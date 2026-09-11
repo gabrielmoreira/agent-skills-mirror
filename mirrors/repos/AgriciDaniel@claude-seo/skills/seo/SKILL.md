@@ -6,7 +6,7 @@ argument-hint: "[command] [url]"
 license: MIT
 metadata:
   author: AgriciDaniel
-  version: "2.2.5"
+  version: "2.3.1"
   category: seo
 ---
 
@@ -14,10 +14,15 @@ metadata:
 
 **Invocation:** `/seo $1 $2` where `$1` is the command and `$2` is the URL or argument.
 
-**Runtime:** Run bundled Python tools through `claude-seo run <script.py>`. Plugin
-installs expose this command automatically. Repository users run
-`./bin/claude-seo`; manual installers rewrite the command to the isolated
-launcher path. Never invoke bundled scripts with a bare Python interpreter.
+**Runtime:** Run bundled Python tools through
+`"${CLAUDE_PLUGIN_ROOT}/scripts/claude-seo" run <script.py>`. That is the single
+canonical form used by every skill and agent. Claude Code expands
+`${CLAUDE_PLUGIN_ROOT}` to the installed plugin directory, so the launcher is
+found without any `PATH` entry; the repository ships no top-level `bin/`
+directory because hosted marketplaces reject one. Repository users run
+`./scripts/claude-seo`; manual installers rewrite the canonical form to
+`"$HOME/.claude/skills/seo/scripts/claude-seo"`. Never invoke bundled scripts
+with a bare Python interpreter.
 
 Comprehensive SEO analysis across all industries (SaaS, local services,
 e-commerce, publishers, agencies). Orchestrates 24 sub-skills (21 core + 1 framework
@@ -61,25 +66,28 @@ extension is also installable (see "Optional Extensions" below).
 ## Runtime Setup
 
 Run setup only when the user explicitly invokes `/seo setup` or explicitly asks
-to repair dependencies. Execute `claude-seo setup`, report core and Chromium
+to repair dependencies. Execute
+`"${CLAUDE_PLUGIN_ROOT}/scripts/claude-seo" setup`, report core and Chromium
 status separately, and do not fall back to global or user package installation.
-For diagnosis, execute `claude-seo doctor --json`; its output intentionally omits
-absolute paths and environment values. If any `claude-seo run` command reports
-that setup is required, suggest `/seo setup` and do not improvise a `pip install`.
+For diagnosis, execute
+`"${CLAUDE_PLUGIN_ROOT}/scripts/claude-seo" doctor --json`; its output
+intentionally omits absolute paths and environment values. If any
+`"${CLAUDE_PLUGIN_ROOT}/scripts/claude-seo" run` command reports that setup is
+required, suggest `/seo setup` and do not improvise a `pip install`.
 
 ## Orchestration Logic
 
 When the user invokes `/seo audit`, delegate to subagents in parallel:
 1. Detect business type (SaaS, local, ecommerce, publisher, agency, other)
 2. Spawn subagents: seo-technical, seo-content, seo-schema, seo-sitemap, seo-performance, seo-visual, seo-geo
-3. If Google API credentials detected (`claude-seo run google_auth.py --check`), also spawn seo-google agent
+3. If Google API credentials detected (`"${CLAUDE_PLUGIN_ROOT}/scripts/claude-seo" run google_auth.py --check`), also spawn seo-google agent
 4. If local business detected, also spawn seo-local agent
 5. If local business detected AND DataForSEO MCP available, also spawn seo-maps agent
-6. If backlink APIs detected (`claude-seo run backlinks_auth.py --check`), also spawn seo-backlinks agent
+6. If backlink APIs detected (`"${CLAUDE_PLUGIN_ROOT}/scripts/claude-seo" run backlinks_auth.py --check`), also spawn seo-backlinks agent
 7. If Firecrawl MCP available, use `firecrawl_map` to discover all site URLs before analysis
 8. If content strategy signals detected (blog, pillar pages, topic clusters), also spawn seo-cluster agent
 9. If e-commerce detected, also spawn seo-ecommerce agent
-10. If drift baseline exists for this URL (`claude-seo run drift_history.py <url>`), also spawn seo-drift agent
+10. If drift baseline exists for this URL (`"${CLAUDE_PLUGIN_ROOT}/scripts/claude-seo" run drift_history.py <url>`), also spawn seo-drift agent
 11. Always include seo-sxo in full audits (search experience applies to all sites)
 12. Collect results and generate unified report with SEO Health Score (0-100)
 13. **Synthesize via the 10-principle framework** (see "Synthesis Methodology" below), walk PERCEIVE → ANALYZE → VALIDATE → ACT before bucketing findings into Critical / High / Medium / Low
@@ -87,7 +95,7 @@ When the user invokes `/seo audit`, delegate to subagents in parallel:
 15. **Offer PDF report**: "Generate a professional PDF report? Use `/seo google report full`"
 
 For individual commands, load the relevant sub-skill directly.
-After any analysis command completes, offer to generate a PDF report via `claude-seo run google_report.py`.
+After any analysis command completes, offer to generate a PDF report via `"${CLAUDE_PLUGIN_ROOT}/scripts/claude-seo" run google_report.py`.
 
 ## Synthesis Methodology
 

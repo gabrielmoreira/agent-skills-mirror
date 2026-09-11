@@ -85,6 +85,31 @@ If a prerequisite is missing, guide the user through setup ([references/prerequi
     preserve `waiting_copilot` and return; do not create duplicate requests. If
     it arrived, process that result before deciding whether another review
     round is needed.
+21. **Never transfer fork validation to a different upstream tree.** A
+    successful build of a fork branch proves only that exact fork tree. Before
+    declaring the upstream PR clean, verify the upstream head itself. If the
+    converged fork contains any fix not present upstream, the PR is not
+    `review_ready`: account for every fork-only change as an author-facing
+    inline suggestion or companion request, or remove it from the reviewed
+    fork tree. Never summarize fork-only tests, documentation, braces, or logic
+    as though they already exist in the upstream head.
+22. **Build the exact suggestion result before presenting it.** Materialize
+    every apply-ready suggestion, together and independently where applicable,
+    on a clean worktree at the pinned upstream head. Run the smallest build or
+    syntax check covering the changed files on that exact candidate tree and
+    record the applied item IDs and commands under
+    `internalEvidence.validation.suggestionPatch`. A build of a hand-edited
+    fork approximation is not sufficient. For a clean zero-finding result,
+    record a passing build of the exact upstream head under
+    `internalEvidence.validation.upstreamHead`.
+23. **Minimize suggestion ranges after proving correctness.** An apply-ready
+    suggestion must show the author only the lines whose replacement is needed.
+    Trim every unchanged leading and trailing line from the selected range and
+    suggestion body unless one unchanged line is required as GitHub's anchor
+    for a pure insertion. Do not include an unchanged opening brace,
+    declaration, condition, or closing brace merely as visual context. Put
+    context in the explanatory prose; keep the apply block to the smallest
+    independently valid replacement.
 
 ## Phase 0: Context & Process Review
 

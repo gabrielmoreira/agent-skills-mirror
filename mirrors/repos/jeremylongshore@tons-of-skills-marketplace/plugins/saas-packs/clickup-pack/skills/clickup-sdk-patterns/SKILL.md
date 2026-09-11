@@ -1,301 +1,84 @@
 ---
 name: clickup-sdk-patterns
-description: 'Production-ready ClickUp API v2 client patterns with typed wrappers,
-
-  error handling, caching, and multi-tenant support.
-
-  Trigger: "clickup client wrapper", "clickup SDK patterns", "clickup best practices",
-
-  "clickup typescript client", "clickup API wrapper", "production clickup code".
-
-  '
-allowed-tools: Read, Write, Edit
-version: 1.6.0
-license: MIT
+description: >-
+  Build a typed ClickUp client from official OpenAPI contracts with explicit version routing, auth injection, error typing, pagination, and retry policy. Use when creating a reusable ClickUp adapter. Trigger with "ClickUp SDK", "ClickUp client wrapper", or "typed ClickUp API".
+argument-hint: "[repository-path] [language]"
+allowed-tools: Read, Glob, Grep, WebFetch, Write, Edit
+version: 1.8.0
 author: Jeremy Longshore <jeremy@intentsolutions.io>
+license: MIT
 tags:
 - saas
-- productivity
 - clickup
-compatibility: Designed for Claude Code
+- sdk-design
+model: inherit
+effort: high
+compatibility: Designed for Claude Code; live client verification requires a scoped ClickUp credential
 ---
-# ClickUp SDK Patterns
+# ClickUp Typed Client Patterns
 
 ## Overview
 
-ClickUp has no official SDK. Build a typed REST client wrapper around `https://api.clickup.com/api/v2/`. These patterns provide singleton clients, typed responses, error boundaries, and multi-tenant support.
-
-## Typed Client Wrapper
-
-```typescript
-// src/clickup/client.ts
-const CLICKUP_BASE = 'https://api.clickup.com/api/v2';
-
-interface ClickUpClientConfig {
-  token: string;
-  timeout?: number;
-  onRateLimit?: (waitMs: number) => void;
-}
-
-class ClickUpClient {
-  private token: string;
-  private timeout: number;
-  private rateLimitRemaining = 100;
-  private rateLimitReset = 0;
-
-  constructor(config: ClickUpClientConfig) {
-    this.token = config.token;
-    this.timeout = config.timeout ?? 30000;
-  }
-
-  async request<T>(path: string, options: RequestInit = {}): Promise<T> {
-    const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), this.timeout);
-
-    try {
-      const response = await fetch(`${CLICKUP_BASE}${path}`, {
-        ...options,
-        signal: controller.signal,
-        headers: {
-          'Authorization': this.token,
-          'Content-Type': 'application/json',
-          ...options.headers,
-        },
-      });
-
-      // Track rate limit state from response headers
-      this.rateLimitRemaining = parseInt(
-        response.headers.get('X-RateLimit-Remaining') ?? '100'
-      );
-      this.rateLimitReset = parseInt(
-        response.headers.get('X-RateLimit-Reset') ?? '0'
-      ) * 1000;
-
-      if (!response.ok) {
-        const body = await response.json().catch(() => ({}));
-        throw new ClickUpApiError(response.status, body.err, body.ECODE);
-      }
-
-      return response.json();
-    } finally {
-      clearTimeout(timer);
-    }
-  }
-
-  // Convenience methods
-  async getUser(): Promise<ClickUpUser> {
-    const data = await this.request<{ user: ClickUpUser }>('/user');
-    return data.user;
-  }
-
-  async getTeams(): Promise<ClickUpTeam[]> {
-    const data = await this.request<{ teams: ClickUpTeam[] }>('/team');
-    return data.teams;
-  }
-
-  async getSpaces(teamId: string): Promise<ClickUpSpace[]> {
-    const data = await this.request<{ spaces: ClickUpSpace[] }>(
-      `/team/${teamId}/space?archived=false`
-    );
-    return data.spaces;
-  }
-
-  async createTask(listId: string, task: CreateTaskInput): Promise<ClickUpTask> {
-    return this.request<ClickUpTask>(`/list/${listId}/task`, {
-      method: 'POST',
-      body: JSON.stringify(task),
-    });
-  }
-
-  async getTask(taskId: string): Promise<ClickUpTask> {
-    return this.request<ClickUpTask>(`/task/${taskId}`);
-  }
-
-  async updateTask(taskId: string, updates: Partial<CreateTaskInput>): Promise<ClickUpTask> {
-    return this.request<ClickUpTask>(`/task/${taskId}`, {
-      method: 'PUT',
-      body: JSON.stringify(updates),
-    });
-  }
-
-  isRateLimited(): boolean {
-    return this.rateLimitRemaining < 5 && Date.now() < this.rateLimitReset;
-  }
-}
-```
-
-## TypeScript Types
-
-```typescript
-// src/clickup/types.ts
-interface ClickUpUser {
-  id: number;
-  username: string;
-  email: string;
-  color: string;
-  profilePicture: string | null;
-}
-
-interface ClickUpTeam {
-  id: string;
-  name: string;
-  color: string;
-  members: Array<{ user: ClickUpUser; role: number }>;
-}
-
-interface ClickUpSpace {
-  id: string;
-  name: string;
-  private: boolean;
-  statuses: Array<{ status: string; color: string; type: string }>;
-  features: Record<string, { enabled: boolean }>;
-}
-
-interface ClickUpTask {
-  id: string;
-  custom_id: string | null;
-  name: string;
-  description: string;
-  status: { status: string; color: string; type: string };
-  priority: { id: string; priority: string; color: string } | null;
-  date_created: string;
-  date_updated: string;
-  due_date: string | null;
-  assignees: ClickUpUser[];
-  tags: Array<{ name: string }>;
-  url: string;
-  list: { id: string; name: string };
-  folder: { id: string; name: string };
-  space: { id: string };
-  custom_fields: ClickUpCustomFieldValue[];
-}
-
-interface CreateTaskInput {
-  name: string;
-  description?: string;
-  markdown_description?: string;
-  assignees?: number[];
-  priority?: 1 | 2 | 3 | 4 | null;
-  status?: string;
-  due_date?: number;
-  due_date_time?: boolean;
-  parent?: string;
-  tags?: string[];
-  custom_fields?: Array<{ id: string; value: any }>;
-}
-
-interface ClickUpCustomFieldValue {
-  id: string;
-  name: string;
-  type: string;
-  value: any;
-}
-
-class ClickUpApiError extends Error {
-  constructor(
-    public readonly status: number,
-    public readonly err: string,
-    public readonly ecode?: string,
-  ) {
-    super(`ClickUp API ${status}: ${err}${ecode ? ` (${ecode})` : ''}`);
-  }
-
-  get isRateLimited(): boolean { return this.status === 429; }
-  get isAuthError(): boolean { return this.status === 401; }
-  get isNotFound(): boolean { return this.status === 404; }
-  get isRetryable(): boolean { return this.status === 429 || this.status >= 500; }
-}
-```
-
-## Singleton Pattern
-
-```typescript
-// src/clickup/index.ts
-let defaultClient: ClickUpClient | null = null;
-
-export function getClickUpClient(): ClickUpClient {
-  if (!defaultClient) {
-    const token = process.env.CLICKUP_API_TOKEN;
-    if (!token) throw new Error('CLICKUP_API_TOKEN not set');
-    defaultClient = new ClickUpClient({ token });
-  }
-  return defaultClient;
-}
-```
-
-## Multi-Tenant Factory
-
-```typescript
-const tenantClients = new Map<string, ClickUpClient>();
-
-function getClientForTenant(tenantId: string, token: string): ClickUpClient {
-  if (!tenantClients.has(tenantId)) {
-    tenantClients.set(tenantId, new ClickUpClient({ token }));
-  }
-  return tenantClients.get(tenantId)!;
-}
-```
-
-## Zod Response Validation
-
-```typescript
-import { z } from 'zod';
-
-const TaskSchema = z.object({
-  id: z.string(),
-  name: z.string(),
-  status: z.object({ status: z.string(), color: z.string() }),
-  priority: z.object({ priority: z.string() }).nullable(),
-  url: z.string().url(),
-});
-
-async function getValidatedTask(taskId: string) {
-  const raw = await getClickUpClient().getTask(taskId);
-  return TaskSchema.parse(raw);
-}
-```
-
-## Error Handling
-
-| Pattern | Use Case | Benefit |
-|---------|----------|---------|
-| Typed error class | All API calls | Type-safe error discrimination |
-| Singleton | Single-tenant apps | Shared rate limit tracking |
-| Factory | Multi-tenant SaaS | Per-tenant isolation |
-| Zod validation | Response parsing | Catches API contract changes |
+Keep application code independent of transport details without presenting an ungoverned third-party wrapper as an official SDK.
 
 ## Prerequisites
 
-- Scoped credential injection and tenant-to-workspace authorization boundary
-- Typed contract schemas, error taxonomy, retry/idempotency policy, and owner
-- Sanitized fixtures plus a protected integration test environment
+- Pinned official v2 and v3 OpenAPI documents or reviewed endpoint schemas
+- A server-side HTTP runtime, validation library, and test framework
+- Auth, Workspace, timeout, retry, redaction, and observability policies
+
+## Tool Discipline
+
+Use `Read`, `Glob`, and `Grep` to inspect the repository, adapters, configuration names, tests, and evidence. Use `WebFetch` only for current official ClickUp documentation. Use `Write` or `Edit` after confirming the target file, Workspace boundary, and requested mode.
+
+## Current Contract
+
+- ClickUp publishes v2 and v3 OpenAPI specifications suitable for generation.
+- Route every operation to an explicit version/base path and preserve ClickUp field types, including nullable webhook fields.
+- Inject personal or OAuth tokens at call time and never store them in client objects serialized to logs.
+- Retry only idempotent transient operations by default; writes need durable application idempotency.
+
+## Authentication
+
+Use a personal token only for accountable individual/testing work or OAuth Authorization Code for a user-facing integration. Inject the token server-side through a governed secret reference, send it in `Authorization`, verify authorized Workspace IDs, and never print the token, OAuth client secret, or webhook secret.
 
 ## Instructions
 
-Centralize requests through the client boundary, validate provider responses,
-classify failures, enforce tenant/workspace isolation, and emit only redacted
-correlation data. Do not cache a tenant client across incompatible credentials
-or treat malformed/unknown provider data as safe; fail closed and surface the
-contract mismatch for review.
+1. Inventory required operations and pin the matching official schema/version digest.
+2. Generate or hand-write a narrow transport and wrap it behind domain-oriented interfaces.
+3. Inject auth, Workspace allow-list, timeouts, content type, and redacted telemetry centrally.
+4. Create endpoint-specific pagination helpers instead of one incorrect universal iterator.
+5. Map statuses/error codes into typed retryable, authorization, plan, validation, and unknown classes.
+6. Test fixtures, schema drift, cancellation, retry ceilings, partial writes, and version migration seams.
+
+## Approval Boundaries
+
+Do not auto-generate broad production access, silently fall back between API versions, or retry writes without a durable source key and owner policy.
 
 ## Output
 
-Return validated domain objects or typed retryable/terminal errors with safe
-correlation metadata. The SDK boundary must never log tokens, raw task bodies,
-comments, or responses beyond the fields required by the caller.
+Return schema pins, supported operations, version routing, auth boundary, error/pagination policies, test coverage, and unsupported surfaces.
+
+## Error Handling
+
+| Condition | Response |
+|---|---|
+| Generated client exposes the token | Block release and correct serialization/logging. |
+| Schema has breaking drift | Regenerate in a review branch and run contract tests. |
+| Endpoint pagination is unknown | Refuse full-scan claims until documented. |
+| Write outcome is ambiguous | Reconcile by durable source ID before retry. |
 
 ## Examples
 
-Use a distinct tenant client to fetch a staging task, validate it through Zod,
-and assert that a malformed response returns a contract error without cache
-poisoning. If authorization crosses tenant or workspace boundaries, reject it
-and investigate identity mapping before retrying.
+The example below is a redacted operator receipt; it contains no task text, member data, credential, or webhook secret.
+
+```text
+schemas=v2@sha256:...+v3@sha256:...; operations=11; direct-http=0; write-retry=off; contracts=pass
+```
 
 ## Resources
 
-- [ClickUp API Reference](https://developer.clickup.com/)
-- [Zod Documentation](https://zod.dev/)
-
-## Next Steps
-
-Apply patterns in `clickup-core-workflow-a` for task management.
+- [Skill-specific official documentation](references/official-docs.md)
+- [OpenAPI specifications](https://developer.clickup.com/docs/open-api-spec)
+- [Authentication](https://developer.clickup.com/docs/authentication)
+- [Rate limits](https://developer.clickup.com/docs/rate-limits)

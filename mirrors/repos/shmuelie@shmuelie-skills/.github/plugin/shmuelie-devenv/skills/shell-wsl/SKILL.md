@@ -109,6 +109,30 @@ fi
   ```
 - Then restart tmux (`tmux kill-server`).
 
+### tmux Server and Pane Environment Boundaries
+- tmux has a long-lived **server** process and one or more short-lived **clients** attached to it. Starting or attaching a client does not replace the server's baseline environment.
+- tmux also maintains a **per-session environment**. New child environments
+  combine global and session values, with session values taking precedence.
+  The `update-environment` option can refresh selected session values from a
+  client on session creation or attachment; do not assume every caller
+  variable is automatically forwarded or that the global environment is the
+  only source. Consult the installed `tmux(1)` manual for these rules.
+- A new window or pane gets its environment when tmux creates that child process. `export FOO=bar` in one pane changes only that pane's shell and its descendants; it does **not** retroactively update sibling panes or unrelated future panes.
+- Forward ephemeral values at the pane or window you are creating, not by mutating the whole tmux server. A portable pattern is to put the variable assignment on the child command itself:
+  ```bash
+  tmux new-window 'TOOLCHAIN_ROOT=/opt/sdk-a exec bash'
+  tmux split-window 'DEPLOY_TARGET=test-box exec bash -lc "./deploy.sh"'
+  ```
+  This keeps the scope on the intended child and makes exit behavior obvious: when that shell exits, the temporary values go with it.
+- These examples use fixed trusted literals and assume the referenced deployment
+  script exists. They are shell command strings, not an argv-preserving API;
+  do not interpolate arbitrary dynamic values without appropriate shell
+  serialization and validation. Login/profile scripts may also overwrite a
+  passed value, so choose the child startup mode deliberately.
+- Avoid `set-environment -g` for one-off values such as SSH agent paths, test flags, or toolchain roots. Global tmux environment changes leak into later panes, later sessions on the same server, and sometimes unrelated attached clients.
+- Existing panes keep whatever environment their child shell already has until that child exits. For a different SDK or compiler setup, start a fresh pane or window instead of trying to "switch" an already-running shell in place.
+- Some tmux versions ship explicit environment-forwarding flags on session/window/pane creation. Check the `tmux(1)` manual that ships with **your** version before depending on a flag name; if portability matters, keep using inline `VAR=value command` or a small wrapper script.
+
 ### APT Troubleshooting
 - **Broken repo files**: Check `/etc/apt/sources.list.d/` for wrong URLs
   (e.g., Edge repo pointing at Chrome URL).

@@ -1,238 +1,84 @@
 ---
 name: clickup-webhooks-events
-description: 'Create and manage ClickUp webhooks for real-time event notifications.
-
-  Use when setting up webhook listeners for task/list/space events,
-
-  implementing two-way sync, or handling ClickUp event payloads.
-
-  Trigger: "clickup webhook", "clickup events", "clickup notifications",
-
-  "clickup real-time", "clickup event listener", "clickup webhook create".
-
-  '
-allowed-tools: Read, Write, Edit, Bash(curl:*)
-version: 1.6.0
-license: MIT
+description: >-
+  Register, verify, process, monitor, and reconcile ClickUp webhooks with raw-body HMAC, durable idempotency, fast acknowledgment, and gap recovery. Use when building event-driven ClickUp integrations. Trigger with "ClickUp webhook", "verify X-Signature", or "ClickUp events".
+argument-hint: "[workspace-id] [endpoint-url] [plan|apply]"
+allowed-tools: Read, Glob, Grep, WebFetch, Write, Edit
+version: 1.8.0
 author: Jeremy Longshore <jeremy@intentsolutions.io>
+license: MIT
 tags:
 - saas
-- productivity
 - clickup
-compatibility: Designed for Claude Code
+- webhooks
+model: inherit
+effort: high
+compatibility: Designed for Claude Code; registration requires authorized ClickUp access and public HTTPS ingress
 ---
-# ClickUp Webhooks & Events
+# ClickUp Signed Webhook Operations
 
 ## Overview
 
-ClickUp webhooks send HTTP POST notifications when resources change. Register webhooks via API, subscribe to specific events, and receive payloads with `history_items` showing what changed.
-
-## Webhook Endpoints
-
-```
-POST   /api/v2/team/{team_id}/webhook    Create webhook
-GET    /api/v2/team/{team_id}/webhook    Get webhooks
-PUT    /api/v2/webhook/{webhook_id}      Update webhook
-DELETE /api/v2/webhook/{webhook_id}      Delete webhook
-```
-
-## Create a Webhook
-
-```typescript
-async function createWebhook(teamId: string, endpoint: string, events: string[]) {
-  return clickupRequest(`/team/${teamId}/webhook`, {
-    method: 'POST',
-    body: JSON.stringify({
-      endpoint,        // Your HTTPS URL
-      events,          // Array of event names
-      space_id: null,  // Optional: limit to specific space
-      folder_id: null, // Optional: limit to specific folder
-      list_id: null,   // Optional: limit to specific list
-      task_id: null,   // Optional: limit to specific task
-    }),
-  });
-}
-
-// Subscribe to task and list events
-const webhook = await createWebhook('1234567', 'https://myapp.com/webhooks/clickup', [
-  'taskCreated',
-  'taskUpdated',
-  'taskDeleted',
-  'taskStatusUpdated',
-  'taskAssigneeUpdated',
-  'taskDueDateUpdated',
-  'taskCommentPosted',
-  'taskTimeTrackedUpdated',
-  'listCreated',
-  'listUpdated',
-  'listDeleted',
-]);
-
-// Response:
-// { "id": "wh_abc123", "webhook": { "id": "...", "endpoint": "...", "events": [...] } }
-```
-
-## Available Events
-
-| Category | Events |
-|----------|--------|
-| **Task** | `taskCreated`, `taskUpdated`, `taskDeleted`, `taskStatusUpdated`, `taskAssigneeUpdated`, `taskDueDateUpdated`, `taskTagUpdated`, `taskMoved`, `taskCommentPosted`, `taskCommentUpdated`, `taskTimeTrackedUpdated`, `taskTimeEstimateUpdated`, `taskPriorityUpdated` |
-| **List** | `listCreated`, `listUpdated`, `listDeleted` |
-| **Folder** | `folderCreated`, `folderUpdated`, `folderDeleted` |
-| **Space** | `spaceCreated`, `spaceUpdated`, `spaceDeleted` |
-| **Goal** | `goalCreated`, `goalUpdated`, `goalDeleted`, `keyResultCreated`, `keyResultUpdated`, `keyResultDeleted` |
-
-## Webhook Payload Format
-
-```json
-{
-  "event": "taskUpdated",
-  "webhook_id": "wh_abc123",
-  "task_id": "abc123",
-  "history_items": [
-    {
-      "id": "hist_001",
-      "type": 1,
-      "date": "1695000000000",
-      "field": "status",
-      "parent_id": "abc123",
-      "data": {},
-      "source": null,
-      "user": { "id": 183, "username": "john", "email": "john@example.com" },
-      "before": { "status": "to do", "color": "#d3d3d3", "type": "open" },
-      "after": { "status": "in progress", "color": "#4194f6", "type": "custom" }
-    }
-  ]
-}
-```
-
-## Webhook Handler (Express)
-
-```typescript
-import express from 'express';
-
-const app = express();
-app.use(express.json());
-
-app.post('/webhooks/clickup', async (req, res) => {
-  const { event, webhook_id, task_id, history_items } = req.body;
-
-  // Immediately acknowledge (ClickUp expects 200 within 30s)
-  res.status(200).json({ received: true });
-
-  // Process asynchronously
-  try {
-    await processClickUpEvent(event, task_id, history_items);
-  } catch (err) {
-    console.error(`Failed to process ${event} for task ${task_id}:`, err);
-  }
-});
-
-async function processClickUpEvent(
-  event: string,
-  taskId: string,
-  historyItems: any[]
-) {
-  switch (event) {
-    case 'taskCreated':
-      console.log(`New task: ${taskId}`);
-      break;
-    case 'taskStatusUpdated': {
-      const change = historyItems[0];
-      console.log(`Task ${taskId}: ${change.before.status} -> ${change.after.status}`);
-      // Trigger downstream actions (e.g., notify Slack, update external system)
-      break;
-    }
-    case 'taskCommentPosted':
-      console.log(`New comment on task ${taskId}`);
-      break;
-    case 'taskTimeTrackedUpdated':
-      console.log(`Time tracked updated on task ${taskId}`);
-      break;
-    default:
-      console.log(`Unhandled event: ${event}`);
-  }
-}
-```
-
-## Idempotency (Prevent Duplicate Processing)
-
-```typescript
-const processedEvents = new Map<string, number>();
-
-function isDuplicate(webhookId: string, historyItemId: string): boolean {
-  const key = `${webhookId}:${historyItemId}`;
-  if (processedEvents.has(key)) return true;
-  processedEvents.set(key, Date.now());
-
-  // Clean old entries every 1000 events
-  if (processedEvents.size > 10000) {
-    const cutoff = Date.now() - 3600000; // 1 hour
-    for (const [k, v] of processedEvents) {
-      if (v < cutoff) processedEvents.delete(k);
-    }
-  }
-  return false;
-}
-```
-
-## List and Manage Webhooks
-
-```bash
-# List all webhooks for a workspace
-TEAM_ID="1234567"
-curl -s "https://api.clickup.com/api/v2/team/${TEAM_ID}/webhook" \
-  -H "Authorization: $CLICKUP_API_TOKEN" | jq '.webhooks[] | {id, endpoint, events}'
-
-# Delete a webhook
-curl -s -X DELETE "https://api.clickup.com/api/v2/webhook/WH_ID" \
-  -H "Authorization: $CLICKUP_API_TOKEN"
-```
-
-## Error Handling
-
-| Issue | Cause | Solution |
-|-------|-------|----------|
-| Webhook not firing | Endpoint not HTTPS | Webhooks require HTTPS URLs |
-| Duplicate events | No idempotency | Track history_item IDs |
-| Timeout (no 200) | Slow processing | Respond 200 immediately, process async |
-| Webhook auto-disabled | Repeated failures | ClickUp disables after many 5xx responses |
+Treat webhooks as signed, user-owned change signals that need durable processing and reconciliation. Assume delivery can duplicate, arrive late, or stop after ownership changes.
 
 ## Prerequisites
 
-- Authorized workspace webhook configuration and an HTTPS receiver
-- Durable event ID/idempotency storage, queue, and redacted monitoring
-- Defined event allow-list, retention policy, and incident escalation route
+- A public HTTPS endpoint capable of retaining raw request bytes
+- A secret manager, durable queue/idempotency store, and Workspace allow-list
+- An authorized user owner for the webhook plus monitoring and reconciliation
+
+## Tool Discipline
+
+Use `Read`, `Glob`, and `Grep` to inspect the repository, adapters, configuration names, tests, and evidence. Use `WebFetch` only for current official ClickUp documentation. Use `Write` or `Edit` after confirming the target file, Workspace boundary, and requested mode.
+
+## Current Contract
+
+- Webhook creation returns a unique secret; verify raw-body HMAC-SHA256 against hexadecimal `X-Signature`.
+- Registrations are tied to the creating user and can stop triggering when that user is disabled or loses hierarchy access.
+- Use `webhook_id:history_item_id` as the documented idempotency key when a history item exists; handle events without one deliberately.
+- Responses over seven seconds or unsuccessful responses are failures; ClickUp attempts delivery up to five times, does not resend the failed event later, suspends at `fail_count=100`, and a 401 suspends immediately.
+
+## Authentication
+
+Use a personal token only for accountable individual/testing work or OAuth Authorization Code for a user-facing integration. Inject the token server-side through a governed secret reference, send it in `Authorization`, verify authorized Workspace IDs, and never print the token, OAuth client secret, or webhook secret.
 
 ## Instructions
 
-Validate event scope and receiver configuration, persist an idempotency key
-before processing, acknowledge quickly only after durable receipt, and enqueue
-authorized work for asynchronous handling. Reject malformed or unauthorized
-requests safely; do not retry by registering duplicate webhooks or replaying
-unbounded event batches.
+1. Choose the narrowest location and explicit event set; inventory duplicate registrations before creation.
+2. Register only after endpoint ownership, HTTPS, secret storage, and rollback approval are confirmed.
+3. Capture raw bytes, look up the per-webhook secret, verify HMAC in constant time, then parse/validate JSON.
+4. Persist idempotency and enqueue before a fast success response; process business effects asynchronously.
+5. Monitor status/fail count, latency, duplicates, dead letters, and owner eligibility.
+6. Run reconciliation reads for delivery gaps and rotate/re-register safely when ownership changes.
+
+## Approval Boundaries
+
+Require approval before creating, broadening, suspending/reactivating, rotating, or deleting production webhooks and before replaying business effects.
 
 ## Output
 
-Record event ID/type, workspace/resource scope, receipt and signature decision,
-idempotency result, queued job status, and redacted error/correlation data.
-Never log tokens, webhook endpoints, task descriptions, comments, or raw
-payloads beyond the policy-approved fields.
+Return the registered scope, credential-storage identifier, HMAC verification and idempotency test results, delivery health, queue result, reconciliation status, and rollback.
+
+## Error Handling
+
+| Condition | Response |
+|---|---|
+| Signature invalid | Reject before parsing and record content-free evidence. |
+| Handler cannot persist within deadline | Return failure deliberately and repair capacity; do not acknowledge lost work. |
+| Webhook suspended | Contain, diagnose fail count/401 behavior, and reactivate only after approval. |
+| History item is absent | Use a documented event-specific fallback key and reconciliation. |
 
 ## Examples
 
-For a task-update event, write the event/history ID once, enqueue a normalized
-job, and return 200; a retry of that ID returns a safe acknowledgement without
-duplicate downstream work. If processing fails, leave the job in the reviewed
-queue/DLQ path and investigate instead of forcing ClickUp to redeliver forever.
+The example below is a redacted operator receipt; it contains no task text, member data, credential, or webhook secret.
+
+```text
+events=taskUpdated,taskDeleted; hmac=pass; ack=82ms; duplicate=ignored; fail-count=0; reconcile=pass
+```
 
 ## Resources
 
-- [ClickUp Webhooks Guide](https://developer.clickup.com/docs/webhooks)
-- [Task Webhook Payloads](https://developer.clickup.com/docs/webhooktaskpayloads)
-- [List Webhook Payloads](https://developer.clickup.com/docs/webhooklistpayloads)
-- [Create Webhook API](https://clickup.com/api/clickupreference/operation/CreateWebhook/)
-
-## Next Steps
-
-For performance optimization, see `clickup-performance-tuning`.
+- [Skill-specific official documentation](references/official-docs.md)
+- [Webhooks](https://developer.clickup.com/docs/webhooks)
+- [Authentication](https://developer.clickup.com/docs/authentication)
+- [Rate limits](https://developer.clickup.com/docs/rate-limits)

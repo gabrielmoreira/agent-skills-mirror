@@ -320,30 +320,25 @@ has no package yet; the `aarch64-darwin` flake output is the closest thing.
 
 ### Name your multiplexer
 
-Collie mirrors one backend: `COLLIE_MUX=herdr` (default), `tmux`, or `zellij`.
-
-> **Note.** You do not have to set it up first.
-
-The first `start` looks for a live Herdr socket, a running tmux server and zellij sessions, prints
-what it found, and writes your answer to the config `.env`, creating it. With no terminal to ask at,
-it takes the only backend it found and says which; with none, or with several, it refuses to start
-and names `COLLIE_MUX`.
-
-To decide up front instead, seed that file **before** the first start. It is
-`~/.config/collie/.env` standalone, or the path `herdr plugin config-dir herdr.collie` prints:
-
 ```bash
 mkdir -p ~/.config/collie
 cp .env.example ~/.config/collie/.env
 ```
 
-Then set the backend and its endpoint:
+Collie mirrors one backend: `COLLIE_MUX=herdr` (default), `tmux`, or `zellij`. Seeding the file
+above **before the first start** lets you decide up front; it is `~/.config/collie/.env` standalone,
+or the path `herdr plugin config-dir herdr.collie` prints. Then set the backend and its endpoint:
 
 ```bash
 COLLIE_MUX=tmux                                           # or: zellij
 # zellij instead: COLLIE_MUX_ENDPOINT_ZELLIJ=<session>
 COLLIE_MUX_ENDPOINT_TMUX=/run/user/1000/collie-tmux.sock
 ```
+
+> **Note.** You do not have to set it up first. The first `start` looks for a live Herdr socket, a
+> running tmux server and zellij sessions, prints what it found, and writes your answer to the
+> config `.env`, creating it. With no terminal to ask at, it takes the only backend it found and
+> says which; with none, or with several, it refuses to start and names `COLLIE_MUX`.
 
 > **Caution.** Do not run that `cp` after a start: it lands `.env.example` on top of the
 > `COLLIE_MUX` the start just wrote.
@@ -404,10 +399,24 @@ with `bin/collie qr`). Your client must be on the same tailnet.
    Settings → Paired devices on the client with the code filled in, or open Settings → Paired
    devices on the client and type the code
    ([Pair a device](security.md#pair-a-device--the-write-credential)).
-2. **Install PWA**: Tap *Add to Home Screen* in Safari (iOS) or Chrome (Android).
+2. **Install the app**: Tap **Install** in Settings if the browser offers it, or use the share
+   sheet on iOS/iPadOS.
+
+> **Note.** **On Android or desktop:** Chrome and Edge offer an install button the moment they
+> decide the app is installable, and Collie surfaces that offer as an **Install** card at the top
+> of Settings.
+
+![The Install card at the top of Settings, with the button Chrome and Edge offer.](images/updates/settings-install-offered.png)
+
+> **Note.** **On iPhone or iPad:** Safari never makes that offer — installing there always goes
+> through the share sheet — so the same card shows those steps instead, exactly while they apply.
+
+![The same card on iOS or iPadOS: installing goes through the share sheet instead.](images/updates/settings-install-ios-hint.png)
 
 Installing the PWA requires HTTPS; `COLLIE_SERVE_MODE=http` disables service workers, so the phone
-can only use the browser tab in that mode.
+can only use the browser tab in that mode. A dev build (any checkout not sitting on its release
+tag) installs as **Collie (dev)** with an orange icon, so it never sits on your home screen next to
+a release install looking the same.
 
 ### Is it actually working?
 

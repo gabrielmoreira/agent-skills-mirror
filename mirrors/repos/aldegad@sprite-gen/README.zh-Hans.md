@@ -9,14 +9,10 @@
 </p>
 
 <p align="center">
-  <img src="docs/assets/hero-paladin-walk.gif" height="202" alt="paladin walk loop" />
-  <img src="docs/assets/hero-paladin-run.gif" height="206" alt="paladin run loop" />
-  <img src="docs/assets/hero-paladin-jump.gif" height="246" alt="paladin jump loop" />
-  <img src="docs/assets/hero-wolf-walk.gif" height="203" alt="wolf walk loop" />
-  <img src="docs/assets/hero-slime-walk.gif" height="203" alt="slime walk loop" />
+  <a href="https://youtu.be/zVu9YlbPtog"><img src="docs/assets/hero-v2-party.gif" width="960" alt="Animated sprite-gen v2 showcase: paladin, wolf and slime" /></a>
 </p>
 
-<p align="center"><sub>上面每个循环都来自<b>一张静止图</b>：填充到动作所需的画布 → 由 Grok Imagine 驱动 → 逐帧抠像 → 在真实周期处剪成透明 GIF — 流水线 B，<code>sprite-gen video-set</code>。</sub></p>
+<p align="center"><sub>每个角色都始于<b>一张静态图</b>。Grok Imagine 生成动作，sprite-gen 提取透明循环动画，再由 HyperFrames 合成这一场景。</sub></p>
 
 ---
 
@@ -24,6 +20,10 @@
 向图像模型要一张“精灵表”，结果可想而知：每帧都在变脸的角色、抠不掉的背景、重叠且偏离网格的姿势、游戏引擎根本无法消费的 PNG。做演示可爱，做资产无用。
 
 `sprite-gen` 是补上这道缺口的 Codex/Claude 技能兼 Python CLI。给它**一张基础图**——它逐行驱动生成、锁定角色 identity、把色键背景剥成真正的 alpha、把每个姿势提取为干净的透明帧，并烘焙出带**机器可读 `manifest.json.frame_layout`** 的运行时图集。把同一张静止图交给视频模型，就能得到每个动作状态一段无缝透明循环。生成永远做不对的最后 10%，交给**策展 Webview**：对比、剔除、微调，实时观看循环后再烘焙。
+
+## 从请求开始
+
+请求**制作精灵图**或**生成图片**。代理检查使用状态，只询问尚未指定的生成工具和动作方式，再通过现有流程交付结果。筛选视图可选。两种用途可分别保存默认设置；单次请求不会覆盖已保存的设置。[请求流程与默认设置](docs/user-workflow.md)。
 
 ## 四条流水线，一个 CLI
 
@@ -33,7 +33,9 @@
 flowchart LR
     subgraph A["A · atlas rows"]
         direction LR
-        a1[prepare] --> a2["gen · gen-set"] --> a3[extract] --> a4[curation] --> a5[compose-atlas]
+        a1[prepare] --> a2["gen · gen-set"] --> a3[extract] --> a5[compose-atlas]
+        a5 -.-> a4["curation (optional)"]
+        a4 --> a5
     end
     subgraph B["B · video → loop"]
         direction LR

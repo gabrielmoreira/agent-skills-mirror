@@ -1,237 +1,84 @@
 ---
 name: clickup-local-dev-loop
-description: 'Set up local development for ClickUp API integrations with testing,
-
-  mocking, and hot reload.
-
-  Trigger: "clickup dev setup", "clickup local development", "clickup dev environment",
-
-  "develop with clickup", "clickup testing setup", "mock clickup API".
-
-  '
-allowed-tools: Read, Write, Edit, Bash(npm:*), Bash(pnpm:*), Grep
-version: 1.6.0
-license: MIT
+description: >-
+  Develop ClickUp adapters with a fake transport, schema fixtures, deterministic clocks, and an opt-in bounded live probe. Use when iterating without mutating a real Workspace. Trigger with "ClickUp local dev", "mock ClickUp API", or "ClickUp fixtures".
+argument-hint: "[repository-path] [offline|live-probe]"
+allowed-tools: Read, Glob, Grep, WebFetch, Write, Edit
+version: 1.8.0
 author: Jeremy Longshore <jeremy@intentsolutions.io>
+license: MIT
 tags:
 - saas
-- productivity
 - clickup
-compatibility: Designed for Claude Code
+- development
+model: inherit
+effort: high
+compatibility: Designed for Claude Code; ordinary tests are offline and the live probe needs a non-production credential
 ---
-# ClickUp Local Dev Loop
+# ClickUp Deterministic Local Development
 
 ## Overview
 
-Set up a fast local development workflow for ClickUp API v2 integrations with hot reload, mocking, and integration testing.
-
-## Project Setup
-
-```bash
-mkdir my-clickup-integration && cd $_
-npm init -y
-npm install -D typescript tsx vitest @types/node dotenv
-npx tsc --init --target ES2022 --module nodenext --outDir dist
-```
-
-```
-my-clickup-integration/
-├── src/
-│   ├── clickup/
-│   │   ├── client.ts       # ClickUp API client (see clickup-sdk-patterns)
-│   │   ├── types.ts         # TypeScript interfaces
-│   │   └── tasks.ts         # Task operations
-│   └── index.ts
-├── tests/
-│   ├── mocks/
-│   │   └── clickup.ts       # Mock ClickUp API responses
-│   ├── unit/
-│   │   └── tasks.test.ts
-│   └── integration/
-│       └── clickup.test.ts
-├── .env.local                # Local secrets (git-ignored)
-├── .env.example              # Template for team
-└── package.json
-```
-
-## Environment Configuration
-
-```bash
-# .env.example (commit this)
-CLICKUP_API_TOKEN=pk_your_token_here
-CLICKUP_TEAM_ID=your_team_id
-CLICKUP_TEST_LIST_ID=your_test_list_id
-
-# .env.local (git-ignored, copy from .env.example)
-cp .env.example .env.local
-```
-
-```json
-{
-  "scripts": {
-    "dev": "tsx watch src/index.ts",
-    "test": "vitest",
-    "test:watch": "vitest --watch",
-    "test:integration": "CLICKUP_LIVE=1 vitest --run tests/integration/",
-    "build": "tsc",
-    "typecheck": "tsc --noEmit"
-  }
-}
-```
-
-## Mock ClickUp API for Unit Tests
-
-```typescript
-// tests/mocks/clickup.ts
-export const mockTask = {
-  id: 'test_task_001',
-  name: 'Test Task',
-  status: { status: 'to do', color: '#d3d3d3', type: 'open' },
-  priority: { id: '3', priority: 'normal', color: '#6fddff' },
-  date_created: '1695000000000',
-  date_updated: '1695000000000',
-  due_date: null,
-  assignees: [],
-  tags: [],
-  url: 'https://app.clickup.com/t/test_task_001',
-  list: { id: '900100200300', name: 'Test List' },
-  folder: { id: '456', name: 'Test Folder' },
-  space: { id: '789' },
-  custom_fields: [],
-};
-
-export const mockTeam = {
-  teams: [{
-    id: '1234567',
-    name: 'Test Workspace',
-    members: [{ user: { id: 183, username: 'testuser', email: 'test@example.com' } }],
-  }],
-};
-
-// Mock fetch for ClickUp API calls
-export function mockClickUpFetch() {
-  return vi.fn(async (url: string, options?: RequestInit) => {
-    const path = new URL(url).pathname.replace('/api/v2', '');
-
-    const routes: Record<string, any> = {
-      '/team': mockTeam,
-      '/user': { user: { id: 183, username: 'testuser' } },
-    };
-
-    // Match dynamic routes
-    if (path.match(/^\/task\/.+/)) return jsonResponse(mockTask);
-    if (path.match(/^\/list\/.+\/task$/) && options?.method === 'POST') {
-      return jsonResponse({ ...mockTask, ...JSON.parse(options.body as string) });
-    }
-
-    return jsonResponse(routes[path] ?? {}, routes[path] ? 200 : 404);
-  });
-}
-
-function jsonResponse(data: any, status = 200) {
-  return new Response(JSON.stringify(data), {
-    status,
-    headers: {
-      'Content-Type': 'application/json',
-      'X-RateLimit-Remaining': '95',
-      'X-RateLimit-Limit': '100',
-      'X-RateLimit-Reset': String(Math.floor(Date.now() / 1000) + 60),
-    },
-  });
-}
-```
-
-## Unit Test Example
-
-```typescript
-// tests/unit/tasks.test.ts
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { mockClickUpFetch, mockTask } from '../mocks/clickup';
-
-describe('ClickUp Task Operations', () => {
-  beforeEach(() => {
-    vi.stubGlobal('fetch', mockClickUpFetch());
-    vi.stubEnv('CLICKUP_API_TOKEN', 'pk_test_token');
-  });
-
-  it('creates a task with required fields', async () => {
-    const { createTask } = await import('../../src/clickup/tasks');
-    const task = await createTask('list123', { name: 'New Task' });
-    expect(task.name).toBe('New Task');
-    expect(fetch).toHaveBeenCalledWith(
-      expect.stringContaining('/list/list123/task'),
-      expect.objectContaining({ method: 'POST' }),
-    );
-  });
-
-  it('gets a task by ID', async () => {
-    const { getTask } = await import('../../src/clickup/tasks');
-    const task = await getTask('test_task_001');
-    expect(task.id).toBe(mockTask.id);
-  });
-});
-```
-
-## Integration Test (Live API)
-
-```typescript
-// tests/integration/clickup.test.ts
-import { describe, it, expect } from 'vitest';
-import 'dotenv/config';
-
-const LIVE = process.env.CLICKUP_LIVE === '1';
-
-describe.skipIf(!LIVE)('ClickUp Live API', () => {
-  it('authenticates and lists workspaces', async () => {
-    const response = await fetch('https://api.clickup.com/api/v2/team', {
-      headers: { 'Authorization': process.env.CLICKUP_API_TOKEN! },
-    });
-    expect(response.ok).toBe(true);
-    const data = await response.json();
-    expect(data.teams.length).toBeGreaterThan(0);
-  });
-});
-```
-
-## Error Handling
-
-| Error | Cause | Solution |
-|-------|-------|----------|
-| `CLICKUP_API_TOKEN` undefined | Missing .env.local | Copy from .env.example |
-| Integration tests fail | No live token | Set `CLICKUP_LIVE=1` and valid token |
-| Mock not matching | Route pattern wrong | Check URL path in mock router |
+Keep the fast loop offline while preserving exact provider shapes and a deliberate path to detect real API drift.
 
 ## Prerequisites
 
-- Isolated local/staging environment, mock fixtures, and non-production list
-- Secret manager or local secure injection for any live test credential
-- Cleanup path and data-retention rule for generated test tasks
+- A transport interface around all ClickUp HTTP calls
+- Sanitized fixtures derived from documented v2/v3 schemas, including nulls and errors
+- A deterministic clock, fake queue, and optional isolated Workspace for a live read
+
+## Tool Discipline
+
+Use `Read`, `Glob`, and `Grep` to inspect the repository, adapters, configuration names, tests, and evidence. Use `WebFetch` only for current official ClickUp documentation. Use `Write` or `Edit` after confirming the target file, Workspace boundary, and requested mode.
+
+## Current Contract
+
+- Fixtures preserve string/number/null differences in task and webhook payloads.
+- Separate base paths and schemas for v2 and selected v3 operations.
+- Mock 429 headers, zero-based task pages, comment cursors, auth codes, and webhook delivery retries.
+- No ordinary unit test reads a developer token or creates a ClickUp object.
+
+## Authentication
+
+Use a personal token only for accountable individual/testing work or OAuth Authorization Code for a user-facing integration. Inject the token server-side through a governed secret reference, send it in `Authorization`, verify authorized Workspace IDs, and never print the token, OAuth client secret, or webhook secret.
 
 ## Instructions
 
-Run unit tests against sanitized fixtures by default, enable a live request
-only in the isolated integration scope, and mark disposable resources clearly.
-Re-read and clean up every live mutation; never use a production workspace or
-personal task list as a test fixture.
+1. Inventory direct HTTP calls and route them through an injectable transport.
+2. Create fixtures for identity, Workspace, tasks, pages, Custom Fields, webhooks, errors, and rate headers.
+3. Freeze time and IDs; make request order, retry jitter, and queue outcomes deterministic.
+4. Test raw-body HMAC verification, redaction, Workspace guards, and partial-write recovery.
+5. Add an explicit live-probe command limited to read-only identity/Workspace calls.
+6. Run offline tests by default and record any provider drift found by the live probe.
+
+## Approval Boundaries
+
+Do not record production responses, use personal work data as fixtures, or enable writes in the default local/test path.
 
 ## Output
 
-Return a local-test receipt with fixture version, mock/live mode, affected test
-IDs, assertion results, cleanup status, and safe correlation data. Do not
-commit `.env.local`, tokens, real task bodies, or private member information.
+Return fixture provenance, offline coverage, direct-call violations, deterministic test result, live-probe result, and drift. Distinguish simulated success from provider-confirmed evidence.
+
+## Error Handling
+
+| Condition | Response |
+|---|---|
+| Fixture contains personal or task content | Delete/quarantine it and replace with synthetic data. |
+| Direct HTTP call bypasses transport | Fail the test and refactor the boundary. |
+| Live credential is absent | Skip the probe without weakening offline tests. |
+| Live response drifts | Update contracts only after official-source review. |
 
 ## Examples
 
-Mock a `GET /task` response and assert the client mapping, then optionally run
-one protected-list read with `CLICKUP_LIVE=1`. If a live test requires a task,
-create a labeled disposable task, verify it, and delete it before the run ends.
+The example below is a redacted operator receipt; it contains no task text, member data, credential, or webhook secret.
+
+```text
+mode=offline; fixtures=14; network-calls=0; clocks=frozen; hmac-tests=pass; live-probe=skipped
+```
 
 ## Resources
 
-- [Vitest Documentation](https://vitest.dev/)
-- [tsx (TypeScript Execute)](https://github.com/privatenumber/tsx)
-- [ClickUp API Reference](https://developer.clickup.com/)
-
-## Next Steps
-
-See `clickup-sdk-patterns` for production-ready client patterns.
+- [Skill-specific official documentation](references/official-docs.md)
+- [OpenAPI specifications](https://developer.clickup.com/docs/open-api-spec)
+- [Authentication](https://developer.clickup.com/docs/authentication)
+- [Rate limits](https://developer.clickup.com/docs/rate-limits)

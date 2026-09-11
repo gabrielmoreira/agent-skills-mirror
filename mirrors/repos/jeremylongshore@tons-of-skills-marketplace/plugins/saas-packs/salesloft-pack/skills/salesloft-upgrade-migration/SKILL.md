@@ -1,137 +1,86 @@
 ---
 name: salesloft-upgrade-migration
-description: 'Migrate between SalesLoft API versions and handle breaking changes.
-
-  Use when SalesLoft announces API deprecations, upgrading OAuth flows,
-
-  or transitioning from legacy endpoints.
-
-  Trigger: "upgrade salesloft", "salesloft migration", "salesloft API version".
-
-  '
-allowed-tools: Read, Write, Edit, Bash(npm:*), Bash(git:*)
+description: >-
+  Migrate an existing Salesloft integration through an evidence-backed endpoint, auth, schema, scope, and behavior diff with shadow validation and rollback. Use when current contracts or application assumptions change. Trigger with "Salesloft migration", "upgrade Salesloft integration", or "Salesloft API contract change".
+argument-hint: "[repository-path] [migration-scope]"
+allowed-tools: Read, Glob, Grep, WebFetch, Write, Edit
 version: 1.6.0
-license: MIT
 author: Jeremy Longshore <jeremy@intentsolutions.io>
+license: MIT
 tags:
 - saas
-- sales
-- outreach
 - salesloft
+- migration
+model: inherit
+effort: medium
 compatibility: Designed for Claude Code
 ---
-# SalesLoft Upgrade & Migration
+# Salesloft Contract Migration
 
 ## Overview
 
-SalesLoft REST API is versioned at v2 with no official SDK -- migrations involve endpoint changes, auth flow updates, and response schema changes. The Cadence Import/Export API was a major addition. Key migration: SalesLoft rebranded some endpoints and added OAuth client credentials flow.
+This skill migrates the integration that actually exists. It does not assume a generic v1-to-v2 journey, API-key deprecation, or universal endpoint rename.
 
-## Migration Scenarios
+## Prerequisites
 
-### Legacy API Key to OAuth 2.0
+- Current integration commit, dependencies, deployment topology, and owners
+- Complete method/path/scope/request/response inventory
+- Target official documentation and migration reason
+- Sanitized fixtures, shadow environment, rollback, and reconciliation plan
 
-```typescript
-// BEFORE: Static API key (being deprecated for partner apps)
-const api = axios.create({
-  headers: { Authorization: `Bearer ${process.env.SALESLOFT_API_KEY}` },
-});
+## Tool Discipline
 
-// AFTER: OAuth 2.0 with token refresh
-class SalesloftOAuthClient {
-  private tokenStore: { access: string; refresh: string; expiresAt: number };
+Use `Read`, `Glob`, and `Grep` to inventory callers, auth, schemas, and compatibility code. Use `WebFetch` only for current official Salesloft documentation. Use `Write` or `Edit` after the migration boundary is approved.
 
-  async getClient() {
-    if (Date.now() > this.tokenStore.expiresAt * 1000 - 300_000) {
-      await this.refreshToken();
-    }
-    return axios.create({
-      baseURL: 'https://api.salesloft.com/v2',
-      headers: { Authorization: `Bearer ${this.tokenStore.access}` },
-    });
-  }
+## Current Contract
 
-  private async refreshToken() {
-    const { data } = await axios.post('https://accounts.salesloft.com/oauth/token', {
-      grant_type: 'refresh_token',
-      refresh_token: this.tokenStore.refresh,
-      client_id: process.env.SALESLOFT_CLIENT_ID,
-      client_secret: process.env.SALESLOFT_CLIENT_SECRET,
-    });
-    this.tokenStore = {
-      access: data.access_token,
-      refresh: data.refresh_token,
-      expiresAt: Math.floor(Date.now() / 1000) + data.expires_in,
-    };
-  }
-}
-```
+- The current public reference exposes v2 and historical v1 surfaces; compatibility is endpoint-specific.
+- Resource paths are documented without a universal `.json` requirement.
+- Auth flow choice depends on integration type; API keys remain a customer path and client credentials remain private-use only.
+- Rate costs and endpoint schemas can change independently of URL versioning.
+- Cadence import, export, and membership contracts must be verified from their own endpoint pages.
 
-### Adding Client Credentials Flow
+## Authentication
 
-```typescript
-// Client credentials: server-to-server, no user interaction
-// Recommended for background sync jobs
-async function getServiceToken(): Promise<string> {
-  const { data } = await axios.post('https://accounts.salesloft.com/oauth/token', {
-    grant_type: 'client_credentials',
-    client_id: process.env.SALESLOFT_CLIENT_ID,
-    client_secret: process.env.SALESLOFT_CLIENT_SECRET,
-  });
-  return data.access_token; // No refresh token -- request new when expired
-}
-```
+Treat auth migration as a separate reversible workstream. Preserve tenant binding and least privilege, and do not disable the old credential until the new path is proven and rollback is viable.
 
-### Cadence Import/Export API Adoption
+## Instructions
 
-```typescript
-// Export cadence (portable format -- can import into any SalesLoft instance)
-const { data: exported } = await api.get(`/cadence_exports/${cadenceId}.json`);
-// Returns agnostic content: steps, email templates, timing
+1. Inventory every live method, path, query, content type, scope, response field, and retry assumption.
+2. Diff each used contract against current official documentation and classify required changes.
+3. Add failing fixtures for every intentional schema or behavior delta.
+4. Implement an adapter or dual-read path instead of changing all callers at once.
+5. Shadow reads and compare normalized results without duplicating writes.
+6. Canary approved mutations with read-after-write and reconciliation evidence.
+7. Cut over gradually, monitor rate and error signals, then remove compatibility code only after rollback expiry.
 
-// Import cadence into another instance
-const { data: imported } = await api.post('/cadence_imports.json', {
-  cadence_content: exported.data,
-  settings: {
-    name: 'Imported: Q1 Outbound',
-    shared: false,
-  },
-});
-```
+## Approval Boundaries
 
-## Migration Checklist
+Do not automatically fall back between API versions, convert auth flows, import cadences, or replay writes. Each live mutation and irreversible cleanup needs explicit approval.
 
-- [ ] Audit all endpoints used (search codebase for `/v2/`)
-- [ ] Check response fields consumed (SalesLoft may add/remove fields)
-- [ ] Test with staging OAuth app first
-- [ ] Update error handling for any new error codes
-- [ ] Verify rate limit costs haven't changed
-- [ ] Update webhook signature verification if format changed
-- [ ] Run integration tests against new version
+## Output
 
-## Rollback
-
-```text
-# Pin to previous behavior
-git checkout -b rollback/salesloft-migration
-git revert <migration-commit>
-git push origin rollback/salesloft-migration
-```
+Return contract diff, affected callers, fixture results, shadow comparison, canary evidence, cutover state, rollback trigger, and cleanup date.
 
 ## Error Handling
 
-| Change | Impact | Migration |
-|--------|--------|-----------|
-| API key deprecation | Auth stops working | Switch to OAuth 2.0 |
-| New required fields | 422 on create | Add new fields to payloads |
-| Endpoint rename | 404 on old path | Update URL in client |
-| Rate limit cost change | Unexpected 429s | Recalculate pagination budgets |
+| Condition | Response |
+|---|---|
+| Undocumented behavior | Stop and obtain provider or support confirmation. |
+| Shadow mismatch | Keep old reads authoritative and isolate the field delta. |
+| Canary uncertainty | Reconcile before retry or wider rollout. |
+| Rate regression | Halt expansion and compare endpoint/page cost. |
+
+## Examples
+
+The example below shows the minimum redacted evidence expected from a successful invocation of this operator workflow.
+
+```text
+contracts=14; changed=3; shadow-match=100%; canary=pending; rollback=ready
+```
 
 ## Resources
 
-- [SalesLoft API Basics](https://developers.salesloft.com/docs/platform/api-basics/)
-- [Cadence Imports](https://developers.salesloft.com/docs/platform/cadence-imports/introduction/)
-- [OAuth Client Credentials](https://developers.salesloft.com/docs/platform/api-basics/client-creds/)
-
-## Next Steps
-
-For CI integration during upgrades, see `salesloft-ci-integration`.
+- [Skill-specific official documentation](references/official-docs.md)
+- [Salesloft API reference](https://developers.salesloft.com/docs/api/salesloft-platform/)
+- [Request and response format](https://developers.salesloft.com/docs/platform/api-basics/request-response-format/)

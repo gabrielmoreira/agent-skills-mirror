@@ -13,7 +13,7 @@ argument-hint: "[url]"
 license: MIT
 metadata:
   author: AgriciDaniel
-  version: "2.2.5"
+  version: "2.3.1"
   category: seo
 ---
 
@@ -152,22 +152,74 @@ Check `robots.txt` for these AI crawlers:
 
 | Crawler | Owner | Purpose | Obeys robots.txt? |
 |---------|-------|---------|---|
-| GPTBot | OpenAI | ChatGPT web search | yes |
-| OAI-SearchBot | OpenAI | OpenAI search features | yes |
+| GPTBot | OpenAI | **Model training only** (NOT ChatGPT Search) | yes |
+| OAI-SearchBot | OpenAI | **ChatGPT Search citability** (the crawler that decides it) | yes |
 | ChatGPT-User | OpenAI | ChatGPT browsing (user-triggered) | no (user-triggered) |
-| ClaudeBot | Anthropic | Claude web features | yes |
+| ClaudeBot | Anthropic | **Model training only** (NOT Claude's search features) | yes |
+| Claude-SearchBot | Anthropic | **Claude/Claude.ai search-result citability** (the crawler that decides it) | yes |
+| Claude-User | Anthropic | Claude browsing on a user's behalf (user-triggered) | no (user-triggered) |
 | PerplexityBot | Perplexity | Perplexity AI search | yes |
 | CCBot | Common Crawl | Training data (often blocked) | yes |
-| anthropic-ai | Anthropic | Claude training | yes |
 | Bytespider | ByteDance | TikTok/Douyin AI | yes |
 | cohere-ai | Cohere | Cohere models | yes |
-| Google-Extended | Google | Gemini/Vertex training & grounding opt-out | yes |
+| Google-Extended | Google | **Gemini/Vertex training & grounding only** (NOT Google Search) | yes |
 | Google-CloudVertexBot | Google | Site-owner-requested Vertex AI Agent crawls | yes |
 | Google-Agent | Google | Agentic browsing (Project Mariner), acts for a user | **no (user-triggered)** |
 | Google-NotebookLM | Google | Fetches individual user-added source URLs | **no (user-triggered)** |
 | Google Messages | Google | User-triggered fetch | **no (user-triggered)** |
+| Applebot-Extended | Apple | **Apple Intelligence / generative-AI training data opt-out only** (NOT Siri, Spotlight, or Safari search; does not itself crawl, it labels content already fetched by Applebot) | yes |
 
-**Recommendation:** Allow GPTBot, OAI-SearchBot, ClaudeBot, PerplexityBot for AI search visibility. Block CCBot and training crawlers if desired.
+Sources: [OpenAI crawlers](https://platform.openai.com/docs/bots),
+[Google crawlers overview](https://developers.google.com/search/docs/crawling-indexing/overview-google-crawlers),
+[Anthropic crawler support article](https://support.anthropic.com/en/articles/8896518-does-anthropic-crawl-data-from-the-web-and-how-can-site-owners-block-the-crawler),
+[Apple Applebot-Extended support article](https://support.apple.com/en-us/119829).
+Anthropic's current crawler support article documents only ClaudeBot, Claude-User,
+and Claude-SearchBot; it does not list `anthropic-ai`, so the previously-unverified
+`anthropic-ai` row has been removed rather than kept as a guess.
+
+**Recommendation:** Allow OAI-SearchBot, Claude-SearchBot, and PerplexityBot for AI
+search visibility. GPTBot, ClaudeBot, CCBot, and Applebot-Extended are training-only
+signals -- allow or block them on licensing preference, not on search-visibility
+grounds.
+
+### Check the right bot for the claim you are making
+
+Two pairs are routinely conflated. **Each claim below may only be supported by its own
+bot's robots.txt status** -- check them separately and report them separately.
+
+| Claim you want to make | Bot to check | Bot that does NOT support this claim |
+|---|---|---|
+| "Content is citable in ChatGPT Search" | `OAI-SearchBot` | `GPTBot` |
+| "Content is available for OpenAI model training" | `GPTBot` | `OAI-SearchBot` |
+| "Content can be used for Gemini/Vertex training & grounding" | `Google-Extended` | `Googlebot` |
+| "Content is eligible for Google Search / AI Overviews" | `Googlebot` | `Google-Extended` |
+| "Content is citable in Claude's search features" | `Claude-SearchBot` | `ClaudeBot` |
+| "Content is available for Anthropic model training" | `ClaudeBot` | `Claude-SearchBot` |
+| "Content can be used for Apple Intelligence training" | `Applebot-Extended` | `Applebot` |
+| "Content is discoverable via Siri, Spotlight, or Safari search" | `Applebot` | `Applebot-Extended` |
+
+- **`Google-Extended` governs Gemini and Vertex AI training and grounding use only.
+  It does not affect inclusion in ordinary Google Search, or in AI Overviews and AI
+  Mode, both of which are served from the `Googlebot` index.** Never score
+  `Google-Extended` as a "Google Search readiness" signal, and never cite a blocked
+  `Google-Extended` as evidence that a site is missing from Google Search.
+- **`OAI-SearchBot` is the crawler that determines ChatGPT Search citability.
+  `GPTBot` is OpenAI's separate training crawler.** Checking `GPTBot` access tells
+  you nothing about whether ChatGPT Search can cite the page. A site that blocks
+  `GPTBot` and allows `OAI-SearchBot` is fully citable in ChatGPT Search.
+- **`Claude-SearchBot` is the crawler that determines citability in Claude's own
+  search features. `ClaudeBot` is Anthropic's separate training crawler** (per
+  Anthropic's crawler support article). Checking `ClaudeBot` access tells you
+  nothing about Claude search citability, and vice versa; report each separately.
+- **`Applebot-Extended` is a training-data opt-out signal, not a crawler that
+  fetches pages itself.** Per Apple's support article, disallowing
+  `Applebot-Extended` opts a site out of Apple Intelligence / generative-model
+  training use, but the page remains discoverable through Siri, Spotlight, and
+  Safari as long as `Applebot` itself is allowed. Never cite a blocked
+  `Applebot-Extended` as evidence a site is missing from Apple's search surfaces.
+
+Do not use these names interchangeably in report prose. When reporting crawler access,
+name the specific user-agent that was checked and the specific capability it governs.
 
 > **User-triggered fetchers ignore robots.txt by design** (Google-Agent, Google-NotebookLM, Google Messages, ChatGPT-User). robots.txt cannot block them, use server-side access controls. Google's canonical crawling/robots reference moved to **developers.google.com/crawling** (migrated 2025-11-20); IP-range files now live at `/crawling/ipranges/` and `googlebot.json` was renamed `common-crawlers.json`. Emerging: **Web Bot Auth** (RFC 9421) lets bots authenticate via a `Signature-Agent` header + key directory (used by Google-Agent); reverse-DNS verification remains the fallback.
 
@@ -236,6 +288,12 @@ New standard (December 2025) for machine-readable AI licensing terms.
 > well in classic Search feeds AI Overviews, but AI Mode draws from a broader pool
 > where freshness and entity authority outweigh raw position. Score both.
 >
+> **AI Mode is also a booking surface (2026-08-27).** Flight price tracking
+> with email alerts (180+ countries and territories), hotel booking through
+> integrated partners, and fares shown in points or miles now happen inside
+> AI Mode. Travel and hospitality clients should check partner eligibility;
+> nothing here is a documented ranking change.
+>
 > **UX is now unified, surfaces still distinct.** At Google I/O 2026 (2026-05-19)
 > Google merged AI Overviews and AI Mode into "one seamless AI Search experience"
 > (question → AI Overview → follow-up in AI Mode) with a new intelligent Search
@@ -269,7 +327,11 @@ Generate `GEO-ANALYSIS.md` with:
 
 1. **GEO Readiness Score: XX/100**
 2. **Platform breakdown** (Google AIO, ChatGPT, Perplexity scores)
-3. **AI Crawler Access Status** (which crawlers allowed/blocked)
+3. **AI Crawler Access Status** -- report each crawler separately with the
+   capability it governs. Training access (`GPTBot`, `Google-Extended`, `CCBot`,
+   `ClaudeBot`, `Applebot-Extended`) and search citability (`OAI-SearchBot`,
+   `Googlebot`, `PerplexityBot`, `Claude-SearchBot`, `Applebot`) are distinct
+   findings and must never be merged into one line.
 4. **llms.txt Status** (present, missing, recommendations)
 5. **Brand Mention Analysis** (presence on Wikipedia, Reddit, YouTube, LinkedIn)
 6. **Passage-Level Citability** (optimal 134-167 word blocks identified)

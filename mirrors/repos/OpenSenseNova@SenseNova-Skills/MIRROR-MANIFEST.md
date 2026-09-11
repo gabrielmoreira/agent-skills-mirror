@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `OpenSenseNova/SenseNova-Skills` — 26 default patterns, 16 followed patterns, 495 file(s) materialized.
+Mirror of `OpenSenseNova/SenseNova-Skills` — 26 default patterns, 24 followed patterns, 508 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `OpenSenseNova/SenseNova-Skills` — 26 default patterns, 16 followed 
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 16 |
-| Files         | 495 |
+| Followed pats | 24 |
+| Files         | 508 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,6 +59,10 @@ Mirror of `OpenSenseNova/SenseNova-Skills` — 26 default patterns, 16 followed 
 - `docs/sn-ppt-generate_cn.md`
 - `docs/sn-data-analysis_cn.md`
 - `docs/sn-deep-research_cn.md`
+- `docs/sn-deepresearch-cli_cn.md`
+- `docs/sn-motion-html_cn.md`
+- `docs/sn-team-harness_cn.md`
+- `docs/sn-proactive-agent_cn.md`
 - `docs/faq_CN.md`
 - `docs/sn-infographic-examples.md`
 - `INSTALL.md`
@@ -66,6 +70,10 @@ Mirror of `OpenSenseNova/SenseNova-Skills` — 26 default patterns, 16 followed 
 - `docs/sn-ppt-generate.md`
 - `docs/sn-data-analysis.md`
 - `docs/sn-deep-research.md`
+- `docs/sn-deepresearch-cli.md`
+- `docs/sn-motion-html.md`
+- `docs/sn-team-harness.md`
+- `docs/sn-proactive-agent.md`
 - `docs/faq.md`
 
 ## File Index
@@ -484,91 +492,104 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 408 | ✓ | [`skills/sn-ppt-workbench/workbench-runtime/package.json`](skills/sn-ppt-workbench/workbench-runtime/package.json) |
 | 409 | ✓ | [`skills/sn-prepare-citations/scripts/prepare_citations.py`](skills/sn-prepare-citations/scripts/prepare_citations.py) |
 | 410 | ✓ | [`skills/sn-prepare-citations/SKILL.md`](skills/sn-prepare-citations/SKILL.md) |
-| 411 | ✓ | [`skills/sn-report-format-discovery/SKILL.md`](skills/sn-report-format-discovery/SKILL.md) |
-| 412 | ✓ | [`skills/sn-research-report/SKILL.md`](skills/sn-research-report/SKILL.md) |
-| 413 | ✓ | [`skills/sn-search-academic/references/paper.md`](skills/sn-search-academic/references/paper.md) |
-| 414 | ✓ | [`skills/sn-search-academic/references/refTree.md`](skills/sn-search-academic/references/refTree.md) |
-| 415 | ✓ | [`skills/sn-search-academic/references/search.md`](skills/sn-search-academic/references/search.md) |
-| 416 | ✓ | [`skills/sn-search-academic/requirements.txt`](skills/sn-search-academic/requirements.txt) |
-| 417 | ✓ | [`skills/sn-search-academic/scripts/arxiv_crawler_search.py`](skills/sn-search-academic/scripts/arxiv_crawler_search.py) |
-| 418 | ✓ | [`skills/sn-search-academic/scripts/arxiv_mirror_search.py`](skills/sn-search-academic/scripts/arxiv_mirror_search.py) |
-| 419 | ✓ | [`skills/sn-search-academic/scripts/arxiv_paper.py`](skills/sn-search-academic/scripts/arxiv_paper.py) |
-| 420 | ✓ | [`skills/sn-search-academic/scripts/arxiv_pdf_paper.py`](skills/sn-search-academic/scripts/arxiv_pdf_paper.py) |
-| 421 | ✓ | [`skills/sn-search-academic/scripts/arxiv_search.py`](skills/sn-search-academic/scripts/arxiv_search.py) |
-| 422 | ✓ | [`skills/sn-search-academic/scripts/crossref_search.py`](skills/sn-search-academic/scripts/crossref_search.py) |
-| 423 | ✓ | [`skills/sn-search-academic/scripts/deepxiv_paper.py`](skills/sn-search-academic/scripts/deepxiv_paper.py) |
-| 424 | ✓ | [`skills/sn-search-academic/scripts/deepxiv_search.py`](skills/sn-search-academic/scripts/deepxiv_search.py) |
-| 425 | ✓ | [`skills/sn-search-academic/scripts/google_scholar_search.py`](skills/sn-search-academic/scripts/google_scholar_search.py) |
-| 426 | ✓ | [`skills/sn-search-academic/scripts/openalex_search.py`](skills/sn-search-academic/scripts/openalex_search.py) |
-| 427 | ✓ | [`skills/sn-search-academic/scripts/paper.py`](skills/sn-search-academic/scripts/paper.py) |
-| 428 | ✓ | [`skills/sn-search-academic/scripts/pmc_paper.py`](skills/sn-search-academic/scripts/pmc_paper.py) |
-| 429 | ✓ | [`skills/sn-search-academic/scripts/pubmed_search.py`](skills/sn-search-academic/scripts/pubmed_search.py) |
-| 430 | ✓ | [`skills/sn-search-academic/scripts/refTree.py`](skills/sn-search-academic/scripts/refTree.py) |
-| 431 | ✓ | [`skills/sn-search-academic/scripts/search_utils.py`](skills/sn-search-academic/scripts/search_utils.py) |
-| 432 | ✓ | [`skills/sn-search-academic/scripts/search.py`](skills/sn-search-academic/scripts/search.py) |
-| 433 | ✓ | [`skills/sn-search-academic/scripts/semantic_scholar_crawler_refTree.py`](skills/sn-search-academic/scripts/semantic_scholar_crawler_refTree.py) |
-| 434 | ✓ | [`skills/sn-search-academic/scripts/semantic_scholar_crawler_search.py`](skills/sn-search-academic/scripts/semantic_scholar_crawler_search.py) |
-| 435 | ✓ | [`skills/sn-search-academic/scripts/semantic_scholar_refs.py`](skills/sn-search-academic/scripts/semantic_scholar_refs.py) |
-| 436 | ✓ | [`skills/sn-search-academic/scripts/semantic_scholar_refTree.py`](skills/sn-search-academic/scripts/semantic_scholar_refTree.py) |
-| 437 | ✓ | [`skills/sn-search-academic/scripts/semantic_scholar_search.py`](skills/sn-search-academic/scripts/semantic_scholar_search.py) |
-| 438 | ✓ | [`skills/sn-search-academic/scripts/ssrn_search.py`](skills/sn-search-academic/scripts/ssrn_search.py) |
-| 439 | ✓ | [`skills/sn-search-academic/scripts/wikipedia_search.py`](skills/sn-search-academic/scripts/wikipedia_search.py) |
-| 440 | ✓ | [`skills/sn-search-academic/SKILL.md`](skills/sn-search-academic/SKILL.md) |
-| 441 | ✓ | [`skills/sn-search-code/requirements.txt`](skills/sn-search-code/requirements.txt) |
-| 442 | ✓ | [`skills/sn-search-code/scripts/github_search.py`](skills/sn-search-code/scripts/github_search.py) |
-| 443 | ✓ | [`skills/sn-search-code/scripts/hackernews_search.py`](skills/sn-search-code/scripts/hackernews_search.py) |
-| 444 | ✓ | [`skills/sn-search-code/scripts/huggingface_search.py`](skills/sn-search-code/scripts/huggingface_search.py) |
-| 445 | ✓ | [`skills/sn-search-code/scripts/search_utils.py`](skills/sn-search-code/scripts/search_utils.py) |
-| 446 | ✓ | [`skills/sn-search-code/scripts/stackoverflow_search.py`](skills/sn-search-code/scripts/stackoverflow_search.py) |
-| 447 | ✓ | [`skills/sn-search-code/SKILL.md`](skills/sn-search-code/SKILL.md) |
-| 448 | ✓ | [`skills/sn-search-finance/requirements.txt`](skills/sn-search-finance/requirements.txt) |
-| 449 | ✓ | [`skills/sn-search-finance/scripts/finance_search.py`](skills/sn-search-finance/scripts/finance_search.py) |
-| 450 | ✓ | [`skills/sn-search-finance/SKILL.md`](skills/sn-search-finance/SKILL.md) |
-| 451 | ✓ | [`skills/sn-search-image/requirements.txt`](skills/sn-search-image/requirements.txt) |
-| 452 | ✓ | [`skills/sn-search-image/scripts/serper_image_search.py`](skills/sn-search-image/scripts/serper_image_search.py) |
-| 453 | ✓ | [`skills/sn-search-image/SKILL.md`](skills/sn-search-image/SKILL.md) |
-| 454 | ✓ | [`skills/sn-search-market-cn/scripts/free_market_api.py`](skills/sn-search-market-cn/scripts/free_market_api.py) |
-| 455 | ✓ | [`skills/sn-search-market-cn/SKILL.md`](skills/sn-search-market-cn/SKILL.md) |
-| 456 | ✓ | [`skills/sn-search-social-cn/requirements.txt`](skills/sn-search-social-cn/requirements.txt) |
-| 457 | ✓ | [`skills/sn-search-social-cn/scripts/bilibili_search.py`](skills/sn-search-social-cn/scripts/bilibili_search.py) |
-| 458 | ✓ | [`skills/sn-search-social-cn/scripts/douyin_search.py`](skills/sn-search-social-cn/scripts/douyin_search.py) |
-| 459 | ✓ | [`skills/sn-search-social-cn/scripts/search_utils.py`](skills/sn-search-social-cn/scripts/search_utils.py) |
-| 460 | ✓ | [`skills/sn-search-social-cn/scripts/zhihu_search.py`](skills/sn-search-social-cn/scripts/zhihu_search.py) |
-| 461 | ✓ | [`skills/sn-search-social-cn/SKILL.md`](skills/sn-search-social-cn/SKILL.md) |
-| 462 | ✓ | [`skills/sn-search-social-en/requirements.txt`](skills/sn-search-social-en/requirements.txt) |
-| 463 | ✓ | [`skills/sn-search-social-en/scripts/reddit_search.py`](skills/sn-search-social-en/scripts/reddit_search.py) |
-| 464 | ✓ | [`skills/sn-search-social-en/scripts/search_utils.py`](skills/sn-search-social-en/scripts/search_utils.py) |
-| 465 | ✓ | [`skills/sn-search-social-en/scripts/twitter_search.py`](skills/sn-search-social-en/scripts/twitter_search.py) |
-| 466 | ✓ | [`skills/sn-search-social-en/scripts/youtube_search.py`](skills/sn-search-social-en/scripts/youtube_search.py) |
-| 467 | ✓ | [`skills/sn-search-social-en/SKILL.md`](skills/sn-search-social-en/SKILL.md) |
-| 468 | ✓ | [`skills/sn-search-social-media/requirements.txt`](skills/sn-search-social-media/requirements.txt) |
-| 469 | ✓ | [`skills/sn-search-social-media/scripts/_filters.py`](skills/sn-search-social-media/scripts/_filters.py) |
-| 470 | ✓ | [`skills/sn-search-social-media/scripts/github_public_search.py`](skills/sn-search-social-media/scripts/github_public_search.py) |
-| 471 | ✓ | [`skills/sn-search-social-media/scripts/hackernews_hotspots.py`](skills/sn-search-social-media/scripts/hackernews_hotspots.py) |
-| 472 | ✓ | [`skills/sn-search-social-media/scripts/search_utils.py`](skills/sn-search-social-media/scripts/search_utils.py) |
-| 473 | ✓ | [`skills/sn-search-social-media/scripts/stackexchange_search.py`](skills/sn-search-social-media/scripts/stackexchange_search.py) |
-| 474 | ✓ | [`skills/sn-search-social-media/scripts/wikimedia_pageviews.py`](skills/sn-search-social-media/scripts/wikimedia_pageviews.py) |
-| 475 | ✓ | [`skills/sn-search-social-media/SKILL.md`](skills/sn-search-social-media/SKILL.md) |
-| 476 | ✓ | [`skills/sn-search-year-report/scripts/year_report_api.py`](skills/sn-search-year-report/scripts/year_report_api.py) |
-| 477 | ✓ | [`skills/sn-search-year-report/SKILL.md`](skills/sn-search-year-report/SKILL.md) |
-| 478 | ✓ | [`skills/sn-team-harness/SKILL.md`](skills/sn-team-harness/SKILL.md) |
-| 479 | ✓ | [`skills/sn-update/SKILL.md`](skills/sn-update/SKILL.md) |
-| 480 | → | [`docs/faq_CN.md`](docs/faq_CN.md) |
-| 481 | → | [`docs/faq.md`](docs/faq.md) |
-| 482 | → | [`docs/sn-data-analysis_cn.md`](docs/sn-data-analysis_cn.md) |
-| 483 | → | [`docs/sn-data-analysis.md`](docs/sn-data-analysis.md) |
-| 484 | → | [`docs/sn-deep-research_cn.md`](docs/sn-deep-research_cn.md) |
-| 485 | → | [`docs/sn-deep-research.md`](docs/sn-deep-research.md) |
-| 486 | → | [`docs/sn-image-generate_en.md`](docs/sn-image-generate_en.md) |
-| 487 | → | [`docs/sn-image-generate.md`](docs/sn-image-generate.md) |
-| 488 | → | [`docs/sn-infographic-examples_CN.md`](docs/sn-infographic-examples_CN.md) |
-| 489 | → | [`docs/sn-infographic-examples.md`](docs/sn-infographic-examples.md) |
-| 490 | → | [`docs/sn-ppt-generate_cn.md`](docs/sn-ppt-generate_cn.md) |
-| 491 | → | [`docs/sn-ppt-generate.md`](docs/sn-ppt-generate.md) |
-| 492 | → | [`INSTALL_CN.md`](INSTALL_CN.md) |
-| 493 | → | [`INSTALL.md`](INSTALL.md) |
-| 494 | → | [`README_CN.md`](README_CN.md) |
-| 495 | → | [`README.md`](README.md) |
+| 411 | ✓ | [`skills/sn-proactive-agent/references/connectors/hermes.md`](skills/sn-proactive-agent/references/connectors/hermes.md) |
+| 412 | ✓ | [`skills/sn-proactive-agent/references/install/macos.md`](skills/sn-proactive-agent/references/install/macos.md) |
+| 413 | ✓ | [`skills/sn-proactive-agent/references/install/overview.md`](skills/sn-proactive-agent/references/install/overview.md) |
+| 414 | ✓ | [`skills/sn-proactive-agent/references/install/windows.md`](skills/sn-proactive-agent/references/install/windows.md) |
+| 415 | ✓ | [`skills/sn-proactive-agent/SKILL.md`](skills/sn-proactive-agent/SKILL.md) |
+| 416 | ✓ | [`skills/sn-report-format-discovery/SKILL.md`](skills/sn-report-format-discovery/SKILL.md) |
+| 417 | ✓ | [`skills/sn-research-report/SKILL.md`](skills/sn-research-report/SKILL.md) |
+| 418 | ✓ | [`skills/sn-search-academic/references/paper.md`](skills/sn-search-academic/references/paper.md) |
+| 419 | ✓ | [`skills/sn-search-academic/references/refTree.md`](skills/sn-search-academic/references/refTree.md) |
+| 420 | ✓ | [`skills/sn-search-academic/references/search.md`](skills/sn-search-academic/references/search.md) |
+| 421 | ✓ | [`skills/sn-search-academic/requirements.txt`](skills/sn-search-academic/requirements.txt) |
+| 422 | ✓ | [`skills/sn-search-academic/scripts/arxiv_crawler_search.py`](skills/sn-search-academic/scripts/arxiv_crawler_search.py) |
+| 423 | ✓ | [`skills/sn-search-academic/scripts/arxiv_mirror_search.py`](skills/sn-search-academic/scripts/arxiv_mirror_search.py) |
+| 424 | ✓ | [`skills/sn-search-academic/scripts/arxiv_paper.py`](skills/sn-search-academic/scripts/arxiv_paper.py) |
+| 425 | ✓ | [`skills/sn-search-academic/scripts/arxiv_pdf_paper.py`](skills/sn-search-academic/scripts/arxiv_pdf_paper.py) |
+| 426 | ✓ | [`skills/sn-search-academic/scripts/arxiv_search.py`](skills/sn-search-academic/scripts/arxiv_search.py) |
+| 427 | ✓ | [`skills/sn-search-academic/scripts/crossref_search.py`](skills/sn-search-academic/scripts/crossref_search.py) |
+| 428 | ✓ | [`skills/sn-search-academic/scripts/deepxiv_paper.py`](skills/sn-search-academic/scripts/deepxiv_paper.py) |
+| 429 | ✓ | [`skills/sn-search-academic/scripts/deepxiv_search.py`](skills/sn-search-academic/scripts/deepxiv_search.py) |
+| 430 | ✓ | [`skills/sn-search-academic/scripts/google_scholar_search.py`](skills/sn-search-academic/scripts/google_scholar_search.py) |
+| 431 | ✓ | [`skills/sn-search-academic/scripts/openalex_search.py`](skills/sn-search-academic/scripts/openalex_search.py) |
+| 432 | ✓ | [`skills/sn-search-academic/scripts/paper.py`](skills/sn-search-academic/scripts/paper.py) |
+| 433 | ✓ | [`skills/sn-search-academic/scripts/pmc_paper.py`](skills/sn-search-academic/scripts/pmc_paper.py) |
+| 434 | ✓ | [`skills/sn-search-academic/scripts/pubmed_search.py`](skills/sn-search-academic/scripts/pubmed_search.py) |
+| 435 | ✓ | [`skills/sn-search-academic/scripts/refTree.py`](skills/sn-search-academic/scripts/refTree.py) |
+| 436 | ✓ | [`skills/sn-search-academic/scripts/search_utils.py`](skills/sn-search-academic/scripts/search_utils.py) |
+| 437 | ✓ | [`skills/sn-search-academic/scripts/search.py`](skills/sn-search-academic/scripts/search.py) |
+| 438 | ✓ | [`skills/sn-search-academic/scripts/semantic_scholar_crawler_refTree.py`](skills/sn-search-academic/scripts/semantic_scholar_crawler_refTree.py) |
+| 439 | ✓ | [`skills/sn-search-academic/scripts/semantic_scholar_crawler_search.py`](skills/sn-search-academic/scripts/semantic_scholar_crawler_search.py) |
+| 440 | ✓ | [`skills/sn-search-academic/scripts/semantic_scholar_refs.py`](skills/sn-search-academic/scripts/semantic_scholar_refs.py) |
+| 441 | ✓ | [`skills/sn-search-academic/scripts/semantic_scholar_refTree.py`](skills/sn-search-academic/scripts/semantic_scholar_refTree.py) |
+| 442 | ✓ | [`skills/sn-search-academic/scripts/semantic_scholar_search.py`](skills/sn-search-academic/scripts/semantic_scholar_search.py) |
+| 443 | ✓ | [`skills/sn-search-academic/scripts/ssrn_search.py`](skills/sn-search-academic/scripts/ssrn_search.py) |
+| 444 | ✓ | [`skills/sn-search-academic/scripts/wikipedia_search.py`](skills/sn-search-academic/scripts/wikipedia_search.py) |
+| 445 | ✓ | [`skills/sn-search-academic/SKILL.md`](skills/sn-search-academic/SKILL.md) |
+| 446 | ✓ | [`skills/sn-search-code/requirements.txt`](skills/sn-search-code/requirements.txt) |
+| 447 | ✓ | [`skills/sn-search-code/scripts/github_search.py`](skills/sn-search-code/scripts/github_search.py) |
+| 448 | ✓ | [`skills/sn-search-code/scripts/hackernews_search.py`](skills/sn-search-code/scripts/hackernews_search.py) |
+| 449 | ✓ | [`skills/sn-search-code/scripts/huggingface_search.py`](skills/sn-search-code/scripts/huggingface_search.py) |
+| 450 | ✓ | [`skills/sn-search-code/scripts/search_utils.py`](skills/sn-search-code/scripts/search_utils.py) |
+| 451 | ✓ | [`skills/sn-search-code/scripts/stackoverflow_search.py`](skills/sn-search-code/scripts/stackoverflow_search.py) |
+| 452 | ✓ | [`skills/sn-search-code/SKILL.md`](skills/sn-search-code/SKILL.md) |
+| 453 | ✓ | [`skills/sn-search-finance/requirements.txt`](skills/sn-search-finance/requirements.txt) |
+| 454 | ✓ | [`skills/sn-search-finance/scripts/finance_search.py`](skills/sn-search-finance/scripts/finance_search.py) |
+| 455 | ✓ | [`skills/sn-search-finance/SKILL.md`](skills/sn-search-finance/SKILL.md) |
+| 456 | ✓ | [`skills/sn-search-image/requirements.txt`](skills/sn-search-image/requirements.txt) |
+| 457 | ✓ | [`skills/sn-search-image/scripts/serper_image_search.py`](skills/sn-search-image/scripts/serper_image_search.py) |
+| 458 | ✓ | [`skills/sn-search-image/SKILL.md`](skills/sn-search-image/SKILL.md) |
+| 459 | ✓ | [`skills/sn-search-market-cn/scripts/free_market_api.py`](skills/sn-search-market-cn/scripts/free_market_api.py) |
+| 460 | ✓ | [`skills/sn-search-market-cn/SKILL.md`](skills/sn-search-market-cn/SKILL.md) |
+| 461 | ✓ | [`skills/sn-search-social-cn/requirements.txt`](skills/sn-search-social-cn/requirements.txt) |
+| 462 | ✓ | [`skills/sn-search-social-cn/scripts/bilibili_search.py`](skills/sn-search-social-cn/scripts/bilibili_search.py) |
+| 463 | ✓ | [`skills/sn-search-social-cn/scripts/douyin_search.py`](skills/sn-search-social-cn/scripts/douyin_search.py) |
+| 464 | ✓ | [`skills/sn-search-social-cn/scripts/search_utils.py`](skills/sn-search-social-cn/scripts/search_utils.py) |
+| 465 | ✓ | [`skills/sn-search-social-cn/scripts/zhihu_search.py`](skills/sn-search-social-cn/scripts/zhihu_search.py) |
+| 466 | ✓ | [`skills/sn-search-social-cn/SKILL.md`](skills/sn-search-social-cn/SKILL.md) |
+| 467 | ✓ | [`skills/sn-search-social-en/requirements.txt`](skills/sn-search-social-en/requirements.txt) |
+| 468 | ✓ | [`skills/sn-search-social-en/scripts/reddit_search.py`](skills/sn-search-social-en/scripts/reddit_search.py) |
+| 469 | ✓ | [`skills/sn-search-social-en/scripts/search_utils.py`](skills/sn-search-social-en/scripts/search_utils.py) |
+| 470 | ✓ | [`skills/sn-search-social-en/scripts/twitter_search.py`](skills/sn-search-social-en/scripts/twitter_search.py) |
+| 471 | ✓ | [`skills/sn-search-social-en/scripts/youtube_search.py`](skills/sn-search-social-en/scripts/youtube_search.py) |
+| 472 | ✓ | [`skills/sn-search-social-en/SKILL.md`](skills/sn-search-social-en/SKILL.md) |
+| 473 | ✓ | [`skills/sn-search-social-media/requirements.txt`](skills/sn-search-social-media/requirements.txt) |
+| 474 | ✓ | [`skills/sn-search-social-media/scripts/_filters.py`](skills/sn-search-social-media/scripts/_filters.py) |
+| 475 | ✓ | [`skills/sn-search-social-media/scripts/github_public_search.py`](skills/sn-search-social-media/scripts/github_public_search.py) |
+| 476 | ✓ | [`skills/sn-search-social-media/scripts/hackernews_hotspots.py`](skills/sn-search-social-media/scripts/hackernews_hotspots.py) |
+| 477 | ✓ | [`skills/sn-search-social-media/scripts/search_utils.py`](skills/sn-search-social-media/scripts/search_utils.py) |
+| 478 | ✓ | [`skills/sn-search-social-media/scripts/stackexchange_search.py`](skills/sn-search-social-media/scripts/stackexchange_search.py) |
+| 479 | ✓ | [`skills/sn-search-social-media/scripts/wikimedia_pageviews.py`](skills/sn-search-social-media/scripts/wikimedia_pageviews.py) |
+| 480 | ✓ | [`skills/sn-search-social-media/SKILL.md`](skills/sn-search-social-media/SKILL.md) |
+| 481 | ✓ | [`skills/sn-search-year-report/scripts/year_report_api.py`](skills/sn-search-year-report/scripts/year_report_api.py) |
+| 482 | ✓ | [`skills/sn-search-year-report/SKILL.md`](skills/sn-search-year-report/SKILL.md) |
+| 483 | ✓ | [`skills/sn-team-harness/SKILL.md`](skills/sn-team-harness/SKILL.md) |
+| 484 | ✓ | [`skills/sn-update/SKILL.md`](skills/sn-update/SKILL.md) |
+| 485 | → | [`docs/faq_CN.md`](docs/faq_CN.md) |
+| 486 | → | [`docs/faq.md`](docs/faq.md) |
+| 487 | → | [`docs/sn-data-analysis_cn.md`](docs/sn-data-analysis_cn.md) |
+| 488 | → | [`docs/sn-data-analysis.md`](docs/sn-data-analysis.md) |
+| 489 | → | [`docs/sn-deep-research_cn.md`](docs/sn-deep-research_cn.md) |
+| 490 | → | [`docs/sn-deep-research.md`](docs/sn-deep-research.md) |
+| 491 | → | [`docs/sn-deepresearch-cli_cn.md`](docs/sn-deepresearch-cli_cn.md) |
+| 492 | → | [`docs/sn-deepresearch-cli.md`](docs/sn-deepresearch-cli.md) |
+| 493 | → | [`docs/sn-image-generate_en.md`](docs/sn-image-generate_en.md) |
+| 494 | → | [`docs/sn-image-generate.md`](docs/sn-image-generate.md) |
+| 495 | → | [`docs/sn-infographic-examples_CN.md`](docs/sn-infographic-examples_CN.md) |
+| 496 | → | [`docs/sn-infographic-examples.md`](docs/sn-infographic-examples.md) |
+| 497 | → | [`docs/sn-motion-html_cn.md`](docs/sn-motion-html_cn.md) |
+| 498 | → | [`docs/sn-motion-html.md`](docs/sn-motion-html.md) |
+| 499 | → | [`docs/sn-ppt-generate_cn.md`](docs/sn-ppt-generate_cn.md) |
+| 500 | → | [`docs/sn-ppt-generate.md`](docs/sn-ppt-generate.md) |
+| 501 | → | [`docs/sn-proactive-agent_cn.md`](docs/sn-proactive-agent_cn.md) |
+| 502 | → | [`docs/sn-proactive-agent.md`](docs/sn-proactive-agent.md) |
+| 503 | → | [`docs/sn-team-harness_cn.md`](docs/sn-team-harness_cn.md) |
+| 504 | → | [`docs/sn-team-harness.md`](docs/sn-team-harness.md) |
+| 505 | → | [`INSTALL_CN.md`](INSTALL_CN.md) |
+| 506 | → | [`INSTALL.md`](INSTALL.md) |
+| 507 | → | [`README_CN.md`](README_CN.md) |
+| 508 | → | [`README.md`](README.md) |
 
 ---
 

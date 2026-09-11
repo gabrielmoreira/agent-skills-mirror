@@ -17,6 +17,10 @@ CORE="$PRODUCT_ROOT/scripts/claude-obsidian.py"
 test -f "$CORE"
 ```
 
+Every `../wiki/references/` link in this file resolves the same way, relative
+to this skill's own directory under `$PRODUCT_ROOT`, never relative to the
+selected vault's `wiki/` directory.
+
 ## Run
 
 Resolve the user vault, then run one of:
@@ -24,13 +28,22 @@ Resolve the user vault, then run one of:
 ```bash
 python3 "$CORE" lint --vault "$VAULT"
 python3 "$CORE" lint --vault "$VAULT" --format markdown
+python3 "$CORE" lint --vault "$VAULT" --exclude "wiki/scratchpad/*"
 ```
+
+The repeatable `--exclude GLOB` flag scopes a path (for example a scratchpad
+folder) out of page, link-resolution, orphan, frontmatter, empty-section, and
+stale-index scanning.
 
 Use `--strict` only when a nonzero exit for findings is useful in automation.
 The command remains read-only either way.
 
 The deterministic parser understands Obsidian wikilinks and embeds, Markdown
 links, aliases, heading and block fragments, escaped aliases, and code fences.
+It skips dot-prefixed directories by default, mirroring Obsidian's own
+indexer. Link resolution honors `.gitignore` files inside the vault (no `git`
+subprocess): when a link is ambiguous between a page and a gitignored file
+such as a build artifact, the gitignored candidate is dropped.
 It reports such categories as dead or ambiguous links, orphan pages, required
 frontmatter gaps (including `title`), empty sections, stale index entries, and
 source/claim ledger contract violations. Report only the

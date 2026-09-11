@@ -124,6 +124,26 @@ def _load_image(source: str) -> bytes:
         return resp.read()
 
 
+def _decode_image_item(item: dict, *, url_first: bool = False) -> bytes | None:
+    """Return the image bytes carried by an OpenAI-compatible result item.
+
+    Some backends send both keys even when only one of them holds a value —
+    e.g. an empty ``b64_json`` next to a usable ``url`` in URL output mode.
+    Branching on key presence would decode the empty string into a 0-byte
+    file, so branch on the value instead and fall through to the other key.
+    Returns None when neither field carries a value.
+    """
+    keys = ("url", "b64_json") if url_first else ("b64_json", "url")
+    for key in keys:
+        value = item.get(key)
+        if not value:
+            continue
+        if key == "b64_json":
+            return base64.b64decode(value)
+        return _load_image(value)
+    return None
+
+
 def _compress_image(data: bytes, max_bytes: int = 4 * 1024 * 1024, max_edge: int = 4096) -> bytes:
     """Compress image to fit size/dimension limits. Requires Pillow only when needed."""
     if len(data) <= max_bytes:
@@ -383,16 +403,8 @@ class OpenAIProvider(ImageProvider):
     def _save_results(result: dict, output_dir: str) -> list[str]:
         paths = []
         for item in result.get("data", []):
-            # Check value non-emptiness rather than key presence: some backends
-            # (e.g. Agnes) return an empty `b64_json` alongside a valid `url` in
-            # URL output mode, which would otherwise decode to a 0-byte file.
-            b64 = item.get("b64_json")
-            url = item.get("url")
-            if b64:
-                raw = base64.b64decode(b64)
-                paths.append(_save_image(raw, output_dir))
-            elif url:
-                raw = _load_image(url)
+            raw = _decode_image_item(item)
+            if raw:
                 paths.append(_save_image(raw, output_dir))
         return paths
 
@@ -477,13 +489,8 @@ class LinkAIProvider(ImageProvider):
 
         paths = []
         for item in result.get("data", []):
-            url = item.get("url")
-            b64 = item.get("b64_json")
-            if url:
-                raw = _load_image(url)
-                paths.append(_save_image(raw, output_dir))
-            elif b64:
-                raw = base64.b64decode(b64)
+            raw = _decode_image_item(item, url_first=True)
+            if raw:
                 paths.append(_save_image(raw, output_dir))
         return paths
 

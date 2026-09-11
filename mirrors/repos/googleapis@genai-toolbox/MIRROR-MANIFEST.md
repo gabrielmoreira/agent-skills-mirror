@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `googleapis/genai-toolbox` — 26 default patterns, 0 followed patterns, 10 file(s) materialized.
+Mirror of `googleapis/genai-toolbox` — 26 default patterns, 3 followed patterns, 21 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `googleapis/genai-toolbox` — 26 default patterns, 0 followed pattern
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 0 |
-| Files         | 10 |
+| Followed pats | 3 |
+| Files         | 21 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,7 +51,9 @@ Mirror of `googleapis/genai-toolbox` — 26 default patterns, 0 followed pattern
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-_None._
+- `DEVELOPER.md`
+- `docs/en/integrations/bigquery/tools/bigquery-sql.md`
+- `maintainer-playbook.md`
 
 ## File Index
 
@@ -65,10 +67,21 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 4 | ✓ | [`GEMINI.md`](GEMINI.md) |
 | 5 | ✓ | [`skills/maintainer/fix-failing-tests/references/ci-map.md`](skills/maintainer/fix-failing-tests/references/ci-map.md) |
 | 6 | ✓ | [`skills/maintainer/fix-failing-tests/SKILL.md`](skills/maintainer/fix-failing-tests/SKILL.md) |
-| 7 | ✓ | [`skills/maintainer/review-prs/SKILL.md`](skills/maintainer/review-prs/SKILL.md) |
-| 8 | ✓ | [`skills/maintainer/stale-sweep/SKILL.md`](skills/maintainer/stale-sweep/SKILL.md) |
-| 9 | ✓ | [`skills/maintainer/triage-issues/SKILL.md`](skills/maintainer/triage-issues/SKILL.md) |
-| 10 | ✓ | [`skills/README.md`](skills/README.md) |
+| 7 | ✓ | [`skills/maintainer/reproduce-bug/references/DEVELOPER.md`](skills/maintainer/reproduce-bug/references/DEVELOPER.md) |
+| 8 | ✓ | [`skills/maintainer/reproduce-bug/references/discriminators.md`](skills/maintainer/reproduce-bug/references/discriminators.md) |
+| 9 | ✓ | [`skills/maintainer/reproduce-bug/references/repro-env.md`](skills/maintainer/reproduce-bug/references/repro-env.md) |
+| 10 | ✓ | [`skills/maintainer/reproduce-bug/SKILL.md`](skills/maintainer/reproduce-bug/SKILL.md) |
+| 11 | ✓ | [`skills/maintainer/review-prs/references/DEVELOPER.md`](skills/maintainer/review-prs/references/DEVELOPER.md) |
+| 12 | ✓ | [`skills/maintainer/review-prs/references/maintainer-playbook.md`](skills/maintainer/review-prs/references/maintainer-playbook.md) |
+| 13 | ✓ | [`skills/maintainer/review-prs/SKILL.md`](skills/maintainer/review-prs/SKILL.md) |
+| 14 | ✓ | [`skills/maintainer/stale-sweep/references/maintainer-playbook.md`](skills/maintainer/stale-sweep/references/maintainer-playbook.md) |
+| 15 | ✓ | [`skills/maintainer/stale-sweep/SKILL.md`](skills/maintainer/stale-sweep/SKILL.md) |
+| 16 | ✓ | [`skills/maintainer/triage-issues/references/maintainer-playbook.md`](skills/maintainer/triage-issues/references/maintainer-playbook.md) |
+| 17 | ✓ | [`skills/maintainer/triage-issues/SKILL.md`](skills/maintainer/triage-issues/SKILL.md) |
+| 18 | ✓ | [`skills/README.md`](skills/README.md) |
+| 19 | → | [`DEVELOPER.md`](DEVELOPER.md) |
+| 20 | → | [`docs/en/integrations/bigquery/tools/bigquery-sql.md`](docs/en/integrations/bigquery/tools/bigquery-sql.md) |
+| 21 | → | [`maintainer-playbook.md`](maintainer-playbook.md) |
 
 ---
 

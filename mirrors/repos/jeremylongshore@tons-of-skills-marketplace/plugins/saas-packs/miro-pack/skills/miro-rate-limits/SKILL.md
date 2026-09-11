@@ -1,288 +1,83 @@
 ---
 name: miro-rate-limits
-description: 'Implement Miro REST API v2 rate limiting with the credit-based system,
-
-  exponential backoff, and request queuing.
-
-  Trigger with phrases like "miro rate limit", "miro throttling",
-
-  "miro 429", "miro retry", "miro backoff", "miro credits".
-
-  '
-allowed-tools: Read, Write, Edit
-version: 1.7.0
-license: MIT
+description: "Design and implement repository-side Miro REST traffic controls from credit weights, supplied headers, bounded queues, and reset-aware retries. Use when preventing or recovering from Miro 429 responses. Trigger with \"Miro rate limit\"."
+argument-hint: "[traffic-window] [workload]"
+allowed-tools: Read, Glob, Grep, WebFetch, Write, Edit
+version: 1.9.0
 author: Jeremy Longshore <jeremy@intentsolutions.io>
+license: MIT
 tags:
 - saas
 - miro
 - rate-limits
-- performance
-compatibility: Designed for Claude Code
+- capacity
+model: inherit
+effort: medium
+compatibility: Designed for Claude Code; live work requires an authorized Miro app and redacted evidence
 ---
-# Miro Rate Limits
+# Miro Credit-Budget and Rate-Limit Control
 
 ## Overview
 
-Miro measures API usage in **credits**, not raw request counts. Each endpoint consumes a different number of credits based on complexity. The global limit is **100,000 credits per minute** per app.
+Plan capacity in credits rather than raw request count and preserve headroom across every caller sharing a user/application quota; use the evidence produced here to make the next decision explicit and reviewable.
 
 ## Prerequisites
 
-Before applying this guide, confirm you have a Miro app or workspace appropriate to the task, a dedicated non-production board where changes can be tested safely, and only the OAuth scopes or administrative access the procedure requires.
+- Sanitized rate-limit headers and recent 429 history
+- Endpoint inventory with documented credit levels
+- Caller priorities, freshness targets, and retry SLO
 
-## Credit System
+## Tool Discipline
 
-### Rate Limit Levels
+Use `Read`, `Glob`, and `Grep` to inspect the repository, configuration names, adapters, tests, and evidence. Use `WebFetch` only for current official Miro documentation. Use `Write` or `Edit` after confirming the requested mode, target environment, tenant, board, and approval boundary. These declared tools do not call authenticated Miro APIs or deployment CLIs; implement client, configuration, and test changes, then return exact operator commands or an approval-gated handoff for live execution.
 
-Each Miro REST API endpoint is assigned a rate limit level that determines its credit cost:
+## Current Contract
 
-| Level | Credits per Call | Example Endpoints |
-|-------|-----------------|-------------------|
-| Level 1 | Lower cost | GET single board, GET single item |
-| Level 2 | Medium cost | POST create sticky note, POST create shape, POST create connector |
-| Level 3 | Higher cost | Batch operations, complex queries |
-| Level 4 | Highest cost | Export, bulk data operations |
+- REST limiting is per user and application with a published global budget of 100,000 credits per minute.
+- Level 1 costs 50 credits, Level 2 costs 100, Level 3 costs 500, and Level 4 costs 2,000 per call.
+- At the global budget those levels correspond to 2,000, 1,000, 200, and 50 calls per minute respectively when used alone.
+- Responses expose `X-RateLimit-Limit`, `X-RateLimit-Remaining`, and Unix-epoch `X-RateLimit-Reset`; published limits are subject to change.
 
-The exact credit cost per level is subject to change. Monitor via response headers.
+## Authentication
 
-### Rate Limit Response Headers
-
-Every Miro API response includes these headers:
-
-| Header | Description | Example |
-|--------|-------------|---------|
-| `X-RateLimit-Limit` | Total credits allocated per minute | `100000` |
-| `X-RateLimit-Remaining` | Credits remaining in current window | `99850` |
-| `X-RateLimit-Reset` | Unix timestamp when window resets | `1700000060` |
-
-When rate limited, the response also includes:
-
-| Header | Description | Example |
-|--------|-------------|---------|
-| `Retry-After` | Seconds to wait before retrying | `30` |
-
-## Exponential Backoff with Jitter
-
-```typescript
-interface BackoffConfig {
-  maxRetries: number;
-  baseDelayMs: number;
-  maxDelayMs: number;
-  jitterMs: number;
-}
-
-const DEFAULT_BACKOFF: BackoffConfig = {
-  maxRetries: 5,
-  baseDelayMs: 1000,
-  maxDelayMs: 32000,
-  jitterMs: 500,
-};
-
-async function withBackoff<T>(
-  operation: () => Promise<Response>,
-  config = DEFAULT_BACKOFF
-): Promise<T> {
-  for (let attempt = 0; attempt <= config.maxRetries; attempt++) {
-    const response = await operation();
-
-    if (response.ok) {
-      return response.json();
-    }
-
-    // Only retry on 429 and 5xx
-    if (response.status !== 429 && response.status < 500) {
-      const error = await response.json().catch(() => ({}));
-      throw new Error(`Miro API ${response.status}: ${error.message ?? 'Request failed'}`);
-    }
-
-    if (attempt === config.maxRetries) {
-      throw new Error(`Miro API: Max retries (${config.maxRetries}) exceeded`);
-    }
-
-    // Prefer Retry-After header if available
-    const retryAfter = response.headers.get('Retry-After');
-    let delay: number;
-
-    if (retryAfter) {
-      delay = parseInt(retryAfter, 10) * 1000;
-    } else {
-      // Exponential backoff with jitter
-      const exponential = config.baseDelayMs * Math.pow(2, attempt);
-      const jitter = Math.random() * config.jitterMs;
-      delay = Math.min(exponential + jitter, config.maxDelayMs);
-    }
-
-    console.warn(
-      `[Miro] ${response.status} — retry ${attempt + 1}/${config.maxRetries} in ${delay}ms`
-    );
-    await new Promise(r => setTimeout(r, delay));
-  }
-
-  throw new Error('Unreachable');
-}
-
-// Usage
-const board = await withBackoff<MiroBoard>(() =>
-  fetch('https://api.miro.com/v2/boards', {
-    headers: { 'Authorization': `Bearer ${token}` },
-  })
-);
-```
-
-## Rate Limit Monitor
-
-```typescript
-class MiroRateLimitMonitor {
-  private remaining = 100000;
-  private resetAt = 0;
-  private windowCreditsUsed = 0;
-
-  /** Call after every API response */
-  updateFromResponse(response: Response): void {
-    const limit = response.headers.get('X-RateLimit-Limit');
-    const remaining = response.headers.get('X-RateLimit-Remaining');
-    const reset = response.headers.get('X-RateLimit-Reset');
-
-    if (remaining) this.remaining = parseInt(remaining, 10);
-    if (reset) this.resetAt = parseInt(reset, 10) * 1000;
-    if (limit) {
-      this.windowCreditsUsed = parseInt(limit, 10) - this.remaining;
-    }
-  }
-
-  /** Check before making a request */
-  shouldThrottle(): boolean {
-    return this.remaining < 1000 && Date.now() < this.resetAt;
-  }
-
-  /** How long to wait before next request */
-  getWaitMs(): number {
-    if (!this.shouldThrottle()) return 0;
-    return Math.max(0, this.resetAt - Date.now());
-  }
-
-  getStatus(): { remaining: number; usedPercent: number; resetsIn: number } {
-    return {
-      remaining: this.remaining,
-      usedPercent: Math.round((this.windowCreditsUsed / 100000) * 100),
-      resetsIn: Math.max(0, this.resetAt - Date.now()),
-    };
-  }
-}
-```
-
-## Request Queue (p-queue)
-
-For high-throughput integrations, queue requests to stay within limits.
-
-```typescript
-import PQueue from 'p-queue';
-
-const monitor = new MiroRateLimitMonitor();
-
-const miroQueue = new PQueue({
-  concurrency: 5,           // Max parallel requests
-  interval: 1000,           // Per second
-  intervalCap: 10,          // Max 10 requests per second
-  timeout: 30000,           // Per-request timeout
-});
-
-async function queuedMiroFetch(path: string, options?: RequestInit) {
-  // Pre-flight throttle check
-  const waitMs = monitor.getWaitMs();
-  if (waitMs > 0) {
-    console.warn(`[Miro] Throttling: waiting ${waitMs}ms for rate limit reset`);
-    await new Promise(r => setTimeout(r, waitMs));
-  }
-
-  return miroQueue.add(async () => {
-    const response = await fetch(`https://api.miro.com${path}`, {
-      ...options,
-      headers: {
-        'Authorization': `Bearer ${process.env.MIRO_ACCESS_TOKEN}`,
-        'Content-Type': 'application/json',
-        ...options?.headers,
-      },
-    });
-
-    monitor.updateFromResponse(response);
-
-    if (!response.ok) {
-      if (response.status === 429) {
-        // Re-queue with backoff
-        const retryAfter = parseInt(response.headers.get('Retry-After') ?? '5', 10);
-        await new Promise(r => setTimeout(r, retryAfter * 1000));
-        return queuedMiroFetch(path, options); // Retry
-      }
-      throw new Error(`Miro ${response.status}: ${await response.text()}`);
-    }
-
-    return response.json();
-  });
-}
-```
-
-## Batch Operations to Reduce Credit Usage
-
-```typescript
-// BAD: 50 individual GET requests = 50 credits
-for (const id of itemIds) {
-  const item = await miroFetch(`/v2/boards/${boardId}/items/${id}`);
-}
-
-// GOOD: 1 paginated list request, filter client-side = fewer credits
-const allItems = await miroFetch(`/v2/boards/${boardId}/items?limit=50`);
-const wantedItems = allItems.data.filter(item => itemIds.includes(item.id));
-
-// GOOD: Use type filter to reduce response size
-const stickyNotes = await miroFetch(`/v2/boards/${boardId}/items?type=sticky_note&limit=50`);
-```
-
-## Cost Estimation
-
-```typescript
-function estimateCreditsPerMinute(
-  requestsPerMinute: number,
-  avgLevel: 1 | 2 | 3 | 4
-): { credits: number; percentOfLimit: number; safe: boolean } {
-  // Approximate credit costs (actual values from Miro docs)
-  const creditCost = { 1: 5, 2: 10, 3: 20, 4: 50 };
-  const credits = requestsPerMinute * creditCost[avgLevel];
-  return {
-    credits,
-    percentOfLimit: Math.round((credits / 100000) * 100),
-    safe: credits < 80000,  // 80% safety margin
-  };
-}
-```
+For REST work, use OAuth 2.0 Authorization Code with the narrowest Miro scopes. Bind each encrypted token record to its user, application, authorized team, and granted scopes. Never print access tokens, refresh tokens, client secrets, authorization codes, or board content.
 
 ## Instructions
 
-Use the ordered procedures and code samples in this guide as a sequence: begin with the prerequisites, apply the configuration or operational step for the target environment, then perform the documented validation or cleanup before proceeding. Keep credentials in the documented secret store; never hard-code them in source.
+1. Inventory users/apps, callers, endpoints, weights, bursts, and retry loops.
+2. Capture current headers from bounded authorized requests and validate reset conversion.
+3. Model each operation in credits, including bulk-create Level 2 cost per item.
+4. Allocate priority budgets with explicit interactive and incident-recovery headroom.
+5. Queue requests with jitter, a maximum elapsed retry time, and no token sharding to evade limits.
+6. Load-test synthetic traffic and verify fairness, queue age, header telemetry, and bounded 429 recovery.
+
+## Approval Boundaries
+
+Do not add installations or identities to multiply quota, request Enterprise capacity, or starve interactive traffic without account and service-owner approval. Pause when the responsible owner or exact target is uncertain.
 
 ## Output
 
-Following this guide produces the Miro integration outcome for its topic—configuration, validation evidence, operational recovery, or a documented migration result. Record command output and relevant identifiers so a failed step is traceable.
-
-## Examples
-
-Start with the smallest applicable command or code example in the relevant section, using a dedicated test board and non-production credentials. Confirm the expected response or validation result before applying the pattern to production.
+Return observed budget/reset, weighted demand, allocations, headroom, queue policy, test results, and 429 recovery evidence. State what was not inspected or changed so the receipt cannot overclaim coverage.
 
 ## Error Handling
 
-| Scenario | Detection | Action |
-|----------|-----------|--------|
-| Approaching limit | `X-RateLimit-Remaining` < 5000 | Reduce request frequency |
-| Rate limited | HTTP 429 | Backoff using `Retry-After` header |
-| Sustained 429s | Multiple consecutive 429s | Pause all requests, wait for reset |
-| Credit spike | Monitor shows >80% usage | Audit for unnecessary requests |
+| Condition | Response |
+|---|---|
+| Headers conflict with assumed limits | Trust the authorized observation and re-check current official docs. |
+| Reset is malformed | Stop automatic retry and use conservative review. |
+| Queue exceeds freshness SLO | Reduce demand or seek an approved architecture change. |
+| Retry storm appears | Open the circuit and drain through one scheduler. |
+
+## Examples
+
+The example is a redacted operator receipt; identifiers are hashes or bounded labels, not board content or credentials.
+
+```text
+budget=100000cr/min; demand=62000; reserved=20000; headroom=18%; queue-p95=3.8s; 429=0
+```
 
 ## Resources
 
-- [Miro Rate Limiting](https://developers.miro.com/reference/rate-limiting)
-- [REST API Rate Limits](https://developers.miro.com/reference/rate-limits)
-- [p-queue](https://github.com/sindresorhus/p-queue)
-
-## Next Steps
-
-For security configuration, see `miro-security-basics`.
+- [Skill-specific official documentation](references/official-docs.md)
+- [REST rate limits](https://developers.miro.com/reference/rate-limiting)
+- [Bulk create](https://developers.miro.com/reference/create-items)

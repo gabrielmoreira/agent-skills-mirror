@@ -1,287 +1,83 @@
 ---
 name: miro-deploy-integration
-description: 'Deploy Miro REST API v2 integrations to Vercel, Fly.io, and Cloud Run
-
-  with proper OAuth token management and webhook configuration.
-
-  Trigger with phrases like "deploy miro", "miro Vercel",
-
-  "miro production deploy", "miro Cloud Run", "miro Fly.io".
-
-  '
-allowed-tools: Read, Write, Edit, Bash(vercel:*), Bash(fly:*), Bash(gcloud:*)
-version: 1.7.0
-license: MIT
+description: "Prepare and verify repository-side deployment configuration for a Miro service with isolated settings, health checks, canaries, rollback, and an approval-gated live handoff. Use when promoting a Miro-backed release. Trigger with \"miro integration deployment\"."
+argument-hint: "[environment] [release-sha]"
+allowed-tools: Read, Glob, Grep, WebFetch, Write, Edit
+version: 1.9.0
 author: Jeremy Longshore <jeremy@intentsolutions.io>
+license: MIT
 tags:
 - saas
 - miro
 - deployment
-- cloud
-compatibility: Designed for Claude Code
+- operations
+model: inherit
+effort: high
+compatibility: Designed for Claude Code; live work requires an authorized Miro app and redacted evidence
 ---
-# Miro Deploy Integration
+# Miro Integration Deployment
 
 ## Overview
 
-Deploy Miro REST API v2 integrations to popular platforms with proper OAuth 2.0 token management, webhook endpoint setup, and health monitoring.
+Promote one immutable artifact while keeping authorization configuration and write enablement separately controlled; use the evidence produced here to make the next decision explicit and reviewable.
 
 ## Prerequisites
 
-- Miro app configured with production OAuth credentials
-- Access token with required scopes
-- Platform CLI installed (vercel, fly, or gcloud)
+- Approved Miro application, tenant, and board scope
+- Current repository and deployment evidence
+- Named owner, success criteria, and rollback or recovery boundary
 
-## Vercel Deployment
+## Tool Discipline
 
-### Environment Variables
+Use `Read`, `Glob`, and `Grep` to inspect the repository, configuration names, adapters, tests, and evidence. Use `WebFetch` only for current official Miro documentation. Use `Write` or `Edit` after confirming the requested mode, target environment, tenant, board, and approval boundary. These declared tools do not call authenticated Miro APIs or deployment CLIs; implement client, configuration, and test changes, then return exact operator commands or an approval-gated handoff for live execution.
 
-```bash
-# Add Miro secrets to Vercel
-vercel env add MIRO_CLIENT_ID production
-vercel env add MIRO_CLIENT_SECRET production
-vercel env add MIRO_ACCESS_TOKEN production
-vercel env add MIRO_WEBHOOK_SECRET production
-```
+## Current Contract
 
-### API Route: Webhook Handler
+- OAuth redirects must exactly match the environment's Miro app configuration.
+- REST secrets remain server-side and out of Web SDK bundles.
+- A read-only context probe precedes write enablement.
+- Retired experimental webhooks cannot be a health dependency.
 
-```typescript
-// api/webhooks/miro.ts (Vercel serverless function)
-import crypto from 'crypto';
+## Authentication
 
-export const config = { api: { bodyParser: false } };
-
-export default async function handler(req, res) {
-  if (req.method !== 'POST') return res.status(405).end();
-
-  const chunks: Buffer[] = [];
-  for await (const chunk of req) chunks.push(chunk);
-  const rawBody = Buffer.concat(chunks);
-
-  // Verify Miro webhook signature
-  const signature = req.headers['x-miro-signature'] as string;
-  const expected = crypto.createHmac('sha256', process.env.MIRO_WEBHOOK_SECRET!)
-    .update(rawBody).digest('hex');
-
-  if (!signature || !crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(expected))) {
-    return res.status(401).json({ error: 'Invalid signature' });
-  }
-
-  const event = JSON.parse(rawBody.toString());
-
-  // Handle board subscription events
-  switch (event.event) {
-    case 'board_subscription_changed':
-      console.log(`Board ${event.boardId}: item ${event.item?.type} ${event.type}`);
-      break;
-  }
-
-  res.status(200).json({ received: true });
-}
-```
-
-### API Route: OAuth Callback
-
-```typescript
-// api/auth/miro/callback.ts
-export default async function handler(req, res) {
-  const { code } = req.query;
-
-  const tokenResponse = await fetch('https://api.miro.com/v1/oauth/token', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: new URLSearchParams({
-      grant_type: 'authorization_code',
-      client_id: process.env.MIRO_CLIENT_ID!,
-      client_secret: process.env.MIRO_CLIENT_SECRET!,
-      code: code as string,
-      redirect_uri: `${process.env.VERCEL_URL}/api/auth/miro/callback`,
-    }),
-  });
-
-  const tokens = await tokenResponse.json();
-  // Store tokens securely (database, not env vars)
-  // tokens.access_token, tokens.refresh_token, tokens.expires_in (3599s)
-
-  res.redirect('/dashboard?connected=miro');
-}
-```
-
-### vercel.json
-
-```json
-{
-  "functions": {
-    "api/webhooks/miro.ts": { "maxDuration": 10 },
-    "api/auth/miro/callback.ts": { "maxDuration": 10 }
-  },
-  "headers": [
-    {
-      "source": "/api/health",
-      "headers": [{ "key": "Cache-Control", "value": "no-store" }]
-    }
-  ]
-}
-```
-
-## Fly.io Deployment
-
-### fly.toml
-
-```toml
-app = "my-miro-integration"
-primary_region = "iad"
-
-[env]
-  NODE_ENV = "production"
-  MIRO_API_BASE = "https://api.miro.com/v2"
-
-[http_service]
-  internal_port = 3000
-  force_https = true
-  auto_stop_machines = "suspend"
-  auto_start_machines = true
-  min_machines_running = 1        # Keep 1 running for webhook delivery
-
-[[http_service.checks]]
-  grace_period = "10s"
-  interval = "30s"
-  method = "GET"
-  path = "/health"
-  timeout = "5s"
-```
-
-### Deploy
-
-```bash
-# Set secrets
-fly secrets set MIRO_CLIENT_ID=your_client_id
-fly secrets set MIRO_CLIENT_SECRET=your_client_secret
-fly secrets set MIRO_ACCESS_TOKEN=your_token
-fly secrets set MIRO_WEBHOOK_SECRET=your_webhook_secret
-
-# Deploy
-fly deploy
-
-# Verify health
-fly ssh console -C "curl -s http://localhost:3000/health | jq '.miro'"
-```
-
-## Google Cloud Run
-
-### Deploy Script
-
-```bash
-#!/bin/bash
-set -euo pipefail
-
-PROJECT_ID="${GOOGLE_CLOUD_PROJECT}"
-SERVICE_NAME="miro-integration"
-REGION="us-central1"
-
-# Store secrets in Secret Manager
-echo -n "$MIRO_CLIENT_SECRET" | gcloud secrets create miro-client-secret --data-file=-
-echo -n "$MIRO_ACCESS_TOKEN" | gcloud secrets create miro-access-token --data-file=-
-echo -n "$MIRO_WEBHOOK_SECRET" | gcloud secrets create miro-webhook-secret --data-file=-
-
-# Build and deploy
-gcloud run deploy $SERVICE_NAME \
-  --source . \
-  --region $REGION \
-  --platform managed \
-  --allow-unauthenticated \
-  --min-instances 1 \
-  --set-env-vars "MIRO_CLIENT_ID=$MIRO_CLIENT_ID,MIRO_API_BASE=https://api.miro.com/v2" \
-  --set-secrets "MIRO_CLIENT_SECRET=miro-client-secret:latest,MIRO_ACCESS_TOKEN=miro-access-token:latest,MIRO_WEBHOOK_SECRET=miro-webhook-secret:latest"
-```
-
-## Health Check Endpoint
-
-```typescript
-// src/health.ts — works on any platform
-export async function healthCheck(): Promise<HealthResponse> {
-  const checks: Record<string, unknown> = {};
-
-  // Miro API connectivity
-  const start = Date.now();
-  try {
-    const response = await fetch('https://api.miro.com/v2/boards?limit=1', {
-      headers: { 'Authorization': `Bearer ${process.env.MIRO_ACCESS_TOKEN}` },
-      signal: AbortSignal.timeout(5000),
-    });
-
-    checks.miro = {
-      status: response.ok ? 'healthy' : 'degraded',
-      latencyMs: Date.now() - start,
-      rateLimitRemaining: response.headers.get('X-RateLimit-Remaining'),
-      httpStatus: response.status,
-    };
-  } catch (err) {
-    checks.miro = { status: 'unhealthy', error: err.message };
-  }
-
-  return {
-    status: Object.values(checks).every((c: any) => c.status === 'healthy') ? 'healthy' : 'degraded',
-    services: checks,
-    timestamp: new Date().toISOString(),
-  };
-}
-```
-
-## Webhook URL Registration via API
-
-After deploying, register your webhook endpoint programmatically:
-
-```typescript
-// Register board subscription webhook
-// POST https://api.miro.com/v2-experimental/webhooks/board_subscriptions
-const subscription = await fetch(
-  'https://api.miro.com/v2-experimental/webhooks/board_subscriptions',
-  {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${process.env.MIRO_ACCESS_TOKEN}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      boardId: 'your-board-id',
-      callbackUrl: 'https://your-app.com/api/webhooks/miro',
-      status: 'enabled',
-    }),
-  }
-);
-```
+For REST work, use OAuth 2.0 Authorization Code with the narrowest Miro scopes. Bind each encrypted token record to its user, application, authorized team, and granted scopes. Never print access tokens, refresh tokens, client secrets, authorization codes, or board content.
 
 ## Instructions
 
-Use the ordered procedures and code samples in this guide as a sequence: begin with the prerequisites, apply the configuration or operational step for the target environment, then perform the documented validation or cleanup before proceeding. Keep credentials in the documented secret store; never hard-code them in source.
+1. Bind the release to SHA, dependency lock, app hash, scopes, redirects, and environment.
+2. Deploy secret references and configuration with Miro writes disabled.
+3. Run service health, token-context, and bounded board-read probes.
+4. Canary approved tenants against error, latency, credit, and semantic thresholds.
+5. Enable writes only after approval and reconcile the first mutations.
+6. Exercise rollback and verify all pre-rollback writes.
+
+## Approval Boundaries
+
+Production deployment, tenant rollout, redirect/scope changes, and write enablement require explicit owner approval. Pause when the responsible owner or exact target is uncertain.
 
 ## Output
 
-Following this guide produces the Miro integration outcome for its topic—configuration, validation evidence, operational recovery, or a documented migration result. Record command output and relevant identifiers so a failed step is traceable.
-
-## Examples
-
-Start with the smallest applicable command or code example in the relevant section, using a dedicated test board and non-production credentials. Confirm the expected response or validation result before applying the pattern to production.
+Return scope, observed contract, proposed or completed actions, verification evidence, approvals, residual risks, and next owner. State what was not inspected or changed so the receipt cannot overclaim coverage.
 
 ## Error Handling
 
-| Issue | Cause | Solution |
-|-------|-------|----------|
-| Webhook delivery fails | URL not HTTPS | Ensure force_https is enabled |
-| Token expires in production | No refresh logic | Implement scheduled token refresh |
-| Cold start misses webhook | Min instances = 0 | Set min_machines_running = 1 |
-| Secret rotation breaks deploy | Old secret cached | Restart service after secret update |
+| Condition | Response |
+|---|---|
+| Tenant or board context mismatches | Stop before mutation and quarantine the credential mapping. |
+| Current docs contradict the implementation | Treat the official current contract as a blocker and design an explicit migration. |
+| A mutation result is ambiguous | Reconcile state before retrying. |
+| Required evidence is unavailable | Return a blocked decision with the smallest safe next probe. |
+
+## Examples
+
+The example is a redacted operator receipt; identifiers are hashes or bounded labels, not board content or credentials.
+
+```text
+sha=4b6a2de; env=staging; context=matched; canary=5; writes=off; rollback=passed
+```
 
 ## Resources
 
-- [Miro OAuth 2.0](https://developers.miro.com/docs/getting-started-with-oauth)
-- [Miro Webhooks Setup](https://developers.miro.com/docs/getting-started-with-webhooks)
-- [Vercel Serverless Functions](https://vercel.com/docs/functions)
-- [Fly.io Secrets](https://fly.io/docs/reference/secrets/)
-- [Cloud Run Secrets](https://cloud.google.com/run/docs/configuring/secrets)
-
-## Next Steps
-
-For webhook handling patterns, see `miro-webhooks-events`.
+- [Skill-specific official documentation](references/official-docs.md)
+- [OAuth guide](https://developers.miro.com/docs/getting-started-with-oauth)
+- [Security guidelines](https://developers.miro.com/docs/security-guidelines)

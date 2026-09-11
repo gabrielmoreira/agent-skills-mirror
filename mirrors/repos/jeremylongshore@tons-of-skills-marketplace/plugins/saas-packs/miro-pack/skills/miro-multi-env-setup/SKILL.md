@@ -1,259 +1,83 @@
 ---
 name: miro-multi-env-setup
-description: 'Configure Miro REST API v2 across development, staging, and production
-
-  with separate OAuth apps, isolated test boards, and secret management.
-
-  Trigger with phrases like "miro environments", "miro staging",
-
-  "miro dev prod", "miro environment setup", "miro multi env".
-
-  '
-allowed-tools: Read, Write, Edit, Bash(gcloud:*), Bash(aws:*), Bash(vault:*)
-version: 1.7.0
-license: MIT
+description: "Design and implement repository-side isolation for Miro development, staging, and production apps, redirects, token references, teams, and boards with hard guards. Use when configuring multiple environments. Trigger with \"miro multi-environment isolation\"."
+argument-hint: "[environments] [deployment-model]"
+allowed-tools: Read, Glob, Grep, WebFetch, Write, Edit
+version: 1.9.0
 author: Jeremy Longshore <jeremy@intentsolutions.io>
+license: MIT
 tags:
 - saas
 - miro
 - environments
 - configuration
-compatibility: Designed for Claude Code
+model: inherit
+effort: medium
+compatibility: Designed for Claude Code; live work requires an authorized Miro app and redacted evidence
 ---
-# Miro Multi-Environment Setup
+# Miro Multi-Environment Isolation
 
 ## Overview
 
-Configure separate Miro app credentials, OAuth scopes, and board access for development, staging, and production. Miro does not provide a sandbox API; all environments use `https://api.miro.com/v2/` — isolation is achieved through separate apps and dedicated boards.
+Make environment confusion detectable before a request leaves the process; use the evidence produced here to make the next decision explicit and reviewable.
 
 ## Prerequisites
 
-Before applying this guide, confirm you have a Miro app or workspace appropriate to the task, a dedicated non-production board where changes can be tested safely, and only the OAuth scopes or administrative access the procedure requires.
+- Approved Miro application, tenant, and board scope
+- Current repository and deployment evidence
+- Named owner, success criteria, and rollback or recovery boundary
 
-## Environment Strategy
+## Tool Discipline
 
-| Environment | Miro App | Boards | Scopes | Token Storage |
-|-------------|----------|--------|--------|---------------|
-| Development | `MyApp (Dev)` | 1 dedicated test board | `boards:read`, `boards:write` | `.env.local` |
-| Staging | `MyApp (Staging)` | Staging workspace boards | All required scopes | Secret Manager |
-| Production | `MyApp (Production)` | Production boards | Minimum required scopes | Secret Manager + rotation |
+Use `Read`, `Glob`, and `Grep` to inspect the repository, configuration names, adapters, tests, and evidence. Use `WebFetch` only for current official Miro documentation. Use `Write` or `Edit` after confirming the requested mode, target environment, tenant, board, and approval boundary. These declared tools do not call authenticated Miro APIs or deployment CLIs; implement client, configuration, and test changes, then return exact operator commands or an approval-gated handoff for live execution.
 
-**Key insight:** Create a separate Miro app at https://developers.miro.com for each environment. This gives you independent client IDs, secrets, and OAuth redirect URIs.
+## Current Contract
 
-## Configuration Structure
+- Each app has independent identity, redirects, scopes, token mode, and installations.
+- Access-token context must match the intended tenant.
+- Production credentials never belong in local or preview environments.
+- Token-expiration mode can differ because it is fixed at app creation.
 
-```
-config/
-├── miro.base.ts          # Shared settings (timeouts, retry policy)
-├── miro.development.ts   # Dev overrides
-├── miro.staging.ts       # Staging overrides
-└── miro.production.ts    # Prod overrides
-```
+## Authentication
 
-### Base Configuration
-
-```typescript
-// config/miro.base.ts
-export const miroBaseConfig = {
-  apiBase: 'https://api.miro.com/v2',
-  tokenEndpoint: 'https://api.miro.com/v1/oauth/token',
-  timeout: 30000,
-  retries: 3,
-  backoff: { baseMs: 1000, maxMs: 32000, jitterMs: 500 },
-  cache: { ttlSeconds: 120 },
-  rateLimit: { maxConcurrency: 5, requestsPerSecond: 10 },
-};
-```
-
-### Environment Configs
-
-```typescript
-// config/miro.development.ts
-import { miroBaseConfig } from './miro.base';
-
-export const miroDevConfig = {
-  ...miroBaseConfig,
-  clientId: process.env.MIRO_CLIENT_ID!,
-  clientSecret: process.env.MIRO_CLIENT_SECRET!,
-  redirectUri: 'http://localhost:3000/auth/miro/callback',
-  testBoardId: process.env.MIRO_TEST_BOARD_ID,   // Dedicated dev board
-  cache: { ttlSeconds: 10 },                      // Short TTL for dev
-  logLevel: 'debug',
-};
-
-// config/miro.staging.ts
-export const miroStagingConfig = {
-  ...miroBaseConfig,
-  clientId: process.env.MIRO_CLIENT_ID_STAGING!,
-  clientSecret: process.env.MIRO_CLIENT_SECRET_STAGING!,
-  redirectUri: 'https://staging.myapp.com/auth/miro/callback',
-  cache: { ttlSeconds: 60 },
-  logLevel: 'info',
-};
-
-// config/miro.production.ts
-export const miroProdConfig = {
-  ...miroBaseConfig,
-  clientId: process.env.MIRO_CLIENT_ID_PROD!,
-  clientSecret: process.env.MIRO_CLIENT_SECRET_PROD!,
-  redirectUri: 'https://myapp.com/auth/miro/callback',
-  retries: 5,                                      // More retries in prod
-  cache: { ttlSeconds: 120 },
-  logLevel: 'warn',
-};
-```
-
-### Config Loader
-
-```typescript
-// config/index.ts
-type Environment = 'development' | 'staging' | 'production';
-
-export function loadMiroConfig() {
-  const env = (process.env.NODE_ENV ?? 'development') as Environment;
-
-  switch (env) {
-    case 'production': return miroProdConfig;
-    case 'staging': return miroStagingConfig;
-    default: return miroDevConfig;
-  }
-}
-```
-
-## Secret Management
-
-### Development: .env.local
-
-```bash
-# .env.local (git-ignored)
-MIRO_CLIENT_ID=3458764500000001
-MIRO_CLIENT_SECRET=dev_secret_here
-MIRO_ACCESS_TOKEN=dev_access_token
-MIRO_REFRESH_TOKEN=dev_refresh_token
-MIRO_TEST_BOARD_ID=uXjVN_dev_board
-MIRO_WEBHOOK_SECRET=dev_webhook_secret
-```
-
-### Staging/Production: Secret Manager
-
-```bash
-# GCP Secret Manager
-gcloud secrets create miro-client-secret-staging --data-file=<(echo -n "staging_secret")
-gcloud secrets create miro-client-secret-prod --data-file=<(echo -n "prod_secret")
-
-# AWS Secrets Manager
-aws secretsmanager create-secret \
-  --name miro/staging/client-secret \
-  --secret-string "staging_secret"
-
-aws secretsmanager create-secret \
-  --name miro/production/client-secret \
-  --secret-string "prod_secret"
-
-# HashiCorp Vault
-vault kv put secret/miro/staging client_secret=staging_secret
-vault kv put secret/miro/production client_secret=prod_secret
-```
-
-### CI/CD Secrets (GitHub Actions)
-
-```bash
-# Per-environment secrets
-gh secret set MIRO_CLIENT_ID_DEV --body "dev_client_id"
-gh secret set MIRO_CLIENT_SECRET_DEV --body "dev_client_secret"
-gh secret set MIRO_CLIENT_ID_STAGING --body "staging_client_id"
-gh secret set MIRO_CLIENT_SECRET_STAGING --body "staging_client_secret"
-gh secret set MIRO_CLIENT_ID_PROD --body "prod_client_id"
-gh secret set MIRO_CLIENT_SECRET_PROD --body "prod_client_secret"
-```
-
-## Environment Guards
-
-Prevent production-dangerous operations in development:
-
-```typescript
-const config = loadMiroConfig();
-
-function guardProduction(operation: string): void {
-  if (config.environment === 'development') {
-    throw new Error(`${operation} blocked in development — use staging or production`);
-  }
-}
-
-function guardDestructive(operation: string, boardId: string): void {
-  const protectedBoards = process.env.MIRO_PROTECTED_BOARDS?.split(',') ?? [];
-  if (protectedBoards.includes(boardId)) {
-    throw new Error(`${operation} blocked on protected board ${boardId}`);
-  }
-}
-
-// Prevent accidental deletion of production boards
-async function deleteBoard(boardId: string): Promise<void> {
-  guardDestructive('deleteBoard', boardId);
-  await api.fetch(`/v2/boards/${boardId}`, 'DELETE');
-}
-```
-
-## OAuth Redirect URI per Environment
-
-Each Miro app must have its redirect URI configured to match the environment:
-
-| Environment | Redirect URI | Where to Configure |
-|-------------|-------------|-------------------|
-| Development | `http://localhost:3000/auth/miro/callback` | Miro app "Dev" settings |
-| Staging | `https://staging.myapp.com/auth/miro/callback` | Miro app "Staging" settings |
-| Production | `https://myapp.com/auth/miro/callback` | Miro app "Production" settings |
-
-Miro requires exact redirect URI match. No wildcards.
-
-## Board Isolation Strategy
-
-```typescript
-// Development: Use a single dedicated test board
-// Clean up after each test run
-async function cleanupDevBoard(): Promise<void> {
-  const testBoardId = config.testBoardId;
-  if (!testBoardId) return;
-
-  const items = await api.fetchAll(`/v2/boards/${testBoardId}/items`);
-  for (const item of items) {
-    await api.fetch(`/v2/boards/${testBoardId}/items/${item.id}`, 'DELETE');
-  }
-  console.log(`Cleaned ${items.length} items from dev board`);
-}
-
-// Staging: Use a separate Miro workspace or team
-// Production: Real user boards — never clean up automatically
-```
+For REST work, use OAuth 2.0 Authorization Code with the narrowest Miro scopes. Bind each encrypted token record to its user, application, authorized team, and granted scopes. Never print access tokens, refresh tokens, client secrets, authorization codes, or board content.
 
 ## Instructions
 
-Use the ordered procedures and code samples in this guide as a sequence: begin with the prerequisites, apply the configuration or operational step for the target environment, then perform the documented validation or cleanup before proceeding. Keep credentials in the documented secret store; never hard-code them in source.
+1. Build an environment matrix of app hash, redirects, token mode, scopes, team, boards, store, and owner.
+2. Fail startup on missing, duplicated, or inconsistent mappings.
+3. Resolve credentials only through each environment's approved server-side reference.
+4. Assert token context before enabling operations.
+5. Test that production identifiers cannot appear in lower-environment config.
+6. Exercise rotation, revocation, promotion, and rollback per environment.
+
+## Approval Boundaries
+
+Creating/installing production apps, copying tokens, and changing production redirects/scopes require explicit owner approval. Pause when the responsible owner or exact target is uncertain.
 
 ## Output
 
-Following this guide produces the Miro integration outcome for its topic—configuration, validation evidence, operational recovery, or a documented migration result. Record command output and relevant identifiers so a failed step is traceable.
-
-## Examples
-
-Start with the smallest applicable command or code example in the relevant section, using a dedicated test board and non-production credentials. Confirm the expected response or validation result before applying the pattern to production.
+Return scope, observed contract, proposed or completed actions, verification evidence, approvals, residual risks, and next owner. State what was not inspected or changed so the receipt cannot overclaim coverage.
 
 ## Error Handling
 
-| Issue | Cause | Solution |
-|-------|-------|----------|
-| Wrong redirect URI | Env mismatch | Check Miro app settings for this environment |
-| Staging token on prod board | Mixed credentials | Use separate Miro apps per env |
-| Secret not found | Wrong secret path | Verify secret manager key for this env |
-| Dev board full | No cleanup between runs | Run `cleanupDevBoard()` in test teardown |
+| Condition | Response |
+|---|---|
+| Tenant or board context mismatches | Stop before mutation and quarantine the credential mapping. |
+| Current docs contradict the implementation | Treat the official current contract as a blocker and design an explicit migration. |
+| A mutation result is ambiguous | Reconcile state before retrying. |
+| Required evidence is unavailable | Return a blocked decision with the smallest safe next probe. |
+
+## Examples
+
+The example is a redacted operator receipt; identifiers are hashes or bounded labels, not board content or credentials.
+
+```text
+envs=3; unique-apps=3/3; context=3/3; cross-env-tests=passed; drift=0
+```
 
 ## Resources
 
-- [Miro App Settings](https://developers.miro.com)
-- [GCP Secret Manager](https://cloud.google.com/secret-manager)
-- [AWS Secrets Manager](https://docs.aws.amazon.com/secretsmanager/)
-- [12-Factor App Config](https://12factor.net/config)
-
-## Next Steps
-
-For observability setup, see `miro-observability`.
+- [Skill-specific official documentation](references/official-docs.md)
+- [Token context](https://developers.miro.com/reference/get-access-token-context)
+- [OAuth guide](https://developers.miro.com/docs/getting-started-with-oauth)

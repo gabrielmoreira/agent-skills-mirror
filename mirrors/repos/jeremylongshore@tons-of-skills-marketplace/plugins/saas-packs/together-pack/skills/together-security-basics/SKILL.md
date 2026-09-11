@@ -1,122 +1,85 @@
 ---
 name: together-security-basics
-description: 'Together AI security basics for inference, fine-tuning, and model deployment.
-
-  Use when working with Together AI''s OpenAI-compatible API.
-
-  Trigger: "together security basics".
-
-  '
-allowed-tools: Read, Write, Edit, Bash(pip:*), Grep
-version: 1.7.0
-license: MIT
+description: >-
+  Secure Together AI integrations with project-scoped keys, environment isolation, prompt/output data controls, bounded model behavior, safe logging, rotation, and incident response. Use when threat-modeling or hardening Together usage. Trigger with "Together security", "protect Together API key", or "Together data controls".
+argument-hint: "[repository-path] [environment] [data-classification]"
+allowed-tools: Read, Glob, Grep, WebFetch, Write, Edit
+version: 1.9.0
 author: Jeremy Longshore <jeremy@intentsolutions.io>
+license: MIT
 tags:
 - saas
-- ai
-- inference
-- together
-compatibility: Designed for Claude Code
+- together-ai
+- security
+model: inherit
+effort: high
+compatibility: Designed for Claude Code; verification may require secret-store and Together AI project access
 ---
 # Together AI Security Basics
 
 ## Overview
 
-Together AI provides inference and fine-tuning for 100+ open-source models (Llama, Mixtral, Qwen, FLUX) via an OpenAI-compatible API. Security concerns include API key management for production inference, protecting fine-tuning datasets that may contain proprietary or sensitive data, rate limit handling to prevent cost overruns, and ensuring model outputs are not logged with sensitive prompt content. A leaked API key grants full access to inference, fine-tuning, and model management endpoints.
+This skill maps credentials, data, model output, tool use, logs, and paid asynchronous actions to explicit controls and owners.
 
-## API Key Management
+## Prerequisites
 
-```typescript
-function createTogetherClient(): { apiKey: string; baseUrl: string } {
-  const apiKey = process.env.TOGETHER_API_KEY;
-  if (!apiKey) {
-    throw new Error("Missing TOGETHER_API_KEY — store in secrets manager, never in code");
-  }
-  // Together keys access inference + fine-tuning — treat as production credentials
-  console.log("Together AI client initialized (key suffix:", apiKey.slice(-4), ")");
-  return { apiKey, baseUrl: "https://api.together.xyz/v1" };
-}
-```
+- Data classification and approved Together use cases
+- Project/environment inventory and credential owners
+- Request/response logging, retention, and deletion policy
+- Model-output validation and any downstream tool-execution boundary
 
-## Webhook Signature Verification
+## Tool Discipline
 
-```typescript
-import crypto from "crypto";
-import { Request, Response, NextFunction } from "express";
+Use `Read`, `Glob`, and `Grep` to find provider calls, secrets, logging, persistence, and model-output consumers. Use `WebFetch` for current Together authentication and API behavior. Use `Write` or `Edit` only for approved controls; never read or reproduce secret values.
 
-function verifyTogetherWebhook(req: Request, res: Response, next: NextFunction): void {
-  const signature = req.headers["x-together-signature"] as string;
-  const secret = process.env.TOGETHER_WEBHOOK_SECRET!;
-  const expected = crypto.createHmac("sha256", secret).update(req.body).digest("hex");
-  if (!signature || !crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(expected))) {
-    res.status(401).send("Invalid signature");
-    return;
-  }
-  next();
-}
-```
+## Current Contract
 
-## Input Validation
+- Together keys are project-scoped; create separate development, CI, and production credentials.
+- Keep keys server-side and out of source, browser bundles, prompts, logs, fixtures, and fork workflows.
+- Treat prompts, uploaded files, outputs, model IDs, and job artifacts according to their data classification.
+- Model output is untrusted input to downstream systems; validate structure and require authorization for side effects.
 
-```typescript
-import { z } from "zod";
+## Authentication
 
-const InferenceRequestSchema = z.object({
-  model: z.string().min(1).max(200),
-  messages: z.array(z.object({
-    role: z.enum(["system", "user", "assistant"]),
-    content: z.string().max(100_000),
-  })).min(1),
-  max_tokens: z.number().int().min(1).max(4096).default(512),
-  temperature: z.number().min(0).max(2).default(0.7),
-  stop: z.array(z.string()).max(4).optional(),
-});
+Inject `TOGETHER_API_KEY` from an approved secret store and send it only as the SDK credential or Bearer header over HTTPS. Define rotation, revocation, leak detection, owner removal, and emergency shutdown procedures.
 
-function validateInferenceRequest(data: unknown) {
-  return InferenceRequestSchema.parse(data);
-}
-```
+## Instructions
 
-## Data Protection
+1. Inventory keys, projects, callers, endpoints, data classes, storage, and downstream actions.
+2. Remove tracked or client-side credentials and separate secrets by environment and workload.
+3. Minimize prompt/upload content, redact diagnostics, and enforce retention/deletion policy.
+4. Validate structured output and isolate any tool execution behind independent authorization.
+5. Bound tokens, concurrency, retries, batch/fine-tune submissions, and dedicated provisioning.
+6. Test credential revocation, provider failure, prompt injection, unsafe output, and incident response.
 
-```typescript
-const TOGETHER_SENSITIVE_FIELDS = ["api_key", "prompt_content", "fine_tune_dataset", "model_output", "system_prompt"];
+## Approval Boundaries
 
-function redactTogetherLog(record: Record<string, unknown>): Record<string, unknown> {
-  const redacted = { ...record };
-  for (const field of TOGETHER_SENSITIVE_FIELDS) {
-    if (field in redacted) redacted[field] = "[REDACTED]";
-  }
-  return redacted;
-}
-```
+Do not upload sensitive datasets, enable model-driven side effects, broaden key sharing, or retain prompts/outputs beyond policy without the named data and security authorities.
 
-## Security Checklist
+## Output
 
-- [ ] API key stored in secrets manager, never in source code
-- [ ] Separate keys for dev/staging/prod environments
-- [ ] Fine-tuning datasets reviewed for sensitive content before upload
-- [ ] Prompt content and model outputs never logged in plaintext
-- [ ] Rate limit handling with exponential backoff to prevent cost overruns
-- [ ] API key rotation scheduled quarterly
-- [ ] Pre-commit hook blocks `TOGETHER_API_KEY` patterns
-- [ ] Model access scoped to required models only
+Return trust boundaries, key/project map, data-flow controls, output-validation rules, cost/side-effect bounds, test evidence, gaps, owners, and remediation deadlines.
 
 ## Error Handling
 
-| Vulnerability | Risk | Mitigation |
-|---|---|---|
-| Leaked API key | Unauthorized inference and fine-tuning access | Secrets manager + rotation |
-| Sensitive data in fine-tuning datasets | Proprietary data embedded in model weights | Dataset review + sanitization before upload |
-| Prompt content in logs | Confidential queries exposed | Field-level redaction pipeline |
-| Missing rate limit handling | Unexpected cost overruns from runaway requests | Exponential backoff + spending alerts |
-| Unrestricted model access | Cost from premium model usage | API key scoped to approved models |
+| Condition | Response |
+|---|---|
+| Credential is exposed | Revoke or rotate immediately and scrub retained artifacts. |
+| Data classification unknown | Stop before sending or uploading content. |
+| Output fails validation | Reject it; do not coerce unsafe content into an action. |
+| Provider access is abused | Disable the affected key/project path and preserve audit evidence. |
+
+## Examples
+
+The example below shows the minimum redacted evidence expected from a successful invocation of this operator workflow.
+
+```text
+keys=per-environment; prompts=minimized; outputs=untrusted-validated; side-effects=separately-authorized
+```
 
 ## Resources
 
-- [Together AI Docs](https://docs.together.ai/)
-- [OWASP API Security Top 10](https://owasp.org/www-project-api-security/)
-
-## Next Steps
-
-See `together-prod-checklist`.
+- [Skill-specific official documentation](references/official-docs.md)
+- [Authentication](https://docs.together.ai/docs/api-keys-authentication)
+- [Chat API](https://docs.together.ai/reference/chat-completions)
+- [Error codes](https://docs.together.ai/docs/error-codes)

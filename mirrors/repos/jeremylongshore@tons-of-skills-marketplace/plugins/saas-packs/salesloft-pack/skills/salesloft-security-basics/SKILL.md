@@ -1,137 +1,86 @@
 ---
 name: salesloft-security-basics
-description: 'Secure SalesLoft OAuth tokens, API keys, and webhook signatures.
-
-  Use when implementing token rotation, securing webhook endpoints,
-
-  or auditing SalesLoft API access controls.
-
-  Trigger: "salesloft security", "salesloft secrets", "secure salesloft", "salesloft
-  token rotation".
-
-  '
-allowed-tools: Read, Write, Grep
+description: >-
+  Harden Salesloft tenant isolation, OAuth and API-key storage, least-privilege scopes, CRM-data handling, and webhook verification. Use when reviewing an integration security boundary. Trigger with "Salesloft security", "secure Salesloft tokens", or "Salesloft webhook verification".
+argument-hint: "[repository-path] [environment]"
+allowed-tools: Read, Glob, Grep, WebFetch, Write, Edit
 version: 1.6.0
-license: MIT
 author: Jeremy Longshore <jeremy@intentsolutions.io>
+license: MIT
 tags:
 - saas
-- sales
-- outreach
 - salesloft
+- security
+model: inherit
+effort: medium
 compatibility: Designed for Claude Code
 ---
-# SalesLoft Security Basics
+# Salesloft Integration Security Boundary
 
 ## Overview
 
-Secure SalesLoft API integrations: OAuth token management, webhook signature verification, secret storage, and scope-based access control. SalesLoft uses OAuth 2.0 bearer tokens and HMAC-SHA256 webhook signatures.
+This skill reviews how credentials, tenant context, prospect data, mutations, and webhook deliveries move through an integration. It produces remediations tied to evidence and named owners.
+
+## Prerequisites
+
+- Architecture, data-flow, scope, and secret inventories
+- Named Salesloft teams, environments, and data owners
+- Current webhook subscription configuration
+- Incident and credential-rotation procedures
+
+## Tool Discipline
+
+Use `Read`, `Glob`, and `Grep` to inspect auth, logging, storage, routing, and signature code. Use `WebFetch` only for official Salesloft security contracts. Use `Write` or `Edit` only after the remediation target is confirmed.
+
+## Current Contract
+
+- Every API credential is a Bearer secret and must remain server-side.
+- Authorization-code refresh rotates the refresh token; client credentials have no refresh token.
+- API keys act as the issuing customer user and are not the partner application path.
+- `x-salesloft-signature` is a hex SHA-1 HMAC of the exact request body using `callback_token` as the key.
+- Salesloft does not document a timestamp header in the general delivery-header contract, so do not invent timestamp replay verification.
+
+## Authentication
+
+Bind each encrypted credential record to one Salesloft team, flow, scope set, environment, owner, and rotation state. Fail closed when tenant context is missing or mismatched.
 
 ## Instructions
 
-### Step 1: Secret Storage
+1. Trace credential acquisition, storage, decryption, refresh, injection, revocation, and audit events.
+2. Verify least-privilege scopes against every used method and path.
+3. Enforce explicit tenant context across queues, caches, jobs, logs, and database keys.
+4. Redact Authorization, token, callback-token, email, phone, and CRM fields from diagnostics.
+5. Verify webhook HMAC over exact raw bytes with equal-length constant-time comparison.
+6. Validate the event type and callback token, then apply durable deduplication before side effects.
+7. Test rotation, tenant-confusion, invalid-signature, deletion, and incident paths.
 
-```bash
-# .gitignore -- NEVER commit credentials
-.env
-.env.local
-.env.*.local
+## Approval Boundaries
 
-# .env
-SALESLOFT_CLIENT_ID=app-client-id
-SALESLOFT_CLIENT_SECRET=app-secret
-SALESLOFT_WEBHOOK_SECRET=webhook-signing-secret
-```
+Do not broaden scopes, export customer data, create or revoke credentials, delete Salesloft records, or rotate production secrets without named owner approval and rollback planning.
 
-```typescript
-// Validate secrets at startup
-const required = ['SALESLOFT_CLIENT_ID', 'SALESLOFT_CLIENT_SECRET'];
-for (const key of required) {
-  if (!process.env[key]) throw new Error(`Missing required env: ${key}`);
-}
-```
+## Output
 
-### Step 2: Token Lifecycle Management
-
-```typescript
-// Store tokens securely with expiry tracking
-interface TokenStore {
-  accessToken: string;
-  refreshToken: string;
-  expiresAt: number; // Unix timestamp
-}
-
-async function getValidToken(store: TokenStore): Promise<string> {
-  // Refresh 5 minutes before expiry
-  if (Date.now() > (store.expiresAt - 300) * 1000) {
-    const refreshed = await refreshAccessToken(store.refreshToken);
-    store.accessToken = refreshed.access_token;
-    store.refreshToken = refreshed.refresh_token;
-    store.expiresAt = Math.floor(Date.now() / 1000) + refreshed.expires_in;
-    await persistTokenStore(store); // Save to DB or secret manager
-  }
-  return store.accessToken;
-}
-```
-
-### Step 3: Webhook Signature Verification
-
-```typescript
-import crypto from 'crypto';
-
-function verifyWebhookSignature(
-  rawBody: Buffer,
-  signature: string,
-  timestamp: string,
-  secret: string,
-): boolean {
-  // Reject stale webhooks (replay attack prevention)
-  const age = Math.abs(Date.now() / 1000 - parseInt(timestamp));
-  if (age > 300) return false; // 5-minute window
-
-  const expected = crypto
-    .createHmac('sha256', secret)
-    .update(`${timestamp}.${rawBody.toString()}`)
-    .digest('hex');
-
-  return crypto.timingSafeEqual(
-    Buffer.from(signature), Buffer.from(expected)
-  );
-}
-```
-
-### Step 4: OAuth Scope Minimization
-
-| Use Case | Required Scopes | Avoid |
-|----------|----------------|-------|
-| Read-only dashboard | `people:read`, `cadences:read` | `*:write` |
-| Cadence enrollment | `people:read`, `cadence_memberships:create` | `admin` |
-| Full sync | `people:*`, `cadences:*`, `activities:read` | Team admin scopes |
-
-### Step 5: Security Checklist
-
-- [ ] OAuth tokens stored in secret manager (not env files in prod)
-- [ ] Refresh tokens encrypted at rest
-- [ ] Webhook endpoints verify signatures before processing
-- [ ] `.env` files in `.gitignore`
-- [ ] Different OAuth apps for dev/staging/prod
-- [ ] Token refresh runs before expiry (not after 401)
-- [ ] API logs monitored for unusual access patterns
+Return tenant and data-flow findings, scope delta, secret lifecycle, webhook-verification result, redaction gaps, prioritized fixes, owners, and verification evidence.
 
 ## Error Handling
 
-| Issue | Detection | Response |
-|-------|-----------|----------|
-| Token leaked in git | GitHub secret scanning alerts | Revoke immediately, rotate |
-| Webhook replay attack | Timestamp > 5 min old | Reject request |
-| Brute force on webhook | High 401 rate | Rate limit webhook endpoint |
+| Condition | Response |
+|---|---|
+| Tenant mismatch | Fail closed and investigate cross-team exposure. |
+| Signature length differs | Reject before constant-time comparison. |
+| Credential exposure | Revoke or rotate, contain logs, and follow incident procedure. |
+| Uncertain delete | Stop; Salesloft documents person deletion as not normally reversible. |
+
+## Examples
+
+The example below shows the minimum redacted evidence expected from a successful invocation of this operator workflow.
+
+```text
+tenant-binding=pass; scopes=least-privilege; webhook-hmac=pass; pii-log-gaps=0
+```
 
 ## Resources
 
-- [OAuth Authorization Code](https://developers.salesloft.com/docs/platform/api-basics/oauth-authentication/)
-- [Client Credentials](https://developers.salesloft.com/docs/platform/api-basics/client-creds/)
-- [API Logs](https://developers.salesloft.com/docs/platform/guides/api-logs/)
-
-## Next Steps
-
-For production deployment, see `salesloft-prod-checklist`.
+- [Skill-specific official documentation](references/official-docs.md)
+- [API key authentication](https://developers.salesloft.com/docs/platform/api-basics/api-key-authentication/)
+- [Webhook delivery headers](https://developers.salesloft.com/docs/platform/webhooks/delivery-headers/)

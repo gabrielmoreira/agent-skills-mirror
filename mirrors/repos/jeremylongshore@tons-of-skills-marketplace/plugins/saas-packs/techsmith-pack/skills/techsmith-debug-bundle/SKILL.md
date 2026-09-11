@@ -1,68 +1,84 @@
 ---
 name: techsmith-debug-bundle
-description: 'TechSmith debug bundle for Snagit COM API and Camtasia automation.
-
-  Use when working with TechSmith screen capture and video editing automation.
-
-  Trigger: "techsmith debug bundle".
-
-  '
-allowed-tools: Read, Write, Edit, Bash(powershell:*), Grep
-version: 1.3.0
-license: MIT
+description: >-
+  Assemble a minimal redacted diagnostic bundle for Snagit COM, Camtasia recorder, deployment, project, or export failures. Use when support or engineering needs reproducible TechSmith evidence. Trigger with "TechSmith debug bundle", "collect Snagit diagnostics", or "Camtasia support evidence".
+argument-hint: "[product] [incident-id] [output-directory]"
+allowed-tools: Read, Glob, Grep, WebFetch, Write, Edit
+version: 1.6.0
 author: Jeremy Longshore <jeremy@intentsolutions.io>
+license: MIT
 tags:
-- saas
-- screen-capture
-- video
+- desktop-automation
 - techsmith
-compatibility: Designed for Claude Code
+- diagnostics
+model: inherit
+effort: medium
+compatibility: Designed for Claude Code; TechSmith product execution requires an approved Windows or macOS desktop as documented
 ---
-# TechSmith Debug Bundle
+# TechSmith Redacted Debug Bundle
 
 ## Overview
 
-Guidance for debug bundle with TechSmith Snagit COM API and Camtasia automation.
+This skill gathers configuration and failure metadata without copying screen captures, videos, project media, user identities, or license keys. The bundle has an explicit schema, redaction pass, size limit, checksum, retention owner, and human review before sharing.
+
+## Prerequisites
+
+- Incident identifier, product/version, affected workstation, and failure timestamp window
+- An approved local output directory outside active project storage
+- Permission to read product logs and command results at the required classification
+- A recipient, retention deadline, and redaction reviewer
+
+## Tool Discipline
+
+Use `Read`, `Glob`, and `Grep` to inspect local scripts, manifests, logs, and tests. Use `WebFetch` only for current primary TechSmith documentation. Use `Write` or `Edit` only after confirming the target repository file and approval boundary.
+
+## Current Contract
+
+- Collect versions, executable paths, COM-registration results, redacted commands, exit codes, and bounded log excerpts.
+- For project failures, record paths and hashes rather than copying TSCPROJ, TREC, captures, or media by default.
+- Never include a software key, activation request/response, account token, email address, or full environment dump.
+- A bundle is not complete until a second redaction scan and manifest/file-count check pass.
+
+## Licensing and Authentication
+
+TechSmith desktop activation is not API authentication. Resolve individual sign-in versus business-key or approved offline activation before execution. Redact all keys, account identifiers, activation artifacts, and sensitive endpoint details.
 
 ## Instructions
 
-### Key Considerations
+1. Create an incident-specific directory with restrictive permissions and a maximum bundle size.
+2. Record OS, architecture, session type, product version, executable discovery, and safe COM creation result.
+3. Capture the exact failing operation, UTC timestamps, exit code, and allowlisted log lines around the failure.
+4. Add local-storage status, free space, project-version metadata, media-presence counts, and output validation where relevant.
+5. Use pattern and entropy scanning to redact keys, tokens, emails, usernames, and sensitive path components.
+6. Write a manifest with hashes, review every file, archive the bundle, and set deletion ownership.
 
-- Snagit COM API is Windows-only (requires COM registration)
-- Camtasia Producer CLI for batch rendering
-- PowerShell is the primary scripting language
-- Python interop via `pywin32` (`pip install pywin32`)
+## Approval Boundaries
 
-### Snagit COM Input Types
+Do not add screenshots, clipboard data, recordings, project archives, browser state, registry exports, or unrestricted logs without case-specific written approval.
 
-| Value | Constant | Description |
-|-------|----------|-------------|
-| 0 | siiDesktop | Full desktop |
-| 2 | siiRegion | User-selected region |
-| 4 | siiWindow | Active window |
-| 5 | siiFile | From file |
+## Output
 
-### Snagit COM Output Types
-
-| Value | Constant | Description |
-|-------|----------|-------------|
-| 1 | sioClipboard | Copy to clipboard |
-| 2 | sioFile | Save to file |
-| 4 | sioPrinter | Send to printer |
+Return bundle path, manifest hash, file count, byte size, redaction result, omitted sensitive categories, reviewer, recipient, and deletion date.
 
 ## Error Handling
 
-| Error | Cause | Solution |
-|-------|-------|----------|
-| COM not registered | Snagit not installed | Install and register COM server |
-| Permission denied | Not running as admin | Elevate PowerShell |
-| File locked | Snagit Editor has file open | Close editor first |
+| Condition | Response |
+|---|---|
+| Bundle exceeds size limit | Replace bulk logs with bounded excerpts and hashes. |
+| Secret scanner finds a match | Quarantine the bundle and redact or remove the source file. |
+| Product version unavailable | Record the failed discovery command rather than guessing. |
+| No approved recipient | Keep the bundle local and do not upload it. |
+
+## Examples
+
+The example below shows the minimum redacted evidence expected from a successful invocation of this operator workflow.
+
+```text
+incident=TS-204; files=6; bytes=184221; secrets=0; media_included=0; review=pass
+```
 
 ## Resources
 
-- [Snagit COM Samples](https://github.com/TechSmith/Snagit-COM-Samples)
-- [TechSmith Support](https://support.techsmith.com/)
-
-## Next Steps
-
-See related TechSmith skills for more automation patterns.
+- [Skill-specific official documentation](references/official-docs.md)
+- [Camtasia deployment guide](https://assets.techsmith.com/docs/Camtasia_2025_Deployment_Tool_Guide.pdf)
+- [Snagit COM samples](https://github.com/TechSmith/Snagit-COM-Samples)

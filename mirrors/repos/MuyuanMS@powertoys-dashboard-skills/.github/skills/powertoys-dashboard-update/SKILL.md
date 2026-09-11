@@ -82,9 +82,11 @@ $Board = 'MuyuanMS/powertoys-pulse-actions'
 $Since = (Get-Date).AddDays(-2).ToUniversalTime().ToString('o')
 $IssueWindowDays = 30
 $DrainReviewQueue = $env:POWERTOYS_DASHBOARD_DRAIN_QUEUE -eq '1'
-$DesignBatchSize = if ($env:POWERTOYS_DESIGN_BATCH_SIZE) { [int]$env:POWERTOYS_DESIGN_BATCH_SIZE } elseif ($DrainReviewQueue) { [int]::MaxValue } else { 4 }
+$DesignBatchSize = if ($env:POWERTOYS_DESIGN_BATCH_SIZE) { [int]$env:POWERTOYS_DESIGN_BATCH_SIZE } elseif ($DrainReviewQueue) { [int]::MaxValue } else { 6 }
 $PrReviewBatchSize = if ($env:POWERTOYS_PR_REVIEW_BATCH_SIZE) { [int]$env:POWERTOYS_PR_REVIEW_BATCH_SIZE } elseif ($DrainReviewQueue) { [int]::MaxValue } else { 16 }
-$IssueRevalidationBatchSize = if ($env:POWERTOYS_ISSUE_REVALIDATION_BATCH_SIZE) { [int]$env:POWERTOYS_ISSUE_REVALIDATION_BATCH_SIZE } elseif ($DrainReviewQueue) { [int]::MaxValue } else { 50 }
+$IssueRevalidationBatchSize = if ($env:POWERTOYS_ISSUE_REVALIDATION_BATCH_SIZE) { [int]$env:POWERTOYS_ISSUE_REVALIDATION_BATCH_SIZE } elseif ($DrainReviewQueue) { [int]::MaxValue } else { 75 }
+$OldIssueReserve = if ($env:POWERTOYS_OLD_ISSUE_RESERVE) { [int]$env:POWERTOYS_OLD_ISSUE_RESERVE } elseif ($DrainReviewQueue) { 0 } else { 15 }
+$SpareIssuesPerUnusedPrSlot = if ($env:POWERTOYS_SPARE_ISSUES_PER_UNUSED_PR_SLOT) { [int]$env:POWERTOYS_SPARE_ISSUES_PER_UNUSED_PR_SLOT } else { 4 }
 $PrReviewConcurrency = if ($env:POWERTOYS_PR_REVIEW_CONCURRENCY) { [int]$env:POWERTOYS_PR_REVIEW_CONCURRENCY } elseif ($DrainReviewQueue) { 6 } else { 3 }
 $RunBudgetMinutes = if ($env:POWERTOYS_DASHBOARD_RUN_BUDGET_MINUTES) { [int]$env:POWERTOYS_DASHBOARD_RUN_BUDGET_MINUTES } elseif ($DrainReviewQueue) { 0 } else { 50 }
 $RunStartedAt = (Get-Date).ToUniversalTime().ToString('o')
@@ -212,13 +214,26 @@ Keep messages brief and clear. Send:
    Include selected PRs, deferred PR count, changed/new bug issues, selected
    full-design issues, the concurrency cap, and the UTC deadline. In drain
    mode, state that the deadline, PR selection limit, and issue design cap are
-   disabled, and include the higher worker count.
+   disabled, and include the higher worker count. Include a Markdown table
+   listing every selected item:
+
+   | Type | Number | Work | Current stage |
+   | --- | ---: | --- | --- |
+   | PR | 50000 | Full review | queued |
+   | Issue | 40000 | Revalidation | triaged |
+
+   Put deferred totals below the table rather than silently omitting them.
 2. **30-minute checkpoint** — if the run is still active 30 minutes after the
    started email, reply to the original with completed PRs/issues, currently
    running PRs/issues, remaining queue count, and next expected milestone.
+   Include a Markdown table with `Type`, `Number`, `Result/stage`, and
+   `Next step` for every selected item that has started or finished.
 3. **Completed** — reply to the original after validation and deployment
    verification, with commit, PR/issue coverage, stale queue count, artifact
-   count, and whether any upstream public action occurred.
+   count, and whether any upstream public action occurred. Include a Markdown
+   table covering every selected PR and issue with `Type`, `Number`, `Final
+   result`, and `Action available / next run`. This table must distinguish
+   concluded, waiting, still in progress, and deferred outcomes.
 4. **Blocked/failed** — reply to the original before stopping on an
    unrecoverable failure, with the failing phase and the next manual action
    needed.
@@ -310,6 +325,8 @@ $updatePlanArgs = @(
   '-Dashboard', $Dashboard, '-Upstream', $Upstream,
   '-PrBatchSize', $PrReviewBatchSize,
   '-IssueBatchSize', $IssueRevalidationBatchSize,
+  '-OldIssueReserve', $OldIssueReserve,
+  '-SpareIssuesPerUnusedPrSlot', $SpareIssuesPerUnusedPrSlot,
   '-AsJson'
 )
 if ($DrainReviewQueue) { $updatePlanArgs += '-DrainQueue' }
@@ -320,6 +337,13 @@ Normal runs process only `selected_prs` and `selected_issues`; all deferred
 entries remain in the exhaustive inventory for the next run. Drain mode selects
 all candidates. A targeted operator run may pass `-PrNumbers` and
 `-IssueNumbers` without changing discovery semantics.
+
+Normal issue selection deliberately advances old backlog as well as recent
+activity. The default issue capacity is 75, with 15 slots reserved for the
+oldest stale bugs. Every unused PR slot adds four issue-revalidation slots, so
+quiet PR runs spend their spare budget reducing old issue debt. Environment
+overrides remain available. Do not reorder the whole issue queue newest-first
+in a way that starves the oldest reserve.
 
 ### PR freshness
 
@@ -671,7 +695,8 @@ Do not re-review an unchanged head that already has a current clean fork result
 and no relevant newer activity.
 Do not call a PR review complete, approval-ready, or "clean" unless the latest
 freshly requested Copilot review has zero new comments, zero unresolved threads,
-and the required local build has passed. A Copilot-clean result with a pending
+the required local build has passed, and that build covers the exact upstream
+head rather than a divergent fork tree. A Copilot-clean result with a pending
 build, context review, spelling check, or timed-out fresh request remains
 `review_in_progress` and must get a `Re-run review`/`Continue review` action.
 
@@ -732,7 +757,7 @@ full-design queue. The lightweight correction pass is not limited by
 `$DesignBatchSize`; only implementation-grade design expansion is bounded.
 Normal-mode full design work is bounded: rank `actionable_design` judgments by confidence,
 reproducibility, scope, recency, and lack of existing ownership, then run at
-most `$DesignBatchSize` (default 4) through `powertoys-issue-to-design`; leave
+most `$DesignBatchSize` (default 6) through `powertoys-issue-to-design`; leave
 the rest queued with explicit `Design fix` actions. Drain mode removes this
 design cap and processes every actionable issue design, still checkpointing and
 publishing after each durable transition or completed artifact. Prefer issues
@@ -796,6 +821,29 @@ reserved for a clean current-head result with zero proposed comments and no
 `awaiting_review_approval` or another explicit draft/pending stage. An action
 label may say `inline suggestion(s)` only when at least one proposed inline
 comment contains a valid apply-ready suggestion block.
+
+Also verify validation-tree consistency:
+
+- `review_ready` requires
+  `validation.upstream_head.head_sha == head_sha` and
+  `validation.upstream_head.result == passed`;
+- any proposed suggestion block requires
+  `validation.suggestion_patch.head_sha == head_sha`,
+  `validation.suggestion_patch.result == passed`,
+  `validation.suggestion_patch.minimal_ranges_reviewed == true`, and
+  `applied_comment_ids` exactly matching all proposed comments that contain
+  suggestion blocks;
+- the suggestion-patch result must come from applying the literal public
+  suggestion blocks to the pinned upstream head and building that candidate
+  tree, not from a hand-edited fork branch.
+- before that final build, trim unchanged leading and trailing lines from each
+  suggestion range. Retain one unchanged anchor only for a pure insertion that
+  GitHub cannot otherwise represent.
+
+Never copy fork-only tests, documentation, braces, or behavior into the
+artifact summary as if they exist upstream. If the converged fork differs from
+the upstream head, every meaningful hunk must remain represented as a proposed
+comment or explicit author request; the artifact cannot be `review_ready`.
 
 Use a local manual-review or validation action only when no defensible
 author-facing comment can be drafted from the current head—for example, the

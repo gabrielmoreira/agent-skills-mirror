@@ -28,19 +28,31 @@ cat docs/MODEL-ONBOARDING.md
 cat MODEL_OPTI.md
 ```
 
-Six things the loop gets wrong most often:
+Nine things the loop gets wrong most often:
 
 - Recognition before research. Probe every served id and every bare chat
   name with `omh coding model-route` first; a `model_family` of `unknown`
   means the calibration never attaches.
+- The chain names the id the vendor's API serves, not the model card's
+  spelling. Read the Hermes provider profile for the family before choosing
+  the alias — DeepSeek serves `deepseek-flash` and 400s `deepseek-v4.1-flash`;
+  the versioned contract sits behind the pointer as a declared projection
+  and in `EXACT_CONTRACT_POINTER_ALIASES`.
+- Research runs as four parallel read-only lanes (official docs, Hermes
+  runtime source, the vendor's own harness, community harnesses), each a
+  labeled dossier under `.omc/research/`; the Hermes lane is the one that
+  shows what the wire carries (id folding, effort overrides, passback).
 - Chains move as a set. The Hermes-lane table, its plugin mirror, the
   Maestro-lane table, the `model-setup` skill text, seven public doc surfaces,
   the release budget note, and the pinned-chain tests all name the old id;
-  grep for it and move every site in the same commit.
+  grep `src/ tests/ docs/ README* site/` for it and move every site in the
+  same commit. Superseded generations leave the shipped chains (owner
+  decision, 2026-09-11) and join the recognition-only list; pins hide in
+  fixtures, so start the full suite in the background at the chain edit.
 - Machine config stays provider-neutral. Chains name aliases; the
   provider row is a separate concern in `model-providers.json`. Place the id
-  with `omh model-chains set`, never by hand-editing the JSON, and let the
-  older generation stay behind it as fall-through.
+  with `omh model-chains set`, never by hand-editing the JSON; an operator
+  may keep an older generation behind it there, the shipped table does not.
 - Served is not released. Prove the route with one `hermes --oneshot` call
   and read the usage file (`model`, `provider`, `cost_status`) before any
   measurement or placement; gateways want the vendor-prefixed id.
@@ -51,6 +63,9 @@ Six things the loop gets wrong most often:
 - A routing signal is only as good as the tier's chain head. Measure the
   head on the request class it will receive before shipping the signal,
   and name the head in every routing claim.
+- A separate reviewer lane reads the diff before the commit. The DeepSeek
+  round's reviewer caught a reverse projection that let `-pro` / `-fast` /
+  `-flex` aliases label their base id; self-review did not.
 
 Arguments pass through verbatim: the model ids as served (for example
 `claude-fable-5-1 claude-mythos-5-1`).

@@ -1,145 +1,84 @@
 ---
 name: salesloft-ci-integration
-description: 'Set up CI/CD pipelines for SalesLoft integrations with GitHub Actions.
-
-  Use when automating SalesLoft integration tests, validating OAuth tokens,
-
-  or running cadence sync validation in CI.
-
-  Trigger: "salesloft CI", "salesloft GitHub Actions", "salesloft automated tests".
-
-  '
-allowed-tools: Read, Write, Edit, Bash(gh:*)
+description: >-
+  Gate Salesloft integration changes with offline contract fixtures and an optional fork-safe read-only smoke lane. Use when wiring CI for auth, pagination, errors, rate limits, or webhooks. Trigger with "Salesloft CI", "Salesloft contract tests", or "Salesloft GitHub Actions".
+argument-hint: "[repository-path] [ci-provider]"
+allowed-tools: Read, Glob, Grep, WebFetch, Write, Edit
 version: 1.6.0
-license: MIT
 author: Jeremy Longshore <jeremy@intentsolutions.io>
+license: MIT
 tags:
 - saas
-- sales
-- outreach
 - salesloft
+- ci
+model: inherit
+effort: medium
 compatibility: Designed for Claude Code
 ---
-# SalesLoft CI Integration
+# Salesloft Contract CI
 
 ## Overview
 
-GitHub Actions workflows for testing SalesLoft API integrations: unit tests with mocked responses, integration tests against the live API, and OAuth token validation.
+This skill keeps pull-request validation deterministic and secretless while retaining a separately authorized live smoke check. It prevents CI from creating people or cadence memberships as a connectivity test.
+
+## Prerequisites
+
+- A repository with a test runner and identified HTTP adapter
+- Sanitized success and failure fixtures
+- Protected CI environment for any live credential
+- Named owner for contract drift and smoke failures
+
+## Tool Discipline
+
+Use `Read`, `Glob`, and `Grep` to inspect workflows, test commands, adapters, and secret references. Use `WebFetch` only for official Salesloft contracts. Use `Write` or `Edit` after confirming the CI file and repository conventions.
+
+## Current Contract
+
+- Offline fixtures cover `data`, list `metadata`, singular `error`, field-keyed `errors`, and rate headers.
+- Webhook tests sign exact raw bytes with SHA-1 HMAC and the fixture callback token.
+- Untrusted fork workflows receive no Salesloft secret.
+- The optional live lane performs one bounded read such as `GET /v2/me` and logs no response body.
+
+## Authentication
+
+Store a least-privilege read credential only in a protected environment. Pin it to a non-production or explicitly approved team and rotate it through the owning Salesloft flow.
 
 ## Instructions
 
-### Step 1: GitHub Actions Workflow
+1. Map required unit, contract, security, and static checks to CI jobs.
+2. Run sanitized fixture tests on every pull request with no external dependency.
+3. Assert secret redaction, tenant binding, pagination termination, bounded retries, and raw-body signature behavior.
+4. Disable live jobs for fork-originated and untrusted events.
+5. Run the live read-only smoke only after protected-environment authorization.
+6. Make contract drift and live failures visible without leaking body or credential data.
 
-```yaml
-# .github/workflows/salesloft-ci.yml
-name: SalesLoft Integration
-on:
-  push:
-    branches: [main]
-  pull_request:
+## Approval Boundaries
 
-jobs:
-  unit-tests:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with: { node-version: '20', cache: 'npm' }
-      - run: npm ci
-      - run: npm test -- --coverage
-      - uses: actions/upload-artifact@v4
-        with: { name: coverage, path: coverage/ }
+Do not expose repository secrets to fork code, print API responses, or perform Salesloft writes from the default CI lane. A new live environment or scope needs owner approval.
 
-  integration-tests:
-    runs-on: ubuntu-latest
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    env:
-      SALESLOFT_API_KEY: ${{ secrets.SALESLOFT_TEST_API_KEY }}
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with: { node-version: '20', cache: 'npm' }
-      - run: npm ci
-      - name: Verify SalesLoft connectivity
-        run: |
-          curl -sf -H "Authorization: Bearer $SALESLOFT_API_KEY" \
-            https://api.salesloft.com/v2/me.json | jq '.data.email'
-      - run: npm run test:integration
-```
+## Output
 
-### Step 2: Configure Secrets
-
-```bash
-# Store test API key (read-only scoped)
-gh secret set SALESLOFT_TEST_API_KEY --body "your-test-token"
-
-# For webhook testing
-gh secret set SALESLOFT_WEBHOOK_SECRET --body "your-webhook-secret"
-```
-
-### Step 3: Integration Test Structure
-
-```typescript
-// tests/integration/salesloft.test.ts
-import { describe, it, expect } from 'vitest';
-import { createClient } from '../../src/salesloft/client';
-
-const SKIP = !process.env.SALESLOFT_API_KEY;
-
-describe.skipIf(SKIP)('SalesLoft Integration', () => {
-  const api = createClient();
-
-  it('authenticates and returns user', async () => {
-    const { data } = await api.get('/me.json');
-    expect(data.data.email).toBeTruthy();
-  });
-
-  it('lists people with pagination', async () => {
-    const { data } = await api.get('/people.json', {
-      params: { per_page: 5 },
-    });
-    expect(data.metadata.paging).toHaveProperty('total_count');
-    expect(data.data.length).toBeLessThanOrEqual(5);
-  });
-
-  it('lists cadences', async () => {
-    const { data } = await api.get('/cadences.json', {
-      params: { per_page: 5 },
-    });
-    expect(Array.isArray(data.data)).toBe(true);
-  });
-
-  it('handles rate limit headers', async () => {
-    const resp = await api.get('/people.json', { params: { per_page: 1 } });
-    expect(resp.headers).toHaveProperty('x-ratelimit-limit-per-minute');
-  });
-});
-```
-
-### Step 4: Pre-merge Validation
-
-```yaml
-# Branch protection: require these checks
-required_status_checks:
-  strict: true
-  contexts:
-    - "unit-tests"
-```
+Return workflow paths, trigger matrix, fixture coverage, secret boundary, live-lane guard, commands, results, and unresolved failures.
 
 ## Error Handling
 
-| CI Issue | Cause | Solution |
-|----------|-------|----------|
-| Secret not found | Missing `SALESLOFT_TEST_API_KEY` | `gh secret set` |
-| Integration test 401 | Token expired | Refresh and update secret |
-| Rate limit in CI | Parallel runs | Use separate test API keys per branch |
-| Flaky integration tests | SalesLoft maintenance | Add retry and skip conditions |
+| Condition | Response |
+|---|---|
+| Fork requests secret | Skip the live lane and run fixtures only. |
+| Live 401/403 | Fail clearly and rotate or correct scope outside the log. |
+| Live 429 | Stop; do not turn CI into a retry storm. |
+| Fixture drift | Update contract and consumer together with an official-source receipt. |
+
+## Examples
+
+The example below shows the minimum redacted evidence expected from a successful invocation of this operator workflow.
+
+```text
+pr-fixtures=pass; fork-secrets=0; live-smoke=protected; writes=0
+```
 
 ## Resources
 
-- [GitHub Actions Docs](https://docs.github.com/en/actions)
-- [SalesLoft API Logs](https://developers.salesloft.com/docs/platform/guides/api-logs/)
-
-## Next Steps
-
-For deployment patterns, see `salesloft-deploy-integration`.
+- [Skill-specific official documentation](references/official-docs.md)
+- [Request and response format](https://developers.salesloft.com/docs/platform/api-basics/request-response-format/)
+- [Webhook delivery headers](https://developers.salesloft.com/docs/platform/webhooks/delivery-headers/)

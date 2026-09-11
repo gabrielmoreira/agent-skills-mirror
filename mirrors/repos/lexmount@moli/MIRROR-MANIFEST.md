@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `lexmount/moli` — 26 default patterns, 0 followed patterns, 7 file(s) materialized.
+Mirror of `lexmount/moli` — 26 default patterns, 0 followed patterns, 14 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `lexmount/moli` — 26 default patterns, 0 followed patterns, 7 file(s
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 7 |
+| Files         | 14 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -66,6 +66,13 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 5 | ✓ | [`skills/moli-webfetch/agents/openai.yaml`](skills/moli-webfetch/agents/openai.yaml) |
 | 6 | ✓ | [`skills/moli-webfetch/references/fetch-recipes.md`](skills/moli-webfetch/references/fetch-recipes.md) |
 | 7 | ✓ | [`skills/moli-webfetch/SKILL.md`](skills/moli-webfetch/SKILL.md) |
+| 8 | ✓ | [`skills/moli-websearch/agents/openai.yaml`](skills/moli-websearch/agents/openai.yaml) |
+| 9 | ✓ | [`skills/moli-websearch/references/cdp-driver.md`](skills/moli-websearch/references/cdp-driver.md) |
+| 10 | ✓ | [`skills/moli-websearch/references/imagesearch-engines.md`](skills/moli-websearch/references/imagesearch-engines.md) |
+| 11 | ✓ | [`skills/moli-websearch/references/imagesearch.md`](skills/moli-websearch/references/imagesearch.md) |
+| 12 | ✓ | [`skills/moli-websearch/references/websearch-engines.md`](skills/moli-websearch/references/websearch-engines.md) |
+| 13 | ✓ | [`skills/moli-websearch/references/websearch.md`](skills/moli-websearch/references/websearch.md) |
+| 14 | ✓ | [`skills/moli-websearch/SKILL.md`](skills/moli-websearch/SKILL.md) |
 
 ---
 

@@ -34,6 +34,8 @@ Only report issues with confidence ≥80 — below that, a finding is more likel
 
 **Stage 2: Code Quality** — Is the code well-built? Check: correctness, performance, security, clarity, test coverage.
 
+**One-fact rule:** On a consequential change, find the one fact the change is safe because of — a caller invariant, a lifecycle assumption, a data-shape contract at a boundary — and spend the review proving that fact instead of enumerating maybes. The fact is usually one a breakage grep will not surface. If you cannot prove it, the change is unreviewed; the maybes you listed do not change that.
+
 ### Review Order
 
 Top-down (spec → architecture → module → function → line) for first pass. Bottom-up (line → function → module) for detail pass. See `references/review-order-and-checkpoints.md`.
@@ -170,6 +172,21 @@ Before implementing a suggestion, grep the codebase for the pattern the reviewer
 | Suggestion is correct but out of scope | Acknowledge, defer to a follow-up |
 | Suggestion is a style preference | Acknowledge, apply only if it matches project conventions |
 
+### Known misbehaviors (external review surfaces)
+
+Feedback arrives through `gh` or pasted text; both misbehave in known ways. Symptom → detection → fallback. Do not burn the fix loop retrying a misbehaving surface.
+
+| Symptom | Detection | Fallback |
+| --------- | ---------- | -------- |
+| Comments predate your latest push (stale review state) | Compare comment `updated_at`, not `created_at` — an edited comment keeps its old creation time. `gh pr view --json` does not expose `updatedAt`; use `gh api repos/{owner}/{repo}/issues/<n>/comments --jq '.[].updated_at'` for issue comments and `gh api repos/{owner}/{repo}/pulls/<n>/comments --jq '.[].updated_at'` for inline comments, and `gh pr view --json reviews --jq '.reviews[].submittedAt'` for review bodies (reviews expose submission time only), all vs the latest push | Treat pre-push comments as already-addressed candidates; verify each against current HEAD before acting |
+| `gh` returns 401 / "To get started with GitHub CLI" | `gh auth status` | Report BLOCKED on auth and ask the user; never retry the call in a loop |
+| "API rate limit exceeded" | `gh api rate_limit --jq .rate` | Wait until the reset time once, or ask the user to fetch; never tight-loop retries |
+| Pasted line numbers no longer match (rebased/squashed diff) | Compare the comment's referenced hunk against the current file | Map by content, not line number; if ambiguous, ask the reviewer — never guess which line was meant |
+
+When the user explicitly requests repeated review cycles, name the iteration cap before the first cycle; at the cap, stop and report, resolving each remaining finding by fixing it or rebutting it with stated grounds. A single requested review starts no score loop.
+
 ### Precedence
 
 Pushing back ≠ refusing. You must either fix the issue or provide evidence why it's not an issue. "I prefer my way" is not a valid push-back. "This is project convention, see patterns.md line X" is valid.
+
+Never perform agreement. "You're absolutely right!" commits you to unverified feedback. Verify before implementing: restate the technical requirement, push back with reasoning, or just do the work and show the fix.

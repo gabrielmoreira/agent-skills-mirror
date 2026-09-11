@@ -278,8 +278,9 @@ incomplete/current authoring hold blocks; only exact anchor/set/session
 `release-complete` allows a completed generation.
 Route directly to already-claimed/Discover fallback (A0-T stops), never A5(c).
 
-Post the claim comment using the exact format and posting mechanics
-already defined in
+First record `{agent-id}`/`{claim-id}` via `--record-tokens`; then post
+the claim comment using the exact format and posting mechanics already
+defined in
 [Claim format](idd-overview-core.instructions.md#claim-format) — do not
 re-derive them here. `emit-marker` (`--type claimed-by`, emit-only) also
 renders the body without posting.
@@ -316,9 +317,10 @@ verification_ below); never skip it for any activation path:
 _{agent-id}: claim activation nonce — IDD automation marker. Do not edit._
 ```
 
-`{nonce}` is fresh; record it with `{agent-id}` / `{claim-id}`. For multiple
-trusted markers sharing a claim, the lexicographically earliest nonce wins;
-no marker means no comparison. With helper runtime, post it using
+`{nonce}` is fresh; record it via `--record-tokens` before posting. For
+multiple trusted markers sharing a claim, the lexicographically earliest
+nonce wins; no marker means no comparison. With helper runtime, post it
+using
 `post-idd-marker --type activation-nonce --target issue <number> --apply`
 with the four fields defined in `docs/idd-helper-scripts.md`.
 
@@ -497,23 +499,36 @@ recognizing the brief reassigns it to a single-issue worker role. The
 delegation brief must state explicitly that the delegate is the sole
 worker for the named issue, that no peer workers exist for it to
 coordinate with or wait on, and that it must perform the implementation
-work itself rather than re-delegate or wait for a reply (#2179). Prefer
-a non-context-inheriting mechanism instead, when the tool offers one —
-see [docs/idd-workflow.md's Orchestrator fan-out
+work itself rather than re-delegate or wait for a reply (#2179). Use a
+non-context-inheriting mechanism whenever the tool offers one — this
+is a strong preference, not a suggestion; a context-inheriting
+mechanism (e.g. forking the orchestrator's own conversation) is a
+fallback only when no non-context-inheriting option exists. See
+[docs/idd-workflow.md's Orchestrator fan-out
 variant](../../docs/idd-workflow.md#orchestrator-fan-out-variant).
 
-**Restate the CI/advisory-wait topology-safety condition; use the
-snapshot-then-stop pattern.** Carry — verbatim or by reference — the
-topology-safety condition from [idd-ci.instructions.md's Wake-up
+**Known limitation.** Neither this wording nor an added negative
+instruction reliably stops a context-inheriting delegate from
+misreading itself as a sub-orchestrator waiting on a nonexistent
+sub-worker (#2802) — an accepted residual risk of the fallback path;
+see
+[docs/idd-design-rationale.md](../../docs/idd-design-rationale.md#context-inheriting-delegation-residual-risk)
+for the field evidence.
+
+**Restate the CI/advisory-wait topology-safety condition.** Carry —
+verbatim or by reference — the topology-safety condition from
+[idd-ci.instructions.md's Wake-up
 discipline](idd-ci.instructions.md#wake-up-discipline) (also in
 [docs/idd-workflow.md's Orchestrator fan-out
 variant](../../docs/idd-workflow.md#orchestrator-fan-out-variant));
 without it, a worker can stall indefinitely on an unconfirmed
-backgrounded wait (#2210). Default: the worker takes one non-blocking
-snapshot, reports it, stops if incomplete, never polls or waits on a
-notification. The orchestrator alone polls and resumes via a
-follow-up message (a fresh delegate re-inherits stale context and
-no-ops).
+backgrounded wait (#2210).
+
+**Restate the scratchpad file-naming requirement.** See
+[docs/idd-workflow.md's Orchestrator fan-out
+variant](../../docs/idd-workflow.md#orchestrator-fan-out-variant):
+each worker must prefix scratchpad filenames with the issue number,
+or use an issue-numbered subdirectory.
 
 ### Hide displaced claim chain on takeover
 
@@ -564,8 +579,10 @@ for the full algorithm.
 ### Worktree-local lock file (same-machine collision)
 
 A same-machine fast path complementing the cross-machine claim check
-above. Acquire once the B1 worktree exists (before the first mutation),
-then re-run alongside every later pre-mutation check:
+above. Acquire once the B1 worktree exists (before the first mutation;
+also re-run `--record-tokens` there (with `--nonce`)), then re-run
+alongside every later
+pre-mutation check:
 `node scripts/claim-lock.mjs --acquire --worktree <path> --agent-id
 {agent-id} --claim-id {claim-id}`.
 
@@ -582,6 +599,10 @@ remove` at F4 deletes the lock with the worktree, so a crashed
 session's leftover lock resolves the same way. See
 `docs/idd-helper-scripts.md`'s Worktree-local claim lock entry for
 mechanical detail.
+
+**Generated-tokens record.** Re-check with `--read-tokens` alongside
+`--acquire` before trusting a recalled `{claim-id}`. See
+`docs/idd-helper-scripts.md`.
 
 Then continue to `idd-work.instructions.md`.
 

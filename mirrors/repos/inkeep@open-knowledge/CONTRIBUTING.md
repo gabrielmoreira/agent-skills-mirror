@@ -40,6 +40,14 @@ The base `tsconfig.json` carries three settings that red a first build. `erasabl
 
 Patched dependencies (listed under `patchedDependencies` in `pnpm-workspace.yaml`, with the diffs in `patches/`) are authored with pnpm: run `pnpm patch <name>@<version>`, edit the printed temp directory, then `pnpm patch-commit <temp-dir>` to write the patch file and register it. A patch that fails to apply fails the install closed — it is never silently skipped.
 
+### Spelling-language combobox
+
+The spelling-language picker uses [shadcn Combobox multiple-selection chips](https://ui.shadcn.com/docs/components/radix/combobox#multiple-selection), backed by Base UI because [Radix Primitives does not provide a Combobox primitive](https://github.com/radix-ui/primitives/issues/3549#issuecomment-2895211522). Other controls, including the surrounding Settings dialog, remain Radix. Keep the popup portal inside that dialog's focus boundary and scope Escape interception to the open spelling combobox, not cmdk Settings search. The combobox inherits reduced-motion styling at the primitive level.
+
+With the installed Base UI version, ArrowLeft from the empty search input moves focus onto a chip and closes the popup. Escape then dismisses Settings because no popup remains open. Keep this distinct from Escape in the expanded input, which closes only the popup first.
+
+The four Floating UI overrides in `pnpm-workspace.yaml` satisfy Base UI's direct and transitive dependency floors, rather than the historical Radix dependency freeze. They are shared with Radix positioning and editor suggestion popups. Changes need regression coverage of Settings, ShareBranchSwitchDialog and CreateProjectDialog, not just the language picker. Keyboard selection/removal, popup-first Escape dismissal, empty search and reduced-motion styling have DOM coverage beside the components.
+
 ## Common commands
 
 ```bash
@@ -76,10 +84,6 @@ First-time contributors are asked to sign our [Contributor License Agreement](./
 - Enable **Allow edits from maintainers** so reviewers can push fixes to your branch.
 
 A maintainer will review your PR; if you don't hear back within a few business days, a friendly nudge on the thread is welcome. Accepted changes land on `main` with your authorship preserved (your PR may show as closed rather than merged).
-
-## Acknowledgements
-
-Thanks to [KGESH](https://github.com/KGESH) for contributing the embedding request limits and timeout controls in Search settings ([#1357](https://github.com/inkeep/open-knowledge/pull/1357)). This acknowledgement restores credit for the contribution shipped in [a07a2fb](https://github.com/inkeep/open-knowledge/commit/a07a2fbdf4616c9e6c7a132458e888a94498a630), whose GitHub co-author attribution was missing.
 
 ## License
 

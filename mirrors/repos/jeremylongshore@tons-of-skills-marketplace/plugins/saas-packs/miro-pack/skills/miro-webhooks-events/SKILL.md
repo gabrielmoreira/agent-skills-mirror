@@ -1,287 +1,84 @@
 ---
 name: miro-webhooks-events
-description: 'Implement Miro REST API v2 webhooks with board subscriptions, event
-  handling,
-
-  and signature verification for real-time board change notifications.
-
-  Trigger with phrases like "miro webhook", "miro events",
-
-  "miro board subscription", "miro real-time", "miro notifications".
-
-  '
-allowed-tools: Read, Write, Edit, Bash(curl:*)
-version: 1.7.0
-license: MIT
+description: "Design and implement a repository-side replacement for retired Miro REST webhooks using explicit freshness requirements, bounded reconciliation, or in-board Web SDK events. Use when designing Miro change detection. Trigger with \"Miro webhooks\"."
+argument-hint: "[event-use-case] [freshness-slo]"
+allowed-tools: Read, Glob, Grep, WebFetch, Write, Edit
+version: 1.9.0
 author: Jeremy Longshore <jeremy@intentsolutions.io>
+license: MIT
 tags:
 - saas
 - miro
-- webhooks
 - events
-compatibility: Designed for Claude Code
+- web-sdk
+- reconciliation
+model: inherit
+effort: high
+compatibility: Designed for Claude Code; live work requires an authorized Miro app and redacted evidence
 ---
-# Miro Webhooks & Events
+# Miro Eventing Gap and Supported Alternatives
 
 ## Overview
 
-Receive real-time notifications when items on a Miro board change. Miro uses **board subscriptions** via the `/v2-experimental/webhooks/board_subscriptions` endpoint. All board item types are supported except tags, connectors, and comments.
+Prevent new systems from depending on Miro's discontinued experimental webhook infrastructure. Select an alternative that honestly represents durability and freshness; use the evidence produced here to make the next decision explicit and reviewable.
 
 ## Prerequisites
 
-- Access token with `boards:read` scope
-- HTTPS endpoint accessible from the internet
-- Webhook signing secret (generated when creating subscription)
+- Event use case, consumers, and freshness/loss tolerance
+- Current REST and Web SDK capability inventory
+- Authorized boards, rate budget, and reconciliation state store
 
-## Create a Board Subscription
+## Tool Discipline
 
-```typescript
-// POST https://api.miro.com/v2-experimental/webhooks/board_subscriptions
-async function createBoardSubscription(boardId: string, callbackUrl: string) {
-  const response = await fetch(
-    'https://api.miro.com/v2-experimental/webhooks/board_subscriptions',
-    {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${process.env.MIRO_ACCESS_TOKEN}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        boardId,
-        callbackUrl,       // Must be HTTPS
-        status: 'enabled', // 'enabled' | 'disabled'
-      }),
-    }
-  );
+Use `Read`, `Glob`, and `Grep` to inspect the repository, configuration names, adapters, tests, and evidence. Use `WebFetch` only for current official Miro documentation. Use `Write` or `Edit` after confirming the requested mode, target environment, tenant, board, and approval boundary. These declared tools do not call authenticated Miro APIs or deployment CLIs; implement client, configuration, and test changes, then return exact operator commands or an approval-gated handoff for live execution.
 
-  const subscription = await response.json();
-  console.log(`Subscription created: ${subscription.id}`);
-  console.log(`Type: ${subscription.type}`);  // 'board_subscription'
-  return subscription;
-}
-```
+## Current Contract
 
-## Manage Subscriptions
+- Miro discontinued experimental REST webhooks and `/v2-experimental/webhooks/board_subscriptions`.
+- There is no current production Miro REST callback/signature contract documented as its replacement.
+- Web SDK UI events such as `items:create` and `items:delete` run in active board app contexts; they are not durable server-to-server delivery.
+- `experimental:items:update` remains experimental, and `items:create` does not fire for copy-paste or duplication.
 
-```typescript
-// List subscriptions
-// GET https://api.miro.com/v2-experimental/webhooks/board_subscriptions
-const list = await miroFetch('/v2-experimental/webhooks/board_subscriptions');
+## Authentication
 
-// Get a specific subscription
-// GET https://api.miro.com/v2-experimental/webhooks/board_subscriptions/{subscription_id}
-const sub = await miroFetch(`/v2-experimental/webhooks/board_subscriptions/${subId}`);
-
-// Update subscription (enable/disable)
-// PATCH https://api.miro.com/v2-experimental/webhooks/board_subscriptions/{subscription_id}
-await miroFetch(`/v2-experimental/webhooks/board_subscriptions/${subId}`, 'PATCH', {
-  status: 'disabled',
-});
-
-// Delete subscription
-// DELETE https://api.miro.com/v2-experimental/webhooks/board_subscriptions/{subscription_id}
-await miroFetch(`/v2-experimental/webhooks/board_subscriptions/${subId}`, 'DELETE');
-```
-
-## Event Payload Structure
-
-When a board item is created, updated, or deleted, Miro sends a POST request to your callback URL:
-
-```json
-{
-  "event": "board_subscription_changed",
-  "type": "update",
-  "boardId": "uXjVN1234567890",
-  "item": {
-    "id": "3458764500000001",
-    "type": "sticky_note"
-  },
-  "changes": [
-    {
-      "property": "data.content",
-      "previousValue": "Old text",
-      "newValue": "Updated text"
-    }
-  ],
-  "createdAt": "2025-01-15T10:30:00Z",
-  "createdBy": {
-    "id": "user-123",
-    "type": "user"
-  }
-}
-```
-
-### Event Types
-
-| `type` Value | Description | Item Types |
-|-------------|-------------|------------|
-| `create` | New item added to board | All except tags, connectors, comments |
-| `update` | Item content/position/style changed | All except tags, connectors, comments |
-| `delete` | Item removed from board | All except tags, connectors, comments |
-
-## Webhook Handler (Express.js)
-
-```typescript
-import express from 'express';
-import crypto from 'crypto';
-
-const app = express();
-
-// CRITICAL: Use raw body parser for signature verification
-app.post('/webhooks/miro',
-  express.raw({ type: 'application/json' }),
-  async (req, res) => {
-    // Step 1: Verify signature
-    const signature = req.headers['x-miro-signature'] as string;
-    if (!verifySignature(req.body, signature)) {
-      console.error('Invalid webhook signature — possible forgery');
-      return res.status(401).json({ error: 'Invalid signature' });
-    }
-
-    // Step 2: Parse event
-    const event = JSON.parse(req.body.toString());
-
-    // Step 3: Respond quickly (within 10 seconds)
-    res.status(200).json({ received: true });
-
-    // Step 4: Process asynchronously
-    processEvent(event).catch(err =>
-      console.error(`Failed to process event: ${err.message}`)
-    );
-  }
-);
-
-function verifySignature(rawBody: Buffer, signature: string): boolean {
-  if (!signature) return false;
-
-  const secret = process.env.MIRO_WEBHOOK_SECRET!;
-  const expected = crypto
-    .createHmac('sha256', secret)
-    .update(rawBody)
-    .digest('hex');
-
-  try {
-    return crypto.timingSafeEqual(
-      Buffer.from(signature, 'hex'),
-      Buffer.from(expected, 'hex'),
-    );
-  } catch {
-    return false;
-  }
-}
-```
-
-## Event Processing
-
-```typescript
-interface MiroBoardEvent {
-  event: 'board_subscription_changed';
-  type: 'create' | 'update' | 'delete';
-  boardId: string;
-  item: { id: string; type: string };
-  changes?: Array<{ property: string; previousValue: unknown; newValue: unknown }>;
-  createdAt: string;
-  createdBy: { id: string; type: string };
-}
-
-async function processEvent(event: MiroBoardEvent): Promise<void> {
-  const { type, boardId, item } = event;
-
-  switch (type) {
-    case 'create':
-      console.log(`New ${item.type} created on board ${boardId}: ${item.id}`);
-      // Fetch full item details if needed
-      const fullItem = await miroFetch(`/v2/boards/${boardId}/items/${item.id}`);
-      await syncToDatabase(fullItem);
-      break;
-
-    case 'update':
-      console.log(`${item.type} updated on board ${boardId}: ${item.id}`);
-      if (event.changes) {
-        for (const change of event.changes) {
-          console.log(`  ${change.property}: ${change.previousValue} → ${change.newValue}`);
-        }
-      }
-      await updateInDatabase(item.id, event.changes);
-      break;
-
-    case 'delete':
-      console.log(`${item.type} deleted from board ${boardId}: ${item.id}`);
-      await deleteFromDatabase(item.id);
-      break;
-  }
-}
-```
-
-## Idempotency Guard
-
-Miro may deliver the same event multiple times. Prevent duplicate processing:
-
-```typescript
-import { Redis } from 'ioredis';
-
-const redis = new Redis(process.env.REDIS_URL);
-
-async function processOnce(eventId: string, handler: () => Promise<void>): Promise<void> {
-  const key = `miro:webhook:${eventId}`;
-
-  // SET NX with TTL — returns 'OK' only if key was newly set
-  const result = await redis.set(key, '1', 'EX', 86400 * 7, 'NX');  // 7 days TTL
-  if (result !== 'OK') {
-    console.log(`Duplicate event ${eventId} — skipping`);
-    return;
-  }
-
-  await handler();
-}
-```
-
-## Webhook Testing
-
-```bash
-# Test with ngrok for local development
-ngrok http 3000
-# Register https://your-ngrok.ngrok-free.app/webhooks/miro as callback URL
-
-# Manually test your endpoint
-curl -X POST http://localhost:3000/webhooks/miro \
-  -H "Content-Type: application/json" \
-  -H "X-Miro-Signature: $(echo -n '{"event":"board_subscription_changed","type":"create","boardId":"test","item":{"id":"123","type":"sticky_note"}}' | openssl dgst -sha256 -hmac "$MIRO_WEBHOOK_SECRET" | awk '{print $2}')" \
-  -d '{"event":"board_subscription_changed","type":"create","boardId":"test","item":{"id":"123","type":"sticky_note"}}'
-
-# Use Pipedream for webhook debugging
-# See: https://developers.miro.com/docs/set-up-a-test-endpoint-for-webhooks
-```
+For REST work, use OAuth 2.0 Authorization Code with the narrowest Miro scopes. Bind each encrypted token record to its user, application, authorized team, and granted scopes. Never print access tokens, refresh tokens, client secrets, authorization codes, or board content.
 
 ## Instructions
 
-Use the ordered procedures and code samples in this guide as a sequence: begin with the prerequisites, apply the configuration or operational step for the target environment, then perform the documented validation or cleanup before proceeding. Keep credentials in the documented secret store; never hard-code them in source.
+1. Inventory every retired subscription call, callback handler, signature assumption, queue, and downstream consumer.
+2. Define required freshness, completeness, replay, ordering, and active-board assumptions.
+3. Choose bounded REST reconciliation for durable server state or supported Web SDK UI events for active in-board behavior.
+4. For polling, store normalized checkpoints, traverse cursors safely, budget credits, and run periodic full reconciliation.
+5. For Web SDK events, register and unregister stable handlers, tolerate duplicates/misses, and label session-only semantics.
+6. Remove retired endpoints and secrets; test detection gaps and publish the residual freshness/loss contract.
+
+## Approval Boundaries
+
+Do not reactivate retired endpoints, invent a signature header, market session events as durable delivery, or increase polling load without owner approval. Pause when the responsible owner or exact target is uncertain.
 
 ## Output
 
-Following this guide produces the Miro integration outcome for its topic—configuration, validation evidence, operational recovery, or a documented migration result. Record command output and relevant identifiers so a failed step is traceable.
-
-## Examples
-
-Start with the smallest applicable command or code example in the relevant section, using a dedicated test board and non-production credentials. Confirm the expected response or validation result before applying the pattern to production.
+Return retired dependency inventory, chosen alternative, freshness/loss guarantee, rate budget, checkpoint design, tests, and migration plan. State what was not inspected or changed so the receipt cannot overclaim coverage.
 
 ## Error Handling
 
-| Issue | Cause | Solution |
-|-------|-------|----------|
-| No events received | Subscription disabled | Check subscription status |
-| Invalid signature | Wrong secret | Verify MIRO_WEBHOOK_SECRET matches app settings |
-| Event processing timeout | Slow handler | Return 200 immediately, process async |
-| Duplicate events | Miro retry delivery | Implement idempotency with event ID |
-| Missing item types | Tags/connectors/comments excluded | Use polling for those types |
+| Condition | Response |
+|---|---|
+| Retired endpoint is still called | Disable that path and move the consumer to reconciliation or an approved alternative. |
+| Consumer requires lossless real time | Report that current documented capabilities do not satisfy it. |
+| Web SDK event misses duplication | Reconcile rather than claiming completeness. |
+| Polling nears credit limit | Slow the schedule, narrow reads, or renegotiate freshness. |
+
+## Examples
+
+The example is a redacted operator receipt; identifiers are hashes or bounded labels, not board content or credentials.
+
+```text
+retired-subscriptions=3; replacement=cursor-reconcile; interval=5m; full-scan=24h; credit-headroom=35%; lossless=no
+```
 
 ## Resources
 
-- [Getting Started with Webhooks](https://developers.miro.com/docs/getting-started-with-webhooks)
-- [Create Board Subscription](https://developers.miro.com/reference/create-board-subscription)
-- [Set Up Test Endpoint](https://developers.miro.com/docs/set-up-a-test-endpoint-for-webhooks)
-- [Webhooks with Python](https://developers.miro.com/docs/getting-started-with-webhooks-python)
-
-## Next Steps
-
-For performance optimization, see `miro-performance-tuning`.
+- [Skill-specific official documentation](references/official-docs.md)
+- [Webhooks removal](https://developers.miro.com/changelog/removed-experimental-webhooks-support)
+- [Web SDK UI events](https://developers.miro.com/docs/websdk-reference-ui)

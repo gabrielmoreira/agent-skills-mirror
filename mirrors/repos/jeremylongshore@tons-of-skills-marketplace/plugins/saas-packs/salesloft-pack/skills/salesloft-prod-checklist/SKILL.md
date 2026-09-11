@@ -1,125 +1,86 @@
 ---
 name: salesloft-prod-checklist
-description: 'Production readiness checklist for SalesLoft API integrations.
-
-  Use when deploying SalesLoft integrations to production, preparing for launch,
-
-  or validating go-live requirements.
-
-  Trigger: "salesloft production", "deploy salesloft", "salesloft go-live checklist".
-
-  '
-allowed-tools: Read, Bash(curl:*), Grep
+description: >-
+  Produce a release-bound go or no-go decision for a Salesloft integration using auth, contract, data, rate, webhook, monitoring, rollback, and ownership evidence. Use when preparing to enable production traffic. Trigger with "Salesloft production checklist", "Salesloft go live", or "Salesloft release readiness".
+argument-hint: "[repository-path] [release-sha]"
+allowed-tools: Read, Glob, Grep, WebFetch, Write, Edit
 version: 1.6.0
-license: MIT
 author: Jeremy Longshore <jeremy@intentsolutions.io>
+license: MIT
 tags:
 - saas
-- sales
-- outreach
 - salesloft
+- production-readiness
+model: inherit
+effort: medium
 compatibility: Designed for Claude Code
 ---
-# SalesLoft Production Checklist
+# Salesloft Production Go-No-Go
 
 ## Overview
 
-Go-live checklist for SalesLoft API integrations covering auth, error handling, monitoring, rate limits, and rollback procedures.
+This skill binds production readiness to one release SHA and target environment. A checked box without evidence is not a passing gate.
 
-## Pre-Launch Checklist
+## Prerequisites
 
-### Authentication & Secrets
+- Immutable release SHA and deployment target
+- Named Salesloft team, integration owner, and rollback owner
+- Passing fixture, contract, security, and failure-path tests
+- Approved auth, data retention, monitoring, and incident policies
 
-- [ ] Production OAuth app created (separate from dev/staging)
-- [ ] Tokens stored in secret manager (AWS Secrets Manager, GCP Secret Manager, Vault)
-- [ ] Token refresh logic tested (simulated expired token)
-- [ ] Webhook signing secret rotated from dev value
+## Tool Discipline
 
-### Error Handling
+Use `Read`, `Glob`, and `Grep` to inspect release artifacts, tests, configuration, and runbooks. Use `WebFetch` only to reverify official Salesloft contracts. Use `Write` or `Edit` only for the approved release record or required fix.
 
-- [ ] 401 triggers automatic token refresh (not crash)
-- [ ] 429 handled with backoff using `Retry-After` header
-- [ ] 5xx retried with exponential backoff (max 3 attempts)
-- [ ] 422 validation errors logged with request payload
-- [ ] Circuit breaker prevents cascade during SalesLoft outages
+## Current Contract
 
-### Rate Limiting
+- Authentication flow must match partner, customer, or private-app use and use least-privilege scopes.
+- Request and response types must preserve documented envelope and endpoint-specific content types.
+- Rate control must be team-wide and use the current endpoint-cost and remaining-minute headers.
+- Webhook verification uses raw-body SHA-1 HMAC plus callback-token validation and durable deduplication.
+- CRM writes require target, payload, read-after-write, and reconciliation evidence.
 
-- [ ] Cost-based budget calculated for expected volume
-- [ ] Deep pagination avoided (page > 100 costs 3-30x)
-- [ ] Bulk operations use `p-queue` or similar throttle
-- [ ] Rate limit headers logged for capacity planning
+## Authentication
 
-### Monitoring & Alerting
+Prove production credential availability and rotation without displaying secret values. Confirm callback URIs, team binding, scopes, and acting-user permissions.
 
-```typescript
-// Health check endpoint
-app.get('/health', async (req, res) => {
-  try {
-    const start = Date.now();
-    await api.get('/me.json');
-    res.json({
-      status: 'healthy',
-      salesloft: { connected: true, latencyMs: Date.now() - start },
-    });
-  } catch {
-    res.status(503).json({ status: 'degraded', salesloft: { connected: false } });
-  }
-});
-```
+## Instructions
 
-- [ ] Health check includes SalesLoft connectivity
-- [ ] Alert on 5xx error rate > 5/min (P1)
-- [ ] Alert on 429 rate > 10/min (P2)
-- [ ] Alert on auth failure (P1 -- token may be revoked)
-- [ ] Latency p99 tracked (baseline: 300ms reads, 500ms writes)
+1. Pin SHA, environment, Salesloft team, owners, and change window.
+2. Attach test results for envelope, pagination, auth, rate, webhook, and failure contracts.
+3. Verify secret references, tenant isolation, logging redaction, and rotation drill.
+4. Run a bounded read-only identity smoke check against the production team.
+5. Validate dashboards for latency, status, endpoint cost, remaining budget, queue lag, and reconciliation.
+6. Rehearse rollback or disablement and confirm data-repair ownership.
+7. Record PASS, FAIL, or WAIVED per gate and issue a final go/no-go decision.
 
-### Data Integrity
+## Approval Boundaries
 
-- [ ] Idempotency keys on all create/update operations
-- [ ] Duplicate detection by email before person creation
-- [ ] Webhook events deduplicated by event ID
-- [ ] Audit log captures all API mutations
+Do not approve a release with an unowned failure, expired exception, missing rollback, or unverified production team. A canary write requires separate payload approval.
 
-### Rollback Procedure
+## Output
 
-```bash
-# 1. Revert deployment
-kubectl rollout undo deployment/salesloft-integration
-# or: git revert HEAD && git push
-
-# 2. Verify old version healthy
-curl -f https://app.example.com/health
-
-# 3. Pause any running cadence syncs
-# 4. Notify sales team of rollback
-```
-
-## Post-Launch Verification
-
-```bash
-# Smoke test production endpoints
-curl -s -H "Authorization: Bearer $PROD_TOKEN" \
-  https://api.salesloft.com/v2/me.json | jq '.data.email'
-
-curl -s -H "Authorization: Bearer $PROD_TOKEN" \
-  'https://api.salesloft.com/v2/people.json?per_page=1' | jq '.metadata.paging.total_count'
-```
+Return release SHA, target, gate table, evidence links, exceptions and expiry, rollback proof, owners, and final decision.
 
 ## Error Handling
 
-| Alert | Condition | Severity | Runbook |
-|-------|-----------|----------|---------|
-| Auth Down | 401 errors > 0 | P1 | Rotate token, check OAuth app |
-| Rate Limited | 429 errors > 10/min | P2 | Reduce request volume |
-| API Errors | 5xx > 5/min | P1 | Check status.salesloft.com |
-| High Latency | p99 > 2000ms | P3 | Check SalesLoft status |
+| Condition | Response |
+|---|---|
+| Evidence is not SHA-bound | Rerun it on the release candidate. |
+| Production team mismatch | Stop the rollout and repair credential mapping. |
+| Rate headroom absent | Reduce canary traffic before proceeding. |
+| Rollback fails | No-go until disablement and repair are proven. |
+
+## Examples
+
+The example below shows the minimum redacted evidence expected from a successful invocation of this operator workflow.
+
+```text
+release=a1b2c3d; gates=12/12; exceptions=0; rollback=pass; decision=GO
+```
 
 ## Resources
 
-- [SalesLoft Status](https://status.salesloft.com)
-- [API Logs](https://developers.salesloft.com/docs/platform/guides/api-logs/)
-
-## Next Steps
-
-For version upgrades, see `salesloft-upgrade-migration`.
+- [Skill-specific official documentation](references/official-docs.md)
+- [API basics](https://developers.salesloft.com/docs/platform/api-basics/)
+- [Salesloft API Logs](https://developers.salesloft.com/docs/platform/guides/api-logs/)

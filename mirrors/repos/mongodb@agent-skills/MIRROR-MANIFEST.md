@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `mongodb/agent-skills` — 26 default patterns, 0 followed patterns, 88 file(s) materialized.
+Mirror of `mongodb/agent-skills` — 26 default patterns, 0 followed patterns, 89 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `mongodb/agent-skills` — 26 default patterns, 0 followed patterns, 8
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 88 |
+| Files         | 89 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -140,13 +140,14 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 79 | ✓ | [`skills/mongodb-schema-design/references/source-query-stats.md`](skills/mongodb-schema-design/references/source-query-stats.md) |
 | 80 | ✓ | [`skills/mongodb-schema-design/references/source-slow-query-logs.md`](skills/mongodb-schema-design/references/source-slow-query-logs.md) |
 | 81 | ✓ | [`skills/mongodb-schema-design/SKILL.md`](skills/mongodb-schema-design/SKILL.md) |
-| 82 | ✓ | [`skills/mongodb-search-and-ai/references/hybrid-search.md`](skills/mongodb-search-and-ai/references/hybrid-search.md) |
-| 83 | ✓ | [`skills/mongodb-search-and-ai/references/lexical-search-indexing.md`](skills/mongodb-search-and-ai/references/lexical-search-indexing.md) |
-| 84 | ✓ | [`skills/mongodb-search-and-ai/references/lexical-search-querying.md`](skills/mongodb-search-and-ai/references/lexical-search-querying.md) |
-| 85 | ✓ | [`skills/mongodb-search-and-ai/references/vector-search.md`](skills/mongodb-search-and-ai/references/vector-search.md) |
-| 86 | ✓ | [`skills/mongodb-search-and-ai/SKILL.md`](skills/mongodb-search-and-ai/SKILL.md) |
-| 87 | ✓ | [`skills/OWNERS.yaml`](skills/OWNERS.yaml) |
-| 88 | ✓ | [`tools/review-skill/SKILL.md`](tools/review-skill/SKILL.md) |
+| 82 | ✓ | [`skills/mongodb-search-and-ai/references/automated-embedding.md`](skills/mongodb-search-and-ai/references/automated-embedding.md) |
+| 83 | ✓ | [`skills/mongodb-search-and-ai/references/hybrid-search.md`](skills/mongodb-search-and-ai/references/hybrid-search.md) |
+| 84 | ✓ | [`skills/mongodb-search-and-ai/references/lexical-search-indexing.md`](skills/mongodb-search-and-ai/references/lexical-search-indexing.md) |
+| 85 | ✓ | [`skills/mongodb-search-and-ai/references/lexical-search-querying.md`](skills/mongodb-search-and-ai/references/lexical-search-querying.md) |
+| 86 | ✓ | [`skills/mongodb-search-and-ai/references/vector-search.md`](skills/mongodb-search-and-ai/references/vector-search.md) |
+| 87 | ✓ | [`skills/mongodb-search-and-ai/SKILL.md`](skills/mongodb-search-and-ai/SKILL.md) |
+| 88 | ✓ | [`skills/OWNERS.yaml`](skills/OWNERS.yaml) |
+| 89 | ✓ | [`tools/review-skill/SKILL.md`](tools/review-skill/SKILL.md) |
 
 ---
 

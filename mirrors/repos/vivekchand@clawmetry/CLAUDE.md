@@ -246,6 +246,7 @@ CLAWMETRY_UPDATE_CHECK_SECS=60         # Daemon PyPI update-check cadence (defau
 CLAWMETRY_AUTOUPDATE_MIN_AGE_HOURS=0   # Stability window before a silent install (default 0 = absolute latest; raise to be conservative)
 CLAWMETRY_AUTO_UPDATE=0                # Hard kill switch for unattended upgrades
 CLAWMETRY_LOCK_STALE_SECS=900          # Daemon lock: how long a holder may miss its heartbeat before the next start takes over (default 900s)
+CLAWMETRY_STALLED_INGEST_SECS=3600     # How long without a completed sync cycle before the daemon reports itself as stalled (default 1h)
 CLAWMETRY_HOOK_TIMEOUT_MAX_S=28800     # Ceiling on an INSTALLED hook timeout (8h; 0 = unbounded). Bounds how long a runtime waits on a wedged gate — docs/HOOK_COEXISTENCE.md
 CLAWMETRY_GIT_OUTCOMES=0               # Turn OFF repository reading entirely (default on)
 CLAWMETRY_GIT_SCAN_INTERVAL=900        # Seconds between repo scans (merges are not tool calls)
@@ -263,6 +264,7 @@ CLAWMETRY_GUARD_POLICIES=1             # Evaluate Guard policies at all (0 = ski
 CLAWMETRY_POLICY_ENFORCE=0             # Let a policy actually signal a process. Default 0 = dry run; this one env var disables every policy on the node
 CLAWMETRY_GUARD_CRITICAL_USD=...       # Spend-at-risk above which a warning becomes critical
 CLAWMETRY_NOPROG_TOOLS__<RUNTIME>=40   # Per-runtime threshold override (highest layer in resolve_thresholds)
+CLAWMETRY_EGRESS_SETTLE_HOURS=24       # A learned host counts as known only after this long in the cohort's memory, so a swarm cannot vouch for its own destination (0 = off)
 CLAWMETRY_ENFORCE=1                    # Turn entitlement enforcement on (default: GRACE, everything allowed)
 
 # Resource budget (FLYWHEEL.md 1e: the daemon must stay near-invisible)

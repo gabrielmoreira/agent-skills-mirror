@@ -16,7 +16,7 @@
 - Core Web Vitals are a **tiebreaker** ranking signal: they matter most when content quality is similar between competitors.
 - **Thresholds unchanged since original definitions**: ignore claims of "tightened thresholds" from SEO blogs.
 - **Anti-hallucination guard**: There is **no "Visual Stability Index" (VSI)**, **no "Core Web Vitals 2.0"**, no "Engagement Reliability" metric, and no LCP-lowered-to-2.0s change. These appear only in third-party SEO blogs and are directly contradicted by web.dev/articles/vitals and the CrUX release notes. The three stable metrics (LCP, INP, CLS) are the entire CWV set as of 2026. Do **not** ingest VSI/CWV-2.0 as real.
-- As of the **May 2026 CrUX dataset** (~18.4M origins, published 2026-06-09): **55.9%** of origins pass all three CWV (down ~0.8% MoM); ~68.6% good LCP, ~87% good INP. Google reports **origin-level** pass rates (not a desktop/mobile split). This number moves monthly — re-check the CrUX release notes.
+- As of the **August 2026 CrUX dataset** (18,294,881 origins, published 2026-09-08): **55.6%** of origins pass all three CWV (down 0.2 points MoM; July 2026 was 55.7%), and Chrome flags the continued INP regression as a cause for concern without a definitive reason. This number is perishable; re-read https://developer.chrome.com/docs/crux/release-notes before quoting it.
 
 ## LCP Subparts (February 2025 CrUX Addition)
 

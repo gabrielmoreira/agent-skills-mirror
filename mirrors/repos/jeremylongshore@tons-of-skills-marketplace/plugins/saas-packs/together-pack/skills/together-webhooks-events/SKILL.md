@@ -1,126 +1,85 @@
 ---
 name: together-webhooks-events
-description: 'Together AI webhooks events for inference, fine-tuning, and model deployment.
-
-  Use when working with Together AI''s OpenAI-compatible API.
-
-  Trigger: "together webhooks events".
-
-  '
-allowed-tools: Read, Write, Edit, Bash(pip:*), Grep
-version: 1.7.0
-license: MIT
+description: >-
+  Convert Together AI batch, fine-tuning, upload, and dedicated-deployment job states into idempotent internal events using bounded polling and an optional owned callback. Use when integrating asynchronous Together work. Trigger with "Together job events", "Together callback", or "poll Together status".
+argument-hint: "[repository-path] [batch|fine-tune|upload|deployment]"
+allowed-tools: Read, Glob, Grep, WebFetch, Write, Edit
+version: 1.9.0
 author: Jeremy Longshore <jeremy@intentsolutions.io>
+license: MIT
 tags:
 - saas
-- ai
-- inference
-- together
-compatibility: Designed for Claude Code
+- together-ai
+- asynchronous-jobs
+model: inherit
+effort: high
+compatibility: Designed for Claude Code; polling requires authorized Together AI project access
 ---
-# Together AI Webhooks & Events
+# Together AI Job Events
 
 ## Overview
 
-Together AI delivers webhook callbacks for asynchronous operations including fine-tuning jobs, batch inference, and model lifecycle events. Subscribe to events for fine-tune completion, job failures, model deprecation notices, and batch processing status to build automated ML pipelines without polling the jobs API.
+Together documents asynchronous retrieval and polling for batch, fine-tune, upload, and deployment state. This skill emits internal events from that source of truth instead of inventing a provider-signed webhook.
 
-## Webhook Registration
+## Prerequisites
 
-```typescript
-const response = await fetch("https://api.together.xyz/v1/webhooks", {
-  method: "POST",
-  headers: {
-    "Authorization": `Bearer ${process.env.TOGETHER_API_KEY}`,
-    "Content-Type": "application/json",
-  },
-  body: JSON.stringify({
-    url: "https://yourapp.com/webhooks/together",
-    events: ["fine_tune.completed", "fine_tune.failed", "model.deprecated", "batch.done"],
-    secret: process.env.TOGETHER_WEBHOOK_SECRET,
-  }),
-});
-```
+- The job type, ID, project, terminal states, and retrieval method
+- A durable cursor/state store and idempotency key policy
+- Poll interval, deadline, retry budget, and event retention policy
+- An owned callback endpoint only if downstream push delivery is required
 
-## Signature Verification
+## Tool Discipline
 
-```typescript
-import crypto from "crypto";
-import { Request, Response, NextFunction } from "express";
+Use `Read`, `Glob`, and `Grep` to inspect job persistence, pollers, queues, and callback handlers. Use `WebFetch` to confirm current job states and retrieval methods. Use `Write` or `Edit` only after the event contract and storage boundary are approved.
 
-function verifyTogetherSignature(req: Request, res: Response, next: NextFunction) {
-  const signature = req.headers["x-together-signature"] as string;
-  const expected = crypto.createHmac("sha256", process.env.TOGETHER_WEBHOOK_SECRET!)
-    .update(req.body).digest("hex");
-  if (!crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(expected))) {
-    return res.status(401).json({ error: "Invalid signature" });
-  }
-  next();
-}
-```
+## Current Contract
 
-## Event Handler
+- Do not expect a universal Together webhook signature header; no general signed webhook surface is documented for these job APIs.
+- Persist the provider job ID before polling and derive internal idempotency from job ID plus observed state/version.
+- Treat terminal job status and per-item output/error artifacts as separate facts.
+- Deliver downstream callbacks from infrastructure you own and authenticate them with your own signing scheme.
 
-```typescript
-import express from "express";
-const app = express();
+## Authentication
 
-app.post("/webhooks/together", express.raw({ type: "application/json" }), verifyTogetherSignature, (req, res) => {
-  const event = JSON.parse(req.body.toString());
-  res.status(200).json({ received: true });
+Poll Together with the project-scoped `TOGETHER_API_KEY` Bearer credential. For an owned callback, use a separate secret, timestamped signature, replay window, and rotation plan; never present that signature as Together-generated.
 
-  switch (event.type) {
-    case "fine_tune.completed":
-      deployModel(event.data.fine_tune_id, event.data.model_name); break;
-    case "fine_tune.failed":
-      alertTeam(event.data.fine_tune_id, event.data.error_message); break;
-    case "model.deprecated":
-      migratePipelines(event.data.model_id, event.data.replacement_model); break;
-    case "batch.done":
-      collectResults(event.data.batch_id, event.data.output_url); break;
-  }
-});
-```
+## Instructions
 
-## Event Types
+1. Map provider job states to a small versioned internal event schema.
+2. Persist job ID, last observed state, next poll time, attempt count, and deadline.
+3. Retrieve with bounded exponential backoff and jitter; stop at terminal state or deadline.
+4. Emit only on meaningful transitions and deduplicate by job/state key.
+5. On completion, fetch output and error artifacts before declaring record-level success.
+6. If needed, sign and deliver an internal callback with replay protection and a dead-letter path.
 
-| Event | Payload Fields | Use Case |
-|-------|---------------|----------|
-| `fine_tune.completed` | `fine_tune_id`, `model_name`, `eval_loss` | Auto-deploy fine-tuned model |
-| `fine_tune.failed` | `fine_tune_id`, `error_message`, `step` | Alert team and retry with adjusted params |
-| `model.deprecated` | `model_id`, `replacement_model`, `sunset_date` | Migrate inference pipelines proactively |
-| `batch.done` | `batch_id`, `output_url`, `total_tokens` | Download batch results and update billing |
-| `fine_tune.checkpoint` | `fine_tune_id`, `step`, `loss` | Monitor training progress in real time |
+## Approval Boundaries
 
-## Retry & Idempotency
+Do not expose the Together key to callback consumers, invent provider signatures, or delete remote/local job artifacts before reconciliation and retention approval.
 
-```typescript
-const processed = new Set<string>();
+## Output
 
-async function handleIdempotent(event: { id: string; type: string; data: any }) {
-  if (processed.has(event.id)) return;
-  await routeEvent(event);
-  processed.add(event.id);
-  if (processed.size > 10_000) {
-    const entries = Array.from(processed);
-    entries.slice(0, entries.length - 10_000).forEach((id) => processed.delete(id));
-  }
-}
-```
+Return the provider job reference, state mapping, poll schedule, transition ledger, reconciliation status, callback delivery evidence, and deadline/dead-letter disposition.
 
 ## Error Handling
 
-| Issue | Cause | Fix |
-|-------|-------|-----|
-| `401 Unauthorized` | Invalid or expired API key | Rotate key at api.together.xyz |
-| Fine-tune stuck | Training data format issues | Validate JSONL before submission |
-| Batch timeout | Large batch exceeds time limit | Split into smaller batches |
-| Model not found | Deprecated without migration | Check `model.deprecated` events proactively |
+| Condition | Response |
+|---|---|
+| Retrieval is transiently unavailable | Retry with jitter inside the overall deadline. |
+| Job ID is missing | Stop; do not create a replacement job automatically. |
+| Completion has an error file | Emit completed-with-errors and reconcile records. |
+| Callback repeatedly fails | Preserve the event in a dead-letter queue for replay. |
+
+## Examples
+
+The example below shows the minimum redacted evidence expected from a successful invocation of this operator workflow.
+
+```text
+job=batch-redacted; transition=IN_PROGRESS->COMPLETED; records=reconciled; callback=owned-signed
+```
 
 ## Resources
 
-- [Together AI Docs](https://docs.together.ai/)
-- Fine-tuning Guide
-
-## Next Steps
-
-See `together-security-basics`.
+- [Skill-specific official documentation](references/official-docs.md)
+- [Batch tutorial](https://docs.together.ai/docs/inference/batch/tutorial)
+- [Fine-tuning lifecycle](https://docs.together.ai/reference/cli/finetune)
+- [Dedicated Model Inference](https://docs.together.ai/docs/dedicated-endpoints/overview)

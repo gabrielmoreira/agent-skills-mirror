@@ -26,7 +26,9 @@ Complete when the operation and target path are established and pre-existing wor
 
    This creates `tools/oxlint/anti-slop/`. Pass another relative destination as the first argument when the repository has an established tooling layout. The script refuses to replace an existing destination; route existing copies through the update procedure rather than `--force`.
 
-   Complete when the files exist at the agreed destination without replacing an existing copy.
+   Preserve the nested `vendor/eslint-stylistic/LICENSE` and `UPSTREAM.md`; they travel with the copied rule. Readability enforcement is self-contained and requires no Stylistic plugin dependency.
+
+   Complete when the files, including vendored license and provenance, exist at the agreed destination without replacing an existing copy.
 
 2. Install current compatible dependencies rather than trusting versions remembered by the agent:
    - If the repository already depends on `oxlint`, read its installed version from the package manager or lockfile and install `@oxlint/plugins` at exactly that version. Pin it exactly rather than by range so future upgrades move both packages together.
@@ -83,6 +85,7 @@ Complete when the operation and target path are established and pre-existing wor
      "anti-slop/no-unknown-type-aliases": "error",
      "anti-slop/no-unsafe-dictionary-type": "error",
      "anti-slop/no-widen-then-assert": "error",
+     "anti-slop/require-readable-spacing": "error",
      "anti-slop/require-safety-comment-for-type-assertion": "error"
    }
    ```
@@ -101,7 +104,11 @@ Complete when the operation and target path are established and pre-existing wor
      },
    ],
    rules: {
+     "anti-slop-effect/no-manual-effect-error-tag": "error",
+     "anti-slop-effect/no-manual-tag-comparison": "error",
+     "anti-slop-effect/no-manual-tagged-construction": "error",
      "anti-slop-effect/no-service-constructor-imports": "error",
+     "anti-slop-effect/prefer-effect-match": "error",
    },
    ```
 
@@ -111,7 +118,9 @@ Complete when the operation and target path are established and pre-existing wor
 
 4. Run the repository's lint command and typecheck. For Vite+, run the repository's full `vp check` command after adding both lint and format ignores. If findings appear in owned project source, report them and fix them only when the user asked for migration/cleanup. Do not suppress rules, weaken rule severity, add unsafe casts, or mechanically launder types to make lint pass.
 
-   Complete when checks have run and every failure is resolved or reported with its diagnostics.
+   When cleanup is authorized, apply `require-readable-spacing` with lint autofix, then run the repository's formatter and lint again. Confirm a second fix/format pass leaves files unchanged. Keep whitespace fixes separate from semantic edits, preserve documentation attachment and overload groups, and do not enable an entire competing formatting preset.
+
+   Complete when checks have run, fix/format stability has been verified for authorized cleanup, and every failure is resolved or reported with its diagnostics.
 
 5. Record provenance in `UPSTREAM.md` beside the vendored entry point: source repository, exact source commit or recoverable pristine snapshot when available, installed plugin paths, and intentional deviations. Verify that the revision identifies the actual copied assets; a package version or the current upstream HEAD alone is insufficient. If provenance cannot be established, record it as unknown rather than guessing.
 

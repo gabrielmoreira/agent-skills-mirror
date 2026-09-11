@@ -20,6 +20,10 @@ CORE="$PRODUCT_ROOT/scripts/claude-obsidian.py"
 test -f "$CORE"
 ```
 
+Every `../wiki/references/` link in this file resolves the same way, relative
+to this skill's own directory under `$PRODUCT_ROOT`, never relative to the
+selected vault's `wiki/` directory.
+
 ## Agree on scope and egress
 
 Before processing, list the inputs and set a budget for source count, source
@@ -80,7 +84,11 @@ new immutable capture or an honest ledger update, not an overwrite.
    be read completely, label the result partial and record the missing range.
 6. Extract source metadata, falsifiable claims, entities, concepts,
    contradictions, and open questions. Separate source statements from your
-   synthesis.
+   synthesis. When citing a URL in page prose, render it as a markdown link
+   (`[descriptive label](url)`) so it stays clickable; reserve backtick
+   code-spans for literal code, CLI flags, and exact identifiers, not for
+   citable URLs. This guidance applies only to narrative prose; ledger and
+   manifest locator fields keep the raw URL string.
 7. Reuse existing canonical pages and stable addresses. Request new addresses
    through `address_requests`; never call a counter allocator from a worker.
 

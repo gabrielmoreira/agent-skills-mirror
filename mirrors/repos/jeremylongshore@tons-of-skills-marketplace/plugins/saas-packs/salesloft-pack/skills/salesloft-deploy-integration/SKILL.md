@@ -1,146 +1,86 @@
 ---
 name: salesloft-deploy-integration
-description: 'Deploy SalesLoft integrations to Vercel, Fly.io, and Cloud Run.
-
-  Use when deploying SalesLoft-powered apps to production,
-
-  configuring platform secrets, or setting up webhook endpoints.
-
-  Trigger: "deploy salesloft", "salesloft Vercel", "salesloft Cloud Run".
-
-  '
-allowed-tools: Read, Write, Edit, Bash(vercel:*), Bash(fly:*), Bash(gcloud:*)
+description: >-
+  Roll out a Salesloft-backed service through secret injection, contract checks, read-only smoke evidence, bounded canaries, monitoring, and rollback. Use when releasing integration code to a runtime. Trigger with "deploy Salesloft integration", "Salesloft rollout", or "Salesloft release plan".
+argument-hint: "[repository-path] [environment] [release-sha]"
+allowed-tools: Read, Glob, Grep, WebFetch, Write, Edit
 version: 1.6.0
-license: MIT
 author: Jeremy Longshore <jeremy@intentsolutions.io>
+license: MIT
 tags:
 - saas
-- sales
-- outreach
 - salesloft
+- deployment
+model: inherit
+effort: medium
 compatibility: Designed for Claude Code
 ---
-# SalesLoft Deploy Integration
+# Salesloft Integration Rollout
 
 ## Overview
 
-Deploy SalesLoft-powered applications to cloud platforms with proper secrets management, webhook endpoint configuration, and health checks. SalesLoft requires HTTPS webhook endpoints and OAuth tokens stored securely.
+This skill deploys application code that calls Salesloft without assuming a particular cloud vendor. It separates process health, Salesloft connectivity, and CRM mutation correctness.
+
+## Prerequisites
+
+- Immutable release SHA and target runtime
+- Named Salesloft team, environment, release owner, and rollback owner
+- Passing offline contract and security tests
+- Approved secret references, callback URL, and canary plan
+
+## Tool Discipline
+
+Use `Read`, `Glob`, and `Grep` to inspect deployment manifests, health checks, secret references, and rollback controls. Use `WebFetch` only for official Salesloft contracts. Use `Write` or `Edit` after the deployment target is confirmed.
+
+## Current Contract
+
+- Inject Bearer credentials through the runtime secret system and bind them to one team.
+- Process health is not proof of API auth or correct CRM mutation.
+- A webhook receiver must preserve raw request bytes before parsing and verify SHA-1 HMAC.
+- Team-wide rate consumption from other integrations can affect the rollout.
+- Webhook subscription creation requires a valid OAuth token or API key and event-specific scopes.
+
+## Authentication
+
+Deploy only an approved flow and least-privilege scope set. Prove credential-to-team mapping with a read-only identity request before enabling workers or webhooks.
 
 ## Instructions
 
-### Vercel Deployment
+1. Pin SHA, image or artifact digest, target, team alias, and secret references.
+2. Run deployment-config and offline contract checks before applying changes.
+3. Deploy with workers and Salesloft writes disabled.
+4. Prove health, TLS, and one bounded read-only Salesloft request.
+5. Verify webhook raw-body handling and callback-token configuration without a real side effect.
+6. Enable a tiny approved canary and reconcile every mutation.
+7. Expand only while error, endpoint-cost, remaining-budget, queue, and reconciliation signals stay healthy.
 
-```bash
-# Set secrets
-vercel env add SALESLOFT_CLIENT_ID production
-vercel env add SALESLOFT_CLIENT_SECRET production
-vercel env add SALESLOFT_WEBHOOK_SECRET production
+## Approval Boundaries
 
-# Deploy
-vercel --prod
-```
+Do not create subscriptions, alter callback URLs, enable production writes, or broaden traffic without target-specific approval. Roll back when identity, signature, or reconciliation evidence fails.
 
-```typescript
-// api/webhooks/salesloft.ts (Vercel serverless function)
-import { verifyWebhookSignature } from '../../lib/salesloft';
+## Output
 
-export const config = { api: { bodyParser: false } }; // Raw body for HMAC
-
-export default async function handler(req: Request) {
-  const body = await req.text();
-  const sig = req.headers.get('x-salesloft-signature')!;
-  const ts = req.headers.get('x-salesloft-timestamp')!;
-
-  if (!verifyWebhookSignature(Buffer.from(body), sig, ts, process.env.SALESLOFT_WEBHOOK_SECRET!)) {
-    return new Response('Invalid signature', { status: 401 });
-  }
-
-  const event = JSON.parse(body);
-  // Process event...
-  return new Response(JSON.stringify({ received: true }), { status: 200 });
-}
-```
-
-### Fly.io Deployment
-
-```toml
-# fly.toml
-app = "salesloft-sync"
-primary_region = "iad"
-
-[env]
-  NODE_ENV = "production"
-
-[http_service]
-  internal_port = 3000
-  force_https = true
-  auto_stop_machines = true
-  auto_start_machines = true
-
-[[services.http_checks]]
-  interval = "30s"
-  timeout = "5s"
-  path = "/health"
-```
-
-```bash
-fly secrets set SALESLOFT_CLIENT_ID=xxx SALESLOFT_CLIENT_SECRET=xxx
-fly secrets set SALESLOFT_WEBHOOK_SECRET=xxx
-fly deploy
-```
-
-### Cloud Run Deployment
-
-```bash
-# Store secrets in Secret Manager
-echo -n "client-id" | gcloud secrets create salesloft-client-id --data-file=-
-echo -n "client-secret" | gcloud secrets create salesloft-client-secret --data-file=-
-
-# Deploy with secret mounts
-gcloud run deploy salesloft-sync \
-  --image gcr.io/$PROJECT_ID/salesloft-sync \
-  --region us-central1 \
-  --set-secrets=SALESLOFT_CLIENT_ID=salesloft-client-id:latest \
-  --set-secrets=SALESLOFT_CLIENT_SECRET=salesloft-client-secret:latest \
-  --allow-unauthenticated
-```
-
-### Health Check (All Platforms)
-
-```typescript
-app.get('/health', async (req, res) => {
-  const start = Date.now();
-  try {
-    const { data } = await api.get('/me.json');
-    res.json({
-      status: 'healthy',
-      salesloft: { user: data.data.email, latencyMs: Date.now() - start },
-    });
-  } catch (err: any) {
-    res.status(503).json({
-      status: 'degraded',
-      salesloft: { error: err.message, latencyMs: Date.now() - start },
-    });
-  }
-});
-```
+Return SHA/digest, target, team proof, config checks, smoke result, canary evidence, monitoring snapshot, rollout state, and rollback receipt.
 
 ## Error Handling
 
-| Issue | Cause | Solution |
-|-------|-------|----------|
-| Webhook 401 | Wrong signing secret | Verify secret matches SalesLoft config |
-| Cold start timeout | Webhook response > 30s | Process async, respond 200 immediately |
-| Secret not found | Missing env var | Check platform secret configuration |
-| Health check fails | Token expired | Ensure token refresh is automated |
+| Condition | Response |
+|---|---|
+| Wrong team identity | Disable workers and replace the secret mapping. |
+| Webhook signature fails | Reject delivery and halt subscription cutover. |
+| Rate headroom collapses | Pause expansion and inspect team-wide consumers. |
+| Canary mismatch | Stop, reconcile, and roll back before retrying. |
+
+## Examples
+
+The example below shows the minimum redacted evidence expected from a successful invocation of this operator workflow.
+
+```text
+sha=a1b2c3d; health=pass; auth-read=pass; canary=2/2 reconciled; rollout=10%
+```
 
 ## Resources
 
-- [SalesLoft API Basics](https://developers.salesloft.com/docs/platform/api-basics/)
-- [Vercel Serverless Functions](https://vercel.com/docs/functions)
-- [Fly.io Docs](https://fly.io/docs)
-- [Cloud Run Docs](https://cloud.google.com/run/docs)
-
-## Next Steps
-
-For webhook handling, see `salesloft-webhooks-events`.
+- [Skill-specific official documentation](references/official-docs.md)
+- [Webhook introduction](https://developers.salesloft.com/docs/platform/webhooks/introduction/)
+- [Rate limits](https://developers.salesloft.com/docs/platform/api-basics/rate-limits/)

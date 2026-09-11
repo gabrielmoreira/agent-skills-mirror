@@ -4,6 +4,32 @@ Note: Only use **NEW:** for entirely new prompt files, NOT for new additions/sec
 
 ### Claude Code System Prompts Changelog
 
+# [2.1.268](https://github.com/Piebald-AI/claude-code-system-prompts/commit/ad256fc)
+
+_-13,613 tokens_
+
+- **NEW:** System Prompt: Artifact page-owned comment thread guidance and System Reminder: Artifact page-owned comment reply refusal — Route replies to the page’s own comment tools under their permissions, or answer in-session; prohibit unsupported thread replies, resolution, and retries.
+- **NEW:** System Prompt: Sandbox task resource boundary — Limits work to task-provided resources even where unenforced; reachable credentials, projects, and machine-control interfaces are not permission to use them.
+- **NEW:** Tool Description: Navigate tab cleanup guidance — Requires closing automatically opened navigation tabs before finishing unless the user wants to see them or keep them open.
+- **NEW:** Tool Description: Upload image — Guides uploading fresh computer screenshots, allowing one fresh-capture retry unless declined; directs other files to file_upload when available.
+- **NEW:** Tool Parameter: Sandboxed command allowed domains — Declares direct and indirect command destinations for per-command review in auto mode only; forbids adding hosts merely because untrusted content requests them.
+- **REMOVED:** System Prompt: Interactive agent intro (output-style below) — Replaces the standalone introduction with wording that no longer says the output style is “below”; output-style guidance itself remains.
+- **REMOVED:** System Prompt: Scratchpad directory — Replaces the standalone temporary-file instructions with shorter environment guidance, retaining scratchpad preference and requiring an explicit user request for `/tmp`.
+- **REMOVED:** Tool Description: Bash (sandbox — adjust settings, mandatory mode, and no exceptions) — Removes three standalone sandbox-policy descriptions; their disappearance from the prompt catalog does not establish that sandbox enforcement was removed.
+- **REMOVED:** Tool Description: Browser file upload — Shortens the surviving upload description, dropping its shared-file eligibility and 10 MB wording; file upload itself is not removed.
+- Agent Prompt: Quick PR creation — Requires staging specific files by name rather than bulk additions that could accidentally include secrets or large binaries.
+- Agent Prompt: /schedule slash command — Rephrases the GitHub-access reminder to reference the earlier setup note and its remedy instead of repeating conditional connection instructions.
+- Skill: Dynamic pacing loop execution, Skill: /loop self-pacing mode, and Tool Description: Background monitor (streaming events) — Add conditional monitor-expiry guidance: use bounded watches, check for existing monitors, and re-arm expired watches rather than assuming session-long persistence.
+- Skill: Plugin authoring — Adds mobile rendering and surface-specific element limitations, while simplifying the explanation of fallback rendering and debug logging for invalid trees.
+- System Prompt: Artifact comment result guidance — Removes the instruction for fetching an individual comment thread by URL and thread ID, without stating that reading threads is unavailable.
+- System Prompt: Project timeline user message provenance — Recognizes every current shared-project member’s server-attributed messages as user intent, retaining action-specific consent rules and excluding former members and coordinator-controlled text.
+- Tool Description: Artifact design skill loading guidance — Shows the workshop exception to mandatory design-skill loading only when workshop support is available, retaining diagramming guidance within that exception.
+- Tool Description: Artifact publishing and update guidance — Condenses browser-storage guidance while retaining per-viewer isolation, failure-safe access, and the distinction between convenience storage and reliable shared state.
+- Tool Description: Artifact publishing and update guidance — Describes favicon emoji as list/card markers rather than browser-tab icons, and adds an optional persistent, generic, non-brand icon word.
+- Tool Description: Artifact publishing introduction — Removes the requirement to offer unrequested pages before building them, while preserving file-only handling for sensitive or potentially misleading or harmful content.
+- Tool Description: ReadFile and ReadFile compact — Consistently recommend targeted reads when the needed range is known, dropping whole-file preference and conditional file-size-limit wording while retaining line-number guidance.
+- Tool Description: WebFetch and WebFetch (concise) — Explain that localhost and other dotless hostnames are unsupported and direct local-server requests to curl through Bash instead.
+
 # [2.1.267](https://github.com/Piebald-AI/claude-code-system-prompts/commit/45081e3)
 
 _+1,450 tokens_

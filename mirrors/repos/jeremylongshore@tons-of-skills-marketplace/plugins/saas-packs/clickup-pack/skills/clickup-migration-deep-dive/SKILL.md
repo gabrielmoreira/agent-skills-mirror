@@ -1,276 +1,84 @@
 ---
 name: clickup-migration-deep-dive
-description: 'Migrate to ClickUp from other project management tools (Jira, Asana,
-  Trello)
-
-  or migrate data between ClickUp workspaces using API v2.
-
-  Trigger: "migrate to clickup", "clickup migration", "jira to clickup",
-
-  "asana to clickup", "trello to clickup", "clickup data migration",
-
-  "move tasks to clickup", "clickup import".
-
-  '
-allowed-tools: Read, Write, Edit, Bash(npm:*), Bash(node:*), Bash(curl:*)
-version: 1.6.0
-license: MIT
+description: >-
+  Plan and execute resumable migrations into or between ClickUp Workspaces with explicit mapping, stable source IDs, bounded writes, and reconciliation. Use when moving Jira, Asana, Trello, or ClickUp data. Trigger with "migrate to ClickUp", "ClickUp migration", or "clone ClickUp Workspace".
+argument-hint: "[source-system] [destination-workspace-id] [dry-run|pilot|apply]"
+allowed-tools: Read, Glob, Grep, WebFetch, Write, Edit
+version: 1.8.0
 author: Jeremy Longshore <jeremy@intentsolutions.io>
+license: MIT
 tags:
 - saas
-- productivity
 - clickup
-compatibility: Designed for Claude Code
+- migration
+model: inherit
+effort: high
+compatibility: Designed for Claude Code; apply mode requires authorized source/destination access and migration-owner approval
 ---
-# ClickUp Migration Deep Dive
+# ClickUp Migration and Reconciliation
 
 ## Overview
 
-Migrate project data to ClickUp from external tools or between ClickUp workspaces using API v2. Covers data mapping, batch creation, custom field migration, and validation.
+Treat migration as a versioned data program rather than a one-shot task-creation loop. Make each batch resumable, reconcilable, and safe to stop.
 
 ## Prerequisites
 
-- Approved source and destination owners, scopes, and change window
-- Exported source inventory plus a field/status/assignee mapping decision
-- Scoped API credentials and separate staging or reversible pilot destination
-- Verified backup, idempotency keys, reconciliation query, and rollback owner
+- Source export/API ownership and a destination Workspace/List allow-list
+- Approved field, user, status, date, attachment, comment, and dependency mappings
+- A durable reconciliation database, pilot cohort, rate budget, and rollback policy
+
+## Tool Discipline
+
+Use `Read`, `Glob`, and `Grep` to inspect the repository, adapters, configuration names, tests, and evidence. Use `WebFetch` only for current official ClickUp documentation. Use `Write` or `Edit` after confirming the target file, Workspace boundary, and requested mode.
+
+## Current Contract
+
+- Get Tasks returns 100 records per zero-based page; decide explicitly about closed tasks, subtasks, and Tasks in Multiple Lists.
+- Task priorities and dates require ClickUp's documented values and millisecond timestamps.
+- Custom Field definitions/options must be resolved first; existing task fields use their separate value endpoints.
+- ClickUp does not document a general transactional bulk-create endpoint, so partial progress must be durable and resumable.
+
+## Authentication
+
+Use a personal token only for accountable individual/testing work or OAuth Authorization Code for a user-facing integration. Inject the token server-side through a governed secret reference, send it in `Authorization`, verify authorized Workspace IDs, and never print the token, OAuth client secret, or webhook secret.
 
 ## Instructions
 
-Map and validate a small representative sample before any bulk creation, then
-create in bounded batches with durable source IDs and rate limits. Reconcile
-counts, statuses, custom fields, relationships, and permissions after every
-batch; do not retire the source system or cancel its access until the agreed
-validation window confirms the migration is complete.
+1. Inventory source entities, destination hierarchy, volume, sensitivity, identities, and unsupported concepts.
+2. Define mapping versions and validate status, assignee, priority, Custom Field, relationship, and attachment rules.
+3. Extract with complete pagination and persist immutable source IDs plus content hashes.
+4. Run a no-write transform report, then migrate a representative pilot with strict ceilings.
+5. Persist every destination ID before dependent writes and retry only idempotent/transient work.
+6. Reconcile counts and sampled field hashes; quarantine exceptions and obtain cutover approval.
 
-## Migration Types
+## Approval Boundaries
 
-| Source | Complexity | Key Challenge |
-|--------|-----------|---------------|
-| Trello | Low | Board -> List mapping, labels -> tags |
-| Asana | Medium | Sections -> statuses, custom fields |
-| Jira | High | Epics/stories/subtasks, custom fields, workflows |
-| Another ClickUp workspace | Medium | Custom field UUIDs differ per workspace |
-
-## ClickUp Hierarchy Mapping
-
-```
-External Concept        ClickUp API v2 Target
-─────────────────       ──────────────────────
-Project/Board       →   Space   (POST /team/{team_id}/space)
-Epic/Section        →   Folder  (POST /space/{space_id}/folder)
-Sprint/Column       →   List    (POST /folder/{folder_id}/list)
-Issue/Card/Task     →   Task    (POST /list/{list_id}/task)
-Subtask             →   Task with parent  (parent field)
-Label/Tag           →   Tag     (POST /task/{task_id}/tag/{tag_name})
-Custom Field        →   Custom Field (POST /task/{task_id}/field/{field_id})
-Comment             →   Comment (POST /task/{task_id}/comment)
-Attachment          →   Attachment (POST /task/{task_id}/attachment)
-```
-
-## Migration Script
-
-```typescript
-// src/migrate-to-clickup.ts
-interface MigrationItem {
-  externalId: string;
-  name: string;
-  description: string;
-  status: string;
-  priority?: 'urgent' | 'high' | 'normal' | 'low';
-  assigneeEmail?: string;
-  dueDate?: string;
-  labels?: string[];
-  subtasks?: MigrationItem[];
-}
-
-const PRIORITY_MAP: Record<string, number> = {
-  urgent: 1, high: 2, normal: 3, low: 4,
-};
-
-const STATUS_MAP: Record<string, string> = {
-  'To Do': 'to do',
-  'In Progress': 'in progress',
-  'Done': 'complete',
-  'Backlog': 'to do',
-  // Add your status mappings here
-};
-
-async function migrateItems(
-  items: MigrationItem[],
-  listId: string,
-  memberEmails: Map<string, number>, // email -> ClickUp user ID
-): Promise<{ migrated: number; errors: Array<{ item: string; error: string }> }> {
-  let migrated = 0;
-  const errors: Array<{ item: string; error: string }> = [];
-
-  for (const item of items) {
-    try {
-      const assignees = item.assigneeEmail && memberEmails.has(item.assigneeEmail)
-        ? [memberEmails.get(item.assigneeEmail)!]
-        : [];
-
-      const task = await clickupRequest(`/list/${listId}/task`, {
-        method: 'POST',
-        body: JSON.stringify({
-          name: item.name,
-          markdown_description: item.description,
-          status: STATUS_MAP[item.status] ?? 'to do',
-          priority: item.priority ? PRIORITY_MAP[item.priority] : null,
-          assignees,
-          due_date: item.dueDate ? new Date(item.dueDate).getTime() : undefined,
-          due_date_time: !!item.dueDate,
-          tags: item.labels ?? [],
-        }),
-      });
-
-      // Migrate subtasks
-      if (item.subtasks?.length) {
-        for (const subtask of item.subtasks) {
-          await clickupRequest(`/list/${listId}/task`, {
-            method: 'POST',
-            body: JSON.stringify({
-              name: subtask.name,
-              markdown_description: subtask.description,
-              parent: task.id,
-              status: STATUS_MAP[subtask.status] ?? 'to do',
-            }),
-          });
-        }
-      }
-
-      migrated++;
-      console.log(`Migrated: ${item.name} -> ${task.id}`);
-
-      // Rate limit: stay under 100 req/min
-      await new Promise(r => setTimeout(r, 700));
-    } catch (error) {
-      errors.push({ item: item.name, error: String(error) });
-    }
-  }
-
-  return { migrated, errors };
-}
-```
-
-## Build Member Lookup
-
-```typescript
-// Map external emails to ClickUp user IDs
-async function buildMemberLookup(teamId: string): Promise<Map<string, number>> {
-  const data = await clickupRequest(`/team/${teamId}`);
-  const lookup = new Map<string, number>();
-
-  for (const member of data.team.members) {
-    lookup.set(member.user.email, member.user.id);
-  }
-
-  return lookup;
-}
-```
-
-## Workspace-to-Workspace Migration
-
-```typescript
-async function cloneListBetweenWorkspaces(
-  sourceToken: string,
-  sourceListId: string,
-  destToken: string,
-  destListId: string,
-) {
-  // Fetch all tasks from source
-  const sourceTasks = [];
-  let page = 0;
-  let hasMore = true;
-
-  while (hasMore) {
-    const data = await fetch(
-      `https://api.clickup.com/api/v2/list/${sourceListId}/task?page=${page}&subtasks=true&include_closed=true`,
-      { headers: { 'Authorization': sourceToken } }
-    ).then(r => r.json());
-
-    sourceTasks.push(...data.tasks);
-    hasMore = data.tasks.length === 100;
-    page++;
-  }
-
-  console.log(`Fetched ${sourceTasks.length} tasks from source`);
-
-  // Create tasks in destination
-  for (const task of sourceTasks) {
-    if (task.parent) continue; // Handle subtasks separately
-
-    const created = await fetch(
-      `https://api.clickup.com/api/v2/list/${destListId}/task`,
-      {
-        method: 'POST',
-        headers: { 'Authorization': destToken, 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: task.name,
-          markdown_description: task.description,
-          priority: task.priority?.id ? parseInt(task.priority.id) : null,
-          tags: task.tags.map((t: any) => t.name),
-        }),
-      }
-    ).then(r => r.json());
-
-    console.log(`Cloned: ${task.name} -> ${created.id}`);
-    await new Promise(r => setTimeout(r, 700)); // Rate limit
-  }
-}
-```
-
-## Validation
-
-```typescript
-async function validateMigration(
-  sourceItems: MigrationItem[],
-  listId: string,
-): Promise<{ match: number; missing: string[] }> {
-  const tasks = await clickupRequest(`/list/${listId}/task?include_closed=true`);
-  const taskNames = new Set(tasks.tasks.map((t: any) => t.name));
-
-  const missing = sourceItems
-    .filter(item => !taskNames.has(item.name))
-    .map(item => item.name);
-
-  return {
-    match: sourceItems.length - missing.length,
-    missing,
-  };
-}
-```
-
-## Error Handling
-
-| Issue | Cause | Solution |
-|-------|-------|----------|
-| Rate limited during migration | Too many creates | Add 700ms delay between requests |
-| Status not found | Status name mismatch | Map source statuses to ClickUp statuses |
-| Assignee not found | Email not in workspace | Invite user first or skip assignment |
-| Custom field UUID mismatch | Different workspace | Re-fetch field UUIDs via `/list/{id}/field` |
+Require explicit approval for production cutover, identity reassignment, attachment transfer, private-content expansion, deletion, or rollback that changes user-visible work.
 
 ## Output
 
-Produce a migration receipt with source/destination scope, mappings, batch and
-task counts, skipped/failed items, custom-field and assignee decisions,
-reconciliation result, approvals, and rollback status. Preserve redacted audit
-data rather than user tokens, raw private task content, or unnecessary member
-details.
+Return mapping version, extracted/transformed/migrated/skipped/quarantined counts, ID map, reconciliation results, cutover decision, and rollback state. Name every unresolved owner and deadline.
+
+## Error Handling
+
+| Condition | Response |
+|---|---|
+| Source ID already mapped | Verify the destination hash and resume; do not duplicate. |
+| Mapping target is absent | Quarantine the record and update the versioned mapping. |
+| Rate limit reached | Checkpoint and resume after the documented reset. |
+| Pilot reconciliation fails | Stop before broad migration and correct the transform. |
 
 ## Examples
 
-Migrate one staging list with ten representative tasks, map its status and one
-custom field, then compare source IDs and target tasks before proceeding. If
-the reconciliation finds missing records or a field mapping is ambiguous, stop
-the next batch and repair the map instead of recreating tasks blindly.
+The example below is a redacted operator receipt; it contains no task text, member data, credential, or webhook secret.
+
+```text
+mode=pilot; source=jira; extracted=50; migrated=47; quarantined=3; duplicates=0; reconcile=94%
+```
 
 ## Resources
 
-- [ClickUp Create Task](https://developer.clickup.com/reference/createtask)
-- [ClickUp Get Tasks](https://developer.clickup.com/reference/gettasks)
-- [ClickUp Import Guide](https://help.clickup.com/hc/en-us/categories/6301007545623-Import-Export)
-
-## Next Steps
-
-For advanced troubleshooting during migration, see `clickup-debug-bundle`.
+- [Skill-specific official documentation](references/official-docs.md)
+- [Get Tasks reference](https://developer.clickup.com/reference/gettasks)
+- [Authentication](https://developer.clickup.com/docs/authentication)
+- [Rate limits](https://developer.clickup.com/docs/rate-limits)

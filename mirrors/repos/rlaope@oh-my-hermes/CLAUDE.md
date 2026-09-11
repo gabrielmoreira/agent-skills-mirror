@@ -26,6 +26,7 @@ uv run python -m compileall -q src tests                          # syntax gate
 uv run python -m omh.cli docs workflows --check                   # byte gate
 uv run python -m omh.cli docs roles --check                       # byte gate
 uv run python -m omh.cli docs claims --check --json               # selected claims
+uv run python -m omh.cli docs navigation --check                  # docs structure gate
 uv run --group lint ruff check src tests                          # static-analysis gate
 git diff --check
 ```
@@ -162,9 +163,58 @@ Rules:
   with the reason written at the entry: the per-skill Hangul freeze in
   `tests/test_routing_language_policy.py` and
   `FULL_PROFILE_SKILL_BODY_CHAR_LIMIT` in `src/maintenance/release.py`.
+- Adding a page under `docs/` and stopping there. `docs navigation --check`
+  requires every top-level `docs/*.md` to be reachable from a declared root or
+  classified in `src/catalogs/documentation_navigation.py` with a reason and an
+  owner; a page that is neither fails, which is the whole point — an accidental
+  orphan must not pass as an intentional one. Link it from a page a reader
+  actually reaches before reaching for the classification list, and delete the
+  classification entry when a page later becomes reachable (a reachable page
+  still marked exempt is its own failure).
 - Grepping the repo and matching stale strings under `build/lib/` — it is a
   gitignored copy of old sources. Scope searches to `src/`, `tests/`, `docs/`,
   `skills/`.
+- Trusting a red run before clearing `build/`. A `ModuleNotFoundError` whose
+  traceback names a `build/__editable__…` path is the gitignored editable
+  install, not the tree you are editing: your venv's copy predates a module the
+  branch now has. It is not a real failure and it is not the other branch's
+  regression. Clear it before you diagnose anything:
+
+  ```sh
+  rm -rf build && uv sync --reinstall-package oh-my-hermes
+  ```
+
+  This is worth its own entry because of how it lies. Bisecting across the
+  commit that adds the module produces green-then-red — the exact shape of a
+  genuine regression — since before that commit the stale copy is adequate and
+  after it the import fails. It cost several agents hours in one afternoon and
+  produced one false attribution of a defect to another contributor's branch.
+  If a checkout ever aborts with "local changes would be overwritten", stop:
+  every run after that measured the same dirty tree. `git reset --hard &&
+  git clean -fdx` first, then re-measure.
+- Concluding a platform fact settles a call site. Windows and POSIX differ in
+  ways this repo keeps rediscovering — `Path.write_text` without `newline=`
+  emits CRLF; a child process's stdout arrives CRLF-terminated; CR is a control
+  character to a text guard; and Windows will not unlink a file another thread
+  still holds open, so a leaked worker turns a test failure into a failure plus
+  a cleanup error. Each of those is true, and none of them is a conclusion on
+  its own. One prediction here reasoned correctly that `os.open` without
+  `O_BINARY` returns a text-mode descriptor, and missed that the next line's
+  `os.fdopen(fd, 'rb')` re-sets the descriptor to binary before a byte is read.
+  Trace the composition to the end, or say the claim is untested.
+- Letting a best-effort `except OSError` decide what a failure was. The swallow
+  in `append_sidecar_line` is deliberate — the sidecar is the record of last
+  resort and must not raise — but it covers every step under it, and
+  `FileLockTimeout` is a `TimeoutError`, hence an `OSError` too. So "the write
+  failed", "the lock timed out" and "Windows denied the chmod while another
+  waiter held the file open" all leave one trace: a line missing and nothing
+  raised. The barrier test above it then reports `13 != 16`, which is exactly
+  what a lock that failed to hold would report, and the Windows run that
+  produced it is over. Two rules follow. A swallow is only as good as what
+  still records the failure, so widen the *report*, not the `except`. And when
+  a guard can fail two ways, put the discriminator in the assertion message —
+  here, whether any surviving line failed to parse, since only an interleave
+  splices one. A count is not a diagnosis.
 - Regenerating docs but forgetting the demo cards (or vice versa) when catalog
   data changes — the parse-equality test catches it late; regenerate all four
   artifact families together.

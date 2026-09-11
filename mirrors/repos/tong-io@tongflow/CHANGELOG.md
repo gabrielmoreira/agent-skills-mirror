@@ -7,6 +7,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.5] - 2026-09-10
+
+### Added
+
+- **Advanced parameters on executable nodes** — a plugin declares its
+  run-time knobs (sampling steps, CFG / guidance, LoRA strength, thinking
+  toggles, reasoning effort, temperature, resolution tiers…) as a pure-literal
+  `TONGFLOW_SLOT_PARAMS` table next to its handlers; the node shows them under
+  a collapsed **Advanced** section below the plugin / model pickers. Controls:
+  `select`, `number`, `integer`, `boolean`, `text`, optionally gated per router
+  model. Only values that differ from the declared default are stored on the
+  node and sent top-level as `params` (never inside the ABI prompt); the plugin
+  reads them through `tongflow.slots.current_params()` and falls back to its
+  own defaults for anything untouched. Changed params show the declared
+  default beside the label. New `tasks.params` column, `ExecutableNode.params`
+  in the workflow export. Scanner version 8, SDK 0.3.3.
+- **36 official plugins expose advanced parameters** — text plugins
+  (temperature, thinking / reasoning effort), diffusion image plugins (steps,
+  CFG, shift, LoRA strength, prompt enhancement), video plugins (MiniMax H3
+  steps + PDD fast path, LTX steps / frame rate / control signal, InfiniteTalk
+  resolution and guidance, Bernini guidance, Wan-Animate relight, Veo /
+  Seedance resolution and audio), music / speech (MiniMax Music steps / CFG /
+  top-k, LeVo, IndexTTS emotion strength, OpenAI TTS speed), and utilities
+  (Whisper model size, PaddleOCR language, PDF DPI, SAM 3 confidence,
+  SAM-Audio rerank / spans / keep-prompt, Scrapling toggles). DeepSeek's
+  thinking moved from `<model>-thinking` ids to an Advanced switch (old ids
+  still work).
+
 ## [0.3.4] - 2026-08-19
 
 ### Added

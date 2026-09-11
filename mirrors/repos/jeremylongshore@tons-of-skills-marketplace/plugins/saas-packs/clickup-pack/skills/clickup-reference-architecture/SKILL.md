@@ -1,259 +1,84 @@
 ---
 name: clickup-reference-architecture
-description: 'Production architecture for ClickUp API v2 integrations with layered
-  design,
-
-  custom fields, time tracking, goals, and two-way sync patterns.
-
-  Trigger: "clickup architecture", "clickup design", "clickup project structure",
-
-  "clickup custom fields", "clickup time tracking", "clickup goals API".
-
-  '
-allowed-tools: Read, Grep
-version: 1.6.0
-license: MIT
+description: >-
+  Analyze and design a governed ClickUp integration with typed v2/v3 adapters, Workspace policy, durable events, reconciliation, telemetry, and reversible writes. Use when shaping a production ClickUp service. Trigger with "ClickUp architecture", "design ClickUp sync", or "ClickUp integration blueprint".
+argument-hint: "[system-context] [one-way|two-way]"
+allowed-tools: Read, Glob, Grep, WebFetch, Write, Edit
+version: 1.8.0
 author: Jeremy Longshore <jeremy@intentsolutions.io>
+license: MIT
 tags:
 - saas
-- productivity
 - clickup
-compatibility: Designed for Claude Code
+- architecture
+model: inherit
+effort: high
+compatibility: Designed for Claude Code; production design requires current ClickUp plan, data, and authorization facts
 ---
-# ClickUp Reference Architecture
+# ClickUp Integration Reference Architecture
 
 ## Overview
 
-Production-ready architecture for ClickUp API v2 integrations covering custom fields, time tracking, goals, and two-way sync with external systems.
+Separate provider transport, tenancy policy, business mapping, durable execution, and evidence so API evolution or partial failure does not corrupt work.
 
 ## Prerequisites
 
-- Approved workspace/list scope, data classification, and integration owner
-- Dedicated scoped identity, secret reference, and separate non-production path
-- Versioned mapping, idempotency, conflict-resolution, and recovery decisions
-- Monitoring/alerting for sync freshness, retries, and authorization failures
+- System boundaries, source-of-truth decision, data classes, latency/freshness SLOs, and ownership
+- Endpoint/version and plan inventory for required ClickUp capabilities
+- Failure, reconciliation, rollback, and incident requirements
+
+## Tool Discipline
+
+Use `Read`, `Glob`, and `Grep` to inspect the repository, adapters, configuration names, tests, and evidence. Use `WebFetch` only for current official ClickUp documentation. Use `Write` or `Edit` after confirming the target file, Workspace boundary, and requested mode.
+
+## Current Contract
+
+- Use explicit v2 and v3 clients because ClickUp exposes only selected v3 surfaces today.
+- Resolve v2 `team_id` to the application Workspace tenant boundary before every operation.
+- Treat webhooks as signed change signals processed through a durable idempotent queue, not as a complete event log.
+- Writes require stable source identity, reconciliation, and compensating/rollback policy.
+
+## Authentication
+
+Use a personal token only for accountable individual/testing work or OAuth Authorization Code for a user-facing integration. Inject the token server-side through a governed secret reference, send it in `Authorization`, verify authorized Workspace IDs, and never print the token, OAuth client secret, or webhook secret.
 
 ## Instructions
 
-Implement the client boundary and mappings in a staging scope first, then test
-one-way and two-way changes with deterministic external IDs, conflict handling,
-and least-privilege access. Promote only after observed sync, permission, and
-rollback behavior match the architecture; do not use last-write-wins by default
-for business-critical fields without a named owner decision.
+1. Define source of truth and field-level ownership for every one-way or two-way mapping.
+2. Place auth and Workspace authorization in a policy layer above versioned transports.
+3. Model commands and events with durable IDs, mapping versions, and idempotency records.
+4. Add rate-aware queues, webhook ingress, reconciliation sweeps, and dead-letter review.
+5. Separate content-free telemetry/evidence from sensitive payload storage and retention.
+6. Exercise auth, plan, rate, webhook-gap, partial-write, schema-drift, and rollback scenarios.
 
-## Architecture Layers
+## Approval Boundaries
 
-```
-┌──────────────────────────────────────────┐
-│          Application Layer               │
-│   (Routes, Controllers, Webhooks)        │
-├──────────────────────────────────────────┤
-│          Service Layer                   │
-│   (Business Logic, Orchestration)        │
-├──────────────────────────────────────────┤
-│          ClickUp Client Layer            │
-│   (API Wrapper, Types, Cache, Retry)     │
-├──────────────────────────────────────────┤
-│          Infrastructure                  │
-│   (Queue, Cache, Monitoring, Secrets)    │
-└──────────────────────────────────────────┘
-          │
-          ▼
-  api.clickup.com/api/v2/
-```
-
-## Custom Fields API
-
-Custom fields let you extend tasks beyond built-in fields. Each field has a UUID and a type.
-
-```
-GET  /api/v2/list/{list_id}/field          Get accessible custom fields
-POST /api/v2/task/{task_id}/field/{field_id}  Set custom field value
-DELETE /api/v2/task/{task_id}/field/{field_id}  Remove custom field value
-```
-
-### Custom Field Types and Value Formats
-
-| Type | `value` Format | Example |
-|------|---------------|---------|
-| `text` | string | `"Release v2.1"` |
-| `number` | number | `42` |
-| `money` / `currency` | number (in smallest unit) | `9999` (= $99.99) |
-| `date` | Unix ms timestamp | `1695000000000` |
-| `drop_down` | option UUID from `type_config.options` | `"opt_uuid_123"` |
-| `labels` | array of label UUIDs | `["lbl_uuid_1", "lbl_uuid_2"]` |
-| `checkbox` | boolean | `true` |
-| `email` | string | `"user@example.com"` |
-| `phone` | string | `"+1-555-0100"` |
-| `url` | string | `"https://example.com"` |
-| `rating` | number (0-5) | `4` |
-| `location` | object | `{ "lat": 33.749, "lng": -84.388 }` |
-
-```typescript
-// Get custom fields for a list
-const fields = await clickupRequest(`/list/${listId}/field`);
-// Response: { fields: [{ id: "uuid", name: "Sprint", type: "drop_down", type_config: { options: [...] } }] }
-
-// Set a dropdown custom field
-const sprintField = fields.fields.find((f: any) => f.name === 'Sprint');
-const nextSprint = sprintField.type_config.options.find((o: any) => o.name === 'Sprint 24');
-
-await clickupRequest(`/task/${taskId}/field/${sprintField.id}`, {
-  method: 'POST',
-  body: JSON.stringify({ value: nextSprint.orderindex }),
-});
-
-// Set a date custom field
-await clickupRequest(`/task/${taskId}/field/${dateFieldId}`, {
-  method: 'POST',
-  body: JSON.stringify({ value: Date.now() + 604800000 }), // 1 week from now
-});
-```
-
-## Time Tracking API
-
-```
-POST   /api/v2/team/{team_id}/time_entries     Create time entry
-GET    /api/v2/team/{team_id}/time_entries     Get time entries (date range)
-GET    /api/v2/team/{team_id}/time_entries/current  Get running timer
-GET    /api/v2/task/{task_id}/time             Get tracked time on task
-PUT    /api/v2/team/{team_id}/time_entries/{timer_id}  Update entry
-DELETE /api/v2/team/{team_id}/time_entries/{timer_id}  Delete entry
-```
-
-```typescript
-// Create a time entry (logged time)
-await clickupRequest(`/team/${teamId}/time_entries`, {
-  method: 'POST',
-  body: JSON.stringify({
-    task_id: 'abc123',
-    description: 'Worked on auth module',
-    start: Date.now() - 3600000, // 1 hour ago
-    duration: 3600000,           // 1 hour in ms
-    assignee: 183,               // user ID
-    billable: true,
-  }),
-});
-
-// Get entries for a date range (default: last 30 days)
-const entries = await clickupRequest(
-  `/team/${teamId}/time_entries?start_date=${startMs}&end_date=${endMs}`
-);
-// Note: negative duration means timer is currently running
-```
-
-## Goals API
-
-```
-POST   /api/v2/team/{team_id}/goal         Create goal
-GET    /api/v2/team/{team_id}/goal         Get goals
-GET    /api/v2/goal/{goal_id}              Get goal
-PUT    /api/v2/goal/{goal_id}              Update goal
-DELETE /api/v2/goal/{goal_id}              Delete goal
-POST   /api/v2/goal/{goal_id}/key_result   Create key result
-PUT    /api/v2/key_result/{key_result_id}  Update key result
-DELETE /api/v2/key_result/{key_result_id}  Delete key result
-```
-
-```typescript
-// Create a goal with key results
-const goal = await clickupRequest(`/team/${teamId}/goal`, {
-  method: 'POST',
-  body: JSON.stringify({
-    name: 'Q1 2026 Engineering OKRs',
-    due_date: 1711929600000,
-    description: 'Engineering team quarterly objectives',
-    multiple_owners: true,
-    owners: [183, 456],
-    color: '#05a1f5',
-  }),
-});
-
-// Add a key result (target)
-await clickupRequest(`/goal/${goal.goal.id}/key_result`, {
-  method: 'POST',
-  body: JSON.stringify({
-    name: 'Reduce P95 latency to <200ms',
-    type: 'number',
-    steps_start: 500,
-    steps_end: 200,
-    unit: 'ms',
-    owners: [183],
-  }),
-});
-```
-
-## Two-Way Sync Pattern
-
-```typescript
-// Sync ClickUp tasks to external system and vice versa
-class ClickUpSyncService {
-  async syncToExternal(listId: string) {
-    const { tasks } = await clickupRequest(`/list/${listId}/task?archived=false`);
-
-    for (const task of tasks) {
-      await externalSystem.upsert({
-        externalId: task.id,
-        title: task.name,
-        status: this.mapStatus(task.status.status),
-        assignee: task.assignees[0]?.email,
-        updatedAt: parseInt(task.date_updated),
-      });
-    }
-  }
-
-  async syncFromExternal(externalItem: ExternalItem) {
-    if (externalItem.clickupTaskId) {
-      await clickupRequest(`/task/${externalItem.clickupTaskId}`, {
-        method: 'PUT',
-        body: JSON.stringify({
-          name: externalItem.title,
-          status: this.reverseMapStatus(externalItem.status),
-        }),
-      });
-    }
-  }
-
-  private mapStatus(clickupStatus: string): string {
-    const map: Record<string, string> = {
-      'to do': 'backlog', 'in progress': 'active',
-      'review': 'in_review', 'complete': 'done',
-    };
-    return map[clickupStatus] ?? 'backlog';
-  }
-}
-```
-
-## Error Handling
-
-| Issue | Cause | Solution |
-|-------|-------|----------|
-| Custom field UUID not found | Field removed or renamed | Re-fetch fields via `/list/{id}/field` |
-| Time entry negative duration | Timer still running | Stop timer before reading duration |
-| Goal permission denied | User not goal owner | Add user to goal owners |
-| Sync conflict | Both sides updated | Last-write-wins or manual merge |
+Do not permit autonomous destructive writes, cross-Workspace routing, ACL changes, or conflict resolution without explicit product-owner policy.
 
 ## Output
 
-Produce an architecture record with source/destination boundaries, mappings,
-identity scope, conflict and idempotency policy, monitoring, retention, owner,
-and rollback evidence. It must avoid live tokens, private task content, and
-unapproved member data.
+Return component/data-flow design, version matrix, trust and tenant boundaries, failure modes, SLOs, reconciliation, approvals, and rollback.
+
+## Error Handling
+
+| Condition | Response |
+|---|---|
+| Source of truth is ambiguous | Stop two-way design until ownership is decided. |
+| Required endpoint is plan-gated | Record the dependency and approved alternative. |
+| Webhook-only design cannot reconcile gaps | Add source reads and durable checkpoints. |
+| Compensation is impossible | Narrow write scope or require manual approval. |
 
 ## Examples
 
-Synchronize one staging list with external IDs, then create a controlled
-simultaneous edit to prove the selected conflict policy and audit outcome. If
-the mapping or permission check fails, halt the sync and restore the prior
-certified state before expanding to additional lists.
+The example below is a redacted operator receipt; it contains no task text, member data, credential, or webhook secret.
+
+```text
+mode=two-way; versions=v2-tasks+v3-audit; tenant-guard=required; queue=durable; reconcile=hourly; destructive=manual
+```
 
 ## Resources
 
-- [Custom Fields Docs](https://developer.clickup.com/docs/customfields)
-- [Set Custom Field Value](https://developer.clickup.com/reference/setcustomfieldvalue)
-- [Time Tracking Endpoints](https://developer.clickup.com/reference/createatimeentry)
-- [ClickUp Developer Portal](https://developer.clickup.com/)
-
-## Next Steps
-
-For multi-environment setup, see `clickup-multi-env-setup`.
+- [Skill-specific official documentation](references/official-docs.md)
+- [API v2 and v3 terminology](https://developer.clickup.com/docs/general-v2-v3-api)
+- [Authentication](https://developer.clickup.com/docs/authentication)
+- [Rate limits](https://developer.clickup.com/docs/rate-limits)

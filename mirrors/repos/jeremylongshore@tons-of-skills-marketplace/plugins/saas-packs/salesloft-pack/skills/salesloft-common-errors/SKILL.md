@@ -1,160 +1,84 @@
 ---
 name: salesloft-common-errors
-description: 'Diagnose and fix SalesLoft API errors: 401, 403, 422, 429, and 5xx.
-
-  Use when encountering SalesLoft errors, debugging failed requests,
-
-  or troubleshooting OAuth token issues.
-
-  Trigger: "salesloft error", "fix salesloft", "salesloft not working", "salesloft
-  429".
-
-  '
-allowed-tools: Read, Grep, Bash(curl:*)
+description: >-
+  Classify Salesloft API failures from status, documented error envelopes, auth context, visibility, and rate metadata without exposing customer data. Use when an integration returns 401, 403, 404, 422, 429, or 5xx. Trigger with "Salesloft error", "Salesloft request failed", or "debug Salesloft API".
+argument-hint: "[repository-path] [redacted-error]"
+allowed-tools: Read, Glob, Grep, WebFetch, Write, Edit
 version: 1.6.0
-license: MIT
 author: Jeremy Longshore <jeremy@intentsolutions.io>
+license: MIT
 tags:
 - saas
-- sales
-- outreach
 - salesloft
+- troubleshooting
+model: inherit
+effort: medium
 compatibility: Designed for Claude Code
 ---
-# SalesLoft Common Errors
+# Salesloft Error Triage
 
 ## Overview
 
-Quick reference for the most common SalesLoft REST API v2 errors. All errors return JSON with a message field. Rate limiting uses a cost-based system (600 cost/minute).
+This skill identifies the failing contract before changing code, scopes, or credentials. It retains structured error meaning while excluding Bearer values and sales-record payloads.
 
-## Error Reference
+## Prerequisites
 
-### 401 Unauthorized -- Invalid or Expired Token
+- Method, path template, status, timestamp, and team alias
+- Redacted request shape and response content type
+- Auth flow, granted scopes, and acting-user role
+- Rate headers and attempt count when present
 
-```json
-{ "error": "Not authorized", "error_description": "The access token is invalid" }
-```
+## Tool Discipline
 
-**Causes:** Token expired, revoked, or wrong environment key.
+Use `Read`, `Glob`, and `Grep` to trace request construction and response handling. Use `WebFetch` only for the exact official Salesloft contract. Use `Write` or `Edit` after the failure class is supported by evidence.
 
-**Fix:**
+## Current Contract
 
-```typescript
-// Check if token works
-const { data } = await api.get('/me.json').catch(err => {
-  if (err.response?.status === 401) {
-    console.error('Token invalid. Refreshing...');
-    return refreshAccessToken(storedRefreshToken);
-  }
-  throw err;
-});
-```
+- Success data is under `data`; list metadata is under `metadata`.
+- Salesloft documents a singular `error` for 403 and 404 responses.
+- A 422 response uses a field-keyed `errors` object and can report multiple validation failures.
+- A 429 should be evaluated with `x-ratelimit-endpoint-cost` and `x-ratelimit-remaining-minute` plus any retry guidance actually returned.
 
-### 403 Forbidden -- Insufficient Scopes
+## Authentication
 
-```json
-{ "error": "Forbidden", "error_description": "Insufficient scope for this resource" }
-```
+Record only auth type, expiry state, scope names, and acting-user identity. Never capture an access token, refresh token, client secret, API key, or authorization code.
 
-**Fix:** Check app scopes in [developer portal](https://developers.salesloft.com). Common issue: using user-level OAuth for team-level endpoints (cadences, team templates).
+## Instructions
 
-### 404 Not Found -- Wrong Endpoint or Deleted Resource
+1. Reproduce once with secrets and record values redacted before persistence.
+2. Confirm base URL, method, path, content type, query encoding, and timeout.
+3. Classify authentication, permission/visibility, missing resource, validation, rate, transport, or provider failure.
+4. Compare the exact endpoint's required scope and allowed parameters with the request.
+5. Apply the smallest correction and rerun a read-only or fixture proof first.
+6. For writes, require payload approval and read-after-write verification.
 
-```bash
-# Verify endpoint format -- all endpoints end with .json
-curl -s -H "Authorization: Bearer $TOKEN" \
-  https://api.salesloft.com/v2/people/12345.json
-# NOT /people/12345 (missing .json suffix)
-```
+## Approval Boundaries
 
-### 422 Unprocessable Entity -- Validation Errors
+Do not rotate credentials, broaden scopes, change production data, or retry an uncertain write merely to test a theory. Escalate when the failure cannot be reproduced safely.
 
-```json
-{
-  "errors": [
-    { "attribute": "email_address", "message": "is required" },
-    { "attribute": "email_address", "message": "has already been taken" }
-  ]
-}
-```
+## Output
 
-**Common 422 causes:**
-
-| Field | Error | Solution |
-|-------|-------|----------|
-| `email_address` | required | Must include when creating a person |
-| `email_address` | already taken | Use `GET /people.json?email_addresses[]=x` first |
-| `cadence_id` | not active | Cadence must have `current_state: 'active'` |
-| `person_id` | already enrolled | Check existing cadence memberships |
-
-### 429 Too Many Requests -- Rate Limit Exceeded
-
-```
-X-RateLimit-Limit-Per-Minute: 600
-X-RateLimit-Remaining-Per-Minute: 0
-Retry-After: 42
-```
-
-**SalesLoft uses cost-based rate limiting:**
-
-- Default: each request costs 1 point
-- Pages 101-150: 3 points per request
-- Pages 151-250: 8 points per request
-- Pages 251-500: 10 points per request
-- Pages 501+: 30 points per request
-
-```typescript
-// Auto-retry with Retry-After header
-api.interceptors.response.use(undefined, async (error) => {
-  if (error.response?.status === 429) {
-    const wait = parseInt(error.response.headers['retry-after'] || '60');
-    await new Promise(r => setTimeout(r, wait * 1000));
-    return api.request(error.config);
-  }
-  throw error;
-});
-```
-
-### 5xx Server Errors
-
-**Fix:** Retry with exponential backoff. Check [status.salesloft.com](https://status.salesloft.com) for outages.
-
-## Quick Diagnostic
-
-```bash
-# 1. Verify token
-curl -s -H "Authorization: Bearer $SALESLOFT_API_KEY" \
-  https://api.salesloft.com/v2/me.json | jq '.data.email'
-
-# 2. Check API status
-curl -s https://status.salesloft.com/api/v2/status.json | jq '.status'
-
-# 3. Test specific endpoint
-curl -v -H "Authorization: Bearer $SALESLOFT_API_KEY" \
-  'https://api.salesloft.com/v2/people.json?per_page=1'
-
-# 4. Check rate limit remaining
-curl -sI -H "Authorization: Bearer $SALESLOFT_API_KEY" \
-  https://api.salesloft.com/v2/people.json | grep -i ratelimit
-```
+Return a redacted symptom, evidence, failure class, smallest supported correction, safe verification, and escalation owner.
 
 ## Error Handling
 
-| Status | Retryable | Action |
-|--------|-----------|--------|
-| 401 | No | Refresh token or re-authenticate |
-| 403 | No | Update app scopes in developer portal |
-| 404 | No | Check endpoint URL (must end in `.json`) |
-| 422 | No | Fix request payload |
-| 429 | Yes | Wait for `Retry-After` header value |
-| 500-503 | Yes | Exponential backoff, check status page |
+| Status | Response |
+|---|---|
+| 401 | Check credential expiry and Bearer injection; refresh or reacquire once. |
+| 403/404 | Preserve singular `error`; verify scope, visibility, team, and path. |
+| 422 | Preserve every field in `errors`; correct only validated inputs. |
+| 429/5xx | Bound retries, retain rate state, and surface exhaustion. |
+
+## Examples
+
+The example below shows the minimum redacted evidence expected from a successful invocation of this operator workflow.
+
+```text
+status=422; class=validation; fields=email_address; secrets=redacted; retry=no
+```
 
 ## Resources
 
-- [SalesLoft API Basics](https://developers.salesloft.com/docs/platform/api-basics/)
-- [Rate Limits](https://developers.salesloft.com/docs/platform/api-basics/rate-limits/)
-- [Status Page](https://status.salesloft.com)
-
-## Next Steps
-
-For comprehensive debugging, see `salesloft-debug-bundle`.
+- [Skill-specific official documentation](references/official-docs.md)
+- [Request and response format](https://developers.salesloft.com/docs/platform/api-basics/request-response-format/)
+- [Rate limits](https://developers.salesloft.com/docs/platform/api-basics/rate-limits/)

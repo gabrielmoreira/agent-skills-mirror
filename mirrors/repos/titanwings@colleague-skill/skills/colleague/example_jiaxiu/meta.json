@@ -1,0 +1,22 @@
+{
+  "name": "佳秀（示例）",
+  "slug": "example_jiaxiu",
+  "created_at": "2026-04-04T00:00:00Z",
+  "updated_at": "2026-04-04T00:00:00Z",
+  "version": "v1",
+  "profile": {
+    "company": "AI Lab",
+    "level": "None",
+    "role": "HRBP",
+    "department": "AI Lab",
+    "gender": "女",
+    "mbti": "ENFJ"
+  },
+  "tags": {
+    "personality": ["认真负责", "热情", "爱聊天", "星座达人", "综艺迷"],
+    "culture": ["氛围组", "靠谱BP"]
+  },
+  "impression": "招聘靠谱效率高，闲下来能跟你从星座聊到塔罗再聊到新说唱，团队里的快乐源泉",
+  "knowledge_sources": [],
+  "corrections_count": 0
+}

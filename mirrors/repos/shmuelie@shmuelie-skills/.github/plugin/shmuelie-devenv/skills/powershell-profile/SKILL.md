@@ -35,6 +35,79 @@ When working on PowerShell profile scripts, custom cmdlets, or terminal customiz
 - Verify argument mapping with `-WhatIf`, not by launching. Give the wrapper `[CmdletBinding(SupportsShouldProcess)]` and gate execution on `$PSCmdlet.ShouldProcess("$exe $displayArgs", 'Execute')`.
 - Treat native exit codes as failures and include captured stderr in the error record.
 
+### Command Resolution vs Native Process Creation
+- `about_Command_Precedence` matters here: a bare command name can resolve to an alias, function, or cmdlet before an external application. An interactive shell shortcut that works at the prompt is not automatically suitable as the target of `Start-Process`, a terminal launcher, or any other host that needs a concrete child process.
+- Use `Get-Command <name> -All` to inspect everything with that name, and `Get-Command <name> -CommandType Application -All` when you specifically need launchable applications. `ApplicationInfo.Source` gives the path that PowerShell would start.
+- Fail loudly when discovery does not produce exactly the boundary you need. If no application is found, throw with the searched name. If multiple applications are found, surface the candidate paths and pick one deterministically (explicit path, documented preference, or user-configured location) instead of assuming `PATH` order is stable across shells and machines.
+- The examples below deliberately select the first discovered application in
+  the current environment. That is an explicit example policy, not a promise
+  that the same version wins on every machine. Never expand `.Source` from
+  multiple `ApplicationInfo` objects and pass the resulting array as one
+  executable name.
+- For a native executable, use separate arguments and the call operator, and
+  check the result. Verify the application's parser and your PowerShell
+  version's native-argument behavior when embedded quotes or empty arguments
+  matter:
+  ```powershell
+  $git = (Get-Command git -CommandType Application -All -ErrorAction Stop |
+      Select-Object -First 1).Source
+  & $git '-C' 'C:\Work With Spaces' 'status' '--short'
+  if ($LASTEXITCODE -ne 0) { throw "git failed with exit code $LASTEXITCODE." }
+  ```
+  Do not build one string such as `"$git -C C:\Work With Spaces status --short"` and hope a later layer reparses it the same way.
+- An `Application` lookup can still return a `.cmd` or `.bat` shim, not a native
+  executable. It may depend on `cmd.exe` parsing, PATHEXT lookup, or adjacent
+  files. A host requiring a native executable should reject that boundary
+  rather than silently substitute shell execution:
+  ```powershell
+  $application = Get-Command tool -CommandType Application -All -ErrorAction Stop |
+      Select-Object -First 1
+  if ([IO.Path]::GetExtension($application.Source) -in '.cmd', '.bat') {
+      throw 'Configure the real executable or a separately reviewed shell launcher.'
+  }
+  ```
+- If the documented entry point really is a shim, use an explicit,
+  shell-specific launcher whose quoting and accepted input are tested. An
+  argument array passed to `cmd /c` is **not** a general escaping solution:
+  spaced shim paths can be reparsed incorrectly, and metacharacters such as
+  `&`, `|`, `%`, or `!` can change meaning. Prefer the real executable for
+  dynamic arguments; reject unsupported inputs rather than invent a generic
+  escaping recipe or interpolate them into a command string.
+- Prefer direct invocation (`& $exe @args`) for synchronous execution in the
+  current host. `Start-Process -ArgumentList` joins its array into **one string**,
+  so its elements are not preserved as an argv array; provide quoting for the
+  target parser or use an appropriate process API with a real argument-list
+  contract. For `Start-Process`, use an exact `-FilePath`, `-Wait -PassThru` when
+  needed, and inspect the returned process's `ExitCode`, not `$LASTEXITCODE`.
+  See [Start-Process](https://learn.microsoft.com/powershell/module/microsoft.powershell.management/start-process#-argumentlist)
+  and [command precedence](https://learn.microsoft.com/powershell/module/microsoft.powershell.core/about/about_command_precedence).
+
+### Terminal Host, Launcher, and Child-Shell Boundaries
+- Distinguish the layers: current PowerShell session -> optional launcher (`wt`, `cmd /c start`, another host) -> child shell -> tool. Each layer has its own parsing rules, startup behavior, and exit behavior.
+- Resolve aliases/functions/shims **before** crossing into another host. Pass the final executable path plus arguments to the launcher or child shell, not a convenient prompt-only alias from the parent session.
+- A launcher usually finishes its job once it creates the child shell or pane. After that, success and failure belong to the child process tree. If you need an interactive shell to remain open after setup, make the child shell explicit (`pwsh -NoExit ...` or the shell equivalent). If you want failure to be immediate and visible, let the tool be the child process rather than hiding it behind an always-successful bootstrap shell.
+- Keep startup state local to the child you are creating. Set environment variables, working directory, and temporary toolchain tweaks in the child command line or the child shell's startup script, rather than mutating parent-session state and hoping the launcher copies exactly what you intended.
+
+### Toolchain Environments Are Fresh-Shell Boundaries
+- Compiler and SDK setup is process-local: `PATH`, `INCLUDE`, `LIB`, prompt state, loaded modules, and toolchain marker variables all live in the current shell process. Once a shell has loaded one developer environment, trying to "switch" it in place risks mixed state from both toolchains.
+- Prefer one fresh shell per toolchain version, architecture, or environment
+  flavor. **A new process still inherits the parent's environment by default.**
+  Start from a known-clean parent environment or configure the intended child's
+  environment explicitly using a supported launcher API. Do not mutate shared
+  parent/server state to prepare that child. Also control profile startup:
+  `-NoProfile` skips profile scripts but does not reset inherited `PATH`, `LIB`,
+  or `INCLUDE`. Apply the chosen toolchain setup only in the intended child.
+- This valid, non-interactive example demonstrates a child-only setting, not
+  a real SDK setup command. Use the vendor's setup routine in the actual child;
+  add `-NoExit` only when an interactive shell should remain open:
+  ```powershell
+  $pwsh = (Get-Command pwsh -CommandType Application -All -ErrorAction Stop |
+      Select-Object -First 1).Source
+  & $pwsh '-NoProfile' '-Command' '$env:TOOLCHAIN_ROOT="C:\Sdk A"; Write-Output $env:TOOLCHAIN_ROOT'
+  if ($LASTEXITCODE -ne 0) { throw "Child shell failed with exit code $LASTEXITCODE." }
+  ```
+  Keep the parent shell clean, and do not try to "undo" the first toolchain with manual environment-variable surgery after the fact.
+
 ### Restoring the terminal after an engine crash
 - Copilot CLI can exit mid-frame and leave the terminal in a bad state: mouse tracking, focus reporting, the alternate screen buffer, bracketed paste, synchronized output, and the kitty keyboard protocol may still be enabled. After a non-zero exit, emit a reset when stdout is not redirected.
 - **CRITICAL — these are DEC *private* modes; the disable sequence MUST include the `?`.** `CSI ? <modes> l` (DECRST) disables them; `CSI <modes> l` **without** the `?` is ANSI RM and is a **silent no-op** for mouse/alt-screen/etc. (Bug hit in this repo: `` `e[1000;1004;1049l `` did nothing; the fix was `` `e[?1000;1004;1049l ``.)
@@ -191,18 +264,79 @@ When working on PowerShell profile scripts, custom cmdlets, or terminal customiz
   `Get-Command -Module * | Where-Object Name -like '*keyword*'`.
 
 ### Caching CLI-Generated Completions
-- CLI tools that emit shell completion scripts (`uv generate-shell-completion powershell`, `dotnet-suggest list`) spawn a process on every profile load (~200-800ms each).
-- **Cache to `%TEMP%`** with a version-gated sidecar file:
-  ```powershell
-  $cache = Join-Path $env:TEMP 'PowerShellProfileCache' 'uv-completion.ps1'
-  $versionFile = Join-Path $env:TEMP 'PowerShellProfileCache' 'uv-completion.version'
-  $current = (uv --version 2>$null)
-  if (-not (Test-Path $cache) -or (Get-Content $versionFile -Raw)?.Trim() -ne $current) {
-      # Regenerate
-  }
-  . $cache
-  ```
-- Regenerate only when `--version` output changes. Cache files are ephemeral (`%TEMP%`) and not tracked in the repo.
+- Cache generated completion scripts, but **do not run `<tool> --version` on
+  every profile load to validate the cache**. That still pays for a process
+  launch per tool on every new shell; antivirus scanning and cold-start work
+  can make even a version probe expensive and variable.
+- Resolve the application with `Get-Command -CommandType Application`, not an
+  invocation. If the optional tool is absent, skip its completion registration
+  explicitly rather than attempting a failing probe or loading its old cache.
+- Refresh when the cache is missing, older than the resolved executable, or past
+  a configurable maximum age. Use UTC timestamps. A maximum age is a safety net
+  for preserved executable timestamps or completion lists affected by other
+  installed tools, not proof that timestamps detect every upgrade.
+
+This PowerShell 7 example computes the **freshness decision only**; it does not
+run a generator or load a script:
+
+```powershell
+$tool = Get-Command uv -CommandType Application -ErrorAction Ignore |
+    Select-Object -First 1
+$needsRefresh = $false
+if ($null -eq $tool) {
+    Write-Verbose 'uv is unavailable; skip completion registration.'
+}
+else {
+    $cacheBase = [Environment]::GetFolderPath('LocalApplicationData')
+    if ([string]::IsNullOrWhiteSpace($cacheBase)) {
+        throw 'Choose a writable, user-owned cache directory for this platform.'
+    }
+    $cachePath = Join-Path $cacheBase 'ExampleProfileCache' 'uv-completion.ps1'
+    $exe = Get-Item -LiteralPath $tool.Source -ErrorAction Stop
+    $cacheItem = $null
+    if (Test-Path -LiteralPath $cachePath -PathType Leaf -ErrorAction Stop) {
+        $cacheItem = Get-Item -LiteralPath $cachePath -ErrorAction Stop
+    }
+    $now = [DateTime]::UtcNow
+    $maxAge = [TimeSpan]::FromDays(7)
+    $needsRefresh = (
+        $null -eq $cacheItem -or
+        $cacheItem.LastWriteTimeUtc -lt $exe.LastWriteTimeUtc -or
+        ($now - $cacheItem.LastWriteTimeUtc) -ge $maxAge -or
+        $cacheItem.LastWriteTimeUtc -gt $now
+    )
+}
+```
+
+- When the tool is present and refresh is needed, invoke its documented
+  completion generator once. Check its exit code and validate the complete
+  output before replacing a known-good cache. Do not dot-source a missing,
+  partial, failed, or untrusted result. Keep script caches in a user-owned
+  directory; never execute content from a location writable by other users.
+- If PATH can select different installations or a shim can point to a different
+  executable, record and compare the resolved source identity as well.
+  Timestamp checks on an unchanged launcher do not prove its target is unchanged.
+- Lazy or background regeneration can keep startup responsive, but is optional:
+  coordinate writers and publish a complete snapshot safely. Report generation
+  failures; do not silently treat them as successful refreshes. A valid,
+  policy-permitted previous cache may remain usable while refreshing.
+- Measure cache-hit and cache-miss startup separately. The expected steady-state
+  improvement is removal of generator/version-probe process launches, not a
+  universal millisecond guarantee.
+
+| Case | Expected behavior |
+|---|---|
+| Tool absent | Skip its completion registration; launch nothing. |
+| Cache missing | Generate once when the tool is available. |
+| Executable newer than cache | Regenerate from the selected executable. |
+| Cache within maximum age and not older than executable | Reuse it without launching the tool. |
+| Cache expired, or timestamp unexpectedly in the future | Refresh; investigate clock/metadata anomalies when relevant. |
+| Generator fails | Surface the failure; never publish or load its partial output. |
+
+See [Get-Command](https://learn.microsoft.com/powershell/module/microsoft.powershell.core/get-command)
+and [Get-Item](https://learn.microsoft.com/powershell/module/microsoft.powershell.management/get-item)
+for command discovery and filesystem metadata.
+
 - For `Update-FormatData`, batch all format files into one call instead of N individual calls: `Update-FormatData -AppendPath @(Get-ChildItem *.format.ps1xml).FullName`.
 
 ## Subdirectory Module Pattern
@@ -237,3 +371,258 @@ When working on PowerShell profile scripts, custom cmdlets, or terminal customiz
 - `$using:` **cannot pass ScriptBlock values** — PowerShell throws "script block variables are not supported". Pass function bodies as strings if needed, or dot-source the script file inside the parallel block.
 - **AllScope constant variables** (created with `New-Variable -Option Constant,AllScope`) may not resolve via `$using:`. Pre-resolve the value to a local variable before the parallel block: `$path = $PSUserRoot; ... $using:path`.
 - **Switch parameters should never default to `$true`** — use opt-out names instead (e.g., `-NoPrune` instead of `-Prune = $true`). Switches always default to `$false`.
+
+## Ownership-Preserving Updates for Symlink-Managed Copilot Configuration
+- This is an **ownership** problem, not a freshness or launch-timing problem: determine who owns the on-disk path before changing bytes.
+- Use first-party CLI help to define the fixture boundary before testing writers: `copilot help environment` documents `COPILOT_HOME`, and `copilot mcp --help` says user MCP configuration loads from `~/.copilot/mcp-config.json`.
+- **Discovery metadata alone is not authoritative ownership.** `copilot mcp get ...` showing `Source: User`, or merely finding a file under `~/.copilot`, tells you which config layer won — not whether the path is an ordinary file, a managed symlink, or a broken link replacement.
+
+The examples are Windows PowerShell 7.3+ **lab fragments**, not an unattended
+configuration migrator. Replace `C:\ConfigLab` with a newly created disposable
+lab you own and prepare the indicated synthetic files. Run in a dedicated child
+shell with `$ErrorActionPreference = 'Stop'`; never use real credentials or
+live configuration. For actual maintenance, quiesce readers/writers, preserve
+the originals, and use an appropriate publication/recovery procedure. Writing
+through a preserved link target is not itself an atomic-update guarantee.
+
+### Inspect the active path first
+```powershell
+$activePath = 'C:\ConfigLab\active\.copilot\mcp-config.json'
+$item = Get-Item -LiteralPath $activePath -Force
+$authoritativePath = $item.FullName
+$hop = $item
+$visited = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
+
+while ($hop.LinkType -eq 'SymbolicLink') {
+    if ($hop -isnot [System.IO.FileInfo]) {
+        throw 'Expected a file link, not a directory or unsupported object.'
+    }
+    if ([string]::IsNullOrWhiteSpace($hop.Target)) {
+        throw 'Unsupported symbolic link with an empty target.'
+    }
+
+    $candidatePath = if ([System.IO.Path]::IsPathFullyQualified($hop.Target)) {
+        [System.IO.Path]::GetFullPath($hop.Target)
+    } elseif ([System.IO.Path]::IsPathRooted($hop.Target)) {
+        throw 'Drive-relative or root-relative link targets require explicit review.'
+    } else {
+        [System.IO.Path]::GetFullPath((Join-Path $hop.Directory.FullName $hop.Target))
+    }
+
+    if (-not $visited.Add($candidatePath)) {
+        throw "Symbolic-link cycle detected at $candidatePath"
+    }
+
+    $authoritativePath = $candidatePath
+    try {
+        $next = Get-Item -LiteralPath $candidatePath -Force -ErrorAction Stop
+    } catch [System.Management.Automation.ItemNotFoundException] {
+        break
+    }
+    $hop = $next
+}
+
+if ($hop.LinkType -ne 'SymbolicLink' -and $hop -isnot [System.IO.FileInfo]) {
+    throw 'Expected the authoritative configuration to be a file.'
+}
+
+[pscustomobject]@{
+    Path = $item.FullName
+    LinkType = $item.LinkType
+    ImmediateTarget = $item.Target
+    AuthoritativePath = $authoritativePath
+    AuthoritativeExists = Test-Path -LiteralPath $authoritativePath
+}
+```
+- **Ordinary file**: treat it as user-owned until you intentionally migrate it back under management.
+- **Valid symlink**: the authoritative source is the final existing non-link target, not the live link path.
+- **Broken symlink**: the link still carries ownership metadata, but determine the intended target path explicitly and verify whether that path exists. `ResolveLinkTarget($false)` can return a non-null `FileInfo` whose `Exists` is `false`, so a null test alone misclassifies dangling links.
+- Resolve **relative targets against the current link's containing directory at each hop**, not the process current directory.
+- If a target chain leaves the expected managed tree, points somewhere you cannot justify, or ends in an unsupported object type, stop instead of inferring ownership from the directory name.
+
+### Probe writer behavior per CLI version, in a disposable fixture
+```powershell
+$copilotExe = (Get-Command copilot.exe -CommandType Application -All -ErrorAction Stop |
+    Select-Object -First 1).Source
+$probeHome = 'C:\ConfigLab\fixture\.copilot'
+$oldHome = $env:COPILOT_HOME
+$oldAutoUpdate = $env:COPILOT_AUTO_UPDATE
+
+try {
+    $env:COPILOT_HOME = $probeHome
+    $env:COPILOT_AUTO_UPDATE = 'false'
+    & $copilotExe --version
+    if ($LASTEXITCODE -ne 0) { throw 'CLI version probe failed.' }
+    & $copilotExe mcp add demo -- cmd /c exit 0
+    if ($LASTEXITCODE -ne 0) { throw 'CLI writer probe failed.' }
+} finally {
+    if ($null -eq $oldHome) {
+        Remove-Item Env:COPILOT_HOME -ErrorAction SilentlyContinue
+    } else {
+        $env:COPILOT_HOME = $oldHome
+    }
+
+    if ($null -eq $oldAutoUpdate) {
+        Remove-Item Env:COPILOT_AUTO_UPDATE -ErrorAction SilentlyContinue
+    } else {
+        $env:COPILOT_AUTO_UPDATE = $oldAutoUpdate
+    }
+}
+```
+- Re-run that probe against the **exact writer** and **exact CLI version** you plan to use.
+- Prepare a separate ordinary-file, valid-link, or dangling-link case before
+  each run. Compare the active entry's link metadata and the authoritative
+  file's contents before and after; merely observing a new ordinary config
+  in an empty directory does not test whether a writer preserves symlinks.
+- Use the **native application path**, not a profile alias or wrapper function.
+- **Observed in a disposable `COPILOT_HOME` fixture on GitHub Copilot CLI 1.0.84-3**: `copilot mcp add` replaced `mcp-config.json` symlinks with ordinary files instead of updating their targets. That happened for both a valid link and a broken link.
+- Treat other writers (`/settings`, marketplace commands, future builds) as **unknown** until you repeat the same experiment for them.
+
+### Synthetic cases
+
+#### Ordinary file: preserve first, then edit in place
+```powershell
+$activePath = 'C:\ConfigLab\ordinary\.copilot\mcp-config.json'
+$backupDir = 'C:\ConfigLab\ordinary\preserved'
+New-Item -ItemType Directory -Path $backupDir -Force | Out-Null
+$backupPath = Join-Path $backupDir ("mcp-config.before-edit.{0}.{1}.json" -f (Get-Date -Format 'yyyyMMdd-HHmmss'), $PID)
+if (Test-Path -LiteralPath $backupPath) { throw "Refusing to overwrite $backupPath" }
+
+[System.IO.File]::Copy($activePath, $backupPath, $false)
+$json = Get-Content -LiteralPath $activePath -Raw | ConvertFrom-Json -AsHashtable
+$json = if ($json -is [hashtable]) { $json } else { throw 'Unsupported or null JSON root.' }
+if (-not $json.ContainsKey('mcpServers') -or $json['mcpServers'] -isnot [hashtable]) {
+    throw 'Unsupported schema: mcpServers must be an object.'
+}
+$json['mcpServers']['ordinary-demo'] = @{
+    type = 'local'
+    command = 'cmd'
+    args = @('/c', 'exit', '0')
+    tools = @('*')
+}
+$updatedJson = $json | ConvertTo-Json -Depth 100 -WarningAction Stop
+$updatedJson | Set-Content -LiteralPath $activePath -NoNewline -ErrorAction Stop
+```
+- Preserve the pre-edit file before changing it.
+- Because no managed link exists, there is nothing to restore yet; ownership stays with the active file.
+
+#### Valid link: edit the authoritative source, not the live link
+```powershell
+$activePath = 'C:\ConfigLab\linked\active\.copilot\mcp-config.json'
+$sourcePath = 'C:\ConfigLab\linked\managed\mcp-config.source.json' # resolved by the inspection loop above
+$backupDir = 'C:\ConfigLab\linked\preserved'
+New-Item -ItemType Directory -Path $backupDir -Force | Out-Null
+$sourceBackup = Join-Path $backupDir ("source.before-edit.{0}.{1}.json" -f (Get-Date -Format 'yyyyMMdd-HHmmss'), $PID)
+if (Test-Path -LiteralPath $sourceBackup) { throw "Refusing to overwrite $sourceBackup" }
+
+[System.IO.File]::Copy($sourcePath, $sourceBackup, $false)
+$json = Get-Content -LiteralPath $sourcePath -Raw | ConvertFrom-Json -AsHashtable
+$json = if ($json -is [hashtable]) { $json } else { throw 'Unsupported or null JSON root.' }
+if (-not $json.ContainsKey('mcpServers')) { $json['mcpServers'] = @{} }
+$json['mcpServers'] = if ($json['mcpServers'] -is [hashtable]) {
+    $json['mcpServers']
+} else {
+    throw 'Unsupported schema: mcpServers must be an object.'
+}
+$json['mcpServers']['demo-safe'] = @{
+    type = 'local'
+    command = 'cmd'
+    args = @('/c', 'exit', '0')
+    tools = @('*')
+}
+$updatedJson = $json | ConvertTo-Json -Depth 100 -WarningAction Stop
+$updatedJson | Set-Content -LiteralPath $sourcePath -NoNewline -ErrorAction Stop
+```
+- Start from the resolved authoritative source so the symlink stays intact and unrelated settings remain in the authoritative file. The same pattern works when the active link points to a **relative target** or to another link, as long as your inspection step resolved the full intended target path deliberately.
+- Let the **next Copilot process** discover the change by reading the same active path at startup. Do **not** delete the live link, run a writer, then put the link back — concurrent readers can observe the wrong file during that window.
+
+#### Drifted ordinary file: preserve both sides, surface conflicts, then stop for review
+```powershell
+$activePath = 'C:\ConfigLab\drifted\.copilot\mcp-config.json'
+$sourcePath = 'C:\ConfigLab\managed\mcp-config.source.json'
+$backupDir = 'C:\ConfigLab\drifted\preserved'
+New-Item -ItemType Directory -Path $backupDir -Force | Out-Null
+$stamp = "{0}.{1}" -f (Get-Date -Format 'yyyyMMdd-HHmmss'), $PID
+$activeBackup = Join-Path $backupDir "active.$stamp.json"
+$sourceBackup = Join-Path $backupDir "source.$stamp.json"
+if ((Test-Path -LiteralPath $activeBackup) -or (Test-Path -LiteralPath $sourceBackup)) {
+    throw 'Refusing to overwrite an existing backup.'
+}
+
+[System.IO.File]::Copy($activePath, $activeBackup, $false)
+[System.IO.File]::Copy($sourcePath, $sourceBackup, $false)
+$source = Get-Content -LiteralPath $sourcePath -Raw | ConvertFrom-Json -AsHashtable
+$drift = Get-Content -LiteralPath $activePath -Raw | ConvertFrom-Json -AsHashtable
+$source = if ($source -is [hashtable]) { $source } else { throw 'Unsupported or null authoritative JSON root.' }
+$drift = if ($drift -is [hashtable]) { $drift } else { throw 'Unsupported or null drifted JSON root.' }
+if ($source['mcpServers'] -isnot [hashtable] -or $drift['mcpServers'] -isnot [hashtable]) {
+    throw 'Unsupported schema: both mcpServers values must be objects.'
+}
+
+$conflicts = [ordered]@{
+    TopLevelOnlyInSource = @()
+    TopLevelOnlyInActive = @()
+    ChangedTopLevelKeys = @()
+    ServerOnlyInSource = @()
+    ServerOnlyInActive = @()
+    ChangedServers = @()
+}
+
+$sourceKeys = @($source.Keys | Where-Object { $_ -cne 'mcpServers' })
+$driftKeys = @($drift.Keys | Where-Object { $_ -cne 'mcpServers' })
+$conflicts.TopLevelOnlyInSource = @($sourceKeys | Where-Object { $_ -cnotin $driftKeys })
+$conflicts.TopLevelOnlyInActive = @($driftKeys | Where-Object { $_ -cnotin $sourceKeys })
+$conflicts.ChangedTopLevelKeys = @(
+    $sourceKeys |
+        Where-Object { $_ -cin $driftKeys } |
+        Where-Object {
+            (ConvertTo-Json $source[$_] -Depth 100 -Compress -WarningAction Stop) -cne
+            (ConvertTo-Json $drift[$_] -Depth 100 -Compress -WarningAction Stop)
+        }
+)
+
+$sourceServerNames = @($source['mcpServers'].Keys)
+$driftServerNames = @($drift['mcpServers'].Keys)
+$conflicts.ServerOnlyInSource = @($sourceServerNames | Where-Object { $_ -cnotin $driftServerNames })
+$conflicts.ServerOnlyInActive = @($driftServerNames | Where-Object { $_ -cnotin $sourceServerNames })
+$conflicts.ChangedServers = @(
+    $sourceServerNames |
+        Where-Object { $_ -cin $driftServerNames } |
+        Where-Object {
+            (ConvertTo-Json $source['mcpServers'][$_] -Depth 100 -Compress -WarningAction Stop) -cne
+            (ConvertTo-Json $drift['mcpServers'][$_] -Depth 100 -Compress -WarningAction Stop)
+        }
+)
+
+$conflicts | ConvertTo-Json -Depth 5
+$differenceCount = 0
+foreach ($names in $conflicts.Values) { $differenceCount += $names.Count }
+if ($differenceCount -gt 0) {
+    throw 'Preserved both versions. Review the backups and update the authoritative source intentionally before relinking.'
+}
+```
+- Report **key names and server names only**. Do not echo secret values into logs while comparing drift.
+- Do **not** relink while any added, removed, or changed setting/server is
+  unresolved. Comparison is case-sensitive and deliberately conservative:
+  property-order differences can also require manual review. Preserve both
+  files and stop until every difference is intentionally decided; do not hide
+  serialization-depth warnings or normalize away unfamiliar data.
+- After review, update the authoritative source intentionally, then relink during a **maintenance** window when readers and writers are quiesced:
+  ```powershell
+  Remove-Item -LiteralPath $activePath
+  New-Item -ItemType SymbolicLink -Path $activePath -Target $sourcePath -ErrorAction Stop | Out-Null
+  ```
+- If relinking fails, restore the preserved active file before resuming writers. This is controlled maintenance or recovery work, **not** a per-launch link swap.
+
+#### Broken link: recreate the missing source before any writer runs
+```powershell
+$activePath = 'C:\ConfigLab\broken\.copilot\mcp-config.json'
+$recoveryPath = 'C:\ConfigLab\broken\preserved\mcp-config.recovered.json'
+$targetPath = 'C:\ConfigLab\broken\managed\mcp-config.source.json' # resolved by the inspection loop above
+if (Test-Path -LiteralPath $targetPath) { throw 'Expected the authoritative target to be missing.' }
+New-Item -ItemType Directory -Path (Split-Path $targetPath -Parent) -Force | Out-Null
+[System.IO.File]::Copy($recoveryPath, $targetPath, $false)
+```
+- If the target path is known and trusted, recreate the **intended authoritative target** and keep the active link stable.
+- If the target path is unknown, stop instead of inventing a new "authoritative" file.
+- On CLI 1.0.84-3, `copilot mcp add` against a broken link **replaced the link with a plain file**. That is an ownership change, not a repair.

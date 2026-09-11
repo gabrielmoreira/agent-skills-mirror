@@ -21,7 +21,7 @@ Adapted from `/research-review`. The reviewer persona is a patent examiner, not 
 
 - Codex MCP Server configured:
   ```bash
-  claude mcp add codex -s user -- codex mcp-server
+  claude mcp add codex -s user -- python3 "$HOME/aris_repo/mcp-servers/codex-exec/server.py"   # your ARIS clone's path
   ```
 
 ## Inputs

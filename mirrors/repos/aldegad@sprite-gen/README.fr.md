@@ -9,14 +9,10 @@
 </p>
 
 <p align="center">
-  <img src="docs/assets/hero-paladin-walk.gif" height="202" alt="paladin walk loop" />
-  <img src="docs/assets/hero-paladin-run.gif" height="206" alt="paladin run loop" />
-  <img src="docs/assets/hero-paladin-jump.gif" height="246" alt="paladin jump loop" />
-  <img src="docs/assets/hero-wolf-walk.gif" height="203" alt="wolf walk loop" />
-  <img src="docs/assets/hero-slime-walk.gif" height="203" alt="slime walk loop" />
+  <a href="https://youtu.be/zVu9YlbPtog"><img src="docs/assets/hero-v2-party.gif" width="960" alt="Animated sprite-gen v2 showcase: paladin, wolf and slime" /></a>
 </p>
 
-<p align="center"><sub>Chaque boucle ci-dessus est partie d'<b>une seule image fixe</b> : rembourrée au canevas que son mouvement exige, animée par Grok Imagine, détourée image par image et coupée à sa vraie période en GIF transparent — pipeline B, <code>sprite-gen video-set</code>.</sub></p>
+<p align="center"><sub>Chaque personnage est né d'une <b>seule image fixe</b>. Grok Imagine lui a donné vie, sprite-gen a extrait les boucles transparentes et HyperFrames a composé cette scène.</sub></p>
 
 ---
 
@@ -24,6 +20,10 @@
 Demandez une « sprite sheet » à un modèle d'image et vous savez ce que vous obtenez : un personnage dont le visage change à chaque image, un fond impossible à détourer, des poses qui se chevauchent et sortent de la grille, et un PNG que votre moteur de jeu ne peut pas consommer. Jolie démo, asset inutile.
 
 `sprite-gen` est une skill Codex/Claude et une CLI Python qui comble cet écart. Donnez-lui **une image de base** : elle pilote la génération ligne par ligne, verrouille l'identité du personnage, retire le fond chroma en vrai alpha, extrait chaque pose en une image transparente propre et cuit un atlas d'exécution **avec un `manifest.json.frame_layout` lisible par machine**. Passez la même image fixe à un modèle vidéo et vous recevez une boucle transparente sans raccord par état de mouvement. Pour les 10 % que la génération ne réussit jamais, une **webview de curation** permet de comparer, rejeter, ajuster et regarder la boucle en direct avant de cuire.
+
+## Commencer par une demande
+
+Demandez des **sprites** ou **une image**. L'agent vérifie l'accès, demande seulement les choix manquants et livre les fichiers avec le pipeline existant. La vue de sélection est facultative. Enregistrez des préférences distinctes pour chaque usage ; un choix ponctuel ne les remplace pas. [Parcours et préférences](docs/user-workflow.md).
 
 ## Quatre pipelines, une CLI
 
@@ -33,7 +33,9 @@ Chaque verbe fonctionne seul ou comme étape d'un pipeline. `sprite-gen --help` 
 flowchart LR
     subgraph A["A · atlas rows"]
         direction LR
-        a1[prepare] --> a2["gen · gen-set"] --> a3[extract] --> a4[curation] --> a5[compose-atlas]
+        a1[prepare] --> a2["gen · gen-set"] --> a3[extract] --> a5[compose-atlas]
+        a5 -.-> a4["curation (optional)"]
+        a4 --> a5
     end
     subgraph B["B · video → loop"]
         direction LR

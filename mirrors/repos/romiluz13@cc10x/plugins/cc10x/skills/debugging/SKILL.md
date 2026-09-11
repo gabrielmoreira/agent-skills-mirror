@@ -77,8 +77,9 @@ Don't guess where a value comes from — trace it with LSP. Don't grep for a fun
 2. **Git History** — `git log --oneline -20 -- <files>`, `git blame`, `git diff BASE..HEAD`
 3. **Compounded knowledge** — if `docs/solutions/debugging/` exists, check for a prior write-up matching this symptom before starting fresh investigation
 4. **LOG FIRST** — collect error logs, stack traces, run failing commands. The error text is the highest-density evidence you will ever get; acting first destroys or masks it.
-5. **Feedback Loop** — build repro signal (construction ladder above). No loop → fail closed.
-6. **Variant Scan** — identify which variant dimensions must keep working (locale, config, env, platform, data shape, concurrency). A fix verified on one variant routinely breaks a sibling variant.
+5. **Before-capture** — persist step 4's capture while the bug is reproducing: save the red output (log excerpt, command output, screenshot) to a durable artifact BEFORE writing the fix. It is the "before" half of the evidence pair; the fixed state alone proves less, and the failing state is cheapest to capture while it is red.
+6. **Feedback Loop** — build repro signal (construction ladder above). No loop → fail closed.
+7. **Variant Scan** — identify which variant dimensions must keep working (locale, config, env, platform, data shape, concurrency). A fix verified on one variant routinely breaks a sibling variant.
 
 **Repro Minimisation:** After reproducing the bug, shrink to the smallest scenario that still goes red before forming hypotheses. Cut inputs, callers, config, and environment one at a time. Re-run after each cut. Every remaining element is load-bearing — removing it should make the bug disappear.
 
@@ -120,7 +121,7 @@ Tag every debug log with a unique prefix (e.g. `[DEBUG-a4f2]`) so cleanup is a s
 | 60-79 | Plausible: fits some evidence but gaps remain — investigate more |
 | <60 | Speculative: do not act — gather more evidence |
 
-**When to Restart Investigation:** If 3 hypotheses fail, you're pattern-matching, not investigating. Re-read the loop output. Re-trace with LSP. Consider you're looking at the wrong layer.
+**When to Restart Investigation:** If 3 hypotheses fail, you're pattern-matching, not investigating. Re-read the loop output. Re-trace with LSP. Consider you're looking at the wrong layer. If two or more fixes that share one premise failed the same gate, write the premise down — the premise, not the next fix variant, is now the suspect. Ask what the premise predicts beyond that gate: where the failure should concentrate, which variant should stay green. Test the prediction with the repro loop before the next fix; a prediction the observation contradicts disposes of the premise, not just the fix.
 
 ### Phase 4: Implementation
 

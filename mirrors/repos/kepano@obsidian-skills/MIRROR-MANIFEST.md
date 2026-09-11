@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `kepano/obsidian-skills` — 26 default patterns, 0 followed patterns, 10 file(s) materialized.
+Mirror of `kepano/obsidian-skills` — 26 default patterns, 0 followed patterns, 11 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `kepano/obsidian-skills` — 26 default patterns, 0 followed patterns,
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 10 |
+| Files         | 11 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -62,13 +62,14 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 1 | ✓ | [`skills/defuddle/SKILL.md`](skills/defuddle/SKILL.md) |
 | 2 | ✓ | [`skills/json-canvas/references/EXAMPLES.md`](skills/json-canvas/references/EXAMPLES.md) |
 | 3 | ✓ | [`skills/json-canvas/SKILL.md`](skills/json-canvas/SKILL.md) |
-| 4 | ✓ | [`skills/obsidian-bases/references/FUNCTIONS_REFERENCE.md`](skills/obsidian-bases/references/FUNCTIONS_REFERENCE.md) |
-| 5 | ✓ | [`skills/obsidian-bases/SKILL.md`](skills/obsidian-bases/SKILL.md) |
-| 6 | ✓ | [`skills/obsidian-cli/SKILL.md`](skills/obsidian-cli/SKILL.md) |
-| 7 | ✓ | [`skills/obsidian-markdown/references/CALLOUTS.md`](skills/obsidian-markdown/references/CALLOUTS.md) |
-| 8 | ✓ | [`skills/obsidian-markdown/references/EMBEDS.md`](skills/obsidian-markdown/references/EMBEDS.md) |
-| 9 | ✓ | [`skills/obsidian-markdown/references/PROPERTIES.md`](skills/obsidian-markdown/references/PROPERTIES.md) |
-| 10 | ✓ | [`skills/obsidian-markdown/SKILL.md`](skills/obsidian-markdown/SKILL.md) |
+| 4 | ✓ | [`skills/knap/SKILL.md`](skills/knap/SKILL.md) |
+| 5 | ✓ | [`skills/obsidian-bases/references/FUNCTIONS_REFERENCE.md`](skills/obsidian-bases/references/FUNCTIONS_REFERENCE.md) |
+| 6 | ✓ | [`skills/obsidian-bases/SKILL.md`](skills/obsidian-bases/SKILL.md) |
+| 7 | ✓ | [`skills/obsidian-cli/SKILL.md`](skills/obsidian-cli/SKILL.md) |
+| 8 | ✓ | [`skills/obsidian-markdown/references/CALLOUTS.md`](skills/obsidian-markdown/references/CALLOUTS.md) |
+| 9 | ✓ | [`skills/obsidian-markdown/references/EMBEDS.md`](skills/obsidian-markdown/references/EMBEDS.md) |
+| 10 | ✓ | [`skills/obsidian-markdown/references/PROPERTIES.md`](skills/obsidian-markdown/references/PROPERTIES.md) |
+| 11 | ✓ | [`skills/obsidian-markdown/SKILL.md`](skills/obsidian-markdown/SKILL.md) |
 
 ---
 

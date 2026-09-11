@@ -10,7 +10,7 @@ argument-hint: "[url]"
 license: MIT
 metadata:
   author: AgriciDaniel
-  version: "2.2.5"
+  version: "2.3.1"
   category: seo
 ---
 
@@ -70,6 +70,17 @@ XML sitemap implementations.
 - The Search Console **International Targeting report and the manual
   country-targeting setting were removed in 2022**, do **not** recommend setting
   country targeting in GSC; hreflang is the remaining lever.
+
+### 5c. Region-specific Search units (EEA, South Africa, Turkiye)
+- Google documents Search experiences that exist only in certain countries:
+  **aggregator units**, **supplier units**, and carousels for hotel, flight,
+  long-distance transport, and product queries shown to users in the EEA,
+  South Africa, and Turkiye (documentation added 2026-09-08). Eligibility and
+  participation are documented per unit; they are not ranking signals.
+- When a site serves those regions with hreflang variants, note in the report
+  whether the business is an aggregator or a direct supplier and point to the
+  regional documentation, so the client is not surprised by a different result
+  layout in those markets.
 
 ### 6. Canonical URL Alignment
 - Hreflang tags must only appear on canonical URLs

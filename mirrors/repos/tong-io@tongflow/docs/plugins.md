@@ -222,6 +222,54 @@ rejecting everything outside the shortlist — see
 [tongflow-router-cometapi](https://github.com/tong-io/tongflow-router-cometapi) for the
 reference implementation.
 
+### Advanced parameters (per-run knobs the node can expose)
+
+Sampling steps, CFG, LoRA switches, samplers — the things a ComfyUI-style plugin
+would otherwise hard-code or read from a deploy-time env var — can be offered on the
+node under a collapsed **Advanced** section. Declare them next to your handlers, in
+the plugin only (the main repo never carries a per-plugin table):
+
+```python
+TONGFLOW_SLOT_PARAMS = {
+    "refs-gen-video": {
+        "steps": {"type": "select", "options": [8, 20, 40], "default": 20, "label": "Steps"},
+        "turbo": {"type": "boolean", "default": False},
+        "shift": {"type": "number", "default": 12.0, "min": 1, "max": 20, "step": 0.5},
+        "sampler": {"type": "text", "default": "euler"},
+        # Router plugins: only offered while one of these models is selected
+        "guidance": {"type": "integer", "default": 4, "models": ["fal-ai/x"]},
+    },
+}
+```
+
+- Pure literal only (AST-scanned, never imported), slot strings as keys, every slot
+  needs a `@node_slot` handler. Param names are identifiers. Controls: `select`
+  (`options`, string or number literals), `number` / `integer` (`min` / `max` /
+  `step`), `boolean`, `text`; optional `label`, `description`, `default`, `models`.
+  Always give a `default`: it is what the control shows before the user touches it,
+  and it must equal the value the handler falls back to when the key is absent.
+- The canvas stores only values that differ from `default` and sends them top-level
+  as `params` (never inside the ABI prompt). They reach the slot body through the
+  reserved `_params` key, which `@node_slot` pops into
+  `tongflow.slots.current_params()`:
+
+```python
+from tongflow.slots import current_params
+
+STEPS = int(os.environ.get("H3_STEPS") or 20)   # env stays the deploy-time default
+
+def refs_gen_video(self, input: RefsGenVideoInput) -> RefsGenVideoOutput:
+    p = current_params()
+    steps = int(p.get("steps", STEPS))
+    turbo = bool(p.get("turbo", False))
+```
+
+- Anything the user left untouched is absent from `current_params()`, so a node with
+  the section collapsed behaves exactly as before. Older hosts that never send params
+  simply yield an empty dict. Requires `tongflow>=0.3.3` in the plugin's pin.
+- These are plugin internals by design: a knob that every implementation of a slot
+  needs belongs in the ABI instead (see `CLAUDE.md`, "ABI hygiene").
+
 ### Assets in, assets out
 
 Binary media crosses the wire as an `Asset`

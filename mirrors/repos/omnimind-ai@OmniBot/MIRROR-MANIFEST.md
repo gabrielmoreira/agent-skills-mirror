@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `omnimind-ai/OmniBot` — 26 default patterns, 0 followed patterns, 11 file(s) materialized.
+Mirror of `omnimind-ai/OmniBot` — 26 default patterns, 0 followed patterns, 12 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `omnimind-ai/OmniBot` — 26 default patterns, 0 followed patterns, 11
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 11 |
+| Files         | 12 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -61,15 +61,16 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 2 | ✓ | [`app/src/main/assets/builtin_skills/find-install-skills/SKILL.md`](app/src/main/assets/builtin_skills/find-install-skills/SKILL.md) |
-| 3 | ✓ | [`app/src/main/assets/builtin_skills/install-codex-pet/SKILL.md`](app/src/main/assets/builtin_skills/install-codex-pet/SKILL.md) |
-| 4 | ✓ | [`app/src/main/assets/builtin_skills/self-improving-agent/SKILL.md`](app/src/main/assets/builtin_skills/self-improving-agent/SKILL.md) |
-| 5 | ✓ | [`app/src/main/assets/builtin_skills/skill-creator/SKILL.md`](app/src/main/assets/builtin_skills/skill-creator/SKILL.md) |
-| 6 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 7 | ✓ | [`plugins/omni-vlm-lite/agent-skill/omniflow-runtime-modifier/SKILL.md`](plugins/omni-vlm-lite/agent-skill/omniflow-runtime-modifier/SKILL.md) |
-| 8 | ✓ | [`plugins/omni-vlm-lite/runtime-skill/omniflow-gui-runtime/SKILL.md`](plugins/omni-vlm-lite/runtime-skill/omniflow-gui-runtime/SKILL.md) |
-| 9 | ✓ | [`plugins/omnilink-agent/runtime-skill/omnilink-agent/SKILL.md`](plugins/omnilink-agent/runtime-skill/omnilink-agent/SKILL.md) |
-| 10 | ✓ | [`plugins/vibe-project/runtime-skill/vibe-project-builder/SKILL.md`](plugins/vibe-project/runtime-skill/vibe-project-builder/SKILL.md) |
-| 11 | ✓ | [`skills/wechat.json`](skills/wechat.json) |
+| 3 | ✓ | [`app/src/main/assets/builtin_skills/install-acp-agent/SKILL.md`](app/src/main/assets/builtin_skills/install-acp-agent/SKILL.md) |
+| 4 | ✓ | [`app/src/main/assets/builtin_skills/install-codex-pet/SKILL.md`](app/src/main/assets/builtin_skills/install-codex-pet/SKILL.md) |
+| 5 | ✓ | [`app/src/main/assets/builtin_skills/self-improving-agent/SKILL.md`](app/src/main/assets/builtin_skills/self-improving-agent/SKILL.md) |
+| 6 | ✓ | [`app/src/main/assets/builtin_skills/skill-creator/SKILL.md`](app/src/main/assets/builtin_skills/skill-creator/SKILL.md) |
+| 7 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 8 | ✓ | [`plugins/omni-vlm-lite/agent-skill/omniflow-runtime-modifier/SKILL.md`](plugins/omni-vlm-lite/agent-skill/omniflow-runtime-modifier/SKILL.md) |
+| 9 | ✓ | [`plugins/omni-vlm-lite/runtime-skill/omniflow-gui-runtime/SKILL.md`](plugins/omni-vlm-lite/runtime-skill/omniflow-gui-runtime/SKILL.md) |
+| 10 | ✓ | [`plugins/omnilink-agent/runtime-skill/omnilink-agent/SKILL.md`](plugins/omnilink-agent/runtime-skill/omnilink-agent/SKILL.md) |
+| 11 | ✓ | [`plugins/vibe-project/runtime-skill/vibe-project-builder/SKILL.md`](plugins/vibe-project/runtime-skill/vibe-project-builder/SKILL.md) |
+| 12 | ✓ | [`skills/wechat.json`](skills/wechat.json) |
 
 ---
 

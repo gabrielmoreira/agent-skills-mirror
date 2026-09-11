@@ -44,7 +44,7 @@ Packages split by role, one module per concern, the same way in both languages:
 Command history is a recording, not a command log. A hidden `Observer` records every top-level command as timestamp-ordered events (`COMMAND`, `CLEAR`, `DELETE`, op events); the user-facing surfaces are just views of those events.
 
 - **Observer + ObserverStore.** The `Observer` owns a storage-agnostic `ObserverStore` (`append`/`write`/`readAll`/`readMatching`/`clear`/`close`), not a mount. Stores: `RAMObserverStore` (core, default), `DiskObserverStore` and `RedisObserverStore` (node). RAM is just the default, history can persist to disk or Redis.
-- **Two views over the same events.** `/.bash_history` is a read-only view mount (`HistoryViewResource`) rendered in GNU bash histfile format (`#<epoch>` line then the command), so `cat`/`grep`/`tail`/`find` work on it for free. The `history` shell builtin (GNU `-c -d -a -n -r -w -s -p` + count) routes through the same mount, so file and builtin never disagree.
+- **Two views over the same events.** `/.bash_history` is a read-only view mount (`HistoryViewResource`) rendered in GNU bash histfile format (`#<epoch>` line then the command), so `cat`/`grep`/`tail`/`find` work on it for free. The `history` shell builtin (GNU `-c -d -a -n -r -w -s -p` + count) projects the same events for one session: the list after its `CLEAR`/`DELETE` events, as bash's in-memory list is. The file is the shared histfile of every session, as `~/.bash_history` is, and `history -c` clears the list, not the file (`integ/bash/history/clear.json` pins `bash_history_survives_clear`). Both render one recording, so a command never appears in one without having been recorded in the other. A blank typed line is never recorded; a whitespace-only or comment-only line is (bash's `shell_input_line[0]`).
 - **Recording scope.** Top-level lines record; nested evals (`$()`, `eval`, `source`, `xargs`) run with `record: false`, so their inner ops bubble to the parent and no spurious command is logged (mirrors GNU's line reader).
 - **Snapshots.** History is captured as events into snapshot state and restored on load.
 - **Format is GNU bash, not zsh** (`#<epoch>`, not `: <ts>:<dur>;<cmd>`).
@@ -644,16 +644,25 @@ Invoke the venv's `pre-commit` binary directly (not via `uv --directory python r
   - a path is `str | PathSpec`, a backend handle is `accessor: Accessor` (`mirage.accessor.base`), an index is `index: IndexCacheStore | None` (`mirage.cache.index`), a stat function is `StatFn` (`mirage.types`). Ignored variadics are still typed (`*texts: str`).
   - a sentinel is a one-member `Enum`, never `object()`; that keeps it distinguishable from the real values sharing the variable.
     `tests/commands/test_no_object_annotations.py` enforces this and carries the only exemptions: four Python protocol methods (`__setattr__`, `__contains__`, `Mapping.pop`) whose signatures the language fixes, and one guard whose whole job is to catch a value the annotations already claim cannot arrive. Adding to that allowlist needs the same kind of reason.
-- **Every session write goes through `SessionView.set`.** A deployment refuses a
-  name (`AWS_*`, a credential) with a `pre_session` rule, and a writer that
-  reaches `session.env` directly makes that rule advisory. `export` and a plain
+- **Every session write a shell line names goes through `SessionView.set`.** A
+  deployment refuses a name (`AWS_*`, a credential) with a `pre_session` rule,
+  and a writer that reaches `session.env` directly makes that rule advisory. `export` and a plain
   assignment always cleared the gate; the expansion-time writers did not, so
   `${X:=d}`, `$((X=5))`, `(( ))`, `printf -v` and `for ((X=0; ...))` each wrote
   past every policy. The view is threaded into expansion explicitly rather than
   read from ambient state, and defaults to `None` (correct outside a workspace,
   where the env is the only state there is). Reads (`$X`) stay sync; only the
   writers await. `tests/workspace/expand/test_session_gate.py` and
-  `integ/session/writers.json` hold the line in both languages.
+  `integ/session/writers.json` hold the line in both languages. Two host-side
+  doors are exempt by design and write through `seed_var`: the shell's own
+  bookkeeping (`cd` writing `PWD`/`OLDPWD`, `[[ =~ ]]` writing `BASH_REMATCH`;
+  `SHELL_BOOKKEEPING` in `session/state.py`) and the embedder seeding a
+  session before it is handed out (`SessionManager.env`). A `for` loop's
+  variable is not written back at all (bash leaves it at its last value). A
+  snapshot restore is **not** exempt: every session table and the env template
+  a snapshot carries clear the gate (`gate_restored_vars`) before any of it
+  lands, mount state included, so a refusal aborts the load with the workspace
+  as it was rather than half-restored.
 - **The record client is a substrate, not a session detail.** Sessions, the
   namespace node table and workspace metadata are three tables that persist the
   same way, so the keyed-record clients live in `workspace/record/`

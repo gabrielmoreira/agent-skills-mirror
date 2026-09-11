@@ -30,7 +30,12 @@ If no flags are provided, run in standard mode.
 Run all checks in this order and report each as `pass`, `warn`, or `fail`.
 
 1. Python runtime
-- Resolve `python3` first, then `python`.
+- Resolve `python3` first, then `python`. A name that is on PATH but cannot report
+  its own version does not win the resolution: fall through to the next candidate.
+  (Windows ships a `python3` App Execution Alias that is a Microsoft Store stub, not
+  an interpreter, and it sits on PATH ahead of a python.org install.) A name that
+  cannot be launched at all counts as the same kind of dud, and is reported as a
+  failed check rather than ending the run.
 - Require version >= 3.10.
 - `fail` if no Python interpreter is found.
 - `fail` if version is below 3.10.

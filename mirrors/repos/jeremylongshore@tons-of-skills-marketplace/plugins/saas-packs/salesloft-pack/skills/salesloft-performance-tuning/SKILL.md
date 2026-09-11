@@ -1,151 +1,86 @@
 ---
 name: salesloft-performance-tuning
-description: 'Optimize SalesLoft API performance with caching, pagination strategies,
-  and connection pooling.
-
-  Use when experiencing slow API responses, reducing latency for bulk operations,
-
-  or optimizing cadence sync throughput.
-
-  Trigger: "salesloft performance", "optimize salesloft", "salesloft slow", "salesloft
-  caching".
-
-  '
-allowed-tools: Read, Write, Edit
+description: >-
+  Analyze and improve measured Salesloft sync latency and throughput with cursor polling, bounded page size, safe concurrency, caching, and correctness checks. Use when an integration is slow or falling behind. Trigger with "Salesloft performance", "speed up Salesloft sync", or "Salesloft cursor poller".
+argument-hint: "[repository-path] [operation]"
+allowed-tools: Read, Glob, Grep, WebFetch, Write, Edit
 version: 1.6.0
-license: MIT
 author: Jeremy Longshore <jeremy@intentsolutions.io>
+license: MIT
 tags:
 - saas
-- sales
-- outreach
 - salesloft
+- performance
+model: inherit
+effort: medium
 compatibility: Designed for Claude Code
 ---
-# SalesLoft Performance Tuning
+# Salesloft Sync Performance Tuning
 
 ## Overview
 
-Optimize SalesLoft REST API v2 performance. Key bottlenecks: deep pagination (cost multiplier), no batch endpoints, and per-minute rate limits. Solutions: caching, incremental sync, and pagination-aware request planning.
+This skill optimizes one measured Salesloft path without trading away completeness or tenant isolation. It treats deep pagination and uncontrolled concurrency as cost and correctness risks.
 
-## Latency Benchmarks
+## Prerequisites
 
-| Operation | Typical | With Caching |
-|-----------|---------|-------------|
-| GET /me.json | 80ms | N/A (auth) |
-| GET /people.json (page 1) | 120ms | 1ms (cached) |
-| POST /people.json | 200ms | N/A (write) |
-| GET /activities/emails.json | 150ms | 1ms (cached) |
-| Full sync (10k people) | ~20min | ~5min (incremental) |
+- A named operation, team, dataset size, and service-level objective
+- Baseline latency, pages, endpoint cost, remaining budget, retries, and lag
+- Correctness assertions and replayable fixtures
+- Durable cursor and destination transaction boundary
+
+## Tool Discipline
+
+Use `Read`, `Glob`, and `Grep` to locate pagers, caches, concurrency, checkpoints, and metrics. Use `WebFetch` only for current official Salesloft contracts. Use `Write` or `Edit` after the baseline and target path are confirmed.
+
+## Current Contract
+
+- Supported list endpoints generally page from 1 with up to 100 records per page.
+- Deep page indices incur higher documented cost, so full scans degrade shared team capacity.
+- Salesloft's efficient polling pattern sorts `updated_at` ascending and persists a microsecond-precision cursor.
+- A production poller must handle overlap and duplicate processing safely.
+- Actual response headers, not assumed request counts, measure endpoint cost.
+
+## Authentication
+
+Use the existing tenant-bound read credential. Performance work must not broaden scopes or mix caches, cursors, or limiters between teams.
 
 ## Instructions
 
-### Step 1: Response Caching
+1. Measure the slow path with record count, page count, p50/p95 latency, endpoint cost, remaining budget, and lag.
+2. Confirm the endpoint's supported filters and sort fields.
+3. Replace repeated deep scans with an `updated_at` cursor, ascending order, page size up to 100, and a deliberate overlap window.
+4. Persist destination data and cursor atomically; deduplicate by stable resource ID and content fingerprint.
+5. Add bounded per-team concurrency and cache only data with explicit freshness rules.
+6. Load-test with fixtures, then run a bounded canary against an approved team.
+7. Compare before/after performance and reconciliation counts before rollout.
 
-```typescript
-import { LRUCache } from 'lru-cache';
+## Approval Boundaries
 
-const cache = new LRUCache<string, any>({ max: 5000, ttl: 60_000 });
+Do not raise concurrency, remove overlap, skip reconciliation, or cache prospect data beyond policy merely to improve latency.
 
-async function cachedGet<T>(endpoint: string, params?: Record<string, any>): Promise<T> {
-  const key = `${endpoint}:${JSON.stringify(params || {})}`;
-  const hit = cache.get(key);
-  if (hit) return hit as T;
+## Output
 
-  const { data } = await api.get(endpoint, { params });
-  cache.set(key, data);
-  return data;
-}
-
-// Cache people lookups (frequent during cadence enrollment)
-const person = await cachedGet('/people.json', { email_addresses: ['alex@co.com'] });
-```
-
-### Step 2: Incremental Sync with updated_at
-
-```typescript
-// Only fetch records changed since last sync
-async function incrementalSync(lastSyncTime: string) {
-  const updated: any[] = [];
-  let page = 1;
-
-  while (true) {
-    const { data } = await api.get('/people.json', {
-      params: {
-        updated_at: { gt: lastSyncTime }, // ISO 8601
-        per_page: 100,
-        page,
-        sort_by: 'updated_at',
-        sort_direction: 'ASC',
-      },
-    });
-    updated.push(...data.data);
-    if (page >= data.metadata.paging.total_pages) break;
-    page++;
-  }
-
-  return { updated, newSyncTime: new Date().toISOString() };
-}
-```
-
-### Step 3: Avoid Deep Pagination Cost
-
-```typescript
-// Deep pages cost 3-30x. Instead of paginating all 25k records,
-// use updated_at filter to get incremental changes
-function shouldUseIncremental(totalCount: number): boolean {
-  // If total records > 1000, incremental sync is more efficient
-  // Full pagination of 250 pages = 910 cost points vs.
-  // incremental of last 50 changes = 1 page = 1 point
-  return totalCount > 1000;
-}
-```
-
-### Step 4: Connection Pooling
-
-```typescript
-import { Agent } from 'https';
-
-const agent = new Agent({
-  keepAlive: true,
-  maxSockets: 10,     // Max concurrent connections
-  maxFreeSockets: 5,  // Keep idle connections alive
-  timeout: 30_000,
-});
-
-const api = axios.create({
-  baseURL: 'https://api.salesloft.com/v2',
-  headers: { Authorization: `Bearer ${process.env.SALESLOFT_API_KEY}` },
-  httpsAgent: agent,
-});
-```
-
-### Step 5: Parallel Safe Reads
-
-```typescript
-// Parallelize independent reads (each costs 1 point)
-const [people, cadences, activities] = await Promise.all([
-  api.get('/people.json', { params: { per_page: 100 } }),
-  api.get('/cadences.json', { params: { per_page: 50 } }),
-  api.get('/activities/emails.json', { params: { per_page: 100 } }),
-]);
-// 3 points total, ~120ms parallel vs ~360ms sequential
-```
+Return baseline, bottleneck, change, cursor and cache rules, rate impact, correctness comparison, canary result, and measured improvement.
 
 ## Error Handling
 
-| Issue | Cause | Solution |
-|-------|-------|----------|
-| Cache stampede | TTL expiry under load | Stale-while-revalidate pattern |
-| Incremental misses | Clock skew | Use `updated_at` from last response, not local clock |
-| Connection timeout | Pool exhausted | Increase `maxSockets` or reduce concurrency |
-| Rate limit on bulk | Too many parallel requests | Use `p-queue` with `intervalCap: 10` |
+| Condition | Response |
+|---|---|
+| Records missing | Roll back and widen overlap or repair cursor logic. |
+| Duplicate side effects | Make the consumer idempotent before resuming. |
+| Endpoint cost rises | Reduce deep pages or concurrency and inspect actual headers. |
+| Cache crosses team | Purge affected entries and investigate tenant isolation. |
+
+## Examples
+
+The example below shows the minimum redacted evidence expected from a successful invocation of this operator workflow.
+
+```text
+lag=18m->3m; p95=2.4s->0.8s; reconciled=100%; endpoint-cost=-63%
+```
 
 ## Resources
 
-- [SalesLoft Rate Limits](https://developers.salesloft.com/docs/platform/api-basics/rate-limits/)
-- [LRU Cache](https://github.com/isaacs/node-lru-cache)
-
-## Next Steps
-
-For cost optimization, see `salesloft-cost-tuning`.
+- [Skill-specific official documentation](references/official-docs.md)
+- [Efficient cursor poller](https://developers.salesloft.com/docs/platform/guides/building-an-efficient-cursor-poller/)
+- [Filtering, paging, and sorting](https://developers.salesloft.com/docs/platform/api-basics/filtering-paging-sorting/)

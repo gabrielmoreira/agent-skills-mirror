@@ -1,139 +1,85 @@
 ---
 name: together-rate-limits
-description: 'Together AI rate limits for inference, fine-tuning, and model deployment.
-
-  Use when working with Together AI''s OpenAI-compatible API.
-
-  Trigger: "together rate limits".
-
-  '
-allowed-tools: Read, Write, Edit, Bash(pip:*), Grep
-version: 1.7.0
-license: MIT
+description: >-
+  Analyze and control Together AI serverless concurrency from dynamic per-model request/token headers, bounded queues, jittered retries, and batch or dedicated alternatives. Use when preventing throttling or sizing inference traffic. Trigger with "Together rate limit", "Together 429", or "Together concurrency control".
+argument-hint: "[repository-path] [model-id] [traffic-profile]"
+allowed-tools: Read, Glob, Grep, WebFetch, Write, Edit
+version: 1.9.0
 author: Jeremy Longshore <jeremy@intentsolutions.io>
+license: MIT
 tags:
 - saas
-- ai
-- inference
-- together
-compatibility: Designed for Claude Code
+- together-ai
+- rate-limits
+model: inherit
+effort: high
+compatibility: Designed for Claude Code; measurement requires authorized Together AI serverless responses
 ---
-# Together AI Rate Limits
+# Together AI Dynamic Rate Limits
 
 ## Overview
 
-Together AI's OpenAI-compatible inference API enforces per-key rate limits that vary by model tier and operation type. Chat completions and embeddings share a global request quota, while fine-tuning jobs and batch inference have separate concurrency caps. High-throughput workloads like embedding entire document corpora or running evaluations across 100+ prompts require client-side token bucket limiting. Together's batch inference endpoint offers 50% cost savings but has its own queue depth limits that differ from real-time inference.
+This skill replaces fixed quota tables with adaptive control driven by Together's current response headers and observed workload demand.
 
-## Rate Limit Reference
+## Prerequisites
 
-| Endpoint | Limit | Window | Scope |
-|----------|-------|--------|-------|
-| Chat completions | 600 req | 1 minute | Per API key |
-| Embeddings | 300 req | 1 minute | Per API key |
-| Image generation (FLUX) | 60 req | 1 minute | Per API key |
-| Fine-tune jobs (concurrent) | 3 jobs | Rolling | Per API key |
-| Batch inference | 100 req/batch, 10 batches | Rolling | Per API key |
+- The exact model IDs and traffic profile by request and token volume
+- Access to response headers from the HTTP or SDK transport
+- Queue-latency, retry, spend, and failure budgets
+- A decision owner for batch, provisioned, or dedicated capacity
 
-## Rate Limiter Implementation
+## Tool Discipline
 
-```typescript
-class TogetherRateLimiter {
-  private tokens: number;
-  private lastRefill: number;
-  private readonly max: number;
-  private readonly refillRate: number;
-  private queue: Array<{ resolve: () => void }> = [];
+Use `Read`, `Glob`, and `Grep` to locate concurrency, queue, retry, and telemetry code. Use `WebFetch` for the current dynamic-limit header contract. Use `Write` or `Edit` only after the target limiter and tests are identified.
 
-  constructor(maxPerMinute: number) {
-    this.max = maxPerMinute;
-    this.tokens = maxPerMinute;
-    this.lastRefill = Date.now();
-    this.refillRate = maxPerMinute / 60_000;
-  }
+## Current Contract
 
-  async acquire(): Promise<void> {
-    this.refill();
-    if (this.tokens >= 1) { this.tokens -= 1; return; }
-    return new Promise(resolve => this.queue.push({ resolve }));
-  }
+- Serverless limits are dynamic per organization and model; historical account tiers are retired.
+- Read request and token limit/remaining/reset headers on every response and maintain state per model.
+- Treat displayed RPM as a per-second enforcement budget when Together documents that conversion.
+- Use batch for delay-tolerant bursts and dedicated capacity for predictable reserved throughput.
 
-  private refill() {
-    const now = Date.now();
-    this.tokens = Math.min(this.max, this.tokens + (now - this.lastRefill) * this.refillRate);
-    this.lastRefill = now;
-    while (this.tokens >= 1 && this.queue.length) {
-      this.tokens -= 1;
-      this.queue.shift()!.resolve();
-    }
-  }
-}
+## Authentication
 
-const chatLimiter = new TogetherRateLimiter(500);  // buffer under 600
-const embedLimiter = new TogetherRateLimiter(250);
-```
+Limit headers arrive on authenticated serverless inference responses using the project-scoped Bearer key. Record numeric headers and model alias only; never retain the credential or sensitive body.
 
-## Retry Strategy
+## Instructions
 
-```typescript
-async function togetherRetry<T>(
-  limiter: TogetherRateLimiter, fn: () => Promise<Response>, maxRetries = 4
-): Promise<T> {
-  for (let attempt = 0; attempt <= maxRetries; attempt++) {
-    await limiter.acquire();
-    const res = await fn();
-    if (res.ok) return res.json();
-    if (res.status === 429) {
-      const retryAfter = parseInt(res.headers.get("Retry-After") || "5", 10);
-      const jitter = Math.random() * 2000;
-      await new Promise(r => setTimeout(r, retryAfter * 1000 + jitter));
-      continue;
-    }
-    if (res.status >= 500 && attempt < maxRetries) {
-      await new Promise(r => setTimeout(r, Math.pow(2, attempt) * 1000));
-      continue;
-    }
-    throw new Error(`Together API ${res.status}: ${await res.text()}`);
-  }
-  throw new Error("Max retries exceeded");
-}
-```
+1. Inventory callers, models, concurrency, token sizes, queue depth, and existing retries.
+2. Capture the current `x-ratelimit-*` and `x-tokenlimit-*` fields from redacted responses.
+3. Build independent request and token budgets keyed by model and organization context.
+4. Admit work through a bounded queue; reserve headroom for retries and interactive traffic.
+5. On `429`, honor reset evidence, apply jitter, and stop at the request deadline.
+6. Load-test below approval bounds, then choose serverless, batch, or dedicated capacity from measured demand.
 
-## Batch Processing
+## Approval Boundaries
 
-```typescript
-async function batchEmbedDocuments(texts: string[], model: string, batchSize = 20) {
-  const results: any[] = [];
-  for (let i = 0; i < texts.length; i += batchSize) {
-    const batch = texts.slice(i, i + batchSize);
-    const result = await togetherRetry(embedLimiter, () =>
-      fetch("https://api.together.xyz/v1/embeddings", {
-        method: "POST", headers,
-        body: JSON.stringify({ model, input: batch }),
-      })
-    );
-    results.push(result);
-    if (i + batchSize < texts.length) await new Promise(r => setTimeout(r, 3000));
-  }
-  return results;
-}
-```
+Do not manufacture fixed limits, increase retry concurrency after throttling, or move to paid reserved hardware without explicit cost and capacity approval.
+
+## Output
+
+Return observed headers, per-model limiter settings, queue/retry budgets, load-test evidence, dropped/deferred work, and capacity recommendation.
 
 ## Error Handling
 
-| Issue | Cause | Fix |
-|-------|-------|-----|
-| 429 on chat completions | Exceeded 600 req/min key limit | Use token bucket, avoid burst patterns |
-| 429 on embeddings | Embedding limit is half of chat | Batch inputs (up to 20 texts per request) |
-| Model not found | Wrong model ID string | Verify with `GET /v1/models` endpoint |
-| 503 model overloaded | Popular model at peak demand | Retry with backoff, or use fallback model |
-| Fine-tune 409 | 3 concurrent job limit reached | Wait for running job to complete first |
+| Condition | Response |
+|---|---|
+| Limit headers missing | Fall back conservatively and surface transport visibility as a blocker. |
+| `429` persists | Reduce concurrency; do not multiply retries. |
+| Queue deadline exceeded | Fail or defer according to workload policy. |
+| Bursts dominate | Evaluate Batch API rather than chasing serverless limits. |
+
+## Examples
+
+The example below shows the minimum redacted evidence expected from a successful invocation of this operator workflow.
+
+```text
+model=catalog-id; limits=header-derived; queue=bounded; retry=jittered; overflow=batch-candidate
+```
 
 ## Resources
 
-- [Together AI Documentation](https://docs.together.ai/)
-- [API Reference](https://docs.together.ai/reference/chat-completions-1)
-- [Model List](https://docs.together.ai/docs/inference-models)
-
-## Next Steps
-
-See `together-cost-tuning` for batch and caching trade-offs.
+- [Skill-specific official documentation](references/official-docs.md)
+- [Serverless rate limits](https://docs.together.ai/docs/serverless/rate-limits)
+- [Usage limits and analytics](https://docs.together.ai/docs/billing-usage-limits)
+- [Batch overview](https://docs.together.ai/docs/inference/batch/overview)

@@ -1,176 +1,87 @@
 ---
 name: salesloft-webhooks-events
-description: 'Implement SalesLoft webhook handling with signature verification and
-  event routing.
-
-  Use when setting up webhook endpoints, handling activity notifications,
-
-  or syncing SalesLoft data to external systems in real-time.
-
-  Trigger: "salesloft webhook", "salesloft events", "salesloft notifications".
-
-  '
-allowed-tools: Read, Write, Edit, Bash(curl:*)
+description: >-
+  Verify and process Salesloft webhooks using exact raw-body SHA-1 HMAC, callback-token validation, event routing, durable deduplication, and reconciliation. Use when building or auditing a webhook receiver. Trigger with "Salesloft webhook", "Salesloft signature", or "Salesloft event handler".
+argument-hint: "[repository-path] [event-type]"
+allowed-tools: Read, Glob, Grep, WebFetch, Write, Edit
 version: 1.6.0
-license: MIT
 author: Jeremy Longshore <jeremy@intentsolutions.io>
+license: MIT
 tags:
 - saas
-- sales
-- outreach
 - salesloft
+- webhooks
+model: inherit
+effort: medium
 compatibility: Designed for Claude Code
 ---
-# SalesLoft Webhooks & Events
+# Salesloft Verified Webhook Processing
 
 ## Overview
 
-Handle SalesLoft webhook notifications for real-time data sync. SalesLoft sends webhooks for person updates, email events (sent, opened, clicked, replied, bounced), call completions, and cadence membership changes. Webhooks use HMAC-SHA256 signatures.
+This skill accepts a delivery only after authenticating its exact bytes and subscription secret. It makes side effects idempotent even though the general delivery contract does not expose a timestamp replay header.
+
+## Prerequisites
+
+- Approved HTTPS callback URL and event type
+- Webhook subscription with a high-entropy callback token
+- Raw-body access before JSON parsing
+- Durable deduplication store and reconciliation owner
+
+## Tool Discipline
+
+Use `Read`, `Glob`, and `Grep` to inspect body parsing, signature comparison, queues, and side effects. Use `WebFetch` only for current official Salesloft webhook documentation. Use `Write` or `Edit` after the handler boundary is confirmed.
+
+## Current Contract
+
+- `x-salesloft-event` identifies the delivered event type.
+- `x-salesloft-signature` is the hexadecimal SHA-1 HMAC of the exact response/request body using `callback_token` as the key.
+- The callback token is also included in each event payload and should be validated.
+- Failed deliveries are retried three additional times, 15 seconds apart.
+- Subscription scopes vary by event type and must be checked in the current event table.
+
+## Authentication
+
+Protect the callback token as a secret. Compute the expected HMAC from the exact raw body, decode hex safely, require equal lengths, and use constant-time comparison before parsing or queuing.
 
 ## Instructions
 
-### Step 1: Register Webhook in SalesLoft
+1. Capture raw bytes and required headers before any middleware transforms the body.
+2. Reject missing, malformed, unequal-length, or non-matching signatures.
+3. Parse JSON only after signature success and validate the callback token and expected event type.
+4. Derive a stable deduplication key from event type plus canonical business identifiers and payload digest.
+5. Persist receipt and dedup state before acknowledging or dispatching side effects.
+6. Process asynchronously with bounded retries and reconcile missed changes through API reads.
+7. Test tampering, malformed hex, duplicate delivery, retry, queue failure, and rotated token behavior.
 
-Configure webhooks in SalesLoft Settings > Integrations > Webhooks:
+## Approval Boundaries
 
-- URL: `https://your-app.com/webhooks/salesloft`
-- Events: Select specific events (person.updated, email.sent, etc.)
-- Copy the webhook signing secret
+Do not create or change a subscription, callback URL, event scope, or production token without owner approval. Reject unverifiable events rather than accepting them for debugging convenience.
 
-### Step 2: Signature Verification
+## Output
 
-```typescript
-import crypto from 'crypto';
-import express from 'express';
-
-function verifySalesloftWebhook(
-  rawBody: Buffer,
-  signature: string,
-  timestamp: string,
-): boolean {
-  const secret = process.env.SALESLOFT_WEBHOOK_SECRET!;
-
-  // Replay protection: reject webhooks older than 5 minutes
-  const age = Math.abs(Date.now() / 1000 - parseInt(timestamp));
-  if (age > 300) return false;
-
-  const expected = crypto
-    .createHmac('sha256', secret)
-    .update(`${timestamp}.${rawBody.toString()}`)
-    .digest('hex');
-
-  return crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(expected));
-}
-```
-
-### Step 3: Event Router
-
-```typescript
-interface SalesloftWebhookEvent {
-  event_type: string; // e.g., 'person.created', 'email.sent', 'call.completed'
-  event_id: string;
-  data: Record<string, any>;
-  created_at: string;
-}
-
-const handlers: Record<string, (data: any) => Promise<void>> = {
-  'person.created': async (data) => {
-    console.log(`New person: ${data.email_address}`);
-    await syncToExternalCRM(data);
-  },
-  'person.updated': async (data) => {
-    await updateExternalCRM(data.id, data);
-  },
-  'email.sent': async (data) => {
-    await logActivity('email_sent', data);
-  },
-  'email.opened': async (data) => {
-    await logActivity('email_opened', data);
-  },
-  'email.clicked': async (data) => {
-    await logActivity('email_clicked', data);
-  },
-  'email.replied': async (data) => {
-    await logActivity('email_replied', data);
-    await notifySalesRep(data.person_id, 'Reply received!');
-  },
-  'email.bounced': async (data) => {
-    await markEmailInvalid(data.person_id);
-  },
-  'call.completed': async (data) => {
-    await logActivity('call', { ...data, duration: data.duration });
-  },
-};
-```
-
-### Step 4: Express Webhook Endpoint
-
-```typescript
-const app = express();
-
-app.post('/webhooks/salesloft',
-  express.raw({ type: 'application/json' }),
-  async (req, res) => {
-    const sig = req.headers['x-salesloft-signature'] as string;
-    const ts = req.headers['x-salesloft-timestamp'] as string;
-
-    if (!verifySalesloftWebhook(req.body, sig, ts)) {
-      return res.status(401).json({ error: 'Invalid signature' });
-    }
-
-    const event: SalesloftWebhookEvent = JSON.parse(req.body.toString());
-
-    // Idempotency: skip already-processed events
-    if (await isProcessed(event.event_id)) {
-      return res.status(200).json({ status: 'already_processed' });
-    }
-
-    // Respond immediately, process async
-    res.status(200).json({ received: true });
-
-    try {
-      const handler = handlers[event.event_type];
-      if (handler) {
-        await handler(event.data);
-        await markProcessed(event.event_id);
-      }
-    } catch (err) {
-      console.error(`Failed: ${event.event_type} ${event.event_id}`, err);
-      await queueForRetry(event);
-    }
-  }
-);
-```
-
-### Step 5: Idempotency Store
-
-```typescript
-import { Redis } from 'ioredis';
-const redis = new Redis(process.env.REDIS_URL!);
-
-async function isProcessed(eventId: string): Promise<boolean> {
-  return (await redis.exists(`sl:event:${eventId}`)) === 1;
-}
-
-async function markProcessed(eventId: string): Promise<void> {
-  await redis.set(`sl:event:${eventId}`, '1', 'EX', 604800); // 7-day TTL
-}
-```
+Return event type, signature and callback-token verdicts, dedup key, queue receipt, processing result, retry state, and reconciliation status without payload data.
 
 ## Error Handling
 
-| Issue | Cause | Solution |
-|-------|-------|----------|
-| Invalid signature | Wrong secret or body parsing | Use raw body parser, verify secret |
-| Duplicate events | Webhook retries | Idempotency check by `event_id` |
-| Timeout on processing | Heavy handler logic | Respond 200 immediately, process async |
-| Missing events | Wrong event subscription | Check webhook config in SalesLoft dashboard |
+| Condition | Response |
+|---|---|
+| Signature mismatch | Reject before parsing and record redacted metadata. |
+| Duplicate delivery | Return prior outcome without repeating side effects. |
+| Handler failure | Preserve receipt and use bounded internal retry. |
+| Missed event suspected | Reconcile through the relevant read endpoint or cursor poller. |
+
+## Examples
+
+The example below shows the minimum redacted evidence expected from a successful invocation of this operator workflow.
+
+```text
+event=person_updated; signature=pass; callback-token=pass; duplicate=no; queued=yes
+```
 
 ## Resources
 
-- [SalesLoft API Basics](https://developers.salesloft.com/docs/platform/api-basics/)
-- [SalesLoft Developer Portal](https://developers.salesloft.com/)
-
-## Next Steps
-
-For performance optimization, see `salesloft-performance-tuning`.
+- [Skill-specific official documentation](references/official-docs.md)
+- [Webhook delivery headers](https://developers.salesloft.com/docs/platform/webhooks/delivery-headers/)
+- [Webhook event types](https://developers.salesloft.com/docs/platform/webhooks/event-types/)
+- [Create a webhook subscription](https://developers.salesloft.com/docs/api/webhook-subscriptions-create/)

@@ -520,6 +520,13 @@ this way must never cite the triage tooling itself as a completion
 dependency: its acceptance criteria stay implementable by any agent,
 including one lacking that specific integration.
 
+A sibling entry path exists for a signal whose _root cause_ lives in a
+different repository (the `idd-skill` distribution itself) rather than
+in this one: see
+[Upstream-candidate escalation](../.github/instructions/idd-overview-appendix.instructions.md#upstream-candidate-escalation)
+in the reference appendix for the qualifying criteria and the local
+marker/label convention it produces.
+
 ## Issue-author approval contract
 
 Repositories may also keep a secure-by-default issue-author approval
@@ -765,19 +772,24 @@ external scheduler.
 Running this variant safely requires:
 
 - **A non-context-inheriting delegation mechanism for the full
-  B-through-F4 worker role, when the calling tool offers one.** A
-  context-inheriting worker (e.g. Claude Code's `fork` subagent) can let
-  the orchestrator's own recent framing compete with, and sometimes
-  override, the delegation brief's own role statement — the same
-  problem [Critique pass invocation](#critique-pass-invocation) already
-  avoids for Claude Code's narrower critique-pass role, since that row
-  also picks a fresh `general-purpose` agent rather than a
+  B-through-F4 worker role, whenever the calling tool offers one — a
+  strong preference, not merely a suggestion, per
+  [Orchestrator delegation](../.github/instructions/idd-claim.instructions.md#orchestrator-delegation).**
+  A context-inheriting worker (e.g. Claude Code's `fork` subagent) can
+  let the orchestrator's own recent framing compete with, and
+  sometimes override, the delegation brief's own role statement — the
+  same problem [Critique pass invocation](#critique-pass-invocation)
+  already avoids for Claude Code's narrower critique-pass role, since
+  that row also picks a fresh `general-purpose` agent rather than a
   context-inheriting one. Extend that same preference to this full
-  worker role, whenever the tool exposes the choice, and fall back to
-  the explicit role-statement wording in
-  [Orchestrator delegation](../.github/instructions/idd-claim.instructions.md#orchestrator-delegation)
-  as defense-in-depth when only a context-inheriting mechanism is
-  available (kurone-kito/idd-skill#2221, kurone-kito/idd-skill#2624).
+  worker role whenever the tool exposes the choice; a
+  context-inheriting mechanism is a fallback only for when no
+  non-context-inheriting alternative exists, and even careful brief
+  wording (the explicit role-statement text in
+  [Orchestrator delegation](../.github/instructions/idd-claim.instructions.md#orchestrator-delegation))
+  does not reliably close its residual role-misread risk — a
+  documented known limitation (kurone-kito/idd-skill#2221,
+  kurone-kito/idd-skill#2624, kurone-kito/idd-skill#2802).
 - **A small concurrency cap**, sized against CI-minute cost and
   shared-file contention rather than raised without bound. The optional
   `discover-shared-file-overlap` helper (see
@@ -794,11 +806,33 @@ Running this variant safely requires:
   carry the
   [wake-up discipline](../.github/instructions/idd-ci.instructions.md#wake-up-discipline)
   topology-safety condition, so a worker never assumes an unconfirmed
-  background wait resumes its own turn. The brief must also state that
-  the worker's B-through-F execution ends at F4-complete: the worker
-  reports its final result back to the orchestrator instead of
-  independently entering F5's Discover step, so Discover/Claim ownership
-  stays with the orchestrator alone.
+  background wait resumes its own turn: the worker must wait
+  synchronously or with a confirmed topology-safe wake for any
+  backgrounded command, and must not end its turn until that wait has
+  a confirmed result (kurone-kito/idd-skill#2221,
+  kurone-kito/idd-skill#2624). When the orchestrating session already
+  has a same-session sibling worker that stalled this way, the brief
+  must cite that sibling failure by name. The brief must also state
+  that the worker's B-through-F execution ends at F4-complete: the
+  worker reports its final result back to the orchestrator instead of
+  independently entering F5's Discover step, so Discover/Claim
+  ownership stays with the orchestrator alone.
+- **A delegation brief that requires issue-number-namespaced
+  scratchpad filenames.** Concurrently delegated workers share the
+  orchestrating session's own scratchpad directory — it is
+  session-scoped, not subagent-scoped — so a generic filename
+  (`pr-body.md`, `commit-msg.txt`, `plan-draft.md`, etc.) one worker
+  writes under its brief can collide with, and be silently
+  overwritten by, a sibling worker writing the same name under its
+  own brief. Each delegation brief must instruct its worker to
+  prefix every scratchpad file it creates with the issue number (for
+  example `2878-pr-body.md`), or to create and use an issue-numbered
+  scratchpad subdirectory, instead of a generic filename a sibling
+  worker might independently produce too under its own brief (observed
+  2026-09-10, kurone-kito/idd-skill#2900). This is a separate
+  requirement from the background-wait topology-safety condition
+  above — a namespacing convention for concurrent scratchpad writes,
+  not a wake-up-discipline concern.
 - **The delegation brief carries the claim token verbatim, nonce
   included — and the worker actively revalidates it.** The worker
   adopts the orchestrator's already-verified `{agent-id}` / `{claim-id}`
@@ -1181,8 +1215,8 @@ as a structured self-review step within the same response.
 
 ### Repository-configurable critique delegate
 
-A repository may point C1 at a reviewer other than the per-agent
-mechanism above by setting `critiqueLoop.delegate` in
+A repository may point C1 or E10 at a reviewer other than the
+per-agent mechanism above by setting `critiqueLoop.delegate` in
 `.github/idd/config.json` (see
 [Customization Surfaces](customization.md#customization-surfaces) and
 [Configuration Authority Hierarchy](policy-constants.md#configuration-authority-hierarchy)):
@@ -1223,7 +1257,9 @@ advance to PR submission on that vacuous result. A delegate that trips
 one of the conditions above but still emitted a readable findings list
 has produced critique — those findings are the pass's output and C1
 continues to C3 scoring on them. `fallback`'s fall-through to the
-per-agent mechanism is unchanged.
+per-agent mechanism is unchanged. (Written here in C1's own step
+vocabulary — `C2`/`C3`; see "E10 delegate support" below for the same
+hold applied in E10's own vocabulary.)
 
 The hold turns on a **missing or unreadable** findings list, never on
 an empty one. A delegate that succeeded and reported no issues has
@@ -1242,25 +1278,27 @@ Configuration-time fail-safe (distinct from the runtime behavior
 above): a non-object `critiqueLoop.delegate`, one whose `command` is
 missing, empty, whitespace-only, non-string, or supplied through the
 prototype chain rather than as an own property, or one carrying any key
-beyond `command`/`mode`, is treated the same as an absent delegate — C1
-uses the per-agent mechanism, never attempting the delegate at all. A
-present but non-object **`critiqueLoop`** parent (a string, array, or
-`null`) is a repository-local configuration error rather than an absent
-key: it fails closed to the per-agent mechanism and, like a malformed
+beyond `command`/`mode`, is treated the same as an absent delegate —
+the calling pass (C1 or E10) uses the per-agent mechanism, never
+attempting the delegate at all. A present but non-object
+**`critiqueLoop`** parent (a string, array, or `null`) is a
+repository-local configuration error rather than an absent key: it
+fails closed to the per-agent mechanism and, like a malformed
 `delegate`, blocks user-global inheritance instead of letting a global
 delegate stand in for it. A present but **unrecognized `mode`** is
-unusable the same way: effective C1 resolution reports a
+unusable the same way: effective delegate resolution reports a
 repository-local one as malformed, so it neither runs nor inherits the
 user-global layer, and reports an unusable user-global fragment as
-absent. Either way C1 falls back to the per-agent mechanism rather than
-running the delegate under an assumed default. (A direct
-`normalizePolicyConfig` caller — a different consumer, not the C1
-resolution path — still collapses such a value to the `fallback`
-default, which is why both behaviors have their own regression tests.)
-`.github/idd/config.json` schema validation separately rejects an
-unsupported `mode` value or any key other than `command`/`mode` before
-the file is accepted, so this state normally reaches C1 only through
-the unvalidated user-global file.
+absent. Either way the calling pass falls back to the per-agent
+mechanism rather than running the delegate under an assumed default.
+(A direct `normalizePolicyConfig` caller — a different consumer, not
+the delegate resolution path used by C1 or E10 — still collapses such
+a value to the `fallback` default, which is why both behaviors have
+their own regression tests.) `.github/idd/config.json` schema
+validation separately rejects an unsupported `mode` value or any key
+other than `command`/`mode` before the file is accepted, so this state
+normally reaches C1 or E10 only through the unvalidated user-global
+file.
 
 The C-phase's objective diff validation floor described below applies
 **uniformly** whether a delegate is configured or not, in every mode,
@@ -1447,14 +1485,22 @@ never changes which mechanism supplies critique findings, the C-phase
 objective diff validation floor, the E-phase Copilot
 advisory-convergence policy, required checks, or merge gates.
 
-### E10 has no delegate or telemetry hook support
+### E10 delegate support; telemetry hook stays C1-only
 
-`idd-review-fix.instructions.md`'s own critique pass (E10) does not
-consult `critiqueLoop.delegate` or `critiqueLoop.telemetryHook` at
-all — both surfaces are scoped to the C1 critique pass only, and E10
-always runs the per-agent mechanism above unmodified, regardless of
-how either surface is configured. Extending either surface to E10 is a
-separate, not-yet-scoped change.
+`idd-review-fix.instructions.md`'s own critique pass (E10) also
+consults `critiqueLoop.delegate`, using the exact same resolution
+chain, `mode` semantics, and fail-closed hold behavior described above
+for C1 — including the `idd-critique-delegate` helper and the
+`instructions-only` resolution order. E10 states the fail-closed hold
+in its own vocabulary: when the mechanisms that actually ran under
+`on-success`/`never` leave no readable findings list, that is a hold
+(the shared Hold / suspend rules in
+`idd-overview-appendix.instructions.md` apply), never a clean "zero
+issues, proceed to E11" round.
+
+`critiqueLoop.telemetryHook` remains scoped to the C1 critique pass
+only; E10 never consults it, regardless of configuration. Extending
+the telemetry hook to E10 remains a separate, not-yet-scoped change.
 
 ### Mutation / write-side helper lens
 

@@ -1,0 +1,1 @@
+cache/repos/github.com/googleapis@mcp-toolbox/skills/maintainer/stale-sweep/references/../../../../maintainer-playbook.md

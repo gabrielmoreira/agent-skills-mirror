@@ -1,121 +1,85 @@
 ---
 name: together-local-dev-loop
-description: 'Together AI local dev loop for inference, fine-tuning, and model deployment.
-
-  Use when working with Together AI''s OpenAI-compatible API.
-
-  Trigger: "together local dev loop".
-
-  '
-allowed-tools: Read, Write, Edit, Bash(pip:*), Grep
-version: 1.7.0
-license: MIT
+description: >-
+  Develop Together AI integrations with a fake transport, recorded response shapes, deterministic assertions, and an opt-in bounded live probe. Use when iterating without spending tokens on every test. Trigger with "Together local dev", "mock Together API", or "test Together client".
+argument-hint: "[repository-path] [test-command]"
+allowed-tools: Read, Glob, Grep, WebFetch, Write, Edit
+version: 1.9.0
 author: Jeremy Longshore <jeremy@intentsolutions.io>
+license: MIT
 tags:
 - saas
-- ai
-- inference
-- together
-compatibility: Designed for Claude Code
+- together-ai
+- testing
+model: inherit
+effort: medium
+compatibility: Designed for Claude Code; optional live probes require network access and a Together AI project key
 ---
-# Together AI Local Dev Loop
+# Together AI Local Development Loop
 
 ## Overview
 
-Local development workflow for Together AI inference API integration. Provides a fast feedback loop with mock chat completions, embeddings, and model listing endpoints so you can build AI-powered applications without consuming live API credits. Together AI is OpenAI-compatible, so the same client libraries work with both. Toggle between mock mode for rapid iteration and live mode for model evaluation.
+This skill keeps ordinary development offline and deterministic while retaining one explicit live lane for detecting provider-contract drift.
 
-## Environment Setup
+## Prerequisites
 
-```bash
-cp .env.example .env
-# Set your credentials:
-# TOGETHER_API_KEY=tog_xxxxxxxxxxxx
-# TOGETHER_BASE_URL=https://api.together.xyz/v1
-# MOCK_MODE=true
-npm install express axios dotenv tsx typescript @types/node
-npm install -D vitest supertest @types/express
-# Or for Python: pip install together openai httpx pytest
-```
+- The repository's test runner and client abstraction
+- Sanitized fixtures for success, streaming chunks, `401`, `404`, `429`, and `503`
+- A separate development project key for an opt-in live probe
+- A fixed token and request budget for that probe
 
-## Dev Server
+## Tool Discipline
 
-```typescript
-// src/dev/server.ts
-import express from "express";
-import { createProxyMiddleware } from "http-proxy-middleware";
-const app = express();
-app.use(express.json());
-const MOCK = process.env.MOCK_MODE === "true";
-if (!MOCK) {
-  app.use("/v1", createProxyMiddleware({
-    target: process.env.TOGETHER_BASE_URL,
-    changeOrigin: true,
-    headers: { Authorization: `Bearer ${process.env.TOGETHER_API_KEY}` },
-  }));
-} else {
-  const { mountMockRoutes } = require("./mocks");
-  mountMockRoutes(app);
-}
-app.listen(3009, () => console.log(`Together dev server on :3009 [mock=${MOCK}]`));
-```
+Use `Read`, `Glob`, and `Grep` to discover the wrapper, tests, fixtures, and environment gates. Use `WebFetch` to confirm current response and error shapes. Use `Write` or `Edit` only after matching repository conventions; never save live prompts, outputs, or credentials as fixtures.
 
-## Mock Mode
+## Current Contract
 
-```typescript
-// src/dev/mocks.ts — OpenAI-compatible mock responses for inference
-export function mountMockRoutes(app: any) {
-  app.post("/v1/chat/completions", (req: any, res: any) => res.json({
-    id: "chatcmpl-mock-001", object: "chat.completion", model: req.body.model || "meta-llama/Llama-3-70b-chat-hf",
-    choices: [{ index: 0, message: { role: "assistant", content: "This is a mock response from Together AI." }, finish_reason: "stop" }],
-    usage: { prompt_tokens: 25, completion_tokens: 12, total_tokens: 37 },
-  }));
-  app.post("/v1/embeddings", (req: any, res: any) => res.json({
-    object: "list", model: req.body.model || "togethercomputer/m2-bert-80M-8k-retrieval",
-    data: [{ object: "embedding", index: 0, embedding: Array(768).fill(0).map(() => Math.random() * 2 - 1) }],
-  }));
-  app.get("/v1/models", (_req: any, res: any) => res.json({
-    data: [
-      { id: "meta-llama/Llama-3-70b-chat-hf", type: "chat", context_length: 8192 },
-      { id: "mistralai/Mixtral-8x22B-Instruct-v0.1", type: "chat", context_length: 65536 },
-      { id: "togethercomputer/m2-bert-80M-8k-retrieval", type: "embedding", context_length: 8192 },
-    ],
-  }));
-}
-```
+- Inject a client or transport rather than mocking SDK internals throughout the codebase.
+- Preserve the SDK response fields the application actually consumes: choices, deltas, finish reason, usage, and error status.
+- Make live tests opt-in, bounded, non-sensitive, and visibly skipped when no approved key exists.
+- Test dynamic limit-header handling without hard-coding permanent RPM or TPM values.
 
-## Testing Workflow
+## Authentication
 
-```bash
-npm run dev:mock &                    # Start mock server in background
-npm run test                          # Unit tests with vitest
-npm run test -- --watch               # Watch mode for rapid iteration
-MOCK_MODE=false npm run test:integration  # Integration test against real API
-```
+Offline tests use no key. The live lane reads a development-only `TOGETHER_API_KEY` from the approved test secret store and must be unavailable to untrusted fork workflows.
 
-## Debug Tips
+## Instructions
 
-- Together AI is OpenAI-compatible — set `base_url` to `http://localhost:3009/v1` for local dev
-- Use `/v1/models` to discover available model IDs instead of hardcoding them
-- Monitor `usage.total_tokens` in responses to estimate costs before switching to live mode
-- Batch inference (`/v1/batch`) runs at 50% cost but is async — poll for completion
-- Set `max_tokens` explicitly to avoid unexpectedly large responses and costs
+1. Locate the narrowest Together client boundary and enumerate consumed fields.
+2. Build typed fake responses for non-streaming, streaming, and each retry class.
+3. Assert model selection, request bounds, idempotent reconciliation keys, and redaction.
+4. Gate the live probe behind an explicit environment switch plus a development key.
+5. Limit the live probe to one small request against a catalog-resolved model.
+6. Compare shape-level behavior, update sanitized fixtures if approved, and record cost/cleanup.
+
+## Approval Boundaries
+
+Do not expose a live key to pull requests from forks. Do not refresh fixtures from customer traffic or authorize an unbounded live test suite.
+
+## Output
+
+Return fake-contract coverage, offline test results, live-lane disposition, model-resolution evidence, request budget, and any detected SDK or API drift.
 
 ## Error Handling
 
-| Issue | Cause | Fix |
-|-------|-------|-----|
-| `401 Unauthorized` | Invalid API key | Regenerate at api.together.xyz dashboard |
-| `404 Model not found` | Wrong model ID string | Use `client.models.list()` to verify |
-| `429 Rate Limited` | Too many requests per minute | Implement exponential backoff |
-| `500 Server Error` | Model overloaded or cold start | Retry with backoff after 5s |
-| `ECONNREFUSED :3009` | Dev server not running | Run `npm run dev:mock` first |
+| Condition | Response |
+|---|---|
+| SDK object is hard to fake | Introduce an application-owned adapter; do not patch deep internals. |
+| Live key absent | Mark the live lane skipped, not passed. |
+| Fixture contains sensitive text | Remove it and replace it with synthetic data. |
+| Live response shape changed | Preserve evidence and update the adapter before fixtures. |
+
+## Examples
+
+The example below shows the minimum redacted evidence expected from a successful invocation of this operator workflow.
+
+```text
+offline=34_pass; live=skipped(no-approved-key); fixtures=synthetic; token_budget=128
+```
 
 ## Resources
 
-- [Together AI Docs](https://docs.together.ai/)
-- [API Reference](https://docs.together.ai/reference/chat-completions-1)
-- [Model List](https://docs.together.ai/docs/inference-models)
-
-## Next Steps
-
-See `together-common-errors` for live-integration failures and recovery.
+- [Skill-specific official documentation](references/official-docs.md)
+- [Python v2 client](https://github.com/togethercomputer/together-py)
+- [Chat API](https://docs.together.ai/reference/chat-completions)
+- [Error codes](https://docs.together.ai/docs/error-codes)

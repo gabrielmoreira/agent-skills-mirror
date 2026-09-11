@@ -9,14 +9,10 @@
 </p>
 
 <p align="center">
-  <img src="docs/assets/hero-paladin-walk.gif" height="202" alt="paladin walk loop" />
-  <img src="docs/assets/hero-paladin-run.gif" height="206" alt="paladin run loop" />
-  <img src="docs/assets/hero-paladin-jump.gif" height="246" alt="paladin jump loop" />
-  <img src="docs/assets/hero-wolf-walk.gif" height="203" alt="wolf walk loop" />
-  <img src="docs/assets/hero-slime-walk.gif" height="203" alt="slime walk loop" />
+  <a href="https://youtu.be/zVu9YlbPtog"><img src="docs/assets/hero-v2-party.gif" width="960" alt="Animated sprite-gen v2 showcase: paladin, wolf and slime" /></a>
 </p>
 
-<p align="center"><sub>上のループはすべて<b>静止画一枚</b>から生まれた: モーションに合うキャンバスへパディング → Grok Imagine で動かす → フレームごとにキーイング → 真の周期で切って透明 GIF に — パイプライン B、<code>sprite-gen video-set</code>。</sub></p>
+<p align="center"><sub>各キャラクターは<b>1枚の静止画</b>から始まりました。Grok Imagineで動きを作り、sprite-genで透過ループを抽出し、HyperFramesでこのシーンを構成しました。</sub></p>
 
 ---
 
@@ -24,6 +20,10 @@
 画像モデルに「スプライトシート」を頼むと結果は分かっている: フレームごとに顔が変わるキャラ、キーアウトできない背景、重なってグリッドから外れるポーズ、ゲームエンジンが読めない PNG。デモとしては可愛く、アセットとしては役に立たない。
 
 `sprite-gen` はその隙間を埋める Codex/Claude スキルであり Python CLI だ。**ベース画像一枚**を渡すと、行ごとに生成を進め、キャラの identity を固定し、クロマ背景を本物のアルファに剥がし、ポーズごとに綺麗な透明フレームを取り出し、**機械可読な `manifest.json.frame_layout`** 付きのランタイムアトラスを焼く。同じ静止画を動画モデルに渡せば、モーション状態ごとに継ぎ目のない透明ループが返ってくる。生成が最後まで合わせられない 10% は**キュレーション Webview** で比較・除外・微調整し、ループを実再生で確かめてから焼く。
+
+## リクエストから始める
+
+**スプライト作成**または**画像作成**を依頼してください。利用状態を確認し、未指定の生成ツールと動作方式だけを質問して、既存のパイプラインで結果を渡します。キュレーション画面は任意です。用途別の既定値を保存でき、今回だけの指定では保存値を変更しません。[リクエストと既定値](docs/user-workflow.md)。
 
 ## 4 本のパイプライン、1 つの CLI
 
@@ -33,7 +33,9 @@
 flowchart LR
     subgraph A["A · atlas rows"]
         direction LR
-        a1[prepare] --> a2["gen · gen-set"] --> a3[extract] --> a4[curation] --> a5[compose-atlas]
+        a1[prepare] --> a2["gen · gen-set"] --> a3[extract] --> a5[compose-atlas]
+        a5 -.-> a4["curation (optional)"]
+        a4 --> a5
     end
     subgraph B["B · video → loop"]
         direction LR

@@ -21,7 +21,7 @@ claude-seo/
   CONTRIBUTORS.md                    # Community credits (Pro Hub Challenge)
   AGENTS.md                          # Multi-platform agent instructions (Cursor, Antigravity)
   .claude-plugin/
-    plugin.json                    # Plugin manifest (v2.2.5)
+    plugin.json                    # Plugin manifest (v2.3.1)
     marketplace.json               # Marketplace catalog for distribution
   skills/                            # 25 sub-skills (auto-discovered)
     seo/                           # Main orchestrator skill
@@ -85,7 +85,7 @@ claude-seo/
     seo-flow.md                  # FLOW framework integration
   hooks/                           # Quality gate hooks
     hooks.json                   # PostToolUse schema validation
-  scripts/                         # 53 Python execution scripts
+  scripts/                         # 54 Python execution scripts
     google_auth.py               # Credential management (OAuth, SA, API key, 4-tier detection)
     backlinks_auth.py            # Backlink API credential management (Moz, Bing)
     moz_api.py                   # Moz Link Explorer API (DA/PA, spam, domains, anchors)
@@ -120,6 +120,7 @@ claude-seo/
     preload_check.py             # Speculation Rules / bfcache / prerender / preload detector
     agent_ux_check.py            # Agent-friendly page auditor
     content_quality.py           # QRG-aligned content quality detector
+    metadata_template.py         # Templated title/description detector (title echo + stock CTA)
     content_humanize.py          # AI-pattern remover (rewrites AI-typical phrasing)
     content_verify.py            # Claim extractor + citation-gap detector
     schema_generate.py           # JSON-LD generators for high-leverage v2 schema types
@@ -194,7 +195,7 @@ claude-seo/
 - Scripts must have docstrings, CLI interface, and JSON output
 - Follow kebab-case naming for all skill directories
 - Agents invoked via Agent tool, never via Bash
-- Bundled tools run through `claude-seo run`; plugin state uses `CLAUDE_PLUGIN_DATA`
+- Bundled tools run through `"${CLAUDE_PLUGIN_ROOT}/scripts/claude-seo" run`; plugin state uses `CLAUDE_PLUGIN_DATA`
 - Manual Python dependencies install into `~/.claude/skills/seo/.venv/`
 - Test with `python3 -m pytest tests/` after changes (if applicable)
 
@@ -209,7 +210,7 @@ claude-seo/
 ## Report Generation Rules
 
 - **All SEO reports must use `scripts/google_report.py`** as the canonical report generator
-- **Dependencies**: `matplotlib>=3.8.0` (charts) + `weasyprint>=61.0` (HTML-to-PDF), both in `requirements.txt`
+- **Dependencies**: `matplotlib>=3.8.0` (charts) + `weasyprint>=70.0` (HTML-to-PDF), both in `requirements.txt`
 - **Format**: A4 PDF via WeasyPrint + matplotlib charts at 200 DPI
 - **Style**: Clean white title page with navy (#1e3a5f) accent, Times New Roman body font
 - **Color palette**: Navy #1e3a5f (headers), dark gold #b8860b (accents), forest green #2d6a4f (pass), warm amber #d4740e (warnings), deep red #c53030 (fail), warm cream #faf9f7 (backgrounds)
@@ -237,9 +238,10 @@ Part of the Claude Code skill family:
 
 ## Repository Topology (public + private)
 
-This project is mirrored across two GitHub remotes that share git history.
-Both originate from the same local checkout; neither is a GitHub fork of
-the other (different orgs, no parent/child relationship in the GitHub UI).
+This project is mirrored across two GitHub remotes with shared historical
+ancestry. Reviewed back-ports, private-only research, and marketplace branding
+mean their release commits can have different SHAs. Neither repository is a
+GitHub fork of the other.
 
 | Remote | URL | Visibility | Role |
 |---|---|---|---|
@@ -253,17 +255,15 @@ Daily development:
 - `git push aimh <branch>` to publish work-in-progress to the private repo
   (Dependabot, Actions, and CI run there).
 
-Promoting to public on release:
-1. Merge `v2` into local `main` when ready to release (fast-forward).
-2. Tag the release locally (`git tag -a vX.Y.Z`).
-3. Push the tag and main to **both** remotes in this order:
-   - First: `git push aimh main && git push aimh vX.Y.Z`
-   - Then: `git push origin vX.Y.Z && git push origin main`
-   - The "tag before merge" sequence (see `feedback_push_caution` memory)
-     applies on `origin` to avoid the `curl|bash` outage window where
-     users pull a tag that doesn't yet point at code on `main`.
-4. `gh release create vX.Y.Z --repo AgriciDaniel/claude-seo` (public-only).
-5. `/release-blog` to publish the release post.
+Promoting reviewed release changes:
+1. Use an isolated clean worktree from the target repository branch.
+2. Fast-forward only when ancestry proves it is safe. Otherwise cherry-pick
+   the exact reviewed commits with `-x` and resolve only documented divergence.
+3. Run the full validation suite and compare the private/public release trees.
+4. Create an annotated repository-specific tag after validation.
+5. Push private changes first. Push public changes only with explicit release
+   authorization, with the public tag available before the installer moves.
+6. Create the GitHub Release and release post on the public repository only.
 
 ### Safety rules
 
@@ -271,12 +271,10 @@ Promoting to public on release:
   pushes are user-authorized per-release.
 - **`aimh` accepts day-to-day pushes.** No release-gate ceremony required
   for the private remote.
-- **Tags push to private first.** Historical pre-release illustration: v2.0.0
-  once lived on `aimh` before `origin`. Before the authorized v2.2.5 release,
-  released tags through v2.2.4 are on both remotes. Verify v2.2.5 on both
-  remotes after publication.
-- **History stays shared.** Never rewrite history on either remote with
-  force-push unless explicitly authorized for that specific operation.
+- **v2.2.5 is tagged on both repositories.** Each tag points to that
+  repository's reviewed release commit.
+- **Never force-sync the histories.** Preserve reviewed divergence and never
+  rewrite either remote without explicit per-operation authorization.
 
 ### Verifying the topology
 
@@ -284,9 +282,10 @@ Promoting to public on release:
 # Both remotes configured
 git remote -v        # expects: origin (public) + aimh (private)
 
-# Both share main HEAD
+# Compare heads and then audit the documented divergence. Equal SHAs are not
+# expected after repository-specific back-ports.
 git ls-remote --heads aimh main
-git ls-remote --heads origin main   # origin = aimh/main + 1 public-branding commit (intentional; see docs/WORKFLOW-public-private.md)
+git ls-remote --heads origin main
 ```
 
 Full workflow reference: `docs/WORKFLOW-public-private.md`.

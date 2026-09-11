@@ -66,7 +66,7 @@ Stage 2 of the loop: [cw-orient](../cw-orient/SKILL.md) → **slice** →
      `tui/src/prompt_zones.rs`, `tui/src/tools/remember.rs`, `config/src/route/`.
 
 4. **Read the scoped guidance for the files you will touch.** `crates/tui/AGENTS.md`
-   owns the UI contracts (one owner per fact, `palette::grammar` semantics, typed
+   owns the UI contracts (one owner per fact, `codewhale_palette::grammar` semantics, typed
    state enums, toast routing, `tr(locale, MessageId::...)` for user prose).
    `crates/tui/locales/AGENTS.md` owns string changes. `web/AGENTS.md` owns the
    site. `docs/MOTION_CONTRACT.md` owns motion. Design law lives in

@@ -57,7 +57,7 @@ This is stage 1 of the loop: **orient → [cw-slice](../cw-slice/SKILL.md) →
    find . -name AGENTS.md -not -path './tmp/*' -not -path '*/node_modules/*' -not -path './target/*'
    ```
    Today: root `AGENTS.md`, `crates/tui/AGENTS.md`,
-   `crates/tui/locales/AGENTS.md`, `web/AGENTS.md`. Read the one that owns the
+   `crates/localization/locales/AGENTS.md`, `web/AGENTS.md`. Read the one that owns the
    files you are about to touch.
 
 5. **Establish version truth from source, not memory.**

@@ -1,263 +1,84 @@
 ---
 name: clickup-observability
-description: 'Monitor ClickUp API integrations with metrics, tracing, structured logging,
-
-  and alerting using Prometheus, OpenTelemetry, and Grafana.
-
-  Trigger: "clickup monitoring", "clickup metrics", "clickup observability",
-
-  "monitor clickup", "clickup alerts", "clickup tracing", "clickup dashboard".
-
-  '
-allowed-tools: Read, Write, Edit
-version: 1.6.0
-license: MIT
+description: >-
+  Instrument ClickUp requests, queues, webhooks, and reconciliation with content-free metrics, traces, alerts, and health evidence. Use when operating a ClickUp integration in production. Trigger with "ClickUp observability", "ClickUp metrics", or "monitor ClickUp webhooks".
+argument-hint: "[service-path] [environment]"
+allowed-tools: Read, Glob, Grep, WebFetch, Write, Edit
+version: 1.8.0
 author: Jeremy Longshore <jeremy@intentsolutions.io>
+license: MIT
 tags:
 - saas
-- productivity
 - clickup
-compatibility: Designed for Claude Code
+- observability
+model: inherit
+effort: high
+compatibility: Designed for Claude Code; live telemetry must follow approved data and secret-handling policy
 ---
-# ClickUp Observability
+# ClickUp Integration Observability
 
 ## Overview
 
-Monitor ClickUp API v2 integrations with metrics (request rate, latency, errors, rate limit usage), distributed tracing, and alerting.
-
-## Key Metrics
-
-| Metric | Type | Labels | Description |
-|--------|------|--------|-------------|
-| `clickup_requests_total` | Counter | method, endpoint, status | Total API requests |
-| `clickup_request_duration_seconds` | Histogram | method, endpoint | Request latency |
-| `clickup_errors_total` | Counter | status_code, error_type | Errors by type |
-| `clickup_rate_limit_remaining` | Gauge | token_hash | Rate limit headroom |
-| `clickup_rate_limit_resets_total` | Counter | | Times we hit 429 |
-
-## Prometheus Instrumentation
-
-```typescript
-import { Registry, Counter, Histogram, Gauge } from 'prom-client';
-
-const registry = new Registry();
-
-const requestCounter = new Counter({
-  name: 'clickup_requests_total',
-  help: 'Total ClickUp API v2 requests',
-  labelNames: ['method', 'endpoint', 'status'] as const,
-  registers: [registry],
-});
-
-const requestDuration = new Histogram({
-  name: 'clickup_request_duration_seconds',
-  help: 'ClickUp API request duration in seconds',
-  labelNames: ['method', 'endpoint'] as const,
-  buckets: [0.05, 0.1, 0.25, 0.5, 1, 2, 5],
-  registers: [registry],
-});
-
-const rateLimitGauge = new Gauge({
-  name: 'clickup_rate_limit_remaining',
-  help: 'ClickUp rate limit remaining requests',
-  registers: [registry],
-});
-
-const errorCounter = new Counter({
-  name: 'clickup_errors_total',
-  help: 'ClickUp API errors by status code',
-  labelNames: ['status_code', 'error_type'] as const,
-  registers: [registry],
-});
-```
-
-## Instrumented Client
-
-```typescript
-async function instrumentedClickUpRequest<T>(
-  path: string,
-  options: RequestInit = {}
-): Promise<T> {
-  const method = options.method ?? 'GET';
-  // Normalize endpoint for cardinality control (replace UUIDs)
-  const endpoint = path.replace(/\/[a-zA-Z0-9]{6,}(?=\/|$|\?)/g, '/:id');
-  const timer = requestDuration.startTimer({ method, endpoint });
-
-  try {
-    const response = await fetch(`https://api.clickup.com/api/v2${path}`, {
-      ...options,
-      headers: {
-        'Authorization': process.env.CLICKUP_API_TOKEN!,
-        'Content-Type': 'application/json',
-        ...options.headers,
-      },
-    });
-
-    // Update rate limit gauge
-    const remaining = response.headers.get('X-RateLimit-Remaining');
-    if (remaining) rateLimitGauge.set(parseInt(remaining));
-
-    const status = response.ok ? 'success' : `${response.status}`;
-    requestCounter.inc({ method, endpoint, status });
-
-    if (!response.ok) {
-      const body = await response.json().catch(() => ({}));
-      errorCounter.inc({
-        status_code: String(response.status),
-        error_type: body.ECODE ?? 'unknown',
-      });
-      throw new Error(`ClickUp ${response.status}: ${body.err}`);
-    }
-
-    return response.json();
-  } catch (error) {
-    if (!(error instanceof Error && error.message.startsWith('ClickUp'))) {
-      errorCounter.inc({ status_code: 'network', error_type: 'fetch_error' });
-    }
-    throw error;
-  } finally {
-    timer();
-  }
-}
-```
-
-## OpenTelemetry Tracing
-
-```typescript
-import { trace, SpanStatusCode } from '@opentelemetry/api';
-
-const tracer = trace.getTracer('clickup-integration', '1.0.0');
-
-async function tracedClickUpCall<T>(
-  operationName: string,
-  path: string,
-  fn: () => Promise<T>
-): Promise<T> {
-  return tracer.startActiveSpan(`clickup.${operationName}`, async (span) => {
-    span.setAttribute('clickup.path', path);
-    span.setAttribute('clickup.method', 'GET');
-
-    try {
-      const result = await fn();
-      span.setStatus({ code: SpanStatusCode.OK });
-      return result;
-    } catch (error: any) {
-      span.setStatus({ code: SpanStatusCode.ERROR, message: error.message });
-      span.recordException(error);
-      throw error;
-    } finally {
-      span.end();
-    }
-  });
-}
-```
-
-## Structured Logging
-
-```typescript
-import pino from 'pino';
-
-const logger = pino({ name: 'clickup', level: process.env.LOG_LEVEL ?? 'info' });
-
-function logClickUpCall(data: {
-  method: string;
-  path: string;
-  status: number;
-  durationMs: number;
-  rateLimitRemaining?: number;
-  error?: string;
-}): void {
-  const level = data.status >= 500 ? 'error' : data.status >= 400 ? 'warn' : 'info';
-  loggerlevel`);
-}
-```
-
-## Alert Rules
-
-```yaml
-# prometheus/clickup_alerts.yaml
-groups:
-  - name: clickup
-    rules:
-      - alert: ClickUpHighErrorRate
-        expr: rate(clickup_errors_total[5m]) / rate(clickup_requests_total[5m]) > 0.05
-        for: 5m
-        labels: { severity: warning }
-        annotations:
-          summary: "ClickUp API error rate > 5%"
-
-      - alert: ClickUpHighLatency
-        expr: histogram_quantile(0.95, rate(clickup_request_duration_seconds_bucket[5m])) > 3
-        for: 5m
-        labels: { severity: warning }
-        annotations:
-          summary: "ClickUp P95 latency > 3s"
-
-      - alert: ClickUpRateLimitLow
-        expr: clickup_rate_limit_remaining < 10
-        for: 1m
-        labels: { severity: critical }
-        annotations:
-          summary: "ClickUp rate limit nearly exhausted"
-
-      - alert: ClickUpAuthFailures
-        expr: increase(clickup_errors_total{status_code="401"}[5m]) > 0
-        labels: { severity: critical }
-        annotations:
-          summary: "ClickUp authentication failures detected"
-```
-
-## Metrics Endpoint
-
-```typescript
-app.get('/metrics', async (req, res) => {
-  res.set('Content-Type', registry.contentType);
-  res.send(await registry.metrics());
-});
-```
-
-## Error Handling
-
-| Issue | Cause | Solution |
-|-------|-------|----------|
-| High cardinality | Dynamic IDs in labels | Normalize paths (replace IDs with `:id`) |
-| Missing metrics | Uninstrumented code path | Wrap all API calls through instrumented client |
-| Alert storm | Threshold too sensitive | Tune `for` duration and threshold |
-| Trace gaps | Missing context propagation | Ensure span context is passed |
+Expose reliability, rate pressure, delivery health, and business reconciliation without exporting task or member content.
 
 ## Prerequisites
 
-- Approved telemetry owner, alert route, and retention/classification policy
-- Instrumented client boundary with redaction for task and credential data
-- Separate staging telemetry validation and production change control
+- A typed ClickUp transport and durable webhook/job queues
+- Approved telemetry fields, retention, access, sampling, and alert ownership
+- Service-level objectives for request success, latency, queue age, freshness, and reconciliation
+
+## Tool Discipline
+
+Use `Read`, `Glob`, and `Grep` to inspect the repository, adapters, configuration names, tests, and evidence. Use `WebFetch` only for current official ClickUp documentation. Use `Write` or `Edit` after confirming the target file, Workspace boundary, and requested mode.
+
+## Current Contract
+
+- Capture `X-RateLimit-*` values as bounded numeric telemetry without capturing the Authorization header.
+- Webhook objects expose health/failure state; over-seven-second or unsuccessful delivery contributes to failure behavior.
+- ClickUp retries an event up to five times, but failed events are not later resent after those attempts.
+- Task names, descriptions, comments, attachments, emails, raw bodies, tokens, and webhook secrets are not telemetry.
+
+## Authentication
+
+Use a personal token only for accountable individual/testing work or OAuth Authorization Code for a user-facing integration. Inject the token server-side through a governed secret reference, send it in `Authorization`, verify authorized Workspace IDs, and never print the token, OAuth client secret, or webhook secret.
 
 ## Instructions
 
-Instrument the shared API client, normalize labels, capture only decision-useful
-aggregates, and validate alerts with bounded synthetic traffic before release.
-When an alert fires, preserve correlation data and follow the incident path;
-do not mute a recurring auth, rate-limit, or freshness signal without an owner
-decision and replacement control.
+1. Inventory request, queue, webhook, reconciliation, and deployment signals plus current data exposure.
+2. Define low-cardinality metrics by endpoint family, version, status class, environment, and Workspace alias.
+3. Add trace spans around the transport and queue without request/response content.
+4. Monitor rate remaining/reset, 429s, webhook latency/status/fail count, queue age, and duplicate suppression.
+5. Create actionable alerts with runbook links, owners, and tested thresholds from baseline data.
+6. Validate dashboards and alerts with synthetic failures and record redaction checks.
+
+## Approval Boundaries
+
+Do not add user/task IDs as unbounded labels, export payloads for debugging, or reactivate a failing webhook automatically without policy.
 
 ## Output
 
-Publish a privacy-aware operations view with request outcomes, latency, retries,
-rate-limit state, alert status, correlation IDs, and owner. Exclude task bodies,
-comments, tokens, attachments, and high-cardinality personal identifiers.
+Return signal inventory, SLOs, dashboards, alert tests, redaction results, cardinality risks, and runbook links. Separate measured evidence from proposed instrumentation.
+
+## Error Handling
+
+| Condition | Response |
+|---|---|
+| Telemetry contains work content or secrets | Stop export, quarantine data, rotate if needed, and remediate instrumentation. |
+| Labels are unbounded | Aggregate or hash into a governed low-cardinality alias. |
+| Alert has no owner/runbook | Do not enable paging. |
+| Webhook health degrades | Queue/contain and follow the incident runbook. |
 
 ## Examples
 
-Create a staging alert for rate-limit exhaustion, trigger it with a capped test,
-and verify the runbook notification has aggregate metrics only. If an auth alert
-fires in production, pause affected automation and rotate/repair the scoped
-secret before resuming requests.
+The example below is a redacted operator receipt; it contains no task text, member data, credential, or webhook secret.
+
+```text
+request-slo=99.9%; p95=420ms; 429=0; queue-age=18s; webhook-fail-count=0; sensitive-fields=0
+```
 
 ## Resources
 
-- [Prometheus Best Practices](https://prometheus.io/docs/practices/naming/)
-- [OpenTelemetry JS SDK](https://opentelemetry.io/docs/languages/js/)
-- [ClickUp Rate Limits](https://developer.clickup.com/docs/rate-limits)
-
-## Next Steps
-
-For incident response, see `clickup-incident-runbook`.
+- [Skill-specific official documentation](references/official-docs.md)
+- [Webhook health](https://developer.clickup.com/docs/webhookhealth)
+- [Authentication](https://developer.clickup.com/docs/authentication)
+- [Rate limits](https://developer.clickup.com/docs/rate-limits)

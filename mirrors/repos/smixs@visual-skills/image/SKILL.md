@@ -2,16 +2,16 @@
 name: image
 license: CC-BY-4.0 (attribution required — Serge Shima, github.com/smixs/visual-skills)
 description: >
-  Image prompting skill for Nano Banana (NBP/NB2) and GPT Image 2. Writes ready-to-use
+  Image prompting skill for Nano Banana (NBP/NB2) and GPT Image 2.5 (Flare/Sunburst). Writes ready-to-use
   prompts with model/quality/size recommendations. Use when: "нарисуй", "сгенерируй
   картинку", "image prompt", "промпт для картинки", blog covers, slides, posters,
   product shots, UI mockups, storyboards, character sheets, edit/colorize, style transfer,
-  vision analysis, image-to-prompt, nb, NBP, NB2, gpt-image-2, multi-panel grids,
+  vision analysis, image-to-prompt, nb, NBP, NB2, gpt-image-2.5, multi-panel grids,
   ecommerce product photography, fashion editorial, food/beverage ads, cinematic portraits.
   Do NOT use for: video (use video skill), 3D models, audio, non-image tasks.
 ---
 
-# Image Prompting — Nano Banana & GPT Image 2
+# Image Prompting — Nano Banana & GPT Image 2.5
 
 This skill writes image prompts. It does not generate images. The output is: model name + quality / size / aspect ratio + the prompt itself.
 
@@ -31,7 +31,7 @@ Past attempts to write prompts directly from this skill body produced lazy, gene
 
 ### Step 1 — always read first → [models.md](references/models.md)
 
-Decide: Nano Banana (NB2 or NBP) or GPT Image 2. The choice changes the prompt syntax fundamentally — natural-language paragraphs vs. labeled 5-slot template, quality settings, which features exist (image grounding only on NB, EXACT TEXT discipline only on GPT Image, etc.).
+Decide: Nano Banana (NB2 or NBP) or GPT Image 2.5 (Flare for speed, Sunburst for precision edits). The choice changes the prompt syntax fundamentally — natural-language paragraphs vs. labeled 5-slot template, quality settings, which features exist (image grounding only on NB, EXACT TEXT discipline only on GPT Image, etc.).
 
 If the user named a model — confirm and proceed. If not — pick using the table in `models.md`, then state your choice in the output header.
 
@@ -40,8 +40,8 @@ If the user named a model — confirm and proceed. If not — pick using the tab
 - **Nano Banana** → [nano-banana.md](references/nano-banana.md)
   Image grounding for real locations. Extreme aspect ratios (1:8, 8:1, 4:1). Thinking mode. JSON for 5+ elements. Up to 14 reference images. Why you must NOT write `50mm / f-stop / ISO` numbers.
 
-- **GPT Image 2** → [gpt-image.md](references/gpt-image.md)
-  5-slot template (Scene / Subject / Important Details / Use Case / Constraints). Anti-slop banned-words list. `quality: low / medium / high` as a deliberate fidelity lever. Size constraints (multiples of 16, max 3:1, up to 2560×1440). Two-column edit logic (Change / Preserve / Constraints). Up to 16 reference images with explicit roles.
+- **GPT Image 2.5** → [gpt-image.md](references/gpt-image.md)
+  5-slot template (Scene / Subject / Important Details / Use Case / Constraints). Anti-slop banned-words list. `quality: low / medium / high / xhigh / max` as a deliberate fidelity lever. Size constraints (multiples of 16, max 3:1, up to 4K 3840×2160). Two-column edit logic (Change / Preserve / Constraints). Up to 16 reference images with explicit roles.
 
 The model file is non-negotiable. Skipping it is the single biggest cause of weak prompts.
 
@@ -86,8 +86,8 @@ Universal element checklist (subject, context, action, environment, camera, ligh
 When you return the prompt, structure it like this:
 
 ```
-Model: <nano-banana-2 | nano-banana-pro | gpt-image-2>
-Quality: <low | medium | high>          (only for gpt-image-2)
+Model: <nano-banana-2 | nano-banana-pro | gpt-image-2.5-flare | gpt-image-2.5-sunburst>
+Quality: <low | medium | high | xhigh | max>   (only for gpt-image-2.5)
 Size / Ratio: <e.g. 1536×1024 or 16:9>
 
 Prompt:
@@ -97,7 +97,7 @@ Notes:
 - <anything you inferred or assumed because the user did not specify>
 ```
 
-For edits, also include an explicit preserve-list (mandatory for gpt-image-2, recommended for nano-banana):
+For edits, also include an explicit preserve-list (mandatory for gpt-image-2.5, recommended for nano-banana):
 
 ```
 Change: <one concrete thing>
@@ -111,7 +111,7 @@ Constraints: <no extra objects, no drift, ...>
 
 Prefer: ready-to-copy prompts, hex colors, concrete materials, named compositions, model-specific syntax (5-slot for GPT Image, natural prose for Nano Banana).
 
-Avoid: tag soup ("cool, modern, 4k"), vague praise ("stunning, epic, masterpiece" — actively hurts GPT Image 2), negative framing ("no people, no cars" — invert to positive), external comparisons ("like Apple ad" — describe the visual properties instead), numerical lens parameters in Nano Banana prompts (it ignores them).
+Avoid: tag soup ("cool, modern, 4k"), vague praise ("stunning, epic, masterpiece" — actively hurts GPT Image 2.5), negative framing ("no people, no cars" — invert to positive), external comparisons ("like Apple ad" — describe the visual properties instead), numerical lens parameters in Nano Banana prompts (it ignores them).
 
 ---
 

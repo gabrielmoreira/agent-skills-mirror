@@ -1,131 +1,85 @@
 ---
 name: together-sdk-patterns
-description: 'Together AI sdk patterns for inference, fine-tuning, and model deployment.
-
-  Use when working with Together AI''s OpenAI-compatible API.
-
-  Trigger: "together sdk patterns".
-
-  '
-allowed-tools: Read, Write, Edit, Bash(pip:*), Grep
-version: 1.7.0
-license: MIT
+description: >-
+  Encapsulate Together AI SDK v2 behind a typed adapter with catalog-resolved models, bounded retries, streaming normalization, usage capture, and OpenAI-compatible migration seams. Use when building a reusable Together client layer. Trigger with "Together SDK pattern", "Together client wrapper", or "OpenAI compatibility on Together".
+argument-hint: "[repository-path] [python|typescript]"
+allowed-tools: Read, Glob, Grep, WebFetch, Write, Edit
+version: 1.9.0
 author: Jeremy Longshore <jeremy@intentsolutions.io>
+license: MIT
 tags:
 - saas
-- ai
-- inference
-- together
-compatibility: Designed for Claude Code
+- together-ai
+- sdk
+model: inherit
+effort: high
+compatibility: Designed for Claude Code; live calls require network access and a Together AI project key
 ---
 # Together AI SDK Patterns
 
 ## Overview
 
-Production-ready patterns for Together AI inference. Together exposes an OpenAI-compatible REST API at `https://api.together.xyz/v1`, meaning any OpenAI client library works with a base URL swap. This makes Together a drop-in replacement for OpenAI when running open-source models (Llama, Mixtral, Qwen, FLUX). A singleton client centralizes the base URL override and enables seamless backend switching.
+This skill creates an application-owned boundary around Together's native v2 client or OpenAI-compatible surface so provider changes do not leak through every caller.
 
-## Singleton Client
+## Prerequisites
 
-```typescript
-import OpenAI from 'openai';
-let _client: OpenAI | null = null;
-export function getClient(): OpenAI {
-  if (!_client) {
-    const apiKey = process.env.TOGETHER_API_KEY;
-    if (!apiKey) throw new Error('TOGETHER_API_KEY must be set — get it from api.together.xyz/settings');
-    _client = new OpenAI({ apiKey, baseURL: 'https://api.together.xyz/v1' });
-  }
-  return _client;
-}
-// Usage: const client = getClient();
-// await client.chat.completions.create({ model: 'meta-llama/Meta-Llama-3.1-70B-Instruct', messages: [...] });
-```
+- The repository's language, dependency manager, and existing client abstractions
+- Required capabilities such as chat, streaming, embeddings, batch, or fine-tuning
+- Latency, retry, token, and spend budgets
+- A policy for model selection and deprecation response
 
-## Error Wrapper
+## Tool Discipline
 
-```typescript
-export class TogetherError extends Error {
-  constructor(public status: number, public code: string, message: string) { super(message); }
-}
-export async function safeCall<T>(operation: string, fn: () => Promise<T>): Promise<T> {
-  try { return await fn(); }
-  catch (err: any) {
-    const status = err.status ?? err.response?.status ?? 0;
-    if (status === 429) { await new Promise(r => setTimeout(r, 3000)); return fn(); }
-    if (status === 401) throw new TogetherError(401, 'AUTH', 'Invalid TOGETHER_API_KEY');
-    if (status === 404) throw new TogetherError(404, 'MODEL', `${operation}: model not found — use client.models.list()`);
-    throw new TogetherError(status, 'API_ERROR', `${operation} failed [${status}]: ${err.message}`);
-  }
-}
-```
+Use `Read`, `Glob`, and `Grep` to map existing provider calls and error handling. Use `WebFetch` for current SDK and API contracts. Use `Write` or `Edit` only to implement the approved adapter and focused tests.
 
-## Request Builder
+## Current Contract
 
-```typescript
-class TogetherRequest {
-  private params: Record<string, any> = {};
-  model(m: string) { this.params.model = m; return this; }
-  messages(msgs: Array<{ role: string; content: string }>) { this.params.messages = msgs; return this; }
-  temperature(t: number) { this.params.temperature = t; return this; }
-  maxTokens(n: number) { this.params.max_tokens = n; return this; }
-  stream(s = true) { this.params.stream = s; return this; }
-  jsonMode() { this.params.response_format = { type: 'json_object' }; return this; }
-  build() { return this.params; }
-}
-// Usage: new TogetherRequest().model('meta-llama/Meta-Llama-3.1-70B-Instruct')
-//   .messages([{ role: 'user', content: 'Summarize this' }]).temperature(0.3).jsonMode().build();
-```
+- Prefer the Together Python v2 client for Together-native features; v1 is maintenance-only.
+- OpenAI clients require both the Together project key and `base_url="https://api.together.ai/v1"`.
+- Together model IDs use provider/model names; OpenAI-native model strings return `404`.
+- Normalize streaming chunks defensively and capture both ordinary usage and nested reasoning/cached-token fields when present.
 
-## Response Types
+## Authentication
 
-```typescript
-interface TogetherModel {
-  id: string; type: 'chat' | 'language' | 'image' | 'embedding' | 'code';
-  display_name: string; context_length: number; pricing: { input: number; output: number };
-}
-interface ChatCompletion {
-  id: string; model: string; created: number;
-  choices: Array<{ message: { role: string; content: string }; finish_reason: string }>;
-  usage: { prompt_tokens: number; completion_tokens: number; total_tokens: number };
-}
-interface EmbeddingResponse {
-  data: Array<{ embedding: number[]; index: number }>;
-  model: string; usage: { prompt_tokens: number; total_tokens: number };
-}
-interface FineTuneJob {
-  id: string; model: string; status: 'pending' | 'running' | 'completed' | 'failed';
-  training_file: string; created_at: string; fine_tuned_model?: string;
-}
-```
+Construct clients from runtime-injected `TOGETHER_API_KEY`. Keep the key out of adapter configuration objects that may be logged or serialized. REST and OpenAI-compatible clients send it as a Bearer token.
 
-## Testing Utilities
+## Instructions
 
-```typescript
-export function mockCompletion(content = 'Hello!', overrides: Partial<ChatCompletion> = {}): ChatCompletion {
-  return { id: 'cmpl-001', model: 'meta-llama/Meta-Llama-3.1-70B-Instruct', created: Date.now(),
-    choices: [{ message: { role: 'assistant', content }, finish_reason: 'stop' }],
-    usage: { prompt_tokens: 10, completion_tokens: 5, total_tokens: 15 }, ...overrides };
-}
-export function mockModel(overrides: Partial<TogetherModel> = {}): TogetherModel {
-  return { id: 'meta-llama/Meta-Llama-3.1-70B-Instruct', type: 'chat',
-    display_name: 'Meta Llama 3.1 70B Instruct', context_length: 131072,
-    pricing: { input: 0.88, output: 0.88 }, ...overrides };
-}
-```
+1. Inventory direct Together and OpenAI-compatible calls, consumed fields, and retry behavior.
+2. Define typed request/result/error interfaces owned by the application.
+3. Centralize base URL, timeouts, model policy, request bounds, and credential injection.
+4. Normalize full and streaming responses without discarding finish reason, usage, warnings, or request metadata.
+5. Retry only bounded transient classes with jitter; surface auth, billing, validation, and model errors immediately.
+6. Add fake-transport contract tests and one opt-in live compatibility probe.
+
+## Approval Boundaries
+
+Do not change the default model, retry amplification, or OpenAI-to-Together routing globally without latency, quality, and cost evidence plus a rollback.
+
+## Output
+
+Return the adapter interface, runtime configuration contract, normalized result/error shapes, retry policy, model policy, and test evidence.
 
 ## Error Handling
 
-| Pattern | When to Use | Example |
-|---------|-------------|---------|
-| `safeCall` wrapper | All Together API calls | Structured error with operation context |
-| Retry on 429 | High-throughput inference | Reads `Retry-After` header for backoff |
-| Model validation | Before inference calls | 404 directs to `client.models.list()` |
-| Streaming fallback | Long completions timeout | Switch `stream: true` on timeout |
+| Condition | Response |
+|---|---|
+| OpenAI model ID returns `404` | Resolve a Together model ID; do not rewrite the error as transient. |
+| Stream chunk has no choices | Skip safely and continue until terminal evidence. |
+| SDK major mismatch | Stop and apply the v2 migration contract before feature work. |
+| Retry budget exhausted | Return the last redacted status and retry metadata. |
+
+## Examples
+
+The example below shows the minimum redacted evidence expected from a successful invocation of this operator workflow.
+
+```text
+adapter=typed; sdk=together-v2; model=catalog-resolved; retries=bounded; usage=normalized
+```
 
 ## Resources
 
-- [Together AI Docs](https://docs.together.ai/)
-
-## Next Steps
-
-Apply patterns in `together-core-workflow-a`.
+- [Skill-specific official documentation](references/official-docs.md)
+- [Python v2 migration](https://docs.together.ai/docs/pythonv2-migration-guide)
+- [OpenAI compatibility](https://docs.together.ai/docs/inference/openai-compatibility)
+- [Official Together skills](https://github.com/togethercomputer/skills)

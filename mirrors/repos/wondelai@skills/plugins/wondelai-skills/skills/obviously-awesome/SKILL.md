@@ -4,7 +4,7 @@ description: 'Define product positioning by mapping competitive alternatives, un
 license: MIT
 metadata:
   author: wondelai
-  version: "1.4.0"
+  version: "1.4.1"
 ---
 
 # Product Positioning Framework
@@ -238,7 +238,7 @@ See [references/case-studies.md](references/case-studies.md) when you want a wor
 ## Further Reading
 
 - [Obviously Awesome by April Dunford](https://www.amazon.com/Obviously-Awesome-Product-Positioning-Customers/dp/1999023005?tag=wondelai00-20) — The definitive guide to product positioning
-- [Sales Pitch by April Dunford](https://www.amazon.com/Sales-Pitch-Compelling-Positioning-Positioning/dp/1999023048?tag=wondelai00-20) — How to translate positioning into a winning sales narrative
+- [Sales Pitch by April Dunford](https://www.amazon.com/Sales-Pitch-Compelling-Positioning-Positioning/dp/1999023021?tag=wondelai00-20) — How to translate positioning into a winning sales narrative
 
 ## About the Author
 

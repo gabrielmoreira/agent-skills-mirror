@@ -9,14 +9,10 @@
 </p>
 
 <p align="center">
-  <img src="docs/assets/hero-paladin-walk.gif" height="202" alt="paladin walk loop" />
-  <img src="docs/assets/hero-paladin-run.gif" height="206" alt="paladin run loop" />
-  <img src="docs/assets/hero-paladin-jump.gif" height="246" alt="paladin jump loop" />
-  <img src="docs/assets/hero-wolf-walk.gif" height="203" alt="wolf walk loop" />
-  <img src="docs/assets/hero-slime-walk.gif" height="203" alt="slime walk loop" />
+  <a href="https://youtu.be/zVu9YlbPtog"><img src="docs/assets/hero-v2-party.gif" width="960" alt="Animated sprite-gen v2 showcase: paladin, wolf and slime" /></a>
 </p>
 
-<p align="center"><sub>위 루프는 전부 <b>정지 이미지 한 장</b>에서 나왔다: 모션에 맞는 캔버스로 패딩 → Grok Imagine 으로 움직임 → 프레임마다 키잉 → 진짜 주기에서 잘라 투명 GIF 로 — 파이프라인 B, <code>sprite-gen video-set</code>.</sub></p>
+<p align="center"><sub>각 캐릭터는 <b>이미지 한 장</b>에서 시작했습니다. Grok Imagine으로 움직임을 만들고, sprite-gen으로 투명 루프를 추출한 뒤 HyperFrames로 이 장면을 구성했습니다.</sub></p>
 
 ---
 
@@ -24,6 +20,10 @@
 이미지 모델에 "스프라이트 시트"를 부탁하면 결과는 뻔하다: 프레임마다 얼굴이 바뀌는 캐릭터, 키잉이 안 되는 배경, 겹치고 격자를 벗어나는 포즈, 게임 엔진이 소비할 수 없는 PNG. 데모로는 귀엽고 에셋으로는 무용지물.
 
 `sprite-gen` 은 그 간극을 메우는 Codex/Claude 스킬이자 파이썬 CLI 다. **베이스 이미지 한 장**을 주면 행 단위로 생성을 몰고, 캐릭터 identity 를 고정하고, 크로마 배경을 진짜 알파로 벗기고, 포즈마다 깨끗한 투명 프레임을 뽑아 **기계가 읽는 `manifest.json.frame_layout`** 이 딸린 런타임 아틀라스를 굽는다. 같은 스틸을 영상 모델에 넘기면 모션 상태별로 이음새 없는 투명 루프가 돌아온다. 생성이 끝내 못 맞추는 마지막 10% 는 **큐레이션 웹뷰**에서 비교·거부·미세조정하고 루프를 실재생으로 본 뒤 굽는다.
+
+## 요청으로 시작하기
+
+**스프라이트 만들기** 또는 **이미지 만들기**를 요청하세요. 이용 상태를 확인하고 생성 도구와 동작 방식 중 빠진 선택만 물어본 뒤 기존 파이프라인으로 결과를 전달합니다. 큐레이션뷰는 선택 사항입니다. 두 요청의 기본 설정을 따로 저장할 수 있고, 이번 요청의 선택은 저장값을 바꾸지 않습니다. [요청 흐름과 기본 설정](docs/user-workflow.md).
 
 ## 파이프라인 4종, CLI 하나
 
@@ -33,7 +33,9 @@
 flowchart LR
     subgraph A["A · atlas rows"]
         direction LR
-        a1[prepare] --> a2["gen · gen-set"] --> a3[extract] --> a4[curation] --> a5[compose-atlas]
+        a1[prepare] --> a2["gen · gen-set"] --> a3[extract] --> a5[compose-atlas]
+        a5 -.-> a4["curation (optional)"]
+        a4 --> a5
     end
     subgraph B["B · video → loop"]
         direction LR

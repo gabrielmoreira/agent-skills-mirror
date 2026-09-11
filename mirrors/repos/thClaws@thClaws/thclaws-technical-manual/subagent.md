@@ -44,7 +44,7 @@ Task           │  in-process recursive│  inherits parent's   │  bounded su
                │                      │  cancel              │  levels deep
 ───────────────┼──────────────────────┼──────────────────────┼─────────────────────
 SpawnTeammate +│  subprocess per      │  filesystem mailboxes│  long-lived parallel
-team mailboxes │  teammate (thclaws -p│  (.thclaws/team/...) │  agents with their
+team mailboxes │  teammate (thclaws -p│  (.thclaws/state/team/...) │  agents with their
                │  per process)        │  no shared memory    │  own session each
 ```
 

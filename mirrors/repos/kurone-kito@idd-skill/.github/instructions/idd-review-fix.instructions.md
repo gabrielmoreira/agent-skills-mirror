@@ -54,6 +54,30 @@ implementation). The distributed defaults for the E10 guardrails are
 listed in `docs/policy-constants.md`. Keep an E10 pass count for the
 current E9 fix batch.
 
+A repository may also configure `critiqueLoop.delegate` to point this
+pass at a different reviewer instead of the per-agent mechanism, using
+the same resolution chain and `mode` semantics C1 already has. When
+helper runtime is enabled, resolve the effective `critiqueLoop.delegate`
+with the
+[`idd-critique-delegate`](../../docs/idd-helper-scripts.md#effective-c1-critique-delegate)
+helper: `node scripts/idd-critique-delegate.mjs` for source-repo /
+vendored-node profiles, or the profile-selected command named in
+`docs/idd-helper-scripts.md` for package-manager / ephemeral-npx
+profiles — never hardcode the bare binary name for those profiles.
+For `instructions-only` execution (no helper runtime), apply the
+resolution order directly: repo-local `critiqueLoop.delegate` always
+wins outright, and only when it is genuinely absent does a local
+runtime's user-global config file apply. `critiqueLoop.telemetryHook`
+remains C1-only and is never consulted here. Delegate findings enter
+this pass the way `mode`
+governs at C1 — see `docs/idd-workflow.md`'s "Critique pass invocation"
+section for the full table — replacing or joining the per-agent
+mechanism; never assume they are unconditionally added on top of it.
+Treat a delegate that, under `on-success` or `never`, leaves no
+readable findings list as a **hold**, not a clean "zero issues,
+proceed to E11" round: apply the shared Hold / suspend rules
+(`idd-overview-appendix.instructions.md`) instead of advancing.
+
 If the critique pass finds additional issues, fix them, commit
 atomically, and run E10 again while the findings are converging.
 
@@ -117,6 +141,38 @@ recovery — the same shape
 specifically because the issue's acceptance criteria only ever
 required an acquire/release interface, never automatic stale-lock
 recovery.
+
+**Third escalation tier (heuristic, not a hard rule): open-ended
+correctness-domain findings against an external spec.** A different
+shape from both tiers above: each new finding is a genuine, distinct
+gap in the feature's own coverage of an open-ended external
+correctness domain (a document/markup grammar, a protocol, a wire
+format), not a symptom of one internal mechanism -- so neither "one
+structural fix" (Tier 1) nor "simplify/remove the mechanism" (Tier 2)
+is available, because the mechanism's correctness against that domain
+**is** the acceptance criterion itself. Reaching "stop for a
+maintainer decision" here does not depend on Tier 2's
+mechanism-simplification precondition, since there is no mechanism
+safe to remove: once several rounds each keep surfacing a genuinely
+new, in-scope spec-coverage gap rather than repeating one, list each
+outstanding gap with its evidence, and the round count, in a hold
+comment and stop for a maintainer decision. Once a maintainer decision
+accepts the residual gaps as a known limitation, record the decision
+and close out the
+finding the same way this workflow already disposes of any review
+item or resolves any hold (`idd-review-triage.instructions.md`,
+`idd-overview-appendix.instructions.md`), and file any follow-up
+through `idd-review-triage.instructions.md`'s E6 follow-up-issue rule,
+rather than continuing rounds indefinitely. Worked example:
+kurone-kito/idd-skill#2767 (PR kurone-kito/idd-skill#2840) implemented
+a CommonMark-compliant structural-evidence parser
+(`triage-structural-evidence.mts` / `markdown-code.mts`); an
+adversarial automated reviewer kept surfacing genuine, distinct
+CommonMark spec-compliance gaps across 27 review rounds, each an
+in-scope correctness gap rather than a repeating symptom of one
+mechanism -- the loop ended only once the operator accepted 3
+remaining findings as a documented known limitation and filed
+kurone-kito/idd-skill#2865 as the scoped follow-up.
 
 ## E11 — Resolve conflicts with {development-branch}
 

@@ -1,262 +1,84 @@
 ---
 name: clickup-incident-runbook
-description: 'Execute ClickUp API incident response: triage, diagnosis, mitigation,
-
-  and postmortem for API failures and integration outages.
-
-  Trigger: "clickup incident", "clickup outage", "clickup down",
-
-  "clickup on-call", "clickup emergency", "clickup API broken".
-
-  '
-allowed-tools: Read, Grep, Bash(kubectl:*), Bash(curl:*)
-version: 1.6.0
-license: MIT
+description: >-
+  Triage, contain, recover, and review ClickUp API and webhook incidents with bounded read-only evidence. Use when ClickUp-backed production behavior is degraded. Trigger with "ClickUp incident", "ClickUp outage", or "ClickUp webhook failing".
+argument-hint: "[incident-id] [severity]"
+allowed-tools: Read, Glob, Grep, WebFetch, Write, Edit
+version: 1.8.0
 author: Jeremy Longshore <jeremy@intentsolutions.io>
+license: MIT
 tags:
 - saas
-- productivity
 - clickup
-compatibility: Designed for Claude Code
+- incident-response
+model: inherit
+effort: high
+compatibility: Designed for Claude Code; live response requires authorized operational access and an incident commander
 ---
-# ClickUp Incident Runbook
+# ClickUp Integration Incident Response
 
 ## Overview
 
-Rapid incident response for ClickUp API v2 integration failures. Covers triage, diagnosis by error type, mitigation, and postmortem.
-
-## Severity Classification
-
-| Level | Definition | Response Time | Example |
-|-------|-----------|---------------|---------|
-| P1 | All ClickUp API calls failing | < 15 min | 401 on all requests, API unreachable |
-| P2 | Degraded service | < 1 hour | High latency, rate limited, partial 500s |
-| P3 | Minor impact | < 4 hours | Webhook delays, non-critical endpoint errors |
-| P4 | No user impact | Next business day | Monitoring gaps, documentation issues |
-
-## Step 1: Quick Triage (< 2 minutes)
-
-```bash
-#!/bin/bash
-echo "=== ClickUp Incident Triage ==="
-
-# 1. Is ClickUp itself down?
-echo -n "ClickUp platform: "
-curl -sf https://status.clickup.com/api/v2/summary.json 2>/dev/null | \
-  python3 -c "import sys,json; print(json.load(sys.stdin)['status']['description'])" 2>/dev/null \
-  || echo "UNREACHABLE"
-
-# 2. Can we authenticate?
-echo -n "Auth: "
-STATUS=$(curl -sf -o /dev/null -w "%{http_code}" \
-  https://api.clickup.com/api/v2/user \
-  -H "Authorization: $CLICKUP_API_TOKEN" 2>/dev/null)
-echo "HTTP $STATUS"
-
-# 3. Rate limit status
-echo -n "Rate limit: "
-curl -sD - -o /dev/null https://api.clickup.com/api/v2/user \
-  -H "Authorization: $CLICKUP_API_TOKEN" 2>&1 | \
-  grep -i "X-RateLimit-Remaining" | awk '{print $2}' | tr -d '\r'
-
-# 4. API latency
-echo -n "Latency: "
-curl -sf -o /dev/null -w "%{time_total}s\n" \
-  https://api.clickup.com/api/v2/user \
-  -H "Authorization: $CLICKUP_API_TOKEN"
-
-# 5. Our service health (adjust URL)
-echo -n "Our health endpoint: "
-curl -sf http://localhost:3000/health 2>/dev/null | \
-  python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('status','unknown'))" 2>/dev/null \
-  || echo "UNREACHABLE"
-```
-
-## Decision Tree
-
-```
-ClickUp API errors?
-├── YES: Check status.clickup.com
-│   ├── ClickUp incident → Enable fallback mode. Wait. Monitor.
-│   └── No ClickUp incident → Our issue
-│       ├── 401 errors → Token rotated/revoked → Regenerate token
-│       ├── 429 errors → Rate limited → Enable queuing, check for loops
-│       ├── 403 errors → Permission changed → Check workspace access
-│       └── 500 errors → Intermittent ClickUp issue → Retry with backoff
-└── NO: Our service down?
-    ├── YES → Infrastructure issue (pods, memory, network)
-    └── NO → Resolved or intermittent. Monitor.
-```
-
-## Remediation by Error Type
-
-### 401 Unauthorized (Token Issue)
-
-```bash
-# Verify token is set and valid
-echo "Token length: ${#CLICKUP_API_TOKEN}"
-
-# Test with explicit token
-curl -v https://api.clickup.com/api/v2/user \
-  -H "Authorization: $CLICKUP_API_TOKEN" 2>&1 | grep "< HTTP"
-
-# If invalid: regenerate in ClickUp Settings > Apps > API Token
-# Then update in your secrets manager:
-gh secret set CLICKUP_API_TOKEN --body "pk_NEW_TOKEN"
-# OR: vault kv put secret/clickup/api-token value="pk_NEW_TOKEN"
-```
-
-### 429 Rate Limited
-
-```bash
-# Check current rate limit state
-curl -sD - -o /dev/null https://api.clickup.com/api/v2/user \
-  -H "Authorization: $CLICKUP_API_TOKEN" 2>&1 | grep -i ratelimit
-
-# Check for runaway loops in your application
-# Look for rapid repeated calls to same endpoint
-```
-
-Mitigation: Enable request queuing, check for infinite loops, consider plan upgrade.
-
-### 500/503 ClickUp Server Error
-
-```bash
-# Check ClickUp status page
-curl -sf https://status.clickup.com/api/v2/summary.json | \
-  python3 -c "import sys,json; [print(f'  {c[\"name\"]}: {c[\"status\"]}') for c in json.load(sys.stdin)['components']]"
-```
-
-Mitigation: Enable graceful degradation (circuit breaker), queue writes for retry.
-
-## Graceful Degradation
-
-```typescript
-// Circuit breaker for ClickUp API
-class ClickUpCircuitBreaker {
-  private failures = 0;
-  private lastFailure = 0;
-  private readonly threshold = 5;
-  private readonly resetMs = 60000;
-
-  isOpen(): boolean {
-    if (this.failures >= this.threshold) {
-      if (Date.now() - this.lastFailure > this.resetMs) {
-        this.failures = 0; // Reset after cooldown
-        return false;
-      }
-      return true;
-    }
-    return false;
-  }
-
-  recordFailure(): void {
-    this.failures++;
-    this.lastFailure = Date.now();
-  }
-
-  recordSuccess(): void {
-    this.failures = 0;
-  }
-}
-
-const breaker = new ClickUpCircuitBreaker();
-
-async function resilientClickUpCall<T>(path: string, fallback: T): Promise<T> {
-  if (breaker.isOpen()) {
-    console.warn('[clickup] Circuit breaker OPEN, using fallback');
-    return fallback;
-  }
-
-  try {
-    const result = await clickupRequest(path);
-    breaker.recordSuccess();
-    return result;
-  } catch (error) {
-    breaker.recordFailure();
-    console.error('[clickup] API error, circuit breaker count:', breaker['failures']);
-    return fallback;
-  }
-}
-```
-
-## Communication Templates
-
-### Internal (Slack)
-
-```
-P[1-4] INCIDENT: ClickUp Integration
-Status: INVESTIGATING | IDENTIFIED | MONITORING | RESOLVED
-Impact: [user-facing impact description]
-Cause: [root cause if known]
-Action: [current mitigation steps]
-Next update: [time]
-```
-
-### Postmortem Template
-
-```markdown
-## Incident: ClickUp API [Error Type]
-**Date:** YYYY-MM-DD | **Duration:** Xh Ym | **Severity:** P[1-4]
-
-### Timeline
-- HH:MM - Alert fired / issue reported
-- HH:MM - Triage started
-- HH:MM - Root cause identified
-- HH:MM - Mitigation applied
-- HH:MM - Resolved
-
-### Root Cause
-[Technical explanation]
-
-### Action Items
-- [ ] [Preventive measure] - Owner - Due date
-```
-
-## Error Handling
-
-| Issue | Cause | Solution |
-|-------|-------|----------|
-| Can't reach status page | DNS/network issue | Use mobile or VPN |
-| Token rotation fails | Insufficient permissions | Need workspace admin |
-| Circuit breaker stuck open | resetMs too long | Reduce reset threshold |
-| Webhook backlog | ClickUp retrying failed deliveries | Fix endpoint, events replay |
+Separate provider health, credential scope, rate exhaustion, webhook suspension, data drift, and application faults before taking recovery action.
 
 ## Prerequisites
 
-- Named incident commander, integration/data owners, and escalation contacts
-- Access to redacted telemetry, queue/webhook state, feature flags, and status
-- Tested capability to disable mutations, webhook intake, and scheduled sync
-- Approved communication and evidence-retention procedures
+- An incident commander, severity model, affected service/Workspace inventory, and communication channel
+- Read-only diagnostic capability plus audited break-glass procedures
+- Known last-good deployment, queue checkpoints, and rollback targets
+
+## Tool Discipline
+
+Use `Read`, `Glob`, and `Grep` to inspect the repository, adapters, configuration names, tests, and evidence. Use `WebFetch` only for current official ClickUp documentation. Use `Write` or `Edit` after confirming the target file, Workspace boundary, and requested mode.
+
+## Current Contract
+
+- ClickUp status, API reachability, tenant authorization, and application side effects are independent signals.
+- A webhook is failing after unsuccessful or over-seven-second responses; failed events are not resent after their delivery attempts.
+- At `fail_count=100` a webhook is suspended; returning 401 suspends it immediately.
+- 429 recovery follows the per-token reset header rather than a guessed delay.
+
+## Authentication
+
+Use a personal token only for accountable individual/testing work or OAuth Authorization Code for a user-facing integration. Inject the token server-side through a governed secret reference, send it in `Authorization`, verify authorized Workspace IDs, and never print the token, OAuth client secret, or webhook secret.
 
 ## Instructions
 
-Classify the impact, stabilize affected automation before changing mappings or
-credentials, preserve safe correlation IDs and timestamps, and communicate on
-the defined cadence. Restore service through the smallest reversible change,
-then verify authorization, idempotency, and data consistency before declaring
-resolution or replaying queued events.
+1. Declare scope, commander, severity, affected Workspaces, write freeze, and evidence-retention boundary.
+2. Check provider status and run metadata-only identity/rate probes.
+3. Classify auth, plan/permission, rate, webhook health, schema, queue, deployment, or data-consistency failure.
+4. Contain with write disablement, circuit breaking, queue pause, or rollback before rotating credentials.
+5. Recover one lane at a time and reconcile missed or duplicate business operations from durable records.
+6. Close only after verification, stakeholder communication, evidence capture, and assigned follow-up.
+
+## Approval Boundaries
+
+Do not rotate shared tokens, reactivate webhooks, replay queues, mutate tasks, or suppress evidence without commander and owner approval.
 
 ## Output
 
-Create a time-stamped incident record with severity, scope, affected lists or
-workflows, containment, communications, recovery evidence, root-cause status,
-and prevention owner. Exclude live tokens, task bodies, comments, attachments,
-and personal data from status updates and postmortems.
+Return timeline, failure class, containment, affected Workspaces/operations, recovery evidence, reconciliation result, and follow-up owners. Include unresolved risk and the next decision deadline.
+
+## Error Handling
+
+| Condition | Response |
+|---|---|
+| Evidence includes work content | Redact or quarantine before sharing. |
+| Webhook events were dropped | Reconcile from source-of-truth reads; do not assume ClickUp will resend them. |
+| Credential ownership is unknown | Freeze writes and escalate before rotation. |
+| Recovery increases error rate | Return to containment and roll back. |
 
 ## Examples
 
-For a webhook backlog, pause ingestion, preserve the pending queue, verify the
-callback fix in staging, then replay a small deduplicated set before reopening
-production. If a task mapping caused unauthorized or incorrect changes, keep
-the integration disabled until reconciliation and owner validation complete.
+The example below is a redacted operator receipt; it contains no task text, member data, credential, or webhook secret.
+
+```text
+incident=CU-207; provider=healthy; class=webhook-suspended; writes=frozen; reconcile=required; commander=assigned
+```
 
 ## Resources
 
-- [ClickUp Status Page](https://status.clickup.com)
-- [ClickUp Common Errors](https://developer.clickup.com/docs/common_errors)
-- [ClickUp Rate Limits](https://developer.clickup.com/docs/rate-limits)
-
-## Next Steps
-
-For data handling during incidents, see `clickup-data-handling`.
+- [Skill-specific official documentation](references/official-docs.md)
+- [Webhook health](https://developer.clickup.com/docs/webhookhealth)
+- [Authentication](https://developer.clickup.com/docs/authentication)
+- [Rate limits](https://developer.clickup.com/docs/rate-limits)

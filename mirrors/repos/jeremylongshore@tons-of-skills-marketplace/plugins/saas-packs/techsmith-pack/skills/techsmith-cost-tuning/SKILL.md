@@ -1,68 +1,84 @@
 ---
 name: techsmith-cost-tuning
-description: 'TechSmith cost tuning for Snagit COM API and Camtasia automation.
-
-  Use when working with TechSmith screen capture and video editing automation.
-
-  Trigger: "techsmith cost tuning".
-
-  '
-allowed-tools: Read, Write, Edit, Bash(powershell:*), Grep
-version: 1.3.0
-license: MIT
+description: >-
+  Optimize TechSmith desktop automation cost through license assignment, workstation utilization, retention, and measured export capacity. Use when sizing Snagit or Camtasia operations without inventing API usage pricing. Trigger with "TechSmith cost tuning", "Camtasia capacity cost", or "Snagit license optimization".
+argument-hint: "[inventory-path] [planning-window]"
+allowed-tools: Read, Glob, Grep, WebFetch, Write, Edit
+version: 1.6.0
 author: Jeremy Longshore <jeremy@intentsolutions.io>
+license: MIT
 tags:
-- saas
-- screen-capture
-- video
+- desktop-automation
 - techsmith
-compatibility: Designed for Claude Code
+- cost
+model: inherit
+effort: medium
+compatibility: Designed for Claude Code; TechSmith product execution requires an approved Windows or macOS desktop as documented
 ---
-# TechSmith Cost Tuning
+# TechSmith License and Workstation Cost Control
 
 ## Overview
 
-Guidance for cost tuning with TechSmith Snagit COM API and Camtasia automation.
+This skill treats cost as a desktop fleet and media-lifecycle problem. TechSmith's supported Snagit/Camtasia automation is not a metered public API, so optimization focuses on approved license models, active seats, workstation time, local scratch, retained artifacts, and support burden.
+
+## Prerequisites
+
+- A redacted inventory of product, version, license model, assigned user, and workstation
+- Measured queue duration, failure/rework rate, storage growth, and retention
+- Current commercial terms from TechSmith or the organization's agreement
+- Business owners for license reassignment, archive policy, and service levels
+
+## Tool Discipline
+
+Use `Read`, `Glob`, and `Grep` to inspect local scripts, manifests, logs, and tests. Use `WebFetch` only for current primary TechSmith documentation. Use `Write` or `Edit` only after confirming the target repository file and approval boundary.
+
+## Current Contract
+
+- Do not invent per-request pricing or API quotas for desktop COM and recorder workflows.
+- Individual subscriptions activate by user sign-in; business licenses use managed keys and can support offline activation.
+- Commercial prices and discounts are contract facts to recheck, not constants to embed in code.
+- Camtasia project/export work remains workstation-bound; concurrency adds hardware and license implications.
+
+## Licensing and Authentication
+
+TechSmith desktop activation is not API authentication. Resolve individual sign-in versus business-key or approved offline activation before execution. Redact all keys, account identifiers, activation artifacts, and sensitive endpoint details.
 
 ## Instructions
 
-### Key Considerations
+1. Reconcile installed products and versions with assigned entitlements without collecting raw keys.
+2. Measure successful workstation-minutes per output, queue delay, retries, storage churn, and operator intervention.
+3. Separate mandatory production capacity from burst, development, and disaster-recovery capacity.
+4. Reduce rework through version pinning, standalone projects, local scratch, approved presets, and canary exports.
+5. Apply retention tiers to source projects, intermediate files, and validated deliverables; archive only after applications close.
+6. Model license or hardware changes with current vendor quotes and document the assumptions and rollback.
 
-- Snagit COM API is Windows-only (requires COM registration)
-- Camtasia Producer CLI for batch rendering
-- PowerShell is the primary scripting language
-- Python interop via `pywin32` (`pip install pywin32`)
+## Approval Boundaries
 
-### Snagit COM Input Types
+Do not share a single-user credential across workers, deactivate users automatically, or treat an observed install as proof of entitlement.
 
-| Value | Constant | Description |
-|-------|----------|-------------|
-| 0 | siiDesktop | Full desktop |
-| 2 | siiRegion | User-selected region |
-| 4 | siiWindow | Active window |
-| 5 | siiFile | From file |
+## Output
 
-### Snagit COM Output Types
-
-| Value | Constant | Description |
-|-------|----------|-------------|
-| 1 | sioClipboard | Copy to clipboard |
-| 2 | sioFile | Save to file |
-| 4 | sioPrinter | Send to printer |
+Return entitlement counts, measured utilization, unit-cost assumptions, capacity risks, retention savings, recommended action, owner, and review date.
 
 ## Error Handling
 
-| Error | Cause | Solution |
-|-------|-------|----------|
-| COM not registered | Snagit not installed | Install and register COM server |
-| Permission denied | Not running as admin | Elevate PowerShell |
-| File locked | Snagit Editor has file open | Close editor first |
+| Condition | Response |
+|---|---|
+| Entitlement data incomplete | Report a range and request the authoritative contract inventory. |
+| Costs are stale | Recheck the vendor quote or agreement before recommending purchase. |
+| Queue savings reduce reliability | Restore headroom and prioritize deterministic canaries over utilization. |
+| License reassignment disputed | Stop and route to the contract or procurement owner. |
+
+## Examples
+
+The example below shows the minimum redacted evidence expected from a successful invocation of this operator workflow.
+
+```text
+licensed_workers=4; peak_required=3; export_rework=12%; recommendation=fix-version-drift-before-adding-seat
+```
 
 ## Resources
 
-- [Snagit COM Samples](https://github.com/TechSmith/Snagit-COM-Samples)
-- [TechSmith Support](https://support.techsmith.com/)
-
-## Next Steps
-
-See related TechSmith skills for more automation patterns.
+- [Skill-specific official documentation](references/official-docs.md)
+- [Deploying TechSmith products](https://support.techsmith.com/hc/en-us/articles/43771074923021-Deploying-TechSmith-Products)
+- [Activation models](https://support.techsmith.com/hc/en-us/articles/31352249532941-How-Do-I-Activate-My-Snagit-or-Camtasia-Subscription)

@@ -1,150 +1,85 @@
 ---
 name: together-ci-integration
-description: 'Together AI ci integration for inference, fine-tuning, and model deployment.
-
-  Use when working with Together AI''s OpenAI-compatible API.
-
-  Trigger: "together ci integration".
-
-  '
-allowed-tools: Read, Write, Edit, Bash(pip:*), Grep
-version: 1.7.0
-license: MIT
+description: >-
+  Gate Together AI client, batch, fine-tuning, and deployment changes with offline contract tests plus a protected bounded live lane. Use when adding CI for a Together-backed repository. Trigger with "Together CI", "test Together integration", or "Together contract tests".
+argument-hint: "[repository-path] [live-test-environment]"
+allowed-tools: Read, Glob, Grep, WebFetch, Write, Edit
+version: 1.9.0
 author: Jeremy Longshore <jeremy@intentsolutions.io>
+license: MIT
 tags:
 - saas
-- ai
-- inference
-- together
-compatibility: Designed for Claude Code
+- together-ai
+- ci
+model: inherit
+effort: high
+compatibility: Designed for Claude Code; live CI requires a protected Together AI development project key
 ---
-# Together AI CI Integration
+# Together AI Continuous Integration
 
 ## Overview
 
-Set up CI/CD for Together AI inference integrations: run unit tests with mocked completion and embedding responses on every PR, validate live API connectivity for model inference on merge to main. Together AI provides an OpenAI-compatible API for 100+ open-source models including Llama, Mixtral, and FLUX, so CI pipelines verify prompt formatting, response parsing, model selection logic, and fine-tuning job management.
+This skill keeps ordinary pull-request gates deterministic and secretless while retaining a separately protected live lane for provider-contract drift.
 
-## GitHub Actions Workflow
+## Prerequisites
 
-```yaml
-# .github/workflows/together-ci.yml
-name: Together AI CI
-on:
-  pull_request:
-    paths: ['src/together/**', 'tests/**']
-  push:
-    branches: [main]
+- The repository's CI platform, test runner, and provider adapter
+- Sanitized fixtures for success, streaming, errors, limits, and asynchronous jobs
+- A protected environment and development-only Together project key for live testing
+- Explicit request, token, cost, concurrency, and timeout ceilings
 
-jobs:
-  unit-tests:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with: { node-version: '20' }
-      - run: npm ci
-      - run: npm test -- --reporter=verbose
+## Tool Discipline
 
-  integration-tests:
-    if: github.ref == 'refs/heads/main'
-    needs: unit-tests
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with: { node-version: '20' }
-      - run: npm ci
-      - run: npm run test:integration
-        env:
-          TOGETHER_API_KEY: ${{ secrets.TOGETHER_API_KEY }}
-```
+Use `Read`, `Glob`, and `Grep` to inspect workflows, manifests, adapters, tests, and secret references. Use `WebFetch` for current SDK and API contracts. Use `Write` or `Edit` only after confirming the CI file and fork-secret boundary.
 
-## Mock-Based Unit Tests
+## Current Contract
 
-```typescript
-// tests/together-service.test.ts
-import { describe, it, expect, vi } from 'vitest';
-import { generateCompletion, createEmbedding } from '../src/together-service';
+- Pull requests run schema, adapter, fixture, retry, reconciliation, and redaction tests without a live credential.
+- A live lane is opt-in or trusted-branch-only, uses a development project, and sends one bounded non-sensitive request.
+- Fork workflows never receive `TOGETHER_API_KEY` or a workflow token able to retrieve it.
+- Paid batch, fine-tuning, and dedicated-capacity actions are plan/contract tests unless separately approved.
 
-vi.mock('../src/together-client', () => ({
-  TogetherClient: vi.fn().mockImplementation(() => ({
-    chatCompletion: vi.fn().mockResolvedValue({
-      id: 'cmpl_abc123',
-      model: 'meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo',
-      choices: [{ message: { role: 'assistant', content: 'Hello! How can I help?' }, finish_reason: 'stop' }],
-      usage: { prompt_tokens: 12, completion_tokens: 8, total_tokens: 20 },
-    }),
-    createEmbedding: vi.fn().mockResolvedValue({
-      data: [{ embedding: new Array(768).fill(0.01), index: 0 }],
-      model: 'togethercomputer/m2-bert-80M-8k-retrieval',
-      usage: { total_tokens: 5 },
-    }),
-    listModels: vi.fn().mockResolvedValue([
-      { id: 'meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo', type: 'chat' },
-      { id: 'togethercomputer/m2-bert-80M-8k-retrieval', type: 'embedding' },
-    ]),
-  })),
-}));
+## Authentication
 
-describe('Together AI Service', () => {
-  it('generates a chat completion', async () => {
-    const result = await generateCompletion('Hello', { model: 'meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo' });
-    expect(result.choices[0].finish_reason).toBe('stop');
-    expect(result.usage.total_tokens).toBe(20);
-  });
+Inject a development-only project key into the protected live job as `TOGETHER_API_KEY`. Mask it, restrict environment access, and prevent execution of untrusted code in any secret-bearing workflow.
 
-  it('creates embeddings for text', async () => {
-    const result = await createEmbedding('test text');
-    expect(result.data[0].embedding).toHaveLength(768);
-  });
-});
-```
+## Instructions
 
-## Integration Tests
+1. Inventory direct SDK calls, model constants, retry paths, async jobs, and deployment commands.
+2. Add offline contract fixtures for response shapes, dynamic headers, terminal states, and errors.
+3. Test model-policy fallbacks, batch ID reconciliation, key redaction, and bounded retry behavior.
+4. Separate the live job behind a protected environment and trusted event/branch condition.
+5. Limit live execution to a catalog/model-list probe or one small chat request with a hard budget.
+6. Publish test evidence and cost while scrubbing prompts, responses, headers, and credentials.
 
-```typescript
-// tests/integration/together.integration.test.ts
-import { describe, it, expect } from 'vitest';
+## Approval Boundaries
 
-const hasKey = !!process.env.TOGETHER_API_KEY;
+Do not expose secrets to fork code or let CI submit fine-tunes, batches, provisioned capacity, or dedicated replicas without a distinct approval boundary and teardown.
 
-describe.skipIf(!hasKey)('Together AI Live API', () => {
-  it('runs inference via OpenAI-compatible endpoint', async () => {
-    const res = await fetch('https://api.together.xyz/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${process.env.TOGETHER_API_KEY}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo',
-        messages: [{ role: 'user', content: 'Say hello in one word.' }],
-        max_tokens: 10,
-      }),
-    });
-    expect(res.status).toBe(200);
-    const body = await res.json();
-    expect(body.choices[0].message.content).toBeDefined();
-  });
-});
-```
+## Output
+
+Return offline coverage, fixture provenance, live-lane eligibility/result, secret boundary, request budget, cost, and any provider drift.
 
 ## Error Handling
 
-| CI Issue | Cause | Fix |
-|----------|-------|-----|
-| `401 Unauthorized` | Invalid API key | Regenerate at api.together.xyz/settings |
-| `Model not found` | Wrong model ID string | Use `client.models.list()` to get valid IDs |
-| `429 Rate limit` | Too many concurrent requests | Implement exponential backoff with 3 retries |
-| `500 Server error` | Model overloaded or cold start | Retry with backoff; use Turbo variants for faster cold starts |
-| Embedding dimension mismatch | Wrong model for embeddings | Use `m2-bert-80M-8k-retrieval` for embeddings, not chat models |
+| Condition | Response |
+|---|---|
+| No approved live key | Mark live verification skipped; keep offline gates authoritative. |
+| Fork event requests secrets | Refuse the secret-bearing job. |
+| Live model disappears | Refresh catalog/deprecations and fail visibly. |
+| Credential appears in logs | Cancel publication, rotate the key, and scrub artifacts. |
+
+## Examples
+
+The example below shows the minimum redacted evidence expected from a successful invocation of this operator workflow.
+
+```text
+offline=pass; live=skipped(untrusted-event); paid-actions=disabled; secrets=not-exposed
+```
 
 ## Resources
 
-- [Together AI Documentation](https://docs.together.ai/)
-- [Together AI API Reference](https://docs.together.ai/reference/chat-completions-1)
-- [GitHub Actions Secrets](https://docs.github.com/en/actions/security-guides/encrypted-secrets)
-
-## Next Steps
-
-See related Together AI skills for fine-tuning and batch inference patterns.
+- [Skill-specific official documentation](references/official-docs.md)
+- [Authentication](https://docs.together.ai/docs/api-keys-authentication)
+- [Python v2 client](https://github.com/togethercomputer/together-py)
+- [Chat API](https://docs.together.ai/reference/chat-completions)

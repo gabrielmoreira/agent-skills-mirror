@@ -1,132 +1,85 @@
 ---
 name: together-deploy-integration
-description: 'Together AI deploy integration for inference, fine-tuning, and model
-  deployment.
-
-  Use when working with Together AI''s OpenAI-compatible API.
-
-  Trigger: "together deploy integration".
-
-  '
-allowed-tools: Read, Write, Edit, Bash(pip:*), Grep
-version: 1.7.0
-license: MIT
+description: >-
+  Deploy and roll back Together AI integrations across serverless inference or v2 Dedicated Model Inference with secret injection, health probes, traffic control, and cost shutdown. Use when releasing Together-backed services or dedicated models. Trigger with "deploy Together", "Together dedicated endpoint", or "Together rollout".
+argument-hint: "[repository-path] [serverless|dedicated-v2] [environment]"
+allowed-tools: Read, Glob, Grep, WebFetch, Write, Edit
+version: 1.9.0
 author: Jeremy Longshore <jeremy@intentsolutions.io>
+license: MIT
 tags:
 - saas
-- ai
-- inference
-- together
-compatibility: Designed for Claude Code
+- together-ai
+- deployment
+model: inherit
+effort: high
+compatibility: Designed for Claude Code; deployment requires platform access and Together AI project authorization
 ---
-# Together AI Deploy Integration
+# Together AI Deployment Integration
 
 ## Overview
 
-Deploy a containerized Together AI inference integration service with Docker. This skill covers building a production image that connects to Together's OpenAI-compatible API for running completions, embeddings, and image generation across 100+ open-source models. Includes environment configuration for model selection and batch processing, health checks that verify API key validity and model availability, and rolling update strategies for zero-downtime deployments serving real-time inference requests.
+This skill separates application release from paid Together capacity changes and defines a reversible deployment for serverless or current v2 dedicated inference.
 
-## Docker Configuration
+## Prerequisites
 
-```dockerfile
-FROM python:3.12-slim AS builder
-WORKDIR /app
-COPY requirements.txt ./
-RUN pip install --no-cache-dir -r requirements.txt
+- A tested application artifact and model-quality evidence
+- Environment-scoped secret references and network egress policy
+- Current model availability plus serverless or dedicated capacity decision
+- Health, canary, rollback, cost, and teardown owners
 
-FROM python:3.12-slim
-RUN groupadd -r app && useradd -r -g app app
-WORKDIR /app
-COPY --from=builder /usr/local/lib/python3.12/site-packages /usr/local/lib/python3.12/site-packages
-COPY --from=builder /usr/local/bin /usr/local/bin
-COPY src/ ./src/
-USER app
-EXPOSE 8000
-HEALTHCHECK --interval=30s --timeout=5s --retries=3 \
-  CMD curl -f http://localhost:8000/health || exit 1
-CMD ["python", "src/server.py"]
-```
+## Tool Discipline
 
-## Environment Variables
+Use `Read`, `Glob`, and `Grep` to inspect manifests, secret wiring, health checks, and rollback automation. Use `WebFetch` for current Together model and DMI lifecycle contracts. Use `Write` or `Edit` only for approved deployment files after the target platform is confirmed.
 
-```bash
-export TOGETHER_API_KEY="tog_xxxxxxxxxxxx"
-export TOGETHER_BASE_URL="https://api.together.xyz/v1"
-export TOGETHER_DEFAULT_MODEL="meta-llama/Llama-3.1-8B-Instruct"
-export TOGETHER_MAX_TOKENS="2048"
-export LOG_LEVEL="info"
-export PORT="8000"
-```
+## Current Contract
 
-## Health Check Endpoint
+- Serverless needs no GPU provisioning and uses the shared inference API with a current model ID.
+- New dedicated deployments use Together's v2 endpoint/deployment model and beta management surfaces.
+- Legacy v1 endpoint creation is retired; do not publish `client.endpoints.create(model=..., hardware=...)` as the new path.
+- Dedicated replicas bill while running. Scale to zero or delete after an approved rollback or experiment.
 
-```typescript
-import express from 'express';
+## Authentication
 
-const app = express();
+Inject a project-scoped `TOGETHER_API_KEY` from the deployment platform's secret manager. Dedicated management also requires authorized project context; never expose management identifiers or Bearer headers unnecessarily.
 
-app.get('/health', async (req, res) => {
-  try {
-    const response = await fetch(`${process.env.TOGETHER_BASE_URL}/models`, {
-      headers: { 'Authorization': `Bearer ${process.env.TOGETHER_API_KEY}` },
-    });
-    if (!response.ok) throw new Error(`Together API returned ${response.status}`);
-    res.json({ status: 'healthy', service: 'together-integration', model: process.env.TOGETHER_DEFAULT_MODEL, timestamp: new Date().toISOString() });
-  } catch (error) {
-    res.status(503).json({ status: 'unhealthy', error: (error as Error).message });
-  }
-});
-```
+## Instructions
 
-## Deployment Steps
+1. Classify the workload as serverless or dedicated from latency, throughput, model, and utilization evidence.
+2. Pin the application artifact, SDK major, configuration schema, model policy, and secret references.
+3. For dedicated v2, resolve model/config resources, create the deployment, and poll to ready before routing traffic.
+4. Run a non-sensitive health probe that validates provider reachability and response shape.
+5. Shift a bounded canary while monitoring error rate, latency, usage, quality, and cost.
+6. Promote or roll back explicitly; scale obsolete dedicated replicas to zero and verify billing disposition.
 
-### Step 1: Build
+## Approval Boundaries
 
-```bash
-docker build -t together-integration:latest .
-```
+Do not provision paid hardware, change traffic weights, rotate production keys, or promote a model without the named owners and an executable rollback.
 
-### Step 2: Run
+## Output
 
-```bash
-docker run -d --name together-integration \
-  -p 8000:8000 \
-  -e TOGETHER_API_KEY -e TOGETHER_BASE_URL -e TOGETHER_DEFAULT_MODEL \
-  together-integration:latest
-```
-
-### Step 3: Verify
-
-```bash
-curl -s http://localhost:8000/health | jq .
-```
-
-### Step 4: Rolling Update
-
-```bash
-docker build -t together-integration:v2 . && \
-docker stop together-integration && \
-docker rm together-integration && \
-docker run -d --name together-integration -p 8000:8000 \
-  -e TOGETHER_API_KEY -e TOGETHER_BASE_URL -e TOGETHER_DEFAULT_MODEL \
-  together-integration:v2
-```
+Return deployment mode, artifact/model/config identities, secret reference, readiness and canary evidence, traffic state, cost state, rollback result, and teardown owner.
 
 ## Error Handling
 
-| Issue | Cause | Fix |
-|-------|-------|-----|
-| `401 Unauthorized` | Invalid API key | Regenerate key at api.together.xyz/settings |
-| `Model not found` | Wrong model ID string | List models with `GET /v1/models` or check docs |
-| `429 Rate Limited` | Exceeding requests per minute | Implement backoff; use batch inference for 50% cost savings |
-| `500 Server Error` | Model overloaded or unavailable | Retry with exponential backoff; try alternate model |
-| Slow inference | Model cold start on first request | Use a smaller model or keep-alive with periodic requests |
+| Condition | Response |
+|---|---|
+| Legacy v1 create returns `403` | Stop and migrate to the current v2 DMI flow. |
+| Deployment ready but routing fails | Verify traffic split and endpoint inference name. |
+| Canary regresses | Route back and preserve redacted evidence. |
+| Teardown unverified | Keep the change open; dedicated replicas may still bill. |
+
+## Examples
+
+The example below shows the minimum redacted evidence expected from a successful invocation of this operator workflow.
+
+```text
+mode=dedicated-v2; deployment=ready; canary=5%; rollback=verified; obsolete-replicas=zero
+```
 
 ## Resources
 
-- [Together AI Docs](https://docs.together.ai/)
-- [API Reference](https://docs.together.ai/reference/chat-completions-1)
-- [Model List](https://docs.together.ai/docs/inference-models)
-
-## Next Steps
-
-See `together-webhooks-events`.
+- [Skill-specific official documentation](references/official-docs.md)
+- [Dedicated Model Inference](https://docs.together.ai/docs/dedicated-endpoints/overview)
+- [Migrate from v1](https://docs.together.ai/docs/dedicated-endpoints/migrate-from-v1)
+- [Official dedicated skill](https://github.com/togethercomputer/skills/tree/main/skills/together-dedicated-model-inference)

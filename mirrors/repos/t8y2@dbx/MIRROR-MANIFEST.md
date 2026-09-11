@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `t8y2/dbx` — 26 default patterns, 8 followed patterns, 629 file(s) materialized.
+Mirror of `t8y2/dbx` — 26 default patterns, 8 followed patterns, 630 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `t8y2/dbx` — 26 default patterns, 8 followed patterns, 629 file(s) m
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 8 |
-| Files         | 629 |
+| Files         | 630 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -685,16 +685,17 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 617 | ✓ | [`vendor/ctor/README.md`](vendor/ctor/README.md) |
 | 618 | ✓ | [`vendor/dirs-sys/README.md`](vendor/dirs-sys/README.md) |
 | 619 | ✓ | [`vendor/rumqttc/README.md`](vendor/rumqttc/README.md) |
-| 620 | ✓ | [`vendor/tiberius/README.md`](vendor/tiberius/README.md) |
-| 621 | ✓ | [`vendor/wry/README.md`](vendor/wry/README.md) |
-| 622 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 623 | → | [`CONTRIBUTING.zh-CN.md`](CONTRIBUTING.zh-CN.md) |
-| 624 | → | [`deploy/database/README.md`](deploy/database/README.md) |
-| 625 | → | [`deploy/database/README.zh-CN.md`](deploy/database/README.zh-CN.md) |
-| 626 | → | [`packages/cli/README.md`](packages/cli/README.md) |
-| 627 | → | [`packages/mcp-server/README.md`](packages/mcp-server/README.md) |
-| 628 | → | [`README.md`](README.md) |
-| 629 | → | [`README.zh-CN.md`](README.zh-CN.md) |
+| 620 | ✓ | [`vendor/tauri-plugin-updater/README.md`](vendor/tauri-plugin-updater/README.md) |
+| 621 | ✓ | [`vendor/tiberius/README.md`](vendor/tiberius/README.md) |
+| 622 | ✓ | [`vendor/wry/README.md`](vendor/wry/README.md) |
+| 623 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 624 | → | [`CONTRIBUTING.zh-CN.md`](CONTRIBUTING.zh-CN.md) |
+| 625 | → | [`deploy/database/README.md`](deploy/database/README.md) |
+| 626 | → | [`deploy/database/README.zh-CN.md`](deploy/database/README.zh-CN.md) |
+| 627 | → | [`packages/cli/README.md`](packages/cli/README.md) |
+| 628 | → | [`packages/mcp-server/README.md`](packages/mcp-server/README.md) |
+| 629 | → | [`README.md`](README.md) |
+| 630 | → | [`README.zh-CN.md`](README.zh-CN.md) |
 
 ---
 

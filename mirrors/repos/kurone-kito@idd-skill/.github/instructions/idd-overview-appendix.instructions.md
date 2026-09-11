@@ -110,22 +110,52 @@ Merge Wrapper; never permanently rewrite signing config. `--no-gpg-sign`
 on `git commit`/`git merge` is the last resort.
 
 Record material progress, decisions, and hold reasons as issue or PR
-comments as they happen. That includes a non-default signing outcome
-(including a `--no-gpg-sign` fallback). This ensures that any agent
-resuming without session context can understand the current state and
-continue correctly. Do not rely on session memory alone for
-information that another agent may need.
+comments as they happen -- including any non-default signing outcome
+(e.g. `--no-gpg-sign`) -- so a resuming agent needs no session memory
+to continue correctly.
 
 Operational restore markers (`review-watermark` and `review-baseline`)
 must include the current `{claim-id}` and must never be restored across
 a claim change. A takeover starts a new restore scope. These markers
-must also be authored by a trusted marker actor and include a visible
+must be authored by a trusted marker actor with a visible
 human-readable note (see `idd-review-snapshot.instructions.md`).
 
 ## Review item classes
 
 For the full PATH A / PATH B classification of review items and their
 handling rules, see `idd-review-triage.instructions.md`.
+
+## Upstream-candidate escalation
+
+**Gating.** Applies only when `upstreamEscalation.enabled` is `true`
+in `.github/idd/config.json` (absent or `false`: skip silently).
+
+**Qualifying criteria** (high-confidence bar, mirroring A4.5's
+`invalid`/`out-of-scope` rigor in `idd-suitability.instructions.md`):
+the discovered problem's root cause must be that an
+`idd-template`-sourced instruction/doc/helper's own stated logic is
+self-contradictory, or its steps as written cannot produce the outcome
+it claims. Never for a subjective "unclear wording" complaint, and
+never when the root cause is local to the current repository (its own
+code, config, or a local customization).
+
+- **Qualifying**: a step tells the reader to "proceed to step N" from
+  inside step N itself, with no later step N in the section — the
+  stated control flow cannot be followed as written.
+- **Non-qualifying**: an adopter finds a step confusing given their
+  own branch-naming convention — followable exactly as written; the
+  friction is local interpretation.
+
+**What to do.** Author (or extend, via the normal reuse-first checks)
+a local issue through `skills/issue-authoring/` as usual, additionally
+carrying the GitHub label `status:upstream-candidate` (create it on
+first use) and the hidden marker
+`<!-- idd-skill-upstream-candidate: true -->`.
+
+**What never to do.** Never write to `kurone-kito/idd-skill` or any
+other repository — no comment, no issue, no mutation of any kind.
+Whether to report the local issue upstream is a human decision outside
+this workflow.
 
 ## Project commands
 
@@ -143,6 +173,10 @@ assessment. For the per-agent invocation table (Copilot / Claude Code /
 Codex CLI / Antigravity CLI (formerly Gemini CLI)) and the optional
 repository-configurable `critiqueLoop.delegate` surface, see
 [`docs/idd-workflow.md` → Critique pass invocation](../../docs/idd-workflow.md#critique-pass-invocation).
+For **C1 and E10** — this surface does not extend to E2 — when
+helper runtime is enabled, resolve the effective delegate with the
+`idd-critique-delegate` helper documented at
+[`docs/idd-helper-scripts.md` → Effective C1 critique delegate](../../docs/idd-helper-scripts.md#effective-c1-critique-delegate).
 
 ### Critique lenses
 

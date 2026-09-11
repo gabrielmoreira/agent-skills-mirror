@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `daymade/claude-code-skills` — 26 default patterns, 14 followed patterns, 121 file(s) materialized.
+Mirror of `daymade/claude-code-skills` — 26 default patterns, 15 followed patterns, 123 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `daymade/claude-code-skills` — 26 default patterns, 14 followed patt
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 14 |
-| Files         | 121 |
+| Followed pats | 15 |
+| Files         | 123 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -65,6 +65,7 @@ Mirror of `daymade/claude-code-skills` — 26 default patterns, 14 followed patt
 - `CONTRIBUTING.md`
 - `references/plugin-architecture.md`
 - `references/plugin-troubleshooting.md`
+- `cloudflare-troubleshooting/references/email-routing.md`
 
 ## File Index
 
@@ -156,43 +157,45 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 82 | ✓ | [`llm-icon-finder/SKILL.md`](llm-icon-finder/SKILL.md) |
 | 83 | ✓ | [`llm-wiki-setup/SKILL.md`](llm-wiki-setup/SKILL.md) |
 | 84 | ✓ | [`marketplace-health-check/SKILL.md`](marketplace-health-check/SKILL.md) |
-| 85 | ✓ | [`notify-wecom/SKILL.md`](notify-wecom/SKILL.md) |
-| 86 | ✓ | [`openclaw-model-switch/SKILL.md`](openclaw-model-switch/SKILL.md) |
-| 87 | ✓ | [`openclaw/SKILL.md`](openclaw/SKILL.md) |
-| 88 | ✓ | [`peer-message/SKILL.md`](peer-message/SKILL.md) |
-| 89 | ✓ | [`product-analysis/SKILL.md`](product-analysis/SKILL.md) |
-| 90 | ✓ | [`prompt-optimizer/SKILL.md`](prompt-optimizer/SKILL.md) |
-| 91 | ✓ | [`promptfoo-evaluation/SKILL.md`](promptfoo-evaluation/SKILL.md) |
-| 92 | ✓ | [`qa-expert/SKILL.md`](qa-expert/SKILL.md) |
-| 93 | ✓ | [`repomix-safe-mixer/SKILL.md`](repomix-safe-mixer/SKILL.md) |
-| 94 | ✓ | [`repomix-unmixer/SKILL.md`](repomix-unmixer/SKILL.md) |
-| 95 | ✓ | [`scrapling-skill/SKILL.md`](scrapling-skill/SKILL.md) |
-| 96 | ✓ | [`setup-notifications-via-wecom/SKILL.md`](setup-notifications-via-wecom/SKILL.md) |
-| 97 | ✓ | [`slides-creator/SKILL.md`](slides-creator/SKILL.md) |
-| 98 | ✓ | [`teams-channel-post-writer/SKILL.md`](teams-channel-post-writer/SKILL.md) |
-| 99 | ✓ | [`terraform-skill/SKILL.md`](terraform-skill/SKILL.md) |
-| 100 | ✓ | [`tibo-reset-codex/SKILL.md`](tibo-reset-codex/SKILL.md) |
-| 101 | ✓ | [`tunnel-doctor/SKILL.md`](tunnel-doctor/SKILL.md) |
-| 102 | ✓ | [`twitter-reader/SKILL.md`](twitter-reader/SKILL.md) |
-| 103 | ✓ | [`ui-designer/SKILL.md`](ui-designer/SKILL.md) |
-| 104 | ✓ | [`video-comparer/SKILL.md`](video-comparer/SKILL.md) |
-| 105 | ✓ | [`windows-remote-desktop-connection-doctor/SKILL.md`](windows-remote-desktop-connection-doctor/SKILL.md) |
-| 106 | ✓ | [`wps-doc-scraper/SKILL.md`](wps-doc-scraper/SKILL.md) |
-| 107 | ✓ | [`youtube-downloader/SKILL.md`](youtube-downloader/SKILL.md) |
-| 108 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 109 | → | [`daymade-audio/transcript-fixer/references/native_review_packets.md`](daymade-audio/transcript-fixer/references/native_review_packets.md) |
-| 110 | → | [`daymade-claude-code/claude-switch-models-setup/references/context-window-config.md`](daymade-claude-code/claude-switch-models-setup/references/context-window-config.md) |
-| 111 | → | [`daymade-claude-code/claude-switch-models-setup/references/local-source-sync-architecture.md`](daymade-claude-code/claude-switch-models-setup/references/local-source-sync-architecture.md) |
-| 112 | → | [`daymade-skill/skill-creator/references/sanitization_checklist.md`](daymade-skill/skill-creator/references/sanitization_checklist.md) |
-| 113 | → | [`daymade-skill/skill-creator/references/source-snapshot-archives.md`](daymade-skill/skill-creator/references/source-snapshot-archives.md) |
-| 114 | → | [`feishu-doc-scraper/references/archive-storage-contract.md`](feishu-doc-scraper/references/archive-storage-contract.md) |
-| 115 | → | [`feishu-doc-scraper/references/comments-and-feedback.md`](feishu-doc-scraper/references/comments-and-feedback.md) |
-| 116 | → | [`references/new-skill-guide.md`](references/new-skill-guide.md) |
-| 117 | → | [`references/plugin-architecture.md`](references/plugin-architecture.md) |
-| 118 | → | [`references/plugin-troubleshooting.md`](references/plugin-troubleshooting.md) |
-| 119 | → | [`references/promotion-policy.md`](references/promotion-policy.md) |
-| 120 | → | [`tibo-reset-codex/references/account-usage.md`](tibo-reset-codex/references/account-usage.md) |
-| 121 | → | [`youtube-downloader/references/internal-sop.md`](youtube-downloader/references/internal-sop.md) |
+| 85 | ✓ | [`meme-creator/SKILL.md`](meme-creator/SKILL.md) |
+| 86 | ✓ | [`notify-wecom/SKILL.md`](notify-wecom/SKILL.md) |
+| 87 | ✓ | [`openclaw-model-switch/SKILL.md`](openclaw-model-switch/SKILL.md) |
+| 88 | ✓ | [`openclaw/SKILL.md`](openclaw/SKILL.md) |
+| 89 | ✓ | [`peer-message/SKILL.md`](peer-message/SKILL.md) |
+| 90 | ✓ | [`product-analysis/SKILL.md`](product-analysis/SKILL.md) |
+| 91 | ✓ | [`prompt-optimizer/SKILL.md`](prompt-optimizer/SKILL.md) |
+| 92 | ✓ | [`promptfoo-evaluation/SKILL.md`](promptfoo-evaluation/SKILL.md) |
+| 93 | ✓ | [`qa-expert/SKILL.md`](qa-expert/SKILL.md) |
+| 94 | ✓ | [`repomix-safe-mixer/SKILL.md`](repomix-safe-mixer/SKILL.md) |
+| 95 | ✓ | [`repomix-unmixer/SKILL.md`](repomix-unmixer/SKILL.md) |
+| 96 | ✓ | [`scrapling-skill/SKILL.md`](scrapling-skill/SKILL.md) |
+| 97 | ✓ | [`setup-notifications-via-wecom/SKILL.md`](setup-notifications-via-wecom/SKILL.md) |
+| 98 | ✓ | [`slides-creator/SKILL.md`](slides-creator/SKILL.md) |
+| 99 | ✓ | [`teams-channel-post-writer/SKILL.md`](teams-channel-post-writer/SKILL.md) |
+| 100 | ✓ | [`terraform-skill/SKILL.md`](terraform-skill/SKILL.md) |
+| 101 | ✓ | [`tibo-reset-codex/SKILL.md`](tibo-reset-codex/SKILL.md) |
+| 102 | ✓ | [`tunnel-doctor/SKILL.md`](tunnel-doctor/SKILL.md) |
+| 103 | ✓ | [`twitter-reader/SKILL.md`](twitter-reader/SKILL.md) |
+| 104 | ✓ | [`ui-designer/SKILL.md`](ui-designer/SKILL.md) |
+| 105 | ✓ | [`video-comparer/SKILL.md`](video-comparer/SKILL.md) |
+| 106 | ✓ | [`windows-remote-desktop-connection-doctor/SKILL.md`](windows-remote-desktop-connection-doctor/SKILL.md) |
+| 107 | ✓ | [`wps-doc-scraper/SKILL.md`](wps-doc-scraper/SKILL.md) |
+| 108 | ✓ | [`youtube-downloader/SKILL.md`](youtube-downloader/SKILL.md) |
+| 109 | → | [`cloudflare-troubleshooting/references/email-routing.md`](cloudflare-troubleshooting/references/email-routing.md) |
+| 110 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 111 | → | [`daymade-audio/transcript-fixer/references/native_review_packets.md`](daymade-audio/transcript-fixer/references/native_review_packets.md) |
+| 112 | → | [`daymade-claude-code/claude-switch-models-setup/references/context-window-config.md`](daymade-claude-code/claude-switch-models-setup/references/context-window-config.md) |
+| 113 | → | [`daymade-claude-code/claude-switch-models-setup/references/local-source-sync-architecture.md`](daymade-claude-code/claude-switch-models-setup/references/local-source-sync-architecture.md) |
+| 114 | → | [`daymade-skill/skill-creator/references/sanitization_checklist.md`](daymade-skill/skill-creator/references/sanitization_checklist.md) |
+| 115 | → | [`daymade-skill/skill-creator/references/source-snapshot-archives.md`](daymade-skill/skill-creator/references/source-snapshot-archives.md) |
+| 116 | → | [`feishu-doc-scraper/references/archive-storage-contract.md`](feishu-doc-scraper/references/archive-storage-contract.md) |
+| 117 | → | [`feishu-doc-scraper/references/comments-and-feedback.md`](feishu-doc-scraper/references/comments-and-feedback.md) |
+| 118 | → | [`references/new-skill-guide.md`](references/new-skill-guide.md) |
+| 119 | → | [`references/plugin-architecture.md`](references/plugin-architecture.md) |
+| 120 | → | [`references/plugin-troubleshooting.md`](references/plugin-troubleshooting.md) |
+| 121 | → | [`references/promotion-policy.md`](references/promotion-policy.md) |
+| 122 | → | [`tibo-reset-codex/references/account-usage.md`](tibo-reset-codex/references/account-usage.md) |
+| 123 | → | [`youtube-downloader/references/internal-sop.md`](youtube-downloader/references/internal-sop.md) |
 
 ---
 

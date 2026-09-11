@@ -2,7 +2,7 @@
 
 Read this file only when ego lite isn't installed yet, or when the user asks to install ego lite. For day-to-day browser work, go back to `SKILL.md`.
 
-The ego-browser skill depends on the ego lite browser: the `ego-browser` command is provided by the ego lite app. Once ego lite is installed and you've gone through onboarding once, the environment is ready and there are no further environment issues.
+The ego-browser skill depends on the ego lite browser: the `ego-browser` command is provided by the ego lite app. Once ego lite is installed and you've completed onboarding, no additional setup is normally needed.
 
 ego lite website: https://lite.ego.app/
 
@@ -57,7 +57,7 @@ Printing `ego-browser ready` means the environment is ready.
 
 ## After that, return to the original task
 
-Once the environment is ready, return to the user's original task and continue with the task space flow in `SKILL.md` — start from `taskSpaces.useOrCreate(name)` and proceed as usual.
+Once the environment is ready, return to the user's original task and continue with the task space flow in `SKILL.md` — start from `taskSpace(name)` and proceed as usual.
 
 ## Troubleshooting
 

@@ -1,192 +1,87 @@
 ---
 name: salesloft-reference-architecture
-description: 'Production architecture for SalesLoft API integrations with service
-  layer,
-
-  webhook processing, and CRM sync patterns.
-
-  Use when designing new SalesLoft integrations or reviewing project structure.
-
-  Trigger: "salesloft architecture", "salesloft project structure", "salesloft design".
-
-  '
-allowed-tools: Read, Grep
+description: >-
+  Design a multi-team Salesloft integration with explicit tenant, auth, client, scheduler, cursor, webhook, queue, reconciliation, and ownership boundaries. Use when reviewing or creating production architecture. Trigger with "Salesloft architecture", "design Salesloft integration", or "Salesloft multi-tenant system".
+argument-hint: "[repository-path] [architecture-scope]"
+allowed-tools: Read, Glob, Grep, WebFetch, Write, Edit
 version: 1.6.0
-license: MIT
 author: Jeremy Longshore <jeremy@intentsolutions.io>
+license: MIT
 tags:
 - saas
-- sales
-- outreach
 - salesloft
+- architecture
+model: inherit
+effort: medium
 compatibility: Designed for Claude Code
 ---
-# SalesLoft Reference Architecture
+# Salesloft Integration Reference Architecture
 
 ## Overview
 
-Production architecture for SalesLoft API integrations: typed API client, service layer with caching, webhook processor, and background sync. Designed around SalesLoft's REST API v2 with cost-based rate limiting.
+This skill maps Salesloft integration responsibilities into inspectable components and data flows. It treats tenant isolation, rate sharing, and reconciliation as architectural requirements rather than library details.
 
-## Project Structure
+## Prerequisites
 
-```
-salesloft-integration/
-├── src/
-│   ├── salesloft/
-│   │   ├── client.ts           # Axios wrapper with rate-limit handling
-│   │   ├── types.ts            # Person, Cadence, Activity types
-│   │   ├── paginator.ts        # AsyncGenerator pagination
-│   │   └── errors.ts           # SalesloftApiError class
-│   ├── services/
-│   │   ├── people-sync.ts      # Bidirectional people sync
-│   │   ├── cadence-manager.ts  # Cadence CRUD + enrollment
-│   │   └── activity-tracker.ts # Email/call activity aggregation
-│   ├── webhooks/
-│   │   ├── handler.ts          # Signature verification + routing
-│   │   └── processors/        # Per-event-type processors
-│   ├── jobs/
-│   │   ├── incremental-sync.ts # Cron: sync changed records
-│   │   └── engagement-report.ts# Cron: aggregate daily metrics
-│   └── api/
-│       ├── health.ts           # /health endpoint
-│       └── webhooks.ts         # /webhooks/salesloft endpoint
-├── config/
-│   ├── default.json
-│   ├── production.json
-│   └── test.json
-└── tests/
-    ├── unit/
-    └── integration/
-```
+- Business workflows, team topology, data classes, and service objectives
+- Auth-flow and endpoint/scope inventory
+- Hosting, queue, database, secret-store, and observability constraints
+- Named service, security, data, and incident owners
 
-## Architecture Diagram
+## Tool Discipline
 
-```
-┌─────────────────────────────────┐
-│           API Layer             │
-│  /health  /webhooks/salesloft   │
-├─────────────────────────────────┤
-│         Service Layer           │
-│  PeopleSync  CadenceManager    │
-│  ActivityTracker               │
-├─────────────────────────────────┤
-│       SalesLoft Client          │
-│  Typed API  Pagination  Retry  │
-├─────────────────────────────────┤
-│       Infrastructure            │
-│  Redis Cache  BullMQ Jobs      │
-│  PostgreSQL  Prometheus        │
-└─────────────────────────────────┘
-         │              ▲
-         ▼              │
-┌─────────────────────────────────┐
-│     SalesLoft REST API v2       │
-│  /people  /cadences  /webhooks  │
-│  Rate: 600 cost/min             │
-└─────────────────────────────────┘
-```
+Use `Read`, `Glob`, and `Grep` to inspect repository topology, boundaries, schemas, and deployment files. Use `WebFetch` only for official Salesloft contracts. Use `Write` or `Edit` after confirming the intended architecture artifact.
 
-## Key Components
+## Current Contract
 
-### Typed API Models
+- Every request carries an explicit team context and tenant-bound Bearer credential.
+- The client preserves endpoint-specific requests, response envelopes, pagination, and rate metadata.
+- A scheduler coordinates the team-wide cost budget across workers and integrations.
+- Incremental readers persist microsecond `updated_at` cursors with overlap and deduplication.
+- Webhook ingress preserves raw bytes, verifies SHA-1 HMAC and callback token, then queues durable idempotent work.
 
-```typescript
-// src/salesloft/types.ts
-export interface SalesloftPerson {
-  id: number;
-  display_name: string;
-  email_address: string;
-  first_name: string;
-  last_name: string;
-  title: string | null;
-  company_name: string | null;
-  phone: string | null;
-  city: string | null;
-  state: string | null;
-  tags: string[];
-  created_at: string;
-  updated_at: string;
-}
+## Authentication
 
-export interface SalesloftCadence {
-  id: number;
-  name: string;
-  current_state: 'draft' | 'active' | 'paused' | 'archived';
-  team_cadence: boolean;
-  counts: { people_count: number };
-}
+Model separate authorization-code, customer API-key, and private client-credentials lifecycles. Keep encrypted credentials and refresh state keyed by immutable Salesloft team identity.
 
-export interface SalesloftActivity {
-  id: number;
-  action_type: 'email' | 'phone' | 'other' | 'integration';
-  person_id: number;
-  cadence_id: number | null;
-  created_at: string;
-}
-```
+## Instructions
 
-### Service Layer Pattern
+1. Map actors, Salesloft teams, trust zones, data classes, and all read/write flows.
+2. Define tenant context at ingress and carry it through client, queue, cache, database, and logs.
+3. Place auth resolution and refresh behind a serialized tenant-bound service.
+4. Place request shaping, envelopes, paging, errors, and rate headers behind a narrow client.
+5. Separate webhook receipt from processing and pair it with cursor-based reconciliation.
+6. Define mutation ownership, idempotency, read-after-write, and repair workflows.
+7. Add metrics and runbooks for auth, status, cost, remaining budget, lag, duplicates, and reconciliation.
 
-```typescript
-// src/services/people-sync.ts
-export class PeopleSyncService {
-  constructor(
-    private salesloft: SalesloftClient,
-    private db: Database,
-    private cache: LRUCache<string, any>,
-  ) {}
+## Approval Boundaries
 
-  async syncIncremental(): Promise<{ created: number; updated: number }> {
-    const lastSync = await this.db.getLastSyncTime('people');
-    const stats = { created: 0, updated: 0 };
+Do not centralize mutable global credentials, share tenant caches, accept webhooks before verification, or create a write path without ownership and repair controls.
 
-    for await (const person of this.salesloft.paginate<SalesloftPerson>(
-      '/people.json', { updated_at: { gt: lastSync } }
-    )) {
-      const existing = await this.db.findPersonBySlId(person.id);
-      if (existing) {
-        await this.db.updatePerson(person);
-        stats.updated++;
-      } else {
-        await this.db.createPerson(person);
-        stats.created++;
-      }
-      this.cache.delete(`person:${person.email_address}`);
-    }
+## Output
 
-    await this.db.setLastSyncTime('people', new Date().toISOString());
-    return stats;
-  }
-}
-```
-
-### Background Job
-
-```typescript
-// src/jobs/incremental-sync.ts
-import { CronJob } from 'cron';
-
-new CronJob('*/5 * * * *', async () => { // Every 5 minutes
-  const service = new PeopleSyncService(salesloft, db, cache);
-  const stats = await service.syncIncremental();
-  console.log(`Sync: +${stats.created} created, ~${stats.updated} updated`);
-}).start();
-```
+Return component and data-flow diagrams, tenant invariants, auth model, endpoint boundaries, rate scheduler, webhook/reconciliation design, failure modes, owners, and open decisions.
 
 ## Error Handling
 
-| Component | Failure Mode | Recovery |
-|-----------|-------------|----------|
-| API Client | 429 rate limit | Automatic retry with `Retry-After` |
-| Webhook Handler | Invalid signature | Reject 401, log for investigation |
-| Sync Job | Partial failure | Resume from last successful `updated_at` |
-| Cache | Redis unavailable | Fall through to API (graceful degradation) |
+| Condition | Response |
+|---|---|
+| Tenant context absent | Reject before resolving credentials or data. |
+| Queue duplicates | Deduplicate before side effects and retain receipt history. |
+| Cursor corruption | Restore last committed checkpoint and replay overlap. |
+| Provider/API failure | Degrade boundedly, preserve work, and reconcile after recovery. |
+
+## Examples
+
+The example below shows the minimum redacted evidence expected from a successful invocation of this operator workflow.
+
+```text
+teams=12; auth=tenant-bound; limiter=per-team; webhook=verified; reconciliation=daily
+```
 
 ## Resources
 
-- SalesLoft API Reference
-- [SalesLoft Developer Portal](https://developers.salesloft.com/)
-
-## Next Steps
-
-See individual skill docs for deep-dives on each component.
+- [Skill-specific official documentation](references/official-docs.md)
+- [API basics](https://developers.salesloft.com/docs/platform/api-basics/)
+- [Efficient cursor poller](https://developers.salesloft.com/docs/platform/guides/building-an-efficient-cursor-poller/)
+- [Webhook introduction](https://developers.salesloft.com/docs/platform/webhooks/introduction/)

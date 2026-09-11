@@ -1,6 +1,6 @@
 ---
 name: threejs-procedural-materials
-description: Author production procedural materials in Three.js. Use for hybrid texture-backed PBR soil and moss with procedural displacement and masks, upward-facing model moss accumulation, atlas filtering, specular AA, planet-space fields, terrain wetness, lava and emissive surfaces, reflective wave-optical diffraction gratings, air-film-air soap bubbles with Airy interference, raytraced diamond and gem refraction with internal reflection and dispersion, image-space glass transmission with spectral dispersion and volume absorption, per-instance dissolve, authored PBR identities, derivative normals, and custom direct-light shadow modulation.
+description: Author production procedural materials in Three.js. Use for hybrid texture-backed PBR soil and moss with procedural displacement and masks, upward-facing model moss accumulation, atlas filtering, specular AA, planet-space fields, terrain wetness, lava and emissive surfaces, reflective wave-optical diffraction gratings, air-film-air soap bubbles with Airy interference, raytraced diamond and gem refraction with internal reflection and dispersion, image-space glass transmission with spectral dispersion and volume absorption, deforming softbody jelly materials with XPBD mechanics and refractive caustics, per-instance dissolve, authored PBR identities, derivative normals, and custom direct-light shadow modulation.
 ---
 
 # Procedural Materials
@@ -100,6 +100,17 @@ dependent aqueous index, front and rear membrane passes, analytic nearby-
 bubble reflection, volume-preserving capillary modes, buoyancy and drag,
 Taylor-Culick rupture, visible-drop aftermath, and deterministic physics gates.
 
+Read the
+[softbody jelly implementation](examples/softbody-jelly/softbody-jelly.js)
+for a deforming flower-shaped transmissive body whose tetrahedral XPBD state,
+smooth optical shell, view-ray thickness, BVH refraction, absorption, receiver
+shadow, and finite RGB caustic fields remain coupled.
+
+Read
+[references/softbody-jelly.md](references/softbody-jelly.md) for the
+softbody coordinate contract, neo-Hookean XPBD split, damping and sleep rules,
+refractive receiver budget, material constants, limits, and diagnostics.
+
 ## Required controls
 
 - real or perceptual texture scale;
@@ -142,6 +153,9 @@ shared moss PBR identity.
 - a narrowed diffraction lobe loses energy because its density lacks sigma normalization.
 - a soap bubble is treated as a solid glass sphere or painted with a rainbow instead of using air-film-air interference;
 - a deformed soap membrane retains the undeformed sphere normal;
+- a deforming transmissive body updates its render shell, optical BVH, and receiver field from different states;
+- a finite caustic receiver lets non-zero data reach its clamped texture edge;
+- a softbody solver uses variable integration steps or an uncoupled rest-stress split that injects energy after damping;
 
 ## Routing boundary
 

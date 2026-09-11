@@ -1,0 +1,22 @@
+{
+  "name": "天意（示例）",
+  "slug": "example_tianyi",
+  "created_at": "2026-04-04T00:00:00Z",
+  "updated_at": "2026-04-04T00:00:00Z",
+  "version": "v1",
+  "profile": {
+    "company": "AI Lab",
+    "level": "None",
+    "role": "安全可信工程师",
+    "department": "AI Lab · 安全部门",
+    "gender": "男",
+    "mbti": "ENFP"
+  },
+  "tags": {
+    "personality": ["靠谱", "代码规范", "热心", "健谈", "游戏爱好者"],
+    "culture": ["团队氛围好", "技术扎实"]
+  },
+  "impression": "工程代码写得规范又扎实，团队里谁都愿意找他搭，闲下来聊杀戮尖塔能聊一下午",
+  "knowledge_sources": [],
+  "corrections_count": 0
+}

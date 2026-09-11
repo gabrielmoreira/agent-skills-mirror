@@ -1,139 +1,85 @@
 ---
 name: together-reference-architecture
-description: 'Together AI reference architecture for inference, fine-tuning, and model
-  deployment.
-
-  Use when working with Together AI''s OpenAI-compatible API.
-
-  Trigger: "together reference architecture".
-
-  '
-allowed-tools: Read, Write, Edit, Bash(pip:*), Grep
-version: 1.7.0
-license: MIT
+description: >-
+  Design a production Together AI service with a typed provider boundary, policy-based model routing, serverless and dedicated lanes, batch workers, telemetry, budgets, and reversible degradation. Use when defining the integration topology. Trigger with "Together architecture", "Together model gateway", or "design Together service".
+argument-hint: "[repository-path] [workload-profile]"
+allowed-tools: Read, Glob, Grep, WebFetch, Write, Edit
+version: 1.9.0
 author: Jeremy Longshore <jeremy@intentsolutions.io>
+license: MIT
 tags:
 - saas
-- ai
-- inference
-- together
-compatibility: Designed for Claude Code
+- together-ai
+- architecture
+model: inherit
+effort: high
+compatibility: Designed for Claude Code; implementation may require cloud, queue, secret-store, and Together AI access
 ---
 # Together AI Reference Architecture
 
 ## Overview
 
-Production architecture for AI inference, fine-tuning, and batch processing with Together AI's OpenAI-compatible API. Designed for teams routing requests across 100+ open-source models (Llama, Mixtral, Qwen, FLUX) with intelligent model selection, response caching, fine-tune pipeline management, and cost optimization via batch inference at 50% discount. Key design drivers: model routing for cost/quality tradeoffs, inference caching for repeated queries, fine-tune lifecycle management, and graceful degradation across model providers.
+This skill turns workload requirements into explicit real-time, batch, and dedicated paths with one governed provider boundary and observable cost/quality behavior.
 
-## Architecture Diagram
+## Prerequisites
 
-```
-Application ──→ Model Router ──→ Cache (Redis) ──→ Together API (v1)
-                    ↓                                /chat/completions
-               Queue (Bull) ──→ Batch Worker         /completions
-                    ↓                                /images/generations
-               Fine-Tune Manager ──→ Together API    /fine-tunes
-                    ↓                                /models
-               Cost Tracker ──→ Analytics Dashboard
-```
+- Workload classes, modalities, volumes, latency objectives, and data classifications
+- Model-quality evaluations and fallback constraints
+- Availability, cost, retention, residency, and recovery objectives
+- Existing gateway, queue, telemetry, and secret-management topology
 
-## Service Layer
+## Tool Discipline
 
-```typescript
-class InferenceService {
-  constructor(private together: TogetherClient, private cache: CacheLayer, private router: ModelRouter) {}
+Use `Read`, `Glob`, and `Grep` to map callers, trust boundaries, queues, storage, and observability. Use `WebFetch` for current Together capabilities and limits. Use `Write` or `Edit` only for approved diagrams, ADRs, interfaces, or configuration.
 
-  async complete(request: InferenceRequest): Promise<InferenceResponse> {
-    const model = this.router.selectModel(request.task, request.priority);
-    const cacheKey = `inference:${model}:${this.hashPrompt(request.prompt)}`;
-    const cached = await this.cache.get(cacheKey);
-    if (cached && request.allowCached) return cached;
-    const response = await this.together.chatCompletions({ model, messages: request.messages, temperature: request.temperature ?? 0.7 });
-    await this.cache.set(cacheKey, response, CACHE_CONFIG.inference.ttl);
-    await this.costTracker.record(model, response.usage);
-    return response;
-  }
+## Current Contract
 
-  async submitBatch(requests: InferenceRequest[]): Promise<string> {
-    const batchId = await this.together.createBatch(requests.map(r => ({
-      model: this.router.selectModel(r.task, 'batch'), messages: r.messages })));
-    return batchId;  // 50% cost reduction for batch processing
-  }
-}
-```
+- Interactive serverless and dedicated models share inference request shapes, but capacity and billing differ.
+- Batch is an asynchronous file/job path with arbitrary result order and separate error artifacts.
+- Model IDs, prices, redirects, and availability are runtime policy inputs, not constants scattered through callers.
+- Credentials are project-scoped; isolate environments and inject keys at the gateway or worker boundary.
 
-## Caching Strategy
+## Authentication
 
-```typescript
-const CACHE_CONFIG = {
-  inference:   { ttl: 3600,  prefix: 'infer' },    // 1 hr — deterministic prompts (temp=0) cache well
-  embeddings:  { ttl: 86400, prefix: 'embed' },     // 24 hr — embeddings are stable for same input
-  modelList:   { ttl: 3600,  prefix: 'models' },    // 1 hr — available models change infrequently
-  fineTune:    { ttl: 60,    prefix: 'ft' },         // 1 min — training status needs near-real-time
-  batchStatus: { ttl: 30,    prefix: 'batch' },      // 30s — batch completion polling
-};
-// Cache only temp=0 responses by default; stochastic responses bypass cache unless explicitly opted in
-```
+Use separate `TOGETHER_API_KEY` references per environment and workload authority. Keep provider credentials server-side. Internal callers authenticate to the application gateway independently; they never receive the Together key.
 
-## Event Pipeline
+## Instructions
 
-```typescript
-class InferencePipeline {
-  private queue = new Bull('together-events', { redis: process.env.REDIS_URL });
+1. Partition workloads into interactive, offline batch, training, and reserved-capacity classes.
+2. Define a typed provider adapter and policy service for model, bounds, fallback, and deprecation state.
+3. Place bounded queues around bursty and asynchronous work with durable IDs and reconciliation.
+4. Add per-model request/token control, circuit breaking, usage/cost telemetry, and quality sampling.
+5. Define data redaction, retention, tenant isolation, and secret rotation at each trust boundary.
+6. Document degradation, model migration, batch recovery, dedicated scale-to-zero, and provider-exit paths.
 
-  async onFineTuneComplete(event: FineTuneEvent): Promise<void> {
-    await this.queue.add('deploy-model', event, { attempts: 3, backoff: { type: 'exponential', delay: 5000 } });
-  }
+## Approval Boundaries
 
-  async processFineTuneEvent(event: FineTuneEvent): Promise<void> {
-    if (event.status === 'completed') {
-      await this.router.registerModel(event.modelId, { task: event.task, cost: event.inferCostPerToken });
-      await this.runEvalSuite(event.modelId, event.evalDataset);
-    }
-    if (event.status === 'failed') await this.notifyTeam(event.error);
-  }
+Do not introduce provider failover, cross-region data movement, dedicated capacity, or automatic model substitution without security, quality, reliability, and cost owners.
 
-  async processBatchComplete(batchId: string): Promise<void> {
-    const results = await this.together.getBatchResults(batchId);
-    await this.storeResults(results);
-    await this.costTracker.recordBatch(batchId, results.usage);
-  }
-}
-```
+## Output
 
-## Data Model
-
-```typescript
-interface InferenceRequest  { task: 'chat' | 'code' | 'embedding' | 'image'; messages: Message[]; prompt?: string; temperature?: number; priority: 'realtime' | 'standard' | 'batch'; allowCached?: boolean; }
-interface ModelRoute         { modelId: string; task: string; costPerToken: number; latencyP50Ms: number; qualityScore: number; }
-interface FineTuneJob        { id: string; baseModel: string; trainingFile: string; status: 'pending' | 'running' | 'completed' | 'failed'; epochs: number; learningRate: number; }
-interface CostRecord         { model: string; promptTokens: number; completionTokens: number; costUsd: number; timestamp: string; }
-```
-
-## Scaling Considerations
-
-- Route low-priority requests to cheaper models (Llama 8B) and high-priority to larger models (Llama 70B, Mixtral)
-- Use batch API for non-interactive workloads — 50% cost savings with acceptable latency tradeoff
-- Cache embeddings aggressively — identical text produces identical vectors, high cache hit rate
-- Monitor per-model cost and latency; auto-shift traffic when a model degrades or pricing changes
-- Fine-tune pipeline should use a separate API key with isolated rate limits from production inference
+Return component/flow topology, trust boundaries, provider interfaces, model policy, capacity lanes, observability, budgets, failure modes, rollback, and decision owners.
 
 ## Error Handling
 
-| Component | Failure Mode | Recovery |
-|-----------|-------------|----------|
-| Inference request | Model overloaded (500) | Fallback to alternative model in same task category |
-| Rate limiting | 429 Too Many Requests | Token bucket with exponential backoff, queue overflow to batch |
-| Fine-tune job | Training divergence | Auto-stop on loss plateau, notify team with checkpoint artifacts |
-| Batch processing | Partial batch failure | Retry failed items individually, report partial results |
-| Model routing | Selected model deprecated | Auto-reroute to replacement model, alert team to update config |
+| Condition | Response |
+|---|---|
+| Requirements conflict | Record the tradeoff and seek the named decision owner. |
+| Provider unavailable | Apply bounded circuit/degradation policy; do not retry indefinitely. |
+| Model deprecated | Route through evaluated migration policy, not an ad hoc replacement. |
+| Batch partially fails | Reconcile by ID and retry only approved failed records. |
+
+## Examples
+
+The example below shows the minimum redacted evidence expected from a successful invocation of this operator workflow.
+
+```text
+interactive=serverless-gateway; offline=batch-worker; reserved=dedicated-v2; secrets=per-environment
+```
 
 ## Resources
 
-- [Together AI Docs](https://docs.together.ai/)
-- [API Reference](https://docs.together.ai/reference/chat-completions-1)
-- [Model List](https://docs.together.ai/docs/inference-models)
-
-## Next Steps
-
-See `together-deploy-integration`.
+- [Skill-specific official documentation](references/official-docs.md)
+- [Inference overview](https://docs.together.ai/docs/inference/overview)
+- [Batch overview](https://docs.together.ai/docs/inference/batch/overview)
+- [Dedicated Model Inference](https://docs.together.ai/docs/dedicated-endpoints/overview)

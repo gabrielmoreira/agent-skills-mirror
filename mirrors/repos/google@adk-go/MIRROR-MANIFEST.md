@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `google/adk-go` — 26 default patterns, 0 followed patterns, 8 file(s) materialized.
+Mirror of `google/adk-go` — 26 default patterns, 0 followed patterns, 9 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `google/adk-go` — 26 default patterns, 0 followed patterns, 8 file(s
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 8 |
+| Files         | 9 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,14 +59,15 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`.agents/skills/adk-sample-creator/SKILL.md`](.agents/skills/adk-sample-creator/SKILL.md) |
-| 2 | ✓ | [`.agents/skills/adk-sample-creator/templates/main.go.tmpl`](.agents/skills/adk-sample-creator/templates/main.go.tmpl) |
-| 3 | ✓ | [`.agents/skills/adk-sample-creator/templates/README.md.tmpl`](.agents/skills/adk-sample-creator/templates/README.md.tmpl) |
-| 4 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 5 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 6 | ✓ | [`examples/skills/skills/grocery-prices/SKILL.md`](examples/skills/skills/grocery-prices/SKILL.md) |
-| 7 | ✓ | [`examples/skills/skills/weather/SKILL.md`](examples/skills/skills/weather/SKILL.md) |
-| 8 | ✓ | [`GEMINI.md`](GEMINI.md) |
+| 1 | ✓ | [`.agents/skills/adk-go-self-review/SKILL.md`](.agents/skills/adk-go-self-review/SKILL.md) |
+| 2 | ✓ | [`.agents/skills/adk-sample-creator/SKILL.md`](.agents/skills/adk-sample-creator/SKILL.md) |
+| 3 | ✓ | [`.agents/skills/adk-sample-creator/templates/main.go.tmpl`](.agents/skills/adk-sample-creator/templates/main.go.tmpl) |
+| 4 | ✓ | [`.agents/skills/adk-sample-creator/templates/README.md.tmpl`](.agents/skills/adk-sample-creator/templates/README.md.tmpl) |
+| 5 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 6 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 7 | ✓ | [`examples/skills/skills/grocery-prices/SKILL.md`](examples/skills/skills/grocery-prices/SKILL.md) |
+| 8 | ✓ | [`examples/skills/skills/weather/SKILL.md`](examples/skills/skills/weather/SKILL.md) |
+| 9 | ✓ | [`GEMINI.md`](GEMINI.md) |
 
 ---
 

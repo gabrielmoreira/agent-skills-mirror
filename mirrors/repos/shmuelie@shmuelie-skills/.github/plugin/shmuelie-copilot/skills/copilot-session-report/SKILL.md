@@ -1,13 +1,78 @@
 ---
 name: copilot-session-report
-description: "Generate a detailed report of a Copilot CLI session — tools, skills, MCPs used, problem/solution narrative, files modified, testing results, key learnings, tool assessments, and pending work. Use when asked to create a session report, summarize a session, document what was done, or generate a session writeup."
+description: "Generate a detailed report of a Copilot CLI session — tools, skills, MCPs used, problem/solution narrative, files modified, testing results, key learnings, tool assessments, and pending work. Use when asked to create a session report, summarize a session, document what was done, or generate a session writeup. The report can also serve as source material for a separately drafted PR description."
 ---
 
 # Copilot Session Report — Domain Knowledge
 
 ## Purpose
 
-Generate a comprehensive per-session report after completing significant work. The report documents what was done, how it was done, what tools were involved, and lessons learned. Useful for PR descriptions, knowledge sharing, and self-review.
+Generate a comprehensive per-session report after completing significant work. The report documents what was done, how it was done, what tools were involved, and lessons learned. Useful for knowledge sharing, self-review, and as source material when separately drafting a PR description.
+
+## Session Report vs. PR Description
+
+A session report and a merge-ready PR description serve different purposes.
+
+- **Session report**: chronological and factual. Preserve the sequence of work,
+  pivots, rejected approaches, temporary regressions fixed during the session,
+  tools used, and what was learned.
+- **PR description**: final-state oriented. Describe the delivered behavior and
+  rationale, plus unresolved limitations, compatibility implications, material
+  risks, and relevant validation evidence.
+
+When deriving a PR description from a session report:
+
+1. Keep the original session report intact; do not rewrite or discard it.
+2. Summarize the final delivered change and why it exists.
+3. Remove transient development defects, dead ends, and temporary workarounds
+   that are no longer present in the final diff. Do not describe them as
+   shipped behavior.
+4. Retain history that is still materially relevant to understanding the final
+   change, such as unresolved limitations, compatibility tradeoffs, risky
+   migrations, or a workaround that remains in the final code.
+5. Separate completed changes, future follow-up work, and remaining known
+   problems.
+6. Treat title repetition, headings, and section layout as repository-specific
+   style choices, not universal rules.
+
+### Synthetic Example: Development Journal to PR Description
+
+**Session narrative excerpt**
+
+> Added a `--resume` mode for the importer. The first attempt kept retry state
+> only in memory, so interrupted runs restarted from the beginning. Reworked it
+> to persist checkpoints to disk. Also briefly added verbose per-record logging,
+> then removed it after it buried the real failure signal. Decided not to add
+> CSV support in this change. Validation covered interrupted reruns and clean
+> runs. Known limitation: stored checkpoints only work with the current schema
+> version.
+
+**Derived PR description**
+
+```markdown
+This change lets the importer resume interrupted runs from persisted
+checkpoints instead of restarting from the beginning.
+
+## Completed changes
+- Persist resume checkpoints across process restarts.
+- Continue from the saved checkpoint on rerun.
+
+## Remaining problems
+- Stored checkpoints are only compatible with the current schema version.
+- CSV input is still unsupported.
+
+## Validation
+- Re-ran interrupted and successful import scenarios to confirm checkpoint
+  restore and normal completion.
+
+## Future work
+- Add CSV input support in a follow-up change if that format becomes required.
+```
+
+In this example, the abandoned in-memory approach and removed verbose logging
+remain in the session report but add no material context to the PR description.
+Do not infer additional delivered behavior from discarded experiments. Retain
+historical context when it materially explains a final design choice or risk.
 
 ## When to Generate
 
@@ -238,3 +303,7 @@ code "~\.copilot\session-state\<session-id>\files\session-report.md"
 - **Include specific error messages** and workarounds in Key Learnings — these are the most reusable parts
 - **Tool Assessment** should be honest — if a tool wasn't used, explain why with a requirements comparison table
 - **Cross-reference work items and PRs** — link them in the header for traceability
+- If later drafting a PR description, use the report as source material rather
+  than pasting it verbatim. Collapse chronology into final-state behavior and
+  rationale, while preserving unresolved limitations, material risks,
+  compatibility notes, and relevant validation evidence.

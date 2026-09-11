@@ -1,258 +1,84 @@
 ---
 name: miro-core-workflow-a
-description: "Manage Miro boards and items \u2014 create, read, update, delete boards,\n\
-  sticky notes, shapes, cards, frames, and tags via REST API v2.\nTrigger with phrases\
-  \ like \"miro board management\", \"create miro board\",\n\"miro items CRUD\", \"\
-  miro sticky notes\", \"organize miro board\".\n"
-allowed-tools: Read, Write, Edit, Bash(npm:*), Bash(curl:*), Grep
-version: 1.7.0
-license: MIT
+description: "Plan and implement an approval-gated Miro client workflow for board and item mutations with preconditions, bounded batches, and rollback evidence. Use when creating or changing Miro content. Trigger with \"update Miro board\"."
+argument-hint: "[board-id] [requested-change]"
+allowed-tools: Read, Glob, Grep, WebFetch, Write, Edit
+version: 1.9.0
 author: Jeremy Longshore <jeremy@intentsolutions.io>
+license: MIT
 tags:
 - saas
 - miro
 - boards
 - items
-compatibility: Designed for Claude Code
+- writes
+model: inherit
+effort: high
+compatibility: Designed for Claude Code; live work requires an authorized Miro app and redacted evidence
 ---
-# Miro Core Workflow A — Boards & Items CRUD
+# Miro Governed Board and Item Writes
 
 ## Overview
 
-The primary workflow for Miro integrations: full CRUD on boards and board items (sticky notes, shapes, cards, frames, tags) using the REST API v2 at `https://api.miro.com/v2/`.
+Convert a requested canvas change into an explicit write set. Confirm board identity and permissions before any mutation, then reconcile what Miro actually persisted; use the evidence produced here to make the next decision explicit and reviewable.
 
 ## Prerequisites
 
-- Valid access token with `boards:read` and `boards:write` scopes
-- Understanding of Miro item types (see `miro-hello-world`)
+- Approved target board and expected team
+- OAuth installation with only the required board scopes
+- Desired state, ownership, rollback, and collision policy
 
-## Board Operations
+## Tool Discipline
 
-### Create a Board
+Use `Read`, `Glob`, and `Grep` to inspect the repository, configuration names, adapters, tests, and evidence. Use `WebFetch` only for current official Miro documentation. Use `Write` or `Edit` after confirming the requested mode, target environment, tenant, board, and approval boundary. These declared tools do not call authenticated Miro APIs or deployment CLIs; implement client, configuration, and test changes, then return exact operator commands or an approval-gated handoff for live execution.
 
-```typescript
-// POST https://api.miro.com/v2/boards
-const board = await miroFetch('/v2/boards', 'POST', {
-  name: 'Sprint Retro — Week 12',
-  description: 'Team retrospective board',
-  teamId: 'your-team-id',  // optional — creates in specific team
-  policy: {
-    sharingPolicy: {
-      access: 'private',
-      inviteToAccountAndBoardLinkAccess: 'no_access',
-      organizationAccess: 'private',
-    },
-    permissionsPolicy: {
-      collaborationToolsStartAccess: 'all_editors',
-      copyAccess: 'anyone',
-      sharingAccess: 'team_members_and_collaborators',
-    },
-  },
-});
-```
+## Current Contract
 
-### Get a Board
+- Board and item writes require `boards:write`; reads use `boards:read`.
+- The v2 API exposes item-type endpoints rather than the polymorphic v1 widget model.
+- Bulk item creation accepts at most twenty items, is transactional, and charges Level 2 credits per item.
+- A successful mutation response must be followed by a read when persisted state matters.
 
-```typescript
-// GET https://api.miro.com/v2/boards/{board_id}
-const board = await miroFetch(`/v2/boards/${boardId}`);
-// Returns: id, name, description, owner, policy, createdAt, modifiedAt
-```
+## Authentication
 
-### List All Boards
-
-```typescript
-// GET https://api.miro.com/v2/boards
-// Supports filtering by team_id, project_id, query, sort, owner
-const boards = await miroFetch('/v2/boards?limit=50&sort=last_modified');
-for (const board of boards.data) {
-  console.log(`${board.id}: ${board.name} (modified: ${board.modifiedAt})`);
-}
-```
-
-### Update a Board
-
-```typescript
-// PATCH https://api.miro.com/v2/boards/{board_id}
-await miroFetch(`/v2/boards/${boardId}`, 'PATCH', {
-  name: 'Sprint Retro — Week 12 (CLOSED)',
-  description: 'Archived — action items in Jira',
-});
-```
-
-### Delete a Board
-
-```typescript
-// DELETE https://api.miro.com/v2/boards/{board_id}
-await miroFetch(`/v2/boards/${boardId}`, 'DELETE');
-```
-
-## Item CRUD Operations
-
-### Create Items
-
-```typescript
-// Sticky Note — POST /v2/boards/{board_id}/sticky_notes
-const note = await miroFetch(`/v2/boards/${boardId}/sticky_notes`, 'POST', {
-  data: { content: 'Went well: team communication', shape: 'square' },
-  style: { fillColor: 'light_green', textAlign: 'center' },
-  position: { x: -200, y: 0 },
-  geometry: { width: 199 },
-});
-
-// Shape — POST /v2/boards/{board_id}/shapes
-const shape = await miroFetch(`/v2/boards/${boardId}/shapes`, 'POST', {
-  data: { content: 'Decision Point', shape: 'rhombus' },
-  style: { fillColor: '#ff6b6b', borderColor: '#333333', borderWidth: 2 },
-  position: { x: 0, y: 200 },
-  geometry: { width: 200, height: 200 },
-});
-
-// Card — POST /v2/boards/{board_id}/cards
-const card = await miroFetch(`/v2/boards/${boardId}/cards`, 'POST', {
-  data: {
-    title: 'Improve deploy pipeline',
-    description: 'Reduce deploy time from 15min to 5min',
-    dueDate: '2025-04-01T00:00:00Z',
-    assigneeId: 'user-id-123',
-  },
-  style: { cardTheme: '#2d9bf0' },
-  position: { x: 200, y: 0 },
-});
-
-// Frame — POST /v2/boards/{board_id}/frames
-const frame = await miroFetch(`/v2/boards/${boardId}/frames`, 'POST', {
-  data: {
-    title: 'What went well',
-    format: 'custom',   // 'custom' | 'a4' | 'letter' | etc.
-    type: 'freeform',   // 'freeform' | 'heap_map' | etc.
-    showContent: true,
-  },
-  position: { x: -400, y: -200 },
-  geometry: { width: 600, height: 400 },
-});
-
-// Text — POST /v2/boards/{board_id}/texts
-const text = await miroFetch(`/v2/boards/${boardId}/texts`, 'POST', {
-  data: { content: '<strong>Action Items</strong>' },
-  style: { fontSize: 24, textAlign: 'left' },
-  position: { x: 0, y: -300 },
-  geometry: { width: 300 },
-});
-```
-
-### Get a Specific Item
-
-```typescript
-// GET https://api.miro.com/v2/boards/{board_id}/items/{item_id}
-const item = await miroFetch(`/v2/boards/${boardId}/items/${itemId}`);
-// Or type-specific:
-// GET /v2/boards/{board_id}/sticky_notes/{item_id}
-```
-
-### Update an Item
-
-```typescript
-// PATCH https://api.miro.com/v2/boards/{board_id}/sticky_notes/{item_id}
-await miroFetch(`/v2/boards/${boardId}/sticky_notes/${noteId}`, 'PATCH', {
-  data: { content: 'Updated: team communication was excellent' },
-  style: { fillColor: 'light_blue' },
-});
-```
-
-### Delete an Item
-
-```typescript
-// DELETE https://api.miro.com/v2/boards/{board_id}/items/{item_id}
-await miroFetch(`/v2/boards/${boardId}/items/${itemId}`, 'DELETE');
-```
-
-## Tags
-
-Tags can be attached to sticky notes and cards (up to 8 per item).
-
-```typescript
-// Step 1: Create a tag — POST /v2/boards/{board_id}/tags
-const tag = await miroFetch(`/v2/boards/${boardId}/tags`, 'POST', {
-  title: 'Action Item',
-  fillColor: 'red',  // red | light_green | cyan | yellow | magenta | green | blue | etc.
-});
-
-// Step 2: Attach tag to an item — POST /v2/boards/{board_id}/items/{item_id}/tags
-await miroFetch(`/v2/boards/${boardId}/items/${noteId}/tags`, 'POST', {
-  tagId: tag.id,
-});
-
-// NOTE: Tag changes via API do NOT appear on the board in realtime.
-// Users must refresh the board to see tag updates made via REST API.
-```
-
-## Board Members
-
-```typescript
-// List members — GET /v2/boards/{board_id}/members
-const members = await miroFetch(`/v2/boards/${boardId}/members?limit=50`);
-
-// Share board with a user — POST /v2/boards/{board_id}/members
-await miroFetch(`/v2/boards/${boardId}/members`, 'POST', {
-  emails: ['colleague@company.com'],
-  role: 'commenter',  // 'viewer' | 'commenter' | 'editor' | 'coowner'
-  message: 'Check out our retro board!',
-});
-```
-
-## Helper: Fetch Wrapper
-
-```typescript
-async function miroFetch(path: string, method = 'GET', body?: unknown) {
-  const response = await fetch(`https://api.miro.com${path}`, {
-    method,
-    headers: {
-      'Authorization': `Bearer ${process.env.MIRO_ACCESS_TOKEN}`,
-      'Content-Type': 'application/json',
-    },
-    ...(body ? { body: JSON.stringify(body) } : {}),
-  });
-
-  if (!response.ok) {
-    const error = await response.json().catch(() => ({}));
-    throw new Error(`Miro ${method} ${path}: ${response.status} ${error.message ?? ''}`);
-  }
-
-  if (response.status === 204) return null; // DELETE returns no body
-  return response.json();
-}
-```
+For REST work, use OAuth 2.0 Authorization Code with the narrowest Miro scopes. Bind each encrypted token record to its user, application, authorized team, and granted scopes. Never print access tokens, refresh tokens, client secrets, authorization codes, or board content.
 
 ## Instructions
 
-Use the ordered procedures and code samples in this guide as a sequence: begin with the prerequisites, apply the configuration or operational step for the target environment, then perform the documented validation or cleanup before proceeding. Keep credentials in the documented secret store; never hard-code them in source.
+1. Resolve token context, team, board, and current permissions; stop on any mismatch.
+2. Read the target objects and calculate a deterministic create/update/delete plan.
+3. Present counts, affected types, destructive actions, credit estimate, and rollback before writing.
+4. Apply the smallest approved operation or a maximum-twenty-item transactional bulk create.
+5. Re-read affected IDs and compare normalized desired versus observed state.
+6. Return a redacted receipt and rollback outcome; never retry an ambiguous write blindly.
+
+## Approval Boundaries
+
+Require explicit approval for board creation/deletion, sharing changes, member changes, or deleting/replacing existing items. Do not infer a target from a board name alone. Pause when the responsible owner or exact target is uncertain.
 
 ## Output
 
-Following this guide produces the Miro integration outcome for its topic—configuration, validation evidence, operational recovery, or a documented migration result. Record command output and relevant identifiers so a failed step is traceable.
-
-## Examples
-
-Start with the smallest applicable command or code example in the relevant section, using a dedicated test board and non-production credentials. Confirm the expected response or validation result before applying the pattern to production.
+Return board/team confirmation, planned and applied counts by item type, credit estimate, reconciliation result, rollback handle, and exceptions. State what was not inspected or changed so the receipt cannot overclaim coverage.
 
 ## Error Handling
 
-| Error | Status | Cause | Solution |
-|-------|--------|-------|----------|
-| `boardNotFound` | 404 | Board deleted or wrong ID | Verify board ID |
-| `invalidInput` | 400 | Missing required field | Check request body per item type |
-| `insufficientPermissions` | 403 | Missing `boards:write` scope | Re-authorize with correct scopes |
-| `itemNotFound` | 404 | Item ID wrong or deleted | Re-fetch board items |
-| `duplicateTagTitle` | 409 | Tag name already exists on board | Reuse existing tag ID |
+| Condition | Response |
+|---|---|
+| 409 conflict | Re-read state, recompute the plan, and request approval if intent changes. |
+| Ambiguous timeout | Search or re-read by known IDs/markers before retrying. |
+| Bulk create fails | Treat the operation as uncommitted, then verify before any replay. |
+| Permission changed mid-run | Stop remaining writes and preserve completed-action evidence. |
+
+## Examples
+
+The example is a redacted operator receipt; identifiers are hashes or bounded labels, not board content or credentials.
+
+```text
+board=hash:8d2; create=6; update=2; delete=0; estimated-credits=800; reconciled=8/8; rollback=ready
+```
 
 ## Resources
 
-- [Create Board](https://developers.miro.com/reference/create-board)
-- [Get Items on Board](https://developers.miro.com/reference/get-items)
-- [Create Sticky Notes and Tags](https://developers.miro.com/docs/working-with-sticky-notes-and-tags-with-the-rest-api)
-- [REST API Reference Guide](https://developers.miro.com/docs/rest-api-reference-guide)
-
-## Next Steps
-
-For connectors and visual relationships, see `miro-core-workflow-b`.
+- [Skill-specific official documentation](references/official-docs.md)
+- [Create items in bulk](https://developers.miro.com/reference/create-items)
+- [Create board](https://developers.miro.com/reference/create-board-1)

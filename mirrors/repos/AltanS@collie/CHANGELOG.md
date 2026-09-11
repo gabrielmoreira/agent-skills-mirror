@@ -30,6 +30,43 @@ PATH. Details and rollback: [`docs/upgrading.md`](./docs/upgrading.md) → *Upgr
 
 ## [Unreleased]
 
+### Added
+
+- **Opening a pane now slides the screen in, and going back slides it back.** The arriving screen
+  enters from the right on the way into a pane and from the left on the way back, 240ms and
+  eased, with the band, the header and the Collie mark holding still. Every other navigation is
+  silent, including a poll revalidation and a machine or session switch: this is a plain entrance
+  animation on the route region, not the View Transitions API removed in 0.10.0 for flickering the
+  page on every poll. Reduced motion gets the new screen in place, with no slide.
+- **The playground has Notices and Motion tabs.** Notices shows the notice family, the strip
+  band, the connection recovery flash, the update ribbon and the status toast. Motion shows the
+  collapse and swap primitives, loading states, sheets, menus, and pending and pulsing controls.
+  Every card carries a Replay control, and the ones that swap between states also carry a Slow
+  toggle. Motion opens with a walkthrough of the real app, every route on fixture data inside a
+  phone frame, with the live route, shortcut buttons and a frame meter for each move.
+- **A dev build wears an orange icon, and the playground a red one.** A build whose HEAD isn't the
+  release tag now installs as "Collie (dev)" with orange favicons and manifest tiles, so it is
+  never mistaken for the release build on the same home screen; the states playground gets its own
+  red favicon set. The release build's `index.html` and manifest are unchanged.
+
+### Changed
+
+- **The states playground is now a tabbed page instead of one long scroll.** The tab list and the
+  theme/clock/typeface/accent controls sit in a sidebar on wide screens and a top bar on narrow
+  ones; only the selected section mounts, so switching sections no longer means scrolling past
+  several of them to reach one. The
+  tabs open with Dashboard, then Pane, Crew and Settings, then Boot & connection, Idle & resume
+  and Brand, then Notices and Motion. The selected tab lives in the URL hash (`#pane`, or
+  `#pane/<card-handle>` to also scroll to a card), remembered in `localStorage` between visits.
+  Within a tab, cards are grouped under a small labelled `Group`, ordered from the everyday state
+  to the rare one, so a tab with a dozen cards can be skimmed by its group titles. `app.tsx`
+  (1600+ lines) is split into one file per section under `src/playground/sections/`, registered
+  in a small `SECTIONS` table.
+- **The Keys tray is less than half its old height.** One seven-column pad replaces the old
+  Keys/123 toggle and stacked rows, with Space in the middle of the bottom row, and 123, Presets
+  and F keys now sit behind one row of chips instead of two separate disclosures. Measured at a
+  390px-wide viewport: 275px tall before, 119px tall now, every key still at least 36px tall.
+
 ### Fixed
 
 - **The playground's crew fixtures named real machines, not fictional ones.** The lead and
@@ -38,6 +75,59 @@ PATH. Details and rollback: [`docs/upgrading.md`](./docs/upgrading.md) → *Upgr
   feature screens, so this stops the real names from reaching new builds of the public site; a
   dead re-export of the unit-test fixtures was also dropped from this file's public surface,
   since it carried the same two names and nothing read it.
+- **The dashboard-row playground card named real machines, a real username and real clients.**
+  `dashboard-live.ts`'s frozen snapshot carried the real host id and host name a dozen-odd times
+  (now `lodge`/`workshop`, matching the crew fixtures' outbuilding theme), plus the operator's
+  real OS username and several real client/project codenames throughout its `cwd`, label and
+  session fields — a bigger exposure than the hostnames, now swapped for same-shape fakes. This
+  card is dev-only and was never imported by colliepwa.dev, so nothing public was showing these
+  names, but a future import could have carried them out unnoticed; the website repo now runs a
+  build-time check against exactly that (`bun run build:app`), so a real name reaching
+  `public/app/` fails the build instead of shipping quietly.
+- **The top of the app no longer reserves the iPhone notch three times over.** The update
+  ribbon, the connection bar and the header each set `env(safe-area-inset-top)` for themselves,
+  each written when it was the first thing on the screen, so any two of them at once left a tall
+  dead band above the notice — the everyday ribbon-plus-header case on iOS. The band above the
+  header now shows one strip at a time and owns the inset while it is open; the header reserves it
+  only while the band is empty, and the handover rides the band's own 240ms open and close, so
+  nothing jumps. The update offer and the connection bar are `ui/notice.tsx` strips now, which also
+  ends two copies of the tint recipe, two hand-rolled collapse animations, and two rows that asked
+  a screen reader to be assertive and polite at once. The offer's states that carry a ✕ trade their
+  row-wide tap for a named View button, since a button may not hold a button.
+- **The update ribbon's text no longer says "Tap to update".** The dismissible ribbon states
+  navigate through the View button beside the ✕, so the row itself no longer taps, and the copy
+  in all seven locales now says only that the version is available.
+- **The "tap to update" band is a named button again.** The band's text sits in a live region,
+  which does not name the button around it; the button now names itself from that text.
+- **A long tab row scrolls its active tab into view.** On arrival and on every selection change,
+  the Spaces, Tabs and Panes strips now carry their active item to the nearest visible edge:
+  instant on arrival, smoothly afterwards, and a workspace with many tabs no longer opens on a
+  tab that's scrolled off-screen.
+- **The "Collie on" header line no longer flickers on the dashboard.** The header identity stays
+  mounted across routes and only hides inside a pane, so the multiplexer's logo is fetched once per
+  page instead of once per dashboard open. Over a tailnet that fetch left the logo box blank for a
+  round trip every time you came back from a pane.
+- **Opening the dashboard no longer re-reads the bridge config.** The footer build stamp asked for
+  it on every mount and threw the answer away once the build was known.
+- **A checkout on an untagged release commit builds as dev.** The channel now reads the tags the
+  checkout holds; a tree with no git and a shallow install with no tags still build as release.
+
+### Docs
+
+- **The docs show how to install and update the PWA itself, not just the host.**
+  `docs/install.md` gains two screenshots of the Install card at the top of Settings — the
+  button Chrome and Edge offer, and the share-sheet hint iOS shows instead — since neither
+  existed anywhere before. The Updates screenshots in `docs/upgrading.md` are regenerated too:
+  two still read "Update pack to" and "Retry pack update" from before the crew rename, and one
+  named a real Tailscale hostname (`minibuch`) in its rolled-back-peer example.
+  `scripts/docs-screens.sh`, which generates this whole set, carried both and is what's actually
+  fixed; the images are just its output.
+- **`scripts/docs-screens.sh` no longer races its own screenshots.** Every capture now scrolls
+  its target flush to the top before the shot, not just the two newest ones: the previous
+  `agent-browser scrollintoview` call centres an element and can still be mid-animation when
+  the screenshot fires, silently cropping the top off. Also tightens the two install-path
+  Notes in `docs/install.md` to open with the platform they apply to, so a reader can tell at
+  a glance which one is theirs.
 
 ## [1.8.0] - 2026-09-09
 

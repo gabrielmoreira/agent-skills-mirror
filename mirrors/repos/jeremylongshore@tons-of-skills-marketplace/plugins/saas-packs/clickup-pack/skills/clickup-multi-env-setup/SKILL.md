@@ -1,237 +1,84 @@
 ---
 name: clickup-multi-env-setup
-description: 'Configure ClickUp API access across dev, staging, and production environments
-
-  with per-environment tokens and workspace isolation.
-
-  Trigger: "clickup environments", "clickup staging", "clickup dev prod",
-
-  "clickup environment setup", "clickup config by env", "clickup multi-env".
-
-  '
-allowed-tools: Read, Write, Edit, Bash(aws:*), Bash(gcloud:*), Bash(vault:*)
-version: 1.6.0
-license: MIT
+description: >-
+  Separate ClickUp development, staging, and production identities, Workspaces, callbacks, queues, and data with fail-closed guards. Use when one integration spans multiple environments. Trigger with "ClickUp environments", "ClickUp staging setup", or "ClickUp tenant isolation".
+argument-hint: "[repository-path] [environment]"
+allowed-tools: Read, Glob, Grep, WebFetch, Write, Edit
+version: 1.8.0
 author: Jeremy Longshore <jeremy@intentsolutions.io>
+license: MIT
 tags:
 - saas
-- productivity
 - clickup
-compatibility: Designed for Claude Code
+- environment-management
+model: inherit
+effort: high
+compatibility: Designed for Claude Code; each live environment requires separately governed ClickUp authorization
 ---
-# ClickUp Multi-Environment Setup
+# ClickUp Multi-Environment Isolation
 
 ## Overview
 
-Configure separate ClickUp workspaces and API tokens for development, staging, and production. ClickUp does not have sandbox environments, so the recommended approach is separate workspaces with separate tokens per environment.
-
-## Environment Strategy
-
-| Environment | Workspace | Token | Rate Limit | Purpose |
-|-------------|-----------|-------|-----------|---------|
-| Development | Dev workspace | Personal token | 100 req/min | Local development, testing |
-| Staging | Staging workspace | Service token | 100 req/min | Integration testing, QA |
-| Production | Production workspace | Service token | Per plan | Live traffic |
-
-**Key point:** All ClickUp API calls go to `https://api.clickup.com/api/v2/` regardless of environment. Environment isolation comes from using different tokens that are authorized for different workspaces.
-
-## Configuration
-
-```typescript
-// src/config/clickup.ts
-interface ClickUpEnvConfig {
-  token: string;
-  teamId: string;
-  defaultListId?: string;
-  timeout: number;
-  retries: number;
-  cacheEnabled: boolean;
-  cacheTtlMs: number;
-}
-
-function getClickUpConfig(): ClickUpEnvConfig {
-  const env = process.env.NODE_ENV ?? 'development';
-
-  const base = {
-    timeout: 30000,
-    retries: 3,
-    cacheEnabled: true,
-    cacheTtlMs: 60000,
-  };
-
-  switch (env) {
-    case 'production':
-      return {
-        ...base,
-        token: requireEnv('CLICKUP_API_TOKEN_PROD'),
-        teamId: requireEnv('CLICKUP_TEAM_ID_PROD'),
-        retries: 5,          // More retries in prod
-        cacheTtlMs: 300000,  // 5 min cache in prod
-      };
-    case 'staging':
-      return {
-        ...base,
-        token: requireEnv('CLICKUP_API_TOKEN_STAGING'),
-        teamId: requireEnv('CLICKUP_TEAM_ID_STAGING'),
-      };
-    default:
-      return {
-        ...base,
-        token: requireEnv('CLICKUP_API_TOKEN'),
-        teamId: process.env.CLICKUP_TEAM_ID ?? '',
-        cacheEnabled: false,  // No cache in dev for fresh data
-      };
-  }
-}
-
-function requireEnv(key: string): string {
-  const value = process.env[key];
-  if (!value) throw new Error(`Missing required env var: ${key}`);
-  return value;
-}
-```
-
-## Environment Files
-
-```bash
-# .env.development (local dev, git-ignored)
-CLICKUP_API_TOKEN=pk_dev_12345_ABCDEF
-CLICKUP_TEAM_ID=1111111
-
-# .env.staging (CI/CD only, git-ignored)
-CLICKUP_API_TOKEN_STAGING=pk_stg_67890_GHIJKL
-CLICKUP_TEAM_ID_STAGING=2222222
-
-# .env.production (secrets manager only, NEVER in files)
-# CLICKUP_API_TOKEN_PROD=pk_prod_... (stored in Vault/AWS/GCP)
-# CLICKUP_TEAM_ID_PROD=3333333
-```
-
-```bash
-# .env.example (commit this as template)
-CLICKUP_API_TOKEN=pk_your_token_here
-CLICKUP_TEAM_ID=your_team_id_here
-```
-
-## Secrets by Platform
-
-```bash
-# GitHub Actions
-gh secret set CLICKUP_API_TOKEN_STAGING --body "pk_stg_..."
-gh secret set CLICKUP_API_TOKEN_PROD --body "pk_prod_..."
-
-# AWS Secrets Manager
-aws secretsmanager create-secret \
-  --name clickup/production/api-token \
-  --secret-string "pk_prod_..."
-
-# GCP Secret Manager
-echo -n "pk_prod_..." | gcloud secrets create clickup-api-token-prod --data-file=-
-
-# HashiCorp Vault
-vault kv put secret/clickup/production api_token="pk_prod_..."
-```
-
-## Environment Guards
-
-```typescript
-// Prevent destructive operations in production
-function guardDestructiveOp(operation: string): void {
-  const config = getClickUpConfig();
-  const env = process.env.NODE_ENV ?? 'development';
-
-  // In production, require explicit confirmation
-  if (env === 'production' && !process.env.CLICKUP_ALLOW_DESTRUCTIVE) {
-    throw new Error(
-      `${operation} blocked in production. Set CLICKUP_ALLOW_DESTRUCTIVE=true to override.`
-    );
-  }
-}
-
-// Usage: prevent bulk delete in prod
-async function deleteCompletedTasks(listId: string) {
-  guardDestructiveOp('deleteCompletedTasks');
-
-  const { tasks } = await clickupRequest(
-    `/list/${listId}/task?statuses[]=complete`
-  );
-  for (const task of tasks) {
-    await clickupRequest(`/task/${task.id}`, { method: 'DELETE' });
-  }
-}
-```
-
-## Verify Environment Setup
-
-```bash
-#!/bin/bash
-# verify-clickup-env.sh
-echo "=== ClickUp Environment Verification ==="
-echo "NODE_ENV: ${NODE_ENV:-development}"
-
-for ENV_SUFFIX in "" "_STAGING" "_PROD"; do
-  TOKEN_VAR="CLICKUP_API_TOKEN${ENV_SUFFIX}"
-  TOKEN="${!TOKEN_VAR}"
-
-  if [ -z "$TOKEN" ]; then
-    echo "${TOKEN_VAR}: NOT SET"
-    continue
-  fi
-
-  echo -n "${TOKEN_VAR}: "
-  RESULT=$(curl -sf https://api.clickup.com/api/v2/user \
-    -H "Authorization: $TOKEN" 2>/dev/null)
-  if [ $? -eq 0 ]; then
-    USERNAME=$(echo "$RESULT" | python3 -c "import sys,json; print(json.load(sys.stdin)['user']['username'])" 2>/dev/null)
-    echo "OK (user: $USERNAME)"
-  else
-    echo "FAILED"
-  fi
-done
-```
-
-## Error Handling
-
-| Issue | Cause | Solution |
-|-------|-------|----------|
-| Wrong workspace in prod | Using dev token | Verify CLICKUP_TEAM_ID matches token's workspace |
-| Missing env var | Not configured | Check .env file or secrets manager |
-| Cross-env data leak | Shared token | Use separate tokens per environment |
-| Destructive op in prod | Missing guard | Implement environment guards |
+Prevent a development process or callback from crossing into production merely because a shared token can access multiple Workspaces.
 
 ## Prerequisites
 
-- Separate development, staging, and production workspace/list boundaries
-- Distinct scoped identities and secret references per environment
-- Configuration schema, deployment promotion gate, and tested rollback process
+- An environment matrix of OAuth apps or personal tokens, allowed Workspace IDs, callback URLs, queues, and secret references
+- Separate non-production data and synthetic verification records
+- Deployment and incident owners for every environment
+
+## Tool Discipline
+
+Use `Read`, `Glob`, and `Grep` to inspect the repository, adapters, configuration names, tests, and evidence. Use `WebFetch` only for current official ClickUp documentation. Use `Write` or `Edit` after confirming the target file, Workspace boundary, and requested mode.
+
+## Current Contract
+
+- OAuth users can authorize one or more Workspaces, so the application must enforce its own environment allow-list.
+- Redirect URIs and webhook endpoints are environment-specific and HTTPS.
+- Rate limits are per token; sharing a token also shares its budget and blast radius.
+- v2 team IDs and v3 Workspace IDs must resolve to the same intended environment boundary.
+
+## Authentication
+
+Use a personal token only for accountable individual/testing work or OAuth Authorization Code for a user-facing integration. Inject the token server-side through a governed secret reference, send it in `Authorization`, verify authorized Workspace IDs, and never print the token, OAuth client secret, or webhook secret.
 
 ## Instructions
 
-Validate environment identity at startup, bind every token and target ID to its
-declared environment, and reject cross-environment data or destructive actions
-without the production guard and approval. Promote tested configuration rather
-than copying secret files; rotate/review any credential that crosses an
-environment boundary.
+1. Inventory every environment's credentials, app IDs, redirects, webhooks, queues, storage, and Workspace IDs.
+2. Remove shared credentials and assign an accountable owner and rotation path to each secret.
+3. Implement startup and per-request guards that compare environment and Workspace allow-lists.
+4. Namespace reconciliation keys, queues, metrics, and callback secrets by environment.
+5. Run offline cross-environment denial tests and bounded live identity/Workspace probes.
+6. Publish the matrix and fail deployment if any production boundary is ambiguous.
+
+## Approval Boundaries
+
+Do not reuse production credentials or data in lower environments, authorize extra Workspaces silently, or copy production webhook secrets.
 
 ## Output
 
-Create an environment configuration receipt with target workspace/list IDs,
-secret references, validation results, guards, promotion decision, owner, and
-rollback evidence. Do not expose actual tokens, task data, or private workspace
-details in environment files or diagnostic output.
+Return the environment matrix, shared-boundary findings, guard/test results, live Workspace matches, and unresolved isolation risks.
+
+## Error Handling
+
+| Condition | Response |
+|---|---|
+| One token spans conflicting environments | Disable writes and replace it with separated identities. |
+| Workspace ID is not allow-listed | Reject the operation. |
+| Callback points to another environment | Do not deploy or register the webhook. |
+| Secret owner is unknown | Block promotion until ownership is assigned. |
 
 ## Examples
 
-Deploy a staging configuration with a distinct team/list and token, verify that
-the startup check rejects the production ID, and run only synthetic operations.
-If a production token appears in a non-production environment, stop deployment,
-revoke or rotate it as needed, and repair the configuration before promotion.
+The example below is a redacted operator receipt; it contains no task text, member data, credential, or webhook secret.
+
+```text
+env=staging; workspace-match=yes; shared-secrets=0; cross-env-tests=pass; writes=disabled
+```
 
 ## Resources
 
-- [ClickUp Authentication](https://developer.clickup.com/docs/authentication)
-- [12-Factor App Config](https://12factor.net/config)
-
-## Next Steps
-
-For observability setup, see `clickup-observability`.
+- [Skill-specific official documentation](references/official-docs.md)
+- [Authentication](https://developer.clickup.com/docs/authentication)
+- [API availability by plan](https://developer.clickup.com/docs/apis-available-by-plan)
+- [Rate limits](https://developer.clickup.com/docs/rate-limits)

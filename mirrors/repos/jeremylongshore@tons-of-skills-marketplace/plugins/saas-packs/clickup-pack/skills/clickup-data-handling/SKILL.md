@@ -1,241 +1,84 @@
 ---
 name: clickup-data-handling
-description: 'Handle ClickUp data exports, PII redaction, GDPR compliance, and
-
-  data retention for ClickUp API integrations.
-
-  Trigger: "clickup data", "clickup PII", "clickup GDPR", "clickup data retention",
-
-  "clickup privacy", "clickup CCPA", "clickup data export".
-
-  '
-allowed-tools: Read, Write, Edit
-version: 1.6.0
-license: MIT
+description: >-
+  Analyze, map, minimize, redact, retain, export, and delete ClickUp-derived work data under an application-owned governance policy. Use when ClickUp tasks, comments, attachments, or member data enter another system. Trigger with "ClickUp data handling", "ClickUp PII", or "ClickUp retention".
+argument-hint: "[data-flow-or-repository] [assessment|remediation]"
+allowed-tools: Read, Glob, Grep, WebFetch, Write, Edit
+version: 1.8.0
 author: Jeremy Longshore <jeremy@intentsolutions.io>
+license: MIT
 tags:
 - saas
-- productivity
 - clickup
-compatibility: Designed for Claude Code
+- data-governance
+model: inherit
+effort: high
+compatibility: Designed for Claude Code; legal retention and data-subject decisions require authorized owners
 ---
-# ClickUp Data Handling
+# ClickUp Work-Data Governance
 
 ## Overview
 
-Handle sensitive data from ClickUp API v2 responses. ClickUp task data often contains PII (assignee emails, names) and business-sensitive information (task descriptions, comments, custom field values).
-
-## ClickUp Data Classification
-
-| Data Source | PII Risk | Handling |
-|-------------|----------|----------|
-| `/user` response | High (email, username) | Redact in logs |
-| `/team` members | High (emails, names) | Minimize; cache only IDs |
-| Task assignees | Medium (user IDs, names) | Aggregate when possible |
-| Task descriptions | Variable (may contain PII) | Scan before storing |
-| Custom field values | High (email, phone fields) | Encrypt at rest |
-| Comments | Variable (user content) | Scan before logging |
-| Webhook payloads | Medium (user objects in history) | Redact before queuing |
-
-## PII Detection in ClickUp Data
-
-```typescript
-interface PiiFindings {
-  field: string;
-  type: string;
-  value: string;
-}
-
-const PII_PATTERNS = [
-  { type: 'email', regex: /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g },
-  { type: 'phone', regex: /\b\d{3}[-.]?\d{3}[-.]?\d{4}\b/g },
-  { type: 'ssn', regex: /\b\d{3}-\d{2}-\d{4}\b/g },
-];
-
-function scanClickUpTaskForPii(task: any): PiiFindings[] {
-  const findings: PiiFindings[] = [];
-
-  // Check description
-  for (const pattern of PII_PATTERNS) {
-    const matches = (task.description ?? '').matchAll(pattern.regex);
-    for (const m of matches) {
-      findings.push({ field: 'description', type: pattern.type, value: m[0] });
-    }
-  }
-
-  // Check custom fields
-  for (const cf of task.custom_fields ?? []) {
-    if (cf.type === 'email' && cf.value) {
-      findings.push({ field: `custom_field:${cf.name}`, type: 'email', value: cf.value });
-    }
-    if (cf.type === 'phone' && cf.value) {
-      findings.push({ field: `custom_field:${cf.name}`, type: 'phone', value: cf.value });
-    }
-  }
-
-  // Check assignees
-  for (const assignee of task.assignees ?? []) {
-    if (assignee.email) {
-      findings.push({ field: 'assignee', type: 'email', value: assignee.email });
-    }
-  }
-
-  return findings;
-}
-```
-
-## Redaction for Logging
-
-```typescript
-function redactClickUpResponse(data: any): any {
-  const redacted = JSON.parse(JSON.stringify(data));
-
-  // Redact user objects
-  const redactUser = (user: any) => {
-    if (user?.email) user.email = '[REDACTED]';
-    if (user?.username) user.username = user.username.substring(0, 2) + '***';
-  };
-
-  // Task-level redaction
-  if (redacted.assignees) redacted.assignees.forEach(redactUser);
-  if (redacted.creator) redactUser(redacted.creator);
-
-  // Webhook payload redaction
-  if (redacted.history_items) {
-    for (const item of redacted.history_items) {
-      if (item.user) redactUser(item.user);
-    }
-  }
-
-  // Custom fields with PII types
-  if (redacted.custom_fields) {
-    for (const cf of redacted.custom_fields) {
-      if (['email', 'phone'].includes(cf.type) && cf.value) {
-        cf.value = '[REDACTED]';
-      }
-    }
-  }
-
-  return redacted;
-}
-
-// Use when logging API responses
-console.log('[clickup] task fetched:', JSON.stringify(redactClickUpResponse(task)));
-```
-
-## Data Export for GDPR/CCPA
-
-```typescript
-async function exportUserClickUpData(userId: number, teamId: string) {
-  // 1. Get user profile
-  const user = await clickupRequest('/user');
-
-  // 2. Get tasks assigned to user across workspace
-  const tasks = await clickupRequest(
-    `/team/${teamId}/task?assignees[]=${userId}&include_closed=true`
-  );
-
-  // 3. Get time entries by user
-  const timeEntries = await clickupRequest(
-    `/team/${teamId}/time_entries?assignee=${userId}`
-  );
-
-  return {
-    exportedAt: new Date().toISOString(),
-    source: 'ClickUp API v2',
-    userData: {
-      id: user.user.id,
-      username: user.user.username,
-      email: user.user.email,
-    },
-    tasks: tasks.tasks.map((t: any) => ({
-      id: t.id,
-      name: t.name,
-      status: t.status.status,
-      url: t.url,
-    })),
-    timeEntries: timeEntries.data?.map((e: any) => ({
-      id: e.id,
-      duration: e.duration,
-      description: e.description,
-      task_id: e.task?.id,
-    })) ?? [],
-  };
-}
-```
-
-## Data Retention
-
-```typescript
-// Track ClickUp API data locally with retention policies
-interface RetentionPolicy {
-  dataType: string;
-  retentionDays: number;
-  reason: string;
-}
-
-const RETENTION_POLICIES: RetentionPolicy[] = [
-  { dataType: 'api_request_logs', retentionDays: 30, reason: 'Debugging' },
-  { dataType: 'webhook_events', retentionDays: 90, reason: 'Audit trail' },
-  { dataType: 'cached_tasks', retentionDays: 1, reason: 'Performance' },
-  { dataType: 'time_entries', retentionDays: 365, reason: 'Billing' },
-  { dataType: 'audit_logs', retentionDays: 2555, reason: 'Compliance (7 years)' },
-];
-
-async function enforceRetention(db: any) {
-  for (const policy of RETENTION_POLICIES) {
-    const cutoff = new Date();
-    cutoff.setDate(cutoff.getDate() - policy.retentionDays);
-    await db.collection(policy.dataType).deleteMany({
-      createdAt: { $lt: cutoff },
-    });
-  }
-}
-```
-
-## Error Handling
-
-| Issue | Cause | Solution |
-|-------|-------|----------|
-| PII in logs | Missing redaction | Wrap all logging with `redactClickUpResponse` |
-| GDPR export incomplete | Pagination not handled | Use async generator for full export |
-| Retention job fails | DB connection | Add retry logic to cron job |
-| Custom field PII missed | New field types | Re-scan fields via `/list/{id}/field` |
+Treat ClickUp content as potentially sensitive and keep compliance obligations separate from unsupported API assumptions.
 
 ## Prerequisites
 
-- Approved data inventory, purpose, classification, and named data owner
-- Documented authorized destinations, access controls, retention, and deletion path
-- Redaction tests for task/comment/custom-field and webhook data
+- A data-flow inventory covering tasks, descriptions, comments, attachments, members, webhooks, logs, and backups
+- Authorized legal/security retention, deletion, residency, and access rules
+- A scoped credential plus test fixtures that contain no real personal or confidential data
+
+## Tool Discipline
+
+Use `Read`, `Glob`, and `Grep` to inspect the repository, adapters, configuration names, tests, and evidence. Use `WebFetch` only for current official ClickUp documentation. Use `Write` or `Edit` after confirming the target file, Workspace boundary, and requested mode.
+
+## Current Contract
+
+- API responses reflect what the authenticated user can access; access is not proof that downstream storage is permitted.
+- Webhook payloads can include user and before/after data and must be classified before persistence.
+- Do not invent a universal ClickUp GDPR export/delete endpoint; map each application copy and authorized API action.
+- Evidence can retain counts, hashes, classifications, and deletion receipts without retaining work content.
+
+## Authentication
+
+Use a personal token only for accountable individual/testing work or OAuth Authorization Code for a user-facing integration. Inject the token server-side through a governed secret reference, send it in `Authorization`, verify authorized Workspace IDs, and never print the token, OAuth client secret, or webhook secret.
 
 ## Instructions
 
-Minimize collection, classify fields before storage, enforce destination and
-retention controls, and verify deletion/export behavior across every synced
-system. Treat task text, comments, assignees, custom fields, and attachments as
-potentially sensitive; use redacted diagnostics and obtain legal/privacy review
-when the use case or jurisdiction requires it.
+1. Trace every ClickUp field from collection through processing, storage, logs, analytics, backups, and deletion.
+2. Classify direct identifiers, free text, attachments, secrets, regulated content, and business metadata.
+3. Minimize fields and scopes, redact telemetry, encrypt approved storage, and set retention by class.
+4. Define subject/access/deletion workflows across ClickUp and each downstream copy with legal ownership.
+5. Test export and deletion on synthetic records, including backups, queues, and failed jobs.
+6. Produce a gap register and implement only owner-approved remediation.
+
+## Approval Boundaries
+
+Do not export, bulk delete, alter retention, scan private content, or claim legal compliance without the data owner and applicable legal/security approval.
 
 ## Output
 
-Maintain a data-handling record with source, purpose, classification, allowed
-uses/destinations, access owner, retention/deletion results, request status,
-and audit reference. Do not place personal task data, tokens, or raw API
-responses in the record.
+Return the data map, field classifications, auth boundary, retention/deletion controls, test receipts, gaps, and accountable owners.
+
+## Error Handling
+
+| Condition | Response |
+|---|---|
+| Data owner or lawful basis is unknown | Stop collection or expansion and escalate. |
+| Logs contain task text or tokens | Quarantine artifacts, rotate exposed secrets, and remediate logging. |
+| Deletion cannot reach a downstream copy | Record the exception and block a false completion claim. |
+| API access exceeds purpose | Reduce scope and revoke unnecessary copies. |
 
 ## Examples
 
-Before syncing a new custom field, classify it, add it to the redaction and
-retention tests, and verify it is excluded from general logs. For a deletion
-request, enumerate ClickUp and downstream copies, remove or suppress them via
-the approved route, and record redacted completion evidence.
+The example below is a redacted operator receipt; it contains no task text, member data, credential, or webhook secret.
+
+```text
+flows=9; sensitive-fields=6; logs-redacted=yes; retention-mapped=8/9; deletion-test=partial; compliance-claim=no
+```
 
 ## Resources
 
-- [ClickUp Privacy Policy](https://clickup.com/privacy)
-- GDPR Developer Guide
-- [ClickUp API User Endpoint](https://developer.clickup.com/reference/getauthorizeduser)
-
-## Next Steps
-
-For enterprise access control, see `clickup-enterprise-rbac`.
+- [Skill-specific official documentation](references/official-docs.md)
+- [Authentication and access model](https://developer.clickup.com/docs/authentication)
+- [Authentication](https://developer.clickup.com/docs/authentication)
+- [Rate limits](https://developer.clickup.com/docs/rate-limits)

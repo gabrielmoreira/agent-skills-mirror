@@ -250,10 +250,11 @@ in this preamble, since the fallback differs per helper.
   [kurone-kito/idd-skill#1237](https://github.com/kurone-kito/idd-skill/issues/1237)).
   Source-repo internal helper; not distributed via the package-manager
   / ephemeral-npx profiles.
-- `scripts/idd-critique-delegate.mjs` for the C1 effective
-  `critiqueLoop.delegate` verdict: `usable`, `source`, `command`,
-  `mode`, and a machine-readable `reason` when unusable, delegating
-  entirely to the existing exported resolvers (referenced in
+- `scripts/idd-critique-delegate.mjs` for the effective
+  `critiqueLoop.delegate` verdict consumed by both C1 and E10:
+  `usable`, `source`, `command`, `mode`, and a machine-readable
+  `reason` when unusable, delegating entirely to the existing exported
+  resolvers (referenced in
   [kurone-kito/idd-skill#2329](https://github.com/kurone-kito/idd-skill/issues/2329))
 - `scripts/idd-critique-telemetry-hook.mjs` for the C-phase effective
   `critiqueLoop.telemetryHook` verdict (`usable`, `source`, `command`,
@@ -262,6 +263,56 @@ in this preamble, since the fallback differs per helper.
   and it invokes the resolved hook, always exiting `0` regardless of
   the hook's own success or failure (referenced in
   [kurone-kito/idd-skill#2679](https://github.com/kurone-kito/idd-skill/issues/2679))
+- `scripts/authoring-owner-provenance.mjs` for the review-fix-loop-cutoff
+  auto-release exception's provenance check
+  (`skills/issue-authoring/references/contract.md`): computes the sha256
+  of a live issue body's exact UTF-8 content and compares it against that
+  same issue's own Stage 1 `mode=acquire` `authoring-owner` marker's
+  recorded `body-sha256`, reporting a machine-readable
+  `pass`/`mismatch`/`not-found` verdict — `not-found` is never treated as
+  a pass. Read-only: never posts, labels, or mutates anything (referenced
+  in
+  [kurone-kito/idd-skill#2891](https://github.com/kurone-kito/idd-skill/issues/2891)).
+  Anchors on the target's own trusted, owner-marker-shaped comments
+  (every one still containing the case-insensitive
+  `<marker-prefix>-authoring-owner:` token, whether or not it parses),
+  taken in deterministic comment order. If ANY of those comments was
+  edited after posting (`updatedAt` differs from `createdAt`), the whole
+  log is rejected up front, before a first candidate is even chosen — an
+  editor cannot make the true Stage 1 acquire vanish from consideration
+  by editing it into something unparseable or retargeting it, letting a
+  later acquire silently win instead (PR #2901 review round 6, Copilot;
+  contract.md: owner comments are append-only). Past that check, the
+  _first_ candidate in comment order is scrutinized whatever its shape —
+  not merely the first one that happens to parse and match this target —
+  and must itself parse, name this issue as its target, and be a valid
+  Stage 1 `mode=acquire` marker, or this reports `not-found` rather than
+  silently skipping it for a later, validly-parsing marker (PR #2901
+  review round 7, Copilot). "Valid" means every condition contract.md
+  attaches to a genuine acquire: `mode=acquire` itself (every other mode
+  — `bootstrap`, `resume`, `heartbeat`, `release`, ... — presupposes a
+  prior acquire, so a well-formed history never opens with one);
+  `supersedes=none` (contract.md requires this specifically for
+  `acquire`); a real 64-hex `body-sha256`, never the sentinel `none`; and
+  its own `anchor` names the same issue as its own `target` (a mismatch
+  means the marker declares itself a multi-target set's non-anchor
+  child, out of scope for this single-target-orphan helper) (PR #2901
+  review round 5, chatgpt-codex-connector and Copilot). Only it, not any
+  later marker, is guaranteed to have hashed the body as published: a
+  same-generation racer, a `bootstrap`/`resume` recovery, or a legitimate
+  re-acquisition after a full release cycle all hash whatever body is
+  live at their own posting time, not the originally published one —
+  comparing against any of those instead would make the check pass
+  trivially for a body edited before that later marker (PR #2901 review,
+  chatgpt-codex-connector across four rounds). `target` comparisons fold
+  case, since GitHub owner/repo names are case-insensitive. Two accepted
+  limitations, both fail-closed (never a false `pass`): a marker whose
+  own `anchor` differs from its own `target` (a multi-target set's
+  non-anchor child, out of scope here); and tampering with the true
+  Stage 1 acquire that leaves no authoring-owner token at all — deleting
+  it outright, or editing it into ordinary prose — which cannot be
+  detected by a live comment-log reader (PR #2901 review rounds 5-7,
+  chatgpt-codex-connector and Copilot)
 
 **Review & Merge Phase Helpers:**
 
@@ -453,7 +504,7 @@ default below is unchanged.
     `maxDepth: number }`
 - **Cross-roadmap autopilot mode (`--all-roadmaps`)**: discovers every
   **open** roadmap root (an open issue carrying the `roadmap` label **or**
-  an `<!-- {{PROJECT_MARKER_PREFIX}}-roadmap-id: ... -->` marker **or** a
+  an `<!-- idd-skill-roadmap-id: ... -->` marker **or** a
   configured `discover.legacyRoots` issue number, deduped against the
   label/marker roots), runs the single-root enumeration above from each
   root, and returns a **union** of open execution leaves. The output
@@ -494,7 +545,7 @@ default below is unchanged.
     `readiness: { ready: boolean, reasons: string[], authoringHeld: boolean,`
     `startable: boolean }` — the A3 startability of each open leaf (dependency
     resolution across visible `Blocked by #N` / `Depends on #N` / task-list refs
-    and hidden `{{PROJECT_MARKER_PREFIX}}-blocked-by` markers, plus
+    and hidden `idd-skill-blocked-by` markers, plus
     authoring-hold), where `reasons` lists the sorted filter reasons (e.g.
     `blocked_by_open_issue:#N`) and is empty when `ready`, and `startable` is
     `ready` **and** not claim-blocked (it folds
@@ -534,7 +585,7 @@ default below is unchanged.
 - **Legacy roots (`discover.legacyRoots`, #1315)**: a repository that
   adopted IDD after already running an ad-hoc "umbrella issue"
   convention may have legacy roots that predate both the `roadmap`
-  label and the `{{PROJECT_MARKER_PREFIX}}-roadmap-id` marker, so they
+  label and the `idd-skill-roadmap-id` marker, so they
   are never found by the two searches above (the graph walker still
   follows their `Blocked by #NNN` references once reached from
   elsewhere; only root _discovery_ has no path to them). Two
@@ -615,10 +666,17 @@ one or more issues.
 - **Inputs**: `--issue <number>` (repeatable) or `--issues <n1,n2,...>`,
   with optional `--csv`, `--owner <owner>`, and `--repo <repo>`.
 - **JSON output**:
-  - `viable`: `[{ number: number, title: string }]`
+  - `viable`: `[{ number: number, title: string, criteria?: [{ id: string,`
+    `name: string, result: "pass" | "warn" | "fail", evidence: string }] }]`
+    -- `criteria` is present only when at least one criterion was
+    structural-evidence-**demoted** (`#2767`: a lexical `fail` that all
+    three structural signals -- `verificationCommand`,
+    `candidateFilesExist`, `trustedEditor` -- demote to a `warn`-annotated
+    pass); an ordinary fully-passed issue keeps the pre-`#2767` two-field
+    shape, `criteria` omitted entirely, not an empty array.
   - `discarded`: `[{ number: number, title: string,`
     `failedCriteria: string[], criteria?: [{ id: string, name: string,`
-    `result: "pass" | "fail", evidence: string }] }]`
+    `result: "pass" | "warn" | "fail", evidence: string }] }]`
   - `summary`: `{ total: number, viableCount: number,`
     `discardedCount: number, discardedByCriterion: Record<string, number> }`
 - **Error conditions**: missing issue arguments or unknown flags throw;
@@ -629,9 +687,23 @@ one or more issues.
 
   ```json
   {
-    "viable": [{ "number": 123, "title": "trim helper docs" }],
+    "viable": [
+      { "number": 123, "title": "trim helper docs" },
+      {
+        "number": 125,
+        "title": "add retry to flaky helper",
+        "criteria": [
+          {
+            "id": "limited_scope",
+            "name": "Limited scope",
+            "result": "warn",
+            "evidence": "Structural evidence (verification command, candidate file, trusted editor) demotes an otherwise-failing lexical scan."
+          }
+        ]
+      }
+    ],
     "discarded": [{ "number": 124, "title": "rewrite workflow", "failedCriteria": ["limited_scope", "autonomous_completion"] }],
-    "summary": { "total": 2, "viableCount": 1, "discardedCount": 1, "discardedByCriterion": { "limited_scope": 1, "autonomous_completion": 1 } }
+    "summary": { "total": 3, "viableCount": 2, "discardedCount": 1, "discardedByCriterion": { "limited_scope": 1, "autonomous_completion": 1 } }
   }
   ```
 
@@ -647,7 +719,9 @@ A4 Step 2 de-prioritization order. Evidence-only: it claims nothing.
 - **Inputs**: `--candidate <number>` (repeatable) or `--candidates <n1,n2>`,
   with optional `--owner <owner>`, `--repo <repo>`, `--policy <path>`,
   `--manifest <path>` (default `audit/sync-manifest.json`), `--bundles
-  <id1,id2>` (default `bundle-review,bundle-merge`), `--now <ISO8601>`, and
+  <id1,id2,...>` (default
+  `bundle-core,bundle-review-triage-phase,bundle-review-fix-phase,bundle-merge-phase`),
+  `--now <ISO8601>`, and
   `--check-overlap`. The cross-issue active-set discovery (open PRs plus the
   claim comments of issues that have a remote `issue/<n>-*` branch, resolved
   with the shared claim-state rules and the configured claim stale age) is
@@ -1522,6 +1596,12 @@ Interpretation rules:
 
 - Stable fields consumed by A4: `viable[].number`, `discarded[].number`,
   `discarded[].failedCriteria`, and `summary.viableCount`
+- `viable[]` entries also carry an optional `criteria` array (`#2767`,
+  same shape as `discarded[].criteria`) whenever structural evidence
+  demoted a criterion to a `warn`-annotated pass; omitted for an
+  ordinarily fully-passed issue, so this stays additive to the stable
+  two-field shape above -- see the Discover Viability Gate Contract
+  section for the full `criteria` shape and a worked example.
 - The helper evaluates the three A4 viability criteria (limited scope, clear
   verification, autonomous completion) against fetched issue bodies; it does
   not post claims or mutate any state
@@ -1627,6 +1707,114 @@ Interpretation rules:
   authorized takeover instead. Both profiles share the `idd-claim.lock`
   namespace, so a helper-runtime session and an instructions-only
   session see the same lock.
+
+### Worktree-local generated-tokens record
+
+- A sibling artifact to the worktree-local claim lock above, in the same
+  admin directory, answering a narrower question (#2719): not "does
+  anyone else hold this worktree" but "did _this_ session actually
+  generate the `{agent-id}`/`{claim-id}` it is about to trust, on disk,
+  independent of possibly-compacted conversation memory." Referenced by
+  the "Generated-tokens record" paragraph in
+  [`idd-claim.instructions.md`'s Worktree-local lock file section](../.github/instructions/idd-claim.instructions.md#worktree-local-lock-file-same-machine-collision).
+- Source repo / vendored-node commands:
+  `node scripts/claim-lock.mjs --record-tokens --worktree <path>
+  --agent-id <id> --claim-id <id> [--nonce <nonce>]`
+  and `node scripts/claim-lock.mjs --read-tokens --worktree <path>
+  --claim-id <id>`
+- Package-manager / ephemeral-npx command: use the same profile-selected
+  `idd:claim-lock` command as the lock above; the literal invocations are:
+
+  ```sh
+  npx --yes --package <helper-package-spec> \
+    idd-claim-lock --record-tokens --worktree <path> --agent-id <id> \
+    --claim-id <id> [--nonce <nonce>]
+
+  npx --yes --package <helper-package-spec> \
+    idd-claim-lock --read-tokens --worktree <path> --claim-id <id>
+  ```
+
+- **When to call `--record-tokens`**: once at A5 claim time, right after
+  generating `{agent-id}`/`{claim-id}`, before posting the `claimed-by`
+  marker (the B1 worktree does not exist yet, so `<path>` is then the
+  _primary_ worktree); again with `--nonce` right before posting the
+  activation-nonce marker; a third time at B1 once the sibling worktree
+  exists, again with `--nonce` carried over from the A5 write --
+  mirroring the lock's own `--acquire` step, but into a distinct file in
+  the new worktree's own admin directory, so the earlier primary-worktree
+  write's `nonce` field must be copied forward rather than omitted (the
+  B1 write is not a re-read-then-rewrite of the same file). Keyed by
+  `--claim-id` (a content-hash-suffixed, sanitized filename), so two
+  sessions generating two different claim-ids resolve to different paths
+  (an astronomically unlikely, not provably impossible, chance of
+  collision from the truncated hash suffix) even while sharing the
+  primary worktree's admin directory. No collision or `--takeover`
+  concept: this is per-claim-id evidence, not a mutual-exclusion
+  primitive, so re-invoking for the same `--claim-id` is always a safe,
+  idempotent overwrite. Exits `0` unless a filesystem error occurs.
+  **Scope**: a `--read-tokens` hit against the **shared primary**
+  worktree path is bootstrap evidence only, not proof of current-session
+  ownership by itself — see `claim-lock.mts`'s own "Scope of the
+  ownership proof" header comment (#2879 review). Always resolve
+  `--read-tokens`/`--acquire` against the caller's own current cwd, never
+  an explicit different worktree's path.
+- **When to call `--read-tokens`**: alongside every later `--acquire`
+  re-run, before trusting a `{claim-id}` recalled only from context.
+  Reports `{ path, present, malformed?, record? }` read-only, mirroring
+  `--check`'s own shape: `present: true` with `record` means a
+  well-formed record for exactly this `--claim-id` exists; `present:
+  true, malformed: true` means a file exists at the resolved path but
+  cannot be trusted as this claim-id's record (corrupt content, or an
+  internal `claimId` field that disagrees with the path it was found
+  at); `present: false` means this claim-id was never recorded. Treat
+  `malformed` the same as absent for an ownership check — never trust a
+  claim-id this record does not affirmatively confirm.
+- No explicit release verb, no cleanup across takeovers: like the lock
+  file, the record lives inside the worktree's own private git-admin
+  directory, so `git worktree remove` at F4 deletes it together with the
+  worktree. The _primary_-worktree copy written at A5 (before the B1
+  worktree exists) is not cleaned up by that removal — an accepted
+  residual, since giving this record cross-worktree, pre-acquisition
+  visibility is explicitly out of scope (see the lock file's own
+  cross-worktree-visibility note above).
+- **`instructions-only` helper-free fallback, write side** (no helper
+  runtime available — `instructions-only` is the distributed default
+  profile, see
+  [Helper Runtime Profile](customization.md#helper-runtime-profile) —
+  so this path is the common case, not an edge case): resolve the
+  private admin directory the same way as the lock file above, then
+  atomically create-or-replace a file there matching this pattern
+  (kept in a fenced block, not a prose code span, so a Markdown
+  reflow can't break the filename across a line -- #2879 review,
+  Codex P1):
+
+  ```text
+  idd-generated-tokens-<sanitized-claim-id>-<8-hex-char sha256 prefix>.json
+  ```
+
+  `<sanitized-claim-id>`: non-`[A-Za-z0-9._-]` characters replaced with
+  `_`, then truncated to 64 characters, so a long claim-id can't push
+  the filename past the filesystem's `NAME_MAX` -- #2879 review, Codex
+  P1. `<8-hex-char sha256 prefix>`: the first 8 hex characters of the
+  SHA-256 digest of the **original, pre-sanitize, pre-truncate**
+  `{claim-id}`, UTF-8-encoded -- not the sanitized or truncated form,
+  so a fallback and the CLI (or two fallback implementations) agree on
+  the same path for the same claim-id (#2879 review, Codex P2). Write
+  `{ agentId, claimId, nonce?, recordedAt }`. No
+  exclusive-create semantics needed (unlike the lock): a plain atomic
+  replace is correct since this is idempotent evidence, not a
+  mutual-exclusion primitive.
+- **`instructions-only` helper-free fallback, read side** (#2879 review,
+  Codex P1 -- the mandatory `--read-tokens` check in the Claim
+  revalidation gate has no helper-free path without this): resolve the
+  same filename for the queried `{claim-id}`, using the same sanitize-
+  then-truncate rule as the write side, then reproduce the same three
+  outcomes as the CLI's own `--read-tokens` above: a missing file is
+  `present: false`; a file that exists but is unparseable JSON, or whose
+  parsed `claimId` field disagrees with the queried `{claim-id}`, is
+  `present: true, malformed: true`; only a well-formed record whose
+  `claimId` field matches is plain `present: true`. Treat `malformed`
+  the same as absent for the ownership check -- fail closed on both.
 
 ### Clone-scoped lock
 
@@ -2490,8 +2678,24 @@ reflexively as any other CLI option.
   `DEFAULT_COPILOT_REVIEW_POLL_INTERVAL_MS`, default 7.5s, up to
   `DEFAULT_COPILOT_REVIEW_POLL_MAX_WAIT_MS`, default 60s) before its real
   `--assert`-driven exit, absorbing the common race where the hosting
-  workflow's `pull_request` `synchronize` trigger fires before the
-  separate `pull_request_review` trigger's review has landed. Every other
+  workflow's `pull_request`/`pull_request_target` `synchronize` trigger
+  fires before the primary bot's own review has landed. (Through
+  Phase 1 of the shipped `idd-advisory-convergence.yml` template's own
+  trigger topology, `#2764`, a review landing refreshed this same run
+  via a direct `pull_request_review` trigger on the hosting workflow
+  itself; that trigger now lives on the non-required companion
+  `idd-advisory-convergence-comment.yml` instead, which reruns the
+  existing required run via
+  `rerun-advisory-convergence.mjs --refresh-latest --apply` (not the
+  budget-gated plain `--apply` the two comment-family triggers share) --
+  see that flag's own doc comment in `rerun-advisory-convergence.mts`
+  for why a review submission needs the stronger mode. This move keeps
+  the required workflow's own trigger list free of a same-repository
+  PR's ability to disable or reshape a review-triggered rerun of its
+  required check, though the companion itself stays exactly as
+  PR-editable as that former direct trigger was; the push-triggered
+  gate (via `pull_request_target`, also `#2764`) is what actually stays
+  trusted.) Every other
   not-ready reason (an off-HEAD review, unresolved threads, an
   indeterminate claim scope, a deadline/terminal reason, etc.) still fails
   immediately with no wait, exactly as before this addition — the
@@ -2505,12 +2709,14 @@ reflexively as any other CLI option.
   120s for a paginated call, `#1675`), not by `maxWaitMs` — closing that
   gap would mean threading a remaining-budget deadline into every `gh`
   call inside `collectFromGitHub`, out of scope for this narrow poll
-  wrapper; (2) a review that lands while this poll is asleep can still
-  start a fresh `pull_request_review`-triggered run in the hosting
-  workflow's own PR-scoped `cancel-in-progress` concurrency group,
-  cancelling this run before it observes the review — a narrower win than
-  "never needs an external rerun again"; see the full analysis in
-  `runAdvisoryConvergenceWithPoll`'s doc comment
+  wrapper; (2) as of `#2764` Phase 1, a review landing while this poll
+  is asleep no longer starts a fresh trigger directly in the hosting
+  workflow's own PR-scoped `cancel-in-progress` concurrency group (see
+  the parenthetical above) — it instead reaches this run only
+  indirectly, via the companion's `gh run rerun` on an already-terminal
+  instance. Whether that indirect path can still race and cancel a
+  still-polling sibling is not re-derived here; see the full poll
+  analysis in `runAdvisoryConvergenceWithPoll`'s doc comment
   (`src/scripts/advisory-convergence.mts`).
 - **Deadlock / deadline policy**: while the primary bot has not reviewed
   the current HEAD, `pending` is `true` and the gate is not ready. After

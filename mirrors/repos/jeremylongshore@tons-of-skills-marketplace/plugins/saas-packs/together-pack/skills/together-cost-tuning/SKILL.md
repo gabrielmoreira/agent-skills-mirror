@@ -1,83 +1,85 @@
 ---
 name: together-cost-tuning
-description: 'Together AI cost tuning for inference, fine-tuning, and model deployment.
-
-  Use when working with Together AI''s OpenAI-compatible API.
-
-  Trigger: "together cost tuning".
-
-  '
-allowed-tools: Read, Write, Edit, Bash(pip:*), Grep
-version: 1.7.0
-license: MIT
+description: >-
+  Reduce Together AI spend using measured token usage, live per-model prices, cached-input evidence, batch discounts, model evaluation, and dedicated break-even analysis. Use when forecasting or optimizing Together workloads. Trigger with "Together cost", "optimize Together spend", or "Together batch savings".
+argument-hint: "[repository-path] [usage-window] [budget]"
+allowed-tools: Read, Glob, Grep, WebFetch, Write, Edit
+version: 1.9.0
 author: Jeremy Longshore <jeremy@intentsolutions.io>
+license: MIT
 tags:
 - saas
-- ai
-- inference
-- together
-compatibility: Designed for Claude Code
+- together-ai
+- cost-optimization
+model: inherit
+effort: high
+compatibility: Designed for Claude Code; current estimates require Together AI pricing and usage data
 ---
 # Together AI Cost Tuning
 
 ## Overview
 
-Optimize Together AI costs with model selection, batching, and caching.
+This skill builds a reproducible cost model from actual usage and current pricing rather than embedding a price table that will drift.
+
+## Prerequisites
+
+- A representative usage window with input, cached-input, output, and request counts
+- Current model catalog/pricing and billing analytics access
+- Quality, latency, context, and availability requirements
+- A monthly budget and an owner for model or capacity changes
+
+## Tool Discipline
+
+Use `Read`, `Glob`, and `Grep` to find model selection, token bounds, caching, batch, and telemetry logic. Use `WebFetch` only for current official pricing and eligibility. Use `Write` or `Edit` for an approved cost model, instrumentation, or configuration change.
+
+## Current Contract
+
+- Serverless models bill from current per-model input/output rates; some expose discounted cached input.
+- Eligible batch work can cost up to 50% less, but eligibility and discount vary by model.
+- Dedicated Model Inference bills per minute per running replica and hardware, not per token.
+- Usage and prices change; snapshot retrieval time and source with every forecast.
+
+## Authentication
+
+Billing and usage views require authorized Together project access. API workloads use `TOGETHER_API_KEY`; record aggregate usage and project alias only, not the credential or sensitive request content.
 
 ## Instructions
 
-### Together AI Pricing Model
+1. Group measured requests by model, workload, token class, latency, and success state.
+2. Fetch current pricing and batch eligibility, recording retrieval time and source.
+3. Reconcile calculated cost with Together billing analytics before proposing savings.
+4. Evaluate output bounds, prompt reuse/caching, smaller models, and asynchronous batch in that order.
+5. Benchmark quality and latency before shifting models or endpoint type.
+6. Compare steady utilization with dedicated per-minute capacity, then publish forecast, risk, rollback, and owner.
 
-| Model Category | Price (per 1M tokens) | Example Models |
-|---------------|----------------------|----------------|
-| Small (< 10B) | $0.10-0.30 | Llama-3.2-3B, Qwen-2.5-7B |
-| Medium (10-40B) | $0.60-1.20 | Mixtral-8x7B, Llama-3.3-70B-Turbo |
-| Large (40B+) | $2.00-5.00 | Llama-3.1-405B, DeepSeek-V3 |
-| Image gen | $0.003-0.05/image | FLUX.1-schnell, SDXL |
-| Embeddings | $0.008/1M tokens | M2-BERT |
-| Fine-tuning | ~$5-25/hour | Depends on model + GPU |
-| Batch inference | 50% off | Same models, async |
+## Approval Boundaries
 
-### Cost Reduction Strategies
+Do not change a production model, reduce quality/safety controls, submit batch jobs, or provision dedicated replicas solely from a spreadsheet estimate.
 
-```python
-# 1. Use Turbo variants (faster, cheaper, similar quality)
-# meta-llama/Llama-3.3-70B-Instruct-Turbo vs Llama-3.1-70B-Instruct
+## Output
 
-# 2. Batch inference (50% cost reduction)
-batch_response = client.batch.create(
-    input_file_id=file_id,
-    model="meta-llama/Llama-3.3-70B-Instruct-Turbo",
-    completion_window="24h",
-)
-
-# 3. Cache responses for identical prompts
-from functools import lru_cache
-
-@lru_cache(maxsize=1000)
-def cached_completion(prompt: str, model: str) -> str:
-    response = client.chat.completions.create(
-        model=model, messages=[{"role": "user", "content": prompt}],
-    )
-    return response.choices[0].message.content
-
-# 4. Use smallest model that works
-# Test with 3B first, upgrade to 70B only if quality insufficient
-```
+Return source-stamped prices, usage baseline, reconciled cost, option-by-option savings, quality/latency evidence, break-even assumptions, recommendation, and rollback.
 
 ## Error Handling
 
-| Issue | Cause | Solution |
-|-------|-------|----------|
-| High costs | Wrong model tier | Downsize model |
-| Batch failures | Invalid input format | Validate JSONL |
-| Fine-tuning expensive | Too many epochs | Start with 1-2 epochs |
+| Condition | Response |
+|---|---|
+| Usage lacks token fields | Add measurement before estimating savings. |
+| Catalog and invoice diverge | Use billed data for history and current catalog for forward scenarios. |
+| Batch model ineligible | Price synchronous or another explicitly tested model. |
+| Dedicated utilization uncertain | Run a bounded capacity test; do not provision from peak guesses. |
+
+## Examples
+
+The example below shows the minimum redacted evidence expected from a successful invocation of this operator workflow.
+
+```text
+baseline=reconciled; prices=live-snapshot; option=batch; savings=modeled; quality=gate-required
+```
 
 ## Resources
 
-- [Together AI Pricing](https://www.together.ai/pricing)
-- [Batch Inference](https://docs.together.ai/docs/batch-inference)
-
-## Next Steps
-
-For architecture patterns, see `together-reference-architecture`.
+- [Skill-specific official documentation](references/official-docs.md)
+- [Serverless models and pricing](https://docs.together.ai/docs/serverless/models)
+- [Usage and cost analytics](https://docs.together.ai/docs/billing-usage-limits)
+- [Batch overview](https://docs.together.ai/docs/inference/batch/overview)

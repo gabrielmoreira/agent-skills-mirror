@@ -155,43 +155,55 @@ context，而不是修改请求 payload 或让无关 SDK 调用失败。默认 N
 
 `getServicesOfServer` 的 selector overload 已废弃，仅作为兼容面保留。
 
-### 5.3 AiService、AgentDiscoveryService 和 A2aService
+### 5.3 AiService 资源子接口
 
-本节的 Agent/RAD 契约是目标契约，不是当前已经实现的 Java 方法清单。只有新的
-Agent/RAD 能力完成实现并经过协商后才生效；在此之前，现有 `AiService` 和
-`A2aService` 方法仍是生效的兼容面。
-
-目标继承关系为：
+`AiService` 提供 namespace-bound 的 `mcp()`、`agent()`、`skill()`、`agentSpec()` 和
+`prompt()`。getter 返回复用的子服务，与 facade 共享连接、缓存、监听及 `shutdown()` 生命周期。
 
 ```text
-AiService extends AgentDiscoveryService, A2aService
+AiService extends McpService, A2aService, SkillService, AgentSpecService, PromptService
+AgentService extends A2aService, AgentDiscoveryService
 ```
 
-增加该父接口时，不能让已经编译的第三方 `AiService` 实现立即发生 linkage failure。新增的
-继承方法使用兼容 default bridge，在实现未 override 时报告不支持；Nacos 官方实现 override
-完整目标接口面。
+已发布的扁平方法保留并标记 Deprecated，核心方法通过对应 getter 委托。便利 default 重载
+继续调用本对象核心 override。新增 getter 的 default 报告不支持，第三方旧实现无需实现新 getter
+即可保持原调用；官方实现覆盖所有 getter。MCP createDraft default 保留 false 分派到旧四参
+方法、未实现 true 时受控拒绝的行为；官方五参方法是到 mcp() 的纯桥接。
 
-`AiService` 直接提供 namespace-bound 的
-`publishAgent(AgentPublishRequest)`，返回 `AgentVersionDetail`。该新增方法使用同样的兼容
-default bridge；它不放入 `AgentDiscoveryService`，因为定义发布不是发现操作。官方实现复制
-Request、注入 SDK namespace，并按 `autoSubmit` 创建 draft 或执行普通 submit Pipeline，且不
-修改调用方对象。等价重试、冲突和状态收敛遵循 [Agent API 规范](../ai/agent-api-spec.md)。
+3.3 尚未发布的新 Agent 操作只通过 `agent()` 使用。`AgentService.publishAgent` 返回
+`AgentVersionDetail`，保留兼容 default；官方实现仍复制请求、注入 SDK namespace，并按
+`autoSubmit` 创建 draft 或普通 submit，不修改输入对象。参见 [Agent API 规范](../ai/agent-api-spec.md)。
+旧 A2A 方法始终保留现有 gRPC 路径，不因本次接口拆分切换为 RAD。
 
 `AgentTransportMode` 是 API 模块中的 Java 8 兼容枚举，公开 `GRPC`、`HTTP`、`AUTO`，并可通过
 `getValue()` 写入 `nacosAiTransportMode`。模式在 `AiService` 创建时冻结；非法值在 Factory
 创建阶段失败。Transport 生命周期、AUTO 探测与操作 fallback 的具体规则由
 [Agent API 规范](../ai/agent-api-spec.md)定义。
 
+资源键 `nacosAiMcpTransportMode`、`nacosAiAgentTransportMode`、`nacosAiSkillTransportMode`、
+`nacosAiAgentSpecTransportMode`、`nacosAiPromptTransportMode` 继承 `nacosAiTransportMode`
+（默认 grpc）。创建生命周期对象前验证全部显式值，包括最终走 HTTP 的 Skill/AgentSpec 和已被
+全部覆盖的全局值；构造后冻结。Skill/AgentSpec 注入原 HTTP proxy；Prompt 查询与轮询使用同一
+薄路由，AUTO 按连接状态选路，不新增能力位。Agent 配置仅控制新 RAD，旧 A2A 固定原 gRPC。
+
+MCP、Agent、Prompt 分别记录 AUTO 的使用和 HTTP 成功。任一有效 GRPC 或旧 A2A 需求阻止暂停
+共享重连；仅所有已使用 AUTO 资源 HTTP 成功、初始失败达既有阈值时可暂停。未使用资源首次调用
+恢复完整初始探测预算，不改变已稳定资源；曾连接后的 UNHEALTHY 恢复不变。安全读回退必须有
+CLIENT_DISCONNECT、UN_REGISTER 或通用 transport 异常中的 gRPC UNAVAILABLE 证据；不能仅凭
+同时断连覆盖业务、授权、容量或未找到错误。写入结果不明和既有 publication owner 不跨 transport 重放。
+
+原能力检查的断连 runtime exception 保留公开类型、错误码和文案，仅补充 CLIENT_DISCONNECT cause 供安全读路由识别。
+
 `AgentDiscoveryService` 提供以下 namespace-bound 方法：
 
 | 能力 | 方法 | 契约 |
 | --- | --- | --- |
-| Search | `searchAgents` | 接受 `AgentSearchRequest`，返回 `Page<AgentCatalogEntry>`。 |
+| Search | `searchAgents` | 接受 `AgentSearchQuery`，返回 `Page<AgentCatalogEntry>`。 |
 | Discover | `discoverAgent` 重载 | 接受 `AgentReference` 和可选 `AgentDiscoveryFilter`，返回一个完整 `AgentDiscoveryResult`。 |
 | Watch | `subscribeAgent` 重载 | 接受相同 Reference、可选 Filter 和 Listener；返回当前完整结果，后续传递完整替换结果。 |
 | 取消 Watch | `unsubscribeAgent` 重载 | 按相同 Reference、Filter 和 Listener identity 移除 Watch。 |
-| 注册 Endpoint | `registerAgentEndpoints` | 注册一个 `AgentEndpointRegistrationBatch`，并保留为 redo 意图。 |
-| 注销 Endpoint | `deregisterAgentEndpoints` | 注销该 SDK Publisher 拥有的一个 `AgentEndpointDeregistrationBatch`。 |
+| 注册 Endpoint | `registerAgentEndpoints` | 注册一个 `AgentEndpointRegistration`，并保留为 redo 意图。 |
+| 注销 Endpoint | `deregisterAgentEndpoints` | 注销该 SDK Publisher 拥有的一个 `AgentEndpointDeregistration`。 |
 
 Watch 不增加另一组公开 Subscribe 方法，并保持现有源码和二进制兼容。
 `NacosAgentDiscoveryEvent` 增加 Event Type 与 Unavailable Error Getter，现有 Result
@@ -213,9 +225,9 @@ Listener Callback 在 Connection/HTTP I/O 外执行；有 Listener Executor 时�
 使用有界共享 Executor，并隔离异常。该 Agent-only 分层不改变 Prompt、Skill、MCP、
 AgentSpec 或旧 A2A 的 Transport Ownership。
 
-这些公开方法不接受 `namespaceId`。Proxy 复制调用方的 Request 或 Batch，把 SDK
-namespace 注入传输对象，并且不修改调用方对象。如果共享输入模型已经携带与 SDK namespace
-不同的非空值，Proxy 在本地拒绝。目标 Watch、Cache 和 Redo 行为遵循
+这些公开方法的 Search/Endpoint 入参分别是 `AgentSearchQuery`、`AgentEndpointRegistration`
+和 `AgentEndpointDeregistration`，不包含 `namespaceId` 字段或访问器，也不继承带 namespace 的
+传输模型。Proxy 复制调用方内容，将 SDK namespace 注入原有内部传输对象，不修改输入。目标 Watch、Cache 和 Redo 行为遵循
 [客户端本地缓存与 Redo 规范](../client/client-local-cache-redo-spec.md)和
 [运行时推送与重连规范](../client/runtime-push-reconnect-spec.md)。
 

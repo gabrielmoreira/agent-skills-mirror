@@ -28,6 +28,10 @@ CORE="$PRODUCT_ROOT/scripts/claude-obsidian.py"
 test -f "$CORE"
 ```
 
+Every `../wiki/references/` link in this file resolves the same way, relative
+to this skill's own directory under `$PRODUCT_ROOT`, never relative to the
+selected vault's `wiki/` directory.
+
 ## Prepare
 
 1. Resolve the user vault by explicit `--vault`, then
@@ -39,9 +43,11 @@ test -f "$CORE"
 3. Search for an existing note before creating one. Prefer a small update over a
    duplicate. Obtain explicit approval before replacing an existing canonical
    note.
-4. Select the smallest useful note type: synthesis, concept, decision, source,
-   or session summary. Use declarative prose, Obsidian wikilinks, and honest
-   frontmatter.
+4. Select the smallest useful note type from the declared vocabulary
+   (`claude_obsidian/page_schema.py`, documented in WIKI.md) — usually
+   `question` for an answered analysis, `concept` for an idea worth naming,
+   `source` for material summary, or `session` for approved conversation
+   content. Use declarative prose, Obsidian wikilinks, and honest frontmatter.
 
 If the material has no durable value or is already represented, report that and
 offer a no-op. Honor the user's choice if they still want it saved.

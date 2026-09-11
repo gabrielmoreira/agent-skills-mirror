@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `patchy631/ai-engineering-hub` — 26 default patterns, 0 followed patterns, 11 file(s) materialized.
+Mirror of `patchy631/ai-engineering-hub` — 26 default patterns, 0 followed patterns, 13 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `patchy631/ai-engineering-hub` — 26 default patterns, 0 followed pat
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 11 |
+| Files         | 13 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,17 +59,19 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`grpo-finetuning-qwen3/agent-skill/grpo-finetune/SKILL.md`](grpo-finetuning-qwen3/agent-skill/grpo-finetune/SKILL.md) |
-| 2 | ✓ | [`hugging-face-skills/agents/AGENTS.md`](hugging-face-skills/agents/AGENTS.md) |
-| 3 | ✓ | [`hugging-face-skills/skills/brightdata-web-mcp/SKILL.md`](hugging-face-skills/skills/brightdata-web-mcp/SKILL.md) |
-| 4 | ✓ | [`hugging-face-skills/skills/hugging-face-cli/SKILL.md`](hugging-face-skills/skills/hugging-face-cli/SKILL.md) |
-| 5 | ✓ | [`hugging-face-skills/skills/hugging-face-datasets/SKILL.md`](hugging-face-skills/skills/hugging-face-datasets/SKILL.md) |
-| 6 | ✓ | [`hugging-face-skills/skills/hugging-face-evaluation/SKILL.md`](hugging-face-skills/skills/hugging-face-evaluation/SKILL.md) |
-| 7 | ✓ | [`hugging-face-skills/skills/hugging-face-jobs/SKILL.md`](hugging-face-skills/skills/hugging-face-jobs/SKILL.md) |
-| 8 | ✓ | [`hugging-face-skills/skills/hugging-face-model-trainer/SKILL.md`](hugging-face-skills/skills/hugging-face-model-trainer/SKILL.md) |
-| 9 | ✓ | [`hugging-face-skills/skills/hugging-face-paper-publisher/SKILL.md`](hugging-face-skills/skills/hugging-face-paper-publisher/SKILL.md) |
-| 10 | ✓ | [`hugging-face-skills/skills/hugging-face-tool-builder/SKILL.md`](hugging-face-skills/skills/hugging-face-tool-builder/SKILL.md) |
-| 11 | ✓ | [`hugging-face-skills/skills/hugging-face-trackio/SKILL.md`](hugging-face-skills/skills/hugging-face-trackio/SKILL.md) |
+| 1 | ✓ | [`conversational-support-flow/frontend/AGENTS.md`](conversational-support-flow/frontend/AGENTS.md) |
+| 2 | ✓ | [`conversational-support-flow/frontend/CLAUDE.md`](conversational-support-flow/frontend/CLAUDE.md) |
+| 3 | ✓ | [`grpo-finetuning-qwen3/agent-skill/grpo-finetune/SKILL.md`](grpo-finetuning-qwen3/agent-skill/grpo-finetune/SKILL.md) |
+| 4 | ✓ | [`hugging-face-skills/agents/AGENTS.md`](hugging-face-skills/agents/AGENTS.md) |
+| 5 | ✓ | [`hugging-face-skills/skills/brightdata-web-mcp/SKILL.md`](hugging-face-skills/skills/brightdata-web-mcp/SKILL.md) |
+| 6 | ✓ | [`hugging-face-skills/skills/hugging-face-cli/SKILL.md`](hugging-face-skills/skills/hugging-face-cli/SKILL.md) |
+| 7 | ✓ | [`hugging-face-skills/skills/hugging-face-datasets/SKILL.md`](hugging-face-skills/skills/hugging-face-datasets/SKILL.md) |
+| 8 | ✓ | [`hugging-face-skills/skills/hugging-face-evaluation/SKILL.md`](hugging-face-skills/skills/hugging-face-evaluation/SKILL.md) |
+| 9 | ✓ | [`hugging-face-skills/skills/hugging-face-jobs/SKILL.md`](hugging-face-skills/skills/hugging-face-jobs/SKILL.md) |
+| 10 | ✓ | [`hugging-face-skills/skills/hugging-face-model-trainer/SKILL.md`](hugging-face-skills/skills/hugging-face-model-trainer/SKILL.md) |
+| 11 | ✓ | [`hugging-face-skills/skills/hugging-face-paper-publisher/SKILL.md`](hugging-face-skills/skills/hugging-face-paper-publisher/SKILL.md) |
+| 12 | ✓ | [`hugging-face-skills/skills/hugging-face-tool-builder/SKILL.md`](hugging-face-skills/skills/hugging-face-tool-builder/SKILL.md) |
+| 13 | ✓ | [`hugging-face-skills/skills/hugging-face-trackio/SKILL.md`](hugging-face-skills/skills/hugging-face-trackio/SKILL.md) |
 
 ---
 

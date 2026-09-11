@@ -26,7 +26,7 @@ COMPLETION → TRUTH → PROOF
 2. **Truth:** Is the work actually correct? (independent verification)
 3. **Proof:** Can you prove it with evidence? (exit codes, test output, screenshots)
 
-A PASS without proof is a claim.
+A PASS without proof is a claim. When a result surprises you in either direction — a pass that came too easily, or a failure you cannot explain — suspect the observation method before the system: confirm the check runs the right command against the current build and exercises the real code path before theorizing about the code.
 
 <!-- Authoring rule (maintenance, not runtime): every gate in this skill encodes an observed failure mode; understand what a gate prevents before removing it. -->
 
@@ -85,7 +85,7 @@ EVIDENCE:
     - "[case]: [command] → exit [code]: [result]"
 ```
 
-Every scenario needs non-empty Expected and Actual. Every scenario maps to exactly one EVIDENCE entry. SCENARIOS_PASSED must equal EVIDENCE.scenarios with exit 0 + Result=PASS.
+Every scenario needs non-empty Expected and Actual. Every scenario maps to exactly one EVIDENCE entry. SCENARIOS_PASSED must equal EVIDENCE.scenarios with exit 0 + Result=PASS. Run each check against the revision being verified; if the code changes after a check, re-run the affected scenarios before citing them. Record the tested identity with the evidence: the commit SHA, plus a patch or digest when the tree is dirty; evidence that does not identify the revision it was produced from is unverified, not PASS.
 
 ## Goal-Backward Lens
 
@@ -101,9 +101,12 @@ Walk backward from the goal to verify it was achieved:
 | Failure | What happens | Fix |
 | --------- | ------------- | ----- |
 | **False green** | Test passes without exercising the real code path | Test Honesty Gates (see integration-verifier) |
+| **Tautological check** | Expected value recomputed the way the code computes it, e.g. `expect(add(a, b)).toBe(a + b)` — passes by construction | Expected values come from an independent source of truth: a known-good literal, a worked example, the spec |
 | **Scope skip** | "All tests pass" but untested scenarios exist | Goal-backward lens: name every scenario, verify each |
 | **Stale evidence** | "Tests pass" but you didn't run them this session | Re-run. Evidence must be from THIS session. |
 | **Claim without proof** | "It works" with no command/exit code | Evidence array is mandatory for PASS |
+| **Pointer-as-proof** | Path cited as PASS without re-opening it | Re-open the artifact; if it does not show the claim, downgrade or re-run. Never cite it as PASS |
+| **Untested claim** | A scenario or claim the return never addresses | Mark it untested with its reason; never assume it passed |
 | **Environment escape** | Test fails with env signal (command not found, ECONNREFUSED) | Classify as ENVIRONMENT not code. Mark BLOCKED. |
 
 ## Excuses and Tells

@@ -1,281 +1,83 @@
 ---
 name: miro-incident-runbook
-description: 'Execute Miro REST API v2 incident response with triage, mitigation,
-  and postmortem.
-
-  Use when responding to Miro-related outages, investigating API errors,
-
-  or running post-incident reviews for Miro integration failures.
-
-  Trigger with phrases like "miro incident", "miro outage",
-
-  "miro down", "miro on-call", "miro emergency", "miro broken".
-
-  '
-allowed-tools: Read, Grep, Bash(curl:*), Bash(jq:*)
-version: 1.7.0
-license: MIT
+description: "Plan and implement repository-side containment and recovery controls for Miro authorization, capacity, outage, and data-correctness incidents, with approval-gated live actions. Use when responding to a Miro service incident. Trigger with \"Miro incident\"."
+argument-hint: "[incident-id] [symptom]"
+allowed-tools: Read, Glob, Grep, WebFetch, Write, Edit
+version: 1.9.0
 author: Jeremy Longshore <jeremy@intentsolutions.io>
+license: MIT
 tags:
 - saas
 - miro
 - incident-response
-- runbook
-compatibility: Designed for Claude Code
+- operations
+model: inherit
+effort: high
+compatibility: Designed for Claude Code; live work requires an authorized Miro app and redacted evidence
 ---
-# Miro Incident Runbook
+# Miro Integration Incident Response
 
 ## Overview
 
-Rapid incident response for Miro REST API v2 integration failures: triage, mitigation, recovery, and postmortem.
+Stabilize user impact before changing authorization or replaying writes. Keep an UTC action log and make ambiguity explicit; use the evidence produced here to make the next decision explicit and reviewable.
 
 ## Prerequisites
 
-Before applying this guide, confirm you have a Miro app or workspace appropriate to the task, a dedicated non-production board where changes can be tested safely, and only the OAuth scopes or administrative access the procedure requires.
+- Incident commander, owners, severity, and affected window
+- Current deployment, app/team context, dashboards, and safe logs
+- Write-disable, circuit-breaker, reconciliation, and rollback controls
 
-## Severity Levels
+## Tool Discipline
 
-| Level | Definition | Response | Example |
-|-------|------------|----------|---------|
-| P1 | Complete integration outage | < 15 min | Miro API returns 5xx on all calls |
-| P2 | Degraded service | < 1 hour | High latency, partial 429s |
-| P3 | Minor impact | < 4 hours | Webhook delays, single-board errors |
-| P4 | No user impact | Next business day | Monitoring gaps, non-critical warnings |
+Use `Read`, `Glob`, and `Grep` to inspect the repository, configuration names, adapters, tests, and evidence. Use `WebFetch` only for current official Miro documentation. Use `Write` or `Edit` after confirming the requested mode, target environment, tenant, board, and approval boundary. These declared tools do not call authenticated Miro APIs or deployment CLIs; implement client, configuration, and test changes, then return exact operator commands or an approval-gated handoff for live execution.
 
-## Quick Triage (First 5 Minutes)
+## Current Contract
 
-```bash
-#!/bin/bash
-# miro-triage.sh — Run this first during any Miro incident
+- 401, 403/404, 409, 429, network, and 5xx failures require different containment.
+- One refresh attempt is safe only when serialized against rotating token storage.
+- 429 recovery follows observed reset headers and shared credit demand.
+- Timeout/5xx on a mutation is ambiguous until target state is reconciled.
 
-echo "=== MIRO TRIAGE $(date -u +%H:%M:%SZ) ==="
+## Authentication
 
-# 1. Is Miro itself down?
-echo -n "Miro Status: "
-curl -sf "https://status.miro.com/api/v2/status.json" | jq -r '.status.description' 2>/dev/null || echo "STATUS PAGE UNREACHABLE"
-
-# 2. Can we reach the API?
-echo -n "API Connectivity: "
-curl -s -o /dev/null -w "HTTP %{http_code} (%{time_total}s)" \
-  -H "Authorization: Bearer ${MIRO_ACCESS_TOKEN}" \
-  "https://api.miro.com/v2/boards?limit=1" 2>/dev/null
-echo ""
-
-# 3. What's our rate limit status?
-echo "Rate Limit:"
-curl -sI -H "Authorization: Bearer ${MIRO_ACCESS_TOKEN}" \
-  "https://api.miro.com/v2/boards?limit=1" 2>/dev/null | \
-  grep -i "x-ratelimit\|retry-after" || echo "  No rate limit headers"
-
-# 4. Token validity
-echo -n "Token: "
-TOKEN_RESP=$(curl -s -H "Authorization: Bearer ${MIRO_ACCESS_TOKEN}" \
-  "https://api.miro.com/v1/oauth-token" 2>/dev/null)
-echo "$TOKEN_RESP" | jq -r '"scopes: \(.scopes // "INVALID"), team: \(.team.id // "N/A")"' 2>/dev/null || echo "INVALID OR EXPIRED"
-
-# 5. Our health check
-echo -n "App Health: "
-curl -sf "${APP_URL:-http://localhost:3000}/health" | jq -r '.miro.status // "UNAVAILABLE"' 2>/dev/null || echo "HEALTH CHECK FAILED"
-```
-
-## Decision Tree
-
-```
-Miro API returning errors?
-├── YES → What status code?
-│   ├── 401/403 → Token issue
-│   │   ├── Token expired? → Refresh token (see below)
-│   │   └── Scopes changed? → Re-authorize via OAuth flow
-│   ├── 429 → Rate limited
-│   │   ├── Check X-RateLimit-Remaining header
-│   │   ├── Honor Retry-After header
-│   │   └── Reduce request rate or enable queue
-│   ├── 404 → Board/item not found
-│   │   └── Verify IDs haven't changed
-│   └── 500/502/503 → Miro platform issue
-│       ├── Check status.miro.com
-│       ├── Enable graceful degradation
-│       └── Wait for Miro to resolve
-└── NO → Is our integration healthy?
-    ├── YES → Intermittent. Monitor for recurrence.
-    └── NO → Our infrastructure issue
-        ├── Check pods/containers
-        ├── Check memory/CPU
-        └── Check network/DNS
-```
-
-## Immediate Actions by Error Type
-
-### 401 — Token Expired
-
-```bash
-# Refresh access token
-curl -s -X POST https://api.miro.com/v1/oauth/token \
-  -d "grant_type=refresh_token" \
-  -d "client_id=${MIRO_CLIENT_ID}" \
-  -d "client_secret=${MIRO_CLIENT_SECRET}" \
-  -d "refresh_token=${MIRO_REFRESH_TOKEN}" | jq
-
-# If refresh token is also expired, user must re-authorize:
-# Redirect to: https://miro.com/oauth/authorize?response_type=code&client_id=${MIRO_CLIENT_ID}&redirect_uri=${REDIRECT_URI}
-```
-
-### 403 — Insufficient Permissions
-
-```bash
-# Check what scopes the token has
-curl -s -H "Authorization: Bearer ${MIRO_ACCESS_TOKEN}" \
-  "https://api.miro.com/v1/oauth-token" | jq '.scopes'
-
-# Compare with what the failed endpoint requires
-# boards:read for GET endpoints
-# boards:write for POST/PATCH/DELETE endpoints
-# team:read / organizations:read for team/org endpoints
-```
-
-### 429 — Rate Limited
-
-```bash
-# Check current rate limit status
-curl -sI -H "Authorization: Bearer ${MIRO_ACCESS_TOKEN}" \
-  "https://api.miro.com/v2/boards?limit=1" | grep -i ratelimit
-
-# Response headers:
-# X-RateLimit-Limit: 100000 (credits per minute)
-# X-RateLimit-Remaining: 0
-# Retry-After: 30 (seconds)
-
-# Immediate mitigation: pause all non-critical API calls
-# Long-term: implement caching + webhooks (see miro-performance-tuning)
-```
-
-### 5xx — Miro Platform Issue
-
-```bash
-# 1. Confirm it's Miro-side
-curl -s "https://status.miro.com/api/v2/status.json" | jq '.status'
-
-# 2. Check for ongoing incidents
-curl -s "https://status.miro.com/api/v2/incidents/unresolved.json" | \
-  jq '.incidents[] | {name, status, updated_at}'
-
-# 3. Enable graceful degradation in your app
-# Feature flag: MIRO_FALLBACK_ENABLED=true
-# Serve cached data, queue writes for retry when Miro recovers
-```
-
-## Communication Templates
-
-### Internal (Slack/PagerDuty)
-
-```
-P[1-4] INCIDENT: Miro Integration
-Status: INVESTIGATING | IDENTIFIED | MONITORING | RESOLVED
-Impact: [What users experience]
-Root cause: [Miro-side outage | Token expired | Rate limited | Our bug]
-Action: [What we're doing now]
-ETA: [Expected resolution time]
-Next update: [When]
-```
-
-### External (Status Page)
-
-```
-Miro Integration — Degraded Performance
-
-We are experiencing issues with our Miro integration.
-[Board sync / item creation / webhook processing] may be delayed.
-
-Root cause: [Brief technical explanation]
-Workaround: [If any — e.g., "Changes will sync when service recovers"]
-
-Last updated: [timestamp UTC]
-```
-
-## Post-Incident Evidence Collection
-
-```bash
-# Collect evidence for postmortem
-INCIDENT_DIR="miro-incident-$(date +%Y%m%d-%H%M%S)"
-mkdir -p "$INCIDENT_DIR"
-
-# API response during incident
-curl -s -H "Authorization: Bearer ${MIRO_ACCESS_TOKEN}" \
-  "https://api.miro.com/v2/boards?limit=1" > "$INCIDENT_DIR/api-response.json"
-
-# Miro status page snapshot
-curl -s "https://status.miro.com/api/v2/incidents/unresolved.json" > "$INCIDENT_DIR/miro-status.json"
-
-# Application metrics (adjust query for your Prometheus)
-curl -s "http://prometheus:9090/api/v1/query_range?query=rate(miro_errors_total[5m])&start=$(date -d '2 hours ago' +%s)&end=$(date +%s)&step=60" > "$INCIDENT_DIR/error-metrics.json"
-
-# Package (exclude tokens)
-tar -czf "$INCIDENT_DIR.tar.gz" "$INCIDENT_DIR"
-echo "Evidence collected: $INCIDENT_DIR.tar.gz"
-```
-
-## Postmortem Template
-
-```markdown
-## Incident: Miro [Error Type]
-**Date:** YYYY-MM-DD
-**Duration:** X hours Y minutes
-**Severity:** P[1-4]
-**Impact:** [Users affected, features impacted]
-
-### Timeline (UTC)
-- HH:MM — [First error detected by monitoring]
-- HH:MM — [On-call alerted]
-- HH:MM — [Root cause identified]
-- HH:MM — [Mitigation applied]
-- HH:MM — [Service restored]
-
-### Root Cause
-[Technical explanation — e.g., "Access token expired and refresh logic
-had a bug where it used the old refresh token instead of the new one
-returned in the last refresh response."]
-
-### What Went Well
-- [Monitoring detected the issue within 2 minutes]
-- [Runbook was accurate and followed]
-
-### What Went Wrong
-- [Token refresh logic untested in integration tests]
-- [No alerting on 401 error rate]
-
-### Action Items
-- [ ] Add integration test for token refresh flow — @owner — Due date
-- [ ] Add P1 alert for miro_errors_total{error_type="auth"} > 0 — @owner — Due date
-- [ ] Document token rotation procedure — @owner — Due date
-```
+For REST work, use OAuth 2.0 Authorization Code with the narrowest Miro scopes. Bind each encrypted token record to its user, application, authorized team, and granted scopes. Never print access tokens, refresh tokens, client secrets, authorization codes, or board content.
 
 ## Instructions
 
-Use the ordered procedures and code samples in this guide as a sequence: begin with the prerequisites, apply the configuration or operational step for the target environment, then perform the documented validation or cleanup before proceeding. Keep credentials in the documented secret store; never hard-code them in source.
+1. Declare incident scope, commander, severity, start time, affected tenants/operations, and change freeze.
+2. Contain with write disablement, queue pause, concurrency reduction, or circuit opening appropriate to evidence.
+3. Correlate deployment changes, token events, rate headers, semantic drift, and official Miro status.
+4. Run the smallest read-only probe to classify auth, tenant, capacity, vendor, network, or local failure.
+5. Recover in a canary cohort; reconcile ambiguous operations before draining queues.
+6. Verify SLOs and data correctness, document timeline/root cause/follow-ups, and obtain closure approval.
+
+## Approval Boundaries
+
+Credential rotation/revocation, scope or redirect changes, destructive repair, queue replay, and broad re-enable require the incident commander's explicit approval. Pause when the responsible owner or exact target is uncertain.
 
 ## Output
 
-Following this guide produces the Miro integration outcome for its topic—configuration, validation evidence, operational recovery, or a documented migration result. Record command output and relevant identifiers so a failed step is traceable.
-
-## Examples
-
-Start with the smallest applicable command or code example in the relevant section, using a dedicated test board and non-production credentials. Confirm the expected response or validation result before applying the pattern to production.
+Return severity, impact, timeline, evidence, containment, root cause/confidence, recovery metrics, reconciliation, approvals, and follow-ups. State what was not inspected or changed so the receipt cannot overclaim coverage.
 
 ## Error Handling
 
-| Issue | Cause | Solution |
-|-------|-------|----------|
-| Status page unreachable | DNS/network | Use mobile or VPN |
-| Token refresh fails | Refresh token revoked | User must re-authorize |
-| Rate limit persists after reset | Clock skew | Use `Retry-After` header, not local clock |
-| Metrics unavailable | Prometheus down | Check application logs directly |
+| Condition | Response |
+|---|---|
+| Incident scope expands | Reassess severity and containment before further recovery. |
+| Mutation result is unknown | Reconcile; never blind-retry. |
+| Shared refresh races | Pause callers and serialize one rotation path. |
+| Recovery canary regresses | Recontain and restore the last verified state. |
+
+## Examples
+
+The example is a redacted operator receipt; identifiers are hashes or bounded labels, not board content or credentials.
+
+```text
+incident=INC-311; class=rate-exhaustion; writes=paused; headroom=35%; ambiguous=4; reconciled=4/4; recovery=stable
+```
 
 ## Resources
 
-- [Miro Status Page](https://status.miro.com)
-- [Miro Developer Support](https://developers.miro.com/docs/getting-help)
-- [Rate Limiting Reference](https://developers.miro.com/reference/rate-limiting)
-
-## Next Steps
-
-For data handling and compliance, see `miro-data-handling`.
+- [Skill-specific official documentation](references/official-docs.md)
+- [Miro status](https://status.miro.com/)
+- [Rate limits](https://developers.miro.com/reference/rate-limiting)
