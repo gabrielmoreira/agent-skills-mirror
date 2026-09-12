@@ -1,326 +1,92 @@
 ---
 name: linear-core-workflow-b
-description: 'Project, cycle, and roadmap management workflows with Linear.
-
-  Use when implementing sprint planning, managing projects and milestones,
-
-  or organizing work into cycles.
-
-  Trigger: "linear project", "linear cycle", "linear sprint",
-
-  "linear roadmap", "linear planning", "linear milestone".
-
-  '
-allowed-tools: Read, Write, Edit, Grep
-version: 1.12.0
-license: MIT
+description: >-
+  Coordinate Linear projects, cycles, initiatives, milestones, and issue membership without assuming a workspace taxonomy. Use when implementing portfolio or planning automation. Trigger with "sync Linear project", "manage Linear cycles", or "coordinate Linear initiatives".
+argument-hint: "[repository-path] [project-or-cycle] [dry-run|apply]"
+allowed-tools: Read, Glob, Grep, WebFetch, Write, Edit
+version: 1.13.0
 author: Jeremy Longshore <jeremy@intentsolutions.io>
+license: MIT
 tags:
 - saas
 - linear
-- workflow
-compatibility: Designed for Claude Code
+- planning-workflow
+model: inherit
+effort: high
+compatibility: Designed for Claude Code; live verification requires network access and an approved Linear workspace credential
 ---
-# Linear Core Workflow B: Projects & Cycles
+# Linear Project and Cycle Coordination
 
 ## Overview
 
-Manage projects, cycles (sprints), milestones, and roadmaps using the Linear API. Projects group issues across teams with states (`planned`, `started`, `paused`, `completed`, `canceled`), target dates, and progress tracking. Cycles are time-boxed iterations (sprints) owned by a single team. Initiatives group projects at the organizational level.
+Map planning intent onto the workspace's actual project, cycle, initiative, and team model before making relationship changes.
 
 ## Prerequisites
 
-- Linear SDK configured with API key or OAuth token
-- Understanding of Linear's hierarchy: Organization > Team > Cycle/Project > Issue
-- Team access with project create permissions
+- The target repository, Linear workspace, environment, and accountable owner
+- Current security, privacy, compliance, capacity, and change-control requirements
+- An approved Linear credential only when a bounded live verification is necessary
+
+## Tool Discipline
+
+Use `Read`, `Glob`, and `Grep` to inspect code, configuration, and evidence. Use `WebFetch` only for current first-party Linear documentation and package metadata. Use `Write` or `Edit` only for requested implementation with known target files. Never write credentials, customer content, unrestricted environment output, or unredacted GraphQL variables.
+
+## Current Contract
+
+- Issues belong to one team, while projects can belong to one or more teams; access must be evaluated at both levels.
+- List operations are Relay-style connections and must be paginated rather than assuming `nodes` is complete.
+- Archived resources are hidden by default and require `includeArchived: true` when reconciliation needs them.
+
+## Authentication
+
+Use a personal API key only for owner-controlled scripts, OAuth with PKCE for user-delegated applications, or an enabled client-credentials grant for approved automation. Personal keys use `Authorization: <API_KEY>`; OAuth tokens use `Authorization: Bearer <ACCESS_TOKEN>`. Store credentials server-side in an approved secret manager.
+
+Treat app approval, team access, scope changes, credential creation, rotation, revocation, and production access as owner-approved actions.
 
 ## Instructions
 
-### Step 1: Project CRUD
+1. Discover visible teams, project statuses, cycles, initiatives, milestones, and archived-state requirements.
+2. Define the source of truth and stable matching keys for every entity; names alone are not sufficient for unattended writes.
+3. Build a read-only diff of requested membership, dates, status, and ownership changes.
+4. Validate cross-team visibility and reject any mapping that would expose a private team's issues.
+5. Apply approved mutations in dependency order and stop on the first GraphQL or payload failure.
+6. Re-query every changed entity and produce a reconciliation report with compensating actions.
 
-```typescript
-import { LinearClient } from "@linear/sdk";
+## Approval Boundaries
 
-const client = new LinearClient({ apiKey: process.env.LINEAR_API_KEY! });
+Do not create, reveal, rotate, or revoke credentials; authorize an OAuth app; change scopes or team access; create, mutate, archive, or delete workspace data; configure or re-enable webhooks; import or export data; change roles, SCIM, or audit streaming; transmit diagnostics; change paid entitlements; or perform another production mutation without explicit approval from the accountable owner. Keep diagnosis read-only unless implementation was requested.
 
-// List projects (optionally filter by team)
-const projects = await client.projects({
-  filter: {
-    accessibleTeams: { some: { key: { eq: "ENG" } } },
-    state: { nin: ["completed", "canceled"] },
-  },
-  orderBy: "updatedAt",
-  first: 20,
-});
+## Output
 
-for (const project of projects.nodes) {
-  console.log(`${project.name} [${project.state}] — progress: ${Math.round(project.progress * 100)}%`);
-}
-
-// Create a project
-const teams = await client.teams();
-const eng = teams.nodes.find(t => t.key === "ENG")!;
-
-const projectResult = await client.createProject({
-  name: "Authentication Overhaul",
-  description: "Modernize auth infrastructure with OAuth 2.0 + MFA.",
-  teamIds: [eng.id],
-  state: "planned",
-  targetDate: "2026-06-30",
-});
-
-const project = await projectResult.project;
-console.log(`Created project: ${project?.name} (${project?.id})`);
-
-// Update project
-await client.updateProject(project!.id, {
-  state: "started",
-  description: "Updated scope: includes SSO integration.",
-});
-
-// Get project by slug
-const found = await client.projects({
-  filter: { slugId: { eq: "auth-overhaul" } },
-});
-```
-
-### Step 2: Project Milestones
-
-```typescript
-// Create milestones for a project
-await client.createProjectMilestone({
-  projectId: project!.id,
-  name: "OAuth 2.0 Implementation",
-  targetDate: "2026-04-15",
-});
-
-await client.createProjectMilestone({
-  projectId: project!.id,
-  name: "MFA Rollout",
-  targetDate: "2026-05-30",
-});
-
-// List milestones
-const milestones = await project!.projectMilestones();
-for (const ms of milestones.nodes) {
-  console.log(`  Milestone: ${ms.name} — target: ${ms.targetDate}`);
-}
-```
-
-### Step 3: Assign Issues to Projects
-
-```typescript
-// Create issue directly in a project
-await client.createIssue({
-  teamId: eng.id,
-  title: "Implement OAuth 2.0 login flow",
-  projectId: project!.id,
-  priority: 2,
-});
-
-// Move existing issue to project
-await client.updateIssue("existing-issue-id", {
-  projectId: project!.id,
-});
-
-// Get all issues in a project
-const projectIssues = await project!.issues({ first: 100 });
-for (const issue of projectIssues.nodes) {
-  const state = await issue.state;
-  console.log(`  ${issue.identifier}: ${issue.title} [${state?.name}]`);
-}
-```
-
-### Step 4: Cycle (Sprint) Management
-
-```typescript
-// Get current and upcoming cycles for a team
-const now = new Date().toISOString();
-const cycles = await eng.cycles({
-  filter: { endsAt: { gte: now } },
-  orderBy: "startsAt",
-});
-
-for (const cycle of cycles.nodes) {
-  console.log(`${cycle.name ?? "Unnamed"}: ${cycle.startsAt} → ${cycle.endsAt}`);
-}
-
-// Create a new 2-week cycle
-const startsAt = new Date();
-const endsAt = new Date();
-endsAt.setDate(endsAt.getDate() + 14);
-
-const cycleResult = await client.createCycle({
-  teamId: eng.id,
-  name: "Sprint 42",
-  startsAt: startsAt.toISOString(),
-  endsAt: endsAt.toISOString(),
-});
-
-const cycle = await cycleResult.cycle;
-console.log(`Created cycle: ${cycle?.name}`);
-
-// Add issues to cycle
-const issueIds = ["issue-id-1", "issue-id-2", "issue-id-3"];
-for (const issueId of issueIds) {
-  await client.updateIssue(issueId, { cycleId: cycle!.id });
-}
-```
-
-### Step 5: Cycle Metrics
-
-```typescript
-async function getCycleMetrics(cycleId: string) {
-  const cycle = await client.cycle(cycleId);
-  const issues = await cycle.issues();
-
-  const byState = new Map<string, number>();
-  let totalEstimate = 0;
-  let completedEstimate = 0;
-
-  for (const issue of issues.nodes) {
-    const state = await issue.state;
-    const name = state?.name ?? "Unknown";
-    byState.set(name, (byState.get(name) ?? 0) + 1);
-
-    totalEstimate += issue.estimate ?? 0;
-    if (state?.type === "completed") {
-      completedEstimate += issue.estimate ?? 0;
-    }
-  }
-
-  return {
-    totalIssues: issues.nodes.length,
-    stateBreakdown: Object.fromEntries(byState),
-    totalPoints: totalEstimate,
-    completedPoints: completedEstimate,
-    burndown: totalEstimate ? Math.round((completedEstimate / totalEstimate) * 100) : 0,
-  };
-}
-
-const metrics = await getCycleMetrics(cycle!.id);
-console.log(`Sprint progress: ${metrics.burndown}% (${metrics.completedPoints}/${metrics.totalPoints} pts)`);
-```
-
-### Step 6: Sprint Rollover
-
-```typescript
-async function rolloverCycle(fromCycleId: string, toCycleId: string) {
-  const fromCycle = await client.cycle(fromCycleId);
-  const unfinished = await fromCycle.issues({
-    filter: { state: { type: { nin: ["completed", "canceled"] } } },
-  });
-
-  let moved = 0;
-  for (const issue of unfinished.nodes) {
-    await client.updateIssue(issue.id, { cycleId: toCycleId });
-    moved++;
-  }
-
-  console.log(`Rolled over ${moved} unfinished issues`);
-  return moved;
-}
-```
-
-### Step 7: Team Velocity
-
-```typescript
-async function calculateVelocity(teamKey: string, sprintCount = 3) {
-  const teams = await client.teams({ filter: { key: { eq: teamKey } } });
-  const team = teams.nodes[0];
-
-  // Get completed cycles
-  const cycles = await team.cycles({
-    filter: { completedAt: { neq: null } },
-    orderBy: "completedAt",
-    first: sprintCount,
-  });
-
-  const velocities = await Promise.all(
-    cycles.nodes.map(async (cycle) => {
-      const completed = await cycle.issues({
-        filter: { state: { type: { eq: "completed" } } },
-      });
-      return completed.nodes.reduce((sum, i) => sum + (i.estimate ?? 0), 0);
-    })
-  );
-
-  const avg = velocities.reduce((a, b) => a + b, 0) / velocities.length;
-  return { velocities, average: Math.round(avg * 10) / 10 };
-}
-
-const velocity = await calculateVelocity("ENG");
-console.log(`Average velocity: ${velocity.average} pts/sprint`);
-```
-
-### Step 8: Roadmap View
-
-```typescript
-async function getRoadmap(monthsAhead = 6) {
-  const futureDate = new Date();
-  futureDate.setMonth(futureDate.getMonth() + monthsAhead);
-
-  const projects = await client.projects({
-    filter: {
-      state: { nin: ["completed", "canceled"] },
-      targetDate: { lte: futureDate.toISOString() },
-    },
-    orderBy: "targetDate",
-  });
-
-  return projects.nodes.map(p => ({
-    name: p.name,
-    state: p.state,
-    progress: `${Math.round(p.progress * 100)}%`,
-    targetDate: p.targetDate,
-  }));
-}
-
-const roadmap = await getRoadmap();
-console.table(roadmap);
-```
+Return the workspace and team scope, auth mode without credential value, files and contracts inspected, exact operation names, evidence collected, validation result, sensitive fields redacted, remaining risk, accountable owner, approval state, and rollback or next action.
 
 ## Error Handling
 
-| Error | Cause | Solution |
-|-------|-------|----------|
-| `Project not found` | Invalid project ID or deleted | Verify ID with `client.projects()` |
-| `Cycle dates overlap` | Dates conflict with existing cycle | Check existing cycles: `team.cycles()` |
-| `Permission denied` | No project access | Verify team membership |
-| `Invalid date range` | `endsAt` before `startsAt` | Validate date ordering before API call |
-| `Team not in project` | Issue team not in project's team list | Add team via `updateProject` first |
+| Condition | Response |
+|---|---|
+| Ambiguous name match | Require a stable ID or owner-confirmed mapping. |
+| Archived entity missing | Repeat the read with `includeArchived: true` before creating a replacement. |
+| Cross-team access gap | Stop; do not infer visibility from project membership. |
+| Partial batch | Record successful IDs, halt remaining writes, and reconcile before retrying. |
 
 ## Examples
 
-### Sprint Planning Flow
+Use a compact handoff that makes scope, mutation authority, and verification evidence reviewable.
 
-```typescript
-async function planSprint(teamKey: string, durationDays: number, issueIds: string[]) {
-  const teams = await client.teams({ filter: { key: { eq: teamKey } } });
-  const team = teams.nodes[0];
+Input:
 
-  const startsAt = new Date();
-  const endsAt = new Date();
-  endsAt.setDate(endsAt.getDate() + durationDays);
+```text
+initiative=Q4; project=Billing; teams=ENG,PLAT; mode=dry-run
+```
 
-  const cycleResult = await client.createCycle({
-    teamId: team.id,
-    name: `Sprint ${new Date().toISOString().slice(0, 10)}`,
-    startsAt: startsAt.toISOString(),
-    endsAt: endsAt.toISOString(),
-  });
+Expected handoff:
 
-  const cycle = await cycleResult.cycle;
-  for (const id of issueIds) {
-    await client.updateIssue(id, { cycleId: cycle!.id });
-  }
-
-  console.log(`Sprint created: ${cycle?.name} (${issueIds.length} issues)`);
-  return cycle;
-}
+```text
+mapping=reviewed; visibility=pass; mutations=0; approval=pending
 ```
 
 ## Resources
 
-- [Project Model Schema](https://studio.apollographql.com/public/Linear-API/variant/current/schema/reference/objects/Project)
-- [Cycle Model Schema](https://studio.apollographql.com/public/Linear-API/variant/current/schema/reference/objects/Cycle)
-- Linear Roadmaps Documentation
+- [Skill-specific official documentation](references/official-docs.md)
+- [Linear developer documentation index](https://linear.app/llms.txt)
+- [Linear GraphQL API](https://linear.app/developers/graphql.md)

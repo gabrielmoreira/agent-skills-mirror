@@ -1,7 +1,7 @@
 <div align="center">
   <img src="../public/logo.svg" alt="TongFlow" width="320" />
 
-  <h1>TongFlow：开源多模态 GenAI 工作流工作室</h1>
+  <h1>TongFlow：开源的 Modality-First GenAI 平台</h1>
   <p>
     <a href="https://github.com/tong-io/tongflow/stargazers"><img src="https://img.shields.io/github/stars/tong-io/tongflow?style=flat&logo=github" alt="GitHub Stars" /></a>
     <a href="https://github.com/tong-io/tongflow/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-AGPL--3.0-blue.svg" alt="License" /></a>
@@ -18,6 +18,12 @@
   </p>
 </div>
 
+**把不同模态，接成工作流。**
+
+文字、图像、声音、视频、三维，都是你的材料。决定它们如何转换、组合，再为每一步选择模型。结果也是材料，可以继续连接。
+
+开源内核 · 自选模型 · 支持自行部署 · [tongflow.com](https://www.tongflow.com/zh) · [打开画布](https://app.tongflow.com)
+
 ## Demo 示例
 
 | 工作流截图 | 输出结果 |
@@ -26,9 +32,11 @@
 | **中级** — （添加主题 → 生成文案 → 生成语音） + （人物描述 → 生成图像） → 生成对口型视频 = 数字人口播。<br/><img src="https://file.tongflow.com/public/demos/digitalhuman.png" width="620" alt="工作流" /> | <video src="https://github.com/user-attachments/assets/a803394d-0ccf-4023-9b06-5c1581345758" width="200"></video> |
 | **高级** — 生成歌词 + 生成歌曲 + 生成人物 + 生成场景 + 生成分镜 → 生成MV<br/><img src="https://file.tongflow.com/public/demos/mv.png" width="620" alt="工作流" /> | <video src="https://github.com/user-attachments/assets/2bc71e3c-3ed6-48b2-81e7-82ad5976d801" width="200"></video> |
 
-用TongFlow借助生成式AI释放想创意！
+每一步的输出都留在画布上，作为下一步的材料：从生成的图接着分支，把转录文本送进下一步，或者只换掉某个节点背后的模型，其余流程原样保留。
 
 ## 快速开始
+
+TongFlow 有三种用法，共用同一个开源内核：**TongFlow 云版**（桌面版，或在浏览器里打开 [app.tongflow.com](https://app.tongflow.com)）、**自行部署**（[从源代码](#从源代码启动)或[用 Docker](#用-docker-启动)），以及**与 Agent 一起构建**（[`tongflow` npm 包](../packages/tongflow/README.md)或 [dsh 插件](#装进你自己的-agentdsh-插件)）。
 
 TongFlow **桌面版**是一个轻量（约 10 MB）的壳应用，直接加载云端工作室 **[app.tongflow.com](https://app.tongflow.com)** ——安装、登录，即可开始创作。云端工作室也可以直接在浏览器里打开。
 
@@ -55,17 +63,27 @@ TongFlow **桌面版**是一个轻量（约 10 MB）的壳应用，直接加载�
 
 > **想要完全本地、无需账号的 TongFlow？** 请使用自托管——参见[从源代码启动](#从源代码启动)或[用 Docker 启动](#用-docker-启动)，然后按照[自托管配置](#自托管配置插件与凭据)完成设置。（v0.1.13 及之前的桌面版内置了完整本地运行时，安装包仍保留在 [Releases](https://github.com/tong-io/tongflow/releases) 页面。）
 
-## 核心概念
+## Modality-First：从模态出发
 
-- **全模型**: AI 模型可理解为**模态转换**（例如 LLM 是文本→文本，图像模型是文本→图像，语音模型是文本→音频等）。TongFlow 将每种能力封装为节点。
+模态是信息的形态：文字、图像、声音、视频、三维、文档、链接。TongFlow 把它们当作工作流的基本材料。先想能做什么，再选用什么模型。搭一步流程，其实是三个分开的决定：
 
-- **全模态**: TongFlow 支持 Web 上实际流通的几乎所有模态与文件格式。
+| | 问题 | 举例 |
+| :-- | :-- | :-- |
+| **材料** | 你拥有什么？ | 一份文档、一张照片、一段录音、一个想法。 |
+| **能力** | 它能成为什么？ | 理解、生成、转换、组合，或拆成多个部分。 |
+| **实现** | 交给谁来完成？ | 为这一步选择兼容的插件和模型。 |
 
-- **低门槛，高可能性**: 无需学习复杂的AI参数，无需手动连接节点；只需**添加**、**转换**和**组合**三种操作，就能自由排列创意。同时，通过对AI模型的自由编排，可以生成独有的创意和作品。
+- **结果，也是新的起点。** 材料拥有独立节点。上传的图和生成的图，都能进入下一个兼容的操作。从已有结果继续分支，不必从头再来。
+- **能力在前，模型在后。** 工作流分别记录「这一步做什么」和「由哪个插件执行」。切换兼容实现时，周围的流程结构原样保留。
+- **四种基本操作。** 添加、转换、组合、拆分与批量。理解、生成和处理用的是同一套节点和连接规则，生成只是其中一种操作。
+- **人与 Agent，共用一种结构。** 画布、导出器与 Agent 工具使用同一份节点注册表。可以在画布上搭，也可以通过 `tongflow` 包构图；DSH 集成让 Agent 生成的工作流可以打开、编辑、再跑一遍。
+- **开放生态。** ABI 只定义每个能力的输入输出契约，不关心由谁实现。任何平台都能用同样的方式发布插件；下方的官方插件几乎覆盖了功能表里的每个节点。
 
-- **开放生态**: TongFlow 基于插件的设计，使得每个平台都可以封装独立的插件，官方将对每个能力节点提供至少一个实现插件。核心精简，生态开放。
+延伸阅读：[把不同模态，接成工作流：TongFlow 的设计起点](https://www.tongflow.com/zh/blog/tongflow-why-modality-first)。
 
 ## 已实现功能
+
+下面每个节点都对应 ABI 里的一项能力，按四种基本操作分组。材料（文本、图像、音频、视频、三维、文档、链接）是把它们连起来的节点。
 
 > ✅ = 开箱即用（已有官方插件）· ⬜ = 画布中已有节点，但暂无官方插件（规划中）。
 
@@ -130,6 +148,13 @@ TongFlow **桌面版**是一个轻量（约 10 MB）的壳应用，直接加载�
 - ✅ **多轨 / 人声伴奏分离**: 分离人声、鼓、贝斯、吉他等 12 种乐轨。
 - ✅ **开放词汇声音分离**: 用一句话描述任意声音（“狗叫”），把它和其余声音拆成两轨。
 
+#### 三维、文档与链接
+
+- ✅ **图像 → 3D**: 从单张图像生成 3D 模型。
+- ✅ **视频 → 动作捕捉**: 单目视频转骨骼动画（身体 + 手指 + 表情通道，GLB）。
+- ✅ **文档 → 文本**: 从文档中提取纯文本。
+- ✅ **链接 → 文本**: 将页面内容转换为文本。
+
 ### 组合
 
 - ✅ **图像融合**: 将多张参考图融合或编辑为一张图。
@@ -138,18 +163,11 @@ TongFlow **桌面版**是一个轻量（约 10 MB）的壳应用，直接加载�
 - ✅ **换角色**: 视频 + 参考（场景融合 / 角色替换），Animate Mix 风格生成。
 - ✅ **动作迁移**: 视频 + 参考（动作 / 重定向），Animate Move 风格生成。
 - ✅ **文本合并**: 将多个文本节点合并为一个。
-
-### 其他
-
-- ✅ **图像 → 3D**: 从单张图像生成 3D 模型。
-- ✅ **视频 → 动作捕捉**: 单目视频转骨骼动画（身体 + 手指 + 表情通道，GLB）。
-- ✅ **文档 → 文本**: 从文档中提取纯文本。
-- ✅ **链接 → 文本**: 将页面内容转换为文本。
-
-### 辅助工具
-
 - ✅ **拼接片段**: 将多个视频首尾相接。
 - ✅ **音视频合并**: 合并为单个文件。
+
+### 拆分与批量
+
 - ✅ **按镜头分割**: 按场景将长视频切分。
 - ✅ **拆分音视频**: 将视频解封装为独立的视频轨和音频轨。
 - ✅ **提取音轨**: 将音频单独导出为资源。
@@ -302,7 +320,7 @@ npx @deepseek-ai/dsh@next web
 
 ## 自定义插件
 
-画布上每一个能跑的节点，背后都是一份**契约**——ABI（[`packages/tongflow/abi/tongflow.abi.json`](../packages/tongflow/abi/tongflow.abi.json)），它定义「有哪些能力」以及「每个能力的输入输出长什么样」，而与「由谁实现」无关。一个插件就是一个小小的 Python 包，挑 ABI 里一个或多个槽，借助 tongflow Python SDK，用 ABI 生成的类型给出**怎么做**的那部分。
+画布上每一个能跑的节点都是一项**能力**，背后是一份**契约**——ABI（[`packages/tongflow/abi/tongflow.abi.json`](../packages/tongflow/abi/tongflow.abi.json)），它定义「有哪些能力」以及「每个能力的输入输出长什么样」，而与「由谁实现」无关。插件负责**实现**：一个小小的 Python 包，挑 ABI 里一个或多个槽，借助 tongflow Python SDK，用 ABI 生成的类型给出**怎么做**的那部分。换掉节点背后的插件，周围的工作流不用动。
 
 完整的开发流程——ABI、`@node_slot` 装饰器、SDK、目录结构以及如何发布，请见 **[docs/plugins.md](plugins.md)**。
 
@@ -321,7 +339,7 @@ npx @deepseek-ai/dsh@next web
 - **开源模型 owner**：我可以集成你的模型，让用户流畅体验。
 - **企业用户**：我可以协助在本地 GPU 上部署、构建定制节点和插件等。
 - **平台 / 路由**：我可以接入你的 API。
-- **VCs**：欢迎探讨在 [tongflow.com](https://tongflow.com) 云端 AI 工作室上的合作。
+- **VCs**：欢迎探讨围绕 [TongFlow 云版](https://www.tongflow.com/zh)（托管工作台）的合作。
 
 ## 开源
 

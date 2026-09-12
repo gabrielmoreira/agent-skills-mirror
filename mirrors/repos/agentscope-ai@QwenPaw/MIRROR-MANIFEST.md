@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `agentscope-ai/QwenPaw` — 26 default patterns, 0 followed patterns, 55 file(s) materialized.
+Mirror of `agentscope-ai/QwenPaw` — 26 default patterns, 0 followed patterns, 59 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `agentscope-ai/QwenPaw` — 26 default patterns, 0 followed patterns, 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 55 |
+| Files         | 59 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -114,6 +114,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 53 | ✓ | [`src/qwenpaw/agents/tools/deprecated_browser/skills/browser_cdp-zh/SKILL.md`](src/qwenpaw/agents/tools/deprecated_browser/skills/browser_cdp-zh/SKILL.md) |
 | 54 | ✓ | [`src/qwenpaw/agents/tools/deprecated_browser/skills/browser_visible-en/SKILL.md`](src/qwenpaw/agents/tools/deprecated_browser/skills/browser_visible-en/SKILL.md) |
 | 55 | ✓ | [`src/qwenpaw/agents/tools/deprecated_browser/skills/browser_visible-zh/SKILL.md`](src/qwenpaw/agents/tools/deprecated_browser/skills/browser_visible-zh/SKILL.md) |
+| 56 | ✓ | [`tests/fixtures/portability/codex-mini/plugins/cache/mini-market/expo/1.0.0/skills/building-native-ui/SKILL.md`](tests/fixtures/portability/codex-mini/plugins/cache/mini-market/expo/1.0.0/skills/building-native-ui/SKILL.md) |
+| 57 | ✓ | [`tests/fixtures/portability/codex-mini/skills/portable-skill/SKILL.md`](tests/fixtures/portability/codex-mini/skills/portable-skill/SKILL.md) |
+| 58 | ✓ | [`tests/fixtures/portability/qoder-mini/plugins/custom/mini-plugin-0.1.0/skills/report/SKILL.md`](tests/fixtures/portability/qoder-mini/plugins/custom/mini-plugin-0.1.0/skills/report/SKILL.md) |
+| 59 | ✓ | [`tests/fixtures/portability/qoder-mini/skills/portable-qoder/SKILL.md`](tests/fixtures/portability/qoder-mini/skills/portable-qoder/SKILL.md) |
 
 ---
 

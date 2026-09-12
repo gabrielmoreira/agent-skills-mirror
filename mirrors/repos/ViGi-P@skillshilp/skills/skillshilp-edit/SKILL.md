@@ -5,7 +5,7 @@ license: MIT
 metadata:
   author: Vignesh Prasad
   github: https://github.com/ViGi-P/skillshilp
-  version: "2.1.0"
+  version: "2.1.1"
   purpose: meta-skill
 ---
 
@@ -56,6 +56,22 @@ Unless explicitly requested, preserve:
 - documented workflows
 
 Only introduce structural changes when they provide a clear improvement in correctness, maintainability, discoverability, or specification compliance.
+
+### Skill Location
+
+Treat the skill directory and its parent discovery directory as separate concerns.
+
+The skill directory is the directory containing `SKILL.md` and its supporting resources. Its parent directory is determined by the host or client.
+
+`.agents/skills/` is a widely adopted cross-client convention for project- and user-level skill discovery, but it is not required by the Agent Skills specification.
+
+When editing an existing skill:
+
+- preserve the skill directory and its contents unless a change is required
+- do not move a skill merely to make its parent directory `.agents/skills/`
+- do not introduce `.agents/`, `.claude/`, `.github/`, or another client-specific discovery directory inside the skill
+- preserve the host's existing discovery location unless relocation is explicitly requested
+- when creating or moving a skill as part of the requested change, follow the host/client's documented discovery convention
 
 When preserving product-specific metadata conflicts with a portability objective, remove or isolate it only when the request clearly asks for portability.
 

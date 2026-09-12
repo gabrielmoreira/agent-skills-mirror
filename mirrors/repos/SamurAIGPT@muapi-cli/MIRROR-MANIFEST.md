@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `SamurAIGPT/muapi-cli` — 26 default patterns, 0 followed patterns, 3 file(s) materialized.
+Mirror of `SamurAIGPT/muapi-cli` — 26 default patterns, 0 followed patterns, 4 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `SamurAIGPT/muapi-cli` — 26 default patterns, 0 followed patterns, 3
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 3 |
+| Files         | 4 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -62,6 +62,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 1 | ✓ | [`integrations/langchain/examples/creative-agent/AGENTS.md`](integrations/langchain/examples/creative-agent/AGENTS.md) |
 | 2 | ✓ | [`integrations/langchain/examples/creative-agent/skills/generate-asset/SKILL.md`](integrations/langchain/examples/creative-agent/skills/generate-asset/SKILL.md) |
 | 3 | ✓ | [`integrations/langchain/examples/creative-agent/skills/run-skill/SKILL.md`](integrations/langchain/examples/creative-agent/skills/run-skill/SKILL.md) |
+| 4 | ✓ | [`skills/muapi-media/SKILL.md`](skills/muapi-media/SKILL.md) |
 
 ---
 

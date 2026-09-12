@@ -1,309 +1,91 @@
 ---
 name: cohere-sdk-patterns
-description: 'Apply production-ready Cohere SDK patterns for TypeScript and Python.
-
-  Use when implementing Cohere integrations, refactoring SDK usage,
-
-  or establishing team coding standards for Cohere API v2.
-
-  Trigger with phrases like "cohere SDK patterns", "cohere best practices",
-
-  "cohere code patterns", "idiomatic cohere", "cohere wrapper".
-
-  '
-allowed-tools: Read, Write, Edit
-version: 1.5.0
-license: MIT
+description: >-
+  Implement a typed Cohere v2 provider boundary with timeouts, bounded retries, streaming, and response validation. Use when standardizing production SDK usage. Trigger with "Cohere SDK patterns", "Cohere client wrapper", or "refactor Cohere client".
+argument-hint: "[repository-path] [typescript|python]"
+allowed-tools: Read, Glob, Grep, WebFetch, Write, Edit
+version: 1.6.0
 author: Jeremy Longshore <jeremy@intentsolutions.io>
+license: MIT
 tags:
 - saas
-- ai
-- nlp
 - cohere
-compatibility: Designed for Claude Code
+- sdk
+model: inherit
+effort: high
+compatibility: Designed for Claude Code; live verification requires network access and an approved Cohere API key
 ---
-# Cohere SDK Patterns
+# Cohere SDK Integration Patterns
 
 ## Overview
 
-Production-ready patterns for the `cohere-ai` TypeScript SDK (CohereClientV2) and Python `cohere` package. Real model names, real API shapes, real error types.
+Wrap generated SDK clients behind a small application contract so model changes, provider errors, and migrations stay localized.
 
 ## Prerequisites
 
-- `cohere-ai` v7+ installed (TypeScript) or `cohere` v5+ (Python)
-- Familiarity with async/await patterns
-- Understanding of Cohere API v2 endpoints
+- The target repository, runtime, environment, and accountable owner
+- An approved Cohere team and key for any live verification
+- Current quality, security, privacy, capacity, and change-control requirements
+
+## Tool Discipline
+
+Use `Read`, `Glob`, and `Grep` to inspect code, configuration, and evidence. Use `WebFetch` only for current Cohere primary documentation. Use `Write` or `Edit` only when the user requested implementation and the exact target files are known; never write credentials or customer content.
+
+## Current Contract
+
+- Instantiate one configured v2 client per runtime process unless tenancy requires a separate credential boundary.
+- Require callers to supply an operation purpose, bounded timeout, and resolved model ID.
+- Retry only transient transport, `429`, and eligible `5xx` failures with jitter and a total-attempt ceiling.
+- Normalize Chat content, citations, tool calls, Embed vectors, Rerank scores, usage, and provider request metadata at the boundary.
+
+## Authentication
+
+Use an environment-specific key injected from an approved secret manager. Never print, persist, commit, or place `CO_API_KEY` in an example. Confirm access with the least costly bounded operation appropriate to the task, and treat key creation, rotation, revocation, role changes, and production-capacity requests as owner-approved actions.
 
 ## Instructions
 
-### Pattern 1: Singleton Client with Retry
+1. Inventory current direct SDK calls and group them by Chat, Embed, Rerank, and model discovery.
+2. Define typed request and result contracts that expose only application-required fields.
+3. Centralize timeout, redaction, retry eligibility, and model resolution.
+4. Implement streaming as an async iterator with cancellation and terminal-event validation.
+5. Add contract fixtures for success, partial stream, timeout, limit, and schema drift.
+6. Migrate one call site at a time and delete direct SDK access only after parity tests pass.
 
-```typescript
-// src/cohere/client.ts
-import { CohereClientV2, CohereError, CohereTimeoutError } from 'cohere-ai';
+## Approval Boundaries
 
-let instance: CohereClientV2 | null = null;
-
-export function getCohere(): CohereClientV2 {
-  if (!instance) {
-    if (!process.env.CO_API_KEY) {
-      throw new Error('CO_API_KEY environment variable is required');
-    }
-    instance = new CohereClientV2({
-      token: process.env.CO_API_KEY,
-    });
-  }
-  return instance;
-}
-
-export async function withRetry<T>(
-  operation: () => Promise<T>,
-  maxRetries = 3,
-  baseDelayMs = 1000
-): Promise<T> {
-  for (let attempt = 1; attempt <= maxRetries; attempt++) {
-    try {
-      return await operation();
-    } catch (err) {
-      if (attempt === maxRetries) throw err;
-
-      // Only retry on rate limits (429) and server errors (5xx)
-      if (err instanceof CohereError) {
-        const status = err.statusCode;
-        if (status && status !== 429 && status < 500) throw err;
-      } else if (!(err instanceof CohereTimeoutError)) {
-        throw err;
-      }
-
-      const delay = baseDelayMs * Math.pow(2, attempt - 1);
-      const jitter = Math.random() * 500;
-      await new Promise(r => setTimeout(r, delay + jitter));
-    }
-  }
-  throw new Error('Unreachable');
-}
-```
-
-### Pattern 2: Type-Safe Chat Wrapper
-
-```typescript
-// src/cohere/chat.ts
-import { getCohere, withRetry } from './client';
-
-interface ChatOptions {
-  message: string;
-  systemPrompt?: string;
-  model?: string;
-  maxTokens?: number;
-  temperature?: number;
-  documents?: Array<{ id?: string; data: Record<string, string> }>;
-}
-
-export async function chat(options: ChatOptions): Promise<string> {
-  const cohere = getCohere();
-
-  const messages: Array<{ role: string; content: string }> = [];
-
-  if (options.systemPrompt) {
-    messages.push({ role: 'system', content: options.systemPrompt });
-  }
-  messages.push({ role: 'user', content: options.message });
-
-  const response = await withRetry(() =>
-    cohere.chat({
-      model: options.model ?? 'command-a-03-2025',
-      messages,
-      maxTokens: options.maxTokens,
-      temperature: options.temperature,
-      documents: options.documents,
-    })
-  );
-
-  return response.message?.content?.[0]?.text ?? '';
-}
-```
-
-### Pattern 3: Streaming Chat
-
-```typescript
-// src/cohere/stream.ts
-export async function* streamChat(
-  message: string,
-  model = 'command-a-03-2025'
-): AsyncGenerator<string> {
-  const cohere = getCohere();
-
-  const stream = await cohere.chatStream({
-    model,
-    messages: [{ role: 'user', content: message }],
-  });
-
-  for await (const event of stream) {
-    if (event.type === 'content-delta') {
-      const text = event.delta?.message?.content?.text;
-      if (text) yield text;
-    }
-  }
-}
-
-// Usage
-for await (const chunk of streamChat('Explain RAG in 3 sentences')) {
-  process.stdout.write(chunk);
-}
-```
-
-### Pattern 4: Batch Embedding
-
-```typescript
-// src/cohere/embed.ts
-type InputType = 'search_document' | 'search_query' | 'classification' | 'clustering';
-
-export async function embedTexts(
-  texts: string[],
-  inputType: InputType = 'search_document',
-  model = 'embed-v4.0'
-): Promise<number[][]> {
-  const cohere = getCohere();
-
-  // Cohere embed accepts up to 96 texts per call
-  const BATCH_SIZE = 96;
-  const allEmbeddings: number[][] = [];
-
-  for (let i = 0; i < texts.length; i += BATCH_SIZE) {
-    const batch = texts.slice(i, i + BATCH_SIZE);
-    const response = await withRetry(() =>
-      cohere.embed({
-        model,
-        texts: batch,
-        inputType,
-        embeddingTypes: ['float'],
-      })
-    );
-    allEmbeddings.push(...response.embeddings.float);
-  }
-
-  return allEmbeddings;
-}
-```
-
-### Pattern 5: Rerank with Type Safety
-
-```typescript
-// src/cohere/rerank.ts
-interface RerankResult {
-  text: string;
-  score: number;
-  originalIndex: number;
-}
-
-export async function rerankDocuments(
-  query: string,
-  documents: string[],
-  topN = 5,
-  model = 'rerank-v3.5'
-): Promise<RerankResult[]> {
-  const cohere = getCohere();
-
-  const response = await withRetry(() =>
-    cohere.rerank({ model, query, documents, topN })
-  );
-
-  return response.results.map(r => ({
-    text: documents[r.index],
-    score: r.relevanceScore,
-    originalIndex: r.index,
-  }));
-}
-```
-
-### Pattern 6: Structured JSON Output
-
-```typescript
-export async function chatJSON<T>(
-  message: string,
-  schema?: Record<string, unknown>
-): Promise<T> {
-  const cohere = getCohere();
-
-  const response = await cohere.chat({
-    model: 'command-a-03-2025',
-    messages: [{ role: 'user', content: `${message}\n\nRespond in valid JSON.` }],
-    responseFormat: schema
-      ? { type: 'json_object', jsonSchema: schema }
-      : { type: 'json_object' },
-  });
-
-  const text = response.message?.content?.[0]?.text ?? '{}';
-  return JSON.parse(text) as T;
-}
-```
-
-## Python Equivalents
-
-```python
-import cohere
-from cohere import ClientV2
-
-# Singleton
-_client: ClientV2 | None = None
-
-def get_cohere() -> ClientV2:
-    global _client
-    if _client is None:
-        _client = ClientV2()  # reads CO_API_KEY
-    return _client
-
-# Chat
-def chat(message: str, model: str = "command-a-03-2025") -> str:
-    co = get_cohere()
-    response = co.chat(
-        model=model,
-        messages=[{"role": "user", "content": message}],
-    )
-    return response.message.content[0].text
-
-# Embed
-def embed(texts: list[str], input_type: str = "search_document") -> list[list[float]]:
-    co = get_cohere()
-    response = co.embed(
-        model="embed-v4.0",
-        texts=texts,
-        input_type=input_type,
-        embedding_types=["float"],
-    )
-    return response.embeddings.float
-```
-
-## Error Handling
-
-| Error Type | When | Recovery |
-|------------|------|----------|
-| `CohereError` (status 400) | Bad request params | Fix request, do not retry |
-| `CohereError` (status 401) | Invalid API key | Check CO_API_KEY |
-| `CohereError` (status 429) | Rate limited | Retry with backoff |
-| `CohereError` (status 5xx) | Server error | Retry with backoff |
-| `CohereTimeoutError` | Network timeout | Retry with backoff |
+Do not expose or rotate keys, change Cohere Team roles, accept commercial terms, enable sensitive production data, increase spend or capacity, switch production models, send a support bundle, or execute model-proposed side effects without the accountable owner's approval. Keep diagnosis read-only unless implementation was requested.
 
 ## Output
 
-Return validated domain results or classified retryable/terminal errors with
-safe correlation data, model/version, and operation context. The client boundary
-must not log API keys, complete prompts, retrieved documents, embeddings, or
-personal data beyond the caller’s approved need.
+Return the resolved API and model contract, files or settings inspected, evidence collected, validation result, remaining risk, owner, and rollback or next action. Redact keys, authorization headers, prompts, retrieved documents, embeddings, customer identifiers, and unrestricted environment output.
+
+## Error Handling
+
+| Condition | Response |
+|---|---|
+| Unknown event | Preserve it in diagnostics and fail the affected stream safely. |
+| Retry storm | Enforce jitter, an attempt ceiling, and a shared concurrency budget. |
+| Type drift | Update the adapter against the pinned SDK and add a fixture. |
+| Empty content | Treat it as an invalid result unless the operation expected tool calls. |
 
 ## Examples
 
-Use a staging client with a scoped key to embed a synthetic document, validate
-the expected embedding type and dimensions, then assert a malformed response
-becomes a contract error without caching it. On a 429, reschedule the same
-bounded job; on 401, stop and repair the secret reference through its owner.
+Use this compact handoff shape to keep the selected scope, validation evidence, and operational result reviewable.
+
+Input:
+
+```text
+operations=chat,embed,rerank; timeout=15s; retries=2; stream-cancel=true
+```
+
+Expected handoff:
+
+```text
+adapter=typed; direct-sdk-calls=0; fixtures=pass; retry-budget=bounded
+```
 
 ## Resources
 
-- [Cohere TypeScript SDK](https://github.com/cohere-ai/cohere-typescript)
-- [Cohere Python SDK](https://github.com/cohere-ai/cohere-python)
-- [API v2 Reference](https://docs.cohere.com/reference/about)
-
-## Next Steps
-
-Apply patterns in `cohere-core-workflow-a` for RAG workflows.
+- [Skill-specific official documentation](references/official-docs.md)
+- [TypeScript SDK](https://github.com/cohere-ai/cohere-typescript)
+- [Python SDK](https://github.com/cohere-ai/cohere-python)

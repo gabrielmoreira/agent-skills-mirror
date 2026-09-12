@@ -16,13 +16,36 @@ so tracking it would leave the working tree dirty after each run — the churn p
 
 ## Promoting a report
 
+A full sweep (`bash run-evals.sh` with no arguments) offers to promote itself (#159):
+
+```
+=== Harness check ===
+Eval harness ran: 1 report(s), scored 21 scenarios.
+
+## Verdict changed across runs
+...
+
+Promote report_<timestamp>.md to skill/eval/baselines/? [y/N]
+```
+
+Say yes and it's copied for you. **Only offered in a terminal, on a full sweep.** In
+a non-interactive context — `evals.yml` on a GitHub Actions runner, no TTY on stdin —
+it never prompts; it prints the `cp` command instead and moves on, since a blocking
+prompt there would hang the job rather than fail loudly. A partial run (one scenario,
+one class) is never offered either way, whatever the argument count claimed: it's
+decided from the report's own content — does it score every scenario? — so a bug in
+that argument-count check can't corrupt the baseline's completeness invariant.
+
+To promote by hand instead:
+
 ```bash
 cd skill && bash run-evals.sh tests/test_evals.py      # or dispatch evals.yml
 cp eval/results/report_<timestamp>.md eval/baselines/
 ```
 
-Promote a **full sweep**, not a single scenario — `test_baseline_exists_for_every_scenario`
-requires every scenario in `eval/scenarios/` to appear in some baseline here.
+Either way, promote a **full sweep**, not a single scenario —
+`test_baseline_exists_for_every_scenario` requires every scenario in `eval/scenarios/`
+to appear in some baseline here.
 
 ## Reading a baseline
 
@@ -30,6 +53,19 @@ requires every scenario in `eval/scenarios/` to appear in some baseline here.
 `anthropic` versions that produced it (#145). Scores are not comparable across a major
 dependency bump, and a report without that line predates the mechanism — treat its numbers
 as unattributable, which is precisely why #122 could not be answered in retrospect.
+
+**The rubric ladder itself is a version — check the `**Rubric ladder:**` line (#172).**
+#153 added a `0.6 — Borderline` band to all five rubrics; #148 later rewrote the shared
+bands and scaffold again. Either change shifts scores by construction wherever a response
+lands in the newly affected range — the fix is meant to, that's the point — so a GEval
+delta measured across such a change is not evidence of a prompt regression or improvement
+by itself. Every report now records a short content fingerprint of all five rubrics'
+assembled `CRITERIA` text; two reports with different fingerprints used different rubric
+wording, whatever their timestamps say. A report from before this line existed (e.g.
+`report_20260909_174245.md`, which predates both #153 and #172) carries no fingerprint at
+all — treat a comparison against it the same way as a dependency-bump comparison above:
+the fingerprint can only rule two reports *in* as comparable, never rule an unfingerprinted
+one out.
 
 **Mechanical checks are the reliable gate.** They were steady across every measured run
 (17/18, 22/23, 17/18 on the #136 diagnostic).

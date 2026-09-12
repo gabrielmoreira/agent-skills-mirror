@@ -31,7 +31,7 @@ Boundaries: code/commits/PRs written normal.
 
 ## Agent skills
 
-- Issues and specs: GitHub Issues for `amruthpillai/reactive-resume`. See `docs/agents/issue-tracker.md`.
+- Issues and specs: GitHub Issues for `reactive-resume/app`. See `docs/agents/issue-tracker.md`.
 - Domain docs use a multi-context layout. See `docs/agents/domain.md`.
 
 ## Overview

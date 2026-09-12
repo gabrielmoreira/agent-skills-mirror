@@ -1,6 +1,6 @@
 ---
 name: winui3-msix
-description: WinUI 3 binding gotchas, MSIX packaging, WinAppSDK test architecture, and deployment patterns
+description: WinUI 3 binding gotchas, MSIX packaging and bundling troubleshooting, WinAppSDK test architecture, and deployment patterns
 ---
 
 When working on projects related to winui 3 / msix patterns, apply this domain knowledge.
@@ -46,6 +46,14 @@ When working on projects related to winui 3 / msix patterns, apply this domain k
 - Use `-p:WindowsPackageType=None` for architecture-neutral builds/tests without packaging.
 - The WindowsAppSDK package injects auto-initializer source files — exclude them in test projects:
   `<Compile Remove="**\\*AutoInitializer*.cs" />`
+
+### Packaging and bundling failures
+
+Use [packaging troubleshooting](packaging-troubleshooting.md) for Visual Studio
+MSBuild discovery, single-architecture RID/restore scope, publish-versus-build
+trimming/AOT failures, `vswhere` lookup failures, recursive bundle inputs, and
+older-platform `.appx` payload requirements. Diagnose the actual project/SDK
+combination rather than applying every workaround to every build.
 
 ## Test Architecture for WinUI 3 Apps
 - Do NOT add a project reference from the test project to the WinUI app project.

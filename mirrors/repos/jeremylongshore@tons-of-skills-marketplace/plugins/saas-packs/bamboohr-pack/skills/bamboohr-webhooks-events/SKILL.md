@@ -1,325 +1,103 @@
 ---
 name: bamboohr-webhooks-events
-description: 'Implement BambooHR webhook endpoints with HMAC signature validation
-
-  and employee change event handling. Covers global and permissioned webhooks.
-
-  Use when setting up real-time employee notifications, implementing sync triggers,
-
-  or handling BambooHR webhook payloads.
-
-  Trigger with phrases like "bamboohr webhook", "bamboohr events",
-
-  "bamboohr real-time sync", "bamboohr notifications", "bamboohr employee changes".
-
-  '
-allowed-tools: Read, Write, Edit, Bash(curl:*)
-version: 1.4.0
+description: >-
+  Create and operate BambooHR event- or field-based webhooks with one-time key
+  custody, HMAC-SHA256 verification, idempotency, and replay controls. Use when
+  building employee-change delivery or diagnosing webhook failures. Trigger
+  with "BambooHR webhook", "BambooHR events", or "BambooHR webhook signature".
+allowed-tools: Read,Glob,Grep,Write,Edit
+argument-hint: "<create|receive|audit> <event-or-field-scope>"
+version: 1.5.0
 license: MIT
 author: Jeremy Longshore <jeremy@intentsolutions.io>
-tags:
-- saas
-- hr
-- bamboohr
-- webhooks
+tags: [saas, hr, bamboohr, webhooks, security]
+model: inherit
+effort: high
 compatibility: Designed for Claude Code
 ---
-# BambooHR Webhooks & Events
+# BambooHR Webhook Operations
 
 ## Overview
 
-BambooHR supports two webhook types: **global webhooks** (configured in the BambooHR admin UI, subset of fields) and **permissioned webhooks** (created via API, access all fields the API key user can see). This skill covers creating, validating, and handling both types.
+Operate permissioned BambooHR webhooks as a security boundary. The creation
+response contains a `privateKey` used for HMAC-SHA256 and returns it only once;
+losing it requires controlled replacement, not a retrieval call.
 
 ## Prerequisites
 
-- BambooHR API key with webhook management permissions
-- HTTPS endpoint accessible from the internet
-- Webhook secret for HMAC-SHA256 signature verification
+- The target repository or integration path and the requested operator outcome.
+- The tenant, identity, and data scope only when approved live work is in scope.
+- The current evidence register plus customer-specific permissions and agreements.
+
+## Current Contract
+
+- Create/list/get/update/delete and log endpoints live under `/api/v1/webhooks`.
+- The destination URL must use HTTPS and `format` is required (`json` or
+  `form-encoded` in the reviewed OpenAPI).
+- `monitorFields` is required when events include `employee.updated` or
+  `employee_with_fields.updated`; omitted events default to field-based employee
+  events that also require monitored fields.
+- Receiver `4xx` responses are not retried. Receiver `5xx` responses may be
+  retried up to five times at documented 5, 10, 20, 40, and 80 minute intervals.
+
+## Authentication
+
+Webhook management requires OAuth scope `webhooks` or a permitted API-key user.
+Store the one-time `privateKey` immediately in a secret manager scoped to tenant
+and webhook ID. Keep management credentials separate from receiver verification.
 
 ## Instructions
 
-### Step 1: Understand Webhook Types
+1. Choose event-based or field-based delivery and list only the events,
+   `monitorFields`, and `postFields` needed by the consumer.
+2. Validate an HTTPS destination and use a non-production receiver for creation
+   tests. Prepare secret storage before the create call.
+3. Capture `id` and `privateKey` from the `201` response atomically; store the key
+   once and ensure it never enters logs, tickets, fixtures, or source control.
+4. Implement HMAC-SHA256 over the exact raw request bytes according to BambooHR's
+   current webhook documentation. Do not parse or reserialize before checking.
+   Confirm the documented signature carrier/header from current docs or a
+   controlled sample; this pack does not invent one.
+5. Compare signatures in constant time, reject before processing, then enforce
+   tenant routing, payload schema, event allowlist, timestamp/replay window when
+   supplied, and an idempotency key derived from stable delivery facts.
+6. Acknowledge only after durable enqueue. Return intentional `4xx` for terminal
+   payload rejection and `5xx` only when a later retry can succeed.
+7. Monitor webhook logs, last-fired time, verification failures, duplicates,
+   queue age, and dead letters. Rotate by creating and validating a replacement
+   before removing the old webhook.
 
-| Feature | Global Webhooks | Permissioned Webhooks |
-|---------|----------------|----------------------|
-| Setup | BambooHR admin UI | API (`POST /webhooks/`) |
-| Field access | Subset of standard fields | All fields user can access |
-| Auth | Shared secret | Per-webhook secret |
-| Signature | SHA-256 HMAC | SHA-256 HMAC |
-| Actions | Created, Updated, Deleted | Created, Updated, Deleted |
+## Tool Discipline
 
-### Step 2: Create a Permissioned Webhook via API
+Use Read, Glob, and Grep to inspect receiver code and secret handling. Use
+Write/Edit only for approved handler, tests, and runbook changes. This skill does
+not authorize webhook creation, update, deletion, or receipt of production PII.
 
-```typescript
-// POST /webhooks/ — register a new webhook
-const webhook = await client.request<{
-  id: number;
-  name: string;
-  privateKey: string; // Save this — used for HMAC verification
-}>('POST', '/webhooks/', {
-  name: 'Employee Sync Webhook',
-  monitorFields: [
-    'firstName', 'lastName', 'jobTitle', 'department',
-    'division', 'location', 'workEmail', 'status',
-    'supervisor', 'hireDate', 'terminationDate',
-  ],
-  postFields: {
-    firstName: 'firstName',
-    lastName: 'lastName',
-    jobTitle: 'jobTitle',
-    department: 'department',
-    status: 'status',
-    workEmail: 'workEmail',
-  },
-  url: 'https://your-app.example.com/webhooks/bamboohr',
-  format: 'json',
-  frequency: { every: 0 }, // 0 = immediate, or N = batch every N minutes
-  limit: { enabled: false },
-});
+## Approval Boundaries
 
-console.log(`Webhook ID: ${webhook.id}`);
-console.log(`Private Key: ${webhook.privateKey}`);
-// IMPORTANT: Store the privateKey securely — it's the HMAC secret
-```
-
-### Step 3: List and Manage Webhooks
-
-```typescript
-// GET /webhooks/ — list all webhooks for this API key
-const webhooks = await client.request<any[]>('GET', '/webhooks/');
-for (const wh of webhooks) {
-  console.log(`${wh.id}: ${wh.name} -> ${wh.url} (${wh.status})`);
-}
-
-// GET /webhooks/{id}/ — get webhook details
-const detail = await client.request<any>('GET', `/webhooks/${webhook.id}/`);
-
-// GET /webhooks/{id}/log — get webhook delivery logs
-const logs = await client.request<any[]>('GET', `/webhooks/${webhook.id}/log`);
-for (const log of logs) {
-  console.log(`${log.timestamp}: ${log.statusCode} (${log.employeeId})`);
-}
-
-// DELETE /webhooks/{id}/ — remove a webhook
-await client.request('DELETE', `/webhooks/${webhook.id}/`);
-
-// GET /webhooks/monitor_fields — see available fields to monitor
-const fields = await client.request<any>('GET', '/webhooks/monitor_fields');
-```
-
-### Step 4: Signature Verification
-
-BambooHR sends two headers: `X-BambooHR-Signature` (HMAC-SHA256 hex digest) and `X-BambooHR-Timestamp`.
-
-```typescript
-import crypto from 'crypto';
-
-function verifyBambooHRWebhook(
-  rawBody: Buffer | string,
-  signature: string,
-  timestamp: string,
-  secret: string,
-): boolean {
-  // 1. Reject timestamps > 5 minutes old (replay protection)
-  const age = Math.abs(Date.now() - parseInt(timestamp, 10) * 1000);
-  if (age > 300_000) {
-    console.error(`Webhook timestamp too old: ${age}ms`);
-    return false;
-  }
-
-  // 2. Compute expected HMAC
-  const payload = `${timestamp}.${rawBody.toString()}`;
-  const expected = crypto
-    .createHmac('sha256', secret)
-    .update(payload)
-    .digest('hex');
-
-  // 3. Timing-safe comparison
-  try {
-    return crypto.timingSafeEqual(
-      Buffer.from(signature, 'hex'),
-      Buffer.from(expected, 'hex'),
-    );
-  } catch {
-    return false;
-  }
-}
-```
-
-### Step 5: Webhook Handler (Express.js)
-
-```typescript
-import express from 'express';
-
-const app = express();
-
-app.post('/webhooks/bamboohr',
-  express.raw({ type: 'application/json' }),
-  async (req, res) => {
-    const sig = req.headers['x-bamboohr-signature'] as string;
-    const ts = req.headers['x-bamboohr-timestamp'] as string;
-
-    if (!sig || !ts || !verifyBambooHRWebhook(req.body, sig, ts, process.env.BAMBOOHR_WEBHOOK_SECRET!)) {
-      console.error('Webhook signature verification failed');
-      return res.status(401).json({ error: 'Invalid signature' });
-    }
-
-    // Parse the webhook payload
-    const payload = JSON.parse(req.body.toString());
-    // Respond immediately — process asynchronously
-    res.status(200).json({ received: true });
-
-    // Process each employee in the payload
-    await processWebhookPayload(payload);
-  },
-);
-```
-
-### Step 6: Handle Webhook Payload
-
-BambooHR webhook payloads contain employee data grouped by action type.
-
-```typescript
-interface BambooHRWebhookPayload {
-  employees: {
-    id: string;
-    action: 'Created' | 'Updated' | 'Deleted';
-    changedFields: string[];    // Which fields triggered this notification
-    fields: Record<string, string>; // Current field values (from postFields config)
-  }[];
-}
-
-async function processWebhookPayload(payload: BambooHRWebhookPayload): Promise<void> {
-  for (const employee of payload.employees) {
-    const { id, action, changedFields, fields } = employee;
-
-    switch (action) {
-      case 'Created':
-        console.log(`New employee: ${fields.firstName} ${fields.lastName} (ID: ${id})`);
-        await onEmployeeCreated(id, fields);
-        break;
-
-      case 'Updated':
-        console.log(`Employee ${id} updated: ${changedFields.join(', ')}`);
-
-        // Route to specific handlers based on what changed
-        if (changedFields.includes('department') || changedFields.includes('jobTitle')) {
-          await onPositionChanged(id, fields);
-        }
-        if (changedFields.includes('status')) {
-          if (fields.status === 'Inactive') {
-            await onEmployeeTerminated(id, fields);
-          }
-        }
-        if (changedFields.includes('supervisor')) {
-          await onManagerChanged(id, fields);
-        }
-        break;
-
-      case 'Deleted':
-        console.log(`Employee ${id} deleted`);
-        await onEmployeeDeleted(id);
-        break;
-    }
-  }
-}
-
-// Example handlers
-async function onEmployeeCreated(id: string, fields: Record<string, string>) {
-  // Provision accounts in external systems
-  // e.g., create Slack account, set up email, assign training
-}
-
-async function onEmployeeTerminated(id: string, fields: Record<string, string>) {
-  // Deprovisioning: disable accounts, revoke access, archive data
-}
-
-async function onPositionChanged(id: string, fields: Record<string, string>) {
-  // Update org chart, Slack channels, access groups
-}
-
-async function onManagerChanged(id: string, fields: Record<string, string>) {
-  // Update reporting hierarchy in downstream systems
-}
-
-async function onEmployeeDeleted(id: string) {
-  // Remove from external systems
-}
-```
-
-### Step 7: Idempotency (Prevent Duplicate Processing)
-
-```typescript
-import { Redis } from 'ioredis';
-
-const redis = new Redis(process.env.REDIS_URL);
-
-async function deduplicateWebhook(
-  employeeId: string,
-  action: string,
-  changedFields: string[],
-): Promise<boolean> {
-  // Create a unique key for this specific change
-  const changeKey = `bamboohr:webhook:${employeeId}:${action}:${changedFields.sort().join(',')}`;
-  const wasSet = await redis.set(changeKey, '1', 'EX', 3600, 'NX'); // 1 hour TTL
-  return wasSet === 'OK'; // true = first time, false = duplicate
-}
-```
-
-### Step 8: Test Webhooks Locally
-
-```bash
-# 1. Expose local server with ngrok
-ngrok http 3000
-# Note the https:// URL
-
-# 2. Create a test webhook pointing to your ngrok URL
-# Use the API to create webhook with your ngrok URL
-
-# 3. Or manually send a test payload
-curl -X POST http://localhost:3000/webhooks/bamboohr \
-  -H "Content-Type: application/json" \
-  -H "X-BambooHR-Timestamp: $(date +%s)" \
-  -H "X-BambooHR-Signature: test" \
-  -d '{"employees": [{"id":"1","action":"Updated","changedFields":["department"],"fields":{"firstName":"Jane","department":"Engineering"}}]}'
-```
+Require approval for event/field scope, destination, management identity, secret
+write, create/update/delete calls, production traffic, and replay of any payload.
 
 ## Output
 
-- Webhook registered via BambooHR API with monitored fields
-- HMAC-SHA256 signature verification on all incoming webhooks
-- Event routing by action type (Created, Updated, Deleted)
-- Field-specific change handlers (position, status, manager)
-- Deduplication via Redis
-- Local testing workflow with ngrok
-
-## Examples
-
-Verify the raw request signature and timestamp before JSON parsing, persist a redacted event receipt plus idempotency key before acknowledgement, and enqueue downstream HR actions only after authorization checks. Never log employee fields or execute provisioning/deprovisioning directly in the webhook request path; workers must be retry-safe and require explicit policy approval for access changes.
+Return webhook type, event/field scope, destination class, verification contract,
+secret custody receipt without value, idempotency strategy, receiver status
+policy, test results, monitoring, and rotation procedure.
 
 ## Error Handling
 
-| Issue | Cause | Solution |
-|-------|-------|----------|
-| Invalid signature | Wrong webhook secret | Verify `privateKey` from webhook creation |
-| Empty `changedFields` | Created/Deleted action | Normal — only Updated includes changed fields |
-| Missing fields in payload | Not in `postFields` config | Update webhook `postFields` configuration |
-| Webhook not firing | Webhook disabled or URL unreachable | Check webhook status and logs via API |
+- Creation response not stored atomically: delete or disable the unverified
+  webhook and recreate under approval.
+- Signature contract uncertain: fail closed and inspect current official docs.
+- Repeated `5xx`: stop accepting new side effects, preserve queue evidence, and
+  repair before BambooHR exhausts retries.
 
-## Enterprise Considerations
+## Examples
 
-- **HTTPS required**: BambooHR only posts to HTTPS URLs
-- **Retry behavior**: BambooHR retries failed deliveries; implement idempotency
-- **Custom fields**: Permissioned webhooks can monitor custom fields (use field IDs from `/meta/fields/`)
-- **Batch frequency**: Set `frequency.every` > 0 to batch multiple changes into fewer deliveries
+- "Notify us when department changes" discovers the permitted field ID first.
+- "Use a conventional signature header" is rejected until current official
+  evidence confirms the exact carrier and signing input.
 
 ## Resources
 
-- [BambooHR Webhooks Guide](https://documentation.bamboohr.com/docs/webhooks)
-- [BambooHR Global Webhooks](https://documentation.bamboohr.com/docs/global-webhooks)
-- [BambooHR Permissioned Webhooks](https://documentation.bamboohr.com/docs/permissioned-webhooks)
-- [BambooHR Webhook API Reference](https://documentation.bamboohr.com/reference/webhooks-1)
-
-## Next Steps
-
-For performance optimization, see `bamboohr-performance-tuning`.
+Read [official evidence](references/official-docs.md) before webhook changes.

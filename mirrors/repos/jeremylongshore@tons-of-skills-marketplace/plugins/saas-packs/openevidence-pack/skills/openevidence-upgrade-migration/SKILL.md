@@ -1,152 +1,90 @@
 ---
 name: openevidence-upgrade-migration
-description: 'Upgrade Migration for OpenEvidence.
-
-  Trigger: "openevidence upgrade migration".
-
-  '
-allowed-tools: Read, Write, Edit
-version: 1.13.0
-license: MIT
+description: >-
+  Adopt a documented OpenEvidence feature or model change through inventory, pilot, review, training, and rollback. Use when working with OpenEvidence in a healthcare organization. Trigger with "openevidence upgrade migration", "OpenEvidence change-management", or a matching workflow request.
+argument-hint: "[change-description] [affected-workflows-path]"
+allowed-tools: Read, Glob, Grep, WebFetch, Write, Edit
+version: 1.14.0
 author: Jeremy Longshore <jeremy@intentsolutions.io>
+license: MIT
 tags:
 - saas
 - openevidence
-- healthcare
-compatibility: Designed for Claude Code
+- change-management
+- migration
+model: inherit
+effort: high
+compatibility: Designed for Claude Code; requires authorized OpenEvidence access and qualified clinical review for patient-care use
 ---
-# OpenEvidence Upgrade & Migration
+# OpenEvidence Feature-Change Adoption
 
 ## Overview
 
-OpenEvidence is a clinical AI platform that provides evidence-based medical answers and clinical decision support. The API exposes endpoints for clinical queries, evidence retrieval, and citation management. Tracking API changes is critical because OpenEvidence evolves its evidence grading schema, citation format, and clinical query response structure — and breaking changes in a healthcare context can surface outdated medical evidence, alter confidence scores, or remove critical safety disclaimers that downstream clinical applications depend on.
+Prevent silent workflow drift when navigation, models, outputs, or product features change. Keep inputs minimal, separate observed facts from assumptions, and leave consequential decisions with the named accountable owner.
 
-## Version Detection
+## Prerequisites
 
-```typescript
-const OPENEVIDENCE_BASE = "https://api.openevidence.com/v1";
+- A clearly bounded workflow, accountable clinical owner, and organizational policy
+- Current first-party OpenEvidence documentation and applicable institution agreements
+- Synthetic or properly authorized minimum-necessary data
 
-async function detectOpenEvidenceVersion(apiKey: string): Promise<void> {
-  const res = await fetch(`${OPENEVIDENCE_BASE}/status`, {
-    headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
-  });
-  const version = res.headers.get("x-openevidence-api-version") ?? "v1";
-  console.log(`OpenEvidence API version: ${version}`);
+## Tool Discipline
 
-  // Test clinical query response schema
-  const queryRes = await fetch(`${OPENEVIDENCE_BASE}/query`, {
-    method: "POST",
-    headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
-    body: JSON.stringify({ question: "What is the recommended treatment for hypertension?", max_citations: 1 }),
-  });
-  const data = await queryRes.json();
-  const hasStructuredCitations = data.citations?.[0]?.evidence_grade !== undefined;
-  console.log(`Structured citations: ${hasStructuredCitations}`);
-  const hasDisclaimers = data.disclaimers !== undefined;
-  console.log(`Disclaimers field present: ${hasDisclaimers}`);
-}
-```
+Use `Read`, `Glob`, and `Grep` to inspect supplied policies, plans, and evidence. Use `WebFetch` only for current first-party OpenEvidence documentation. Use `Write` or `Edit` only when the user requests a named deliverable with an approved destination. Never expose credentials, PHI, recordings, or unrestricted environment output.
 
-## Migration Checklist
+## Current Contract
 
-- [ ] Review OpenEvidence release notes for API schema changes
-- [ ] Verify clinical query response structure (answer, citations, confidence)
-- [ ] Check evidence grading scale — letter grades vs. numeric scores may change
-- [ ] Validate citation format (PMID references, DOI links, journal metadata)
-- [ ] Test disclaimer and safety warning fields in query responses
-- [ ] Update clinical specialty filters if taxonomy was expanded
-- [ ] Check rate limits for clinical query endpoints (may differ by plan tier)
-- [ ] Verify streaming response format if using real-time query mode
-- [ ] Update evidence date range filters if temporal query syntax changed
-- [ ] Run clinical validation suite against known question-answer pairs
+- OpenEvidence features and model choices can change; current first-party guidance is the baseline.
+- Deep Consult-to-Snow is one documented replacement, but other changes require their own evidence.
+- Saved prompts and procedures must be revalidated when model or output behavior changes.
 
-## Schema Migration
+## Authentication
 
-```typescript
-// OpenEvidence query response: flat answer → structured evidence with grading
-interface OldQueryResponse {
-  answer: string;
-  citations: Array<{ title: string; url: string; source: string }>;
-  confidence: number;
-}
+Use only the official OpenEvidence web/mobile sign-in or an institution-approved access path. Do not invent API keys, OAuth clients, SDK credentials, service accounts, or private endpoints. Never ask a user to reveal a password, session token, cookie, or recovery code.
 
-interface NewQueryResponse {
-  answer: { text: string; sections: Array<{ heading: string; content: string }> };
-  citations: Array<{
-    title: string;
-    url: string;
-    source: string;
-    pmid?: string;
-    doi?: string;
-    evidence_grade: "A" | "B" | "C" | "D" | "expert_opinion";
-    publication_year: number;
-  }>;
-  confidence: { score: number; level: "high" | "moderate" | "low"; basis: string };
-  disclaimers: string[];
-  query_metadata: { specialty: string; guidelines_version: string };
-}
+## Instructions
 
-function migrateQueryResponse(old: OldQueryResponse): NewQueryResponse {
-  return {
-    answer: { text: old.answer, sections: [{ heading: "Summary", content: old.answer }] },
-    citations: old.citations.map((c) => ({
-      ...c,
-      evidence_grade: "C" as const,
-      publication_year: 0,
-    })),
-    confidence: { score: old.confidence, level: old.confidence > 0.7 ? "high" : "moderate", basis: "legacy" },
-    disclaimers: ["This information is for educational purposes. Consult a healthcare provider."],
-    query_metadata: { specialty: "general", guidelines_version: "unknown" },
-  };
-}
-```
+1. Capture the change source, evidence date, affected users, workflows, data, templates, records, training, and controls.
+2. Separate documented facts from assumptions and determine whether the change is mandatory, optional, or unavailable to the account.
+3. Run synthetic before/after scenarios using a stable rubric for citations, applicability, uncertainty, format, and effort.
+4. Review privacy, consent, security, clinical, operational, and records impacts.
+5. Update procedures and training, define rollback or fallback, and obtain accountable approval.
+6. Monitor the first cohort and close only after acceptance evidence and residual risks are recorded.
 
-## Rollback Strategy
+## Approval Boundaries
 
-```typescript
-class OpenEvidenceClient {
-  private apiVersion: "v1" | "v2";
+Do not create or share accounts; change access, roles, agreements, consent, retention, or security settings; enter PHI; record a conversation; copy content into another system; contact a patient; make a diagnosis or treatment decision; submit billing; transmit a support packet; run a production pilot; or represent vendor capabilities without explicit approval from the accountable owner. A qualified professional remains responsible for clinical decisions.
 
-  constructor(private apiKey: string, version: "v1" | "v2" = "v2") {
-    this.apiVersion = version;
-  }
+## Output
 
-  async query(question: string, options?: { specialty?: string }): Promise<any> {
-    try {
-      const res = await fetch(`https://api.openevidence.com/${this.apiVersion}/query`, {
-        method: "POST",
-        headers: { Authorization: `Bearer ${this.apiKey}`, "Content-Type": "application/json" },
-        body: JSON.stringify({ question, ...options }),
-      });
-      if (!res.ok) throw new Error(`OpenEvidence ${res.status}`);
-      return await res.json();
-    } catch (err) {
-      if (this.apiVersion === "v2") {
-        console.warn("Falling back to OpenEvidence API v1");
-        this.apiVersion = "v1";
-        return this.query(question, options);
-      }
-      throw err;
-    }
-  }
-}
-```
+Return scope, current first-party evidence and date, data classification, workflow or findings, citations reviewed, assumptions rejected, clinical and governance owners, approval state, unresolved risk, and the exact next action. Redact patient and credential data.
 
 ## Error Handling
 
-| Migration Issue | Symptom | Fix |
-|----------------|---------|-----|
-| Evidence grade scale changed | Grade returns `"level-1"` instead of `"A"` | Map new grade scale to internal representation using lookup table |
-| Citation format restructured | Missing `pmid` field, now nested under `identifiers.pmid` | Update citation parser for new nested identifier structure |
-| Disclaimer field required | Integration missing safety warnings in user-facing output | Always render `disclaimers[]` array from query response |
-| Specialty taxonomy expanded | `400` with `unknown specialty` on filtered queries | Fetch current specialties from `/specialties` endpoint |
-| Streaming format changed | SSE parser breaks on new event structure | Update event stream parser for new `data:` payload format |
+| Condition | Response |
+|---|---|
+| No authoritative change notice | Treat the observation as unverified and seek vendor confirmation. |
+| Rollback impossible | Use a smaller pilot and independent fallback. |
+| Clinical behavior regresses | Pause adoption and escalate to the clinical owner. |
+
+## Examples
+
+This compact example shows the minimum reviewable handoff; adapt fields to the approved workflow without adding sensitive data.
+
+Input:
+
+```text
+change=model selector update; workflows=4; cohort=pilot; data=synthetic
+```
+
+Expected handoff:
+
+```text
+affected=4; passed=3; blocked=1; training=updated; rollout=paused
+```
 
 ## Resources
 
-- [OpenEvidence](https://www.openevidence.com)
-- [OpenEvidence API Documentation](https://docs.openevidence.com)
-
-## Next Steps
-
-For CI pipeline integration, see `openevidence-ci-integration`.
+- [OpenEvidence official evidence register](references/official-docs.md)
+- [OpenEvidence User Guide](https://www.openevidence.com/user-guide)
+- [OpenEvidence Terms of Use](https://www.openevidence.com/policies/terms)

@@ -239,7 +239,7 @@ def sector_clustering(
 ### Comparison of Three Linkage Methods
 
 | Method | Feature | Best Use Case | Weakness |
-|------|------|---------|------|
+|------|------|---------|--------|
 | Ward | Minimizes within-cluster variance, gives compact clusters | **Default recommendation**, stock-sector discovery | Works best for spherical clusters, weaker for irregular shapes |
 | Complete | Uses maximum pairwise distance, conservative | When high within-cluster similarity is required | Can produce elongated clusters |
 | Average | Uses average distance, compromise approach | General analysis where compactness is not the top priority | Sensitive to noise |
@@ -347,53 +347,48 @@ Correlation measures the degree of co-movement. Cointegration measures whether a
 Suitable for two-variable pairs, quick and intuitive.
 
 ```python
-from statsmodels.tsa.stattools import coint, adfuller
-import statsmodels.api as sm
-import numpy as np
+from src.quantlib.timeseries import adf_test, cointegration_test, find_hedge_ratio
 
 def engle_granger_coint(
     y: pd.Series,
     x: pd.Series,
     significance: float = 0.05,
 ) -> dict:
-    """Run the Engle-Granger two-step cointegration test.
+    """Run the Engle-Granger two-step cointegration test on one ordered pair.
 
     H0: No cointegration relationship exists (residuals contain a unit root).
+    Both steps come from the tested quantlib layer rather than a local OLS
+    fit: ``find_hedge_ratio`` estimates ``y = α + β·x`` (step 1) and
+    ``cointegration_test`` runs the Engle-Granger test itself (step 2).
 
     Args:
-        y, x: Two price series. These must be non-stationary series,
-            usually prices rather than returns.
+        y, x: Two price series sharing one index. These must be
+            non-stationary series, usually prices rather than returns.
         significance: Significance level
 
     Returns:
         Test results and spread series
     """
-    # Step 1: estimate the cointegrating vector with OLS.
-    x_const = sm.add_constant(x)
-    ols = sm.OLS(y, x_const).fit()
-    hedge_ratio = ols.params[x.name if x.name else "x"]
-    intercept = ols.params["const"]
-    residuals = ols.resid
-
-    # Step 2: test residual stationarity with ADF.
-    adf_res = adfuller(residuals, autolag="AIC")
-    adf_stat, adf_p = adf_res[0], adf_res[1]
-
-    # statsmodels coint wrapper.
-    coint_stat, coint_p, crit_vals = coint(y, x)
+    fit = find_hedge_ratio(y, x)
+    spread = y - fit["hedge_ratio"] * x - fit["intercept"]
+    coint = cointegration_test(y, x, significance=significance)
+    adf = adf_test(spread.dropna(), significance=significance)
 
     return {
         "method": "Engle-Granger",
-        "is_cointegrated": coint_p < significance,
-        "coint_p": round(coint_p, 6),
-        "coint_stat": round(coint_stat, 4),
-        "critical_values": {"1%": crit_vals[0], "5%": crit_vals[1], "10%": crit_vals[2]},
-        "hedge_ratio": round(hedge_ratio, 6),
-        "intercept": round(intercept, 6),
-        "spread": residuals,
-        "adf_on_spread": {"stat": round(adf_stat, 4), "p": round(adf_p, 6)},
+        "is_cointegrated": coint["is_cointegrated"],
+        "coint_p": round(coint["p_value"], 6),
+        "coint_stat": round(coint["test_statistic"], 4),
+        "critical_values": coint["critical_values"],
+        "hedge_ratio": round(fit["hedge_ratio"], 6),
+        "intercept": round(fit["intercept"], 6),
+        "half_life": fit["half_life"],
+        "spread": spread,
+        "adf_on_spread": {"stat": round(adf["adf_statistic"], 4), "p": round(adf["p_value"], 6)},
     }
 ```
+
+`find_hedge_ratio` and `cointegration_test` refuse two legs of different lengths or on different indices instead of zipping them positionally — inner-join the two price series on date before calling.
 
 **Note**: Engle-Granger can detect only one cointegrating vector, and the test result depends on the ordering of `y` and `x`. In practice, test both directions and keep the direction with the smaller p-value.
 
@@ -480,34 +475,16 @@ rank = k   → the series themselves are stationary, so cointegration is not nee
 Half-life measures how long a spread takes to mean-revert after deviating from equilibrium. It is a practical reference for expected holding period in pairs trading.
 
 ```python
-def compute_half_life(spread: pd.Series) -> float:
-    """Estimate mean-reversion half-life with OLS, in days.
+from src.quantlib.timeseries import compute_half_life
 
-    Principle:
-        Estimate ΔSpread_t = λ·Spread_{t-1} + ε
-        Half-life = -ln(2) / λ, where λ must be negative for mean reversion
-
-    Args:
-        spread: Spread series, which should be stationary
-
-    Returns:
-        Half-life in trading days. Negative or infinite values imply divergence.
-    """
-    spread_lag = spread.shift(1)
-    delta = spread.diff()
-    df = pd.concat([delta, spread_lag], axis=1).dropna()
-    df.columns = ["delta", "lag"]
-
-    x_const = sm.add_constant(df["lag"])
-    ols = sm.OLS(df["delta"], x_const).fit()
-    lam = ols.params["lag"]
-
-    if lam >= 0:
-        return float("inf")  # no mean reversion
-
-    half_life = -np.log(2) / lam
-    return round(half_life, 1)
+half_life = compute_half_life(spread)
+# Regresses ΔSpread_t on Spread_{t-1}; half-life = -ln(2) / λ, in observation
+# periods (trading days for daily bars). Returns inf when λ >= 0, i.e. the
+# spread does not mean-revert. Raises ValueError on fewer than 3 usable
+# lag/delta pairs or on a spread that never moves.
 ```
+
+`find_hedge_ratio` already reports this as `half_life`, so a pair screened through `engle_granger_coint` above carries it in its result.
 
 **Half-life reference ranges**:
 

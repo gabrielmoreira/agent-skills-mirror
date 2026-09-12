@@ -1,7 +1,7 @@
 <div align="center">
   <img src="public/logo.svg" alt="TongFlow" width="320" />
 
-  <h1>TongFlow : An Open-Source Multi-Modal GenAI Workflow Studio</h1>
+  <h1>TongFlow: The Open-Source Modality-First GenAI Platform</h1>
   <p>
     <a href="https://github.com/tong-io/tongflow/stargazers"><img src="https://img.shields.io/github/stars/tong-io/tongflow?style=flat&logo=github" alt="GitHub stars" /></a>
     <a href="https://github.com/tong-io/tongflow/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-AGPL--3.0-blue.svg" alt="License" /></a>
@@ -18,25 +18,25 @@
   </p>
 </div>
 
+**Different modalities. One workflow.**
 
+Text, images, audio, video and 3D are your materials. Decide how they transform and combine, then choose the model behind each step. Every result is material you can use again.
 
-
-
-
-
-
+Open-source core · Your models · Self-hostable · [tongflow.com](https://www.tongflow.com) · [Open the canvas](https://app.tongflow.com)
 
 ## Demo Examples
 
 | Workflow | Result |
 | :--: | :--: |
-| **Basic** — Type text (Add), generate images (Transform), then blend them into one (Compose).<br/><img src="https://file.tongflow.com/public/demos/basic.png" width="620" alt="workflow" /> | <img src="https://file.tongflow.com/public/demos/basic_result.png" width="200" alt="result" /> |
+| **Basic** — Type text (Add), generate images (Transform), then blend them into one (Combine).<br/><img src="https://file.tongflow.com/public/demos/basic.png" width="620" alt="workflow" /> | <img src="https://file.tongflow.com/public/demos/basic_result.png" width="200" alt="result" /> |
 | **Intermediate** — (Add topic → write script → generate speech) + (character description → generate image) → lip-synced video = talking-head avatar.<br/><img src="https://file.tongflow.com/public/demos/digitalhuman.png" width="620" alt="workflow" /> | <video src="https://github.com/user-attachments/assets/a803394d-0ccf-4023-9b06-5c1581345758" width="200"></video> |
 | **Advanced** — Generate lyrics + song + characters + scenes + storyboard → produce a music video.<br/><img src="https://file.tongflow.com/public/demos/mv.png" width="620" alt="workflow" /> | <video src="https://github.com/user-attachments/assets/2bc71e3c-3ed6-48b2-81e7-82ad5976d801" width="200"></video> |
 
-With TongFlow, you can expand your imagination and stretch your ideas with generative AI, just have a try now!
+Every output stays on the canvas as a material: branch from a generated image, feed a transcript into the next step, or swap the model behind one node and keep the rest of the workflow.
 
 ## How To Start
+
+There are three ways to use TongFlow, all sharing the same open-source core: **TongFlow Cloud** (the desktop app or [app.tongflow.com](https://app.tongflow.com) in a browser), **self-host** ([from source](#run-from-source) or [with Docker](#run-with-docker)), or **build with an agent** (the [`tongflow` npm package](packages/tongflow/README.md) or the [dsh plugin](#use-it-inside-an-agent-dsh-plugin)).
 
 The TongFlow **desktop app** is a lightweight (~10 MB) shell around the cloud studio at **[app.tongflow.com](https://app.tongflow.com)** — install it, sign in, and start creating. The cloud studio also runs in any modern browser.
 
@@ -63,17 +63,27 @@ Sign in with Google or WeChat and start creating — the cloud studio manages pl
 
 > **Prefer a fully local, account-free TongFlow?** That's what self-hosting is for — see [Run from source](#run-from-source) or [Run with Docker](#run-with-docker), then follow [Self-host setup](#self-host-setup-plugins--credentials). (The desktop app up to v0.1.13 bundled this local runtime; those installers remain on the [Releases](https://github.com/tong-io/tongflow/releases) page.)
 
-## Core Concept
+## Modality-First
 
-- **All models**: AI models can be thought of as a **modality transform** (e.g. LLMs are text→text, image models are text→image, speech models are text→audio, and so on). TongFlow wraps each capability as a node.
+A modality is a form of information: text, image, audio, video, 3D, document, URL. TongFlow makes these the building blocks of a workflow. Decide what you want to do with them, then choose the model for the job. Every step is three separate decisions:
 
-- **All modalities**: TongFlow supports almost every modality and file format that people actually ship over the web.
+| | Question | Examples |
+| :-- | :-- | :-- |
+| **Material** | What do you have? | A document, a photo, a recording, an idea. |
+| **Capability** | What could it become? | Understand, generate, transform, combine or split. |
+| **Implementation** | What should run it? | A compatible plugin and the model it provides. |
 
-- **Low barrier, high ceiling**: no complex AI parameters to learn, no manual node connecting; just three operations — **add**, **transform**, and **combine** — to arrange ideas freely. And by orchestrating AI models freely, you can generate unique creations and works of your own.
+- **Every result is a new beginning.** Materials have their own nodes. An uploaded image and a generated image can both feed the next compatible operation. Branch out from a result instead of starting over.
+- **Choose a capability, then a model.** A workflow records what a step does separately from the plugin that runs it. Switch compatible implementations while keeping the surrounding structure.
+- **Four operations.** Add, transform, combine, split & batch. Understanding, generating and processing fit into the same system; generation is one kind of operation.
+- **A shared structure for people and agents.** The canvas, exporter and agent tools use the same node registry. Build visually or through the `tongflow` package; the DSH integration lets an agent create workflows you can open, edit and run again.
+- **Open ecosystem.** The ABI defines each capability's input/output contract independent of who implements it. Any platform can publish plugins the same way, and the official plugins below cover nearly every node in the matrix.
 
-- **Open ecosystem**: TongFlow's plugin-based design lets every platform package its own independent plugins, and we provide at least one official implementation plugin for each capability node. The core stays small, the ecosystem stays open.
+Read more: [Why TongFlow starts with modalities](https://www.tongflow.com/en/blog/tongflow-why-modality-first).
 
-## What’s Defined
+## Capabilities
+
+Every node below is a capability from the ABI, grouped by the four operations. Materials (text, image, audio, video, 3D, document, URL) are the nodes that connect them.
 
 > ✅ = available out of the box with an official plugin · ⬜ = node exists in the canvas but has no official plugin yet (planned).
 
@@ -138,6 +148,13 @@ Sign in with Google or WeChat and start creating — the cloud studio manages pl
 - ✅ **Multi-track / vocal-accompaniment separation**: isolate vocals, drums, bass, guitar, and 8 more stems.
 - ✅ **Open-vocabulary sound separation**: describe any sound in words ("dog barking") and split the audio into that sound and everything else.
 
+#### 3D, documents & links
+
+- ✅ **Image → 3D**: single-view 3D model from an image.
+- ✅ **Video → motion capture**: monocular video to skeletal animation (body + fingers + face channels, GLB).
+- ✅ **Document → text**: extract plain text from documents.
+- ✅ **Link → text**: turn page content into text.
+
 ### Combine
 
 - ✅ **Image fusion**: blend or edit multiple references into one image.
@@ -146,18 +163,11 @@ Sign in with Google or WeChat and start creating — the cloud studio manages pl
 - ✅ **Character swap**: video + reference (scene blend / character replacement), Animate Mix-style generation.
 - ✅ **Motion transfer**: video + reference (motion / retarget), Animate Move-style generation.
 - ✅ **Combine text**: merge multiple text nodes into one.
-
-### Other
-
-- ✅ **Image → 3D**: single-view 3D model from an image.
-- ✅ **Video → motion capture**: monocular video to skeletal animation (body + fingers + face channels, GLB).
-- ✅ **Document → text**: extract plain text from documents.
-- ✅ **Link → text**: turn page content into text.
-
-### Helpers
-
 - ✅ **Concatenate clips**: join multiple videos end to end.
 - ✅ **Mux audio + video**: merge into one file.
+
+### Split & batch
+
 - ✅ **Split by shots**: cut a long video into segments by scene.
 - ✅ **Split video & audio**: demux a video into separate video and audio tracks.
 - ✅ **Extract audio track**: pull audio into its own asset.
@@ -310,7 +320,7 @@ Requirements and configuration: **[packages/dsh-tongflow/README.md](packages/dsh
 
 ## Custom plugins
 
-Every runnable node is backed by a **contract** — the ABI ([`packages/tongflow/abi/tongflow.abi.json`](packages/tongflow/abi/tongflow.abi.json)) — that defines *what capabilities exist* and *what each one's input/output looks like*, independent of *who* implements it. A plugin is just a small Python package that picks one or more ABI slots and supplies the **how**, annotated against the ABI-generated types via the tongflow Python SDK.
+Every runnable node is a **capability** backed by a contract — the ABI ([`packages/tongflow/abi/tongflow.abi.json`](packages/tongflow/abi/tongflow.abi.json)) — that defines *what capabilities exist* and *what each one's input/output looks like*, independent of *who* implements it. A plugin is the **implementation**: a small Python package that picks one or more ABI slots and supplies the **how**, annotated against the ABI-generated types via the tongflow Python SDK. Swapping the plugin behind a node leaves the workflow around it unchanged.
 
 The full development flow — the ABI, the `@node_slot` decorator, the SDK, directory layout, and how to publish — lives in **[docs/plugins.md](docs/plugins.md)**.
 
@@ -329,7 +339,7 @@ For business inquiries, please contact business@tongflow.com.
 - **Open-source model owners**: I can integrate your models so users can try them out smoothly.
 - **Enterprise**: I can help you deploy on your local GPU, build custom nodes and plugins, and more.
 - **Platform / router**: I can integrate your APIs.
-- **VCs**: I’m interested in partnering on [tongflow.com](https://tongflow.com), a cloud-hosted AI studio.
+- **VCs**: I’m interested in partnering on [TongFlow Cloud](https://www.tongflow.com), the hosted workspace.
 
 ## Open-Source
 

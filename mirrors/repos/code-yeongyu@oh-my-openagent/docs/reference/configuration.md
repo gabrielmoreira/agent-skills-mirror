@@ -562,7 +562,10 @@ Configured under `memory` in `omo.json`, with per-agent overrides under `memory.
 
 #### Reflection
 
-Reflection reviews the conversation and writes durable notes back into memory.
+Reflection reviews the conversation and writes durable notes back into memory. An automatic run
+that fails (step-count or compaction trigger) is not retried on the very next trigger: the
+conversation backs off for 5 seconds, doubling per consecutive failure up to 5 minutes, and a
+successful reflection clears the backoff. `/reflect` ignores it, so you can always force a run.
 
 | Option                     | Default  | Description                                               |
 | -------------------------- | -------- | --------------------------------------------------------- |
@@ -586,10 +589,25 @@ Reminds the agent to save when durable facts have gone unwritten.
 #### Recall (recollections)
 
 The nudge above asks the agent to write. Recall is the other direction: a read-only judge called
-Kibitzer watches each turn, checks stored memory against what the agent is doing, and hands back
-a hint only when that memory would change the next step (a constraint being ignored, a past
-failure of the same approach, an answer about to be re-derived). Silence is the default. Most
-turns produce nothing, and a judge that finds nothing leaves no trace.
+Kibitzer runs as one resident sidecar session per main agent session. It is fed the session's
+prompts, tool calls and tool results as bounded, redacted events, and hands back a hint only when
+a stored memory would change the next step (a constraint being ignored, a past failure of the same
+approach, an answer about to be re-derived). Silence is the default. Most turns produce nothing,
+and a sidecar that finds nothing leaves no trace.
+
+The sidecar only spends a model turn (a "wake") when a prompt or tool call surfaces a memory
+candidate it has not judged yet in its lifetime; unchanged candidates never wake it. Wakes are
+admitted through a lease held as lock files under the memory identity's runtime directory, shared
+by every omo process on the machine that uses that memory, so at most `max_concurrent_wakes` run
+at once - a session that finds every slot busy keeps buffering events and tries again at its next
+hook. Inside a wake the sidecar has exactly five read-only tools:
+`read` and `grep` over the workspace, `session_entries` over the parent transcript, `memory` with
+`search` and `read` only, and `nudge`. It has no tool that writes memory or files, no shell, and
+each wake is limited to `tool_budget` tool calls and 90 seconds. When its own context passes 60%
+of `sidecar_max_tokens` it is replaced by a fresh sidecar seeded with what it already delivered
+or rejected, so a long session never runs the judge out of context. A sidecar whose model fails
+is disposed and recreated after an exponential backoff (1 s doubling to 5 min); nothing it had
+buffered is lost.
 
 When it does fire, you see a recollection in the transcript identified as Kibitzer advice: a
 single fixed `Kibitzer` title, then `recalled memory: <hint>`,
@@ -600,8 +618,16 @@ relying on it, and expanding the entry shows that caveat.
 
 | Option              | Default | Description                                                     |
 | ------------------- | ------- | --------------------------------------------------------------- |
-| `recall.enabled`    | `true`  | Run the Kibitzer judge and surface recollections                |
-| `recall.max_items`  | `2`     | Most memories one judge run may surface (1-5)                   |
+| `recall.enabled`    | `true`  | Run the Kibitzer sidecar and surface recollections; `false` is the only off switch |
+| `recall.max_items`  | `2`     | Most memories one wake may surface (1-5)                        |
+| `recall.category` | `quick` | Model category the sidecar runs on (it never leaves that category's chain) |
+| `recall.event_caps` | `tool_args: 400`, `result_head: 600`, `assistant: 1500`, `prompt: 4000` | Per-event character caps, applied after secret redaction |
+| `recall.sidecar_max_tokens` | `48000` | Sidecar context budget; the sidecar reseeds itself at 60% of it |
+| `recall.max_concurrent_wakes` | `2` | Machine-wide cap on wakes running at once |
+| `recall.tool_budget` | `8` | Read-only tool calls one wake may make before it is cut off |
+
+Like the other memory blocks, every recall option can be overridden per agent under
+`memory.agents.<name>.recall`; `event_caps` merges field by field.
 
 #### Facts
 

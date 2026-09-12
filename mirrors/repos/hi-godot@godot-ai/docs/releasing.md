@@ -67,7 +67,15 @@ Python-side signature check runs through the OpenSSL command line there; with
 the `cryptography` package present (the dev extra) the same check uses it.
 
 After the qualification run's `Require complete release evidence` job is
-green, dispatch `release.yml`. Select **patch**, **minor**, or **major**, and
+green, run `release-validation.yml` in **predecessor** mode with that
+`qualification_run_id` and the previous published version. Its six OS/Python
+rows install the published predecessor and update to the exact signed A bytes,
+with the same attached bridge across the update. This is required for 4.1.0;
+the A-to-B qualification row does not substitute for the public-to-A hop.
+Require `Require complete supplemental release evidence` to pass and retain
+the `v4-predecessor-attestation` artifact before promotion.
+
+Then dispatch `release.yml`. Select **patch**, **minor**, or **major**, and
 provide the previous published version and the qualification run ID. The
 `verify-approval` job checks the run's provenance before downloading anything,
 then rebuilds the expected release record from the downloaded candidates and
@@ -98,8 +106,16 @@ upload, a pre-existing GitHub tag/release must also match the approved source
 and asset inventory. A partial matching draft release can resume; mismatches
 fail without overwriting tags or clobbering assets. The GitHub job verifies
 public PyPI bytes again before publishing and re-downloads all six public
-assets afterward. This receipt does not yet replace the required cross-platform
-public dependency re-resolution and immutable post-publication attestation.
+assets afterward.
+
+After successful promotion, run `release-validation.yml` in **public** mode,
+with the same qualification run and the successful `publication_run_id`.
+It re-downloads the public distributions and six assets, checks their approved
+digests, resolves fresh wheel and sdist installs on all three OSes with Python
+3.11 and 3.14, and verifies each resolved public dependency's bytes. The final
+job binds every row to A and the publication receipt. Retain the immutable
+`v4-public-attestation` Actions artifact and its digest; it has a 90-day
+retention window. The release is complete only after that job passes.
 
 The old `bump-and-release.yml` remains retired. Version changes are reviewed
 source changes: prepare A with the chosen next semantic version and B as its

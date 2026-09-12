@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `slopus/happy` — 26 default patterns, 0 followed patterns, 28 file(s) materialized.
+Mirror of `slopus/happy` — 26 default patterns, 0 followed patterns, 29 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `slopus/happy` — 26 default patterns, 0 followed patterns, 28 file(s
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 28 |
+| Files         | 29 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -79,14 +79,15 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 18 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 19 | ✓ | [`docs/competition/AGENTS.md`](docs/competition/AGENTS.md) |
 | 20 | ✓ | [`environments/lab-rat-todo-project/CLAUDE.md`](environments/lab-rat-todo-project/CLAUDE.md) |
-| 21 | ✓ | [`packages/happy-app/CLAUDE.md`](packages/happy-app/CLAUDE.md) |
-| 22 | ✓ | [`packages/happy-cli/.cursorrules`](packages/happy-cli/.cursorrules) |
-| 23 | ✓ | [`packages/happy-cli/CLAUDE.md`](packages/happy-cli/CLAUDE.md) |
-| 24 | ✓ | [`packages/happy-cli/src/daemon/CLAUDE.md`](packages/happy-cli/src/daemon/CLAUDE.md) |
-| 25 | ✓ | [`packages/happy-server/.cursorrules`](packages/happy-server/.cursorrules) |
-| 26 | ✓ | [`packages/happy-server/CLAUDE.md`](packages/happy-server/CLAUDE.md) |
-| 27 | ✓ | [`packages/happy-server/deploy/integration-tests/AGENTS.md`](packages/happy-server/deploy/integration-tests/AGENTS.md) |
-| 28 | ✓ | [`packages/happy-server/deploy/integration-tests/CLAUDE.md`](packages/happy-server/deploy/integration-tests/CLAUDE.md) |
+| 21 | ✓ | [`packages/expo-tailcat/AGENTS.md`](packages/expo-tailcat/AGENTS.md) |
+| 22 | ✓ | [`packages/happy-app/CLAUDE.md`](packages/happy-app/CLAUDE.md) |
+| 23 | ✓ | [`packages/happy-cli/.cursorrules`](packages/happy-cli/.cursorrules) |
+| 24 | ✓ | [`packages/happy-cli/CLAUDE.md`](packages/happy-cli/CLAUDE.md) |
+| 25 | ✓ | [`packages/happy-cli/src/daemon/CLAUDE.md`](packages/happy-cli/src/daemon/CLAUDE.md) |
+| 26 | ✓ | [`packages/happy-server/.cursorrules`](packages/happy-server/.cursorrules) |
+| 27 | ✓ | [`packages/happy-server/CLAUDE.md`](packages/happy-server/CLAUDE.md) |
+| 28 | ✓ | [`packages/happy-server/deploy/integration-tests/AGENTS.md`](packages/happy-server/deploy/integration-tests/AGENTS.md) |
+| 29 | ✓ | [`packages/happy-server/deploy/integration-tests/CLAUDE.md`](packages/happy-server/deploy/integration-tests/CLAUDE.md) |
 
 ---
 

@@ -141,10 +141,16 @@ just check              # formatting check + cargo nextest + maintenance script 
 Run `just check` before committing unless Can explicitly accepts narrower validation. Do not bypass failing checks; fix the failure or explain exactly why a narrower check is enough.
 
 Windows MSVC cross-compilation from Unix requires SDK/CRT headers and libraries.
-Set `LIBGHOSTTY_VT_WINDOWS_LIBC` to a Zig libc configuration file whose directories
-point to that SDK (the format is shown by `zig libc` on Windows). `just windows-lint`
-and the Windows stage of `just check` use this configuration. Native Windows builds
-auto-detect their installed SDK and do not require the override.
+Install `xwin` with `cargo install xwin --locked`, then run
+`just setup-windows-cross` once and accept Microsoft's SDK license when prompted.
+This downloads the SDK directly from Microsoft; no Windows machine is required.
+The SDK and Zig libc configuration live at `~/.local/share/herdr/windows-cross/`,
+shared by worktrees. `just windows-lint` and the Windows stage of `just check`
+use this configuration automatically. To use another SDK, set
+`LIBGHOSTTY_VT_WINDOWS_LIBC` to its Zig libc configuration file.
+Setup accepts `--accept-license` for explicit noninteractive license acceptance;
+normal checks never download the SDK. Native Windows builds auto-detect their
+installed SDK. Native Linux/macOS builds do not need the Windows SDK.
 
 Unit tests live next to the code (`#[cfg(test)] mod tests`). New `AppState` or `Workspace` behavior should be testable with `AppState::test_new()` and `Workspace::test_new()` without PTYs.
 

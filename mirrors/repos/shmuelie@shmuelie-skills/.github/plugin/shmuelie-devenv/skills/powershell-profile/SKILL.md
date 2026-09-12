@@ -1,6 +1,6 @@
 ---
 name: powershell-profile
-description: PowerShell profile engineering, PSReadLine configuration, prompt customization, git worktree detection, Start-Copilot script, and symlink management
+description: PowerShell profile engineering, PSReadLine configuration, prompt customization, terminal directory reporting, git worktree detection, Start-Copilot script, and symlink management
 ---
 
 When working on PowerShell profile scripts, custom cmdlets, or terminal customization, apply this domain knowledge.
@@ -21,6 +21,93 @@ When working on PowerShell profile scripts, custom cmdlets, or terminal customiz
 - **CRITICAL**: When PowerShell is spawned with redirected stdin (e.g., Copilot's `!` command), the profile must return early before hitting PSReadLine, console encoding, or `$Host.UI.RawUI` operations.
 - `Test-Interactive` should check `[Console]::IsInputRedirected` — wrap in `try/catch` for environments where the Console class isn't available.
 - Guard all interactive-only operations behind `Test-Interactive`.
+
+## Windows Terminal Directory Reporting
+- Windows Terminal's documented `OSC 9 ; 9 ; <CWD>` sequence only accepts a **Windows filesystem path**. PowerShell provider-qualified paths are not sufficient when the current location is a custom PSDrive or a non-filesystem provider.
+- Build the report from `$ExecutionContext.SessionState.Path.CurrentLocation` only when the provider is `FileSystem`, and emit **`ProviderPath`** rather than `.Path`. Example: a filesystem drive `Repo:` rooted at `D:\repos` means `Repo:\project` must report `D:\repos\project`; `HKCU:\Software` or `Function:\prompt` must report nothing.
+- Emit the directory report only to a supporting real terminal. Check
+  `[Console]::IsOutputRedirected` before `[Console]::Write()`; writing through
+  `Console` alone does **not** prevent redirected output. A multiplexer may
+  filter the sequence; do not assume it reaches the outer terminal or add an
+  unverified passthrough escape.
+- Prevent terminal-control injection with **validation before serialization**, not just by using `ProviderPath`. Reject any path that contains:
+  - C0 or C1 control characters (`0x00-0x1F`, `0x7F-0x9F`)
+  - explicit OSC terminators or control bytes such as ESC and BEL
+  - carriage return / line feed / tab
+  - an embedded double quote (`"`) when using the documented quoted payload form
+- The public Windows Terminal docs show a **quoted** `OSC 9;9` payload but do not define an in-band escaping grammar for embedded quotes or control bytes. In this profile, the safe behavior is to **not emit** when validation fails, rather than inventing an undocumented escaping scheme.
+- The fixture below accepts only nonempty drive-rooted or UNC Windows paths.
+  Empty, relative, POSIX, and device-namespace paths are not emitted. This is
+  a guard model for a current filesystem `ProviderPath`, not a general path
+  resolver or a promise that every Windows path form is supported.
+- After validation, serialize the final payload as ordinary text/UTF-8 bytes. Preserve spaces and Unicode; reject dangerous bytes. Do not concatenate prompt text, provider names, aliases, or arbitrary user input into the OSC payload.
+- Distinguish **directory reporting** from **working-directory inheritance**. `OSC 9;9` updates the terminal's metadata for features such as duplicate-tab/split-pane and persisted layouts; it does **not** move an already-running shell and does **not** retroactively change a tmux popup's startup directory.
+- If the current provider is not `FileSystem`, skipping the report is the safe behavior. Reusing the last reported directory is better than publishing an invalid pseudo-path that causes the terminal to open new panes or tabs in the wrong place.
+
+Concrete cases:
+- **Custom filesystem drive**: `Set-Location Repo:\project` where `Repo:` maps to `D:\repos` -> report `D:\repos\project`, not `Repo:\project`.
+- **Non-filesystem provider**: `Set-Location HKCU:\Software` -> emit no `OSC 9;9` sequence.
+- **Spaces / Unicode**: `D:\Work\A B\日本語` -> quote the exact `ProviderPath`; do not escape spaces or transliterate Unicode.
+- **Redirected stdout**: `powershell -File status.ps1 > status.txt` -> write plain status text only; do not append control sequences to `status.txt`.
+- **Rejected payload**: a path containing `"` or a control byte -> emit nothing; do not try to partially sanitize and continue.
+
+In-memory fixture for validating the payload without touching a real terminal:
+```powershell
+function New-TestWtOsc9Payload {
+    param(
+        [string]$ProviderName,
+        [string]$ProviderPath,
+        [bool]$IsOutputRedirected
+    )
+
+    if ($IsOutputRedirected -or $ProviderName -ne 'FileSystem') {
+        return $null
+    }
+
+    if ([string]::IsNullOrWhiteSpace($ProviderPath) -or
+        $ProviderPath -match '^\\\\[?.]\\' -or
+        $ProviderPath -notmatch '^(?:[A-Za-z]:\\|\\\\[^\\]+\\[^\\]+(?:\\|$))') {
+        return $null
+    }
+
+    if ($ProviderPath.IndexOf('"') -ge 0) {
+        return $null
+    }
+
+    foreach ($ch in $ProviderPath.ToCharArray()) {
+        $code = [int][char]$ch
+        if (($code -ge 0x00 -and $code -le 0x1F) -or
+            ($code -ge 0x7F -and $code -le 0x9F)) {
+            return $null
+        }
+    }
+
+    return ([string][char]27) + ']9;9;"' + $ProviderPath + '"' + ([string][char]7)
+}
+
+$payload = New-TestWtOsc9Payload -ProviderName 'FileSystem' -ProviderPath 'D:\Work\A B\日本語' -IsOutputRedirected $false
+if ($null -eq $payload) { throw 'Expected a filesystem payload.' }
+$bytes = [System.Text.Encoding]::UTF8.GetBytes($payload)
+if ([System.Text.Encoding]::UTF8.GetString($bytes) -ne $payload) {
+    throw 'OSC payload round-trip failed.'
+}
+foreach ($bad in @(
+    $null,
+    '',
+    'relative\folder',
+    '/tmp/project',
+    '\\.\pipe\example',
+    "D:\bad$([char]27)esc",
+    "D:\bad$([char]7)bell",
+    "D:\bad`nline",
+    'D:\bad"quote',
+    "D:\bad$([char]0x85)c1"
+)) {
+    if ($null -ne (New-TestWtOsc9Payload -ProviderName 'FileSystem' -ProviderPath $bad -IsOutputRedirected $false)) {
+        throw 'Unsafe payload was not rejected.'
+    }
+}
+```
 
 ## Start-Copilot Script
 - Supports positional `$Prompt` parameter and `$NoResume` switch.
@@ -339,6 +426,58 @@ for command discovery and filesystem metadata.
 
 - For `Update-FormatData`, batch all format files into one call instead of N individual calls: `Update-FormatData -AppendPath @(Get-ChildItem *.format.ps1xml).FullName`.
 
+### Lifetime-Qualified Cross-Process Cache Identity and Atomic Snapshot Publication
+
+Keep completion **freshness** separate from the identity and delivery guarantees
+of a shared snapshot. A reused session ID can point at an old cache and suppress
+the first update after a server restart.
+
+- Identify the lifetime of the **shared owner/server**, not each reporting
+  client's PID: combine its PID, UTC start time, and logical session ID where
+  applicable. Include the relevant user/machine namespace. All cooperating
+  writers must agree on that identity; missing start-time evidence is not a
+  reason to fall back silently to a reused PID alone.
+- Serialize the tuple unambiguously with a defined field order and encoding,
+  then derive both the file key and cross-process lock from the same hash.
+  Validate exact, case-sensitive identity after reads and before cache hits.
+- Lock the entire read/compare/write sequence. Write complete encoded data to a
+  temporary file in the destination directory, flush, and use same-filesystem
+  replace/rename semantics supported by that filesystem. This is atomic
+  publication, not a guarantee of crash durability or network-filesystem
+  behavior. Never treat a cross-filesystem move as an atomic replacement.
+- A lock timeout proves only that the acquisition deadline expired. Report it;
+  do not treat it as a cache hit. An abandoned mutex grants ownership to the
+  waiter but makes protected state suspect: reread and validate it. If the last
+  handle closed when the owner died, reopening the name may create a new mutex
+  with no abandonment signal. Recovery cannot depend solely on that signal.
+- Local snapshot publication is not acknowledgment that a native dispatch
+  succeeded. Track attempts separately from acknowledged delivery; avoid
+  suppressing retries or recording success merely because a process started.
+
+| Scenario | Expected outcome |
+|---|---|
+| Server restarts or a PID/session ID is reused | Start time changes the shared identity; the first update is not suppressed by an old cache. |
+| Concurrent writers | The second writer rereads the first complete snapshot after acquiring the same lock. |
+| Writer stops before replacement | The last published snapshot remains intact; a later owner validates before republishing. |
+| Acquisition deadline expires | Explicit timeout, not a success-shaped result; retry only under the caller's policy. |
+| Local write succeeds but external dispatch fails | Preserve the distinction and report the actual delivery failure. |
+
+The [disposable cache lab](examples/Invoke-CacheIdentityExample.ps1) exercises
+these local coordination boundaries with synthetic identities, owned temporary
+children, and bounded handshakes. Run it with PowerShell 7 on a local filesystem
+supporting the documented mutex/replace APIs; it deliberately terminates an
+owned child to demonstrate abandonment while an observer handle remains open.
+It is not a production cache library or an external-delivery test:
+
+```powershell
+pwsh -NoProfile -File ./examples/Invoke-CacheIdentityExample.ps1 -FixtureParent 'C:\Temp\Cache Lab'
+```
+
+Resolve the example path relative to this installed skill directory. The
+caller-selected parent is preserved; only a newly allocated, ownership-marked
+child is cleaned up. Unconfirmed child termination retains the fixture and
+reports cleanup errors instead of deleting data still in use.
+
 ## Subdirectory Module Pattern
 - Large helper scripts (700+ lines) should be split into focused subdirectories: `Scripts/CopilotHelpers/`, `Scripts/GitHelpers/`, `Scripts/NodeHelpers/`.
 - Each subdirectory has an `_init.ps1` entry point that dot-sources the individual files and registers argument completers.
@@ -353,8 +492,52 @@ for command discovery and filesystem metadata.
 - `$env:TMUX` is set by tmux/psmux when running inside a session — use this to detect the multiplexer.
 - **Prompt simplification**: Skip `Write-VcsStatus` when `$env:TMUX` is set — the psmux status bar already shows git status. Keep the repo name path shortening.
 - **Prompt-driven refresh**: Instead of timer-based `status-interval`, set `status-interval 0` and call `tmux refresh-client -S` from the prompt function after each command. This gives instant updates without polling.
+- **Scope tmux identity claims carefully**: public tmux docs guarantee `TMUX_PANE` for real panes, and tmux source sets it in `spawn.c` for `spawn_pane`. But `display-popup` goes through the overlay path in `cmd-display-menu.c` -> `popup_display` in `popup.c`, not `spawn_pane`, so popup docs/source do **not** guarantee a distinct new pane ID for the popup command.
+- **Launch-time cwd is separate from terminal metadata**: tmux's shipped popup support documents a start-directory flag (`display-popup -d <start-directory>`). Use that to choose the popup's initial cwd. Reporting `OSC 9;9` from inside the popup later only updates terminal metadata for that shell; it does not prove the popup inherited the parent's cwd correctly.
+- **Set the popup marker before the profile loads**: the popup launcher must set a dedicated child-only marker in the popup environment before starting the shell. The profile can then see the marker on first load without probing external state. Do **not** rewrite `TMUX`, `TMUX_PANE`, or other native routing variables to fake parent ownership.
+- **Scope the marker to its origin**: capture the current native
+  session/server/pane context in child-only marker metadata before shell
+  startup. Compare it with the current context before suppressing shared
+  access. A matching marker suppresses the popup and its same-context
+  descendants even when their native pane ID equals the parent's. A marker
+  inherited into a positively identified, different ordinary pane must not
+  suppress that pane. If identity cannot be established, skip shared access
+  and report the uncertainty rather than claiming ownership.
+- **Do not infer ownership from `TMUX_PANE` alone**: popup and parent may report the same native pane ID, or the popup may not provide a distinct pane identity at all. The child-only marker is what makes the shell a popup descendant for ownership purposes.
+- **Popup descendants are non-owners of shared artifacts**: after matching the
+  marker scope, bail out before **both** shared status writes **and any shared
+  cache access (reads or writes)**. Keep local prompt rendering, footer text,
+  and ordinary in-process calculations enabled. Do not publish the marker into
+  the multiplexer's global/session environment.
+- **No popup save/restore of parent state**: do not snapshot a parent's shared cwd/status on popup open and restore it on popup close. If the parent pane changes repo or directory while the popup is open, that restore replays stale data and overwrites a newer parent update.
+- **Stay within shipped capabilities**: treat current tmux documentation as the boundary. Documented popup start-directory support is available; proposed behaviors from issue threads are not guarantees and must not be presented as if they already exist.
 - **Git status script**: `psmux-git-status.ps1` is a standalone script invoked with `-NoProfile` that dot-sources `Get-GitStatusSummary.ps1` and outputs `RepoName\path [branch|OP ≡ +A ~M -D | +A ~M -D !C ?]` format matching the PowerShell prompt.
 - **Git tab completion**: `GitTabCompletion.ps1` registers a native argument completer (`Register-ArgumentCompleter -CommandName git -Native`) providing context-aware completions for subcommands, branches, tags, remotes, stashes, files, and parameters — no external module dependency (replaces posh-git).
+
+Conceptual ownership algorithm for popup-safe shared state:
+1. Launcher sets a child-only marker and native origin context before the popup shell starts.
+2. Profile compares marker scope with current context before any shared access. A match suppresses popup descendants even if `TMUX_PANE` matches the parent; a verified different ordinary pane is unaffected.
+3. Ordinary owners use the lifetime-qualified shared identity described in [cache publication](#lifetime-qualified-cross-process-cache-identity-and-atomic-snapshot-publication), not a raw pane ID alone. Popup descendants must not use it to access shared state.
+4. Popup descendants render prompt/footer locally but skip shared artifact reads and writes entirely.
+5. Popup close performs no restore; the owning pane's next prompt/status refresh publishes the current truth.
+
+Concrete cases:
+- **Popup descendant with inherited native ID**: if the popup marker is set and both popup and parent report the same `TMUX_PANE`, the popup still must not read or write shared `statusline-cwd` or shared caches.
+- **Popup descendant**: a popup shell with the child marker set may still show a local prompt and run `git status`, but it must not write `statusline-cwd` and must not consume/update any shared cache intended for other panes.
+- **Ordinary pane in the same tmux session**: no child marker -> normal shared-state behavior continues.
+- **Unrelated pane**: popup-only marker/origin metadata must not suppress shared-state behavior in a different ordinary pane.
+- **Nested same-context shell**: an inherited matching marker continues to
+  suppress shared reads and writes; it must not be cleared just because the
+  shell's own PID changes.
+- **Changed or unknown context**: a confirmed new ordinary pane is not the old
+  popup; unknown identity does not grant shared-write permission. Origin matching
+  is a routing guard, not a security boundary against malicious descendants.
+
+References: [Windows Terminal directory reporting](https://learn.microsoft.com/windows/terminal/tutorials/new-tab-same-directory)
+and the installed version's [tmux manual](https://man.openbsd.org/tmux).
+The public [tmux source](https://github.com/tmux/tmux) distinguishes real-pane
+creation (`spawn.c`) from popup overlays (`popup.c`); other multiplexers may
+expose different identity and passthrough mechanisms.
 
 ## Copilot CLI Custom Status Line
 - **Status line script**: `copilot-statusline.ps1` + `copilot-statusline.cmd` wrapper provide git status and context window usage in the Copilot CLI bottom bar.
@@ -365,6 +548,7 @@ for command discovery and filesystem metadata.
 - **Configuration**: Requires `statusLine.type: "command"` and `statusLine.command: "~/.copilot/statusline.cmd"` in `~/.copilot/settings.json`, plus `feature_flags.enabled: ["STATUS_LINE"]`.
 - **Symlink deployment**: DSC symlinks both `.cmd` and `.ps1` to `~/.copilot/`. The `.ps1` resolves its real script root via `(Get-Item $PSCommandPath).Target` to find `Get-GitStatusSummary.ps1` through the symlink.
 - **Windows `.cmd` wrapper required**: Copilot CLI on Windows cannot reliably spawn `pwsh -File ...` inline — a `.cmd` wrapper is needed for argument parsing and stdin redirection to work correctly. Uses Windows PowerShell 5.1 (`powershell.exe`) instead of `pwsh` for ~600ms faster startup (~300ms vs ~900ms cold start), preventing timeouts in large repos.
+- **Shared cwd/status artifacts are owner-only surfaces**: a non-popup owning pane may publish and consume shared cwd or status information for the status line, but popup descendants must not read from or write to those shared surfaces at all. This avoids a transient popup clobbering the parent pane's status line context or reusing stale parent state.
 - **Per-segment fault isolation**: Each segment (git / ctx / cost / AIU) is built inside its own `try/catch`, and the final left-right layout has a plain-`Join-Segments` fallback `catch`. A throw while building one segment must not blank the whole line — the others still print. On failure a segment renders a dim `label: ?` marker (via `New-StatusMarker`) so a *broken* segment is visible, which is distinct from a legitimately *empty* segment (no data) that renders nothing. Guard **each** independent piece separately (cost and AIU share `$costSegment`, so wrap them individually and combine the non-null pieces) — otherwise one failure still takes out its sibling. Note PowerShell returns `$null` (not a throw) for property access on a wrong-typed value, so only genuine exceptions (e.g. an `[int]` cast on a non-numeric field) trip the marker; degenerate-but-valid output is left as-is.
 
 ### ForEach-Object -Parallel Gotchas

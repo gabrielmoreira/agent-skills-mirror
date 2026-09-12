@@ -32,7 +32,10 @@ Nine things the loop gets wrong most often:
 
 - Recognition before research. Probe every served id and every bare chat
   name with `omh coding model-route` first; a `model_family` of `unknown`
-  means the calibration never attaches.
+  means the calibration never attaches. Probe the dated snapshot form too
+  (`<id>-YYYY-MM-DD`): some providers serve only that spelling, and it must
+  resolve the base's contract, chain position, price, and HUD label through
+  `dated_snapshot_base()` rather than falling to generic.
 - The chain names the id the vendor's API serves, not the model card's
   spelling. Read the Hermes provider profile for the family before choosing
   the alias — DeepSeek serves `deepseek-flash` and 400s `deepseek-v4.1-flash`;

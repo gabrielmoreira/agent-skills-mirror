@@ -26,6 +26,7 @@ uv run python -m compileall -q src tests                          # syntax gate
 uv run python -m omh.cli docs workflows --check                   # byte gate
 uv run python -m omh.cli docs roles --check                       # byte gate
 uv run python -m omh.cli docs claims --check --json               # selected claims
+uv run python -m omh.cli docs chain-table --check                 # byte gate
 uv run python -m omh.cli docs navigation --check                  # docs structure gate
 uv run --group lint ruff check src tests                          # static-analysis gate
 git diff --check
@@ -63,11 +64,19 @@ Source of truth → generated file → regen command → drift gate:
 | `capability_family_projection()` in `src/capabilities/families.py` | `src/plugin_bundle/omh/tools/capability_families.json` | `uv run python -m omh.cli docs capability-families` | `uv run python -m omh.cli docs capability-families --check`; dict-parity in `tests/test_plugin_capabilities.py` |
 | `ulw_inventory_payload()` in `src/skills/catalog.py` via `src/catalogs/ulw_surfaces.py` | marked ULW region of `README.md` | `uv run python -m omh.cli docs ulw-inventory` | `uv run python -m omh.cli docs ulw-inventory --check`; `tests/test_ulw_inventory.py` |
 | Same producer | marked ULW region of `site/index.html` | `uv run python -m omh.cli docs ulw-site` | `uv run python -m omh.cli docs ulw-site --check`; i18n parity in `tests/test_ulw_inventory.py` |
+| `SHIPPED_MODEL_RECOMMENDATIONS` in `src/coding/model_recommendations.py` via `src/catalogs/model_chain_table.py` | marked chain-table region of `docs/INSTALLATION.md` | `uv run python -m omh.cli docs chain-table` | `uv run python -m omh.cli docs chain-table --check`; round-trip equality in `tests/test_model_chain_table.py` |
 
 Rules:
 
-- Never hand-edit `skills/*/SKILL.md`, `docs/WORKFLOWS.md`, `docs/ROLES.md`, or
-  the demo-cards JSON. Edit the catalog/render source, regenerate, commit both.
+- Never hand-edit `skills/*/SKILL.md`, `docs/WORKFLOWS.md`, `docs/ROLES.md`, the
+  demo-cards JSON, or a marked region (ULW in `README.md` / `site/index.html`,
+  the shipped chain table in `docs/INSTALLATION.md`). Edit the catalog/render
+  source, regenerate, commit both.
+- A model generation that leaves or joins a shipped chain needs
+  `docs chain-table` rerun; a NEW mixture category also needs a
+  `CHAIN_SURFACE_PURPOSES` entry in `src/catalogs/model_chain_table.py`, and a
+  new model alias a `MODEL_DISPLAY_LABELS` entry. Both raise with the key to
+  add — the public table cannot stay silent about a shipped chain.
 - After any catalog or render change, rerun every `--check` gate before commit.
 - The gates are byte-exact comparisons. A one-character drift fails CI.
 
@@ -174,6 +183,26 @@ Rules:
 - Grepping the repo and matching stale strings under `build/lib/` — it is a
   gitignored copy of old sources. Scope searches to `src/`, `tests/`, `docs/`,
   `skills/`.
+- Letting an exit code report success over work that failed. On 2026-09-11
+  every unit of a dispatch failed on a provider session limit and
+  `omh coding fanout dispatch` exited `0`, so a wrapper reading only the status
+  was told the batch succeeded. The mapper had a case for a refusal, with a
+  docstring saying a shell that only checks the status must not read "nothing
+  was dispatched" as success — the sentence was right and had been applied to
+  only one of the ways work fails to happen.
+  `tests/test_exit_code_truthfulness_policy.py` now re-derives every
+  `*_exit_code` mapper under `src/commands/` and fails when one maps a summary
+  carrying a failure signal to `0`. It says nothing about which code to return,
+  so a new command keeps its own vocabulary and its own recoverable lane; it
+  only may not call failure success.
+- Matching a provider's refusal by wording alone. The limit-shape patterns in
+  `src/coding/fanout_dispatch.py` are how a failure becomes recoverable rather
+  than terminal, and the same day the exit code lied, `You've hit your session
+  limit` matched none of the twelve patterns and classified as `crash` — a
+  condition that clears at a stated time, recorded as a permanent fault. When a
+  provider adds a phrasing, add the pattern and a verbatim regression case; when
+  you add a pattern, check it against ordinary narration in the same commit, the
+  way the existing anchors are deliberately multi-word.
 - Trusting a red run before clearing `build/`. A `ModuleNotFoundError` whose
   traceback names a `build/__editable__…` path is the gitignored editable
   install, not the tree you are editing: your venv's copy predates a module the

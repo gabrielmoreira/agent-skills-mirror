@@ -82,7 +82,7 @@ User Request
     +--> task(subagent_type: "explore")    -> fast codebase grep
     +--> task(subagent_type: "librarian")  -> documentation and OSS code search
     +--> task(category: "architect")       -> the architect consult lane (read-only design advice)
-    +--> [Kibitzer]                        -> memory recall nudges, read-only
+    +--> [Kibitzer]                        -> resident memory recall sidecar, read-only, nudges only
 
 Planning path (same session, no agent switching):
 /ulw-plan  ->  plan-consultant gap analysis  ->  plan-reviewer rounds  ->  /ulw-execute
@@ -124,7 +124,7 @@ Architecture consultation isn't an agent. Run `task(category: "architect")`: the
 
 ### Kibitzer
 
-Kibitzer is the memory side. It watches each turn, checks stored memory against what the main agent is doing, and hands back a recollection when one applies. Read-only; its only act is a nudge.
+Kibitzer is the memory side: one resident, read-only sidecar per main agent session. It receives the session's prompts, tool calls and tool results as bounded, redacted events, wakes only when a stored memory it has not judged yet comes into play, can read the workspace, the parent transcript and memory to check itself, and hands back a recollection when one applies. It cannot write memory or files; its only act is a nudge.
 
 ---
 

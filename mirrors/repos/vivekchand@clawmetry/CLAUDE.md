@@ -21,7 +21,7 @@ See `ARCHITECTURE.md` for the full deep dive, and `docs/MODULE_MAP.md` (generate
 
 `docs/MODULE_MAP.md` is the **generated** inventory: every module, the blueprints it defines, the URL space it owns, and a coarse size band. `scripts/gen_module_map.py` regenerates it and CI fails when it drifts. The tables below are a short curated index of what you reach for most often, deliberately without line counts (they went stale within weeks every time they were written down).
 
-**Five files are big enough to change how you work on them**: `routes/entitlement.py` (~48k lines), `clawmetry/entitlements.py` (~31k), `clawmetry/sync.py` (~26k), `dashboard.py` (~21k), `clawmetry/local_store.py` (~20k). Drift Bot reads only the head of a long file, so anything added deep inside one is reported as "not implemented" forever. Put new capability in a new short module and re-export it, rather than appending 300 lines to a 20k-line file.
+**Five files are big enough to change how you work on them**: `routes/entitlement/` (~48k lines, now a package: a re-export init, a shared helpers module, and eight endpoint files), `clawmetry/entitlements.py` (~31k), `clawmetry/sync.py` (~26k), `dashboard.py` (~21k), `clawmetry/local_store.py` (~20k). Drift Bot reads only the head of a long file, so anything added deep inside one is reported as "not implemented" forever. Put new capability in a new short module and re-export it, rather than appending 300 lines to a 20k-line file.
 
 ### Core
 | File | Purpose |
@@ -42,7 +42,7 @@ All HTTP endpoints live here, organised by feature: 70 modules, 82 blueprints, l
 | `routes/health.py` | `bp_health` — system-health, reliability, diagnostics, rate-limits, sandbox-status, health-stream (SSE) |
 | `routes/overview.py` | `bp_overview` — main dashboard endpoint, channels list, timeline, cloud-CTA OTP |
 | `routes/brain.py` | `bp_brain` — `/api/brain-history` + `/api/brain-stream` (SSE) |
-| `routes/channels.py` | `bp_channels` — 23 chat-channel adapters (Telegram, Signal, WhatsApp, Discord, Slack, IRC, iMessage, WebChat, …) |
+| `routes/channels.py` | `bp_channels` — 24 chat-channel adapters (Telegram, Signal, WhatsApp, Discord, Slack, IRC, iMessage, WebChat, …) |
 | `routes/components.py` | `bp_components` — Flow-panel detail endpoints (tool / runtime / machine / gateway / brain) |
 | `routes/local_query.py` | `bp_local_query` — `/api/local/*` DuckDB read API + the daemon-proxy `_dispatch` (shape→store bridge shared by HTTP and the cloud relay) |
 | `routes/guard.py` | `bp_guard` — live session control (Pause/Stop/Kill), Guard policy CRUD, policy decision log, learned baselines. Sessions ranked by **spend at risk**, not severity |
@@ -50,7 +50,7 @@ All HTTP endpoints live here, organised by feature: 70 modules, 82 blueprints, l
 | `routes/hooks.py` | `bp_hooks` — hook install / status / uninstall per runtime, and the gate's decision log |
 | `routes/infra.py` | `bp_logs` + `bp_memory` + `bp_security` + `bp_config` — logs stream, memory files, security posture, cost-optimizer |
 | `routes/meta.py` | `bp_auth` + `bp_gateway` + `bp_otel` + `bp_version` + `bp_version_impact` + `bp_cloud_relay` + `bp_otlp_traces` — auth, gateway proxy, OTLP ingestion, version meta |
-| `routes/entitlement.py` | `bp_entitlement` — the resolved entitlement plus the preview / diff / batch family at `/api/entitlement*` |
+| `routes/entitlement/` | `bp_entitlement` — the resolved entitlement plus the preview / diff / batch family at `/api/entitlement*` (package: init re-exports flat namespace, shared helpers module, eight endpoint files with 434 handlers) |
 | `routes/alerts.py` | `bp_alerts` + `bp_budget` — alert rules, webhooks, velocity, budget config |
 | `routes/crons.py` | `bp_crons` — cron CRUD + run log + health summary |
 | `routes/signals.py` | `bp_signals` — Behaviour Signals read API: `/api/signals` (rate, count, eligible turns, trend, by model and runtime, coverage, plain-words headline), `/api/signals/<name>/sessions` (sessions, never phrases) |
@@ -261,6 +261,8 @@ CLAWMETRY_SIGNALS=1                    # Behaviour Signals tick on/off; CLAWMETR
 # Guard / enforcement. Every one of these defaults to the safe side.
 CLAWMETRY_DETECTORS=1                  # Trajectory + behavioural detectors on/off
 CLAWMETRY_GUARD_POLICIES=1             # Evaluate Guard policies at all (0 = skip the pass entirely)
+CLAWMETRY_DESKTOP_ALERTS=1             # Urgent incidents (critical, or an agent blocked on you) pop a desktop notification (0 = off)
+CLAWMETRY_CLOUD_INCIDENT_ALERTS=1      # Connected nodes hand urgent incidents to cloud, which always emails the account owner (0 = off)
 CLAWMETRY_POLICY_ENFORCE=0             # Let a policy actually signal a process. Default 0 = dry run; this one env var disables every policy on the node
 CLAWMETRY_GUARD_CRITICAL_USD=...       # Spend-at-risk above which a warning becomes critical
 CLAWMETRY_NOPROG_TOOLS__<RUNTIME>=40   # Per-runtime threshold override (highest layer in resolve_thresholds)

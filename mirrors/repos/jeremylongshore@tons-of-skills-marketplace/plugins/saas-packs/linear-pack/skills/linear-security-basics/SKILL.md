@@ -1,319 +1,93 @@
 ---
 name: linear-security-basics
-description: 'Secure API key management, OAuth best practices, and webhook
-
-  verification for Linear integrations.
-
-  Trigger: "linear security", "linear API key security",
-
-  "linear OAuth", "secure linear", "linear webhook verification",
-
-  "linear secrets management", "linear token refresh".
-
-  '
-allowed-tools: Read, Write, Edit, Grep
-version: 1.12.0
-license: MIT
+description: >-
+  Harden Linear credentials, OAuth, team access, webhook verification, logging, and rotation. Use when threat-modeling an integration or correcting a security gap. Trigger with "secure Linear integration", "review Linear OAuth security", or "verify Linear webhooks".
+argument-hint: "[repository-path] [auth|webhook|data|rotation]"
+allowed-tools: Read, Glob, Grep, WebFetch, Write, Edit
+version: 1.13.0
 author: Jeremy Longshore <jeremy@intentsolutions.io>
+license: MIT
 tags:
 - saas
 - linear
-- api
 - security
-- authentication
-compatibility: Designed for Claude Code
+model: inherit
+effort: high
+compatibility: Designed for Claude Code; live verification requires network access and an approved Linear workspace credential
 ---
-# Linear Security Basics
+# Linear Integration Security Baseline
 
 ## Overview
 
-Secure authentication patterns for Linear integrations: API key management, OAuth 2.0 with PKCE, token refresh (mandatory for new apps after Oct 2025), webhook HMAC-SHA256 signature verification, and secret rotation.
+Apply least privilege and fail-closed verification across every credential, workspace boundary, inbound event, and diagnostic path.
 
 ## Prerequisites
 
-- Linear account with API access
-- Understanding of environment variables and secret management
-- Familiarity with OAuth 2.0 and HMAC concepts
+- The target repository, Linear workspace, environment, and accountable owner
+- Current security, privacy, compliance, capacity, and change-control requirements
+- An approved Linear credential only when a bounded live verification is necessary
+
+## Tool Discipline
+
+Use `Read`, `Glob`, and `Grep` to inspect code, configuration, and evidence. Use `WebFetch` only for current first-party Linear documentation and package metadata. Use `Write` or `Edit` only for requested implementation with known target files. Never write credentials, customer content, unrestricted environment output, or unredacted GraphQL variables.
+
+## Current Contract
+
+- Authorization-code OAuth supports PKCE; applications must use exact registered redirect URLs and validate authorization state.
+- All OAuth apps moved to the refresh-token system on 2026-04-01; access and refresh tokens require secure server-side storage and revocation handling.
+- Webhook authenticity is HMAC-SHA256 over the exact raw body; compare safely and use timestamp/delivery ID for replay controls.
+- Client-secret rotation and webhook-signing-secret rotation are separate operations with different impacts.
+
+## Authentication
+
+Use a personal API key only for owner-controlled scripts, OAuth with PKCE for user-delegated applications, or an enabled client-credentials grant for approved automation. Personal keys use `Authorization: <API_KEY>`; OAuth tokens use `Authorization: Bearer <ACCESS_TOKEN>`. Store credentials server-side in an approved secret manager.
+
+Treat app approval, team access, scope changes, credential creation, rotation, revocation, and production access as owner-approved actions.
 
 ## Instructions
 
-### Step 1: Secure API Key Storage
+1. Inventory tokens, client and signing secrets, redirect URLs, scopes, team access, caches, logs, exports, and third-party processors.
+2. Select the narrowest auth actor and scopes, validate OAuth state/PKCE, and store credentials only in an approved secret manager.
+3. Verify webhook raw-body HMAC before parsing or queuing; reject invalid signatures and stale/replayed deliveries.
+4. Redact authorization, cookies, queries, variables, issue content, emails, actor data, and signatures from telemetry.
+5. Test revocation, client-secret rotation, signing-secret rotation, compromised-token containment, and app disablement.
+6. Document residual risk, accountable owners, and an independently approved remediation rollout.
 
-```typescript
-// NEVER hardcode keys
-// BAD:
-// const client = new LinearClient({ apiKey: "lin_api_xxxx" });
+## Approval Boundaries
 
-// GOOD: environment variable
-import { LinearClient } from "@linear/sdk";
+Do not create, reveal, rotate, or revoke credentials; authorize an OAuth app; change scopes or team access; create, mutate, archive, or delete workspace data; configure or re-enable webhooks; import or export data; change roles, SCIM, or audit streaming; transmit diagnostics; change paid entitlements; or perform another production mutation without explicit approval from the accountable owner. Keep diagnosis read-only unless implementation was requested.
 
-const client = new LinearClient({
-  apiKey: process.env.LINEAR_API_KEY!,
-});
-```
+## Output
 
-**Environment setup:**
-
-```bash
-# .env (never commit)
-LINEAR_API_KEY=lin_api_xxxxxxxxxxxxxxxxxxxxxxxxxxxx
-LINEAR_WEBHOOK_SECRET=whsec_xxxxxxxxxxxx
-
-# .gitignore
-.env
-.env.*
-!.env.example
-
-# .env.example (commit for documentation)
-LINEAR_API_KEY=lin_api_your_key_here
-LINEAR_WEBHOOK_SECRET=your_webhook_secret_here
-```
-
-**Startup validation:**
-
-```typescript
-function validateConfig(): void {
-  const key = process.env.LINEAR_API_KEY;
-  if (!key) throw new Error("LINEAR_API_KEY is required");
-  if (!key.startsWith("lin_api_")) throw new Error("LINEAR_API_KEY has invalid format");
-  if (key.length < 30) throw new Error("LINEAR_API_KEY appears truncated");
-}
-validateConfig();
-```
-
-### Step 2: OAuth 2.0 with PKCE
-
-```typescript
-import express from "express";
-import crypto from "crypto";
-
-const app = express();
-
-const OAUTH = {
-  clientId: process.env.LINEAR_CLIENT_ID!,
-  clientSecret: process.env.LINEAR_CLIENT_SECRET!,
-  redirectUri: process.env.LINEAR_REDIRECT_URI!,
-  scopes: ["read", "write", "issues:create"],
-};
-
-// Generate PKCE verifier and challenge
-function generatePKCE() {
-  const verifier = crypto.randomBytes(32).toString("base64url");
-  const challenge = crypto.createHash("sha256").update(verifier).digest("base64url");
-  return { verifier, challenge };
-}
-
-// Step 1: Redirect to Linear authorization
-app.get("/auth/linear", (req, res) => {
-  const state = crypto.randomBytes(16).toString("hex");
-  const { verifier, challenge } = generatePKCE();
-
-  // Store state + verifier in session
-  req.session!.oauthState = state;
-  req.session!.codeVerifier = verifier;
-
-  const url = new URL("https://linear.app/oauth/authorize");
-  url.searchParams.set("client_id", OAUTH.clientId);
-  url.searchParams.set("redirect_uri", OAUTH.redirectUri);
-  url.searchParams.set("response_type", "code");
-  url.searchParams.set("scope", OAUTH.scopes.join(","));
-  url.searchParams.set("state", state);
-  url.searchParams.set("code_challenge", challenge);
-  url.searchParams.set("code_challenge_method", "S256");
-
-  res.redirect(url.toString());
-});
-
-// Step 2: Handle callback — exchange code for tokens
-app.get("/auth/linear/callback", async (req, res) => {
-  const { code, state } = req.query;
-
-  // CSRF check
-  if (state !== req.session!.oauthState) {
-    return res.status(400).json({ error: "Invalid state parameter" });
-  }
-
-  const response = await fetch("https://api.linear.app/oauth/token", {
-    method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body: new URLSearchParams({
-      grant_type: "authorization_code",
-      code: code as string,
-      client_id: OAUTH.clientId,
-      client_secret: OAUTH.clientSecret,
-      redirect_uri: OAUTH.redirectUri,
-      code_verifier: req.session!.codeVerifier,
-    }),
-  });
-
-  const tokens = await response.json();
-
-  // Store tokens securely (encrypt at rest)
-  await storeTokens(req.user!.id, {
-    accessToken: encrypt(tokens.access_token),
-    refreshToken: encrypt(tokens.refresh_token),
-    expiresAt: new Date(Date.now() + tokens.expires_in * 1000),
-  });
-
-  res.redirect("/dashboard");
-});
-```
-
-### Step 3: Token Refresh
-
-As of Oct 2025, all new Linear OAuth apps issue refresh tokens. Existing apps must migrate by April 2026.
-
-```typescript
-async function getValidToken(userId: string): Promise<string> {
-  const stored = await getStoredTokens(userId);
-
-  // Refresh if expired or expiring within 5 minutes
-  if (stored.expiresAt.getTime() - Date.now() < 5 * 60 * 1000) {
-    const response = await fetch("https://api.linear.app/oauth/token", {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: new URLSearchParams({
-        grant_type: "refresh_token",
-        refresh_token: decrypt(stored.refreshToken),
-        client_id: process.env.LINEAR_CLIENT_ID!,
-        client_secret: process.env.LINEAR_CLIENT_SECRET!,
-      }),
-    });
-
-    if (!response.ok) throw new Error(`Token refresh failed: ${response.status}`);
-    const tokens = await response.json();
-
-    // Linear rotates refresh tokens — always store the new one
-    await storeTokens(userId, {
-      accessToken: encrypt(tokens.access_token),
-      refreshToken: encrypt(tokens.refresh_token),
-      expiresAt: new Date(Date.now() + tokens.expires_in * 1000),
-    });
-
-    return tokens.access_token;
-  }
-
-  return decrypt(stored.accessToken);
-}
-```
-
-### Step 4: Webhook Signature Verification
-
-Linear signs every webhook with HMAC-SHA256 using the webhook's signing secret. The signature is in the `Linear-Signature` header.
-
-```typescript
-import crypto from "crypto";
-
-function verifyWebhookSignature(
-  rawBody: string,
-  signature: string,
-  secret: string
-): boolean {
-  const expected = crypto
-    .createHmac("sha256", secret)
-    .update(rawBody)
-    .digest("hex");
-
-  // Timing-safe comparison to prevent timing attacks
-  try {
-    return crypto.timingSafeEqual(
-      Buffer.from(signature),
-      Buffer.from(expected)
-    );
-  } catch {
-    return false; // Length mismatch
-  }
-}
-
-// Express middleware — must use raw body parser
-app.post("/webhooks/linear", express.raw({ type: "*/*" }), (req, res) => {
-  const signature = req.headers["linear-signature"] as string;
-  const rawBody = req.body.toString();
-
-  if (!verifyWebhookSignature(rawBody, signature, process.env.LINEAR_WEBHOOK_SECRET!)) {
-    return res.status(401).json({ error: "Invalid signature" });
-  }
-
-  // Verify webhook timestamp (guard against replay attacks)
-  const event = JSON.parse(rawBody);
-  const age = Date.now() - event.webhookTimestamp;
-  if (age > 60000) {
-    return res.status(400).json({ error: "Webhook too old" });
-  }
-
-  processEvent(event).catch(console.error);
-  res.json({ received: true });
-});
-```
-
-### Step 5: Secret Rotation
-
-```typescript
-// Support multiple keys during rotation period
-const apiKeys = [
-  process.env.LINEAR_API_KEY_NEW,
-  process.env.LINEAR_API_KEY_OLD,
-].filter(Boolean) as string[];
-
-async function getWorkingClient(): Promise<LinearClient> {
-  for (const apiKey of apiKeys) {
-    try {
-      const client = new LinearClient({ apiKey });
-      await client.viewer; // Verify key works
-      return client;
-    } catch {
-      continue;
-    }
-  }
-  throw new Error("No valid Linear API key found");
-}
-```
-
-## Security Checklist
-
-- [ ] API keys in environment variables only (never in code)
-- [ ] `.env` files in `.gitignore`
-- [ ] OAuth state parameter validated (CSRF protection)
-- [ ] PKCE used for public/mobile clients
-- [ ] Tokens encrypted at rest in database
-- [ ] Token refresh implemented (mandatory for new apps)
-- [ ] Webhook signatures verified with `crypto.timingSafeEqual`
-- [ ] Webhook timestamp checked (< 60s age)
-- [ ] HTTPS enforced on all endpoints
-- [ ] Minimal OAuth scopes requested
-- [ ] API keys rotated quarterly
+Return the workspace and team scope, auth mode without credential value, files and contracts inspected, exact operation names, evidence collected, validation result, sensitive fields redacted, remaining risk, accountable owner, approval state, and rollback or next action.
 
 ## Error Handling
 
-| Error | Cause | Solution |
-|-------|-------|----------|
-| `Invalid signature` | Webhook secret mismatch | Verify `LINEAR_WEBHOOK_SECRET` in Linear Settings > API > Webhooks |
-| `invalid_grant` | Refresh token expired/revoked | Re-initiate full OAuth flow |
-| `Invalid scope` | App not authorized for scope | Request only scopes your app needs |
-| `Authentication required` | Token expired, refresh failed | Trigger re-authentication |
+| Condition | Response |
+|---|---|
+| Token exposed | Revoke or rotate the affected credential, scrub retained copies, and audit access. |
+| Signature invalid | Reject before parsing business data and preserve only redacted delivery metadata. |
+| OAuth state mismatch | Abort the flow; do not exchange the code. |
+| Scope too broad | Reduce scopes/team access and reauthorize through the approved change path. |
 
 ## Examples
 
-### Test Webhook Signature Locally
+Use a compact handoff that makes scope, mutation authority, and verification evidence reviewable.
 
-```typescript
-import crypto from "crypto";
+Input:
 
-const secret = "test-signing-secret";
-const payload = JSON.stringify({
-  action: "create",
-  type: "Issue",
-  data: { id: "test", title: "Test" },
-  webhookTimestamp: Date.now(),
-});
-const sig = crypto.createHmac("sha256", secret).update(payload).digest("hex");
-console.log(`Signature: ${sig}`);
-console.log(`Valid: ${verifyWebhookSignature(payload, sig, secret)}`);
+```text
+auth=oauth-pkce; scopes=read,write; teams=approved-subset; raw-body=true
+```
+
+Expected handoff:
+
+```text
+threat-model=updated; secrets=server-side; replay-control=delivery-id+timestamp
 ```
 
 ## Resources
 
-- [OAuth 2.0 Authentication](https://linear.app/developers/oauth-2-0-authentication)
-- [OAuth Actor Authorization](https://linear.app/developers/oauth-actor-authorization)
-- [Webhooks Documentation](https://linear.app/developers/webhooks)
-- [API Settings](https://linear.app/settings/api)
+- [Skill-specific official documentation](references/official-docs.md)
+- [Linear developer documentation index](https://linear.app/llms.txt)
+- [Linear GraphQL API](https://linear.app/developers/graphql.md)

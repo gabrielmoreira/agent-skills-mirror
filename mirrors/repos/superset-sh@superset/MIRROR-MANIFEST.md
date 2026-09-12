@@ -96,8 +96,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 35 | ✓ | [`apps/mobile/AGENTS.md`](apps/mobile/AGENTS.md) |
 | 36 | ✓ | [`apps/mobile/CLAUDE.md`](apps/mobile/CLAUDE.md) |
 | 37 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 38 | ✓ | [`packages/trpc/src/lib/blaxel/AGENTS.md`](packages/trpc/src/lib/blaxel/AGENTS.md) |
-| 39 | ✓ | [`packages/trpc/src/lib/blaxel/CLAUDE.md`](packages/trpc/src/lib/blaxel/CLAUDE.md) |
+| 38 | ✓ | [`packages/trpc/src/lib/sandbox/AGENTS.md`](packages/trpc/src/lib/sandbox/AGENTS.md) |
+| 39 | ✓ | [`packages/trpc/src/lib/sandbox/CLAUDE.md`](packages/trpc/src/lib/sandbox/CLAUDE.md) |
 | 40 | ✓ | [`plugins/github/skills/ci-triage/SKILL.md`](plugins/github/skills/ci-triage/SKILL.md) |
 | 41 | ✓ | [`plugins/github/skills/issue-triage/SKILL.md`](plugins/github/skills/issue-triage/SKILL.md) |
 | 42 | ✓ | [`plugins/linear/skills/duplicate-sweep/SKILL.md`](plugins/linear/skills/duplicate-sweep/SKILL.md) |

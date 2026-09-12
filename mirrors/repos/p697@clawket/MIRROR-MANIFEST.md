@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `p697/clawket` — 26 default patterns, 0 followed patterns, 10 file(s) materialized.
+Mirror of `p697/clawket` — 26 default patterns, 0 followed patterns, 12 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `p697/clawket` — 26 default patterns, 0 followed patterns, 10 file(s
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 10 |
+| Files         | 12 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -65,10 +65,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 4 | ✓ | [`apps/mobile/AGENTS.md`](apps/mobile/AGENTS.md) |
 | 5 | ✓ | [`apps/mobile/CLAUDE.md`](apps/mobile/CLAUDE.md) |
 | 6 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 7 | ✓ | [`packages/bridge-runtime/AGENTS.md`](packages/bridge-runtime/AGENTS.md) |
-| 8 | ✓ | [`packages/bridge-runtime/CLAUDE.md`](packages/bridge-runtime/CLAUDE.md) |
-| 9 | ✓ | [`packages/relay-shared/AGENTS.md`](packages/relay-shared/AGENTS.md) |
-| 10 | ✓ | [`packages/relay-shared/CLAUDE.md`](packages/relay-shared/CLAUDE.md) |
+| 7 | ✓ | [`packages/agent-protocol/AGENTS.md`](packages/agent-protocol/AGENTS.md) |
+| 8 | ✓ | [`packages/agent-protocol/CLAUDE.md`](packages/agent-protocol/CLAUDE.md) |
+| 9 | ✓ | [`packages/bridge-runtime/AGENTS.md`](packages/bridge-runtime/AGENTS.md) |
+| 10 | ✓ | [`packages/bridge-runtime/CLAUDE.md`](packages/bridge-runtime/CLAUDE.md) |
+| 11 | ✓ | [`packages/relay-shared/AGENTS.md`](packages/relay-shared/AGENTS.md) |
+| 12 | ✓ | [`packages/relay-shared/CLAUDE.md`](packages/relay-shared/CLAUDE.md) |
 
 ---
 

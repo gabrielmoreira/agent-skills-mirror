@@ -1,6 +1,6 @@
 # Toolbox — every bundled script, by use-case
 
-A map of the 39 focused tools, the unified `diagramctl.py` orchestrator
+A map of the 41 focused tools, the unified `diagramctl.py` orchestrator
 (and its MCP server wrapper), and its
 internal `diagram_ir.py` model grouped by what you're trying to do. The
 per-task routing table in `SKILL.md` says *when* to reach for each; this says
@@ -43,6 +43,8 @@ Use focused scripts directly when you need their narrow interface; use
 | a running cluster/stack/cloud | what's **actually deployed** | `tfstate` · `dockerimports` · `k8simports -` |
 | a SQL schema | an ER diagram | `sqlerd` |
 | an OpenAPI / Swagger spec | an API diagram (by method) | `openapiimports` |
+| an AsyncAPI 2 / 3 spec | an event-driven architecture diagram | `asyncapiimports` |
+| a Protocol Buffers (.proto) schema | a message/service diagram | `protoimports` |
 | CI workflows (GH Actions / GitLab) | the pipeline as a DAG | `ciimports` |
 | a diagram + a metrics file | it coloured by the data | `heatmap` |
 | a sequence of interactions | a UML sequence diagram | `seqlayout` |
@@ -88,6 +90,8 @@ All emit graph JSON → `autolayout.py`.
 - **`sqlerd.py`** — SQL DDL (`CREATE TABLE`) → ERD with crow's-foot FK edges.
 - **`ciimports.py`** — GitHub Actions (`.github/workflows/*.yml`) and/or `.gitlab-ci.yml` -> pipeline DAG: job nodes (runner, `matrix xN`, reusable-workflow calls in purple), `needs:` edges, an `on:` trigger node per workflow, jobs boxed per workflow / per GitLab stage.
 - **`openapiimports.py`** — OpenAPI 3 / Swagger 2 spec → API diagram: one node per operation (coloured by HTTP method) + one per component schema, with edges to the schemas each operation uses and between nested schemas. `--group` by tag.
+- **`asyncapiimports.py`** — AsyncAPI 2 / 3 spec → event-driven architecture diagram: channel, publish/subscribe operation, and payload-schema nodes with provenance. `--group` by operation tag, channel tag, or channel prefix.
+- **`protoimports.py`** — Protocol Buffers (`.proto`) → message/service diagram: one node per message, service (with RPC methods), or enum; edges for referenced message field types and service request/response types. `--group` by proto package.
 
 ## 4. Live infrastructure → diagram (actually running)
 
@@ -121,6 +125,7 @@ The skill runs both directions — these turn a `.drawio` back into something el
 
 - **`relabel.py`** — swap every label via a JSON map, layout untouched — `--extract` dumps an identity map of all labels (vertices, edges, UserObjects, page names), translate the values, `--map` applies them. Built for bilingual (EN/CN) variants of one diagram.
 - **`restyle.py`** — apply a style preset (user or built-in, e.g. `dark`) to an existing `.drawio`: palette remap by hue, font, dark-theme extras, page background. Layout, shapes, and edge routing stay put.
+- **`edgeports.py`** — pin `exitX/exitY`/`entryX/entryY` ports when several edges stack at the same side of one node (typical on swimlane handoffs); spreads each (node, side) group evenly, keeps already-pinned and hand-tuned geometry, idempotent. Port assignment, not routing; node positions untouched. `SKILL.md` "Editing and identity" says when to reach for it.
 - **`validate.py`** — deterministic structural lint (dangling edges, dup/reserved ids, overlaps; `--score` for layout readability). Findings render as `error: [E-DANGLING-END] ... (fix: ...)` — stable codes + fix hints; `--json` for structured output. Run before exporting.
 - **`repair_png.py`** — fix draw.io's truncated IEND chunk after every `-e` PNG export (issue #8).
 - **`encode_drawio_url.py`** — encode a `.drawio` into a diagrams.net browser URL when the CLI is unavailable (`--edit` for an editable editor URL).

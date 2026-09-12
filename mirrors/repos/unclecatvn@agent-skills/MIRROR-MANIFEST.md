@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `unclecatvn/agent-skills` — 26 default patterns, 0 followed patterns, 112 file(s) materialized.
+Mirror of `unclecatvn/agent-skills` — 26 default patterns, 0 followed patterns, 114 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `unclecatvn/agent-skills` — 26 default patterns, 0 followed patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 112 |
+| Files         | 114 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,8 +59,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`agents/odoo-code-review/SKILL.md`](agents/odoo-code-review/SKILL.md) |
-| 2 | ✓ | [`agents/odoo-code-tracer/SKILL.md`](agents/odoo-code-tracer/SKILL.md) |
+| 1 | ✓ | [`agents/odoo-code-review.md`](agents/odoo-code-review.md) |
+| 2 | ✓ | [`agents/odoo-code-tracer.md`](agents/odoo-code-tracer.md) |
 | 3 | ✓ | [`agents/planner.md`](agents/planner.md) |
 | 4 | ✓ | [`skills/code-review/references/code-review-reception.md`](skills/code-review/references/code-review-reception.md) |
 | 5 | ✓ | [`skills/code-review/references/requesting-code-review.md`](skills/code-review/references/requesting-code-review.md) |
@@ -170,7 +170,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 109 | ✓ | [`skills/odoo-19.0/references/odoo-19-view-guide.md`](skills/odoo-19.0/references/odoo-19-view-guide.md) |
 | 110 | ✓ | [`skills/odoo-19.0/SKILL.md`](skills/odoo-19.0/SKILL.md) |
 | 111 | ✓ | [`skills/odoo-commit/SKILL.md`](skills/odoo-commit/SKILL.md) |
-| 112 | ✓ | [`skills/slide/SKILL.md`](skills/slide/SKILL.md) |
+| 112 | ✓ | [`skills/odoo-workflow/SKILL.md`](skills/odoo-workflow/SKILL.md) |
+| 113 | ✓ | [`skills/odoo-workflow/templates/CLAUDE.md`](skills/odoo-workflow/templates/CLAUDE.md) |
+| 114 | ✓ | [`skills/slide/SKILL.md`](skills/slide/SKILL.md) |
 
 ---
 

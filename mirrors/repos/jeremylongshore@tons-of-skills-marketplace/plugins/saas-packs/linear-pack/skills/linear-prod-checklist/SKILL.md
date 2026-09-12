@@ -1,267 +1,92 @@
 ---
 name: linear-prod-checklist
-description: 'Production readiness checklist for Linear integrations.
-
-  Use when preparing to deploy, reviewing production requirements,
-
-  or auditing existing Linear deployments.
-
-  Trigger: "linear production checklist", "deploy linear",
-
-  "linear production ready", "linear go live", "linear launch".
-
-  '
-allowed-tools: Read, Write, Edit, Grep
-version: 1.12.0
-license: MIT
+description: >-
+  Analyze a Linear integration for production across auth, data, quotas, webhooks, recovery, and ownership. Use when preparing a launch, material permission change, or production migration. Trigger with "review Linear readiness", "launch Linear integration", or "Linear production checklist".
+argument-hint: "[repository-path] [environment]"
+allowed-tools: Read, Glob, Grep, WebFetch, Write, Edit
+version: 1.13.0
 author: Jeremy Longshore <jeremy@intentsolutions.io>
+license: MIT
 tags:
 - saas
 - linear
-- deployment
-- audit
-compatibility: Designed for Claude Code
+- production-readiness
+model: inherit
+effort: high
+compatibility: Designed for Claude Code; live verification requires network access and an approved Linear workspace credential
 ---
-# Linear Production Checklist
+# Linear Production Readiness Gate
 
 ## Overview
 
-Comprehensive checklist and implementation patterns for deploying Linear integrations to production. Covers authentication, error handling, rate limiting, monitoring, data handling, and deployment verification.
+Produce an evidence-backed go, conditional-go, or no-go decision instead of a box-checking document detached from the deployed system.
 
 ## Prerequisites
 
-- Working development integration passing all tests
-- Production Linear workspace (or production API key)
-- Deployment infrastructure (Vercel, Cloud Run, etc.)
-- Secret management solution (not `.env` files in production)
+- The target repository, Linear workspace, environment, and accountable owner
+- Current security, privacy, compliance, capacity, and change-control requirements
+- An approved Linear credential only when a bounded live verification is necessary
 
-## Pre-Production Checklist
+## Tool Discipline
 
-### 1. Authentication & Security
+Use `Read`, `Glob`, and `Grep` to inspect code, configuration, and evidence. Use `WebFetch` only for current first-party Linear documentation and package metadata. Use `Write` or `Edit` only for requested implementation with known target files. Never write credentials, customer content, unrestricted environment output, or unredacted GraphQL variables.
 
-```
-[ ] Production API key generated (separate from dev)
-[ ] API key stored in secret manager (Vault, AWS SM, GCP SM)
-[ ] OAuth redirect URIs updated for production domain
-[ ] Webhook secrets are unique per environment
-[ ] All dev secrets rotated before launch
-[ ] HTTPS enforced on all endpoints
-[ ] Webhook HMAC-SHA256 verification implemented
-[ ] Webhook timestamp validation (< 60s age)
-[ ] Token refresh flow implemented (mandatory since Oct 2025)
-```
+## Current Contract
 
-### 2. Error Handling & Resilience
+- OAuth is recommended for apps used by others, and app/team authorization, refresh behavior, and secret rotation must be tested.
+- Webhook receivers require public HTTPS, raw-body signature verification, a 200 response within five seconds, deduplication, and reconciliation.
+- Request and complexity limits vary by auth mode and can include lower endpoint-specific windows.
 
-```
-[ ] All Linear API calls wrapped in try/catch
-[ ] Rate limit retry with exponential backoff (max 5 retries)
-[ ] 30s timeout on all API calls
-[ ] Graceful degradation when Linear API is down
-[ ] Error logging includes context (no secrets in logs)
-[ ] InvalidInputLinearError caught separately from network errors
-[ ] Alerts configured for auth failures and error rate spikes
-```
+## Authentication
 
-### 3. Performance & Rate Limits
+Use a personal API key only for owner-controlled scripts, OAuth with PKCE for user-delegated applications, or an enabled client-credentials grant for approved automation. Personal keys use `Authorization: <API_KEY>`; OAuth tokens use `Authorization: Bearer <ACCESS_TOKEN>`. Store credentials server-side in an approved secret manager.
 
-```
-[ ] Pagination with first:50 for all list queries
-[ ] Caching for static data (teams, states, labels) — 10-30 min TTL
-[ ] Request batching for bulk operations (20 mutations per batch)
-[ ] Query complexity stays under 5,000 pts per request
-[ ] No polling — webhooks for real-time updates
-[ ] N+1 query patterns eliminated (use rawRequest for joins)
-[ ] Response times monitored with p95 alerting
-```
+Treat app approval, team access, scope changes, credential creation, rotation, revocation, and production access as owner-approved actions.
 
-### 4. Monitoring & Observability
+## Instructions
 
-```
-[ ] Health check endpoint hitting Linear API
-[ ] API latency metrics collected per operation
-[ ] Error rate monitoring with alerting (>1% = alert)
-[ ] Rate limit remaining tracked (alert if < 100 requests)
-[ ] Structured JSON logging for API calls and webhooks
-[ ] Webhook delivery tracking via Linear-Delivery header
-```
+1. Identify the exact artifact, commit, environment, workspace/team scope, data classes, owner, and rollback authority.
+2. Verify SDK/runtime compatibility, token type, exact scopes, secret storage, rotation, revocation, and access review.
+3. Run offline tests plus approved read-only auth, error, rate-header, pagination, and webhook-signature probes.
+4. Review data minimization, export/retention, observability redaction, idempotency, queue behavior, and missed-event reconciliation.
+5. Exercise dependency outage, token failure, throttling, duplicate webhook, rollback, and disablement paths.
+6. Record blockers, evidence, accountable approvers, decision, expiry, and post-launch checks.
 
-### 5. Data Handling
+## Approval Boundaries
 
-```
-[ ] No PII logged or stored unnecessarily
-[ ] Webhook event idempotency (deduplicate by Linear-Delivery)
-[ ] Data retention policy defined for synced data
-[ ] Stale data detection with periodic consistency checks
-```
+Do not create, reveal, rotate, or revoke credentials; authorize an OAuth app; change scopes or team access; create, mutate, archive, or delete workspace data; configure or re-enable webhooks; import or export data; change roles, SCIM, or audit streaming; transmit diagnostics; change paid entitlements; or perform another production mutation without explicit approval from the accountable owner. Keep diagnosis read-only unless implementation was requested.
 
-## Production Configuration
+## Output
 
-```typescript
-import { LinearClient } from "@linear/sdk";
-
-interface ProdConfig {
-  linear: { apiKey: string; webhookSecret: string };
-  rateLimit: { maxRetries: number; baseDelayMs: number; maxDelayMs: number };
-  cache: { teamsTtl: number; statesTtl: number; labelsTtl: number };
-  timeouts: { requestMs: number; webhookProcessMs: number };
-}
-
-const config: ProdConfig = {
-  linear: {
-    apiKey: await getSecret("linear-api-key-prod"),
-    webhookSecret: await getSecret("linear-webhook-secret-prod"),
-  },
-  rateLimit: { maxRetries: 5, baseDelayMs: 1000, maxDelayMs: 30000 },
-  cache: { teamsTtl: 600, statesTtl: 1800, labelsTtl: 600 },
-  timeouts: { requestMs: 30000, webhookProcessMs: 5000 },
-};
-
-function createProductionClient(): LinearClient {
-  return new LinearClient({ apiKey: config.linear.apiKey });
-}
-```
-
-## Health Check Implementation
-
-```typescript
-interface HealthStatus {
-  status: "healthy" | "degraded" | "unhealthy";
-  latencyMs: number;
-  details: {
-    authentication: boolean;
-    apiReachable: boolean;
-    rateLimitOk: boolean;
-  };
-  timestamp: string;
-}
-
-async function checkHealth(client: LinearClient): Promise<HealthStatus> {
-  const start = Date.now();
-  const details = { authentication: false, apiReachable: false, rateLimitOk: true };
-
-  try {
-    const viewer = await client.viewer;
-    details.authentication = true;
-    details.apiReachable = true;
-
-    const latencyMs = Date.now() - start;
-    return {
-      status: latencyMs > 3000 ? "degraded" : "healthy",
-      latencyMs,
-      details,
-      timestamp: new Date().toISOString(),
-    };
-  } catch (error: any) {
-    details.apiReachable = !error.message?.includes("ENOTFOUND");
-    return {
-      status: "unhealthy",
-      latencyMs: Date.now() - start,
-      details,
-      timestamp: new Date().toISOString(),
-    };
-  }
-}
-
-// Express endpoint
-app.get("/health/linear", async (req, res) => {
-  const health = await checkHealth(client);
-  res.status(health.status === "unhealthy" ? 503 : 200).json(health);
-});
-```
-
-## Deployment Verification Script
-
-```typescript
-// scripts/verify-deployment.ts
-import { LinearClient } from "@linear/sdk";
-
-async function verify(): Promise<void> {
-  console.log("Verifying Linear integration...\n");
-
-  const checks = [
-    {
-      name: "Environment variables",
-      check: async () => !!(process.env.LINEAR_API_KEY && process.env.LINEAR_WEBHOOK_SECRET),
-    },
-    {
-      name: "API authentication",
-      check: async () => { await new LinearClient({ apiKey: process.env.LINEAR_API_KEY! }).viewer; return true; },
-    },
-    {
-      name: "Team access",
-      check: async () => {
-        const client = new LinearClient({ apiKey: process.env.LINEAR_API_KEY! });
-        const teams = await client.teams();
-        return teams.nodes.length > 0;
-      },
-    },
-    {
-      name: "Write capability",
-      check: async () => {
-        const client = new LinearClient({ apiKey: process.env.LINEAR_API_KEY! });
-        const teams = await client.teams();
-        const r = await client.createIssue({
-          teamId: teams.nodes[0].id,
-          title: "[DEPLOY-CHECK] Safe to delete",
-        });
-        if (r.success) {
-          const issue = await r.issue;
-          await issue?.delete();
-        }
-        return r.success;
-      },
-    },
-  ];
-
-  let passed = 0;
-  let failed = 0;
-
-  for (const { name, check } of checks) {
-    try {
-      const ok = await check();
-      console.log(ok ? `  PASS: ${name}` : `  FAIL: ${name}`);
-      ok ? passed++ : failed++;
-    } catch (error: any) {
-      console.log(`  FAIL: ${name} — ${error.message}`);
-      failed++;
-    }
-  }
-
-  console.log(`\nResults: ${passed} passed, ${failed} failed`);
-  if (failed > 0) process.exit(1);
-}
-
-verify();
-```
-
-## Post-Deployment Monitoring
-
-```typescript
-// Key metrics to track after deploy
-const ALERT_THRESHOLDS = {
-  errorRate: 0.01,        // Alert if >1% of requests fail
-  p99LatencyMs: 3000,     // Alert if p99 > 3 seconds
-  rateLimitRemaining: 100, // Alert if remaining requests < 100
-};
-
-// First 30 minutes after deploy: watch for
-// - Auth failures (key mismatch between environments)
-// - Rate limit spikes (init burst fetching too much data)
-// - Webhook signature failures (secret not updated in new env)
-```
+Return the workspace and team scope, auth mode without credential value, files and contracts inspected, exact operation names, evidence collected, validation result, sensitive fields redacted, remaining risk, accountable owner, approval state, and rollback or next action.
 
 ## Error Handling
 
-| Issue | Cause | Solution |
-|-------|-------|----------|
-| Health check `unhealthy` | API key invalid/expired | Regenerate key, update secret manager |
-| Webhook sig fails in prod | Secret mismatch | Verify `LINEAR_WEBHOOK_SECRET` matches Linear webhook config |
-| Rate limit burst on deploy | Startup fetches too much | Add request queue, cache static data |
-| Deploy verification fails | Missing env vars | Run verification locally first |
+| Condition | Response |
+|---|---|
+| Evidence missing | Mark the gate incomplete; do not infer readiness from configuration. |
+| Rollback untested | Return no-go for a material mutation path. |
+| Shared quota unowned | Assign a workspace budget owner before launch. |
+| Sensitive logs | Block launch until redaction and retained-data cleanup are verified. |
+
+## Examples
+
+Use a compact handoff that makes scope, mutation authority, and verification evidence reviewable.
+
+Input:
+
+```text
+artifact=commit-sha; env=production; scope=two-teams; rollback=tested
+```
+
+Expected handoff:
+
+```text
+decision=conditional-go; blockers=listed; approvers=required
+```
 
 ## Resources
 
-- [Linear API Status](https://status.linear.app)
-- [Linear Security](https://linear.app/security)
-- [API Changelog](https://linear.app/changelog)
+- [Skill-specific official documentation](references/official-docs.md)
+- [Linear developer documentation index](https://linear.app/llms.txt)
+- [Linear GraphQL API](https://linear.app/developers/graphql.md)

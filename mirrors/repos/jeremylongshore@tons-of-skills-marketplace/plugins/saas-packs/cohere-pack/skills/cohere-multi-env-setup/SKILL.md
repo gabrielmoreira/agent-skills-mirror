@@ -1,278 +1,91 @@
 ---
 name: cohere-multi-env-setup
-description: 'Configure Cohere across development, staging, and production environments.
-
-  Use when setting up multi-environment deployments, configuring per-environment
-
-  API keys, model selection, and rate limit strategies.
-
-  Trigger with phrases like "cohere environments", "cohere staging",
-
-  "cohere dev prod", "cohere environment setup", "cohere config by env".
-
-  '
-allowed-tools: Read, Write, Edit, Bash(aws:*), Bash(gcloud:*), Bash(vault:*)
-version: 1.5.0
-license: MIT
+description: >-
+  Configure Cohere development, staging, and production with separate keys, model resolution, budgets, and promotion evidence. Use when operating Cohere across environments. Trigger with "Cohere environments", "Cohere staging", or "Cohere dev prod setup".
+argument-hint: "[repository-path] [dev|staging|production]"
+allowed-tools: Read, Glob, Grep, WebFetch, Write, Edit
+version: 1.6.0
 author: Jeremy Longshore <jeremy@intentsolutions.io>
+license: MIT
 tags:
 - saas
-- ai
-- nlp
 - cohere
-compatibility: Designed for Claude Code
+- environments
+model: inherit
+effort: high
+compatibility: Designed for Claude Code; live verification requires network access and an approved Cohere API key
 ---
-# Cohere Multi-Environment Setup
+# Cohere Multi-Environment Configuration
 
 ## Overview
 
-Configure Cohere API v2 across dev/staging/prod with environment-specific API keys, model selection, and budget controls.
+Keep credentials and capacity isolated while promoting one versioned provider contract through increasingly production-like environments.
 
 ## Prerequisites
 
-- Separate Cohere API keys per environment (trial for dev, production for staging/prod)
-- Secret management solution (Vault, AWS Secrets Manager, GCP Secret Manager)
-- Environment detection in application
+- The target repository, runtime, environment, and accountable owner
+- An approved Cohere team and key for any live verification
+- Current quality, security, privacy, capacity, and change-control requirements
 
-## Environment Strategy
+## Tool Discipline
 
-| Environment | API Key Type | Model | maxTokens | Caching |
-|-------------|-------------|-------|-----------|---------|
-| Development | Trial (free) | `command-r7b-12-2024` | 200 | Disabled |
-| Staging | Production | `command-r-08-2024` | 1000 | Enabled |
-| Production | Production | `command-a-03-2025` | 4096 | Enabled |
+Use `Read`, `Glob`, and `Grep` to inspect code, configuration, and evidence. Use `WebFetch` only for current Cohere primary documentation. Use `Write` or `Edit` only when the user requested implementation and the exact target files are known; never write credentials or customer content.
+
+## Current Contract
+
+- Use separate keys or provider deployments per environment and never fall back from production to an evaluation key.
+- Resolve model availability per environment because Cohere platform and cloud-provider IDs differ.
+- Promote configuration references, not secret values.
+- Keep evaluation fixtures synthetic or approved and align staging limits closely enough to expose production failure modes.
+
+## Authentication
+
+Use an environment-specific key injected from an approved secret manager. Never print, persist, commit, or place `CO_API_KEY` in an example. Confirm access with the least costly bounded operation appropriate to the task, and treat key creation, rotation, revocation, role changes, and production-capacity requests as owner-approved actions.
 
 ## Instructions
 
-### Step 1: Configuration Structure
+1. Inventory environments, accounts, teams, cloud platforms, keys, owners, and data classes.
+2. Define a validated configuration schema for provider, base URL, model IDs, timeouts, retries, and budgets.
+3. Store secrets in environment-specific managers and bind access to runtime identities.
+4. Run the same offline contracts everywhere and a bounded provider probe only in trusted environments.
+5. Promote resolved configuration through review with quality, capacity, and rollback evidence.
+6. Continuously detect key reuse, model drift, missing budgets, and unauthorized configuration changes.
 
-```typescript
-// src/config/cohere.ts
-type Environment = 'development' | 'staging' | 'production';
+## Approval Boundaries
 
-interface CohereEnvConfig {
-  chatModel: string;
-  embedModel: string;
-  rerankModel: string;
-  maxTokens: number;
-  cacheEnabled: boolean;
-  cacheTtlMs: number;
-  retries: number;
-  timeoutSeconds: number;
-}
-
-const configs: Record<Environment, CohereEnvConfig> = {
-  development: {
-    chatModel: 'command-r7b-12-2024',    // Fastest, cheapest
-    embedModel: 'embed-v4.0',
-    rerankModel: 'rerank-v3.5',
-    maxTokens: 200,                       // Limit for dev
-    cacheEnabled: false,                   // See real responses
-    cacheTtlMs: 0,
-    retries: 1,                            // Fail fast in dev
-    timeoutSeconds: 30,
-  },
-  staging: {
-    chatModel: 'command-r-08-2024',       // Mid-tier for testing
-    embedModel: 'embed-v4.0',
-    rerankModel: 'rerank-v3.5',
-    maxTokens: 1000,
-    cacheEnabled: true,
-    cacheTtlMs: 5 * 60 * 1000,           // 5 minutes
-    retries: 3,
-    timeoutSeconds: 60,
-  },
-  production: {
-    chatModel: 'command-a-03-2025',       // Best quality
-    embedModel: 'embed-v4.0',
-    rerankModel: 'rerank-v3.5',
-    maxTokens: 4096,
-    cacheEnabled: true,
-    cacheTtlMs: 15 * 60 * 1000,          // 15 minutes
-    retries: 5,
-    timeoutSeconds: 120,
-  },
-};
-
-function detectEnvironment(): Environment {
-  const env = process.env.NODE_ENV ?? 'development';
-  if (['development', 'staging', 'production'].includes(env)) {
-    return env as Environment;
-  }
-  return 'development';
-}
-
-export function getCohereConfig(): CohereEnvConfig & { environment: Environment } {
-  const env = detectEnvironment();
-  return { ...configs[env], environment: env };
-}
-```
-
-### Step 2: Environment-Aware Client
-
-```typescript
-// src/cohere/client.ts
-import { CohereClientV2 } from 'cohere-ai';
-import { getCohereConfig } from '../config/cohere';
-
-let instance: CohereClientV2 | null = null;
-
-export function getCohere(): CohereClientV2 {
-  if (!instance) {
-    const config = getCohereConfig();
-
-    if (!process.env.CO_API_KEY) {
-      throw new Error(`CO_API_KEY not set for ${config.environment} environment`);
-    }
-
-    instance = new CohereClientV2({
-      token: process.env.CO_API_KEY,
-      timeoutInSeconds: config.timeoutSeconds,
-    });
-
-    console.log(`[cohere] Initialized for ${config.environment} (model: ${config.chatModel})`);
-  }
-  return instance;
-}
-```
-
-### Step 3: Secret Management
-
-```bash
-# --- Local Development ---
-# .env.local (git-ignored)
-CO_API_KEY=trial-key-for-dev
-
-# --- GitHub Actions (CI) ---
-gh secret set CO_API_KEY --body "production-key-for-ci"
-
-# --- AWS Secrets Manager ---
-aws secretsmanager create-secret \
-  --name cohere/staging/api-key \
-  --secret-string "staging-production-key"
-
-aws secretsmanager create-secret \
-  --name cohere/production/api-key \
-  --secret-string "prod-production-key"
-
-# --- GCP Secret Manager ---
-echo -n "staging-key" | gcloud secrets create cohere-api-key-staging --data-file=-
-echo -n "prod-key" | gcloud secrets create cohere-api-key-prod --data-file=-
-
-# --- HashiCorp Vault ---
-vault kv put secret/cohere/staging api_key="staging-key"
-vault kv put secret/cohere/production api_key="prod-key"
-```
-
-### Step 4: Environment Guards
-
-```typescript
-// Prevent expensive operations in development
-function guardExpensiveOperation(operation: string): void {
-  const config = getCohereConfig();
-
-  if (config.environment === 'development') {
-    // In dev, warn but don't block
-    console.warn(`[cohere] ${operation} using trial key — limited to 20 calls/min`);
-  }
-}
-
-// Prevent development keys in production
-function validateKeyForEnv(): void {
-  const config = getCohereConfig();
-  const key = process.env.CO_API_KEY ?? '';
-
-  if (config.environment === 'production' && key.length < 30) {
-    throw new Error('Production requires a production API key (not trial)');
-  }
-}
-```
-
-### Step 5: Per-Environment API Calls
-
-```typescript
-import { getCohereConfig } from '../config/cohere';
-
-export async function chat(message: string): Promise<string> {
-  const config = getCohereConfig();
-  const cohere = getCohere();
-
-  const response = await cohere.chat({
-    model: config.chatModel,     // Environment-specific model
-    messages: [{ role: 'user', content: message }],
-    maxTokens: config.maxTokens, // Environment-specific limit
-  });
-
-  return response.message?.content?.[0]?.text ?? '';
-}
-
-export async function embed(texts: string[]): Promise<number[][]> {
-  const config = getCohereConfig();
-  const cohere = getCohere();
-
-  const response = await cohere.embed({
-    model: config.embedModel,
-    texts,
-    inputType: 'search_document',
-    embeddingTypes: config.environment === 'development' ? ['float'] : ['int8'], // Cheaper in prod
-  });
-
-  return response.embeddings.float ?? response.embeddings.int8;
-}
-```
-
-### Step 6: Docker Compose for Local Multi-Env Testing
-
-```yaml
-# docker-compose.yml
-services:
-  app-dev:
-    build: .
-    environment:
-      - NODE_ENV=development
-      - CO_API_KEY=${CO_API_KEY_DEV}
-    ports:
-      - "3000:3000"
-
-  app-staging:
-    build: .
-    environment:
-      - NODE_ENV=staging
-      - CO_API_KEY=${CO_API_KEY_STAGING}
-    ports:
-      - "3001:3000"
-```
+Do not expose or rotate keys, change Cohere Team roles, accept commercial terms, enable sensitive production data, increase spend or capacity, switch production models, send a support bundle, or execute model-proposed side effects without the accountable owner's approval. Keep diagnosis read-only unless implementation was requested.
 
 ## Output
 
-- Per-environment Cohere configuration (model, tokens, timeout)
-- Secret management across dev/staging/prod
-- Environment guards preventing misuse
-- Docker compose for local multi-env testing
+Return the resolved API and model contract, files or settings inspected, evidence collected, validation result, remaining risk, owner, and rollback or next action. Redact keys, authorization headers, prompts, retrieved documents, embeddings, customer identifiers, and unrestricted environment output.
 
 ## Error Handling
 
-| Issue | Cause | Solution |
-|-------|-------|----------|
-| Trial key in production | Wrong secret | Validate key length at startup |
-| Rate limited in dev | Trial key limits | Use 20 calls/min budget |
-| Model not found | Typo in config | Validate model IDs at startup |
-| Config merge fails | Missing environment | Default to development |
+| Condition | Response |
+|---|---|
+| Shared key | Create environment-specific credentials and rotate the shared value. |
+| Model unavailable | Resolve the correct platform ID; do not silently switch models. |
+| Config drift | Block promotion until the reviewed schema and deployment agree. |
+| Trial key in production | Fail startup or readiness and escalate to the owner. |
 
 ## Examples
 
-Configure staging with its own secret reference, model allow-list, token budget,
-and non-production destination, then prove a production identifier is rejected
-by startup guards. If an environment receives the wrong key or configuration,
-stop deployment, rotate/review the boundary as needed, and correct it before
-promoting any workload.
+Use this compact handoff shape to keep the selected scope, validation evidence, and operational result reviewable.
+
+Input:
+
+```text
+environments=dev,staging,prod; provider=cohere-platform; promote=config-only
+```
+
+Expected handoff:
+
+```text
+keys=separate; models=resolved; schema=validated; promotion=evidenced
+```
 
 ## Resources
 
-- [Cohere API Keys](https://dashboard.cohere.com/api-keys)
-- [Cohere Rate Limits](https://docs.cohere.com/docs/rate-limits)
-- [12-Factor App Config](https://12factor.net/config)
-
-## Next Steps
-
-For observability setup, see `cohere-observability`.
+- [Skill-specific official documentation](references/official-docs.md)
+- [Create a client](https://docs.cohere.com/docs/create-client)
+- [Cloud compatibility](https://docs.cohere.com/docs/cohere-works-everywhere/)

@@ -10,6 +10,7 @@ OpenAI → Gemini → Seedream → Qwen → MiniMax → LinkAI; missing API keys
 are skipped, and the provider that natively owns the requested model is
 promoted to the front of the queue):
 
+    - gpt-image-2.5-flare / gpt-image-2.5-sunburst → OpenAI
     - gpt-image-2 / gpt-image-1                    → OpenAI
     - nano-banana / gemini-*-image-*               → Gemini
     - doubao-seedream-* / seedream-*               → Seedream (Volcengine Ark)
@@ -253,13 +254,14 @@ class ImageProvider(ABC):
 
 
 # ---------------------------------------------------------------------------
-# OpenAI-compatible provider (gpt-image-2, gpt-image-1)
+# OpenAI-compatible provider
+# (gpt-image-2.5-flare, gpt-image-2.5-sunburst, gpt-image-2, gpt-image-1)
 # ---------------------------------------------------------------------------
 
 class OpenAIProvider(ImageProvider):
     """Provider for OpenAI Image API (generations + edits)."""
 
-    DEFAULT_MODEL = "gpt-image-2"
+    DEFAULT_MODEL = "gpt-image-2.5-flare"
 
     def __init__(self, api_key: str, api_base: str, model: str):
         self.api_key = api_key
@@ -416,7 +418,7 @@ class OpenAIProvider(ImageProvider):
 class LinkAIProvider(ImageProvider):
     """Provider for LinkAI unified image generation API."""
 
-    DEFAULT_MODEL = "gpt-image-2"
+    DEFAULT_MODEL = "gpt-image-2.5-flare"
 
     def __init__(self, api_key: str, api_base: str, model: str):
         self.api_key = api_key
@@ -1061,6 +1063,7 @@ class MinimaxProvider(ImageProvider):
 # When the requested model matches a prefix, that provider is promoted to the
 # front of the queue. All other configured providers still run as fallbacks.
 _MODEL_PREFERRED_PROVIDER: list[tuple[tuple[str, ...], str]] = [
+    (("gpt-image-2.5",), "OpenAI"),
     (("gpt-image",), "OpenAI"),
     (("nano-banana", "gemini-"), "Gemini"),
     (("seedream", "doubao-seedream"), "Seedream"),

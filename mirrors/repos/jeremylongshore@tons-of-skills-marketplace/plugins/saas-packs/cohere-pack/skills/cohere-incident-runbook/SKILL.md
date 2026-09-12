@@ -1,292 +1,91 @@
 ---
 name: cohere-incident-runbook
-description: 'Execute Cohere incident response procedures with triage, mitigation,
-  and postmortem.
-
-  Use when responding to Cohere API outages, investigating errors,
-
-  or running post-incident reviews for Cohere integration failures.
-
-  Trigger with phrases like "cohere incident", "cohere outage",
-
-  "cohere down", "cohere on-call", "cohere emergency", "cohere broken".
-
-  '
-allowed-tools: Read, Grep, Bash(kubectl:*), Bash(curl:*)
-version: 1.5.0
-license: MIT
+description: >-
+  Analyze and mitigate Cohere integration incidents with provider, model, capacity, data, and application evidence plus reversible actions. Use when responding to an outage or serious degradation. Trigger with "Cohere incident", "Cohere outage", or "Cohere on-call".
+argument-hint: "[incident-id] [severity]"
+allowed-tools: Read, Glob, Grep, WebFetch, Write, Edit
+version: 1.6.0
 author: Jeremy Longshore <jeremy@intentsolutions.io>
+license: MIT
 tags:
 - saas
-- ai
-- nlp
 - cohere
-compatibility: Designed for Claude Code
+- incident-response
+model: inherit
+effort: high
+compatibility: Designed for Claude Code; live verification requires network access and an approved Cohere API key
 ---
 # Cohere Incident Runbook
 
 ## Overview
 
-Rapid incident response procedures for Cohere API v2 outages. Covers triage, mitigation, communication, and postmortem for Chat, Embed, Rerank, and Classify endpoints.
+Restore a safe user experience first, preserve evidence, and distinguish provider incidents from local regressions before making changes.
 
 ## Prerequisites
 
-- Access to [status.cohere.com](https://status.cohere.com)
-- kubectl access to production cluster
-- Prometheus/Grafana access
-- PagerDuty/Slack communication channels
+- The target repository, runtime, environment, and accountable owner
+- An approved Cohere team and key for any live verification
+- Current quality, security, privacy, capacity, and change-control requirements
 
-## Severity Levels
+## Tool Discipline
 
-| Level | Definition | Response Time | Example |
-|-------|------------|---------------|---------|
-| P1 | All Cohere endpoints down | < 15 min | API returning 5xx globally |
-| P2 | Degraded (rate limits, high latency) | < 1 hour | 429 errors, P95 > 10s |
-| P3 | Single endpoint affected | < 4 hours | Embed works, Chat fails |
-| P4 | Non-blocking issue | Next business day | Slow response, minor errors |
+Use `Read`, `Glob`, and `Grep` to inspect code, configuration, and evidence. Use `WebFetch` only for current Cohere primary documentation. Use `Write` or `Edit` only when the user requested implementation and the exact target files are known; never write credentials or customer content.
 
-## Quick Triage (Run These First)
+## Current Contract
 
-```bash
-# 1. Check Cohere service status
-curl -s https://status.cohere.com/api/v2/status.json | jq '.status.description'
+- Check Cohere's status page, but treat service-specific evidence as authoritative for your workload.
+- Separate authentication, billing, throttling, model retirement, provider `5xx`, retrieval, and application failures.
+- Use only pre-approved degradation paths such as queueing, cached answers, read-only mode, or an evaluated model route.
+- Never debug by dumping keys, prompts, documents, or unrestricted environment variables.
 
-# 2. Test each endpoint directly
-echo "--- Chat ---"
-curl -s -o /dev/null -w "%{http_code}" \
-  -X POST https://api.cohere.com/v2/chat \
-  -H "Authorization: Bearer $CO_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{"model":"command-r7b-12-2024","messages":[{"role":"user","content":"ping"}]}'
+## Authentication
 
-echo -e "\n--- Embed ---"
-curl -s -o /dev/null -w "%{http_code}" \
-  -X POST https://api.cohere.com/v2/embed \
-  -H "Authorization: Bearer $CO_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{"model":"embed-v4.0","texts":["test"],"input_type":"search_document","embedding_types":["float"]}'
-
-echo -e "\n--- Rerank ---"
-curl -s -o /dev/null -w "%{http_code}" \
-  -X POST https://api.cohere.com/v2/rerank \
-  -H "Authorization: Bearer $CO_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{"model":"rerank-v3.5","query":"test","documents":["a","b"]}'
-
-# 3. Check our app health
-curl -sf https://api.yourapp.com/api/health | jq '.cohere'
-
-# 4. Check error rate (last 5 min)
-curl -s "localhost:9090/api/v1/query?query=rate(cohere_errors_total[5m])" | jq '.data.result'
-```
-
-## Decision Tree
-
-```
-Cohere API returning errors?
-├─ YES: Is status.cohere.com showing incident?
-│   ├─ YES → Cohere-side outage. Enable fallback. Monitor status page.
-│   └─ NO → Check our API key and configuration.
-│       ├─ 401 → API key revoked or wrong. Check CO_API_KEY.
-│       ├─ 429 → Rate limited. Check if trial key in prod.
-│       ├─ 400 → Bad request. Check request format (v1 vs v2?).
-│       └─ 5xx → Cohere server issue. Retry with backoff.
-└─ NO: Is our app healthy?
-    ├─ YES → Intermittent. Monitor.
-    └─ NO → Our infrastructure. Check pods, memory, network.
-```
-
-## Immediate Actions by Error Type
-
-### 401 — Authentication Failure
-
-```bash
-# Verify API key is set
-kubectl get secret cohere-secrets -o jsonpath='{.data.CO_API_KEY}' | base64 -d | head -c4
-echo "..."
-
-# Test key directly
-curl -s -o /dev/null -w "%{http_code}" \
-  -H "Authorization: Bearer $(kubectl get secret cohere-secrets -o jsonpath='{.data.CO_API_KEY}' | base64 -d)" \
-  -H "Content-Type: application/json" \
-  https://api.cohere.com/v2/chat \
-  -d '{"model":"command-r7b-12-2024","messages":[{"role":"user","content":"test"}]}'
-
-# If key is invalid: rotate
-# 1. Generate new key at dashboard.cohere.com
-# 2. Update secret
-kubectl create secret generic cohere-secrets \
-  --from-literal=CO_API_KEY=NEW_KEY \
-  --dry-run=client -o yaml | kubectl apply -f -
-# 3. Restart pods
-kubectl rollout restart deployment/app
-```
-
-### 429 — Rate Limited
-
-```bash
-# Check if using trial key in production (trial = 20 calls/min)
-KEY_LEN=$(kubectl get secret cohere-secrets -o jsonpath='{.data.CO_API_KEY}' | base64 -d | wc -c)
-echo "Key length: $KEY_LEN chars"
-
-# If trial key: upgrade to production key at dashboard.cohere.com
-
-# If production key: reduce concurrency
-kubectl set env deployment/app COHERE_MAX_CONCURRENT=5
-
-# Enable request queuing
-kubectl set env deployment/app COHERE_QUEUE_ENABLED=true
-```
-
-### 5xx — Cohere Server Errors
-
-```bash
-# Enable graceful degradation
-kubectl set env deployment/app COHERE_FALLBACK_ENABLED=true
-
-# If using RAG: fall back to rerank-only (skip chat)
-# If using agents: fall back to cached responses
-
-# Monitor Cohere status page for resolution
-watch -n 30 'curl -s https://status.cohere.com/api/v2/status.json | jq .status.description'
-```
-
-## Graceful Degradation Pattern
-
-```typescript
-import { CohereError, CohereTimeoutError } from 'cohere-ai';
-
-async function resilientChat(message: string): Promise<string> {
-  try {
-    const response = await cohere.chat({
-      model: 'command-a-03-2025',
-      messages: [{ role: 'user', content: message }],
-    });
-    return response.message?.content?.[0]?.text ?? '';
-  } catch (err) {
-    if (err instanceof CohereError && err.statusCode === 429) {
-      // Fallback to cheaper model (may have separate rate limit)
-      const fallback = await cohere.chat({
-        model: 'command-r7b-12-2024',
-        messages: [{ role: 'user', content: message }],
-        maxTokens: 200,
-      });
-      return fallback.message?.content?.[0]?.text ?? '';
-    }
-
-    if (err instanceof CohereError && (err.statusCode ?? 0) >= 500) {
-      return 'Cohere is temporarily unavailable. Please try again shortly.';
-    }
-
-    throw err;
-  }
-}
-```
-
-## Communication Templates
-
-### Internal (Slack)
-
-```
-P[1-4] INCIDENT: Cohere Integration
-Status: INVESTIGATING / MITIGATED / RESOLVED
-Impact: [e.g., "RAG answers unavailable, chat degraded to cached responses"]
-Root cause: [e.g., "Cohere API returning 503 — confirmed on status.cohere.com"]
-Current action: [e.g., "Enabled fallback mode, monitoring for recovery"]
-Next update: [time]
-```
-
-### External (Status Page)
-
-```
-Cohere Integration — Degraded Performance
-
-Some AI-powered features may be slower than usual or temporarily unavailable.
-We are monitoring the situation and will provide updates as available.
-
-Last updated: [timestamp]
-```
-
-## Post-Incident
-
-### Evidence Collection
-
-```bash
-# Export error logs from incident window
-kubectl logs -l app=my-cohere-app --since=1h | grep -i "cohere\|CohereError" > incident-logs.txt
-
-# Export metrics
-curl "localhost:9090/api/v1/query_range?query=cohere_errors_total&start=$(date -d '2 hours ago' +%s)&end=$(date +%s)&step=60" > metrics.json
-
-# Cohere status history
-curl -s https://status.cohere.com/api/v2/incidents.json | jq '.incidents[:3]'
-```
-
-### Postmortem Template
-
-```markdown
-## Incident: Cohere [endpoint] [error type]
-**Date:** YYYY-MM-DD HH:MM - HH:MM UTC
-**Duration:** X hours Y minutes
-**Severity:** P[1-4]
-**Detection:** [Alert name / user report / health check]
-
-### Summary
-[1-2 sentences]
-
-### Timeline
-- HH:MM — Alert fired: cohere_errors_total spike
-- HH:MM — On-call acknowledged, began triage
-- HH:MM — Root cause identified: [cause]
-- HH:MM — Mitigation applied: [action]
-- HH:MM — Service restored
-
-### Root Cause
-[Was it Cohere-side (status page incident) or our configuration?]
-
-### Action Items
-- [ ] Add circuit breaker for [endpoint] — @owner — due date
-- [ ] Improve fallback for [scenario] — @owner — due date
-- [ ] Add alert for [missed signal] — @owner — due date
-```
-
-## Output
-
-- Triage completed with endpoint-level diagnosis
-- Immediate mitigation applied (fallback, key rotation, etc.)
-- Stakeholders notified via templates
-- Evidence collected for postmortem
+Use an environment-specific key injected from an approved secret manager. Never print, persist, commit, or place `CO_API_KEY` in an example. Confirm access with the least costly bounded operation appropriate to the task, and treat key creation, rotation, revocation, role changes, and production-capacity requests as owner-approved actions.
 
 ## Instructions
 
-Classify the affected model/endpoint and data sensitivity, stabilize outbound
-traffic with the approved fallback or circuit breaker, preserve redacted
-correlation/timing evidence, and communicate through the defined incident
-cadence. Restore the smallest safe change, then verify behavior and data
-integrity before closing or replaying queued work.
+1. Open the incident record and capture start time, impact, environment, endpoint, model, release, and correlation IDs.
+2. Check provider status and compare control traffic, regions, models, and recent local changes.
+3. Classify the failure and apply the smallest reversible mitigation within the incident authority matrix.
+4. Protect data and side effects while monitoring recovery against explicit thresholds.
+5. Escalate to Cohere with the redacted debug bundle when provider assistance is required.
+6. After recovery, verify normal quality and capacity, document timeline and cause, and assign preventive work.
+
+## Approval Boundaries
+
+Do not expose or rotate keys, change Cohere Team roles, accept commercial terms, enable sensitive production data, increase spend or capacity, switch production models, send a support bundle, or execute model-proposed side effects without the accountable owner's approval. Keep diagnosis read-only unless implementation was requested.
+
+## Output
+
+Return the resolved API and model contract, files or settings inspected, evidence collected, validation result, remaining risk, owner, and rollback or next action. Redact keys, authorization headers, prompts, retrieved documents, embeddings, customer identifiers, and unrestricted environment output.
 
 ## Error Handling
 
 | Condition | Response |
 |---|---|
-| Authentication/key compromise | Stop the affected workload, rotate through the secret owner, and verify scoped recovery. |
-| Provider outage or severe 5xx | Use the approved fallback/circuit breaker and preserve request state for safe retry. |
-| Rate/timeout exhaustion | Defer through bounded retry policy; do not amplify traffic. |
-| Unsafe output or data-handling concern | Disable affected feature path and engage the safety/data owner. |
+| Unknown cause | Prefer traffic reduction or safe degradation over speculative code changes. |
+| Credential suspected | Rotate through the security incident process. |
+| Model retired | Use only a pre-evaluated replacement or hold affected traffic. |
+| Recovery unstable | Keep the incident open and extend observation. |
 
 ## Examples
 
-During a provider outage, trip the model circuit breaker, keep queued work with
-idempotency keys, notify stakeholders using the template, and test recovery on
-a small staging request before reopening. If a key is exposed, rotate it and
-validate logs/configuration before processing any previously failed request.
+Use this compact handoff shape to keep the selected scope, validation evidence, and operational result reviewable.
+
+Input:
+
+```text
+incident=INC-77; symptom=429-spike; release=unchanged; status=investigating
+```
+
+Expected handoff:
+
+```text
+class=capacity; mitigation=queue-cap; impact=stable; evidence=preserved
+```
 
 ## Resources
 
-- [Cohere Status Page](https://status.cohere.com)
-- [Cohere Error Codes](https://docs.cohere.com/reference/errors)
-- [Cohere Support](https://support.cohere.com)
-
-## Next Steps
-
-For data handling, see `cohere-data-handling`.
+- [Skill-specific official documentation](references/official-docs.md)
+- [Cohere status](https://status.cohere.com)
+- [Going live](https://docs.cohere.com/docs/going-live)

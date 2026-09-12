@@ -1,364 +1,91 @@
 ---
 name: cohere-observability
-description: 'Set up comprehensive observability for Cohere API v2 with metrics, traces,
-  and alerts.
-
-  Use when implementing monitoring for Chat/Embed/Rerank operations,
-
-  setting up dashboards, or configuring alerts for Cohere integrations.
-
-  Trigger with phrases like "cohere monitoring", "cohere metrics",
-
-  "cohere observability", "monitor cohere", "cohere alerts", "cohere tracing".
-
-  '
-allowed-tools: Read, Write, Edit
-version: 1.5.0
-license: MIT
+description: >-
+  Instrument Cohere requests, streams, retrieval, tools, limits, quality, and cost with low-cardinality telemetry and safe traces. Use when monitoring a Cohere service. Trigger with "Cohere observability", "Cohere metrics", or "monitor Cohere".
+argument-hint: "[service] [telemetry-backend]"
+allowed-tools: Read, Glob, Grep, WebFetch, Write, Edit
+version: 1.6.0
 author: Jeremy Longshore <jeremy@intentsolutions.io>
+license: MIT
 tags:
 - saas
-- ai
-- nlp
 - cohere
-compatibility: Designed for Claude Code
+- observability
+model: inherit
+effort: high
+compatibility: Designed for Claude Code; live verification requires network access and an approved Cohere API key
 ---
 # Cohere Observability
 
 ## Overview
 
-Set up production observability for Cohere API v2 with Prometheus metrics, OpenTelemetry tracing, and AlertManager rules. Tracks per-endpoint latency, token usage, error rates, and costs.
+Expose enough evidence to separate application, retrieval, model, capacity, and provider failures without logging credentials or customer content.
 
 ## Prerequisites
 
-- Prometheus or compatible metrics backend
-- OpenTelemetry SDK installed
-- `cohere-ai` SDK v7+
+- The target repository, runtime, environment, and accountable owner
+- An approved Cohere team and key for any live verification
+- Current quality, security, privacy, capacity, and change-control requirements
+
+## Tool Discipline
+
+Use `Read`, `Glob`, and `Grep` to inspect code, configuration, and evidence. Use `WebFetch` only for current Cohere primary documentation. Use `Write` or `Edit` only when the user requested implementation and the exact target files are known; never write credentials or customer content.
+
+## Current Contract
+
+- Measure queue, retrieval, provider, first-event, completion, and tool durations separately.
+- Label metrics with bounded dimensions such as endpoint, operation, resolved model, environment, outcome, and retry class.
+- Keep prompts, documents, embeddings, keys, and raw tool arguments out of telemetry by default.
+- Pair operational metrics with sampled quality, citation, and safety evaluations.
+
+## Authentication
+
+Use an environment-specific key injected from an approved secret manager. Never print, persist, commit, or place `CO_API_KEY` in an example. Confirm access with the least costly bounded operation appropriate to the task, and treat key creation, rotation, revocation, role changes, and production-capacity requests as owner-approved actions.
 
 ## Instructions
 
-### Step 1: Metrics Collection
+1. Define service objectives and an allowlist of telemetry fields before instrumenting.
+2. Create counters for requests, outcomes, retries, throttles, circuit transitions, and tool decisions.
+3. Create histograms for queue, retrieval, provider, first-event, completion, and end-to-end duration.
+4. Record usage and cost units without tenant names or unbounded request IDs as metric labels.
+5. Build alerts for availability, sustained throttling, queue age, latency, quality, and spend.
+6. Test redaction, trace propagation, stream cancellation, and incident correlation.
 
-```typescript
-import { Registry, Counter, Histogram, Gauge } from 'prom-client';
+## Approval Boundaries
 
-const registry = new Registry();
-
-// Per-endpoint request counter
-const requestCounter = new Counter({
-  name: 'cohere_requests_total',
-  help: 'Total Cohere API requests',
-  labelNames: ['endpoint', 'model', 'status'],
-  registers: [registry],
-});
-
-// Latency histogram
-const requestDuration = new Histogram({
-  name: 'cohere_request_duration_seconds',
-  help: 'Cohere request duration',
-  labelNames: ['endpoint', 'model'],
-  buckets: [0.1, 0.25, 0.5, 1, 2.5, 5, 10, 30],
-  registers: [registry],
-});
-
-// Token usage tracking
-const tokenCounter = new Counter({
-  name: 'cohere_tokens_total',
-  help: 'Total tokens consumed',
-  labelNames: ['endpoint', 'model', 'direction'], // direction: input|output
-  registers: [registry],
-});
-
-// Error counter by type
-const errorCounter = new Counter({
-  name: 'cohere_errors_total',
-  help: 'Cohere errors by status code',
-  labelNames: ['endpoint', 'status_code'],
-  registers: [registry],
-});
-
-// Rate limit headroom
-const rateLimitGauge = new Gauge({
-  name: 'cohere_rate_limit_remaining',
-  help: 'Remaining rate limit capacity',
-  labelNames: ['endpoint'],
-  registers: [registry],
-});
-```
-
-### Step 2: Instrumented Client Wrapper
-
-```typescript
-import { CohereClientV2, CohereError, CohereTimeoutError } from 'cohere-ai';
-
-const cohere = new CohereClientV2();
-
-async function instrumentedCall<T>(
-  endpoint: string,
-  model: string,
-  operation: () => Promise<T>
-): Promise<T> {
-  const timer = requestDuration.startTimer({ endpoint, model });
-
-  try {
-    const result = await operation();
-    requestCounter.inc({ endpoint, model, status: 'success' });
-    timer();
-
-    // Track tokens from response
-    const usage = (result as any)?.usage?.billedUnits;
-    if (usage) {
-      if (usage.inputTokens) {
-        tokenCounter.inc({ endpoint, model, direction: 'input' }, usage.inputTokens);
-      }
-      if (usage.outputTokens) {
-        tokenCounter.inc({ endpoint, model, direction: 'output' }, usage.outputTokens);
-      }
-    }
-
-    return result;
-  } catch (err) {
-    requestCounter.inc({ endpoint, model, status: 'error' });
-    timer();
-
-    if (err instanceof CohereError) {
-      errorCounter.inc({ endpoint, status_code: String(err.statusCode) });
-    } else if (err instanceof CohereTimeoutError) {
-      errorCounter.inc({ endpoint, status_code: 'timeout' });
-    }
-
-    throw err;
-  }
-}
-
-// Usage
-const response = await instrumentedCall('chat', 'command-a-03-2025', () =>
-  cohere.chat({
-    model: 'command-a-03-2025',
-    messages: [{ role: 'user', content: query }],
-  })
-);
-```
-
-### Step 3: OpenTelemetry Tracing
-
-```typescript
-import { trace, SpanStatusCode, SpanKind } from '@opentelemetry/api';
-
-const tracer = trace.getTracer('cohere-client', '1.0.0');
-
-async function tracedCohereCall<T>(
-  endpoint: string,
-  model: string,
-  operation: () => Promise<T>
-): Promise<T> {
-  return tracer.startActiveSpan(
-    `cohere.${endpoint}`,
-    { kind: SpanKind.CLIENT },
-    async (span) => {
-      span.setAttribute('cohere.model', model);
-      span.setAttribute('cohere.endpoint', endpoint);
-
-      try {
-        const result = await operation();
-
-        // Add token usage to span
-        const usage = (result as any)?.usage?.billedUnits;
-        if (usage) {
-          span.setAttribute('cohere.tokens.input', usage.inputTokens ?? 0);
-          span.setAttribute('cohere.tokens.output', usage.outputTokens ?? 0);
-        }
-
-        span.setStatus({ code: SpanStatusCode.OK });
-        return result;
-      } catch (err: any) {
-        span.setStatus({ code: SpanStatusCode.ERROR, message: err.message });
-        span.recordException(err);
-
-        if (err instanceof CohereError) {
-          span.setAttribute('cohere.error.status', err.statusCode ?? 0);
-        }
-        throw err;
-      } finally {
-        span.end();
-      }
-    }
-  );
-}
-```
-
-### Step 4: Structured Logging
-
-```typescript
-import pino from 'pino';
-
-const logger = pino({ name: 'cohere', level: process.env.LOG_LEVEL ?? 'info' });
-
-function logCohereCall(
-  endpoint: string,
-  model: string,
-  durationMs: number,
-  status: 'success' | 'error',
-  meta?: Record<string, unknown>
-) {
-  logger[status === 'error' ? 'error' : 'info']({
-    endpoint,
-    model,
-    durationMs,
-    status,
-    ...meta,
-  }, 'Cohere API call');
-}
-
-// Combined instrumentation
-async function observedCall<T>(
-  endpoint: string,
-  model: string,
-  fn: () => Promise<T>
-): Promise<T> {
-  return tracedCohereCall(endpoint, model, () =>
-    instrumentedCall(endpoint, model, async () => {
-      const start = Date.now();
-      try {
-        const result = await fn();
-        logCohereCall(endpoint, model, Date.now() - start, 'success', {
-          tokens: (result as any)?.usage?.billedUnits,
-        });
-        return result;
-      } catch (err) {
-        logCohereCall(endpoint, model, Date.now() - start, 'error', {
-          error: err instanceof CohereError ? err.statusCode : 'timeout',
-        });
-        throw err;
-      }
-    })
-  );
-}
-```
-
-### Step 5: Alert Rules
-
-```yaml
-# prometheus/cohere-alerts.yml
-groups:
-  - name: cohere
-    rules:
-      - alert: CohereHighErrorRate
-        expr: |
-          rate(cohere_errors_total[5m]) /
-          rate(cohere_requests_total[5m]) > 0.05
-        for: 5m
-        labels:
-          severity: warning
-        annotations:
-          summary: "Cohere error rate > 5%"
-          description: "{{ $labels.endpoint }} error rate: {{ $value | humanizePercentage }}"
-
-      - alert: CohereRateLimited
-        expr: rate(cohere_errors_total{status_code="429"}[5m]) > 0.1
-        for: 2m
-        labels:
-          severity: warning
-        annotations:
-          summary: "Cohere rate limiting detected"
-
-      - alert: CohereHighLatency
-        expr: |
-          histogram_quantile(0.95,
-            rate(cohere_request_duration_seconds_bucket[5m])
-          ) > 10
-        for: 5m
-        labels:
-          severity: warning
-        annotations:
-          summary: "Cohere P95 latency > 10s"
-
-      - alert: CohereAuthFailure
-        expr: cohere_errors_total{status_code="401"} > 0
-        for: 1m
-        labels:
-          severity: critical
-        annotations:
-          summary: "Cohere authentication failure — check API key"
-
-      - alert: CohereHighTokenBurn
-        expr: rate(cohere_tokens_total[1h]) > 100000
-        for: 15m
-        labels:
-          severity: warning
-        annotations:
-          summary: "Cohere token burn rate > 100K/hour"
-```
-
-### Step 6: Metrics Endpoint
-
-```typescript
-// GET /metrics
-import express from 'express';
-
-const app = express();
-
-app.get('/metrics', async (req, res) => {
-  res.set('Content-Type', registry.contentType);
-  res.send(await registry.metrics());
-});
-```
-
-## Dashboard Panels (Grafana)
-
-| Panel | Query | Type |
-|-------|-------|------|
-| Request Rate | `rate(cohere_requests_total[5m])` | Time series |
-| Error Rate | `rate(cohere_errors_total[5m]) / rate(cohere_requests_total[5m])` | Stat |
-| P50/P95 Latency | `histogram_quantile(0.95, rate(cohere_request_duration_seconds_bucket[5m]))` | Time series |
-| Token Usage | `rate(cohere_tokens_total[1h])` | Bar chart |
-| Errors by Code | `sum by (status_code)(rate(cohere_errors_total[5m]))` | Pie chart |
+Do not expose or rotate keys, change Cohere Team roles, accept commercial terms, enable sensitive production data, increase spend or capacity, switch production models, send a support bundle, or execute model-proposed side effects without the accountable owner's approval. Keep diagnosis read-only unless implementation was requested.
 
 ## Output
 
-- Prometheus metrics for requests, latency, tokens, and errors
-- OpenTelemetry traces with Cohere-specific attributes
-- Structured JSON logging with pino
-- AlertManager rules for error rate, latency, auth, and cost
+Return the resolved API and model contract, files or settings inspected, evidence collected, validation result, remaining risk, owner, and rollback or next action. Redact keys, authorization headers, prompts, retrieved documents, embeddings, customer identifiers, and unrestricted environment output.
 
 ## Error Handling
 
-| Issue | Cause | Solution |
-|-------|-------|----------|
-| Missing token metrics | Usage not in response | Check `response.usage.billedUnits` |
-| High cardinality | Too many model labels | Use model family, not exact version |
-| Alert storm | Threshold too low | Tune thresholds for your traffic |
-| Trace gaps | Missing context propagation | Ensure OTel context flows through async |
+| Condition | Response |
+|---|---|
+| Cardinality spike | Remove unbounded labels and aggregate request identifiers in logs only. |
+| Prompt in trace | Redact it and review retained telemetry as a data incident. |
+| Missing terminal event | Mark the stream incomplete and count a distinct outcome. |
+| False provider alert | Split local queue/retrieval time from Cohere duration. |
 
 ## Examples
 
-Treat client inputs and model responses as sensitive by default. This example emits
-only an operation name, model, duration, and token counts; it does not attach prompt
-text, retrieved documents, API keys, or full response bodies to metrics, logs, or spans.
+Use this compact handoff shape to keep the selected scope, validation evidence, and operational result reviewable.
 
-```typescript
-const result = await observedCall('rerank', 'rerank-v3.5', () =>
-  cohere.rerank({
-    model: 'rerank-v3.5',
-    query: userQuery,
-    documents: candidateIds.map(id => lookupDocument(id).title),
-    topN: 5,
-  }),
-);
+Input:
 
-logger.info({ returned: result.results.length }, 'rerank completed');
+```text
+service=rag-api; backend=otel; content-logging=off; quality-sampling=1%
 ```
 
-Route the `CohereAuthFailure` alert to the credential owner. Rotate or revoke the
-affected credential through the approved secret manager, then verify recovery with a
-single minimal request; do not paste the key into dashboards, tickets, or chat.
+Expected handoff:
+
+```text
+metrics=bounded; traces=redacted; slo=defined; alerts=tested
+```
 
 ## Resources
 
-- [Prometheus Naming Conventions](https://prometheus.io/docs/practices/naming/)
-- [OpenTelemetry JS](https://opentelemetry.io/docs/languages/js/)
-- [Cohere API Reference](https://docs.cohere.com/reference/about)
-
-## Next Steps
-
-For incident response, see `cohere-incident-runbook`.
+- [Skill-specific official documentation](references/official-docs.md)
+- [Cohere status](https://status.cohere.com)
+- [Error reference](https://docs.cohere.com/reference/errors)

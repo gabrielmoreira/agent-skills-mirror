@@ -5,7 +5,7 @@ license: MIT
 metadata:
   author: Vignesh Prasad
   github: https://github.com/ViGi-P/skillshilp
-  version: "2.1.0"
+  version: "2.1.1"
   purpose: meta-skill
 ---
 
@@ -90,7 +90,11 @@ Map concrete examples to reusable artifacts:
 
 Create only the directories that add value.
 
-Typical portable layout:
+### Skill Directory
+
+A skill is a directory whose required entry point is `SKILL.md`.
+
+Typical portable skill layout:
 
 ```text
 skill-name/
@@ -99,6 +103,14 @@ skill-name/
 ├── scripts/
 └── assets/
 ```
+
+The skill directory itself is independent of the directory used by an agent or client to discover it.
+
+ For project-level skills, `.agents/skills/<skill-name>/` is a widely adopted cross-client convention, but it is not required by the Agent Skills specification. Clients may use their own discovery directories.
+
+ When creating a skill in a project, use the host/client's documented skill directory when one is provided. Do not hard-code `.agents/skills/` when the environment specifies another location.
+
+ When creating a standalone or distributable skill, create the skill directory itself and do not add a client-specific parent directory unless requested.
 
 Do not create `README.md` or other auxiliary documentation unless the user requests distribution-facing docs.
 
@@ -152,12 +164,14 @@ Do not add product-specific metadata, client configuration, or product-specific 
 
 Generate:
 
-- directory tree
+- the skill directory at the requested or host-provided destination
 - valid frontmatter
 - concise `SKILL.md`
 - supporting reference files
 - scripts when appropriate
 - assets when appropriate
+
+Do not assume that the skill repository's source directory, the skill's installation directory, and the client's discovery directory are the same location.
 
 Descriptions should clearly explain:
 
@@ -190,6 +204,8 @@ When a skill directory exists on disk, run:
 ```bash
 scripts/validate-skill.sh <skill-dir>
 ```
+
+`<skill-dir>` refers to the skill directory itself, not its parent discovery directory. For example, `.agents/skills/my-skill/` is the skill directory; `.agents/skills/` is its discovery directory.
 
 Validate against:
 

@@ -54,7 +54,8 @@ Only the former is a papercut.
    - [ ] `YYYY-MM-DDTHH:MM:SSZ` — `agent` — <friction, and the smallest useful fix or workaround>.
    ```
 
-3. Keep it to one or two sentences: what got in the way, and the likely repo-side
+3. Keep it to one or two sentences: a current example (command/error or affected
+   path), who it blocks or what time it wastes, and the smallest useful repo-side
    fix. Lead with the friction, not with what you were doing.
 4. Continue the original task. Do not expand a papercut into unrelated work.
 
@@ -65,15 +66,23 @@ PR or task identifier only when it helps future triage.
 
 Only mine a whole session or do a broad review when the user explicitly asks.
 
-When asked to review the file:
+For a review or prioritization request, inspect and recommend; do not edit the
+log or implement fixes unless the user also asks for cleanup or implementation.
+Carry out an authorized cleanup using the same triage:
 
-1. Re-run the two-question test on every open entry; delete any that fail it
-   (environment/shell/flake noise that slipped in).
+1. Re-run the two-question test on every open entry; recommend removing entries
+   that fail it (environment/shell/flake noise that slipped in).
 2. Deduplicate and group related entries.
-3. Verify each surviving papercut still reproduces.
-4. Fix the smallest safe, high-leverage entries first.
-5. Move fixed items to `## Resolved`, check them, and append the resolving date
-   or commit. Route real bugs to normal issue/fix work; route recurring
+3. Check whether each surviving papercut still reproduces. Distinguish reproduced
+   failures, source inspection, and historical reports you could not verify.
+4. Prioritize current impact against review and maintenance cost. Prefer an
+   existing command or a short documentation fix over new helpers, dependencies,
+   or setup hooks. Defer hypothetical improvements until a concrete need appears.
+5. For an authorized cleanup, remove noise, consolidate duplicates, and implement
+   the agreed fixes. Move fixed items to `## Resolved`, check them, and append the
+   resolving date or commit. Keep deferred reports separate from actionable open
+   work, with a reason and a concrete trigger to revisit. Route real bugs to
+   normal issue/fix work; route recurring
    review-policy gaps through `maintain-greptile-rules`.
 
 Preserve useful history for genuinely-resolved papercuts; do not delete them

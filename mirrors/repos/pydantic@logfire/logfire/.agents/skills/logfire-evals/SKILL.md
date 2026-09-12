@@ -35,7 +35,8 @@ Skip straight to Step 5 (Verify) — the SDK's own printed result URL also opens
 
 For an explicitly local-only run without span evaluators, use a fresh process that neither preloads nor imports application telemetry; omit Python's `logfire.configure()` and any Node.js exporter bootstrap. If the task configures an exporter and has no documented disable switch, stop rather than claiming local-only. Uploading, hosted datasets, and span evaluators require Logfire authentication to the exact project.
 
-For a Logfire-backed run, use [Authenticate and Select the Exact Project](https://pydantic.dev/.well-known/agent-skills/logfire-instrumentation/references/auth.md) to derive the CLI target from the supplied Logfire URL and run its target-aware `whoami` check. Skip to Step 3 if that already reports the right project and resolved `--region` or `--base-url` target; otherwise, continue through the full authentication and project-selection sequence there. This CLI flow is for `logfire.configure()`; Step 3's hosted-dataset operations use a separate API key with different scopes.
+For a Logfire-backed run, use [Authenticate and Select the Exact Project](https://pydantic.dev/.well-known/agent-skills/logfire-instrumentation/references/auth.md) to derive the CLI target from the supplied Logfire URL and run its target-aware `whoami` check with a verified CLI path — for JS/TS projects without `uv`, use the external-prefix npm fallback instead of plain `npx`, which can execute a repository-local binary. Skip to Step 3 if that already reports the right project and resolved `--region` or `--base-url` target; otherwise, continue through the full authentication and project-selection sequence there. This CLI flow is for `logfire.configure()`; Step 3's hosted-dataset operations use a separate API key with different scopes.
+
 
 ## Step 3: Detect What to Evaluate
 
@@ -46,13 +47,11 @@ Identify the real task and any dataset. Follow repository package, test, and dep
 
 ## Step 4: Define the Dataset and Run It
 
-Use the repository's existing package manager. Install only the missing integration for its language.
+Use the repository's existing package manager and lockfile. Install only the missing integration for its language.
 
 ### Python
 
-```bash
-uv add 'pydantic-evals[logfire]'
-```
+Add `pydantic-evals[logfire]` with the detected Python manager: `uv add`, `poetry add`, or `pdm add`. For a pip/requirements project, update its declared requirements and install from that file; do not introduce a second manager or lockfile.
 
 ```python
 import logfire
@@ -84,11 +83,7 @@ Use `logfire[datasets]` instead only when the task specifically needs the hosted
 
 Do not apply this section to Deno, Bun, browsers, or workers; their exporter setup is not validated by this skill.
 
-Add `logfire` and the Node exporter if missing:
-
-```bash
-npm install logfire @pydantic/logfire-node
-```
+Add `logfire` and `@pydantic/logfire-node` with the manager selected by the existing lockfile: `pnpm add`, `yarn add`, `bun add`, or `npm install`. Do not introduce a second lockfile.
 
 Configure Logfire before loading the task. Reuse an existing instrumentation entry point rather than configuring it twice.
 
@@ -105,9 +100,9 @@ const dataset = new Dataset<string, string>({
   evaluators: [new EqualsExpected()],
 })
 
-dataset.evaluate(classifySentiment).then((report) => {
+await dataset.evaluate(classifySentiment).then((report) => {
   console.log(renderReport(report, { includeInput: true, includeOutput: true }))
-})
+}).finally(() => logfire.shutdown({ timeoutMillis: 5000 }))
 ```
 
 Other built-ins include `Equals`, `Contains`, `IsInstance`, `MaxDuration`, `HasMatchingSpan`, and `LLMJudge`. Node.js custom evaluators extend `Evaluator`, and `LLMJudge` needs a judge callback. Use `@pydantic/logfire-node/datasets` only for hosted datasets.
@@ -138,9 +133,9 @@ const smoke = new Dataset({
   evaluators: dataset.evaluators,
   reportEvaluators: dataset.reportEvaluators,
 })
-smoke.evaluate(classifySentiment).then((report) => {
+await smoke.evaluate(classifySentiment).then((report) => {
   console.log(renderReport(report, { includeInput: true, includeOutput: true }))
-})
+}).finally(() => logfire.shutdown({ timeoutMillis: 5000 }))
 ```
 
 Confirm the smoke run has zero unexpected errors and the assertions that should pass do. Then, if the full dataset is large or uses paid model calls, tell the user the case count and which evaluators will make model calls, and get explicit confirmation before running the full dataset — don't run an expensive full pass on the strength of a clean smoke test alone without saying so.

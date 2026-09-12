@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `mxyhi/ok-skills` — 26 default patterns, 0 followed patterns, 50 file(s) materialized.
+Mirror of `mxyhi/ok-skills` — 26 default patterns, 0 followed patterns, 51 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `mxyhi/ok-skills` — 26 default patterns, 0 followed patterns, 50 fil
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 50 |
+| Files         | 51 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -98,17 +98,18 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 37 | ✓ | [`opencli/opencli-usage/SKILL.md`](opencli/opencli-usage/SKILL.md) |
 | 38 | ✓ | [`opencli/smart-search/SKILL.md`](opencli/smart-search/SKILL.md) |
 | 39 | ✓ | [`planning-with-files/SKILL.md`](planning-with-files/SKILL.md) |
-| 40 | ✓ | [`product-decision-agent/SKILL.md`](product-decision-agent/SKILL.md) |
-| 41 | ✓ | [`prototype/LOGIC.md`](prototype/LOGIC.md) |
-| 42 | ✓ | [`prototype/SKILL.md`](prototype/SKILL.md) |
-| 43 | ✓ | [`prototype/UI.md`](prototype/UI.md) |
-| 44 | ✓ | [`tdd/mocking.md`](tdd/mocking.md) |
-| 45 | ✓ | [`tdd/SKILL.md`](tdd/SKILL.md) |
-| 46 | ✓ | [`tdd/tests.md`](tdd/tests.md) |
-| 47 | ✓ | [`teach/LEARNING-RECORD-FORMAT.md`](teach/LEARNING-RECORD-FORMAT.md) |
-| 48 | ✓ | [`teach/MISSION-FORMAT.md`](teach/MISSION-FORMAT.md) |
-| 49 | ✓ | [`teach/RESOURCES-FORMAT.md`](teach/RESOURCES-FORMAT.md) |
-| 50 | ✓ | [`teach/SKILL.md`](teach/SKILL.md) |
+| 40 | ✓ | [`ponytail/SKILL.md`](ponytail/SKILL.md) |
+| 41 | ✓ | [`product-decision-agent/SKILL.md`](product-decision-agent/SKILL.md) |
+| 42 | ✓ | [`prototype/LOGIC.md`](prototype/LOGIC.md) |
+| 43 | ✓ | [`prototype/SKILL.md`](prototype/SKILL.md) |
+| 44 | ✓ | [`prototype/UI.md`](prototype/UI.md) |
+| 45 | ✓ | [`tdd/mocking.md`](tdd/mocking.md) |
+| 46 | ✓ | [`tdd/SKILL.md`](tdd/SKILL.md) |
+| 47 | ✓ | [`tdd/tests.md`](tdd/tests.md) |
+| 48 | ✓ | [`teach/LEARNING-RECORD-FORMAT.md`](teach/LEARNING-RECORD-FORMAT.md) |
+| 49 | ✓ | [`teach/MISSION-FORMAT.md`](teach/MISSION-FORMAT.md) |
+| 50 | ✓ | [`teach/RESOURCES-FORMAT.md`](teach/RESOURCES-FORMAT.md) |
+| 51 | ✓ | [`teach/SKILL.md`](teach/SKILL.md) |
 
 ---
 

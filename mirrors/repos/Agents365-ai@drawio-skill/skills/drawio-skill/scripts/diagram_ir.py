@@ -425,11 +425,21 @@ def _grid_page(graph, page_id, name):
         style = html.escape(node.get("style") or DEFAULT_NODE_STYLE, quote=True)
         label = html.escape(str(node.get("label") or node["id"]), quote=True)
         nid = html.escape(node["id"], quote=True)
-        cells.append(
-            f'        <mxCell id="{nid}" value="{label}" style="{style}" vertex="1" parent="1">\n'
-            f'          <mxGeometry x="{x}" y="{y}" width="{node.get("width", 160)}" height="{node.get("height", 70)}" as="geometry"/>\n'
-            f"        </mxCell>"
-        )
+        if "link" in node:
+            link = html.escape(str(node["link"]), quote=True)
+            cells.append(
+                f'        <UserObject id="{nid}" label="{label}" link="{link}">\n'
+                f'          <mxCell style="{style}" vertex="1" parent="1">\n'
+                f'            <mxGeometry x="{x}" y="{y}" width="{node.get("width", 160)}" height="{node.get("height", 70)}" as="geometry"/>\n'
+                f'          </mxCell>\n'
+                f'        </UserObject>'
+            )
+        else:
+            cells.append(
+                f'        <mxCell id="{nid}" value="{label}" style="{style}" vertex="1" parent="1">\n'
+                f'          <mxGeometry x="{x}" y="{y}" width="{node.get("width", 160)}" height="{node.get("height", 70)}" as="geometry"/>\n'
+                f"        </mxCell>"
+            )
     for i, edge in enumerate(graph.get("edges", [])):
         cells.append(
             f'        <mxCell id="edge-{page_id}-{i}" value="{html.escape(edge.get("label", ""), quote=True)}" '

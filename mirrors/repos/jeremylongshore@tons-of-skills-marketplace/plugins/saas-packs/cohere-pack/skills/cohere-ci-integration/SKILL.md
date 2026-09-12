@@ -1,253 +1,91 @@
 ---
 name: cohere-ci-integration
-description: 'Configure CI/CD for Cohere integrations with GitHub Actions and automated
-  testing.
-
-  Use when setting up automated testing for Chat/Embed/Rerank,
-
-  configuring CI pipelines, or testing Cohere-powered applications.
-
-  Trigger with phrases like "cohere CI", "cohere GitHub Actions",
-
-  "cohere automated tests", "CI cohere", "cohere pipeline".
-
-  '
-allowed-tools: Read, Write, Edit, Bash(gh:*)
-version: 1.5.0
-license: MIT
+description: >-
+  Configure offline Cohere contract tests plus a protected, bounded live verification lane in CI. Use when testing Cohere integrations in pull requests or releases. Trigger with "Cohere CI", "Cohere GitHub Actions", or "Cohere integration tests".
+argument-hint: "[repository-path] [ci-provider]"
+allowed-tools: Read, Glob, Grep, WebFetch, Write, Edit
+version: 1.6.0
 author: Jeremy Longshore <jeremy@intentsolutions.io>
+license: MIT
 tags:
 - saas
-- ai
-- nlp
 - cohere
-compatibility: Designed for Claude Code
+- ci
+model: inherit
+effort: high
+compatibility: Designed for Claude Code; live verification requires network access and an approved Cohere API key
 ---
-# Cohere CI Integration
+# Cohere Continuous Integration
 
 ## Overview
 
-Set up CI/CD pipelines with automated unit tests (mocked) and integration tests (real API) for Cohere API v2 applications.
+Make the required CI path deterministic and secret-free while preserving a trusted lane that detects real SDK and API drift.
 
 ## Prerequisites
 
-- GitHub repository with Actions enabled
-- Cohere trial or production API key
-- `cohere-ai` package installed
+- The target repository, runtime, environment, and accountable owner
+- An approved Cohere team and key for any live verification
+- Current quality, security, privacy, capacity, and change-control requirements
+
+## Tool Discipline
+
+Use `Read`, `Glob`, and `Grep` to inspect code, configuration, and evidence. Use `WebFetch` only for current Cohere primary documentation. Use `Write` or `Edit` only when the user requested implementation and the exact target files are known; never write credentials or customer content.
+
+## Current Contract
+
+- Required pull-request checks should mock the application provider port and make no Cohere network calls.
+- Fork pull requests must never receive Cohere secrets.
+- A trusted branch, schedule, or manual workflow may run one bounded live probe with explicit spend and timeout limits.
+- Pin runtime, SDK, action, and lockfile versions so failures are reproducible.
+
+## Authentication
+
+Use an environment-specific key injected from an approved secret manager. Never print, persist, commit, or place `CO_API_KEY` in an example. Confirm access with the least costly bounded operation appropriate to the task, and treat key creation, rotation, revocation, role changes, and production-capacity requests as owner-approved actions.
 
 ## Instructions
 
-### Step 1: GitHub Actions Workflow
+1. Identify required checks, fork behavior, secret scopes, and the existing provider adapter.
+2. Add offline request-mapping, response, stream, error, retry, and redaction fixtures.
+3. Make the offline lane required and assert that no network fallback is possible.
+4. Add a separate protected live job with concurrency control, one request, timeout, and model discovery.
+5. Upload sanitized test metadata without prompts, credentials, or customer content.
+6. Document who may trigger the live lane and how model/API drift is triaged.
 
-```yaml
-# .github/workflows/cohere-ci.yml
-name: Cohere CI
+## Approval Boundaries
 
-on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
-
-jobs:
-  unit-tests:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-      - run: npm ci
-      - run: npm test -- --coverage
-        # Unit tests use mocked Cohere responses — no API key needed
-
-  integration-tests:
-    runs-on: ubuntu-latest
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    env:
-      CO_API_KEY: ${{ secrets.CO_API_KEY }}
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-      - run: npm ci
-      - name: Run Cohere integration tests
-        run: npm run test:integration
-        timeout-minutes: 5
-```
-
-### Step 2: Configure GitHub Secrets
-
-```bash
-# Store Cohere API key as a repo secret
-gh secret set CO_API_KEY --body "your-production-key-here"
-
-# Verify it was set
-gh secret list
-```
-
-### Step 3: Unit Tests (Mocked — No API Key)
-
-```typescript
-// tests/unit/cohere-chat.test.ts
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-
-// Mock the entire SDK
-vi.mock('cohere-ai', () => ({
-  CohereClientV2: vi.fn().mockImplementation(() => ({
-    chat: vi.fn().mockResolvedValue({
-      message: { content: [{ type: 'text', text: 'mocked response' }] },
-      finishReason: 'COMPLETE',
-      usage: { billedUnits: { inputTokens: 5, outputTokens: 3 } },
-    }),
-    embed: vi.fn().mockResolvedValue({
-      embeddings: { float: [[0.1, 0.2, 0.3]] },
-    }),
-    rerank: vi.fn().mockResolvedValue({
-      results: [{ index: 0, relevanceScore: 0.95 }],
-    }),
-  })),
-}));
-
-describe('Chat service', () => {
-  it('returns text from chat completion', async () => {
-    const { CohereClientV2 } = await import('cohere-ai');
-    const cohere = new CohereClientV2();
-
-    const response = await cohere.chat({
-      model: 'command-a-03-2025',
-      messages: [{ role: 'user', content: 'test' }],
-    });
-
-    expect(response.message?.content?.[0]?.text).toBe('mocked response');
-    expect(cohere.chat).toHaveBeenCalledWith(
-      expect.objectContaining({ model: 'command-a-03-2025' })
-    );
-  });
-
-  it('handles embed with correct input type', async () => {
-    const { CohereClientV2 } = await import('cohere-ai');
-    const cohere = new CohereClientV2();
-
-    const response = await cohere.embed({
-      model: 'embed-v4.0',
-      texts: ['test'],
-      inputType: 'search_document',
-      embeddingTypes: ['float'],
-    });
-
-    expect(response.embeddings.float).toHaveLength(1);
-  });
-});
-```
-
-### Step 4: Integration Tests (Real API — Gated)
-
-```typescript
-// tests/integration/cohere.test.ts
-import { describe, it, expect } from 'vitest';
-import { CohereClientV2 } from 'cohere-ai';
-
-const hasApiKey = !!process.env.CO_API_KEY;
-
-describe.skipIf(!hasApiKey)('Cohere Integration', () => {
-  const cohere = new CohereClientV2();
-
-  it('chat completion works', async () => {
-    const response = await cohere.chat({
-      model: 'command-r7b-12-2024', // cheapest model for CI
-      messages: [{ role: 'user', content: 'Reply with exactly: OK' }],
-      maxTokens: 5,
-    });
-    expect(response.message?.content?.[0]?.text).toBeTruthy();
-    expect(response.finishReason).toBe('COMPLETE');
-  }, 15_000);
-
-  it('embed generates vectors', async () => {
-    const response = await cohere.embed({
-      model: 'embed-v4.0',
-      texts: ['CI test embedding'],
-      inputType: 'search_document',
-      embeddingTypes: ['float'],
-    });
-    expect(response.embeddings.float[0].length).toBeGreaterThan(0);
-  }, 15_000);
-
-  it('rerank scores documents', async () => {
-    const response = await cohere.rerank({
-      model: 'rerank-v3.5',
-      query: 'machine learning',
-      documents: ['ML is AI', 'cooking recipes', 'deep learning'],
-      topN: 2,
-    });
-    expect(response.results).toHaveLength(2);
-    expect(response.results[0].relevanceScore).toBeGreaterThan(0.5);
-  }, 15_000);
-});
-```
-
-### Step 5: Package Scripts
-
-```json
-{
-  "scripts": {
-    "test": "vitest --run",
-    "test:watch": "vitest --watch",
-    "test:integration": "COHERE_INTEGRATION=1 vitest --run tests/integration/",
-    "test:coverage": "vitest --run --coverage"
-  }
-}
-```
-
-## CI Cost Control
-
-- Use `command-r7b-12-2024` (cheapest) for integration tests
-- Set `maxTokens: 5` on all CI chat calls
-- Run integration tests only on `main` pushes (not PRs)
-- Use trial key for CI if under 1000 monthly calls
-
-## Error Handling
-
-| CI Issue | Cause | Solution |
-|----------|-------|----------|
-| Secret not found | Missing GitHub secret | `gh secret set CO_API_KEY` |
-| 429 in CI | Rate limited (trial key) | Reduce test count or upgrade key |
-| Integration timeout | Slow API response | Set `timeout-minutes: 5` |
-| Flaky tests | API latency variance | Add retry in test setup |
+Do not expose or rotate keys, change Cohere Team roles, accept commercial terms, enable sensitive production data, increase spend or capacity, switch production models, send a support bundle, or execute model-proposed side effects without the accountable owner's approval. Keep diagnosis read-only unless implementation was requested.
 
 ## Output
 
-- A pull-request lane that runs deterministic mocked tests without a Cohere credential.
-- A protected-main integration lane that uses the repository secret without printing it,
-  and reports pass/fail, coverage, and the failed test name in GitHub Actions.
-- A cost-bounded live check: the job has a five-minute ceiling, uses minimal prompts,
-  and is not triggered by untrusted pull-request code.
+Return the resolved API and model contract, files or settings inspected, evidence collected, validation result, remaining risk, owner, and rollback or next action. Redact keys, authorization headers, prompts, retrieved documents, embeddings, customer identifiers, and unrestricted environment output.
+
+## Error Handling
+
+| Condition | Response |
+|---|---|
+| Secret unavailable | Skip only the optional live job; required offline tests must still run. |
+| Fork event | Never switch to a privileged event that executes untrusted code with secrets. |
+| Live `429` | Stop the probe and classify capacity rather than retrying repeatedly. |
+| Fixture drift | Refresh from a reviewed redacted response. |
 
 ## Examples
 
-For a release candidate, run the low-cost integration suite from a trusted local
-environment after setting `CO_API_KEY` in the shell (never in a command line, log,
-or committed file):
+Use this compact handoff shape to keep the selected scope, validation evidence, and operational result reviewable.
 
-```bash
-npm test
-npm run test:integration
+Input:
+
+```text
+provider=github-actions; required=offline; live=protected-main; max-requests=1
 ```
 
-If the integration job returns a 429, keep the unit-test result as the merge signal,
-record the rate-limit response in the incident log with secrets redacted, and retry
-the protected-main job after the documented backoff window. Do not add the key to a
-pull-request workflow or weaken the branch protection to work around a transient API failure.
+Expected handoff:
+
+```text
+offline=required-pass; fork-secrets=none; live=bounded; artifacts=redacted
+```
 
 ## Resources
 
-- [GitHub Actions Secrets](https://docs.github.com/en/actions/security-guides/encrypted-secrets)
-- [Vitest Configuration](https://vitest.dev/config/)
-- [Cohere Rate Limits](https://docs.cohere.com/docs/rate-limits)
-
-## Next Steps
-
-For deployment patterns, see `cohere-deploy-integration`.
+- [Skill-specific official documentation](references/official-docs.md)
+- [TypeScript SDK](https://github.com/cohere-ai/cohere-typescript)
+- [Rate limits](https://docs.cohere.com/docs/rate-limits)

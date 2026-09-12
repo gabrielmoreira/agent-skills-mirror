@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Kotlin/kotlin-agent-skills` — 26 default patterns, 0 followed patterns, 41 file(s) materialized.
+Mirror of `Kotlin/kotlin-agent-skills` — 26 default patterns, 0 followed patterns, 51 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Kotlin/kotlin-agent-skills` — 26 default patterns, 0 followed patte
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 41 |
+| Files         | 51 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -76,30 +76,40 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 15 | ✓ | [`skills/kotlin-tooling-cocoapods-spm-migration/references/migration-report-template.md`](skills/kotlin-tooling-cocoapods-spm-migration/references/migration-report-template.md) |
 | 16 | ✓ | [`skills/kotlin-tooling-cocoapods-spm-migration/references/troubleshooting.md`](skills/kotlin-tooling-cocoapods-spm-migration/references/troubleshooting.md) |
 | 17 | ✓ | [`skills/kotlin-tooling-cocoapods-spm-migration/SKILL.md`](skills/kotlin-tooling-cocoapods-spm-migration/SKILL.md) |
-| 18 | ✓ | [`skills/kotlin-tooling-immutable-collections-0-5-x-migration/SKILL.md`](skills/kotlin-tooling-immutable-collections-0-5-x-migration/SKILL.md) |
-| 19 | ✓ | [`skills/kotlin-tooling-java-to-kotlin/assets/checklist.md`](skills/kotlin-tooling-java-to-kotlin/assets/checklist.md) |
-| 20 | ✓ | [`skills/kotlin-tooling-java-to-kotlin/references/CONVERSION-METHODOLOGY.md`](skills/kotlin-tooling-java-to-kotlin/references/CONVERSION-METHODOLOGY.md) |
-| 21 | ✓ | [`skills/kotlin-tooling-java-to-kotlin/references/frameworks/DAGGER-HILT.md`](skills/kotlin-tooling-java-to-kotlin/references/frameworks/DAGGER-HILT.md) |
-| 22 | ✓ | [`skills/kotlin-tooling-java-to-kotlin/references/frameworks/GUICE.md`](skills/kotlin-tooling-java-to-kotlin/references/frameworks/GUICE.md) |
-| 23 | ✓ | [`skills/kotlin-tooling-java-to-kotlin/references/frameworks/HIBERNATE.md`](skills/kotlin-tooling-java-to-kotlin/references/frameworks/HIBERNATE.md) |
-| 24 | ✓ | [`skills/kotlin-tooling-java-to-kotlin/references/frameworks/JACKSON.md`](skills/kotlin-tooling-java-to-kotlin/references/frameworks/JACKSON.md) |
-| 25 | ✓ | [`skills/kotlin-tooling-java-to-kotlin/references/frameworks/JUNIT.md`](skills/kotlin-tooling-java-to-kotlin/references/frameworks/JUNIT.md) |
-| 26 | ✓ | [`skills/kotlin-tooling-java-to-kotlin/references/frameworks/LOMBOK.md`](skills/kotlin-tooling-java-to-kotlin/references/frameworks/LOMBOK.md) |
-| 27 | ✓ | [`skills/kotlin-tooling-java-to-kotlin/references/frameworks/MICRONAUT.md`](skills/kotlin-tooling-java-to-kotlin/references/frameworks/MICRONAUT.md) |
-| 28 | ✓ | [`skills/kotlin-tooling-java-to-kotlin/references/frameworks/MOCKITO.md`](skills/kotlin-tooling-java-to-kotlin/references/frameworks/MOCKITO.md) |
-| 29 | ✓ | [`skills/kotlin-tooling-java-to-kotlin/references/frameworks/QUARKUS.md`](skills/kotlin-tooling-java-to-kotlin/references/frameworks/QUARKUS.md) |
-| 30 | ✓ | [`skills/kotlin-tooling-java-to-kotlin/references/frameworks/RETROFIT.md`](skills/kotlin-tooling-java-to-kotlin/references/frameworks/RETROFIT.md) |
-| 31 | ✓ | [`skills/kotlin-tooling-java-to-kotlin/references/frameworks/RXJAVA.md`](skills/kotlin-tooling-java-to-kotlin/references/frameworks/RXJAVA.md) |
-| 32 | ✓ | [`skills/kotlin-tooling-java-to-kotlin/references/frameworks/SPRING.md`](skills/kotlin-tooling-java-to-kotlin/references/frameworks/SPRING.md) |
-| 33 | ✓ | [`skills/kotlin-tooling-java-to-kotlin/references/KNOWN-ISSUES.md`](skills/kotlin-tooling-java-to-kotlin/references/KNOWN-ISSUES.md) |
-| 34 | ✓ | [`skills/kotlin-tooling-java-to-kotlin/SKILL.md`](skills/kotlin-tooling-java-to-kotlin/SKILL.md) |
-| 35 | ✓ | [`skills/kotlin-tooling-native-build-performance/evals/EVALUATION.md`](skills/kotlin-tooling-native-build-performance/evals/EVALUATION.md) |
-| 36 | ✓ | [`skills/kotlin-tooling-native-build-performance/references/artifacts-and-targets.md`](skills/kotlin-tooling-native-build-performance/references/artifacts-and-targets.md) |
-| 37 | ✓ | [`skills/kotlin-tooling-native-build-performance/references/caching-and-gradle.md`](skills/kotlin-tooling-native-build-performance/references/caching-and-gradle.md) |
-| 38 | ✓ | [`skills/kotlin-tooling-native-build-performance/references/experimental.md`](skills/kotlin-tooling-native-build-performance/references/experimental.md) |
-| 39 | ✓ | [`skills/kotlin-tooling-native-build-performance/references/exports-and-generated-code.md`](skills/kotlin-tooling-native-build-performance/references/exports-and-generated-code.md) |
-| 40 | ✓ | [`skills/kotlin-tooling-native-build-performance/scripts/audit-native-build.sh`](skills/kotlin-tooling-native-build-performance/scripts/audit-native-build.sh) |
-| 41 | ✓ | [`skills/kotlin-tooling-native-build-performance/SKILL.md`](skills/kotlin-tooling-native-build-performance/SKILL.md) |
+| 18 | ✓ | [`skills/kotlin-tooling-gradle-to-kotlin-toolchain-plugin/references/examples.md`](skills/kotlin-tooling-gradle-to-kotlin-toolchain-plugin/references/examples.md) |
+| 19 | ✓ | [`skills/kotlin-tooling-gradle-to-kotlin-toolchain-plugin/SKILL.md`](skills/kotlin-tooling-gradle-to-kotlin-toolchain-plugin/SKILL.md) |
+| 20 | ✓ | [`skills/kotlin-tooling-gradle-to-kotlin-toolchain-project/references/examples.md`](skills/kotlin-tooling-gradle-to-kotlin-toolchain-project/references/examples.md) |
+| 21 | ✓ | [`skills/kotlin-tooling-gradle-to-kotlin-toolchain-project/SKILL.md`](skills/kotlin-tooling-gradle-to-kotlin-toolchain-project/SKILL.md) |
+| 22 | ✓ | [`skills/kotlin-tooling-immutable-collections-0-5-x-migration/SKILL.md`](skills/kotlin-tooling-immutable-collections-0-5-x-migration/SKILL.md) |
+| 23 | ✓ | [`skills/kotlin-tooling-java-to-kotlin/assets/checklist.md`](skills/kotlin-tooling-java-to-kotlin/assets/checklist.md) |
+| 24 | ✓ | [`skills/kotlin-tooling-java-to-kotlin/references/CONVERSION-METHODOLOGY.md`](skills/kotlin-tooling-java-to-kotlin/references/CONVERSION-METHODOLOGY.md) |
+| 25 | ✓ | [`skills/kotlin-tooling-java-to-kotlin/references/frameworks/DAGGER-HILT.md`](skills/kotlin-tooling-java-to-kotlin/references/frameworks/DAGGER-HILT.md) |
+| 26 | ✓ | [`skills/kotlin-tooling-java-to-kotlin/references/frameworks/GUICE.md`](skills/kotlin-tooling-java-to-kotlin/references/frameworks/GUICE.md) |
+| 27 | ✓ | [`skills/kotlin-tooling-java-to-kotlin/references/frameworks/HIBERNATE.md`](skills/kotlin-tooling-java-to-kotlin/references/frameworks/HIBERNATE.md) |
+| 28 | ✓ | [`skills/kotlin-tooling-java-to-kotlin/references/frameworks/JACKSON.md`](skills/kotlin-tooling-java-to-kotlin/references/frameworks/JACKSON.md) |
+| 29 | ✓ | [`skills/kotlin-tooling-java-to-kotlin/references/frameworks/JUNIT.md`](skills/kotlin-tooling-java-to-kotlin/references/frameworks/JUNIT.md) |
+| 30 | ✓ | [`skills/kotlin-tooling-java-to-kotlin/references/frameworks/LOMBOK.md`](skills/kotlin-tooling-java-to-kotlin/references/frameworks/LOMBOK.md) |
+| 31 | ✓ | [`skills/kotlin-tooling-java-to-kotlin/references/frameworks/MICRONAUT.md`](skills/kotlin-tooling-java-to-kotlin/references/frameworks/MICRONAUT.md) |
+| 32 | ✓ | [`skills/kotlin-tooling-java-to-kotlin/references/frameworks/MOCKITO.md`](skills/kotlin-tooling-java-to-kotlin/references/frameworks/MOCKITO.md) |
+| 33 | ✓ | [`skills/kotlin-tooling-java-to-kotlin/references/frameworks/QUARKUS.md`](skills/kotlin-tooling-java-to-kotlin/references/frameworks/QUARKUS.md) |
+| 34 | ✓ | [`skills/kotlin-tooling-java-to-kotlin/references/frameworks/RETROFIT.md`](skills/kotlin-tooling-java-to-kotlin/references/frameworks/RETROFIT.md) |
+| 35 | ✓ | [`skills/kotlin-tooling-java-to-kotlin/references/frameworks/RXJAVA.md`](skills/kotlin-tooling-java-to-kotlin/references/frameworks/RXJAVA.md) |
+| 36 | ✓ | [`skills/kotlin-tooling-java-to-kotlin/references/frameworks/SPRING.md`](skills/kotlin-tooling-java-to-kotlin/references/frameworks/SPRING.md) |
+| 37 | ✓ | [`skills/kotlin-tooling-java-to-kotlin/references/KNOWN-ISSUES.md`](skills/kotlin-tooling-java-to-kotlin/references/KNOWN-ISSUES.md) |
+| 38 | ✓ | [`skills/kotlin-tooling-java-to-kotlin/SKILL.md`](skills/kotlin-tooling-java-to-kotlin/SKILL.md) |
+| 39 | ✓ | [`skills/kotlin-tooling-kotlin-toolchain-plugin-authoring/references/examples.md`](skills/kotlin-tooling-kotlin-toolchain-plugin-authoring/references/examples.md) |
+| 40 | ✓ | [`skills/kotlin-tooling-kotlin-toolchain-plugin-authoring/SKILL.md`](skills/kotlin-tooling-kotlin-toolchain-plugin-authoring/SKILL.md) |
+| 41 | ✓ | [`skills/kotlin-tooling-kotlin-toolchain/evals/evals.json`](skills/kotlin-tooling-kotlin-toolchain/evals/evals.json) |
+| 42 | ✓ | [`skills/kotlin-tooling-kotlin-toolchain/evals/EVALUATION.md`](skills/kotlin-tooling-kotlin-toolchain/evals/EVALUATION.md) |
+| 43 | ✓ | [`skills/kotlin-tooling-kotlin-toolchain/references/examples.md`](skills/kotlin-tooling-kotlin-toolchain/references/examples.md) |
+| 44 | ✓ | [`skills/kotlin-tooling-kotlin-toolchain/SKILL.md`](skills/kotlin-tooling-kotlin-toolchain/SKILL.md) |
+| 45 | ✓ | [`skills/kotlin-tooling-native-build-performance/evals/EVALUATION.md`](skills/kotlin-tooling-native-build-performance/evals/EVALUATION.md) |
+| 46 | ✓ | [`skills/kotlin-tooling-native-build-performance/references/artifacts-and-targets.md`](skills/kotlin-tooling-native-build-performance/references/artifacts-and-targets.md) |
+| 47 | ✓ | [`skills/kotlin-tooling-native-build-performance/references/caching-and-gradle.md`](skills/kotlin-tooling-native-build-performance/references/caching-and-gradle.md) |
+| 48 | ✓ | [`skills/kotlin-tooling-native-build-performance/references/experimental.md`](skills/kotlin-tooling-native-build-performance/references/experimental.md) |
+| 49 | ✓ | [`skills/kotlin-tooling-native-build-performance/references/exports-and-generated-code.md`](skills/kotlin-tooling-native-build-performance/references/exports-and-generated-code.md) |
+| 50 | ✓ | [`skills/kotlin-tooling-native-build-performance/scripts/audit-native-build.sh`](skills/kotlin-tooling-native-build-performance/scripts/audit-native-build.sh) |
+| 51 | ✓ | [`skills/kotlin-tooling-native-build-performance/SKILL.md`](skills/kotlin-tooling-native-build-performance/SKILL.md) |
 
 ---
 

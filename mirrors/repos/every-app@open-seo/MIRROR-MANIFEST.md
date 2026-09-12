@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `every-app/open-seo` — 26 default patterns, 0 followed patterns, 48 file(s) materialized.
+Mirror of `every-app/open-seo` — 26 default patterns, 0 followed patterns, 49 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `every-app/open-seo` — 26 default patterns, 0 followed patterns, 48 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 48 |
+| Files         | 49 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -87,26 +87,27 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 26 | ✓ | [`.agents/skills/seo-audit/template.html`](.agents/skills/seo-audit/template.html) |
 | 27 | ✓ | [`.agents/skills/seo-coach/SKILL.md`](.agents/skills/seo-coach/SKILL.md) |
 | 28 | ✓ | [`.agents/skills/seo-project-setup/SKILL.md`](.agents/skills/seo-project-setup/SKILL.md) |
-| 29 | ✓ | [`.agents/skills/simple-issue-description/agents/openai.yaml`](.agents/skills/simple-issue-description/agents/openai.yaml) |
-| 30 | ✓ | [`.agents/skills/simple-issue-description/SKILL.md`](.agents/skills/simple-issue-description/SKILL.md) |
-| 31 | ✓ | [`.agents/skills/verify-local-mcp/SKILL.md`](.agents/skills/verify-local-mcp/SKILL.md) |
-| 32 | ✓ | [`.agents/skills/webapp-testing/examples/console_logging.py`](.agents/skills/webapp-testing/examples/console_logging.py) |
-| 33 | ✓ | [`.agents/skills/webapp-testing/examples/element_discovery.py`](.agents/skills/webapp-testing/examples/element_discovery.py) |
-| 34 | ✓ | [`.agents/skills/webapp-testing/examples/static_html_automation.py`](.agents/skills/webapp-testing/examples/static_html_automation.py) |
-| 35 | ✓ | [`.agents/skills/webapp-testing/LICENSE.txt`](.agents/skills/webapp-testing/LICENSE.txt) |
-| 36 | ✓ | [`.agents/skills/webapp-testing/scripts/with_server.py`](.agents/skills/webapp-testing/scripts/with_server.py) |
-| 37 | ✓ | [`.agents/skills/webapp-testing/SKILL.md`](.agents/skills/webapp-testing/SKILL.md) |
-| 38 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 39 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 40 | ✓ | [`plugins/openseo/skills/competitive-landscape/SKILL.md`](plugins/openseo/skills/competitive-landscape/SKILL.md) |
-| 41 | ✓ | [`plugins/openseo/skills/competitor-analysis/SKILL.md`](plugins/openseo/skills/competitor-analysis/SKILL.md) |
-| 42 | ✓ | [`plugins/openseo/skills/keyword-clustering/SKILL.md`](plugins/openseo/skills/keyword-clustering/SKILL.md) |
-| 43 | ✓ | [`plugins/openseo/skills/keyword-research/SKILL.md`](plugins/openseo/skills/keyword-research/SKILL.md) |
-| 44 | ✓ | [`plugins/openseo/skills/link-prospecting/SKILL.md`](plugins/openseo/skills/link-prospecting/SKILL.md) |
-| 45 | ✓ | [`plugins/openseo/skills/local-seo/SKILL.md`](plugins/openseo/skills/local-seo/SKILL.md) |
-| 46 | ✓ | [`plugins/openseo/skills/seo-audit/SKILL.md`](plugins/openseo/skills/seo-audit/SKILL.md) |
-| 47 | ✓ | [`plugins/openseo/skills/seo-coach/SKILL.md`](plugins/openseo/skills/seo-coach/SKILL.md) |
-| 48 | ✓ | [`plugins/openseo/skills/seo-project-setup/SKILL.md`](plugins/openseo/skills/seo-project-setup/SKILL.md) |
+| 29 | ✓ | [`.agents/skills/setup-openseo/SKILL.md`](.agents/skills/setup-openseo/SKILL.md) |
+| 30 | ✓ | [`.agents/skills/simple-issue-description/agents/openai.yaml`](.agents/skills/simple-issue-description/agents/openai.yaml) |
+| 31 | ✓ | [`.agents/skills/simple-issue-description/SKILL.md`](.agents/skills/simple-issue-description/SKILL.md) |
+| 32 | ✓ | [`.agents/skills/verify-local-mcp/SKILL.md`](.agents/skills/verify-local-mcp/SKILL.md) |
+| 33 | ✓ | [`.agents/skills/webapp-testing/examples/console_logging.py`](.agents/skills/webapp-testing/examples/console_logging.py) |
+| 34 | ✓ | [`.agents/skills/webapp-testing/examples/element_discovery.py`](.agents/skills/webapp-testing/examples/element_discovery.py) |
+| 35 | ✓ | [`.agents/skills/webapp-testing/examples/static_html_automation.py`](.agents/skills/webapp-testing/examples/static_html_automation.py) |
+| 36 | ✓ | [`.agents/skills/webapp-testing/LICENSE.txt`](.agents/skills/webapp-testing/LICENSE.txt) |
+| 37 | ✓ | [`.agents/skills/webapp-testing/scripts/with_server.py`](.agents/skills/webapp-testing/scripts/with_server.py) |
+| 38 | ✓ | [`.agents/skills/webapp-testing/SKILL.md`](.agents/skills/webapp-testing/SKILL.md) |
+| 39 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 40 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 41 | ✓ | [`plugins/openseo/skills/competitive-landscape/SKILL.md`](plugins/openseo/skills/competitive-landscape/SKILL.md) |
+| 42 | ✓ | [`plugins/openseo/skills/competitor-analysis/SKILL.md`](plugins/openseo/skills/competitor-analysis/SKILL.md) |
+| 43 | ✓ | [`plugins/openseo/skills/keyword-clustering/SKILL.md`](plugins/openseo/skills/keyword-clustering/SKILL.md) |
+| 44 | ✓ | [`plugins/openseo/skills/keyword-research/SKILL.md`](plugins/openseo/skills/keyword-research/SKILL.md) |
+| 45 | ✓ | [`plugins/openseo/skills/link-prospecting/SKILL.md`](plugins/openseo/skills/link-prospecting/SKILL.md) |
+| 46 | ✓ | [`plugins/openseo/skills/local-seo/SKILL.md`](plugins/openseo/skills/local-seo/SKILL.md) |
+| 47 | ✓ | [`plugins/openseo/skills/seo-audit/SKILL.md`](plugins/openseo/skills/seo-audit/SKILL.md) |
+| 48 | ✓ | [`plugins/openseo/skills/seo-coach/SKILL.md`](plugins/openseo/skills/seo-coach/SKILL.md) |
+| 49 | ✓ | [`plugins/openseo/skills/seo-project-setup/SKILL.md`](plugins/openseo/skills/seo-project-setup/SKILL.md) |
 
 ---
 

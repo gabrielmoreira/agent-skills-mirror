@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `Unclecheng-li/AI_Animation` — 26 default patterns, 0 followed patterns, 149 file(s) materialized.
+Mirror of `Unclecheng-li/AI_Animation` — 26 default patterns, 0 followed patterns, 150 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Unclecheng-li/AI_Animation` — 26 default patterns, 0 followed patte
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 149 |
+| Files         | 150 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -201,13 +201,14 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 140 | ✓ | [`skills/video-shot-demos/assets/examples/glm-5.3-range-test/icons/GPTicon.png`](skills/video-shot-demos/assets/examples/glm-5.3-range-test/icons/GPTicon.png) |
 | 141 | ✓ | [`skills/video-shot-demos/assets/examples/glm-5.3-range-test/index.html`](skills/video-shot-demos/assets/examples/glm-5.3-range-test/index.html) |
 | 142 | ✓ | [`skills/video-shot-demos/assets/examples/glm-5.3-range-test/reference/0-1-typewriter.html`](skills/video-shot-demos/assets/examples/glm-5.3-range-test/reference/0-1-typewriter.html) |
-| 143 | ✓ | [`skills/video-shot-demos/assets/template.html`](skills/video-shot-demos/assets/template.html) |
-| 144 | ✓ | [`skills/video-shot-demos/README.md`](skills/video-shot-demos/README.md) |
-| 145 | ✓ | [`skills/video-shot-demos/references/character-reactions.md`](skills/video-shot-demos/references/character-reactions.md) |
-| 146 | ✓ | [`skills/video-shot-demos/references/mechanics.md`](skills/video-shot-demos/references/mechanics.md) |
-| 147 | ✓ | [`skills/video-shot-demos/references/style-cards.md`](skills/video-shot-demos/references/style-cards.md) |
-| 148 | ✓ | [`skills/video-shot-demos/scripts/shot.js`](skills/video-shot-demos/scripts/shot.js) |
-| 149 | ✓ | [`skills/video-shot-demos/SKILL.md`](skills/video-shot-demos/SKILL.md) |
+| 143 | ✓ | [`skills/video-shot-demos/assets/examples/uu-dsh/index.html`](skills/video-shot-demos/assets/examples/uu-dsh/index.html) |
+| 144 | ✓ | [`skills/video-shot-demos/assets/template.html`](skills/video-shot-demos/assets/template.html) |
+| 145 | ✓ | [`skills/video-shot-demos/README.md`](skills/video-shot-demos/README.md) |
+| 146 | ✓ | [`skills/video-shot-demos/references/character-reactions.md`](skills/video-shot-demos/references/character-reactions.md) |
+| 147 | ✓ | [`skills/video-shot-demos/references/mechanics.md`](skills/video-shot-demos/references/mechanics.md) |
+| 148 | ✓ | [`skills/video-shot-demos/references/style-cards.md`](skills/video-shot-demos/references/style-cards.md) |
+| 149 | ✓ | [`skills/video-shot-demos/scripts/shot.js`](skills/video-shot-demos/scripts/shot.js) |
+| 150 | ✓ | [`skills/video-shot-demos/SKILL.md`](skills/video-shot-demos/SKILL.md) |
 
 ---
 

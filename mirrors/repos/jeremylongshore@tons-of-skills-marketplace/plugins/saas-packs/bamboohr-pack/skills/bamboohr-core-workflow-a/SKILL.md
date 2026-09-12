@@ -1,227 +1,100 @@
 ---
 name: bamboohr-core-workflow-a
-description: 'Execute BambooHR primary workflows: employee CRUD, directory sync, and
-  custom reports.
-
-  Use when managing employees, syncing employee data to external systems,
-
-  or building HR data pipelines with BambooHR.
-
-  Trigger with phrases like "bamboohr employees", "bamboohr employee management",
-
-  "sync bamboohr directory", "bamboohr custom report", "add employee bamboohr".
-
-  '
-allowed-tools: Read, Write, Edit, Bash(curl:*), Grep
-version: 1.4.0
+description: >-
+  Build a permission-aware BambooHR employee and dataset synchronization
+  workflow with pagination, field minimization, and checkpoints. Use when
+  exporting employee changes or replacing deprecated report calls. Trigger with
+  "sync BambooHR employees", "BambooHR dataset", or "BambooHR HR pipeline".
+allowed-tools: Read,Glob,Grep,Write,Edit
+argument-hint: "<dataset-or-employee-scope> <destination>"
+version: 1.5.0
 license: MIT
 author: Jeremy Longshore <jeremy@intentsolutions.io>
-tags:
-- saas
-- hr
-- bamboohr
-- employees
-- reports
+tags: [saas, hr, bamboohr, employees, data-sync]
+model: inherit
+effort: high
 compatibility: Designed for Claude Code
 ---
-# BambooHR Core Workflow A — Employee Management & Reports
+# BambooHR Employee and Dataset Sync
 
 ## Overview
 
-Primary BambooHR workflows: CRUD operations on employees, directory sync to external systems, custom reports, and table data (job history, compensation, emergency contacts).
+Design a resumable read pipeline for employee data. Prefer BambooHR's dataset v2
+contract for new bulk data work, minimize fields at the source, and treat missing
+fields as a possible permission decision rather than automatically as data loss.
 
 ## Prerequisites
 
-- Completed `bamboohr-install-auth` setup
-- `BambooHRClient` from `bamboohr-sdk-patterns`
-- API key with appropriate permissions (read or read+write)
+- The target repository or integration path and the requested operator outcome.
+- The tenant, identity, and data scope only when approved live work is in scope.
+- The current evidence register plus customer-specific permissions and agreements.
+
+## Current Contract
+
+- Employee endpoints include list, get, create, and update operations.
+- `POST /api/v2/datasets/{datasetName}/data` accepts `fields`, OData-style
+  `filter`, `orderBy`, `page`, and `pageSize` and returns `data`, `links`, and
+  `meta`; page size is at most 1000 in the reviewed OpenAPI.
+- Dataset v1 data calls are deprecated. Dataset discovery and field discovery
+  use v1.2 endpoints in the current OpenAPI.
+- Legacy custom-report endpoints carry deprecation notices. Do not start a new
+  pipeline on them merely because old examples do.
+
+## Authentication
+
+Use OAuth scope `report` where the documented dataset operation requires it, or
+a dedicated API-key user with access only to selected fields. Bind credentials,
+checkpoint, and destination namespace to one tenant.
 
 ## Instructions
 
-### Step 1: Add a New Employee
+1. Define the business purpose, legal basis, tenant, destination, data owner,
+   refresh target, and exact employee fields before making a request.
+2. Discover the dataset and its field definitions from current endpoints. Save
+   field IDs and semantic mappings as reviewed configuration, not assumptions.
+3. Query dataset v2 with deterministic ordering. Keep every ordered field in the
+   requested `fields` list and bound `pageSize` to the documented maximum.
+4. Follow returned pagination metadata or links until completion. Persist a
+   checkpoint only after the destination transaction commits.
+5. Upsert by a stable tenant-scoped employee identifier. Distinguish absent,
+   null, redacted, future-dated, and inactive values.
+6. Reconcile source count, received count, accepted count, rejected count, and
+   destination count. Quarantine schema or permission drift instead of deleting.
+7. Encrypt retained HR data and delete raw page bodies after the approved
+   retention window.
 
-```typescript
-// POST /employees/ — minimum: firstName + lastName
-const newEmpRes = await fetch(`${BASE}/employees/`, {
-  method: 'POST',
-  headers: { Authorization: AUTH, 'Content-Type': 'application/json' },
-  body: JSON.stringify({
-    firstName: 'Sarah',
-    lastName: 'Chen',
-    department: 'Engineering',
-    jobTitle: 'Backend Engineer',
-    workEmail: 'sarah.chen@acmecorp.com',
-    hireDate: '2026-04-01',
-    location: 'San Francisco',
-    status: 'Active',
-  }),
-});
+## Tool Discipline
 
-// New employee ID is in the Location header
-const locationHeader = newEmpRes.headers.get('Location');
-// e.g., "https://api.bamboohr.com/.../v1/employees/456"
-const newId = locationHeader?.split('/').pop();
-console.log(`Created employee ID: ${newId}`);
-```
+Use Read, Glob, and Grep to inspect mappings, schemas, and checkpoints. Use
+Write/Edit only for approved pipeline code, configuration, and tests. Do not use
+this skill to fetch production employee data or mutate a downstream system.
 
-### Step 2: Update Employee Fields
+## Approval Boundaries
 
-```typescript
-// POST /employees/{id}/ — only send fields you want to change
-await fetch(`${BASE}/employees/${newId}/`, {
-  method: 'POST',
-  headers: { Authorization: AUTH, 'Content-Type': 'application/json' },
-  body: JSON.stringify({
-    jobTitle: 'Senior Backend Engineer',
-    department: 'Platform Engineering',
-  }),
-});
-```
-
-**Fields that trigger position history changes:** `jobTitle`, `department`, `division`, `location`, `reportsTo`. Updating these creates a new row in the employee's position history table.
-
-### Step 3: Directory Sync to External System
-
-```typescript
-interface SyncResult {
-  created: number;
-  updated: number;
-  deactivated: number;
-  errors: string[];
-}
-
-async function syncBambooHRDirectory(
-  onSync: (emp: BambooEmployee, action: string) => Promise<void>,
-): Promise<SyncResult> {
-  const result: SyncResult = { created: 0, updated: 0, deactivated: 0, errors: [] };
-
-  // Fetch full directory
-  const { employees } = await client.getDirectory();
-
-  // Use the "changed since" endpoint for incremental sync
-  // GET /employees/changed/?since=2026-03-20T00:00:00Z
-  const changedRes = await client.request<Record<string, { lastChanged: string }>>(
-    'GET', `/employees/changed/?since=${lastSyncTimestamp}`,
-  );
-
-  for (const [empId, meta] of Object.entries(changedRes.employees || {})) {
-    try {
-      const emp = await client.getEmployee(empId, [
-        'firstName', 'lastName', 'workEmail', 'department',
-        'jobTitle', 'status', 'hireDate', 'terminationDate',
-      ]);
-
-      const action = emp.terminationDate ? 'deactivated' : emp.status === 'Active' ? 'updated' : 'created';
-      await onSync(emp as any, action);
-      result[action as keyof SyncResult]++;
-    } catch (err) {
-      result.errors.push(`Employee ${empId}: ${(err as Error).message}`);
-    }
-  }
-
-  return result;
-}
-```
-
-### Step 4: Custom Reports
-
-```typescript
-// POST /reports/custom?format=JSON — pull arbitrary field combinations
-const headcountReport = await client.customReport(
-  ['department', 'division', 'jobTitle', 'hireDate', 'status', 'location'],
-  { lastChanged: { includeNull: 'no', value: '2025-01-01T00:00:00Z' } },
-);
-
-// Aggregate by department
-const deptCounts = new Map<string, number>();
-for (const emp of headcountReport.employees) {
-  const dept = emp.department || 'Unassigned';
-  deptCounts.set(dept, (deptCounts.get(dept) || 0) + 1);
-}
-
-console.log('Headcount by Department:');
-for (const [dept, count] of [...deptCounts.entries()].sort((a, b) => b[1] - a[1])) {
-  console.log(`  ${dept}: ${count}`);
-}
-```
-
-### Step 5: Saved Reports
-
-```typescript
-// GET /reports/{reportId}?format=JSON — run a saved report from BambooHR
-const savedReport = await client.request<{
-  title: string;
-  employees: Record<string, string>[];
-}>('GET', '/reports/42?format=JSON');
-
-console.log(`Report: ${savedReport.title}`);
-for (const row of savedReport.employees) {
-  console.log(row);
-}
-```
-
-### Step 6: Employee Table Data
-
-BambooHR stores structured data in "tables" — each employee has rows in tables like `jobInfo`, `employmentStatus`, `compensation`, `emergencyContacts`.
-
-```typescript
-// GET /employees/{id}/tables/{tableName} — read table rows
-const jobHistory = await client.getTableRows(123, 'jobInfo');
-// Returns array: [{ date, jobTitle, department, division, location, reportsTo }, ...]
-
-const compensation = await client.getTableRows(123, 'compensation');
-// Returns: [{ startDate, rate, type, reason, comment }, ...]
-
-const emergencyContacts = await client.getTableRows(123, 'emergencyContacts');
-// Returns: [{ name, relationship, phone, email }, ...]
-
-// POST /employees/{id}/tables/{tableName} — add a new row
-await client.addTableRow(123, 'emergencyContacts', {
-  name: 'John Smith',
-  relationship: 'Spouse',
-  phone: '555-0100',
-  email: 'john@example.com',
-});
-```
-
-**Available table names:**
-
-| Table | Description |
-|-------|-------------|
-| `jobInfo` | Job title, department, division, location changes |
-| `employmentStatus` | Hire date, termination date, status changes |
-| `compensation` | Pay rate, pay type, pay schedule changes |
-| `emergencyContacts` | Emergency contact records |
-| `dependents` | Employee dependents |
-| `customTable_*` | Custom tables created in BambooHR admin |
+Require approval for the field set, inactive/future employee inclusion,
+production tenant, destination, retention policy, and any employee create or
+update operation. Reads do not authorize writes.
 
 ## Output
 
-- New employees created with auto-assigned IDs
-- Employee fields updated with position history tracking
-- Directory sync with incremental change detection
-- Custom and saved reports with aggregation
-- Table data CRUD for job history, compensation, contacts
-
-## Examples
-
-For a reporting workflow, use a pre-approved custom report containing only minimum necessary fields, process one bounded synthetic or authorized batch, and emit only opaque result identifiers and counts. Before mutating a downstream system, verify current employment status and policy authorization; record the idempotency key so a retry cannot create duplicate access or payroll-related actions.
+Return dataset and field selection, auth identity, pagination and checkpoint
+design, mapping contract, reconciliation counts, retention controls, tests, and
+all unapproved live operations.
 
 ## Error Handling
 
-| Error | Cause | Solution |
-|-------|-------|----------|
-| 400 on employee create | Missing `firstName` or `lastName` | Both are required |
-| 403 on compensation tables | API key lacks access | Need admin-level API key |
-| 409 on duplicate | Same `employeeNumber` exists | Use unique employee numbers |
-| Empty `changed` response | No changes since timestamp | Normal — nothing to sync |
+- `403`: re-check field-level permission and requested dataset; do not request
+  broader access without a business owner.
+- `413`: reduce page size or field set; never silently drop records.
+- `422`: reject the invalid filter/order contract and preserve the checkpoint.
+- Missing field with `200`: compare requested and returned schemas because some
+  report paths omit inaccessible fields without failing.
+
+## Examples
+
+- "Sync active employees to the warehouse" produces a minimized dataset v2 plan.
+- "Copy every employee field" pauses for field necessity and retention approval.
 
 ## Resources
 
-- [BambooHR Create Employee](https://documentation.bamboohr.com/reference/add-employee-2)
-- [BambooHR Table Fields](https://documentation.bamboohr.com/docs/table-name-fields)
-- [BambooHR Field Names](https://documentation.bamboohr.com/docs/list-of-field-names)
-
-## Next Steps
-
-For time off and benefits workflows, see `bamboohr-core-workflow-b`.
+Read [official evidence](references/official-docs.md) before selecting endpoints.

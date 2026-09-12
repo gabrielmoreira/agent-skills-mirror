@@ -1296,6 +1296,22 @@ auditable and fail-closed.
 _{actor}: external check waiver for IDD F phase._
 ```
 
+`run-id:{run-id}` is an optional trailing field (kurone-kito/idd-skill#2657,
+Copilot review PR #2895: shown as its own separate extended form below, so
+neither snippet reads as though the field were required):
+
+```md
+<!-- idd-external-check-waiver: {agent-id} {claim-id|none} {head-sha} check:{check-selector} reason:{reason-token} expires:{iso8601} run-id:{run-id} -->
+
+_{actor}: external check waiver for IDD F phase._
+```
+
+the posting GitHub Actions run's own `GITHUB_RUN_ID`, carried verbatim (not
+percent-encoded -- it is a numeric run id, not free text). Every
+person-authored waiver omits it and parses exactly as before this field
+existed; it exists only for the automated `self-referential-bootstrap-auto`
+waiver kind below.
+
 Interpretation rules:
 
 - `agent-id`, `claim-id`, `head-sha`, `check`, `reason`, and `expires`
@@ -1369,6 +1385,287 @@ Interpretation rules:
     marker comments into the PR
   - in solo-maintainer repositories, this helper-generated comment is
     the authorization path; a normal PR approval is not equivalent
+
+#### Automated self-referential-bootstrap-auto waiver (kurone-kito/idd-skill#2657)
+
+A narrow, documented exception to "human maintainer only" above: when a
+PR's own diff touches `idd-advisory-convergence`'s committed trigger-file
+allowlist (the check's own source, its policy inputs, or its workflow
+files -- a fixed, committed set of paths, never derived from imports),
+that PR cannot benefit from its own fix to the checker while still
+unmerged. This source repository's own copy of the allowlist -- checked
+both by its own top-level workflow's posting step and, at consume time,
+by `resolveSelfReferentialTriggerFiles` recognizing this exact
+repository -- lists a hand-curated set of `.mts`/workflow paths, its real
+checker files, regardless of its own configured `helperRuntime.profile`
+(`package-manager`, chosen for its own IDD dependency, unrelated to this
+workflow's own file layout). For every other repository, both the
+distributed `idd-template/` posting step and `resolveSelfReferentialTriggerFiles`
+independently derive a profile-appropriate set instead, on a
+profile-invariant base of the two workflow paths plus
+`.github/idd/config.json`, adding: compiled `scripts/*.mjs` paths for
+`vendored-node`; the dependency manifest and lockfiles for
+`package-manager`; nothing further for `ephemeral-npx` (whose own
+checker version pin already lives in the base set's config file, via
+`helperRuntime.packageSpec` -- see
+[Customizing IDD](customization.md)); or nothing further for any other
+profile. The config file is included for every profile, not only
+`ephemeral-npx` (kurone-kito/idd-skill#2657, Codex review round 8):
+both this posting job and the verdict job check out the trusted default
+branch, never the PR head, so a PR that fixes a broken checker by
+migrating `helperRuntime.profile` itself (e.g. `package-manager` to
+`ephemeral-npx`, to work around a broken lockfile/manager detection)
+resolves the OLD, still-broken profile on both sides -- scoping the
+config file to only the profile a PR happens to migrate TO would leave
+every other profile's own migration-via-config-only fix unable to
+trigger this bypass, the exact trap this mechanism exists to escape.
+Since a `vendored-node`/`package-manager`
+adopter never ships this source repository's own `src/scripts/*.mts`
+files, an
+unconditional match against them left the mechanism both non-functional
+for adopters and gameable via a PR touching a path that does not exist in
+their own checkout at all. `idd-advisory-convergence.yml` detects this
+from a
+separate job with `issues: write` as its only write permission (the
+verdict job stays read-only; it additionally gains `actions: read`,
+required for the run-id trust verification's own
+`GET /repos/{owner}/{repo}/actions/runs/{run-id}` call in a private
+repository) and posts a marker as `github-actions[bot]` via
+`GITHUB_TOKEN`, using the CLI's `--auto-bootstrap` mode. The verdict job
+also runs `needs:` this posting job (with `if: ${{ !cancelled() }}` so it
+still runs when the posting job skips) so an allowlisted PR's own
+bootstrap marker is guaranteed to exist -- posted or definitively not --
+before the verdict job ever fetches PR comments; without that ordering
+the two jobs race, since posting a PR comment does not itself trigger a
+fresh run of this workflow:
+
+```sh
+idd-external-check-waiver --pr 123 \
+  --check "idd-advisory-convergence" \
+  --reason "self-referential-bootstrap-auto" \
+  --run-id "$GITHUB_RUN_ID" \
+  --auto-bootstrap \
+  --apply --yes
+```
+
+`--auto-bootstrap` differs from ordinary usage in exactly five ways:
+
+- it skips the collaborator-authority check entirely (there is no human
+  actor to authorize -- the trust model below replaces it);
+- `--reason` must equal the literal token `self-referential-bootstrap-auto`
+  (a value the parser rejects for every other purpose) and `--run-id` is
+  required; `--expires`/`--expires-in` are rejected -- the expiry is
+  always computed internally, independent of
+  `advisoryWait.convergenceDeadline`. The base window is the PR's HEAD
+  commit timestamp plus a fixed `PT24H`, but two further rules apply
+  (Codex review, PR #2895): the duration clamps to the configured
+  `ciGate.externalCheckWaivers.maxValidity` when that is shorter than
+  `PT24H` (an adopter with a stricter configured maximum still gets a
+  marker, just a shorter-lived one, instead of every post being
+  rejected by that same policy's own validation), and if the
+  HEAD-anchored result would already be non-future (a stale HEAD from a
+  `reopened` trigger with no new commit), the window anchors on the
+  current time instead, so a stale-enough PR still gets a
+  genuinely-future expiry rather than one rejected outright;
+- it resolves the linked issue's real active claim exactly like the
+  ordinary path when exactly one resolves, but falls back to the same
+  claimless `none` binding `--claimless` renders (rather than blocking)
+  when ZERO candidates resolve at all (Codex review, PR #2895) -- the
+  fixed workflow invocation never passes `--issue`/`--claim-id`/
+  `--claimless`, so a fully claimless allowlisted PR under the default
+  `advisoryWait.convergenceScope: "all-prs"` (no linked issue, e.g. a
+  human-authored checker-file edit outside IDD) would otherwise be
+  permanently unable to post this waiver. Safe because the consumer's own
+  `none`-sentinel match (below) only ever succeeds when it independently
+  finds no active claim either, so this can never paper over a genuine
+  claim mismatch. Restricted to the zero-candidate case specifically, not
+  an AMBIGUOUS one (more than one candidate resolves, Copilot review, PR
+  #2895): some claim genuinely exists there, just not uniquely
+  identified from this input, and this file's own claim resolution
+  cannot prove `advisory-convergence.mts`'s own (different)
+  claim-resolution mechanism would treat that ambiguity the same way, so
+  an ambiguous PR still blocks. Explicitly combining the literal
+  `--claimless` flag with `--auto-bootstrap` is still rejected as
+  redundant caller error;
+- it never reuses an existing marker (kurone-kito/idd-skill#2657, Codex
+  review round 2, PR #2895): the generic reuse scan every other
+  `--apply` invocation runs first (to avoid double-posting on a retry)
+  is skipped entirely here, since it correlates only on selector,
+  reason, HEAD, and claim -- never the `run-id:`/event-type trust chain
+  below -- so a same-repository PR-controlled `pull_request` workflow
+  could otherwise prepost a same-reason marker with no verifiable
+  `run-id:` and trick this job into believing a valid waiver already
+  exists, skipping its own post. Always attempting to post is at worst
+  a harmless extra marker; the consumer's trust check below already
+  accepts any candidate that verifies;
+- when the post succeeds, the job's own workflow steps additionally
+  upload a run-scoped GitHub Actions artifact named
+  `idd-self-waiver-marker-<comment-id>-<body-digest>`
+  (kurone-kito/idd-skill#2912, round 2, extended round 3, extended round
+  4) -- the posted comment's own numeric id, a literal `-`, and the
+  SHA-256 hex digest of that comment's exact body, and nothing else, as
+  the artifact's name (never its content, so the consumer never needs to
+  download or unzip it). This is the channel condition 7 below reads to
+  bind a marker to the run's own trusted execution: artifacts are scoped
+  to the run that uploaded them by the Actions runtime's own dedicated
+  upload token, never by the shared `GITHUB_TOKEN` `permissions:`
+  surface an issue comment (or a check run) is created and mutated
+  through, so no OTHER same-repository workflow run can add, edit, or
+  remove an entry from this specific run's own artifact list. The body
+  digest is hashed from an API-returned body on both the posting and
+  consuming sides, so an unedited comment digests identically regardless
+  of which side computed it -- specifically, the posting side hashes
+  ONLY the `body` field GitHub's create-comment response returns for the
+  exact POST that created the comment, never a later re-read. An earlier
+  design (round 3) instead preferred a body observed in a LATER, separate
+  post-write re-read (falling back to the locally-sent string only when
+  that re-read came up empty, and labeling the result
+  `ExternalCheckWaiverReport.bodyDigestSource: 'constructed'` when it
+  did) -- a Copilot review of that round's own commit found this opened a
+  window: a same-repository `issues: write` workflow could edit the
+  genuine comment's body between the POST returning and that later
+  re-read running, and the reconcile-preferring design would then hash
+  and report the FORGED body as trustworthy. Round 4 removed that
+  fallback entirely; `bodyDigestSource` no longer exists, and the digest
+  is reported only when the create-comment response itself carried a
+  body.
+
+The marker is honored only when **all** of the following hold, verified
+by `advisory-convergence.mts` itself (not the generic
+`resolveTrustedCollaboratorMarkerLogins` trust surface, since this check
+needs a live per-marker run lookup no other consumer needs):
+
+1. the comment author is exactly `github-actions[bot]`;
+2. the `reason:` token is exactly `self-referential-bootstrap-auto`;
+3. `GET /repos/{owner}/{repo}/actions/runs/{run-id}` for the marker's
+   `run-id:` returns `path` equal to
+   `.github/workflows/idd-advisory-convergence.yml`, `head_sha` equal to
+   the marker's `{head-sha}`, and `head_repository.full_name` equal to
+   the current repository;
+4. that same response's `event` field is exactly `pull_request_target`,
+   never `pull_request` -- closing the gap where a same-repository PR
+   editing the workflow YAML can still trigger a `pull_request`-triggered
+   run of it during a `pull_request`/`pull_request_target` migration
+   window (kurone-kito/idd-skill#2764 Phase 1);
+5. the PR's own changed files (fetched independently at consume time,
+   never trusted from the posting job's own internal check) include at
+   least one path from the trigger-file allowlist above
+   (kurone-kito/idd-skill#2657, Codex review, PR #2895) -- conditions 3
+   and 4 alone only prove the marker cites a genuine
+   `pull_request_target` run of this exact workflow file/head/repo, not
+   that the run's own allowlist check found a match, so without this a
+   same-repository PR could forge a marker citing the ordinary verdict
+   job's own trivially-discoverable run id for its own HEAD and bypass
+   advisory convergence for a change that never touched the allowlist at
+   all;
+6. `GET /repos/{owner}/{repo}/actions/runs/{run-id}/jobs` for that same
+   `run-id:` reports the run's own `idd-advisory-convergence-self-waiver`
+   job's "Post the self-referential-bootstrap-auto waiver" step with
+   `conclusion: success`, AND the marker comment's own `createdAt` falls
+   within that step's `[started_at, completed_at]` execution window
+   (kurone-kito/idd-skill#2912) -- conditions 3 and 4 alone prove only
+   that SOME genuine run of the right shape exists, never that THAT run's
+   own job actually posted THIS specific comment; a same-repository
+   `pull_request`-triggered workflow (untrusted, but able to post
+   `github-actions[bot]`-authored comments the same way the genuine
+   posting job does) can discover a legitimate, concurrently running
+   `pull_request_target` run's id via the public Actions API and cite it
+   in a forged marker, satisfying conditions 1-5 without having been
+   posted by that run's job at all. Binding to the post step's own
+   recorded conclusion and execution window closes this; and
+7. the marker's own comment `(id, body digest)` pair appears in the SET
+   of such pairs the cited `run-id:`'s own trusted job execution recorded
+   actually posting, recovered from a run-scoped GitHub Actions artifact
+   that job uploads immediately after posting (named
+   `idd-self-waiver-marker-<comment-id>-<body-digest>` -- see
+   `listWorkflowRunArtifacts` in `provider-adapter-github.mts`)
+   (kurone-kito/idd-skill#2912, round 2, extended round 3, extended round
+   4) -- condition 6
+   above proves only that the cited run's job succeeded and posted SOME
+   comment within a tight execution window, never THIS EXACT comment (and
+   never that its content stayed unchanged since); a same-repository
+   `pull_request`-triggered workflow can post a forged marker inside that
+   same window, wait for the genuine marker to post, and then either
+   DELETE it (`issues: write` permits deleting ANY issue comment on the
+   repository, not only ones the deleting token itself authored), leaving
+   the forged marker as the sole survivor of a plain "no duplicate
+   currently visible" scan (round 1's gap), or EDIT it in place --
+   `issues: write` permits rewriting an existing comment's body too,
+   which preserves that comment's `id` and `createdAt` while replacing
+   its content, so binding on `id` alone (round 2) would still accept the
+   rewritten body. Binding on the `(id, body digest)` pair instead of `id`
+   alone closes both: artifacts are scoped to the run that uploaded them
+   by the Actions runtime's own dedicated upload token, never by the
+   shared `GITHUB_TOKEN` `permissions:` surface comments (and condition
+   6's own job/step data) are read and, in the comment's case, mutated
+   through -- so no unrelated run can add, edit, or remove an entry from
+   that trusted set regardless of which `permissions:` it self-grants,
+   and a LATER edit to the live comment changes its digest without being
+   able to retroactively change what the artifact already recorded.
+   Deleting or editing the genuine comment only removes/changes it in the
+   live comment scan condition 7 itself needs to correlate an entry back
+   to its own `id` (two distinct candidates sharing the same cited run id
+   AND the same wall-clock second are ambiguous for that correlation and
+   both fail closed, never guessing a winner) -- it degrades this
+   mechanism to "no auto-waiver", never "the forged or edited marker
+   validates". The one residual: an attacker who additionally
+   self-grants the broader, repository-wide `actions: write` permission
+   could delete the genuine run's own artifact through Actions' own
+   artifact-management endpoint, which still only degrades to "no
+   auto-waiver", never a forged one -- outside the `issues: write`-scoped
+   threat model this condition (and the independent review findings that
+   prompted both rounds) are framed against.
+
+A marker missing `run-id:`, whose run, run-jobs, or run-artifacts data
+cannot be resolved, targets another head SHA or repository, ran under
+any event other than `pull_request_target`, whose PR diff does not touch
+the trigger-file allowlist, whose cited run's own posting step did not
+report `success` within its own execution window, or whose own comment
+`(id, body digest)` pair is absent from (or ambiguous within) the cited
+run's artifact-recorded trusted set, is rejected the same way a manual
+waiver from an untrusted actor is today. Unlike an ordinary
+maintainer-authorized waiver (gated behind
+`deadlinePassed || terminalUnavailable`), a valid
+self-referential-bootstrap-auto waiver is evaluated **unconditionally** --
+it makes `ready` true immediately, without waiting for the deadline clock
+or a proven Copilot outage, since the whole point is bootstrapping a fix
+to the deadline mechanism itself. It stays gated on the applicability
+scope, though: under `convergenceScope: "idd-claimed"`, a PR whose
+linked issue's claim history is ambiguous or lacks a currently active
+claim resolves `indeterminate`, not `not_applicable` -- deliberately
+kept **not** self-bootstrap-eligible (Copilot review, PR #2895, round
+10), unlike the ordinary maintainer waiver's own `not_applicable`-only
+gate, since that path requires an actual human judgment call that this
+one never makes. Do not widen this exception to any other reason
+token, actor, or check selector.
+
+**A narrow, inherent dead zone remains** (kurone-kito/idd-skill#2657,
+Codex review, PR #2895, round 9): being in the trigger-file allowlist
+does not mean every possible bug in that file can be self-bootstrapped.
+Both the posting job and the verdict job always check out the
+repository's default branch, never the PR head -- required so neither
+job ever executes PR-controlled code with `issues: write` -- so a bug
+specifically WITHIN the code that decides whether/how to invoke
+`--auto-bootstrap` (its own branches in `external-check-waiver.mts`),
+the four Actions-API methods the trust chain above itself calls
+(`getWorkflowRun`, `getWorkflowRunJobs`, `listWorkflowRunArtifacts`,
+`listChangeRequestChangedFiles` in `provider-adapter-github.mts`), or the
+seven conditions' own verification functions in `advisory-convergence.mts`
+(`verifySelfReferentialBootstrapWaiverRun`,
+`verifySelfReferentialBootstrapWaiverProvenance`,
+`verifySelfReferentialBootstrapWaiverArtifactBinding`, and the rest) cannot
+be rescued by this mechanism: the OLD, buggy version of exactly that
+code is what would have to decide to trust the fix. This is the same
+fixed point every self-hosting bootstrap has, and isolating marker
+emission into a
+smaller module would shrink it, never eliminate it. The rest of each
+listed file's surface -- most of it, since each implements far more
+than this one trust path -- remains genuinely bootstrappable as
+described above. For the residual case, the
+[maintainer-authorized waiver backstop](#external-check-waiver-contract)
+this repository already configures is the documented human off-ramp
+for precisely this situation, not a gap this mechanism itself needs to
+close.
 
 ### Provider health helper
 
@@ -1680,6 +1977,14 @@ Interpretation rules:
   A `holder`
   snapshot of the previous occupant is reported on **both** a plain
   `collision` and an authorized takeover, not only on takeover.
+- `reacquired: true` also carries an optional `racedCreate: true` flag
+  (#2917 review, Codex): set when this exact
+  invocation's own first read found the lock absent and its own
+  exclusive-create attempt then lost a race to a concurrent same-`claim-id`
+  creator, so the eventual match came from a later retry, not the
+  invocation's first look. A caller trusting `reacquired: true` as
+  evidence the lock predates this call (as the backfill-tokens recovery
+  route does) must also require `racedCreate` to be absent/`false`.
 - The `--acquire` CLI exits `0` only for `acquired` and exits `2` for
   `collision`, so a hook can safely chain installation or another mutation
   with `&&`; `--check` remains read-only and exits `0` for a reported state.
@@ -1696,17 +2001,26 @@ Interpretation rules:
   `git worktree remove` at F4 deletes it together with the worktree
 - **`instructions-only` helper-free fallback** (no helper runtime
   available): resolve the private admin directory with
-  `git -C <worktree> rev-parse --absolute-git-dir`, then atomically
-  create an `idd-claim.lock` file there with an exclusive file-create
-  API (`open(..., O_CREAT|O_EXCL)` on POSIX, or the PowerShell
+  `git -C <worktree> rev-parse --absolute-git-dir`, then read the
+  `idd-claim.lock` path first, before writing anything. Present,
+  well-formed, and its holder matches (`agentId`, `claimId`) →
+  re-acquired without writing — this call's own first read found the
+  lock already there, mirroring the helper's `reacquired: true` with no
+  `racedCreate`. Absent → create it with an exclusive file-create API
+  (`open(..., O_CREAT|O_EXCL)` on POSIX, or the PowerShell
   `FileMode.CreateNew` equivalent), writing the same JSON holder shape
-  (`agentId`, `claimId`, `acquiredAt`). A path that already exists is a
-  collision; a matching holder may re-acquire, and a missing,
-  malformed, or unreadable holder is also a collision. Never delete or
-  override a different holder — enable a helper runtime for an
-  authorized takeover instead. Both profiles share the `idd-claim.lock`
-  namespace, so a helper-runtime session and an instructions-only
-  session see the same lock.
+  (`agentId`, `claimId`, `acquiredAt`). If that create then fails
+  because the path now exists (`EEXIST`), a concurrent same-claim-id
+  writer landed between the read and the create; re-read to confirm the
+  holder matches, but treat this outcome as a race, not as evidence the
+  lock predates this call — never equal it to a lock this same read
+  already found present (the helper's `racedCreate: true`, #2917
+  review, Codex). A path that already exists with a non-matching,
+  missing, malformed, or unreadable holder is a collision either way.
+  Never delete or override a different holder — enable a helper runtime
+  for an authorized takeover instead. Both profiles share the
+  `idd-claim.lock` namespace, so a helper-runtime session and an
+  instructions-only session see the same lock.
 
 ### Worktree-local generated-tokens record
 
@@ -1719,8 +2033,10 @@ Interpretation rules:
   [`idd-claim.instructions.md`'s Worktree-local lock file section](../.github/instructions/idd-claim.instructions.md#worktree-local-lock-file-same-machine-collision).
 - Source repo / vendored-node commands:
   `node scripts/claim-lock.mjs --record-tokens --worktree <path>
-  --agent-id <id> --claim-id <id> [--nonce <nonce>]`
-  and `node scripts/claim-lock.mjs --read-tokens --worktree <path>
+  --agent-id <id> --claim-id <id> [--nonce <nonce>]`,
+  `node scripts/claim-lock.mjs --read-tokens --worktree <path>
+  --claim-id <id>`, and
+  `node scripts/claim-lock.mjs --backfill-tokens --worktree <path>
   --claim-id <id>`
 - Package-manager / ephemeral-npx command: use the same profile-selected
   `idd:claim-lock` command as the lock above; the literal invocations are:
@@ -1732,6 +2048,9 @@ Interpretation rules:
 
   npx --yes --package <helper-package-spec> \
     idd-claim-lock --read-tokens --worktree <path> --claim-id <id>
+
+  npx --yes --package <helper-package-spec> \
+    idd-claim-lock --backfill-tokens --worktree <path> --claim-id <id>
   ```
 
 - **When to call `--record-tokens`**: once at A5 claim time, right after
@@ -1769,6 +2088,83 @@ Interpretation rules:
   at); `present: false` means this claim-id was never recorded. Treat
   `malformed` the same as absent for an ownership check — never trust a
   claim-id this record does not affirmatively confirm.
+- **When to call `--backfill-tokens`** (#2884): the recovery route the
+  Claim revalidation gate's step 5 documents for an absent or malformed
+  `--read-tokens` result -- a worktree whose B1 predates this
+  generated-tokens-record feature (a rollout gap: PR #2879 review, Codex
+  P1) never gets a record written, so `--read-tokens` fails closed
+  forever with no recovery otherwise. Reads the existing `idd-claim.lock`
+  file at `<path>` (the same resolution `--check` uses) and writes only
+  when it is present and its own `claimId` matches the given
+  `--claim-id` exactly, using the lock's own `agentId` and no `--nonce`
+  (matching a fresh pre-nonce `--record-tokens` call) unless a
+  well-formed record for this `--claim-id` is already present, in which
+  case its own `nonce` is preserved rather than silently erased (the
+  documented recovery route only ever reaches this command when
+  `--read-tokens` reported absent/malformed -- meaning no well-formed
+  record exists yet -- but the CLI itself does not enforce that
+  precondition, so it guards against a direct out-of-band invocation
+  too, #2917 review): reports
+  `backfilled`. An absent lock reports `lock-absent`; an unparseable or
+  otherwise unreadable lock (for example a directory at the lock path)
+  reports `lock-malformed`; a lock present for a different `claimId`
+  reports `lock-mismatch` (naming the actual holder); a matching lock
+  whose own record path is a directory reports `record-blocked` instead
+  of deleting it -- the lock only authenticates the lock, not this
+  separate path, and the path's hash suffix is not collision-proof, so
+  lock authority alone never authorizes replacing it (#2917 review,
+  Copilot) -- all four write nothing. Exits `0` for `backfilled` and `2`
+  for the four failure statuses, mirroring `--acquire`'s own collision
+  exit-code contract so a
+  caller can chain `--backfill-tokens && --read-tokens`. Performs no
+  GitHub round-trip, matching `--acquire`'s own same-machine, no-network
+  design -- the caller is responsible for having already independently
+  confirmed the live claim-id via GitHub before ever reaching this
+  recovery step; this command only ever reconciles local worktree state,
+  never adjudicates claim ownership itself. Re-invoking after a
+  successful backfill is always a safe, idempotent overwrite (reports
+  `backfilled` again), matching `--record-tokens`'s own idempotency
+  contract -- there is no separate `already-present` status. The Claim
+  revalidation gate (step 5, `idd-overview-core.instructions.md`, and
+  the equivalent step in every lite guard) reaches this route only
+  through a chain in which **each step gates the next** -- proceed to
+  the next step only on the exact result shown, and stop fail-closed on
+  any other result:
+  0. The gate's own initial `--acquire` reports `reacquired: true` with
+  no `racedCreate` -- a fresh `acquired` (lock just created),
+  `forcedTakeover: true`, or `reacquired: true` with `racedCreate:
+     true` (this call itself raced a concurrent creator for the same
+  claim-id, so the match is not proof the lock predates this gate
+  pass) are never legitimate backfill evidence.
+  1. `--check` reports the lock `present`, holder matching
+     `{claim-id}`.
+  2. `--backfill-tokens` reports `backfilled`.
+  3. The retried `--read-tokens` reports `present: true` (no
+     `malformed`).
+  4. A final `--acquire`, run again immediately before the mutation,
+     reports `reacquired: true` with no `racedCreate` -- the same
+     requirement as step 0, applied again because a fresh `acquired`
+     here would mean the lock vanished mid-recovery (for example a
+     concurrent takeover) and this step would otherwise create a new
+     one and let the mutation proceed with no real token evidence.
+
+  This closes gaps three review rounds each found real: the window
+  between the initial acquire and the mutation that a concurrent
+  takeover could exploit; a literal reading of the sequence as an
+  unconditional run-these-in-order list rather than a chain each link
+  of which must actually succeed; and `reacquired: true` alone being
+  trusted as proof of pre-existence when a same-claim-id race can
+  produce it for a lock that is in fact only microseconds old
+  (`acquireClaimLock`'s own `EEXIST`-retry loop,
+  `src/scripts/claim-lock.mts`) (#2917 review, Codex and Copilot).
+  Residual, named rather than hidden: a _third_ process arriving after
+  such a race has already settled sees `reacquired: true` with no
+  `racedCreate` on its own first read, the same way it would for a
+  lock that is genuinely years old -- this mechanism only ever detects
+  a race this specific call itself observed, never a lock's true age;
+  the Claim revalidation gate's own GitHub-verified claim check (steps
+  1-4 before this one) is the actual authority this is defense in
+  depth for, not a replacement for it.
 - No explicit release verb, no cleanup across takeovers: like the lock
   file, the record lives inside the worktree's own private git-admin
   directory, so `git worktree remove` at F4 deletes it together with the
@@ -1800,10 +2196,86 @@ Interpretation rules:
   `{claim-id}`, UTF-8-encoded -- not the sanitized or truncated form,
   so a fallback and the CLI (or two fallback implementations) agree on
   the same path for the same claim-id (#2879 review, Codex P2). Write
-  `{ agentId, claimId, nonce?, recordedAt }`. No
-  exclusive-create semantics needed (unlike the lock): a plain atomic
-  replace is correct since this is idempotent evidence, not a
-  mutual-exclusion primitive.
+  `{ agentId, claimId, nonce?, recordedAt }`. No exclusive-create
+  semantics needed for **this record file itself** (unlike the lock
+  file): a plain atomic replace is correct here since the record is
+  idempotent evidence, not a mutual-exclusion primitive -- except a
+  directory already occupying this exact path, which this fallback
+  never replaces or deletes either, matching
+  `recordGeneratedClaimTokens`'s own absolute invariant in
+  `src/scripts/claim-lock.mts` (PR #2879 regression test; #2917 review,
+  Copilot); stop fail-closed instead. **This is scoped to the record
+  file's own replace step only** -- it does not exempt the coordination
+  below: the separate `.writelock` guard the next bullet introduces
+  _does_ need an exclusive create, every time, even though the record
+  replace it wraps does not (#2922 review round 8, Copilot). Skipping
+  the guard because "no exclusive-create semantics needed" was read as
+  covering this whole write reopens the exact nonce-clobber race #2922
+  reported.
+- **`instructions-only` write-lock coordination** (#2922 -- applies to
+  this write side and to the backfill side below, which performs a
+  read-then-write of the same record): before writing, coordinate
+  against a concurrent writer for the same `{claim-id}` the way the
+  CLI's `recordGeneratedClaimTokens` and `backfillGeneratedClaimTokens`
+  do (`withGeneratedTokensWriteLock`, `src/scripts/claim-lock.mts`):
+  atomically create a same-directory `<resolved-path>.writelock` guard
+  file (exclusive create -- fails if it already exists), retrying
+  roughly every 5 ms for up to 5 seconds if it does, **writing a fresh,
+  unique per-attempt token as the guard's own body** (a random value,
+  or `pid:timestamp:random` -- any scheme unique per attempt is fine).
+  **Only once that create call itself has actually succeeded** -- never
+  before it, and never merely because this invocation _attempted_ one --
+  arm a cleanup handler (a shell `trap`, or the agent's own equivalent of
+  a `finally` block) that runs on **every exit path from this point
+  forward, success or failure alike**, then perform the write (or, for
+  the backfill side, the read that captures the existing `nonce` and the
+  write that follows it). Arming the handler any earlier (for example a
+  `trap` set up before the create attempt) is not ownership-safe: a
+  failed create -- whether from `EEXIST` or from exhausting the 5-second
+  wait budget below -- proves nothing was created by this invocation, so
+  a handler armed that early would remove a **different, possibly
+  concurrent, holder's own guard** instead, reopening the exact ABA race
+  #2922's CLI-side fix (`withGeneratedTokensWriteLock`'s own
+  `openSync`/`writeSync`/`closeSync` ownership tracking) exists to close
+  (#2922 review round 6, CodeRabbit). The cleanup handler itself must be
+  **token-verified, not unconditional** (#2922 review round 11,
+  Copilot): re-read the guard and remove it only if it still holds the
+  exact token this attempt wrote, mirroring the CLI's own
+  `releaseGeneratedTokensWriteLockIfOwned` (and, before it,
+  `releaseCloneLock` in `src/scripts/clone-lock.mts`) -- an operator can
+  legitimately remove a guard by hand per the fail-closed timeout
+  guidance below while this invocation's own write is still genuinely in
+  flight, and a new writer can recreate it before this invocation's
+  cleanup runs; an unconditional removal there would delete that new
+  writer's guard instead of its own, letting two writers proceed at
+  once. Treat a guard that is simply already gone (removed by hand, or
+  already released) the same as a token mismatch -- nothing left for
+  this cleanup to remove, not an error. This narrows rather than
+  eliminates the race (verifying the token and removing the guard are
+  still two separate steps, not one atomic operation), which is an
+  accepted limitation shared with the CLI's own implementation -- see
+  the doc comment on `withGeneratedTokensWriteLock` in
+  `src/scripts/claim-lock.mts` for the full rationale. An agent that
+  removes the guard solely after a successful write and skips cleanup
+  when that write itself fails leaves the same orphaned-guard problem
+  the CLI's own code was separately reviewed for (#2922 review round 4,
+  Copilot): every later writer for this exact `{claim-id}` then waits
+  the full 5 seconds and fails closed until an operator manually removes
+  it. Unlike the record file's own body, the guard file's content is
+  read back by this same cleanup handler to verify ownership before
+  removing it -- no other, contending reader ever needs to inspect it,
+  so no atomic-visibility trick is needed beyond the exclusive create
+  itself. If the 5-second wait budget is exhausted, stop fail-closed and
+  report the guard path for manual removal rather than writing anyway
+  (an earlier revision of the CLI's own lock self-reclaimed an aged
+  guard automatically; three independent reviewers found that unsafe --
+  see the doc comment on `withGeneratedTokensWriteLock` for why
+  fail-closed is the current answer) -- a pre-existing guard this
+  invocation did not itself create is never removed on any path, success
+  or failure. Skipping this coordination reopens the exact race #2922
+  reported for the CLI path: a concurrent writer's fresher `nonce` can be
+  silently lost, including between an `instructions-only` session and a
+  helper-runtime session sharing the same worktree.
 - **`instructions-only` helper-free fallback, read side** (#2879 review,
   Codex P1 -- the mandatory `--read-tokens` check in the Claim
   revalidation gate has no helper-free path without this): resolve the
@@ -1815,6 +2287,35 @@ Interpretation rules:
   `present: true, malformed: true`; only a well-formed record whose
   `claimId` field matches is plain `present: true`. Treat `malformed`
   the same as absent for the ownership check -- fail closed on both.
+- **`instructions-only` helper-free fallback, backfill side** (#2884 --
+  the same class of gap PR #2879's Codex P1 review flagged for
+  `--read-tokens` above: a mandatory gate-recovery step needs a
+  helper-free path too, and `instructions-only` is the distributed
+  default profile): resolve the worktree-local lock file the same way as
+  the lock section above and parse it the same way `--check` does --
+  but only when your own _first read_ in the acquire step above already
+  found the lock present and matching, never when it was absent there
+  and your own exclusive-create then failed `EEXIST`. That failure means
+  a concurrent same-claim-id writer landed between your read and your
+  create -- a race, not evidence the lock predates this gate pass; the
+  helper's own `racedCreate: true` marks exactly this case (#2917
+  review, Codex). Only when it parses as well-formed and its `claimId`
+  field equals the active `{claim-id}` exactly, apply the write-side
+  fallback above -- write-lock coordination included, wrapped around
+  this whole read-then-write, not just the write -- using the lock's
+  own `agentId`, carrying forward an existing well-formed record's own
+  `nonce` when present, otherwise no `nonce` (#2917 review, Copilot) --
+  except when the record's own
+  resolved path is already occupied by a directory: leave it and its
+  contents untouched and stop fail-closed instead, mirroring the CLI's
+  own `record-blocked` status (`backfillGeneratedClaimTokens`,
+  `src/scripts/claim-lock.mts`) -- a matching lock authenticates the
+  lock, not that separate path, and the path's hash suffix is not
+  collision-proof, so lock authority alone never authorizes replacing it
+  (#2917 review, Copilot). An absent lock, a lock that fails to parse, a
+  lock whose `claimId` differs, or a lock your own first read did not
+  already find present and matching all leave the existing fail-closed
+  stop unchanged -- write nothing.
 
 ### Clone-scoped lock
 
@@ -2420,9 +2921,11 @@ reflexively as any other CLI option.
   is a `branch-currency` merge-gate blocker (see below); `UNKNOWN` is the
   async-still-computing state F1 and the E-phase branch-sync check
   already re-poll, not a blocker here.
-- `ci.discardedNonPassingRequiredChecks` (#1745) surfaces a same-name/type/
-  workflowName required-check instance discarded by the latest-per-producer
-  dedup while the surviving representative is pass-equivalent -- e.g. a
+- `ci.discardedNonPassingRequiredChecks` (#1745) surfaces a same-producer
+  (name/type/workflowName/workflowPath -- kurone-kito/idd-skill#2919 widened
+  this from the original name/type/workflowName 3-tuple) required-check
+  instance discarded by the latest-per-producer dedup while the surviving
+  representative is pass-equivalent -- e.g. a
   `CANCELLED` bot-triggered instance sitting alongside the `SUCCESS`
   instance the dedup selected as "latest", the live PR #1741 divergence
   where `ci.status: "success"` disagreed with GitHub's own
@@ -2458,6 +2961,35 @@ reflexively as any other CLI option.
   `trustSourcePinnedRequiredChecks` opt-in never clears this cause, even
   when a separate, named-and-pinned check on the same required-check set
   would itself qualify.
+- `ci.identityUnresolvedRequiredCheckNames` (kurone-kito/idd-skill#2919,
+  round 2) mirrors `ci.sourcePinnedRequiredCheckNames`'s own shape for a
+  different unverifiable-producer case: required check names whose green
+  state was downgraded to `ci.status: "unknown"` because this collection
+  pass could not fully resolve their real workflow-file producer identity
+  (`workflowPath`) -- a parse failure on some but not all live instances, a
+  thrown `listCheckRunWorkflowPaths` call, an empty resolved path, a
+  run-id count exceeding the collector's own lookup ceiling, or a
+  `detailsUrl` that repeats -- either among the resolved
+  `checkSuite.workflowRun` associations or among the live rollup's own
+  matching instances -- and so cannot be joined back to a single instance
+  safely (kurone-kito/idd-skill#2926). Today this can only ever name
+  `idd-advisory-convergence`, the one check name `pre-merge-readiness`
+  attempts `workflowPath` resolution for. Evidence only (empty array, never
+  omitted, when no such downgrade occurred) -- `computePreMergeReadinessBlockers`
+  uses it (alongside `ci.preDowngradeStatus` below) to name the
+  identity-unresolved cause in the `ci` blocker detail.
+- `ci.preDowngradeStatus` (kurone-kito/idd-skill#2919, round 5) is the
+  dedup+waiver-adjusted `ci.status` classification captured BEFORE either
+  the source-pinned or identity-unresolved downgrade above could narrow
+  it -- `"success"` here means every OTHER required check was already
+  fully resolved as passing, so any non-success final `ci.status` can only
+  be attributed to those two named downgrades. `computePreMergeReadinessBlockers`
+  reads this to decide whether a genuinely separate, concurrent CI failure
+  (an unrelated required check that is actually failing/pending/missing)
+  also needs naming in the `ci` blocker detail, rather than letting a
+  pinned/identity-unresolved cause's own detail text silently replace it.
+  `"unknown"` when no required checks are configured, mirroring
+  `ci.status`'s own initial default in that case.
 - Authoritative phase role: the live `pre-merge-readiness` run on the
   current HEAD is the **authoritative source for the final-merge CI and
   activity fields** at F2/F3. The `review-activity-snapshot` helper builds
@@ -2645,7 +3177,11 @@ reflexively as any other CLI option.
   Without `--assert` it always exits `0` (report-only). With `--assert` it
   exits non-zero unless `ready` is `true` (`ready = not_applicable ||
   converged || ((deadline passed || terminal-unavailable) && validly
-  waived)`).
+  waived) || autoWaiverValid`, the last disjunct added by
+  kurone-kito/idd-skill#2657 -- see the self-referential-bootstrap-auto
+  waiver section above; `waiver.autoWaiverValid` in the verdict reports
+  it directly, since every other `waiver.*` field stays gated behind the
+  deadline/terminal precondition this new disjunct is not).
 - **Structured `nextActions` (`#2143`)**: the verdict also reports a
   `nextActions` array populated from the same catalog the `--assert`
   failure stderr block uses (`collectAssertNextActions`). Each item
@@ -2741,7 +3277,9 @@ reflexively as any other CLI option.
   ordinary deadline has passed — but `ready` still requires a valid
   waiver in addition (`ready = not_applicable || converged ||
   ((deadline.passed || terminal.state == "COPILOT_UNAVAILABLE") &&
-  waived)`); the terminal state alone never sets `ready: true`. A
+  waived) || autoWaiverValid`, the last disjunct unaffected by this
+  section — kurone-kito/idd-skill#2657's self-referential-bootstrap-auto
+  waiver above); the terminal state alone never sets `ready: true`. A
   `not_applicable` applicability (including `reviewPolicy`
   `human-required` / `no-advisory`) is an independent ready path and
   does not change this waiver rule. Observed incident:
@@ -3507,6 +4045,197 @@ commit reverts to the stalling primary signer. This is the normal-path
 complement to the recovery-path re-signing in
 `idd-pr-submit.instructions.md` (Post-rebase verification) and
 `idd-overview-core.instructions.md` (cwd-vs-claim cherry-pick recovery).
+
+This wrapper also applies to an ordinary per-commit `git commit` in B3
+(`idd-work.instructions.md`), not only a merge or rebase continuation:
+
+```sh
+git -c gpg.format=ssh -c user.signingkey=<abs-path> -c commit.gpgsign=true commit -F <message-file>
+```
+
+Unlike the merge case above, a commit-only alias such as `git
+commit-ssh` is sufficient here — a single `commit` invocation needs no
+`--continue` step to re-sign.
+
+**Bounded timeout for every invocation** (commit, merge, or rebase): if
+the wrapper has not completed within 2 minutes, treat it as stuck
+rather than a signing failure worth retrying — a whole-command,
+root-cause-agnostic bound (it deliberately does not try to isolate the
+signer subprocess) that applies even to an invocation still producing
+output: an inactivity-only trigger would leave a merge or rebase that
+keeps emitting output free to run indefinitely without ever completing,
+which is not actually bounded (preventive; no observed incident yet —
+raised in PR #2906 review). First check whether the process **tree** —
+the wrapper's git invocation and any descendants such as the signer
+subprocess, not just the top-level command — is still running: per
+`idd-ci.instructions.md`'s "Wake-up discipline" guidance on a heavy
+local command that auto-backgrounds past a tool's default timeout, do
+not start a second wrapper invocation alongside it. This whole
+recovery procedure depends on being able to snapshot and signal the
+process tree — if `pgrep`/`ps` (or an equivalent process-listing and
+signaling mechanism) are not available on the host, that dependency
+cannot be met: stop and post a hold note rather than falling back
+without the cleanup guarantee, the same fail-closed treatment the
+`lsof` case below already gets. It also depends on already knowing
+which process is this invocation's own: "the git PID" below is the PID
+recorded when this wrapper invocation itself was launched, never one
+recovered afterward by searching the process table — launch the
+wrapper (the original invocation and every fallback or continuation
+alike) as `<wrapper command> & echo "wrapper-pid=$!"; wait "$!"` so the
+PID lands in the tool's own output at launch, an unambiguous launch
+record that survives a later timeout, since shell state such as a bare
+`$!` does not itself persist between separate tool calls. B1's
+sibling-worktree model already puts several concurrent workers on one
+host, so a generic `pgrep`/`ps` pattern match (for example, on the
+command name `git commit`) can just as easily match another worker's
+unrelated git invocation, and signaling that tree would terminate
+someone else's in-progress work instead of this one's (preventive; no
+observed incident yet — raised in PR #2906 review). If no such
+launch-time handle was recorded, that dependency is unmet too: hold,
+the same as the missing-`pgrep`/`ps` case above, rather than search for
+a substitute. Otherwise, snapshot the whole set to signal: the git PID
+itself **and** its descendants, found by walking from the git PID (for
+example, recursively via `pgrep -P`) — a
+"descendant" walk alone omits the root git process, leaving it able to
+keep running (and keep `index.lock` held) after only its children are
+signaled. Immediately send SIGTERM to every recorded PID in that
+whole set, not `-9` — git's own signal handler cleans up `index.lock`,
+and a descendant such as the signer subprocess can outlive a `kill`
+scoped to only the git parent (reproduced 2026-09-11 in PR #2906
+review). Snapshot and signal back-to-back, with nothing in between:
+that is what keeps a bare recorded PID number trustworthy without
+needing a separate identity check, since the gap in which an exited
+PID could be reused by an unrelated process stays sub-second on any
+real host. Then wait up to 30 seconds for each recorded PID
+individually to exit (not a fresh tree walk); SIGTERM is asynchronous,
+so checking state immediately can race git's own unwind (still
+removing `index.lock`) or observe stale state.
+
+Even a PID snapshot is best-effort, not a guarantee: a child that gets
+reparented (commonly to init) before the snapshot is taken is never
+recorded at all, so it survives untouched no matter how promptly the
+recorded PIDs are signaled. The same is true of a recorded PID that
+simply outlasts the 30-second wait — for example a process stuck in
+uninterruptible I/O, which cannot receive a signal until it leaves
+that state (preventive; no observed incident yet). Whether either kind
+of survivor is safe to proceed past depends on what it can be: a
+signer subprocess is only a resource leak to report, since the
+unsigned fallback below never invokes one and so cannot race it — but
+the whole-command timeout this section opens with is root-cause-
+agnostic (it can equally fire on a hung hook, not only a stalled
+signer), and a hook process that survives could still be reading or
+writing the working tree or index. Proceeding with the fallback while
+an unidentified or non-signer descendant might still be touching
+repository state risks the fallback's own git operation racing it, so
+treat that case as blocking: stop and post a hold note documenting the
+surviving PID(s) rather than falling back, reserving the
+resource-leak-and-continue treatment for a descendant identifiable as
+the signer itself.
+
+Separately, the lock-ownership check keeps its original (round-6)
+purpose: a leftover `index.lock` after the tree is confirmed gone does
+not prove it belongs to this invocation — a hook, another command, or
+the signer itself could hold it instead, the same ambiguity the
+clone-scoped lock's own "no automatic stale-lock recovery" convention
+already treats as unsafe to guess past. Confirm no other process
+still has the lock file open — a hook or the signer subprocess itself
+could hold it, not only another `git` command, and not necessarily
+one running from this worktree's directory (an absolute-path or
+`git -C` invocation holds the same lock without it) — with `lsof` on
+the `--git-path index.lock` path; where `lsof` is not available,
+ownership cannot be reliably confirmed at all, so treat it as
+unconfirmed rather than substituting a weaker check — before removing
+it yourself
+(`rm -f "$(git rev-parse --git-path index.lock)"`, not a literal
+`.git/index.lock` path, the same linked-worktree rule the rebase-state
+check below uses); if ownership cannot be confirmed, leave the lock in
+place and stop with a hold note instead of forcing the removal.
+
+Either way — the tree exited on its own, was terminated with nothing
+left but an identified signer leak, or the checks above otherwise
+allow proceeding — verify what actually happened before falling back;
+a killed or already-exited process can leave the operation completed,
+mid-progress, or never started at all:
+
+- **Plain commit**: compare `git rev-parse HEAD` before/after the
+  wrapper call, the same check B3's "Verify a commit actually landed"
+  paragraph already prescribes. Landed → stop, do not re-commit.
+  Otherwise, before falling back to `--no-gpg-sign`, also compare the
+  index's tree hash — from running `git write-tree` before the wrapper
+  call and again now — rather than comparing `git status --porcelain`
+  and `git diff --cached --stat` output: `git commit -F` commits the
+  index, so this content-addressed hash is what actually proves it
+  unchanged, whereas status/diff-stat output only shows that a hook
+  mutated the index without moving `HEAD` (reproduced 2026-09-11 in PR
+  #2906 review, via a hook that staged an extra file and slept) — it
+  cannot also catch a hook that swaps one tracked line's content for
+  another of the same shape, leaving both reports unchanged
+  (preventive; no observed incident yet). Unstaged working-tree
+  changes are intentionally excluded from this check: `git commit -F`
+  alone never commits them, so they cannot reach the fallback commit
+  regardless of what changed there. Unchanged → fall back to
+  `--no-gpg-sign`
+  (`idd-overview-appendix.instructions.md`'s "Commit signing" section).
+  Changed → stop and post a hold note for review instead of falling
+  back.
+- **Merge or rebase, state still present**: name the state via git, not
+  a literal path — in a linked worktree (every B1 sibling worktree)
+  `.git` at the worktree root is a _file_ pointing elsewhere, so a
+  hardcoded `.git/rebase-merge` check silently never matches. Use
+  `git rev-parse -q --verify MERGE_HEAD` for a merge, or
+  `test -d "$(git rev-parse --git-path rebase-merge)"` (or
+  `rebase-apply`) for a rebase. Either succeeding means the operation is
+  mid-progress: complete it with `-c commit.gpgsign=false` on the
+  `--continue` form — a plain `--continue` re-signs through the stalled
+  primary signer, and `--no-gpg-sign` itself is not a `--continue` flag.
+- **Merge or rebase, no state present**: absent state alone does not
+  prove the operation succeeded — the timeout can equally fire before
+  Git ever creates that state (nothing to `--continue`), or, for a
+  rebase specifically, leave `HEAD` detached at the upstream tip
+  without replaying the local commit, the same sibling-worktree failure
+  mode `idd-pr-submit.instructions.md`'s D1 "Post-rebase verification"
+  already documents and defines the same predicate for: current branch
+  non-empty (not detached) and the expected local commit present in
+  `origin/{development-branch}..HEAD` for a rebase; for a merge, either
+  `HEAD` advanced past its pre-call value or
+  `git merge-base --is-ancestor origin/{development-branch} HEAD`
+  already succeeds — an already-current merge exits `0` having created
+  neither a new `HEAD` nor `MERGE_HEAD`, and is success, not a failed
+  attempt. For a rebase specifically, D1's two checks alone are not
+  enough here: D1 verifies a rebase that already completed, but a
+  timeout that fires **before** the rebase ever starts leaves the
+  untouched, still-behind branch passing both checks trivially (it was
+  never detached, and its own feature commit was already present in
+  `origin/{development-branch}..HEAD` before this attempt began) —
+  require `git merge-base --is-ancestor origin/{development-branch}
+  HEAD` to succeed too, the same upstream-incorporated check the merge
+  case above already uses, so a rebase that never actually ran is not
+  mistaken for one that did. Verified → stop. Not verified → re-attach
+  to the branch if
+  detached (`git checkout {branch-name}`; the commit is preserved on
+  the branch ref) and rerun the original merge or rebase command
+  **unsigned** (`git -c commit.gpgsign=false merge …` / `rebase …`, not
+  the SSH-signing wrapper), exactly once, under this same 2-minute
+  bound — mirroring D1's own bounded auto-recovery. If that rerun times
+  out or still fails the same verification, post a hold note
+  documenting the branch state and stop, the same as D1's own recovery
+  does when it is exhausted.
+
+No step in this recovery procedure waits indefinitely: the original
+wrapper invocation and every fallback or continuation share the same
+2-minute bound, and the termination wait above has its own 30-second
+bound — every step that exceeds its bound routes to the same
+terminate-and-verify-or-hold outcome, not a fresh unbounded wait. A
+hook or other non-signing cause can hang the plain-commit
+`--no-gpg-sign` fallback or the `--continue` completion just as it
+hung the original attempt; if either does not itself complete within
+2 minutes, apply the same terminate-and-verify procedure to it, and if
+it still does not resolve, post a hold note and stop rather than
+retrying further.
+
+Observed hanging with no output for an extended, unbounded period on
+2026-09-10 (issue #2844 / PR #2870, commit `7be8acc9`, later confirmed
+unsigned).
 
 ## Friction Inventory
 

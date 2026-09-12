@@ -4,9 +4,31 @@
 
 ---
 
-## v0.3.220：Windows 推荐进程修复与保存键扩展（2026-09-09）
+## 未发布
 
-- **新增 AtomGit 国内源码镜像（2026-09-10）**：中英文 README 补充 [AtomGit 项目入口](https://atomgit.com/whiteguo233/OpenBiliClaw)，镜像从 GitHub 自动同步源码，方便国内访问并满足 G-Star 申请的项目链接展示要求。
+- **补上 B 站扩展任务的 CSRF 门禁**：`GET /api/sources/bili/next-task` 与其它来源的 `next-task` 一样是「pending → in_progress」的领取型 GET，但此前不在 `api/auth.py` 的 `_CSRF_GET_EXACT` 集合里 —— 带 cookie 的跨站顶层导航（`SameSite=Lax` 会随顶层 GET 发送会话 cookie，且 `Sec-Fetch-Site: cross-site` 已使本机免登录 fast path fail-closed）可以在没有 `X-OBC-Auth` 的情况下把一条 pending 的 B 站扩展任务置为 `in_progress`，而扩展永远收不到它，只能等租约回收。现在该路径与其余九个来源一起强制 `X-OBC-Auth`；扩展走 `Authorization: Bearer`（Bearer 豁免 CSRF），不受影响，本机 CLI / 扩展链路无行为变化。同时把 CSRF 回归从手抄路径列表改为**集合相等断言**（`tests/test_api_auth.py`：已注册的 `*/next-task` 路由集合 == `_CSRF_GET_EXACT` 中登记的 claim 路径），后续新增来源漏登记会直接失败，`docs/modules/api-auth.md` 的 CSRF 行同步更正为十个来源。
+
+- **B 站视频信息补分区 id，新增标签读取方法（issue #57 / #232 方向 1）**：`get_video_info()` 补填同一 `/x/web-interface/view` 响应里一直存在、但此前被丢弃的 `tid` / `tid_v2`（零额外请求）；新增 `get_video_tags(bvid, limit=20)`，走 `/x/tag/archive/tags`（网页播放器标签行所用的端点）取标签名，匿名 Cookie 亦可读取，响应远轻于 `/x/web-interface/view/detail`（后者会连带 Card / Related / Reply）。**实测纠正**：2026-09-11 在 8 个分区各取 1 个样本（含 plain `/view` 与 WBI `/x/web-interface/wbi/view` 两种变体）确认 —— 该响应**不含 `tag` 数组**，`tname` / `tname_v2` **恒为空字符串**，因此 `VideoInfo.tags` 在这条路径上保持 `None`，标签只能由 `get_video_tags()` 显式获取；`get_video_info()` 的请求数不变（有回归测试锁定）。集成点（把标签喂给评估 prompt、摇摆区视频才拉标签）留待后续按需接入，本次不改变任何发现/推荐链路行为。
+
+---
+
+## v0.3.221：保存 URL 归一化、B 站视频信息回退与 learned scorer 校准（2026-09-11）
+
+- **修复协议相对封面 URL 导致「稍后再看 / 收藏」422（issue #237）**：B 站等上游常见返回 `//i2.hdslb.com/...` 这类协议相对地址，入站 `SavedItemIn` 的 `content_url` / `cover_url` 在 `_validate_http_url` 校验前统一补全为 `https://...` 再入库；三个图形界面共用同一端点，无需各客户端自行兜底，非 HTTP(S)、带凭据、含空白或控制字符等非法值仍照旧拒绝。真实进程 + 真实 HTTP 回归：未修复的 main 提交返回 422，修复后 200 并落库为绝对地址。
+
+- **B 站视频信息接口增加 WBI 签名回退**：新增后端 `GET /api/bilibili/video/info`，优先走普通 `/x/web-interface/view`，被 412 风控时回退到 WBI 签名 `/x/web-interface/wbi/view`，保证移动端原生播放页的简介与点赞 / 投币 / 收藏 / 评论数在风控下仍可获取。
+
+- **learned scorer 安全校准闭环（eval_scorer）**：`[discovery].eval_scorer` 默认 `"llm"` 保持既有行为，并在桌面 Web / 扩展「高级功能」中显示为 `Agent（默认）`；用户可显式切换 `Shadow（校准观察）` 或 `Learned（仅相关性，实验性）`，保存后经同一配置 API 热重载。注册策略与回填策略复用顶层 evaluator，直连发现、统一候选流水线和单条评估不再绕回默认 Agent。`shadow` 并跑 learned + 完整 LLM、由 LLM 决定产品 relevance 并落完整隐私安全对照，人工运行只读 gate 并确认通过后才应选择 `learned` hybrid relevance。learned 模式仍保留 LLM temporal / topic / style / franchise 元数据，且审计失败、非法分数 / 向量 / digest 或不完整 LLM 成员均 fail-open；gate 拒绝不完整 telemetry、零 admission 和缺失指标。切换只影响后续候选，不重算已有推荐；本版本不减少 LLM 调用。
+
+- **贡献者致谢**：learned scorer 功能初始 PR 由 [@aweds13](https://github.com/aweds13) 提交（[PR #228](https://github.com/whiteguo233/OpenBiliClaw/pull/228)）；随后由 [@whiteguo233](https://github.com/whiteguo233) 接管完善并合入。
+
+- **新增 AtomGit 国内源码镜像**：中英文 README 补充 [AtomGit 项目入口](https://atomgit.com/whiteguo233/OpenBiliClaw)，镜像从 GitHub 自动同步源码，方便国内访问并满足 G-Star 申请的项目链接展示要求。
+
+- **CI 基线清理（MyPy）**：修复 8 个既有 MyPy 报错（`soul/cognition_cycle.py`、`image_service.py`、`worker/main.py`、`api/app.py`），`mypy src/` 恢复 0 error，CI 不再在 MyPy 步骤阻断后续 pytest。改动仅为类型注解 + 一个鸭子类型 Protocol（`_BackgroundTaskHost`）与一个 TypedDict，无运行时行为变化。
+- **CI 基线清理（pytest）**：MyPy 恢复后 pytest 暴露的 9 个既有失败一并处理，CI 全绿。其中 1 个是真实缺陷：`_get_wbi_keys` 之前把 HTTP 状态码吞成一个无 code 的 `BilibiliAPIError`，导致 watch-later 遇到 412/429 时被误标为 `failed` 而不是 `rate_limited`（现改用 `_sanitized_http_error` 保留码值）；其余 8 个为与近期重构不同步的过期断言（image-fetch 并发上限默认值 4/3→10/8、weibo 测试桩缺 `include_delivered`、desktop `sendChat` 改流式、dialogue respond 调用点新增 `_respond`、candidate eval max_tokens 8192→16384）。
+- **发布状态**：后端源码 / 浏览器插件 / 桌面安装包 / Docker 镜像与聚合 Release 统一为 `v0.3.221`；客户端配套版本为移动端 `v0.3.156+2006`。
+
+## v0.3.220：Windows 推荐进程修复与保存键扩展（2026-09-09）
 
 - **修复 Windows 端 v0.3.219 启动崩溃（issue #234）**：Windows 的 asyncio/uvicorn 不支持 Unix socket，独立推荐进程改为监听 `127.0.0.1:8423` 回环 TCP，主 API 改用 HTTP 代理；POSIX 仍保留 Unix socket。同时为桌面 Web 的 `renderPoolStatus` 增加 `null` 状态保护。
 - **允许 Linux.do 主题类型内容 ID 保存**：saved-item key 校验新增 `linuxdo:topic:<positive-id>` 规范键，与既有知乎 / GitHub typed-content 规则保持一致。
@@ -93,12 +115,6 @@
 - **README 下载与星标徽章**：中英文 README 顶部新增 GitHub Releases 总下载数与仓库 Star 动态徽章，点击可直达对应页面。
 
 - **桌面 Web 手机版二维码优先使用手动配置的后端地址**：校园网等存在 AP/客户端隔离或多网卡选错网卡的场景下，`/api/qr-info` 自动探测的局域网 IP 可能手机不可达，而桌面 Web 设置里手动填写的后端地址此前会被自动探测结果覆盖。现在二维码生成时显式配置的后端 host/port 始终优先，用户可填写手机可达的 IP、域名或内网穿透地址后再扫码；未填写时行为保持不变。更新 `tests/test_desktop_web_mobile_entry.py` 静态契约测试。
-
-## 未发布
-
-- **learned scorer 安全校准闭环（eval_scorer）**：`[discovery].eval_scorer` 默认 `"llm"` 保持既有行为，并在桌面 Web / 扩展「高级功能」中显示为 `Agent（默认）`；用户可显式切换 `Shadow（校准观察）` 或 `Learned（仅相关性，实验性）`，保存后经同一配置 API 热重载。注册策略与回填策略复用顶层 evaluator，直连发现、统一候选流水线和单条评估不再绕回默认 Agent。`shadow` 并跑 learned + 完整 LLM、由 LLM 决定产品 relevance 并落完整隐私安全对照，人工运行只读 gate 并确认通过后才应选择 `learned` hybrid relevance。learned 模式仍保留 LLM temporal / topic / style / franchise 元数据，且审计失败、非法分数 / 向量 / digest 或不完整 LLM 成员均 fail-open；gate 拒绝不完整 telemetry、零 admission 和缺失指标。切换只影响后续候选，不重算已有推荐；本版本不减少 LLM 调用。
-
-- **贡献者致谢**：该功能初始 PR 由 [@aweds13](https://github.com/aweds13) 提交（[PR #228](https://github.com/whiteguo233/OpenBiliClaw/pull/228)）；随后由 [@whiteguo233](https://github.com/whiteguo233) 接管完善并合入。
 
 ## v0.3.220：Windows 推荐进程修复与保存键扩展（2026-09-09）
 
@@ -230,7 +246,6 @@
 - **README 新增 Linux.do 友情链接（折叠）**：主项目 README（中英）顶部原有的「LINUX DO Community」徽章移除，改在 README 底部新增可折叠的「友情链接」区块，内含指向 https://linux.do/ 的 LINUX DO 友情徽章；讨论帖徽章保留。DSH 插件仓库（dsh-openbiliclaw）README 底部同步新增同款折叠友情链接。
 - 修复 `scripts/install.ps1` 在原生 Windows 上的一键安装解析失败（issue #157）：双引号字符串内 `$InstallDir:` 会被解析为作用域限定变量引用，导致整个脚本在 PowerShell parse 阶段直接报错，改为 `${InstallDir}`；同时为脚本补充 UTF-8 BOM，确保 Windows PowerShell 5.1（脚本声明 `#requires -Version 5.1`）按 UTF-8 解码含中文注释与 here-string 的内容；`Invoke-Bootstrap` 内的 `$args` 改名 `$bootstrapArgs`，避免遮蔽自动变量（`PSAvoidAssignmentToAutomaticVariable`）。
 - **修复 with-embedding 安装包 bge-m3 调用 500（llama-server `0xc0000005` 访问违规）的诊断与随包版本**：Windows 随包 Ollama 从 `0.30.6` 升到 `0.32.13`（`release-desktop.yml` / `build-installers.yml` / `docker/ollama-bundled.Dockerfile` 同步），降低旧版 llama-server 在 embedding 负载上的崩溃概率；`ollama_diagnostics` 新增 `0xc0000005` / access violation 识别，`model_broken` 文案改为按「一键重拉 → 重启 → 内存/虚拟内存 → 杀软白名单 → 升级安装包」排序排查，不再只说「下载不完整或内存不足」；托管 Ollama 在桌面包启动时（`OPENBILICLAW_PROJECT_ROOT` 已设置）把 `ollama serve` 与 llama-server 的 stdout/stderr 写入 `<project>/logs/ollama-managed.log`，让后续同类崩溃有原生日志可查，CLI / dev / 测试仍保持 DEVNULL。测试补充访问违规分类与日志捕获 / 关闭。
-
 
 ## v0.3.205：证据驱动时效推荐与可靠性升级（2026-08-14）
 
@@ -1089,7 +1104,6 @@
 
 后端源码走 `backend-v0.3.154`，浏览器插件走 `extension-v0.3.154`，桌面安装包走 `desktop-v0.3.154`。
 
-
 - **Windows 桌面包支持系统 SOCKS 代理**：用户系统设置 `ALL_PROXY` / `HTTPS_PROXY=socks5://...` 时，冻结包启动阶段创建 OpenAI / 兼容 LLM 客户端会触发 `httpx` 的 SOCKS 路径；此前默认依赖未安装、PyInstaller 也未显式收集 `socksio`，导致启动弹出 `Failed to execute script 'entry'`，浏览器随后只能看到 `127.0.0.1 refused`。现在默认依赖改为 `httpx[socks]`，spec 增加 `socksio` hidden import，并补打包回归测试。
 - **运行时可选依赖补齐**：专项审计发现两处同类隐患：(1) `/api/runtime-stream` 是插件 / Web UI 的核心通道，但 `websockets` 只在 `dev` extra，桌面包按 `.[packaging]` 构建时只装裸 `uvicorn`，WebSocket 协议实现可能缺失；(2) `discovery.multimodal` 直接 import `PIL`，此前普通运行路径靠 `bilibili-api-python` 的传递依赖碰巧带入 Pillow。现在默认依赖显式加入 `websockets>=13` 与 `Pillow>=10.0`，PyInstaller spec 增加 `uvicorn.protocols.websockets.websockets_impl` / `websockets` hidden import，并补元数据与打包回归测试。
 - **未初始化客户端稳定进入引导流程（全入口审计修复）**：针对「未初始化的客户端必须稳定看到引导初始化」目标做了一轮四入口审计并修复：① `/web` 页面比后端先加载（冻结包启动竞速）后永久空白——runtime-stream 首次连上时若 initStatus/runtimeStatus 均为空则触发补水重拉；② 安装包入口 `webbrowser.open` 在 uvicorn 绑定前执行必然 `ERR_CONNECTION_REFUSED`——改为后台线程轮询 `/api/health`（≤30s）后再开页，并读 `/api/init-status` 决定落地页（已配置但从未初始化 → `/setup/` 而非 `/web/`；「已有实例」分支同样 init 感知）；③ `/setup/` 向导刷新后静默落回第 0 步——load 时恢复现场（running → 直挂实时进度，initialized → 完成页 / 等待态），已存 key 的 provider 留空即沿用不必重贴，首池等待态新增「先进入应用 →」逃生链接（此前用户被永久停在 95% 禁用按钮上）；④ 插件对「在线但未初始化」零信号（badge 被清空、与健康态视觉一致）——新增三态 badge 决策表（灰 `!`=后端未启动、橙 `!`=未初始化点击开始引导、清空=健康），WS 连上用零探针的 `/api/runtime-status` 刷新，`init_completed`/`refresh.pool_updated` 事件即时清除；⑤ Docker 文档把方式 A/B 用户指向容器内被 `unsupported_runtime` 封锁的「开始初始化」按钮——文档 / compose 注释 / 前端文案统一改为「/setup/ 完成配置与前置检查 + 宿主机 `docker exec … openbiliclaw init`」；⑥ `start`/`serve-api` 未初始化时启动前打印引导入口 WARN 面板。新增 packaging 落地页判定 / 健康等待单测、`/setup` 恢复现场与逃生口 Playwright E2E、badge 决策表单测与多条静态契约测试。
@@ -1528,7 +1542,6 @@ B 站不再是初始化的强制基座：CLI、插件面板、桌面 Web 和安�
 - 存量 git 安装升级提示：旧版 updater 代码仍会被脏 `uv.lock` 卡住，无法自动升到本版。在安装目录手动执行一次 `git checkout -- uv.lock && git pull`（或重跑一键安装脚本，会复用现有目录与配置）即可解卡，此后自动更新恢复正常。
 - 修复 `/api/sources/status` 小红书状态「永久绿点」：原先只看带 `xsec_token` 缓存行的总数，插件停止同步几周后令牌早已失效（xhs 300031）状态仍显示就绪。现在以 24 小时新鲜窗口判定——窗口内有新发现的带令牌缓存行、或有被令牌回填刷新过 `last_seen_at` 的候选行才算 `ready`，仅剩存量旧行降级为新状态 `stale`（黄点，提示逛逛小红书即可刷新）。
 - B 站 cookie 缺少核心登录字段（`SESSDATA`/`bili_jct`/`DedeUserID` 不全）时不再报绿点 `ready`，改为新状态 `partial`（黄点）——绿点不再掩盖「凭据存在但大概率已坏」的情况。桌面 Web 与插件的彩点映射同步新增 `partial`/`stale`，并在状态行可见时每 30 秒自动重拉 `/api/sources/status`（此前只在打开设置页时拉一次，去别的标签页登录平台后回来状态不会变）。
-
 
 ## v0.3.114 / extension v0.3.74: 来源 Cookie 配置对齐（2026-06-10）
 

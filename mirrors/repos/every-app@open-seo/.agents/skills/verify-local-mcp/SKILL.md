@@ -14,6 +14,7 @@ Two layers, in order. The protocol layer proves the server and provider behave; 
 - `.env.local` needs `AUTH_MODE=local_noauth` and `DATAFORSEO_API_KEY` (base64 of `login:password`). Never print the key.
 - Start `pnpm dev:agents` in the background. The server URL is branch-prefixed: `http://<branch-suffix>.open-seo.localhost:1355` (the exact URL is printed on boot; logs tee to `.logs/dev-server.log`).
 - With `local_noauth`, `/mcp` needs no token. Vite hot-reloads server code, so fix → re-call without restarting.
+- After changing a tool's input or output schema, refresh the client's tool discovery (`tools/list`) or reconnect the MCP client before calling it again. Clients can cache validators from the previous tool list and reject valid results after the provider call has already incurred a charge.
 
 ## 2. Protocol smoke (cheap, deterministic)
 

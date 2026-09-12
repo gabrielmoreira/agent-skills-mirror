@@ -1,9 +1,9 @@
 ---
 name: drawio-skill
-description: Create, edit, synchronize, inspect, test, and publish editable draw.io diagrams. Use when the user explicitly requests draw.io/diagrams.net, needs a polished architecture, ERD, UML, sequence, C4, SysML, BPMN, network, swimlane, ML, or infrastructure diagram, wants code/IaC/SQL/OpenAPI converted into a diagram, or wants an existing diagram queried, reviewed, diffed, restyled, kept in sync, or made interactive. Prefer Mermaid/PlantUML elsewhere when the requested artifact is diagrams-as-code rather than an editable draw.io file.
+description: Create, edit, synchronize, inspect, test, and publish editable draw.io diagrams. Use when the user explicitly requests draw.io/diagrams.net, needs a polished architecture, ERD, UML, sequence, C4, SysML, BPMN, network, swimlane, ML, or infrastructure diagram, wants code/IaC/SQL/OpenAPI/AsyncAPI/Protobuf converted into a diagram, or wants an existing diagram queried, reviewed, diffed, restyled, kept in sync, or made interactive. Prefer Mermaid/PlantUML elsewhere when the requested artifact is diagrams-as-code rather than an editable draw.io file.
 license: MIT
 allowed-tools: [Bash, Read, Write, WebFetch]
-metadata: {"openclaw":{"requires":{"anyBins":["python3"]},"emoji":"📐","os":["darwin","linux","win32"],"install":[{"id":"brew-drawio","kind":"brew","formula":"drawio","bins":["drawio"],"label":"Install draw.io for native exports","os":["darwin"],"optional":true},{"id":"brew-graphviz","kind":"brew","formula":"graphviz","bins":["dot"],"label":"Install Graphviz for automatic layout","os":["darwin"],"optional":true}]},"hermes":{"tags":["drawio","diagram","architecture","visualization","uml"],"category":"design","requires_tools":["python3"],"related_skills":["mermaid","excalidraw","plantuml"]},"author":"Agents365-ai","version":"3.2.1","homepage":"https://github.com/Agents365-ai/drawio-skill","compatibility":"Core IR, XML, sync, query, test, review, and Story workflows need Python 3 only; native export needs draw.io; Graphviz is optional.","platforms":["macos","linux","windows"]}
+metadata: {"openclaw":{"requires":{"anyBins":["python3"]},"emoji":"📐","os":["darwin","linux","win32"],"install":[{"id":"brew-drawio","kind":"brew","formula":"drawio","bins":["drawio"],"label":"Install draw.io for native exports","os":["darwin"],"optional":true},{"id":"brew-graphviz","kind":"brew","formula":"graphviz","bins":["dot"],"label":"Install Graphviz for automatic layout","os":["darwin"],"optional":true}]},"hermes":{"tags":["drawio","diagram","architecture","visualization","uml"],"category":"design","requires_tools":["python3"],"related_skills":["mermaid","excalidraw","plantuml"]},"author":"Agents365-ai","version":"3.3.0","homepage":"https://github.com/Agents365-ai/drawio-skill","compatibility":"Core IR, XML, sync, query, test, review, and Story workflows need Python 3 only; native export needs draw.io; Graphviz is optional.","platforms":["macos","linux","windows"]}
 ---
 
 # Draw.io Architecture Studio
@@ -19,16 +19,22 @@ and accessible publishing over a shared Diagram IR.
 | --- | --- |
 | Natural-language diagram with precise styling | Read `references/diagram-types.md`, then `references/xml-authoring.md` and author XML |
 | Standard flowchart/mindmap/gantt/timeline/etc. with no special styling | If draw.io >=30, read `references/mermaid-authoring.md` and convert Mermaid to native `.drawio` |
-| Code, Terraform, K8s, compose, SQL, OpenAPI, or CI source | Use `diagramctl.py build`; read `references/diagram-ir.md` |
+| Large graph (~15+ nodes) that needs automatic layout | Use `autolayout.py`; read `references/autolayout.md` before passing any `--layout` value |
+| Code, Terraform, K8s, compose, SQL, OpenAPI, AsyncAPI, or CI source | Use `diagramctl.py build`; read `references/diagram-ir.md` |
+| Protocol Buffers schema (.proto) | Use `protoimports.py` or `diagramctl.py build`; read `references/toolbox.md` |
+| Running cluster/stack/cloud (actual state, not declared config) | Read `references/live-infra.md`, then use `tfstate.py`, `dockerimports.py`, or `k8simports.py -` |
 | Update a generated diagram without losing manual layout | Use `diagramctl.py sync`; read `references/diagram-ir.md` |
 | Executive/system/deployment/data-flow/security views | Use `diagramctl.py views`; read `references/diagram-ir.md` |
 | Query, architecture policy, review, what-if, or guided walkthrough | Read `references/semantic-workflows.md` |
 | MCP host (Claude Desktop, Cursor, VS Code, Codex) should call these workflows | Register `scripts/diagramctl_mcp.py`; read `references/mcp.md` |
 | Prompt phrasing for a diagram type or semantic workflow | Read `references/cookbook.md` |
 | Enforce architecture rules or visual diffs in GitHub Actions CI | Read `references/ci-gate.md` |
+| Rendered before/after/diff images as a PR review comment | Use `prdiff.py`; read `references/pr-bot.md` |
 | Existing `.drawio` to HTML/PPTX/Mermaid/Markdown/animation/runbook | Read `references/toolbox.md`; `diagramctl.py transform` exposes the existing tools |
+| Pipeline, journey, or subsystem map drawn as a metro/subway map | Use `tubemap.py`; read `references/tubemap.md` |
 | Shape, cloud/vendor, AI, or Databricks icon | Read `references/shapes.md` or `references/databricks.md`; never guess shape names |
 | Learn/apply/manage a visual style | Read `references/style-presets.md` |
+| Extract a reusable style from an existing diagram or theme | Read `references/style-extraction.md` |
 | Existing image to editable diagram (screenshot, whiteboard photo, legacy PNG) | Read `references/derasterize.md` |
 | Export/platform problem | Read `references/troubleshooting.md`; for access/network questions read `references/security.md` |
 

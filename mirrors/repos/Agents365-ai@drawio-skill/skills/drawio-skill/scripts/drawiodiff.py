@@ -43,23 +43,24 @@ original icons/shapes are replaced by status colours (the label is kept).
 Usage: python3 drawiodiff.py <old.drawio> <new.drawio> [-o diff.json]
        [--direction TB|LR] [--by-label]
 """
+
 import argparse
 import json
 import sys
 import xml.etree.ElementTree as ET
 
 STYLE = {
-    "added":   "rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;",
+    "added": "rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;",
     "removed": "rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;dashed=1;",
     "changed": "rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;",
-    "moved":   "rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;",
-    "same":    "rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#999999;",
+    "moved": "rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;",
+    "same": "rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#999999;",
 }
 EDGE_STYLE = {
-    "added":    "endArrow=classic;html=1;strokeColor=#82b366;strokeWidth=2;",
-    "removed":  "endArrow=classic;html=1;strokeColor=#b85450;strokeWidth=2;dashed=1;",
+    "added": "endArrow=classic;html=1;strokeColor=#82b366;strokeWidth=2;",
+    "removed": "endArrow=classic;html=1;strokeColor=#b85450;strokeWidth=2;dashed=1;",
     "rerouted": "endArrow=classic;html=1;strokeColor=#d79b00;strokeWidth=2;",
-    "same":     "endArrow=classic;html=1;strokeColor=#999999;",
+    "same": "endArrow=classic;html=1;strokeColor=#999999;",
 }
 
 
@@ -90,8 +91,10 @@ def parse(path):
                 if inner is not None:
                     inner.set("id", child.get("id", ""))
                     cells.append(inner)
-                    labels[child.get("id")] = child.get("label") or child.get("value") or ""
-    parents = {c.get("parent") for c in cells}                # ids that have children
+                    labels[child.get("id")] = (
+                        child.get("label") or child.get("value") or ""
+                    )
+    parents = {c.get("parent") for c in cells}  # ids that have children
     nodes, edges = {}, set()
     for c in cells:
         cid = c.get("id")
@@ -99,11 +102,11 @@ def parse(path):
             s, t = c.get("source"), c.get("target")
             if s and t:
                 edges.add((s, t))
-        elif c.get("vertex") == "1" and cid not in parents:   # leaf vertices only
+        elif c.get("vertex") == "1" and cid not in parents:  # leaf vertices only
             if "edgeLabel" in (c.get("style") or ""):
                 continue
             g = c.find("mxGeometry")
-            if g is not None and g.get("relative") == "1":    # edge-label child
+            if g is not None and g.get("relative") == "1":  # edge-label child
                 continue
             pos = None
             if g is not None:
@@ -128,7 +131,7 @@ def classify_rerouted(old_ek, new_ek, removed, added):
     rerouted = {(s, t) for (s, t) in new_only if (t, s) in old_only}
     for a, b in old_only:
         if (b, a) in new_only:
-            continue                                          # flip, handled above
+            continue  # flip, handled above
         if b in removed and a not in removed:
             cands = [(a, c) for (s, c) in new_only if s == a and c in added]
             if len(cands) == 1:
@@ -141,14 +144,19 @@ def classify_rerouted(old_ek, new_ek, removed, added):
 
 
 def main():
-    ap = argparse.ArgumentParser(description="Diff two .drawio files -> autolayout graph JSON.")
+    ap = argparse.ArgumentParser(
+        description="Diff two .drawio files -> autolayout graph JSON."
+    )
     ap.add_argument("old", help="baseline .drawio")
     ap.add_argument("new", help="updated .drawio")
     ap.add_argument("-o", "--output", help="output JSON path (default: stdout)")
     ap.add_argument("--direction", default="TB", choices=["TB", "LR"])
-    ap.add_argument("--by-label", action="store_true",
-                    help="match nodes by visible label instead of cell id "
-                         "(for hand-drawn diagrams with non-stable ids)")
+    ap.add_argument(
+        "--by-label",
+        action="store_true",
+        help="match nodes by visible label instead of cell id "
+        "(for hand-drawn diagrams with non-stable ids)",
+    )
     args = ap.parse_args()
 
     old_n, old_e = parse(args.old)
@@ -158,7 +166,9 @@ def main():
         """Map match-key -> label. By id (default) the key is the cell id and the
         value is its label; by label the key *is* the label."""
         if args.by_label:
-            return {lbl: lbl for lbl, _, _ in nodes.values()}, {i: lbl for i, (lbl, _, _) in nodes.items()}
+            return {lbl: lbl for lbl, _, _ in nodes.values()}, {
+                i: lbl for i, (lbl, _, _) in nodes.items()
+            }
         return {i: lbl for i, (lbl, _, _) in nodes.items()}, {i: i for i in nodes}
 
     old_keys, old_id2key = keyed(old_n)
@@ -168,29 +178,39 @@ def main():
 
     # Selective movement only: when every matched node changed position the two
     # files come from different layout runs, so movement carries no information.
-    moved = {key for key in set(old_keys) & set(new_keys)
-             if old_keys[key] == new_keys[key]
-             and old_pos.get(key) and new_pos.get(key)
-             and old_pos[key] != new_pos[key]}
+    moved = {
+        key
+        for key in set(old_keys) & set(new_keys)
+        if old_keys[key] == new_keys[key]
+        and old_pos.get(key)
+        and new_pos.get(key)
+        and old_pos[key] != new_pos[key]
+    }
     if moved and len(moved) == len(set(old_keys) & set(new_keys)):
         moved = set()
 
-    nodes, counts = [], {"added": 0, "removed": 0, "changed": 0,
-                         "moved": 0, "same": 0}
+    nodes, counts = [], {"added": 0, "removed": 0, "changed": 0, "moved": 0, "same": 0}
     for key in sorted(set(old_keys) | set(new_keys)):
         if key in old_keys and key not in new_keys:
             status, label = "removed", old_keys[key]
         elif key in new_keys and key not in old_keys:
             status, label = "added", new_keys[key]
-        elif old_keys[key] != new_keys[key]:                  # matched, label moved
+        elif old_keys[key] != new_keys[key]:  # matched, label moved
             status, label = "changed", new_keys[key]
         elif key in moved:
             status, label = "moved", new_keys[key]
         else:
             status, label = "same", new_keys[key]
         counts[status] += 1
-        nodes.append({"id": key, "label": label or key, "style": STYLE[status],
-                      "width": 160, "height": 60})
+        nodes.append(
+            {
+                "id": key,
+                "label": label or key,
+                "style": STYLE[status],
+                "width": 160,
+                "height": 60,
+            }
+        )
 
     def edge_keys(edges, id2key):
         out = set()
@@ -213,7 +233,7 @@ def main():
         elif (s, t) in new_ek:
             status = "rerouted" if (s, t) in rerouted else "added"
         else:
-            status = "removed" if (t, s) not in new_ek else None   # flip: shown once
+            status = "removed" if (t, s) not in new_ek else None  # flip: shown once
         if status:
             edges.append({"source": s, "target": t, "style": EDGE_STYLE[status]})
     rerouted_n = sum(1 for e in edges if "d79b00" in e["style"])
@@ -226,9 +246,11 @@ def main():
         sys.stderr.write(f"wrote {args.output}\n")
     else:
         sys.stdout.write(text)
-    sys.stderr.write(f"+{counts['added']} added, -{counts['removed']} removed, "
-                     f"~{counts['changed']} changed, >{counts['moved']} moved, "
-                     f"={counts['same']} unchanged, {rerouted_n} edge(s) rerouted\n")
+    sys.stderr.write(
+        f"+{counts['added']} added, -{counts['removed']} removed, "
+        f"~{counts['changed']} changed, >{counts['moved']} moved, "
+        f"={counts['same']} unchanged, {rerouted_n} edge(s) rerouted\n"
+    )
 
 
 if __name__ == "__main__":

@@ -1,6 +1,6 @@
 # tongflow
 
-**The Python SDK for [TongFlow](https://tongflow.com)** — an open-source, multi-modal GenAI workflow studio.
+**The Python SDK for [TongFlow](https://tongflow.com)** — the open-source Modality-First GenAI Platform.
 
 - 🌐 Cloud studio & homepage: **https://tongflow.com**
 - 📦 Source, desktop app & docs: **https://github.com/tong-io/tongflow**

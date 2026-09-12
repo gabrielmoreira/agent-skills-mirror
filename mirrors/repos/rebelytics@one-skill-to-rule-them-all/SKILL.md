@@ -71,7 +71,20 @@ and its references takes that pinned absolute path, written
 `[ABSOLUTE PATH]` — substitute it when installing, exactly as in the
 activation block. A snippet run with a relative path from any other
 directory does not fail: it reports an empty, clean backlog, which is the
-one answer that never gets questioned.
+one answer that never gets questioned. **The substituted path routinely
+contains a space** — the default shared-folder name on at least one
+common install does — so every expansion of it stays double-quoted, and
+no snippet may feed it through word splitting (`for f in $(find …)`): a
+sweep that splits its own path at the space examines zero files, prints
+errors nobody reads, and lets the command it rides inside succeed.
+**Every snippet here is bash, not POSIX `sh`** — the archival sweep's
+`read -r -d ''` is a bash extension that `dash` and `ash` do not have, so
+under `sh` it fails as a usage error or, worse, as a loop that reads
+nothing and exits zero, which is the same silent success as the word
+split. A `bash` code fence states that to a human reader and to nothing
+else, so invoke the snippets with bash explicitly; where a loop happens to
+be POSIX-safe as well (the session-start scan), that is incidental and not
+a promise about the rest.
 
 ## Reference files — load on demand, not up front
 
@@ -103,9 +116,10 @@ was handled without its reference loaded, log an observation.
   pre-3.0 single-file `log.md`. **Load only when the Session Start
   Protocol detects a legacy log.** Fresh installs never read it.
 - `references/starter-principles.md` — an optional, provenance-stripped
-  seed set of generic cross-cutting principles. **Load at first run when
-  offering the seed** (Session Start step 1); never read it once the
-  adopter's own principles file exists.
+  seed set of generic cross-cutting principles. **Load only when the
+  starter-set reconciliation is due** (Session Start step 1: the
+  `starter-principles-reviewed.txt` marker is absent or names an older
+  starter set) — never on an ordinary session start.
 
 ## Session Start Protocol
 
@@ -123,15 +137,27 @@ was handled without its reference loaded, log an observation.
    `skill-observations/observation-log/` (with its `archive/`
    subdirectory) or `skill-observations/cross-cutting-principles.md`
    don't exist, create them (principles template:
-   `references/skill-authoring.md`). When the principles file is being
-   created for the first time, offer one choice and act on the answer:
-   start empty, or seed it from `references/starter-principles.md` — a
-   provenance-stripped set of generic methodology principles shipped with
-   the bundle. Seeded entries carry `**Origin:** imported from starter set`
-   so the adopter's own reviews can prune them like any other rule. Never
-   pre-populate silently: the file's authority comes from the adopter's
-   own evidence trail, and unexamined imported rules contradict the
-   pruning principle the file itself carries.
+   `references/skill-authoring.md`). Then the **starter-set
+   reconciliation**, due whenever
+   `skill-observations/starter-principles-reviewed.txt` is absent or holds
+   a starter-set version older than the one in
+   `references/starter-principles.md` (the `Starter set version: N` line
+   in its header, below the title) — which covers a fresh install, an existing
+   install upgrading to a bundle that ships the file, and every later
+   growth of the set. Load the starter file, match each starter entry
+   against the adopter's existing principles by substance (a rule that
+   says the same thing under a different title counts as covered), and
+   offer once, in one line: "the bundle ships N starter principles; M are
+   not covered by your file — want to see them?" On yes, show only the
+   uncovered ones, let the adopter pick, and import the picks in the
+   template format with `**Origin:** imported from starter set`, so the
+   adopter's own reviews can prune them like any other rule. On a fresh
+   file M equals N and the choice is simply "start empty, or seed". Either
+   way, write the starter set's version into the marker file, so the
+   offer never repeats until the shipped set changes. Never pre-populate
+   silently: the file's authority comes from the adopter's own evidence
+   trail, and unexamined imported rules contradict the pruning principle
+   the file itself carries.
    Create `skill-observations/last-review-date.txt` containing the literal
    value `never` if it doesn't exist — never write a date into it at setup;
    a date means a review actually ran. If a legacy single-file
@@ -170,10 +196,13 @@ was handled without its reference loaded, log an observation.
    rather than an error.
 
    ```bash
-   d="[ABSOLUTE PATH]/skill-observations/observation-log"   # the pinned workspace path — re-derive in EVERY call, never relative to the cwd
+   d="[ABSOLUTE PATH]/skill-observations/observation-log"   # the pinned workspace path — re-derive in EVERY call, never relative to the cwd; run under bash, not sh
    n=$(find "[ABSOLUTE PATH]/skill-observations/observation-log" -maxdepth 1 -name '*.md' | wc -l | tr -d ' ')  # literal path: independent of $d
    parsed=$(find "$d" -maxdepth 1 -name '*.md' -exec awk 'FNR==1 {if (/^---[[:space:]]*$/) print FILENAME; nextfile}' {} + | wc -l | tr -d ' ')
-   for f in $(find "$d" -maxdepth 1 -name '*.md' | sort); do
+   suspect=$(find "$d" -maxdepth 1 -name '*.md' -exec awk 'FNR==1 && /^---[[:space:]]*$/ {fm=1; next}
+     fm && /^---[[:space:]]*$/ {fm=0; nextfile}
+     fm && /^[a-z_]+: [^"\047[|>].*: / {print FILENAME; nextfile}' {} + | wc -l | tr -d ' ')   # values with an unquoted ": " — invalid YAML
+   find "$d" -maxdepth 1 -name '*.md' | LC_ALL=C sort | while IFS= read -r f; do  # quote + IFS=: never word-split a path containing a space
      awk 'NR==1 && /^---[[:space:]]*$/ {fm=1; next}
           fm && /^---[[:space:]]*$/ {exit}
           fm' "$f"
@@ -182,21 +211,52 @@ was handled without its reference loaded, log an observation.
    if [ "$n" -gt 0 ] && [ "$parsed" -eq 0 ]; then
      echo "SCAN COMMAND BROKEN — $n files present, 0 headers parsed"; exit 1
    fi
+   [ "$suspect" -gt 0 ] && echo "NOTE: $suspect of $n headers carry an unquoted ': ' in a value — quote those values (File format)"
+   printf 'files: %s  parsed: %s  suspect: %s\n' "$n" "$parsed" "$suspect"
+   printf '%s session-start scan: files=%s parsed=%s\n' "$(date +%F)" "$n" "$parsed" \
+     >> "[ABSOLUTE PATH]/skill-observations/checkpoints.log"   # the protocol's own trace
    ```
+
+   **The scan ends in a write, not only a print.** Loading this skill and
+   executing this protocol are two acts, and only the load leaves an
+   artefact in the transcript — which discharges the felt obligation, so a
+   session that loaded and then ran nothing looks from outside exactly
+   like one that did both. The appended `checkpoints.log` line is the
+   protocol's own trace, for the same reason the checkpoint rule is a
+   write: a step whose value lies in happening at a specific moment needs
+   its own entry in the tool record. (Where the workspace prices every
+   write — the exception under "How to Log" — fold this line into the
+   session's first write instead.)
 3. **Review trigger.** Read `skill-observations/last-review-date.txt`. The
    value carries the truth: a date = when the last review actually ran;
    `never` = no review has run yet. A missing file is abnormal (step 1
    creates it) — recreate it with `never`, don't invent a date. If the
    value is `never` or older than 7 days AND there are OPEN observations:
-   in an interactive session, offer the review in one line ("the
-   observation backlog hasn't been reviewed [in N days / yet] — run it now,
-   or carry on with your task?") and proceed with the user's task unless
-   they opt in; never gate their work on the review. Only a
+   in an interactive session, offer the review in one line and proceed
+   with the user's task unless they opt in; never gate their work on the
+   review. Scale the offer's CONTENT with the backlog, never its
+   frequency: up to ~15 open observations, offer the full review ("the
+   backlog hasn't been reviewed [in N days / yet] — N open; run it now, or
+   carry on?"); above that, offer a bounded slice whose unit of work stays
+   constant as the backlog grows — "review the 10 oldest", "review just
+   the ones targeting <the skill most named>" — and state both numbers,
+   how many are open and roughly how many distinct findings they
+   represent (cluster on the `title` and `skill` fields you just scanned).
+   A backlog that is never drained does not fail loudly; it fails by
+   becoming too expensive to drain, so the per-session behaviour that is
+   correct (never block the user) sums to a review nobody accepts. Only a
    scheduled/autonomous run loads `references/weekly-review.md` and runs
    the review unprompted.
 4. **Activation.** Once per session: if no CLAUDE.md (or equivalent)
    activation instruction for this skill exists, briefly suggest adding one
-   (see `references/environments.md`). Skip if already configured.
+   (see `references/environments.md`). Skip if already configured. Be clear
+   about what this step is: it runs only after the skill has been invoked,
+   so it verifies a working setup and structurally cannot detect the
+   missing one — it is not the safety net for a never-activated install.
+   That case is caught only from outside the runtime: the install-time
+   verification and the external diagnostic in `references/environments.md`
+   (no observation-log directory after sessions of real work), and the
+   review's regression check for a tier that was present and is gone.
 5. **Concurrency.** There is no shared log file to guard: each observation
    is its own file, so creating one never collides with or overwrites
    another session's entry. Before changing the *status* of an existing
@@ -273,6 +333,19 @@ Mostly no → task context, not an observation. Before minting a
 `proposes_skill` name, check the existing candidates and reuse a fitting
 one — independently logged proposals for one skill rarely share a name.
 
+**Check for a restatement before writing.** Before creating the file,
+list the open observations that name the same target skill (the scan at
+session start already holds their titles; otherwise
+`grep -l "skill:.*<skill>" observation-log/*.md`) and read those titles.
+If the finding is the same one restated — the same rule, the same
+failure shape, a different example — extend the existing entry instead:
+append the new instance to its body and add the session to its
+`session_context`, editing that one file. Duplication is only visible in
+aggregate; measured on one log, roughly forty of ninety-one open entries
+were one finding restated, and a dozen separately minted skill proposals
+described two skills. A near-duplicate costs a capture every session and
+a triage every review, and adds nothing the first entry did not.
+
 **Validate the target at write time.** A name in `skill:` must be a skill
 that exists now; if it doesn't, the observation proposes a skill instead.
 Checking is cheap at write time and expensive forty entries later.
@@ -334,6 +407,18 @@ tool call; piggy-backing the flush onto them makes the write a side effect
 of work you were doing anyway. (Why both checkpoints are writes rather than
 questions: `references/observation-log.md`.)
 
+**A failed write to an external system is a flush trigger in its own
+right** — a tool result carrying `permission stream closed`, `permission
+denied`, or a harness interrupt. It is not a completion, but it has both
+properties the flush needs: it is a literal string in the tool record
+rather than a judgement about whether the moment qualifies, and it lands
+at the point where a run has just discovered something worth reporting and
+is therefore most likely to stop instead. Flush before doing anything else
+with the failure, including deciding what to do about it. (Observed: an
+unattended run completed every substantive step, took a permission error
+on its first write to an external system, and ended without a report or a
+logged observation.)
+
 **Two gaps this pairing still leaves — both observed across full working days
 in which nothing was logged at all.**
 
@@ -386,21 +471,25 @@ resolved files into `archive/` — archival is a side effect of deriving the
 id, not a separate duty (see Archival on Write):
 
 ```bash
-d="[ABSOLUTE PATH]/skill-observations/observation-log"   # the pinned workspace path, never relative to the cwd
+d="[ABSOLUTE PATH]/skill-observations/observation-log"   # the pinned workspace path, never relative to the cwd; it may contain a space, so keep it quoted; bash, not sh
 today=$(date +%F)          # archival rides inside this command (see below):
-for f in $(find "$d" -maxdepth 1 -name '*.md'); do   # stale resolved files move before the id is read
-  hdr=$(awk 'NR==1 && /^---[[:space:]]*$/ {fm=1; next}
-             fm && /^---[[:space:]]*$/ {exit} fm' "$f")
-  case $hdr in
-    *"status: actioned"*|*"status: declined"*|*"status: superseded"*) ;;
-    *) continue ;;
-  esac
-  r=$(printf '%s\n' "$hdr" | sed -n 's/^resolved:[[:space:]]*//p' | head -1)
-  case $r in [0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]) ;; *) continue ;; esac
-  [ "$r" != "$today" ] && \
-    [ "$(printf '%s\n%s\n' "$r" "$today" | sort | head -1)" = "$r" ] && \
-    mv "$f" "$d/archive/"
-done
+n_files=$(find "$d" -maxdepth 1 -name '*.md' | wc -l | tr -d ' ')
+seen=$(find "$d" -maxdepth 1 -name '*.md' -print0 | { n=0   # -print0/-d '': never word-split a path containing a space — `read -d` is a bash extension, so this loop requires bash
+  while IFS= read -r -d '' f; do   # stale resolved files move before the id is read
+    n=$(( n + 1 ))
+    hdr=$(awk 'NR==1 && /^---[[:space:]]*$/ {fm=1; next}
+               fm && /^---[[:space:]]*$/ {exit} fm' "$f")
+    case $hdr in
+      *"status: actioned"*|*"status: declined"*|*"status: superseded"*) ;;
+      *) continue ;;
+    esac
+    r=$(printf '%s\n' "$hdr" | sed -n 's/^resolved:[[:space:]]*//p' | head -1)
+    case $r in [0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]) ;; *) continue ;; esac
+    [ "$r" != "$today" ] && \
+      [ "$(printf '%s\n%s\n' "$r" "$today" | sort | head -1)" = "$r" ] && \
+      mv "$f" "$d/archive/"
+  done; printf %s "$n"; })
+[ "$n_files" -gt 0 ] && [ "${seen:-0}" -eq 0 ] && { echo "ARCHIVAL SWEEP BROKEN — $n_files files present, 0 examined"; exit 1; }
 hi=$( { ls "$d" "$d/archive" 2>/dev/null | grep -oE '^[0-9]+'; cat "$d/archive/.id-floor" 2>/dev/null; } \
      | sed 's/^0*\([0-9]\)/\1/' | sort -n | tail -1); : "${hi:=0}"
 [ "$hi" -eq 0 ] && [ -n "$(find "$d" -maxdepth 1 -name '*.md')" ] && { echo "ID COMMAND BROKEN — log is non-empty but no ids extracted"; exit 1; }
@@ -417,7 +506,12 @@ prefix containing an 8 or 9 errors out.
 
 The guard line distinguishes "the log says zero" from "I could not read
 the log": a command that fails to empty rather than to error would
-otherwise propose id 1 in a populated log. A new file never touches another entry's bytes, so it cannot truncate,
+otherwise propose id 1 in a populated log. The sweep carries the same
+guard in its own right — it counts the files it actually examined and
+halts if that count is zero while `find` reports files present. An
+archival loop that never enters its body moves nothing and exits
+successfully, so without the count "nothing was due for archival" and
+"the loop never ran" are the same output. A new file never touches another entry's bytes, so it cannot truncate,
 overwrite or renumber anyone else's work — provided it is a new file. If
 two parallel sessions pick the same id and different slugs, two files
 share a number — harmless; the next review renumbers one and logs a
@@ -481,21 +575,25 @@ as logged without a sibling check.
 
 ```markdown
 ---
-id: [N]
-title: [Short descriptive title]
+id: 0
+title: "Short descriptive title"
 status: open            # open | actioned | declined | superseded | parked
 type: open-source       # open-source | internal
-skill: [list of existing skills this improves — always a list, even with
-       one entry; first entry is primary; may be empty]
-proposes_skill: [list of new skills this argues for, by working name;
-       may be empty — an observation can fill either list or both]
-siblings_checked: [MANDATORY, never blank: the family name and the members
-       evaluated, plus the verdict — e.g. "family-name: a, b — shared, both
-       added" or "family-name: a, b — instance-specific, no propagation";
-       the literal `none` only where the target belongs to no family]
-area: [which part of the skill or workflow]
-date: [YYYY-MM-DD]
-session_context: [what task was being worked on]
+skill: [skill-a, skill-b]        # existing skills this improves — always a
+                                 # list, even with one entry; first entry is
+                                 # primary; may be empty: []
+proposes_skill: []               # new skills this argues for, by working
+                                 # name; an observation can fill either
+                                 # list or both
+siblings_checked: "family-name: a, b — shared, both added"
+                                 # MANDATORY, never blank: the family name,
+                                 # the members evaluated and the verdict —
+                                 # or "family-name: a, b — instance-specific,
+                                 # no propagation"; the literal none only
+                                 # where the target belongs to no family
+area: "which part of the skill or workflow"
+date: YYYY-MM-DD
+session_context: "what task was being worked on"
 parked_until:           # MANDATORY when status is parked, empty otherwise:
                         #   one line naming the condition that unparks it
 resolved:               # date resolved; leave empty while OPEN
@@ -511,6 +609,21 @@ section or rule; for new skills, scope and key components.]
 
 **Principle:** [The generalisable takeaway — the most important field.]
 ```
+
+**Every prose value is double-quoted.** `title`, `siblings_checked`,
+`area`, `session_context`, `resolution`, `parked_until` and `reference`
+carry free text, and free text contains `: ` as the common case, not the
+exotic one ("resolution: Actioned: principle #8 extended…"). Unquoted,
+that is invalid YAML: the frontmatter still extracts, so nothing in the
+scan notices, but every consumer that PARSES it — a review reading
+`status`, a hook counting `skill:` — throws on the file. Measured on one
+live log at last verification: 27 of 292 files unreadable, 25 of them in
+`resolution:`, every one written by following the earlier unquoted
+template. Quote the value (`"…"`, with inner `"` written as `\"`), keep
+lists in `[]` with bare kebab-case names, and leave dates and status
+words bare. The scan reports suspect headers — a value with an unquoted
+`: ` — beside the file count, so a log drifting into this state announces
+itself at session start.
 
 **`parked` means decided, not pending.** Use it when an observation is sound
 but cannot be acted on until an external precondition is met — the scheduled

@@ -4,7 +4,7 @@ Reply in Chinese; write PR titles and descriptions in English.
 
 ## Overview
 
-Skills Hub is a cross-platform desktop app (Tauri 2 + React 19) for managing AI Agent Skills and syncing them to 47+ AI coding tools. Core concept: "Install once, sync everywhere."
+Skills Hub is a cross-platform desktop app (Tauri 2 + React 19) for managing AI Agent Skills and syncing them to 48+ AI coding tools. Core concept: "Install once, sync everywhere."
 
 ## Tech Stack
 
@@ -65,7 +65,7 @@ src-tauri/src/                # Rust backend
     ├── installer.rs          # Skill installation (local/git, with multi-skill detection)
     ├── sync_engine.rs        # Sync engine (symlink/junction/copy triple fallback)
     ├── git_fetcher.rs        # Git clone/pull (with cache and TTL)
-    ├── tool_adapters/mod.rs  # Tool adapter registry (47 AI tools)
+    ├── tool_adapters/mod.rs  # Tool adapter registry (48 AI tools)
     ├── onboarding.rs         # Existing skill scanning/discovery
     ├── github_search.rs      # GitHub API search
     ├── central_repo.rs       # Central repository path management
@@ -147,6 +147,11 @@ src-tauri/src/                # Rust backend
 - Token、密码和私钥只能存入系统安全凭据存储，禁止进入数据库、配置文件、日志、URL 或同步仓库。
 - 只有用户主动操作或明确开启的后台功能才能读取凭据；页面加载、Tab 切换、状态展示和普通启动不得读取。
 - 开发版必须使用独立的凭据命名空间；授权、凭据、同步相关改动必须通过防泄漏与访问边界测试。
+
+## Network Boundary
+
+- 所有生产环境的 HTTP 客户端、OAuth 请求及远端 Git 操作必须通过 `src-tauri/src/core/network_proxy.rs` 创建或配置，并显式使用应用代理设置；禁止依赖进程代理环境变量、Git 全局代理或在业务模块中直接创建传输客户端。
+- 新增或修改出站网络代码后必须运行 `npm run network:check`，不得通过路径、命名或测试标记规避边界检查。
 
 ## Important Notes
 

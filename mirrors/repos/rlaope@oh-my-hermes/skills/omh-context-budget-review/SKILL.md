@@ -81,6 +81,10 @@ Handoff policy:
 
 Keep budget design and status narration in Hermes. Provider billing, exact token usage, runtime compaction, and executor cost evidence require observed wrapper, runtime, or provider data.
 
+Route binding:
+
+- Bind the plan to the session's published `context_budget_plan/v1` (agent/operator: `omh context budget-plan prepare|rebind|status --session-ref <session>`). Unpublished capacity holds as `capacity_unknown_hold` and inherits nothing; a hold or checkpoint action is a prepared obligation, not compaction, usage, or billing evidence. Rules: `references/route-capacity.md`.
+
 Required inputs:
 
 - task or workflow scope

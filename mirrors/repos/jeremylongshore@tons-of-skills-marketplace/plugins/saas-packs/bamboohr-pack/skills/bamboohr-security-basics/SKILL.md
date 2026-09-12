@@ -1,259 +1,99 @@
 ---
 name: bamboohr-security-basics
-description: 'Apply BambooHR security best practices for API keys, webhook verification,
-
-  and PII data handling compliance.
-
-  Use when securing API keys, implementing webhook signature validation,
-
-  or handling sensitive employee data from BambooHR.
-
-  Trigger with phrases like "bamboohr security", "bamboohr secrets",
-
-  "secure bamboohr", "bamboohr PII", "bamboohr data protection".
-
-  '
-allowed-tools: Read, Write, Grep
-version: 1.4.0
+description: >-
+  Threat-model and harden a BambooHR integration that handles employee PII,
+  OAuth tokens, API keys, files, and webhooks. Use when reviewing access,
+  storage, logging, or incident controls. Trigger with "secure BambooHR",
+  "BambooHR PII", "BambooHR threat model", or "BambooHR secrets".
+allowed-tools: Read,Glob,Grep,Write,Edit
+argument-hint: "<integration-path> [auth|data|webhooks|full]"
+version: 1.5.0
 license: MIT
 author: Jeremy Longshore <jeremy@intentsolutions.io>
-tags:
-- saas
-- hr
-- bamboohr
-- security
+tags: [saas, hr, bamboohr, security, privacy]
+model: inherit
+effort: high
 compatibility: Designed for Claude Code
 ---
-# BambooHR Security Basics
+# BambooHR Integration Security
 
 ## Overview
 
-Security best practices for BambooHR API integrations covering API key management, webhook HMAC verification, PII handling, and access control. BambooHR contains highly sensitive employee data (SSNs, salaries, addresses) — treat every integration as PII-critical.
+Treat the connector as a high-sensitivity HR data system. Security is not only
+secret storage: it includes tenant isolation, field-level authorization, data
+minimization, webhook authenticity, auditability, and deletion.
 
 ## Prerequisites
 
-- BambooHR API access configured
-- Understanding of environment variables and secrets management
-- Access to BambooHR admin settings
+- The target repository or integration path and the requested operator outcome.
+- The tenant, identity, and data scope only when approved live work is in scope.
+- The current evidence register plus customer-specific permissions and agreements.
+
+## Current Contract
+
+BambooHR permissions affect which employee fields and operations an identity
+can access. The official SDK supports secure logging and request-ID extraction,
+but application logs, queues, databases, exports, and support artifacts remain
+the operator's responsibility. Webhook creation returns a one-time private key.
+
+## Authentication
+
+Use OAuth for partner integrations with validated `state`, exact HTTPS redirect
+URIs, encrypted per-subject token storage, and persisted token rotation. For API
+keys, use a dedicated least-privilege user, named owner, expiry review, and
+tested revocation. Never share one identity across tenants.
 
 ## Instructions
 
-### Step 1: API Key Security
+1. Map trust boundaries: user/browser, callback, token store, connector,
+   BambooHR tenant, queue, destination, logs, backups, support, and analytics.
+2. Inventory every requested field and classify sensitivity. Remove fields not
+   tied to an approved purpose; isolate government IDs, compensation, medical,
+   dependent, benefit, and file data.
+3. Enforce tenant from trusted credential metadata, not from a request body.
+   Validate identifiers at every queue and storage boundary.
+4. Redact authorization, keys, cookies, query strings, webhook secrets, and HR
+   values. Allow request IDs, operation names, status, latency, and safe counts.
+5. For webhooks, store the creation-only key atomically, verify HMAC-SHA256 over
+   raw bytes using the currently documented carrier, compare in constant time,
+   and reject before parsing or side effects.
+6. Encrypt in transit and at rest, set retention and deletion jobs, restrict
+   backup access, and test subject/customer deletion obligations.
+7. Exercise cross-tenant access, denied fields, revoked credentials, replay,
+   log injection, oversized payload, SSRF-like tenant input, and support-bundle
+   exfiltration in tests.
 
-```bash
-# .env (NEVER commit to git)
-BAMBOOHR_API_KEY=your-api-key
-BAMBOOHR_COMPANY_DOMAIN=yourcompany
-BAMBOOHR_WEBHOOK_SECRET=your-webhook-hmac-secret
+## Tool Discipline
 
-# .gitignore — MUST include these
-.env
-.env.local
-.env.*.local
-*.pem
-```
+Use Read, Glob, and Grep for code and configuration inspection. Use Write/Edit
+only for explicitly approved hardening and regression tests. Never write sample
+secrets or real employee records.
 
-**Key management rules:**
+## Approval Boundaries
 
-- Each environment (dev/staging/prod) uses a separate API key
-- Create API keys under service accounts, not personal accounts
-- API keys inherit the permissions of the user who created them
-- Rotate keys quarterly; immediately rotate if exposed
-
-**Key rotation procedure:**
-
-```bash
-# 1. Generate new key in BambooHR: Profile > API Keys > Add New Key
-# 2. Update secret store
-aws secretsmanager update-secret --secret-id bamboohr/api-key --secret-string "new-key"
-# Or for GCP:
-echo -n "new-key" | gcloud secrets versions add bamboohr-api-key --data-file=-
-
-# 3. Deploy with new key
-# 4. Verify new key works
-curl -s -o /dev/null -w "%{http_code}" \
-  -u "new-key:x" \
-  "https://api.bamboohr.com/api/gateway.php/${DOMAIN}/v1/employees/directory" \
-  -H "Accept: application/json"
-
-# 5. Delete old key in BambooHR dashboard
-```
-
-### Step 2: Webhook Signature Verification
-
-BambooHR signs webhook payloads with SHA-256 HMAC. Verify every webhook before processing.
-
-```typescript
-import crypto from 'crypto';
-
-function verifyBambooHRWebhook(
-  rawBody: Buffer | string,
-  signature: string,
-  timestamp: string,
-  secret: string,
-): boolean {
-  // 1. Reject old timestamps (replay attack protection — 5 min window)
-  const age = Date.now() - parseInt(timestamp, 10) * 1000;
-  if (age > 300_000 || age < -60_000) {
-    console.error(`Webhook timestamp outside 5-minute window: ${age}ms`);
-    return false;
-  }
-
-  // 2. Compute expected HMAC
-  const payload = `${timestamp}.${rawBody.toString()}`;
-  const expected = crypto
-    .createHmac('sha256', secret)
-    .update(payload)
-    .digest('hex');
-
-  // 3. Timing-safe comparison (prevents timing attacks)
-  try {
-    return crypto.timingSafeEqual(
-      Buffer.from(signature, 'hex'),
-      Buffer.from(expected, 'hex'),
-    );
-  } catch {
-    return false;
-  }
-}
-
-// Express middleware
-app.post('/webhooks/bamboohr',
-  express.raw({ type: 'application/json' }),
-  (req, res) => {
-    const sig = req.headers['x-bamboohr-signature'] as string;
-    const ts = req.headers['x-bamboohr-timestamp'] as string;
-
-    if (!verifyBambooHRWebhook(req.body, sig, ts, process.env.BAMBOOHR_WEBHOOK_SECRET!)) {
-      return res.status(401).json({ error: 'Invalid webhook signature' });
-    }
-
-    // Safe to process
-    const event = JSON.parse(req.body.toString());
-    handleWebhookEvent(event);
-    res.status(200).json({ received: true });
-  },
-);
-```
-
-### Step 3: PII Data Handling
-
-BambooHR employee data includes PII and sensitive fields. Handle accordingly.
-
-```typescript
-// Define sensitivity levels for BambooHR fields
-const FIELD_SENSITIVITY: Record<string, 'public' | 'internal' | 'confidential' | 'restricted'> = {
-  firstName: 'internal',
-  lastName: 'internal',
-  displayName: 'internal',
-  jobTitle: 'internal',
-  department: 'internal',
-  workEmail: 'internal',
-  homeEmail: 'confidential',
-  homePhone: 'confidential',
-  mobilePhone: 'confidential',
-  address1: 'confidential',
-  dateOfBirth: 'confidential',
-  ssn: 'restricted',
-  payRate: 'restricted',
-  payType: 'restricted',
-  maritalStatus: 'confidential',
-  gender: 'confidential',
-  ethnicity: 'restricted',
-  eeo: 'restricted',
-};
-
-// Only request fields you actually need
-function safeFieldRequest(neededFields: string[]): string[] {
-  const restricted = neededFields.filter(f => FIELD_SENSITIVITY[f] === 'restricted');
-  if (restricted.length > 0) {
-    console.warn(`Requesting restricted fields: ${restricted.join(', ')}. Ensure compliance.`);
-  }
-  return neededFields;
-}
-
-// Redact PII from logs
-function redactForLogging(employee: Record<string, string>): Record<string, string> {
-  const redacted = { ...employee };
-  const sensitiveFields = ['ssn', 'dateOfBirth', 'homeEmail', 'homePhone',
-    'mobilePhone', 'address1', 'payRate', 'gender', 'ethnicity'];
-  for (const field of sensitiveFields) {
-    if (redacted[field]) redacted[field] = '***REDACTED***';
-  }
-  return redacted;
-}
-```
-
-### Step 4: Access Control Audit
-
-```typescript
-// Audit which API key permissions are actually needed
-interface AccessAudit {
-  endpoint: string;
-  method: string;
-  requiredPermission: string;
-  used: boolean;
-}
-
-const ACCESS_MAP: AccessAudit[] = [
-  { endpoint: '/employees/directory', method: 'GET', requiredPermission: 'employee:read', used: true },
-  { endpoint: '/employees/{id}/', method: 'GET', requiredPermission: 'employee:read', used: true },
-  { endpoint: '/employees/{id}/', method: 'POST', requiredPermission: 'employee:write', used: false },
-  { endpoint: '/employees/{id}/tables/compensation', method: 'GET', requiredPermission: 'admin', used: false },
-  { endpoint: '/time_off/requests/', method: 'GET', requiredPermission: 'timeoff:read', used: true },
-  { endpoint: '/webhooks/', method: 'POST', requiredPermission: 'webhooks:manage', used: false },
-];
-
-// Principle of least privilege: only enable permissions for endpoints you use
-const neededPermissions = new Set(
-  ACCESS_MAP.filter(a => a.used).map(a => a.requiredPermission),
-);
-console.log('Required permissions:', [...neededPermissions].join(', '));
-```
-
-### Step 5: Security Checklist
-
-```markdown
-- [ ] API keys stored in environment variables or secret manager (never in code)
-- [ ] `.env` files in `.gitignore`
-- [ ] Separate API keys for dev / staging / prod
-- [ ] API key user has minimum required access level
-- [ ] Webhook signatures verified with HMAC-SHA256
-- [ ] Webhook timestamp checked (reject > 5 min old)
-- [ ] PII fields redacted from logs and error messages
-- [ ] Only requesting needed fields (not SELECT *)
-- [ ] Restricted fields (SSN, salary) only accessed when required
-- [ ] Data at rest encrypted if storing BambooHR data locally
-- [ ] API key rotation scheduled (quarterly minimum)
-- [ ] git-secrets or truffleHog scanning enabled
-```
+Require security/data-owner approval before broadening fields, OAuth scopes,
+API-key permissions, retention, destinations, webhook events, or support access.
+Do not rotate or revoke live credentials as part of an audit without approval.
 
 ## Output
 
-- Secure API key storage and rotation procedure
-- Webhook HMAC verification middleware
-- PII classification and redaction utilities
-- Access control audit framework
-- Security compliance checklist
-
-## Examples
-
-Give the integration identity the smallest approved field and action scope, keep its credential in the organization's secret manager, and audit access on a defined schedule. For a suspected leak, revoke/rotate through BambooHR and the secret manager, preserve only redacted evidence, and verify that no employee data or secrets reached logs, tickets, or client-side code.
+Return assets, trust boundaries, field inventory, identities and permissions,
+findings by severity, exact remediation, test evidence, retention/deletion
+controls, owners, and unresolved risk acceptances.
 
 ## Error Handling
 
-| Security Issue | Detection | Mitigation |
-|----------------|-----------|------------|
-| Exposed API key in git | `git-secrets`, GitHub secret scanning | Rotate immediately; add pre-commit hook |
-| Webhook replay attack | Timestamp > 5 min old | Reject and alert |
-| PII in logs | Log audit | Add redaction middleware |
-| Over-permissioned key | Access audit | Create new key with minimal permissions |
+- Suspected secret or HR-data exposure: stop collection, preserve minimal audit
+  metadata, and invoke the organization's incident process.
+- Cross-tenant ambiguity: fail closed before a BambooHR or destination request.
+- Missing webhook verification contract: disable processing, not verification.
+
+## Examples
+
+- "Review our BambooHR logs" searches for sensitive categories without printing values.
+- "Give the connector admin access" is replaced by an operation/field permission map.
 
 ## Resources
 
-- [BambooHR Webhooks Security](https://documentation.bamboohr.com/docs/webhooks)
-- [BambooHR Authentication](https://documentation.bamboohr.com/docs/getting-started)
-
-## Next Steps
-
-For production deployment, see `bamboohr-prod-checklist`.
+Read [official evidence](references/official-docs.md) and the executed customer
+agreements before finalizing controls.

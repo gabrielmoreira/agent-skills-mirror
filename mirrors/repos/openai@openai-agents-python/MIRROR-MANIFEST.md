@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `openai/openai-agents-python` — 26 default patterns, 2 followed patterns, 78 file(s) materialized.
+Mirror of `openai/openai-agents-python` — 26 default patterns, 3 followed patterns, 79 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `openai/openai-agents-python` — 26 default patterns, 2 followed patt
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 2 |
-| Files         | 78 |
+| Followed pats | 3 |
+| Files         | 79 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,6 +51,7 @@ Mirror of `openai/openai-agents-python` — 26 default patterns, 2 followed patt
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
+- `SECURITY.md`
 - `.github/RELEASING.md`
 - `tests/README.md`
 
@@ -137,7 +138,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 75 | ✓ | [`examples/sandbox/tutorials/vision_website_clone/skills/playwright/SKILL.md`](examples/sandbox/tutorials/vision_website_clone/skills/playwright/SKILL.md) |
 | 76 | ✓ | [`examples/tools/skills/csv-workbench/SKILL.md`](examples/tools/skills/csv-workbench/SKILL.md) |
 | 77 | → | [`.github/RELEASING.md`](.github/RELEASING.md) |
-| 78 | → | [`tests/README.md`](tests/README.md) |
+| 78 | → | [`SECURITY.md`](SECURITY.md) |
+| 79 | → | [`tests/README.md`](tests/README.md) |
 
 ---
 

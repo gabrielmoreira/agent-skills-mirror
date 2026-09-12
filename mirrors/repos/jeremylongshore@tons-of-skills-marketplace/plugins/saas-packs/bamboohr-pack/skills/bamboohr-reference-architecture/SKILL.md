@@ -1,421 +1,101 @@
 ---
 name: bamboohr-reference-architecture
-description: 'Implement BambooHR reference architecture for production HR data pipelines.
-
-  Use when designing new BambooHR integrations, building employee sync systems,
-
-  or establishing architecture standards for BambooHR-powered applications.
-
-  Trigger with phrases like "bamboohr architecture", "bamboohr design",
-
-  "bamboohr project structure", "bamboohr system design", "bamboohr pipeline".
-
-  '
-allowed-tools: Read, Grep
-version: 1.4.0
+description: >-
+  Design a multi-tenant BambooHR connector with explicit auth, ingestion,
+  webhook, queue, storage, destination, reconciliation, and audit boundaries.
+  Use when creating or reviewing production HR integration architecture.
+  Trigger with "BambooHR architecture", "BambooHR system design", or
+  "multi-tenant BambooHR connector".
+allowed-tools: Read,Glob,Grep,Write,Edit
+argument-hint: "<integration-scope> <single-tenant|multi-tenant>"
+version: 1.5.0
 license: MIT
 author: Jeremy Longshore <jeremy@intentsolutions.io>
-tags:
-- saas
-- hr
-- bamboohr
-- architecture
+tags: [saas, hr, bamboohr, architecture, multi-tenant]
+model: inherit
+effort: high
 compatibility: Designed for Claude Code
 ---
 # BambooHR Reference Architecture
 
 ## Overview
 
-Production-ready architecture for BambooHR integrations covering the three most common patterns: real-time employee sync, HR data pipeline, and employee lifecycle automation.
+Produce an architecture that keeps control-plane actions, HR data-plane reads,
+mutations, webhook reception, and downstream delivery independently governable.
+The connector is not the authority for HR policy; BambooHR and the approved
+destination each retain explicit ownership.
 
 ## Prerequisites
 
-- Understanding of layered architecture and event-driven design
-- BambooHR API knowledge from earlier skills in this pack
-- TypeScript project setup with Node.js 18+
+- The target repository or integration path and the requested operator outcome.
+- The tenant, identity, and data scope only when approved live work is in scope.
+- The current evidence register plus customer-specific permissions and agreements.
+
+## Current Contract
+
+Use tenant-local BambooHR hosts and current official OpenAPI operations. Prefer
+dataset v2 for new bulk reads. Support OAuth token refresh with external
+persistence, typed request IDs/errors, bounded retries, and webhook one-time key
+custody. Treat deprecated report/dataset v1 paths as migration boundaries.
+
+## Authentication
+
+The control plane stores encrypted, tenant-scoped credential metadata and exact
+redirect/permission configuration. Workers receive short-lived access to one
+tenant credential; they cannot choose arbitrary hosts or read another tenant's
+tokens. API-key mode uses a dedicated BambooHR identity and explicit rotation.
 
 ## Instructions
 
-### Architecture Overview
+1. Define actors, tenants, business outcomes, systems of record, fields,
+   workflows, freshness, scale, residency, retention, and recovery objectives.
+2. Draw trust boundaries among consent/callback, token store, scheduler, sync
+   worker, webhook ingress, queue, schema validator, destination adapter,
+   checkpoint store, audit log, monitoring, and support tooling.
+3. Separate read and mutation workers and permissions. Route jobs with an
+   immutable tenant ID resolved to trusted credential and destination metadata.
+4. For scheduled sync, use minimized dataset v2 reads, deterministic pagination,
+   transactional checkpoints, idempotent destination upsert, and periodic full
+   reconciliation.
+5. For webhooks, terminate TLS, retain raw bytes only in memory for verified
+   HMAC, reject replay, enqueue idempotently, acknowledge promptly, and use the
+   event only as a trigger for an authorized source read when appropriate.
+6. Enforce field allowlists and schema versions before queues/storage. Encrypt
+   approved HR data and keep bodies out of general logs, traces, and dead letters.
+7. Add per-tenant concurrency, finite retries, circuit breaker, dead-letter
+   review, request-ID correlation, and backpressure.
+8. Design credential revocation, tenant offboarding, data deletion, webhook
+   replacement, schema migration, regional failure, and rollback before launch.
 
-```
-┌──────────────────────────────────────────────────────────┐
-│                    Your Application                       │
-├──────────────┬───────────────┬────────────────────────────┤
-│  API Layer   │  Sync Engine  │  Webhook Handler           │
-│  /api/*      │  (Cron/Queue) │  /webhooks/bamboohr        │
-├──────────────┴───────────────┴────────────────────────────┤
-│                   Service Layer                            │
-│  EmployeeService  │  TimeOffService  │  ReportService     │
-├───────────────────┴──────────────────┴────────────────────┤
-│                BambooHR Client Layer                       │
-│  BambooHRClient  │  Cache  │  RetryHandler  │  Metrics    │
-├───────────────────┴─────────┴────────────────┴────────────┤
-│                   Data Layer                               │
-│  PostgreSQL (employees)  │  Redis (cache)  │  S3 (files)  │
-└───────────────────────────────────────────────────────────┘
-                           │
-                           ▼
-              ┌────────────────────────┐
-              │   BambooHR REST API    │
-              │ api.bamboohr.com/api/  │
-              │   gateway.php/{co}/v1  │
-              └────────────────────────┘
-```
+## Tool Discipline
 
-### Project Structure
+Use Read, Glob, and Grep to ground the design in the existing system. Use
+Write/Edit only for approved architecture records, diagrams-as-code, and
+interface contracts. This skill does not provision or mutate infrastructure.
 
-```
-bamboohr-integration/
-├── src/
-│   ├── bamboohr/
-│   │   ├── client.ts              # HTTP client (from sdk-patterns)
-│   │   ├── types.ts               # BambooHR API response types
-│   │   ├── retry.ts               # Retry with Retry-After support
-│   │   ├── cache.ts               # LRU + Redis cache layer
-│   │   └── metrics.ts             # Request counting and latency
-│   ├── services/
-│   │   ├── employee-sync.ts       # Incremental directory sync
-│   │   ├── time-off.ts            # PTO balance and request management
-│   │   ├── reports.ts             # Custom report generation
-│   │   └── lifecycle.ts           # Onboarding/offboarding automation
-│   ├── handlers/
-│   │   ├── webhook.ts             # Webhook signature verification + routing
-│   │   └── events.ts              # Employee change event processors
-│   ├── api/
-│   │   ├── health.ts              # Health check endpoint
-│   │   ├── employees.ts           # REST API for local employee data
-│   │   └── reports.ts             # Report generation endpoints
-│   ├── jobs/
-│   │   ├── full-sync.ts           # Scheduled full directory sync
-│   │   ├── incremental-sync.ts    # Frequent delta sync
-│   │   └── report-export.ts       # Scheduled report export
-│   └── db/
-│       ├── schema.sql             # PostgreSQL schema
-│       └── queries.ts             # Database queries
-├── tests/
-│   ├── unit/
-│   │   ├── client.test.ts
-│   │   ├── employee-sync.test.ts
-│   │   └── webhook.test.ts
-│   ├── integration/
-│   │   └── bamboohr-live.test.ts
-│   └── mocks/
-│       └── bamboohr-handlers.ts   # MSW handlers
-├── config/
-│   ├── default.json
-│   ├── production.json
-│   └── test.json
-└── docker-compose.yml             # PostgreSQL + Redis for local dev
-```
+## Approval Boundaries
 
-### Step 1: Data Model
-
-```sql
--- db/schema.sql
-CREATE TABLE bamboohr_employees (
-  id               INTEGER PRIMARY KEY,  -- BambooHR employee ID
-  first_name       TEXT NOT NULL,
-  last_name        TEXT NOT NULL,
-  display_name     TEXT,
-  work_email       TEXT,
-  job_title        TEXT,
-  department       TEXT,
-  division         TEXT,
-  location         TEXT,
-  supervisor_id    INTEGER REFERENCES bamboohr_employees(id),
-  status           TEXT DEFAULT 'Active',
-  hire_date        DATE,
-  termination_date DATE,
-  employee_number  TEXT,
-  raw_data         JSONB,                -- Full BambooHR response
-  synced_at        TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  created_at       TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  updated_at       TIMESTAMPTZ NOT NULL DEFAULT NOW()
-);
-
-CREATE INDEX idx_employees_status ON bamboohr_employees(status);
-CREATE INDEX idx_employees_department ON bamboohr_employees(department);
-CREATE INDEX idx_employees_synced ON bamboohr_employees(synced_at);
-
-CREATE TABLE bamboohr_sync_log (
-  id            SERIAL PRIMARY KEY,
-  sync_type     TEXT NOT NULL,  -- 'full', 'incremental', 'webhook'
-  started_at    TIMESTAMPTZ NOT NULL,
-  completed_at  TIMESTAMPTZ,
-  employees_created  INTEGER DEFAULT 0,
-  employees_updated  INTEGER DEFAULT 0,
-  employees_deleted  INTEGER DEFAULT 0,
-  errors        JSONB DEFAULT '[]',
-  status        TEXT DEFAULT 'running'  -- 'running', 'completed', 'failed'
-);
-```
-
-### Step 2: Employee Sync Service
-
-```typescript
-// src/services/employee-sync.ts
-import { BambooHRClient } from '../bamboohr/client';
-import { db } from '../db/queries';
-
-const SYNC_FIELDS = [
-  'firstName', 'lastName', 'displayName', 'workEmail',
-  'jobTitle', 'department', 'division', 'location',
-  'supervisor', 'status', 'hireDate', 'terminationDate',
-  'employeeNumber',
-];
-
-export class EmployeeSyncService {
-  constructor(private client: BambooHRClient) {}
-
-  async fullSync(): Promise<SyncResult> {
-    const log = await db.createSyncLog('full');
-
-    try {
-      // One API call for all employee data
-      const report = await this.client.customReport(SYNC_FIELDS);
-      const result = { created: 0, updated: 0, deleted: 0, errors: [] as string[] };
-
-      for (const emp of report.employees) {
-        try {
-          const existing = await db.getEmployee(parseInt(emp.id));
-          if (existing) {
-            await db.updateEmployee(parseInt(emp.id), emp);
-            result.updated++;
-          } else {
-            await db.createEmployee(parseInt(emp.id), emp);
-            result.created++;
-          }
-        } catch (err) {
-          result.errors.push(`Employee ${emp.id}: ${(err as Error).message}`);
-        }
-      }
-
-      // Mark employees not in report as inactive
-      const activeIds = new Set(report.employees.map(e => parseInt(e.id)));
-      const localEmployees = await db.getActiveEmployeeIds();
-      for (const localId of localEmployees) {
-        if (!activeIds.has(localId)) {
-          await db.deactivateEmployee(localId);
-          result.deleted++;
-        }
-      }
-
-      await db.completeSyncLog(log.id, result);
-      return result;
-    } catch (err) {
-      await db.failSyncLog(log.id, (err as Error).message);
-      throw err;
-    }
-  }
-
-  async incrementalSync(): Promise<SyncResult> {
-    const lastSync = await db.getLastSyncTimestamp();
-    const changed = await this.client.request<any>(
-      'GET', `/employees/changed/?since=${lastSync}`,
-    );
-
-    const changedIds = Object.keys(changed.employees || {});
-    if (changedIds.length === 0) return { created: 0, updated: 0, deleted: 0, errors: [] };
-
-    // Fetch details for changed employees only
-    const result = { created: 0, updated: 0, deleted: 0, errors: [] as string[] };
-    for (const id of changedIds) {
-      const emp = await this.client.getEmployee(id, SYNC_FIELDS);
-      // Upsert logic...
-    }
-
-    return result;
-  }
-
-  async handleWebhookEvent(employeeId: string, action: string, fields: Record<string, string>) {
-    switch (action) {
-      case 'Created':
-        await db.createEmployee(parseInt(employeeId), fields);
-        break;
-      case 'Updated':
-        await db.updateEmployee(parseInt(employeeId), fields);
-        break;
-      case 'Deleted':
-        await db.deactivateEmployee(parseInt(employeeId));
-        break;
-    }
-  }
-}
-```
-
-### Step 3: Employee Lifecycle Automation
-
-```typescript
-// src/services/lifecycle.ts
-export class EmployeeLifecycleService {
-  constructor(
-    private bamboohr: BambooHRClient,
-    private slackClient: any,
-    private googleAdmin: any,
-  ) {}
-
-  async onNewEmployee(employeeId: string, fields: Record<string, string>) {
-    const { firstName, lastName, workEmail, department, jobTitle, supervisor } = fields;
-
-    // 1. Create Google Workspace account
-    await this.googleAdmin.createUser({
-      primaryEmail: workEmail,
-      name: { givenName: firstName, familyName: lastName },
-      orgUnitPath: `/departments/${department}`,
-    });
-
-    // 2. Add to Slack
-    await this.slackClient.inviteUser(workEmail);
-    await this.slackClient.addToChannel(workEmail, `#${department.toLowerCase()}`);
-
-    // 3. Notify manager
-    await this.slackClient.sendDM(supervisor, {
-      text: `Your new report ${firstName} ${lastName} (${jobTitle}) starts soon. ` +
-            `BambooHR profile: https://${process.env.BAMBOOHR_COMPANY_DOMAIN}.bamboohr.com/employees/employee.php?id=${employeeId}`,
-    });
-
-    console.log(`Onboarding complete for ${firstName} ${lastName}`);
-  }
-
-  async onEmployeeTerminated(employeeId: string, fields: Record<string, string>) {
-    const { workEmail, firstName, lastName } = fields;
-
-    // 1. Disable Google Workspace account
-    await this.googleAdmin.suspendUser(workEmail);
-
-    // 2. Deactivate Slack
-    await this.slackClient.deactivateUser(workEmail);
-
-    // 3. Archive in downstream systems
-    console.log(`Offboarding complete for ${firstName} ${lastName}`);
-  }
-
-  async onDepartmentChanged(employeeId: string, fields: Record<string, string>) {
-    const { workEmail, department } = fields;
-
-    // Update Google Workspace OU
-    await this.googleAdmin.moveUser(workEmail, `/departments/${department}`);
-
-    // Update Slack channels
-    await this.slackClient.addToChannel(workEmail, `#${department.toLowerCase()}`);
-  }
-}
-```
-
-### Step 4: Sync Scheduling
-
-```typescript
-// src/jobs/sync-scheduler.ts
-import cron from 'node-cron';
-
-// Full sync: daily at 2 AM
-cron.schedule('0 2 * * *', async () => {
-  console.log('Starting full BambooHR sync...');
-  const result = await syncService.fullSync();
-  console.log(`Full sync: ${result.created} created, ${result.updated} updated, ${result.deleted} deleted`);
-});
-
-// Incremental sync: every 15 minutes (safety net for missed webhooks)
-cron.schedule('*/15 * * * *', async () => {
-  const result = await syncService.incrementalSync();
-  if (result.created + result.updated + result.deleted > 0) {
-    console.log(`Incremental sync: ${JSON.stringify(result)}`);
-  }
-});
-```
-
-### Step 5: Configuration Management
-
-```typescript
-// config/bamboohr.ts
-export interface BambooHRIntegrationConfig {
-  api: {
-    companyDomain: string;
-    apiKey: string;
-    timeoutMs: number;
-    maxRetries: number;
-  };
-  sync: {
-    fullSyncCron: string;
-    incrementalSyncCron: string;
-    batchSize: number;
-  };
-  cache: {
-    directoryTtlMs: number;
-    employeeTtlMs: number;
-    redisUrl?: string;
-  };
-  webhook: {
-    secret: string;
-    path: string;
-    replayWindowMs: number;
-  };
-}
-
-export function loadConfig(): BambooHRIntegrationConfig {
-  return {
-    api: {
-      companyDomain: process.env.BAMBOOHR_COMPANY_DOMAIN!,
-      apiKey: process.env.BAMBOOHR_API_KEY!,
-      timeoutMs: 30_000,
-      maxRetries: 3,
-    },
-    sync: {
-      fullSyncCron: '0 2 * * *',
-      incrementalSyncCron: '*/15 * * * *',
-      batchSize: 100,
-    },
-    cache: {
-      directoryTtlMs: 5 * 60 * 1000,
-      employeeTtlMs: 60 * 1000,
-      redisUrl: process.env.REDIS_URL,
-    },
-    webhook: {
-      secret: process.env.BAMBOOHR_WEBHOOK_SECRET!,
-      path: '/webhooks/bamboohr',
-      replayWindowMs: 300_000,
-    },
-  };
-}
-```
+Require approval for field and workflow scope, auth model, tenant routing,
+regions, retention, destination authority, webhook events, mutation path, and
+recovery objectives. Record unresolved decisions rather than guessing.
 
 ## Output
 
-- Layered architecture separating API, service, client, and data concerns
-- Employee sync with full, incremental, and webhook-driven modes
-- PostgreSQL schema for local employee data with audit trail
-- Lifecycle automation (onboarding, offboarding, department changes)
-- Scheduled sync jobs with cron
-- Environment-specific configuration
-
-## Examples
-
-Use an API boundary that authenticates the caller, checks a policy-managed employee/field scope, and creates an idempotency receipt before delegating to a BambooHR adapter. Keep event queues, caches, and audit stores encrypted and access-controlled; workers must recheck authorization before side effects and pause on webhook or reconciliation uncertainty.
+Return context/container/component views, data flows and trust boundaries,
+identity/permission matrix, field contract, queue/checkpoint/idempotency model,
+failure paths, SLOs, retention/deletion, decisions, risks, and validation plan.
 
 ## Error Handling
 
-| Issue | Cause | Solution |
-|-------|-------|----------|
-| Sync data gaps | Missed webhooks + long incremental interval | Full sync as daily safety net |
-| Duplicate processing | Webhook retry + no idempotency | Idempotency keys in sync log |
-| Stale local data | Cache TTL too long | Webhook-based cache invalidation |
-| Circular dependencies | Poor layer separation | Strict dependency direction (API > Service > Client > DB) |
+- Unknown system of record: stop write-path design until ownership is resolved.
+- Shared tenant credential/destination namespace: classify as a blocking isolation risk.
+- No reconciliation or rollback model: architecture is not production-ready.
 
-## Enterprise Considerations
+## Examples
 
-- **Multi-company**: Deploy separate instances per BambooHR company domain, or use tenant-aware client factory
-- **Data residency**: Store employee data in the same region as your BambooHR instance
-- **Compliance**: Implement data retention policies; BambooHR data includes PII
-- **High availability**: Run sync workers as separate pods/containers from API servers
-- **Monitoring**: Alert on sync failures, webhook delivery gaps, and API error spikes
+- "Design employee sync" yields both scheduled reconciliation and webhook trigger paths.
+- "Use one admin key for all customers" is rejected at the tenant trust boundary.
 
 ## Resources
 
-- [BambooHR API Documentation](https://documentation.bamboohr.com/docs)
-- [BambooHR API Reference](https://documentation.bamboohr.com/reference)
-- [BambooHR Webhooks](https://documentation.bamboohr.com/docs/webhooks)
-
-## Flagship Skills
-
-For the complete BambooHR skill pack, start with `bamboohr-install-auth`.
+Read [official evidence](references/official-docs.md) before finalizing interfaces.

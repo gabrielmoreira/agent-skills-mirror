@@ -90,6 +90,34 @@ brief, or a routing recommendation is planning evidence, not permission: recomme
 engine that fits the work's shape with a one-line reason, and start it only after the user's
 explicit go-ahead in this conversation.
 
+## Active Workflow Continuation
+
+A workflow the user explicitly started stays visible to its session until it ends. Durable
+state is written only through the control plane: `omh state start --workflow <name>
+--session-ref <session>` records `activation.source: explicit_api` with
+`observed_by_host: not_observed`. Chat text, quoted workflow names, and routing cues never
+activate, overwrite, or clear state.
+
+On later turns in the same session `pre_llm_call` reprojects `active_workflow_context/v1`
+(payload field `omh_active_workflow`, context line `[OMH Active Workflow]`) even when the
+message carries no cue or the history is a compacted summary. The projection names the
+workflow, its lifecycle state, allowed transition targets, and the claim boundary; it carries
+no prompt or note text, and `compaction_observed` stays `not_observed` because OMH never
+sees the host compact.
+
+Precedence is fixed: an explicit cancel, finish, block, failure, allowed transition, or new
+scope from the user outranks continuation; current-message routing outranks continuation; a
+neutral follow-up or interjection does not. Answer the interjection, then return to the
+active checklist without asking the user to repeat the workflow name.
+
+End or replace the state explicitly: `omh state finish --workflow <name> --outcome
+finished|blocked|failed|cancelled --session-ref <session>` or `omh state start` for an
+allowed transition. A session-bound record refuses any mutation without its matching
+`--session-ref`. Unreadable or multiple active records produce `state: recovery_required`
+with error types and recovery commands, and `omh state status` reports
+`recovery_required: true`; never pick a workflow silently. The projection is metadata-only
+and is not dispatch, execution, review, CI, or merge evidence.
+
 ## Multi-Agent Target Awareness
 
 Respect `omh_target_topology/v1` when a wrapper reports it: bind state to the current target/thread, adapt only the parts of this workflow that benefit from multiple Hermes agents, and fall back to single-target behavior when `active_agent_count` is one.

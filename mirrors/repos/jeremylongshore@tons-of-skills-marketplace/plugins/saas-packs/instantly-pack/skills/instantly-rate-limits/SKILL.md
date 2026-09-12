@@ -1,270 +1,90 @@
 ---
 name: instantly-rate-limits
-description: 'Implement Instantly.ai rate limiting, backoff, and request throttling
-  patterns.
-
-  Use when handling 429 errors, implementing retry logic,
-
-  or building high-throughput Instantly integrations.
-
-  Trigger with phrases like "instantly rate limit", "instantly 429",
-
-  "instantly throttle", "instantly backoff", "instantly retry".
-
-  '
-allowed-tools: Read, Write, Edit, Bash(npm:*), Grep
-version: 1.12.0
-license: MIT
+description: >-
+  Implement Instantly API v2 workspace-wide throttling, endpoint overrides, and safe 429 recovery. Use when coordinating request budgets across workers, keys, or API versions. Trigger with "handle Instantly 429s", "set an Instantly request budget", or "throttle Instantly API workers".
+argument-hint: "[service] [workspace-budget]"
+allowed-tools: Read, Glob, Grep, WebFetch, Write, Edit
+version: 1.13.0
 author: Jeremy Longshore <jeremy@intentsolutions.io>
+license: MIT
 tags:
 - saas
 - instantly
 - rate-limits
-- reliability
-compatibility: Designed for Claude Code
+model: inherit
+effort: high
+compatibility: Designed for Claude Code; live verification requires network access and an approved Instantly workspace and API v2 key
 ---
-# Instantly Rate Limits
+# Instantly Workspace Rate Control
 
 ## Overview
 
-Handle Instantly API v2 rate limits. The API returns `429 Too Many Requests` when limits are exceeded. Most endpoints follow standard limits. The email listing endpoint has a stricter constraint of **20 requests per minute**. Failed webhook deliveries are retried up to **3 times within 30 seconds**.
+Coordinate traffic across clients and keys so retries do not amplify throttling or duplicate writes. Record assumptions, evidence, approval state, and rollback ownership so another operator can reproduce the result.
 
 ## Prerequisites
 
-- Completed `instantly-install-auth` setup
-- Understanding of exponential backoff patterns
+- The target repository, Instantly workspace, environment, and accountable owner
+- Current security, privacy, compliance, capacity, and change-control requirements
+- An approved API v2 key only when a bounded live verification is necessary
 
-## Known Rate Limits
+## Tool Discipline
 
-| Endpoint | Limit | Notes |
-|----------|-------|-------|
-| Most API endpoints | Standard REST limits | Varies by plan |
-| `GET /emails` | 20 req/min | Stricter — email listing |
-| Webhook deliveries | 3 retries in 30s | Instantly retries to your endpoint |
-| Background jobs | N/A | Async — poll via `GET /background-jobs/{id}` |
+Use `Read`, `Glob`, and `Grep` to inspect code, configuration, and evidence. Use `WebFetch` only for current first-party Instantly documentation and package metadata. Use `Write` or `Edit` only when implementation was requested and exact target files are known; never write credentials, lead data, email content, or unrestricted environment output.
+
+## Current Contract
+
+- General limits are 100 requests per second and 6,000 per minute across API v1/v2 for the whole workspace.
+- GET /emails is limited to 20 requests per minute; other endpoints may publish independent limits.
+- 429 is the authoritative throttling signal; retry timing must follow documented or observed response metadata.
+
+## Authentication
+
+Use an API v2 key as `Authorization: Bearer <key>` against `https://api.instantly.ai/api/v2`. Grant only the endpoint-specific scopes needed, inject the key from an approved server-side secret manager, and never print, persist, commit, or place it in a URL. Treat key creation, rotation, revocation, member changes, workspace delegation, and production access as owner-approved actions.
 
 ## Instructions
 
-### Step 1: Exponential Backoff with Jitter
+1. Inventory every producer sharing the workspace and every endpoint-specific override.
+2. Allocate a workspace request budget below both general windows.
+3. Centralize token-bucket state and expose queue depth, wait time, and 429 telemetry.
+4. Retry only operations proven safe, with bounded exponential backoff and jitter.
+5. Do not assume a webhook retry count or timing absent a published contract.
+6. Test burst, sustained, override, and retry-storm scenarios with synthetic traffic.
 
-```typescript
-import { InstantlyApiError } from "./src/instantly/client";
+## Approval Boundaries
 
-interface RetryOptions {
-  maxRetries: number;
-  baseDelayMs: number;
-  maxDelayMs: number;
-}
-
-const DEFAULT_RETRY: RetryOptions = {
-  maxRetries: 5,
-  baseDelayMs: 1000,
-  maxDelayMs: 30000,
-};
-
-async function withBackoff<T>(
-  operation: () => Promise<T>,
-  opts: Partial<RetryOptions> = {}
-): Promise<T> {
-  const { maxRetries, baseDelayMs, maxDelayMs } = { ...DEFAULT_RETRY, ...opts };
-
-  for (let attempt = 0; attempt <= maxRetries; attempt++) {
-    try {
-      return await operation();
-    } catch (err) {
-      const isRetryable =
-        err instanceof InstantlyApiError &&
-        (err.status === 429 || err.status >= 500);
-
-      if (!isRetryable || attempt === maxRetries) throw err;
-
-      // Parse Retry-After header if available
-      let delay = baseDelayMs * Math.pow(2, attempt);
-      delay = Math.min(delay, maxDelayMs);
-
-      // Add jitter (10-30% of delay)
-      const jitter = delay * (0.1 + Math.random() * 0.2);
-      const totalDelay = delay + jitter;
-
-      console.warn(
-        `Rate limited (attempt ${attempt + 1}/${maxRetries}). Waiting ${Math.round(totalDelay)}ms...`
-      );
-      await new Promise((r) => setTimeout(r, totalDelay));
-    }
-  }
-  throw new Error("Unreachable");
-}
-```
-
-### Step 2: Request Queue with Concurrency Control
-
-```typescript
-class RequestQueue {
-  private queue: Array<() => Promise<void>> = [];
-  private running = 0;
-  private readonly maxConcurrent: number;
-  private readonly delayBetweenMs: number;
-
-  constructor(maxConcurrent = 5, delayBetweenMs = 200) {
-    this.maxConcurrent = maxConcurrent;
-    this.delayBetweenMs = delayBetweenMs;
-  }
-
-  async add<T>(operation: () => Promise<T>): Promise<T> {
-    return new Promise((resolve, reject) => {
-      this.queue.push(async () => {
-        try {
-          const result = await withBackoff(operation);
-          resolve(result);
-        } catch (err) {
-          reject(err);
-        } finally {
-          this.running--;
-          this.processQueue();
-        }
-      });
-      this.processQueue();
-    });
-  }
-
-  private async processQueue() {
-    while (this.running < this.maxConcurrent && this.queue.length > 0) {
-      const task = this.queue.shift()!;
-      this.running++;
-      if (this.delayBetweenMs > 0) {
-        await new Promise((r) => setTimeout(r, this.delayBetweenMs));
-      }
-      task();
-    }
-  }
-}
-
-// Usage — add 500 leads with controlled concurrency
-const queue = new RequestQueue(3, 300); // 3 concurrent, 300ms gap
-
-for (const lead of leads) {
-  queue.add(() =>
-    instantly("/leads", {
-      method: "POST",
-      body: JSON.stringify({ campaign: campaignId, email: lead.email, ...lead }),
-    })
-  );
-}
-```
-
-### Step 3: Rate-Limited Email Listing
-
-```typescript
-// The /emails endpoint has a 20 req/min limit
-// Use a dedicated throttled fetcher
-class ThrottledEmailFetcher {
-  private requestTimestamps: number[] = [];
-  private readonly maxPerMinute = 18; // leave 2 req margin
-
-  private async waitForSlot() {
-    const now = Date.now();
-    this.requestTimestamps = this.requestTimestamps.filter(
-      (t) => now - t < 60000
-    );
-
-    if (this.requestTimestamps.length >= this.maxPerMinute) {
-      const oldest = this.requestTimestamps[0];
-      const waitMs = 60000 - (now - oldest) + 1000; // +1s buffer
-      console.log(`Email API throttle: waiting ${waitMs}ms`);
-      await new Promise((r) => setTimeout(r, waitMs));
-    }
-
-    this.requestTimestamps.push(Date.now());
-  }
-
-  async listEmails(params: {
-    campaign_id?: string;
-    is_unread?: boolean;
-    limit?: number;
-    starting_after?: string;
-  }) {
-    await this.waitForSlot();
-
-    const qs = new URLSearchParams();
-    if (params.campaign_id) qs.set("campaign_id", params.campaign_id);
-    if (params.is_unread !== undefined) qs.set("is_unread", String(params.is_unread));
-    if (params.limit) qs.set("limit", String(params.limit));
-    if (params.starting_after) qs.set("starting_after", params.starting_after);
-
-    return instantly(`/emails?${qs}`);
-  }
-}
-```
-
-### Step 4: Batch Operations Pattern
-
-```typescript
-// Instead of creating leads one-by-one, batch where possible
-async function addLeadsBatched(
-  campaignId: string,
-  leads: Array<{ email: string; first_name?: string }>,
-  batchSize = 10,
-  delayBetweenBatchesMs = 1000
-) {
-  let added = 0;
-  let failed = 0;
-
-  for (let i = 0; i < leads.length; i += batchSize) {
-    const batch = leads.slice(i, i + batchSize);
-
-    const results = await Promise.allSettled(
-      batch.map((lead) =>
-        withBackoff(() =>
-          instantly("/leads", {
-            method: "POST",
-            body: JSON.stringify({
-              campaign: campaignId,
-              email: lead.email,
-              first_name: lead.first_name,
-              skip_if_in_workspace: true,
-            }),
-          })
-        )
-      )
-    );
-
-    added += results.filter((r) => r.status === "fulfilled").length;
-    failed += results.filter((r) => r.status === "rejected").length;
-
-    console.log(`Batch ${Math.floor(i / batchSize) + 1}: ${added} added, ${failed} failed`);
-
-    if (i + batchSize < leads.length) {
-      await new Promise((r) => setTimeout(r, delayBetweenBatchesMs));
-    }
-  }
-
-  console.log(`\nTotal: ${added} added, ${failed} failed out of ${leads.length}`);
-}
-```
-
-## Error Handling
-
-| Error | Cause | Solution |
-|-------|-------|----------|
-| `429` on lead import | Too many sequential POSTs | Use batch pattern with delays |
-| `429` on email listing | >20 req/min | Use `ThrottledEmailFetcher` |
-| `5xx` intermittent | Instantly server overload | Backoff + retry; check status.instantly.ai |
-| Webhook delivery retries exhausted | Your endpoint too slow | Return 200 immediately, process async |
-| Queue memory growing | Too many queued operations | Set max queue size, reject overflow |
+Do not create, rotate, reveal, or revoke keys; invite or remove members; delegate across workspaces; connect sending accounts; create or activate campaigns; import or delete leads; change suppression or retention; register, patch, resume, or delete webhooks; alter plans or paid capacity; transmit diagnostics; or perform another production mutation without explicit approval from the accountable owner. Keep diagnosis read-only unless implementation was requested.
 
 ## Output
 
-Return a rate-limit receipt with sender/campaign scope, requested/limited/deferred counts, retry revision, idempotency state, queue health, consent/suppression checks, sent-count assertion, and rollback reference. Exclude addresses, copy, and credentials.
+Return the workspace-safe scope, files and contracts inspected, exact API v2 routes and required scopes, evidence collected, validation result, sensitive fields redacted, remaining risk, accountable owner, approval state, and rollback or next action.
+
+## Error Handling
+
+| Condition | Response |
+|---|---|
+| `401` | Stop and verify that the bearer key exists, is current, and was not revoked. |
+| `403` | Stop and compare the operation with its exact required scope; do not broaden to `all:all` by default. |
+| `429` | Coordinate the workspace-wide budget, honor endpoint overrides, and bound retries. |
+| Schema or tenant mismatch | Fail closed, preserve redacted evidence, and do not retry a mutation. |
 
 ## Examples
 
-`scope=sandbox-campaign; requested=100; limited=3; deferred=3; retry=v2; idempotent=pass; consent=pass; suppression=pass; sends=0; rollback=limits-r7` proves bounded handling.
+Use a compact handoff that makes scope, mutation authority, and evidence reviewable.
+
+Input:
+
+```text
+workspace-rps=80; workspace-rpm=4800; email-list-rpm=15
+```
+
+Expected handoff:
+
+```text
+limits=enforced; retry-budget=bounded; mutation-retries=disabled
+```
 
 ## Resources
 
-- [Instantly API v2 Docs](https://developer.instantly.ai/)
-- [Instantly Blog: API Rate Limits](https://instantly.ai/blog/api-webhooks-custom-integrations-for-outreach/)
-
-## Next Steps
-
-For security patterns, see `instantly-security-basics`.
+- [Skill-specific official documentation](references/official-docs.md)
+- [Instantly API v2 documentation](https://developer.instantly.ai/)
+- [Instantly API v2 OpenAPI document](https://api.instantly.ai/openapi/api_v2.json)

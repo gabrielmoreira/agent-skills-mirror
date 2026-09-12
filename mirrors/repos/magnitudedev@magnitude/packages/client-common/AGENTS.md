@@ -1,0 +1,125 @@
+# Client State Patterns
+
+## Reactive State Policy
+
+### Declarative reactive vs imperative side effect
+
+**Declarative reactive** means expressing output as `f(inputs)` where the framework handles synchronization — atom derivations, React props, query atoms. The relationship is declared once; propagation is automatic. There is no trigger, no cleanup, no race window. State has a single source of truth and changes flow through the system without manual wiring.
+
+**Imperative side effect** means reacting to a value changing and then manually doing work — `useEffect`, ref-diff, async IIFEs, callback ref deps. The trigger is manual, cleanup is manual, and the execution timing relative to render is implicit. Every instance duplicates the framework's propagation mechanism with hand-rolled code that can be wrong, incomplete, or racy.
+
+Prioritize declarative reactive because it eliminates entire classes of bugs — stale closures, missing cleanup, race conditions, state desynchronization — by construction rather than by discipline.
+
+### Why useAtomMount over useEffect / ref-diff / callback refs
+
+When a side effect is unavoidable (no declarative mechanism exists, no single user action is the sole trigger), `useAtomMount` with Effect is the exclusive pattern — not `useEffect`, not ref-diff, not callback ref dep arrays. These are all semantically equivalent ("react to value changing, do work") but `useAtomMount` provides:
+
+- **Structured cleanup** via `Effect.addFinalizer` — guaranteed to run on unmount or fiber interruption, not best-effort like `useEffect` return
+- **Fiber management** — the Effect runtime can interrupt, cancel, or timeout pending work
+- **Error channel** — failures go through Effect's typed error handling, not swallowed or thrown into React's error boundary
+- **Composability** — multiple side effects compose with `Effect.zip`, `Effect.timeout`, `Effect.retry`
+
+Callback ref dep arrays are `useEffect` in disguise — they use React's dep mechanism to re-run work on value changes. Plain refs for element capture are fine; dep-array re-runs for side effects are not.
+
+### Patterns to follow
+
+These follow directly from the principles above — declarative first, imperative only when unavoidable, and when imperative, use the safest mechanism.
+
+**1. Declarative** — atom derivation, React props, query atoms. Always the first choice. If this applies, imperative patterns are a violation.
+
+**2. Event-source** — imperative call in a user action handler, when the user action is the sole cause of the state change. This eliminates the reactive trigger entirely — the work happens when the user acts, not when state updates.
+
+**3. `useAtomMount`** — Effect-scoped side effect with `Effect.addFinalizer`. The only sanctioned pattern when a side effect is inherent: no declarative mechanism exists, and no single user action is the sole trigger (state comes from server, timers, agent activity, or multiple sources).
+
+This decision applies to component-owned effects. A connection- or registry-lifetime resource owned
+by a client service is acquired by that service's `Layer.scoped`, as defined in
+`design/patterns/client-di.md`; React must not mount it to manufacture service lifetime.
+
+**Decision:** Can output be `f(inputs)` with platform sync? → Declarative. Is a user action the sole trigger? → Event-source. Otherwise → `useAtomMount`.
+
+**Prohibited:** `useEffect` with side effects, ref-diff (`prevRef !== value → doWork`), async IIFEs for server state, `useState` + `useEffect` sync, callback ref dep arrays for side effects.
+
+## State Ownership
+
+Classify state before implementing it:
+
+- **Server state** — sessions, provider/model configuration, operation progress, durable settings, and daemon status. The boundary query atom is the source of truth. Never copy it into `useState` or another writable atom.
+- **Shared client state** — client-only state used across components or surfaces. Put it in an Effect Atom in client-common.
+- **Presentation state** — a local selection, open panel, input draft, or route. A component-local value or presentation atom is appropriate, but it must not duplicate a server fact.
+
+Keep domains independent. A flow may compose several query atoms in a pure view model; do not create a combined server RPC, snapshot, or controller merely because one screen uses those domains together.
+
+## Effect Atom Lifetimes
+
+Every writable client atom MUST choose the correct lifetime:
+
+- `Atom.make(initial)` — when the last consumer unmounts, the registry deletes the
+  current value after its idle TTL. **All writes are lost.** The next read recreates
+  the atom as `initial`. Use this only when that reset is intended.
+- `Atom.keepAlive(Atom.make(initial))` — the registry retains the current value even
+  with zero consumers. **Writes survive** gates, route changes, and component
+  unmounts until the registry is disposed. Use this whenever state must survive them.
+
+`useAtomInitialValues` only writes an initial value; it does not retain it. Never
+root-mount an atom to simulate durability—declare it with `Atom.keepAlive`.
+
+## Client ↔ ACN: queries, mutations, subscriptions
+
+First-party reactive interactions use Effect Query `Query`, `Mutation`, `Subscription`, or
+stream-folded `Query` definitions in client-common's `AcnQueries`. Each definition calls the shared
+`MagnitudeClient` through Effect DI and derives payload identity from the authoritative RPC schema.
+Client-common may extend that graph with local semantic commands.
+Local operation bindings centralize SDK service lookup and schema-derived keys; they never generate
+RPCs or choose domain cache policy. Freshness, mutation scope/synchronization, and stream folding
+remain explicit at each domain definition.
+`createAgentClient(sdk)` makes
+one application operation client; Effect Query never generates the RPC contract. Construction must
+close every embedded Effect requirement. `useAgentClient()` returns it. Every operation is a member of that client at its group name, already
+materialized: a query member is `(input) => QueryAtom` (`client.Sessions.GetSession({ sessionId })`),
+a mutation member is its `MutationAtom` (`client.Agent.SendMessage`), a subscription member is
+`(input) => SubscriptionAtom` (`client.Changes.StreamChanges({})`). Members are the canonical atoms —
+equal inputs return the same atom — so they are never wrapped in `useMemo`. Domain services see the
+same members through `ClientEffectQuery`. Client code never passes a definition to
+`client.query`/`client.mutation`/`client.subscription`, and never declares or inspects RPCs,
+transports, or framing: UI/domain services do not construct another SDK client or parallel request cache, reactivity-key
+registry, or per-domain invalidation wiring.
+
+- A definition carries its cache identity (the payload), freshness, and — for mutations — its
+  `scope` and `synchronize` postcondition. Client code never re-declares them.
+- Freshness is owned by the connection: `StreamChanges` is drained once (`state/changes.ts`) and
+  invalidates queries by name. Domain code writes no invalidation for poked state.
+- A keyed watch (`WatchFile`, `WatchProjectFiles`) belongs to the service that exposes the queries
+  it keeps fresh, as a dependency of those query atoms: the watch is open exactly while a query is
+  observed. No component mounts a watch and no hook owns a stream fiber.
+- `StreamDisplayView(sessionId, shape)` is consumed by the display controller; a shape change is a
+  different subscription and resync/retry reopen it.
+
+### Queries
+
+- Read server state with `useAtomValue(…)` over the query member (`client.Sessions.GetSession(input)`;
+  its value is the query state; render from `.result`) or over a service's read-only atom.
+- Render loading, success, and failure directly from the `Result`.
+- Derive transformed views with pure functions, `useMemo`, or derived atoms. Do not copy query results into writable state.
+- A query must be observational. Reading or mounting it must not cause installation, downloads, process startup, or other product mutations.
+- Imperative one-shot reads (mention search, pasted-image resolution) use `QueryClient.fetch` through a runtime action; they remain queries.
+
+### Mutations
+
+- Trigger a mutation from the user event that causes it with `useAtomSet(client.Sessions.CreateSession)` (the mutation member is the atom); the argument is the payload.
+- If the UI displays mutation pending/failure state, read the mutation atom's `Result` with `useAtomValue`. Do not wrap the call with `busy`/`error` `useState` or `try/finally` bookkeeping.
+- Prefer value mode. Use `{ mode: "promise" }` only when the event handler genuinely needs the returned success value for immediate one-shot control flow. A promise is not a state store and must not be used to mirror loading, errors, progress, or query data.
+- For long-running work, the mutation should acknowledge or return an operation ID. Progress and terminal state belong to a query, not to the mutation promise.
+- A combined operation belongs in ACN when it is a universal product capability; client-common composes it only when it is use-case-specific orchestration of independently complete capabilities.
+- Use an Effect-backed Mutation when that composed command has a reusable pending, failure, scope, retry, or synchronization lifecycle; use a plain Effect when only its immediate caller needs the execution result.
+
+### Services
+
+A client service (Tag + `Layer.scoped`, see `design/patterns/client-di.md`) exists when a domain has
+connection-lifetime state, a resident resource (a keyed watch), reusable operations with
+dependencies, or a stateful client-owned use case. Services expose read-only atoms and Effects;
+hooks project them (`client.runtime.atom(Tag)`), never construct them. Sessions, projects, provider
+auth, usage, and skills need no service: hooks materialize their definitions directly.
+
+## Shared Boundaries
+
+Reusable query atoms, mutation actions, state derivations, and domain hooks belong in client-common. CLI, web, and desktop should provide rendering and platform interaction, not separate RPC state systems.

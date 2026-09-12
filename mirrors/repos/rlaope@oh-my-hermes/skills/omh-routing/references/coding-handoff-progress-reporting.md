@@ -53,6 +53,43 @@ if an update was just sent:
   while no file changed, or a success report alongside a non-zero exit
 - the first occurrence of any new kind of event
 
+## Parent-Owned Clarification
+
+A delegated fanout unit never contacts the user. When one user decision blocks
+it, the child preserves its work and returns `process_status: input_required`
+with an `input_required` object: `decision_id` (slug), `question` and
+`blocking_reason` (300 chars each), `answer_shape` (`options` with 1..8 unique
+entries or `text` with `max_chars` up to 300), `affected_unit_ids` (its own
+unit only), and up to 8 `redacted_context` strings. Secrets, transcripts, and
+executable text are rejected at intake, and a request naming sibling units is
+refused.
+
+The dispatcher journals that unit as `blocked`, records unit status
+`input_required`, skips its verification, and keeps completed siblings
+completed; a dependent unit waits instead of failing. The supervising root
+session is the only user surface:
+
+```sh
+omh coding fanout clarifications <fanout-id>
+omh coding fanout answer <fanout-id> --unit <unit> --decision <decision-id> --attempt-id <attempt> --round <n> --answer <value>
+omh coding fanout answer <fanout-id> --unit <unit> --decision <decision-id> --attempt-id <attempt> --round <n> --cancel
+```
+
+`clarifications` renders at most one question and lists the units queued
+behind it. `answer` validates the value against the answer shape, records it
+against the exact decision, attempt, and round, and reports `dispatch:
+not_observed`; only a depth-zero root session may answer, and an answer changes
+no scope or approval authority. Resuming is a separate explicit act:
+`omh coding fanout dispatch ... --resume-journal <journal> --unit <unit>` reuses
+the same worktree, requires unchanged lineage (run, attempt, base SHA, contract
+digest, goal attempt), and appends the answer as a `[Parent decision]` block.
+
+Terminal states are deterministic: `cancelled`, `exhausted` after two rounds,
+`expired` after 24 hours, and stale answers rejected as `stale_decision_id`,
+`stale_attempt_id`, or `stale_round`. Report the request as prepared, the
+answer as observed only when its journal event exists, the redispatch as
+observed only when its event exists, and execution and verification separately.
+
 ## Completion Verification
 
 After completion, verify the executor self-report against local git status/log,

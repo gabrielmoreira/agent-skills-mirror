@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `cp-yu/cc-switch-web` — 26 default patterns, 0 followed patterns, 13 file(s) materialized.
+Mirror of `cp-yu/cc-switch-web` — 26 default patterns, 0 followed patterns, 19 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `cp-yu/cc-switch-web` — 26 default patterns, 0 followed patterns, 13
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 13 |
+| Files         | 19 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -69,9 +69,15 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 8 | ✓ | [`.github/skills/openspec-bootstrap-opsx/SKILL.md`](.github/skills/openspec-bootstrap-opsx/SKILL.md) |
 | 9 | ✓ | [`.github/skills/openspec-explore/SKILL.md`](.github/skills/openspec-explore/SKILL.md) |
 | 10 | ✓ | [`.github/skills/openspec-propose/SKILL.md`](.github/skills/openspec-propose/SKILL.md) |
-| 11 | ✓ | [`skills/cc-switch-release/agents/openai.yaml`](skills/cc-switch-release/agents/openai.yaml) |
-| 12 | ✓ | [`skills/cc-switch-release/references/release-facts.md`](skills/cc-switch-release/references/release-facts.md) |
-| 13 | ✓ | [`skills/cc-switch-release/SKILL.md`](skills/cc-switch-release/SKILL.md) |
+| 11 | ✓ | [`.pi/skills/xirang-apply-change/SKILL.md`](.pi/skills/xirang-apply-change/SKILL.md) |
+| 12 | ✓ | [`.pi/skills/xirang-archive-change/SKILL.md`](.pi/skills/xirang-archive-change/SKILL.md) |
+| 13 | ✓ | [`.pi/skills/xirang-build/SKILL.md`](.pi/skills/xirang-build/SKILL.md) |
+| 14 | ✓ | [`.pi/skills/xirang-explore/SKILL.md`](.pi/skills/xirang-explore/SKILL.md) |
+| 15 | ✓ | [`.pi/skills/xirang-propose/SKILL.md`](.pi/skills/xirang-propose/SKILL.md) |
+| 16 | ✓ | [`.pi/skills/xirang-snack/SKILL.md`](.pi/skills/xirang-snack/SKILL.md) |
+| 17 | ✓ | [`skills/cc-switch-release/agents/openai.yaml`](skills/cc-switch-release/agents/openai.yaml) |
+| 18 | ✓ | [`skills/cc-switch-release/references/release-facts.md`](skills/cc-switch-release/references/release-facts.md) |
+| 19 | ✓ | [`skills/cc-switch-release/SKILL.md`](skills/cc-switch-release/SKILL.md) |
 
 ---
 

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `tong-io/tongflow` — 26 default patterns, 10 followed patterns, 12 file(s) materialized.
+Mirror of `tong-io/tongflow` — 26 default patterns, 11 followed patterns, 12 file(s) materialized.
 
 ## Metadata
 
@@ -17,7 +17,7 @@ Mirror of `tong-io/tongflow` — 26 default patterns, 10 followed patterns, 12 f
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 10 |
+| Followed pats | 11 |
 | Files         | 12 |
 
 ## Default Sparse Patterns  *(included from config)*
@@ -59,6 +59,7 @@ Mirror of `tong-io/tongflow` — 26 default patterns, 10 followed patterns, 12 f
 - `sdk/README.md`
 - `desktop/README.md`
 - `CHANGELOG.md`
+- `packages/tongflow/README.md`
 - `packages/dsh-tongflow/README.md`
 - `COMMERCIAL-LICENSE.md`
 
@@ -69,15 +70,15 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 2 | ✓ | [`packages/tongflow/README.md`](packages/tongflow/README.md) |
-| 3 | → | [`CHANGELOG.md`](CHANGELOG.md) |
-| 4 | → | [`CLA.md`](CLA.md) |
-| 5 | → | [`COMMERCIAL-LICENSE.md`](COMMERCIAL-LICENSE.md) |
-| 6 | → | [`desktop/README.md`](desktop/README.md) |
-| 7 | → | [`docs/plugins.md`](docs/plugins.md) |
-| 8 | → | [`docs/README_JA.md`](docs/README_JA.md) |
-| 9 | → | [`docs/README_ZH.md`](docs/README_ZH.md) |
-| 10 | → | [`packages/dsh-tongflow/README.md`](packages/dsh-tongflow/README.md) |
+| 2 | → | [`CHANGELOG.md`](CHANGELOG.md) |
+| 3 | → | [`CLA.md`](CLA.md) |
+| 4 | → | [`COMMERCIAL-LICENSE.md`](COMMERCIAL-LICENSE.md) |
+| 5 | → | [`desktop/README.md`](desktop/README.md) |
+| 6 | → | [`docs/plugins.md`](docs/plugins.md) |
+| 7 | → | [`docs/README_JA.md`](docs/README_JA.md) |
+| 8 | → | [`docs/README_ZH.md`](docs/README_ZH.md) |
+| 9 | → | [`packages/dsh-tongflow/README.md`](packages/dsh-tongflow/README.md) |
+| 10 | → | [`packages/tongflow/README.md`](packages/tongflow/README.md) |
 | 11 | → | [`README.md`](README.md) |
 | 12 | → | [`sdk/README.md`](sdk/README.md) |
 

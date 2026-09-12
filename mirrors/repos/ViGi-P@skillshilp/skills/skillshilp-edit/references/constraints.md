@@ -4,15 +4,40 @@ Use this document to validate updated Agent Skills.
 
 ## Directory
 
+A skill is a self-contained directory containing `SKILL.md` and, optionally, supporting resources.
+
 | Required | Optional |
 |----------|----------|
 | `SKILL.md` | `references/` |
 | | `scripts/` |
 | | `assets/` |
 
-Preserve the existing directory structure unless a structural change provides meaningful value.
+Preserve the existing skill directory structure unless a structural change provides meaningful value.
+
+The parent directory used to discover or install the skill is a separate concern and should not be treated as part of the skill's portable structure.
+
+`.agents/skills/` is a widely adopted project- and user-level convention for cross-client skill discovery, but it is not required by the Agent Skills specification. Clients may use other discovery directories.
+
+When `.agents/skills/` is used, the structure is:
+
+```text
+.agents/
+└── skills/
+    └── my-skill/
+        ├── SKILL.md
+        ├── references/
+        ├── scripts/
+        └── assets/
+```
+
+Here `my-skill/` is the skill directory. `.agents/skills/` is the discovery directory.
+
+Do not move an existing skill solely to change its discovery directory.
+
 Create optional directories only when they provide meaningful value.
+
 Do not introduce empty or placeholder directories.
+
 Do not add product-specific metadata directories, client configs, or product-specific helper scripts when portability is the goal.
 
 ---
