@@ -13,10 +13,13 @@ Architecture: [overview](gitbooks/developing/architecture.md),
 | Path | Purpose |
 | --- | --- |
 | `app/src/` | Vite and React frontend |
-| `app/src-tauri/` | Thin desktop host |
-| `src/core/` | Transport, dispatch, auth, and runtime composition |
-| `src/openhuman/` | Business domains |
-| `src/main.rs` | `openhuman-core` CLI |
+| `crates/openhuman-app/` | Thin desktop host |
+| `crates/openhuman-core/` | Business domains, transport, dispatch, auth, RPC, and runtime composition |
+| `crates/openhuman-embed/` | Typed library facade for embedding the core in another product |
+| `crates/openhuman-rpc/` | Shared RPC contracts, response decoding, and HTTP client used by app and TUI |
+| `crates/openhuman-tui/` | Standalone terminal frontend |
+| `crates/openhuman-core/src/` | Business domains, server dispatch, and runtime composition |
+| `crates/openhuman-core/src/main.rs` | `openhuman-core` CLI |
 | `tests/` | Rust integration and JSON-RPC tests |
 | `gitbooks/` | Public product and contributor documentation |
 | `docs/` | Internal maintainer documentation |
@@ -35,7 +38,7 @@ workspace.
 - The frontend and Tauri shell present or orchestrate core behavior. Do not
   duplicate core policy in TypeScript or shell code.
 - The desktop core runs as a tokio task managed by
-  `app/src-tauri/src/core_process.rs`. Frontend RPC uses the per-launch bearer
+  `crates/openhuman-app/src/core_process.rs`. Frontend RPC uses the per-launch bearer
   returned through the `core_rpc_token` command.
 - `OPENHUMAN_CORE_REUSE_EXISTING=1` connects the shell to an external core for
   debugging.
@@ -57,7 +60,7 @@ pnpm test:rust
 
 cargo check --manifest-path Cargo.toml
 cargo build --manifest-path Cargo.toml --bin openhuman-core
-cargo check --manifest-path app/src-tauri/Cargo.toml
+cargo check --manifest-path crates/openhuman-app/Cargo.toml
 
 # Standard root-crate validation
 cargo check --manifest-path Cargo.toml
@@ -78,7 +81,7 @@ Long CI build or test commands must run through
 already configures shared build output where appropriate.
 
 Keep matching profile settings synchronized between `Cargo.toml` and
-`app/src-tauri/Cargo.toml`:
+`crates/openhuman-app/Cargo.toml`:
 
 - Development dependencies use `debug = false`.
 - Release builds use thin LTO, one codegen unit, symbol stripping, and
@@ -115,7 +118,7 @@ Shared mock backend:
 - Frontend environment access is centralized in `app/src/utils/config.ts`.
   Do not read `import.meta.env` elsewhere.
 - Rust configuration is defined under
-  `src/openhuman/config/schema/` and loaded through its config operations.
+  `crates/openhuman-core/src/config/schema/` and loaded through its config operations.
 
 The autonomy policy is security-sensitive:
 
@@ -147,7 +150,7 @@ generated documentation blocks.
   `fetchCoreAppSnapshot()`.
 - Routes are defined in `AppRoutes.tsx`. Check that file before adding links
   or redirects.
-- Bundled agent prompts live under `src/openhuman/agent/prompts/`, not in the
+- Bundled agent prompts live under `crates/openhuman-core/src/agent/prompts/`, not in the
   frontend.
 
 Analytics:
@@ -171,8 +174,8 @@ UI rules:
 
 ## Tauri shell
 
-Keep `app/src-tauri/` thin. The authoritative IPC list is the
-`generate_handler!` call in `app/src-tauri/src/lib.rs`.
+Keep `crates/openhuman-app/` thin. The authoritative IPC list is the
+`generate_handler!` call in `crates/openhuman-app/src/lib.rs`.
 
 Do not add JavaScript injection to child webviews. New behavior belongs in
 Rust-side IPC hooks. Audit new Tauri plugins for `js_init_script`.
@@ -182,8 +185,9 @@ iMessage scanner remains separate because it reads `chat.db` directly.
 
 ## Rust domain structure
 
-Business logic belongs under `src/openhuman/<domain>/`. Do not add flat
-`src/openhuman/*.rs` domain files or business logic to `src/core/`.
+Business logic belongs under `crates/openhuman-core/src/<domain>/`. Do not add flat
+`crates/openhuman-core/src/*.rs` domain files or business logic to
+`crates/openhuman-core/src/core/`.
 
 Preferred module shape:
 
@@ -200,16 +204,16 @@ Preferred module shape:
 
 Additional rules:
 
-- Wire controllers through the registry in `src/core/all.rs`. Do not add
+- Wire controllers through the registry in `crates/openhuman-core/src/core/all.rs`. Do not add
   namespace branches to `cli.rs` or `jsonrpc.rs`.
 - RPC namespace strings are wire contracts and do not follow directory
   renames.
 - Domain tools live with their domain and are re-exported through
-  `src/openhuman/tools/mod.rs`. Keep only cross-cutting tools in
+  `crates/openhuman-core/src/tools/mod.rs`. Keep only cross-cutting tools in
   `tools/impl/`.
 - Stable memory collection scope belongs in `metadata.path_scope`; item IDs
   are deduplication keys.
-- Update `src/openhuman/platform/about_app/` when user-visible capabilities
+- Update `crates/openhuman-core/src/platform/about_app/` when user-visible capabilities
   change.
 
 ## Tool, harness, and runtime boundaries
@@ -222,7 +226,7 @@ progress events.
 - Use the `tinytools` copy vendored through `vendor/tinyagents/`; a second path
   creates incompatible Rust types.
 - Keep conversions mechanical. Policy decisions belong in OpenHuman.
-- `openhuman_core::Harness` is the public prompt-to-reply API. Calls go through
+- `openhuman_embed::Harness` is the public prompt-to-reply API. Calls go through
   `CoreRuntime::invoke`, not directly to domain operations.
 - Set `config_path` with `workspace_dir`, and set a turn origin with its access
   tier. `Access::full()` configures both access fields.
@@ -236,7 +240,7 @@ narrow capabilities.
 Cargo default features define the contributor build;
 `scripts/ci/product-features.txt` defines the shipped product. The Tauri shell
 disables default features, so product gates must be forwarded explicitly in
-`app/src-tauri/Cargo.toml` and checked by
+`crates/openhuman-app/Cargo.toml` and checked by
 `scripts/ci/check-feature-forwarding.mjs`. Test both enabled and disabled
 builds after changing a gate. Use `scripts/assert-shed.sh` or
 `scripts/dep-sim.py` before claiming a dependency reduction.
@@ -311,7 +315,7 @@ auditing hand-built backend requests.
 
 ## Event bus
 
-`src/core/bus.rs` owns the process-wide `BUS` singleton. Use `BUS.publish` and
+`crates/openhuman-core/src/core/bus.rs` owns the process-wide `BUS` singleton. Use `BUS.publish` and
 `BUS.subscribe` for domain events. Use `BUS.native()` for typed, in-process
 request and response calls that carry values which cannot cross a serialized
 transport.
@@ -324,7 +328,7 @@ When adding an event:
 1. Add it to `DomainEvent`.
 2. Extend the `domain()` match.
 3. Register its subscriber at startup.
-4. Bump `EVENTS_VERSION` in `src/core/bus.rs`.
+4. Bump `EVENTS_VERSION` in `crates/openhuman-core/src/core/bus.rs`.
 
 Native request and response types must be `Send + 'static` and do not need
 serialization.

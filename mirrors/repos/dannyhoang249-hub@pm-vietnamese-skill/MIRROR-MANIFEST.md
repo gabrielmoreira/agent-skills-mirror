@@ -62,15 +62,15 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`agents/openai.yaml`](agents/openai.yaml) |
 | 2 | ✓ | [`SKILL.md`](SKILL.md) |
-| 3 | ✓ | [`skills/pm-bilingual-copilot/agents/openai.yaml`](skills/pm-bilingual-copilot/agents/openai.yaml) |
-| 4 | ✓ | [`skills/pm-bilingual-copilot/references/templates-bilingual.md`](skills/pm-bilingual-copilot/references/templates-bilingual.md) |
-| 5 | ✓ | [`skills/pm-bilingual-copilot/SKILL.md`](skills/pm-bilingual-copilot/SKILL.md) |
+| 3 | ✓ | [`skills/pm-bilingual/agents/openai.yaml`](skills/pm-bilingual/agents/openai.yaml) |
+| 4 | ✓ | [`skills/pm-bilingual/references/templates-bilingual.md`](skills/pm-bilingual/references/templates-bilingual.md) |
+| 5 | ✓ | [`skills/pm-bilingual/SKILL.md`](skills/pm-bilingual/SKILL.md) |
 | 6 | ✓ | [`skills/pm-karpathy-thinking/agents/openai.yaml`](skills/pm-karpathy-thinking/agents/openai.yaml) |
 | 7 | ✓ | [`skills/pm-karpathy-thinking/SKILL.md`](skills/pm-karpathy-thinking/SKILL.md) |
-| 8 | ✓ | [`skills/pm-vietnamese-copilot/agents/openai.yaml`](skills/pm-vietnamese-copilot/agents/openai.yaml) |
-| 9 | ✓ | [`skills/pm-vietnamese-copilot/references/templates-bilingual.md`](skills/pm-vietnamese-copilot/references/templates-bilingual.md) |
-| 10 | ✓ | [`skills/pm-vietnamese-copilot/references/templates-vi.md`](skills/pm-vietnamese-copilot/references/templates-vi.md) |
-| 11 | ✓ | [`skills/pm-vietnamese-copilot/SKILL.md`](skills/pm-vietnamese-copilot/SKILL.md) |
+| 8 | ✓ | [`skills/pm-vietnamese/agents/openai.yaml`](skills/pm-vietnamese/agents/openai.yaml) |
+| 9 | ✓ | [`skills/pm-vietnamese/references/templates-bilingual.md`](skills/pm-vietnamese/references/templates-bilingual.md) |
+| 10 | ✓ | [`skills/pm-vietnamese/references/templates-vi.md`](skills/pm-vietnamese/references/templates-vi.md) |
+| 11 | ✓ | [`skills/pm-vietnamese/SKILL.md`](skills/pm-vietnamese/SKILL.md) |
 | 12 | → | [`references/templates-bilingual.md`](references/templates-bilingual.md) |
 | 13 | → | [`references/templates-vi.md`](references/templates-vi.md) |
 

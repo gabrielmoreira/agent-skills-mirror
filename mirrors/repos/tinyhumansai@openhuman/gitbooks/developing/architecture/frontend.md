@@ -57,8 +57,8 @@ OpenHuman’s desktop UI is a **React 19** app (`app/src/`) that:
 
 - Uses **Redux Toolkit** with persistence for session-related state
 - Connects to the backend with **REST** (`apiClient`) and to the local core with **Socket.io** (`socketService` → core socket endpoint)
-- Calls the **Rust core** (embedded in the Tauri host as a tokio task) over HTTP via **`coreRpcClient`** (JSON-RPC methods implemented in repo root `src/openhuman/`); non-loopback plain-http runtimes are relayed through the Tauri **`relay_http_rpc`** command
-- Leaves **AI prompts** to the core: bundled `src/openhuman/agent/prompts` (repo root) ship as Tauri resources and are read core-side, not by the frontend
+- Calls the **Rust core** (embedded in the Tauri host as a tokio task) over HTTP via **`coreRpcClient`** (JSON-RPC methods implemented in repo root `crates/openhuman-core/src/`); non-loopback plain-http runtimes are relayed through the Tauri **`relay_http_rpc`** command
+- Leaves **AI prompts** to the core: bundled `crates/openhuman-core/src/agent/prompts` (repo root) ship as Tauri resources and are read core-side, not by the frontend
 - Uses a **minimal MCP-style** helper layer under `lib/mcp/` (transport, validation)
 
 ### Entry points
@@ -279,7 +279,7 @@ How a call flows:
 
 1. **URL + token resolution** — the RPC URL follows the precedence in [Runtime config precedence](frontend.md#runtime-config-precedence); the per-launch bearer token comes from the Tauri `core_rpc_token` command (or the stored token for self-hosted cores).
 2. **Direct fetch** — the webview `fetch()`es the JSON-RPC envelope straight to the core (loopback http or any https URL).
-3. **Shell relay fallback** — plain `http://` to a **non-loopback** host is active mixed content and Chromium blocks it (#3865). `rpcUrlNeedsShellRelay()` detects this and routes the call through `invoke('relay_http_rpc', { url, token, body })`, implemented in **`app/src-tauri/src/core_rpc.rs`**, which returns `{ status, body }` re-wrapped as a `Response`.
+3. **Shell relay fallback** — plain `http://` to a **non-loopback** host is active mixed content and Chromium blocks it (#3865). `rpcUrlNeedsShellRelay()` detects this and routes the call through `invoke('relay_http_rpc', { url, token, body })`, implemented in **`crates/openhuman-app/src/core_rpc.rs`**, which returns `{ status, body }` re-wrapped as a `Response`.
 4. **Transport override** — iOS/remote connection profiles install a `CoreTransport` (`setActiveCoreTransport`) so the same `callCoreRpc` surface rides LAN/tunnel/cloud transports.
 
 Errors are classified into a stable `CoreRpcError.kind` (`auth_expired`, `transport`, `timeout`, `rate_limited`, …) — callers branch on `kind`, never on message regexes. An `auth_expired` classification broadcasts `core-rpc-auth-expired`, which `CoreStateProvider` turns into a session clear.

@@ -1,0 +1,237 @@
+# Progressive Web App (PWA)
+
+HAPI's web interface is a fully-featured PWA that can be installed on your phone for a native app-like experience.
+
+This page covers browser installation. For the SwiftUI/UIKit and Kotlin
+Compose clients, see [Native apps (iOS / Android)](./native-apps.md).
+
+## What is PWA?
+
+A Progressive Web App (PWA) is a web application that can be installed on your device and works like a native app:
+
+- **Home screen icon** - Launch HAPI like any other app
+- **Full screen mode** - No browser chrome, immersive experience
+- **Offline support** - Basic functionality works without internet
+- **Auto-updates** - Always get the latest version
+
+## Installing HAPI PWA
+
+### Android (Chrome/Edge)
+
+1. Open HAPI in Chrome or Edge browser
+2. Look for the **"Install HAPI"** banner at the bottom
+3. Tap **"Install"**
+4. HAPI appears on your home screen
+
+::: tip
+If you don't see the install banner, tap the three-dot menu and select **"Add to Home screen"** or **"Install app"**.
+:::
+
+### iOS (Safari)
+
+1. Open HAPI in Safari browser
+2. Tap the **Share** button (square with arrow)
+3. Scroll down and tap **"Add to Home Screen"**
+4. Tap **"Add"** in the top right corner
+
+::: warning
+iOS requires Safari for PWA installation. Chrome/Firefox on iOS don't support the "Add to Home Screen" feature.
+:::
+
+### Desktop (Chrome/Edge)
+
+1. Open HAPI in your browser
+2. Click the install icon in the address bar (⊕)
+3. Or use the menu: **"Install HAPI..."**
+4. HAPI opens as a standalone window
+
+## PWA Features
+
+### Offline Mode
+
+When offline, HAPI can:
+
+- Display cached session lists
+- Show previously loaded messages
+
+HAPI does not queue actions taken while offline — an offline banner appears at the top when you lose connection, and live features resume once you're back online.
+
+### Auto-Update
+
+HAPI checks for updates in the background and lets you choose when to reload:
+
+- Updates are checked hourly and when you return to the tab
+- When a new version is available, a persistent in-app banner appears at the top
+- Tap **Reload** when you're ready to apply the update — the banner stays until you do
+- Expand **"Why can't I dismiss this?"** on the banner for the rationale
+
+HAPI uses a user-controlled reload instead of forcing an automatic refresh, so you choose when to reload. The banner cannot be dismissed without upgrading, so you won't forget you're on an old build.
+
+### Share Target (Android)
+
+On Android, HAPI appears in the system share sheet. When you share content to HAPI:
+
+1. Chrome sends a `POST /share` multipart form (title, text, URL, and files) to the app
+2. The service worker intercepts the request and stores the payload in IndexedDB
+3. The app is then redirected (303) to the share picker, which reads the stored content
+
+This lets you share images, PDFs, text, and other files directly into a session from any app.
+
+### Native / deep-link ingest
+
+Companions that cannot use Web Share Target (for example a native app on a headset share sheet) can open the same picker with a fragment deep link:
+
+```
+{hapiOrigin}/share#url=…&text=…&title=…
+```
+
+- Fragment params: `url`, `text`, `title` (all optional; omit empty). Optional companion file hand-off: `fileUrl`, `fileName`, `fileType` — the page fetches `fileUrl` (CORS) into the same IndexedDB `files[]` as Web Share Target (capped at the same 50 MiB upload limit). The fragment is **not** sent on the HTTP request, so shared content does not appear in hub access logs.
+- When any are present and query `id` is absent, the web app synthesizes the same IndexedDB transfer used by the POST path, scrubs the fragment, then continues with the session picker / create-new flow (`?id=`).
+- When query `id` is present (Web Share Target redirect), that path wins; fragment content is ignored for ingest.
+- Deep links cannot embed binaries in the fragment; a companion may hand off one file with `fileUrl`. Use Web Share Target POST for direct or multi-file payloads.
+
+See [Web Share Target](https://developer.chrome.com/docs/capabilities/web-apis/web-share-target) for the POST vs GET distinction.
+
+## Caching Strategy
+
+HAPI uses intelligent caching:
+
+| Content | Strategy | Duration |
+|---------|----------|----------|
+| App shell | Cache first | Until update |
+| Sessions API | Network first | 5 minutes |
+| Machines API | Network first | 10 minutes |
+| Session detail API | Network first | 5 minutes |
+| CDN (cdn.socket.io) | Cache first | 30 days |
+| CDN (telegram.org) | Cache first | 7 days |
+| Static assets | Cache first | Forever |
+
+## Notifications
+
+HAPI supports push notifications to alert you when agents need attention.
+
+### Enable Notifications
+
+1. Open HAPI - a permission popup appears automatically
+2. Tap **Allow** to enable notifications
+3. If you missed the popup, go to system settings to grant permission
+
+### Notification Types
+
+| Type | When Sent |
+|------|-----------|
+| Permission Request | Agent needs your approval |
+| Ready | Agent finished and awaits input |
+| Task completed / Task failed | A background task finishes (success or failure) |
+
+### Native app notifications
+
+The [native Android and iOS apps](./native-apps.md#notifications) use FCM and
+APNs. Official builds use encrypted push relay delivery by default; private
+builds need matching provider configuration. If a native provider accepts a
+notification for any device in your namespace, the hub skips the Web Push
+duplicate for that dispatch. Missing registrations or failed sends retain the
+Web Push fallback. Provider acceptance is not a handset receipt. See
+[Native app notifications](./notifications.md#native-app-notifications).
+
+::: tip
+If push notifications don't work in your region (e.g., FCM unavailable), use [Telegram integration](./notifications.md#telegram-setup) instead.
+:::
+
+### Windows taskbar badge
+
+When HAPI is installed as a PWA from Microsoft Edge or Chrome on Windows, users can show the number of sessions with activity newer than the local last-seen watermark on its taskbar icon. The setting is disabled by default because some Edge/Windows configurations render the same host badge as overlapping layers, with one layer offset and clipped by the taskbar. Use Settings > Display > Session list > Taskbar unread badge to opt in or out for this PWA. The badge is updated while the PWA has a current session snapshot; it is not shown for a normal browser tab, and the read state remains local to that browser/PWA profile.
+
+## Managing Your PWA
+
+### Check Install Status
+
+HAPI shows different UI based on install status:
+
+- **Not installed** - Shows install prompt
+- **Installing** - Shows progress indicator
+- **Installed** - No prompt shown
+
+### Uninstalling
+
+**Android:**
+1. Long-press the HAPI icon
+2. Drag to "Uninstall" or tap the X
+
+**iOS:**
+1. Long-press the HAPI icon
+2. Tap "Remove App" → "Delete App"
+
+**Desktop:**
+1. Open HAPI
+2. Click the three-dot menu
+3. Select "Uninstall HAPI"
+
+### Clearing Cache
+
+If you experience issues:
+
+1. Open HAPI in browser (not installed version)
+2. Open Developer Tools (F12)
+3. Go to Application → Storage
+4. Click "Clear site data"
+
+## Best Practices
+
+### Battery Optimization
+
+On Android, disable battery optimization for HAPI to ensure notifications arrive promptly.
+
+Settings → Apps → HAPI → Battery → Unrestricted
+
+### Data Usage
+
+HAPI uses minimal data:
+
+- Initial load: ~500KB
+- Cached after first load
+- Only syncs changed data
+
+### Multiple Devices
+
+You can install HAPI on multiple devices:
+
+- All devices use the same server
+- Sessions sync across devices
+- Same access token works everywhere
+
+## Troubleshooting
+
+### Install Button Not Showing
+
+- Ensure you're using HTTPS (required for PWA)
+- Try refreshing the page
+- Check if already installed
+
+### App Not Updating
+
+1. Close the app completely
+2. Reopen and wait for update prompt
+3. If stuck, clear cache and reinstall
+
+### Offline Mode Not Working
+
+- Ensure you've loaded the app at least once online
+- Check if ServiceWorker is registered (DevTools → Application)
+- Clear cache and reload
+
+### iOS-Specific Issues
+
+- Must use Safari for installation
+- Limited offline capabilities
+
+## Telegram Mini App Alternative
+
+If PWA doesn't suit your needs, consider the Telegram Mini App:
+
+- Works inside Telegram
+- No separate installation
+- Same features as PWA
+- Integrated notifications
+
+See [Notifications](./notifications.md#telegram-setup) for Telegram setup.

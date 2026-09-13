@@ -112,7 +112,7 @@ Direction lock loads `references/design-reference.md` for the full rewrites, typ
 | What happened | Rule |
 |---|---|
 | Relied on `…` truncation to fit text in a fixed-width slot | Guarantee fit instead: compact the format, cap to whole segments, or hard-trim with no glyph. Metric and label footers must never tail-truncate into an ellipsis. |
-| One extra word pushed a line into a wrap; the last line held a single orphan word | Tighten the copy, never shrink type; one instance found means every user-visible text block gets swept and every instance fixed. |
+| One extra word pushed a line into a wrap; the last line held a single orphan word | Inspect the container and forced breaks first; tighten repetition without losing meaning, never shrink type for a widow. Sweep sibling blocks for the same layout cause, not every short last line. |
 | Five text styles inside one small card | One text style per role inside a card, hierarchy by order; more than three distinct text styles in a small block is the smell. |
 
 ## Output: Aesthetic Review
@@ -129,7 +129,7 @@ Run these checks before the handoff summary:
 - Would the design still feel premium if all decorative shadows were removed?
 - AI Slop Test: would a stranger glancing at the first viewport say "an AI made this"? Scan it for the Absolute Bans and Common Traps in `references/design-reference.md` (reflex font, default gradient, centered hero with two CTAs side by side, three identical cards, generic top nav) and fix typography, color, or layout until any that were not an explicit part of the direction are gone.
 
-If any check fails, fix first. Render at full width and at 375px yourself (Responsive & Screen Verification in `references/design-reference.md`); if the layout breaks at mobile width, fix before handing off. Only when the host cannot render, say so and hand the user the exact view to check.
+If any check fails, fix first. Render the product's supported viewport or window range yourself: web breakpoints on both sides, and native minimum width, minimum height, their combination, and normal size. Test samples do not require new layout branches. Only when the host cannot render, say so and hand the user the exact view to check.
 
 End with:
 - Aesthetic direction, named and justified in 2-3 sentences

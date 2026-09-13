@@ -409,6 +409,20 @@ in this preamble, since the fallback differs per helper.
   trust explicitly while collaborator-permission trust stays opt-in
   (the `IDD_TRUST_COLLABORATOR_MARKERS` environment variable or the
   `trustCollaboratorMarkers` config field)
+- `scripts/sweep-authoring-markers.mjs` (#2935) for the fetch-driven
+  hide-on-supersede sweep the issue-authoring contract's Stage 2 release
+  flow depends on: given one or more `--issue` targets, it fetches each
+  issue's comments via GraphQL (selecting `isMinimized`, which REST
+  never carries), classifies every comment with
+  `matchCanonicalAuthoringMarkerFamily`, keeps only the newest
+  trusted-actor match per `authoring-owner`/`authoring-publication-intent`
+  family, and minimizes every other eligible candidate in one mutation
+  pass via `minimize-superseded-markers.mjs`'s own `runMinimize` —
+  replacing the ~8-step manual paginate/classify/filter procedure the
+  contract previously described in prose at three separate points. Same
+  mandatory trusted-author gate as `minimize-superseded-markers` (no
+  `--allow-untrusted` escape hatch: this sweep's own "newest"
+  determination depends on the trust filter)
 - `scripts/review-disposition-verify.mjs` for read-only E7 disposition
   marker presence verification across PATH A and PATH B items
 - `scripts/disposition-non-review-notices.mjs` for dry-run/apply
@@ -1426,8 +1440,16 @@ unconditional match against them left the mechanism both non-functional
 for adopters and gameable via a PR touching a path that does not exist in
 their own checkout at all. `idd-advisory-convergence.yml` detects this
 from a
-separate job with `issues: write` as its only write permission (the
-verdict job stays read-only; it additionally gains `actions: read`,
+separate job with `issues: write` and `pull-requests: write` as its
+write permissions (kurone-kito/idd-skill#2951: a live A/B test proved
+`pull-requests: write` is the fix -- with only `pull-requests: read`,
+the posting call 403s; adding `pull-requests: write` alone resolves it.
+That test held `issues: write` constant throughout, so it proves the
+posting call needs `pull-requests: write`, but proves nothing about
+whether `issues: write` is also required -- it is retained unchanged
+because narrowing it was never tested, not because it was proven
+necessary; the verdict job stays read-only; it
+additionally gains `actions: read`,
 required for the run-id trust verification's own
 `GET /repos/{owner}/{repo}/actions/runs/{run-id}` call in a private
 repository) and posts a marker as `github-actions[bot]` via
@@ -2006,19 +2028,32 @@ close.
   well-formed, and its holder matches (`agentId`, `claimId`) →
   re-acquired without writing — this call's own first read found the
   lock already there, mirroring the helper's `reacquired: true` with no
-  `racedCreate`. Absent → create it with an exclusive file-create API
-  (`open(..., O_CREAT|O_EXCL)` on POSIX, or the PowerShell
-  `FileMode.CreateNew` equivalent), writing the same JSON holder shape
-  (`agentId`, `claimId`, `acquiredAt`). If that create then fails
-  because the path now exists (`EEXIST`), a concurrent same-claim-id
-  writer landed between the read and the create; re-read to confirm the
-  holder matches, but treat this outcome as a race, not as evidence the
-  lock predates this call — never equal it to a lock this same read
-  already found present (the helper's `racedCreate: true`, #2917
-  review, Codex). A path that already exists with a non-matching,
-  missing, malformed, or unreadable holder is a collision either way.
-  Never delete or override a different holder — enable a helper runtime
-  for an authorized takeover instead. Both profiles share the
+  `racedCreate`. Absent → write the same JSON holder shape (`agentId`,
+  `claimId`, `acquiredAt`) to a same-directory temporary file with a
+  unique name (for example `idd-claim.lock.tmp-<pid>-<random>`); once
+  that temp file is fully written and closed, publish it into the
+  final `idd-claim.lock` path atomically: on POSIX, `link()` the temp
+  file into `idd-claim.lock` and then `unlink()` the temp file (never
+  `rename()`, which would silently replace an existing destination
+  instead of failing); on Windows/PowerShell, a no-overwrite move of
+  the fully-written temp file into the final path (for example
+  `[System.IO.File]::Move`, which throws when the destination already
+  exists). This mirrors `createLockFileExclusively` in
+  `src/scripts/claim-lock.mts`. Never create the final
+  `idd-claim.lock` path directly and write into it as two separate
+  steps — a concurrent same-claim-id reader could then observe a torn
+  or empty body at that path and misreport a collision (#2920). If the
+  publish step then fails because the final path now
+  exists (`EEXIST` on POSIX, or the platform-equivalent
+  already-exists failure on Windows), remove your own temporary file
+  and re-read the final path to confirm the holder matches, but treat
+  this outcome as a race, not as evidence the lock predates this call —
+  never equal it to a lock this same read already found present (the
+  helper's `racedCreate: true`, #2917 review, Codex). A path that
+  already exists with a non-matching, missing, malformed, or
+  unreadable holder is a collision either way. Never delete or
+  override a different holder — enable a helper runtime for an
+  authorized takeover instead. Both profiles share the
   `idd-claim.lock` namespace, so a helper-runtime session and an
   instructions-only session see the same lock.
 
@@ -2172,7 +2207,15 @@ close.
   worktree exists) is not cleaned up by that removal — an accepted
   residual, since giving this record cross-worktree, pre-acquisition
   visibility is explicitly out of scope (see the lock file's own
-  cross-worktree-visibility note above).
+  cross-worktree-visibility note above). This is a deliberate choice,
+  not an oversight: the file is a few hundred bytes, untracked (never
+  shown by `git status`), and has no working-tree impact, so leaving it
+  in place is cheaper than adding narrowly-scoped cleanup machinery for
+  it. See issue `kurone-kito/idd-skill#2944` for the full reasoning
+  record and the cleanup-vs-document-intent tradeoff it considered —
+  qualified with the owner/repo here since this file is distributed
+  via `idd-template/`, where a bare `#2944` would resolve against
+  whichever repository copied it in.
 - **`instructions-only` helper-free fallback, write side** (no helper
   runtime available — `instructions-only` is the distributed default
   profile, see
@@ -2295,11 +2338,12 @@ close.
   the lock section above and parse it the same way `--check` does --
   but only when your own _first read_ in the acquire step above already
   found the lock present and matching, never when it was absent there
-  and your own exclusive-create then failed `EEXIST`. That failure means
-  a concurrent same-claim-id writer landed between your read and your
-  create -- a race, not evidence the lock predates this gate pass; the
-  helper's own `racedCreate: true` marks exactly this case (#2917
-  review, Codex). Only when it parses as well-formed and its `claimId`
+  and your own publish-into-place attempt then failed because the final
+  path already existed. That failure means a concurrent same-claim-id
+  writer landed between your read and your publish -- a race, not
+  evidence the lock predates this gate pass; the helper's own
+  `racedCreate: true` marks exactly this case (#2917 review, Codex).
+  Only when it parses as well-formed and its `claimId`
   field equals the active `{claim-id}` exactly, apply the write-side
   fallback above -- write-lock coordination included, wrapped around
   this whole read-then-write, not just the write -- using the lock's

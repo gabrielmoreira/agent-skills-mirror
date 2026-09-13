@@ -42,7 +42,7 @@ This project adheres to the [Contributor Covenant Code of Conduct](CODE_OF_CONDU
 | CMake | Current stable | Required by native Rust dependencies such as Whisper bindings. |
 | Ninja | Current stable | Required on macOS and Windows to build the bundled CEF helper. CMake delegates the actual compile to Ninja; without it the `cef-dll-sys` build script aborts. |
 | ripgrep (`rg`) | Current stable | Used by the `lint:commands-tokens` pre-push step (scans `app/src/components/commands/`). Without it, `git push` fails the hook with `rg: command not found`. |
-| Tauri vendored sources | Git submodules under `app/src-tauri/vendor/` | Required for the CEF-aware Tauri CLI and notification plugin patches. |
+| Tauri vendored sources | Git submodules under `crates/openhuman-app/vendor/` | Required for the CEF-aware Tauri CLI and notification plugin patches. |
 | macOS tools | Xcode Command Line Tools | Needed for local desktop builds on macOS. |
 | Linux desktop packages | System GTK/WebKit/AppIndicator build deps | Install the package set Tauri requires for your distro before attempting desktop builds. |
 
@@ -150,8 +150,8 @@ pnpm install
 
 Why submodules matter here:
 
-- `app/src-tauri/vendor/tauri-cef`
-- `app/src-tauri/vendor/tauri-plugin-notification`
+- `crates/openhuman-app/vendor/tauri-cef`
+- `crates/openhuman-app/vendor/tauri-plugin-notification`
 
 Those vendored trees are part of the current desktop toolchain. If they are missing, desktop builds and Tauri CLI setup will fail.
 
@@ -240,7 +240,7 @@ pnpm typecheck
 pnpm lint
 pnpm format:check
 cargo check --manifest-path Cargo.toml
-cargo check --manifest-path app/src-tauri/Cargo.toml
+cargo check --manifest-path crates/openhuman-app/Cargo.toml
 ```
 
 If you only changed docs in a normal local workflow, `pnpm format:check` is usually the only validation you need. AI-authored or remote-agent PRs must still fill in the AI Authored PR Metadata section of the PR template and report any blocked commands with the exact command and error.

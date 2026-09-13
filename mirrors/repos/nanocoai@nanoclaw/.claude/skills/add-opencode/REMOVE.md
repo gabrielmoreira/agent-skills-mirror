@@ -14,10 +14,14 @@ This unregisters the provider from both `listProviderContainerConfigNames()` (ho
 
 ## 2. Delete the copied files (both trees)
 
+`src/opencode-dockerfile.test.ts` is the guard the skill installed before the
+`cli-tools.json` migration; it is listed so removal also cleans older installs.
+
 ```bash
 rm -f src/providers/opencode.ts \
       src/providers/opencode-registration.test.ts \
       src/opencode-cli-tools.test.ts \
+      src/opencode-dockerfile.test.ts \
       container/agent-runner/src/providers/opencode.ts \
       container/agent-runner/src/providers/mcp-to-opencode.ts \
       container/agent-runner/src/providers/mcp-to-opencode.test.ts \

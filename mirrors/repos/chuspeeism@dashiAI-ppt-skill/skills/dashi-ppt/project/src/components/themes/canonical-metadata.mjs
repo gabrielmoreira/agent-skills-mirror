@@ -8,23 +8,13 @@ import {
   clampDefaultCountProps,
   serializeValue,
 } from '../../prop-contract-core.mjs';
-import { overrides as theme02Overrides } from './theme02/overrides.js';
-import { overrides as theme03Overrides } from './theme03/overrides.js';
-import { overrides as theme04Overrides } from './theme04/overrides.js';
-
-const THEME_OVERRIDES = {
-  theme02: theme02Overrides,
-  theme03: theme03Overrides,
-  theme04: theme04Overrides,
-};
-
 const REMOVED_CONTROL_TYPES = new Set(['text', 'string', 'input', 'url', 'email', 'textarea', 'multiline']);
 
-export function canonicalizeThemePageRuntime(page) {
-  const canonicalPage = applyThemePageDefaults(page);
+export function canonicalizeThemePageRuntime(page, override) {
+  const canonicalPage = applyThemePageDefaults(page, override);
   const serializedDefaults = serializeDefaults(canonicalPage.defaultProps);
   const serializedControls = normalizePageControls(canonicalPage, serializedDefaults);
-  const controls = normalizeControls(serializedControls, serializedDefaults, canonicalPage);
+  const controls = normalizeControls(serializedControls, serializedDefaults, canonicalPage, override);
   const defaults = clampDefaultCountProps(serializedDefaults, controls);
   return {
     page: canonicalPage,
@@ -33,8 +23,7 @@ export function canonicalizeThemePageRuntime(page) {
   };
 }
 
-function applyThemePageDefaults(page) {
-  const override = THEME_OVERRIDES[page.themeKey];
+function applyThemePageDefaults(page, override) {
   if (!override) return page;
   let next = page;
   if (override.removeControlTypes) {
@@ -62,7 +51,7 @@ function applyThemePageDefaults(page) {
   return next;
 }
 
-function normalizeControls(controls, defaults, page) {
+function normalizeControls(controls, defaults, page, override) {
   return clampCountControlLimits(normalizePublicControls((controls || [])
     .map(control => {
       const key = control.key || control.prop;
@@ -95,7 +84,7 @@ function normalizeControls(controls, defaults, page) {
         desc: serializeValue(control.desc || control.description || control.describe),
       };
       const sourceType = String(control.type || '').toLowerCase();
-      if (!explicitDisplay && type === 'select' && (sourceType === 'color' || sourceType === 'palette' || isThemeSwatchControl(page, key))) {
+      if (!explicitDisplay && type === 'select' && (sourceType === 'color' || sourceType === 'palette' || (override?.swatchKeys || []).includes(key))) {
         next.display = 'color';
       }
       const optionCount = Array.isArray(options) ? options.length : 0;
@@ -105,10 +94,6 @@ function normalizeControls(controls, defaults, page) {
       return next;
     })
     .filter(Boolean), { layout: page?.key, themeKey: page?.themeKey }), serializeDefaults(defaults));
-}
-
-function isThemeSwatchControl(page, key) {
-  return (THEME_OVERRIDES[page?.themeKey]?.swatchKeys || []).includes(key);
 }
 
 function normalizeType(type) {

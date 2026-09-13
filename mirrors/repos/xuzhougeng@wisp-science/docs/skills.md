@@ -59,7 +59,11 @@ a spinner and “Previewing…” until completion or cancellation. Escape cance
 keeping the store open. The indicator respects the system's reduced-motion setting.
 An accepted installation completes before its confirmation can be dismissed.
 
-On success the current project's index refreshes without restarting Wisp;
+On success the preview shows an installed status, and the source results mark
+the package as installed. Repeat installation stays disabled without reporting
+a name conflict for the successful operation. Actual name collisions still
+show the existing source/path and block installation.
+The current project's index refreshes without restarting Wisp;
 existing disabled Skills and tag overrides are preserved. Application updates
 and changes to the remote directory do not update or remove user packages.
 See the authoring guide for download/preview limits, upgrade ownership boundaries,

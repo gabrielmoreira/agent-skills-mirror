@@ -32,7 +32,7 @@ This is a Hermes-native `loop` workflow skill.
 Good example:
 
 - Prompt: ./loop make OMH a credible Hermes workflow pack with install, docs, QA, and feedback cycles.
-- Expected behavior: Start a permission-scoped loop, maintain loop_cycle/v1 state, choose the next concrete task, and keep external outcomes as waiting states.
+- Expected behavior: Start a permission-scoped loop, maintain loop_cycle/v2 selected-driver state, choose the next concrete task, and keep external outcomes as waiting states.
 - Why: The request is long-horizon and needs repeated discovery, verification, feedback, and resume decisions.
 
 Bad example:
@@ -54,8 +54,8 @@ Bad example:
 - If a queued tick is pending, show it as prepared queue state and use loop status/run-once before claiming progress.
 - If feedback is unclear, ask one gate question or route back to research/plan rather than advancing the loop.
 - If the goal turns into external waiting, record the waiting state and next observable signal instead of continuing locally.
-- If context or budget is exhausted, checkpoint the loop artifact and continue from the latest loop_cycle/v1 state.
-- If the upstream goal loop paused on its turn ceiling or a failing gate, record the pause as a loop wait state, not as completion, re-prepare the driver handoff, and re-register every gate after re-setting the goal, because setting a goal discards the previous gates.
+- Checkpoint on context/budget exhaustion. Migrate loop_cycle/v1 with migrate-driver --apply before external binding.
+- Resume paused native goals with re-registered gates; external goals follow driver recovery. Transfers require observed stopped/absent reconciliation; handoffs never dispatch.
 - If the loop runs out of next actions, re-read the scoped files, recombine the near-miss attempts, then escalate to a more radical change before declaring the loop blocked.
 
 ## Workflow Lane
@@ -97,8 +97,8 @@ Quality bar:
 - Use cheap inner-loop checks frequently and expensive outer-loop checks sparingly.
 - Keep the practical small-loop recipe visible: test as stop signal, plan -> execute -> verify, one task at a time.
 - Surface verification_gap, comprehension_debt, and cognitive_surrender as warnings before a loop starts looking self-steering.
-- Drive iteration with the upstream `/goal` loop from the prepared loop_goal_driver_handoff/v1, and register OMH's inner-tier checks as `/goal gate add` commands so verification runs before the judge.
-- After Hermes accepts `/goal`, ingest metadata-only activation plus same-session contiguous turn evidence with `omh loop goal-driver-observe`; prepared text and isolated turn claims do not advance the loop.
+- Session-bound host_observed resumable_goal plus explicit coding ownership prepares one executor goal. Otherwise use native `/goal` and `/goal gate add`. Never prepare two controllers.
+- Ingest bounded snapshots via `omh loop goal-driver-observe`. External state guides recovery, not checkpoint decisions; native turns still require activation and contiguous same-session evidence.
 - Treat ticks as preparation only. Advance one legal role phase through loop_phase_transition/v1 only after its named gate has observed evidence.
 - Treat a judge `done` verdict, a turn-ceiling pause, or a gate-retry pause as narration; completion still requires the linked goal ledger completion gate and observed evidence.
 - Treat any future change to the default as a maintainer-reviewed product decision, not a runtime phase or automatic loop outcome.
@@ -132,7 +132,7 @@ Expected outputs:
 
 - loopability_assessment/v1 task/project/ambition classification
 - loop_start_card/v1 setup prompt
-- loop_cycle/v1 state
+- loop_cycle/v2
 - loop_engineering/v1 pipeline/building-block snapshot
 - loop verification_policy for inner/outer checks
 - loop failure_mode_summary over verification gap, comprehension debt, and cognitive surrender
@@ -142,21 +142,21 @@ Expected outputs:
 - loop_queue_handoff/v1 only when permitted
 - executor-neutral handoff only when permitted
 - external-wait or checkpoint boundary
-- loop_goal_driver_handoff/v1 prepared /goal driver text with gates and turn-ceiling guidance
+- loop_goal_driver_handoff/v1 selected goal
 - loop_goal_driver_observation/v1 metadata-only activation and same-session contiguous turn evidence
 - loop_phase_transition/v1 evidence-backed progress record
 
 Artifact expectations:
 
-- metadata-only .omh/loops loop_cycle/v1 artifact with loopability_assessment/v1
+- loop_cycle/v2: loop_driver/v1 and loopability_assessment/v1 metadata
 - loop_engineering/v1 status over automation, worktree, skill, connector, subagent, verification policy, and failure modes
 - loop_runtime/v1 queue entries with context_policy_ref, cost_policy_ref, and verification_plan
 - loop_subagent_result_contract/v1 for prepared subagent handoffs
 - loop_status_card/v1 wrapper payload with loopability_assessment, failure_mode_summary, small_loop_guidance, and native-goal observation status
 - loop_start_card/v1 wrapper setup card
 - linked goal_ledger/v1 only when completion evidence is required
-- loop_goal_driver_handoff/v1 prepared upstream /goal command, gate lines, and completion ownership
-- loop_goal_driver_observation/v1 stored in loop_cycle/v1 after `omh loop goal-driver-observe` ingests host evidence
+- loop_goal_driver_handoff/v1 selected goal with OMH completion ownership
+- loop_goal_driver_observation/v1 native history or loop_executor_goal_observation/v1 advisory external snapshots ingested through goal-driver-observe
 - loop_phase_transition/v1 stored only when evidence advances an observed phase
 
 Safety rules:
@@ -169,6 +169,10 @@ Safety rules:
 - Do not let unattended loop progress bypass verification; missing or failed verification returns to plan/research or waits for evidence.
 - Do not let comprehension debt or cognitive surrender hide behind green-looking loop status.
 - Do not claim a goal is complete because the upstream judge said done, the turn budget ran out, or a gate paused the loop.
+
+## Goal Driver Ownership
+
+Hermes narrates; the selected executor runs its goal; OMH verifies. Driver recovery never overrides checkpoint `next_action`.
 
 ## Constraint Discipline
 

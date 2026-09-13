@@ -1,12 +1,12 @@
 ---
 name: media-search
-description: Find and play music/videos via youtube_search + open_url
+description: Find and play music/videos via youtube_search + browser_navigate
 category: media
-version: 1.3.2
+version: 1.3.3
 origin: aiden
 license: Apache-2.0
 tags: music, video, youtube, play, song, listen, media, autoplay
-required_tools: [youtube_search, open_url]
+required_tools: [youtube_search, browser_navigate]
 ---
 
 
@@ -14,31 +14,25 @@ required_tools: [youtube_search, open_url]
 
 Resolve "play X" / "listen to X" / "find me a song" requests by chaining
 `web_search` (optional, for fuzzy intent) → `youtube_search` (REQUIRED,
-returns real watch URLs) → `open_url` (REQUIRED, must use a URL that
-came back from `youtube_search`). The user hears the song in their
-default browser without you having to drive a controlled browser
-session.
+returns real watch URLs) → `browser_navigate` (REQUIRED, must use a URL that
+came back from `youtube_search`). Keep navigation, interaction and Evidence
+inside the owned Browser Session. Navigation alone does not prove playback.
 
 <execute_action>
-"Play X" is the authorization. You're not asking permission, you're
-confirming the action by doing it. Once `youtube_search` returns a URL
-that clears the rules below, fire `open_url` in the same turn — no
-deliberation step between picking and opening.
+The user's request authorizes the requested media action, subject to the
+runtime's approval and browser policy. Use the actual available controlled
+browser tools. External `open_url` launching is unavailable inside durable
+Jobs and is not a recovery path.
 
-If any of these phrases form in your reply draft, you have stopped
-short of the action:
+After navigation, inspect the player. If playback has not started, use the
+observed play control through an admitted browser action. Verify observable
+player state (for example paused=false and advancing currentTime, when
+supported) before claiming playback. A screenshot or loaded watch URL alone
+does not establish that audio is playing.
 
-- "say go ahead"
-- "should I"
-- "I can do that for you"
-- "let me know if"
-- "if you want"
-- "want me to"
-- "shall I"
-
-Replace the offer with the call: invoke `open_url`, then write
-the report. The user's default browser is the feedback channel —
-not your prose.
+Do not bypass approval, login, CAPTCHA, browser policy, or autoplay restrictions.
+If a supported action or verification is unavailable, report that exact
+limitation. Never claim success from an attempted action.
 </execute_action>
 
 <selection_rule>
@@ -108,24 +102,14 @@ Every successful run of this skill calls these tools, in order:
    title + artist. Skip this when the user already named a song.
 2. `youtube_search` — **REQUIRED pass 2**: get real `/watch?v=` URLs
    for that specific song. Query: `<title> <artist> official audio`.
-3. `open_url` — exactly **once**, with a URL that came back from
+3. `browser_navigate` — exactly **once**, with a URL that came back from
    `youtube_search` (verbatim — copy the `url` field from the tool
    result, do not retype it from memory).
 
-Then you report. **A run that stops after `youtube_search` is a
-FAILED run** — the user does not hear anything until `open_url`
-fires. The runtime enforces both conditions:
-
-- **Skill enforcement** (Phase 23.1): if you emit a final message
-  without calling every tool in `required_tools`, your reply is
-  discarded and you are asked to retry. Cap of 2 corrective retries.
-- **URL provenance gate** (Phase 23.4a): if `open_url` receives a
-  `youtube.com/watch?v=<id>` URL whose `<id>` was NOT returned by
-  any `youtube_search` call this turn, the call is **blocked before
-  the browser opens**, an error is fed back to you, and you are
-  asked to call `youtube_search` and pick a real URL. Cap of 2
-  corrective retries; on exceed the user sees an honest-failure
-  message, not a confabulated open.
+Then inspect playback through supported browser tools and retain action
+Evidence before reporting. Searches alone do not fulfill a playback request.
+The required search/navigation sequence does not replace runtime approval or
+verification. Copy real result URLs; never invent video IDs.
 
 Anti-patterns the planner sometimes drifts into — do NOT do these:
 
@@ -141,10 +125,10 @@ Anti-patterns the planner sometimes drifts into — do NOT do these:
 - ❌ Re-entering the `media-search` skill mid-run after the
   searches returned. The skill is already loaded; re-viewing
   wastes a turn and signals a hung agent. Run `youtube_search`,
-  then `open_url`.
+  then `browser_navigate`.
 - ❌ Stopping after the searches and asking the user to confirm. The
   user's "play me a song" request is the consent — proceed to
-  `open_url`.
+  `browser_navigate`.
 - ❌ Picking a `youtube_search` result whose **title** does not
   contain the song you committed to. Artist-only match is not
   enough; "Alex Warren live stream" is not "Alex Warren — Ordinary."
@@ -165,7 +149,7 @@ The user's request matches any of these patterns:
   cooking video about ramen"
 
 If the user says "open spotify" or "open youtube" without a specific
-piece, that's an `open_url` direct call — not this skill.
+piece, that's an `browser_navigate` direct call — not this skill.
 
 ## How to use
 
@@ -187,7 +171,7 @@ user actually said:
 | "play Bohemian Rhapsody" | (skip pass 1 — title already given) |
 
 After pass 1, **announce your commitment in your reasoning** (this is
-NOT yet shown to the user — that comes after `open_url`):
+NOT yet shown to the user — that comes after `browser_navigate`):
 
 > Picked: `<title>` by `<artist>` (reason: e.g. "currently #1 on
 > Billboard Hot 100").
@@ -207,8 +191,8 @@ Wrap the title in double quotes. `youtube_search` hits the public
 YouTube results page, parses real `/watch?v=` URLs out of the
 response, and returns a list of `{ videoId, url, title, channel,
 durationText? }` objects. The URLs in that list are the only URLs
-the **URL provenance gate** will let `open_url` consume — anything
-else is blocked before the browser opens.
+you may use for the chosen video. Preserve existing URL provenance checks;
+do not invent or reconstruct a watch URL.
 
 **URL-selection rules (apply in order to the `youtube_search`
 results, not to `web_search` snippets):**
@@ -229,37 +213,25 @@ results, not to `web_search` snippets):**
    the honest-fallback path (below). Do **not** loosen the rules to
    force a pick.
 
-### Step 3 — Open the URL
+### Step 3 — Navigate, interact and verify
 
-Call `open_url` with the **`url` field** of the chosen
-`youtube_search` result — copy it verbatim, do not retype. Exactly
-once, in the same turn that `youtube_search` returned. Don't print
-the URL and ask. Don't list the candidates. Don't pause for
-confirmation. YouTube's `/watch?v=` pages autoplay in the user's
-browser; the autoplay is the answer to "did it work?", not your
-prose. This step is REQUIRED.
+Call `browser_navigate` with the chosen result's URL: copy the `url` field
+verbatim. Inspect the resulting page with supported browser tools and operate
+the actual play control if needed. Reuse the same owned session and tab;
+do not launch duplicate tabs just because the player is slow.
 
-The URL provenance gate validates `open_url`'s `url` argument
-against this turn's `youtube_search` results before the browser
-launches. If you somehow type a watch URL that wasn't in the
-result list (you composed an ID, you reused one from training
-data, you typo'd while copying), the call is rejected, an error
-is fed back to you, and you are asked to try again with a real
-URL from `youtube_search`. The user's browser does not open until
-the URL clears the gate.
+Observe playback state after the action. If playback cannot be verified,
+report navigation as navigation and playback as unverified. Do not invent
+a successful play receipt or assume autoplay.
 
-### Step 4 — Report (after `open_url` has fired, not before)
+### Step 4 — Report the observed result
 
-Format your reply so the user sees what you picked AND why. The title
-must be **announced together with the URL in a single message that
-follows the `open_url` call**, never as an offer before it:
+Report the chosen title, URL, observed action and any limitation. Say
+"playing" only when playback was observed; otherwise say "opened" and explain
+what remains blocked or unverified. Keep Evidence linked to the actual action.
 
-> Picked: `<title>` by `<artist>` — `<one-line reason>`. Opened
-> `<url>`.
-
-For a fuzzy intent ("popular song") the reason explains your
-substitution ("currently #1 on Billboard"). For a specific request
-("play Despacito") the reason can be brief ("the official video").
+For fuzzy intent, briefly explain the selection. Do not present selection,
+navigation, or a user-facing browser window as proof that playback succeeded.
 
 ### Honest-fallback: no verifying URL found
 
@@ -267,11 +239,11 @@ If pass 2 returns no result that satisfies all the URL-selection
 rules above, the fallback **executes** in the same turn — it is not
 something you offer to the user.
 
-1. `open_url` to
+1. `browser_navigate` to
    `https://www.youtube.com/results?search_query=<title>+<artist>`
    (URL-encoded). Same turn. No "want me to?" question. No "let
    me know if".
-2. **After** `open_url` fires, report what executed:
+2. **After** `browser_navigate` fires, report what executed:
    > Couldn't find a verified official upload for `<title>` by
    > `<artist>`. Opened
    > `youtube.com/results?search_query=<title>+<artist>` — autoplay
@@ -304,9 +276,8 @@ Expected flow:
   2. `{ title: "Taylor Swift - Opalite (Official Audio)", channel: "Taylor Swift" }` — no anti-pattern keyword → **first clean candidate, pick**.
   3. (rest of list ignored — once a clean candidate is found, stop)
 
-- Aiden runs: `open_url(<candidate 2 .url>)` — copy the `url`
-  field verbatim. The provenance gate sees the id in the ledger,
-  lets the call through.
+- Aiden runs: `browser_navigate(<candidate 2 .url>)` — copy the `url`
+  field verbatim, then inspect the player and verify the requested action.
 - Aiden reports: "Picked: '<title>' from '<channel>'. Opened
   `<url>`."
 
@@ -329,7 +300,7 @@ Expected flow:
   whose `title` field contains "Tum Hi Ho" (case-insensitive
   substring is fine). The highest-ranked match is the answer —
   not "the most official-looking one further down the list."
-- Aiden runs: `open_url(<that result's url, verbatim>)`.
+- Aiden runs: `browser_navigate(<that result's url, verbatim>)`.
 - Aiden reports: "Picked: '<title>' from '<channel>'. Opened `<url>`."
 
 If the very top result's title contains "Tum Hi Ho", that's the
@@ -344,7 +315,7 @@ Expected flow:
 - Aiden skips `web_search`.
 - Aiden runs: `youtube_search("Despacito Luis Fonsi")` → top
   result's title contains "Despacito". Match found at rank 1.
-- Aiden runs: `open_url(<top result.url>)`.
+- Aiden runs: `browser_navigate(<top result.url>)`.
 - Aiden reports: "Picked: '<title>' from '<channel>'. Opened
   `<url>`."
 
@@ -365,7 +336,7 @@ Expected flow:
   list of candidates.
 - Aiden picks the top candidate whose `title` or `channel` names
   Kendrick Lamar. Top result usually qualifies.
-- Aiden runs: `open_url(<that result's url, verbatim>)`.
+- Aiden runs: `browser_navigate(<that result's url, verbatim>)`.
 - Aiden reports: "Picked: '<title>' from '<channel>'. Opened
   `<url>`."
 
@@ -382,9 +353,8 @@ Expected flow:
   watch URL whose title contains "live" or "24/7" fails reject rule
   3. No top-5 result satisfies the rules.
 - Aiden runs:
-  `open_url("https://www.youtube.com/results?search_query=lofi+hip+hop+radio+Lofi+Girl")`
-  — this is a `/results?` URL, not a `/watch?v=` URL, so the
-  provenance gate does not apply (it's only scoped to watch URLs).
+  `browser_navigate("https://www.youtube.com/results?search_query=lofi+hip+hop+radio+Lofi+Girl")`
+  — a search-results page, not proof of playback.
 - Aiden reports honestly: "Couldn't find a single verified upload —
   Lofi Girl's stream is a 24/7 livestream, not a single video.
   Opened YouTube search results; click any livestream tile to start
@@ -392,15 +362,13 @@ Expected flow:
 
 ## Cautions
 
-- **Never call `open_url` more than once per request.** If the first
+- **Never call `browser_navigate` more than once per request.** If the first
   call succeeded, the URL is open in the user's browser. Re-launching
   is duplicate noise.
-- **`/watch?v=` autoplays; `/results?` and `/c/` do NOT.** Only claim
-  "now playing" when you launched a watch URL.
-- **`youtube_search` is required, not optional.** Skipping it means
-  the URL provenance gate has no candidates and any `open_url` call
-  to a watch URL gets blocked. The gate is structural — there is no
-  way to bypass it from the prompt side.
+- **A watch URL does not guarantee autoplay.** Only claim "now playing"
+  after observing playback; report restrictions or unverified state honestly.
+- **`youtube_search` is required, not optional.** Use its real results and
+  preserve URL provenance checks. Never compose a video ID from memory.
 - **`web_search` (pass 1) is optional, but valuable for fuzzy
   intents.** It helps you commit to a specific title before
   `youtube_search`. For "play Despacito" you can skip it; for "play
@@ -422,6 +390,7 @@ Expected flow:
 
 - `web_search` tool (always available — registered at boot)
 - `youtube_search` tool (always available — registered at boot)
-- `open_url` tool (always available, BUILTIN_SAFE_TOOLS, auto-approves)
-- The user's default browser must be installed (every desktop has one).
-- No API keys, no credentials, no plugins.
+- An available owned Browser Session and permitted browser navigation/interaction tools.
+- Respect current approval requirements. If a browser dependency is unavailable,
+  report it rather than switching to an unowned external launcher.
+- Some sites require user login or consent; never bypass these barriers.

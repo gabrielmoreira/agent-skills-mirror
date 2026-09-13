@@ -98,6 +98,11 @@ packs, social creative briefs, synthetic persona bibles, voiceover plans,
 source provenance, disclosure, likeness/voice boundaries, and human-review
 gates.
 
+Use `local-video-assembly` with creator content, AI production, publishing,
+rights, and reputation skills for local narrated explainer assembly, FFMPEG
+render manifests, caption burn-in or sidecar planning, audio sync, MP4 export,
+`ffprobe` validation, and human-reviewed YouTube episode packages.
+
 Use `concise-technical-writing` for commit messages, PR descriptions, changelogs, implementation summaries, status updates, and direct technical communication.
 
 Use `visual-ui-ux-audit`, `tailwind-design-system`, and `react-next-performance-optimization` for frontend quality, design systems, and performance.

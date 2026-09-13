@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `openclaw/crabbox` — 26 default patterns, 0 followed patterns, 17 file(s) materialized.
+Mirror of `openclaw/crabbox` — 26 default patterns, 0 followed patterns, 19 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `openclaw/crabbox` — 26 default patterns, 0 followed patterns, 17 fi
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 17 |
+| Files         | 19 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -72,10 +72,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 11 | ✓ | [`.agents/skills/autoreview/tests/fixtures/typescript-benign-references.ts`](.agents/skills/autoreview/tests/fixtures/typescript-benign-references.ts) |
 | 12 | ✓ | [`.agents/skills/autoreview/tests/fixtures/typescript-sensitive-literals.ts`](.agents/skills/autoreview/tests/fixtures/typescript-sensitive-literals.ts) |
 | 13 | ✓ | [`.agents/skills/autoreview/tests/test_autoreview_hardening.py`](.agents/skills/autoreview/tests/test_autoreview_hardening.py) |
-| 14 | ✓ | [`.agents/skills/crabbox/SKILL.md`](.agents/skills/crabbox/SKILL.md) |
-| 15 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 16 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 17 | ✓ | [`skills/crabbox/SKILL.md`](skills/crabbox/SKILL.md) |
+| 14 | ✓ | [`.agents/skills/crabbox-quickstart/SKILL.md`](.agents/skills/crabbox-quickstart/SKILL.md) |
+| 15 | ✓ | [`.agents/skills/crabbox/SKILL.md`](.agents/skills/crabbox/SKILL.md) |
+| 16 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 17 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 18 | ✓ | [`skills/crabbox-quickstart/SKILL.md`](skills/crabbox-quickstart/SKILL.md) |
+| 19 | ✓ | [`skills/crabbox/SKILL.md`](skills/crabbox/SKILL.md) |
 
 ---
 

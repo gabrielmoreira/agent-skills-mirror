@@ -3,8 +3,8 @@ import fs from "node:fs";
 import http from "node:http";
 import os from "node:os";
 import path from "node:path";
-import { spawn } from "node:child_process";
-import test from "node:test";
+import { execFileSync, spawn } from "node:child_process";
+import test, { after } from "node:test";
 import {
   renderSession,
   resolveClaudeSession,
@@ -13,9 +13,16 @@ import {
 } from "./beam-session.js";
 
 const script = path.resolve("skills/beam/scripts/beam");
+const tempDirs = [];
+
+after(() => {
+  for (const dir of tempDirs) fs.rmSync(dir, { recursive: true, force: true });
+});
 
 function tempDir() {
-  return fs.mkdtempSync(path.join(os.tmpdir(), "beam-test-"));
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "beam-test-"));
+  tempDirs.push(dir);
+  return dir;
 }
 
 function writeJsonl(file, rows) {
@@ -223,6 +230,89 @@ test("standalone discovery fails closed when the file scan is incomplete", () =>
     () => resolveClaudeSession(id, { CLAUDE_CONFIG_DIR: configDir }, { maxFiles: 1 }),
     /discovery exceeded its file limit/,
   );
+});
+
+test("Claude discovery accepts the exact cap with trailing non-session entries", () => {
+  const configDir = tempDir();
+  const projectDir = path.join(configDir, "projects", "demo");
+  fs.mkdirSync(projectDir, { recursive: true });
+  const id = "exact-cap-session";
+  const session = path.join(projectDir, `${id}.jsonl`);
+  writeJsonl(session, [{ type: "user", sessionId: id, message: { content: "Exact cap" } }]);
+  fs.writeFileSync(path.join(projectDir, "z-notes.txt"), "not a session");
+  fs.mkdirSync(path.join(projectDir, "zz-empty"));
+  assert.equal(
+    resolveClaudeSession(id, { CLAUDE_CONFIG_DIR: configDir }, { maxFiles: 1 }).file,
+    fs.realpathSync(session),
+  );
+});
+
+test("Codex discovery shares an exact cap across active and empty archive roots", () => {
+  const codexHome = tempDir();
+  const active = path.join(codexHome, "sessions");
+  const archived = path.join(codexHome, "archived_sessions");
+  fs.mkdirSync(active);
+  fs.mkdirSync(archived);
+  const id = "exact-cap-session";
+  const session = path.join(active, `rollout-${id}.jsonl`);
+  writeJsonl(session, [{ type: "session_meta", payload: { id } }]);
+  assert.equal(
+    resolveCodexSession(id, { CODEX_HOME: codexHome }, { maxFiles: 1 }).file,
+    fs.realpathSync(session),
+  );
+  writeJsonl(path.join(archived, "other.jsonl"), []);
+  assert.throws(
+    () => resolveCodexSession(id, { CODEX_HOME: codexHome }, { maxFiles: 1 }),
+    /discovery exceeded its file limit/,
+  );
+});
+
+test("session rendering and metadata discovery retry short reads", (t) => {
+  const codexHome = tempDir();
+  fs.mkdirSync(path.join(codexHome, "sessions"));
+  const id = "short-read-session";
+  const session = path.join(codexHome, "sessions", `rollout-${id}.jsonl`);
+  writeJsonl(session, [
+    { type: "session_meta", payload: { id } },
+    { type: "event_msg", payload: { type: "user_message", message: "Complete message" } },
+  ]);
+  const read = fs.readSync;
+  t.mock.method(fs, "readSync", (fd, buffer, offset, length, position) =>
+    read(fd, buffer, offset, Math.min(length, 13), position));
+  assert.equal(resolveCodexSession(id, { CODEX_HOME: codexHome }).file, fs.realpathSync(session));
+  assert.deepEqual(renderSession(session, { source: "codex" }).items, [
+    { type: "userMessage", text: "Complete message" },
+  ]);
+});
+
+test("bounded session reads retain head and tail messages after short reads", (t) => {
+  const session = path.join(tempDir(), "session.jsonl");
+  const row = (message) => JSON.stringify({ type: "event_msg", payload: { type: "user_message", message } });
+  fs.writeFileSync(session, `${row("Head message")}\n${"x".repeat(8 * 1024 * 1024)}\n${row("Tail message")}\n`);
+  const read = fs.readSync;
+  t.mock.method(fs, "readSync", (fd, buffer, offset, length, position) =>
+    read(fd, buffer, offset, Math.min(length, 4096), position));
+  const rendered = renderSession(session, { source: "codex" });
+  assert.equal(rendered.truncated, true);
+  assert.deepEqual(rendered.items, [
+    { type: "userMessage", text: "Head message" },
+    { type: "userMessage", text: "Tail message" },
+  ]);
+});
+
+test("rendering and metadata discovery reject unexpected EOF", (t) => {
+  const codexHome = tempDir();
+  fs.mkdirSync(path.join(codexHome, "sessions"));
+  const id = "early-eof-session";
+  const session = path.join(codexHome, "sessions", `rollout-${id}.jsonl`);
+  writeJsonl(session, [{ type: "session_meta", payload: { id } }]);
+  const read = fs.readSync;
+  let calls = 0;
+  t.mock.method(fs, "readSync", (fd, buffer, offset, length, position) =>
+    calls++ === 0 ? read(fd, buffer, offset, Math.min(length, 13), position) : 0);
+  assert.throws(() => renderSession(session, { source: "codex" }), /ended before the expected read/);
+  calls = 0;
+  assert.throws(() => resolveCodexSession(id, { CODEX_HOME: codexHome }), /ended before the expected read/);
 });
 
 test("standalone Codex discovery verifies metadata across active and archived rollouts", () => {
@@ -1298,4 +1388,25 @@ test("publish never prints access tokens on receiver errors", async (t) => {
   assert.equal(result.stderr.includes(String.fromCharCode(27)), false);
   assert.doesNotMatch(result.stderr, /\nforged/);
   assert.doesNotMatch(`${result.stdout}\n${result.stderr}`, /super-secret-access-token/);
+});
+
+test("CLI loads its native module format without loader warnings", async () => {
+  const result = await run(["--help"], {
+    env: { NODE_OPTIONS: "", NODE_NO_WARNINGS: "" },
+  });
+  assert.equal(result.code, 0, result.stderr);
+  assert.match(result.stdout, /Usage:/);
+  assert.equal(result.stderr, "");
+});
+
+test("copied Beam runs inside a CommonJS project without dependencies", () => {
+  const root = tempDir();
+  fs.writeFileSync(path.join(root, "package.json"), JSON.stringify({ type: "commonjs" }));
+  const installed = path.join(root, "installed-beam");
+  fs.cpSync(path.dirname(path.dirname(script)), installed, { recursive: true });
+  const output = execFileSync(process.execPath, [path.join(installed, "scripts", "beam"), "--help"], {
+    cwd: root, encoding: "utf8", stdio: "pipe",
+    env: { ...process.env, NODE_OPTIONS: "", NODE_NO_WARNINGS: "" },
+  });
+  assert.match(output, /Usage:/);
 });

@@ -2,8 +2,9 @@ import React from 'react';
 import { useSlideViewModel } from '../../view-model/context.jsx';
 import { GENERATED_THEME_PAGES, GENERATED_THEME_PACKS } from './generated-metadata.js';
 import { canonicalizeThemePageRuntime } from './canonical-metadata.mjs';
+import { THEME_OVERRIDES } from './theme-registry-codegen.mjs';
 
-const THEME_RUNTIME_METADATA = GENERATED_THEME_PAGES.map(canonicalizeThemePageRuntime);
+const THEME_RUNTIME_METADATA = GENERATED_THEME_PAGES.map(page => canonicalizeThemePageRuntime(page, THEME_OVERRIDES[page.themeKey]));
 export const THEME_PAGES = THEME_RUNTIME_METADATA.map(metadata => metadata.page);
 export const THEME_PACK_OPTIONS = Object.fromEntries(
   GENERATED_THEME_PACKS.map(theme => [

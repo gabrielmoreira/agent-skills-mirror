@@ -311,8 +311,8 @@ maestro-cli update-agent <agent-id> [-g <group-id|none>] [-d <new-cwd>] [--json]
 ```
 
 - `--group <id>` sends a `move_session_to_group` message (reuses the same write path as drag-and-drop in the Left Bar). Pass `none`, `null`, or `""` to ungroup. Supports partial group IDs via `resolveGroupId()`.
-- `--cwd <path>` sends the new `update_session_cwd` message. Resolves to absolute via `path.resolve()`. The renderer mutates `cwd`/`fullPath`/`shellCwd` only - `projectRoot` is preserved so historical provider sessions stay addressable (important for archive workflows where you relocate the case folder but want prior conversations to remain attached).
-- The renderer refuses cwd updates when `aiPid > 0` (the PTY's cwd is fixed at spawn time) and returns `{ success: false, error: '...' }`; the CLI surfaces that error and exits non-zero.
+- `--cwd <path>` sends the new `update_session_cwd` message. Resolves to absolute via `path.resolve()`. The renderer relocates the agent through `withWorkingDirectory()` (`src/renderer/utils/agentWorkingDirectory.ts`), which moves `cwd`/`fullPath`/`shellCwd`/`projectRoot` together, rebases `autoRunFolderPath` when it lives under the old root, and clears the file tree and git state so they reload from the new directory. Moving `cwd` alone left the Files panel and the Edit dialog on the old folder (#1565). Provider conversations stored under the old path are not carried over.
+- The renderer refuses cwd updates while the agent is busy or `aiPid > 0` (`workingDirectoryChangeBlocker()`; the PTY's cwd is fixed at spawn time) and returns `{ success: false, error: '...' }`; the CLI surfaces that error and exits non-zero.
 
 ### `list ssh-remotes`
 
@@ -490,8 +490,11 @@ The CLI spawner is simpler than the desktop process manager but honors the same
 per-agent/per-session overrides that users configure in the desktop app:
 
 - **Honored**: custom binary path, custom CLI args, custom env vars, custom model,
-  custom effort/reasoning - all merged via `applyAgentConfigOverrides()` just
+  custom effort/reasoning - all resolved via `applyAgentConfigOverrides()` just
   like the desktop (`session` wins over `agent config` wins over defaults).
+  Env vars REPLACE rather than layer: an agent with any vars of its own gets
+  none of the provider-level set, so usage attribution can read the same
+  single set back (`effectiveAgentCustomEnvVars()` in `shared/providerProfiles.ts`).
 - **Honored**: SSH remote execution - when `sessionSshRemoteConfig.enabled` is
   true, the spawn is wrapped via `wrapSpawnWithSsh()` (dynamic import so the
   SSH chain stays out of the local hot path). If the configured remote can't

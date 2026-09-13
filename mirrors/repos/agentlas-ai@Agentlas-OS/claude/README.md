@@ -1,0 +1,132 @@
+# Claude Code Plugin Install
+
+Install from a new computer with the OS terminal:
+
+On a fresh Mac, install Apple Command Line Tools first if `git` is unavailable:
+
+```bash
+xcode-select --install
+git --version
+```
+
+One-command install or update for Claude, Codex, and Gemini:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/agentlas-ai/Agentlas-OS/main/scripts/install-all-runtimes.sh | bash
+```
+
+Optional global router prompt block:
+
+```bash
+hep-global install --target claude
+```
+
+This appends a managed Hephaestus block to `~/.claude/CLAUDE.md`, so ordinary
+Claude Code prompts use Network federation unless the request explicitly names
+Local, Cloud, or Hub. Exact scopes never widen. If a requested source is
+blocked by credits, entitlement, availability, or fit, Claude Code reports
+that boundary. Claude Code should announce final workers as `Agents
+used: ...` in English contexts or `사용 에이전트: ...` in Korean contexts, not as
+`hep-network`. Use `hep-global remove --target claude` to remove only that
+managed block.
+
+Claude Code global router commands:
+
+| Command | What it does |
+| --- | --- |
+| `hep-global install --target claude` | Install or refresh only `~/.claude/CLAUDE.md`. |
+| `hep-global status --target claude` | Check whether the Claude Code router block is installed. |
+| `hep-global remove --target claude` | Remove only the managed Claude Code router block. |
+| `hep-global install --target claude --dry-run` | Preview the Claude Code edit without writing files. |
+| `hep-global install --target claude --no-backup` | Edit without writing a timestamped backup. |
+| `hephaestus global install --target claude` | Same command through the main runner. |
+| `~/.agentlas/runtime/current/bin/hephaestus global status --target claude` | Use the installed runtime directly when `hep-global` is not on `PATH`. |
+
+To enable this during one-command install:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/agentlas-ai/Agentlas-OS/main/scripts/install-all-runtimes.sh | HEPHAESTUS_INSTALL_GLOBAL_ROUTER=1 bash
+```
+
+The one-command installer registers the shared runtime and adapters. Desktop
+startup and `/hep-*` commands start a digest-verified, rate-limited update in
+the background without delaying the current task. A successful update moves
+`~/.agentlas/runtime/current` atomically and reconciles the installed Claude
+adapter. Use `/reload-plugins` or start a new session to load new plugin code.
+
+```bash
+claude plugin marketplace add https://github.com/agentlas-ai/Agentlas-OS --sparse .claude-plugin claude/plugins
+claude plugin install hephaestus@agentlas-core-engine
+```
+
+Those two plugin-manager commands expose Claude's required namespaced command,
+`/hephaestus:hep-build`. The one-command installer at the top additionally
+writes standalone user commands to `~/.claude/commands/hep-*.md`, which is what
+makes the shorter `/hep-build` surface persist in autocomplete across new
+sessions.
+
+After the one-command installer, open or restart Claude Code in the project and
+type:
+
+```text
+/reload-plugins
+/hep-build ontology
+```
+
+After a plugin-only install, use `/hephaestus:hep-build ontology` instead.
+
+If an older install still points at `agentlas-meta-agent`:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/agentlas-ai/Agentlas-OS/main/scripts/install-all-runtimes.sh | bash
+```
+
+That command creates and opens:
+
+```text
+.agentlas/ontology-gui/index.html
+```
+
+Use the same slash command for builder work:
+
+```text
+/hep-build create a research agent for SEC filing analysis
+/hep-build package this existing Claude agent into Agentlas architecture
+/hep-network split this launch into research, copy, QA, and release agents
+/hep-local staff this only from agents registered on this machine
+/hep-cloud use my saved analyst agent
+/hep-hub find only public Hub agents for accessibility QA
+/hep-search find agents for market report research
+/hep-browser https://example.com
+/hep-call market-researcher, report-writer {draft a market report brief}
+/hep-connect Telegram for Marketing Agent Team
+```
+
+The plugin registers one Workforce MCP, `hephaestus-network`, backed by local
+Agentlas OS Core. Its public staffing tools are
+`workforce.search_candidates`, `workforce.validate_selection`, and
+`workforce.prepare_execution`. Core reaches Cloud and Hub internally; adding a
+second direct `agentlas` MCP would bypass the local federation/privacy boundary.
+
+After generation, the final handoff must include `global_commands` for the
+created agent or team. For teams, that command routes to the orchestrator/HQ.
+
+Local validation from this repository:
+
+```bash
+claude plugin validate claude/plugins/agentlas-core-engine-meta-agent
+claude plugin validate claude
+```
+
+Local checkout install:
+
+```bash
+claude plugin marketplace add ./claude
+claude plugin install hephaestus@agentlas-core-engine
+```
+
+Use directly for one Claude session without installing:
+
+```bash
+claude --plugin-dir claude/plugins/agentlas-core-engine-meta-agent
+```

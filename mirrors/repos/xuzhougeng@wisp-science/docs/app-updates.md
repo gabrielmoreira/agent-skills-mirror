@@ -4,6 +4,11 @@ Wisp supports optional, signed in-app updates on macOS. Windows and Linux keep
 the update check and **Open Releases** path until their installers are enabled
 in a later change.
 
+Manual installers are also available from the [guided download page](https://wispscience.com/#download)
+through the Cloudflare mirror. See [website deployment and installer synchronization](cloudflare-downloads.md).
+The website download manifest is separate from the signed Tauri updater manifest;
+in-app updates continue using the existing GitHub endpoint.
+
 ## User flow
 
 1. Wisp checks the signed `latest.json` manifest. The Tauri updater chooses

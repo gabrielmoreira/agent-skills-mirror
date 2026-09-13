@@ -1,226 +1,81 @@
 ---
 name: alchemy-webhooks-events
-description: 'Implement Alchemy Notify webhooks for real-time blockchain event notifications.
-
-  Use when tracking wallet activity, monitoring mined transactions,
-
-  watching smart contract events, or building real-time dApp features.
-
-  Trigger: "alchemy webhook", "alchemy notify", "alchemy events",
-
-  "alchemy address activity", "alchemy real-time notifications".
-
-  '
-allowed-tools: Read, Write, Edit, Bash(curl:*)
-version: 1.5.0
+description: >-
+  Operate Alchemy Notify webhooks with raw-body HMAC verification, idempotent intake, durable processing, and safe lifecycle changes. Use when implementing or repairing blockchain event delivery. Trigger with "Alchemy webhook", "Alchemy Notify", or "verify X-Alchemy-Signature".
+allowed-tools: Read,Glob,Grep,Write,Edit
+argument-hint: "<webhook-type> <network> <callback>"
+version: 2.0.0
 license: MIT
 author: Jeremy Longshore <jeremy@intentsolutions.io>
-tags:
-- saas
-- blockchain
-- web3
-- alchemy
-- webhooks
-compatibility: Designed for Claude Code
+tags: [saas, alchemy, webhooks, events]
+model: inherit
+effort: high
+compatibility: "Designed for Claude Code; live Alchemy access requires network access, an appropriate credential, account capacity, and explicit approval"
 ---
-# Alchemy Webhooks & Events (Notify API)
+# Alchemy Notify Webhook Operations
 
 ## Overview
 
-Alchemy Notify provides real-time push notifications for on-chain events. Instead of polling, receive webhook callbacks for wallet activity, mined transactions, dropped transactions, and smart contract events.
-
-## Webhook Types
-
-| Type | Trigger | Use Case |
-|------|---------|----------|
-| Address Activity | ETH/token transfer to/from address | Wallet notifications |
-| Mined Transaction | Transaction confirmed on-chain | Payment confirmation |
-| Dropped Transaction | Transaction removed from mempool | Failed tx alerting |
-| NFT Activity | NFT transfer events | Marketplace notifications |
-| Custom Webhook | GraphQL-defined filter | Complex event tracking |
+Operate Alchemy Notify webhooks with raw-body HMAC verification, idempotent intake, durable processing, and safe lifecycle changes. This workflow produces a reviewable artifact and negative-path evidence before any live side effect.
 
 ## Prerequisites
 
-- A TLS-protected callback URL, signing key in managed storage, and a handler
-  that receives the raw body before JSON parsing for signature verification.
-- Persistent idempotency storage, validated address/filter configuration, and
-  a least-privilege workflow token for webhook management.
-- A product decision for reorganization, duplicate delivery, unavailable
-  callbacks, and event types that require user-visible confirmation.
+- Current first-party Alchemy documentation for the selected product, chain, feature, client, authentication method, limit, and lifecycle.
+- Named product, application, security, data/privacy, budget, release, and operations owners appropriate to the requested scope.
+- Synthetic or approved non-production fixtures, a credential canary, explicit success criteria, and a tested rollback boundary.
+
+## Current Contract
+
+Alchemy signs the exact raw request body with HMAC-SHA256 using the webhook's signing key and sends the digest in `X-Alchemy-Signature`. Notify management uses its documented auth token, not the signing key. Current docs describe automatic retries/backoff and ordered first-time delivery; consumers still need idempotency because duplicate processing and application retries remain possible.
+
+## Authentication
+
+Keep the per-webhook signing key and Notify management token in separate managed secrets. The receiver may read the signing key only for verification; it may not create, update, or delete webhook registrations.
 
 ## Instructions
 
-### Step 1: Create Webhook via Dashboard or API
+1. Select the current webhook type and network from first-party support, define event semantics, confirmation policy, callback SLO, and data retention.
+2. Create or modify the registration only through an approved management path; record webhook ID, redacted filter, owner, signing-key version, and rollback configuration.
+3. Capture the raw request bytes before JSON parsing, compute HMAC-SHA256, and compare decoded equal-length values with a timing-safe function.
+4. Persist the webhook and event identifiers atomically before acknowledging; enqueue work and return success without blocking on downstream side effects.
+5. Make consumers idempotent, preserve per-entity ordering where required, and define reorganization, mined, dropped, and duplicate-event behavior.
+6. Test valid, invalid, replayed, delayed, out-of-order, and downstream-failure cases; operate a bounded dead-letter replay with explicit approval.
 
-```bash
-# Create Address Activity webhook via Alchemy API
-curl -X POST "https://dashboard.alchemy.com/api/create-webhook" \
-  -H "X-Alchemy-Token: ${ALCHEMY_AUTH_TOKEN}" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "network": "ETH_MAINNET",
-    "webhook_type": "ADDRESS_ACTIVITY",
-    "webhook_url": "https://your-app.com/webhooks/alchemy",
-    "addresses": [
-      "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045"
-    ]
-  }'
-```
+## Tool Discipline
 
-### Step 2: Webhook Handler with Signature Verification
+Use Read, Glob, and Grep to inspect current documentation, configuration, code, fixtures, and evidence. Use Write and Edit only for approved repository artifacts. Skill invocation alone does not authorize network access, credentials, wallet addresses, customer data, plan changes, spend, key creation or rotation, webhook changes, deployment, replay, transaction construction, signing, broadcast, or deletion.
 
-```typescript
-// src/webhooks/alchemy-handler.ts
-import express from 'express';
-import crypto from 'crypto';
+## Approval Boundaries
 
-const router = express.Router();
-
-router.post('/webhooks/alchemy',
-  express.raw({ type: 'application/json' }),
-  async (req, res) => {
-    // Verify webhook signature
-    const signature = req.headers['x-alchemy-signature'] as string;
-    if (!verifySignature(req.body.toString(), signature)) {
-      return res.status(401).json({ error: 'Invalid signature' });
-    }
-
-    const event = JSON.parse(req.body.toString());
-    await processAlchemyEvent(event);
-    res.status(200).json({ ok: true });
-  }
-);
-
-function verifySignature(body: string, signature: string): boolean {
-  const signingKey = process.env.ALCHEMY_WEBHOOK_SIGNING_KEY!;
-  const hmac = crypto.createHmac('sha256', signingKey);
-  hmac.update(body, 'utf8');
-  const digest = hmac.digest('hex');
-  return crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(digest));
-}
-```
-
-### Step 3: Event Router
-
-```typescript
-// src/webhooks/event-router.ts
-interface AlchemyWebhookEvent {
-  webhookId: string;
-  id: string;
-  createdAt: string;
-  type: 'ADDRESS_ACTIVITY' | 'MINED_TRANSACTION' | 'DROPPED_TRANSACTION' | 'NFT_ACTIVITY';
-  event: {
-    network: string;
-    activity: Array<{
-      fromAddress: string;
-      toAddress: string;
-      value: number;
-      asset: string;
-      category: 'external' | 'internal' | 'erc20' | 'erc721' | 'erc1155';
-      hash: string;
-      blockNum: string;
-    }>;
-  };
-}
-
-async function processAlchemyEvent(event: AlchemyWebhookEvent): Promise<void> {
-  switch (event.type) {
-    case 'ADDRESS_ACTIVITY':
-      for (const activity of event.event.activity) {
-        console.log(`${activity.category} transfer: ${activity.value} ${activity.asset}`);
-        console.log(`  From: ${activity.fromAddress}`);
-        console.log(`  To: ${activity.toAddress}`);
-        console.log(`  Tx: ${activity.hash}`);
-        // Trigger application logic (e.g., update balance, send notification)
-      }
-      break;
-
-    case 'MINED_TRANSACTION':
-      console.log('Transaction mined:', event.event);
-      break;
-
-    case 'DROPPED_TRANSACTION':
-      console.log('Transaction dropped:', event.event);
-      // Alert user their transaction was dropped
-      break;
-
-    case 'NFT_ACTIVITY':
-      for (const activity of event.event.activity) {
-        console.log(`NFT transfer: ${activity.asset} #${activity.value}`);
-      }
-      break;
-  }
-}
-```
-
-### Step 4: Programmatic Webhook Management
-
-```typescript
-// src/webhooks/manage-webhooks.ts
-import { Alchemy, Network, WebhookType } from 'alchemy-sdk';
-
-const alchemy = new Alchemy({
-  apiKey: process.env.ALCHEMY_API_KEY,
-  network: Network.ETH_MAINNET,
-  authToken: process.env.ALCHEMY_AUTH_TOKEN, // Required for Notify API
-});
-
-async function setupAddressWebhook(addresses: string[], webhookUrl: string) {
-  const webhook = await alchemy.notify.createWebhook(
-    webhookUrl,
-    WebhookType.ADDRESS_ACTIVITY,
-    { addresses, network: Network.ETH_MAINNET }
-  );
-  console.log(`Webhook created: ${webhook.id}`);
-  return webhook;
-}
-
-async function listWebhooks() {
-  const webhooks = await alchemy.notify.getAllWebhooks();
-  for (const wh of webhooks.webhooks) {
-    console.log(`${wh.id}: ${wh.webhookType} → ${wh.webhookUrl} (${wh.isActive ? 'active' : 'inactive'})`);
-  }
-}
-
-async function addAddressToWebhook(webhookId: string, newAddresses: string[]) {
-  await alchemy.notify.updateWebhook(webhookId, {
-    addAddresses: newAddresses,
-  });
-}
-```
-
-## Output
-
-- Address Activity webhook for wallet monitoring
-- HMAC signature verification for webhook security
-- Event router handling all Alchemy webhook types
-- Programmatic webhook management via Notify API
-
-## Examples
-
-Create a sandbox or development callback for a public test address, then send
-one valid synthetic `ADDRESS_ACTIVITY` payload and the exact duplicate event.
-Verify the handler checks the raw-body signature, persists the event ID before
-side effects, and returns a duplicate-safe response for the second delivery.
-Capture only event IDs, network, status, and timing in logs. If signature
-verification fails, the endpoint is unreachable, or a downstream update fails,
-quarantine the event for bounded replay after the fault is fixed; do not
-process an unverified payload or silently discard a user-impacting event.
+The product owner approves event scope and user impact. Security approves callback exposure and secret storage. Creating, changing, deleting, replaying, or rotating a production webhook requires explicit owner approval.
 
 ## Error Handling
 
-| Issue | Cause | Solution |
-|-------|-------|----------|
-| Invalid signature | Wrong signing key | Copy from Alchemy webhook details page |
-| Missing events | Webhook URL not reachable | Ensure HTTPS endpoint is publicly accessible |
-| Duplicate events | No idempotency | Track webhook event IDs |
+- Reject a missing, malformed, or mismatched signature before parsing or side effects.
+- Do not use the Notify management token as the HMAC signing key.
+- A duplicate-safe acknowledgement is preferable to repeating a user-visible side effect.
+
+## Output
+
+Return the event contract, registration receipt, raw-body verifier, idempotency key and storage design, acknowledgement SLO, ordering/reorg policy, replay runbook, tests, and rollback. Mark assumptions, observations, source dates, environment-specific behavior, owners, and unresolved gaps explicitly.
+
+## Examples
+
+- Accept one synthetic signed Address Activity event, then acknowledge its exact duplicate without repeating a notification.
+- Quarantine a valid event when downstream processing fails and replay it only after the fault and approval boundary are resolved.
+
+## Validation
+
+Exercise and record expected and observed results for:
+
+- valid signature
+- wrong signing key
+- body changed after signing
+- duplicate event
+- out-of-order event
+- downstream failure and replay
 
 ## Resources
 
-- [Alchemy Webhooks Overview](https://www.alchemy.com/docs/reference/webhooks-overview)
-- [Alchemy Webhook Types](https://www.alchemy.com/docs/reference/webhook-types)
-- [Alchemy Notify Tutorial](https://github.com/alchemyplatform/Alchemy-Notify-Tutorial)
-
-## Next Steps
-
-For performance optimization, see `alchemy-performance-tuning`.
+- [Current first-party evidence map](references/official-docs.md) — recheck dated Alchemy sources before execution.
+- Treat observed account, application, network, indexer, chain, or provider behavior as environment-specific evidence, never a universal guarantee.

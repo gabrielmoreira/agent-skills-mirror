@@ -21,7 +21,7 @@ If there is no person to experience the prototype — LFG, `mode:pipeline`, or a
 
 ## Scope the question
 
-Read `references/scoping.md` before you ask the user anything or touch the repo. That read is not optional. It defines how the question arrives and the scoped repo read of what the question touches — do not scan the tree. It also defines narrow vs wide, sizing, the go-ahead message, and how the remaining questions change after each decision. Do not build until the user proceeds.
+Read `references/scoping.md` before you ask the user anything or touch the repo. That read is not optional. It defines how the question arrives and the scoped repo read of what the question touches — do not scan the tree. It also defines narrow vs wide, sizing, the go-ahead message, and how the remaining questions change after each decision. Do not build until authorized. A request that already is to prototype a named thing is that authorization after scoping.
 
 ## Build it
 
@@ -31,7 +31,7 @@ After they proceed, speak only when they can act on something new, in one short 
 
 A question is settled by seeing when the judgment lands on the rendered result: how a layout reads, what a palette does, how dense a screen feels. It is settled by driving when the judgment lands on what happens as the user moves through it: a flow, a state model, how a control answers. Load `references/craft-floor.md` for a seeing question. It carries the quality floor and the avenue-difference rule; neither lives here. A question settled by driving does not load it and gains no finish from it.
 
-Default substrate: the web, whatever the product is written in — a native app's navigation feel gets a web approximation, not SwiftUI. It yields in exactly two cases: the user names a technology, or the dimension cannot be rendered in a browser without faking it. In that second case, build in the medium the dimension requires, and name that choice before you build. If a named technology also cannot render the dimension, say so rather than yielding silently. `references/build.md` defines what the artifact may be on either path.
+Default substrate: the web, whatever the product is written in — a native app's navigation feel gets a web approximation, not SwiftUI. `references/build.md` defines yields and artifacts.
 
 Build under `.context/compound-engineering/ce-prototype/<date>-<slug>/`, so the prototype survives for the implementation that follows. Fall back to `/tmp/compound-engineering-<uid>/ce-prototype/<date>-<slug>/`, where survival is best-effort. `references/build.md` names every case that forces the fallback root.
 
@@ -56,4 +56,4 @@ When the user applies:
 - If this run has a directly related brainstorm or plan — passed on invoke, passed by the calling skill, or named in this session as the file this prototype is for — load `references/write-back.md` and follow it. Markdown and HTML both. Use `decisions.md` when present. Do not pick a plan because one exists in the repo.
 - If there is no such file or relatedness is unclear: do not mint a plan or a third note. Recap from `decisions.md` when present, carrying the decisions and, when the run left one behind, the prototype path — an overlay run has none, so say that rather than pointing at something you undid. That recap is a complete outcome, not a degraded one.
 
-Then continue. If a calling skill invoked this, return the choices in `decisions.md` and let it continue. Otherwise recommend a next skill and pass this session as the seed. After a write-back, recommend `ce-plan`: the plan is now `requirements-only` with its HOW stripped, and `ce-work` refuses it until `ce-plan` re-enriches. After a file-free run, recommend `ce-brainstorm` when product-level questions remain, or `ce-plan` when the session is enough to plan. Print that recommendation per the rendering rule above.
+Then continue. If a calling skill invoked this, return the choices in `decisions.md` and let it continue. Otherwise recommend a next skill and pass this session as the seed. After a write-back, recommend `ce-plan` to regenerate implementation planning for the changed requirements. After a file-free run, recommend `ce-brainstorm` when product-level questions remain, or `ce-plan` when the session is enough to plan. Print that recommendation per the rendering rule above.

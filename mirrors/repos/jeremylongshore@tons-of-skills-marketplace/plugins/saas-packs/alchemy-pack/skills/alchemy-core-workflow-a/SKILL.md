@@ -1,252 +1,81 @@
 ---
 name: alchemy-core-workflow-a
-description: 'Build a complete wallet portfolio tracker using Alchemy Enhanced APIs.
-
-  Use when implementing token balance dashboards, NFT galleries,
-
-  transaction history views, or wallet analytics applications.
-
-  Trigger: "alchemy wallet tracker", "alchemy portfolio", "alchemy token dashboard",
-
-  "alchemy transaction history", "build dApp with alchemy".
-
-  '
-allowed-tools: Read, Write, Edit, Bash(npm:*), Grep
-version: 1.5.0
+description: >-
+  Design a multi-chain holdings workflow on Alchemy Portfolio APIs with explicit pagination, partial-failure, privacy, and reconciliation contracts. Use when building wallet portfolio views. Trigger with "Alchemy portfolio", "multi-chain token balances", or "wallet holdings dashboard".
+allowed-tools: Read,Glob,Grep,Write,Edit
+argument-hint: "<address-set> <network-set> <freshness-slo>"
+version: 2.0.0
 license: MIT
 author: Jeremy Longshore <jeremy@intentsolutions.io>
-tags:
-- saas
-- blockchain
-- web3
-- alchemy
-- defi
-- portfolio
-compatibility: Designed for Claude Code
+tags: [saas, alchemy, portfolio, data-api]
+model: inherit
+effort: high
+compatibility: "Designed for Claude Code; live Alchemy access requires network access, an appropriate credential, account capacity, and explicit approval"
 ---
-# Alchemy Core Workflow A — Wallet Portfolio Tracker
+# Alchemy Multi-Chain Portfolio Workflow
 
 ## Overview
 
-Primary workflow: build a wallet portfolio tracker using Alchemy's Enhanced APIs. Combines `getTokenBalances`, `getNftsForOwner`, `getAssetTransfers`, and token metadata to create a complete wallet view across ERC-20, ERC-721, and ERC-1155 assets.
+Design a multi-chain holdings workflow on Alchemy Portfolio APIs with explicit pagination, partial-failure, privacy, and reconciliation contracts. This workflow produces a reviewable artifact and negative-path evidence before any live side effect.
 
 ## Prerequisites
 
-- Completed `alchemy-install-auth` setup
-- `alchemy-sdk` installed
-- Understanding of Ethereum address format and token standards
+- Current first-party Alchemy documentation for the selected product, chain, feature, client, authentication method, limit, and lifecycle.
+- Named product, application, security, data/privacy, budget, release, and operations owners appropriate to the requested scope.
+- Synthetic or approved non-production fixtures, a credential canary, explicit success criteria, and a tested rollback boundary.
+
+## Current Contract
+
+Portfolio APIs aggregate fungible tokens and NFTs across requested networks. Multi-network fanout can return HTTP 200 while reporting `error.partialErrors`; failed networks can be absent from pagination. Therefore HTTP success is not completeness, and retries for failed networks begin as fresh bounded requests rather than continuing the successful-network cursor.
+
+## Authentication
+
+Use an application API key appropriate to Portfolio APIs and keep it in the approved server boundary. Wallet addresses are personal or customer-linked data when the product context makes them identifiable; apply the declared notice, consent, retention, and logging policy.
 
 ## Instructions
 
-### Step 1: Portfolio Data Fetcher
+1. Define the supported network set, address source, freshness SLO, display currency, pagination limit, and completeness status shown to users.
+2. Confirm every requested Portfolio network in current documentation and validate each address before provider access.
+3. Call the appropriate Portfolio token or NFT endpoint through a response-validating adapter; retain the request's network set with the result.
+4. Persist successful network pages and surface top-level `error.partialErrors` as named unavailable networks rather than dropping them.
+5. Continue cursors only for successful result sets; retry each failed network as a fresh request within a bounded budget and reconcile without duplicating holdings.
+6. Prove empty, partial, paginated, stale, and total-provider-failure states in the UI/API, then document cache invalidation and data deletion.
 
-```typescript
-// src/portfolio/fetcher.ts
-import { Alchemy, Network, AssetTransfersCategory } from 'alchemy-sdk';
+## Tool Discipline
 
-const alchemy = new Alchemy({
-  apiKey: process.env.ALCHEMY_API_KEY,
-  network: Network.ETH_MAINNET,
-});
+Use Read, Glob, and Grep to inspect current documentation, configuration, code, fixtures, and evidence. Use Write and Edit only for approved repository artifacts. Skill invocation alone does not authorize network access, credentials, wallet addresses, customer data, plan changes, spend, key creation or rotation, webhook changes, deployment, replay, transaction construction, signing, broadcast, or deletion.
 
-interface TokenHolding {
-  contractAddress: string;
-  symbol: string;
-  name: string;
-  balance: number;
-  decimals: number;
-}
+## Approval Boundaries
 
-interface NftHolding {
-  contractAddress: string;
-  collectionName: string;
-  tokenId: string;
-  name: string;
-  imageUrl: string | null;
-}
-
-interface WalletPortfolio {
-  address: string;
-  ethBalance: string;
-  tokens: TokenHolding[];
-  nfts: NftHolding[];
-  recentTransactions: any[];
-  fetchedAt: string;
-}
-
-async function fetchPortfolio(address: string): Promise<WalletPortfolio> {
-  // Parallel fetch all portfolio data
-  const [ethBalance, tokenBalances, nftResponse, transfers] = await Promise.all([
-    alchemy.core.getBalance(address),
-    alchemy.core.getTokenBalances(address),
-    alchemy.nft.getNftsForOwner(address, { pageSize: 100 }),
-    alchemy.core.getAssetTransfers({
-      fromAddress: address,
-      category: [
-        AssetTransfersCategory.EXTERNAL,
-        AssetTransfersCategory.ERC20,
-        AssetTransfersCategory.ERC721,
-      ],
-      maxCount: 25,
-      order: 'desc',
-    }),
-  ]);
-
-  // Resolve token metadata
-  const tokens: TokenHolding[] = [];
-  for (const tb of tokenBalances.tokenBalances) {
-    if (tb.tokenBalance && tb.tokenBalance !== '0x0') {
-      const metadata = await alchemy.core.getTokenMetadata(tb.contractAddress);
-      const balance = parseInt(tb.tokenBalance, 16) / Math.pow(10, metadata.decimals || 18);
-      if (balance > 0.001) {  // Filter dust
-        tokens.push({
-          contractAddress: tb.contractAddress,
-          symbol: metadata.symbol || 'UNKNOWN',
-          name: metadata.name || 'Unknown Token',
-          balance,
-          decimals: metadata.decimals || 18,
-        });
-      }
-    }
-  }
-
-  // Map NFTs
-  const nfts: NftHolding[] = nftResponse.ownedNfts.map(nft => ({
-    contractAddress: nft.contract.address,
-    collectionName: nft.contract.name || 'Unknown Collection',
-    tokenId: nft.tokenId,
-    name: nft.name || `#${nft.tokenId}`,
-    imageUrl: nft.image?.cachedUrl || null,
-  }));
-
-  return {
-    address,
-    ethBalance: (parseInt(ethBalance.toString()) / 1e18).toFixed(6),
-    tokens: tokens.sort((a, b) => b.balance - a.balance),
-    nfts,
-    recentTransactions: transfers.transfers,
-    fetchedAt: new Date().toISOString(),
-  };
-}
-
-export { fetchPortfolio, WalletPortfolio };
-```
-
-### Step 2: Transaction History Analyzer
-
-```typescript
-// src/portfolio/transactions.ts
-import { Alchemy, Network, AssetTransfersCategory, SortingOrder } from 'alchemy-sdk';
-
-const alchemy = new Alchemy({
-  apiKey: process.env.ALCHEMY_API_KEY,
-  network: Network.ETH_MAINNET,
-});
-
-async function getTransactionHistory(address: string, maxCount: number = 50) {
-  // Get both sent and received transactions
-  const [sent, received] = await Promise.all([
-    alchemy.core.getAssetTransfers({
-      fromAddress: address,
-      category: [AssetTransfersCategory.EXTERNAL, AssetTransfersCategory.ERC20],
-      maxCount,
-      order: 'desc',
-    }),
-    alchemy.core.getAssetTransfers({
-      toAddress: address,
-      category: [AssetTransfersCategory.EXTERNAL, AssetTransfersCategory.ERC20],
-      maxCount,
-      order: 'desc',
-    }),
-  ]);
-
-  // Merge and sort by block number
-  const allTransfers = [
-    ...sent.transfers.map(t => ({ ...t, direction: 'sent' as const })),
-    ...received.transfers.map(t => ({ ...t, direction: 'received' as const })),
-  ].sort((a, b) => parseInt(b.blockNum) - parseInt(a.blockNum));
-
-  return allTransfers;
-}
-
-export { getTransactionHistory };
-```
-
-### Step 3: Multi-Chain Portfolio Aggregator
-
-```typescript
-// src/portfolio/multi-chain.ts
-import { Alchemy, Network } from 'alchemy-sdk';
-
-const CHAINS = [
-  { name: 'Ethereum', network: Network.ETH_MAINNET },
-  { name: 'Polygon', network: Network.MATIC_MAINNET },
-  { name: 'Arbitrum', network: Network.ARB_MAINNET },
-  { name: 'Optimism', network: Network.OPT_MAINNET },
-  { name: 'Base', network: Network.BASE_MAINNET },
-];
-
-async function getMultiChainBalances(address: string) {
-  const results = await Promise.allSettled(
-    CHAINS.map(async (chain) => {
-      const client = new Alchemy({
-        apiKey: process.env.ALCHEMY_API_KEY,
-        network: chain.network,
-      });
-      const balance = await client.core.getBalance(address);
-      const tokens = await client.core.getTokenBalances(address);
-      const nonZeroTokens = tokens.tokenBalances.filter(
-        t => t.tokenBalance && t.tokenBalance !== '0x0'
-      );
-      return {
-        chain: chain.name,
-        nativeBalance: (parseInt(balance.toString()) / 1e18).toFixed(6),
-        tokenCount: nonZeroTokens.length,
-      };
-    })
-  );
-
-  return results
-    .filter((r): r is PromiseFulfilledResult<any> => r.status === 'fulfilled')
-    .map(r => r.value);
-}
-
-export { getMultiChainBalances };
-```
-
-## Output
-
-- Complete wallet portfolio: ETH + ERC-20 tokens + NFTs
-- Transaction history with sent/received classification
-- Multi-chain balance aggregation across 5 networks
-- Sorted holdings with dust filtering
-
-## Examples
-
-For a development demonstration, call `fetchPortfolio` with a publicly known
-test address or an address you control; never request a customer address until
-the product’s privacy notice and consent flow are in place. Render the returned
-network, timestamp, balances, and token counts, and cache metadata so repeated
-page loads do not exhaust the request budget. Verify that a zero-balance
-address produces an empty but valid portfolio and that a simulated `429` uses
-bounded backoff. If a chain query fails, show that chain as unavailable while
-retaining successful chains instead of inventing a consolidated balance.
+Product and privacy owners approve address collection and retention. Operations approves freshness and degraded-mode semantics. Exporting addresses or holdings, increasing retention, or adding networks requires explicit approval.
 
 ## Error Handling
 
-| Error | Cause | Solution |
-|-------|-------|----------|
-| `429 Rate Limit` | Too many metadata calls | Batch with delays or cache metadata |
-| Empty token list | Address has no tokens | Verify address is correct |
-| Missing NFT images | IPFS gateway timeout | Use Alchemy's cached URL fallback |
-| `getAssetTransfers` empty | Wrong category filter | Include all relevant categories |
+- Never label an HTTP 200 response complete until `partialErrors`, requested networks, and pagination have been reconciled.
+- Do not continue a successful-network page key for a network that failed out of the original response.
+- Do not convert missing price or metadata into a zero-valued asset.
+
+## Output
+
+Return the network/address contract, validated adapter schema, pagination and partial-error state machine, cache policy, privacy controls, degraded UX, reconciliation evidence, and rollback. Mark assumptions, observations, source dates, environment-specific behavior, owners, and unresolved gaps explicitly.
+
+## Examples
+
+- Render Ethereum and Base holdings while explicitly marking a failed Arbitrum query unavailable, then retry Arbitrum as a fresh bounded request.
+- Show an empty portfolio as a valid complete result only when every requested network completed and pagination is exhausted.
+
+## Validation
+
+Exercise and record expected and observed results for:
+
+- empty complete wallet
+- multi-page success
+- HTTP 200 with partialErrors
+- one failed network retry
+- duplicate reconciliation
+- data-deletion request
 
 ## Resources
 
-- [Alchemy Enhanced APIs](https://www.alchemy.com/docs)
-- [Alchemy NFT API](https://www.alchemy.com/docs/reference/nft-api-quickstart)
-- [Alchemy Asset Transfers](https://www.alchemy.com/docs/reference/sdk-getassettransfers)
-
-## Next Steps
-
-For NFT minting and smart contract interaction, see `alchemy-core-workflow-b`.
+- [Current first-party evidence map](references/official-docs.md) — recheck dated Alchemy sources before execution.
+- Treat observed account, application, network, indexer, chain, or provider behavior as environment-specific evidence, never a universal guarantee.

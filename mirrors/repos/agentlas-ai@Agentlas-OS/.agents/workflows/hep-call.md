@@ -12,6 +12,30 @@ Syntax: `/hep-call agent-a, agent-b {context}`. The text before `{` is the
 agent list; the text inside braces is the context. If braces are omitted, the
 first token is the agent list and the rest is context.
 
+## If the user wants it to keep running
+
+A Hub call is charged **every time it runs** — the 24-hour auto-lease was
+retired 2026-08-18, so paying once does not make the next call free. A job that
+wakes on a schedule pays on every wake-up: a five-minute watcher is 288 calls a
+day.
+
+When the request is a standing or recurring one, call
+`hephaestus.quote_agent_lease` for the named agent **before the first run**. It
+answers in one shot — per-day price, total for the days considered, the
+workspace's current balance, and the shortfall plus a top-up link when the
+balance is short. Show all of it in one message and **ask how many days they
+want**; do not choose for them. Only then call
+`hephaestus.purchase_agent_lease` — a confirmed purchase needs `confirm: true`,
+the chosen `days`, the `confirmationToken`, the `expectedPerDayCredits` and
+`expectedTotalCredits` from the quote, and a stable `idempotencyKey`, or it is
+refused.
+
+Never buy a lease the user did not agree to. On `insufficient_credits`, say how
+short they are and give the top-up link instead of asking them to approve a
+purchase that cannot go through. On `leaseOffered: false` the creator set no
+per-day price and it is genuinely not for sale — say so and quote the per-call
+cost instead.
+
 ## How to run
 
 Run the shell block below **verbatim**, replacing only the `RAW` value with the
@@ -46,7 +70,7 @@ if [ -z "$RUNNER" ]; then
 fi
 [ -n "$RUNNER" ] || { echo "Hephaestus runtime not found. Run the installer first." >&2; exit 1; }
 if [ "${HEPHAESTUS_AUTH_AUTOPOPUP:-1}" != "0" ]; then
-  "$RUNNER" auth ensure --timeout 180 >/dev/null 2>&1 || true
+  "$RUNNER" auth ensure >/dev/null 2>&1 || true
 fi
 if printf '%s' "$RAW" | grep -q '{'; then
   AGENTS="${RAW%%\{*}"
@@ -58,7 +82,7 @@ else
 fi
 AGENTS="$(printf '%s' "$AGENTS" | sed 's/[[:space:]]*$//')"
 CONTEXT="$(printf '%s' "$CONTEXT" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')"
-"$RUNNER" call "$AGENTS" "$CONTEXT" --runtime antigravity
+"$RUNNER" call "$AGENTS" "$CONTEXT" --runtime "${AGENTLAS_HOST_RUNTIME:-terminal}"
 ```
 
 ## Answer shape
@@ -87,24 +111,3 @@ CONTEXT="$(printf '%s' "$CONTEXT" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')"
 
 Update fallback: 자동 업데이트가 안 되면 `hephaestus update`를 한 번 실행하세요.
 업데이트하지 않아도 현재 버전 명령은 그대로 동작합니다.
-
-## Rules carried from the other runtime copies
-
-These lines existed in one runtime's hand-maintained copy and not in the
-longest one. They are kept verbatim rather than dropped — a rule that only
-one runtime enforced was still a rule someone wrote on purpose.
-
-- `the request typed after the command` ## Call ```bash RUNNER="" for candidate in \ "$HOME/.agentlas/runtime/current/bin/hephaestus" \ "${CLAUDE_PLUGIN_ROOT:+$CLAUDE_PLUGIN_ROOT/bin/hephaestus}" \ "${PLUGIN_ROOT:+$PLUGIN_ROOT/bin/hephaestus}" \ "./bin/hephaestus" do if [ -n "$candidate" ] && [ -x "$candidate" ]; then RUNNER="$candidate"; break; fi done [ -n "$RUNNER" ] || { echo "Hephaestus runtime not found.
-- Sign-in is automatic — if a call still reports an auth/sign-in status, relay it and stop.
-- `the request typed after the command` Codex plugins cannot register slash commands, so this custom prompt is the explicit entrypoint:
-- Resolve the runner and prepare the named agents:
-- ```bash RUNNER="" for c in "$HOME/.agentlas/runtime/current/bin/hephaestus" ./bin/hephaestus; do [ -x "$c" ] && RUNNER="$c" && break done [ -n "$RUNNER" ] || { echo "Hephaestus runtime not found.
-- For each prepared agent, follow its returned `output.entry_excerpt` and `output.grounding.directive`.
-- The Hub returns BYOM instructions; Codex executes with the current model and permission model.
-- Report failures separately and include the top-level `receipt_id` plus every prepared agent `execution_id`.
-- # Hephaestus Call Prepare explicitly named Agentlas Hub or Cloud agents.
-- First run the `hephaestus-network` skill's app-host auto-update preflight inside Cursor; do not ask the user to open a separate terminal.
-- Resolve the runner (`~/.agentlas/runtime/current/bin/hephaestus`, then `./bin/hephaestus`), run `"$RUNNER" auth ensure --timeout 180`, split the arguments into agent list and context, then run `"$RUNNER" call "<agents>" "<context>" --runtime cursor`.
-- For each prepared agent, follow `output.entry_excerpt` and `output.grounding.directive`.
-- Report failures separately and include `receipt_id` plus every prepared `execution_id`.
-- `the request typed after the command` ```bash RUNNER="" for c in "$HOME/.agentlas/runtime/current/bin/hephaestus" ./bin/hephaestus; do [ -x "$c" ] && RUNNER="$c" && break done [ -n "$RUNNER" ] || { echo "Hephaestus runtime not found.

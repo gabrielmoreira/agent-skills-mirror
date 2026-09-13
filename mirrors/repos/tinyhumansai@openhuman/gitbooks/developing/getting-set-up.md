@@ -21,7 +21,7 @@ This guide covers two paths:
 - `pnpm@10.10.0` (see the root `package.json` `packageManager` field)
 - Rust 1.93.0 through `rustup` with `rustfmt` and `clippy` (see `rust-toolchain.toml`)
 - CMake, required by native Rust dependencies
-- Git submodules under `app/src-tauri/vendor/`, required for the vendored CEF-aware Tauri CLI
+- Git submodules under `crates/openhuman-app/vendor/`, required for the vendored CEF-aware Tauri CLI
 - Platform desktop build tools: Xcode Command Line Tools on macOS, or the Tauri GTK/WebKit/AppIndicator package set on Linux
 
 macOS Homebrew quick start:
@@ -157,7 +157,7 @@ The binary requires the CEF library path to be set:
 ### Option 1 - Direct invocation
 
 ```bash
-REL_DIR=app/src-tauri/target/aarch64-unknown-linux-gnu/release
+REL_DIR=crates/openhuman-app/target/aarch64-unknown-linux-gnu/release
 CEF_DIR=$(ls -d "$REL_DIR"/build/cef-dll-sys-*/out/cef_linux_aarch64 2>/dev/null | head -n1)
 export LD_LIBRARY_PATH="$CEF_DIR:$REL_DIR/deps:$REL_DIR${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
 "$REL_DIR/OpenHuman" --no-sandbox
@@ -169,7 +169,7 @@ Save to `~/bin/openhuman` and make it executable (`chmod +x ~/bin/openhuman`):
 
 ```bash
 #!/bin/bash
-REL_DIR=/path/to/app/src-tauri/target/aarch64-unknown-linux-gnu/release
+REL_DIR=/path/to/crates/openhuman-app/target/aarch64-unknown-linux-gnu/release
 CEF_DIR=$(ls -d "$REL_DIR"/build/cef-dll-sys-*/out/cef_linux_aarch64 2>/dev/null | head -n1)
 export LD_LIBRARY_PATH="$CEF_DIR:$REL_DIR/deps:$REL_DIR${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
 exec "$REL_DIR/OpenHuman" --no-sandbox "$@"
@@ -178,7 +178,7 @@ exec "$REL_DIR/OpenHuman" --no-sandbox "$@"
 ### DEB package install
 
 ```bash
-DEB_FILE=$(ls app/src-tauri/target/aarch64-unknown-linux-gnu/release/bundle/deb/OpenHuman_*_arm64.deb | head -n1)
+DEB_FILE=$(ls crates/openhuman-app/target/aarch64-unknown-linux-gnu/release/bundle/deb/OpenHuman_*_arm64.deb | head -n1)
 sudo dpkg -i "$DEB_FILE"
 ```
 

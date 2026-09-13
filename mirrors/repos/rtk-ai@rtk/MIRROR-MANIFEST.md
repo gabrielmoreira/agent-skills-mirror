@@ -54,13 +54,13 @@ Mirror of `rtk-ai/rtk` — 26 default patterns, 14 followed patterns, 57 file(s)
 - `docs/contributing/ARCHITECTURE.md`
 - `docs/contributing/TECHNICAL.md`
 - `CONTRIBUTING.md`
-- `hooks/README.md`
-- `src/core/README.md`
 - `docs/guide/resources/savings-explained.md`
 - `src/filters/README.md`
 - `src/cmds/README.md`
 - `README.md`
+- `src/core/README.md`
 - `src/hooks/README.md`
+- `hooks/README.md`
 - `SECURITY.md`
 - `INSTALL.md`
 - `docs/TELEMETRY.md`

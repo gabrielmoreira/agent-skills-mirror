@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `lidge-jun/opencodex` — 26 default patterns, 4 followed patterns, 16 file(s) materialized.
+Mirror of `lidge-jun/opencodex` — 26 default patterns, 5 followed patterns, 27 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `lidge-jun/opencodex` — 26 default patterns, 4 followed patterns, 16
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 4 |
-| Files         | 16 |
+| Followed pats | 5 |
+| Files         | 27 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,6 +51,7 @@ Mirror of `lidge-jun/opencodex` — 26 default patterns, 4 followed patterns, 16
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
+- `structure/INDEX.md`
 - `AGENTS_INSTALL.md`
 - `CREDITS.md`
 - `MAINTAINERS.md`
@@ -74,10 +75,21 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 10 | ✓ | [`skills/ocx/references/05_remote_hub.md`](skills/ocx/references/05_remote_hub.md) |
 | 11 | ✓ | [`skills/ocx/SKILL.md`](skills/ocx/SKILL.md) |
 | 12 | ✓ | [`src/AGENTS.md`](src/AGENTS.md) |
-| 13 | → | [`AGENTS_INSTALL.md`](AGENTS_INSTALL.md) |
-| 14 | → | [`CREDITS.md`](CREDITS.md) |
-| 15 | → | [`MAINTAINERS.md`](MAINTAINERS.md) |
-| 16 | → | [`SECURITY.md`](SECURITY.md) |
+| 13 | ✓ | [`structure/AGENTS.md`](structure/AGENTS.md) |
+| 14 | ✓ | [`structure/catalog.md`](structure/catalog.md) |
+| 15 | ✓ | [`structure/codex-home.md`](structure/codex-home.md) |
+| 16 | ✓ | [`structure/config.md`](structure/config.md) |
+| 17 | ✓ | [`structure/design-methodology.md`](structure/design-methodology.md) |
+| 18 | ✓ | [`structure/gui-and-management-api.md`](structure/gui-and-management-api.md) |
+| 19 | ✓ | [`structure/overview.md`](structure/overview.md) |
+| 20 | ✓ | [`structure/remote-workspace.md`](structure/remote-workspace.md) |
+| 21 | ✓ | [`structure/runtime.md`](structure/runtime.md) |
+| 22 | ✓ | [`structure/subagents.md`](structure/subagents.md) |
+| 23 | → | [`AGENTS_INSTALL.md`](AGENTS_INSTALL.md) |
+| 24 | → | [`CREDITS.md`](CREDITS.md) |
+| 25 | → | [`MAINTAINERS.md`](MAINTAINERS.md) |
+| 26 | → | [`SECURITY.md`](SECURITY.md) |
+| 27 | → | [`structure/INDEX.md`](structure/INDEX.md) |
 
 ---
 

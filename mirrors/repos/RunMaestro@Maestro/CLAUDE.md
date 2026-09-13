@@ -82,7 +82,7 @@ Grep-verified 2026-09-04 (`npm run docs:verify` re-checks every path). This is t
 - **Color math and contrast:** `readableTextOn()`, `isReadableOn()` in `src/shared/colorContrast.ts`
 - **Agent display name:** `getAgentDisplayName()` in `src/shared/agentMetadata.ts`
 - **Whether an agent is working right now (main process):** `isAgentBusy(session, processManager)`, `isAiTabProcessActive(...)` in `src/main/utils/agent-busy.ts`
-- **Which provider account an agent runs as:** `resolveAgentAccountKey()`, `PROVIDER_PROFILE_CONFIGS` in `src/shared/providerProfiles.ts`
+- **Which provider account an agent runs as:** `resolveAgentProfile()`, `effectiveAgentCustomEnvVars()`, `PROVIDER_PROFILE_CONFIGS` in `src/shared/providerProfiles.ts`
 - **SSH remote lookup:** `getSshRemoteById()` in `src/main/stores/getters.ts`
 - **Deferred main-process store persistence:** `deferStoreWrites()`, `flushPendingSessionWrites()` in `src/main/stores/deferred-writes.ts` / `src/main/stores/instances.ts`
 - **Toast notifications:** `notifyToast({ color, title, message, dismissible? })`, `theme` in `src/renderer/stores/notificationStore.ts`
@@ -99,6 +99,7 @@ Grep-verified 2026-09-04 (`npm run docs:verify` re-checks every path). This is t
 - **Whether an agent is drawn in the Left Bar:** `sessionMatchesFilter()`, `passesUnreadFilter()` in `src/renderer/utils/sidebarMembership.ts`
 - **Session lookup:** `selectActiveSession()`, `selectSessionById()` in `src/renderer/stores/sessionStore.ts`
 - **Session mutation:** `updateSessionWith(sessionId, updater)` in `src/renderer/stores/sessionStore.ts`
+- **Moving an agent to another directory:** `withWorkingDirectory(session, dir)`, `workingDirectoryChangeBlocker(session)`, `isSameDirectory(a, b)`, `rebasePathOntoRoot()` in `src/renderer/utils/agentWorkingDirectory.ts`
 - **Per-agent git actions:** `useGitAgentActions(session)`, `buildGitWorktreeCommands` in `src/renderer/hooks/git/useGitAgentActions.ts`
 - **Whether a PR is being opened right now:** `usePRCreationActive(worktreePath)`, `startPRCreation()` in `src/renderer/stores/prCreationStore.ts`
 - **Focus an AI tab:** `aiTabFocusFields(tabId?)`, `activeFileTabId` in `src/renderer/utils/tabHelpers.ts`

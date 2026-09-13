@@ -11,7 +11,7 @@ The bounded JSON result is `workflow_artifact_operation_result/v1`; the CLI is m
 ## Closed registry
 
 - `decision-prototype`: `prepare`, `validate`, `observe`, `receipt`, `handoff`, `persist`
-- `lifecycle-growth`: `build`, `prepare`, `validate`, `evaluate`, `readout`, `audience`, `promote`, `graduate`
+- `lifecycle-growth`: `build`, `prepare`, `validate`, `evaluate`, `readout`, `audience`, `promote`, `graduate`, `configuration`, `metrics`
 - `product-discovery-validation`: `build`, `prepare`, `validate`, `audience-gate`, `evaluate`, `handoff`, `append`
 - `sales-pipeline-review`: `prepare`, `validate`, `evaluate`, `handoff`
 

@@ -51,7 +51,7 @@ def _relevance_rank_key(post: Dict[str, Any]) -> float:
     """
     eng = post.get("engagement", {})
     total = (eng.get("score", 0) or 0) + (eng.get("num_comments", 0) or 0)
-    return (post.get("relevance") or 0.0) + min(0.25, math.log10(total + 1) / 20.0)
+    return (post.get("relevance") or 0.0) + min(0.25, math.log10(max(0, total) + 1) / 20.0)
 
 
 def _log(msg: str) -> None:

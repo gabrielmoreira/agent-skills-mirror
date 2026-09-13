@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `sergeyklay/.agents` — 26 default patterns, 0 followed patterns, 190 file(s) materialized.
+Mirror of `sergeyklay/.agents` — 26 default patterns, 0 followed patterns, 191 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `sergeyklay/.agents` — 26 default patterns, 0 followed patterns, 190
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 190 |
+| Files         | 191 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -189,66 +189,67 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 128 | ✓ | [`.agents/skills/manage-todo/scripts/validate_roadmap.py`](.agents/skills/manage-todo/scripts/validate_roadmap.py) |
 | 129 | ✓ | [`.agents/skills/manage-todo/SKILL.md`](.agents/skills/manage-todo/SKILL.md) |
 | 130 | ✓ | [`.agents/skills/monitor-ci/SKILL.md`](.agents/skills/monitor-ci/SKILL.md) |
-| 131 | ✓ | [`.agents/skills/prove-checks/references/nothing-executed.md`](.agents/skills/prove-checks/references/nothing-executed.md) |
-| 132 | ✓ | [`.agents/skills/prove-checks/SKILL.md`](.agents/skills/prove-checks/SKILL.md) |
-| 133 | ✓ | [`.agents/skills/research-it/assets/investigation-checklist.md`](.agents/skills/research-it/assets/investigation-checklist.md) |
-| 134 | ✓ | [`.agents/skills/research-it/references/effort-scaling.md`](.agents/skills/research-it/references/effort-scaling.md) |
-| 135 | ✓ | [`.agents/skills/research-it/references/source-catalog.md`](.agents/skills/research-it/references/source-catalog.md) |
-| 136 | ✓ | [`.agents/skills/research-it/references/triangulation-and-bias.md`](.agents/skills/research-it/references/triangulation-and-bias.md) |
-| 137 | ✓ | [`.agents/skills/research-it/SKILL.md`](.agents/skills/research-it/SKILL.md) |
-| 138 | ✓ | [`.agents/skills/review-arch/assets/review-template.md`](.agents/skills/review-arch/assets/review-template.md) |
-| 139 | ✓ | [`.agents/skills/review-arch/references/anti-patterns.md`](.agents/skills/review-arch/references/anti-patterns.md) |
-| 140 | ✓ | [`.agents/skills/review-arch/references/communication-style.md`](.agents/skills/review-arch/references/communication-style.md) |
-| 141 | ✓ | [`.agents/skills/review-arch/references/evaluation-dimensions.md`](.agents/skills/review-arch/references/evaluation-dimensions.md) |
-| 142 | ✓ | [`.agents/skills/review-arch/references/quality-attributes.md`](.agents/skills/review-arch/references/quality-attributes.md) |
-| 143 | ✓ | [`.agents/skills/review-arch/references/review-philosophy.md`](.agents/skills/review-arch/references/review-philosophy.md) |
-| 144 | ✓ | [`.agents/skills/review-arch/SKILL.md`](.agents/skills/review-arch/SKILL.md) |
-| 145 | ✓ | [`.agents/skills/review-impl/SKILL.md`](.agents/skills/review-impl/SKILL.md) |
-| 146 | ✓ | [`.agents/skills/review-spec/assets/review-template.md`](.agents/skills/review-spec/assets/review-template.md) |
-| 147 | ✓ | [`.agents/skills/review-spec/references/review-dimensions.md`](.agents/skills/review-spec/references/review-dimensions.md) |
-| 148 | ✓ | [`.agents/skills/review-spec/references/spec-anti-patterns.md`](.agents/skills/review-spec/references/spec-anti-patterns.md) |
-| 149 | ✓ | [`.agents/skills/review-spec/SKILL.md`](.agents/skills/review-spec/SKILL.md) |
-| 150 | ✓ | [`.agents/skills/scan-security/assets/report-template.md`](.agents/skills/scan-security/assets/report-template.md) |
-| 151 | ✓ | [`.agents/skills/scan-security/SKILL.md`](.agents/skills/scan-security/SKILL.md) |
-| 152 | ✓ | [`.agents/skills/search-web/SKILL.md`](.agents/skills/search-web/SKILL.md) |
-| 153 | ✓ | [`.agents/skills/split-docs/references/anti-patterns.md`](.agents/skills/split-docs/references/anti-patterns.md) |
-| 154 | ✓ | [`.agents/skills/split-docs/references/inbound-references.md`](.agents/skills/split-docs/references/inbound-references.md) |
-| 155 | ✓ | [`.agents/skills/split-docs/SKILL.md`](.agents/skills/split-docs/SKILL.md) |
-| 156 | ✓ | [`.agents/skills/test-go/assets/helper-template.go`](.agents/skills/test-go/assets/helper-template.go) |
-| 157 | ✓ | [`.agents/skills/test-go/assets/integration-test-template.go`](.agents/skills/test-go/assets/integration-test-template.go) |
-| 158 | ✓ | [`.agents/skills/test-go/assets/table-test-template.go`](.agents/skills/test-go/assets/table-test-template.go) |
-| 159 | ✓ | [`.agents/skills/test-go/references/error-testing-patterns.md`](.agents/skills/test-go/references/error-testing-patterns.md) |
-| 160 | ✓ | [`.agents/skills/test-go/references/integration-tests.md`](.agents/skills/test-go/references/integration-tests.md) |
-| 161 | ✓ | [`.agents/skills/test-go/references/test-doubles.md`](.agents/skills/test-go/references/test-doubles.md) |
-| 162 | ✓ | [`.agents/skills/test-go/SKILL.md`](.agents/skills/test-go/SKILL.md) |
-| 163 | ✓ | [`.agents/skills/test-ts/assets/vitest.config.ts`](.agents/skills/test-ts/assets/vitest.config.ts) |
-| 164 | ✓ | [`.agents/skills/test-ts/assets/vitest.setup.ts`](.agents/skills/test-ts/assets/vitest.setup.ts) |
-| 165 | ✓ | [`.agents/skills/test-ts/references/mocking-patterns.md`](.agents/skills/test-ts/references/mocking-patterns.md) |
-| 166 | ✓ | [`.agents/skills/test-ts/references/rsc-patterns.md`](.agents/skills/test-ts/references/rsc-patterns.md) |
-| 167 | ✓ | [`.agents/skills/test-ts/SKILL.md`](.agents/skills/test-ts/SKILL.md) |
-| 168 | ✓ | [`.agents/skills/verify-impl/assets/remediation-plan-template.md`](.agents/skills/verify-impl/assets/remediation-plan-template.md) |
-| 169 | ✓ | [`.agents/skills/verify-impl/assets/review-summary-template.md`](.agents/skills/verify-impl/assets/review-summary-template.md) |
-| 170 | ✓ | [`.agents/skills/verify-impl/references/cross-cutting-checks.md`](.agents/skills/verify-impl/references/cross-cutting-checks.md) |
-| 171 | ✓ | [`.agents/skills/verify-impl/references/requirement-taxonomy.md`](.agents/skills/verify-impl/references/requirement-taxonomy.md) |
-| 172 | ✓ | [`.agents/skills/verify-impl/references/severity-rubric.md`](.agents/skills/verify-impl/references/severity-rubric.md) |
-| 173 | ✓ | [`.agents/skills/verify-impl/SKILL.md`](.agents/skills/verify-impl/SKILL.md) |
-| 174 | ✓ | [`.agents/skills/vet-dependency/references/ecosystems.md`](.agents/skills/vet-dependency/references/ecosystems.md) |
-| 175 | ✓ | [`.agents/skills/vet-dependency/references/forges.md`](.agents/skills/vet-dependency/references/forges.md) |
-| 176 | ✓ | [`.agents/skills/vet-dependency/SKILL.md`](.agents/skills/vet-dependency/SKILL.md) |
-| 177 | ✓ | [`.agents/skills/writing-plans/assets/plan-template.md`](.agents/skills/writing-plans/assets/plan-template.md) |
-| 178 | ✓ | [`.agents/skills/writing-plans/references/output-style-rules.md`](.agents/skills/writing-plans/references/output-style-rules.md) |
-| 179 | ✓ | [`.agents/skills/writing-plans/references/phase-structure.md`](.agents/skills/writing-plans/references/phase-structure.md) |
-| 180 | ✓ | [`.agents/skills/writing-plans/references/philosophy-checklist.md`](.agents/skills/writing-plans/references/philosophy-checklist.md) |
-| 181 | ✓ | [`.agents/skills/writing-plans/scripts/validate_plan.py`](.agents/skills/writing-plans/scripts/validate_plan.py) |
-| 182 | ✓ | [`.agents/skills/writing-plans/SKILL.md`](.agents/skills/writing-plans/SKILL.md) |
-| 183 | ✓ | [`.agents/skills/writing-specs/assets/spec-template.md`](.agents/skills/writing-specs/assets/spec-template.md) |
-| 184 | ✓ | [`.agents/skills/writing-specs/references/analysis-protocol.md`](.agents/skills/writing-specs/references/analysis-protocol.md) |
-| 185 | ✓ | [`.agents/skills/writing-specs/references/authoring-procedure.md`](.agents/skills/writing-specs/references/authoring-procedure.md) |
-| 186 | ✓ | [`.agents/skills/writing-specs/references/project-context.md`](.agents/skills/writing-specs/references/project-context.md) |
-| 187 | ✓ | [`.agents/skills/writing-specs/references/quality-checklist.md`](.agents/skills/writing-specs/references/quality-checklist.md) |
-| 188 | ✓ | [`.agents/skills/writing-specs/scripts/validate_spec.py`](.agents/skills/writing-specs/scripts/validate_spec.py) |
-| 189 | ✓ | [`.agents/skills/writing-specs/SKILL.md`](.agents/skills/writing-specs/SKILL.md) |
-| 190 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 131 | ✓ | [`.agents/skills/prove-checks/references/anti-patterns.md`](.agents/skills/prove-checks/references/anti-patterns.md) |
+| 132 | ✓ | [`.agents/skills/prove-checks/references/nothing-executed.md`](.agents/skills/prove-checks/references/nothing-executed.md) |
+| 133 | ✓ | [`.agents/skills/prove-checks/SKILL.md`](.agents/skills/prove-checks/SKILL.md) |
+| 134 | ✓ | [`.agents/skills/research-it/assets/investigation-checklist.md`](.agents/skills/research-it/assets/investigation-checklist.md) |
+| 135 | ✓ | [`.agents/skills/research-it/references/effort-scaling.md`](.agents/skills/research-it/references/effort-scaling.md) |
+| 136 | ✓ | [`.agents/skills/research-it/references/source-catalog.md`](.agents/skills/research-it/references/source-catalog.md) |
+| 137 | ✓ | [`.agents/skills/research-it/references/triangulation-and-bias.md`](.agents/skills/research-it/references/triangulation-and-bias.md) |
+| 138 | ✓ | [`.agents/skills/research-it/SKILL.md`](.agents/skills/research-it/SKILL.md) |
+| 139 | ✓ | [`.agents/skills/review-arch/assets/review-template.md`](.agents/skills/review-arch/assets/review-template.md) |
+| 140 | ✓ | [`.agents/skills/review-arch/references/anti-patterns.md`](.agents/skills/review-arch/references/anti-patterns.md) |
+| 141 | ✓ | [`.agents/skills/review-arch/references/communication-style.md`](.agents/skills/review-arch/references/communication-style.md) |
+| 142 | ✓ | [`.agents/skills/review-arch/references/evaluation-dimensions.md`](.agents/skills/review-arch/references/evaluation-dimensions.md) |
+| 143 | ✓ | [`.agents/skills/review-arch/references/quality-attributes.md`](.agents/skills/review-arch/references/quality-attributes.md) |
+| 144 | ✓ | [`.agents/skills/review-arch/references/review-philosophy.md`](.agents/skills/review-arch/references/review-philosophy.md) |
+| 145 | ✓ | [`.agents/skills/review-arch/SKILL.md`](.agents/skills/review-arch/SKILL.md) |
+| 146 | ✓ | [`.agents/skills/review-impl/SKILL.md`](.agents/skills/review-impl/SKILL.md) |
+| 147 | ✓ | [`.agents/skills/review-spec/assets/review-template.md`](.agents/skills/review-spec/assets/review-template.md) |
+| 148 | ✓ | [`.agents/skills/review-spec/references/review-dimensions.md`](.agents/skills/review-spec/references/review-dimensions.md) |
+| 149 | ✓ | [`.agents/skills/review-spec/references/spec-anti-patterns.md`](.agents/skills/review-spec/references/spec-anti-patterns.md) |
+| 150 | ✓ | [`.agents/skills/review-spec/SKILL.md`](.agents/skills/review-spec/SKILL.md) |
+| 151 | ✓ | [`.agents/skills/scan-security/assets/report-template.md`](.agents/skills/scan-security/assets/report-template.md) |
+| 152 | ✓ | [`.agents/skills/scan-security/SKILL.md`](.agents/skills/scan-security/SKILL.md) |
+| 153 | ✓ | [`.agents/skills/search-web/SKILL.md`](.agents/skills/search-web/SKILL.md) |
+| 154 | ✓ | [`.agents/skills/split-docs/references/anti-patterns.md`](.agents/skills/split-docs/references/anti-patterns.md) |
+| 155 | ✓ | [`.agents/skills/split-docs/references/inbound-references.md`](.agents/skills/split-docs/references/inbound-references.md) |
+| 156 | ✓ | [`.agents/skills/split-docs/SKILL.md`](.agents/skills/split-docs/SKILL.md) |
+| 157 | ✓ | [`.agents/skills/test-go/assets/helper-template.go`](.agents/skills/test-go/assets/helper-template.go) |
+| 158 | ✓ | [`.agents/skills/test-go/assets/integration-test-template.go`](.agents/skills/test-go/assets/integration-test-template.go) |
+| 159 | ✓ | [`.agents/skills/test-go/assets/table-test-template.go`](.agents/skills/test-go/assets/table-test-template.go) |
+| 160 | ✓ | [`.agents/skills/test-go/references/error-testing-patterns.md`](.agents/skills/test-go/references/error-testing-patterns.md) |
+| 161 | ✓ | [`.agents/skills/test-go/references/integration-tests.md`](.agents/skills/test-go/references/integration-tests.md) |
+| 162 | ✓ | [`.agents/skills/test-go/references/test-doubles.md`](.agents/skills/test-go/references/test-doubles.md) |
+| 163 | ✓ | [`.agents/skills/test-go/SKILL.md`](.agents/skills/test-go/SKILL.md) |
+| 164 | ✓ | [`.agents/skills/test-ts/assets/vitest.config.ts`](.agents/skills/test-ts/assets/vitest.config.ts) |
+| 165 | ✓ | [`.agents/skills/test-ts/assets/vitest.setup.ts`](.agents/skills/test-ts/assets/vitest.setup.ts) |
+| 166 | ✓ | [`.agents/skills/test-ts/references/mocking-patterns.md`](.agents/skills/test-ts/references/mocking-patterns.md) |
+| 167 | ✓ | [`.agents/skills/test-ts/references/rsc-patterns.md`](.agents/skills/test-ts/references/rsc-patterns.md) |
+| 168 | ✓ | [`.agents/skills/test-ts/SKILL.md`](.agents/skills/test-ts/SKILL.md) |
+| 169 | ✓ | [`.agents/skills/verify-impl/assets/remediation-plan-template.md`](.agents/skills/verify-impl/assets/remediation-plan-template.md) |
+| 170 | ✓ | [`.agents/skills/verify-impl/assets/review-summary-template.md`](.agents/skills/verify-impl/assets/review-summary-template.md) |
+| 171 | ✓ | [`.agents/skills/verify-impl/references/cross-cutting-checks.md`](.agents/skills/verify-impl/references/cross-cutting-checks.md) |
+| 172 | ✓ | [`.agents/skills/verify-impl/references/requirement-taxonomy.md`](.agents/skills/verify-impl/references/requirement-taxonomy.md) |
+| 173 | ✓ | [`.agents/skills/verify-impl/references/severity-rubric.md`](.agents/skills/verify-impl/references/severity-rubric.md) |
+| 174 | ✓ | [`.agents/skills/verify-impl/SKILL.md`](.agents/skills/verify-impl/SKILL.md) |
+| 175 | ✓ | [`.agents/skills/vet-dependency/references/ecosystems.md`](.agents/skills/vet-dependency/references/ecosystems.md) |
+| 176 | ✓ | [`.agents/skills/vet-dependency/references/forges.md`](.agents/skills/vet-dependency/references/forges.md) |
+| 177 | ✓ | [`.agents/skills/vet-dependency/SKILL.md`](.agents/skills/vet-dependency/SKILL.md) |
+| 178 | ✓ | [`.agents/skills/writing-plans/assets/plan-template.md`](.agents/skills/writing-plans/assets/plan-template.md) |
+| 179 | ✓ | [`.agents/skills/writing-plans/references/output-style-rules.md`](.agents/skills/writing-plans/references/output-style-rules.md) |
+| 180 | ✓ | [`.agents/skills/writing-plans/references/phase-structure.md`](.agents/skills/writing-plans/references/phase-structure.md) |
+| 181 | ✓ | [`.agents/skills/writing-plans/references/philosophy-checklist.md`](.agents/skills/writing-plans/references/philosophy-checklist.md) |
+| 182 | ✓ | [`.agents/skills/writing-plans/scripts/validate_plan.py`](.agents/skills/writing-plans/scripts/validate_plan.py) |
+| 183 | ✓ | [`.agents/skills/writing-plans/SKILL.md`](.agents/skills/writing-plans/SKILL.md) |
+| 184 | ✓ | [`.agents/skills/writing-specs/assets/spec-template.md`](.agents/skills/writing-specs/assets/spec-template.md) |
+| 185 | ✓ | [`.agents/skills/writing-specs/references/analysis-protocol.md`](.agents/skills/writing-specs/references/analysis-protocol.md) |
+| 186 | ✓ | [`.agents/skills/writing-specs/references/authoring-procedure.md`](.agents/skills/writing-specs/references/authoring-procedure.md) |
+| 187 | ✓ | [`.agents/skills/writing-specs/references/project-context.md`](.agents/skills/writing-specs/references/project-context.md) |
+| 188 | ✓ | [`.agents/skills/writing-specs/references/quality-checklist.md`](.agents/skills/writing-specs/references/quality-checklist.md) |
+| 189 | ✓ | [`.agents/skills/writing-specs/scripts/validate_spec.py`](.agents/skills/writing-specs/scripts/validate_spec.py) |
+| 190 | ✓ | [`.agents/skills/writing-specs/SKILL.md`](.agents/skills/writing-specs/SKILL.md) |
+| 191 | ✓ | [`AGENTS.md`](AGENTS.md) |
 
 ---
 

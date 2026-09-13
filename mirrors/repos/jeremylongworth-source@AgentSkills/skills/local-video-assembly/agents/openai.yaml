@@ -1,0 +1,4 @@
+interface:
+  display_name: "Local Video Assembly"
+  short_description: "Plan FFMPEG video assembly."
+  default_prompt: "Use $local-video-assembly to plan and validate a local FFMPEG-rendered narrated explainer video package."

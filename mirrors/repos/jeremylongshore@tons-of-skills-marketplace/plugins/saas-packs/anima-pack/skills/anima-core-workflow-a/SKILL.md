@@ -6,13 +6,16 @@ description: 'Build automated Figma-to-React pipeline with the Anima SDK.
 
   or creating a design system code generator from Figma components.
 
-  Trigger: "anima design pipeline", "figma to react pipeline",
+  Trigger with: "anima design pipeline", "figma to react pipeline",
 
   "automated design handoff", "anima component generator".
 
   '
 allowed-tools: Read, Write, Edit, Bash(npm:*), Grep
-version: 1.4.0
+version: 2.0.0
+argument-hint: "[figma-file-key] [node-id]"
+model: inherit
+effort: high
 license: MIT
 author: Jeremy Longshore <jeremy@intentsolutions.io>
 tags:
@@ -22,19 +25,27 @@ tags:
 - anima
 - react
 - automation
-compatibility: Designed for Claude Code
+compatibility: Requires Node.js 20+, approved Anima API access, current Anima SDK documentation, and authorized Figma or website source access
 ---
 # Anima Core Workflow A — Figma-to-React Pipeline
 
 ## Overview
 
-Primary workflow: automated pipeline that watches a Figma file, generates React components whenever the design changes, and integrates them into your codebase. This replaces manual design handoff with continuous design-to-code automation.
+Build a review-driven Figma-to-React pipeline. Detect an approved source revision,
+generate only allowlisted nodes, contain the output, and open a review change; never
+turn a Figma change directly into merged or deployed application code.
 
 ## Prerequisites
 
 - Completed `anima-install-auth` setup
 - Figma file with organized components (auto-layout recommended)
 - React project (Next.js, Vite, or CRA)
+
+## Authentication
+
+Create the `Anima` client only on the backend with `ANIMA_TOKEN`; pass a managed
+`FIGMA_TOKEN` for the allowlisted file to `generateCode`. Stop on either token's
+401/403 result and correct access without widening the source allowlist.
 
 ## Instructions
 
@@ -55,7 +66,7 @@ const anima = new Anima({
 });
 
 // Fetch all top-level components from a Figma page
-async function scanFigmaComponents(fileKey: string): Promise<FigmaComponent[]> {
+async function scanFigmaComponents(fileKey: string) {
   const response = await fetch(
     `https://api.figma.com/v1/files/${fileKey}/components`,
     { headers: { 'X-Figma-Token': process.env.FIGMA_TOKEN! } }
@@ -87,9 +98,9 @@ interface GenerationConfig {
   outputDir: string;
   settings: {
     language: 'typescript' | 'javascript';
-    framework: 'react' | 'vue' | 'html';
-    styling: 'tailwind' | 'css' | 'styled-components';
-    uiLibrary?: 'none' | 'mui' | 'antd' | 'shadcn';
+    framework: 'react' | 'html';
+    styling: 'plain_css' | 'tailwind' | 'inline_styles';
+    uiLibrary?: 'mui' | 'antd' | 'radix' | 'shadcn' | 'clean_react' | 'custom_design_system';
   };
 }
 
@@ -112,19 +123,23 @@ async function generateComponentBatch(
         settings: config.settings,
       });
 
-      for (const file of files) {
-        const filePath = path.join(config.outputDir, file.fileName);
+      for (const [fileName, file] of Object.entries(files)) {
+        const root = path.resolve(config.outputDir);
+        const filePath = path.resolve(root, fileName);
+        if (!filePath.startsWith(`${root}${path.sep}`) || file.isBinary) {
+          throw new Error(`Rejected generated file: ${fileName}`);
+        }
+        fs.mkdirSync(path.dirname(filePath), { recursive: true });
         fs.writeFileSync(filePath, file.content);
-        console.log(`Generated: ${file.fileName}`);
+        console.log(`Generated: ${fileName}`);
       }
       generated++;
-    } catch (err) {
-      console.error(`Failed to generate node ${nodeId}:`, err);
+    } catch {
+      console.error({ failureClass: 'node-generation-failed', nodeId });
       failed.push(nodeId);
     }
 
-    // Rate limit: Anima API has per-minute limits
-    await new Promise(r => setTimeout(r, 2000));
+    // Concurrency and retry policy belong to the measured rate-limit workflow.
   }
 
   return { generated, failed };
@@ -143,7 +158,7 @@ interface FileVersion {
   label: string;
 }
 
-async function getLatestVersion(fileKey: string): Promise<FileVersion> {
+async function getLatestVersion(fileKey: string) {
   const response = await fetch(
     `https://api.figma.com/v1/files/${fileKey}/versions`,
     { headers: { 'X-Figma-Token': process.env.FIGMA_TOKEN! } }
@@ -155,7 +170,7 @@ async function getLatestVersion(fileKey: string): Promise<FileVersion> {
 // Check if file changed since last generation
 let lastVersionId = '';
 
-async function hasDesignChanged(fileKey: string): Promise<boolean> {
+async function hasDesignChanged(fileKey: string) {
   const latest = await getLatestVersion(fileKey);
   if (latest.id !== lastVersionId) {
     lastVersionId = latest.id;
@@ -200,26 +215,22 @@ async function runPipeline() {
   console.log(`\nPipeline complete: ${result.generated} generated, ${result.failed.length} failed`);
 }
 
-// Watch mode: re-generate on design changes
-async function watchMode() {
-  console.log('Watching for Figma design changes...');
-  setInterval(async () => {
-    if (await hasDesignChanged(config.fileKey)) {
-      console.log('Design changed — regenerating...');
-      await runPipeline();
-    }
-  }, 60000); // Check every minute
-}
-
-runPipeline().catch(console.error);
+runPipeline().catch(() => {
+  console.error({ failureClass: 'figma-pipeline-failed' });
+  process.exitCode = 1;
+});
 ```
+
+## Tool Discipline
+
+Use Read and Grep to inspect the existing integration and generated diff before changing anything. Use Write or Edit only inside the approved generated-code, test, or configuration paths. Use the declared Bash commands only for the explicit install, validation, or diagnostic steps in this workflow; never print tokens, source designs, generated source, or private website captures.
 
 ## Output
 
 - Automated Figma component scanning and enumeration
 - Batch code generation for entire design systems
 - Change detection for continuous design-to-code sync
-- Watch mode for iterative design development
+- A durable source-revision receipt suitable for a PR review gate
 
 ## Examples
 
@@ -246,7 +257,3 @@ correct the node allowlist or design source before the next run.
 - [Anima API](https://docs.animaapp.com/docs/anima-api)
 - [Figma API Components](https://www.figma.com/developers/api#components)
 - [Anima Blog](https://www.animaapp.com/blog/design-to-code/)
-
-## Next Steps
-
-For website-to-code cloning, see `anima-core-workflow-b`.

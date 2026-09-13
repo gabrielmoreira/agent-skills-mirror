@@ -29,7 +29,7 @@ OpenHuman is a desktop AI assistant app. The codebase has three main parts:
 | Part             | Tech               | What it does                           |
 | ---------------- | ------------------ | -------------------------------------- |
 | `app/`           | React + TypeScript | The UI — what you see and click        |
-| `app/src-tauri/` | Rust + Tauri       | Wraps the UI into a desktop app        |
+| `crates/openhuman-app/` | Rust + Tauri       | Wraps the UI into a desktop app        |
 | `src/`           | Rust               | The backend brain — logic, memory, RPC |
 
 **As a beginner**, focus on `app/src/` (React/TypeScript). You don't need to touch Rust to make meaningful contributions.
@@ -334,7 +334,7 @@ For your first contribution, `pnpm dev` is all you need.
 | Documentation        | `*.md` files, `gitbooks/`            | Writing           |
 | Bug fixes (frontend) | `app/src/`                           | React, TypeScript |
 
-**Avoid for now**: anything in `src/` (Rust core) or `app/src-tauri/` (Tauri shell) until you're comfortable with the codebase.
+**Avoid for now**: anything in `src/` (Rust core) or `crates/openhuman-app/` (Tauri shell) until you're comfortable with the codebase.
 
 ---
 

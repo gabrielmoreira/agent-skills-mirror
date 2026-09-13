@@ -43,6 +43,15 @@ The public API is the barrel at `src/index.ts`.
 - **Preserve markdown contracts.** Memory files require YAML frontmatter with a
   non-empty `description`; `read_only: "true"` blocks mutation. Keep UTF-8,
   normalized repository-relative paths, and LF output.
+- **Frontmatter is strict YAML, one grammar everywhere.** `renderMemoryFile`
+  is the only writer: it quotes any scalar that the `yaml` package would not
+  read back verbatim and re-parses its own header. The reader decodes quoted
+  scalars, keeps non-contract keys (`extra`) so SKILL.md `name`/`version`
+  survive edits, and only falls back to the legacy first-colon grammar for
+  pre-existing files. `describeFrontmatterViolation` is the shared gate for
+  the pre-commit hook rules, `validateCompletion`, and
+  `normalizeMemoryFrontmatter` (one-time legacy repair keyed by a marker in
+  the common git dir). Never emit an unquoted `description:` by hand.
 - **Keep reflection transitions deterministic.** Manual triggers outrank
   compaction, which outranks step-count triggers. Only one active run and one
   merged pending reservation may exist.

@@ -6,6 +6,7 @@ import datetime
 import json
 import locale
 import os
+import re
 import sys
 from dataclasses import dataclass
 from pathlib import Path
@@ -126,6 +127,60 @@ def _truthy(value: Any) -> bool:
     return str(value).strip().lower() in {"1", "true", "yes", "on"}
 
 
+# A Claude Desktop extension maps every unset field in its config modal to the
+# literal string ``${user_config.<field>}`` in the engine's environment. The
+# placeholder is non-empty, so a presence check reads it as a real credential:
+# doctor reports the source healthy, preflight returns ready, and the backend
+# sends the literal placeholder upstream and surfaces the vendor's 401 instead
+# of falling back. Two constraints keep legitimate values out of scope. The
+# match is anchored to the whole trimmed value, so a real credential containing
+# ``$`` or braces is untouched. And the field name is restricted to the
+# identifier charset the manifest uses, so shell-default syntax is not mistaken
+# for a placeholder - both the generic form a user may paste into ``.env``
+# (``${VAR:-default}``) and the namespaced form with a default
+# (``${user_config.x:-default}``). Only the extension namespace, as issue
+# #1081's own suggested fix names, is rejected.
+_UNSUBSTITUTED_TEMPLATE = re.compile(r"^\$\{user_config\.[A-Za-z0-9_]+\}$")
+
+# Config-record key holding the names of values rejected above, so diagnostics
+# report the templated state instead of silently counting the key absent.
+TEMPLATE_CONFIG_KEYS = "_TEMPLATE_CONFIG_KEYS"
+
+
+def is_unsubstituted_template(value: Any) -> bool:
+    """True when ``value`` is a whole, unexpanded ``${user_config.*}`` placeholder."""
+    if not isinstance(value, str):
+        return False
+    return bool(_UNSUBSTITUTED_TEMPLATE.match(value.strip()))
+
+
+def templated_config_keys(config: dict[str, Any]) -> list[str]:
+    """Public view of the keys ``get_config()`` rejected as unsubstituted templates.
+
+    Thin reader so diagnostics report the templated state without re-deriving
+    the record key, in the same spirit as ``include_sources`` and
+    ``is_setup_complete``. Sorted here too: these call sites also see hand-built
+    configs, and the order is user-visible in both diagnostics.
+    """
+    return sorted(config.get(TEMPLATE_CONFIG_KEYS) or [])
+
+
+def _rotate_scrapecreators_key(config: dict[str, Any]) -> None:
+    """Round-robin a comma-separated SCRAPECREATORS_API_KEY to one key per run.
+
+    Extracted so the placeholder sweep can reapply it: the sweep may restore a
+    value from a lower-priority source after the ordinary rotation already ran,
+    and a comma-separated list handed to a backend whole fails authentication.
+    A second call on an already-rotated value is a no-op (no comma remains).
+    """
+    raw = config.get('SCRAPECREATORS_API_KEY') or ''
+    if ',' not in raw:
+        return
+    import random
+    sc_keys = [k.strip() for k in raw.split(',') if k.strip()]
+    config['SCRAPECREATORS_API_KEY'] = random.choice(sc_keys) if sc_keys else ''
+
+
 def is_timestamp_fresh(timestamp_value: Any, ttl_seconds: int) -> bool:
     """True when ``timestamp_value`` (ISO-8601 string) is within ``ttl_seconds``.
 
@@ -180,6 +235,31 @@ def _check_file_permissions(path: Path) -> None:
         sys.stderr.flush()
 
 
+def _strip_inline_comment(value: str) -> str:
+    """Drop a trailing ``# comment`` from the right-hand side of a KEY=value line.
+
+    Unquoted: ``#`` opens a comment only as the first non-blank character or
+    when preceded by whitespace, so ``value#nothash`` stays intact. Quoted:
+    everything up to the matching close quote is kept verbatim; only a
+    whitespace-separated ``#`` after the close quote is dropped. Anything that
+    does not match those shapes is returned unchanged for the existing quote
+    handling to deal with.
+    """
+    stripped = value.lstrip()
+    if stripped[:1] in ('"', "'"):
+        end = stripped.find(stripped[0], 1)
+        if end == -1:
+            return value
+        rest = stripped[end + 1:]
+        if rest[:1].isspace() and rest.lstrip().startswith('#'):
+            return stripped[:end + 1]
+        return value
+    match = re.search(r'(?:^|\s)#', stripped)
+    if match:
+        return stripped[:match.start()]
+    return value
+
+
 def load_env_file(path: Path) -> dict[str, str]:
     """Load environment variables from a file."""
     env = {}
@@ -204,7 +284,7 @@ def load_env_file(path: Path) -> dict[str, str]:
         if '=' in line:
             key, _, value = line.partition('=')
             key = key.strip()
-            value = value.strip()
+            value = _strip_inline_comment(value).strip()
             # Remove quotes if present
             if value and value[0] in ('"', "'") and value[-1] == value[0]:
                 value = value[1:-1]
@@ -684,11 +764,7 @@ def get_config(policy: ConfigLoadPolicy | None = None) -> dict[str, Any]:
     # Multi-key rotation: comma-separated SCRAPECREATORS_API_KEY round-robins
     # via random.choice per run. Originally added in #268, accidentally dropped
     # in v3.0.6, restored here.
-    sc_key_raw = config.get('SCRAPECREATORS_API_KEY') or ''
-    if ',' in sc_key_raw:
-        import random
-        sc_keys = [k.strip() for k in sc_key_raw.split(',') if k.strip()]
-        config['SCRAPECREATORS_API_KEY'] = random.choice(sc_keys) if sc_keys else ''
+    _rotate_scrapecreators_key(config)
 
     # Track which config source was used (highest-priority file source wins
     # the label; keychain is only reported when nothing else is configured).
@@ -712,6 +788,51 @@ def get_config(policy: ConfigLoadPolicy | None = None) -> dict[str, Any]:
     # Evaluated after the host and pin keys are merged: on an official-only
     # host the browser list is empty unless bird is pinned (x_policy).
     config['_BROWSER_COOKIE_BROWSERS'] = cookie_extraction_browsers(config)
+
+    # Reject unsubstituted extension placeholders last among the value-producing
+    # steps, so the legacy ScrapeCreators spelling, the multi-key rotation, and
+    # the OpenAI auth fields assembled above are all covered by one sweep rather
+    # than by a predicate repeated at each presence check. Rejection means
+    # "absent", not "empty": the placeholder is removed from the process
+    # environment and the key is then re-resolved from the lower-priority
+    # sources exactly as it would be had the host never written it, so a real
+    # .env, Keychain, or pass credential it was shadowing is not discarded.
+    # Every consumer of a rejected config key therefore agrees the credential is
+    # unset, and the keys left genuinely unset are published for the diagnostics
+    # to report. The sweep is bounded by the keys get_config registers: a
+    # credential read straight from the environment under a name it does not
+    # register - LAST30DAYS_API_KEY, or a bare SCRAPE_CREATORS_API_KEY spelling
+    # left behind after the canonical key resolved - keeps its placeholder.
+    declared_defaults = {key: default for key, default in keys}
+    templated_keys = sorted(
+        key
+        for key, value in config.items()
+        if not key.startswith('_') and is_unsubstituted_template(value)
+    )
+    for key in templated_keys:
+        os.environ.pop(key, None)
+        fallback = merged_env.get(key)
+        # A lower-priority value that is itself a placeholder is not a credential.
+        if is_unsubstituted_template(fallback):
+            fallback = None
+        resolved = fallback if fallback is not None else declared_defaults.get(key)
+        config[key] = resolved if resolved is not None else ''
+    # The rotation ran before this sweep, so a fallback restored from a
+    # comma-separated list would otherwise reach a backend whole. Reapply it,
+    # then reject the picked key if it is itself a placeholder.
+    _rotate_scrapecreators_key(config)
+    if is_unsubstituted_template(config.get('SCRAPECREATORS_API_KEY')):
+        config['SCRAPECREATORS_API_KEY'] = ''
+    # Report only the keys still leaving the credential unset. A placeholder that
+    # fell through to a real lower-priority credential (or to a usable default)
+    # is handled, and reporting it would nag about a setup that works.
+    config[TEMPLATE_CONFIG_KEYS] = [
+        key for key in templated_keys if not config.get(key)
+    ]
+    if 'OPENAI_API_KEY' in templated_keys and not config.get('OPENAI_API_KEY'):
+        # Keep the derived auth record consistent with the token it describes.
+        config['OPENAI_AUTH_SOURCE'] = AUTH_SOURCE_NONE
+        config['OPENAI_AUTH_STATUS'] = AUTH_STATUS_MISSING
 
     if policy.browser_cookies == "read":
         _discover_and_apply_x_credentials(config)

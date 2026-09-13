@@ -17,7 +17,7 @@ The model parameter on any chat call can take one of two shapes:
 - **Hint prefix**. e.g. `hint:reasoning`. Looks the hint up in the route table and resolves to a `(provider, model)` pair.
 
 ```rust
-// src/openhuman/providers/router.rs
+// crates/openhuman-core/src/providers/router.rs
 fn resolve(&self, model: &str) -> (usize, String) {
     if let Some(hint) = model.strip_prefix("hint:") {
         if let Some((idx, resolved_model)) = self.routes.get(hint) {
@@ -51,7 +51,7 @@ The subscription is the default, not a requirement. The same router works agains
 
 ## Overriding routes
 
-- **Globally**. config TOML (`Config` struct in `src/openhuman/config/schema/types.rs`) can supply a custom route table at startup.
+- **Globally**. config TOML (`Config` struct in `crates/openhuman-core/src/config/schema/types.rs`) can supply a custom route table at startup.
 - **Per call**. pass a concrete model name (no `hint:` prefix) and the router falls through to the default provider with that exact model.
 - **For a skill**. skills can pin a hint or a model in their manifest.
 

@@ -20,10 +20,10 @@ Ask this before anything else, even when the arguments already say upload,
 publish, add, Cloud, Hub, or name a target folder:
 
 ```text
-Cloud에 업로드 할까요? 다른사람들이 볼 수 없어요.
+Cloud에 업로드할까요? 다른 사람들은 볼 수 없어요.
 Upload to Cloud? Other people cannot see it.
 
-Agentlas Hub에 업로드 할까요? 다른 사람들이 빌려 쓸 수 있어요.
+Agentlas Hub에 업로드할까요? 다른 사람들이 빌려 쓸 수 있어요.
 Upload to Agentlas Hub? Other people can borrow it.
 ```
 
@@ -39,21 +39,28 @@ Cloud/private-link: a private save is not listed and nobody can hire it, so
 there is nothing for a price to apply to.
 
 ```text
-값을 정하시겠어요? 비워 두면 그 항목은 팔지 않습니다.
+가격을 정하시겠어요? 비워 두면 그 항목은 팔지 않아요.
 Set a price? Leave one out and that kind is simply not sold.
 
-  빌리기 / Rent      워크오더 1건 · 24시간   1-100 크레딧
-  인제스트 / Ingest   프로젝트 1개 · 하루     1-2000 크레딧
-  포크 / Fork        사본 1개 · 1회         1 크레딧 이상
+  원샷 / One-shot    작업 1건, 부를 때마다           1-100 크레딧
+  장기대여 / Lease   에이전트 1개 · 하루 (계정 전체)   1-2000 크레딧
+  포크 / Fork       사본 1개 · 1회                 1 크레딧 이상
 
 전부 비워 두면 무료로 불립니다. 나중에 agentlas.cloud 수익 페이지에서도 정할 수 있습니다.
 Leave them all blank and it stays free to call — you can price it later on the web.
 ```
 
-Why the three ceilings differ: a rental is a 24-hour lease a buyer opens many
-of, so the same job must not cost more for being split into more pieces;
-ingest is a day of a whole project, worth twenty times that; a fork is a copy
-sold once, with no repeat for a ceiling to protect against.
+Why the three ceilings differ: a one-shot is a single work order the buyer
+opens many of, so the same job must not cost more for being split into more
+pieces; a lease is a whole day of that agent across the buyer's entire
+account, worth twenty times that; a fork is a copy sold once, with no repeat
+for a ceiling to protect against.
+
+If the agent is meant to keep running — a watcher, a poller, anything that
+wakes on a schedule — **press for a lease price.** Without one the buyer can
+only pay per call, on every wake-up, and a five-minute watch is 288 calls a
+day. An unpriced lease is not sold: the server answers `lease_not_offered`
+rather than defaulting a number nobody set.
 
 Rules:
 

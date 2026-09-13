@@ -105,10 +105,14 @@ busy (external) / errors / user activity → rearm cap
 - **SessionLifecycle**: registers `session.deleted` cleanup via the
   coordinator.
 - **v2 adapter**: the client shim's `session.list` (parentID filter, v1
-  envelope with mapped `outcome`/`time.updated`/`directory`) and the
-  `promptAsync` `delivery` parameter ('queue' from the wake path; 'steer'
-  default for foreground-fallback); `src/v2/setup.ts`'s cleanup invokes the
-  v1 `dispose` hook, which synthesizes `server.instance.disposed` into the
+  envelope with mapped `outcome`/`time.updated`/`directory`), the
+  children-fallback enrichment via `session.get` (authoritative
+  `outcome`/`time.updated` refreshed every evaluation; fail-soft), and
+  the `promptAsync` `delivery` ('queue' from the wake path; 'steer' default
+  for foreground-fallback) and `modelVariant` (wake model pin; the shim
+  merges it into the `switchModel` ref so the reasoning-effort variant is
+  preserved) parameters; `src/v2/setup.ts`'s cleanup invokes the v1
+  `dispose` hook, which synthesizes `server.instance.disposed` into the
   scheduler.
 - **Dependencies**: `createInternalAgentTextPart` /
   `isInternalInitiatorPart` (`src/utils/internal-initiator.ts`), `log`,

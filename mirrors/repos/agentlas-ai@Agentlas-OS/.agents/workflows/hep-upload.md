@@ -18,10 +18,10 @@ Always ask this before doing anything else, even if the arguments already say
 upload, publish, add, Cloud, Hub, or a target folder:
 
 ```text
-Cloud에 업로드 할까요? 다른사람들이 볼 수 없어요.
+Cloud에 업로드할까요? 다른 사람들은 볼 수 없어요.
 Upload to Cloud? Other people cannot see it.
 
-Agentlas Hub에 업로드 할까요? 다른 사람들이 빌려 쓸 수 있어요.
+Agentlas Hub에 업로드할까요? 다른 사람들이 빌려 쓸 수 있어요.
 Upload to Agentlas Hub? Other people can borrow it.
 ```
 
@@ -35,21 +35,36 @@ uploading. Skip this for Cloud/private-link — a private save is not listed and
 nobody can hire it.
 
 ```text
-값을 정하시겠어요? 비워 두면 그 항목은 팔지 않습니다.
+가격을 정하시겠어요? 비워 두면 그 항목은 팔지 않아요.
 Set a price? Leave one out and that kind is simply not sold.
 
-  빌리기 / Rent      워크오더 1건 · 24시간   1-100 크레딧
-  인제스트 / Ingest   프로젝트 1개 · 하루     1-2000 크레딧
-  포크 / Fork        사본 1개 · 1회         1 크레딧 이상
+  원샷 / One-shot    작업 1건, 부를 때마다           1-100 크레딧
+  장기대여 / Lease   에이전트 1개 · 하루 (계정 전체)   1-2000 크레딧
+  포크 / Fork       사본 1개 · 1회                 1 크레딧 이상
 
 전부 비워 두면 무료로 불립니다. 나중에 agentlas.cloud 수익 페이지에서도 정할 수 있습니다.
 Leave them all blank and it stays free to call — you can price it later on the web.
 ```
 
+Ask what the buyer will have to bring, too, and put it in the package guide's
+prerequisites: an account to log into, an API key, an address to send results
+to. A buyer's host shows that list before spending anything, and an empty list
+reads as "needs nothing" — which is how someone ends up paying for a run that
+stops to ask for a password they were never told about.
+
+If this agent is meant to keep running — a watcher, a poller, anything that
+wakes on a schedule — say so plainly and **press for a lease price**: without
+one, the buyer's only option is paying per call, every wake-up, and a
+five-minute watch costs them 288 calls a day. An unpriced lease is not sold at
+all; the server refuses it as `lease_not_offered` rather than inventing a
+default.
+
 Blank is NOT zero: leave the flag out entirely. Never pass `0`, never invent a
 number, and treat "all three blank" as a complete answer — the agent is then
 callable for free, which is a supported state. Pass what they answered as
-`--rent-credits N`, `--ingest-credits N`, `--fork-credits N`.
+`--rent-credits N` (one-shot), `--ingest-credits N` (lease, per day), and
+`--fork-credits N` — the flag names are the older wire spelling and are not
+what the user should be shown.
 
 ## Step 2 — Resolve the runner
 
@@ -118,22 +133,3 @@ edits the card for you: use stable English `role:*`, `community:*`, `skill:*`,
 and `knowledge:*` IDs that actually describe the agent. Returned examples are
 aliases, not an allowlist. Rerun the upload and repeat until registration
 succeeds.
-
-## Rules carried from the other runtime copies
-
-These lines existed in one runtime's hand-maintained copy and not in the
-longest one. They are kept verbatim rather than dropped — a rule that only
-one runtime enforced was still a rule someone wrote on purpose.
-
-- After the user chooses a destination, run the app-host auto-update preflight inside this host app and resolve the runner.
-- Run the installer first." >&2; exit 1; } ``` Use one explicit `hep-upload` command.
-- Never run `package` and then `publish`, because that packages twice and can submit bytes different from the review:
-- `"$RUNNER" hep-upload <agent-folder> --visibility private-link` - Agentlas Hub/marketplace:
-- If the user asks for a preview, add `--dry-run`, retain both `manifest.packageHash` and `uploadReceipt.receipt`, and append `--expected-package-hash <manifest.packageHash> --expected-upload-receipt <uploadReceipt.receipt>` to the later one-shot publish.
-- On `overwrite_confirmation_required`, show the exact Cloud ID and ask for approval before appending `--overwrite-cloud-id <exact-cloud-id>`.
-- # Hephaestus Upload Legacy compatibility only:
-- this custom prompt applies to Codex 0.116 and earlier.
-- Codex 0.117 and later use the installed `$hephaestus-upload` skill.
-- Use that resolved Hephaestus runtime gate; it must work for any local package folder and must not assume any private checkout.
-- After the user chooses a destination, first run the `hephaestus-network` skill's app-host auto-update preflight inside Cursor, then resolve `RUNNER`.
-- Never run `package` and then `publish`; that packages twice.

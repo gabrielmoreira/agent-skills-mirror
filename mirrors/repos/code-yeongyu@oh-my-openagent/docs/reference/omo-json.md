@@ -262,7 +262,7 @@ These are the only deprecated keys the strict agent schema accepts. `textVerbosi
 
 The Senpi task engine ships four builtin curated agents: `explore` and `librarian` are always spawnable through the task tool with zero configuration, for example `task(subagent_type: "explore", ...)`, while `plan-consultant` and `plan-reviewer` are plan-gated: spawnable only after the user requests the `ulw-plan` workflow, a `.omo/plans/*.md` artifact was touched, and `ulw-execute` was never invoked. They are read-only research and review specialists; implementation and orchestration agents stay category-routed (architecture consults go through `task(category: "architect")`).
 
-> **Deprecated**: `agents.metis` and `agents.momus` (and `subagent_type: "metis"|"momus"`) still resolve to `plan-consultant` and `plan-reviewer` with a deprecation notice and are removed in the release after 5.0.0-beta.51. <!-- retired-name-allowed -->
+> **Removed**: `agents.metis` / `agents.momus` and `subagent_type: "metis"|"momus"` no longer resolve to `plan-consultant` / `plan-reviewer`. The one-release alias window closed after 5.0.0-beta.51: a retired id is now an ordinary agent name, so a config key defines a custom agent and an undefined `subagent_type` fails as unknown. Rename them to the canonical ids. <!-- retired-name-allowed -->
 
 | Name | Purpose |
 |------|---------|

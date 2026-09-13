@@ -42,5 +42,4 @@ Advanced Security) · Azure Kubernetes Service(AKS) · Azure Container Apps(ACA)
 
 ## 스킬
 - web-search: 실시간 웹·공식 문서 검색
-- ai-platform-demo: 고객·산업별 인터랙티브 AI·App Platform 운영 데모
 - adaptive-presentation: Straightforward한 결론·스토리라인 중심 PPTX 제작(고정 템플릿 없이 python-pptx 자유 생성)

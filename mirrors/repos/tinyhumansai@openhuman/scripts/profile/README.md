@@ -2,7 +2,7 @@
 
 Reproducible benchmarking scripts for the OpenHuman Rust core as an embedded
 library (no RPC server), built around the `library-profile` and `rss-bench`
-binaries (see `src/bin/library_profile/main.rs`).
+binaries (see `crates/openhuman-core/src/bin/library_profile/main.rs`).
 
 Five driver scripts: `library-bench.sh` (per-scenario RSS/duration),
 `library-cpu.sh` (samply), `library-heap.sh` (dhat), `library-fleet.sh`

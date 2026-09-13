@@ -1,0 +1,213 @@
+# hapi-web
+
+React Mini App / PWA for monitoring and controlling hapi sessions.
+
+## What it does
+
+- Session list with status, pending approvals, todos, and summaries.
+- Chat view with streaming updates and message sending.
+- Permission approval and denial workflows.
+- Permission mode and model selection.
+- Machine list and remote session spawn.
+- File browser and git status/diff views.
+- PWA install prompt and offline banner.
+- Optional unread-session count on the Windows taskbar when installed as an Edge/Chrome PWA (toggleable in Display settings; off by default).
+
+## Runtime behavior
+
+- When opened inside Telegram, auth uses Telegram WebApp init data.
+- When opened in a normal browser, you can log in with `CLI_API_TOKEN:<namespace>` (or `CLI_API_TOKEN` for the default namespace).
+- The login screen includes a top-right hub picker; if unset, the app uses the same origin it was loaded from.
+- Live updates come from the hub via SSE.
+- Session `@` suggestions require conversation content, including untitled conversations. Names and directory labels affect display/search, not eligibility; empty stubs stay excluded.
+
+## Routes
+
+See `src/router.tsx` for route definitions.
+
+- `/` - Redirect to /sessions.
+- `/sessions` - Session list.
+- `/sessions/$sessionId` - Chat interface.
+- `/sessions/new` - Create new session.
+- `/sessions/$sessionId/files` - File browser with git status.
+- `/sessions/$sessionId/file` - File viewer with diff support.
+- `/sessions/$sessionId/terminal` - Terminal interface.
+- `/browse` - Workspace browser, enabled by the runner's configured workspace roots.
+- `/share` - Share-target landing (Web Share Target POST → `?id=`, or native `/share#url=&text=&title=`).
+- `/settings` - Settings category hub (mobile) and responsive master-detail shell.
+- `/settings/general` - Language preferences.
+- `/settings/display` - Appearance, typography, colors, and session list preferences.
+- `/settings/chat` - Message input, tool card, and conversation color preferences.
+- `/settings/voice` - Everyday voice assistant preferences.
+- `/settings/voice/voices` - Full-page voice picker.
+- `/settings/voice/advanced` - Voice persona, tuning, and diagnostics.
+- `/settings/machines` - Machine management and runner status.
+- `/settings/storage` - SQLite storage sizes for the hub owner.
+- `/settings/usage` - Cache-aware token usage dashboard for the hub owner.
+- `/settings/about` - Application links and version information.
+
+## Features
+
+### Session list (`src/components/SessionList.tsx`)
+
+- Active/inactive status indicator.
+- Session title from name, summary, or path.
+- Todo progress display.
+- Pending permission request count.
+- Agent name and model display.
+
+### Chat interface (`src/components/SessionChat.tsx`)
+
+- Message thread with infinite scroll.
+- Composer for sending messages.
+- Permission mode and model selection for supported agents.
+- Session abort and handoff controls.
+- Context size display.
+- Per-session scratchlist (`src/components/AssistantChat/ScratchlistPanel.tsx`)
+  - Workbench panel for held notes/drafts; **distinct from the queue**.
+  - Add/delete/reorder entries; promote to composer (copy) or queue (send).
+  - Entries and attachments saved on the hub and synced across devices.
+  - Reordering affects only the current view and resets when entries refresh.
+  - Keyboard shortcut: Ctrl/Cmd+Shift+S to focus the add-input.
+
+### File browser (`src/routes/sessions/files.tsx`)
+
+- Git status view (staged/unstaged files).
+- File search with ripgrep.
+- Navigate to file viewer.
+
+### File viewer (`src/routes/sessions/file.tsx`)
+
+- File content display with syntax highlighting.
+- Staged/unstaged diff view.
+
+### Terminal (`src/routes/sessions/terminal.tsx`)
+
+- Remote terminal via xterm.js
+- Real-time via Socket.IO `/terminal`
+- Resize handling
+
+### Voice assistant
+
+- ElevenLabs (@elevenlabs/react), Gemini Live, and Qwen Realtime backends
+- Real-time voice control
+- Standard and realtime composer dictation with provider capability selection
+
+### New session (`src/components/NewSession/`)
+
+Modular session creation:
+
+- Machine selector
+- Directory input with recent paths
+- Agent type selector
+- Model selector
+- Per-agent permission, effort, and collaboration controls when supported
+
+### First-User-Experience (FUE)
+
+For a new, non-essential feature whose affordance would otherwise be hard to
+discover, consider the existing FUE primitive rather than a permanent UI block.
+Optional, not a requirement for every feature or a reason to expand a bug fix.
+
+- `src/lib/use-fue.ts`: `useFue(featureId)` returns `{ status, engage, dismiss }`; acknowledgement is isolated per feature in `hapi.fue.v1.<featureId>` localStorage keys.
+- `src/components/Fue.tsx`: `FueDot` marks the affordance; `FueCallout` explains it while `status === 'engaging'`.
+- Dismissal requires an affirmative user action ("Got it"), never an auto-timeout.
+- The FUE dot and feature-specific badges/counters are mutually exclusive; onboarding wins until acknowledged.
+- Opt in per feature; skip the wrapper if an upstream component already supplies onboarding.
+- Working example: `ScratchlistToggleButton` in `src/components/AssistantChat/ComposerButtons.tsx`. Use the source rather than maintaining a copied example here.
+
+## Authentication
+
+See `src/hooks/useAuth.ts` and `src/hooks/useAuthSource.ts`.
+
+- Telegram Mini App: Uses initData from WebApp SDK.
+- Browser: Uses CLI_API_TOKEN from login prompt.
+- JWT tokens with auto-refresh.
+
+## Data fetching
+
+See `src/hooks/queries/` for query hooks and `src/hooks/mutations/` for mutations.
+
+- Sessions, messages, machines via TanStack Query.
+- Git status and file operations.
+- Optimistic updates for message sending.
+
+## Real-time updates
+
+See `src/hooks/useSSE.ts`.
+
+- SSE connection to `/api/events`.
+- Session/message/machine update events.
+- Automatic cache invalidation on events.
+
+## Stack
+
+React 19 + Vite + TanStack Router/Query + Tailwind + @assistant-ui/react + xterm.js + @elevenlabs/react + socket.io-client + workbox + shiki.
+
+## Source structure
+
+- `src/router.tsx` - Route definitions.
+- `src/components/` - UI components.
+- `src/hooks/` - Data fetching and state hooks.
+- `src/api/client.ts` - API client.
+- `src/types/api.ts` - Type definitions.
+
+## Development
+
+From the repo root:
+
+```bash
+bun install
+bun run dev:web
+```
+
+
+If testing in Telegram, set:
+
+- `HAPI_PUBLIC_URL` to the public HTTPS URL of the dev server.
+- `CORS_ORIGINS` to include the dev server origin.
+
+## Tests
+
+Unit tests run under vitest + jsdom:
+
+```bash
+bun run test:web
+```
+
+End-to-end browser tests for the scratchlist component (real Chromium, real
+`inert` focus blocking, real localStorage round-trips) live at the repo root
+under `e2e/`:
+
+```bash
+bun run test:e2e          # headless
+bun run test:e2e:ui       # Playwright UI mode (debug)
+```
+
+The spec drives a Vite-served fixture page (`web/e2e-fixtures/scratchlist-fixture.html`)
+that mounts the production `ScratchlistPanel` in isolation, so no hub /
+auth / socket setup is required.
+
+## Build
+
+```bash
+bun run build:web
+```
+
+The built assets land in `web/dist` and are served by hapi-hub. The single executable can embed these assets.
+
+## Standalone hosting
+
+You can host `web/dist` on a static host (GitHub Pages, Cloudflare Pages) and point it at any hapi hub:
+
+1. Build the web app. If your static host uses a subpath, set the Vite base:
+
+```bash
+bun run build:web -- --base /<repo>/
+```
+
+2. Deploy `web/dist` to your static host.
+3. Set hub CORS to allow the static origin (`HAPI_PUBLIC_URL` or `CORS_ORIGINS`).
+4. Open the static site, click the top-right Hub button on the login screen, and enter the hapi hub origin.
+
+Clear the hub override in the same dialog to return to same-origin behavior.

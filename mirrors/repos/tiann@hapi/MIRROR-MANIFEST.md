@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `tiann/hapi` — 26 default patterns, 0 followed patterns, 4 file(s) materialized.
+Mirror of `tiann/hapi` — 26 default patterns, 17 followed patterns, 33 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `tiann/hapi` — 26 default patterns, 0 followed patterns, 4 file(s) m
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 0 |
-| Files         | 4 |
+| Followed pats | 17 |
+| Files         | 33 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,7 +51,23 @@ Mirror of `tiann/hapi` — 26 default patterns, 0 followed patterns, 4 file(s) m
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-_None._
+- `README.md`
+- `docs/guide/agents.md`
+- `cli/README.md`
+- `hub/README.md`
+- `web/README.md`
+- `docs/api/client-contract/index.md`
+- `ios/README.md`
+- `android/README.md`
+- `relay/README.md`
+- `docs/guide/why-hapi.md`
+- `docs/guide/codex-shared-sessions.md`
+- `docs/guide/native-apps.md`
+- `docs/guide/installation.md`
+- `docs/guide/pwa.md`
+- `docs/guide/how-it-works.md`
+- `docs/guide/voice-assistant.md`
+- `docs/guide/faq.md`
 
 ## File Index
 
@@ -63,6 +79,35 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 2 | ✓ | [`.github/prompts/codex-pr-review.md`](.github/prompts/codex-pr-review.md) |
 | 3 | ✓ | [`.github/prompts/issue-auto-response.md`](.github/prompts/issue-auto-response.md) |
 | 4 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 5 | ✓ | [`assets/brand/README.md`](assets/brand/README.md) |
+| 6 | ✓ | [`cli/src/runner/README.md`](cli/src/runner/README.md) |
+| 7 | ✓ | [`docs/api/client-contract/auth.md`](docs/api/client-contract/auth.md) |
+| 8 | ✓ | [`docs/api/client-contract/errors.md`](docs/api/client-contract/errors.md) |
+| 9 | ✓ | [`docs/api/client-contract/messages.md`](docs/api/client-contract/messages.md) |
+| 10 | ✓ | [`docs/api/client-contract/pagination.md`](docs/api/client-contract/pagination.md) |
+| 11 | ✓ | [`docs/api/client-contract/rest.md`](docs/api/client-contract/rest.md) |
+| 12 | ✓ | [`docs/api/client-contract/sse.md`](docs/api/client-contract/sse.md) |
+| 13 | ✓ | [`docs/guide/deployment.md`](docs/guide/deployment.md) |
+| 14 | ✓ | [`docs/guide/namespace.md`](docs/guide/namespace.md) |
+| 15 | ✓ | [`docs/guide/quick-start.md`](docs/guide/quick-start.md) |
+| 16 | ✓ | [`shared/fixtures/README.md`](shared/fixtures/README.md) |
+| 17 | → | [`android/README.md`](android/README.md) |
+| 18 | → | [`cli/README.md`](cli/README.md) |
+| 19 | → | [`docs/api/client-contract/index.md`](docs/api/client-contract/index.md) |
+| 20 | → | [`docs/guide/agents.md`](docs/guide/agents.md) |
+| 21 | → | [`docs/guide/codex-shared-sessions.md`](docs/guide/codex-shared-sessions.md) |
+| 22 | → | [`docs/guide/faq.md`](docs/guide/faq.md) |
+| 23 | → | [`docs/guide/how-it-works.md`](docs/guide/how-it-works.md) |
+| 24 | → | [`docs/guide/installation.md`](docs/guide/installation.md) |
+| 25 | → | [`docs/guide/native-apps.md`](docs/guide/native-apps.md) |
+| 26 | → | [`docs/guide/pwa.md`](docs/guide/pwa.md) |
+| 27 | → | [`docs/guide/voice-assistant.md`](docs/guide/voice-assistant.md) |
+| 28 | → | [`docs/guide/why-hapi.md`](docs/guide/why-hapi.md) |
+| 29 | → | [`hub/README.md`](hub/README.md) |
+| 30 | → | [`ios/README.md`](ios/README.md) |
+| 31 | → | [`README.md`](README.md) |
+| 32 | → | [`relay/README.md`](relay/README.md) |
+| 33 | → | [`web/README.md`](web/README.md) |
 
 ---
 

@@ -1,9 +1,9 @@
 ---
-name: pm-vietnamese-copilot
+name: pm-vietnamese
 description: Create decision-ready, delivery-ready bilingual Vietnamese-English product management artifacts. Use for discovery, PRDs, user stories, prioritization, roadmaps, OKRs, metrics, experiment plans, feedback analysis, meeting synthesis, stakeholder updates, and pre-mortems.
 ---
 
-# PM Copilot cá nhân | Personal PM Copilot
+# PM Workflow | Quy trình PM
 
 Chuyển đầu vào PM chưa hoàn chỉnh thành một quyết định hoặc tài liệu có thể thực thi. Turn incomplete PM input into a decision-ready, actionable artifact.
 
@@ -16,7 +16,7 @@ Chuyển đầu vào PM chưa hoàn chỉnh thành một quyết định hoặc 
 3. **Surgical scope | Phạm vi có chủ đích:** chỉ thay đổi phần liên quan trực tiếp đến outcome; không biến một request thành roadmap hay PRD lớn nếu không được yêu cầu.
 4. **Goal-driven execution | Thực thi theo mục tiêu:** chuyển yêu cầu thành tiêu chí thành công có thể kiểm chứng, tín hiệu quyết định và vòng lặp `làm → đo → học → quyết định`.
 
-Khi yêu cầu liên quan đến một quyết định mơ hồ, scope lớn, đề xuất solution, hoặc rủi ro thực thi, dùng thêm `$pm-karpathy-thinking` hoặc `commands/decision-check.md`.
+Khi yêu cầu liên quan đến một quyết định mơ hồ, scope lớn, đề xuất solution, hoặc rủi ro thực thi, dùng thêm `pm-karpathy-thinking` hoặc `commands/decision-check.md`.
 
 ## Ngôn ngữ đầu ra | Output language
 
@@ -95,6 +95,6 @@ Mỗi metric cần có: tên, công thức, event/source, segment, baseline stat
 
 ## Ví dụ
 
-- `Dùng $pm-vietnamese-copilot để biến ghi chú dưới đây thành PRD tiếng Việt cho tính năng đặt lịch khám.`
+- `Dùng pm-vietnamese để biến ghi chú dưới đây thành PRD tiếng Việt cho tính năng đặt lịch khám.`
 - `Hãy ưu tiên các ý tưởng onboarding này bằng RICE; ghi rõ giả định và viết kết luận bằng tiếng Việt.`
 - `Tóm tắt transcript họp thành quyết định, việc cần làm, người phụ trách và hạn.`

@@ -32,6 +32,8 @@ GitHub Copilot CLI와 VS Code Copilot Chat/Agent의 검색 capability를 사용�
 검색 결과·snippet·AI 요약은 URL 발견용이며 근거가 아니다. `web_fetch` 같은 조회 도구로 canonical
 원문을 확인한다. JS challenge·CAPTCHA·403·429는 우회·반복하지 않고 동급 출처로 전환한다.
 공식 URL도 capability도 없으면 사용자에게 출발 URL이 필요함을 알리고 최신 사실을 만들지 않는다.
+HTTP 성공이나 URL 존재만으로 원문 확인을 판정하지 않는다. 빈 본문·사이트 footer만 반환되면
+공식 원문의 일반 브라우저 렌더를 확인할 수 있지만, 접근 제한 우회에는 사용하지 않는다.
 
 ## 안전
 
@@ -52,6 +54,14 @@ GitHub Copilot CLI와 VS Code Copilot Chat/Agent의 검색 capability를 사용�
 가격은 지역·통화·기준일, 제품 상태는 제품·버전·지역·GA/Preview·확인 시각, 법·정책은 관할·시행일,
 시장 수치는 기간·단위·표본·방법론을 `Scope/status`에 기록한다.
 
+### 고객 사례·성과 수치
+
+- 공개 사례·초기 내부 결과·협력 발표·공급자 참조·미확인 후보를 구분한다. 공식 발표가 있다는 사실은
+  특정 제품의 운영 도입이나 확정 성과를 증명하지 않는다.
+- 성과는 분모·기간·표본·업무 범위·측정 주체와 함께 확인한다. 보고된 상관관계를 인과 효과로 확대하지 않는다.
+- 미확인 원본 수치는 `Unresolved`로 남기고 확정 제목·차트·ROI 계산에 쓰지 않는다.
+  기록 방식과 원문 확인 한계는 [`고객 근거 가이드`](./reference/customer-evidence.md)를 따른다.
+
 ## Fact Ledger 계약
 
 | ID | Type | Claim | Evidence | Sources/Basis | Scope/status | Confidence | Status |
@@ -65,9 +75,14 @@ GitHub Copilot CLI와 VS Code Copilot Chat/Agent의 검색 capability를 사용�
 - 상충하는 주장은 각각 보존하고, 접근 실패·페이월·신뢰 미달 자료는 `excludedSources`에 이유를 남긴다.
 - `Confidence`는 `High`(1차 원문 직접 근거), `Medium`(신뢰할 수 있는 2차·간접 근거),
   `Low`(단일 비1차·미해결 충돌)다. Low는 핵심 결론의 확정 근거로 쓰지 않는다.
-- 재현 가능한 수집물은 `fact-ledger.md`로 보존한다. machine-readable handoff는
-  [`schema/fact-ledger.schema.json`](./schema/fact-ledger.schema.json)과
-  [`scripts/validate_fact_ledger.py`](./scripts/validate_fact_ledger.py)로 검증한다.
+- `fact-ledger.json`을 정본으로 작성하고 [`공통 schema`](./schema/fact-ledger.schema.json)로 검증한다.
+  `fact-ledger.md`는 검증된 JSON에서 생성하는 읽기용 뷰이며 두 파일을 독립적으로 수정하지 않는다.
+  [`검증기`](./scripts/validate_fact_ledger.py)는 출처·판단 이유·가정·제외 자료를 보존해 출력한다.
+
+```bash
+python3 -B .github/skills/web-search/scripts/validate_fact_ledger.py <work>/fact-ledger.json \
+  --markdown-output <work>/fact-ledger.md
+```
 
 ## 완료 판정
 

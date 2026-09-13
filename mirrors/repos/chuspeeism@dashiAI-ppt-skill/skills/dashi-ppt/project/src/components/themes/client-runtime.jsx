@@ -22,7 +22,7 @@ import { BespokeSlide } from '../bespoke/BespokeSlide.jsx';
 import { canonicalizeThemePageRuntime } from './canonical-metadata.mjs';
 // JAD-201:主题注册表(runtimePages + 图片槽 Provider 包裹)从可注入模块取。
 // renderDeck 打包时把 `@dashi/theme-registry` 别名指向「全主题」或「按 deck 实际用到的主题裁剪版」。
-import { runtimePages, wrapThemeImageProviders } from '@dashi/theme-registry';
+import { runtimePages, themeOverrides, wrapThemeImageProviders } from '@dashi/theme-registry';
 
 const mountedRoots = new WeakMap();
 const rootMediaApis = new WeakMap();
@@ -31,7 +31,7 @@ const IMAGE_UPLOAD_MAX_DIM = 1400;
 const IMAGE_UPLOAD_QUALITY = 0.78;
 const releaseInactiveThemeKeys = new Set(['theme03', 'theme10']);
 const runtimeMetadataByKey = new Map(runtimePages.map(page => {
-  const metadata = canonicalizeThemePageRuntime(page);
+  const metadata = canonicalizeThemePageRuntime(page, themeOverrides[page.themeKey]);
   return [page.key, metadata];
 }));
 const entriesByKey = new Map([...runtimeMetadataByKey].map(([key, metadata]) => [key, metadata.page]));

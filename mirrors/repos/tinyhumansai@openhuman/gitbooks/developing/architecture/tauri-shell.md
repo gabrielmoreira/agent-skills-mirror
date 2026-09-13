@@ -1,11 +1,11 @@
 ---
-description: The desktop host (`app/src-tauri/`) - Tauri v2 + WebView, IPC, embedded core lifecycle, core bridge.
+description: The desktop host (`crates/openhuman-app/`) - Tauri v2 + WebView, IPC, embedded core lifecycle, core bridge.
 icon: desktop
 ---
 
-# Tauri shell (`app/src-tauri/`)
+# Tauri shell (`crates/openhuman-app/`)
 
-The desktop host for OpenHuman: Tauri v2 + WebView, IPC commands, window management, and bridging to the embedded `openhuman-core` Rust runtime (core JSON-RPC). It does **not** duplicate the full domain stack; that lives in the repo-root Rust crate (`openhuman_core`, `src/main.rs`).
+The desktop host for OpenHuman: Tauri v2 + WebView, IPC commands, window management, and bridging to the embedded `openhuman-core` Rust runtime (core JSON-RPC). It does **not** duplicate the full domain stack; that lives in `crates/openhuman-core` (`openhuman_core`, `src/main.rs`).
 
 ## Responsibilities
 
@@ -16,7 +16,7 @@ The desktop host for OpenHuman: Tauri v2 + WebView, IPC commands, window managem
 
 ## Core process model
 
-`app/package.json` `core:stage` is intentionally a no-op kept for script compatibility. The desktop app links the core in-process, so local builds no longer need a staged `openhuman-core-*` sidecar under `app/src-tauri/binaries/`.
+`app/package.json` `core:stage` is intentionally a no-op kept for script compatibility. The desktop app links the core in-process, so local builds no longer need a staged `openhuman-core-*` sidecar under `crates/openhuman-app/binaries/`.
 
 ## Stuck process recovery
 
@@ -26,20 +26,20 @@ On macOS, hard exits (Force Quit, `SIGKILL`, renderer crash) can skip normal tea
 
 Startup recovery skips when `OPENHUMAN_CORE_REUSE_EXISTING=1` is set so manual CLI-core reuse still works. The Tauri command `process_diagnostics_list_owned` returns the currently owned process list; the macOS implementation is bundle-scoped, Linux/Windows currently return empty.
 
-## Tauri shell architecture (`app/src-tauri/`)
+## Tauri shell architecture (`crates/openhuman-app/`)
 
 ### Overview
 
-The **`app/src-tauri`** crate (Rust package **`OpenHuman`**, binary **`OpenHuman`**) is a **desktop-only** host. It embeds the React UI, registers plugins (deep link, opener, OS, notifications, autostart, updater), manages the main window and tray, and runs the core JSON-RPC server **in-process**.
+The **`crates/openhuman-app`** crate (Rust package **`OpenHuman`**, binary **`OpenHuman`**) is a **desktop-only** host. It embeds the React UI, registers plugins (deep link, opener, OS, notifications, autostart, updater), manages the main window and tray, and runs the core JSON-RPC server **in-process**.
 
 Non-desktop targets fail at compile time (`compile_error!` in `lib.rs`).
 
 ### Directory layout (actual)
 
-`app/src-tauri/src/` is a flat set of modules (no `commands/` or `utils/` subtree). Key modules:
+`crates/openhuman-app/src/` is a flat set of modules (no `commands/` or `utils/` subtree). Key modules:
 
 ```
-app/src-tauri/src/
+crates/openhuman-app/src/
 ├── lib.rs                  # `run()`, tray/menu, plugins, `generate_handler!`, most window/update/lifecycle commands
 ├── main.rs                 # Binary entry
 ├── core_process.rs         # CoreProcessHandle — embedded core server task, RPC token, port conflict handling
@@ -94,17 +94,17 @@ The renderer talks to the local core **directly over HTTP** — `app/src/service
 
 ### Bundled resources
 
-`tauri.conf.json` bundles **`../../src/openhuman/agent/prompts`** so the core prompt markdown ships with the app.
+`tauri.conf.json` bundles **`../../crates/openhuman-core/src/agent/prompts`** so the core prompt markdown ships with the app.
 
 ### Related
 
 - IPC surface: see the [Commands](#tauri-ipc-commands-app-src-tauri) section below
 - HTTP bridge: see the [Core bridge & helpers](#core-bridge-helpers-app-src-tauri) section below
-- Rust domains (implementation): repo root `src/openhuman/`, `src/core/`
+- Rust domains and runtime: `crates/openhuman-core/src/`, `crates/openhuman-core/src/core/`
 
-## Tauri IPC commands (`app/src-tauri`)
+## Tauri IPC commands (`crates/openhuman-app`)
 
-All commands are registered in **`app/src-tauri/src/lib.rs`** inside `tauri::generate_handler![...]` — that list is the authoritative reference. The major families:
+All commands are registered in **`crates/openhuman-app/src/lib.rs`** inside `tauri::generate_handler![...]` — that list is the authoritative reference. The major families:
 
 ### Core RPC & diagnostics
 
@@ -239,7 +239,7 @@ Registered in **`lib.rs`** (`ptt_hotkeys.rs` + `ptt_overlay.rs`). These commands
 
 Registered in **`lib.rs`** at startup under the event-bus native-request method
 `computer.input_on_main_thread` (`INPUT_ON_MAIN_THREAD_METHOD`, defined in
-`openhuman_core::openhuman::tools::computer::main_thread`). This is **not** a
+`openhuman_core::tools::computer::main_thread`). This is **not** a
 `@tauri-apps/api` `invoke` command. It is an in-process native request the
 **core** dispatches to the **shell** so synthetic input runs on the real app
 main thread.
@@ -276,9 +276,9 @@ const result = await callCoreRpc({
 
 ---
 
-_See `app/src-tauri/src/lib.rs` (`generate_handler!`) for the authoritative list._
+_See `crates/openhuman-app/src/lib.rs` (`generate_handler!`) for the authoritative list._
 
-## Core bridge & helpers (`app/src-tauri`)
+## Core bridge & helpers (`crates/openhuman-app`)
 
 The Tauri crate **does not** embed a duplicate Socket.io server or Telegram client; it focuses on **in-process core lifecycle** and the thin HTTP/auth glue around the core's JSON-RPC surface.
 

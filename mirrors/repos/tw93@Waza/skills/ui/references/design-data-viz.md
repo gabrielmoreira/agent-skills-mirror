@@ -6,7 +6,7 @@ Load this only when the surface is a dashboard, analytics view, chart-heavy inte
 
 Dashboards are utility surfaces: orient the user, show status, enable action. No hero sections, no marketing copy. Every element must earn its place by answering a question the user has.
 
-- Primary layout: status summary at top, detail below; or sidebar filters + main chart area.
+- Primary layout: status summary at top, detail below; or sidebar filters + main chart area. The main question must be answerable without expansion; disclose supplementary records, not the answer itself. Check sparse and typical data without padding gaps with filler.
 - Whitespace: tighter than marketing pages; users scan, not read. Use generous column spacing, not generous row height.
 - Number density: many numbers on screen at once is not a problem. Crowding without alignment is. Use `font-variant-numeric: tabular-nums` for all numeric columns. Right-align numbers. Left-align labels.
 

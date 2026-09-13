@@ -4,6 +4,34 @@ Note: Only use **NEW:** for entirely new prompt files, NOT for new additions/sec
 
 ### Claude Code System Prompts Changelog
 
+#### [2.1.270](https://github.com/Piebald-AI/claude-code-system-prompts/commit/709742c)
+
+<sub>_No changes to the system prompts in v2.1.270._</sub>
+
+# [2.1.269](https://github.com/Piebald-AI/claude-code-system-prompts/commit/dcf1fc9)
+
+_+682 tokens_
+
+- **NEW:** Tool Descriptions and Parameter: Artifact app-wording variants — Add nine app-specific renderings of existing guidance for publishing, design, types, capabilities, live rooms, updates, safety, and supporting files.
+- **NEW:** Agent Prompt: Artifact comment completion reply and resolution — Requires one non-duplicate completion reply when needed, then resolves finished open threads unless the conversation remains active.
+- **NEW:** Agent Prompt: Plugin eval pilot trust requirement — Requires explicit trust before loading a plugin and piloting its evals; otherwise writes cases without running them.
+- **NEW:** Tool Description: Artifact design fallback requirements — Applies minimum title, theming, resource-host, phone-layout, and overflow requirements when a page is written before the design skill loads.
+- **NEW:** Tool Description: Commit and PR skill routing — Routes enabled commits and PR creation through dedicated skills with narrow raw-command exceptions; worker, coordinator, and PowerShell guidance follows it.
+- **REMOVED:** Agent Prompt: /ultrareview GitHub comment poster — Removes the dedicated routine for posting one deduplicated plain PR comment; this does not establish that `/ultrareview` itself was removed.
+- **REMOVED:** Skill: Plugin authoring — Removes the embedded plugin-development reference covering function hooks, rendering surfaces, dispatch lifetimes, validation, and registered tools.
+- **REMOVED:** System Prompt: Plugin eval enabled-session status — Removes the rollout-variable enablement notice after plugin eval became generally available, retaining kill-switch availability guidance in reference prompts.
+- **REMOVED:** Tool Description: Artifact authoring skill requirement — Replaces standalone design-skill loading guidance with an app-worded variant and separate fallback requirements.
+- **REMOVED:** Tool Description: Finding artifacts from earlier sessions — Removes standalone listing and recovery guidance; the new update variant still directs URL recovery through listing or asking.
+- **REMOVED:** Tool Descriptions: Live and remote Artifact watch guidance — Remove standalone explanations of session-local and durable republish watches; their disappearance does not establish that watching itself was removed.
+- Agent Prompt: /batch slash command — Corrects worker-prompt interpolation so generated worker instructions are embedded instead of the generator reference.
+- Agent Prompt: Claude Code guide, Agent Prompt: Claude guide agent, Data: Claude Code recent changes reference, and Skill: Claude Code configuration guide — Mark plugin eval generally available by default, with a server-side kill switch replacing early-access rollout instructions.
+- Skill: Plugin eval authoring interview — Supports parent-launched interviews while retaining `plugin eval init`, and adjusts generated eval-directory references for the selected invocation context.
+- System Prompts: Artifact comment list framing, thread framing, and thread triage — Add context-sensitive comment provenance and viewer-prefix framing while preserving untrusted-data boundaries.
+- System Reminder: /btw side question — Forbids writing fake tool calls or output and redirects questions requiring inspection or execution to the main conversation.
+- Tool Description: Artifact action reference — Rewords read/list trust and person-facing guidance, and conditionally documents live-file synchronization and approved, transient `room_send` broadcasts.
+- Tool Description: Artifact assets guidance — Adds CSS stylesheets and JavaScript scripts to the documented file types accepted by Artifact asset uploads.
+- Tool Description: Artifact type discovery guidance — Adds conditional surface-specific guidance for when a newly created typed Artifact opens during its initial fill.
+
 # [2.1.268](https://github.com/Piebald-AI/claude-code-system-prompts/commit/ad256fc)
 
 _-13,613 tokens_

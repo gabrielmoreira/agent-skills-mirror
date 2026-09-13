@@ -264,7 +264,7 @@ def _relevance_rank_key(item: Dict[str, Any]) -> float:
     ~0) above an on-topic one (relevance >= RELEVANCE_FLOOR).
     """
     rel = item.get("relevance") or 0.0
-    eng_bonus = min(0.25, math.log10(_total_engagement(item) + 1) / 20.0)
+    eng_bonus = min(0.25, math.log10(max(0, _total_engagement(item)) + 1) / 20.0)
     return rel + eng_bonus
 
 

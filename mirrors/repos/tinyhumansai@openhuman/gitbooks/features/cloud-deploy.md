@@ -80,7 +80,7 @@ not recommended because every RPC call carries the bearer token.
 ## Single source of truth for the bearer token
 
 Every `/rpc` call carries `Authorization: Bearer <token>`. The core has two
-ways to load that token at startup ([`src/core/auth.rs`](../../src/core/auth.rs)):
+ways to load that token at startup ([`crates/openhuman-core/src/core/auth.rs`](../../crates/openhuman-core/src/core/auth.rs)):
 
 1. **`OPENHUMAN_CORE_TOKEN` environment variable**: pre-seeded by the caller
    (Tauri shell, Docker, App Platform, systemd unit, …). The core uses this

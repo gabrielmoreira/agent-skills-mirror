@@ -429,12 +429,8 @@ function toolCallFamily(row) {
 }
 
 function compactToolSummary(familyCounts, dropped) {
-  const families = new Map();
-  for (const [family, count] of familyCounts.entries()) {
-    families.set(family, (families.get(family) || 0) + count);
-  }
   const ordered = ["read", "write", "execute", "network", "other"]
-    .map((family) => [family, families.get(family) || 0])
+    .map((family) => [family, familyCounts.get(family) || 0])
     .filter(([, count]) => count > 0)
     .map(([family, count]) => `${count} ${family}`);
   const calls = ordered.length ? ordered.join(", ") : "0 tool";
@@ -709,22 +705,31 @@ async function renderTranscript(options) {
   return renderSession(options.session, options);
 }
 
+function readRegion(fd, start, length) {
+  const buffer = Buffer.alloc(length);
+  let offset = 0;
+  while (offset < length) {
+    const read = fs.readSync(fd, buffer, offset, length - offset, start + offset);
+    if (read === 0) {
+      throw new Error("session file ended before the expected read completed; retry the read");
+    }
+    offset += read;
+  }
+  return buffer.toString("utf8");
+}
+
 function readBoundedText(file, maxBytes = 220000) {
   const fd = fs.openSync(file, "r");
   try {
     const stat = fs.fstatSync(fd);
     if (stat.size <= maxBytes) {
-      const buffer = Buffer.alloc(stat.size);
-      const bytesRead = fs.readSync(fd, buffer, 0, stat.size, 0);
-      return { text: buffer.subarray(0, bytesRead).toString("utf8"), truncated: false };
+      return { text: readRegion(fd, 0, stat.size), truncated: false };
     }
     const half = Math.floor(maxBytes / 2);
-    const head = Buffer.alloc(half);
-    const tail = Buffer.alloc(half);
-    const headBytes = fs.readSync(fd, head, 0, half, 0);
-    const tailBytes = fs.readSync(fd, tail, 0, half, Math.max(0, stat.size - half));
+    const head = readRegion(fd, 0, half);
+    const tail = readRegion(fd, stat.size - half, half);
     return {
-      text: `${head.subarray(0, headBytes).toString("utf8")}\n[...middle omitted for scan...]\n${tail.subarray(0, tailBytes).toString("utf8")}`,
+      text: `${head}\n[...middle omitted for scan...]\n${tail}`,
       truncated: true,
     };
   } finally {
@@ -780,7 +785,7 @@ function recentFiles(files, maxFiles) {
     .map((entry) => entry.file);
 }
 
-function candidateFiles(roots, terms, sinceMs, options = {}) {
+function candidateFiles(roots, sinceMs, options = {}) {
   return recentFiles(discoverSessionFiles(roots, sinceMs, options), Number(options["max-files"] || 400));
 }
 
@@ -793,7 +798,7 @@ function findSessions(options) {
     .split(/\s+/)
     .concat(query.match(/https?:\/\/\S+/g) || [])
     .filter(Boolean);
-  const files = candidateFiles(roots, terms, sinceMs, options);
+  const files = candidateFiles(roots, sinceMs, options);
   const scanBytes = Number(options["scan-bytes"] || 60000);
   const results = files
     .map((file) => scoreScanRecord(sessionScanRecord(file, scanBytes), terms, options.cwd))

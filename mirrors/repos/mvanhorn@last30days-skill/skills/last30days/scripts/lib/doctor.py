@@ -48,6 +48,7 @@ import json
 import os
 import shutil
 import sys
+import time
 import urllib.error
 import urllib.request
 from pathlib import Path
@@ -139,7 +140,14 @@ def audit_state(
             return AUDIT_UNVERIFIED
         return AUDIT_NOT_WORKING
     if probe_result is not None:
-        return AUDIT_WORKING if probe_result.get("ok") else AUDIT_NOT_WORKING
+        if probe_result.get("ok"):
+            return AUDIT_WORKING
+        # A transient refusal (host rate-limited THIS probe) is not evidence the
+        # source is broken: the lane retries with backoff and serves fine. Report
+        # it as unverified instead of claiming a working source is down.
+        if probe_result.get("transient"):
+            return AUDIT_UNVERIFIED
+        return AUDIT_NOT_WORKING
     if name in KEYLESS_ALWAYS_ON:
         return AUDIT_WORKING
     return AUDIT_UNVERIFIED
@@ -1154,6 +1162,13 @@ def _setup_block(config: Dict[str, Any]) -> Dict[str, Any]:
     return {
         "setup_complete": env.is_setup_complete(config),
         "keys_present": keys_present,
+        # get_config() rejected these before any presence check ran, so
+        # keys_present already reads them as absent. Carrying the names here is
+        # what lets the text renderer say *why* they are absent instead of
+        # leaving the user to read "credentials present: none". Only keys left
+        # unset are listed: one whose placeholder fell through to a real
+        # lower-priority credential is configured and does not appear.
+        "unsubstituted_templates": env.templated_config_keys(config),
     }
 
 
@@ -1398,6 +1413,13 @@ def render_text(report: Dict[str, Any]) -> str:
         + (", ".join(present) if present else "none")
         + " (values never shown)"
     )
+    templated = setup.get("unsubstituted_templates") or []
+    if templated:
+        lines.append(
+            "note: unsubstituted config template(s), counted as unset: "
+            + ", ".join(templated)
+            + " (set a real value or remove each)"
+        )
 
     permissions = report.get("permissions") or {}
     if permissions.get("status"):
@@ -1792,6 +1814,18 @@ _HTTP_PROBE_URLS = {
 # refusing this client — the exact failure the engine hits — not reachability.
 _PROBE_BLOCKED_STATUSES = {"reddit": frozenset({403, 429})}
 
+# Blocked statuses that mean "refused this probe right now", not "the source is
+# down". Reddit answers a burst of keyless probes with 429 while the research
+# lane — which retries with backoff across several endpoints — serves the same
+# query fine. A single unretried 429 was reporting a healthy Reddit as NOT
+# WORKING, so these get one retry and, if still refused, downgrade to unverified
+# rather than a false outage. 403 stays hard: that is a real keyless block.
+_PROBE_TRANSIENT_STATUSES = {"reddit": frozenset({429})}
+
+# One retry only: the probe budget is the per-source deadline, and a source that
+# rate-limits twice in a row is worth surfacing as unverified.
+_PROBE_RETRY_DELAY_SECONDS = 2.0
+
 # Probe with the identity the lane sends, or the probe measures the User-Agent
 # rather than the endpoint (get_text sends http.BROWSER_USER_AGENT).
 _PROBE_HEADERS = {
@@ -1857,15 +1891,34 @@ def _http_ok(
         return False, f"{type(exc).__name__}: {exc}"
 
 
+def _transient_probe_detail(name: str, detail: str) -> bool:
+    """True when ``detail`` is a status this source may refuse us transiently.
+
+    ``_http_ok`` renders its verdict as ``HTTP {code}``; both live in this module,
+    so matching that shape here keeps the retry rule next to the codes it covers.
+    """
+    transient = _PROBE_TRANSIENT_STATUSES.get(name)
+    if not transient:
+        return False
+    return any(detail == f"HTTP {code}" for code in transient)
+
+
 def _probe_source(name: str, config: Dict[str, Any], timeout: float) -> Optional[Dict[str, Any]]:
     url = _HTTP_PROBE_URLS.get(name)
     if url:
-        ok, detail = _http_ok(
-            url,
-            timeout,
-            blocked_statuses=_PROBE_BLOCKED_STATUSES.get(name, frozenset()),
-            headers=_PROBE_HEADERS.get(name),
-        )
+        blocked = _PROBE_BLOCKED_STATUSES.get(name, frozenset())
+        headers = _PROBE_HEADERS.get(name)
+        ok, detail = _http_ok(url, timeout, blocked_statuses=blocked, headers=headers)
+        if not ok and _transient_probe_detail(name, detail):
+            time.sleep(_PROBE_RETRY_DELAY_SECONDS)
+            ok, detail = _http_ok(url, timeout, blocked_statuses=blocked, headers=headers)
+            if not ok and _transient_probe_detail(name, detail):
+                return {
+                    "ok": False,
+                    "transient": True,
+                    "detail": f"{detail} (rate-limited twice; the lane retries with backoff)",
+                    "probed": True,
+                }
         return {"ok": ok, "detail": detail, "probed": True}
     cli = CLI_DEPENDENCIES.get(name)
     if cli:

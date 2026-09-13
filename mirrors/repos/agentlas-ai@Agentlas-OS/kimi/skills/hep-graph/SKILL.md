@@ -4,12 +4,12 @@ description: Build an Agentlas automation by describing it, list saved ones, or 
 ---
 Update fallback: 자동 업데이트가 안 되면 `hephaestus update`를 한 번 실행하세요. 업데이트하지 않아도 현재 버전 명령은 그대로 동작합니다.
 
-# Hephaestus Graph
+# /hep-graph
 
 Saved automation graphs live in the local Agentlas database, shared with the
 desktop app. This command reads that database and can ask for a graph to run.
 
-Raw arguments: everything the user typed after `/skill:hep-graph`.
+Raw arguments: `$ARGUMENTS`
 
 **What this command can and cannot do.** It lists graphs, shows what a graph
 does, and *requests* a run. It does not execute the graph — the desktop app is
@@ -48,13 +48,16 @@ Rules that matter here:
 
 - **Never invent an answer.** If the user has not said when it runs, ask them — do not pick
   a time. The whole point of the interview is that these come from the person.
+- The interview **proposes a grading checklist** for steps that repeat until good enough
+  (what must exist / what must not appear). Relay those items so the user can confirm or
+  edit them — they are the pass/fail criteria, and the person should see them before saving.
 - If the user does not know or says you decide, pass that through verbatim
   (`알아서 해주세요` / `you decide`). The CLI then takes the most conservative option and
   says what it chose. Do not decide on their behalf yourself.
 - The last line must be `y` to save. Until then nothing is written.
 - It is created **switched off**. Say so, and relay the two commands the CLI prints
   (`graph show` to look it over, `automation on` to turn it on).
-- If the CLI stops with "answer 를 받지 못해 멈췄습니다" / "Stopped without an answer to",
+- If the CLI stops with "답을 받지 못해 여기서 멈췄습니다: <질문>" / "Stopped here without an answer to: <question>",
   it needed one more answer. Relay that exact question to the user and run again with the
   fuller list. Do not retry with a guess.
 
@@ -80,9 +83,12 @@ With `show <name>`:
 
 The output is a tree, not a list — indentation is the wiring. Relay it as
 wiring, because on a surface with no canvas this is the only way the user can
-see where a graph branches. Four marks must survive into your summary:
+see where a graph branches. These marks must survive into your summary:
 a step that **changes something outside**, a step that **asks first**,
-a branch's `[yes]`/`[no]` sides, and a `↩ back to …` line (a repeat).
+a branch's `[yes]`/`[no]` sides, a `↩ back to …` line (a repeat),
+a **checklist** under a verification step (the `· [must] / [must not]` lines —
+those items are exactly what the result is graded on), and a **code** step
+(a script the AI wrote runs there, not a model prompt).
 If the graph starts from a value the user provides, the output says so —
 carry that into the summary too.
 

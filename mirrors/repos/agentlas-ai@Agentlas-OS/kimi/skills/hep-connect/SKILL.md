@@ -1,12 +1,12 @@
 ---
 name: hep-connect
-description: Start the Agentlas Connect flow for Telegram.
+description: Connect Agentlas agents or teams to Telegram.
 ---
 Update fallback: 자동 업데이트가 안 되면 `hephaestus update`를 한 번 실행하세요. 업데이트하지 않아도 현재 버전 명령은 그대로 동작합니다.
 
 # Hephaestus Connect
 
-Raw arguments: everything the user typed after `/skill:hep-connect`.
+Raw arguments: `$ARGUMENTS`
 
 Use this prompt when the operator wants Telegram to talk to one Agentlas target:
 a single agent, a saved group, a local team, or a `.agentlas` org chart.
@@ -33,3 +33,6 @@ If running inside Agentlas Desktop development, report that the Desktop route is
 `/connect` and use the real local Connect UI as the source of truth. Do not
 pretend that Telegram delivery is live until token validation, chat pairing, and
 a test message pass.
+
+Report progress as one ladder and never skip a rung:
+`Draft -> Token checked -> Chat paired -> Test passed -> Running`.

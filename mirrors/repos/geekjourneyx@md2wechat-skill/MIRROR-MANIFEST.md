@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `geekjourneyx/md2wechat-skill` — 26 default patterns, 0 followed patterns, 5 file(s) materialized.
+Mirror of `geekjourneyx/md2wechat-skill` — 26 default patterns, 0 followed patterns, 9 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `geekjourneyx/md2wechat-skill` — 26 default patterns, 0 followed pat
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 5 |
+| Files         | 9 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -63,7 +63,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 2 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 3 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 | 4 | ✓ | [`platforms/openclaw/md2wechat/SKILL.md`](platforms/openclaw/md2wechat/SKILL.md) |
-| 5 | ✓ | [`skills/md2wechat/SKILL.md`](skills/md2wechat/SKILL.md) |
+| 5 | ✓ | [`skills/md2wechat/references/sync/csdn.md`](skills/md2wechat/references/sync/csdn.md) |
+| 6 | ✓ | [`skills/md2wechat/references/sync/toutiao.md`](skills/md2wechat/references/sync/toutiao.md) |
+| 7 | ✓ | [`skills/md2wechat/references/sync/workflow.md`](skills/md2wechat/references/sync/workflow.md) |
+| 8 | ✓ | [`skills/md2wechat/references/sync/zhihu.md`](skills/md2wechat/references/sync/zhihu.md) |
+| 9 | ✓ | [`skills/md2wechat/SKILL.md`](skills/md2wechat/SKILL.md) |
 
 ---
 

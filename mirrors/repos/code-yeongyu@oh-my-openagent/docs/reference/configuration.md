@@ -197,7 +197,7 @@ Override built-in agent settings. The main agent runs in your session on your se
 }
 ```
 
-> **Deprecated**: the keys `agents.metis` and `agents.momus` still resolve to `plan-consultant` and `plan-reviewer` with a startup notice and are removed in the release after 5.0.0-beta.51. <!-- retired-name-allowed -->
+> **Removed**: the retired keys `agents.metis` and `agents.momus` no longer resolve to `plan-consultant` and `plan-reviewer`. Their one-release alias window closed after 5.0.0-beta.51, so such a key now defines an ordinary custom agent under that name. Rename it to the canonical id. <!-- retired-name-allowed -->
 
 The OpenCode edition adds `disabled_agents`, `agent_order`, and its own core-agent overrides. See [OpenCode edition configuration (legacy)](./opencode-config.md).
 

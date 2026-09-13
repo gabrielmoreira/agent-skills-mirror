@@ -76,6 +76,12 @@ Wraps the `codex exec` subcommand. Each `send()` spawns a new process. Tested wi
 - Reasoning effort: the engine-agnostic `effort` maps to `-c model_reasoning_effort=<level>` and passes straight through. Codex 0.149's ladder runs `low|medium|high|xhigh|max|ultra` — it is the only engine here that reaches `ultra`, and all three top levels were exercised against 0.149.1. `auto` and `ultracode` are omitted. Note `-c` values are not validated at spawn: codex prints `reasoning effort: <whatever>` and sends it, so an unknown level fails at the API rather than at the command line
 - `noSessionPersistence` → `--ephemeral` (accepted by `exec` and `exec resume`); `ignoreUserConfig` → `--ignore-user-config`, which stops `$CODEX_HOME/config.toml` from deciding an orchestrated run's model behind the caller's back (auth still resolves from `CODEX_HOME`); `addDir` → `--add-dir` on the first turn only, since `exec resume` rejects it and the resumed thread keeps the roots it opened with
 - `codexProfile` → `--profile <name>` (named config profile from `~/.codex/config.toml`)
+- `--worktree` (0.154.0, behind `--enable worktrees`) is deliberately not wired. Measured: the turn's
+  edits land in `~/.codex/worktrees/<hash>/<repo>` on a detached HEAD, not in the session's `cwd`, and
+  the JSON stream never reports that path except inside individual `file_change` items. Everything
+  here that checks work — acceptance contracts, evidence diffs, the baseline change set — reads the
+  session's `cwd`, so passing the flag would have them verify an untouched tree and report on it.
+  Council's own per-agent git worktrees cover the isolation use case with paths the orchestrator owns
 - Per-session continuity: the `thread_id` from the first turn's `thread.started` event is captured and reused via `codex exec resume <id>` for subsequent sends, so the model sees prior turns
 - `sandboxMode` maps to `--sandbox <mode>` on the first turn. **A resumed thread does not inherit it**, and `codex exec resume` rejects `--sandbox`, so the policy is restated as `-c sandbox_mode="<mode>"` on every resume. Without that, a `read-only` session goes writable from its second turn onward — verified against 0.146.0, where such a session wrote to disk on turn 2 on every attempt. Re-probed on 0.147.0 (direct write, shell redirect and delegate-to-subagent, each on a resumed turn): no writes
 - One-shot execution per message (no persistent subprocess between sends)
@@ -127,7 +133,7 @@ await manager.startSession({
 
 Wraps Google's **Antigravity CLI** (`agy`) — the successor to Gemini CLI (consumer
 Gemini CLI tiers stopped serving 2026-06-18). Each `send()` spawns a new process
-in print mode. Verified against `agy` **1.1.13**.
+in print mode. Adapter behavior is covered through `agy` **1.2.2**.
 
 - One-shot execution per message (no persistent subprocess)
 - **Structured output and real usage** — `--output-format stream-json` emits an
@@ -139,6 +145,18 @@ in print mode. Verified against `agy` **1.1.13**.
   scrape remains as a fallback for turns that die before emitting `init`. Seed it
   externally via `resumeSessionId` (bare UUID only); read it back from
   `getStats().agyConversationId`.
+- **Empty responses fail adapter-wide and remain recoverable**: an exit-0 result
+  with a missing, blank, or whitespace-only response rejects instead of becoming
+  a successful empty reply, whether the caller is Autoloop, MCP, HTTP, or the
+  library API. agy 1.1.26 may do this after plan mode soft-denies a tool
+  confirmation. The adapter clears the per-session log before each spawn and
+  recognizes only the narrow current-turn `tool_confirmation_manager` marker,
+  returning a fixed sanitized diagnosis without exposing native log content. A
+  conversation id already emitted by `init` is retained for the caller's next
+  send; the failed turn is not retried automatically. On agy 1.2.2 the same
+  denial can accompany `status: SUCCESS` and a non-empty reply; the refused tool
+  names are emitted as `permission_denials`, which SessionManager exposes as
+  `SendResult.permissionDenials` without discarding the reply.
 - **Reasoning effort**: session `effort` and per-turn `session_send` overrides map
   to `--effort`. agy accepts `low`, `medium`, and `high`; everything above that
   (`xhigh`, `max`, `ultra`) clamps to `high`. agy 1.1.25 requires an effort with unsuffixed base
@@ -157,15 +175,21 @@ in print mode. Verified against `agy` **1.1.13**.
 - Permission modes: `bypassPermissions` → `--dangerously-skip-permissions`,
   `default` → `--sandbox` (terminal-restricted), and
   `sandboxMode: 'read-only'` → `--mode plan` (takes precedence). Other modes
-  run agy's own approval flow, which blocks in headless print mode — use
-  `bypassPermissions` for autonomous write-enabled work
+  run agy's own approval flow, which can block in headless print mode. A caller
+  must explicitly choose `bypassPermissions` for a write-enabled session; it is
+  not a recovery mechanism. In particular, an Autoloop Planner stays on
+  `--mode plan` when its preserved conversation is resumed.
 - agy enforces its own print timeout (default 5m); the engine derives
   `--print-timeout` from the send timeout so the wrapper timer decides
-- Unknown `--model` slugs do **not** error — agy silently falls back to its
-  default model. Registered slugs: `gemini-3.5-flash` (alias `agy-flash`),
-  `gemini-3.1-pro` (alias `agy-pro`); agy also proxies Claude and GPT-OSS
-  models (`agy models` lists them) which pass through unregistered. The
-  `agy/` prefix forces Antigravity routing for provider-like model strings
+- Do not rely on an unknown `--model` falling back: current agy versions can
+  report `status: ERROR` with no usable response. The adapter rejects result
+  errors, non-success statuses, and empty responses. `agy-flash` and the engine
+  default resolve to `gemini-3.8-flash`; `agy-pro` resolves to
+  `gemini-3.1-pro`. The registry also describes the 3.5/3.6/3.7 Flash API
+  families for pricing and routing, but agy's own `agy models` output decides
+  which slugs are executable. agy also proxies Claude and GPT-OSS models, which
+  pass through unregistered. The `agy/` prefix forces Antigravity routing for
+  provider-like model strings.
 - Consumer auth is a one-time `agy` Google OAuth login (subscription quotas, no
   per-token billing — registry pricing mirrors Gemini API rates as a value proxy)
 - Requires `agy` installed: `curl -fsSL https://antigravity.google/cli/install.sh | bash`
@@ -175,7 +199,7 @@ in print mode. Verified against `agy` **1.1.13**.
 await manager.startSession({
   name: 'antigravity-task',
   engine: 'agy',
-  model: 'gemini-3.5-flash',
+  model: 'gemini-3.8-flash',
   effort: 'high',
   cwd: '/project',
 });

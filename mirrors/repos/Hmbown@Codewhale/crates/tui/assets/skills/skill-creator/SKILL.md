@@ -31,8 +31,12 @@ Discovery paths, in precedence order:
 
 Use skills for model instructions, workflows, and lightweight conventions. Use
 MCP for live external APIs or durable tools. Use hooks for automatic local
-events. Use plugin folders only as packaging/scaffolding until a real plugin
-loader exists.
+events. To distribute a skill through a plugin bundle, give the bundle a
+`plugin.json` whose `net.codewhale` extension points `skills.path` at a
+directory holding `<name>/SKILL.md` folders; each skill then loads namespaced
+as `<plugin>:<skill>` after review, trust, and enablement. A bare `SKILL.md`
+directory is discoverable on the skills paths above but is not a plugin
+bundle and cannot be installed through `/plugin install`.
 
 ## Minimum Shape
 
