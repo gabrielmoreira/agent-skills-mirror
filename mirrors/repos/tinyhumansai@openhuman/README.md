@@ -158,8 +158,16 @@ High-level comparison (products evolve, so verify against each vendor). OpenHuma
 New contributor? Start with [`CONTRIBUTING.md`](./CONTRIBUTING.md) for the fork/PR workflow and local validation commands, or use the copy-paste AI-agent prompt in [`CONTRIBUTING-BEGINNERS.md`](./docs/CONTRIBUTING-BEGINNERS.md#optional--let-an-ai-coding-agent-guide-you). The short path is:
 
 1. Install Git, Node.js 24+, pnpm 10.10.0, Rust 1.96.1 (`rustfmt` + `clippy`), CMake, Ninja, ripgrep, and the platform desktop build prerequisites.
-2. Fork and clone the repo, then run `git submodule update --init --recursive` before `pnpm install` so the vendored Tauri/CEF sources are present.
+2. Fork and clone the repo, then run `git submodule update --init --recursive` before `pnpm install` so the vendored Rust dependencies under `vendor/` (tinyagents, tinyflows, tinychannels, tinymemory, motosan-ai-oauth, ...) resolve.
 3. Use `pnpm dev` for web-only UI work, `pnpm --filter openhuman-app dev:app` (macOS) or `pnpm dev:app:win` (Windows) for the desktop shell, and focused checks such as `pnpm typecheck`, `pnpm format:check`, and `cargo check -p openhuman --lib` before opening a PR.
+
+The Rust workspace under `crates/` splits into `crates/openhuman-core` (package
+`openhuman`: the core plus the `openhuman-core` CLI), `crates/openhuman-app`
+(the Tauri desktop shell, built as a separate Cargo world), `crates/openhuman-embed`
+(the library facade for embedding the core), `crates/openhuman-rpc` (shared RPC
+contracts and client), and `crates/openhuman-tui` (the terminal client). See
+[Building the Rust core](./gitbooks/developing/building-rust-core.md) and
+[AGENTS.md](./AGENTS.md#repository-map) for the full layout.
 
 Deeper docs: [Architecture](https://tinyhumans.gitbook.io/openhuman/developing/architecture) · [Getting Set Up](https://tinyhumans.gitbook.io/openhuman/developing/getting-set-up) · [Cloud Deploy](./gitbooks/features/cloud-deploy.md).
 

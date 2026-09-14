@@ -13,7 +13,7 @@ description: "Operate EssentialsX on Minecraft 26.x and 1.21.x servers, includin
 - `Do not use when`: the task is writing Java plugin code (`minecraft-plugin-dev`).
 - `Do not use when`: the task is WorldEdit selection/build workflows (`minecraft-worldedit-ops`).
 
-## Support Assets
+## References
 
 - Read `references/permissions-and-rollout-checklists.md` when the task is a permissions audit, economy rollout, or moderation-policy change and you need a compact preflight list.
 

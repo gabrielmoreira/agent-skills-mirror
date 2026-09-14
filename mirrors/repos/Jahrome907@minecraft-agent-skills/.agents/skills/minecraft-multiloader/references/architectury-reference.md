@@ -13,13 +13,13 @@ Use this file together with `SKILL.md` when you need the quick alignment rules.
 
 ## Version Alignment Rules
 
-### Retained 1.21.x lane
+### Minecraft 1.21.x
 
 - Keep `minecraft_version` on one explicit 1.21.x patch line across the whole repo
 - Keep `neoforge_version` on the matching `21.<patch>.x` family for that same patch
 - Keep Fabric API on the exact Minecraft patch suffix you target, for example `+1.21.11` for `minecraft_version=1.21.11`
 
-### Current 26.2 lane
+### Minecraft 26.2
 
 - Use the official [Architectury Template Generator](https://generate.architectury.dev/)
   only when it offers the exact 26.2 target with Fabric and NeoForge. Preserve
@@ -30,7 +30,7 @@ Use this file together with `SKILL.md` when you need the quick alignment rules.
   before changing pins; do not manufacture a current matrix from a 1.21.11
   example or an older template download.
 
-For both lanes, keep `enabled_platforms=fabric,neoforge`, avoid snapshot-only
+For both versions, keep `enabled_platforms=fabric,neoforge`, avoid snapshot-only
 pins unless intentionally testing a prerelease, and use the split Architectury
 artifacts (`architectury`, `architectury-fabric`, and `architectury-neoforge`).
 
@@ -46,7 +46,7 @@ The checker performs a static preflight and validates:
 - required keys exist in `gradle.properties`
 - `enabled_platforms` contains both `fabric` and `neoforge`
 - snapshot versions are flagged
-- NeoForge version family matches the Minecraft patch line for the retained 1.21.x lane
+- NeoForge version family matches the Minecraft patch line for Minecraft 1.21.x
 
 It does not download or resolve dependencies, compile the project, or establish
 that a specific Architectury, Fabric API, NeoForge, and Loom combination is

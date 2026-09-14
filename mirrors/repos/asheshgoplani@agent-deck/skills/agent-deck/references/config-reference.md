@@ -19,6 +19,7 @@ All options for `$XDG_CONFIG_HOME/agent-deck/config.toml` (default `~/.config/ag
 - [[worktree] Section](#worktree-section)
 - [[fork] Section](#fork-section)
 - [[conductor] Section](#conductor-section)
+- [[launch] Section](#launch-section)
 - [[logs] Section](#logs-section)
 - [[updates] Section](#updates-section)
 - [[interval_hooks.*] Section](#interval_hooks-section)
@@ -344,6 +345,7 @@ cpu_limit = ""                 # CPU limit, e.g. "2.0"
 memory_limit = ""              # Memory limit, e.g. "4g"
 mount_ssh = false              # Mount ~/.ssh read-only into container
 auto_cleanup = true            # Remove containers on session kill
+seed_credentials_from_keychain = false  # macOS: copy the Keychain Claude token into a new sandbox once (forks the host login, see sandbox.md)
 environment = []               # Host env vars to pass into container
 volume_ignores = []            # Directories to exclude from project mount
 ```
@@ -356,6 +358,7 @@ volume_ignores = []            # Directories to exclude from project mount
 | `memory_limit` | string | `""` | Container memory limit (e.g. `"4g"`). |
 | `mount_ssh` | bool | `false` | Bind-mount `~/.ssh` read-only for git access inside containers. |
 | `auto_cleanup` | bool | `true` | Remove sandbox containers when sessions are killed. |
+| `seed_credentials_from_keychain` | bool | `false` | macOS only. Copy the Claude Code Keychain token into a sandbox that has no `.credentials.json` yet. Off, the sandbox logs in on its own (`/login` inside the sandbox). On, the one-time copy forks the host's OAuth refresh chain once; see the single-owner rule in the sandbox reference. |
 | `environment` | array | `[]` | Host environment variable names to forward into containers. |
 | `volume_ignores` | array | `[]` | Directories to exclude from the project bind mount (e.g. `["node_modules", ".git"]`). |
 
@@ -452,6 +455,31 @@ dir = ""   # Override the base conductor directory (default: <data-dir>/conducto
 
 > **Note:** The Telegram/Slack/Discord bridge daemon (`bridge.py`) now honors `[conductor].dir`: the Go side injects the resolved override into the daemon environment as `AGENT_DECK_CONDUCTOR_DIR`, and the bridge prefers it over its XDG/legacy resolver (#1350). Caveat: the daemon's environment is frozen at install time, so if you change `[conductor].dir` after the bridge is set up, regenerate the bridge daemon (re-run conductor setup, or the planned `conductor migrate-dir`) for the daemon to pick up the new directory.
 
+## [launch] Section
+
+Tool-agnostic spawn settings.
+
+```toml
+[launch]
+inject_identity = true   # Default: true
+```
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| `inject_identity` | bool | `true` | Tell every spawned session, through its harness's own instruction mechanism, that it runs inside agent-deck: its session id, title, tool, group, profile, account, parent session and project path, the six most useful `agent-deck` commands, `session current --json` as the way to fetch the live record, and the `===AGENTDECK_DONE===` completion sentinel. The block (under 40 lines) is regenerated from the session record on every start/restart and written to `<data-dir>/agent-deck/runtime/identity/<session-id>/identity.md`; its path is exported as `AGENTDECK_IDENTITY_FILE`. Nothing is written into the project directory. Per-session opt-out: `agent-deck add|launch --no-identity`. |
+
+How each harness receives the block (`documentation/HARNESS_IDENTITY.md` has the details):
+
+| Tool | Mechanism | Notes |
+|------|-----------|-------|
+| `claude` | `--append-system-prompt-file <file>` | fresh, `--resume` and fork spawns; custom `[claude].command` wrappers and `claude <subcommand>` passthrough get the env var only |
+| `codex` | `-c developer_instructions="..."` (block inlined as a TOML basic string) | appends to the developer message; a configured `developer_instructions` in that `CODEX_HOME/config.toml` is merged in first; the built-in instructions are never replaced; custom codex commands get the env var only |
+| `pi` | `--append-system-prompt <file>` | also on `session fork` |
+| `gemini` | `--include-directories <dir>` (dir holds `GEMINI.md`) | only when gemini's folder trust is off or a `TRUST_FOLDER` rule in `~/.gemini/trustedFolders.json` covers `<data-dir>/agent-deck/runtime/identity`; otherwise the flag is withheld (the trust dialog would swallow `launch -m`), the pane prints the rule to add, and only the env var is set |
+| anything else (`--cmd`, opencode, cursor, ...) | `AGENTDECK_IDENTITY_FILE` env var only | the file is still written and current |
+
+SSH (`--ssh`) and Docker-sandboxed sessions are skipped: the file lives on the controller host.
+
 ## [logs] Section
 
 Session log file management.
@@ -497,6 +525,8 @@ notify_in_cli = true          # Show in CLI commands
 | `notify_in_cli` | bool | `true` | Show updates in CLI (not just TUI). |
 
 **Timer.** `agent-deck update --install-timer` schedules `agent-deck update --unattended --trigger timer` once a day: a launchd agent (`~/Library/LaunchAgents/com.agentdeck.autoupdate.plist`, 07:MM local time with a minute drawn at random at install time, since launchd has no `RandomizedDelaySec`) on macOS, or a systemd user timer (`agent-deck-autoupdate.timer`, `OnCalendar=daily`, `RandomizedDelaySec=1h`, `Persistent=true`) on Linux. The unattended run honours `auto_install`, never runs Homebrew, takes `<cache dir>/update.lock` so it cannot collide with the TUI's own install, and afterwards runs the same no-prompt remote sweep as an interactive update when `auto_update_remotes` is on (with it off, remotes are left alone). `--timer-status`, `--uninstall-timer` and `--dry-run` round it out; `agent-deck update --check --json` reports the timer state alongside these settings.
+
+**When the automatic paths stay quiet.** `auto_install` and `auto_restart` are for a person's deck. Neither fires, whatever the config says, when the process runs under `go test`, when `AGENTDECK_SKIP_UPDATE_CHECK` is set, when `CI` is truthy, when an `AGENTDECK_TEST_*` marker is in the environment, or (TUI only) when stdin or stdout is not a terminal. Headless daemons (`web --no-tui`, `remote-agent`) keep their idle-point restart for real deployments but honour the same environment markers. The reason is logged once at startup (`auto_update_suppressed`), the banner then offers the keys instead of promising a restart, and `ctrl+y` / `ctrl+t` and the explicit `agent-deck update` commands keep working. Scripts that drive `agent-deck` and must never see an unattended install set `AGENTDECK_SKIP_UPDATE_CHECK=1`; the repository's CI workflows do so once per workflow.
 
 **macOS launchd hygiene.** macOS ties a launch agent's code identity to the file at its program path, so any `com.agentdeck.*` agent that runs the agent-deck binary (for example `notify-daemon` or `web --no-tui`) crash-loops with `EX_CONFIG` after that file is replaced. Every install path therefore boots those agents out and bootstraps them again, then checks they are running; a failure exits 1 and prints the `launchctl` commands to run by hand. The timer's own plist runs `/bin/sh` and is never touched. The unattended flow refuses to install at all when `launchctl print gui/<uid>` does not work, so the binary is never replaced without the follow-up.
 
@@ -1050,3 +1080,4 @@ description = "GitHub access"
 | `AGENTDECK_PROFILE` | Override default profile |
 | `CLAUDE_CONFIG_DIR` | Override Claude config dir |
 | `AGENTDECK_DEBUG=1` | Enable debug logging |
+| `AGENTDECK_IDENTITY_FILE` | Set in every spawned session: path of the model-readable identity block for that session (see `[launch] inject_identity`) |

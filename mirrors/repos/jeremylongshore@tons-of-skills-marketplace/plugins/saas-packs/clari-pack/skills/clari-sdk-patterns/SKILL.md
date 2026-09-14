@@ -1,257 +1,91 @@
 ---
 name: clari-sdk-patterns
-description: 'Production-ready Clari API client patterns in Python and TypeScript.
-
-  Use when building reusable Clari clients, implementing export pipelines,
-
-  or wrapping the Clari v4 API for team use.
-
-  Trigger with phrases like "clari API patterns", "clari client wrapper",
-
-  "clari Python client", "clari TypeScript client".
-
-  '
-allowed-tools: Read, Write, Edit
-version: 1.6.0
+description: >-
+  Build and validate a typed local Clari REST client with bounded retries, job polling, pagination, and redaction. Use when standardizing application code around public contracts. Trigger with: "build a Clari client", "wrap the Clari API", "type Clari responses".
+allowed-tools: Read, Grep, Write, Edit
+version: 2.0.0
+argument-hint: '[surface-language-and-owned-endpoints]'
+model: inherit
+effort: high
 license: MIT
 author: Jeremy Longshore <jeremy@intentsolutions.io>
 tags:
-- saas
-- revenue-intelligence
-- forecasting
-- clari
-compatibility: Designed for Claude Code
+  - saas
+  - clari
+  - client-library
+  - rest
+  - typed-contracts
+compatibility: 'Requires a pinned Clari API contract and an HTTP client with timeout, retry, TLS, and structured logging controls; no official public Clari SDK is assumed.'
 ---
-# Clari SDK Patterns
+
+# Typed Clari REST Client Patterns
 
 ## Overview
 
-Clari has no official SDK -- build typed wrappers around the v4 REST API. These patterns cover the Export API for forecasts, job polling, and data transformation pipelines.
+Wrap only the endpoints the application owns instead of inventing a broad unofficial SDK. Keep Revenue, v2 ingestion, and Copilot clients separate so their base URLs, headers, limits, schemas, and mutation policies cannot bleed across boundaries.
 
 ## Prerequisites
 
-- Completed `clari-install-auth` setup
-- Python 3.10+ (primary) or TypeScript 5+
+- Endpoint inventory and pinned first-party contract fingerprint
+- Language-native HTTP and schema-validation libraries
+- Defined timeout, retry, logging, and secret-redaction policies
 
 ## Instructions
 
-### Step 1: Python Client
+### Step 1: Split clients by surface
 
-```python
-# clari_client.py
-import os
-import time
-import requests
-from dataclasses import dataclass, field
-from typing import Optional
+Create separate Revenue, ingestion, and Copilot transports with immutable base URLs and header builders.
 
-@dataclass
-class ClariConfig:
-    api_key: str
-    base_url: str = "https://api.clari.com/v4"
-    poll_interval: int = 5
-    max_poll_attempts: int = 60
+### Step 2: Model request and response types
 
-class ClariClient:
-    def __init__(self, config: Optional[ClariConfig] = None):
-        self.config = config or ClariConfig(
-            api_key=os.environ["CLARI_API_KEY"]
-        )
-        self.session = requests.Session()
-        self.session.headers.update({
-            "apikey": self.config.api_key,
-            "Content-Type": "text/plain",
-        })
+Represent identifiers, timestamps, pagination, export job states, error bodies, and optional fields explicitly; reject unknown destructive actions by default.
 
-    def list_forecasts(self) -> list[dict]:
-        resp = self.session.get(f"{self.config.base_url}/export/forecast/list")
-        resp.raise_for_status()
-        return resp.json()["forecasts"]
+### Step 3: Centralize transport policy
 
-    def export_forecast(
-        self,
-        forecast_name: str,
-        time_period: str,
-        types: list[str] = None,
-        currency: str = "USD",
-        export_format: str = "JSON",
-    ) -> dict:
-        payload = {
-            "timePeriod": time_period,
-            "typesToExport": types or [
-                "forecast", "quota", "forecast_updated",
-                "adjustment", "crm_total", "crm_closed"
-            ],
-            "currency": currency,
-            "schedule": "NONE",
-            "includeHistorical": False,
-            "exportFormat": export_format,
-        }
+Set connect and response timeouts, user-agent identity, bounded retries for eligible transient failures, and correlation metadata without logging credentials or payloads.
 
-        resp = self.session.post(
-            f"{self.config.base_url}/export/forecast/{forecast_name}",
-            json=payload,
-        )
-        resp.raise_for_status()
-        return resp.json()
+### Step 4: Implement job primitives
 
-    def wait_for_job(self, job_id: str) -> dict:
-        for attempt in range(self.config.max_poll_attempts):
-            resp = self.session.get(
-                f"{self.config.base_url}/export/jobs/{job_id}",
-            )
-            resp.raise_for_status()
-            status = resp.json()
+Expose queue, status, cancel, and result operations as an explicit state machine; do not hide long-running work behind an unbounded method.
 
-            if status["status"] == "COMPLETED":
-                return status
-            if status["status"] == "FAILED":
-                raise ClariExportError(f"Job {job_id} failed: {status}")
+### Step 5: Validate at the boundary
 
-            time.sleep(self.config.poll_interval)
+Schema-check provider responses before domain mapping and preserve the redacted original error ID when validation fails.
 
-        raise ClariExportError(f"Job {job_id} timed out after {self.config.max_poll_attempts} attempts")
+### Step 6: Prove compatibility
 
-    def download_export(self, download_url: str) -> dict:
-        resp = requests.get(download_url)
-        resp.raise_for_status()
-        return resp.json()
+Run offline contract tests, one non-production read smoke test, and a rollback test against the previously pinned client version.
 
-    def export_and_download(
-        self, forecast_name: str, time_period: str
-    ) -> dict:
-        job = self.export_forecast(forecast_name, time_period)
-        completed = self.wait_for_job(job["jobId"])
-        return self.download_export(completed["downloadUrl"])
+## Authentication
 
-class ClariExportError(Exception):
-    pass
-```
+Construct `apikey`, `partnerkey`, `X-Api-Key`, and `X-Api-Password` headers only inside the matching transport. Accept secret references rather than literal values and guarantee header redaction in errors, traces, and snapshots.
 
-### Step 2: TypeScript Client
+## Tool Discipline
 
-```typescript
-// clari-client.ts
-interface ClariConfig {
-  apiKey: string;
-  baseUrl?: string;
-  pollIntervalMs?: number;
-  maxPollAttempts?: number;
-}
-
-interface ForecastExport {
-  entries: ForecastEntry[];
-}
-
-interface ForecastEntry {
-  ownerName: string;
-  ownerEmail: string;
-  forecastAmount: number;
-  quotaAmount: number;
-  crmTotal: number;
-  crmClosed: number;
-  adjustmentAmount: number;
-  timePeriod: string;
-}
-
-class ClariClient {
-  private apiKey: string;
-  private baseUrl: string;
-  private pollIntervalMs: number;
-  private maxPollAttempts: number;
-
-  constructor(config: ClariConfig) {
-    this.apiKey = config.apiKey;
-    this.baseUrl = config.baseUrl ?? "https://api.clari.com/v4";
-    this.pollIntervalMs = config.pollIntervalMs ?? 5000;
-    this.maxPollAttempts = config.maxPollAttempts ?? 60;
-  }
-
-  private async request<T>(path: string, options?: RequestInit): Promise<T> {
-    const response = await fetch(`${this.baseUrl}${path}`, {
-      ...options,
-      headers: {
-        apikey: this.apiKey,
-        "Content-Type": "text/plain",
-        ...options?.headers,
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error(`Clari API ${response.status}: ${await response.text()}`);
-    }
-
-    return response.json();
-  }
-
-  async listForecasts(): Promise<{ forecasts: any[] }> {
-    return this.request("/export/forecast/list");
-  }
-
-  async exportForecast(forecastName: string, timePeriod: string): Promise<any> {
-    return this.request(`/export/forecast/${forecastName}`, {
-      method: "POST",
-      body: JSON.stringify({
-        timePeriod,
-        typesToExport: ["forecast", "quota", "crm_total", "crm_closed"],
-        currency: "USD",
-        schedule: "NONE",
-        includeHistorical: false,
-        exportFormat: "JSON",
-      }),
-    });
-  }
-
-  async exportAndDownload(
-    forecastName: string,
-    timePeriod: string
-  ): Promise<ForecastExport> {
-    const job = await this.exportForecast(forecastName, timePeriod);
-    const completed = await this.waitForJob(job.jobId);
-    const resp = await fetch(completed.downloadUrl);
-    return resp.json();
-  }
-
-  private async waitForJob(jobId: string): Promise<any> {
-    for (let i = 0; i < this.maxPollAttempts; i++) {
-      const status = await this.request(`/export/jobs/${jobId}`);
-      if (status.status === "COMPLETED") return status;
-      if (status.status === "FAILED") throw new Error(`Job failed: ${jobId}`);
-      await new Promise((r) => setTimeout(r, this.pollIntervalMs));
-    }
-    throw new Error(`Job ${jobId} timed out`);
-  }
-}
-```
-
-## Error Handling
-
-| Status | Meaning | Action |
-|--------|---------|--------|
-| 401 | Invalid API key | Regenerate token |
-| 403 | Insufficient permissions | Admin must grant API access |
-| 404 | Wrong forecast name | List forecasts first |
-| 429 | Rate limited | Back off and retry |
+Use Read and Grep to inspect configuration, provider contracts, fixtures, logs, schemas, and existing tests before proposing a change. Use Write or Edit only for the approved plan, implementation, test, or redacted receipt; do not issue, rotate, revoke, create, update, cancel, delete, export, ingest, or publish provider data without explicit operator approval.
 
 ## Output
 
-The client returns validated forecast/export results or a classified failure
-with a job ID and safe correlation metadata. It never logs bearer credentials,
-download URLs, or unfiltered forecast payloads; callers receive a bounded
-retry decision rather than an unstructured provider exception.
+- Endpoint-scoped typed client and surface-specific transport policy
+- Contract, retry, state-machine, and redaction tests
+- Compatibility matrix tied to provider contract fingerprints
+
+Return the exact surface, environment, resource or job identifiers, contract fingerprint, evidence, unresolved risks, and final decision without exposing credentials or sensitive customer data.
 
 ## Examples
 
-Submit a read-only export for a staging period, poll the returned job ID within
-the configured attempt limit, and persist only the approved fields after a
-completed response. On 429, honor the backoff policy; on 401 or 403, stop and
-route the request to the credential or authorization owner instead of retrying.
+A Revenue client returns a typed job handle from a forecast request and requires the caller to poll to `DONE` before fetching results. A separate Copilot client cannot access or serialize the Revenue token.
+
+## Error Handling
+
+| Failure | Response |
+| --- | --- |
+| Response fails schema validation | Preserve a redacted sample and contract fingerprint, then stop downstream loading. |
+| Retry repeats a mutation | Require an explicit idempotency decision and operator review; never assume POST or PUT is safe to replay. |
+| Wrong credential reaches a surface | Fail before network I/O through separate credential types and header builders. |
 
 ## Resources
 
-- [Clari API Reference](https://developer.clari.com/documentation/external_spec)
-- [Clari Community API Guide](https://community.clari.com/product-q-a-6/clari-api-all-you-need-to-know-556)
-
-## Next Steps
-
-Apply patterns in `clari-core-workflow-a` for forecast export pipelines.
+- [First-party source notes](references/official-docs.md)
+- [Clari Revenue API reference](https://developer.clari.com/default/documentation/external_spec)
+- [Clari Copilot API reference](https://api-doc.copilot.clari.com/)

@@ -19,21 +19,8 @@ Platform-conditional TLS backend selection for `reqwest` HTTP clients. A single 
 
 - `tls_client_builder() -> reqwest::ClientBuilder` — returns a `reqwest::Client::builder()` with `.use_native_tls()` on Windows and `.use_rustls_tls()` elsewhere, selected at compile time via `cfg`. Intended as the starting point for any client reaching external HTTPS endpoints; callers chain `.timeout(...)`, `.http1_only()`, proxy config, etc. and then `.build()`.
 
-## RPC / controllers
-
-None. Not RPC-facing — no `schemas.rs`, no controllers.
-
-## Agent tools
-
-None.
-
-## Events
-
-None.
-
-## Persistence
-
-None — stateless, pure factory.
+No RPC surface, agent tools, bus events, or persistence — a stateless
+factory.
 
 ## Dependencies
 
@@ -44,12 +31,12 @@ None — stateless, pure factory.
 Every HTTP-client construction site that talks to external HTTPS endpoints, including:
 
 - `crates/openhuman-core/src/config/schema/proxy.rs` — proxy-aware client builders (primary + fallback).
-- `crates/openhuman-core/src/integrations/client.rs` and integration tools (`tools/searxng.rs`, `tools/brave.rs`, `tools/querit.rs`, `tools/seltz.rs`).
-- `crates/openhuman-core/src/inference/provider/compatible.rs` — OpenAI-compatible inference provider clients.
-- `crates/openhuman-core/src/integrations/composio/client.rs`, `crates/openhuman-core/src/desktop/app_state/ops.rs`.
+- `crates/openhuman-core/src/integrations/client/construct.rs` and `crates/openhuman-core/src/integrations/composio/client/connections.rs`.
+- `crates/openhuman-core/src/search/tools/*.rs` (`tavily`, `exa`, `brave`, `searxng`, `querit`, `seltz`) — search-tool HTTP clients.
+- `crates/openhuman-core/src/desktop/app_state/ops/current_user_fetch.rs`.
 - `crates/openhuman-core/src/api/rest.rs` (REST API client).
 
-Registered in the domain tree via `pub mod tls;` in `crates/openhuman-core/src/mod.rs`.
+Declared via `pub mod tls;` in `crates/openhuman-core/src/util/mod.rs`; not re-exported at the `util` root, so callers spell `crate::util::tls::tls_client_builder`.
 
 ## Notes / gotchas
 

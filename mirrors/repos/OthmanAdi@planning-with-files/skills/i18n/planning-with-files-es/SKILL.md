@@ -36,7 +36,7 @@ hooks:
         - type: command
           command: "SH=\"\"; for c in \"${PWF_SCRIPT_DIR}/skill-hook.sh\" \"${CLAUDE_SKILL_DIR}/scripts/skill-hook.sh\" \"$HOME/.claude/skills/planning-with-files-es/scripts/skill-hook.sh\" \"$HOME/.claude/skills/planning-with-files/scripts/skill-hook.sh\" \"$HOME/.claude/plugins/marketplaces/planning-with-files/scripts/skill-hook.sh\"; do [ -f \"$c\" ] && { SH=\"$c\"; break; }; done; [ -n \"$SH\" ] && sh \"$SH\" --event=precompact; exit 0"
 metadata:
-  version: "3.17.2"
+  version: "3.18.0"
 ---
 
 # Sistema de Planificación con Archivos
@@ -236,6 +236,12 @@ Scripts auxiliares de automatización:
 - `scripts/init-session.sh` — Inicializa todos los archivos de planificación
 - `scripts/check-complete.sh` — Verifica si todas las fases están completas
 - `scripts/session-catchup.py`: sin opciones no accede al historial; `--metadata` inspecciona solo metadatos locales del mismo proyecto y `--replay` reproduce extractos limitados y enmarcados cuando el usuario lo solicita de forma explícita
+
+### Listar planes guardados
+
+Para encontrar una tarea antes de retomarla, ejecuta `sh "<skill-dir>/scripts/set-active-plan.sh" --list` o, en Windows PowerShell, `& "<skill-dir>/scripts/set-active-plan.ps1" -List`. Sustituye `<skill-dir>` por el directorio de instalación de este skill y mantén la raíz del proyecto como directorio de trabajo actual.
+
+Este comando de solo lectura muestra los planes con nombre y el progreso de sus fases en `.planning/` del directorio actual. `[active]` marca el puntero predeterminado compartido; no vincula una sesión a un plan. Las tareas simultáneas siguen necesitando una `PLAN_ID` por host o árboles de trabajo separados.
 
 ## Límites de seguridad
 

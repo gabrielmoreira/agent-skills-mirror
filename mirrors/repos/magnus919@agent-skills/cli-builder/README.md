@@ -1,0 +1,34 @@
+# CLI Builder — Design Agent-Friendly CLI Tools
+
+A comprehensive design guide and scaffold for building CLI tools that **AI agents can actually use**. 10 universal design patterns grounded in real failures from building 15+ agent-facing CLIs.
+
+## Why Install This Skill
+
+When your agent loads this skill, it can **design, build, and refactor CLI tools** that agents can discover and use without human help. The goal is to establish and review explicit contracts for help, output, safety, and repeatable operations:
+
+- **Treat `--help` as a contract** the agent parses to understand your tool
+- **Establish a documented `--json` contract** for machine-readable output, when the CLI supports it
+- **Design and verify idempotent operations** where repeatability is appropriate, with `--dry-run` previews for changes
+- **Authentication is lazy** — help and dry-run work without credentials
+- **Errors are structured** — different exit codes for different failure modes
+
+## What You Get
+
+| Directory | Purpose |
+|-----------|---------|
+| `SKILL.md` | Concise workflow for discovery, predictable contracts, verification, and maintenance |
+| `templates/` | Bash CLI scaffold for local wrappers |
+| `references/` | Python API clients, advanced patterns, readiness checklist, wrapper example, MCP decisions, and improvement cycle |
+
+## Triggers
+
+Load this when building a new CLI tool, refactoring an existing tool that causes agent friction, or debugging why your agent keeps failing to use a CLI properly.
+
+## Requirements
+
+Bash, Python 3.8+, jq, and a standard Unix CLI environment.
+
+
+## Quick Start
+
+Start with the setup and first workflow in SKILL.md, then use the linked resources for the specific task you need to complete.

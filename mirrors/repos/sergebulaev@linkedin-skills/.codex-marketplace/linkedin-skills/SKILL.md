@@ -20,6 +20,7 @@ A bundle of 11 focused skills for LinkedIn content ops in 2026, built for Claude
 - **Auditing / rewriting a LinkedIn profile** → use `linkedin-profile-optimizer`
 - **Running an employee advocacy program across a marketing team** → use `linkedin-employee-advocacy`
 - **Adapting content from another platform (tweet, video, blog) into a native LinkedIn post** → use `linkedin-repurposer`
+- **Working out what you actually have to say, or having nothing concrete for a draft to use** → use `linkedin-interviewer`. It interviews you and keeps the answers in `references/story-bank.md`, which every writing skill reads. Start here if you have never posted: the voice profile needs posts you already wrote, the Story Bank only needs a career.
 
 ## Founders edition
 

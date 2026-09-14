@@ -49,7 +49,8 @@ Goal: Take a bug ticket from root-cause analysis through a locally-verified PR/M
     - **Proposed Changes**: Exact files and logic to be modified.
     - **Verification Plan**: Detail which QE skill will be used to verify the fix _locally_ before PR.
     - Do not propose code changes until repro steps, expected result, and root cause hypothesis are explicit.
-4.  **HARD STOP**: Request user approval for the implementation plan.
+    - **SNC**: score per `common-task-complexity-routing`; record `snc_tier`/`model_tier` in the plan.
+4.  **HARD STOP**: Request user approval for the implementation plan. Mandatory at `snc_tier=high`; `medium` requires self-review first; `low` may skip approval in autonomous mode only.
 5.  **Readiness Gate**: Run `implementation-readiness`; code only after READY or approved PARTIAL.
 
 ### Step 2: Implementation (TDD Phase)
@@ -71,8 +72,8 @@ Do NOT rely on "it builds" — verify the fix against the issue reproduction ste
 
 1.  **Launch Dev Server**: Run the local dev environment for the service.
 2.  **Execute QE Audit**:
-    - **Web**: Load `quality-engineering-playwright-cli`. Run the reproduction steps. Capture "After" snapshots.
-    - **Mobile**: Load `quality-engineering-appium-mcp`. Run the reproduction steps on an emulator.
+    - **Web**: Load `quality-engineering-playwright-cli`. Run its preflight, take the first driver rung (CLI, else Playwright MCP). Run the reproduction steps. Capture "After" snapshots.
+    - **Mobile**: Load `quality-engineering-appium-mcp`. Run its preflight, take the first driver rung (local device, else cloud). Run the reproduction steps.
 3.  **Final Verdict**: Compare results against the issue `Expected Result`. If any sub-3px regressions exist, fix them now.
     - No success claim without fresh local evidence in `docs/srs/srs-walkthrough.md`.
 
@@ -89,10 +90,11 @@ Do NOT rely on "it builds" — verify the fix against the issue reproduction ste
 ## Runtime Contract
 - Use for bug tickets that need root-cause remediation and a PR/MR.
 - Required inputs: issue URL/key or exported ticket text with reproduce steps.
+- Accepts a `test-loop` `REAL_BUG_DO_NOT_HEAL` handoff as the ticket input: the healer's `TEST:` and `EVIDENCE:` lines plus the failing AC are the reproduce steps.
 - Return BLOCKED only when repro steps, expected result, or root-cause hypothesis cannot be established.
 
 ## Handoff Payload
-- `slug`, `operator_profile` (carried, not re-inferred), implementation plan path, task list path, walkthrough path, PR/MR link, outcome report, next workflow.
+- `slug`, `operator_profile` (carried, not re-inferred), `snc_tier`, `model_tier`, implementation plan path, task list path, walkthrough path, PR/MR link, outcome report, next workflow.
 
 ## Blocking Questions
 - Ask max 3 at a time with a recommended default and 2-3 options.

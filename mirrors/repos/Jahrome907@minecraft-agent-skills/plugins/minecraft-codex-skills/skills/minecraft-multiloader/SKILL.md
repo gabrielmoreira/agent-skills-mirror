@@ -28,7 +28,7 @@ platform-specific behavior behind the `@ExpectPlatform` abstraction.
 
 ---
 
-## Versions (Retained 1.21.11 Lane)
+## Versions (Minecraft 1.21.11)
 
 ```properties
 # gradle.properties property names used by this skill's static helper.
@@ -49,7 +49,7 @@ from the same generated or known-working project line. This skill deliberately
 does not publish a copyable dependency matrix: its static helper cannot resolve
 whether a particular set of versions is compatible.
 
-For the current Minecraft 26.2 / Java 25 lane, use the official
+For Minecraft 26.2 / Java 25, use the official
 [Architectury Template Generator](https://generate.architectury.dev/) only when
 its version selector offers the exact target. Generate a **Multiplatform**
 project with Fabric and NeoForge, then preserve the generated Gradle layout and
@@ -116,7 +116,7 @@ my-mod/
 ## Legacy Build Template
 
 The old fixed Gradle scripts were a 1.21.11 snapshot and are intentionally not
-presented as a current scaffold. For either supported lane, read
+presented as a current scaffold. For either supported version, read
 [`references/legacy-1.21.11-template.md`](references/legacy-1.21.11-template.md)
 or [`references/architectury-reference.md`](references/architectury-reference.md)
 before changing generated build files. They preserve version anchors and

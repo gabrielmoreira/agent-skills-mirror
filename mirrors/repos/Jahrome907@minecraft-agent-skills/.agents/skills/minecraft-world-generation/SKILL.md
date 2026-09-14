@@ -31,12 +31,12 @@ mod-specific registry path.
 
 ## Version boundary
 
-Treat Minecraft 26.x as the current lane for new work. Use Java 25 and start
+Use Minecraft 26.x for new work. Use Java 25 and start
 each JSON schema from the exact target's vanilla data or generated output. Do
 not copy a 1.21 shape into a 26.x pack merely because it parses as JSON.
 
 Preserve an established 1.21.x project on Java 21 and its matching schema unless
-the task explicitly includes an upgrade. Do not mix compatibility lanes.
+the task explicitly includes an upgrade. Keep examples matched to the project version.
 
 The [26.1 migration primer](https://docs.neoforged.net/primer/docs/26.1/)
 removes `minecraft:random_patch` and `minecraft:no_bonemeal_flower`. It replaces
@@ -45,7 +45,7 @@ feature and placements for count, random offset, and block-predicate filtering.
 Inspect the relevant primer section before migrating code or data.
 
 Read [legacy 1.21 JSON patterns](references/legacy-1.21-worldgen-json.md) only
-when the project targets that compatibility lane. Those examples are not
+when the project targets that version. Those examples are not
 release artifacts for 26.x.
 
 ---

@@ -58,7 +58,7 @@ document.getElementById("title").textContent = title;
 ### Two JSON Shapes (Easy to Confuse)
 
 - `data-composition-variables` is an **array of declarations** (the schema): `[{id, type, label, default}, ...]`
-- `--variables` and `data-variable-values` are **objects keyed by id** (the values): `{ title: "Q4", accent: "#fff" }`
+- `--variables` and `data-variable-values` are **objects keyed by id** (the values): `{"title":"Q4","accent":"#fff"}`
 
 ## Media
 

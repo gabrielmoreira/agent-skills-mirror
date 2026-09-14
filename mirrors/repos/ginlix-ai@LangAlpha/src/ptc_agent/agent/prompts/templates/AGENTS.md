@@ -136,6 +136,61 @@ sees — move it outside the fence, or register it as an either/or.
   can select a section instead of printing. Model-scoped settings (the guidance level
   among them) live in the sibling `model_preference` bucket, which the template
   never iterates.
-- **The static prompt excludes time and user profile.** Both are appended by
-  `RuntimeContextMiddleware` after the cache breakpoint. Adding either to a
-  system template silently breaks prompt caching.
+- **The static prompt excludes every per-request value.** The clock, the user's
+  identity, the surface this turn is running on, and anything that changes
+  between turns are rendered from `templates/envelope/` and appended after the
+  cache breakpoint. Putting one of them in a system template silently breaks
+  prompt caching. What stays static is only the rules that hold on every turn:
+  `components/time_rules.md.j2` frames what runtime context is, who it is from
+  and how to resolve a time frame against the stamp. The rules that depend on
+  the turn ride with it: `envelope/surface_rules.md.j2` states what the surface
+  in hand accepts, inside the turn row, and only when those rules are not the
+  last ones the model can still see. It holds a line only for the surfaces
+  langalpha renders itself (`web`, `market_view`); any other surface sends its
+  own text on the request (`ChatRequest.surface_rules`) and the template renders
+  that verbatim in place of a built-in line.
+
+## `templates/envelope/`
+
+Fragments of the runtime context, rendered by `middleware/runtime_context/`
+rather than included from a system template. Three lifetimes share the
+directory:
+
+- **Tail fragments** (`header`, `updates`) re-render per model call, after the
+  last breakpoint, so their cost is a few hundred tokens rather than the whole
+  history. They emit bare markdown lines: the envelope supplies the
+  `<system-reminder>` wrapper, so a fragment that adds one nests it.
+- **Baseline fragments** (`baseline_files`, `baseline_agentmd`,
+  `baseline_memory`, `baseline_identity`) land *inside* the cached per-thread
+  prefix, so they must be byte-identical for equal inputs: no timestamps, no
+  dict iteration, and no guidance fence. A guidance flip must not move them,
+  because the model can change mid-thread.
+- **Row fragments** (`turn`, `surface_rules`, `update_row`) are rendered once,
+  at the turn boundary, and persisted as messages in history. `turn` is the
+  stamp the turn opened with, `surface_rules` is the paragraph it carries about
+  what this turn's reply has to be shaped like (langalpha's own line for `web`
+  and `market_view`, otherwise the client's `surface_rules` text rendered as
+  sent), and `update_row` is one thing that moved underneath the baseline.
+  They are read for the rest of the thread and cannot be re-rendered, so
+  nothing in them may be relative to now and none of them takes a guidance
+  fence: the model that reads one back may not be the one it was written for.
+  `turn` states an absolute stamp rather than an age or a countdown;
+  `update_row` states none at all and leans on where it sits, directly after
+  the anchor that already gives the turn its time. A change row also carries
+  the paragraph explaining what a change row is, because nothing in the system
+  prefix does.
+  Like a tail fragment they emit bare markdown, because which wrapper they get
+  (a `<system-reminder>` block or an operator-role message) is decided per call
+  by `runtime_context/carrier.py`.
+
+Guidance splits here the same way it does in a component, with one extra rule:
+**lean carries state, detailed carries state plus steering.** A lean fragment is
+facts and values only, on the assumption a frontier model knows what to do with
+a clock. Provenance and trust labels are not steering and render at both levels.
+
+Every line is guarded on its own value. Jinja resolves an unknown name to the
+empty string, so an unwired kwarg would otherwise render a headed blank
+(`**Now:** `) that reads as authoritative and says nothing; an empty section is
+caught by eye on the first render, a blank stamp is not caught at all. The kwarg
+each fragment expects is recorded under `envelope:` in `../config/prompts.yaml`
+and pinned by `tests/unit/ptc_agent/agent/prompts/test_runtime_context_templates.py`.

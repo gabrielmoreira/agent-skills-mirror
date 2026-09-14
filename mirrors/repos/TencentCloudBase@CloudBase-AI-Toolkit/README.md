@@ -24,23 +24,19 @@ The CloudBase integration layer for AI coding tools: Plugin installs the stack, 
 
 ## Recent updates
 
+**v2.34.x** (2026-09)
+
+- i18n / IDE: full tool-copy localization with an instance-level `lang`, plus `auth` `site` / `region` params so international-site login and region routing resolve correctly
+- Cloud API: `callCloudApi` service allowlist widened to 57 with built-in version mapping (multi-version services such as `tke` / `mongodb` / `vod` require an explicit `version`)
+- Deploy / Env: new `appBuild` tool with hosting build neutralization; `queryEnv` reports the region actually applied and `domains` honors a passed envId
+- Skills / Docs: skill fallback reads now point at the official distribution repo with a references address list; SDK-first database decision gate for cloudrun; site doc links moved to the current Markdown addresses; post-deployment share offered after delivery in the expert packs and the deploy skills (opt-in, redacted, at most once)
+
 **v2.33.x** (2026-09)
 
 - Functions / Apps: custom container-image deploy for cloud functions with async status query; cloud upload channel (`getUploadUrl` + `deployApp` cosTimestamp)
 - Env binding: `cloudbaserc.json` as field-level fallback for envId / region / site (literal + `{{env.KEY}}`)
 - Errors / Skills: centralized error guidance by structured `Code`; virtual-pay reference; CodeBuddy IDE MCP upgrade skill; WorkBuddy experts
 - Cloud API / Deploy: `callCloudApi` opens monitor & postgres services; declarative deploy with `deployPlan` / `deployApply`; `cloud-api-operations` skill
-
-**v2.32.x** (2026-08)
-
-- Auth / Security / IDE: international-site (`TCB_SITE=intl`) login routing; default env-var masking in queryFunctions/queryCloudRun; Kimi Code & Kimi Work support
-- Mini Program: `queryMessagePush` / `manageMessagePush` for event and message-type subscriptions (virtual-pay defaults, idempotent merge, optional appid)
-- Mini Program: message push aware of cloudfunction vs container mode (`ensureContainerMode` / `setContainerCallback`, function-existence check)
-- Gateway: `manageGateway` verifies HTTP service before custom-domain / route create, with certificate auto-select and clearer DNS guidance
-
-**v2.31.x** (2026-08)
-
-- CloudRun: `getDeployLog` failures (CODING login / image deploy with no build) now rewrite to `getProcessLog` / `getDeployRecords` next steps instead of raw English errors
 
 [Releases][changelog] · [Star][github-stars-link] · Watch → Releases
 

@@ -37,7 +37,7 @@ hooks:
           command: "SH=\"\"; for c in \"${PWF_SCRIPT_DIR}/skill-hook.sh\" \"${CLAUDE_SKILL_DIR}/scripts/skill-hook.sh\" \"$HOME/.claude/skills/planning-with-files-zh/scripts/skill-hook.sh\" \"$HOME/.claude/skills/planning-with-files/scripts/skill-hook.sh\" \"$HOME/.claude/plugins/marketplaces/planning-with-files/scripts/skill-hook.sh\"; do [ -f \"$c\" ] && { SH=\"$c\"; break; }; done; [ -n \"$SH\" ] && sh \"$SH\" --event=precompact; exit 0"
 metadata:
 
-  version: "3.17.2"
+  version: "3.18.0"
 
 ---
 
@@ -232,6 +232,12 @@ if 操作失败:
 - `scripts/init-session.sh` — 初始化所有规划文件
 - `scripts/check-complete.sh` — 验证所有阶段是否完成
 - `scripts/session-catchup.py`：显式查看同项目会话元数据或有限摘录；无参数运行不会访问会话存储
+
+### 列出已保存的计划
+
+恢复任务前，可运行 `sh "<skill-dir>/scripts/set-active-plan.sh" --list` 查找计划；在 Windows PowerShell 中运行 `& "<skill-dir>/scripts/set-active-plan.ps1" -List`。将 `<skill-dir>` 替换为此技能的安装目录，并将当前工作目录保持在项目根目录。
+
+此命令仅执行读取，列出当前目录下 `.planning/` 中的命名计划及阶段进度。`[active]` 表示共享的默认指针，不会将会话绑定到计划。并行任务仍需为每个宿主设置 `PLAN_ID`，或使用独立的工作树。
 
 ## 安全边界
 

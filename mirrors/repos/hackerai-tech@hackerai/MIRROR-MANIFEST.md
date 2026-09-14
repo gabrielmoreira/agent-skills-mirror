@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `hackerai-tech/hackerai` — 26 default patterns, 1 followed patterns, 16 file(s) materialized.
+Mirror of `hackerai-tech/hackerai` — 26 default patterns, 1 followed patterns, 19 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `hackerai-tech/hackerai` — 26 default patterns, 1 followed patterns,
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 16 |
+| Files         | 19 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,22 +59,25 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`.agents/skills/hackerai-user-research/agents/openai.yaml`](.agents/skills/hackerai-user-research/agents/openai.yaml) |
-| 2 | ✓ | [`.agents/skills/hackerai-user-research/references/pm-runbook.md`](.agents/skills/hackerai-user-research/references/pm-runbook.md) |
-| 3 | ✓ | [`.agents/skills/hackerai-user-research/references/privacy-policy.md`](.agents/skills/hackerai-user-research/references/privacy-policy.md) |
-| 4 | ✓ | [`.agents/skills/hackerai-user-research/scripts/run-research.mjs`](.agents/skills/hackerai-user-research/scripts/run-research.mjs) |
-| 5 | ✓ | [`.agents/skills/hackerai-user-research/scripts/run-research.test.mjs`](.agents/skills/hackerai-user-research/scripts/run-research.test.mjs) |
-| 6 | ✓ | [`.agents/skills/hackerai-user-research/SKILL.md`](.agents/skills/hackerai-user-research/SKILL.md) |
-| 7 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 8 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 9 | ✓ | [`docker/centrifugo/README.md`](docker/centrifugo/README.md) |
-| 10 | ✓ | [`e2b/README.md`](e2b/README.md) |
-| 11 | ✓ | [`e2e/README.md`](e2e/README.md) |
-| 12 | ✓ | [`packages/desktop/README.md`](packages/desktop/README.md) |
-| 13 | ✓ | [`packages/local/README.md`](packages/local/README.md) |
-| 14 | ✓ | [`scripts/README.md`](scripts/README.md) |
-| 15 | ✓ | [`third_party/strix-skills/skills/README.md`](third_party/strix-skills/skills/README.md) |
-| 16 | → | [`README.md`](README.md) |
+| 1 | ✓ | [`.agents/skills/hackerai-retention-analysis/agents/openai.yaml`](.agents/skills/hackerai-retention-analysis/agents/openai.yaml) |
+| 2 | ✓ | [`.agents/skills/hackerai-retention-analysis/references/measurement-guide.md`](.agents/skills/hackerai-retention-analysis/references/measurement-guide.md) |
+| 3 | ✓ | [`.agents/skills/hackerai-retention-analysis/SKILL.md`](.agents/skills/hackerai-retention-analysis/SKILL.md) |
+| 4 | ✓ | [`.agents/skills/hackerai-user-research/agents/openai.yaml`](.agents/skills/hackerai-user-research/agents/openai.yaml) |
+| 5 | ✓ | [`.agents/skills/hackerai-user-research/references/pm-runbook.md`](.agents/skills/hackerai-user-research/references/pm-runbook.md) |
+| 6 | ✓ | [`.agents/skills/hackerai-user-research/references/privacy-policy.md`](.agents/skills/hackerai-user-research/references/privacy-policy.md) |
+| 7 | ✓ | [`.agents/skills/hackerai-user-research/scripts/run-research.mjs`](.agents/skills/hackerai-user-research/scripts/run-research.mjs) |
+| 8 | ✓ | [`.agents/skills/hackerai-user-research/scripts/run-research.test.mjs`](.agents/skills/hackerai-user-research/scripts/run-research.test.mjs) |
+| 9 | ✓ | [`.agents/skills/hackerai-user-research/SKILL.md`](.agents/skills/hackerai-user-research/SKILL.md) |
+| 10 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 11 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 12 | ✓ | [`docker/centrifugo/README.md`](docker/centrifugo/README.md) |
+| 13 | ✓ | [`e2b/README.md`](e2b/README.md) |
+| 14 | ✓ | [`e2e/README.md`](e2e/README.md) |
+| 15 | ✓ | [`packages/desktop/README.md`](packages/desktop/README.md) |
+| 16 | ✓ | [`packages/local/README.md`](packages/local/README.md) |
+| 17 | ✓ | [`scripts/README.md`](scripts/README.md) |
+| 18 | ✓ | [`third_party/strix-skills/skills/README.md`](third_party/strix-skills/skills/README.md) |
+| 19 | → | [`README.md`](README.md) |
 
 ---
 

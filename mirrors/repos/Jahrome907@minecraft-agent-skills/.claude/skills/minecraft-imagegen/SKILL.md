@@ -17,7 +17,7 @@ server brand asset.
 - `Do not use when`: the task is vector/code-native UI, an existing SVG/logo system, or non-image code/assets.
 - `Do not use when`: the current host does not expose built-in image generation or an equivalent image-editing tool.
 
-### Support Assets
+### References
 
 - Read [prompt patterns](references/prompt-patterns.md) for an underspecified request or a generation/edit prompt template.
 - Read [asset recipes](references/asset-recipes.md) for a pack icon, release banner, server header, or texture concept sheet.

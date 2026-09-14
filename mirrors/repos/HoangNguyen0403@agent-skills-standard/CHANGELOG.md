@@ -5,6 +5,118 @@ All notable changes to the Programming Languages and Frameworks Agent Skills wil
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [quality-engineering-v1.6.0] - Unreleased
+
+**Category**: Test-loop program P0–P3, requirement-to-TC hardening, automation health, UI automation driver ladders
+
+> Consolidated in #192. The untagged headers `quality-engineering-v1.6.0`–`v1.8.0` written by #169, #184, #186 and #188 were merged into this one entry because nothing after `quality-engineering-v1.5.1` has been released. One minor bump per release, not per PR.
+
+### Added
+- `quality-engineering-selector-stability` (#169): cross-stack locator ladder (web `getByRole` > `getByLabel` > `getByTestId`; mobile a11y id > resource-id/testTag), test-id naming `<screen>-<element>-<role>`, never XPath.
+- `quality-engineering-test-healing` (#169): failure taxonomy `SELECTOR_DRIFT / TIMING_SYNC / DATA_ENV / INFRA / REAL_REGRESSION`, allowed and forbidden repairs, verdict contract.
+- `quality-engineering-test-plan-authoring` (#169): AC-* into an executable test plan with lanes, seed, and `Selector Gaps`.
+- `quality-engineering-automation-health` (#184): feedback-loop, suite reliability, release cadence and prod-escape metrics rolled into a `release_confidence` verdict.
+- `quality-engineering-playwright-pom-generation` (#186): one page object per screen, ladder-compliant locators, no assertions, `pages` fixture; MCP-assisted locator confirmation.
+- `quality-engineering-flaky-triage` (#188): quarantine behind a ticket with owner and 14-day expiry, root-cause buckets, 10-run isolated evidence, un-quarantine criteria.
+- `quality-engineering-visual-baseline` (#188): capture in CI image, mask by locator, per-region thresholds, reviewed-diff baseline updates.
+- `quality-engineering-playwright-cli` (#192): driver ladder (preflight → `playwright-cli` → Playwright MCP → exported evidence → `BLOCKED (driver: playwright)`), `scripts/preflight.sh` with `PLAYWRIGHT_CLI_BIN` override and exit 0/1/2, `references/driver-ladder.md` with CLI↔MCP tool equivalence and launch flags, evidence dir convention `.playwright-cli/<session>/`, keywords `playwright mcp`, `browser_snapshot`, `playwright-cli install`, fallback eval.
+- `quality-engineering-appium-mcp` (#192): driver ladder (preflight → local device → `remoteServerUrl` cloud → exported evidence → `BLOCKED (driver: appium)`), `scripts/preflight.sh` reporting Node/JDK/adb/emulator/simctl/cloud creds with a `MODE` line, `references/driver-ladder.md` with prerequisites per rung and server env (`NO_UI`, `AI_VISION_ENABLED`, `REMOTE_SERVER_URL_ALLOW_REGEX`), evidence dir `.appium-mcp/<session>/`, keywords `appium-mcp`, `appium doctor`, `android emulator`, `ios simulator`, `select_device`, cloud-fallback eval.
+- `references/setup.md` in both driver skills (#192): install matrix, MCP config snippet, security notes, and the evaluated-not-adopted record for Obscura, Lightpanda (web) and google/artemis (mobile). `docs/ui-automation-drivers.md` is a maintainer summary only; skills never link to `docs/`.
+
+### Changed
+- `quality-engineering-zephyr-test-generation` (#184): P/N/E scenario contract, `ASSUMED` tagging, `HALT` on ambiguous AC, golden requirement fixtures, three new anti-patterns.
+- `quality-engineering-test-plan-authoring` (#186, #192): `Selector Gaps` now feeds a live `specialist-testid-inserter`; Playwright agents reference notes the vendor agents use Playwright MCP independently of the verification driver.
+- `quality-engineering-test-healing` (#186, #188): repair catalog no longer marks `specialist-testid-inserter` as a future phase; references flaky-triage and visual-baseline; `test.skip`/`fixme` never allowed as a heal; second `BLOCKED` cause (no stable locator target); P3 placeholders removed.
+- `quality-engineering-playwright-cli` (#192): install guidance unpinned (`@latest` + `playwright-cli install --skills`, pin in the consuming project); Playwright MCP named as the sanctioned no-shell exception.
+- `quality-engineering-appium-mcp` (#192): cheatsheet adds `select_device`, `prepare_ios_simulator`, `appium_get_page_source`, `generate_locators`, `appium_generate_tests`; LambdaTest setup documents the allowlist regex and `video.url`.
+- `quality-engineering-playwright-pom-generation` (#192): MCP authoring reference now shows both drivers.
+- Workflows `verify-work`, `verify-bug`, `test-loop` (steps 1–4), `dev-fix` (#192): run the driver preflight, record `driver:` / `evidence_dir:`, carry `driver_blocked[]`.
+
+### Versions
+- quality-engineering: 1.6.0
+
+## [specialists-v1.3.0] - Unreleased
+
+**Category**: Test-loop specialists (planner, testid-inserter, healer), solution diagrammer, driver-aware generation
+
+> Consolidated in #192. The untagged headers `specialists-v1.4.0`–`v1.7.0` written by #169, #172, #186 and #188 were merged into this one entry because nothing after `specialists-v1.2.1` has been released. One minor bump per release, not per PR.
+
+### Added
+- `specialist-test-planner` (#169): turns approved AC/SRS into `PLAN: / LANES: / SCENARIOS: / SEED: / SELECTOR_GAPS:` output with `HALT:` triggers.
+- `specialist-solution-diagrammer` (#172): draws exactly one evidence-grounded diagram per invocation from a caller-supplied evidence bundle, then validates, renders, exports, and reviews the exported image. Returns `BLOCKED` when given no evidence, no diagram type, or when every node would be UNVERIFIED. Generated agent definitions ship for Claude, Codex, Antigravity, and Copilot. Carries `metric` and `constraint` onto each node, never invents a number, reports a `METRICS:` line. Renders with `--strict` and exports through a draw.io MCP tool, the Desktop CLI, or reports the image as not exported.
+- `specialist-testid-inserter` (#186): closes `SELECTOR_GAPS` under an approval gate; never renames ids.
+- `specialist-test-healer` (#188): classifies one failing test from artifacts, one allowed repair, 3 consecutive reruns, `ASSERTION_DELTA` gate, verdict + route.
+
+### Changed
+- `specialist-integration-test-generator` (#186, #192): web lane must use page objects; returns `Test: BLOCKED` when one is missing; lane → driver table (web `playwright-cli` → Playwright MCP, mobile Appium MCP local → cloud) and the `Test: BLOCKED (driver)` verdict.
+
+### Versions
+- specialists: 1.3.0
+
+---
+
+## [cli-v2.6.2] - 2026-09-13
+
+**Category**: CLI Tool
+
+### Fixed
+
+- **Skill validator** (`DirectoryStructureRule`): a package directory under `scripts/` (for
+  example `common-architecture-diagramming/scripts/schema_parsers/`) no longer triggers
+  "Script without standard extension"; directories are skipped, files still need `.py`, `.js`,
+  `.ts`, or `.sh`.
+
+### Versions
+
+- **CLI**: `2.6.1` → `2.6.2`
+
+---
+
+## [system-design-v1.1.0] - Unreleased
+
+**Category**: One diagram lane
+
+> Renumbered from `2.0.0` in #192. The `system-design-diagramming` removal is recorded below, but the category is versioned as a minor bump because consumers sync by category, not by skill name.
+
+### Removed
+
+- **`system-design-diagramming`** (Archify dark-SVG lane): superseded by `common-architecture-diagramming`. Two render lanes with different visual languages shipped side by side, and the Archify lane depended on an external CLI this repository never carried, had no validator, and no tests. The draw.io lane has both.
+
+### Added
+
+- **`system-design-interview-coaching`** (P1): the `interview practice` mode finally has an owner.
+  The agent is the interviewer during the round and the coach after it: seven phases on a
+  45-minute time budget (scales to 60) with interrupt lines when a phase overruns, one deliberate
+  mid-round requirement change, one follow-up on the weakest area, the model answer only after
+  the candidate commits to an approach. Debrief on a six-criterion 0-3 rubric with a quoted line
+  of evidence per score, bands, the two fixes to work on first, and the next practice problem.
+  References: `time-budget.md`, `rubric.md`, `mistakes.md` (twelve symptom → coach line →
+  recovery rows), `whiteboard-rules.md` (Mermaid in chat during the round, same conventions as
+  the house style). Evals carry pressure scenarios for "just tell me the answer", "skip the
+  numbers", and "score it a hire".
+- **`system-design-methodology/references/phase-deliverables.md`**: maps the seven interview phases (requirements, estimation, high-level design, data model, API, deep dive, bottlenecks) onto the four methodology gates, names the deliverable per phase, the diagram type and audience that carries it, and where each node's `metric`, `constraint`, and `evidence` come from.
+
+### Changed
+
+- **`system-design-methodology`**: description and Phase 3 route to `common-architecture-diagramming`; a design-session diagram is a `container` view (audience tech) plus `sequence` or `dataflow` for the critical path, every node carrying `metric` and `constraint` from its `constraint -> component -> cost` line. `four-phase-process.md` lists diagrams as a Phase 3 output.
+- **`system-design-artifact-intake`**: the fact-sheet re-draw goes through the draw.io pipeline; confirmed rows carry `evidence` into the artifact, low-confidence rows omit it and render UNVERIFIED. The Archify JSON row is gone from the artifact-format table.
+- **`system-design-review`**: prose said "eight axes" while the scorecard has nine; fixed.
+- **`system-design-case-catalog`**: now the problem bank for the coaching skill; Coaching Mode is a
+  pointer; three problems added (video streaming, ride hailing, payment ledger); the
+  `mock interview` trigger moved to `system-design-interview-coaching`.
+- **`system-design-methodology`**: interview-practice mode routes to the coaching skill.
+- **Workflows** `system-design-session`, `review-system-design`, `design-solution`: load `common-architecture-diagramming`, render through it, and carry diagram paths in the handoff payload. `design-solution` gains a diagram step and a `## Diagrams` section it never had. `system-design-session` interview-practice mode runs the coaching skill and adds an interview scorecard to the output.
+
+### Migration
+
+- `.skillsrc` must not exclude `common-architecture-diagramming`, and `common` must be at `common-v2.5.0` or later. The keywords `diagram` and `architecture diagram` are now served by the common skill only.
+
+### Versions
+
+- **System Design Skills**: `1.0.0` → `1.1.0`
+
+---
+
 ## [common-v2.5.0] - 2026-09-09
 
 **Category**: Architecture diagramming moves from Mermaid guidance to a draw.io render pipeline
@@ -21,8 +133,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `export_drawio.py`: draw.io Desktop CLI wrapper. Resolves the binary via `DRAWIO_BIN`, then
     `PATH`, then per-OS install locations, and fails with an install hint rather than silently
     producing nothing.
-  - `test_render_drawio.py`: 41 unit tests covering the validator, renderer, layouts, and binary
-    resolution.
+  - `check_layout.py`: geometric lint on the same layout the renderer draws (overlapping
+    nodes, an edge through a third node, a label on a node or on another label, a group box
+    enclosing an outsider); `render_drawio.py --strict` exits 2 on any finding.
+  - `schema_to_spec.py` with the `schema_parsers/` package: SQL DDL, Prisma, TypeORM, Django
+    and SQLAlchemy models become an `erd` spec, evidence per table and relation; a referenced
+    but undeclared table renders UNVERIFIED.
+  - 138 unit tests across validator, renderer, ERD, layout check, parsers, and golden fixtures.
 - **Evidence-tagged shapes**: each node carries a `path:line` pointer, stored as a draw.io custom
   property. A node without evidence renders dashed, orange, and labelled UNVERIFIED, so a guess
   cannot be mistaken for a confirmed component.
@@ -30,6 +147,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   against the shape names actually shipped in the draw.io Desktop bundle.
 - **New references**: `diagram-spec.md`, `style-catalog.md`, `house-style.md`,
   `exec-readability.md`, `source-extraction.md`.
+- **`erd` diagram type**: `entity` nodes with `columns[]` render as a header plus one row per
+  column (`PK`, `FK`, `?` markers); relations carry a `cardinality` drawn with IE crow's-foot
+  arrows; entities lay out by foreign-key depth.
+- **Cloud kinds beyond GCP**: 20 `aws:*` kinds using `resIcon` names verified against the
+  draw.io Desktop bundle, and 11 vendor-neutral `cloud:*` kinds in a managed fill for clouds
+  without a trustworthy icon set (draw.io ships only 2014 Azure stencils).
+- **Golden fixtures** under `assets/fixtures/`: one runnable spec and pinned `.drawio` per diagram
+  type, one schema per parser with its expected spec (`UPDATE_GOLDEN=1` rewrites).
+- **`layout-rules.md`**: direction per type, grid, the anchor rule, what the check catches, and
+  the spec-level fixes for each finding.
+- **Layout engine**: edges between rows leave the bottom and enter the top so the horizontal
+  run stays in the row gap; edges bending in one gap get staggered slots and the gap widens
+  with the fan-out; icon kinds reserve a footprint for the label under the shape and push
+  their bottom port below it; with groups, rows are left-aligned and each group claims a
+  column band so a boundary never encloses an outsider.
+- **Spec v1.1, numbers on the box**: nodes and edges carry an optional `metric` (max 48
+  characters, the one headline number that sized the box or the hop: peak QPS, p99, GB/day),
+  rendered as a small line under the label; nodes carry an optional `constraint` (the left side
+  of the `constraint -> component -> cost` line), stored as a draw.io custom property beside
+  `evidence`. The validator errors on over-long metrics and gains an advisory warnings channel
+  (exit 0): a `tech` container, deployment, or dataflow diagram with no metric on any node is
+  flagged, so design-session diagrams stop dropping the numbers that justified them.
 
 ### Changed
 
@@ -42,18 +181,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   the checklist now separates what the validator enforces from what still needs human judgement.
 - `evals/evals.json` extended from 3 to 6 scenarios, covering the render pipeline, UNVERIFIED
   handling, and the executive node cap.
-
-## [specialists-v1.5.0] - 2026-09-09
-
-**Category**: Solution diagrammer specialist
-
-### Added
-
-- **`specialist-solution-diagrammer`**: draws exactly one evidence-grounded diagram per
-  invocation from a caller-supplied evidence bundle, then validates, renders, exports, and
-  reviews the exported image. Returns `BLOCKED` when given no evidence, no diagram type, or when
-  every node would be UNVERIFIED, so a batch redraw cannot quietly invent architecture.
-  Generated agent definitions ship for Claude, Codex, Antigravity, and Copilot.
+- `diagram-selection.md` owns design-session artefacts too, per
+  `system-design-methodology/references/phase-deliverables.md`; the deferral to the retired
+  `system-design-diagramming` skill is gone, as is its should-not-trigger eval case.
+- `house-style.md` type scale and `checklist.md` ("numbers that justified the box are on the
+  box") updated for spec v1.1; the SKILL guideline "Put the number on the box" added.
+- The catalogue moved to `scripts/style_catalog.py` (re-exported from `render_drawio.py`);
+  `diagram-spec.md` is v1.2 (`erd`, `entity`, `cardinality`, `aws:*`, `cloud:*`).
+- `diagram-selection.md` covers ERDs; `cloud-architecture.md` and `style-catalog.md` document
+  AWS, the vendor-neutral kinds, and why Azure has no icons.
+- `mermaid-fallback.md` opens with the export ladder: a draw.io MCP tool when the session has
+  one, else the Desktop CLI, else ship the `.drawio` and say the image was not exported. Mermaid
+  gains a third legitimate case: a live interview practice round in chat.
+- SKILL pipeline renders with `--strict`; triggers gain `entity relationship`, `schema diagram`,
+  `aws`; evals gain an ERD-from-Prisma case and an AWS-plus-Azure-AD case.
+- `common-software-requirements` (#192): `docs/requirements-standards-baseline.md` moved into `references/requirements-standards-baseline.md` so it ships with the skill; `common-business-requirements`, `common-product-requirements` and the `sdlc` workflow now link there instead of the unsynced `docs/` folder.
+- `common-web-visual-testing`, `common-mobile-visual-testing` (#192): Evidence section naming `.playwright-cli/<session>/` and `.appium-mcp/<session>/`, `browser_snapshot` alias for the MCP rung, link to the driver ladders; `appium_get_source` corrected to `appium_get_page_source`.
 
 ## [system-design-v1.0.0] - 2026-08-30
 

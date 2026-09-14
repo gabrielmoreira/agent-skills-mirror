@@ -6,7 +6,7 @@ and more. Code examples use NeoForge syntax unless noted; adapt field/method nam
 This reference retains 1.21.11 examples alongside 26.x replacements. A heading
 that names Minecraft 26.x uses the 26.1 API and official Mojang mappings;
 verify any later 26.x API change before copying code into a pinned project.
-Treat all other examples as the retained 1.21.11 lane unless their exact API is
+Treat all other examples as 1.21.11 examples unless their exact API is
 verified for the project.
 
 ---

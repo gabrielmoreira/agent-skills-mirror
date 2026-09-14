@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `simota/agent-skills` — 26 default patterns, 3 followed patterns, 164 file(s) materialized.
+Mirror of `simota/agent-skills` — 26 default patterns, 6 followed patterns, 167 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `simota/agent-skills` — 26 default patterns, 3 followed patterns, 16
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 3 |
-| Files         | 164 |
+| Followed pats | 6 |
+| Files         | 167 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -52,8 +52,11 @@ Mirror of `simota/agent-skills` — 26 default patterns, 3 followed patterns, 16
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
 - `_common/GIT_GUIDELINES.md`
-- `_common/BOUNDARIES.md`
+- `_common/SECURITY.md`
 - `_common/OPERATIONAL.md`
+- `_common/BOUNDARIES.md`
+- `_common/OPUS_5_AUTHORING.md`
+- `_common/LLM_PROMPT_GENERATION.md`
 
 ## File Index
 
@@ -224,7 +227,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 161 | ✓ | [`zen/SKILL.md`](zen/SKILL.md) |
 | 162 | → | [`_common/BOUNDARIES.md`](_common/BOUNDARIES.md) |
 | 163 | → | [`_common/GIT_GUIDELINES.md`](_common/GIT_GUIDELINES.md) |
-| 164 | → | [`_common/OPERATIONAL.md`](_common/OPERATIONAL.md) |
+| 164 | → | [`_common/LLM_PROMPT_GENERATION.md`](_common/LLM_PROMPT_GENERATION.md) |
+| 165 | → | [`_common/OPERATIONAL.md`](_common/OPERATIONAL.md) |
+| 166 | → | [`_common/OPUS_5_AUTHORING.md`](_common/OPUS_5_AUTHORING.md) |
+| 167 | → | [`_common/SECURITY.md`](_common/SECURITY.md) |
 
 ---
 

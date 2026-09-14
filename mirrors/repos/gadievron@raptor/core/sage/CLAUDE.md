@@ -119,6 +119,10 @@ Two qualifications:
 - `raptor-audit-{repo_key}` — Audit hypothesis verdicts (repo-scoped)
 - `raptor-cve` — Pipeline-verified CVE → fix-commit pointers (global, written by `/cve-diff`)
 
+The table lists the mechanical-hook domains only; command hooks also write
+`raptor-campaigns` / `raptor-understand-*` / `raptor-validation-*` /
+`raptor-web-*`.
+
 ## Domain rationale
 
 - Use repo-scoped domains for target-specific outcomes that should not leak across projects.

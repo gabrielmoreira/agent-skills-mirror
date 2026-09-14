@@ -69,6 +69,10 @@ That report should stay continuous across `design-solution` / `implementation-re
 When `code-review` or `review-ticket` findings are approved for publication or channel handoff, also emit `artifacts/review-delivery.md` as the sanitized delivery packet for `specialist-pr-commenter-batch` or channel-driven follow-up.
 For full-repo health checks, `codebase-review` should also emit `artifacts/codebase-review.md`, using `security-review.md` only for the security slice.
 
+## Task Difficulty Routing (SNC)
+
+`common-task-complexity-routing` scores a task on Spread, Novelty, and Centrality (each 0-2, summed 0-6) into `snc_tier=low|medium|high`. `specialist-codebase-scout` emits the `SNC:` line; `sdlc`, `dev-fix`, `implement-feature`, and `code-review` carry `snc_tier` and `model_tier` in their Handoff Payload. Low runs autonomously with `fast` review; medium adds TDD + self-review + `deep` review; high requires plan-first HARD STOP, independent reviewer specialists, and human merge approval. Tiers only rise once work starts; a ticket label never sets the tier.
+
 ## Naming Rule
 
 When users ask for BRD, PRD, or SRS:
@@ -79,7 +83,7 @@ When users ask for BRD, PRD, or SRS:
 
 ## Trust Baseline
 
-Use `docs/requirements-standards-baseline.md` as the shared source baseline for BRD/PRD/SRS phases.
+Use `skills/common/common-software-requirements/references/requirements-standards-baseline.md` as the shared source baseline for BRD/PRD/SRS phases (it ships with the skill; `docs/` does not sync to consumers).
 
 ## Requirement Quality Rule
 
@@ -144,4 +148,6 @@ When running workflows in sequence (e.g., `brainstorm` -> `plan` -> `implement`)
 | Confluence context                  | `specialist-confluence-searcher`        |
 | Approved PR comment posting         | `specialist-pr-commenter-batch`         |
 | Integration test generation         | `specialist-integration-test-generator` |
+| Selector gap closure (test ids)     | `specialist-testid-inserter`            |
+| Failing E2E classification and heal | `specialist-test-healer`                |
 | TC creation                         | `specialist-tc-creator`                 |

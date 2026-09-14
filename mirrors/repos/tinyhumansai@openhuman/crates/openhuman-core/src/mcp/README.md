@@ -1,110 +1,114 @@
-# mcp — MCP client/server family
+# mcp — MCP host
 
-One directory, one gate. Members: `server/` (the `openhuman mcp` stdio/HTTP
-server), `registry/` (dynamic, SQLite-backed Smithery installs), `audit/` (the
-write-audit log), `config_servers/` (the static, TOML-declared server set +
-stdio transport), and `http_client/` (the HTTP transport primitive). Each of
-`server`/`registry`/`audit` has its own README.
-
-The family root `mcp/mod.rs` is **ungated**: `http_client` is always compiled
-(always-compiled consumers outside the MCP subsystem reach it), and the three
-facades each ship a `stub.rs` that must resolve in an `mcp`-less build. The
-gate is pushed onto each member — `config_servers` is leaf-gated, `http_client`
-is not gated at all.
-
-`sanitize` is **not** in this family: it moved to `util/sanitize.rs`, because
-the orchestrator prompt runs *skill* descriptions through it.
-
-The rest of this page documents `config_servers/` + `http_client/` — the halves
-that were the old `mcp_client` directory.
-
----
-
-Reusable **MCP client transport library** plus a **read-only static server set** declared in the user's TOML config. This module knows how to *talk to* a remote MCP server over two transports — Streamable HTTP (with OAuth discovery + SSE per the MCP spec) and subprocess JSON-RPC over stdin/stdout — and exposes the servers the user pinned under `[[mcp_client.servers]]` as a queryable registry. It owns no RPC surface, no persistence, and no event-bus subscribers; it is a building block consumed by other domains. Its sibling `mcp::registry` reuses `config_servers`' `McpStdioClient` for all stdio transport of dynamically-installed Smithery servers.
+Host-side half of Model Context Protocol support. Both transports, the
+static config-declared server set, the dynamic (Smithery/official-catalog)
+registry with its store, its reconnect supervisor and browser sign-in, and
+the write-audit log moved out to [`tinymcp`](https://github.com/tinyhumansai/tinymcp).
+What is here is what belongs to this application: the one holder of that
+library's services, the RPC surface over it, the agent-facing tools, and the
+`openhuman mcp` server that exposes this application's own tools to external
+MCP hosts.
 
 ## Responsibilities
 
-- Implement the MCP **Streamable HTTP** client (`McpHttpClient`): `initialize` handshake + protocol-version negotiation, `tools/list`, `tools/call`, SSE event draining, session lifecycle (`Mcp-Session-Id`), `notifications/initialized`, and graceful `close_session` via HTTP DELETE.
-- Implement the MCP **stdio** client (`McpStdioClient`): spawn a subprocess, speak newline-delimited JSON-RPC over stdin/stdout, and cache a single long-lived session.
-- Handle **OAuth / authorization discovery** on HTTP transport: parse `WWW-Authenticate` challenges on 401, fetch protected-resource metadata and authorization-server metadata (OIDC `.well-known` + OAuth `.well-known`).
-- Apply per-server **auth** (bearer / basic / custom header / query param) to outbound requests.
-- **Reinitialize-and-retry once** on a 404 indicating an expired HTTP session.
-- Mirror tool-schema parameters tagged `x-mcp-header` into `Mcp-Param-*` request headers.
-- Render raw MCP `tools/call` results into the skills `ToolResult` shape.
-- Build a static `McpServerRegistry` from `Config` (`[[mcp_client.servers]]` + a legacy `gitbooks` server), enforce per-server allow/deny tool lists, and pick HTTP vs stdio transport per entry.
-- **Redact** endpoints in logs/errors (scheme + authority only; credentials → `<redacted>`).
+- Hold the `tinymcp` service — one per workspace — and open it at boot
+  ([`host`]).
+- Expose the `mcp_clients` and `mcp_setup` RPC namespaces, the agent-facing
+  `mcp_registry_*` tools, and the prompt-injection scan over remote tool
+  definitions ([`registry`]).
+- Expose the RPC surface over the write-audit log ([`audit`]).
+- Run the `openhuman mcp` stdio/HTTP server that serves this application's
+  own tools to external MCP clients ([`server`]) — the *server* side, which
+  did not move because it is bound to the tool registry, the permission
+  model and the agent turn machinery.
+
+## Where the boundary fell
+
+Three things stayed here on purpose, each because it is host policy rather
+than protocol:
+
+- **Prompt-injection detection** over remote tool definitions
+  (`registry::tools_safe_for_agent`). The detector, its rules, and what a hit
+  means belong to this application's threat model. The *lexical* half —
+  control characters, prompt-template fences, length caps — lives in the
+  contract instead, applied by the display accessors on every remote
+  description.
+- **Events.** `tinymcp` reports what happened in its return values;
+  translating that into a `DomainEvent` happens here, where the vocabulary is
+  known (`registry::ops`/`setup_ops` for the RPC-driven lifecycle events,
+  `registry::supervisor_events` for what the reconnect supervisor observed,
+  `registry::tools_safe_for_agent` for `McpToolRejected`). `audit` publishes
+  nothing.
+- **The proxy decision.** Whether a proxy applies to MCP traffic is decided
+  by this application's proxy scope setting, per-service list and no-proxy
+  list — `host::proxy_for_mcp` consults them and hands `tinymcp` the answer.
 
 ## Key files
 
-| File | Role |
+| Path | Purpose |
 | --- | --- |
-| `crates/openhuman-core/src/mcp/mod.rs` | Family root (ungated). Declares the five members and documents where the gate sits. |
-| `crates/openhuman-core/src/mcp/http_client/mod.rs` | Ungated carve-out. Re-exports the HTTP transport + protocol types. |
-| `crates/openhuman-core/src/mcp/config_servers/mod.rs` | Leaf-gated on `mcp`. Re-exports the static registry + stdio transport. |
-| `crates/openhuman-core/src/mcp/http_client/client.rs` | `McpHttpClient` (Streamable HTTP transport), shared MCP protocol types, SSE/`WWW-Authenticate` parsing, `render_tool_result`, `redact_endpoint`, `x-mcp-header` mirroring. Largest file; carries the inline test suite. |
-| `crates/openhuman-core/src/mcp/config_servers/stdio.rs` | `McpStdioClient` — subprocess spawn + newline-delimited JSON-RPC over stdin/stdout, single cached `StdioSession`. |
-| `crates/openhuman-core/src/mcp/config_servers/spawn_env.rs` | PATH reconstruction for stdio children: probes the user's login shell (`$SHELL -ilc`) + well-known version-manager dirs (nvm/volta/bun/Homebrew), caches the result, and resolves the command up front so missing `npx`/`uvx` fails with actionable guidance. |
-| `crates/openhuman-core/src/mcp/config_servers/registry.rs` | `McpServerRegistry`, `McpServerDefinition`, `McpTransportClient` (Http/Stdio dispatch enum), `McpRegistrySource`; builds the static set from `Config`, applies allow/deny tool filtering. |
+| `mod.rs` | Family root, entry points, and the two re-export facades below. |
+| `host.rs` / `host_tests.rs` | The per-workspace `tinymcp` service holder — see [its own doc comment](host.rs) for the shape (`HOSTS` map, `McpHost`, `for_config`/`try_service`/`init`, `client_config`, `proxy_for_mcp`). |
+| [`registry/README.md`](registry/README.md) | `mcp_clients`/`mcp_setup` RPC, agent tools, reconnect-supervisor events. |
+| [`audit/README.md`](audit/README.md) | `mcp_audit` RPC over the write-audit log. |
+| [`server/README.md`](server/README.md) | The `openhuman mcp` server (this application as an MCP host's target). |
 
-## Public surface
+## The two re-export modules
 
-Re-exported from the two member `mod.rs` files:
+`mcp::http_client` and `mcp::config_servers` are not directories — they no
+longer hold transport source, only `pub use` re-exports of `tinymcp`:
 
-- **HTTP transport / protocol types** (`http_client/client.rs`, ungated): `McpHttpClient`, `McpInitializeResult`, `McpRemoteTool`, `McpServerToolResult`, `McpSseEvent`, `McpAuthChallenge`, `McpAuthorizationContext`, `ProtectedResourceMetadata`, `AuthorizationServerMetadata`, and the helper `redact_endpoint`.
-- **Stdio transport** (`config_servers/stdio.rs`, gated): `McpStdioClient`.
-- **Registry** (`config_servers/registry.rs`, gated): `McpServerRegistry`, `McpServerDefinition`, `McpTransportClient`, `McpRegistrySource`.
+- `http_client` (ungated) — the Streamable HTTP transport:
+  `tinymcp::transport::http::{McpHttpClient, McpHttpClientBuilder}`,
+  `tinymcp::Error` as `McpError`, `redact_endpoint`, `render_tool_result`, and
+  the `tinymcp_bus` wire types (`McpRemoteTool`, `McpServerToolResult`,
+  `McpSseEvent`, the OAuth challenge/metadata types). Always compiled because
+  the ungated `gitbooks` tool (`tools/impl/network/gitbooks.rs`) dials
+  `McpHttpClient`; `mcp::server`'s test-only HTTP round-trip names it too.
+- `config_servers` (`mcp` feature) — the statically declared, TOML-configured
+  server set: `tinymcp::transport::stdio::McpStdioClient`,
+  `McpRegistrySource`, `McpServerDefinition`, `McpServerRegistry`,
+  `McpTransportClient`, and `tinymcp_bus::McpAuthConfig` re-exported as
+  `McpDefinitionAuth` (distinct from this application's own
+  `config::McpAuthConfig`, which the TOML file declares).
 
-Key entry points:
+Neither module implements a transport, a handshake, or OAuth discovery any
+more — that all lives in `tinymcp` now. Read
+[the tinymcp repo](https://github.com/tinyhumansai/tinymcp) for that half.
 
-- `McpHttpClient::new(endpoint, timeout_secs)` / `with_options(endpoint, timeout_secs, auth, identity)` → `initialize`, `list_tools`, `call_tool`, `discover_authorization`, `drain_events`, `close_session`, `initialize_snapshot`.
-- `McpStdioClient::new(command, args, env, cwd, identity)` → `initialize`, `list_tools`, `call_tool`, `close_session`.
-- `McpServerRegistry::from_config(&Config)` → `list`, `get`, `list_tools`, `call_tool`, `initialize`, `discover_authorization`, `is_empty`.
-- `McpTransportClient` — enum unifying `Http`/`Stdio`, forwarding `initialize`/`list_tools`/`call_tool`/`discover_authorization` (stdio always returns `None` for authorization discovery).
+## Startup wiring
 
-## Configuration
+`mcp::start(config)` initializes the registry's bus subscriber and opens the
+host service; it never fails (MCP being unavailable must not stop the core
+coming up). `mcp::start_boot_jobs(config)` additionally spawns the
+installed-server boot pass and the reconnect supervisor. Both are called from
+`core/jsonrpc.rs` (`start` on the RPC-enable path) and
+`core/runtime/services.rs` (`start_boot_jobs` on the boot path); each is
+idempotent so the two callers can't double-register or double-spawn.
 
-Reads `config.mcp_client` (`McpClientConfig`): `enabled`, `servers` (`Vec<McpServerConfig>`), and `client_identity` (`McpClientIdentityConfig` → client name/title/version sent in the `initialize` handshake). Each `McpServerConfig` supplies `name`, `endpoint`, `command`/`args`/`env`/`cwd` (stdio), `description`, `enabled`, `allowed_tools`, `disallowed_tools`, `timeout_secs`, and `auth` (`McpAuthConfig`). Also reads `config.gitbooks` (`enabled`, `endpoint`, `timeout_secs`) to seed a legacy `gitbooks` HTTP server when no explicit server of that name exists. HTTP clients apply the runtime proxy via `config::apply_runtime_proxy_to_builder(builder, "tool.mcp_client")`.
+## Compile-time gate (`mcp` feature)
 
-Transport selection in `build_transport_client`: a non-empty `command` ⇒ stdio; otherwise HTTP against `endpoint`.
-
-## RPC / controllers
-
-None. This module exposes no JSON-RPC controllers or schemas of its own. RPC-facing MCP work lives in the sibling `mcp::registry` and in the generic bridge tools.
-
-## Agent tools
-
-None owned here. The generic bridge tools that drive this registry (`mcp_list_servers`, `mcp_list_tools`, `mcp_call_tool`) live in `crates/openhuman-core/src/tools/impl/network/mcp.rs`; the bespoke `gitbooks` tool (`tools/impl/network/gitbooks.rs`) consumes `McpHttpClient` directly.
-
-## Events
-
-None. No `bus.rs`; publishes/subscribes to no `DomainEvent`s.
-
-## Persistence
-
-None. No `store.rs`. The static registry is rebuilt from `Config` in memory; HTTP/stdio session state (session id, negotiated protocol version, cached tool list, child process) lives only in the in-memory client instances.
+`pub mod mcp;` is always compiled — the family root is a facade. `host` and
+`http_client` are ungated because the startup path and always-on consumers
+reach them unconditionally. `registry`, `audit`, and `server` keep
+their own gate and their own `stub.rs`, so a build without the feature still
+serves `/rpc` without those namespaces; `config_servers` is simply
+`#[cfg(feature = "mcp")]` with no stub.
 
 ## Dependencies
 
-- `crate::config` — `Config`, `McpClientConfig`, `McpServerConfig`, `McpAuthConfig`, `McpClientIdentityConfig`, and `apply_runtime_proxy_to_builder` (proxy-aware reqwest builder). Source of the static server set and per-server auth/identity.
-- `crate::skills::types::ToolResult` — the rendered result shape returned from `tools/call` (via `render_tool_result`).
+- `tinymcp` (path dependency on `vendor/tinymcp`, `default-features = false`)
+  — the extracted client library.
+- `tinymcp-bus` — the wire contract: payload types and member names, with no
+  transport and no runtime, also used to generate the desktop settings
+  schema.
+- `crate::config` — `McpClientConfig`/`McpServerConfig`/`McpAuthConfig` and
+  the runtime proxy config `host::client_config`/`proxy_for_mcp` convert
+  from.
+- `crate::core::bus` / `crate::core::events` — `DomainEvent` publishing for
+  everything that stayed host-side.
 
-External crates: `reqwest` (HTTP), `tokio` (process + async IO + `sync::Mutex`), `parking_lot::Mutex` (HTTP session state), `serde`/`serde_json`, `base64`, `anyhow`, `tracing`.
-
-## Used by
-
-- `crates/openhuman-core/src/mcp/registry/` (`mod.rs`, `connections.rs`, `setup_ops.rs`) — reuses `McpStdioClient` (and HTTP client) for all transport of dynamically-installed servers; carries no transport code of its own.
-- `crates/openhuman-core/src/tools/impl/network/mcp.rs` and `tools/ops.rs` — generic `mcp_*` bridge tools driving the static registry.
-- `crates/openhuman-core/src/tools/impl/network/gitbooks.rs` — uses `McpHttpClient` directly for the GitBook docs server.
-- `crates/openhuman-core/src/mcp/server/http.rs` — references this module.
-
-## Notes / gotchas
-
-- **Latest protocol version is `2025-11-25`**, sent on every `initialize`; the server's negotiated version must be one of the four `SUPPORTED_PROTOCOL_VERSIONS` or `initialize` fails. The constant is duplicated in both `http_client/client.rs` and `config_servers/stdio.rs`.
-- HTTP transport uses `redirect::Policy::none()` and a 10s connect timeout; the per-request timeout comes from the server's `timeout_secs`.
-- A 404 on a request while a session id is held triggers exactly one reinitialize + retry (`allow_reinitialize` guards against loops); after that the error propagates.
-- `Accept` is always `application/json, text/event-stream`; the client transparently parses an SSE-framed single response (`parse_sse_message`) or a plain JSON body based on `Content-Type`.
-- Tool allow/deny enforcement is **fail-closed and pre-transport**: `is_tool_allowed` rejects empty names, anything in `disallowed_tools`, and (when `allowed_tools` is non-empty) anything not allow-listed; `registry.call_tool` blocks before any network/subprocess I/O.
-- The legacy `gitbooks` server is only auto-seeded when `config.gitbooks.enabled` and no explicit server named `gitbooks` exists (explicit config wins, flipping `source` from `LegacyGitbooks` to `Config`).
-- `redact_endpoint` returns `<redacted>` for any URL containing userinfo (`@`) or a non-`http(s)` scheme — used in all log/error output so endpoints never leak credentials.
-- `McpStdioClient` discards child stderr (`Stdio::null()`) and skips non-JSON stdout lines (logged at debug); the session is a single cached `StdioSession` guarded by a tokio `Mutex`.
-- Stdio children inherit a **reconstructed PATH** (`spawn_env::spawn_path`), not the GUI-stripped process PATH, so `npx`/`uvx` servers spawn the same way a terminal would. A config-provided `PATH` env still overrides it. The command is resolved before spawn; a missing Node/uv runtime surfaces actionable install guidance instead of a raw `ENOENT` (#4279).
+See `Cargo.toml` (`crates/openhuman-core/Cargo.toml`, the `tinymcp` block)
+for why this stays a path dependency rather than the pinned release, and
+`crates/openhuman-core/src/modules/registry/records_mcp_connectors.rs` for
+the release version this application does pin for the loadable-module path.

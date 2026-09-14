@@ -9,7 +9,7 @@ description: "Turn a music track (an audio file, a video to pull audio from, or 
 
 Use this skill to turn a **music track** into a beat-synced HyperFrames video. You analyze the track once, lay out the frames, fill in a per-frame plan, and build each frame as a composition. The input is a music track plus optional user images or videos — there is **no narration and no website capture**. Typography and templates are the floor (a complete video needs zero assets); any media the user supplies is cut in on the same beat grid.
 
-You are the **orchestrator**. Work in `videos/<project>/`. Run the steps in order and pass each **Gate** before moving on. Two steps need the user: **Step 3** (plan approval) and **Step 6** (render approval) — both are checkpoint gates per `../hyperframes-core/references/brief-contract.md` (read it before Step 0): in autonomous mode, post the summary as a heads-up and proceed instead of waiting. Do every step yourself except **Step 4**, where you dispatch **one sub-agent per frame**. Keep design and motion rules out of this file — they live in `references/` and the `frame-worker` sub-agent.
+You are the **orchestrator**. Work in `videos/<project>/`. Run the steps in order and pass each **Gate** before moving on. Two steps need the user: **Step 3** (plan approval) and **Step 6** (render approval) — both are checkpoint gates per `../hyperframes/references/brief-contract.md` (read it before Step 0): in autonomous mode, post the summary as a heads-up and proceed instead of waiting. Do every step yourself except **Step 4**, where you dispatch **one sub-agent per frame**. Keep design and motion rules out of this file — they live in `references/` and the `frame-worker` sub-agent.
 
 `SKILL_DIR` = this skill directory. `PROJECT_DIR` = `videos/<project-name>/`.
 
@@ -108,7 +108,7 @@ Fix every `✗` (hard errors: duration mismatch, frames not tiling the track, a 
 
 Goal: Build every frame as a self-contained composition file.
 
-Create `compositions/frames/`. Read [`sub-agents/frame-worker.md`](sub-agents/frame-worker.md) and `../hyperframes-core/references/subagent-dispatch.md`. Dispatch **one frame-worker per frame**, in parallel where possible (otherwise in waves). Each worker gets exactly one frame and this context:
+Create `compositions/frames/`. Read [`sub-agents/frame-worker.md`](sub-agents/frame-worker.md) and `../hyperframes/references/subagent-dispatch.md`. Dispatch **one frame-worker per frame**, in parallel where possible (otherwise in waves). Each worker gets exactly one frame and this context:
 
 ```text
 PROJECT_DIR: <abs path>
@@ -191,7 +191,7 @@ Inspect at `t=0`, each frame start, the strongest DROP / SURGE, every `hard_stop
 | [`references/motion-primitive-catalog.md`](references/motion-primitive-catalog.md)                             | Step 3/4: L0 recipes for free-compose                   |
 | [`references/montage.md`](references/montage.md)                                                               | Step 3/4: asset treatments (beat-cut / ken-burns)       |
 | [`sub-agents/frame-worker.md`](sub-agents/frame-worker.md)                                                     | Step 4: dispatch + build one frame                      |
-| `../hyperframes-core/references/subagent-dispatch.md`                                                          | Step 4: dispatch sub-agents safely                      |
+| `../hyperframes/references/subagent-dispatch.md`                                                               | Step 4: dispatch sub-agents safely                      |
 | `../hyperframes-creative/references/design-spec.md`                                                            | Step 3: pick the preset (the brand)                     |
 
 ## Directory layout

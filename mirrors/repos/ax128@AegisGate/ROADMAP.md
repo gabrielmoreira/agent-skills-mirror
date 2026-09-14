@@ -101,8 +101,10 @@ stats、LRU 缓存、后台 worker、限流窗口全是**进程内单例**，只
    等价于「永远 relaxed」；multipart 因此出现「全量集打分、relaxed 集改写」的分歧。
    现在五个转发入口都接收 `route` 并内部推导，`relaxed_patterns` 改为必填参数，
    角色集合已删除。守护见 `aegisgate/tests/test_forward_redaction_route_derived.py`。
-3. **field 规则语义跨 V1/V2 统一**：默认列表与显式列表的关系、`field_value_min_len` 各层下限不同；
-   顺带把精确值脱敏的覆盖面扩到 V1 结构化内容、通用 JSON 与 multipart（目前只覆盖扁平消息文本）。
+3. ~~**field 规则语义跨 V1/V2 统一**~~ **已完成**。三层共用 `config/field_patterns.py`：
+   显式 YAML 替换代码 fallback；下限一律 `max(8, 配置值)`；V1 转发层不再把 field 规则送进
+   `relaxed_pii_ids` 过滤。精确值覆盖面表已按 R9 叶子写回对齐（结构化内容 / 通用 JSON /
+   multipart 表单字段生效；文件内容仍不扫描）。
 4. **按执行层 / 规则 ID 的命中统计**。控制台现在的统计卡是去重后的唯一值数且含 field 规则，
    无法回答「哪条规则在哪一层命中了多少次」。
 
@@ -113,7 +115,22 @@ stats、LRU 缓存、后台 worker、限流窗口全是**进程内单例**，只
 
 ~~**已完成**~~。sanitize 走嵌套 patch、allow 叶子写回、Restoration mapping 生命周期、确认门控收窄、出站匹配口径、相位文档、精确值结构化叶子均已在 `main`。
 
-未进本项、仍开放的：R8.3 的 **field 规则语义跨 V1/V2 统一**；E1/E3 占位符语法统一仍留在 R8；`block` 强制 vs 按阈值仍归 R6。请求相位挂 AnomalyDetector / PrivilegeGuard、以及用脱敏命中 id 灌回 leak_check，见下方单点待办。
+未进本项、仍开放的：E1/E3 占位符语法统一仍留在 R8；`block` 强制 vs 按阈值仍归 R6。请求相位挂 AnomalyDetector / PrivilegeGuard、以及用脱敏命中 id 灌回 leak_check，见下方单点待办。
+
+### R10 — 整域名转发的后续面（M–L，**需先决策**）
+
+整域名转发（Host 路由、逐规则过滤开关、`/__fwd__/` 透传、响应头回写、控制台面板）已落地；以下几项刻意没有进首版，
+每项都改变安全面或回归面，须单独立项：
+
+1. **后缀 / 通配域名匹配**：目前只有精确表，上游全部是 operator 手写常量。若由客户端 Host 派生上游，
+   必须自带标签白名单与带 IP 绑定、私网拒绝的上游解析，不得复用 V1 scope 上游的免校验通路。
+   验收：伪造 Host 无法构造规则表以外的目标。
+2. **WebSocket 转发**：ASGI `websocket` scope 现在原样交给现有栈。上游管理台依赖 ws 时需要独立实现，
+   并沿用同一套 `expose` 门与保留路径。
+3. **响应体改写**：只改写 `Location` / `Set-Cookie` / `Access-Control-Allow-Origin`，上游 HTML / JS 里写死的自身地址会露出。
+   是否改写、改写哪些内容类型，需要先评估对流式与二进制响应的影响。
+4. **V2 逐规则开关**：转发域名上的 `/v2/*` 一律透传，不进 V2 链路；V2 自身开关与 V1 的分裂归入 R8 的执行面收敛。
+5. **无 `Content-Length` 上传**：仍会被缓冲到请求体上限；流式化需要与 boundary 的体积检查一起改。
 
 ## 单点待办
 

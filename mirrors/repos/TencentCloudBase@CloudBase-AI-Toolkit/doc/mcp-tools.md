@@ -2169,7 +2169,7 @@ CloudBase 云函数统一写入口。支持创建函数、更新代码、更新�
 文档名：auth-tool-cloudbase 文档介绍：CloudBase auth provider configuration and login-readiness guide. This skill should be used when users need to inspect, enable, disable, or configure auth providers, publishable-key prerequisites, login methods, SMS/email sender setup, or other provider-side readiness before implementing a client or backend auth flow.
 文档名：auth-web-cloudbase 文档介绍：CloudBase Web Authentication Quick Guide for frontend integration after auth-tool has already been checked. Provides concise and practical Web authentication solutions with multiple login methods and complete user management.
 文档名：auth-wechat-miniprogram 文档介绍：CloudBase WeChat Mini Program native authentication guide. This skill should be used when users need mini program identity handling, OPENID/UNIONID access, or `wx.cloud` auth behavior in projects where login is native and automatic.
-文档名：cloud-api-operations 文档介绍：Operate Tencent Cloud control-plane resources (monitoring/alarms, CLB, CAM roles, COS, MySQL, SCF, etc.) via cloud APIs when no dedicated MCP tool exists. Covers API discovery via the api-reference index, calling via MCP callCloudApi or official SDKs, credential/permission models with CAM authorization escalation, and battle-tested workflow recipes. Use when the task requires Tencent Cloud control-plane operations beyond CloudBase's own tooling.
+文档名：cloud-api-operations 文档介绍：Operate Tencent Cloud control-plane resources (monitoring/alarms, CLB, CAM roles, COS, MySQL, SCF) via cloud APIs when no dedicated MCP tool covers the task. Use when a task needs control-plane operations beyond CloudBase's own tooling, or when a callCloudApi call failed and needs classifying.
 文档名：cloud-functions 文档介绍：CloudBase function runtime guide for building, deploying, and debugging your own Event Functions or HTTP Functions. This skill should be used when users need application runtime code on CloudBase, not when they are merely calling CloudBase official platform APIs.
 文档名：cloud-storage-web 文档介绍：Complete guide for CloudBase cloud storage using Web SDK (@cloudbase/js-sdk) - upload, download, temporary URLs, file management, and best practices.
 文档名：cloudbase-agent 文档介绍：Build and deploy AI agents with CloudBase Agent SDK (TypeScript & Python). Implements the AG-UI protocol for streaming agent-UI communication. Use when deploying agent servers, using LangGraph/LangChain/CrewAI adapters, building custom adapters, understanding AG-UI protocol events, or building web/mini-program UI clients. Supports both TypeScript (@cloudbase/agent-server) and Python (cloudbase-agent-server via FastAPI).
@@ -3637,28 +3637,28 @@ CloudBase Agent 域统一写入口。支持创建、更新和删除远端 Agent�
       name: "service",
       type: "string",
       required: true,
-      description: `选择要访问的服务。可选：tcb、tcbr、scf、sts、cam、lowcode、cdn、vpc、monitor（云监控/告警，version 需传 2018-07-24）、postgres（云数据库 PostgreSQL，version 需传 2017-03-12）。对于 tcb / scf / lowcode 等 CloudBase 管控面 Action，请优先查官方文档，不要直接猜测 Action。云托管统一走 tcbr（version 需传 2022-02-17）。 可填写的值: "tcb", "tcbr", "scf", "sts", "cam", "lowcode", "cdn", "vpc", "monitor", "postgres"`,
+      description: `腾讯云产品标识，**取值只能来自本字段的 enum 白名单（共 57 个）**，决定请求域名 https://<service>.tencentcloudapi.com。名单外的取值一律拒绝，不要臆造；COS 不在云 API 体系内。产品名与 Action 对照见 skill cloud-api-operations。云托管统一走 tcbr。 可填写的值: "tcb", "tcbr", "scf", "sts", "cam", "cloudaudit", "tag", "billing", "region", "cvm", "lighthouse", "tke", "cbs", "cfs", "tcr", "cdb", "mariadb", "postgres", "sqlserver", "redis", "mongodb", "cynosdb", "dcdb", "tcaplusdb", "keewidb", "vpc", "clb", "cdn", "ecdn", "dnspod", "privatedns", "domain", "ssl", "teo", "gaap", "kms", "ssm", "waf", "cwp", "tcss", "ckafka", "tdmq", "tdmysql", "apigateway", "monitor", "cls", "apm", "tsf", "tat", "hunyuan", "lkeap", "tts", "trtc", "live", "vod", "sms", "ses"`,
     },
     {
       name: "action",
       type: "string",
       required: true,
-      description: `具体 Action 名称，需符合对应服务的官方 API 定义。若不确定正确 Action，请先查官方文档；不要用近义词或历史命名进行猜测。tcb 常用 Action：环境管理 CreateEnv/ModifyEnv/DescribeEnvs/DestroyEnv、用户管理 CreateUser/ModifyUser/DescribeUserList/DeleteUsers、认证配置 EditAuthConfig、云函数 DescribeFunctions/CreateFunction、数据库 CreateMySQLInstance 等。tcbr 常用 Action：CreateCloudRunEnv（初始化云托管）、DescribeEnvBaseInfo（查询单个环境基础信息，EnvId 必填）、DescribeCloudRunEnvs（查询环境列表/资源信息，EnvId 可选过滤）、CreateCloudRunServer/DescribeCloudRunServers。`,
+      description: `具体 Action 名称，需符合对应服务的官方 API 定义。**不确定时先查官方文档，不要用近义词或历史命名猜测**（猜错会被服务端报成 action invalid，很难排查）。常用 Action 见 skill cloud-api-operations。`,
     },
     {
       name: "version",
       type: "string",
-      description: `API 版本（可选）。缺省时按 service 使用 SDK 内置默认版本；tcbr 必须传 "2022-02-17"（否则请求缺少 X-TC-Version 会失败），monitor 必须传 "2018-07-24"、postgres 必须传 "2017-03-12"（这两个 service 无内置默认版本，不传会失败）。示例：service="tcbr", version="2022-02-17", action="CreateCloudRunEnv", params={EnvId:"env-xxx",PackageType:"Standard"}。`,
+      description: `API 版本（多数场景可省略）。白名单里**只有一个官方版本的产品会自动补齐**，不必传；以下多版本产品必须显式传，缺省会报错并列出可选项：tke、mongodb、teo、monitor、vod、sms。示例：service="tcbr", version="2022-02-17", action="CreateCloudRunEnv", params={EnvId:"env-xxx",PackageType:"Standard"}；service="monitor" 需显式传 "2018-07-24"（告警策略族 Action 属于该版本）。`,
     },
     {
       name: "params",
       type: "object",
-      description: `Action 对应的参数对象，键名需与官方 API 定义一致。某些 Action 需要携带 EnvId 等信息；如不确定参数结构，请先查官方文档。tcb 示例：\`{ "service": "tcb", "action": "DestroyEnv", "params": { "EnvId": "env-xxx", "BypassCheck": true } }\`，如果环境已经处于隔离期，可再补 \`IsForce: true\`；更新环境别名则可用 \`{ "service": "tcb", "action": "ModifyEnv", "params": { "EnvId": "env-xxx", "Alias": "demo" } }\`。不要把 Region 放进 params（会报 The parameter Region is not recognized）；跨地域请用顶层 region，例如 \`{ "service": "tcb", "action": "DescribeEnvs", "region": "ap-singapore" }\`。若你的场景是通过 HTTP 协议直接集成 auth/functions/cloudrun/storage/mysqldb 等 CloudBase 业务 API，请优先使用 OpenAPI / Swagger 或 searchKnowledgeBase(mode="openapi")，而不是优先使用 callCloudApi。`,
+      description: `Action 对应的参数对象，键名与官方 API 定义一致，不确定时先查文档。**不要把 Region 放这里**，跨地域用顶层 region。CloudBase 业务 API 请优先用 searchKnowledgeBase(mode="openapi")，不要用本工具。示例见 skill cloud-api-operations。`,
     },
     {
       name: "region",
       type: "string",
-      description: `云 API 地域（X-TC-Region）。例如 ap-shanghai、ap-guangzhou、ap-singapore。DescribeEnvs 等接口按地域查询，跨地域必须传此顶层参数，不要写入 params.Region。⚠️ ap-singapore 同时属于国内站与国际站，未显式指定站点时会被判定为国际站（site=intl）：若你要操作的是国内站的 ap-singapore 环境，请先用 auth(action="start_auth"|"login_by_api_key", site="domestic") 或设置 TCB_SITE=domestic 明确站点，否则请求会静默打到国际站账号。`,
+      description: `云 API 地域（X-TC-Region），如 ap-shanghai。跨地域必须传此顶层参数，不要写进 params。⚠️ ap-singapore 同属国内站与国际站，未指定站点按国际站（site=intl）处理：要操作国内站该地域环境，先 auth(action="start_auth", site="domestic") 或设 TCB_SITE=domestic。`,
     }
   ]}
 />

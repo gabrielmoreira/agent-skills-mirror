@@ -1,5 +1,10 @@
 # Model Catalog
 
+The configuration-only [plaintext V2 contract](subagents.md#plaintext-v2-agent-messages)
+is scoped to canonical ChatGPT Responses forwarding; other source-area behavior described here is unchanged.
+
+Shared parsing and streaming follow the [request-copy](transports/byte-accounting.md#request-copy-accounting) and [stream-buffer accounting](transports/byte-accounting.md#stream-buffer-accounting) contracts.
+
 ## Shared catalog
 
 `src/codex/catalog.ts` builds a shared Codex-shaped catalog for CLI, TUI, App, and SDK. It:
@@ -7,6 +12,8 @@
 - preserves native OpenAI entries from the live catalog or static fallback, and emits
   gpt-5.6 natives from the pinned upstream models.json snapshot
   (`src/codex/data/upstream-models.json` — exact per-slug ladders: luna has no ultra);
+- excludes retired `gpt-5.3-codex-spark` from native fallback, observed/cache rows, and
+  account-selector projections, including retained sync and native restore;
 - upgrades either an observed selector-qualified `*/gpt-daybreak-blue-latest` account row or an
   explicitly configured canonical `openai/gpt-daybreak-blue-latest` Codex-forward row from the
   pinned Sol capability metadata while preserving its selector and Daybreak wire identity;
@@ -23,7 +30,8 @@
 - backs up the pristine catalog once per catalog: the copy is keyed by a hash of the catalog path
   (`catalog-backup-<id>.json`), and the legacy unsuffixed `catalog-backup.json` is retained in
   addition for the default catalog, so a restore resolves the backup for the catalog it is restoring
-  rather than assuming a single file;
+  rather than assuming a single file; restoration omits retired bare and trusted account-qualified
+  native rows from the output without rewriting the pristine backup or unrelated snapshots;
 - invalidates `$CODEX_HOME/models_cache.json` when model visibility changes.
 
 On the default `opencodex-catalog.json` path, sync deliberately uses two catalog sources: Codex's
@@ -37,13 +45,16 @@ custom catalog remains the native metadata/template authority even when a bundle
 warm. Both paths may use an admitted matching bundled memo only as installed-runtime capability
 evidence to remove unsupported reasoning efforts; convergence never probes Codex itself.
 
-Custom Astra and Daybreak rows acquire native reasoning capability only through the existing
-canonical `openai` forward destination and explicit capability-source predicate. The shared
-custom-row producer bounds their merged effort lists against pinned per-model Codex metadata,
-preserves an explicit empty list without a default, and recovers an incompatible nonempty list
-to the native default singleton. A default must belong to the projected list. Other custom rows
-keep their declaration precedence; a GPT model name, display alias, or arbitrary gateway is not
-native provenance. Stored configuration and native capability maps are unchanged.
+Custom Astra and Daybreak rows acquire native identity -- Responses Lite, multi-agent, context
+windows, display names -- only through the canonical `openai` forward destination and explicit
+capability-source predicate. Catalog-advertised reasoning lists are a narrower bound: when a
+custom row's model id has pinned native capability metadata, the shared producer intersects an
+explicit declared ladder with that pinned list even on an arbitrary gateway such as
+`YYLJ/gpt-6-astra`. Desktop validates the model id, so `none` and `minimal` must not survive on
+those catalog rows. An explicit empty list remains empty; a nonempty incompatible list falls back
+to the native default singleton. A default must belong to the projected list. Full native identity
+is still not inferred from a GPT name. Stored configuration and native capability maps are
+unchanged. Request-time native effort clamps remain canonical-forward only.
 
 The observed-state merge tracks the current invocation's freshly generated custom row objects
 after detaching its inputs. Those rows already own their complete reasoning projection, so the
@@ -52,15 +63,16 @@ ordinary retained provider rows still receive the existing mock-tier policy. A p
 marker alone never grants this exemption. Both gather entry points, retained sync, management
 convergence and direct Codex model discovery use the same producer. The legacy runtime effort
 union clamp remains separate; it is not a per-model or per-client-version grammar oracle.
-Existing thread settings and the reported Desktop 0.153.4 gateway rejection require separate
-runtime evidence. Codex's native `ultra` mode is preserved and is not a literal API wire promise.
-
+Codex's native `ultra` mode is preserved and is not a literal API wire promise.
 When account selectors are enabled, the sync path may also observe exact, visible, API-supported
 OpenAI-family ids from Codex's user-owned catalog/cache. Only rows with native catalog provenance
 are trusted; unknown ids are carried through startup cache invalidation as hidden observations and
 are emitted only as selector-qualified rows whose account provenance matches. They never expand
 the bare native or API-key model list. This keeps account-scoped upstream ids such as
 `gpt-daybreak-blue-latest` callable without treating them as a static release allowlist.
+
+Retirement is a catalog/evidence policy, not a universal request denylist. Manually supplied
+model ids still follow generic routing. User-selected config and historical usage remain stored.
 
 Account-gated native ids are a stricter subset. Their authenticated ChatGPT `/models` roster is
 cached per credential generation with a bounded timeout. A bare gated row is emitted only when at
@@ -230,6 +242,8 @@ search sidecar.
 
 > Decision record: [ADR-0022](decisions/ADR-0022-routed-tool-discovery-and-hosted-search.md)
 
+The shared Responses path follows the [bounded multipart recovery contract](subagents.md#multipart-encrypted-task-recovery); credential admission and retry policy remain unchanged.
+
 ## Ultra reasoning level
 
 Ultra is always advertised in the catalog regardless of the `multi_agent_v2` toggle. The v2 toggle
@@ -239,6 +253,11 @@ wire-clamps ultra/max to each model's real top rung (e.g. gpt-5.5 ultra → xhig
 `effortCap` and `subagentEffortCap` are hard ceilings applied on the V2 path
 (`src/server/effort-policy.ts`): they lower or preserve the requested effort rather than rejecting
 the request, and they never raise it.
+
+Combo dispatch reads the final target ladder through the same `supportedLadderFor` authority. An
+explicit empty ladder means that target receives no effort control; an unknown ladder receives no
+parent effort controls only when the combo opts into `reasoningEffortMode: "adaptive"`. Known
+non-empty ladders continue through the existing per-target resolution.
 
 The `ocx effort` CLI accepts only the same canonical cap ladder before live probing or persistence.
 Its status output preserves unsupported legacy cap values and reports that those fields are ignored;
@@ -251,8 +270,10 @@ Provider model pins precede provider-wide pins, then global selector/destination
 A pin can raise the effective caller effort; the later cap can still lower or omit it.
 `none` means explicit-effort omission (provider default), not guaranteed reasoning disablement.
 Compaction maintenance is exempt. Pins are user overlays and do not alter registry seeds,
-model discovery or advertised ladders. Native Chat normalizes newly pinned values through
-provider wire mapping; unpinned native requests retain their existing pass-through contract.
+model discovery or advertised ladders. Native Chat applies qualifying caps even without a
+pin, and normalizes pinned values and values rewritten by a cap through provider wire
+mapping. Without a pin or a cap rewrite, native caller values retain their original wire
+spelling; the V1 and compaction cap exemptions are preserved.
 
 > Decision record: [ADR-0023](decisions/ADR-0023-ultra-reasoning-level.md)
 
@@ -265,16 +286,53 @@ provider wire mapping; unpinned native requests retain their existing pass-throu
 Codex display-cache expiry, retained main-policy evidence, and reset history follow the
 [quota cache contract](providers/openai-tiers.md#quota-cache-and-short-window-history).
 
+Usage consumers preserve positive incomplete-history metadata as specified in [usage accounting](gui-and-management-api.md#usage-accounting); readable totals are not represented as a complete ledger.
+
+Connected CLI usage follows the [client-scoped hub usage contract](gui-and-management-api.md#usage-accounting); local management and account data remain separate.
+
+Remote Workspace uses a separate, explicitly enabled server surface with structural WebSocket callbacks and awaited per-server cleanup; [its contract](remote-workspace.md) owns that integration.
+
+Listener startup diagnostics follow [the runtime lifecycle contract](runtime.md#lifecycle); malformed optional listener blocks follow [config loading](config.md#config-surface).
 Chat helper admission in `src/server/responses/core.ts` follows the
 [deferred stored-main contract](providers/openai-tiers.md): only a needed Direct OpenAI helper
 claims stored main, after terminal vision, routed vision and search exclusions.
 
+Account-qualified catalog routes bypass automatic plan exclusions while retaining credential and entitlement checks; see [automatic pool plan exclusions](providers/openai-tiers.md#automatic-pool-plan-exclusions).
+
 The management quota DTO keeps Combo editing aligned with scoped inference evidence;
 see [Combo editor routing quota](gui-and-management-api.md#combo-editor-routing-quota).
 
+Optional Codex transport-hint suppression is scoped to canonical Responses client output;
+its defaults and exclusions are owned by [Responses transport](transports/responses.md).
+
+Provider `showThinkingSummary` is a Responses request default; it does not rewrite catalog summary defaults or client configuration. See [Google summaries](providers/google.md).
+
 ## Paginated history writer boundary
 
-`src/codex/history-provider.ts` refuses external writes to paginated or migration-capable history. `src/codex/inject.ts` checks affected rows and manifest-owned restore targets before artifact changes and compensates detected migration. Failed config restore stops later catalog/history work. See the [history writer contract](codex-home.md#paginated-history-writer-boundary) for guarantees and concurrent-writer limits.
+`src/codex/history-provider.ts` refuses external writes to paginated or migration-capable history. `src/codex/inject.ts` checks affected rows and manifest-owned restore targets before and after config/profile/journal changes, including successful journal and fallback restores, and compensates detected migration. Failed config restore stops later catalog/history work and rolls back a coordinated remove transition. See the [history writer contract](codex-home.md#paginated-history-writer-boundary) for guarantees and concurrent-writer limits.
+
+Codex pool settings and their consumers follow the [reset-first ordering contract](providers/openai-tiers.md#reset-first-account-ordering), including independent-quota fallback and preserved affinity.
 
 Claude replay carries [Go conversation affinity](data-planes/inbound-compat.md#claude-affinity-at-final-go-dispatch)
 privately to final dispatch; preliminary route selection does not inject Go-only headers.
+Private pool credential metadata follows the [quota-history publication identity contract](providers/openai-tiers.md#quota-history-publication-identity); credential-only and account DTO projections omit it.
+
+Pool quota producers and account commands follow the [bounded raw-observation contract](providers/openai-tiers.md#bounded-pool-quota-observations), separate from the latest display snapshot and capacity estimates.
+
+The account history response can include a [low-confidence effective capacity estimate](providers/openai-tiers.md#observed-effective-token-capacity); usage normalization retains local-answer provenance so local responses cannot supply samples.
+
+Account quota surfaces use [safe probe diagnostics](transports/inventory.md#account-quota-failure-diagnostics) separately from quota validity, credential health and routing authority.
+
+Live sideband admission and its bounded upstream handshake follow the [runtime contract](runtime.md#live-sideband-handshake); the ordinary Responses WebSocket exchange remains separate.
+
+## Provider-scoped approval reviewer
+
+`src/codex/catalog/sync.ts` resolves exact case-preserving provider/model reviewer selectors against the final catalog in both retained sync and `src/codex/convergence.ts`. Valid per-model selection wins over valid provider-wide selection, then the root selector supplies fallback. Native root stamps retain the observed original value and applied selector bound to their slug; removal restores the original only while the applied value is unchanged. The native provenance remains after restoration so an equal provider reviewer cannot trigger legacy reclassification on the next sync. Ambiguous legacy unmarked catalogs retain their existing heuristic cleanup. Provider stamps do not change routing or credentials.
+
+The [explicit model-capability contract](config.md#explicit-per-model-capability-declarations) preserves operator declarations through provider storage and catalog capture; it does not infer upstream capability or change this surface's routing behavior.
+
+Exact [model input declarations](config.md#explicit-per-model-capability-declarations) now feed text-only eligibility and catalog hints; existing image-description/omission handling consumes them before the main upstream send.
+
+## Renamed destination reasoning metadata
+
+`src/providers/derive.ts` fills missing reasoning tables for renamed providers accepted by the existing fixed-key destination matcher. Model entries are cloned and explicit user entries (including empty arrays) win. Provider-wide effort defaults fill only when undefined; Command Code unknown models therefore keep the registry's empty picker policy unless overridden. Identity, transport and other capability axes are unchanged. The gathered row drives client exports; this metadata contract does not prove arbitrary gateway routing.

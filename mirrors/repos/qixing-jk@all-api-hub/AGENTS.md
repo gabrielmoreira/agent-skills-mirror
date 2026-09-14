@@ -1,5 +1,19 @@
 # Repository Guidelines
 
+## Agent skills
+
+### Issue tracker
+
+Issues and specs for this repo live as local Markdown files under `.scratch/<feature>/`. See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+Use the default canonical triage labels: `needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, and `wontfix`. See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context layout: read root `CONTEXT.md` and root `docs/adr/` when present. See `docs/agents/domain.md`.
+
 ## Task context
 
 Read only the guidance relevant to the current task; reuse unchanged material already read. These links are task routes, not a startup reading list.
@@ -9,8 +23,6 @@ Read only the guidance relevant to the current task; reuse unchanged material al
 - Translation keys, resources, or language behavior: [i18n guidance](docs/agents/i18n.md). Use `add-app-language` only when adding a supported application language.
 - Sponsor catalog changes or audits use the project `sponsor-catalog` skill, not ordinary documentation edits.
 - Development setup, test harnesses, or hook troubleshooting: [CONTRIBUTING.md](CONTRIBUTING.md). Commands and versions belong to `package.json`, `.nvmrc`, and hooks.
-- Local Markdown specs and tickets: [issue tracker conventions](docs/agents/issue-tracker.md), using `.scratch/<feature>/`; local triage uses [triage labels](docs/agents/triage-labels.md). A supplied GitHub issue remains the task source.
-- Domain terminology or architecture decisions: [domain guidance](docs/agents/domain.md) routes to relevant `CONTEXT.md` sections and ADRs.
 
 ## Project boundaries
 

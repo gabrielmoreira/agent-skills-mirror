@@ -33,7 +33,7 @@ Compatibility note: WorldEdit 7.4.x has builds for 1.21.x, 26.1, and 26.2.
 Select the build listed for the exact server version and stage-test it before
 using it on production worlds.
 
-## Support Assets
+## References
 
 - Read `references/safety-checklists.md` before large pastes, destructive replacements, or any edit where rollback discipline matters more than speed.
 

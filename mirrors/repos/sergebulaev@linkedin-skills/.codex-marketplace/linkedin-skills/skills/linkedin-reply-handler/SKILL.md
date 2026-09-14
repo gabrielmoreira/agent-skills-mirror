@@ -44,7 +44,7 @@ Either shape works:
 
 ## Steps — single comment
 
-**Voice profile first (all drafts, both modes).** If `../../references/voice-profile.md` has `filled: yes`, load it and match the user's voice fingerprint, hard rules, and CTA/link style throughout. If it is not filled, mention once that `linkedin-humanizer --mode profile` can learn their voice from a few posts, then proceed with the generic voice rules.
+**Voice profile first (all drafts, both modes).** If `../../references/voice-profile.md` has `filled: yes`, load it and match the user's voice fingerprint, hard rules, and CTA/link style throughout. If it is not filled, mention once that `linkedin-humanizer --mode profile` can learn their voice from a few posts, then proceed with the generic voice rules. If `../../references/story-bank.md` has `filled: yes`, load it too and take concrete details (numbers, dates, named projects) from there instead of asking mid-draft. Never invent a figure that is not in it; if the bank has nothing that fits, ask the user or offer `linkedin-interviewer`.
 
 1. **Parse the URL.** `lib.url_parser.parse_linkedin_url` returns `post_urn`, `comment_id`, `comment_urn`.
 2. **Determine thread structure.** If `APIFY_TOKEN` is set, call `lib.ApifyClient.fetch_post_comments(post_id=post_urn, max_items=50, scrape_replies=True)` and locate the comment by `comment_id`. Otherwise ask the user to paste the relevant slice of the thread. Figure out whether the target is:

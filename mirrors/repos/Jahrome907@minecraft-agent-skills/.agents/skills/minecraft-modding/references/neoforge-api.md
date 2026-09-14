@@ -130,7 +130,7 @@ public class ModItems {
 ```
 
 For 26.x tool and armor APIs, use the explicitly versioned patterns in
-`common-patterns.md`; this reference otherwise retains the 1.21.x lane.
+`common-patterns.md`; this reference otherwise retains 1.21.x examples.
 
 ---
 

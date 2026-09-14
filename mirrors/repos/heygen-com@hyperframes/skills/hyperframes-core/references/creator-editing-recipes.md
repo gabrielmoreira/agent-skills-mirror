@@ -47,7 +47,7 @@ These recipes keep sound on a separate `<audio>` element with the `<video>` mute
 ></audio>
 ```
 
-Timeline math: B starts at A start + duration. Source math: each range starts at `data-media-start`; consumed source = timeline duration × rate. Audio follows: duplicate matching `<audio>` ranges/timing. Owner: `/hyperframes-core`. Limit: adjacent windows only; author the two windows edge to edge.
+Timeline math: B starts at A start + duration. Source math: each range starts at `data-media-start`; consumed source = timeline duration × rate. Audio follows: duplicate matching `<audio>` ranges/timing. Owner: `/hyperframes-core`. Limit: adjacent windows only; author the two windows edge to edge. Same-track overlap is valid; both clips paint in CSS order.
 
 ## Trim in/out
 
@@ -314,11 +314,10 @@ Timeline math: overlap placed clips for the 0.5s handoff. Source math: each clip
 ></audio>
 <script>
   const tl = gsap.timeline({ paused: true });
-  tl.set("#b-visual", { autoAlpha: 0 }, 0)
-    .to("#a-visual", { autoAlpha: 0, duration: 0.5 }, 2.5)
-    .to("#b-visual", { autoAlpha: 1, duration: 0.5 }, 2.5);
-  window.__timelines = window.__timelines || {};
-  window.__timelines.main = tl;
+  tl.set("#b-visual", { opacity: 0 }, 0)
+    .to("#a-visual", { opacity: 0, duration: 0.5 }, 2.5)
+    .to("#b-visual", { opacity: 1, duration: 0.5 }, 2.5);
+  window.__timelines["main"] = tl;
 </script>
 ```
 

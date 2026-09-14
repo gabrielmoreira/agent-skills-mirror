@@ -16,7 +16,7 @@ description: "Design and implement automated tests for current Minecraft 26.x or
 | **Integration server** | Full plugin/mod lifecycle | Yes (dedicated test server) |
 
 Use Java 25 for current 26.x projects. Keep legacy 1.21.x examples on Java 21
-and Forge 1.20.1 on Java 17. Do not combine source layouts or APIs across lanes.
+and Forge 1.20.1 on Java 17. Do not combine source layouts or APIs across versions.
 
 ### Routing Boundaries
 - `Use when`: the task is designing or implementing automated tests (unit, mock, gametest, CI test jobs) for Minecraft projects.
@@ -429,7 +429,7 @@ and headless client CI.
 
 ## Legacy NeoForge Game Tests (1.21.3 only)
 
-Keep annotation-based tests isolated to an explicit 1.21.3 lane. The class can
+Keep annotation-based tests isolated to Minecraft 1.21.3. The class can
 be registered by either `@GameTestHolder(MOD_ID)` or a
 `RegisterGameTestsEvent` listener. Do not register a `@GameTestHolder` class
 again with `modEventBus.register(MyGameTests.class)`.
@@ -464,7 +464,7 @@ path name only; configure its namespace through `templateNamespace` or
 ## CI
 
 Keep fast unit/mock tests separate from a loader's Game Test task, and select
-the Java version by lane: 25 for 26.x, 21 for 1.21.x, and 17 for Forge 1.20.1.
+the Java version for each Minecraft version: 25 for 26.x, 21 for 1.21.x, and 17 for Forge 1.20.1.
 Upload test reports when a runtime-facing job fails. Do not assume a task name
 from another loader: Fabric server Game Tests run with `build`, while NeoForge
 uses `runGameTestServer`. MockBukkit does not prove Folia thread safety or real

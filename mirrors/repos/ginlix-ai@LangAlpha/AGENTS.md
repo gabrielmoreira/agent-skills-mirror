@@ -71,7 +71,7 @@ A tool may instead be bound to the **direct** path, where the model calls it as 
 ### Prompts, memory & memos
 
 - **Prompts**: Jinja2 templates in `src/ptc_agent/agent/prompts/templates/`, config in `.../prompts/config/prompts.yaml`, via `PromptLoader`. Preview: `scripts/utils/render_prompt.py`.
-- **Long-term memory** (agent-written): `MemoryContextMiddleware` injects `memory.md` into every model call; user + workspace tiers on the LangGraph `BaseStore`.
+- **Long-term memory** (agent-written): user + workspace tiers on the LangGraph `BaseStore`. The memory index rides the per-thread baseline of the runtime context (`agent/middleware/runtime_context/`), frozen at turn start and rebuilt at compaction; a change by another writer reaches the model as a durable row, not a re-render.
 - **Memo store** (`agent/memo/`, `server/app/memo.py`): user-uploaded docs, read-only to the agent; binaries in S3-compatible storage (`services/memo_binary_storage.py`), base64 fallback.
 
 ## Conventions

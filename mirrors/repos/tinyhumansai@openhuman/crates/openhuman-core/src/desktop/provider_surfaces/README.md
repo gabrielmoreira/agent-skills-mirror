@@ -15,9 +15,9 @@ Local assistive surfaces for third-party provider apps. This domain owns a norma
 | --- | --- |
 | `crates/openhuman-core/src/desktop/provider_surfaces/mod.rs` | Export-only: declares submodules; re-exports `all_provider_surfaces_controller_schemas` / `all_provider_surfaces_registered_controllers`. |
 | `crates/openhuman-core/src/desktop/provider_surfaces/types.rs` | Serde domain types: `ProviderEvent`, `RespondQueueItem`, `RespondQueueListResponse`. Snake_case contract shared by request and response. |
-| `crates/openhuman-core/src/desktop/provider_surfaces/ops.rs` | Business logic / entry points: `ingest_event`, `list_queue`. Wrap results in `ApiEnvelope` + `RpcOutcome`. Contains the inline test suite. |
+| `crates/openhuman-core/src/desktop/provider_surfaces/ops.rs` | Business logic / entry points: `ingest_event`, `list_queue`. Wrap results in `ApiEnvelope` + `RpcOutcome`. Tests in sibling `ops_tests.rs`. |
 | `crates/openhuman-core/src/desktop/provider_surfaces/store.rs` | In-memory persistence: process-global `RESPOND_QUEUE` (`OnceLock<Mutex<Vec<…>>>`), `upsert_queue_item`, `list_queue_items`, `clear_queue` (test-only). |
-| `crates/openhuman-core/src/desktop/provider_surfaces/schemas.rs` | Controller registry: `ControllerSchema`s + `handle_*` fns delegating to `ops.rs`. Inline schema tests. |
+| `crates/openhuman-core/src/desktop/provider_surfaces/schemas.rs` | Controller registry: `ControllerSchema`s + `handle_*` fns delegating to `ops.rs`. Tests in sibling `schemas_tests.rs`. |
 | `crates/openhuman-core/src/desktop/provider_surfaces/rpc.rs` | Docstring-only placeholder; no code. The handler delegation lives in `schemas.rs`, not here. |
 
 ## Public surface
@@ -26,7 +26,7 @@ Local assistive surfaces for third-party provider apps. This domain owns a norma
 - `types::RespondQueueItem` — queue entry (adds `id` and `status`, default `"pending"`).
 - `types::RespondQueueListResponse` — `{ items, count }`.
 - `ops::ingest_event(ProviderEvent)` / `ops::list_queue(EmptyRequest)` — async handlers returning `RpcOutcome<ApiEnvelope<T>>`.
-- `store::{upsert_queue_item, list_queue_items}` — used directly by `desktop_companion` (see Used by).
+- `store::{upsert_queue_item, list_queue_items}` — internal to `ops.rs`; no external caller reads the store directly today.
 - Re-exported from `mod.rs`: `all_provider_surfaces_controller_schemas`, `all_provider_surfaces_registered_controllers`.
 
 ## RPC / controllers
@@ -62,14 +62,12 @@ In-memory only. State lives in a process-global `RESPOND_QUEUE` (`static OnceLoc
 
 ## Used by
 
-- `crates/openhuman-core/src/core/all.rs` — registers the controllers/schemas into the global registry (`all_provider_surfaces_registered_controllers`, `all_provider_surfaces_controller_schemas`, and a `"provider_surfaces"` dispatch arm).
-- `crates/openhuman-core/src/desktop_companion/handoff.rs` — reads `store::list_queue_items()` and matches `RespondQueueItem`s to correlate desktop companion handoff actions against the queue (light-touch, read-only against the store).
-- `crates/openhuman-core/src/integrations/task_sources/pipeline_tests.rs` — references the queue in tests.
+- `crates/openhuman-core/src/core/all.rs` — pushes `all_provider_surfaces_registered_controllers()` into the registry under `DomainGroup::Desktop` (schemas are read off each registered controller, so `all_provider_surfaces_controller_schemas` has no external caller) and carries a `"provider_surfaces"` arm in the namespace-description match. No other in-tree caller.
 
 ## Notes / gotchas
 
 - **Scaffold, not finished domain.** Docstrings across `mod.rs`/`ops.rs`/`store.rs` explicitly call this an initial cut: state is in-memory, SQLite store + drafts + provider-specific assistive actions are deferred.
 - **`rpc.rs` is empty (docstring only).** Despite the canonical module shape suggesting `rpc.rs` holds the pure-domain API, here handlers live in `schemas.rs` delegating to `ops.rs`; `rpc.rs` is a placeholder.
 - **Queue id is deterministic** (`provider:account_id:event_kind:entity_id`), so re-ingesting the same entity upserts (removes + re-prepends) rather than duplicating.
-- **Process-global mutable state** means tests must serialize around `RESPOND_QUEUE`; `ops.rs` tests use a `TEST_MUTEX` + `store::clear_queue()` to avoid interleaving under cargo's parallel runner. Mutex poisoning is recovered via `into_inner()`.
+- **Process-global mutable state** means tests must serialize around `RESPOND_QUEUE`; `ops_tests.rs` uses a `TEST_MUTEX` + `store::clear_queue()` to avoid interleaving under cargo's parallel runner. Mutex poisoning is recovered via `into_inner()`.
 - **Snake_case contract is intentional and shared** between request (`ProviderEvent`) and response (`RespondQueueItem`) so callers see one consistent shape.

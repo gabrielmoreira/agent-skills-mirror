@@ -7,8 +7,8 @@ description: "Create, edit, and debug vanilla Minecraft 26.x and 1.21.x datapack
 
 Inspect `pack.mcmeta` and the target Minecraft version before editing. Preserve
 an existing target unless migration is requested; metadata numbers alone do not
-make older command or registry schemas compatible. Complete the requested pack
-changes, then use static checks and the available game environment proportionately.
+make older command or registry schemas compatible. Check the edited files with
+the bundled validator and test in-game when available.
 
 ## Skill Scope
 

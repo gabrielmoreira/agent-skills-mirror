@@ -81,7 +81,7 @@ These are runtime-detected contract gaps surfaced by the audit pipeline; they sh
 
 | Signal | First response | Recovery |
 |--------|----------------|----------|
-| `dirty-start-paths.txt` missing while `AUTOCOMMIT=true` | classify `P1`, regenerate baseline | resnapshot dirty baseline |
+| `dirty-start-paths.nul` missing while `AUTOCOMMIT=true` | classify `P1`, regenerate baseline | resnapshot dirty baseline |
 | staged files include baseline paths | classify `P0`, unstage baseline paths | `git reset HEAD -- <baseline_paths>` |
 | single-loop candidate scope exceeds goal | classify `P1`, restrict staging | verify each candidate path |
 | cross-loop path overlap | classify `P1`, suspend affected loop | delegate via `ORBIT_TO_GUARDIAN_HANDOFF` |
@@ -199,8 +199,8 @@ When the same failure signature (class + sub_class + error message hash) occurs 
 | State | Condition | Behavior |
 |-------|-----------|----------|
 | `CLOSED` | `< CIRCUIT_THRESHOLD` consecutive same-signature failures | normal retry policy applies |
-| `HALF_OPEN` | exactly `CIRCUIT_THRESHOLD` consecutive same-signature failures | allow one probe execution; if it fails, transition to `OPEN` |
-| `OPEN` | `> CIRCUIT_THRESHOLD` consecutive same-signature failures or probe failed | stop execution, emit `BLOCKED` status, require manual reset or cooldown |
+| `HALF_OPEN` | `OPEN` cooldown elapsed | allow one probe execution; success transitions to `CLOSED`, failure to `OPEN` |
+| `OPEN` | same-signature failures reach `CIRCUIT_THRESHOLD`, or a probe fails | stop execution, including remaining retries, emit `BLOCKED` status, require manual reset or cooldown |
 
 Cooldown: `OPEN` state auto-transitions to `HALF_OPEN` after `CIRCUIT_COOLDOWN` seconds (default: `300`).
 
@@ -220,7 +220,7 @@ Run before launching a loop:
 - [ ] ACs were written for this loop, not copied from another
 - [ ] `state.env` has not been edited manually
 - [ ] `state.env` and `progress.md` are consistent
-- [ ] `dirty-start-paths.txt` exists when `AUTOCOMMIT=true`
+- [ ] `dirty-start-paths.nul` exists when `AUTOCOMMIT=true`
 - [ ] the `DONE` gate requires `done.md` and verify `PASS`/`SKIP`
 - [ ] no manual `git checkout` will happen during active `BRANCH_ISOLATION`
 - [ ] `verify.sh` includes a placeholder-detection step (TODO / `pass` / `NotImplementedError`)

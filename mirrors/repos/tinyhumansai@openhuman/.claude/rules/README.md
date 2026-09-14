@@ -10,7 +10,7 @@ Authoritative docs for AI agents and contributors:
 - **[`gitbooks/developing/architecture/tauri-shell.md`](../../gitbooks/developing/architecture/tauri-shell.md)** — Tauri shell.
 - **[`gitbooks/developing/architecture/agent-harness.md`](../../gitbooks/developing/architecture/agent-harness.md)** — agent harness / tool surface.
 - **[`gitbooks/developing/e2e-testing.md`](../../gitbooks/developing/e2e-testing.md)** — WDIO/Appium testing.
-- **[`gitbooks/developing/cef.md`](../../gitbooks/developing/cef.md)** — CEF runtime notes.
+- **[`gitbooks/developing/cef.md`](../../gitbooks/developing/cef.md)** — historical CEF runtime notes (the shell now uses Wry).
 - **[`gitbooks/developing/testing-strategy.md`](../../gitbooks/developing/testing-strategy.md)** — testing strategy.
 - **[`gitbooks/developing/agent-observability.md`](../../gitbooks/developing/agent-observability.md)** — agent observability.
 

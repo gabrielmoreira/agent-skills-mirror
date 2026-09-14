@@ -14,7 +14,7 @@ Cross-platform directory-jail facade. Given a declarative description of a works
 
 | File | Role |
 | --- | --- |
-| `crates/openhuman-core/src/sandbox/cwd_jail/mod.rs` | Module docstring + the thin facade: `spawn` / `spawn_with` / `default_backend` (cached via `OnceLock`). Re-exports the public surface. Inline tests. |
+| `crates/openhuman-core/src/sandbox/cwd_jail/mod.rs` | Module docstring + the thin facade: `spawn` / `spawn_with` / `default_backend` (cached via `OnceLock`). Re-exports the public surface. |
 | `crates/openhuman-core/src/sandbox/cwd_jail/jail.rs` | Core types: the `Jail` description struct (builder + `canonicalize`/`canonicalize_or_log`) and the `JailBackend` trait (`name`/`is_available`/`spawn`). |
 | `crates/openhuman-core/src/sandbox/cwd_jail/detect.rs` | `pick_backend()` — cfg-gated platform selection; returns the first available backend or `NoopBackend`. |
 | `crates/openhuman-core/src/sandbox/cwd_jail/noop.rs` | `NoopBackend` — no enforcement, plain `Command::spawn`. Always available. |
@@ -22,14 +22,14 @@ Cross-platform directory-jail facade. Given a declarative description of a works
 | `crates/openhuman-core/src/sandbox/cwd_jail/macos.rs` | `SeatbeltBackend` — wraps the command in `/usr/bin/sandbox-exec -p '<profile>'`. Renders an allow-default-reads / deny-default-writes Seatbelt profile. |
 | `crates/openhuman-core/src/sandbox/cwd_jail/windows.rs` | `AppContainerBackend` — `CreateAppContainerProfile` + DACL grant + `STARTUPINFOEX`/`CreateProcessW` via `windows-sys`. |
 | `crates/openhuman-core/src/sandbox/cwd_jail/registry.rs` | `JailRegistry` + `JailRecord` — multi-jail manager persisted to `index.json`, with atomic-rename writes and containment checks. |
-| `crates/openhuman-core/src/sandbox/cwd_jail/registry_tests.rs` | Sibling test suite for the registry (`#[path]`-included from `registry.rs`). |
+| `crates/openhuman-core/src/sandbox/cwd_jail/{mod,jail,noop,macos,windows,registry}_tests.rs` | Sibling test suites, each `#[path]`-included from its source file. |
 
 ## Public surface
 
 Re-exported from `mod.rs`:
 
 - `Jail`, `JailBackend` — the declarative jail description and the OS-enforcement trait.
-- `NoopBackend` — the unenforced fallback backend.
+- `NoopBackend`, `NOOP_BACKEND_NAME` — the unenforced fallback backend and its `name()` string (`sandbox/ops.rs` compares against it to report `Inactive`).
 - `JailRecord`, `JailRegistry` — persisted multi-jail manager.
 
 Free functions in `mod.rs`:
@@ -64,7 +64,17 @@ The Linux backend's docstring references `crate::security::landlock` as conceptu
 
 ## Used by
 
-- Declared at `crates/openhuman-core/src/mod.rs:37` (`pub mod cwd_jail;`). No other `src/` Rust files currently reference `openhuman::sandbox::cwd_jail` — it is a self-standing facade not yet wired into a calling domain.
+- Declared in `crates/openhuman-core/src/sandbox/mod.rs` (`pub mod cwd_jail;`).
+- `crates/openhuman-core/src/sandbox/ops.rs` — `execute_local_jail` builds a
+  `Jail` from the resolved `SandboxPolicy` and spawns through
+  `cwd_jail::default_backend()`, falling back to `cwd_jail::NoopBackend`
+  when no OS jail is available.
+- `crates/openhuman-core/src/agent/platform_shell.rs` — doc references to
+  `cwd_jail::spawn` when explaining why shell-spawning is routed through a
+  shared, Windows-aware command builder.
+- `crates/openhuman-core/src/tools/impl/system/{node_exec,npm_exec}.rs` and
+  `agent/profiles/guard.rs` mention `cwd_jail` in comments/docs when
+  describing the `Local` sandbox backend.
 
 ## Notes / gotchas
 

@@ -36,7 +36,7 @@ hooks:
         - type: command
           command: "SH=\"\"; for c in \"${PWF_SCRIPT_DIR}/skill-hook.sh\" \"${CLAUDE_SKILL_DIR}/scripts/skill-hook.sh\" \"$HOME/.claude/skills/planning-with-files-ar/scripts/skill-hook.sh\" \"$HOME/.claude/skills/planning-with-files/scripts/skill-hook.sh\" \"$HOME/.claude/plugins/marketplaces/planning-with-files/scripts/skill-hook.sh\"; do [ -f \"$c\" ] && { SH=\"$c\"; break; }; done; [ -n \"$SH\" ] && sh \"$SH\" --event=precompact; exit 0"
 metadata:
-  version: "3.17.2"
+  version: "3.18.0"
 ---
 
 # نظام تخطيط الملفات
@@ -230,6 +230,12 @@ if فشل العملية:
 - `scripts/init-session.sh` — تهيئة جميع ملفات التخطيط
 - `scripts/check-complete.sh` — التحقق من اكتمال جميع المراحل
 - `scripts/session-catchup.py`: فحص صريح لبيانات الجلسة المحلية أو إعادة تشغيل محدودة منها
+
+### عرض الخطط المحفوظة
+
+للعثور على مهمة قبل استئنافها، شغّل `sh "<skill-dir>/scripts/set-active-plan.sh" --list` أو، في Windows PowerShell، `& "<skill-dir>/scripts/set-active-plan.ps1" -List`. استبدل `<skill-dir>` بمسار تثبيت هذه المهارة، وأبقِ دليل العمل الحالي عند جذر المشروع.
+
+يعرض هذا الأمر للقراءة فقط الخطط المسماة وتقدّم مراحلها داخل `.planning/` في دليل العمل الحالي. تشير `[active]` إلى المؤشر الافتراضي المشترك، ولا تربط جلسة بخطة. تتطلب المهام المتزامنة تعيين `PLAN_ID` لكل مضيف أو استخدام أشجار عمل منفصلة.
 
 ## الحدود الأمنية
 

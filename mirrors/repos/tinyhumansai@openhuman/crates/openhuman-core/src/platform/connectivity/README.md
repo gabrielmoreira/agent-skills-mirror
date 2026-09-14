@@ -50,8 +50,8 @@ None — the module holds no state. The diag snapshot reads only the environment
 ## Used by
 
 - `crates/openhuman-core/src/core/all.rs` — registers the controller (`all_connectivity_registered_controllers`) and schema (`all_connectivity_controller_schemas`), and routes the `"connectivity"` namespace.
-- `crates/openhuman-core/src/core/jsonrpc.rs` — calls `connectivity::rpc::pick_listen_port_for_host(...)` during core bind to select the embedded HTTP listener port; afterward syncs `OPENHUMAN_CORE_RPC_URL` to the actual bound port so `resolve_listen_port()` (and thus `connectivity_diag`) reports the live listener after a fallback.
-- `crates/openhuman-core/src/mod.rs` — declares the module.
+- `crates/openhuman-core/src/core/runtime/builder.rs` — calls `connectivity::rpc::pick_listen_port_for_host(...)` during core bind to select the embedded HTTP listener port; afterward syncs `OPENHUMAN_CORE_RPC_URL` to the actual bound port so `resolve_listen_port()` (and thus `connectivity_diag`) reports the live listener after a fallback.
+- `crates/openhuman-core/src/platform/mod.rs` — declares the module.
 
 ## Notes / gotchas
 

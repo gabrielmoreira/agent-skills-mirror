@@ -7,7 +7,7 @@
 
 **The portable SDLC standards layer for AI coding agents. Sync once, then work in your own runtime.**
 
-**Current release:** `cli-v2.6.1` — OWASP Agentic Skills Top 10 hardening: skill-content lockfile (`ags verify`), opt-in enforcing hooks, blocking secret/dependency scanning, and a per-category governance/revocation model. See [CHANGELOG.md](CHANGELOG.md).
+**Current release:** `cli-v2.6.2` — the skill validator accepts package directories under `scripts/` (needed by the draw.io diagram pipeline's `schema_parsers/`); builds on v2.6.1's OWASP Agentic Skills Top 10 hardening (skill-content lockfile, `ags verify`, enforcing hooks, secret/dependency scanning). See [CHANGELOG.md](CHANGELOG.md).
 
 280 ready-to-use coding standards for **Cursor, Claude Code, GitHub Copilot, Gemini, Windsurf, Trae, Kiro, Roo** and more — synced, versioned, and optimized to use **85% fewer tokens** than traditional prompt engineering.
 
@@ -242,7 +242,7 @@ In practice that means:
 
 For repository enforcement, keep the workflows and skills lean: the source of truth lives in `skills/` and `.agents/workflows/`, not in MCP-only artifact helpers, fixture packs, or replay chains.
 
-See also [Learning From agentic-ai](./docs/agentic-ai-learning.md) and the [Optional MCP Integration Guide](./docs/mcp-integration-guide.md).
+See also [Learning From agentic-ai](./docs/agentic-ai-learning.md) and the [Optional MCP Integration Guide](./docs/mcp-integration-guide.md) and [UI Automation Drivers](./docs/ui-automation-drivers.md).
 
 ## 299 Skills Across 20+ Frameworks
 

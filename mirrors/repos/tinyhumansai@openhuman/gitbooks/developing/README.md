@@ -16,11 +16,11 @@ If you just want to use the app, head to [Getting Started](../overview/getting-s
 | Path        | What's there                                                                                                      |
 | ----------- | ----------------------------------------------------------------------------------------------------------------- |
 | `app/`      | pnpm workspace `openhuman-app`. Vite + React frontend (`app/src/`) and the Tauri desktop host (`crates/openhuman-app/`). |
-| `src/`      | Rust crate `openhuman_core` and the `openhuman-core` CLI binary. Domains, JSON-RPC, MCP routing.                  |
+| `crates/`   | Rust crates: `openhuman-core` (lib `openhuman_core` + the `openhuman-core` CLI binary; domains under `src/<domain>/`, JSON-RPC, MCP routing), `openhuman-app` (Tauri host), `openhuman-embed` (library facade), `openhuman-rpc` (shared RPC contracts + HTTP client), `openhuman-tui` (terminal frontend). |
 | `gitbooks/` | This site (the public-facing docs).                                                                               |
-| `docs/`     | Older deep references not yet migrated to GitBook (memory pipeline diagrams, agent flows, etc.).                  |
+| `docs/`     | Internal maintainer docs: test-coverage matrix, release smoke checklist, library benchmarking and minimal-recipe notes, translated READMEs, `community/`. |
 
-`CLAUDE.md` at the repo root is the source of truth for AI agents working on the codebase. Same rules apply to humans.
+`AGENTS.md` at the repo root is the source of truth for AI agents working on the codebase (`CLAUDE.md` is a symlink to it). Same rules apply to humans.
 
 ---
 
@@ -28,9 +28,9 @@ If you just want to use the app, head to [Getting Started](../overview/getting-s
 
 If it's your first time pulling the repo:
 
-1. [**Getting Set Up**](getting-set-up.md). Toolchain, dependencies, the vendored Tauri CLI, sidecar staging - everything `pnpm dev` needs to actually start.
-2. [**Building the Rust Core**](building-rust-core.md). Fresh-machine setup for the repo-root Rust crate only: pinned toolchain, OS packages, and exact `cargo` commands.
-3. [**Architecture**](architecture.md). How the desktop app, the Rust core sidecar, the JSON-RPC bridge, and the dual sockets fit together. Read this before you make non-trivial changes.
+1. [**Getting Set Up**](getting-set-up.md). Toolchain, dependencies, the Tauri CLI - everything `pnpm dev` needs to actually start.
+2. [**Building the Rust Core**](building-rust-core.md). Fresh-machine setup for the Rust workspace only: pinned toolchain, OS packages, and exact `cargo` commands.
+3. [**Architecture**](architecture.md). How the desktop app, the in-process Rust core, the JSON-RPC bridge, and the dual sockets fit together. Read this before you make non-trivial changes.
 4. [**Frontend**](architecture/frontend.md) and [**Tauri Shell**](architecture/tauri-shell.md). The React app and the desktop host that wraps it.
 5. [**MCP Server**](mcp-server.md). Opt-in stdio MCP mode for exposing read-only OpenHuman memory tools to local clients.
 
@@ -59,7 +59,8 @@ PRs must clear the **≥ 80% coverage on changed lines** gate. Add tests for new
 
 - [**Agent Harness**](architecture/agent-harness.md). The tinyagents-based turn loop (checkpointing, circuit breakers, sub-agent handback, journals/replay) and how to extend the tool surface.
 - [**Workflows**](../features/workflows.md). The tinyflows-backed `flows` domain: triggers, trust origins, approval-gated runs, and the `flows_*` RPC surface.
-- [**Chromium Embedded Framework**](cef.md). How embedded provider webviews work, why they don't run injected JS, and what the per-provider scanners do instead.
+- [**Hooks**](hooks.md). User-owned scripts that run before a tool executes, after a file edit, or when a turn finishes.
+- [**Chromium Embedded Framework**](cef.md). Historical design notes from the CEF era; the shell now runs on stock Tauri (Wry).
 
 For features still being built, the Subconscious Loop page covers the background task evaluation system end-to-end.
 

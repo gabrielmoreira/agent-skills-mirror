@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `lidge-jun/opencodex` — 26 default patterns, 5 followed patterns, 27 file(s) materialized.
+Mirror of `lidge-jun/opencodex` — 26 default patterns, 5 followed patterns, 28 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `lidge-jun/opencodex` — 26 default patterns, 5 followed patterns, 27
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 5 |
-| Files         | 27 |
+| Files         | 28 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -66,30 +66,31 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 1 | ✓ | [`.github/AGENTS.md`](.github/AGENTS.md) |
 | 2 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 3 | ✓ | [`docs-site/AGENTS.md`](docs-site/AGENTS.md) |
-| 4 | ✓ | [`gui/AGENTS.md`](gui/AGENTS.md) |
-| 5 | ✓ | [`scripts/AGENTS.md`](scripts/AGENTS.md) |
-| 6 | ✓ | [`skills/ocx/references/01_management_surface.md`](skills/ocx/references/01_management_surface.md) |
-| 7 | ✓ | [`skills/ocx/references/02_json_shapes.md`](skills/ocx/references/02_json_shapes.md) |
-| 8 | ✓ | [`skills/ocx/references/03_recipes.md`](skills/ocx/references/03_recipes.md) |
-| 9 | ✓ | [`skills/ocx/references/04_failure_semantics.md`](skills/ocx/references/04_failure_semantics.md) |
-| 10 | ✓ | [`skills/ocx/references/05_remote_hub.md`](skills/ocx/references/05_remote_hub.md) |
-| 11 | ✓ | [`skills/ocx/SKILL.md`](skills/ocx/SKILL.md) |
-| 12 | ✓ | [`src/AGENTS.md`](src/AGENTS.md) |
-| 13 | ✓ | [`structure/AGENTS.md`](structure/AGENTS.md) |
-| 14 | ✓ | [`structure/catalog.md`](structure/catalog.md) |
-| 15 | ✓ | [`structure/codex-home.md`](structure/codex-home.md) |
-| 16 | ✓ | [`structure/config.md`](structure/config.md) |
-| 17 | ✓ | [`structure/design-methodology.md`](structure/design-methodology.md) |
-| 18 | ✓ | [`structure/gui-and-management-api.md`](structure/gui-and-management-api.md) |
-| 19 | ✓ | [`structure/overview.md`](structure/overview.md) |
-| 20 | ✓ | [`structure/remote-workspace.md`](structure/remote-workspace.md) |
-| 21 | ✓ | [`structure/runtime.md`](structure/runtime.md) |
-| 22 | ✓ | [`structure/subagents.md`](structure/subagents.md) |
-| 23 | → | [`AGENTS_INSTALL.md`](AGENTS_INSTALL.md) |
-| 24 | → | [`CREDITS.md`](CREDITS.md) |
-| 25 | → | [`MAINTAINERS.md`](MAINTAINERS.md) |
-| 26 | → | [`SECURITY.md`](SECURITY.md) |
-| 27 | → | [`structure/INDEX.md`](structure/INDEX.md) |
+| 4 | ✓ | [`docs-site/src/content/docs/guides/remote-workspace.md`](docs-site/src/content/docs/guides/remote-workspace.md) |
+| 5 | ✓ | [`gui/AGENTS.md`](gui/AGENTS.md) |
+| 6 | ✓ | [`scripts/AGENTS.md`](scripts/AGENTS.md) |
+| 7 | ✓ | [`skills/ocx/references/01_management_surface.md`](skills/ocx/references/01_management_surface.md) |
+| 8 | ✓ | [`skills/ocx/references/02_json_shapes.md`](skills/ocx/references/02_json_shapes.md) |
+| 9 | ✓ | [`skills/ocx/references/03_recipes.md`](skills/ocx/references/03_recipes.md) |
+| 10 | ✓ | [`skills/ocx/references/04_failure_semantics.md`](skills/ocx/references/04_failure_semantics.md) |
+| 11 | ✓ | [`skills/ocx/references/05_remote_hub.md`](skills/ocx/references/05_remote_hub.md) |
+| 12 | ✓ | [`skills/ocx/SKILL.md`](skills/ocx/SKILL.md) |
+| 13 | ✓ | [`src/AGENTS.md`](src/AGENTS.md) |
+| 14 | ✓ | [`structure/AGENTS.md`](structure/AGENTS.md) |
+| 15 | ✓ | [`structure/catalog.md`](structure/catalog.md) |
+| 16 | ✓ | [`structure/codex-home.md`](structure/codex-home.md) |
+| 17 | ✓ | [`structure/config.md`](structure/config.md) |
+| 18 | ✓ | [`structure/design-methodology.md`](structure/design-methodology.md) |
+| 19 | ✓ | [`structure/gui-and-management-api.md`](structure/gui-and-management-api.md) |
+| 20 | ✓ | [`structure/overview.md`](structure/overview.md) |
+| 21 | ✓ | [`structure/remote-workspace.md`](structure/remote-workspace.md) |
+| 22 | ✓ | [`structure/runtime.md`](structure/runtime.md) |
+| 23 | ✓ | [`structure/subagents.md`](structure/subagents.md) |
+| 24 | → | [`AGENTS_INSTALL.md`](AGENTS_INSTALL.md) |
+| 25 | → | [`CREDITS.md`](CREDITS.md) |
+| 26 | → | [`MAINTAINERS.md`](MAINTAINERS.md) |
+| 27 | → | [`SECURITY.md`](SECURITY.md) |
+| 28 | → | [`structure/INDEX.md`](structure/INDEX.md) |
 
 ---
 

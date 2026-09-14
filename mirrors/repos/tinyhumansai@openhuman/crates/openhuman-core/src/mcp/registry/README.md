@@ -1,127 +1,149 @@
-# mcp/registry
+# mcp/registry — user-installed MCP servers
 
-The dynamic, user-facing side of MCP-client support. It browses upstream MCP server directories (Smithery.ai + the official modelcontextprotocol/registry), persists the user's chosen installs to SQLite, supervises their per-server connection lifecycle (stdio subprocess **or** HTTP-remote dial), and surfaces the connected servers' tools to agents via the unified tool registry. It also hosts a separate "setup agent" RPC surface (`mcp_setup`) that lets an LLM walk a non-technical user through search → secret collection → dry-run test → install-and-connect, with raw secret values kept out of the agent's context via opaque `secret://<hex>` refs.
+Host half of the dynamic, user-installed MCP server surface. The registry
+itself — the Smithery and official catalogs, the SQLite store, the live
+connection map, the subprocess/browser-sign-in supervisor, and the setup
+secret vault — moved to [`tinymcp`](https://github.com/tinyhumansai/tinymcp).
+What is left here is what belongs to this application: the `mcp_clients` and
+`mcp_setup` RPC surface, the agent-facing tools, the prompt-injection scan
+over remote tool definitions, and turning what the reconnect supervisor
+observed into this application's own events.
 
-The transport primitives themselves (stdio + HTTP MCP clients) live in the sibling `mcp_client` module — this module carries no transport code of its own, only lifecycle, dispatch, persistence, and the registry HTTP adapters. (Naming note: the RPC namespace and SQLite db filename are still `mcp_clients` for backwards-compat; the Rust module path is `mcp_registry`.)
-
-## Responsibilities
-
-- Search multiple upstream MCP registries in parallel and merge results; route detail fetches back to the originating registry.
-- Persist installed-server records (no env values) + per-server env values + a TTL'd registry response cache in SQLite.
-- Establish, track, and tear down live MCP connections keyed by `server_id`, dispatching on each install's `Transport` (stdio subprocess vs HTTP-remote).
-- Spawn all installed local servers at boot without blocking core startup.
-- Expose the install/connect/status/tool-call lifecycle over JSON-RPC (`mcp_clients_*`).
-- Run a setup-agent surface (`mcp_setup_*`) with out-of-band secret collection so credentials never enter the LLM context.
-- Provide an AI `config_assist` flow that guides users through filling required env vars.
-- Publish lifecycle `DomainEvent`s for observability.
+The RPC namespace and the on-disk database filename are still `mcp_clients`,
+unchanged across the move — existing frontend code and existing on-disk state
+keep working. The Rust module path is `crate::mcp::registry`.
 
 ## Key files
 
 | File | Role |
 | --- | --- |
-| `crates/openhuman-core/src/mcp/registry/mod.rs` | Module docstring + exports; re-exports controller schema/registry pair and key types. |
-| `crates/openhuman-core/src/mcp/registry/types.rs` | Domain types: `CommandKind`, `Transport` (Stdio / HttpRemote), `InstalledServer`, `McpTool`, `ServerStatus`, `ConnStatus`, Smithery DTOs, `ChatTurn`. |
-| `crates/openhuman-core/src/mcp/registry/store.rs` | SQLite persistence (`mcp_clients/mcp_clients.db`): server CRUD, env values, registry cache; additive `transport`/`deployment_url` column migration. |
-| `crates/openhuman-core/src/mcp/registry/registry.rs` | Multi-registry dispatch: `registry_search` (parallel fan-out + merge), `registry_get` (source-prefix routing or first-hit). |
-| `crates/openhuman-core/src/mcp/registry/registries/mod.rs` | `Registry` trait + `enabled_registries` / `registry_for_source`; `SOURCE_*` constants. |
-| `crates/openhuman-core/src/mcp/registry/registries/smithery.rs` | Smithery.ai adapter (`registry.smithery.ai`), 10-min SQLite cache, optional `SMITHERY_API_KEY` auth. |
-| `crates/openhuman-core/src/mcp/registry/registries/mcp_official.rs` | Official modelcontextprotocol/registry adapter; cursor→page mapping with a bounded sequential cursor walk; optional `MCP_OFFICIAL_REGISTRY_*` env overrides. |
-| `crates/openhuman-core/src/mcp/registry/connections.rs` | Global in-process connection registry; `connect`/`disconnect`/`call_tool`/`all_status`/`all_connected_tools`; dispatches stdio vs HTTP via `ActiveClient`. |
-| `crates/openhuman-core/src/mcp/registry/boot.rs` | `spawn_installed_servers` — boot-time connect of all installs; per-server failures logged, never fatal. |
-| `crates/openhuman-core/src/mcp/registry/mod.rs` (`supervisor`) | Background reconnect loop (#3312): every 60s drives `tinymcp::Supervisor::tick` for every open workspace host — probes each connected transport and reconnects dropped / never-connected enabled servers with per-server exponential backoff (the cycle itself lives in `tinymcp`). Missed ticks are delayed, not burst. Hands each tick's `TickReport` to `supervisor_events`. |
-| `crates/openhuman-core/src/mcp/registry/supervisor_events.rs` | Translates a `tinymcp::TickReport` into this domain's events (#5931): `McpServerProbeTimedOut`, `McpServerTransportDropped`, `McpServerReconnected`, `McpServerReconnectFailed`, `McpServerParked`. Every event is stamped with the workspace whose host was ticked — one process supervises every workspace it has opened, so the notification bridge files one under the workspace it names rather than under whichever one the bridge was registered with, and announces it to connected clients only when that workspace is the active one (the socket bridge has no per-client routing). The developer Event Log streams them (with a one-line `DomainEvent::log_detail` summary, since the envelope carries no payload); the notification bridge turns stays-down / restored / parked into user notifications. An answered probe is deliberately not an event. |
-| `crates/openhuman-core/src/mcp/registry/ops.rs` | `mcp_clients_*` RPC handler implementations + `resolve_command` + `config_assist` inference call. |
-| `crates/openhuman-core/src/mcp/registry/setup.rs` | Opaque secret-ref machinery (`SecretRef`, mint/fulfill/await/resolve/consume/gc) for the setup agent. |
-| `crates/openhuman-core/src/mcp/registry/setup_ops.rs` | `mcp_setup_*` RPC handlers (search/get/request_secret/submit_secret/test_connection/install_and_connect) + connection `pick_connection`. |
-| `crates/openhuman-core/src/mcp/registry/schemas.rs` | Controller schemas + `handle_*` dispatch for both `mcp_clients` and `mcp_setup` namespaces. |
-| `crates/openhuman-core/src/mcp/registry/bus.rs` | `McpClientEventSubscriber` — logs lifecycle events; `init()` registers it. |
+| `mod.rs` | Module declarations, the `connections`/`store`/`boot`/`supervisor`/`oauth` re-export facades, and `tools_safe_for_agent` (the prompt-injection scan). |
+| `ops.rs` / `ops_tests.rs` | `mcp_clients_*` RPC handler bodies — each delegates to the service `mcp::host` holds. |
+| `setup_ops.rs` / `setup_ops_tests.rs` | `mcp_setup_*` guided-setup handler bodies. |
+| `schemas.rs`, `schemas/` (`mod.rs`, `registry.rs`, `handlers.rs`, `params.rs`, `setup_registry.rs`, `setup_handlers.rs`), `schemas_tests.rs` | Controller schema registry and dispatch. |
+| `supervisor_events.rs` / `supervisor_events_tests.rs` | Maps a supervisor tick's `TickReport` into `DomainEvent`s. |
+| `bus.rs` / `bus_tests.rs` | `McpClientEventSubscriber` — logs lifecycle events for observability. |
+| `tools.rs` / `tools_tests.rs` | Agent-facing `mcp_registry_*` tools, thin shims over `ops.rs`. |
+| `helpers.rs` | Shared identifier validation, workspace-service resolution, and env-key injection used by both `ops.rs` and `setup_ops.rs`. |
+| `stub.rs` | The `mcp`-less mirror of the always-on surface: `all_mcp_registry_registered_controllers` (empty), `boot`, `bus`, `supervisor`, `oauth`, and the three `connections` lookups always-on callers name. |
 
-## Public surface
+## Modules re-exported over `tinymcp`
 
-From `mod.rs`:
-- `all_mcp_registry_controller_schemas` / `all_mcp_registry_registered_controllers` (`schemas::all_controller_schemas` / `all_registered_controllers`).
-- `mcp_registry_schemas` (`schemas::schemas`).
-- Types `ConnStatus`, `InstalledServer`, `McpTool`.
+`mod.rs` defines several thin facade modules rather than fresh logic:
 
-`pub mod boot`, `bus`, `connections`, `setup`, `setup_ops`, `store`, `supervisor`, `types` are public; `ops`, `registries`, `registry`, `schemas` are private (reached via the schema handlers). Notably `connections::all_connected_tools()` is consumed by `tool_registry`, and both `boot::spawn_installed_servers` and `supervisor::run` are spawned from core startup.
+- `types` — the payload vocabulary, entirely re-exported from `tinymcp_bus`
+  (`InstalledServer`, `McpTool`, `ConnStatus`, `Transport`, the Smithery
+  catalog types, …). A parallel set of types here would mean a conversion at
+  every call site that nothing checks.
+- `connections` — a thin view over the live connection map the `mcp::host`
+  service holds: `connected_overview[_for_config]`,
+  `all_connected_tools[_for_config]`, `tools_for`/`server_tools_for_config`,
+  `is_connected[_for_config]`, `auth_hint_for[_config]`, `connect`,
+  `disconnect[_for_config]`, `last_error_for[_config]`. Every lookup answers
+  "nothing" (empty list / `false` / `None`) when the workspace has no open
+  host yet, rather than erroring; only `connect` returns an error in that
+  case.
+- `store` — the one direct reach into the registry's store that outlived the
+  extraction: `set_cached`, used by an end-to-end test to seed the upstream
+  response cache without a real catalog call.
+- `boot` — `spawn_installed_servers`, connecting every enabled installed
+  server at startup; never fails (a broken third-party server is logged and
+  skipped).
+- `supervisor` — `run()`, the reconnect-supervisor loop: one task per
+  process, walking every workspace host the process has opened each tick.
+- `oauth` — `complete`, finishing a browser sign-in from the redirect
+  callback and reconnecting the server.
 
-## RPC / controllers
+## RPC surface
 
-Two namespaces. `all_controller_schemas()` returns 16 controllers (10 `mcp_clients` + 6 `mcp_setup`).
+`ops.rs` implements the `mcp_clients` namespace: `registry_search`,
+`registry_get`, `installed_list`, `install`, `update_env`, `uninstall`,
+`detect_auth`, `oauth_begin`, `connect`, `disconnect`, `status`, `tool_call`,
+`config_assist`, `registry_settings_get`, `registry_settings_set`,
+`set_enabled`. `setup_ops.rs` implements the `mcp_setup` namespace: `search`,
+`get`, `request_secret`, `submit_secret`, `test_connection`,
+`install_and_connect`. Both are registered together by
+`schemas::all_registered_controllers` (`schemas/registry.rs`).
 
-**`mcp_clients`** (`ops.rs`):
-- `registry_search` — search the registries.
-- `registry_get` — full server detail (augmented with `required_env_keys`).
-- `installed_list` — list installed servers (env values omitted).
-- `install` — install from registry (stdio-only legacy path); stores env values, publishes `McpServerInstalled`.
-- `uninstall` — disconnect + delete.
-- `connect` / `disconnect` — bring a server's connection up/down.
-- `status` — per-server connection summaries.
-- `tool_call` — invoke a tool on a connected server.
-- `config_assist` — AI helper for filling required env vars (calls inference at `{api_url}/openai/v1/chat/completions`, falls back to a stub when unconfigured).
+What stayed host-side inside these handlers, on purpose:
 
-**`mcp_setup`** (`setup_ops.rs`):
-- `search` / `get` — thin wrappers over `registry`.
-- `request_secret` — mint a `secret://<hex>` ref, publish `McpSetupSecretRequested`, block up to 5 min for the UI to submit.
-- `submit_secret` — UI-side fulfillment of a pending ref.
-- `test_connection` — dry-run: dial a candidate (stdio scratch subprocess or HTTP-remote), list tools, tear down; nothing persisted.
-- `install_and_connect` — commit: persist install + consume secret refs into `mcp_client_env`, then connect; returns `connected` or `installed_disconnected`.
+- **Events** — `tinymcp` reports outcomes in its return values and publishes
+  nothing; `ops.rs`/`setup_ops.rs` turn those into `DomainEvent`s because the
+  vocabulary is this application's.
+- **The prompt-injection scan** — `tools_safe_for_agent` filters remote tool
+  definitions before they reach the agent.
+- **The configuration-assistant agent turn** — `tinymcp` gathers catalog
+  detail and the credential names an install would need; running the model
+  turn needs the agent, the tool surface, and the approval gate, all of which
+  live in this crate.
+- **Setup secret handles** — the `secret://…` opaque handle flow: `tinymcp`
+  owns the vault, this layer publishes the event that prompts the user
+  out-of-band and waits for the answer. The raw value never crosses the
+  model-facing surface.
+
+## Reconnect-supervisor events
+
+`supervisor_events::domain_events_for` maps each `TickReport` from
+`tinymcp::Supervisor::tick` into `DomainEvent`s in the `mcp_client` domain:
+`McpServerProbeTimedOut`, `TransportDropped`, `Reconnected`,
+`ReconnectFailed`, `Parked`. Every event is stamped with the workspace whose
+host was ticked, because one process supervises every workspace it has
+opened over its life and a subscriber persisting an event (the notification
+bridge) needs to file it under the right one. An answered probe — the
+nominal case — is deliberately not an event; `tinymcp` logs it at trace
+level. These events reach the developer Event Log (`GET /events/domain`) and,
+for the stays-down/restored/parked cases, the desktop notification bridge.
 
 ## Agent tools
 
-This module does not define `Tool` impls directly. The setup-agent tools live in `crates/openhuman-core/src/tools/impl/network/mcp_setup.rs` as thin wrappers calling `mcp::registry::setup_ops`. The MCP browse/list/call tools (`McpListServersTool`, `McpListToolsTool`, etc.) are wired in `crates/openhuman-core/src/tools/ops.rs` against the connected-tools surface, and `tool_registry` pulls live tools via `connections::all_connected_tools()`.
+`tools.rs` exposes `mcp_registry_search`, `mcp_registry_get`,
+`mcp_registry_installed_list`, `mcp_registry_status`,
+`mcp_registry_list_tools`, `mcp_registry_connect`,
+`mcp_registry_disconnect`, `mcp_registry_tool_call`,
+`mcp_registry_config_assist`, `mcp_registry_install`,
+`mcp_registry_uninstall` — thin shims over `ops.rs`. Discovery/observe/
+connect/call tools are default-ON; `install`/`uninstall` (persistent writes
+of installed state and secrets) ship default-OFF, gated behind the
+`mcp_manage` toggle in `tools/user_filter.rs`. Re-exported by
+`tools/mod.rs` behind `#[cfg(feature = "mcp")]`. The `mcp_setup_*`
+setup-agent tools and the generic `mcp_list_servers`/`mcp_call_tool` bridge
+tools live elsewhere and are a distinct surface from these
+`mcp_registry_*` tools.
 
-## Events
+## Compile-time gate (`mcp` feature)
 
-Publishes (via `publish_global`):
-- `McpServerInstalled` (ops::install, setup_ops::install_and_connect)
-- `McpServerConnected` (ops::connect)
-- `McpServerDisconnected` (ops::disconnect)
-- `McpClientToolExecuted` (ops::tool_call)
-- `McpSetupSecretRequested` (setup_ops::request_secret)
-
-Subscribes: `bus::McpClientEventSubscriber` (domain `"mcp_client"`) — logs the four `McpServer*` / `McpClientToolExecuted` events for observability; no side effects.
-
-## Persistence
-
-SQLite at `{workspace_dir}/mcp_clients/mcp_clients.db` (`store.rs`), three tables:
-- `mcp_servers` — installed-server metadata (no env values); `transport`/`deployment_url` added via idempotent additive migration (pre-migration rows default to `stdio`).
-- `mcp_client_env` — per-server env key/value pairs; values never serialized into any response and never logged. `ON DELETE CASCADE` from `mcp_servers`.
-- `mcp_registry_cache` — registry HTTP response bodies with a 10-minute TTL.
-
-Setup-agent secrets (`setup.rs`) are held in a **process-local in-memory map** (not SQLite) with a 5-min request timeout and 15-min idle GC; they only persist if committed via `consume_refs` → `mcp_client_env` during `install_and_connect`.
-
-The in-process connection registry (`connections.rs`) is a `OnceLock<RwLock<HashMap<server_id, Connection>>>`, ephemeral per process.
+Every member above except `types` is gated on the `mcp` feature; with it
+off, `stub.rs` mirrors the always-on surface with empty/no-op bodies.
+`types` stays ungated so `ConnectedServerOverview` and `McpTool` are the
+same real type in both builds.
 
 ## Dependencies
 
-- `crate::config::Config` — workspace dir, `mcp_client.client_identity`, inference api_url/api_key/default_model.
-- `crate::config::rpc` (`load_config_with_timeout`) — config load inside RPC handlers.
-- `crate::mcp::config_servers` (`McpStdioClient`) and `crate::mcp::http_client` (`McpHttpClient`, `McpRemoteTool`, `McpServerToolResult`) — actual transport clients used by `connections.rs` and `setup_ops.rs`.
-- `crate::core::event_bus` (`publish_global`, `DomainEvent`, `EventHandler`, `subscribe_global`) — lifecycle events + subscriber.
-- `crate::core::all` (`ControllerFuture`, `RegisteredController`) and `crate::core::{ControllerSchema, FieldSchema, TypeSchema}` — controller wiring.
-- `crate::rpc::RpcOutcome` — handler return contract.
-- External crates: `rusqlite` (store), `reqwest` + `futures` (registry HTTP / fan-out), `tokio::sync` (RwLock/Mutex/oneshot), `uuid`, `async_trait`, `parking_lot` (official-registry cursor cache).
+- `tinymcp` / `tinymcp_bus` — the extracted registry library and its wire
+  contract.
+- `crate::mcp::host` — the per-workspace service holder every function here
+  resolves through.
+- `crate::core::bus` / `crate::core::events` — `DomainEvent` publishing.
+- `crate::security::prompt_injection` — `scan_tool_definition`, used by
+  `tools_safe_for_agent`.
 
 ## Used by
 
-- `crates/openhuman-core/src/mcp/mod.rs` — declares `pub mod registry`.
-- `crates/openhuman-core/src/core/all.rs` — registers `all_mcp_registry_registered_controllers()` + `all_mcp_registry_controller_schemas()`.
-- `crates/openhuman-core/src/core/jsonrpc.rs` — calls `boot::spawn_installed_servers` during startup.
-- `crates/openhuman-core/src/tools/registry/ops.rs` — uses `connections` to surface MCP tools to agents.
-- `crates/openhuman-core/src/tools/ops.rs` + `crates/openhuman-core/src/tools/impl/network/mcp_setup.rs` — agent tool wrappers.
-- `crates/openhuman-core/src/platform/about_app/catalog.rs` — capability entry `channels.mcp_registry_browse`.
-- `crates/openhuman-core/src/bin/test_mcp_stub.rs` + `tests/mcp_registry_e2e.rs` — E2E stub server.
-
-## Notes / gotchas
-
-- **`mcp_clients` vs `mcp_registry`**: the RPC namespace and db filename keep the old `mcp_clients` name for backwards-compat; only the Rust module path is `mcp_registry`.
-- **Unified install transport**: both `mcp_clients_install` (manual install dialog) and `mcp_setup_install_and_connect` (setup agent) pick the best connection via `setup_ops::pick_connection` and build the `Transport` via `setup_ops::build_install_transport` (preference: published stdio → any stdio → published http_remote → any http_remote). So HTTP-remote listings install from the UI too, not just via the setup agent.
-- **Reconfigure**: `mcp_clients_update_env` replaces the stored env values (and the server row's `env_keys`), disconnects, and reconnects — API-key rotation without uninstall/reinstall.
-- **Registry credentials**: `mcp_clients_registry_settings_get` / `_set` expose Smithery / official-registry auth (config-first, env-fallback via `mcp_client.registry_auth`). The getter reports `*_set` booleans only; secret values are write-only and never returned.
-- **Smithery DTO naming**: the canonical result shapes are named `Smithery*` for wire compat; non-Smithery registries adapt into the same shapes and tag the `source` field.
-- **HTTP-remote env**: env vars for HTTP-remote installs (typically OAuth tokens) are picked up by `McpHttpClient`'s own auth config, not injected at dial time by this module.
-- **Secret safety**: raw secret values flow only through `submit_secret` and the just-in-time resolve in `test_connection`/`install_and_connect`; never echoed in responses or logged. `consume_refs` only removes refs after values are persisted.
-- **Boot is best-effort**: a misbehaving server logs and is skipped; it never blocks core startup.
-- **`all_connected_tools` caveat**: it currently returns `server_id` in the `qualified_name` slot — callers needing the real qualified name must re-join against `store::list_servers`.
-- **Official registry cursor walk**: deep-page cache misses walk pages sequentially up to `MAX_CURSOR_WALK_PAGES` (50) before bailing to avoid request amplification.
+- `crates/openhuman-core/src/core/all.rs` (~line 444) — registers
+  `all_mcp_registry_registered_controllers()`.
+- `crates/openhuman-core/src/mcp/mod.rs` — `start`/`start_boot_jobs` wire up
+  `bus::init()`, `boot::spawn_installed_servers`, and the reconnect
+  supervisor.
+- `crates/openhuman-core/src/core/jsonrpc.rs` — the `/oauth/mcp/callback`
+  route calls `oauth::complete`.
+- `crates/openhuman-core/src/tools/impl/network/mcp_setup.rs` — the
+  `mcp_setup_*` agent tools wrap `setup_ops`.
+- `crates/openhuman-core/src/tools/registry/ops.rs` and
+  `crates/openhuman-core/src/agent/registry/agents/orchestrator/prompt.rs` —
+  read `mcp::registry::connections` to list connected servers/tools for the
+  tool catalog and the orchestrator prompt.
+- `crates/openhuman-core/src/agent/harness/session/turn/core_turn.rs` — reads
+  `connections::connected_overview()` when assembling a turn.
+- `crates/openhuman-core/src/platform/about_app/catalog_auth_channels_team.rs` — the
+  `channels.mcp_registry_browse` / `mcp_server_install` /
+  `mcp_server_connect` capability entries.

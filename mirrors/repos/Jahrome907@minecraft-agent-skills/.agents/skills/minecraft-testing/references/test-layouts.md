@@ -1,6 +1,6 @@
 # Minecraft Testing Layouts
 
-Choose one explicit platform and version lane. `src/test` is for JUnit or
+Choose the target platform and version. `src/test` is for JUnit or
 MockBukkit; it is optional for a Game Test-only project.
 
 ## Unit + MockBukkit plugin

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `qixing-jk/all-api-hub` — 26 default patterns, 8 followed patterns, 15 file(s) materialized.
+Mirror of `qixing-jk/all-api-hub` — 26 default patterns, 5 followed patterns, 12 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `qixing-jk/all-api-hub` — 26 default patterns, 8 followed patterns, 
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 8 |
-| Files         | 15 |
+| Followed pats | 5 |
+| Files         | 12 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -55,9 +55,6 @@ Mirror of `qixing-jk/all-api-hub` — 26 default patterns, 8 followed patterns, 
 - `docs/agents/product.md`
 - `docs/agents/i18n.md`
 - `CONTRIBUTING.md`
-- `docs/agents/issue-tracker.md`
-- `docs/agents/triage-labels.md`
-- `docs/agents/domain.md`
 - `.husky/README.md`
 
 ## File Index
@@ -75,12 +72,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 7 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 | 8 | → | [`.husky/README.md`](.husky/README.md) |
 | 9 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 10 | → | [`docs/agents/domain.md`](docs/agents/domain.md) |
-| 11 | → | [`docs/agents/i18n.md`](docs/agents/i18n.md) |
-| 12 | → | [`docs/agents/issue-tracker.md`](docs/agents/issue-tracker.md) |
-| 13 | → | [`docs/agents/product.md`](docs/agents/product.md) |
-| 14 | → | [`docs/agents/site-integrations.md`](docs/agents/site-integrations.md) |
-| 15 | → | [`docs/agents/triage-labels.md`](docs/agents/triage-labels.md) |
+| 10 | → | [`docs/agents/i18n.md`](docs/agents/i18n.md) |
+| 11 | → | [`docs/agents/product.md`](docs/agents/product.md) |
+| 12 | → | [`docs/agents/site-integrations.md`](docs/agents/site-integrations.md) |
 
 ---
 

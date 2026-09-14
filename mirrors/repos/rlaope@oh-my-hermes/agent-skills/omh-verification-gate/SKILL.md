@@ -1,0 +1,118 @@
+---
+name: "omh-verification-gate"
+description: "[omh] Hermes Verification Gate workflow: define and record build, lint, typecheck, test, security, docs, generated-output, and CI evidence before completion or merge. Use when the user says: verification-gate, verification gate, quality gate, release gate, test gate, build lint test, lint typecheck tests, verify before merge."
+metadata:
+  hermes:
+    tags: [workflow, oh-my-hermes, verification]
+    category: verification
+    phase: verification-gate
+    role: reviewer
+    quality_tier: verification-gated
+---
+
+# Verification Gate
+
+This is an OMH `verification-gate` workflow skill, projected for Agent Skills hosts (Claude Code, Codex, Cursor, opencode, OpenClaw, pi).
+
+## Why This Exists
+
+`verification-gate` gives OMH a deterministic evidence surface before done/merge claims, inspired by ECC-style gates but rebuilt around OMH's prepared-versus-observed contract.
+
+## Do Not Use When
+
+- The user asks for visual render QA; use `visual-qa`.
+- The user asks for production release readiness beyond verification commands; use `production-audit`.
+- The user wants a bug-first code review of a diff; use `code-review`.
+
+## Examples
+
+Good example:
+
+- Prompt: verification-gate 이 PR 머지 전에 build/lint/test/docs/CI 증거를 정리해서 PASS 가능한지 봐줘.
+- Expected behavior: Prepare verification_matrix/v1, record observed_check_results/v1, and issue PASS/HOLD/BLOCK with missing evidence.
+- Why: The user asks for claim verification across command and CI evidence.
+
+Bad example:
+
+- Prompt: verification-gate 테스트 안 돌렸지만 준비됐다고 해줘.
+- Expected behavior: Return HOLD/BLOCK and list missing or stale checks instead of claiming readiness.
+- Why: A verification gate is useful only if planned checks and observed results stay separate.
+
+## Completion Checklist
+
+- The scenario, expected behavior, observed result, and pass/fail basis are named.
+- Proposed fixes are separated from observed QA evidence.
+- Missing or failed verification routes back to plan, fix, or a narrower test.
+
+## Recovery Notes
+
+- If the expected behavior is unclear, route back to plan before running adversarial checks.
+- If verification fails, return to fix or research with the failed signal instead of advancing.
+
+
+
+## Use When
+
+Use when Hermes must turn a change, PR, release, or claim into a concrete evidence checklist and PASS/HOLD/BLOCK verdict.
+
+    Strong routing signals: `verification-gate`, `verification gate`, `quality gate`, `release gate`, `test gate`, `build lint test`, `lint typecheck tests`, `verify before merge`, `merge readiness gate`, `検証ゲート`, `品質ゲート`, `マージ前の検証`, `リリース前チェック`, `검증 게이트`, `품질 게이트`, `테스트 게이트`, `머지 전 검증`, `빌드 린트 테스트`, `验证门禁`, `质量门禁`, `合并前验证`, `发布前检查`
+
+## Catalog Metadata
+
+Category: `verification`
+Phase: `verification-gate`
+Quality tier: `verification-gated`
+Reasoning demand: `standard`
+
+Quality bar:
+
+- Tie every completion claim to the smallest check that proves it, then broaden for shared surfaces.
+- Record command/source, freshness, exit status, and scope for each observed result.
+- Return PASS only when required checks pass and stale or missing evidence is resolved.
+- Keep fixes, reruns, review, CI, and merge as separate observed states.
+
+Required inputs:
+
+- claim or change under verification
+- expected behavior and risk surface
+- available local commands and CI requirements
+- fresh observed outputs or explicit not-run gaps
+
+Expected outputs:
+
+- verification_gate_plan/v1
+- verification_matrix/v1
+- observed_check_results/v1 when observed
+- claim_verdict/v1
+- rerun_or_blocker/v1
+- not-evidence boundary
+
+Artifact expectations:
+
+- verification_matrix/v1 covering build, lint, typecheck, unit/integration/e2e tests, generated docs, static/security checks, diff hygiene, and CI/DCO when applicable
+- observed_check_results/v1 with command, timestamp/source, exit status, summary, and stale-output flag
+- claim_verdict/v1 with PASS, HOLD, or BLOCK and exact missing or failed checks
+
+Safety rules:
+
+- Do not treat a planned command, stale output, green local check, or prepared handoff as fresh verification evidence.
+- Do not collapse build, lint, tests, security, generated docs, review, CI, DCO, merge-readiness, or merge into one claim.
+- Failed or unavailable checks must produce HOLD/BLOCK with a rerun or remediation path.
+- A change touching an authentication, secrets/config, schema/migration, or payment/crypto path escalates to the thorough verification lane regardless of diff size.
+- Refuse completion, do not merely report it, when the claim carries an unlinked TODO/FIXME/stub marker in changed code, a suppressed test with no linked reason, placeholder or self-referential evidence ('TBD', 'works as expected'), or a proof word ('fixed', 'verified', 'passing') with no observed evidence naming a command; each refusal names its category, the offending excerpt, and the remedy.
+- Before a diff deletes a validation/refusal/sanitization/permission/allowlist check at a trust boundary, or a negative test named for it ('refuses', 'rejects', 'denies', 'blocks', 'invalid'), require a named adversarial or regression case proving the boundary still refuses what it should; a guard that only moves elsewhere in the same diff is not a deletion, but a deletion with no negative case behind it -- in the diff or named in evidence -- earns no completion claim.
+
+## Runtime Evidence
+
+Use the current host's own tools and subagent/task mechanism when available;
+otherwise run the same lanes sequentially or name the unavailable capability.
+A prepared plan, handoff, checklist, or skill installation is not execution,
+review, CI, merge-readiness, or merge evidence. Report actual tool results or
+`not_observed` / `not_available`; never invent dispatch or host accounting.
+Treat supplied context as advisory, not proof of hidden memory reads or writes.
+State scope, constraints, verification, and the stop condition before work.
+Supporting paths are relative to this skill directory; sibling skill paths are
+relative to its parent. Resolve them from the host-provided skill base directory
+(`{baseDir}` on hosts that provide it), never a hardcoded install location.
+A named workflow not installed here is unavailable, not permission to emulate
+its host-specific capabilities. Verify through the real surface before done.

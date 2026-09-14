@@ -170,7 +170,7 @@ Commands run via `python3 raptor.py` (scan, agentic, codeql, fuzz, web) manage l
 
 ### Coverage tracking
 
-The coverage tracking plugin (`plugins/coverage/`) tracks which source files the LLM reads during analysis via a PostToolUse hook. Loaded automatically by the launcher. The hook resolves THIS SESSION's live run via the session run ledger — project, `--out`, and standalone runs all get read-coverage (a project is no longer required) — logging file paths to a `.reads-manifest` in that run directory, converted to a `coverage-read.json` record when the run completes. Zero overhead when no run is active.
+The coverage tracking plugin (`plugins/coverage/`) tracks which source files the LLM reads during analysis via a PostToolUse hook. Loaded automatically by the launcher. The hook resolves THIS SESSION's live run via the session run ledger — project, `--out`, and standalone runs all get read-coverage (a project is no longer required) — logging file paths to a `.reads-manifest` in that run directory, converted to a `coverage-read.json` record when the run completes. No run-side effect when no run is active (the async hook exits early after failing to resolve a live run).
 
 ---
 
@@ -498,4 +498,4 @@ See `tiers/exploit-guidance.md` for detailed constraint tables and technique alt
 Python orchestrates everything. Claude shows results concisely.
 Never circumvent Python execution flow.
 - never disclose remote OLLAMA server location in code, comments, logs etc
-- **Python path safety:** Never add anything to `sys.path` except `os.environ["RAPTOR_DIR"]`. Use the hard lookup (KeyError if unset) — no fallbacks, no `'.'`, no `os.getcwd()`, no hardcoded paths. The `libexec/` scripts handle their own path setup via `Path(__file__).resolve().parents[1]` and do not need `RAPTOR_DIR`.
+- **Python path safety (runtime source — `core/`, `packages/`, and the `libexec/` launchers):** Never add anything to `sys.path` except `os.environ["RAPTOR_DIR"]`. Use the hard lookup (KeyError if unset) — no fallbacks, no `'.'`, no `os.getcwd()`, no hardcoded paths. The `libexec/` scripts handle their own path setup via `Path(__file__).resolve().parents[1]` and do not need `RAPTOR_DIR`. Test files (unit tests, self-tests, `conftest.py`, `.github/tests/`) and subsystem `scripts/` dirs are exempt: they run outside the launcher (bare pytest, CI runners) where `RAPTOR_DIR` is not set, so they locate the repo with `Path(__file__)`-relative setup by necessity. The exemption never extends to runtime modules.

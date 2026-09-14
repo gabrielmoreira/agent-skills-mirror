@@ -7,8 +7,7 @@ description: "Create, modify, debug, or migrate Minecraft mods for current NeoFo
 
 ## Overview
 
-This skill guides Codex through developing open-source Minecraft mods.
-Target platforms:
+Supported platforms:
 
 | Platform | MC Version | Java | Build System |
 |---|---|---|---|
@@ -25,8 +24,8 @@ projects, start from the current loader generator or example mod and preserve
 its build layout. Do not copy the 1.21.11 mapping, Loom plugin, remapping task,
 or Java 21 snippets in this skill into a 26.x project. Fabric 26.x uses the
 non-remapping Loom path and official names; NeoForge 26.x should start from the
-current NeoForge generator. Treat the detailed API references here as the
-legacy 1.21.x lane unless a section explicitly says 26.x.
+current NeoForge generator. The detailed API references cover legacy 1.21.x
+examples unless a section explicitly says 26.x.
 
 ### Routing Boundaries
 - `Use when`: the task is Java/Kotlin mod code, registry/event work, networking, datagen wiring, and loader APIs.
@@ -87,7 +86,7 @@ Key files per platform:
 
 `./gradlew build` runs the project's configured build tasks. Candidate mod jars are
 usually under `build/libs/`, but task names and file names are project-specific.
-Treat the build output as compilation evidence, then identify the intended
+Check the build result, then identify the intended
 distributable before publishing it.
 
 ---

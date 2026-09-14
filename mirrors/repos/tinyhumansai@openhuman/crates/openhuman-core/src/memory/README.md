@@ -23,13 +23,37 @@ What stays here, per that split:
   engine crate cannot name the `Tool` trait).
 - **Guard** — [`guard/`](guard/), the taint/scope/budget policy gate over
   every provider call.
-- **Driver binding** — [`driver/`](driver/), which provider backs a
-  workspace.
+- **Driver binding** — [`binding.rs`](binding.rs) (`memory::binding::for_config`,
+  the workspace-keyed driver binding the Layer rules below reference) and
+  [`driver/`](driver/), which provider backs a workspace. The built-in driver
+  is the compiled TinyMemory TinyBus module; there is no in-process engine
+  driver any more.
 - **Ops** — [`ops/`](ops/), RPC handlers that delegate into the core.
+- **Contract facade** — [`api.rs`](api.rs) (`memory::api`), the selective
+  re-export of `tinymemory-api` that is the bus vocabulary — see its own
+  module docs for what it excludes and why.
 - **Seam impls** — [`host.rs`](host.rs) — `install_memory_event_sink` and
   `MemoryHostConfig for Config`. Its sibling `host_impls.rs` held the half that
   only an in-process engine could use, and went with the engine when the test
   build stopped linking one (openhuman#6161).
+- **Host-owned wire shapes** — [`rpc_models.rs`](rpc_models.rs) /
+  [`ingestion_models.rs`](ingestion_models.rs), the RPC request/response
+  shapes that used to live in `tinymemory_core::rpc_models`, re-exported flat
+  from [`mod.rs`](mod.rs) (`pub use rpc_models::*`).
+- **Host-only policy modules**, each with its own reasoning for why it is not
+  the engine's:
+  - [`auto_recall/`](auto_recall/) — Lane C, the gated, bounded pre-turn
+    recall of facts about the user (#6040).
+  - [`safety.rs`](safety.rs) — the host-side secret/PII scrubbers applied to
+    anything this host persists or hands on.
+  - [`source_scope.rs`](source_scope.rs) — the host-side per-turn
+    memory-source allowlist.
+  - [`obsidian_registry.rs`](obsidian_registry.rs) — is the memory content
+    root a vault Obsidian already knows about.
+  - [`exit.rs`](exit.rs), [`sync_activity.rs`](sync_activity.rs),
+    [`sync_events_bridge.rs`](sync_events_bridge.rs),
+    [`preferences/`](preferences/) — smaller host-side seams; see each file's
+    own doc comment.
 
 This module used to be mostly a **re-export** of the engine crate — a wall of
 `pub use tinymemory_core::{chat, global, ingest_pipeline, ingestion,
@@ -47,20 +71,42 @@ link. `memory::api` is the re-export of the contract, and its own module docs
 explain which parts of `tinymemory-api` are the *bus* surface and which are the
 host's own use of the crate — they are not the same set.
 
+## Wiring
+
+`core/all.rs` registers the nine schema families behind the `all_memory_*_registered_controllers`
+aliases re-exported from [`mod.rs`](mod.rs) — `core_recall`, `documents`,
+`ingest`, `files`, `kv_graph`, `sync`, `learn`, `provider`, `tool_memory` —
+plus [`goals`](goals/)'s, [`people`](people/)'s, and
+[`tree`](tree/)'s own `all_memory_tree_*`, `all_retrieval_*`, and
+`all_tree_summarizer_*` registered-controller functions,
+[`sync/sync_status/`](sync/sync_status/)'s `all_memory_sync_status_registered_controllers`,
+[`sources`](sources/)'s `all_memory_sources_registered_controllers`, and the
+Slack pair in [`sync/composio/providers/slack/`](sync/composio/providers/slack/)
+(`all_slack_memory_registered_controllers`, reached through the
+`integrations::composio::providers::slack` re-export).
+
+Agent tools are re-exported into the crate-wide tool surface by
+[`tools/mod.rs`](../tools/mod.rs): `pub use crate::memory::tools::*`,
+`crate::memory::tools::goals::*`, and `crate::memory::agent::tools::*`.
+
+`memory::rpc` is an alias of [`ops`](ops/) (`pub use ops as rpc;` in
+[`mod.rs`](mod.rs)) kept for callers that predate the extraction.
+
 ## Domains that kept their RPC surface here
 
-Each is the RPC surface for a family the *driver* serves: the handler and
-schema modules that name `RpcOutcome` and `ControllerSchema`, resolving through
-the bound provider rather than through a linked engine. Before the engine left,
-each was a thin wrapper over `pub use tinymemory_core::<domain>::*;` as well.
+Each (bar `conversations/`, which is a host-owned store) is the RPC surface
+for a family the *driver* serves: the handler and schema modules that name
+`RpcOutcome` and `ControllerSchema`, resolving through the bound provider
+rather than through a linked engine. Before the engine left, each was a thin
+wrapper over `pub use tinymemory_core::<domain>::*;` as well.
 
 | Module                          | Role                                                     |
 | -------------------------------- | --------------------------------------------------------- |
-| [`conversations/`](conversations/) | Conversation-scoped memory RPC.                          |
+| [`conversations/`](conversations/) | Workspace-backed thread/message store + `core::bus` subscriber; no RPC surface of its own (see its README). |
 | [`goals/`](goals/)               | Goal tracking RPC.                                       |
 | [`people/`](people/)             | People/contacts RPC.                                     |
 | [`sources/`](sources/)           | Source-registration RPC.                                 |
-| [`sync/`](sync/)                 | Composio + workspace + MCP sync pipeline RPC.            |
+| [`sync/`](sync/)                 | `composio/` bus subscribers + providers (incl. Slack), and `sync_status/` — per-connection sync status/progress RPC. |
 | [`tool_memory/`](tool_memory/)   | Tool-scoped rules + agent read/write tools.               |
 | [`tree/`](tree/)                 | Tree walk/retrieval RPC.                                  |
 

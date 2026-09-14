@@ -24,23 +24,19 @@
 
 ## 最近更新
 
+**v2.34.x**（2026-09）
+
+- 多语言 / IDE：工具文案全量国际化，新增实例级 `lang` 与 `auth` 的 `site` / `region` 参数，国际站登录与地域路由更准确
+- 云 API：`callCloudApi` 服务白名单扩至 57 个并内置版本映射（`tke` / `mongodb` / `vod` 等多版本服务需显式传 `version`）
+- 部署 / 环境：新增 `appBuild` 工具与托管构建中和；`queryEnv` 如实回执 region 生效情况，`domains` 尊重传入的 envId
+- Skills / 文档：skill 兜底读取改指官方分发仓并返回 references 地址清单；cloudrun 增加 SDK-first 数据库访问决策闸门；官网文档链接改指站点当前 Markdown 寻址；专家包与部署 skill 在交付后可执行「部署分享」（脱敏、至多一次、可拒绝）
+
 **v2.33.x**（2026-09）
 
 - 云函数 / 应用：支持自定义容器镜像部署与异步状态查询；云端上传通道（`getUploadUrl` + `deployApp` cosTimestamp）
 - 环境绑定：`cloudbaserc.json` 可作为 envId / region / site 的字段级回退（字面量与 `{{env.KEY}}`）
 - 错误引导 / Skills：按结构化 `Code` 集中引导；虚拟支付参考；CodeBuddy IDE MCP 升级 skill；WorkBuddy experts
 - 云 API / 部署：`callCloudApi` 开放 monitor / postgres 服务；声明式部署 `deployPlan` / `deployApply`；新增 `cloud-api-operations` skill
-
-**v2.32.x**（2026-08）
-
-- 认证 / 安全 / IDE：国际站（`TCB_SITE=intl`）登录链路修复；queryFunctions/queryCloudRun 默认脱敏环境变量；新增 Kimi Code / Kimi Work 支持
-- 小程序：新增 `queryMessagePush` / `manageMessagePush`，支持事件与消息类型订阅（虚拟支付默认事件、声明式幂等、可选 appid）
-- 小程序：消息推送支持云函数/云托管模式识别与切换（`ensureContainerMode` / `setContainerCallback`，订阅前校验函数存在）
-- 网关：`manageGateway` 在创建自定义域名/路由前校验 HTTP 服务，并支持证书自动选择与更清晰的 DNS 指引
-
-**v2.31.x**（2026-08）
-
-- 云托管：`getDeployLog` 遇 CODING 未登录 / 镜像部署无构建时，改写为 `getProcessLog` / `getDeployRecords` 建议，不再暴露原始英文报错
 
 [Releases][changelog] · [Star][github-stars-link] · Watch → Releases
 

@@ -1,6 +1,6 @@
 # notifications
 
-The notifications domain owns two complementary sub-systems. The **core-bridge** translates selected `DomainEvent`s (cron completions, webhook failures, sub-agent results, triaged integration notifications) into compact `CoreNotificationEvent` payloads pushed over a broadcast channel into the Socket.IO bridge, surfacing as in-app notification-center items. The **integration-notification pipeline** ingests notifications captured from embedded webview integrations (Gmail, Slack, WhatsApp, …), persists them to a per-workspace SQLite store, runs each through the triage LLM pipeline in the background to back-fill an importance score/action, and exposes a unified RPC surface for listing, marking, settings, and stats.
+The notifications domain owns two complementary sub-systems. The **core-bridge** translates selected `DomainEvent`s (cron completions, webhook failures, sub-agent results, triaged integration notifications, provider API-key rejections, MCP reconnect outcomes) into compact `CoreNotificationEvent` payloads pushed over a broadcast channel into the Socket.IO bridge, surfacing as in-app notification-center items. The **integration-notification pipeline** ingests notifications captured from embedded webview integrations (Gmail, Slack, WhatsApp, …), persists them to a per-workspace SQLite store, runs each through the triage LLM pipeline in the background to back-fill an importance score/action, and exposes a unified RPC surface for listing, marking, settings, and stats.
 
 ## Responsibilities
 
@@ -18,12 +18,11 @@ The notifications domain owns two complementary sub-systems. The **core-bridge**
 | --- | --- |
 | `crates/openhuman-core/src/desktop/notifications/mod.rs` | Export-focused module root; docstring + re-exports of bus helpers, schema registries, and types. |
 | `crates/openhuman-core/src/desktop/notifications/types.rs` | Serde domain types: `CoreNotificationEvent`/`CoreNotificationCategory` (bridge), `IntegrationNotification`, `NotificationStatus`, `NotificationSettings`, `NotificationStats`, and RPC request types. |
-| `crates/openhuman-core/src/desktop/notifications/bus.rs` | `NotificationBridgeSubscriber` (`EventHandler`), the `NOTIFICATION_BUS` broadcast static, `publish_core_notification`/`subscribe_core_notifications`, the pure `event_to_notification` translator, and `register_notification_bridge_subscriber`. |
+| `crates/openhuman-core/src/desktop/notifications/bus.rs` | `NotificationBridgeSubscriber` (`tinybus::EventHandler<DomainEvent>`, name `notifications::bridge`), the `NOTIFICATION_BUS` broadcast static, `publish_core_notification`/`subscribe_core_notifications`, the pure `event_to_notification` translator, the workspace gate (`store_target` / `should_announce` / `announces_to`, #5931), and `register_notification_bridge_subscriber(config)`. |
 | `crates/openhuman-core/src/desktop/notifications/rpc.rs` | Async RPC handler fns (`handle_ingest`, `handle_list`, `handle_mark_read`, `handle_dismiss`, `handle_mark_acted`, `handle_settings_get`/`_set`, `handle_stats`) + `triage_action_to_score` heuristic. |
 | `crates/openhuman-core/src/desktop/notifications/schemas.rs` | Controller schema defs, the `NOTIFICATION_CONTROLLER_DEFS` table, `all_controller_schemas`/`all_registered_controllers`, and handler wrappers delegating to `rpc.rs`. |
 | `crates/openhuman-core/src/desktop/notifications/store.rs` | SQLite persistence (`integration_notifications` + `notification_settings` + `core_notifications` tables) via a per-call `with_connection` helper; insert/list/dedup/triage-update/status/settings/stats queries plus core-notification persistence (#3805). |
-| `crates/openhuman-core/src/desktop/notifications/bus_tests.rs` | Sibling test suite for the bridge. |
-| `crates/openhuman-core/src/desktop/notifications/store_tests.rs` | Sibling test suite for the store. |
+| `crates/openhuman-core/src/desktop/notifications/{bus,store}_tests.rs`, `{bus,store}_tests_2_tests.rs`, `schemas_tests.rs`, `types_tests.rs` | Sibling test suites, attached with `#[cfg(test)] #[path = ...] mod`. |
 
 ## Public surface
 
@@ -68,7 +67,9 @@ None. This domain owns no `tools.rs`.
 
 ## Events
 
-**Subscribes** (via `NotificationBridgeSubscriber`, no `domains()` filter — matches on variant): `DomainEvent::CronJobCompleted` (→ Agents), `WebhookProcessed` (failures only → System), `SubagentCompleted`/`SubagentFailed` (→ Agents), and `NotificationTriaged` (only when `routed` and action is `escalate`/`react` → Agents). Each is translated to a `CoreNotificationEvent` and published on the broadcast bus.
+**Subscribes** (via `NotificationBridgeSubscriber`, no `domains()` filter — matches on variant): `DomainEvent::CronJobCompleted` (→ Agents), `WebhookProcessed` (failures only → System), `SubagentCompleted`/`SubagentFailed` (→ Agents), `NotificationTriaged` (only when `routed` and action is `escalate`/`react` → Agents), `ProviderApiKeyRejected` (→ System), and `McpServerReconnectFailed`/`McpServerReconnected`/`McpServerParked` (→ System). Each is translated to a `CoreNotificationEvent`, stamped with the event's workspace handle, persisted, then published on the broadcast bus.
+
+**Workspace gating (#5931):** a workspace-bound event is persisted under its own workspace's DB (`store_target`), and announced only when that workspace is the active one (`should_announce` → `Announce::{Unbound, Active(revision), Suppressed}`); an active-workspace event carries `workspace_revision`.
 
 **Publishes**: `DomainEvent::NotificationTriaged` from `rpc::handle_ingest`'s background triage task (carries `id`, `provider`, `action`, `importance_score`, `latency_ms`, `routed`).
 
@@ -76,28 +77,30 @@ The bridge bus is a separate `tokio::sync::broadcast` channel (not the global ev
 
 ## Persistence
 
-SQLite DB at `{workspace_dir}/notifications/notifications.db`, opened per-call via `with_connection` (idempotent schema migration on each open). Two tables:
+SQLite DB at `{workspace_dir}/notifications/notifications.db`, opened per-call via `with_connection` (idempotent schema migration on each open). Three tables:
 
 - `integration_notifications` — one row per ingested notification (id, provider, account_id, title, body, raw_payload JSON, importance_score, triage_action, triage_reason, status, received_at, scored_at). Indexed on provider, status, and a dedup tuple (provider, account_id, title, body, received_at).
 - `notification_settings` — per-provider routing prefs (enabled, importance_threshold, route_to_orchestrator), upserted on `provider` PK.
+- `core_notifications` — persisted bridge events keyed by event id (#3805), indexed on read state and timestamp; served by `core_list` / `core_mark_read`.
 
 `insert_if_not_recent` runs a `BEGIN IMMEDIATE` transaction so concurrent duplicate ingests collapse to a single insert.
 
 ## Dependencies
 
-- `crate::core::event_bus` — `DomainEvent`, `EventHandler`, `publish_global`, `subscribe_global` for bridge subscription and triage-result publishing.
+- `crate::core::bus::BUS` and `crate::core::events::DomainEvent` (`BUS.subscribe` for the bridge, `BUS.publish` for triage results); the `EventHandler` trait comes from `tinybus`.
 - `crate::core::all` (`ControllerFuture`, `RegisteredController`) and `crate::core` (`ControllerSchema`, `FieldSchema`, `TypeSchema`) — controller registry contract.
-- `crate::config` — `Config` (workspace dir for the DB path) and `config::rpc::load_config_with_timeout` in handlers.
-- `crate::agent::triage` — `run_triage`, `apply_decision`, `TriageOutcome`, `TriggerEnvelope`, `TriggerSource`, `TriageAction` for the background scoring/routing pipeline.
+- `crate::config` — `Config` (workspace dir for the DB path), `config::rpc::load_config_with_timeout` in handlers, `active_workspace_snapshot` / `workspace_handle` for the workspace gate.
+- `crate::agent::triage` — `run_triage`, `apply_decision`, `TriageOutcome`, `TriggerEnvelope`, `TriggerSource`, `TriageAction` for the background scoring/routing pipeline; `crate::agent::turn_origin::with_origin` scopes the routing turn.
 - `crate::rpc::RpcOutcome` — RPC response shaping.
 - External crates: `rusqlite` (store), `chrono`, `uuid`, `serde_json`, `tokio`, `once_cell`, `async_trait`.
 
 ## Used by
 
 - `crates/openhuman-core/src/core/all.rs` — registers the controllers/schemas into the RPC registry.
-- `crates/openhuman-core/src/core/jsonrpc.rs` — calls `register_notification_bridge_subscriber()` at startup.
+- `crates/openhuman-core/src/core/jsonrpc.rs` — calls `register_notification_bridge_subscriber(config)` at startup when the Desktop domain group is enabled.
 - `crates/openhuman-core/src/core/socketio.rs` — calls `subscribe_core_notifications()` to forward events to web clients.
-- `crates/openhuman-core/src/cron/scheduler.rs` and `crates/openhuman-core/src/heartbeat/planner/*` reference the notification surface (e.g. triggering/observing notifications).
+- `crates/openhuman-core/src/cron/scheduler/delivery.rs` — writes cron-triggered notifications through `notifications::store` directly; `cron/scheduler_tests*.rs` list them back with `store::list`.
+- `crates/openhuman-core/src/flows/ops/execution.rs` and `crates/openhuman-core/src/security/approval/gate.rs` — call `publish_core_notification` directly to surface flow and approval events.
 
 ## Notes / gotchas
 

@@ -1,25 +1,25 @@
 ---
 name: minecraft-ci-release
-description: "Set up and review CI, artifact publishing, versioning, and release governance for Minecraft 26.x or legacy 1.21.x mods and Paper plugins. Use for pipelines and releases, not gameplay implementation or server operations."
+description: "Set up and review CI, artifact publishing, versioning, and release management for Minecraft 26.x or legacy 1.21.x mods and Paper plugins. Use for pipelines and releases, not gameplay implementation or server operations."
 ---
 
 # Minecraft CI / Release Skill
 
 ## Routing Boundaries
-- `Use when`: the task is CI/CD pipelines, artifact publishing, versioning, or release governance.
+- `Use when`: the task is CI/CD pipelines, artifact publishing, versioning, or release management.
 - `Do not use when`: the task is gameplay or plugin implementation (`minecraft-modding`, `minecraft-plugin-dev`, or `minecraft-datapack`).
 - `Do not use when`: the task is server runtime operations or infrastructure tuning (`minecraft-server-admin`).
 
 ---
 
-## Release Shape
+## Release setup
 
 Keep each repository's existing release destinations and approval policy. A tag can
 build an artifact and create a GitHub Release without publishing to Modrinth or
 CurseForge. Add a publisher only when the project already uses it or the user asks
 for it. Never add tokens to committed files.
 
-For the current Minecraft 26.x lane, use Java 25 and state that in workflow labels
+For Minecraft 26.x, use Java 25 and state that in workflow labels
 and examples. Legacy Minecraft 1.21.x projects stay on Java 21; retain their own
 loader and Gradle conventions instead of mechanically changing their version.
 

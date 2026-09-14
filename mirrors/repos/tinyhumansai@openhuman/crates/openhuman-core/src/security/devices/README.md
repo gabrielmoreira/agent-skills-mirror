@@ -88,7 +88,7 @@ Separately, encrypted X25519 private keys are persisted as `enc2:` strings (via 
 - `crate::config` (`Config`, `config::rpc::load_config_with_timeout`) — workspace paths and config loading for handlers.
 - `crate::security::keyring::SecretStore` — encrypt/decrypt the X25519 private key at rest.
 - `crate::platform::socket::global_socket_manager` — reuse the shared backend Socket.IO connection to emit `tunnel:*` events (no second WebSocket).
-- `crate::core::event_bus` (`publish_global`, `DomainEvent`, `EventHandler`, `SubscriptionHandle`, `subscribe_global`) — pub/sub for device tunnel events.
+- `crate::core::bus::BUS` (`.publish`, `.subscribe`) + `crate::core::events::DomainEvent` + `tinybus::EventHandler` — pub/sub for device tunnel events.
 - `crate::core::all` (`ControllerFuture`, `RegisteredController`) and `crate::core::{ControllerSchema, FieldSchema, TypeSchema}` — controller registry contract.
 - `crate::rpc::RpcOutcome` — RPC handler return type.
 - External crates: `rusqlite`, `chacha20poly1305`, `x25519-dalek`, `base64`, `sha2`, `chrono`, `once_cell`, `tokio`, `async_trait`, `anyhow`.

@@ -666,7 +666,7 @@ Records about individuals, stored as cards with an observation ledger.
 
 | Option             | Default | Description                                            |
 | ------------------ | ------- | ------------------------------------------------------ |
-| `soul.edit_notice` | `true`  | Surface a notice when the persona or identity changes   |
+| `soul.edit_notice` | `true`  | Surface a notice when the persona, identity, or boundaries block changes |
 
 #### Write Notice
 

@@ -7,26 +7,34 @@ icon: terminal
 
 This page is the contributor-facing reference for compiling the Rust core on a fresh machine.
 
-It covers the **core workspace member only**:
+It covers the **core workspace and its sibling crates**:
 
 - Cargo package: `openhuman`
 - Binary: `openhuman-core`
 - Library: `openhuman_core`
 
-If you want the full desktop app (`pnpm dev`, Tauri, CEF, frontend tooling), use [Getting Set Up](getting-set-up.md). That path has extra JavaScript, submodule, and desktop-runtime requirements that are **not** needed for a core-only `cargo` workflow.
+The root `Cargo.toml` is a virtual workspace whose members are
+`crates/openhuman-core`, `crates/openhuman-embed`, `crates/openhuman-rpc`, and
+`crates/openhuman-tui`. `crates/openhuman-app` (the Tauri desktop shell) is
+excluded from that workspace and builds from its own manifest.
+
+If you want the full desktop app (`pnpm dev`, Tauri, frontend tooling), use [Getting Set Up](getting-set-up.md). That path has extra JavaScript, submodule, and desktop-runtime requirements that are **not** needed for a core-only `cargo` workflow.
 
 ## 1. Install the pinned Rust toolchain
 
 The repository pins Rust in [`rust-toolchain.toml`](../../rust-toolchain.toml):
 
-- Channel: `1.93.0`
+- Channel: `1.96.1`
 - Components: `rustfmt`, `clippy`
+
+The pin exists because `rusqlite` 0.40 / `libsqlite3-sys` 0.38 use the
+`cfg_select!` macro, stabilized in 1.96 (unstable through 1.95).
 
 Recommended install:
 
 ```bash
-rustup toolchain install 1.93.0 --component rustfmt --component clippy
-rustup default 1.93.0
+rustup toolchain install 1.96.1 --component rustfmt --component clippy
+rustup default 1.96.1
 ```
 
 You can also let `cargo` auto-install from `rust-toolchain.toml` after `rustup` itself is installed.
@@ -44,12 +52,23 @@ That is enough for the Rust workspace. Core sources, the package manifest, and
 the authoritative domain implementation live under `crates/openhuman-core/`.
 The stable host-facing library facade is the sibling
 `crates/openhuman-embed/` package, while the terminal frontend is
-`crates/openhuman-tui/`.
+`crates/openhuman-tui/`. Shared JSON-RPC contracts and the HTTP client used by
+the Tauri shell and the TUI live in `crates/openhuman-rpc/`.
 
-Desktop/Tauri work is different:
+The recursive submodules under repo-root `vendor/` are required for the core
+build too, not just the desktop shell: `crates/openhuman-core/Cargo.toml`
+path-depends on `vendor/tinyagents`, `vendor/tinymemory`, `vendor/tinymcp`,
+and the rest of the `tiny*` family, and the root `Cargo.toml` `[patch]`
+tables point into `vendor/tinymemory`, `vendor/tinyflows`,
+`vendor/tinychannels`, `vendor/motosan-ai-oauth`, and the `tinyinference`
+copy nested under `vendor/tinyagents/`.
 
-- `crates/openhuman-app/vendor/` submodules are only needed when building the desktop shell or CEF-aware Tauri tooling.
-- For that flow, follow [Getting Set Up](getting-set-up.md) and run `git submodule update --init --recursive`.
+```bash
+git submodule update --init --recursive vendor/
+```
+
+Desktop/Tauri work has extra requirements on top of this — follow [Getting
+Set Up](getting-set-up.md) for those.
 
 ## 3. Build commands
 
@@ -65,8 +84,14 @@ cargo build --manifest-path Cargo.toml --bin openhuman-core
 # Check the stable host-facing embedding facade
 cargo check --manifest-path Cargo.toml -p openhuman-embed
 
+# Check the shared RPC contracts + HTTP client crate
+cargo check --manifest-path Cargo.toml -p openhuman-rpc
+
 # Build the terminal frontend (embeds the core in-process)
 cargo build --manifest-path Cargo.toml -p openhuman-tui
+
+# Check the desktop shell (separate Cargo world, own manifest/lockfile)
+cargo check --manifest-path crates/openhuman-app/Cargo.toml
 
 # Release build
 cargo build --manifest-path Cargo.toml --release --bin openhuman-core
@@ -113,8 +138,7 @@ Install:
 
 Why:
 
-- `whisper-rs` compiles native code during the build.
-- On macOS this crate is built with the `metal` feature enabled in [`Cargo.toml`](../../Cargo.toml), so Apple toolchains and SDK headers need to be present.
+- Native dependencies (`cpal` for audio capture behind the `inference` feature, which `voice` requires; the `objc2` Contacts cohort compiled by the vendored `tinymemory` module) compile C/Objective-C code during the build and need Apple toolchains and SDK headers present.
 
 After Xcode CLT is installed, the core should build with the cargo commands above.
 
@@ -146,28 +170,10 @@ sudo pacman -S --needed base-devel cmake pkgconf clang openssl \
 Why these matter:
 
 - `build-essential` / `base-devel`, `cmake`, `pkg-config` / `pkgconf`: native builds used by transitive Rust dependencies.
-- `clang`, `libclang-dev`: bindgen / C and C++ compilation paths used by native crates.
+- `clang`, `libclang-dev`: bindgen (used by native crates such as `cpal`'s ALSA bindings) and C/C++ compilation paths.
 - `libssl-dev` / `openssl`: OpenSSL headers needed by some networking dependencies.
-- `libasound2-dev` / `alsa-lib`, `libxi-dev` / `libxi`, `libxtst-dev` / `libxtst`, `libxdo-dev` / `xdotool`, `libudev-dev` (included in Arch `systemd-libs`), `libevdev`: required by audio/input/device crates pulled into the core build.
-
-### `whisper-rs` + `clang` note
-
-`whisper-rs-sys` can fail under `clang` with:
-
-```text
-fatal error: 'array' file not found
-```
-
-This is why the docs call out `libstdc++-14-dev`: `clang` may pick GCC 14 C++ headers on Ubuntu runners.
-
-If your distro layout still leaves `libstdc++.so` unresolved for the build, use the same workaround documented in [`AGENTS.md`](../../AGENTS.md):
-
-```bash
-# Ubuntu/Debian — adjust the GCC version as needed
-sudo ln -sf /usr/lib/gcc/x86_64-linux-gnu/13/libstdc++.so /usr/lib/x86_64-linux-gnu/libstdc++.so
-```
-
-Arch Linux typically does not need this workaround because `gcc-libs` places `libstdc++.so` on the default library search path.
+- `libasound2-dev` / `alsa-lib`, `libxi-dev` / `libxi`, `libxtst-dev` / `libxtst`, `libxdo-dev` / `xdotool`, `libudev-dev` (included in Arch `systemd-libs`), `libevdev`: required by audio/input/device crates (`cpal`, `enigo`/X11 input handling) pulled into the core build.
+- `libstdc++-14-dev`: `clang`-driven builds may pick GCC 14 C++ headers on Ubuntu runners; this keeps `libstdc++.so` resolvable for those native crates.
 
 ### Linux desktop/Tauri package set
 
@@ -208,16 +214,15 @@ Install:
 Recommended commands after the Microsoft toolchain is installed:
 
 ```powershell
-rustup toolchain install 1.93.0 --component rustfmt --component clippy
+rustup toolchain install 1.96.1 --component rustfmt --component clippy
 rustup target add x86_64-pc-windows-msvc
 cargo build --manifest-path Cargo.toml --bin openhuman-core
 ```
 
-Windows note:
-
-- The repo patches `whisper-rs-sys` to force the static MSVC CRT and avoid the `LNK2038` / `LNK1169` mismatch called out in [`Cargo.toml`](../../Cargo.toml). Use the MSVC toolchain, not MinGW.
+Use the MSVC toolchain, not MinGW, to match CI and release builds.
 
 ## 7. Related paths
 
-- [Getting Set Up](getting-set-up.md): full desktop contributor setup with `pnpm`, Tauri, submodules, and sidecar staging.
+- [Getting Set Up](getting-set-up.md): full desktop contributor setup with `pnpm`, Tauri, and submodules. The core runs in-process inside the desktop shell (see [Tauri Shell](architecture/tauri-shell.md)); there is no sidecar staging step.
 - [OpenHuman Architecture](architecture/README.md): where the core fits into the desktop app and RPC flow.
+- [Deep Architecture Reference](architecture.md): the full crate map and repository layout.

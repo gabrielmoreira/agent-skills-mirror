@@ -160,7 +160,7 @@ public class ModBlockEntities {
 
 In Yarn 1.21.11, block-entity persistence uses `ReadView` and `WriteView`.
 For compound state such as inventories, use the view's codec/list helpers; do not
-copy the earlier `readNbt` / `writeNbt` overloads into this lane.
+copy the earlier `readNbt` / `writeNbt` overloads into this version.
 
 ---
 

@@ -18,20 +18,23 @@ Interactive approval workflow for supervised mode (issue #1339). `ApprovalGate` 
 | File | Role |
 | --- | --- |
 | `crates/openhuman-core/src/security/approval/mod.rs` | Export-focused: module docstring, `pub mod` decls, `pub use` re-exports including the controller-schema pair. |
-| `crates/openhuman-core/src/security/approval/gate.rs` | `ApprovalGate` — the singleton coordinator. `init_global`/`try_global`, `intercept`/`intercept_audited`, `decide`, `record_execution`, `list_pending`, `list_recent_decisions`, the thread→request routing map, `ApprovalChatContext` task-local, and `parse_approval_reply`. |
+| `crates/openhuman-core/src/security/approval/gate.rs` | `ApprovalGate` struct + `DecideMiss`, `DEFAULT_APPROVAL_TTL` (10 minutes) and the shorter `COPILOT_APPROVAL_TTL`, the `ApprovalChatContext` / `FlowRunContext` task-locals, `parse_approval_reply`, and the `ApprovalGateBootState` record. |
+| `crates/openhuman-core/src/security/approval/gate_setup.rs` (`include!`d by `gate.rs`, as are the next two) | `ApprovalGate::init_global`/`try_global` (process-global install, re-install-safe) and the private constructor. |
+| `crates/openhuman-core/src/security/approval/gate_intercept.rs` | `intercept`/`intercept_audited`/`intercept_audited_bounded` — the origin check, allowlist short-circuit, persist-and-park flow, and cancellation-safe bounded park used by the Flow Canvas copilot live-run path. |
+| `crates/openhuman-core/src/security/approval/gate_state.rs` | `decide` (resolves the parked future, emits `ApprovalDecided`), `classify_decide_miss`, `record_execution` (best-effort terminal audit row), `list_pending`/`list_recent_decisions`, the flow-trust helpers, and the thread→request routing lookups. |
 | `crates/openhuman-core/src/security/approval/store.rs` | SQLite persistence (`pending_approvals` table). `insert_pending`, `decide`, `get_decision`, `record_execution`, `list_pending`, `list_recent_decisions`, `purge_session`, `expire_stale`, plus idempotent column migration for the v1 schema. |
 | `crates/openhuman-core/src/security/approval/types.rs` | Serde domain types: `PendingApproval`, `ApprovalAuditEntry`, `ApprovalDecision`, `GateOutcome`, `ExecutionOutcome`. |
 | `crates/openhuman-core/src/security/approval/redact.rs` | `redact_args` (PII/chat-content key scrubbing + home-path stripping) and `summarize_action` (safe-field summary). |
-| `crates/openhuman-core/src/security/approval/rpc.rs` | Domain RPC entry points returning `RpcOutcome<T>`: `approval_list_pending`, `approval_list_recent_decisions`, `approval_decide`. |
+| `crates/openhuman-core/src/security/approval/rpc.rs` | Domain RPC entry points returning `RpcOutcome<T>`: `approval_get_gate_state`, `approval_list_pending`, `approval_list_recent_decisions`, `approval_decide`, `approval_preauthorize_flow`. |
 | `crates/openhuman-core/src/security/approval/schemas.rs` | Controller schemas + `handle_*` fns wiring the RPC into the registry. |
 
 ## Public surface
 
 Re-exported from `mod.rs`:
 
-- Gate: `ApprovalGate`, `ApprovalChatContext`, `APPROVAL_CHAT_CONTEXT` (task-local), `parse_approval_reply`.
+- Gate: `ApprovalGate`, `ApprovalChatContext`, `FlowRunContext`, the `APPROVAL_CHAT_CONTEXT` / `APPROVAL_COPILOT_STREAM_CONTEXT` / `APPROVAL_FLOW_RUN_CONTEXT` task-locals, `parse_approval_reply`.
 - Redaction: `redact_args`, `summarize_action`.
-- Types: `PendingApproval`, `ApprovalAuditEntry`, `ApprovalDecision`, `ExecutionOutcome`, `GateOutcome`.
+- Types: `PendingApproval`, `ApprovalAuditEntry`, `ApprovalDecision`, `ApprovalSourceContext`, `ExecutionOutcome`, `GateOutcome`.
 - Controller registry: `all_approval_controller_schemas`, `all_approval_registered_controllers`.
 
 `ApprovalGate::try_global()` returns `None` when no gate is installed; tools/harness branches treat `None` as "no gating".
@@ -44,7 +47,9 @@ Namespace `approval` (registered via `all_approval_registered_controllers`, cons
 | --- | --- | --- |
 | `approval.list_pending` | — | `pending: PendingApproval[]` |
 | `approval.list_recent_decisions` | `limit?: u64` (1-500, default 50) | `decisions: ApprovalAuditEntry[]` |
-| `approval.decide` | `request_id: string`, `decision: string` (`approve_once` / `approve_always_for_tool` / `deny`) | `decided: PendingApproval` |
+| `approval.get_gate_state` | — | `state: ApprovalGateBootState` (installed / disabled-by-env / override-ignored / host tag) |
+| `approval.decide` | `request_id: string`, `decision: string` (`approve_once` / `approve_always_for_tool` / `approve_always_for_flow` / `deny`) | `decided: PendingApproval` |
+| `approval.preauthorize_flow` | `flow_id: string`, `tool_names: string[]` | `result: FlowPreauthorizationResult` (idempotent flow-scoped trust grants; succeeds with `gate_installed=false` when the gate is off) |
 
 `list_pending` / `list_recent_decisions` return empty (not an error) when the gate is not installed; `decide` errors when the gate is absent or the `request_id` is unknown/already decided.
 
@@ -54,12 +59,13 @@ None. This module gates other domains' tools; it owns no tools of its own (no `t
 
 ## Events
 
-Published via `publish_global` (domain `approval`, defined in `crates/openhuman-core/src/core/event_bus/events.rs`):
+Published via `crate::core::bus::BUS.publish` with variants from `crate::core::events::DomainEvent` (`crates/openhuman-core/src/core/events.rs`):
 
-- `DomainEvent::ApprovalRequested { request_id, tool_name, action_summary, args_redacted, session_id, thread_id, client_id }` — emitted when a call is parked. Bridged to the `approval_request` web-channel socket event by `ApprovalSurfaceSubscriber` (defined in `crates/openhuman-core/src/web_chat/`).
-- `DomainEvent::ApprovalDecided { request_id, tool_name, decision }` — emitted when a decision is applied.
+- `DomainEvent::ApprovalRequested { request_id, tool_name, action_summary, args_redacted, session_id, thread_id, client_id }` — emitted (`gate_intercept.rs`) when a call is parked. Bridged to the `approval_request` web-channel socket event by `ApprovalSurfaceSubscriber` (defined in `crates/openhuman-core/src/web_chat/`).
+- `DomainEvent::ApprovalDecided { request_id, tool_name, decision }` — emitted (`gate_state.rs`) when a decision is applied.
+- `DomainEvent::FlowApprovalRequested { request_id, flow_id, run_id, tool_name, summary }` — emitted (`gate_intercept.rs`) alongside `ApprovalRequested` when the parked call has a `Workflow` origin. It carries no thread/client id, so `ApprovalSurfaceSubscriber` drops it; `core::socketio` broadcasts it as `flow_approval_request` for the Workflows UI.
 
-No `bus.rs` in this module — it only publishes; the subscriber lives in the `channels` web provider.
+No `bus.rs` in this module — it only publishes; the subscriber (`ApprovalSurfaceSubscriber`) lives in `crates/openhuman-core/src/web_chat/event_bus.rs`.
 
 ## Persistence
 
@@ -67,7 +73,7 @@ SQLite DB at `{workspace_dir}/approval/approval.db`, table `pending_approvals` (
 
 ## Dependencies
 
-- `crate::core::event_bus` — `publish_global` + `DomainEvent` to surface approval prompts/decisions.
+- `crate::core::bus::BUS` + `crate::core::events::DomainEvent` to surface approval prompts/decisions.
 - `crate::core::all` — `ControllerFuture` / `RegisteredController` for the controller registry.
 - `crate::core` (`ControllerSchema`, `FieldSchema`, `TypeSchema`) — schema definitions.
 - `crate::rpc::RpcOutcome` — RPC return contract.
@@ -85,10 +91,19 @@ SQLite DB at `{workspace_dir}/approval/approval.db`, table `pending_approvals` (
 
 ## Notes / gotchas
 
+- **Fail-closed 10-minute TTL is an invariant, not a tunable.** `gate.rs`'s
+  `DEFAULT_APPROVAL_TTL` (`Duration::from_secs(60 * 10)`) matches the
+  default `expires_at` written into the persisted row; a parked call that
+  times out resolves to `Deny`. Do not weaken this default or the fail-closed
+  timeout behavior to make a feature work.
 - **Interactive only.** With no `ApprovalChatContext` task-local in scope, `intercept` returns `Allow` immediately (no row, no event) so autonomous turns don't stall on a prompt nobody can answer.
 - **Fail-closed everywhere.** Persist failure, channel drop, and TTL timeout all return `Deny` (with a `POLICY_DENIED_MARKER`-prefixed reason). The TTL path re-reads the persisted decision to honor an approve that committed in the timeout race (PR #2367).
 - **Waiter registered before persist** so a fast `approval_decide` can't mark a request approved while no waiter exists (PR #2149).
 - **Orphan rows are intentionally preserved** across launches (issue #1339); deciding one is a DB-only audit update — no side effect can fire across processes, so the security invariant holds.
 - **`approve_always_for_tool` persistence is the RPC handler's job**, not the gate's — `gate.decide` only resolves the parked future and emits the audit event; `rpc::approval_decide` appends to `autonomy.auto_approve` + reloads the live policy (best-effort; failure degrades to prompting again).
-- `OPENHUMAN_APPROVAL_GATE=0`/`false` skips installing the gate (handled in `crates/openhuman-core/src/core/jsonrpc.rs`), in which case `Prompt`-class calls run unprompted.
+- `OPENHUMAN_APPROVAL_GATE=0`/`false` skips installing the gate for CLI, Docker, and library hosts only (`approval_gate_boot_decision` in `crates/openhuman-core/src/core/types.rs`, applied in `core/jsonrpc.rs`); the Tauri shell always installs it and ignores the override. Where honored, `Prompt`-class calls run unprompted.
 - A prior list-based `ApprovalManager` was removed; the gate is now the sole control reading the `autonomy.auto_approve` allowlist.
+
+## Tests
+
+- `gate_tests.rs`, `store_tests.rs`, `redact_tests.rs`, `schemas_tests.rs`, `types_tests.rs`.

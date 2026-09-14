@@ -17,9 +17,10 @@ The single source of truth for the OpenHuman desktop app's **user-facing capabil
 | --- | --- |
 | `crates/openhuman-core/src/platform/about_app/mod.rs` | Export-only module root + docstring. Re-exports catalog reads, ops entry points, schema registry hooks, and types. |
 | `crates/openhuman-core/src/platform/about_app/types.rs` | Serde domain types: `Capability`, `CapabilityCategory` (with `as_str` / `FromStr` incl. aliases), `CapabilityStatus`, `CapabilityPrivacy`, `PrivacyDataKind`. Inline serde/roundtrip tests. |
-| `crates/openhuman-core/src/platform/about_app/catalog.rs` | The static `CAPABILITIES` table plus shared `CapabilityPrivacy` constants. Implements `all_capabilities`, `capabilities_by_category`, `lookup`, `search`, and the `ensure_validated` integrity check. |
+| `crates/openhuman-core/src/platform/about_app/catalog.rs` | Read API over the `CAPABILITIES` data it includes from `catalog_data.rs`. Implements `all_capabilities`, `capabilities_by_category`, `lookup`, `search`, and the `ensure_validated` integrity check. |
 | `crates/openhuman-core/src/platform/about_app/ops.rs` | RPC-facing logic returning `RpcOutcome<T>`: `list_capabilities`, `lookup_capability`, `search_capabilities`. Thin wrappers over `catalog.rs` with summary logs. |
 | `crates/openhuman-core/src/platform/about_app/schemas.rs` | Controller schemas + `handle_*` async handlers for the three RPC methods; param structs; the `all_about_app_controller_schemas` / `all_about_app_registered_controllers` registry pair. |
+| `crates/openhuman-core/src/platform/about_app/catalog_data.rs` | The `CAPABILITIES` data itself (`LazyLock<Vec<Capability>>`) plus the shared `CapabilityPrivacy` constants, concatenated from the `catalog_conversation_intelligence.rs`, `catalog_workflows_automation.rs`, `catalog_auth_channels_team.rs`, and `catalog_localai_settings_mobile.rs` submodules. |
 | `crates/openhuman-core/src/platform/about_app/catalog_tests.rs` | Sibling test module (`#[path]`-included by `catalog.rs`) covering catalog behavior. |
 
 ## Public surface
@@ -66,7 +67,7 @@ No dependencies on other `openhuman` domains — capability metadata for other d
 ## Used by
 
 - `crates/openhuman-core/src/core/all.rs` — registers the controllers/schemas into the global RPC/CLI registry and supplies the `about_app` namespace description.
-- `crates/openhuman-core/src/memory/sync/composio/periodic.rs` — references this catalog only in a doc comment, as the place to add the user-visible status for that flow (no code dependency).
+- `crates/openhuman-core/src/memory/sources/rpc/coding_sessions.rs` — references `platform/about_app/catalog_data.rs` in a doc comment, noting `max_sessions` is an untrusted, advertised programmatic RPC input (no code dependency).
 
 ## Notes / gotchas
 

@@ -25,9 +25,9 @@ OS-keychain-backed secret storage with pluggable test/debug backends, plus a Cha
 | `crates/openhuman-core/src/security/keyring/file_store.rs`             | Shared secrets-file primitives for both file backends: the cross-process advisory write lock (`lock_for_write`, on a sidecar `<path>.lock`), the `0600` unique-temp-then-rename `write_atomic`, and `quarantine_corrupt`.                                                                      |
 | `crates/openhuman-core/src/security/keyring/crypto.rs`                 | Shared ChaCha20-Poly1305 helpers (`chacha20_encrypt`/`chacha20_decrypt`), random-byte generation, hex encode/decode. Used by both `encrypted_store` and `encrypted_file_backend`.                                                                                                               |
 | `crates/openhuman-core/src/security/keyring/error.rs`                  | `KeyringError` (thiserror) with variants `Os`/`InvalidUtf8`/`MigrationReadFailed`/`VerifyFailed`/`MigrationDeleteFailed`/`RandomGeneration`/`Crypto`/`Backend`, plus a log-safe `diagnostic()` that preserves the `keyring::Error` variant + `OSStatus`.                                        |
-| `crates/openhuman-core/src/security/keyring/tests.rs`                  | Module tests (backend isolation via `force_backend_for_test`).                                                                                                                                                                                                                                  |
-| `crates/openhuman-core/src/security/keyring/store_tests.rs`            | Test-isolation regressions: test builds ignore `OPENHUMAN_WORKSPACE`, production resolution still honours it, scoped workspaces do not share secrets, and a deleted scoped workspace cannot reset the default store.                                                                            |
-| `crates/openhuman-core/src/security/keyring/encrypted_store_tests.rs`  | `SecretStore` tests (wired via `#[path]` from `encrypted_store.rs`).                                                                                                                                                                                                                            |
+| `crates/openhuman-core/src/security/keyring/keyring_tests.rs`          | Module tests (backend isolation via `force_backend_for_test`).                                                                                                                                                                                                                                  |
+| `crates/openhuman-core/src/security/keyring/store_tests.rs`, `store_tests_2_tests.rs`, `store_test_scope_tests.rs` | Test-isolation regressions: test builds ignore `OPENHUMAN_WORKSPACE`, production resolution still honours it, scoped workspaces do not share secrets, and a deleted scoped workspace cannot reset the default store.                                                                            |
+| `crates/openhuman-core/src/security/keyring/encrypted_store_tests.rs`, `encrypted_store_crypto_migration_tests.rs`, `encrypted_store_key_management_tests.rs` | `SecretStore` tests (wired via `#[path]` from `encrypted_store.rs`).                                                                                                                                                                                                                            |
 
 ## Public surface
 
@@ -76,11 +76,12 @@ Internal openhuman/core modules: **none** — the keyring module's own files onl
 
 Discovered consumers (`crate::security::keyring::*`):
 
-- `src/lib.rs` and `crates/openhuman-core/src/core/jsonrpc.rs` — call `init_master_key()` at startup.
+- `crates/openhuman-core/src/lib.rs` and `crates/openhuman-core/src/core/runtime/context.rs` — call `init_master_key()` at startup.
 - `crates/openhuman-core/src/security/secrets.rs`, `crates/openhuman-core/src/security/mod.rs` — secret handling.
-- `crates/openhuman-core/src/config/schema/load.rs` — `SecretStore::new` / `is_encrypted` to encrypt/decrypt config fields on load.
+- `crates/openhuman-core/src/config/schema/load/secrets.rs` — `SecretStore::new` / `is_encrypted` to encrypt/decrypt config fields on load.
 - `crates/openhuman-core/src/security/credentials/profiles.rs`, `credentials/ops.rs` — `SecretStore`, `is_available`, `get`/`set`/`delete` for per-profile credential storage.
-- `crates/openhuman-core/src/web3/wallet/ops.rs` — `is_available`/`get`/`set` for the wallet mnemonic.
+- `crates/openhuman-core/src/security/keyring_consent/` — gates the OS-keyring-to-local fallback behind user consent and reports `backend_name()`/`is_available()` as a `KeyringStatus`; see [`../keyring_consent/README.md`](../keyring_consent/README.md).
+- `crates/openhuman-core/src/web3/wallet/ops/state.rs` — `is_available`/`get`/`set` for the wallet mnemonic.
 - `crates/openhuman-core/src/security/devices/rpc.rs` — device secret handling.
 
 ## Notes / gotchas

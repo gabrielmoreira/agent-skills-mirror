@@ -28,7 +28,7 @@ hooks:
         - type: command
           command: "[ -n \"${CLAUDE_PLUGIN_ROOT:-}\" ] && exit 0; SH=\"${CLAUDE_SKILL_DIR}/scripts/skill-hook.sh\"; [ -f \"$SH\" ] || SH=$(ls \"$HOME/.claude/skills/planning-with-files/scripts/skill-hook.sh\" \"$HOME/.claude/plugins/marketplaces/planning-with-files/scripts/skill-hook.sh\" 2>/dev/null | head -1); [ -n \"$SH\" ] && [ -f \"$SH\" ] && sh \"$SH\" --event=precompact; exit 0"
 metadata:
-  version: "3.17.2"
+  version: "3.18.0"
 ---
 
 # Planning with Files
@@ -223,12 +223,18 @@ Copy these templates to start:
 Helper scripts for automation:
 
 - `scripts/init-session.sh` — Initialize planning files. With a name arg, creates an isolated plan under `.planning/YYYY-MM-DD-<slug>/` for parallel task workflows. Without args, writes `task_plan.md` at project root (legacy mode, backward-compatible).
-- `scripts/set-active-plan.sh` — Switch the active plan pointer (`.planning/.active_plan`). Run with a plan ID to switch; run without args to show which plan is current.
+- `scripts/set-active-plan.sh` — Switch or inspect the active plan pointer (`.planning/.active_plan`). Run with `--list` to show named plans and phase counts, with a plan ID to switch, or without args to show which plan is current.
 - `scripts/resolve-plan-dir.sh` — Resolve the active plan directory. A set `$PLAN_ID` is a binding: it resolves or resolution stops, never another plan (issue #237). With no `$PLAN_ID`, multiple named plans refuse selection. A single named plan may use `.planning/.active_plan` or discovery by mtime; otherwise resolution falls back to the project root (legacy). Used internally by hooks.
 - `scripts/check-complete.sh` — Verify all phases in the active plan are complete.
 - `scripts/session-catchup.py`: Explicit same-project session-record aggregation or bounded replay (`--metadata` / `--replay`); bare invocation does not access host history.
 - `scripts/attest-plan.sh` (and `.ps1`) — Lock the current `task_plan.md` content with a SHA-256 attestation (v2.37.0). Hooks then refuse to inject plan content if the file diverges from the attested hash. Use `--show` to print the stored hash, `--clear` to remove the attestation. See `/plan-attest` command.
 - `scripts/plan-doctor.sh` — One-pass self-check for the mechanisms that fail silently (v3.6.0): plan resolution, hook injection, canonicalizer path shape, attestation state, install surfaces, per-fire hook latency. Run it whenever hooks seem quiet or after installing on a new machine. See `/plan-doctor` command.
+
+### List saved plans
+
+To find a task before resuming it, run `sh "<skill-dir>/scripts/set-active-plan.sh" --list` or, in Windows PowerShell, `& "<skill-dir>/scripts/set-active-plan.ps1" -List`. Replace `<skill-dir>` with this installed skill directory and keep your current directory at the project root.
+
+This read-only command lists named plans and phase progress under the current directory's `.planning/`. `[active]` marks the shared default pointer; it does not bind a session. Concurrent tasks still require each host's `PLAN_ID` or separate worktrees.
 
 ### Parallel task workflow
 

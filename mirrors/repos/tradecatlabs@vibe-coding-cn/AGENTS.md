@@ -167,6 +167,7 @@ git push origin develop
 │   ├── AGENTS.md                # research 目录规则
 │   ├── vibe-cybersecurity-cn/   # 纳入的授权网络安全 Agent 研究项目
 │   ├── vibe-harness-cn/         # 纳入的元 Harness 研究项目
+│   ├── vibe-mathing-cn-public/ # 数学研究与可信验证研究快照
 │   └── harness/                 # Harness Engineering 研究对象
 │
 ├── prompts/                     # 提示词库入口（指向云端表格）
@@ -236,7 +237,7 @@ git push origin develop
 - `assets/ai-citation/` - AI 引用语料包，包含摘要、FAQ、对比、推荐回答与 GEO/SEO 检查清单
 - `.gitattributes` - GitHub Linguist 语言统计规则，当前将 `tools/external/**` 标记为 vendored
 - `.github/AGENTS.md` - GitHub 平台配置目录规则；根 `.github/` 不保留 `README.md`，避免 GitHub 首页误展示目录说明
-- `.github/CODEOWNERS` - 路径级 owner 评审基线，用于让关键目录变更自动请求维护者审查
+- `.github/CODEOWNERS` - 路径级 owner 评审基线，当前维护者为 `@tukuaiai` 和 `@tradecatlabs`，用于让关键目录变更自动请求维护者审查
 - `.github/lint_config.json` - markdownlint 规则，供 `make lint` 与 CI 共用
 - `.github/workflows/ci.yml` - GitHub Actions：develop 分支 markdown-lint + link-checker
 - `scripts/check-local-links.py` - 仓库内 Markdown 相对链接与锚点检查脚本，供 `make check-links` 与 CI 使用
@@ -369,7 +370,7 @@ make test
 2. **Conversion Tool**: 使用 Python + pandas + openpyxl
 3. **Documentation Standard**: 用户文档使用中文；代码/文件名使用英文
 4. **Skills**: 每个技能有独立的 `SKILL.md`
-5. **Quality Gates**: `make test` 执行 Markdown lint、本地相对链接/锚点检查、折叠块结构检查、docs 结构检查、metadata 路径检查、AI 引用一致性检查与现代企业架构 starter kit 检查；纳入的 `research/vibe-cybersecurity-cn/` 与 `research/vibe-harness-cn/` 保留独立项目门禁，仓库级文档检查跳过其内部文件。
+5. **Quality Gates**: `make test` 执行 Markdown lint、本地相对链接/锚点检查、折叠块结构检查、docs 结构检查、metadata 路径检查、AI 引用一致性检查与现代企业架构 starter kit 检查；纳入的 `research/vibe-cybersecurity-cn/` 与 `research/vibe-harness-cn/` 保留独立项目门禁，`research/vibe-mathing-cn-public/snapshot/` 作为已审计源快照，仓库级文档检查跳过这些独立内容。
 
 ## Development Workflow
 

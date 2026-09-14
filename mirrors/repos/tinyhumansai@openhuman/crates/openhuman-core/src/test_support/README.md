@@ -15,8 +15,10 @@ Test-support domain: wipe-and-reset plus read-only introspection RPCs that let E
 | File | Role |
 | --- | --- |
 | `crates/openhuman-core/src/test_support/mod.rs` | Export-only module: declares `introspect`, `rpc`, `schemas`; re-exports `all_test_support_controller_schemas` / `all_test_support_registered_controllers`. |
-| `crates/openhuman-core/src/test_support/rpc.rs` | `openhuman.test_reset` implementation — `reset()` wipes cron, memory tree, config fields, and active user; returns a `ResetSummary`. Includes the `OPENHUMAN_E2E_MODE` guard and inline tests. |
-| `crates/openhuman-core/src/test_support/introspect.rs` | Read-only introspection RPCs: `workspace_root`, `list_workspace_files`, `read_workspace_file`, `in_flight_chats`, `wallet_prepared_quotes`, plus the `resolve_workspace_relative` path guard and BFS `walk_dir`. |
+| `crates/openhuman-core/src/test_support/rpc.rs` | `openhuman.test_reset` implementation — `reset()` wipes cron, memory tree, config fields, and active user; returns a `ResetSummary`. Includes the `OPENHUMAN_E2E_MODE` guard. |
+| `crates/openhuman-core/src/test_support/rpc_tests.rs` | Tests for the `OPENHUMAN_E2E_MODE` guard (`reset` rejects when unset; `1`/`true`/`yes` accepted) and for `wipe_memory_tree` removing content dirs. |
+| `crates/openhuman-core/src/test_support/introspect.rs` | Read-only introspection RPCs: `workspace_root`, `list_workspace_files`, `read_workspace_file`, `in_flight_chats`, `wallet_prepared_quotes`, plus the `resolve_workspace_relative` path guard and the iterative `walk_dir`. |
+| `crates/openhuman-core/src/test_support/introspect_tests.rs` | Tests for `resolve_workspace_relative` only: `..` traversal (missing and existing targets), leading `/` and `./` handling, and (unix) a symlink pointing out of the workspace. The RPC functions themselves have no unit tests here; E2E specs exercise them. |
 | `crates/openhuman-core/src/test_support/schemas.rs` | `ControllerSchema` definitions, the registered-controller list, and `handle_*` dispatchers that delegate to `rpc`/`introspect` and serialize via `RpcOutcome::into_cli_compatible_json`. |
 
 ## Public surface
@@ -26,7 +28,7 @@ From `mod.rs`:
 - `all_test_support_registered_controllers()` — `Vec<RegisteredController>` (schema + handler pairs).
 
 From `rpc` / `introspect` (used by handlers, also `pub`):
-- `rpc::reset() -> RpcOutcome<ResetSummary>`, `rpc::reset_json()` (raw JSON envelope convenience).
+- `rpc::reset() -> RpcOutcome<ResetSummary>`, `rpc::reset_json()` (raw JSON envelope convenience; currently `#[allow(dead_code)]`, no caller).
 - `introspect::workspace_root()`, `list_workspace_files(rel_root, max_depth)`, `read_workspace_file(rel_path, max_bytes)`, `in_flight_chats()`, `wallet_prepared_quotes()`.
 - Result types: `ResetSummary`, `WorkspaceRoot`, `ListEntry`/`ListResult`, `ReadFileResult`, `InFlightEntryView`/`InFlightResult`, `PreparedQuotesResult`.
 
@@ -60,19 +62,20 @@ This module owns no state of its own — it mutates/reads state owned by other d
 - `crate::web3::wallet` — `prepared_quotes_for_test` and `PreparedTransaction` to snapshot prepared quotes.
 - `crate::core::all` — `ControllerFuture`, `RegisteredController` for handler wiring.
 - `crate::core::{ControllerSchema, FieldSchema, TypeSchema}` — controller schema types.
-- `crate::rpc::RpcOutcome` — standard RPC result envelope.
+- `crate::rpc::RpcOutcome` — standard RPC result envelope; `crate::rpc` is the `openhuman-rpc` crate re-exported by `pub use openhuman_rpc as rpc;` in `crates/openhuman-core/src/lib.rs`.
 
 ## Used by
 
-- `crates/openhuman-core/src/core/all.rs` — registers this module's controllers and schemas into the global RPC registry (`all_test_support_registered_controllers` / `all_test_support_controller_schemas`).
-- `crates/openhuman-core/src/mod.rs` — declares `pub mod test_support`.
+- `crates/openhuman-core/src/core/all.rs` — pushes `all_test_support_registered_controllers()` into the global registry under `DomainGroup::Platform`, behind the same `#[cfg(feature = "e2e-test-support")]`. Method names come from the registry's `openhuman.{namespace}_{function}` rule. `all_test_support_controller_schemas()` has no consumer outside this module.
+- `crates/openhuman-core/src/lib.rs` — declares `pub mod test_support;` behind `#[cfg(feature = "e2e-test-support")]`. The feature is off in the contributor default set (`default = [...]` in `crates/openhuman-core/Cargo.toml`) and absent from `scripts/ci/product-features.txt`, so neither a bare `cargo check` nor the shipped app compiles this module. It is turned on by the E2E build (`app/scripts/e2e-build.sh`, forwarded through `crates/openhuman-app/Cargo.toml`'s `e2e-test-support` feature) and by a dedicated CI Lite lane (`.github/workflows/ci-lite.yml`) that `cargo check`s it and runs the `test_support::introspect::` tests with `--no-default-features --features e2e-test-support`.
 - Consumed at runtime by E2E specs (WDIO) calling `openhuman.test_reset` and `openhuman.test_support_*` over JSON-RPC.
 
 ## Notes / gotchas
 
-- **Double gating**: `reset` is fail-closed behind both the `/rpc` bearer token (debug-only token file) and `OPENHUMAN_E2E_MODE`; introspection RPCs rely on the bearer token alone. Not reachable in release builds by design.
+- **Double gating**: `reset` is fail-closed behind both the `/rpc` bearer token and `OPENHUMAN_E2E_MODE`; introspection RPCs rely on the bearer token alone. The token file specs read is written by `crates/openhuman-app/src/core_process.rs` under `#[cfg(debug_assertions)]` only.
 - **In-process reset**: the core process is not restarted; specs reload the webview afterward so the renderer also starts blank.
 - **Add new persistent state to `reset`**: per the module docstring, any new domain that survives `test_reset` is a leak that lets specs interfere — extend `rpc::reset` when adding persistent state.
-- **Path-jail symlink handling**: `resolve_workspace_relative` canonicalizes the root first (macOS `/var`→`/private/var`); `walk_dir` uses `symlink_metadata` and skips symlinks so listings can't follow links out of the workspace.
+- **Path-jail ordering**: `resolve_workspace_relative` rejects `..` (and root/prefix components) lexically before touching the filesystem; the `canonicalize` + `starts_with` check underneath only catches symlink escapes and used to fail open for non-existent targets (openhuman#6085). It canonicalizes the root first (macOS `/var`→`/private/var`); `walk_dir` uses `symlink_metadata` and skips symlinks so listings can't follow links out of the workspace.
+- **CI runs only the `introspect` tests**: the CI Lite lane filters to `test_support::introspect::` because `rpc_tests.rs`'s `wipe_memory_tree` test fails under `--no-default-features` (the memory driver there does not serve `Maintenance`, so `wipe_all_rpc` errors). Run `cargo test -p openhuman --features e2e-test-support --lib -- test_support::` locally to cover both files.
 - **`read_workspace_file` byte accounting**: `returned_bytes` is the raw byte count before lossy UTF-8 conversion (which substitutes U+FFFD and can change length) so specs can assert byte-accurate truncation.
 - **`list_workspace_files` schema omits `entries`** for brevity, but the runtime payload includes them; `max_depth` defaults to 2, clamped to 6; entry cap is 2000.

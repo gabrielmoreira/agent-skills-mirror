@@ -57,8 +57,8 @@ OpenHuman’s desktop UI is a **React 19** app (`app/src/`) that:
 
 - Uses **Redux Toolkit** with persistence for session-related state
 - Connects to the backend with **REST** (`apiClient`) and to the local core with **Socket.io** (`socketService` → core socket endpoint)
-- Calls the **Rust core** (embedded in the Tauri host as a tokio task) over HTTP via **`coreRpcClient`** (JSON-RPC methods implemented in repo root `crates/openhuman-core/src/`); non-loopback plain-http runtimes are relayed through the Tauri **`relay_http_rpc`** command
-- Leaves **AI prompts** to the core: bundled `crates/openhuman-core/src/agent/prompts` (repo root) ship as Tauri resources and are read core-side, not by the frontend
+- Calls the **Rust core** (embedded in the Tauri host as a tokio task) over HTTP via **`coreRpcClient`** (JSON-RPC methods implemented in `crates/openhuman-core/src/`); non-loopback plain-http runtimes are relayed through the Tauri **`relay_http_rpc`** command
+- Leaves **AI prompts** to the core: bundled `crates/openhuman-core/src/agent/prompts` ship as Tauri resources (see `crates/openhuman-app/tauri.conf.json` resources) and are read core-side, not by the frontend
 - Uses a **minimal MCP-style** helper layer under `lib/mcp/` (transport, validation)
 
 ### Entry points
@@ -112,8 +112,7 @@ App.tsx
   ├─ ChatRuntimeProvider - chat streaming, tool timeline, approvals → Redux
   └─ AppShell (desktop or mobile)
        ├─ AppRoutes - PublicRoute / ProtectedRoute / DefaultRedirect
-       ├─ SettingsModal - overlay mounted when the URL is /settings/*
-       └─ WebviewHost - active connected-app CEF webview overlay
+       └─ SettingsModal - overlay mounted when the URL is /settings/*
 ```
 
 ### Services layer (conceptual)
@@ -160,7 +159,7 @@ Authoritative list = the `reducer` map in `store/index.ts`. One-line purposes:
 
 | Slice                | Purpose                                                                 | Persisted?                                                     |
 | -------------------- | ----------------------------------------------------------------------- | -------------------------------------------------------------- |
-| `accounts`           | Connected web-app (CEF webview) accounts + rail ordering                | `accounts`, `order`, `lastActiveAccountId` (not the active id) |
+| `accounts`           | Connected web-app accounts + rail ordering                              | `accounts`, `order`, `lastActiveAccountId` (not the active id) |
 | `agentProfiles`      | Agent profile data                                                      | no                                                             |
 | `announcement`       | Harness-init announcement banner, seen ids                              | `shownIds`                                                     |
 | `backendMeet`        | Backend-driven Google Meet call state (join/leave, transcript, replies) | no                                                             |
@@ -279,7 +278,7 @@ How a call flows:
 
 1. **URL + token resolution** — the RPC URL follows the precedence in [Runtime config precedence](frontend.md#runtime-config-precedence); the per-launch bearer token comes from the Tauri `core_rpc_token` command (or the stored token for self-hosted cores).
 2. **Direct fetch** — the webview `fetch()`es the JSON-RPC envelope straight to the core (loopback http or any https URL).
-3. **Shell relay fallback** — plain `http://` to a **non-loopback** host is active mixed content and Chromium blocks it (#3865). `rpcUrlNeedsShellRelay()` detects this and routes the call through `invoke('relay_http_rpc', { url, token, body })`, implemented in **`crates/openhuman-app/src/core_rpc.rs`**, which returns `{ status, body }` re-wrapped as a `Response`.
+3. **Shell relay fallback** — plain `http://` to a **non-loopback** host is active mixed content and Chromium blocks it (#3865). `rpcUrlNeedsShellRelay()` detects this and routes the call through `invoke('relay_http_rpc', { url, token, body })`, implemented in **`crates/openhuman-app/src/core_rpc.rs`** (a thin wrapper over `openhuman_rpc::post_json_rpc` from `crates/openhuman-rpc/`), which returns `{ status, body }` re-wrapped as a `Response`.
 4. **Transport override** — iOS/remote connection profiles install a `CoreTransport` (`setActiveCoreTransport`) so the same `callCoreRpc` surface rides LAN/tunnel/cloud transports.
 
 Errors are classified into a stable `CoreRpcError.kind` (`auth_expired`, `transport`, `timeout`, `rate_limited`, …) — callers branch on `kind`, never on message regexes. An `auth_expired` classification broadcasts `core-rpc-auth-expired`, which `CoreStateProvider` turns into a session clear.
@@ -362,9 +361,9 @@ lipsync, so (a) it is rendered as a leaf with nothing beneath it, and (b) the
 mascot context value is deliberately non-reactive — reactive state lives in
 Redux or in the send-binding external store instead. A reactive context value
 would reconcile the whole chat tree every frame, which is the stall #5357 had to
-fix. And the overlay only mounts while the agent account is selected: HTML paints
-_behind_ the native CEF provider webviews, so a fixed overlay left alive under
-WhatsApp/Slack would be an invisible canvas still burning frames.
+fix. And the overlay only mounts while the agent account is selected, so a fixed
+overlay is never left alive as an invisible canvas still burning frames under
+another account.
 
 The mascot face comes from `useHumanMascot`, which subscribes to chat lifecycle
 events for thinking, speaking, acknowledgement, and error states, plus a
@@ -506,7 +505,7 @@ components/
 ├── ProtectedRoute / PublicRoute / DefaultRedirect   # Route guards
 ├── layout/shell/            # RootShellLayout, AppSidebar, SidebarSlot (two-pane app chrome)
 ├── settings/                # Settings registry, modal, layout, panels, search (see above)
-├── accounts/                # WebviewHost + connected-app (CEF webview) surfaces
+├── accounts/                # Connected-app provider icons (the live WebviewHost overlay was removed with the CEF provider webviews)
 ├── BootCheckGate/, daemon/  # Boot + service gates in the provider chain
 ├── commands/                # CommandProvider (command palette)
 ├── Announcement/, upsell/, userErrors/, walkthrough/  # Shell-level overlays

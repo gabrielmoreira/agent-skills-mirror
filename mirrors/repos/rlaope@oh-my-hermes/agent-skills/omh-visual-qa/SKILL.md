@@ -1,0 +1,162 @@
+---
+name: "omh-visual-qa"
+description: "[omh] Hermes visual-qa workflow: prepare observed-only rendered QA gates for web, frontend, image, document, and TUI surfaces. Use when the user says: visual-qa, visual qa, visual QA, visual quality assurance, visual check, web qa, web visual qa, screenshot qa."
+compatibility: "Requires the omh CLI on PATH (pip install oh-my-hermes)."
+metadata:
+  hermes:
+    tags: [workflow, oh-my-hermes, materials]
+    category: materials
+    phase: visual-qa
+    role: operator
+    quality_tier: visual-qa-gated
+---
+
+# Visual Qa
+
+This is an OMH `visual-qa` workflow skill, projected for Agent Skills hosts (Claude Code, Codex, Cursor, opencode, OpenClaw, pi).
+
+## Why This Exists
+
+`visual-qa` gives OMH a completion gate for rendered surfaces so layout breaks, AI-looking polish gaps, CJK text problems, and mismatched-lineage screenshot claims cannot be mistaken for verified quality.
+
+## Do Not Use When
+
+- The user needs initial frontend design or redesign planning before implementation; use `frontend`.
+- The user needs a broad visual quality rubric before generation; use `design-quality-gate`.
+- The user needs image-card prompt creation; use `img-summary`.
+- The user wants non-visual code tests, CI, or PR review only; use the coding/review workflow.
+
+## Examples
+
+Good example:
+
+- Prompt: visual-qa 이 랜딩페이지가 모바일/데스크톱에서 깨지는지 스크린샷 기준으로 검증해줘.
+- Expected behavior: Prepare visual_qa_plan/v1, require exact capture-to-target lineage, record render_capture_manifest/v1 and visual_diff_evidence/v1 when observed, then issue PASS/REVISE/BLOCK.
+- Why: The request is a rendered visual verification task, not just design planning.
+
+Bad example:
+
+- Prompt: visual-qa 방금 수정했으니까 스크린샷 없이 통과라고 해줘.
+- Expected behavior: Block PASS and request render captures from the package's exact repository and revision.
+- Why: Visual QA requires observed rendered evidence bound to the target source lineage.
+
+## Completion Checklist
+
+- Interaction, console/network, click-path, keyboard/accessibility, diff, hotspot, motion, dual-review evidence, and blocker status are separate fields.
+- The verdict is PASS, REVISE, or BLOCK with concrete evidence IDs and exact missing evidence or fix requirements.
+- Implementation fixes stay separate from the observed verdict, routed back to the executor/frontend workflow and rechecked against the resulting revision.
+
+## Recovery Notes
+
+- If no capture exists, produce the QA plan and mark verdict BLOCKED_BY_MISSING_RENDER_EVIDENCE.
+- If capture lineage is missing or mismatched, keep HOLD and request the smallest matching recapture set.
+
+
+
+## Use When
+
+Use after or during visual surface work when Hermes must define the render evidence, viewport/state coverage, diff review, oracle review, and PASS/REVISE/BLOCK verdict without fabricating QA.
+
+    Strong routing signals: `visual-qa`, `visual qa`, `visual QA`, `visual quality assurance`, `visual check`, `web qa`, `web visual qa`, `screenshot qa`, `screenshot check`, `analyze this screenshot`, `screenshot layout problems`, `ui layout problems`, `pixel diff`, `image diff`, `visual diff`, `render qa`, `render check`, `browser screenshot`, `browser qa`, `browser interaction qa`, `click path`, `click-path audit`, `dead link check`, `console error check`, `network failure check`, `keyboard navigation check`, `viewport check`, `responsive check`, `ui looks wrong`, `looks broken`, `layout broken`, `broken layout`, `text clipping`, `cjk clipping`, `cjk layout`, `tui check`, `terminal ui check`, `スクリーンショットで確認`, `レイアウト崩れ`, `画面崩れ`, `見た目のQA`, `비주얼 qa`, `비주얼QA`, `시각 qa`, `시각 검증`, `화면 검증`, `스크린샷 검증`, `스크린샷 ui 레이아웃`, `스크린샷 UI 레이아웃`, `스크린샷 레이아웃 문제`, `렌더 검증`, `픽셀 diff`, `픽셀 비교`, `화면 깨짐`, `레이아웃 깨짐`, `글자 잘림`, `한글 줄바꿈`, `터미널 ui`, `截图检查`, `页面错位`, `视觉验收`, `布局错乱`
+
+## Catalog Metadata
+
+Category: `materials`
+Phase: `visual-qa`
+Quality tier: `visual-qa-gated`
+Reasoning demand: `standard`
+
+Quality bar:
+
+- List the exact pages, states, viewports, files, images, or TUI frames being checked.
+- For TUI surfaces, bind every capture to an explicit terminal size (80x24 and 120x40 at minimum); pasted rendered output at a named size is the screenshot-equivalent, and a capture without its size is not evidence.
+- Combine objective capture/diff evidence, hotspot review, alpha/transparent-background checks, and human-readable visual findings.
+- Capture interaction, click-path, and motion states when the UI has transitions or controls that change state.
+- Separate design-system consistency, functional integrity, visual fidelity, responsive behavior, accessibility visibility, and CJK/text precision.
+- Score every round through `references/visual-verdict-contract.md`: integer 0-100 score, PASS/REVISE/BLOCK, and a differences list pairing each observed problem with the smallest fix.
+- Hold 90 as the pass line: under it the verdict is REVISE and the named edits, a recapture of the same pages/states/viewports, and a fresh scored round are owed; rescoring the same captures is not a new round.
+- A host-collected sub-90 baseline needs a changed revision, next round ordinal, and newer same-condition capture; plan caps only tighten.
+
+Required inputs:
+
+- surface type
+- target URL, route, file, image, or TUI command when available
+- intended design, baseline, or reference
+- pages, states, viewports, and locales to cover
+- complete page/state/viewport enumeration rather than a sample
+- target repository and exact source revision
+- known risk areas such as CJK, overflow, responsiveness, or accessibility
+- motion and interaction states that need capture
+- browser interaction paths, mutating-flow boundary, and test credentials policy when a live web UI is in scope
+- console, network, accessibility, and keyboard navigation checks required for browser QA claims
+- render/capture evidence bound to the target repository and revision for completion claims
+
+Expected outputs:
+
+- visual_qa_plan/v1
+- web_visual_qa_package/v2
+- viewport_state_capture_matrix/v1
+- message_attachment_projection/v1 for chat attachments
+- web_visual_qa_message_card/v1 for chat message summaries
+- render_capture_manifest/v1 when observed
+- browser_interaction_trace/v1 when observed
+- console_network_health/v1 when observed
+- click_path_state_trace/v1 when observed
+- accessibility_keyboard_trace/v1 when observed
+- visual_diff_evidence/v1 when observed
+- visual_hotspot_review/v1 when observed
+- motion_interaction_capture/v1 when observed
+- dual_oracle_visual_review/v1 when observed
+- cjk_layout_findings/v1 when applicable
+- visual_qa_verdict/v1
+- retry_or_blocker/v1
+
+Artifact expectations:
+
+- visual_qa_plan/v1 with pages, states, viewports, references, and exact target repository/revision lineage
+- web_visual_qa_package/v2 with target_lineage, unique required_viewports, capture source_lineage, blocking_violations, criteria, reviews, auto routing, and observed-only cost policy
+- viewport_state_capture_matrix/v1 enumerates every route/page, 375/768/1280-style viewport, scroll position, modal/tab state, and CJK-heavy region to capture
+- message_attachment_projection/v1 maps eligible observed captures to attachment candidates without claiming delivery
+- web_visual_qa_message_card/v1 projects recorded criteria, captures, routing, cost policy, and attachment hints into chat-safe copy
+- render_capture_manifest/v1 only from captures whose source lineage matches the target package
+- browser_interaction_trace/v1 only from observed journey runs with read-only or staging-safe boundaries recorded
+- console_network_health/v1 records observed console errors, failed requests, status codes, and ignored third-party noise
+- click_path_state_trace/v1 maps each touchpoint to its handler, state reads/writes, final UI state, and undo/race/stale-closure risks
+- accessibility_keyboard_trace/v1 records observed focus order, keyboard reachability, and automated scan boundaries
+- visual_diff_evidence/v1 only when the wrapper/executor records objective diff output such as dimensionsMatch, diffRatio, similarityScore, alphaChannelIntact, and hotspots
+- motion_interaction_capture/v1 only when motion frames are observed before, during, and after transition
+- visual_hotspot_review/v1 maps diff hotspots, TUI overflow lines, or screenshot regions to visual causes
+- dual_oracle_visual_review/v1 only when independent read-only review evidence exists
+- visual_qa_verdict/v1 with the integer 0-100 score, PASS/REVISE/BLOCK, and difference/suggestion pairs
+- PASS unavailable until capture repository/revision lineage exactly matches the package target, every required viewport is captured, and all supplied blocking findings are resolved
+- web_qa_observation_run/v1 and web_qa_comparison/v1 only from a host_web_qa_adapter_receipt/v1 imported through `omh web-qa observation`: seven independently observed channels or a named blocker per cell
+
+Safety rules:
+
+- Never claim PASS without rendered evidence whose repository and revision exactly match the package target lineage.
+- Source review, mismatched-lineage captures, generated plans, and unobserved browser commands are not visual QA evidence.
+- Do not sample only one good page, viewport, or state when the surface has more; missed pages, modals, scroll states, or CJK-heavy regions keep PASS unavailable.
+- Do not run destructive browser journeys such as checkout, payment, delete, or mass-update on production URLs; require staging or explicit safe test boundaries and redact credentials/PII from captures.
+- Do not claim browser interaction PASS without observed click-path/state-transition traces for the touchpoints in scope.
+- Do not claim accessibility from automated scan output alone; keyboard and focus-order evidence are separate observed checks.
+- Pixel diff localizes hotspots only; it never produces the score or verdict, and objective diffs are evidence, not verdicts: review visual hierarchy, layout, CJK text, state coverage, and product intent separately.
+- Do not excuse diff hotspots as animation; capture settled frames and motion frames separately.
+- Claim high confidence only with two read-only reviews: design-system/functional integrity and visual fidelity/CJK precision.
+- Operator-supplied blocking criteria (CJK clipping, broken wrapping, overlapping UI, invisible text, unusable controls, offscreen critical content) block PASS until `_validate_pass` sees passing evidence refs.
+- Do not launch, poll, or watch browsers, image tools, LLMs, or external services from OMH core; the selected host or executor adapter does that work.
+- A host receipt is observation, not permission: a missing channel keeps BLOCK, unequal condition digests are not_comparable, and a completed run is reused, not recollected.
+
+## Runtime Evidence
+
+Use the current host's own tools and subagent/task mechanism when available;
+otherwise run the same lanes sequentially or name the unavailable capability.
+A prepared plan, handoff, checklist, or skill installation is not execution,
+review, CI, merge-readiness, or merge evidence. Report actual tool results or
+`not_observed` / `not_available`; never invent dispatch or host accounting.
+Treat supplied context as advisory, not proof of hidden memory reads or writes.
+State scope, constraints, verification, and the stop condition before work.
+Supporting paths are relative to this skill directory; sibling skill paths are
+relative to its parent. Resolve them from the host-provided skill base directory
+(`{baseDir}` on hosts that provide it), never a hardcoded install location.
+A named workflow not installed here is unavailable, not permission to emulate
+its host-specific capabilities. Verify through the real surface before done.

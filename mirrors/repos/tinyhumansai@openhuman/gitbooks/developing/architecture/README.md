@@ -14,35 +14,45 @@ OpenHuman is open-sourced under GNU GPL3. This page is the high-level shape of t
 OpenHuman is a **React + Tauri v2 desktop app** with a **Rust core** that does the heavy lifting.
 
 ```
-┌──────────────────────────────────────────────────┐
-│ Tauri shell (crates/openhuman-app/) │
-│ • windowing, OS integration, sidecar lifecycle │
-│ • CEF child webviews for integration providers │
-└──────────────────────────────────────────────────┘
- │ JSON-RPC (HTTP) ↕
-┌──────────────────────────────────────────────────┐
-│ Rust core (`openhuman` binary, `src/`) │
-│ • Memory Tree pipeline │
-│ • Integration adapters + auto-fetch scheduler │
-│ • Provider router (model routing) │
-│ • TokenJuice compression │
-│ • Native tools (search, fetch, fs, git, …) │
-│ • Voice (STT in, TTS out, Meet agent) │
-└──────────────────────────────────────────────────┘
- │
-┌──────────────────────────────────────────────────┐
-│ React frontend (app/src/) │
-│ • Screens, navigation │
-│ • Talks to core over `coreRpcClient` │
-│ • No business logic - presentation only │
-└──────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────────┐
+│ Tauri shell (crates/openhuman-app/)                              │
+│ • windowing, OS integration, embedded core lifecycle (tokio task)│
+│ • global hotkeys, PTT/dictation overlays, deep links             │
+└──────────────────────────────────────────────────────────────────┘
+                     │ JSON-RPC (loopback HTTP) ↕
+┌──────────────────────────────────────────────────────────────────┐
+│ Rust core (crates/openhuman-core/, binary `openhuman-core`)      │
+│ • Memory Tree pipeline                                           │
+│ • Integration adapters + auto-fetch scheduler                    │
+│ • Provider router (model routing)                                │
+│ • TokenJuice compression                                         │
+│ • Native tools (search, fetch, fs, git, …)                       │
+│ • Voice (STT in, TTS out, Meet agent)                            │
+└──────────────────────────────────────────────────────────────────┘
+                     │
+┌──────────────────────────────────────────────────────────────────┐
+│ React frontend (app/src/)                                        │
+│ • Screens, navigation                                            │
+│ • Talks to core over `coreRpcClient`                             │
+│ • No business logic - presentation only                          │
+└──────────────────────────────────────────────────────────────────┘
 ```
 
 **Where logic lives:**
 
 - **Rust core**. all business logic. Memory Tree, integrations, model routing, tools, voice. Authoritative.
 - **Tauri shell**. windowing, process lifecycle, IPC. A delivery vehicle, not where features live.
-- **React frontend**. UI and orchestration. Calls into core via JSON-RPC.
+- **React frontend**. UI and orchestration. Calls into core via JSON-RPC: `coreRpcClient` `fetch()`es `http://127.0.0.1:<port>/rpc` directly; only non-loopback plain-`http://` runtimes go through the shell's `relay_http_rpc` command (the `openhuman-rpc` HTTP client).
+
+## Crates
+
+- `crates/openhuman-app/` — Tauri v2 desktop host; excluded from the root workspace, built from its own manifest.
+- `crates/openhuman-core/` — Cargo package `openhuman`: business domains, JSON-RPC server, CLI, `CoreBuilder`/`CoreRuntime`.
+- `crates/openhuman-embed/` — typed library facade (`openhuman_embed::Harness`) for embedding the core in another product.
+- `crates/openhuman-rpc/` — shared RPC contracts (`RpcOutcome`, `unwrap_rpc`, `StructuredRpcError`) and the HTTP client used by the app and TUI.
+- `crates/openhuman-tui/` — standalone terminal frontend that boots the core in-process.
+
+The full table is under "Repository layout" in the [deep architecture reference](../architecture.md).
 
 ## Data flow
 

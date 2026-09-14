@@ -29,7 +29,7 @@ the relevant examples. Check current release notes for version-sensitive syntax.
 - Example scripts: `scripts/examples/arena-countdown.mcfunction`, `scripts/examples/stopwatch-podium.mcfunction`, `scripts/examples/rcon-backup-warning.sh` (one-time setup commands are called out in comments when needed)
 
 Use the cheat sheets when you need fast command recall without scanning this whole
-skill file. The example scripts are meant to be copyable starting points, not toy snippets.
+skill file. Copy and adapt the example scripts as needed.
 
 ---
 

@@ -20,7 +20,7 @@ Self-update domain for the `openhuman-core` binary. Checks GitHub Releases (`tin
 | `crates/openhuman-core/src/platform/update/scheduler.rs` | `run(UpdateConfig)` periodic checker loop + `tick()`; publishes startup/health events. Floor `MIN_INTERVAL_MINUTES = 10`. |
 | `crates/openhuman-core/src/platform/update/schemas.rs` | Controller registry: `all_controller_schemas`, `all_registered_controllers`, `schemas(fn)`, and `handle_*` thunks delegating to `ops`. |
 | `crates/openhuman-core/src/platform/update/types.rs` | Serde types: `UpdateInfo`, `VersionInfo`, `UpdateRunResult`, `UpdateApplyResult`, `GitHubRelease`, `GitHubAsset`. |
-| `crates/openhuman-core/src/platform/update/ops_tests.rs` | Sibling test suite for `ops.rs` (via `#[path]`). |
+| `crates/openhuman-core/src/platform/update/*_tests.rs` | Sibling test suites (`core_tests`, `ops_tests`, `ops_tests_2_tests`, `scheduler_tests`, `schemas_tests`), included via `#[path]`. |
 
 ## Public surface
 - Types (`types.rs`): `UpdateInfo`, `VersionInfo`, `UpdateRunResult`, `UpdateApplyResult`, `GitHubRelease`, `GitHubAsset`.
@@ -44,11 +44,11 @@ All under namespace `update` (i.e. `openhuman.update_*`):
 Not owned here — the domain has no `tools.rs`. Two cross-cutting system tools wrap it: `crates/openhuman-core/src/tools/impl/system/update_check.rs` (read-only, calls `update::rpc::update_check`) and `crates/openhuman-core/src/tools/impl/system/update_apply.rs` (calls `update::rpc::update_run`).
 
 ## Events
-No `bus.rs`. The scheduler *publishes* (via `core::event_bus::publish_global`):
+No `bus.rs`. The scheduler *publishes* (via `crate::core::bus::BUS.publish`):
 - `DomainEvent::SystemStartup { component: "update_checker" }` at startup.
 - `DomainEvent::HealthChanged { component: "update_checker", healthy, message }` after each tick.
 
-It also calls `health::bus::register_health_subscriber()` and `event_bus::init_global(...)` on start.
+It also calls `crate::core::bus::init()` (idempotent against an already-initialised bus) and `health::bus::register_health_subscriber()` on start.
 
 ## Persistence
 None. No `store.rs` — staged binaries are written to the filesystem (current-exe dir by default), but the domain holds no persisted state of its own. Configuration is read from `config.update`.
@@ -58,7 +58,7 @@ None. No `store.rs` — staged binaries are written to the filesystem (current-e
 - `crate::platform::service` — `service::rpc::service_restart` to publish the self-restart for `SelfReplace`.
 - `crate::platform::health` — `health::bus::register_health_subscriber` in the scheduler.
 - `crate::util` — `utf8_safe_prefix_at_byte_boundary` for safe error-body truncation.
-- `crate::core::event_bus` — `publish_global`, `DomainEvent`, `init_global`, `DEFAULT_CAPACITY`.
+- `crate::core::bus` — `BUS.publish`, `crate::core::events::DomainEvent`, and `bus::init()` to bring up the in-process broker.
 - `crate::core::observability` — Sentry reporting + transient-failure classifiers (`report_error`, `is_updater_transient_message`, `is_updater_transient_http_status`).
 - `crate::core::all` — `ControllerFuture`, `RegisteredController` (schemas wiring); `crate::core::{ControllerSchema, FieldSchema, TypeSchema}`.
 - `crate::rpc::RpcOutcome` — RPC return contract.
@@ -66,7 +66,7 @@ None. No `store.rs` — staged binaries are written to the filesystem (current-e
 
 ## Used by
 - `crates/openhuman-core/src/core/all.rs` — registers `all_update_registered_controllers()` / `all_update_controller_schemas()` into the controller registry.
-- `crates/openhuman-core/src/core/jsonrpc.rs` — spawns `update::scheduler::run(config.update)` at server start.
+- `crates/openhuman-core/src/core/runtime/services.rs` — spawns `update::scheduler::run(config.update)` as a background service at core start.
 - `crates/openhuman-core/src/tools/impl/system/update_check.rs` and `update_apply.rs` — agent tools wrapping the RPC layer.
 
 ## Notes / gotchas

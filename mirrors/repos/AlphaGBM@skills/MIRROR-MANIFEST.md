@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `AlphaGBM/skills` — 26 default patterns, 0 followed patterns, 30 file(s) materialized.
+Mirror of `AlphaGBM/skills` — 26 default patterns, 0 followed patterns, 31 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `AlphaGBM/skills` — 26 default patterns, 0 followed patterns, 30 fil
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 30 |
+| Files         | 31 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -80,15 +80,16 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 19 | ✓ | [`skills/alphagbm-options-strategy/SKILL.md`](skills/alphagbm-options-strategy/SKILL.md) |
 | 20 | ✓ | [`skills/alphagbm-pnl-simulator/SKILL.md`](skills/alphagbm-pnl-simulator/SKILL.md) |
 | 21 | ✓ | [`skills/alphagbm-polymarket/SKILL.md`](skills/alphagbm-polymarket/SKILL.md) |
-| 22 | ✓ | [`skills/alphagbm-stock-analysis/SKILL.md`](skills/alphagbm-stock-analysis/SKILL.md) |
-| 23 | ✓ | [`skills/alphagbm-take-profit/SKILL.md`](skills/alphagbm-take-profit/SKILL.md) |
-| 24 | ✓ | [`skills/alphagbm-tepper-signal/SKILL.md`](skills/alphagbm-tepper-signal/SKILL.md) |
-| 25 | ✓ | [`skills/alphagbm-theme-research/SKILL.md`](skills/alphagbm-theme-research/SKILL.md) |
-| 26 | ✓ | [`skills/alphagbm-unusual-activity/SKILL.md`](skills/alphagbm-unusual-activity/SKILL.md) |
-| 27 | ✓ | [`skills/alphagbm-vix-status/SKILL.md`](skills/alphagbm-vix-status/SKILL.md) |
-| 28 | ✓ | [`skills/alphagbm-vol-smile/SKILL.md`](skills/alphagbm-vol-smile/SKILL.md) |
-| 29 | ✓ | [`skills/alphagbm-vol-surface/SKILL.md`](skills/alphagbm-vol-surface/SKILL.md) |
-| 30 | ✓ | [`skills/alphagbm-watchlist/SKILL.md`](skills/alphagbm-watchlist/SKILL.md) |
+| 22 | ✓ | [`skills/alphagbm-research-insights/SKILL.md`](skills/alphagbm-research-insights/SKILL.md) |
+| 23 | ✓ | [`skills/alphagbm-stock-analysis/SKILL.md`](skills/alphagbm-stock-analysis/SKILL.md) |
+| 24 | ✓ | [`skills/alphagbm-take-profit/SKILL.md`](skills/alphagbm-take-profit/SKILL.md) |
+| 25 | ✓ | [`skills/alphagbm-tepper-signal/SKILL.md`](skills/alphagbm-tepper-signal/SKILL.md) |
+| 26 | ✓ | [`skills/alphagbm-theme-research/SKILL.md`](skills/alphagbm-theme-research/SKILL.md) |
+| 27 | ✓ | [`skills/alphagbm-unusual-activity/SKILL.md`](skills/alphagbm-unusual-activity/SKILL.md) |
+| 28 | ✓ | [`skills/alphagbm-vix-status/SKILL.md`](skills/alphagbm-vix-status/SKILL.md) |
+| 29 | ✓ | [`skills/alphagbm-vol-smile/SKILL.md`](skills/alphagbm-vol-smile/SKILL.md) |
+| 30 | ✓ | [`skills/alphagbm-vol-surface/SKILL.md`](skills/alphagbm-vol-surface/SKILL.md) |
+| 31 | ✓ | [`skills/alphagbm-watchlist/SKILL.md`](skills/alphagbm-watchlist/SKILL.md) |
 
 ---
 

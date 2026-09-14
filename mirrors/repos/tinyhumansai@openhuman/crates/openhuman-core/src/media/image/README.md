@@ -6,6 +6,16 @@ This module does not execute image generation or pixel inspection directly. It
 defines the stable model-facing contracts that provider/runtime adapters can
 expose when image capabilities are available.
 
+Currently unwired (#2997): no tool registers these contracts yet, and nothing
+outside `media/image/` references its types (see the family root
+`media/mod.rs` and the `media` feature comment in
+`crates/openhuman-core/Cargo.toml`).
+
+## Gate
+
+Gated transitively by the `media` feature at
+`crates/openhuman-core/src/lib.rs` (`#[cfg(feature = "media")] pub mod media;`).
+
 ## Responsibilities
 
 - Define the `image_generation` contract for hosted raster image creation and
@@ -22,12 +32,15 @@ expose when image capabilities are available.
 
 | File                  | Role                                                                |
 | --------------------- | ------------------------------------------------------------------- |
-| `mod.rs`              | Export-only module entrypoint.                                      |
+| `mod.rs`              | Re-exports plus the `image_tests.rs` test-module declaration.       |
 | `types.rs`            | Shared descriptors, permission/config types, and gating helpers.    |
 | `image_generation.rs` | `image_generation` schema and output-format contract.               |
 | `image_view.rs`       | `view_image` schema and detail-level contract.                      |
 | `prompt.rs`           | Agent prompt guidance for enabled image tools.                      |
-| `tests.rs`            | Contract-level e2e tests across config, schemas, and prompt output. |
+| `image_tests.rs`      | Contract-level e2e tests across config, schemas, and prompt output. |
+
+Per-file tests also live alongside their subject: `image_generation_tests.rs`,
+`image_view_tests.rs`, `prompt_tests.rs`.
 
 ## Notes
 

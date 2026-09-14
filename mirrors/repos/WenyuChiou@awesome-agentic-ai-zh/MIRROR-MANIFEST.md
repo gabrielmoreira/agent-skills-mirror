@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `WenyuChiou/awesome-agentic-ai-zh` — 26 default patterns, 2 followed patterns, 6 file(s) materialized.
+Mirror of `WenyuChiou/awesome-agentic-ai-zh` — 26 default patterns, 0 followed patterns, 2 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `WenyuChiou/awesome-agentic-ai-zh` — 26 default patterns, 2 followed
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 2 |
-| Files         | 6 |
+| Followed pats | 0 |
+| Files         | 2 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,8 +51,7 @@ Mirror of `WenyuChiou/awesome-agentic-ai-zh` — 26 default patterns, 2 followed
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-- `resources/cli-agents-guide.md`
-- `docs/TESTING_PLAN.md`
+_None._
 
 ## File Index
 
@@ -62,10 +61,6 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 | 2 | ✓ | [`examples/stage-5/tool-calling-tutor/SKILL.md`](examples/stage-5/tool-calling-tutor/SKILL.md) |
-| 3 | ✓ | [`resources/cli-agents-guide.en.md`](resources/cli-agents-guide.en.md) |
-| 4 | ✓ | [`resources/cli-agents-guide.zh-Hans.md`](resources/cli-agents-guide.zh-Hans.md) |
-| 5 | → | [`docs/TESTING_PLAN.md`](docs/TESTING_PLAN.md) |
-| 6 | → | [`resources/cli-agents-guide.md`](resources/cli-agents-guide.md) |
 
 ---
 

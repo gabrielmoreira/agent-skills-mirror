@@ -13,17 +13,18 @@ Architecture: [overview](gitbooks/developing/architecture.md),
 | Path | Purpose |
 | --- | --- |
 | `app/src/` | Vite and React frontend |
-| `crates/openhuman-app/` | Thin desktop host |
-| `crates/openhuman-core/` | Business domains, transport, dispatch, auth, RPC, and runtime composition |
+| `crates/openhuman-app/` | Thin desktop host; excluded from the root workspace, build with `--manifest-path crates/openhuman-app/Cargo.toml` |
+| `crates/openhuman-core/` | Package `openhuman`: business domains under `src/<domain>/`, transport/dispatch/auth under `src/core/` |
+| `crates/openhuman-core/src/<domain>/` | Flat business-domain modules (agent, memory, tools, security, channels, ...) |
+| `crates/openhuman-core/src/core/` | CLI, JSON-RPC and HTTP dispatch, controller registry, event bus, runtime composition; no business logic |
+| `crates/openhuman-core/src/main.rs` | `openhuman-core` CLI |
 | `crates/openhuman-embed/` | Typed library facade for embedding the core in another product |
 | `crates/openhuman-rpc/` | Shared RPC contracts, response decoding, and HTTP client used by app and TUI |
 | `crates/openhuman-tui/` | Standalone terminal frontend |
-| `crates/openhuman-core/src/` | Business domains, server dispatch, and runtime composition |
-| `crates/openhuman-core/src/main.rs` | `openhuman-core` CLI |
 | `tests/` | Rust integration and JSON-RPC tests |
 | `gitbooks/` | Public product and contributor documentation |
 | `docs/` | Internal maintainer documentation |
-| `vendor/` | Recursive git submodules |
+| `vendor/` | Recursive git submodules; root `Cargo.toml` `[patch]` tables point into this tree |
 
 Run commands from the repository root. The root package is a private pnpm
 workspace.
@@ -101,9 +102,19 @@ coverage must be at least 80 percent.
   `tests/json_rpc_e2e.rs`.
 - Frontend flows need mocked browser or desktop E2E coverage under
   `app/test/e2e/specs/`.
-- E2E code must use `element-helpers.ts`, not raw platform element types.
+- E2E code must use `app/test/e2e/helpers/element-helpers.ts`, not raw platform
+  element types.
 - Tests must not call real backend or third-party services.
 - Avoid time-based flakes and real network access in unit tests.
+- Root `tests/*.rs` and `examples/*.rs` are NOT auto-discovered (`autotests =
+  false`, `autoexamples = false` in `crates/openhuman-core/Cargo.toml`). Every
+  new file needs an explicit `[[test]]` / `[[example]]` entry with `path =
+  "../../tests/<name>.rs"`; `pnpm rust:layout`
+  (`scripts/ci/check-openhuman-rust-layout.mjs`) fails on missing or stale
+  entries, on inline `#[cfg(test)] mod` blocks, and on files named
+  `tests.rs`/`test.rs`. Files under `tests/raw_coverage/` are aggregated by
+  the root `build.rs` (`build = "../../build.rs"`) into the single
+  `raw_coverage_all` target and need no entry.
 
 Shared mock backend:
 
@@ -144,8 +155,9 @@ generated documentation blocks.
   `app/src/store/index.ts`.
 - Persist user state through `userScopedStorage`, not ad hoc
   `localStorage`.
-- Use `coreRpcClient` for core RPC. It delegates to the
-  `relay_http_rpc` Tauri command.
+- Use `coreRpcClient` for core RPC. It `fetch()`es the loopback core
+  directly and routes only non-loopback plain-`http://` runtimes (blocked as
+  mixed content, #3865) through the `relay_http_rpc` Tauri command.
 - Auth state comes from `CoreStateProvider` and
   `fetchCoreAppSnapshot()`.
 - Routes are defined in `AppRoutes.tsx`. Check that file before adding links
@@ -215,6 +227,13 @@ Additional rules:
   are deduplication keys.
 - Update `crates/openhuman-core/src/platform/about_app/` when user-visible capabilities
   change.
+- `RpcOutcome<T>`, `StructuredRpcError`, `unwrap_rpc`, and the JSON-RPC HTTP
+  client live in `crates/openhuman-rpc/`; the core re-exports the crate as
+  `crate::rpc` (`pub use openhuman_rpc as rpc;` in
+  `crates/openhuman-core/src/lib.rs`), and `openhuman-app` and `openhuman-tui`
+  depend on it directly. Keep it free of business logic and core dependencies
+  (its only deps are serde, serde_json, and optional log/reqwest/url behind
+  the `http-client` feature).
 
 ## Tool, harness, and runtime boundaries
 
@@ -244,6 +263,7 @@ disables default features, so product gates must be forwarded explicitly in
 `scripts/ci/check-feature-forwarding.mjs`. Test both enabled and disabled
 builds after changing a gate. Use `scripts/assert-shed.sh` or
 `scripts/dep-sim.py` before claiming a dependency reduction.
+
 ## Loadable modules and bus contracts
 
 Each loadable module has a small `*-bus` contract crate for interface names,
@@ -258,6 +278,7 @@ method constants, request and response types, and its contract version.
 | `tinywallet-bus` | `web3` |
 | `tinymcp-bus` | `mcp` |
 | `tinychannels-bus` | channel vocabulary |
+| `tinyconnectors-bus` | OAuth connector (Composio) wire contract; called through `integrations/composio/module_client.rs` |
 
 Rules:
 
@@ -292,11 +313,17 @@ module release before migrating a host call to it.
 ## Backend API
 
 Backend calls use the vendored `tinyhumans-sdk`. Add missing backend routes to
-that SDK rather than recreating them in `src/api/`.
+that SDK rather than recreating them in `crates/openhuman-core/src/api/`.
 
-`src/api/` owns OpenHuman session-token lookup, base URL selection, transport
-configuration, and error classification. Every SDK error must pass through
-`classify_sdk_error`.
+`crates/openhuman-core/src/api/` owns OpenHuman session-token lookup, base URL
+selection, transport configuration, and error classification. Authenticated
+`BackendOAuthClient` requests go through `authed_json`, whose private
+`finish_authed_json` (`crates/openhuman-core/src/api/rest.rs`) classifies
+transient transport failures and maps 401/404 responses to typed
+`BackendApiError` variants; `IntegrationClient::map_sdk_error`
+(`crates/openhuman-core/src/integrations/client/errors.rs`) plays the same
+role for integrations. Route new SDK calls through those helpers instead of
+matching `tinyhumans_sdk::Error` by hand.
 
 Every TinyHumans backend request must carry a sanitized `x-sdk-name`:
 

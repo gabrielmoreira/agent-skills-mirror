@@ -20,6 +20,7 @@ In-process health registry for the OpenHuman core. Tracks per-component liveness
 | `crates/openhuman-core/src/platform/health/ops.rs` | RPC handler logic returning `RpcOutcome<T>`: `health_snapshot()` and `system_info()` (+ `SystemInfo` type). |
 | `crates/openhuman-core/src/platform/health/schemas.rs` | Controller schemas + `handle_snapshot`/`handle_system_info` async handlers that delegate to `ops` and serialize via `into_cli_compatible_json`. |
 | `crates/openhuman-core/src/platform/health/bus.rs` | `HealthSubscriber` (`EventHandler`) and `register_health_subscriber()`; maps domain events to registry mutations. |
+| `crates/openhuman-core/src/platform/health/tools.rs` | Read-only, default-on LLM tools `health_snapshot` / `health_system_info`, re-exported through `crates/openhuman-core/src/tools/mod.rs`. |
 
 ## Public surface
 
@@ -67,7 +68,7 @@ None on disk. State lives in a process-global `OnceLock<HealthRegistry>` (lazy-i
 
 ## Dependencies
 
-- `crate::core::event_bus` (`DomainEvent`, `EventHandler`, `SubscriptionHandle`, `subscribe_global`) — to receive system/channel events.
+- `crate::core::bus::BUS.subscribe` (`crate::core::events::DomainEvent`, `tinybus::SubscriptionHandle`) — to receive system/channel events.
 - `crate::core::all` (`ControllerFuture`, `RegisteredController`) and `crate::core::{ControllerSchema, FieldSchema, TypeSchema}` — controller registry wiring.
 - `crate::rpc::RpcOutcome` — RPC handler return contract.
 - External crates: `chrono` (RFC3339 timestamps), `parking_lot::Mutex`, `serde`/`serde_json`, `async_trait`.

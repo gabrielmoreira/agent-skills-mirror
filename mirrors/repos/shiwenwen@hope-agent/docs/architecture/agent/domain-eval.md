@@ -107,7 +107,7 @@ flowchart TD
 
 | 字段 | 承载 |
 | --- | --- |
-| `id` / `version` | 稳定身份；内置版本 `1.0.0`。 |
+| `id` / `version` | 稳定身份；内置版本 `1.1.0`，历史 `1.0.0` 报告保持原判定。 |
 | `domain` / `taskType` | 领域与任务类型。 |
 | `input.prompt` | 半确定性 trace fixture 的任务输入；`input.fixtureKind` 标记 fixture 种类。 |
 | `allowedTools` | 允许工具的**提示**，不自动授权任何工具。 |
@@ -156,6 +156,8 @@ flowchart LR
 ```
 
 六类检查各自盯一种失败模式：
+
+从任务版本 `1.1.0` 起，`requiredEvidence.minCount` 统计的是**逐条通过字段语义校验的证据数**，不再是同类型总数；不能用“一条有字段 + 若干空壳记录”凑足数量。内置字符串字段（如 `path`、`version`、`audience`、`uri`）必须是非空字符串，列表字段（如 `issues`、`gaps`、`checks`）必须是数组，因而 `issues=[]` 合法、`issues=null` 或错类型无效；自定义布尔值 `false` 和数值 `0` 不会被通用 truthy 规则误拒。显式保留 `1.0.x` 的导入任务继续使用历史“总数 + 至少一条具备全部键”的兼容语义，已经持久化的报告也不回算。
 
 | Check | 失败/不充分模式 |
 | --- | --- |

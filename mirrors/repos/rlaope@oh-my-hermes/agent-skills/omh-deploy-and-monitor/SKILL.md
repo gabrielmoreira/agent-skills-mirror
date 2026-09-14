@@ -1,0 +1,118 @@
+---
+name: "omh-deploy-and-monitor"
+description: "[omh] Hermes Deploy-and-Monitor workflow: release checklist, deploy decision, health signals, rollback gate, and post-deploy status. Use when the user says: deploy-and-monitor, deploy and monitor, deploy monitor, deployment monitoring, release monitor, post deploy, post-deploy, rollback."
+metadata:
+  hermes:
+    tags: [workflow, oh-my-hermes, monitoring]
+    category: monitoring
+    phase: release-ops
+    role: operator
+    quality_tier: release-gated
+---
+
+# Deploy And Monitor
+
+This is an OMH `deploy-and-monitor` workflow skill, projected for Agent Skills hosts (Claude Code, Codex, Cursor, opencode, OpenClaw, pi).
+
+## Why This Exists
+
+`deploy-and-monitor` exists to keep `monitoring` work explicit, evidence-backed, and inside the Hermes/executor boundary instead of relying on ad hoc chat narration.
+
+## Do Not Use When
+
+- The request is casual chat, a status-only acknowledgement, or another workflow has stronger routing evidence.
+- The user needs implementation, review, CI, merge, or external publishing evidence that has not been delegated or observed.
+
+## Examples
+
+Good example:
+
+- Prompt: deploy-and-monitor: prepare the release monitor, rollback signals, health checks, and post-deploy status card.
+- Expected behavior: Create release monitoring guidance with deployment, metric, rollback, and observation boundaries.
+- Why: The request is about deploy readiness and monitoring rather than code review alone.
+
+Bad example:
+
+- Prompt: deploy-and-monitor: treat casual chat or unaccepted work as if this workflow already produced verified results.
+- Expected behavior: Ask a clarification question or route to a narrower workflow instead of forcing `deploy-and-monitor`.
+- Why: The request lacks the required inputs or would overclaim work that Hermes did not observe.
+
+## Completion Checklist
+
+- Confirm the workflow target, evidence boundary, and stop condition are named.
+- Report which outputs are prepared, observed, blocked, or missing.
+- Name the smallest next verification or handoff instead of claiming completion from narration.
+
+## Recovery Notes
+
+- If required context is missing, ask one blocking question or route back to the narrower workflow.
+- If runtime or wrapper evidence is unavailable, keep the status as not_observed and expose the next observable action.
+
+
+
+## Use When
+
+Use when Hermes should prepare or narrate a release operation with deploy checklist, health signals, rollback criteria, and post-deploy status without pretending to run infrastructure.
+
+    Strong routing signals: `deploy-and-monitor`, `deploy and monitor`, `deploy monitor`, `deployment monitoring`, `release monitor`, `post deploy`, `post-deploy`, `rollback`, `rollback gate`, `health check`, `incident watch`, `release health`, `deploy this service`, `배포 모니터링`, `서비스 배포`, `프로덕션 배포`, `인프라에 배포`, `배포 감시`, `롤백`, `헬스 체크`, `장애 감시`, `릴리즈 모니터링`
+
+## Catalog Metadata
+
+Category: `monitoring`
+Phase: `release-ops`
+Quality tier: `release-gated`
+Reasoning demand: `light`
+
+Quality bar:
+
+- Name release scope, target environment, health signals, rollback criteria, and evidence owner.
+- Show pre-deploy, deploy decision, monitor, rollback, and post-deploy as distinct stages.
+- Mark health and rollback status unknown until observed evidence arrives.
+
+Required inputs:
+
+- release scope
+- environment
+- health signals
+- rollback owner
+
+Expected outputs:
+
+- pre-deploy checklist
+- deploy decision gate
+- monitoring watchlist
+- rollback criteria
+- post-deploy status boundary
+
+Artifact expectations:
+
+- release operation status record when the wrapper captures deploy or monitor observations
+- web_qa_comparison/v1 for a canary only with a trusted host_deployment_observation/v1 and a production baseline captured before it
+
+Artifact contracts:
+
+This label denotes the machine-enforcement level, not a skill quality score and not an observed evidence state.
+
+- contract_id: `deploy-and-monitor`; enforcement_level: `guidance_only`; consumer_id: `none`
+
+Safety rules:
+
+- Do not claim deployment, health checks, rollback, or incident response happened from a prepared checklist.
+- Keep release readiness, deploy decision, monitor signals, and rollback as separate evidence steps.
+- Route code fixes discovered during monitoring as later executor handoffs.
+- A canary web-QA comparison never authorizes rollback; a missing deployment observation is BLOCK and a field regression beyond tolerance is REVISE.
+
+## Runtime Evidence
+
+Use the current host's own tools and subagent/task mechanism when available;
+otherwise run the same lanes sequentially or name the unavailable capability.
+A prepared plan, handoff, checklist, or skill installation is not execution,
+review, CI, merge-readiness, or merge evidence. Report actual tool results or
+`not_observed` / `not_available`; never invent dispatch or host accounting.
+Treat supplied context as advisory, not proof of hidden memory reads or writes.
+State scope, constraints, verification, and the stop condition before work.
+Supporting paths are relative to this skill directory; sibling skill paths are
+relative to its parent. Resolve them from the host-provided skill base directory
+(`{baseDir}` on hosts that provide it), never a hardcoded install location.
+A named workflow not installed here is unavailable, not permission to emulate
+its host-specific capabilities. Verify through the real surface before done.

@@ -24,3 +24,38 @@ Top-level home for web search selection and agent-facing search tool registratio
 A BYO engine with no key configured falls back to the managed surface, so `managed` stays the effective default until a key is saved.
 
 When search is disabled, search tools are absent from the agent runtime tool list, so they do not render in agent context.
+
+## Wiring
+
+- `search::build_search_tools` (`registry.rs`) is called once from
+  `tools/ops.rs:891` to assemble the search slice of the agent tool list.
+- `tools/mod.rs:47` re-exports `crate::search::tools::*`, so callers reach
+  search tools through `crate::tools` rather than importing `crate::search`
+  directly.
+- TinyFish tools are not selected by `search.engine`: `registry.rs`
+  (`build_backend_search_tools`) pushes them on top of whichever engine is
+  active when the engine is not `disabled`, an `IntegrationClient` can be
+  built, and `config.integrations.tinyfish.is_active()`.
+- `SearxngSearchTool` and `SeltzSearchTool` bypass the engine registry
+  entirely. They are constructed per call by the `tools.searxng_search`
+  and `tools.seltz_search` RPC handlers
+  (`crates/openhuman-core/src/tools/schemas/web_search.rs`), which take the query from the
+  RPC params and the endpoint, key, timeout, and `enabled` gate from the
+  top-level `config.searxng` / `config.seltz` sections, not `Config.search`.
+
+## `engines/`
+
+`engines` is `pub(crate)`. Each file (`managed`, `parallel`, `brave`,
+`querit`, `exa`, `tavily`, `disabled`) exports a single
+`pub(crate) fn build(root_config: &Config, params: SearchToolParams) -> Vec<Box<dyn Tool>>`
+that constructs that engine's tool set — e.g. `managed::build` returns a single
+`WebSearchTool`, which posts to the backend's
+`/agent-integrations/parallel/search`. `parallel::build` registers the same
+`WebSearchTool` alongside the Parallel family, and falls back to it alone when
+no backend client is available. `registry.rs` matches
+`search.effective_engine()` to pick exactly one.
+
+See [`tools/README.md`](tools/README.md) for the provider -> tool -> transport
+table, and
+[`gitbooks/features/native-tools/web-search.md`](../../../../gitbooks/features/native-tools/web-search.md)
+for the user-facing description of engine selection.

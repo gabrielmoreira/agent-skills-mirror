@@ -162,7 +162,7 @@ reqwest 的 `redirect::Policy::custom` 回调是同步上下文，没法 `.await
 3. host 是 IP 字面量 → `classify_ip` 后判策略
 4. **未知 hostname → 返回 `false` 放行**——它无法在同步上下文里 resolve；如果 client 自动 follow，单靠这个回调并不存在可靠的“下一跳业务代码再检查”保证
 
-因此新代码不应把同步回调当完整 SSRF 边界。`http_redirect::checked_get` 要求调用方构造 `Policy::none()` client，自行解析相对 `Location`、限制跳数 / loop，并在下一次 `send()` 前对完整目标异步 `check_url`。`web_fetch`、远程 PDF 与 `url_preview` 已走这条共享原语。
+因此新代码不应把同步回调当完整 SSRF 边界。`http_redirect::checked_get` 要求调用方构造 `Policy::none()` client，自行解析相对 `Location`、限制跳数 / loop，并在下一次 `send()` 前对完整目标异步 `check_url`。`web_fetch`、远程 PDF、`url_preview` 与 Knowledge URL / 远程媒体采集已走这条共享原语。
 
 `check_host_blocking_sync` 的返回值语义和 `check_url` **相反**：`true = 应该 block，false = 放行`。它只用于仍受 reqwest 同步 callback 形状限制的兼容入口；迁移这些入口时应改用手动逐跳协议。
 
@@ -178,6 +178,7 @@ reqwest 的 `redirect::Policy::custom` 回调是同步上下文，没法 `.await
 | `image_generate` 输入/产物图片下载 | `ssrf_cfg.image_generate()`，逐跳 SSRF 经 `adapters::fetch` 统一走同一条安全通路，封顶 10 MB | [`ha-media media_gen/input.rs`](../../../crates/ha-media/src/media_gen/input.rs) |
 | `url_preview`（页面 head / favicon） | `ssrf_cfg.url_preview()`，每次重定向逐跳复查 | [`url_preview.rs`](../../../crates/ha-core/src/url_preview.rs) |
 | `web_search`（各 provider + SearXNG） | `ssrf_cfg.default_policy`（无 per-tool override），统一经 helper `check_search_url` | [`tools/web_search/helpers.rs`](../../../crates/ha-core/src/tools/web_search/helpers.rs) |
+| Knowledge URL / 远程媒体采集 | `ssrf_cfg.web_fetch()`，client 禁自动 redirect，逐跳经 `http_redirect::checked_get` 异步解析并检查；响应仍按文本/二进制上限流式读取 | [`ha-knowledge knowledge/source.rs`](../../../crates/ha-knowledge/src/knowledge/source.rs) |
 | MCP transport（Streamable HTTP / SSE / WebSocket） | 按 MCP server 的 `trust_level`：Trusted 继承 `default_policy`，Untrusted 强制 `Strict`（连 loopback 都拦）；ws/wss 先 rewrite 成 http/https 再分类，三入口统一经 `ssrf_gate_url` | [`ha-mcp transport.rs`](../../../crates/ha-mcp/src/transport.rs) |
 | MCP OAuth（discovery / DCR / token / refresh） | 固定 `SsrfPolicy::Default`，出站前叠 `provider::apply_proxy` | [`ha-mcp oauth.rs`](../../../crates/ha-mcp/src/oauth.rs) |
 
@@ -287,6 +288,7 @@ pub fn status() -> DangerousModeStatus;
 这几条不属于某个具体函数，而是所有子系统都要守的跨切面约束：
 
 - **凭据绝不进日志**。任何日志路径（`app_*!` / `tracing` / panic backtrace / 请求响应体落盘）在写出前都必须经 [`logging::redact_sensitive`](../../../crates/ha-base/src/logging/file_ops.rs) 脱敏；错误/正文预览还会额外做长度截断，避免把大段响应体连同其中的密钥一起写进磁盘。API Key / OAuth Token 绝不能出现在任何日志中——一旦模型能读到含密钥的历史，日志就成了泄漏通道。
+- **搜索查询也按敏感正文处理**。`web_search` 的运行日志、Provider 错误、用量记录与 fallback 诊断只保留 provider、阶段、HTTP 状态、耗时和结果数；不记录 query、带查询参数的 URL 或上游错误正文。正常工具结果可以返回来源标题、URL 与摘要，但不再额外回显原查询。Google Key / CX 即使位于请求 URL，也只能在请求构造内存中存在，reqwest 错误必须先移除 URL。
 - **凭据文件的落盘位置与清理**。核心 LLM 的 OAuth token 落在 `~/.hope-agent/credentials/auth.json`，MCP server 的凭据落在 `~/.hope-agent/credentials/mcp/{server_id}.json`。登出 / 删除 server 时**必须**调用对应的 `clear_token()` / `mcp::credentials::clear()` 清除。
 - **凭据原子保存**。主 LLM OAuth 与 MCP 均使用[平台安全写原语](platform.md)；OAuth 使用 `write_secure_file_outcome` 区分是否已经发布，并在 Unix 收紧凭据目录和文件权限。Windows 仍依赖继承 DACL，不宣称专属 ACL 或加密。
 - **CSP 不放行外部脚本域名**。`tauri.conf.json` 的 CSP 是一段限制性策略（并非放开）：`script-src` 与 `default-src` 锁定在 `'self'` 和 IPC 通道，`object-src 'none'`、`base-uri 'self'`、`form-action 'self'`。任何需要远端资源的地方都请走后端代理，不要往 CSP 里加外部脚本/框架来源。

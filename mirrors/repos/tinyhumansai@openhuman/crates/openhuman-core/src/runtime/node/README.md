@@ -104,8 +104,8 @@ This module reads `config.node` (`enabled`, `prefer_system`, `version`,
 - `crate::config` — the settings each request carries.
 - `crate::tools`, `security`, `agent::host_runtime`, `memory` — the
   registry the bridge enumerates and executes.
-- `crate::core::event_bus`, `crate::core::all`, `crate::rpc` — events and RPC
-  plumbing.
+- `crate::core::bus::BUS` / `crate::core::events::DomainEvent`,
+  `crate::core::all`, `crate::rpc` — events and RPC plumbing.
 
 External crates: `tinyruntime-bus`, `tokio`, `anyhow`, `serde`/`serde_json`,
 `tracing`, `async-trait`. No HTTP client, no archive crates, no digest crate —

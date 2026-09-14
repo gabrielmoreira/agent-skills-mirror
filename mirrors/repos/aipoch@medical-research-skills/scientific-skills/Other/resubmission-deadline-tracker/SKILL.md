@@ -10,6 +10,11 @@ author: AIPOCH
 
 Track manuscript resubmission deadlines and generate actionable task schedules based on remaining time.
 
+## Dependencies
+
+- Python 3.9+ (standard-library `zoneinfo`)
+- `pip install -r requirements.txt` supplies IANA timezone data, including on Windows.
+
 ## Quick Check
 
 ```bash
@@ -27,7 +32,7 @@ python scripts/main.py --help
 
 1. Confirm the manuscript title, journal, deadline date, and reviewer issue counts.
 2. **Timezone validation:** If `--timezone` is not provided, default to `Asia/Shanghai` and emit a note: "Deadline calculated using Asia/Shanghai timezone. Use `--timezone` to specify your local timezone (e.g., `America/New_York`, `Europe/London`)."
-3. Calculate remaining time and assign urgency level (standard / urgent / emergency).
+3. Calculate remaining time using the stored IANA timezone and assign urgency level.
 4. Generate a phase-appropriate task schedule based on the urgency level.
 5. Return the deadline summary, task breakdown, and risk notes.
 6. If inputs are incomplete, state exactly which fields are missing and request only the minimum additional information.
@@ -68,11 +73,14 @@ python scripts/main.py --update "Cancer Research Paper" --progress 60
 
 | Remaining Time | Level | Mode |
 |----------------|-------|------|
-| > 14 days | Standard | Full 4-phase schedule |
-| 3–14 days | Urgent | Triage and P0-only execution |
-| < 3 days | Emergency | Minimum viable changes + extension request |
+| ≥ 30 days | Relaxed | Full revision schedule |
+| 14–<30 days | Standard | Full 4-phase schedule |
+| 7–<14 days | Active | Triage and priority execution |
+| 3–<7 days | Urgent | Critical changes only |
+| 0–<3 days | Emergency | Minimum viable changes + extension request |
+| < 0 days | Overdue | Contact the editor |
 
-**Note:** The 3–7 day range was previously labeled "Urgent" but the boundary is 3–14 days. Any remaining time between 3 and 14 days triggers Urgent mode.
+These levels describe the existing implementation; no new states are introduced.
 
 ## Output
 
@@ -90,6 +98,15 @@ For complex multi-constraint requests, always include these explicit blocks:
 3. Task Schedule
 4. Risks and Caveats
 5. Next Checks
+
+## Timezone and Stored Data
+
+`--timezone` applies when adding a deadline. Existing records use their stored
+`timezone`; their JSON format and files are unchanged. Remaining time is compared
+in UTC, so the machine timezone does not change the result. Invalid dates, unknown
+IANA zones, daylight-saving gaps and ambiguous overlap times are rejected before
+a new record is saved. For an overlap, supply the exact UTC date/time with
+`--timezone UTC`. Interactive mode also asks for a timezone.
 
 ## Error Handling
 

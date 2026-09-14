@@ -24,7 +24,9 @@ Persistent, Rust-native Socket.IO client to the OpenHuman backend. The `socket` 
 | `crates/openhuman-core/src/platform/socket/token_provider.rs` | `TokenProvider` type alias + `static_token_provider`, `token_provider_from_config`, and `is_invalid_token_error` (strict double-anchor matcher). |
 | `crates/openhuman-core/src/platform/socket/schemas.rs` | Controller schemas + RPC handlers for the `socket` namespace. |
 | `crates/openhuman-core/src/platform/socket/types.rs` | `WsStream` alias, `ConnectionOutcome` enum, observability event-name constants; re-exports `ConnectionStatus` / `SocketState` from `crate::api::models::socket`. |
-| `crates/openhuman-core/src/platform/socket/ws_loop_tests.rs` | Out-of-line test suite for `ws_loop.rs` (via `#[path = ...]`). |
+| `crates/openhuman-core/src/platform/socket/ops.rs` | RPC operations behind `schemas.rs` (`connect_with_session` and the live-socket reuse path that reinstalls the medulla workflow bridge). |
+| `crates/openhuman-core/src/platform/socket/medulla/` | The Medulla harness plane: `medulla:task_*`, capability probes, and workflow round trips bound to an agent session. See [`medulla/README.md`](medulla/README.md). |
+| `crates/openhuman-core/src/platform/socket/*_tests.rs` | Sibling test suites, included via `#[path]`. |
 
 ## Public surface
 
@@ -50,7 +52,7 @@ All handlers go through `require_manager()` and error with `"SocketManager not i
 
 ## Events
 
-`event_handlers::handle_sio_event` is a thin transport router — it does not run domain logic itself. It mutates connection status for `ready`/`error` and publishes the following `DomainEvent`s via `publish_global` for other domains' bus subscribers:
+`event_handlers::handle_sio_event` is a thin transport router — it does not run domain logic itself. It mutates connection status for `ready`/`error` and publishes the following `DomainEvent`s via `crate::core::bus::BUS.publish` for other domains' bus subscribers:
 
 | Inbound SIO event | Published `DomainEvent` | Consumer domain |
 | --- | --- | --- |
@@ -60,6 +62,8 @@ All handlers go through `require_manager()` and error with `"SocketManager not i
 | `tunnel:frame` | `DeviceTunnelFrame` | devices |
 | `tunnel:evicted` | `DevicePeerOffline` | devices |
 | `*:message` (suffix match) | `ChannelInboundMessage { event_name, channel, message, sender, reply_target, thread_ts, raw_data }` | channels |
+
+`medulla:task_run` / `task_send` / `task_abort` / `capabilities_request` / `workflow_request` are not published to the bus; `handle_sio_event` hands them straight to `medulla/` (see its README), and on `ready` it advertises the agent roster and workflow set through `medulla::emit_register_agents` / `medulla::workflows::emit_register_workflows`.
 
 This module is a **publisher only** — it owns no `bus.rs` / `EventHandler` impls.
 
@@ -73,7 +77,7 @@ None of its own. State (`status`, `socket_id`, `error`, attached `WebhookRouter`
 - `crate::api::socket::websocket_url`, `crate::api::config::effective_backend_api_url`, `crate::api::jwt::get_session_token` — URL derivation and session-token lookup.
 - `crate::core::all` — `ControllerFuture`, `RegisteredController` for the controller registry.
 - `crate::core::{ControllerSchema, FieldSchema, TypeSchema}` — RPC schema types.
-- `crate::core::event_bus` — `publish_global` / `DomainEvent` for routing inbound events.
+- `crate::core::bus::BUS.publish` / `crate::core::events::DomainEvent` — for routing inbound events.
 - `crate::core::observability::report_error_or_expected` — one-shot sustained-outage classification at the failure threshold.
 - `crate::skills::webhooks` — `WebhookRouter` (attached for parse-error logging / response emission) and `WebhookRequest`.
 - `crate::integrations::composio` — `ComposioTriggerEvent` DTO for `composio:trigger` deserialization.
@@ -84,7 +88,7 @@ None of its own. State (`status`, `socket_id`, `error`, attached `WebhookRouter`
 ## Used by
 
 - `crates/openhuman-core/src/core/all.rs` — registers the socket controllers.
-- `crates/openhuman-core/src/core/jsonrpc.rs`, `crates/openhuman-core/src/core/observability.rs` — reference the socket namespace/state.
+- `crates/openhuman-core/src/core/jsonrpc.rs` (`set_global_socket_manager` at bootstrap), `crates/openhuman-core/src/core/runtime/services.rs` (backend auto-connect with `token_provider_from_config`), `crates/openhuman-core/src/core/observability.rs` — reference the socket namespace/state.
 - `crates/openhuman-core/src/platform/connectivity/rpc.rs` — connectivity/status surfacing.
 - `crates/openhuman-core/src/skills/webhooks/{ops.rs,bus.rs}` — emit webhook responses back through the global manager.
 - `crates/openhuman-core/src/security/devices/tunnel_client.rs` — emits tunnel frames/registration over the socket.

@@ -37,6 +37,7 @@ For a deliberate code-index snapshot, configure every MCP process that uses the 
 
 - **`codebase_stop`** — gracefully pause in-progress indexing. Current batch finishes and checkpoints. All progress preserved. Resume with `codebase_index`.
 - **`codebase_remove`** — delete entire index (destructive). Safely stops watcher, cancels indexing, waits for graph builds.
+- **`codebase_prune`** — inventory stored identities; delete one by exact identity, fresh confirmation token and shared-store acknowledgement. Path absence is advisory, never a candidate set.
 - **`codebase_list_projects`** — list all indexed projects with metadata, graph info, and artifact status.
 
 ## Managing the Code Graph

@@ -121,7 +121,7 @@ At `data/<namespace>/dimension/my_dimension.json`:
 
 Use `minecraft:multi_noise` only with a complete set of climate parameters from
 a known-good 1.21 source. Keep the dimension type, noise settings, and every
-referenced biome in the same compatibility lane.
+referenced biome in the same Minecraft version.
 
 ## NeoForge biome modifier
 

@@ -13,7 +13,7 @@ keeps one active. Session lists support machine filtering, pinning and archive;
 sending to an inactive session can resume it and migrate the draft/navigation
 when the returned session ID changes.
 
-Model and permission controls follow the session's agent/capabilities;
+Model, permission and Codex collaboration controls follow the session's agent/capabilities;
 usage/storage require the owner namespace. Rename, Delete and explicit Reopen
 have API wrappers but no current iOS UI. See the [native app guide](../docs/guide/native-apps.md)
 for platform differences, web-only features and everyday use.
@@ -95,6 +95,15 @@ presentation. When changing fixture inputs or generation, run
 hand-edit fixtures. See [fixture guidance](../shared/fixtures/README.md) and
 [UI development](#ui-development) for targeted app-hosted checks.
 
+New-session directory regression checks: `ios/scripts/linux-test.sh --filter
+'NewSession|RemoteDirectoryBrowser'` covers path queries and browser navigation;
+`HapiTests/NewSessionDirectoryTests` covers the form's defaults, roster refresh,
+offline machines and spawn validation. On a device, verify home → parent → a
+project outside home, explicit workspace-root prefixes, `~/` and hidden-directory
+completion, and clearing the input while machine health updates arrive. A
+restored or selected offline machine stays selected until the user chooses an
+online machine; its old path is never silently moved to another host.
+
 ## Pairing
 
 The app supports multiple hubs with one active selection. See the
@@ -171,7 +180,10 @@ provider credentials as described below.
   carries an SDK-only copy of the HapiKit `PushEnvelope` decrypt, kept honest
   by the shared test vector.
 - **Actions.** `permission-request` → Allow / Deny; `ready` and
-  `task-notification` → inline Reply. Handlers run in the notification
+  `task-notification` → inline Reply. `input-request` previews the first
+  question, remaining question count and session name, with tap-to-open only
+  (no approval or Reply action). Apple Watch mirrors the preview; answer on
+  the phone. Handlers run in the notification
   delegate's async completion and resolve the owning hub Android-style
   (active hub first, then the roster; 404 "Session not found" / 403 = try
   the next hub) — approve/deny post `{}`, reply posts `{text, localId}`.
@@ -306,10 +318,29 @@ TEST_RUNNER_HAPI_TYPOGRAPHY_CAPTURE=/tmp/hapi-typography-review \
 
 ### Tool inspection
 
+Inline approvals use a neutral card with a quiet pending/submitting/handled
+status, a full-input link, and adaptive action rows. `ChatActionButtonStyle`
+owns the complete 44pt minimum target (10pt corners); do not add system bordered
+button padding or another minimum label height. Approvals, question navigation
+and plan actions share only this style, never their submission semantics.
+Queued-message actions also keep 44pt targets and stack when the column is too
+narrow. Native alerts, sheets and form controls retain their system styling.
+
+`PermissionActionPresentationTests` covers flavor gates, action geometry, busy
+and already-handled states, failures, themes and large text. To capture isolated,
+non-networked approval specimens, set `TEST_RUNNER_HAPI_APPROVAL_CAPTURE` to a
+new temporary directory and run it through `ios/scripts/test-transcript.sh`.
+
 Plan proposals (`ExitPlanMode` / `exit_plan_mode`) are reading documents, not
 activity summaries: their complete `input.plan` Markdown stays visible in the
 conversation, before any approval controls. The same renderer is used in the
 inspector; null output does not show a misleading "No output" placeholder.
+Shared Codex proposals expose **Implement plan** and **Continue planning** only
+when the active session's `agentState.codexPlanProposalId` matches the tool-call
+id. Implementation uses the dedicated plan endpoint, not permission approval;
+continue only focuses the composer, preserving its draft. Pending/error state
+survives row recycling. Withdrawn, historical and child proposals stay read-only
+(an outstanding operation/error can still be shown).
 Plans are prewarmed in the chat Markdown cache and never use the ordinary
 tool-output preview/paging budget. The inspector retains raw fields under Source.
 
@@ -342,6 +373,11 @@ question**. **Previous question** retains all choices and notes; the last step
 always requires **Submit answer**. Recommended labels are display-only badges,
 never default selections or rewritten wire values. Other-answer/note fields
 expand on demand; text-only questions and prefilled drafts show them immediately.
+Codex choice questions with `isOther: true` also offer **None of the above**.
+Selecting it stays on the current question and focuses optional notes; empty
+notes are valid. Its wire value remains `None of the above` in every language,
+and recorded answers/notes appear in summaries and details. Requests without
+`isOther` (including Pi and MCP forms) keep their existing choices.
 All form state survives transcript-cell recycling for the retained request.
 Successful records collapse to answer summaries; missing recorded answers are
 shown as handled, not inferred from local drafts. Ordinary approvals retain their approval footer.
@@ -357,8 +393,10 @@ TEST_RUNNER_HAPI_QUESTION_CAPTURE=/tmp/hapi-question-review \
 
 Inspection pauses transcript tail-following and hidden history paging, without
 opening another SSE subscription. Closing returns to the reading anchor;
-**Back to latest** explicitly resumes following. Trimmed records remain visible
-as labeled, read-only snapshots; missing groups retain their last membership,
+opening/closing at bottom does not itself show **Back to latest**. The button
+appears when the transcript is far enough from bottom (or the live tail has been
+trimmed), and explicitly resumes following. Trimmed records remain visible as
+labeled, read-only snapshots; missing groups retain their last membership,
 without switching to another group. Incomplete history is labeled and can be
 loaded from the conversation after closing the inspector. Large text is loaded
 in 20,000-character parts and can be copied in full; large diffs use paged source

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `pascalorg/editor` — 26 default patterns, 0 followed patterns, 38 file(s) materialized.
+Mirror of `pascalorg/editor` — 26 default patterns, 0 followed patterns, 41 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `pascalorg/editor` — 26 default patterns, 0 followed patterns, 38 fi
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 38 |
+| Files         | 41 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -72,31 +72,34 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 11 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 | 12 | ✓ | [`GEMINI.md`](GEMINI.md) |
 | 13 | ✓ | [`skills/.claude-plugin/plugin.json`](skills/.claude-plugin/plugin.json) |
-| 14 | ✓ | [`skills/.mcp.json`](skills/.mcp.json) |
-| 15 | ✓ | [`skills/furniture-fit/.clawhubignore`](skills/furniture-fit/.clawhubignore) |
-| 16 | ✓ | [`skills/furniture-fit/evals/evals.json`](skills/furniture-fit/evals/evals.json) |
-| 17 | ✓ | [`skills/furniture-fit/evals/trigger-evals.json`](skills/furniture-fit/evals/trigger-evals.json) |
-| 18 | ✓ | [`skills/furniture-fit/examples/all-tested-poses-fail.md`](skills/furniture-fit/examples/all-tested-poses-fail.md) |
-| 19 | ✓ | [`skills/furniture-fit/examples/clear-footprint.md`](skills/furniture-fit/examples/clear-footprint.md) |
-| 20 | ✓ | [`skills/furniture-fit/examples/insufficient-evidence.md`](skills/furniture-fit/examples/insufficient-evidence.md) |
-| 21 | ✓ | [`skills/furniture-fit/examples/no-sign-in-dimension-precheck.md`](skills/furniture-fit/examples/no-sign-in-dimension-precheck.md) |
-| 22 | ✓ | [`skills/furniture-fit/examples/rotated-footprint-fails.md`](skills/furniture-fit/examples/rotated-footprint-fails.md) |
-| 23 | ✓ | [`skills/furniture-fit/examples/unproven-height-metadata.md`](skills/furniture-fit/examples/unproven-height-metadata.md) |
-| 24 | ✓ | [`skills/furniture-fit/references/evidence-boundaries.md`](skills/furniture-fit/references/evidence-boundaries.md) |
-| 25 | ✓ | [`skills/furniture-fit/references/report-template.md`](skills/furniture-fit/references/report-template.md) |
-| 26 | ✓ | [`skills/furniture-fit/references/setup.md`](skills/furniture-fit/references/setup.md) |
-| 27 | ✓ | [`skills/furniture-fit/SKILL.md`](skills/furniture-fit/SKILL.md) |
-| 28 | ✓ | [`skills/pascal-3d/.clawhubignore`](skills/pascal-3d/.clawhubignore) |
-| 29 | ✓ | [`skills/pascal-3d/evals/evals.json`](skills/pascal-3d/evals/evals.json) |
-| 30 | ✓ | [`skills/pascal-3d/evals/trigger-evals.json`](skills/pascal-3d/evals/trigger-evals.json) |
-| 31 | ✓ | [`skills/pascal-3d/examples/autonomous-private-project.md`](skills/pascal-3d/examples/autonomous-private-project.md) |
-| 32 | ✓ | [`skills/pascal-3d/examples/hosted-existing-account.md`](skills/pascal-3d/examples/hosted-existing-account.md) |
-| 33 | ✓ | [`skills/pascal-3d/examples/local-project.md`](skills/pascal-3d/examples/local-project.md) |
-| 34 | ✓ | [`skills/pascal-3d/references/setup.md`](skills/pascal-3d/references/setup.md) |
-| 35 | ✓ | [`skills/pascal-3d/references/tool-workflows.md`](skills/pascal-3d/references/tool-workflows.md) |
-| 36 | ✓ | [`skills/pascal-3d/SKILL.md`](skills/pascal-3d/SKILL.md) |
-| 37 | ✓ | [`skills/README.md`](skills/README.md) |
-| 38 | ✓ | [`skills/VALIDATION.md`](skills/VALIDATION.md) |
+| 14 | ✓ | [`skills/.cursor-plugin/mcp.json`](skills/.cursor-plugin/mcp.json) |
+| 15 | ✓ | [`skills/.cursor-plugin/pascal-mark-plate.svg`](skills/.cursor-plugin/pascal-mark-plate.svg) |
+| 16 | ✓ | [`skills/.cursor-plugin/plugin.json`](skills/.cursor-plugin/plugin.json) |
+| 17 | ✓ | [`skills/.mcp.json`](skills/.mcp.json) |
+| 18 | ✓ | [`skills/furniture-fit/.clawhubignore`](skills/furniture-fit/.clawhubignore) |
+| 19 | ✓ | [`skills/furniture-fit/evals/evals.json`](skills/furniture-fit/evals/evals.json) |
+| 20 | ✓ | [`skills/furniture-fit/evals/trigger-evals.json`](skills/furniture-fit/evals/trigger-evals.json) |
+| 21 | ✓ | [`skills/furniture-fit/examples/all-tested-poses-fail.md`](skills/furniture-fit/examples/all-tested-poses-fail.md) |
+| 22 | ✓ | [`skills/furniture-fit/examples/clear-footprint.md`](skills/furniture-fit/examples/clear-footprint.md) |
+| 23 | ✓ | [`skills/furniture-fit/examples/insufficient-evidence.md`](skills/furniture-fit/examples/insufficient-evidence.md) |
+| 24 | ✓ | [`skills/furniture-fit/examples/no-sign-in-dimension-precheck.md`](skills/furniture-fit/examples/no-sign-in-dimension-precheck.md) |
+| 25 | ✓ | [`skills/furniture-fit/examples/rotated-footprint-fails.md`](skills/furniture-fit/examples/rotated-footprint-fails.md) |
+| 26 | ✓ | [`skills/furniture-fit/examples/unproven-height-metadata.md`](skills/furniture-fit/examples/unproven-height-metadata.md) |
+| 27 | ✓ | [`skills/furniture-fit/references/evidence-boundaries.md`](skills/furniture-fit/references/evidence-boundaries.md) |
+| 28 | ✓ | [`skills/furniture-fit/references/report-template.md`](skills/furniture-fit/references/report-template.md) |
+| 29 | ✓ | [`skills/furniture-fit/references/setup.md`](skills/furniture-fit/references/setup.md) |
+| 30 | ✓ | [`skills/furniture-fit/SKILL.md`](skills/furniture-fit/SKILL.md) |
+| 31 | ✓ | [`skills/pascal-3d/.clawhubignore`](skills/pascal-3d/.clawhubignore) |
+| 32 | ✓ | [`skills/pascal-3d/evals/evals.json`](skills/pascal-3d/evals/evals.json) |
+| 33 | ✓ | [`skills/pascal-3d/evals/trigger-evals.json`](skills/pascal-3d/evals/trigger-evals.json) |
+| 34 | ✓ | [`skills/pascal-3d/examples/autonomous-private-project.md`](skills/pascal-3d/examples/autonomous-private-project.md) |
+| 35 | ✓ | [`skills/pascal-3d/examples/hosted-existing-account.md`](skills/pascal-3d/examples/hosted-existing-account.md) |
+| 36 | ✓ | [`skills/pascal-3d/examples/local-project.md`](skills/pascal-3d/examples/local-project.md) |
+| 37 | ✓ | [`skills/pascal-3d/references/setup.md`](skills/pascal-3d/references/setup.md) |
+| 38 | ✓ | [`skills/pascal-3d/references/tool-workflows.md`](skills/pascal-3d/references/tool-workflows.md) |
+| 39 | ✓ | [`skills/pascal-3d/SKILL.md`](skills/pascal-3d/SKILL.md) |
+| 40 | ✓ | [`skills/README.md`](skills/README.md) |
+| 41 | ✓ | [`skills/VALIDATION.md`](skills/VALIDATION.md) |
 
 ---
 

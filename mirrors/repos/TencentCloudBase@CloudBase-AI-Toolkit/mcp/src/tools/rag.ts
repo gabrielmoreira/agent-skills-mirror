@@ -326,32 +326,40 @@ async function downloadOpenAPI() {
   const baseDir = path.join(CACHE_BASE_DIR, "openapi");
   await fs.mkdir(baseDir, { recursive: true });
 
-  const results: OpenAPIInfo[] = [];
-  await Promise.all(
-    OPENAPI_SOURCES.map(async (source) => {
+  const downloaded = await Promise.all(
+    OPENAPI_SOURCES.map(async (source): Promise<OpenAPIInfo | undefined> => {
       try {
         const response = await fetch(source.url);
         if (!response.ok) {
           warn(`[downloadOpenAPI] Failed to download ${source.name}`, {
             status: response.status,
           });
-          return;
+          return undefined;
         }
         const content = await response.text();
         const filePath = path.join(baseDir, `${source.name}.openapi.yaml`);
         await fs.writeFile(filePath, content, "utf8");
-        results.push({
+        return {
           name: source.name,
           description: source.description,
           absolutePath: filePath,
           url: source.url,
-        });
+        };
       } catch (error) {
         warn(`[downloadOpenAPI] Failed to download ${source.name}`, {
           error,
         });
+        return undefined;
       }
     }),
+  );
+
+  // 顺序必须跟随 OPENAPI_SOURCES 声明顺序。`Promise.all` 只保证按输入顺序
+  // 返回结果，所以这里先收集再过滤；若改成在各并发任务内部 `results.push()`，
+  // 数组顺序会变成网络完成顺序，导致 tools.json / mcp-tools.md 里内联的
+  // OpenAPI 清单在每次构建之间无意义漂移。
+  const results = downloaded.filter(
+    (item): item is OpenAPIInfo => item !== undefined,
   );
 
   debug("[downloadOpenAPI] openAPIDocs 下载完成", {
@@ -487,6 +495,40 @@ async function downloadResources(
   });
 
   return resourceDownloadPromise;
+}
+
+/**
+ * docs.cloudbase.net 的 markdown 地址规则。
+ *
+ * 站点改为「页面路径 + `.md`」直接给出 Markdown 源文件；而 `@cloudbase/manager-node`
+ * 的 `DocsService.readDoc()` 仍按旧规则拼接 `<path>/index.md`。旧地址不会 404 ——
+ * 站点对未知路径返回 200 + HTML（SPA 兜底页），因此 SDK 会静默把整页 HTML 当成
+ * 文档正文返回，既不报错也无法从状态码察觉。
+ *
+ * SDK 对已以 `.md` 结尾的路径原样透传，所以在这里先把路径归一化成正确形态即可
+ * 绕开拼接逻辑；SDK 日后修好也不会重复加后缀。
+ */
+export function resolveDocsMarkdownPath(docPath: string): string {
+  const raw = docPath.trim();
+  const hashAt = raw.indexOf("#");
+  const withoutHash = (hashAt >= 0 ? raw.slice(0, hashAt) : raw).replace(/\/+$/, "");
+  const hash = hashAt >= 0 ? raw.slice(hashAt) : "";
+
+  // 旧文档里常见的 `<path>/index.md` 写法先还原成页面路径，再按新规则加后缀。
+  const base = withoutHash.replace(/\/index\.md$/i, "");
+  const normalized = /\.md$/i.test(base)
+    ? base
+    : `${base.replace(/\/index$/i, "")}.md`;
+
+  return `${normalized}${hash}`;
+}
+
+/**
+ * 识别 SPA 兜底页：站点对不存在的 markdown 路径同样返回 200，正文是站点 HTML 外壳。
+ * 用于把「静默返回一坨 HTML」换成明确的失败信息。
+ */
+export function isDocsHtmlFallback(content: string): boolean {
+  return /^<!doctype html|^<html[\s>]/i.test(content.replace(/^\uFEFF/, "").trimStart());
 }
 
 export async function registerRagTools(server: ExtendedMcpServer) {
@@ -675,11 +717,22 @@ export async function registerRagTools(server: ExtendedMcpServer) {
               "docPath",
               resolvedAction,
             );
-            const markdown = await docsManager.readDoc(resolvedDocPath);
+            const markdownPath = resolveDocsMarkdownPath(resolvedDocPath);
+            const markdown = await docsManager.readDoc(markdownPath);
+            // 站点对没有 markdown 的路径也返回 200 + HTML 外壳，必须显式判失败，
+            // 否则会把整页 HTML 当成文档正文交给模型（旧行为就是这样静默出错的）。
+            if (isDocsHtmlFallback(markdown)) {
+              throw new Error(
+                t("rag.readDocNotMarkdown", {
+                  docPath: markdownPath,
+                  pageUrl: markdownPath.replace(/\.md(?=#|$)/i, ""),
+                }),
+              );
+            }
             return jsonContent(
               buildDocsEnvelope(
                 resolvedAction,
-                { docPath: resolvedDocPath, content: markdown },
+                { docPath: resolvedDocPath, markdownPath, content: markdown },
                 t("rag.readDocSuccess"),
               ),
             );

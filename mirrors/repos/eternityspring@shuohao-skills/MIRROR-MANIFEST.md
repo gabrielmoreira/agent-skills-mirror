@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `eternityspring/shuohao-skills` — 26 default patterns, 2 followed patterns, 61 file(s) materialized.
+Mirror of `eternityspring/shuohao-skills` — 26 default patterns, 0 followed patterns, 59 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `eternityspring/shuohao-skills` — 26 default patterns, 2 followed pa
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 2 |
-| Files         | 61 |
+| Followed pats | 0 |
+| Files         | 59 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,8 +51,7 @@ Mirror of `eternityspring/shuohao-skills` — 26 default patterns, 2 followed pa
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-- `README.md`
-- `README.en.md`
+_None._
 
 ## File Index
 
@@ -119,8 +118,6 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 57 | ✓ | [`skills/novel-storyboard/scripts/novel-storyboard.mjs`](skills/novel-storyboard/scripts/novel-storyboard.mjs) |
 | 58 | ✓ | [`skills/novel-storyboard/scripts/selftest.mjs`](skills/novel-storyboard/scripts/selftest.mjs) |
 | 59 | ✓ | [`skills/novel-storyboard/SKILL.md`](skills/novel-storyboard/SKILL.md) |
-| 60 | → | [`README.en.md`](README.en.md) |
-| 61 | → | [`README.md`](README.md) |
 
 ---
 

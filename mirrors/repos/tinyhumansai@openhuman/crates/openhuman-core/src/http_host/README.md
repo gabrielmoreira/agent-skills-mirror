@@ -24,7 +24,8 @@ Static directory hosting over ad-hoc, in-process HTTP listeners owned by the cor
 | `crates/openhuman-core/src/http_host/path_utils.rs` | Path safety + URL/HTML helpers: directory canonicalization, request-path traversal resolution, bind-host/label sanitization, href builders, `escape_html`, `content_type_for_path`, `redact_path_for_log`. |
 | `crates/openhuman-core/src/http_host/rpc.rs` | RPC adapters wrapping ops into `RpcOutcome<T>` (`start`/`stop`/`get`/`list`). |
 | `crates/openhuman-core/src/http_host/schemas.rs` | `ControllerSchema`s + `handle_*` controller handlers; `all_controller_schemas` / `all_registered_controllers`. |
-| `crates/openhuman-core/src/http_host/tests.rs` | `#[cfg(test)]` test module. |
+| `crates/openhuman-core/src/http_host/http_host_tests.rs` | Module-level tests (start/list/stop round-trip with Basic auth, path traversal rejection, username sanitization/resolution); mounted from `mod.rs` via `#[path = "http_host_tests.rs"] mod tests`. |
+| `crates/openhuman-core/src/http_host/schemas_tests.rs` | Controller-schema tests (schema/handler inventory parity, required inputs, unknown-function fallback); mounted from `schemas.rs` the same way. |
 
 ## Public surface
 
@@ -56,13 +57,13 @@ None on disk. Running servers are held in a process-global `HostedDirRegistry` (
 - `crate::core::shutdown` — `register` a one-time hook so all hosted servers stop when the core shuts down (`ops.rs`).
 - `crate::core::all` — `ControllerFuture`, `RegisteredController` for controller registration (`schemas.rs`).
 - `crate::core::{ControllerSchema, FieldSchema, TypeSchema}` — controller schema types (`schemas.rs`).
-- `crate::rpc::RpcOutcome` — RPC response envelope (`rpc.rs`).
+- `crate::rpc::RpcOutcome` — RPC response envelope (`rpc.rs`); `crate::rpc` is the `openhuman-rpc` crate re-exported from `crates/openhuman-core/src/lib.rs`.
 - External crates: `axum` (HTTP server/router), `tokio` (`TcpListener`, tasks), `tokio_util` (`CancellationToken`, `ReaderStream`), `uuid`, `base64`, `rand`, `urlencoding`, `serde`/`serde_json`.
 
 ## Used by
 
-- `crates/openhuman-core/src/core/all.rs` — registers `all_http_host_registered_controllers()` (line ~145) and `all_http_host_controller_schemas()` (line ~309) into the core controller registry, exposing the RPC/CLI surface.
-- `crates/openhuman-core/src/mod.rs` — declares `pub mod http_host`.
+- `crates/openhuman-core/src/core/all.rs` — registers `all_http_host_registered_controllers()` into the core controller registry, exposing the RPC/CLI surface.
+- `crates/openhuman-core/src/lib.rs` — declares `pub mod http_host;`, gated by `#[cfg(feature = "http-server")]`; a slim build without that feature has no `http_host.*` controllers (see the `default` feature list and `http-server` feature notes in `crates/openhuman-core/Cargo.toml`).
 - `crates/openhuman-core/src/core/observability.rs` references `http_host::path_utils` paths in error-classification docs/tests (`http_host` directory-not-found maps to a filesystem user-path-invalid class).
 
 ## Notes / gotchas

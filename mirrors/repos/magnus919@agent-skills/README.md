@@ -1,0 +1,809 @@
+# agent-skills
+
+[![skills.sh](https://skills.sh/b/magnus919/agent-skills)](https://skills.sh/magnus919/agent-skills)
+
+A collection of AI agent skills — reusable workflows, protocols, and knowledge packs for agentic systems. Skills follow the Agent Skills open format, making them compatible with any agent framework that supports the standard.
+
+The project is also where I codify practical patterns for making agents more capable, governable, observable, and trustworthy in real work — from evaluations and production operations to AI governance, operating economics, and multi-agent collaboration.
+
+## Skills
+
+### [actuarial-risk-modeling](actuarial-risk-modeling/SKILL.md)
+
+Expert statistical modeling for insurance, actuarial, and financial-risk decisions, including regression, GLMs, claims, forecasting, calibration, tail risk, and model governance.
+
+### [adr-authoring](adr-authoring/SKILL.md)
+
+Preserve the reasoning behind consequential architecture choices so later contributors can understand, revisit, or supersede them responsibly.
+
+
+### [agent-council](agent-council/SKILL.md)
+
+Multi-agent structured debate system — spawn a panel of expert agents to debate any question with convergence-aware iteration. Produces a decision landscape with confidence diagnostics, shared risks, remaining disagreements, and a principal's path narrative. Ships as a pip-installable Python package built on PydanticAI + PydanticGraph. `pip install pydantic-ai && pip install agent-council` and one API key to run your first debate.
+
+### [agent-evals-and-observability](agent-evals-and-observability/SKILL.md)
+
+Design and review framework-neutral AI-agent evaluations, trajectory evidence, risk-tiered release gates, and privacy-aware observability. Covers datasets, grader calibration, statistical comparisons, incident-to-case learning, optional OpenTelemetry interoperability, and templates for durable evidence.
+
+### [agent-production-operations](agent-production-operations/SKILL.md)
+
+Operate an evaluated agent with tools and authority in production through a runtime control plane covering versioning, staged rollout, fallback, cost and latency budgets, tool health, human escalation, disablement, and trace-to-eval feedback.
+
+### [agent-skills](agent-skills/SKILL.md)
+
+Reference for the Agent Skills open format itself — directory structure, frontmatter schema, naming conventions, and progressive disclosure model. Use this meta-skill when creating or reviewing any other skill in this repository.
+
+### [ai-governance](ai-governance/SKILL.md)
+
+Design and operate an organization's AI governance system: governance principles, operating models and decision rights, risk frameworks, lifecycle gates, and fairness, transparency, privacy, security, regulatory, and board-oversight controls. Use when standing up or maturing a governance program, tiering use-case risk, reviewing an LLM or agent system for governance and safety gaps, mapping a regulation to a compliance plan, or preparing board reporting. Do not use for legal interpretation (route to legal-strategy), data-governance mechanics (data-architect/data-engineering), or implementing application security (secure-software-engineering).
+
+### [ai-operating-economics](ai-operating-economics/SKILL.md)
+
+Decide whether an AI-enabled workflow should be adopted, scaled, constrained, redesigned, or retired by connecting workflow outcomes, worker or user effects, quality guardrails, full operating cost, telemetry, uncertainty, and accountable governance. Routes detailed financial, statistical, analytics, evaluation, runtime, governance, and launch work to the owning specialist skills.
+
+### [analog-occultism](analog-occultism/SKILL.md)
+
+Create subject-neutral images and videos in an analog occultism / industrial CRT noir aesthetic: near-monochrome archival technical atmosphere, severe low-key lighting, tactile signal degradation, industrial geometry, and quiet unresolved tension. Not for colorful cyberpunk, glossy advertising, conventional horror, or clean digital renders.
+
+### [anydoc](anydoc/SKILL.md)
+
+Convert Word, PowerPoint, Excel, OpenDocument, RTF, EPUB, CSV, and text-based PDF documents to GitHub-Flavored Markdown locally with the Any Doc CLI. Use when a task needs the contents of an office document, spreadsheet, presentation, ebook, or PDF you cannot read directly. Do not use for generating, editing, or validating documents, for ebook packaging, or for OCR of scanned or image-only PDFs.
+
+### [api-design-and-evolution](api-design-and-evolution/SKILL.md)
+
+Design, govern, document, review, and evolve consumer-facing HTTP, GraphQL, RPC, event, webhook, and streaming interfaces. Covers consumer jobs, domain semantics, API landscapes, ownership, lifecycle, topology, contracts, failure behavior, compatibility, deprecation, migration, and deployed-boundary verification. Do not use for product discovery, platform operations, full security assessment, ADR authoring, or delivery gates.
+
+### [artifact-pyramids](artifact-pyramids/SKILL.md)
+
+Structure durable research work so people and agents can start with conclusions, then inspect the analysis and underlying evidence only when needed.
+
+### [ascii-city-engine](ascii-city-engine/SKILL.md)
+
+Build portable, first-person colored ASCII city engines and small GIS-derived city packs. Covers terrain-following pedestrian physics, raycast-to-character-grid rendering, a pluggable city-provider JSON contract with an offline validator, reproducible public-GIS ingestion, and a committed downtown Raleigh sample pack. Not for WebGL/3D games, multi-level interiors, or committing full-resolution GIS archives.
+
+### [autogen](autogen/SKILL.md)
+
+An expert-level skill for building **conversational multi-agent systems** with Microsoft's AutoGen framework. Unlike graph-based or role-based orchestration, AutoGen uses **agent-to-agent conversations** as the orchestration primitive.
+
+### [backend-engineering](backend-engineering/SKILL.md)
+
+Design and implement backend services and APIs — REST, gRPC, GraphQL endpoint patterns, clean/hexagonal/layered services, event-driven handlers, outbox/inbox delivery, migration coexistence, database access, integrations, errors, and service-level testing. Language agnostic; routes API contracts, decomposition strategy, cross-system migration, data engineering, and platform provisioning to their owners.
+
+### [binary-analysis](binary-analysis/SKILL.md)
+
+Analyze unknown PE, ELF, Mach-O, and firmware files through a deterministic CLI backed by Ghidra's static-analysis engine. Covers triage, imports, decompilation, call paths, and structured evidence reports without executing or modifying the binary.
+
+### [bmad](bmad/SKILL.md)
+
+Run the BMad method (Breakthrough Method of Agile AI-Driven Development) as a harness-agnostic control-plane protocol: compress human intent into a five-field contract, classify work as direct/bounded/initiative and route to the smallest safe path, carry decisions in durable artifacts, review as triage, route failure to the layer where ambiguity entered, and gate autonomy on observable acceptance with machine-readable status. Use for intent capture, bounded implementation, review, and resumability in any agent harness.
+
+### [brand-designer](brand-designer/SKILL.md)
+
+Create comprehensive brand identity documentation for any brand. Guides you through documenting strategy, visual identity (logo, color, typography, imagery), voice and tone, application guidelines, governance, and asset inventory. Produces markdown specs, compiled brand books, and brand-compliant images via reference-image-aware generation. Ships 7 templates, a brand-book CLI for validation/compilation, and a generate script for brand card and mockup imagery.
+
+### [c4-diagramming](c4-diagramming/SKILL.md)
+
+Make system boundaries, responsibilities, and relationships legible at the architectural level appropriate to the reader.
+
+### [capacity-and-cost-engineering](capacity-and-cost-engineering/SKILL.md)
+
+Model technical capacity, unit cost, and budget constraints connected to demand, performance, and reliability decisions. Covers growth forecasting, peak sizing, degraded-mode capacity, multi-tenant demand distributions and skew, pooled/siloed headroom, tier-linked admission and fairness evidence, tenant-variable unit cost, budget/quota controls, representative load/soak evidence, and SLO-cost tradeoff records. Routes SaaS architecture, security, financial outcomes, infrastructure implementation, SRE, analytics, and general architecture to their specialist owners. Ships focused references, six fillable templates, and ten evals.
+
+### [chief-of-staff-methodology](chief-of-staff-methodology/SKILL.md)
+
+Prepare executive decisions, information triage, organizational sensing, institutional memory, and calendar choices with accountable human authority, transparent data use, and reviewable trade-offs.
+
+### [cli-builder](cli-builder/SKILL.md)
+
+Build and refactor CLI tools for AI agent consumption. 10 universal patterns (non-interactive, `--json`, `--dry-run`, idempotent, lazy auth, progressive help), an agent-compatibility test suite, a Python API client pattern, and a bash scaffold template. Principles grounded in real failures from building 15+ agent-facing CLIs.
+
+### [cncf-landscape](cncf-landscape/SKILL.md)
+
+Discover and compare cloud-native technologies from the live CNCF Landscape API, then turn the evidence into a constraint-aware shortlist with trade-offs, unknowns, and a bounded validation plan. Ships a stdlib-only query CLI, API caveats, a decision framework, an output template, and six evals.
+
+### [color-management](color-management/SKILL.md)
+
+Expert-level ICC profile color management for open-source workflows. Covers color science fundamentals (CIELAB, xyY, chromaticity), working space selection (sRGB, ProPhotoRGB, ACEScg, Rec.2020), ICC profile operations (convert, assign, extract, embed), gamut analysis, sRGB variant comparison, and color difference (dE) computation. Ships 6 Python scripts that wrap ImageMagick, ArgyllCMS, Exiftool, and LittleCMS; 5 reference files covering overview, operations, tool commands, working space data, and a full glossary. Distilled from Elle Stone's ninedegreesbelow.com and Bruce Lindbloom's color science resources.
+
+### [conditional-customer-success](conditional-customer-success/SKILL.md)
+
+A conditional skill for products with recurring human relationships — success plans, health evidence, renewal and expansion signals, QBRs, escalation, and closed-loop Voice of Customer. Declines to load for products without accounts, renewals, QBRs, or a customer-success team (internal tools, transactional products, public services without account-based engagement). Provides four product-model adaptations (B2B subscription, transactional, public-service, internal product), reference material on privacy and human-judgment boundaries, and four templates (applicability decision, success plan, health/risk record, escalation and feedback closure).
+
+### [confluence-cli](confluence-cli/SKILL.md)
+
+Atlassian Confluence from the terminal. List spaces, browse pages, view content with body extraction, search with CQL, and create pages. Same API token as Jira.
+
+### [crewai](crewai/SKILL.md)
+
+An expert-level skill for building **role-based multi-agent teams** with CrewAI. Agents are defined as Roles with Goals and Backstories; crews are composed with sequential or hierarchical workflows.
+
+### [crm](crm/SKILL.md)
+
+Operate HubSpot CRM from the terminal: list and search contact records, view deal pipeline stages, and move deals between stages with confirmation. Ships a bounded stdlib CLI (contacts list/get/search, deals list/update-stage, pipelines list) with `--json`, `--limit`, and a `--dry-run`/`--yes` mutation gate for stage changes.
+
+### [crowdsec](crowdsec/SKILL.md)
+
+Deploy, configure, and manage CrowdSec — the open-source, collaborative IPS/IDPS/WAF. Covers Security Engine installation (Linux, Docker), cscli hub management, remediation components (firewall, Traefik, Nginx), AppSec WAF, profiles, notifications, blocklists, CTI, metrics, and production best practices. Ships 7 reference files for deep dives into config, AppSec, Docker, Traefik integration, database backends, hub collections, and troubleshooting.
+
+### [cyberpunk](cyberpunk/SKILL.md)
+
+Create or analyze original settings, scenes, world operations, and image direction through the material, social, and human-scale logic of William Gibson’s Sprawl fiction. Distinguishes canon, inference, and original adaptation; does not imitate Gibson’s prose or continue named canon.
+
+### [daily-life-discovery](daily-life-discovery/SKILL.md)
+
+Guide a consent-based conversation that helps people discover how an AI agent could improve their day-to-day life, then match those needs to verified capabilities, reusable skills, and focused platform CLIs.
+
+### [data-architect](data-architect/SKILL.md)
+
+Act as a virtual data architect. Discover data assets, assess maturity, evaluate platforms, design architectures, establish governance, and create migration plans. Covers modern data patterns (data mesh, data lakehouse, streaming, real-time analytics) with vendor evaluation frameworks and maturity models.
+
+### [data-cleaning](data-cleaning/SKILL.md)
+
+Clean, profile, validate, reshape, and document messy data through an evidence-first, reproducible workflow with reusable plans, contracts, reports, and a dependency-free profiler.
+
+### [data-engineering](data-engineering/SKILL.md)
+
+Design and operate data infrastructure — database operations (vector, relational, graph, time-series), ETL/ELT pipeline design (dbt patterns, incremental loading), SQL analytical patterns, data quality monitoring, schema migration, and storage infrastructure management. Do not use for statistical analysis or ML model development.
+
+### [data-scientist](data-scientist/SKILL.md)
+
+PhD-level expertise in data science, statistics, and machine learning. Rigorous statistical methodology, experimental design, causal inference, Bayesian analysis, model selection and diagnostics, and research-grade communication. Ships five analysis scripts (power analysis, assumption diagnostics, model comparison, effect size calculator, experimental design generator) with Python + R dual-language support.
+
+### [de-spin](de-spin/SKILL.md)
+
+Analyze propaganda, spin, selective framing, deceptive marketing, and AI-generated persuasion by tracing claims to evidence and separating literal truth from implied conclusions. Produces a calibrated assessment of what is true, false, misleading, complicated, unsupported, or unknown, with an evidence ledger and a decision-safe next step.
+
+### [digital-twin](digital-twin/SKILL.md)
+
+Design and operate trustworthy digital twins and federated twin universes for software systems, engineering processes, infrastructure, agentic software factories, and cyber-physical operations. Covers architecture, synchronization, provenance, simulation, VVUQ, twin health, authority, governance, lifecycle, and decommissioning. Do not use for ordinary dashboards, static dependency graphs, or one named infrastructure tool without a twin-specific feedback loop.
+
+### [docker-compose](docker-compose/SKILL.md)
+Define, run, debug, and harden multi-container applications with Docker Compose. Covers the Compose Specification, lifecycle and healthchecks, service networking, volumes, secrets, profiles, interpolation, overrides, Compose Watch, CI, production patterns, and troubleshooting. Ships 9 references, 5 templates, and a portable diagnostics script.
+
+### [documents](documents/SKILL.md)
+Generate, inspect, validate, and fix PDF, Word (.docx), Excel (.xlsx), and PowerPoint (.pptx) documents through one shared workflow (scope, content model, template, render, validate, deliver) with per-format references, generation templates, and a stdlib validation script that performs structural sanity plus a render check with graceful degradation when no renderer is installed.
+### [dsm5](dsm5/SKILL.md)
+Assess and explain mental health and neurocognitive questions against DSM-5-TR diagnostic criteria, and guide evidence-based conversations for clinicians, patients, and family members. Use for symptoms, possible conditions, differential diagnoses, criteria, prevalence, and specifiers — not for formal diagnosis, treatment decisions, crisis intervention, or legal/insurance determinations.
+### [dspy](dspy/SKILL.md)
+
+An expert-level skill for **programmatic prompt optimization** with Stanford's DSPy framework. You write Python programs with typed signatures; DSPy optimizes the prompts automatically. This is the framework for prompt engineering that doesn't feel like engineering.
+
+### [email](email/SKILL.md)
+
+Send and diagnose transactional email through Twilio SendGrid: send with `--dry-run`/`--yes` confirmation, check deliverability (bounces and spam reports), and verify Signed Event Webhook signatures with a self-contained ECDSA P-256 verifier. Ships a bounded stdlib CLI with `--json` and `--limit`.
+
+### [enterprise-architecture](enterprise-architecture/SKILL.md)
+
+Connect enterprise outcomes to capabilities, value streams, application and information portfolios, operating models, decision rights, and feasible transition architectures. Keeps system design, organization design, product roadmaps, technology posture, and corporate strategy with their neighboring owners.
+
+### [epub](epub/SKILL.md)
+
+EPUB file format expert — read, write, edit, convert, and repair EPUB2/EPUB3 ebooks.
+Ten CLI scripts: structure inspection, text extraction, knowledge extraction (LLM mode
+via env vars), scaffold creation, surgical editing, image extraction, batch processing,
+EPUB2→3 conversion, repair, and validation. Eight reference files covering format
+internals, Python libraries, spec/validation, tutorials, capability discovery,
+fixed-layout, accessibility, and media overlays. Portable across any AgentSkills harness.
+
+### [esp32-development](esp32-development/SKILL.md)
+
+Build, configure, flash, test, debug, and recover complete ESP32 systems across ESP-IDF C/C++, Arduino/PlatformIO, MicroPython, CircuitPython, ESPHome, Zephyr, Rust, and NuttX. Covers board and pin identification, electrical safety, sensors, actuators, buses, networking, sleep, OTA, production security, native command-line tools, and evidence-first troubleshooting. Ships focused references, safe bring-up templates, a non-mutating host preflight, and safety evals.
+
+### [ffmpeg](ffmpeg/SKILL.md)
+
+Expert FFmpeg command-line guidance for inspecting, remuxing, transcoding, filtering, combining, streaming, and troubleshooting media with explicit mappings, build-aware assumptions, and post-run verification.
+
+### [financial-modeling](financial-modeling/SKILL.md)
+
+Build and review assumptions-led financial models, unit economics, pricing, fundraising scenarios, and SaaS operating metrics.
+
+### [fireflies](fireflies/SKILL.md)
+
+Fireflies.ai meeting intelligence from the terminal. Query transcripts, summaries, analytics, AskFred, and workspace data through source-faithful GraphQL documents; safely preview confirmed mutations and verify Webhooks V2 signatures locally.
+
+### [flaresolverr](flaresolverr/SKILL.md)
+
+Use a private FlareSolverr service through a dependency-free JSON CLI when ordinary HTTP retrieval is blocked by a browser challenge.
+
+### [flaresolverr-cli](flaresolverr-cli/SKILL.md)
+
+Use a small FlareSolverr JSON CLI for browser-backed GET and POST requests, readiness checks, and session lifecycle management.
+
+### [forgejo-cli](forgejo-cli/SKILL.md)
+
+Safe Forgejo API v1 CLI for issues, pull requests, repositories, file contents, metadata, webhooks, and user settings. Includes a guarded generic `/api/v1/` route for version-specific endpoints such as Actions and admin APIs.
+
+### [forward-deployed-engineering](forward-deployed-engineering/SKILL.md)
+
+Carry an embedded technical engagement from an ambiguous need to an adopted, measurable capability and a deliberate generalization decision across discovery, build, deployment, adoption, and field learning.
+
+### [frontend-engineering](frontend-engineering/SKILL.md)
+
+Build and maintain web frontends — component architecture, state management, API integration, responsive layout, client-side performance, and frontend testing patterns. Framework agnostic, focused on web frontend implementation. Do not use for backend service implementation, data engineering, or platform infrastructure work.
+
+### [gap-analysis](gap-analysis/SKILL.md)
+
+Conduct evidence-based gap analyses that compare a defined current state with a justified target state, characterize uncertainty and causes, prioritize action, and produce traceable registers, roadmaps, and decision records.
+
+### [genius-life](genius-life/SKILL.md)
+
+Guide a person in cultivating creativity in their own work and life: open conversational sessions on creative blocks, habits, environment, motivation, and resilience, or structured development of a concrete project or fledgling idea through a five-phase practice. Do not use for therapy or clinical support, general life coaching, product or stakeholder discovery, or as a study guide for a book.
+
+### [ghost](ghost/SKILL.md)
+
+Ghost CMS from the terminal. Manage posts and pages, list tags, and check site info. Admin API key from Ghost Integrations. JWT authentication handled automatically.
+
+### [github-runner](github-runner/SKILL.md)
+
+Deploy, manage, and troubleshoot self-hosted GitHub Actions runners. Covers systemd, Docker, Kubernetes (ARC), and Scale Set Client deployments.
+
+### [go-to-market](go-to-market/SKILL.md)
+
+CMO methodology — positioning and messaging frameworks (April Dunford's positioning, message hierarchy), customer acquisition strategy (paid, organic, PLG, SLG), brand architecture (brand house vs house of brands), growth modeling (CAC/LTV by channel, cohort analysis), market entry strategy (beachhead, land-and-expand), competitive response (pricing wars, feature races, brand defense).
+
+### [grafana](grafana/SKILL.md)
+
+Operate Grafana OSS, Enterprise, and Cloud with version-aware discovery, decision-oriented dashboards, end-to-end alert routing, explicit as-code ownership, evidence-led troubleshooting, and guarded security or production changes.
+
+### [gutenberg](gutenberg/SKILL.md)
+
+Search, download, and extract public-domain books from Project Gutenberg. Look up books by ID or keyword via gutendex, download plain-text and EPUB editions, strip licensing boilerplate, and classify fiction vs non-fiction. Ships a portable Python CLI with zero external dependencies.
+
+### [haystack](haystack/SKILL.md)
+
+An expert-level skill for building **production search and NLP pipelines** with Haystack. Pipelines are validated DAGs with typed components and explicit connections.
+
+### [hugo-theme](hugo-theme/SKILL.md)
+
+Build, customize, and debug advanced Hugo CMS themes. Covers template architecture, asset pipeline (Hugo Pipes, Tailwind CSS, PostCSS, images), shortcodes and render hooks, page bundles and content adapters, Hugo Modules, performance optimization, SEO/structured data, design/UX/accessibility, custom output formats, and CI/CD. Ships 7 reference files covering each topic area.
+
+### [implementation-planning](implementation-planning/SKILL.md)
+
+Turn an approved requirement or specification into an executable, dependency-aware delivery plan. Covers work breakdown into vertical slices, dependency mapping with critical-path analysis, ownership assignment, sequencing and parallelism, staged rollout strategy with rollback paths, and verification traceability against the original requirement. Supports cross-team, cross-repository, data migration, and staged-rollout scenarios. Does not plan unapproved work — entry gate enforces prerequisite approval.
+
+### [incident-learning](incident-learning/SKILL.md)
+
+Convert operational incident and near-miss evidence into verified, owned improvements across product, code, tests, evals, operations, and governance. Separates observed facts from causal hypotheses and unresolved uncertainty; maps escaped-from gaps (requirements, monitoring, authority, migration, adoption); assigns domain-specific follow-up work with owners and verification methods; and requires evidence of the implemented change — not just tickets — for closure. Routes implementation to SRE, QA, verification, agent evals, product lifecycle learning, implementation planning, resilience-and-recovery, and production-readiness. Ships 4 references (discovery brief, evidence/inference taxonomy, escaped-from analysis, follow-up domains, verification and closure), 4 templates (incident-learning record, causal/evidence ledger, follow-up work map, verification and closure record), and 5 evals.
+
+### [jellyfin](jellyfin/SKILL.md)
+
+Jellyfin media server from the terminal. Log in as a user or use an API key, check server info, browse recently added and library contents, search and inspect media, walk series/seasons/episodes, see next-up episodes, and view statistics — with MediaBrowser auth, user-id scoping, and response-shape quirks documented.
+
+### [jira](jira/SKILL.md)
+
+Atlassian Jira from the terminal. Search issues with JQL, view details, create issues, add comments, count matches, list projects, and transition status. Includes a full JQL reference (functions, history predicates, date expressions) plus REST auth/pagination guidance. API token from id.atlassian.com.
+
+### [kanban-guru](kanban-guru/SKILL.md)
+
+A virtual Kanban expert for engineering teams. Diagnose flow problems, design board configurations, calibrate WIP limits, establish service level expectations, set up multi-portfolio operating models, and navigate Scrum-to-Kanban transitions. Covers all seven cadences, classes of service, Little's Law, flow metrics, and the full practitioner's playbook with rich reference material.
+
+### [kubernetes](kubernetes/SKILL.md)
+
+Operate and troubleshoot Kubernetes safely across upstream Kubernetes, k3s, RKE2, MicroK8s, k0s, Talos, OpenShift/OKD, kind, Minikube, Rancher, EKS, AKS, and GKE. Covers workloads, APIs, version skew, networking, storage, scheduling, autoscaling, security, policy, backups, upgrades, observability, and evidence-first diagnosis. Ships the agent-first `k8s-cli` wrapper, diagnostic scripts, templates, and dated source references.
+
+### [langchain](langchain/SKILL.md)
+
+An expert-level skill for building LLM-powered applications with LangChain — the most widely adopted LLM orchestration framework. LCEL chains, RAG pipelines, agents, LangSmith observability, and LangServe deployment.
+
+### [langgraph](langgraph/SKILL.md)
+
+Build multi-agent AI systems with LangGraph — the low-level orchestration framework for stateful, graph-based agent workflows using directed graphs. Covers all major patterns: supervisor (centralized routing node, ~94% accuracy), swarm (direct agent-to-agent handoffs, ~40% fewer LLM calls), and hierarchical teams (subgraph composition with nested state). Includes state management (checkpointers/stores), persistence, production debugging, and evaluation methodology. Ships 3 Python scripts (supervisor scaffold, swarm scaffold, eval generator), 3 runnable templates, and 8 reference files covering architecture, each pattern in depth, evals, production failures, and troubleshooting.
+
+### [lastfm](lastfm/SKILL.md)
+
+Last.fm music data API from the terminal. Lookup user listening history, get artist/album/track metadata, discover similar music via collaborative filtering, explore global and per-country charts, search, manage tags, and scrobble listening events. API key from last.fm/api/account/create (free). Includes a music discovery pipeline for turning liked tracks into recommendations.
+
+### [legal-strategy](legal-strategy/SKILL.md)
+
+CLO/General Counsel methodology — regulatory landscape analysis (GDPR, CCPA, AI Act, sector-specific), IP strategy (patent, trademark, trade secret, open source licensing), contract risk assessment (indemnification, liability caps, force majeure), data privacy frameworks (privacy-by-design, DPIAs, data mapping), corporate governance (board responsibilities, fiduciary duties, shareholder rights), employment law (classification, IP assignment, non-competes).
+
+### [life-coach](life-coach/SKILL.md)
+
+Guide bounded, user-led coaching for adult nonclinical goals, decisions, transitions, habits, ambivalence, accountability, and progress review. Keeps choices with the person, routes direct requests and specialist needs correctly, and includes expert references, original templates, safety and anti-dependency boundaries, deployment controls, and a capability-contract validator.
+
+### [linear](linear/SKILL.md)
+
+Work with Linear teams, projects, cycles, issues, comments, workflow transitions, and documents using a small, dependency-free GraphQL CLI with bounded reads, dry-run previews, and focused reference guidance.
+
+### [litellm](litellm/SKILL.md)
+
+Operate, configure, secure, and troubleshoot the LiteLLM AI gateway (proxy) and Python SDK: one OpenAI-compatible config routing to 100+ providers, model lists and load-balanced groups, virtual keys/teams/budgets/rate limits, caching and guardrails, observability and spend, deployment and public-facing hardening, and evidence-led failure diagnosis. Ships a read-only `litellm-health` probe (`--json`), proxy-config and deployment record templates, 9 dated references, tests, and 6 evals. Routes engine selection to ml-engineering and single-engine operation to vllm/llama-cpp.
+
+### [llama-cpp](llama-cpp/SKILL.md)
+
+Operate llama.cpp from hardware-aware installation and GGUF selection through verified local inference, OpenAI-compatible serving, reproducible tuning, multi-GPU operation, and evidence-led troubleshooting. Uses dated upstream sources, operation and benchmark templates, and six output-quality eval cases without adding a wrapper CLI.
+
+### [llamaindex](llamaindex/SKILL.md)
+
+An expert-level skill for building LLM applications over your data with LlamaIndex. RAG pipelines, multi-agent orchestration, event-driven workflows, knowledge graph construction, and production deployment.
+
+### [mermaid-diagrams](mermaid-diagrams/SKILL.md)
+
+Create maintainable diagrams that render reliably in the documentation surfaces where readers actually encounter them.
+
+### [meshcore-packet-capture](meshcore-packet-capture/SKILL.md)
+
+Operate MeshCore Companion radio packet capture over BLE, serial, or TCP. Covers MQTT publishing, TOML and environment configuration, token authentication, Docker, systemd, launchd, NixOS, and evidence-first troubleshooting.
+
+### [migration-engineering](migration-engineering/SKILL.md)
+
+Plan and execute safe cross-system migrations, including service extraction from monoliths, with compatibility windows, dual-running, backfills, reconciliation, cutover, deprecation, and cleanup. Distinguishes rollback, roll-forward, restore, and irreversible recovery paths. Routes implementation to API, data, platform, release, and SRE specialists, while leaving decomposition decisions to the architecture owner.
+
+### [ml-engineering](ml-engineering/SKILL.md)
+
+Machine learning engineering methodology — model training, fine-tuning (LoRA/QLoRA), evaluation, quantization, deployment, and MLOps pipeline design. Grounded in practical engineering patterns for production ML systems.
+
+### [mobile-development](mobile-development/SKILL.md)
+
+Build, test, sign, and ship mobile apps across iOS, Android, Flutter, and React Native as ONE family skill with per-framework references: project scaffolding, builds and code signing, device and emulator testing, store submission (App Store/TestFlight and Google Play), app lifecycle and backgrounding, offline and sync, and mobile-specific testing. Ships 4 framework references (ios, android, flutter, react-native) and 6 evals. Routes web UI work to frontend-engineering and server-side work to backend-engineering.
+
+### [multi-tenant-saas-architecture](multi-tenant-saas-architecture/SKILL.md)
+
+Design end-to-end multi-tenant SaaS architectures by connecting tenant semantics, control/application planes, tenancy and partitioning choices, onboarding, entitlements, metering, billing handoffs, lifecycle, restore, noisy-neighbor behavior, and tenant-aware operations. Routes security, capacity, finance, platform, API, implementation, data, migration, and privacy details to their specialist owners.
+
+### [neckbeard](neckbeard/SKILL.md)
+
+Evidence-driven software delivery operating model — routes a change through framing, discovery, design, implementation, review, verification, delivery, and learning, choosing the smallest *safe* intervention and proving it at the real delivery boundary. Every non-trivial run leaves an inspectable evidence ledger. Composes the specialist catalog rather than replacing it. Ships a versioned evaluation harness that measures SDLC outcomes, never LOC. Not a "10x developer" persona.
+
+### [notion](notion/SKILL.md)
+
+Operate Notion from the terminal: retrieve pages, query databases, search pages and databases, and update page properties with confirmation. Ships a bounded stdlib CLI (pages get/create/update, databases query, search) with `--json`, `--limit`, and a `--dry-run`/`--yes` mutation gate for creates and updates.
+
+### [nous-branding](nous-branding/SKILL.md)
+
+Generate images and content consistent with the Nous Research brand identity.
+Ships four reference images (color palette card, official high-res mascot,
+brand collage) that can be used as img2img inputs. Covers the Nous Girl
+mascot specs, cyber-classical art style, texture system (risograph grain,
+CRT scan lines, photocopy noise), hex-accurate color palette, and image
+prompt templates for text-only and reference-image-driven workflows.
+
+> **Cross-pollination note:** This skill was developed in parallel with [plntrprotocol/nous-branding](https://github.com/plntrprotocol/nous-branding) — a sibling project created independently, in friendship, for the same purpose. We've been learning from each other's approaches throughout development, and each repo has strengths the other doesn't. If you're using ours, go check out theirs too.
+
+### [open-knowledge-format](open-knowledge-format/SKILL.md)
+
+Google's Open Knowledge Format (OKF) v0.1 — create, validate, and consume vendor-neutral AI agent knowledge bundles. Markdown files with YAML frontmatter, organized in directory hierarchies with cross-links and progressive disclosure. Ships a validation script, concept template, example bundle, and detailed references covering the spec, bundle architecture, and real-world use cases.
+
+### [openlibrary](openlibrary/SKILL.md)
+
+Query the Open Library catalog from the terminal: search books and authors, look up works, editions, and ISBNs, enumerate every edition of a work, read community ratings, and resolve cover-image URLs. Fully keyless public API — no API key required.
+
+### [opensource-contributions](opensource-contributions/SKILL.md)
+
+Comprehensive open source contribution guidance — from reading CONTRIBUTING.md and filing good bug reports through branching, committing, PR creation, and the release cycle. Covers both contributor and maintainer workflows with progressive disclosure: a concise orchestrator SKILL.md loads detailed phase references on demand. Includes a portable PR template compliance checker script. Agent disclosure template for AI-assisted contributions.
+
+### [operational-design](operational-design/SKILL.md)
+
+Design and improve operational processes and organizational scaling — process design, operational metrics, compliance and audit, vendor management, and team topology. Covers value stream mapping, BPMN, bottleneck analysis, scaling from 10 to 100 to 1000 people, KPI design, balanced scorecard, SOC 2, ISO 27001, GDPR readiness, RFP processes, SLA design, vendor scorecards, team topologies, Conway's Law, and Dunbar's Number. Do not use for engineering delivery, financial modeling, or technology evaluation.
+
+### [org-design](org-design/SKILL.md)
+
+CHRO methodology — organizational design (team topologies, span of control, reporting structures), talent strategy (make-vs-buy, skill taxonomies, succession planning), compensation frameworks (market benchmarking, equity design, leveling), culture architecture (values codification, rituals, psychological safety), organizational health metrics (eNPS, retention risk, engagement surveys), DEI strategy (inclusive design, equitable systems, belonging).
+
+### [pace-plan](pace-plan/SKILL.md)
+
+Build and maintain owner-approved Primary, Alternate, Contingency, and Emergency communications plans with explicit dependencies, authorities, transition triggers, check-ins, bounded exercises, troubleshooting evidence, and corrective actions. Preserves unknown local facts instead of inventing operational details or authority.
+
+### [peertube](peertube/SKILL.md)
+
+PeerTube federated video from the terminal. Browse videos, channels, and comment threads on any instance, search instance-local or the whole fediverse via SepiaSearch, check server stats, and log in with OAuth2 — with per-instance token persistence and pagination/search-scope quirks documented.
+
+### [platform-engineering](platform-engineering/SKILL.md)
+
+Infrastructure as code, CI/CD, container orchestration, service networking — methodology and reference patterns for building and operating internal developer platforms.
+
+### [playwright](playwright/SKILL.md)
+
+Operate Playwright for browser automation: E2E test authoring with robust locators, network interception and mocking, parallel workers, CI integration, headless scraping, and accessibility snapshot checks. Ships a `pwrun` smoke harness (`--json`), a test-suite scaffold, 8 references, and 6 evals.
+
+### [postgres](postgres/SKILL.md)
+
+Operate PostgreSQL safely: configuration review, index and query-plan analysis, vacuum and bloat management, WAL archiving and point-in-time recovery, replication and failover, extensions, major-version upgrades, and evidence-based diagnostics. Ships the read-only `pgdiag` collector (`--json`, `--plan-for`, `--help` without a cluster), 9 dated references, tests, and 6 evals. Routes app data access to backend-engineering and schema design to data-architect/data-engineering.
+
+### [privacy-engineering](privacy-engineering/SKILL.md)
+
+Translate privacy principles and legal requirements into verifiable engineering artifacts — data-lifecycle records, privacy acceptance criteria, data-flow and access maps, retention/deletion verification plans, and privacy change reviews. Covers seven privacy dimensions (purpose, lifecycle/retention, access, deletion, tenant/isolation, residency, consent) as structured concerns, with specific guidance for agent traces and product analytics telemetry. Routes legal interpretation to legal-strategy and security implementation to secure-software-engineering. Ships 1 discovery brief, 5 templates, and 6 evals.
+
+### [product-adoption](product-adoption/SKILL.md)
+
+Diagnose and design product adoption — onboarding, activation, behavior change, feature discovery, rollout segmentation, and sustained use after launch. Covers consumer, B2B, internal-tool, and public-service contexts with evidence-based decision points (proceed, pause, stop, accelerate). Distinguishes acquisition, activation, adoption, retention, and expansion as separate stages with different owners and interventions. Ships 3 references (discovery brief, adoption lifecycle concepts, non-SaaS adoption contexts, behavior change and education) and 4 templates (adoption plan, activation/time-to-value diagnostic, segmentation and rollout record, sustained-use review).
+
+### [product-analytics-and-measurement](product-analytics-and-measurement/SKILL.md)
+
+Turn intended product outcomes into observable, governed evidence. Covers metric trees (leading/lagging indicators, countermetrics, guardrails), event and tracking plans (identity, session, data quality, ownership), instrumentation QA, funnels, cohorts, retention, adoption, dashboard contracts, privacy-aware measurement, and decision cadence. Routes statistical inference to data-scientist and data pipelines to data-engineering.
+
+### [product-design-and-ux](product-design-and-ux/SKILL.md)
+
+Turn validated evidence and approved product scope into traceable user-facing behavior: information architecture, plain-language content, task flows, applicable state and recovery models, interface contracts, authorized usability evidence, and observable engineering handoffs. Portable and framework-neutral; routes WCAG/ARIA depth to web-accessibility and formal software acceptance to spec-driven-development. Ships 10 focused references and 6 fillable templates.
+
+### [product-discovery](product-discovery/SKILL.md)
+
+Discover product requirements from human stakeholders — map who to talk to, ask questions that surface hidden assumptions, detect gaps in real time, resolve conflicts, and translate conversations into structured specs. Phase 0 upstream of any spec-driven pipeline. Ships 8 reference files covering stakeholder mapping, question patterns, gap detection, conflict resolution, transcript-to-spec distillation, AI-conducted discovery, power dynamics, and time-constrained discovery; plus 5 templates (discovery plan, interview guide, distillation worksheet, gap register, interpretation log).
+
+### [product-experimentation](product-experimentation/SKILL.md)
+
+Run end-to-end product experiments from assumption to decision — translate assumptions into testable hypotheses, select the right method (qualitative interviews, prototypes, concierge tests, fake doors, feature flags, A/B tests), define guardrails and ethics, and produce readouts that update the roadmap and decision record. Ships 4 references (discovery brief, method selection, guardrails and ethics, experiment readout) and 4 fillable templates (assumption map, experiment brief, guardrail and decision rule record, readout learning entry). Routes statistical design to data-scientist and rollout mechanics to release-engineering.
+
+### [product-lifecycle](product-lifecycle/SKILL.md)
+
+Route a product through its full lifecycle — discovery, strategy and portfolio choice, roadmap, UX and requirements, experimentation, delivery handoff, adoption, success, and lifecycle review — by composing existing specialist product skills with phase-entry evidence, handoff artifacts, and stop/escalation rules. A thin orchestration bundle that provides cross-skill routing and a lifecycle evidence ledger; never duplicates a specialist's methodology. Ships 2 references (phases with per-phase contracts and ledger spec, capability map), a discovery brief, an AGENTS.md loading guide, and 6 evals covering complete lifecycle trajectories, stopped/escalated paths, and evidence handoffs. Does not assume B2B SaaS; customer-success routing is conditional on product type.
+
+### [product-lifecycle-learning](product-lifecycle-learning/SKILL.md)
+
+Close the launch-to-learning loop for product features and capabilities — compare expected vs. observed outcomes using explicit epistemic categories (expected/observed/uncertain/inferred), update the assumption ledger, assess feature health across multiple dimensions, and make disciplined continue/improve/harvest/pivot/pause/retire decisions. Covers full retirement lifecycles with deprecation communication, migration paths, customer treatment during sunset, and internal cleanup. Produces durable retained learning records that feed back into roadmap, analytics, adoption, experimentation, and specifications. Ships 4 references (discovery brief, epistemic discipline, retirement lifecycle, feedback destinations) and 6 templates (outcome review, assumption ledger update, feature health record, retirement decision, sunset plan, retained learning record).
+
+### [product-methodology](product-methodology/SKILL.md)
+
+Product management frameworks for translating validated evidence into prioritized backlogs, documented decisions, specifications, and stakeholder communications. Covers RICE scoring, MoSCoW prioritization, opportunity solution trees, decision logs, spec drafting, and audience-specific stakeholder communication. Ships 7 reference files covering each framework and a source index, plus 2 fillable templates (decision log and spec). Picks up where product-discovery ends.
+
+
+### [product-operations-and-governance](product-operations-and-governance/SKILL.md)
+
+Define and run product governance — recurring decision rights, intake, portfolio cadences, evidence standards, and cross-functional operating contracts. Covers six review cadences (intake/opportunity, portfolio, roadmap, experiment, launch, lifecycle/health) with named accountable owners, minimum evidence standards per decision type, and escalation paths. Supports lightweight mode (small teams, minimal ceremony) and high-assurance mode (regulated/safety-critical) with configurable governance patterns. Distinguishes product governance from executive governance (routes to chief-of-staff-methodology, strategy-frameworks) and technical delivery gates (routes to release-engineering, spec-driven-development). Ships 1 reference (discovery brief), 5 fillable templates (operating model, decision-rights map, review cadence, exception record, escalation record), and 6 evals.
+
+### [product-roadmapping-and-portfolio](product-roadmapping-and-portfolio/SKILL.md)
+
+Build and maintain outcome-based product roadmaps and portfolio views that sequence strategic bets by evidence, not dates. Covers Now/Next/Later views, strategic-bet management with continue/pause/kill/revisit criteria, capacity allocation, dependency and confidence mapping, scenario planning, stakeholder narratives, and roadmap review cadences. Routes tactical prioritization (RICE, MoSCoW, Kano, OST) to their canonical owners. Ships 5 reference files, 3 fillable templates, a discovery brief, and 5 evals.
+
+### [product-shaping](product-shaping/SKILL.md)
+
+Set appetites instead of estimates and shape raw ideas into bounded pitches before committing time: Basecamp's Shape Up method adapted for teams whose builders include AI agents. Covers appetite-setting, problem narrowing (grab-bag detection), breadboard/fat-marker solution sketching including non-UI work, five-ingredient pitches, betting with circuit breakers, discovered scopes with hill-state tracking, scope hammering, and hybrid-adaptation practices — budget currencies, batched steering, verification cost inside scope, and kill criteria for non-converging agent loops. Ships 6 reference files (including an independent-evidence anti-patterns record), 2 fillable templates (pitch, scope map), and 6 evals. Upstream of product-methodology; consumes validated problems from product-discovery.
+
+### [product-strategy](product-strategy/SKILL.md)
+
+CPO methodology — product vision and strategy (North Star, product principles), competitive analysis and positioning, roadmap prioritization (RICE, Kano, OST), product-market fit frameworks (Sean Ellis test, retention curves), market sizing (TAM/SAM/SOM), platform strategy, product lifecycle management.
+
+### [production-excellence](production-excellence/SKILL.md)
+Cross-domain production gate model — assembles readiness, migration, recovery, capacity/cost, and incident-learning evidence into a launch or operational decision (go/no-go/defer/exception/escalation) with an accountable owner and a post-launch learning path. Composes 12 specialist skills (production-readiness, migration-engineering, resilience-and-recovery, capacity-and-cost-engineering, incident-learning, SRE, release, platform, security, data, QA, verification) without copying their runbooks. Ships 4 references (discovery brief, evidence packet, gate model, handoff record) and 5 integrated evals covering normal release, blocked launch, data migration, dependency outage, and cost/SLO conflict.
+
+### [production-readiness](production-readiness/SKILL.md)
+
+Assemble cross-domain production evidence into a risk-scaled launch decision. Defines three risk classes (Low/Standard/High) with proportional evidence requirements, an 11-category evidence checklist with named source or explicit gap for every category, and four launch-decision outcomes (Go/No-go/Defer/Exception) with accountable owners. Routes detailed technical checks to release-engineering, SRE, security, data, QA, platform, and implementation-planning. Ships 2 references (discovery brief, readiness record template) and 5 evals.
+
+### [programming-principles](programming-principles/SKILL.md)
+
+Distilled coding principles from 14 classic software engineering books (Clean Code, DDD, Refactoring, Release It!, DDIA, Code Complete, and more). Cross-cutting principles organized by concern, task-to-book mapping, per-book mini and full rule sets, and a structured code-assessment workflow.
+
+### [promise-theory](promise-theory/SKILL.md)
+
+Design and diagnose coordination in hybrid human + AI agent workforces using promise theory (Burgess/Bergstra): model agents as autonomous, coordination as voluntary offers plus acceptance, and trust as calibrated assessment. Covers delegation modeling, capability manifests and agent contracts, coordination-failure diagnosis, trust/verification calibration, and converting obligation-based designs to promise-based ones. Ships 7 references, 3 templates, a stdlib-only lint CLI, and 6 evals.
+
+### [pydanticai](pydanticai/SKILL.md)
+
+Build production-grade AI agents and graph-based state machines with PydanticAI and PydanticGraph. Covers agent creation, function tools with RunContext dependencies, structured output validation, streaming (text/events/graph nodes), a 20+ capability plugin system with on-demand loading (Thinking, WebSearch, MCP, Hooks, etc.), 16 model providers with FallbackModel and concurrency limiting, multi-agent delegation and programmatic hand-off, comprehensive testing with TestModel/FunctionModel, and the PydanticEvals evaluation framework. Includes the full PydanticGraph API — both BaseNode (class-based) and GraphBuilder (function-based) with parallel map/broadcast operations, joins with reducers, decisions, Mermaid rendering, and step-by-step execution. Ships 8 reference files covering core agents, capabilities/hooks, graph, models/output, patterns/integrations, testing/evals, worked examples, and an API surface quick reference.
+
+### [qa-methodology](qa-methodology/SKILL.md)
+
+QA and SDET methodology for senior-to-principal engineers — test strategy, automation, regression, risk-based prioritization, exploratory testing, mutation-guided test hardening, quality gates, AI code quality gates for agentic development, agentic eval design, career leveling, and SDET engineering. Ships 16 references, 6 templates, 3 assets, 2 tested scripts, and 10 evals.
+
+### [raleigh](raleigh/SKILL.md)
+
+Query, search, and download public datasets from the City of Raleigh Open Data portal. Wraps the ArcGIS REST API to access 170+ datasets — crime reports, food inspections, building permits, bike lanes, parks, zoning, traffic, budgets, and more. No API key needed. Ships a Python CLI with catalog, search, info, query, download, and categories commands.
+
+### [react](react/SKILL.md)
+React-specific component, hooks, state-flow, rendering, accessibility boundaries, testing, diagnostics, and Vite integration workflows.
+
+### [release-engineering](release-engineering/SKILL.md)
+
+Senior-to-principal release engineering methodology — release process models and CD pipelines, progressive delivery and feature flags, versioning and artifacts, readiness gates, rollback planning, change-governance and compliance evidence, DORA metrics, and multi-team release coordination. Ships 15 references, 6 templates, 4 assets, 5 stdlib-only Python CLIs, and 8 evals.
+
+### [remote-systems-administration](remote-systems-administration/SKILL.md)
+
+Administer and troubleshoot remote Linux, FreeBSD, NetBSD, OpenBSD, and macOS hosts safely, one system or a controlled fleet at a time. Covers SSH, Ansible, Paramiko, portable diagnostics, platform-specific services, packages, configuration, firewalls, rollback, and evidence-led verification.
+
+### [research-and-vault](research-and-vault/SKILL.md)
+
+Run a repeatable research-to-notes sequence: gather sources, record URLs and dates, extract independent atomic claims, then create a durable note with explicit coverage gaps.
+
+### [research-methodology](research-methodology/SKILL.md)
+
+Turn an open question into a bounded, evidence-led investigation rather than a plausible-sounding synthesis.
+
+### [resilience-and-recovery](resilience-and-recovery/SKILL.md)
+
+Design, exercise, and evidence resilience and recovery behavior across systems and dependencies — graceful degradation, restore-based recovery, RTO/RPO decision records, game days, failover drills, data integrity verification, and recovery communication. Ships 7 references, 1 template, 1 discovery brief, and 5 evals.
+
+### [restic](restic/SKILL.md)
+
+Install, configure, operate, secure, automate, tune, troubleshoot, and recover restic backups across local, SFTP, S3-compatible, cloud, and REST backends. Ships deep references for repository selection, backup design, retention/prune, restore drills, threat modeling, performance, observability, migration, and recovery, plus safe preflight and verification scripts and scheduling templates.
+
+### [secure-software-engineering](secure-software-engineering/SKILL.md)
+
+Build security into software requirements, design, implementation, review, and release decisions. Covers threat modeling, authorization, data and secret handling, dependencies, tenant isolation, security evidence, incident learning, and AI boundaries without treating a checklist as proof of security.
+
+### [security-audit-methodology](security-audit-methodology/SKILL.md)
+
+Give authorized teams a disciplined way to identify and prioritize security risks without mistaking a checklist for a security guarantee.
+
+### [semantic-spacetime](semantic-spacetime/SKILL.md)
+
+Model and diagnose shared semantic ground between agents with Mark Burgess's Semantic Spacetime: discrete graph spacetimes where meaning evolves over time, typed gamma(3,4) edges expose semantic drift and absorbing states, and cooperative promises carry causality.
+
+### [seo](seo/SKILL.md)
+
+Audit and improve visibility across traditional search, answer engines, and generative search, with provider-scoped evidence and reproducible measurement.
+
+### [site-reliability-engineering](site-reliability-engineering/SKILL.md)
+
+Build practical reliability practices around the work teams actually perform: measurable service objectives, useful alerts, incident response, and learning-oriented follow-up.
+
+### [slack](slack/SKILL.md)
+
+Operate Slack workspaces from the terminal: list channels, read messages, follow threads, search history, list files, and verify webhook signatures. Ships a bounded stdlib CLI with `--json`, `--limit`, and a `--dry-run`/`--yes` mutation gate for sends.
+
+### [software-architecture](software-architecture/SKILL.md)
+
+Design and review software architectures from business drivers through system boundaries, tradeoffs, runtime behavior, evolution, and architecture practice. Use for greenfield or target architecture, modular-monolith decisions, distributed consistency and failure behavior, fitness evidence, and architecture reviews; route reverse engineering, interfaces, data, implementation, platform, security, and migration execution to their specialist owners.
+
+### [software-architecture-analysis](software-architecture-analysis/SKILL.md)
+
+Reverse-engineer a software codebase to understand its architecture, data flow, privacy posture, feature surface, coupling, quality characteristics, data ownership, and workflow recovery — then produce an evidence-grounded clean-room design document, PRD, or migration plan under new constraints. Includes interface extraction, decomposition-readiness, and architecture health assessment guidance.
+
+### [spec-driven-development](spec-driven-development/SKILL.md)
+
+Design and run a Spec-Driven Development (SDD) pipeline for AI software factories — where structured specifications are the input, AI agents generate the code, and quality gates enforce correctness at each pipeline phase. Covers the 5-phase pipeline (SPECIFY → DECOMPOSE → IMPLEMENT → VERIFY → DELIVER), 4 phase gates with APPROVED/CONDITIONS/REJECTED verdicts, 7 spec quality gates, a methodology selection matrix (BDD, OpenAPI, AsyncAPI, DbC, TLA+, ADRs, C4), NFR encoding patterns, format translation (PRD → SPEC.md → Gherkin → OpenAPI), gate recovery and revision workflows, and a worked example SPEC.md. Ships 4 templates, 9 reference files, and 2 validation scripts. Tool-agnostic — works with Claude Code, Cursor, Hermes Agent, Devin, OpenHands, and droid. Not for single small changes, the intent-to-delivery control-plane protocol (see bmad), or unvalidated problems (product-discovery).
+
+### [strategy-frameworks](strategy-frameworks/SKILL.md)
+
+Structure organizational strategy decisions about direction, industry structure, growth, capital allocation, acquisitions, and portfolios. Uses frameworks as prompts for evidence and trade-offs, not automatic recommendations.
+
+### [stripe](stripe/SKILL.md)
+
+Read Stripe account state from the terminal — balance, payment intents, and subscriptions — with guarded subscription cancellations. Ships a read-only-first stdlib CLI with `--json`, `--limit`, and a `--dry-run`/`--yes` mutation gate for cancellations (period-end default).
+
+### [supabase](supabase/SKILL.md)
+
+Develop, self-host, and administer Supabase across the CLI local stack, managed projects, and the official Docker deployment. Covers reproducible migrations, RLS and pgTAP testing, generated client types, Auth, REST, Realtime, Storage, Edge Functions, TLS, secrets, backups, restores, release-set upgrades, and evidence-led troubleshooting.
+
+### [systematic-debugging](systematic-debugging/SKILL.md)
+
+4-phase root cause debugging protocol: understand bugs before fixing. Covers schema/environment divergence, exception type specificity in fallback chains, progressive characterization grids for API/retrieval failures, dependency source detection (editable dev forks), macOS sandboxed application debugging, and the Rule of Three for recognizing architectural problems. Adapted from [obra/superpowers](https://github.com/obra/superpowers) (MIT) with significant expansion from real-world use.
+
+### [tailscale](tailscale/SKILL.md)
+
+Self-hosted Tailscale/Headscale VPN ecosystem. Seven sub-skills covering Headscale server deployment, ACL/tailnet policy authoring, Tailscale client configuration, node lifecycle (auth keys, registration, tagging, decommissioning), subnet routing and exit nodes, DERP relay infrastructure, and backup/migration. Ships 23 scripts with `--json` and `--dry-run` support, 8 reference documents, and 6 templates.
+
+### [technical-documentation](technical-documentation/SKILL.md)
+
+Make documentation useful at the moment someone needs to install, operate, extend, or troubleshoot a system.
+
+### [technical-program-management](technical-program-management/SKILL.md)
+
+Manage technical programs made of multiple related projects, products, teams, or vendors: establish the program mandate and benefits, align component work, manage cross-project dependencies and shared capacity, govern risks and decisions, coordinate transformation and adoption, and communicate program health to executives, delivery teams, and partners. Complements technical-project-management rather than replacing single-project control.
+
+### [technical-project-management](technical-project-management/SKILL.md)
+
+Manage technical projects from initiation through closure: choose and tailor delivery approaches, coordinate teams and vendors, maintain credible forecasts, handle scope changes, recover troubled projects, and hand off operations. Adapts to teams without a PM and experienced TPMs. Ships a research source ledger, four real-world cases, focused references, seven templates, a tested read-only schedule calculator, and output-quality evals. Routes detailed planning, Kanban, product choices, and release mechanics to their specialists.
+
+### [technology-radar](technology-radar/SKILL.md)
+
+Turn technology preferences and architecture-governance choices into explicit, reviewable decisions with owners, evidence, and a proportionate adoption posture.
+
+### [telemetry](telemetry/SKILL.md)
+
+Operate the Prometheus + OpenTelemetry + Loki observability stack as one unit: scrape config, recording and alerting rules, relabeling, retention, and HA; OpenTelemetry Collector pipelines (receivers, processors, exporters, sampling, trace/span correlation); and Loki ingest, LogQL, retention, and label design. Ships the read-only `telemetry-check` script (rule sanity + scrape-target reachability, `--json`), fixtures, tests, dated references, and 6 evals. Routes strategy to platform-engineering and dashboards to grafana.
+
+### [tempest](tempest/SKILL.md)
+
+Hyper-local weather from a WeatherFlow Tempest station over the REST API and the hub's local UDP broadcast: current conditions, forecast, historical observations, and real-time decoded datagrams (obs_st, rapid_wind, evt_precip, evt_strike, hub_status) with metric-native values and conversion guidance. Not for generic city forecasts without a station, or weather hardware from other vendors.
+
+### [terraform](terraform/SKILL.md)
+
+Operate Terraform and OpenTofu safely across the whole infrastructure lifecycle: module structure, state backends and locking, plan/apply workflow, drift detection, remote state, upgrade and refactor flows, and evidence-based diagnostics. Ships the agent-first `tfops` wrapper with direct state-file analysis, a `--dry-run`/`--yes`/`--force` mutation gate, tests, and dated references.
+
+### [three](three/SKILL.md)
+
+Build browser-based Three.js and WebGL scenes, animations, and interactive 3D visualizations.
+
+### [tmdb](tmdb/SKILL.md)
+
+The Movie Database API from the terminal. Search and discover movies and TV by genre, certification, rating, and date range. Check trending, upcoming, and now playing. Free API key from themoviedb.org.
+
+### [traefik](traefik/SKILL.md)
+
+Deploy, configure, secure, and maintain Traefik v3 reverse proxy — Docker provider, HTTP/TCP/UDP routing, TLS/ACME (Let's Encrypt), middlewares, observability, API, and production deployment. Covers the full static config schema, all 25+ built-in middlewares with YAML config, ACME certificate resolvers with DNS-01/HTTP-01/TLS-ALPN-01 challenges, Docker label reference for routers/services/middlewares, TCP/UDP routing with SNI matching, Prometheus/OpenTelemetry metrics and access logs, and production-ready Docker Compose deployments with security hardening. Ships 10 reference files covering every major feature area.
+
+### [trakt](trakt/SKILL.md)
+
+Trakt.tv media discovery from the terminal. Browse trending, anticipated, and popular movies and TV shows. Read-only — uses only a Client ID, no OAuth required.
+
+### [transistor](transistor/SKILL.md)
+
+Operate Transistor.fm podcast hosting from the terminal: verify API access, browse shows and episodes with JSON:API-aware output, run the episode publish lifecycle (create draft, attach audio, publish or schedule via the dedicated publish endpoint), pull download analytics, and manage private podcast subscribers and webhooks.
+
+### [travel-guide](travel-guide/SKILL.md)
+
+Create personalized, source-grounded travel dossiers from a destination, dates, duration, travelers, and constraints. Ask only the questions that change the plan, research current logistics, and produce a cited PDF or responsive companion web page with private/shareable output options.
+
+### [vercel-eve](vercel-eve/SKILL.md)
+
+Build, deploy, self-host, secure, and troubleshoot durable backend AI agents with Vercel Eve. Covers the filesystem-first agent project, typed tools, skills, subagents, connections, sandboxes, durable sessions, Vercel deployment, and the operational contracts required for a Node-hosted deployment.
+
+### [verification-methodology](verification-methodology/SKILL.md)
+
+Replace completion claims with a disciplined evidence trail that shows what was checked, what passed, and what remains uncertain.
+
+### [verified-delivery](verified-delivery/SKILL.md)
+
+Deliver an authorized change end to end — implement, verify, merge, and confirm the merged state — without losing the thread when a hard limit interrupts the work.
+
+### [vite](vite/SKILL.md)
+
+Vite-specific configuration, plugins, modes, environment boundaries, dependency optimization, development server diagnostics, builds, previews, and deployment verification.
+
+### [vllm](vllm/SKILL.md)
+
+Operate, configure, benchmark, and troubleshoot vLLM inference servers: Docker and Kubernetes deployment, quantization-aware model configuration (tensor parallelism, KV cache), the OpenAI-compatible API surface, throughput/latency benchmarking, continuous batching tuning, GPU operation, and upgrade/rollback. Ships a read-only `vllm-health` probe (`--json`), serving-config and benchmark-run-record templates, 7 dated references, tests, and 6 evals. Routes serving methodology to ml-engineering and the llama.cpp stack to llama-cpp.
+
+### [web-accessibility](web-accessibility/SKILL.md)
+
+Design, build, and review accessible web interfaces through native semantics, keyboard and focus contracts, error recovery, adaptive UI, assistive-technology testing, and WCAG 2.2-informed evidence without mistaking automated scans for conformance.
+
+### [woodpecker-ci](woodpecker-ci/SKILL.md)
+Operate self-hosted Woodpecker CI from installation through production troubleshooting. Covers Forgejo/Gitea integration, server and agent setup, Docker and Kubernetes backends, workflow syntax, secrets, plugins, matrices, CLI/local execution, upgrades, security, and incident response.
+
+### [workflow-architect](workflow-architect/SKILL.md)
+
+Discover your actual workflow through conversation or passive observation, then generate a tailored skills bundle that encodes it as loadable agent skills with trigger conditions. Dual mode: active interrogation (guided 8-15 question interview) or passive observation (analyzes session context from what you actually did). Output includes sub-skills per workflow phase, a manifest with trigger conditions, a Mermaid decision map, and optionally a kanban board if the workflow is linear. Ships 3 sub-skills, 3 reference documents, 4 templates, and a worked example output bundle.
+
+### [writers-helper](writers-helper/SKILL.md)
+
+A complete writing companion for fiction and nonfiction: premise and planning, outlining and worldbuilding, research, drafting and finishing, editing and revision, creative blocks and prompts, writing habits, and the business of publishing — book proposals, query letters, synopses, agents, publishers, and book deals. Ships 10 expert references, 13 fill-in templates, and 5 Python tools (prompt generator, session planner, manuscript stats analyzer, habit journal, submission tracker). Distilled from a 44-book writing-craft and publishing library.
+
+### [yc-default-alive-calculator](yc-default-alive-calculator/SKILL.md)
+
+Paul Graham's "Default Alive / Default Dead" framework as a deterministic CLI tool. Given revenue, burn rate, cash on hand, and growth rate, compute whether a startup will reach profitability before running out of money. Ships a month-by-month projection engine, burn multiple analysis, lever identification, and actionable verdict (ALIVE / DEAD / MARGINAL). Python 3.9+ with zero external dependencies.
+
+### [yc-weekly-growth-compass](yc-weekly-growth-compass/SKILL.md)
+
+Paul Graham's "Startup = Growth" framework as an operational weekly practice. Computes growth rates from single-period or time-series data, benchmarks against YC tiers (1% concerning → 10%+ outstanding), projects compound growth, and frames every decision through the compass question: "Does this serve your target growth rate?" Python 3.9+ with zero external dependencies.
+
+---
+
+## Installation
+
+### `skills` CLI (cross-harness)
+
+The fastest portable route is the open [`skills` CLI](https://github.com/vercel-labs/skills). The flat top-level skill layout works without a skills.sh-specific manifest, so every skill — including the bundle umbrellas — is discovered at the top level.
+
+```bash
+# Inspect every available skill name, including the bundle umbrellas
+npx skills add magnus919/agent-skills --list
+
+# Install one skill into the current project for Codex
+npx skills add magnus919/agent-skills --skill systematic-debugging --agent codex --yes
+
+# Install one skill globally for Hermes Agent
+npx skills add magnus919/agent-skills --skill systematic-debugging --agent hermes-agent --global --yes
+
+# Bundle umbrellas are top-level skills; select them directly
+npx skills add magnus919/agent-skills --skill neckbeard --agent codex --yes
+```
+
+`--skill` matches the `name` in a skill's `SKILL.md`; use the names returned by `--list`. All skills, including the bundle umbrellas, are discovered by default at the top level.
+
+For Hermes Agent, keep `--global`: the CLI then installs directly into `$HERMES_HOME/skills/` (normally `~/.hermes/skills/`), which Hermes loads natively. The CLI's project-scoped `.hermes/skills/` target is not auto-discovered by Hermes.
+
+The [skills.sh catalog page](https://skills.sh/magnus919/agent-skills) is populated from installation telemetry rather than a separately submitted registry manifest.
+
+### Repository validation
+
+Contributors need Python 3.10+ and Ruby 2.6+ for local development. CI currently runs the validation workflow with Python 3.12 and Ruby 3.3; the checked-in `.venv` uses the pinned development dependencies in `requirements-dev.txt`. Run the focused checks first, then the complete repository gate:
+
+```bash
+python3 scripts/check-catalog-set.py
+python3 scripts/check-artifacts.py
+python3 scripts/validate-evals.py
+make validate
+```
+
+`check-catalog-set.py` emits JSON by default and also accepts the explicit `--json` selector. It compares canonical top-level `SKILL.md` names with the Claude, Codex, Agents, and `llms.txt` projections, rejecting missing, extra, duplicate, retired, nested, or infrastructure entries. Regenerate projections from source metadata when needed:
+
+```bash
+ruby scripts/gen-claude-marketplace.rb --write
+ruby scripts/gen-codex-plugin.rb --write
+ruby scripts/gen-llms-txt.rb --write
+```
+
+The eval manifest contract is checked with `python3 scripts/validate-evals.py`; use `python3 scripts/eval-coverage.py` for the current coverage report and `python3 scripts/test-eval-validation.py` for focused validator tests. Lifecycle matrix and fake-adapter coverage are verified with `ruby scripts/validate-lifecycle-matrix.rb` and `CORPUS_OUT_DIR=/tmp/lifecycle-evals-runs-local bash lifecycle-evals/scripts/run-corpus.sh`.
+
+### Harness-native installation
+
+Skills don't require installation in the traditional sense. They are loaded by your AI agent when triggered. Each agent framework documents its own skill directory path and loading mechanism — follow the links below for the authoritative setup guide for your harness.
+
+| Harness | Setup Guide |
+|---------|-------------|
+| **Claude Code** | See below |
+| **OpenCode** | [opencode.ai/docs/skills](https://opencode.ai/docs/skills) |
+| **OpenAI Codex** | See below |
+| **GitHub Copilot** | [docs.github.com/en/copilot/concepts/agents/about-agent-skills](https://docs.github.com/en/copilot/concepts/agents/about-agent-skills) |
+| **Cursor** | [cursor.com/docs/context/skills](https://cursor.com/docs/context/skills) |
+| **Gemini CLI** | [geminicli.com/docs/cli/skills](https://geminicli.com/docs/cli/skills) |
+| **Hermes Agent** | See below |
+
+### Claude Code
+
+This repository ships a Claude Code plugin marketplace. Add it once, then install any skill as a plugin:
+
+```
+/plugin marketplace add magnus919/agent-skills
+/plugin install cli-builder@magnus-agent-skills
+```
+
+Every top-level skill and bundle is listed in `.claude-plugin/marketplace.json`. Installed skills are namespaced by plugin name (for example, `/cli-builder:cli-builder`). To update after the repository changes, run `/plugin marketplace update magnus-agent-skills`.
+
+### Hermes Agent
+
+Two options depending on whether you want the whole catalog or individual skills.
+
+**Mount the entire repository** — point Hermes at your local checkout in `~/.hermes/config.yaml`:
+
+```yaml
+skills:
+  external_dirs:
+    - /path/to/agent-skills
+```
+
+Every skill in the repository becomes available immediately (next session). Edits in the checkout are picked up without reinstalling. Paths support `~` and `${VAR}` expansion.
+
+**Install individual skills** — add the repository as a tap, then cherry-pick:
+
+```bash
+hermes skills tap add magnus919/agent-skills
+hermes skills search <query>
+hermes skills install <skill-name>
+```
+
+Tap skills install into `~/.hermes/skills/` like any other hub skill. Use `hermes skills check` to see when updates are available.
+
+### OpenAI Codex
+
+This repository ships a Codex plugin. Add the marketplace and install:
+
+```bash
+codex plugin marketplace add magnus919/agent-skills
+codex plugin install magnus919
+```
+
+All public skills are bundled in a single plugin. Codex discovers them from the `skills` array in `.codex-plugin/plugin.json`.
+
+**Local/repo-scoped install** (for contributors or single-skill use):
+
+```bash
+mkdir -p .agents/skills
+ln -s ../../systematic-debugging .agents/skills/systematic-debugging
+```
+
+Codex scans `.agents/skills/` in every directory from cwd up to the repo root.
+
+### Generic / Other Frameworks
+
+The [agentskills.io clients page](https://agentskills.io/clients) maintains an up-to-date list of every agent framework that supports the Agent Skills format, with links to each one's setup instructions. Any framework listed there can load these skills — follow that framework's specific documentation for the correct directory path and loading mechanism.
+
+For frameworks without built-in skill loading, the format is intentionally simple:
+
+1. Place the skill directory in your agent's accessible file path
+2. The agent reads `SKILL.md` when triggered by keywords in the task
+3. Supporting files in `references/`, `templates/`, and `scripts/` are loaded on demand
+
+You can also instruct your agent to read specific `SKILL.md` files at session start, or reference skills in your agent's system prompt or CLAUDE.md/AGENTS.md.
+
+---
+
+## Contributing
+
+Skills follow the [Agent Skills specification](https://agentskills.io/specification.md). See [CONTRIBUTING.md](CONTRIBUTING.md) for the contributor workflow, [the Code of Conduct](CODE_OF_CONDUCT.md) for community expectations, and `AGENTS.md` for agent-specific loading and compliance guidance.
+
+Before submitting a new skill:
+1. Ensure `SKILL.md` has valid YAML frontmatter (required: `name`, `description`)
+2. The `name` field must match the parent directory name
+3. Keep `SKILL.md` under 500 lines and 5,000 tokens
+4. Move detailed reference material to `references/` for progressive disclosure
+5. Run the canonical-skill validator: `ruby scripts/validate-skills.rb` (vendored `agent-council/profiles/skills/` content is intentionally excluded)
+6. Validate with `skills-ref validate ./my-skill` if available
+
+---
+
+## License
+
+MIT — see [LICENSE.md](LICENSE.md) for full terms.

@@ -60,6 +60,33 @@ Remove a project's entire index from the vector database.
 
 ---
 
+## codebase_prune
+
+Inventory every stored project identity, and delete one only on an explicit, confirmed apply.
+
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| `apply` | boolean | no | `false` | Delete the selected identity. Omit for the report. |
+| `identity` | string | with `apply` | — | Exact identity as printed by the report |
+| `confirmationToken` | string | with `apply` | — | Token printed beside that identity in a fresh report |
+| `acknowledgeNoRemoteWriters` | boolean | with `apply` | — | States that no other host sharing this Qdrant is writing to the identity |
+
+**Returns:** The report lists, per identity, the recorded path and its state (`present-on-this-host`, `absent-on-this-host`, `unknown/inaccessible`), the collections carrying its name, every metadata record with point id, status, timestamps and builder version, advisories (`possible-superseded`, manual inspection), and the confirmation token. Metadata points that cannot be attributed to an identity are listed with the reason, and so are collections whose name fits two identities and nothing in the store settles which. An apply returns one line per resource (`deleted` or `failed` with the error) and, when anything is still stored afterwards, what remains.
+
+**Key behaviours:**
+- **Report-only by default**; no candidate set is derived from path state, and there is no blanket apply
+- Path absence on this host is an observation, not proof of abandonment (shared stores)
+- The token covers every collection and every metadata record; any change refuses the apply
+- Refused while the identity is indexed, watched, graph-built or context-indexed here, while another local process holds any of its `index`/`watch`/`graph`/`context` locks, when a lock cannot be inspected, when a record reports indexing in progress, or when a barrier lock is lost before the delete
+- Holds an identity-scoped barrier (`prune` plus every writer lock) from final validation through deletion; every writer checks it before starting and holds its own lock while it runs, so graph builds and context indexing of one identity no longer run in two processes at once
+- Targets the inventoried identity directly, so a stranded pinned id is reachable
+- Every identity an unsettled name could belong to is held back from deletion until a person settles it
+- Barrier ownership is re-checked before every write; a barrier lost mid-cleanup stops deletion and reports incomplete
+- Already-gone resources count as deleted: repeating an apply is safe
+- Success only when a re-read inventory shows nothing left for the identity
+
+---
+
 ## codebase_stop
 
 Gracefully stop an in-progress indexing operation.

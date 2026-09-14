@@ -31,6 +31,7 @@ Service-management domain for the OpenHuman core daemon. It installs/uninstalls 
 | `crates/openhuman-core/src/platform/service/daemon_host.rs` | `DaemonHostConfig { show_tray }` + async `load_for_config_dir` / `save_for_config_dir` (JSON next to config, `daemon_host_config.json`). |
 | `crates/openhuman-core/src/platform/service/mock.rs` | File-backed deterministic mock backend gated on `OPENHUMAN_SERVICE_MOCK`; supports forced failures and an `agent_running` flag (`mock_agent_running`). |
 | `crates/openhuman-core/src/platform/service/mock_tests.rs` | Sibling test suite for `mock.rs`. |
+| `crates/openhuman-core/src/platform/service/tools.rs` | LLM-callable wrappers over the domain (`service_status` / `daemon_host_prefs_get` default-on; lifecycle mutators default-off via the `service_lifecycle` user-filter toggle). |
 
 ## Public surface
 
@@ -85,7 +86,7 @@ Both subscribers are registered idempotently from `crates/openhuman-core/src/cor
 ## Dependencies
 
 - `crate::config` — `Config` (paths, config dir) for every lifecycle/path operation; `config::rpc::load_config_with_timeout` in the schema handlers.
-- `crate::core::event_bus` — `DomainEvent`, `EventHandler`, `SubscriptionHandle`, `publish_global` / `subscribe_global` / `init_global` for restart/shutdown orchestration.
+- `crate::core::bus::BUS` (`tinybus::OnceBus<DomainEvent>`) — `publish` / `subscribe` for restart/shutdown orchestration; `crate::core::events::DomainEvent` for the event catalog.
 - `crate::core` (`ControllerSchema`, `FieldSchema`, `TypeSchema`) and `crate::core::all` (`ControllerFuture`, `RegisteredController`) — controller schema/registration contract.
 - `crate::rpc::RpcOutcome` — standard RPC result envelope.
 - External: `anyhow`, `serde`/`serde_json`, `tokio`, `async_trait`, plus OS CLIs (`launchctl`, `systemctl`, `schtasks`).
@@ -95,8 +96,9 @@ Both subscribers are registered idempotently from `crates/openhuman-core/src/cor
 - `crates/openhuman-core/src/core/all.rs` — registers the service controllers (`all_service_registered_controllers`).
 - `crates/openhuman-core/src/core/jsonrpc.rs` — registers the restart/shutdown event-bus subscribers at startup.
 - `crates/openhuman-core/src/platform/doctor/core.rs` — reads `service::daemon::state_file_path`.
-- `crates/openhuman-core/src/platform/update/ops.rs`, `crates/openhuman-core/src/config/ops.rs`, `crates/openhuman-core/src/desktop/app_state/ops.rs` — reference `openhuman::platform::service` (status/lifecycle/restart paths).
-- `src/lib.rs` — module wiring.
+- `crates/openhuman-core/src/platform/update/ops.rs` (`rpc::service_restart` after a self-replace), `crates/openhuman-core/src/config/ops/loader/runtime_flags.rs` (`mock::mock_agent_running`), `crates/openhuman-core/src/desktop/app_state/ops/{types,runtime_snapshot}.rs` (`ServiceState`/`ServiceStatus`, `status`) — call into `crate::platform::service`.
+- `crates/openhuman-core/src/tools/mod.rs` — re-exports `platform::service::tools::*`.
+- `lib.rs` — module wiring.
 
 ## Notes / gotchas
 

@@ -13,7 +13,7 @@ description: "Set up, operate, tune, and troubleshoot Minecraft Java 26.x and le
 - `Do not use when`: the task is WorldEdit command workflows (`minecraft-worldedit-ops`) or EssentialsX workflow/policy design (`minecraft-essentials-ops`).
 - `Do not use when`: the task is datapack/resource-pack authoring (`minecraft-datapack`, `minecraft-resource-pack`).
 
-## Support Assets
+## References
 
 - Read `references/deployment-checklists.md` when the task is an incident, rollout window, proxy change, or recovery drill and you need a compact checklist before acting.
 
@@ -41,14 +41,14 @@ stack and version first and preserve them unless migration is requested.
 - Use Velocity when one process is not enough or you need separate backend roles.
 - Use Fabric/NeoForge when the requirement is mod-driven, not plugin-driven.
 
-### Java and version lanes
+### Java versions
 
 - Paper and Purpur: Minecraft 26.1+ requires Java 25; Minecraft 1.21.x uses
   Java 21. Verify the exact Paper/Purpur build and installed plugins before a
-  lane change.
+  version change.
 - Current Velocity 4.x requires Java 25. For a legacy proxy, retain the Java
   version required by that exact proxy release rather than applying the current
-  lane by default.
+  version by default.
 
 ---
 

@@ -16,13 +16,14 @@ Centralized, deterministic prompt-injection screening. Given a user-provided pro
 | --- | --- |
 | `crates/openhuman-core/src/security/prompt_injection/mod.rs` | Module docstring + re-exports of the public surface. No logic. |
 | `crates/openhuman-core/src/security/prompt_injection/detector.rs` | All logic: types, normalization, detection rules + `RegexSet`, heuristics, optional classifier, scoring/thresholds, and the `enforce_prompt_input` entry point. |
-| `crates/openhuman-core/src/security/prompt_injection/tests.rs` | `#[cfg(test)]` suite (~40 cases) covering allow/review/block verdicts, obfuscation handling, and known false-positive regressions (TAURI-140, issue #1940). |
+| `crates/openhuman-core/src/security/prompt_injection/prompt_injection_tests.rs` | `#[cfg(test)]` suite (~24 cases) covering allow/review/block verdicts, obfuscation handling, and known false-positive regressions (TAURI-140, issue #1940). |
 
 ## Public surface
 
 Re-exported from `mod.rs` (all defined in `detector.rs`):
 
-- `enforce_prompt_input(input: &str, context: PromptEnforcementContext) -> PromptEnforcementDecision` — the single entry point.
+- `enforce_prompt_input(input: &str, context: PromptEnforcementContext) -> PromptEnforcementDecision` — the entry point for user-facing prompts.
+- `scan_tool_definition(field: &str, text: &str) -> Option<ToolDefinitionScanHit>` — same rules applied to remote MCP tool descriptions/titles; any non-`Allow` verdict is a hit and the registry rejects the tool.
 - `PromptEnforcementContext<'a>` — borrowed `source` plus optional `request_id` / `user_id` / `session_id` for the audit log.
 - `PromptEnforcementDecision` — `{ verdict, score: f32, reasons, action, prompt_hash: String, prompt_chars: usize }`.
 - `PromptEnforcementAction` — `Allow` / `Blocked` / `ReviewBlocked`.
@@ -56,6 +57,8 @@ Consumers call `enforce_prompt_input` and treat any non-`Allow` action as a reje
 
 - `crates/openhuman-core/src/agent/harness/session/runtime.rs` — gates agent session turns; emits `prompt_injection_blocked`.
 - `crates/openhuman-core/src/agent/bus.rs` — screens inbound prompts on the agent event path.
+- `crates/openhuman-core/src/agent/tinyagents/host/security_gate.rs` — `screen_input` stage of the tinyagents security gate.
+- `crates/openhuman-core/src/mcp/registry/mod.rs` — `scan_tool_definition` on remote tool metadata at registration.
 - `crates/openhuman-core/src/web_chat/` — screens chat payloads at the web channel ingress (`start_chat`).
 - `crates/openhuman-core/src/inference/local/ops.rs` — rejects injected prompts before local-AI runtime execution.
 - `crates/openhuman-core/src/platform/about_app/catalog.rs` — surfaces the `conversation.prompt_injection_guard` capability entry.

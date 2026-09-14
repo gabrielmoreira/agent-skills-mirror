@@ -8,20 +8,104 @@ const CATEGORY = "cloud-api";
 const CLOUDBASE_CONTROL_PLANE_DOC_URL = "https://cloud.tencent.com/document/product/876/34809";
 const CLOUDBASE_DEPENDENCY_API_DOC_URL = "https://cloud.tencent.com/document/product/876/34808";
 
-export const ALLOWED_SERVICES = [
-    "tcb",
-    "tcbr",
-    "scf",
-    "sts",
-    "cam",
-    "lowcode",
-    "cdn",
-    "vpc",
-    "monitor",
-    "postgres",
-] as const;
+/**
+ * 支持的 service 白名单 + 官方 API 版本映射。
+ *
+ * **这是枚举白名单**：`service` 只接受下表里的产品标识，其余取值（对象存储 COS 这类
+ * 不在云 API 体系内的产品、以及任何拼写错误）在请求出网前就被 schema 拦下。
+ *
+ * 数组语义：
+ * - **一个元素**：该产品官方只有一个在用的 API 版本，调用时 `version` 可省略，自动使用该值；
+ * - **多个元素**：该产品有多个仍在用的官方版本，**必须显式传 `version`** —— 缺省会报错并列出
+ *   可选项，而不是替你猜一个（猜错会表现为「Action 不存在」，很难排查）。
+ *
+ * 版本号来源：官方 SDK 目录 `tencentcloud/<service>/v<YYYYMMDD>`。
+ * 新增 service 时补一行 + 跑 `pnpm test`（`capi.test.ts` 会校验枚举与表的对应关系）。
+ */
+export const SERVICE_VERSIONS: Readonly<Record<string, readonly string[]>> = {
+    // 云开发 / 管控面
+    tcb: ["2018-06-08"],
+    tcbr: ["2022-02-17"],
+    scf: ["2018-04-16"],
+    sts: ["2018-08-13"],
+    cam: ["2019-01-16"],
+    cloudaudit: ["2019-03-19"],
+    tag: ["2018-08-13"],
+    billing: ["2018-07-09"],
+    region: ["2022-06-27"],
+    // 计算 / 容器 / 存储
+    cvm: ["2017-03-12"],
+    lighthouse: ["2020-03-24"],
+    tke: ["2018-05-25", "2022-05-01"],
+    cbs: ["2017-03-12"],
+    cfs: ["2019-07-19"],
+    tcr: ["2019-09-24"],
+    // 数据库
+    cdb: ["2017-03-20"],
+    mariadb: ["2017-03-12"],
+    postgres: ["2017-03-12"],
+    sqlserver: ["2018-03-28"],
+    redis: ["2018-04-12"],
+    mongodb: ["2018-04-08", "2019-07-25"],
+    cynosdb: ["2019-01-07"],
+    dcdb: ["2018-04-11"],
+    tcaplusdb: ["2019-08-23"],
+    keewidb: ["2022-03-08"],
+    // 网络 / 域名 / 证书
+    vpc: ["2017-03-12"],
+    clb: ["2018-03-17"],
+    cdn: ["2018-06-06"],
+    ecdn: ["2019-10-12"],
+    dnspod: ["2021-03-23"],
+    privatedns: ["2020-10-28"],
+    domain: ["2018-08-08"],
+    ssl: ["2019-12-05"],
+    teo: ["2022-01-06", "2022-09-01"],
+    gaap: ["2018-05-29"],
+    // 安全
+    kms: ["2019-01-18"],
+    ssm: ["2019-09-23"],
+    waf: ["2018-01-25"],
+    cwp: ["2018-02-28"],
+    tcss: ["2020-11-01"],
+    // 中间件 / 消息
+    ckafka: ["2019-08-19"],
+    tdmq: ["2020-02-17"],
+    tdmysql: ["2021-11-22"],
+    apigateway: ["2018-08-08"],
+    // 可观测 / 运维
+    monitor: ["2018-07-24", "2023-06-16"],
+    cls: ["2020-10-16"],
+    apm: ["2021-06-22"],
+    tsf: ["2018-03-26"],
+    tat: ["2020-10-28"],
+    // AI / 音视频
+    hunyuan: ["2023-09-01"],
+    lkeap: ["2024-05-22"],
+    tts: ["2019-08-23"],
+    trtc: ["2019-07-22"],
+    live: ["2018-08-01"],
+    vod: ["2018-07-17", "2024-07-18"],
+    // 通信
+    sms: ["2019-07-11", "2021-01-11"],
+    ses: ["2020-10-02"],
+};
 
-type AllowedService = (typeof ALLOWED_SERVICES)[number];
+/** 白名单取值，直接作为工具 schema 的枚举。 */
+export const ALLOWED_SERVICES = Object.keys(SERVICE_VERSIONS) as [string, ...string[]];
+
+/** 有多个在用官方版本、因此必须显式传 version 的 service。 */
+const MULTI_VERSION_SERVICES = Object.entries(SERVICE_VERSIONS)
+    .filter(([, versions]) => versions.length > 1)
+    .map(([name]) => name);
+
+/**
+ * 未收录 service 的命名指引。枚举已经拦掉这些取值，这段只在直接用函数调用时兜底。
+ */
+const SERVICE_NAMING_HINT =
+    `service 必须与官方 SDK 目录名一致（tencentcloud/<service>/v<YYYYMMDD>），部分产品的标识与中文名不同 —— ` +
+    `云数据库 MySQL 是 \`cdb\`、日志服务是 \`cls\`、DNS 解析是 \`dnspod\`、证书是 \`ssl\`；` +
+    `对象存储 COS 走独立 XML API，不在云 API 体系内。需要新增产品请补 \`SERVICE_VERSIONS\` 白名单。`;
 
 /**
  * Legacy tcb small-tenant CloudRun (CloudBase Run) API family — blocked.
@@ -62,6 +146,37 @@ export function assertTcbCloudRunActionAllowed(service: string, action: string):
             }),
         );
     }
+}
+
+/**
+ * Resolve the API version for a service.
+ *
+ * - 显式传入的 version 永远优先；
+ * - 白名单里只有一个官方版本的 service（绝大多数）缺省时自动补上，不必让调用方记版本号；
+ * - 多版本 service 缺省时直接报错并列出可选项 —— 替你猜一个会造成「版本错配被服务端
+ *   报成 Action 不存在」，比报错难排查得多。
+ * - 不在白名单内的 service 直接拒绝（正常路径下 schema 已经拦掉，这里兜直接调用）。
+ */
+export function resolveServiceVersion(service: string, version?: string): string {
+    if (version) {
+        return version;
+    }
+
+    const versions = SERVICE_VERSIONS[service];
+    if (!versions) {
+        throw new Error(
+            `service \`${service}\` 不在支持列表内。当前支持：${ALLOWED_SERVICES.join("、")}。${SERVICE_NAMING_HINT}`,
+        );
+    }
+
+    if (versions.length === 1) {
+        return versions[0];
+    }
+
+    throw new Error(
+        `[${service}] 缺少 version：该 service 有多个在用的官方 API 版本（${versions.join("、")}），` +
+            `必须显式传 version，否则无法判断你要调用的 Action 属于哪一版。`,
+    );
 }
 
 export function resolveCloudApiRegionAndParams(args: {
@@ -178,13 +293,18 @@ function formatTcbParamsTypeHint(action: string) {
     return `参数类型参考：\n\`\`\`ts\n${entry.paramsType}\n\`\`\``;
 }
 
-function buildCapiDocGuidance(service: AllowedService) {
-    if (service === "tcb" || service === "tcbr" || service === "lowcode" || service === "scf") {
+function buildCapiDocGuidance(service: string) {
+    if (service === "tcb" || service === "tcbr" || service === "scf") {
         return `优先查阅 CloudBase API 概览 ${CLOUDBASE_CONTROL_PLANE_DOC_URL} 与云开发依赖资源接口指引 ${CLOUDBASE_DEPENDENCY_API_DOC_URL}。`;
     }
 
     if (service === "monitor") {
         return `请优先核对云监控（腾讯云可观测平台）官方 API 文档：API 概览 https://cloud.tencent.com/document/product/649/30343 ，单 Action 详细文档在 https://cloud.tencent.com/document/api/248/ 产品线下。`;
+    }
+
+    const versions = SERVICE_VERSIONS[service];
+    if (versions) {
+        return `请对照 \`${service}\`（官方版本 ${versions.join(" / ")}）的官方 API 文档核对 Action 与参数：腾讯云 API 文档 https://cloud.tencent.com/document/api ，SDK 源码 tencentcloud/${service}/v<YYYYMMDD>。`;
     }
 
     return `请优先核对对应官方云 API 文档；若你的场景其实是通过 HTTP 协议直接集成 auth/functions/cloudrun/storage/mysqldb 等 CloudBase 业务 API，请优先使用 OpenAPI / Swagger 或 searchKnowledgeBase(mode="openapi")，不要继续猜测管控面 Action。`;
@@ -206,7 +326,7 @@ export function isCamAuthError(message: string): boolean {
     return CAM_AUTH_ERROR_PATTERN.test(message);
 }
 
-export function buildCapiErrorMessage(service: AllowedService, action: string, error: unknown): string {
+export function buildCapiErrorMessage(service: string, action: string, error: unknown): string {
     const baseMessage = error instanceof Error ? error.message : String(error);
     const suggestions: string[] = [];
     const tcbEntry = service === "tcb" ? findTcbActionEntry(action) : undefined;
@@ -273,7 +393,7 @@ export function buildCapiErrorMessage(service: AllowedService, action: string, e
     }
 
     if (/ECONNRESET|socket hang up|ETIMEDOUT|ENOTFOUND/i.test(baseMessage)) {
-        suggestions.push(t("capi.errorNetwork"));
+        suggestions.push(t("capi.errorNetwork", { service }));
     }
 
     if (suggestions.length === 0) {
@@ -320,27 +440,32 @@ export function registerCapiTools(server: ExtendedMcpServer) {
                 service: z
                     .enum(ALLOWED_SERVICES)
                     .describe(
-                        "选择要访问的服务。可选：tcb、tcbr、scf、sts、cam、lowcode、cdn、vpc、monitor（云监控/告警，version 需传 2018-07-24）、postgres（云数据库 PostgreSQL，version 需传 2017-03-12）。对于 tcb / scf / lowcode 等 CloudBase 管控面 Action，请优先查官方文档，不要直接猜测 Action。云托管统一走 tcbr（version 需传 2022-02-17）。",
+                        `腾讯云产品标识，**取值只能来自本字段的 enum 白名单（共 ${ALLOWED_SERVICES.length} 个）**，决定请求域名 https://<service>.tencentcloudapi.com。名单外的取值一律拒绝，不要臆造；COS 不在云 API 体系内。产品名与 Action 对照见 skill cloud-api-operations。云托管统一走 tcbr。`,
                     ),
                 action: z
                     .string()
                     .min(1)
-                    .describe("具体 Action 名称，需符合对应服务的官方 API 定义。若不确定正确 Action，请先查官方文档；不要用近义词或历史命名进行猜测。tcb 常用 Action：环境管理 CreateEnv/ModifyEnv/DescribeEnvs/DestroyEnv、用户管理 CreateUser/ModifyUser/DescribeUserList/DeleteUsers、认证配置 EditAuthConfig、云函数 DescribeFunctions/CreateFunction、数据库 CreateMySQLInstance 等。tcbr 常用 Action：CreateCloudRunEnv（初始化云托管）、DescribeEnvBaseInfo（查询单个环境基础信息，EnvId 必填）、DescribeCloudRunEnvs（查询环境列表/资源信息，EnvId 可选过滤）、CreateCloudRunServer/DescribeCloudRunServers。"),
+                    .describe("具体 Action 名称，需符合对应服务的官方 API 定义。**不确定时先查官方文档，不要用近义词或历史命名猜测**（猜错会被服务端报成 action invalid，很难排查）。常用 Action 见 skill cloud-api-operations。"),
                 version: z
                     .string()
                     .optional()
-                    .describe("API 版本（可选）。缺省时按 service 使用 SDK 内置默认版本；tcbr 必须传 \"2022-02-17\"（否则请求缺少 X-TC-Version 会失败），monitor 必须传 \"2018-07-24\"、postgres 必须传 \"2017-03-12\"（这两个 service 无内置默认版本，不传会失败）。示例：service=\"tcbr\", version=\"2022-02-17\", action=\"CreateCloudRunEnv\", params={EnvId:\"env-xxx\",PackageType:\"Standard\"}。"),
+                    .describe(
+                        `API 版本（多数场景可省略）。白名单里**只有一个官方版本的产品会自动补齐**，不必传；` +
+                            `以下多版本产品必须显式传，缺省会报错并列出可选项：${MULTI_VERSION_SERVICES.join("、")}。` +
+                            `示例：service="tcbr", version="2022-02-17", action="CreateCloudRunEnv", params={EnvId:"env-xxx",PackageType:"Standard"}；` +
+                            `service="monitor" 需显式传 "2018-07-24"（告警策略族 Action 属于该版本）。`,
+                    ),
                 params: z
                     .record(z.any())
                     .optional()
                     .describe(
-                        "Action 对应的参数对象，键名需与官方 API 定义一致。某些 Action 需要携带 EnvId 等信息；如不确定参数结构，请先查官方文档。tcb 示例：`{ \"service\": \"tcb\", \"action\": \"DestroyEnv\", \"params\": { \"EnvId\": \"env-xxx\", \"BypassCheck\": true } }`，如果环境已经处于隔离期，可再补 `IsForce: true`；更新环境别名则可用 `{ \"service\": \"tcb\", \"action\": \"ModifyEnv\", \"params\": { \"EnvId\": \"env-xxx\", \"Alias\": \"demo\" } }`。不要把 Region 放进 params（会报 The parameter Region is not recognized）；跨地域请用顶层 region，例如 `{ \"service\": \"tcb\", \"action\": \"DescribeEnvs\", \"region\": \"ap-singapore\" }`。若你的场景是通过 HTTP 协议直接集成 auth/functions/cloudrun/storage/mysqldb 等 CloudBase 业务 API，请优先使用 OpenAPI / Swagger 或 searchKnowledgeBase(mode=\"openapi\")，而不是优先使用 callCloudApi。",
+                        "Action 对应的参数对象，键名与官方 API 定义一致，不确定时先查文档。**不要把 Region 放这里**，跨地域用顶层 region。CloudBase 业务 API 请优先用 searchKnowledgeBase(mode=\"openapi\")，不要用本工具。示例见 skill cloud-api-operations。",
                     ),
                 region: z
                     .string()
                     .optional()
                     .describe(
-                        "云 API 地域（X-TC-Region）。例如 ap-shanghai、ap-guangzhou、ap-singapore。DescribeEnvs 等接口按地域查询，跨地域必须传此顶层参数，不要写入 params.Region。⚠️ ap-singapore 同时属于国内站与国际站，未显式指定站点时会被判定为国际站（site=intl）：若你要操作的是国内站的 ap-singapore 环境，请先用 auth(action=\"start_auth\"|\"login_by_api_key\", site=\"domestic\") 或设置 TCB_SITE=domestic 明确站点，否则请求会静默打到国际站账号。",
+                        "云 API 地域（X-TC-Region），如 ap-shanghai。跨地域必须传此顶层参数，不要写进 params。⚠️ ap-singapore 同属国内站与国际站，未指定站点按国际站（site=intl）处理：要操作国内站该地域环境，先 auth(action=\"start_auth\", site=\"domestic\") 或设 TCB_SITE=domestic。",
                     ),
             },
             annotations: {
@@ -358,17 +483,13 @@ export function registerCapiTools(server: ExtendedMcpServer) {
             version,
             region,
         }: {
-            service: AllowedService;
+            service: string;
             action: string;
             params?: Record<string, any>;
             version?: string;
             region?: string;
         }) => {
-            if (!ALLOWED_SERVICES.includes(service)) {
-                throw new Error(
-                    `Service ${service} is not allowed. Allowed services: ${ALLOWED_SERVICES.join(", ")}`,
-                );
-            }
+            const resolvedVersion = resolveServiceVersion(service, version);
 
             assertTcbCloudRunActionAllowed(service, action);
 
@@ -380,9 +501,6 @@ export function registerCapiTools(server: ExtendedMcpServer) {
                     : cloudBaseOptions,
             });
             if (['1', 'true'].includes(process.env.CLOUDBASE_EVALUATE_MODE ?? '')) {
-                if (service === 'lowcode') {
-                    throw new Error(t("capi.evalModeNotExposed", { service, action }));
-                }
                 if (service === 'tcb') {
                     const tcbCapiForbidList = [
                         // Cloud APIs not clearly public
@@ -414,7 +532,7 @@ export function registerCapiTools(server: ExtendedMcpServer) {
             let result: unknown;
             try {
                 const cleanedParams = removeEmptyStringParams(bodyParams);
-                result = await cloudbase.commonService(service, version).call({
+                result = await cloudbase.commonService(service, resolvedVersion).call({
                     Action: action,
                     Param: cleanedParams,
                 });

@@ -15,15 +15,15 @@ Run commands as `npx hyperframes ...` unless project instructions provide a wrap
 
 ## Development loop
 
-1. **Scaffold:** `npx hyperframes init <project>` or capture a site. In non-TTY mode, pass `--non-interactive --example=<name>`.
+1. **Scaffold:** `npx hyperframes init <project>` (centered blank). Or capture a site. Pass `--example=<name>` only to start from a named example.
 2. **Find the move:** before authoring motion by hand, search for a primitive that already does it: `npx hyperframes catalog --query "reveal a headline one line at a time"`. Ask for the effect you want rather than the mechanism you have in mind. Install with `npx hyperframes add <name>` (see `/hyperframes-registry`). Author by hand only once nothing fits.
 3. **Author:** write the composition using `/hyperframes-core`.
 4. **Get fast feedback while editing:** run `npx hyperframes lint` after the first HTML pass and after structural changes.
 5. **Run the final gate:** run `npx hyperframes check`; it reruns lint before opening the browser. Do not prepend a redundant standalone lint invocation. Add `--snapshots` for annotated overview frames and finding crops.
 6. **Inspect sub-compositions:** when `index.html` mounts `data-composition-src`, capture midpoint snapshots and inspect each mounted scene.
 7. **Open the final Studio preview:** run `npx hyperframes preview --background`, verify the URL returns HTTP 200, hand the timeline project URL to the user, and ask whether to revise or render. Keep it alive until review ends.
-8. **Render only after approval:** use draft quality for iteration and high quality for delivery.
-9. **Verify the output:** confirm the file exists, is non-empty, and has a plausible duration.
+8. **Render only after approval:** use `--quality draft` while iterating, `--quality looks` for the first real encode (the CLI default), and `--quality delivery` for final delivery.
+9. **Verify the output:** confirm the file exists and is non-empty. Read the render summary's second line (`beginframe` vs `screenshot`, GPU, stage timings). `screenshot` + `software gpu` on Linux is the slow path. `ffprobe -v error -show_format -show_streams` and compare duration (and fps if the brief set it) to the root `data-duration`.
 
 ## Mandatory creator-edit cross-references
 
@@ -46,9 +46,9 @@ npx hyperframes lint
 # Required final gate; includes lint.
 npx hyperframes check
 npx hyperframes preview --background
-npx hyperframes render --quality high --output out.mp4
+npx hyperframes render --quality looks --output out.mp4
 test -s out.mp4
-ffprobe -v error -show_format out.mp4
+ffprobe -v error -show_format -show_streams out.mp4
 ```
 
 `check` runs lint first, then uses one browser session and one seek pass to audit runtime errors, failed requests, layout, `*.motion.json` assertions, and WCAG contrast. Persistent findings gate the exit code; transient entrance or exit findings are informational. Use `--strict` to gate warnings. `validate`, `inspect`, and `layout` remain aliases for compatibility but must not appear in new instructions or scripts.
@@ -62,7 +62,7 @@ Do not confuse these states:
 | Storyboard board          | Before composition checks, only when `storyboard: yes` | Review plan cards and wireframe sketches. Open `?view=storyboard#project/<name>`. |
 | Final composition preview | After `check` passes                                   | Review the assembled timeline before render. Open `#project/<name>`.              |
 
-The early board is not approval of the final video. Rendering always requires the final approval defined by `hyperframes-core/references/review-loop.md`.
+The early board is not approval of the final video. Rendering always requires the final approval defined by `hyperframes/references/review-loop.md`.
 
 ## Sub-composition smoke test
 
@@ -90,7 +90,7 @@ Treat tiny unstyled content, canvas-sized icons, missing hero elements, or timel
   npx hyperframes doctor --json | jq -e '.ok' >/dev/null
   ```
 
-- Non-TTY mode is automatic. `init` requires `--example` there; use `--non-interactive` to force deterministic behavior on a TTY.
+- Non-TTY mode is automatic and scaffolds the centered blank. Pass `--example` only to start from a named example. Use `--non-interactive` to force flag-only mode on a TTY.
 - Use one `HYPERFRAMES_RUN_ID` for all commands in the same verification loop.
 - Use `--strict`, `--strict-all`, and `--strict-variables` when the corresponding warnings, variables, or CI conditions must gate the render.
 - JSON paths redact the home directory as `$HOME`; do not try to reverse the redaction.
@@ -112,7 +112,8 @@ Use `selection.target.hfId` when available, otherwise its selector and source fi
 | Need                                     | Command                                                                       |
 | ---------------------------------------- | ----------------------------------------------------------------------------- |
 | Fast local iteration                     | `npx hyperframes render --quality draft`                                      |
-| Final local delivery                     | `npx hyperframes render --quality high --output out.mp4`                      |
+| First real encode                        | `npx hyperframes render --quality looks --output out.mp4`                     |
+| Final local delivery                     | `npx hyperframes render --quality delivery --output out.mp4`                  |
 | Reproducible container render            | `npx hyperframes render --docker --strict --output out.mp4`                   |
 | Local variable-driven batch render       | `npx hyperframes render --batch rows.json --output "renders/{name}.mp4"`      |
 | HeyGen-hosted zero-infrastructure render | `npx hyperframes cloud render`                                                |

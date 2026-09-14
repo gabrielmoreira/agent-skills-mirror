@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `KAN-H/llama-cpp-windows-deployment-skill` — 26 default patterns, 2 followed patterns, 3 file(s) materialized.
+Mirror of `KAN-H/llama-cpp-windows-deployment-skill` — 26 default patterns, 5 followed patterns, 6 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `KAN-H/llama-cpp-windows-deployment-skill` — 26 default patterns, 2 
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 2 |
-| Files         | 3 |
+| Followed pats | 5 |
+| Files         | 6 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,8 +51,11 @@ Mirror of `KAN-H/llama-cpp-windows-deployment-skill` — 26 default patterns, 2 
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-- `references/20260803-session-experience.md`
-- `references/20260816-session-experience.md`
+- `references/INDEX.md`
+- `references/sessions/20260803-session-experience.md`
+- `references/sessions/20260816-session-experience.md`
+- `references/guides/20260913-moe-offload-community-research.md`
+- `references/guides/mtp-head-grafting.md`
 
 ## File Index
 
@@ -61,8 +64,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`SKILL.md`](SKILL.md) |
-| 2 | → | [`references/20260803-session-experience.md`](references/20260803-session-experience.md) |
-| 3 | → | [`references/20260816-session-experience.md`](references/20260816-session-experience.md) |
+| 2 | → | [`references/guides/20260913-moe-offload-community-research.md`](references/guides/20260913-moe-offload-community-research.md) |
+| 3 | → | [`references/guides/mtp-head-grafting.md`](references/guides/mtp-head-grafting.md) |
+| 4 | → | [`references/INDEX.md`](references/INDEX.md) |
+| 5 | → | [`references/sessions/20260803-session-experience.md`](references/sessions/20260803-session-experience.md) |
+| 6 | → | [`references/sessions/20260816-session-experience.md`](references/sessions/20260816-session-experience.md) |
 
 ---
 

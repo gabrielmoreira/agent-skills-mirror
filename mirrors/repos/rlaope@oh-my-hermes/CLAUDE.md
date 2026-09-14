@@ -65,9 +65,11 @@ Source of truth → generated file → regen command → drift gate:
 | `ulw_inventory_payload()` in `src/skills/catalog.py` via `src/catalogs/ulw_surfaces.py` | marked ULW region of `README.md` | `uv run python -m omh.cli docs ulw-inventory` | `uv run python -m omh.cli docs ulw-inventory --check`; `tests/test_ulw_inventory.py` |
 | Same producer | marked ULW region of `site/index.html` | `uv run python -m omh.cli docs ulw-site` | `uv run python -m omh.cli docs ulw-site --check`; i18n parity in `tests/test_ulw_inventory.py` |
 | `SHIPPED_MODEL_RECOMMENDATIONS` in `src/coding/model_recommendations.py` via `src/catalogs/model_chain_table.py` | marked chain-table region of `docs/INSTALLATION.md` | `uv run python -m omh.cli docs chain-table` | `uv run python -m omh.cli docs chain-table --check`; round-trip equality in `tests/test_model_chain_table.py` |
+| `src/skills/catalog_portable.py` + catalog/render via `agent_skill_templates()` / `agent_skill_reference_templates()` | `agent-skills/*/SKILL.md`, `agent-skills/*/references/*.md` | `uv run python -m omh.cli docs agent-skills` | `uv run python -m omh.cli docs agent-skills --check` |
 
 Rules:
 
+- Never hand-edit `agent-skills/*/SKILL.md` or its references; regenerate the portable target without changing the Hermes projection.
 - Never hand-edit `skills/*/SKILL.md`, `docs/WORKFLOWS.md`, `docs/ROLES.md`, the
   demo-cards JSON, or a marked region (ULW in `README.md` / `site/index.html`,
   the shipped chain table in `docs/INSTALLATION.md`). Edit the catalog/render

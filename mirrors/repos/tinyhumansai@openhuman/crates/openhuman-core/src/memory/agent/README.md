@@ -20,7 +20,8 @@ The memory agent is a specialist sub-agent that navigates the user's memory tree
 | `mod.rs` | Module declarations and re-exports |
 | `types.rs` | Benchmark and performance tracking types |
 | `ops.rs` | Benchmarking harness for memory walk performance |
-| `tools.rs` | `call_memory_agent` tool implementation |
+| `tools.rs` | `call_memory_agent` tool implementation, re-exported from [`tools/mod.rs`](../../tools/mod.rs) (`pub use crate::memory::agent::tools::*;`) |
+| `memory_loader.rs` | What is left of the old per-turn memory loader: `CROSS_CHAT_HEADER` (the `[Cross-chat context]` block header, bound by `agent/harness/memory_context.rs` and the orchestrator prompt so the wording cannot drift), `MemoryCitation`, and `collect_recall_citations` (called from `agent/harness/session/turn/core_turn.rs`; the citations reach `web_chat`'s reply presentation). The per-turn `load_context()` block — two full scans of the `global` namespace every turn — was removed from `core_turn.rs`; see [`memory/auto_recall/mod.rs`](../auto_recall/mod.rs) for what replaced it. The `PRIOR_CONVERSATION_*` constants are leftovers of that block and have no caller. |
 
 ## Memory tree structure
 
@@ -65,4 +66,4 @@ The built-in agent is registered at `crates/openhuman-core/src/memory/agent/agen
 - `prompt.rs` — dynamic prompt builder
 - `prompt.md` — system prompt archetype
 
-The agent has access to the full memory retrieval tool surface: `memory_tree` (with deterministic E2GraphRAG `walk`/`smart_walk` modes plus `search_entities`/`query_source`/`cover_window`/`drill_down`/`fetch_leaves`), `memory_recall`, and `query_memory`.
+`agent.toml`'s `[tools] named` allowlist is `memory_recall`, `memory_tree`, `query_memory`, `memory_doctor`, `memory_flavour`, and `ask_user_clarification`. `memory_tree` is the [`memory/query/`](../query/) dispatcher, so its `walk`/`smart_walk`/`search_entities`/`query_source`/`cover_window`/`drill_down`/`fetch_leaves` modes are all reachable; `prompt.md` steers the model to `walk` first. The allowlist is per tool name, not per mode, so the write mode `ingest_document` is technically callable too — nothing in `memory/query/` checks `current_sandbox_mode`, and `sandbox_mode = "read_only"` is only consulted by the Composio tools and by orchestration's write-capability checks, not by memory writes. The agent is read-only by prompt and by intent (`prompt.md` never mentions ingest), not by enforcement.

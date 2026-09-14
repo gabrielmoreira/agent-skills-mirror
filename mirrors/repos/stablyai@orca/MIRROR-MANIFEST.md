@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `stablyai/orca` — 26 default patterns, 14 followed patterns, 27 file(s) materialized.
+Mirror of `stablyai/orca` — 26 default patterns, 15 followed patterns, 28 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `stablyai/orca` — 26 default patterns, 14 followed patterns, 27 file
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 14 |
-| Files         | 27 |
+| Followed pats | 15 |
+| Files         | 28 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,6 +59,7 @@ Mirror of `stablyai/orca` — 26 default patterns, 14 followed patterns, 27 file
 - `docs/reference/windows-edr-posture.md`
 - `docs/reference/wsl-command-execution.md`
 - `docs/reference/linux-glibc-compatibility.md`
+- `docs/reference/pnpm-install-policy.md`
 - `docs/reference/ssh-execution-boundary.md`
 - `docs/reference/agent-status-store.md`
 - `docs/reference/agent-pty-transcript-capture.md`
@@ -90,15 +91,16 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 16 | → | [`docs/reference/antigravity-readiness-evidence.md`](docs/reference/antigravity-readiness-evidence.md) |
 | 17 | → | [`docs/reference/git-compatibility.md`](docs/reference/git-compatibility.md) |
 | 18 | → | [`docs/reference/linux-glibc-compatibility.md`](docs/reference/linux-glibc-compatibility.md) |
-| 19 | → | [`docs/reference/remote-wire-compatibility.md`](docs/reference/remote-wire-compatibility.md) |
-| 20 | → | [`docs/reference/ssh-execution-boundary.md`](docs/reference/ssh-execution-boundary.md) |
-| 21 | → | [`docs/reference/windows-cmd-shim-resolution.md`](docs/reference/windows-cmd-shim-resolution.md) |
-| 22 | → | [`docs/reference/windows-daemon-host-relocation.md`](docs/reference/windows-daemon-host-relocation.md) |
-| 23 | → | [`docs/reference/windows-edr-posture.md`](docs/reference/windows-edr-posture.md) |
-| 24 | → | [`docs/reference/windows-process-enumeration.md`](docs/reference/windows-process-enumeration.md) |
-| 25 | → | [`docs/reference/windows-setup-shell.md`](docs/reference/windows-setup-shell.md) |
-| 26 | → | [`docs/reference/wsl-command-execution.md`](docs/reference/wsl-command-execution.md) |
-| 27 | → | [`docs/STYLEGUIDE.md`](docs/STYLEGUIDE.md) |
+| 19 | → | [`docs/reference/pnpm-install-policy.md`](docs/reference/pnpm-install-policy.md) |
+| 20 | → | [`docs/reference/remote-wire-compatibility.md`](docs/reference/remote-wire-compatibility.md) |
+| 21 | → | [`docs/reference/ssh-execution-boundary.md`](docs/reference/ssh-execution-boundary.md) |
+| 22 | → | [`docs/reference/windows-cmd-shim-resolution.md`](docs/reference/windows-cmd-shim-resolution.md) |
+| 23 | → | [`docs/reference/windows-daemon-host-relocation.md`](docs/reference/windows-daemon-host-relocation.md) |
+| 24 | → | [`docs/reference/windows-edr-posture.md`](docs/reference/windows-edr-posture.md) |
+| 25 | → | [`docs/reference/windows-process-enumeration.md`](docs/reference/windows-process-enumeration.md) |
+| 26 | → | [`docs/reference/windows-setup-shell.md`](docs/reference/windows-setup-shell.md) |
+| 27 | → | [`docs/reference/wsl-command-execution.md`](docs/reference/wsl-command-execution.md) |
+| 28 | → | [`docs/STYLEGUIDE.md`](docs/STYLEGUIDE.md) |
 
 ---
 

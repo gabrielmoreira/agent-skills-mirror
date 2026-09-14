@@ -24,6 +24,9 @@ API-usage cost tracking and budget enforcement for the agent. Records per-call t
 | `crates/openhuman-core/src/platform/cost/rpc.rs`           | RPC-facing handlers (`dashboard`, `daily_history`, `summary`) returning `RpcOutcome<Value>`; DTO types; `resolve_tracker` with a cached fallback tracker + error-replay TTL.                                            |
 | `crates/openhuman-core/src/platform/cost/schemas.rs`       | Controller schemas + `handle_*` JSON-RPC dispatchers; `all_controller_schemas` / `all_registered_controllers`.                                                                                                          |
 | `crates/openhuman-core/src/platform/cost/tracker_tests.rs` | Sibling test suite for `tracker.rs` (`#[path]`-included).                                                                                                                                                               |
+| `crates/openhuman-core/src/platform/cost/catalog.rs` | Static per-model pricing + context-window catalog (`ModelPrice`, `lookup`, `estimate_cost_usd`, `PRICING_AS_OF`) and the tinyagents model-catalog adapters. |
+| `crates/openhuman-core/src/platform/cost/route.rs` | `CostRoute` / `route_for_model`: derives from the model id whether a record counts against OpenHuman-managed credits or is BYOK/local (#5016). |
+| `crates/openhuman-core/src/platform/cost/tools.rs` | Read-only, default-on LLM tools (`cost_get_dashboard`, `cost_get_daily_history`, …) re-exported through `crates/openhuman-core/src/tools/mod.rs`. |
 
 ## Public surface
 
@@ -62,7 +65,7 @@ None. The module has no `bus.rs` and no `DomainEvent` publishers/subscribers.
 ## Dependencies
 
 - `crate::config` — `CostConfig` / `Config` (limits, warn percent, `dashboard` thresholds/currency/enabled, `workspace_dir`); `config::rpc::load_config_with_timeout` in schemas.
-- `crate::inference::provider::traits::UsageInfo` — provider usage payload translated into `TokenUsage` in `global.rs`.
+- `crate::inference::provider::types::UsageInfo` (re-exported as `crate::inference::provider::UsageInfo`) — provider usage payload translated into `TokenUsage` in `global.rs`.
 - `crate::core::all` — `ControllerFuture`, `RegisteredController` for controller registration.
 - `crate::core` — `ControllerSchema`, `FieldSchema`, `TypeSchema`.
 - `crate::rpc::RpcOutcome` — RPC return wrapper.
@@ -72,7 +75,8 @@ None. The module has no `bus.rs` and no `DomainEvent` publishers/subscribers.
 
 - `crates/openhuman-core/src/core/all.rs` — registers `all_cost_registered_controllers` / `all_cost_controller_schemas`.
 - `crates/openhuman-core/src/core/jsonrpc.rs` — calls `cost::init_global(cfg.cost.clone(), &workspace_dir)` at bootstrap.
-- `crates/openhuman-core/src/agent/harness/session/turn.rs` — calls `cost::record_provider_usage` after provider calls to log per-turn usage.
+- `crates/openhuman-core/src/agent/tinyagents/observability/event_bridge.rs`, `agent/tinyagents/turn_outcome.rs`, `agent/tinyagents/host/budget_gate.rs`, and `agent/harness/subagent_runner/ops/graph/dispatch.rs` — call `cost::record_provider_usage` after provider calls to log per-turn (and subagent) usage.
+- `crates/openhuman-core/src/tools/mod.rs` — re-exports `platform::cost::tools::*`.
 - `crates/openhuman-core/src/config/schema/identity_cost.rs` — `CostConfig` definition references `check_budget` / `record_provider_usage` semantics in docs.
 
 ## Notes / gotchas

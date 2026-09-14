@@ -5,7 +5,7 @@ icon: desktop
 
 # Tauri shell (`crates/openhuman-app/`)
 
-The desktop host for OpenHuman: Tauri v2 + WebView, IPC commands, window management, and bridging to the embedded `openhuman-core` Rust runtime (core JSON-RPC). It does **not** duplicate the full domain stack; that lives in `crates/openhuman-core` (`openhuman_core`, `src/main.rs`).
+The desktop host for OpenHuman: Tauri v2 + WebView, IPC commands, window management, and bridging to the embedded `openhuman-core` Rust runtime (core JSON-RPC). It does **not** duplicate the full domain stack; that lives in `crates/openhuman-core` (library `openhuman_core`, CLI at `crates/openhuman-core/src/main.rs`).
 
 ## Responsibilities
 
@@ -30,7 +30,7 @@ Startup recovery skips when `OPENHUMAN_CORE_REUSE_EXISTING=1` is set so manual C
 
 ### Overview
 
-The **`crates/openhuman-app`** crate (Rust package **`OpenHuman`**, binary **`OpenHuman`**) is a **desktop-only** host. It embeds the React UI, registers plugins (deep link, opener, OS, notifications, autostart, updater), manages the main window and tray, and runs the core JSON-RPC server **in-process**.
+The **`crates/openhuman-app`** crate (Cargo package **`openhuman-app`**, lib **`openhuman`**, binary **`OpenHuman`**) is a **desktop-only** host. It embeds the React UI, registers plugins (deep link, opener, OS, notifications, autostart, updater), manages the main window and tray, and runs the core JSON-RPC server **in-process**.
 
 Non-desktop targets fail at compile time (`compile_error!` in `lib.rs`).
 
@@ -82,7 +82,7 @@ React (fetch)
         → embedded openhuman core server (tokio task in this process)
 ```
 
-The renderer talks to the local core **directly over HTTP** — `app/src/services/coreRpcClient.ts` invokes `core_rpc_url` / `core_rpc_token` once, then issues plain `fetch()` calls. The `relay_http_rpc` Tauri command is a host-side fallback used only when the RPC URL is **not** a trustworthy origin for the secure `tauri://localhost` webview (e.g. a self-hosted runtime on a LAN IP, blocked as mixed content — #3865): the Rust host performs the POST with `reqwest` and mirrors status + body back verbatim.
+The renderer talks to the local core **directly over HTTP** — `app/src/services/coreRpcClient.ts` invokes `core_rpc_url` / `core_rpc_token` once, then issues plain `fetch()` calls. The `relay_http_rpc` Tauri command is a host-side fallback used only when the RPC URL is **not** a trustworthy origin for the secure `tauri://localhost` webview (e.g. a self-hosted runtime on a LAN IP, blocked as mixed content — #3865): the Rust host delegates to `openhuman_rpc::post_json_rpc` from the shared `crates/openhuman-rpc` crate (feature `http-client`): 30 s timeout, redirects disabled when a bearer is present, status + body mirrored back verbatim as `HttpRpcResponse`. The shell adds only the gateway transport guard (`validate_remote_transport`, feature `gateways`) before delegating.
 
 `CoreProcessHandle` in `core_process.rs` owns the embedded server task (started via `openhuman_core::core::jsonrpc::run_server_embedded_with_ready` with a per-launch random bearer token) and handles stale-listener/port-conflict recovery.
 
@@ -101,6 +101,7 @@ The renderer talks to the local core **directly over HTTP** — `app/src/service
 - IPC surface: see the [Commands](#tauri-ipc-commands-app-src-tauri) section below
 - HTTP bridge: see the [Core bridge & helpers](#core-bridge-helpers-app-src-tauri) section below
 - Rust domains and runtime: `crates/openhuman-core/src/`, `crates/openhuman-core/src/core/`
+- Shared RPC contracts + HTTP client: `crates/openhuman-rpc/` (also used by `crates/openhuman-tui` for envelope decoding)
 
 ## Tauri IPC commands (`crates/openhuman-app`)
 
@@ -152,7 +153,7 @@ identity path and a remote bearer are materially more sensitive than a window po
 the renderer's own notes on the cloud token (audit U3, `utils/configPersistence.ts`) already
 say a renderer XSS can read anything kept there. The frontend holds a gateway *id*.
 
-Shell-internal callers (`imessage_scanner`, `local_data_reset`, `companion`) deliberately
+Shell-internal callers (`imessage_scanner`, `local_data_reset`) deliberately
 keep talking to the embedded core: they are about *this* machine's iMessage database, *this*
 install's data, and *this* machine's audio, so routing them to a remote gateway would be
 wrong rather than incomplete.
@@ -178,13 +179,12 @@ Frontend: **`app/src/services/gatewayService.ts`**, surfaced in Settings → Cor
 
 `check_core_update` / `apply_core_update` (embedded core) and `check_app_update` / `download_app_update` / `install_app_update` / `apply_app_update` (desktop app, via the updater plugin).
 
-### Hotkeys (dictation, PTT, companion)
+### Hotkeys (dictation, PTT)
 
 | Command                                                                            | Purpose                                                                       |
 | ---------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
 | `register_dictation_hotkey` / `unregister_dictation_hotkey`                        | Global dictation shortcuts (`dictation_hotkeys.rs`)                           |
 | `register_ptt_hotkey` / `unregister_ptt_hotkey` / `show_ptt_overlay`               | Push-to-talk — see the [PTT section](#push-to-talk-ptt-hotkey--overlay) below |
-| `register_companion_hotkey` / `unregister_companion_hotkey` / `companion_activate` | Companion window hotkey + activation (`companion_commands.rs`)                |
 
 ### Notifications
 
@@ -245,7 +245,7 @@ Registered in **`lib.rs`** at startup under the event-bus native-request method
 main thread.
 
 Why: enigo's macOS keyboard-layout lookup (`TSMGetInputSourceProperty`) traps
-(`_dispatch_assert_queue_fail` / `EXC_BREAKPOINT`) and crashes the CEF host when
+(`_dispatch_assert_queue_fail` / `EXC_BREAKPOINT`) and crashes the desktop host when
 called off the main thread. The `mouse` / `keyboard` tools therefore never call
 enigo on their tokio worker; they build a closure and dispatch it here, where
 the shell runs it via `AppHandle::run_on_main_thread`.
@@ -292,4 +292,4 @@ The Tauri crate **does not** embed a duplicate Socket.io server or Telegram clie
 ### `core_rpc` (`core_rpc.rs`)
 
 - Shared auth helpers for host-side calls to the local core (URL from `OPENHUMAN_CORE_RPC_URL` or the default port; bearer from `core_process::current_rpc_token`).
-- **`relay_http_rpc`** Tauri command: host-side `reqwest` POST for self-hosted runtimes on non-trustworthy origins (see [Core RPC & diagnostics](#core-rpc--diagnostics)).
+- **`relay_http_rpc`** Tauri command: a thin wrapper over `openhuman_rpc::post_json_rpc` (`crates/openhuman-rpc`, feature `http-client`) for self-hosted runtimes on non-trustworthy origins; `bearer_header`, `redact_url_for_log` and `HttpRpcResponse` are re-exported from that crate (see [Core RPC & diagnostics](#core-rpc--diagnostics)).
