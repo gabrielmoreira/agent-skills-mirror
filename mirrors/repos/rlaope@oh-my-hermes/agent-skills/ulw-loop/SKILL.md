@@ -52,6 +52,7 @@ Bad example:
 
 ## Recovery Notes
 
+- Drive the loop lifecycle through a native loop tool when this host offers one, submitting the revision the last read reported; the OMH native loop tool is unavailable in this projection, so keep the durable ledger with the host commands instead.
 - If a queued tick is pending, show it as prepared queue state and use loop status/run-once before claiming progress.
 - If feedback is unclear, ask one gate question or route back to research/plan rather than advancing the loop.
 - If the goal turns into external waiting, record the waiting state and next observable signal instead of continuing locally.

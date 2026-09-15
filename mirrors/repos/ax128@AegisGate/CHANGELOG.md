@@ -9,6 +9,53 @@ each. Collapsing those into dated releases is tracked in [ROADMAP.md](ROADMAP.md
 
 ## [Unreleased]
 
+### Security（上游白名单旁路补上 XFF 降级）
+
+- **`security_boundary.client_is_internal` 改用与 admin / 默认 `/v1` / UI 相同的 XFF 降级判定。**
+  该值决定 `AEGIS_UPSTREAM_WHITELIST_URL_LIST` 旁路（跳过全部过滤，含 PII 脱敏）是否对当前客户端开放，
+  此前只看 `_real_client_ip`：直连对端不在 `AEGIS_TRUSTED_PROXY_IPS`、却带着 `X-Forwarded-For` 时，
+  对端自己的内网地址就让请求算作内网。
+  - 上一条（uvicorn `--no-proxy-headers`）之后，同机反代的对端是 127.0.0.1：未设
+    `AEGIS_TRUSTED_PROXY_IPS` 时，经它进来的公网客户端在 `AEGIS_ALLOW_PUBLIC_UPSTREAM_WHITELIST=false`
+    下仍拿到白名单旁路，请求原文（含密钥）直达上游。实测：整域名转发 public 规则、上游在白名单、
+    模拟同机 Caddy 带 `X-Forwarded-For: 8.8.8.8`，修复前密钥原文到达上游，修复后被脱敏。
+  - 同样的判定此前也适用于私网地址上未列入可信代理的反代（如 Docker 网络里的 Caddy）。
+  - 按文档设了 `AEGIS_TRUSTED_PROXY_IPS` 的部署行为不变；`AEGIS_XFF_STRICT_INTERNAL=false` 仍回到旧判定。
+    审计与响应里 `security_boundary.client_is_internal` 的取值随之变化。
+
+### Documentation（整域名转发：LLM 路由流式滞后）
+
+- README、README_zh 与 UPSTREAM-QUICKSTART 的整域名转发小节补充流式延迟说明：三条 LLM 路由的
+  SSE 按 `AEGIS_STREAM_SCAN_INTERVAL_CHUNKS × 2`（默认 8）个事件滞后放行（chat completions /
+  responses 为带文本的事件，messages 为全部 `message_*` / `content_block_*` 事件），首个受滞后事件要等到
+  上游第 9 个这类事件，短回复基本整段到达；透传面的 SSE 不缓冲。行为未改动。
+
+### Fixed（uvicorn 启动参数：关闭它自己的 proxy-headers）
+
+- **launcher、Dockerfile 与文档里的 uvicorn 启动命令都加上 `--no-proxy-headers`。**
+  网关的信任判断（`AEGIS_ENFORCE_LOOPBACK_ONLY`、`AEGIS_TRUSTED_PROXY_IPS`、XFF 降级、发往上游的
+  转发头）都假定 `request.client` / `request.url.scheme` 是直连对端。uvicorn 默认开启 proxy-headers
+  并信任 127.0.0.1（或 `FORWARDED_ALLOW_IPS`），会先用 `X-Forwarded-For` / `X-Forwarded-Proto` 改写它们：
+  - 同机 Caddy（`Caddyfile.example` 的写法）被当成它的客户端：`AEGIS_ENFORCE_LOOPBACK_ONLY=true`
+    下全部 403 `loopback_only_reject`，`AEGIS_TRUSTED_PROXY_IPS=127.0.0.1` 永远匹配不到；
+  - 本机客户端可以伪造 `X-Forwarded-Proto: https`，整域名转发时上游收到的协议与 `Location` 回写随之改变。
+
+  **升级动作**：自己写 uvicorn 命令或 systemd unit 的部署需手动加 `--no-proxy-headers`。
+  加上后同机反代的对端是 127.0.0.1，客户端 IP 与协议都取决于 `AEGIS_TRUSTED_PROXY_IPS` 是否列出该反代：
+  没列出时，TLS 反代后面的整域名转发 `Location` 回写、控制台与 `/__gw__/register` 给出的 Base URL
+  都会从 `https://` 变成 `http://`（此前 uvicorn 替网关采信了反代的 `X-Forwarded-Proto`）。
+  Docker 默认部署的对端是 bridge 地址，uvicorn 本就不信任，行为不变。
+
+### Fixed（整域名转发透传面：压缩协商与重复响应头）
+
+- **客户端没带 `Accept-Encoding` 时不再收到 gzip。** 透传面按上游编码原样转发响应体，
+  而 httpx 在请求没有该头时会自己补 `Accept-Encoding: gzip, deflate`；上游据此压缩后，
+  没声明解压能力的客户端（如不带 `--compressed` 的 curl）拿到的是二进制。现在缺省时显式
+  发送 `Accept-Encoding: identity`，客户端自带的值原样转发。
+- **透传面响应不再出现两份 `Date` / `Server`。** uvicorn 会给每个响应前置自己的
+  `date` / `server`，此前上游的这两个头也被转发。现在丢弃上游的这两个头（与 nginx
+  `proxy_pass` 的默认行为一致）。三条 LLM 路由与 v2 代理未改动。
+
 ### Changed（R8.3：field 规则语义跨三层统一）
 
 - **`field_value_patterns` 三层共用一份编译器**（`aegisgate/config/field_patterns.py`）。

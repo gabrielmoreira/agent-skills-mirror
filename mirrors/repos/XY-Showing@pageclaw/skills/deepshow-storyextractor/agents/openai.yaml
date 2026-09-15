@@ -1,0 +1,4 @@
+interface:
+  display_name: "DeepShow StoryExtractor"
+  short_description: "Restore one source document as a complete PageStory"
+  default_prompt: "Use $deepshow-storyextractor to restore this source document as pagestory.md."

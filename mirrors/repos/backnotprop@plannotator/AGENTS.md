@@ -305,7 +305,71 @@ The default code-review diff is **`since-base`** — a composite of `merge-base(
 
 **Staging display invariant:** `useGitAdd`'s `stagedFiles` is the EFFECTIVE staged set (sections-sidecar snapshot + session stage/unstage overrides) and is the only source any surface may render staging state from. The sidecar entry's `staged` flag is a snapshot — ORing it back in makes files unstaged mid-session render as staged (and inverts the next toggle).
 
-`since-base` is only offered when the base ref actually resolves — on a repo whose trunk isn't discoverable (`trunk`, no `origin/HEAD`) `getGitContext` omits it and the default falls through to `uncommitted`, so committed branch work is never silently hidden. The since-base patch/sections/fingerprint/file-content paths all degrade to `HEAD` together when merge-base fails for a resolvable-but-unrelated base. First-run shows `ReviewSetupDialog` (replaces the removed `DiffTypeSetupDialog`), which initializes an unseen reviewer's panel to Tree once while preserving the resolved diff default, and is reopenable from the review header menu. The one-time dialog chain is guide intro → look-and-feel → review setup → Edit Mode → token hover cards; none of the dialogs stack. The token hover announcement is last and additionally skips a session where hover cards cannot run at all (no live workspace), WITHOUT consuming its cookie, and never shows to a reviewer whose trigger is already non-default (which after the boolean-to-trigger migration is exactly the early adopter who turned cards off). Analysis layers no longer add a startup dialog: Semantic Changes retains its enabled default, while Call Flow remains disabled until the user explicitly enables it in Settings, which is also consent for its managed runtime installation.
+`since-base` is only offered when the base ref actually resolves — on a repo whose trunk isn't discoverable (`trunk`, no `origin/HEAD`) `getGitContext` omits it and the default falls through to `uncommitted`, so committed branch work is never silently hidden. The since-base patch/sections/fingerprint/file-content paths all degrade to `HEAD` together when merge-base fails for a resolvable-but-unrelated base. First-run shows `ReviewSetupDialog` (replaces the removed `DiffTypeSetupDialog`), which initializes an unseen reviewer's panel to Tree once while preserving the resolved diff default, and is reopenable from the review header menu. The one-time dialog chain is guide intro → look-and-feel → review setup → Edit Mode → token hover cards → the terminal-tools announcement; none of the dialogs stack. The token hover announcement is last and additionally skips a session where hover cards cannot run at all (no live workspace), WITHOUT consuming its cookie, and never shows to a reviewer whose trigger is already non-default (which after the boolean-to-trigger migration is exactly the early adopter who turned cards off). Analysis layers no longer add a startup dialog: Semantic Changes retains its enabled default, while Call Flow remains disabled until the user explicitly enables it in Settings, which is also consent for its managed runtime installation.
+
+### First-run terminal-tools announcement
+
+A one-time panel announcing Plannotator's two terminal clients, **Plannotator
+TUI** (`plannotator/plannotator-tui`) and **Herdr Annotate**
+(`plannotator/herdr-annotate`). One cookie covers every surface —
+`plannotator-announce-tui-herdr-seen`, value `'1'`, read and written by
+`needsTerminalToolsAnnouncement()` / `markTerminalToolsAnnouncementSeen()` in
+`packages/ui/utils/terminalToolsAnnouncement.ts` — so dismissing it in plan
+review retires it in annotate and code review too, and vice versa. It is a
+plain storage key rather than a settings-registry entry for the same reason
+`lookAndFeelAnnouncement.ts` is: `configStore.ensureLoaded` seeds every
+registry default into a cookie on first access, so a registry-backed flag could
+never tell "never seen" from "seeded default".
+
+The component is `packages/ui/components/TerminalToolsAnnouncementDialog.tsx`
+(shared shell: portal, `z-[100]`, hand-rolled Escape + Tab wrap + focus
+restore, `data-terminal-tools-announcement-dialog`). It is video first: the
+real demo footage fills the top of the panel edge to edge, and the text under
+it is one headline and one sentence, then one action row (star the two repos,
+"Watch on X", "Got it"). There is no mock terminal, no install commands, no
+feature list; the repo pages carry all of that. Two deliberate departures from
+its siblings: the backdrop dismisses (the panel collects no decision, so there
+is nothing to lose by closing it impatiently), and its keydown listener is
+registered on the CAPTURE phase and swallows `Mod+Enter`, so a keystroke aimed
+at the announcement cannot approve a plan or post a review behind it.
+
+**Media is hosted, not bundled.** The two demos (`tui-herdr-full-demo` and
+`tui-herdr-lite-demo`, mp4 + webm + poster jpg each, ~23MB together) live in
+`apps/marketing/public/assets/` and are served from
+`https://plannotator.ai/assets/` once the marketing deploy syncs them, the same
+precedent as `GuideIntroDialog`'s hero image (the Edit Mode recording is small
+enough to inline; these are not). The `<video>` is `muted playsInline loop`
+with `preload="auto"`, mp4 first in source order, and `autoPlay` unless
+`prefers-reduced-motion` matches, in which case the poster waits behind a
+play button. A `Full | Lite` segmented switch (`role="tablist"`) swaps the
+footage and the "Watch on X" link together; the panel is keyed per demo so
+playback and load-failure state reset with it. If neither source can load
+(offline), the frame keeps its place and shows a "Watch on X" link over it.
+The panel's width follows the viewport HEIGHT as well as its width
+(`min(1120px, 100%, (100dvh - 14rem) * 1280/806)`) so the video never
+scrolls out of view on a short window. No CSP is involved: the app HTML ships
+no `Content-Security-Policy`, and the servers only set one on sandboxed
+artifact responses.
+
+**Ordering: LAST in each app's chain, never first.** Code review gates it
+through `terminalToolsAnnouncementCanShow` on guide intro, look-and-feel, review
+setup, Edit Mode and token hover cards; the plan editor gates it on the
+look-and-feel chooser, goal setup and permission-mode setup. The destination
+spotlight and the auto-viewed toast were extended to defer behind it too, so
+nothing stacks. Last rather than first because none of those dialogs consumes
+this cookie: a session busy asking setup questions defers the announcement to
+the next load instead of burning it, and that also puts it in front of the right
+reader — someone opening Plannotator for the first time is still learning this
+app, while the people who should hear that it now runs in a terminal are the
+ones who already answered every setup question and see it on their next load.
+
+Suppressed, never consumed, on: archive browsing and read-only shared plans
+(which is also what the share portal serves, via `isSharedSession`), the
+compact touch shell, and while the initial payload is still loading. The
+guides.show portable viewer never mounts either App, so it is unaffected by
+construction. `@plannotator/ui` exposes no first-run-suppression seam on
+`configurePlannotatorUI`; a host that wants the announcement off installs its
+own `storageBackend` (the documented escape hatch) and pre-seeds the key.
 
 ### GitButler review invariants
 

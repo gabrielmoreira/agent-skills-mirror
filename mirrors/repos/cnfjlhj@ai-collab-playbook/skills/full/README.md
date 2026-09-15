@@ -22,9 +22,9 @@
 
 - [`proactive-explorer/`](proactive-explorer/)：把“先摸清事实，再决定下一步”的主动探索原则固化成工作纪律。
 - [`all-plan/`](all-plan/)：轻量的多视角规划入口，强调 `designer + inspiration + reviewer` 的多轮计划与纠偏。
-- [`human-machine-brainstorm/`](human-machine-brainstorm/)：偏 CCB 生态的人机协同需求对齐工作流，不是泛化到任何环境的万能头脑风暴器。
 - [`spec-first-mvp/`](spec-first-mvp/)：给兴奋态点子加一个小闸门，先写 `spec seed`，再做 throwaway MVP probe，再决定是否进入完整设计或实现。
-- [`prompt-polisher/`](prompt-polisher/)：把语音转写、碎笔记和粗糙说明清洗成更适合 Claude 4.x 系列执行的 prompt。
+- [`research-lead-sidecar/`](research-lead-sidecar/)：面向研究主导型多 Agent 任务，主会话保留关键路径，1–2 个低耦合 sidecar 承担有界工作。
+- [`prompt-polisher/`](prompt-polisher/)：把语音转写、碎笔记和粗糙说明清洗成可复用的 prompt，不绑定特定目标模型。
 - [`session-recovery-codex/`](session-recovery-codex/)：按 `session id` 或最近会话列表恢复 Codex 上下文，提取任务、TODO、文件与报错。
 - [`skill-creator/`](skill-creator/)：把个人工作流沉淀成 skill 的方法论与工具包，覆盖 frontmatter、资源拆分、初始化与校验。
 - [`skill-governance-loop/`](skill-governance-loop/)：从真实 case 出发做 skill 质量审计、版本更新、保留 / 禁用 / 归档决策，并明确什么应进入 `AGENTS.md`、什么应保留在 skill。

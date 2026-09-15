@@ -21,7 +21,7 @@ Convert a `page-story-*.md` file into a polished, single-file static HTML page.
 page-story.md
     │
     ▼
-[1. teach-impeccable]       → <name>-design.md
+[1. design context]         → <name>-design.md
     │
     ▼
 [2. ui-ux-pro-max]          → (appended to design.md)
@@ -40,6 +40,8 @@ page-story.md
 
 Each numbered step in this pipeline invokes a sub-skill. How to invoke it depends on your platform:
 
+All required sub-skills are bundled as sibling directories under the same installed `skills/` root. Resolve them from this bundle; do not rely on a user's pre-existing Skills.
+
 | Platform | How to invoke a sub-skill |
 |----------|--------------------------|
 | **Claude Code** | Use the `Skill` tool with the skill name |
@@ -55,7 +57,7 @@ Before asking any questions, verify that a `page-story-*.md` file has been provi
 
 **If no page-story is found:**
 
-1. Copy the full contents of `page-story-starter.md` (at `~/.claude/skills/page-claw/page-story-starter.md`) into a new file called `page-story.md` in the user's current working directory.
+1. Copy the full contents of `page-story-starter.md` next to this `SKILL.md` into a new file called `page-story.md` in the user's current working directory.
 2. Pause and respond with:
 
 > "No page-story found — I've created `page-story.md` in your current directory with sample content.
@@ -131,7 +133,7 @@ Infer everything else (audience, tone, content hierarchy) directly from the page
 
 ---
 
-Once you have the user's answers (and have analyzed any reference URL), write a brief summary in your response — the user's aesthetic choice, reference signals extracted (or that they skipped), and the target save path. This appears in the conversation history so teach-impeccable can read it without re-asking. Then **invoke the `teach-impeccable` skill** (Claude Code: use the Skill tool; other platforms: read `teach-impeccable/SKILL.md` in full and execute it completely), passing the target file path (`docs/plans/<name>-design.md`) as the `config_file` argument. teach-impeccable scans the page-story and produces a `## Design Context` block (users, brand personality, aesthetic direction, design principles).
+Once you have the user's answers (and have analyzed any reference URL), write a brief summary in your response — the user's aesthetic choice, reference signals extracted (or that they skipped), and the target save path. Then create `docs/plans/<name>-design.md` with a `## Design Context` section covering users, brand personality, aesthetic direction, and three or four design principles derived from the PageStory and the confirmed visual direction.
 
 Save output to: `docs/plans/<name>-design.md`
 
@@ -185,7 +187,7 @@ Common platform slugs:
 | GitHub | `github` |
 | LinkedIn | `linkedin` |
 | Google Scholar | `googlescholar` |
-| rednote (小红书) | `xiaohongshu` |
+| RedNote (Xiaohongshu) | `xiaohongshu` |
 | Twitter / X | `x` |
 | ORCID | `orcid` |
 | ResearchGate | `researchgate` |
@@ -221,6 +223,6 @@ After `index.html` is functionally complete, invoke these skills in order (Claud
 
 | Artifact | Created by | Purpose |
 |----------|-----------|---------|
-| `docs/plans/*-design.md` | teach-impeccable + ui-ux-pro-max | Design context + system, source of truth for all decisions |
+| `docs/plans/*-design.md` | page-claw + ui-ux-pro-max | Design context + system, source of truth for all decisions |
 | `docs/plans/*-impl.md` | writing-plans | Task-by-task build instructions |
 | `index.html` | Build step | Final deliverable |

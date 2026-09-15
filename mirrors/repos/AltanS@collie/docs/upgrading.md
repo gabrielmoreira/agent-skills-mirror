@@ -117,7 +117,9 @@ your multiplexer, so the agents keep running and the phone comes back on the new
 never rides a routine update: crossing one asks its own confirm, names the version as a new major,
 and tells you to read the release notes first.
 
-While it runs, the card shows the state it is in:
+While it runs, a sheet takes the screen. See
+[What the phone shows while an update runs](#what-the-phone-shows-while-an-update-runs) below. The
+card on the Updates page carries the same states in more detail:
 
 | State | What it means |
 | --- | --- |
@@ -153,18 +155,41 @@ and the one case the phone cannot fix, see
 
 ![The Updates page on a lead, with the preflight per member and one button for the crew.](images/updates/updates-page-crew-available.png)
 
-A band across the top of every screen carries the run: the release on offer, then
-`Starting update…`, `Updating to <version>`, `Updated to <version>. Tap to reload.`, and finally
-`Updating <n> peers: <names>` as the peers follow. A peer that rolled back is named there too, with
-**See Updates.** as the way back to the page. The band appears in this sequence:
+A band across the top of every screen carries what is standing rather than what is running: the
+release on offer, a peer that could not update, and `New version — tap to update` when the app in
+your hand is behind the bridge. A running update is the sheet's, not the band's.
 
 ![The band when a new release is ready to install.](images/updates/band-available.png)
 
-![The band while the update installation runs.](images/updates/band-updating.png)
+### What the phone shows while an update runs
 
-![The band after the new version answered.](images/updates/band-updated-reload.png)
+A sheet takes the screen on the device that tapped the confirm, and every other device gets a badge.
 
-![The band while the peers update.](images/updates/band-peers.png)
+The sheet carries one row per machine, the lead first, each with its version and the state it is in.
+Under those sits this device's own row, which is about the app in your hand and not about a machine:
+once the bridge serves the new version, the phone fetches that app in the background and the row
+counts the files as they arrive. The sheet also says once, in small type, that the update runs on the
+machines and that closing the app does not stop it.
+
+The device that started the run cannot use the app behind the sheet. Nothing else is blocked: a
+second phone or a tablet shows one line it can tap to open, and closes again.
+
+When every machine is done and the phone is running the new app, the sheet closes itself and a short
+message names the version. On a crew it reads `Crew updated to <version>`; on one machine it names
+that machine instead.
+
+Three states can stall, and each one has a way out. None of them cancels the update, and none of them
+reloads the app.
+
+| What you see | What it means | What to do |
+| --- | --- | --- |
+| `last seen <time> ago` on a machine | That machine has stopped answering the lead. | **See Updates** for the reason, or leave it. |
+| *Still downloading. Keep using the app you have…* | The phone's own download has made no progress for two minutes. | **Keep using the app.** The download carries on. |
+| *Still working. Nothing is wrong yet…* | The lead has held one state for three minutes. | **Keep waiting.** The run carries on. |
+
+> **Note.** "Still downloading, keep using the app" is about the app on your phone and never about the
+> machine. The machines have finished; only the new app has not arrived yet. The app you are holding
+> keeps working, and it switches over on its own the moment the download lands.
 
 ### From the terminal
 
@@ -254,6 +279,22 @@ and `crew-runtime.json` need no edit at all. If you would rather not touch the f
 of `pack-trust.json` taken before the update, or stay on 1.8.0: a 1.7.0 build that cannot read the
 trust store starts solo and enforces no roster.
 
+**Going the other way into 1.9.0 needs the same two edits, by hand.** 1.8.x renamed the three files
+for you on its first start; 1.9.0 does not rename anything. So a state directory that never saw 1.8.x
+still holds the 1.7.0 names, and a 1.9.0 build reads only the crew names. It says so at start, names
+both edits, and stays solo rather than adopting the directory. Do them before you start it:
+
+```bash
+cd ~/.local/state/collie
+mv pack-trust.json crew-trust.json
+mv pack-ops.json crew-ops.json
+mv pack-runtime.json crew-runtime.json
+```
+
+Then rename two key names inside `crew-trust.json`: the block `"pack"` becomes `"crew"`, and every
+`"packId"` inside it becomes `"crewId"`. Nothing else in the three files changes. A file left under
+the old name costs no data, it only costs the crew: that collie comes up solo until the rename.
+
 #### Verify
 
 ```bash
@@ -332,7 +373,10 @@ page keeps a line per member: `waiting`, `checking`, `staging`, `restarting`, `v
 environment keys, the three state files and the journal prefix to crew. A 1.8.0 lead answers the old
 `/pack/v1/*` paths for one release, so a member still on 1.7.0 follows the roll over the link it
 already has. Both old spellings go away in 1.9.0. The names and what each one does on your machine
-are in [Updating from 1.7.0](crew.md#updating-from-170). The `collie-release.json` asset the
+are in [Updating to 1.9.0 from 1.7.0 or 1.8.x](crew.md#updating-to-190-from-170-or-18x). Bring every member to 1.8.x before you move
+the lead to 1.9.0: 1.9.0 answers the old paths with nothing, and a member still on 1.7.0 then shows
+red on the lead's preflight, naming both versions and the command to run on that machine. The
+`collie-release.json` asset the
 release publishes only feeds the wording of that notice on the band, on the Updates card and in the
 daily push; it never gates an update and never changes what one does.
 
@@ -580,8 +624,9 @@ herdr plugin action invoke uninstall --plugin herdr.collie   # Herdr-managed
 bin/collie uninstall                                         # standalone
 ```
 
-To delete remaining files: run `herdr plugin uninstall herdr.collie` (Herdr-managed), or run
-`bin/collie unlink` and delete `~/.local/share/collie` / `$COLLIE_DIR` (standalone).
+To delete the program and your own files too, follow the three steps under
+[Install → Uninstall](install.md#uninstall), which spells them out per install kind, packages
+included.
 
 ## When collie will not run
 

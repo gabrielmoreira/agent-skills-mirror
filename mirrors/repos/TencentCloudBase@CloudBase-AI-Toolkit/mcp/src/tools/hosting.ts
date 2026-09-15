@@ -341,6 +341,16 @@ function buildWebsiteConfigNextStep() {
   };
 }
 
+/**
+ * 静态托管的对象 key 一律不带前导斜杠（`dir/f.txt` 而非 `/dir/f.txt`），但 agent
+ * 从 URL 形态（`/index.html`）推路径时很自然带上斜杠。底层 SDK 的 `getCloudKey`
+ * 只补尾部 `/`、不剥离前导 `/`，随后 `getBucket({ Prefix })` 做的是严格字节前缀
+ * 匹配 ⇒ `/dir/` 匹配不到 `dir/f.txt`。因此所有对外传入的路径/前缀都先在此归一化。
+ */
+function stripLeadingSlashes(value: string): string {
+  return value.replace(/^\/+/, '');
+}
+
 function buildFindFilesNextStep(prefix: string) {
   return {
     tool: 'queryHosting',
@@ -688,8 +698,11 @@ export function registerHostingTools(server: ExtendedMcpServer) {
             if (!input.prefix) {
               throw new Error(t('hosting.findFilesPrefixRequired'));
             }
+            // 读侧与 delete 侧同源：prefix 原样透传时，agent 按 URL 形态传的
+            // `/assets/` 在 COS 侧严格前缀匹配命中 0 条，会被误读成「目录是空的」。
+            const normalizedPrefix = stripLeadingSlashes(input.prefix);
             const result = await cloudbase.hosting.findFiles({
-              prefix: input.prefix,
+              prefix: normalizedPrefix,
               marker: input.marker,
               maxKeys: input.maxKeys,
             });
@@ -701,7 +714,7 @@ export function registerHostingTools(server: ExtendedMcpServer) {
               success: true,
               data: {
                 action: 'findFiles',
-                prefix: input.prefix,
+                prefix: normalizedPrefix,
                 marker: input.marker,
                 maxKeys: input.maxKeys,
                 files: normalizedFiles,
@@ -710,7 +723,7 @@ export function registerHostingTools(server: ExtendedMcpServer) {
                 result,
               },
               message: t('hosting.findFilesSuccess', {
-                prefix: input.prefix,
+                prefix: normalizedPrefix,
                 count: normalizedFiles.length,
                 more: nextMarker ? t('hosting.findFilesMore') : '',
               }),
@@ -983,10 +996,18 @@ export function registerHostingTools(server: ExtendedMcpServer) {
             if (!input.confirm) {
               throw new Error(t('hosting.deleteConfirmRequired'));
             }
+            // 静态托管对象 key 不带前导斜杠。若不规范化，isDir=true 会走
+            // storage.deleteDirectoryCustom，其前缀由 getCloudKey(cloudPath)
+            // 生成且不做前导斜杠剥离，做严格字节前缀匹配时 `/dir/` 匹配不到
+            // `dir/f.txt`，导致目录删除静默 no-op（Deleted:0，文件全在）。
+            // 同时下面的回查 findFiles(prefix) 也是严格前缀匹配，带斜杠时
+            // 同样命中 0 条，会把「没删到」误判成「删干净了 verified:true」。
+            // 这里统一剥离前导斜杠，两种形态（/dir 与 dir）都按正确 key 处理。
+            const normalizedCloudPath = stripLeadingSlashes(input.cloudPath);
             let result: unknown;
             try {
               result = await cloudbase.hosting.deleteFiles({
-                cloudPath: input.cloudPath,
+                cloudPath: normalizedCloudPath,
                 isDir: input.isDir ?? false,
               });
             } catch (error) {
@@ -1009,11 +1030,29 @@ export function registerHostingTools(server: ExtendedMcpServer) {
             }
             try {
               const checkResult = await cloudbase.hosting.findFiles({
-                prefix: input.cloudPath,
-                maxKeys: 1,
+                prefix: normalizedCloudPath,
+                maxKeys: 100,
               });
-              
-              if (Array.isArray(checkResult) && checkResult.length > 0) {
+
+              // ⚠️ 回查有两个坑，都会让 verified 失真：
+              // 1) findFiles 返回 **COS 风格对象**（列表在 Contents 内），直接用
+              //    `Array.isArray(checkResult)` 判断会静默失效、恒判 verified=true。
+              //    统一走 extractFileList 归一化。
+              // 2) findFiles 是 **prefix** 语义：删单文件 /a/b.txt 时，若同前缀的
+              //    /a/b.txt.bak 还在也会命中 → 把「已删成功」误判成未验证。
+              //    单文件场景必须精确比对 Key（前缀场景见 normalizeFileFields 的 key 字段）。
+              const remaining = normalizeFileFields(checkResult);
+              const targetPath = normalizedCloudPath;
+              const stillExists = input.isDir
+                ? remaining.length > 0
+                : remaining.some((file) => {
+                    const key = typeof file.key === 'string' ? file.key : '';
+                    // 拿不到 Key 时保守按「仍存在」处理，避免误报已验证
+                    if (!key) return true;
+                    return stripLeadingSlashes(key) === targetPath;
+                  });
+
+              if (stillExists) {
                 deleteVerified = false;
                 verificationError = verificationError ?? t('hosting.deleteVerifyFailed');
               }
@@ -1037,7 +1076,11 @@ export function registerHostingTools(server: ExtendedMcpServer) {
                     type: input.isDir ? t('hosting.typeDirectory') : t('hosting.typeFile'),
                     cloudPath: input.cloudPath,
                   })
-                : t('hosting.deleteUnverified', { cloudPath: input.cloudPath }),
+                // 这里刻意插入规范化后的路径：该文案的 {cloudPath} 会被拼进
+                // `queryHosting(action="findFiles", prefix="{cloudPath}")` 自查命令里，
+                // 带前导斜杠的前缀在 COS 侧严格匹配不到任何对象，agent 照抄会得到
+                // 「0 命中 ⇒ 看起来删干净了」的错误结论。
+                : t('hosting.deleteUnverified', { cloudPath: normalizedCloudPath }),
             });
           }
 

@@ -8,11 +8,11 @@ import re
 import sys
 import time
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Callable
 
-from playwright.sync_api import Dialog, Locator, Page, TimeoutError as PlaywrightTimeoutError, sync_playwright
+from playwright.sync_api import Dialog, Error as PlaywrightError, Locator, Page, TimeoutError as PlaywrightTimeoutError, sync_playwright
 
 
 ARTICLE_ENTRY_URL = "https://creator.xiaohongshu.com/publish/publish?from=menu&target=article"
@@ -112,8 +112,29 @@ def build_title_prefix(title: str, limit: int = 14) -> str:
     return normalized[:limit]
 
 
-def card_matches(card_text: str, title_prefix: str, visibility_text: str) -> bool:
-    return title_prefix in card_text and visibility_text in card_text
+def card_has_recent_timestamp(card_text: str, published_after: datetime) -> bool:
+    threshold = published_after - timedelta(minutes=2)
+    for timestamp in re.findall(r"\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}", card_text):
+        try:
+            if datetime.strptime(timestamp, "%Y-%m-%d %H:%M") >= threshold:
+                return True
+        except ValueError:
+            continue
+    return False
+
+
+def card_matches(
+    card_text: str,
+    title_prefix: str,
+    visibility_text: str,
+    date_prefix: str | None = None,
+    published_after: datetime | None = None,
+) -> bool:
+    if title_prefix not in card_text or visibility_text not in card_text:
+        return False
+    if published_after is not None and not card_has_recent_timestamp(card_text, published_after):
+        return False
+    return date_prefix is None or date_prefix in card_text
 
 
 def load_desc_override(args: argparse.Namespace, payload_desc: str) -> str:
@@ -229,9 +250,27 @@ def wait_until_visible(locator: Locator, timeout_ms: int, name: str) -> Locator:
     return locator.first
 
 
+def goto_with_retry(page: Page, url: str, timeout_ms: int, attempts: int = 3) -> None:
+    last_error: Exception | None = None
+    for attempt in range(1, attempts + 1):
+        try:
+            page.goto(url, wait_until="domcontentloaded", timeout=timeout_ms)
+            try:
+                page.wait_for_load_state("networkidle", timeout=min(timeout_ms, 10_000))
+            except PlaywrightTimeoutError:
+                print("[warn] 页面已加载但未进入 networkidle，继续按页面元素判断。")
+            return
+        except (PlaywrightError, PlaywrightTimeoutError) as exc:
+            last_error = exc
+            if attempt == attempts:
+                break
+            print(f"[warn] 打开入口失败，准备重试 {attempt}/{attempts}: {exc}")
+            page.wait_for_timeout(2_000)
+    raise PublishAutomationError(f"打开长文入口失败：{last_error}") from last_error
+
+
 def open_longform_editor(page: Page, timeout_ms: int) -> None:
-    page.goto(ARTICLE_ENTRY_URL, wait_until="domcontentloaded")
-    page.wait_for_load_state("networkidle", timeout=timeout_ms)
+    goto_with_retry(page, ARTICLE_ENTRY_URL, timeout_ms)
 
     editor_title = page.locator('textarea[placeholder="输入标题"]')
     editor_body = page.locator("div.tiptap.ProseMirror")
@@ -315,6 +354,7 @@ def locate_image_button(page: Page) -> Locator:
 
 
 def insert_image(page: Page, editor: Locator, image_path: Path) -> None:
+    print(f"[stage] 插入图片：{image_path.name}", flush=True)
     button = locate_image_button(page)
     before_count = editor.locator("img").count()
 
@@ -338,7 +378,7 @@ def insert_image(page: Page, editor: Locator, image_path: Path) -> None:
               return editor.querySelectorAll('img').length >= expectedCount;
             }
             """,
-            {"selector": "div.tiptap.ProseMirror", "expectedCount": before_count + 1},
+            arg={"selector": "div.tiptap.ProseMirror", "expectedCount": before_count + 1},
             timeout=30_000,
         )
     except PlaywrightTimeoutError:
@@ -346,6 +386,7 @@ def insert_image(page: Page, editor: Locator, image_path: Path) -> None:
 
 
 def fill_longform_editor(page: Page, payload: LongformPayload) -> None:
+    print("[stage] 填写长文标题和正文", flush=True)
     title_box = wait_until_visible(page.locator('textarea[placeholder="输入标题"]'), 20_000, "longform title")
     editor = wait_until_visible(page.locator("div.tiptap.ProseMirror"), 20_000, "longform body")
 
@@ -359,6 +400,7 @@ def fill_longform_editor(page: Page, payload: LongformPayload) -> None:
 
 
 def apply_one_click_layout(page: Page, timeout_ms: int) -> None:
+    print("[stage] 点击一键排版", flush=True)
     button = wait_until_visible(page.get_by_role("button", name="一键排版"), 20_000, "one-click layout")
     button.click()
 
@@ -366,7 +408,10 @@ def apply_one_click_layout(page: Page, timeout_ms: int) -> None:
         page.wait_for_function(
             """
             () => {
-              return window.location.href.includes('/publish/update') || document.body.innerText.includes('图片编辑');
+              const text = document.body.innerText || '';
+              return window.location.href.includes('/publish/update')
+                || text.includes('图片编辑')
+                || (text.includes('选择模板') && text.includes('下一步'));
             }
             """,
             timeout=timeout_ms,
@@ -374,8 +419,12 @@ def apply_one_click_layout(page: Page, timeout_ms: int) -> None:
     except PlaywrightTimeoutError as exc:
         raise PublishAutomationError("一键排版超时，页面没有进入图片发布阶段。") from exc
 
+    next_button = page.get_by_role("button", name="下一步")
+    if next_button.count() and next_button.first.is_visible():
+        print("[stage] 模板预览页已生成，点击下一步", flush=True)
+        next_button.first.click(timeout=20_000)
+
     wait_until_visible(page.locator('input[placeholder="填写标题会有更多赞哦"]'), timeout_ms, "post-layout title")
-    wait_until_visible(page.locator("text=图片编辑"), timeout_ms, "image editor")
 
 
 def clear_short_desc(page: Page, editor: Locator) -> None:
@@ -386,6 +435,7 @@ def clear_short_desc(page: Page, editor: Locator) -> None:
 
 
 def fill_post_layout_page(page: Page, payload: LongformPayload, desc: str) -> None:
+    print("[stage] 填写发布页标题和简介", flush=True)
     title_input = wait_until_visible(
         page.locator('input[placeholder="填写标题会有更多赞哦"]'),
         20_000,
@@ -401,6 +451,7 @@ def fill_post_layout_page(page: Page, payload: LongformPayload, desc: str) -> No
 
 
 def set_visibility(page: Page, visibility: str) -> None:
+    print(f"[stage] 设置可见性：{VISIBILITY_TEXT[visibility]}", flush=True)
     target_label = VISIBILITY_TEXT[visibility]
     toggles = [VISIBILITY_TEXT["public"], VISIBILITY_TEXT["private"], VISIBILITY_TEXT["mutual"]]
 
@@ -416,16 +467,118 @@ def set_visibility(page: Page, visibility: str) -> None:
     page.wait_for_timeout(500)
 
 
+def wait_for_note_image_generation(page: Page, timeout_ms: int = 180_000) -> None:
+    generation_markers = ["笔记图片生成中", "图片生成中"]
+    page_text = page.evaluate("document.body ? document.body.innerText : ''")
+    if not any(marker in page_text for marker in generation_markers):
+        return
+
+    print("[stage] 等待笔记图片生成完成", flush=True)
+    try:
+        page.wait_for_function(
+            """
+            (markers) => {
+              const text = document.body ? document.body.innerText : '';
+              return !markers.some(marker => text.includes(marker));
+            }
+            """,
+            arg=generation_markers,
+            timeout=timeout_ms,
+        )
+    except PlaywrightTimeoutError as exc:
+        raise PublishAutomationError("发布页仍显示“笔记图片生成中”，先不点击最终发布。") from exc
+
+
 def capture_screenshot(page: Page, path: Path) -> Path:
     page.screenshot(path=str(path), full_page=True)
     return path
+
+
+def write_failure_state(page: Page, screenshot_dir: Path, exc: Exception) -> None:
+    screenshot_path = screenshot_dir / "failure.png"
+    state_path = screenshot_dir / "failure-state.json"
+    try:
+        page.screenshot(path=str(screenshot_path), full_page=True)
+    except Exception as screenshot_exc:
+        print(f"[warn] 失败截图保存失败：{screenshot_exc}", flush=True)
+
+    try:
+        state = page.evaluate(
+            """
+            (message) => {
+              const text = document.body ? document.body.innerText : '';
+              const buttons = Array.from(document.querySelectorAll('button')).slice(0, 60).map((node, i) => ({
+                i,
+                text: (node.innerText || '').trim(),
+                disabled: Boolean(node.disabled),
+                className: node.className || '',
+              }));
+              const textareas = Array.from(document.querySelectorAll('textarea')).map((node, i) => ({
+                i,
+                placeholder: node.getAttribute('placeholder'),
+                valueLength: node.value ? node.value.length : 0,
+                className: node.className || '',
+              }));
+              return {
+                error: message,
+                url: window.location.href,
+                title: document.title,
+                textHead: text.split(/\\s+/).slice(0, 240).join(' | '),
+                imageCount: document.querySelectorAll('img').length,
+                editorImageCount: document.querySelectorAll('div.tiptap.ProseMirror img').length,
+                buttons,
+                textareas,
+              };
+            }
+            """,
+            str(exc),
+        )
+        state_path.write_text(json.dumps(state, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        print(f"[debug] failure_state: {state_path}", flush=True)
+        print(f"[debug] failure_screenshot: {screenshot_path}", flush=True)
+    except Exception as state_exc:
+        print(f"[warn] 失败状态保存失败：{state_exc}", flush=True)
 
 
 def publish_or_stop(page: Page, publish: bool) -> None:
     if not publish:
         print("[dry-run] 已填充完排版后的发布页，未点击最终发布。")
         return
-    wait_until_visible(page.get_by_role("button", name="发布"), 10_000, "publish button").click()
+    print("[stage] 点击最终发布", flush=True)
+    page.evaluate("window.scrollTo(0, document.body.scrollHeight)")
+    page.wait_for_timeout(500)
+    clicked = click_first_visible(
+        page,
+        [
+            lambda: page.get_by_role("button", name="发布"),
+            lambda: page.get_by_text("发布", exact=True),
+            lambda: page.locator("button:has-text('发布')"),
+            lambda: page.locator(".d-button:has-text('发布')"),
+        ],
+        timeout_ms=10_000,
+    )
+    if not clicked:
+        clicked = bool(
+            page.evaluate(
+                """
+                () => {
+                  const candidates = Array.from(document.querySelectorAll('*'))
+                    .filter(node => (node.innerText || '').trim() === '发布')
+                    .map(node => ({ node, rect: node.getBoundingClientRect() }))
+                    .filter(({ rect }) => rect.width > 0 && rect.height > 0 && rect.top >= 0 && rect.bottom <= window.innerHeight)
+                    .sort((a, b) => (a.rect.width * a.rect.height) - (b.rect.width * b.rect.height));
+                  const hit = candidates[0]?.node;
+                  if (!hit) return false;
+                  hit.click();
+                  return true;
+                }
+                """
+            )
+        )
+    if not clicked:
+        viewport = page.viewport_size or {"width": 1440, "height": 1200}
+        page.mouse.click(viewport["width"] / 2 + 24, viewport["height"] - 45)
+        page.wait_for_timeout(800)
     try:
         page.wait_for_function(
             """
@@ -436,43 +589,72 @@ def publish_or_stop(page: Page, publish: bool) -> None:
             timeout=60_000,
         )
     except PlaywrightTimeoutError:
-        page.wait_for_timeout(5_000)
+        print("[warn] 点击发布后未捕获发布成功弹窗，继续进入管理页做最终验收。", flush=True)
 
 
-def verify_manager_page(page: Page, payload: LongformPayload, visibility: str, timeout_ms: int) -> str:
+def verify_manager_page(
+    page: Page,
+    payload: LongformPayload,
+    visibility: str,
+    timeout_ms: int,
+    published_after: datetime | None = None,
+) -> str:
     title_prefix = build_title_prefix(payload.title)
     visibility_text = VISIBILITY_TEXT[visibility]
-    page.goto(MANAGER_URL, wait_until="domcontentloaded")
-    page.wait_for_load_state("networkidle", timeout=timeout_ms)
+    date_prefix = datetime.now().strftime("%Y-%m-%d")
+    published_after_ms = int(published_after.timestamp() * 1000) if published_after else None
+    goto_with_retry(page, MANAGER_URL, timeout_ms)
 
     page.wait_for_function(
         """
-        ({ titlePrefix, visibilityText }) => {
+        ({ titlePrefix, visibilityText, datePrefix, publishedAfterMs }) => {
+          const hasExpectedTime = (text) => {
+            if (!publishedAfterMs) return text.includes(datePrefix);
+            const threshold = publishedAfterMs - 120000;
+            const matches = text.match(/\\d{4}-\\d{2}-\\d{2}\\s+\\d{2}:\\d{2}/g) || [];
+            return matches.some(value => Date.parse(value.replace(' ', 'T') + ':00') >= threshold);
+          };
           const nodes = Array.from(document.querySelectorAll('div, li, article'));
           return nodes.some(node => {
             const text = node.innerText || '';
-            return text.includes(titlePrefix) && text.includes(visibilityText);
+            return text.includes(titlePrefix) && text.includes(visibilityText) && hasExpectedTime(text);
           });
         }
         """,
-        {"titlePrefix": title_prefix, "visibilityText": visibility_text},
+        arg={
+            "titlePrefix": title_prefix,
+            "visibilityText": visibility_text,
+            "datePrefix": date_prefix,
+            "publishedAfterMs": published_after_ms,
+        },
         timeout=timeout_ms,
     )
 
     matched_text = page.evaluate(
         """
-        ({ titlePrefix, visibilityText }) => {
+        ({ titlePrefix, visibilityText, datePrefix, publishedAfterMs }) => {
+          const hasExpectedTime = (text) => {
+            if (!publishedAfterMs) return text.includes(datePrefix);
+            const threshold = publishedAfterMs - 120000;
+            const matches = text.match(/\\d{4}-\\d{2}-\\d{2}\\s+\\d{2}:\\d{2}/g) || [];
+            return matches.some(value => Date.parse(value.replace(' ', 'T') + ':00') >= threshold);
+          };
           const nodes = Array.from(document.querySelectorAll('div, li, article'));
-          const hit = nodes.find(node => {
-            const text = node.innerText || '';
-            return text.includes(titlePrefix) && text.includes(visibilityText);
-          });
-          return hit ? hit.innerText : '';
+          const hits = nodes
+            .map(node => (node.innerText || '').trim())
+            .filter(text => text.includes(titlePrefix) && text.includes(visibilityText) && hasExpectedTime(text))
+            .sort((a, b) => a.length - b.length);
+          return hits[0] || '';
         }
         """,
-        {"titlePrefix": title_prefix, "visibilityText": visibility_text},
+        {
+            "titlePrefix": title_prefix,
+            "visibilityText": visibility_text,
+            "datePrefix": date_prefix,
+            "publishedAfterMs": published_after_ms,
+        },
     )
-    if not card_matches(matched_text, title_prefix, visibility_text):
+    if not card_matches(matched_text, title_prefix, visibility_text, date_prefix, published_after):
         raise PublishAutomationError("管理页未找到符合预期的私密长文卡片。")
     return matched_text
 
@@ -524,16 +706,25 @@ def run(args: argparse.Namespace) -> int:
     manager_card_text: str | None = None
     playwright, context, page = launch_page(args)
     try:
+        print("[stage] 打开长文编辑器", flush=True)
         open_longform_editor(page, args.timeout_ms)
         fill_longform_editor(page, payload)
         apply_one_click_layout(page, args.layout_timeout_ms)
         fill_post_layout_page(page, payload, desc)
         set_visibility(page, args.visibility)
+        wait_for_note_image_generation(page)
         artifacts.editor_screenshot = capture_screenshot(page, screenshot_dir / "prepublish-editor.png")
+        published_after = datetime.now() if args.publish else None
         publish_or_stop(page, args.publish)
 
         if args.publish:
-            manager_card_text = verify_manager_page(page, payload, args.visibility, args.manager_timeout_ms)
+            manager_card_text = verify_manager_page(
+                page,
+                payload,
+                args.visibility,
+                args.manager_timeout_ms,
+                published_after=published_after,
+            )
             artifacts.manager_screenshot = capture_screenshot(page, screenshot_dir / "manager-proof.png")
 
         write_summary(screenshot_dir / "run-summary.json", payload, args.visibility, args.publish, artifacts, manager_card_text)
@@ -546,6 +737,9 @@ def run(args: argparse.Namespace) -> int:
         if args.pause_on_finish:
             input("按回车关闭浏览器...")
         return 0
+    except Exception as exc:
+        write_failure_state(page, screenshot_dir, exc)
+        raise
     finally:
         try:
             context.close()

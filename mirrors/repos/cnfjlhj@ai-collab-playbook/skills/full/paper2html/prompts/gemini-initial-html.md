@@ -8,6 +8,11 @@
 4. 实验结果及核心结论：对比了哪些 baseline，达到了什么效果，揭示了什么结论和 insights。
 5. 你的评论：作为一个犀利的 reviewer，整体锐评这篇工作，指出优势、不足，以及可能的改进方向。
 6. One More Thing：你可以自由发挥本文中其他你认为重要、希望分享给我的内容。
+7. Other Discussion Roles / 其他讨论角色：作为最后一个实质分析章节，显式保留并完成模板中的全部七个角色：Scientific Peer Reviewer、Archaeologist、Academic Researcher、Industry Practitioner、Hacker、Private Investigator、Social Impact Assessor。每个角色的英文原始 prompt 已固定在 HTML 模板中，必须逐字保留，不能缩写、改写、合并、换名或删除；在每个 prompt 后写出充分、基于论文与公开证据的中文见解，并完成该原始 prompt 要求的全部责任。该章节之后只能出现 Reference / Evidence。
+写作前先读取 `notes/grounding-anchor.md`。用其中经公开链接支撑的“人类已知边界”和“真实增量”组织故事、方法、实验与评论，不要只沿论文自身叙事复述。grounding anchor 是内部笔记，不得直接泄露到公开 HTML；引用的公开链接仍须列入 Reference / Evidence。
+
+默认覆盖从 TeX、源码或 PDF 中发现的全部论文 figure。主叙事放不下的图进入“完整图谱 / Figure Gallery”；每个已纳入的图使用 `<figure data-figure="basename.ext">`，省略项必须在 `notes/figure-table-map.md` 中有明确 waiver。
+
 
 注意：
 
@@ -26,9 +31,11 @@
 
 4. 要尽可能事无巨细。目标是读完这个网页，基本把握论文 90% 的核心内容，并且掌握复现论文所需的关键细节，特别是实验部分。
 
-5. 证据边界必须清楚。不要编造论文没有给出的实验、数字、数据集、代码、作者信息或结论。如果输入材料不足，请显式标记为“材料不足 / 待 Codex 复核”，不要用猜测填满。
+5. 证据边界必须清楚。不要编造论文没有给出的实验、数字、数据集、代码、作者信息或结论。如果输入材料不足，请显式标记为“材料不足 / 待主 Agent 复核”，不要用猜测填满。
 
 6. Public HTML 的 Reference / Evidence 只能放公开在线资料，不要暴露本地路径、私有 TeX 文件名、隐藏 prompt、运行日志、账号信息或任何凭证。
+
+7. 不得破坏模板中的 `data-discussion-role` 标记。七个角色必须各出现一次。不得捏造较新的引用论文、作者经历、已经运行的实现、产品事实或社会影响证据。Private Investigator 的原 prompt 虽允许联系作者，但未经用户明确批准不得执行任何对外联系。
 
 在输出最终代码前，请暂停并进行一次彻底的自我校正。确保你的 `index.html` 文件严格遵守以下所有规则：
 
@@ -37,3 +44,4 @@
 - 仔细检查每一个 LaTeX 公式都能被准确渲染，特别是行内公式，确保它们无缝嵌入文本，绝不换行。
 - 内容深度必须足以支撑论文 90% 核心信息和复现所需的关键细节。
 - 最后以顶尖研究者身份，给出真正犀利、有洞见的 reviewer 评述。
+- 检查 Other Discussion Roles 七个角色是否完整、顺序正确、原始英文 prompt 是否逐字保留，并确保每个角色都有实质性的中文见解。

@@ -13,7 +13,7 @@ description: Use when running the final pre-submission preflight for the Journal
 
 ## Process facts (verified 2026-06-01; re-confirm on the live page)
 
-- JHR is published by **University of Wisconsin Press** for the Board of Regents, housed at the UW-Madison **Institute for Research on Poverty (IRP)**; founded **1965**; Editor **Anna Aizer (Brown)** now, **Michael Lovenheim (Cornell)** from **2026-07-01**.
+- JHR is published by **University of Wisconsin Press** for the Board of Regents, housed at the UW-Madison **Institute for Research on Poverty (IRP)**; founded **1965**; Editor **Michael Lovenheim (Cornell, ILR School)** since **2026-07-01**, succeeding Anna Aizer (Brown). Re-verified 2026-09-14.
 - Submit only via **http://jhr.msubmit.net**. Do **NOT** email the editor, coeditors, managing editor, or editorial office directly.
 - **Scope is the first gate.** JHR is empirical microeconomics (labor, development, health, education, discrimination, retirement) with a policy bent and **does NOT consider management/personnel ("HR") research.** The fee is **not refunded** for out-of-scope papers.
 - **Nonrefundable submission fee: $175** on the live Authors page ($150 in the Sept-2024 policy PDF — verify which is current). **No fee** for invited revisions; economic-hardship exemption may be requested. The fee does **not** guarantee outside review.

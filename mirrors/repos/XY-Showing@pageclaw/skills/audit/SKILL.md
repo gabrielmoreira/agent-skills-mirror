@@ -8,7 +8,7 @@ argument-hint: "[area (feature, page, component...)]"
 
 ## MANDATORY PREPARATION
 
-Invoke /impeccable — it contains design principles, anti-patterns, and the **Context Gathering Protocol**. Follow the protocol before proceeding — if no design context exists yet, you MUST run /impeccable teach first.
+Invoke the bundled `impeccable` Skill at `../impeccable/SKILL.md`; it contains design principles, anti-patterns, and the **Context Gathering Protocol**. Follow the protocol before proceeding — if no design context exists yet, run `impeccable teach` first.
 
 ---
 

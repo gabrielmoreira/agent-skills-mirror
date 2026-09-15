@@ -4,15 +4,15 @@ description: Evaluate design from a UX perspective, assessing visual hierarchy, 
 version: 2.1.1
 user-invocable: true
 argument-hint: "[area (feature, page, component...)]"
-allowed-tools:
-  - Bash(npx impeccable *)
 ---
 
 ## STEPS
 
 ### Step 1: Preparation
 
-Invoke /impeccable, which contains design principles, anti-patterns, and the **Context Gathering Protocol**. Follow the protocol before proceeding. If no design context exists yet, you MUST run /impeccable teach first. Additionally gather: what the interface is trying to accomplish.
+Invoke the bundled `impeccable` Skill at `../impeccable/SKILL.md`, which contains design principles, anti-patterns, and the **Context Gathering Protocol**. Follow the protocol before proceeding. If no design context exists yet, run `impeccable teach` first. Additionally gather: what the interface is trying to accomplish.
+
+In commands below, resolve `<impeccable-skill-dir>` to that sibling `impeccable/` directory; do not use an external CLI installation.
 
 ### Step 2: Gather Assessments
 
@@ -57,13 +57,12 @@ Run the bundled deterministic detector, which flags 25 specific patterns (AI slo
 
 **CLI scan**:
 ```bash
-npx impeccable --json [--fast] [target]
+node <impeccable-skill-dir>/scripts/detect.mjs --json [target]
 ```
 
 - Pass HTML/JSX/TSX/Vue/Svelte files or directories as `[target]` (anything with markup). Do not pass CSS-only files.
-- For URLs, skip the CLI scan (it requires Puppeteer). Use browser visualization instead.
-- For large directories (200+ scannable files), use `--fast` (regex-only, skips jsdom)
-- For 500+ files, narrow scope or ask the user
+- For URLs, prefer browser visualization when browser automation is available.
+- For large directories, narrow scope to representative files.
 - Exit code 0 = clean, 2 = findings
 
 **Browser visualization** (when browser automation tools are available AND the target is a viewable page):
@@ -72,7 +71,7 @@ The overlay is a **visual aid for the user**. It highlights issues directly in t
 
 1. **Start the live detection server**:
    ```bash
-   npx impeccable live &
+   node <impeccable-skill-dir>/scripts/live-server.mjs --background
    ```
    Note the port printed to stdout (auto-assigned). Use `--port=PORT` to fix it.
 2. **Create a new tab** and navigate to the page (use dev server URL for local files, or direct URL). Do not reuse existing tabs.
@@ -89,7 +88,7 @@ The overlay is a **visual aid for the user**. It highlights issues directly in t
 7. **Read results from console** using `read_console_messages` with pattern `impeccable`. The detector logs all findings with the `[impeccable]` prefix. Do NOT scroll through the page to take screenshots of the overlays.
 8. **Cleanup**: Stop the live server when done:
    ```bash
-   npx impeccable live stop
+   node <impeccable-skill-dir>/scripts/live-server.mjs stop
    ```
 
 For multi-view targets, inject on 3-5 representative pages. If injection fails, continue with CLI results only.

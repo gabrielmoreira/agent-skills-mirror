@@ -153,6 +153,7 @@ host policy.
   "summarySpendBackoffMs": 1800000,
   "timezone": "America/Los_Angeles",
   "pruneHeartbeatOk": false,
+  "preserveHeartbeatPoll": false,
   "enableSummaryThinking": true,
   "maxAssemblyTokenBudget": 30000,
   "summaryMaxOverageFactor": 3,
@@ -262,6 +263,7 @@ output.
 | `newSessionRetainDepth` | `integer` | `2` | `LCM_NEW_SESSION_RETAIN_DEPTH` | Controls what survives `/new`. `-1` keeps all context, `0` keeps summaries only, higher values keep only deeper summaries. |
 | `timezone` | `string` | `TZ` or system timezone | `TZ` | IANA timezone used for timestamp rendering in summaries. |
 | `pruneHeartbeatOk` | `boolean` | `false` | `LCM_PRUNE_HEARTBEAT_OK` | Retroactively removes `HEARTBEAT_OK` turn cycles from persisted storage. |
+| `preserveHeartbeatPoll` | `boolean` | `false` | `LCM_PRESERVE_HEARTBEAT_POLL` | Keeps OpenClaw heartbeat poll events in LCM storage and assembled context. With `pruneHeartbeatOk` enabled, removes only pure `HEARTBEAT_OK` acknowledgements and preserves the poll and intermediate messages. The env override accepts `1` or `true` to enable; any other value disables. |
 | `transcriptGcEnabled` | `boolean` | ignored | none | Retired 0.15 compatibility setting. Lossless accepts the key, ignores its value, and warns at startup. |
 | `autoRotateSessionFiles` | `object` | ignored | none | Retired 0.15 compatibility setting. Lossless accepts its former nested shape, ignores its values, and warns at startup. |
 | `enableSummaryThinking` | `boolean` | `true` | `LCM_ENABLE_SUMMARY_THINKING` | When true, requests low reasoning budget from the model during summarization calls. Set to false to disable reasoning and keep summarization output concise. |
@@ -379,7 +381,9 @@ Lossless still records prompt-cache telemetry for status and diagnostics, but ca
 
 `contextThresholdOverrides` are optional and never replace the global fallback. Each rule's `match` object can include `model`, `modelContextWindowMin`, `modelContextWindowMax`, and `sessionPattern`; all fields in a rule must match. If several rules match, Lossless picks the highest-specificity rule, then the earliest rule in the array for ties. Exact `model` matches have higher specificity than `sessionPattern` matches, and session-pattern matches have higher specificity than context-window range matches. A matching rule may also set `freshTailCount`, which overrides the global fresh-tail count for assembly and threshold compaction, and `leafChunkTokens`, which overrides the global leaf chunk size for matching threshold sweeps. Threshold selection logs include the chosen threshold, source, rule index/name, token budget, threshold tokens, fresh-tail count, leaf chunk size, model, context-window value, and match reason.
 
-Context-window matchers only apply when the OpenClaw host reports explicit model context-window metadata to Lossless. Lossless does not infer `modelContextWindowMin` or `modelContextWindowMax` matches from the active token budget. If an override must affect assemble-time `freshTailCount` on all currently supported OpenClaw hosts, prefer an exact `model` or `sessionPattern` matcher.
+Context-window matchers only apply when the OpenClaw host reports explicit model context-window metadata to Lossless. Lossless does not infer `modelContextWindowMin` or `modelContextWindowMax` matches from the active token budget. If an override must affect assemble-time `freshTailCount` on all currently supported OpenClaw hosts, prefer an exact `model` or `sessionPattern` matcher. The `large-context-models` and `small-context-models` rules in the example above are therefore inert on a host that reports no window size.
+
+To tell that case apart from "the ranges did not cover this model", threshold selection logs `reason=no_override_matched_window_metadata_absent` whenever a window-range rule is configured and the host supplied no window size, instead of the plain `reason=no_override_matched`. Seeing it on every turn means the matchers can never fire on that host.
 
 Full sweeps first run leaf passes until there are no more eligible raw-message chunks outside the fresh tail. Condensation is then driven by summarized-prefix pressure: the routine condensation phase obeys `sweepMaxDepth`, and if the summarized prefix still exceeds `summaryPrefixTargetTokens`, a pressure phase may use `condensedMinFanoutHard` and condense deeper. Total context pressure starts the sweep, but does not by itself force deeper condensation once the raw prefix has been summarized.
 

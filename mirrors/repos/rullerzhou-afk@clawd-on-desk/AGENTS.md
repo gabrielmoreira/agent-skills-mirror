@@ -4,7 +4,7 @@ This file is the entry point for coding agents working in this repository. Keep 
 
 ## Project Overview
 
-Clawd 是一个 Electron 桌宠：通过 hook、日志轮询、plugin 和 extension 感知 AI coding agent 的工作状态，并播放像素风动画。当前支持 Claude Code、Codex CLI、Copilot CLI、Gemini CLI、Antigravity CLI (agy)、Cursor Agent、CodeBuddy、WorkBuddy、Kiro CLI、Kimi Code CLI (Kimi-CLI)、Qwen Code、ZCode、CodeWhale、opencode、MiMo Code、Pi、OpenClaw、Hermes Agent、Qoder、QoderWork、QwenWork (千问办公)、Reasonix、DeepSeek Harness、TraeCode (Trae CN)；内置 Clawd / Calico / Cloudling 三套主题，支持用户主题；平台覆盖 Windows、macOS、Linux，UI 支持 en / zh / zh-TW / ko / ja / pt-BR / es。
+Clawd 是一个 Electron 桌宠：通过 hook、日志轮询、plugin 和 extension 感知 AI coding agent 的工作状态，并播放像素风动画。当前支持 Claude Code、Codex CLI、Copilot CLI、Gemini CLI、Antigravity CLI (agy)、Cursor Agent、CodeBuddy、WorkBuddy、Grok Build、Kiro CLI、Kimi Code CLI (Kimi-CLI)、Qwen Code、ZCode、CodeWhale、opencode、MiMo Code、Pi、OpenClaw、Hermes Agent、Qoder、QoderWork、QwenWork (千问办公)、Reasonix、DeepSeek Harness、TraeCode (Trae CN)；内置 Clawd / Calico / Cloudling 三套主题，支持用户主题；平台覆盖 Windows、macOS、Linux，UI 支持 en / zh / zh-TW / ko / ja / pt-BR / es。
 
 ## Common Commands
 
@@ -53,6 +53,8 @@ npm run install:reasonix-hooks
 npm run uninstall:reasonix-hooks
 npm run install:workbuddy-hooks
 npm run uninstall:workbuddy-hooks
+npm run install:grok-hooks
+npm run uninstall:grok-hooks
 npm run install:dsh
 npm run uninstall:dsh
 npm run install:codex-hooks
@@ -70,7 +72,7 @@ bash test-macos.sh
 bash test-oneshot-gate.sh [state] [seconds]
 ```
 
-新安装默认只把 Claude Code 和 Codex 标记为已安装并启用；其他 agent 默认未安装、未启用。正常启动时，Clawd 只会为 `integrationInstalled=true` 且 `enabled=true` 的 agent 自动同步 Claude / Codex / Copilot / Gemini / Antigravity / Cursor / CodeBuddy / WorkBuddy / Kiro / Kimi / Qwen / ZCode / CodeWhale / Qoder / QoderWork / QwenWork / Reasonix / TraeCode hooks、opencode / MiMo Code / OpenClaw / Hermes plugins 和 Pi extension。Settings Agent 页的 Install 会安装并启用该集成；Uninstall 会卸载 Clawd 管理的 hook/plugin/extension，并同时把该 agent 设为未安装、未启用。单独关闭 enabled 只会跳过启动同步并屏蔽事件/权限入口，不卸载用户已有 hooks / plugins / extensions；重新启用未安装 agent 只打开事件入口，不会写本机集成文件。手动安装命令主要用于调试、重装或远程部署。
+新安装默认只把 Claude Code 和 Codex 标记为已安装并启用；其他 agent 默认未安装、未启用。正常启动时，Clawd 只会为 `integrationInstalled=true` 且 `enabled=true` 的 agent 自动同步 Claude / Codex / Copilot / Gemini / Antigravity / Cursor / CodeBuddy / WorkBuddy / Grok Build / Kiro / Kimi / Qwen / ZCode / CodeWhale / Qoder / QoderWork / QwenWork / Reasonix / TraeCode hooks、opencode / MiMo Code / OpenClaw / Hermes plugins 和 Pi extension。Settings Agent 页的 Install 会安装并启用该集成；Uninstall 会卸载 Clawd 管理的 hook/plugin/extension，并同时把该 agent 设为未安装、未启用。单独关闭 enabled 只会跳过启动同步并屏蔽事件/权限入口，不卸载用户已有 hooks / plugins / extensions；重新启用未安装 agent 只打开事件入口，不会写本机集成文件。手动安装命令主要用于调试、重装或远程部署。
 Settings 注册的自定义 HTTP Agent 是独立模型：`customApplications` 是注册真相，对应 `agents[customId]` 必须显式保持 `integrationInstalled=false`。注册只分配 ID 和状态入口，不安装 hook、不观察进程；v1 仅允许已注册且启用的 ID 向 `/state` 上报，`/permission` 永远不提供决定。删除或伪造的 `custom-` ID 必须直接拒绝，不能降级成 Claude Code subagent。
 Copilot CLI 同步走 `<COPILOT_HOME 或 ~/.copilot>/hooks/hooks.json`，marker-based 增量合并只接管含 `copilot-hook.js` 标记的条目，用户其他 entry / 其他 `hooks/*.json` 文件原样保留；hooks.json 或 `settings.json` 顶层 `disableAllHooks: true` 时 doctor 报 warning（不挂 Fix 按钮）。详见 `docs/guides/copilot-setup.md`。
 
@@ -156,6 +158,7 @@ Copilot CLI 同步走 `<COPILOT_HOME 或 ~/.copilot>/hooks/hooks.json`，marker-
 | `hooks/codex-hook.js` / `hooks/codex-install.js` | Codex official hooks 状态与权限审批、安装 / 卸载 |
 | `hooks/cursor-install.js` / `gemini-install.js` / `antigravity-install.js` / `kiro-install.js` / `kimi-install.js` / `qwen-code-install.js` / `codewhale-install.js` / `codebuddy-install.js` / `workbuddy-install.js` / `opencode-install.js` / `pi-install.js` / `openclaw-install.js` / `hermes-install.js` / `qoder-install.js` / `qoderwork-install.js` / `reasonix-install.js` | 各 agent 集成安装逻辑 |
 | `hooks/workbuddy-hook.js` | WorkBuddy state + Notification command hook；无 session_id 时返回合法 stdout 后丢弃事件 |
+| `hooks/grok-hook.js` / `hooks/grok-install.js` | Grok Build state + Notification command hook；写入 `<GROK_HOME 或 ~/.grok>/hooks/clawd-on-desk.json`；`env` marker `CLAWD_GROK_HOOK=v1` 所有权；无 session id 时丢弃；不注册 `/permission` |
 | `hooks/zcode-hook.js` / `hooks/zcode-install.js` | ZCode 状态 + 阻塞式 PermissionRequest hooks（`hookSpecificOutput` 决定 / `{}` 无决定）、`hooks.events.*` 按事件超时增量注册与 Claude-imported Clawd hook 清理 |
 | `hooks/qoder-hook.js` | Qoder state-only 状态上报脚本（Phase 1，stdout 恒为 `{}`） |
 | `hooks/codex-remote-monitor.js` | 远程 Codex JSONL 轮询并通过 SSH 隧道回传（含 token_count 订阅配额的 metadata_only 上报） |
@@ -171,6 +174,7 @@ Copilot CLI 同步走 `<COPILOT_HOME 或 ~/.copilot>/hooks/hooks.json`，marker-
 - permission automation（off / auto-tools / unattended）和 per-session grant 会在 bubble 渲染前产生真实 allow/answer。agent/family eligibility 是显式白名单；工具分类则因 mode/adapter 而异：auto-tools 对 Claude/Qwen 的未知 built-in fail closed，但其他已知 adapter 不都使用逐工具白名单，unattended 还会有意自动放行可作 Allow/Deny 的未知请求。新增 agent、工具或交互类型必须审查 policy + tests，不能从 `permissionApproval` 推导资格或笼统假设“未知请求都会 defer”
 - Telegram / 飞书 Lark 与本地 bubble 是并行决策通道。远程通道超时、断连、未配置或发送失败不得产生远程决定，更不得转成 deny；有本地 bubble 时请求继续 pending，只有 remote-only 且所有可用 client 都无决定时，整体请求才 no-decision 并回到 agent 原生流程
 - WorkBuddy 通过 `~/.workbuddy/settings.json` 的 Claude Code 兼容 command hooks 做 **state + Notification only** 集成：不注册 `/permission`，审批始终留在 WorkBuddy 原生沙箱与 GUI；无 `session_id` 的事件返回合法 stdout 后直接丢弃。当前只支持 macOS/Windows 桌面应用，没有已验证的 Linux/WSL CLI；不要把裸 `Electron` 当 WorkBuddy 进程。
+- Grok Build（agent id `grok-build`）通过 `<GROK_HOME 或 ~/.grok>/hooks/clawd-on-desk.json` 的 Claude Code 兼容 command hooks 做 **local / main-session / state + Notification only** 集成（Phase 1）：stdin 为 camelCase（`sessionId` / `toolName`），`hookEventName` 是 camelCase key + snake_case value，`hook_event_name` 是 snake_case key + PascalCase value。**逐 handler 的 `env` 结构化 marker `CLAWD_GROK_HOOK=v1` 是唯一所有权凭据**；文件名/substring（含 `grok-hook.js.backup`）只用于诊断告警，永不授权改写或删除。安装/卸载只增删含该 marker 的 handler，保留 unknown 顶层键、其他 event、foreign matcher group 与 sibling handler；没有 marker 的既有文件一律原样拒绝。`SessionEnd` 不写 `timeout`（继承 Grok 1.5s teardown），其余事件 5s。Windows 用 `windowsWrapper:"portable"` 形态，不得用 `&` / `-EncodedCommand` / 自造 `shell` 字段。Grok 没有 `PermissionRequest`，不注册 `/permission`，adapter 始终输出 `{}`。子代理事件（`subagentType`）直接丢弃；不注册 `SubagentStart` / `SubagentStop`。Grok 默认会扫 `~/.claude/settings.json`，所以 `clawd-hook.js` / `cursor-hook.js` / `auto-start.js` 只在非空官方 `GROK_HOOK_EVENT` 下直接退出，`GROK_HOME` / `GROK_SESSION_ID` / 无关 `GROK_*` 不得触发。`Stop` 只有精确 `reason === "end_turn"` 且无 background task / session cron / `stopHookActive` 才算完成，其余由 adapter 本地判定；`channel_closed` / `shutdown` 等 session-end 形态的 Stop 在 fence 之前丢弃。turn 顺序由 `src/grok-turn-fence.js` 的 bounded in-memory fence 仲裁（晚到旧 turn、重复 terminal、continuation Stop、Stop→StopCancelled 纠正）。不进入 subagent / WSL / Remote SSH / startup recovery / terminal focus / quota / context / recap turn 指标。`~/.grok/hooks/clawd.json` 是未发布的 PR preview 路径，只做 warning，不得自动接管或删除。
 - Codex 的阻塞式权限审批走 official `PermissionRequest` command hook：hook 脚本长连接 `POST /permission`，只允许 stdout 返回 sanitized `behavior/message`，`updatedInput` / `updatedPermissions` / `interrupt` 必须 omit
 - hook 脚本只允许依赖 Node 内置模块，以及同目录 `hooks/` 下、且登记在 `src/remote-ssh-deploy.js` 的 `HOOK_FILES` 部署清单中的纯 Node helper（如 `server-config.js` / `shared-process.js` / `json-utils.js` / `codex-originator.js` / `codex-subagent-fields.js` / `context-usage.js` / `state-payload-size.js` / `quota-bucket.js` / `claude-rate-limits.js` / `codex-rate-limits.js` / `antigravity-context-usage.js`）；manifest-consistency 测试强制检查依赖闭包，新增 helper 必须登记
 - CJS hook 脚本需要稳定终端 PID 时，必须复用 `hooks/shared-process.js` 的 `createPidResolver()` 及其 lifecycle context；不要复制进程树 walk 或用 `process.ppid` 简化。`getStablePid()` 只是 opencode-family plugin 的内部 resolver

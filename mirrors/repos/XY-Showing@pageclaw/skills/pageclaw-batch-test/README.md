@@ -13,10 +13,10 @@ Run from the pageclaw repo root. All artifacts go to `test-output/batch/` (not t
 ## Fixtures
 
 - `fixtures/style-matrix-test.yaml` -- 3 styles: sidebar-brutalist, centered-minimal, topnav-editorial
-- Page-story reused from `skills/pageclaw-test/fixtures/page-story-test.md`
+- Page-story reused from the bundled `skills/pageclaw-test/fixtures/page-story-test.md`
 
 ## Requirements
 
 - Claude Code with ECC
 - `pageclaw-batch` skill installed
-- `pageclaw-test` skill installed (provides the shared page-story fixture)
+- The bundled `skills/pageclaw-test/fixtures/page-story-test.md` fixture is present

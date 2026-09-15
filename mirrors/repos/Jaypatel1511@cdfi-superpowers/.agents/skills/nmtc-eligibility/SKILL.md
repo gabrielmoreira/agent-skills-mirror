@@ -47,21 +47,28 @@ tract up in the CDFI Fund's NMTC Low-Income Community (LIC) eligibility table.
 ## Install
 
 ```
-pip install "nmtc-mapper>=0.5.0" nmtc-screener
+pip install "nmtc-mapper>=0.6.1" nmtc-screener
 ```
 
-Verified 2026-08-14 (PyPI) against **`nmtc-mapper>=0.5.0`** (resolved 0.5.0 at
-the time) and **nmtc-screener 0.1.0** (`nmtc-calc 0.2.1` is pulled in as a
-dependency). Quote the floor, not the resolved point version — the point version
-moves on every release and this line does not. The `>=0.5.0` floor is not
-cosmetic — 0.4.0 is where `nmtc_eligible` became tri-state (see below), 0.4.1
+Verified 2026-09-14 (PyPI) against **`nmtc-mapper>=0.6.1`** (resolved 0.6.1,
+published 2026-09-14) and **nmtc-screener 0.1.0** (`nmtc-calc 0.2.1` is pulled
+in as a dependency). Quote the floor, not the resolved point version — the point
+version moves on every release and this line does not. The `>=0.6.1` floor is
+not cosmetic — 0.4.0 is where `nmtc_eligible` became tri-state (see below), 0.4.1
 binds the geocoder vintage to the eligibility table's 2020 tract basis (see Data
 dependencies & fragility), **0.4.2 is the release that stopped reporting 168
-statutorily-eligible tracts as ineligible**, and **0.5.0 is the release that
+statutorily-eligible tracts as ineligible**, **0.5.0 is the release that
 stopped returning a confident `False` for every unconfirmed Opportunity Zone and
-for every field of a tract it never read.** A reader on 0.3.x following this
-skill's third-state guidance would never see `None`, because 0.3.x collapses
-"could not determine" into `False`.
+for every field of a tract it never read**, **0.6.0 is the release whose
+`eligibility_status` vocabulary this skill describes** — it added a fifth value,
+`not-covered-territory`, and exported the vocabulary as a constant (see the
+fifth reason below) — and **0.6.1 is the release that can still download the
+CDFI Fund eligibility table at all** (see the sixth reason below). A reader on
+0.3.x following this skill's third-state guidance would never see `None`,
+because 0.3.x collapses "could not determine"
+into `False`; a reader on 0.5.0 following this skill's five-way guidance would
+never see `not-covered-territory`, because 0.5.0 reports an Island Area tract as
+a plain `not-found`.
 
 **The third reason is this skill's own rule, shipped as a defect.** The
 third-state rule below says a fabricated negative "kills a deal that may
@@ -74,30 +81,64 @@ published the poverty and 80%-AMI routes in the workbook's **column C** and the
 net out-migration over 20 years) in **column N** (the layout in force through
 June 2026 — see the note below). Pre-0.4.2 read column C alone as the entire
 verdict while separately parsing, storing and surfacing column N as
-`is_high_migration_rural`. Verified against the live table this session:
-**1,422 tracts carry the high-migration-rural designation, and 168 of them fail
-both the ≥20%-poverty and ≤80%-AMI prongs** — all non-metro, all in the
-(80%, 85%] MFI band, so §45D(e)(5) is the only route by which they qualify.
+`is_high_migration_rural`. **On the July-2026 file that argument is measured
+against, 1,422 tracts carried the high-migration-rural designation, and 168 of
+them fail both the ≥20%-poverty and ≤80%-AMI prongs** — all non-metro, all in
+the (80%, 85%] MFI band, so §45D(e)(5) is the only route by which they qualify.
 Those 168 were reported ineligible by a package that was, in the same object,
 reporting the evidence of their eligibility. 0.4.2 reads the verdict as **C or
 N**. That is why no floor below 0.4.2 is defensible and none of this is
 version-hygiene preference: 0.4.2 is the line below which this skill's central
-rule is violated by its own dependency. (All four figures re-derived against the
-live table on 0.5.0 this session, not carried forward: 1,422 HMR tracts, 168
-failing both prongs, all non-metro, all in the (80%, 85%] band, and all 168 now
-`nmtc_eligible=True`.)
+rule is violated by its own dependency.
 
-**On the current workbook a pre-0.4.2 install does not answer at all.** The Fund
-moved the C/N boundary in **July 2026**, folding the high-migration-rural route
-into column C and renaming that column's header. 0.4.1 pins column C's exact
-header string, so against the workbook the loader downloads today it raises
-`EligibilitySchemaError` and loads nothing (executed this session). The 168-tract
-divergence was real against the pre-July-2026 edition; today the same defect
-presents as a hard load failure. Either way 0.4.2 is the release that reads
-`C or N` and is therefore correct on both sides of the boundary move.
+**On the file the Fund publishes today the count is 1,318, and the 168 are
+untouched.** The September-2026 replacement retitled column N *"High Migration
+Rural County Census Tract for Deep Distress"* and narrowed it to **1,318 YES**.
+The 104 tracts it dropped are all column-E **YES** — they reach LIC by the
+≥20%-poverty route — with MFI between 85.7% and 134.4%, so the field now carries
+the §45D(e)(5) income-route determination only and no longer flags "any LIC tract
+in a high-migration-rural county." The 168 *fail* the poverty prong (column E
+**NO**), so they are disjoint from the 104 and not one of them was dropped; every
+one also sits at MFI ≤ 85%, the band the narrowed column keeps. And **no
+eligibility verdict moved — 0 of 85,395 differ** — because the 1,318 are a strict
+subset of the 1,422 and all 104 are column C YES in both files. The argument
+above therefore stands on both files; what moves is `is_high_migration_rural`'s
+True count, nothing else.
+
+*Provenance, stated precisely because this round turns on it: 1,318, the 104,
+85.7%–134.4%, and 0-of-85,395 are **derived from `nmtc-mapper` 0.6.1's pinned
+constants and source comments** (read 2026-09-14), **not** re-measured against a
+live table — this session has no route to `cdfifund.gov`. 1,422 and the 168 are
+the **July-2026 file's** figures, measured on 0.5.0 in an earlier session.*
+
+**A pre-0.4.2 install does not answer at all — and since 2026-09-03 it fails one
+step earlier than this skill used to say.** The Fund moved the C/N boundary in
+**July 2026**, folding the high-migration-rural route into column C and renaming
+that column's header. 0.4.1 pins column C's exact *pre*-July-2026 header string,
+so against the **July-2026** workbook — while that file was still being served at
+the URL 0.4.1 pins — its positional header validation raised
+`EligibilitySchemaError` at column index 2 and loaded nothing. That is no longer
+the error a reader will see. On **2026-09-03** the Fund retired that URL, and the
+retired route answers **403**; 0.4.1 still pins the dead literal, so on a **cold
+start today** it fails at *download* — `EligibilityDownloadError` naming the 403 —
+and never reaches the header guard at all. The schema path survives in exactly one
+case: a machine with a **warm** `~/.nmtcmapper/cache/` holding the July-2026
+workbook, where the loader returns the cached file without downloading and the
+header check then raises `EligibilitySchemaError`. The 168-tract divergence was
+real against the pre-July-2026 edition; after it the same defect presents as a
+hard load failure — download if cold, schema if warm. Either way 0.4.2 is the
+release that reads `C or N` and is therefore correct on both sides of the boundary
+move, and `>=0.6.1` is the floor that can load anything at all.
+
+*Provenance: **derived, not executed.** The download-before-parse control flow,
+the retired URL literal and column index 2's two header strings were read from the
+`nmtc-mapper` **0.4.1 and 0.6.1 sdists** on **2026-09-14**
+(`nmtcmapper/data/loader.py`, `nmtcmapper/data/schema.py`,
+`nmtcmapper/exceptions.py`). No 0.4.1 install was run and no request was made to
+`cdfifund.gov` — this session has no route to it.*
 
 **The fourth reason is the same defect one field over, and it is why the floor
-is now `>=0.5.0`.** Through 0.4.3 `is_opportunity_zone` was a plain `bool`, so
+moved to `>=0.5.0`.** Through 0.4.3 `is_opportunity_zone` was a plain `bool`, so
 the package answered "not an Opportunity Zone" about tracts it had no basis to
 answer for: **78,039 of the 85,395 tracts received a confident `False`** (every
 row in the table that is not in the 8,764-tract designation set), and the
@@ -111,6 +152,40 @@ states it is in.** Below 0.5.0 this skill has to correct its own dependency in
 prose on every OZ answer, which is exactly the posture the third-state rule
 exists to make unnecessary. 0.5.0 also drops `is_nmtc_native_area`, a field that
 could only ever say "I don't know" (see the note under the field list).
+
+**The fifth reason is why the floor can never again sit below 0.6.0: the
+`eligibility_status` vocabulary this skill teaches is only true from 0.6.0.**
+Through 0.5.0 the property had four values and an Island Area tract — American
+Samoa, Guam, the CNMI, the US Virgin Islands — came back as `not-found`, the
+same word as a
+mistyped GEOID, even though nothing about it was *missing*: those four
+jurisdictions are outside the loaded table's universe by scope (see the
+vintage-scope rule). 0.6.0 separates the two with a fifth value,
+**`not-covered-territory`**, and exports the whole vocabulary as
+**`nmtcmapper.ELIGIBILITY_STATUS_VALUES`** so a caller can bind to it instead of
+retyping it. Executed this session on 0.6.0 installed from PyPI:
+
+```
+>>> nmtcmapper.__version__
+'0.6.0'
+>>> nmtcmapper.ELIGIBILITY_STATUS_VALUES
+('verified-eligible', 'verified-ineligible', 'not-found', 'not-covered-territory', 'geocode-failed')
+```
+
+0.5.0 exports no such constant (`AttributeError`, verified against the 0.5.0
+wheel this session). A skill that describes five values while allowing 0.5.0 to
+be installed is the same defect as this skill's own pre-0.6.0 list was — one
+enumeration copied into prose and left behind by the package — which is why the
+floor moved with the vocabulary rather than after it.
+
+**The sixth reason is why the floor is `>=0.6.1`, and it has nothing to do with
+vocabulary: `>=0.6.0` is a floor that admits an install which cannot load its
+data.** On 2026-09-03 the CDFI Fund retired the workbook URL that every release
+through 0.6.0 pins, and that URL now answers **403**; 0.6.1 retargets the loader
+to the replacement. A reader who resolves `>=0.6.0` to 0.6.0 gets
+`EligibilityDownloadError` on the first cold call and no answer to any question
+in this skill. Whoever raises this floor next: it is a data-availability floor,
+not version hygiene — see the dated note under Data dependencies & fragility.
 
 Import names (dist name ≠ import name):
 
@@ -132,43 +207,80 @@ are three outcomes, not two:
 
 **`None` / `"unknown"` means "could not be determined." It is NOT "not
 eligible."** Never render `None` as "no," "ineligible," "not eligible," or a
-falsy `False`. A `None` reached two ways: the address did not geocode, or the
-tract is absent from the ~85k-tract universe (a bad/mistyped GEOID, or a
-vintage mismatch). Neither is a NO — both are "we don't know."
+falsy `False`. A `None` is reached three ways: the address did not geocode; the
+tract is absent from the ~85k-tract universe (a bad/mistyped GEOID, a
+leading-zero-stripped GEOID, or a vintage mismatch); or the tract is in one of
+the four Island Areas the loaded table does not cover at all. None of the three
+is a NO — all are "we don't know."
 
-`EligibilityResult.eligibility_status` (property, 0.4.0) collapses this into one
-explicit four-way string so you never have to infer intent from a `None`:
+`EligibilityResult.eligibility_status` (property, 0.4.0; fifth value 0.6.0)
+collapses this into one explicit five-way string so you never have to infer
+intent from a `None`. The vocabulary is exported as
+`nmtcmapper.ELIGIBILITY_STATUS_VALUES` (0.6.0) — bind to the constant, do not
+retype it:
 
 ```
-verified-eligible  |  verified-ineligible  |  not-found  |  geocode-failed
+verified-eligible  |  verified-ineligible  |  not-found  |  not-covered-territory  |  geocode-failed
 ```
 
-`not-found` and `geocode-failed` are the two indeterminate cases. `summary()`
-prints indeterminate results as `❓ UNKNOWN — … (indeterminate, NOT ineligible)`
-on the eligibility line itself — that inline qualifier is defined in
+`not-found`, `not-covered-territory` and `geocode-failed` are the **three**
+indeterminate cases — executed this session on 0.6.0, `nmtc_eligible is None`
+on exactly those three and on no other. `summary()` prints indeterminate results
+with an inline qualifier on the eligibility line itself — `❓ UNKNOWN — …
+(indeterminate, NOT ineligible)` for the first and last, `🚫 NOT COVERED — …`
+for the territory case — defined in
 `nmtcmapper/eligibility/checker.py::EligibilityResult.summary`, not a footer.
+
+**`not-covered-territory` is indeterminate, never a negative — and it is a
+different kind of indeterminate from `not-found`.** `not-found` means the table
+was searched for the tract and had no row: the tract may be mistyped, may be a
+retired 2010 GEOID, or may simply be missing. `not-covered-territory` means the
+tract is **outside the loaded table's universe** — the CDFI Fund's 2016–2020 ACS
+NMTC LIC table covers the 50 states + DC + **Puerto Rico** (981 rows), and the
+four DECIA Island Areas — American Samoa (FIPS 60), Guam (66), the Northern
+Mariana Islands (69), the US Virgin Islands (78), **133 tracts** on 2020
+geography — are not in it. Both halves of that were counted this session, not
+relayed: the 85,395-row eligibility table has **zero** rows with those four
+prefixes, and Treasury's OZ 2.0 table (85,529 rows, which 0.6.0 also loads and
+which *does* carry the Island Areas) has exactly **133** — AS 18, GU 57, MP 26,
+VI 32 — plus PR's 981, matching the eligibility table's PR count. Their
+LIC status lives in a separate CDFI Fund file,
+*"New Markets Tax Credit Low-Income Community Census Tracts (2020 Island Areas
+Decennial Census)"*, which **nmtc-mapper does not load**. So the answer for a
+territory tract is not "unknown, re-check the GEOID" — it is "this package
+cannot answer for this jurisdiction; use CIMS or the Island Areas file." Do not
+claim a territory answer this package cannot produce. **Puerto Rico is
+covered**: a PR GEOID that misses is a real lookup miss and reports `not-found`
+(executed this session: `72001956300` → `verified-eligible`, `72001999999` →
+`not-found`; `66010950100` → `not-covered-territory`). The status is keyed on
+the GEOID's state FIPS, so it is available from `check_tract` as well as from
+`check_address`, and `enrich_dataframe` writes the same value into
+`eligibility_status`.
 
 ### 0.5.0 extends the tri-state contract to every field that can be unobtainable
 
 Through 0.4.3 only the verdict was tri-state, and its **neighbours fabricated
-inside the very branches written to protect it**: the two indeterminate branches
+inside the very branches written to protect it**: the indeterminate branches
 set every supporting boolean to a confident `False` about a tract no row was
 ever read for. **Six fields are `Optional[bool]` in 0.5.0:**
 
 | field | `None` when |
 |---|---|
-| `nmtc_eligible` | either indeterminate branch (0.4.0) |
-| `is_non_metro` | either indeterminate branch (0.5.0) |
-| `is_high_migration_rural` | either indeterminate branch (0.5.0) |
-| `severe_distress` | either indeterminate branch (0.5.0) |
-| `deep_distress` | either indeterminate branch (0.5.0) |
+| `nmtc_eligible` | any indeterminate status (0.4.0; `not-covered-territory` joined the set in 0.6.0) |
+| `is_non_metro` | any indeterminate status (0.5.0) |
+| `is_high_migration_rural` | any indeterminate status (0.5.0) |
+| `severe_distress` | any indeterminate status (0.5.0) |
+| `deep_distress` | any indeterminate status (0.5.0) |
 | `is_opportunity_zone` | **on every path** — `True` or `None`, never `False` (0.5.0) |
 
-**The rule that ties them together: when `eligibility_status` is `not-found` or
-`geocode-failed`, every tract-derived field is `None`, because nothing was
-read.** For a tract that *was* found, a `False` on the four supporting booleans
-is unchanged and fully supportable — it is the Fund's published `NO`, present as
-a strict YES/NO on all 85,395 rows. `is_opportunity_zone` is the exception in
+**The rule that ties them together: when `eligibility_status` is `not-found`,
+`not-covered-territory` or `geocode-failed`, every tract-derived field is
+`None`, because nothing was read.** Re-derived by execution on 0.6.0 this
+session, across `EligibilityResult` and `enrich_dataframe` on all five statuses:
+the four supporting booleans are `None` on exactly those three statuses and
+non-`None` on the two verified ones. For a tract that *was* found, a `False` on
+the four supporting booleans is unchanged and fully supportable — it is the
+Fund's published `NO`, present as a strict YES/NO on all 85,395 rows. `is_opportunity_zone` is the exception in
 both directions: it is keyed on designation-set membership rather than on
 `tract_found`, so a retired 2010 GEOID that is designated still returns a
 correct `True` alongside `tract_found=False`, and it is never `False` at all.
@@ -203,12 +315,17 @@ rule; decline and report that the lookup failed.
 The hard failure rule above governs a tool that *errors*. This rule governs a
 lookup that *succeeds and returns UNKNOWN* (`nmtc_eligible is None`,
 `distress_level == "unknown"`, `eligibility_status` in `{not-found,
-geocode-failed}`). An unknown verdict is a **result, not an error** — and it
-must be reported as its own answer:
+not-covered-territory, geocode-failed}` — three values, re-derived by execution
+on 0.6.0 this session, not from a docstring). An unknown verdict is a **result,
+not an error** — and it must be reported as its own answer:
 
 - Report it as **"NMTC eligibility could not be determined for this tract"**,
-  and **name the tract ID** (or state the address did not geocode). Say *why*:
-  tract absent from the vintage's universe, or address failed to geocode.
+  and **name the tract ID** (or state the address did not geocode). Say *why*,
+  and say the right why: tract absent from the vintage's universe
+  (`not-found`), tract in an Island Area this table does not cover
+  (`not-covered-territory` — route to CIMS or the Island Areas file), or
+  address failed to geocode (`geocode-failed`). The three are different next
+  steps for the user; do not flatten them into one "unknown."
 - **Never** collapse it into "not eligible," "no," or "ineligible."
 - **Never** soften it into "probably not eligible" or "likely ineligible."
 - **Never** resolve it from a neighboring tract, the ZIP, the city, or the
@@ -268,10 +385,18 @@ Dec 19, 2023 and available in CIMS as of Jan 25, 2024 — which **this package
 does not carry**. Per the CDFI Fund's *2016-2020 ACS Data FAQ* (updated Feb 1,
 2024, General Q3): *"For Island areas, CDEs should continue to use 2011-2015
 NMTC Low-Income Community eligibility data and follow the same transition dates
-outlined in question 3."* An Island Area address/tract that is absent here is
-therefore **"not carried by this package," never "ineligible"** — route to CIMS
-or to the separate territory file; do not answer it from this 2016–2020 ACS
-table.
+outlined in question 3."* An Island Area address/tract is therefore **"not
+carried by this package," never "ineligible"** — route to CIMS or to the
+separate territory file; do not answer it from this 2016–2020 ACS table. **As of
+0.6.0 the package says this itself**: an 11-digit GEOID whose state FIPS is 60,
+66, 69 or 78 returns `eligibility_status == "not-covered-territory"` (executed
+this session on all four), and `summary()` prints `🚫 NOT COVERED — Guam is
+outside the 2016-2020 ACS NMTC LIC table this package loads (50 states + DC +
+PR)` with the separate file named on the following lines. Through 0.5.0 the same
+GEOID returned a bare `not-found` (executed this session on the 0.5.0 wheel),
+which told the reader to re-check the GEOID when the GEOID was fine. Puerto Rico
+is **in** this table (981 rows), so a PR miss is a genuine `not-found`, not a
+territory case.
 
 ## The commitment-basis rule (non-negotiable)
 
@@ -403,10 +528,17 @@ the package *does* return.
 **The same holds one tier down, and harder.** Q25(b)'s 20% tier is not Deep
 Distress alone — it is **any one of four**: Deep Distress, NMTC Native Areas,
 **High Migration Rural Counties**, and U.S. Island Areas. A `deep_distress=False`
-says nothing about the other three. **1,185 tracts are high-migration-rural and
-not deep** (live table, this session), and `is_high_migration_rural` is a field
-this package returns — so here too a negative on the flag the label names is not
-a negative on the commitment.
+says nothing about the other three. **High-migration-rural-and-not-deep is a
+large set that a `deep_distress=False` hides**: on the **July-2026 file** it was
+**1,185 tracts**, and `is_high_migration_rural` is a field this package returns
+— so here too a negative on the flag the label names is not a negative on the
+commitment. *The September-2026 figure has not been counted, and none is
+asserted here: that file narrows the high-migration-rural column to 1,318, but
+how many of the 104 dropped tracts were deep-distress is pinned nowhere in
+`nmtc-mapper` 0.6.1, so the current value lies somewhere in **1,081–1,185** and
+cannot be narrowed without the workbook. The deep column itself is byte-identical
+between the two files (77,334 / 8,061), which fixes the deep set but not this
+intersection.*
 
 **The two commitments nest, and the Fund says so as a rule** — *"A QLICI that
 meets this commitment will also automatically meet the commitment made in
@@ -440,11 +572,13 @@ result.summary()          # prints a formatted block; returns None
 print(result.eligibility_status)   # -> 'verified-eligible'
 ```
 
-Actual output this session (nmtc-mapper **0.5.0**, clean-venv PyPI install, cold
-cache, isolated `HOME`, live CDFI Fund + Census downloads — 85,395 tracts and
-8,764 OZ tracts loaded). Every demographic and eligibility figure re-executed
-**unchanged** from the revision of this file that recorded it on 0.4.2; **the
-`Opportunity Zone` line is the one line that moved**, and that is the release:
+Actual output this session (nmtc-mapper **0.6.0** from PyPI, live Census
+geocoder; the CDFI Fund workbook was the Aug-2025b edition read from a
+pre-existing `~/.nmtcmapper/cache/`, because **the URL 0.6.0 pins no longer
+serves it** — see the dated note under Data dependencies & fragility — 85,395
+tracts, 8,764 OZ tracts and 85,529 OZ 2.0 tracts loaded). Every line that this
+block showed on 0.5.0 re-executed **unchanged**; **the two trailing lines are
+the ones 0.6.0 added**, and that is the release:
 
 ```
 NMTC Eligibility Result
@@ -462,10 +596,23 @@ NMTC Eligibility Result
   Opportunity Zone: ❓ NOT CONFIRMED — not on the 2018 designation list, which is
                     2010-tract-based (indeterminate, NOT "not an Opportunity Zone")
   High Migration:   No
+  OZ 2.0 Eligible:  ✅ YES — eligible to be NOMINATED as a 2027 QOZ (not designated;
+                    no tract is designated yet)
+  Rural-Area QOZ:   ❌ NO — eligible, but not comprised entirely of a rural area
 ```
 
 `eligibility_status` is `verified-eligible`. Tract `36005023702` verified
 **present** in the live 2016–2020 table this session.
+
+**The two `OZ 2.0` lines are new in 0.6.0 and this skill does not yet document
+them.** They come from Treasury's Opportunity Zone 2.0 nomination-eligibility
+file (a second table on a second scheme, held separately from the eligibility
+table) and are carried on the result as `is_oz2_nomination_eligible`,
+`is_rural_area_qoz_eligible`, `oz2_nomination_status` and `oz2_inputs_missing`.
+Quote the two lines as the package printed them and do not interpret them
+beyond that until a later revision of this skill carries their methodology
+(`nmtcmapper/methodology/oz2_nomination_eligibility.md` in the installed
+package).
 
 **The `Description:` line is the package's own string, reproduced verbatim — read
 it through the commitment-basis rule.** `DISTRESS_LEVELS["severe"]` reads
@@ -502,7 +649,8 @@ The `EligibilityResult` fields (read these, don't re-derive): `address`,
 and **`tract_found`** (bool, 0.4.0 — `False` when the tract is absent from the
 table). Properties: `distress_description` (plain-English line, e.g. *"Severe
 Distress — qualifies for 85% investment commitment"*), **`eligibility_status`**
-(the four-way string above) and **`opportunity_zone_status`** (0.5.0 — the
+(the five-way string above; its vocabulary is `ELIGIBILITY_STATUS_VALUES`, 0.6.0)
+and **`opportunity_zone_status`** (0.5.0 — the
 three-way string `designated` / `not-confirmed` / `no-tract`; see the OZ rule
 below).
 
@@ -521,18 +669,35 @@ package constant into prose.
 **`is_high_migration_rural` is the field that exposes a stale install.** It is
 one of the three routes to LIC status (§45D(e)(5)), and pre-0.4.2 the package
 surfaced it while excluding it from the verdict — see the install note. On a
-pre-0.4.2 install one of two things happens, and **both mean the eligibility
-verdict is wrong or absent**: against the current workbook the loader raises
-`EligibilitySchemaError` and returns nothing; against a cached pre-July-2026
-workbook it returns `is_high_migration_rural=True` alongside
-`nmtc_eligible=False` — a result contradicting itself. The remedy for both is
-the same: **upgrade to the `>=0.5.0` floor.** Check it with tract
-**`01013953500`**, the first of the 168 — on 0.5.0 it returns
-`nmtc_eligible=True`, `is_high_migration_rural=True`, `distress_level='lic'`
-(re-executed this session). The pre-0.4.2 load failure was re-executed too: a
-0.4.1 install against the workbook the Fund serves today raises
-`EligibilitySchemaError` naming column index 2's renamed header, and loads
-nothing.
+pre-0.4.2 install one of three things happens, and **all three mean the
+eligibility verdict is wrong or absent**: on a **cold start** it never gets a file
+at all — the URL it pins was retired on 2026-09-03 and answers **403**, so it
+raises `EligibilityDownloadError` before any header is read; from a **warm cache**
+holding the **July-2026** workbook it reaches the header guard and raises
+`EligibilitySchemaError` at column index 2, returning nothing; from a cached
+**pre**-July-2026 workbook it returns `is_high_migration_rural=True` alongside
+`nmtc_eligible=False` — a result contradicting itself. The remedy for all three is
+the same: **upgrade to the `>=0.6.1` floor.** Check it with tract
+**`01013953500`**, the first of the 168 — on **0.6.1**, against the Fund's
+September-2026 file, it returns `nmtc_eligible=True`,
+`is_high_migration_rural=True`, `distress_level='lic'`,
+`eligibility_status='verified-eligible'`. **That expectation is derived from
+0.6.1's pinned constants and test fixtures, not re-executed** — this session has
+no route to `cdfifund.gov`, so treat it as a prediction the package should
+satisfy rather than a recording. It is derivable because 0.6.1's own fixture
+records the tract as Butler County AL, non-metro, poverty 15.0%, MFI 0.8377:
+that fails both the ≥20%-poverty and ≤80%-AMI prongs, which is what puts it in
+the (80%, 85%] §45D(e)(5) band, and at 83.77% it sits at MFI ≤ 85% — inside the
+1,318 the September file keeps, not the 104 it dropped, every one of which is at
+MFI ≥ 85.7%. If the four values do not come back, that is a finding worth
+reporting, not a stale note.
+The pre-0.4.2 load failure is **derived, not
+executed**: read from the `nmtc-mapper` 0.4.1 sdist on 2026-09-14,
+`download_eligibility_file()` raises `EligibilityDownloadError` on the retired
+URL's 403 and returns before `_validate_xlsb_header()` can run, so a cold start
+today fails at the download. The `EligibilitySchemaError` naming column index 2's
+renamed header is what 0.4.1 did against the **July-2026** workbook while it was
+served, and what it still does from a warm cache holding that file.
 
 **`is_nmtc_native_area` was REMOVED in 0.5.0 — and Native Area status cannot be
 determined from this package at all.** Through 0.4.3 the field existed and was
@@ -600,7 +765,7 @@ print(r.nmtc_eligible, r.distress_level, r.poverty_rate, r.ami_ratio)
 print(r.eligibility_status, "| tract_found:", r.tract_found)
 ```
 
-Actual output this session (0.5.0):
+Actual output this session (0.6.0):
 
 ```
 False ineligible nan nan
@@ -610,12 +775,29 @@ verified-ineligible | tract_found: True
 `poverty_rate` and `ami_ratio` came back **NaN** — the Fund does not publish an
 income or poverty estimate for this tract (see the FAQ Q2 reasons above) —
 render them "not available," never invent a number. **As of 0.5.0 `summary()`
-does this for you**, and says which kind of missing it is; the same call on this
-tract prints (executed this session):
+does this for you**, and says which kind of missing it is; `r.summary()` on this
+tract prints (executed this session on 0.6.0, whole block):
 
 ```
+NMTC Eligibility Result
+==================================================
+  Address:          Census Tract 11001980000
+  Census Tract:     11001980000
+  NMTC Eligible:    ❌ NO
+  Distress Level:   INELIGIBLE
+  Description:      Not NMTC eligible
+
   Poverty Rate:     not available — the CDFI Fund published no value for this tract
   AMI Ratio:        not available — the CDFI Fund published no value for this tract
+  Unemployment:     0.0%
+  Non-Metro:        No
+  Opportunity Zone: ❓ NOT CONFIRMED — not on the 2018 designation list, which is
+                    2010-tract-based (indeterminate, NOT "not an Opportunity Zone")
+  High Migration:   No
+  OZ 2.0 Eligible:  ❌ NO — not an eligible LIC on the 2020-2024 ACS / 2020 DECIA
+                    inputs Treasury used
+  Rural-Area QOZ:   ❓ NOT DETERMINED — Treasury determines rural status only for
+                    ELIGIBLE tracts, and this tract is not one
 ```
 
 Through 0.4.3 those two lines rendered as `nan%` for all 1,583 poverty / 2,358
@@ -643,7 +825,7 @@ print(r.nmtc_eligible, r.distress_level, r.eligibility_status, r.tract_found)
 r.summary()
 ```
 
-Actual output this session (0.5.0):
+Actual output this session (0.6.0):
 
 ```
 None unknown not-found False
@@ -665,6 +847,8 @@ NMTC Eligibility Result
   Opportunity Zone: ❓ NOT CONFIRMED — not on the 2018 designation list, which is
                     2010-tract-based (indeterminate, NOT "not an Opportunity Zone")
   High Migration:   ❓ UNKNOWN — tract not read
+  OZ 2.0 Eligible:  ❓ NOT DETERMINED — tract absent from Treasury's 85,529-row universe
+  Rural-Area QOZ:   ❓ NOT DETERMINED — tract absent from Treasury's universe
 ```
 
 **This block is why the floor moved to `>=0.5.0`.** On 0.4.3 the same call
@@ -695,15 +879,135 @@ files and to CIMS for geocoding; do the same rather than reporting "not
 eligible."
 
 The same third state reaches you from `check_address` when an address does not
-geocode: `nmtc_eligible=None`, `distress_level="unknown"`,
-`eligibility_status="geocode-failed"`, and `summary()` prints *"❓ UNKNOWN —
-address could not be geocoded (indeterminate, NOT ineligible)."* (executed this
-session on 0.5.0 against a deliberately unresolvable address). On that branch
-0.5.0 also returns `opportunity_zone_status == 'no-tract'` and prints
-*"Opportunity Zone: ❓ UNKNOWN — no census tract resolved"* — through 0.4.3 this
-branch hardcoded `is_opportunity_zone=False`, asserting a non-designation about
-an address that never resolved to a tract. It is the third of the three OZ
-states and the only one that is *not* "not-confirmed."
+geocode. Executed this session on 0.6.0 against the live Census geocoder with a
+deliberately unresolvable address:
+
+```python
+r = m.check_address("99999 Nonexistent Street, Nowhereville, ZZ 00000")
+print(r.nmtc_eligible, r.distress_level, r.eligibility_status, r.opportunity_zone_status)
+r.summary()
+```
+
+```
+None unknown geocode-failed no-tract
+```
+
+```
+NMTC Eligibility Result
+==================================================
+  Address:          99999 Nonexistent Street, Nowhereville, ZZ 00000
+  Census Tract:     Not found
+  NMTC Eligible:    ❓ UNKNOWN — address could not be geocoded (indeterminate, NOT ineligible)
+  Distress Level:   UNKNOWN
+  Description:      Indeterminate — eligibility not verified (no match / tract absent)
+
+  Poverty Rate:     ❓ UNKNOWN — tract not read
+  AMI Ratio:        ❓ UNKNOWN — tract not read
+  Unemployment:     ❓ UNKNOWN — tract not read
+  Non-Metro:        ❓ UNKNOWN — tract not read
+  Opportunity Zone: ❓ UNKNOWN — no census tract resolved
+  High Migration:   ❓ UNKNOWN — tract not read
+  OZ 2.0 Eligible:  ❓ UNKNOWN — no census tract resolved
+  Rural-Area QOZ:   ❓ UNKNOWN — no census tract resolved
+```
+
+On this branch `opportunity_zone_status == 'no-tract'` (0.5.0) — through 0.4.3
+it hardcoded `is_opportunity_zone=False`, asserting a non-designation about an
+address that never resolved to a tract. It is the third of the three OZ states
+and the only one that is *not* "not-confirmed."
+
+## Worked example — the fifth state: a territory tract (executed)
+
+The teaching case for `not-covered-territory`. Guam's state FIPS is 66; the
+GEOID is well-formed and 11 digits, and the answer is not "unknown" — it is
+"this table does not cover Guam."
+
+```python
+import nmtcmapper as nm
+m = nm.NMTCMapper()
+r = m.check_tract("66010950100")   # Guam — outside the loaded table's universe
+print(r.nmtc_eligible, r.distress_level, r.eligibility_status, r.tract_found)
+r.summary()
+```
+
+Actual output this session (0.6.0):
+
+```
+None unknown not-covered-territory False
+```
+
+```
+NMTC Eligibility Result
+==================================================
+  Address:          Census Tract 66010950100
+  Census Tract:     66010950100
+  NMTC Eligible:    🚫 NOT COVERED — Guam is outside the 2016-2020 ACS
+                    NMTC LIC table this package loads (50 states + DC + PR).
+                    Territory LIC status is published separately, in the CDFI Fund's
+                    "New Markets Tax Credit Low-Income Community Census Tracts (2020 Island Areas Decennial Census)"
+                    file. This package does not load it.
+  Distress Level:   UNKNOWN
+  Description:      Not covered — outside this table's universe, NOT a lookup miss
+
+  Poverty Rate:     ❓ UNKNOWN — tract not read
+  AMI Ratio:        ❓ UNKNOWN — tract not read
+  Unemployment:     ❓ UNKNOWN — tract not read
+  Non-Metro:        ❓ UNKNOWN — tract not read
+  Opportunity Zone: ❓ NOT CONFIRMED — not on the 2018 designation list, which is
+                    2010-tract-based (indeterminate, NOT "not an Opportunity Zone")
+  High Migration:   ❓ UNKNOWN — tract not read
+  OZ 2.0 Eligible:  ✅ YES — eligible to be NOMINATED as a 2027 QOZ (not designated;
+                    no tract is designated yet)
+  Rural-Area QOZ:   ✅ YES — Treasury determined this eligible tract is comprised
+                    entirely of a rural area
+```
+
+Report this as: *"nmtc-mapper does not cover Guam — tract 66010950100 is
+outside the 2016–2020 ACS LIC table it loads. Its LIC status is in the CDFI
+Fund's separate 2020 Island Areas Decennial Census file; determine it there or
+in CIMS."* Not "could not be found," not "unknown," and never "ineligible."
+The `Description` line is the verbatim value of `NOT_COVERED_DESCRIPTION` in
+`nmtcmapper/eligibility/checker.py`, selected by `distress_description` on
+`eligibility_status` rather than on `distress_level` — which stays `"unknown"`,
+because a coverage boundary is not a distress finding. Note the last two lines:
+Treasury's OZ 2.0 universe (85,529 rows) *does* include the 133 Island Area
+tracts, so the same GEOID this table cannot see is answered on the OZ 2.0 side
+— two tables, two universes, and the skill does not yet document the second.
+
+## Input shape — a GEOID is the 11-digit, zero-padded string (0.6.0 does not normalize)
+
+`check_tract` and the `tract_col` path of `enrich` take the tract GEOID as the
+**11-character, zero-padded string** `SSCCCTTTTTT` — `"06037101110"`, not
+`"6037101110"` and not the int `6037101110`. The package applies **no
+normalization** (0.6.0's own Known-limitations entry says so and defers
+`zfill` to 0.7.0), and both of its internal tables are keyed on the padded form.
+So the leading-zero-stripped shape — **which is the shape Excel, CSV readers and
+`int` columns emit for every state whose FIPS begins with 0** (AL 01, AK 02,
+AZ 04, AR 05, CA 06, CO 08, CT 09) — misses the table and comes back
+`not-found`. It fails safe (`nmtc_eligible is None`, never a fabricated
+`False`), but it is a wrong "unknown" for a tract the table actually has.
+Executed this session on 0.6.0 against the live table:
+
+```
+"06037101110" -> verified-ineligible   nmtc_eligible=False  tract_found=True
+"6037101110"  -> not-found             nmtc_eligible=None   tract_found=False
+6037101110    -> not-found             nmtc_eligible=None   tract_found=False
+```
+
+Same tract, three spellings, and only the padded one reaches the row. **Pad it
+yourself before calling: `str(geoid).zfill(11)`**, and on a DataFrame
+`df[tract_col] = df[tract_col].astype(str).str.zfill(11)` before `enrich`. When
+a user hands you a `not-found` for a GEOID that is 10 digits long, or a GEOID
+that came out of a spreadsheet, re-run it padded before reporting "could not
+be determined" — that `None` was an input-shape artifact, not a lookup result.
+
+**0.6.0 also closed the other half of this defect: a stripped GEOID is never
+mistaken for a territory.** A stripped California id begins with `60`, which is
+American Samoa's FIPS; only a well-formed 11-digit GEOID can carry a
+`not-covered-territory` claim (executed this session: `"6037101110"` returns
+`not-found`, not `not-covered-territory`). So `not-covered-territory` is
+trustworthy as a territory statement, and `not-found` on a short id should make
+you check its length first.
 
 ## Worked example — project feasibility screen (executed)
 
@@ -819,8 +1123,15 @@ is only as honest as this input.
   the vintage-scope rule — and the remaining **1,333 are 2010→2020 vintage
   misses.** So `not-confirmed` has three possible causes the package cannot
   separate: genuinely not designated, a vintage miss, or an Island Area outside
-  this table. Same posture as the third-state rule — an unknowable negative is
-  not a negative.
+  this table. (As of 0.6.0 the third cause is at least visible on the
+  *eligibility* side — `eligibility_status` says `not-covered-territory` for
+  those GEOIDs — while `opportunity_zone_status` is unchanged, still keyed on
+  designation-set membership alone: executed this session, `60010950100`
+  (American Samoa) is `not-covered-territory` **and** `designated`, and
+  `66010950100` (Guam) is `not-covered-territory` and `not-confirmed`. The two
+  properties answer different questions and neither one settles the other.)
+  Same posture as the third-state rule — an unknowable negative is not a
+  negative.
 
 ## Data dependencies & fragility (must document)
 
@@ -838,6 +1149,35 @@ is only as honest as this input.
   **say the lookup failed and why; never guess eligibility.** (For offline
   demos only, `NMTCMapper.from_sample()` exists and stamps `data_source ==
   "sample"`; its 12 synthetic tracts are NEVER valid for a real answer.)
+
+  **It moved on 2026-09-03, and `nmtc-mapper` 0.6.1 is the release that follows
+  it (verified 2026-09-14).** The URL every release **through 0.6.0** pins —
+  `…/system/files?file=2025-08/NMTC_2016-2020_Severe_Deep_Distress_August-2025b.xlsb`
+  — began returning **403** (a Drupal access-denied page; the host itself is
+  200) when the Fund replaced that workbook with
+  `…/system/files?file=2026-09/NMTC_LIC_Eligibility_Dataset_9_3_2026.xlsx`. On a
+  fresh 0.6.0 install with an empty `HOME`, `NMTCMapper()` raises
+  `EligibilityDownloadError` (*"access blocked (403 Forbidden)"*) and answers
+  nothing — 0.4.3, 0.5.0 and 0.6.0 all pin the same dead literal, so **no
+  release before 0.6.1 can cold-load the eligibility table at all.**
+
+  **The durable lesson is the status code: a relocated CDFI Fund file answers
+  403, not 404.** A moved file does not announce itself as missing — it looks
+  like a blocked client, which invites the wrong diagnosis (user agent, proxy,
+  WAF) and hides a dead pin. A warm `~/.nmtcmapper/cache/` hides it further, on
+  every machine that already has one. Expect the Fund to do this again.
+
+  **The remedy is `pip install -U nmtc-mapper`, not a hand-pointed URL.** 0.6.1
+  (PyPI, 2026-09-14) retargets the loader to the replacement and chooses its
+  parser by sniffing the ZIP member list rather than trusting the URL's
+  extension, so the `.xlsb` → `.xlsx` flip needs no further release. If a user
+  reports `EligibilityDownloadError` naming a 403, tell them to upgrade; that is
+  why this skill's floor is `>=0.6.1`. Still report the error verbatim, per the
+  hard failure rule, and never guess eligibility around it. (This session read
+  the retarget from 0.6.1's own `CDFI_FUND_LIC_URL_2020` and
+  `ELIGIBILITY_CACHE_FILENAME`; it has no route to `cdfifund.gov` and did not
+  re-run the download. Note also that 0.6.1 does a plain cold download on
+  upgrade rather than reusing the `.xlsb` cache — the cache filename changed.)
 - **Tract vintage in force (verified this session):** the cached table is
   `NMTC_LIC_Eligibility_2016_2020.xlsb`, **85,395 census tracts**, sourced from
   the CDFI Fund's Aug-2025b Severe/Deep Distress release. As of 0.5.0 the
@@ -881,14 +1221,16 @@ is only as honest as this input.
 
 **Geocoder (0.4.0 splits the old single `None` return into four distinct
 outcomes).** `geocode_address` / `check_address` now behave as follows. All
-four re-executed this session against the installed **0.5.0** wheel and are
-unchanged from 0.4.2: the no-match and
-agree branches ran against the live Census endpoint; the transport failure was
-**induced** by pointing the geocoder URL at a closed local port, which raised
-`GeocoderTransportError` (`connection/DNS`, `isinstance NMTCMapperError ==
-True`), message naming the failure kind and the address; the disagree branch was
-**induced** by returning two matches on different tracts, which raised
-`AmbiguousAddressError` naming both candidates and stating it refuses to guess.
+four re-executed this session against the installed **0.6.0** wheel and are
+unchanged from 0.4.2: the no-match and agree branches ran against the live
+Census endpoint (the two `check_address` examples above); the transport failure
+was **induced** by pointing the geocoder URL at a closed local port, which
+raised `GeocoderTransportError` (`connection/DNS`, *"after 4 attempts"*,
+`isinstance NMTCMapperError == True`), message naming the failure kind and the
+address; the disagree branch was **induced** by returning two matches on
+different tracts, which raised `AmbiguousAddressError` naming both candidates
+(`['36005023701', '36005023702']`) and stating it *"refus[es] to guess which is
+correct."*
 
 - **Transport / HTTP-status / decode failure** (403, 5xx, timeout,
   connection/DNS, non-JSON body), after retries are exhausted → **raises
@@ -916,7 +1258,20 @@ universe): **not a failure** — it is the third state. Returns
 field is `None` too** — `is_non_metro`, `is_high_migration_rural`,
 `severe_distress`, `deep_distress`, and the three demographic rates. Report
 "could not be determined," never "ineligible." (See the third-state rule and its
-worked example.)
+worked example.) **Check the id's length before reporting it**: a 10-digit id is
+a leading-zero-stripped GEOID, and `not-found` on it is an input-shape artifact
+— see the input-shape section.
+
+**Tract in an Island Area** (`check_tract` on an 11-digit GEOID whose state
+FIPS is 60, 66, 69 or 78): **not a failure and not a lookup miss** — the tract is
+outside the loaded table's universe. Returns `nmtc_eligible=None`,
+`distress_level="unknown"`, `tract_found=False`,
+`eligibility_status="not-covered-territory"` (0.6.0), every other tract-derived
+field `None`, and `summary()` prints `🚫 NOT COVERED — …` naming the
+jurisdiction and the separate CDFI Fund Island Areas file. Report "this package
+does not cover [jurisdiction]; determine it against CIMS or the CDFI Fund's
+*2020 Island Areas Decennial Census* LIC file," never "ineligible" and never
+"could not be found." Through 0.5.0 this case returned `not-found`.
 
 **CDFI Fund file download fails / 404** (URL moved): raises
 `EligibilityDownloadError` / `EligibilityParseError`. Report the error and that

@@ -100,8 +100,12 @@ admission. The manifest records the failure stage, reason, retryability, and
 the observed PR head. Native Git failures also retain process exit status, signal,
 error code, and bounded redacted stderr. Public errors omit raw process output;
 scanner output and verification details are never retained. Scan refusals
-remain terminal and retain their workflow exit code. Incomplete or inconsistent
-native output uses `scanner_failed`; a complete scan with an unclassified finding
+remain terminal and retain their workflow exit code. Source-blob fetches that
+fail after the hydration deadline retain their native Git process diagnostics
+while preserving the terminal `deadline` refusal. These
+diagnostics do not establish retry eligibility or a completed input scan.
+Incomplete or inconsistent native output uses `scanner_failed`; a complete scan
+with an unclassified finding
 uses `findings`. The manifest's optional `failure.scan` carries closed diagnostic
 reason codes. Finding diagnostics identify only the first blocking record, with
 the total finding count, bounded detector/decoder/line metadata, and a host-staged
@@ -114,8 +118,9 @@ are excluded. Diagnostic metadata never authorizes a finding or removes scanned 
 Blob-size metadata uses batches of at most 160 objects; one explicit fetch per
 delta retrieves missing blobs only after the complete set fits the scanner's
 shared 256 MiB upper bound. Local metadata reads remain bounded to 4 MiB, and
-each blob hydration pass has a 30-second deadline for Git work. Metadata
-requests retain the existing GitHub transport timeout policy.
+each blob hydration pass shares one 30-second deadline across Git work and
+GitHub blob-size metadata requests, including retries and rate-limit inspection.
+Metadata requests also retain any tighter outer GitHub runtime budget.
 The scanner separately enforces its aggregate budget, including prompts and the
 binary patch, and still refuses incomplete or unsupported source without fetching.
 

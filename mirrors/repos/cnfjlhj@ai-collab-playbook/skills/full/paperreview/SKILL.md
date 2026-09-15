@@ -1,7 +1,8 @@
 ---
 name: paperreview
 description: Use when the user explicitly wants to upload a final or near-final PDF to paperreview.ai for an external second opinion. Skip this for local paper critique, which should go through `paper-review-pipeline` first.
-version: 0.1.0
+metadata:
+  version: 0.1.0
 ---
 
 # paperreview.ai submission

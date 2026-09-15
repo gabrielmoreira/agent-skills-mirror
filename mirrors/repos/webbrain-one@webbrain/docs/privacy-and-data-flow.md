@@ -374,8 +374,8 @@ The only outbound HTTP requests are:
 7. **Encrypted Cloud Sync calls** to `https://api.webbrain.one/v1/sync` (only after a subscriber explicitly enables sync; vault content is encrypted before upload)
 8. **Slash-driven tab/screen recording** creates no outbound traffic (the .webm is saved to the Downloads folder via `chrome.downloads.download`)
 
-The opt-in `webRequest` API shortcut observer is off by default and does not
-create outbound requests; when enabled, it observes replay metadata for requests
+The `webRequest` API shortcut observer is on by default and does not
+create outbound requests; it observes replay metadata for requests
 the page already made so repeated UI mutations can be diagnosed.
 
 ### Bundled Skills
@@ -602,7 +602,7 @@ CDP capture → JPEG/PNG data URL
 | User memory auto-learn | Controls whether post-turn extractor calls run |
 | Site adapters toggle | Controls whether site-specific guidance is prepended |
 | Research escalation | Off by default; when enabled, permits per-prompt consent requests for the visible ChatGPT helper flow |
-| `/allow-api` | Controls whether the agent can use API mutations |
+| Always allow API mutations / `/allow-api` | The persistent setting (on by default) or a per-conversation override waives permission prompts for write-method network egress |
 | CapSolver toggle | Controls whether CAPTCHA data is sent to a third-party solver |
 
 ---

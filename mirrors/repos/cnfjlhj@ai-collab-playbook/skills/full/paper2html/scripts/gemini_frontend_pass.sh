@@ -147,6 +147,7 @@ if [[ "$auto_material" -eq 1 ]]; then
     "$html_dir/notes/material-pack.md" \
     "$html_dir/notes/tex-inventory.md" \
     "$html_dir/notes/figure-table-map.md" \
+    "$html_dir/notes/grounding-anchor.md" \
     "$html_dir/notes/source-boundary.md"; do
     if [[ -f "$candidate" ]]; then
       material_files+=("$candidate")
@@ -202,13 +203,19 @@ If the prompt template asks you to output index.html, implement that by editing
 the draft file above rather than printing a full HTML blob in chat.
 
 Use attached material files as the paper evidence basis. If a claim is not
-supported by the attached materials or the existing draft, mark it for Codex
+supported by the attached materials or the existing draft, mark it for primary-agent
 review instead of inventing details.
+
+Preserve all seven data-discussion-role markers, their source order, and every
+verbatim English role prompt. Preserve data-figure markers and the rule that
+Other Discussion Roles is followed only by Reference / Evidence. Use the
+grounding anchor to organize the page, but do not expose the private note itself.
+Do not introduce local paths, private filenames, credentials, or unsupported facts.
 
 After editing the draft, return a concise changelog with:
 1. The visual system changes.
 2. The content/depth changes you made from attached materials.
-3. Risks Codex should verify before publishing.
+3. Risks the primary agent should verify before publishing.
 EOF
 
 if [[ -n "$reference_path" ]]; then
@@ -233,7 +240,7 @@ else
   cat >>"$prompt_file" <<'EOF'
 
 No extra material files were attached. Work only from the current draft and
-explicitly mark content gaps for Codex review.
+explicitly mark content gaps for primary-agent review.
 EOF
 fi
 

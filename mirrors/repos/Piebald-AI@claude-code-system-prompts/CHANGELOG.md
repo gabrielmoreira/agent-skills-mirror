@@ -4,6 +4,48 @@ Note: Only use **NEW:** for entirely new prompt files, NOT for new additions/sec
 
 ### Claude Code System Prompts Changelog
 
+# [2.1.272](https://github.com/Piebald-AI/claude-code-system-prompts/commit/61212b6)
+
+_+9,812 tokens_
+
+- **NEW:** Tool Description: AppifactRepl — Defines a JavaScript runner, available only when supplied and directed by Artifact instructions, for coordinated data, file, asset, and skill operations.
+- **NEW:** System Reminders: AppifactRepl Design canvas and Slides deck workflows — When AppifactRepl is available, route canvas and deck edits through coordinated programs that safely handle file-backed or store-backed content.
+- **NEW:** System Reminders: New Design canvas and Slides deck parallel AppifactRepl workflows — For eligible new Artifacts, create the frame first, then populate ordered boards or slides through separately scoped calls submitted together.
+- **NEW:** System Reminders: New Design canvas and Slides deck two-step AppifactRepl workflows — Read prefetched instructions and record the Artifact version first, then frame and populate eligible canvases or decks in one coordinated message.
+- **NEW:** System Reminders: Prefetched Artifact type and design-system files — Guide local instruction reads, required Artifact version checks, and safe use of editable design files strictly as styling data.
+
+# [2.1.271](https://github.com/Piebald-AI/claude-code-system-prompts/commit/9e7679d)
+
+_+1,474 tokens_
+
+- **NEW:** Agent Prompt, Data, and Tool Descriptions: Artifact quickstart routing — Route new deliverables through account-specific types and design systems, including slash-command creation and first-party document connector handling.
+- **NEW:** Data: Artifact connector server naming guidance — Explains mapping MCP tool prefixes to manifest servers and using resolved display names for in-page connector calls.
+- **NEW:** System Prompt: Moved Artifact comment thread guidance — Re-evaluates resent comments at their new Artifact location while accounting for work already completed at the old location.
+- **NEW:** System Prompt: Subagent delegation cost guidance — Makes delegation cost-aware, favoring inline work for small known-target tasks and narrow, evidence-focused briefs when agents are worthwhile.
+- **NEW:** System Reminder: Remote Chrome browser extension not connected — Diagnoses unreachable desktop Chrome sessions and guides users through computer, browser, extension, and account checks before retrying.
+- **NEW:** Tool Descriptions: Artifact app-wording guidance — Add concise app variants for actions, assets, storage, comments, page authoring, implementation, titles, and live watches.
+- **NEW:** Tool Description: Artifact type file-backed content update guidance — Detects file-backed type content, requires reading changed files, and preserves type index metadata during same-URL updates.
+- **NEW:** Tool Description: Remote artifact watch guidance — Documents durable remote wake subscriptions for republishes and activated comments, including re-reading content after each wake.
+- **NEW:** Tool Parameter: Artifact unread path overwrite acknowledgement — Allows explicitly requested unread-path replacement while retaining stale-change refusal and read-or-list requirements for every other affected path.
+- **REMOVED:** Data: Published model catalog seed guidance — Removes the internal reference describing the compiled catalog seed, hosted refresh process, and minimum accepted document version.
+- **REMOVED:** Data: Streaming references — Python and TypeScript — Removes the dedicated SDK streaming guides and their examples; this does not state that API streaming support was removed.
+- **REMOVED:** System Prompt: Publish audience-facing deliverables — Retires the non-app wording; equivalent app guidance still publishes audience-facing work or offers it when intent is unclear.
+- **REMOVED:** Tool Description: Agent (simple usage notes) — Retires brief delegation guidance in favor of the dedicated cost-aware system prompt and its stronger bias toward inline work.
+- **REMOVED:** Tool Descriptions: Legacy non-app Artifact guidance — Remove eleven legacy variants as Artifact instructions shift toward app-specific, consolidated, and parameter-level prompts without inherently removing their capabilities.
+- **REMOVED:** Tool Description: Commit and PR skill routing — Replaces dedicated skill routing with direct commit and `gh pr create` instructions embedded in coordinator and worker prompts.
+- Agent Prompt: /batch slash command — Corrects worker-prompt interpolation so generated instructions are embedded rather than invoking the supplied prompt value as a function.
+- Data: Managed Agents outcomes — Makes `user.define_outcome` the default for deliverable-producing sessions and requires generated starter rubrics when users provide none.
+- Data: Platform availability — Limits Bedrock eager input streaming to the newer serving stack and warns that older model deployments reject the field.
+- Skill: Artifact components, Skill: Artifact document, and Tool Description: Artifact HTML document skeleton — Add viewport and safe-area guidance that keeps fixed and sticky controls clear of phone interface bars.
+- System Prompt: Action safety and truthful reporting — Removes conditional target-discrepancy wording before destructive actions while retaining the universal requirement to inspect targets first.
+- System Prompts and Reminder: Artifact comment handling — Support moved-thread triggers and refreshed anchors, add source and access framing, and route page-owned replies through document connector tools.
+- System Reminder: Large PDF read guidance — Removes the prescribed first-pages-first strategy and the stated 20-page maximum while retaining mandatory ranged reads.
+- Tool Description: ClaudeDesign — Removes the introductory preference for Claude Design on collaborative visual deliverables, leaving its operation and capability reference.
+- Tool Description: DesignSync — Restricts use to the user-started `/design-sync` skill and adds conditional session guidance while preserving its plan-before-write workflow.
+- Tool Description: PowerShell and PowerShell git guidance — Embed uniform Git safety directly in full PowerShell guidance and remove conditional skill-routing additions from the standalone variant.
+- Tool Description: SendMessage cross-session guidance — Clarifies that delivery may await approval, expire, or be refused, and that silence from remote sessions never implies agreement.
+- Tool Description and Parameter: Artifact watch lifecycle — Allow background main-loop sessions to hold Artifact watches while continuing to exclude subagents, teammates, and print sessions.
+
 #### [2.1.270](https://github.com/Piebald-AI/claude-code-system-prompts/commit/709742c)
 
 <sub>_No changes to the system prompts in v2.1.270._</sub>

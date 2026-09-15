@@ -3,8 +3,8 @@ from __future__ import annotations
 
 import argparse
 import datetime as dt
+import html
 import re
-import shutil
 import subprocess
 import tarfile
 import urllib.request
@@ -35,7 +35,7 @@ def safe_extract_tar(tar_path: Path, dest: Path) -> None:
     with tarfile.open(tar_path) as archive:
         for member in archive.getmembers():
             target = (dest / member.name).resolve()
-            if not str(target).startswith(str(dest_resolved)):
+            if target != dest_resolved and dest_resolved not in target.parents:
                 raise RuntimeError(f"Unsafe tar member path: {member.name}")
         try:
             archive.extractall(dest, filter="data")
@@ -51,6 +51,10 @@ def download(url: str, dest: Path) -> None:
 
 def run(cmd: list[str], cwd: Path | None = None) -> None:
     subprocess.run(cmd, cwd=cwd, check=True)
+
+
+def try_run(cmd: list[str], cwd: Path | None = None) -> subprocess.CompletedProcess[str]:
+    return subprocess.run(cmd, cwd=cwd, text=True, capture_output=True)
 
 
 def main() -> None:
@@ -102,6 +106,7 @@ def main() -> None:
         path.mkdir(parents=True, exist_ok=True)
 
     public_sources = list(args.public_source)
+    source_status: list[str] = []
 
     if args.arxiv:
         aid = arxiv_id(args.arxiv)
@@ -115,17 +120,66 @@ def main() -> None:
         unpacked = source / "unpacked"
         unpacked.mkdir(exist_ok=True)
         safe_extract_tar(src_dest, unpacked)
+        source_status.append(f"- arXiv PDF/source: downloaded and unpacked for {aid}.")
 
     if args.github:
         public_sources.append(args.github)
         clone_name = slugify(Path(args.github.rstrip("/")).name.removesuffix(".git"))
         clone_dest = repo / clone_name
         if not clone_dest.exists():
-            run(["git", "clone", "--depth", "1", args.github, str(clone_dest)])
+            result = try_run(["git", "clone", "--depth", "1", args.github, str(clone_dest)])
+            if result.returncode == 0:
+                source_status.append(f"- GitHub: cloned to repo/{clone_name}.")
+            else:
+                message = (result.stderr or result.stdout or "git clone failed").strip()
+                source_status.append(
+                    f"- GitHub: unavailable at bootstrap time; clone exited {result.returncode}: "
+                    f"{message.splitlines()[-1]}"
+                )
+                (notes / "github-status.txt").write_text(
+                    "\n".join(
+                        [
+                            f"URL: {args.github}",
+                            f"Clone destination: repo/{clone_name}",
+                            f"Exit code: {result.returncode}",
+                            "",
+                            "stdout:",
+                            result.stdout.strip(),
+                            "",
+                            "stderr:",
+                            result.stderr.strip(),
+                        ]
+                    )
+                    + "\n",
+                    encoding="utf-8",
+                )
+        else:
+            source_status.append(f"- GitHub: existing clone found at repo/{clone_name}.")
 
     template = Path(args.template).expanduser().resolve()
-    if template.exists() and not (out / "index.html").exists():
-        shutil.copyfile(template, out / "index.html")
+    index_path = out / "index.html"
+    if template.exists() and not index_path.exists():
+        title = args.title.strip()
+        short_title = title if len(title) <= 48 else f"{title[:45]}..."
+        source_badge = (
+            f"arXiv {arxiv_id(args.arxiv)}"
+            if args.arxiv
+            else "GitHub source" if args.github else "Source pending"
+        )
+        replacements = {
+            "__TITLE__": title,
+            "__SHORT_TITLE__": short_title,
+            "__DESCRIPTION__": f"Source-grounded deep-reading notes for {title}",
+            "__DATE__": dt.date.today().isoformat(),
+            "__TAGS__": "paper-reading,research",
+            "__BADGE_1__": "Deep Reading",
+            "__BADGE_2__": source_badge,
+            "__SUBTITLE__": "Source-grounded Chinese deep-reading notes",
+        }
+        index_html = template.read_text(encoding="utf-8")
+        for placeholder, value in replacements.items():
+            index_html = index_html.replace(placeholder, html.escape(value, quote=True))
+        index_path.write_text(index_html, encoding="utf-8")
 
     visibility = "private-only" if args.private_only else "public blog HTML"
     boundary = [
@@ -143,6 +197,9 @@ def main() -> None:
         f"- arXiv: {args.arxiv or '(not provided)'}",
         f"- GitHub: {args.github or '(not provided)'}",
         "- Local/private materials: (fill if any)",
+        "",
+        "Source retrieval status:",
+        *(source_status or ["- (not recorded)"]),
         "",
         "Public evidence sources allowed in final page:",
     ]
@@ -193,8 +250,32 @@ def main() -> None:
             [
                 "Figure / Table Evidence Map",
                 "",
-                "| Item | Source/page | Original caption | What it itself shows | Allowed HTML caption | Nearby callout needed |",
+                "Each discovered paper figure needs either an Included marker matching the HTML data-figure basename or a Waiver reason.",
+                "",
+                "| Item | Source/page | Original caption | What it itself shows | Included marker | Waiver reason |",
                 "| --- | --- | --- | --- | --- | --- |",
+            ]
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
+    (notes / "grounding-anchor.md").write_text(
+        "\n".join(
+            [
+                "Grounding Anchor",
+                "",
+                "1. Human knowledge boundary",
+                "- Status (solved / partially solved / unsolved):",
+                "- Public evidence URL(s):",
+                "- Boundary statement:",
+                "",
+                "2. Real contribution",
+                "- One sentence from an independent reviewer perspective, relative to section 1:",
+                "",
+                "3. Writing anchor",
+                "- Sections that establish the contribution:",
+                "- Sections that are source-faithful background only:",
             ]
         )
         + "\n",

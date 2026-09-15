@@ -1,7 +1,6 @@
 ---
 name: xhs-longform-private-publisher
 description: This skill should be used when the user wants to publish an existing Markdown article to Xiaohongshu as a private longform post, keep the original wording and structure, insert inline images in order, use one-click layout, and verify the result in note manager.
-version: 0.1.0
 ---
 
 # 小红书长文私密发布技能
@@ -44,12 +43,13 @@ version: 0.1.0
 ## 工作原则
 
 1. 保留原文措辞，不自行改写。
-2. 保留原始结构，包括标题层级、列表、引用、强调、分隔线。
+2. 保留原始结构感，包括标题层级、列表、引用和强调；不要为了兼容小红书把小标题压平成普通段落。
 3. 图片必须按占位顺序插入，不允许随意重排。
 4. “一键排版”在正文和图片全部插完之后再点。
 5. 默认发布为“仅自己可见”，不要误发公开。
 6. 结果验收以创作者平台的可见页面为准，不以控制台日志为准。
-7. 若版式、图片顺序或可见性不对，最多重做 3 次，每次都要更换假设，而不是机械重试。
+7. 小红书不稳定的不是“层级本身”，而是原始 Markdown 符号和部分 HTML 结构。默认使用 XHS 安全富文本：保留 `h2/h3/blockquote/ul/li/strong`，移除 `code/hr` 和属性。
+8. 若版式、图片顺序或可见性不对，最多重做 3 次，每次都要更换假设，并保留失败截图和页面状态 JSON。
 
 ## 推荐流程
 
@@ -65,7 +65,11 @@ version: 0.1.0
 优先使用内置脚本把 Markdown 转成一个稳定的 JSON 载荷：
 
 ```bash
-python scripts/build_payload.py <markdown_path> --image-dir <image_dir> --output /tmp/xhs_payload.json
+python scripts/build_payload.py \
+  <markdown_path> \
+  --image-dir <image_dir> \
+  --xhs-safe-rich \
+  --output /tmp/xhs_payload.json
 ```
 
 这个脚本会做几件事：
@@ -73,6 +77,7 @@ python scripts/build_payload.py <markdown_path> --image-dir <image_dir> --output
 - 提取第一个 H1 作为标题
 - 以 Markdown 图片语法行为分界，把正文切成 `图片数 + 1` 段
 - 把每一段 Markdown 转成 HTML，避免把原始 Markdown 符号直接贴进编辑器
+- `--xhs-safe-rich` 是默认推荐：保留小标题、引用和列表层级，同时移除 XHS 容易处理异常的 `code`、`hr` 和 HTML 属性
 - 对图片文件名按数字顺序排序，如 `1.png`、`2.png`、`10.png`
 - 默认要求“图片数量 = 图片占位数量”
 
@@ -81,6 +86,14 @@ python scripts/build_payload.py <markdown_path> --image-dir <image_dir> --output
 ```bash
 python scripts/build_payload.py <markdown_path> --images <img1> <img2> <img3>
 ```
+
+如果手工维护了 `payload-xhs.json`，发布前必须检查：
+
+- `parts = images + 1`
+- 不出现原始 Markdown 标题符号如 `##`
+- 不出现反引号或 `<code>`
+- 不出现 `<hr>`
+- 小标题仍然以 `h2/h3` 或等价的独立标题行保留
 
 ### 3. 在长文编辑器里插入内容
 
@@ -99,6 +112,7 @@ python scripts/publish_longform.py --payload /tmp/xhs_payload.json --publish
 - 默认目标可见性是 `仅自己可见`
 - 不传 `--publish` 时只走到发布前页面，便于人工验收
 - 传 `--publish` 后会在发布后自动跳转笔记管理页并截图留证
+- 失败时自动保存 `failure.png` 和 `failure-state.json`
 
 核心要求：
 
@@ -106,8 +120,9 @@ python scripts/publish_longform.py --payload /tmp/xhs_payload.json --publish
 - 正文必须进入长文富文本编辑器，而不是短描述框
 - 依次插入：`part1 -> image1 -> part2 -> image2 -> ... -> partN`
 - 先完成内容，再做“一键排版”
+- 当前小红书长文新版流程是：`一键排版 -> 选择模板/预览页 -> 下一步 -> 发布设置页 -> 发布`
 
-如果直接贴 Markdown 导致页面出现 `#`、`-`、`>` 等原始符号，说明插入方式错了，应改为先转换成 HTML 再插入。
+如果直接贴 Markdown 导致页面出现 `#`、`-`、`>` 等原始符号，说明插入方式错了，应改为先转换成 XHS 安全富文本再插入。不要用“全部降级为普通段落”的方式解决，它会破坏长文可读性。
 
 ### 4. 设置可见性并发布
 
@@ -115,6 +130,7 @@ python scripts/publish_longform.py --payload /tmp/xhs_payload.json --publish
 - 再次检查标题前缀是否正确
 - 再次检查图片数量是否和预期一致
 - 点击“发布”
+- “发布成功”弹窗不是唯一完成标准；有时捕获不到弹窗。最终以管理页最新卡片为准。
 
 如果用脚本执行，可通过以下参数显式控制：
 
@@ -133,7 +149,7 @@ python scripts/publish_longform.py \
 
 - 最新一条有 `仅自己可见`
 - 标题前缀和原文标题一致
-- 时间戳与本次发布时间一致
+- 日期或时间戳与本次发布时间一致
 - 状态显示 `审核中` 或 `已发布`
 
 至少保留一张截图；有条件的话，再补一张编辑页或预览页截图。
@@ -143,20 +159,24 @@ python scripts/publish_longform.py \
 允许最多 3 次完整重试。
 
 - 第 1 次：按标准流程直发
-- 第 2 次：如果图片错位或版式异常，优先重新新建一篇，不在坏稿上修补
-- 第 3 次：收缩自动化范围，重点人工确认“图片插入点”“一键排版”“仅自己可见”三个关键步骤
+- 第 2 次：根据 `failure-state.json` 更换假设，例如入口登录态、模板预览流程、最终发布按钮定位或管理页异步刷新
+- 第 3 次：收缩自动化范围，重点人工确认“图片插入点”“一键排版/下一步”“仅自己可见”“发布按钮”四个关键步骤
 
 每次重试都要说明新的判断依据，例如：
 
 - 上次是把内容插到短描述框了
 - 上次图片上传后光标没有回到正确位置
-- 上次点“一键排版”的时机过早
+- 上次小红书已进入“选择模板”页，但脚本仍在等旧版“图片编辑”状态
+- 上次最终发布按钮不是标准 `button` 语义元素，需要滚到底部或坐标兜底
 
 ## 常见失败模式
 
 - 误把内容填到短描述框，导致长文正文为空
 - 直接粘贴 Markdown，导致原始语法暴露
+- 为了兼容 XHS 把所有标题压成普通加粗段落，导致长文层级感消失
 - 图片顺序错位，通常是插图前后光标位置不对
+- “一键排版”后停在模板预览页，页面显示 `选择模板`、页码和 `下一步`，这不是失败，应点击 `下一步`
+- 最终发布按钮可能不是标准 `button`，语义定位失败时需要滚到底部后使用文本/class/坐标兜底
 - 管理页返回后先出现骨架屏或空列表，需要等待真实列表刷新
 - 标题在管理页被截断，这通常是正常现象，用前缀匹配即可
 - 平台按钮顺序可能漂移，按钮下标只能当“最后的已知经验”，不能当唯一事实
@@ -167,7 +187,7 @@ python scripts/publish_longform.py \
 
 1. 笔记管理页能看到最新一条笔记
 2. 该条笔记带有 `仅自己可见`
-3. 标题前缀与原文一致
+3. 标题前缀与原文一致，且日期/时间戳与本次发布相符
 4. 已保存至少一张截图作为证据
 
 ## 绑定资源

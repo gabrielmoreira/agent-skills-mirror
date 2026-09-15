@@ -28,6 +28,7 @@ uv run python -m omh.cli docs roles --check                       # byte gate
 uv run python -m omh.cli docs claims --check --json               # selected claims
 uv run python -m omh.cli docs chain-table --check                 # byte gate
 uv run python -m omh.cli docs navigation --check                  # docs structure gate
+uv run python -m omh.cli docs skill-sources --check               # watch-closure gate
 uv run --group lint ruff check src tests                          # static-analysis gate
 git diff --check
 ```
@@ -174,6 +175,14 @@ Rules:
   with the reason written at the entry: the per-skill Hangul freeze in
   `tests/test_routing_language_policy.py` and
   `FULL_PROFILE_SKILL_BODY_CHAR_LIMIT` in `src/maintenance/release.py`.
+- Advancing `reviewed_ref` in `docs/SKILL-SOURCES.md` without appending the
+  closure receipt, or landing the skill change and leaving the row behind.
+  `docs skill-sources --check` fails either half by name
+  (`closure_receipt_missing`, `closure_checkpoint_missing`) because a row that
+  did not move makes the next tracker run re-evaluate a range already reviewed.
+  The receipt schema, the reason codes, and the baseline enrolment for rows
+  that predate the contract are in the Closure receipts section of
+  `docs/SKILL-SOURCES.md`.
 - Adding a page under `docs/` and stopping there. `docs navigation --check`
   requires every top-level `docs/*.md` to be reachable from a declared root or
   classified in `src/catalogs/documentation_navigation.py` with a reason and an

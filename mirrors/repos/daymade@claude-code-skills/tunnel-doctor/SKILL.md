@@ -687,6 +687,15 @@ Two things that wrapper must get right:
 
 ⚠️ Beware stacking retries. If a wrapper script or cron job already retries pushes, adding a transport-layer retry underneath multiplies them (5 × 3 = 15 connections), and the outer layer's logs will undercount actual connection attempts.
 
+**(C) "The SSH channel is down entirely" — a verdict shape to resist, not a mechanism.** A window of back-to-back SSH failures (`ssh.github.com:443` banner timeouts, port 22 also `Connection closed`) with HTTPS 100% clean looks like a new mechanism. It isn't: re-measured across windows the same host showed `ssh -T git@github.com` succeeding 75–84% over 25 attempts — mechanism (B)'s bad-window peak all along. **N consecutive failures inside one time window are not N independent samples**: forwarding instability is time-varying, and a bad window produces 5-in-a-row failures routinely. Before concluding "the channel is dead," re-measure minutes later.
+
+How much sampling is enough depends on the **shape of the refusal**, not the count of failures. A named policy code (e.g. an API returning `KEYLESS_ACCESS_NOT_AVAILABLE`) is the endpoint *stating a rule* — a few same-session samples settle it. A challenge page, a rate limit, or a connection reset is *state* — it drifts with time and IP reputation, so a same-window losing streak counts as one sample, and only a cross-window re-measure can separate "dead" from "bad window."
+
+Two facts to keep regardless:
+
+- `nc -vz github.com 22` reporting **succeeded** proves nothing — under a TUN the local stack answers for the destination on any port. Only trust a real handshake (`ssh -T`).
+- When the retry wrapper's attempts are genuinely exhausted, the one-shot HTTPS bypass leaves shared remote config untouched: `git push https://github.com/<owner>/<repo>.git HEAD:refs/heads/main` (prefix `HTTPS_PROXY=http://127.0.0.1:<proxy-port>` if the direct attempt dies with `SSL_ERROR_SYSCALL`).
+
 **Fix for (A) — a DIRECT rule** (requires proxy tool config access), so the TUN passes this traffic through without protocol inspection:
 
 ```

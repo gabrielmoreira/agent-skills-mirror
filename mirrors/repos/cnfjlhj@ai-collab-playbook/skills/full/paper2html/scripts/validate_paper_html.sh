@@ -10,6 +10,11 @@ Checks:
   - file exists and is HTML
   - no common placeholders
   - no private local-source leaks in public mode
+  - all seven MIT Other Discussion Roles occur exactly once
+  - each role preserves its complete source prompt verbatim
+  - each role has a substantive response and roles keep the source order
+  - Other Discussion Roles is the final substantive section before references
+  - figure inventory entries match HTML data-figure markers or carry waivers
   - KaTeX auto-render creates math nodes and no katex-error
   - desktop and mobile screenshots can be rendered by Chrome
 USAGE
@@ -33,11 +38,155 @@ if [[ "${HTML_PATH##*.}" != "html" ]]; then echo "Expected .html: $HTML_PATH" >&
 python3 - "$HTML_PATH" "$MODE_PUBLIC" <<'PY'
 import re
 import sys
+import html as html_lib
+from html.parser import HTMLParser
 from pathlib import Path
 
 html_path = Path(sys.argv[1])
 public = sys.argv[2] == "1"
 html = html_path.read_text(encoding="utf-8", errors="replace")
+
+role_prompts = {
+    "scientific-peer-reviewer": "The paper has not been published yet and is currently submitted to a top conference where you’ve been assigned as a peer reviewer. Complete a full review of the paper answering all prompts of the official review form of the top venue in this research area (e.g., NeurIPS). This includes recommending whether to accept or reject the paper.",
+    "archaeologist": "This paper was found buried under ground in the desert. You’re an archeologist who must determine where this paper sits in the context of previous and subsequent work. Find and report on one older paper cited within the current paper that substantially influenced the current paper and one newer paper that cites this current paper.",
+    "academic-researcher": "You’re a researcher who is working on a new project in this area. Propose an imaginary follow-up project not just based on the current but only possible due to the existence and success of the current paper.",
+    "industry-practitioner": "You work at a company or organization developing an application or product of your choice (that has not already been suggested in a prior session). Bring a convincing pitch for why you should be paid to implement the method in the paper, and discuss at least one positive and negative impact of this application.",
+    "hacker": "You’re a hacker who needs a demo of this paper ASAP. Implement a small part or simplified version of the paper on a small dataset or toy problem. Prepare to share the core code of the algorithm to the class and demo your implementation. Do not simply download and run an existing implementation – though you are welcome to use (and give credit to) an existing implementation for “backbone” code.",
+    "private-investigator": "You are a detective who needs to run a background check on one of the paper’s authors. Where have they worked? What did they study? What previous projects might have led to working on this one? What motivated them to work on this project? Feel free to contact the authors, but remember to be courteous, polite, and on-topic.",
+    "social-impact-assessor": "Identify how this paper self-assesses its (likely positive) impact on the world. Have any additional positive social impacts left out? What are possible negative social impacts that were overlooked or omitted?",
+}
+
+def normalize_text(value: str) -> str:
+    return " ".join(html_lib.unescape(value).split())
+
+class DiscussionRoleParser(HTMLParser):
+    def __init__(self):
+        super().__init__()
+        self.current_role = None
+        self.prompt_depth = 0
+        self.insight_depth = 0
+        self.prompts = {role: [] for role in role_prompts}
+        self.insights = {role: [] for role in role_prompts}
+        self.counts = {role: 0 for role in role_prompts}
+        self.seen_roles = []
+
+        self.section_ids = []
+        self.figure_markers = []
+    def handle_starttag(self, tag, attrs):
+        attrs = dict(attrs)
+        if tag == "section":
+            self.section_ids.append(attrs.get("id", ""))
+        if tag == "figure":
+            marker = attrs.get("data-figure")
+            if marker:
+                self.figure_markers.append(Path(marker).name)
+        role = attrs.get("data-discussion-role")
+        if role in self.counts:
+            self.current_role = role
+            self.counts[role] += 1
+            self.seen_roles.append(role)
+        classes = set(attrs.get("class", "").split())
+        if self.current_role and "role-prompt" in classes:
+            self.prompt_depth += 1
+        if self.current_role and "role-insight" in classes:
+            self.insight_depth += 1
+
+    def handle_endtag(self, tag):
+        if self.prompt_depth and tag == "blockquote":
+            self.prompt_depth -= 1
+        if self.insight_depth and tag == "div":
+            self.insight_depth -= 1
+        if tag == "article" and self.current_role:
+            self.current_role = None
+
+    def handle_data(self, data):
+        if self.current_role and self.prompt_depth:
+            self.prompts[self.current_role].append(data)
+        if self.current_role and self.insight_depth:
+            self.insights[self.current_role].append(data)
+
+role_parser = DiscussionRoleParser()
+role_parser.feed(html)
+expected_order = list(role_prompts)
+if role_parser.seen_roles != expected_order:
+    print(
+        f"{html_path}: discussion role order mismatch: {role_parser.seen_roles}; "
+        f"expected {expected_order}",
+        file=sys.stderr,
+    )
+    raise SystemExit(1)
+for role, expected_prompt in role_prompts.items():
+    count = role_parser.counts[role]
+    if count != 1:
+        print(f"{html_path}: discussion role {role!r} occurs {count} times; expected exactly 1", file=sys.stderr)
+        raise SystemExit(1)
+    actual_prompt = normalize_text("".join(role_parser.prompts[role]))
+    if actual_prompt != normalize_text(expected_prompt):
+        print(f"{html_path}: verbatim prompt drift for discussion role {role!r}", file=sys.stderr)
+        raise SystemExit(1)
+    insight = normalize_text("".join(role_parser.insights[role]))
+    if len(insight) < 120:
+        print(
+            f"{html_path}: discussion role {role!r} response is too short "
+            f"({len(insight)} characters; expected at least 120)",
+            file=sys.stderr,
+        )
+        raise SystemExit(1)
+
+section_ids = role_parser.section_ids
+if "discussion-roles" not in section_ids or "references" not in section_ids:
+    print(f"{html_path}: missing discussion-roles or references section", file=sys.stderr)
+    raise SystemExit(1)
+discussion_index = section_ids.index("discussion-roles")
+if section_ids[discussion_index + 1 :] != ["references"]:
+    print(
+        f"{html_path}: Other Discussion Roles must be the final substantive section before "
+        f"Reference / Evidence; trailing sections: {section_ids[discussion_index + 1 :]}",
+        file=sys.stderr,
+    )
+    raise SystemExit(1)
+
+figure_map_path = html_path.parent / "notes" / "figure-table-map.md"
+if not figure_map_path.is_file():
+    print(f"{html_path}: missing figure inventory: {figure_map_path}", file=sys.stderr)
+    raise SystemExit(1)
+
+empty_values = {"", "-", "tbd", "todo", "n/a"}
+included_markers = set()
+for line_no, line in enumerate(figure_map_path.read_text(encoding="utf-8").splitlines(), start=1):
+    if not line.lstrip().startswith("|"):
+        continue
+    cells = [cell.strip().replace(r"\|", "|") for cell in re.split(r"(?<!\\)\|", line.strip().strip("|"))]
+    if not cells or cells[0].lower() == "item" or all(set(cell) <= {"-", ":"} for cell in cells):
+        continue
+    if len(cells) != 6:
+        print(f"{figure_map_path}:{line_no}: expected 6 table columns, got {len(cells)}", file=sys.stderr)
+        raise SystemExit(1)
+    item, _source, _caption, _shows, included, waiver = cells
+    normalized_included = included.strip("` ")
+    if normalized_included.lower() not in empty_values:
+        marker = Path(normalized_included).name
+        if marker != normalized_included:
+            print(f"{figure_map_path}:{line_no}: Included marker must be a basename", file=sys.stderr)
+            raise SystemExit(1)
+        included_markers.add(marker)
+    elif waiver.strip().lower() in empty_values:
+        print(f"{figure_map_path}:{line_no}: {item!r} needs an Included marker or Waiver reason", file=sys.stderr)
+        raise SystemExit(1)
+
+html_markers = role_parser.figure_markers
+if len(html_markers) != len(set(html_markers)):
+    print(f"{html_path}: duplicate data-figure markers: {html_markers}", file=sys.stderr)
+    raise SystemExit(1)
+missing_markers = sorted(included_markers - set(html_markers))
+unexpected_markers = sorted(set(html_markers) - included_markers)
+if missing_markers or unexpected_markers:
+    print(
+        f"{html_path}: figure inventory mismatch; missing={missing_markers}, "
+        f"unexpected={unexpected_markers}",
+        file=sys.stderr,
+    )
+    raise SystemExit(1)
 
 # Base64 payloads can accidentally contain strings like TODO. Do static text
 # checks on a masked copy, while browser checks still use the original file.

@@ -238,6 +238,35 @@ neighbours), so the grammar matches on shape and never on colour.
 | `claude--autocomplete-slash-long.txt` | `/model` typed on a machine with many skills: 23 popup rows — 17 entries at a description column of 43, six of whose blurbs wrap onto a continuation row. **No statusline and no key-hint footer**: while the popup is open the run reaches the last line of the screen. The capture the bug was diagnosed from |
 | `claude--autocomplete-slash-short.txt` | The 3-row shape (`/re` → `/rename`, `/resume`, `/release-notes`) at a description column of 23, first row highlighted. **Derived**: written to the same layout and SGR palette as the long capture, at a width that fits the page |
 
+## Model-alias capture (2026-09-13, Claude Code v2.1.270, throwaway Herdr pane)
+
+One byte-faithful `pane.read format:ansi` capture, and the only thing it is evidence for is that
+Claude Code takes an ALIAS as an argument to `/model`. The harness bar's Claude Model chooser offers
+`opus`, `sonnet`, `haiku` and `default`, and those four names are the one set of strings in
+[`harness-bar.ts`](../../lib/harness-bar.ts) that no published catalog vouches for — so the row cites
+this file. `/model sonnet` was typed into an idle pane in `/tmp/fable-capture-claude` and Enter
+pressed; nothing else was sent, and no model turn was ever run. Claude answered on the row under the
+echo, and the statusline under it moved from `[Opus·medium]` to `[Sonnet·xhigh]` in the same frame.
+That acknowledgement is the whole point of the file: it says the command was understood, not merely
+that it was accepted as text.
+
+CRLF throughout with no trailing newline; `wc -l` is 62.
+
+**One sanitization pass, LENGTH-PRESERVING, two substitutions.** The welcome banner names the
+subscription the session runs on (`Claude Max` → `Claude Pro`), and the statusline's `LIMITS` row
+prints per-account quota, whose four values become zeroes (`12%`, `31m`, `14%`, `18h` → `00%`, `00m`,
+`00%`, `00h`) the way the OMP approval corpus below zeroes its own. Byte length is unchanged, 2799
+before and after. Nothing else needed it: the cwd is a throwaway `/tmp` directory, and no username,
+hostname, home path, email, session id or credential-shaped string appears in the file.
+
+| Fixture | State / what's in it | Herdr status |
+|---|---|---|
+| `claude--model-alias.txt` | `❯ /model sonnet` echoed on a filled row, then `⎿ Set model to Sonnet 5 and saved as your default for new sessions`, a screen of blank rows, and the idle input box above a `LIMITS` row and a `[Sonnet·xhigh]` statusline | `idle` |
+
+**Running this capture changes the operator's saved default.** Claude's own sentence says so, and the
+`model` key in `~/.claude/settings.json` really moved. Put it back by hand after capturing, or capture
+with an isolated `CLAUDE_CONFIG_DIR`.
+
 ## Wizard corpus (captured 2026-07-05, sandbox pane; choreography in `../../lib/grammar/WIZARD_NOTES.md`)
 
 | Fixture | State / what's in it |
@@ -453,6 +482,36 @@ bash dialog it approved and `gh issue create --help` then ran. `down` moves the 
 probed on the `write` dialog, with the target file verified absent afterwards. One reproduction trap
 worth recording: `read` is auto-approved even under `--approval-mode always-ask`, so a read call
 paints no dialog and cannot be used to generate one.
+
+## OMP `/tree` capture (2026-09-13, oh-my-pi `omp` v18.1.19, throwaway Herdr pane)
+
+One byte-faithful `pane.read format:ansi` capture, and the only thing it is evidence for is that omp
+has `/tree` and what omp paints for it. The harness bar's omp rows each name a capture, so the Tree
+button waited on this file rather than on the argument that omp is a pi fork
+([`harness-bar.ts`](../../lib/harness-bar.ts)).
+
+omp 18.1.19 was installed into a throwaway prefix and run in `/tmp/fable-omp-sandbox`, a `git init`
+repo. Its five-step first-run setup was skipped with `Escape`, so the session has **no model at all**
+— the screen carries omp's own `No models available` warning. `/tree` still works, which is itself the
+finding: the command is local to the TUI and needs no provider.
+
+The screen is a box at column 0 titled `Session Tree`, with a long hint row
+(`Enter: switch. Alt+↑/↓: previous/next turn. PgUp/PgDn (←/→): page. …`), a `Search:` row, a rule, and
+then the filtered list, which here reads `1 entries hidden by the current filter [default]` over
+`Press Alt+A to show all, Alt+D for default` and `(0/1)`. `Alt+A` was probed: it reveals the one entry
+as `› • [thinking: high]` and flips the footer to `[all]`. `Alt+D` put the default filter back, and the
+capture is that default state — what `/tree` paints on its own, with nothing driven after it.
+
+CRLF throughout with no trailing newline; `wc -l` is 35. **No sanitization pass was needed**, and that
+is verified rather than assumed: the file contains no username, hostname, home path, email, session id,
+credential-shaped string or UUID, and the modal covers the statusline that would otherwise carry the
+cwd. The session had no provider signed in, so there is no vendor account state to rewrite either.
+
+| Fixture | State / what's in it | Herdr status |
+|---|---|---|
+| `omp--tree.txt` | The welcome panel and the `No models available` warning above a `╭─ Session Tree ─╮` box: hint row, `Search:` row, rule, then the default filter's `1 entries hidden` notice and `(0/1)` | `idle` |
+
+`/tree` was dismissed with `Escape`; nothing in the tree was ever switched to.
 
 ## Lessons already encoded here (don't re-learn them)
 

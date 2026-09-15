@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `cline/cline` — 26 default patterns, 2 followed patterns, 58 file(s) materialized.
+Mirror of `cline/cline` — 26 default patterns, 2 followed patterns, 59 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `cline/cline` — 26 default patterns, 2 followed patterns, 58 file(s)
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 2 |
-| Files         | 58 |
+| Files         | 59 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -115,9 +115,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 53 | ✓ | [`sdk/AGENTS.md`](sdk/AGENTS.md) |
 | 54 | ✓ | [`sdk/ARCHITECTURE.md`](sdk/ARCHITECTURE.md) |
 | 55 | ✓ | [`sdk/CONTRIBUTING.md`](sdk/CONTRIBUTING.md) |
-| 56 | ✓ | [`sdk/packages/llms/AGENTS.md`](sdk/packages/llms/AGENTS.md) |
-| 57 | → | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
-| 58 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 56 | ✓ | [`sdk/DOC.md`](sdk/DOC.md) |
+| 57 | ✓ | [`sdk/packages/llms/AGENTS.md`](sdk/packages/llms/AGENTS.md) |
+| 58 | → | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
+| 59 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
 
 ---
 

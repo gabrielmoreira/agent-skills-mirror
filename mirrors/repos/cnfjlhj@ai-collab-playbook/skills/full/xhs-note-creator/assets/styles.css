@@ -70,7 +70,8 @@ body {
     -webkit-text-fill-color: transparent;
     background-clip: text;
     margin-bottom: auto;
-    word-break: break-all;
+    word-break: normal;
+    overflow-wrap: break-word;
 }
 
 .cover-subtitle {
@@ -199,7 +200,7 @@ body {
     overflow-x: visible;
     overflow-wrap: break-word;
     word-wrap: break-word;
-    word-break: break-all;
+    word-break: normal;
     white-space: pre-wrap;
     font-size: 36px;
     line-height: 1.5;

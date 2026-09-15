@@ -113,6 +113,10 @@ A conditional skill for products with recurring human relationships — success 
 
 Atlassian Confluence from the terminal. List spaces, browse pages, view content with body extraction, search with CQL, and create pages. Same API token as Jira.
 
+### [constrained-optimization](constrained-optimization/SKILL.md)
+
+Formulate and evaluate constrained allocation, routing and scheduling decisions with explicit feasibility, objective units, exact or heuristic baselines, repeatable comparisons and honest solver-status evidence.
+
 ### [crewai](crewai/SKILL.md)
 
 An expert-level skill for building **role-based multi-agent teams** with CrewAI. Agents are defined as Roles with Goals and Backstories; crews are composed with sequential or hierarchical workflows.
@@ -124,6 +128,10 @@ Operate HubSpot CRM from the terminal: list and search contact records, view dea
 ### [crowdsec](crowdsec/SKILL.md)
 
 Deploy, configure, and manage CrowdSec — the open-source, collaborative IPS/IDPS/WAF. Covers Security Engine installation (Linux, Docker), cscli hub management, remediation components (firewall, Traefik, Nginx), AppSec WAF, profiles, notifications, blocklists, CTI, metrics, and production best practices. Ships 7 reference files for deep dives into config, AppSec, Docker, Traefik integration, database backends, hub collections, and troubleshooting.
+
+### [cryptpad](cryptpad/SKILL.md)
+
+Integrate CryptPad encrypted collaborative editors with explicit storage and session-key ownership. Includes public instance discovery, secret-safe link inspection, browser callback templates, and operational diagnostics.
 
 ### [cyberpunk](cyberpunk/SKILL.md)
 
@@ -167,6 +175,10 @@ Assess and explain mental health and neurocognitive questions against DSM-5-TR d
 ### [dspy](dspy/SKILL.md)
 
 An expert-level skill for **programmatic prompt optimization** with Stanford's DSPy framework. You write Python programs with typed signatures; DSPy optimizes the prompts automatically. This is the framework for prompt engineering that doesn't feel like engineering.
+
+### [electronics](electronics/SKILL.md)
+
+Design, review and troubleshoot electronic circuits with component evidence, worst-case calculations, interface contracts and staged bench verification. Includes detailed references and reusable design, calibration, measurement and fault-isolation templates.
 
 ### [email](email/SKILL.md)
 
@@ -216,6 +228,10 @@ Safe Forgejo API v1 CLI for issues, pull requests, repositories, file contents, 
 ### [forward-deployed-engineering](forward-deployed-engineering/SKILL.md)
 
 Carry an embedded technical engagement from an ambiguous need to an adopted, measurable capability and a deliberate generalization decision across discovery, build, deployment, adoption, and field learning.
+
+### [fpga-development](fpga-development/SKILL.md)
+
+Design and verify FPGA logic with RTL contracts, arithmetic analysis, self-checking simulation, clock/reset and CDC review, timing constraints and reproducible release evidence. Includes dense references, engineering templates and an original executable ready/valid buffer fixture.
 
 ### [frontend-engineering](frontend-engineering/SKILL.md)
 
@@ -543,6 +559,10 @@ Reverse-engineer a software codebase to understand its architecture, data flow, 
 
 Design and run a Spec-Driven Development (SDD) pipeline for AI software factories — where structured specifications are the input, AI agents generate the code, and quality gates enforce correctness at each pipeline phase. Covers the 5-phase pipeline (SPECIFY → DECOMPOSE → IMPLEMENT → VERIFY → DELIVER), 4 phase gates with APPROVED/CONDITIONS/REJECTED verdicts, 7 spec quality gates, a methodology selection matrix (BDD, OpenAPI, AsyncAPI, DbC, TLA+, ADRs, C4), NFR encoding patterns, format translation (PRD → SPEC.md → Gherkin → OpenAPI), gate recovery and revision workflows, and a worked example SPEC.md. Ships 4 templates, 9 reference files, and 2 validation scripts. Tool-agnostic — works with Claude Code, Cursor, Hermes Agent, Devin, OpenHands, and droid. Not for single small changes, the intent-to-delivery control-plane protocol (see bmad), or unvalidated problems (product-discovery).
 
+### [spring-ai](spring-ai/SKILL.md)
+
+Build and diagnose Spring AI integrations with version-aware setup, ChatClient/advisors, retrieval, scoped memory, tool/MCP boundaries and observability. Includes a read-only Maven/Gradle diagnostic CLI with explicit static-analysis limits.
+
 ### [strategy-frameworks](strategy-frameworks/SKILL.md)
 
 Structure organizational strategy decisions about direction, industry structure, growth, capital allocation, acquisitions, and portfolios. Uses frameworks as prompts for evidence and trade-offs, not automatic recommendations.
@@ -602,6 +622,10 @@ The Movie Database API from the terminal. Search and discover movies and TV by g
 ### [traefik](traefik/SKILL.md)
 
 Deploy, configure, secure, and maintain Traefik v3 reverse proxy — Docker provider, HTTP/TCP/UDP routing, TLS/ACME (Let's Encrypt), middlewares, observability, API, and production deployment. Covers the full static config schema, all 25+ built-in middlewares with YAML config, ACME certificate resolvers with DNS-01/HTTP-01/TLS-ALPN-01 challenges, Docker label reference for routers/services/middlewares, TCP/UDP routing with SNI matching, Prometheus/OpenTelemetry metrics and access logs, and production-ready Docker Compose deployments with security hardening. Ships 10 reference files covering every major feature area.
+
+### [training-data-annotation](training-data-annotation/SKILL.md)
+
+Design reliable training-data annotation and active-learning workflows: label definitions, acquisition policies, representative audits, annotator conditions, adjudication, provenance and cost-quality stopping.
 
 ### [trakt](trakt/SKILL.md)
 

@@ -56,7 +56,7 @@ Use the anchored confidence rubric in the subagent template. Persona-specific gu
 
 **Anchor 75** — objectively visible in the diff: new wrapper with no added behavior; special-case branch in a busy shared function; refactor that adds indirection without reducing concepts; type cast bypassing a check you can point to; a data-locality smell where you can quote every occurrence of the repeated or misplaced shape.
 
-**Anchor 50** — judgment-based naming, boundary placement, or whether extraction helped — **suppress unless severity is P1** (the synthesis rules still report a critical structural regression you could not fully verify as P1 at anchor 50).
+**Anchor 50** — judgment-based naming, boundary placement, or whether extraction helped — **suppress unless severity is P0** (the synthesis rules still report a critical structural regression you could not fully verify as P0 at anchor 50).
 
 **Anchor 25 or below — suppress.**
 

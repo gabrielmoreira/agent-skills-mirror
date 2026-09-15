@@ -1,11 +1,13 @@
 ---
 name: writing-anti-ai
-description: This skill should be used when the user asks to "remove AI writing patterns", "humanize this text", "make this sound more natural", "remove AI-generated traces", "fix robotic writing", or needs to eliminate AI writing patterns from prose. Supports both English and Chinese text. Based on Wikipedia's "Signs of AI writing" guide, detects and fixes inflated symbolism, promotional language, superficial -ing analyses, vague attributions, AI vocabulary, negative parallelisms, and excessive conjunctive phrases.
-disable-model-invocation: true
-version: 1.0.0
-author: gaoruizhang
+description: Use only when the user explicitly asks to remove formulaic AI-writing patterns, humanize prose, or make English or Chinese text sound more natural while preserving its meaning.
 license: MIT
-tags: [Writing, AI, Anti-AI, Humanizer]
+metadata:
+  version: 1.0.0
+  author: gaoruizhang
+  tags:
+    - writing
+    - humanizer
 ---
 
 # Writing Anti-AI
@@ -197,8 +199,6 @@ See **`examples/`** for before/after transformations:
 ### Reference Files
 - **`references/patterns-english.md`** - Complete English pattern reference
 - **`references/patterns-chinese.md`** - 完整中文模式参考
-- **`references/phrases-to-cut.md`** - Filler phrases to remove (需删除的填充短语)
-- **`references/wikipedia-source.md`** - Original Wikipedia source material
 
 ### Example Files
 - **`examples/english.md`** - English before/after examples

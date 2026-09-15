@@ -2,7 +2,7 @@ interface:
   display_name: "Serenity.skill"
   short_description: "Turns investment agents into supply-chain bottleneck hunters"
   brand_color: "#111827"
-  default_prompt: "Use serenity-skill to deeply research a market theme, map the value chain, find scarce layers, rank research priorities, explain the evidence, and say what could prove the view wrong."
+  default_prompt: "Use $serenity-skill to research this investment theme, compare supply-chain constraints and company earnings, and explain priorities with dated evidence and counterarguments."
 policy:
   allow_implicit_invocation: true
 dependencies:

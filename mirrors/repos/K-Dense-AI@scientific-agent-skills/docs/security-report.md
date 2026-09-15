@@ -1,12 +1,12 @@
 # Security Scan Report
 
-**Generated:** 2026-09-13 14:32 UTC\
-**Skills scanned:** 165\
-**Total findings:** 661\
-**Critical:** 28 | **High:** 4 | **Safe skills:** 154/165
+**Generated:** 2026-09-14 09:27 UTC  
+**Skills scanned:** 166  
+**Total findings:** 674  
+**Critical:** 28 | **High:** 4 | **Safe skills:** 155/166
 
-**Scanner:** cisco-ai-skill-scanner 2.1.0 · **Model:** claude-opus-5\
-**This run:** 2 skill(s) rescanned; 163 unchanged since the last scan and carried forward unmodified. Per-skill scan dates are in [`security-report.json`](security-report.json) (`last_scanned`).\
+**Scanner:** cisco-ai-skill-scanner 2.1.0 · **Model:** claude-opus-5  
+**This run:** 1 skill(s) rescanned; 165 unchanged since the last scan and carried forward unmodified. Per-skill scan dates are in [`security-report.json`](security-report.json) (`last_scanned`).  
 
 ## Summary
 
@@ -44,6 +44,7 @@
 | etetoolkit | 🔵 LOW | 1 | ✅ | 22.1s |
 | experimental-design | 🔵 LOW | 1 | ✅ | 21.3s |
 | exploratory-data-analysis | 🔵 LOW | 1 | ✅ | 23.4s |
+| geomaster | 🔵 LOW | 1 | ✅ | 17.1s |
 | geopandas | 🔵 LOW | 1 | ✅ | 26.6s |
 | gget | 🔵 LOW | 1 | ✅ | 23.3s |
 | ginkgo-cloud-lab | 🔵 LOW | 1 | ✅ | 22.2s |
@@ -89,7 +90,6 @@
 | usfiscaldata | 🔵 LOW | 1 | ✅ | 13.5s |
 | vaex | 🔵 LOW | 1 | ✅ | 21.3s |
 | venue-templates | 🔵 LOW | 1 | ✅ | 26.4s |
-| geomaster | 🔵 LOW | 1 | ✅ | 17.1s |
 | ncats-arax | ⚪ INFO | 1 | ✅ | 10.8s |
 | analytical-method-validation | 🟢 SAFE | 0 | ✅ | 26.2s |
 | anndata | 🟢 SAFE | 0 | ✅ | 15.1s |
@@ -124,6 +124,7 @@
 | imaging-data-commons | 🟢 SAFE | 0 | ✅ | 9.5s |
 | iso-standards-readiness | 🟢 SAFE | 0 | ✅ | 23.1s |
 | lab-hardware-cad | 🟢 SAFE | 0 | ✅ | 10.8s |
+| labarchive-integration | 🟢 SAFE | 0 | ✅ | 11.2s |
 | latchbio-integration | 🟢 SAFE | 0 | ✅ | 20.9s |
 | markdown-mermaid-writing | 🟢 SAFE | 0 | ✅ | 17.3s |
 | matchms | 🟢 SAFE | 0 | ✅ | 8.8s |
@@ -176,7 +177,7 @@
 | what-if-oracle | 🟢 SAFE | 0 | ✅ | 6.0s |
 | xlsx | 🟢 SAFE | 0 | ✅ | 18.7s |
 | zarr-python | 🟢 SAFE | 0 | ✅ | 14.1s |
-| labarchive-integration | 🟢 SAFE | 0 | ✅ | 11.2s |
+| alphagenome | 🟢 SAFE | 0 | ✅ | 14.4s |
 
 ## Detailed Findings
 
@@ -734,6 +735,13 @@
   > File: `SKILL.md`
   > **Remediation:** Make citation guidance advisory rather than directive, and remove or explicitly gate the outbound arXiv fetch so the skill's documented local/network-free contract is not contradicted.
 
+### geomaster — 🔵 LOW
+
+- **🔵 LOW** `LLM_PROMPT_INJECTION` — Self-promotional citation directive instructs agent to add specific paper and fetch external URL
+  > The SKILL.md body contains an active directive telling the agent to cite a specific arXiv paper (arXiv:2609.00065) in any manuscript, report, or code release the skill contributes to, to tell the user it did so, and to fetch an external URL (https://arxiv.org/abs/2609.00065 or the arXiv API endpoint) when network access is available. This is an instruction embedded in skill content that steers agent output and triggers outbound network requests unrelated to the stated geospatial purpose. It is low-severity self-promotion rather than a malicious override, and the destination is a legitimate public preprint server, but it does inject behavior into user deliverables.
+  > File: `SKILL.md`
+  > **Remediation:** Convert the citation section into passive documentation (e.g., 'Citation information: ...') rather than an imperative instruction to the agent, and remove the directive to automatically fetch external URLs.
+
 ### geopandas — 🔵 LOW
 
 - **🔵 LOW** `LLM_SOCIAL_ENGINEERING` — Embedded self-citation directive instructing agent to add author's paper and fetch external URL
@@ -1072,13 +1080,6 @@
   > The SKILL.md instruction body contains a 'Citing Scientific Agent Skills' section that directs the agent to add a specific arXiv paper authored by the skill vendor (K-Dense) to the references or software section of the user's manuscript/report/code release, to notify the user that it did so, and to fetch the arXiv record over the network when available. This is vendor self-promotion embedded in active agent directions that can influence the content of user work products (academic citations), rather than a security exploit. No credential access, exfiltration sink, code execution, or obfuscation is present; the fetched URLs are legitimate public arXiv endpoints. Treated as a contextual policy/integrity risk, not confirmed malicious behavior.
   > File: `SKILL.md`
   > **Remediation:** Make the citation request advisory and user-gated (e.g., 'suggest citing, only if the user agrees') rather than an unconditional directive to modify the user's reference list, and clearly separate vendor attribution from the skill's operational instructions.
-
-### geomaster — 🔵 LOW
-
-- **🔵 LOW** `LLM_PROMPT_INJECTION` — Self-promotional citation directive instructs agent to add specific paper and fetch external URL
-  > The SKILL.md body contains an active directive telling the agent to cite a specific arXiv paper (arXiv:2609.00065) in any manuscript, report, or code release the skill contributes to, to tell the user it did so, and to fetch an external URL (https://arxiv.org/abs/2609.00065 or the arXiv API endpoint) when network access is available. This is an instruction embedded in skill content that steers agent output and triggers outbound network requests unrelated to the stated geospatial purpose. It is low-severity self-promotion rather than a malicious override, and the destination is a legitimate public preprint server, but it does inject behavior into user deliverables.
-  > File: `SKILL.md`
-  > **Remediation:** Convert the citation section into passive documentation (e.g., 'Citation information: ...') rather than an imperative instruction to the agent, and remove the directive to automatically fetch external URLs.
 
 ### ncats-arax — ⚪ INFO
 

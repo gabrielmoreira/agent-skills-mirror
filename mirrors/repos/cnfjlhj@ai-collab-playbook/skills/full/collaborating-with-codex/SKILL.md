@@ -17,6 +17,14 @@ python scripts/codex_bridge.py --ssh "server-alias" --cd "/remote/project" --PRO
 
 **Output:** JSON with `success`, `SESSION_ID`, `agent_messages`, and optional `error`.
 
+## Collaboration Rules
+
+- Keep the current session responsible for scope, synthesis, final edits, and verification.
+- Delegate a bounded task with a concrete output contract such as a diff, diagnosis, or review note.
+- Avoid overlapping write scope between sessions unless the second session is review-only.
+- Start with read-only access; expand the sandbox only when the delegated task requires it.
+- Do not set model or profile overrides unless the user explicitly asked for them.
+
 ## Parameters
 
 ```

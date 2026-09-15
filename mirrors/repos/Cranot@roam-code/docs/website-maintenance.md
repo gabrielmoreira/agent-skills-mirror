@@ -13,7 +13,7 @@ layout. Homepage styles are scoped to `.home-page`; shared navigation, fonts,
 and the other pages still use `landing.css`. Keep homepage-only changes out of
 the shared stylesheet unless the change is deliberately site-wide.
 
-The checkout illustration has an optional native disclosure showing selected
+The checkout illustration has an open-by-default native disclosure showing selected
 fields from a real CLI run on a synthetic four-function project. Its full dated
 response is `data/examples/checkout-impact-2026-09-13.json` under the site source.
 `test_homepage_walkthrough_and_connection_example_execute` rebuilds that fixture,
@@ -23,6 +23,50 @@ synthetic scope, omitted-field label and full-response link visible. The small
 fixture's high relative-risk score is explained, not hidden or represented as
 production evidence. A future capture is a new observation; do not silently
 rewrite the dated one or turn a successful indexed traversal into runtime coverage.
+
+The hero's example link leads to that existing section; the map keeps its own
+explore link. Check both routes without JavaScript before adding another demo
+surface. A captured fixture demonstrates a command's output, not agent-workflow
+savings or detector accuracy on unfamiliar repositories.
+
+The compact answer beside the hero introduces the real fixture before the map.
+Keep it useful without JavaScript and link its capture and limits. The atlas
+remains a separate source-derived illustration, not that command's output.
+
+## Generated product facts and measurement records
+
+`scripts/build_site_product_facts.py` checks the site's bound current facts;
+`--write` regenerates them. It uses the existing count producer and
+`pyproject.toml`, plus `dev/site-product-policy.json` for adopted editorial offer
+policy. It emits `data/product-facts.json`, explicit `product-fact` markers,
+the concise `llms.txt` snapshot, and Audit offer structured data. No browser
+fetch is needed. Source version is not a fresh observation of PyPI or a
+reader's installation. Existing count scripts still own their established
+Markdown blocks, free-form counts, registry cards and install pins; this view
+does not create another registry count authority.
+
+Run the new generator after the existing count scripts. CI checks all three.
+Unknown/missing bindings, an empty required scope, or disagreement with the
+adopted SOW's tier scope, price or credit refuse generation. Availability
+transitions require a deliberate description and launch-evidence review;
+changing a state label alone is not a launch. A report being available means
+it can be requested, with scope, availability and written terms agreed before
+work—not that it is an in-stock SKU or can be bought online.
+
+For offer changes, review the SOW, legal overview, procurement packet and
+customer-journey templates together. Those written terms and correspondence
+are not silently rewritten by a marketing generator. Historical sample reports
+retain the windows and prices of their recorded or illustrative engagements.
+The binding check catches known shapes, not every possible contradiction in
+natural language; review the whole diff and search current offer wording too.
+
+`/measurements` is the public reading guide to runnable examples and historical
+records. Preserve engine/date/source identity, denominator, baseline, misses,
+and missing artifacts beside each result. The historical archive remains in
+`docs/measurements.md`; it is not a current performance promise. Do not promote
+private tables or a frozen-study claim into public reproducibility without a
+resolving artifact location. Tests of examples establish bounded behavior,
+not detector accuracy, human comprehension, agent outcomes or savings.
 
 ## Shared typography, navigation, and writing
 
@@ -447,6 +491,14 @@ legacy anchors, and executable examples in a temporary repository. The link
 checker covers internal destinations and fragments, not external availability.
 These checks do not certify the rendered layout, keyboard interactions, or
 screen-reader experience.
+
+The Press fact list is owned by `scripts/sync_surface_counts.py`, including
+its bold-number HTML and default-preset count. Test a changed count through the
+real check/write path, not just today's agreement between prose and source.
+`tests/test_press_count_sync.py` does this in an isolated copy. Keep historical
+measurements separate from current source counts, with their original evidence
+and scope; do not place unverified download or subsystem estimates under one
+"authoritative" heading. Installed-package identity is a separate observation.
 
 ### Search and sharing surfaces
 

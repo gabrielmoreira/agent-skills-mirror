@@ -70,6 +70,11 @@ AVAILABLE_THEMES = [
 PAGING_MODES = ['separator', 'auto-fit', 'auto-split', 'dynamic']
 
 
+def chromium_launch_kwargs() -> dict:
+    executable = os.environ.get('PLAYWRIGHT_CHROMIUM_EXECUTABLE')
+    return {'executable_path': executable} if executable else {}
+
+
 def parse_markdown_file(file_path: str) -> dict:
     """解析 Markdown 文件，提取 YAML 头部和正文内容"""
     with open(file_path, 'r', encoding='utf-8') as f:
@@ -147,13 +152,27 @@ def generate_cover_html(metadata: dict, theme: str, width: int, height: int) -> 
     emoji = metadata.get('emoji', '📝')
     title = metadata.get('title', '标题')
     subtitle = metadata.get('subtitle', '')
-    
-    # 限制标题和副标题长度
-    if len(title) > 15:
-        title = title[:15]
-    if len(subtitle) > 15:
-        subtitle = subtitle[:15]
-    
+
+    title_len = len(title)
+    if title_len <= 6:
+        title_size = int(width * 0.14)
+    elif title_len <= 10:
+        title_size = int(width * 0.12)
+    elif title_len <= 18:
+        title_size = int(width * 0.09)
+    elif title_len <= 30:
+        title_size = int(width * 0.07)
+    else:
+        title_size = int(width * 0.055)
+
+    subtitle_len = len(subtitle)
+    if subtitle_len <= 15:
+        subtitle_size = int(width * 0.067)
+    elif subtitle_len <= 30:
+        subtitle_size = int(width * 0.052)
+    else:
+        subtitle_size = int(width * 0.042)
+
     # 获取主题背景色
     theme_backgrounds = {
         'default': 'linear-gradient(180deg, #f3f3f3 0%, #f9f9f9 100%)',
@@ -231,7 +250,7 @@ def generate_cover_html(metadata: dict, theme: str, width: int, height: int) -> 
         
         .cover-title {{
             font-weight: 900;
-            font-size: {int(width * 0.12)}px;
+            font-size: {title_size}px;
             line-height: 1.4;
             background: {title_bg};
             -webkit-background-clip: text;
@@ -240,15 +259,18 @@ def generate_cover_html(metadata: dict, theme: str, width: int, height: int) -> 
             flex: 1;
             display: flex;
             align-items: flex-start;
-            word-break: break-all;
+            word-break: normal;
+            overflow-wrap: break-word;
         }}
         
         .cover-subtitle {{
             font-weight: 350;
-            font-size: {int(width * 0.067)}px;
+            font-size: {subtitle_size}px;
             line-height: 1.4;
             color: #000000;
             margin-top: auto;
+            word-break: normal;
+            overflow-wrap: break-word;
         }}
     </style>
 </head>
@@ -390,6 +412,11 @@ def generate_card_html(content: str, theme: str, page_number: int = 1,
         }}
         
         {theme_css}
+
+        .card-content :not(pre) > code {{
+            overflow-wrap: anywhere;
+            word-break: break-word;
+        }}
         
         .page-number {{
             position: absolute;
@@ -423,7 +450,7 @@ async def render_html_to_image(html_content: str, output_path: str,
                                dpr: int = 2):
     """使用 Playwright 将 HTML 渲染为图片"""
     async with async_playwright() as p:
-        browser = await p.chromium.launch()
+        browser = await p.chromium.launch(**chromium_launch_kwargs())
         
         # 设置视口大小
         viewport_height = height if mode != 'dynamic' else max_height
@@ -534,7 +561,7 @@ async def auto_split_content(body: str, theme: str, width: int, height: int,
     current_content = []
     
     async with async_playwright() as p:
-        browser = await p.chromium.launch()
+        browser = await p.chromium.launch(**chromium_launch_kwargs())
         page = await browser.new_page(
             viewport={'width': width, 'height': height * 2},
             device_scale_factor=dpr

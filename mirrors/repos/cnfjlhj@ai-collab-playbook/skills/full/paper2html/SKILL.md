@@ -7,59 +7,57 @@ description: Use when turning an academic paper PDF/arXiv/OpenReview page/local 
 
 ## Overview
 
-Create one self-contained Chinese `index.html` that lets the user read the page and understand the paper without reopening the PDF. Default style: clear Cheat-Sheet page, focused evidence, KaTeX formulas, no decorative complexity.
+Create one self-contained Chinese `index.html` that lets the reader understand the paper without reopening the PDF. Open with a compact, source-faithful story, then deliver a clear Cheat-Sheet page with evidence boundaries, KaTeX formulas, complete figure coverage, reviewer-level analysis, and no decorative complexity.
 
-Use scripts first. Keep this skill as workflow/quality gates, not a long prompt.
+Every completed page ends its substantive analysis with all seven MIT **Other Discussion Roles**. Each role shows the original English prompt verbatim and a source-grounded Chinese response.
+
+Use scripts first. Keep this skill as workflow and quality gates, not a long prompt.
 
 ## Scripted Path
 
 ```bash
 cd /path/to/paper2html
 
-# 1) Create workspace + source-boundary note + starter index.html
+# 1) Create workspace, notes, and starter index.html
 python scripts/bootstrap_paper2html.py \
   --title "Paper Title" \
   --slug paper-slug \
   --out /path/to/output/paper-slug-html-YYYYMMDD \
   --arxiv 2504.07952 \
   --github https://github.com/org/repo \
-  --publish-to self-evolving-agent/topic/paper-slug
+  --publish-to topic/series/paper-slug
 
-# 2) If TeX/source exists, create a structural inventory
+# 2) Inventory TeX/source when available
 python scripts/tex_inventory.py \
   /path/to/output/source/unpacked \
   --out /path/to/output/notes/tex-inventory.md \
   --json /path/to/output/notes/tex-inventory.json
 
-# 3) Optimize figures and get data URIs for single-file HTML
+# 3) Optimize figures and create data URIs for single-file HTML
 python scripts/optimize_paper_images.py \
   paper_figures/*.pdf paper_figures/*.png \
   --out-dir /path/to/output/assets/optimized \
   --width 1600 \
   --data-uri-json /path/to/output/assets/data-uris.json
 
-# 4) Optional but preferred: ask Gemini for a visual draft on a copy
+# 4) Optional: ask Gemini for a visual draft on a copy
 scripts/gemini_frontend_pass.sh \
   /path/to/output/index.html \
   --reference /path/to/good-reference.html \
   --timeout 240
 
-# To inspect the exact Gemini prompt and attached materials without spending a model call:
-scripts/gemini_frontend_pass.sh \
-  /path/to/output/index.html --dry-run
+# Inspect the Gemini request without making a model call
+scripts/gemini_frontend_pass.sh /path/to/output/index.html --dry-run
 
-# 5) Validate final HTML after Codex merges the useful visual changes and
-#    fills/repairs the paper details.
-scripts/validate_paper_html.sh \
-  /path/to/output/index.html --public
+# 5) Validate the completed page
+scripts/validate_paper_html.sh /path/to/output/index.html --public
 
-# 6) Optional: publish through a compatible research-page importer.
-#    Requires PAPER2HTML_BLOG_ROOT and a repo that provides `pnpm research:publish`.
+# 6) Optional publication through a compatible research-page importer
 PAPER2HTML_BLOG_ROOT=/path/to/blog \
 PAPER2HTML_PUBLIC_BASE_URL=https://example.com/research \
 scripts/publish_paper2html.sh \
   /path/to/output/index.html \
-  --to self-evolving-agent/topic/paper-slug \
+  --to topic/series/paper-slug \
   --title "Paper Title" \
   --description "One sentence summary" \
   --tags "paper-reading,agent" \
@@ -68,65 +66,62 @@ scripts/publish_paper2html.sh \
 
 ## Workflow
 
-1. **Freeze source boundary**
-   - Treat user input as a locator for one paper, then look for public adjacent artifacts: arXiv source/PDF, OpenReview, proceedings, project page, GitHub, appendix, dataset/model cards.
-   - Run `bootstrap_paper2html.py` when starting from a known title/arXiv/GitHub. Otherwise manually create the same `notes/source-boundary.md`.
-   - Separate **reading sources** from **public evidence sources**. Public pages must not expose local paths, private source filenames, review metadata, private prompts, or run logs.
-   - If public publishing is requested and no public paper source exists, generate private HTML only and do not publish.
+1. **Freeze the source boundary**
+   - Treat user input as a locator for one paper, then look for public adjacent artifacts: arXiv source/PDF, OpenReview, proceedings, project page, GitHub, appendix, dataset cards, and model cards.
+   - Run `bootstrap_paper2html.py` when starting from a known title, arXiv id, or GitHub repository. Otherwise manually create the same `notes/source-boundary.md`.
+   - Separate reading sources from public evidence sources. Public pages must not expose local paths, private filenames, review metadata, private prompts, or run logs.
+   - If public publishing is requested and no public paper source exists, generate private HTML only.
 
-2. **Extract material**
+2. **Extract the material**
    - Prefer TeX/source packages over PDF-only reading. Run `tex_inventory.py` when source exists.
-   - Build a paper material pack: metadata, outline, claims, notation, equations, algorithms, figure/table map, experiment map, appendix details, public links.
+   - Build a material pack covering metadata, outline, claims, notation, equations, algorithms, experiments, appendix details, and public links.
    - Use PDF rendering for visual verification and figure/table placement. `pdftotext` is only an auxiliary index.
-   - Before inserting any figure/table, record: original caption, page/source, what the visual/table itself shows, allowed HTML caption, and any nearby callout needed for broader interpretation.
-   - Extract reproducibility details: datasets, splits, models, baselines, metrics, prompts, tool/prover/solver versions, decoding, timeouts, retries, appendix-only settings.
+   - Record every discovered paper figure in `notes/figure-table-map.md`. For each item, capture its source/page, original caption, what the visual itself shows, and either the exact `data-figure` basename used in HTML or an explicit waiver reason.
+   - Include every paper figure by default. Figures that do not fit the main narrative go in a `完整图谱 / Figure Gallery` appendix section.
+   - Extract reproducibility details: datasets, splits, models, baselines, metrics, prompts, tool/prover/solver versions, decoding, timeouts, retries, and appendix-only settings.
 
-3. **Write the page**
-   - Use a two-stage authoring path when visual quality matters:
-     1. Codex builds the source-faithful content skeleton from the material pack.
-     2. Gemini produces a visual draft on `index.gemini-draft.html` with
-        `gemini_frontend_pass.sh`, using
-        `prompts/gemini-initial-html.md` as the initial prompt. The script
-        auto-attaches common notes from `<output>/notes/`: `material-pack.md`,
-        `tex-inventory.md`, `figure-table-map.md`, and `source-boundary.md`.
-     3. Codex manually merges the useful layout/style changes back into
-        `index.html`, then adds missing paper details, formulas, figures,
-        tables, evidence boundaries, and reviewer comments.
-   - Gemini may improve visual hierarchy, spacing, typography, callouts,
-     responsive behavior, and component composition. It must not become the
-     source of factual paper content.
-   - Use the fixed section order unless the paper demands a small adjustment:
-     `先给结论`, `研究动机`, `数学表示及建模`, `算法流程/方法`, `实验设计`, `实验结果`, `我的评论`, `One More Thing`, `Reference / Evidence`.
-   - Add a short version note near the top: reading basis and retrieval date, without local paths.
-   - Write as deep-reading Cheat-Sheet, not abstract translation. The page should recover motivation, modeling, method, experiments, results, and reviewer-level caveats.
+3. **Ground against the human knowledge boundary**
+   - Before writing, complete `notes/grounding-anchor.md` using public sources beyond the focal paper's related-work section.
+   - Record: the prior human knowledge boundary with `solved / partially solved / unsolved` status and public links; the paper's real contribution relative to that boundary; and a short writing anchor showing which sections establish the contribution versus repeat source-faithful background.
+   - If a claim rests only on model memory, mark it as unverified. Do not manufacture novelty for incremental work; for surveys, describe the organizational contribution.
+   - The grounding anchor is an internal working note. Public links used from it must also appear in `Reference / Evidence`.
+
+4. **Write the page**
+   - Use `assets/cheatsheet-template.html` as the visual skeleton and organize the page around the grounding anchor's real-contribution statement, not the paper's narrative order alone.
+   - Use the fixed section order unless the paper requires a small adjustment: `先讲一个故事`, `故事与技术如何对应`, `先给结论`, `研究动机`, `数学表示及建模`, `算法流程/方法`, `实验设计`, `实验结果`, `我的评论`, `One More Thing`, `Other Discussion Roles / 其他讨论角色`, `Reference / Evidence`.
+   - Open with a compact protagonist/system, goal, obstacle, insufficient obvious explanation, and the paper's turning point. Prefer a sourced discovery or experiment; otherwise label the opening as a thought experiment or teaching analogy. Never invent author dialogue, motivation, chronology, or results.
+   - Follow the story with a short bridge mapping its actors and conflict to the paper's actual concepts, method, and evidence, clearly distinguishing analogy from source fact.
+   - Add a short version note near the top with reading basis and retrieval date, without local paths.
    - Bind each major claim to evidence and state boundaries when evidence does not support a stronger conclusion.
    - Use Chinese by default; keep paper terms, model names, datasets, commands, and identifiers in English.
    - Use KaTeX for all math. Inline math uses `\(...\)` or `$...$`; block math uses `$$...$$` or `\[...\]`.
-   - Figure/table captions are evidence-local: captions may only claim what the displayed visual/table itself shows. Broader interpretation goes in a nearby callout.
+   - Captions may claim only what the displayed figure/table itself shows. Put broader interpretation in a nearby callout.
+   - Mark every included paper figure as `<figure data-figure="basename.ext">`.
    - `One More Thing` is for bounded research insight, not unsupported extrapolation.
+   - Read `references/other-discussion-roles.md` and follow its rendering contract. The discussion-role section is mandatory, is the final substantive section, and may be followed only by `Reference / Evidence`.
+   - Include all seven roles exactly once and in source order: `Scientific Peer Reviewer`, `Archaeologist`, `Academic Researcher`, `Industry Practitioner`, `Hacker`, `Private Investigator`, `Social Impact Assessor`.
+   - Preserve every role's complete English prompt and exact `data-discussion-role` marker. Responses must perform the prompt rather than summarize it, distinguish facts from hypotheses, and never fabricate newer papers, author history, implementation runs, product facts, or impact claims.
+   - Do not contact authors or any external person without explicit user approval, even though the preserved Private Investigator prompt mentions contact.
 
-4. **Reference policy**
-   - Public page: `Reference / Evidence` contains only public online links.
-   - Do not include `/home/...`, `main.tex`, `sections/...`, `appendices/...`, private PDF paths, hidden prompts, unpublished logs, or private run roots.
-   - If no public source exists, say the page is private-only and do not publish.
+5. **Use the optional Gemini visual pass carefully**
+   - `gemini_frontend_pass.sh` writes `index.gemini-draft.html`; it must never edit the source HTML.
+   - Gemini may improve hierarchy, spacing, typography, callouts, responsive behavior, and component composition. It is not a factual source.
+   - The script attaches the source boundary, material pack, TeX inventory, figure map, and grounding anchor when present. It requires preservation of role markers, verbatim prompts, figure markers, and evidence boundaries.
+   - The primary agent must review and selectively merge useful visual changes back into `index.html`.
 
-5. **Validate**
+6. **Validate**
    - Run `scripts/validate_paper_html.sh <index.html>` from this skill.
-   - It checks: file exists, no placeholders, no local-path leaks in public mode, KaTeX initializes, no `katex-error`, desktop screenshot, mobile screenshot, no mobile horizontal overflow.
-   - If `index.gemini-draft.html` was created, compare it against `index.html`
-     and merge only design improvements that preserve source-faithful content.
-   - For user-visible artifacts, deliver through the active collaboration channel when the host environment supports file delivery; otherwise provide the local path and validation result.
+   - It checks placeholders, public-path leaks, all seven role markers and verbatim prompts, response substance, final-section order, figure inventory/waiver coverage, KaTeX rendering, desktop/mobile screenshots, and mobile horizontal overflow.
+   - Treat skipped browser checks as partial verification, not a full pass.
+   - Deliver user-visible artifacts through the active collaboration channel when supported, and report the validation result.
 
-6. **Publish**
-   - For repositories with a compatible `pnpm research:publish` command, use the optional one-step publisher:
-     `PAPER2HTML_BLOG_ROOT=/path/to/blog scripts/publish_paper2html.sh <index.html> --to=<topic/series/slug> --title="..." --description="..." --tags="..." --ship`
+7. **Publish**
+   - The optional publisher requires a target repository with a compatible `pnpm research:publish` command and `PAPER2HTML_BLOG_ROOT`.
    - Use `--check` for import plus local validation without commit/push.
-   - `--ship` runs: paper HTML validation, public evidence guard, import, Prettier formatting of touched research files, `format:check`, lint, build, commit, push, deploy-workflow watch, and remote URL verification.
-   - The publisher calls the target repo's `pnpm research:publish` control script, so the target repo owns staging, commit, and deploy behavior.
-   - If a remote deploy check is not needed, pass `--no-watch` or `--no-remote-verify`.
-   - Do not commit or push unless the user explicitly asks for git history updates.
+   - `--ship` validates, imports, formats, checks, commits, pushes, watches deployment, and verifies the public URL. Use it only when the user explicitly requested those history and remote changes.
+   - The target repository owns staging, commit, and deployment behavior.
 
 ## Template
 
-- `assets/cheatsheet-template.html` is the fixed visual skeleton. Copy it into the output directory when starting a new page, then fill content and embed images.
-- Keep the template simple. Do not turn paper pages into a marketing landing page.
+- `assets/cheatsheet-template.html` is the fixed visual skeleton. Copy it into the output directory, then fill content and embed images.
+- Keep the template restrained and reading-focused. Do not turn paper pages into marketing landing pages.

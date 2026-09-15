@@ -49,28 +49,38 @@ Observe once, act once, then verify.
 3. `get_app_state` defaults to a text-first summary (macOS AX / Windows
    UIA / Linux AT-SPI / HarmonyOS uitest) with controls, values, actions,
    layout, element indices and a `state_id`. Start here without a screenshot,
-   whether or not the model supports vision. Use `detail:"full"` for nested
-   menus and tree structure; `compact` remains a summary alias. Missing labels
-   or values mean unknown content, not something to guess.
-4. If the tree contains the target, act on the element: `perform_action`
-   (AXPress/Invoke/click…), `set_value` for editable fields, element click.
+   whether or not the model supports vision. Pass `query`, `role`, `limit`
+   and `offset` instead of dumping the whole tree — truncated dumps hide the
+   title and search field. `detail:"compact"` is smaller (same indices,
+   shorter labels). `detail:"full"` adds nested menus and tree paths.
+   `find_elements` searches a cached `state_id` or observes now. Missing
+   labels or values mean unknown content, not something to guess. `get_value`
+   reads one field live.
+4. If the tree contains the target, act on the element: `focus` then `type`
+   or `key` for composers, `set_value` for ordinary fields, `perform_action`
+   (AXPress/Invoke/click…) for advertised actions, element click. Newlines in
+   `type` are Return/Enter; `press_enter:true` sends after the text. Never
+   expect `\\n` to send a chat message. `run_actions` batches up to 8 steps
+   (click → type → key return → get_value).
    macOS provides background element actions; Linux AT-SPI support depends
    on the control. Windows currently refuses scoped semantic mutations.
    Windows and Linux are development backends: do not assume their raw
    input is background-safe or that native Pause/Stop controls are available.
 5. When accessibility cannot read visible text, macOS supports
-   `get_app_state({app_ref, include_ocr:true})`. This explicitly captures the
-   selected app window and recognizes text locally, without a vision model or
-   remote service. Check `ocr.status`; recognized blocks include confidence,
-   pixel bounds and ready-to-use coordinate targets. OCR text is not a control
-   role or an advertised action. Verify uncertain text and observe again after
-   changes. Other platforms return an explicit unavailable status while keeping
-   their accessibility state usable. A text-only model must not infer unlabeled
-   icons, charts or other graphical meaning from OCR or a screenshot file path.
-   With vision, when accessibility cannot express the target: `screenshot` (optionally
-   `zoom` for small targets) and act with a coordinate target. Coordinates are
-   pixels **in the latest returned raster** for that computer; the server maps
-   them to screen points. After a new screenshot, old pixels are stale.
+   `get_app_state({app_ref, include_ocr:true})`. Pass `ocr_region:[x,y,w,h]`
+   in screen points to recognize one rect instead of the whole window. This
+   captures locally, without a vision model. Check `ocr.status`; recognized
+   blocks include confidence, pixel bounds and ready-to-use coordinate
+   targets. OCR text is not a control role or an advertised action. Verify
+   uncertain text and observe again after changes. Other platforms return an
+   explicit unavailable status while keeping their accessibility state usable.
+   A text-only model must not infer unlabeled icons, charts or other graphical
+   meaning from OCR or a screenshot file path.
+   With vision, when accessibility cannot express the target: `screenshot`
+   (optionally `zoom` for small targets) and act with a coordinate target.
+   Default coordinates are pixels **in the latest returned raster**. Pass
+   `space:"screen"` to send absolute screen points from the AX tree and skip
+   conversion. After a new screenshot, old raster pixels are stale.
    If the host reports an omitted or oversized image, capture a smaller app
    window/region or zoom, then use that returned raster. Do not guess from a
    file path or reuse coordinates from an image the model never received.
@@ -92,9 +102,11 @@ Observe once, act once, then verify.
   (`state_wrong_computer`).
 - Coordinate: `{"type":"coordinate","x":496,"y":331}` — pixels from the latest
   raster only; submit `x`/`y` unchanged, never transform them yourself.
-  `zoom` returns a bindable raster of its own: after zooming, coordinates are
-  pixels in the zoomed image. Points outside the bound raster fail
-  `target_outside_raster` instead of landing somewhere unintended.
+  `{"type":"coordinate","x":100,"y":200,"space":"screen"}` is an absolute
+  screen point (what AX `position` uses). `zoom` returns a bindable raster of
+  its own: after zooming, raster coordinates are pixels in the zoomed image.
+  Points outside the bound raster fail `target_outside_raster` instead of
+  landing somewhere unintended.
 - Never translate pixels into an element target; never invent `state_id`s.
 
 ## Raw input reality (read before clicking)
@@ -102,20 +114,25 @@ Observe once, act once, then verify.
 - macOS: call `open_application` with `activate:false` to bind input to the
   intended process, even when the app is already running; pass `pid` when two
   processes share a bundle id. Then the two halves behave differently:
-  - **Keyboard and element actions are quiet.** `type`, `key`, `set_value`,
-    `select_text` and `perform_action` reach the bound process without moving
-    the pointer or changing the foreground. Prefer them. Text entry uses writable
-    accessibility selection when available; verify the resulting value.
-    `get_app_state`, `list_windows` and `screenshot` default to the selected app.
+  - **Keyboard and element actions are quiet.** `type`, `key`, `focus`,
+    `set_value`, `get_value`, `select_text` and `perform_action` reach the
+    bound process without moving the pointer or changing the foreground.
+    Prefer them. Text entry uses writable accessibility selection when
+    available; verify the resulting value. `get_app_state`, `list_windows`
+    and `screenshot` default to the selected app.
   - **Background mode never takes the shared pointer.** A coordinate
     `left_click` first tries the bound application's accessibility action,
-    including field focus and row selection. `right_click` uses advertised
-    context-menu actions. `scroll` uses the target's accessibility scrollbar;
-    prefer a scroll-area element and read the receipt's unit and value change.
-    Raw double/triple/middle click, drag and hover fail with
+    including focusing a field that is not AXPressable. `right_click` uses
+    advertised context-menu actions. `scroll` uses the target's accessibility
+    scrollbar; prefer a scroll-area element and read the receipt's unit and
+    value change. If accessibility cannot act, `strategy:"app"` posts a
+    pointer event only when the point is inside the bound app's window, then
+    restores the cursor — not a global desktop click. Raw double/triple/middle
+    click, drag, hover, and `strategy:"event"` fail with
     `shared_pointer_required` before moving the cursor. Missing semantic
-    scrolling or context-menu support is a refusal, never permission to activate.
-    Use another advertised accessibility action or a separate computer.
+    scrolling or context-menu support is a refusal, never permission to
+    activate. Use `strategy:"app"`, another advertised accessibility action,
+    or a separate computer.
   - Shared-desktop gestures and foreground keyboard delivery require explicit
     user authorization for exclusive desktop use, followed by
     `open_application(activate:true)`. Do not select it merely to work around a
@@ -145,8 +162,12 @@ Observe once, act once, then verify.
 ## Keyboard
 
 - macOS uses `cmd` (`cmd+c`), Linux/Windows use `ctrl` (`ctrl+c`).
-- `key` for chords and repeats, `hold_key` for a duration, `type` for text.
-- Prefer `set_value` on editable elements over typing.
+- `key` is the key-press tool: `return`, `enter`, `backspace`, `tab`,
+  `escape`, chords and repeats. `hold_key` holds for a duration.
+- `type` sends unicode. Newlines and `press_enter` become Return; they do
+  not insert a literal line break or U+FFFC.
+- Prefer `set_value` on ordinary fields; prefer `focus` then `type`/`key`
+  on chat composers.
 
 ## Recording
 

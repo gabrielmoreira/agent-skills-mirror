@@ -82,7 +82,8 @@ cd /path/to/parent  # e.g., if repo is at ~/projects/skills, be in ~/projects
 | Plugin | Description |
 |--------|-------------|
 | [constant-time-analysis](plugins/constant-time-analysis/) | Detect compiler-induced timing side-channels in cryptographic code |
-| [mutation-testing](plugins/mutation-testing/) | Configure mewt/muton mutation testing campaigns — scope targets, tune timeouts, optimize long runs |
+| [mutation-testing](plugins/mutation-testing/) | Configure mutation testing, analyze surviving mutants, and investigate bugs in weakly tested code |
+| [post-patch-validation](plugins/post-patch-validation/) | Help patch authors find missed variants and regressions, with reproducible failures and explicit validation gaps |
 | [property-based-testing](plugins/property-based-testing/) | Write, review, and triage property-based tests — Hypothesis, fast-check, proptest, and Echidna or Medusa for Solidity invariants |
 | [spec-to-code-compliance](plugins/spec-to-code-compliance/) | Check code against the documentation that specifies it, across contracts, C/C++, services, and firmware |
 | [writing-lean-proofs](plugins/writing-lean-proofs/) | Write structured Lean 4 proofs and design Lean libraries following Mathlib conventions |
@@ -114,7 +115,8 @@ cd /path/to/parent  # e.g., if repo is at ~/projects/skills, be in ~/projects
 | [modern-cpp](plugins/modern-cpp/) | Modern C++ best practices (C++20/23/26) with compiler hardening and safe idioms |
 | [modern-python](plugins/modern-python/) | Modern Python tooling and best practices with uv, ruff, and pytest |
 | [open-sourcing](plugins/open-sourcing/) | Prepare a repository for public release: secrets hygiene, licensing, CI readiness, and release automation |
-| [second-opinion](plugins/second-opinion/) | Run code reviews using external LLM CLIs (OpenAI Codex, Google Antigravity) on changes, diffs, or commits. Bundles Codex's built-in MCP server. |
+| [review-walkthrough](plugins/review-walkthrough/) | Generate an interactive walkthrough of branch changes with ordered diffs, explanations, and anchored review findings |
+| [second-opinion](plugins/second-opinion/) | Get independent reviews from Codex or Antigravity for uncommitted changes, branch diffs, and commits |
 
 ### Team Management
 

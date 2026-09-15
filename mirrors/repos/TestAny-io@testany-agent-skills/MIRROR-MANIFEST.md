@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `TestAny-io/testany-agent-skills` — 26 default patterns, 0 followed patterns, 35 file(s) materialized.
+Mirror of `TestAny-io/testany-agent-skills` — 26 default patterns, 1 followed patterns, 38 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `TestAny-io/testany-agent-skills` — 26 default patterns, 0 followed 
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 0 |
-| Files         | 35 |
+| Followed pats | 1 |
+| Files         | 38 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,7 +51,7 @@ Mirror of `TestAny-io/testany-agent-skills` — 26 default patterns, 0 followed 
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-_None._
+- `docs/plugin-development.md`
 
 ## File Index
 
@@ -87,13 +87,16 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 26 | ✓ | [`plugins/testany-eng/skills/prototype-designer/SKILL.md`](plugins/testany-eng/skills/prototype-designer/SKILL.md) |
 | 27 | ✓ | [`plugins/testany-eng/skills/prototype-reviewer/SKILL.md`](plugins/testany-eng/skills/prototype-reviewer/SKILL.md) |
 | 28 | ✓ | [`plugins/testany-eng/skills/runbook-writer/SKILL.md`](plugins/testany-eng/skills/runbook-writer/SKILL.md) |
-| 29 | ✓ | [`plugins/testany-eng/skills/test-reviewer/SKILL.md`](plugins/testany-eng/skills/test-reviewer/SKILL.md) |
-| 30 | ✓ | [`plugins/testany-eng/skills/test-spec-writer/SKILL.md`](plugins/testany-eng/skills/test-spec-writer/SKILL.md) |
-| 31 | ✓ | [`plugins/testany-eng/skills/test-strategy-reviewer/SKILL.md`](plugins/testany-eng/skills/test-strategy-reviewer/SKILL.md) |
-| 32 | ✓ | [`plugins/testany-eng/skills/test-strategy-writer/SKILL.md`](plugins/testany-eng/skills/test-strategy-writer/SKILL.md) |
-| 33 | ✓ | [`plugins/testany-eng/skills/uc-interviewer/SKILL.md`](plugins/testany-eng/skills/uc-interviewer/SKILL.md) |
-| 34 | ✓ | [`plugins/testany-llm/skills/prompt-optimizer/SKILL.md`](plugins/testany-llm/skills/prompt-optimizer/SKILL.md) |
-| 35 | ✓ | [`plugins/testany-mrkt/skills/media-writer/SKILL.md`](plugins/testany-mrkt/skills/media-writer/SKILL.md) |
+| 29 | ✓ | [`plugins/testany-eng/skills/skill-manager/SKILL.md`](plugins/testany-eng/skills/skill-manager/SKILL.md) |
+| 30 | ✓ | [`plugins/testany-eng/skills/test-reviewer/SKILL.md`](plugins/testany-eng/skills/test-reviewer/SKILL.md) |
+| 31 | ✓ | [`plugins/testany-eng/skills/test-spec-writer/SKILL.md`](plugins/testany-eng/skills/test-spec-writer/SKILL.md) |
+| 32 | ✓ | [`plugins/testany-eng/skills/test-strategy-reviewer/SKILL.md`](plugins/testany-eng/skills/test-strategy-reviewer/SKILL.md) |
+| 33 | ✓ | [`plugins/testany-eng/skills/test-strategy-writer/SKILL.md`](plugins/testany-eng/skills/test-strategy-writer/SKILL.md) |
+| 34 | ✓ | [`plugins/testany-eng/skills/uc-interviewer/SKILL.md`](plugins/testany-eng/skills/uc-interviewer/SKILL.md) |
+| 35 | ✓ | [`plugins/testany-eng/tests/b4-followup/code-review-assets/workspace/AGENTS.md`](plugins/testany-eng/tests/b4-followup/code-review-assets/workspace/AGENTS.md) |
+| 36 | ✓ | [`plugins/testany-llm/skills/prompt-optimizer/SKILL.md`](plugins/testany-llm/skills/prompt-optimizer/SKILL.md) |
+| 37 | ✓ | [`plugins/testany-mrkt/skills/media-writer/SKILL.md`](plugins/testany-mrkt/skills/media-writer/SKILL.md) |
+| 38 | → | [`docs/plugin-development.md`](docs/plugin-development.md) |
 
 ---
 

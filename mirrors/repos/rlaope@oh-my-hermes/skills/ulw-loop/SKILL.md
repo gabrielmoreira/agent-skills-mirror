@@ -51,6 +51,7 @@ Bad example:
 
 ## Recovery Notes
 
+- Prefer the native `omh_loop` tool when the plugin is loaded: assess, start, status, feedback, permit, run_once, goal_driver_observe, and queue_observe reach the same loop_cycle/v2 state, and a mutation submits the record_revision that status reported. Where it is absent, the same lifecycle is `omh loop assess|start|status|feedback|permit|run-once|goal-driver-observe|queue observe`, and every other Loop surface stays on that CLI.
 - If a queued tick is pending, show it as prepared queue state and use loop status/run-once before claiming progress.
 - If feedback is unclear, ask one gate question or route back to research/plan rather than advancing the loop.
 - If the goal turns into external waiting, record the waiting state and next observable signal instead of continuing locally.

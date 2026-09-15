@@ -21,6 +21,14 @@ sources:
   - title: 成唯識論
     cbeta_id: T31n1585
     fojin_text_id: 44
+  - title: 教觀綱宗
+    cbeta_id: T46n1939
+    fojin_text_id: 8109
+  - title: 靈峰宗論
+    cbeta_id: J36nB348
+  - title: 成唯識論觀心法要
+    cbeta_id: X51n0824
+    fojin_text_id: 12717
 citation_format: "【《{title}》卷{juan}，{cbeta_id}】"
 verified_by: xr843
 verified_at: 2026-04-06

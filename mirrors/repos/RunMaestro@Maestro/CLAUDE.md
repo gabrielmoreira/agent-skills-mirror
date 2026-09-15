@@ -77,6 +77,7 @@ Grep-verified 2026-09-04 (`npm run docs:verify` re-checks every path). This is t
 - **Modifier-key display text:** `formatKey()`, `formatShortcutKeys()` in `src/renderer/utils/shortcutFormatter.ts`
 - **Advertising a shortcut next to the control that fires it:** `ShortcutHint`, `shortcutSuffix(keys)` in `src/renderer/components/ui/ShortcutHint.tsx`
 - **Whether a chord may be bound at all:** `findReservedShortcutCombo(keys)`, `RESERVED_SHORTCUT_COMBOS` in `src/shared/shortcutKeys.ts`
+- **Whether a keystroke belongs to a text field (guard before `preventDefault`):** `isTextInputTarget()`, `isTextEntryTarget()` in `src/renderer/utils/messageScrollNavigation.ts`; `isEditingTextTarget()`, `isEditingTextFocused()` in `src/renderer/utils/editableTarget.ts`
 - **How much of the keyboard the user has mastered:** `collectBoundShortcuts(...maps)`, `countUsedBoundShortcuts(bound, usedIds)` in `src/renderer/constants/keyboardMastery.ts`
 - **Naming the OS file manager in copy:** `getFileManagerName(platform)`, `fileManagerName()` in `src/renderer/utils/platformUtils.ts`
 - **Color math and contrast:** `readableTextOn()`, `isReadableOn()` in `src/shared/colorContrast.ts`
@@ -140,6 +141,7 @@ Grep-verified 2026-09-04 (`npm run docs:verify` re-checks every path). This is t
 - **Opening the expanded staged-image organizer:** `requestOpenStagedImagesOrganizer()`, `OPEN_STAGED_IMAGES_ORGANIZER_EVENT` in `src/renderer/services/stagedImagesOrganizer.ts`
 - **A text box that narrows a list:** `resultLabel`, `AutoRunSearchBar` in `src/renderer/components/ui/FilterInput.tsx`
 - **A pane that reads and edits a markdown document:** `generateProseStyles({ theme, scopeSelector })`, `focus` in `src/renderer/components/FilePreview/markdownEditor`
+- **Rendering a surface containing `<MarkdownEditor>` in a test:** `markdownEditorModuleMock()` in `src/__tests__/helpers/mockMarkdownEditor.tsx` (CM6 cannot lay itself out in jsdom)
 - **`{{template}}` variable autocomplete:** `useTemplateAutocompleteEngine()`, `useTemplateAutocomplete()` in `src/renderer/hooks/input/useTemplateAutocompleteEngine.ts`
 - **Keyboard navigation in a `<DualPaneFileEditor>` list:** built in; `onDeleteItem`, `autoFocusList`, `listFocusToken` props
 - **Segmented toolbar (sort/filter pill bar):** `borderLeft`, `variant` in `src/renderer/components/ui/SegmentedControl.tsx`

@@ -15,7 +15,7 @@ Run the full `pageclaw-batch` pipeline on bundled fixtures and produce a test re
 ## Fixtures
 
 - **Style matrix:** `skills/pageclaw-batch-test/fixtures/style-matrix-test.yaml`
-- **Page-story:** `skills/pageclaw-test/fixtures/page-story-test.md` (shared with pageclaw-test)
+- **Page-story:** `skills/pageclaw-test/fixtures/page-story-test.md` (bundled shared fixture)
 
 Read both files at the start. These are the only inputs for the entire test run.
 

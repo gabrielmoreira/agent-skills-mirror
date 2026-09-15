@@ -8,7 +8,7 @@ PyYAML>=6.0
 playwright>=1.40.0
 
 # 小红书发布
-xhs>=0.4.0
+xhs==0.2.13
 
 # 环境变量管理
 python-dotenv>=1.0.0

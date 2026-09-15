@@ -110,7 +110,7 @@ If this self-review changes files, rerun the affected tests or lint for those fo
 
 ### Stage 6: Synthesize and present
 
-Assemble the final report. **Default:** human-readable markdown. **`mode:agent`:** skip markdown and emit JSON (see ### JSON output format); the structured fields are how a downstream agent consumes the review. Put `---` before the verdict in markdown mode.
+Assemble the final report. **Default:** human-readable markdown. **`mode:agent`:** skip markdown and emit JSON (see ## JSON output format in `references/modes-and-output.md`); the structured fields are how a downstream agent consumes the review. Put `---` before the verdict in markdown mode.
 
 **Report completion check:** do not finish until stable `#` identifiers appear on every primary finding, the report contains `### Actionable Findings`, `### Coverage`, and `### Verdict` (or their exact JSON fields in `mode:agent`), and the run artifacts named at the end of this reference are on disk: `report.md` in default mode, `review.json` in `mode:agent`, and `metadata.json` in both. Coverage must name the cross-model outcome and validator shortcut/batch outcome. The Actionable section must include every `downstream-resolver` finding; never silently replace it with a count.
 
@@ -136,16 +136,14 @@ Write the human-readable findings through the `ce-noslop` skill. Preserve exact 
 2. **Applied (explicit local apply only).** When Stage 5c applied fixes, list them first, before the findings, in an Applied section (see review output template). Each entry carries `#`, file, the fix, and reviewer (a multi-file fix is one row with one `#`), then a one-line validation outcome (e.g. "pin tests 4 -> 6; suite 94 pass, lint clean") and commit status (committed on a clean tree as `fix(review): …` or the repo's nearest convention, or left uncommitted for the user on a dirty one). Flag green-but-unverifiable edits (auth/contract/concurrency) prominently. Omit this section when local apply was not authorized or nothing was applied. Applied findings appear here, not in the severity tables.
 2b. **Triage Groups.** When finalized `triage_groups` exist (after validation in Stage 5b step 5 and after apply in Stage 5c), render a `### Triage Groups` section before the findings as a compact table (`| Group | Findings | Context | Preferred Resolution | Why |`); a table fits this content well. The `Findings` cell lists the stable `#`s it covers; the resolution names the order/dependency. **Mark whether each group is an apply-queue or a decision-gate** (a group of mechanical fixes an automated fixer can apply, or a group that needs a design decision first, so the fixer stops there). Every referenced `#` must appear in the findings below; groups supplement the findings, never replace them. Omit the section when `grouping:off` is active or no groups survived. In `mode:agent` this section is carried by the `triage_groups` JSON field instead.
 3. **Findings.** Grouped by severity (`### P0 -- Critical`, `### P1 -- High`, `### P2 -- Moderate`, `### P3 -- Low`), rendered per the per-finding direction above and consistent within the section. Show the decision-vs-mechanical split where it helps the actor (flag the design calls). Omit empty severity levels. Finding numbers come from the stable assignment in Stage 5 -- never re-derive them per severity section or triage group.
-4. **Requirements Completeness.** Include only when a plan was found in Stage 2b (Plan discovery). For each requirement (R1, R2, etc.) and implementation unit in the plan, report whether corresponding work appears in the diff. Use a simple checklist: met / not addressed / partially addressed. Routing depends on `plan_source`:
-   - **`explicit`** (caller-provided or PR body): Flag unaddressed requirements or implementation units as P1 findings with `autofix_class: manual`, `owner: downstream-resolver`. These enter the actionable queue.
-   - **`inferred`** (auto-discovered): Flag unaddressed requirements or implementation units as P3 findings with `autofix_class: advisory`, `owner: human`. These stay in the report only, with no autonomous follow-up. An inferred plan match is a hint, not a contract.
+4. **Requirements Completeness.** Include only when a plan was found in Stage 2b (Plan discovery). For each requirement (R1, R2, etc.) and implementation unit in the plan, report whether corresponding work appears in the diff. Use a simple checklist: met / not addressed / partially addressed. Unaddressed requirements or implementation units are findings routed by `plan_source` under the rule in the Plan Requirements Completeness section of `references/intent-and-plan.md` (explicit: P1 `manual` / `downstream-resolver`, into the actionable queue; inferred: P3 `advisory` / `human`, report only).
    Omit this section entirely when no plan was found; do not mention the absence of a plan.
 5. **Actionable Findings.** Include when the actionable queue is non-empty: findings the caller should address (`gated_auto` / `manual` with `downstream-resolver`), plus anything Stage 5c chose not to apply. When local apply ran, findings already applied appear in the Applied section, not here.
 6. **Pre-existing.** Separate section, does not count toward verdict.
 7. **Learnings & Past Solutions.** Show the `learnings-researcher` results that are not findings: relevant past solutions, and matched pack rules with no violating line, as "Known Pattern" notes with links to `<root>/solutions/` files or the `(pack: <id>, <path within the pack>)` citation. A pack rule the diff contradicts entered the finding set in Stage 5 and appears in the findings tables, not here; one violated only by unchanged code sits in the pre-existing section, not here.
 8. **Agent-Native Gaps.** Show `agent-native-reviewer` local-prompt results. Omit section if no gaps found.
 9. **Deployment Notes.** If the `deployment-verification-agent` local prompt ran, show the key Go/No-Go items: blocking pre-deploy checks, the most important verification queries, rollback caveats, and monitoring focus areas. Keep the checklist actionable rather than dropping it into Coverage. Schema drift appears in the findings tables as `data-migration` P1 rows; do not add a separate Schema Drift section.
-10. **Coverage.** Applied count (when Stage 5c ran), suppressed count by anchor (e.g., "N findings suppressed at anchor 50, M at anchor 25"), mode-aware demotion count, validator outcome counts and reasons (when Stage 5b ran) broken out as confirmed, rejected, unresolved, malformed, failed, and shortcut-skipped, plus any protected-subject reclassification, any P0/P1 with degraded validation (kept on validator infrastructure failure), residual risks, testing gaps, failed/timed-out reviewers, and inferred-intent uncertainty when applicable. When the Stage 3c (Small-diff fast path) lite roster ran, state it and the reduced reviewer set (so the narrower coverage is visible). When Stage 5b skipped validators for quote-anchored cross-model-corroborated findings, state how many and name that evidence basis; also state the one-batch result for every remaining selected finding, and whether the verdicts landed or the wait's bound was exceeded. When the Stage 5 step 3 quote-the-line check demoted any 75/100 finding for missing `first_evidence`, record that count alongside `first_evidence_backfilled` (including zero). When no plan was discovered in Stage 2b (or discovery was ambiguous and skipped), note that settlement suppression was not evaluated. When the plan was `plan_source: inferred` and Stage 5 step 2 (Settled decisions) discarded findings, note the inferred source and count of preference findings suppressed. **Removable surface (only when deletion-oriented maintainability findings exist):** one line giving the approximate net lines/files those findings would remove if applied (e.g., "Removable surface: ~120 lines / 2 files across findings #4, #7"). This is a dead-weight signal, **not** a reduction target: never lower the bar for a finding or invent deletions to grow the number, and omit the line entirely when no finding proposes a deletion.
+10. **Coverage.** Applied count (when Stage 5c ran), suppressed count by anchor (e.g., "N findings suppressed at anchor 50, M at anchor 25"), mode-aware demotion count, validator outcome counts and reasons (when Stage 5b ran) broken out as confirmed, rejected, unresolved, malformed, failed, and shortcut-skipped, plus any protected-subject reclassification, any P0/P1 with degraded validation (kept on validator infrastructure failure), residual risks, testing gaps, failed/timed-out reviewers, and inferred-intent uncertainty when applicable. When Stage 5b skipped validators for quote-anchored cross-model-corroborated findings, state how many and name that evidence basis; also state the one-batch result for every remaining selected finding, and whether the verdicts landed or the wait's bound was exceeded. When the Stage 5 step 3 quote-the-line check demoted any 75/100 finding for missing `first_evidence`, record that count alongside `first_evidence_backfilled` (including zero). When no plan was discovered in Stage 2b (or discovery was ambiguous and skipped), note that settlement suppression was not evaluated. When the plan was `plan_source: inferred` and Stage 5 step 2 (Settled decisions) discarded findings, note the inferred source and count of preference findings suppressed. **Removable surface (only when deletion-oriented maintainability findings exist):** one line giving the approximate net lines/files those findings would remove if applied (e.g., "Removable surface: ~120 lines / 2 files across findings #4, #7"). This is a dead-weight signal, **not** a reduction target: never lower the bar for a finding or invent deletions to grow the number, and omit the line entirely when no finding proposes a deletion.
 11. **Verdict.** Ready to merge / Ready with fixes / Not ready. Fix order if applicable. The verdict reads severity across the whole primary finding set, never the actionable queue alone: an open P0 forbids "Ready to merge" and an open P1 caps the verdict at "Ready with fixes", whether Stage 5b confirmed the finding or left it as an unresolved verification gate. Withholding a gate from `actionable_findings` withholds apply authority; it never clears the blocker, so name the gate and the evidence it still needs in the verdict reasoning. When an `explicit` plan has unaddressed requirements or implementation units, the verdict must reflect it: a PR that's code-clean but missing planned requirements is "Not ready" unless the omission is intentional. When an `inferred` plan has unaddressed requirements or implementation units, note it in the verdict reasoning but do not block on it alone.
 
 Do not include time estimates.
@@ -156,51 +154,7 @@ After the final artifact write returns, emit the final response immediately. The
 
 ### JSON output format (`mode:agent` only)
 
-Emit **one raw JSON object** as the primary response: a single bare JSON value, **no markdown code fence**. A leading ```` ```json ```` fence makes the response start with backticks and breaks naive `JSON.parse` consumers, so never wrap it. Also write `review.json` under the resolved `<run-dir>` with the same payload.
-
-`mode:agent` does not apply fixes (the caller does), so there is no `applied_fixes` field; the handoff is `actionable_findings`. Applied work appears only in explicitly authorized local-apply markdown runs (Stage 5c/6).
-
-Minimum shape:
-
-```json
-{
-  "status": "complete",
-  "verdict": "Ready to merge | Ready with fixes | Not ready",
-  "scope": {
-    "base": "<merge-base sha, pr:NNN marker, or base: ref>",
-    "branch": "<current branch name>",
-    "head_sha": "<git rev-parse HEAD>",
-    "pr_url": "<url or null>",
-    "files_changed": 0
-  },
-  "intent": "<2-3 line summary>",
-  "intent_confidence": "explicit | inferred | uncertain",
-  "reviewers": ["correctness", "security"],
-  "findings": [],
-  "actionable_findings": [],
-  "triage_groups": [],
-  "pre_existing_findings": [],
-  "requirements_completeness": null,
-  "learnings": [],
-  "agent_native_gaps": [],
-  "deployment_notes": [],
-  "residual_risks": [],
-  "testing_gaps": [],
-  "coverage": {},
-  "artifact_path": "<resolved-run-dir>",
-  "run_id": "<run-id>"
-}
-```
-
-Each object in `findings` uses the merged finding fields: `#`, `title`, `severity`, `file`, `line`, `confidence`, `autofix_class`, `owner`, `requires_verification`, `pre_existing`, `suggested_fix`, `first_evidence`, `why_it_matters`, `evidence`, `reviewers`, `independent_reviewers`. A finding Stage 5b left unresolved, or confirmed with an unmeasured-incidence reason, also carries `validation_status` and `validation_reason`, and carries `protected_subject` when one applies. Each object in `learnings` is a Known Pattern note: `type` (`known_pattern`), `title`, `citation` (a `<root>/solutions/` path or `(pack: <id>, <path within the pack>)`), and `note` (one line on how it bears on the change); contradicted pack rules are findings, never `learnings` entries. When Compound Packs were resolved for the learnings dispatch, `coverage.compound_packs` carries `roots` as the list of pack ids (strings — never the resolver's absolute `dir` paths) plus the resolver's `warnings` and `errors` arrays verbatim, so a consumer can tell a declared pack that loaded from one that was skipped. The helper derives `independent_reviewers`; synthesis may preserve or union that list but must not infer it from `reviewers`.
-
-An incoming finding may carry an optional `settled_conflict` field naming a `session-settled:` KTD. The marker supplies context for settlement reconciliation; it does not exempt the finding from admission or authorize a change.
-
-`actionable_findings` lists the `gated_auto` / `manual` + `downstream-resolver` subset with the same fields plus stable `#`. A finding with `validation_status: "unresolved"` never appears here; it stays in `findings` as a clearly labeled verification gate.
-
-Each object in `triage_groups` carries `{ "title", "findings": [<stable #s>], "context", "preferred_resolution", "why" }`: the finalized groups from Stage 5 step 6 after Stage 5b step 5 pruning. Every referenced `#` must exist in `findings` (the full set), **not** necessarily in `actionable_findings`. Groups are a triage **lens over all findings, not an apply queue**: a group (and its `preferred_resolution` ordering) can reference advisory or `human`/`release`-owned findings that the caller must not apply. So a caller batching related fixes by theme must first intersect each group's `findings` with `actionable_findings` and act only on that subset; the apply handoff stays `actionable_findings`, never `triage_groups`. Empty array when `grouping:off` is active or no groups were built.
-
-On failure before review completes, set `"status": "failed"` and `"reason": "<one sentence>"`. When all reviewers fail, use `"status": "degraded"` with a reason. When a PR skip rule applies (closed/merged/trivial), use `"status": "skipped"` with the skip reason. Do not emit markdown tables when `mode:agent` is active.
+The shape is defined once, in `references/modes-and-output.md` (## JSON output format). On the full path fill every field there from the merged findings and Coverage; `reviewers` lists the dispatched roster.
 
 ## Quality Gates
 
@@ -210,18 +164,12 @@ Before delivering the review, verify:
 2. **No false positives from skimming.** For each finding, verify the surrounding code was actually read. Check that the "bug" isn't handled elsewhere in the same function, that the "unused import" isn't used in a type annotation, that the "missing null check" isn't guarded by the caller.
 3. **Severity is calibrated.** A style nit is never P0. A SQL injection is never P3. Re-check every severity assignment.
 4. **Line numbers are accurate.** Verify each cited line number against the file content. A finding pointing to the wrong line is worse than no finding.
-5. **Protected artifacts are respected.** Discard any finding that recommends deleting or gitignoring a CE pipeline artifact, per the Protected Artifacts rule at the end of this reference: any file under a `plans/`, `solutions/`, or legacy `brainstorms/` directory whose immediate parent is the artifact root (a directory named `docs`, or the configured `docs_root` when resolved). Categories nest (`solutions/<category>/`); a `references/personas/` skill asset, parented by `references`, is not a protected artifact.
+5. **Protected artifacts are respected.** Discard any finding that recommends deleting or gitignoring a CE pipeline artifact, per the Protected Artifacts rule in `references/action-class-rubric.md`: any file under a `plans/`, `solutions/`, or legacy `brainstorms/` directory whose immediate parent is the artifact root (a directory named `docs`, or the configured `docs_root` when resolved). Categories nest (`solutions/<category>/`); a `references/personas/` skill asset, parented by `references`, is not a protected artifact.
 6. **Findings don't duplicate linter output.** Don't flag things the project's linter/formatter would catch (missing semicolons, wrong indentation). Focus on semantic issues.
 
 ## Protected Artifacts
 
-Compound-engineering pipeline artifacts must never be flagged for deletion, removal, or gitignore by any reviewer. A protected artifact is any file **under** a `plans/`, `solutions/`, or legacy `brainstorms/` directory **whose immediate parent is the artifact root** — a directory named `docs` (the default, and where unmigrated legacy artifacts stay even after a project sets `docs_root`) or the configured `docs_root` when this run resolved it:
-
-- `plans/` under the artifact root -- unified plan artifacts created by ce-brainstorm or ce-plan (decision artifacts; execution progress is derived from git, not stored in plan bodies)
-- `solutions/` under the artifact root -- solution documents created during the pipeline (categories nest, e.g. `solutions/<category>/foo.md`)
-- the legacy `brainstorms/` -- requirements documents created by older ce-brainstorm versions
-
-Matching by the immediate parent covers nested category files while leaving a same-named directory elsewhere (a skill's own `references/personas/` prompt assets, parented by `references`) as ordinary code whose deletion finding stands. A run that never resolved a configured root still protects the `docs`-parented tree; a configured-root artifact seen by such a run is the one honest gap. Discard any such file's cleanup or removal finding during synthesis.
+The protected-artifact rule is part of the finding contract in `references/action-class-rubric.md` (## Protected Artifacts); it binds every depth path. Discard any protected file's cleanup or removal finding during synthesis.
 
 ## After Review
 
@@ -262,16 +210,4 @@ Always write run artifacts under the resolved `<run-dir>`:
 - `adversarial-review-brief.md` when the cross-model route starts: the orchestrator's compact semantic divisions, never a copied diff
 - `report.md`: the rendered markdown report exactly as presented to the user (default mode only), so format and numbering stay auditable after the run
 
-`metadata.json` minimum fields:
-
-```json
-{
-  "run_id": "<run-id>",
-  "branch": "<git branch --show-current at dispatch time>",
-  "head_sha": "<git rev-parse HEAD at dispatch time>",
-  "verdict": "<Ready to merge | Ready with fixes | Not ready>",
-  "completed_at": "<ISO 8601 UTC timestamp>"
-}
-```
-
-Capture `branch` and `head_sha` at dispatch time (no in-skill fixes will land afterward).
+`metadata.json` carries the minimum fields defined under ## Run artifacts in `references/modes-and-output.md`; capture `branch` and `head_sha` at dispatch time (no in-skill fixes will land afterward).

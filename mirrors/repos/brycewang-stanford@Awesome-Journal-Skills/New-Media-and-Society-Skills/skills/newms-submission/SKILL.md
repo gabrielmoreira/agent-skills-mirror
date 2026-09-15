@@ -8,10 +8,10 @@ description: Use for the final preflight before submitting a New Media & Society
 The last gate before upload. NM&S submits through **Sage Track** at
 `mc.manuscriptcentral.com/nms`. This skill is a mechanical preflight: format, length, masking, and the
 ethics/data statements that an anonymous, ethics-attentive interdisciplinary journal expects. **Verify
-every upload-field prompt on the live SAGE author-instructions page** because details can change,
-especially across the 2026 editorial transition. As of 2026-06-22, **Steve Jones is stepping down as
-Editor in June 2026 and the successor Editor(s) had not yet been publicly announced** — treat all
-editor-specific guidance as live-check material and confirm the current masthead before submitting.
+every upload-field prompt on the live SAGE author-instructions page** because details can change.
+As of 2026-09-14: **Crystal Abidin** (Curtin University) and **Christian Katzenbach** (University of
+Bremen) are the co-Editors-in-Chief since July 2026, succeeding Steve Jones (Editor 2006–June 2026).
+Re-verified 2026-09-14; confirm the current masthead on the SAGE editorial-board page before submitting.
 
 ## When to trigger
 

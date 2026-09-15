@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Devin-AXIS/iPolloWork` — 26 default patterns, 0 followed patterns, 101 file(s) materialized.
+Mirror of `Devin-AXIS/iPolloWork` — 26 default patterns, 0 followed patterns, 102 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Devin-AXIS/iPolloWork` — 26 default patterns, 0 followed patterns, 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 101 |
+| Files         | 102 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -121,45 +121,46 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 60 | ✓ | [`examples/plugin-packages/github/skills/github-publish-changes/SKILL.md`](examples/plugin-packages/github/skills/github-publish-changes/SKILL.md) |
 | 61 | ✓ | [`examples/plugin-packages/github/skills/github-review-follow-up/SKILL.md`](examples/plugin-packages/github/skills/github-review-follow-up/SKILL.md) |
 | 62 | ✓ | [`examples/plugin-packages/github/skills/github/SKILL.md`](examples/plugin-packages/github/skills/github/SKILL.md) |
-| 63 | ✓ | [`examples/plugin-packages/image-studio/skills/image-editing/SKILL.md`](examples/plugin-packages/image-studio/skills/image-editing/SKILL.md) |
-| 64 | ✓ | [`examples/plugin-packages/image-studio/skills/image-generation/SKILL.md`](examples/plugin-packages/image-studio/skills/image-generation/SKILL.md) |
-| 65 | ✓ | [`examples/plugin-packages/linear/skills/linear-issue-delivery/SKILL.md`](examples/plugin-packages/linear/skills/linear-issue-delivery/SKILL.md) |
-| 66 | ✓ | [`examples/plugin-packages/linear/skills/linear-project-updates/SKILL.md`](examples/plugin-packages/linear/skills/linear-project-updates/SKILL.md) |
-| 67 | ✓ | [`examples/plugin-packages/linear/skills/linear-sprint-planning/SKILL.md`](examples/plugin-packages/linear/skills/linear-sprint-planning/SKILL.md) |
-| 68 | ✓ | [`examples/plugin-packages/linear/skills/linear-triage/SKILL.md`](examples/plugin-packages/linear/skills/linear-triage/SKILL.md) |
+| 63 | ✓ | [`examples/plugin-packages/linear/skills/linear-issue-delivery/SKILL.md`](examples/plugin-packages/linear/skills/linear-issue-delivery/SKILL.md) |
+| 64 | ✓ | [`examples/plugin-packages/linear/skills/linear-project-updates/SKILL.md`](examples/plugin-packages/linear/skills/linear-project-updates/SKILL.md) |
+| 65 | ✓ | [`examples/plugin-packages/linear/skills/linear-sprint-planning/SKILL.md`](examples/plugin-packages/linear/skills/linear-sprint-planning/SKILL.md) |
+| 66 | ✓ | [`examples/plugin-packages/linear/skills/linear-triage/SKILL.md`](examples/plugin-packages/linear/skills/linear-triage/SKILL.md) |
+| 67 | ✓ | [`examples/plugin-packages/media-studio/skills/image-editing/SKILL.md`](examples/plugin-packages/media-studio/skills/image-editing/SKILL.md) |
+| 68 | ✓ | [`examples/plugin-packages/media-studio/skills/image-generation/SKILL.md`](examples/plugin-packages/media-studio/skills/image-generation/SKILL.md) |
 | 69 | ✓ | [`examples/plugin-packages/notion/skills/notion-databases/SKILL.md`](examples/plugin-packages/notion/skills/notion-databases/SKILL.md) |
 | 70 | ✓ | [`examples/plugin-packages/notion/skills/notion-knowledge/SKILL.md`](examples/plugin-packages/notion/skills/notion-knowledge/SKILL.md) |
 | 71 | ✓ | [`examples/plugin-packages/notion/skills/notion-meeting-notes/SKILL.md`](examples/plugin-packages/notion/skills/notion-meeting-notes/SKILL.md) |
 | 72 | ✓ | [`examples/plugin-packages/notion/skills/notion-project-docs/SKILL.md`](examples/plugin-packages/notion/skills/notion-project-docs/SKILL.md) |
-| 73 | ✓ | [`examples/plugin-packages/sentry/skills/sentry-fix-verification/SKILL.md`](examples/plugin-packages/sentry/skills/sentry-fix-verification/SKILL.md) |
-| 74 | ✓ | [`examples/plugin-packages/sentry/skills/sentry-issue-investigation/SKILL.md`](examples/plugin-packages/sentry/skills/sentry-issue-investigation/SKILL.md) |
-| 75 | ✓ | [`examples/plugin-packages/sentry/skills/sentry-regression-monitoring/SKILL.md`](examples/plugin-packages/sentry/skills/sentry-regression-monitoring/SKILL.md) |
-| 76 | ✓ | [`examples/plugin-packages/sentry/skills/sentry-release-health/SKILL.md`](examples/plugin-packages/sentry/skills/sentry-release-health/SKILL.md) |
-| 77 | ✓ | [`examples/plugin-packages/stripe/skills/stripe-billing-subscriptions/SKILL.md`](examples/plugin-packages/stripe/skills/stripe-billing-subscriptions/SKILL.md) |
-| 78 | ✓ | [`examples/plugin-packages/stripe/skills/stripe-payment-investigation/SKILL.md`](examples/plugin-packages/stripe/skills/stripe-payment-investigation/SKILL.md) |
-| 79 | ✓ | [`examples/plugin-packages/stripe/skills/stripe-reconciliation/SKILL.md`](examples/plugin-packages/stripe/skills/stripe-reconciliation/SKILL.md) |
-| 80 | ✓ | [`examples/plugin-packages/stripe/skills/stripe-safe-operations/SKILL.md`](examples/plugin-packages/stripe/skills/stripe-safe-operations/SKILL.md) |
-| 81 | ✓ | [`examples/plugin-packages/video-agent/skills/hyperframes-animation/SKILL.md`](examples/plugin-packages/video-agent/skills/hyperframes-animation/SKILL.md) |
-| 82 | ✓ | [`examples/plugin-packages/video-agent/skills/hyperframes-cli/SKILL.md`](examples/plugin-packages/video-agent/skills/hyperframes-cli/SKILL.md) |
-| 83 | ✓ | [`examples/plugin-packages/video-agent/skills/hyperframes-core/SKILL.md`](examples/plugin-packages/video-agent/skills/hyperframes-core/SKILL.md) |
-| 84 | ✓ | [`examples/plugin-packages/video-agent/skills/hyperframes-creative/SKILL.md`](examples/plugin-packages/video-agent/skills/hyperframes-creative/SKILL.md) |
-| 85 | ✓ | [`examples/plugin-packages/video-agent/skills/hyperframes-keyframes/SKILL.md`](examples/plugin-packages/video-agent/skills/hyperframes-keyframes/SKILL.md) |
-| 86 | ✓ | [`examples/plugin-packages/video-agent/skills/hyperframes-registry/SKILL.md`](examples/plugin-packages/video-agent/skills/hyperframes-registry/SKILL.md) |
-| 87 | ✓ | [`examples/plugin-packages/video-agent/skills/hyperframes/SKILL.md`](examples/plugin-packages/video-agent/skills/hyperframes/SKILL.md) |
-| 88 | ✓ | [`examples/plugin-packages/video-agent/skills/ipollowork-video-studio/SKILL.md`](examples/plugin-packages/video-agent/skills/ipollowork-video-studio/SKILL.md) |
-| 89 | ✓ | [`examples/plugin-packages/video-agent/skills/ipollowork-video-voiceover/SKILL.md`](examples/plugin-packages/video-agent/skills/ipollowork-video-voiceover/SKILL.md) |
-| 90 | ✓ | [`examples/plugin-packages/video-agent/skills/media-use/SKILL.md`](examples/plugin-packages/video-agent/skills/media-use/SKILL.md) |
-| 91 | ✓ | [`examples/plugin-packages/video-agent/skills/product-launch-video/SKILL.md`](examples/plugin-packages/video-agent/skills/product-launch-video/SKILL.md) |
-| 92 | ✓ | [`examples/plugin-packages/wechat-official/skills/wechat-official-assets/SKILL.md`](examples/plugin-packages/wechat-official/skills/wechat-official-assets/SKILL.md) |
-| 93 | ✓ | [`examples/plugin-packages/wechat-official/skills/wechat-official-comments/SKILL.md`](examples/plugin-packages/wechat-official/skills/wechat-official-comments/SKILL.md) |
-| 94 | ✓ | [`examples/plugin-packages/wechat-official/skills/wechat-official-community/SKILL.md`](examples/plugin-packages/wechat-official/skills/wechat-official-community/SKILL.md) |
-| 95 | ✓ | [`examples/plugin-packages/wechat-official/skills/wechat-official-content/SKILL.md`](examples/plugin-packages/wechat-official/skills/wechat-official-content/SKILL.md) |
-| 96 | ✓ | [`examples/plugin-packages/wechat-official/skills/wechat-official-messages/SKILL.md`](examples/plugin-packages/wechat-official/skills/wechat-official-messages/SKILL.md) |
-| 97 | ✓ | [`examples/plugin-packages/wechat-official/skills/wechat-official-publishing/SKILL.md`](examples/plugin-packages/wechat-official/skills/wechat-official-publishing/SKILL.md) |
-| 98 | ✓ | [`examples/plugin-packages/wechat-official/skills/wechat-official-review/SKILL.md`](examples/plugin-packages/wechat-official/skills/wechat-official-review/SKILL.md) |
-| 99 | ✓ | [`examples/plugin-packages/xiaohongshu-ops/AGENTS.md`](examples/plugin-packages/xiaohongshu-ops/AGENTS.md) |
-| 100 | ✓ | [`examples/plugin-packages/xiaohongshu-ops/skills/xhs-ops-dispatcher/SKILL.md`](examples/plugin-packages/xiaohongshu-ops/skills/xhs-ops-dispatcher/SKILL.md) |
-| 101 | ✓ | [`examples/plugin-packages/xiaohongshu-ops/skills/xhs-ops-worker/SKILL.md`](examples/plugin-packages/xiaohongshu-ops/skills/xhs-ops-worker/SKILL.md) |
+| 73 | ✓ | [`examples/plugin-packages/reference-context/skills/ipollowork-reference-analyzer/SKILL.md`](examples/plugin-packages/reference-context/skills/ipollowork-reference-analyzer/SKILL.md) |
+| 74 | ✓ | [`examples/plugin-packages/sentry/skills/sentry-fix-verification/SKILL.md`](examples/plugin-packages/sentry/skills/sentry-fix-verification/SKILL.md) |
+| 75 | ✓ | [`examples/plugin-packages/sentry/skills/sentry-issue-investigation/SKILL.md`](examples/plugin-packages/sentry/skills/sentry-issue-investigation/SKILL.md) |
+| 76 | ✓ | [`examples/plugin-packages/sentry/skills/sentry-regression-monitoring/SKILL.md`](examples/plugin-packages/sentry/skills/sentry-regression-monitoring/SKILL.md) |
+| 77 | ✓ | [`examples/plugin-packages/sentry/skills/sentry-release-health/SKILL.md`](examples/plugin-packages/sentry/skills/sentry-release-health/SKILL.md) |
+| 78 | ✓ | [`examples/plugin-packages/stripe/skills/stripe-billing-subscriptions/SKILL.md`](examples/plugin-packages/stripe/skills/stripe-billing-subscriptions/SKILL.md) |
+| 79 | ✓ | [`examples/plugin-packages/stripe/skills/stripe-payment-investigation/SKILL.md`](examples/plugin-packages/stripe/skills/stripe-payment-investigation/SKILL.md) |
+| 80 | ✓ | [`examples/plugin-packages/stripe/skills/stripe-reconciliation/SKILL.md`](examples/plugin-packages/stripe/skills/stripe-reconciliation/SKILL.md) |
+| 81 | ✓ | [`examples/plugin-packages/stripe/skills/stripe-safe-operations/SKILL.md`](examples/plugin-packages/stripe/skills/stripe-safe-operations/SKILL.md) |
+| 82 | ✓ | [`examples/plugin-packages/video-agent/skills/hyperframes-animation/SKILL.md`](examples/plugin-packages/video-agent/skills/hyperframes-animation/SKILL.md) |
+| 83 | ✓ | [`examples/plugin-packages/video-agent/skills/hyperframes-cli/SKILL.md`](examples/plugin-packages/video-agent/skills/hyperframes-cli/SKILL.md) |
+| 84 | ✓ | [`examples/plugin-packages/video-agent/skills/hyperframes-core/SKILL.md`](examples/plugin-packages/video-agent/skills/hyperframes-core/SKILL.md) |
+| 85 | ✓ | [`examples/plugin-packages/video-agent/skills/hyperframes-creative/SKILL.md`](examples/plugin-packages/video-agent/skills/hyperframes-creative/SKILL.md) |
+| 86 | ✓ | [`examples/plugin-packages/video-agent/skills/hyperframes-keyframes/SKILL.md`](examples/plugin-packages/video-agent/skills/hyperframes-keyframes/SKILL.md) |
+| 87 | ✓ | [`examples/plugin-packages/video-agent/skills/hyperframes-registry/SKILL.md`](examples/plugin-packages/video-agent/skills/hyperframes-registry/SKILL.md) |
+| 88 | ✓ | [`examples/plugin-packages/video-agent/skills/hyperframes/SKILL.md`](examples/plugin-packages/video-agent/skills/hyperframes/SKILL.md) |
+| 89 | ✓ | [`examples/plugin-packages/video-agent/skills/ipollowork-video-studio/SKILL.md`](examples/plugin-packages/video-agent/skills/ipollowork-video-studio/SKILL.md) |
+| 90 | ✓ | [`examples/plugin-packages/video-agent/skills/ipollowork-video-voiceover/SKILL.md`](examples/plugin-packages/video-agent/skills/ipollowork-video-voiceover/SKILL.md) |
+| 91 | ✓ | [`examples/plugin-packages/video-agent/skills/media-use/SKILL.md`](examples/plugin-packages/video-agent/skills/media-use/SKILL.md) |
+| 92 | ✓ | [`examples/plugin-packages/video-agent/skills/product-launch-video/SKILL.md`](examples/plugin-packages/video-agent/skills/product-launch-video/SKILL.md) |
+| 93 | ✓ | [`examples/plugin-packages/wechat-official/skills/wechat-official-assets/SKILL.md`](examples/plugin-packages/wechat-official/skills/wechat-official-assets/SKILL.md) |
+| 94 | ✓ | [`examples/plugin-packages/wechat-official/skills/wechat-official-comments/SKILL.md`](examples/plugin-packages/wechat-official/skills/wechat-official-comments/SKILL.md) |
+| 95 | ✓ | [`examples/plugin-packages/wechat-official/skills/wechat-official-community/SKILL.md`](examples/plugin-packages/wechat-official/skills/wechat-official-community/SKILL.md) |
+| 96 | ✓ | [`examples/plugin-packages/wechat-official/skills/wechat-official-content/SKILL.md`](examples/plugin-packages/wechat-official/skills/wechat-official-content/SKILL.md) |
+| 97 | ✓ | [`examples/plugin-packages/wechat-official/skills/wechat-official-messages/SKILL.md`](examples/plugin-packages/wechat-official/skills/wechat-official-messages/SKILL.md) |
+| 98 | ✓ | [`examples/plugin-packages/wechat-official/skills/wechat-official-publishing/SKILL.md`](examples/plugin-packages/wechat-official/skills/wechat-official-publishing/SKILL.md) |
+| 99 | ✓ | [`examples/plugin-packages/wechat-official/skills/wechat-official-review/SKILL.md`](examples/plugin-packages/wechat-official/skills/wechat-official-review/SKILL.md) |
+| 100 | ✓ | [`examples/plugin-packages/xiaohongshu-ops/AGENTS.md`](examples/plugin-packages/xiaohongshu-ops/AGENTS.md) |
+| 101 | ✓ | [`examples/plugin-packages/xiaohongshu-ops/skills/xhs-ops-dispatcher/SKILL.md`](examples/plugin-packages/xiaohongshu-ops/skills/xhs-ops-dispatcher/SKILL.md) |
+| 102 | ✓ | [`examples/plugin-packages/xiaohongshu-ops/skills/xhs-ops-worker/SKILL.md`](examples/plugin-packages/xiaohongshu-ops/skills/xhs-ops-worker/SKILL.md) |
 
 ---
 

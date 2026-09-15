@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `moby/moby` — 26 default patterns, 5 followed patterns, 287 file(s) materialized.
+Mirror of `moby/moby` — 26 default patterns, 5 followed patterns, 288 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `moby/moby` — 26 default patterns, 5 followed patterns, 287 file(s) 
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 5 |
-| Files         | 287 |
+| Files         | 288 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -328,28 +328,29 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 263 | ✓ | [`vendor/go.yaml.in/yaml/v2/README.md`](vendor/go.yaml.in/yaml/v2/README.md) |
 | 264 | ✓ | [`vendor/go.yaml.in/yaml/v3/README.md`](vendor/go.yaml.in/yaml/v3/README.md) |
 | 265 | ✓ | [`vendor/golang.org/x/net/http2/README.md`](vendor/golang.org/x/net/http2/README.md) |
-| 266 | ✓ | [`vendor/golang.org/x/oauth2/CONTRIBUTING.md`](vendor/golang.org/x/oauth2/CONTRIBUTING.md) |
-| 267 | ✓ | [`vendor/golang.org/x/oauth2/README.md`](vendor/golang.org/x/oauth2/README.md) |
-| 268 | ✓ | [`vendor/golang.org/x/sys/unix/README.md`](vendor/golang.org/x/sys/unix/README.md) |
-| 269 | ✓ | [`vendor/golang.org/x/term/CONTRIBUTING.md`](vendor/golang.org/x/term/CONTRIBUTING.md) |
-| 270 | ✓ | [`vendor/golang.org/x/term/README.md`](vendor/golang.org/x/term/README.md) |
-| 271 | ✓ | [`vendor/google.golang.org/grpc/CONTRIBUTING.md`](vendor/google.golang.org/grpc/CONTRIBUTING.md) |
-| 272 | ✓ | [`vendor/google.golang.org/grpc/README.md`](vendor/google.golang.org/grpc/README.md) |
-| 273 | ✓ | [`vendor/k8s.io/klog/v2/CONTRIBUTING.md`](vendor/k8s.io/klog/v2/CONTRIBUTING.md) |
-| 274 | ✓ | [`vendor/k8s.io/klog/v2/internal/clock/README.md`](vendor/k8s.io/klog/v2/internal/clock/README.md) |
-| 275 | ✓ | [`vendor/k8s.io/klog/v2/README.md`](vendor/k8s.io/klog/v2/README.md) |
-| 276 | ✓ | [`vendor/pgregory.net/rapid/CONTRIBUTING.md`](vendor/pgregory.net/rapid/CONTRIBUTING.md) |
-| 277 | ✓ | [`vendor/pgregory.net/rapid/README.md`](vendor/pgregory.net/rapid/README.md) |
-| 278 | ✓ | [`vendor/resenje.org/singleflight/README.md`](vendor/resenje.org/singleflight/README.md) |
-| 279 | ✓ | [`vendor/sigs.k8s.io/json/CONTRIBUTING.md`](vendor/sigs.k8s.io/json/CONTRIBUTING.md) |
-| 280 | ✓ | [`vendor/sigs.k8s.io/json/README.md`](vendor/sigs.k8s.io/json/README.md) |
-| 281 | ✓ | [`vendor/sigs.k8s.io/yaml/CONTRIBUTING.md`](vendor/sigs.k8s.io/yaml/CONTRIBUTING.md) |
-| 282 | ✓ | [`vendor/sigs.k8s.io/yaml/README.md`](vendor/sigs.k8s.io/yaml/README.md) |
-| 283 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 284 | → | [`docs/contributing/README.md`](docs/contributing/README.md) |
-| 285 | → | [`project/REVIEWING.md`](project/REVIEWING.md) |
-| 286 | → | [`README.md`](README.md) |
-| 287 | → | [`TESTING.md`](TESTING.md) |
+| 266 | ✓ | [`vendor/golang.org/x/net/internal/httpcommon/README.md`](vendor/golang.org/x/net/internal/httpcommon/README.md) |
+| 267 | ✓ | [`vendor/golang.org/x/oauth2/CONTRIBUTING.md`](vendor/golang.org/x/oauth2/CONTRIBUTING.md) |
+| 268 | ✓ | [`vendor/golang.org/x/oauth2/README.md`](vendor/golang.org/x/oauth2/README.md) |
+| 269 | ✓ | [`vendor/golang.org/x/sys/unix/README.md`](vendor/golang.org/x/sys/unix/README.md) |
+| 270 | ✓ | [`vendor/golang.org/x/term/CONTRIBUTING.md`](vendor/golang.org/x/term/CONTRIBUTING.md) |
+| 271 | ✓ | [`vendor/golang.org/x/term/README.md`](vendor/golang.org/x/term/README.md) |
+| 272 | ✓ | [`vendor/google.golang.org/grpc/CONTRIBUTING.md`](vendor/google.golang.org/grpc/CONTRIBUTING.md) |
+| 273 | ✓ | [`vendor/google.golang.org/grpc/README.md`](vendor/google.golang.org/grpc/README.md) |
+| 274 | ✓ | [`vendor/k8s.io/klog/v2/CONTRIBUTING.md`](vendor/k8s.io/klog/v2/CONTRIBUTING.md) |
+| 275 | ✓ | [`vendor/k8s.io/klog/v2/internal/clock/README.md`](vendor/k8s.io/klog/v2/internal/clock/README.md) |
+| 276 | ✓ | [`vendor/k8s.io/klog/v2/README.md`](vendor/k8s.io/klog/v2/README.md) |
+| 277 | ✓ | [`vendor/pgregory.net/rapid/CONTRIBUTING.md`](vendor/pgregory.net/rapid/CONTRIBUTING.md) |
+| 278 | ✓ | [`vendor/pgregory.net/rapid/README.md`](vendor/pgregory.net/rapid/README.md) |
+| 279 | ✓ | [`vendor/resenje.org/singleflight/README.md`](vendor/resenje.org/singleflight/README.md) |
+| 280 | ✓ | [`vendor/sigs.k8s.io/json/CONTRIBUTING.md`](vendor/sigs.k8s.io/json/CONTRIBUTING.md) |
+| 281 | ✓ | [`vendor/sigs.k8s.io/json/README.md`](vendor/sigs.k8s.io/json/README.md) |
+| 282 | ✓ | [`vendor/sigs.k8s.io/yaml/CONTRIBUTING.md`](vendor/sigs.k8s.io/yaml/CONTRIBUTING.md) |
+| 283 | ✓ | [`vendor/sigs.k8s.io/yaml/README.md`](vendor/sigs.k8s.io/yaml/README.md) |
+| 284 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 285 | → | [`docs/contributing/README.md`](docs/contributing/README.md) |
+| 286 | → | [`project/REVIEWING.md`](project/REVIEWING.md) |
+| 287 | → | [`README.md`](README.md) |
+| 288 | → | [`TESTING.md`](TESTING.md) |
 
 ---
 

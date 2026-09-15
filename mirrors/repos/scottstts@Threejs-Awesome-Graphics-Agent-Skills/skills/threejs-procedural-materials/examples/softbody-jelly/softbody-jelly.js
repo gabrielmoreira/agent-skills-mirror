@@ -1,5 +1,6 @@
 import * as THREE from "three/webgpu";
 import { attribute, float, uniform } from "three/tsl";
+import { GPUCausticField } from "./gpu-caustic-field.js";
 
 export const SOFTBODY_JELLY_DEFAULTS = Object.freeze({
   density: 1050,
@@ -649,174 +650,112 @@ const keep = (object) => (resources.add(object), object);
     return {direction:[eta*d[0]+a*n[0],eta*d[1]+a*n[1],eta*d[2]+a*n[2]],transmission:1-(rs*rs+rp*rp)/2};
   }
 
-  export class RefractiveLightField {
-    constructor(surface) {
-      this.size=192; this.span=.22; this.minSpan=.22; this.maxSpan=.75; this.samples=42; this.origin=new THREE.Vector2();
-      this.originNode=uniform(this.origin); this.spanNode=uniform(this.span);
-      this.bvh=new SurfaceBVH(surface); this.surface=surface;
-      this.photons=new Float32Array(this.size*this.size*3);
-      this.shadow=new Float32Array(this.size*this.size);
-      this.contact=new Float32Array(this.size*this.size);
-      this.blurScratch=new Float32Array(this.size*this.size);
-      this.lightBytes=new Uint8Array(this.size*this.size*4);
-      this.shadowBytes=new Uint8Array(this.size*this.size*4);
-      this.lightTexture=this.makeTexture(this.lightBytes);
-      this.shadowTexture=this.makeTexture(this.shadowBytes);
-      this.kernel=[]; let sum=0;
-      for(let y=-3;y<=3;y++) for(let x=-3;x<=3;x++) { const w=Math.exp(-(x*x+y*y)/3.5); this.kernel.push([x,y,w]); sum+=w; }
-      for(const k of this.kernel) k[2]/=sum;
-    }
-    makeTexture(data) {
-      const tex=keep(new THREE.DataTexture(data,this.size,this.size,THREE.RGBAFormat,THREE.UnsignedByteType));
-      tex.minFilter=tex.magFilter=THREE.LinearFilter; tex.generateMipmaps=false;
-      tex.colorSpace=THREE.NoColorSpace; tex.needsUpdate=true; return tex;
-    }
-    splat(x,z,channel,energy) {
-      const sx=(x-this.origin.x)/this.span*this.size-.5,sy=(z-this.origin.y)/this.span*this.size-.5;
-      const ix=Math.floor(sx),iy=Math.floor(sy),fx=sx-ix,fy=sy-iy;
-      // Normalised kernels preserve integrated photon flux (except receiver edges).
-      for(const [kx,ky,w] of this.kernel) for(let dy=0;dy<2;dy++) for(let dx=0;dx<2;dx++) {
-        const px=ix+kx+dx,py=iy+ky+dy;
-        if(px<0||px>=this.size||py<0||py>=this.size) continue;
-        this.photons[(py*this.size+px)*3+channel]+=energy*w*(dx?fx:1-fx)*(dy?fy:1-fy);
-      }
-    }
-    rasterTriangle(a,b,c,buffer,value) {
-      const n=this.size,scale=n/this.span;
-      const ax=(a[0]-this.origin.x)*scale,ay=(a[1]-this.origin.y)*scale;
-      const bx=(b[0]-this.origin.x)*scale,by=(b[1]-this.origin.y)*scale;
-      const cx=(c[0]-this.origin.x)*scale,cy=(c[1]-this.origin.y)*scale;
-      const area=(bx-ax)*(cy-ay)-(by-ay)*(cx-ax); if(Math.abs(area)<1e-9) return;
-      const minX=clamp(Math.floor(Math.min(ax,bx,cx)),0,n-1),maxX=clamp(Math.ceil(Math.max(ax,bx,cx)),0,n-1);
-      const minY=clamp(Math.floor(Math.min(ay,by,cy)),0,n-1),maxY=clamp(Math.ceil(Math.max(ay,by,cy)),0,n-1);
-      for(let y=minY;y<=maxY;y++) for(let x=minX;x<=maxX;x++) {
-        const px=x+.5,py=y+.5;
-        const u=((bx-px)*(cy-py)-(by-py)*(cx-px))/area;
-        const v=((cx-px)*(ay-py)-(cy-py)*(ax-px))/area;
-        if(u>=0 && v>=0 && u+v<=1) buffer[y*n+x]=Math.max(buffer[y*n+x],value);
-      }
-    }
-    blur(buffer) {
-      const n=this.size,tmp=this.blurScratch;
-      for(let y=0;y<n;y++) for(let x=0;x<n;x++) {
-        let sum=0; for(let k=-2;k<=2;k++) sum+=buffer[y*n+clamp(x+k,0,n-1)]*(3-Math.abs(k)); tmp[y*n+x]=sum/9;
-      }
-      for(let y=0;y<n;y++) for(let x=0;x<n;x++) {
-        let sum=0; for(let k=-2;k<=2;k++) sum+=tmp[clamp(y+k,0,n-1)*n+x]*(3-Math.abs(k)); buffer[y*n+x]=sum/9;
-      }
-    }
-
-
-    clearTextureBorder(bytes,pixels=2) {
-      // DataTexture uses ClampToEdge.  Any non-zero texel that reaches an edge
-      // would otherwise be repeated across the whole floor outside the optical
-      // field, creating the long shadow/caustic streaks seen on tall drags.
-      const n=this.size;
-      for(let y=0;y<n;y++) for(let x=0;x<n;x++) {
-        if(x>=pixels&&x<n-pixels&&y>=pixels&&y<n-pixels) continue;
-        const i=(y*n+x)*4;
-        bytes[i]=bytes[i+1]=bytes[i+2]=0; bytes[i+3]=255;
-      }
-    }
-    updateViewThickness(camera) {
-      // Trace the first interior exit for each displayed vertex in the viewing
-      // direction. Interpolated per-vertex thickness improves on a constant slab;
-      // screen-space colour lookup still cannot see off-screen/background layers.
-      const p=this.surface.positions,n=this.surface.geometry.attributes.normal.array;
-      const thickness=this.surface.geometry.attributes.opticalThickness;
-      for(let i=0;i<p.length;i+=3) {
-        let dx=p[i]-camera.position.x,dy=p[i+1]-camera.position.y,dz=p[i+2]-camera.position.z;
-        const length=Math.hypot(dx,dy,dz)||1; dx/=length;dy/=length;dz/=length;
-        const normal=[n[i],n[i+1],n[i+2]];
-        if(dx*normal[0]+dy*normal[1]+dz*normal[2]>-.01) continue;
-        const refraction=refractRay([dx,dy,dz],normal,1,1.35); if(!refraction) continue;
-        const dir=refraction.direction,o=[p[i]+dir[0]*2e-6,p[i+1]+dir[1]*2e-6,p[i+2]+dir[2]*2e-6];
-        const hit=this.bvh.hit(o,dir);
-        thickness.array[i/3]=hit?clamp(hit.distance,.0002,.16):.002;
-      }
-      thickness.needsUpdate=true;
-    }
-    update(body) {
-      this.bvh.refit(); this.photons.fill(0); this.shadow.fill(0); this.contact.fill(0);
-      const D=[lightDirection.x,lightDirection.y,lightDirection.z];
-      const p=this.surface.positions,ix=this.surface.indices,box=this.surface.geometry.boundingBox;
-
-      // Fit the receiver field to both the object's floor footprint and its full
-      // oblique-light projection.  A fixed 22 cm field is too small when the
-      // jelly is pulled high: the projected shadow reaches the texture edge and,
-      // because DataTexture clamps to that edge, gets smeared across the floor.
-      let minX=Infinity,maxX=-Infinity,minZ=Infinity,maxZ=-Infinity;
-      for(let i=0;i<p.length;i+=3) {
-        const x=p[i],y=p[i+1],z=p[i+2];
-        const sx=x-y*D[0]/D[1],sz=z-y*D[2]/D[1];
-        minX=Math.min(minX,x,sx); maxX=Math.max(maxX,x,sx);
-        minZ=Math.min(minZ,z,sz); maxZ=Math.max(maxZ,z,sz);
-      }
-      const guard=.030;
-      const required=Math.max(maxX-minX,maxZ-minZ)+guard*2;
-      this.span=clamp(required,this.minSpan,this.maxSpan);
-      this.spanNode.value=this.span;
-      const centerX=(minX+maxX)/2,centerZ=(minZ+maxZ)/2;
-      this.origin.set(centerX-this.span/2,centerZ-this.span/2);
-      for(let t=0;t<ix.length;t+=3) {
-        const vertices=[ix[t]*3,ix[t+1]*3,ix[t+2]*3];
-        const projected=vertices.map(i=>[p[i]-p[i+1]*D[0]/D[1],p[i+2]-p[i+1]*D[2]/D[1]]);
-        this.rasterTriangle(...projected,this.shadow,1);
-        const height=(p[vertices[0]+1]+p[vertices[1]+1]+p[vertices[2]+1])/3;
-        if(height<.016) this.rasterTriangle(...vertices.map(i=>[p[i],p[i+2]]),this.contact,Math.exp(-height/.0028));
-      }
-      this.blur(this.shadow); this.blur(this.contact);
-      const top=box.max.y+.007;
-      let loX=Infinity,hiX=-Infinity,loZ=Infinity,hiZ=-Infinity;
-      for(let i=0;i<p.length;i+=3) {
-        const x=p[i]+(top-p[i+1])*D[0]/D[1],z=p[i+2]+(top-p[i+1])*D[2]/D[1];
-        loX=Math.min(loX,x); hiX=Math.max(hiX,x); loZ=Math.min(loZ,z); hiZ=Math.max(hiZ,z);
-      }
-      const width=hiX-loX+.002,depth=hiZ-loZ+.002; loX-=.001;loZ-=.001;
-      const sampleArea=width*depth/(this.samples*this.samples),pixelArea=(this.span/this.size)**2;
-      const sigmas=LOOKS[state.flavour].sigma,iors=[1.347,1.350,1.354];
-      for(let y=0;y<this.samples;y++) for(let x=0;x<this.samples;x++) {
-        // Stable stratification avoids temporal random speckle. There is no idle
-        // animation of the light pattern: all motion comes from the mesh.
-        const jx=((x*73+y*37)%101+.5)/101,jy=((x*31+y*83)%103+.5)/103;
-        const o=[loX+(x+.2+.6*jx)/this.samples*width,top,loZ+(y+.2+.6*jy)/this.samples*depth];
-        const entry=this.bvh.hit(o,D); if(!entry) continue;
-        const en=this.bvh.normal(entry,D,true),entryPoint=o.map((v,a)=>v+D[a]*entry.distance);
-        for(let channel=0;channel<3;channel++) {
-          const transmitted=refractRay(D,en,1,iors[channel]); if(!transmitted) continue;
-          let dir=transmitted.direction,throughput=transmitted.transmission;
-          let start=entryPoint.map((v,a)=>v+dir[a]*2e-6),escaped=false;
-          for(let bounce=0;bounce<4;bounce++) {
-            const exit=this.bvh.hit(start,dir); if(!exit) break;
-            throughput*=Math.exp(-sigmas[channel]*exit.distance);
-            const hitPoint=start.map((v,a)=>v+dir[a]*exit.distance);
-            const normal=this.bvh.normal(exit,dir,false),refraction=refractRay(dir,normal,iors[channel],1);
-            if(refraction) {
-              throughput*=refraction.transmission; dir=refraction.direction;
-              start=hitPoint.map((v,a)=>v+dir[a]*2e-6); escaped=true; break;
-            }
-            const dot=dir[0]*normal[0]+dir[1]*normal[1]+dir[2]*normal[2];
-            dir=dir.map((v,a)=>v-2*dot*normal[a]); start=hitPoint.map((v,a)=>v+dir[a]*2e-6);
-          }
-          if(!escaped||dir[1]>=-1e-5||throughput<.002) continue;
-          const distance=-start[1]/dir[1]; if(distance<=0) continue;
-          // Secondary interception is occlusion here, not an invented ray exit.
-          if(this.bvh.hit(start,dir,distance)) continue;
-          this.splat(start[0]+dir[0]*distance,start[2]+dir[2]*distance,channel,throughput*sampleArea/pixelArea);
-        }
-      }
-      for(let i=0;i<this.size*this.size;i++) {
-        for(let c=0;c<3;c++) this.lightBytes[i*4+c]=Math.round(clamp(this.photons[i*3+c]/5,0,1)*255);
-        this.lightBytes[i*4+3]=255;
-        this.shadowBytes[i*4]=Math.round(this.shadow[i]*255);
-        this.shadowBytes[i*4+1]=Math.round(this.contact[i]*255);
-        this.shadowBytes[i*4+2]=0; this.shadowBytes[i*4+3]=255;
-      }
-      this.clearTextureBorder(this.lightBytes);
-      this.clearTextureBorder(this.shadowBytes);
-      this.lightTexture.needsUpdate=true; this.shadowTexture.needsUpdate=true;
+export class RefractiveLightField {
+  constructor(surface) {
+    this.size=192; this.span=.22; this.minSpan=.22; this.maxSpan=.75; this.origin=new THREE.Vector2();
+    this.originNode=uniform(this.origin); this.spanNode=uniform(this.span);
+    this.bvh=new SurfaceBVH(surface); this.surface=surface;
+    this.shadow=new Float32Array(this.size*this.size);
+    this.contact=new Float32Array(this.size*this.size);
+    this.blurScratch=new Float32Array(this.size*this.size);
+    this.shadowBytes=new Uint8Array(this.size*this.size*4);
+    this.shadowTexture=this.makeTexture(this.shadowBytes);
+    this.gpu=new GPUCausticField(surface); this.lightTexture=this.gpu.lightTexture;
+    this.cleanup=keep({ dispose: () => this.gpu.dispose() });
+  }
+  setCamera(camera) {
+    this.gpu.setCamera(camera);
+  }
+  sampleIrradiance() {
+    return this.gpu.sampleIrradiance();
+  }
+  makeTexture(data) {
+    const tex=keep(new THREE.DataTexture(data,this.size,this.size,THREE.RGBAFormat,THREE.UnsignedByteType));
+    tex.minFilter=tex.magFilter=THREE.LinearFilter; tex.generateMipmaps=false;
+    tex.colorSpace=THREE.NoColorSpace; tex.needsUpdate=true; return tex;
+  }
+  rasterTriangle(a,b,c,buffer,value) {
+    const n=this.size,scale=n/this.span;
+    const ax=(a[0]-this.origin.x)*scale,ay=(a[1]-this.origin.y)*scale;
+    const bx=(b[0]-this.origin.x)*scale,by=(b[1]-this.origin.y)*scale;
+    const cx=(c[0]-this.origin.x)*scale,cy=(c[1]-this.origin.y)*scale;
+    const area=(bx-ax)*(cy-ay)-(by-ay)*(cx-ax); if(Math.abs(area)<1e-9) return;
+    const minX=clamp(Math.floor(Math.min(ax,bx,cx)),0,n-1),maxX=clamp(Math.ceil(Math.max(ax,bx,cx)),0,n-1);
+    const minY=clamp(Math.floor(Math.min(ay,by,cy)),0,n-1),maxY=clamp(Math.ceil(Math.max(ay,by,cy)),0,n-1);
+    for(let y=minY;y<=maxY;y++) for(let x=minX;x<=maxX;x++) {
+      const px=x+.5,py=y+.5;
+      const u=((bx-px)*(cy-py)-(by-py)*(cx-px))/area;
+      const v=((cx-px)*(ay-py)-(cy-py)*(ax-px))/area;
+      if(u>=0 && v>=0 && u+v<=1) buffer[y*n+x]=Math.max(buffer[y*n+x],value);
     }
   }
+  blur(buffer) {
+    const n=this.size,tmp=this.blurScratch;
+    for(let y=0;y<n;y++) for(let x=0;x<n;x++) {
+      let sum=0; for(let k=-2;k<=2;k++) sum+=buffer[y*n+clamp(x+k,0,n-1)]*(3-Math.abs(k)); tmp[y*n+x]=sum/9;
+    }
+    for(let y=0;y<n;y++) for(let x=0;x<n;x++) {
+      let sum=0; for(let k=-2;k<=2;k++) sum+=tmp[clamp(y+k,0,n-1)*n+x]*(3-Math.abs(k)); buffer[y*n+x]=sum/9;
+    }
+  }
+  clearTextureBorder(bytes,pixels=2) {
+    const n=this.size;
+    for(let y=0;y<n;y++) for(let x=0;x<n;x++) {
+      if(x>=pixels&&x<n-pixels&&y>=pixels&&y<n-pixels) continue;
+      const i=(y*n+x)*4; bytes[i]=bytes[i+1]=bytes[i+2]=0; bytes[i+3]=255;
+    }
+  }
+  updateViewThickness(camera) {
+    const p=this.surface.positions,n=this.surface.geometry.attributes.normal.array;
+    const thickness=this.surface.geometry.attributes.opticalThickness;
+    for(let i=0;i<p.length;i+=3) {
+      let dx=p[i]-camera.position.x,dy=p[i+1]-camera.position.y,dz=p[i+2]-camera.position.z;
+      const length=Math.hypot(dx,dy,dz)||1; dx/=length;dy/=length;dz/=length;
+      const normal=[n[i],n[i+1],n[i+2]];
+      if(dx*normal[0]+dy*normal[1]+dz*normal[2]>-.01) continue;
+      const refraction=refractRay([dx,dy,dz],normal,1,1.35); if(!refraction) continue;
+      const dir=refraction.direction,o=[p[i]+dir[0]*2e-6,p[i+1]+dir[1]*2e-6,p[i+2]+dir[2]*2e-6];
+      const hit=this.bvh.hit(o,dir);
+      thickness.array[i/3]=hit?clamp(hit.distance,.0002,.16):.002;
+    }
+    thickness.needsUpdate=true;
+  }
+  update(body) {
+    this.bvh.refit(); this.shadow.fill(0); this.contact.fill(0);
+    const D=[lightDirection.x,lightDirection.y,lightDirection.z];
+    const p=this.surface.positions,ix=this.surface.indices;
+    let minX=Infinity,maxX=-Infinity,minZ=Infinity,maxZ=-Infinity;
+    for(let i=0;i<p.length;i+=3) {
+      const x=p[i],y=p[i+1],z=p[i+2];
+      const sx=x-y*D[0]/D[1],sz=z-y*D[2]/D[1];
+      minX=Math.min(minX,x,sx); maxX=Math.max(maxX,x,sx);
+      minZ=Math.min(minZ,z,sz); maxZ=Math.max(maxZ,z,sz);
+    }
+    const guard=.030;
+    const required=Math.max(maxX-minX,maxZ-minZ)+guard*2;
+    this.span=clamp(required,this.minSpan,this.maxSpan);
+    this.spanNode.value=this.span;
+    const centerX=(minX+maxX)/2,centerZ=(minZ+maxZ)/2;
+    this.origin.set(centerX-this.span/2,centerZ-this.span/2);
+    for(let t=0;t<ix.length;t+=3) {
+      const vertices=[ix[t]*3,ix[t+1]*3,ix[t+2]*3];
+      const projected=vertices.map(i=>[p[i]-p[i+1]*D[0]/D[1],p[i+2]-p[i+1]*D[2]/D[1]]);
+      this.rasterTriangle(...projected,this.shadow,1);
+      const height=(p[vertices[0]+1]+p[vertices[1]+1]+p[vertices[2]+1])/3;
+      if(height<.016) this.rasterTriangle(...vertices.map(i=>[p[i],p[i+2]]),this.contact,Math.exp(-height/.0028));
+    }
+    this.blur(this.shadow); this.blur(this.contact);
+    for(let i=0;i<this.size*this.size;i++) {
+      this.shadowBytes[i*4]=Math.round(this.shadow[i]*255);
+      this.shadowBytes[i*4+1]=Math.round(this.contact[i]*255);
+      this.shadowBytes[i*4+2]=0; this.shadowBytes[i*4+3]=255;
+    }
+    this.clearTextureBorder(this.shadowBytes); this.shadowTexture.needsUpdate=true;
+  }
+  updateGPU(renderer,body,force=false) {
+    this.gpu.update(renderer,body,LOOKS[state.flavour].sigma,force);
+  }
+}
 
 
 function applyFlavour(name) {
@@ -1076,6 +1015,7 @@ export function createSoftbodyJellySystem({
 
   body = new SoftBody(makeFlowerCage());
   optics = new RefractiveLightField(body.surface);
+  if (camera) optics.setCamera(camera);
 
   jellyMaterial = createJellyMaterial();
   jelly = new THREE.Mesh(body.surface.geometry, jellyMaterial);
@@ -1243,6 +1183,9 @@ export function createSoftbodyJellySystem({
     },
     reset,
     nudge,
+    updateGPU(renderer, force = false) {
+      if (renderer) optics.updateGPU(renderer, body, force);
+    },
     update,
     metrics() {
       return {

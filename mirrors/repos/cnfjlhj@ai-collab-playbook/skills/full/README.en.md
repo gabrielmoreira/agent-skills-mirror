@@ -31,9 +31,9 @@ If you want to go back to the repository homepage, see [`../../README.en.md`](..
 
 - [`proactive-explorer/`](proactive-explorer/): formalize the habit of exploring facts before asking the user for information.
 - [`all-plan/`](all-plan/): a lightweight multi-perspective planning entry point with scoring and correction loops.
-- [`human-machine-brainstorm/`](human-machine-brainstorm/): a CCB-flavored human-in-the-loop brainstorming workflow rather than a universal multi-agent framework.
 - [`spec-first-mvp/`](spec-first-mvp/): add a small gate for exciting ideas by writing a spec seed, running a throwaway MVP probe, and only then deciding whether to enter full design or implementation.
-- [`prompt-polisher/`](prompt-polisher/): turn messy notes or transcripts into a better prompt for Claude 4.x style workflows.
+- [`research-lead-sidecar/`](research-lead-sidecar/): keep the lead on the critical path while 1-2 bounded sidecars handle low-coupling work in research-led multi-agent tasks.
+- [`prompt-polisher/`](prompt-polisher/): turn messy notes or transcripts into a concise reusable prompt without assuming a specific target model.
 - [`session-recovery-codex/`](session-recovery-codex/): recover Codex session state from a session id or recent session list.
 - [`skill-creator/`](skill-creator/): methods and tooling for turning personal workflows into reusable skills.
 - [`skill-governance-loop/`](skill-governance-loop/): govern skills from real cases, version updates, and keep/disable/archive decisions while clarifying what belongs in `AGENTS.md` versus a skill.

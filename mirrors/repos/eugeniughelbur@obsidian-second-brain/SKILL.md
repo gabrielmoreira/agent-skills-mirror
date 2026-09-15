@@ -33,7 +33,8 @@ description: >
 Try these methods in order. Use the first one available:
 
 **Method 0 - SessionStart hook (if configured):**
-If `hooks/load_vault_context.py` is wired as a SessionStart hook in `~/.claude/settings.json`, `_CLAUDE.md` is injected into context automatically at session start. Skip step 1 below.
+If `hooks/load_vault_context.py` is wired as a SessionStart hook in `~/.claude/settings.json`, `_CLAUDE.md` is injected into context automatically at session start.
+Skip step 1 only when the manual is actually in your context, not merely because the hook is configured. Claude Code caps hook context at 10,000 characters, so a larger manual cannot be injected; in that case the hook says so in as many words ("NOT loaded - read it") and you read the file yourself (#270). A vault whose `.claude/CLAUDE.md` holds `@../_CLAUDE.md` sidesteps the cap entirely - Claude Code imports that natively at any size.
 To wire it: `bash scripts/setup.sh "/path/to/vault"` or run `/obsidian-setup`.
 
 **Method A - Direct filesystem (default, always works):**
@@ -53,7 +54,7 @@ Read <vault>/_CLAUDE.md
 If it exists: follow its rules exactly - they override the defaults in this skill. Where `_CLAUDE.md` is silent, fall back to the defaults below.
 If it doesn't exist: use the defaults in this skill, then offer to create one.
 
-If the SessionStart hook is active, `_CLAUDE.md` is already in context - skip this step.
+Skip this step only if `_CLAUDE.md` is actually in your context already - the SessionStart hook injects it, but not when the manual is over Claude Code's 10,000-character hook limit, and the hook says which case you are in. If you cannot quote a rule from it, you do not have it: read the file.
 
 ### 2. First time with a new user → run discovery
 

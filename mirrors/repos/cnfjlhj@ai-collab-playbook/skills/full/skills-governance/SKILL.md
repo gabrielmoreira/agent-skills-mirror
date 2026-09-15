@@ -1,7 +1,6 @@
 ---
 name: skills-governance
 description: Use when auditing a large local skill collection, identifying duplicate or imported skills, comparing skill roots, or deciding what to keep, disable, or archive across Codex and adjacent agent skill directories.
-user-invocable: true
 ---
 
 # Skills Governance

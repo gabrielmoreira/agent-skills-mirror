@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `EveryInc/compound-engineering-plugin` — 26 default patterns, 0 followed patterns, 446 file(s) materialized.
+Mirror of `EveryInc/compound-engineering-plugin` — 26 default patterns, 0 followed patterns, 447 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `EveryInc/compound-engineering-plugin` — 26 default patterns, 0 foll
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 446 |
+| Files         | 447 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -502,9 +502,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 441 | ✓ | [`tests/skill-eval-cell/fixtures/refresh-worth-lens/AGENTS.md`](tests/skill-eval-cell/fixtures/refresh-worth-lens/AGENTS.md) |
 | 442 | ✓ | [`tests/skill-eval-cell/fixtures/setup-instructions-covered/AGENTS.md`](tests/skill-eval-cell/fixtures/setup-instructions-covered/AGENTS.md) |
 | 443 | ✓ | [`tests/skill-eval-cell/fixtures/setup-instructions-gap/AGENTS.md`](tests/skill-eval-cell/fixtures/setup-instructions-gap/AGENTS.md) |
-| 444 | ✓ | [`tests/skill-eval-cell/fixtures/standards-designated/AGENTS.md`](tests/skill-eval-cell/fixtures/standards-designated/AGENTS.md) |
-| 445 | ✓ | [`tests/skill-eval-cell/fixtures/standards-fallback-only/AGENTS.md`](tests/skill-eval-cell/fixtures/standards-fallback-only/AGENTS.md) |
-| 446 | ✓ | [`tests/skill-eval-cell/fixtures/standards-mixed-scope/AGENTS.md`](tests/skill-eval-cell/fixtures/standards-mixed-scope/AGENTS.md) |
+| 444 | ✓ | [`tests/skill-eval-cell/fixtures/standards-compliant/AGENTS.md`](tests/skill-eval-cell/fixtures/standards-compliant/AGENTS.md) |
+| 445 | ✓ | [`tests/skill-eval-cell/fixtures/standards-designated/AGENTS.md`](tests/skill-eval-cell/fixtures/standards-designated/AGENTS.md) |
+| 446 | ✓ | [`tests/skill-eval-cell/fixtures/standards-fallback-only/AGENTS.md`](tests/skill-eval-cell/fixtures/standards-fallback-only/AGENTS.md) |
+| 447 | ✓ | [`tests/skill-eval-cell/fixtures/standards-mixed-scope/AGENTS.md`](tests/skill-eval-cell/fixtures/standards-mixed-scope/AGENTS.md) |
 
 ---
 

@@ -53,8 +53,8 @@
       .badge-row { display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; margin-bottom: 24px; }
       .badge { border-radius: 999px; padding: 7px 12px; background: #e8f2ff; color: #064f9e; font-size: 12px; font-weight: 700; }
       .badge.gray { background: #eeeeef; color: #4d4d52; }
-      h1 { margin: 0; font-size: clamp(36px, 6.2vw, 72px); line-height: 1.03; letter-spacing: -0.055em; overflow-wrap: anywhere; }
-      .subtitle { max-width: 780px; margin: 22px auto 0; color: var(--muted); font-size: clamp(17px, 2.1vw, 22px); }
+      h1 { margin: 0; font-size: 72px; line-height: 1.03; letter-spacing: 0; overflow-wrap: anywhere; }
+      .subtitle { max-width: 780px; margin: 22px auto 0; color: var(--muted); font-size: 22px; }
       .container { max-width: 1080px; margin: 0 auto; padding: 0 24px 56px; }
       .grid-3, .two-col, .ref-list { display: grid; gap: 16px; min-width: 0; }
       .grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
@@ -69,13 +69,17 @@
       .metric .num { display: block; font-size: 32px; line-height: 1; font-weight: 800; }
       .metric .label { display: block; margin-top: 9px; color: var(--muted); font-size: 14px; }
       section.card { border-radius: 28px; padding: clamp(26px, 4vw, 48px); margin: 22px 0; }
-      h2 { margin: 0 0 18px; font-size: clamp(28px, 4vw, 44px); line-height: 1.08; letter-spacing: -0.045em; }
+      h2 { margin: 0 0 18px; font-size: 44px; line-height: 1.08; letter-spacing: 0; }
       h3 { margin: 28px 0 10px; font-size: 21px; line-height: 1.24; }
       p { margin: 0 0 14px; }
       p, li, td, th, .metric .label, .subtitle { overflow-wrap: anywhere; word-break: break-word; }
       .lead { color: #36363a; font-size: 18px; }
       .muted { color: var(--muted); }
       .callout, .mini-card, .ref { border: 1px solid var(--line); background: #f8f8fa; border-radius: 18px; padding: 18px; }
+      .discussion-role { border-top: 1px solid var(--line); padding: 22px 0; }
+      .discussion-role:first-of-type { border-top: 0; padding-top: 0; }
+      .role-prompt { margin: 12px 0 16px; padding: 16px 18px; border-left: 4px solid var(--blue); background: #f5f9ff; color: #34343a; border-radius: 0 14px 14px 0; }
+      .role-insight { padding: 18px; border: 1px solid var(--line); background: #fafafa; border-radius: 18px; }
       .formula, .table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 16px; }
       .formula { padding: 12px 14px; background: #fafafa; }
       table { width: 100%; border-collapse: collapse; font-size: 14px; }
@@ -89,7 +93,9 @@
         .links { display: none; }
         .hero { padding: 102px 18px 48px; }
         .container { width: 100vw; max-width: 100vw; padding-left: 16px; padding-right: 16px; }
-        h1 { max-width: calc(100vw - 36px); margin: 0 auto; font-size: 34px; line-height: 1.12; letter-spacing: -0.04em; }
+        h1 { max-width: calc(100vw - 36px); margin: 0 auto; font-size: 34px; line-height: 1.12; letter-spacing: 0; }
+        h2 { font-size: 32px; }
+        .subtitle { font-size: 18px; }
         .grid-3, .two-col, .ref-list { grid-template-columns: 1fr; }
         section.card { border-radius: 22px; padding: 24px 18px; }
       }
@@ -105,6 +111,7 @@
           <a href="#experiments">实验</a>
           <a href="#results">结果</a>
           <a href="#review">评论</a>
+          <a href="#discussion-roles">讨论角色</a>
           <a href="#references">Reference</a>
         </div>
       </div>
@@ -119,6 +126,52 @@
     </header>
     <main class="container">
       __CONTENT__
+      <section class="card" id="discussion-roles">
+        <h2>Other Discussion Roles / 其他讨论角色</h2>
+        <p class="lead">以下七个角色使用 MIT MAS.S60 课程原始 prompt，从不同责任位置审视同一篇论文。</p>
+
+        <article class="discussion-role" data-discussion-role="scientific-peer-reviewer">
+          <h3>Scientific Peer Reviewer</h3>
+          <blockquote class="role-prompt" lang="en">The paper has not been published yet and is currently submitted to a top conference where you’ve been assigned as a peer reviewer. Complete a full review of the paper answering all prompts of the official review form of the top venue in this research area (e.g., NeurIPS). This includes recommending whether to accept or reject the paper.</blockquote>
+          <div class="role-insight">__ROLE_SCIENTIFIC_PEER_REVIEWER_INSIGHT__</div>
+        </article>
+
+        <article class="discussion-role" data-discussion-role="archaeologist">
+          <h3>Archaeologist</h3>
+          <blockquote class="role-prompt" lang="en">This paper was found buried under ground in the desert. You’re an archeologist who must determine where this paper sits in the context of previous and subsequent work. Find and report on one older paper cited within the current paper that substantially influenced the current paper and one newer paper that cites this current paper.</blockquote>
+          <div class="role-insight">__ROLE_ARCHAEOLOGIST_INSIGHT__</div>
+        </article>
+
+        <article class="discussion-role" data-discussion-role="academic-researcher">
+          <h3>Academic Researcher</h3>
+          <blockquote class="role-prompt" lang="en">You’re a researcher who is working on a new project in this area. Propose an imaginary follow-up project not just based on the current but only possible due to the existence and success of the current paper.</blockquote>
+          <div class="role-insight">__ROLE_ACADEMIC_RESEARCHER_INSIGHT__</div>
+        </article>
+
+        <article class="discussion-role" data-discussion-role="industry-practitioner">
+          <h3>Industry Practitioner</h3>
+          <blockquote class="role-prompt" lang="en">You work at a company or organization developing an application or product of your choice (that has not already been suggested in a prior session). Bring a convincing pitch for why you should be paid to implement the method in the paper, and discuss at least one positive and negative impact of this application.</blockquote>
+          <div class="role-insight">__ROLE_INDUSTRY_PRACTITIONER_INSIGHT__</div>
+        </article>
+
+        <article class="discussion-role" data-discussion-role="hacker">
+          <h3>Hacker</h3>
+          <blockquote class="role-prompt" lang="en">You’re a hacker who needs a demo of this paper ASAP. Implement a small part or simplified version of the paper on a small dataset or toy problem. Prepare to share the core code of the algorithm to the class and demo your implementation. Do not simply download and run an existing implementation – though you are welcome to use (and give credit to) an existing implementation for “backbone” code.</blockquote>
+          <div class="role-insight">__ROLE_HACKER_INSIGHT__</div>
+        </article>
+
+        <article class="discussion-role" data-discussion-role="private-investigator">
+          <h3>Private Investigator</h3>
+          <blockquote class="role-prompt" lang="en">You are a detective who needs to run a background check on one of the paper’s authors. Where have they worked? What did they study? What previous projects might have led to working on this one? What motivated them to work on this project? Feel free to contact the authors, but remember to be courteous, polite, and on-topic.</blockquote>
+          <div class="role-insight">__ROLE_PRIVATE_INVESTIGATOR_INSIGHT__</div>
+        </article>
+
+        <article class="discussion-role" data-discussion-role="social-impact-assessor">
+          <h3>Social Impact Assessor</h3>
+          <blockquote class="role-prompt" lang="en">Identify how this paper self-assesses its (likely positive) impact on the world. Have any additional positive social impacts left out? What are possible negative social impacts that were overlooked or omitted?</blockquote>
+          <div class="role-insight">__ROLE_SOCIAL_IMPACT_ASSESSOR_INSIGHT__</div>
+        </article>
+      </section>
       <section class="card" id="references">
         <h2>Reference / Evidence</h2>
         __PUBLIC_REFERENCES__

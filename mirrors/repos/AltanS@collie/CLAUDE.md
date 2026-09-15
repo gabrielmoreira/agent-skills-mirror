@@ -307,7 +307,12 @@ tests nothing Vitest already covers.
 
 - **Tier 1** runs in CI, on every push. `cd web && bun run e2e` builds the web bundle, serves it,
   and drives Chromium at `phone` (390x844) and `tablet` (820x1180), declared as four projects in
-  `web/playwright.config.ts`: `app-phone`, `app-tablet`, `states-phone`, `states-tablet`. The `app`
+  `web/playwright.config.ts`: `app-phone`, `app-tablet`, `states-phone`, `states-tablet`, plus a
+  fifth, `app-phone-webkit`, the same `app` specs under WebKit, Safari's engine. That one is always
+  on in CI and opt-in elsewhere (`COLLIE_E2E_WEBKIT=1`), because Playwright's WebKit build cannot
+  launch on Fedora; `make e2e-webkit` at the workspace root runs it inside an Ubuntu distrobox
+  there. It exists because Safari disagrees with Chromium on geometry a unit test never sees
+  (`web/e2e/belt.spec.ts` holds the first such case, 2026-09-14). The `app`
   target serves `web/dist` and answers every `/api/*` request from `web/e2e/fixtures/api.ts`; it
   never touches a live bridge. The `states` target runs the playground on port 5199, the way `make
   playground` runs it, and answers no API at all. Cases live under `web/e2e/`: today
@@ -447,6 +452,13 @@ lint guard, the crew-wire guard or the `flake.lock` guard.
 - **The operator's rows in `commands.toml` replace the shipped command catalog on the panes they
   address, never merge into it** ([ADR 0018](./.adr/0018-operator-command-rows-replace-the-catalog.md));
   the bridge re-reads the file behind an mtime check, so edits are live and need no restart.
+- **That replace-law runs PER SURFACE, and the harness bar is the second surface** — a row with
+  `bar = true` goes on the bar above the keys as well as into the palette, and the bar's
+  replace-or-fall-back runs over the `bar = true` rows ALONE, so one bar row never blanks the Agent
+  palette ([ADR 0043](./.adr/0043-operator-bar-rows-replace-the-bar-not-the-palette.md)).
+  `web/src/lib/harness-bar.ts` is a VIEW of `agent-commands.ts`, never a second catalog: a command it
+  spells that the catalog lacks is a failing test, and a row for a capture-sourced harness needs an
+  `evidence` path that exists. `commandsFor` is unchanged.
 - **`keys.toml` is `commands.toml`'s sibling** — the operator's rows replace the Keys tray's shipped
   Ctrl presets on the panes they address (ADR 0018 again), and only those presets: the tray's
   keyboard is fixed. Both files share one reader (`bridge/operator-file.ts`) and one scope ladder

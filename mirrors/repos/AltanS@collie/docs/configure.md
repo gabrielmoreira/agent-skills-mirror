@@ -10,6 +10,53 @@ COLLIE_PUBLIC_HOSTS=myhost.tail1234.ts.net    # only behind your OWN proxy; on a
                                               # start` discovers this for you
 ```
 
+## The config file
+
+Every Collie setting can be written in a TOML file. Write one with every setting and its default:
+
+```bash
+collie config init
+```
+
+That writes `~/.collie/config.toml`, the machine's own statement, and prints the path. Every key in
+it is commented out, so the file as written changes nothing: uncomment a key and restart. Run
+`collie config init --instance` instead to write `config.toml` beside your `.env`, which overrides
+the machine's file for this one instance.
+
+| file | layer | how it is located |
+| --- | --- | --- |
+| `~/.collie/config.toml` | machine | your home directory, or the path in `COLLIE_CONFIG` |
+| `<config-dir>/config.toml` | instance | beside the `.env` the CLI already resolves |
+
+The instance file wins key by key, never file by file: a key absent from it keeps the machine file's
+value. There is no `config.<instance>.toml`, because on a Herdr-managed install the config dir is
+already per instance, and on a binary install it is `~/.config/collie`. A second Collie on one host
+therefore puts its own settings in its own config dir, see
+[docs/deployment.md → Several Collies on one host](deployment.md#several-collies-on-one-host). A
+`.collie/` inside a project directory is not read at all.
+
+Three verbs drive the file:
+
+1. `collie config init` writes a commented file with every setting and its default.
+2. `collie config check` validates the two files that would be read, or one file you name.
+3. `collie config show` prints both paths and every setting with its value and where it came from.
+
+The precedence runs default, then `~/.collie/config.toml`, then `<config-dir>/config.toml`, then the
+process environment, which includes your `.env`. `collie config show` names the winner for every key
+at once, so "why is my poll interval still 1500" is answered in one line.
+
+A broken key never stops the bridge. An unknown key or a wrong type is a problem that
+`collie config check` prints and `collie doctor` reports, and that key alone falls back to what the
+environment says. Every other key in the file still applies.
+
+Collie reads `config.toml` only during startup. Run `collie restart` after modifying it.
+
+> **Note.** A file holding `[push] vapid_private` or `[stt] stt_key` is held to mode 600, exactly as
+> your `.env` is. If Collie cannot tighten it, those keys alone are dropped and `collie doctor` says
+> so.
+
+## The environment still wins
+
 Collie loads configuration from a `.env` file in `~/.config/collie`. If Herdr manages the
 installation, the CLI queries Herdr for the plugin config directory (typically
 `~/.config/herdr/plugins/config/herdr.collie`). Both paths resolve consistently across CLI commands,
@@ -27,13 +74,34 @@ Paths below use `~/.config/collie/…`. On a Herdr-managed install, replace that
 
 Collie reads `.env` only during startup. Run `collie restart` after modifying it.
 
-The [`.env.example`](../.env.example) file lists all options.
+The [`.env.example`](../.env.example) file lists all options, and so does
+`collie config init --print`.
 
 It includes `COLLIE_PORT`, `COLLIE_SERVE_MODE=http` (for Headscale or `.internal` domains), and
 `COLLIE_SERVE_PORT` (to expose HTTPS on a port other than `:443`; see
 [docs/deployment.md → Several Collies on one host](deployment.md#several-collies-on-one-host)). The
 CLI reads the serve parameters to configure `tailscale serve`, rather than passing them to the
 bridge.
+
+## What each section holds
+
+The config file groups every setting under a `[section]`. The environment name of a key is
+`COLLIE_` plus the key in capitals, so `[bridge] poll_ms` is `COLLIE_POLL_MS`.
+
+| section | what it holds |
+| --- | --- |
+| `bridge` | poll cadence, how many lines are read, where state lives |
+| `network` | the port, the bind address, allowed hosts and origins |
+| `mux` | which multiplexer this collie mirrors, and where it lives |
+| `access` | the Tailscale identity gate, the device header, the audit trail |
+| `push` | the three Web Push (VAPID) values |
+| `uploads` | the attachment size cap and the extra text types accepted |
+| `journal` | where each harness keeps its own session log |
+| `crew` | the budgets a lead gives a member, and a peer's own browser |
+| `standby` | the deputy's second door: port, bind address, arming |
+| `update` | where releases come from, how many versions stay |
+| `serve` | whether Collie publishes the front door, and on what |
+| `stt` | speech-to-text, absent until `collie stt setup` runs |
 
 To read history from multiple agent home directories, provide a comma-separated list in
 `COLLIE_TRANSCRIPT_ROOT`.
@@ -52,14 +120,19 @@ Without this setting, the UI will load as an empty page. See
 ## Your own slash commands
 
 Put machine-specific commands, such as a Herdr plugin `/fork-in-herdr` or a custom `/deploy`, in
-`commands.toml`. This is one of four config files that share the same reader and load pattern:
+`commands.toml`. This is one of six config files that share the same reader and load pattern:
 
 | file | scope | confirm/danger flag | live reload |
 | --- | --- | --- | --- |
 | `commands.toml` | optional, per row | `confirm = true` | yes, no restart needed |
 | `keys.toml` | optional, per row | `danger = true` | yes, no restart needed |
 | `quick-replies.toml` | optional, per row | none | yes, no restart needed |
+| `theme.toml` | none, the faces are a device setting | none | yes, on the next page reload |
 | `launchers.toml` | none, matched by exact command instead | none | yes, but an already-open tab re-reads the rows only on its next load |
+| `cache-rules.toml` | none, matched by exact rule id instead | none | yes, no restart needed |
+
+These files are unchanged by the config file. They share the instance `config.toml`'s
+directory, they keep their own formats and their own live reload, and nothing merges them into it.
 
 Any row with the flag set requires a two-tap confirmation before it fires. Edits to any of these
 files take effect without restarting the service. If Collie rejects a row, `journalctl --user -u
@@ -74,12 +147,69 @@ cp commands.toml.example ~/.config/collie/commands.toml
 scope = "omp"                # optional; omit for every pane
 command = "/fork-in-herdr"
 description = "Fork this conversation into a new herdr tab"
+
+[[commands]]
+scope = "claude"
+command = "/statusline"
+description = "Set the status line"
+bar = true
+bar_label = "Status"
 ```
 
 A pane that matches your configured rows displays only those rows. The narrowest row wins, as
 documented in [ADR 0018](../.adr/0018-operator-command-rows-replace-the-catalog.md).
 
 To verify, open a pane and tap **/**; your rows appear on the first screen.
+
+### Putting a command on the actions row
+
+`bar = true` also puts the row on the actions row, the one row of buttons above the keyboard. A bar
+row is still an ordinary palette row, so it appears on both surfaces. `bar_label` is the button's
+text and defaults to the command name without its slash.
+
+The actions row is a belt, one full-bleed band above the keyboard. Collie's own controls sit
+directly on the band: Keys, Type, Quick, Agent and the display gear. The running harness's own
+commands sit beside them, in a section tinted with the harness's brand colour, so you can see at a
+glance which buttons type into the agent. A sideways drag scrolls the belt; nothing is dropped.
+
+Each harness ships its own buttons, in this order:
+
+| Harness | Buttons |
+| --- | --- |
+| Claude Code | Model, Effort, Compact, Resume |
+| Codex | Model, Compact, Resume |
+| pi | Model, Compact, Tree, Resume |
+| omp | Model, Compact, Tree, Resume |
+
+Codex and pi have no Effort button. Codex's `/model` picker sets the model and the reasoning effort
+on one screen, so one button already reaches both. pi has no effort or thinking command at all;
+that dial lives inside `/settings`, a modal the keys pad cannot usefully drive.
+
+omp's Tree button sits between Compact and Resume. It opens omp's own session tree in the mirror, a
+picker that jumps to any earlier point in the session. The same command, `/tree`, is also in omp's
+command palette.
+
+Every harness button sends its command bare. **Model sends `/model`, and the agent's own model
+picker takes over in the pane.** Collie keeps no list of model names, because that list is the
+harness's and it changes without telling us. Effort works the same way.
+
+Your bar rows replace the shipped harness segment for the panes they address, and leave it alone
+everywhere else. The Agent palette is a separate surface and one bar row never blanks it
+([ADR 0043](../.adr/0043-operator-bar-rows-replace-the-bar-not-the-palette.md)).
+
+A `bar_label` longer than 12 characters is shortened and the button still appears. A `bar` that is
+not `true` or `false` drops that one row, the same way a bad `confirm` does.
+
+The row sends while the agent is busy, the same as the command palette. The checkmark appears only
+when the pane took the text.
+
+A Switch button sits at the belt's right end and opens the pane switcher. It draws the layers mark
+alone, behind a hairline, and carries no word. A drag up, anywhere on the belt, opens the same
+switcher. A sideways drag scrolls the belt instead.
+
+To verify, open a pane running Claude Code, Codex, pi or omp; the tinted segment sits at the right
+of the row above the keyboard. Turn that segment off per device in **Settings → Harness shortcuts**;
+Collie's own controls stay.
 
 ## Your own key presets
 
@@ -174,8 +304,8 @@ This file is the allowlist. `POST /api/launch` accepts only a `command` that mat
 exactly, so a phone can start nothing that is not in the file. Changes apply immediately without a
 restart, but an already-open tab re-reads the rows only on its next load.
 
-Your rows appear in two places: a **Launch** section on the dashboard, which folds like Spaces and
-Recent, and a **Launch** section in the switcher sheet (swipe up from a pane). A pinned row shows
+Your rows appear in two places: a **Launch** section on the dashboard, which folds like Spaces,
+and a **Launch** section in the switcher sheet (swipe up from a pane). A pinned row shows
 its folder, shortened under home; a cwd-less row says "here" in the switcher (the dashboard already
 implies home, so it says nothing there). Declare no rows and neither section appears.
 
@@ -222,6 +352,99 @@ Three behaviors to note:
   transcript, and rendered markdown retain their own typography.
 - **Live on next reload.** Changes do not require a restart, taking effect on the next page reload.
   Invalid configurations log errors visible via `journalctl --user -u collie -n 20`.
+
+## Your own cache rules
+
+Use `cache-rules.toml` to change a prompt-cache lifetime that your provider changed.
+
+```bash
+cp cache-rules.toml.example ~/.config/collie/cache-rules.toml
+```
+
+Collie ships one rule per harness and provider. Collie read each rule from a vendor page on a
+recorded date. A vendor can change that value without notice. A gateway, a proxy that sits between
+your agent and the vendor, can change it too. Use this file to override values until Collie ships an
+update.
+
+```toml
+[[rule]]
+id = "claude.api"
+ttl_seconds = 3600
+source_url = "https://platform.claude.com/docs/en/build-with-claude/prompt-caching"
+retrieved = "2026-09-12"
+note = "our gateway sends ttl 1h on every request"
+```
+
+Collie keeps a row only when all four rules hold. `id` must name a shipped rule. `ttl_seconds` must
+be an integer from 1 to 86400. `source_url` must be a non-empty string. `retrieved` must parse as a
+valid `YYYY-MM-DD` date, and it must not be later than today. Invalid rows are dropped and logged.
+The rest of the file still applies.
+
+Two more rules decide what a file means. Two rows with the same `id` are not an error: the later row
+wins. A `note` you write as an empty string drops the whole row, so leave the field out instead.
+
+A row binds at the tier rule, the one its `id` names. The per-model split under that tier moves with
+it, so one row covers every model on that tier.
+
+> **Note.** You may change a number. You may not remove its source page or retrieval date. The rule
+> catalog requires both fields.
+
+`collie doctor` checks three items. `cache-claims` warns when nobody has re-checked a shipped rule in
+180 days. `cache-rules` names every dropped row and the reason it was dropped. `cache-env` flags when
+you set `ENABLE_PROMPT_CACHING_1H` or `FORCE_PROMPT_CACHING_5M` in your shell. The bridge runs as a
+separate service and cannot read your agent's environment. Mirror these Claude Code variables here so
+the bridge can read them.
+
+These are the rule ids you may write.
+
+| rule id | what it covers |
+| --- | --- |
+| `claude.subscription` | Claude Code on a Claude subscription, Pro or Max |
+| `claude.api` | Claude Code on an API key or a third-party provider |
+| `codex.subscription` | Codex CLI signed in with a ChatGPT plan |
+| `codex.api` | Codex CLI on an OpenAI API key |
+| `pi.anthropic`, `opencode.anthropic` | pi or opencode talking to Anthropic |
+| `pi.openai`, `opencode.openai` | pi or opencode talking to OpenAI |
+| `pi.google`, `opencode.google` | pi or opencode talking to Google |
+| `pi.unknown`, `opencode.unknown` | pi or opencode on an upstream that documents no TTL |
+
+## The prompt-cache countdown
+
+A chip on each agent pane shows how long that agent's prompt cache stays warm.
+
+Every supported harness caches the current conversation. Harnesses charge lower rates while that
+cache stays warm. The chip counts down idle time since the agent's last request. It does not track
+total session age. Each new request resets the timer.
+
+The chip's hourglass carries the state in one of three colours, and the number beside it stays grey.
+The hourglass is green while the window is wide, red during the final quarter of it, and blue once
+the window expires or a turn pays the full rate. The chip says `cold` in the blue state, and `<1m`
+instead of seconds when under one minute remains.
+
+The chip sits at the right end of the pane header's second line, after the pane's workspace. On a
+crew the machine's name sits beside it, on the same line. Tap the chip to view the underlying rule:
+the rule id, the vendor source page, and the retrieval date.
+
+> **Note.** Values are vendor claims with recorded dates, not live measurements, unless marked
+> **measured**. Claude Code writes cache windows directly to its transcript, so Claude panes are
+> usually measured.
+
+Some panes show no chip. This is expected. A pane shows a chip only after its agent completes one
+turn. Collie makes no assumptions before measurement. A pane shows nothing if its harness lacks a
+journal adapter, or if its vendor publishes no lifetime data.
+
+Collie can also send push alerts to a phone before a cache expires. One variable controls the timing.
+
+| var | default | meaning |
+| --- | --- | --- |
+| `COLLIE_CACHE_WARN_SECONDS` | `300` | how many seconds before a watched pane's cache expires the push goes out; floor 30, ceiling 3600 |
+
+This setting controls only the push alert. It does **not** control when the chip turns red. The
+red threshold is fixed at one-quarter of each rule's TTL. The push itself fires at whichever is
+shorter, this setting or half the pane's own cache lifetime, so a five-minute cache (Codex,
+OpenCode, pi, omp) warns about two and a half minutes before it goes cold, even though that is
+less than the configured 300 seconds. To enable warnings for specific panes or all panes, see
+[voice-and-push.md](voice-and-push.md#which-alerts-collie-sends).
 
 ## Attachments
 

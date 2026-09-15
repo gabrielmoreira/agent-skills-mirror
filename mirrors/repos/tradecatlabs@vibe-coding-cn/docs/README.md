@@ -14,7 +14,7 @@
 | 目录 | 定位 | 首选入口 |
 |:---|:---|:---|
 | [getting-started](./getting-started/) | 从零开始的入门教程 | [Vibe Coding 经验](./getting-started/vibe-coding-experience.md) / [学习地图](./getting-started/learning-map.md) |
-| [concepts](./concepts/) | 核心概念、问题求解、关键词系统与工程思想 | [问题求解](./concepts/problem-solving.md) / [拼好码](./concepts/glue-coding.md) / [关键词系统](./concepts/keyword-system.md) |
+| [concepts](./concepts/) | 核心概念、问题求解、状态转移闭环、关键词系统与工程思想 | [问题求解](./concepts/problem-solving.md) / [Vibe Coding 状态转移闭环](./concepts/vibe-coding-state-transition.md) / [拼好码](./concepts/glue-coding.md) |
 | [philosophy](./philosophy/) | 哲学方法论、思维模型与底层认知模型 | [思维模型](./philosophy/thinking-models.md) / [方法论工具箱](./philosophy/methodology-toolbox.md) |
 | [references](./references/) | 工程实践、技术栈、模板和检查清单 | [项目架构模板](./references/project-architecture-template.md) / [质量门禁](./references/quality-gates-and-pitfalls.md) |
 | [research](../research/) | 根级研究域：新技术、优秀 repo 与工程范式研究 | [研究域治理契约](../research/research-domain-contract.md) / [研究迁移综合](../research/research-transfer-synthesis.md) |
@@ -39,6 +39,7 @@
 
 - [README](./concepts/README.md) - 核心概念索引。
 - [问题求解](./concepts/problem-solving.md) - 用目标、现状、差距、标准、约束、对象和路径定义问题。
+- [Vibe Coding 状态转移闭环](./concepts/vibe-coding-state-transition.md) - 用目标、约束、行动、证据和版本统一理解 Vibe Coding。
 - [拼好码](./concepts/glue-coding.md) - 复用成熟能力，用胶水代码连接、编排、适配业务流程。
 - [系统构建方法](./concepts/system-building.md) - 自顶向下、自底向上与分而治之的组合使用。
 - [开发范式演进](./concepts/development-paradigms.md) - 软件工程组织方式的演进。
@@ -83,11 +84,7 @@
 - [Harness 工程解析](../research/harness/harness-engineering.md) - Harness Engineering 的工程控制、评估器与反馈闭环解析。
 - [walkinglabs/learn-harness-engineering 研究域](../research/walkinglabs-learn-harness-engineering/README.md) - Harness Engineering 课程、模板、Skill 与审计工具。
 - [mindfold-ai/Trellis 研究域](../research/mindfold-ai-trellis/README.md) - 跨平台 Agent Harness、任务规格与会话记忆系统。
-- [vibe-cybersecurity-cn](../research/vibe-cybersecurity-cn/README.md) - 授权边界内的 Agent 网络安全自动化研究与工程项目。
-- [vibe-harness-cn](../research/vibe-harness-cn/README.md) - 治理 Agent Harness 与问题求解算子库的元 Harness 项目。
-- [vibemathing/vibe-mathing-cn-public 研究域](../research/vibe-mathing-cn-public/README.md) - 数学研究、证据闭环与可信验证工作台。
-- [vibemathing/vibe-mathing-cn-public 研究分析](../research/vibe-mathing-cn-public/analysis.md) - 数学研究工作流、迁移价值和采用边界的结构化研究。
-- [vibemathing/vibe-mathing-cn-public 深度研究](../research/vibe-mathing-cn-public/deep-dive.md) - 证据闭环、有界运行时和公共边界的 L2 研究。
+- [外部源事实层](../research/facts/README.md) - 三个外部仓库的已提交源文件树、提交事实、哈希和隐私边界。
 - [tmux 蜂群协作](../research/tmux-ai-swarm.md) - 用 tmux 让多个 AI 终端可感知、可调度、可救援的实验性协作范式。
 - [Aider-AI/aider 研究域](../research/aider-ai-aider/README.md) - 终端 AI 结对编程工具。
 - [Aider-AI/aider 研究分析](../research/aider-ai-aider/analysis.md) - 结构化研究结论、可借鉴点、风险和下一轮任务。
@@ -202,7 +199,7 @@
 ## 使用方式
 
 - 只想快速开始：从 [getting-started](./getting-started/README.md) 进入。
-- 已经有项目问题：先读 [问题求解](./concepts/problem-solving.md)，再读 [质量门禁与常见坑](./references/quality-gates-and-pitfalls.md)。
+- 已经有项目问题：先读 [问题求解](./concepts/problem-solving.md) 和 [Vibe Coding 状态转移闭环](./concepts/vibe-coding-state-transition.md)，再读 [质量门禁与常见坑](./references/quality-gates-and-pitfalls.md)。
 - 需要给 AI Agent 上下文：先给它 [AGENTS](./AGENTS.md)，再给它当前任务对应目录的 README 和具体正文文档。
 - 需要规范执行顺序：读 [开发流程](./workflow/development-process.md)。
 - 新增内容时，先判断它属于教程、概念、哲学、参考还是研究；研究内容进入根目录 `research/`。
@@ -216,8 +213,9 @@
 1. [Vibe Coding 经验](./getting-started/vibe-coding-experience.md)
 2. [学习地图](./getting-started/learning-map.md)
 3. [问题求解](./concepts/problem-solving.md)
-4. [拼好码](./concepts/glue-coding.md)
-5. [质量门禁与常见坑](./references/quality-gates-and-pitfalls.md)
+4. [Vibe Coding 状态转移闭环](./concepts/vibe-coding-state-transition.md)
+5. [拼好码](./concepts/glue-coding.md)
+6. [质量门禁与常见坑](./references/quality-gates-and-pitfalls.md)
 
 #### 开发者路径
 

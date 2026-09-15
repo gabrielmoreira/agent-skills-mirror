@@ -50,6 +50,11 @@ CARD_HEIGHT = 1440
 # 安全边距: ~40px
 SAFE_HEIGHT = CARD_HEIGHT - 120 - 100 - 80 - 40  # ~1100px
 
+
+def chromium_launch_kwargs() -> dict:
+    executable = os.environ.get('PLAYWRIGHT_CHROMIUM_EXECUTABLE')
+    return {'executable_path': executable} if executable else {}
+
 # 样式配置
 STYLES = {
     "purple": {
@@ -294,13 +299,27 @@ def generate_cover_html(metadata: dict, style_key: str = "purple") -> str:
     emoji = metadata.get('emoji', '📝')
     title = metadata.get('title', '标题')
     subtitle = metadata.get('subtitle', '')
-    
-    # 限制标题和副标题长度
-    if len(title) > 15:
-        title = title[:15]
-    if len(subtitle) > 15:
-        subtitle = subtitle[:15]
-    
+
+    title_len = len(title)
+    if title_len <= 6:
+        title_size = 150
+    elif title_len <= 10:
+        title_size = 130
+    elif title_len <= 18:
+        title_size = 100
+    elif title_len <= 30:
+        title_size = 80
+    else:
+        title_size = 60
+
+    subtitle_len = len(subtitle)
+    if subtitle_len <= 15:
+        subtitle_size = 72
+    elif subtitle_len <= 30:
+        subtitle_size = 58
+    else:
+        subtitle_size = 48
+
     # 暗黑模式特殊处理
     is_dark = style_key == "dark"
     text_color = "#ffffff" if is_dark else "#000000"
@@ -335,19 +354,22 @@ def generate_cover_html(metadata: dict, style_key: str = "purple") -> str:
         }}
         .cover-emoji {{ font-size: 180px; line-height: 1.2; margin-bottom: 50px; }}
         .cover-title {{
-            font-weight: 900; font-size: 130px; line-height: 1.4;
+            font-weight: 900; font-size: {title_size}px; line-height: 1.4;
             background: {title_gradient};
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
             flex: 1;
             display: flex; align-items: flex-start;
-            word-break: break-all;
+            word-break: normal;
+            overflow-wrap: break-word;
         }}
         .cover-subtitle {{
-            font-weight: 350; font-size: 72px; line-height: 1.4;
+            font-weight: 350; font-size: {subtitle_size}px; line-height: 1.4;
             color: {text_color};
             margin-top: auto;
+            word-break: normal;
+            overflow-wrap: break-word;
         }}
     </style>
 </head>
@@ -463,7 +485,7 @@ def generate_card_html(content: str, page_number: int = 1, total_pages: int = 1,
             overflow-x: visible;
             overflow-wrap: break-word;
             word-wrap: break-word;
-            word-break: break-all;
+            word-break: normal;
             white-space: pre-wrap;
             font-size: 36px; line-height: 1.5;
         }}
@@ -536,7 +558,7 @@ async def render_html_to_image(html_content: str, output_path: str,
                                 width: int = CARD_WIDTH, height: int = CARD_HEIGHT):
     """使用 Playwright 将 HTML 渲染为图片"""
     async with async_playwright() as p:
-        browser = await p.chromium.launch()
+        browser = await p.chromium.launch(**chromium_launch_kwargs())
         page = await browser.new_page(viewport={'width': width, 'height': height})
         
         try:
@@ -563,7 +585,7 @@ async def process_and_render_cards(card_contents: List[str], output_dir: str,
     返回最终生成的所有卡片文件路径
     """
     async with async_playwright() as p:
-        browser = await p.chromium.launch()
+        browser = await p.chromium.launch(**chromium_launch_kwargs())
         page = await browser.new_page(viewport={'width': CARD_WIDTH, 'height': CARD_HEIGHT})
         
         all_cards = []
@@ -648,7 +670,7 @@ async def render_markdown_to_cards(md_file: str, output_dir: str, style_key: str
     
     # 生成正文卡片
     async with async_playwright() as p:
-        browser = await p.chromium.launch()
+        browser = await p.chromium.launch(**chromium_launch_kwargs())
         page = await browser.new_page(viewport={'width': CARD_WIDTH, 'height': CARD_HEIGHT})
         
         try:

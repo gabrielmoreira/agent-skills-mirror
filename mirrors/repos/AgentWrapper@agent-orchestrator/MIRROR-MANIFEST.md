@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `AgentWrapper/agent-orchestrator` — 26 default patterns, 1 followed patterns, 14 file(s) materialized.
+Mirror of `AgentWrapper/agent-orchestrator` — 26 default patterns, 1 followed patterns, 15 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `AgentWrapper/agent-orchestrator` — 26 default patterns, 1 followed 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 14 |
+| Files         | 15 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -63,16 +63,17 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 2 | ✓ | [`.agents/skills/ao-desktop-dev/SKILL.md`](.agents/skills/ao-desktop-dev/SKILL.md) |
 | 3 | ✓ | [`.agents/skills/bug-triage/scripts/push_fix_to_github.py`](.agents/skills/bug-triage/scripts/push_fix_to_github.py) |
 | 4 | ✓ | [`.agents/skills/bug-triage/SKILL.md`](.agents/skills/bug-triage/SKILL.md) |
-| 5 | ✓ | [`.claude/skills/ao-desktop-dev/SKILL.md`](.claude/skills/ao-desktop-dev/SKILL.md) |
-| 6 | ✓ | [`.claude/skills/bug-triage/SKILL.md`](.claude/skills/bug-triage/SKILL.md) |
-| 7 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 8 | ✓ | [`backend/internal/skillassets/using-ao/references.md`](backend/internal/skillassets/using-ao/references.md) |
-| 9 | ✓ | [`backend/internal/skillassets/using-ao/SKILL.md`](backend/internal/skillassets/using-ao/SKILL.md) |
-| 10 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 11 | ✓ | [`cloud/internal/skillassets/using-ao/SKILL.md`](cloud/internal/skillassets/using-ao/SKILL.md) |
-| 12 | ✓ | [`frontend/src/landing/src/app/blog/llms.txt/route.ts`](frontend/src/landing/src/app/blog/llms.txt/route.ts) |
-| 13 | ✓ | [`frontend/src/landing/src/app/llms.txt/route.ts`](frontend/src/landing/src/app/llms.txt/route.ts) |
-| 14 | → | [`DESIGN.md`](DESIGN.md) |
+| 5 | ✓ | [`.agents/skills/pr-description/SKILL.md`](.agents/skills/pr-description/SKILL.md) |
+| 6 | ✓ | [`.claude/skills/ao-desktop-dev/SKILL.md`](.claude/skills/ao-desktop-dev/SKILL.md) |
+| 7 | ✓ | [`.claude/skills/bug-triage/SKILL.md`](.claude/skills/bug-triage/SKILL.md) |
+| 8 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 9 | ✓ | [`backend/internal/skillassets/using-ao/references.md`](backend/internal/skillassets/using-ao/references.md) |
+| 10 | ✓ | [`backend/internal/skillassets/using-ao/SKILL.md`](backend/internal/skillassets/using-ao/SKILL.md) |
+| 11 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 12 | ✓ | [`cloud/internal/skillassets/using-ao/SKILL.md`](cloud/internal/skillassets/using-ao/SKILL.md) |
+| 13 | ✓ | [`frontend/src/landing/src/app/blog/llms.txt/route.ts`](frontend/src/landing/src/app/blog/llms.txt/route.ts) |
+| 14 | ✓ | [`frontend/src/landing/src/app/llms.txt/route.ts`](frontend/src/landing/src/app/llms.txt/route.ts) |
+| 15 | → | [`DESIGN.md`](DESIGN.md) |
 
 ---
 

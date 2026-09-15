@@ -1,0 +1,4 @@
+interface:
+  display_name: "DeepShow ExtractionAuditor"
+  short_description: "Review PageStory restoration against one source document"
+  default_prompt: "Use $deepshow-extractionauditor to review this PageStory against its source document."

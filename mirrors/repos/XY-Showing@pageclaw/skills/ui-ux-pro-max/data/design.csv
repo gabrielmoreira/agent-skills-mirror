@@ -1,8 +1,8 @@
-Bauhaus（包豪斯）
-大胆的几何现代主义，包含圆形、方形和三角形。主色调（红/蓝/黄），边缘鲜明，阴影强烈。功能性与艺术性兼备，带有建构主义的不对称。
-1. 极简主义品牌官网与电商
-2. 工具类与高效率 App
-3. 数字媒体与在线杂志
+Bauhaus
+Bold geometric modernism using circles, squares, and triangles. Primary colors (red, blue, and yellow), sharp edges, and strong shadows. Functional yet artistic, with constructivist asymmetry.
+1. Minimalist brand sites and ecommerce
+2. Utility and high-efficiency apps
+3. Digital media and online magazines
 
 <design-system>
 Design Style: Bauhaus (Mobile)
@@ -143,12 +143,12 @@ Mobile Constraints require distinct personality to avoid looking like a wirefram
 
 
 
-"Monochrome（单色/黑白）
-"一套简洁的编辑设计体系，建立在纯粹的黑白之上。没有点缀色——只有戏剧性的对比、超大衬线字体和精准的几何布局。让人联想到高端时尚专题和建筑作品集。严肃、成熟、毫不掩饰地大胆。
-"1. 极简主义电商与高端奢侈品
-2. 专业创意与文档编辑工具
-3. 数据密集型仪表盘（局部应用）
-4. 实验性与先锋感网站"
+"Monochrome
+"A clean editorial design system built on pure black and white. No accent color—only dramatic contrast, oversized serif typography, and precise geometric layouts. It evokes high-end fashion editorials and architectural portfolios: serious, mature, and unapologetically bold.
+"1. Minimalist ecommerce and luxury brands
+2. Professional creative and document-editing tools
+3. Data-dense dashboards (selective use)
+4. Experimental and avant-garde websites"
 
 <design-system>
 Design Style: Minimalist Monochrome (Mobile)
@@ -364,12 +364,12 @@ It should NOT feel like:
 
 
 
-Modern Dark（现代深色模式）
-一种电影般的高精度暗模式设计，通过动画渐变斑点、鼠标跟踪聚光灯效果和精心制作的微交互实现分层环境照明，感觉就像高级软件。
-"1. 影音娱乐与流媒体平台
-2. 开发者工具与专业生产力软件
-3. 金融、科技与 AI 仪表盘
-4. 高端运动与奢华品牌"
+Modern Dark
+A cinematic, high-precision dark-mode design with layered ambient lighting created through animated gradient blobs, cursor-following spotlights, and carefully crafted micro-interactions. It feels like premium software.
+"1. Entertainment and streaming platforms
+2. Developer tools and professional productivity software
+3. Finance, technology, and AI dashboards
+4. Premium sports and luxury brands"
 
 Design Philosophy
 Core Principles: Precision, tactile depth, and fluid motion define this mobile design system. For React Native, every component is treated as a physical layer within a stacked 3D space, illuminated by virtual light sources. The design communicates "high-end mobile utility"—as responsive and refined as the Linear mobile app or Apple’s native interface. Every shadow uses multiple layers, every gradient is dithered to prevent banding, and every interaction uses precise haptic feedback combined with Expo.out easing.
@@ -489,12 +489,12 @@ The "Bold Factor" (Signature Elements)
 4. Bento Layouts: For dashboards, use Flexbox to create asymmetric cards (e.g., one card taking 60% width, the other 40% with different heights).
 
 
-SaaS（软件即服务）
-一个大胆、极简主义的现代视觉系统，将简洁的美学与动态的执行相结合。具有标志性的电蓝渐变、复杂的双字体配对（Calistoga+Inter）、动画英雄图形、倒置对比部分和贯穿始终的微交互。专业而前卫的设计——自信而不杂乱。
-1. 业务管理与协作系统 (B2B / Operations)
-2. 开发者工具与云服务平台
-3. 企业内部工具与人力资源管理 (HRM)
-4. 营销与数据分析工具
+SaaS (Software as a Service)
+A bold, minimalist modern visual system that combines clean aesthetics with dynamic execution. It features a signature electric-blue gradient, a sophisticated Calistoga + Inter type pairing, animated hero graphics, inverted-contrast sections, and micro-interactions throughout. Professional and progressive—confident without clutter.
+1. Business management and collaboration systems (B2B / Operations)
+2. Developer tools and cloud-service platforms
+3. Enterprise internal tools and human-resource management (HRM)
+4. Marketing and data-analysis tools
 
 System Prompt: Mobile Excellence Design System (React Native)
 Design Philosophy
@@ -600,12 +600,12 @@ Example Signature Block:
 When generating a screen, always include a "Design Note" explaining how the Asymmetry and Gradient Accent are applied to ensure it doesn't look like a generic template.
 
 
-Terminal（终端/命令行）
-一种原始的、功能性的、复古的、未来主义的命令行界面美学。高对比度、等宽精度和闪烁光标。
-1. 开发者工具与极客类应用
-2. 区块链、Web3 与 加密货币项目
-3. 科幻、侦探与解谜类游戏 (ARG)
-4. 创意工作室与个人作品集
+Terminal (Command Line)
+A raw, functional, retro-futurist command-line aesthetic with high contrast, monospaced precision, and a blinking cursor.
+1. Developer tools and enthusiast applications
+2. Blockchain, Web3, and cryptocurrency projects
+3. Science-fiction, detective, and puzzle games (ARG)
+4. Creative studios and personal portfolios
 System Prompt: React Native Terminal CLI Framework
 Design Philosophy
 The Mobile Terminal CLI aesthetic adapts the raw power of a command-line interface into a handheld, touch-first environment. It treats the smartphone screen as a portable "hacker’s deck" or a remote server console. It is utilitarian, high-contrast, and uncompromisingly rigid.
@@ -681,12 +681,12 @@ Accessibility & Performance
 ● Touch Targets: Even though the style is "tight," ensure hitSlop is used on bracketed buttons to meet 44x44dp mobile standards.
 ● Reduced Motion: Respect AccessibilityInfo.isReduceMotionEnabled by disabling the typewriter and scanline effects if requested.
 
-Kinetic（动力学/动态）
-运动优先设计，排版是主要的视觉媒介。具有无限选框、视口缩放文本、滚动触发动画和激进的大写样式。高对比度的野兽派能量，有节奏的动作。
-1. 沉浸式叙事与品牌官网 (Storytelling)
-2. 具有强引导需求的复杂流程 (Guidance)
-3. 数据可视化与实时监控 (Data Visualization)
-4. 情感化设计与反馈 (Micro-interactions)
+Kinetic
+Motion-first design in which typography is the primary visual medium. It uses infinite marquees, viewport-scaling text, scroll-triggered animation, and assertive uppercase styling. High-contrast brutalist energy meets rhythmic movement.
+1. Immersive storytelling and brand websites
+2. Complex flows that need strong guidance
+3. Data visualization and real-time monitoring
+4. Expressive design and feedback micro-interactions
 System Prompt: Kinetic Mobile Brutalism
 Design Philosophy
 Core Principle: Typography is the architecture of the mobile screen. This style rejects standard app layouts in favor of a "kinetic poster" approach. Text is treated as a graphic element; headers are hero units. Motion is constant and reactive—if an element isn't moving, it should be responding to the user’s thumb. Every interaction feels heavy, tactile, and high-contrast.
@@ -781,12 +781,12 @@ Implementation Guidelines (React Native Specifics)
     ○ Respect isReduceMotionEnabled to stop marquees for sensitive users.
 
 
-Flat Design（扁平化设计）
-一种以去除深度线索（阴影、斜面、渐变）为中心的设计理念，有利于纯色、排版和布局。清晰、二维和几何，带有大胆的色块。
-1. 跨平台响应式网页与移动应用
-2. 信息架构极其复杂的仪表盘 (Dashboard)
-3. 系统级界面与图标设计
-4. 品牌导向的插画与营销页面
+Flat Design
+A design philosophy centered on removing depth cues such as shadows, bevels, and gradients in favor of solid color, typography, and layout. Clear, two-dimensional, geometric, and built from bold color blocks.
+1. Cross-platform responsive web and mobile applications
+2. Dashboards with highly complex information architecture
+3. System interfaces and icon design
+4. Brand-led illustration and marketing pages
 
 System Prompt: React Native Flat Design Specialist
 Flat Design for mobile removes all artifice. It rejects the illusion of three-dimensionality—no elevation, no drop shadows, no bevels, and no realistic textures. It relies entirely on hierarchy through size, color, and typography. This is confident reduction tailored for the palm of the hand.
@@ -850,11 +850,11 @@ The "Bold Factor" (React Native Implementation)
 
 
 
-Material Design（材料设计）
-有趣、动态的颜色提取、药丸形状的按钮和不同的仰角状态。基于谷歌的Material Design 3，具有增强的深度和微观交互。
-1. 安卓（Android）生态系统应用
-2. 跨平台工具与生产力软件
-3. 数据密集型 B 端后台 (Material UI)
+Material Design
+Playful dynamic color extraction, pill-shaped buttons, and distinct elevation states. Based on Google's Material Design 3 with enhanced depth and micro-interactions.
+1. Android ecosystem applications
+2. Cross-platform tools and productivity software
+3. Data-dense B2B administration interfaces (Material UI)
 
 System Prompt: Material You (MD3) for React Native
 Design Philosophy
@@ -986,11 +986,11 @@ Anti-Patterns (Avoid)
 
 
 
-Neo Brutalism（新野兽派）
-一种原始的、高对比度的美学，模仿印刷设计和DIY朋克文化。其特点是奶油色背景、厚厚的黑色边框（4px）、零模糊的硬偏移阴影、冲突的鲜艳颜色（热红色、鲜艳的黄色、柔和的紫色）和厚重的Space Grotesk排版。拥抱不对称、旋转、贴纸般的分层和有组织的视觉混乱。
-1. 创意工具与协作平台
-2. 针对 Z 世代（Gen Z）的市场营销与电商
-3. 内容展示与个人作品集
+Neo Brutalism
+A raw, high-contrast aesthetic inspired by print design and DIY punk culture. It features cream backgrounds, thick black borders (4px), zero-blur hard-offset shadows, clashing vivid colors (hot red, bright yellow, and soft purple), and heavy Space Grotesk typography. It embraces asymmetry, rotation, sticker-like layering, and organized visual chaos.
+1. Creative tools and collaboration platforms
+2. Gen Z marketing and ecommerce
+3. Content showcases and personal portfolios
 
 Design Philosophy: Mobile Neo-Brutalism (React Native)
 Neo-brutalism in a mobile context is a high-energy rebellion against the "Glassmorphism" and "Minimalist" trends of iOS and Android. It translates the raw, "sticker-on-a-laptop" aesthetic into a tactile, thumb-friendly interface. While standard mobile design hides structure, Mobile Neo-brutalism enforces it. It treats the mobile screen as a physical collage board where elements don't just "float"—they occupy heavy, bordered space.
@@ -1053,11 +1053,11 @@ System Prompt for AI Code Generation
 System Role: You are an expert React Native developer specializing in Neo-Brutalist Mobile UI.Core Instruction: Generate code that strictly adheres to the Neo-Brutalist aesthetic.Styling Rules:Goal: Create a high-contrast, loud, and tactile mobile interface that feels mechanical and rebellious.
 
 
-Bold Typography（粗体排版/大字报风）
-以字体为导向的设计，将大字体作为主要的视觉元素。超大标题、极端对比和戏剧性的负面空间创造了海报般的构图，文字成为了艺术。
-1. 创意品牌官网与产品首屏（Hero Section）
-2. 纯内容驱动的应用与阅读平台
-3. 活动推广、展览与快闪页面
+Bold Typography
+Type-led design that uses large lettering as the main visual element. Oversized headlines, extreme contrast, and dramatic negative space create poster-like compositions in which text becomes art.
+1. Creative brand websites and product Hero sections
+2. Content-driven applications and reading platforms
+3. Event promotion, exhibitions, and pop-up pages
 
 System Prompt: Bold Typography (Mobile/React Native)
 Design Philosophy
@@ -1163,12 +1163,12 @@ Accessibility
 
 
 
-Academia （学院风）
-大学美学，古老的图书馆，温暖的纸张纹理，传统的衬线，金色/深红色的色调。
-1、知识管理与深度阅读工具类
-2、仪式感较强的个人品牌与创意作品集
-3、解谜与角色扮演游戏
-4、特定文化调性的社区平台
+Academia
+A university aesthetic with old libraries, warm paper textures, traditional serif type, and gold or deep-red tones.
+1. Knowledge-management and deep-reading tools
+2. Ceremonial personal brands and creative portfolios
+3. Puzzle and role-playing games
+4. Community platforms with a distinctive cultural tone
 
 System Prompt: Scholarly Academia Mobile (React Native)
 Design Philosophy
@@ -1285,12 +1285,12 @@ const academiaTheme = {
 };
 
 
-Cyberpunk（赛博朋克）
-黑色上的高对比度霓虹灯、故障动画、终端/单空间字体、面向技术的装饰。受80年代科幻和黑客文化启发的反乌托邦数字美学。
-1. 游戏领域
-2. 金融科技与加密货币
-3. 数据可视化与大屏监控
-4. 潮流品牌与创意营销
+Cyberpunk
+High-contrast neon on black, glitch animation, terminal or monospaced typography, and technology-oriented decoration. A dystopian digital aesthetic inspired by 1980s science fiction and hacker culture.
+1. Games
+2. Financial technology and cryptocurrency
+3. Data visualization and large-screen monitoring
+4. Fashion-forward brands and creative marketing
 
 System Prompt: Cyber-Noir React Native Architect
 1. Design Philosophy
@@ -1376,11 +1376,11 @@ Reanimated / Animated API:
 
 
 web3
-一种大胆的、未来主义的美学，灵感来自比特币和去中心化金融。深空背景，带有比特币橙色色调、金色亮点、发光元素和精确的数据可视化。
-1. 去中心化金融协议 (DeFi) 与 钱包 (Wallets)
-2. NFT 交易市场与数字收藏品展示
-3. 元宇宙 (Metaverse) 与 社交平台
-4. 前沿科技品牌官网 (High-Tech Brands)
+A bold, futuristic aesthetic inspired by Bitcoin and decentralized finance. Deep-space backgrounds use Bitcoin-orange tones, gold highlights, glowing elements, and precise data visualization.
+1. Decentralized-finance protocols (DeFi) and wallets
+2. NFT marketplaces and digital-collection showcases
+3. Metaverse and social platforms
+4. High-technology brand websites
 
 System Prompt: Bitcoin DeFi Mobile (React Native)
 You are an expert React Native developer specializing in high-end Fintech and Web3 mobile interfaces. Your goal is to implement the "Bitcoin DeFi" aesthetic—a sophisticated fusion of precision engineering, cryptographic trust, and digital gold. This is a deep cosmic void where data structures glow with Bitcoin orange and digital gold.
@@ -1444,12 +1444,12 @@ Inputs (The "Terminal" Style)
 ● Performance: Use FlashList for heavy transaction lists. Keep animations to the UI thread using React Native Reanimated.
 
 
-Claymorphism（粘土拟物化）
-一种超现实的3D美学，模拟柔软的充气粘土物体，具有多层阴影堆叠、充满活力的糖果店颜色、触觉微交互和有机浮动环境元素，创造出优质、有趣的数字玩具体验。
-1. 针对儿童与青少年的教育类应用
-2. 品牌形象中的 3D 角色与插图
-3. 金融科技与加密货币 (轻量版)
-4. 创意工具与社交软件
+Claymorphism
+A surreal 3D aesthetic that simulates soft, inflatable clay objects through layered shadow stacks, vivid candy-shop colors, tactile micro-interactions, and organic floating ambient elements, producing a polished and playful digital-toy experience.
+1. Educational applications for children and teenagers
+2. 3D characters and illustrations in brand identity
+3. Financial technology and cryptocurrency (lightweight use)
+4. Creative tools and social software
 
 System Prompt: High-Fidelity Claymorphism (React Native Mobile Edition)
 Design Philosophy
@@ -1522,12 +1522,12 @@ Dos and Don'ts
 ● DON'T use pure black #000000 for text or shadows.
 
 
-Enterprise（企业级/政企风）
-现代SaaS美学平衡了专业性和可接近性。鲜艳的靛蓝/紫罗兰色渐变、柔和的阴影、等距深度和干净的几何无衬线字体。
-1. 后台管理系统
-2. 生产力工具与协作平台
-3. 政务与金融类严肃应用
-4. 垂直领域专业软件
+Enterprise
+A modern SaaS aesthetic balancing professionalism and approachability. Vivid indigo/violet gradients, soft shadows, isometric depth, and clean geometric sans-serif typography.
+1. Administration systems
+2. Productivity tools and collaboration platforms
+3. Serious government and financial applications
+4. Specialized vertical-industry software
 Here is a translated version of your web design prompt, adapted specifically for mobile application development (iOS/Android/React Native/Flutter). I have replaced web-specific concepts like "hover states," "CSS grids," and "mouse interactions" with mobile-native paradigms such as "press states," "haptics," "safe areas," and "gestures."
 
 App Design System Prompt: Modern Enterprise SaaS (Mobile)
@@ -1614,12 +1614,12 @@ Inputs & Forms
 
 
 
-Sketch（素描/手绘风）
-有机的不稳定边框、手写排版、纸张纹理和俏皮的不完美。每个元素都是用记号笔和铅笔在纹理纸上勾勒出来的。
-1. 原型设计与早期创意提案 (Low-Fidelity Prototyping)
-2. 创意品牌、艺术与独立文化项目
-3. 教育、绘本与儿童类产品
-4. 游戏化 UI 与 叙事解谜游戏
+Sketch (Hand-drawn)
+Organic uneven borders, handwritten typography, paper texture, and playful imperfection. Every element appears sketched with marker and pencil on textured paper.
+1. Low-fidelity prototyping and early creative proposals
+2. Creative brands, art, and independent-culture projects
+3. Education, picture books, and children's products
+4. Gamified UI and narrative puzzle games
 
 Design Philosophy
 The Hand-Drawn mobile design style celebrates authentic imperfection and human touch within the palm of the hand. It rejects the sterile precision of typical mobile UI in favor of organic, playful irregularity that evokes a portable sketchbook, a pocket notebook, or a collection of sticky notes.
@@ -1699,12 +1699,12 @@ Mobile-First Strategy (React Native)
 ● Haptics: Add Haptics.impactAsync on button presses to reinforce the feeling of "clicking" a physical object.
 
 
-Neumorphism（新拟物化）
-通过单色背景上的双阴影拉伸和插入元素。柔软、触感好、物理接地，可接近性极佳。
-1. 极简主义硬件控制与智能家居
-2. 追求审美感的工具类 App
-3. 金融与健康监测看板（非密集型）
-4. 品牌营销与展示型页面
+Neumorphism
+Raised and inset elements formed by paired shadows on a monochrome background. Soft, tactile, and physically grounded, with strong approachability.
+1. Minimalist hardware controls and smart homes
+2. Aesthetic-focused utility applications
+3. Finance and health-monitoring dashboards (low density)
+4. Brand marketing and showcase pages
 
 Design Philosophy (React Native / Mobile)
 Core Principles: Neumorphism on mobile creates a tactile, physical interface through dual shadows. On React Native, this is achieved by layering View components or using specialized libraries to simulate the light source (top-left) and dark shadow (bottom-right). Every component is "molded" from the base material (#E0E5EC). Buttons are never flat; they are either "pillowed" (convex) or "wells" (concave/inset).

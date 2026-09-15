@@ -154,25 +154,46 @@ Return no transmitted ray when `k < 0`. Otherwise use exact unpolarised Fresnel
 with the s and p amplitude ratios, and set transmission to
 `1 − 0.5(rs² + rp²)`. Offset every new ray by `2e-6 m`.
 
-The receiver field uses:
+The receiver shadow/contact field uses:
 
 ```js
-const optical = {
+const receiver = {
   size: 192,
   minSpan: 0.22,
   maxSpan: 0.75,
-  samples: 42,
-  internalBounces: 4,
-  ior: [1.347, 1.350, 1.354],
 };
 ```
 
 Fit the field to the body footprint and its oblique-light projection. Add
 `0.060 m` to the larger extent before clamping the span to `0.22…0.75 m`,
-then centre the square on the combined bounds. Stratify each
-of the `42 × 42` launch samples with the deterministic `(73,37)` and `(31,83)`
-hash pairs. Transport red, green, and blue independently; multiply each
-interior segment by `exp(−σ distance)` using the active preset:
+then centre the square on the combined bounds. Rasterize each projected
+shell face into the receiver field for direct shadow and contact masks. Blur
+these two masks horizontally and vertically with weights `1, 2, 3, 2, 1`
+divided by `9`. Encode shadow in red and contact in green in a linear,
+`NoColorSpace`, `192²` unsigned-byte texture with linear filtering and no
+mipmaps. Clear its outer two texels before upload.
+
+RGB caustics use the adaptive WebGPU/TSL transport path:
+
+```js
+const caustics = {
+  baseGrid: 32,
+  fineGrid: 64,
+  rayStride: 65,
+  rayRecords: 5,
+  cellCount: 1024,
+  beamCount: 8192,
+  outputSize: 384,
+};
+```
+
+Build one packed surface BVH and refit it with a compute pass whenever the
+shell changes. Launch the `65 × 65` ray lattice in three parity phases:
+even/even samples, odd/odd samples, and mixed-parity samples only for cells
+flagged by the adaptive classifier. Each base cell owns up to eight beam
+triangles, using the coarse diagonal or its four refined subcells. Trace the
+first entry, then at most eight surface events. Multiply interior path length
+by `exp(−σ distance)` using the active preset:
 
 ```text
 berry = [5, 46, 23] 1/m
@@ -180,16 +201,14 @@ mint  = [40, 8, 20] 1/m
 honey = [5, 17, 58] 1/m
 ```
 
-Use at most four internal intersection attempts. Reflect only on total internal
-reflection; otherwise take the transmitted exit and discard the reflected
-Fresnel branch. Reject unescaped paths, throughput below `0.002`, exit
-`dy >= −1e-5`, non-positive receiver distances, or another body hit before
-the receiver. Splat `throughput × sampleArea/pixelArea` using the normalised
-`7 × 7` kernel `exp(−(kx² + ky²)/3.5)` with bilinear distribution. Blur only
-shadow and contact, horizontally then vertically, with weights
-`1, 2, 3, 2, 1` divided by `9`. Clear the
-outer two texels before uploading the shadow/contact and RGB light textures so
-clamp-to-edge filtering cannot repeat energy outside the fitted field.
+At each event, take the transmitted Fresnel branch when refraction exists and
+reflect only on total internal reflection. Keep the branch identity and
+receiver distance with the ray record. Reject rays that do not escape,
+miss the planar receiver, or are occluded before reaching it. Rasterize finite
+beam power into a `384²` half-float raw target, reconstruct across nearby
+receiver samples with surface-continuity tests, and sample the reconstructed
+irradiance bilinearly in the final receiver material. The atlas crop includes
+a two-texel guard so its clamped edge cannot repeat non-zero transport.
 
 The view-thickness pass uses the camera-to-vertex direction and updates only
 vertices with `dot(direction, normal) <= −0.01`. Refract at IOR `1.35`, trace
@@ -200,15 +219,12 @@ triggers at `>= 1/24 s` and resets to zero, so ordinary refreshes run at most
 at 24 Hz and depend on frame rate. They continue while mechanics are paused;
 between refreshes optical data can lag behind the current shell.
 
-Encode shadow in red and contact in green. Photon RGB is encoded as
-`round(clamp(photons/5, 0, 1) × 255)` in unsigned-byte textures with
-`NoColorSpace`, linear filtering, and no mipmaps. Receiver UV is
-`(positionWorld.xz − originNode)/spanNode`; decode light RGB by multiplying
-by `5`. With receiver albedo `bench`, use
+With receiver albedo `bench`, use
 `colorNode = bench × (1 − 0.63 shadow) × (1 − 0.40 contact)` and
-`emissiveNode = bench × decodedLight × 0.67`. The caller creates the receiver
-material using the example’s exposed textures and uniforms. Transport and
-direct lighting share `normalize([-0.6123724357, −0.5, 0.6123724357])`.
+`emissiveNode = bench × irradiance × uniform(sun.color) ×
+(sun.intensity/π)`. The caustic lookup comes from `sampleIrradiance()` rather
+than directly sampling the shadow field’s UV texture. Transport and direct
+lighting share `normalize([-0.6123724357, −0.5, 0.6123724357])`.
 
 The physical material uses `roughness = 0.075`, `transmission = 1`,
 `thickness = 0.035 m`, `ior = 1.35`, `dispersion = 0.025`,
@@ -223,16 +239,17 @@ separate preset. Keep `transparent = false` and `side = FrontSide`.
 - The mesh has no self-collision or tearing constraint; extreme folding can
   create visual intersections.
 - Transmission is view-dependent and cannot see a surface outside the frame.
-- The receiver is planar, finite, and limited to `192²` texels and `42²`
-  stratified launch samples; it is not a path tracer.
+- The receiver is planar and finite; shadow/contact use `192²` texels while
+  caustics use a `384²` atlas and an adaptive `65²` ray lattice over `32²`
+  base cells. It is not a path tracer.
 - Receiver and thickness data can lag between optical refreshes, including
   during camera movement.
 - The subdivision shell smooths the rendered boundary but does not add
   mechanical degrees of freedom.
-- The finite internal-reflection budget can discard bright trapped paths too;
-  partial Fresnel reflection branches are not traced.
-- Encoded light saturates at `5` before the receiver’s artistic gain; this is
-  not a fully energy-conserving renderer.
+- The finite eight-event internal-reflection budget can discard bright trapped
+  paths too; partial Fresnel reflection branches are not traced.
+- Beam energy is clamped at `60000` in the raw fragment pass; this is not a
+  fully energy-conserving renderer.
 - The example allows one active system per module and assumes an unparented
   camera and identity group transforms.
 - The receiver texture must not be allowed to repeat non-zero edge texels.
@@ -251,7 +268,8 @@ caustics    receiver RGB transport field
 Report mass, volume ratio, kinetic energy, optical field size, and fixed-step
 duration. Deterministic checks should pin `762` cage nodes, `3240` tetrahedra,
 `792` boundary faces, `6338` shell stencils, `12672` shell triangles, the rest
-volume, default mass, `192` field size, `42` samples per grid axis, and the normal
+volume, default mass, `192` shadow/contact field size, `65²` adaptive ray
+storage, `32²` adaptive cells, `384` caustic output size, and the normal
 incidence transmission approximately `0.977818017202354` for `n₁ = 1`, `n₂ = 1.35`.
 
 ## Failure diagnosis
@@ -261,11 +279,11 @@ incidence transmission approximately `0.977818017202354` for `n₁ = 1`, `n₂ =
   both rigid and internal velocity components.
 - If the surface looks faceted but the cage is stable, verify both Loop passes,
   dynamic shell positions, and `computeVertexNormals()` after stepping.
-- If caustics smear into long bands, inspect receiver span fitting and confirm
-  that the outer two texels of both data textures are zeroed.
+- If caustics smear into long bands, inspect the atlas crop guard, receiver
+  continuity test, and the shadow texture’s outer two zeroed texels.
 - If colours change without deformation, check that the active extinction
   preset is shared by the material attenuation colour and RGB transport.
 - If the body appears to refract through itself, inspect BVH refit order,
-  `2e-6 m` ray offsets, geometric-normal fallback, and the four-bounce limit.
+  `2e-6 m` ray offsets, geometric-normal fallback, and the eight-event limit.
 - If the receiver shadow is displaced from the jelly, verify that the direct
   light direction, projected footprint, and planar receiver use the same vector.

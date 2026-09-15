@@ -43,12 +43,12 @@ incomplete footnote apparatus, skipped anonymization, and mistimed submission.
 - **What HLR publishes:** **Articles, Essays, Book Reviews** by outside authors; **Notes** and case/
   legislation comments by **student editors** (student writing is unsigned); the annual **Supreme
   Court issue** (November) with the **Foreword**, and a **Developments in the Law** issue (April).
-- **Leadership / no fee:** HLR is led by an **annually-elected student President** (the law-review
-  analogue of an editor-in-chief) — **Volume 139 (2025–2026)** is led by **G. Terrell Seabrooks ('26)**;
-  the masthead **rotates ANNUALLY each volume** (Volume 140's President, Alex Zhao, was elected Feb 2026),
-  so **re-check the current masthead** before naming anyone (verified 2026-06-22). Article selection is by
-  **student editors**, and HLR charges **no submission fee / no APC** — Scholastica/ExpressO fees, if any,
-  belong to the *peer-journal* market, not HLR's own portal.
+- **Leadership / no fee (re-verified 2026-09-14):** HLR is led by an **annually-elected student President**
+  (the law-review analogue of an editor-in-chief) — **Volume 140 (2026–2027)** is led by **Alex Zhao ('27)**,
+  elected February 2026, succeeding G. Terrell Seabrooks ('26) who led Volume 139 (2025–2026);
+  the masthead **rotates ANNUALLY each volume**, so **re-check the current masthead** before naming anyone.
+  Article selection is by **student editors**, and HLR charges **no submission fee / no APC** — Scholastica/ExpressO
+  fees, if any, belong to the *peer-journal* market, not HLR's own portal.
 - **Season:** submit in the **Feb-Mar** main window or the smaller **Aug** window; earlier is
   stronger. Current intake **volume/season status**: 待核实 on the live page.
 

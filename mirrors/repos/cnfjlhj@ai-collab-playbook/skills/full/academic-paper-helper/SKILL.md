@@ -1,7 +1,6 @@
 ---
 name: academic-paper-helper
-description: 学术论文写作助手，专门用于 LaTeX 论文编写、BibTeX 管理、格式化、学术写作规范检查。适用于 AI/ML 研究论文、会议投稿（NeurIPS、ICML、ICLR 等）
-disable-model-invocation: true
+description: Use only when the user explicitly asks for help drafting or revising an AI/ML research paper in LaTeX, including structure, BibTeX, formatting, or academic-writing checks.
 ---
 
 # 学术论文写作助手

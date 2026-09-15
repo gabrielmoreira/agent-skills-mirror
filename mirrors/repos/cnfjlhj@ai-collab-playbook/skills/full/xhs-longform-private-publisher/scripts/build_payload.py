@@ -46,6 +46,14 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help="Allow image count to differ from Markdown image marker count.",
     )
+    parser.add_argument(
+        "--xhs-safe-rich",
+        action="store_true",
+        help=(
+            "Keep rich-text structure for Xiaohongshu longform while removing fragile "
+            "Markdown/code-only constructs. Preserves h2/h3 headings and lists."
+        ),
+    )
     return parser.parse_args()
 
 
@@ -66,6 +74,35 @@ def load_renderer():
         )
 
     return render
+
+
+def to_xhs_safe_rich_html(html: str) -> str:
+    if not html.strip():
+        return ""
+    try:
+        from bs4 import BeautifulSoup
+    except ImportError as exc:
+        raise SystemExit(
+            "Missing dependency 'beautifulsoup4'. Install it with `python -m pip install beautifulsoup4`."
+        ) from exc
+
+    soup = BeautifulSoup(html, "html.parser")
+    allowed_tags = {"p", "h2", "h3", "strong", "em", "ul", "ol", "li", "blockquote", "br"}
+
+    for tag in list(soup.find_all("code")):
+        tag.replace_with(tag.get_text())
+    for tag in list(soup.find_all("hr")):
+        tag.decompose()
+
+    for tag in list(soup.find_all(True)):
+        if tag.name == "h1":
+            tag.name = "h2"
+        if tag.name not in allowed_tags:
+            tag.unwrap()
+            continue
+        tag.attrs = {}
+
+    return str(soup).strip()
 
 
 def image_sort_key(path: Path):
@@ -129,6 +166,7 @@ def build_payload(
     image_paths: list[Path] | None,
     title_override: str | None,
     allow_count_mismatch: bool,
+    xhs_safe_rich: bool,
 ) -> dict:
     if not markdown_path.is_file():
         raise SystemExit(f"Markdown file not found: {markdown_path}")
@@ -149,6 +187,8 @@ def build_payload(
 
     render = load_renderer()
     html_parts = [render(part) for part in parts]
+    if xhs_safe_rich:
+        html_parts = [to_xhs_safe_rich_html(part) for part in html_parts]
     return {
         "title": title,
         "parts": html_parts,
@@ -164,6 +204,7 @@ def main() -> int:
         image_paths=args.images,
         title_override=args.title,
         allow_count_mismatch=args.allow_count_mismatch,
+        xhs_safe_rich=args.xhs_safe_rich,
     )
     serialized = json.dumps(payload, ensure_ascii=False, indent=2)
     if args.output:

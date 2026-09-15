@@ -30,6 +30,7 @@
 - 云 API：`callCloudApi` 服务白名单扩至 57 个并内置版本映射（`tke` / `mongodb` / `vod` 等多版本服务需显式传 `version`）
 - 部署 / 环境：新增 `appBuild` 工具与托管构建中和；`queryEnv` 如实回执 region 生效情况，`domains` 尊重传入的 envId
 - Skills / 文档：skill 兜底读取改指官方分发仓并返回 references 地址清单；cloudrun 增加 SDK-first 数据库访问决策闸门；官网文档链接改指站点当前 Markdown 寻址；专家包与部署 skill 在交付后可执行「部署分享」（脱敏、至多一次、可拒绝）
+- 部署 / 应用：云端上传通道可完整跑通（`deployApp` 接受 `getUploadUrl` 返回的时间戳，`getBuildLog` 接受部署返回的构建 ID）；网关路由创建前会校验上游资源是否存在
 
 **v2.33.x**（2026-09）
 

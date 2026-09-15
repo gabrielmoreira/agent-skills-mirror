@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `THU-MAIC/OpenMAIC` — 26 default patterns, 0 followed patterns, 51 file(s) materialized.
+Mirror of `THU-MAIC/OpenMAIC` — 26 default patterns, 0 followed patterns, 54 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `THU-MAIC/OpenMAIC` — 26 default patterns, 0 followed patterns, 51 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 51 |
+| Files         | 54 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -101,15 +101,18 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 40 | ✓ | [`skills/agent-runtime/vocational/SKILL.md`](skills/agent-runtime/vocational/SKILL.md) |
 | 41 | ✓ | [`skills/agent-runtime/workshop-style/outline-constraints.json`](skills/agent-runtime/workshop-style/outline-constraints.json) |
 | 42 | ✓ | [`skills/agent-runtime/workshop-style/SKILL.md`](skills/agent-runtime/workshop-style/SKILL.md) |
-| 43 | ✓ | [`skills/openmaic/references/clone.md`](skills/openmaic/references/clone.md) |
-| 44 | ✓ | [`skills/openmaic/references/extend-cookbook.md`](skills/openmaic/references/extend-cookbook.md) |
-| 45 | ✓ | [`skills/openmaic/references/extend-sdk.md`](skills/openmaic/references/extend-sdk.md) |
-| 46 | ✓ | [`skills/openmaic/references/extend.md`](skills/openmaic/references/extend.md) |
-| 47 | ✓ | [`skills/openmaic/references/generate-flow.md`](skills/openmaic/references/generate-flow.md) |
-| 48 | ✓ | [`skills/openmaic/references/live-demo.md`](skills/openmaic/references/live-demo.md) |
-| 49 | ✓ | [`skills/openmaic/references/provider-keys.md`](skills/openmaic/references/provider-keys.md) |
-| 50 | ✓ | [`skills/openmaic/references/startup-modes.md`](skills/openmaic/references/startup-modes.md) |
-| 51 | ✓ | [`skills/openmaic/SKILL.md`](skills/openmaic/SKILL.md) |
+| 43 | ✓ | [`skills/agent-runtime/zone-of-proximal-development/references/exercise-lesson.md`](skills/agent-runtime/zone-of-proximal-development/references/exercise-lesson.md) |
+| 44 | ✓ | [`skills/agent-runtime/zone-of-proximal-development/references/theory.md`](skills/agent-runtime/zone-of-proximal-development/references/theory.md) |
+| 45 | ✓ | [`skills/agent-runtime/zone-of-proximal-development/SKILL.md`](skills/agent-runtime/zone-of-proximal-development/SKILL.md) |
+| 46 | ✓ | [`skills/openmaic/references/clone.md`](skills/openmaic/references/clone.md) |
+| 47 | ✓ | [`skills/openmaic/references/extend-cookbook.md`](skills/openmaic/references/extend-cookbook.md) |
+| 48 | ✓ | [`skills/openmaic/references/extend-sdk.md`](skills/openmaic/references/extend-sdk.md) |
+| 49 | ✓ | [`skills/openmaic/references/extend.md`](skills/openmaic/references/extend.md) |
+| 50 | ✓ | [`skills/openmaic/references/generate-flow.md`](skills/openmaic/references/generate-flow.md) |
+| 51 | ✓ | [`skills/openmaic/references/live-demo.md`](skills/openmaic/references/live-demo.md) |
+| 52 | ✓ | [`skills/openmaic/references/provider-keys.md`](skills/openmaic/references/provider-keys.md) |
+| 53 | ✓ | [`skills/openmaic/references/startup-modes.md`](skills/openmaic/references/startup-modes.md) |
+| 54 | ✓ | [`skills/openmaic/SKILL.md`](skills/openmaic/SKILL.md) |
 
 ---
 

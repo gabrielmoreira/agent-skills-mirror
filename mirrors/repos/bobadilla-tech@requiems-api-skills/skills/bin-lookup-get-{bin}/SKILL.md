@@ -61,6 +61,7 @@ Returns card metadata for the given 6–8 digit BIN prefix.
 | `prepaid` | boolean | Whether the card is a prepaid card |
 | `luhn_prefix_valid` | boolean | Whether the BIN prefix (not a full card number) passes the Luhn algorithm check |
 | `confidence` | number | Data quality score (0.00–1.00). Multi-source confirmed records score higher. |
+| `data_freshness` | string | Year and month the underlying BIN data was last refreshed (YYYY-MM), based on the most recent seed run for this record |
 
 ## Errors
 

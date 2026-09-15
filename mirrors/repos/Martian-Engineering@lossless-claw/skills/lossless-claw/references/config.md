@@ -399,6 +399,28 @@ Env overrides:
 - `LCM_LOG_FILE`
 - `LCM_LOG_MAX_FILE_BYTES`
 
+### `preserveHeartbeatPoll`
+
+- Type: `boolean` (default `false`)
+- Env override: `LCM_PRESERVE_HEARTBEAT_POLL=1` (also accepts `true`); any other
+  value disables and overrides the plugin setting.
+
+OpenClaw heartbeat polls arrive as synthetic system events. By default Lossless
+short-circuits them out of ingest and out of the after-turn visible-transcript
+reconcile, so a session whose only traffic is heartbeats can look as if nothing
+ever happened.
+
+Set this to `true` to keep heartbeat poll events in LCM storage and in assembled
+context. It pairs with `pruneHeartbeatOk`: with both enabled, pruning preserves
+the poll prompt and intermediate messages and removes only the pure `HEARTBEAT_OK`
+ack across after-turn projection and durable turn commits. With `pruneHeartbeatOk`
+disabled, the acknowledgements are retained. Preserved polls participate in normal
+context budgeting and compaction.
+
+Leave it at the default unless a session's heartbeat traffic is itself
+meaningful (for example, long-running agents that treat the poll as a liveness
+clock).
+
 ## Compaction timing and shape
 
 ### `contextThreshold`

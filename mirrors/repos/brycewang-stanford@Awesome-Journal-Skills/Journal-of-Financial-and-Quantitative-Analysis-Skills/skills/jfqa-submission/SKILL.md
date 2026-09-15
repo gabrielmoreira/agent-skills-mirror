@@ -11,7 +11,7 @@ Run this before pressing submit on **Editorial Manager** (`editorialmanager.com/
 
 - Published by **Cambridge University Press** for the **University of Washington Foster School of Business**.
 - **$350** fee (re-verified 2026-06-22, unchanged), credit card only; **$275 refunded** if the paper is not sent to a reviewer (a desk reject keeps **$75**). **Double-anonymous** review; the text-searchable PDF goes blind to reviewer(s). No fixed length limit, but over-long papers are likely desk-rejected.
-- **Editor structure:** JFQA has **no single Editor-in-Chief** — seven **Managing Editors** (Bessembinder, Duchin, Foucault, Harford, Li, Pennacchi, Siegel as of 2026-06-22) handle papers by assignment. *Upcoming:* Pennacchi steps down 1 Sep 2026, replaced by Mariassunta Giannetti (announced 4 Jun 2026). Re-verify the current slate before submission.
+- **Editor structure (re-verified 2026-09-14):** JFQA has **no single Editor-in-Chief** — seven **Managing Editors** handle papers by assignment. Current slate: Bessembinder, Duchin, Foucault, Harford, Li, **Giannetti**, Siegel. **Mariassunta Giannetti** (Stockholm School of Economics) joined 1 Sep 2026, replacing George Pennacchi who stepped down on that date. Re-verify the live slate before submission.
 
 ## Preflight checklist
 

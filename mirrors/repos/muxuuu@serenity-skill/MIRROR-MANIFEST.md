@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `muxuuu/serenity-skill` — 26 default patterns, 0 followed patterns, 2 file(s) materialized.
+Mirror of `muxuuu/serenity-skill` — 26 default patterns, 12 followed patterns, 14 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `muxuuu/serenity-skill` — 26 default patterns, 0 followed patterns, 
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 0 |
-| Files         | 2 |
+| Followed pats | 12 |
+| Files         | 14 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,7 +51,18 @@ Mirror of `muxuuu/serenity-skill` — 26 default patterns, 0 followed patterns, 
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-_None._
+- `references/public-profile-and-evaluation.md`
+- `references/deep-research-workflow.md`
+- `references/evidence-ladder.md`
+- `references/serenity-dialogue-protocol.md`
+- `references/market-source-playbook.md`
+- `assets/thesis-template.md`
+- `references/output-style-and-language.md`
+- `references/risk-and-compliance.md`
+- `examples/a-share-ai-semiconductor-demo.md`
+- `examples/cpo-company-challenge.md`
+- `examples/demo-conversation.md`
+- `assets/research-prompt-pack.md`
 
 ## File Index
 
@@ -61,6 +72,18 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`agents/openai.yaml`](agents/openai.yaml) |
 | 2 | ✓ | [`SKILL.md`](SKILL.md) |
+| 3 | → | [`assets/research-prompt-pack.md`](assets/research-prompt-pack.md) |
+| 4 | → | [`assets/thesis-template.md`](assets/thesis-template.md) |
+| 5 | → | [`examples/a-share-ai-semiconductor-demo.md`](examples/a-share-ai-semiconductor-demo.md) |
+| 6 | → | [`examples/cpo-company-challenge.md`](examples/cpo-company-challenge.md) |
+| 7 | → | [`examples/demo-conversation.md`](examples/demo-conversation.md) |
+| 8 | → | [`references/deep-research-workflow.md`](references/deep-research-workflow.md) |
+| 9 | → | [`references/evidence-ladder.md`](references/evidence-ladder.md) |
+| 10 | → | [`references/market-source-playbook.md`](references/market-source-playbook.md) |
+| 11 | → | [`references/output-style-and-language.md`](references/output-style-and-language.md) |
+| 12 | → | [`references/public-profile-and-evaluation.md`](references/public-profile-and-evaluation.md) |
+| 13 | → | [`references/risk-and-compliance.md`](references/risk-and-compliance.md) |
+| 14 | → | [`references/serenity-dialogue-protocol.md`](references/serenity-dialogue-protocol.md) |
 
 ---
 

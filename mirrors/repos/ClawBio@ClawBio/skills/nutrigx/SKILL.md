@@ -166,6 +166,8 @@ For each SNP in the panel:
 2. Return genotype string (e.g. `"AT"`, `"TT"`, `"AA"`)
 3. Flag as `"NOT_TESTED"` if absent (common for chip-to-chip variation)
 
+**Palindromic SNPs.** Three panel SNPs are palindromic, so strand cannot be told from the genotype: `rs9939609` (FTO, T/A), `rs12934922` (BCMO1, A/T) and `rs1801282` (PPARG, C/G). Their calls are read as reported on the plus strand, which is how 23andMe and AncestryDNA export them. A file on the minus strand would score these three the wrong way round without warning.
+
 ### 3. Risk Scoring (`score_variants.py`)
 
 Each SNP is scored on a **0 / 0.5 / 1.0** scale by default:
@@ -276,6 +278,8 @@ gene names, SNP IDs, and risk categories).
 ---
 
 ## Limitations & Disclaimer
+
+**Symbolic links in the output path are refused.** Report, figure and reproducibility files will not be written through a symlink, including a deliberately symlinked output directory; point `--output` at a real directory. On platforms without `O_NOFOLLOW` and `dir_fd` support (such as Windows) the same refusal is made with a less race-proof check.
 
 1. **Not a medical device.** This skill provides educational, research-oriented
    nutrigenomics analysis. It does not constitute medical advice.

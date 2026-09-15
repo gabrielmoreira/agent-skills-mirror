@@ -61,7 +61,7 @@ Bad example:
 - **Claim extraction (추출)** - Break the `USER.md` and `MEMORY.md` material into claims; quote only observed claims and never invent provenance.
 - **Provenance (출처)** - Ask for the source class and distinguish Hermes-native, provider, and vector material as `not_omh_reviewed`. A provider posture's `input_fidelity_summary.readiness` is literal: only `complete_observed` rests on an observed complete receipt (`docs/MEMORY-SYNC-FIDELITY.md`).
 - **Target (대상)** - Review existing native-memory claims only; route a new project/product fact to `memory-new`.
-- **Candidate selection (후보)** - A short interview, not a census: pick about five candidates per pass and say why. Rank by dreaming reminders (duplicate clusters, deadline, `stale_review_required`), status-bridge similarity rows, and claims that look stale, conflicting, or overgeneralized. Walk the full inventory only on request.
+- **Candidate selection (후보)** - Open records first (see Open Records below); then a short interview, not a census: pick about five candidates per pass and say why. Rank by dreaming reminders (duplicate clusters, deadline, `stale_review_required`), status-bridge similarity rows, and claims that look stale, conflicting, or overgeneralized. Walk the full inventory only on request.
 - **Per-entry confirmation (확인)** - One candidate at a time: quote it back from your own memory file, say what you take it to mean, then ask the user to keep, revise, or archive it before moving on. A review the user cannot correct entry by entry is not a review.
 - **Cursor (이어하기)** - Close every pass with reviewed entry indexes, remaining candidates, and the next entry a resumed review starts from. The resume point lives only in the conversation; name it.
 - **Incident (진단)** - A recall complaint ("my saved preference was not used") is a diagnosis, never an apology or automatic write. Anchor one expected claim and run `omh memory recall-incident --record-id <id> | --claim-digest <sha256> --session-id <session>` (agent reference; JSON only). Explain its `memory_recall_incident/v1` stage, evidence surfaces, and remediation: stored, eligible, selected, rendered, delivered, and used are separate claims; diagnosis today stops at `selected`; a missing receipt is `unavailable`, never non-delivery. Mutation waits for this interview's approvals. Contract: `docs/MEMORY-RECALL-INCIDENT.md`.
@@ -70,6 +70,18 @@ Bad example:
 - **Diff (차이)** - Prepare one concise native write diff with before/after claims and counts. Caps: MEMORY.md about 2,200 characters, USER.md about 1,375 characters.
 - **Native-write boundary (쓰기)** - OMH prepares guidance and a native write diff only; no OMH surface invokes, applies, or observes a `MEMORY.md`/`USER.md` write.
 - **Apply after approval (적용)** - Per-entry answers feed the diff without approving it. Ask for one explicit approval of the assembled diff, then apply the approved entries yourself through the Hermes-native memory tool that owns these files and report what the write observably changed; an approved diff left unapplied while the tool is available fails the interview. Without the tool, report the approved diff and stop; never edit the files directly. The OMH artifact stays `memory_curation_review/v1` metadata either way; the native write is Hermes's own act and never becomes OMH mutation evidence.
+
+## Open Records
+
+An open record is one the person marked unresolved: `staleness.resolution: "open"`. Recall delivers it as `open · N days unresolved`; past its review deadline its freshness state is `open` (reason `unresolved`), never `stale`, and it never becomes a verdict by timeout. Two clocks can still expire it: a retention TTL, which outranks everything, and the hard ceiling `open_max_days` (default 365; durable records exempt), with reason `unresolved_expired`.
+
+When the user asks to tidy, review, or clean up memory, list open records first, before the stale, duplicate, and conflict review. Run `omh memory status` and read `counts.unresolved` and the bounded `open_records` list (oldest first). Show each record with its `summary`, `open_days`, `review_due_at`, `state`, and `last_asked_at`, then offer the same three answers the reminder offers:
+
+- **Resolved** - `omh memory confirm <record-id>` writes `resolution: resolved` and resets the review deadline. A correction (`omh memory correct`) also resolves, by superseding.
+- **Still open** - `omh memory keep-open <record-id>` resets only the reminder's ask clock; the record, its state, and its deadline do not change.
+- **Drop it** - `omh memory retire <record-id>` prepares the retirement; `--apply` archives it. Nothing is deleted.
+
+The person answers per record; never resolve, keep open, or retire on your own judgment. A record with no answer stays open: say so, and do not default it to keep-open. Between reviews the provider prefetch asks on its own, with at most one `omh reminder: "<summary>" (<record_id>) has been unresolved for N days — resolved, still open, or drop it?` line per turn: once when the review deadline passes, then at most every `open_ask_days` (default 14) per record, and "still open" resets that clock. The reminder only asks and writes no record, so an answer given in chat still goes through one of the three commands above.
 
 ## Memory Boundaries
 

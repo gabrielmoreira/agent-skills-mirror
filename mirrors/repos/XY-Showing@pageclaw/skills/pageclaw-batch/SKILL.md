@@ -44,6 +44,8 @@ style-matrix.yaml + page-story-*.md
 
 Steps B through E invoke sub-skills. How to invoke depends on your platform:
 
+All required sub-skills are bundled as sibling directories under the same installed `skills/` root. Resolve them from this bundle; do not rely on a user's pre-existing Skills.
+
 | Platform | How to invoke a sub-skill |
 |----------|--------------------------|
 | **Claude Code** | Use the `Skill` tool with the skill name |
@@ -88,7 +90,7 @@ For each (style entry, page-story) pair, execute Steps A through E sequentially.
 
 ### Step A -- Create Design Context
 
-This step replaces page-claw's interactive Step 1. Instead of asking questions and invoking teach-impeccable, synthesize the design context from the style entry's `intent` and `layout` fields combined with the page-story content.
+This step replaces page-claw's interactive Step 1. Synthesize the design context directly from the style entry's `intent` and `layout` fields combined with the page-story content.
 
 Write `output/docs/<id>-design.md` with the following structure:
 
@@ -112,7 +114,7 @@ Restate the intent from the style matrix. Describe the overall mood and visual c
 
 The `intent` field is the primary creative input. It describes design actions and character (e.g., "drop caps, pull quotes, mixed serif/sans pairing") without prescribing specific colors, fonts, or CSS values. Pass this intent faithfully to Step B — do not interpret it into concrete design decisions yourself.
 
-Do not ask the user any questions. Do not invoke teach-impeccable.
+Do not ask the user any questions or invoke a separate context Skill.
 
 **Verify:** `output/docs/<id>-design.md` exists and contains `## Design Context` with all subsections above.
 

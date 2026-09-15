@@ -908,6 +908,30 @@ The detection of a sharp collapse in a waterway's daily transit counts against i
 
 The comparison needs enough accumulated history to be meaningful and is suppressed below a baseline traffic floor, so a quiet waterway reports no signal rather than a dramatic percentage of a tiny number. See also: Disruption Score, Score Input.
 
+## Live Media
+
+### Live Detection
+
+Working out which broadcast a news channel is airing at the moment a viewer asks, instead of trusting an identifier recorded when the channel was added. A channel with its own stream address plays that first; detection runs when there is none or it fails, and a Fallback Stream plays when detection returns nothing.
+
+Broken detection does not look broken on the dashboard. An empty answer cannot be told apart from "this channel is not live right now", so every channel that depends on detection quietly falls through to its Fallback Stream at once, and the only visible symptom is pinned broadcasts playing ended or unrelated video. Detection health must be checked against channels known to be live, never inferred from the absence of errors. See also: Fallback Stream.
+
+### Fallback Stream
+
+A specific broadcast identifier pinned to a channel or camera and played when Live Detection yields nothing. Webcam tiles play only their Fallback Streams. News channels marked to skip detection play their own stream address when they have one, otherwise their Fallback Stream, and never run Live Detection.
+
+A Fallback Stream decays with no code change. The provider ends the broadcast, restarts it under a new identifier, deletes it, or reassigns it, and the pinned identifier then plays an error card, a years-old recording under a live label, or another channel's content. For news channels that run detection, a dead Fallback Stream stays hidden until Live Detection fails, and then every dead one surfaces together. Keeping them honest takes a recurring liveness check against the provider, not code review. See also: Live Detection.
+
+### Idle Pause
+
+The resource-saving stop of live video after a viewer-chosen stretch with no pointer, keyboard, scroll, wheel, click, or touch input, which the viewer can also set to never. Every live panel that was playing ends at once and shows a notice naming inactivity as the cause, with a way to resume and a way to stop pausing. Input alone never restarts video; only the notice or a Play action does.
+
+The pause keys on input, not on whether anyone is watching, so input inside an embedded player does not count. A panel in fullscreen and a video the viewer paused are left alone. A separate, shorter, fixed stretch freezes page animation and is not governed by this preference. See also: Always-On Playback.
+
+### Always-On Playback
+
+A viewer preference that starts live news and webcams as soon as their panels are visible instead of waiting for Play. It governs autoplay only; how long video keeps playing without input is the Idle Pause preference, and once an Idle Pause has happened it does not restart video on tab return or scroll-back either. A viewer who saved it before the Idle Pause preference existed is treated as never pausing until they choose a duration, which preserves what the preference used to imply. See also: Idle Pause.
+
 ## Flagged ambiguities
 
 - *"Pool"* had been used for both a labelled market category and the complete set of markets — these are distinct. A pool is always a labelled subset; the complete set has no pool and must be requested as an explicit union.

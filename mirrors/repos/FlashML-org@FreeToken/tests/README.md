@@ -50,6 +50,9 @@ checkpoint is set:
 | `FREETOKEN_AIME_MIN_FREE_GIB` | `e2e/test_aime.py` — required free GPU memory (default `70`) |
 | `FREETOKEN_QWEN36_MODEL`   | `tokenizer/test_mm_tokenize.py` — local Qwen3.6 checkpoint (image processor + tokenizer) |
 | `FREETOKEN_QWEN3VL_MODEL`  | `tokenizer/test_mm_tokenize.py` — local Qwen3-VL checkpoint (same expansion, DeepStack family) |
+| `FREETOKEN_GEMMA4_MODEL`   | `models/test_gemma4_vision.py`, `tokenizer/test_mm_tokenize.py` — local Gemma-4 `gemma4` checkpoint (tower parity, boi/eoi expansion; the tokenizer test also takes the 12B `gemma4_unified` checkpoint) |
+| `FREETOKEN_GEMMA4_UNIFIED_MODEL` | `models/test_gemma4_vision.py` — local gemma-4-12B `gemma4_unified` checkpoint (embedder parity) |
+| `FREETOKEN_GLM53_MODEL`    | `tokenizer/test_mm_tokenize.py` — local GLM-5.3-Flash checkpoint (image-token expansion) |
 | `FREETOKEN_TEST_MOE_CACHE_SIZE` | `e2e/test_aime.py` — >0 switches to the offload MoE backend with this cache size |
 | `FREETOKEN_TEST_MEM_RATIO` | `e2e/test_aime.py` — offload-mode memory_ratio (default `0.9`) |
 | `FREETOKEN_REBUILD_TEST_MODEL` | `e2e/test_cache_rebuild.py` — a SMALL local model dir; boots a real server (falls back to `FREETOKEN_TEST_MODEL`) |

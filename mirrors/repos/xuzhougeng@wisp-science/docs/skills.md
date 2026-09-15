@@ -93,6 +93,12 @@ and controlled `domains`, `research_stages`, `roles`, `evidence_types`,
 semantics are retained as catalog parse-error records instead of silently
 entering the effective catalog.
 
+A Skill remains usable directly by the main Agent. Workflow conversion reads
+its method documents and creates independent node instructions and contracts;
+Skills are no longer runtime Workflow node bindings. `side_effects` metadata
+does not grant tools or determine the generated permissions. See
+[Workflow conversion and legacy migration](agent-delegation.md#convert-skills-into-independent-workflows).
+
 Discovery uses this precedence when two packages declare the same public name:
 
 1. `bundled` — the read-only catalog shipped with Wisp.

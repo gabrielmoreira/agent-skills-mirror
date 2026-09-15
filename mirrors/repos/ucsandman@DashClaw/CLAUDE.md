@@ -169,3 +169,5 @@ This project is indexed by GitNexus as **DashClaw** (32131 symbols, 63068 relati
 ## Environment
 
 - Required env vars: `DATABASE_URL`, `DASHCLAW_API_KEY`, `ENCRYPTION_KEY`, `NEXTAUTH_URL`, `NEXTAUTH_SECRET` — see `.env.example` for placeholders. Never read or move real values from `.env`/`.env.local`.
+
+@.claude/costclaw.md

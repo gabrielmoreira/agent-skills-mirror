@@ -85,6 +85,8 @@ For common workflows, tips, and full usage patterns, see [references/cli.md](ref
 
 Three methods to access Langfuse docs, in order of preference. **Always prefer your application's native web fetch and search tools** (e.g., `WebFetch`, `WebSearch`, `mcp_fetch`, etc.) over `curl` when available. The URLs and patterns below work with any fetching method — the `curl` examples are just illustrative.
 
+When working with self-hosted Langfuse, prefer the [API reference served by the deployment](https://langfuse.com/faq/all/self-hosting-api-reference) so it matches the installed version.
+
 ### 2a. Documentation Index (llms.txt)
 
 Fetch the full index of all documentation pages:

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `openclaw/openclaw` — 26 default patterns, 22 followed patterns, 538 file(s) materialized.
+Mirror of `openclaw/openclaw` — 26 default patterns, 22 followed patterns, 539 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `openclaw/openclaw` — 26 default patterns, 22 followed patterns, 538
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 22 |
-| Files         | 538 |
+| Files         | 539 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -554,70 +554,71 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 472 | ✓ | [`skills/taskflow-inbox-triage/SKILL.md`](skills/taskflow-inbox-triage/SKILL.md) |
 | 473 | ✓ | [`skills/taskflow/examples/inbox-triage.lobster`](skills/taskflow/examples/inbox-triage.lobster) |
 | 474 | ✓ | [`skills/taskflow/examples/pr-intake.lobster`](skills/taskflow/examples/pr-intake.lobster) |
-| 475 | ✓ | [`skills/taskflow/SKILL.md`](skills/taskflow/SKILL.md) |
-| 476 | ✓ | [`skills/things-mac/SKILL.md`](skills/things-mac/SKILL.md) |
-| 477 | ✓ | [`skills/tmux/scripts/find-sessions.sh`](skills/tmux/scripts/find-sessions.sh) |
-| 478 | ✓ | [`skills/tmux/scripts/wait-for-text.sh`](skills/tmux/scripts/wait-for-text.sh) |
-| 479 | ✓ | [`skills/tmux/SKILL.md`](skills/tmux/SKILL.md) |
-| 480 | ✓ | [`skills/trello/SKILL.md`](skills/trello/SKILL.md) |
-| 481 | ✓ | [`skills/visualize/SKILL.md`](skills/visualize/SKILL.md) |
-| 482 | ✓ | [`skills/weather/SKILL.md`](skills/weather/SKILL.md) |
-| 483 | ✓ | [`skills/xurl/SKILL.md`](skills/xurl/SKILL.md) |
-| 484 | ✓ | [`src/agents/AGENTS.md`](src/agents/AGENTS.md) |
-| 485 | ✓ | [`src/agents/CLAUDE.md`](src/agents/CLAUDE.md) |
-| 486 | ✓ | [`src/agents/embedded-agent-runner/run/AGENTS.md`](src/agents/embedded-agent-runner/run/AGENTS.md) |
-| 487 | ✓ | [`src/agents/embedded-agent-runner/run/CLAUDE.md`](src/agents/embedded-agent-runner/run/CLAUDE.md) |
-| 488 | ✓ | [`src/agents/tools/AGENTS.md`](src/agents/tools/AGENTS.md) |
-| 489 | ✓ | [`src/agents/tools/CLAUDE.md`](src/agents/tools/CLAUDE.md) |
-| 490 | ✓ | [`src/channels/AGENTS.md`](src/channels/AGENTS.md) |
-| 491 | ✓ | [`src/channels/CLAUDE.md`](src/channels/CLAUDE.md) |
-| 492 | ✓ | [`src/channels/plugins/contracts/test-helpers/AGENTS.md`](src/channels/plugins/contracts/test-helpers/AGENTS.md) |
-| 493 | ✓ | [`src/channels/plugins/contracts/test-helpers/CLAUDE.md`](src/channels/plugins/contracts/test-helpers/CLAUDE.md) |
-| 494 | ✓ | [`src/gateway/AGENTS.md`](src/gateway/AGENTS.md) |
-| 495 | ✓ | [`src/gateway/CLAUDE.md`](src/gateway/CLAUDE.md) |
-| 496 | ✓ | [`src/gateway/server-methods/AGENTS.md`](src/gateway/server-methods/AGENTS.md) |
-| 497 | ✓ | [`src/gateway/server-methods/CLAUDE.md`](src/gateway/server-methods/CLAUDE.md) |
-| 498 | ✓ | [`src/hooks/bundled/README.md`](src/hooks/bundled/README.md) |
-| 499 | ✓ | [`src/infra/outbound/AGENTS.md`](src/infra/outbound/AGENTS.md) |
-| 500 | ✓ | [`src/infra/outbound/CLAUDE.md`](src/infra/outbound/CLAUDE.md) |
-| 501 | ✓ | [`src/plugin-sdk/AGENTS.md`](src/plugin-sdk/AGENTS.md) |
-| 502 | ✓ | [`src/plugin-sdk/CLAUDE.md`](src/plugin-sdk/CLAUDE.md) |
-| 503 | ✓ | [`src/plugins/AGENTS.md`](src/plugins/AGENTS.md) |
-| 504 | ✓ | [`src/plugins/CLAUDE.md`](src/plugins/CLAUDE.md) |
-| 505 | ✓ | [`src/tui/AGENTS.md`](src/tui/AGENTS.md) |
-| 506 | ✓ | [`src/tui/CLAUDE.md`](src/tui/CLAUDE.md) |
-| 507 | ✓ | [`test/AGENTS.md`](test/AGENTS.md) |
-| 508 | ✓ | [`test/CLAUDE.md`](test/CLAUDE.md) |
-| 509 | ✓ | [`test/fixtures/agents/prompt-snapshots/codex-runtime-happy-path/README.md`](test/fixtures/agents/prompt-snapshots/codex-runtime-happy-path/README.md) |
-| 510 | ✓ | [`test/fixtures/sqlite/README.md`](test/fixtures/sqlite/README.md) |
-| 511 | ✓ | [`test/fixtures/state-corpus/README.md`](test/fixtures/state-corpus/README.md) |
-| 512 | ✓ | [`test/helpers/AGENTS.md`](test/helpers/AGENTS.md) |
-| 513 | ✓ | [`test/helpers/CLAUDE.md`](test/helpers/CLAUDE.md) |
-| 514 | ✓ | [`ui/AGENTS.md`](ui/AGENTS.md) |
-| 515 | ✓ | [`ui/CLAUDE.md`](ui/CLAUDE.md) |
-| 516 | ✓ | [`ui/docs/design-system/README.md`](ui/docs/design-system/README.md) |
-| 517 | → | [`.github/pull_request_template.md`](.github/pull_request_template.md) |
-| 518 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 519 | → | [`docs/auth-credential-semantics.md`](docs/auth-credential-semantics.md) |
-| 520 | → | [`docs/cli/mcp.md`](docs/cli/mcp.md) |
-| 521 | → | [`docs/gateway/audit.md`](docs/gateway/audit.md) |
-| 522 | → | [`docs/gateway/doctor/config-migrations.md`](docs/gateway/doctor/config-migrations.md) |
-| 523 | → | [`docs/gateway/secrets.md`](docs/gateway/secrets.md) |
-| 524 | → | [`docs/help/testing/suites.md`](docs/help/testing/suites.md) |
-| 525 | → | [`docs/help/testing/writing-tests.md`](docs/help/testing/writing-tests.md) |
-| 526 | → | [`docs/install/node.md`](docs/install/node.md) |
-| 527 | → | [`docs/platforms/mac/signing.md`](docs/platforms/mac/signing.md) |
-| 528 | → | [`docs/plugins/codex-harness.md`](docs/plugins/codex-harness.md) |
-| 529 | → | [`docs/plugins/sdk-channel-plugins.md`](docs/plugins/sdk-channel-plugins.md) |
-| 530 | → | [`docs/reference/database-schemas.md`](docs/reference/database-schemas.md) |
-| 531 | → | [`docs/reference/pull-request-review-flow.md`](docs/reference/pull-request-review-flow.md) |
-| 532 | → | [`docs/reference/RELEASING.md`](docs/reference/RELEASING.md) |
-| 533 | → | [`docs/security/incident-response.md`](docs/security/incident-response.md) |
-| 534 | → | [`docs/tools/plugin.md`](docs/tools/plugin.md) |
-| 535 | → | [`README.md`](README.md) |
-| 536 | → | [`SECURITY.md`](SECURITY.md) |
-| 537 | → | [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md) |
-| 538 | → | [`VISION.md`](VISION.md) |
+| 475 | ✓ | [`skills/taskflow/references/subagent-workflows.md`](skills/taskflow/references/subagent-workflows.md) |
+| 476 | ✓ | [`skills/taskflow/SKILL.md`](skills/taskflow/SKILL.md) |
+| 477 | ✓ | [`skills/things-mac/SKILL.md`](skills/things-mac/SKILL.md) |
+| 478 | ✓ | [`skills/tmux/scripts/find-sessions.sh`](skills/tmux/scripts/find-sessions.sh) |
+| 479 | ✓ | [`skills/tmux/scripts/wait-for-text.sh`](skills/tmux/scripts/wait-for-text.sh) |
+| 480 | ✓ | [`skills/tmux/SKILL.md`](skills/tmux/SKILL.md) |
+| 481 | ✓ | [`skills/trello/SKILL.md`](skills/trello/SKILL.md) |
+| 482 | ✓ | [`skills/visualize/SKILL.md`](skills/visualize/SKILL.md) |
+| 483 | ✓ | [`skills/weather/SKILL.md`](skills/weather/SKILL.md) |
+| 484 | ✓ | [`skills/xurl/SKILL.md`](skills/xurl/SKILL.md) |
+| 485 | ✓ | [`src/agents/AGENTS.md`](src/agents/AGENTS.md) |
+| 486 | ✓ | [`src/agents/CLAUDE.md`](src/agents/CLAUDE.md) |
+| 487 | ✓ | [`src/agents/embedded-agent-runner/run/AGENTS.md`](src/agents/embedded-agent-runner/run/AGENTS.md) |
+| 488 | ✓ | [`src/agents/embedded-agent-runner/run/CLAUDE.md`](src/agents/embedded-agent-runner/run/CLAUDE.md) |
+| 489 | ✓ | [`src/agents/tools/AGENTS.md`](src/agents/tools/AGENTS.md) |
+| 490 | ✓ | [`src/agents/tools/CLAUDE.md`](src/agents/tools/CLAUDE.md) |
+| 491 | ✓ | [`src/channels/AGENTS.md`](src/channels/AGENTS.md) |
+| 492 | ✓ | [`src/channels/CLAUDE.md`](src/channels/CLAUDE.md) |
+| 493 | ✓ | [`src/channels/plugins/contracts/test-helpers/AGENTS.md`](src/channels/plugins/contracts/test-helpers/AGENTS.md) |
+| 494 | ✓ | [`src/channels/plugins/contracts/test-helpers/CLAUDE.md`](src/channels/plugins/contracts/test-helpers/CLAUDE.md) |
+| 495 | ✓ | [`src/gateway/AGENTS.md`](src/gateway/AGENTS.md) |
+| 496 | ✓ | [`src/gateway/CLAUDE.md`](src/gateway/CLAUDE.md) |
+| 497 | ✓ | [`src/gateway/server-methods/AGENTS.md`](src/gateway/server-methods/AGENTS.md) |
+| 498 | ✓ | [`src/gateway/server-methods/CLAUDE.md`](src/gateway/server-methods/CLAUDE.md) |
+| 499 | ✓ | [`src/hooks/bundled/README.md`](src/hooks/bundled/README.md) |
+| 500 | ✓ | [`src/infra/outbound/AGENTS.md`](src/infra/outbound/AGENTS.md) |
+| 501 | ✓ | [`src/infra/outbound/CLAUDE.md`](src/infra/outbound/CLAUDE.md) |
+| 502 | ✓ | [`src/plugin-sdk/AGENTS.md`](src/plugin-sdk/AGENTS.md) |
+| 503 | ✓ | [`src/plugin-sdk/CLAUDE.md`](src/plugin-sdk/CLAUDE.md) |
+| 504 | ✓ | [`src/plugins/AGENTS.md`](src/plugins/AGENTS.md) |
+| 505 | ✓ | [`src/plugins/CLAUDE.md`](src/plugins/CLAUDE.md) |
+| 506 | ✓ | [`src/tui/AGENTS.md`](src/tui/AGENTS.md) |
+| 507 | ✓ | [`src/tui/CLAUDE.md`](src/tui/CLAUDE.md) |
+| 508 | ✓ | [`test/AGENTS.md`](test/AGENTS.md) |
+| 509 | ✓ | [`test/CLAUDE.md`](test/CLAUDE.md) |
+| 510 | ✓ | [`test/fixtures/agents/prompt-snapshots/codex-runtime-happy-path/README.md`](test/fixtures/agents/prompt-snapshots/codex-runtime-happy-path/README.md) |
+| 511 | ✓ | [`test/fixtures/sqlite/README.md`](test/fixtures/sqlite/README.md) |
+| 512 | ✓ | [`test/fixtures/state-corpus/README.md`](test/fixtures/state-corpus/README.md) |
+| 513 | ✓ | [`test/helpers/AGENTS.md`](test/helpers/AGENTS.md) |
+| 514 | ✓ | [`test/helpers/CLAUDE.md`](test/helpers/CLAUDE.md) |
+| 515 | ✓ | [`ui/AGENTS.md`](ui/AGENTS.md) |
+| 516 | ✓ | [`ui/CLAUDE.md`](ui/CLAUDE.md) |
+| 517 | ✓ | [`ui/docs/design-system/README.md`](ui/docs/design-system/README.md) |
+| 518 | → | [`.github/pull_request_template.md`](.github/pull_request_template.md) |
+| 519 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 520 | → | [`docs/auth-credential-semantics.md`](docs/auth-credential-semantics.md) |
+| 521 | → | [`docs/cli/mcp.md`](docs/cli/mcp.md) |
+| 522 | → | [`docs/gateway/audit.md`](docs/gateway/audit.md) |
+| 523 | → | [`docs/gateway/doctor/config-migrations.md`](docs/gateway/doctor/config-migrations.md) |
+| 524 | → | [`docs/gateway/secrets.md`](docs/gateway/secrets.md) |
+| 525 | → | [`docs/help/testing/suites.md`](docs/help/testing/suites.md) |
+| 526 | → | [`docs/help/testing/writing-tests.md`](docs/help/testing/writing-tests.md) |
+| 527 | → | [`docs/install/node.md`](docs/install/node.md) |
+| 528 | → | [`docs/platforms/mac/signing.md`](docs/platforms/mac/signing.md) |
+| 529 | → | [`docs/plugins/codex-harness.md`](docs/plugins/codex-harness.md) |
+| 530 | → | [`docs/plugins/sdk-channel-plugins.md`](docs/plugins/sdk-channel-plugins.md) |
+| 531 | → | [`docs/reference/database-schemas.md`](docs/reference/database-schemas.md) |
+| 532 | → | [`docs/reference/pull-request-review-flow.md`](docs/reference/pull-request-review-flow.md) |
+| 533 | → | [`docs/reference/RELEASING.md`](docs/reference/RELEASING.md) |
+| 534 | → | [`docs/security/incident-response.md`](docs/security/incident-response.md) |
+| 535 | → | [`docs/tools/plugin.md`](docs/tools/plugin.md) |
+| 536 | → | [`README.md`](README.md) |
+| 537 | → | [`SECURITY.md`](SECURITY.md) |
+| 538 | → | [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md) |
+| 539 | → | [`VISION.md`](VISION.md) |
 
 ---
 
