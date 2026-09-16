@@ -1,0 +1,18 @@
+{
+  "play_res_x": 1280,
+  "play_res_y": 720,
+  "font": "Arial Black",
+  "font_size": 64,
+  "bold": 1,
+  "primary_color": "&H00FFFFFF",
+  "highlight_color": "&H0000FFFF",
+  "outline_color": "&H00000000",
+  "outline": 5,
+  "shadow": 2,
+  "alignment": 2,
+  "margin_v": 60,
+  "uppercase": true,
+  "max_words_per_line": 4,
+  "max_gap": 0.8,
+  "break_on_punctuation": true
+}

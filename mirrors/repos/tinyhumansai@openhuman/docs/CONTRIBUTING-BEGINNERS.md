@@ -158,7 +158,7 @@ sudo pacman -S --needed rustup
 # rust-toolchain.toml; rustup installs it automatically the first time you run
 # cargo inside the checkout, so there is nothing to pick by hand here.
 
-# Build tools required by native Rust crates (whisper-rs, cpal, enigo, etc.)
+# Build tools required by native Rust crates (cpal, enigo, etc.)
 sudo pacman -S --needed base-devel cmake pkgconf clang openssl \
   alsa-lib xdotool libxtst libxi libevdev
 ```

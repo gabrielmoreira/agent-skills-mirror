@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `metalbear-co/mirrord` — 26 default patterns, 0 followed patterns, 7 file(s) materialized.
+Mirror of `metalbear-co/mirrord` — 26 default patterns, 0 followed patterns, 9 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `metalbear-co/mirrord` — 26 default patterns, 0 followed patterns, 7
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 7 |
+| Files         | 9 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -61,11 +61,13 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 3 | ✓ | [`mirrord/operator/AGENTS.md`](mirrord/operator/AGENTS.md) |
-| 4 | ✓ | [`mirrord/operator/CLAUDE.md`](mirrord/operator/CLAUDE.md) |
-| 5 | ✓ | [`mirrord/protocol/AGENTS.md`](mirrord/protocol/AGENTS.md) |
-| 6 | ✓ | [`mirrord/protocol/CLAUDE.md`](mirrord/protocol/CLAUDE.md) |
-| 7 | ✓ | [`mirrord/tui/AGENTS.md`](mirrord/tui/AGENTS.md) |
+| 3 | ✓ | [`mirrord/operator-websocket/AGENTS.md`](mirrord/operator-websocket/AGENTS.md) |
+| 4 | ✓ | [`mirrord/operator-websocket/CLAUDE.md`](mirrord/operator-websocket/CLAUDE.md) |
+| 5 | ✓ | [`mirrord/operator/AGENTS.md`](mirrord/operator/AGENTS.md) |
+| 6 | ✓ | [`mirrord/operator/CLAUDE.md`](mirrord/operator/CLAUDE.md) |
+| 7 | ✓ | [`mirrord/protocol/AGENTS.md`](mirrord/protocol/AGENTS.md) |
+| 8 | ✓ | [`mirrord/protocol/CLAUDE.md`](mirrord/protocol/CLAUDE.md) |
+| 9 | ✓ | [`mirrord/tui/AGENTS.md`](mirrord/tui/AGENTS.md) |
 
 ---
 

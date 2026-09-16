@@ -1,118 +1,33 @@
 # Inline Scripts
 
-> When to read: when writing recipes that need shell scripts (script attribute or shebang style).
+> Read when a recipe needs multi-line shell or another interpreter. Confirm the installed syntax with `just --help`,
+> `just --man`, or the current manual before adding an attribute or setting.
 
-Just supports inline scripts in any language via two methods:
-
-## Script Attribute (Recommended)
-
-Use `[script("interpreter")]` for cross-platform compatibility:
+Use linewise recipes for short commands. Use `[script("interpreter")]` or a shebang when the body needs shell state,
+traps, control flow, or a non-shell language. `set default-script` changes the default; `[shell]` opts one recipe back
+to linewise execution.
 
 ```just
-[script("node")]
-fetch-data:
-    const response = await fetch('https://api.example.com/data');
-    const data = await response.json();
-    console.log(data);
-
-[script("python3")]
-analyze:
-    import json
-    with open('package.json') as f:
-        pkg = json.load(f)
-    print(f"Package: {pkg['name']}@{pkg['version']}")
-
 [script("bash")]
 deploy:
     set -e
-    npm run build
-    aws s3 sync dist/ s3://bucket/
+    ./build.sh
+    ./deploy.sh
 ```
 
-## Default Script Mode
+Script recipes are quiet already. Do not prefix a `[script]` recipe with `@`: there it prints the generated script body.
+See [recipes.md](recipes.md#quiet-recipes-and-command-prefixes) for linewise echo rules.
 
-Use `set default-script := true` (v1.52.0+) when most recipes should run as complete scripts instead of independent
-shell lines:
+## Bash on macOS
 
-```just
-set default-script := true
-set script-interpreter := ["bash", "-euo", "pipefail"]
-
-deploy:
-    trap 'echo failed' ERR
-    npm run build
-    npm publish
-
-[shell]
-status:
-    echo "force this one back to linewise shell execution"
-```
-
-`[shell]` overrides `default-script` for one recipe. `set shell` still controls linewise recipes and backticks;
-`set script-interpreter` controls `[script]` recipes with no explicit command.
-
-## Script Echoing
-
-Script recipes are quiet by default: Just does not print the generated script body before running it. Do not add `@` to
-a `[script]` recipe when trying to reduce output; for scripts, `@` undoes that default quiet mode and prints the script
-body before command output. On non-script recipes, `@` keeps its usual meaning and suppresses the echoed command line.
-
-## Shebang Method
-
-Use `#!/usr/bin/env interpreter` at the recipe start:
-
-```just
-node-script:
-    #!/usr/bin/env node
-    console.log(`Node ${process.version}`);
-    console.log(JSON.stringify(process.env, null, 2));
-
-python-script:
-    #!/usr/bin/env python3
-    import sys
-    print(f"Python {sys.version}")
-
-bash-script:
-    #!/usr/bin/env bash
-    set -euo pipefail
-    echo "Running on $(uname -s)"
-```
-
-**When to use which:**
-
-- `[script()]` - Cleaner multi-line recipe syntax
-- Shebang - Traditional Unix approach, works without `set unstable`
-
-## Bash Version Pitfalls (macOS)
-
-`[script("bash")]`, `#!/usr/bin/env bash`, and `set shell := ["bash", ...]` all resolve `bash` via `PATH`. On stock
-macOS — and in minimal-`PATH` agent sandboxes — that is `/bin/bash` 3.2 (2007), not Homebrew's 5.x. Recipes written
-against Bash 4+ fail with signatures like:
-
-```
-mapfile: command not found
-declare: -A: invalid option
-```
-
-**Bash-4+ features and 3.2-safe replacements:**
-
-| Bash 4+ feature         | 3.2-safe replacement                           |
-| ----------------------- | ---------------------------------------------- |
-| `mapfile -t arr < file` | `while IFS= read -r line; do ...; done < file` |
-| `declare -A map`        | `case` statement or parallel arrays            |
-| `${var,,}` / `${var^^}` | `tr '[:upper:]' '[:lower:]'` (and inverse)     |
-| `${arr[-1]}`            | `${arr[${#arr[@]}-1]}`                         |
-| `cmd \|& other`         | `cmd 2>&1 \| other`                            |
-
-**Pinning a newer interpreter** works when the path exists. Keep it explicit and guarded because CI or agent sandboxes
-may expose only `/bin/bash`:
+Assume `/bin/bash` 3.2 unless the recipe selects another shell. Write 3.2-compatible bodies by default; pin a newer
+interpreter only for semantics that require it, and ensure that path is available in CI and agent environments.
 
 ```just
 set shell := ["/opt/homebrew/bin/bash", "-euo", "pipefail", "-c"]
 ```
 
-**3.2-safe version guard** when a recipe genuinely needs Bash 4+ (`BASH_VERSINFO` exists in 3.2, so the check itself
-never breaks):
+For a Bash-4+-only recipe, guard before using its newer syntax:
 
 ```just
 [script("bash")]
@@ -123,6 +38,3 @@ modern:
     fi
     declare -A map=([a]=1)
 ```
-
-**Default recommendation:** write recipe bodies that are Bash-3.2-safe. Pin `/opt/homebrew/bin/bash` only when a recipe
-genuinely needs Bash 4+ semantics.

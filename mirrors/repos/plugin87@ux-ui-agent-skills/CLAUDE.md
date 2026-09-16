@@ -36,6 +36,13 @@ This governs every build/review from the **start**, not the end. Trust comes fro
 6. **Responsive is gated too.** `node scripts/verify_responsive.mjs <file|dir>` — no horizontal overflow at 280/320/414px. Mobile-first; a fixed-px width that can't shrink is a bug.
 7. **Honest scope.** These gates prove *objective correctness* (token-consistency, accessibility, no drift). They do **not** prove subjective taste/beauty — say so, and never claim auto-100% on aesthetics. For the half no script can score, run **`/critique`** (the adversarial `design-critic` reviewer: renders it, argues for rejection, cites evidence per finding) alongside `scripts/taste_audit.mjs` + `scripts/slop_tells.mjs` and a human read. A passing gate is never evidence of taste.
 
+8. **A render gate with no browser prints SKIPPED and exits 0.** That is not a pass,
+and reading it as one is the last way left to satisfy rule 1 with a number nothing
+measured. `accuracy_report.mjs` already sets `DS_REQUIRE_BROWSER=1`, which turns a
+missing browser into `REQUIRED, FAILING`; set it yourself when you run a single
+render gate and intend to trust its exit code. The fix when it fails that way is
+`npm install && npx playwright install chrome`, never dropping the flag.
+
 > If you're about to type a quality number, stop: did a gate just produce it? If not, run the gate.
 > If you're about to say a component "looks right", stop: did you screenshot it and click it? If not, render it.
 

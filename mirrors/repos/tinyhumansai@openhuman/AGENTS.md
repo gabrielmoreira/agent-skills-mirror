@@ -245,12 +245,24 @@ progress events.
 - Use the `tinytools` copy vendored through `vendor/tinyagents/`; a second path
   creates incompatible Rust types.
 - Keep conversions mechanical. Policy decisions belong in OpenHuman.
-- `openhuman_embed::Harness` is the public prompt-to-reply API. Calls go through
-  `CoreRuntime::invoke`, not directly to domain operations.
+- `openhuman_embed::Runtime` → `Agent` is the public library API: one runtime
+  per process (features, services, backend URL, TinyHumans API key), then any
+  number of independently configured agents on it (`AgentSpec`: provider,
+  access, `action_dir`, MCP servers, skills, prompt, tool scope, sandbox).
+  `Harness` is the one-agent shorthand over the same two types. Agent turns
+  dispatch natively (`inference::local::ops::agent_chat_for`) under the
+  agent's own `CoreContext` (`CoreContext::derive_with`); other facade calls
+  go through `CoreRuntime::invoke`.
 - Set `config_path` with `workspace_dir`, and set a turn origin with its access
-  tier. `Access::full()` configures both access fields.
-- Use one `Harness` per process. Copy skills into its workspace because skill
-  discovery rejects symlinked bundles.
+  tier. `Access::full()` configures both access fields. Every agent on a
+  runtime shares its `config_path` (credentials, keyring, API key).
+- Copy skills into an agent's `personalities/<id>/skills/` (what
+  `AgentSpec::skills_dir` does) because skill discovery rejects symlinked
+  bundles. Library agents hide the operator's `~/.openhuman/skills` unless
+  `include_user_skills(true)`.
+- Library mode has no user login: the runtime's API key rides managed
+  inference as `Authorization: Bearer` and backend REST as `x-api-key`
+  (`security::credentials::api_key`, `session_support::BackendCredential`).
 
 `CoreBuilder` controls background services with `ServiceSet`, runtime domains
 with `DomainSet`, and tool visibility with `ToolGroups`. These controls only

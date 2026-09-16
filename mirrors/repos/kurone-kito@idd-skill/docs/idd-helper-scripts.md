@@ -211,6 +211,12 @@ in this preamble, since the fallback differs per helper.
   live `--issue <n>` verdict; `duplicate_or_superseded` always reports
   `"not_evaluated"`, never omitted (referenced in
   [kurone-kito/idd-skill#2102](https://github.com/kurone-kito/idd-skill/issues/2102))
+- `scripts/suitability-close-execute.mjs` for the A4.5 high-confidence
+  duplicate/superseded coordination-close path (referenced in
+  [kurone-kito/idd-skill#1485](https://github.com/kurone-kito/idd-skill/issues/1485));
+  it reuses the triage detection kernel, requires a separate
+  `suitability-close/<issue>-<slug>` claim for `--apply`, and fails closed
+  when a fresh evaluation is no longer eligible
 - `scripts/claim-approval-gate.mjs` for A5(a) issue-author approval
   verification; A5(d) open-PR conflict checks remain manual by design
   (referenced in
@@ -382,6 +388,14 @@ in this preamble, since the fallback differs per helper.
   attempt before starting the next, and stops early once the recomputed
   plan is fully resolved — never a `bot-gated-skip`,
   `awaiting-fresh-review`, or rerun-budget-held instance.
+  A consumer that wraps this helper in a wait loop must exclude its own
+  guaranteed self-referential pending instance before polling for zero
+  pending instances; a `needs:` dependency can keep that sibling pending
+  for the polling job’s whole lifetime. This does not authorize treating
+  `awaiting-fresh-review` as eligible for rerun or trusting a raw waiver comment;
+  retain that hold unless an independently verified recovery signal exists.
+  The failure shape is documented in [issue #2994](https://github.com/kurone-kito/idd-skill/issues/2994),
+  filed on 2026-09-14.
 - `scripts/live-status-digest.mjs` for issue or PR live status digest
   discovery, rendering, dry-run, and claim-checked upsert
 - `scripts/audit-pr-cleanup.mjs` for post-merge comment cleanup auditing
@@ -1925,13 +1939,71 @@ close.
   verification, autonomous completion) against fetched issue bodies; it does
   not post claims or mutate any state
 
+### Suitability high-confidence close
+
+- Source repo / vendored-node command:
+  `node scripts/suitability-close-execute.mjs --issue <issue-number>`
+  runs the read-only dry-run. Add `--claim-id <claim-id> --agent-id
+  <agent-id> --apply` after posting the `suitability-close/<issue>-<slug>`
+  coordination claim to execute an eligible close.
+- Package-manager command: run the profile-selected
+  `idd:suitability-close-execute` package script. The example uses `npm`;
+  substitute the repository's configured package manager:
+
+  ```sh
+  npm run idd:suitability-close-execute -- --issue <issue-number>
+  npm run idd:suitability-close-execute -- --issue <issue-number> \
+    --claim-id <claim-id> --agent-id <agent-id> --apply
+  ```
+
+- Ephemeral-npx command: use the profile-selected
+  `idd-suitability-close-execute` command from the helper runtime manifest
+  wiring above; the literal invocations are:
+
+  ```sh
+  npx --yes --package <helper-package-spec> \
+    idd-suitability-close-execute --issue <issue-number>
+  npx --yes --package <helper-package-spec> \
+    idd-suitability-close-execute --issue <issue-number> \
+    --claim-id <claim-id> --agent-id <agent-id> --apply
+  ```
+
+- Supported options are `--issue <number>` (required), `--apply` (execute the
+  evidence-bound close), `--help` (print usage), `--claim-id` and `--agent-id`
+  (required with `--apply`), `--owner <owner>` and `--repo <repo>` (required
+  together when supplied), `--policy <path>`, and `--now <ISO8601>`.
+- Stable output fields are `ready`, `eligible`, `evidence`, `claim`,
+  `closed`, and `result`, alongside `protocolVersion`, `mode`, and
+  `issueNumber`. Dry-run reports the high-confidence evidence without
+  mutating; apply re-validates the coordination claim and evidence, posts
+  the evidence-bound closing comment, closes the issue, and releases the
+  claim in that order. It never acts on the weak title/declaration
+  heuristic.
+- `instructions-only`: apply the written A4.5 checks as a detect-only path,
+  post the required diagnostic comment with machine-derivable evidence, and
+  do not create a coordination claim; do not close the issue or release a
+  coordination claim. For a
+  discovery candidate, remove it from Candidates and continue the Decision
+  Flow loop; an explicit-target caller follows A0-T's report-and-stop route.
+  See the [A4.5 high-confidence coordination-close
+  path](../.github/instructions/idd-suitability.instructions.md#mutation-policy-and-coordination-rule)
+  for the evidence boundary and the helper-capable execution path.
+
 ### Claim approval evidence
 
 - Source repo / vendored-node command:
   `node scripts/claim-approval-gate.mjs --issue <issue-number>`
-- Package-manager / ephemeral-npx command: use the
-  profile-selected `idd:claim-approval-gate` command from the helper
-  runtime manifest wiring above; the literal invocation is:
+- Package-manager command: run the profile-selected
+  `idd:claim-approval-gate` package script. The example uses `npm`;
+  substitute the repository's configured package manager:
+
+  ```sh
+  npm run idd:claim-approval-gate -- --issue <issue-number>
+  ```
+
+- Ephemeral-npx command: use the profile-selected
+  `idd:claim-approval-gate` command from the helper runtime manifest
+  wiring above; the literal invocation is:
 
   ```sh
   npx --yes --package <helper-package-spec> \
@@ -1959,9 +2031,20 @@ close.
   `node scripts/claim-lock.mjs --acquire --worktree <path> --agent-id <id>
   --claim-id <id> [--takeover]`
   and `node scripts/claim-lock.mjs --check --worktree <path>`
-- Package-manager / ephemeral-npx command: use the profile-selected
-  `idd:claim-lock` command from the helper runtime manifest wiring above;
-  the literal invocations are:
+- Package-manager commands: run the profile-selected `idd:claim-lock`
+  package script. The examples use `npm`; substitute the repository's
+  configured package manager:
+
+  ```sh
+  npm run idd:claim-lock -- --acquire --worktree <path> --agent-id <id> \
+    --claim-id <id> [--takeover]
+
+  npm run idd:claim-lock -- --check --worktree <path>
+  ```
+
+- Ephemeral-npx commands: use the profile-selected `idd:claim-lock`
+  command from the helper runtime manifest wiring above; the literal
+  invocations are:
 
   ```sh
   npx --yes --package <helper-package-spec> \
@@ -2073,8 +2156,22 @@ close.
   --claim-id <id>`, and
   `node scripts/claim-lock.mjs --backfill-tokens --worktree <path>
   --claim-id <id>`
-- Package-manager / ephemeral-npx command: use the same profile-selected
-  `idd:claim-lock` command as the lock above; the literal invocations are:
+- Package-manager commands: run the same profile-selected `idd:claim-lock`
+  package script as the lock above. The examples use `npm`; substitute the
+  repository's configured package manager:
+
+  ```sh
+  npm run idd:claim-lock -- --record-tokens --worktree <path> \
+    --agent-id <id> --claim-id <id> [--nonce <nonce>]
+
+  npm run idd:claim-lock -- --read-tokens --worktree <path> --claim-id <id>
+
+  npm run idd:claim-lock -- --backfill-tokens --worktree <path> \
+    --claim-id <id>
+  ```
+
+- Ephemeral-npx commands: use the same profile-selected `idd:claim-lock`
+  command as the lock above; the literal invocations are:
 
   ```sh
   npx --yes --package <helper-package-spec> \
@@ -2372,9 +2469,27 @@ close.
   node scripts/clone-lock.mjs --check [--repo <path>]
   ```
 
-- Package-manager / ephemeral-npx command: use the profile-selected
-  `idd:clone-lock` command from the helper runtime manifest wiring
-  above; the literal invocations are:
+- Package-manager commands: run the profile-selected `idd:clone-lock`
+  package script. `npm` needs an outer `--` before helper arguments;
+  `pnpm` and `yarn` do not. Keep the inner `--` that separates the
+  helper flags from the command wrapped by `clone-lock`:
+
+  ```sh
+  npm run idd:clone-lock -- --exec --agent-id <id> [--repo <path>] \
+    [--timeout-ms <n>] -- <command> [args...]
+  pnpm run idd:clone-lock --exec --agent-id <id> [--repo <path>] \
+    [--timeout-ms <n>] -- <command> [args...]
+  yarn run idd:clone-lock --exec --agent-id <id> [--repo <path>] \
+    [--timeout-ms <n>] -- <command> [args...]
+
+  npm run idd:clone-lock -- --check [--repo <path>]
+  pnpm run idd:clone-lock --check [--repo <path>]
+  yarn run idd:clone-lock --check [--repo <path>]
+  ```
+
+- Ephemeral-npx commands: use the profile-selected `idd:clone-lock`
+  command from the helper runtime manifest wiring above; the literal
+  invocations are:
 
   ```sh
   npx --yes --package <helper-package-spec> \
@@ -2423,9 +2538,17 @@ close.
 
 - Source repo / vendored-node command:
   `node scripts/branch-name.mjs --number <issue-number> --title <issue-title>`
-- Package-manager / ephemeral-npx command: use the profile-selected
-  `idd:branch-name` command from the helper runtime manifest wiring above;
-  the literal invocation is:
+- Package-manager command: run the profile-selected `idd:branch-name`
+  package script. The example uses `npm`; substitute the repository's
+  configured package manager:
+
+  ```sh
+  npm run idd:branch-name -- --number <issue-number> --title <issue-title>
+  ```
+
+- Ephemeral-npx command: use the profile-selected `idd:branch-name`
+  command from the helper runtime manifest wiring above; the literal
+  invocation is:
 
   ```sh
   npx --yes --package <helper-package-spec> \
@@ -2446,7 +2569,16 @@ close.
 
 - Source repo / vendored-node command:
   `node scripts/select-desynced-index.mjs --token <session-token> --band-size <band-size>`
-- Package-manager / ephemeral-npx command: use the profile-selected
+- Package-manager command: run the profile-selected
+  `idd:select-desynced-index` package script. The example uses `npm`;
+  substitute the repository's configured package manager:
+
+  ```sh
+  npm run idd:select-desynced-index -- --token <session-token> \
+    --band-size <band-size>
+  ```
+
+- Ephemeral-npx command: use the profile-selected
   `idd:select-desynced-index` command from the helper runtime manifest
   wiring above; the literal invocation is:
 
@@ -2470,9 +2602,17 @@ close.
 - Source repo / vendored-node command:
   `node scripts/emit-marker.mjs --type <type> <fields...>` where `<type>` is
   `claimed-by`, `review-watermark`, or `review-baseline`
-- Package-manager / ephemeral-npx command: use the profile-selected
-  `idd:emit-marker` command from the helper runtime manifest wiring above;
-  the literal invocation is:
+- Package-manager command: run the profile-selected `idd:emit-marker`
+  package script. The example uses `npm`; substitute the repository's
+  configured package manager:
+
+  ```sh
+  npm run idd:emit-marker -- --type <type> <fields...>
+  ```
+
+- Ephemeral-npx command: use the profile-selected `idd:emit-marker`
+  command from the helper runtime manifest wiring above; the literal
+  invocation is:
 
   ```sh
   npx --yes --package <helper-package-spec> \
@@ -2496,9 +2636,18 @@ close.
   `node scripts/post-idd-marker.mjs --type <type> --target <issue|pr> <number> <fields...>`
   (dry-run prints a JSON envelope whose `body` field is the marker); add
   `--apply` to POST it.
-- Package-manager / ephemeral-npx command: use the profile-selected
-  `idd:post-idd-marker` command from the helper runtime manifest wiring
-  above; the literal invocation is:
+- Package-manager command: run the profile-selected `idd:post-idd-marker`
+  package script. The example uses `npm`; substitute the repository's
+  configured package manager:
+
+  ```sh
+  npm run idd:post-idd-marker -- --type <type> \
+    --target <issue|pr> <number> <fields...>
+  ```
+
+- Ephemeral-npx command: use the profile-selected `idd:post-idd-marker`
+  command from the helper runtime manifest wiring above; the literal
+  invocation is:
 
   ```sh
   npx --yes --package <helper-package-spec> \
@@ -2660,9 +2809,17 @@ to post it is the consuming track's job.
 
 - Source repo / vendored-node command:
   `node scripts/ci-wait-policy.mjs`
-- Package-manager / ephemeral-npx command: use the
-  profile-selected `idd:ci-wait-policy` command from the helper runtime
-  manifest wiring above; the literal invocation is:
+- Package-manager command: run the profile-selected `idd:ci-wait-policy`
+  package script. The example uses `npm`; substitute the repository's
+  configured package manager:
+
+  ```sh
+  npm run idd:ci-wait-policy --
+  ```
+
+- Ephemeral-npx command: use the profile-selected `idd:ci-wait-policy`
+  command from the helper runtime manifest wiring above. The
+  profile-selected `idd:ci-wait-policy` command is:
 
   ```sh
   npx --yes --package <helper-package-spec> \
@@ -2711,9 +2868,17 @@ to post it is the consuming track's job.
 
 - Source repo / vendored-node command:
   `node scripts/ci-wait-state.mjs --pr <pr-number>`
-- Package-manager / ephemeral-npx command: use the
-  profile-selected `idd:ci-wait-state` command from the helper runtime
-  manifest wiring above; the literal invocation is:
+- Package-manager command: run the profile-selected `idd:ci-wait-state`
+  package script. The example uses `npm`; substitute the repository's
+  configured package manager:
+
+  ```sh
+  npm run idd:ci-wait-state -- --pr <pr-number>
+  ```
+
+- Ephemeral-npx command: use the profile-selected `idd:ci-wait-state`
+  command from the helper runtime manifest wiring above; the literal
+  invocation is:
 
   ```sh
   npx --yes --package <helper-package-spec> \
@@ -2768,10 +2933,19 @@ to post it is the consuming track's job.
   node scripts/rerun-advisory-convergence.mjs --pr <pr-number> [--check-name <name>] [--apply]
   ```
 
-- Package-manager / ephemeral-npx command: use the
-  profile-selected `idd:rerun-advisory-convergence` command from the
-  helper runtime manifest wiring above, with `[--check-name <name>]`
-  and `[--apply]` appended the same way; the literal invocation is:
+- Package-manager command: run the profile-selected
+  `idd:rerun-advisory-convergence` package script. The example uses `npm`;
+  substitute the repository's configured package manager:
+
+  ```sh
+  npm run idd:rerun-advisory-convergence -- --pr <pr-number> \
+    [--check-name <name>] [--apply]
+  ```
+
+- Ephemeral-npx command: use the profile-selected
+  `idd:rerun-advisory-convergence` command from the helper runtime manifest
+  wiring above, with `[--check-name <name>]` and `[--apply]` appended the
+  same way; the literal invocation is:
 
   ```sh
   npx --yes --package <helper-package-spec> \
@@ -4008,9 +4182,18 @@ same as `AW4`/`AW5`.
   node scripts/idd-suggest-untrusted-labelers.mjs [--owner <owner>] [--repo <repo>] [--format table|json]
   ```
 
-- Package-manager / ephemeral-npx command: use the profile-selected
-  `idd:suggest-untrusted-labelers` command from the helper runtime
-  manifest wiring above; the literal invocation is:
+- Package-manager command: run the profile-selected
+  `idd:suggest-untrusted-labelers` package script. The example uses `npm`;
+  substitute the repository's configured package manager:
+
+  ```sh
+  npm run idd:suggest-untrusted-labelers -- --owner <owner> \
+    --repo <repo> [--format table|json]
+  ```
+
+- Ephemeral-npx command: use the profile-selected
+  `idd:suggest-untrusted-labelers` command from the helper runtime manifest
+  wiring above; the literal invocation is:
 
   ```sh
   npx --yes --package <helper-package-spec> \
@@ -4150,8 +4333,10 @@ review). Snapshot and signal back-to-back, with nothing in between:
 that is what keeps a bare recorded PID number trustworthy without
 needing a separate identity check, since the gap in which an exited
 PID could be reused by an unrelated process stays sub-second on any
-real host. Then wait up to 30 seconds for each recorded PID
-individually to exit (not a fresh tree walk); SIGTERM is asynchronous,
+real host. Then wait up to 30 seconds, as one shared wall-clock deadline
+across the whole recorded PID set, for those PIDs to exit (not a
+fresh tree walk, and not a fresh 30-second allowance per PID);
+SIGTERM is asynchronous,
 so checking state immediately can race git's own unwind (still
 removing `index.lock`) or observe stale state.
 
@@ -4267,8 +4452,9 @@ mid-progress, or never started at all:
 
 No step in this recovery procedure waits indefinitely: the original
 wrapper invocation and every fallback or continuation share the same
-2-minute bound, and the termination wait above has its own 30-second
-bound — every step that exceeds its bound routes to the same
+2-minute bound, and the termination wait above has its own single
+shared 30-second bound across the whole recorded PID set — every
+step that exceeds its bound routes to the same
 terminate-and-verify-or-hold outcome, not a fresh unbounded wait. A
 hook or other non-signing cause can hang the plain-commit
 `--no-gpg-sign` fallback or the `--continue` completion just as it

@@ -66,10 +66,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 5 | ✓ | [`docs/how-to-guides/mcp-server.md`](docs/how-to-guides/mcp-server.md) |
 | 6 | ✓ | [`docs/how-to-guides/skills.md`](docs/how-to-guides/skills.md) |
 | 7 | ✓ | [`docs/integrations/agent-frameworks/CLAUDE.md`](docs/integrations/agent-frameworks/CLAUDE.md) |
-| 8 | ✓ | [`logfire/.agents/skills/logfire-evals/SKILL.md`](logfire/.agents/skills/logfire-evals/SKILL.md) |
-| 9 | ✓ | [`logfire/.agents/skills/logfire-infrastructure/SKILL.md`](logfire/.agents/skills/logfire-infrastructure/SKILL.md) |
-| 10 | ✓ | [`logfire/.agents/skills/logfire-instrumentation/SKILL.md`](logfire/.agents/skills/logfire-instrumentation/SKILL.md) |
-| 11 | ✓ | [`logfire/.agents/skills/logfire-setup/SKILL.md`](logfire/.agents/skills/logfire-setup/SKILL.md) |
+| 8 | ✓ | [`logfire-sdk/logfire/.agents/skills/logfire-evals/SKILL.md`](logfire-sdk/logfire/.agents/skills/logfire-evals/SKILL.md) |
+| 9 | ✓ | [`logfire-sdk/logfire/.agents/skills/logfire-infrastructure/SKILL.md`](logfire-sdk/logfire/.agents/skills/logfire-infrastructure/SKILL.md) |
+| 10 | ✓ | [`logfire-sdk/logfire/.agents/skills/logfire-instrumentation/SKILL.md`](logfire-sdk/logfire/.agents/skills/logfire-instrumentation/SKILL.md) |
+| 11 | ✓ | [`logfire-sdk/logfire/.agents/skills/logfire-setup/SKILL.md`](logfire-sdk/logfire/.agents/skills/logfire-setup/SKILL.md) |
 | 12 | → | [`dev-docs/documentation-style-guide.md`](dev-docs/documentation-style-guide.md) |
 
 ---

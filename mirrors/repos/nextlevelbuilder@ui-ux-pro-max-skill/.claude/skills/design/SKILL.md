@@ -27,9 +27,9 @@ Unified design skill: brand, tokens, UI, logo, CIP, slides, banners, social phot
 
 | Task | Sub-skill | Details |
 |------|-----------|---------|
-| Brand identity, voice, assets | `brand` | External skill |
-| Tokens, specs, CSS vars | `design-system` | External skill |
-| shadcn/ui, Tailwind, code | `ui-styling` | External skill |
+| Brand identity, voice, assets | `brand` | Bundled sibling skill |
+| Tokens, specs, CSS vars | `design-system` | Bundled sibling skill |
+| shadcn/ui, Tailwind, code | `ui-styling` | Bundled sibling skill |
 | Logo creation, AI generation | Logo (built-in) | `references/logo-design.md` |
 | CIP mockups, deliverables | CIP (built-in) | `references/cip-design.md` |
 | Presentations, pitch decks | Slides (built-in) | `references/slides.md` |
@@ -74,7 +74,7 @@ python3 scripts/logo/generate.py --brand "TechFlow" --provider muapi --muapi-mod
 
 **IMPORTANT:** When scripts fail, try to fix them directly.
 
-After generation, **ALWAYS** ask user about HTML preview via `AskUserQuestion`. If yes, invoke `/ui-ux-pro-max` for gallery.
+After generation, **ALWAYS** ask user about HTML preview via `AskUserQuestion`. If yes, use the bundled `ui-ux-pro-max` skill for the gallery.
 
 ## CIP Design (Built-in)
 
@@ -139,16 +139,16 @@ Load `references/slides-create.md` for the creation workflow.
 
 ## Banner Design (Built-in)
 
-22 art direction styles across social, ads, web, print. Uses `frontend-design`, `ai-artist`, `ai-multimodal`, `chrome-devtools` skills.
+22 art direction styles across social, ads, web, print. This workflow needs nothing outside the bundle: `references/banner-sizes-and-styles.md` and the bundled `ui-ux-pro-max` skill for style and palette guidance. Browser research, image generation, and screenshot capture are optional runtime capabilities; when unavailable, use supplied assets, CSS-built visuals, and the runtime's standard preview or capture workflow.
 
 Load `references/banner-sizes-and-styles.md` for complete sizes and styles reference.
 
 ### Banner: Workflow
 
 1. **Gather requirements** via `AskUserQuestion` — purpose, platform, content, brand, style, quantity
-2. **Research** — Activate `ui-ux-pro-max`, browse Pinterest for references
-3. **Design** — Create HTML/CSS banner with `frontend-design`, generate visuals with `ai-artist`/`ai-multimodal`
-4. **Export** — Screenshot to PNG at exact dimensions via `chrome-devtools`
+2. **Research** — Read `references/banner-sizes-and-styles.md` and use the bundled `ui-ux-pro-max` skill for style and palette guidance; if browser research is available and permitted, collect 3–5 references
+3. **Design** — Create the HTML/CSS banner at exact platform dimensions; use supplied assets or CSS-built visuals, or an authorized image-generation capability if the runtime provides one
+4. **Export** — Capture PNG at exact dimensions with the runtime's browser or screenshot capability; if unavailable, deliver the HTML/CSS source and mark PNG export as pending
 5. **Present** — Show all options side-by-side, iterate on feedback
 
 ### Banner: Quick Size Reference
@@ -224,20 +224,20 @@ python3 scripts/icon/generate.py --prompt "user profile" --sizes "16,24,32,48" -
 
 ## Social Photos (Built-in)
 
-Multi-platform social image design: HTML/CSS → screenshot export. Uses `ui-ux-pro-max`, `brand`, `design-system`, `chrome-devtools` skills.
+Multi-platform social image design: HTML/CSS → screenshot export. Uses the bundled `ui-ux-pro-max`, `brand`, and `design-system` skills; screenshot export runs through Chrome headless, Playwright, or Puppeteer (see the reference).
 
 Load `references/social-photos-design.md` for sizes, templates, best practices.
 
 ### Social Photos: Workflow
 
-1. **Orchestrate** — `project-management` skill for TODO tasks; parallel subagents for independent work
+1. **Orchestrate** — Track the steps below with the runtime's native task list; parallel subagents for independent work
 2. **Analyze** — Parse prompt: subject, platforms, style, brand context, content elements
 3. **Ideate** — 3-5 concepts, present via `AskUserQuestion`
-4. **Design** — `/ckm:brand` → `/ckm:design-system` → randomly invoke `/ck:ui-ux-pro-max` OR `/ck:frontend-design`; HTML per idea × size
-5. **Export** — `chrome-devtools` or Playwright screenshot at exact px (2x deviceScaleFactor)
-6. **Verify** — Use Chrome MCP or `chrome-devtools` skill to visually inspect exported designs; fix layout/styling issues and re-export
+4. **Design** — bundled `brand` → `design-system` → `ui-ux-pro-max` skills; HTML per idea × size
+5. **Export** — Chrome headless, Playwright, or Puppeteer screenshot at exact px (2x device scale factor where the tool supports it; see the reference)
+6. **Verify** — Open the exported PNGs in an available browser or image viewer and inspect them; fix layout/styling issues and re-export
 7. **Report** — Summary to `plans/reports/` with design decisions
-8. **Organize** — Invoke `assets-organizing` skill to sort output files and reports
+8. **Organize** — Sort output files and reports into the project's asset directories
 
 ### Social Photos: Key Sizes
 
@@ -329,5 +329,5 @@ logo workflow leaves at the provider default.
 
 ## Integration
 
-**External sub-skills:** brand, design-system, ui-styling
-**Related Skills:** frontend-design, ui-ux-pro-max, ai-multimodal, chrome-devtools
+**Bundled sub-skills:** brand, design-system, ui-styling
+**Related Skills:** ui-ux-pro-max

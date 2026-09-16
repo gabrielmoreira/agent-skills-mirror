@@ -11,21 +11,28 @@ Publish current catalog content and repair every selected source-owned global in
 
 ## Scope
 
-Default to every candidate reported by `scripts/publish-skills.ts`. Do not reconstruct a last-published Git boundary and
-do not use the current transcript as one.
+Default standalone publication to every candidate reported by `scripts/publish-skills.ts`. Do not reconstruct a
+last-published Git boundary or use the current transcript as one. Use the first applicable scoped mode instead:
 
-When the user explicitly names a commit range, resolve it to commits reachable from the current branch, collect only
-paths matching `skills/<name>/...`, validate and de-duplicate the kebab-case names, and pass each as a repeated
-`--skill <name>` filter on every planner, apply, and check command. A rename contributes both the old and new names
-(details: `@skill-lifecycle`). Stop if the range or ownership is ambiguous.
+- When the user explicitly names a commit range, select that range.
+- For publication triggered by continuous skill maintenance, retain the exact source commit receipts for the completed
+  repairs and select only skill paths attributable to that maintenance. If only the installation is stale, use the
+  commit containing the verified source correction and restrict selection to the affected skill.
+
+For either scoped mode, resolve the selected commits as reachable from the current branch, collect paths matching
+`skills/<name>/...`, validate and de-duplicate the kebab-case names, and pass each as a repeated `--skill <name>` filter
+on every planner, apply, and check command. A rename contributes both the old and new names (details:
+`@skill-lifecycle`). Stop if the selection or ownership is ambiguous. An empty scoped selection is a no-op; never fall
+back to full-drift publication.
 
 ## Workflow
 
 ### 1. Commit and Push Source
 
 If attributable source changes are uncommitted, run `$commit --push` from the source repository without `--all`, passing
-only those paths. If the worktree is clean but `main` is ahead, run `ai-commit push`. On a `BEHIND` receipt, stop before
-touching global installations and report that branch reconciliation is required.
+only those paths. If selected source changes are already committed, run `ai-commit push` to verify propagation even when
+unrelated paths are dirty. On a `BEHIND` receipt, stop before touching global installations and report that branch
+reconciliation is required.
 
 Keep this work under the source-repository claim through its commit and push, then run `ai-coord done` for that claim
 before acquiring the target claims.
@@ -40,7 +47,7 @@ Require planner JSON `version: 2`; retain its `repos` records and `canonical` fi
 apply SHA — no separate `git rev-parse HEAD` step. If `clean` is true, skip to step 5 and report any source commit or
 the no-op.
 
-Append the resolved `--skill` filters only for explicit commit-range mode (see Scope).
+Append the resolved `--skill` filters for either scoped mode (see Scope).
 
 ### 3. Acquire Every Target, Then Apply
 
@@ -85,10 +92,10 @@ report the failed command, completed groups, and changed paths.
 Group `Changed global paths` by reported repo root. Retain all claims acquired in step 3 through every target commit and
 push; never perform a post-apply `start`. For each repo with reported changed paths, commit and push only those paths.
 For a repo with no reported diff, confirm its planned paths have no diff. Once every target's changes are pushed or
-verified absent, run `ai-coord done` once if claims were acquired. For a bundle, this releases every target, not only
-the current repository. Never claim unreported skills, unrelated dirty paths, or the CLI process/state lock. A
-dirty-settling result on a reported publisher-written path is a regression, not expected waiting: preserve the claims
-and stop with the evidence.
+verified absent, run `ai-coord done` once from a claimed target repository if claims were acquired. For a bundle, this
+releases every target, not only the current repository. Never claim unreported skills, unrelated dirty paths, or the CLI
+process/state lock. A dirty-settling result on a reported publisher-written path is a regression, not expected waiting:
+preserve the claims and stop with the evidence.
 
 ### 5. Final Check
 

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `t8y2/dbx` — 26 default patterns, 8 followed patterns, 644 file(s) materialized.
+Mirror of `t8y2/dbx` — 26 default patterns, 8 followed patterns, 645 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `t8y2/dbx` — 26 default patterns, 8 followed patterns, 644 file(s) m
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 8 |
-| Files         | 644 |
+| Files         | 645 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -672,44 +672,45 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 604 | ✓ | [`deploy/database/rnacos/0.8/init/README.md`](deploy/database/rnacos/0.8/init/README.md) |
 | 605 | ✓ | [`deploy/database/zookeeper/3.9/init/README.md`](deploy/database/zookeeper/3.9/init/README.md) |
 | 606 | ✓ | [`deploy/dockerhub/README.md`](deploy/dockerhub/README.md) |
-| 607 | ✓ | [`docs/public/llms.txt`](docs/public/llms.txt) |
-| 608 | ✓ | [`examples/README.md`](examples/README.md) |
-| 609 | ✓ | [`packages/mcp-darwin-arm64/README.md`](packages/mcp-darwin-arm64/README.md) |
-| 610 | ✓ | [`packages/mcp-darwin-x64/README.md`](packages/mcp-darwin-x64/README.md) |
-| 611 | ✓ | [`packages/mcp-linux-arm64-gnu/README.md`](packages/mcp-linux-arm64-gnu/README.md) |
-| 612 | ✓ | [`packages/mcp-linux-x64-gnu/README.md`](packages/mcp-linux-x64-gnu/README.md) |
-| 613 | ✓ | [`packages/mcp-win32-arm64/README.md`](packages/mcp-win32-arm64/README.md) |
-| 614 | ✓ | [`packages/mcp-win32-x64/README.md`](packages/mcp-win32-x64/README.md) |
-| 615 | ✓ | [`packages/plugin-cli/README.md`](packages/plugin-cli/README.md) |
-| 616 | ✓ | [`plugins/connection-types/README.md`](plugins/connection-types/README.md) |
-| 617 | ✓ | [`plugins/examples/hello-workbench/README.md`](plugins/examples/hello-workbench/README.md) |
-| 618 | ✓ | [`plugins/examples/marketplace/README.md`](plugins/examples/marketplace/README.md) |
-| 619 | ✓ | [`plugins/jdbc/README.md`](plugins/jdbc/README.md) |
-| 620 | ✓ | [`plugins/README.md`](plugins/README.md) |
-| 621 | ✓ | [`plugins/sdk/cli/README.md`](plugins/sdk/cli/README.md) |
-| 622 | ✓ | [`plugins/sdk/cli/templates/common/README.md`](plugins/sdk/cli/templates/common/README.md) |
-| 623 | ✓ | [`plugins/sdk/cli/templates/frontend/README.md`](plugins/sdk/cli/templates/frontend/README.md) |
-| 624 | ✓ | [`plugins/sdk/cli/templates/svelte/README.md`](plugins/sdk/cli/templates/svelte/README.md) |
-| 625 | ✓ | [`plugins/sdk/dev-host/README.md`](plugins/sdk/dev-host/README.md) |
-| 626 | ✓ | [`plugins/sdk/go/dbx-plugin-sdk/README.md`](plugins/sdk/go/dbx-plugin-sdk/README.md) |
-| 627 | ✓ | [`plugins/sdk/packager/README.md`](plugins/sdk/packager/README.md) |
-| 628 | ✓ | [`plugins/sdk/rust/dbx-plugin-sdk/README.md`](plugins/sdk/rust/dbx-plugin-sdk/README.md) |
-| 629 | ✓ | [`skills/dbx/SKILL.md`](skills/dbx/SKILL.md) |
-| 630 | ✓ | [`src-tauri/tests/fixtures/pnpm/10.27.0/README.md`](src-tauri/tests/fixtures/pnpm/10.27.0/README.md) |
-| 631 | ✓ | [`vendor/ctor/README.md`](vendor/ctor/README.md) |
-| 632 | ✓ | [`vendor/dirs-sys/README.md`](vendor/dirs-sys/README.md) |
-| 633 | ✓ | [`vendor/rumqttc/README.md`](vendor/rumqttc/README.md) |
-| 634 | ✓ | [`vendor/tauri-plugin-updater/README.md`](vendor/tauri-plugin-updater/README.md) |
-| 635 | ✓ | [`vendor/tiberius/README.md`](vendor/tiberius/README.md) |
-| 636 | ✓ | [`vendor/wry/README.md`](vendor/wry/README.md) |
-| 637 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 638 | → | [`CONTRIBUTING.zh-CN.md`](CONTRIBUTING.zh-CN.md) |
-| 639 | → | [`deploy/database/README.md`](deploy/database/README.md) |
-| 640 | → | [`deploy/database/README.zh-CN.md`](deploy/database/README.zh-CN.md) |
-| 641 | → | [`packages/cli/README.md`](packages/cli/README.md) |
-| 642 | → | [`packages/mcp-server/README.md`](packages/mcp-server/README.md) |
-| 643 | → | [`README.md`](README.md) |
-| 644 | → | [`README.zh-CN.md`](README.zh-CN.md) |
+| 607 | ✓ | [`deploy/plugin-stats-worker/README.md`](deploy/plugin-stats-worker/README.md) |
+| 608 | ✓ | [`docs/public/llms.txt`](docs/public/llms.txt) |
+| 609 | ✓ | [`examples/README.md`](examples/README.md) |
+| 610 | ✓ | [`packages/mcp-darwin-arm64/README.md`](packages/mcp-darwin-arm64/README.md) |
+| 611 | ✓ | [`packages/mcp-darwin-x64/README.md`](packages/mcp-darwin-x64/README.md) |
+| 612 | ✓ | [`packages/mcp-linux-arm64-gnu/README.md`](packages/mcp-linux-arm64-gnu/README.md) |
+| 613 | ✓ | [`packages/mcp-linux-x64-gnu/README.md`](packages/mcp-linux-x64-gnu/README.md) |
+| 614 | ✓ | [`packages/mcp-win32-arm64/README.md`](packages/mcp-win32-arm64/README.md) |
+| 615 | ✓ | [`packages/mcp-win32-x64/README.md`](packages/mcp-win32-x64/README.md) |
+| 616 | ✓ | [`packages/plugin-cli/README.md`](packages/plugin-cli/README.md) |
+| 617 | ✓ | [`plugins/connection-types/README.md`](plugins/connection-types/README.md) |
+| 618 | ✓ | [`plugins/examples/hello-workbench/README.md`](plugins/examples/hello-workbench/README.md) |
+| 619 | ✓ | [`plugins/examples/marketplace/README.md`](plugins/examples/marketplace/README.md) |
+| 620 | ✓ | [`plugins/jdbc/README.md`](plugins/jdbc/README.md) |
+| 621 | ✓ | [`plugins/README.md`](plugins/README.md) |
+| 622 | ✓ | [`plugins/sdk/cli/README.md`](plugins/sdk/cli/README.md) |
+| 623 | ✓ | [`plugins/sdk/cli/templates/common/README.md`](plugins/sdk/cli/templates/common/README.md) |
+| 624 | ✓ | [`plugins/sdk/cli/templates/frontend/README.md`](plugins/sdk/cli/templates/frontend/README.md) |
+| 625 | ✓ | [`plugins/sdk/cli/templates/svelte/README.md`](plugins/sdk/cli/templates/svelte/README.md) |
+| 626 | ✓ | [`plugins/sdk/dev-host/README.md`](plugins/sdk/dev-host/README.md) |
+| 627 | ✓ | [`plugins/sdk/go/dbx-plugin-sdk/README.md`](plugins/sdk/go/dbx-plugin-sdk/README.md) |
+| 628 | ✓ | [`plugins/sdk/packager/README.md`](plugins/sdk/packager/README.md) |
+| 629 | ✓ | [`plugins/sdk/rust/dbx-plugin-sdk/README.md`](plugins/sdk/rust/dbx-plugin-sdk/README.md) |
+| 630 | ✓ | [`skills/dbx/SKILL.md`](skills/dbx/SKILL.md) |
+| 631 | ✓ | [`src-tauri/tests/fixtures/pnpm/10.27.0/README.md`](src-tauri/tests/fixtures/pnpm/10.27.0/README.md) |
+| 632 | ✓ | [`vendor/ctor/README.md`](vendor/ctor/README.md) |
+| 633 | ✓ | [`vendor/dirs-sys/README.md`](vendor/dirs-sys/README.md) |
+| 634 | ✓ | [`vendor/rumqttc/README.md`](vendor/rumqttc/README.md) |
+| 635 | ✓ | [`vendor/tauri-plugin-updater/README.md`](vendor/tauri-plugin-updater/README.md) |
+| 636 | ✓ | [`vendor/tiberius/README.md`](vendor/tiberius/README.md) |
+| 637 | ✓ | [`vendor/wry/README.md`](vendor/wry/README.md) |
+| 638 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 639 | → | [`CONTRIBUTING.zh-CN.md`](CONTRIBUTING.zh-CN.md) |
+| 640 | → | [`deploy/database/README.md`](deploy/database/README.md) |
+| 641 | → | [`deploy/database/README.zh-CN.md`](deploy/database/README.zh-CN.md) |
+| 642 | → | [`packages/cli/README.md`](packages/cli/README.md) |
+| 643 | → | [`packages/mcp-server/README.md`](packages/mcp-server/README.md) |
+| 644 | → | [`README.md`](README.md) |
+| 645 | → | [`README.zh-CN.md`](README.zh-CN.md) |
 
 ---
 

@@ -105,6 +105,10 @@ Discover and compare cloud-native technologies from the live CNCF Landscape API,
 
 Expert-level ICC profile color management for open-source workflows. Covers color science fundamentals (CIELAB, xyY, chromaticity), working space selection (sRGB, ProPhotoRGB, ACEScg, Rec.2020), ICC profile operations (convert, assign, extract, embed), gamut analysis, sRGB variant comparison, and color difference (dE) computation. Ships 6 Python scripts that wrap ImageMagick, ArgyllCMS, Exiftool, and LittleCMS; 5 reference files covering overview, operations, tool commands, working space data, and a full glossary. Distilled from Elle Stone's ninedegreesbelow.com and Bruce Lindbloom's color science resources.
 
+### [community-guides](community-guides/SKILL.md)
+
+Create, adapt, and revise practical community guides with local evidence, participant activities and worksheets, facilitator instructions, and maintenance plans. Supports short workshops and longer programs, with an original apartment-community example, an offline consistency checker, and eight output-quality eval scenarios.
+
 ### [conditional-customer-success](conditional-customer-success/SKILL.md)
 
 A conditional skill for products with recurring human relationships — success plans, health evidence, renewal and expansion signals, QBRs, escalation, and closed-loop Voice of Customer. Declines to load for products without accounts, renewals, QBRs, or a customer-success team (internal tools, transactional products, public services without account-based engagement). Provides four product-model adaptations (B2B subscription, transactional, public-service, internal product), reference material on privacy and human-judgment boundaries, and four templates (applicability decision, success plan, health/risk record, escalation and feedback closure).
@@ -658,6 +662,10 @@ Vite-specific configuration, plugins, modes, environment boundaries, dependency 
 ### [vllm](vllm/SKILL.md)
 
 Operate, configure, benchmark, and troubleshoot vLLM inference servers: Docker and Kubernetes deployment, quantization-aware model configuration (tensor parallelism, KV cache), the OpenAI-compatible API surface, throughput/latency benchmarking, continuous batching tuning, GPU operation, and upgrade/rollback. Ships a read-only `vllm-health` probe (`--json`), serving-config and benchmark-run-record templates, 7 dated references, tests, and 6 evals. Routes serving methodology to ml-engineering and the llama.cpp stack to llama-cpp.
+
+### [waiting-list](waiting-list/SKILL.md)
+
+Design and build honest, resilient waitlist portals for anticipated goods and services, including interest lists, referral queues, virtual waiting rooms, appointment backfills, contact verification, runtime CRM delivery, and scarce-inventory allocation.
 
 ### [web-accessibility](web-accessibility/SKILL.md)
 

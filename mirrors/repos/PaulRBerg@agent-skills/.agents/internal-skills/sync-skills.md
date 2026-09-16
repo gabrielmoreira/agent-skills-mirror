@@ -94,9 +94,12 @@ their content here, the sync run reads both skills directly:
 13. Failure classification: a blocker from a newly discovered necessary in-repository fix or evidence change triggers
     parent-owned follow-on without fresh authorization; an evidenced tool/infrastructure failure permits exactly one
     same-agent continuation, a second blocks.
-14. Post-success skill-evolution review: parent-only judgment, only after full success and verification, requires
-    credible recurrence and durable reuse (not size/difficulty), rejects one-offs and speculative value, at most one
-    two-sentence `$task-handoff` suggestion, silent otherwise.
+14. Skill maintenance and evolution: already-authorized repairs are separate from the optional review. The parent owns
+    completion; subagents report evidence without expanding scope. One verified occurrence is enough; independent
+    repairs do not require main-task success and finish before the final report after required handoff work or a
+    concrete blocker. Plan Mode prohibits edits. The optional review remains parent-only and requires full success,
+    verification, credible recurrence and durable reuse (not size/difficulty); reject one-offs and speculative value,
+    allow at most one two-sentence `$task-handoff` suggestion, and stay silent otherwise.
 15. Completion rules: success verification, dependent gating on failure, changed-files union dedupe, ordered/scoped
     polish invocation, polish skip/failure conditions, cross-repository `$commit` behavior.
 16. Adapter integrity: adapters implement the shared prompt/result/failure/completion contracts without weakening them;

@@ -239,6 +239,16 @@ each rename side before patch uncertainty, retaining production or semantic docs
 evidence and truncated-list warnings. Reviewer production/test metrics remain
 separately assessed. Test roles grant no contributor-proof exemption. Storage
 warnings retain their separate persistence-evidence and upgrade-proof rules.
+
+Compatibility classification reads the recorded Real Behavior Proof summary only
+when its canonical front matter status (or section status when absent) is
+`sufficient`. Serialized metadata such as `Needs contributor action: false`
+does not become evidence of outstanding upgrade work. A `proof: override` label
+preserves sufficient recorded evidence but does not itself establish compatibility.
+Solution Assessment and Evidence remain independent inputs. Reproduce the
+rendering contract with `pnpm run build` followed by
+`node scripts/e2e/data-model-proof.ts`; the synthetic reports exercise sufficient
+and missing evidence with and without override, without publishing to GitHub.
 OpenClaw Bay needs no change because its observer API and data contract are unchanged.
 
 The recorded reviewer proof assessment and the host's existing proof requirement

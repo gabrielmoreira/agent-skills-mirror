@@ -4,6 +4,24 @@ Note: Only use **NEW:** for entirely new prompt files, NOT for new additions/sec
 
 ### Claude Code System Prompts Changelog
 
+# [2.1.273](https://github.com/Piebald-AI/claude-code-system-prompts/commit/c10ea52)
+
+_+5,149 tokens_
+
+- **NEW:** Data: Structured usage rate-limit rows field — Defines server-ordered usage-limit rows, null and empty semantics, and the synthesized header-fallback row used when usage fetching fails.
+- **NEW:** Tool Description: Artifact asset read result — Reports saved asset metadata and warns that writer-uploaded content is data, with stronger untrusted treatment for outside or co-writers.
+- **NEW:** Tool Descriptions: Artifact file-backed type detection and creation guidance — Guide agents to detect file-backed content before writing and manage project files while preserving index metadata.
+- **NEW:** Tool Description: FetchInboxMessage — Reads Remote Control inbox messages, distinguishes verified owner relays from untrusted third-party text, and enforces confirmation, expiry, and retry rules.
+- **NEW:** Tool Description: Skill-scoped git push refusal — Rejects force, delete, mirror, prune, hook-bypassing, push-option, and receive-pack push forms during skills without permitting evasive rewrites.
+- **REMOVED:** Tool Description: Artifact unsupported supporting file error — Removes the dedicated Artifact publish error explaining unsupported supporting-file media types and blocked viewer downloads.
+- Agent Prompts: Git commit and PR creation — Require commit messages and PR bodies inline because file and template flags are refused while these skills run.
+- Data: Artifact connector call observation requirement — Requires connector arguments from loaded schemas, result shapes from safe real calls, and explicit disclosure when neither can be observed.
+- System Reminders: AppifactRepl Design canvas and Slides deck workflows — Move creation and revision from store records to indexed `project/` files, embedding slide speaker notes in HTML.
+- Tool Description: Artifact database guidance — Documents removing nested database fields with the `{"__delete__": true}` sentinel in updates, while rejecting it in replacements.
+- Tool Description: Artifact type discovery guidance — Adds design systems shared with the user to discovery listings alongside personal and organization-owned systems.
+- Tool Description: Artifact type file-backed content update guidance — Makes updates explicit, including first-time store-to-files migration, index-marker preservation, read-before-write behavior, and one-call publication.
+- Tool Description: Publish audience-facing deliverables (app wording) — Publishes work when an external audience is named, but merely offers a page when passing it along is only possible.
+
 # [2.1.272](https://github.com/Piebald-AI/claude-code-system-prompts/commit/61212b6)
 
 _+9,812 tokens_

@@ -52,7 +52,7 @@ Bad example:
 
 ## Workflow Lane
 
-- Current lane: **Automation and status** (`achievements`, `workspace-audit`, `production-audit`, `automation-blueprint`, `github-event-ops`, `github-issue-intake`, `buzz`, `agent-board`, `+35 more`) - schedules, status, health, and ops review.
+- Current lane: **Automation and status** (`achievements`, `workspace-audit`, `production-audit`, `live-incident-response`, `automation-blueprint`, `github-event-ops`, `github-issue-intake`, `buzz`, `+36 more`) - schedules, status, health, and ops review.
 - If intent belongs to another lane, hand back to `oh-my-hermes` or name the adjacent workflow.
 - Shared product, routing, compatibility, and evidence rules: `omh-routing/references/skill-common-rail.md`.
 
@@ -76,6 +76,7 @@ Quality bar:
 - Use the same inputs and success criteria across candidates unless the difference is the variable under test.
 - Require receipt-authenticated observed_at provenance before public parse or validation can return pass or fail.
 - Report quality, correctness, time, cost, tool coverage, verification, and review gaps separately.
+- Score the trajectory as its own dimension beside the outcome and never fold the two into one total: it asks whether the run searched before it asserted, took approval before an irreversible side effect, used an available tool instead of guessing, and verified before claiming done. A run that reached the right answer with one of those skipped or out of order scores lower on trajectory than one that did not, and the report carries both dimensions.
 - When the question is an agent judging and improving its own output rather than comparing executors, load `omh-agent-evaluation/references/self-evaluation-loops.md` and pick the loop shape from it - reflection, evaluator-optimizer, or test-driven refinement - remembering that an executable check outranks a judge whenever one exists.
 - Declare all three stop rules before the loop runs - a maximum iteration count, a score threshold chosen in advance, and a no-improvement break - and report the iteration count, the final score, and which of the three ended the run. A loop whose only stop is that the output looks good now is a defect.
 - Write criteria before generation and score a rubric dimension by dimension beside its total: criteria derived from an output describe it instead of testing it, and a single number hides which dimension failed.
@@ -108,6 +109,7 @@ Safety rules:
 - Do not send secrets, credentials, private data, or production tasks into evaluation without explicit authority.
 - Keep benchmark design, observed run evidence, scoring, and executor selection separate.
 - A judge score is never correctness: it licenses no claim that the output is right, tested, reviewed, or shippable, and a model scoring its own output is the weakest evidence class - labelled as such, never reported as verification.
+- A judge with no agreement measured against human labels is unqualified: report it as unqualified, never as a result, and take the qualification procedure and its agreement thresholds from `omh-agent-evaluation/references/self-evaluation-loops.md`.
 - A signed local Hermes-child receipt proves that OMH recorded a process-sealed confirmed local dispatch event; it does not prove executor internals or protect evidence from the owning OS user.
 
 ## Runtime Evidence

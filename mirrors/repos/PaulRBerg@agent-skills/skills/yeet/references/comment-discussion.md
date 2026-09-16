@@ -25,7 +25,7 @@ only with an existing comment URL or node ID; deletion is not part of this workf
 For a discussion target, fetch the discussion and recent comments before writing:
 
 ```bash
-gh discussion view <number-or-url> --repo "<owner>/<repo>" --comments --json number,url,title,body,comments
+gh discussion view <number-or-url> --repo "<owner>/<repo>" --json number,url,title,body,comments
 ```
 
 For a comment target, fetch its thread and the parent discussion:

@@ -271,9 +271,10 @@
       "accountActivityModel": "ethereum-eoa",
       "primaryPublicRpc": "https://rpc.morphl2.io",
       "nativeCurrencySymbol": "ETH",
-      "explorerUrl": "https://explorer.morphl2.io",
-      "explorerAddressUrl": "https://explorer.morphl2.io/address/{address}",
-      "explorerTxUrl": "https://explorer.morphl2.io/tx/{tx_hash}",
+      "explorerUrl": "https://explorer.morph.network",
+      "explorerAddressUrl": "https://explorer.morph.network/address/{address}",
+      "explorerApiUrl": "https://explorer-api.morph.network/api",
+      "explorerTxUrl": "https://explorer.morph.network/tx/{tx_hash}",
       "routeMesh": true
     },
     {

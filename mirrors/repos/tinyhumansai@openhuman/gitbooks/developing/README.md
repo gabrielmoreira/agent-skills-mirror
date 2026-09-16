@@ -62,7 +62,6 @@ PRs must clear the **≥ 80% coverage on changed lines** gate. Add tests for new
 - [**Hooks**](hooks.md). User-owned scripts that run before a tool executes, after a file edit, or when a turn finishes.
 - [**Chromium Embedded Framework**](cef.md). Historical design notes from the CEF era; the shell now runs on stock Tauri (Wry).
 
-For features still being built, the Subconscious Loop page covers the background task evaluation system end-to-end.
 
 ---
 

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `stablyai/orca` — 26 default patterns, 15 followed patterns, 28 file(s) materialized.
+Mirror of `stablyai/orca` — 26 default patterns, 16 followed patterns, 29 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `stablyai/orca` — 26 default patterns, 15 followed patterns, 28 file
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 15 |
-| Files         | 28 |
+| Followed pats | 16 |
+| Files         | 29 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -52,6 +52,7 @@ Mirror of `stablyai/orca` — 26 default patterns, 15 followed patterns, 28 file
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
 - `docs/STYLEGUIDE.md`
+- `docs/reference/windows-terminal-shell-selection.md`
 - `docs/reference/windows-setup-shell.md`
 - `docs/reference/windows-cmd-shim-resolution.md`
 - `docs/reference/windows-process-enumeration.md`
@@ -99,8 +100,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 24 | → | [`docs/reference/windows-edr-posture.md`](docs/reference/windows-edr-posture.md) |
 | 25 | → | [`docs/reference/windows-process-enumeration.md`](docs/reference/windows-process-enumeration.md) |
 | 26 | → | [`docs/reference/windows-setup-shell.md`](docs/reference/windows-setup-shell.md) |
-| 27 | → | [`docs/reference/wsl-command-execution.md`](docs/reference/wsl-command-execution.md) |
-| 28 | → | [`docs/STYLEGUIDE.md`](docs/STYLEGUIDE.md) |
+| 27 | → | [`docs/reference/windows-terminal-shell-selection.md`](docs/reference/windows-terminal-shell-selection.md) |
+| 28 | → | [`docs/reference/wsl-command-execution.md`](docs/reference/wsl-command-execution.md) |
+| 29 | → | [`docs/STYLEGUIDE.md`](docs/STYLEGUIDE.md) |
 
 ---
 

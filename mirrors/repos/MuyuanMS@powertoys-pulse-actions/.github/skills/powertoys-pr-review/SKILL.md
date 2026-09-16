@@ -64,7 +64,14 @@ If a prerequisite is missing, guide the user through setup ([references/prerequi
     into one unsafe patch. Split localized edits out of broader findings
     instead of collapsing them into companion prose. A companion item is
     allowed only when no current RIGHT-side anchor exists and must include a
-    concrete `outOfDiffReason`. Omit obsolete findings.
+    concrete `outOfDiffReason`. Its author-facing body must be independently
+    implementation-ready: name affected repository paths and symbols, explain
+    the current behavior and impact, give ordered change guidance or
+    illustrative pseudo-code, and state focused verification. Write it so the
+    author can paste the comment into Copilot and implement the same fix proven
+    in the review branch without access to that branch. Consolidate findings
+    with the same root cause; never expand suppressed/internal findings into
+    repetitive general comments. Omit obsolete findings.
 15. **Never publish with ad-hoc `gh` commands.** Validate schema-version-2 data with `Test-ReviewData.ps1`, then publish approved decisions with `Publish-ApprovedReview.ps1`. The publisher stages a pending review, reads it back, and submits only after exact verification.
 16. **Score confidence per finding, but never expose it upstream.** Every drafted public item carries a 50–100 confidence score and evidence-based rationale as metadata. Scores below 50 stay internal. Pulse may show the score to maintainers; author-facing review bodies must contain severity and reasoning only.
 17. **Fork pushes are required review work, not upstream publication.** Workers may create/update branches and PRs in the configured personal fork, push review fixes, and resolve fork review threads. A coordinator instruction not to commit or push dashboard data must never be interpreted as prohibiting fork-side pushes. Only writes to `microsoft/PowerToys` remain approval-gated.

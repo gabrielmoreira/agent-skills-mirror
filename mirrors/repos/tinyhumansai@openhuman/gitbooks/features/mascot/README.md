@@ -10,7 +10,7 @@ icon: face-smile
 
 OpenHuman has a face. The mascot is an animated character that lives on your desktop and acts as the visible surface of the agent, what it's saying, what it's thinking about, when it's idle, when it's busy, when it has something to tell you.
 
-It is not a chrome ornament. The mascot is wired into the same pieces as the rest of the agent: voice, memory, the [subconscious loop](../subconscious.md), and the [Google Meet integration](../native-tools/voice.md). When the agent talks, the mascot is the one talking; when the agent is thinking, the mascot is the one thinking.
+It is not a chrome ornament. The mascot is wired into the same pieces as the rest of the agent: voice, memory, [scheduled runs](../native-tools/cron.md), and the [Google Meet integration](../native-tools/voice.md). When the agent talks, the mascot is the one talking; when the agent is thinking, the mascot is the one thinking.
 
 ## What it does
 
@@ -36,16 +36,9 @@ The mascot is the visible part of an agent that has the [Memory Tree](../obsidia
 
 That memory is what makes the personality consistent over weeks and months. The mascot you talk to today knows what the mascot you talked to last Tuesday knows.
 
-### It thinks in the background, the subconscious
+### It works while you're away
 
-Even when you've stopped typing, the mascot keeps thinking. The [Subconscious Loop](../subconscious.md) is a background tick that:
-
-- Loads your standing tasks and ambient goals.
-- Reads the current state of your workspace and recent memory.
-- Decides what to do about each one (execute autonomously, hold, or escalate to you for approval).
-- Writes the outcome back to an activity log you can audit.
-
-So when you come back to the desk, the mascot may have already drafted the email, refreshed the dashboard, or queued the question it needs to ask you. The face on the screen is the one that did the work.
+Even when you've stopped typing, work can keep happening on your behalf: [scheduled routines](../native-tools/cron.md) run on a cron expression, [triggers](../integrations/triggers.md) fire on inbound events, and [workflows](../workflows.md) execute durable, approval-gated graphs. So when you come back to the desk, the mascot may have already drafted the email, refreshed the dashboard, or queued the question it needs to ask you. The face on the screen is the one that did the work.
 
 ### It dreams
 
@@ -67,5 +60,4 @@ The mascot exists because:
 
 - [Native Voice](../native-tools/voice.md), the STT / TTS plumbing the mascot rides on.
 - [Memory Tree](../obsidian-wiki/memory-tree.md), what the mascot remembers, and how.
-- [Subconscious Loop](../subconscious.md), what it thinks about while you're away.
 - [Chromium Embedded Framework](../../developing/cef.md), the camera-into-Meet pipeline (developer reference).

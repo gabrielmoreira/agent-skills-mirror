@@ -103,6 +103,7 @@ Grep-verified 2026-09-04 (`npm run docs:verify` re-checks every path). This is t
 - **Moving an agent to another directory:** `withWorkingDirectory(session, dir)`, `workingDirectoryChangeBlocker(session)`, `isSameDirectory(a, b)`, `rebasePathOntoRoot()` in `src/renderer/utils/agentWorkingDirectory.ts`
 - **Per-agent git actions:** `useGitAgentActions(session)`, `buildGitWorktreeCommands` in `src/renderer/hooks/git/useGitAgentActions.ts`
 - **Whether a PR is being opened right now:** `usePRCreationActive(worktreePath)`, `startPRCreation()` in `src/renderer/stores/prCreationStore.ts`
+- **Taking the user to an agent:** `jumpToAgent(sessionId, { tabId? })`, `revealAgentInSidebar(session)`, `openAgentSettings(session)` in `src/renderer/services/agentNavigation.ts`
 - **Focus an AI tab:** `aiTabFocusFields(tabId?)`, `activeFileTabId` in `src/renderer/utils/tabHelpers.ts`
 - **Focus a file tab:** `fileTabFocusFields(tabId)` in `src/renderer/utils/tabHelpers.ts`
 - **Ending a turn with no process exit:** `settleTabThinkingState(session, tabId)` in `src/renderer/utils/tabHelpers.ts`
@@ -129,6 +130,7 @@ Grep-verified 2026-09-04 (`npm run docs:verify` re-checks every path). This is t
 - **Whether a login flow can fix an auth failure:** `classifyCredentialKind()`, `credentialKindBlocksLogin()` in `src/shared/providerAuthIdentity.ts`
 - **Typing a login command into a shell:** `formatAgentLoginCommand(login, syntax?)`, `loginShellSyntaxFor(shellId, isWindows)` in `src/shared/agentMetadata.ts`
 - **Bucketing Director's Notes bullets:** `bucketNarrativeItems()`, `shouldRenderBuckets()` in `src/shared/directorNotesGrouping.ts`
+- **Which provider generates a synopsis:** `AUTO_SYNOPSIS_PROVIDER`, `synopsisProviderChoice()`, `pickFirstAvailableProvider()` in `src/shared/directorNotesProvider.ts`; `resolveSynopsisProvider()` in `src/main/utils/director-notes-provider.ts`
 - **Sortable table header:** `useTableSort()`, `role` in `src/renderer/components/ui/SortableTh.tsx`
 - **Graphing a set of documents rather than one:** `scopeDirectory`, `openGraphScope()` in `src/renderer/components/DocumentGraph/graphDataBuilder.ts`
 - **A labeled action button in a panel header:** `src/renderer/components/ui/HeaderActionButton.tsx`
@@ -156,7 +158,9 @@ Grep-verified 2026-09-04 (`npm run docs:verify` re-checks every path). This is t
 - **A label that must not truncate:** `useOptionalLabelFits(rowRef)` in `src/renderer/hooks/ui/useOptionalLabelFits.ts`
 - **Usage Dashboard metric tile:** `MetricCard` in `src/renderer/components/UsageDashboard/MetricCard.tsx`
 - **Recording wizard usage:** `beginWizardRun()`, `recordWizardDocuments()` in `src/renderer/services/wizardStats.ts`
-- **Fixed-pitch font for shell text:** `resolveFixedPitchFontFamily()`, `resolveTerminalFontFamily()` in `src/renderer/utils/fixedPitchFont.ts`
+- **Font-family fallback chain:** `withMonoFallback()`, `resolveSurfaceFont()`, `MONO_FALLBACK_STACK`, `WORDMARK_FONT_STACK` in `src/shared/fontStack.ts`
+- **Fixed-pitch font for shell text:** `resolveFixedPitchFontFamily()`, `resolveTerminalFontFamily()`, `isFixedPitchStack()` in `src/renderer/utils/fixedPitchFont.ts` (composes with `withMonoFallback`, do not reintroduce `ensureMonospaceFallback`)
+- **Saving the user's own font setup:** `captureTypographySnapshot()`, `typographySnapshotPatch()`, `typographySnapshotMatches()` in `src/shared/typographySnapshot.ts`; keys from `TYPOGRAPHY_SURFACE_LIST` in `src/shared/typography.ts`
 - **Rendering raw terminal output (ANSI):** `useAnsiConverter(theme)`, `getCachedAnsiHtml(text, theme.id, converter)` in `src/renderer/hooks/ui/useAnsiConverter.ts`
 - **Any CLI verb that can move the Maestro view:** `resolveBackgroundFlag()`, `readBackgroundField()` in `src/shared/focusPlacement.ts`
 - **Making a tab the visible one:** `aiTabFocusFields`, `fileTabFocusFields` in `src/renderer/utils/tabFocusFields.ts`
@@ -171,6 +175,7 @@ Grep-verified 2026-09-04 (`npm run docs:verify` re-checks every path). This is t
 - **A view preference a user sets by clicking:** `usePersistedToggle(storageKey, defaultValue)`, `AutoRunNoticeBanner` in `src/renderer/hooks/ui/usePersistedToggle.ts`
 - **Sizing a Document Graph node:** `calculateNodeWidth(label, previewCharLimit)`, `calculateNodeHeight(previewText, previewCharLimit)` in `src/renderer/components/DocumentGraph/mindMapLayouts.ts`
 - **A pane width the user sets by dragging:** `useResizablePanel()`, `settingsKey` in `src/renderer/hooks/ui/useResizablePanel.ts`
+- **Sizing a surface to its longest label:** `widestLabelWidth(labels, opts)`, `estimateLabelWidth()` in `src/renderer/utils/labelWidth.ts`
 - **A modal default sized to the screen:** `viewportModalSize({ width, height })`, `defaultSize` in `src/renderer/utils/modalSizing.ts`
 - **Focus after render:** `useFocusAfterRender()`, `useFocusOnMount()` in `src/renderer/hooks/utils/useFocusAfterRender.ts`
 - **Event listeners:** `useEventListener()`, `addEventListener` in `src/renderer/hooks/utils/useEventListener.ts`
@@ -186,6 +191,7 @@ Grep-verified 2026-09-04 (`npm run docs:verify` re-checks every path). This is t
 - **Model tier / effort level (`'low' | 'medium' | 'high'`):** `resolveTierModel()`, `resolveEffortLevel()` in `src/shared/modelTiers.ts`
 - **Auto Run markers (HITL / halt / model hint):** `scanMaestroMarkers()`, `findPendingHitlGate()` in `src/shared/autorunMarkers.ts`
 - **Fence-aware markdown scanning:** `forEachMarkdownLine()`, `UNCHECKED_TASK_REGEX` in `src/shared/markdownTaskScan.ts`
+- **Encore Feature flags and their defaults:** `DEFAULT_ENCORE_FEATURES`, `resolveEncoreFeatures()` in `src/shared/encoreFeatures.ts`
 - **Thinking mode (`'off' | 'on' | 'sticky'`):** `THINKING_MODES`, `nextThinkingMode()` in `src/shared/types.ts`
 
 If your use case does NOT match an existing utility, prefer extending the canonical file over creating a new one. If you genuinely need something new, add the full entry to [CANONICAL-UTILITIES.md](docs/agent-guides/CANONICAL-UTILITIES.md) and a one-line index entry above so the next person can find it.
@@ -406,7 +412,7 @@ src/
 | Spawn agent with SSH support  | `src/main/utils/ssh-spawn-wrapper.ts` (required for SSH remote execution)                                                                                                                                                                                        |
 | Modify file preview tabs      | `TabBar.tsx`, `FilePreview.tsx`, `MainPanel.tsx` (see ARCHITECTURE.md → File Preview Tab System)                                                                                                                                                                 |
 | Add parquet viewer feature    | `src/renderer/components/ParquetViewer/` (UI), `src/main/parquet/` (query engine), `src/shared/parquet/` (filter language + wire types)                                                                                                                          |
-| Add Director's Notes feature  | `src/renderer/components/DirectorNotes/`, `src/shared/directorNotesNarrative.ts`, `src/shared/directorNotesGrouping.ts`, `src/main/ipc/handlers/director-notes.ts`                                                                                               |
+| Add Director's Notes feature  | `src/renderer/components/DirectorNotes/`, `src/shared/directorNotesNarrative.ts`, `src/shared/directorNotesGrouping.ts`, `src/shared/directorNotesProvider.ts`, `src/main/utils/director-notes-provider.ts`, `src/main/ipc/handlers/director-notes.ts`           |
 | Add Encore Feature            | `src/renderer/types/index.ts` (flag), `useSettings.ts` (state), `SettingsModal.tsx` (toggle UI), gate in `App.tsx` + keyboard handler                                                                                                                            |
 | Modify history components     | `src/renderer/components/History/`                                                                                                                                                                                                                               |
 | Modify history activity graph | `src/renderer/components/History/ActivityGraph.tsx`, `src/main/utils/history-bucket-cache.ts` (disk-cached aggregates), `src/main/utils/history-bucket-builder.ts`                                                                                               |

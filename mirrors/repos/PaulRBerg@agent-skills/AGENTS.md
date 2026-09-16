@@ -83,17 +83,18 @@ Run `just` to list every recipe with its description; the `justfile` is authorit
   skill under `skills/<name>/`. Never route it to `.agents/skills/` or the `skill-writing` workflow.
 - Create a repo-private internal skill under `.agents/internal-skills/<name>.md` only when the user explicitly requests
   an internal skill.
-- When asked to edit or remove an installable catalog skill while the current working directory is this repo, modify the
-  skill under `skills/` here only, not the installed copy under `~/.agents`.
+- Edit or remove installable catalog skills under `skills/` here, regardless of the session's starting repository;
+  installed copies belong to the publish workflow.
 - Changes here are not live until installed into every target declared by the skill. By default, `publish-skills`
-  reconciles all current source-owned drift; an explicit commit range narrows that reconciliation to the affected skill
-  names (scope rules: `@publish-skills`).
-- At the end of a successfully completed user task that edits installable catalog skills, run the `publish-skills`
-  internal skill on the user's behalf. First inspect `ai-coord status --json`: consider every active work row, and do
-  not run this step if another agent has a queued claim overlapping any active claim. Commit and push catalog source
-  changes under the source-repository claim, then release that claim before acquiring targets: home-directory targets
-  sort before this source repository. Otherwise, if the task was super complex or the working tree has ongoing dirty
-  changes, recommend `@publish-skills` instead. The agent must make the complexity assessment.
+  reconciles all current source-owned drift; an explicit commit range or automatic continuous skill maintenance narrows
+  reconciliation to the affected skill names (scope rules: `@publish-skills`).
+- After validating edits to installable catalog skills, run the `publish-skills` internal skill on the user's behalf,
+  including for independent repairs made during a blocked main task. Complete publication unless a concrete blocker
+  prevents it; task complexity and unrelated dirty files are not reasons to leave validated repairs unpublished.
+- Before publication, inspect `ai-coord status --json` and consider every active work row. Commit and push catalog
+  source changes under the source-repository claim, then release that claim before acquiring targets: home-directory
+  targets sort before this source repository. If another agent has a queued claim overlapping any active claim, resolve
+  or wait out that conflict before publishing. Require `READY` for the complete target claim set in `@publish-skills`.
 - When creating, renaming, or deleting a catalog or internal skill, follow `@skill-lifecycle`. For catalog creation,
   also follow `@skill-authoring`. `just readme-skills-check` must pass.
 - Before creating or editing `SKILL.md` frontmatter, `agents/openai.yaml`, `metadata.install-targets`, or
@@ -104,6 +105,10 @@ Run `just` to list every recipe with its description; the `justfile` is authorit
   catalog skills.
 - After editing skills that must stay aligned, run the `sync-skills` internal skill to check coupled skills and helper
   data.
+- Claude Code slash commands under `~/.claude/commands/<skill>/*.md` are thin wrappers over catalog skills (currently
+  `agents-brain` and `yeet`). After changing a skill's workflows, argument forms, context requirements, or reference
+  file names, update the matching commands in the same session: argument hints, descriptions, `## Context` reads, and
+  reference paths must match the skill, and every user-facing workflow needs a command. Commit them in `~/.claude`.
 - Keep skills self-contained. Do not de-duplicate content across skills by extracting shared references or canonical
   files; users install skills individually.
 - Keep globally installed skills self-contained. Do not refer to or depend on another repository; put reusable guidance

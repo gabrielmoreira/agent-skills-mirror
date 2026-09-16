@@ -208,7 +208,7 @@ export const options = {
 export function setup() {
   const loginRes = http.post('[BASE_URL]/auth/login', JSON.stringify({
     username: `load_test_user_${Math.floor(Math.random() * 10000)}@example.com`,
-    password: '[LOAD_TEST_PASSWORD]',
+    password: __ENV.LOAD_TEST_PASSWORD,
   }), { headers: { 'Content-Type': 'application/json' } });
 
   check(loginRes, { 'login ok': (r) => r.status === 200 });

@@ -815,7 +815,15 @@ is justified, but do not downgrade a valid line comment to `companion` merely
 because prose is clearer than a patch. For every truly out-of-diff supported
 finding, emit a non-inline proposed comment that explains the concern, its
 impact, and the required follow-up, and record a concrete
-`out_of_diff_reason`; Pulse posts those findings as separate PR
+`out_of_diff_reason`. Every general comment must be a self-contained
+implementation prompt with these author-facing sections: `Affected code`
+(repository paths and symbols), `Problem`, `Why it matters`, `Suggested
+change` (ordered steps and, when useful, an illustrative non-`suggestion` code
+block), and `Verification`. Include enough detail that the author can paste
+the comment into Copilot and reproduce the fix already proven in the review
+branch without seeing that branch. Consolidate comments that share a root
+cause, affected change, or verification path; suppressed findings are evidence
+to synthesize, not one-comment-per-finding output. Pulse posts the resulting PR
 conversation comments rather than combining them into one review body. Never
 replace them with a generic local `review_summary` action. Label
 companion-only reviews `Post general review notes` and disclose `general

@@ -8,7 +8,8 @@ or message review in `SKILL.md` has been explicitly approved.
 Confirm the installed Cast supports browser signing:
 
 ```sh
-env -i PATH="$PATH" cast send --help | rg --no-config -- '--browser'
+CAST_SEND_HELP=$(env -i PATH="$PATH" cast send --help) || exit 1
+printf '%s\n' "$CAST_SEND_HELP" | rg --no-config -- '--browser'
 ```
 
 Check the help command's exit status as well as the match. Use a clean environment for help output because Cast may
@@ -18,6 +19,22 @@ imply `wallet address --browser` or `wallet sign --browser` exists.
 If unavailable in a browser-only workflow, stop without a signer fallback. Otherwise the signer preferences in
 `SKILL.md` apply. Browser signing requires an interactive browser and local port `9545`; it does not work in ordinary
 headless CI or SSH sessions.
+
+### EIP-7702 Authorization Boundary
+
+Read [eip7702.md](eip7702.md) before preparing delegation or revocation. Check `cast wallet sign-auth --help` in a clean
+environment separately: `send --browser` does not establish authorization-signing support. When `sign-auth` lacks
+browser support, a browser-only request needing a new authorization is blocked before opening a signer. Report the
+missing capability and supported next step; never substitute message/typed-data signing or introduce secret-entry
+automation. A different signer requires authorization under the user's signer constraints.
+
+An already approved, verified authorization can accompany `cast send --auth "$SIGNED_AUTH" --browser` when the installed
+Cast and connected wallet support that type-4 transaction. The browser signs the outer transaction as its sender/fee
+payer; the authorization's recovered authority may differ. An address-valued `--auth` needs a local signer and cannot
+obtain a new authorization through the browser sender. Preserve the full reviewed authorization list and transaction
+type in the wallet; reject unsupported transport, dropped tuples, or substituted authorizations. Apply the existing
+fee-edit exception only to gas settings. Verify authorization application and account code after inclusion as well as
+the receipt.
 
 ## Resolve the Sender
 
@@ -54,13 +71,14 @@ resulting reserve, additional fees, and affordability; an execution fee cap may 
 stop, request another approval, or resimulate solely because those values differ from the reviewed command.
 
 This exception applies only to gas settings changed and approved in the wallet UI. Confirm the chain, account, target,
-calldata, native value, and nonce still match the reviewed transaction; reject the request if any of those fields
-change.
+calldata, native value, nonce, and authorization list (if present) still match the reviewed transaction; reject the
+request if any of those fields change.
 
 For a workflow whose transfer value depends on its fee reserve, including exact-zero and best-effort sweeps, preserve
 the reviewed transaction type, gas limit, and gas price or both EIP-1559 fee caps. Reject wallet changes before signing
-and rebuild, simulate, and review the dependent transfer value. If the wallet cannot preserve a legacy request, stop
-without submitting an EIP-1559 substitute.
+and rebuild, simulate, and review the dependent transfer value. Cast 1.8.3+ forwards an explicit `--legacy` type to the
+browser wallet; earlier versions could drop it at the provider boundary, so confirm the wallet screen shows the reviewed
+type. If the wallet cannot preserve a legacy request, stop without submitting an EIP-1559 substitute.
 
 Do not combine `--browser` with another signer flag. Capture the transaction hash, then have `$evm-atlas` verify the
 receipt before reporting success.

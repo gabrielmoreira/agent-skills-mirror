@@ -2,6 +2,24 @@
 
 > 按里程碑记录各阶段交付内容。每次分支合回 main 时追加条目。
 
+## 未发布：后台 worker 降级等待与子进程存活看护（issue #250）
+
+- **修复 Windows 桌面版启动必弹两个错误对话框、且后台循环随子进程一起死掉（[issue #250](https://github.com/whiteguo233/OpenBiliClaw/issues/250)）**：四进程桌面版在 `config.toml` 没有任何可成功构造的 LLM 实例时（全新安装未配 key，或 key 失效），`worker` / `discovery_worker` 两个窗口化子进程分别在 `build_runtime_context`（`RegistryBuildError`）与 `raise RuntimeError("runtime_controller.run_forever not available")` 处未捕获退出——PyInstaller bootloader 各弹一个 "Unhandled exception in script" 对话框；主 API 进程虽已用 `build_degraded_runtime_context` 降级为可配密钥、但会按环境变量继续把后台循环委托给已死子进程，于是用户在 `/setup` 修好 key 后，发现 / 刷新 / 候选评估（`/api/sources/*/next-task`、`/api/events`）仍持续 503，直到重启应用。现在：① `worker/main.py::run_full_worker` 先用 `build_llm_registry(load_config())` 做纯构造探针（无网络），失败时每 15 秒重读磁盘配置重试，等待期间心跳照常写 `worker_status.json`，成功后重新加载配置再走完整 `build_runtime_context`；② `discovery_worker.py` 同样的探针门 + 重试循环（失败时先关闭 degraded 上下文再退避），拿不到 `run_forever` 只记日志不抛异常；③ `packaging/entry.py` 的 `--openbiliclaw-worker` 分发把子进程异常写进 `logs/desktop.log` 后以 `SystemExit(1)` 退出，任何未预期崩溃都不再触发 bootloader 弹窗；④ `proc.py::ChildProcessSupervisor` 让桌面父进程周期巡检后端子进程，崩溃后按 2s 起步、上限 60s 的指数退避重启（存活 ≥5 分钟重置退避），父进程退出时逆序 terminate/kill；⑤ API 侧 `RuntimeContext.warn_if_full_worker_heartbeat_stale()` 在委托模式下发现已存在但过期的 worker 心跳时打 WARNING（首次启动尚无心跳文件时不误报），配合 `/api/runtime-status` 既有的 `worker_running` / `worker_heartbeat_age_seconds` 暴露降级委托状态。⑥ `recommendation_server.py` 同样先探针等待可构造的 LLM 配置再 `create_app()`，避免独立推荐进程永久停在 degraded 而让主 API 热恢复后 `/api/recommendations` 仍回 503；新增 `tests/test_worker_degraded_boot.py`（探针重试、等待期心跳仍在、discovery worker 不再 raise、心跳告警边界）与 `tests/test_proc_supervisor.py`（崩溃重启、退避与重置、stop 清理）。
+
+---
+
+---
+
+## 未发布：上下文事件不再进入画像证据
+
+- **修复 hover / scroll / snapshot / reshuffle / pause / seek 等上下文事件被当成画像证据**：这些插件采集事件此前会随 generic durable 路径生成 `ProfileSignal`、写入 layer buffer 并交给 speculator，但它们只是活动时间线与诊断用的上下文，不应影响口味画像。现在 `sources/event_format.py` 新增 `NON_PROFILE_EVENT_TYPES`，`soul/pipeline.py` 在 `_enqueue_batch_locked` 中先识别并跳过这些信号：durable event 行保留、consumer cursor 照常推进（不阻塞后续事件、重启可恢复），但不 buffer、不触发 layer updater、不进入 speculator。`search` 特意不在集合内（满足度中性但属真实意图信号，继续按 0.5 强度进入 SURFACE updater），`view` 也继续作为画像证据。新增回归：六类事件参数化「零接受 / 零 buffer / cursor 不倒退」、`search` + `view` 仍被接受，以及 SoulEngine 层「消费 6 行 context-only + 1 行 view，cursor 推进 7、只 buffer view」的 durable 路径测试。
+
+---
+
+## 未发布：Windows 安装/卸载拦截运行中的应用
+
+- **修复卸载正在运行的 Windows 桌面版时卸载器自删、无法二次卸载**：Inno 的 `CloseApplications`/Restart Manager 只作用于安装，卸载器对占用文件按非致命错误处理后仍会照常删除开始菜单图标、注册表卸载项与 `unins000.exe` 自身——用户关掉程序后也没有入口重试卸载，只能手删 `%LOCALAPPDATA%\Programs\OpenBiliClaw`。现在 `packaging/entry.py` 为每个冻结进程（托盘主进程与 `--openbiliclaw-worker` 子进程）全程持有一个命名互斥体（`_acquire_installer_mutex`，fail-open，进程退出自动释放），`openbiliclaw.iss` 增设 `AppMutex`，Setup 与 Uninstall 启动即弹标准「检测到 OpenBiliClaw 正在运行」对话框（关闭应用后点 OK 自动重检）；卸载器侧 `[Code] CurUninstallStepChanged(usUninstall)` 复用 `StopRunningInstance` 的 `taskkill /T /F` 兜底——**必须在 AppMutex 门禁之后**执行：Inno 卸载器先跑 `[Code] InitializeUninstall` 事件再做内部互斥体检查（`Setup.Uninstall.pas` `RunSecondPhase` 的既定顺序），把强杀放进 InitializeUninstall 会先杀掉持锁进程、让门禁永远静默通过（真机验证过该反例）；usUninstall 在门禁通过后、删文件前触发，覆盖升级前尚无互斥体的旧安装与孤儿 worker/ollama 子进程。新增互斥体名与 `.iss` 的一致性回归（防两处漂移）及 fail-open / 非冻结守卫单测。真机验证：应用运行中触发卸载即被门禁拦截（卸载日志记录 `Defaulting to Cancel for suppressed message box: Uninstall has detected that OpenBiliClaw is currently running`），应用、文件与卸载入口零改动、退出应用后可重试。
+
 ---
 
 ## 未发布：修复手动桌面安装包 workflow 的 Tailnet 模块预取缺失

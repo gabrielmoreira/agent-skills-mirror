@@ -716,10 +716,16 @@ Available commands: `goal`, `refactor`, `ulw-execute`, `stop-continuation`, `rem
 
 ### Browser Automation
 
+`browser_automation_engine.provider` accepts only the three values below.
+Unsupported values fail schema validation and `oh-my-opencode doctor` reports
+both the rejected value and the replacement: use the built-in browser path:
+Bun.WebView / playwright-core scripts. Remove the obsolete provider override
+from the active `[opencode]` block in `omo.jsonc` (including project/profile
+layers); it is not silently mapped to another provider.
+
 | Provider               | Interface | Installation                                        |
 | ---------------------- | --------- | --------------------------------------------------- |
 | `playwright` (default) | MCP tools | Auto-installed via npx                              |
-| `agent-browser`        | Legacy provider | Prefer the script-based guidance below |
 | `dev-browser`          | Skill     | Uses persistent dev-browser state                   |
 | `playwright-cli`       | Bash CLI  | Uses the token-efficient `@playwright/cli`           |
 

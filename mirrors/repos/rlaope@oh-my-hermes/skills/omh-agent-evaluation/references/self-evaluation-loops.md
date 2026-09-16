@@ -60,6 +60,42 @@ to know.
 - Keep the full trajectory: every iteration's output, score, and critique.
   A refinement loop with no history cannot be debugged, only rerun.
 
+## Qualifying a judge
+
+A judge nobody measured is unqualified, and an unqualified judge's number is
+not a result. Qualification happens before the run whose score depends on it,
+and again whenever the grader model ID, the rubric, or the task distribution
+changes - a judge qualified on last quarter's tasks is unqualified on these.
+
+1. **Label a sample by hand.** Fifty cases is a working floor. Draw them from
+   the distribution the judge will actually score, and include the boundary
+   cases the rubric is likeliest to get wrong; a sample of clear passes and
+   clear failures qualifies a judge for a job it will never do.
+2. **Score that sample with the judge**, blind to the human label, with the
+   grader model ID pinned and the rubric version recorded.
+3. **Measure agreement against the human labels**, never against a second
+   model. Report raw agreement and a chance-corrected statistic beside it -
+   Cohen's kappa for a categorical verdict, Krippendorff's alpha or a rank
+   correlation for an ordinal rubric. Raw agreement alone is not evidence: on
+   a sample that is 90% pass, a judge answering pass every time scores 90%.
+4. **Read every disagreement.** Each one says either that the judge is wrong
+   or that the rubric is ambiguous, and a rubric two humans score differently
+   is not repaired by a better judge.
+
+What the agreement figure licenses:
+
+| Chance-corrected agreement | What the judge's number is |
+| --- | --- |
+| not measured | unqualified; reported as unqualified, never quoted as a result |
+| below 0.4 | unusable; fix the rubric or replace the judge with an executable check |
+| 0.4 to 0.6 | usable only to compare two runs against the same rubric, never as an absolute score |
+| above 0.6 | usable as an absolute score, reported with the agreement figure beside it |
+
+Every reported judge score carries four fields: the grader model ID, the
+rubric version, the size of the sample agreement was measured on, and the
+agreement value. A score missing any of them is prepared analysis, and the
+report names the missing field instead of dropping the caveat.
+
 ## Boundary
 
 A rubric, a loop design, or a judge score is prepared analysis. It is not

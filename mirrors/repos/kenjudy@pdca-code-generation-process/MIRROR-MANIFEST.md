@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `kenjudy/pdca-code-generation-process` — 26 default patterns, 1 followed patterns, 83 file(s) materialized.
+Mirror of `kenjudy/pdca-code-generation-process` — 26 default patterns, 2 followed patterns, 84 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `kenjudy/pdca-code-generation-process` — 26 default patterns, 1 foll
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 1 |
-| Files         | 83 |
+| Followed pats | 2 |
+| Files         | 84 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -52,6 +52,7 @@ Mirror of `kenjudy/pdca-code-generation-process` — 26 default patterns, 1 foll
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
 - `README.md`
+- `CHEATSHEET.md`
 
 ## File Index
 
@@ -141,7 +142,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 80 | ✓ | [`skill/tests/test_schema.py`](skill/tests/test_schema.py) |
 | 81 | ✓ | [`skill/typecheck.sh`](skill/typecheck.sh) |
 | 82 | ✓ | [`skill/uv.lock`](skill/uv.lock) |
-| 83 | → | [`README.md`](README.md) |
+| 83 | → | [`CHEATSHEET.md`](CHEATSHEET.md) |
+| 84 | → | [`README.md`](README.md) |
 
 ---
 

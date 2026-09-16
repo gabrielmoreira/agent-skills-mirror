@@ -12,9 +12,12 @@ Owns remote skill catalogs and installed-skill lifecycle:
 - Browse/search registry entries.
 - Derive `SKILL.md` download URLs: Hermes bundled/optional skills from
   `docsPath`, GitHub-hosted community skills from `sourceUrl` (blob/tree
-  rewritten to `raw.githubusercontent.com`); portal-only sources
-  (ClawHub/LobeHub/skills.sh) get no URL and `install` returns an actionable
-  error instead of a 404.
+  rewritten to `raw.githubusercontent.com`), ClawHub from its file API by
+  slug, and skills.sh from the listed GitHub repo (located at install time).
+  LobeHub agents have no `SKILL.md`: they get no URL, search ranks them last,
+  and `install` returns an actionable error instead of a 404.
+- Give entries unique ids (the source-qualified Hermes `identifier`, or the
+  name for bundled skills) and resolve install requests to exactly one entry.
 - Install catalog entries into the user skills directory.
 - Uninstall user-scope skills.
 - Host the built-in `skill_setup` agent.
@@ -24,7 +27,8 @@ Owns remote skill catalogs and installed-skill lifecycle:
 | File | Purpose |
 | --- | --- |
 | `mod.rs` | Feature gate (`skills` Cargo feature) and module wiring; re-exports the controller aggregators |
-| `ops.rs` | Catalog fetch/cache, boot refresh, browse/search/sources/categories, download-URL derivation, `install_from_catalog` |
+| `ops.rs` | Catalog fetch/cache, boot refresh, browse/search/sources/categories, entry ids, download-URL derivation, `find_catalog_entry`, `install_from_catalog` |
+| `download.rs` | `SKILL.md` locations for ClawHub (file API) and skills.sh (GitHub repo probe + tree lookup) |
 | `store.rs` | Catalog cache at `~/.openhuman/skill-registry/cache.json`, 1-hour TTL, kept past TTL for stale-while-revalidate; `OPENHUMAN_SKILL_REGISTRY_CACHE_DIR` relocates it (tests) |
 | `tools.rs` | LLM-callable tools `skill_registry_browse`, `skill_registry_search`, `skill_registry_sources`, `skill_registry_install`, `skill_registry_uninstall` |
 | `types.rs` | `CatalogEntry` |

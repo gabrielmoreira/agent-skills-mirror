@@ -69,9 +69,23 @@ selected replay when rendered inspection adds evidence.
 - On attachment or transport failure, distinguish the browser endpoint from the MCP process: check the debugging
   endpoint at `http://127.0.0.1:${PRB_AGENT_CHROMIUM_PORT:-9222}/json/version`, then inspect the newest per-process log
   under `$XDG_CACHE_HOME/chrome-devtools-mcp/logs/` or, when unset, `~/.cache/chrome-devtools-mcp/logs/`.
-- Expect Chromium to remain healthy when an MCP transport drops. Report which layer failed and the supporting evidence;
-  do not launch another browser, edit client configuration, or change wrapper flags unless the user explicitly requests
-  configuration work.
+- A responsive endpoint proves the browser process is alive, not that renderers can start. If `new_page` times out and
+  tabs show a crashed icon or `Untitled`, stop repeated creation attempts and check browser health separately from MCP
+  transport health. A failed creation can leave a tab without returning a `pageId`; do not infer ownership from a later
+  page list or close unidentified tabs.
+- After a macOS Homebrew Chromium upgrade, compare the endpoint's `Browser` version with
+  `plutil -extract CFBundleShortVersionString raw /Applications/Chromium.app/Contents/Info.plist`. Confirm the running
+  process uses that app bundle and inspect its start time and versioned framework/helper paths. Homebrew can replace the
+  bundle while the old process keeps running, removing helpers it needs for new renderers; existing pages and
+  `/json/version` can still work. A version mismatch alone is a clue, not proof of the failure.
+- Report the failed layer and evidence. Do not change client configuration or wrapper flags without authorization for
+  that configuration work. Do not automatically restart the shared browser during ordinary browsing or from the wrapper.
+  An explicit request to repair the browser authorizes a graceful restart using the same profile and debugging port.
+  Record those arguments first and preserve the session; `chrome://restart` requests a session-restoring restart. If the
+  old process exits but cannot relaunch after an upgrade, confirm it has exited, then reopen the installed executable
+  with the recorded profile/port arguments and `--restore-last-session`, never a fallback profile. Respect any
+  unsaved-work prompt. Recheck the live version, call `list_pages` for fresh IDs, verify pre-existing pages were
+  restored, and test creation and navigation on an owned page before closing it.
 - When a requested capability is missing, confirm the current tool inventory and wrapper configuration, then report the
   boundary. Do not invent a fallback that weakens the configured privacy or concurrency defaults.
 

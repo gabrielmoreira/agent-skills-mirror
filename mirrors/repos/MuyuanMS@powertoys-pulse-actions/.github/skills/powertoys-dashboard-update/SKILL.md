@@ -42,10 +42,12 @@ skills:
    workflow. Do not substitute the artifact repository's Pages site as the
    final preview.
 7. The only canonical skill and action-data repository is
-   `MuyuanMS/powertoys-pulse-actions`. Before reading or writing checkpoints,
-   generating data, or publishing, run
+   `MuyuanMS/powertoys-pulse-actions`, and canonical action data is published
+   only from its `main` branch. Before reading or writing checkpoints,
+   generating data, committing, or publishing, run
    `scripts/Assert-CanonicalDashboardTarget.ps1`. Never update or push
-   `MuyuanMS/powertoys-triage-board`; it is a retired standalone prototype.
+   another branch or `MuyuanMS/powertoys-triage-board`; it is a retired
+   standalone prototype.
 8. Dashboard publication and fork review writes are separate permissions.
    Workers must not emit, sanitize, commit, or push the dashboard repository,
    but they are allowed and expected to push `pr-iterate/<number>` branches,
@@ -113,10 +115,14 @@ pwsh -NoProfile -File `
   -Dashboard $Dashboard
 ```
 
-Run this skill from the `MuyuanMS/powertoys-pulse-actions` repository root, or
-set `POWERTOYS_DASHBOARD_PATH` to a checkout of that exact repository. The
-other three skills must be present beside it under `.github\skills`. The target
-repository is intentionally not overrideable.
+Run this skill from a dedicated `main` checkout of
+`MuyuanMS/powertoys-pulse-actions`, or set `POWERTOYS_DASHBOARD_PATH` to that
+checkout. Before each run, fetch and fast-forward it from `origin/main`; abort
+instead of switching or publishing if it is detached, dirty, divergent, or on
+another branch. Never use a Pulse preview, feature, or development checkout as
+the dashboard path. The other three skills must be present beside it under
+`.github\skills`. The target repository and branch are intentionally not
+overrideable.
 
 The configured repository is both the reusable skill suite and canonical
 artifact feed. Generated files belong only in its root `data/` directory, not
@@ -809,7 +815,15 @@ is justified, but do not downgrade a valid line comment to `companion` merely
 because prose is clearer than a patch. For every truly out-of-diff supported
 finding, emit a non-inline proposed comment that explains the concern, its
 impact, and the required follow-up, and record a concrete
-`out_of_diff_reason`; Pulse posts those findings as separate PR
+`out_of_diff_reason`. Every general comment must be a self-contained
+implementation prompt with these author-facing sections: `Affected code`
+(repository paths and symbols), `Problem`, `Why it matters`, `Suggested
+change` (ordered steps and, when useful, an illustrative non-`suggestion` code
+block), and `Verification`. Include enough detail that the author can paste
+the comment into Copilot and reproduce the fix already proven in the review
+branch without seeing that branch. Consolidate comments that share a root
+cause, affected change, or verification path; suppressed findings are evidence
+to synthesize, not one-comment-per-finding output. Pulse posts the resulting PR
 conversation comments rather than combining them into one review body. Never
 replace them with a generic local `review_summary` action. Label
 companion-only reviews `Post general review notes` and disclose `general
@@ -1074,11 +1088,14 @@ Publish only the board data and UI:
 
 ```powershell
 Set-Location $Dashboard
+pwsh -NoProfile -File `
+  "$SkillRoot\scripts\Assert-CanonicalDashboardTarget.ps1" `
+  -Dashboard $Dashboard
 git add README.md SCHEMA.md UPDATE_DASHBOARD_PROMPT.md emit.ps1 data
 git diff --cached --check
 if (-not (git diff --cached --quiet)) {
   git commit -m "Update PowerToys triage dashboard"
-  git push origin HEAD
+  git push origin main:main
 }
 ```
 

@@ -111,6 +111,14 @@ to that delegate, not a second skill runtime.
   (`named_tool` is `None`) and renders it with `render_pack_filtered` against
   the session's allowlist, with `route_sentence` naming the owner delegate
   when nothing in the pack is callable.
+- `agent/tinyagents/middleware/packed_tool_route.rs` — `before_tool`
+  rewrites a call that names a withheld packed tool by its bare name (the name
+  the listing and sibling descriptions use) into the `use_skill` call that
+  reaches it, ahead of admission, so the rewritten call passes every gate an
+  explicit `use_skill` call does (#6276). It routes only when the turn's
+  tool-policy session lets that tool run (`blocks_execution()` is false), and
+  never on a turn without a session (sub-agent, channel/CLI), where an
+  unregistered name was excluded by the registration allowlist.
 - `agent/registry/agents/orchestrator/prompt.rs` — `pack_for_tool` to tell
   the orchestrator which pack a withheld delegate lives in.
 - `crates/openhuman-embed/` — re-exports `GroupMode` and `ToolGroups` and

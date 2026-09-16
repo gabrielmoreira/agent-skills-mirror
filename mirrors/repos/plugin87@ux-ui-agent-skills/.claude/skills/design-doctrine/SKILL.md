@@ -27,6 +27,10 @@ then load the rule file for the territory you are actually in.
    no horizontal overflow at 280/320/414px.
 7. **Honest scope.** The gates prove objective correctness. They never prove taste.
    For that, run `/critique` and look at the work yourself.
+8. **SKIPPED is not a pass.** With no browser installed a render gate prints
+   `SKIPPED` and exits 0, reporting nothing. Run single render gates behind
+   `DS_REQUIRE_BROWSER=1` so that becomes `REQUIRED, FAILING`, and fix it with
+   `npx playwright install chrome` rather than by removing the flag.
 
 > ABSOLUTE: zero emoji in any output - UI, code, JSON, copy, comments, commit
 > messages. Not as an icon, a bullet, a status dot, or "polish". Emoji are the

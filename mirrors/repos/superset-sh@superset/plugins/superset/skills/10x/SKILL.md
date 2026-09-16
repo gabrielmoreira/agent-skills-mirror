@@ -28,8 +28,8 @@ For each recommendation in order: a two-sentence pitch, then ask (use the ask_us
 | Feature | Why it 10x's you | Live setup |
 | --- | --- | --- |
 | Automations | Scheduled agents: triage, changelogs, standups run while you sleep | `superset automations create`, then `superset automations logs` to review runs |
-| Parallel workspaces | Every task gets an isolated worktree; run several agents at once instead of queueing | `superset workspaces create --project <id>` then `superset agents create --workspace <id> --agent claude --prompt "..."` |
-| PR review workspaces | Check out any PR into its own workspace in one command | `superset workspaces create --pr <number>` |
+| Parallel workspaces | Every task gets an isolated worktree; run several agents at once instead of queueing | `superset workspaces create --local --project <id>` then `superset agents create --workspace <id> --agent claude --prompt "..."` |
+| PR review workspaces | Check out any PR into its own workspace in one command | `superset workspaces create --local --pr <number>` |
 | Tasks | A shared queue agents can pick up; track work across sessions | `superset tasks create --title "..."`, `superset tasks update` |
 | Multi-host | Run agents on your desktop from your laptop; wake offline machines | `superset hosts list`, `superset hosts set-wake`, `superset hosts wake <id>` |
 | Terminal remote-control | Read and drive any agent's terminal from anywhere | `superset terminals list / read / send` |

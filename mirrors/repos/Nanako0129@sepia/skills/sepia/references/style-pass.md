@@ -32,7 +32,7 @@ These part-of-speech shapes are 2–5× overrepresented in LLM prose and heavily
 
 ## 3 Vocabulary
 
-Merged ban list (R Table 12 + P excess-vocab + L signature phrases + F fiction slop). A single hit is not a verdict — **slop is cumulative** (S): count hits, and rewrite when they cluster.
+Merged ban list (R Table 12 + P excess-vocab + L signature phrases + F fiction slop). A single hit is not a verdict — **slop is cumulative** (S): count hits, and rewrite when they cluster. Lists of this kind also age, measured so far in one corpus: on 207,111 astronomy papers, the aggregate excess of a fixed 72-word marker list in assisted prose fell from 3.5 times background in 2023 to 1.5 times in 2026, delve retreating after mid-2024 while underscore and notably kept rising (Saad & Ting 2026, ledger `SAAD-TING-2026`; astro-ph only, mixture-model estimate, no labelled human-vs-LLM corpus). That is a property of one list's aggregate signal in that corpus, not a discount on any word in this table; words are not added here from detector output.
 
 | Class | Words/phrases |
 |---|---|

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `23blocks-OS/ai-maestro` — 26 default patterns, 17 followed patterns, 25 file(s) materialized.
+Mirror of `23blocks-OS/ai-maestro` — 26 default patterns, 18 followed patterns, 27 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `23blocks-OS/ai-maestro` — 26 default patterns, 17 followed patterns
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 17 |
-| Files         | 25 |
+| Followed pats | 18 |
+| Files         | 27 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,6 +51,7 @@ Mirror of `23blocks-OS/ai-maestro` — 26 default patterns, 17 followed patterns
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
+- `docs/CHAT-ARCHITECTURE.md`
 - `README.md`
 - `docs/REQUIREMENTS.md`
 - `docs/OPERATIONS-GUIDE.md`
@@ -75,31 +76,33 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`agent-container/README.md`](agent-container/README.md) |
-| 2 | ✓ | [`channels/amp-plugin/README.md`](channels/amp-plugin/README.md) |
-| 3 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 4 | ✓ | [`docs/AGENT-COMMUNICATION-GUIDELINES.md`](docs/AGENT-COMMUNICATION-GUIDELINES.md) |
-| 5 | ✓ | [`docs/AGENT-COMMUNICATION-QUICKSTART.md`](docs/AGENT-COMMUNICATION-QUICKSTART.md) |
-| 6 | ✓ | [`docs/EXTERNAL-AGENTS.md`](docs/EXTERNAL-AGENTS.md) |
-| 7 | ✓ | [`infrastructure/terraform/aws-agent/README.md`](infrastructure/terraform/aws-agent/README.md) |
-| 8 | ✓ | [`public/logos/social/README.md`](public/logos/social/README.md) |
-| 9 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 10 | → | [`docs/AGENT-COMMUNICATION-ARCHITECTURE.md`](docs/AGENT-COMMUNICATION-ARCHITECTURE.md) |
-| 11 | → | [`docs/AGENT-INTELLIGENCE.md`](docs/AGENT-INTELLIGENCE.md) |
-| 12 | → | [`docs/AGENT-MESSAGING-GUIDE.md`](docs/AGENT-MESSAGING-GUIDE.md) |
-| 13 | → | [`docs/CEREBELLUM.md`](docs/CEREBELLUM.md) |
-| 14 | → | [`docs/CONCEPTS.md`](docs/CONCEPTS.md) |
-| 15 | → | [`docs/ECOSYSTEM.md`](docs/ECOSYSTEM.md) |
-| 16 | → | [`docs/NETWORK-ACCESS.md`](docs/NETWORK-ACCESS.md) |
-| 17 | → | [`docs/OPERATIONS-GUIDE.md`](docs/OPERATIONS-GUIDE.md) |
-| 18 | → | [`docs/QUICKSTART.md`](docs/QUICKSTART.md) |
-| 19 | → | [`docs/REQUIREMENTS.md`](docs/REQUIREMENTS.md) |
-| 20 | → | [`docs/SETUP-TUTORIAL.md`](docs/SETUP-TUTORIAL.md) |
-| 21 | → | [`docs/TROUBLESHOOTING.md`](docs/TROUBLESHOOTING.md) |
-| 22 | → | [`docs/USE-CASES.md`](docs/USE-CASES.md) |
-| 23 | → | [`docs/WINDOWS-INSTALLATION.md`](docs/WINDOWS-INSTALLATION.md) |
-| 24 | → | [`README.md`](README.md) |
-| 25 | → | [`SECURITY.md`](SECURITY.md) |
+| 1 | ✓ | [`.agents/skills/agent-browser/SKILL.md`](.agents/skills/agent-browser/SKILL.md) |
+| 2 | ✓ | [`agent-container/README.md`](agent-container/README.md) |
+| 3 | ✓ | [`channels/amp-plugin/README.md`](channels/amp-plugin/README.md) |
+| 4 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 5 | ✓ | [`docs/AGENT-COMMUNICATION-GUIDELINES.md`](docs/AGENT-COMMUNICATION-GUIDELINES.md) |
+| 6 | ✓ | [`docs/AGENT-COMMUNICATION-QUICKSTART.md`](docs/AGENT-COMMUNICATION-QUICKSTART.md) |
+| 7 | ✓ | [`docs/EXTERNAL-AGENTS.md`](docs/EXTERNAL-AGENTS.md) |
+| 8 | ✓ | [`infrastructure/terraform/aws-agent/README.md`](infrastructure/terraform/aws-agent/README.md) |
+| 9 | ✓ | [`public/logos/social/README.md`](public/logos/social/README.md) |
+| 10 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 11 | → | [`docs/AGENT-COMMUNICATION-ARCHITECTURE.md`](docs/AGENT-COMMUNICATION-ARCHITECTURE.md) |
+| 12 | → | [`docs/AGENT-INTELLIGENCE.md`](docs/AGENT-INTELLIGENCE.md) |
+| 13 | → | [`docs/AGENT-MESSAGING-GUIDE.md`](docs/AGENT-MESSAGING-GUIDE.md) |
+| 14 | → | [`docs/CEREBELLUM.md`](docs/CEREBELLUM.md) |
+| 15 | → | [`docs/CHAT-ARCHITECTURE.md`](docs/CHAT-ARCHITECTURE.md) |
+| 16 | → | [`docs/CONCEPTS.md`](docs/CONCEPTS.md) |
+| 17 | → | [`docs/ECOSYSTEM.md`](docs/ECOSYSTEM.md) |
+| 18 | → | [`docs/NETWORK-ACCESS.md`](docs/NETWORK-ACCESS.md) |
+| 19 | → | [`docs/OPERATIONS-GUIDE.md`](docs/OPERATIONS-GUIDE.md) |
+| 20 | → | [`docs/QUICKSTART.md`](docs/QUICKSTART.md) |
+| 21 | → | [`docs/REQUIREMENTS.md`](docs/REQUIREMENTS.md) |
+| 22 | → | [`docs/SETUP-TUTORIAL.md`](docs/SETUP-TUTORIAL.md) |
+| 23 | → | [`docs/TROUBLESHOOTING.md`](docs/TROUBLESHOOTING.md) |
+| 24 | → | [`docs/USE-CASES.md`](docs/USE-CASES.md) |
+| 25 | → | [`docs/WINDOWS-INSTALLATION.md`](docs/WINDOWS-INSTALLATION.md) |
+| 26 | → | [`README.md`](README.md) |
+| 27 | → | [`SECURITY.md`](SECURITY.md) |
 
 ---
 

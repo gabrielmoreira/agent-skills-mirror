@@ -20,8 +20,7 @@ This is a Hermes-native `deploy-and-monitor` workflow skill.
 
 ## Do Not Use When
 
-- The request is casual chat, a status-only acknowledgement, or another workflow has stronger routing evidence.
-- The user needs implementation, review, CI, merge, or external publishing evidence that has not been delegated or observed.
+- An incident has already been declared and the work is commanding it -- severity, commander, running timeline, recovery verification -- rather than watching a release; use `live-incident-response`.
 
 ## Examples
 
@@ -50,7 +49,7 @@ Bad example:
 
 ## Workflow Lane
 
-- Current lane: **Coding handoff** (`idea-to-deploy`, `llm-app-dev`, `cto-loop`, `deploy-and-monitor`, `code-review`, `build-failure-triage`, `verification-gate`, `security-safety-review`, `+13 more`) - coding owners, handoffs, review, CI, and merge evidence.
+- Current lane: **Coding handoff** (`idea-to-deploy`, `llm-app-dev`, `cto-loop`, `deploy-and-monitor`, `code-review`, `build-failure-triage`, `verification-gate`, `security-safety-review`, `+14 more`) - coding owners, handoffs, review, CI, and merge evidence.
 - If intent belongs to another lane, hand back to `oh-my-hermes` or name the adjacent workflow.
 - Shared product, routing, compatibility, and evidence rules: `omh-routing/references/skill-common-rail.md`.
 

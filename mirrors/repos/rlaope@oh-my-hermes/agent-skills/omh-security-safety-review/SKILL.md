@@ -23,6 +23,7 @@ This is an OMH `security-safety-review` workflow skill, projected for Agent Skil
 - The user asks for production readiness across release, rollback, and observability; use `production-audit`.
 - The user asks for merge verification commands; use `verification-gate`.
 - The user asks for a normal code review focused on bugs; use `code-review`.
+- The subject is an application or service rather than the agent's own runtime -- its assets, trust boundaries, attack scenarios, and the controls that defend them; use `application-threat-model`.
 
 ## Examples
 

@@ -1,6 +1,6 @@
 # Runtime
 
-Boots every enabled channel, keeps their listeners alive, and dispatches inbound messages into the agent loop. `mod.rs` exports only `start_channels`; `dispatch` and `supervision` internals are `pub(crate)` for `channels/tests/` under `#[cfg(test)]`.
+Boots every enabled channel, keeps their listeners alive, and dispatches inbound messages into the agent loop. `mod.rs` exports `start_channels` and a crate-internal startup entry with a captured session lifetime; `dispatch` and `supervision` internals are `pub(crate)` for `channels/tests/` under `#[cfg(test)]`.
 
 ## Files
 
@@ -10,6 +10,10 @@ Boots every enabled channel, keeps their listeners alive, and dispatches inbound
 | `supervision.rs` | `spawn_supervised_listener` — re-runs `Channel::listen` in a loop with exponential backoff plus full jitter, publishing `DomainEvent::ChannelConnected` / `ChannelDisconnected` / `HealthRestarted`; re-exports `tinychannels::runtime::compute_max_in_flight_messages` |
 | `dispatch/` | The inbound pipeline that turns a `RuntimeChannelMessage` into an agent turn and a reply |
 | `test_support.rs` | `#[cfg(any(test, debug_assertions))]` dispatch harness (`run_dispatch_harness`, `DispatchHarnessOptions`) used by `channels/tests/` and raw coverage |
+
+## Account lifetime
+
+Model authentication and account lifetime are separate. A local or CLI model can run without an OpenHuman backend session, but explicit logout cancels the old account's channel runtime. `spawn_channels_service` captures the channel lifetime before awaiting config loading, so logout also cancels a partially started runtime. `session.rs` stops the runtime on invalidation; owned listener/bridge tasks, dispatch workers, draft updaters, typing tasks, and relay reconnect supervision terminate when their owners drop. A runtime explicitly started again obtains a fresh lifetime; logout does not automatically start listeners for another account.
 
 ## Inbound path
 

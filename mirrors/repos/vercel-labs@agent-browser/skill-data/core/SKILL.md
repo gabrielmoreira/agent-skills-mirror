@@ -31,7 +31,7 @@ agent-browser click @e3         # 3. Act on refs from the snapshot
 agent-browser snapshot -i       # 4. Re-snapshot after any page change
 ```
 
-Refs (`@e1`, `@e2`, ...) are assigned fresh on every snapshot. They become **stale the moment the page changes** — after clicks that navigate, form submits, dynamic re-renders, dialog opens. Always re-snapshot before your next ref interaction.
+Refs (`@e1`, `@e2`, ...) can be reused across snapshots. Take a fresh snapshot after navigation or to observe page changes.
 
 ## Always use your own session
 
@@ -96,7 +96,11 @@ agent-browser snapshot -i -c              # compact (no empty structural nodes)
 agent-browser snapshot -i -d 3            # cap depth at 3 levels
 agent-browser snapshot -s "#main"         # scope to a CSS selector
 agent-browser snapshot -i --json          # machine-readable output
+agent-browser snapshot -i --delta         # full state once, then compact changes
+agent-browser snapshot -i --delta --full  # force full state and refresh baseline
 ```
+
+Use `--delta` to reduce repeated output and `--full` to reset the baseline.
 
 Snapshot output looks like:
 
@@ -138,6 +142,7 @@ For sessions that handle sensitive data, use `--allowed-domains` to restrict nav
 ```bash
 agent-browser click @e1                   # click
 agent-browser click @e1 --new-tab         # open link in new tab instead of navigating
+agent-browser click @e1 --human           # approach with reproducible curved movement
 agent-browser dblclick @e1                # double-click
 agent-browser hover @e1                   # hover
 agent-browser focus @e1                   # focus (useful before keyboard input)
@@ -153,6 +158,7 @@ agent-browser upload @e5 file1.pdf        # upload file(s)
 agent-browser scroll down 500             # scroll page (up/down/left/right)
 agent-browser scrollintoview @e1          # scroll element into view
 agent-browser drag @e1 @e2                # drag and drop
+agent-browser drag @e1 @e2 --human        # drag with curved, eased movement
 ```
 
 ### When refs don't work or you don't want to snapshot
@@ -310,7 +316,11 @@ agent-browser screenshot                        # temp path, printed on stdout
 agent-browser screenshot page.png               # specific path
 agent-browser screenshot --full full.png        # full scroll height
 agent-browser screenshot --annotate map.png     # numbered labels + legend keyed to snapshot refs
+agent-browser screenshot --if-changed           # recommended: skip unchanged images to save tokens
+agent-browser screenshot --threshold 0.01       # ignore changes affecting at most 1% of pixels
 ```
+
+Prefer `--if-changed` for repeated captures: skipping unchanged images is the most token-efficient option. The first capture returns a path; later unchanged captures omit it. See [conditional screenshot responses](references/commands.md#screenshots-and-pdf) for JSON fields.
 
 Headless Chromium screenshots hide native scrollbars for consistent image output. Pass `--hide-scrollbars false` when launching to keep native scrollbars visible.
 
@@ -370,13 +380,13 @@ agent-browser network har stop /tmp/trace.har
 
 ```bash
 agent-browser open https://example.com
-agent-browser record start demo.webm          # 30 fps by default; .webm or .mp4
+agent-browser record start demo.webm --cursor --contact-sheet
 agent-browser snapshot -i
 agent-browser click @e3
 agent-browser record stop
 ```
 
-`record start` attaches to the active tab as-is (no new context, no navigation unless you pass a URL). To record in a separate tab, run `tab new <url>` first. Recording needs `ffmpeg` on PATH (`brew install ffmpeg` / `apt install ffmpeg`); `agent-browser doctor` checks for it. Pass `--fps 60` for motion-heavy takes (drag, animation, scroll work) or a lower rate for long sessions; `--fps` accepts 1 to 60.
+Recording uses the active tab. Use `--cursor` for an animated pointer, `--contact-sheet` for a visual summary, and `--fps 60` for motion-heavy recordings.
 
 See [references/video-recording.md](references/video-recording.md) for frame rate guidance, codec options, and more.
 

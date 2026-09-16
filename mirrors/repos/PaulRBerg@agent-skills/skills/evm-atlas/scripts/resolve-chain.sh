@@ -10,6 +10,7 @@
 #   name=<string>
 #   native_currency=<symbol>
 #   instance_url=<url, ends in />
+#   api_url=<API base URL, without trailing slash>
 #   hosted_by=<blockscout|other>
 #   is_testnet=<true|false>
 #   layer=<int|>
@@ -84,6 +85,7 @@ unsafe_reason() {
   case "$1" in
     250) printf '%s\n' 'Chainscout still lists self-hosted FTMScout at https://ftmscout.com/, but as checked 2026-07-31 its frontend returns HTTP 200 while /api/v2/* data routes return HTTP 500; do not use it for evidence' ;;
     2020) printf '%s\n' 'Chainscout returns a different network for `2020`; app.roninchain.com blocks scripted access, so verify with `$chromium-browser` instead of curl or WebFetch' ;;
+    5330) printf '%s\n' 'Chromium verified 2026-09-15: explorer.superseed.xyz now serves Conduit Explorer, which does not support historical transactions, holdings, or transfers; do not use its stale Chainscout Blockscout route' ;;
     *)
       return 1
       ;;
@@ -124,11 +126,18 @@ testnet=$(bval "isTestnet")
 layer=$(nval "layer")
 rollup=$(sval "rollupType")
 
+api="${instance%/}/api"
+# Explicit registry API bases override stale Chainscout page-host routes.
+case "$chain_id" in
+  2818) instance='https://explorer.morph.network/'; api='https://explorer-api.morph.network/api' ;;
+esac
+
 cat <<EOF
 chain_id=$chain_id
 name=$name
 native_currency=$native
 instance_url=$instance
+api_url=$api
 hosted_by=$hosted
 is_testnet=$testnet
 layer=$layer

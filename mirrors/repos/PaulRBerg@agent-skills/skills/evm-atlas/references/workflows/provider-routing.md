@@ -157,6 +157,33 @@ Otherwise issue bounded direct HTTP JSON-RPC requests against the target's `prim
 `eth_chainId`, then try `references/generated/target-fallback-rpcs.json` in order. Do not hand public-RPC reads to
 `cli-cast`. Public RPCs are best-effort and may be rate limited.
 
+### Exact simulation failures
+
+Preserve the exact transaction object, block selector, CLI exit code, stdout JSON-RPC response, and redacted stderr
+diagnostics. A nonzero exit can accompany useful JSON-RPC error evidence; capture both streams before handling it.
+Retain every correlation ID: RouteMesh uses `X-Batch-Id` for individual requests and comma-separated `X-Batch-Ids` for
+batches, as documented in its [debugging guide](https://routeme.sh/docs/intro/debugging).
+
+When a simulation contradicts its supplied fields or checkpointed state:
+
+1. Verify the CLI payload with `--dry-run`, including sender, target, value, calldata, nonce, transaction type, gas, and
+   fee fields. For an affordability error, compare the reported requirement with the exact transaction's upfront
+   reserve. A reported gas allowance different from the supplied limit is a simulation-integrity warning.
+2. Replay the unchanged call and estimate through the ordered independent public-RPC fallback at the same verified
+   checkpoint. Verify its chain ID first. A successful estimate does not validate a failed call: the two methods may use
+   different upstreams. Do not repeatedly retry the same route or switch transaction type to explain a mismatch.
+3. If needed, use a bounded synthetic probe with different explicit gas limits to test whether the route honors gas. For
+   a verified ordinary EOA with empty calldata, a below-intrinsic limit must fail. Where state overrides are supported,
+   an isolated GAS-opcode probe can establish the executed allowance. These probes diagnose the provider; zeroing value
+   or fees, changing gas, or overriding state never substitutes for the exact transaction simulation.
+4. When authenticated logs are available, use `$chromium-browser` to correlate request IDs with the logged parameters,
+   result, and upstream. Preserve the distinction between the service's received payload and any unobserved forwarded
+   payload. A provider label alone does not prove which layer changed execution semantics.
+
+Return the exact simulation outcome and any provider discrepancy separately. Keep the consuming workflow's simulation
+and approval requirements; diagnostic success does not authorize signing or broadcast. A failing RPC route does not
+establish chain-wide transaction-type incompatibility or justify changing static chain metadata.
+
 ## Explorer Links
 
 For address and transaction links, substitute `{address}` in the target row's `explorerAddressUrl` or `{tx_hash}` in

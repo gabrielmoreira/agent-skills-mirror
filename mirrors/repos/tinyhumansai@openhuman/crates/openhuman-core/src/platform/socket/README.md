@@ -5,11 +5,11 @@ Persistent, Rust-native Socket.IO client to the OpenHuman backend. The `socket` 
 ## Responsibilities
 
 - Open and maintain a persistent Socket.IO connection to the backend over a raw WebSocket; perform the Engine.IO OPEN and Socket.IO CONNECT handshakes by hand.
-- Authenticate the SIO CONNECT with a JWT and reconnect automatically with exponential backoff (1 s → 30 s cap).
+- Authenticate the SIO CONNECT with a JWT and reconnect automatically with exponential backoff (1 s → 30 s cap). Every connect attempt (DNS + TCP + TLS + upgrade) is bounded at 10 s per redirect hop (`CONNECT_TIMEOUT`), so a path that accepts the connection and then goes silent fails the attempt instead of parking the loop until the far end gives up (#6256).
 - Follow HTTP 3xx redirects during the upgrade (up to 3 hops) so a `http://`-configured `BACKEND_URL` behind a TLS-forcing edge connects cleanly; pin the resolved URL for subsequent reconnects and surface a one-shot "stale BACKEND_URL" warning for permanent redirects.
 - Refresh the session token before every reconnect via a `TokenProvider` callback (live re-read of the profile store) instead of caching a single token — fixes the "Invalid token" retry storm (#2892 / TAURI-RUST-9C).
 - Fast-fail on a definitively dead token (server "Invalid token" + no fresher token available) rather than burning the whole backoff budget.
-- Track connection status / socket id / last user-visible error in shared state and expose it via RPC.
+- Track connection status / socket id / last user-visible error / loop liveness (`SharedState::loop_active` + `loop_stopped_on_failure`, `SocketManager::is_loop_active` / `loop_stopped_on_failure`, surfaced as `connectivity_diag.socket_loop_active` / `socket_loop_stopped_on_failure`) in shared state and expose it via RPC. A loop that exits because no usable session token exists raises the failure flag so the frontend can say "sign in again" instead of showing nothing. Between attempts the loop reports `Reconnecting`; `Disconnected` means the loop is not running (signed out, session expired, shutdown), which is what the frontend's connectivity chip relies on to show "down, retrying" and stay quiet for "never wanted" (#6256).
 - Parse inbound Socket.IO EVENT frames and publish them as `DomainEvent`s for other domains to consume; emit outbound events.
 - Suppress reconnect-storm Sentry noise: route only the 5th consecutive failure through the observability classifier (which demotes offline/transport shapes to a breadcrumb), keep all other retries at `warn`.
 
@@ -101,5 +101,7 @@ None of its own. State (`status`, `socket_id`, `error`, attached `WebhookRouter`
 - The reconnect loop bounds "fresh-token immediate retry" to **one** per cycle so a provider that returns a different non-empty token every call cannot hot-loop without sleeping or escalating (CodeRabbit Major, #2905).
 - A genuinely fresh token from the invalid-token decision is **carried forward** (`pending_token`) so the next iteration uses the exact validated value, avoiding a redundant profile-store lock/disk read.
 - Sentry escalation fires exactly once, on the 5th consecutive failure (~15 s of accumulated backoff), and is routed through the observability classifier so offline/transport shapes demote to a breadcrumb (OPENHUMAN-TAURI-8M / -BH).
+- A connect attempt that outlives `CONNECT_TIMEOUT` is rendered as `WsError::Io(TimedOut)` with the `operation timed out` phrase on purpose — that is the substring `is_network_unreachable_message` demotes, so a sustained blackhole never pages. Keep the wording if you touch it.
+- The ping-timeout warning carries the connection age, the number of Engine.IO pings the connection ever received, and the frames sent since the last server frame; a successful handshake after an outage logs `Reconnected after Ns (N failed attempt(s))`. Both exist so a drop report can be root-caused from the log alone (#6256): drops that always land at the same connection age point at a lifetime ceiling on the path (#5603), zero pings on a minutes-old connection point at the server.
 - Redirect following only persists the "update BACKEND_URL" warning for permanent redirects (301/308); temporary (302/307) hops don't (CodeRabbit, #1547).
 - No agent tools and no `bus.rs` — this is a transport domain that publishes events for others to handle.

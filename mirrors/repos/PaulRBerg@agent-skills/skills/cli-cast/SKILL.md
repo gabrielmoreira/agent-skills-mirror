@@ -16,6 +16,10 @@ This skill is coordination-exempt: skip the ai-coord gate for its declared work.
 Separate read, preparation, simulation, signing, and broadcast so no state-changing action is hidden inside command
 construction.
 
+For EIP-7702 authorization or delegation revocation, read [references/eip7702.md](references/eip7702.md) before
+preparation. It defines signer selection, authority versus transaction sender, conditional staged approval, and
+authorization verification in addition to the transaction receipt.
+
 ## Resolve Chain and Provider
 
 Invoke `$evm-atlas` before every network operation. It owns chain resolution, discrete reads, and bounded live
@@ -47,7 +51,8 @@ nonce, `eth_call`, `eth_estimateGas`, transaction, receipt, log, balance, code, 
 `$evm-atlas`, including reads needed to prepare or verify a transaction. Do not ask `evm-atlas` to hand a read back to
 this skill merely because later work may change state.
 
-Use current `cast <command> --help` for exact local syntax. Typical local operations:
+Use `env -i PATH="$PATH" cast <command> --help` for exact local syntax. Cast help can print inherited environment
+values, including API keys; do not load credentials or decrypted dotenv for capability checks. Typical local operations:
 
 ```sh
 cast calldata 'transfer(address,uint256)' "$TO" "$AMOUNT"
@@ -58,7 +63,8 @@ cast decode-calldata 'transfer(address,uint256)' "$CALLDATA"
 
 Resolve and validate chain ID, sender, target, function signature, arguments, calldata, native value, nonce, and fee
 assumptions without signing. Obtain every on-chain fact through `evm-atlas`; do not request or load key material during
-preparation.
+preparation. Select a supported signer under Sign and Broadcast and check its command capabilities before simulation or
+helper construction.
 
 For Ethereum mainnet, the default gas policy is [references/ethereum-gas.md](references/ethereum-gas.md): fetch a fresh
 Rabby `slow` quote and bind its EIP-1559 fee pair before simulation. The user or a consuming skill may explicitly choose
@@ -88,10 +94,14 @@ change; serialization can change the L1 charge even for an empty-calldata transf
   use exactly 21000 gas. Do not apply that constant to other fee models.
 - **Arbitrum Nitro:** use the complete `eth_estimateGas` result, or `NodeInterface.gasEstimateComponents()` through
   atlas. It includes the parent-chain posting charge converted into child-chain gas. Budget the full gas limit at the
-  reviewed price cap; do not add a second L1 fee. Prefer EIP-1559 with zero priority fee: Nitro ignores tips and charges
-  the inclusion base fee, so a legacy bid is also not a promise of the charged price. Allow unused gas/price headroom to
-  remain with the sender. Use receipt `gasUsed * effectiveGasPrice` for total cost; `gasUsedForL1` is an included gas
-  component, not an extra wei charge. See
+  reviewed price cap; do not add a second L1 fee. Legacy transactions are supported, but their charged price depends on
+  the active ArbOS version and tip-collection setting. Verify that behavior through atlas and the current
+  [fee processor](https://github.com/OffchainLabs/nitro/blob/master/arbos/tx_processor.go): newer versions make tip
+  collection configurable. When tips are disabled, prefer EIP-1559 with zero priority fee; legacy bids and equal caps
+  still charge the inclusion base fee. When tips are collected, apply the active effective-price rules. A fixed charged
+  price alone does not fix the variable posting-gas component or prove an exact-zero sweep. Reconcile unused gas/price
+  headroom against the reviewed residual policy. Use receipt `gasUsed * effectiveGasPrice` for total cost;
+  `gasUsedForL1` is an included gas component, not an extra wei charge. See
   [gas and fees](https://docs.arbitrum.io/how-arbitrum-works/deep-dives/gas-and-fees) and
   [estimation](https://docs.arbitrum.io/arbitrum-essentials/how-to-estimate-gas).
 - **OP Stack:** reserve execution gas plus the L1 data fee and any enabled operator fee. Through atlas, query the
@@ -127,14 +137,20 @@ transfer. A consuming sweep must state its residual-balance policy and any known
 
 ### Simulate
 
-Simulate the exact prepared call from the intended sender and value, then estimate gas. Delegate bounded `eth_call` and
-`eth_estimateGas` evidence to `evm-atlas`. Use a local fork, project simulation, or Cast trace only when the simulation
-requires a continuous provider, following Resolve Chain and Provider. A successful simulation is evidence, not
-authorization to sign.
+Simulate the exact prepared call, preserving sender, target, value, calldata, nonce, transaction type, gas limit, and
+fee fields, then estimate gas. Delegate bounded `eth_call` and `eth_estimateGas` evidence to `evm-atlas`. When an RPC
+error contradicts the supplied gas or checkpointed balance, have atlas diagnose the exact simulation path before
+attributing it to transaction invalidity or chain-wide type support. Changing fields to make a diagnostic call pass does
+not validate the prepared transaction. Preserve the consuming workflow's simulation and approval requirements. Use a
+local fork, project simulation, or Cast trace only when the simulation requires a continuous provider, following Resolve
+Chain and Provider. A successful simulation is evidence, not authorization to sign.
+
+When exact EIP-7702 simulation needs a signed authorization, use the reference's approved authorization-signing stage
+first; transaction signing and broadcast still follow simulation and transaction approval.
 
 ### Review
 
-Before any signature or broadcast, present one concrete review containing:
+Before a transaction signature or broadcast, present one concrete review containing:
 
 - chain name and ID, RPC source, and latest block used;
 - sender, target, function, decoded arguments, calldata, and native value;
@@ -149,15 +165,16 @@ Before any signature or broadcast, present one concrete review containing:
 Lead the review with `### ⚠️ Transaction approval required`. Put repeated fields in a compact table, keep the exact
 command in a fenced block, and state precisely what confirmation authorizes. Stop and require explicit user confirmation
 of this review in a subsequent message. If any reviewed field changes outside the browser-wallet exception below,
-simulate again and present a revised review.
+simulate again and present a revised review. Existing explicit approval of the concrete payload and its stated use
+remains valid; EIP-7702 authorization signatures follow the reference's conditional staged review.
 
 For browser signing only, the reviewed gas limit and fees are starting values unless the consuming workflow requires
 them to remain fixed. The user may deliberately change the gas limit, gas price, max fee per gas, or max priority fee
 per gas in the wallet confirmation UI. Their approval of that final wallet screen authorizes those edited gas settings;
 apply chain-specific accounting to the additional fees and resulting affordability. Do not stop, require a second
 approval, or resimulate solely because they differ from the prepared values. Continue only when the chain, sender,
-target, calldata, native value, nonce, and decoded intent still match the approved review. Wallet changes to any of
-those fields require rejection and a revised review.
+target, calldata, native value, nonce, authorization list (if present), and decoded intent still match the approved
+review. Wallet changes to any of those fields require rejection and a revised review.
 
 When fees determine the transfer value or another reviewed invariant, such as leaving exactly zero native balance, the
 browser exception does not apply. Preserve the reviewed transaction type, gas limit, and fee values. If the wallet
@@ -172,8 +189,12 @@ the user or consuming skill restricts the signer. A browser-only workflow must s
 never substitute another signer. Use an environment-backed private key only when the user explicitly opts in or no safer
 method is available; never ask for a key in chat or print it.
 
-`cast send` signs and broadcasts in one command. Run it only after the review approval. Signing a message or typed data
-also requires a review of the exact payload, domain, chain binding, and intended use before approval.
+`cast send` signs and broadcasts in one command. Run it only after the review approval. So do the Cast 1.8.3+ helpers
+`cast erc20-token transfer|approve|mint|burn`, `cast erc20-token permit --broadcast`,
+`cast erc4626 deposit|mint|withdraw|redeem`, and `cast safe propose|sign|execute`: apply the same Prepare, Simulate, and
+Review phases to them; a Safe proposal or confirmation is a signature artifact that needs its own payload review.
+Signing a message or typed data, including `cast erc20-token permit` without `--broadcast`, also requires a review of
+the exact payload, domain, chain binding, and intended use before approval.
 
 Pass the selected fees explicitly: EIP-1559 uses `--gas-price` and `--priority-gas-price`; a fixed legacy policy uses
 `--legacy --gas-price` without `--priority-gas-price`. Under the default Ethereum policy, use the approved Rabby Slow
@@ -197,10 +218,13 @@ human wait and the wallet may broadcast via its own RPC provider.
 
 ## Stop Conditions
 
-Stop before signing when the signer, sender, chain, target, decoded intent, fee accounting, affordability, or simulation
-result is unresolved. Review must distinguish enforced caps from an estimated reserve; browser approval of edited gas
-settings authorizes those settings but does not establish coverage of omitted chain-specific charges. Stop before
-retrying when broadcast outcome is ambiguous. Completion requires either a verified read result, a local encoding
-result, an approved signature artifact, or a mined receipt verified by `evm-atlas` that matches the reviewed transaction
-apart from user-approved browser-wallet gas settings. Never decorate or truncate addresses, calldata, signatures,
-hashes, RPC URLs, fee values, commands, or safety wording.
+Stop before signing when the signer, sender, chain, target, or decoded intent is unresolved. Transaction signing also
+requires resolved fee accounting, affordability, and simulation. Only the explicitly approved EIP-7702 authorization
+stage may precede those transaction checks; its authorization payload, signer, and intended use must already be
+resolved. Review must distinguish enforced caps from an estimated reserve; browser approval of edited gas settings
+authorizes those settings but does not establish coverage of omitted chain-specific charges. Stop before retrying when
+broadcast outcome is ambiguous. Completion requires either a verified read result, a local encoding result, an approved
+signature artifact, or a mined receipt verified by `evm-atlas` that matches the reviewed transaction apart from
+user-approved browser-wallet gas settings. Never decorate or truncate addresses, calldata, signatures, hashes, RPC URLs,
+fee values, commands, or safety wording. Revocation completion additionally requires the authorization and cleared-code
+checks in [references/eip7702.md](references/eip7702.md).

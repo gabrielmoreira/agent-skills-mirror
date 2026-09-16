@@ -57,12 +57,11 @@ Observed on 2026-07-08. Presence here does not override the canonical explorer/R
 | Lightlink       | `1890`     | ETH    | blockscout | https://phoenix.lightlink.io/                    |                                                   |
 | Linea           | `59144`    | ETH    | self       | https://explorer.linea.build/                    |                                                   |
 | Mode            | `34443`    | ETH    | blockscout | https://explorer.mode.network/                   |                                                   |
-| Morph           | `2818`     | ETH    | self       | https://explorer.morphl2.io/                     |                                                   |
+| Morph           | `2818`     | ETH    | self       | https://explorer.morph.network/                  | Separate API host; see explorerApiUrl             |
 | Optimism        | `10`       | ETH    | blockscout | https://explorer.optimism.io/                    |                                                   |
 | Polygon         | `137`      | POL    | blockscout | https://polygon.blockscout.com/                  |                                                   |
 | Robinhood Chain | `4663`     | ETH    | blockscout | https://robinhoodchain.blockscout.com/           |                                                   |
 | Scroll          | `534352`   | ETH    | blockscout | https://scroll.blockscout.com                    |                                                   |
-| Superseed       | `5330`     | ETH    | self       | https://explorer.superseed.xyz/                  |                                                   |
 | Taiko           | `167000`   | ETH    | self       | https://blockscout.mainnet.taiko.xyz/            | Chainscout name is Taiko Alethia                  |
 | Unichain        | `130`      | ETH    | blockscout | https://unichain.blockscout.com                  |                                                   |
 | World Chain     | `480`      | ETH    | alchemy    | https://worldchain-mainnet.explorer.alchemy.com/ | Alchemy-hosted instance; prefer Etherscan V2      |
@@ -73,25 +72,26 @@ Observed on 2026-07-08. Presence here does not override the canonical explorer/R
 Use Etherscan, a documented exceptional-history route, or the public RPC/explorer in
 `references/generated/target-mainnets.json` for these.
 
-| Chain     | `chain_id` | Notes                                                                                                                                                                                                 |
-| --------- | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Abstract  | `2741`     | Not returned by Chainscout                                                                                                                                                                            |
-| Avalanche | `43114`    | Not returned by Chainscout                                                                                                                                                                            |
-| Berachain | `80094`    | Not returned by Chainscout                                                                                                                                                                            |
-| Blast     | `81457`    | Not returned by Chainscout                                                                                                                                                                            |
-| BNB Chain | `56`       | Not returned by Chainscout                                                                                                                                                                            |
-| Chiliz    | `88888`    | Not returned by Chainscout                                                                                                                                                                            |
-| Core Dao  | `1116`     | Not returned by Chainscout                                                                                                                                                                            |
-| Fantom    | `250`      | Chainscout still lists self-hosted FTMScout at https://ftmscout.com/, but as checked 2026-07-31 its frontend returns HTTP 200 while /api/v2/* data routes return HTTP 500; do not use it for evidence |
-| Fraxtal   | `252`      | Not returned by Chainscout                                                                                                                                                                            |
-| IoTeX     | `4689`     | Not returned by Chainscout                                                                                                                                                                            |
-| Monad     | `143`      | Not returned by Chainscout                                                                                                                                                                            |
-| Ronin     | `2020`     | Chainscout returns a different network for `2020`; app.roninchain.com blocks scripted access, so verify with `$chromium-browser` instead of curl or WebFetch                                          |
-| Sei       | `1329`     | Not returned by Chainscout                                                                                                                                                                            |
-| Sonic     | `146`      | Not returned by Chainscout                                                                                                                                                                            |
-| Sophon    | `50104`    | Not returned by Chainscout                                                                                                                                                                            |
-| XDC       | `50`       | Not returned by Chainscout                                                                                                                                                                            |
-| Zora      | `7777777`  | Not returned by Chainscout                                                                                                                                                                            |
+| Chain     | `chain_id` | Notes                                                                                                                                                                                                      |
+| --------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Abstract  | `2741`     | Not returned by Chainscout                                                                                                                                                                                 |
+| Avalanche | `43114`    | Not returned by Chainscout                                                                                                                                                                                 |
+| Berachain | `80094`    | Not returned by Chainscout                                                                                                                                                                                 |
+| Blast     | `81457`    | Not returned by Chainscout                                                                                                                                                                                 |
+| BNB Chain | `56`       | Not returned by Chainscout                                                                                                                                                                                 |
+| Chiliz    | `88888`    | Not returned by Chainscout                                                                                                                                                                                 |
+| Core Dao  | `1116`     | Not returned by Chainscout                                                                                                                                                                                 |
+| Fantom    | `250`      | Chainscout still lists self-hosted FTMScout at https://ftmscout.com/, but as checked 2026-07-31 its frontend returns HTTP 200 while /api/v2/* data routes return HTTP 500; do not use it for evidence      |
+| Fraxtal   | `252`      | Not returned by Chainscout                                                                                                                                                                                 |
+| IoTeX     | `4689`     | Not returned by Chainscout                                                                                                                                                                                 |
+| Monad     | `143`      | Not returned by Chainscout                                                                                                                                                                                 |
+| Ronin     | `2020`     | Chainscout returns a different network for `2020`; app.roninchain.com blocks scripted access, so verify with `$chromium-browser` instead of curl or WebFetch                                               |
+| Sei       | `1329`     | Not returned by Chainscout                                                                                                                                                                                 |
+| Sonic     | `146`      | Not returned by Chainscout                                                                                                                                                                                 |
+| Sophon    | `50104`    | Not returned by Chainscout                                                                                                                                                                                 |
+| Superseed | `5330`     | Chromium verified 2026-09-15: explorer.superseed.xyz now serves Conduit Explorer, which does not support historical transactions, holdings, or transfers; do not use its stale Chainscout Blockscout route |
+| XDC       | `50`       | Not returned by Chainscout                                                                                                                                                                                 |
+| Zora      | `7777777`  | Not returned by Chainscout                                                                                                                                                                                 |
 
 ## Contributing
 

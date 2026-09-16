@@ -3,7 +3,7 @@ argument-hint: "[task]"
 compatibility:
   The Claude Code host requires Git, /bin/bash, Python 3, and an authenticated Codex CLI with dangerous bypass support;
   the Codex CLI host requires native subagents.
-disable-model-invocation: true
+disable-model-invocation: false
 metadata:
   install-targets: claude-code codex
 name: codex-handoff
@@ -107,8 +107,13 @@ adapter's read-only mechanism. Give each agent a self-contained prompt containin
 - the open questions and exact investigation scope;
 - relevant repository constraints and known concurrent-work boundaries;
 - a strict read-only authority boundary;
-- the stopping rule that it must return evidence rather than a plan or design; and
+- the stopping rule that it must return evidence rather than a plan or design;
+- its time budget, with the instruction to use it: an early `blocked` return citing only time is not a valid stop; and
 - exact result fields: `status`, `findings`, `open_questions`, `evidence`, and `blockers`.
+
+A research agent that returns `blocked` citing only its time budget while most of that budget is unused and no concrete
+obstacle is named has not settled its scope: continue the same agent once through the adapter's same-agent mechanism
+with the uncovered files and the remaining budget. This continuation is not a new research agent.
 
 When every required research agent settles, fold its findings and evidence into the implementation plan or the
 research-only response. Surface open questions or blockers through the host's user-question mechanism only when they
@@ -233,6 +238,12 @@ polish, and do not silently take over implementation.
   failure. Continue only work proven independent.
 
 ## Skill Evolution Review
+
+Keep verified repairs to skills used during the handoff separate from the optional review below. When user or repository
+instructions already authorize repairs, the parent owns their completion; subagents report evidence without expanding
+their write scopes. One verified occurrence is enough, and a blocked main task does not prevent independent repairs.
+Complete the handoff's required work or establish its blocker, then finish independent repairs before the final report
+under the applicable maintenance policy. Plan Mode still prohibits edits.
 
 After every required agent succeeds and the task is verified — never for a blocked, failed, or partial handoff — the
 parent alone judges skill-evolution opportunities; agents never make the recommendation. Recommend only a stable,

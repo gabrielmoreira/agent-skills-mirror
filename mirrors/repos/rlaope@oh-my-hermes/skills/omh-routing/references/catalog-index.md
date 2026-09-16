@@ -15,6 +15,7 @@ Trigger phrases and the role registry live in `references/workflow-registry.md`;
 - `omh-agent-ops-review`: [omh] Hermes agent ops review workflow: help managers inspect AI-agent progress, blockers, quality gates, and throughput levers.
 - `omh-ai-slop-cleaner`: [omh] Hermes AI slop cleaner workflow: delete AI-generated slop, dead code, and duplication while observable behavior stays identical.
 - `omh-apple-design`: [omh] Hermes Apple design workflow: prepare native Apple UI or Apple marketing product-visual direction, review, and improvement briefs with evidence-backed remediation handoffs.
+- `omh-application-threat-model`: [omh] Application threat model workflow: turn a system's components and data flows into assets, trust boundaries, attack scenarios, controls, and the security test that proves each control holds.
 - `omh-ask`: [omh] Hermes adaptation for consulting an external advisor when configured.
 - `omh-automation-blueprint`: [omh] Hermes Scheduled Ops Blueprint workflow: design recurring Hermes operations with schedule, delivery, silence policy, context chain, and prepared-vs-observed status.
 - `omh-autoresearch-goal`: [omh] Hermes adaptation for durable research-goal execution.
@@ -64,6 +65,7 @@ Trigger phrases and the role registry live in `references/workflow-registry.md`;
 - `omh-jit-learn`: [omh] Just-in-time learning workflow: select and confirm an immediate learning target, research credible sources, and prepare an application-first brief without popularity ranking.
 - `omh-legal-compliance-review`: [omh] Surface contract and compliance risks, questions, and escalation points before a legal decision or action.
 - `omh-lifecycle-growth`: [omh] Turn an observed onboarding, activation, retention, re-engagement, referral, or monetization problem into one consent-safe in-app journey or growth experiment plan with a bounded readout and an explicit decision.
+- `omh-live-incident-response`: [omh] Live incident response workflow: command an incident that is still open -- severity as declared live state, commander and roles, an append-only timeline, a recorded temporary mitigation, verified recovery, and the customer notice.
 - `omh-live-info`: [omh] Policy overlay for live lookups - add provider, freshness, units, and source-quality gates after preferring native live-data tools for ordinary weather, finance, sports, maps, and time-zone requests.
 - `omh-llm-app-dev`: [omh] Hermes LLM App Development workflow: prepare a build handoff for an LLM-powered feature with a pinned provider boundary, schema-first outputs, versioned prompt files, grounded retrieval, and an eval suite as a shipped deliverable.
 - `omh-localization-review`: [omh] Make a product or content release locale-ready with terminology, cultural-fit, and quality-review guidance.

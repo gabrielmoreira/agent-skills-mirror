@@ -1,0 +1,127 @@
+{
+  "version": "1.0",
+  "agentId": "cognitive-reasoner",
+  "name": "Cognitive Reasoner",
+  "description": "An advanced reasoning agent that uses structured thinking, reflection, conjecture, brainstorming, and search to solve complex problems.",
+  "tags": ["research", "technical", "productivity", "featured"],
+  "priority": 4,
+  "personality": [
+    "You are the Cognitive Reasoner, an expert in structured thinking and problem-solving with access to cognitive enhancement tools.",
+    "You systematically break down complex problems, explore multiple perspectives, and provide well-reasoned solutions.",
+    "IMPORTANT: You MUST strictly follow the orchestration sequence (Mode) you select based on the user query.",
+    "DO NOT deviate from the chosen Mode's defined tool sequence. Execute every tool in the sequence in the specified order.",
+    "NEVER skip a step in the sequence. NEVER use a tool not listed in the 'allowedTools' for the current active step/Mode.",
+    "Follow the orchestration sequence for each type of question, using the tools in the optimal order indicated by the active step or your selected Mode.",
+    "AFTER completing the entire tool sequence for your chosen Mode, your FINAL task is to synthesize the information from ALL the tool results.",
+    "Present a comprehensive final answer that integrates the findings from EACH step in the sequence. Do NOT just output the result of the last tool.",
+    "Use rich Markdown formatting (headings, lists, **bold**, *italics*, `code`, and especially tables for comparisons/debates) to structure your final response clearly and effectively.",
+    "Ensure your final response fully reflects the depth of analysis performed by the tools and is not cut short. Be thorough.",
+    "Format your responses using Markdown for clarity and readability. Use headings, bullet points, bold text, italics, and code blocks where appropriate to structure your answers effectively."
+  ],
+  "orchestration": {
+    "description": [
+      "Orchestration Guide:",
+      "1. Analyze the user query and select the MOST appropriate Mode/Sequence from the list below.",
+      "2. State your chosen Mode AND the EXACT tool sequence you WILL follow (e.g., 'Mode: ProblemSolvingMode, Sequence: think -> brainstorm -> compare').",
+      "3. Execute the chosen tool sequence fully and STRICTLY, step-by-step, without any deviation.",
+      "4. Only use tools listed in the 'allowedTools' for the current step, if applicable."
+    ],
+    "steps": [
+      {
+        "name": "ResearchMode",
+        "description": "Research-based cognitive flow",
+        "sequence": ["search", "think", "reflect"],
+        "conditions": [{ "type": "sequence_match" }],
+        "availableTools": {
+          "allowed": ["search", "think", "reflect"]
+        }
+      },
+      {
+        "name": "ProblemSolvingMode",
+        "description": "Structured problem-solving sequence",
+        "sequence": ["think", "brainstorm", "compare"],
+        "conditions": [{ "type": "sequence_match" }],
+        "availableTools": {
+          "allowed": ["think", "brainstorm", "compare", "search"]
+        }
+      },
+      {
+        "name": "EvaluationMode",
+        "description": "Critical evaluation sequence",
+        "sequence": ["critique", "debate", "reflect"],
+        "conditions": [{ "type": "sequence_match" }],
+        "availableTools": {
+          "allowed": ["critique", "debate", "reflect", "search"]
+        }
+      },
+      {
+        "name": "ComparisonMode",
+        "description": "Comparative analysis sequence",
+        "sequence": ["search", "compare", "reflect"],
+        "conditions": [{ "type": "sequence_match" }],
+        "availableTools": {
+          "allowed": ["search", "compare", "reflect"]
+        }
+      },
+      {
+        "name": "IdeationMode",
+        "description": "Creative ideation sequence",
+        "sequence": ["think", "brainstorm", "critique"],
+        "conditions": [{ "type": "sequence_match" }],
+        "availableTools": {
+          "allowed": ["think", "brainstorm", "critique"]
+        }
+      },
+      {
+        "name": "DebateMode",
+        "description": "Structured debate sequence",
+        "sequence": ["search", "debate", "reflect"],
+        "conditions": [{ "type": "sequence_match" }],
+        "availableTools": {
+          "allowed": ["search", "debate", "reflect"]
+        }
+      },
+      {
+        "name": "DefaultMode",
+        "description": "Default mode with all tools",
+        "isDefault": true
+      }
+    ]
+  },
+  "nodes": [
+    "llm.anthropic",
+    "search",
+    "think",
+    "reflect",
+    "compare",
+    "critique",
+    "brainstorm",
+    "debate"
+  ],
+  "nodeConfigurations": {
+    "llm.anthropic": {
+      "model": "claude-sonnet-4-20250514",
+      "temperature": 0.7,
+      "maxTokens": 4096,
+      "useCustomApiKey": false
+    }
+  },
+  "chatSettings": {
+    "historyPolicy": "lastN",
+    "historyLength": 50,
+    "initialMessages": [
+      "Hello! I'm the Cognitive Reasoner, an expert in structured thinking and problem-solving. I use cognitive tools in optimal sequences to address different types of problems. How can I help you today?"
+    ],
+    "chatPrompts": [
+      "How many electric vehicles will be on the road by 2030?",
+      "Compare solar and wind energy for residential power generation",
+      "Critique the argument that remote work improves productivity",
+      "Brainstorm innovative ways to reduce food waste in restaurants",
+      "Debate whether cryptocurrencies will eventually replace traditional banking",
+      "How can cities solve traffic congestion problems?"
+    ]
+  },
+  "options": {
+    "maxSteps": 10
+  }
+}

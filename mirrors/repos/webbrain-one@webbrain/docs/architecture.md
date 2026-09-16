@@ -814,6 +814,30 @@ Wraps `chrome.debugger` API for:
   `WebMCP.invokeTool` executes a page-registered structured capability. WebBrain
   exposes opaque `wmcp_*` IDs rather than page-controlled names as call handles.
 
+During active Chrome Act/Dev runs (including saved workflow replay), native
+JavaScript dialogs are continued through `Page.javascriptDialogOpening` and
+`Page.handleJavaScriptDialog`. Alerts are acknowledged; confirmations and text
+prompts are dismissed. A dialog event cannot prove which click triggered it,
+so a running task or an input command in flight never grants permission to
+accept a confirmation. Cached dialogs from idle time are also dismissed.
+
+A `beforeunload` warning chooses Leave only for a one-use navigation permission
+created immediately before a navigation or history navigation tool dispatches,
+after its existing permission and unsaved-change checks. The warning must come
+from the same top-level source URL. The permission expires on the first accepted
+warning, navigation completion/failure, cancellation, or after ten seconds.
+Other navigation warnings choose Stay. Dialog text is never treated as instructions.
+
+The handler runs independently of blocked page commands and is removed on
+Stop, completion, or detach, even when Dev diagnostics retain the debugger.
+Ask mode and idle tabs do not auto-answer dialogs. Already-observed dialogs are
+resolved before startup commands. Dialogs opened before debugger attachment
+may need manual dismissal. Startup responds to Stop and times out after five
+seconds instead of holding the run indefinitely.
+This does not handle browser permission requests, authentication windows, or
+OS file pickers. Firefox WebExtensions provide no equivalent native-dialog API;
+those dialogs still require manual handling in Firefox.
+
 WebMCP is an experimental Chrome-only fast path that is off by default. The
 user must enable **Experimental WebMCP** under Settings → General → Advanced;
 until then, neither WebMCP tool schemas nor WebMCP prompt guidance enter model

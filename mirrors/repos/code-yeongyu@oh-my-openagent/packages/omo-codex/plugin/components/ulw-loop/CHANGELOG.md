@@ -2,6 +2,8 @@
 
 ## [0.1.0] - unreleased
 
+- Status nextActions and missing-plan recovery now follow the calling surface: omo-senpi teaches the eval SDK methods and current attempt directory without asking for a driver snapshot; LazyCodex retains its existing CLI guidance byte-for-byte.
+
 - Async `.state.lock` holders now keep their file descriptor open and refresh a 30-second lease through it. An expired lease can be reclaimed even while its process remains alive; sync hooks and older lease-less records retain dead-pid-only ownership. Windows filesystems that refuse unlinking an open lock fail closed. Interrupted kernels can recover after lease expiry without deleting a live owner's lock.
 - Plan and audit mutations publish one immutable `revisions/<revision>.json` record using create-only hard links. Published revision paths are never deleted or reused.
 - `ULW_LOOP_PUBLISH_CONFLICT` retries the complete mutation once while its lock token remains owned.
@@ -9,6 +11,7 @@
 - Filesystems without atomic hard links fail closed with `ULW_LOOP_PUBLISH_UNSUPPORTED_FS` (no copy fallback).
 - Additive plan fields `revision`, `brief`, and `ledgerResetRevision`, plus ledger `revision` and `id`, remain optional on legacy reads. The first mutation hydrates a legacy brief, and objective migration is folded into that mutation rather than committed by a read. Force recreation advances the revision and filters older audit entries instead of truncating the ledger.
 - `goals.json`, `ledger.jsonl`, and `brief.md` are complete-file, temp-and-rename derived views. Shared readers reconcile committed records after a crash, including audit-only steering and idempotency, and locked reads repair lagging views. Logical audit order is revision/sequence, not completion order. Older CLIs see complete but possibly lagging or transiently regressed caches; after force recreation they may see pre-reset entries until views are replaced. Hook budget counters remain separate from plan/audit state. Reconciliation now materializes the logical ledger in memory, replacing the earlier streaming-only dedup implementation.
+- Reconciling a plan reads only the newest commit record (newest revision first, stopping at the first valid one) instead of parsing every record in `revisions/`, so a status probe stays independent of how many revisions a session has committed. The full scan remains where the audit trail needs every record.
 
 - SDK contexts now reject session IDs that normalize to null with `ULW_LOOP_SESSION_ID_INVALID`, before any session state directory is created.
 

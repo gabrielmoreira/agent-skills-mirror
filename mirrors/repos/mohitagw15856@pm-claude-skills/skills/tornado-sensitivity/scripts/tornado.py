@@ -19,6 +19,7 @@ The formula is evaluated with ONLY the driver names and +-*/(), min, max, abs �
 Python. Honest limits: one-at-a-time ignores interactions; if two drivers move together
 in your world, model the pair as one driver.
 """
+import ast
 import argparse, json, math, re, sys
 # ── xlsx writer (stdlib zip+XML — same approach as the excel-model skill) ─────
 import zipfile
@@ -89,12 +90,31 @@ def write_xlsx(out, data):
 
 SAFE = {"min": min, "max": max, "abs": abs, "sqrt": math.sqrt, "log": math.log, "exp": math.exp}
 
+_BIN = {ast.Add: lambda a, b: a + b, ast.Sub: lambda a, b: a - b, ast.Mult: lambda a, b: a * b,
+        ast.Div: lambda a, b: a / b, ast.Pow: lambda a, b: a ** b}
+_UN = {ast.USub: lambda a: -a, ast.UAdd: lambda a: a}
+
 def evaluate(formula, values):
+    """Evaluate a driver formula by walking its AST rather than handing the string to the interpreter. Only numbers, the driver
+    names, the six SAFE functions, + - * / ** and unary +/- are accepted; anything else exits."""
     if re.search(r"[^\w\s+\-*/().,]", formula): sys.exit("formula contains characters outside the safe set")
     names = set(re.findall(r"[A-Za-z_]\w*", formula))
     unknown = names - set(values) - set(SAFE)
     if unknown: sys.exit(f"formula uses unknown names: {sorted(unknown)}")
-    return eval(formula, {"__builtins__": {}}, {**SAFE, **values})   # restricted: drivers + 6 math fns only
+    try: tree = ast.parse(formula, mode="eval")
+    except SyntaxError as e: sys.exit(f"formula is not a valid expression: {e.msg}")
+    def walk(n):
+        if isinstance(n, ast.Expression): return walk(n.body)
+        if isinstance(n, ast.Constant) and isinstance(n.value, (int, float)) and not isinstance(n.value, bool): return n.value
+        if isinstance(n, ast.Name):
+            if n.id in values: return values[n.id]
+            sys.exit(f"formula uses unknown name: {n.id}")
+        if isinstance(n, ast.BinOp) and type(n.op) in _BIN: return _BIN[type(n.op)](walk(n.left), walk(n.right))
+        if isinstance(n, ast.UnaryOp) and type(n.op) in _UN: return _UN[type(n.op)](walk(n.operand))
+        if isinstance(n, ast.Call) and isinstance(n.func, ast.Name) and n.func.id in SAFE and not n.keywords:
+            return SAFE[n.func.id](*(walk(a) for a in n.args))
+        sys.exit(f"formula uses an unsupported construct: {type(n).__name__}")
+    return walk(tree)
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)

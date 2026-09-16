@@ -52,7 +52,7 @@ Bad example:
 
 ## Workflow Lane
 
-- Current lane: **Automation and status** (`achievements`, `workspace-audit`, `production-audit`, `automation-blueprint`, `github-event-ops`, `github-issue-intake`, `buzz`, `agent-board`, `+35 more`) - schedules, status, health, and ops review.
+- Current lane: **Automation and status** (`achievements`, `workspace-audit`, `production-audit`, `live-incident-response`, `automation-blueprint`, `github-event-ops`, `github-issue-intake`, `buzz`, `+36 more`) - schedules, status, health, and ops review.
 - If intent belongs to another lane, hand back to `oh-my-hermes` or name the adjacent workflow.
 - Shared product, routing, compatibility, and evidence rules: `omh-routing/references/skill-common-rail.md`.
 
@@ -96,7 +96,7 @@ Expected outputs:
 Artifact expectations:
 
 - workflow-learning/v1 metadata-only runtime or wrapper card when recorded
-- browser_skill_promotion_approval_receipt/v1 only through `omh web-qa promotion diff` then `approve --reviewed-diff-digest --reviewer` on an approved, replay-passing `omh web-qa trace`; every operation needs its own reviewed exact diff
+- browser_skill_promotion_approval_receipt/v1 per operation: `promotion diff` then `approve --reviewed-diff-digest --reviewer`; source `learning promotion --source-id sd-<id>` (reviewed draft) or `web-qa promotion --trace-id bwt-<id>`
 
 Safety rules:
 

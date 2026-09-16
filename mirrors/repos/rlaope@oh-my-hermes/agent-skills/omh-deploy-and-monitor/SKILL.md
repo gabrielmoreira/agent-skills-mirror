@@ -20,8 +20,7 @@ This is an OMH `deploy-and-monitor` workflow skill, projected for Agent Skills h
 
 ## Do Not Use When
 
-- The request is casual chat, a status-only acknowledgement, or another workflow has stronger routing evidence.
-- The user needs implementation, review, CI, merge, or external publishing evidence that has not been delegated or observed.
+- An incident has already been declared and the work is commanding it -- severity, commander, running timeline, recovery verification -- rather than watching a release; use `live-incident-response`.
 
 ## Examples
 

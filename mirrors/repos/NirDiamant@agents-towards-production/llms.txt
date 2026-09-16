@@ -1,0 +1,68 @@
+# Agents Towards Production
+
+> An open-source playbook of end-to-end, code-first tutorials for turning GenAI agents into real-world products. Organized as independent tutorial tracks, each covering one layer of the production stack: orchestration, memory, retrieval, security and guardrails, observability and tracing, evaluation, deployment, GPU serving, fine-tuning and user interfaces. Each track stands alone and can be followed without the others. Authored by Nir Diamant with contributed tutorials from tool vendors, credited individually. Licensed under a custom non-commercial license.
+
+## Core Documents
+
+- [README](https://github.com/NirDiamant/agents-towards-production/blob/main/README.md): Overview, the full tutorial index and how to choose a starting track.
+- [Tutorials index](https://github.com/NirDiamant/agents-towards-production/blob/main/tutorials/README.md): Index of every track.
+- [CONTRIBUTING](https://github.com/NirDiamant/agents-towards-production/blob/main/CONTRIBUTING.md): How to contribute a tutorial.
+- [AGENTS](https://github.com/NirDiamant/agents-towards-production/blob/main/AGENTS.md): Repository conventions for AI coding agents.
+- [LICENSE](https://github.com/NirDiamant/agents-towards-production/blob/main/LICENSE): Custom non-commercial license. Read before any commercial reuse.
+
+## Orchestration and Agent Frameworks
+
+- [LangGraph Agent](https://github.com/NirDiamant/agents-towards-production/tree/main/tutorials/LangGraph-agent): Building a stateful agent as a graph with LangGraph.
+- [Agent with MCP](https://github.com/NirDiamant/agents-towards-production/tree/main/tutorials/agent-with-mcp): Connecting an agent to tools over the Model Context Protocol.
+- [A2A](https://github.com/NirDiamant/agents-towards-production/tree/main/tutorials/a2a): Agent-to-agent communication.
+- [Kotlin Agent with Koog](https://github.com/NirDiamant/agents-towards-production/tree/main/tutorials/kotlin-agent-with-koog): Building an agent on the JVM in Kotlin.
+
+## Memory
+
+- [Agent Memory with Mem0](https://github.com/NirDiamant/agents-towards-production/tree/main/tutorials/agent-memory-with-mem0): A managed memory layer for personalized agents.
+- [Agent Memory with Redis](https://github.com/NirDiamant/agents-towards-production/tree/main/tutorials/agent-memory-with-redis): Memory backed by Redis.
+- [AI Memory with Cognee](https://github.com/NirDiamant/agents-towards-production/tree/main/tutorials/ai-memory-with-cognee): Knowledge-graph-backed agent memory.
+
+## Retrieval and Data Ingestion
+
+- [Agent RAG with Contextual](https://github.com/NirDiamant/agents-towards-production/tree/main/tutorials/agent-RAG-with-Contextual): Retrieval-augmented agents on Contextual AI.
+- [Durable RAG Ingestion with Inngest](https://github.com/NirDiamant/agents-towards-production/tree/main/tutorials/durable-rag-ingestion-inngest): Ingestion pipelines that survive failures and retries.
+- [Agent with Tavily Web Access](https://github.com/NirDiamant/agents-towards-production/tree/main/tutorials/agent-with-tavily-web-access): Giving an agent live web search.
+- [Agent with Bright Data](https://github.com/NirDiamant/agents-towards-production/tree/main/tutorials/agent-with-brightdata): Large-scale web data collection for agents.
+- [Agent File Conversion with Hushvert](https://github.com/NirDiamant/agents-towards-production/tree/main/tutorials/agent-file-conversion-with-hushvert): Converting user file formats inside an agent pipeline.
+
+## Security and Guardrails
+
+- [Agent Security with LlamaFirewall](https://github.com/NirDiamant/agents-towards-production/tree/main/tutorials/agent-security-with-llamafirewall): Guardrails against prompt injection and unsafe actions.
+- [Agent Security with Apex](https://github.com/NirDiamant/agents-towards-production/tree/main/tutorials/agent-security-apex): Runtime security controls for agents.
+- [Arcade Secure Tool Calling](https://github.com/NirDiamant/agents-towards-production/tree/main/tutorials/arcade-secure-tool-calling): Authenticated, permissioned tool calls on a user's behalf.
+
+## Observability and Evaluation
+
+- [Tracing with LangSmith](https://github.com/NirDiamant/agents-towards-production/tree/main/tutorials/tracing-with-langsmith): Tracing agent runs to debug and monitor them.
+- [Agent Evaluation with IntellAgent](https://github.com/NirDiamant/agents-towards-production/tree/main/tutorials/agent-evaluation-intellagent): Simulation-based evaluation of agent behavior.
+
+## Deployment and Serving
+
+- [Docker Intro](https://github.com/NirDiamant/agents-towards-production/tree/main/tutorials/docker-intro): Containerizing an agent. The prerequisite for most deployment tracks.
+- [FastAPI Agent](https://github.com/NirDiamant/agents-towards-production/tree/main/tutorials/fastapi-agent): Exposing an agent as an HTTP API.
+- [AWS AgentCore](https://github.com/NirDiamant/agents-towards-production/tree/main/tutorials/aws_agentcore): Deploying agents on AWS.
+- [RunPod GPU Deploy](https://github.com/NirDiamant/agents-towards-production/tree/main/tutorials/runpod-gpu-deploy): Serving models on rented GPUs.
+- [On-Prem LLM with Ollama](https://github.com/NirDiamant/agents-towards-production/tree/main/tutorials/on-prem-llm-ollama): Running models on your own hardware.
+
+## Model Customization
+
+- [Fine-Tuning Agents](https://github.com/NirDiamant/agents-towards-production/tree/main/tutorials/fine-tuning-agents): When to fine-tune an agent's model, and how.
+
+## User Interface
+
+- [Agent with Streamlit UI](https://github.com/NirDiamant/agents-towards-production/tree/main/tutorials/agent-with-streamlit-ui): Putting a usable interface on an agent.
+
+## Related work by the same author
+
+- [GenAI_Agents](https://github.com/NirDiamant/GenAI_Agents): 59 notebooks implementing GenAI agents.
+- [RAG_Techniques](https://github.com/NirDiamant/RAG_Techniques): 41 notebooks on Retrieval-Augmented Generation.
+- [Agent_Memory_Techniques](https://github.com/NirDiamant/Agent_Memory_Techniques): 30 notebooks on memory for LLM agents.
+- [Course, Prompt to Production](https://diamant-ai.com/courses): Building software with AI, taught systematically.
+- [Newsletter](https://newsletter.diamant-ai.com): Weekly deep dives on GenAI engineering.
+- [Community Discord](https://discord.gg/cA6Aa4uyDX): Questions, contributions and discussion.

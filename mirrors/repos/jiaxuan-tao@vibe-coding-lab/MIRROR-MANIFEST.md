@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `jiaxuan-tao/vibe-coding-lab` — 26 default patterns, 0 followed patterns, 6 file(s) materialized.
+Mirror of `jiaxuan-tao/vibe-coding-lab` — 26 default patterns, 0 followed patterns, 7 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `jiaxuan-tao/vibe-coding-lab` — 26 default patterns, 0 followed patt
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 6 |
+| Files         | 7 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -62,9 +62,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 2 | ✓ | [`ai-topic-collector-skill/SKILL.md`](ai-topic-collector-skill/SKILL.md) |
 | 3 | ✓ | [`computer-file-organizer-skill/SKILL.md`](computer-file-organizer-skill/SKILL.md) |
-| 4 | ✓ | [`prd-decision-review-skill/SKILL.md`](prd-decision-review-skill/SKILL.md) |
-| 5 | ✓ | [`user-feedback-insight-skill/SKILL.md`](user-feedback-insight-skill/SKILL.md) |
-| 6 | ✓ | [`web-app-acceptance-skill/SKILL.md`](web-app-acceptance-skill/SKILL.md) |
+| 4 | ✓ | [`pm-workflow-codex-skill/SKILL.md`](pm-workflow-codex-skill/SKILL.md) |
+| 5 | ✓ | [`prd-decision-review-skill/SKILL.md`](prd-decision-review-skill/SKILL.md) |
+| 6 | ✓ | [`user-feedback-insight-skill/SKILL.md`](user-feedback-insight-skill/SKILL.md) |
+| 7 | ✓ | [`web-app-acceptance-skill/SKILL.md`](web-app-acceptance-skill/SKILL.md) |
 
 ---
 

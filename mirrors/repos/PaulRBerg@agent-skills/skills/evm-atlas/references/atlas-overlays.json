@@ -273,7 +273,8 @@
       "blockscout": {
         "status": "observed",
         "hostedBy": "self",
-        "instanceUrl": "https://explorer.morphl2.io/"
+        "instanceUrl": "https://explorer.morph.network/",
+        "notes": "Separate API host; see explorerApiUrl"
       }
     },
     "optimism": {
@@ -373,9 +374,8 @@
       "routeMesh": true,
       "etherscan": { "support": "unsupported" },
       "blockscout": {
-        "status": "observed",
-        "hostedBy": "self",
-        "instanceUrl": "https://explorer.superseed.xyz/"
+        "status": "unsafe",
+        "notes": "Chromium verified 2026-09-15: explorer.superseed.xyz now serves Conduit Explorer, which does not support historical transactions, holdings, or transfers; do not use its stale Chainscout Blockscout route"
       }
     },
     "taiko": {

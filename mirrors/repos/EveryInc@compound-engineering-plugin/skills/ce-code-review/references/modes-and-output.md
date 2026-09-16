@@ -14,7 +14,7 @@ Parse the arguments you were invoked with for optional tokens. Strip each recogn
 | `apply:local` | `apply:local` | Explicitly authorize Stage 5c to apply verified findings to the reviewed local checkout. This is authority, not an output mode; bare review remains report-only. |
 | `base:<sha-or-ref>` | `base:abc1234` or `base:origin/main` | Diff base on the **current checkout** (explicit; skips auto base detection) |
 | `plan:<path>` | `plan:<root>/plans/2026-03-25-001-feat-foo-plan.md` | Plan file for requirements verification (explicit). Supports markdown and HTML unified plans. |
-| `depth:full` | `depth:full` | **Force the full spine** — skip the Review depth gate's lite path. Use when a deep/thorough review is explicitly requested (the one override the gate cannot infer). Does not change conditional selection, merge, or scope on the full path. |
+| `depth:full` | `depth:full` | **Force the full spine** — skip the Review depth gate's lite and focused paths. Use when a deep/thorough review is explicitly requested (the one override the gate cannot infer). Does not change conditional selection, merge, or scope on the full path. |
 | `depth:auto` | `depth:auto` | **Default** — this skill self-sizes via the Review depth gate after Stage 1. Callers do not classify. |
 | `grouping:auto` | `grouping:auto` | **Default** — build thematic triage groups when findings span distinct concerns (Stage 5 step 9b) |
 | `grouping:off` | `grouping:off` | Suppress triage groups: no Triage Groups section, empty `triage_groups` in JSON |
@@ -61,32 +61,21 @@ Sequence:
 
 ## Review depth
 
-Decide after Stage 1 (its 1b facts and 1c mapping), before reading any later reference. This skill owns the decision; a caller may pass `depth:full` but never a depth of its own.
+Decide after Stage 1 (its 1b facts and 1c mapping), before reading any later reference. This skill owns the decision; a caller may pass `depth:full` but never a depth of its own. Three paths exist: **lite** (this context alone), **focused** (this context plus one independent adversarial read), and **full** (the multi-agent spine from Stage 2).
 
-Floors that run the full spine from Stage 2, whatever the diff looks like: `depth:full`; the helper's `hard_block_full` (the helper reports facts. It never awards lite. `hard_block_full` is a floor, and it covers a size band other than `small`, a named hard-block class, and any file the helper could not count); a Stage 1c criteria search that failed or whose scope is uncertain; and apply authority (`apply:local` or an explicit apply request), which needs Stage 5c's verified-apply mechanics. `signals` are prompts to consider, not floors.
+Floors that run the full spine from Stage 2, whatever the diff looks like: `depth:full`; the helper's `hard_block_full` (the helper reports facts. It never awards lite. `hard_block_full` is a floor, and it covers a named hard-block class, any file the helper could not count, and a `size_band` of `large`, which means the executable non-test changed lines reached the full floor); a Stage 1c criteria search that failed or whose scope is uncertain; and apply authority (`apply:local` or an explicit apply request), which needs Stage 5c's verified-apply mechanics. Line counts below the floor, prose and test volume, `unclassified_lines`, and `signals` are prompts to consider, not floors.
 
-With no floor set, read the Stage 1 diff and decide whether a wrong version of this change would fail loudly where it is made, or silently somewhere else. It fails silently when it would break a silent-pass guard, an auth / money / data boundary, or a public contract, or would let a system degrade under load, failure, or contention with no error at the change site (retry, timeout, ordering, locking, background work). Silent, or unsure → continue from Stage 2. Loud and local → lite.
+With no floor set, read the Stage 1 diff and decide whether a wrong version of this change would fail loudly where it is made, or silently somewhere else. It fails silently when it would break a silent-pass guard, an auth / money / data boundary, or a public contract, or would let a system degrade under load, failure, or contention with no error at the change site (retry, timeout, ordering, locking, background work). Executable code the helper could not name, visible in `unclassified_lines` under its extension, is executable code for this question; a markdown or data file listed there is what it is. Loud and local → lite. Silent, or unsure → focused, unless the silent failure sits on an auth, money, or public-contract boundary, where the specialist lenses only the full spine carries are the point: then continue from Stage 2.
 
-You may only upgrade to the full spine. A floor cannot be talked down.
+A helper-named silent-pass class (`silent_pass_classes`, today the CI workflow paths) is a floor on the lens, not on depth: the change can never take lite, because the guard needs the adversarial read the focused path carries, and consequence still decides focused versus full as above. On the focused path that guard gets correctness and the one independent adversarial read and no standards, testing, or security persona; a workflow change that handles credentials, tokens, or permissions is an auth boundary and goes to full by the sentence above.
 
-### Lite path
+A floor cannot be talked down, and a path may only move toward full: lite never becomes the answer once the diff reads silent or the helper named a silent-pass class, and focused never replaces a floor.
 
-Lite is the same review with the same receipt, done in this context. Do not dispatch reviewers or finish leaves. Read no reference beyond the two named below. The skill's done condition applies unchanged: every retained finding is supported by the source, and the receipt states its coverage limits.
-
-Produce, in this context:
-
-- Correctness findings on the diff. Every lite finding carries the merged finding fields the output format lists, with severity, `autofix_class`, and `owner` set by `references/action-class-rubric.md` (read it before writing a finding). A lite finding quotes its motivating line as `first_evidence` and carries confidence `100` when the defect is mechanical or `75` when it names a concrete consequence; a concern you cannot quote goes to `residual_risks`, not `findings`.
-- Criteria findings from the Stage 1c mapping: read each governing criteria file, judge every changed file only against the criteria paired with it, and report a changed line that contradicts a written rule as a finding that quotes the rule and names its file.
-- Requirements verification: read the Plan Requirements Completeness and Stage 2b sections of `references/intent-and-plan.md`, discover a plan by that contract (the `plan:` argument, the PR body, or the branch), and when one is found fill `requirements_completeness`. An unaddressed requirement or unit is a finding routed by `plan_source` under that section's rule, so an explicit-plan omission reaches `actionable_findings`; it also makes the verdict Not ready unless the omission is intentional.
-- Test sufficiency: when the change alters runtime behavior without corresponding test work, record the gap in `testing_gaps`. Risks you can see but cannot settle go in `residual_risks`.
-
-Coverage states that the lite path ran and no reviewer agents were dispatched; names the criteria files checked, or that none govern the change, and the instruction-file fallback when it supplied criteria; states that declared Compound Packs were not applied; and names what lite did not assess (learnings, agent-native gaps, deployment notes).
-
-Write the receipt and `metadata.json` (## Run artifacts below) into the run directory Stage 1b created and emit the receipt as the response. In `mode:agent`, the receipt is the JSON object the output format below defines, written to `review.json`. In default mode, it is every retained finding (stable `#`, severity, `file:line`, route), then Actionable Findings, Coverage, and Verdict, written to `report.md`; a retained finding that is not actionable still appears in the findings list.
+When the gate selects lite or focused, read `references/depth-paths.md` at that point and run the selected path from this context; the full spine continues from Stage 2 and never opens that file. Either way, close the scope stage with the decision: the stage-log call from `references/scope.md` with `--end scope --start review` (lite, focused) or `--end scope --start select` (full), carrying `--fact` entries for `exec_nontest_lines`, `changed_lines`, `size_band`, `unclassified_lines`, and `depth`.
 
 ## Run artifacts
 
-Every run, lite or full, leaves its receipt (`review.json` in `mode:agent`, `report.md` in default mode) and `metadata.json` in the run directory. `metadata.json` minimum fields:
+Every run, lite, focused, or full, leaves its receipt (`review.json` in `mode:agent`, `report.md` in default mode), `stages.jsonl` (the stage log `references/scope.md` opens), and `metadata.json` in the run directory. `metadata.json` minimum fields:
 
 ```json
 {
@@ -98,11 +87,13 @@ Every run, lite or full, leaves its receipt (`review.json` in `mode:agent`, `rep
 }
 ```
 
-The full path's finish leaf adds the artifacts `references/finish-review.md` lists.
+After `metadata.json` is written, the receipt writer runs `run-log.py summarize --run-dir "$RUN_DIR"` (the same `SKILL_DIR` and interpreter recipe as the stage log) as its last action before returning or emitting the receipt; it is the only writer that touches `metadata.json` after the receipt write, and it merges a `cost` object into the existing fields: `status` (`complete` when every started stage ended and the receipt stage is present, else `partial`), `host`, `scope` (the helper facts and chosen depth from the scope stage), `stages` (name, elapsed seconds, reviewers, candidates, tokens when present), `totals` (elapsed, reviewers, candidates produced by the review, peer, and dispatch stages, artifact bytes, tokens when any stage carried them), `peer` (from `adversarial-<provider>-usage.json` when present), and `truncated_events`. A run killed mid-way leaves a parseable partial log, and a maintainer tuning `FULL_EXEC_LINE_MIN` or another threshold reads `cost.status` before trusting a run's numbers.
+
+The full path adds the artifacts listed under "Run artifacts" in `references/finish-input.md`.
 
 ## JSON output format (`mode:agent` only)
 
-One definition for both depth paths. Emit **one raw JSON object** as the primary response: a single bare JSON value, **no markdown code fence**. A leading ```` ```json ```` fence makes the response start with backticks and breaks naive `JSON.parse` consumers, so never wrap it. Also write `review.json` under the resolved `<run-dir>` with the same payload.
+One definition for every depth path. Emit **one raw JSON object** as the primary response: a single bare JSON value, **no markdown code fence**. A leading ```` ```json ```` fence makes the response start with backticks and breaks naive `JSON.parse` consumers, so never wrap it. Also write `review.json` under the resolved `<run-dir>` with the same payload.
 
 `mode:agent` does not apply fixes (the caller does), so there is no `applied_fixes` field; the handoff is `actionable_findings`. Applied work appears only in explicitly authorized local-apply markdown runs (Stage 5c/6).
 
@@ -132,13 +123,13 @@ Minimum shape:
   "deployment_notes": [],
   "residual_risks": [],
   "testing_gaps": [],
-  "coverage": {"depth": "lite | full"},
+  "coverage": {"depth": "lite | focused | full"},
   "artifact_path": "<resolved-run-dir>",
   "run_id": "<run-id>"
 }
 ```
 
-Lite fills `findings`, `actionable_findings`, `testing_gaps`, `residual_risks`, and `requirements_completeness` (`null` only when no plan was found) from its own review. The arrays owned by reviewers it did not run (`learnings`, `agent_native_gaps`, `deployment_notes`, `pre_existing_findings`, `triage_groups`) are `[]`, and Coverage names them as not assessed. `reviewers` is `["correctness"]` and `coverage.depth` is `"lite"`; the full path's finish leaf fills every field and sets `coverage.depth` to `"full"`.
+Lite fills `findings`, `actionable_findings`, `testing_gaps`, `residual_risks`, and `requirements_completeness` (`null` only when no plan was found) from its own review. The arrays owned by reviewers it did not run (`learnings`, `agent_native_gaps`, `deployment_notes`, `pre_existing_findings`, `triage_groups`) are `[]`, and Coverage names them as not assessed. `reviewers` is `["correctness"]` and `coverage.depth` is `"lite"`. Focused fills the same fields from its merged findings, lists its two reviewers, and sets `coverage.depth` to `"focused"`; the full path's finish leaf fills every field and sets `coverage.depth` to `"full"`.
 
 Each object in `findings` uses the merged finding fields: `#`, `title`, `severity`, `file`, `line`, `confidence`, `autofix_class`, `owner`, `requires_verification`, `pre_existing`, `suggested_fix`, `first_evidence`, `why_it_matters`, `evidence`, `reviewers`, `independent_reviewers`. A finding Stage 5b left unresolved, or confirmed with an unmeasured-incidence reason, also carries `validation_status` and `validation_reason`, and carries `protected_subject` when one applies. Each object in `learnings` is a Known Pattern note: `type` (`known_pattern`), `title`, `citation` (a `<root>/solutions/` path or `(pack: <id>, <path within the pack>)`), and `note` (one line on how it bears on the change); contradicted pack rules are findings, never `learnings` entries. When Compound Packs were resolved for the learnings dispatch, `coverage.compound_packs` carries `roots` as the list of pack ids (strings — never the resolver's absolute `dir` paths) plus the resolver's `warnings` and `errors` arrays verbatim, so a consumer can tell a declared pack that loaded from one that was skipped. The helper derives `independent_reviewers`; synthesis may preserve or union that list but must not infer it from `reviewers`.
 

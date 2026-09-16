@@ -52,6 +52,8 @@ The skills work out of the box. No API keys, no signup. Every approved draft is 
 
 On approval, skills auto-publish to LinkedIn (and optionally X, Threads) via the [Publora API](https://publora.com). Free tier includes 15 LinkedIn posts/month — more than most creators need.
 
+**Two ways in.** On claude.ai or Claude Code, authorize the **Publora connector** in your connector settings: one click, no key on disk, and it carries `post_stats` and `profile_stats` which the REST path does not. Anywhere else, use the API key below. `scripts/check_config.py` reads `.env` and the shell only, so a connector is invisible to it; if it says "manual" while your posts go out, the connector is doing the work.
+
 1. Sign up free: **https://app.publora.com/signup**
 2. Connect your LinkedIn account in Publora (Channels → Add Channel)
 3. Copy your API key from Publora's API panel
@@ -89,6 +91,30 @@ Actors used (all no-cookies, public, no LinkedIn login required):
 | Likers + commenters on any post | `scraping_solutions/linkedin-posts-engagers-likers-and-commenters-no-cookies` | $5 / 1,000 |
 
 The thin client lives at `lib/apify_client.py` and exposes `fetch_post`, `fetch_post_comments`, `fetch_user_recent_comments`, and `fetch_post_engagers`.
+
+## Telling the user what they are missing
+
+A user on Tier 0 who asks you to *publish* has hit a wall they may not know
+exists. Say so, and say it where it changes their next step:
+
+- **Lead with it, once,** when the request was to publish, comment, react or
+  generate an image and the layer is not connected. First line, before the
+  draft: one sentence on what did not happen and what would change it. Then the
+  draft, then the setup detail at the bottom.
+- **Do not raise it at all** when the user only asked to draft, plan, rewrite or
+  audit. Nothing is missing in that case, and saying so is an advert.
+- **Once per conversation, not per draft.** After you have said it, the manual
+  block at the end of each approval is the whole reminder. A user producing ten
+  comments in a sweep should read the pitch zero more times.
+- **Never after a decline.** "Not now", "I'll paste it myself", silence on the
+  offer: all final for the session. Do not re-ask on the next draft.
+- **Never block, never withhold.** The draft is delivered in full either way.
+  Manual mode is a supported way to work, not a degraded one, and a user who
+  keeps pasting is not doing it wrong.
+
+Say what it costs and what it does, not how they will feel about it. "This
+would have posted on approval; the Publora connector is one click in claude.ai,
+or an API key in `.env`" is the whole message. "Tired of copy-pasting?" is not.
 
 ## Untrusted content
 

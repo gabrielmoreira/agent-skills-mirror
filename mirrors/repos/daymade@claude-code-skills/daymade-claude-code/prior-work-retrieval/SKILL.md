@@ -123,6 +123,14 @@ coverage.
 
 ### 4. Verify candidates at authority
 
+For a request to recover a deployed artifact, first bind the named system and
+the requested state (historical edition, used at a specific time, or current
+deployment). A related design document is a candidate, not the recovered file.
+Follow the project's artifact/deployment owner before selecting a similarly
+named experiment. If runtime proof is accessible, obtain it before delivering;
+an “unverified” disclaimer does not complete the lookup. If the user explicitly
+wants a historical draft, return that edition without imposing a live check.
+
 Open promising candidates at their original path. Check:
 
 - **Match**: does it solve the same business problem, not merely share words?
@@ -134,6 +142,38 @@ Open promising candidates at their original path. Check:
   results over a process that merely looks complete.
 
 ### 5. Complete the reuse receipt
+
+When an archived request contains an actual file read, first use
+[`verify_artifact.py`](scripts/verify_artifact.py) to compare the **selected
+deliverable**, not a nearby reference, against its correlated tool result:
+
+```bash
+uv run --no-project python scripts/verify_artifact.py \
+  --candidate /tmp/agent-backup.zip --member skills/editor/SKILL.md \
+  --archive /tmp/request.json.gz --read-path /agent/skills/editor/SKILL.md
+```
+
+The checker accepts JSON/gzip bundles with `request_id`, a timezone-qualified
+`timestamp`, and `request.body.messages` in Anthropic tool-call format. Omit
+`--member` for a plain file. Exit 0 means the candidate's bytes appeared in a
+successful correlated `read` at the recorded time — byte-exact for raw-byte
+readers (`read`/`read_file`), or, for Claude Code's `Read`, a line-numbered
+result whose absolute row numbers provably span the whole file and reconstruct
+it (a partial `offset`/`limit` read can never pass; the JSON's `match_basis`
+says which proof held, and `rejected_read_reconstructions` counts numbered
+reads that failed the coverage preconditions). 1 means no matching proof; 2
+means invalid/ambiguous evidence. Path mentions, failed reads and related old
+files do not pass. Other evidence formats remain supported by the
+source-specific reader; do not convert an unsupported format into a negative
+claim.
+
+The archive must come from the verified system's source-specific reader or
+observability tool. This check cannot authenticate an archive, decide which
+system the user meant, or establish current deployment. It also does not prove
+that every dependency was recovered. Preserve these distinctions in the handoff.
+For artifact retrieval, record the selected artifact/member and its matching
+evidence in the adoption reason. A receipt about a locator document alone does
+not establish that the final artifact is correct.
 
 Classify the items you actually inspected:
 
@@ -147,7 +187,13 @@ uv run --no-project python scripts/prior_work.py complete \
 
 If none qualify, use `--no-reuse-reason` with the verified mismatch. “No hits”
 is not a reason; it is a retrieval observation and may require widening terms or
-resolving a failed carrier.
+resolving a failed carrier. And a zero-candidate required carrier cannot be
+reported as "none exists" by paraphrase either: attach the label census — run
+`analyze_sessions.py search --all-projects --exclude-session <CURRENT_ID> '<term>'`
+for each outcome term and report the per-label hit counts (`message` /
+`thinking` / `tool_input:<name>` / `tool_result` / `attachment` / `summary`).
+The census does not change the conclusion; it closes the "re-derive the query
+syntax" path by showing where the terms do live.
 
 The completed receipt preserves `business_outcome` and `outcome_terms`; `check`
 rejects legacy or hand-built receipts that omit either field. Receipt freshness
@@ -265,6 +311,15 @@ path remain possible so the agent can repair the gate without bypassing it.
 - This Skill is the workflow. Companion hooks may require a fresh receipt before
   `Write`/`Edit`; Stop may enforce that same existing obligation, but final-answer
   shape cannot create a new one. Hooks do not decide which candidate is good.
+
+## Surface contract
+
+First use in a session: run `python3 scripts/surface_version.py` once and note
+the 12-char fingerprint — the sha256 of this skill's `scripts/**/*.py` code
+surface. If it differs from the fingerprint you last saw for this skill, the
+code changed under you: re-read this SKILL.md and the references from disk
+before acting on in-context echoes of them. The fingerprint covers code only;
+documentation edits do not change it.
 
 ## Maintainer verification
 

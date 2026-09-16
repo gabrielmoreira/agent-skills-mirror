@@ -7,7 +7,7 @@ ref: develop
 
 # Mirror Manifest
 
-Mirror of `tradecatlabs/vibe-coding-cn` — 26 default patterns, 61 followed patterns, 543 file(s) materialized.
+Mirror of `tradecatlabs/vibe-coding-cn` — 26 default patterns, 62 followed patterns, 544 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `tradecatlabs/vibe-coding-cn` — 26 default patterns, 61 followed pat
 | Ref Type      | `branch` |
 | Ref           | `develop` |
 | Default pats  | 26 |
-| Followed pats | 61 |
-| Files         | 543 |
+| Followed pats | 62 |
+| Files         | 544 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -66,6 +66,7 @@ Mirror of `tradecatlabs/vibe-coding-cn` — 26 default patterns, 61 followed pat
 - `tools/README.md`
 - `assets/README.md`
 - `docs/getting-started/vibe-coding-experience.md`
+- `docs/getting-started/first-project.md`
 - `docs/concepts/problem-solving.md`
 - `docs/concepts/vibe-coding-state-transition.md`
 - `docs/references/quality-gates-and-pitfalls.md`
@@ -616,52 +617,53 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 495 | → | [`docs/concepts/system-building.md`](docs/concepts/system-building.md) |
 | 496 | → | [`docs/concepts/vibe-coding-state-transition.md`](docs/concepts/vibe-coding-state-transition.md) |
 | 497 | → | [`docs/getting-started/cli-setup.md`](docs/getting-started/cli-setup.md) |
-| 498 | → | [`docs/getting-started/learning-map.md`](docs/getting-started/learning-map.md) |
-| 499 | → | [`docs/getting-started/README.md`](docs/getting-started/README.md) |
-| 500 | → | [`docs/getting-started/vibe-coding-experience.md`](docs/getting-started/vibe-coding-experience.md) |
-| 501 | → | [`docs/philosophy/compositional-description-model.md`](docs/philosophy/compositional-description-model.md) |
-| 502 | → | [`docs/philosophy/methodology-toolbox.md`](docs/philosophy/methodology-toolbox.md) |
-| 503 | → | [`docs/philosophy/programming-dao.md`](docs/philosophy/programming-dao.md) |
-| 504 | → | [`docs/philosophy/README.md`](docs/philosophy/README.md) |
-| 505 | → | [`docs/philosophy/software-engineering-truths.md`](docs/philosophy/software-engineering-truths.md) |
-| 506 | → | [`docs/philosophy/thinking-models.md`](docs/philosophy/thinking-models.md) |
-| 507 | → | [`docs/README.md`](docs/README.md) |
-| 508 | → | [`docs/references/modern-enterprise-architecture-template.md`](docs/references/modern-enterprise-architecture-template.md) |
-| 509 | → | [`docs/references/quality-gates-and-pitfalls.md`](docs/references/quality-gates-and-pitfalls.md) |
-| 510 | → | [`docs/references/README.md`](docs/references/README.md) |
-| 511 | → | [`docs/workflow/development-process.md`](docs/workflow/development-process.md) |
-| 512 | → | [`docs/workflow/README.md`](docs/workflow/README.md) |
-| 513 | → | [`README.md`](README.md) |
-| 514 | → | [`research/aaif-goose-goose/README.md`](research/aaif-goose-goose/README.md) |
-| 515 | → | [`research/addyosmani-agent-skills/README.md`](research/addyosmani-agent-skills/README.md) |
-| 516 | → | [`research/affaan-m-ecc/README.md`](research/affaan-m-ecc/README.md) |
-| 517 | → | [`research/aider-ai-aider/README.md`](research/aider-ai-aider/README.md) |
-| 518 | → | [`research/anomalyco-opencode/README.md`](research/anomalyco-opencode/README.md) |
-| 519 | → | [`research/cline-cline/README.md`](research/cline-cline/README.md) |
-| 520 | → | [`research/continuedev-continue/README.md`](research/continuedev-continue/README.md) |
-| 521 | → | [`research/facts/README.md`](research/facts/README.md) |
-| 522 | → | [`research/fission-ai-openspec/README.md`](research/fission-ai-openspec/README.md) |
-| 523 | → | [`research/github-spec-kit/README.md`](research/github-spec-kit/README.md) |
-| 524 | → | [`research/google-gemini-gemini-cli/README.md`](research/google-gemini-gemini-cli/README.md) |
-| 525 | → | [`research/harness/harness-engineering.md`](research/harness/harness-engineering.md) |
-| 526 | → | [`research/obra-superpowers/README.md`](research/obra-superpowers/README.md) |
-| 527 | → | [`research/openai-agents-js/README.md`](research/openai-agents-js/README.md) |
-| 528 | → | [`research/openai-agents-python/README.md`](research/openai-agents-python/README.md) |
-| 529 | → | [`research/openai-codex/README.md`](research/openai-codex/README.md) |
-| 530 | → | [`research/openai-cookbook/README.md`](research/openai-cookbook/README.md) |
-| 531 | → | [`research/openai-plugins/README.md`](research/openai-plugins/README.md) |
-| 532 | → | [`research/openai-skills/README.md`](research/openai-skills/README.md) |
-| 533 | → | [`research/openhands-openhands/README.md`](research/openhands-openhands/README.md) |
-| 534 | → | [`research/README.md`](research/README.md) |
-| 535 | → | [`research/research-domain-contract.md`](research/research-domain-contract.md) |
-| 536 | → | [`research/research-transfer-synthesis.md`](research/research-transfer-synthesis.md) |
-| 537 | → | [`research/research-value-application-map.md`](research/research-value-application-map.md) |
-| 538 | → | [`research/shanraisshan-claude-code-best-practice/README.md`](research/shanraisshan-claude-code-best-practice/README.md) |
-| 539 | → | [`research/swe-agent-mini-swe-agent/README.md`](research/swe-agent-mini-swe-agent/README.md) |
-| 540 | → | [`research/tmux-ai-swarm.md`](research/tmux-ai-swarm.md) |
-| 541 | → | [`scripts/README.md`](scripts/README.md) |
-| 542 | → | [`tools/config/.codex/README.md`](tools/config/.codex/README.md) |
-| 543 | → | [`tools/README.md`](tools/README.md) |
+| 498 | → | [`docs/getting-started/first-project.md`](docs/getting-started/first-project.md) |
+| 499 | → | [`docs/getting-started/learning-map.md`](docs/getting-started/learning-map.md) |
+| 500 | → | [`docs/getting-started/README.md`](docs/getting-started/README.md) |
+| 501 | → | [`docs/getting-started/vibe-coding-experience.md`](docs/getting-started/vibe-coding-experience.md) |
+| 502 | → | [`docs/philosophy/compositional-description-model.md`](docs/philosophy/compositional-description-model.md) |
+| 503 | → | [`docs/philosophy/methodology-toolbox.md`](docs/philosophy/methodology-toolbox.md) |
+| 504 | → | [`docs/philosophy/programming-dao.md`](docs/philosophy/programming-dao.md) |
+| 505 | → | [`docs/philosophy/README.md`](docs/philosophy/README.md) |
+| 506 | → | [`docs/philosophy/software-engineering-truths.md`](docs/philosophy/software-engineering-truths.md) |
+| 507 | → | [`docs/philosophy/thinking-models.md`](docs/philosophy/thinking-models.md) |
+| 508 | → | [`docs/README.md`](docs/README.md) |
+| 509 | → | [`docs/references/modern-enterprise-architecture-template.md`](docs/references/modern-enterprise-architecture-template.md) |
+| 510 | → | [`docs/references/quality-gates-and-pitfalls.md`](docs/references/quality-gates-and-pitfalls.md) |
+| 511 | → | [`docs/references/README.md`](docs/references/README.md) |
+| 512 | → | [`docs/workflow/development-process.md`](docs/workflow/development-process.md) |
+| 513 | → | [`docs/workflow/README.md`](docs/workflow/README.md) |
+| 514 | → | [`README.md`](README.md) |
+| 515 | → | [`research/aaif-goose-goose/README.md`](research/aaif-goose-goose/README.md) |
+| 516 | → | [`research/addyosmani-agent-skills/README.md`](research/addyosmani-agent-skills/README.md) |
+| 517 | → | [`research/affaan-m-ecc/README.md`](research/affaan-m-ecc/README.md) |
+| 518 | → | [`research/aider-ai-aider/README.md`](research/aider-ai-aider/README.md) |
+| 519 | → | [`research/anomalyco-opencode/README.md`](research/anomalyco-opencode/README.md) |
+| 520 | → | [`research/cline-cline/README.md`](research/cline-cline/README.md) |
+| 521 | → | [`research/continuedev-continue/README.md`](research/continuedev-continue/README.md) |
+| 522 | → | [`research/facts/README.md`](research/facts/README.md) |
+| 523 | → | [`research/fission-ai-openspec/README.md`](research/fission-ai-openspec/README.md) |
+| 524 | → | [`research/github-spec-kit/README.md`](research/github-spec-kit/README.md) |
+| 525 | → | [`research/google-gemini-gemini-cli/README.md`](research/google-gemini-gemini-cli/README.md) |
+| 526 | → | [`research/harness/harness-engineering.md`](research/harness/harness-engineering.md) |
+| 527 | → | [`research/obra-superpowers/README.md`](research/obra-superpowers/README.md) |
+| 528 | → | [`research/openai-agents-js/README.md`](research/openai-agents-js/README.md) |
+| 529 | → | [`research/openai-agents-python/README.md`](research/openai-agents-python/README.md) |
+| 530 | → | [`research/openai-codex/README.md`](research/openai-codex/README.md) |
+| 531 | → | [`research/openai-cookbook/README.md`](research/openai-cookbook/README.md) |
+| 532 | → | [`research/openai-plugins/README.md`](research/openai-plugins/README.md) |
+| 533 | → | [`research/openai-skills/README.md`](research/openai-skills/README.md) |
+| 534 | → | [`research/openhands-openhands/README.md`](research/openhands-openhands/README.md) |
+| 535 | → | [`research/README.md`](research/README.md) |
+| 536 | → | [`research/research-domain-contract.md`](research/research-domain-contract.md) |
+| 537 | → | [`research/research-transfer-synthesis.md`](research/research-transfer-synthesis.md) |
+| 538 | → | [`research/research-value-application-map.md`](research/research-value-application-map.md) |
+| 539 | → | [`research/shanraisshan-claude-code-best-practice/README.md`](research/shanraisshan-claude-code-best-practice/README.md) |
+| 540 | → | [`research/swe-agent-mini-swe-agent/README.md`](research/swe-agent-mini-swe-agent/README.md) |
+| 541 | → | [`research/tmux-ai-swarm.md`](research/tmux-ai-swarm.md) |
+| 542 | → | [`scripts/README.md`](scripts/README.md) |
+| 543 | → | [`tools/config/.codex/README.md`](tools/config/.codex/README.md) |
+| 544 | → | [`tools/README.md`](tools/README.md) |
 
 ---
 

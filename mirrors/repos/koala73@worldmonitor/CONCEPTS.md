@@ -474,6 +474,13 @@ The address a buyer types into the payment provider's checkout form. It is unaut
 
 The composed state in which a paying subscriber receives the daily AI brief off-app without visiting the dashboard: an enabled Alert Rule with the AI digest on a digest cadence, plus at least one verified delivery channel to carry it. The loop is the unit of activation this project measures — "brief loop live" means all parts are wired and delivery will occur on the next digest cycle, not that any single toggle was flipped. Production data (2026-07) showed feature-touching alone does not predict retention; the brief loop is the recurring-delivery wager that replaces toggle-counting as the leading activation metric. See also: Alert Rule, Activation Interstitial.
 
+### Brief URL
+
+The per-recipient link to one issue of the hosted brief magazine, whose signed query token is the whole credential: whoever holds the URL can read that issue, and no session or cookie stands behind it.
+*Avoid:* capability URL, magazine link
+
+The token binds the recipient and the issue slot, so each dispatch gets its own frozen URL, and it travels only over channels that already authenticated the recipient (push, email, the dashboard). Because the URL is the credential, every place the URL is copied is a credential store: an analytics tracker on the page must drop the query, and the response sends no referrer. The signing secret rolls with an overlap secret so in-flight links stay valid; rolling without the overlap invalidates every outstanding link at once, which is the containment move for a suspected leak. See also: Brief Loop.
+
 ### Activation Interstitial
 
 The day-0 post-checkout flow shown to a new Pro subscriber once the payment-to-entitlement settling window resolves: a short sequence of one-click, individually-skippable confirms that wire premium features — the Brief Loop first — rather than teach them. Defined against two constraints from production data: activation that does not happen on day 0 essentially never happens, and nothing may activate without an explicit per-item confirm. Distinct from a tour (education, no state change) and from a persistent checklist (dashboard residue; the interstitial leaves at most a dismissible finish-setup affordance). See also: Brief Loop, Activation Step State, Billing UX State.
@@ -940,3 +947,4 @@ A viewer preference that starts live news and webcams as soon as their panels ar
 - *"Crashed"* had been used for both a build that failed and a run that exited non-zero — these are distinct. A failed build never started a container and leaves the previous Active Deployment serving; a crash is a started run that exited non-zero. Only the second is a seeder outcome; the first is a platform outcome that decides whether the seeder will ever run again.
 - *"Release"* names two unrelated things. A desktop Release Line is a publication sequence addressable by update clients. An error-tracking release is an event grouping label, and the browser and server surfaces choose it differently, which is what decides whether a Resolve Pin is satisfiable. Never reason about one from the other.
 - *"Gate"* had been used for both the local pre-push Tiered Gate and the CI Deploy Gate — these are distinct. The Tiered Gate is a cacheable pre-flight that can be scoped or escalated on one machine; only the Deploy Gate decides mergeability, and only names on its required list count toward it.
+- *"Capability"* names two things. A Capability-Gated Deep Link is gated on an entitlement predicate the destination also renders on; a Brief URL is a bearer link where the token itself is the capability. Say "entitlement" for the first sense in prose and "Brief URL" for the second; avoid "capability URL".

@@ -1,23 +1,33 @@
 # Writing Great Skills
 
-Predictability levers for skill authoring. Adapted from Matt Pocock's
+Compact authoring guidance adapted from Matt Pocock's
 [writing-great-skills](https://github.com/mattpocock/skills/tree/main/skills/productivity/writing-great-skills)
 (SKILL.md + GLOSSARY.md).
 
-A skill exists to make a stochastic system reliably satisfy an observable contract. **Predictability** means reaching
-the intended outcome while respecting the same invariants, authority boundaries, and completion evidence; it does not
-require an identical execution path. A brainstorming skill should vary its ideas while consistently honoring its scope
-and stopping criteria.
+A skill makes a stochastic system reliably satisfy an observable contract. Predictability means reaching the intended
+outcome while preserving the contract, not following an identical path.
 
-## Observable contract
+## Contents
+
+- [Observable contract](#define-the-observable-contract)
+- [Self-containment](#keep-independently-installed-skills-self-contained)
+- [Context and invocation](#spend-context-deliberately)
+- [Frontmatter dialect](#frontmatter-dialect)
+- [Representation and routing](#choose-the-smallest-useful-representation)
+- [Execution](#write-for-reliable-execution)
+- [Background reporting](#design-background-reporting)
+- [Presentation](#keep-presentation-substantive)
+
+## Define the Observable Contract
 
 Write the smallest interface that makes success checkable:
 
 - **Outcome**: the state or artifact the user should receive.
 - **Invariants**: rules that must hold on every valid path.
-- **Preferred defaults**: opinionated choices to use when repository or user evidence does not override them.
+- **Preferred defaults**: opinionated choices that explicit user intent or repository evidence may override.
 - **Authority**: which reads, local writes, external writes, and destructive actions are allowed or gated.
 - **Routing**: prerequisites, tools, scripts, and conditional references needed for each branch.
+- **Stop conditions**: states that require a different workflow, missing authority, or user-owned input.
 - **User communication**: the kickoff, progress, decision, blocker, and completion events worth surfacing, with the
   smallest useful output shape for each.
 - **Completion evidence**: the command, inspection, or artifact that proves the outcome.
@@ -25,222 +35,119 @@ Write the smallest interface that makes success checkable:
 Let the agent choose the path inside that contract. Prescribe a sequence only when ordering is safety-critical, a
 prerequisite determines the next action, or a deterministic helper is the simpler interface.
 
-## Self-containment
+Make completion criteria both checkable and demanding enough to force the required legwork. Prefer criteria such as
+"every modified model accounted for and the scoped check passes" over subjective states such as "understanding reached."
 
-Global skills must be self-contained. Do not mention or depend on another repository. Put reusable guidance directly in
-the owning skill, and discover target-project conventions when execution requires them. Reference an external repository
-only when it is genuinely required to perform the skill's task.
+## Keep Independently Installed Skills Self-Contained
 
-## User-facing presentation
+Put reusable guidance in the owning skill and discover target-project conventions at runtime. Do not share references
+across skills or depend on another repository unless that repository is required to perform the task.
 
-Design presentation as part of the observable contract when a skill reports meaningful state:
-
-- Lead with the outcome and use a small semantic status vocabulary consistently: `🔎` preview/read-only, `⏳` running,
-  `✅` verified success, `⚠️` caveat/approval/risk, `⛔` blocked/not written, `❓` unknown, and `↩` reverted/rolled
-  back. Pair every status symbol with text.
-- Use at most one non-status domain icon per heading for identity. Use tables only for repeated fields, trees only for
-  real structure, and progress bars only from a measured numerator and denominator.
-- Keep exact commands, machine-readable output, identifiers, confirmation tokens, diagnostics, safety wording, and
-  copied downstream content undecorated.
-- Keep decoration in the agent's wrapper unless the requested artifact itself calls for it. Do not inject emoji into
-  code, product copy, user-authored prose, external contributions, or structured data by default.
-
-### Long-winded background work
-
-When a skill launches background jobs or agents, decide during authoring whether the wait could feel materially long or
-opaque. Use the work's expected runtime and uncertainty, fan-out or waves, meaningful milestones, and existing
-host-visible state rather than a universal time cutoff. For every branch judged long-winded, bake a polished,
-scan-friendly progress surface into the skill:
-
-- Make the main agent own monitoring and user reporting until every required background unit settles. Announce the
-  kickoff with the units or scope in flight and the evidence that will prove completion.
-- Reuse a native progress surface only when it gives the user meaningful live state; a generic task or transport banner
-  is not enough. Otherwise report meaningful state changes and coherent milestones, with sparse reassurance during quiet
-  periods proportionate to the expected wait.
-- Ground each update in observed facts such as the current phase, elapsed time or budget when useful, settled and total
-  units, last verified activity, and blockers. Say `no recent activity` when that is all the monitor proves. Never turn
-  elapsed time, event counts, or activity into inferred completion.
-- Use the semantic status vocabulary above, tables for repeated background-unit fields, and a progress bar or percentage
-  only when an exact numerator and denominator exist. When the total is unknown, report phase, elapsed time, and
-  evidence without a bar.
-- Finish with a compact terminal report that distinguishes completed, blocked, failed, and timed-out units and links
-  those states to the skill's completion evidence and next action.
-
-Tailor the domain nouns and fields, but use a compact rendered shape such as:
-
-```markdown
-### ⏳ Render wave [████░░░░░░] 40% (2/5 settled) — running
-
-| Unit | State        | Elapsed | Last evidence       |
-| ---- | ------------ | ------- | ------------------- |
-| A1   | ✅ completed | 6m      | output verified     |
-| A2   | ⏳ running   | 8m      | rendering scene 4/7 |
-| A3   | ⚠️ blocked   | 3m      | missing input       |
-```
-
-When no measured denominator exists, replace the bar and percentage with a factual heading such as
-`### ⏳ Rendering scenes — 8m elapsed`.
-
-## Invocation: two loads
+## Spend Context Deliberately
 
 Every skill pays one of two costs:
 
 - **Context load** — a model-invoked skill's `description` sits in the agent's context window every turn, spending
   tokens and attention.
-- **Cognitive load** — a user-invoked skill is invisible to the agent; the human is the index and must remember it
-  exists and when to reach for it. Not a cost to minimize: it is the price of human agency. Spend it where human
-  judgment matters.
+- **Cognitive load** — a user-invoked skill is invisible to the agent; the human must remember when to invoke it. Spend
+  this where human judgment matters.
 
 Choose:
 
-- **Model-invoked** (omit `disable-model-invocation`): the agent can fire the skill autonomously, and other skills can
-  reach it. Write a model-facing description with rich trigger phrasing. Pick this only when the agent must reach the
-  skill on its own, or another skill must.
+- **Model-invoked** (omit `disable-model-invocation`): the agent and other skills can reach it. Write a model-facing
+  description with one trigger phrase per distinct branch.
 - **User-invoked** (`disable-model-invocation: true`): only the human, typing its name, can invoke it — no other skill
-  can. Zero context load. The `description` becomes human-facing: a one-line summary, trigger lists stripped.
+  can. Its description becomes a human-facing one-line summary.
 
-When user-invoked skills multiply past what the human can remember, add a **router skill**: one user-invoked skill
-naming the others and when to reach for each. It can only hint, never fire them.
+Inline what every branch needs. Route conditional detail directly from `SKILL.md`; the wording of the link must say when
+to read it. Co-locate a concept's definition, rules, and caveats. Keep each meaning in one authoritative place.
 
-## Frontmatter dialect
+Judge context economy relative to the current target models: remove a sentence when it does not change their behavior,
+and resolve disagreements with representative runs rather than intuition. Prune descriptions hardest because they may
+load on every turn.
 
-Use `ai-skillet doctor --root '<skill-directory>'` as the canonical deterministic local validator. It accepts one
-extended top-level field union:
+Prefer domain-first capability names such as `large-file-refactor`; keep memorable verb-based exceptions when clearer.
+Use familiar domain terms from the user's prompts, docs, and code. Give a model-facing description one trigger per
+distinct branch, without repeating identity already in the body.
 
-- Portable Agent Skills fields: `name`, `description`, `license`, `compatibility`, `metadata`, and `allowed-tools`.
-- Claude Code fields: `when_to_use`, `argument-hint`, `arguments`, `disable-model-invocation`, `user-invocable`,
-  `disallowed-tools`, `model`, `effort`, `context`, `agent`, `background`, `hooks`, `paths`, and `shell`.
-- Repository fields: `coordination` and `skill-dependencies`.
+## Frontmatter Dialect
 
-Unknown fields are errors. `metadata` is a string-to-string mapping; tool, argument, and path fields are strings or
-lists of strings; and `hooks` is a mapping. `effort` accepts `low`, `medium`, `high`, `xhigh`, or `max`; `context`
-accepts only `fork`; and `shell` accepts `bash` or `powershell`. `agent` and `background` require `context: fork`.
+`ai-skillet doctor` accepts an extended top-level field union:
 
-Omit default-valued Claude invocation fields: absent `disable-model-invocation` means `false`, and absent
-`user-invocable` means `true`. Use portable-only validators such as `skills-ref` or `agentskills` only as optional
-distribution-boundary checks when a target explicitly requires the strict portable format; they are not authoritative
-for this repository's normal authoring workflow.
+- Portable: `name`, `description`, `license`, `compatibility`, `metadata`, `allowed-tools`.
+- Claude Code: `when_to_use`, `argument-hint`, `arguments`, `disable-model-invocation`, `user-invocable`,
+  `disallowed-tools`, `model`, `effort`, `context`, `agent`, `background`, `hooks`, `paths`, `shell`.
+- Repository: `coordination`, `skill-dependencies`.
 
-## Naming skills
+Unknown fields are errors. `metadata` maps strings to strings; tool, argument, and path fields accept strings or string
+lists; `hooks` is a mapping. `effort` accepts `low`, `medium`, `high`, `xhigh`, or `max`; `context` accepts only `fork`;
+`shell` accepts `bash` or `powershell`. `agent` and `background` require `context: fork`. The entrypoint defines
+invocation defaults and dependency policy.
 
-Prefer domain-first, noun-based skill names (`<domain>-<capability noun>`) over imperative verb-object names—for
-example, `large-file-refactor` rather than `refactor-large-files`. Treat this as a heuristic, not a validation rule:
-keep a verb-based name when it is unusually clear, memorable, and fitting; `grill-me` and `yeet` are strong exceptions.
+Use portable-only validators such as `skills-ref` or `agentskills` only when a distribution target explicitly requires
+the strict portable format; they do not replace the canonical local gate.
 
-## Writing the description
+## Choose the Smallest Useful Representation
 
-A model-invoked description does two jobs — state what the skill is, and list the **branches** (distinct ways of being
-invoked) that should trigger it. Every word adds context load, so the description earns harder pruning than the body:
+| Content                                                              | Put it in                    | Decision rule                                                                |
+| -------------------------------------------------------------------- | ---------------------------- | ---------------------------------------------------------------------------- |
+| Intent, authority, routing, exceptions, evidence judgment            | `SKILL.md`                   | The model must interpret it on every applicable path.                        |
+| Deterministic computation, parsing, formatting, validation, recovery | `scripts/`                   | Repetition, exactness, or failure handling justifies code.                   |
+| Closed structural shape                                              | Schema plus validator        | Types, required fields, enums, and relationships are mechanically checkable. |
+| Conditional detail, long examples, API or schema documentation       | `references/` or `examples/` | Only some branches need the context.                                         |
+| Templates, media, or files copied into output                        | `assets/`                    | Runtime uses the file without loading it as instructions.                    |
 
-- **Front-load the skill's leading word** — the description is where it does its invocation work.
-- **One trigger per branch.** Synonyms renaming a single branch are duplication ("build features using TDD … asks for
-  test-first development" is one branch written twice). Collapse them; keep only genuinely distinct branches.
-- **Cut identity already in the body.** Keep the description to triggers, plus any "when another skill needs…" reach
-  clause.
-- Word the description with the leading words actually used in the user's prompts, docs, and code — the agent links that
-  shared language to the skill and fires it more reliably.
+Prefer one deep helper with a small interface over scripts that mirror prose steps. Keep the caller-visible invariant in
+prose, document the CLI and compact result, and leave the implementation algorithm in code. A helper earns its place
+when logic is repeated, deterministic, exact, or recovery-heavy; a shell pipeline past roughly five lines, real error
+handling, or a recurring long heredoc is a strong signal.
 
-## Information hierarchy
+Use TypeScript through `bun run scripts/<name>.ts` by default. Use Python through `uv run scripts/<name>.py` when it
+better fits data, text, or file processing. Keep Bash compatible with macOS `/bin/bash` 3.2. Scripts save context only
+when normal runs do not require reading their source and stdout stays compact.
 
-Skill content is **steps** (ordered actions) and **reference** (definitions, rules, facts consulted on demand); a skill
-can be all of either, or both. Rank each piece on a ladder by how immediately the agent needs it:
+Aim for `SKILL.md` under 500 lines; move sections past roughly 50 lines when they are not core workflow. Move prose,
+examples, or schema documentation past roughly 100 lines into a reference when not core to every branch. Link references
+directly from `SKILL.md`, one level deep, with a routing sentence. Add a table of contents to references over 100 lines;
+for files over 10,000 words, give targeted search patterns in `SKILL.md`. Keep a required rule inline if a direct
+pointer still fails to route reliably.
 
-1. **In-skill step** — an ordered action in `SKILL.md`, the primary tier.
-2. **In-skill reference** — consulted on demand. A flat peer-set (every rule of a review on one rung) is a fine
-   arrangement, not a smell.
-3. **Disclosed reference** — pushed into a linked file, reached by a context pointer, loaded only when the pointer
-   fires.
+Bundle a schema only with a real validation route. Keep semantic meaning and permissions in prose. Put output templates
+in `assets/`, and omit repository-style support files, scratch artifacts, and authoring notes that runtime agents do not
+use.
 
-Push too little down and the top bloats; push too much and you hide material the agent actually needs. **Branching** is
-the cleanest disclosure test: inline what every branch needs; disclose what only some branches reach.
+## Write for Reliable Execution
 
-A **context pointer**'s _wording_ — not its target — decides when, and how reliably, the agent reaches disclosed
-material. A must-have target behind a weakly worded pointer is a variance bug: sharpen the wording first; inline the
-material only if that fails.
+State outcomes, invariants, and completion evidence as positive, observable acceptance criteria. Keep a negative
+instruction only for an explicit user exclusion or when it is the clearest concise guard against a consequential safety,
+authority, destructive-action, scope, or likely model-failure boundary.
 
-**Co-location**: the hierarchy ranks how far _down_ a piece sits; co-location decides what sits _beside_ it. Keep a
-concept's definition, rules, and caveats under one heading rather than scattered — a skill should read like
-documentation written for the agent.
+If a workflow completes prematurely, sharpen its completion criterion first; split later steps behind a real context
+boundary only when observed behavior still justifies it.
 
-### Completion criteria
+## Design Background Reporting
 
-Every workflow and safety-critical phase ends on a **completion criterion** — the condition telling the agent the work
-is done. Two properties make it a lever:
+When a skill launches background jobs or agents, decide whether the wait may be long or opaque from expected runtime and
+uncertainty, fan-out or waves, meaningful milestones, and the state already visible in the host. Do not use a universal
+time cutoff.
 
-- **Clarity** (checkable: can the agent tell done from not-done?) resists premature completion. "Understanding reached"
-  gives way; "every test passing" holds.
-- **Demand** (how much it requires) sets **legwork** — the digging the agent does within a step. "Every modified model
-  accounted for" forces thorough work; "produce a change list" does not. Demand binds flat reference too: "every rule
-  applied" is how a step-free skill still carries an exhaustiveness bar.
+Make the main agent own monitoring and user reporting until every required unit settles. Announce the units or scope in
+flight and the evidence that will prove completion. Reuse a host-native progress surface only when it exposes meaningful
+live state; otherwise report observed phase changes and milestones, with sparse factual updates during quiet periods.
 
-The strongest criteria are both checkable and exhaustive.
+Never infer completion from elapsed time, event counts, or activity. Use a progress bar or percentage only with an exact
+settled/total denominator. Finish with a compact report distinguishing completed, blocked, failed, and timed-out units,
+their evidence, and the next action.
 
-## Choose prose, code, or schema
+## Keep Presentation Substantive
 
-Use prose for intent, authority, contextual routing, evidence judgment, exceptions, and semantic completion criteria.
-Use code for bounded deterministic computation, parsing, exact formatting or quoting, repeated validation, aggregation,
-and recovery behavior. Use a schema when correctness is a closed structural shape—required fields, types, enums, and
-relationships—and pair it with an actual validator; keep meaning and permissions in prose.
+Lead with the outcome and keep the output shape proportional to the information:
 
-Prefer one deep helper with a small interface over scripts that mirror individual prose steps. Keep the caller-visible
-invariant in prose while code enforces it; do not duplicate the implementation algorithm. Describe the hybrid handoff:
-prose selects and judges, code performs the bounded mechanical stage, and a compact result returns control to prose.
-
-A script saves tokens only when its interface is documented, normal runs do not read its source, and stdout is compact.
-Measure correctness, total tokens, retries, and maintenance on representative tasks. Keep a reliable one-shot operation
-in prose or existing tools; extraction is justified by determinism, repetition, exactness, or nontrivial failure
-handling—not line count alone.
-
-## Leading words
-
-A **leading word** is a compact concept already living in the model's pretraining that the agent thinks with while
-running the skill (_lesson_, _fog of war_, _tracer bullets_). Repeated as a token — never as a sentence — it accumulates
-a distributed definition and anchors a whole region of behavior in the fewest tokens by recruiting priors the model
-already holds. Coining a new word recruits no priors and costs definition tokens; reach for an existing word first.
-
-It serves predictability twice: in the body it anchors _execution_ (the agent reaches for the same behavior every time
-the word appears); in the description it anchors _invocation_.
-
-Hunt for restatements a leading word retires — each wins twice, fewer tokens and a sharper hook:
-
-- "fast, deterministic, low-overhead" → a _tight_ loop.
-- "a loop you believe in" → the loop goes _red_ on the bug (fuzzy gate → binary observable state).
-
-## When to split skills
-
-**Granularity** — how finely skills are divided — spends one of the two loads per cut, so split only when the cut earns
-it:
-
-- **By invocation**: split off a model-invoked skill when a distinct leading word should trigger it on its own, or
-  another skill must reach it. The new always-loaded description costs context load; the independent reach has to be
-  worth it.
-- **By sequence**: split a run of steps when the steps still ahead (**post-completion steps**) tempt the agent to rush
-  the one in front of it. Hiding only works across a real context boundary — a user-invoked hand-off or a subagent
-  dispatch; an inline call leaves the later steps in context and clears nothing. Beware the reverse: merging sequences
-  exposes every step's followers.
-
-## Pruning
-
-- **Single source of truth**: each meaning in exactly one authoritative place, so a behavior change is a one-place edit.
-- **Relevance**: does the line still bear on what the skill does? Lines lose relevance by never bearing on the task, or
-  by going stale as the behavior or world drifts. Shorter skills are cheaper to keep relevant.
-- **No-op hunt**: test each sentence in isolation — does it change behavior versus the model's default? When one fails,
-  delete the whole sentence rather than trim words from it. Most failing prose should go, not be rewritten.
-
-## Failure modes
-
-Diagnose skill misbehavior against these:
-
-- **Premature completion** — ending a step before it is genuinely done; attention slips to _being done_ rather than the
-  work. Defense in order: sharpen the completion criterion first (cheap, local); only if it is irreducibly fuzzy _and_
-  the rush is observed, hide the post-completion steps by splitting the sequence.
-- **Duplication** — the same meaning in more than one place. Costs maintenance and tokens, and inflates the meaning's
-  rank on the ladder past its real prominence. The accidental inverse of a leading word, which repeats a token, never
-  the meaning.
-- **Sediment** — stale layers that settle because adding feels safe and removing feels risky. The default fate of any
-  skill without a pruning discipline.
-- **Sprawl** — a skill simply too long, even when every line is live and unique. Cure with the ladder: disclose
-  reference behind pointers; split by branch or sequence so each path carries only what it needs.
-- **No-op** — a line the model already obeys by default; load paid to say nothing. A weak leading word (_be thorough_)
-  is a no-op; the fix is a stronger word (_relentless_), not a different technique. The test is model-relative: settle
-  disagreements by running the skill, not by debate.
+- Use `🔎` preview/read-only, `⏳` running, `✅` verified success, `⚠️` caveat/approval/risk, `⛔` blocked/not written,
+  `❓` unknown, and `↩` reverted/rolled back consistently; pair every status symbol with text.
+- Use at most one non-status domain icon per heading. Reserve tables for repeated fields, trees for real structure, and
+  progress bars for measured numerators and denominators.
+- Keep commands, machine-readable output, identifiers, confirmation tokens, diagnostics, safety wording, and copied
+  downstream content undecorated.
+- Keep decoration in the reporting wrapper unless the requested artifact calls for it; do not inject emoji into code,
+  product copy, user prose, external contributions, or structured data by default.

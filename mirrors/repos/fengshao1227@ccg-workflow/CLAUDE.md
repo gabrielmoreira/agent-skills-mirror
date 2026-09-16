@@ -2,7 +2,7 @@
 
 > [根目录](../CLAUDE.md) > **skills-v2**
 
-**Last Updated**: 2026-09-03 (v3.6.4)
+**Last Updated**: 2026-09-15 (v3.6.7)
 
 > ⚠ 本文档主体仍停留在 v2.1.16 架构描述（v3.0 引擎重构后未全量同步）。下方变更记录保留 v3.x 修复轨迹，完整历史见 [CHANGELOG.md](./CHANGELOG.md)。
 
@@ -11,6 +11,18 @@
 ## 变更记录 (Changelog)
 
 > 完整变更历史请查看 [CHANGELOG.md](./CHANGELOG.md)
+
+### 2026-09-15 (v3.6.7)
+- 🐛 **npm 扫描 hold：** tarball 不再含 `templates/skills/domains/security/`（红队/渗透笔记）。3.6.5/3.6.6 的 PUT 成功但永不 GET。文件仍在 git。
+
+### 2026-09-15 (v3.6.6)
+- 🔄 **重发 3.6.5。** 3.6.5 被 npm 暂存后从未 GET 得到（PUT 409 previously staged，owner 也 404）。功能与 3.6.5 相同。**此号同样未上线。**
+
+### 2026-09-15 (v3.6.5)
+- ✨ **PackyCode 赞助商**：README Banner（置于 APIMart 之上）+ `init` Step 1 / 菜单 API 配置新选项。自动填 `ANTHROPIC_BASE_URL=https://cf.api.fan`（**不带** `/v1`），用户只填 Key。注册链接 `https://www.packyapi.ai/register?aff=m21P`。
+- ✨ **Codex CLI 接入 PackyCode**：`[model_providers.packycode]`，`base_url=https://cf.api.fan/v1`（**带** `/v1`），`env_key=PACKYCODE_API_KEY`。注册与启用分离，启用默认否。`codex-mode install` 静默注册；卸载只摘自己那张表，不误伤 APIMart。
+- ✨ **赞助商表 `src/utils/sponsors.ts`**：一家一个对象。init / 菜单 / Codex 注册 / 卸载全遍历它，再加一家只改这一处 + README Banner。
+- ✅ `installer-codex-api.test.ts` 改测注册表 + 通用 API。
 
 ### 2026-09-03 (v3.6.4)
 - 🐛 **dsh-ccg 让新版 harness 的整个 Web UI 打不开**（#162）：插件配置页把 `settings.plugin.item` 从 `list` 改声明为 `keyed`（按卡片编辑的 settings 命名空间派发）。**插槽注册缺了它那个 kind 要求的选项会抛异常，而异常吃掉的是整条 loader entry** —— 不是少个卡片，是设置卡片 + 面板视图 + 团队条一起没，页面只剩 `Failed to load plugins`。修法是一份注册**同时带 `key` 和 `id`**：两种 kind 各读各的、忽略对方的。⚠ 新版 harness 已把**全部** settings 命名空间发给浏览器（`settings.describe({redactSecrets:true})` 不再过白名单）——这正是插槽改 keyed 的动机，也意味着第三方插件的卡片终于能被派发到。
@@ -753,7 +765,9 @@ npm http fetch POST <码> https://registry.npmjs.org/-/npm/v1/oidc/token/exchang
 
 ⚠ 普通日志级别看不到这行，这是区分「workflow 配错」和「npm 后台没配」的唯一依据。
 ⚠ **provenance 签名成功 ≠ npm 认证成功** —— 那走 Sigstore，与 npm 认证是两条独立路径，极易误判。
-⚠ Node 22 自带 npm 10.x 无 OIDC 支持，workflow 里的 `npm install -g npm@latest`（需 ≥ 11.5.1）不可删。
+⚠ Node 22 自带 npm 10.x 无 OIDC 支持，workflow 里必须先升到 npm 11（`npm install -g npm@11`，需 ≥ 11.5.1）。**不要用 `npm@latest`**。
+⚠ **自 2026-07-28 起 npm 发布后要过恶意扫描才可 GET**（通常约 5 分钟，高峰可 15 分钟以上）。`+ pkg@version` 只表示已暂存。再 PUT 同一版本会 409 `Cannot publish over previously staged version`，**不要因此升版本号**。publish.yml 把这条 409 当已暂存，再轮询 `npm view` 最多 15 分钟。若更久仍 404，去查维护者邮箱是否被 hold/block。
+https://github.blog/changelog/2026-07-28-npm-publish-time-malware-scanning-and-dual-use-metadata/
 
 npm 网页的 README 有服务端渲染缓存，发布后要等一会儿才更新（无痕也绕不过）；
 想立刻确认内容用 `npm view ccg-workflow readme | head -20` 直接读 registry。

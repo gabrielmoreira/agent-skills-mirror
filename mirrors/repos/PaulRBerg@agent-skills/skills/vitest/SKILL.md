@@ -7,41 +7,23 @@ description:
 
 # Vitest
 
-Follow the repository's Vitest configuration and test conventions before introducing generic patterns.
+Repository configuration, projects, setup, imports/globals, environments, aliases, test placement, and cleanup own the
+test contract. Inspect them and nearby tests before adding generic patterns. Do not add globals, jsdom, coverage, new
+setup, or browser mode by default.
 
 ## Workflow
 
-1. Inspect package scripts, Vitest config/projects, setup files, neighboring tests, path aliases, environment selection,
-   and repository instructions.
-2. Define the behavior or regression the test must prove. Prefer public behavior and observable outcomes over
-   implementation details.
-3. Match local file placement, naming, imports/globals, fixtures, cleanup, DOM utilities, and assertion style. Do not
-   enable globals, jsdom, coverage, or new setup merely because they are common defaults.
-4. Load conditional guidance only when needed:
-   - components, async behavior, snapshots, type tests, tables, fixtures, tags:
-     [references/testing-patterns.md](references/testing-patterns.md);
-   - spies, module mocks, timers, environment stubs: [references/mocking.md](references/mocking.md);
-   - config, projects, environments, coverage, reporters, v4 migration:
-     [references/configuration.md](references/configuration.md);
-   - timeouts, flaky tests, mock failures, resolution errors:
-     [references/troubleshooting.md](references/troubleshooting.md).
-5. Run the narrowest established command for the changed file or test name, then the affected package suite when shared
-   setup or contracts changed. Use `nlx vitest run ...` only when the repository has no preferred recipe/script. Prefer
-   `--reporter=agent` on Vitest 4.1+ for minimal agent-friendly output when the repository has no reporter convention.
+Define the behavior or regression, test its observable public result, and mock system boundaries rather than the
+behavior under test. Follow local fixture and cleanup ownership. In Effect repositories, use established
+`@effect/vitest` conventions such as `it.effect`, Layers, and TestClock rather than generic replacements. For a bug fix,
+reproduce the failure before relying on a passing result when practical.
 
-## Defaults
+Read [patterns](references/testing-patterns.md) for component, async, fixture, snapshot, tag, or browser questions;
+[mocking](references/mocking.md) for module, timer, spy, or global boundaries;
+[configuration](references/configuration.md) for projects, migration, coverage, or reporter selection; and
+[troubleshooting](references/troubleshooting.md) for hangs, discovery, resolution, or flaky state.
 
-- Colocate tests when the repository does.
-- Restore mocks, timers, environment, and mutable shared state using the local cleanup convention.
-- Mock system boundaries, not the behavior under test.
-- Add coverage configuration only when coverage is the requested outcome.
-- Do not use jest-dom matchers unless setup imports `@testing-library/jest-dom`.
-- In Effect-TS repositories, follow `@effect/vitest` conventions (`it.effect`, Layers, TestClock) instead of generic
-  patterns.
-- For a bug fix, reproduce the failure before relying on the passing result when practical.
-
-Completion requires a focused test that meaningfully exercises the requested behavior and passes under the repository's
-configuration. For a bug with observed red-before-green evidence, finish with `### 🧪 Regression covered`; otherwise use
-`### 🧪 Tests verified`. Include a phase/command/result table with only the phases actually run. Report mock, timer,
-environment, or shared-state cleanup only when the checks provide that evidence. Keep reporter output, snapshots,
-assertions, failure text, commands, and diagnostics exact and undecorated.
+Run the narrowest established command for the changed behavior, then the affected package suite only when shared setup
+or contracts changed. Use `nlx vitest run` only when no project recipe or script exists. Completion requires a
+meaningful passing focused test under repository configuration and concise command/result evidence. Use
+`### 🧪 Regression covered` when red-before-green evidence exists; otherwise `### 🧪 Tests verified`.

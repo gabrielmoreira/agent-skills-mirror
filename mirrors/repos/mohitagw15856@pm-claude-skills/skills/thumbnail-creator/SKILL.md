@@ -22,13 +22,13 @@ Get a free key from [Google AI Studio](https://aistudio.google.com/app/apikey).
 Set it as an environment variable:
 
 ```bash
-export GEMINI_API_KEY="your-key-here"
+export GEMINI_API_KEY=<your-key>
 ```
 
 To persist it across sessions, add to your shell profile (`~/.zshrc` or `~/.bashrc`):
 
 ```bash
-echo 'export GEMINI_API_KEY="your-key-here"' >> ~/.zshrc
+echo 'export GEMINI_API_KEY=<your-key>' >> ~/.zshrc
 source ~/.zshrc
 ```
 
@@ -367,7 +367,7 @@ def get_api_key() -> str:
     if not key:
         print("ERROR: GEMINI_API_KEY environment variable is not set.")
         print("Get a key at: https://aistudio.google.com/app/apikey")
-        print("Then run: export GEMINI_API_KEY='your-key-here'")
+        print("Then run: export GEMINI_API_KEY=<your-key>")
         sys.exit(1)
     return key
 
@@ -552,7 +552,7 @@ Or instruct the user to add text overlay manually in Canva after generation if l
 
 | Issue | Cause | Fix |
 |---|---|---|
-| `GEMINI_API_KEY not set` | Environment variable missing | Run `export GEMINI_API_KEY="your-key"` and retry |
+| `GEMINI_API_KEY not set` | Environment variable missing | Run `export GEMINI_API_KEY=<your-key>` and retry |
 | `ModuleNotFoundError: google.generativeai` | Dependency missing | Run `pip install google-generativeai` |
 | `No images returned` | Safety filter triggered | Revise prompt to remove any ambiguous language; check that the prompt doesn't describe faces, violence, or brand logos |
 | Generated image has garbled text | Imagen text rendering limitation | Use shorter headline in prompt, or plan to add text overlay in Canva/Figma post-generation |

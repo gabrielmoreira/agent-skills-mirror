@@ -7,7 +7,7 @@ ref: develop
 
 # Mirror Manifest
 
-Mirror of `medusajs/medusa` — 26 default patterns, 0 followed patterns, 12 file(s) materialized.
+Mirror of `medusajs/medusa` — 26 default patterns, 0 followed patterns, 13 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `medusajs/medusa` — 26 default patterns, 0 followed patterns, 12 fil
 | Ref           | `develop` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 12 |
+| Files         | 13 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -68,9 +68,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 7 | ✓ | [`.claude/skills/writing-tutorials/SKILL.md`](.claude/skills/writing-tutorials/SKILL.md) |
 | 8 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 | 9 | ✓ | [`www/apps/api-reference/CLAUDE.md`](www/apps/api-reference/CLAUDE.md) |
-| 10 | ✓ | [`www/apps/book/public/llms.txt`](www/apps/book/public/llms.txt) |
-| 11 | ✓ | [`www/apps/resources/.cursorrules`](www/apps/resources/.cursorrules) |
-| 12 | ✓ | [`www/apps/resources/CLAUDE.md`](www/apps/resources/CLAUDE.md) |
+| 10 | ✓ | [`www/apps/book/CLAUDE.md`](www/apps/book/CLAUDE.md) |
+| 11 | ✓ | [`www/apps/book/public/llms.txt`](www/apps/book/public/llms.txt) |
+| 12 | ✓ | [`www/apps/resources/.cursorrules`](www/apps/resources/.cursorrules) |
+| 13 | ✓ | [`www/apps/resources/CLAUDE.md`](www/apps/resources/CLAUDE.md) |
 
 ---
 

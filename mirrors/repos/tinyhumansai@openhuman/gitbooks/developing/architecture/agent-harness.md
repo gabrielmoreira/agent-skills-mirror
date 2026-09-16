@@ -9,23 +9,54 @@ icon: layer-group
 
 ## Embedding OpenHuman as a library
 
-`openhuman_embed::Harness` builds one in-process core for a caller that supplies
-its workspace, provider endpoint and credential, skills, MCP servers, and tool
-policy. Such a harness identifies as `HostKind::Library`: inference does not
-depend on OpenHuman app login, including inference-readiness checks for workflow
-agent nodes. Backend features such as integrations and managed services still
-need whatever identity their endpoint requires.
+`openhuman_embed` exposes a two-step API. `Runtime::builder()` boots one
+in-process core per process — background services, registered domain
+families, backend URL and the TinyHumans API key — and `Runtime::agent(spec)`
+instantiates any number of agents on it. Each `AgentSpec` fully describes
+one agent: provider endpoint and model, access tier, `action_dir`, MCP
+servers, skill bundles, system prompt, tool scope, sandbox mode, allowlists,
+and a narrowed `DomainSet` / `ToolGroups`. A runtime identifies as
+`HostKind::Library`: inference does not depend on OpenHuman app login,
+including inference-readiness checks for workflow agent nodes.
 
-Build one harness and issue concurrent `run` or `turn(...).send()` calls on it;
-do not build one core per agent. Each call owns a distinct session unless a
-prior session id is supplied. The conversation store coordinates metadata per
-workspace and message writes per thread, so independent agents do not serialize
-on one process-wide store mutex.
+Per-agent isolation is a context, not a second core. `Runtime::agent` clones
+the runtime's base `Config`, applies the spec, and derives a child
+`CoreContext` (`CoreContext::derive_with`) carrying that config, the agent's
+domain set, tool groups and skill-root policy. Every turn is dispatched under
+that context (`CoreRuntime::run_in` → `agent_chat_for` with an explicit
+`AgentDefinition` and `AgentProfile`), so the config loader, the domain gate,
+the tool-group filter and skill discovery all read the agent's own settings.
+Transcripts are keyed by agent id and a turn resumes only its own thread.
 
-`Workspace::Inherit` together with `Provider::inherit()` is deliberately not
-library-routed inference. It borrows the installed OpenHuman configuration and
-therefore keeps the installed application's session checks. Supply an explicit
-provider when embedding without app login.
+Layout under a runtime-owned root: `<root>/config.toml` and the credential
+store; `<root>/workspace/` with the session database, `session_raw/`
+transcripts and each agent's `personalities/<id>/skills/`; and
+`<root>/agents/<id>/action/` as each agent's default working root (a sibling
+of the workspace, never inside it).
+
+`Harness` is the one-agent shorthand: a runtime plus one agent named
+`harness`. Build one runtime and issue concurrent `run` or `turn(...).send()`
+calls on its agents; do not build one core per agent. Each call owns a
+distinct session unless a prior session id is supplied.
+
+Authentication in library mode is the TinyHumans API key
+(`RuntimeBuilder::api_key`), stored as an `api-key` auth profile beside the
+runtime's `config.toml`. Managed inference sends it as a bearer to the
+OpenAI-compatible endpoint; backend REST calls send `x-api-key`; there is no
+session JWT and nothing to expire. Agents that name their own `Provider`
+(BYOK) never touch it. Backend features that need a signed-in user still
+take `HarnessBuilder::session`.
+
+`Workspace::Inherit` together with `Provider::inherit()` and no API key is
+deliberately not library-routed inference. It borrows the installed
+OpenHuman configuration and therefore keeps the installed application's
+session checks. Supply an explicit provider or an API key when embedding
+without app login.
+
+Some settings remain runtime-wide for every agent (the live autonomy policy's
+`auto_approve*`, the approval gate switch, the sub-agent catalogue, the
+config sub-agents re-read); the crate README lists them under "Still
+runtime-wide".
 
 > **Status (issue #4249, tinyagents migration):** the agent turn no longer runs
 > on the in-tree `run_turn_engine` loop. **All three entry points (`Agent::turn`,
@@ -582,7 +613,13 @@ Three cooperating mechanisms keep runs from wandering or dying silently:
 - `AwaitingUser { question, options }`: the child called `ask_user_clarification`; a full checkpoint (history, question, options, overrides) is written to `{workspace}/.openhuman/subagent_checkpoints/{task_id}.json`, and the run resumes from it when the user answers.
 - `Incomplete { reason }`: the child was halted by the breaker or hit its model-call cap. The delegating parent **relays the blocker** instead of treating a halted child as a finished answer or re-spinning the identical delegation.
 
-A breaker halt at the top level is likewise never a silent finish: the turn's final text is overridden with the breaker's root-cause summary, and `hit_cap` / `breaker_halt` are surfaced on the turn result.
+A breaker halt at the top level is likewise never a silent finish, and the breaker's root-cause summary is not shown to the user as is either: it is worded for a model ("Report this back instead of retrying"). `hit_cap` / `breaker_halt` are surfaced on the turn result, and the chat turn closes the halted run the same way it closes a tool turn that ended without final text (`turn/core/grounded_close.rs`, #4093 / #6278 / #6279):
+
+1. A tools-disabled wrap-up call whose instruction restates the turn's tool records, each failure's own message included, with the breaker summary passed as a stop note to explain rather than repeat.
+2. A separate check call that sees only the request, the records and the candidate reply. It rejects a reply that only narrates intent, contradicts a record, or leaves out the failure that explains an unfinished request.
+3. A deterministic fallback for an empty, tool-calling, rejected or unverified reply (a check that failed or gave no verdict). It quotes each tool result and the stop note.
+
+Accepted text is streamed only after the check, so a rejected reply never renders.
 
 **Classified tool failures** (`crates/openhuman-core/src/tools/status/`): every failed tool call is classified into a transport-agnostic `ClassifiedFailure { class, category, cause_plain, next_action, recoverable }`. Classes cover `MissingPermission`, `MissingApp`, `ServiceUnavailable`, `BadCredentials`, `BlockedByPolicy`, `ModelConnection`, `Timeout`, `Denied`, `ApprovalExpired`; categories map 1:1 to UI states: _recoverable_ (safe auto-retry), _blocked by policy_ (change settings), _needs user confirmation_ (sign in / install / grant), _user declined_ (never auto-retried). The classification rides `AgentProgress::ToolCallCompleted.failure` (including for sub-agent calls) into the chat timeline.
 

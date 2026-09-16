@@ -1,0 +1,76 @@
+{
+  "org_id": "00Dxx0000000001",
+  "org_name": "TestOrgA",
+  "org_edition": "Developer Edition",
+  "base_url": "https://org-a.example.com",
+  "collected_at": "2026-05-13T00:00:00Z",
+  "api_version": "62.0",
+  "metadata_types": ["ApexClass", "CustomObject", "Profile"],
+  "metadata_components": {
+    "ApexClass": [
+      {"fullName": "SharedClass", "namespace": null},
+      {"fullName": "OnlyInA", "namespace": null},
+      {"fullName": "ManagedPkg", "namespace": "pkg"}
+    ],
+    "CustomObject": [
+      {"fullName": "Project__c", "namespace": null}
+    ],
+    "Profile": [
+      {"fullName": "Admin", "namespace": null},
+      {"fullName": "Standard User", "namespace": null},
+      {"fullName": "Custom Profile", "namespace": null}
+    ]
+  },
+  "permissions": {
+    "ApiEnabled": {"value": "true"},
+    "ApexRest": {"value": "true"},
+    "SharedPerm": {"value": "true"},
+    "DisabledInA": {"value": "false"}
+  },
+  "org_values": {
+    "OrgEdition": "DE",
+    "MaxCustomObjects": "400",
+    "DataStorage": "5",
+    "SharedValue": "same"
+  },
+  "licenses": {
+    "user": [
+      {"Name": "Salesforce", "TotalLicenses": 10, "UsedLicenses": 1, "Status": "Active"},
+      {"Name": "Chatter Free", "TotalLicenses": 5000, "UsedLicenses": 0, "Status": "Active"},
+      {"Name": "OnlyInA License", "TotalLicenses": 5, "UsedLicenses": 0, "Status": "Active"}
+    ],
+    "permission_set": [
+      {"DeveloperName": "SalesforceCPQ", "TotalLicenses": 10, "UsedLicenses": 0}
+    ],
+    "package": []
+  },
+  "installed_packages": [
+    {"name": "Shared Package", "namespace": "sharedpkg", "version": "1.5"},
+    {"name": "Only In A", "namespace": "apkg", "version": "2.0"},
+    {"name": "Version Mismatch", "namespace": "vmpkg", "version": "3.1"}
+  ],
+  "system_permissions": {
+    "fields_discovered": ["PermissionsApiEnabled", "PermissionsAuthorApex", "PermissionsBulkApiHardDelete", "PermissionsManageUsers", "PermissionsViewSetup"],
+    "permission_sets": [
+      {
+        "name": "Admin",
+        "label": "System Administrator",
+        "is_profile": true,
+        "permissions": {"PermissionsApiEnabled": true, "PermissionsAuthorApex": true, "PermissionsManageUsers": true, "PermissionsViewSetup": true}
+      },
+      {
+        "name": "StandardUser",
+        "label": "Standard User",
+        "is_profile": true,
+        "permissions": {"PermissionsApiEnabled": true, "PermissionsViewSetup": true}
+      },
+      {
+        "name": "OnlyInAPermSet",
+        "label": "Only In A PermSet",
+        "is_profile": false,
+        "permissions": {"PermissionsBulkApiHardDelete": true}
+      }
+    ]
+  },
+  "errors": []
+}

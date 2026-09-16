@@ -116,11 +116,11 @@ already on `PATH` in Superset terminals, and we dogfood it.
 Replace the capitalized placeholders before running these:
 
 ```bash
-superset ws create --project PROJECT_ID --branch BRANCH --agent claude --prompt "..."
+superset ws create --local --project PROJECT_ID --branch BRANCH --agent claude --prompt "..."
 superset agents create --workspace WORKSPACE_ID --agent claude --prompt "..."
-superset ws list
+superset ws list --local
 superset terminals read --workspace WORKSPACE_ID --terminal TERMINAL_ID
-superset ws delete WORKSPACE_ID
+superset ws delete --local WORKSPACE_ID
 ```
 
 In order: an isolated workspace with an agent already working in it, another agent in an existing
@@ -128,7 +128,7 @@ workspace, what's running, what an agent is doing right now, and cleanup when yo
 
 Spawning several related workspaces? Add `--tag SOME_TAG` (repeatable) to `ws create` — tagged
 workspaces group into a sidebar folder of that name automatically, so a batch files itself instead
-of scattering across the project. `ws list --tag SOME_TAG` filters to them, and
+of scattering across the project. `ws list --local --tag SOME_TAG` filters to them, and
 `ws update WORKSPACE_ID --tag ...` retags (`--clear-tags` ungroups). Automation-created workspaces
 are tagged `automation` by default and collect in an "automation" folder.
 

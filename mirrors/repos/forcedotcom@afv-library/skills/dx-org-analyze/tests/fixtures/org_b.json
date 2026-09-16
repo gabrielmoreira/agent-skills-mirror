@@ -1,0 +1,70 @@
+{
+  "org_id": "00Dxx0000000002",
+  "org_name": "TestOrgB",
+  "org_edition": "Professional Edition",
+  "base_url": "https://org-b.example.com",
+  "collected_at": "2026-05-13T00:00:00Z",
+  "api_version": "62.0",
+  "metadata_types": ["ApexClass", "Profile"],
+  "metadata_components": {
+    "ApexClass": [
+      {"fullName": "SharedClass", "namespace": null},
+      {"fullName": "OnlyInB", "namespace": null}
+    ],
+    "Profile": [
+      {"fullName": "Admin", "namespace": null},
+      {"fullName": "Standard User", "namespace": null}
+    ]
+  },
+  "permissions": {
+    "SharedPerm": {"value": "true"},
+    "DisabledInA": {"value": "true"},
+    "OnlyInB": {"value": "true"}
+  },
+  "org_values": {
+    "OrgEdition": "PE",
+    "MaxCustomObjects": "50",
+    "DataStorage": "10240",
+    "SharedValue": "same"
+  },
+  "licenses": {
+    "user": [
+      {"Name": "Salesforce", "TotalLicenses": 25, "UsedLicenses": 3, "Status": "Active"},
+      {"Name": "Chatter Free", "TotalLicenses": 5000, "UsedLicenses": 0, "Status": "Active"},
+      {"Name": "OnlyInB License", "TotalLicenses": 100, "UsedLicenses": 0, "Status": "Active"}
+    ],
+    "permission_set": [
+      {"DeveloperName": "SalesforceCPQ", "TotalLicenses": 25, "UsedLicenses": 0}
+    ],
+    "package": []
+  },
+  "installed_packages": [
+    {"name": "Shared Package", "namespace": "sharedpkg", "version": "1.5"},
+    {"name": "Only In B", "namespace": "bpkg", "version": "1.0"},
+    {"name": "Version Mismatch", "namespace": "vmpkg", "version": "4.0"}
+  ],
+  "system_permissions": {
+    "fields_discovered": ["PermissionsApiEnabled", "PermissionsAuthorApex", "PermissionsBulkApiHardDelete", "PermissionsManageUsers", "PermissionsViewSetup"],
+    "permission_sets": [
+      {
+        "name": "Admin",
+        "label": "System Administrator",
+        "is_profile": true,
+        "permissions": {"PermissionsApiEnabled": true, "PermissionsAuthorApex": true, "PermissionsManageUsers": true, "PermissionsViewSetup": true, "PermissionsBulkApiHardDelete": true}
+      },
+      {
+        "name": "StandardUser",
+        "label": "Standard User",
+        "is_profile": true,
+        "permissions": {"PermissionsApiEnabled": true}
+      },
+      {
+        "name": "OnlyInBPermSet",
+        "label": "Only In B PermSet",
+        "is_profile": false,
+        "permissions": {"PermissionsManageUsers": true}
+      }
+    ]
+  },
+  "errors": []
+}

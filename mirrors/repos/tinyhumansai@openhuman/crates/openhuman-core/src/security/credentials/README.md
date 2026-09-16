@@ -31,7 +31,8 @@ Credential management for the OpenHuman app session and provider/OAuth auth prof
 ## Public surface
 
 - **`AuthService`** (`core.rs`) — `from_config`, `new`, `load_profiles`, `store_provider_token`, `set_active_profile`, `remove_profile`, `get_profile`, `get_provider_bearer_token`.
-- **Constants** — `APP_SESSION_PROVIDER` (`"app-session"`), `DEFAULT_AUTH_PROFILE_NAME` (`"default"`), `COMPOSIO_DIRECT_PROVIDER` (`"composio-direct"`).
+- **Constants** — `APP_SESSION_PROVIDER` (`"app-session"`), `DEFAULT_AUTH_PROFILE_NAME` (`"default"`), `COMPOSIO_DIRECT_PROVIDER` (`"composio-direct"`), `api_key::API_KEY_PROVIDER` (`"api-key"`).
+- **API key (library mode)** — `api_key::{store_api_key, store_api_key_in, get_api_key, get_api_key_in, has_api_key, clear_api_key}` keep a TinyHumans API key as the `api-key` profile. `session_support::resolve_backend_credential` returns `BackendCredential::ApiKey` when one is stored (before any session classification) and `BackendCredential::Session` otherwise; `BackendOAuthClient::authed_json` sends an API key as `x-api-key` and a session as `Authorization: Bearer`, while `OpenHumanBackendModel::resolve_bearer` sends the key as the bearer for managed inference. `has_backend_credential` is the boot-time "signed in?" question the scheduler gate asks; `SessionExpired` is ignored for an API-key runtime.
 - **Helpers** — `normalize_provider`, `default_profile_id`, `select_profile_id`, `state_dir_from_config`, `profile_id`.
 - **Types** (`profiles.rs`) — `AuthProfile`, `AuthProfileKind` (`OAuth`/`Token`), `TokenSet`, `AuthProfilesData`, `AuthProfilesStore`.
 - **Ops/RPC** (`ops`, re-exported as `rpc`) — `store_session`, `clear_session`, `auth_get_state`, `auth_get_session_token_json`, `auth_get_me`, `consume_login_token`, `auth_create_channel_link_token`, `store_provider_credentials`, `remove_provider_credentials`, `list_provider_credentials`, `list_provider_credentials_by_prefix`, `oauth_connect`, `oauth_list_integrations`, `oauth_fetch_integration_tokens`, `oauth_fetch_client_key`, `oauth_revoke_integration`, `encrypt_secret`, `decrypt_secret`, `start_login_gated_services`, `stop_login_gated_services`.
@@ -40,6 +41,8 @@ Credential management for the OpenHuman app session and provider/OAuth auth prof
 - **Schema controllers** — `all_credentials_controller_schemas`, `all_credentials_registered_controllers`.
 
 ## RPC / controllers
+
+`auth.store_api_key` (`{ key }`) and `auth.clear_api_key` manage the API-key profile; `auth.get_state` reports `credential: "session" | "api-key"` alongside `isAuthenticated`.
 
 Namespace `auth` (JSON-RPC `openhuman.auth_*` / CLI). Defined in `schemas.rs`:
 

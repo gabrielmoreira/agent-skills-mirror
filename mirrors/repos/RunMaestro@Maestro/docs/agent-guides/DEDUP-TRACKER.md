@@ -287,6 +287,17 @@ Numbered out of document order: this came from a targeted 2026-09-14 grep, not t
 - **DO NOT TOUCH (3 sites that differ on purpose):** `usePipelineKeyboard.ts:85` also counts `SELECT` and deliberately only suppresses for inputs INSIDE the editor container, so the AI composer behind the Cue modal cannot eat its shortcuts. `GitDiffViewer.tsx:40` (`isFormControl`) also counts `BUTTON`, `SELECT`, and `A`, which is a different question (does this element own the key) than "is the caret in text". `MediaViewer.tsx:490` tests `INPUT` only, but its handler is scoped to the player container and the only inputs in that subtree are two `type="range"` sliders, so there is no textarea or contenteditable for it to miss.
 - **Estimated savings:** ~35 lines, but the value is drift prevention rather than line count.
 
+### 42. Per-character Text Width Estimates (3 inline copies, 3 different constants)
+
+Numbered out of document order for the same reason as #41: a targeted 2026-09-15 grep, kept under P2 without renumbering.
+
+- **Evidence:** grep-verified 2026-09-15 for `CHAR_WIDTH` / `charWidth` across `src/renderer/`
+- **Why it matters:** each copy answers "how wide must this container be to show its longest label", and each picked its own px-per-character constant with no font size written down - `7.5` in `Wizard/shared/DocumentSelector.tsx:114`, `7.5` in `FilePreview/FilePreview.tsx:682`, `7` in `DocumentGraph/mindMapLayouts.ts:158`. A constant that does not name the font size it was tuned for silently stops matching when the surface's type scale changes, and the symptom is a clipped label rather than an error.
+- **KEEP:** `estimateLabelWidth()` / `widestLabelWidth()` in `renderer/utils/labelWidth.ts`, which take the font size and derive the advance from it. `PipelineSelector` uses it.
+- **CONSOLIDATE (2 sites):** `DocumentSelector.tsx:112-117` is the same computation exactly (widest filename -> dropdown width, clamped) and should pass its real `text-*` size. `FilePreview.tsx:678-693` is the same per-label loop plus a per-entry indent, so it needs either a per-label lead argument or to keep its loop and call `estimateLabelWidth` inside it.
+- **DO NOT TOUCH:** `mindMapLayouts.ts` - `NODE_PILL_CHAR_WIDTH` is also read back by `MindMap.tsx:537` to decide where to TRUNCATE a label, so the sizing constant and the truncation constant must stay the same number. Converting it means moving both together.
+- **Estimated savings:** ~20 lines; the value is that a font-size change stops silently clipping labels.
+
 ---
 
 ## P3 - Nice to Have

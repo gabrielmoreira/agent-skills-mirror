@@ -10,11 +10,10 @@ description:
 
 # Skill Writing
 
-Bootstrap a project-local skill with a small observable contract, then symlink it into `.claude/skills/` so Claude Code
-can discover it. Keep invariant workflow guidance in `SKILL.md`; move deterministic mechanics and conditional detail
-into scripts and references.
+Bootstrap a project-local skill in `.agents/skills/`, expose it to Claude Code through a relative symlink, and verify
+the result with the repository's canonical skill validator.
 
-## Model Optimization
+## Model Guidance
 
 Optimize every new skill and its content for GPT-6 Astra and Claude Fable 5.1. The summaries below are reminders, not
 substitutes for the live guides. Read both guides before designing or writing a complex, long-running, multi-tool, or
@@ -27,20 +26,22 @@ orchestration-heavy skill because their recommendations may evolve.
   Calibrate effort with evals; request progress updates; batch independent tool calls; preserve decisions across
   compaction; verify changing facts; and finish the requested scope with targeted edits and proportionate tests.
 
-## Arguments
+## Input
 
-- **skill-name** (required): kebab-case name (e.g., `my-skill`). Stop if missing or invalid.
+- **skill-name** (required): a kebab-case name such as `my-skill`. Stop if it is missing or invalid.
 
 Reject `--global`, explicit destination paths, and other scope overrides. The invocation working directory is the only
 supported scope.
 
-## Repository Catalog Guard
+## Workflow
+
+### 1. Apply the Repository Catalog Guard
 
 Before resolving project-local paths, read the repository instructions applicable to the invocation working directory.
-If they define a source catalog and lifecycle for skill creation, stop this workflow and follow that repository-owned
-workflow. Do not create `.agents/skills/` or `.claude/skills/` paths in that repository.
+If they define a skill source catalog and lifecycle, stop this workflow and follow that repository-owned workflow. Do
+not create `.agents/skills/` or `.claude/skills/` paths there.
 
-## Resolved Paths
+### 2. Resolve and Validate the Local Scope
 
 Set `<scope>` to the working directory where the skill was invoked. Create the source at
 `<scope>/.agents/skills/<name>/` and the Claude Code symlink at `<scope>/.claude/skills/<name>`. Do not redirect the
@@ -49,129 +50,15 @@ scope to the repository root when invoked from a nested project or workspace. Ne
 
 The symlink target is always the relative path `../../.agents/skills/<name>`.
 
-## Skill Layout
+Reject a collision before writing: stop if either the source directory or symlink path already exists.
 
-```
-<name>/
-├── SKILL.md       # Required: frontmatter + lean workflow (aim for <500 lines)
-├── agents/
-│   └── openai.yaml # Required: Codex invocation policy derived from SKILL.md
-├── scripts/       # Optional: helper code (prefer TypeScript via bun run; Python via uv)
-├── references/    # Optional: long-form docs loaded on demand
-└── assets/        # Optional: templates / fonts / images used in OUTPUT (never loaded into context)
-```
+### 3. Read the Current Format Sources
 
-Agents load skills via **progressive disclosure**, in three stages:
-
-1. **Discovery** — only `name` + `description` are visible at startup. Front-load triggers in `description`.
-2. **Activation** — the full `SKILL.md` body is read once a task matches.
-3. **Execution** — `scripts/` run without being read into context; `references/` are read only when `SKILL.md`
-   explicitly links to them.
-
-Keep `SKILL.md` focused on workflow. Push bulk into `scripts/` (deterministic logic) or `references/` (documentation).
-
-## Authoring Contract
-
-Before choosing a layout, separate the content into:
-
-- **Invariants** that every valid execution must preserve.
-- **Preferred defaults** that explicit user intent or repository evidence may override.
-- **Conditional examples and references** loaded only when their branch is active.
-
-Define the outcome, authority boundaries, stopping conditions, and completion evidence. Do not prescribe an identical
-execution path when several safe paths satisfy the same contract. For user-facing workflows, also define which kickoff,
-progress, decision, blocker, and completion events deserve a message and the smallest useful shape for each.
-
-When a workflow hands long-winded work to background jobs or agents, make polished progress monitoring part of the
-contract. Judge whether the work is long-winded from its expected runtime and uncertainty, fan-out or waves, meaningful
-milestones, and the visibility the host already provides rather than a universal time cutoff. Name the main agent as the
-reporting owner and follow the long-winded background-work guidance in
-[references/writing-great-skills.md](references/writing-great-skills.md).
-
-Express outcomes, invariants, and completion evidence as positive, observable acceptance criteria; when affirmative
-evidence is available, require it instead of accepting only the absence of listed failures or adding negative examples,
-inverse restatements, or long blacklists. Retain a negative instruction only for an explicit user-requested exclusion or
-when it is the clearest concise guard for a consequential safety, authority, destructive-action, scope, or likely model
-failure boundary that positive criteria cannot enforce equivalently.
-
-## When to Split Content
-
-### Use `scripts/` when
-
-- The same code would be rewritten on every invocation (e.g., PDF rotate, JSON transform, curl wrapper).
-- Determinism matters more than flexibility (parsing, validation, codegen, idempotent setup).
-- A shell pipeline grows past ~5 lines or needs real error handling.
-- A long heredoc keeps appearing inside `SKILL.md`.
-
-Scripts are token-efficient: the agent invokes them without reading them. Document the CLI signature in `SKILL.md` and
-leave the implementation in `scripts/`.
-
-Prefer `scripts/*.ts` run with `bun run scripts/<name>.ts`, unless there is a good reason TypeScript is the wrong fit
-for the helper. Python is also a good choice for data, text, and file processing; run Python helpers through
-`uv run scripts/<name>.py`, not raw `python` or `python3`.
-
-Keep Bash helpers compatible with macOS `/bin/bash` 3.2.
-
-### Use `references/` when
-
-- A topic exceeds ~100 lines of prose, examples, or schemas.
-- Content is conditionally relevant (variant-, framework-, or domain-specific) — splitting keeps irrelevant context out.
-- Detailed API surfaces, DB schemas, policies, or large templates would otherwise dominate `SKILL.md`.
-- A long explanation is needed only on one branch.
-
-Rules of thumb:
-
-- **One level deep** — link `references/placeholder.md` directly from `SKILL.md`, never reference-to-reference.
-- Files >100 lines: include a table of contents at the top.
-- Files >10k words: document grep patterns in `SKILL.md` so the agent can locate sections without reading the whole
-  file.
-- **No duplication** — each fact lives in `SKILL.md` _or_ a reference, never both. Keep skills self-contained rather
-  than sharing references across independently installed skills.
-- For every reference, write one line in `SKILL.md` that says _when_ to read it.
-
-### Reference organization patterns
-
-**Pattern A — High-level guide + topical references**
-
-```
-SKILL.md
-references/
-├── forms.md
-├── api.md
-└── examples.md
-```
-
-`SKILL.md` teaches the happy path; references hold deep-dive material.
-
-**Pattern B — Domain or variant split**
-
-```
-SKILL.md           # workflow + selection logic
-references/
-├── aws.md
-├── gcp.md
-└── azure.md
-```
-
-The agent reads only the variant the user picked — irrelevant providers never enter context.
-
-**Pattern C — Conditional details**
-
-Inline the basic case in `SKILL.md`, link advanced files for edge cases (`tracked-changes.md`, `ooxml.md`, etc.).
-
-### Exclude runtime-irrelevant files
-
-Do not add repository-style support files (`README.md`, `INSTALLATION.md`, `CHANGELOG.md`, or `QUICK_REFERENCE.md`),
-authoring notes, test logs, scratch files, or anything the agent will not use at runtime.
-
-## Workflow
-
-### 1. Read Format Docs
-
-Resolve `scripts/fetch-agentskills-spec.sh` relative to this skill directory, run it once, and read the returned file
-completely. The helper reuses an integrity-valid specification for 24 hours, conditionally revalidates older entries,
-and may return a cache validated within seven days when live retrieval fails. Set `AGENTSKILLS_CACHE_DIR` when the
-default user cache location is unavailable or unwritable.
+Resolve `scripts/fetch-agentskills-spec.sh` relative to this skill directory. Run
+`scripts/fetch-agentskills-spec.sh [--refresh]` once and read the returned file completely. The helper reuses an
+integrity-valid specification for 24 hours, conditionally revalidates older entries, and may return a cache validated
+within seven days when live retrieval fails. Set `AGENTSKILLS_CACHE_DIR` when the default user cache location is
+unavailable or unwritable.
 
 Use `--refresh` for explicitly latest or change-sensitive work, disputed portable-format guidance, or a conflict with
 validator behavior. A `stale` result is usable only after reading it; disclose its validation timestamp and retrieval
@@ -182,32 +69,17 @@ Fetch the current [Claude Code frontmatter reference](https://code.claude.com/do
 `WebFetch`. Confirm field shapes, naming rules, and progressive-disclosure conventions from both sources; do not guess
 because the formats evolve.
 
-### 2. Validate
+### 4. Define the Contract and Layout
 
-- Reject names that are not kebab-case or collide with an existing skill at the resolved path.
-- Confirm `<scope>` is the invocation working directory and is not a home-level or global skill directory.
-- Stop if `<scope>/.agents/skills/<name>/` or `<scope>/.claude/skills/<name>` already exists.
+Read [references/writing-great-skills.md](references/writing-great-skills.md) completely before choosing the contract or
+layout. It defines the authoring principles, content-routing thresholds, helper runtime defaults, and communication
+contract.
 
-### 3. Read the Authoring Guide and Define the Contract and Layout
+Define the contract and identify every skill the workflow requires, invokes, or hands off to on any supported branch.
+Suggestions, examples, related-skill references, and underlying tool capabilities are not dependencies. Create only the
+directories justified by the selected layout; `SKILL.md` and `agents/openai.yaml` are always required.
 
-Read [references/writing-great-skills.md](references/writing-great-skills.md) before choosing the contract or layout. It
-defines the predictability levers and the prose-versus-code-or-schema decision.
-
-Then define the observable outcome, invariants, preferred defaults, authority, routing, stop conditions, and completion
-evidence. While defining routing, identify every skill that the workflow requires, invokes, or hands off to on any
-supported branch. Exclude suggestions, examples, related-skill references, and underlying tool capabilities. Decide what
-belongs where:
-
-- Will the workflow invoke helper code? → Prefer `scripts/<name>.ts` run with `bun run`; use `scripts/<name>.py` through
-  `uv run` when Python is a better fit.
-- Machine-consumed schema with a real validator? → Bundle both and document the validation route.
-- Reference-only schema documentation, long examples, variant guides, or domain knowledge? → `references/<topic>.md`
-- Templates or files the skill writes into the user's output? → `assets/`
-- None of the above? → ship only the required `SKILL.md` and `agents/openai.yaml`.
-
-Sketch the directory tree first, then create only the subdirectories the layout actually needs.
-
-### 4. Create the Skill
+### 5. Create the Skill
 
 ```bash
 mkdir -p "<scope>/.agents/skills/<name>/agents"
@@ -243,14 +115,12 @@ Write `<scope>/.agents/skills/<name>/SKILL.md` with:
   contract and let repository evidence guide execution.
 - Explicit links to every `references/` file the workflow may need, each with a one-line note describing _when_ to read
   it.
-- CLI signatures for any bundled scripts, including the runtime command (`bun run scripts/<name>.ts` or
-  `uv run scripts/<name>.py`), so the agent can call them without reading them.
+- CLI signatures for every bundled helper, including arguments, output, defaults, and the runtime command, so an agent
+  can invoke it without reading its source.
 
 Use imperative prose and resolve bundled `references/`, `scripts/`, `examples/`, and `assets/` paths relative to the
-owning skill directory.
-
-Aim for `SKILL.md` under 500 lines. If a section grows past ~50 lines and is not core workflow, move it to `references/`
-and link it.
+owning skill directory. Do not add repository-style support files or authoring artifacts that runtime agents will not
+use. Quote YAML plain scalars containing a colon followed by a space; otherwise the frontmatter parser may reject them.
 
 Write `<scope>/.agents/skills/<name>/agents/openai.yaml` with:
 
@@ -262,7 +132,7 @@ policy:
 Set `allow_implicit_invocation` to the inverse of `SKILL.md` `disable-model-invocation`. If later adding Codex UI
 metadata or MCP/tool dependencies, merge them into the same file and keep the policy.
 
-### 5. Create the Claude Code Symlink
+### 6. Create the Claude Code Symlink
 
 Always create a relative symlink so Claude Code picks the skill up from its own discovery path:
 
@@ -271,14 +141,15 @@ mkdir -p "<scope>/.claude/skills"
 ln -s "../../.agents/skills/<name>" "<scope>/.claude/skills/<name>"
 ```
 
-### 6. Verify
+### 7. Verify and Report
 
 - Patch tooling creates files at mode 0644. Before the first verification run, `chmod 755` every executable under
   `scripts/` and `tests/` (a scaffolded test failing its first run with `Permission denied (os error 13)` is this
   cause).
 - `test -f "<scope>/.agents/skills/<name>/SKILL.md"`
 - `test -f "<scope>/.agents/skills/<name>/agents/openai.yaml"`
-- `readlink "<scope>/.claude/skills/<name>"` resolves to the source directory.
+- `readlink "<scope>/.claude/skills/<name>"` equals `../../.agents/skills/<name>`, and the link resolves to the source
+  directory.
 - `test -x` every `scripts/*` and `tests/*` executable so a missed `chmod` fails loudly instead of surfacing later as a
   permission error.
 - `ai-skillet doctor --root "<scope>/.agents/skills/<name>"` exits 0. This is the canonical local schema and policy
@@ -288,10 +159,5 @@ ln -s "../../.agents/skills/<name>" "<scope>/.claude/skills/<name>"
 - Offer to commit the new skill. When the host project's standing instructions require prompt commits, commit without
   further prompting.
 
-## Notes
-
-- The skills CLI parses `SKILL.md` frontmatter as YAML before publishing. A colon followed by a space inside a plain
-  scalar, such as `leave: freeze` in `description`, makes that parser fail. Use an em dash or another safe separator, or
-  quote the entire scalar.
-- Keep helper stdout, commands, paths, frontmatter, and generated skill content undecorated unless that skill's own
-  output contract requires otherwise.
+Keep helper stdout, commands, paths, frontmatter, and generated skill content undecorated unless the new skill's output
+contract requires otherwise.

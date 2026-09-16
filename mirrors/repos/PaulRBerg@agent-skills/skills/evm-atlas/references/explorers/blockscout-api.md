@@ -102,6 +102,7 @@ chain_id=100
 name=Gnosis
 native_currency=XDAI
 instance_url=https://gnosis.blockscout.com/
+api_url=https://gnosis.blockscout.com/api
 hosted_by=blockscout
 is_testnet=false
 layer=1
@@ -274,19 +275,27 @@ For a target chain whose resolved instance is self-hosted or third-party and the
 that instance directly without a key:
 
 ```bash
-# 1. Resolve the instance URL
-eval "$(scripts/resolve-chain.sh 42170 | sed 's/^/CS_/')"   # CS_instance_url, CS_name, …
+# 1. Resolve the API base for a self-hosted instance
+api_url="$(scripts/resolve-chain.sh 2818 | sed -n 's/^api_url=//p')"
 
 # 2. Hit native v2 on that host (no key)
-curl -s "${CS_instance_url}api/v2/addresses/0xADDR/token-balances"
+curl -s "${api_url}/v2/addresses/0xADDR/token-balances"
 
 # Or the Etherscan-compatible layer on that host
-curl -s "${CS_instance_url}api?module=account&action=balance&address=0xADDR"
+curl -s "${api_url}?module=account&action=balance&address=0xADDR"
 ```
 
-Note `instance_url` already ends in `/`. Per-instance hosts are community-operated for many chains, so uptime and
-indexing depth vary. Do not use one to bypass missing credentials, rate limits, or transient errors on a
-Blockscout-hosted target.
+Use the helper's `api_url` for API requests; `instance_url` is the page host. An explicit `explorerApiUrl` in
+`target-mainnets.json` takes precedence over a Chainscout URL. Morph (`2818`) uses
+`https://explorer-api.morph.network/api` for its API and `https://explorer.morph.network` for pages, verified in
+Chromium and through the API on 2026-09-15.
+
+Superseed (`5330`) is not a usable Blockscout instance despite its stale Chainscout entry. Chromium verified on
+2026-09-15 that `https://explorer.superseed.xyz` serves Conduit Explorer and explicitly lacks historical transactions,
+holdings, and transfers. Use the target RPC for state facts; preserve indexed-history coverage as unknown.
+
+Per-instance hosts are community-operated for many chains, so uptime and indexing depth vary. Do not use one to bypass
+missing credentials, rate limits, or transient errors on a Blockscout-hosted target.
 
 ## Unit Conversion
 

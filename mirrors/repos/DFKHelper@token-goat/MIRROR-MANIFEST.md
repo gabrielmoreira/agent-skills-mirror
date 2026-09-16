@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `DFKHelper/token-goat` — 26 default patterns, 2 followed patterns, 4 file(s) materialized.
+Mirror of `DFKHelper/token-goat` — 26 default patterns, 3 followed patterns, 5 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `DFKHelper/token-goat` — 26 default patterns, 2 followed patterns, 4
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 2 |
-| Files         | 4 |
+| Followed pats | 3 |
+| Files         | 5 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -53,6 +53,7 @@ Mirror of `DFKHelper/token-goat` — 26 default patterns, 2 followed patterns, 4
 
 - `CONTRIBUTING.md`
 - `CLAUDE.arch.md`
+- `docs/PROMPT_SESSION_MINING.md`
 
 ## File Index
 
@@ -64,6 +65,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 2 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 3 | → | [`CLAUDE.arch.md`](CLAUDE.arch.md) |
 | 4 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 5 | → | [`docs/PROMPT_SESSION_MINING.md`](docs/PROMPT_SESSION_MINING.md) |
 
 ---
 

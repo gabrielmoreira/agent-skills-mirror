@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `astral-sh/ruff` — 26 default patterns, 0 followed patterns, 13 file(s) materialized.
+Mirror of `astral-sh/ruff` — 26 default patterns, 0 followed patterns, 17 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `astral-sh/ruff` — 26 default patterns, 0 followed patterns, 13 file
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 13 |
+| Files         | 17 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -70,8 +70,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 9 | ✓ | [`.agents/skills/summarise-ecosystem-results/SKILL.md`](.agents/skills/summarise-ecosystem-results/SKILL.md) |
 | 10 | ✓ | [`.agents/skills/wobbling-ty-constraint-order/SKILL.md`](.agents/skills/wobbling-ty-constraint-order/SKILL.md) |
 | 11 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 12 | ✓ | [`agents/references/repository-threat-model.md`](agents/references/repository-threat-model.md) |
-| 13 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 12 | ✓ | [`agents/references/cli-threat-model.md`](agents/references/cli-threat-model.md) |
+| 13 | ✓ | [`agents/references/language-server-threat-model.md`](agents/references/language-server-threat-model.md) |
+| 14 | ✓ | [`agents/references/playground-threat-model.md`](agents/references/playground-threat-model.md) |
+| 15 | ✓ | [`agents/references/repository-threat-model.md`](agents/references/repository-threat-model.md) |
+| 16 | ✓ | [`agents/references/threat-models.md`](agents/references/threat-models.md) |
+| 17 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 
 ---
 

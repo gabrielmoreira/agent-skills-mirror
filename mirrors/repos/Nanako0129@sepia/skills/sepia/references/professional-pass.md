@@ -40,7 +40,7 @@ Weighting sets the order and depth of attention, not an exemption: a short reply
 
 For long-form (articles, postmortems), also run the outline test and QUD check in `discourse-pass.md` §1–3: extract first sentences per paragraph; a clean-summary outline and a briefing→justification→consequences→reflection question-sequence are both machine shapes.
 
-## Report format (review operation)
+## Report format (review; refactor stage 1 prints the same report before editing)
 
 ```text
 SEPIA REVIEW — <document type, venue>
@@ -50,6 +50,8 @@ Prose layer: author=<operative | prior | none> executor=<operative | prior | non
 Venue corpus: <artifacts sampled, or "none — using domain baseline">
 Style scan: <style-pass §2–3 and §5 rhythm hits with quoted evidence, or none>
 Failed: <#n check-name — quoted evidence>   (one line per failed check)
+Deferred: <#n check-name — quoted evidence — needs human | none>   (unattended runs only; omitted otherwise)
+Protected: <#n check-name — quoted evidence | none>   (only when ranges were declared, omitted otherwise; the passage is identified by its quoted words, never by a number the model derives — the caller already holds its own ranges)
 Passed: <check numbers only>
 Verdict: <clean / isolated hits / cluster> → <ship / refactor / recreate>
 ```

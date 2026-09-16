@@ -2,7 +2,7 @@
 repo: tirth8205/code-review-graph
 repoUrl: https://github.com/tirth8205/code-review-graph.git
 refType: branch
-ref: main
+ref: staging
 ---
 
 # Mirror Manifest
@@ -15,7 +15,7 @@ Mirror of `tirth8205/code-review-graph` — 26 default patterns, 0 followed patt
 |---------------|-------|
 | Repo          | `tirth8205/code-review-graph` |
 | Ref Type      | `branch` |
-| Ref           | `main` |
+| Ref           | `staging` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 11 |

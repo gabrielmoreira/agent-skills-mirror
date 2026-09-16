@@ -45,6 +45,8 @@ All HTTP endpoints live here, organised by feature: 70 modules, 82 blueprints, l
 | `routes/channels.py` | `bp_channels` — 24 chat-channel adapters (Telegram, Signal, WhatsApp, Discord, Slack, IRC, iMessage, WebChat, …) |
 | `routes/components.py` | `bp_components` — Flow-panel detail endpoints (tool / runtime / machine / gateway / brain) |
 | `routes/local_query.py` | `bp_local_query` — `/api/local/*` DuckDB read API + the daemon-proxy `_dispatch` (shape→store bridge shared by HTTP and the cloud relay) |
+| `routes/public_api.py` | `bp_public_api` — `/api/q/1/*`, the **keyed, cross-origin** read API custom UIs are built on (`docs/BUILD_YOUR_OWN_UI.md`). Same `_dispatch`, but it is the one surface that does not trust loopback: every request needs a scoped `cmk_` key, and CORS is echoed only for an origin that key named |
+| `routes/apikeys_admin.py` | `bp_apikeys_admin` — `/api/apikeys`, minting and revoking the keys `public_api` accepts. Kept apart from that surface on purpose: it sits behind the dashboard's own cross-origin write guard and never carries a CORS header, so a page holding a read key can neither list this node's keys nor issue itself a wider one |
 | `routes/guard.py` | `bp_guard` — live session control (Pause/Stop/Kill), Guard policy CRUD, policy decision log, learned baselines. Sessions ranked by **spend at risk**, not severity |
 | `routes/policy.py` | `bp_policy` — the *pre-tool* sandbox/permission surface (`/api/tool-policy`). Deliberately a different axis from `routes/guard.py`: different table, no shared state |
 | `routes/hooks.py` | `bp_hooks` — hook install / status / uninstall per runtime, and the gate's decision log |
@@ -66,11 +68,12 @@ All HTTP endpoints live here, organised by feature: 70 modules, 82 blueprints, l
 
 | File | Purpose |
 |------|---------|
-| `clawmetry/cli.py` | CLI entry point — `clawmetry`, `connect`, `sync`, `status`, `license`, `hook`, `update` |
+| `clawmetry/cli.py` | CLI entry point — `clawmetry`, `connect`, `sync`, `status`, `license`, `hook`, `key`, `update` |
 | `clawmetry/sync.py` | Cloud sync daemon — ingests into DuckDB, owns the writer lock, runs the detectors and Guard policies, streams the E2E-encrypted (AES-256-GCM) snapshot to `ingest.clawmetry.com`. Holds `_FAMILY_ADAPTER_SPECS` (the adapters that actually load) and `_CHANNEL_DIRS` |
 | `clawmetry/local_store.py` | **DuckDB store** — the single data layer features read and write (the daemon holds the writer lock). Schema v15 |
 | `clawmetry/local_server.py` | Daemon-hosted localhost query server (`/local/query`, discovered through `~/.clawmetry/local_query.json`) so the dashboard reads DuckDB without grabbing the writer lock |
 | `clawmetry/query_contract.py` | The declared node query surface (`q/1`), rendered to `docs/QUERY_CONTRACT.md`. Additive-only inside a version |
+| `clawmetry/apikeys.py` | Scoped read keys (`cmk_…`) for custom UIs: mint, verify, revoke. SHA-256 in `~/.clawmetry/api_keys.json` (0600); the scope a key carries maps to `query_contract`'s per-method `scope` |
 | `clawmetry/entitlements.py` | Single source of truth for tiers, `FREE_RUNTIMES` / `PAID_RUNTIMES`, `ALL_CHANNELS` and every capacity limit. GRACE by default |
 | `clawmetry/license.py` | Offline Ed25519 verification of self-hosted license keys |
 | `clawmetry/proxy.py` | Enforcement proxy — budget limits, loop detection, model routing (port 4100) |
@@ -80,6 +83,8 @@ All HTTP endpoints live here, organised by feature: 70 modules, 82 blueprints, l
 | `clawmetry/detector_calibration.py` | Where a threshold comes from: module defaults → `RUNTIME_PROFILES` → the cohort's learned baseline → a per-runtime env override. `resolve_thresholds` reports which layer set each value |
 | `clawmetry/detector_money.py` | `spend_at_risk_usd` and the ranking. Only a measured basis may promote a warning to `critical` |
 | `clawmetry/policy_engine.py` | **Pure** Guard policy evaluator — detector incident + policies → at most one enforcement decision per session, including the escalation ladder |
+| `clawmetry/detector_injection.py` | The **content** detector `prompt_injection`: declared injection signatures in the text of tool results and user-sourced messages; critical when a high-risk call follows in the same turn. Never keeps the matched text |
+| `clawmetry/prompt_injection.py` | **Pure** injection signatures plus the untrusted-content signal for the Claude Code pre-tool gate (after ATLAS AML.M0030): the hook derives tool names and signature ids for the current turn from the transcript, `approvals.match_policy` rates a high-risk call critical after untrusted output |
 | `clawmetry/framework_map.py` | **Pure** mapping contract from every Guard finding kind to OWASP LLM 2026, OWASP Agentic 2026 and MITRE ATLAS identifiers, with edition, rationale, limits and tests. Stamps `incident["frameworks"]`; renders `docs/FRAMEWORK_COVERAGE.md` |
 | `clawmetry/guard_actuator.py` | The one place a decision becomes a signal. Both the manual and the automatic path go through it |
 | `clawmetry/process_control.py` | Signal actuators — pause (SIGSTOP / `NtSuspendProcess`), stop (SIGINT / a console Ctrl+C), kill (SIGTERM→SIGKILL tree / `taskkill /T`), pid-reuse guarded. Owns `runtime_control_support()` |
@@ -118,6 +123,7 @@ All HTTP endpoints live here, organised by feature: 70 modules, 82 blueprints, l
 | `docs/EGRESS.md` | Every outbound destination, what it carries, and how to verify it on the wire |
 | `docs/FRAMEWORK_COVERAGE.md` | **Generated** Guard framework coverage (coverage, not compliance) with gaps (`scripts/gen_framework_coverage.py --check`) |
 | `docs/HOOK_COEXISTENCE.md` | How ClawMetry shares a runtime's hook config with other writers |
+| `docs/BUILD_YOUR_OWN_UI.md` | The keyed read API, its scopes, and how to point a coding agent at it |
 | `docs/CUSTOM_RUNTIME_INGEST.md` | The HTTP ingest API for a runtime with no adapter |
 | `docs/EVENT_RETENTION.md` | Store growth and trimming |
 | `CHANGELOG.md` | Version history |
@@ -172,6 +178,7 @@ The complete surface is generated at `/openapi.json` and browsable at `/api/docs
 - `/api/signals` — Behaviour signal rates per window (`1d|7d|30d`) and `?runtime=`, with coverage and headline; `/api/signals/<name>/sessions` lists matching sessions, never phrases
 - `/api/guard/sessions` — What is running, what a detector thinks has gone off track, and whether each session can be controlled at all; `/api/guard/control` is the Pause / Stop / Kill button and `/api/guard/policies` the autonomous rules
 - `/api/entitlement` — The resolved entitlement (tier, allowed runtimes, features, capacity). GRACE mode answers "allowed" for everything until the announced enforce date
+- `/api/q/1/*` — The **public** read API: the same q/1 methods, gated by a scoped API key instead of by being local. `GET /api/q/1` says what a key can read and `GET /api/q/1/llms.txt` describes the whole surface for a coding agent. `docs/BUILD_YOUR_OWN_UI.md`
 - `/api/local/*` — The DuckDB read API, proxied to the daemon. The method set is declared in `clawmetry/query_contract.py`; `make lint-daemon-allowlist` fails when a route calls one the daemon does not serve
 - `/v1/metrics`, `/v1/traces`, `/v1/logs` — OTLP receiver (binds `127.0.0.1` by default)
 
@@ -282,6 +289,9 @@ CLAWMETRY_DUCKDB_THREADS=2             # DuckDB defaults to every core; never sh
 CLAWMETRY_DUCKDB_MEMORY_LIMIT=...      # Ceiling; derived from store size when unset
 CLAWMETRY_AGG_CACHE_TTL=20             # Seconds a hot rollup is reused instead of re-scanned
 CLAWMETRY_AUTO_COMPACT=0               # Kill switch for startup compaction
+
+# Received telemetry (OTLP)
+CLAWMETRY_OTLP_CONTENT=redacted        # full | redacted (default) | metadata: how much span/log content the OTLP receivers store. Secret masking (CLAWMETRY_REDACT) and personal-data filtering (CLAWMETRY_REDACT_PII) stay separate switches. clawmetry/otlp_content.py
 
 # Egress
 CLAWMETRY_OFFLINE=1                    # Air-gapped: no install ping, no version check. See docs/EGRESS.md

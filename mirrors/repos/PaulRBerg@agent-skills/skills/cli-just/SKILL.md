@@ -29,15 +29,8 @@ Create readable task automation that matches the repository's installed Just ver
   )
   ```
 
-- Prefer explicit, small recipes; Just-native executable checks; private helpers; check/write recipe pairs; and aliases
-  after their target recipes. Prefer `which()` plus `assert()` with actionable install guidance over shell `command -v`
-  or backtick `which` checks when the justfile already enables `set unstable` and `set lists`. Otherwise, use
-  `require()` when its generic missing-executable error is sufficient. Put an assertion at top level only when every
-  recipe needs that tool; otherwise make it a private prerequisite of the affected recipes.
-- Make recipes quiet by default: prefix the recipe name with `@` unless echoing commands has clear value. Recipe-level
-  `@` inverts per-line `@`, so never also prefix lines inside a `@recipe`. Never add `@` to a `[script]` recipe: scripts
-  are already quiet, and `@` un-mutes them. See "Quiet Recipes and Command Prefixes" in `references/recipes.md`.
-- On stock macOS, assume `/bin/bash` 3.2 unless the recipe explicitly selects a newer shell.
+- Read `references/recipes.md` when writing recipes for executable prerequisites and quiet/script echo rules.
+- Read `references/inline-scripts.md` when selecting a shell or writing script bodies, including macOS Bash constraints.
 - Use the user's section-banner style when creating a new standalone justfile; existing repository organization
   overrides it.
 

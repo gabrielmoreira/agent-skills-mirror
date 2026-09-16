@@ -166,7 +166,7 @@ Authoritative list = the `reducer` map in `store/index.ts`. One-line purposes:
 | `channelConnections` | Messaging channel connections (WhatsApp, Slack, …)                      | connections + migration/default-channel fields                 |
 | `chatRuntime`        | Streaming buffers, tool timelines, inference status, artifacts          | only `artifactsByThread` (ready snapshots)                     |
 | `companion`          | Companion overlay state                                                 | no                                                             |
-| `connectivity`       | navigator.onLine + backend/core health status                           | no                                                             |
+| `connectivity`       | navigator.onLine, core health, renderer↔core socket, core↔hosted link   | no                                                             |
 | `coreMode`           | Pre-login core mode selection (embedded / self-hosted / cloud)          | `mode` (plain localStorage)                                    |
 | `layout`             | Two-pane layout geometry (sidebar visibility, dragged widths)           | `panels`                                                       |
 | `locale`             | UI language                                                             | `current` (plain localStorage)                                 |
@@ -534,7 +534,7 @@ Conventions:
 - **`useDaemonHealth` / `useDaemonLifecycle`** — core service health.
 - **`useDictationHotkey` / `usePttHotkey`** — global hotkey managers.
 - **`useDeveloperMode`**, **`useMediaQuery`**, **`useEscapeKey`**, **`useStickToBottom`** — UI utilities.
-- Feature hooks: `useFlowRunProgress`, `useWorkflowBuilderChat`, `useConsciousItems`, `useSubconscious`, `useIntelligenceStats`, `useCostDashboard`, ….
+- Feature hooks: `useFlowRunProgress`, `useWorkflowBuilderChat`, `useConsciousItems`, `useIntelligenceStats`, `useCostDashboard`, ….
 
 Feature-local hooks live next to their feature under `features/*/`.
 

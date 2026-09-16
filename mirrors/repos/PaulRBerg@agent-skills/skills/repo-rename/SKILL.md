@@ -20,8 +20,14 @@ Preview the complete GitHub, Git, filesystem, and agent-continuity mutation set 
 - Update literal old paths in `~/.claude/projects`, `~/claude/projects` when present, `~/.codex/sessions`, and
   `~/.codex/config.toml` only when the repository has an active Claude Code or Codex transcript; this continuity update
   does not apply to repos with no active transcripts.
-- Update constrained literal old-name references inside the repository, excluding VCS, dependencies, and generated build
-  directories.
+- Update constrained literal old-name references inside the repository, excluding VCS, dependencies (including Python
+  virtual environments), caches, and generated build directories.
+- By default, skip `PROMPT.md`, `TODO.md`, and symlinks before reading replacement candidates; prune excluded
+  directories during discovery. When the user explicitly authorizes updating notes, dependencies, caches, or generated
+  files, pass `--include-local-state` to both preview and apply. This includes those repository text files while
+  preserving file permissions; symlinks, binary files, and `.git` remain excluded.
+- The helper honors `CLAUDE_CONFIG_DIR` and `CODEX_HOME`, gates continuity updates on active transcripts, and replaces
+  only the absolute repository path in continuity stores and Codex config.
 - Do not modify other transcript stores, archives, remotes, or repositories.
 
 ## Workflow

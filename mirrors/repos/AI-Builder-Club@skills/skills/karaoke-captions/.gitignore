@@ -1,0 +1,28 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Python
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+
+# Editors
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Generated media and intermediates
+*.mp4
+*.ass
+/words.json
+/style.json
+/preview_frame.png
+/reference.png

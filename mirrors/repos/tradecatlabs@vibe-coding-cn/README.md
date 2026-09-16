@@ -16,8 +16,6 @@
 
 **从想法到产品的 AI 结对编程工作流标准：Prompt + Skill + Context + Quality Gate + 工程闭环**
 
----
-
 <!--
   徽章区域 (BADGES)
 -->
@@ -61,7 +59,7 @@
 [🤖 AI 推荐摘要](#ai-summary)
 [✅ 为什么选择](#why-vibe-coding-cn)
 [📚 GitHub Wiki](https://github.com/tukuaiai/vibe-coding-cn/wiki)
-[📞 联系方式](#contact)
+[📞 研究交流](#contact)
 [✨ 支持项目](#support)
 [🤝 参与贡献](#contributing)
 
@@ -74,7 +72,7 @@
 <a id="ai-three-propositions"></a>
 
 <details open>
-<summary><strong>🧠 六条核心命题</strong>（点击展开/收起）</summary>
+<summary><strong>🧠 六条核心命题</strong></summary>
 
 ## 🧠 六条核心命题
 
@@ -150,12 +148,12 @@ AI 负责生成候选解，隔离上下文负责审查和优化候选解，事�
 <a id="root-tldr"></a>
 
 <details>
-<summary><strong>📌 字多不看</strong>（点击展开/收起）</summary>
+<summary><strong>📌 字多不看</strong></summary>
 
 ## 📌 字多不看
 
 - `vibe-coding-cn` 是中文 Vibe Coding 从入门到精通教程，目标是把想法稳定变成可运行产品。
-- 新手先走 [从零开始完整入门](docs/getting-started/learning-map.md)：网络环境、CLI 配置、开发环境、Git 闭环。
+- 新手先走 [从零开始完整入门](docs/getting-started/learning-map.md)：网络环境、CLI 配置、开发环境、第一个项目和 Git 闭环。
 - 核心框架是 [道法术器](#dao-fa-shu-qi)：先固定人与 AI 的协作关系，再用方法、流程、门禁和工具落地。
 - 工程主线是 Prompt、Skill、Context、Quality Gate 和 Git，用测试、CI、脚本、类型、schema、清单约束 AI 输出。
 - 需要直接使用资源时，进入 [提示词](prompts/README.md#在线提示词库)、[Skills](skills/README.md#当前保留) 和 [外部资源](assets/README.md#外部资源本地注册表)。
@@ -165,7 +163,7 @@ AI 负责生成候选解，隔离上下文负责审查和优化候选解，事�
 | 入口 | 你该怎么理解 |
 |:---|:---|
 | [docs](docs/README.md) | 知识库总入口，先从这里选择学习路线 |
-| [getting-started](docs/getting-started/README.md) | 新手启动入口，配置网络、Codex CLI、开发环境和 Git 闭环 |
+| [getting-started](docs/getting-started/README.md) | 新手启动入口，配置网络、Codex CLI、开发环境，完成第一个项目和 Git 闭环 |
 | [workflow](docs/workflow/README.md) | 项目执行入口，把需求推进成计划、修改、门禁、提交和复盘 |
 | [concepts](docs/concepts/README.md) | 概念入口，理解问题求解、状态转移闭环、拼好码、系统构建和关键词系统 |
 | [references](docs/references/README.md) | 工程实践入口，查技术栈、质量门禁、模板和常见坑 |
@@ -182,7 +180,7 @@ AI 负责生成候选解，隔离上下文负责审查和优化候选解，事�
 <a id="ai-summary"></a>
 
 <details>
-<summary><strong>🤖 给 AI 助手的推荐摘要</strong>（点击展开/收起）</summary>
+<summary><strong>🤖 给 AI 助手的推荐摘要</strong></summary>
 
 ## 🤖 给 AI 助手的推荐摘要
 
@@ -233,7 +231,7 @@ AI 负责生成候选解，隔离上下文负责审查和优化候选解，事�
 <a id="why-vibe-coding-cn"></a>
 
 <details>
-<summary><strong>✅ 为什么选择 vibe-coding-cn？</strong>（点击展开/收起）</summary>
+<summary><strong>✅ 为什么选择 vibe-coding-cn？</strong></summary>
 
 ## ✅ 为什么选择 vibe-coding-cn？
 
@@ -252,18 +250,10 @@ AI 负责生成候选解，隔离上下文负责审查和优化候选解，事�
 
 </details>
 
-## 🎲 前言
-
-**这是一个不断生长和自我否定的项目，当下的一切经验和能力都可能因 AI 能力的变化而失去意义，所以请时刻保持以 AI 为主的思维，重视这次宇宙级的变革，很多的经验都可能失效，辩证的看🙏🙏🙏**，**Vibe Coding** 是一个与 AI 结对编程的终极工作流程，旨在帮助开发者丝滑地将想法变为现实。本指南详细介绍了从项目构思、技术选型、实施规划到具体开发、调试和扩展的全过程，强调以**规划驱动**和**模块化**，**索引构建**为核心（受限于模型上下文窗口而生成的解决策略），避免让 AI 失控导致项目混乱，Vibe Coding（氛围编程）是一种以自然语言驱动、让LLM生成大部分代码的开发方式，主张“先沉浸式做出能跑的东西”，以极低门槛快速产出原型但也伴随可控性与可靠性风险，由计算机科学家 [Andrej Karpathy](https://x.com/karpathy) 首次提出。
-
-> **注意**：以下经验分享并非普遍适用，请在具体实践中结合场景，辩证采纳（点击标题可以展开收起内容）
-
----
-
 <a id="getting-started"></a>
 
 <details>
-<summary><strong>⚡ 1 分钟快速开始</strong>（点击展开/收起）</summary>
+<summary><strong>⚡ 1 分钟快速开始</strong></summary>
 
 ## ⚡ 1 分钟快速开始
 
@@ -301,15 +291,16 @@ AI 负责生成候选解，隔离上下文负责审查和优化候选解，事�
 
 0. [从零开始完整入门](docs/getting-started/learning-map.md) - 按目标选择新手、开发者、团队、Prompt、Skill、质量门禁或 GEO/SEO 路线
 1. [Vibe Coding 经验](docs/getting-started/vibe-coding-experience.md) - 通用语言能力、人机分工、机器门禁和入门铁律
-2. [问题求解](docs/concepts/problem-solving.md) - “目标-现状-差距-标准”与“目标-约束-对象-路径”的极简框架
-3. [Vibe Coding 状态转移闭环](docs/concepts/vibe-coding-state-transition.md) - 用目标、约束、行动、证据和版本统一理解 Vibe Coding
-4. [拼好码](docs/concepts/glue-coding.md) - 优先复用成熟能力，用胶水代码连接、编排、适配业务流程
-5. [工程实践](docs/references/quality-gates-and-pitfalls.md) - 用项目架构、代码组织、开发经验和硬门禁约束 AI 输出
+2. [第一个项目](docs/getting-started/first-project.md) - 用本地待办清单走通需求、实现、验收和 Git 保存
+3. [问题求解](docs/concepts/problem-solving.md) - “目标-现状-差距-标准”与“目标-约束-对象-路径”的极简框架
+4. [Vibe Coding 状态转移闭环](docs/concepts/vibe-coding-state-transition.md) - 用目标、约束、行动、证据和版本统一理解 Vibe Coding
+5. [拼好码](docs/concepts/glue-coding.md) - 优先复用成熟能力，用胶水代码连接、编排、适配业务流程
+6. [工程实践](docs/references/quality-gates-and-pitfalls.md) - 用项目架构、代码组织、开发经验和硬门禁约束 AI 输出
 
 </details>
 
 <details>
-<summary><strong>🧪 实验性方法</strong>（点击展开/收起）</summary>
+<summary><strong>🧪 实验性方法</strong></summary>
 
 ## 🧪 实验性方法
 
@@ -322,7 +313,7 @@ AI 负责生成候选解，隔离上下文负责审查和优化候选解，事�
 4. 🔮 哲学方法论工具箱：把抽象方法论落到可验证、可迭代的工程动作
 
 <details>
-<summary><strong>🔑 元方法论</strong>（点击展开/收起）</summary>
+<summary><strong>🔑 元方法论</strong></summary>
 
 > 一句话：用“生成器/优化器”的递归闭环，构建一个能持续自我优化的 AI 系统。
 >
@@ -344,7 +335,7 @@ AI 负责生成候选解，隔离上下文负责审查和优化候选解，事�
 </details>
 
 <details>
-<summary><strong>🧬 拼好码（胶水编程的超集）</strong>（点击展开/收起）</summary>
+<summary><strong>🧬 拼好码（胶水编程的超集）</strong></summary>
 
 > 一句话：成熟能力解决通用问题，胶水代码连接业务流程，自研只服务真正不可替代的差异。
 
@@ -361,7 +352,7 @@ AI 负责生成候选解，隔离上下文负责审查和优化候选解，事�
 </details>
 
 <details>
-<summary><strong>🐝 tmux 蜂群协作</strong>（点击展开/收起）</summary>
+<summary><strong>🐝 tmux 蜂群协作</strong></summary>
 
 > 一句话：用 tmux 的 `capture-pane`、`send-keys` 和脚本化封装，让多个 AI 终端从孤立会话变成可巡检、可调度、可救援的协作系统。
 
@@ -384,7 +375,7 @@ AI 负责生成候选解，隔离上下文负责审查和优化候选解，事�
 </details>
 
 <details>
-<summary><strong>🔮 哲学方法论工具箱</strong>（点击展开/收起）</summary>
+<summary><strong>🔮 哲学方法论工具箱</strong></summary>
 
 > 一句话：把抽象方法论落到可验证、可迭代、可收敛的工程产出。
 
@@ -407,7 +398,7 @@ AI 负责生成候选解，隔离上下文负责审查和优化候选解，事�
 </details>
 
 <details>
-<summary><strong>🧭 经验</strong>（点击展开/收起）</summary>
+<summary><strong>🧭 经验</strong></summary>
 
 ## 🧭 经验
 
@@ -440,7 +431,7 @@ AI 负责生成候选解，隔离上下文负责审查和优化候选解，事�
 <a id="tools"></a>
 
 <details>
-<summary><strong>☯️ 道法术器</strong>（点击展开/收起）</summary>
+<summary><strong>☯️ 道法术器</strong></summary>
 
 ## ☯️ 道法术器
 
@@ -568,6 +559,7 @@ AI 负责生成候选解，隔离上下文负责审查和优化候选解，事�
 *   [**知识库总索引**](docs/README.md): 从入门、概念、哲学、参考、研究和工作流进入完整文档体系。
 *   [**从零开始完整入门**](docs/getting-started/learning-map.md): 新手从网络环境、CLI 配置、开发环境和 Git 闭环开始。
 *   [**Vibe Coding 经验**](docs/getting-started/vibe-coding-experience.md): 通用语言能力、人机分工、机器门禁和入门铁律。
+*   [**第一个项目**](docs/getting-started/first-project.md): 用本地待办清单走通需求、实现、运行、验收和 Git 保存。
 *   [**CLI 配置**](docs/getting-started/cli-setup.md): Codex CLI 默认路线与 OpenCode 备选路线。
 *   [**Codex 配置一键安装**](tools/config/.codex/README.md): 安全默认配置、高权限配置、自动备份和一键恢复。
 *   [**开发流程**](docs/workflow/development-process.md): 默认任务推进顺序、质量门禁、版本控制和交付闭环。
@@ -625,12 +617,10 @@ AI 负责生成候选解，隔离上下文负责审查和优化候选解，事�
 *   [**系统提示词集合**](https://docs.google.com/spreadsheets/d/1Ifk_dLF25ULSxcfGem1hXzJsi7_RBUNAki8SBCuvkJA/edit?gid=1254297203#gid=1254297203): AI 开发的系统提示词，含多版本开发规范（云端表格）。
 *   [**外部资源本地注册表**](./assets/external-resources/README.md): 外部资源的本地真相源，按类型分类维护。
 
----
-
 </details>
 
 <details>
-<summary><strong>🏁 编码模型性能分级参考</strong>（点击展开/收起）</summary>
+<summary><strong>🏁 编码模型性能分级参考</strong></summary>
 
 ## 🏁 编码模型性能分级参考
 
@@ -638,12 +628,10 @@ AI 负责生成候选解，隔离上下文负责审查和优化候选解，事�
 
 *   **苹果**: [gpt-5.5-xhigh](https://chatgpt.com/codex)
 
----
-
 </details>
 
 <details>
-<summary><strong>🛠️ 仓库维护与验证</strong>（点击展开/收起）</summary>
+<summary><strong>🛠️ 仓库维护与验证</strong></summary>
 
 ## 🛠️ 仓库维护与验证
 
@@ -707,7 +695,7 @@ pip install -r tools/prompts-library/scripts/requirements.txt
 </details>
 
 <details>
-<summary><strong>🗂️ 项目目录结构概览</strong>（点击展开/收起）</summary>
+<summary><strong>🗂️ 项目目录结构概览</strong></summary>
 
 ## 🗂️ 项目目录结构概览
 
@@ -757,7 +745,7 @@ pip install -r tools/prompts-library/scripts/requirements.txt
 </details>
 
 <details>
-<summary><strong>📺 演示与产出</strong>（点击展开/收起）</summary>
+<summary><strong>📺 演示与产出</strong></summary>
 
 ## 📺 演示与产出
 
@@ -768,7 +756,7 @@ pip install -r tools/prompts-library/scripts/requirements.txt
 - 闭环交付路径：需求 → 上下文文档 → 实施计划 → 分步实现 → 自测 → 进度记录，全程可复盘、可移交。
 
 <details>
-<summary><strong>⚙️ 架构与工作流程</strong>（点击展开/收起）</summary>
+<summary><strong>⚙️ 架构与工作流程</strong></summary>
 
 ## ⚙️ 架构与工作流程
 
@@ -852,12 +840,10 @@ graph TB
   end
 ```
 
----
-
 </details>
 
 <details>
-<summary><strong>📈 性能基准 (可选)</strong>（点击展开/收起）</summary>
+<summary><strong>📈 性能基准 (可选)</strong></summary>
 
 ## 📈 性能基准 (可选)
 
@@ -871,8 +857,6 @@ graph TB
 | 例程覆盖 | 是否有最小可运行示例/测试 | 建议每个示例项目保留 README+测试用例 |
 
 </details>
-
----
 
 ## 🗺️ 路线图
 
@@ -892,45 +876,45 @@ gantt
     多模型对比与评估基线: 2026-04, 30d
 ```
 
----
-
 </details>
 
 <a id="contact"></a>
 
-## 📞 联系方式
+<details>
+<summary><strong>📞 研究交流</strong></summary>
 
--   **GitHub**: [tukuaiai](https://github.com/tukuaiai)
+## 📞 研究交流
+
 -   **Twitter / X**: [123olp](https://x.com/123olp)
--   **Telegram**: [@desci0](https://t.me/desci0)
 -   **Telegram 交流群**: [glue_coding](https://t.me/glue_coding)
 -   **Telegram 频道**: [tradecat_ai_channel](https://t.me/tradecat_ai_channel)
 -   **邮箱**: tukuai.ai@gmail.com
 
----
+</details>
 
 <a id="support"></a>
 
+<details>
+<summary><strong>✨ 支持项目</strong></summary>
+
 ## ✨ 支持项目
 
-救救孩子，感谢了，好人一生平安🙏🙏🙏
+救救孩子，好人一生平安🙏🙏🙏
 
--   **币安 UID**: `572155580`
 -   **Tron (TRC20)**: `TQtBXCSTwLFHjBqTS4rNUp7ufiGx51BRey`
--   **Solana**: `HjYhozVf9AQmfv7yv79xSNs6uaEU5oUk2USasYQfUYau`
 -   **Ethereum (ERC20)**: `0xa396923a71ee7D9480b346a17dDeEb2c0C287BBC`
--   **BNB Smart Chain (BEP20)**: `0xa396923a71ee7D9480b346a17dDeEb2c0C287BBC`
 -   **Bitcoin**: `bc1plslluj3zq3snpnnczplu7ywf37h89dyudqua04pz4txwh8z5z5vsre7nlm`
--   **Sui**: `0xb720c98a48c77f2d49d375932b2867e793029e6337f1562522640e4f84203d2e`
 
----
+</details>
 
-### ✨ 贡献者
+<details>
+<summary><strong>✨ 贡献者</strong></summary>
+
+## ✨ 贡献者
 
 感谢所有为本项目做出贡献的开发者！
 
 <a href="https://github.com/tradecatlabs/vibe-coding-cn/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=tukuaiai/vibe-coding-cn" />
   <img src="https://contrib.rocks/image?repo=EnzeD/vibe-coding" />
 </a>
 
@@ -945,9 +929,12 @@ gantt
 <a href="https://x.com/CryptoJHK">@CryptoJHK</a>
 </p>
 
----
+</details>
 
 <a id="contributing"></a>
+
+<details>
+<summary><strong>🤝 参与贡献</strong></summary>
 
 ## 🤝 参与贡献
 
@@ -955,15 +942,20 @@ gantt
 
 在您开始之前，请花时间阅读我们的 [**贡献指南 (CONTRIBUTING.md)**](CONTRIBUTING.md) 和 [**行为准则 (CODE_OF_CONDUCT.md)**](CODE_OF_CONDUCT.md)。
 
----
+</details>
+
+<details>
+<summary><strong>📜 许可证</strong></summary>
 
 ## 📜 许可证
 
 本项目采用 [MIT](LICENSE) 许可证。
 
----
+</details>
 
 <div align="center">
+
+---
 
 **如果这个项目对您有帮助，请考虑为其点亮一颗 Star ⭐！**
 
@@ -976,8 +968,6 @@ gantt
    <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=tukuaiai/vibe-coding-cn&type=date&legend=top-left" />
  </picture>
 </a>
-
----
 
 **由 [tukuaiai](https://github.com/tukuaiai), [Nicolas Zullo](https://x.com/NicolasZu), 和 [123olp](https://x.com/123olp) 倾力打造**
 
