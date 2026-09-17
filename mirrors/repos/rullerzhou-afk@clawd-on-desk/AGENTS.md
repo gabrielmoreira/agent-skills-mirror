@@ -4,7 +4,7 @@ This file is the entry point for coding agents working in this repository. Keep 
 
 ## Project Overview
 
-Clawd 是一个 Electron 桌宠：通过 hook、日志轮询、plugin 和 extension 感知 AI coding agent 的工作状态，并播放像素风动画。当前支持 Claude Code、Codex CLI、Copilot CLI、Gemini CLI、Antigravity CLI (agy)、Cursor Agent、CodeBuddy、WorkBuddy、Grok Build、Kiro CLI、Kimi Code CLI (Kimi-CLI)、Qwen Code、ZCode、CodeWhale、opencode、MiMo Code、Pi、OpenClaw、Hermes Agent、Qoder、QoderWork、QwenWork (千问办公)、Reasonix、DeepSeek Harness、TraeCode (Trae CN)；内置 Clawd / Calico / Cloudling 三套主题，支持用户主题；平台覆盖 Windows、macOS、Linux，UI 支持 en / zh / zh-TW / ko / ja / pt-BR / es。
+Clawd 是一个 Electron 桌宠：通过 hook、日志轮询、plugin 和 extension 感知 AI coding agent 的工作状态，并播放像素风动画。当前支持 Claude Code、Codex CLI、Copilot CLI、Gemini CLI、Antigravity CLI (agy)、Cursor Agent、CodeBuddy、WorkBuddy、Grok Build、Kiro CLI、Kimi Code CLI (Kimi-CLI)、Qwen Code、ZCode、CodeWhale、opencode、MiMo Code、Pi、OpenClaw、Hermes Agent、Qoder、QoderWork、QwenWork (千问办公)、Reasonix、DeepSeek Harness、TraeCode (Trae CN)；内置 Clawd / Calico / Cloudling 三套主题，支持用户主题，并可经 Settings 从独立 `rullerzhou-afk/clawd-themes` 仓库下载可选官方主题（Hash Sage，external theme 权限、可卸载）；平台覆盖 Windows、macOS、Linux，UI 支持 en / zh / zh-TW / ko / ja / pt-BR / es。
 
 ## Common Commands
 
@@ -22,6 +22,7 @@ npm test
 npm run verify:electron
 npm run verify:release
 npm run audit:assets
+npm run audit:pr-history-assets
 npm run audit:native-package -- --app-root <extracted-app-root> --target <target-id>
 npm run create-theme
 
@@ -126,7 +127,8 @@ Copilot CLI 同步走 `<COPILOT_HOME 或 ~/.copilot>/hooks/hooks.json`，marker-
 | `src/dashboard-quick-mode.js` | 完整 Dashboard 的 1–9 键盘模式（**macOS/Windows only**）：quick 宿主、opacity/input parking、轮次栅栏与冻结数字映射；Windows 显式取消与页面失效的来源恢复在 `src/quick-select-origin-focus.js`，quick 宿主的退出清理挂在 `before-quit` |
 | `src/session-hud.js` + `src/session-hud-renderer.js` | 桌宠旁轻量会话 HUD、折叠行、点击跳转 |
 | `src/session-alias.js` | session alias key 规范化、TTL pruning、Kiro cwd scope |
-| `src/theme-loader.js` + `src/theme-runtime.js` | stateless 主题加载/消毒与唯一 active-theme owner |
+| `src/theme-loader.js` + `src/theme-runtime.js` | stateless 主题加载/消毒与唯一 active-theme owner；`waitForThemeReloadSettled` 完成信号 |
+| `src/official-theme-catalog.js` / `-download.js` / `-installer.js` / `-main.js` | 官方可下载主题：严格 catalog/cache、Electron `net.request` 流式下载、受限流式 ZIP 解压与 marker-before-rename、main owner/IPC/共享 `theme` lock |
 | `src/prefs.js` | 偏好 schema、load/save/migrate/validate，设置持久化入口 |
 | `src/settings-actions*.js` + `src/settings-effect-router.js` | 设置 validators / commands / pre-commit gates 与 post-commit runtime effects |
 | `src/settings-controller.js` | 设置系统唯一写入者 |
@@ -212,6 +214,7 @@ Copilot CLI 同步走 `<COPILOT_HOME 或 ~/.copilot>/hooks/hooks.json`，marker-
 - 需要编辑发布素材时，先复制到 `assets/source/` 再改，不要直接改工作素材来源不明的文件
 - `assets/source/cloudling-pointer-bridge/` 是 Cloudling 指针桥素材的保留源文件目录；运行时逻辑已内联进主题 SVG，不要把这个 source 目录当临时文件清理
 - 主题状态、sleep/DND、mini mode、状态映射的细节在 `docs/project/theme-state-ui.md`
+- 官方可下载主题（`official-theme-*`）是受管分发层，不是 built-in、也不提升信任：catalog 是固定远端小目录（renderer 只能传 themeId），下载走 Electron main `net.request` 的 manual redirect + 精确 CDN host allowlist + 固定 bytes/SHA-256（未支持 host 返回稳定 `DOWNLOAD_HOST_UNSUPPORTED`，不允许 catalog 扩展 allowlist），ZIP 只在 manager 专属 staging 内流式解压并以 marker-before-rename 同卷提交，最终以 `isBuiltin=false` 加载（`trustedRuntime` 无效）。`setThemeSelection` / `removeTheme` / `officialTheme.commitInstall` / `officialTheme.uninstall` / `theme` update 共用 `lockKey="theme"`；卸载 active 主题必须等 `waitForThemeReloadSettled()`。不要把 Hash Sage APNG/第四套内置主题文案带回主仓库
 - Settings 体系里，store 是唯一真相，controller 是唯一写入者；不要绕开 `settings-controller.js`
 - Dashboard 数字快选是**完整 Dashboard 同一页面的临时键盘模式，仅 macOS/Windows**；Linux 明确 NOT SUPPORTED（不是待验证）。平台 gate 的唯一真相是 `shortcut-actions.js` 的 `supportedPlatforms` + `isShortcutActionSupported()`，Settings 展示、globalShortcut 注册/录制、设置命令和冲突占用都必须服从它；遗留的不支持绑定只忽略执行，不删用户 prefs、不占其他快捷键。darwin/win32 的 Dashboard 页面活在 `WebContentsView` 里，`BrowserWindow.fromWebContents()` 对它返回 null、BaseWindow 不触发 `ready-to-show`；页面 WC 一律从 owner 取。禁止用 `hide()`+`showInactive()` 归还已显示的普通宿主（实测会遮挡来源窗口），只能 opacity/input parking 并幂等恢复捕获值。详见 `docs/project/theme-state-ui.md`
 

@@ -105,7 +105,23 @@ The directory listings below are the canonical map of the repository. **Whenever
 
 **Tests** — see [TESTING_DOCS.md](TESTING_DOCS.md) for directory structure, naming, and how to run a single case.
 
-- `test/` — All test suites (`cases/`, `configCases/`, `watchCases/`, `hotCases/`, `statsCases/`, `typesCases/`, `test262-cases/`, `html5lib-tests/`, `wpt/`, `css-parsing-tests/`, `benchmarkCases/`, `memoryLimitCases/`, etc.). `RoundTripConfigCases` re-bundles the output of `configCases` marked with a `roundTrip.js` file. `wpt/` is web-platform-tests, checked out one commit deep by the `html5lib` job alone — it is where the HTML tree-construction corpus lives since html5lib-tests dropped it.
+- `test/` — All test suites (`unitCases/`, `cases/`, `configCases/`, `specCases/`, `watchCases/`, `hotCases/`, `statsCases/`, `typesCases/`, `test262-cases/`, `html5lib-tests/`, `wpt/`, `css-parsing-tests/`, `benchmarkCases/`, `memoryLimitCases/`, etc.). `RoundTripConfigCases` re-bundles the output of `configCases` marked with a `roundTrip.js` file. `wpt/` is web-platform-tests, checked out one commit deep by the `html5lib` and `syntax-equivalence` jobs — it is where the HTML tree-construction corpus lives since html5lib-tests dropped it.
+
+**Git submodules** — the spec-conformance corpora are submodules, checked out on demand: `yarn setup` does not fetch them, and each CI job fetches only the submodules it needs, one commit deep.
+
+| Path                     | Upstream                                                                              | Fetched by                       |
+| ------------------------ | ------------------------------------------------------------------------------------- | -------------------------------- |
+| `test/test262-cases`     | [tc39/test262](https://github.com/tc39/test262)                                       | `test262`, `test262-parser`      |
+| `test/html5lib-tests`    | [html5lib/html5lib-tests](https://github.com/html5lib/html5lib-tests)                 | `html5lib`                       |
+| `test/wpt`               | [web-platform-tests/wpt](https://github.com/web-platform-tests/wpt)                   | `html5lib`, `syntax-equivalence` |
+| `test/css-parsing-tests` | [CourtBouillon/css-parsing-tests](https://github.com/CourtBouillon/css-parsing-tests) | `css-parsing`                    |
+
+```sh
+git submodule update --init --recursive --depth 1   # check out the commits the repo pins
+git submodule update --init --recursive --remote --depth 1 # move every pin to its upstream tip
+```
+
+Keep `--depth 1`: `wpt` alone is ~161k files. `--remote` changes the commit the repo records for each path, so `git status` shows the four `test/…` paths modified — commit that only once CI is green on the new commits, or run `git submodule update` to return to the pinned ones.
 
 **Examples & changesets**
 
@@ -136,9 +152,9 @@ The loader context is not one of these: `LoaderContext` and the loader-definitio
 5. **Generated output and snapshots** — run `yarn fix:special`, then update the snapshots the option's _name_ leaks into. A schema property is read back by several tests that no `configCases/` pattern will match:
    - `test/__snapshots__/Cli.basictest.js.snap` — the CLI flags are derived from the schema, so every new property adds one.
    - `test/configCases/ecmaVersion/browserslist*/webpack.config.js` — these carry an **inline** snapshot of the resolved `output.environment`, so an entry there must be added to nine config files.
-   - `test/__snapshots__/target-browserslist.unittest.js.snap` — same, per browserslist query.
-   - `test/Defaults.unittest.js` — its **inline** snapshots carry the whole resolved config twice over, once for the base defaults and once per browserslist fixture, so an `output.environment` property adds a line to each. It runs in the `unit` flag, which no `configCases` or `basic` run reaches.
-   - `test/Validation.test.js` — its **inline** snapshots quote the "these properties are valid" list, so a new property under `module.rules` changes one. It runs in the `integration` matrix, not `basic`.
+   - `test/unitCases/__snapshots__/target-browserslist.unittest.js.snap` — same, per browserslist query.
+   - `test/unitCases/Defaults.unittest.js` — its **inline** snapshots carry the whole resolved config twice over, once for the base defaults and once per browserslist fixture, so an `output.environment` property adds a line to each. It runs in the `unit` flag, which no `configCases` or `basic` run reaches.
+   - `test/unitCases/Validation.unittest.js` — its **inline** snapshots quote the "these properties are valid" list, so a new property under `module.rules` changes one. It runs in the `unit` matrix, not `basic`.
 
 Skipping any layer silently breaks the option. After editing schemas, run `yarn fix:special` so `lib/` code can reference the updated types. If you added or modified options, consider updating `examples/` and run `yarn build:examples` to verify.
 
@@ -325,7 +341,7 @@ Pitfalls that have produced wrong conclusions here:
 yarn test:basic --testPathPatterns="ConfigTestCases" --testNamePattern="<category> <case>"
 ```
 
-Swap `ConfigTestCases` for `StatsTestCases`, `HotTestCases`, `WatchTestCases`, … (full matrix in [TESTING_DOCS.md](TESTING_DOCS.md)). The `test262`/`html5lib`/`css-parsing` suites are git submodules — run `git submodule update --init test/<dir>` first, or they fail confusingly.
+Swap `ConfigTestCases` for `StatsTestCases`, `HotTestCases`, `WatchTestCases`, … (full matrix in [TESTING_DOCS.md](TESTING_DOCS.md)). The `test262`, `html5lib`, `syntax-equivalence`, and `css-parsing` suites use git submodules — run `git submodule update --init --depth 1 test/test262-cases test/html5lib-tests test/wpt test/css-parsing-tests` first, or they fail confusingly.
 
 **Writing a `configCases/` case:** a case is a mini project — `index.js` (runs assertions; a thrown error fails the test) plus `webpack.config.js`. The emitted bundle is actually executed, so it must run. Optional per-case files: `errors.js` / `warnings.js` export arrays of matchers for expected build diagnostics (without them, any error/warning fails the case); `test.filter.js` returns `false` to skip the case (e.g. gate by Node version — see [Target the Node baseline](#target-the-node-baseline) when the fixture itself needs newer syntax); `test.config.js` customizes the run (e.g. `findBundle`).
 

@@ -75,7 +75,7 @@ Route elsewhere when the task is primarily:
 - Preserve the closed loop: code extraction (Frame / repo scan) → visual generation (Forge / Pixel / Ink / Stage) → code materialization (Artisan / Vitrine). Every run must be able to return to code.
 - Quantify success criteria per artifact before delegation: token-drift = 0, pixel fidelity ≥ 95% for Pixel work, load time ≤ 3s for landing implementations. A11y baseline per Core Rule #7.
 - Match scope to pipeline shape: single-artifact requests collapse to one delegate; multi-artifact requests expand to parallel handoffs with file-ownership isolation.
-- Author for the executing engine (P1–P11 bind only on Opus 5; P12 generation-wide). See `_common/OPUS_5_AUTHORING.md` (P1, P4, P7 critical for atelier). Parallel fan-out to independent delegates (e.g., Stage + Ink + Forge) is the default for multi-artifact bundles, not an escalation path.
+- Parallel fan-out to independent delegates (e.g., Stage + Ink + Forge) is the default for multi-artifact bundles, with isolated write ownership.
 - Output language follows the CLI global config (`settings.json` `language` field, `CLAUDE.md`, `AGENTS.md`, or `GEMINI.md`); identifiers, token names, DTCG fields, and schema keys remain in English.
 
 ## Core Rules
@@ -231,7 +231,7 @@ Routing rules:
 ## Collaboration
 
 **Receives:** Vision (`VISION_TO_ATELIER`, carrying `DESIGN_INTENT_HANDOFF`) for direction and constraints, the user for an ad-hoc brief, and Judge (`QUALITY_FEEDBACK`) for output review.
-**Sends:** every delegate receives a `DESIGN_INTENT_HANDOFF` — Frame (Figma extraction, Code Connect), Muse (tokens, DTCG alignment), Forge (prototype), Pixel (mockup reproduction), Ink / Builder (visual assets), Stage (deck), Canvas (diagram), Scribe (multi-format export), Artisan (production implementation), Vitrine (Storybook catalog). Out-of-scope multi-domain work escalates to Nexus via `NEXUS_ROUTING`. Full table -> `reference/autorun-schema.md`.
+**Sends:** every delegate receives a `DESIGN_INTENT_HANDOFF` — Frame (Figma extraction, Code Connect), Muse (tokens, DTCG alignment), Forge (prototype), Pixel (mockup reproduction), Ink / Builder (visual assets), Stage (deck), Canvas (diagram), Scribe (multi-format export), Artisan (production implementation), Vitrine (Storybook catalog). Out-of-scope multi-domain work escalates to Nexus via `NEXUS_ROUTING`.
 
 
 ## Output Requirements

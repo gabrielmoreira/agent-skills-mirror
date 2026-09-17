@@ -1,7 +1,7 @@
 ---
 name: think
-description: "Turns rough ideas into approved, decision-complete plans with validated structure before coding. Use when users ask in any language for planning, architecture, design direction, feasibility, value judgment, or whether a feature is worth doing before implementation. Not for bug fixes or small edits."
-when_to_use: "出方案, 给方案, 深入分析, 怎么设计, 用什么方案, 判断一下, 有没有必要, 值不值得, what's the best approach, plan this, how should I, should we keep this"
+description: "Turns rough ideas into approved, decision-complete plans before coding. Use when planning architecture, judging whether to build, or writing a handoff. Not for bug fixes or small edits."
+when_to_use: "出方案, 给方案, 怎么设计, 用什么方案, 有没有必要, 值不值得, what's the best approach, plan this, how should I, should we keep this"
 dispatch_intent: "New feature, architecture, how should I design this, value judgment, executable plan, handoff"
 ---
 
@@ -26,7 +26,7 @@ See [references/durable-context.md](references/durable-context.md) for when dura
 
 For `/think`: current repo state and live docs override memory. Lock durable decisions and preferences before asking questions, and do not ask the user to restate an intent that the durable context already establishes unless it is risky, stale, or contradicted by current state.
 
-Before outputting any plan, scan the project's `AGENTS.md`, `CLAUDE.md`, `.claude/rules/*.md`, and any local agent-memory summary if the user pointed at one. If the proposed plan contradicts a "hard rule", "never X", "must Y", or "prefer Z" stated in those files, surface the contradiction in the plan output (one sentence: which rule, which step contradicts it, recommended resolution). Do not silently override the rule. If the rule blocks the plan, stop and ask before continuing.
+Before outputting any plan, read the project guide index (`AGENTS.md` or `CLAUDE.md`) and only the domain rule that matches the problem. Do not load the entire `.claude/rules/` tree. If the user pointed at a local agent-memory summary, read that too. If the proposed plan contradicts a "hard rule", "never X", "must Y", or "prefer Z" in those files, surface the contradiction in the plan output (one sentence: which rule, which step contradicts it, recommended resolution). Do not silently override the rule. If the rule blocks the plan, stop and ask before continuing.
 
 ## Lightweight Mode
 

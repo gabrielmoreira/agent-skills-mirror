@@ -7,7 +7,7 @@ ref: dev
 
 # Mirror Manifest
 
-Mirror of `different-ai/openwork` — 26 default patterns, 0 followed patterns, 28 file(s) materialized.
+Mirror of `different-ai/openwork` — 26 default patterns, 0 followed patterns, 29 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `different-ai/openwork` — 26 default patterns, 0 followed patterns, 
 | Ref           | `dev` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 28 |
+| Files         | 29 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -80,13 +80,14 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 19 | ✓ | [`.opencode/skills/validate-a-release/SKILL.md`](.opencode/skills/validate-a-release/SKILL.md) |
 | 20 | ✓ | [`.opencode/skills/write-a-spec/SKILL.md`](.opencode/skills/write-a-spec/SKILL.md) |
 | 21 | ✓ | [`.warden/skills/confidentiality-review/SKILL.md`](.warden/skills/confidentiality-review/SKILL.md) |
-| 22 | ✓ | [`.warden/skills/desktop-den-sync-review/SKILL.md`](.warden/skills/desktop-den-sync-review/SKILL.md) |
-| 23 | ✓ | [`.warden/skills/diff-security-review/SKILL.md`](.warden/skills/diff-security-review/SKILL.md) |
-| 24 | ✓ | [`.warden/skills/spec-provenance-review/SKILL.md`](.warden/skills/spec-provenance-review/SKILL.md) |
-| 25 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 26 | ✓ | [`ee/apps/landing/public/.well-known/agent-skills/workspace-guide/SKILL.md`](ee/apps/landing/public/.well-known/agent-skills/workspace-guide/SKILL.md) |
-| 27 | ✓ | [`ee/apps/landing/public/llms.txt`](ee/apps/landing/public/llms.txt) |
-| 28 | ✓ | [`integrations/agent-plugins/openwork-connect/skills/openwork-connect/SKILL.md`](integrations/agent-plugins/openwork-connect/skills/openwork-connect/SKILL.md) |
+| 22 | ✓ | [`.warden/skills/design-spec-review/SKILL.md`](.warden/skills/design-spec-review/SKILL.md) |
+| 23 | ✓ | [`.warden/skills/desktop-den-sync-review/SKILL.md`](.warden/skills/desktop-den-sync-review/SKILL.md) |
+| 24 | ✓ | [`.warden/skills/diff-security-review/SKILL.md`](.warden/skills/diff-security-review/SKILL.md) |
+| 25 | ✓ | [`.warden/skills/spec-provenance-review/SKILL.md`](.warden/skills/spec-provenance-review/SKILL.md) |
+| 26 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 27 | ✓ | [`ee/apps/landing/public/.well-known/agent-skills/workspace-guide/SKILL.md`](ee/apps/landing/public/.well-known/agent-skills/workspace-guide/SKILL.md) |
+| 28 | ✓ | [`ee/apps/landing/public/llms.txt`](ee/apps/landing/public/llms.txt) |
+| 29 | ✓ | [`integrations/agent-plugins/openwork-connect/skills/openwork-connect/SKILL.md`](integrations/agent-plugins/openwork-connect/skills/openwork-connect/SKILL.md) |
 
 ---
 

@@ -479,7 +479,9 @@ Print, in this order:
    that would retire it.
 5. **Sweep outcome** — verdict, how many undeclared assumptions the cross-model
    pass found, and how many were `semantic`. Report this number even when it is
-   embarrassing; it is the single most useful line in the report.
+   embarrassing; it is the single most useful line in the report. If the sweep
+   budget ran out before a re-sweep, say so here: fixes made after the last
+   sweep were verified by the executor only, not by the reviewer.
 6. **Interface assumptions** — named, with the mode and the split
    (*"`ask: semantic` — 6 rows, 3 `user`, 3 `default`"*). Under `ask: semantic`,
    name every plain `default` row in the `semantic` class individually: those are

@@ -94,7 +94,6 @@ Route elsewhere when the task is primarily:
 - When using synthetic personas, mark findings as `[hypothesis]` until real-user confirmation. Flag WEIRD bias when target audience is non-Western/non-WEIRD. See `_common/AI_PERSONA_RISKS.md` for hallucination/over-sanitization/standardization risks.
 - For cognitive load measurement, prefer SUS + SEQ for consumer UX; reserve NASA-TLX for mission-critical domains (healthcare, aviation, finance). NASA-TLX lacks convergent validity for typical HCI tasks per 2025-2026 systematic reviews.
 - For WCAG 3.0 evaluation, apply the March 2026 Working Draft (Bronze ≥3.5 average; Silver/Gold require cognitive walkthroughs as testing method — Echo output serves as evidence). Do not treat as final until W3C Recommendation (CR expected Q4 2027).
-- Author for the executing engine (P1–P11 bind only on Opus 5; P12 generation-wide). See `_common/OPUS_5_AUTHORING.md` (P3, P5 critical for this role; P1, P2 recommended).
 
 ## Boundaries
 
@@ -202,7 +201,7 @@ A complete deliverable carries the following — a ceiling, not a floor. Emit on
 ## Collaboration
 
 **Receives:** Field (persona data), Voice (real feedback), Pulse (quantitative metrics), Experiment (context), Cast (synthetic personas)
-**Sends:** Palette (interaction fixes), Experiment (A/B hypotheses), Growth (CRO insights), Canon (WCAG 3.0 Silver/Gold walkthrough evidence), Canvas (visualization data), Spark (feature ideas), Scout (bug investigation), Muse (design tokens), Cast (persona evolution data + PERSONA_FEEDBACK for confidence adjustment)
+**Sends:** Palette (interaction fixes), Experiment (A/B hypotheses), Growth (CRO insights), Canon (accessibility evidence against the engagement’s adopted standard), Canvas (visualization data), Spark (feature ideas), Scout (bug investigation), Muse (design tokens), Cast (persona evolution data + PERSONA_FEEDBACK for confidence adjustment)
 
 **Overlap boundaries:**
 - **vs Palette**: Palette = UX design fixes; Echo = friction discovery and emotion scoring.
@@ -223,7 +222,7 @@ Activated by the `multi` Recipe. Step-level walkthrough cell as unit of work; Pa
 
 **Critical rule:** `CANDIDATE` / `DIVERGENT` findings are NOT auto-low-value — single-engine breakthroughs often surface "normalized friction" the team smoothed over.
 
-**Dark pattern auto-promotion:** Any dark-pattern friction flagged by ≥2 engines auto-promotes to `CONFIRMED` (regulatory risk asymmetry).
+**Dark pattern auto-promotion:** Any dark-pattern friction flagged by ≥2 engines receives the `CONFIRMED` walkthrough-priority tag (risk asymmetry); this does not establish a legal violation or real-user validation. Ground the artifact and hand regulatory applicability to Canon.
 
 **Engine-attribution tag** (mandatory): e.g. `[codex+agy+claude] [CONVERGENT] [validated]` / `[codex+agy] [DIVERGENT-2] [supported]`. Cross-persona-universal findings additionally carry `[CROSS-PERSONA-UNIVERSAL]`.
 

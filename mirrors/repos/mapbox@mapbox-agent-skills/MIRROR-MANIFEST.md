@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `mapbox/mapbox-agent-skills` — 26 default patterns, 0 followed patterns, 160 file(s) materialized.
+Mirror of `mapbox/mapbox-agent-skills` — 26 default patterns, 0 followed patterns, 161 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `mapbox/mapbox-agent-skills` — 26 default patterns, 0 followed patte
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 160 |
+| Files         | 161 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -184,41 +184,42 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 123 | ✓ | [`skills/mapbox-style-patterns/references/data-viz-base.md`](skills/mapbox-style-patterns/references/data-viz-base.md) |
 | 124 | ✓ | [`skills/mapbox-style-patterns/references/delivery-logistics.md`](skills/mapbox-style-patterns/references/delivery-logistics.md) |
 | 125 | ✓ | [`skills/mapbox-style-patterns/references/expressions-clustering.md`](skills/mapbox-style-patterns/references/expressions-clustering.md) |
-| 126 | ✓ | [`skills/mapbox-style-patterns/references/navigation.md`](skills/mapbox-style-patterns/references/navigation.md) |
-| 127 | ✓ | [`skills/mapbox-style-patterns/references/real-estate.md`](skills/mapbox-style-patterns/references/real-estate.md) |
-| 128 | ✓ | [`skills/mapbox-style-patterns/SKILL.md`](skills/mapbox-style-patterns/SKILL.md) |
-| 129 | ✓ | [`skills/mapbox-style-quality/AGENTS.md`](skills/mapbox-style-quality/AGENTS.md) |
-| 130 | ✓ | [`skills/mapbox-style-quality/evals/evals.json`](skills/mapbox-style-quality/evals/evals.json) |
-| 131 | ✓ | [`skills/mapbox-style-quality/references/ci-integration.md`](skills/mapbox-style-quality/references/ci-integration.md) |
-| 132 | ✓ | [`skills/mapbox-style-quality/references/comparison.md`](skills/mapbox-style-quality/references/comparison.md) |
-| 133 | ✓ | [`skills/mapbox-style-quality/references/optimization.md`](skills/mapbox-style-quality/references/optimization.md) |
-| 134 | ✓ | [`skills/mapbox-style-quality/SKILL.md`](skills/mapbox-style-quality/SKILL.md) |
-| 135 | ✓ | [`skills/mapbox-token-security/AGENTS.md`](skills/mapbox-token-security/AGENTS.md) |
-| 136 | ✓ | [`skills/mapbox-token-security/evals/evals.json`](skills/mapbox-token-security/evals/evals.json) |
-| 137 | ✓ | [`skills/mapbox-token-security/references/incident-response.md`](skills/mapbox-token-security/references/incident-response.md) |
-| 138 | ✓ | [`skills/mapbox-token-security/references/rotation-monitoring.md`](skills/mapbox-token-security/references/rotation-monitoring.md) |
-| 139 | ✓ | [`skills/mapbox-token-security/references/token-management.md`](skills/mapbox-token-security/references/token-management.md) |
-| 140 | ✓ | [`skills/mapbox-token-security/SKILL.md`](skills/mapbox-token-security/SKILL.md) |
-| 141 | ✓ | [`skills/mapbox-web-integration-patterns/AGENTS.md`](skills/mapbox-web-integration-patterns/AGENTS.md) |
-| 142 | ✓ | [`skills/mapbox-web-integration-patterns/evals/evals.json`](skills/mapbox-web-integration-patterns/evals/evals.json) |
-| 143 | ✓ | [`skills/mapbox-web-integration-patterns/references/angular.md`](skills/mapbox-web-integration-patterns/references/angular.md) |
-| 144 | ✓ | [`skills/mapbox-web-integration-patterns/references/common-mistakes.md`](skills/mapbox-web-integration-patterns/references/common-mistakes.md) |
-| 145 | ✓ | [`skills/mapbox-web-integration-patterns/references/nextjs.md`](skills/mapbox-web-integration-patterns/references/nextjs.md) |
-| 146 | ✓ | [`skills/mapbox-web-integration-patterns/references/svelte.md`](skills/mapbox-web-integration-patterns/references/svelte.md) |
-| 147 | ✓ | [`skills/mapbox-web-integration-patterns/references/token-management.md`](skills/mapbox-web-integration-patterns/references/token-management.md) |
-| 148 | ✓ | [`skills/mapbox-web-integration-patterns/references/vanilla.md`](skills/mapbox-web-integration-patterns/references/vanilla.md) |
-| 149 | ✓ | [`skills/mapbox-web-integration-patterns/references/vue.md`](skills/mapbox-web-integration-patterns/references/vue.md) |
-| 150 | ✓ | [`skills/mapbox-web-integration-patterns/references/web-components.md`](skills/mapbox-web-integration-patterns/references/web-components.md) |
-| 151 | ✓ | [`skills/mapbox-web-integration-patterns/SKILL.md`](skills/mapbox-web-integration-patterns/SKILL.md) |
-| 152 | ✓ | [`skills/mapbox-web-performance-patterns/AGENTS.md`](skills/mapbox-web-performance-patterns/AGENTS.md) |
-| 153 | ✓ | [`skills/mapbox-web-performance-patterns/evals/evals.json`](skills/mapbox-web-performance-patterns/evals/evals.json) |
-| 154 | ✓ | [`skills/mapbox-web-performance-patterns/references/data-loading.md`](skills/mapbox-web-performance-patterns/references/data-loading.md) |
-| 155 | ✓ | [`skills/mapbox-web-performance-patterns/references/interactions.md`](skills/mapbox-web-performance-patterns/references/interactions.md) |
-| 156 | ✓ | [`skills/mapbox-web-performance-patterns/references/layers-styles.md`](skills/mapbox-web-performance-patterns/references/layers-styles.md) |
-| 157 | ✓ | [`skills/mapbox-web-performance-patterns/references/memory.md`](skills/mapbox-web-performance-patterns/references/memory.md) |
-| 158 | ✓ | [`skills/mapbox-web-performance-patterns/references/mobile.md`](skills/mapbox-web-performance-patterns/references/mobile.md) |
-| 159 | ✓ | [`skills/mapbox-web-performance-patterns/SKILL.md`](skills/mapbox-web-performance-patterns/SKILL.md) |
-| 160 | ✓ | [`skills/README.md`](skills/README.md) |
+| 126 | ✓ | [`skills/mapbox-style-patterns/references/interactions.md`](skills/mapbox-style-patterns/references/interactions.md) |
+| 127 | ✓ | [`skills/mapbox-style-patterns/references/navigation.md`](skills/mapbox-style-patterns/references/navigation.md) |
+| 128 | ✓ | [`skills/mapbox-style-patterns/references/real-estate.md`](skills/mapbox-style-patterns/references/real-estate.md) |
+| 129 | ✓ | [`skills/mapbox-style-patterns/SKILL.md`](skills/mapbox-style-patterns/SKILL.md) |
+| 130 | ✓ | [`skills/mapbox-style-quality/AGENTS.md`](skills/mapbox-style-quality/AGENTS.md) |
+| 131 | ✓ | [`skills/mapbox-style-quality/evals/evals.json`](skills/mapbox-style-quality/evals/evals.json) |
+| 132 | ✓ | [`skills/mapbox-style-quality/references/ci-integration.md`](skills/mapbox-style-quality/references/ci-integration.md) |
+| 133 | ✓ | [`skills/mapbox-style-quality/references/comparison.md`](skills/mapbox-style-quality/references/comparison.md) |
+| 134 | ✓ | [`skills/mapbox-style-quality/references/optimization.md`](skills/mapbox-style-quality/references/optimization.md) |
+| 135 | ✓ | [`skills/mapbox-style-quality/SKILL.md`](skills/mapbox-style-quality/SKILL.md) |
+| 136 | ✓ | [`skills/mapbox-token-security/AGENTS.md`](skills/mapbox-token-security/AGENTS.md) |
+| 137 | ✓ | [`skills/mapbox-token-security/evals/evals.json`](skills/mapbox-token-security/evals/evals.json) |
+| 138 | ✓ | [`skills/mapbox-token-security/references/incident-response.md`](skills/mapbox-token-security/references/incident-response.md) |
+| 139 | ✓ | [`skills/mapbox-token-security/references/rotation-monitoring.md`](skills/mapbox-token-security/references/rotation-monitoring.md) |
+| 140 | ✓ | [`skills/mapbox-token-security/references/token-management.md`](skills/mapbox-token-security/references/token-management.md) |
+| 141 | ✓ | [`skills/mapbox-token-security/SKILL.md`](skills/mapbox-token-security/SKILL.md) |
+| 142 | ✓ | [`skills/mapbox-web-integration-patterns/AGENTS.md`](skills/mapbox-web-integration-patterns/AGENTS.md) |
+| 143 | ✓ | [`skills/mapbox-web-integration-patterns/evals/evals.json`](skills/mapbox-web-integration-patterns/evals/evals.json) |
+| 144 | ✓ | [`skills/mapbox-web-integration-patterns/references/angular.md`](skills/mapbox-web-integration-patterns/references/angular.md) |
+| 145 | ✓ | [`skills/mapbox-web-integration-patterns/references/common-mistakes.md`](skills/mapbox-web-integration-patterns/references/common-mistakes.md) |
+| 146 | ✓ | [`skills/mapbox-web-integration-patterns/references/nextjs.md`](skills/mapbox-web-integration-patterns/references/nextjs.md) |
+| 147 | ✓ | [`skills/mapbox-web-integration-patterns/references/svelte.md`](skills/mapbox-web-integration-patterns/references/svelte.md) |
+| 148 | ✓ | [`skills/mapbox-web-integration-patterns/references/token-management.md`](skills/mapbox-web-integration-patterns/references/token-management.md) |
+| 149 | ✓ | [`skills/mapbox-web-integration-patterns/references/vanilla.md`](skills/mapbox-web-integration-patterns/references/vanilla.md) |
+| 150 | ✓ | [`skills/mapbox-web-integration-patterns/references/vue.md`](skills/mapbox-web-integration-patterns/references/vue.md) |
+| 151 | ✓ | [`skills/mapbox-web-integration-patterns/references/web-components.md`](skills/mapbox-web-integration-patterns/references/web-components.md) |
+| 152 | ✓ | [`skills/mapbox-web-integration-patterns/SKILL.md`](skills/mapbox-web-integration-patterns/SKILL.md) |
+| 153 | ✓ | [`skills/mapbox-web-performance-patterns/AGENTS.md`](skills/mapbox-web-performance-patterns/AGENTS.md) |
+| 154 | ✓ | [`skills/mapbox-web-performance-patterns/evals/evals.json`](skills/mapbox-web-performance-patterns/evals/evals.json) |
+| 155 | ✓ | [`skills/mapbox-web-performance-patterns/references/data-loading.md`](skills/mapbox-web-performance-patterns/references/data-loading.md) |
+| 156 | ✓ | [`skills/mapbox-web-performance-patterns/references/interactions.md`](skills/mapbox-web-performance-patterns/references/interactions.md) |
+| 157 | ✓ | [`skills/mapbox-web-performance-patterns/references/layers-styles.md`](skills/mapbox-web-performance-patterns/references/layers-styles.md) |
+| 158 | ✓ | [`skills/mapbox-web-performance-patterns/references/memory.md`](skills/mapbox-web-performance-patterns/references/memory.md) |
+| 159 | ✓ | [`skills/mapbox-web-performance-patterns/references/mobile.md`](skills/mapbox-web-performance-patterns/references/mobile.md) |
+| 160 | ✓ | [`skills/mapbox-web-performance-patterns/SKILL.md`](skills/mapbox-web-performance-patterns/SKILL.md) |
+| 161 | ✓ | [`skills/README.md`](skills/README.md) |
 
 ---
 

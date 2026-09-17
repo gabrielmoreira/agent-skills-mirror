@@ -365,7 +365,9 @@ substitute a second same-model pass.
 3. **Ladder status** — green / blocked / deferred, deferred ones named.
 4. **Live stubs** — each with the rung that would retire it.
 5. **Sweep outcome** — verdict, counts, and its `same-family / provisional`
-   status. Report the undeclared count even when it is embarrassing.
+   status. Report the undeclared count even when it is embarrassing. If the
+   sweep budget ran out before a re-sweep, say so: fixes made after the last
+   sweep were verified by the executor only.
 6. **Interface assumptions** — named, with the mode and the split (*"`ask:
    semantic` — 6 rows, 3 `user`, 3 `default`"*). Under `ask: semantic`, name
    every plain `default` row in the `semantic` class individually — those are the

@@ -61,7 +61,6 @@ Route elsewhere when the task is primarily:
 - Fix accessibility at the design-system component level, not per-instance — instance-level patches fail to prevent recurrence and repeat litigation (`reference/wcag22-inclusive-design.md` — Component-Level Remediation).
 - Require agentic AI interfaces to show Intent Preview before autonomous actions — state what the agent plans to do, offer Proceed/Edit/Cancel controls, and log every action for audit (Smashing Magazine 2026); trust must be earned through transparency, not assumed (`reference/ai-assist-patterns.md` — trust calibration).
 - Enforce WCAG 2.2 Level AA as the accessibility floor — nine new success criteria target mobile, authentication, and cognitive load (W3C 2023; ratified as ISO/IEC 40500:2025). Legal deadlines: US ADA Title II compliance is due April 24, 2026 for entities serving 50,000+ people; EU EAA enforced since June 28, 2025 with fines up to €3M and market removal (EN 301 549 references WCAG 2.1, updating to 2.2). Litigation is accelerating (`reference/wcag22-inclusive-design.md` — Litigation Trends).
-- Author for the executing engine (P1–P11 bind only on Opus 5; P12 generation-wide). See `_common/OPUS_5_AUTHORING.md` (P3, P5 critical for Palette; P2, P1 recommended).
 
 ## Boundaries
 
@@ -294,7 +293,6 @@ Palette receives UX direction and testing results from upstream agents. Palette 
 | `_common/PROPORTION_AND_SPACING.md` | Judging spacing/layout usability with numbers — touch-target floors, text measure, text-spacing overrides, and the inner ≤ outer proximity rule (§4); use §1 evidence tiers to separate spec findings from craft convention. |
 | `_common/UX_PRINCIPLE_CONFLICTS.md` | A finding pits one principle against another (safety vs. speed, density vs. scannability, automation vs. control). Supplies the pair, the failure each one-sided win produces, and the resolution sheet an allocation must record. |
 | `_common/PROOF_CARRYING.md` | Generating `state_proof` (interactive component states) + `responsive_proof` (viewport assertions) in `nexus acceptance` Phase 2B; coordinates with `weave` for state coverage gating. |
-| `reference/autorun-schema.md` | Emitting the AUTORUN `_STEP_COMPLETE` block — Palette-specific Output/Next schema. |
 
 ## Operational
 
@@ -305,7 +303,7 @@ Palette receives UX direction and testing results from upstream agents. Palette 
 
 ## AUTORUN Support
 
-See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling). Palette-specific `_STEP_COMPLETE.Output` schema lives in `reference/autorun-schema.md`.
+Emit `_STEP_COMPLETE` using `_common/AUTORUN.md` § Default Completion Schema; no skill-specific extension is required.
 
 ## Nexus Hub Mode
 

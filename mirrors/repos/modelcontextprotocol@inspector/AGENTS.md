@@ -94,7 +94,7 @@ The reasoning behind each of these, and what breaks when it is ignored, is the
 - **`dependencies` vs `devDependencies` follows from who consumes it at runtime**, not from where it is declared. Anything `core/` imports at runtime must be a root **`dependency`** — the client builds externalize npm packages and a published install resolves them from the root manifest, where devDependencies are absent.
 - **The shared toolchain is declared once, at the repo root, and in no client manifest.** `eslint`, `@eslint/js`, `typescript-eslint`, `globals`, `prettier`, `typescript`, `vitest`, `@vitest/coverage-v8` and `@types/node` are used by every client's own scripts, and a client that declares none of them still resolves the root copy by walk-up — `npm run` puts each ancestor `node_modules/.bin` on `PATH`, and Node and TypeScript walk parent `node_modules` / `node_modules/@types` the same way. `clients/launcher` declares no `devDependencies` at all and its `validate` is unchanged. A client-side declaration buys nothing and installs a second copy free to drift, as `globals` (`^17.7.0` root / `^17.4.0` clients) and `typescript-eslint` (`^8.65.0` / `^8.56.1`) had before #2196. These stay **`devDependencies`** — none is consumed at runtime and the tarball ships only each client's `build/`. The boundary is **used by every client**, not "used by one": anything narrower stays where it is, whether one client declares it (`tsx`, `playwright`, `storybook`, `happy-dom`, `ink-testing-library`, `vite-node`, each client's own `@types/*`) or several do — `tsup` is declared in web, cli and tui, and `vite` in web and tui on top of the root **runtime** `dependency` that `--web --dev` needs. Those are out of scope here; consolidating them is a different call with a different rationale.
   - ⚠️ **Deleting the declaration does not always delete the copy, and the local copy still wins.** npm auto-installs an unmet **peer** into the install that needs it, and it has no visibility into the root's tree — so a client-only ESLint plugin drags a client-local `eslint` in (`eslint-plugin-react-refresh`/`-storybook` in web, `eslint-plugin-react-hooks` in tui), and web's Storybook/Vitest stack drags in a local `typescript` and `vitest`. A hoisted transitive does the same: `@types/express` puts an `@types/node` in web and cli. Those copies sit _nearer_ than the root's and take precedence. The consolidation is therefore about **one declaration and one place to bump**, not about a single copy on disk. ⚠️ **Nothing keeps the surviving copies aligned automatically — but since #2226 the guard rejects the drift.** A **peer** copy is at least constrained by its holder's peer range — tightly for `vitest` (an exact peer, hence the pin below), loosely for `eslint` (`^9 || ^10`), where the copies agree only because npm resolves the same latest in both installs. A **transitive** copy is constrained by nothing of ours at all, and cli's `@types/node` (`24.13.1` against the root's `24.13.3`) diverged on exactly that. **That is detection, not alignment: `verify:dep-lockstep` fails on this class since #2226, and you still do the bump by hand.** Its second tier compares every package any install _declares_ (`dependencies`, `devDependencies`, `optionalDependencies`; not peers) against every top-level copy across all five installs, independent of what a `tsc` program loads, so a transitive drift and a peer shadow (`eslint`, `typescript`, `vitest`) are both in scope now. Two limits remain: the tier reads lockfiles, so a tool binary you installed by hand and never committed is still invisible; and it only compares names some manifest declares, so a purely transitive package no manifest names is out of scope in both tiers unless a `tsc` program loads both copies. Aligning a stale install is `npm update <pkg>` there; a transitive copy that will not move takes an `overrides` entry in that install (`clients/cli` pins `@types/node` this way).
-  - ⚠️ **`vitest`, `@vitest/coverage-v8` and web's `@vitest/browser-playwright` are pinned exactly, and move together.** `@vitest/browser-playwright` declares an **exact** peer on `vitest`, so it — not the root range — decides which `vitest` web installs. Left to float, the root resolves a newer patch and web's tests then run on one `vitest` while loading a coverage provider built against another. Bumping means editing all three in one change, the same discipline the exact `prettier` pin (#1790) exists for.
+  - ⚠️ **`vitest`, `@vitest/coverage-v8` and web's `@vitest/browser-playwright` are pinned exactly, and move together.** `@vitest/browser-playwright` declares an **exact** peer on `vitest`, so it — not the root range — decides which `vitest` web installs. Left to float, the root resolves a newer patch and web's tests then run on one `vitest` while loading a coverage provider built against another. Bumping means editing all three in one change, the same discipline the exact `prettier` pin (#1790) exists for. ⚠️ **Editing the three is necessary but not sufficient — `clients/web` also carries a `vitest` `overrides` entry that has to move with them.** Web does not declare `vitest`, so its copy is the peer shadow above; its lockfile pins that copy at the old patch, and the exact peer plus the lockfile form a knot `npm install` resolves by refusing outright (`Conflicting peer dependency: vitest@<new>`), while `npm update` will not move it either. Deleting web's lockfile clears the error and re-resolves every caret range in the tree at once — an uncontrolled dependency update wearing a security patch's clothes. The `overrides` entry is the controlled alternative, the same mechanism `clients/cli` uses for `@types/node`: it moves the shadowed copy and nothing else, keeping the churn inside the vitest constellation. So a vitest bump is **four** edits, and the override's version is an exact pin like the other three (#2301).
 - **A root-declared package that `core/` imports at runtime must also be named in all three bundler `external` lists** (`clients/{cli,tui}/tsup.config.ts`, `clients/web/tsup.runner.config.ts`), since which client reaches it is a function of what `core/` imports rather than of what the client's own code names. `npm run verify:bundle-externals` enforces this against the **built output**.
 - **A dependency that renders React components must be bundled** into the client that uses it (`noExternal`) and declared only there — an externalized one resolves its own `react` and splits the tree. `ink` is the single exemption, on cost, and it is only safe while the root `react` range stays open to the whole major (`^19.0.0`).
 - **One version per install-crossing dependency.** When bumping a dependency the shared sources pull in, bump it in every install that declares it. Consolidating to the root is what makes most of these unbumpable in two places at once, but it does not retire the rule — a client's `devDependencies`, and any package that arrives transitively into a client install, can still skew against the root. Never raise the tsc heap to work around one. `npm run verify:dep-lockstep` enforces this in two tiers: packages that reach one `tsc` **program** from two installs (the #1896 heap-exhaustion class), and — since #2226 — every package any install **declares** that more than one install holds a top-level copy of, whether or not a program ever sees both.
@@ -130,7 +130,7 @@ The board write needs `organization projects: write`, which `GITHUB_TOKEN` canno
 **`.github/workflows/sdk-watch.yml` → `scripts/sdk-watch.mjs` runs nightly (#1063) and files one issue per MCP SDK release we are behind**, labeled `v2` + `chore` + `dependencies`. It is not a Dependabot replacement — it exists because SDK churn, OAuth especially, was being tracked by habit rather than by mechanism — but it obeys the same rule as the two above: **it files an issue, never a PR.**
 
 - **Two upstreams, two issues.** `client`/`core`/`server`/`server-legacy` ship from `modelcontextprotocol/typescript-sdk` in lockstep and share one issue; `ext-apps` ships from its own repo and gets its own. A fifth `@modelcontextprotocol/*` package added to the root manifest and not added to `SDK_GROUPS` **fails the sweep loudly** rather than going unwatched — that guard is the point, since a hardcoded group table is otherwise a silent blind spot.
-- **It compares the INSTALLED version, not the declared range.** The four SDK packages are pinned exactly, so the two agree for them; `ext-apps` is a caret range whose lockfile already resolves higher, and comparing the declared string would file an issue for a bump `npm install` has already taken.
+- **It compares the INSTALLED version, not the declared range.** The four SDK packages are pinned exactly, so the two agree for them; `ext-apps` is a caret range, so its lockfile can already resolve higher than the manifest's floor, and comparing the declared string would file an issue for a bump `npm install` has already taken.
 - **The target is the LOWEST `latest` across a group — the version the whole group has reached — not the highest.** npm publishes a lockstep release one package at a time, so a sweep landing mid-publish sees one package ahead of its three siblings. Targeting the highest would name a version three of them do not have _and_ write a marker that suppresses the real filing once the publication completes, so the release would never be tracked at all. Taking the minimum keeps the issue actionable and lets the completed release file its own.
 - **It never boards, like the monthly sweep** — no `PROJECT_TOKEN` exists in this org — so the issue arrives labeled and milestoned and `/issue-triage` places it.
 - **It never closes an issue either.** A further release files its own issue and leaves a **supersession comment** on the older one; closing is a maintainer act, since the card may already have moved. An issue closed for the same target keeps suppressing it, so a maintainer's "not planned" is not re-argued nightly.
@@ -217,8 +217,8 @@ Skills are conditional — a skill's body loads only when it is invoked — so a
 skill that stops being reachable loses behavior **silently**. Four rules keep
 that from happening:
 
-1. **`npm run verify:skills` must pass.** It runs inside `validate` (and so in
-   `local:gate` and in CI). It parses each `SKILL.md`'s frontmatter the way Claude
+1. **`npm run verify:skills` must pass.** It runs inside `validate:guards`,
+   which `validate` (CI) and `local:validate` (the gate) both run first. It parses each `SKILL.md`'s frontmatter the way Claude
    Code does and fails on anything that would strip the metadata — most importantly
    **malformed YAML**, which loads the body with an _empty_ description, so
    `/skill-name` still works and a manual spot check passes while the skill can
@@ -318,6 +318,12 @@ node/field/option IDs, and the option-deletion hazard` was cut at `#28`, so 90
    negative requirement, and it is only worth writing where the first link's
    body actually points at the target — a chain through a skill that says
    nothing about it is a permanent 0% with no lever.
+   ⚠️ **A green chain case proves the second skill LOADED, never that it
+   answered.** `testing` -> `test-servers` held 100% while `test-servers`
+   documented only the two-process manual path, so a model arriving from an
+   integration-test prompt was handed the wrong half of the procedure (#2264).
+   When a chain goes green, read the target's body as the caller who arrives
+   through the pointer; no number measures that.
    ⚠️ **The gate cannot catch a description that never matches.** `verify:skills`
    checks that a skill is well-formed and that its cases exist; only
    `skills:eval` observes whether it actually fires, and that cannot be gated —
@@ -390,11 +396,115 @@ diagnose a failing gate — is the `testing` skill. These are the rules.
 - **Render React components through `renderWithMantine`** (`src/test/renderWithMantine.tsx`); do not hand-roll a bare `MantineProvider`, which skips the project theme and the helper's options and drifts from every other test. Pass the `colorScheme` option to exercise a forced scheme rather than hand-rolling `defaultColorScheme`. Use `renderWithMantineTransitions` **only** when a test must assert mid-flight transition state, and read the long comment on the helper before changing anything about it.
 - **The web coverage `include` is a whitelist.** It names `components`/`hooks`/`theme`/`lib`/`utils`/`server` plus the browser-consumed `core/*` runtime, so a module placed **outside** those directories falls out of the gate entirely, silently. Place new modules inside a gated directory. The documented exceptions — `src/App.tsx` and the `src/main.tsx` / `src/index.ts` bootstraps — are called out in a comment on the `include` array itself.
 
+### Test-gate timeouts are chosen values, stated once
+
+**Every wall-clock budget a test gate runs under is a value somebody picked,
+and it lives in one place (#2323).** The shared budgets are `TIMEOUTS` and
+`INTEGRATION_TIMEOUTS` in `vitest.shared.mts`; all six Vitest projects spread
+one of them, and Testing Library's `asyncUtilTimeout` — which no Vitest config
+can see — is configured in each web project's setup file
+(`src/test/setup.ts`, `src/test/storybookSetup.ts`).
+`npm run verify:test-timeouts` resolves each project through Vitest itself and
+enforces all of it.
+
+This is not a licence to relax the bar. #1596 settled that: **a test that races
+is fixed with fake timers or an awaited condition, never with headroom.** The
+complementary case is what these budgets exist for — a test that is correct and
+deterministic and is simply cut off, because the number bounding it was a
+library default sized for an idle machine rather than for the one this repo is
+worked on (three or four concurrent agent sessions in separate worktrees, each
+free to run a full `local:gate`). Raising a budget nobody chose hides no race.
+
+- **Raise a budget in the shared object, not at a suite.** A per-suite
+  `}, 30_000)` moves one site and leaves every future file where it was — which
+  is how five of the six projects came to have no stated budget at all. Delete a
+  restatement of the project's own value rather than keeping it in sync.
+- **A per-suite raise is right only where the work is genuinely different**, and
+  then it says so: real cross-process lock contention (`file-lock.test.ts`), a
+  full interactive OAuth round trip (`oauth-interactive.test.ts`). Name the
+  constant and state the reason at the site.
+- **A rule about what the code _does_ is asserted at runtime, not read out of
+  the source.** Both of this section's runtime checks
+  (`vitest.setup.shared.mts`, `clients/web/src/test/asyncUtilTimeout.test.ts`)
+  began as source scanning in #2334, and the review found a new valid
+  JavaScript spelling the scanner missed in five consecutive rounds — each fix
+  correct, each making it more parser-shaped, until it carried eight helpers
+  doing quote tracking and bracket balancing. Asking the runtime needs no
+  spelling to be anticipated and covers cases the scan could not reach at all.
+  Reach for `verify:*` when the question is about **configuration**, which a
+  tool can be asked to resolve; assert at runtime when it is about behavior.
+- **A budget is stated, which is not the same as raised.** Testing Library's
+  `asyncUtilTimeout` is pinned at its own default in both web setup files
+  because raising it was *measured* and found to buy nothing: #2323's
+  three-arm run went red at 5000, and #2335's interleaved re-run on a leased
+  machine found no web test that lets a Testing Library wait expire on its
+  passing path and no difference between 1000 and 5000 beyond the guard
+  refusing the raised value. The hazard the rule guards against is still
+  real: a wait that is meant to expire — a test asserting something never
+  appears, a poll allowed to run out — spends its whole budget on the happy
+  path, so a raise is a proportional cost on exactly those tests. Measure
+  before raising a budget that a passing test can spend in full; the
+  call-site comment records both runs.
+- **An inner budget must be strictly smaller than the budget enclosing it.**
+  `waitFor({ timeout: N })` inside a test whose own budget is `N` can never win:
+  the test expires first and reports a timeout naming neither the wait nor its
+  subject (#2292). So when two bounds cover the same work they must differ, and
+  the **inner** one — the one carrying the useful diagnostic — has to be the
+  tighter, which is arranged by raising the outer rather than shrinking the
+  inner. Both shapes in this repo read that way: `AppRenderer.test.tsx`'s 5s
+  `waitFor` inside a 15s test, and `clients/cli/__tests__/e2e.test.ts`'s 15s
+  child timer (which kills the process group and names the CLI) inside a 25s
+  test.
+- **`retry` stays unset.** A retry turns a load-induced red into a silent green
+  on the only pre-push gate this repo has, and hides a real race behind a second
+  attempt. `vitest.setup.shared.mts` asserts it **at runtime**, in every
+  project, reading the value Vitest resolved for the test — so a per-test
+  option, a `describe` option, a project setting and a `--retry` flag all land
+  on the same check.
+- **`maxWorkers` stays unset — on measurement, not by omission (#2336).** The
+  five forks-pool projects inherit `max(availableParallelism() - 1, 1)`; web's
+  `storybook` project runs the browser pool, whose own default is
+  `max(min(12, availableParallelism() - 1), 1)` and which was not measured (a cap set
+  there would apply, so it is not exempt — it just needs its own numbers).
+  Capping the forks pool to 4 was
+  measured at the leased baseline as +14% wall on the web unit suite and +39%
+  on `coverage:web` for zero fewer failures (0 of 18 runs either way), so the
+  cap is a permanent solo-run cost. The only thing it moved was one test's 5s
+  inner `waitFor` when two sessions ran suites at once — a site to fix, not a
+  reason to cap. The numbers, the sibling-session trade and what would reopen
+  the question are on the comment in `vitest.shared.mts`; do not add a
+  per-project cap without re-running that measurement.
+- **The Playwright locator budgets the web smokes use are named constants in
+  `scripts/lib/browser-timeouts.mjs`** — raise one there, not at a call site.
+  The shared flow helpers (`deep-link-connect.mjs`, `mcp-app-flow.mjs`)
+  default to the same constants, so a budget that moves there moves for every
+  smoke at once. The process-level budgets are stated the same way in their
+  own modules — `DEFAULTS` in `announced-child.mjs` and `render-smoke.mjs`,
+  `SCRIPT_PROBE_TIMEOUT_MS` in `pty.mjs` — each with the measurement that
+  sized it (#2333).
+- **Every CI job declares `timeout-minutes`, sized from observed runs.** It is
+  a hung-job guard, not a flake remedy — GitHub runners are not the contended
+  machine — so the rule is roughly twice the slowest run observed, rounded up
+  to the next five minutes, stated per job in `.github/workflows/main.yml`
+  with the range it was read from. A job that starts taking longer gets its
+  number raised there, with the new range; the 360-minute default it replaces
+  is how a hang blocks a runner for six hours.
+- **Do not scale a fixed sleep.** A `setTimeout(r, N)` with no condition is not
+  a timeout: it always waits the full window, so raising it slows every passing
+  run and still races on a loaded one. Replace one with a condition wait when it
+  actually flakes (#2250). The single exception is the transition auto-settle in
+  `clients/web/src/test/renderWithMantine.tsx`, whose failure is silent and
+  displaced rather than loud and local — and there only its `RAF_SLACK_MS` term
+  moves, never the term derived from the component's own animation constant.
+
+
 ## Mandatory pre-push gate
 
 - **ALWAYS run `npm run format` before committing.** The **root** `format` auto-fixes `core/`, the root `scripts/` tooling, the root shared surface, and every client's scope in one shot. `validate` runs the non-fixing `format:check` and will fail in CI on any unformatted file, so run the auto-fixer first rather than letting `format:check` catch it.
-- **`npm run local:gate` is the mandatory pre-push command.** It is a **strict superset** of `.github/workflows/main.yml`, so passing it locally means CI's gates will pass. Expect several minutes.
+- **`npm run local:gate` is the mandatory pre-push command.** It runs **every check** `.github/workflows/main.yml` runs, plus two local-only steps, so a green run here is the strongest predictor of a green CI this repo has: every check CI applies has already passed on your machine. It is not a proof — CI runs on a different OS and, since #2341, runs each client's suite bare where the gate runs it only instrumented — so the one residual is a test that passes *only* when slowed down, which is a race (#1596) to fix, never headroom to keep. Expect several minutes.
+- **The gate runs each client's test suite once, instrumented; CI runs it twice (#2341).** CI's `build` job runs the bare `test` inside `validate` and its parallel `coverage` job runs `test:coverage`, which costs CI no wall clock. Serially in one process the bare pass was ~80s of a ~370s gate, re-running exactly the files the coverage pass runs a few minutes later — so the gate calls **`local:validate`**, which is `validate` minus each client's `test` leg (every client's `validate` is `check && test`, and `local:validate` runs the `check` half). "Every check" is therefore a claim about checks, not invocations, and it holds because `@vitest/coverage-v8` collects coverage from V8's own profiler (`Profiler.takePreciseCoverage`) and rewrites no source: a test file sees identical code either way, and the instrumented run is only *slower*, which makes it the stricter of the two for the failure class this repo actually sees (a correct test cut off under load). A test that passed only *because* it ran slower would be a race — #1596's class, a defect wherever it surfaces — and CI's bare pass still runs it. **`npm run validate` is unchanged**, because CI runs it directly and it is the inner-loop check; `verify:*` guards that ask "is this reachable from `validate`" are unaffected. `local:validate` lives in the `local:` namespace so the workflow guard keeps it out of CI by construction.
 - **`npm run validate` is the fast inner-loop check and is NOT an acceptable substitute.** It runs `test`, not `test:coverage`, so it does **zero** coverage gating, no smokes, and no Storybook tests. Skipping the gate is how a push passes every fast local check and still fails CI.
+- **Concurrent gates queue; they do not overlap.** `local:gate` takes a machine-wide lease (`scripts/gate-lease.mjs`, #2339) so a gate started in a second worktree waits for the first rather than running alongside it. Overlap is not merely slow — the web smokes bind fixed ports, so two gates reaching the same smoke together go red on a diff that cannot have caused it (measured: one of two concurrent gates failed at 279s on port 6298 while a quiet gate passed in 257s). The wait names the holder and its worktree; a holder that dies releases within 30s (unless its lock directory cannot be removed, in which case the wait runs to its 45-minute cap and names the path); `INSPECTOR_SKIP_GATE_LEASE=1` bypasses it, which is for a measurement that _needs_ contention, never for getting a result sooner — the queued run finishes sooner anyway.
 - There is deliberately **no `npm run ci`** — that name collided with the `npm ci` built-in, which clean-installs from the lockfile and does not run this script.
 - What each stage covers, and why two of them are local-only, is [`docs/quality-gate.md`](./docs/quality-gate.md); how to diagnose a failing stage is the `pre-push-gate` skill.
 
@@ -428,7 +538,7 @@ The two coverage guards do **not** catch this, and adding a third is not the fix
 
 **Every `lint` script runs with `--max-warnings 0`, so a warning fails `validate` exactly as an error does (#2085).** All six scopes carry the flag — each of `clients/{web,cli,tui,launcher}`'s `eslint .`, plus the root's `lint:core` and `lint:shared`.
 
-This exists because the gate's promise — that passing `npm run local:gate` locally means CI's gates pass — was kept while a real bug walked through it. `react-hooks/exhaustive-deps` ships at `warn` in the recommended set, and two `useCallback`s in `App.tsx` omitted a non-stable `refresh` from their dependency arrays; ESLint printed the right message on both lines on every run, nothing consumed it, and the stale closure was caught only by a review round on #2076. It is the same argument [Build output is never a gate target](#build-output-is-never-a-gate-target) makes from the other direction: a channel nobody fails on is one people learn to skim.
+This exists because the gate's promise — that a green `npm run local:gate` means every check CI applies has already passed — was kept while a real bug walked through it. `react-hooks/exhaustive-deps` ships at `warn` in the recommended set, and two `useCallback`s in `App.tsx` omitted a non-stable `refresh` from their dependency arrays; ESLint printed the right message on both lines on every run, nothing consumed it, and the stale closure was caught only by a review round on #2076. It is the same argument [Build output is never a gate target](#build-output-is-never-a-gate-target) makes from the other direction: a channel nobody fails on is one people learn to skim.
 
 Two consequences worth stating:
 

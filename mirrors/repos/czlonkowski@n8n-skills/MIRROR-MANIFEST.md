@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `czlonkowski/n8n-skills` — 26 default patterns, 0 followed patterns, 88 file(s) materialized.
+Mirror of `czlonkowski/n8n-skills` — 26 default patterns, 0 followed patterns, 86 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `czlonkowski/n8n-skills` — 26 default patterns, 0 followed patterns,
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 88 |
+| Files         | 86 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -84,69 +84,67 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 23 | ✓ | [`skills/n8n-code-javascript/README.md`](skills/n8n-code-javascript/README.md) |
 | 24 | ✓ | [`skills/n8n-code-javascript/SKILL.md`](skills/n8n-code-javascript/SKILL.md) |
 | 25 | ✓ | [`skills/n8n-code-python/COMMON_PATTERNS.md`](skills/n8n-code-python/COMMON_PATTERNS.md) |
-| 26 | ✓ | [`skills/n8n-code-python/DATA_ACCESS.md`](skills/n8n-code-python/DATA_ACCESS.md) |
-| 27 | ✓ | [`skills/n8n-code-python/ERROR_PATTERNS.md`](skills/n8n-code-python/ERROR_PATTERNS.md) |
-| 28 | ✓ | [`skills/n8n-code-python/README.md`](skills/n8n-code-python/README.md) |
-| 29 | ✓ | [`skills/n8n-code-python/SKILL.md`](skills/n8n-code-python/SKILL.md) |
-| 30 | ✓ | [`skills/n8n-code-python/STANDARD_LIBRARY.md`](skills/n8n-code-python/STANDARD_LIBRARY.md) |
-| 31 | ✓ | [`skills/n8n-code-tool/ERROR_PATTERNS.md`](skills/n8n-code-tool/ERROR_PATTERNS.md) |
-| 32 | ✓ | [`skills/n8n-code-tool/INPUT_SCHEMA.md`](skills/n8n-code-tool/INPUT_SCHEMA.md) |
-| 33 | ✓ | [`skills/n8n-code-tool/README.md`](skills/n8n-code-tool/README.md) |
-| 34 | ✓ | [`skills/n8n-code-tool/SKILL.md`](skills/n8n-code-tool/SKILL.md) |
-| 35 | ✓ | [`skills/n8n-error-handling/API_WORKFLOWS.md`](skills/n8n-error-handling/API_WORKFLOWS.md) |
-| 36 | ✓ | [`skills/n8n-error-handling/ERROR_WORKFLOWS.md`](skills/n8n-error-handling/ERROR_WORKFLOWS.md) |
-| 37 | ✓ | [`skills/n8n-error-handling/NODE_ERROR_OUTPUTS.md`](skills/n8n-error-handling/NODE_ERROR_OUTPUTS.md) |
-| 38 | ✓ | [`skills/n8n-error-handling/README.md`](skills/n8n-error-handling/README.md) |
-| 39 | ✓ | [`skills/n8n-error-handling/RESPONSE_SHAPES.md`](skills/n8n-error-handling/RESPONSE_SHAPES.md) |
-| 40 | ✓ | [`skills/n8n-error-handling/SKILL.md`](skills/n8n-error-handling/SKILL.md) |
-| 41 | ✓ | [`skills/n8n-expression-syntax/COMMON_MISTAKES.md`](skills/n8n-expression-syntax/COMMON_MISTAKES.md) |
-| 42 | ✓ | [`skills/n8n-expression-syntax/EXAMPLES.md`](skills/n8n-expression-syntax/EXAMPLES.md) |
-| 43 | ✓ | [`skills/n8n-expression-syntax/README.md`](skills/n8n-expression-syntax/README.md) |
-| 44 | ✓ | [`skills/n8n-expression-syntax/SKILL.md`](skills/n8n-expression-syntax/SKILL.md) |
-| 45 | ✓ | [`skills/n8n-mcp-tools-expert/OPERATIONS_GUIDE.md`](skills/n8n-mcp-tools-expert/OPERATIONS_GUIDE.md) |
-| 46 | ✓ | [`skills/n8n-mcp-tools-expert/README.md`](skills/n8n-mcp-tools-expert/README.md) |
-| 47 | ✓ | [`skills/n8n-mcp-tools-expert/SEARCH_GUIDE.md`](skills/n8n-mcp-tools-expert/SEARCH_GUIDE.md) |
-| 48 | ✓ | [`skills/n8n-mcp-tools-expert/SKILL.md`](skills/n8n-mcp-tools-expert/SKILL.md) |
-| 49 | ✓ | [`skills/n8n-mcp-tools-expert/VALIDATION_GUIDE.md`](skills/n8n-mcp-tools-expert/VALIDATION_GUIDE.md) |
-| 50 | ✓ | [`skills/n8n-mcp-tools-expert/WORKFLOW_GUIDE.md`](skills/n8n-mcp-tools-expert/WORKFLOW_GUIDE.md) |
-| 51 | ✓ | [`skills/n8n-multi-instance/README.md`](skills/n8n-multi-instance/README.md) |
-| 52 | ✓ | [`skills/n8n-multi-instance/SKILL.md`](skills/n8n-multi-instance/SKILL.md) |
-| 53 | ✓ | [`skills/n8n-node-configuration/DEPENDENCIES.md`](skills/n8n-node-configuration/DEPENDENCIES.md) |
-| 54 | ✓ | [`skills/n8n-node-configuration/NODE_FAMILY_GOTCHAS.md`](skills/n8n-node-configuration/NODE_FAMILY_GOTCHAS.md) |
-| 55 | ✓ | [`skills/n8n-node-configuration/OPERATION_PATTERNS.md`](skills/n8n-node-configuration/OPERATION_PATTERNS.md) |
-| 56 | ✓ | [`skills/n8n-node-configuration/README.md`](skills/n8n-node-configuration/README.md) |
-| 57 | ✓ | [`skills/n8n-node-configuration/SKILL.md`](skills/n8n-node-configuration/SKILL.md) |
-| 58 | ✓ | [`skills/n8n-self-hosting/assets/.env.queue.example`](skills/n8n-self-hosting/assets/.env.queue.example) |
-| 59 | ✓ | [`skills/n8n-self-hosting/assets/.env.single.example`](skills/n8n-self-hosting/assets/.env.single.example) |
-| 60 | ✓ | [`skills/n8n-self-hosting/assets/Caddyfile`](skills/n8n-self-hosting/assets/Caddyfile) |
-| 61 | ✓ | [`skills/n8n-self-hosting/assets/docker-compose.queue.yml`](skills/n8n-self-hosting/assets/docker-compose.queue.yml) |
-| 62 | ✓ | [`skills/n8n-self-hosting/assets/docker-compose.single.yml`](skills/n8n-self-hosting/assets/docker-compose.single.yml) |
-| 63 | ✓ | [`skills/n8n-self-hosting/assets/init-data.sh`](skills/n8n-self-hosting/assets/init-data.sh) |
-| 64 | ✓ | [`skills/n8n-self-hosting/CREDENTIAL_OVERWRITES.md`](skills/n8n-self-hosting/CREDENTIAL_OVERWRITES.md) |
-| 65 | ✓ | [`skills/n8n-self-hosting/DAY2.md`](skills/n8n-self-hosting/DAY2.md) |
-| 66 | ✓ | [`skills/n8n-self-hosting/QUEUE_MODE.md`](skills/n8n-self-hosting/QUEUE_MODE.md) |
-| 67 | ✓ | [`skills/n8n-self-hosting/README.md`](skills/n8n-self-hosting/README.md) |
-| 68 | ✓ | [`skills/n8n-self-hosting/SECURITY.md`](skills/n8n-self-hosting/SECURITY.md) |
-| 69 | ✓ | [`skills/n8n-self-hosting/SINGLE_MODE.md`](skills/n8n-self-hosting/SINGLE_MODE.md) |
-| 70 | ✓ | [`skills/n8n-self-hosting/SKILL.md`](skills/n8n-self-hosting/SKILL.md) |
-| 71 | ✓ | [`skills/n8n-subworkflows/NAMING_AND_DISCOVERY.md`](skills/n8n-subworkflows/NAMING_AND_DISCOVERY.md) |
-| 72 | ✓ | [`skills/n8n-subworkflows/README.md`](skills/n8n-subworkflows/README.md) |
-| 73 | ✓ | [`skills/n8n-subworkflows/SKILL.md`](skills/n8n-subworkflows/SKILL.md) |
-| 74 | ✓ | [`skills/n8n-subworkflows/SUBWORKFLOW_PATTERNS.md`](skills/n8n-subworkflows/SUBWORKFLOW_PATTERNS.md) |
-| 75 | ✓ | [`skills/n8n-validation-expert/ERROR_CATALOG.md`](skills/n8n-validation-expert/ERROR_CATALOG.md) |
-| 76 | ✓ | [`skills/n8n-validation-expert/FALSE_POSITIVES.md`](skills/n8n-validation-expert/FALSE_POSITIVES.md) |
-| 77 | ✓ | [`skills/n8n-validation-expert/README.md`](skills/n8n-validation-expert/README.md) |
-| 78 | ✓ | [`skills/n8n-validation-expert/REVIEW_CHECKLIST.md`](skills/n8n-validation-expert/REVIEW_CHECKLIST.md) |
-| 79 | ✓ | [`skills/n8n-validation-expert/SKILL.md`](skills/n8n-validation-expert/SKILL.md) |
-| 80 | ✓ | [`skills/n8n-workflow-patterns/ai_agent_workflow.md`](skills/n8n-workflow-patterns/ai_agent_workflow.md) |
-| 81 | ✓ | [`skills/n8n-workflow-patterns/database_operations.md`](skills/n8n-workflow-patterns/database_operations.md) |
-| 82 | ✓ | [`skills/n8n-workflow-patterns/http_api_integration.md`](skills/n8n-workflow-patterns/http_api_integration.md) |
-| 83 | ✓ | [`skills/n8n-workflow-patterns/README.md`](skills/n8n-workflow-patterns/README.md) |
-| 84 | ✓ | [`skills/n8n-workflow-patterns/scheduled_tasks.md`](skills/n8n-workflow-patterns/scheduled_tasks.md) |
-| 85 | ✓ | [`skills/n8n-workflow-patterns/SKILL.md`](skills/n8n-workflow-patterns/SKILL.md) |
-| 86 | ✓ | [`skills/n8n-workflow-patterns/webhook_processing.md`](skills/n8n-workflow-patterns/webhook_processing.md) |
-| 87 | ✓ | [`skills/using-n8n-mcp-skills/README.md`](skills/using-n8n-mcp-skills/README.md) |
-| 88 | ✓ | [`skills/using-n8n-mcp-skills/SKILL.md`](skills/using-n8n-mcp-skills/SKILL.md) |
+| 26 | ✓ | [`skills/n8n-code-python/README.md`](skills/n8n-code-python/README.md) |
+| 27 | ✓ | [`skills/n8n-code-python/SKILL.md`](skills/n8n-code-python/SKILL.md) |
+| 28 | ✓ | [`skills/n8n-code-tool/ERROR_PATTERNS.md`](skills/n8n-code-tool/ERROR_PATTERNS.md) |
+| 29 | ✓ | [`skills/n8n-code-tool/INPUT_SCHEMA.md`](skills/n8n-code-tool/INPUT_SCHEMA.md) |
+| 30 | ✓ | [`skills/n8n-code-tool/README.md`](skills/n8n-code-tool/README.md) |
+| 31 | ✓ | [`skills/n8n-code-tool/SKILL.md`](skills/n8n-code-tool/SKILL.md) |
+| 32 | ✓ | [`skills/n8n-error-handling/API_WORKFLOWS.md`](skills/n8n-error-handling/API_WORKFLOWS.md) |
+| 33 | ✓ | [`skills/n8n-error-handling/ERROR_WORKFLOWS.md`](skills/n8n-error-handling/ERROR_WORKFLOWS.md) |
+| 34 | ✓ | [`skills/n8n-error-handling/NODE_ERROR_OUTPUTS.md`](skills/n8n-error-handling/NODE_ERROR_OUTPUTS.md) |
+| 35 | ✓ | [`skills/n8n-error-handling/README.md`](skills/n8n-error-handling/README.md) |
+| 36 | ✓ | [`skills/n8n-error-handling/RESPONSE_SHAPES.md`](skills/n8n-error-handling/RESPONSE_SHAPES.md) |
+| 37 | ✓ | [`skills/n8n-error-handling/SKILL.md`](skills/n8n-error-handling/SKILL.md) |
+| 38 | ✓ | [`skills/n8n-expression-syntax/COMMON_MISTAKES.md`](skills/n8n-expression-syntax/COMMON_MISTAKES.md) |
+| 39 | ✓ | [`skills/n8n-expression-syntax/EXAMPLES.md`](skills/n8n-expression-syntax/EXAMPLES.md) |
+| 40 | ✓ | [`skills/n8n-expression-syntax/README.md`](skills/n8n-expression-syntax/README.md) |
+| 41 | ✓ | [`skills/n8n-expression-syntax/SKILL.md`](skills/n8n-expression-syntax/SKILL.md) |
+| 42 | ✓ | [`skills/n8n-mcp-tools-expert/OPERATIONS_GUIDE.md`](skills/n8n-mcp-tools-expert/OPERATIONS_GUIDE.md) |
+| 43 | ✓ | [`skills/n8n-mcp-tools-expert/README.md`](skills/n8n-mcp-tools-expert/README.md) |
+| 44 | ✓ | [`skills/n8n-mcp-tools-expert/SEARCH_GUIDE.md`](skills/n8n-mcp-tools-expert/SEARCH_GUIDE.md) |
+| 45 | ✓ | [`skills/n8n-mcp-tools-expert/SKILL.md`](skills/n8n-mcp-tools-expert/SKILL.md) |
+| 46 | ✓ | [`skills/n8n-mcp-tools-expert/VALIDATION_GUIDE.md`](skills/n8n-mcp-tools-expert/VALIDATION_GUIDE.md) |
+| 47 | ✓ | [`skills/n8n-mcp-tools-expert/WORKFLOW_GUIDE.md`](skills/n8n-mcp-tools-expert/WORKFLOW_GUIDE.md) |
+| 48 | ✓ | [`skills/n8n-multi-instance/README.md`](skills/n8n-multi-instance/README.md) |
+| 49 | ✓ | [`skills/n8n-multi-instance/SKILL.md`](skills/n8n-multi-instance/SKILL.md) |
+| 50 | ✓ | [`skills/n8n-node-configuration/DEPENDENCIES.md`](skills/n8n-node-configuration/DEPENDENCIES.md) |
+| 51 | ✓ | [`skills/n8n-node-configuration/NODE_FAMILY_GOTCHAS.md`](skills/n8n-node-configuration/NODE_FAMILY_GOTCHAS.md) |
+| 52 | ✓ | [`skills/n8n-node-configuration/OPERATION_PATTERNS.md`](skills/n8n-node-configuration/OPERATION_PATTERNS.md) |
+| 53 | ✓ | [`skills/n8n-node-configuration/README.md`](skills/n8n-node-configuration/README.md) |
+| 54 | ✓ | [`skills/n8n-node-configuration/SKILL.md`](skills/n8n-node-configuration/SKILL.md) |
+| 55 | ✓ | [`skills/n8n-self-hosting/assets/.env.queue.example`](skills/n8n-self-hosting/assets/.env.queue.example) |
+| 56 | ✓ | [`skills/n8n-self-hosting/assets/.env.single.example`](skills/n8n-self-hosting/assets/.env.single.example) |
+| 57 | ✓ | [`skills/n8n-self-hosting/assets/Caddyfile`](skills/n8n-self-hosting/assets/Caddyfile) |
+| 58 | ✓ | [`skills/n8n-self-hosting/assets/docker-compose.queue.yml`](skills/n8n-self-hosting/assets/docker-compose.queue.yml) |
+| 59 | ✓ | [`skills/n8n-self-hosting/assets/docker-compose.single.yml`](skills/n8n-self-hosting/assets/docker-compose.single.yml) |
+| 60 | ✓ | [`skills/n8n-self-hosting/assets/init-data.sh`](skills/n8n-self-hosting/assets/init-data.sh) |
+| 61 | ✓ | [`skills/n8n-self-hosting/CREDENTIAL_OVERWRITES.md`](skills/n8n-self-hosting/CREDENTIAL_OVERWRITES.md) |
+| 62 | ✓ | [`skills/n8n-self-hosting/DAY2.md`](skills/n8n-self-hosting/DAY2.md) |
+| 63 | ✓ | [`skills/n8n-self-hosting/QUEUE_MODE.md`](skills/n8n-self-hosting/QUEUE_MODE.md) |
+| 64 | ✓ | [`skills/n8n-self-hosting/README.md`](skills/n8n-self-hosting/README.md) |
+| 65 | ✓ | [`skills/n8n-self-hosting/SECURITY.md`](skills/n8n-self-hosting/SECURITY.md) |
+| 66 | ✓ | [`skills/n8n-self-hosting/SINGLE_MODE.md`](skills/n8n-self-hosting/SINGLE_MODE.md) |
+| 67 | ✓ | [`skills/n8n-self-hosting/SKILL.md`](skills/n8n-self-hosting/SKILL.md) |
+| 68 | ✓ | [`skills/n8n-self-hosting/TASK_RUNNERS.md`](skills/n8n-self-hosting/TASK_RUNNERS.md) |
+| 69 | ✓ | [`skills/n8n-subworkflows/NAMING_AND_DISCOVERY.md`](skills/n8n-subworkflows/NAMING_AND_DISCOVERY.md) |
+| 70 | ✓ | [`skills/n8n-subworkflows/README.md`](skills/n8n-subworkflows/README.md) |
+| 71 | ✓ | [`skills/n8n-subworkflows/SKILL.md`](skills/n8n-subworkflows/SKILL.md) |
+| 72 | ✓ | [`skills/n8n-subworkflows/SUBWORKFLOW_PATTERNS.md`](skills/n8n-subworkflows/SUBWORKFLOW_PATTERNS.md) |
+| 73 | ✓ | [`skills/n8n-validation-expert/ERROR_CATALOG.md`](skills/n8n-validation-expert/ERROR_CATALOG.md) |
+| 74 | ✓ | [`skills/n8n-validation-expert/FALSE_POSITIVES.md`](skills/n8n-validation-expert/FALSE_POSITIVES.md) |
+| 75 | ✓ | [`skills/n8n-validation-expert/README.md`](skills/n8n-validation-expert/README.md) |
+| 76 | ✓ | [`skills/n8n-validation-expert/REVIEW_CHECKLIST.md`](skills/n8n-validation-expert/REVIEW_CHECKLIST.md) |
+| 77 | ✓ | [`skills/n8n-validation-expert/SKILL.md`](skills/n8n-validation-expert/SKILL.md) |
+| 78 | ✓ | [`skills/n8n-workflow-patterns/ai_agent_workflow.md`](skills/n8n-workflow-patterns/ai_agent_workflow.md) |
+| 79 | ✓ | [`skills/n8n-workflow-patterns/database_operations.md`](skills/n8n-workflow-patterns/database_operations.md) |
+| 80 | ✓ | [`skills/n8n-workflow-patterns/http_api_integration.md`](skills/n8n-workflow-patterns/http_api_integration.md) |
+| 81 | ✓ | [`skills/n8n-workflow-patterns/README.md`](skills/n8n-workflow-patterns/README.md) |
+| 82 | ✓ | [`skills/n8n-workflow-patterns/scheduled_tasks.md`](skills/n8n-workflow-patterns/scheduled_tasks.md) |
+| 83 | ✓ | [`skills/n8n-workflow-patterns/SKILL.md`](skills/n8n-workflow-patterns/SKILL.md) |
+| 84 | ✓ | [`skills/n8n-workflow-patterns/webhook_processing.md`](skills/n8n-workflow-patterns/webhook_processing.md) |
+| 85 | ✓ | [`skills/using-n8n-mcp-skills/README.md`](skills/using-n8n-mcp-skills/README.md) |
+| 86 | ✓ | [`skills/using-n8n-mcp-skills/SKILL.md`](skills/using-n8n-mcp-skills/SKILL.md) |
 
 ---
 

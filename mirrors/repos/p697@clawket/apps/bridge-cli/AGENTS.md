@@ -41,6 +41,10 @@ When expanding `start`, `install`, `restart`, `stop`, or `uninstall`:
 3. Never log setup bootstrap tokens, decoded setup payloads, or issued device tokens.
 4. Preserve raw token/password pairing for existing installations and keep Hermes pairing behavior unchanged.
 
+## CLI Test Isolation Rule
+
+`index.test.ts` re-imports the CLI per test, but `main()` is fire-and-forget: a finished test's Hermes pid polling and OpenClaw reconnect polling keep running for up to 25 seconds. Mocks those pollers touch (`execFileSync`, `spawn`, `getServiceStatus`, `readRecentCliLogs`) must stay per-test instances re-registered with `vi.doMock` in `beforeEach`; never move them back into the shared hoisted set, and restore real timers in `afterEach`.
+
 ## Preview Environment Rule
 
 1. `clawket pair --preview` uses the official Preview Registry and writes `~/.clawket/bridge-cli.preview.json`; it must never overwrite Production pairing state.
@@ -61,8 +65,12 @@ Managed OpenClaw runtimes advertise additive independent-client channel support.
 
 ## Local model Preview
 
-`local-model pair` (also `pair --backend local-model`) runs a foreground, isolated Preview Bridge and prints a secure six-digit code only after Relay readiness. `local-model run` restores its saved configuration. Optional llama.cpp router startup must never replace an occupied port or terminate unrelated model processes. Local-model state is separate from existing OpenClaw and Hermes state. See `../../docs/3.0/15-local-model.md`.
+`local-model pair` (also `pair --backend local-model`) runs a foreground, isolated Preview Bridge and prints a secure six-digit code only after Relay readiness. `local-model run` restores its saved configuration. Optional llama.cpp router startup must never replace an occupied port or terminate unrelated model processes. Local-model state is separate from existing OpenClaw and Hermes state. See `../../docs/3.0/15-local-model.md`. Model discovery goes through `discoverLocalModelEndpoints`: an unreachable address, a non-OpenAI-compatible reply, an empty model list or an unknown `--engine` must fail with the address and the `--base-url` / `--engine` remedy, never a bare `fetch failed`; keep its engine list equal to the Mobile onboarding tabs.
 
 Windows local-model persistence uses `scripts/bridge/windows-local-model.ps1` and its detached supervisor. Restore existing pairing only; keep independent bundle snapshots, per-config exclusive control, bounded child restart backoff, and graceful IPC shutdown/parent-loss cleanup. Logon recovery is per-user, not a pre-login service. See `../../docs/3.0/21-windows-local-model-recovery.md`.
 
 Supervisor Stop must wait for the owned child to exit before acknowledging; Start must wait out stopping instances. Install attempts use fresh release directories and validate the CLI before activation, never mutate a referenced snapshot. Cover these boundaries with process and Windows installation-failure regressions.
+
+The CLI keeps `https-proxy-agent` as an explicit external runtime dependency for Relay-only proxy support; preserve it in the packaged install. Managed service proxy configuration must not modify global host networking.
+
+Diagnostics resolve the invoked CLI symlink before matching managed process command lines; a global `clawket` symlink and its real bundle path must identify the same runtime. Missing paths remain safe to inspect.

@@ -1,6 +1,6 @@
 > [!NOTE]
 > **OmO Beta: OmO ❤️ Pi**
-> Try with `bun install -g omo-ai@beta` - Memory System, CodeMode, Anthropic subscriptions. All got covered.
+> Try it with `bun add -g omo-ai@beta`. Memory system, CodeMode, Anthropic subscriptions, all covered.
 > [![OmO Herdr DAG - live OmO workflow DAGs in a Herdr side pane](./.github/assets/omo-herdr-dag.png)](https://github.com/jc01rho/omo-herdr-dag)
 > *Just type "mass ulw" with your prompt - now you are the master of graph engineering. Multi-model ultracode, together with a better memory system. (The right panel is [omo-herdr-dag](https://github.com/jc01rho/omo-herdr-dag).)*
 
@@ -13,7 +13,7 @@
 > [!NOTE]
 >
 > [![Sisyphus Labs - Meet Dori. Not a demo. Subscribes to everything.](./.github/assets/sisyphuslabs.png?v=4)](https://sisyphuslabs.ai)
-> > **OmO is maintained by Jobdori, the AI assistant shown above. Meet your own Jobdori — Dori. <br />Join the waitlist [here](https://sisyphuslabs.ai).**
+> > **OmO is maintained by Jobdori, the AI assistant shown above. Meet your own Jobdori, Dori. <br />Join the waitlist [here](https://sisyphuslabs.ai).**
 
 > [!TIP]
 > Be with us!
@@ -89,7 +89,7 @@
 
 # Oh My OpenAgent
 
-You're juggling Claude Code, Codex, and random OSS models. Configuring workflows. Debugging agents.
+You're juggling Claude Code, Codex, and random OSS models. Configuring each one. Debugging agents.
 
 We did the work. Tested everything. Kept what actually shipped.
 
@@ -100,36 +100,32 @@ Install oh-my-openagent. Type `ultrawork`. Done.
 
 oh-my-openagent ships in three editions of the same product: two plugins that load into a host you already run, plus one standalone edition.
 
-- **Ultimate Edition (omo for OpenCode)** — full omo. 11 agents, 54+ lifecycle hooks, 4 built-in MCPs (websearch, context7, grep_app, lsp), all slash commands, Team Mode, `/goal`, ultrawork — everything. Hashline edits are opt-in (`hashline_edit: true`).
-- **Light Edition (omo for Codex CLI)** — the portable components that fit Codex's plugin system: `rules`, `comment-checker`, `git-bash`, `lsp`, `ultrawork`, `ulw-loop`, `ulw-execute-continuation`, and `telemetry` at the core, plus `teammode` and supporting components (`bootstrap`, `lcx`, and more), plugin-scoped MCPs for `grep_app`, `context7`, `git_bash`, and `lsp`, and the shared `ast-grep` skill. It installs Codex agent TOMLs into `~/.codex/agents/`. No OpenCode `team_*` tools — Codex CLI's own spawn/collaboration surface does that work.
-- **Senpi Edition (standalone, beta)** — the native `omo` command with the OMO extension built in. It installs from `omo-ai@beta` rather than loading into OpenCode or Codex.
+**Ultimate Edition (omo for OpenCode)** is the full omo. 11 agents, 54+ lifecycle hooks, 4 built-in MCPs (websearch, context7, grep_app, lsp), all slash commands, Team Mode, `/goal`, ultrawork. Hashline edits are opt-in (`hashline_edit: true`).
+
+**Light Edition (omo for Codex CLI)** carries the portable components that fit Codex's plugin system: `rules`, `comment-checker`, `git-bash`, `lsp`, `ultrawork`, `ulw-loop`, `ulw-execute-continuation`, and `telemetry` at the core, plus `teammode` and supporting components (`bootstrap`, `lcx`, and more), plugin-scoped MCPs for `grep_app`, `context7`, `git_bash`, and `lsp`, and the shared `ast-grep` skill. It installs Codex agent TOMLs into `~/.codex/agents/`. There are no OpenCode `team_*` tools; Codex CLI's own spawn/collaboration surface does that work.
+
+**Senpi Edition (standalone, beta)** is the native `omo` command with the OMO extension built in. It installs from `omo-ai@beta` and loads into neither OpenCode nor Codex.
 
 Pick the edition(s) you want.
 
-### TL;DR
+### One-line install
 
 | You want | Run | What lands on disk |
 | :--- | :--- | :--- |
 | **Ultimate** (OpenCode) | `bunx oh-my-openagent install` (TUI walks you through it) | Plugin registered in `opencode.json` + agent/model config + provider auth prompts |
 | **Light** (Codex CLI) | `npx lazycodex-ai install` | `~/.codex/plugins/cache/sisyphuslabs/omo/` + local Codex marketplace cache + `~/.codex/config.toml` marketplace/plugin/agent blocks + optional autonomous permissions + component CLIs in `~/.local/bin` |
 | **Both** | `bunx oh-my-openagent install --platform=both` | Both of the above |
-| **Senpi edition** (beta) | `npm i -g omo-ai@beta`, then `omo` | The `omo` command: pinned senpi release with the OMO extension built in. Beta channel only; a bare `npm i -g omo-ai` fails by design. See the [install guide](docs/guide/installation.md#senpi-edition-beta-omo-via-npm-omo-ai). |
+| **Senpi edition** (beta) | `bun add -g omo-ai@beta`, then `omo` | The `omo` command: pinned senpi release with the OMO extension built in. Beta channel only; a bare `bun add -g omo-ai` fails by design. See the [install guide](docs/guide/installation.md#senpi-edition-beta-omo-via-npm-omo-ai). |
 
 `lazycodex-ai` defaults to the Codex Light installer and runs through Node/npm. `--platform` on the shared `omo-agent-toolkit` CLI still defaults to `opencode` (Ultimate).
 
 ### Which edition should I pick?
 
-- Already use OpenCode, or want the most-tested path? Choose **Ultimate**: `bunx oh-my-openagent install`.
-- Already use Codex CLI? Choose **Light**: `npx lazycodex-ai install`.
-- Want one command without installing a host first? Choose **Senpi/native (beta)**: `npm i -g omo-ai@beta`.
-
-Ultimate and Light are plugins that load into a host you already run. Senpi is standalone: it ships a pinned Senpi engine with OMO built in.
-
-For Senpi, the `@beta` tag is required; bare `npm i -g omo-ai` fails by design. Do not install plain `omo` from npm: it is an unrelated package by a different author.
+Already on OpenCode, or want the most-tested path? **Ultimate**. Already on Codex CLI? **Light**. Want one command without installing a host first? The **Senpi edition**, which ships a pinned Senpi engine with OMO built in; bun is the recommended runtime for it, and the `@beta` tag is required. Do not install plain `omo` from npm; that is an unrelated package by a different author.
 
 ### For Humans
 
-**Strongly recommended: let an LLM agent install this for you.** The Ultimate edition setup involves subscription detection, model selection across 11 agents, and per-provider authentication — humans fat-finger these. An LLM agent reads the full guide and walks every step correctly.
+**Strongly recommended: let an LLM agent install this for you.** The Ultimate edition setup involves subscription detection, model selection across 11 agents, and per-provider authentication, and humans fat-finger these. An LLM agent reads the full guide and walks every step correctly.
 
 Paste this prompt into Claude Code, AmpCode, Cursor, or any agent:
 
@@ -156,22 +152,19 @@ Fetch the full guide and follow it step by step:
 curl -fsSL https://raw.githubusercontent.com/code-yeongyu/oh-my-openagent/refs/heads/dev/docs/guide/installation.md
 ```
 
-The guide covers: platform selection, the subscription interview, provider authentication (Anthropic / Gemini / Copilot / Z.ai / OpenCode Zen), the agent-to-model matching matrix, modes (`ultrawork`, `team`, `hyperplan`), slash commands, the Light edition's Codex components, Team Mode, and uninstall. Don't summarize it; read it end to end.
+The guide covers: platform selection, the subscription interview, provider authentication (Anthropic / Google / Copilot / Z.ai / OpenCode Zen), the agent-to-model matching matrix, modes (`ultrawork`, `team`, `hyperplan`), slash commands, the Light edition's Codex components, Team Mode, and uninstall. Don't summarize it; read it end to end.
 
 ### Note on package and command names
 
 The published npm package and CLI binary are still named `oh-my-opencode` (dual-published as `oh-my-openagent` during the rename transition). Inside `opencode.json`, the compatibility layer prefers the plugin entry `oh-my-openagent`, while legacy `oh-my-opencode` entries still load with a warning. Runtime config is `~/.omo/omo.jsonc` plus walked project `.omo/omo.jsonc`. Legacy `oh-my-openagent.json[c]` / `oh-my-opencode.json[c]` files are imported once by the migration engine and are not read afterward.
 
-The recommended `bunx`/`npx` invocation is `oh-my-openagent install` (or the original `oh-my-opencode install`). Once installed, the short command is `omo-agent-toolkit`. The `omo` bin was removed from these packages in this major release; the name now belongs to the senpi-native edition, installed with `npm i -g omo-ai@beta` (beta channel only). Do **not** use `bunx omo` or `npx omo`: `omo` on npm is a different, unrelated package by a different author, and those commands resolve to it. The senpi edition's package name is `omo-ai`. `lazycodex-ai` is a single-purpose Node/npm installer package: `npx lazycodex-ai install` routes directly to the Codex Light installer. It is not the Codex marketplace name (the marketplace repository is `code-yeongyu/lazycodex`). Codex sees marketplace `sisyphuslabs` and plugin `omo`, enabled as `omo@sisyphuslabs`.
+The recommended `bunx`/`npx` invocation is `oh-my-openagent install` (or the original `oh-my-opencode install`). Once installed, the short command is `omo-agent-toolkit`. The `omo` bin was removed from these packages in this major release; the name now belongs to the senpi-native edition, installed with `bun add -g omo-ai@beta` (beta channel only; bun is the recommended runtime). Do **not** use `bunx omo` or `npx omo`: `omo` on npm is a different, unrelated package by a different author, and those commands resolve to it. The senpi edition's package name is `omo-ai`. `lazycodex-ai` is a single-purpose Node/npm installer package: `npx lazycodex-ai install` routes directly to the Codex Light installer. It is not the Codex marketplace name (the marketplace repository is `code-yeongyu/lazycodex`). Codex sees marketplace `sisyphuslabs` and plugin `omo`, enabled as `omo@sisyphuslabs`.
 
 ### Telemetry
 
 Anonymous telemetry is enabled by default to track active installations (DAU/WAU/MAU). For both products, a single event is sent **at most once per UTC day per machine** using a SHA256-hashed installation identifier (never the raw hostname), and PostHog person profiles are not created. The main plugin emits `omo_daily_active` from plugin load (`plugin_loaded`) and CLI run (`run_started`) sources; the Codex CLI Light edition emits `omo_codex_daily_active` from two sources (`install_completed` and `session_start`).
 
-Opt out per product:
-
-- Main plugin: set `"telemetry": false` in oh-my-openagent config, `OMO_DISABLE_POSTHOG=1`, or `OMO_SEND_ANONYMOUS_TELEMETRY=0`
-- Codex CLI Light edition: `OMO_CODEX_DISABLE_POSTHOG=1` or `OMO_CODEX_SEND_ANONYMOUS_TELEMETRY=0` (the global flags also disable Codex)
+Opt out per product. For the main plugin, set `"telemetry": false` in the oh-my-openagent config, or export `OMO_DISABLE_POSTHOG=1` or `OMO_SEND_ANONYMOUS_TELEMETRY=0`. For the Codex CLI Light edition, export `OMO_CODEX_DISABLE_POSTHOG=1` or `OMO_CODEX_SEND_ANONYMOUS_TELEMETRY=0`; the global flags also disable Codex.
 
 See [Privacy Policy](docs/legal/privacy-policy.md) and [Terms of Service](docs/legal/terms-of-service.md).
 
@@ -190,7 +183,7 @@ Read this and tell me why it's not just another boilerplate: https://raw.githubu
 
 We are restructuring the codebase to support multiple agent harnesses (OpenCode, Codex, Pi, Claude Code, and others). The most urgent work is the package layering refactor: separating pure TypeScript core logic, MCP servers, skills, and adapter shims into distinct layers so the same logic can be reused across harnesses without duplication.
 
-If you want to contribute, read the [ROADMAP](./ROADMAP.md) first. PRs related to this refactor should use the `ROADMAP` label so we can track them.
+If you want to contribute, read the [ROADMAP](./ROADMAP.md) first. PRs related to this refactor should use the `ROADMAP` label so they are easy to track.
 
 ## Highlights
 
@@ -202,11 +195,7 @@ Install. Type `ultrawork` (or `ulw`). Done.
 
 Everything below, every feature, every optimization: you don't need to know any of it. It just works.
 
-Even with only the following subscriptions, `ultrawork` works well (this project is not affiliated; these are personal recommendations):
-- [ChatGPT Subscription ($20)](https://chatgpt.com/)
-- [Kimi Code Subscription ($19)](https://www.kimi.com/code)
-- [GLM Coding Plan ($10)](https://z.ai/subscribe)
-- If you're eligible for pay-per-token, using Kimi and Gemini models won't cost much.
+Even with only a [ChatGPT subscription ($20)](https://chatgpt.com/), a [Kimi Code subscription ($19)](https://www.kimi.com/code) or the [GLM Coding Plan ($10)](https://z.ai/subscribe), `ultrawork` works well (this project is not affiliated; these are personal recommendations). If you're eligible for pay-per-token, Kimi and GLM models won't cost much either.
 
 |       | Feature                                                  | Edition  | What it does                                                                                                                                                                                                     |
 | :---: | :------------------------------------------------------- | :------: | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -228,10 +217,10 @@ Even with only the following subscriptions, `ultrawork` works well (this project
 |   🖥️   | **Tmux Integration**                                     | Ultimate | Full interactive terminal. REPLs, debuggers, TUIs. All live.                                                                                                                                                     |
 |   🔌   | **Claude Code Compatible**                               | Ultimate | Your hooks, commands, skills, MCPs, and plugins? All work here.                                                                                                                                                  |
 |   🧬   | **Skill-Embedded MCPs**                                  | Ultimate | Skills carry their own MCP servers. No context bloat.                                                                                                                                                            |
-|   📋   | **Ultrawork Planner**                                    | Ultimate | Interview-mode strategic planning before any execution.                                                                                                                                                          |
+|   📋   | **Ultrawork Planner**                                    | Ultimate | Interview-mode strategic planning before execution starts.                                                                                                                                                         |
 |   🔍   | **`/init-deep`**                                         | Ultimate | Auto-generates hierarchical `AGENTS.md` files throughout your project. Great for both token efficiency and your agent's performance.                                                                             |
 
-> **Edition legend.** **Ultimate** = OpenCode-only (`bunx oh-my-openagent install`). **Light** = Codex CLI-only (`npx lazycodex-ai install`). **Both** = shipped in both editions, often with slightly different implementations under the hood.
+> **Edition legend.** **Ultimate** = OpenCode-only (`bunx oh-my-openagent install`). **Light** = Codex CLI-only (`npx lazycodex-ai install`). **Both** = shipped in both editions, often with slightly different implementations.
 
 ### Discipline Agents
 
@@ -262,10 +251,7 @@ One agent is fast. A coordinated team is *devastating*.
 }
 ```
 
-Restart opencode and the `team_*` tool family unlocks. Two skills already ride on top:
-
-- **`hyperplan`** — 5 hostile agents tear apart your plan from orthogonal angles before a single line of code is written.
-- **`security-research`** — 3 vulnerability hunters + 2 PoC engineers audit your codebase in parallel, with severity calibrated by *actual exploitability*.
+Restart opencode and the `team_*` tool family appears. Two skills already ride on top of it. `hyperplan` sends 5 hostile agents at your plan from orthogonal angles before a single line of code is written. `security-research` runs 3 vulnerability hunters and 2 PoC engineers over your codebase in parallel, with severity calibrated by *actual exploitability*.
 
 > **Off by default. Enable it when you want it.** [Full Team Mode guide →](docs/guide/team-mode.md)
 
@@ -290,18 +276,13 @@ Every hook, command, skill, MCP, plugin works here unchanged. Full compatibility
 
 ### World-Class Tools for Your Agents
 
-LSP, AST-Grep, Tmux, and MCP, actually integrated, not duct-taped together.
-
-- **LSP**: `lsp_rename`, `lsp_goto_definition`, `lsp_find_references`, `lsp_diagnostics`. IDE precision for every agent.
-- **AST-Grep**: Pattern-aware code search and rewriting across 25 languages.
-- **Tmux**: Full interactive terminal. REPLs, debuggers, TUI apps. Your agent stays in session.
-- **MCP**: Web search, official docs, GitHub code search. All baked in.
+LSP, AST-Grep, Tmux, and MCP, actually integrated, not duct-taped together. LSP gives every agent `lsp_rename`, `lsp_goto_definition`, `lsp_find_references` and `lsp_diagnostics`, IDE precision included. AST-Grep does pattern-aware code search and rewriting across 25 languages. Tmux is a full interactive terminal, so REPLs, debuggers and TUI apps stay in session. MCP brings web search, official docs and GitHub code search, all baked in.
 
 ### Skill-Embedded MCPs
 
 MCP servers eat your context budget. We fixed that.
 
-Skills bring their own MCP servers. They spin up on demand, scoped to the task, and go away when done. The context window stays clean.
+Skills bring their own MCP servers. They spin up on demand, scoped to the task, and go away when done. The context window stays small.
 
 ### Codes Better. Hash-Anchored Edits
 
@@ -319,7 +300,7 @@ Inspired by [oh-my-pi](https://github.com/can1357/oh-my-pi), we built **Hashline
 33#MB| }
 ```
 
-The agent edits by referencing those tags. If the file has changed since the last read, the hash won't match and the edit is rejected before any corruption. No whitespace reproduction. No stale-line errors.
+The agent edits by referencing those tags. If the file has changed since the last read, the hash won't match and the edit is rejected before it can corrupt the file. No whitespace reproduction. No stale-line errors.
 
 ### Deep Initialization. `/init-deep`
 
@@ -340,17 +321,13 @@ Agents auto-read relevant context. Zero manual management.
 
 Complex task? Don't prompt and pray.
 
-The Ultrawork Planner (`/ulw-plan`) **interviews you like a real engineer**, identifies scope and ambiguities, and writes a verified plan to `.omo/plans/` before touching code. `/ulw-execute` then has the main agent execute that plan in the same session. The agent knows what it's building before it starts.
+The Ultrawork Planner (`/ulw-plan`) **interviews you like a real engineer**, identifies scope and ambiguities, and writes a reviewed plan to `.omo/plans/` before touching code. `/ulw-execute` then has the main agent execute that plan in the same session. The agent knows what it's building before it starts.
 
 ### Skills
 
-Skills aren't just prompts. Each brings:
+Skills aren't just prompts. Each brings domain-tuned system instructions, embedded MCP servers on demand, and scoped permissions so agents stay in bounds.
 
-- Domain-tuned system instructions.
-- Embedded MCP servers, on demand.
-- Scoped permissions so agents stay in bounds.
-
-Built-ins: `playwright` (browser automation), `git-master` (atomic commits, rebase surgery), `frontend` (design-first UI).
+Built-ins include `playwright` (browser automation), `git-master` (atomic commits, rebase surgery) and `frontend` (design-first UI).
 
 Add your own under `.opencode/skills/*/SKILL.md` or `~/.config/opencode/skills/*/SKILL.md`.
 
@@ -362,96 +339,77 @@ Add your own under `.opencode/skills/*/SKILL.md` or `~/.config/opencode/skills/*
 
 ## Uninstallation
 
-To remove oh-my-openagent:
+Removing oh-my-openagent takes four steps.
 
-1. **Remove the plugin from your OpenCode config**
+### Remove the plugin from your OpenCode config
 
-   Edit `~/.config/opencode/opencode.json` (or `opencode.jsonc`) and remove either `"oh-my-openagent"` or the legacy `"oh-my-opencode"` entry from the `plugin` array:
+Edit `~/.config/opencode/opencode.json` (or `opencode.jsonc`) and remove either `"oh-my-openagent"` or the legacy `"oh-my-opencode"` entry from the `plugin` array:
 
-   ```bash
-   # Using jq
-   jq '.plugin = [.plugin[] | select(. != "oh-my-openagent" and . != "oh-my-opencode")]' \
-       ~/.config/opencode/opencode.json > /tmp/oc.json && \
-       mv /tmp/oc.json ~/.config/opencode/opencode.json
-   ```
+```bash
+# Using jq
+jq '.plugin = [.plugin[] | select(. != "oh-my-openagent" and . != "oh-my-opencode")]' \
+    ~/.config/opencode/opencode.json > /tmp/oc.json && \
+    mv /tmp/oc.json ~/.config/opencode/opencode.json
+```
 
-2. **Remove configuration files (optional)**
+### Remove configuration files (optional)
 
-   ```bash
-   # Remove the runtime config files
-   rm -f ~/.omo/omo.jsonc ~/.omo/omo.json
+```bash
+# Remove the runtime config files
+rm -f ~/.omo/omo.jsonc ~/.omo/omo.json
 
-   # Remove project config (if exists)
-   rm -f .omo/omo.jsonc .omo/omo.json
+# Remove project config (if exists)
+rm -f .omo/omo.jsonc .omo/omo.json
 
-   # Remove leftover legacy migration backups (if any)
-   rm -f ~/.config/opencode/oh-my-openagent.jsonc ~/.config/opencode/oh-my-openagent.json \
-         ~/.config/opencode/oh-my-opencode.jsonc ~/.config/opencode/oh-my-opencode.json \
-         .opencode/oh-my-openagent.jsonc .opencode/oh-my-openagent.json \
-         .opencode/oh-my-opencode.jsonc .opencode/oh-my-opencode.json
-   ```
+# Remove leftover legacy migration backups (if any)
+rm -f ~/.config/opencode/oh-my-openagent.jsonc ~/.config/opencode/oh-my-openagent.json \
+      ~/.config/opencode/oh-my-opencode.jsonc ~/.config/opencode/oh-my-opencode.json \
+      .opencode/oh-my-openagent.jsonc .opencode/oh-my-openagent.json \
+      .opencode/oh-my-opencode.jsonc .opencode/oh-my-opencode.json
+```
 
-3. **Verify removal**
+### Verify removal
 
-   ```bash
-   opencode --version
-   # Plugin should no longer be loaded
-   ```
+```bash
+opencode --version
+# Plugin should no longer be loaded
+```
 
-4. **Remove omo-codex (Codex CLI Light edition)**
+### Remove omo-codex (Codex CLI Light edition)
 
-   ```bash
-   npx lazycodex-ai uninstall
-   # backward-compatible alias:
-   npx lazycodex-ai cleanup
+```bash
+npx lazycodex-ai uninstall
+# backward-compatible alias:
+npx lazycodex-ai cleanup
 
-   omo-agent-toolkit uninstall --platform=codex
-   # backward-compatible alias:
-   omo-agent-toolkit cleanup --platform=codex
-   ```
+omo-agent-toolkit uninstall --platform=codex
+# backward-compatible alias:
+omo-agent-toolkit cleanup --platform=codex
+```
 
-   The uninstall command removes managed `sisyphuslabs` Codex cache/marketplace state, strips `omo@sisyphuslabs` plugin and hook-state blocks from `~/.codex/config.toml` after writing a backup, and removes agent TOML links listed in the install manifest. If a specific project still has old project-local Codex plugin state, run the command from that project or pass `--project <path>`; it repairs known project-local `.codex/config.toml` conflicts and reports project-local `.codex` artifacts without deleting project-owned files.
+The uninstall command removes managed `sisyphuslabs` Codex cache/marketplace state, strips `omo@sisyphuslabs` plugin and hook-state blocks from `~/.codex/config.toml` after writing a backup, and removes agent TOML links listed in the install manifest. If a specific project still has old project-local Codex plugin state, run the command from that project or pass `--project <path>`; it repairs known project-local `.codex/config.toml` conflicts and reports project-local `.codex` artifacts without deleting project-owned files.
 
 ## Features
 
 Features you'll think should've always existed. Once you use them, you can't go back.
 
-See full [Features Documentation](docs/reference/features.md).
+See the full [Features Documentation](docs/reference/features.md). The short version follows.
 
-**Quick Overview:**
-- **Agents**: the main agent (orchestrator), the Ultrawork Planner (`/ulw-plan`), the architect consult (architecture/debugging), Librarian (docs/code search), Explore (fast codebase grep), Multimodal Looker
-- **Background Agents**: Run multiple agents in parallel like a real dev team
-- **LSP & AST Tools**: Refactoring, rename, diagnostics, AST-aware code search
-- **Hash-anchored Edit Tool** (opt-in via `hashline_edit: true`): `LINE#ID` references validate content before applying every change. Surgical edits, zero stale-line errors
-- **Context Injection**: Auto-inject AGENTS.md, README.md, conditional rules
-- **Claude Code Compatibility**: Full hook system, commands, skills, agents, MCPs
-- **Built-in MCPs**: websearch (Exa), context7 (docs), grep_app (GitHub search), lsp — injected at runtime by the plugin; not visible in `opencode mcp list` (see [MCP docs](docs/reference/features.md#native-vs-plugin-injected-mcps))
-- **Session Tools**: List, read, search, and analyze session history
-- **Productivity Features**: Goal, Todo Enforcer, Comment Checker, Think Mode, and more
-- **Doctor Command**: Built-in diagnostics (`bunx oh-my-opencode doctor`) verify plugin registration, config, models, and environment
-- **Model Fallbacks**: `fallback_models` can mix plain model strings with per-fallback object settings in the same array
-- **File Prompts**: Load prompts from files with `file://` support in agent configurations
-- **Session Recovery**: Automatic recovery from session errors, context window limits, and API failures
-- **Model Setup**: Agent-model matching is built into the [Installation Guide](docs/guide/installation.md#step-5-understand-your-model-setup)
+The main agent orchestrates; the Ultrawork Planner (`/ulw-plan`), the architect consult (architecture and debugging), Librarian (docs and code search), Explore (fast codebase grep) and the Multimodal Looker specialize, and background agents run several of them in parallel like a real dev team. LSP and AST tools cover refactoring, rename, diagnostics and AST-aware code search. The hash-anchored edit tool (opt-in via `hashline_edit: true`) validates `LINE#ID` references before applying every change, so edits are surgical and stale-line errors are gone.
+
+AGENTS.md, README.md and conditional rules are injected into context automatically. Claude Code hooks, commands, skills, agents and MCPs run unchanged. The built-in MCPs (websearch via Exa, context7 for docs, grep_app for GitHub search, lsp) are injected at runtime by the plugin, which is why they do not show up in `opencode mcp list` (see the [MCP docs](docs/reference/features.md#native-vs-plugin-injected-mcps)). Session tools list, read, search and analyze session history.
+
+Goal, the Todo Enforcer, the Comment Checker and Think Mode keep a run on track. `bunx oh-my-opencode doctor` checks plugin registration, config, models and environment. `fallback_models` can mix plain model strings with per-fallback object settings in the same array, agent prompts can load from files with `file://`, and sessions recover from session errors, context window limits and API failures on their own. Agent-model matching is part of the [Installation Guide](docs/guide/installation.md#step-5-understand-your-model-setup).
 
 ## Configuration
 
 Opinionated defaults, adjustable if you insist.
 
-See [Configuration Documentation](docs/reference/configuration.md).
+See the [Configuration Documentation](docs/reference/configuration.md). The short version follows.
 
-**Quick Overview:**
-- **Config Locations**: User `~/.omo/omo.jsonc` plus walked project `.omo/omo.jsonc` configs up to `$HOME`; closest wins. Legacy `oh-my-*` files are migrated once into `omo.jsonc`.
-- **JSONC Support**: Comments and trailing commas supported
-- **Agents**: Override models, temperatures, prompts, and permissions for any agent
-- **Built-in Skills**: `playwright` (browser automation), `git-master` (atomic commits)
-- **Main Agent**: Orchestrator with the Ultrawork Planner (`/ulw-plan`) and the Plan Consultant
-- **Background Tasks**: Configure concurrency limits per provider/model
-- **Categories**: Domain-specific task delegation (`visual-engineering`, `ultrabrain`, `deep`, `artistry`, `quick`, `unspecified-low`, `unspecified-high`, `writing`, plus custom names)
-- **Hooks**: 54+ lifecycle hooks (61 with Team Mode), all configurable via `disabled_hooks`
-- **MCPs**: Built-in websearch (Exa), context7 (docs), grep_app (GitHub search), lsp — runtime-injected, not shown in `opencode mcp list`
-- **LSP**: Full LSP support with refactoring tools
-- **Experimental**: Aggressive truncation, preemptive compaction, and more
+Config lives in the user file `~/.omo/omo.jsonc` plus walked project `.omo/omo.jsonc` files up to `$HOME`; the closest one wins, and legacy `oh-my-*` files are migrated once into `omo.jsonc`. JSONC is accepted, comments and trailing commas included. You can override models, temperatures, prompts and permissions for any agent, set concurrency limits for background tasks per provider or model, and turn any of the 54+ lifecycle hooks (61 with Team Mode) off through `disabled_hooks`.
+
+The main agent orchestrates with the Ultrawork Planner (`/ulw-plan`) and the Plan Consultant. Delegation goes through categories (`visual-engineering`, `ultrabrain`, `deep`, `artistry`, `quick`, `unspecified-low`, `unspecified-high`, `writing`, plus custom names). Built-in skills include `playwright` (browser automation) and `git-master` (atomic commits). The built-in MCPs (websearch via Exa, context7, grep_app, lsp) are runtime-injected and not shown in `opencode mcp list`; LSP support includes the refactoring tools. Experimental options cover aggressive truncation, preemptive compaction, and more.
 
 
 ## Author's Note
@@ -470,14 +428,7 @@ Heavily influenced by [AmpCode](https://ampcode.com) and [Claude Code](https://c
 
 Other harnesses promise multi-model orchestration. We ship it. Stability too. And features that actually work.
 
-I'm this project's most obsessive user:
-- Which model has the sharpest logic?
-- Who's the debugging god?
-- Who writes the best prose?
-- Who dominates frontend?
-- Who owns backend?
-- What's fastest for daily driving?
-- What are competitors shipping?
+I'm this project's most obsessive user. Which model has the sharpest logic? Who's the debugging god? Who writes the best prose? Who dominates frontend, who owns backend, what's fastest for daily driving, what are competitors shipping?
 
 This plugin is the distillation. Take the best. Got improvements? PRs welcome.
 
@@ -488,19 +439,12 @@ Sounds arrogant? Have a better way? Contribute. You're welcome.
 
 No affiliation with any project or model mentioned. Just personal experimentation.
 
-Credit: The LazyCodex name idea is inspired by [LazyVim](https://github.com/LazyVim/LazyVim). The Ultragoal and UltraQA ideas are inspired by [oh-my-codex](https://github.com/Yeachan-Heo/oh-my-codex), reimplemented from concept for OmO.
+The LazyCodex name is inspired by [LazyVim](https://github.com/LazyVim/LazyVim). The Ultragoal and UltraQA ideas come from [oh-my-codex](https://github.com/Yeachan-Heo/oh-my-codex), reimplemented from concept for OmO.
 
 99% of this project was built with OpenCode. I don't really know TypeScript, **but I personally reviewed and largely rewrote this doc.**
 
 ## Loved by professionals at
 
-- [Indent](https://indentcorp.com)
-  - Makers of Spray (influencer marketing solution), vovushop (cross-border commerce platform), and vreview (AI commerce review marketing solution).
-- [Google](https://google.com)
-- [Microsoft](https://microsoft.com)
-- [Vercel](https://vercel.com)
-- [ELESTYLE](https://elestyle.jp)
-  - Makers of elepay (multi-mobile payment gateway) and OneQR (mobile application SaaS for cashless solutions).
-- [Deepgram](https://deepgram.com)
+[Indent](https://indentcorp.com), makers of Spray (influencer marketing solution), vovushop (cross-border commerce platform) and vreview (AI commerce review marketing solution). [Google](https://google.com). [Microsoft](https://microsoft.com). [Vercel](https://vercel.com). [ELESTYLE](https://elestyle.jp), makers of elepay (multi-mobile payment gateway) and OneQR (mobile application SaaS for cashless solutions). [Deepgram](https://deepgram.com).
 
 *Special thanks to [@junhoyeo](https://github.com/junhoyeo) for this amazing hero image.*

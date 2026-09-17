@@ -52,6 +52,8 @@ Behavior changes require doc updates. `src/cli/mod.rs` (`after_long_help` plus c
 
 Per-tool layout and path resolution (Claude/Codex/Gemini), the convention-only Claude manifest, the Codex inline-hooks rationale, the generated plugin-skills mirror, the accepted `wt-switch-create` tradeoff, and `test_plugin_layout_is_consolidated`: `plugins/worktrunk/CLAUDE.md`.
 
+The Pi-family integrations are two commands because they are two agents. `wt config plugins pi` targets Pi (earendil-works/pi), which loads `ExtensionAPI` extensions from `~/.pi/agent/extensions/`; `wt config plugins omp` targets oh-my-pi, which loads `HookAPI` hooks from `~/.omp/agent/hooks/pre/`. Path rules live in `src/commands/config/pi.rs` and `src/commands/config/omp.rs`; the embedded sources are `dev/pi-extension.ts` and `dev/omp-hook.ts`. Neither file is interchangeable — the loaders differ, and so do the config roots (`$PI_CODING_AGENT_DIR` for Pi; `$PI_CONFIG_DIR`, `$OMP_PROFILE`/`$PI_PROFILE`, and `$PI_CODING_AGENT_DIR` for oh-my-pi).
+
 ## Data Safety
 
 Never risk data loss without explicit user consent. A failed command that preserves data beats a "successful" one that silently destroys work.
@@ -98,12 +100,16 @@ Prefer exit codes / `--porcelain` / `--json` over parsing human-readable message
 
 | Tool | Fragile | Structured |
 |------|---------|------------|
-| `git diff` | `--stat` (localized) | `--numstat`, `--shortstat` (`(+)`/`(-)` hardcoded) |
-| `git status` | default | `--porcelain=v2` |
+| `git diff-tree` / `diff-index` | `--stat` (localized) | `--numstat`, `--shortstat` (`(+)`/`(-)` hardcoded) |
+| `git status` | default | `--porcelain=v2 -z` |
 | `git merge-base` | error messages | exit codes |
 | `gh` / `glab` | default | `--json` |
 
 When no structured alternative exists, document the fragility inline.
+
+### Plumbing for Output `wt` Consumes
+
+Porcelain commands read display configuration that changes what they report: `diff.relative` once made `wt remove` delete an unmerged branch, and `color.ui=always` and `diff.external` leaked into LLM prompts. When `wt` parses, caches, renders, or prompts with git's output, it runs plumbing (`diff-tree`, `diff-index`, `diff-files`, `for-each-ref`), which ignores that configuration apart from `submodule.<name>.ignore`. `PlumbingDiff::args` builds every plumbing diff with `--ignore-submodules=none` to override that setting, and a test rejects one spelled by hand. Rendered and prompted diffs go through `PreparedDiff::capture`, which also restores the `git diff` defaults plumbing lacks. `git status` has no plumbing equivalent, so it pins its behavior with explicit flags. Output shown as git's own view, like `wt step diff`, stays porcelain.
 
 ### Immutable Ids Over List Positions
 
@@ -181,6 +187,23 @@ Check `Cargo.toml` before hand-rolling a utility:
 | ANSI colors | `color_print::cformat!()` | raw escape codes |
 | Template var detection | `minijinja::undeclared_variables(false)` | regex/substring on `{{ var }}` |
 
+Delegation extends past utilities to **another tool's own rules** — where zsh
+reads its config, which TOML keys a schema accepts, how MiniJinja scopes a
+template binding. Ask the library; don't re-derive its rule inside `wt`. A
+re-derived rule is correct on the cases that motivated it and drifts silently
+afterwards. Where the library exposes no API that answers the question, keep
+the substitute no larger than the question and say in the code why it exists.
+
+### Don't Defend Improbable Environments
+
+No resolvable home directory, a config directory the user moved out from under
+the tool that owns it — `wt`'s behavior there is the least of that user's
+problems. Take the working environment as a precondition and drop the fallback
+chain rather than carrying code that is maintained forever and exercised by
+nobody. Dropping a fallback still means failing with an error, never
+`.expect()` — see **Error Handling**. Data safety is the exception, and it has
+its own section.
+
 ### Other
 
 - **Don't suppress warnings** with `#[allow(dead_code)]` — delete the code or add `// TODO(topic): used by <upcoming work>`.
@@ -196,7 +219,7 @@ Check `Cargo.toml` before hand-rolling a utility:
 
 All config deprecation lives in one layer: pre-deserialization TOML migration in `src/config/deprecation.rs`. `migrate_content()` rewrites deprecated patterns into canonical form before serde parses; `check_and_migrate()` reuses it, and additionally detects patterns and emits per-process-deduped warnings (the user materializes migrations via `wt config update`). **Never silently drop an old config key** — that's a silent behavior change for users; migrate it.
 
-Every deprecation is one row in the `DEPRECATION_RULES` table: a single idempotent function that rewrites the pattern AND returns the `DeprecationKind`s for what it changed — there is no separate detection function, so detection and migration share one predicate and cannot drift. Detection runs the same functions against a scratch copy of the document (progressively, so a rule sees earlier rules' rewrites); the invariant for warning rules is **a warning fires exactly when `wt config update` would change the file**, pinned by `test_warning_fires_iff_update_changes` — add new edge cases to its battery. The row variant decides when the rewrite applies: `Structural` rewrites on every load; `UpdateOnly` only via `wt config update`, for deprecated forms that still work at runtime; `Silent` rewrites on every load with no warning — its function signature has no channel for a kind, which is what scopes the invariant to `Structural` and `UpdateOnly`. Table order is both the warning-emission order and the migration order. Each `DeprecationKind` carries its own display payload, so `format_deprecation_warnings()` is one match over the kinds. A config that can't be rewritten safely (a malformed value, an occupied destination key) is left untouched and unwarned — serde's type or unknown-field error is the messaging; an empty deprecated section is also left alone, with no message at all (it contributes no config). Adding a deprecation: (1) one idempotent migrate-and-report function; (2) a `DeprecationKind` variant plus its match arm in `format_deprecation_warnings()`; (3) a `DEPRECATION_RULES` row; (4) for a removed top-level section, add a `DeprecatedSection` to `DEPRECATED_SECTION_KEYS` (canonical key plus display form) so `warn_unknown_fields` defers to the deprecation messaging and suggests the correct config file. A silently-migrated rename (e.g. `pre-create` → `pre-start`) is a `Silent` row with no variant. Renaming a field within a section follows the same shape via a TOML-level rename function (see `migrate_negated_bool`); the struct never needs the old field since migration precedes serde.
+Every deprecation is one row in the `DEPRECATION_RULES` table: a single idempotent function that rewrites the pattern AND returns the `DeprecationKind`s for what it changed — there is no separate detection function, so detection and migration share one predicate and cannot drift. Detection runs the same functions against a scratch copy of the document (progressively, so a rule sees earlier rules' rewrites); the invariant for warning rules is **a warning fires exactly when `wt config update` would change the file**, pinned by `test_warning_fires_iff_update_changes` — add new edge cases to its battery. The row variant decides when the rewrite applies: `Structural` rewrites on every load; `UpdateOnly` only via `wt config update`, for deprecated forms that still work at runtime; `Silent` rewrites on every load with no warning — its function signature has no channel for a kind, which is what scopes the invariant to `Structural` and `UpdateOnly`. Table order is both the warning-emission order and the migration order. Each `DeprecationKind` carries its own display payload, so wording it is a match over the kinds — twice, in one file: `format_warning_lines()` names what a load still has ahead of it, `format_applied_lines()` what a config mutation's write already did. A config that can't be rewritten safely (a malformed value, an occupied destination key) is left untouched and unwarned — serde's type or unknown-field error is the messaging; an empty deprecated section is also left alone, with no message at all (it contributes no config). Adding a deprecation: (1) one idempotent migrate-and-report function; (2) a `DeprecationKind` variant plus its match arm in each of those two renderers; (3) a `DEPRECATION_RULES` row; (4) for a removed top-level section, add a `DeprecatedSection` to `DEPRECATED_SECTION_KEYS` (canonical key plus display form) so `warn_unknown_fields` defers to the deprecation messaging and suggests the correct config file. A silently-migrated rename (e.g. `pre-create` → `pre-start`) is a `Silent` row with no variant. Renaming a field within a section follows the same shape via a TOML-level rename function (see `migrate_negated_bool`); the struct never needs the old field since migration precedes serde.
 
 **What an update writes must load clean.** A rule that moves a section's table wholesale (`[select]` → `[switch.picker]`) removes the keys its destination struct has no field for and reports each one (`drop_unsupported_keys`); a key removal that empties a `[projects."<id>"]`-scoped section removes the section too. Otherwise the key or the empty section ends up at a path the user never typed, `warn_unknown_fields` names that path on every command, and `wt config update` — the command the deprecation hint points at — writes it into the file rather than clearing it, so the warning outlives every fix available to the user. `test_warning_fires_iff_update_changes` pins both halves: what the update writes raises no deprecation warning and no unknown-field warning. The removal is reported and the key had no home in either config file, so this does not conflict with "never silently drop a key". A key that is merely *misplaced* (valid in the other config, such as a user-only `commit.generation.command` in project config) stays, and keeps its redirect warning; that is why `drop_unsupported_keys` gets the union of the destination's schemas across config types. Those schemas must carry no `#[serde(alias)]`, which `schema_property_names` cannot see.
 

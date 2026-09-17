@@ -36,7 +36,7 @@ other.
 | Branch | `v2/chore/<ISSUE>-bump-<X-Y-Z>`, cut from `origin/v2/main` | the milestone-merge branch, cut from `origin/main` |
 | Base | **`v2/main`** | **`main`** |
 | Carries | the `npm audit` report, **any fixes the audit forces**, and the **version bump** — all three, one PR | the milestone's work, arriving whole from `v2/main`. **No commits of its own.** |
-| Verified by | `npm run local:gate` | `npm run local:gate` **plus** a hand-driven smoke of every contribution in the milestone, from the **production build**, written up as a **ledger artifact** |
+| Verified by | `npm run local:gate` | `npm run local:gate`, **plus** `npm run pack:verify` (not a gate stage), **plus** a hand-driven smoke of every contribution in the milestone, from the **production build**, written up as a **ledger artifact** |
 | Merged when | reviewed and green | the ledger is reviewed by the maintainers and clean |
 
 Then, and only then, a maintainer tags and publishes the **GitHub Release**
@@ -143,9 +143,16 @@ Then drive it. Work from a **dedicated worktree** with its own full
 `npm install` (a symlinked `node_modules` passes lint and tests and then fails
 every story file), run `npm run local:gate` there, and exercise the app from the
 **production build** — the packaged bin and the built bundles, not `vite dev`.
-The `local-dev`, `test-servers` and `pre-push-gate` skills cover the mechanics;
-`pack:verify` inside the gate is what proves the tarball a consumer installs
-actually resolves.
+The `local-dev`, `test-servers` and `pre-push-gate` skills cover the mechanics.
+
+**Then run `npm run pack:verify` there as its own step.** It is what proves the
+tarball a consumer installs actually resolves, and ⚠️ **`local:gate` does not
+run it** — `local:gate:stages` has no packaging stage, and a green gate says
+nothing about the published tarball (#2380). CI runs it only in the `publish`
+job, which fires on the published GitHub Release — after the tag exists — so
+skipping it here means the first signal of a broken package arrives too late to
+stop the release. It needs network access; record its result (tarball size and
+the `pack:verify OK` line) for the ledger below.
 
 **Every contribution closed in the milestone gets driven, not read.** The bar is
 observed behavior from the running app — a rendered panel, a status attribute, a
@@ -165,11 +172,13 @@ and link it from PR 2. Shape it like the
   standfirst saying what tree was tested and that its hash matches
   `origin/v2/main`, plus whether the milestone payload is complete (the only
   issue left open should be the merge itself).
-- **Verdict band** — `local:gate` result, milestone issues verified as `N / N`,
-  distinct test count, regressions found.
-- **The automated gate** — one cell per stage with its number (file counts,
-  test counts, smoke count, `pack:verify` size), and a note on what is new this
+- **Verdict band** — `local:gate` and `pack:verify` results, milestone issues
+  verified as `N / N`, distinct test count, regressions found.
+- **The automated gate** — one cell per `local:gate` stage with its number
+  (file counts, test counts, smoke count), and a note on what is new this
   milestone.
+- **The packaging check** — `pack:verify` in its own cell, apart from the gate
+  stages because it is not one of them: its result and the tarball size.
 - **One section per theme**, each a table of *Issue · What was driven ·
   Observed · Status*. One row per closed issue, issue-linked, with the actual
   output in the Observed cell.

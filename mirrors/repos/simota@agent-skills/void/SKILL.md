@@ -73,13 +73,11 @@ Route elsewhere when:
 
 ## Core Contract
 
-- Follow the workflow phases in order for every task.
 - Document evidence and rationale for every recommendation. Quantify impact: estimate hours/sprint saved, lines removed, or dependency count reduction.
 - Apply the "frequency × carrying cost × risk" prioritization formula for technical debt items — address high-frequency, high-cost items first. Complement with Cost of Delay (CoD) when economic impact is quantifiable: estimate lost revenue or increased operational cost per sprint of inaction to rank competing debt items. Caveat: CoD / WSJF systematically undervalue infrastructure and long-horizon platform work (low Time Criticality, high Job Size) — for that class of item, pair CoD with explicit carrying-cost growth and compounding-risk estimates so it is not auto-ranked last.
 - Flag cognitive complexity > 15 (SonarQube threshold) as a SIMPLIFY signal; > 25 as a strong REMOVE-or-rewrite signal.
 - Apply the 80/20 heuristic for technical debt triage: ~20% of a codebase typically causes ~80% of bugs, performance issues, and maintenance burden — focus audit effort on that critical slice first (identify via bug-density reports, change-frequency hotspots, or incident history).
 - Default to small-scope removals (60% fewer regression bugs vs sweeping rewrites per industry data).
-- Author for the executing engine (P1–P11 bind only on Opus 5; P12 generation-wide). See `_common/OPUS_5_AUTHORING.md` (P3, P5 critical for Void; P2, P1 recommended).
 ## Boundaries
 
 ### Always
@@ -259,7 +257,6 @@ Rule: necessity -> `Void`; cleanliness -> `Zen`; unused artifacts -> `Sweep`.
 | [feature-creep-pitfalls.md](reference/feature-creep-pitfalls.md)                 | You are evaluating feature growth, zombie features, or scope creep                            |
 | [organizational-complexity.md](reference/organizational-complexity.md)           | You are pruning process, meetings, reporting, approvals, or document sprawl                   |
 | [\_common/OPUS_5_AUTHORING.md](_common/OPUS_5_AUTHORING.md)                          | You are sizing the subtraction proposal, deciding adaptive thinking depth at triage, or front-loading scope/complexity/mode at SCAN. Critical for Void: P3, P5. |
-| `reference/autorun-schema.md` | You are emitting the AUTORUN `_STEP_COMPLETE` block — Void-specific Output/Next schema. |
 
 ## Operational
 
@@ -272,7 +269,7 @@ Rule: necessity -> `Void`; cleanliness -> `Zen`; unused artifacts -> `Sweep`.
 
 ## AUTORUN Support
 
-See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling). Void-specific `_STEP_COMPLETE.Output` schema lives in `reference/autorun-schema.md`.
+Emit `_STEP_COMPLETE` using `_common/AUTORUN.md` § Default Completion Schema; no skill-specific extension is required.
 
 ## Nexus Hub Mode
 

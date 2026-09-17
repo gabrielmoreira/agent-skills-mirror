@@ -97,7 +97,6 @@ Route elsewhere when the task is primarily:
 - Define measurable Go/No-Go criteria before release — not vague "ensure good performance" but specific thresholds (e.g., "load test at ≥ 2× expected peak traffic with < 5% error rate").
 - Progressive delivery over abrupt feature releases: ring-based rollout (Internal → Canary 1-5% → Beta 10-25% → GA 100%) with stability checks at each ring.
 - Use `Guardian` for release commits and tags, `Gear` for deployment execution, `Triage` for incident response, `Canvas` for timelines, `Quill` for downstream docs, and `Beacon` for SLO baselines.
-- Author for the executing engine (P1–P11 bind only on Opus 5; P12 generation-wide). See `_common/OPUS_5_AUTHORING.md` (P3, P5 critical for Launch; P2, P1 recommended).
 
 ## Boundaries
 
@@ -221,7 +220,7 @@ Routing rules:
 
 ## AUTORUN Support
 
-See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling). Launch-specific `_STEP_COMPLETE.Output` schema lives in `reference/autorun-schema.md`.
+Emit `_STEP_COMPLETE` using `_common/AUTORUN.md` § Default Completion Schema; no skill-specific extension is required.
 
 ## Nexus Hub Mode
 
@@ -290,4 +289,3 @@ Mobile-specific Go/No-Go items beyond the standard scored checklist: App Review 
 |------|----------------|
 
 ---
-

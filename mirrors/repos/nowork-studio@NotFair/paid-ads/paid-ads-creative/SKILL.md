@@ -6,7 +6,7 @@ argument-hint: "<platform, audience, or campaign>"
 
 # Paid Ads Creative
 
-Read `../shared/operating-contract.md` and `../shared/measurement-framework.md`. Route platform execution to `/notfair:google-ads-copy`, `/notfair:google-ads-assets`, `/notfair:meta-ads-creative`, `/notfair:paid-ads-x`, or `/notfair:paid-ads-linkedin` as appropriate.
+Read `../shared/operating-contract.md` and `../shared/measurement-framework.md`. Route platform execution to `/notfair:google-ads-copy`, `/notfair:google-ads-assets`, `/notfair:meta-ads-creative`, `/notfair:paid-ads-x`, `/notfair:paid-ads-linkedin`, `/notfair:paid-ads-reddit`, or `/notfair:paid-ads-tiktok` as appropriate.
 
 ## Work from named evidence
 

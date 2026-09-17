@@ -29,4 +29,4 @@ Mark the following artifact `ready_for_review`:
 
 ## Execute only on verified surfaces
 
-For Google Ads, hand the approved brief to `/notfair:google-ads`, then create paused and read it back. For Meta, use `/notfair:meta-ads` for supported operations and route unavailable creation steps to Ads Manager. For all other platforms, provide an operator-ready brief unless the current session exposes a verified NotFair connector with the needed capability. Never resume a campaign without a separate explicit approval.
+For Google Ads, hand the approved brief to `/notfair:google-ads`, then create paused and read it back. For Meta, use `/notfair:meta-ads` for supported operations and route unavailable creation steps to Ads Manager. For X, LinkedIn, Reddit, or TikTok Ads, use the matching live operator skill and create paused or disabled unless activation is explicitly approved. For Amazon and ChatGPT Ads, provide an operator-ready brief unless the current session exposes a verified NotFair connector with the needed capability. Never resume a campaign without a separate explicit approval.

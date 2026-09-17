@@ -493,7 +493,7 @@ Skills bring domain-specific expertise and embedded MCPs.
 
 Selected built-in skills: `playwright`, `playwright-cli`, `dev-browser`, `git-master`, `frontend`, `review-work`, `remove-ai-slops`, `init-deep`, `debugging`, `security-research`, `security-review`, `visual-qa`, `team-mode`. The `team-mode` skill is only rendered when `team_mode.enabled` is true.
 
-Disable built-in skills: `{ "disabled_skills": ["playwright"] }`
+Disable built-in skills: `{ "disabled_skills": ["playwright"] }`. `disabled_skills` is also a shared base key of `~/.omo/omo.jsonc`, honored by every harness including OmO Native (for example `{ "disabled_skills": ["frontend", "visual-qa"] }`); user and project layers are unioned. `skills.enable` below only filters config-sourced skills, not builtin, native, or bundled ones - use `disabled_skills` to hide those.
 
 #### Skills Configuration
 
@@ -768,8 +768,10 @@ Run background subagents in separate tmux panes. Requires running inside tmux wi
 Configure git commit behavior:
 
 ```json
-{ "git_master": { "commit_footer": true, "include_co_authored_by": true } }
+{ "git_master": { "commit_footer": false, "git_env_prefix": "GIT_MASTER=1" } }
 ```
+
+`commit_footer` (default `false`) opts in to an "Ultraworked with Sisyphus" footer in the commit body; a string replaces the builtin text. Commits keep your own git author and committer, and omo never adds a `Co-authored-by` trailer; `include_co_authored_by` is a deprecated no-op kept so existing configs still validate.
 
 This key configures the OpenCode plugin inside `[opencode]`. The Senpi harness reads the typed shared `git_master` section instead, documented in the [omo.json reference](./omo-json.md#git_master-senpi-harness).
 

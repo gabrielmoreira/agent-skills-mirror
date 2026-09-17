@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Unity-Technologies/skills` — 26 default patterns, 0 followed patterns, 199 file(s) materialized.
+Mirror of `Unity-Technologies/skills` — 26 default patterns, 0 followed patterns, 192 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Unity-Technologies/skills` — 26 default patterns, 0 followed patter
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 199 |
+| Files         | 192 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -187,77 +187,70 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 126 | ✓ | [`skills/setup-multiplayer-services/references/underlying-services.md`](skills/setup-multiplayer-services/references/underlying-services.md) |
 | 127 | ✓ | [`skills/setup-multiplayer-services/references/workflows-prerequisites.md`](skills/setup-multiplayer-services/references/workflows-prerequisites.md) |
 | 128 | ✓ | [`skills/setup-multiplayer-services/SKILL.md`](skills/setup-multiplayer-services/SKILL.md) |
-| 129 | ✓ | [`skills/setup-vivox-voice-chat/evals/.env.example`](skills/setup-vivox-voice-chat/evals/.env.example) |
-| 130 | ✓ | [`skills/setup-vivox-voice-chat/evals/.gitignore`](skills/setup-vivox-voice-chat/evals/.gitignore) |
-| 131 | ✓ | [`skills/setup-vivox-voice-chat/evals/promptfooconfig.yaml`](skills/setup-vivox-voice-chat/evals/promptfooconfig.yaml) |
-| 132 | ✓ | [`skills/setup-vivox-voice-chat/evals/README.md`](skills/setup-vivox-voice-chat/evals/README.md) |
-| 133 | ✓ | [`skills/setup-vivox-voice-chat/evals/tests/init-and-login.yaml`](skills/setup-vivox-voice-chat/evals/tests/init-and-login.yaml) |
-| 134 | ✓ | [`skills/setup-vivox-voice-chat/evals/tests/text-chat.yaml`](skills/setup-vivox-voice-chat/evals/tests/text-chat.yaml) |
-| 135 | ✓ | [`skills/setup-vivox-voice-chat/evals/tests/voice-channels.yaml`](skills/setup-vivox-voice-chat/evals/tests/voice-channels.yaml) |
-| 136 | ✓ | [`skills/setup-vivox-voice-chat/references/events-and-participants.md`](skills/setup-vivox-voice-chat/references/events-and-participants.md) |
-| 137 | ✓ | [`skills/setup-vivox-voice-chat/references/init-and-login.md`](skills/setup-vivox-voice-chat/references/init-and-login.md) |
-| 138 | ✓ | [`skills/setup-vivox-voice-chat/references/text-chat.md`](skills/setup-vivox-voice-chat/references/text-chat.md) |
-| 139 | ✓ | [`skills/setup-vivox-voice-chat/references/troubleshooting.md`](skills/setup-vivox-voice-chat/references/troubleshooting.md) |
-| 140 | ✓ | [`skills/setup-vivox-voice-chat/references/voice-channels.md`](skills/setup-vivox-voice-chat/references/voice-channels.md) |
-| 141 | ✓ | [`skills/setup-vivox-voice-chat/SKILL.md`](skills/setup-vivox-voice-chat/SKILL.md) |
-| 142 | ✓ | [`skills/shader-graph-create-custom-node/resources/all_hints.hlsl`](skills/shader-graph-create-custom-node/resources/all_hints.hlsl) |
-| 143 | ✓ | [`skills/shader-graph-create-custom-node/SKILL.md`](skills/shader-graph-create-custom-node/SKILL.md) |
-| 144 | ✓ | [`skills/sprite-editor/references/api_reference.md`](skills/sprite-editor/references/api_reference.md) |
-| 145 | ✓ | [`skills/sprite-editor/references/background.md`](skills/sprite-editor/references/background.md) |
-| 146 | ✓ | [`skills/sprite-editor/references/templates.md`](skills/sprite-editor/references/templates.md) |
-| 147 | ✓ | [`skills/sprite-editor/scripts/AutomaticSliceTexture.cs`](skills/sprite-editor/scripts/AutomaticSliceTexture.cs) |
-| 148 | ✓ | [`skills/sprite-editor/scripts/GenerateNewSpriteRects.cs`](skills/sprite-editor/scripts/GenerateNewSpriteRects.cs) |
-| 149 | ✓ | [`skills/sprite-editor/scripts/GetTextureSourceImageSize.cs`](skills/sprite-editor/scripts/GetTextureSourceImageSize.cs) |
-| 150 | ✓ | [`skills/sprite-editor/scripts/GetTextureToSlice.cs`](skills/sprite-editor/scripts/GetTextureToSlice.cs) |
-| 151 | ✓ | [`skills/sprite-editor/scripts/GridSliceTexture.cs`](skills/sprite-editor/scripts/GridSliceTexture.cs) |
-| 152 | ✓ | [`skills/sprite-editor/scripts/IsometricSliceTexture.cs`](skills/sprite-editor/scripts/IsometricSliceTexture.cs) |
-| 153 | ✓ | [`skills/sprite-editor/scripts/README.md`](skills/sprite-editor/scripts/README.md) |
-| 154 | ✓ | [`skills/sprite-editor/scripts/SetPivotExample.cs`](skills/sprite-editor/scripts/SetPivotExample.cs) |
-| 155 | ✓ | [`skills/sprite-editor/scripts/SpriteToPng.cs`](skills/sprite-editor/scripts/SpriteToPng.cs) |
-| 156 | ✓ | [`skills/sprite-editor/SKILL.md`](skills/sprite-editor/SKILL.md) |
-| 157 | ✓ | [`skills/sprite-segment-3x3grid/scripts/SpriteGridAnalysis.cs`](skills/sprite-segment-3x3grid/scripts/SpriteGridAnalysis.cs) |
-| 158 | ✓ | [`skills/sprite-segment-3x3grid/SKILL.md`](skills/sprite-segment-3x3grid/SKILL.md) |
-| 159 | ✓ | [`skills/tilemap-palette-create/scripts/CreatePaletteTemplate.cs`](skills/tilemap-palette-create/scripts/CreatePaletteTemplate.cs) |
-| 160 | ✓ | [`skills/tilemap-palette-create/SKILL.md`](skills/tilemap-palette-create/SKILL.md) |
-| 161 | ✓ | [`skills/tilemap-ruletile-createempty/resources/hexagonalruletile.md`](skills/tilemap-ruletile-createempty/resources/hexagonalruletile.md) |
-| 162 | ✓ | [`skills/tilemap-ruletile-createempty/resources/ruletile.md`](skills/tilemap-ruletile-createempty/resources/ruletile.md) |
-| 163 | ✓ | [`skills/tilemap-ruletile-createempty/SKILL.md`](skills/tilemap-ruletile-createempty/SKILL.md) |
-| 164 | ✓ | [`skills/tilemap-ruletile-createfromsegment/scripts/ManualWorkflowExample.cs`](skills/tilemap-ruletile-createfromsegment/scripts/ManualWorkflowExample.cs) |
-| 165 | ✓ | [`skills/tilemap-ruletile-createfromsegment/scripts/RuleTileGenerator.cs`](skills/tilemap-ruletile-createfromsegment/scripts/RuleTileGenerator.cs) |
-| 166 | ✓ | [`skills/tilemap-ruletile-createfromsegment/scripts/TilemapRuleTileCreateFromSegment.cs`](skills/tilemap-ruletile-createfromsegment/scripts/TilemapRuleTileCreateFromSegment.cs) |
-| 167 | ✓ | [`skills/tilemap-ruletile-createfromsegment/SKILL.md`](skills/tilemap-ruletile-createfromsegment/SKILL.md) |
-| 168 | ✓ | [`skills/ui-imgui/references/gui-elements.md`](skills/ui-imgui/references/gui-elements.md) |
-| 169 | ✓ | [`skills/ui-imgui/references/templates.md`](skills/ui-imgui/references/templates.md) |
-| 170 | ✓ | [`skills/ui-imgui/SKILL.md`](skills/ui-imgui/SKILL.md) |
-| 171 | ✓ | [`skills/ui-ugui/references/scrollview-setup.md`](skills/ui-ugui/references/scrollview-setup.md) |
-| 172 | ✓ | [`skills/ui-ugui/SKILL.md`](skills/ui-ugui/SKILL.md) |
-| 173 | ✓ | [`skills/ui-uitk/references/common-issues.md`](skills/ui-uitk/references/common-issues.md) |
-| 174 | ✓ | [`skills/ui-uitk/references/custom-elements.md`](skills/ui-uitk/references/custom-elements.md) |
-| 175 | ✓ | [`skills/ui-uitk/references/painter2d.md`](skills/ui-uitk/references/painter2d.md) |
-| 176 | ✓ | [`skills/ui-uitk/references/pointermanipulator-guide.md`](skills/ui-uitk/references/pointermanipulator-guide.md) |
-| 177 | ✓ | [`skills/ui-uitk/references/svg-icons.md`](skills/ui-uitk/references/svg-icons.md) |
-| 178 | ✓ | [`skills/ui-uitk/references/ui-runtime-binding.md`](skills/ui-uitk/references/ui-runtime-binding.md) |
-| 179 | ✓ | [`skills/ui-uitk/references/uss-guide.md`](skills/ui-uitk/references/uss-guide.md) |
-| 180 | ✓ | [`skills/ui-uitk/SKILL.md`](skills/ui-uitk/SKILL.md) |
-| 181 | ✓ | [`skills/ui/SKILL.md`](skills/ui/SKILL.md) |
-| 182 | ✓ | [`skills/unity-cli/CHANGELOG.md`](skills/unity-cli/CHANGELOG.md) |
-| 183 | ✓ | [`skills/unity-cli/references/auth-license-cloud.md`](skills/unity-cli/references/auth-license-cloud.md) |
-| 184 | ✓ | [`skills/unity-cli/references/build-run-test.md`](skills/unity-cli/references/build-run-test.md) |
-| 185 | ✓ | [`skills/unity-cli/references/collaboration.md`](skills/unity-cli/references/collaboration.md) |
-| 186 | ✓ | [`skills/unity-cli/references/config-hub.md`](skills/unity-cli/references/config-hub.md) |
-| 187 | ✓ | [`skills/unity-cli/references/diagnostics-maintenance.md`](skills/unity-cli/references/diagnostics-maintenance.md) |
-| 188 | ✓ | [`skills/unity-cli/references/editors-install.md`](skills/unity-cli/references/editors-install.md) |
-| 189 | ✓ | [`skills/unity-cli/references/integration-advanced.md`](skills/unity-cli/references/integration-advanced.md) |
-| 190 | ✓ | [`skills/unity-cli/references/projects-templates.md`](skills/unity-cli/references/projects-templates.md) |
-| 191 | ✓ | [`skills/unity-cli/references/version-control.md`](skills/unity-cli/references/version-control.md) |
-| 192 | ✓ | [`skills/unity-cli/SECURITY.md`](skills/unity-cli/SECURITY.md) |
-| 193 | ✓ | [`skills/unity-cli/SKILL.md`](skills/unity-cli/SKILL.md) |
-| 194 | ✓ | [`skills/unity-package-management/references/select-packages.md`](skills/unity-package-management/references/select-packages.md) |
-| 195 | ✓ | [`skills/unity-package-management/SKILL.md`](skills/unity-package-management/SKILL.md) |
-| 196 | ✓ | [`skills/urp-postprocessing/references/code-templates.md`](skills/urp-postprocessing/references/code-templates.md) |
-| 197 | ✓ | [`skills/urp-postprocessing/references/effect-reference.md`](skills/urp-postprocessing/references/effect-reference.md) |
-| 198 | ✓ | [`skills/urp-postprocessing/SKILL.md`](skills/urp-postprocessing/SKILL.md) |
-| 199 | ✓ | [`skills/validate-urp-render-graph-renderer-feature/SKILL.md`](skills/validate-urp-render-graph-renderer-feature/SKILL.md) |
+| 129 | ✓ | [`skills/setup-vivox-voice-chat/references/events-and-participants.md`](skills/setup-vivox-voice-chat/references/events-and-participants.md) |
+| 130 | ✓ | [`skills/setup-vivox-voice-chat/references/init-and-login.md`](skills/setup-vivox-voice-chat/references/init-and-login.md) |
+| 131 | ✓ | [`skills/setup-vivox-voice-chat/references/text-chat.md`](skills/setup-vivox-voice-chat/references/text-chat.md) |
+| 132 | ✓ | [`skills/setup-vivox-voice-chat/references/troubleshooting.md`](skills/setup-vivox-voice-chat/references/troubleshooting.md) |
+| 133 | ✓ | [`skills/setup-vivox-voice-chat/references/voice-channels.md`](skills/setup-vivox-voice-chat/references/voice-channels.md) |
+| 134 | ✓ | [`skills/setup-vivox-voice-chat/SKILL.md`](skills/setup-vivox-voice-chat/SKILL.md) |
+| 135 | ✓ | [`skills/shader-graph-create-custom-node/resources/all_hints.hlsl`](skills/shader-graph-create-custom-node/resources/all_hints.hlsl) |
+| 136 | ✓ | [`skills/shader-graph-create-custom-node/SKILL.md`](skills/shader-graph-create-custom-node/SKILL.md) |
+| 137 | ✓ | [`skills/sprite-editor/references/api_reference.md`](skills/sprite-editor/references/api_reference.md) |
+| 138 | ✓ | [`skills/sprite-editor/references/background.md`](skills/sprite-editor/references/background.md) |
+| 139 | ✓ | [`skills/sprite-editor/references/templates.md`](skills/sprite-editor/references/templates.md) |
+| 140 | ✓ | [`skills/sprite-editor/scripts/AutomaticSliceTexture.cs`](skills/sprite-editor/scripts/AutomaticSliceTexture.cs) |
+| 141 | ✓ | [`skills/sprite-editor/scripts/GenerateNewSpriteRects.cs`](skills/sprite-editor/scripts/GenerateNewSpriteRects.cs) |
+| 142 | ✓ | [`skills/sprite-editor/scripts/GetTextureSourceImageSize.cs`](skills/sprite-editor/scripts/GetTextureSourceImageSize.cs) |
+| 143 | ✓ | [`skills/sprite-editor/scripts/GetTextureToSlice.cs`](skills/sprite-editor/scripts/GetTextureToSlice.cs) |
+| 144 | ✓ | [`skills/sprite-editor/scripts/GridSliceTexture.cs`](skills/sprite-editor/scripts/GridSliceTexture.cs) |
+| 145 | ✓ | [`skills/sprite-editor/scripts/IsometricSliceTexture.cs`](skills/sprite-editor/scripts/IsometricSliceTexture.cs) |
+| 146 | ✓ | [`skills/sprite-editor/scripts/README.md`](skills/sprite-editor/scripts/README.md) |
+| 147 | ✓ | [`skills/sprite-editor/scripts/SetPivotExample.cs`](skills/sprite-editor/scripts/SetPivotExample.cs) |
+| 148 | ✓ | [`skills/sprite-editor/scripts/SpriteToPng.cs`](skills/sprite-editor/scripts/SpriteToPng.cs) |
+| 149 | ✓ | [`skills/sprite-editor/SKILL.md`](skills/sprite-editor/SKILL.md) |
+| 150 | ✓ | [`skills/sprite-segment-3x3grid/scripts/SpriteGridAnalysis.cs`](skills/sprite-segment-3x3grid/scripts/SpriteGridAnalysis.cs) |
+| 151 | ✓ | [`skills/sprite-segment-3x3grid/SKILL.md`](skills/sprite-segment-3x3grid/SKILL.md) |
+| 152 | ✓ | [`skills/tilemap-palette-create/scripts/CreatePaletteTemplate.cs`](skills/tilemap-palette-create/scripts/CreatePaletteTemplate.cs) |
+| 153 | ✓ | [`skills/tilemap-palette-create/SKILL.md`](skills/tilemap-palette-create/SKILL.md) |
+| 154 | ✓ | [`skills/tilemap-ruletile-createempty/resources/hexagonalruletile.md`](skills/tilemap-ruletile-createempty/resources/hexagonalruletile.md) |
+| 155 | ✓ | [`skills/tilemap-ruletile-createempty/resources/ruletile.md`](skills/tilemap-ruletile-createempty/resources/ruletile.md) |
+| 156 | ✓ | [`skills/tilemap-ruletile-createempty/SKILL.md`](skills/tilemap-ruletile-createempty/SKILL.md) |
+| 157 | ✓ | [`skills/tilemap-ruletile-createfromsegment/scripts/ManualWorkflowExample.cs`](skills/tilemap-ruletile-createfromsegment/scripts/ManualWorkflowExample.cs) |
+| 158 | ✓ | [`skills/tilemap-ruletile-createfromsegment/scripts/RuleTileGenerator.cs`](skills/tilemap-ruletile-createfromsegment/scripts/RuleTileGenerator.cs) |
+| 159 | ✓ | [`skills/tilemap-ruletile-createfromsegment/scripts/TilemapRuleTileCreateFromSegment.cs`](skills/tilemap-ruletile-createfromsegment/scripts/TilemapRuleTileCreateFromSegment.cs) |
+| 160 | ✓ | [`skills/tilemap-ruletile-createfromsegment/SKILL.md`](skills/tilemap-ruletile-createfromsegment/SKILL.md) |
+| 161 | ✓ | [`skills/ui-imgui/references/gui-elements.md`](skills/ui-imgui/references/gui-elements.md) |
+| 162 | ✓ | [`skills/ui-imgui/references/templates.md`](skills/ui-imgui/references/templates.md) |
+| 163 | ✓ | [`skills/ui-imgui/SKILL.md`](skills/ui-imgui/SKILL.md) |
+| 164 | ✓ | [`skills/ui-ugui/references/scrollview-setup.md`](skills/ui-ugui/references/scrollview-setup.md) |
+| 165 | ✓ | [`skills/ui-ugui/SKILL.md`](skills/ui-ugui/SKILL.md) |
+| 166 | ✓ | [`skills/ui-uitk/references/common-issues.md`](skills/ui-uitk/references/common-issues.md) |
+| 167 | ✓ | [`skills/ui-uitk/references/custom-elements.md`](skills/ui-uitk/references/custom-elements.md) |
+| 168 | ✓ | [`skills/ui-uitk/references/painter2d.md`](skills/ui-uitk/references/painter2d.md) |
+| 169 | ✓ | [`skills/ui-uitk/references/pointermanipulator-guide.md`](skills/ui-uitk/references/pointermanipulator-guide.md) |
+| 170 | ✓ | [`skills/ui-uitk/references/svg-icons.md`](skills/ui-uitk/references/svg-icons.md) |
+| 171 | ✓ | [`skills/ui-uitk/references/ui-runtime-binding.md`](skills/ui-uitk/references/ui-runtime-binding.md) |
+| 172 | ✓ | [`skills/ui-uitk/references/uss-guide.md`](skills/ui-uitk/references/uss-guide.md) |
+| 173 | ✓ | [`skills/ui-uitk/SKILL.md`](skills/ui-uitk/SKILL.md) |
+| 174 | ✓ | [`skills/ui/SKILL.md`](skills/ui/SKILL.md) |
+| 175 | ✓ | [`skills/unity-cli/CHANGELOG.md`](skills/unity-cli/CHANGELOG.md) |
+| 176 | ✓ | [`skills/unity-cli/references/auth-license-cloud.md`](skills/unity-cli/references/auth-license-cloud.md) |
+| 177 | ✓ | [`skills/unity-cli/references/build-run-test.md`](skills/unity-cli/references/build-run-test.md) |
+| 178 | ✓ | [`skills/unity-cli/references/collaboration.md`](skills/unity-cli/references/collaboration.md) |
+| 179 | ✓ | [`skills/unity-cli/references/config-hub.md`](skills/unity-cli/references/config-hub.md) |
+| 180 | ✓ | [`skills/unity-cli/references/diagnostics-maintenance.md`](skills/unity-cli/references/diagnostics-maintenance.md) |
+| 181 | ✓ | [`skills/unity-cli/references/editors-install.md`](skills/unity-cli/references/editors-install.md) |
+| 182 | ✓ | [`skills/unity-cli/references/integration-advanced.md`](skills/unity-cli/references/integration-advanced.md) |
+| 183 | ✓ | [`skills/unity-cli/references/projects-templates.md`](skills/unity-cli/references/projects-templates.md) |
+| 184 | ✓ | [`skills/unity-cli/references/version-control.md`](skills/unity-cli/references/version-control.md) |
+| 185 | ✓ | [`skills/unity-cli/SECURITY.md`](skills/unity-cli/SECURITY.md) |
+| 186 | ✓ | [`skills/unity-cli/SKILL.md`](skills/unity-cli/SKILL.md) |
+| 187 | ✓ | [`skills/unity-package-management/references/select-packages.md`](skills/unity-package-management/references/select-packages.md) |
+| 188 | ✓ | [`skills/unity-package-management/SKILL.md`](skills/unity-package-management/SKILL.md) |
+| 189 | ✓ | [`skills/urp-postprocessing/references/code-templates.md`](skills/urp-postprocessing/references/code-templates.md) |
+| 190 | ✓ | [`skills/urp-postprocessing/references/effect-reference.md`](skills/urp-postprocessing/references/effect-reference.md) |
+| 191 | ✓ | [`skills/urp-postprocessing/SKILL.md`](skills/urp-postprocessing/SKILL.md) |
+| 192 | ✓ | [`skills/validate-urp-render-graph-renderer-feature/SKILL.md`](skills/validate-urp-render-graph-renderer-feature/SKILL.md) |
 
 ---
 

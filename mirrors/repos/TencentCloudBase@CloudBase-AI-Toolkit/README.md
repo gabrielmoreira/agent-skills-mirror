@@ -31,6 +31,8 @@ The CloudBase integration layer for AI coding tools: Plugin installs the stack, 
 - Deploy / Env: new `appBuild` tool with hosting build neutralization; `queryEnv` reports the region actually applied and `domains` honors a passed envId
 - Skills / Docs: skill fallback reads now point at the official distribution repo with a references address list; SDK-first database decision gate for cloudrun; site doc links moved to the current Markdown addresses; post-deployment share offered after delivery in the expert packs and the deploy skills (opt-in, redacted, at most once)
 - Deploy / Apps: the cloud upload channel now completes end to end (`deployApp` accepts the timestamp `getUploadUrl` returns, `getBuildLog` accepts the build ID a deploy returns), and gateway route creation verifies the upstream exists before writing
+- Skills / Context: new PostgreSQL access-pattern best-practices skill (batching, indexes, RLS role gating, launch capacity); `searchKnowledgeBase`'s inline skill / OpenAPI catalogs now load on demand, cutting the 43-tool surface by 9.1% on every `tools/list`
+- Runtime / Hosting: CloudRun Function mode must not bind `PORT` (the function framework does) and gets a credential decision gate naming `CLOUDBASE_APIKEY`; hosting paths and prefixes are normalized so a leading slash can no longer read as an empty directory
 
 **v2.33.x** (2026-09)
 

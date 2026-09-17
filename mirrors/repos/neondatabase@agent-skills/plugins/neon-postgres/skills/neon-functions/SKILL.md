@@ -8,12 +8,13 @@ description: >-
   webhook handler, a Discord bot, an MCP server, or any request/response
   workload that risks timing out on short, lambda-style serverless functions —
   and wants it to branch with their database. Also use for Function Triggers:
-  a cron that POSTs to a function on a schedule. Triggers include "serverless
-  function", "deploy an API", "long-running function", "streaming agent",
-  "SSE server", "WebSocket server", "webhook handler", "MCP server",
-  "cron", "function trigger", "scheduled function", "cron job",
-  "run code next to my database", "function that won't time out",
-  "function logs", "Neon Functions", and "Neon Compute".
+  a cron or an object-storage event that POSTs to a function. Triggers include
+  "serverless function", "deploy an API", "long-running function",
+  "streaming agent", "SSE server", "WebSocket server", "webhook handler",
+  "MCP server", "cron", "function trigger", "scheduled function", "cron job",
+  "object storage trigger", "on upload", "run code next to my database",
+  "function that won't time out", "function logs", "Neon Functions", and
+  "Neon Compute".
 metadata:
   parent: neon
   source: https://github.com/neondatabase/agent-skills/tree/main/skills/neon-functions
@@ -24,7 +25,7 @@ metadata:
 If the `neon` skill is not installed, fetch it from https://neon.com/docs/ai/skills/neon/SKILL.md or install it with:
 
 ```bash
-npx skills add neondatabase/agent-skills --skill neon
+neon skills -s neon -y
 ```
 
 # Neon Functions
@@ -43,6 +44,7 @@ Reach for Neon Functions when the workload is a request/response handler that be
 - **Stateful streaming without bolting on Redis.** Because a function stays alive across a request, it can host an SSE endpoint or a WebSocket server and hold the connection open in-process — no external state store (Redis, etc.) needed just to keep a stream coherent. Module-scope state (a `pg` pool, an in-memory counter) persists across requests on the same isolate.
 - **Compute that must sit next to Postgres.** The function runs in the same region as the branch's database, so there are no cross-region round trips on every query. `DATABASE_URL` is injected for you.
 - **A backend that branches with your data.** Each branch runs its own version of the function at its own URL, against its own isolated database (and storage, and gateway) state. Preview deployments, CI, and dev environments each get a self-contained backend — deploying to a child never affects the parent.
+- **Query Postgres from the Function (or an existing framework handler).** Prefer that over the Data API. Use the Data API when the application already uses PostgREST or Supabase-js database calls, or is migrating that client.
 - **Webhooks, bots, and post-response work.** Webhook handlers that fan out into multiple DB writes, Discord/WebSocket bots, and fire-and-forget follow-ups via `waitUntil` (analytics, audit logs) all fit.
 - **Recurring HTTP work.** A Function Trigger POSTs to the function on a cron (`type: "schedule"`). Same `fetch` handler, same 15-minute time-to-first-byte limit. See [Function Triggers](#function-triggers).
 
@@ -70,22 +72,22 @@ Neon (Functions included) is **backend primitives, not full-stack app hosting**.
 
 Either way, secure a Function like any standalone REST API: verify a JWT or API key at the top of the handler (see the WARNING under [Functions as an Agent Backend](#functions-as-an-agent-backend-nextjs-and-similar-frameworks)). Because a Function is just your backend, you can **move pieces between your host and Neon** — relocate an agent or a stateful WebSocket server onto a Function when it needs more runtime, and back if needed.
 
+Prefer a Function, or an existing framework handler, that queries Postgres. Use Data API when the application already uses PostgREST/Supabase-js database calls or is migrating that client.
+
 ## Setup
 
-Functions are declared in `neon.ts` (see the `neon` skill for the branch-first workflow and `neon.ts` basics). Add `@neon/config` and declare functions under `preview.functions`, keyed by **slug**:
+Functions are declared in `neon.ts` (see the `neon` skill for the branch-first workflow and `neon.ts` basics). Add `@neon/config` and declare functions under `functions`, keyed by **slug**:
 
 ```typescript
 // neon.ts
 import { defineConfig } from "@neon/config/v1";
 
 export default defineConfig({
-  preview: {
-    functions: {
-      todos: {
-        // slug: ^[a-z0-9]{1,20}$ — lowercase letters/digits, no hyphens
-        name: "todo api", // display label only
-        source: "src/index.ts", // entry file, relative to neon.ts
-      },
+  functions: {
+    todos: {
+      // slug: ^[a-z0-9]{1,20}$ — lowercase letters/digits, no hyphens
+      name: "todo api", // display label only
+      source: "src/index.ts", // entry file, relative to neon.ts
     },
   },
 });
@@ -139,15 +141,15 @@ neon dev      # serves every function in neon.ts with hot reload; injects DATABA
 neon deploy --env <file>   # preferred full deploy from neon.ts; --env is the file Function env is read from
 ```
 
-Keep `.env` or `.env.local` up to date with every key under `preview.functions.*.env`. `neon env pull` writes Neon-managed vars only; add Function secrets to that file, then pass it as `--env`. `neon deploy --env <file>` loads that file into `process.env` each time, then uploads those values. A missing value is `undefined` and `defineConfig` throws. Omit the key from `neon.ts` if you do not want to write it. Never coerce a missing `process.env` value to an empty string (that uploads `""` and deletes the live key). An empty assignment (`KEY=`) is also `""`. Use `process.env.X!` when TypeScript needs an assertion.
+Keep `.env` or `.env.local` up to date with every key under `functions.*.env`. `neon env pull` writes Neon-managed vars only; add Function secrets to that file, then pass it as `--env`. `neon deploy --env <file>` loads that file into `process.env` each time, then uploads those values. A missing value is `undefined` and `defineConfig` throws. Omit the key from `neon.ts` if you do not want to write it. Never coerce a missing `process.env` value to an empty string (that uploads `""` and deletes the live key). An empty assignment (`KEY=`) is also `""`. Use `process.env.X!` when TypeScript needs an assertion.
 
 To deploy a single function without applying `neon.ts`: `neon functions deploy <slug> --src src/index.ts` (`--src` takes either the entry file or a directory containing `index.ts`, `index.mjs`, or `index.js`). That command's `--env` is `KEY=VALUE` (repeatable), not a file path. Use it for a targeted env update. Retrieve the public URL with `neon functions get <slug>` (the `invocation_url` field, of the form `https://<branch_id>-<slug>.compute.<cell>.us-east-2.aws.neon.tech`). Manage with `neon functions list|get|delete`.
 
-When `neon checkout` _creates_ a new branch and a `neon.ts` is present, it applies the policy automatically. That create-apply does not load `--env`. If Function env reads `process.env`, run `neon deploy --env <file>` after checkout (add `--update-existing` if checkout already created the branch). Checking out an existing branch does not re-deploy; run `neon deploy --env <file>` explicitly.
+When `neon checkout` _creates_ a new branch and a `neon.ts` is present, it applies the policy automatically. Pass `--env <file>` on that create so Function env that reads `process.env` resolves (`neon checkout feat --create --env .env.local`). Existing process env wins over the file. Checking out an existing branch never reconciles it — apply config changes with `neon deploy --env <file>` (add `--update-existing` only after reviewing those changes).
 
 ## Neon Infrastructure as Code (`neon.ts`)
 
-The `preview.functions` block from [Setup](#setup) is part of `neon.ts`, Neon's infrastructure-as-code file — one TypeScript file declares every function (its `source`, display `name`, and `env`) alongside any other branch services, in version control (see the `neon` skill for the full reference). Treat it like Terraform for your branch:
+The `functions` block from [Setup](#setup) is part of `neon.ts`, Neon's infrastructure-as-code file — one TypeScript file declares every function (its `source`, display `name`, and `env`) alongside any other branch services, in version control (see the `neon` skill for the full reference). Treat it like Terraform for your branch:
 
 ```bash
 neon config status   # print the branch's live config (deployed functions)
@@ -155,17 +157,15 @@ neon config plan     # dry-run diff of what apply would change
 neon config apply --env <file>  # bundle + deploy the declared functions  (neon deploy is an alias; pass --env when Function env reads process.env)
 ```
 
-Functions are **branch-scoped**: each branch runs its own deployment at its own URL. When a `neon.ts` is present, `neon checkout` applies the policy as it _creates_ a branch. That create-apply does not load `--env`. If Function env reads `process.env`, run `neon deploy --env <file>` after checkout. Checking out an _existing_ branch doesn't redeploy — run `neon deploy --env <file>` to apply changes.
+Functions are **branch-scoped**: each branch runs its own deployment at its own URL. When a `neon.ts` is present, `neon checkout` applies the policy as it _creates_ a branch. Pass `--env <file>` on that create when Function env reads `process.env`. Checking out an _existing_ branch doesn't redeploy — run `neon deploy --env <file>` to apply changes.
 
 Per-branch deploy tuning (e.g. `runtime`) lives in the `branch` closure, keyed by slug, so it can vary by branch without changing which functions exist:
 
 ```typescript
 export default defineConfig({
-  preview: {
-    functions: { todos: { name: "todo api", source: "src/index.ts" } },
-  },
+  functions: { todos: { name: "todo api", source: "src/index.ts" } },
   branch: (branch) => ({
-    preview: { functions: { todos: { runtime: "nodejs24" } } },
+    functions: { todos: { runtime: "nodejs24" } },
   }),
 });
 ```

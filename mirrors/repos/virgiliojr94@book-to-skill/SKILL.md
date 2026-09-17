@@ -78,7 +78,7 @@ This converter can run from multiple skill systems. When looking for this conver
 9. Hermes Agent personal skills: `$HERMES_HOME/skills/` (defaults to `~/.hermes/skills/`)
 10. Hermes Agent project skills: `.hermes/skills/` or `.agents/skills/`
 
-For **generated** book skills, prefer the user-level cross-agent root `~/.agents/skills/` — one physical copy serves every supported host. Copilot CLI and Amp discover it natively; Claude Code needs a symlink from `~/.claude/skills/<skill_name>` (created in Step 10, see Step 5 for the rules). Pick a host-private or project-local root only when the user asks for one.
+For **generated** book skills, prefer the user-level cross-agent root `~/.agents/skills/` — one physical copy serves every supported host. Copilot CLI and Amp discover it natively; Claude Code needs a symlink from `~/.claude/skills/<skill_name>` (created in Step 10, see Step 5 for the rules). Pick a host-private or project-local root only when the user explicitly asks for one. `BOOK_TO_SKILL_SCOPE=project` or `personal` can make that choice explicit for automation; do not ask a mandatory scope question merely because both scopes are available.
 
 ---
 
@@ -338,7 +338,7 @@ Otherwise, propose two options and let the user choose:
 
 Default to author-concept format if the book has a strong methodological identity.
 
-Choose the destination skill root (`SKILLS_HOME`). For **personal** (user-level) installs, default to the cross-agent root `~/.agents/skills` — one physical copy that every host except Hermes Agent reaches, natively or through a symlink:
+Choose the destination skill root (`SKILLS_HOME`). First resolve **scope** from an explicit user request or `BOOK_TO_SKILL_SCOPE`, then probe **host**. A request for project-local/project output selects the project-local row; a request for personal/global output selects the personal row. If neither scope is requested, preserve the established personal default (`~/.agents/skills` for non-Hermes hosts). Do not ask a mandatory scope question solely because project-local roots exist. The selected root may still require host approval before writing.
 
 | Host agent | Personal skill root | Project-local root |
 |---|---|---|

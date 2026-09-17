@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `neondatabase/agent-skills` — 26 default patterns, 1 followed patterns, 34 file(s) materialized.
+Mirror of `neondatabase/agent-skills` — 26 default patterns, 1 followed patterns, 38 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `neondatabase/agent-skills` — 26 default patterns, 1 followed patter
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 34 |
+| Files         | 38 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -91,8 +91,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 30 | ✓ | [`skills/neon-postgres/references/vector-search.md`](skills/neon-postgres/references/vector-search.md) |
 | 31 | ✓ | [`skills/neon-postgres/SKILL.md`](skills/neon-postgres/SKILL.md) |
 | 32 | ✓ | [`skills/neon/references/claimable-neon.md`](skills/neon/references/claimable-neon.md) |
-| 33 | ✓ | [`skills/neon/SKILL.md`](skills/neon/SKILL.md) |
-| 34 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 33 | ✓ | [`skills/neon/references/function-triggers.md`](skills/neon/references/function-triggers.md) |
+| 34 | ✓ | [`skills/neon/references/logs-loki.md`](skills/neon/references/logs-loki.md) |
+| 35 | ✓ | [`skills/neon/references/parse-env.md`](skills/neon/references/parse-env.md) |
+| 36 | ✓ | [`skills/neon/references/sdk.md`](skills/neon/references/sdk.md) |
+| 37 | ✓ | [`skills/neon/SKILL.md`](skills/neon/SKILL.md) |
+| 38 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
 
 ---
 

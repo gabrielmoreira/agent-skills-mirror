@@ -65,7 +65,7 @@ Route elsewhere when the task is primarily:
 
 ## Core Contract
 
-- Parse axes, values, constraints, priorities, and budget; expand the full space before optimizing it, then select the smallest set preserving the requested coverage guarantee.
+- Parse axes, values, constraints, priorities, and budget; represent the complete space and compute its cardinality before optimization. Avoid materializing an enormous Cartesian product when symbolic/constraint-aware generation suffices; independently verify the requested coverage guarantee.
 - Apply the **interaction rule** to justify strength: roughly 93% of real-world faults are triggered by `<=2`-way interactions, 98% by `<=3`-way, and nearly 100% by `<=6`-way.
 - Target a 20x-700x suite reduction versus exhaustive while holding 100% t-way coverage.
 - Explain the chosen method and any tuples left uncovered by budget or constraints.
@@ -76,7 +76,6 @@ Route elsewhere when the task is primarily:
 - AI-assisted parameter extraction can draft parameter/value models from specifications to accelerate PARSE, but treat output as a first draft and validate constraints before optimizing. Sources -> `reference/fault-interaction-statistics.md`.
 - Hand off a plan directly executable by another agent.
 - Output language follows the CLI global config; code, IDs, YAML, JSON, and agent names stay English.
-- Author for the executing engine (P1–P11 bind only on Opus 5; P12 generation-wide). See `_common/OPUS_5_AUTHORING.md` (P3, P5 critical for Matrix; P2, P1 recommended).
 
 ## Boundaries
 
@@ -255,7 +254,6 @@ When results are already available (Remap mode), also include:
 
 | Reference | Read this when |
 |-----------|----------------|
-| `reference/quickstart.md` | A fast starter template for test, deploy, or risk planning. |
 | `reference/input-schema.md` | Input arrives as natural language, YAML, JSON, or a table. |
 | `reference/combination-methods.md` | Method definitions, formulas, default reduction guidance. |
 | `reference/optimization-algorithms.md` | Choosing between pairwise, OA, higher-strength, or budgeted optimization. |
@@ -268,7 +266,6 @@ When results are already available (Remap mode), also include:
 | `reference/pairwise-ipog.md` | IPOG/IPOG-F walk-through, OATS selection rubric, pairwise vs n-wise trade-offs. |
 | `reference/equiv-class-bva.md` | Axes are input ranges — equivalence partitioning, BVA, one-defect-per-negative-case discipline. |
 | `reference/risk-weighted-coverage.md` | Prioritizing by RPN / Action Priority or integrating FMEA output from omen. |
-| `reference/autorun-schema.md` | Emitting the AUTORUN `_STEP_COMPLETE` block — Matrix-specific Output/Next schema. |
 | `_common/OPUS_5_AUTHORING.md` | Sizing the plan, thinking depth at t-way strength, front-loading domain/axes at SCAN. Critical: P3, P5. |
 | `_common/PROOF_CARRYING.md` | Generating pairwise / orthogonal-array story sets for `vrt_proof` in `acceptance` Phase 2B. Default 2-way; full N-way only for Tier-S paths; story count `<=5,000` per build; bulk-approve over 10 diffs forbidden. |
 
@@ -285,7 +282,7 @@ Agent, Status(SUCCESS|PARTIAL|BLOCKED|FAILED), Output(domain, axes_count, total_
 
 ## AUTORUN Support
 
-See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling). Matrix-specific `_STEP_COMPLETE.Output` schema lives in `reference/autorun-schema.md`.
+Emit `_STEP_COMPLETE` using `_common/AUTORUN.md` § Default Completion Schema; no skill-specific extension is required.
 
 ## Nexus Hub Mode
 

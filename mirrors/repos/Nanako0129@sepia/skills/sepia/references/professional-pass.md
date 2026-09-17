@@ -1,6 +1,6 @@
 # Professional pass — shared layer for non-fiction
 
-Applies to every non-fiction domain (release notes, PR/issue replies, postmortems, tickets, technical articles, and anything else that isn't narrative). Evidence: the slop taxonomy (Shaib et al., S), expert AI-detector studies (Russell et al., R), genre-alignment findings (Reinhart et al., P), and the Wikipedia/humanizer corpus of documented tells (W). Stable source identities live in the repository research ledger; single-letter aliases in this file are file-local. Prescriptions are Sepia design inferences unless a cited source explicitly tested the intervention.
+Applies to every non-fiction domain (release notes, PR/issue replies, postmortems, tickets, technical articles, long-form journalism, and anything else that isn't invented narrative). Evidence: the slop taxonomy (Shaib et al., S), expert AI-detector studies (Russell et al., R), genre-alignment findings (Reinhart et al., P), and the Wikipedia/humanizer corpus of documented tells (W). Stable source identities live in the repository research ledger; single-letter aliases in this file are file-local. Prescriptions are Sepia design inferences unless a cited source explicitly tested the intervention.
 
 > In professional genres the goal is not "fool a detector" — it is that the text carries information, has a stance, and sounds like it came from the person whose name is on it. Conventional structure is *fine* here; slop is the filler inside the structure.
 

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `stablyai/orca` — 26 default patterns, 16 followed patterns, 29 file(s) materialized.
+Mirror of `stablyai/orca` — 26 default patterns, 17 followed patterns, 30 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `stablyai/orca` — 26 default patterns, 16 followed patterns, 29 file
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 16 |
-| Files         | 29 |
+| Followed pats | 17 |
+| Files         | 30 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -52,6 +52,7 @@ Mirror of `stablyai/orca` — 26 default patterns, 16 followed patterns, 29 file
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
 - `docs/STYLEGUIDE.md`
+- `.github/pull_request_template.md`
 - `docs/reference/windows-terminal-shell-selection.md`
 - `docs/reference/windows-setup-shell.md`
 - `docs/reference/windows-cmd-shim-resolution.md`
@@ -87,22 +88,23 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 11 | ✓ | [`src/main/daemon/AGENTS.md`](src/main/daemon/AGENTS.md) |
 | 12 | ✓ | [`tests/AGENTS.md`](tests/AGENTS.md) |
 | 13 | ✓ | [`tests/e2e/AGENTS.md`](tests/e2e/AGENTS.md) |
-| 14 | → | [`docs/reference/agent-pty-transcript-capture.md`](docs/reference/agent-pty-transcript-capture.md) |
-| 15 | → | [`docs/reference/agent-status-store.md`](docs/reference/agent-status-store.md) |
-| 16 | → | [`docs/reference/antigravity-readiness-evidence.md`](docs/reference/antigravity-readiness-evidence.md) |
-| 17 | → | [`docs/reference/git-compatibility.md`](docs/reference/git-compatibility.md) |
-| 18 | → | [`docs/reference/linux-glibc-compatibility.md`](docs/reference/linux-glibc-compatibility.md) |
-| 19 | → | [`docs/reference/pnpm-install-policy.md`](docs/reference/pnpm-install-policy.md) |
-| 20 | → | [`docs/reference/remote-wire-compatibility.md`](docs/reference/remote-wire-compatibility.md) |
-| 21 | → | [`docs/reference/ssh-execution-boundary.md`](docs/reference/ssh-execution-boundary.md) |
-| 22 | → | [`docs/reference/windows-cmd-shim-resolution.md`](docs/reference/windows-cmd-shim-resolution.md) |
-| 23 | → | [`docs/reference/windows-daemon-host-relocation.md`](docs/reference/windows-daemon-host-relocation.md) |
-| 24 | → | [`docs/reference/windows-edr-posture.md`](docs/reference/windows-edr-posture.md) |
-| 25 | → | [`docs/reference/windows-process-enumeration.md`](docs/reference/windows-process-enumeration.md) |
-| 26 | → | [`docs/reference/windows-setup-shell.md`](docs/reference/windows-setup-shell.md) |
-| 27 | → | [`docs/reference/windows-terminal-shell-selection.md`](docs/reference/windows-terminal-shell-selection.md) |
-| 28 | → | [`docs/reference/wsl-command-execution.md`](docs/reference/wsl-command-execution.md) |
-| 29 | → | [`docs/STYLEGUIDE.md`](docs/STYLEGUIDE.md) |
+| 14 | → | [`.github/pull_request_template.md`](.github/pull_request_template.md) |
+| 15 | → | [`docs/reference/agent-pty-transcript-capture.md`](docs/reference/agent-pty-transcript-capture.md) |
+| 16 | → | [`docs/reference/agent-status-store.md`](docs/reference/agent-status-store.md) |
+| 17 | → | [`docs/reference/antigravity-readiness-evidence.md`](docs/reference/antigravity-readiness-evidence.md) |
+| 18 | → | [`docs/reference/git-compatibility.md`](docs/reference/git-compatibility.md) |
+| 19 | → | [`docs/reference/linux-glibc-compatibility.md`](docs/reference/linux-glibc-compatibility.md) |
+| 20 | → | [`docs/reference/pnpm-install-policy.md`](docs/reference/pnpm-install-policy.md) |
+| 21 | → | [`docs/reference/remote-wire-compatibility.md`](docs/reference/remote-wire-compatibility.md) |
+| 22 | → | [`docs/reference/ssh-execution-boundary.md`](docs/reference/ssh-execution-boundary.md) |
+| 23 | → | [`docs/reference/windows-cmd-shim-resolution.md`](docs/reference/windows-cmd-shim-resolution.md) |
+| 24 | → | [`docs/reference/windows-daemon-host-relocation.md`](docs/reference/windows-daemon-host-relocation.md) |
+| 25 | → | [`docs/reference/windows-edr-posture.md`](docs/reference/windows-edr-posture.md) |
+| 26 | → | [`docs/reference/windows-process-enumeration.md`](docs/reference/windows-process-enumeration.md) |
+| 27 | → | [`docs/reference/windows-setup-shell.md`](docs/reference/windows-setup-shell.md) |
+| 28 | → | [`docs/reference/windows-terminal-shell-selection.md`](docs/reference/windows-terminal-shell-selection.md) |
+| 29 | → | [`docs/reference/wsl-command-execution.md`](docs/reference/wsl-command-execution.md) |
+| 30 | → | [`docs/STYLEGUIDE.md`](docs/STYLEGUIDE.md) |
 
 ---
 

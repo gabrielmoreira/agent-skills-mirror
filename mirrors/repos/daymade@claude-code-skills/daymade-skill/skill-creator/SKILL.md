@@ -35,7 +35,7 @@ Your job when using this skill is to figure out where the user is in this proces
 
 Six standing disciplines apply throughout, because these failure modes ship convincing-looking skills that are wrong:
 
-1. **Verify before you write.** Every technical assertion that enters the skill (endpoint, parameter, command, version, behavior) must trace to something you executed and observed — in this session or an explicitly approved mined one. Can't verify it right now? Either go verify it, or mark it explicitly ("unverified — from memory"). A skill multiplies whatever it contains: verified knowledge compounds, and so do confidently-stated errors. For knowledge skills (content is mostly facts about an external system — API endpoints, parameters, fields, platform behavior), read [references/knowledge-skill-grounding.md](references/knowledge-skill-grounding.md) for the operational version: the authority ladder (observed behavior > machine-readable contract > exercised production code > official docs > memory), evidence-scope annotation, pre-ship doc-example smoke runs, and the audience/Windows portability checklist. A source-grounding audit once found multiple confident contract claims that contradicted evidence already available to the author (methodology Case 9).
+1. **Verify before you write.** Every technical assertion that enters the skill (endpoint, parameter, command, version, behavior) must trace to something you executed and observed — in this session or an explicitly approved mined one. Can't verify it right now? Either go verify it, or mark it explicitly ("unverified — from memory"). A skill multiplies whatever it contains: verified knowledge compounds, and so do confidently-stated errors. For knowledge skills (content is mostly facts about an external system — API endpoints, parameters, fields, platform behavior), read [references/knowledge-skill-grounding.md](references/knowledge-skill-grounding.md) for the operational version: the authority ladder (observed behavior > machine-readable contract > exercised production code > official docs > memory), evidence-scope annotation and live/replay/synthetic evidence tiers, pre-ship doc-example smoke runs, and the audience/Windows portability checklist. A source-grounding audit once found multiple confident contract claims that contradicted evidence already available to the author (methodology Case 9).
 2. **Treat "impossible / not supported" as a hypothesis, not a conclusion.** When a capability seems blocked (an API error wall, a tool that won't connect, a format that won't open), exhaust the observation paths — the UI's own network traffic, an alternative channel, a different documented identifier — before writing "the platform doesn't support this" into a skill. Observed behavior outranks speculative request shapes.
 3. **Stand on the field's shoulders — retrieve the domain's established best-practices into context BY DEFAULT, before authoring or optimizing a skill's methodology.** A skill's methodology is only as good as the knowledge in your context window, not the knowledge latent in your weights: pretraining is lossy, goes stale, and often is not even activated unless the canonical sources are actually pulled in. So the quality ceiling of what you write is `your training data + the user's input` — *unless* you deliberately retrieve the subject domain's real prior art. Do it: WebSearch the field's canonical theory / standards / methods, and read any bundled or installed skill in that domain, then fold the load-bearing principles into the skill with attribution. **This is a different axis from "Prior Art Research" below** — that finds *tools/infrastructure* to reuse; this grounds the *quality of the methodology itself* in the discipline's accumulated science. Make it the **default action, not something you wait to be asked for**: briefly tell the user which field you're pulling from and let them say "skip," but never ship a methodology capped by your memory plus their prompt when 40 years of the field's public work is one search away. Examples: a data-visualization skill must absorb Cleveland & McGill's graphical-perception ranking and Bertin's visual variables (position/length beat color beat text — measured, not aesthetic); a date/time skill must surface the mature libraries and their canonical pitfalls; a persuasion/negotiation skill must retrieve the established frameworks rather than reinvent them from memory. If the canonical knowledge lives only in your weights and never enters context, you are guessing where you could be citing.
 4. **Preserve before you compress an existing skill.** Updating an existing skill is a migration, not a blank-page rewrite. Before the first edit, capture the auditable source bundle with the audit tool's `snapshot` command, or reconstruct it from an explicit Git ref; an arbitrary copy plus a provenance label is not a baseline. Inventory runtime capabilities, trigger contexts, interfaces, references, and eval coverage. Progressive disclosure and concision authorize moving or deduplicating content; they do not authorize silently deleting behavior. After editing, run `scripts/audit_skill_regression.py` and classify every unmatched old unit. A runtime contract that survives only in `evals/`, tests, or an unlinked reference is still lost. Do not call the update complete while any candidate is unclassified or any true gap remains unfixed. The same logic governs *reversals*, not just deletions, and covers any prior commitment — not only the ones carrying a date and a name: **overturning a decision already made is a proposal, never a side effect.** Say it out loud and get it accepted. A silent rewrite is worse than a silent deletion, because it destroys the artifact and the evidence that could have caught it in one move — and it blinds every downstream reviewer (see #5).
@@ -141,7 +141,7 @@ Start by understanding the user's intent. The current conversation might already
 
 **Source inventory — always before drafting, with consent boundaries.** Inventory the live conversation and existing docs/skills that overlap (see Prior Art Research below). Earlier local session JSONL files are a separate private source: do not open or parse them unless the user explicitly asks to mine history or affirmatively approves that source after you explain what will be read. If approved, fold only relevant prior sessions in through the conversation-mining workflow's redacted extraction; never load raw transcripts into your own context. If not approved, continue from the live conversation and existing project sources without treating the missing history as a blocker.
 
-When mining a conversation (or session transcripts), inventory **both asset classes — they land in different places**. *Knowledge* — endpoints, parameters, pitfalls, decision rules — becomes SKILL.md guidance or `references/`. *Code the session had to write* — helper scripts, injected snippets, renderers, one-off templates — is a `scripts/` candidate: if this session wrote it, the next invocation will have to rewrite it, so parameterize it, sanitize it, and bundle it. A prior distillation captured polished prose but omitted the reusable helpers; the general lesson is to keep both knowledge→references and code→scripts channels in frame.
+When mining a conversation (or session transcripts), inventory **both asset classes — they land in different places**. *Knowledge* — endpoints, parameters, pitfalls, decision rules — becomes SKILL.md guidance or `references/`. *Code the session had to write* — helper scripts, injected snippets, renderers, one-off templates — is a `scripts/` candidate: first check whether an existing/upstream tool already owns that execution. Parameterize and bundle only the still-needed local helper or adapter; do not preserve a temporary reimplementation merely because this session wrote it. A prior distillation captured polished prose but omitted the reusable helpers; the general lesson is to keep both knowledge→references and code→scripts channels in frame.
 
 When the source material is *past* session transcripts (the JSONL files under the Claude Code projects directory) rather than the live conversation, enter the conversation-mining workflow. Do not open raw transcripts in the main context or hand raw paths/content to subagents. Its deterministic manifest → discover → redact → chunk sequence must finish before any agent sees content; only redacted chunks may enter the minimum role/shard plan, with the exact unit count and concurrency cap declared under the budget gate.
 
@@ -242,11 +242,19 @@ If something overlaps:
 
 Two cases the probes get wrong or cannot answer, so check for them before trusting the result: a **fork** shows your own remote while the content is someone else's — treat it as third-party, because their upstream improvements still stop reaching you. And when there is **no marketplace.json and no remote** (a local-only project, a skill hand-copied into a global skills dir), the probes are silent rather than negative: **ask the owner instead of guessing**.
 
-- **The overlap is a third party's skill** (a marketplace suite, an official plugin): **do not re-implement its capability.** Write a *thin increment* that drives it correctly — the pitfalls you hit, the correct invocation, the verified helper script — and **reference it by namespaced name**. Cloning someone else's engine into your bundle is the expensive mistake: their upgrades stop reaching you, and the two copies drift apart silently. **Then check the identifiers that cross the seam you just created** — routing to the official tool means handles now travel between two address spaces, and whatever your side emits, theirs has to be able to resolve. Fix that where the identifier is produced, not in a paragraph telling the reader to convert it: the party that suffers may never have loaded your skill. Case 23 in [references/skill-development-methodology.md](references/skill-development-methodology.md) is the worked example, including why the documentation-shaped fix shipped to a public repo and still failed.
-- **The overlap is your own skill**: extend it, or add a sibling inside its existing suite. A standalone that competes for the same triggers helps nobody. **Exception:** if it lives inside an *unrelated project's* working tree, neither move applies — see the project-level case above.
+- **The overlap is a third party's skill** (a marketplace suite, an official plugin): **do not re-implement its capability.** Put a *thin increment* in the existing owning router/workflow when one exists — verified pitfalls, invocation and necessary adaptation — and **reference the upstream skill by its installed identity**. A usage lesson does not by itself justify another standalone skill. Cloning someone else's engine into your bundle is the expensive mistake: their upgrades stop reaching you, and the two copies drift apart silently. **Then check the identifiers that cross the seam you just created** — routing to the official tool means handles now travel between two address spaces, and whatever your side emits, theirs has to be able to resolve. Fix that where the identifier is produced, not in a paragraph telling the reader to convert it: the party that suffers may never have loaded your skill. Case 23 in [references/skill-development-methodology.md](references/skill-development-methodology.md) is the worked example, including why the documentation-shaped fix shipped to a public repo and still failed.
+- **The overlap is your own skill**: first decide whether the gap is a workflow within its existing router. Keep one entry when tasks share account/identity, authorization, lifecycle and user intent; put the workflow's guide, scripts and cases beneath that owner. A sibling skill is justified when it needs a distinct invocation, permission or install/update boundary. Shared vendor or vocabulary alone is not a reason to merge unrelated jobs. Retiring an existing entry still requires the user's authorization and verified replacement. **Exception:** for an unrelated project's working tree, use the project-level ownership procedure above.
 - **Some related skill already points at the gap you're filling** (e.g. its description says "for X, use Y"): after you build, close the loop — update that pointer, or you have left a dangling reference behind.
 
-Only when nothing overlaps do you build standalone.
+Before creating or restructuring a capability, state its **ownership decision** in the
+existing plan: user entry → executable owner/upstream → home of our verified increment
+→ dependency update path → user-visible completion evidence. Reuse the user's prior
+choices; this is not a new approval gate or mandatory document. For a narrow edit
+that leaves ownership unchanged, retain that mapping and proceed.
+
+Only when no suitable owner exists, or a distinct invocation/lifecycle boundary is
+justified, build a standalone skill. The evidence that permits an independent skill
+must also prevent over-merging: an unrelated permission or lifecycle remains separate.
 
 **Why this check earns its place at the top:** a real 2026-07 session spent a day getting a third-party docx engine to produce correct Chinese business documents, then reached for the wrapper-skill branch — which skips straight past Prior Art Research. The shape it was about to ship was a fresh skill re-carrying that engine's capability. The correct shape was a **three-layer reference chain**: third-party engine untouched → a thin increment skill holding the correct usage plus the verified generator script → the domain-workflow skill calling that increment. The user had to catch it twice before it landed, with the second correction being the sharper one: *"don't copy an extra one — write the correct usage on top of theirs, and reference their skill; that's what skill-as-code means."*
 
@@ -380,10 +388,10 @@ Channels 1-3 surface the user's own proven patterns and existing integrations. C
 |---------|--------|
 | Mature MCP/SDK handles the infrastructure | **Adopt it, build on top** — install the MCP, then build the skill as a workflow layer encoding the user's methodology |
 | Partial MCP or SDK exists | **Extend** — use for infrastructure, fill gaps in the skill |
-| Public skill covers the same domain | **Use for structural inspiration only** — public skills in competitive domains are generic by definition. The user's edge is their private SOP |
-| **Complementary skill exists that provides a sub-capability of what you're building** | **Bundle it** — copy the complementary skill's self-contained assets into your bundle and wire them up. Do NOT rely on the user having it pre-installed. See "Complementary Skills" below |
+| Official/public skill implements a required capability | **Verify and reuse it** — exercise the needed interface; keep local methodology, account constraints and acceptance as an increment under their owner. Public origin neither proves suitability nor makes it merely inspiration |
+| Complementary skill provides a required sub-capability | **Choose by ownership/update boundary** — resolve an independently maintained dependency, or bundle an owned self-contained helper. See "Complementary Skills" below |
 | Nothing public exists | **Build from scratch** — validate API access patterns work (auth, endpoints, proxy) before writing the full skill |
-| Integration cost > build cost | **Build it** — a 2-hour custom implementation you own beats a "mature" tool with integration friction and upstream risk |
+| Verified integration mismatch makes reuse unsuitable | **Choose the smallest justified adapter or replacement** — distinguish a fixable invocation/version gap from missing capability; explain maintenance and update consequences. Convenience alone does not override a user-selected upstream |
 | User deliberately supersedes an installed skill (fork, hardened edition) | **Ship it with a supersede kit** — see "Coexistence & Precedence" below |
 
 #### Coexistence & Precedence (deliberate overlap)
@@ -392,21 +400,25 @@ Merging into the existing skill is the default fix for overlap (above). But when
 
 **The more common case: your new skill silently loses the trigger to the *installed population*, without any deliberate fork.** A skill's domain (image generation, PDF handling, dashboards) is often already crowded with several installed skills, and a fresh skill can lose auto-routing to all of them. So **verify triggering early — the build isn't done when the content is good.** After a draft exists, fire a few realistic queries through `claude -p` and check the new skill actually WINS; if it doesn't, **name the specific competitor** it lost to (different queries often lose to different skills). Then know two things: (1) **prose can't always win a crowded slot** — the resolution ladder is rename → description tiebreaker/SUPERSEDES → manual invocation → SessionStart routing hook (structural; modifies global config, so requires the user's explicit consent, same discipline as `--no-verify`); and (2) **the fix depends on who authored the competitor** — competitors that are *third-party* → accept manual invocation or a routing hook; competitors that are *your own* → merge/consolidate them into one, don't keep two of your skills fighting for the same trigger. (The full resolution ladder lives in [references/skill-precedence-and-coexistence.md](references/skill-precedence-and-coexistence.md) — that file is the SSOT; the summaries here and above are pointers, don't extend them independently.) Documenting the chosen path (e.g. an "Activation" note saying "invoke manually, competitors are third-party") stops the next session from re-litigating it. (methodology Case 13)
 
-##### Complementary Skills (bundle, don't depend)
+##### Complementary Skills: preserve the update owner
 
-When building a skill that touches a domain with an existing complementary skill, you have two choices:
+Resolve dependencies; do not assume they are installed, and do not treat copying
+another maintained Skill as the default cure for a missing installation.
 
-- **Depend on it being installed**: fragile — the user may not have it, or may have a different version. Every missing-dependency failure traces back to this choice.
-- **Bundle it**: copy the complementary skill's self-contained assets (scripts, templates, reference docs) into your own bundle, and wire them up so your skill works standalone.
+| Dependency | Integration |
+|---|---|
+| Official or independently maintained Skill/tool | Keep its source unmodified. Resolve the installed identity, verify required interface/version, install the exact dependency within existing authorization if missing, and read back a representative operation. Keep invocation fixes and business acceptance in our owning workflow; preserve the upstream update path |
+| Our self-contained helper/template deliberately shipped with this capability | Bundle it when that is the chosen distribution contract. Keep one canonical source and a declared copy/update mechanism; test the shipped copy. Do not silently fork a separately maintained engine |
+| Explicit standalone/offline distribution or approved fork | Bundle/pin only under that chosen boundary, with provenance/license, update responsibility and replacement tests. Keep this supported escape; a router is not mandatory for every skill |
 
-**Rule: if a sub-capability your skill needs is provided by another installable skill, bundle it.** This is especially important for:
-- Statusline / UI rendering scripts (e.g., `statusline-generator`'s `generate_statusline.sh`)
-- Shared validation / sanitization scripts
-- Common data transformation utilities
+For example, a profile installer may bundle its owned statusline helper so setup
+works after one install. That does not imply copying an official cloud Skill into
+a local operations router. The router must resolve/install its declared dependency
+and verify the handoff instead of leaving the user to assemble prerequisites.
 
-**Example**: `claude-switch-models-setup` manages multiple Claude Code profiles. Each profile needs a statusline. The `statusline-generator` skill provides `generate_statusline.sh`. Rather than depending on the user running `statusline-generator` first, the profile setup skill bundles `statusline.sh` and wires it into each new profile during `claude-profiles-init`. The two skills remain independently useful, but the wrapper skill works standalone.
-
-**Anti-pattern**: writing "run `other-skill`'s installer first" in your SKILL.md. That pushes the dependency to the user and creates a fragile install order. Bundle instead.
+Stop dependency work once the authorized representative task works with the intended
+identity and update owner. Missing dependencies are explicit failures, not permission
+to guess APIs, use another account or reimplement a sender.
 
 After research completes, present findings via **AskUserQuestion**:
 
@@ -433,6 +445,21 @@ Proactively ask questions about edge cases, input/output formats, example files,
 Check available MCPs when useful for research (searching docs, finding similar skills, looking up best practices). Research inline by default. Use a subagent only for a distinct unresolved question, and never turn tool availability into automatic parallel fan-out. Come prepared with context to reduce burden on the user.
 
 ### Write the SKILL.md
+
+When composing or reorganizing multiple workflows, apply the ownership decision
+before filling directories. Keep the entry focused on routing, put cross-workflow
+identity/authorization/completion in one reachable common contract, and keep each
+workflow's local guide with its tools and cases. Keep vendor implementation outside
+our bundle when its upstream owns it. Simple single-purpose skills can stay flat;
+these are responsibility boundaries, not a mandatory folder template.
+
+Before calling the structure ready, walk 1–2 representative changed tasks from the
+entry to the selected guide, actual tool, working directory/dependency and final
+business evidence. Reuse the selected tier's checks or fresh-context review; do not
+launch a second audit merely for this step. A file tree, shorter SKILL.md or passing
+links alone cannot prove correct routing. Stop when those tasks select the intended
+owner, preserve prior exits and can reach verified outcomes; do not keep splitting
+or merging for cosmetic uniformity.
 
 Based on the user interview, fill in these components:
 

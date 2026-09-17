@@ -847,12 +847,21 @@ Also verify validation-tree consistency:
   `validation.suggestion_patch.minimal_ranges_reviewed == true`, and
   `applied_comment_ids` exactly matching all proposed comments that contain
   suggestion blocks;
+- any proposed suggestion block also requires
+  `validation.line_ending_safety.head_sha == head_sha`,
+  `validation.line_ending_safety.result == passed`,
+  `checked_comment_ids` exactly matching all suggestion comments, and one
+  passing non-`mixed` raw-blob result for every target path;
 - the suggestion-patch result must come from applying the literal public
   suggestion blocks to the pinned upstream head and building that candidate
   tree, not from a hand-edited fork branch.
 - before that final build, trim unchanged leading and trailing lines from each
   suggestion range. Retain one unchanged anchor only for a pure insertion that
   GitHub cannot otherwise represent.
+- inspect raw blobs rather than checked-out files for the EOL gate. If a target
+  mixes LF, CRLF, or lone CR endings, remove the suggestion block and keep the
+  finding as exact inline prose or a detailed companion comment. Never
+  normalize an entire file as part of an unrelated suggestion.
 
 Never copy fork-only tests, documentation, braces, or behavior into the
 artifact summary as if they exist upstream. If the converged fork differs from

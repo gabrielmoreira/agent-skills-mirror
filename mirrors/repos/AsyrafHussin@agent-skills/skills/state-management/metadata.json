@@ -1,0 +1,58 @@
+{
+  "version": "1.1.0",
+  "organization": "State Management Patterns",
+  "date": "March 2026",
+  "abstract": "Comprehensive guide for TanStack Query v5 and Zustand v5 state management patterns, designed for AI agents and LLMs. Contains 26+ rules across 6 categories, prioritized by impact from critical (query fundamentals, mutations, stores) to medium (advanced patterns, caching strategies). All patterns verified against v5 APIs including gcTime, placeholderData, useSuspenseQuery, and useShallow. Covers server state with TanStack Query (data fetching, caching, mutations, optimistic updates) and client state with Zustand (stores, secure persistence, selectors). Security: never persist auth tokens to localStorage — use HttpOnly cookies. Optimized for automated refactoring and state management best practices.",
+  "references": [
+    "https://tanstack.com/query/latest",
+    "https://tanstack.com/query/latest/docs/react/overview",
+    "https://tanstack.com/query/latest/docs/react/guides/queries",
+    "https://tanstack.com/query/latest/docs/react/guides/mutations",
+    "https://tanstack.com/query/latest/docs/react/guides/query-keys",
+    "https://tanstack.com/query/latest/docs/react/guides/optimistic-updates",
+    "https://tanstack.com/query/latest/docs/react/guides/infinite-queries",
+    "https://tanstack.com/query/latest/docs/react/guides/paginated-queries",
+    "https://tanstack.com/query/latest/docs/react/devtools",
+    "https://zustand-demo.pmnd.rs",
+    "https://github.com/pmndrs/zustand",
+    "https://docs.pmnd.rs/zustand/getting-started/introduction",
+    "https://docs.pmnd.rs/zustand/guides/typescript",
+    "https://docs.pmnd.rs/zustand/integrations/persisting-store-data",
+    "https://github.com/pmndrs/zustand#recipes"
+  ],
+  "categories": [
+    {
+      "name": "React Query Fundamentals",
+      "prefix": "query",
+      "impact": "CRITICAL",
+      "description": "useQuery, query keys, enabled flag, and stale time"
+    },
+    {
+      "name": "Mutations",
+      "prefix": "mutation",
+      "impact": "CRITICAL",
+      "description": "useMutation, optimistic updates, cache invalidation"
+    },
+    {
+      "name": "Zustand Stores",
+      "prefix": "store",
+      "impact": "CRITICAL",
+      "description": "Store creation, slices, TypeScript, and persistence"
+    },
+    {
+      "name": "Advanced Patterns",
+      "prefix": "advanced",
+      "impact": "MEDIUM",
+      "description": "Infinite queries, paginated queries, prefetching, devtools"
+    }
+  ],
+  "keyFeatures": [
+    "React Query (TanStack Query) for server state management",
+    "Zustand for lightweight client state",
+    "Optimistic updates with rollback patterns",
+    "Query key factories for consistent cache management",
+    "TypeScript patterns for type-safe stores and queries",
+    "Secure persistence with zustand/middleware (partialize to exclude sensitive data)",
+    "v5 API compatibility: gcTime, placeholderData, useSuspenseQuery, useShallow"
+  ]
+}

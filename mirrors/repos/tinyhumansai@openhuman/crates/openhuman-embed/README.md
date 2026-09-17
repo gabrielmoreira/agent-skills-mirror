@@ -129,7 +129,10 @@ TinyHumans OpenAI-compatible endpoint, backend REST calls send it as
 `x-api-key`, and the scheduler gate treats the runtime as signed in. No
 `/auth/me` round trip, no session JWT, nothing to expire. An agent that names
 its own `Provider` (BYOK) never touches the key. `HarnessBuilder::session`
-remains for hosts that drive backend features on behalf of a signed-in user.
+remains for hosts that drive backend features on behalf of a signed-in user;
+the core stores that session as handed over (`auth.set_credential`) and never
+validates it — obtaining and validating a JWT is the host's job (see
+`crates/openhuman-session`).
 
 ### `Harness`: the one-agent shorthand
 

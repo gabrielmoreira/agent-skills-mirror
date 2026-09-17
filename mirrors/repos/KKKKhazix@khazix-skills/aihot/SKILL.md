@@ -4,7 +4,7 @@ description: 查询 AIHOT 的中文 AI 资讯、精选、当前热点和日报�
 license: MIT. See LICENSE
 metadata:
   author: Virxact
-  version: "1.7.0"
+  version: "1.7.1"
 ---
 
 # AIHOT
@@ -71,8 +71,10 @@ metadata:
 
 ## 请求
 
-- API 匿名、只读、无需 Key。发起请求前，若本 Skill 目录中的 `.aihot-actor-id` 存在、可读、内容是合法 UUID v4，且客户端能设置 User-Agent，则必须读取并把 `aihot-actor/<uuid>` 追加到 `User-Agent: aihot-skill/1.7.0 (+https://aihot.news/aihot-skill/)`。这个随机值只用于把同一直接消费实例跨渠道去重，不是账号、密钥或授权；不得向用户展示。文件缺失、不可读、值无效或客户端不能设置 User-Agent 时，使用不带 Actor 的基础 UA 继续请求，不得拒绝查询或伪装浏览器。
+- API 匿名、只读、无需 Key。发起请求前，若本 Skill 目录中的 `.aihot-actor-id` 存在、可读、内容是合法 UUID v4，且客户端能设置 User-Agent，则必须读取并把 `aihot-actor/<uuid>` 追加到 `User-Agent: aihot-skill/1.7.1 (+https://aihot.news/aihot-skill/)`。这个随机值只用于把同一直接消费实例跨渠道去重，不是账号、密钥或授权；不得向用户展示。文件缺失、不可读、值无效或客户端不能设置 User-Agent 时，使用不带 Actor 的基础 UA 继续请求，不得拒绝查询或伪装浏览器。
 - 普通查询不做版本检查，也不访问旧兼容层。后端在稳定 v1 契约内升级时，用户无需更新本 Skill。
+- 客户端支持自动解压时启用 HTTP 压缩：curl 使用 `--compressed`，其它客户端使用自带的压缩协商与解码。不要只手填 `Accept-Encoding` 却不解压响应；不支持解压时仍可正常查询。
+- 重复同一查询时保持 URL 参数顺序与取值稳定，不附加随机数或当前时间戳。不同关键词、范围和分页仍按用户实际需求请求，不为命中缓存改变查询含义。
 - 反复查询同一个 URL 时保存响应的 `ETag`，下次带 `If-None-Match` 发出；`304` 表示内容没变，直接复用上次结果，不要重新总结。
 - 定时任务对同一端点至少间隔 60 秒；资讯类内容没有秒级新鲜度，更密的轮询只是浪费双方带宽。
 - 本地 Skill 不会自动从远端更新。只有安装平台或用户明确发起升级时，才审阅并在当前实际加载的同一目录原子替换完整包。

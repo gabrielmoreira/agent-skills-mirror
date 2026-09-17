@@ -31,6 +31,8 @@
 - 部署 / 环境：新增 `appBuild` 工具与托管构建中和；`queryEnv` 如实回执 region 生效情况，`domains` 尊重传入的 envId
 - Skills / 文档：skill 兜底读取改指官方分发仓并返回 references 地址清单；cloudrun 增加 SDK-first 数据库访问决策闸门；官网文档链接改指站点当前 Markdown 寻址；专家包与部署 skill 在交付后可执行「部署分享」（脱敏、至多一次、可拒绝）
 - 部署 / 应用：云端上传通道可完整跑通（`deployApp` 接受 `getUploadUrl` 返回的时间戳，`getBuildLog` 接受部署返回的构建 ID）；网关路由创建前会校验上游资源是否存在
+- Skills / 上下文：新增 PostgreSQL 访问模式最佳实践 skill（批量读写、索引、RLS 角色门禁、上线容量）；`searchKnowledgeBase` 内联的 skill / OpenAPI 清单改为按需返回，43 个工具的常驻面在每次 `tools/list` 时缩小 9.1%
+- 运行态 / 托管：云托管 Function 模式不得监听 `PORT`（由函数框架绑定），并补上以 `CLOUDBASE_APIKEY` 为准的凭证决策门；静态托管的路径与前缀统一归一化，前导斜杠不再被误读成「目录为空」
 
 **v2.33.x**（2026-09）
 

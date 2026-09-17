@@ -1,7 +1,7 @@
 ---
 name: paid-ads-tiktok
-description: Plan and review TikTok Ads creative experiments with measurement, rights, and conversion guardrails. Use for TikTok advertising, Spark Ads, short-form video ads, creator briefs, TikTok campaign setup, or TikTok performance exports.
-argument-hint: "<goal, product, creator asset, or TikTok export>"
+description: Audit, diagnose, and safely operate connected TikTok Ads accounts through the NotFair MCP. Use for TikTok advertising, Spark Ads, short-form video ads, campaign or ad-group analysis, spend, conversions, targeting, creative, budgets, bids, creator briefs, campaign setup, or approved TikTok Ads changes.
+argument-hint: "<account, campaign, date range, or TikTok Ads goal>"
 ---
 
 # Canonical NotFair workflow

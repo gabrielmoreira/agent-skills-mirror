@@ -4,6 +4,37 @@ Note: Only use **NEW:** for entirely new prompt files, NOT for new additions/sec
 
 ### Claude Code System Prompts Changelog
 
+# [2.1.274](https://github.com/Piebald-AI/claude-code-system-prompts/commit/8d31f14)
+
+_+6,153 tokens_
+
+- **NEW:** Agent Prompts: Claude Test explorer and author — Add the Claude Test plugin's read-only source mapper, barred from credential files and paths above the project, and its background spec-draft author.
+- **NEW:** Data: Chrome browser hints control request — Tells a session which connected Claude in Chrome browser to prefer; hints are session-only and never override the live relay roster.
+- **NEW:** Data: Claude Test spec file format — Documents the Markdown specs in `.claude-test/specs/`: front matter, the three required parts, data-creating specs, and criteria checkable from one end screenshot.
+- **NEW:** Data: Gateway ignored X-Forwarded-For warning — Warns that an untrusted client address made the gateway ignore `X-Forwarded-For`, collapsing sign-in rate limits and audit addresses onto the proxy.
+- **NEW:** Data: Hook mcp_server field — Reports the MCP server behind an `mcp__*` tool and requires trust to key on its source, never its name or tool-name prefix.
+- **NEW:** Data: SDK API error kind field — Documents typed `api_error` kinds so consumers key on the cause, with each kind's meaning for replaying, rewinding, or remedying a request.
+- **NEW:** Data: SDK footer indicator schema — Describes the operator-set status pill delivered on `system/init` and `initialize` so host UIs render what the terminal footer shows.
+- **NEW:** Data: SDK set model system prompt field — Replaces the custom system prompt from the next turn on, leaving sent tool definitions unchanged and requiring non-empty text with no revert form.
+- **NEW:** Skill: Claude Test sign-in — Signs the site's dedicated test member in without the login form, for spec steps that need a signed-in session.
+- **NEW:** System Prompt: Interactive agent intro (short) — Records the default one-line software-engineering intro, now assembled outside the harness prompt rather than inline within it.
+- **NEW:** System Prompt: Project thread in-thread message provenance — A message sent in the project thread answers only what the session sent through the reply tool, so a bare approval clears no block.
+- **NEW:** System Reminder: Background command stopped under memory pressure — Explains that an idle session's background shell was reaped for system memory, not for failing, and must not be restarted unprompted.
+- **NEW:** System Reminders: AGENTS.md project instructions and nested contents — Load AGENTS.md files through the agents-md plugin as project instructions, and attach nested ones to Read results.
+- **NEW:** Tool Description: list_connected_browsers (browser picker guidance) — Asks the user to choose only when several browsers are connected and none is selected, then calls `select_browser` instead of picking one.
+- **REMOVED:** Data: Artifact document quickstart routing — Drops the dedicated document quickstart branch; type discovery guidance still routes documents to an attached first-party connector.
+- **REMOVED:** Tool Description: Claude in Chrome bridge timeout error — Retires the single timeout message; timeouts still report, now branching on whether Chrome may sit on a sleeping remote computer.
+- Agent Prompt: /schedule slash command — Extends the required `{"role": "user", …}` message shape to the `session_request.events[].payload.message` form that list and get return.
+- Agent Prompt: Security monitor for autonomous agent actions and System Prompt: Harness instructions — Add `<pasted_content>` handling: text the user pasted carries intent only where their own words outside the tags ask.
+- System Prompt: Agent Summary Generation — JSON-escapes the previous summary quoted in the reminder instead of wrapping it in bare quotation marks.
+- System Prompt: Project timeline user message provenance — Adds in-thread message guidance and, where the thread carries in-thread messages, restates that Rule 6 reaches no marked message.
+- System Prompts and Reminder: Remote planning and self-hosted runner guidance — Rename "Claude Code on the web" to "Claude Code cloud sessions" across ultraplan, remote plan mode, and runner setup/doctor.
+- Tool Description: Artifact asset read result — Warns that a public artifact created outside the organization may have been written by anyone on the internet.
+- Tool Description: SendMessage cross-session guidance — States that the receiver reads a message literally, so `@path` or `@server:resource` attaches nothing; send the text itself.
+- Tool Description: Skill proposal rendering — Limits improvements to the user's own skills; plugin and built-in skills must be proposed as separately named new skills.
+- Tool Descriptions: Artifact quickstart and type discovery guidance (both wordings) — Drop the conditional AppifactRepl sentence appended to the type guidance for newly created Artifacts.
+- Tool Descriptions and Parameter: Artifact watch lifecycle, app wording, and watch actions — A newer published version starts no turn and sends no notification; Claude re-reads the artifact and merges its edits before republishing.
+
 # [2.1.273](https://github.com/Piebald-AI/claude-code-system-prompts/commit/c10ea52)
 
 _+5,149 tokens_

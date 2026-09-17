@@ -189,6 +189,7 @@ Grep-verified 2026-09-04 (`npm run docs:verify` re-checks every path). This is t
 - **Editing the newest queued message:** `requestEditLastQueuedMessage()`, `editLastQueuedMessage` in `src/renderer/services/editQueuedMessage.ts`
 - **Whether a Force Send control exists at all:** `shouldOfferForceSend(eligibility)`, `getForceSendEligibility()` in `src/renderer/utils/executionQueue.ts`
 - **Model tier / effort level (`'low' | 'medium' | 'high'`):** `resolveTierModel()`, `resolveEffortLevel()` in `src/shared/modelTiers.ts`
+- **Ordering the Auto Run run list from the picker:** `applySelectionOrder()`, `selectFolderFiles()` in `src/renderer/utils/documentSelectionOrder.ts`
 - **Auto Run markers (HITL / halt / model hint):** `scanMaestroMarkers()`, `findPendingHitlGate()` in `src/shared/autorunMarkers.ts`
 - **Fence-aware markdown scanning:** `forEachMarkdownLine()`, `UNCHECKED_TASK_REGEX` in `src/shared/markdownTaskScan.ts`
 - **Encore Feature flags and their defaults:** `DEFAULT_ENCORE_FEATURES`, `resolveEncoreFeatures()` in `src/shared/encoreFeatures.ts`

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `vllm-project/vllm` — 26 default patterns, 6 followed patterns, 21 file(s) materialized.
+Mirror of `vllm-project/vllm` — 26 default patterns, 6 followed patterns, 27 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `vllm-project/vllm` — 26 default patterns, 6 followed patterns, 21 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 6 |
-| Files         | 21 |
+| Files         | 27 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -79,12 +79,18 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 13 | ✓ | [`rust/CLAUDE.md`](rust/CLAUDE.md) |
 | 14 | ✓ | [`rust/src/bench/AGENTS.md`](rust/src/bench/AGENTS.md) |
 | 15 | ✓ | [`rust/src/bench/CLAUDE.md`](rust/src/bench/CLAUDE.md) |
-| 16 | → | [`docs/contributing/editing-agent-instructions.md`](docs/contributing/editing-agent-instructions.md) |
-| 17 | → | [`docs/contributing/incremental_build.md`](docs/contributing/incremental_build.md) |
-| 18 | → | [`docs/contributing/model/tests.md`](docs/contributing/model/tests.md) |
-| 19 | → | [`docs/contributing/vulnerability_management.md`](docs/contributing/vulnerability_management.md) |
-| 20 | → | [`docs/usage/security.md`](docs/usage/security.md) |
-| 21 | → | [`SECURITY.md`](SECURITY.md) |
+| 16 | ✓ | [`vllm/parser/AGENTS.md`](vllm/parser/AGENTS.md) |
+| 17 | ✓ | [`vllm/parser/CLAUDE.md`](vllm/parser/CLAUDE.md) |
+| 18 | ✓ | [`vllm/reasoning/AGENTS.md`](vllm/reasoning/AGENTS.md) |
+| 19 | ✓ | [`vllm/reasoning/CLAUDE.md`](vllm/reasoning/CLAUDE.md) |
+| 20 | ✓ | [`vllm/tool_parsers/AGENTS.md`](vllm/tool_parsers/AGENTS.md) |
+| 21 | ✓ | [`vllm/tool_parsers/CLAUDE.md`](vllm/tool_parsers/CLAUDE.md) |
+| 22 | → | [`docs/contributing/editing-agent-instructions.md`](docs/contributing/editing-agent-instructions.md) |
+| 23 | → | [`docs/contributing/incremental_build.md`](docs/contributing/incremental_build.md) |
+| 24 | → | [`docs/contributing/model/tests.md`](docs/contributing/model/tests.md) |
+| 25 | → | [`docs/contributing/vulnerability_management.md`](docs/contributing/vulnerability_management.md) |
+| 26 | → | [`docs/usage/security.md`](docs/usage/security.md) |
+| 27 | → | [`SECURITY.md`](SECURITY.md) |
 
 ---
 

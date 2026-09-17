@@ -253,6 +253,11 @@ selected host's existing connection; switching the screen's host changes both `u
 installation. A server handler owns an IPC-backed daemon session for the life of its subprocess.
 Use plugin RPC for plugin-specific backend behavior that is not a normal Paseo operation.
 
+Host-targeted clients and discovery are owned by `packages/app/src/plugins/hosts`, with per-installation
+bindings supplied by the bundle loader. Bind the imperative getter to that installation; do not
+resolve ownership through a mutable current-plugin global. Keep observation ownership in this module
+and transport ownership in the app host runtime. See the [public host API contract](../public-docs/plugins/v0.8/reference.md#discover-hosts-and-target-another-host).
+
 Each subprocess gets an exclusively owned `plugin:<id>` session. That identity is reserved from
 normal clients, never resumes another session, and is cleaned immediately on exit without reconnect
 grace. During daemon startup, plugin sessions may connect while application WebSockets remain
@@ -261,7 +266,7 @@ catalog is complete.
 
 When the same plugin contribution exists on multiple hosts, Paseo shows it once in the sidebar and
 adds a host picker to the screen header. The selected host supplies the bundle, RPC transport, and
-query cache. Plugin code cannot address another host.
+query cache. Explicit SDK targets follow the [host API contract](../public-docs/plugins/v0.8/reference.md#discover-hosts-and-target-another-host).
 
 Workspace panels, Command Center items, and client slash commands are client contributions. The
 daemon transports their compiled bundle without interpreting placement or callbacks. Panel props
@@ -278,10 +283,11 @@ when moved between hosts. Explorer configuration can create workspace-context pa
 existing agent-context instances, but it cannot create an agent panel without an agent-aware command.
 
 Command Center callbacks use the selected host's existing `PaseoApi` for normal Paseo operations.
-They use typed plugin RPC only for plugin-specific backend work. Surface and panel props expose
-optional client-owned agent and workspace navigation; its absence is the compatibility gate for
-older clients. Other navigation remains limited to registered global surfaces and workspace panels.
-Plugins do not receive Expo Router or workspace-layout store access.
+They use typed plugin RPC only for plugin-specific backend work. Surface and panel navigation
+belongs to the app; plugins do not receive Expo Router or workspace-layout store access.
+See the public [navigation fields](../public-docs/plugins/v0.8/reference.md#surfaces-and-sidebar-items)
+and [external links and workspace browsers](../public-docs/plugins/v0.8/reference.md#external-links-and-workspace-browsers)
+for the author-facing contract.
 
 ## Lifecycle hooks
 

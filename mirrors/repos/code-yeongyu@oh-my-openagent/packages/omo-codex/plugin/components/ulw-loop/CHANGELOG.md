@@ -2,6 +2,7 @@
 
 ## [0.1.0] - unreleased
 
+- **Fix:** a `goals.json` written outside the commit log (the removed `omo_agent_toolkit` tool path rewrote it wholesale, never stamping `revision`) no longer loses to an older `revisions/` snapshot when it holds goals that snapshot lacks; the cache wins, is stamped with the snapshot's revision, and the next publish folds it into revision N+1 instead of colliding on an existing record. Raw `ledger.jsonl` lines appended after a published revision are attributed to that revision rather than to the pre-store past a later `ledgerResetRevision` discards. Locked reads and every commit now refuse to rewrite `goals.json` while the reconciled ledger names a `goal_added` goal the projection lacks (`ULW_LOOP_PROJECTION_TRUNCATED`, `details.missingGoalIds`) instead of silently truncating the plan (code-yeongyu/oh-my-openagent#8328).
 - Status nextActions and missing-plan recovery now follow the calling surface: omo-senpi teaches the eval SDK methods and current attempt directory without asking for a driver snapshot; LazyCodex retains its existing CLI guidance byte-for-byte.
 
 - Async `.state.lock` holders now keep their file descriptor open and refresh a 30-second lease through it. An expired lease can be reclaimed even while its process remains alive; sync hooks and older lease-less records retain dead-pid-only ownership. Windows filesystems that refuse unlinking an open lock fail closed. Interrupted kernels can recover after lease expiry without deleting a live owner's lock.

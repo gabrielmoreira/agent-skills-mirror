@@ -119,3 +119,31 @@ What would justify revisiting:
 - **A real Muse adapter** — if one registers, its statusline strip (which stays
   inverted) and this display pass need one decision between them; the pass applies to
   raw blocks already, so the strip is the only open half.
+
+## Follow-up — trim Muse row chrome
+
+Muse pads every PTY row to full width and opens content rows with a 2-column gutter
+(prose: grey; emphasized continuations: the running style). On a desktop terminal
+both are invisible structure; on a ~55-column phone each hard row soft-wraps and the
+gutter lands mid-paragraph as a stray indent while the padding becomes blank stub
+lines — the "terminal didn't resize" look. The Muse display pass now strips both per
+row (exact-2-space styled lead, trailing background-less whitespace), so hard breaks
+read exactly like soft wraps. Fills (prompt, diff) keep their padding — only
+background-less spans go — and wider or bare leads stay byte-faithful. Gated to Muse
+panes like the marks: other agents' grammars may depend on exact row text.
+
+## Amendment (2026-09-15) — ground matches the probed reference
+
+The Trail above states the figures at the first ground, `#f5f5f5`; this amendment moves the native
+ground to `#fffbf8` and re-states them.
+
+Herdr 0.9.0's light background, probed live via OSC 11 on a scratch pane
+(`rgb:ffff/fbfb/f8f8`), is `#fffbf8` — 10 steps above the page ground first chosen.
+Page ground compressed Muse's authored fills past visibility (the 236 prompt fill at
+1.08:1, measured; the prompt block melted into the page on the phone). The native
+light ground is now the probed reference, so every tone renders at the contrast Muse
+authored against Herdr 0.9.0's default light background. A Muse pane under tmux, zellij or
+another Herdr theme gets the same ground, which matches its own screen only approximately. Revised native figures: body 11.0,
+secondary 4.2, hints 2.1, near-white mark 19.2, muted 6.4, prompt-fill edge 1.15. The
+whisper seam against the page is deliberate (fidelity beats seamlessness); dark is
+untouched.

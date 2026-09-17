@@ -56,6 +56,7 @@ Pick zero or more, depending on what the user asked for:
 - Text in image, infographic, diagram, multilingual rendering → [text-rendering.md](references/text-rendering.md)
 - Edit existing image (object removal, lighting swap, colorization, restoration, localization) → [editing.md](references/editing.md)
 - Character continuity across multiple images / panels → [characters.md](references/characters.md)
+- **The image must pass as a real photograph** (portrait, reportage, UGC, casting, product-in-hand) — or the user says the result "looks AI", "too glossy", "not like the reference" → [de-slop.md](references/de-slop.md). Model default priors, banned booster words, capture pipeline instead of adjectives, located imperfections.
 - Presentation slides → [slides.md](references/slides.md)
 - Sequential narrative (storyboard, comic, panel sequence) → [storyboards.md](references/storyboards.md)
 - Sketch → final, wireframes, structural input → [structural.md](references/structural.md)
@@ -67,7 +68,7 @@ Pick zero or more, depending on what the user asked for:
   - Fashion editorial campaigns → [patterns/fashion-editorial.md](references/patterns/fashion-editorial.md)
   - Food & beverage advertising → [patterns/food-beverage.md](references/patterns/food-beverage.md)
   - Cinematic portraits → [patterns/portrait-cinema.md](references/patterns/portrait-cinema.md)
-  - Posters & illustration → [patterns/poster-illustration.md](references/patterns/poster-illustration.md)
+  - Posters & illustration → [patterns/poster-illustration.md](references/patterns/poster-illustration.md). Also holds the Style DNA + Reject Checklist method — how to fix a strong visual style in four lines before generating and how to judge the returned image against it. Usable with any pattern in this list, not only posters.
   - Character design (turnarounds, expression sheets, outfit grids) → [patterns/character-design.md](references/patterns/character-design.md)
   - UI mockups & social media formats → [patterns/ui-social.md](references/patterns/ui-social.md)
 

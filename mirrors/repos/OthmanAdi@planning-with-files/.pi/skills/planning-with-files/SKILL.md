@@ -366,7 +366,7 @@ The mode is set by writing a `.mode` file next to the plan (`.planning/<id>/.mod
 
 ### The legacy invariant (promise)
 
-With no `.mode` file and no other v3 marker, the hooks produce byte-identical output to v2.43, including the raw `progress.md` tail and the `===BEGIN PLAN DATA===` / `===END PLAN DATA===` delimiters. Every v3 behavior is additive and opt-in. No existing workflow changes.
+With no `.mode` file and no other v3 marker, plan injection preserves the v2.43 output, including the raw `progress.md` tail and the `===BEGIN PLAN DATA===` / `===END PLAN DATA===` delimiters. Autonomous and gated behavior remains opt-in. Since v3.18.3, completed plans are silent through the shared Stop gate and Codex Stop hook. Explicit `check-complete.sh` or `check-complete.ps1` calls without the gate flag still report completion; incomplete-plan notices and gate decisions are unchanged.
 
 ### What each mode does
 

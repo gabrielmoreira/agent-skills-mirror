@@ -13,6 +13,7 @@ The desktop host for OpenHuman: Tauri v2 + WebView, IPC commands, window managem
 2. **IPC**. Expose an explicit set of Tauri commands (see [Commands](#tauri-ipc-commands-app-src-tauri)).
 3. **Core lifecycle**. Run the core JSON-RPC server as an in-process tokio task (`core_process.rs`) and hand the renderer its URL/bearer via `core_rpc_url` / `core_rpc_token`.
 4. **Window + tray**. Desktop window behavior (main, mascot, notch, overlay windows) and system tray (see `lib.rs`).
+5. **Session ownership**. Log the user in and keep the current user fresh (`session/`, backed by `crates/openhuman-session`): exchange the login token, validate the JWT against `GET /auth/me`, cache `/auth/me`, and hand the resulting credential to the core with `auth.set_credential`. The core never talks to the backend's auth endpoints itself.
 
 ## Core process model
 
@@ -56,6 +57,7 @@ crates/openhuman-app/src/
 ├── workspace_paths.rs      # Safe workspace-relative file open/reveal/preview
 ├── app_update.rs           # Updater support (commands live in lib.rs)
 ├── loopback_oauth.rs       # Localhost OAuth redirect listener
+├── session/                # Session owner: auth_* commands over openhuman-session
 ├── claude_code.rs          # Claude Code login launch
 ├── mcp_commands.rs         # MCP client helpers
 ├── file_logging.rs         # Log file sink + logs-folder commands
@@ -174,6 +176,22 @@ Frontend: **`app/src/services/gatewayService.ts`**, surfaced in Settings → Cor
 | `reset_local_data`                                | Wipe local app data (`local_data_reset.rs`)   |
 | `app_quit` / `restart_app`                        | Quit or relaunch the app                      |
 | `get_active_user_id`                              | Read the active user id                       |
+
+### Session (`session/`)
+
+The shell is the session owner on the desktop: it talks to the TinyHumans backend's auth endpoints so the core never has to. `openhuman-session` does the work; the shell adds the link to the core (`HttpCoreLink`, the same `(url, token)` the renderer uses, so a gateway switch is followed) and these commands. Errors carry a stable `PREFIX:` (`REJECTED`, `EXPIRED`, `TRANSIENT`, `CONSUME_FAILED`, `USER_ID_UNAVAILABLE`, `CORE`) the renderer classifies on.
+
+| Command                 | Purpose                                                                                                                        |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| `auth_login_with_token` | Exchange a one-time login token (`POST /auth/login-token/consume`), validate the JWT (`GET /auth/me`), install it in the core |
+| `auth_store_session`    | Install a JWT the renderer already holds (validated first) or the offline local token (stored as-is with its user)            |
+| `auth_logout`           | Clear the session credential in the core                                                                                       |
+| `auth_state`            | The core's credential state plus the cached current user                                                                       |
+| `auth_current_user`     | The current user from the `/auth/me` cache (5 s TTL, stale-while-revalidate, backoff); `force` bypasses the cache             |
+
+Events: `auth://changed` (credential or current user changed; payload `SessionState`) and `auth://expired` (the backend rejected the stored credential and it has been cleared; payload `{ source }`). `app/src/services/session/shellSessionEvents.ts` bridges them into the window events `CoreStateProvider` already handles.
+
+A JWT accepted while the backend is unreachable (live `exp`, subject claim) is installed with a `pendingBackendValidation` placeholder user and revalidated in the background; a rejected JWT is never installed. In cloud mode the renderer targets a remote core the shell does not know about, so `app/src/services/session/sessionOwner.ts` runs a thin browser equivalent there (and in the browser build).
 
 ### Updates
 

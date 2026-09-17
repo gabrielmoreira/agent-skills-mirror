@@ -405,24 +405,39 @@ Symptom: OAuth in the browser completes ("close this and return to the app"),
 but the desktop then shows a sign-in error — while the **same** account signs in
 fine on the local (embedded) runtime (issue #3025).
 
-Root cause is almost always the **remote** core, not the desktop. `auth_store_session`
-makes the core validate the fresh session token against the backend
-(`GET /auth/me`) before persisting it; on a cloud runtime that call runs on your
-server, so it fails if the remote core can't reach/authenticate the backend:
+The desktop shell validates the fresh session token against the backend
+(`GET /auth/me`) itself and only then hands the credential to the core
+(`auth.set_credential`). On a cloud runtime that handoff travels to your
+server, so the usual causes are:
 
-- **`BACKEND_URL` unset or wrong.** It is required (see the env table above) and
-  must be `https://api.tinyhumans.ai` for prod (or the staging URL). A missing
-  value is the most common cause — one reporter's failure was exactly this.
-- **Backend unreachable from the server** (egress firewall, DNS, TLS interception)
-  → the core sees a gateway/timeout on `/auth/me`.
-- **Outdated core.** Older cores predate `allowPendingBackendValidation` and
-  validate synchronously with no grace; update the server to a current release.
-- **Wrong RPC token.** A token mismatch surfaces as HTTP 401 on `/rpc`; re-paste
-  the token (see "Rotating the bearer token").
+- **Wrong RPC token or URL.** A token mismatch surfaces as HTTP 401 on `/rpc`;
+  re-paste the token (see "Rotating the bearer token") and check the URL.
+- **Outdated core.** Older cores predate `auth.set_credential`; the desktop
+  still sends the legacy `auth_store_session` name through an alias, but a
+  core older than that alias rejects the call. Update the server to a current
+  release.
+- **`BACKEND_URL` unset or wrong on the server.** The remote core does not
+  validate the session any more, but every backend call it makes on your
+  behalf (billing, teams, managed inference) still goes there. It must be
+  `https://api.tinyhumans.ai` for prod (or the staging URL).
 
-Check the remote core logs for `Session validation failed (GET /auth/me)` and the
-status/reason. The desktop now reports a cloud-specific, actionable message for
-these instead of a generic "try again" (issue #3025).
+Check the desktop log for the shell's session-owner lines (`[session]`) and
+the remote core log for `[credentials][set-credential]`. The desktop reports a
+cloud-specific, actionable message for these instead of a generic "try again"
+(issue #3025).
+
+### Headless sign-in
+
+A cloud core has no browser to complete OAuth in. Obtain a credential
+elsewhere and hand it to the core at boot:
+
+- `OPENHUMAN_BACKEND_API_KEY=<key>` — a TinyHumans API key (recommended; no
+  user identity, nothing to expire).
+- `OPENHUMAN_BACKEND_SESSION_TOKEN=<jwt>` — a session JWT with a subject claim.
+
+Either installs the credential only when the store has none of that kind; to
+rotate, clear first (`openhuman-core auth clear_credential --kind api-key`).
+The same operation is available over RPC as `openhuman.auth_clear_credential`.
 
 ---
 

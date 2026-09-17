@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `callstackincubator/agent-skills` — 26 default patterns, 2 followed patterns, 126 file(s) materialized.
+Mirror of `callstackincubator/agent-skills` — 26 default patterns, 2 followed patterns, 127 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `callstackincubator/agent-skills` — 26 default patterns, 2 followed 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 2 |
-| Files         | 126 |
+| Files         | 127 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -184,8 +184,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 122 | ✓ | [`skills/upgrading-react-native/references/upgrading-dependencies.md`](skills/upgrading-react-native/references/upgrading-dependencies.md) |
 | 123 | ✓ | [`skills/upgrading-react-native/references/upgrading-react-native.md`](skills/upgrading-react-native/references/upgrading-react-native.md) |
 | 124 | ✓ | [`skills/upgrading-react-native/SKILL.md`](skills/upgrading-react-native/SKILL.md) |
-| 125 | → | [`docs/ai-assistant-integration.md`](docs/ai-assistant-integration.md) |
-| 126 | → | [`docs/skill-conventions.md`](docs/skill-conventions.md) |
+| 125 | ✓ | [`skills/writing-user-docs/SKILL.md`](skills/writing-user-docs/SKILL.md) |
+| 126 | → | [`docs/ai-assistant-integration.md`](docs/ai-assistant-integration.md) |
+| 127 | → | [`docs/skill-conventions.md`](docs/skill-conventions.md) |
 
 ---
 

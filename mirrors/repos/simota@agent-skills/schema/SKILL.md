@@ -81,7 +81,6 @@ Route elsewhere when the task is primarily:
 - Up to 70 % of database performance issues stem from design flaws, not hardware — invest time in modeling before scaling infrastructure.
 - For multi-tenant schemas, include `tenant_id` in every tenant-scoped table **and** in composite foreign keys to prevent cross-tenant data leakage.
 - On PostgreSQL 18, prefer `uuidv7()` for new primary keys — UUIDv7 embeds a millisecond timestamp, preserving global uniqueness while enabling B-tree-friendly chronological ordering (eliminates the random-write amplification of UUIDv4).
-- Author for the executing engine (P1–P11 bind only on Opus 5; P12 generation-wide). See `_common/OPUS_5_AUTHORING.md` (P3, P5 critical for Schema; P2, P1 recommended).
 - Apply `_common/CODE_QUALITY.md` to every code change — the seven axes (SLD solid / SEC secure / RDB readable / MNT maintainable / TST testable / PRF performant / SCL scalable), proportional to the change surface — and emit `CODE_QUALITY_GATE` before declaring done. `SEC: risk` blocks completion.
 
 ## Boundaries
@@ -200,7 +199,7 @@ design · migration · er · normalize · index · rollback · tenant · partiti
 
 Default Recipe: `design`.
 
-Per-Recipe behavior — load each Recipe's `Read First` file at its initial step. Headline rules: **`rollback`** always supplies reverse DDL, dual-write windows, and backfill scripts, and Ask First on any destructive change without a rollback path. **`tenant`** compares all four isolation strategies against tenant count, isolation requirements, and cost; then selects the narrow mode: `isolation|rls|routing|scale` → `tenant-architecture-patterns.md`, `migration` → `tenant-migration.md`, `provisioning` → `tenant-provisioning.md`, `quota` → `tenant-quota-throttling.md`. It covers routing, noisy-neighbor controls, per-tenant backup, lifecycle, and leakage verification without turning application billing logic into schema work. **`audit-log`** is append-only — actor / action / target / before-image / after-image / timestamp / correlation-id, with retention, WORM compliance, and HMAC tamper-evidence; **never UPDATE or DELETE an audit row**. **`event-sourcing`** designs the event store with optimistic concurrency, projections, snapshots, and the outbox pattern. **`soft-delete`** compares `deleted_at` vs status enum vs tombstone, designs partial unique indexes, and closes the GDPR right-to-erasure pathway (soft then hard delete plus audit log). Full notes -> `reference/schema-examples.md`.
+Per-Recipe behavior — load each Recipe's `Read First` file at its initial step. Headline rules: **`rollback`** always supplies reverse DDL, dual-write windows, and backfill scripts, and Ask First on any destructive change without a rollback path. **`tenant`** compares all four isolation strategies against tenant count, isolation requirements, and cost; then selects the narrow mode: `isolation|rls|routing|scale` → `reference/multi-tenant-patterns.md`, `migration` → `tenant-migration.md`, `provisioning` → `tenant-provisioning.md`, `quota` → `tenant-quota-throttling.md`. It covers routing, noisy-neighbor controls, per-tenant backup, lifecycle, and leakage verification without turning application billing logic into schema work. **`audit-log`** is append-only — actor / action / target / before-image / after-image / timestamp / correlation-id, with retention, WORM compliance, and HMAC tamper-evidence; **never UPDATE or DELETE an audit row**. **`event-sourcing`** designs the event store with optimistic concurrency, projections, snapshots, and the outbox pattern. **`soft-delete`** compares `deleted_at` vs status enum vs tombstone, designs partial unique indexes, and closes the GDPR right-to-erasure pathway (soft then hard delete plus audit log). Full notes -> `reference/schema-examples.md`.
 
 ## Subcommand Dispatch
 
@@ -272,7 +271,7 @@ Schema receives data requirements and architectural context from upstream agents
 
 ## AUTORUN Support
 
-See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling). Schema-specific `_STEP_COMPLETE.Output` schema lives in `reference/autorun-schema.md`.
+Emit `_STEP_COMPLETE` using `_common/AUTORUN.md` § Default Completion Schema; no skill-specific extension is required.
 
 ## Nexus Hub Mode
 

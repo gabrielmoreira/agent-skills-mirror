@@ -117,6 +117,15 @@ If a prerequisite is missing, guide the user through setup ([references/prerequi
     declaration, condition, or closing brace merely as visual context. Put
     context in the explanatory prose; keep the apply block to the smallest
     independently valid replacement.
+24. **Reject suggestions on mixed-line-ending blobs.** Run
+    `scripts/Test-SuggestionLineEndings.ps1` against the exact pinned upstream
+    head and every suggestion target path. Record the result under
+    `internalEvidence.validation.lineEndingSafety`. If any raw blob mixes LF,
+    CRLF, or lone CR endings, do not emit an apply-ready suggestion even when
+    the BOM is unchanged and the local candidate builds. GitHub's server-side
+    Apply suggestion can rewrite every line to the `.gitattributes` checkout
+    EOL; use exact inline prose or an implementation-ready companion comment
+    instead.
 
 ## Phase 0: Context & Process Review
 
@@ -172,6 +181,7 @@ Auto-detect these at the start of each session with [scripts/Get-ForkConfig.ps1]
 | [Get-UnresolvedCopilotThreads.ps1](./scripts/Get-UnresolvedCopilotThreads.ps1) | Count unresolved Copilot threads (stranded-loop / resume check) |
 | [Get-ReviewResumeState.ps1](./scripts/Get-ReviewResumeState.ps1) | Discover durable branches, review PRs, worktrees, rounds, and unresolved threads across sessions |
 | [Sync-ForkMain.ps1](./scripts/Sync-ForkMain.ps1) | Fast-forward the clone's `main` from upstream and push it to the fork |
+| [Test-SuggestionLineEndings.ps1](./scripts/Test-SuggestionLineEndings.ps1) | Reject apply-ready suggestions whose pinned target blobs mix line-ending styles |
 | [Test-ReviewData.ps1](./scripts/Test-ReviewData.ps1) | Validate public payloads, decisions, pinned heads, and current diff ranges |
 | [Publish-ApprovedReview.ps1](./scripts/Publish-ApprovedReview.ps1) | Idempotently stage, verify, and submit approved GitHub reviews |
 | [Show-ReviewDashboard.ps1](./scripts/Show-ReviewDashboard.ps1) | Serve a single-window HTML dashboard for a batch of PRs: live status tracker while reviews run (polls `/status`), then an approval surface capturing per-PR/per-suggestion decisions to a file the agent resumes from |

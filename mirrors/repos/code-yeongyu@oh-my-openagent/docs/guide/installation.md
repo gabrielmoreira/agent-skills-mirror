@@ -883,7 +883,7 @@ Schema autocomplete in your editor:
 
 #### Turning features off
 
-Every agent, hook, skill, MCP, command, and tool is configurable via `disabled_*` arrays:
+Every agent, hook, skill, MCP, command, and tool is configurable via `disabled_*` arrays. `disabled_skills` also works at the shared base of `~/.omo/omo.jsonc` and on OmO Native (`omo`), where `{ "disabled_skills": ["frontend", "visual-qa"] }` removes those skills from the session; user and project `disabled_*` arrays are unioned rather than replaced:
 
 ```jsonc
 {

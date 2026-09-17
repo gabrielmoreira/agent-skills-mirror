@@ -571,7 +571,7 @@ Same-named skill at higher priority overrides lower.
 
 Loaded skill display priority follows this order: `project > user > opencode > builtin/plugin`.
 
-Disable built-in skills via `disabled_skills: ["playwright"]` in config.
+Disable built-in skills via `disabled_skills: ["playwright"]` in config; the same key at the shared base of `~/.omo/omo.jsonc` hides a skill on every harness, including the bundled `frontend` / `visual-qa` skills on OmO Native.
 
 ### Category + Skill Combo Strategies
 

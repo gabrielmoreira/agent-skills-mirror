@@ -30,10 +30,19 @@ review, which is the argument for not making a fourth. `npm run local:gate`
 prints each stage as it starts, so the running command is the other reliable
 answer.
 
-It is a **strict superset** of GitHub CI (which additionally runs `npm install`,
-and runs `coverage` as a parallel job). So the direction that matters holds:
-**passing `local:gate` locally means CI's gates will pass.** The reverse does
-not.
+It runs **every check** GitHub CI runs (which additionally runs `npm install`,
+and runs `coverage` as a parallel job), plus two local-only steps. So the
+direction that matters holds: **passing `local:gate` locally means every check
+CI applies has already passed on your machine** — the strongest predictor of a
+green CI there is here, though not a proof (a different OS, and the bare test
+pass noted below). The reverse does not hold at all.
+
+One difference in *invocations*, not checks: CI runs each client's unit suite
+twice — bare inside `validate`, instrumented inside `coverage` — on two
+parallel runners, while the gate runs it **once**, instrumented (#2341). The
+gate's first stage is `local:validate`, which is `validate` minus each client's
+`test` leg; `npm run validate` itself is unchanged. The reasoning is in
+[`AGENTS.md`](../../../AGENTS.md#mandatory-pre-push-gate).
 
 ⚠️ **There is no `npm run ci`.** The gate was renamed to `local:gate` (#2146)
 precisely because `npm ci` is a built-in that clean-installs from the lockfile
@@ -87,6 +96,22 @@ versions. **Align the versions** — bump it in every install that declares it.
 Do not raise the heap with `--max-old-space-size`; that hides the class rather
 than fixing it.
 
+### `verify:test-timeouts`
+
+A Vitest project resolves to a wall-clock budget nobody stated, or stopped
+loading `vitest.setup.shared.mts`. (A `retry` itself fails at **runtime**, from
+that setup file, with a message naming the test — not here.) The shared values live in `vitest.shared.mts` (`TIMEOUTS` /
+`INTEGRATION_TIMEOUTS`) and every project spreads one of them — so **raise a
+budget there**, not with a per-suite `}, 30_000)` argument, which only moves the
+one site and leaves every future file on the default. A per-suite raise is
+right only where the work is genuinely different (real cross-process lock
+contention, a full OAuth round trip); say so at the site. `retry` stays unset:
+it turns a load-induced red into a silent green on the only pre-push gate here.
+
+A **failing test** is a different problem from a budget — read the failure
+before reaching for a number. An assertion that races is #1596's class and is
+fixed with fake timers or an awaited condition, not with headroom.
+
 ### `lint`
 
 **There is no warning tier** — every `lint` script runs `--max-warnings 0`, so a
@@ -123,9 +148,44 @@ Vite's `fs.allow`. Do a real `npm install` in the worktree.
 
 ### Everything times out at once
 
-⚠️ Two concurrent `npm run local:gate` runs starve each other — ~326 tests time
-out at 5s. Run one at a time. (A `pgrep -f "npm run local:gate"` wait loop
-matches _itself_ and never exits.)
+⚠️ Two `npm run local:gate` runs on one machine starve each other — under four
+worktrees ~326 tests timed out at 5s (#2323), and even two collide
+deterministically on the web smokes' fixed ports. Since #2339 the gate takes a
+**machine-wide lease**, so a second run queues rather than overlapping; if
+everything is still timing out at once, look for what is _not_ the gate: a
+bypassed lease (`INSPECTOR_SKIP_GATE_LEASE` set in that shell), a bare
+`npm run coverage` or `test:storybook` in another session, or Spotlight
+indexing a fresh `node_modules` (a `mdworker` storm after `npm install` in a
+new worktree pushed the load average to 20 for ten minutes). Do not write a
+"wait until the machine is clear" loop — two of them deadlock on each other,
+and a `pgrep -f "npm run local:gate"` loop matches _itself_ and never exits.
+
+### Waiting on the lease
+
+A gate that starts with
+
+```
+gate-lease: pid 12345 in /Users/you/Projects/mcp-inspector-wt-1, running for 2m10s holds the gate lease; waiting …
+```
+
+is queued behind another worktree's gate, and will start the moment it
+releases (it re-checks every 2s and prints `still waiting` once a minute). The
+holder's pid and worktree are in the line, so you can decide whether to wait
+or to stop that gate. A holder that was **killed** — a closed terminal, an
+OOM'd session — stops refreshing its lock and is taken over after 30s; nothing
+needs cleaning up by hand. The one exception is a dead holder's lock directory
+that cannot be removed (a stray file inside it, or permissions): the takeover
+fails, the waiter keeps waiting, and the wait runs to its 45-minute cap naming
+the path — remove that directory by hand. The cap is a total wait budget, counted
+from the waiter's first attempt and not reset as the queue ahead of it drains,
+so a queue of healthy gates deeper than it covers — about ten, at ~4.5 minutes
+each — reaches it too. So the give-up happens against a live gate that has
+hung, a stale lock that would not go away, or a queue that deep; never on its
+own.
+
+`INSPECTOR_SKIP_GATE_LEASE=1 npm run local:gate` runs without the lease. It is
+for a measurement that needs contention; it does not get a result sooner,
+because the queued run finishes before an overlapped one would.
 
 ## Local-only steps
 
@@ -147,6 +207,8 @@ it — the split is the design.
 
 `npm run pack:verify` builds, packs the real tarball, installs it into a clean
 throwaway consumer, and drives the installed `mcp-inspector` bin end to end. It
-needs **network access**, so it is a local/release check and is in neither
-`local:gate` nor CI. Run it when touching packaging (the `files` allowlist,
-a bundler `external` list, anything read from disk at runtime).
+needs **network access**, so it is a local/release check: it is **not** a
+`local:gate` stage, and CI runs it only in the `publish` job on a published
+GitHub Release — never on a push or PR. Run it when touching packaging (the
+`files` allowlist, a bundler `external` list, anything read from disk at
+runtime), and as its own step when cutting a release (the `release` skill).

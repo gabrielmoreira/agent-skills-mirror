@@ -29,7 +29,7 @@ These surfaces are generated command references, not installed Hermes workflow s
 - `planner`: `loop`, `context`, `deep-interview`, `curriculum-design`, `product-brief`, `backend`, `rust`, `codebase-onboarding`, `codegraph-refresh`, `codebase-uml`, `plan`, `ralplan`, `adversarial-consensus`, `refactor-plan`, `decision-prototype`, `product-discovery-validation`
 - `researcher`: `jit-learn`, `research`, `web-research`, `product-docs`, `source-finder`, `research-brief`, `research-department`, `paper-learning`, `best-practice-research`, `autoresearch-goal`, `long-document-reading`
 - `reviewer`: `legal-compliance-review`, `localization-review`, `native-debugging`, `accessibility-audit`, `build-failure-triage`, `production-audit`, `verification-gate`, `security-safety-review`, `ultraqa`, `code-review`, `tech-debt-audit`, `ask`, `application-threat-model`, `failure-signal-audit`
-- `tracker`: `context-budget-review`, `performance-goal`, `model-optimization`, `ultraperf`, `cancel`, `skill`, `doctor`, `capability-toggle`, `running-work-board`, `buzz`, `agent-board`, `toolbelt-readiness`, `harness-session-inventory`, `ops-observability-card`, `achievements`, `agent-ops-review`, `instinct-ledger`, `workflow-learning`, `run-efficiency`
+- `tracker`: `context-budget-review`, `performance-goal`, `model-optimization`, `ultraperf`, `cancel`, `skill`, `doctor`, `capability-toggle`, `running-work-board`, `todo-checklist`, `buzz`, `agent-board`, `toolbelt-readiness`, `harness-session-inventory`, `ops-observability-card`, `achievements`, `agent-ops-review`, `instinct-ledger`, `workflow-learning`, `run-efficiency`
 - Installed workflow skill policies live in generated workflow skills; compatibility/reference-only surface policies live in `docs/WORKFLOWS.md` and are not guaranteed to have `skills/<name>/SKILL.md` files.
 
 ## Automatic Routing Registry
@@ -50,12 +50,12 @@ When Hermes exposes installed skill descriptions to the model, use this registry
 - `research-brief`: `research-brief`, `business-research`, `business research`, `research brief`, `decision brief`, `pricing decision brief`, `decision-ready brief`, `source-backed business research`, `customer feedback trends`
 - `research-department`: `research-department`, `research department`, `research ops department`, `research operations department`, `scout analyst briefer`, `scout analyst brief`, `daily research department`, `competitor research department`, `market research department`
 - `paper-learning`: `paper-learning`, `paper learning`, `paper-explainer`, `paper explainer`, `paper explanation`, `explain this paper`, `explain this arxiv paper`, `paper walkthrough`, `research paper explanation`
-- `strategy-brief`: `strategy-brief`, `strategy brief`, `strategy memo`, `product strategy`, `strategic options`, `decision note`, `leadership strategy`, `next strategy`, `다음 전략`
+- `strategy-brief`: `strategy-brief`, `strategy brief`, `strategy memo`, `product strategy`, `strategic options`, `decision note`, `leadership strategy`, `next strategy`, `capacity planning`
 - `meeting-brief`: `meeting-brief`, `meeting brief`, `meeting agenda`, `agenda`, `discussion prompts`, `decisions needed`, `record template`, `meeting topics`, `회의 주제`
 - `feedback-triage`: `feedback-triage`, `customer-feedback-triage`, `feedback triage`, `customer feedback`, `feedback cluster`, `bug or feature`, `feature request triage`, `payment failure feedback`, `feedback trends`
 - `finance-analysis`: `finance analysis`, `budget variance`, `budget vs actual`, `month-end close`, `재무 분석`, `예산 대비 실적`, `월마감`
 - `people-ops`: `recruiting plan`, `hiring scorecard`, `interview scorecard`, `candidate debrief`, `채용 계획`, `면접 평가표`, `후보자 비교`
-- `legal-compliance-review`: `contract review`, `contract liability clause`, `regulatory analysis`, `compliance review`, `계약서 검토`, `규제 분석`, `컴플라이언스 검토`
+- `legal-compliance-review`: `contract review`, `contract liability clause`, `regulatory analysis`, `compliance review`, `contract redline`, `redline the contract`, `negotiation preparation`, `negotiation strategy`, `clause language`
 - `support-operations`: `support escalation`, `customer support reply`, `ticket triage`, `고객 지원 에스컬레이션`, `고객 답변 초안`, `지원 티켓 분류`
 - `curriculum-design`: `curriculum design`, `learning objectives`, `assessment plan`, `커리큘럼 설계`, `학습 목표`, `평가 계획`
 - `localization-review`: `localization review`, `translation QA`, `locale glossary`, `현지화 검토`, `번역 QA`, `용어집`
@@ -115,6 +115,7 @@ When Hermes exposes installed skill descriptions to the model, use this registry
 - `doctor`: `doctor`, `$doctor`, `diagnose omh`, `installation health`
 - `capability-toggle`: `capability-toggle`, `capability policy`, `disable memory`, `enable memory`, `disable coding orchestration`, `disable a capability family`, `enable a capability family`, `메모리 기능 꺼줘`, `메모리 기능 끄기`
 - `running-work-board`: `running-work-board`, `running work board`, `which units are running`, `what models are running`, `지금 뭐 돌고 있어`, `뭐가 돌고 있어`, `어떤 모델로 돌고 있어`, `실행 중인 작업 보여줘`
+- `todo-checklist`: `todo-checklist`, `$todo`, `plan checklist`, `todo checklist`, `phase checklist`, `declare a plan checklist`, `declare the plan todo`, `show the plan todo`, `clear the plan todo`
 - `model-setup`: `model-setup`, `hermes model setup`, `set up my models`, `set up my model`, `configure my models`, `configure model provider`, `connect my model provider`, `set up model role slots`, `switch my session model`
 - `parallel-tools`: `parallel-tools`, `parallel tools`, `hermes parallel tools setup`, `update hermes for parallel tools`, `check parallel tool support`, `enable parallel tool calls`, `verify parallel tools capability`, `check hermes version for parallel tools`, `헤르메스 업데이트 확인해줘`
 - `websearch-setup`: `websearch-setup`, `web search setup`, `make web search cheaper`, `set up web search`, `configure web search`, `reduce web search cost`, `connect scraper api key`, `set up auxiliary web-extract model`, `웹 검색 싸게 만들어줘`

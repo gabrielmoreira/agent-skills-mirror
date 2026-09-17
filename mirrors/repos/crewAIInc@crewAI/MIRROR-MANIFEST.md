@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `crewAIInc/crewAI` — 26 default patterns, 1 followed patterns, 7 file(s) materialized.
+Mirror of `crewAIInc/crewAI` — 26 default patterns, 1 followed patterns, 9 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `crewAIInc/crewAI` — 26 default patterns, 1 followed patterns, 7 fil
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 7 |
+| Files         | 9 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -61,11 +61,13 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 2 | ✓ | [`lib/cli/src/crewai_cli/templates/AGENTS.md`](lib/cli/src/crewai_cli/templates/AGENTS.md) |
-| 3 | ✓ | [`lib/cli/src/crewai_cli/templates/declarative_flow/AGENTS.md`](lib/cli/src/crewai_cli/templates/declarative_flow/AGENTS.md) |
-| 4 | ✓ | [`lib/crewai/tests/skills/fixtures/invalid-name/SKILL.md`](lib/crewai/tests/skills/fixtures/invalid-name/SKILL.md) |
-| 5 | ✓ | [`lib/crewai/tests/skills/fixtures/minimal-skill/SKILL.md`](lib/crewai/tests/skills/fixtures/minimal-skill/SKILL.md) |
-| 6 | ✓ | [`lib/crewai/tests/skills/fixtures/valid-skill/SKILL.md`](lib/crewai/tests/skills/fixtures/valid-skill/SKILL.md) |
-| 7 | → | [`DOCS_TRANSLATIONS.md`](DOCS_TRANSLATIONS.md) |
+| 3 | ✓ | [`lib/cli/src/crewai_cli/templates/CLAUDE.md`](lib/cli/src/crewai_cli/templates/CLAUDE.md) |
+| 4 | ✓ | [`lib/cli/src/crewai_cli/templates/declarative_flow/AGENTS.md`](lib/cli/src/crewai_cli/templates/declarative_flow/AGENTS.md) |
+| 5 | ✓ | [`lib/cli/src/crewai_cli/templates/GEMINI.md`](lib/cli/src/crewai_cli/templates/GEMINI.md) |
+| 6 | ✓ | [`lib/crewai/tests/skills/fixtures/invalid-name/SKILL.md`](lib/crewai/tests/skills/fixtures/invalid-name/SKILL.md) |
+| 7 | ✓ | [`lib/crewai/tests/skills/fixtures/minimal-skill/SKILL.md`](lib/crewai/tests/skills/fixtures/minimal-skill/SKILL.md) |
+| 8 | ✓ | [`lib/crewai/tests/skills/fixtures/valid-skill/SKILL.md`](lib/crewai/tests/skills/fixtures/valid-skill/SKILL.md) |
+| 9 | → | [`DOCS_TRANSLATIONS.md`](DOCS_TRANSLATIONS.md) |
 
 ---
 

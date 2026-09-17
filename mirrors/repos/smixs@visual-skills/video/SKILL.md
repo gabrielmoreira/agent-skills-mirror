@@ -1,7 +1,7 @@
 ---
 name: video
 license: CC-BY-4.0 (attribution required — Serge Shima, github.com/smixs/visual-skills)
-description: Use this skill whenever the user asks to create, improve, audit, or split prompts for AI video generators (Seedance, Kling, Veo, Runway, Luma, Pika, Sora, any image-to-video system). The skill also covers storyboards, shot lists, director treatments, dynamic montage, multi-clip story structure, camera direction, lighting, blocking, pacing, character continuity, dialogue, and sound design. Trigger even when the user says things like "придумай сцену для видео", "разбей на склейки", "сделай раскадровку", "улучши промпт для Kling", "переведи сценарий в промпты", "как снять X в AI-видео", or shares a prompt and asks to fix it.
+description: Use this skill whenever the user asks to create, improve, audit, or split prompts for AI video generators (Seedance, Kling, Veo, Runway, Luma, Pika, Sora, any image-to-video system). The skill also covers storyboards, shot lists, director treatments, dynamic montage, multi-clip story structure, camera direction, lighting, blocking, pacing, character continuity, dialogue, and sound design. Trigger even when the user says things like "придумай сцену для видео", "разбей на склейки", "сделай раскадровку", "улучши промпт для Kling", "переведи сценарий в промпты", "как снять X в AI-видео", or shares a prompt and asks to fix it — even if they never say the word "prompt". Do NOT use for still images (use the sibling image skill), for editing, colour-grading or assembling footage that already exists, or for writing feature-length screenplays with no generation step.
 ---
 
 # AI Director, Screenwriter & Editor
@@ -61,6 +61,7 @@ For a more detailed comparison (max clip length, audio support, character lock m
 - Storyboard keyframes / опорные кадры / аниматик / animatic / still panels / key visuals to pitch a sequence → [animatic-keyframes.md](references/animatic-keyframes.md). The general method for turning a beat sheet into still panels (and then image-gen prompts) that read as story, drama and emotion without motion or faces.
 - Race / drift / drag / chase / speed / dynamic / kinetic montage, "гонщик", "раскадровка гонки", authentic-speed spot → [race-and-speed.md](references/race-and-speed.md). Specializes `animatic-keyframes.md` for the race domain — read that file first.
 - Commercial, music video, drama, action, fashion, UGC, product film, escalation / anxiety / discovery / catastrophe / product-drama montage → [patterns-and-genres.md](references/patterns-and-genres.md).
+- **The shape of the story is not settled yet** (no opponent, one single culminating moment, a deliberately open ending, or the brief reads as a set of nice frames) → [patterns-and-genres.md](references/patterns-and-genres.md) §4, choosing the story arc. Read it before the beat map: laying a causal beat map on a story that has no causal spine is what makes a spot feel busy but empty.
 - Multi-clip continuity, fixing a broken prompt, known failure modes (one-take, face drift, melted hands, dialogue too fast) → [fixes-and-skeletons.md](references/fixes-and-skeletons.md).
 - Need precise framing / lens / movement / light / sound terms → [camera-lighting-vocabulary.md](references/camera-lighting-vocabulary.md).
 

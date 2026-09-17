@@ -71,7 +71,6 @@ Route elsewhere when the task is primarily:
 - Remediation SLAs by CVSS: Critical (9.0-10.0) → 24h, High (7.0-8.9) → 7 days, Medium (4.0-6.9) → 30 days, Low (0.1-3.9) → 90 days.
 - Reference OWASP Top 10 2025: Broken Access Control (#1), Security Misconfiguration (#2), Software Supply Chain Failures (#3), Injection (#5), Mishandling of Exceptional Conditions (#10, new).
 - Use CVSS v4.0 when tooling supports it, else v3.1 — never mix; v4.0 vectors are incompatible with v3.x parsers and produce incorrect scores.
-- Author for the executing engine (P1–P11 bind only on Opus 5; P12 generation-wide). See `_common/OPUS_5_AUTHORING.md` (P2, P5 critical for Probe; P1 recommended).
 - Pair every confirmed runtime exploit with a paste-ready `## LLM Fix Prompt` block (attack chain, tool evidence, affected endpoints, runtime observation, defensive controls, acceptance criteria, ruled-out alternatives, "what NOT to do"). Verbs and suppression cases -> **LLM Fix Prompt Generation** below; templates -> `reference/fix-prompt-generation.md`, universal rules -> `_common/LLM_PROMPT_GENERATION.md`.
 
 ## Boundaries
@@ -225,7 +224,7 @@ Use `reference/security-report-template.md` as the canonical report skeleton.
 
 ## LLM Fix Prompt Generation
 
-When Probe confirms a runtime exploit, the report ends with a paste-ready `## LLM Fix Prompt` block that drives Builder (and parallel agents) toward a precise, security-correct change. Universal rules -> `_common/LLM_PROMPT_GENERATION.md`; verbs, suppression cases, and worked examples -> `reference/fix-prompt-generation.md`.
+When Probe confirms a runtime exploit, the report ends with a paste-ready `## LLM Fix Prompt` block that drives Builder (and parallel agents) toward a precise, security-correct change. Universal rules -> `_common/LLM_PROMPT_GENERATION.md`; verbs, suppression cases -> `reference/fix-prompt-generation.md`.
 
 | Verb | Use when | Receiving agent |
 |------|----------|----------------|
@@ -240,7 +239,7 @@ Emit with the matching verb on a confirmed runtime exploit; emit `INVESTIGATE-FU
 
 ## AUTORUN Support
 
-See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling). Probe-specific `_STEP_COMPLETE.Output` schema lives in `reference/autorun-schema.md`.
+Emit `_STEP_COMPLETE` using `_common/AUTORUN.md` § Default Completion Schema; no skill-specific extension is required.
 
 ## Nexus Hub Mode
 
@@ -296,7 +295,6 @@ Follow `_common/GIT_GUIDELINES.md`. Use Conventional Commits such as `feat(secur
 | `reference/llm-agent-security-2026.md` | Target embeds an LLM endpoint, RAG retriever, agentic workflow, or MCP server — OWASP LLM01-LLM10 + Agentic ASI01, MCP checks, Garak/PyRIT/Promptfoo tooling, stochasticity proof. |
 | `_common/LLM_PROMPT_GENERATION.md` | Universal authoring rules, prompt structure, cross-agent verb/suppression principles. |
 | `_common/OPUS_5_AUTHORING.md` | Sizing the DAST report, deciding adaptive thinking depth at VALIDATE, or front-loading scope/authorization at PLAN. Critical for Probe: P2, P5. |
-| `reference/autorun-schema.md` | Emitting the AUTORUN `_STEP_COMPLETE` block — Probe-specific Output/Next schema. |
 
 ## Operational
 

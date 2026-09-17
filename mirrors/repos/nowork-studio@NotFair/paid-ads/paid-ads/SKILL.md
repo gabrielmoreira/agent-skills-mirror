@@ -1,6 +1,6 @@
 ---
 name: paid-ads
-description: Coordinate safe, evidence-based paid-media work across Google Ads, Meta Ads, X Ads, LinkedIn Ads, TikTok, Amazon, and ChatGPT Ads. Use for broad ads questions, multi-channel strategy, budgets, CPA or ROAS, campaign requests, spend, ad performance, or when routing to the right NotFair paid-ads skill.
+description: Coordinate safe, evidence-based paid-media work across Google Ads, Meta Ads, X Ads, LinkedIn Ads, Reddit Ads, TikTok Ads, Amazon, and ChatGPT Ads. Use for broad ads questions, multi-channel strategy, budgets, CPA or ROAS, campaign requests, spend, ad performance, or when routing to the right NotFair paid-ads skill.
 argument-hint: "<goal, platform, or 'review my ads'>"
 ---
 
@@ -17,12 +17,12 @@ Start with the business outcome, not a platform request. Establish the conversio
 | Connect accounts, discover access, or capture workspace context | `/notfair:paid-ads-setup` or `/notfair:paid-ads-integrations` |
 | Audit Google or Meta before making changes | `/notfair:google-ads-audit` or `/notfair:meta-ads-audit` |
 | Operate Google or Meta accounts | `/notfair:google-ads` or `/notfair:meta-ads` |
-| Audit or operate X Ads or LinkedIn Ads | `/notfair:paid-ads-x` or `/notfair:paid-ads-linkedin` |
+| Audit or operate X, LinkedIn, Reddit, or TikTok Ads | `/notfair:paid-ads-x`, `/notfair:paid-ads-linkedin`, `/notfair:paid-ads-reddit`, or `/notfair:paid-ads-tiktok` |
 | Plan a new cross-channel campaign | `/notfair:paid-ads-launch` |
 | Read a weekly/monthly scorecard | `/notfair:paid-ads-review` |
 | Cut waste or reallocate an approved budget | `/notfair:paid-ads-optimize` |
 | Write evidence-backed concepts, copy, or a refresh test | `/notfair:paid-ads-creative` |
-| Plan TikTok, Amazon, or ChatGPT Ads | `/notfair:paid-ads-tiktok`, `/notfair:paid-ads-amazon`, or `/notfair:paid-ads-chatgpt` |
+| Plan Amazon or ChatGPT Ads | `/notfair:paid-ads-amazon` or `/notfair:paid-ads-chatgpt` |
 
 For a single-platform request, route directly rather than duplicating a specialized workflow. Establish that the platform's own verified connector is available before promising an account read or write.
 

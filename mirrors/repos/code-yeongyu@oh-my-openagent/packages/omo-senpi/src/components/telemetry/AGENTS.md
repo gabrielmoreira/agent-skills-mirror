@@ -7,7 +7,7 @@ Senpi telemetry adapter over `@oh-my-opencode/telemetry-core` PostHog primitives
 | Path | Purpose |
 |------|---------|
 | `index.ts` | Legacy daily-active: fires `omo_senpi_daily_active` on `session_start`, once per UTC day per machine, hard `withTimeout` cap at 500 ms (`DEFAULT_TIMEOUT_MS`), failures logged at debug only. State under `<agent-home>/omo-senpi/posthog`. |
-| `product-identity.ts` | `omo-native` product config, PostHog write key constant, `KNOWN_MODELS`/provider allowlists, `OMO_NATIVE_EVENT_SCHEMAS` + property allowlists, salted `hashSessionId` (sha256 over a persisted 32-byte 0600 salt), `maskProviderAndModel`. |
+| `product-identity.ts` | `omo-native` product config, PostHog write key constant, `KNOWN_MODELS`/provider allowlists, salted `hashSessionId` (sha256 over a persisted 32-byte 0600 salt), `maskProviderAndModel`; re-exports the schemas from `event-schemas.ts`. |
 | `omo-native-component.ts` | Composition root: shared transport factory, capture fan-in gated by `isOmoNativeEventName`, wires session/prompt/tools/turns/notice/parallel-summary registrations. Registration order is load-bearing (see parallel-summary). |
 | `omo-native-session.ts` | `session_started` event: reason, os/arch/cpu/memory bucket, provider and model inventory (masked to known lists or `custom`). Also chains the legacy `recordSenpiDailyActive`. |
 | `omo-native-notice.ts` | Once-per-machine `notice-shown` marker + visible one-line disclosure with docs URL and `DO_NOT_TRACK=1` opt-out. |
@@ -19,6 +19,9 @@ Senpi telemetry adapter over `@oh-my-opencode/telemetry-core` PostHog primitives
 | `omo-native-parallel-summary.ts` | `parallelism_summary`, exactly once per session at `session_shutdown`; owns its registration order versus the session client and registry teardown. |
 | `eval-classifier.ts` / `savings-math.ts` | Wave bucketing (`eval_only`/`non_eval`/`mixed`, never folded together) and span-based savings math (modeled vs labeled upper bound, negatives not clamped). |
 | `parallelism-schema.ts` | Privacy schema for `parallelism_summary`, including historical `parallelism_v1` and emitted `parallelism_v2` fixed fields. |
+| `omo-native-kibitzer-summary.ts` | `kibitzer_summary`, exactly once per session at `session_shutdown`, from the memory component's wake/offer observer seam; same registration-order constraint as the parallelism summary. |
+| `kibitzer-schema.ts` | Privacy schema for `kibitzer_summary`: counts, durations and a masked model id; nudge paths and hints never leave the memory component. |
+| `event-schemas.ts` | `OMO_NATIVE_EVENT_SCHEMAS` and the derived per-event allowlists; `product-identity.ts` re-exports them. |
 | `delegation-schema.ts` / `category-config-schema.ts` | Privacy schemas for `delegation_completed` and `category_config`, re-exported into `OMO_NATIVE_EVENT_SCHEMAS`. |
 | `delegation-projection.ts` | Pure `TaskRecord` + terminal edge + steer counts -> `delegation_completed` property bag. Explicit scalar allowlist; every free-text record field is excluded by construction and pinned by an exact-key-set test. |
 | `omo-native-delegation.ts` | Subscribes the task terminal-observer ledger, dedupes on `(task_seq, run_epoch)`, counts `steered`/`steer_queued` jsonl lines for the current epoch, and captures `delegation_completed`. Fire-and-forget, unsubscribes on dispose. |
@@ -30,7 +33,7 @@ Senpi telemetry adapter over `@oh-my-opencode/telemetry-core` PostHog primitives
 ## Event model
 
 - Legacy product: single event `omo_senpi_daily_active`, reason `session_start`. Distinct id is `sha256("omo-senpi:" + hostname)` (telemetry-core `machine-id.ts`); once-per-UTC-day dedupe lives in the state dir.
-- `omo-native` product: `daily_active`, `session_started`, `prompt_submitted`, `turn_completed`, `skill_loaded`, `delegation_started`, `delegation_completed`, `category_config`, `feature_used`, `parallelism_summary`. Every event is schema-declared from `product-identity.ts`; properties outside the allowlist do not ship. Session ids are salted sha256 hashes, salt local to the machine.
+- `omo-native` product: `daily_active`, `session_started`, `prompt_submitted`, `turn_completed`, `skill_loaded`, `delegation_started`, `delegation_completed`, `category_config`, `feature_used`, `parallelism_summary`, `kibitzer_summary`. Every event is schema-declared from `product-identity.ts`; properties outside the allowlist do not ship. Session ids are salted sha256 hashes, salt local to the machine.
 - `parallelism_summary` remains one event per session. V2 adds eval event-bus availability, accepted/rejected execution counts, nested status/duration totals, outer eval wrapper counts, and mixed-wave direct counts. Existing non-eval wave and savings formulas are unchanged.
 - Free-form strings are masked to closed vocabularies: unknown providers/models/skills/agents become `custom` or are dropped. Numeric properties are bucketed where cardinality matters.
 
@@ -56,7 +59,8 @@ Senpi telemetry adapter over `@oh-my-opencode/telemetry-core` PostHog primitives
 
 ## Anti-patterns
 
-- Do not emit per-turn variants of session-scoped events (`parallelism_summary` is once per session by design).
+- Do not emit per-turn variants of session-scoped events (`parallelism_summary` and `kibitzer_summary` are once per session by design).
+- Do not add a nudge path, hint or memory excerpt to `kibitzer_summary`; the observer seam carries counts only so that stays impossible by construction.
 - Do not fold `mixed` waves into `non_eval` or clamp negative savings; both hide measurement anomalies.
 - Do not add eval-internal calls to top-level waves or infer nested concurrency/savings from aggregate duration sums; the producer event does not carry the required interval graph.
 - Do not add properties outside the declared schema, log raw session ids, or widen the timeout so telemetry can delay `session_start`.

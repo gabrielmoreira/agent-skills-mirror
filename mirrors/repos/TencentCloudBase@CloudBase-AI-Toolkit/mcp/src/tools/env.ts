@@ -1539,7 +1539,7 @@ async function enrichEnvInfoWithMissingFields(
 }
 
 /**
- * Project gateway Route.Enable onto envQuery(info) without mutating StaticDomain.
+ * Project gateway Route.Enable onto queryEnv(info) without mutating StaticDomain.
  *
  * StaticStorages[].StaticDomain stays the cloud-API nominal hostname.
  * Sibling field staticDomainRouteEnabled (and EnvInfo-level mirrors for the
@@ -2225,7 +2225,7 @@ export function registerEnvTools(server: ExtendedMcpServer) {
         readOnlyHint: false,
         destructiveHint: false,
         idempotentHint: false,
-        openWorldHint: true,
+        openWorldHint: false,
         category: "env",
       },
     },
@@ -3369,7 +3369,8 @@ export function registerEnvTools(server: ExtendedMcpServer) {
     },
     annotations: {
       readOnlyHint: true,
-      openWorldHint: true,
+      destructiveHint: false,
+      openWorldHint: false,
       category: "env",
     },
   };
@@ -3409,9 +3410,9 @@ export function registerEnvTools(server: ExtendedMcpServer) {
       },
       annotations: {
         readOnlyHint: false,
-        destructiveHint: false, // 注意：delete操作虽然是破坏性的，但这里采用较宽松的标注
+        destructiveHint: true,
         idempotentHint: false,
-        openWorldHint: true,
+        openWorldHint: false,
         category: "env",
       },
     },
@@ -3521,7 +3522,7 @@ export function registerEnvTools(server: ExtendedMcpServer) {
         readOnlyHint: false,
         destructiveHint: true,
         idempotentHint: false,
-        openWorldHint: true,
+        openWorldHint: false,
         category: "env",
       },
     },

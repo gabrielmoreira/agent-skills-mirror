@@ -2,8 +2,9 @@
 
 Use one HTTP server named `NotFair` at `https://notfair.co/api/mcp/notfair`.
 The connection is bound to the NotFair workspace selected during OAuth. Connect
-Google Ads, Meta Ads, X Ads, LinkedIn Ads, Google Search Console, Google Analytics,
-and GoHighLevel inside that workspace; do not add an MCP server per platform.
+Google Ads, Meta Ads, X Ads, LinkedIn Ads, Reddit Ads, TikTok Ads, Google Search Console,
+Google Analytics, WordPress, and GoHighLevel inside that workspace; do not add an MCP
+server per platform.
 
 ## Use the live capability descriptions
 

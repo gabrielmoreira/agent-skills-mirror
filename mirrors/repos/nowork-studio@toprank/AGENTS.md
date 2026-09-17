@@ -12,7 +12,7 @@ If you are an agent and a user mentions Google Ads, Meta Ads, SEO, GEO, or anyth
 2. **Read the named skill's `SKILL.md`** from the path shown.
 3. **Follow the procedure** in that SKILL.md exactly.
 
-Skills under `seo/`, `paid-ads/`, `google-ads/`, `meta-ads/`, `analytics/`, `gemini/`, and `notfair-upgrade-skill/` are **host-agnostic** — they work the same on every supported agent host.
+Skills under `seo/`, `paid-ads/`, `google-ads/`, `meta-ads/`, `analytics/`, `wordpress/`, `gohighlevel/`, `gemini/`, and `notfair-upgrade-skill/` are **host-agnostic** — they work the same on every supported agent host.
 
 ---
 
@@ -39,7 +39,7 @@ Skills under `seo/`, `paid-ads/`, `google-ads/`, `meta-ads/`, `analytics/`, `gem
 | Search Experience Optimization (SXO), CTR + on-page conversion | `sxo` | `seo/sxo/SKILL.md` |
 | SEO drift / regression monitoring, baseline & compare over time | `seo-drift` | `seo/seo-drift/SKILL.md` |
 | Backlink / off-page audit, anchor text, referring domains, disavow | `backlink-audit` | `seo/backlink-audit/SKILL.md` |
-| Connect WordPress, Strapi, Contentful, or Ghost | `setup-cms` | `seo/setup-cms/SKILL.md` |
+| Local Application-Password / `.env.local` CMS setup for SEO scripts (WordPress, Strapi, Contentful, or Ghost) | `setup-cms` | `seo/setup-cms/SKILL.md` |
 
 ## Paid Ads
 
@@ -55,9 +55,22 @@ Skills under `seo/`, `paid-ads/`, `google-ads/`, `meta-ads/`, `analytics/`, `gem
 | Cross-channel copy, creative concepts, fatigue diagnosis, or test briefs | `paid-ads-creative` | `paid-ads/paid-ads-creative/SKILL.md` |
 | X Ads performance, campaigns, line items, targeting, creative, or writes | `paid-ads-x` | `paid-ads/paid-ads-x/SKILL.md` |
 | LinkedIn Ads performance, campaigns, targeting, leads, creative, or writes | `paid-ads-linkedin` | `paid-ads/paid-ads-linkedin/SKILL.md` |
-| TikTok Ads plan, creator brief, or export-based review | `paid-ads-tiktok` | `paid-ads/paid-ads-tiktok/SKILL.md` |
+| Reddit Ads performance, campaigns, ad groups, ads, targeting, audiences, or writes | `paid-ads-reddit` | `paid-ads/paid-ads-reddit/SKILL.md` |
+| TikTok Ads performance, campaigns, creative, targeting, or writes | `paid-ads-tiktok` | `paid-ads/paid-ads-tiktok/SKILL.md` |
 | Amazon Ads plan, ACoS review, ASIN targeting, or export-based review | `paid-ads-amazon` | `paid-ads/paid-ads-amazon/SKILL.md` |
 | ChatGPT Ads experiment plan or verified-export review | `paid-ads-chatgpt` | `paid-ads/paid-ads-chatgpt/SKILL.md` |
+
+## WordPress
+
+| Intent | Skill | Path |
+|---|---|---|
+| Live WordPress content, media, comments, design, settings, plugins, themes, HTML files, or approved site changes through NotFair MCP | `wordpress` | `wordpress/SKILL.md` |
+
+## CRM
+
+| Intent | Skill | Path |
+|---|---|---|
+| GoHighLevel / HighLevel contacts, conversations, opportunities, calendars, pipelines, or approved CRM writes | `gohighlevel` | `gohighlevel/SKILL.md` |
 
 ## Analytics
 
@@ -98,11 +111,11 @@ Skills under `seo/`, `paid-ads/`, `google-ads/`, `meta-ads/`, `analytics/`, `gem
 
 ## External dependencies
 
-- **Universal NotFair MCP** — `https://notfair.co/api/mcp/notfair`, OAuth. The plugin registers this single connection for Google Ads, Meta Ads, X Ads, LinkedIn Ads, Google Search Console, Google Analytics, and GoHighLevel. Read [`docs/mcp-connection.md`](docs/mcp-connection.md) before live work. Use the connected server's current instructions and capability descriptions to select tools and verify workspace/platform access; do not prescribe tool names or call sequences in skills.
+- **Universal NotFair MCP** — `https://notfair.co/api/mcp/notfair`, OAuth. The plugin registers this single connection for Google Ads, Meta Ads, X Ads, LinkedIn Ads, Reddit Ads, TikTok Ads, Google Search Console, Google Analytics, WordPress, and GoHighLevel. Read [`docs/mcp-connection.md`](docs/mcp-connection.md) before live work. Use the connected server's current instructions and capability descriptions to select tools and verify workspace/platform access; do not prescribe tool names or call sequences in skills.
 - **Platform connections** — each live skill still requires its corresponding account or property to be connected inside the selected NotFair workspace. A universal MCP session does not imply that every platform is connected.
 - **Google Gemini API key** — required for `gemini`.
 
-TikTok, Amazon, and ChatGPT Ads skills are planning/review workflows unless the current session exposes a verified connector. They do not imply account or mutation access.
+Amazon and ChatGPT Ads skills are planning/review workflows unless the current session exposes a verified connector. They do not imply account or mutation access. `setup-cms` is local Application-Password / `.env.local` setup for SEO scripts; it is not the NotFair WordPress MCP connector.
 
 Skills check for missing credentials at startup and walk the user through setup. Do not invent credentials or skip skills silently — surface the gap.
 

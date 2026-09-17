@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `tinyhumansai/openhuman` — 26 default patterns, 17 followed patterns, 185 file(s) materialized.
+Mirror of `tinyhumansai/openhuman` — 26 default patterns, 17 followed patterns, 186 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `tinyhumansai/openhuman` — 26 default patterns, 17 followed patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 17 |
-| Files         | 185 |
+| Files         | 186 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -217,49 +217,50 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 140 | ✓ | [`crates/openhuman-core/src/web3/x402/README.md`](crates/openhuman-core/src/web3/x402/README.md) |
 | 141 | ✓ | [`crates/openhuman-embed/README.md`](crates/openhuman-embed/README.md) |
 | 142 | ✓ | [`crates/openhuman-rpc/README.md`](crates/openhuman-rpc/README.md) |
-| 143 | ✓ | [`crates/openhuman-tui/README.md`](crates/openhuman-tui/README.md) |
-| 144 | ✓ | [`docs/README.md`](docs/README.md) |
-| 145 | ✓ | [`fastlane/README.md`](fastlane/README.md) |
-| 146 | ✓ | [`gitbooks/developing/architecture/README.md`](gitbooks/developing/architecture/README.md) |
-| 147 | ✓ | [`gitbooks/developing/README.md`](gitbooks/developing/README.md) |
-| 148 | ✓ | [`gitbooks/features/integrations/README.md`](gitbooks/features/integrations/README.md) |
-| 149 | ✓ | [`gitbooks/features/mascot/README.md`](gitbooks/features/mascot/README.md) |
-| 150 | ✓ | [`gitbooks/features/model-routing/README.md`](gitbooks/features/model-routing/README.md) |
-| 151 | ✓ | [`gitbooks/features/native-tools/README.md`](gitbooks/features/native-tools/README.md) |
-| 152 | ✓ | [`gitbooks/features/obsidian-wiki/README.md`](gitbooks/features/obsidian-wiki/README.md) |
-| 153 | ✓ | [`gitbooks/guides/README.md`](gitbooks/guides/README.md) |
-| 154 | ✓ | [`gitbooks/README.md`](gitbooks/README.md) |
-| 155 | ✓ | [`packages/arch/openhuman-bin/README.md`](packages/arch/openhuman-bin/README.md) |
-| 156 | ✓ | [`packages/tauri-plugin-ptt/README.md`](packages/tauri-plugin-ptt/README.md) |
-| 157 | ✓ | [`scripts/bench/README.md`](scripts/bench/README.md) |
-| 158 | ✓ | [`scripts/ci/README.md`](scripts/ci/README.md) |
-| 159 | ✓ | [`scripts/debug/README.md`](scripts/debug/README.md) |
-| 160 | ✓ | [`scripts/profile/README.md`](scripts/profile/README.md) |
-| 161 | ✓ | [`scripts/rabbit/README.md`](scripts/rabbit/README.md) |
-| 162 | ✓ | [`scripts/README.md`](scripts/README.md) |
-| 163 | ✓ | [`scripts/shortcuts/README.md`](scripts/shortcuts/README.md) |
-| 164 | ✓ | [`scripts/shortcuts/review/README.md`](scripts/shortcuts/review/README.md) |
-| 165 | ✓ | [`scripts/shortcuts/work/README.md`](scripts/shortcuts/work/README.md) |
-| 166 | ✓ | [`scripts/test-planning/README.md`](scripts/test-planning/README.md) |
-| 167 | ✓ | [`tests/fixtures/memory_golden/README.md`](tests/fixtures/memory_golden/README.md) |
-| 168 | ✓ | [`tests/README.md`](tests/README.md) |
-| 169 | → | [`.github/PULL_REQUEST_TEMPLATE.md`](.github/PULL_REQUEST_TEMPLATE.md) |
-| 170 | → | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
-| 171 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 172 | → | [`docs/community/discussions.md`](docs/community/discussions.md) |
-| 173 | → | [`docs/CONTRIBUTING-BEGINNERS.md`](docs/CONTRIBUTING-BEGINNERS.md) |
-| 174 | → | [`docs/SUPPORT.md`](docs/SUPPORT.md) |
-| 175 | → | [`gitbooks/developing/architecture.md`](gitbooks/developing/architecture.md) |
-| 176 | → | [`gitbooks/developing/architecture/agent-harness.md`](gitbooks/developing/architecture/agent-harness.md) |
-| 177 | → | [`gitbooks/developing/architecture/frontend.md`](gitbooks/developing/architecture/frontend.md) |
-| 178 | → | [`gitbooks/developing/architecture/tauri-shell.md`](gitbooks/developing/architecture/tauri-shell.md) |
-| 179 | → | [`gitbooks/developing/building-rust-core.md`](gitbooks/developing/building-rust-core.md) |
-| 180 | → | [`gitbooks/developing/getting-set-up.md`](gitbooks/developing/getting-set-up.md) |
-| 181 | → | [`gitbooks/features/cloud-deploy.md`](gitbooks/features/cloud-deploy.md) |
-| 182 | → | [`gitbooks/features/native-tools/voice.md`](gitbooks/features/native-tools/voice.md) |
-| 183 | → | [`INSTALL.md`](INSTALL.md) |
-| 184 | → | [`README.md`](README.md) |
-| 185 | → | [`SECURITY.md`](SECURITY.md) |
+| 143 | ✓ | [`crates/openhuman-session/README.md`](crates/openhuman-session/README.md) |
+| 144 | ✓ | [`crates/openhuman-tui/README.md`](crates/openhuman-tui/README.md) |
+| 145 | ✓ | [`docs/README.md`](docs/README.md) |
+| 146 | ✓ | [`fastlane/README.md`](fastlane/README.md) |
+| 147 | ✓ | [`gitbooks/developing/architecture/README.md`](gitbooks/developing/architecture/README.md) |
+| 148 | ✓ | [`gitbooks/developing/README.md`](gitbooks/developing/README.md) |
+| 149 | ✓ | [`gitbooks/features/integrations/README.md`](gitbooks/features/integrations/README.md) |
+| 150 | ✓ | [`gitbooks/features/mascot/README.md`](gitbooks/features/mascot/README.md) |
+| 151 | ✓ | [`gitbooks/features/model-routing/README.md`](gitbooks/features/model-routing/README.md) |
+| 152 | ✓ | [`gitbooks/features/native-tools/README.md`](gitbooks/features/native-tools/README.md) |
+| 153 | ✓ | [`gitbooks/features/obsidian-wiki/README.md`](gitbooks/features/obsidian-wiki/README.md) |
+| 154 | ✓ | [`gitbooks/guides/README.md`](gitbooks/guides/README.md) |
+| 155 | ✓ | [`gitbooks/README.md`](gitbooks/README.md) |
+| 156 | ✓ | [`packages/arch/openhuman-bin/README.md`](packages/arch/openhuman-bin/README.md) |
+| 157 | ✓ | [`packages/tauri-plugin-ptt/README.md`](packages/tauri-plugin-ptt/README.md) |
+| 158 | ✓ | [`scripts/bench/README.md`](scripts/bench/README.md) |
+| 159 | ✓ | [`scripts/ci/README.md`](scripts/ci/README.md) |
+| 160 | ✓ | [`scripts/debug/README.md`](scripts/debug/README.md) |
+| 161 | ✓ | [`scripts/profile/README.md`](scripts/profile/README.md) |
+| 162 | ✓ | [`scripts/rabbit/README.md`](scripts/rabbit/README.md) |
+| 163 | ✓ | [`scripts/README.md`](scripts/README.md) |
+| 164 | ✓ | [`scripts/shortcuts/README.md`](scripts/shortcuts/README.md) |
+| 165 | ✓ | [`scripts/shortcuts/review/README.md`](scripts/shortcuts/review/README.md) |
+| 166 | ✓ | [`scripts/shortcuts/work/README.md`](scripts/shortcuts/work/README.md) |
+| 167 | ✓ | [`scripts/test-planning/README.md`](scripts/test-planning/README.md) |
+| 168 | ✓ | [`tests/fixtures/memory_golden/README.md`](tests/fixtures/memory_golden/README.md) |
+| 169 | ✓ | [`tests/README.md`](tests/README.md) |
+| 170 | → | [`.github/PULL_REQUEST_TEMPLATE.md`](.github/PULL_REQUEST_TEMPLATE.md) |
+| 171 | → | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
+| 172 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 173 | → | [`docs/community/discussions.md`](docs/community/discussions.md) |
+| 174 | → | [`docs/CONTRIBUTING-BEGINNERS.md`](docs/CONTRIBUTING-BEGINNERS.md) |
+| 175 | → | [`docs/SUPPORT.md`](docs/SUPPORT.md) |
+| 176 | → | [`gitbooks/developing/architecture.md`](gitbooks/developing/architecture.md) |
+| 177 | → | [`gitbooks/developing/architecture/agent-harness.md`](gitbooks/developing/architecture/agent-harness.md) |
+| 178 | → | [`gitbooks/developing/architecture/frontend.md`](gitbooks/developing/architecture/frontend.md) |
+| 179 | → | [`gitbooks/developing/architecture/tauri-shell.md`](gitbooks/developing/architecture/tauri-shell.md) |
+| 180 | → | [`gitbooks/developing/building-rust-core.md`](gitbooks/developing/building-rust-core.md) |
+| 181 | → | [`gitbooks/developing/getting-set-up.md`](gitbooks/developing/getting-set-up.md) |
+| 182 | → | [`gitbooks/features/cloud-deploy.md`](gitbooks/features/cloud-deploy.md) |
+| 183 | → | [`gitbooks/features/native-tools/voice.md`](gitbooks/features/native-tools/voice.md) |
+| 184 | → | [`INSTALL.md`](INSTALL.md) |
+| 185 | → | [`README.md`](README.md) |
+| 186 | → | [`SECURITY.md`](SECURITY.md) |
 
 ---
 

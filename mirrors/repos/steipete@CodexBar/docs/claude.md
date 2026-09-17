@@ -17,6 +17,8 @@ pending. For the exact current-state parity contract, see
 When an Anthropic Admin API key is configured, Claude can also show organization-level spend/messages/tokens in the
 same inline dashboard pattern used by the OpenAI API provider.
 
+Incomplete proxy records with an explicit null `stop_reason`, positive input, zero output, and no cache counters are excluded from token and cost totals until a completed record arrives. Their day and model stay visible with an **Incomplete** marker and an excluded-request count. Known usage remains a partial subtotal; an incomplete-only period stays unavailable rather than becoming zero. Older caches are rebuilt once to apply this distinction. Missing `stop_reason` alone retains compatibility with older complete logs.
+
 ## Data sources + selection order
 
 ### Default selection (debug menu disabled)
@@ -24,6 +26,9 @@ same inline dashboard pattern used by the OpenAI API provider.
 - App runtime main pipeline: OAuth API → CLI PTY → Web API.
 - CLI runtime main pipeline: Web API → CLI PTY.
 - Explicit picker modes (OAuth/Web/CLI) bypass automatic fallback.
+- Explicit OAuth retains the last successful quota measurement through recognized temporary network failures,
+  including localized DNS/offline errors. Its original timestamp remains visible; authentication rejection still
+  follows the existing invalidation and credential-owner rules.
 - A lower-level direct Claude fetcher still contains a separate `.auto` order. That inconsistency is tracked in
   [docs/refactor/claude-current-baseline.md](refactor/claude-current-baseline.md).
 
@@ -69,6 +74,7 @@ Admin API key setup:
 - For the default CLI profile, expired cached credentials can adopt a changed, fresh CLI Keychain token after file fallback. Existing direct-read consent, prompt policy, cooldown, and noninteractive-read checks still apply. Custom profiles are not recovered from the unscoped global item, and CLI credentials are never rewritten by this synchronization.
 - On Claude Code 2.1.x, `Claude Code-credentials` may contain only MCP server OAuth state (`mcpOAuth`) with no `claudeAiOauth`. CodexBar treats that as an OAuth configuration error, does not run background delegated `claude /status` refresh, and surfaces re-auth guidance. Use Web or CLI usage source, or restore a valid Claude OAuth keychain entry. See #1844.
 - Requires `user:profile` scope (CLI tokens with only `user:inference` cannot call usage).
+- Missing-scope errors require a Claude Code sign-in token with usage access. `claude setup-token` produces a token for model requests and is not a usage-scope recovery step ([Claude Code authentication](https://code.claude.com/docs/en/authentication#generate-a-long-lived-token)). Remove any configured OAuth token override before switching Claude Source to Web/CLI.
 - Endpoints:
   - `GET https://api.anthropic.com/api/oauth/usage`
   - `GET https://api.anthropic.com/api/oauth/profile` → account identity used to verify that optional Web enrichment
@@ -128,6 +134,9 @@ Admin API key setup:
   - `sessionKey` (value prefix `sk-ant-...`).
 - Cached cookies: Keychain cache `com.steipete.codexbar.cache` (account `cookie.claude`, source + timestamp).
   Reused before re-importing from browsers.
+- After replacing an expired cached cookie, failures from the recovered session retain their actual error type,
+  including temporary network failures, server outages, Cloudflare challenges, and cancellation. The original
+  sign-in error is retained only when browser recovery itself fails to find a usable session.
 - API calls (all include `Cookie: sessionKey=<value>`):
   - `GET https://claude.ai/api/organizations` → org UUID.
   - `GET https://claude.ai/api/organizations/{orgId}/usage` → session/weekly/opus.
@@ -291,6 +300,7 @@ Model-scoped weekly-window proof (synthetic data, no real accounts or credential
     single pi-compatible session can contribute to multiple models/days.
   - Matching assistant entry IDs within the same session are counted once across roots; distinct turns are retained.
 - Cache:
+  - GPT usage recorded through Claude Code uses the bundled OpenAI model's long-context boundary (272K for supported models), while retaining catalog rates. Uncached input and cache-read/create tokens all contribute to the prompt length. Saved reports are recalculated after pricing corrections without discarding retained Codex history.
   - Native provider cache: `~/Library/Caches/CodexBar/cost-usage/claude-v6.json`
   - Report memo: `~/Library/Caches/CodexBar/cost-usage/claude-v6.report-memo.json` stores source stamps and the daily report across launches. It is reused only while transcript inventory, cache/pricing artifacts, requested window, and report-semantics revision still match.
   - The Claude/Vertex cache artifact retains source file identities independently of the shared Codex parser fingerprint. Replacing a transcript rebuilds its rows rather than merging an old prefix into a new suffix; genuine appends still use the saved parse offset. Older entries without identity are rebuilt once before reuse, including during the normal refresh debounce.

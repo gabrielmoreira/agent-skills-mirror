@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `dyad-sh/dyad` — 26 default patterns, 30 followed patterns, 59 file(s) materialized.
+Mirror of `dyad-sh/dyad` — 26 default patterns, 31 followed patterns, 61 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `dyad-sh/dyad` — 26 default patterns, 30 followed patterns, 59 file(
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 30 |
-| Files         | 59 |
+| Followed pats | 31 |
+| Files         | 61 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -81,6 +81,7 @@ Mirror of `dyad-sh/dyad` — 26 default patterns, 30 followed patterns, 59 file(
 - `rules/state-machines.md`
 - `rules/windows-spawn.md`
 - `rules/i18n.md`
+- `rules/model-effort-and-catalog.md`
 
 ## File Index
 
@@ -109,44 +110,46 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 19 | ✓ | [`.claude/skills/pr-screencast/SKILL.md`](.claude/skills/pr-screencast/SKILL.md) |
 | 20 | ✓ | [`.claude/skills/promote-beta-to-stable/SKILL.md`](.claude/skills/promote-beta-to-stable/SKILL.md) |
 | 21 | ✓ | [`.claude/skills/remember-learnings/SKILL.md`](.claude/skills/remember-learnings/SKILL.md) |
-| 22 | ✓ | [`.claude/skills/swarm-pr-review/SKILL.md`](.claude/skills/swarm-pr-review/SKILL.md) |
-| 23 | ✓ | [`.claude/skills/swarm-to-plan/SKILL.md`](.claude/skills/swarm-to-plan/SKILL.md) |
-| 24 | ✓ | [`.cursor/rules/ipc.mdc`](.cursor/rules/ipc.mdc) |
-| 25 | ✓ | [`.github/prompts/claude-pr-review.txt`](.github/prompts/claude-pr-review.txt) |
-| 26 | ✓ | [`.github/prompts/claude-triage.txt`](.github/prompts/claude-triage.txt) |
-| 27 | ✓ | [`.github/prompts/codex-pr-review.txt`](.github/prompts/codex-pr-review.txt) |
-| 28 | ✓ | [`.github/prompts/triage-playbook.md`](.github/prompts/triage-playbook.md) |
-| 29 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 30 | → | [`rules/adding-settings.md`](rules/adding-settings.md) |
-| 31 | → | [`rules/app-naming.md`](rules/app-naming.md) |
-| 32 | → | [`rules/app-operation-coordination.md`](rules/app-operation-coordination.md) |
-| 33 | → | [`rules/auto-update.md`](rules/auto-update.md) |
-| 34 | → | [`rules/base-ui-components.md`](rules/base-ui-components.md) |
-| 35 | → | [`rules/chat-mentions.md`](rules/chat-mentions.md) |
-| 36 | → | [`rules/chat-message-indicators.md`](rules/chat-message-indicators.md) |
-| 37 | → | [`rules/chat-modes.md`](rules/chat-modes.md) |
-| 38 | → | [`rules/claude-github-workflows.md`](rules/claude-github-workflows.md) |
-| 39 | → | [`rules/database-drizzle.md`](rules/database-drizzle.md) |
-| 40 | → | [`rules/dyad-errors.md`](rules/dyad-errors.md) |
-| 41 | → | [`rules/e2e-testing.md`](rules/e2e-testing.md) |
-| 42 | → | [`rules/electron-ipc.md`](rules/electron-ipc.md) |
-| 43 | → | [`rules/electron-workers.md`](rules/electron-workers.md) |
-| 44 | → | [`rules/git-workflow.md`](rules/git-workflow.md) |
-| 45 | → | [`rules/hybrid-testing.md`](rules/hybrid-testing.md) |
-| 46 | → | [`rules/i18n.md`](rules/i18n.md) |
-| 47 | → | [`rules/jotai-state.md`](rules/jotai-state.md) |
-| 48 | → | [`rules/jotai-testing.md`](rules/jotai-testing.md) |
-| 49 | → | [`rules/local-agent-tools.md`](rules/local-agent-tools.md) |
-| 50 | → | [`rules/native-modules.md`](rules/native-modules.md) |
-| 51 | → | [`rules/openai-reasoning-models.md`](rules/openai-reasoning-models.md) |
-| 52 | → | [`rules/product-principles.md`](rules/product-principles.md) |
-| 53 | → | [`rules/prompt-guides.md`](rules/prompt-guides.md) |
-| 54 | → | [`rules/safe-storage.md`](rules/safe-storage.md) |
-| 55 | → | [`rules/state-machines.md`](rules/state-machines.md) |
-| 56 | → | [`rules/supabase-functions.md`](rules/supabase-functions.md) |
-| 57 | → | [`rules/typescript-strict-mode.md`](rules/typescript-strict-mode.md) |
-| 58 | → | [`rules/ui-styling.md`](rules/ui-styling.md) |
-| 59 | → | [`rules/windows-spawn.md`](rules/windows-spawn.md) |
+| 22 | ✓ | [`.claude/skills/run-benchmark/SKILL.md`](.claude/skills/run-benchmark/SKILL.md) |
+| 23 | ✓ | [`.claude/skills/swarm-pr-review/SKILL.md`](.claude/skills/swarm-pr-review/SKILL.md) |
+| 24 | ✓ | [`.claude/skills/swarm-to-plan/SKILL.md`](.claude/skills/swarm-to-plan/SKILL.md) |
+| 25 | ✓ | [`.cursor/rules/ipc.mdc`](.cursor/rules/ipc.mdc) |
+| 26 | ✓ | [`.github/prompts/claude-pr-review.txt`](.github/prompts/claude-pr-review.txt) |
+| 27 | ✓ | [`.github/prompts/claude-triage.txt`](.github/prompts/claude-triage.txt) |
+| 28 | ✓ | [`.github/prompts/codex-pr-review.txt`](.github/prompts/codex-pr-review.txt) |
+| 29 | ✓ | [`.github/prompts/triage-playbook.md`](.github/prompts/triage-playbook.md) |
+| 30 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 31 | → | [`rules/adding-settings.md`](rules/adding-settings.md) |
+| 32 | → | [`rules/app-naming.md`](rules/app-naming.md) |
+| 33 | → | [`rules/app-operation-coordination.md`](rules/app-operation-coordination.md) |
+| 34 | → | [`rules/auto-update.md`](rules/auto-update.md) |
+| 35 | → | [`rules/base-ui-components.md`](rules/base-ui-components.md) |
+| 36 | → | [`rules/chat-mentions.md`](rules/chat-mentions.md) |
+| 37 | → | [`rules/chat-message-indicators.md`](rules/chat-message-indicators.md) |
+| 38 | → | [`rules/chat-modes.md`](rules/chat-modes.md) |
+| 39 | → | [`rules/claude-github-workflows.md`](rules/claude-github-workflows.md) |
+| 40 | → | [`rules/database-drizzle.md`](rules/database-drizzle.md) |
+| 41 | → | [`rules/dyad-errors.md`](rules/dyad-errors.md) |
+| 42 | → | [`rules/e2e-testing.md`](rules/e2e-testing.md) |
+| 43 | → | [`rules/electron-ipc.md`](rules/electron-ipc.md) |
+| 44 | → | [`rules/electron-workers.md`](rules/electron-workers.md) |
+| 45 | → | [`rules/git-workflow.md`](rules/git-workflow.md) |
+| 46 | → | [`rules/hybrid-testing.md`](rules/hybrid-testing.md) |
+| 47 | → | [`rules/i18n.md`](rules/i18n.md) |
+| 48 | → | [`rules/jotai-state.md`](rules/jotai-state.md) |
+| 49 | → | [`rules/jotai-testing.md`](rules/jotai-testing.md) |
+| 50 | → | [`rules/local-agent-tools.md`](rules/local-agent-tools.md) |
+| 51 | → | [`rules/model-effort-and-catalog.md`](rules/model-effort-and-catalog.md) |
+| 52 | → | [`rules/native-modules.md`](rules/native-modules.md) |
+| 53 | → | [`rules/openai-reasoning-models.md`](rules/openai-reasoning-models.md) |
+| 54 | → | [`rules/product-principles.md`](rules/product-principles.md) |
+| 55 | → | [`rules/prompt-guides.md`](rules/prompt-guides.md) |
+| 56 | → | [`rules/safe-storage.md`](rules/safe-storage.md) |
+| 57 | → | [`rules/state-machines.md`](rules/state-machines.md) |
+| 58 | → | [`rules/supabase-functions.md`](rules/supabase-functions.md) |
+| 59 | → | [`rules/typescript-strict-mode.md`](rules/typescript-strict-mode.md) |
+| 60 | → | [`rules/ui-styling.md`](rules/ui-styling.md) |
+| 61 | → | [`rules/windows-spawn.md`](rules/windows-spawn.md) |
 
 ---
 

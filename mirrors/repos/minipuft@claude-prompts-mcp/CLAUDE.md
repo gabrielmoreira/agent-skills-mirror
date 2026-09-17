@@ -5,7 +5,7 @@
 ## Core Principles
 
 1. **MCP Tooling Only** -- Prompts, templates, chains flow through MCP tools. Manual edits under `server/prompts/**` forbidden.
-2. **Contract ownership** -- Hand-written schemas under `src/mcp/tools/schemas/` own runtime validation; `tooling/contracts/*.json` own descriptions and parameter metadata generated into `src/mcp/contracts/schemas/_generated/`. Run `npm run generate:contracts`, never edit `_generated/`.
+2. **Contract ownership** -- Hand-written schemas in `src/mcp/tools/schemas/` own runtime validation; `tooling/contracts/*.json` own descriptions/parameter metadata generated into `src/mcp/contracts/schemas/_generated/`. Run `npm run generate:contracts`, never edit `_generated/`. `config.schema.json` <- `ConfigFile` (`generate:config-schema`).
 3. **Transport Parity** -- Runtime changes must work in STDIO and Streamable HTTP. The two differ in instance lifetime, and that difference is load-bearing: STDIO pins one `McpServer` per connection, while HTTP builds a fresh one per request. A change that mutates a registered instance passes STDIO and silently no-ops over HTTP. HTTP+SSE was removed in the SDK v2 upgrade.
 4. **Docs/Code Lockstep** -- Update relevant doc in `docs/` when behavior changes.
 5. **Validation Discipline** -- `npm run typecheck && npm run lint:ratchet && npm run typecheck:tests:ratchet && npm run test:all` minimum. `validate:arch` (module boundaries) is not a separate add-on: it is a member of the `validate:all` suite below, and runs there. **`typecheck:tests:ratchet` is not optional**: `tsconfig.json` excludes `tests/`, so `typecheck` is blind to every call site a signature change breaks, and `validate:all` -- which CI runs whole -- runs the ratchet second. Omitting it locally means CI fails on work that passed every gate you ran. **`test:all`, not `test:ci`**: `test:ci` is an alias for `test:unit` and runs neither `tests/integration` nor `tests/e2e`, while CI runs both as separate jobs -- so its name promises the opposite of what it does. Measured 2026-08-27: a default-deny control landed with the unit suite green, and 20 integration plus 17 e2e failures went unseen for five commits because every local check stopped at `test:ci`. `pre-push` does not run integration or e2e tests -- CI runs them at the PR boundary. `test:all` is the only way to catch this locally before a push.
@@ -102,6 +102,43 @@ and everything else takes the root `.prettierrc.json` (printWidth 80). The root 
 ran on prettier's built-in defaults, so the contract was whatever the installed major version
 happened to do, and an editor plugin resolving its own settings would silently disagree with
 the gate. Verified at the time: adding it reformatted zero files on either side.
+
+## Pull Request Boundary
+
+**`npm run pr:check` is the whole local gate, and it is a subset of CI by construction.**
+
+`PR Conventions` is a required context whose gating steps on a non-bot PR are: two positive
+controls, the body against `.github/pull_request_template.md`, and `commitlint` on the title. Run
+every one of them before `gh pr create`, from the repo root:
+
+```bash
+TITLE="feat(scope): outcome"
+npm run pr:body -- --out /tmp/pr-body.md     # seed it; never author a body from scratch
+$EDITOR /tmp/pr-body.md
+npm run pr:check -- --body-file /tmp/pr-body.md --title "$TITLE"
+```
+
+The template requires `## Demonstration` (consumer-observable before/after, or `n/a: <reason>`), a
+`## How it was verified` TABLE (claim · probe · baseline -> measured · the mutation that fails it --
+a count with no baseline is noise), and `## Notes for Reviewers`, under a 400-word above-the-fold
+budget that fenced blocks, tables and `<details>` do not count against. The `Plan:` footer is the
+ONLY sanctioned plan mention and the gate FAILS while that plan's `status:` is non-final, so a PR
+executing one step of a multi-step plan omits the footer entirely.
+
+Parity is enforced rather than documented: `scripts/pr-check.mjs` names each workflow step it
+mirrors and `server/tests/unit/scripts/pr-check-ci-parity.test.ts` reads `pr-conventions.yml` and
+fails when the two sets diverge. That test exists because the relation had already broken in the
+direction that costs a CI cycle -- `CONTRIBUTING.md` documented only the body check, and the body
+checker states outright that it "does not read the title beyond its type", so following the
+instructions exactly still shipped an unchecked title (#283, `subject-case`, 2026-09-14). A
+hand-written body cost a second run three missing sections and a 488-word fold (#312, 2026-09-16).
+
+**This section is deliberately absent from `PROJECTED_HANDBOOK_SECTIONS`** in
+`scripts/sync-project-guidance.js`. The AGENTS.md projection measured 32,709 of its 32,768-byte
+ceiling before this section existed -- 59 bytes of headroom -- so projecting it would fail
+`guidance:check`. Codex and OpenCode reach the same contract through `CONTRIBUTING.md` §Pull
+Request Process and the usage text `pr-check.mjs` prints when invoked without arguments. Deciding
+what the projection should evict to make room is an owner call, not a silent one.
 
 ## Fleet Standards Upstream (`minipuft/repository-standards`)
 
@@ -200,6 +237,7 @@ system_control → SystemControl Router → 12 action handlers
 | `resource_manager` (prompt)    | `PromptResourceHandler`     | `PromptLifecycleProcessor`, `PromptDiscoveryProcessor`, `PromptVersioningProcessor`                                                                                                                                                                                                           |
 | `resource_manager` (gate)      | `GateToolHandler`           | `GateLifecycleProcessor`, `GateDiscoveryProcessor`, `GateVersioningProcessor`                                                                                                                                                                                                                 |
 | `resource_manager` (framework) | `FrameworkToolHandler`      | `FrameworkLifecycleProcessor`, `FrameworkDiscoveryProcessor`, `FrameworkVersioningProcessor`, `FrameworkValidator`                                                                                                                                                                            |
+| `resource_manager` (category)  | `CategoryToolHandler`       | `CategoryLifecycleProcessor`, `CategoryDiscoveryProcessor`, `CategoryVersioningProcessor`, `CategoryFileWriter`. Its resource is `category.yaml`, NOT the directory of prompts around it, which is why its mutation transaction targets the file and its `delete` leaves every prompt in place |
 | `prompt_engine`                | `PromptExecutor`            | `PipelineBuilder` (factory), `ChainSessionRouter`                                                                                                                                                                                                                                             |
 | `system_control`               | `ConsolidatedSystemControl` | 12 action handlers in `system-control/handlers/` (`analytics`, `changes`, `config`, `execution_history`, `framework`, `gates`, `guide`, `injection`, `maintenance`, `session`, `skills_sync`, `status`) -- `skills_sync` was absent from this list while present on disk, measured 2026-08-25 |
 

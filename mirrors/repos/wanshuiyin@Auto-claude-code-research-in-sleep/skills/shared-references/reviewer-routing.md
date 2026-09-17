@@ -393,7 +393,7 @@ The mainline reviewer contract is `mcp__codex__codex` + `mcp__codex__codex-reply
 
 If Codex MCP is broken in your setup, prefer in order:
 
-1. Fix the MCP registration: `claude mcp add codex -s user -- python3 "$HOME/aris_repo/mcp-servers/codex-exec/server.py"` (codex-cli 0.154 removed `codex mcp-server`; the bridge replaces it on every version), then `/mcp` in-session to (re)connect.
+1. Fix the MCP registration: `claude mcp add codex -s user -- python3 "$HOME/aris_repo/mcp-servers/codex-exec/server.py"` (codex-cli 0.154 removed `codex mcp-server`; the bridge replaces it — verified on 0.153.4 and 0.154.0, needs `codex exec resume`), then `/mcp` in-session to (re)connect.
 2. Codex-CLI-as-executor: use the native mirror pack [`skills/skills-codex/`](../skills-codex/) — designed to run inside Codex CLI without Claude-side MCP.
 3. One-shot `codex exec` only for skills whose review is a single call with no follow-up reply.
 

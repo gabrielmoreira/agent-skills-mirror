@@ -100,18 +100,21 @@ OpenHuman-configured `reqwest::Client` (`x-core-version`, optional
 
 - `authed_json` / `fetch_billing_summary` — send an authenticated request and
   route the result through `finish_authed_json`.
-- Typed route helpers (`fetch_current_user`, `create_channel_link_token`,
+- Typed route helpers (`fetch_profile`, `create_channel_link_token`,
   `list_integrations`, `fetch_integration_tokens_handoff`, `fetch_client_key`,
   `send_channel_*`, `*_channel_thread`, `revoke_integration`) all go through
-  `authed_json`. `consume_login_token` is the exception: it calls the SDK's
-  typed `auth()` API directly.
-- `connect`, `login_url`, `url_for`, `raw_client` — OAuth connect flow and
-  URL helpers for callers that need to drive a non-JSON request (e.g.
-  multipart uploads) without re-implementing TLS/proxy setup.
+  `authed_json`. Every one of them is bearer-only: the core never obtains,
+  exchanges or validates a session — login-token exchange and `/auth/me`
+  validation live in the host's session owner (`crates/openhuman-session`),
+  and `fetch_profile` exists only for channel link-checks that read a
+  connected channel id off the profile.
+- `connect`, `url_for`, `raw_client` — OAuth connect flow and URL helpers for
+  callers that need to drive a non-JSON request (e.g. multipart uploads)
+  without re-implementing TLS/proxy setup.
 - `ConnectResponse`, `IntegrationSummary`, `IntegrationTokensHandoff` — typed
   backend response shapes.
-- `user_id_from_auth_me_payload` / `user_id_from_profile_payload` — pull the
-  user id out of the `/auth/me` envelope variants.
+- `user_id_from_profile_payload` — pull the user id out of the `/auth/me`
+  envelope variants.
 - `decrypt_handoff_blob` — AES-256-GCM decrypt for integration token handoff,
   compatible with the backend's `encryptMessageFromString`.
 
@@ -152,8 +155,10 @@ see [`models/mod.rs`](models/mod.rs) for the full list.
   `crates/openhuman-core/src/api/`.
 - Every TinyHumans backend request must carry a sanitized `x-sdk-name`:
   `BackendOAuthClient`, `IntegrationClient` (except redirected file
-  downloads), `MedullaClient` (including its separate SSE handshake),
-  desktop `GET /auth/me`, and the agent's Langfuse ingestion request.
+  downloads), `MedullaClient` (including its separate SSE handshake), the
+  agent's Langfuse ingestion request, and — outside this crate — the host
+  session owner's `POST /auth/login-token/consume` / `GET /auth/me`
+  (`crates/openhuman-session`, via `ClientHeaders`).
 - Never add `x-sdk-name` to third-party endpoints, MCP servers, BYOK
   inference endpoints, or presigned storage redirects.
 - When auditing hand-built backend requests, grep for

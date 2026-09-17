@@ -77,7 +77,6 @@ Full per-phase required checks: `reference/workflow-detail.md`.
 - Verify row estimate accuracy: planner estimate vs. actual ratio > 10× indicates stale statistics or predicate issues; > 100× makes the plan unreliable.
 - Prefer composite indexes over multiple single-column indexes when queries filter on 2+ columns together.
 - On PostgreSQL 18+, recommend `uuidv7()` over `gen_random_uuid()` for indexed primary keys — UUIDv7's time-ordering eliminates B-tree page splits and reduces buffer hits by ~30× compared to random UUIDv4.
-- Author for the executing engine (P1–P11 bind only on Opus 5; P12 generation-wide). See `_common/OPUS_5_AUTHORING.md` (P3, P5 critical for Tuner; P2, P1 recommended).
 - Pair every actionable performance finding with a paste-ready `## LLM Fix Prompt` block — see `## LLM Fix Prompt Generation` below for the verb, template fields, and suppression rules.
 - Apply `_common/CODE_QUALITY.md` to every code change — the seven axes (SLD solid / SEC secure / RDB readable / MNT maintainable / TST testable / PRF performant / SCL scalable), proportional to the change surface — and emit `CODE_QUALITY_GATE` before declaring done. `SEC: risk` blocks completion.
 
@@ -217,7 +216,7 @@ Mandatory when an actionable finding is identified (suppress for analysis-only /
 
 ## LLM Fix Prompt Generation
 
-Every Tuner performance report for an actionable finding ends with a `## LLM Fix Prompt` block — a paste-ready, self-contained prompt that drives the receiving agent (Builder for query rewrites, Schema for migration coordination on `ADD-INDEX`, Bolt for caching layer on `MITIGATE`) toward a precise, plan-evidence-backed change without manual reformulation. Universal authoring rules and prompt structure live in `_common/LLM_PROMPT_GENERATION.md`; the full verb table, authoring-rule checklist (one verb/finding per prompt, verbatim query + file:line, current/predicted `EXPLAIN (ANALYZE, BUFFERS)`, workload context, `CREATE INDEX CONCURRENTLY` DDL, acceptance criteria, ruled-out alternatives, "what NOT to do"), suppression cases, template fields, and a worked example live in `reference/fix-prompt-generation.md`.
+Every Tuner performance report for an actionable finding ends with a `## LLM Fix Prompt` block — a paste-ready, self-contained prompt that drives the receiving agent (Builder for query rewrites, Schema for migration coordination on `ADD-INDEX`, Bolt for caching layer on `MITIGATE`) toward a precise, plan-evidence-backed change without manual reformulation. Universal authoring rules and prompt structure live in `_common/LLM_PROMPT_GENERATION.md`; the full verb table, authoring-rule checklist (one verb/finding per prompt, verbatim query + file:line, current/predicted `EXPLAIN (ANALYZE, BUFFERS)`, workload context, `CREATE INDEX CONCURRENTLY` DDL, acceptance criteria, ruled-out alternatives, "what NOT to do"), suppression cases, template fields live in `reference/fix-prompt-generation.md`.
 
 Verbs at a glance: `OPTIMIZE-QUERY` (query rewrite → Builder), `ADD-INDEX` (index DDL → Schema → Builder), `BREAKING-OPTIMIZE` (contract-impacting change → Builder + Guardian + Launch), `MIGRATE-WORKLOAD` (structural redesign → Atlas + Builder + Schema), `INVESTIGATE-FURTHER` (plan evidence inconclusive → Beacon or Tuner re-entry), `MITIGATE` (cache/MV/replica while fix pends → Builder + Bolt).
 

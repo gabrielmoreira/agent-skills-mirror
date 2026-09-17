@@ -191,6 +191,19 @@ Rules:
   actually reaches before reaching for the classification list, and delete the
   classification entry when a page later becomes reachable (a reachable page
   still marked exempt is its own failure).
+- Adding a module-level `omh.*` import to a file under `src/plugin_bundle/omh/`.
+  Hermes loads that directory with its own interpreter, which has no reason to
+  have the `omh` package on its path; its memory-provider loader also execs
+  every top-level file eagerly and keeps the half-initialized module in
+  `sys.modules` when one raises. The next lazy import of that module then fails
+  on the NAME, with an `ImportError` carrying the bundle's own dotted path
+  rather than `omh`, so a guard written for `ModuleNotFoundError` with an
+  `omh`-prefixed name check re-raises it — on every tool call (#1623). Either
+  vendor what the module needs into the bundle, or guard the import and report
+  the absence at the feature's own entry point.
+  `tests/test_plugin_bundle_standalone.py` imports every module in that
+  directory with `omh` blocked and derives its subject from the directory, so a
+  new module joins the gate without anyone listing it.
 - Grepping the repo and matching stale strings under `build/lib/` — it is a
   gitignored copy of old sources. Scope searches to `src/`, `tests/`, `docs/`,
   `skills/`.

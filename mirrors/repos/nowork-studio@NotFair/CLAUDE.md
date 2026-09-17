@@ -36,9 +36,9 @@ This code ships to real users. Sycophancy and rubber-stamping cost us credibilit
 ## Repository purpose
 
 - Home of the `notfair` plugin — the public artifact customers install.
-- Contains host-agnostic skills under `paid-ads/`, `google-ads/`, `meta-ads/`, `analytics/`, `seo/`, `gemini/`, and `notfair-upgrade-skill/`.
+- Contains host-agnostic skills under `paid-ads/`, `google-ads/`, `meta-ads/`, `analytics/`, `wordpress/`, `gohighlevel/`, `seo/`, `gemini/`, and `notfair-upgrade-skill/`.
 - Registered via `.claude-plugin/plugin.json` + `.claude-plugin/marketplace.json` (Claude Code), `.codex-plugin/plugin.json` (Codex), and `AGENTS.md` (every host's resolver).
-- Paired with one universal NotFair MCP server for Google, Meta, X, and LinkedIn Ads plus Google Search Console and Google Analytics (OAuth at notfair.co).
+- Paired with one universal NotFair MCP server for Google, Meta, X, LinkedIn, Reddit, and TikTok Ads plus Google Search Console, Google Analytics, WordPress, and GoHighLevel (OAuth at notfair.co).
 
 ## Critical: this ships to users
 
