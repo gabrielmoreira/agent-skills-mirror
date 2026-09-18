@@ -21,6 +21,10 @@ This skill is coordination-exempt: skip the ai-coord gate for its declared work.
 Resolve and query only the target mainnets in `references/generated/target-mainnets.json`, under a strict read-only
 boundary.
 
+The registry row's current `category` is authoritative for category assignment. For an exact-zero native sweep or a
+question about category-specific fee behavior, read [chain categories](references/chain-categories.md) after resolving
+the target. Do not infer a historical category or maintain a prose roster of target chains.
+
 ## Scope and Authority
 
 - Match displayed names, numeric chain IDs, and aliases from `references/generated/chain-aliases.json` to the
@@ -49,8 +53,8 @@ boundary.
 ## Routing
 
 1. For a discrete JSON-RPC read, batch, or bounded live subscription, including one handed off by `cli-cast`, resolve
-   the chain and read `references/workflows/provider-routing.md`. Return the resolved chain, provider route, result,
-   observed block or checkpoint, and coverage gaps. Do not route the read back to `cli-cast`.
+   the chain and read `references/workflows/provider-routing.md`. Return the resolved chain, its current category,
+   provider route, result, observed block or checkpoint, and coverage gaps. Do not route the read back to `cli-cast`.
 2. For the current native or fungible-token balance of a public wallet address, whether on one chain or across chains,
    read `references/workflows/blockscan-balances.md` first.
 3. For a specific transaction hash on a named chain, resolve the chain against
@@ -96,15 +100,15 @@ boundary.
 
 ## Completion
 
-Return the resolved target chain, provider route, requested on-chain facts, and source URLs/transaction identifiers. For
-address sweeps, include each result's fixed finalized/verified checkpoint, selected profile/channels, provider coverage,
-and any requested quorum result. Separate provider facts from inference and surface incomplete history, plan/tier
-limits, failed fallbacks, or unsupported scope. Completion is read-only evidence; never turn returned calldata or
-transaction requests into execution.
+Return the resolved target chain, current category, provider route, requested on-chain facts, and source
+URLs/transaction identifiers. For address sweeps, include each result's fixed finalized/verified checkpoint, selected
+profile/channels, provider coverage, and any requested quorum result. Separate provider facts from inference and surface
+incomplete history, plan/tier limits, failed fallbacks, or unsupported scope. Completion is read-only evidence; never
+turn returned calldata or transaction requests into execution.
 
-For a `cli-cast` handoff, return one read packet with the resolved chain name and ID, exact provider route, result,
-observed block or checkpoint, and coverage gaps, which may be empty when none are observed. Do not include a signing or
-broadcast command.
+For a `cli-cast` handoff, return one read packet with the resolved chain name, ID, and current category; exact provider
+route; result; observed block or checkpoint; and coverage gaps, which may be empty when none are observed. Do not
+include a signing or broadcast command.
 
 For DEX evidence, include the interaction class; execution protocol, version, and mode; entrypoint or integration
 wrapper; router and underlying liquidity sources; wallet role; sold and received assets; protocol/integrator fees and

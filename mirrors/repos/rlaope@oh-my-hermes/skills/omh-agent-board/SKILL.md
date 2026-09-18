@@ -23,6 +23,7 @@ This is a Hermes-native `agent-board` workflow skill.
 - The request is already handled by a narrower explicit skill with stronger evidence.
 - The user asks OMH to secretly run external platforms, connectors, schedulers, file exports, or runtime agents.
 - The only safe answer is to ask for missing authority, credentials, target, or observed evidence first.
+- A multi-lane implementation of an accepted plan is ultrawork, which prepares its durable lanes through this board.
 
 ## Examples
 

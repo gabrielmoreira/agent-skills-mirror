@@ -2,7 +2,7 @@
 
 Generated at: 2026-09-16T16:59:38.000Z
 
-Total skills: 2124
+Total skills: 2126
 
 ## agent-behavior (5)
 
@@ -1606,11 +1606,12 @@ Total skills: 2124
 | `not-human-search-mcp` | Search AI-ready websites, inspect indexed site details, verify MCP endpoints, and discover tools and APIs using the Not Human Search MCP server | safe | https://nothumansearch.ai | mcp, search, ai-discovery, api-discovery, mcp-verification, agent-tools | mcp, search, ai-discovery, api-discovery, mcp-verification, agent-tools, human, ai, websites, inspect, indexed, site |
 | `parallel-search-mcp` | Search the public web and verify sources with Parallel's free Search MCP. Use when the user chooses Parallel or its connected tools for current information a... | safe | self | mcp, web-search, research, citations | mcp, web-search, research, citations, parallel, search, public, web, verify, sources, free, user |
 
-## media (11)
+## media (12)
 
 | Skill | Description | Risk | Source | Tags | Triggers |
 | --- | --- | --- | --- | --- | --- |
 | `atlas-cloud-media` | Generate Atlas Cloud images and videos through its asynchronous media API with schema-first model selection and credential-safe polling. | critical | self | atlas-cloud, image-generation, video-generation, media-api | atlas-cloud, image-generation, video-generation, media-api, atlas, cloud, media, generate, images, videos, through, asynchronous |
+| `beatra-ai-video-studio` | Install and use the official Beatra AI Video Studio package, pinned by digest, for paid text-to-video, image-to-video, and video edit or extend jobs on the h... | critical | beatra-ai/beatra-skills | video-generation, text-to-video, image-to-video, video-editing, mcp, paid-api, beatra | video-generation, text-to-video, image-to-video, video-editing, mcp, paid-api, beatra, ai, video, studio, install, official |
 | `generate-nanobanana` | Generate and edit images/video with Google's Gemini media models (Nano Banana 2/Pro, Gemini Omni Flash), with cost-approval gates, reference-image support, a... | critical | AntonioCardenas/generate-nanobanana | nanobanana, gemini, google-ai-studio, image-generation, video-generation | nanobanana, gemini, google-ai-studio, image-generation, video-generation, generate, edit, images, video, google, media, models |
 | `image-generator` | Generate and edit images using Gemini's Nano Banana Pro model (gemini-3-pro-image-preview). Use this skill when the user asks you to generate images, create ... | safe | dair-ai/dair-academy-plugins | dair-academy, ai, workflow | dair-academy, ai, workflow, image, generator, generate, edit, images, gemini, nano, banana, pro |
 | `md2video-audio` | Convert Markdown documents into narrated MP4 videos with synchronized visuals and voice narration. | safe | 70v-Yoyo/md2video-audio-skill | markdown, video, audio, text-to-speech, marp, presentation | markdown, video, audio, text-to-speech, marp, presentation, md2video, convert, documents, narrated, mp4, videos |
@@ -2144,7 +2145,7 @@ Total skills: 2124
 | --- | --- | --- | --- | --- | --- |
 | `travel-planner` | 旅行/行程规划需求时使用:规划去某地旅行、X天X城、带老人孩子、自驾、假期安排等。产出逐日行程表、预算估算(经济/舒适/奢华三档)、交通住宿建议、景点美食清单。必须先问预算,预算未确认只输出问题清单;事实数据带来源和查询日期。 | safe | saudademjj/luopan | travel, itinerary, planning, trip, chinese | travel, itinerary, planning, trip, chinese, planner |
 
-## uncategorized (333)
+## uncategorized (334)
 
 | Skill | Description | Risk | Source | Tags | Triggers |
 | --- | --- | --- | --- | --- | --- |
@@ -2324,6 +2325,7 @@ Total skills: 2124
 | `mathguard` | Math-heavy escalation for n >= 10^6 — Bloom, HyperLogLog, Count-Min, MinHash/LSH, FFT, JL projection, sweep line. Use when classical O(n log n) is the floor ... | safe | morsechimwai/lemmaly | algorithms, probabilistic-data-structures, approximate-algorithms, bloom-filter, hyperloglog, fft, performance | algorithms, probabilistic-data-structures, approximate-algorithms, bloom-filter, hyperloglog, fft, performance, mathguard, math, heavy, escalation, 10 |
 | `maxia` | Connect to MAXIA AI-to-AI marketplace on Solana. Discover, buy, sell AI services. Earn USDC. 13 MCP tools, A2A protocol, DeFi yields, sentiment analysis, rug... | critical | community | solana, crypto, marketplace, ai-agents, mcp, defi, usdc, web3, a2a | solana, crypto, marketplace, ai-agents, mcp, defi, usdc, web3, a2a, maxia, connect, ai |
 | `mercury-mcp` | Cheatsheet for the Mercury (proton) MCP tools. Use when connected to the Mercury MCP server to look up which mercury_* tool to call for messaging teammates, ... | critical | community | mercury, mcp | mercury, mcp, cheatsheet, proton, connected, server, look, up, which, call, messaging, teammates |
+| `meteora-dlmm-pool-screening` | Screen and rank Meteora DLMM pools for LP quality using public Meteora APIs (fee/TVL, bin step, organic score). Read-only: never deploys, swaps, or signs. | safe | romankurnovskii/etemaro | meteora, dlmm, pool, screening | meteora, dlmm, pool, screening, screen, rank, pools, lp, quality, public, apis, fee |
 | `mmx-cli` | Use mmx to generate text, images, video, speech, and music via the MiniMax AI platform. Use when the user wants to create media content, chat with MiniMax mo... | safe | https://github.com/MiniMax-AI/cli | mmx, cli | mmx, cli, generate, text, images, video, speech, music, via, minimax, ai, platform |
 | `monte-carlo-asset-health` | Check the health of a data table/asset using Monte Carlo. Activates on "how is table X", "check health of X", "is X healthy", "status of X", "check on X tabl... | critical | monte-carlo-data/mc-agent-toolkit | monte, carlo, asset, health | monte, carlo, asset, health, check, data, table, activates, how, healthy, status, any |
 | `monte-carlo-performance-diagnosis` | Diagnoses pipeline performance issues -- slow jobs, expensive queries, latency trends -- using Monte Carlo's cross-platform observability. Uses a tiered inve... | critical | monte-carlo-data/mc-agent-toolkit | monte, carlo, performance, diagnosis | monte, carlo, performance, diagnosis, diagnoses, pipeline, issues, slow, jobs, expensive, queries, latency |

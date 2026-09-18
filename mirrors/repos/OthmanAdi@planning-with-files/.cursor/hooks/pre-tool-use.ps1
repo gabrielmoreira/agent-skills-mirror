@@ -9,11 +9,29 @@ if ($env:PLANNING_DISABLED -eq '1') {
     exit 0
 }
 
-$PlanFile = "task_plan.md"
+# The OEM code page turns the em-dash into "-" and non-ASCII plan text into "?"
+# on both Windows PowerShell 5.1 and pwsh; the plan reaches Cursor as UTF-8.
+# ConstrainedLanguage may refuse the assignment, which only keeps the old bytes.
+try { [Console]::OutputEncoding = [System.Text.Encoding]::UTF8 } catch { }
 
-if (Test-Path $PlanFile) {
-    Get-Content $PlanFile -TotalCount 30 | Write-Host
+# The protocol response is printed from finally: a missing helper or a
+# profile that sets $ErrorActionPreference = 'Stop' must not end the hook
+# without it. This hook never blocks a tool.
+try {
+    . (Join-Path $PSScriptRoot "resolve-plan-context.ps1")
+    $PlanContext = Resolve-CursorPlanContext
+    $PlanFile = if ($PlanContext.Directory) {
+        Join-Path $PlanContext.Directory "task_plan.md"
+    } else {
+        $null
+    }
+
+    if ($PlanFile -and (Test-Path -LiteralPath $PlanFile -PathType Leaf)) {
+        Get-Content -LiteralPath $PlanFile -TotalCount 30 | Write-Host
+    }
+} catch {
+    # A planning error is never a reason to hold a tool.
+} finally {
+    Write-Output '{"decision": "allow"}'
 }
-
-Write-Output '{"decision": "allow"}'
 exit 0

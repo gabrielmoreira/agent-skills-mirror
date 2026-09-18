@@ -19,7 +19,8 @@ missing or disagrees.
 
 **Abort conditions**: A0-T, A1 (`orphan-first`/`roadmap` scope only —
 see A0), A3 (default; see decision tree).
-**Early stop condition**: A0-T, A4, or A4.5 (no claim made — see below).
+**Early stop condition**: A0-T, A1.5, A4, or A4.5 (no claim made — see
+below).
 
 ## Authoring label guard
 
@@ -104,7 +105,7 @@ routing:
      candidates exactly as in the normal roadmap path — no
      stop-without-fallback applies at this filtering step. This
      graph-scoped continuation excludes **A0**'s own A0-O
-     orphan-fallback triggers (a)/(b)/(c) throughout: an empty or
+     orphan-fallback triggers (a)/(b)/(c)/(d) throughout: an empty or
      fully-discarded scoped set ends the run the same way A0-T's other
      failure branches do — report and stop.
    - Rank the survivors down to a single highest-suitability open
@@ -151,7 +152,8 @@ Read the **issue-scope** value from the Project commands table in
   **trigger (a)** (zero candidates reach A3.5: A2 found none, or A3
   filtered them all), **trigger (b)** (candidates reach A3.5 but A4
   Step 1, Step 1.5, or Step 2's floor skip discards every one), or
-  **trigger (c)** (A1 finds no roadmap issues). A0-O runs **at most
+  **trigger (c)** (A1 finds no roadmap issues), or **trigger (d)** (A1.5
+  stop). A0-O runs **at most
   once** per Discover pass as this fallback; once spent, a later A4
   exhaustion reports and stops
   (not an abort) without re-entering A0-O. A non-empty A3.5
@@ -169,8 +171,9 @@ search.
 When A0-O runs as the `roadmap-first` fallback, every exit below that
 would re-enter **A1** or reach the **A3 decision tree** is redirected by
 the invoking trigger instead — (a)/(c) to the A3 decision tree, (b) (A4
-exhaustion) to the A4 **"report and stop"** terminal — since A1 already
-ran and must not be re-entered (no A1 ↔ A0-O or A4 ↔ A0-O loop).
+exhaustion) to the A4 **"report and stop"** terminal, (d) to A1.5's
+report-and-stop — since A1 already ran and must not be re-entered (no
+A1 ↔ A0-O or A4 ↔ A0-O loop).
 
 - If `orphan-first-policy` is `public-disabled`: for a public repository
   (or when visibility cannot be determined), skip A0-O without searching
@@ -236,9 +239,9 @@ abort if no roadmap issue exists. Under `roadmap-first` scope, this is
 **Autopilot cross-roadmap mode (optional, additive).** When several
 roadmaps run in parallel and the active autopilot-suitable work may live
 under **sibling** epics, do not commit to a single umbrella here. Instead,
-enumerate the open execution leaves across **all** open roadmap roots and
-rank them by autopilot-suitability (see A2), then carry the top-ranked
-candidate through the normal A3/A4/A4.5/A5 gates. This is additive: the
+enumerate the open execution leaves across **all** open roadmap roots via
+A2's per-root A1.5 audit, then carry the top-ranked candidate through the
+normal A3/A4/A4.5/A5 gates. This is additive: the
 single-root selection above stays the default; orphan-first filtering
 still applies only to true orphans, since cross-roadmap leaves are
 reached via a parent roadmap's task list and never carry their own
@@ -360,17 +363,20 @@ Report every A2 execution candidate with its provenance paths (e.g.
 references, and unresolvable references before passing to A3.
 
 **Autopilot cross-roadmap union (optional, additive).** When A1 elected
-the cross-roadmap mode, enumerate from **each** open roadmap root and
-take the **union** of open execution leaves, de-duplicating a leaf
-reached from several roots (record every source root as provenance;
-never double-count). Rank by autopilot-suitability **descending**,
-tie-broken by issue number **ascending**, using the same
-scored-vs-unscored floor tie-breaker as A4 Step 2. The
-`discover-roadmap-graph` helper's `--all-roadmaps` mode produces exactly
-this ranked union (see
-[IDD helper script evaluation](../../docs/idd-helper-scripts.md)). The
-score is an advisory ranking hint only — A3/A4/A4.5/A5 still run on the
-selected candidate.
+the cross-roadmap mode, take the de-duplicated **union** of open
+execution leaves from **each** open root (`sourceRoots` provenance).
+`--all-roadmaps` emits only this **raw** ranked union; it does not run
+A1.5. Once per `--all-roadmaps` re-enumeration, audit each root via
+A1.5 **before** adding its leaves (re-enumerate after close/link). Drop
+a root that itself has a blocked-by-human or needs-decision label, or
+whose A1.5 outcome is a non-autonomous-gap; descendant blockers still
+continue to A2. Omit a leaf whose `sourceRoots` are all dropped. Do
+not invoke A0-O / trigger (d) for a dropped root; continue auditing
+remaining roots. Close only after A1.5's written checks, not helper
+`ready: true`. Any other A1.5 outcome that continues to A2 still unions
+that root.
+Then rank as in A4 Step 2. Score is advisory — A3/A4/A4.5/A5 still run
+on the selected candidate.
 
 ## A3 — Filter to ready-to-start
 

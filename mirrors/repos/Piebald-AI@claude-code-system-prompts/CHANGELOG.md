@@ -4,6 +4,32 @@ Note: Only use **NEW:** for entirely new prompt files, NOT for new additions/sec
 
 ### Claude Code System Prompts Changelog
 
+#### [2.1.276](https://github.com/Piebald-AI/claude-code-system-prompts/commit/d76741e)
+
+<sub>_No changes to the system prompts in v2.1.276._</sub>
+
+# [2.1.275](https://github.com/Piebald-AI/claude-code-system-prompts/commit/df21f9c)
+
+_-1,237 tokens_
+
+- **NEW:** Data: MCP server status error_code field — Names the host-fixable reasons a server failed: a rejected claude.ai connector login, a rejected first-party credential, or pending project approval.
+- **NEW:** Data: Turn handoff memory_context field — Hands the client's claude.ai memory snapshot to the worker as an attachment line; a malformed or colliding one is ignored, never refused.
+- **NEW:** System Prompt: Artifact commenter access guidance — The owner, editor or commenter word before a comment's stamp is context for weighing feedback, never a permission.
+- **NEW:** System Reminder: Nested instruction file contents — Frames a nested CLAUDE.md or AGENTS.md found below the session's working directory by path when one is attached.
+- **NEW:** Tool Description: Artifact asset upload guidance — Uploads a local file to an artifact's asset store with `asset: true`, batching several under one approval via `file_paths`.
+- **REMOVED:** System Prompt and Tool Description: REPL — Retires the JavaScript runner that looped, branched and composed tool calls, along with its dense-scripting and batching conventions.
+- **REMOVED:** System Reminders: AGENTS.md project instructions and nested contents — Folded into the type-labeled memory reminder and the new nested instruction-file reminder, which covers CLAUDE.md and AGENTS.md alike.
+- Agent Prompts: Claude Test explorer and author — Bar both the source mapper and the spec-draft author from the Claude Test browser plugin's `claude_test_allow` tool.
+- Data: Claude Code agent proxy troubleshooting guide — JVM builds now use the JDK's own truststore when the system trust install already added the proxy CA, otherwise the generated p12.
+- Data: Claude Code gateway protocol — Adds optional `revocation_endpoint` sign-out, an `email` on the token response confirmed before storing, and immediate re-login on a revoked bearer.
+- Skill: Claude Test sign-in — Signs in once before a run and saves the browser session instead of mid-spec, re-establishing it with `ct-auth.mjs sign-in`; account-needing specs otherwise report blocked.
+- Skill: Update config settings file locations — Documents that `permissions` path rules use `Edit(path)` for every file-writing tool and `Read(path)` for reads, leaving `Write(path)`, `NotebookEdit(path)` and `Glob(path)` unmatched.
+- System Reminder: Memory file contents — Labels each loaded file by type: checked-in project instructions, private project or global instructions, auto-memory, or organization-managed policy.
+- Tool Description: Artifact assets guidance (app wording) — Adds batched `file_paths` asset uploads under one approval, with a text file still uploaded in a call of its own.
+- Tool Descriptions: Artifact action reference (both wordings) and Tool Parameter: Artifact url guidance — A shared artifact can be updated when a read reports "writer" access; cross-organization artifacts may be missing from listings.
+- Tool Descriptions and Skill: Artifact icon guidance (publishing, page implementation, action reference, design skill, document) — Replace the required emoji `favicon` with a required one-word `icon` for the browser-tab icon.
+- Tool Parameters: Artifact supporting files with cross-artifact sources (both wordings) and Tool Description: Artifact assets guidance (app wording) — Drop the same-organization requirement on copied source artifacts; any artifact the person can open qualifies.
+
 # [2.1.274](https://github.com/Piebald-AI/claude-code-system-prompts/commit/8d31f14)
 
 _+6,153 tokens_

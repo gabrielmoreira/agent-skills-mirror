@@ -1,0 +1,4 @@
+interface:
+  display_name: "Leos Six-Department Directing Team Skill v1"
+  short_description: "六角色协同完成导演、表演、群戏、摄影、提示词与连续性审查"
+  default_prompt: "使用 $leos-six-department-directing-team-skill-v1 召集六角色导演组梳理这场戏；等我确认后，再生成 5000 字内的结构化纯文本视频提示词，并让六个角色逐镜审稿。"

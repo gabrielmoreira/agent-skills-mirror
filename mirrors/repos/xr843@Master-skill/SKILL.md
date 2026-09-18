@@ -5,13 +5,11 @@ argument-hint: <法师名称>
 version: 1.0.0
 user-invocable: true
 allowed-tools:
-  - Bash
   - Read
-  - Write
-  - Edit
   - Glob
   - Grep
-  - WebFetch
+  - Bash(python3 ${CLAUDE_SKILL_DIR}/tools/*)
+  - Bash(python3 "${CLAUDE_SKILL_DIR}/tools/*)
 ---
 
 # Master-skill — 佛教法师教学角色生成器
@@ -63,6 +61,10 @@ allowed-tools:
 > 选择哪个模式？读 `references/teaching-modes.md`（含决策树与示例）。
 
 ## 主流程（生成新法师）
+
+### Step 0：检查运行环境
+
+先运行 `python3 "${CLAUDE_SKILL_DIR}/tools/check_deps.py"`。生成器的每个工具启动时都要导入 `requests`、`pyyaml`、`pypinyin`，缺任何一个都会直接报 `ModuleNotFoundError`，连离线步骤也跑不了。退出码非 0 时停下，把它打印的安装方法原样告诉用户（系统 Python 拒绝 pip 时改用虚拟环境）；**不要擅自安装**，那会改动用户的环境。
 
 ### Step 1：信息录入
 

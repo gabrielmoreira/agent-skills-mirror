@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `Unclecheng-li/AI_Animation` — 26 default patterns, 0 followed patterns, 150 file(s) materialized.
+Mirror of `Unclecheng-li/AI_Animation` — 26 default patterns, 0 followed patterns, 159 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Unclecheng-li/AI_Animation` — 26 default patterns, 0 followed patte
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 150 |
+| Files         | 159 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -188,27 +188,36 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 127 | ✓ | [`skills/scholar-notes/references/layouts.md`](skills/scholar-notes/references/layouts.md) |
 | 128 | ✓ | [`skills/scholar-notes/SKILL.md`](skills/scholar-notes/SKILL.md) |
 | 129 | ✓ | [`skills/SKILL_TEMPLATE.md`](skills/SKILL_TEMPLATE.md) |
-| 130 | ✓ | [`skills/video-shot-demos/assets/examples/doubao-paper-detective/doctor_ava.jpg`](skills/video-shot-demos/assets/examples/doubao-paper-detective/doctor_ava.jpg) |
-| 131 | ✓ | [`skills/video-shot-demos/assets/examples/doubao-paper-detective/doubaoicon.png`](skills/video-shot-demos/assets/examples/doubao-paper-detective/doubaoicon.png) |
-| 132 | ✓ | [`skills/video-shot-demos/assets/examples/doubao-paper-detective/index.html`](skills/video-shot-demos/assets/examples/doubao-paper-detective/index.html) |
-| 133 | ✓ | [`skills/video-shot-demos/assets/examples/doubao-paper-detective/papers/p1_evidence.jpg`](skills/video-shot-demos/assets/examples/doubao-paper-detective/papers/p1_evidence.jpg) |
-| 134 | ✓ | [`skills/video-shot-demos/assets/examples/doubao-paper-detective/papers/p1_full.jpg`](skills/video-shot-demos/assets/examples/doubao-paper-detective/papers/p1_full.jpg) |
-| 135 | ✓ | [`skills/video-shot-demos/assets/examples/doubao-paper-detective/papers/p1_read.jpg`](skills/video-shot-demos/assets/examples/doubao-paper-detective/papers/p1_read.jpg) |
-| 136 | ✓ | [`skills/video-shot-demos/assets/examples/doubao-paper-detective/papers/thumb_p1.jpg`](skills/video-shot-demos/assets/examples/doubao-paper-detective/papers/thumb_p1.jpg) |
-| 137 | ✓ | [`skills/video-shot-demos/assets/examples/doubao-paper-detective/papers/thumb_p2.jpg`](skills/video-shot-demos/assets/examples/doubao-paper-detective/papers/thumb_p2.jpg) |
-| 138 | ✓ | [`skills/video-shot-demos/assets/examples/doubao-paper-detective/papers/thumb_p3.jpg`](skills/video-shot-demos/assets/examples/doubao-paper-detective/papers/thumb_p3.jpg) |
-| 139 | ✓ | [`skills/video-shot-demos/assets/examples/glm-5.3-range-test/icons/GLMicon.png`](skills/video-shot-demos/assets/examples/glm-5.3-range-test/icons/GLMicon.png) |
-| 140 | ✓ | [`skills/video-shot-demos/assets/examples/glm-5.3-range-test/icons/GPTicon.png`](skills/video-shot-demos/assets/examples/glm-5.3-range-test/icons/GPTicon.png) |
-| 141 | ✓ | [`skills/video-shot-demos/assets/examples/glm-5.3-range-test/index.html`](skills/video-shot-demos/assets/examples/glm-5.3-range-test/index.html) |
-| 142 | ✓ | [`skills/video-shot-demos/assets/examples/glm-5.3-range-test/reference/0-1-typewriter.html`](skills/video-shot-demos/assets/examples/glm-5.3-range-test/reference/0-1-typewriter.html) |
-| 143 | ✓ | [`skills/video-shot-demos/assets/examples/uu-dsh/index.html`](skills/video-shot-demos/assets/examples/uu-dsh/index.html) |
-| 144 | ✓ | [`skills/video-shot-demos/assets/template.html`](skills/video-shot-demos/assets/template.html) |
-| 145 | ✓ | [`skills/video-shot-demos/README.md`](skills/video-shot-demos/README.md) |
-| 146 | ✓ | [`skills/video-shot-demos/references/character-reactions.md`](skills/video-shot-demos/references/character-reactions.md) |
-| 147 | ✓ | [`skills/video-shot-demos/references/mechanics.md`](skills/video-shot-demos/references/mechanics.md) |
-| 148 | ✓ | [`skills/video-shot-demos/references/style-cards.md`](skills/video-shot-demos/references/style-cards.md) |
-| 149 | ✓ | [`skills/video-shot-demos/scripts/shot.js`](skills/video-shot-demos/scripts/shot.js) |
-| 150 | ✓ | [`skills/video-shot-demos/SKILL.md`](skills/video-shot-demos/SKILL.md) |
+| 130 | ✓ | [`skills/stacked-data-cards/assets/examples/png/muzimi.jpg`](skills/stacked-data-cards/assets/examples/png/muzimi.jpg) |
+| 131 | ✓ | [`skills/stacked-data-cards/assets/examples/png/muzimi2.jpg`](skills/stacked-data-cards/assets/examples/png/muzimi2.jpg) |
+| 132 | ✓ | [`skills/stacked-data-cards/assets/examples/scene-ai-code-security-blue.html`](skills/stacked-data-cards/assets/examples/scene-ai-code-security-blue.html) |
+| 133 | ✓ | [`skills/stacked-data-cards/assets/examples/scene-scaling-law-orange.html`](skills/stacked-data-cards/assets/examples/scene-scaling-law-orange.html) |
+| 134 | ✓ | [`skills/stacked-data-cards/assets/template.html`](skills/stacked-data-cards/assets/template.html) |
+| 135 | ✓ | [`skills/stacked-data-cards/README.md`](skills/stacked-data-cards/README.md) |
+| 136 | ✓ | [`skills/stacked-data-cards/references/components.md`](skills/stacked-data-cards/references/components.md) |
+| 137 | ✓ | [`skills/stacked-data-cards/references/prompts.md`](skills/stacked-data-cards/references/prompts.md) |
+| 138 | ✓ | [`skills/stacked-data-cards/SKILL.md`](skills/stacked-data-cards/SKILL.md) |
+| 139 | ✓ | [`skills/video-shot-demos/assets/examples/doubao-paper-detective/doctor_ava.jpg`](skills/video-shot-demos/assets/examples/doubao-paper-detective/doctor_ava.jpg) |
+| 140 | ✓ | [`skills/video-shot-demos/assets/examples/doubao-paper-detective/doubaoicon.png`](skills/video-shot-demos/assets/examples/doubao-paper-detective/doubaoicon.png) |
+| 141 | ✓ | [`skills/video-shot-demos/assets/examples/doubao-paper-detective/index.html`](skills/video-shot-demos/assets/examples/doubao-paper-detective/index.html) |
+| 142 | ✓ | [`skills/video-shot-demos/assets/examples/doubao-paper-detective/papers/p1_evidence.jpg`](skills/video-shot-demos/assets/examples/doubao-paper-detective/papers/p1_evidence.jpg) |
+| 143 | ✓ | [`skills/video-shot-demos/assets/examples/doubao-paper-detective/papers/p1_full.jpg`](skills/video-shot-demos/assets/examples/doubao-paper-detective/papers/p1_full.jpg) |
+| 144 | ✓ | [`skills/video-shot-demos/assets/examples/doubao-paper-detective/papers/p1_read.jpg`](skills/video-shot-demos/assets/examples/doubao-paper-detective/papers/p1_read.jpg) |
+| 145 | ✓ | [`skills/video-shot-demos/assets/examples/doubao-paper-detective/papers/thumb_p1.jpg`](skills/video-shot-demos/assets/examples/doubao-paper-detective/papers/thumb_p1.jpg) |
+| 146 | ✓ | [`skills/video-shot-demos/assets/examples/doubao-paper-detective/papers/thumb_p2.jpg`](skills/video-shot-demos/assets/examples/doubao-paper-detective/papers/thumb_p2.jpg) |
+| 147 | ✓ | [`skills/video-shot-demos/assets/examples/doubao-paper-detective/papers/thumb_p3.jpg`](skills/video-shot-demos/assets/examples/doubao-paper-detective/papers/thumb_p3.jpg) |
+| 148 | ✓ | [`skills/video-shot-demos/assets/examples/glm-5.3-range-test/icons/GLMicon.png`](skills/video-shot-demos/assets/examples/glm-5.3-range-test/icons/GLMicon.png) |
+| 149 | ✓ | [`skills/video-shot-demos/assets/examples/glm-5.3-range-test/icons/GPTicon.png`](skills/video-shot-demos/assets/examples/glm-5.3-range-test/icons/GPTicon.png) |
+| 150 | ✓ | [`skills/video-shot-demos/assets/examples/glm-5.3-range-test/index.html`](skills/video-shot-demos/assets/examples/glm-5.3-range-test/index.html) |
+| 151 | ✓ | [`skills/video-shot-demos/assets/examples/glm-5.3-range-test/reference/0-1-typewriter.html`](skills/video-shot-demos/assets/examples/glm-5.3-range-test/reference/0-1-typewriter.html) |
+| 152 | ✓ | [`skills/video-shot-demos/assets/examples/uu-dsh/index.html`](skills/video-shot-demos/assets/examples/uu-dsh/index.html) |
+| 153 | ✓ | [`skills/video-shot-demos/assets/template.html`](skills/video-shot-demos/assets/template.html) |
+| 154 | ✓ | [`skills/video-shot-demos/README.md`](skills/video-shot-demos/README.md) |
+| 155 | ✓ | [`skills/video-shot-demos/references/character-reactions.md`](skills/video-shot-demos/references/character-reactions.md) |
+| 156 | ✓ | [`skills/video-shot-demos/references/mechanics.md`](skills/video-shot-demos/references/mechanics.md) |
+| 157 | ✓ | [`skills/video-shot-demos/references/style-cards.md`](skills/video-shot-demos/references/style-cards.md) |
+| 158 | ✓ | [`skills/video-shot-demos/scripts/shot.js`](skills/video-shot-demos/scripts/shot.js) |
+| 159 | ✓ | [`skills/video-shot-demos/SKILL.md`](skills/video-shot-demos/SKILL.md) |
 
 ---
 

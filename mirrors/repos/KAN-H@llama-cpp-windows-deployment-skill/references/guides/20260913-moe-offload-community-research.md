@@ -34,7 +34,7 @@
 1. `--n-cpu-moe N` **不是**移除 `N × 平均值` 的显存 —— 移除的是**前 N 层实际字节数**。
 2. `N × 均值` 的误差可达**几百 MiB**（Q5 末 6 层比中段大 46%）。
 3. **正确做法**：用张量表的**真实累积曲线** `cum(N) = Σ per_layer[0..N-1]`，而不是层数 × 均值。
-   已落地在 `estimate_ncpu_moe()`（`launcher/update_launchers.py`）。
+   已落地在 `estimate_ncpu_moe()`（[`scripts/launcher_gen/update_launchers.py`](../../scripts/launcher_gen/update_launchers.py)）。
 4. 生产上「平均 531 MiB/层」的线性模型仍然好用（误差 <2%），因为扫描区间通常落在均匀段。
 
 **两条独立方法互证**（这条最有价值）：

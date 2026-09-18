@@ -126,6 +126,14 @@ If a prerequisite is missing, guide the user through setup ([references/prerequi
     Apply suggestion can rewrite every line to the `.gitattributes` checkout
     EOL; use exact inline prose or an implementation-ready companion comment
     instead.
+25. **Group coordinated inline suggestions atomically.** When one root-cause
+    fix requires localized edits at multiple current RIGHT-side locations,
+    emit one apply-ready inline item per location with a shared
+    `selectionGroup` containing a safe ID, shared title, `position`, `total`,
+    and `atomic: true`. Number public headings `(1/N)` through `(N/N)`. Every
+    member must be selected, validated, and posted together; partial groups
+    are invalid. Do not downgrade the whole fix to a companion note merely
+    because it spans files, but do not group optional or out-of-diff work.
 
 ## Phase 0: Context & Process Review
 

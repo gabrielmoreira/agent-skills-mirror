@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "bughunter": {
+      "command": "python3",
+      "args": ["mcp/bughunter-mcp/server.py"],
+      "env": {
+        "BBHUNT_MCP_APPROVE": "0"
+      }
+    }
+  }
+}

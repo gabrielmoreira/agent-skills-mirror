@@ -7,6 +7,75 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [5.0.0-beta.72] - 2026-09-18
+
+### Engine: senpi 2026.9.18-2
+
+**omo boots again on Bun 1.3.x.** Every build since beta.69 crashed at startup there with `webidl.util.markAsUncloneable is not a function`, TUI and headless alike. The engine's bundled `undici` creates a `CacheStorage` at module init, and that constructor reaches for `worker_threads.markAsUncloneable`, which Node added in 23 and Bun 1.3 does not have. The bundle prologue now installs a no-op when the runtime lacks it; nothing in the engine ever used `caches`. (senpi [#1806](https://github.com/code-yeongyu/senpi/issues/1806))
+
+**Devin and Cursor login work again.** Both failed with `Cannot find module .../dist/bundle/chunks/devin.js`. The engine reaches each provider's login flow through a relative import the bundler cannot see, so it ships those flows as sibling files next to the chunk that loads them; the Devin and Cursor flows, and their two provider streams, had been left off that list while the other seven providers were on it. They ship now, and the engine's bundle smoke test starts a login for six providers under Node and Bun on every build. (senpi [#1810](https://github.com/code-yeongyu/senpi/issues/1810))
+
+**One command now gets you the shared engine daemon.** `senpi host ensure|status|stop|handoff` reads a launch spec, probes what already serves the socket, and reuses it, starts one, hands off to a newer generation, or refuses with a named reason. Every invocation prints one JSON line and reports the outcome in its exit code, so a terminal, a desktop, and a task runner all reach a daemon the same way instead of each re-implementing the decision. The launch spec is a file, not stdin or argv, because a machine-wide daemon needs an owner to check: it is refused when not owned by the current user, when group- or world-writable, when an extension path escapes the spec directory, or when it sets an environment key outside the allowed set. (senpi [#1812](https://github.com/code-yeongyu/senpi/pull/1812))
+
+**Extensions can import named bindings from CommonJS packages.** `import { Readability } from "@mozilla/readability"` (and `jsdom`, and anything reaching `tldts` through `tough-cookie`) failed to load with `Export named 'X' not found in module 'senpi-extension:...'`, though the same line works in plain Bun and Node. The loader wrapped CommonJS as `default`-only; it now rewrites named, aliased, and namespace imports of a CommonJS target to bind off `module.exports`, which is the semantics CommonJS has anyway. `pi-webfetch` loads. (senpi [#1807](https://github.com/code-yeongyu/senpi/issues/1807))
+
+### Fixed
+
+**The memory reconcile pass no longer replays a settled reflection run on every launch.** A run directory whose durable completion record already existed could never be re-settled byte for byte, because the rebuilt record folds in launch-dependent values (the current failure streak, the clock when the ledger has no `finalizedAt`). The strict comparison threw before `final.json` landed, so every bind logged `memory bind-time reconcile failed: Reflection completion record mismatch for reflection-run-1` and tried again next time. Settlement now adopts the existing record and finishes the terminal artifacts, so the directory turns terminal after one pass. ([#8437](https://github.com/code-yeongyu/oh-my-openagent/issues/8437))
+
+## [5.0.0-beta.71] - 2026-09-18
+
+### Engine: senpi 2026.9.17-4
+
+**Downstream builds can bundle the engine again.** `ws` ships two optional native accelerators, `bufferutil` and `utf-8-validate`, and both reach their bindings through `node-gyp-build`'s computed require, which a bundler cannot follow. Any consumer that had them installed failed with `Bundle left unexpected external imports: <runtime>`; senpi's own CI never saw it, because neither package is installed there and `ws` quietly falls back to pure JS. They are now marked external. (senpi [#1804](https://github.com/code-yeongyu/senpi/issues/1804))
+
+## [5.0.0-beta.70] - 2026-09-17
+
+### Engine: senpi 2026.9.17-3
+
+**The published engine ships its tree-sitter assets again.** senpi's publish staging copied a bundled workspace's `dist` but not its `assets`, so the tarball carried compile-time `type: "file"` imports pointing outside the package. Any consumer bundling it with `bun build --compile` — omo's own release binaries included — failed to resolve them. (senpi [#1800](https://github.com/code-yeongyu/senpi/issues/1800))
+
+**Cold startup reaches ready in under a second; warm in under 900 ms.** Three rounds of profiling cut cold time-to-ready from 5.8 s to 850 ms and warm from 1.5 s to 886 ms on a loaded host. The banner-to-spinner wait (the gap where nothing is on screen) fell from 4.6 s to 175 ms cold and from 550 ms to 177 ms warm. The last round found that MCP server attach consumed 255 ms of a 292 ms serial `session_start` dispatch on a real config (0.2 ms with no servers configured); it now starts past the first frame and the first turn still carries the full tool set. The auto-theme detection no longer repaints on every launch: the detected background is persisted and seeds the next start. The app-server MCP inventory stays current after deferred attach through a wire-status subscription. Managed-tool detection uses PATH stats instead of process spawns. The model runtime and resource loader run concurrently instead of in sequence. Measured same-commit for the final round: time-to-ready 1,014 to 797 ms (n=10 interleaved). The cross-version headline compares installed beta.68 against current dev, not only this work. ([#8412](https://github.com/code-yeongyu/oh-my-openagent/issues/8412), senpi [#1781](https://github.com/code-yeongyu/senpi/issues/1781))
+
+**`$skill` mentions expand on submit.** A bare `$name` is now executable when it names a loaded skill. Chained skill blocks appear in the session export. (senpi [#1778](https://github.com/code-yeongyu/senpi/issues/1778))
+
+**A shared-host RPC session can be retained across its last client's disconnect.** `open_session` accepts `retain_on_disconnect`; the next `open_session` with the same id reattaches. (senpi [#1776](https://github.com/code-yeongyu/senpi/issues/1776))
+
+**The bundled CLI runs under custom exec arguments again.** A launch carrying a profiler or inspector flag replays those arguments onto a copy of itself instead of spawning a sibling the bundle step had dropped. (senpi [#1785](https://github.com/code-yeongyu/senpi/pull/1785))
+
+**JS eval kernel: a cell that would shadow a platform global is rejected before execution.** (senpi [#1786](https://github.com/code-yeongyu/senpi/pull/1786))
+
+**Claude-sdk-oauth re-login refreshes the blocked slot** instead of appending a duplicate. Stored credential-pool blocks are bound to a credential revision. (senpi [#7084](https://github.com/code-yeongyu/oh-my-openagent/issues/7084))
+
+**Compaction summarization retries without the reasoning override after an empty stop.** (senpi [#1773](https://github.com/code-yeongyu/senpi/issues/1773))
+
+**RPC socket host: session-event credit on queue acceptance, 30 s dead-peer stall budget, observable cut notice.** (senpi [#1774](https://github.com/code-yeongyu/senpi/issues/1774))
+
+
+### OmO
+
+**Startup work that nobody waits for no longer runs before the first paint.** Three pieces of the omo-senpi plugin ran on the path the user waits through before the prompt appears, and none of them is observable before the first turn: the init-deep advisor spawned `git rev-parse` and stat'd the onboarding marker from its `session_start` handler just to decide it was ineligible (12.4 ms warm, 20.6 ms cold), the OmO-native session telemetry read the model inventory, loaded omo config twice and built its PostHog client on the same dispatch path (1.8 ms warm, 14.2 ms on the first session of a UTC day), and the LSP component built its mutation formatter - an omo-config read plus a formatter-marker scan - while it registered, for a step only a `tool_result` can reach. The advisor and the telemetry capture now run on the first post-paint edge (`input` / `before_agent_start`, or a 750 ms backstop), the formatter is constructed on the first mutation tool result, and the legacy telemetry product config no longer reads the package manifest at module scope. Tool, command, flag and hook registration is untouched: the engine's tables are complete before the first prompt exactly as before. Measured through a real senpi launch with the plugin (15 interleaved ABBA rounds): `interactiveMode.init` 97 ms to 84 ms median, 83 ms to 69 ms min; the plugin's `factory` row is unchanged at 37 ms. ([#8412](https://github.com/code-yeongyu/oh-my-openagent/issues/8412))
+
+### OmO
+
+**Adopts senpi 2026.9.17.** That release carries the engine startup work tracked in code-yeongyu/senpi#1781: the published package now ships a pre-linked bundle that the launcher prefers, TypeScript extensions are imported through Bun's native transpiler on any bun runtime instead of jiti, the terminal PTY package and the MCP SDK load on first use instead of at every boot, command- and mode-only module graphs are deferred to their branch points, and directory-scan migrations are skipped once a marker records them. Measured on an Apple Silicon workstation through the real launcher and plugin, interleaved against the previous engine: banner to spinner 1,209 ms to 196 ms warm and 4,608 ms to 560 ms cold, time to ready 6,197 ms to 1,986 ms cold, and the extensions phase 800 ms to 409 ms cold. ([#8412](https://github.com/code-yeongyu/oh-my-openagent/issues/8412), [senpi#1781](https://github.com/code-yeongyu/senpi/issues/1781))
+
+### OmO
+
+**Session startup stops walking the whole memory root.** A boot profile attributed about 190 ms of synchronous `statSync` time to the memory component, and instrumenting the filesystem boundary during a real boot showed it issuing 3,787 filesystem calls before the first turn: the registration-time transient sweep computed the *newest* mtime of every repo-less identity tree although both callers only compare it to one cutoff, and the session-bind filesystem policy enumerated its denied roots eagerly for metadata that nothing reads at bind time. The age probe now stops at the first mtime that proves a tree active, and denied roots are resolved when a host first reads them. On a 158-identity agents root that is 3,787 filesystem calls down to 405 (synchronous existence checks 328 to 171, `lstatSync` 58 to 9, `realpathSync` 53 to 4, async `stat` 2,214 to 129, async `readdir` 1,074 to 33), the isolated sweep drops from 70.1 ms to 2.2 ms and policy registration from 1.4 ms to 0.1 ms, every verdict unchanged. On a warm cache at this scale the startup timing rows do not move (the sweep is fire-and-forget, so its work overlaps the runtime's own I/O); the win lands on a cold cache, which is where the original profile measured it. ([#8412](https://github.com/code-yeongyu/oh-my-openagent/issues/8412))
+
+### OmO
+
+**A ulw-execute work whose session died no longer shows as running forever.** `.omo/boulder.json` only ever left `status: "active"` on an explicit completion, so a crash, a reboot or a closed terminal left the work `active` for good - one real project still advertised a work whose only session's transcript had been quiet for 41 hours, next to a sibling work the same file had recorded as `completed` ([#8413](https://github.com/code-yeongyu/oh-my-openagent/issues/8413)). Both ulw-execute read paths now reconcile the file where they already read it: a work is demoted to `paused` and stamped `stale_since` once its last activity - the newest of its sessions' transcript mtimes, `updated_at` and `started_at` - is at least six hours old, configurable with `OMO_BOULDER_STALE_WORK_THRESHOLD_MS`. Session ids, plan, mode and every other field survive the demotion, a work with recent activity is never rewritten, `completed` and `abandoned` records are untouched, and an unreadable or absent file changes nothing. Resuming a demoted work returns it to `active` and clears the stamp, and it stays listed as resumable the whole time.
+
+### OmO
+
+**A bun-global `omo` no longer boots node before it runs.** `bun add -g` links the launcher into two bins - `<bun root>/bin/omo` and `<bun root>/install/global/node_modules/.bin/omo` - and a PATH that lists the global `node_modules/.bin` first reached the second one, which is bun's own `#!/usr/bin/env node` symlink: every launch there paid a full node boot before the launcher re-execed itself under bun. The launcher already replaced the first bin with a tiny sh shim that execs bun directly; it now repairs both, judging each entry independently under the same safety rules (only bun's own link to this install, or a shim this launcher wrote, is ever replaced; a foreign file or link is left alone, one entry's failure never blocks the other, and the whole repair stays fail-open and silent unless `OMO_DEBUG`). Measured with hyperfine (15 runs, temp bun-root fixture, Apple Silicon): the `.bin/omo` path drops from 50.6 ms mean / 46.6 ms min to 16.8 ms / 16.4 ms, level with the already-shimmed bin at 17.7 ms. The launcher also prefers the engine's pre-linked bundle (`<senpi>/dist/bundle/cli.js`) when the installed engine ships one and falls back to `dist/cli.js` otherwise, so the engine-side bundle lands without another launcher change. ([#8412](https://github.com/code-yeongyu/oh-my-openagent/issues/8412), [senpi#1781](https://github.com/code-yeongyu/senpi/issues/1781))
+
+### Changed
+
+- **deps:** adopt senpi 2026.9.17-3 with the restored engine tree-sitter assets ([#8428](https://github.com/code-yeongyu/oh-my-openagent/pull/8428))
+
 ## [5.0.0-beta.68] - 2026-09-16
 
 ### OmO

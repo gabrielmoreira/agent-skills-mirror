@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `parallel-web/parallel-agent-skills` — 26 default patterns, 0 followed patterns, 24 file(s) materialized.
+Mirror of `parallel-web/parallel-agent-skills` — 26 default patterns, 0 followed patterns, 26 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `parallel-web/parallel-agent-skills` — 26 default patterns, 0 follow
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 24 |
+| Files         | 26 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -77,12 +77,14 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 16 | ✓ | [`skills/parallel-data-enrichment/SKILL.md`](skills/parallel-data-enrichment/SKILL.md) |
 | 17 | ✓ | [`skills/parallel-deep-research/SKILL.md`](skills/parallel-deep-research/SKILL.md) |
 | 18 | ✓ | [`skills/parallel-findall/SKILL.md`](skills/parallel-findall/SKILL.md) |
-| 19 | ✓ | [`skills/parallel-memory/SKILL.md`](skills/parallel-memory/SKILL.md) |
-| 20 | ✓ | [`skills/parallel-monitor/SKILL.md`](skills/parallel-monitor/SKILL.md) |
-| 21 | ✓ | [`skills/parallel-web-extract/SKILL.md`](skills/parallel-web-extract/SKILL.md) |
-| 22 | ✓ | [`skills/parallel-web-search/SKILL.md`](skills/parallel-web-search/SKILL.md) |
-| 23 | ✓ | [`skills/result/SKILL.md`](skills/result/SKILL.md) |
-| 24 | ✓ | [`skills/status/SKILL.md`](skills/status/SKILL.md) |
+| 19 | ✓ | [`skills/parallel-mcp-setup/references/gateway-controls.md`](skills/parallel-mcp-setup/references/gateway-controls.md) |
+| 20 | ✓ | [`skills/parallel-mcp-setup/SKILL.md`](skills/parallel-mcp-setup/SKILL.md) |
+| 21 | ✓ | [`skills/parallel-memory/SKILL.md`](skills/parallel-memory/SKILL.md) |
+| 22 | ✓ | [`skills/parallel-monitor/SKILL.md`](skills/parallel-monitor/SKILL.md) |
+| 23 | ✓ | [`skills/parallel-web-extract/SKILL.md`](skills/parallel-web-extract/SKILL.md) |
+| 24 | ✓ | [`skills/parallel-web-search/SKILL.md`](skills/parallel-web-search/SKILL.md) |
+| 25 | ✓ | [`skills/result/SKILL.md`](skills/result/SKILL.md) |
+| 26 | ✓ | [`skills/status/SKILL.md`](skills/status/SKILL.md) |
 
 ---
 

@@ -8,7 +8,13 @@ disk, with an optional transparent output whose strategy is decided per provider
 (native alpha or deterministic chroma keying). The general `image-gen` skill is a
 thin shuttle over this command.
 
-Providers (Gemini/OpenRouter/fal/BytePlus are intentionally **not** included):
+Providers are the backends the maintainer uses day to day. Others (Gemini,
+OpenRouter, fal, BytePlus, …) are absent because nobody here uses them, not because
+of a design objection; a contributed provider is welcome when its author will keep
+maintaining it ([#37](https://github.com/aldegad/sprite-gen/issues/37)). A backend
+whose terms forbid reaching a subscription login from third-party software is not
+added, however it is invoked
+([#36](https://github.com/aldegad/sprite-gen/pull/36), Antigravity).
 
 | Provider | Backend | Auth | Output truth | Transparency strategy |
 |---|---|---|---|---|

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `rlaope/oh-my-hermes` — 26 default patterns, 0 followed patterns, 334 file(s) materialized.
+Mirror of `rlaope/oh-my-hermes` — 26 default patterns, 0 followed patterns, 337 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `rlaope/oh-my-hermes` — 26 default patterns, 0 followed patterns, 33
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 334 |
+| Files         | 337 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -379,20 +379,23 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 318 | ✓ | [`skills/ulw-context/references/project-terms.md`](skills/ulw-context/references/project-terms.md) |
 | 319 | ✓ | [`skills/ulw-context/SKILL.md`](skills/ulw-context/SKILL.md) |
 | 320 | ✓ | [`skills/ulw-interview/SKILL.md`](skills/ulw-interview/SKILL.md) |
-| 321 | ✓ | [`skills/ulw-loop/references/goal-constraint-discipline.md`](skills/ulw-loop/references/goal-constraint-discipline.md) |
-| 322 | ✓ | [`skills/ulw-loop/references/measured-loop-discipline.md`](skills/ulw-loop/references/measured-loop-discipline.md) |
-| 323 | ✓ | [`skills/ulw-loop/SKILL.md`](skills/ulw-loop/SKILL.md) |
-| 324 | ✓ | [`skills/ulw-maestro/references/executor-prompt-composition.md`](skills/ulw-maestro/references/executor-prompt-composition.md) |
-| 325 | ✓ | [`skills/ulw-maestro/SKILL.md`](skills/ulw-maestro/SKILL.md) |
-| 326 | ✓ | [`skills/ulw-perf/SKILL.md`](skills/ulw-perf/SKILL.md) |
-| 327 | ✓ | [`skills/ulw-plan/SKILL.md`](skills/ulw-plan/SKILL.md) |
-| 328 | ✓ | [`skills/ulw-qa/SKILL.md`](skills/ulw-qa/SKILL.md) |
-| 329 | ✓ | [`skills/ulw-research/references/briefing-format.md`](skills/ulw-research/references/briefing-format.md) |
-| 330 | ✓ | [`skills/ulw-research/SKILL.md`](skills/ulw-research/SKILL.md) |
-| 331 | ✓ | [`skills/ulw-work/references/campaign-orchestrator.md`](skills/ulw-work/references/campaign-orchestrator.md) |
-| 332 | ✓ | [`skills/ulw-work/references/dependency-topology.md`](skills/ulw-work/references/dependency-topology.md) |
-| 333 | ✓ | [`skills/ulw-work/references/tdd-red-green.md`](skills/ulw-work/references/tdd-red-green.md) |
-| 334 | ✓ | [`skills/ulw-work/SKILL.md`](skills/ulw-work/SKILL.md) |
+| 321 | ✓ | [`skills/ulw-loop/references/board-iteration.md`](skills/ulw-loop/references/board-iteration.md) |
+| 322 | ✓ | [`skills/ulw-loop/references/goal-constraint-discipline.md`](skills/ulw-loop/references/goal-constraint-discipline.md) |
+| 323 | ✓ | [`skills/ulw-loop/references/measured-loop-discipline.md`](skills/ulw-loop/references/measured-loop-discipline.md) |
+| 324 | ✓ | [`skills/ulw-loop/SKILL.md`](skills/ulw-loop/SKILL.md) |
+| 325 | ✓ | [`skills/ulw-maestro/references/executor-prompt-composition.md`](skills/ulw-maestro/references/executor-prompt-composition.md) |
+| 326 | ✓ | [`skills/ulw-maestro/SKILL.md`](skills/ulw-maestro/SKILL.md) |
+| 327 | ✓ | [`skills/ulw-perf/SKILL.md`](skills/ulw-perf/SKILL.md) |
+| 328 | ✓ | [`skills/ulw-plan/SKILL.md`](skills/ulw-plan/SKILL.md) |
+| 329 | ✓ | [`skills/ulw-qa/references/board-fanin.md`](skills/ulw-qa/references/board-fanin.md) |
+| 330 | ✓ | [`skills/ulw-qa/SKILL.md`](skills/ulw-qa/SKILL.md) |
+| 331 | ✓ | [`skills/ulw-research/references/briefing-format.md`](skills/ulw-research/references/briefing-format.md) |
+| 332 | ✓ | [`skills/ulw-research/SKILL.md`](skills/ulw-research/SKILL.md) |
+| 333 | ✓ | [`skills/ulw-work/references/campaign-orchestrator.md`](skills/ulw-work/references/campaign-orchestrator.md) |
+| 334 | ✓ | [`skills/ulw-work/references/dependency-topology.md`](skills/ulw-work/references/dependency-topology.md) |
+| 335 | ✓ | [`skills/ulw-work/references/kanban-lane.md`](skills/ulw-work/references/kanban-lane.md) |
+| 336 | ✓ | [`skills/ulw-work/references/tdd-red-green.md`](skills/ulw-work/references/tdd-red-green.md) |
+| 337 | ✓ | [`skills/ulw-work/SKILL.md`](skills/ulw-work/SKILL.md) |
 
 ---
 

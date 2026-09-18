@@ -16,6 +16,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -50,6 +51,12 @@ public final class Gbase8sAgent extends ConfiguredJdbcAgent {
      */
     private static final Pattern CREATE_DATABASE_LOCALE_DIRECTIVE = Pattern.compile(
         "^\\s*--\\s*DBX_DB_LOCALE\\s*=\\s*(\\S+)\\s*\\r?\\n(.*)$", Pattern.DOTALL);
+
+    // A bare `DROP DATABASE <name>` (unquoted identifier, optional trailing semicolon). The target
+    // database's own locale is resolvable (it exists in sysdbslocale), so the drop is routed here
+    // without a directive.
+    private static final Pattern DROP_DATABASE_STATEMENT = Pattern.compile(
+        "^\\s*DROP\\s+DATABASE\\s+([A-Za-z0-9_]+)\\s*;?\\s*$", Pattern.CASE_INSENSITIVE);
 
     public static final JdbcAgentProfile GBASE8S_PROFILE = new JdbcAgentProfile(
         "com.gbasedbt.jdbc.Driver",
@@ -180,9 +187,13 @@ public final class Gbase8sAgent extends ConfiguredJdbcAgent {
         return localized;
     }
 
-    private String resolveCollate(ConnectParams params, String database) {
-        String key = params.getHost() + "|" + params.getPort() + "|" + getGbaseServer(params)
+    private static String collateCacheKey(ConnectParams params, String database) {
+        return params.getHost() + "|" + params.getPort() + "|" + getGbaseServer(params)
             + "|" + database.toLowerCase(Locale.ROOT);
+    }
+
+    private String resolveCollate(ConnectParams params, String database) {
+        String key = collateCacheKey(params, database);
         String cached = collateByDatabase.get(key);
         if (cached != null) {
             return cached;
@@ -269,7 +280,17 @@ public final class Gbase8sAgent extends ConfiguredJdbcAgent {
     public QueryResult executeQuery(String sql, String schema, ExecuteQueryOptions options) {
         CreateDatabaseLocaleDirective directive = parseCreateDatabaseLocaleDirective(sql);
         if (directive != null) {
-            runCreateDatabaseWithLocale(directive.statement(), directive.locale());
+            runDdlOnSysmasterWithLocale(directive.statement(), directive.locale());
+            clearMetadataCache();
+            return new QueryResult(Collections.emptyList(), Collections.emptyList(), 0, 0);
+        }
+        String dropTarget = parseDropDatabaseName(sql);
+        if (dropTarget != null && databaseListParams != null) {
+            // Informix cannot drop a database from a session whose DB_LOCALE differs, nor the
+            // current database; run it from sysmaster pinned to the target database's own locale.
+            String collate = resolveCollate(databaseListParams, dropTarget);
+            runDdlOnSysmasterWithLocale("DROP DATABASE " + dropTarget, collate);
+            invalidateCollateCache(dropTarget);
             clearMetadataCache();
             return new QueryResult(Collections.emptyList(), Collections.emptyList(), 0, 0);
         }
@@ -278,6 +299,27 @@ public final class Gbase8sAgent extends ConfiguredJdbcAgent {
             clearMetadataCache();
         }
         return result;
+    }
+
+    /**
+     * Parse {@code sql} as a bare {@code DROP DATABASE <name>} statement, returning the (unquoted)
+     * target database name or {@code null} for anything else. Package visible so the routing
+     * decision is testable without a live connection.
+     */
+    static String parseDropDatabaseName(String sql) {
+        if (sql == null) {
+            return null;
+        }
+        Matcher drop = DROP_DATABASE_STATEMENT.matcher(sql);
+        return drop.matches() ? drop.group(1) : null;
+    }
+
+    private void invalidateCollateCache(String database) {
+        ConnectParams base = databaseListParams;
+        if (base == null) {
+            return;
+        }
+        collateByDatabase.remove(collateCacheKey(base, database));
     }
 
     /**
@@ -306,12 +348,14 @@ public final class Gbase8sAgent extends ConfiguredJdbcAgent {
     }
 
     /**
-     * Run a {@code CREATE DATABASE} statement on a sysmaster session whose {@code DB_LOCALE} is
-     * pinned to {@code locale}, so the freshly created database inherits that codeset (Informix has
-     * no charset clause in {@code CREATE DATABASE}). Falls back to the configured locale when
+     * Run a DDL statement (e.g. {@code CREATE DATABASE} / {@code DROP DATABASE}) on a sysmaster
+     * session whose {@code DB_LOCALE} is pinned to {@code locale}. Informix has no charset clause
+     * in {@code CREATE DATABASE} (the new database inherits the creating session's DB_LOCALE) and
+     * cannot drop a database from a session whose locale differs, or drop the current database —
+     * so both run from sysmaster with the relevant locale. Falls back to the configured locale when
      * {@code locale} is blank or unsafe.
      */
-    private void runCreateDatabaseWithLocale(String statement, String locale) {
+    private void runDdlOnSysmasterWithLocale(String statement, String locale) {
         ConnectParams base = databaseListParams;
         if (base == null) {
             throw new IllegalStateException("Not connected");
@@ -454,6 +498,7 @@ public final class Gbase8sAgent extends ConfiguredJdbcAgent {
             Connection conn = requireConnection();
             String owner = trim(schema);
             Set<Integer> primaryKeyColumns = getPrimaryKeyColumnNumbers(conn, owner, table);
+            Map<String, String> columnDefaults = loadColumnDefaults(conn, owner, table);
             List<Object> args = new ArrayList<>();
             args.add(table);
             StringBuilder sql = new StringBuilder("""
@@ -482,7 +527,7 @@ public final class Gbase8sAgent extends ConfiguredJdbcAgent {
                             name,
                             mapColType(baseType),
                             (coltype & 256) == 0,
-                            null,
+                            columnDefaults.get(name),
                             primaryKeyColumns.contains(rs.getInt("colno")),
                             null,
                             emptyToNull(trim(rs.getString("comments"))),
@@ -497,6 +542,38 @@ public final class Gbase8sAgent extends ConfiguredJdbcAgent {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private static Map<String, String> loadColumnDefaults(Connection conn, String owner, String table) {
+        List<Object> args = new ArrayList<>();
+        args.add(table);
+        StringBuilder sql = new StringBuilder("""
+            SELECT c.colname, e.default AS column_default
+            FROM systables t
+            JOIN syscolumns c ON t.tabid = c.tabid
+            JOIN sysdefaultsexpr e ON c.tabid = e.tabid AND c.colno = e.colno
+            WHERE t.tabname = ? AND e.type = 'T'
+            """.stripIndent().trim());
+        if (!owner.isEmpty()) {
+            sql.append(" AND t.owner = ?");
+            args.add(owner);
+        }
+
+        Map<String, String> defaults = new LinkedHashMap<>();
+        try (PreparedStatement stmt = conn.prepareStatement(sql.toString())) {
+            bind(stmt, args);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    String value = rs.getString("column_default");
+                    if (value != null) {
+                        defaults.put(trim(rs.getString("colname")), value);
+                    }
+                }
+            }
+        } catch (SQLException ignored) {
+            return Collections.emptyMap();
+        }
+        return defaults;
     }
 
     @Override
@@ -1028,7 +1105,7 @@ public final class Gbase8sAgent extends ConfiguredJdbcAgent {
         sql.append(" AND tabtype IN (").append(String.join(", ", tabTypes)).append(")");
     }
 
-    private static void bind(PreparedStatement stmt, List<Object> args) throws Exception {
+    private static void bind(PreparedStatement stmt, List<Object> args) throws SQLException {
         for (int index = 0; index < args.size(); index += 1) {
             stmt.setString(index + 1, String.valueOf(args.get(index)));
         }

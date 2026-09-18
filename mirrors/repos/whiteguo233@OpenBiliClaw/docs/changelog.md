@@ -2,76 +2,55 @@
 
 > 按里程碑记录各阶段交付内容。每次分支合回 main 时追加条目。
 
-## 未发布：LLM 输出预算下限与评估分批自愈
+## v0.3.223：Windows 稳定性、推荐入口与画像一致性修复（2026-09-17）
+
+### LLM 输出预算下限与评估分批自愈
 
 - **修复推理实例在结构化小任务上「reasoning-only + finish_reason=length」拖垮整条模块路由链**：这类模型的 `max_tokens` 同时覆盖思考与正文，历史调用点按期望输出长度给的 16 / 256 / 512 / 1024 预算会被 thinking 整段吃掉，`content` 为空后 provider 判失败，模块链里若没有非推理实例兜底就写 error 级 `all_providers_failed` 告警（DSH 面板「异常报警」里表现为两条 `bad_response` warning + 一条 error）。现在分三层处理：① `LLMService.complete_structured_task()` / `complete_multimodal_structured_task()` 统一以 `MIN_STRUCTURED_MAX_TOKENS=4096` 兜底 `max_tokens`（`max_tokens` 是上限不是预扣，正常答完不产生额外成本），`api.sentiment` 16→512，`recommendation.evaluate_batch` 8192→16384，统一关键词 planner 合并生成下限 4096→8192；② 新增 `llm.base.is_reasoning_budget_exhausted()`，沿 cause/context 链统一识别该签名，`soul.posture_gate` 与 `soul.preference_analyzer` 的私有判定改用它（行为不变）；③ 评估 / 表达式批量在该签名下把批减半递归重试 —— discovery `_evaluate_batch` 把整个子批标记 missing 后走既有 split-retry（深度 3、额外请求 6），recommendation 新增 `_classify_batch_with_split_retry`（`classify_pool_backlog` 入口）并让 `_precompute_batch_with_split_retry` 同样按预算错误拆分；限流 / 鉴权 / 超时 / 传输错误继续原样上抛（rate limit 仍走 claim 释放，不因拆分放大请求）。
 - **测试与文档**：`tests/test_llm_service.py` 新增 helper 与结构化 / 多模态下限回归；`tests/test_discovery_engine.py` 新增「预算耗尽 → [45, 22, 23] 拆分」与「持续耗尽仍有界、不退化逐条」两个回归，并保留 rate limit 不拆分断言；`tests/test_recommendation_engine.py` 新增 classify 拆分 / 非预算异常直抛 / 表达式拆分三个回归；同步更新 `api.sentiment` 与 merged-keyword 上限断言，LLM / discovery / recommendation 模块文档补齐对应功能行。
 - **真实环境验证**：用本机 `config.toml` 的真实端点在 `openai_compatible`（deepseek-v4-flash）上复现了原始签名（16 token → reasoning-only + `finish_reason=length`）；同一请求经 `complete_structured_task()` 的下限后发 4096 真实成功（`{"arrival": "12:59"}`）。discovery 批量评估与 recommendation 批量分类在注入该真实异常后，真实子批请求各按 `4 → 2 + 2` 拆分并完成打分；限流失败仍一次直抛、不拆分（注入异常来自真实端点，重试全部为真实请求）。
 
----
-
-## 未发布：画像证据与衰减一致性
+### 画像证据与衰减一致性
 
 - **稳定追加推荐通知回归测试**：使用与后台通知共享事件循环的异步 ASGI 客户端，避免同步测试请求结束后取消尚未完成的状态通知；覆盖无延迟和 50ms 状态读取延迟，不修改生产接口或放宽通知断言。
 - **修复画像证据虚增与重复衰减**：增量分析返回的全量偏好快照不再让未触及兴趣增加 `evidence_count`、刷新 `last_evidence_at` 或复活；兴趣权重新增 `last_decay_at` 增量游标，同一时刻重复合并或按日分批处理与一次处理得到相同衰减结果。新增未触及方向、被触及方向与衰减频率三条生命周期根因回归和相关模块全量回归。
 - **偏好 prompt 不再序列化内部衰减游标**：`last_decay_at` 是存储记账，不是用户行为，但会随原始偏好 dict 进入偏好分析 / 觉察 / 洞察 / 灵魂画像几条 prompt（实测每个兴趣 +53 字符，200 个兴趣每次多出约 10.6KB，足以把偏好分析顶过 `max_prompt_chars=24000` 触发额外分块）。现在 `profile_views.preference_prompt_payload()` 在五条 builder 与 `render_preference_summary` 的入口统一剔除它，无游标输入的 prompt 逐字节不变。
 
----
-
-## 未发布：移动端原生播放页 UP 主信息与关注
+### 移动端原生播放页 UP 主信息与关注
 
 - **新增 UP 主信息卡片与关注能力（移动端依赖）**：移动端原生播放页此前只能展示视频标题与简介，无法看到“是谁发的”。现在从既有的 `GET /api/bilibili/video/info` `owner` 对象取 `mid` / `name` / `face`；新增 `GET /api/bilibili/user/card?mid=<mid>` 透传 B 站 `/x/web-interface/card`，返回头像、签名、粉丝数与当前登录用户的 `following`；新增 `POST /api/bilibili/user/follow` 用 `{mid, follow}` 走 `/x/relation/modify`（`act=1` 关注 / `act=2` 取消关注），CSRF（`bili_jct`）仍只留在后端。B 站对“已经关注用户，无法重复关注”返回 `22014`，现按成功处理并回查 card，避免移动端本地状态过期时误报失败；card 回查失败时返回请求的目标状态，避免把已成功的关注回滚成失败。新增 `tests/test_bilibili_api.py` 覆盖 card 解析/协议相对头像归一化、关注/取消关注请求体、重复关注幂等、未登录拒绝与 card 回查失败保持状态，`tests/test_api_app.py` 固定两个新端点的响应契约。
 
----
-
-## 未发布：画像整理成员引用兼容
+### 画像整理成员引用兼容
 
 - **修复普通画像整理簇拒绝对象成员引用**：likes judge prompt 提供 `{name, category}` 成员对象，但普通簇校验此前只登记裸名称，模型原样返回对象便会被误判为 unknown member、整簇被拒。普通簇现在按名称消费对象引用，并在写 rename map / run record 前把对象成员归一为名称，保证 override 重命名、keyword 标签迁移与用户 revert 的 no-merge pair 保护不丢；同名异类簇仍使用分类限定键严格校验。新增完整 `ProfileConsolidator.run()` 对象成员回归、对象成员 keyword 标签迁移回归与对象成员 revert 钉 pair 回归。
 
----
-
-## 未发布：后台 worker 降级等待与子进程存活看护（issue #250）
+### 后台 worker 降级等待与子进程存活看护（issue #250）
 
 - **修复 Windows 桌面版启动必弹两个错误对话框、且后台循环随子进程一起死掉（[issue #250](https://github.com/whiteguo233/OpenBiliClaw/issues/250)）**：四进程桌面版在 `config.toml` 没有任何可成功构造的 LLM 实例时（全新安装未配 key，或 key 失效），`worker` / `discovery_worker` 两个窗口化子进程分别在 `build_runtime_context`（`RegistryBuildError`）与 `raise RuntimeError("runtime_controller.run_forever not available")` 处未捕获退出——PyInstaller bootloader 各弹一个 "Unhandled exception in script" 对话框；主 API 进程虽已用 `build_degraded_runtime_context` 降级为可配密钥、但会按环境变量继续把后台循环委托给已死子进程，于是用户在 `/setup` 修好 key 后，发现 / 刷新 / 候选评估（`/api/sources/*/next-task`、`/api/events`）仍持续 503，直到重启应用。现在：① `worker/main.py::run_full_worker` 先用 `build_llm_registry(load_config())` 做纯构造探针（无网络），失败时每 15 秒重读磁盘配置重试，等待期间心跳照常写 `worker_status.json`，成功后重新加载配置再走完整 `build_runtime_context`；② `discovery_worker.py` 同样的探针门 + 重试循环（失败时先关闭 degraded 上下文再退避），拿不到 `run_forever` 只记日志不抛异常；③ `packaging/entry.py` 的 `--openbiliclaw-worker` 分发把子进程异常写进 `logs/desktop.log` 后以 `SystemExit(1)` 退出，任何未预期崩溃都不再触发 bootloader 弹窗；④ `proc.py::ChildProcessSupervisor` 让桌面父进程周期巡检后端子进程，崩溃后按 2s 起步、上限 60s 的指数退避重启（存活 ≥5 分钟重置退避），父进程退出时逆序 terminate/kill；⑤ API 侧 `RuntimeContext.warn_if_full_worker_heartbeat_stale()` 在委托模式下发现已存在但过期的 worker 心跳时打 WARNING（首次启动尚无心跳文件时不误报），配合 `/api/runtime-status` 既有的 `worker_running` / `worker_heartbeat_age_seconds` 暴露降级委托状态。⑥ `recommendation_server.py` 同样先探针等待可构造的 LLM 配置再 `create_app()`，避免独立推荐进程永久停在 degraded 而让主 API 热恢复后 `/api/recommendations` 仍回 503；新增 `tests/test_worker_degraded_boot.py`（探针重试、等待期心跳仍在、discovery worker 不再 raise、心跳告警边界）与 `tests/test_proc_supervisor.py`（崩溃重启、退避与重置、stop 清理）。
 
----
-
----
-
-## 未发布：上下文事件不再进入画像证据
+### 上下文事件不再进入画像证据
 
 - **修复 hover / scroll / snapshot / reshuffle / pause / seek 等上下文事件被当成画像证据**：这些插件采集事件此前会随 generic durable 路径生成 `ProfileSignal`、写入 layer buffer 并交给 speculator，但它们只是活动时间线与诊断用的上下文，不应影响口味画像。现在 `sources/event_format.py` 新增 `NON_PROFILE_EVENT_TYPES`，`soul/pipeline.py` 在 `_enqueue_batch_locked` 中先识别并跳过这些信号：durable event 行保留、consumer cursor 照常推进（不阻塞后续事件、重启可恢复），但不 buffer、不触发 layer updater、不进入 speculator。`search` 特意不在集合内（满足度中性但属真实意图信号，继续按 0.5 强度进入 SURFACE updater），`view` 也继续作为画像证据。新增回归：六类事件参数化「零接受 / 零 buffer / cursor 不倒退」、`search` + `view` 仍被接受，以及 SoulEngine 层「消费 6 行 context-only + 1 行 view，cursor 推进 7、只 buffer view」的 durable 路径测试。
 
----
-
-## 未发布：Windows 安装/卸载拦截运行中的应用
+### Windows 安装/卸载拦截运行中的应用
 
 - **修复卸载正在运行的 Windows 桌面版时卸载器自删、无法二次卸载**：Inno 的 `CloseApplications`/Restart Manager 只作用于安装，卸载器对占用文件按非致命错误处理后仍会照常删除开始菜单图标、注册表卸载项与 `unins000.exe` 自身——用户关掉程序后也没有入口重试卸载，只能手删 `%LOCALAPPDATA%\Programs\OpenBiliClaw`。现在 `packaging/entry.py` 为每个冻结进程（托盘主进程与 `--openbiliclaw-worker` 子进程）全程持有一个命名互斥体（`_acquire_installer_mutex`，fail-open，进程退出自动释放），`openbiliclaw.iss` 增设 `AppMutex`，Setup 与 Uninstall 启动即弹标准「检测到 OpenBiliClaw 正在运行」对话框（关闭应用后点 OK 自动重检）；卸载器侧 `[Code] CurUninstallStepChanged(usUninstall)` 复用 `StopRunningInstance` 的 `taskkill /T /F` 兜底——**必须在 AppMutex 门禁之后**执行：Inno 卸载器先跑 `[Code] InitializeUninstall` 事件再做内部互斥体检查（`Setup.Uninstall.pas` `RunSecondPhase` 的既定顺序），把强杀放进 InitializeUninstall 会先杀掉持锁进程、让门禁永远静默通过（真机验证过该反例）；usUninstall 在门禁通过后、删文件前触发，覆盖升级前尚无互斥体的旧安装与孤儿 worker/ollama 子进程。新增互斥体名与 `.iss` 的一致性回归（防两处漂移）及 fail-open / 非冻结守卫单测。真机验证：应用运行中触发卸载即被门禁拦截（卸载日志记录 `Defaulting to Cancel for suppressed message box: Uninstall has detected that OpenBiliClaw is currently running`），应用、文件与卸载入口零改动、退出应用后可重试。
 
----
-
-## 未发布：修复手动桌面安装包 workflow 的 Tailnet 模块预取缺失
+### 修复手动桌面安装包 workflow 的 Tailnet 模块预取缺失
 
 - **修复 `build-installers.yml` 自嵌入式 tailnet 宿主合入起必然失败（发现于 PR #249 的 Windows 安装器实测）**：`7f3b7e35` 给两个平台 job 加了 `actions/setup-go`，但没有把 tailnet 依赖预取进 Go module cache，而 `packaging/build.py` 会以 `GOPROXY=off`（离线、可复现）调起 `scripts/generate_tailnet_notices.py --check`；于是 `go list -tags=ts_omit_logtail,ts_omit_webclient -deps -json .` 在 tailscale.com v1.102.3 新增的 `github.com/tailscale/peercred`（unix 凭据文件）上直接 `module lookup disabled by GOPROXY=off`，PyInstaller 还没开始 job 就红了——`release-desktop.yml` 的两个 job 一直有 `python scripts/generate_tailnet_notices.py --prefetch`，所以 tag 发布路径不受影响，只有手动 workflow 自 2026-09-01 起没跑通过（main 上同样失败）。现与 release-desktop 对齐，在 macOS / windows 两个 job 的 PyInstaller 构建前各补一步预取；新增契约测试 `test_packaging_workflows_prefetch_tailnet_modules_before_every_build` 锁定「每个调用 `packaging/build.py` 的 job 之前都必须有 Tailnet 模块预取」，后续再漏加会直接失败。
 
----
-
-## 未发布：Windows 交互安装改为点「完成」后启动
+### Windows 交互安装改为点「完成」后启动
 
 - **修复 Windows 交互安装未点 Finish 程序就抢跑启动**：`packaging/openbiliclaw.iss` 的 `[Run]` 段此前是单条无条件条目——文件复制一完成、向导还停在最后一页时 `OpenBiliClaw.exe` 就已被拉起。这是 v0.3.182 为修静默升级「杀旧进程后无人拉起新进程」而引入的行为：更早那条 `postinstall nowait skipifsilent` 在 `/SILENT` / `/VERYSILENT` 下被 `skipifsilent` 整个跳过，静默升级因此杀掉旧进程却无人接管（注意 `postinstall` 条目在静默安装里同样会执行——向导会自动点过隐藏的 Finish 页复选框，「没有 Finish 页」并不足以拦住它），改成无条件条目修好了静默路径，副作用是全新交互安装也在用户点「完成」前启动。现拆为两条模式互斥的条目：交互安装走 `postinstall nowait skipifsilent`，Finish 页显示默认勾选的「Launch OpenBiliClaw」复选框，点「完成」才启动且可取消勾选（交互升级仍是杀旧实例→点「完成」→新版本接管）；静默安装/升级保留 `nowait skipifnotsilent` 自动拉起新版本，升级交接语义不变（两条条目必须靠各自的 skip 标志保持互斥：删掉 `skipifsilent` 会让静默安装启动两次）；windows-latest CI 既有的 `/VERYSILENT` 安装步骤继续覆盖静默交接，且交接断言已从空管道 no-op（进程没出现也会通过）改为等待安装器拉起的实例写出 profile 标记 `config.toml`（selftest 实例装配完后端即退出，直接查存活进程会与退出竞态；实测该实例确实写出了 profile / SQLite / 日志），没写标记即报错，见 `build-installers.yml` / `release-desktop.yml`。新增 `tests/test_installer_script.py` 契约测试锁定「恰好一条 postinstall + 一条 silent-only、禁止无条件条目」；另用本地 marker 假应用装置（替换 AppId / 应用名 / exe 名隔离真实安装，`[Run]` 段逐字节不变）编译 1.0.0 / 2.0.0 两个测试安装器跑通 5 场景矩阵：全新交互 Finish 前无进程、点「完成」后启动；取消勾选不启动；交互升级旧 PID 被杀、点「完成」后新版本接管；`/SILENT` 全新安装自动启动；`/VERYSILENT` 升级自动交接。
 
----
-
-## 未发布：推荐接口反代入口上下文修复
+### 推荐接口反代入口上下文修复
 
 - **修复网页「加载更多 / 换一批」固定 403（推荐接口反代丢失 Host）**：四进程模式下主 API 把 `/api/recommendations/*` 反代给独立推荐进程，转发前剔除了 `Host`，httpx 于是按后端地址自行生成 `Host: localhost`（Unix socket 路径）或 `127.0.0.1:<port>`（Windows 回环 TCP 路径），而 `Origin` 原样转发 —— 推荐进程内同一套认证中间件的 CSRF 同源校验比较的正是 `Origin` 与 effective host，于是同源判定永不成立，三端 Web 的写请求（`append` / `reshuffle` / `refresh`）在使用会话 cookie 时固定返回 `403 {"error":"csrf"}`；浏览器扩展走 Bearer 豁免 CSRF，因此只有网页受影响，且非 `recommendations` 的写接口照常可用。现在反代保留浏览器原始 `Host`（`content-length` / `connection` 等传输层头部仍不转发），推荐进程的 CSRF 判定与入口恢复到同一口径。新增 `tests/test_recommendation_proxy_headers.py`：覆盖 Unix socket 与回环 TCP 两条传输的 Host / Origin 透传、hop 头剔除，以及「反代后的请求能通过推荐进程 CSRF」的契约断言，并含把 `Host` 重新剔除后即失败的回归守卫。
 
 - **修复外部 TLS 终结部署（Caddy 等）下网页「加载更多 / 换一批」仍 403**：推荐进程走 Unix socket，对端没有地址，uvicorn 因此不会按 `X-Forwarded-Proto` 改写它的 scheme，于是 https 页面的 `Origin` 永远无法与它算出的 `http` 同源匹配。反代现在用主 API 自己的 effective 视角判定 `Origin`，同源时改写为 `http://<Host>`（与 `tls_proxy` 对内置 TLS 线程的处理一致；前提是入口能算出外部有效 host —— 反向代理保留原始 `Host`，或终结器列入 `auth.trusted_proxies` 并提供 `X-Forwarded-Host`），跨站 `Origin` 原样保留、继续被拒；并且不再把 `X-Forwarded-Proto` / `X-Forwarded-Host` 转给推荐进程 —— 这个 hop 无法验证这两个声明，scheme 与 host 锚点统一由主 API 重建；`X-Forwarded-For` / `X-Real-IP` / `Forwarded` 仍照常透传，否则会放宽 `auth_core` 对「loopback 对端 + 存在转发头」的 fail-closed 判定。
 
-
----
-
-## 未发布：推荐理由补齐发布时间与评估时刻
+### 推荐理由补齐发布时间与评估时刻
 
 - **修复推荐理由把 2024 年旧内容说成“最新”**：推荐理由（`expression`）生成链路此前既不传当前时间、也不传内容发布时间，模型只能靠标题年份或自身知识猜测时效。现在单条实时 `_try_generate_expression()` 与批量池 `_precompute_batch()` 都会把候选的 `published_at` / `published_label` 以及该条的评估时刻 `evaluated_at`（`DiscoveredContent.temporal_evaluated_at`，不是生成文案时的 wall clock）放进 user_prompt 的 content payload；单条和批量静态 system prompt 各加一条规则，只允许对照 `evaluated_at` + `published_at` 判断新旧，禁止根据标题年份、“最新/今天”等词、模型知识截止时间或其它字段推断，字段缺失时不得使用时效词或猜测年龄。时间字段位于可变 user payload，system prompt 仍字节静态，prompt cache 前缀不受影响。补单条 / 批量 prompt 与引擎级回归测试。
 

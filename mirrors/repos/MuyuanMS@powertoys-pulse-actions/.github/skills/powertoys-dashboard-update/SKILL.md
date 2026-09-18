@@ -799,6 +799,12 @@ when the proposed edit is localized and safe to apply directly. Architectural,
 cross-file, out-of-diff, validation, or coordination findings belong in
 separate normal PR conversation comments and must still produce a pinned
 `post_review` action.
+If one correction has two or more safe localized edits, emit separate inline
+suggestions joined by an atomic `selection_group` (`id`, shared `title`,
+`position`, `total`, `atomic: true`). The Pulse checkbox and publisher must
+select and post the complete group together. Number the public comment headings
+`(1/N)` through `(N/N)` and reject missing, duplicate, partial, optional, or
+non-inline group members.
 
 Emit `post_review` with review event `COMMENT`. When every proposed comment is
 inline, omit `review.body_prefix` so GitHub receives only the selected inline

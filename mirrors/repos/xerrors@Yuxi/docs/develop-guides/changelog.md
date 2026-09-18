@@ -10,6 +10,8 @@
 
 ### 升级注意事项
 
+- MCP 仅支持远程 SSE / Streamable HTTP，移除内置 `mcp-server-chart`，所有历史 stdio 配置停用；新增远程 DeepWiki，默认待管理员启用。MySQL 报表技能改用 Markdown 表格。自定义角色或 Skill 对旧图表 MCP 的引用需调整，详见 [MCP 集成](../agents/mcp-integration.md)。
+
 - 数据库一次迁移 business 2 → 7、knowledge 1 → 2，无需经过未发布的中间版本。先停机并成套备份，再运行迁移器，最后协调重启 API 与 worker；旧知识文件的无 owner 处理中间态会标记失败，需要显式重试。操作见[生产部署与升级](../advanced/deployment.md)。
 - 移除 LITE 模式，部署统一包含知识库、图谱和评估能力；原 LITE 实例须补齐完整拓扑资源。
 - Sandbox 默认使用 `core` 规格；网页自动化部署须配置 `SANDBOX_RUNTIME_PROFILE=browser`，需要 Jupyter、code-server 等完整服务时使用 `full`。配置方式见[升级指南](../advanced/deployment.md)。

@@ -35,9 +35,11 @@ and `OPENVIKING_PENDING_DIR` relocate individual pieces.
 | account / user | `OPENVIKING_ACCOUNT` / `OPENVIKING_USER` → `ovcli.conf account/user` → `ovcli.conf plugin.claude_code.accountId/userId` → `ovcli.conf plugin.accountId/userId` → `ov.conf claude_code.accountId/userId` |
 | peer | `OPENVIKING_PEER_ID` → registry → `config.local.json` → `config.json` (`peer.id`) → `ovcli.conf plugin.claude_code.peerId` → `ovcli.conf plugin.peerId` → `ovcli.conf actor_peer_id/peer_id` → `ov.conf claude_code.peerId` → derived per `peer.source` unless `OPENVIKING_WORKSPACE_PEER=0` |
 | peer.source | `OPENVIKING_PEER_SOURCE` → registry → `config.local.json` → `config.json` → `ovcli.conf plugin.claude_code.peerSource` → `ovcli.conf plugin.peerSource` → `ov.conf claude_code.peerSource` → `git` |
-| auth mode | `ovcli.conf plugin.claude_code.authMode` → `ovcli.conf plugin.authMode` → `ov.conf claude_code.authMode` → `ov.conf server.auth_mode` → `trusted` when account/user are set, else `api_key` |
+| auth mode | `OPENVIKING_AUTH_MODE` → `ovcli.conf plugin.claude_code.authMode` → `ovcli.conf plugin.authMode` → `ov.conf claude_code.authMode` → `ov.conf server.auth_mode` → `trusted` when account/user are set, else `api_key` |
 | enabled | `OPENVIKING_MEMORY_ENABLED` → `ov.conf claude_code.enabled === false` → "ov.conf or ovcli.conf exists and parses" |
 | tuning | env → registry → `config.local.json` → `config.json` → `ovcli.conf plugin.claude_code.*` → `ovcli.conf plugin.*` → `ov.conf claude_code.*` → defaults |
+
+The order above is the `auto` mode with a credential variable set, or with no ovcli.conf credentials. When ovcli.conf names a url, key, identity or peer and no credential variable is set, the chain is pinned to that file: the credential variables are skipped, `api_key` still falls back through the `plugin` keys, `ov.conf claude_code.apiKey` and `server.root_api_key`, and account/user stop at the `plugin` keys. `OPENVIKING_CREDENTIAL_SOURCE=cli` forces that; `=env` reads the variables only, and neither file. The MCP proxy resolves this same chain.
 
 Only trailing slashes are stripped from the url; no scheme check, no path
 normalisation. `https://api.vikingdb.cn-beijing.volces.com/openviking` (the Volcengine-hosted OpenViking Service)

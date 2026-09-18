@@ -98,10 +98,14 @@ Per-category Python dependencies, API keys, and invocation examples are document
 
 | Name                                           | Label                  | Description                                                                                                                                                                                                              |
 | ---------------------------------------------- | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| [`sn-ppt-entry`](skills/sn-ppt-entry/SKILL.md)       | **PPT Entry Point**    | **Unified entry point for PPT generation.** Asks the user to choose fast, standard, or creative mode, then collects role / audience / scenario / page count. For standard mode, also asks about image sourcing (AI, web search, or none) and chart rendering (U1 infographics or ECharts). Parses uploaded pdf / docx / md / txt, emits `task_pack.json` + `info_pack.json`, and dispatches to the chosen mode. |
-| [`sn-ppt-doctor`](skills/sn-ppt-doctor/SKILL.md)     | PPT Environment Doctor | Environment check for the PPT pipeline — validates `sn-image-base`, API keys, the Node runtime, and optional deps; writes missing required vars into `.env`.                                                             |
-| [`sn-ppt-creative`](skills/sn-ppt-creative/SKILL.md) | PPT Creative Mode      | One full-page 16:9 PNG per slide, generated via `sn-image-generate` with a per-page composed prompt. Falls back to web image search when T2I generation fails.                                                          |
-| [`sn-ppt-standard`](skills/sn-ppt-standard/SKILL.md) | PPT Standard & Fast    | `style_spec` → outline → asset plan + per-slot images + VLM QC → per-page HTML → per-page review → PPTX export. Fast mode builds a complete draft immediately with autonomous decisions, then provides structured refinement suggestions. Supports AI-generated infographics (U1) for diagrams and web image search (Serper) for real photos. |
+| [`sn-ppt-entry`](skills/sn-ppt-entry/SKILL.md)       | PPT Entry Point    | Unified entry point for PPT generation. Collects role / audience / scene / page count / mode (standard, dazzle, or creative), parses pdf / docx / md / txt inputs, emits `task_pack.json` + `info_pack.json`, and dispatches to the downstream mode. |
+| [`sn-ppt-story`](skills/sn-ppt-story/SKILL.md)       | PPT Outline (Story) | Mandatory mid-stage between the entry and the exit modes: turns the query, user materials, and completed research into the single editable `outline.md`; must not be skipped or written by hand. |
+| [`sn-ppt-standard`](skills/sn-ppt-standard/SKILL.md) | PPT Standard Mode      | style spec → outline → asset plan + per-slot images + VLM QA → per-page HTML → per-page review → build `present.html`; exports PPTX via its own HTML→PPTX exporter. |
+| [`sn-ppt-dazzle`](skills/sn-ppt-dazzle/SKILL.md)     | PPT Dynamic Mode       | Turns a prepared `outline.md` into a single-file 1280×720 dynamic HTML deck (motion, page transitions, keyboard navigation) for animated/interactive presentations. |
+| [`sn-ppt-creative`](skills/sn-ppt-creative/SKILL.md) | PPT Creative Mode      | One full-page 16:9 PNG per slide generated from a per-page composed prompt; exports PPTX. |
+| [`sn-ppt-doctor`](skills/sn-ppt-doctor/SKILL.md)     | PPT Environment Doctor | Checks local rendering/export dependencies (Python/Node Playwright, Chromium, PPTX exporter) and Bundled media config; reports only — never writes `.env` or modifies the task directory. |
+| [`sn-ppt-tools`](skills/sn-ppt-tools/SKILL.md)       | Bundled Tool Fallback  | Provides the fallback (web search, image search, image generation, image download) when the host's native search/image tools are absent or fail; reads `SN_PPT_*` config from `.env`. |
+| [`sn-ppt-workbench`](skills/sn-ppt-workbench/SKILL.md) | PPT Edit Workbench   | Opens or reuses the AI PPT editing WebUI for an existing HTML deck: preview, inspect, and visually fine-tune in the browser; never regenerates the deck or edits slide files directly. |
 
 
 ### 📈 Data Analysis (DA)
@@ -202,6 +206,14 @@ A few `sn-infographic` outputs (more in [`docs/sn-infographic-examples.md`](docs
 [`examples/property-fee-pricing-ppt`](examples/property-fee-pricing-ppt/). The agent takes a free-form brief — topic (property fee pricing), audience (property staff + committee), 26 pages, black-and-white warm style — and first commits to an outline plus a per-page asset plan that conforms to the style spec. Each slide is then built as semantic per-page HTML rather than free-form image generation: copy, layout, illustrations, icons, and any data charts are reasoned about per slot. Imagery is produced or selected per slot and VLM-checked against the page's intent; each rendered page goes through a review pass with optional rewrite for coherence and copy quality. Final pages are screenshotted and composited into the PPTX, with the per-page HTML kept alongside for direct browser preview or re-editing. The example demonstrates `sn-ppt-standard` style consistency on a long, prose-heavy deck where every slide must obey the same audience and palette constraints.
 
 - Depends on: [`sn-ppt-entry`](skills/sn-ppt-entry/SKILL.md), [`sn-ppt-standard`](skills/sn-ppt-standard/SKILL.md)
+
+## Third-Party Quick Try
+
+If you want to try a single skill before setting up the full local stack, here are some community / third-party entry points.
+
+> These links are maintained outside this repository and are not part of the official SenseNova-Skills support surface. Availability, account requirements, and platform terms may vary by provider.
+
+- [`sn-infographic` on ClawMama (Telegram / WhatsApp)](https://app.clawmama.run/skills/3k6s9d/hermes?utm_source=github&utm_medium=issue&utm_campaign=skill_outreach_opensensenova_sensenova_skills_sn_infographic) — a lightweight first run for the infographic workflow in an OpenClaw / Hermes-style agent.
 
 ## FAQ
 

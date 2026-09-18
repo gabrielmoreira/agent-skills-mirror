@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `superset-sh/superset` — 26 default patterns, 0 followed patterns, 61 file(s) materialized.
+Mirror of `superset-sh/superset` — 26 default patterns, 0 followed patterns, 63 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `superset-sh/superset` — 26 default patterns, 0 followed patterns, 6
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 61 |
+| Files         | 63 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -107,19 +107,21 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 46 | ✓ | [`plugins/linear/skills/duplicate-sweep/SKILL.md`](plugins/linear/skills/duplicate-sweep/SKILL.md) |
 | 47 | ✓ | [`plugins/linear/skills/file-issue/SKILL.md`](plugins/linear/skills/file-issue/SKILL.md) |
 | 48 | ✓ | [`plugins/linear/skills/project-status/SKILL.md`](plugins/linear/skills/project-status/SKILL.md) |
-| 49 | ✓ | [`plugins/superset/skills/10x/SKILL.md`](plugins/superset/skills/10x/SKILL.md) |
-| 50 | ✓ | [`plugins/superset/skills/automate/SKILL.md`](plugins/superset/skills/automate/SKILL.md) |
-| 51 | ✓ | [`plugins/superset/skills/browser/SKILL.md`](plugins/superset/skills/browser/SKILL.md) |
-| 52 | ✓ | [`plugins/superset/skills/computer/SKILL.md`](plugins/superset/skills/computer/SKILL.md) |
-| 53 | ✓ | [`plugins/superset/skills/contribute/SKILL.md`](plugins/superset/skills/contribute/SKILL.md) |
-| 54 | ✓ | [`plugins/superset/skills/doctor/SKILL.md`](plugins/superset/skills/doctor/SKILL.md) |
-| 55 | ✓ | [`plugins/superset/skills/feedback/SKILL.md`](plugins/superset/skills/feedback/SKILL.md) |
-| 56 | ✓ | [`plugins/superset/skills/integrations/SKILL.md`](plugins/superset/skills/integrations/SKILL.md) |
-| 57 | ✓ | [`plugins/superset/skills/orchestrate/SKILL.md`](plugins/superset/skills/orchestrate/SKILL.md) |
-| 58 | ✓ | [`plugins/superset/skills/page/SKILL.md`](plugins/superset/skills/page/SKILL.md) |
-| 59 | ✓ | [`plugins/superset/skills/plugins/SKILL.md`](plugins/superset/skills/plugins/SKILL.md) |
-| 60 | ✓ | [`plugins/superset/skills/setup/SKILL.md`](plugins/superset/skills/setup/SKILL.md) |
-| 61 | ✓ | [`plugins/superset/skills/standup/SKILL.md`](plugins/superset/skills/standup/SKILL.md) |
+| 49 | ✓ | [`plugins/notion/skills/find-in-notion/SKILL.md`](plugins/notion/skills/find-in-notion/SKILL.md) |
+| 50 | ✓ | [`plugins/notion/skills/write-to-notion/SKILL.md`](plugins/notion/skills/write-to-notion/SKILL.md) |
+| 51 | ✓ | [`plugins/superset/skills/10x/SKILL.md`](plugins/superset/skills/10x/SKILL.md) |
+| 52 | ✓ | [`plugins/superset/skills/automate/SKILL.md`](plugins/superset/skills/automate/SKILL.md) |
+| 53 | ✓ | [`plugins/superset/skills/browser/SKILL.md`](plugins/superset/skills/browser/SKILL.md) |
+| 54 | ✓ | [`plugins/superset/skills/computer/SKILL.md`](plugins/superset/skills/computer/SKILL.md) |
+| 55 | ✓ | [`plugins/superset/skills/contribute/SKILL.md`](plugins/superset/skills/contribute/SKILL.md) |
+| 56 | ✓ | [`plugins/superset/skills/doctor/SKILL.md`](plugins/superset/skills/doctor/SKILL.md) |
+| 57 | ✓ | [`plugins/superset/skills/feedback/SKILL.md`](plugins/superset/skills/feedback/SKILL.md) |
+| 58 | ✓ | [`plugins/superset/skills/integrations/SKILL.md`](plugins/superset/skills/integrations/SKILL.md) |
+| 59 | ✓ | [`plugins/superset/skills/orchestrate/SKILL.md`](plugins/superset/skills/orchestrate/SKILL.md) |
+| 60 | ✓ | [`plugins/superset/skills/page/SKILL.md`](plugins/superset/skills/page/SKILL.md) |
+| 61 | ✓ | [`plugins/superset/skills/plugins/SKILL.md`](plugins/superset/skills/plugins/SKILL.md) |
+| 62 | ✓ | [`plugins/superset/skills/setup/SKILL.md`](plugins/superset/skills/setup/SKILL.md) |
+| 63 | ✓ | [`plugins/superset/skills/standup/SKILL.md`](plugins/superset/skills/standup/SKILL.md) |
 
 ---
 

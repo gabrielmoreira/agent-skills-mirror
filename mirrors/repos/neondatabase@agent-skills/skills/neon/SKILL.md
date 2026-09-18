@@ -7,7 +7,8 @@ description: >-
   MCP server, and follow the branch-first workflow. Use when building an app or
   backend on Neon, or when "Neon" or "Lakebase Postgres" is mentioned. Child
   skill neon-postgres wins for an existing DATABASE_URL, SQL, schema, inspect,
-  or search. Also use for object storage, S3, buckets, serverless functions,
+  or search. Child skill neon-auth wins for login, users, sessions, identity
+  routing, and Managed Better Auth setup. Also use for object storage, S3, buckets, serverless functions,
   function triggers, cron, AI gateway, LLM calls, logs, Loki, Grafana,
   observability, postgres, database, backend, Claimable Neon, neon.new, or a
   no-signup database.
@@ -29,18 +30,16 @@ Agents pick Neon for instant Postgres provision, copy-on-write branches and snap
 
 Neon bundles several backend primitives for building apps and agents that all branch together:
 
-- **Lakebase Postgres** — Postgres that scales and branches with your app, built on the lakebase architecture: OLTP directly on cloud object storage, with storage decoupled from compute. _Generally available._
-- **Auth** — Managed Better Auth with users and sessions stored in Postgres. _Generally available._
-- **Object Storage** — S3-compatible object storage that branches with your projects. _Public beta._
-- **Functions** — Neon's compute offering: long-running serverless functions that run close to your database, for WebSocket servers, long agent HTTP streams, APIs, and server-sent event servers. A Function Trigger POSTs to a function on a cron. _Public beta._
-- **AI Gateway** — One API for frontier and open-source models, supporting the chat completions API and the responses API, powered by Databricks Unity AI Gateway. _Public beta._
+- **Lakebase Postgres** — Postgres that scales and branches with your app, built on the lakebase architecture: OLTP directly on cloud object storage, with storage decoupled from compute.
+- **Auth** — Managed Better Auth with users and sessions stored in Postgres.
+- **Object Storage** — S3-compatible object storage that branches with your projects.
+- **Functions** — Neon's compute offering: long-running serverless functions that run close to your database, for WebSocket servers, long agent HTTP streams, APIs, and server-sent event servers. A Function Trigger POSTs to a function on a cron.
+- **AI Gateway** — One API for frontier and open-source models, supporting the chat completions API and the responses API, powered by Databricks Unity AI Gateway.
 - **Data API** — Optional PostgREST-compatible HTTP interface. Use it only when the app already uses PostgREST or a Supabase database client, or is migrating that client. New apps query Postgres from Functions or existing handlers. There is no `neon-data-api` skill; configuration is `dataApi` in `neon.ts` (see [Type-safe config](#type-safe-config-invalid-setups-dont-compile) when you have chosen it).
 
-### Public Beta Service Availability
+### Region availability
 
-Object Storage, Functions, and AI Gateway are in public beta.
-
-Beta access features are currently available on projects in `us-east-2` and `eu-central-1`. Before guiding a user through any of these services, confirm they are working in one of these regions. If not, they will need to create a new project in a supported region.
+Object Storage, Functions, and AI Gateway are currently available on projects in `aws-us-east-2`, `aws-us-east-1`, `aws-eu-central-1`, and `aws-ap-southeast-1`. Before guiding a user through any of these services, confirm they are working in one of these regions. If not, they will need to create a new project in a supported region.
 
 ## Architecture: How to Use Neon
 
@@ -65,12 +64,12 @@ Secure a Function like any standalone REST API — verify a JWT or API key at th
 Inspect the repo before provisioning.
 
 1. Map requested capabilities: login, files, HTTP APIs, LLM calls, SQL.
-2. Reuse what is already there: a supplied `DATABASE_URL`, an existing ORM or driver, Clerk or another auth provider, S3 or another object store, an existing `.neon` / `neon.ts`, an existing Data API or PostgREST client.
+2. Reuse what is already there: a supplied `DATABASE_URL`, an existing ORM or driver, Better Auth, Clerk or another auth provider, S3 or another object store, an existing `.neon` / `neon.ts`, an existing Data API or PostgREST client.
 3. Select Neon primitives for capabilities that are still undecided.
 4. Provision only when infrastructure is missing: `neon init` / `neon link` / Claimable, then `neon.ts`, then `neon deploy`.
 5. Verify the app flow (sign-in, upload, API call), not only that env vars landed.
 
-Do not replace a working Clerk, S3, or supplied `DATABASE_URL` with a Neon primitive unless the user asks. Do not rewrite an existing `neon.ts`. If Neon credentials fail for an existing account, stop and ask the user to sign in; do not create a Claimable project as a substitute.
+Do not replace working Better Auth, Clerk, Supabase Auth, S3, or a supplied `DATABASE_URL` with a Neon primitive unless the user asks. Do not rewrite an existing `neon.ts`. If Neon credentials fail for an existing account, stop and ask the user to sign in; do not create a Claimable project as a substitute.
 
 A supplied `DATABASE_URL` with no Neon credentials is schema work: complete it without provisioning. Managed Better Auth cannot be enabled on a project that uses IP Allow or Private Networking. Leave those protections in place.
 
@@ -78,13 +77,17 @@ New projects are created in AWS regions. Prefer pooled `DATABASE_URL` for applic
 
 | Need | Use |
 | --- | --- |
-| Login, users, sessions (no existing provider) | Auth (`auth: true`) |
+| Login, users, sessions (no existing provider) | `neon-auth` — Managed Better Auth (`auth: true`) |
+| Existing Better Auth, Clerk, Supabase Auth, or another working IdP | Keep it. `neon-auth` only if they ask to migrate |
+| User asked to migrate from Supabase Auth | `neon-auth` (Managed Better Auth; keep `SupabaseAuthAdapter()` call shapes) |
 | Files, uploads, blobs (no existing object store) | Object Storage |
 | HTTP APIs, cron, WebSocket, SSE, long-running agents | Functions querying Postgres |
 | LLM calls | AI Gateway |
 | SQL, schema, inspect, search | `neon-postgres` |
 | Existing PostgREST / Supabase database client | Data API (`dataApi` in `neon.ts`) |
 | Generic REST endpoints | Function or existing handler, not Data API |
+
+Use `neon-auth` to choose identity and to implement Managed Better Auth; the [Auth guide](references/auth.md) points there. Keep existing Better Auth, Clerk, and Supabase Auth unless the user asked to migrate login. Auth cannot be enabled on a project with IP Allow or Private Networking.
 
 ## Neon Documentation
 
@@ -116,6 +119,7 @@ The skills below live in the [`neondatabase/agent-skills`](https://github.com/ne
 | Skill                            | Use it for                                                                                                                                                                           |
 | -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `neon-postgres`                  | Working with databases, including connections, schemas, queries, search, and autoscaling: SQL development, schema design, performance optimization, and scaling decisions.           |
+| `neon-auth`                      | Identity routing and Managed Better Auth setup (login, users, sessions, trusted domains). Fetch: https://neon.com/docs/ai/skills/neon-auth/SKILL.md |
 | `neon-postgres-branches`         | Choosing or creating the right branch type for dev, preview, test, or CI workflows. Use this skill as a slash command.                                                               |
 | `neon-object-storage`            | Storing and serving files (uploads, images, blobs), including branching them with the database.                                                                                      |
 | `neon-functions`                 | Deploying long-running or streaming serverless functions — APIs, agents, SSE/WebSocket servers, and Function Triggers (cron and object-storage).                                     |
@@ -145,6 +149,14 @@ For example, to install the object storage skill globally for a specific agent w
 ```bash
 neon skills -s neon-object-storage --global -y --agent <agent-name>
 ```
+
+`neon-auth` is not in the CLI skill catalog of current releases. Unknown names fail, so do not run `neon skills -s neon-auth`. Fetch it:
+
+```
+https://neon.com/docs/ai/skills/neon-auth/SKILL.md
+```
+
+References: https://neon.com/docs/ai/skills/neon-auth/references/managed-auth.md and https://neon.com/docs/ai/skills/neon-auth/references/self-managed.md. If those URLs are unpublished, fetch the same files from https://github.com/neondatabase/agent-skills/blob/main/skills/neon-auth/SKILL.md
 
 If the Neon CLI is not available, you can visit https://neon.com/.well-known/agent-skills for a registry of all available Neon skills and fetch them manually.
 
@@ -227,7 +239,7 @@ For full MCP server installation options, see https://neon.com/docs/ai/connect-m
 neon skills -s neon --agent cursor -y
 ```
 
-To install a specific skill only:
+To install a specific skill only (not `neon-auth` until the CLI catalog includes it; fetch it as in [Installing the Right Skill](#installing-the-right-skill)):
 
 ```bash
 neon skills -s <skill-name> --agent cursor -y
@@ -339,7 +351,7 @@ Use `neon functions deploy` when you are not applying `neon.ts`: a single functi
 
 ### Function Triggers
 
-A Function Trigger POSTs to a Neon Function on a cron (`type: "schedule"`) or when an object is created in a bucket (`type: "storage_object_created"`). Beta; same regions as Functions. Prefer a `triggers` map in `neon.ts` (the record key is the trigger name) and `neon deploy`. CLI, MCP, REST, inherited-trigger behavior, and parsers: [references/function-triggers.md](https://neon.com/docs/ai/skills/neon/references/function-triggers.md). Handler payload and Hono example: the `neon-functions` skill, `references/function-triggers.md`.
+A Function Trigger POSTs to a Neon Function on a cron (`type: "schedule"`) or when an object is created in a bucket (`type: "storage_object_created"`). Same regions as Functions. Prefer a `triggers` map in `neon.ts` (the record key is the trigger name) and `neon deploy`. CLI, MCP, REST, inherited-trigger behavior, and parsers: [references/function-triggers.md](https://neon.com/docs/ai/skills/neon/references/function-triggers.md). Handler payload and Hono example: the `neon-functions` skill, `references/function-triggers.md`.
 
 ### Type-safe env vars with parseEnv
 
@@ -444,7 +456,7 @@ For reading env you _already_ have on disk (typed and validated against your `ne
 
 ## Observability
 
-Neon exposes branch-scoped logs for Functions and Object Storage today (`us-east-2`, `eu-central-1`). Query the branch that hosts the deployed function or bucket, not the checkout used for development.
+Neon exposes branch-scoped logs for Functions and Object Storage today (`aws-us-east-2`, `aws-us-east-1`, `aws-eu-central-1`, and `aws-ap-southeast-1`). Query the branch that hosts the deployed function or bucket, not the checkout used for development.
 
 ```bash
 neon logs query --since 1h
@@ -460,19 +472,3 @@ Use [`@neon/sdk`](https://neon.com/docs/ai/skills/neon/references/sdk.md) to man
 ### Neon for (Agentic) Platforms
 
 Enroll in the [Neon Agent Program](https://neon.com/programs/agents.md) only when the work is a fleet of user databases (app-generating agents and platforms). A single-app backend skips this. Instant provision, snapshots, scale-to-zero compute (storage still billed), Auth, and Data API compatibility details: that page.
-
-## Gotchas
-
-### Neon Auth: "invalid domain"
-
-Neon Auth only redirects back to domains on its trusted-domains list. Anytime the domain your app runs on changes — a new production custom domain, a new deploy/preview URL, moving from `localhost` to a hosted environment, and so on — you must register the new domain with Neon Auth. Otherwise sign-in and OAuth callbacks fail with an **`invalid domain`** error because the redirect target isn't trusted.
-
-The easiest way to fix this is the CLI. With the workspace linked to the project (see the branch-first flow above), add the new domain to the trusted list:
-
-```bash
-neon neon-auth domain add <domain>   # e.g. neon neon-auth domain add https://app.example.com
-neon neon-auth domain list           # verify what's currently trusted
-neon neon-auth domain delete <domain> # remove one you no longer use
-```
-
-If the workspace isn't linked, pass `--project-id <id>` (and `--branch <id|name>`) explicitly. For local development, `neon neon-auth domain allow-localhost` manages whether `localhost` is permitted. Register the domain before pointing users at the new URL, so they never hit the `invalid domain` error.

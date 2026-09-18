@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `stablyai/orca` — 26 default patterns, 17 followed patterns, 30 file(s) materialized.
+Mirror of `stablyai/orca` — 26 default patterns, 18 followed patterns, 31 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `stablyai/orca` — 26 default patterns, 17 followed patterns, 30 file
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 17 |
-| Files         | 30 |
+| Followed pats | 18 |
+| Files         | 31 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -57,6 +57,7 @@ Mirror of `stablyai/orca` — 26 default patterns, 17 followed patterns, 30 file
 - `docs/reference/windows-setup-shell.md`
 - `docs/reference/windows-cmd-shim-resolution.md`
 - `docs/reference/windows-process-enumeration.md`
+- `docs/reference/windows-msys-job-breakaway.md`
 - `docs/reference/windows-daemon-host-relocation.md`
 - `docs/reference/windows-edr-posture.md`
 - `docs/reference/wsl-command-execution.md`
@@ -100,11 +101,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 23 | → | [`docs/reference/windows-cmd-shim-resolution.md`](docs/reference/windows-cmd-shim-resolution.md) |
 | 24 | → | [`docs/reference/windows-daemon-host-relocation.md`](docs/reference/windows-daemon-host-relocation.md) |
 | 25 | → | [`docs/reference/windows-edr-posture.md`](docs/reference/windows-edr-posture.md) |
-| 26 | → | [`docs/reference/windows-process-enumeration.md`](docs/reference/windows-process-enumeration.md) |
-| 27 | → | [`docs/reference/windows-setup-shell.md`](docs/reference/windows-setup-shell.md) |
-| 28 | → | [`docs/reference/windows-terminal-shell-selection.md`](docs/reference/windows-terminal-shell-selection.md) |
-| 29 | → | [`docs/reference/wsl-command-execution.md`](docs/reference/wsl-command-execution.md) |
-| 30 | → | [`docs/STYLEGUIDE.md`](docs/STYLEGUIDE.md) |
+| 26 | → | [`docs/reference/windows-msys-job-breakaway.md`](docs/reference/windows-msys-job-breakaway.md) |
+| 27 | → | [`docs/reference/windows-process-enumeration.md`](docs/reference/windows-process-enumeration.md) |
+| 28 | → | [`docs/reference/windows-setup-shell.md`](docs/reference/windows-setup-shell.md) |
+| 29 | → | [`docs/reference/windows-terminal-shell-selection.md`](docs/reference/windows-terminal-shell-selection.md) |
+| 30 | → | [`docs/reference/wsl-command-execution.md`](docs/reference/wsl-command-execution.md) |
+| 31 | → | [`docs/STYLEGUIDE.md`](docs/STYLEGUIDE.md) |
 
 ---
 

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `generalaction/emdash` — 26 default patterns, 4 followed patterns, 61 file(s) materialized.
+Mirror of `generalaction/emdash` — 26 default patterns, 4 followed patterns, 62 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `generalaction/emdash` — 26 default patterns, 4 followed patterns, 6
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 4 |
-| Files         | 61 |
+| Files         | 62 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -82,47 +82,48 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 18 | ✓ | [`agents/conventions/ui-kit.md`](agents/conventions/ui-kit.md) |
 | 19 | ✓ | [`agents/conventions/ui-styling.md`](agents/conventions/ui-styling.md) |
 | 20 | ✓ | [`agents/conventions/versioned-schemas.md`](agents/conventions/versioned-schemas.md) |
-| 21 | ✓ | [`agents/integrations/mcp.md`](agents/integrations/mcp.md) |
-| 22 | ✓ | [`agents/integrations/providers.md`](agents/integrations/providers.md) |
-| 23 | ✓ | [`agents/quickstart.md`](agents/quickstart.md) |
-| 24 | ✓ | [`agents/README.md`](agents/README.md) |
-| 25 | ✓ | [`agents/research/reconciliation-models.md`](agents/research/reconciliation-models.md) |
-| 26 | ✓ | [`agents/risky-areas/database.md`](agents/risky-areas/database.md) |
-| 27 | ✓ | [`agents/risky-areas/pty.md`](agents/risky-areas/pty.md) |
-| 28 | ✓ | [`agents/risky-areas/ssh.md`](agents/risky-areas/ssh.md) |
-| 29 | ✓ | [`agents/risky-areas/updater.md`](agents/risky-areas/updater.md) |
-| 30 | ✓ | [`agents/workflows/flows.md`](agents/workflows/flows.md) |
-| 31 | ✓ | [`agents/workflows/nx.md`](agents/workflows/nx.md) |
-| 32 | ✓ | [`agents/workflows/remote-development.md`](agents/workflows/remote-development.md) |
-| 33 | ✓ | [`agents/workflows/testing.md`](agents/workflows/testing.md) |
-| 34 | ✓ | [`agents/workflows/worktrees.md`](agents/workflows/worktrees.md) |
-| 35 | ✓ | [`apps/emdash-desktop/src/core/primitives/commands/README.md`](apps/emdash-desktop/src/core/primitives/commands/README.md) |
-| 36 | ✓ | [`apps/emdash-desktop/src/core/primitives/json/README.md`](apps/emdash-desktop/src/core/primitives/json/README.md) |
-| 37 | ✓ | [`apps/emdash-desktop/src/core/primitives/keybindings/README.md`](apps/emdash-desktop/src/core/primitives/keybindings/README.md) |
-| 38 | ✓ | [`apps/emdash-desktop/src/core/primitives/layouts/README.md`](apps/emdash-desktop/src/core/primitives/layouts/README.md) |
-| 39 | ✓ | [`apps/emdash-desktop/src/core/primitives/mementos/README.md`](apps/emdash-desktop/src/core/primitives/mementos/README.md) |
-| 40 | ✓ | [`apps/emdash-desktop/src/core/primitives/modals/README.md`](apps/emdash-desktop/src/core/primitives/modals/README.md) |
-| 41 | ✓ | [`apps/emdash-desktop/src/core/primitives/navigation/README.md`](apps/emdash-desktop/src/core/primitives/navigation/README.md) |
-| 42 | ✓ | [`apps/emdash-desktop/src/core/primitives/palette/README.md`](apps/emdash-desktop/src/core/primitives/palette/README.md) |
-| 43 | ✓ | [`apps/emdash-desktop/src/core/primitives/subjects/README.md`](apps/emdash-desktop/src/core/primitives/subjects/README.md) |
-| 44 | ✓ | [`apps/emdash-desktop/src/core/primitives/view-scopes/README.md`](apps/emdash-desktop/src/core/primitives/view-scopes/README.md) |
-| 45 | ✓ | [`apps/emdash-desktop/src/core/primitives/views/README.md`](apps/emdash-desktop/src/core/primitives/views/README.md) |
-| 46 | ✓ | [`apps/emdash-desktop/src/core/services/hosts/node/testing/README.md`](apps/emdash-desktop/src/core/services/hosts/node/testing/README.md) |
-| 47 | ✓ | [`apps/emdash-desktop/tooling/prototypes/cow-worktree/README.md`](apps/emdash-desktop/tooling/prototypes/cow-worktree/README.md) |
-| 48 | ✓ | [`apps/emdash-desktop/tooling/prototypes/creation-baseline/README.md`](apps/emdash-desktop/tooling/prototypes/creation-baseline/README.md) |
-| 49 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 50 | ✓ | [`packages/core/docs/path/README.md`](packages/core/docs/path/README.md) |
-| 51 | ✓ | [`packages/core/docs/README.md`](packages/core/docs/README.md) |
-| 52 | ✓ | [`packages/core/README.md`](packages/core/README.md) |
-| 53 | ✓ | [`packages/core/src/primitives/sqlite-store/README.md`](packages/core/src/primitives/sqlite-store/README.md) |
-| 54 | ✓ | [`packages/shared/README.md`](packages/shared/README.md) |
-| 55 | ✓ | [`packages/wire/docs/README.md`](packages/wire/docs/README.md) |
-| 56 | ✓ | [`packages/wire/examples/README.md`](packages/wire/examples/README.md) |
-| 57 | ✓ | [`packages/wire/src/state/README.md`](packages/wire/src/state/README.md) |
-| 58 | → | [`apps/workspace-server/docs/packaging.md`](apps/workspace-server/docs/packaging.md) |
-| 59 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 60 | → | [`LICENSE.md`](LICENSE.md) |
-| 61 | → | [`README.md`](README.md) |
+| 21 | ✓ | [`agents/integrations/integration-plugins.md`](agents/integrations/integration-plugins.md) |
+| 22 | ✓ | [`agents/integrations/mcp.md`](agents/integrations/mcp.md) |
+| 23 | ✓ | [`agents/integrations/providers.md`](agents/integrations/providers.md) |
+| 24 | ✓ | [`agents/quickstart.md`](agents/quickstart.md) |
+| 25 | ✓ | [`agents/README.md`](agents/README.md) |
+| 26 | ✓ | [`agents/research/reconciliation-models.md`](agents/research/reconciliation-models.md) |
+| 27 | ✓ | [`agents/risky-areas/database.md`](agents/risky-areas/database.md) |
+| 28 | ✓ | [`agents/risky-areas/pty.md`](agents/risky-areas/pty.md) |
+| 29 | ✓ | [`agents/risky-areas/ssh.md`](agents/risky-areas/ssh.md) |
+| 30 | ✓ | [`agents/risky-areas/updater.md`](agents/risky-areas/updater.md) |
+| 31 | ✓ | [`agents/workflows/flows.md`](agents/workflows/flows.md) |
+| 32 | ✓ | [`agents/workflows/nx.md`](agents/workflows/nx.md) |
+| 33 | ✓ | [`agents/workflows/remote-development.md`](agents/workflows/remote-development.md) |
+| 34 | ✓ | [`agents/workflows/testing.md`](agents/workflows/testing.md) |
+| 35 | ✓ | [`agents/workflows/worktrees.md`](agents/workflows/worktrees.md) |
+| 36 | ✓ | [`apps/emdash-desktop/src/core/primitives/commands/README.md`](apps/emdash-desktop/src/core/primitives/commands/README.md) |
+| 37 | ✓ | [`apps/emdash-desktop/src/core/primitives/json/README.md`](apps/emdash-desktop/src/core/primitives/json/README.md) |
+| 38 | ✓ | [`apps/emdash-desktop/src/core/primitives/keybindings/README.md`](apps/emdash-desktop/src/core/primitives/keybindings/README.md) |
+| 39 | ✓ | [`apps/emdash-desktop/src/core/primitives/layouts/README.md`](apps/emdash-desktop/src/core/primitives/layouts/README.md) |
+| 40 | ✓ | [`apps/emdash-desktop/src/core/primitives/mementos/README.md`](apps/emdash-desktop/src/core/primitives/mementos/README.md) |
+| 41 | ✓ | [`apps/emdash-desktop/src/core/primitives/modals/README.md`](apps/emdash-desktop/src/core/primitives/modals/README.md) |
+| 42 | ✓ | [`apps/emdash-desktop/src/core/primitives/navigation/README.md`](apps/emdash-desktop/src/core/primitives/navigation/README.md) |
+| 43 | ✓ | [`apps/emdash-desktop/src/core/primitives/palette/README.md`](apps/emdash-desktop/src/core/primitives/palette/README.md) |
+| 44 | ✓ | [`apps/emdash-desktop/src/core/primitives/subjects/README.md`](apps/emdash-desktop/src/core/primitives/subjects/README.md) |
+| 45 | ✓ | [`apps/emdash-desktop/src/core/primitives/view-scopes/README.md`](apps/emdash-desktop/src/core/primitives/view-scopes/README.md) |
+| 46 | ✓ | [`apps/emdash-desktop/src/core/primitives/views/README.md`](apps/emdash-desktop/src/core/primitives/views/README.md) |
+| 47 | ✓ | [`apps/emdash-desktop/src/core/services/hosts/node/testing/README.md`](apps/emdash-desktop/src/core/services/hosts/node/testing/README.md) |
+| 48 | ✓ | [`apps/emdash-desktop/tooling/prototypes/cow-worktree/README.md`](apps/emdash-desktop/tooling/prototypes/cow-worktree/README.md) |
+| 49 | ✓ | [`apps/emdash-desktop/tooling/prototypes/creation-baseline/README.md`](apps/emdash-desktop/tooling/prototypes/creation-baseline/README.md) |
+| 50 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 51 | ✓ | [`packages/core/docs/path/README.md`](packages/core/docs/path/README.md) |
+| 52 | ✓ | [`packages/core/docs/README.md`](packages/core/docs/README.md) |
+| 53 | ✓ | [`packages/core/README.md`](packages/core/README.md) |
+| 54 | ✓ | [`packages/core/src/primitives/sqlite-store/README.md`](packages/core/src/primitives/sqlite-store/README.md) |
+| 55 | ✓ | [`packages/shared/README.md`](packages/shared/README.md) |
+| 56 | ✓ | [`packages/wire/docs/README.md`](packages/wire/docs/README.md) |
+| 57 | ✓ | [`packages/wire/examples/README.md`](packages/wire/examples/README.md) |
+| 58 | ✓ | [`packages/wire/src/state/README.md`](packages/wire/src/state/README.md) |
+| 59 | → | [`apps/workspace-server/docs/packaging.md`](apps/workspace-server/docs/packaging.md) |
+| 60 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 61 | → | [`LICENSE.md`](LICENSE.md) |
+| 62 | → | [`README.md`](README.md) |
 
 ---
 

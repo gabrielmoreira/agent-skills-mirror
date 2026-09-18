@@ -94,6 +94,7 @@ Grep-verified 2026-09-04 (`npm run docs:verify` re-checks every path). This is t
 - **Toggling the unread filters:** `toggleAllUnreadFilters()`, `toggleTabUnreadFilter()` in `src/renderer/services/unreadFilters.ts`
 - **Scheduled Tasks (clock-driven Cue subs):** `src/shared/cue/scheduled-tasks.ts`
 - **Whether two subscriptions are the same visual trigger:** `triggerGroupKey(sub)` in `src/shared/cue/trigger-group-key.ts`
+- **How big a pipeline is on the canvas:** `pipelineCardBounds(nodes, opts?)`, `nodeFootprintWidth()` in `src/renderer/components/CuePipelineEditor/utils/nodeFootprint.ts`
 - **Which pipelines belong to an agent:** `pipelinesForSession()`, `pipelineInvolvesSession()` in `src/renderer/components/CuePipelineEditor/utils/pipelineMembership.ts`
 - **How much work happened in a group chat:** `computeGroupChatActivity(entries)`, `elapsedTimeMs` in `src/shared/groupChatActivity.ts`
 - **How big a tab's conversation is and how long it ran:** `computeTabConversationStats()`, `formatConversationDuration()` in `src/shared/tabConversationStats.ts`
@@ -106,6 +107,7 @@ Grep-verified 2026-09-04 (`npm run docs:verify` re-checks every path). This is t
 - **Taking the user to an agent:** `jumpToAgent(sessionId, { tabId? })`, `revealAgentInSidebar(session)`, `openAgentSettings(session)` in `src/renderer/services/agentNavigation.ts`
 - **Focus an AI tab:** `aiTabFocusFields(tabId?)`, `activeFileTabId` in `src/renderer/utils/tabHelpers.ts`
 - **Focus a file tab:** `fileTabFocusFields(tabId)` in `src/renderer/utils/tabHelpers.ts`
+- **Closing a tab while the unread filter is on:** `closeTab()` third arg is an OVERRIDE; omit it and `src/renderer/utils/tabHelpers.ts` reads `uiStore.showUnreadOnly`
 - **Ending a turn with no process exit:** `settleTabThinkingState(session, tabId)` in `src/renderer/utils/tabHelpers.ts`
 - **Leaving inline wizard mode:** `flattenWizardIntoTab(tab, { summary? })` in `src/renderer/utils/tabHelpers.ts` (never clear `tab.wizardState` by hand)
 - **Naming a tab from the user's message:** `requestTabAutoName()`, `collectNamingPrompt()`, `requestWizardTabAutoName()` in `src/renderer/services/tabAutoNaming.ts`
@@ -150,6 +152,7 @@ Grep-verified 2026-09-04 (`npm run docs:verify` re-checks every path). This is t
 - **Paginating a list already in memory:** `usePagination(items, pageSize, resetKey)`, `useHistoryPagination` in `src/renderer/hooks/ui/usePagination.ts`
 - **Following streaming output in a capped box:** `useStickToBottom(contentKey)`, `useScrollIntoView` in `src/renderer/hooks/ui/useStickToBottom.ts`
 - **Restoring an AI tab's scroll position:** `initialScrollTop` + `initialIsAtBottom` props on `src/renderer/components/TerminalOutput.tsx` (a tail-following tab restores to the BOTTOM, not its stale saved offset)
+- **Reaching an off-screen item while dragging:** `useDragAutoScroll(ref, { active, startInset?, endInset? })`, `edgeSize` in `src/renderer/hooks/ui/useDragAutoScroll.ts`
 - **Keeping a virtualized list on its selection:** `scrollToIndex`, `ref` in `src/renderer/hooks/ui/useScrollIntoView.ts`
 - **Sizing a virtualized row the user's font decides:** `virtualizer.measureElement` + `data-index` and NO inline `height`; `HistoryPanel`, `FileSearchModal`
 - **Adding a control to the Left Bar header:** three-zone row in `src/renderer/components/SessionList/SessionList.tsx`; see guide before touching

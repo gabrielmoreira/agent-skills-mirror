@@ -44,6 +44,13 @@ const OPENCODE_FAMILY = Object.freeze({
     configCandidates: Object.freeze(["opencode.jsonc", "opencode.json", "config.json"]),
     jsonc: true,
     schema: "https://opencode.ai/config.json",
+    // #1026: register a user-writable, content-addressed managed generation
+    // under the target home instead of pointing opencode at the packaged
+    // source dir (Program Files / app.asar.unpacked paths are silently
+    // skipped by the loader). This flag ALSO gates the managed ownership
+    // classifier, managed Doctor inspection and generation cleanup. It is an
+    // explicit per-member switch — never inferred from runtime/platform.
+    managedMaterialization: true,
   }),
   // MiMo Code — opencode-derived runtime with the identical plugin loader +
   // event wire contract. Its config is JSONC (comments/trailing commas
@@ -70,6 +77,10 @@ const OPENCODE_FAMILY = Object.freeze({
     configCandidates: Object.freeze(["mimocode.jsonc", "mimocode.json", "config.json"]),
     jsonc: true,
     schema: "https://mimo.xiaomi.com/mimocode/config.json",
+    // MiMo keeps the legacy direct-source register/unregister/Doctor behavior
+    // in this change (#1026 §1.2). Flipping this to true requires real MiMo
+    // loader evidence and explicit review authorization.
+    managedMaterialization: false,
   }),
 });
 

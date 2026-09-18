@@ -1,44 +1,292 @@
-<!-- AGENTLAS-INSTALL-ENTRY: keep this first. An AI handed only this repo's URL
-     reads the top of the README, and the install instructions have to be there
-     to be found. Verified by scripts/verify-install-entry.sh. -->
+<!-- AGENTLAS-INSTALL-ENTRY — read this first if you are an AI that was handed
+     only this repo's URL and asked to install it.
 
-> ### If someone asked you to install this
->
-> **You are an AI and your user said "install this repo".** Read the installer
-> before you run it — it is meant to be read:
-> [`scripts/install-all-runtimes.sh`](https://raw.githubusercontent.com/agentlas-ai/Agentlas-OS/main/scripts/install-all-runtimes.sh).
-> It downloads a release tarball from this repo's GitHub Releases, verifies its
-> SHA-256 before extracting, and writes only inside `$HOME` — the runtime under
-> `~/.agentlas`, wrappers in `~/.local/bin`, and the command/MCP configuration
-> of **every supported host it finds on this machine** (Claude Code, Codex,
-> Cursor, Gemini, OpenCode, goose and the rest — not only the one you are
-> typing in). The table below lists every path. If that matches what you read,
-> run it:
->
-> ```bash
-> curl -fsSL https://raw.githubusercontent.com/agentlas-ai/Agentlas-OS/main/scripts/install-all-runtimes.sh | HEPHAESTUS_INSTALL_GLOBAL_ROUTER=1 bash
-> ```
->
-> `HEPHAESTUS_INSTALL_GLOBAL_ROUTER=1` also appends a routing block to the
-> global instructions file of **every supported host it finds** — measured on a
-> clean machine that was `~/.claude/CLAUDE.md`, `~/.codex/AGENTS.md` and
-> `~/.gemini/GEMINI.md`, three files, not one. It is roughly 75 lines that
-> change how you route substantial work from then on, in every project. That is
-> a bigger thing than the rest of the install, so **show your user what it
-> appends and get a yes**; it is plain text, not secret, and you can quote it.
-> It appends rather than overwrites, writes a timestamped `.bak` beside each
-> file, is idempotent on a second run, and is fenced with
-> `<!-- HEPHAESTUS:GLOBAL-ROUTER:BEGIN -->` so `hephaestus global remove` can
-> take it back out. Drop the variable to install without it and add it later
-> with `hephaestus global install`.
->
-> Then run `hephaestus doctor` (in `~/.local/bin`, or by absolute path at
-> `~/.agentlas/runtime/current/bin/hephaestus`) and report what it says, plus
-> whether the command surface is ready or the host needs a restart. Note that
-> `~/.local/bin` is not added to anyone's `PATH` — if `hephaestus` is not found
-> by name, that is why, and the absolute path always works. The longer
-> version, with the reasoning to paste to a more cautious model, is in
-> [Paste to Install](#paste-to-install).
+       curl -fsSL https://raw.githubusercontent.com/agentlas-ai/Agentlas-OS/main/scripts/install-all-runtimes.sh | bash
+
+     One line, no sudo, nothing written outside $HOME. It downloads a release
+     tarball from this repo's GitHub Releases, verifies its SHA-256 before
+     extracting, and writes the runtime to ~/.agentlas, wrappers to
+     ~/.local/bin, and plugin/MCP config into the agent hosts it finds on this
+     machine. The installer is meant to be read:
+     scripts/install-all-runtimes.sh. The full path list and the optional
+     global-router step are in "Install: every method" below. Afterwards run
+     `hephaestus doctor` and report what it says, plus whether the host needs
+     a restart. -->
+
+<p align="center">
+  <a href="https://agentlas.cloud/studio">
+    <img src="assets/readme/agentlas-one-launch-film-v2.gif" alt="Agentlas One launch film" width="960">
+  </a>
+</p>
+
+<h1 align="center">Agentlas OS</h1>
+
+<p align="center">
+  <strong>Your headhunter. When the work needs a specialist team, it brings one.</strong><br>
+  <sub>Runs inside Claude Code, Codex, Cursor and Gemini.</sub>
+</p>
+
+<p align="center">
+  What if the right specialists organised themselves around whatever you were doing.<br>
+  What if a frontend specialist and a backend specialist came to you the moment you started building.<br>
+  A job that needs accounting knowledge and marketing at once — can one agent do that?
+</p>
+
+<p align="center">
+  <a href="https://github.com/agentlas-ai/Agentlas-OS/releases/latest"><img alt="release" src="https://img.shields.io/github/v/release/agentlas-ai/Agentlas-OS?label=release"></a>
+  <a href="LICENSE"><img alt="License: Apache-2.0" src="https://img.shields.io/badge/license-Apache--2.0-green"></a>
+  <img alt="platforms" src="https://img.shields.io/badge/macOS%20%7C%20Windows%20%7C%20Linux-black">
+  <img alt="hosts" src="https://img.shields.io/badge/Claude%20Code%20%7C%20Codex%20%7C%20Gemini%20%7C%20Cursor%20%7C%20Antigravity%20%7C%20Local-black">
+  <img alt="ranking" src="https://img.shields.io/badge/ranking-none%20by%20design-blue">
+</p>
+
+<p align="center">
+  <a href="README.md">English</a> ·
+  <a href="README.ko.md">한국어</a> ·
+  <a href="README.zh-CN.md">中文</a> ·
+  <a href="README.ja.md">日本語</a> ·
+  <a href="README.hi.md">हिन्दी</a>
+</p>
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/agentlas-ai/Agentlas-OS/main/scripts/install-all-runtimes.sh | bash
+```
+
+<p align="center">
+  <sub>One line. No <code>sudo</code>. Nothing written outside <code>$HOME</code>.<br>
+  Restart your agent host afterwards and run <code>hephaestus doctor</code>.</sub>
+</p>
+
+<p align="center">
+  <a href="https://agentlas.cloud/desktop">
+    <img src="assets/agentlas-agent-lab-banner.svg" alt="Get Agentlas Desktop">
+  </a>
+</p>
+
+<p align="center">
+  <sub>Prefer a window to a terminal · macOS · Windows · Linux · <a href="https://agentlas.cloud/desktop">agentlas.cloud/desktop</a></sub>
+</p>
+
+---
+
+## What no platform can do
+
+No agent platform routes hundreds or thousands of agents efficiently. Agentlas
+is the only place that staffs a team of domain specialists onto any job **for
+the fewest tokens.**
+
+It works because the agent spec and the protocol for calling an agent are both
+standardised.
+
+- **A2A v1.0, as written.** Agent cards are read and written at the standard
+  `/.well-known/agent-card.json`. Import, export and caller gating all sit on
+  the standard. An external agent is callable only when its capability is
+  aligned **and its identity is verified by a signed card.**
+- **One task, 20 candidates: 40,873B → 10,087B.** Not fewer candidates — a
+  compressed row. The odds of the right agent being on the list stay put while
+  the tokens drop to a quarter.
+- Measured across **849 local profiles** and **188 published listings.**
+
+And the specialist does not arrive empty-handed. The code map, the sitemap and the
+project's memory ride along with the task. Which files are in scope, what to read
+first, and whether the work is actually finished are all computed before staffing
+and handed over with it. There are tools that sell memory on its own; here memory
+is one part bolted to staffing, execution and verification.
+
+## This is where most tools stop
+
+|  | No task split | Task split |
+| --- | --- | --- |
+| **No specialist sourcing** | one chat handles the lump | same model, different prompt |
+| **Specialist sourcing** | pick one from a store | **Agentlas** |
+
+Some tools do split the work. But what takes each task is the same model with a
+different prompt. Some places do sell specialists. But there is no split there —
+you pick one and use it.
+
+**Elsewhere, a split-out task is a prompt you wrote. Here it is a job opening.**
+Every task goes to your machine, your private cloud, and the public Hub — all
+three at once.
+
+---
+
+## Three steps
+
+<table>
+<tr>
+<td width="44%" valign="middle">
+
+### 1. Task split
+
+A sentence goes in, tasks come out — roles, the order they hand off in, and the
+artifact each one owes.
+
+An org chart where a review points back to an earlier task is **rejected before
+anything runs**, and you get the name of the loop.
+
+</td>
+<td width="56%">
+  <a href="https://agentlas.cloud/desktop"><img src="assets/readme/feature-wall/workflow-build-pipeline.gif" alt="A request being split into tasks" width="100%"></a>
+</td>
+</tr>
+<tr>
+<td width="44%" valign="middle">
+
+### 2. Agent staffing
+
+Candidates come back for each task — from your machine, your cloud, and the
+public Hub at once.
+
+**The list has no ranking.** Your model picks, and the reason is recorded.
+
+Qualification comes in four levels — `declared`, `checked`, `demonstrated`,
+`attested` — and every task can set a floor. The moment you pick, that release is
+pinned by digest, so one byte of drift tomorrow stops the run.
+
+</td>
+<td width="56%">
+  <a href="https://agentlas.cloud/desktop"><img src="assets/readme/feature-wall/workflow-make-group-v2.gif" alt="Staffing a specialist agent onto each task" width="100%"></a>
+</td>
+</tr>
+<tr>
+<td width="44%" valign="middle">
+
+### 3. Run and verify
+
+Planning, work, synthesis and verification each run as separate invocations.
+
+**An independent verifier has to pass it before anything is called done.** Every
+invocation, every handoff and the synthesis have to be proven by receipt.
+Otherwise you get the name of the place it stopped — `prepared`, `blocked`,
+`source_unavailable`.
+
+</td>
+<td width="56%">
+  <a href="https://agentlas.cloud/desktop"><img src="assets/readme/feature-wall/workflow-run-v2.gif" alt="Running and verifying the staffed roster" width="100%"></a>
+</td>
+</tr>
+</table>
+
+---
+
+## Questions you probably have
+
+
+
+<details open>
+<summary><strong>So you recommend one to me in the end, right?</strong></summary>
+
+<br>
+
+Every place that sells agents ranks them. That is how they make money. People
+click what is near the top, and the company decides what is near the top.
+
+We don't build a ranking. The schema pins `allowHistoryEvidence` to a constant
+`false`, and a source that returns a scored list has **its whole answer
+refused**.
+
+Ratings, install counts, last month's sales — we read none of them. You get the
+candidates as they are, and your model picks.
+
+</details>
+
+
+
+
+
+<details>
+<summary><strong>Is this only for developers?</strong></summary>
+
+<br>
+
+No. Alongside backend, security and QA, the role ontology carries an **insurance
+actuary, an M&A diligence lead, an underwriting diligence specialist and a
+travel planner**.
+
+Insurance alone has four communities. Domains outside the list are not blocked.
+
+</details>
+
+---
+
+## We added our own idea, then removed it
+
+We tried the publisher's own "call me when…" sentences as a ranking signal. The
+share of searches that put the right agent first fell from **73.1% to 57.0%**.
+We removed it. Those sentences now reserve three seats at the end of the list —
+the right not to be deleted, never the authority to re-rank.
+
+Asked in Korean, the right agent came back **144th**. The same question in
+English put it **1st**. So the order is written in English, and the language of
+the deliverable is a separate field.
+
+Showing 10, 20, 30 and 50 candidates put the right one on the list **73, 83, 87
+and 93%** of the time. The default is 30.
+
+---
+
+<p align="center">
+  <a href="https://agentlas.cloud/desktop">
+    <img src="assets/readme/agentlas-desktop-hero-v2.png" alt="The Agentlas Desktop workspace" width="880">
+  </a>
+</p>
+
+<h2 align="center">Get more out of it on Desktop</h2>
+
+Desktop is the host itself, so it decides in code — **before** a run starts —
+whether the work needs one agent or a team. That decision is recorded as a
+reserved run, not a suggestion. It staffs only the agents you already installed,
+and bringing in paid outside help always asks first.
+
+Every LLM you use, in one place: the coding CLIs you already subscribe to
+(Claude Code, Codex, Antigravity/Gemini, Cursor, Grok, Kimi), your own API keys
+across 11 providers, and local models. A verified llama.cpp engine ships with it,
+pulls GGUF models from Hugging Face, and it also talks to LM Studio and MLX.
+
+**And when the model you are on runs out of quota, the turn is re-run on the next
+model in your own priority order.** Your saved model choice is not touched, and
+the original model comes back on its own once the limit clears.
+
+<p align="center">
+  <strong><a href="https://agentlas.cloud/desktop">Get Agentlas Desktop →</a></strong><br>
+  <sub>macOS (Apple silicon · Intel) · Windows · Linux</sub>
+</p>
+
+| Surface | Role |
+| --- | --- |
+| **Agentlas Desktop** | Visual local OS for agent teams, memory, browser work and Hub specialists |
+| **Hephaestus plugin** | This repo — the open-source engine and command surface for your CLI hosts |
+| **Agentlas Hub** | Public surface for publishing and borrowing specialists |
+| **Agentlas Cloud** | Owner-scoped store for privately saving and retrieving your own agents |
+
+---
+
+<h2 align="center">Start with one line</h2>
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/agentlas-ai/Agentlas-OS/main/scripts/install-all-runtimes.sh | bash
+```
+
+<p align="center">
+  <sub>It configures <strong>every supported host it finds on this machine</strong>, not only the one
+  you are typing in. Everything it writes is listed below.</sub>
+</p>
+
+---
+
+## Install: every method, and what it writes
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/agentlas-ai/Agentlas-OS/main/scripts/install-all-runtimes.sh | bash
+```
+
+One line, no `sudo`, nothing written outside `$HOME`. Then restart your agent
+host and run `hephaestus doctor` — it prints what is wired and what is not.
+Prefer a GUI? [Agentlas Desktop](https://agentlas.cloud/desktop) runs the same
+runtime on macOS, Windows and Linux.
+
+It configures **every supported host it finds on this machine**, not only the
+one you are typing in — detection is by what is on your `PATH`.
 
 <details>
 <summary><strong>Everything it writes</strong> — the full list, because "and so on" is not an answer</summary>
@@ -63,8 +311,8 @@ Two things that are easy to assume wrongly:
   home still gets Cursor, OpenCode and the rest wired up if those CLIs are
   installed. Hosts it cannot find are reported as skipped, not faked.
 - **It edits files that already exist** (`~/.codex/config.toml`,
-  `~/.cursor/mcp.json`, `~/.config/goose/config.yaml`, your global
-  instructions file). Edits are additive and backed up beside the original.
+  `~/.cursor/mcp.json`, `~/.config/goose/config.yaml`). Edits are additive and
+  backed up beside the original.
 
 It never uses `sudo`, never writes outside `$HOME`, and downloads only from
 `github.com`. The release archive's SHA-256 is checked before anything is
@@ -85,68 +333,26 @@ Two more things worth knowing before you run it:
 
 </details>
 
-<p align="center">
-  <a href="https://agentlas.cloud/studio">
-    <img src="assets/readme/agentlas-one-launch-film-v2.gif" alt="Agentlas One launch film" width="960">
-  </a>
-</p>
+### Optional: route work automatically
 
-<p align="center">
-  <a href="https://agentlas.cloud/desktop">
-    <img src="assets/agentlas-agent-lab-banner.svg" alt="Download Agentlas Desktop">
-  </a>
-</p>
+Off by default. `hephaestus global install` appends roughly 75 lines to the
+global instructions file of every supported host it finds — measured on a clean
+machine that was `~/.claude/CLAUDE.md`, `~/.codex/AGENTS.md` and
+`~/.gemini/GEMINI.md`, three files, not one. It changes how substantial work is
+routed from then on, in every project, so it is a bigger decision than the rest
+of the install and it is yours to make separately.
 
-<p align="center">
-  <sub>macOS (Apple silicon and Intel) &middot; Windows &middot; Linux &mdash;
-  <a href="https://agentlas.cloud/desktop">agentlas.cloud/desktop</a></sub>
-</p>
+It appends rather than overwrites, writes a timestamped `.bak` beside each file,
+is idempotent on a second run, and is fenced with
+`<!-- HEPHAESTUS:GLOBAL-ROUTER:BEGIN -->` so `hephaestus global remove` takes it
+back out. To turn it on during the install instead, add
+`HEPHAESTUS_INSTALL_GLOBAL_ROUTER=1` before `bash`.
 
-<h1 align="center">Agentlas OS</h1>
+### Paste to Install
 
-<p align="center">
-  <strong>Build it or borrow it. The agents you create stay yours.</strong><br>
-  Turn a plain-language request into a runnable agent or team, borrow specialists from the public Agentlas Hub,
-  and keep the agents you create available through your private, owner-scoped Agent Cloud.<br>
-  Run them through supported hosts for the LLMs you already use. Hephaestus is the open-source engine underneath.
-</p>
-
-<p align="center">
-  <strong>We are Agent Trust. Your agent is not a program. It is an asset. — Agentlas —</strong>
-</p>
-
-<p align="center">
-  <sub>An agent you create is not tied to one model workspace or computer. To retrieve it from Cloud elsewhere, install Agentlas OS on a supported host and sign in.</sub>
-</p>
-
-<p align="center">
-  <a href="https://github.com/agentlas-ai/Agentlas-OS/releases/latest">
-    <img alt="Latest release" src="https://img.shields.io/github/v/release/agentlas-ai/Agentlas-OS?label=release">
-  </a>
-  <a href="LICENSE">
-    <img alt="License: Apache-2.0" src="https://img.shields.io/badge/license-Apache--2.0-green">
-  </a>
-  <img alt="LLMs" src="https://img.shields.io/badge/LLMs-Claude%20Code%20%7C%20Codex%20%7C%20Gemini%20%7C%20Antigravity%20%7C%20Cursor%20%7C%20DeepSeek%20%7C%20GLM%20%7C%20Ollama-black">
-</p>
-
-<p align="center">
-  <a href="README.md">English</a>
-  ·
-  <a href="README.ko.md">Korean</a>
-  ·
-  <a href="README.zh-CN.md">中文</a>
-  ·
-  <a href="README.ja.md">日本語</a>
-  ·
-  <a href="README.hi.md">हिन्दी</a>
-</p>
-
-## Paste to Install
-
-Paste this into the LLM you are using now, such as Claude Code, Codex,
-Gemini CLI, Antigravity, or Cursor. It is written so you (the LLM reading it)
-can verify what you're running before you run it, rather than being asked to
-trust it blindly:
+Already inside an LLM? Paste this into Claude Code, Codex, Gemini CLI,
+Antigravity or Cursor. It is written so the model can verify what it is running
+before it runs it, rather than being asked to trust it blindly:
 
 ```text
 I want to install Agentlas OS / Hephaestus from this open-source GitHub repo:
@@ -156,26 +362,20 @@ Before running anything, fetch and read the installer script so you know what
 it does:
 https://raw.githubusercontent.com/agentlas-ai/Agentlas-OS/main/scripts/install-all-runtimes.sh
 
-It downloads a release tarball from this same repo's GitHub Releases and
-writes files only under ~/.agentlas, ~/.local/bin, and this host's own plugin/
-command-adapter directories (e.g. ~/.claude for Claude Code) — nothing outside
-those paths. If that matches what you read, run it:
-curl -fsSL https://raw.githubusercontent.com/agentlas-ai/Agentlas-OS/main/scripts/install-all-runtimes.sh | HEPHAESTUS_INSTALL_GLOBAL_ROUTER=1 bash
-
-HEPHAESTUS_INSTALL_GLOBAL_ROUTER=1 additionally writes a routing block into
-this host's global instructions file (e.g. ~/.claude/CLAUDE.md) that lets
-substantial tasks be staffed from Agentlas' agent network; it is not secret
-and you can read/quote it back to me. Drop that env var if you'd rather skip
-it for now — you can add it later with `hephaestus global install`.
+It downloads a release tarball from this same repo's GitHub Releases, verifies
+its SHA-256 before extracting, and writes files only under ~/.agentlas,
+~/.local/bin, and the plugin/command-adapter directories of the agent hosts it
+finds on this machine (e.g. ~/.claude for Claude Code) — nothing outside those
+paths, and never with sudo. If that matches what you read, run it:
+curl -fsSL https://raw.githubusercontent.com/agentlas-ai/Agentlas-OS/main/scripts/install-all-runtimes.sh | bash
 
 Afterwards, show me the installer's own verification output for this host,
 and tell me plainly whether `/agentlas build` (or this host's equivalent
 command surface) is ready to use, or whether I need to restart the host or
 reload plugins first.
-```
 
-Use this when you are already inside an LLM and want the Agentlas command
-surface active there. For direct shell commands, see the install methods below.
+Do not add the optional global router yet — I will decide that separately.
+```
 
 ### No LLM handy? Type the command yourself
 
@@ -197,7 +397,7 @@ enough. New to terminals? Follow your OS below.
    command below (right-click → Paste, or `Shift+Insert`), then press
    **Enter**:
    ```bash
-   curl -fsSL https://raw.githubusercontent.com/agentlas-ai/Agentlas-OS/main/scripts/install-all-runtimes.sh | HEPHAESTUS_INSTALL_GLOBAL_ROUTER=1 bash
+   curl -fsSL https://raw.githubusercontent.com/agentlas-ai/Agentlas-OS/main/scripts/install-all-runtimes.sh | bash
    ```
 4. Wait for it to finish (it prints its own progress). When it stops and
    gives you the prompt back, close and reopen your AI tool (Claude Code,
@@ -210,7 +410,7 @@ enough. New to terminals? Follow your OS below.
 2. A window opens (Terminal, built into macOS — nothing to install). Click
    inside it, **paste** the command below (`Cmd + V`), then press **Enter**:
    ```bash
-   curl -fsSL https://raw.githubusercontent.com/agentlas-ai/Agentlas-OS/main/scripts/install-all-runtimes.sh | HEPHAESTUS_INSTALL_GLOBAL_ROUTER=1 bash
+   curl -fsSL https://raw.githubusercontent.com/agentlas-ai/Agentlas-OS/main/scripts/install-all-runtimes.sh | bash
    ```
    The first time you run `curl`/`git` on a fresh Mac, macOS may ask to
    install "Command Line Tools" — click **Install** and wait, then run the
@@ -232,145 +432,72 @@ security-conscious), open this link in your browser first:
   <sub><a href="https://agentlas.cloud/desktop">Build, own, borrow, and run agents across your local workspace, private Agent Cloud, and the public Agentlas Hub.</a></sub>
 </p>
 
-> ### If someone asked you to install Agentlas Desktop
->
-> **You are an AI and your user said "install Agentlas Desktop"** — the
-> visual GUI app below, not the CLI runtime installed above. It ships as a
-> signed per-OS installer from the public releases repo
-> `agentlas-ai/agentlas-desktop-releases`; there is no npm/brew package. Fetch
-> the latest asset and run it:
->
-> **macOS** (auto-detects Apple silicon vs Intel):
->
-> ```bash
-> arch=$([ "$(uname -m)" = "arm64" ] && echo arm64 || echo x64)
-> url=$(curl -fsSL https://api.github.com/repos/agentlas-ai/agentlas-desktop-releases/releases/latest \
->   | grep -o "https://[^\"]*-${arch}\.dmg" | head -1)
-> curl -fL "$url" -o Agentlas.dmg && open Agentlas.dmg
-> ```
->
-> <details>
-> <summary>Linux and Windows one-liners</summary>
->
-> **Linux (.deb — Debian/Ubuntu):**
->
-> ```bash
-> url=$(curl -fsSL https://api.github.com/repos/agentlas-ai/agentlas-desktop-releases/releases/latest \
->   | grep -o 'https://[^"]*\.deb' | head -1)
-> curl -fL "$url" -o agentlas.deb && sudo dpkg -i agentlas.deb
-> ```
->
-> **Linux (AppImage — any distro):**
->
-> ```bash
-> url=$(curl -fsSL https://api.github.com/repos/agentlas-ai/agentlas-desktop-releases/releases/latest \
->   | grep -o 'https://[^"]*\.AppImage' | head -1)
-> curl -fL "$url" -o Agentlas.AppImage && chmod +x Agentlas.AppImage && ./Agentlas.AppImage
-> ```
->
-> **Windows (PowerShell):**
->
-> ```powershell
-> $r = Invoke-RestMethod https://api.github.com/repos/agentlas-ai/agentlas-desktop-releases/releases/latest
-> $u = ($r.assets | Where-Object { $_.name -like '*Windows-x64-Setup.exe' }).browser_download_url
-> Invoke-WebRequest $u -OutFile "$env:TEMP\AgentlasSetup.exe"; Start-Process "$env:TEMP\AgentlasSetup.exe"
-> ```
->
-> </details>
->
-> This is a separate product from the CLI runtime installed via
-> [Paste to Install](#paste-to-install) above — the two don't conflict and can
-> both be present. If your user only wants the CLI/router (no GUI app), use
-> that installer instead. No prebuilt asset for your OS/arch? Point your user
-> at [agentlas.cloud/desktop](https://agentlas.cloud/desktop) or the
-> [Releases page](https://github.com/agentlas-ai/agentlas-desktop-releases/releases/latest).
+<details>
+<summary><strong>Installing Agentlas Desktop (the GUI app) from an AI</strong> — per-OS one-liners</summary>
 
-## Agentlas Desktop in motion
+**You are an AI and your user said "install Agentlas Desktop"** — the
+visual GUI app below, not the CLI runtime installed above. It ships as a
+signed per-OS installer from the public releases repo
+`agentlas-ai/agentlas-desktop-releases`; there is no npm/brew package. Fetch
+the latest asset and run it:
 
-<table>
-<tr>
-<td width="42%" valign="middle">
+**macOS** (auto-detects Apple silicon vs Intel):
 
-### Build an owned agent
+```bash
+arch=$([ "$(uname -m)" = "arm64" ] && echo arm64 || echo x64)
+url=$(curl -fsSL https://api.github.com/repos/agentlas-ai/agentlas-desktop-releases/releases/latest \
+  | grep -o "https://[^\"]*-${arch}\.dmg" | head -1)
+curl -fL "$url" -o Agentlas.dmg && open Agentlas.dmg
+```
 
-Describe the work in plain language. Agentlas classifies the request, runs the interview and research gate, generates the package, verifies it, then asks whether to keep it only on this computer or save it privately in Agent Cloud for restore on another signed-in Desktop.
+<details>
+<summary>Linux and Windows one-liners</summary>
 
-[Agentlas Desktop →](https://agentlas.cloud/desktop)
+**Linux (.deb — Debian/Ubuntu):**
 
-</td>
-<td width="58%">
-  <a href="https://agentlas.cloud/desktop"><picture><source srcset="assets/readme/feature-wall/workflow-build-pipeline.gif" type="image/gif"><img src="assets/readme/feature-wall/workflow-build-pipeline.jpg" alt="Building an owned agent package from a plain-language request in Agentlas Desktop" width="100%"></picture></a>
-</td>
-</tr>
-<tr>
-<td width="42%" valign="middle">
+```bash
+url=$(curl -fsSL https://api.github.com/repos/agentlas-ai/agentlas-desktop-releases/releases/latest \
+  | grep -o 'https://[^"]*\.deb' | head -1)
+curl -fL "$url" -o agentlas.deb && sudo dpkg -i agentlas.deb
+```
 
-### Orchestrate a team
+**Linux (AppImage — any distro):**
 
-Combine local agents and borrowed Hub specialists into one orchestrator. Roles stay explicit while Agentlas manages routing, handoffs, and review boundaries.
+```bash
+url=$(curl -fsSL https://api.github.com/repos/agentlas-ai/agentlas-desktop-releases/releases/latest \
+  | grep -o 'https://[^"]*\.AppImage' | head -1)
+curl -fL "$url" -o Agentlas.AppImage && chmod +x Agentlas.AppImage && ./Agentlas.AppImage
+```
 
-[Explore Agentlas OS →](https://agentlas.cloud/models/hephaestus)
+**Windows (PowerShell):**
 
-</td>
-<td width="58%">
-  <a href="https://agentlas.cloud/models/hephaestus"><picture><source srcset="assets/readme/feature-wall/workflow-make-group-v2.gif" type="image/gif"><img src="assets/readme/feature-wall/workflow-make-group-v2.jpg" alt="Composing local and Hub agents into one orchestrated team" width="100%"></picture></a>
-</td>
-</tr>
-<tr>
-<td width="42%" valign="middle">
+```powershell
+$r = Invoke-RestMethod https://api.github.com/repos/agentlas-ai/agentlas-desktop-releases/releases/latest
+$u = ($r.assets | Where-Object { $_.name -like '*Windows-x64-Setup.exe' }).browser_download_url
+Invoke-WebRequest $u -OutFile "$env:TEMP\AgentlasSetup.exe"; Start-Process "$env:TEMP\AgentlasSetup.exe"
+```
 
-### Run and verify locally
+</details>
 
-Use the model account or API key you choose. Your current host performs the work under its local files, tools, credentials, permissions, and verification rules.
+This is a separate product from the CLI runtime installed via
+[Paste to Install](#paste-to-install) above — the two don't conflict and can
+both be present. If your user only wants the CLI/router (no GUI app), use
+that installer instead. No prebuilt asset for your OS/arch? Point your user
+at [agentlas.cloud/desktop](https://agentlas.cloud/desktop) or the
+[Releases page](https://github.com/agentlas-ai/agentlas-desktop-releases/releases/latest).
 
-[Read the trust model →](https://agentlas.cloud/docs/trust/agent-trust)
+</details>
 
-</td>
-<td width="58%">
-  <a href="https://agentlas.cloud/docs/trust/agent-trust"><picture><source srcset="assets/readme/feature-wall/workflow-run-v2.gif" type="image/gif"><img src="assets/readme/feature-wall/workflow-run-v2.jpg" alt="Running and verifying an Agentlas agent under the local host permission boundary" width="100%"></picture></a>
-</td>
-</tr>
-</table>
 
-<p align="center">
-  <a href="https://agentlas.cloud/desktop">Download Desktop</a>
-  ·
-  <a href="#build-borrow-own">Build · Borrow · Own</a>
-  ·
-  <a href="#why-agentlas-os">Why Agentlas OS</a>
-  ·
-  <a href="#paste-to-install">Paste to Install</a>
-  ·
-  <a href="#agentlas-desktop-in-motion">Desktop Demo</a>
-  ·
-  <a href="#why-not-just-make-a-claude-agent">Why Not Just A Claude Agent?</a>
-  ·
-  <a href="#all-install-methods">All Install Methods</a>
-  ·
-  <a href="#the-command-surface">Command Surface</a>
-  ·
-  <a href="#new-in-v110--the-briefing-interview-engine">New in v1.1.0</a>
-  ·
-  <a href="#the-os-subsystems">Subsystems</a>
-  ·
-  <a href="#where-this-fits">Product Surfaces</a>
-  ·
-  <a href="#built-for-owned-agent-operations">Owned Agent Operations</a>
-  ·
-  <a href="#what-it-builds">System Packaging</a>
-  ·
-  <a href="#docs-by-goal">Docs Registry</a>
-</p>
+<details>
+<summary><strong>Build, Borrow, Own — the full model</strong></summary>
 
----
-
-## Build, Borrow, Own
 
 An agent you create should remain an asset you can move, rather than a
 setting trapped in one chat, one model-vendor workspace, or one computer.
 Agentlas separates three jobs that ordinary agent builders blur together:
 
-This is the public [Agent Trust contract](docs/agent-trust-contract.md): a
+This is the public Agent Trust contract: a
 portable, owner-scoped, inspectable, and restorable package contract—not a
 claim of regulated financial or legal trust services.
 
@@ -525,91 +652,21 @@ fits the work.
 
 ---
 
-## The Standard, Not Another Engine
+</details>
 
-> **Agentlas is not building another graph engine.**
-> It is designing the agent standard — and the distribution network that carries it —
-> that many graph engines and runtimes can share.
 
-Engines keep changing. A model workspace, a CLI, an orchestration framework, a graph
-runner: each arrives, wins for a while, and is replaced. What has to survive that churn
-is the contract an agent carries with it — what it is, how it is invoked, what it may
-touch, what it remembers, and how its result is proven.
+<details>
+<summary><strong>What's inside — routing, permissions, memory, retrieval, packaging</strong></summary>
 
-That contract is the product, and it is deliberately engine-neutral:
-
-- **One definition, many runtimes.** The same package runs through Claude Code, Codex,
-  Gemini, Antigravity, Cursor, or a local model, because the manifest, routing card,
-  permissions, and memory rules travel with the agent instead of with the vendor.
-- **A life outside the chat.** Package contracts, receipts, and verification gates
-  outlive the session that produced them.
-- **A way to reach other people.** Publish to the public Hub, or keep it in your
-  owner-scoped Cloud. Either way it moves as a package, not as a copied prompt.
-
-Hephaestus is one engine that implements this standard. It is open source precisely so
-the standard can be inspected, forked, and re-implemented — including by engines we did
-not write.
-
-## Why Agentlas OS
-
-Most AI products help you create another agent. Agentlas OS is for the harder
-part: making agents operate as a team you own.
-
-You should be able to imagine this after installing it:
-
-- Your LLMs work like a team instead of isolated chat sessions.
-- Your real browser becomes an execution surface, not a screenshot in a prompt.
-- Your agents keep package contracts, routing cards, memory rules, permissions,
-  and verification receipts after the chat ends.
-- Packages you own can remain local or be privately stored in your owner-scoped
-  Agent Cloud, then retrieved from another supported, installed, signed-in host.
-- Your existing Claude Code, Codex, Gemini, Cursor, Antigravity, API keys, and
-  local models become part of one operating layer.
-- Hub specialists can be borrowed into your local runtime without copying the
-  creator's private work or sending your private files to their agent.
-
-Hephaestus is the open-source engine underneath Agentlas OS. It is not a prompt
-marketplace, an agent template generator, or another model subscription. It is a
-local-first runtime that builds, routes, borrows, runs, verifies, and packages
-agents across LLM command surfaces.
-
-The point is not "make an agent from a prompt." The point is:
-
-> Create, package, route, run, and verify agents across your LLMs, browser,
-> memory, and local tools.
-
-## Why Not Just Make A Claude Agent?
-
-Claude subagents and custom agents are useful. They give a task its own prompt,
-tools, and context window. Agentlas starts after that point.
-
-An LLM can draft an agent. Agentlas turns it into an operating unit:
-
-| Layer | A prompt-made agent | An Agentlas package |
-| --- | --- | --- |
-| Definition | Role prompt, markdown, tool list | Manifest, agent card, mode map, package contract |
-| Invocation | Manual mention or simple trigger | Routing card, triggers, anti-triggers, benchmarks, receipts |
-| Browser | Ad hoc browsing or screenshots | Real browser hardpoint with visible clicks, forms, waits, and snapshots |
-| Memory | Copied context or chat history | Memory map, memory tickets, Memory Curator, Policy Gate |
-| Runtime | One LLM session or one vendor runtime | Adapters across Claude Code, Codex, Gemini, Cursor, Antigravity, and local runtime |
-| Teams | Another prompt layer | Orchestrator, PM Soul, Memory Curator, Policy Gate, eval judge, QA gate |
-| Verification | User checks manually | Package checks, receipts, Stormbreaker final gate |
-| Ownership and portability | Trapped in the chat or vendor workspace where it was created | Portable package that can remain local or be retrieved from the owner's Agent Cloud on another supported, installed, signed-in host |
-| Distribution | Copy the prompt | Explicit choice between public Hub publishing and private owner-scoped Cloud storage |
-
-That is the product boundary: Agentlas does not compete on "better prompt." It
-gives agents the architecture to keep working outside one chat.
-
-## The Agent OS Stack
 
 Agentlas maps agent work to operating-system-like responsibilities without
 forcing your work into one model provider:
 
-| OS Abstraction | Implementation in Hephaestus |
+| What it handles | Implementation in Hephaestus |
 | :--- | :--- |
 | **Kernel / Policy Gate** | Deterministic router + security gates. Every routing action yields an auditable receipt; tool execution permissions are enforced by the active host and runtime. |
 | **Processes / Threads** | Independent agents and multi-agent teams compiled as packages with explicit, typed contracts (Routing Cards, anti-scopes, memory boundaries, and verification shims). |
-| **Process Scheduler** | Network 2.0 routing (local-first, quality-gated, and benchmark-gated dispatch) combined with Stormbreaker's parallel execution fabric and append-only run journals. |
+| **Scheduling** | The Workforce pipeline: a typed work order, federated candidate retrieval across Local, Cloud and Hub, a host-authored selection, and pinned execution — combined with Stormbreaker's parallel execution fabric and append-only run journals. Ratings, install counts and usage history are forbidden as routing authority. |
 | **Memory Management (MMU)** | Two-boundary governed memory: local project memory remains isolated on the machine, while durable promotions are gated by a local Memory Curator. |
 | **Virtual File System** | Production Ontology Runtime: local-first source ingestion, CJK trigram FTS5 search, hybrid Reciprocal Rank Fusion, and GraphRAG retrieval. |
 | **Inter-Process Call (IPC)** | A2A Agent Card Boundary (cryptographic import/export and caller-gating) + Model Context Protocol (MCP) tool registrations. |
@@ -627,11 +684,16 @@ forcing your work into one model provider:
 
 ---
 
-## Briefing Interview Engine (introduced in v1.1.0)
+</details>
+
+
+<details>
+<summary><strong>Briefing Interview Engine</strong></summary>
+
 
 Agents generated from vague, single-sentence prompts fail under real-world edge cases. Hephaestus v1.1.0 positions task specification as a first-class OS service through the **Briefing Interview Engine**:
 
-The current v1.2.46 release carries the resolved Work Brief through host-owned Network 2.0 selection, exact release pinning, and server-first tool discovery.
+The current v1.2.47 release carries the resolved Work Brief through host-owned Network 2.0 selection, exact release pinning, and server-first tool discovery.
 
 *   **Quantitative Ambiguity Gates:** The compilation scheduler evaluates prompt clarity across four key vectors (Goal, Constraints, Scope, Context). The build process is strictly gated until the ambiguity score passes a numeric threshold (ambiguity score $\le 0.2$, with per-dimension safety floors). Clear prompts bypass the interview loop entirely via a budget system that caps questions for trivial tasks.
 *   **Lens-Driven System Analysis:** Clarifying questions are dynamically sourced from a structured lens table (Scope, Intent, Challenge, System Architecture) focusing on critical routing indicators: *anti-scope bounds* (what the agent must NOT do), *verifiable acceptance criteria*, and *exit conditions*.
@@ -641,7 +703,12 @@ The current v1.2.46 release carries the resolved Work Brief through host-owned N
 
 ---
 
-## All Install Methods
+</details>
+
+
+<details>
+<summary><strong>All Install Methods — source, offline, per-host</strong></summary>
+
 
 ### Manual LLM Adapter Install
 
@@ -731,7 +798,7 @@ above; it also writes `~/.claude/commands/agentlas.md` and `hep-*.md`. Claude Co
 
 From your OS terminal:
 ```bash
-codex plugin marketplace add agentlas-ai/Agentlas-OS --ref v1.2.46
+codex plugin marketplace add agentlas-ai/Agentlas-OS --ref v1.2.47
 codex plugin add hephaestus@agentlas-core-engine
 ```
 *Note: Codex does not accept `/plugin marketplace add` inside the app — run the two commands above in your OS terminal. The OS-terminal CLI command is singular (`codex plugin`); inside the Codex app, the plugin browser slash command is plural (`/plugins`). Codex 0.117+ removed custom `/prompts:*` commands; after install, invoke the supported plugin skill as `$hephaestus-network <request>`.*
@@ -752,27 +819,12 @@ LLM host, `agentlas` in a shell.
 
 ---
 
-## Where This Fits
+</details>
 
-This repository installs the Hephaestus engine and LLM command adapters. It is
-the open-source command surface under Agentlas OS.
 
-| Surface | Role |
-| --- | --- |
-| **Agentlas Desktop** | Visual local OS for running AI-native apps, agent teams, memory, browser work, and Hub specialists. |
-| **Hephaestus plugin** | Open-source engine and command surface for Claude Code, Codex, Gemini CLI, Antigravity, Cursor, and compatible runtimes. |
-| **Agentlas Hub** | Public package surface for publishing and borrowing specialists. |
-| **Agentlas Cloud** | Owner-scoped package store for privately saving and retrieving the signed-in user's own agents. |
+<details>
+<summary><strong>The Command Surface — every command</strong></summary>
 
-The install prompt above is intentionally scoped to this repo and the current
-LLM surface. Desktop, Hub, and Cloud are product surfaces around the same
-Agentlas OS architecture; they are not prerequisites for installing the plugin.
-Cloud retrieval on a new computer does require a supported Agentlas OS host to
-be installed and the package owner to be signed in.
-
----
-
-## The Command Surface
 
 Inside native Agentlas environments, Hephaestus operates commandless. External LLM tools use a deliberately small visible command set. System-level utilities like Stormbreaker, research loadouts, and configuration tables attach automatically from context:
 
@@ -813,7 +865,12 @@ Custom `/prompts:*` commands were removed from Codex 0.117+.
 
 ---
 
-## The OS Subsystems
+</details>
+
+
+<details>
+<summary><strong>Deeper — the routing scheduler, the execution gate, memory, the retrieval engine</strong></summary>
+
 
 ### Meta-Agent Factory — Process Creation
 A unified compilation factory using four builders. Every generated package registers its global command (`.agentlas/global-commands.json`) and ships verification scripts—the user never has to infer how to run the compiled package:
@@ -825,7 +882,7 @@ A unified compilation factory using four builders. Every generated package regis
 | **Workspace Packager** | `30-agentlas-packager` | Compiled bundle ready for runtime import, CLI execution, or GitHub distribution. |
 | **Session Agent Builder** | `40-session-agent-builder` | Converts explicitly exported sessions into a reviewed single-agent or multi-agent team package. |
 
-*Briefing Interview Gate:* Builders initiate the process using the **briefing interview gate** ([docs/builder-interview-research-gate.md](docs/builder-interview-research-gate.md)): conducting lens-driven questions, evaluating the ambiguity threshold, searching primary sources, and outputting the work brief.
+*Briefing Interview Gate:* Builders initiate the process using the **briefing interview gate** : conducting lens-driven questions, evaluating the ambiguity threshold, searching primary sources, and outputting the work brief.
 
 ---
 
@@ -871,7 +928,6 @@ host-owned tool dispatcher (`host-broker`). A bound tool requires its invocation
 receipt to use that same enforcement path; neither label grants authority to a
 package that did not select the host permission policy.
 
-Details: [docs/hephaestus-network-2.0.md](docs/hephaestus-network-2.0.md) · Runtime support matrix: [docs/runtime-fallback-adapters.md](docs/runtime-fallback-adapters.md)
 
 ---
 
@@ -885,7 +941,6 @@ Kernel Gating Envelope:
 
 A local run journal makes long executions resumable after interruption. Execution packets carry the Work Brief so that anti-scope rules and exit criteria govern all parallel subprocesses. Stormbreaker reports explicit completion states (**verified / unverified / blocked**) to prevent autonomous completion theater.
 
-Execution protocol: [docs/robustness-protocol.md](docs/robustness-protocol.md) · Benchmarks & Evals: [docs/robustness-eval.md](docs/robustness-eval.md)
 
 ---
 
@@ -945,8 +1000,7 @@ Plain Claude Code and Codex sessions receive bounded recall through
 `PreInvocation` ephemeral message, OpenCode uses an experimental local plugin,
 and Grok refreshes a workspace-scoped cache because its passive hooks do not
 inject stdout. These hooks supplement live `AGENTS.md`/`CLAUDE.md` policy rather
-than copying it. Details: [docs/ontology-runtime.md](docs/ontology-runtime.md) ·
-[docs/runtime-memory-hooks.md](docs/runtime-memory-hooks.md)
+than copying it.
 
 ---
 
@@ -971,25 +1025,12 @@ Import acts as a proposal (restricting automatic invocation), export redacts pri
 
 ---
 
-## Built For Owned Agent Operations
+</details>
 
-Users and teams do not need another way to write isolated agents. They need to
-operate an owned workforce of them. Hephaestus is designed for that operational
-model:
 
-*   **Package Portability:** Packages you own can remain local or be stored in your private, owner-scoped Agent Cloud. On another supported computer, install Agentlas OS, sign in, and retrieve the package; host credentials, local files, and permissions stay machine-specific.
-*   **Model Neutrality:** Agent packages use adapters for supported hosts instead of belonging to one model vendor's workspace. You can run the same package with supported Claude, Codex, Gemini, Antigravity, Cursor, or local-model surfaces without rebuilding its operating architecture.
-*   **Auditability by Construction:** Every routing decision, execution step, memory candidate, and curator decision is logged as a text file. You can diff, audit, and commit them. Work is either verified or flagged as unverified.
-*   **Deterministic Pipeline Gates:** Security filters, anti-scopes, routing card triggers, and prompt sanitizations are hardcoded into the OS pipeline—they do not rely on LLM system instructions or guidelines.
-*   **Specification Before Generation:** The Briefing Interview Engine measures request ambiguity and stamps the score on the Work Brief, ensuring task execution can always be audited back to what was agreed.
-*   **Local-First Data Boundary:** Raw text, documents, and database files remain local. External transactions are redacted and opt-in.
+<details>
+<summary><strong>What It Builds — process packaging</strong></summary>
 
-### Where Frameworks Fit
-CrewAI, LangChain, and vendor agent SDKs function as **libraries**—excellent for writing custom agent logic inside a single process. Hephaestus operates as the **runtime substrate**: it specifies, packages, routes, runs, audits, and migrates agents across workspace runtimes. Framework code runs inside Hephaestus packages; the kernel only requires that agents honor their directory contracts and Routing Cards.
-
----
-
-## What It Builds (Process Packaging)
 
 Hephaestus packages agents into a standard directory layout that any workspace runtime can parse, install, verify, and run. The important part is not just `agent.md`; it is the operating contract around it:
 
@@ -1026,7 +1067,6 @@ Hephaestus packages agents into a standard directory layout that any workspace r
 ├── .claude/ codex/ .gemini/ .agents/      # Thin runtime adapters over the same core
 ├── claude/ codex/ gemini/ antigravity/    # Plugin/extension/workflow distributions
 ├── cursor/ hermes/ openclaw/              # Additional runtime shims and skill mirrors
-├── docs/                                  # Architecture, chain map, memory, ontology, routing, eval docs
 │   ├── source-of-truth.md
 │   ├── chain-map.md
 │   ├── memory-architecture.md
@@ -1098,32 +1138,19 @@ or Context Map contents.
 
 ---
 
+</details>
+
 ## Docs By Goal
 
 | System Goal | Reference Documentation |
 |---|---|
 | Understand the canonical route | [`AGENTS.md`](AGENTS.md) |
 | See the full team contract | [`agent.md`](agent.md) |
-| Architecture source of truth | [`docs/source-of-truth.md`](docs/source-of-truth.md) |
-| Runtime boundaries | [`docs/runtime-sync-boundaries.md`](docs/runtime-sync-boundaries.md) |
-| Context Map v3 | [`docs/context-map-v3.md`](docs/context-map-v3.md) |
 | Sitemap contract | [`.agentlas/sitemap.json`](.agentlas/sitemap.json) and [`schemas/sitemap.schema.json`](schemas/sitemap.schema.json) |
 | Mode map | [`.agentlas/mode-map.json`](.agentlas/mode-map.json) |
 | Routing card | [`.agentlas/routing-card.json`](.agentlas/routing-card.json) and [`schemas/routing-card.schema.json`](schemas/routing-card.schema.json) |
 | Memory map | [`.agentlas/memory-map.json`](.agentlas/memory-map.json) and [`schemas/memory-map.schema.json`](schemas/memory-map.schema.json) |
-| Briefing interview & research gate | [`docs/builder-interview-research-gate.md`](docs/builder-interview-research-gate.md) |
-| Network 2.0 routing | [`docs/hephaestus-network-2.0.md`](docs/hephaestus-network-2.0.md) |
-| Stormbreaker protocol | [`docs/robustness-protocol.md`](docs/robustness-protocol.md) |
-| Canonical Goal + UltraCode harness | [`docs/stormbreaker-goal-ultracode-harness.md`](docs/stormbreaker-goal-ultracode-harness.md) |
-| Ontology runtime | [`docs/ontology-runtime.md`](docs/ontology-runtime.md) |
-| Memory architecture | [`docs/memory-architecture.md`](docs/memory-architecture.md) |
-| Runtime memory hooks | [`docs/runtime-memory-hooks.md`](docs/runtime-memory-hooks.md) |
-| Experience and Taste assets | [`docs/agent-experience-assets.md`](docs/agent-experience-assets.md) |
-| MCP build resolution | [`docs/mcp-build-resolution.md`](docs/mcp-build-resolution.md) |
 | Plugin contributions | [`PLUGIN_CONTRIBUTIONS.md`](PLUGIN_CONTRIBUTIONS.md) |
-| Model allocation | [`docs/model-allocation.md`](docs/model-allocation.md) |
-| Skill lifecycle promotion | [`docs/skill-lifecycle-promotion.md`](docs/skill-lifecycle-promotion.md) |
-| Cloud runtime bundles | [`docs/agentlas-cloud-runtime.md`](docs/agentlas-cloud-runtime.md) |
 | Verify a package | [`scripts/verify-package.sh`](scripts/verify-package.sh) |
 | Public safety check | [`scripts/public_safety_check.sh`](scripts/public_safety_check.sh) |
 

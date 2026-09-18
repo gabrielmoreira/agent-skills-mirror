@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `siyuan-note/siyuan` — 26 default patterns, 0 followed patterns, 1 file(s) materialized.
+Mirror of `siyuan-note/siyuan` — 26 default patterns, 1 followed patterns, 4 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `siyuan-note/siyuan` — 26 default patterns, 0 followed patterns, 1 f
 | Ref Type      | `branch` |
 | Ref           | `master` |
 | Default pats  | 26 |
-| Followed pats | 0 |
-| Files         | 1 |
+| Followed pats | 1 |
+| Files         | 4 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,7 +51,7 @@ Mirror of `siyuan-note/siyuan` — 26 default patterns, 0 followed patterns, 1 f
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-_None._
+- `docs/API-CONTRACTS.md`
 
 ## File Index
 
@@ -60,6 +60,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 2 | ✓ | [`docs/API-CONTRACTS.zh-CN.md`](docs/API-CONTRACTS.zh-CN.md) |
+| 3 | ✓ | [`docs/PLUGIN-PUBLISH.md`](docs/PLUGIN-PUBLISH.md) |
+| 4 | → | [`docs/API-CONTRACTS.md`](docs/API-CONTRACTS.md) |
 
 ---
 

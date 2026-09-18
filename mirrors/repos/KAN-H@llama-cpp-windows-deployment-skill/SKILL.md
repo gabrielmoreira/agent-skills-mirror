@@ -7,7 +7,7 @@ user-invocable: true
 
 # llama.cpp Windows 多模型部署与优化集成技能
 
-> **版本**: v3.6.0 | **基准硬件**: RTX 5060 Ti 16GB + Intel U7 270K / CPU-only (48GB DDR5) | **平台**: Windows 10/11 + WSL2 | **llama.cpp 版本**: b10056 – b10713+ | **更新**: 2026-09-13（**references 目录重整**为 `sessions/` / `guides/` / `assets/` 三类 + 新增 [`reference index`](./references/INDEX.md) **权威代码路径表**；`model-profiles.json` 同步补入 `moe` 块；新增第五章 MoE 显存预算与卸载、内建 MTP head 嫁接手册）
+> **版本**: v3.6.0 | **基准硬件**: RTX 5060 Ti 16GB + Intel U7 270K / CPU-only (48GB DDR5) | **平台**: Windows 10/11 + WSL2 | **llama.cpp 版本**: b10056 – b10713+ | **更新**: 2026-09-13（**references 目录重整**为 `sessions/` / `guides/` / `assets/` 三类 + 新增 [`reference index`](./references/INDEX.md)（路径索引，**§5A 项目内 / §5B 部署侧** 分开）；`model-profiles.json` 同步补入 `moe` 块；新增第五章 MoE 显存预算与卸载、内建 MTP head 嫁接手册）
 >
 > 📚 **references 导航**：先看 [`./references/INDEX.md`](./references/INDEX.md) —— 目录结构、每份文档的用途，以及**权威代码路径表**（历史文档中的旧路径一律以该表为准）。
 
@@ -389,9 +389,12 @@ if "%AGENT_TOOLS%"=="all" ( set "TOOLS_ARG=--tools all" ) else ( set "TOOLS_ARG=
 - **菜单标注**：实测速度标注到标题后（`[57 t/s]`）、破限模型特殊标注、不同 B 参数量化版写清（如 12B-Q5_K_M）
 - **编码选择**：见 Troubleshooting「脚本闪退」——新脚本推荐 UTF-8 + 全英文；既有 GBK 脚本保留并在编辑器中手动选 GBK
 
-#### 6A：模型清单自动同步器 `update-launchers`（2026-08-16 新增）
+#### 6A：模型清单自动同步器 `update-launchers`（2026-08-16 新增，2026-09-17 随技能发布）
 
-- **位置**：`<llama-cpp-dir>\` 下 `update-launchers.bat`（纯 ASCII 入口）+ `update_launchers.py`（Python 3.11 纯标准库，用现成 `.venv\Scripts\python.exe`）+ `launcher-models.json`（注册表，UTF-8）
+- **位置**：生成器**随本技能发布** —— [`./scripts/launcher_gen/`](./scripts/launcher_gen/)
+  （`update_launchers.py` Python 3.11 纯标准库 + `update-launchers.bat` 纯 ASCII 入口 + `llama_hub.py` 交互门面）
+- **怎么跑**：在**你自己的**部署目录里设两个环境变量 —— `LAUNCHER_DIR`（缺省=脚本所在目录）与 `CHAT_DIR`（模型目录，**无默认值**，缺失即报错退出 2）；冷启动见 `scripts/launcher_gen/README.md`
+- **运行时数据**（写在 `LAUNCHER_DIR` 下）：`launcher-models.json` 注册表（UTF-8）、`preset-overrides.json` 参数源、`backup/` 自动备份
 - **作用**：扫描 `<models-dir>`，自动同步 4 个工件——`start-CPU-Toolcall-Launcher.bat` / `start-Gemma4-Launcher.bat` / `start-Qwen-Launcher.bat` / `models-config.ini`（Router preset）
   - 模型目录被删 → 自动移除对应变量/菜单/启动块并重编号菜单；ini 僵尸段同步清除
   - 新模型目录出现 → 按家族自动生成默认参数条目（菜单标 [NEW]）：gemma→Gemma4 启动器（自动配对 gemma4_mtp draft 生成 +MTP 条目）/ qwen→Qwen / lfm→CPU / 其他→Qwen
@@ -409,9 +412,10 @@ if "%AGENT_TOOLS%"=="all" ( set "TOOLS_ARG=--tools all" ) else ( set "TOOLS_ARG=
 
 #### 6B：参数知识库 + 26B 长会话降速实测修复（2026-08-16）
 
-**参数知识库（三源治理）**：
+**参数参考集（三源治理）**：
 - `model-profiles.json`：官方/实测参数卡片（Gemma4 全系含 QAT、Qwen3.6/3.5、GLM、Devstral、LFM、Phi 等，含采样/ctx/KV/MTP 规则/来源 URL/verified 级别）。官方 Gemma4：temp 1.0/top-p 0.95/top-k 64、256K ctx、QAT 唯一官方量化 UD-Q4_K_XL、MTP n-max 2 起步+2GB 内存；Qwen3.6 精确编码 temp 0.6/通用 1.0
-> 📎 **知识库参考**：[`./references/assets/model-profiles.json`](./references/assets/model-profiles.json)（脱敏通用版）。⚠️ 其中 `verified: official` 的来源 URL 是在采集时从厂商文档记录，本技能未逐一复核，使用前请自行核实可达性。
+> 📎 **参数参考集**：[`./references/assets/model-profiles.json`](./references/assets/model-profiles.json)。
+> ⚠️ 它**只是一份参考集，不是任何东西的快照**：`verified: official` 的来源 URL 采集自厂商文档，本技能**未逐一复核**，用前请自行确认可达性；`verified: measured` 是作者本机实测（**硬件相关，只是参考点，不是保证**）。生成器读的是*你自己*的那一份。
 - 新模型自动条目三源合并：家族模板 → 知识库匹配覆盖 → 用户注册表最终覆盖；报告标注 profile 来源
 - `update-launchers.bat --audit`：GGUF 头解析（arch/层数/SWA/KV 维度）+ KV 内存估算 + 采样对比 + 16GB 显存红绿灯，只读
 
@@ -649,9 +653,13 @@ N = ceil( (W_non + KV + mmproj + draft + compute_buf − (VRAM − margin)) / E_
 
 - [ ] 1. 更新 SKILL.md 头部版本行（`**版本**: vX.Y`）与更新日期/一句话摘要
 - [ ] 2. 在 `CHANGELOG.md` 顶部追加版本条目（Added/Changed/Fixed 三段）
-- [ ] 3. 同步 `.agents` 部署副本：`Copy-Item` 覆盖 `~\.agents\skills\llama-cpp-windows-deployment\` 下的 `SKILL.md` 与新增 `references\*.md`
+- [ ] 3. 同步 `.agents` 部署副本 —— **只同步技能载荷**：`SKILL.md`、`references/`、`scripts/`。
+       `docs/` 与 `scripts/mtp-graft-package/` 不同步（见 `references/INDEX.md` §7）
 - [ ] 4. 记录 one-line reason（可选写入 repo memory）
-- [ ] 5. 验证副本：确认新内容在 `.agents` 副本中可检索（`Get-Content -Raw ... | Select-String`）
+- [ ] 5. **验证副本逐字节一致**（载荷范围）；若新文档引入了本机绝对路径，先改占位符再同步
+
+> ⚠️ **禁止**往技能载荷里写本机绝对路径（`D:\...`）。技能要能「换一台机器照样跑」——
+> 部署侧路径一律用 `<llama-cpp-dir>` / `<models-dir>` 这类占位符。
 
 ---
 

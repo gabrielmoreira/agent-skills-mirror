@@ -36,7 +36,7 @@ selected replay when rendered inspection adds evidence.
 2. Prefer `new_page` with `background: true` when a fresh page satisfies the task. Record the exact `pageId` returned by
    every page this task creates; never infer ownership from a later page-list difference.
 3. Pass an explicit `pageId` to every page-scoped tool. Do not rely on selected-page state; use `select_page` only when
-   deliberately bringing a page to the foreground.
+   deliberately bringing a page to the foreground or recovering the closed-page context described below.
 4. Navigate or mutate a pre-existing page only when the task explicitly depends on that page's current state. Never
    close a pre-existing page.
 5. At completion, close only the recorded pages created by this task unless the user asked to leave one open.
@@ -66,6 +66,11 @@ selected replay when rendered inspection adds evidence.
 
 ## Troubleshooting
 
+- If closing an owned page returns `The selected page has been closed` and `list_pages` repeats it, the close may have
+  succeeded while MCP retained a stale selection. Select a previously observed surviving page with
+  `bringToFront: false`, then call `list_pages` and confirm the owned page ID is absent. This only repairs MCP context:
+  do not navigate, inspect, or close the surviving page, and suppress unrelated titles and content from results. Do not
+  repeat the close or create another tab to recover selection.
 - On attachment or transport failure, distinguish the browser endpoint from the MCP process: check the debugging
   endpoint at `http://127.0.0.1:${PRB_AGENT_CHROMIUM_PORT:-9222}/json/version`, then inspect the newest per-process log
   under `$XDG_CACHE_HOME/chrome-devtools-mcp/logs/` or, when unset, `~/.cache/chrome-devtools-mcp/logs/`.

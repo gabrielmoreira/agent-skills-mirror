@@ -1325,7 +1325,7 @@
       "name": "dnasp",
       "cli_alias": "dnasp",
       "description": "Population genetics of pre-aligned DNA sequences or multi-sample VCFs using selected DnaSP 6 methods. Use for diversity, neutrality statistics, linkage disequilibrium, InDel polymorphism, divergence, MK, Ka/Ks and codon usage; not alignment, phasing or clinical interpretation.",
-      "version": "0.5.2",
+      "version": "0.5.3",
       "status": "planned",
       "maturity_tier": "cli-registered",
       "maturity_evidence": {
@@ -1644,7 +1644,7 @@
       "name": "fine-mapping",
       "cli_alias": null,
       "description": "Statistical fine-mapping of GWAS loci using SuSiE, SuSiE-inf, and Approximate Bayes Factors to identify credible sets and posterior inclusion probabilities (PIPs) for causal variant discovery. SuSiE-inf adds an infinitesimal polygenic component for improved calibration at well-powered loci.",
-      "version": "0.2.0",
+      "version": "0.3.0",
       "status": "planned",
       "maturity_tier": "tested",
       "maturity_evidence": {
@@ -3314,7 +3314,7 @@
       "name": "phylogenetics-builder",
       "cli_alias": "phylo",
       "description": "End-to-end ML phylogenetic tree inference — MSA, trimming, ModelFinder, IQ-TREE2/RAxML-NG.",
-      "version": "0.2.0",
+      "version": "0.3.0",
       "status": "mvp",
       "maturity_tier": "cli-registered",
       "maturity_evidence": {
@@ -3651,7 +3651,7 @@
       ],
       "trigger_keywords": [],
       "chaining_partners": [],
-      "license": "",
+      "license": "MIT",
       "model_license": "",
       "data_license": ""
     },

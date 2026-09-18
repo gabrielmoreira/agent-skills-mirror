@@ -1,11 +1,19 @@
 # MCP
 
-MCP (Model Context Protocol) server integrations.
+MCP (Model Context Protocol) integrations.
 
 | Integration | Purpose |
 |:---|:---|
-| `burp-mcp-client/` | Burp Suite proxy integration — pipe Claude requests through Burp for interception |
-| `caido-mcp-client/` | Caido proxy integration — alternative to Burp for request interception |
-| `hackerone-mcp/` | HackerOne public API — Hacktivity, program stats, scope and policy lookup |
+| `bughunter-mcp/` | **Native server** — AI agents run scope → recon → hunt → validate → report via existing engines |
+| `burp-mcp-client/` | Burp Suite proxy integration |
+| `caido-mcp-client/` | Caido proxy integration |
+| `hackerone-mcp/` | HackerOne public API helpers (CLI/library) |
 
-Configure MCP servers in `~/.claude/mcp_servers.json` after install.
+```bash
+./install.sh --agent mcp
+bughunter mcp doctor
+bughunter mcp serve
+```
+
+See `docs/mcp.md`. Configure Claude/OpenCode using snippets inside each folder.
+

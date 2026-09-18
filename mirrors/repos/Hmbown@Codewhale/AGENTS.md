@@ -87,6 +87,12 @@ base prompt". Two more corollaries earned here:
 An external contributor's branch goes stale because *we* land things, not
 because they did anything wrong. Treat their time as more expensive than ours.
 
+**The goal is the contributor's PR merging as itself.** Review it, help it
+rebase, or fix it on their branch — that is the default path. Closing their PR
+and re-landing the work as our own commit (`auto-close-harvested`) is the
+fallback for a branch that truly cannot merge in reasonable time; done
+casually it reads as taking the work even when credit is preserved.
+
 - **Never make a contributor rebase around our churn.** If their PR conflicts
   only because main moved, a maintainer resolves it. Read their diff against
   the merge base first so you know exactly what they added, and re-apply that,
@@ -196,6 +202,12 @@ because they did anything wrong. Treat their time as more expensive than ours.
 - Prefer focused compilation, a relevant existing check, and direct product or
   manual evidence. Run a broad suite only when the change creates a genuine
   cross-cutting or release risk. Do not repeatedly rerun an unchanged suite.
+- **Batch edits; compile once.** `cargo check` and test builds on this
+  workspace take minutes, so an edit→compile→edit loop spends most of its
+  time waiting on the linker. Read precisely, write every edit a coherent
+  slice needs, then compile and test once — the same errors surface either
+  way, just later and all at once. Reserve mid-slice compiles for genuinely
+  uncertain API or borrow questions where a wrong guess would cascade.
 - Declared migrations are one-way. Once the repository adopts a replacement
   architecture or shared spine, new work uses it and touched legacy code moves
   toward it. Do not add another legacy call site for convenience. Keep a
@@ -226,7 +238,8 @@ for the claim; a test count is not a proxy for product quality.
 
 Community reports, PRs, logs, and reviews are evidence.
 
-**Harvested contributor credit is still a rule.** When a contributor's work
+**Harvested contributor credit is still a rule** (the fallback path above —
+prefer merging the contributor's PR itself). When a contributor's work
 lands as our commit, that commit carries `Harvested from PR #N by @handle` and a
 `Co-authored-by` naming them at their GitHub-linked address, so
 `auto-close-harvested.yml` closes their PR with credit and the contribution

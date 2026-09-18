@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `JCodesMore/ai-website-cloner-template` — 26 default patterns, 0 followed patterns, 15 file(s) materialized.
+Mirror of `JCodesMore/ai-website-cloner-template` — 26 default patterns, 0 followed patterns, 4 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `JCodesMore/ai-website-cloner-template` — 26 default patterns, 0 fol
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 15 |
+| Files         | 4 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,21 +59,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`.claude/skills/clone-website/SKILL.md`](.claude/skills/clone-website/SKILL.md) |
-| 2 | ✓ | [`.cline/skills/clone-website/SKILL.md`](.cline/skills/clone-website/SKILL.md) |
-| 3 | ✓ | [`.codex/skills/clone-website/SKILL.md`](.codex/skills/clone-website/SKILL.md) |
-| 4 | ✓ | [`.continue/commands/clone-website.md`](.continue/commands/clone-website.md) |
-| 5 | ✓ | [`.continue/rules/project.md`](.continue/rules/project.md) |
-| 6 | ✓ | [`.cursor/commands/clone-website.md`](.cursor/commands/clone-website.md) |
-| 7 | ✓ | [`.cursor/rules/project.mdc`](.cursor/rules/project.mdc) |
-| 8 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
-| 9 | ✓ | [`.github/skills/clone-website/SKILL.md`](.github/skills/clone-website/SKILL.md) |
-| 10 | ✓ | [`.kiro/skills/clone-website/SKILL.md`](.kiro/skills/clone-website/SKILL.md) |
-| 11 | ✓ | [`.roo/skills/clone-website/SKILL.md`](.roo/skills/clone-website/SKILL.md) |
-| 12 | ✓ | [`.windsurfrules`](.windsurfrules) |
-| 13 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 14 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 15 | ✓ | [`GEMINI.md`](GEMINI.md) |
+| 1 | ✓ | [`.agents/skills/clone-website/references/inspection-guide.md`](.agents/skills/clone-website/references/inspection-guide.md) |
+| 2 | ✓ | [`.agents/skills/clone-website/SKILL.md`](.agents/skills/clone-website/SKILL.md) |
+| 3 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 4 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 
 ---
 

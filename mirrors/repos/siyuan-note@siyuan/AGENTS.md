@@ -20,6 +20,7 @@ SiYuan repository guide. Module path `github.com/siyuan-note/siyuan`, license AG
 2. **Frontend build:** Do NOT run `pnpm build` — the developer runs `pnpm dev` manually, and `pnpm build` will conflict with it, producing broken bundles
 3. **Kernel development:** After modifying Go code, run `gofmt`, but do not compile the kernel binary or restart a running kernel; the developer handles both manually
 4. **Git:** **NEVER** run `git commit` / `git push` unless explicitly asked — no exceptions
+5. **UI verification in a browser:** Open `/stage/build/desktop/` directly instead of `/`. The kernel selects the frontend bundle by User-Agent in `kernel/server/serve.go`, and a UA containing `Electron` is redirected to the Electron-only `/stage/build/app/`, which fails in a plain browser with `require is not defined`; VSCode's built-in browser sends such a UA. The Electron main window does not expose a remote debugging port by default
 
 ### Encrypted notebook compatibility
 
@@ -44,7 +45,8 @@ SiYuan repository guide. Module path `github.com/siyuan-note/siyuan`, license AG
    - Domains: `ld246.com` only in `zh-CN.json`; use `liuyun.io` in all other languages
    - In `zh-TW` localization and the Traditional Chinese user guide, consistently translate the content-model term Block as `區塊`, including compounds (e.g. `子區塊`, `程式碼區塊`, `區塊 ID`); never abbreviate it as `塊`, and count blocks with `個區塊`
    - Translate Block Reference as `區塊引用` and Blockquote as `引述區塊`; preserve non-content-block terms such as `分塊` (data chunks) and `覈取方塊` (Checkbox)
-   - After modifying i18n files, run `python scripts/check-lang-keys.py` to verify key completeness across all language files
+   - Preserve each `_kernel` message's Go format argument positions and verbs from `en.json`; when translation requires a different order, use explicit argument indexes such as `%[4]s` and `%[3]d`. Preserve `%%` for literal percent signs
+   - After modifying i18n files, run `python scripts/check-lang-keys.py` to verify key completeness and kernel format argument compatibility across all language files
 2. **Cross-platform scripting:**
    - Do not assume the current shell is Bash, zsh, or PowerShell. Confirm the shell before using shell-specific syntax; otherwise avoid constructs such as `&&`, heredocs, and `/dev/null`
    - For simple sequences, use separate command calls and set the command working directory instead of chaining `cd` with another command
@@ -55,6 +57,7 @@ SiYuan repository guide. Module path `github.com/siyuan-note/siyuan`, license AG
    - When adding an icon to `app/appearance/icons/litheness/icon.js`, add its preview entry to `app/appearance/icons/index.html` in the same change and keep the order aligned
 4. **User guide:** When editing the user guide, follow `docs/SY-FORMAT.md`
    - When a feature adds or changes shortcuts, update the shortcut documentation in the user guide in the same change; if the appropriate section is unclear, ask the user where it should be placed
+   - List item text must not end with a period or equivalent sentence-ending mark (for example `.`, `。`, or `।`)
    - Represent in-app UI navigation paths as segmented `kbd` text marks: use one `NodeTextMark` with `TextMarkType: "kbd"` per navigation level, and place a plain `NodeText` containing ` - ` between adjacent levels
    - In every language, separate a `kbd` path from adjacent prose with exactly one ASCII space on each side, except at block boundaries, after full-width punctuation, or before any punctuation. Half-width punctuation before the path still requires a space; keep internal ` - ` separators unchanged
 5. **Git:**
@@ -70,6 +73,7 @@ SiYuan repository guide. Module path `github.com/siyuan-note/siyuan`, license AG
      4. Inspect the returned resource and read it back with `gh api` to verify the published text exactly, including line breaks and non-ASCII characters
      5. Delete the temporary JSON file and confirm that it no longer exists
    - For shell-independent read-back verification, query one field per `gh api --jq` call, for example `--jq .title` and `--jq .body`
+   - `gh api` applies `--jq` locally after sending the request, so an invalid or failing expression can cause a non-zero exit even when the write succeeded. Omit `--jq` on write commands and use separate read-back calls to verify individual fields. When a write command exits non-zero, confirm the remote state before deciding whether to retry; the write may already have succeeded, and retrying can create duplicate issues or comments or repeat other side effects
 7. **Issue titles:** Whenever the user asks to generate an issue title, provide it in English regardless of the wording of the request, and do not start it with `Fix`. These rules choose title wording from the issue's nature; they are not an instruction to apply GitHub labels
    - For a bug, objectively describe the problem or symptom instead of writing from a bug-fix perspective
    - For an improvement to existing functionality, write the title from an improvement perspective and prefer `Improve ...`
@@ -83,6 +87,12 @@ SiYuan repository guide. Module path `github.com/siyuan-note/siyuan`, license AG
    - Keep parent and child paths aligned with the actual menu hierarchy. Dock entries support visibility only and must not be included in sorting
    - Cover catalog consistency, separator placement, order migration, and plugin-slot preservation in the related tests. Configured menus must not produce leading, trailing, or consecutive separators
    - The menu `ignore` option controls conditional rendering and must not be used to opt an entry out of visibility or order configuration
+10. **API contracts:**
+    - Follow [docs/API-CONTRACTS.md](docs/API-CONTRACTS.md) when adding or changing kernel HTTP APIs. Define new endpoints in `kernel/apicontract/` and bind their handlers through `contractHandler`; keep contracts synchronized when changing existing endpoints
+    - Preserve existing input compatibility, response variants, authorization, and encrypted notebook lease behavior; cover affected behavior with regression tests
+    - Remove migrated or deleted routes from `kernel/apicontract/legacy_routes.json`; never add new routes to this legacy list or bypass contract checks with `any` or type assertions
+    - After contract changes, run `pnpm run api:generate --petal ../../petal` and `pnpm run api:check --petal ../../petal` from `app/`; synchronize related public declarations in `petal` and do not hand-edit generated declarations or schemas
+    - Run `pnpm run lint` from `app/`, `go test ./apicontract/...` from `kernel/`, and the applicable API compatibility and route coverage tests described in the maintenance document; keep new regression cases included in the CI selections and documented commands
 
 ---
 
@@ -93,7 +103,9 @@ SiYuan repository guide. Module path `github.com/siyuan-note/siyuan`, license AG
 3. **UI paths:** In all contexts, including code comments, UI text, i18n, user guides, documentation, issue/PR content, and responses, separate navigation levels with a hyphen surrounded by spaces (for example, `设置 - 快捷键 - 通用`); do not use arrow symbols such as `→`
 4. **Markdown:** Do not hand-wrap; keep each line (paragraphs, table rows, list items, etc.) on a single line
 5. **TypeScript/JavaScript:** Semicolons required, use double quotes, indent with spaces
+   - When moving or extracting a symbol into another module, update all affected imports to reference its defining module directly. Do not leave forwarding re-exports in the original module merely to avoid updating callers
 6. **CSS:** Do not use the `:has()` selector because of its performance impact
+7. **CSS positioning and scrolling:** When changing `position`, `transform`, `contain`, or `overflow` on a shared container, check the effects on descendant positioning reference frames, overlay coverage, and clipping. Prefer a dedicated container when a local control needs a positioning reference. For settings dialog changes, verify detail overlays, the top drag area, and scrollbar placement at different window widths
 
 ---
 
@@ -182,6 +194,7 @@ All Go libraries above are dependencies in `kernel/go.mod`. GitHub org: `siyuan-
 - **Editing Go dependencies:** To test a local change, add a temporary `replace` in `kernel/go.mod` pointing at your local checkout; **never commit that temporary `replace`**.
 - **Rebuilding `lute.min.js`:** Change `lute`, rebuild with GopherJS, and copy the artifact into `app/stage/protyle/js/lute/`.
 - **Type declarations:** when changing files under `app/src/types/` or other TypeScript declarations and constants exposed to plugins, synchronize the corresponding declarations and constants in the `petal` repository in the same task.
+- **Petal documentation:** Keep `petal/README.md` limited to the project title and the `plugin-sample` link. Do not add feature descriptions, API usage explanations, or code examples to the README. Document API behavior, constraints, and lifecycle in comments on the corresponding API declarations in `petal`; put executable usage examples in the actual source code of `plugin-sample`.
 
 ---
 

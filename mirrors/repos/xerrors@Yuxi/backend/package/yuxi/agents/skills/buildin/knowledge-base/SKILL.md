@@ -2,6 +2,8 @@
 name: knowledge-base
 slug: knowledge-base
 description: "使用 Yuxi 知识库进行检索、打开文档、文档内定位和查看思维导图。当用户需要基于已配置知识库回答问题、核验资料或引用文档内容时使用此技能。"
+version: "2026.06.24"
+tool_dependencies: ["list_kbs", "query_kb", "find_kb_document", "open_kb_document", "get_mindmap", "search_file", "download_kb_file"]
 ---
 
 # 知识库技能

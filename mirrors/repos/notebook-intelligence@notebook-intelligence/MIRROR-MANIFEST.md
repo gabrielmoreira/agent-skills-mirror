@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `notebook-intelligence/notebook-intelligence` — 26 default patterns, 0 followed patterns, 1 file(s) materialized.
+Mirror of `notebook-intelligence/notebook-intelligence` — 26 default patterns, 12 followed patterns, 18 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `notebook-intelligence/notebook-intelligence` — 26 default patterns,
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 0 |
-| Files         | 1 |
+| Followed pats | 12 |
+| Files         | 18 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,7 +51,18 @@ Mirror of `notebook-intelligence/notebook-intelligence` — 26 default patterns,
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-_None._
+- `CONTRIBUTING.md`
+- `README.md`
+- `docs/troubleshooting.md`
+- `SECURITY.md`
+- `RELEASE.md`
+- `docs/chatbook.md`
+- `docs/rulesets.md`
+- `docs/performance-diagnostics.md`
+- `docs/admin-guide.md`
+- `docs/chatbook-extensions.md`
+- `PRIVACY.md`
+- `CHANGELOG.md`
 
 ## File Index
 
@@ -59,7 +70,24 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`docs/skills.md`](docs/skills.md) |
+| 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 2 | ✓ | [`benchmarks/claude_perf/README.md`](benchmarks/claude_perf/README.md) |
+| 3 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 4 | ✓ | [`docs/admin-tour-config.md`](docs/admin-tour-config.md) |
+| 5 | ✓ | [`docs/skills.md`](docs/skills.md) |
+| 6 | ✓ | [`ui-tests/README.md`](ui-tests/README.md) |
+| 7 | → | [`CHANGELOG.md`](CHANGELOG.md) |
+| 8 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 9 | → | [`docs/admin-guide.md`](docs/admin-guide.md) |
+| 10 | → | [`docs/chatbook-extensions.md`](docs/chatbook-extensions.md) |
+| 11 | → | [`docs/chatbook.md`](docs/chatbook.md) |
+| 12 | → | [`docs/performance-diagnostics.md`](docs/performance-diagnostics.md) |
+| 13 | → | [`docs/rulesets.md`](docs/rulesets.md) |
+| 14 | → | [`docs/troubleshooting.md`](docs/troubleshooting.md) |
+| 15 | → | [`PRIVACY.md`](PRIVACY.md) |
+| 16 | → | [`README.md`](README.md) |
+| 17 | → | [`RELEASE.md`](RELEASE.md) |
+| 18 | → | [`SECURITY.md`](SECURITY.md) |
 
 ---
 

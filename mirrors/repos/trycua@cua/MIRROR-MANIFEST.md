@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `trycua/cua` — 26 default patterns, 16 followed patterns, 42 file(s) materialized.
+Mirror of `trycua/cua` — 26 default patterns, 2 followed patterns, 25 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `trycua/cua` — 26 default patterns, 16 followed patterns, 42 file(s)
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 16 |
-| Files         | 42 |
+| Followed pats | 2 |
+| Files         | 25 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,22 +51,8 @@ Mirror of `trycua/cua` — 26 default patterns, 16 followed patterns, 42 file(s)
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-- `CONTRIBUTING.md`
-- `MAINTAINERS.md`
 - `rfcs/README.md`
 - `SECURITY.md`
-- `Development.md`
-- `TESTING.md`
-- `docs/README.md`
-- `libs/cua-driver/README.md`
-- `libs/cua-driver/rust/README.md`
-- `libs/typescript/README.md`
-- `libs/cuabot/README.md`
-- `libs/lume/Development.md`
-- `libs/cua-driver/rust/crates/cua-driver/tests/README.md`
-- `scripts/ci/README.md`
-- `libs/cua-driver/docs/test-harnesses-guide.md`
-- `libs/cua-driver/docs/test-matrix.md`
 
 ## File Index
 
@@ -92,30 +78,13 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 16 | ✓ | [`libs/cua-bench/datasets/cua-bench-basic/typing-input/CLAUDE.md`](libs/cua-bench/datasets/cua-bench-basic/typing-input/CLAUDE.md) |
 | 17 | ✓ | [`libs/cua-bench/datasets/cua-bench-basic/video-player/CLAUDE.md`](libs/cua-bench/datasets/cua-bench-basic/video-player/CLAUDE.md) |
 | 18 | ✓ | [`libs/cua-bench/example_tasks/minesweeper_game_env/CLAUDE.md`](libs/cua-bench/example_tasks/minesweeper_game_env/CLAUDE.md) |
-| 19 | ✓ | [`libs/cua-driver/docs/action-support.md`](libs/cua-driver/docs/action-support.md) |
-| 20 | ✓ | [`libs/cua-driver/rust/Skills/cua-driver/SKILL.md`](libs/cua-driver/rust/Skills/cua-driver/SKILL.md) |
-| 21 | ✓ | [`libs/lume/CONTRIBUTING.md`](libs/lume/CONTRIBUTING.md) |
-| 22 | ✓ | [`libs/typescript/cua-cli/CLAUDE.md`](libs/typescript/cua-cli/CLAUDE.md) |
-| 23 | ✓ | [`libs/xfce/Development.md`](libs/xfce/Development.md) |
-| 24 | ✓ | [`rfcs/0000-template.md`](rfcs/0000-template.md) |
-| 25 | ✓ | [`skills/gui-automation/references/command-reference.md`](skills/gui-automation/references/command-reference.md) |
-| 26 | ✓ | [`skills/gui-automation/SKILL.md`](skills/gui-automation/SKILL.md) |
-| 27 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 28 | → | [`Development.md`](Development.md) |
-| 29 | → | [`docs/README.md`](docs/README.md) |
-| 30 | → | [`libs/cua-driver/docs/test-harnesses-guide.md`](libs/cua-driver/docs/test-harnesses-guide.md) |
-| 31 | → | [`libs/cua-driver/docs/test-matrix.md`](libs/cua-driver/docs/test-matrix.md) |
-| 32 | → | [`libs/cua-driver/README.md`](libs/cua-driver/README.md) |
-| 33 | → | [`libs/cua-driver/rust/crates/cua-driver/tests/README.md`](libs/cua-driver/rust/crates/cua-driver/tests/README.md) |
-| 34 | → | [`libs/cua-driver/rust/README.md`](libs/cua-driver/rust/README.md) |
-| 35 | → | [`libs/cuabot/README.md`](libs/cuabot/README.md) |
-| 36 | → | [`libs/lume/Development.md`](libs/lume/Development.md) |
-| 37 | → | [`libs/typescript/README.md`](libs/typescript/README.md) |
-| 38 | → | [`MAINTAINERS.md`](MAINTAINERS.md) |
-| 39 | → | [`rfcs/README.md`](rfcs/README.md) |
-| 40 | → | [`scripts/ci/README.md`](scripts/ci/README.md) |
-| 41 | → | [`SECURITY.md`](SECURITY.md) |
-| 42 | → | [`TESTING.md`](TESTING.md) |
+| 19 | ✓ | [`libs/cua-driver/rust/Skills/cua-driver/SKILL.md`](libs/cua-driver/rust/Skills/cua-driver/SKILL.md) |
+| 20 | ✓ | [`libs/typescript/cua-cli/CLAUDE.md`](libs/typescript/cua-cli/CLAUDE.md) |
+| 21 | ✓ | [`rfcs/0000-template.md`](rfcs/0000-template.md) |
+| 22 | ✓ | [`skills/gui-automation/references/command-reference.md`](skills/gui-automation/references/command-reference.md) |
+| 23 | ✓ | [`skills/gui-automation/SKILL.md`](skills/gui-automation/SKILL.md) |
+| 24 | → | [`rfcs/README.md`](rfcs/README.md) |
+| 25 | → | [`SECURITY.md`](SECURITY.md) |
 
 ---
 

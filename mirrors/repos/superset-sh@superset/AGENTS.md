@@ -2,7 +2,9 @@
 
 Superset is an agent-first development platform, with an Electron desktop IDE, Next.js web apps, and an Expo mobile app as the main customer-facing surfaces. It's a Turborepo monorepo, deployed apps are in apps/ and supporting packages are in packages/, and we use tRPC for the api.
 
-You're working inside a Superset workspace, an isolated git-worktree copy of this repo. "Workspace" in a user message means that, not an editor workspace.
+You're working inside a Superset workspace, an isolated checkout of this repo — a git worktree on a
+machine someone owns, a plain clone at `/workspace` in a cloud workspace. "Workspace" in a user
+message means that, not an editor workspace.
 
 ## Project Structure
 
@@ -92,8 +94,11 @@ Desktop, host-service, and cli share one version; cut releases on a dedicated br
 
 ## Plugins
 
-First-party plugins live in `plugins/<name>/`: a `plugin.json` manifest, `skills/`, and optionally
-an MCP server. A release is the git tag `<name>@<version>` on this repo — that tree is what a host
+First-party plugins live in `plugins/<name>/`: a `plugin.json` manifest and `skills/`. A plugin
+ships no code — agents reach its tools through `/mcp/plugins/<marketplace>/<plugin>` on the API,
+which proxies to the vendor's MCP server or, for the plugins named in the `SUPERSET_HOSTED_PLUGINS` constant,
+serves them from `packages/trpc/src/router/plugins/servers/`. A release is the git tag
+`<name>@<version>` on this repo — that tree is what a host
 downloads — and `packages/shared/src/plugins/manifests.generated.ts` is the bundle the API resolves
 against, which is generated and must never be hand-edited. Change the source, then
 `superset plugins publish <name> --bump patch`, which rewrites the marketplace entry in

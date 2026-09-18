@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `microsoft/skills` — 26 default patterns, 0 followed patterns, 209 file(s) materialized.
+Mirror of `microsoft/skills` — 26 default patterns, 0 followed patterns, 210 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `microsoft/skills` — 26 default patterns, 0 followed patterns, 209 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 209 |
+| Files         | 210 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -242,32 +242,33 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 181 | ✓ | [`.github/plugins/deep-wiki/skills/wiki-qa/SKILL.md`](.github/plugins/deep-wiki/skills/wiki-qa/SKILL.md) |
 | 182 | ✓ | [`.github/plugins/deep-wiki/skills/wiki-researcher/SKILL.md`](.github/plugins/deep-wiki/skills/wiki-researcher/SKILL.md) |
 | 183 | ✓ | [`.github/plugins/deep-wiki/skills/wiki-vitepress/SKILL.md`](.github/plugins/deep-wiki/skills/wiki-vitepress/SKILL.md) |
-| 184 | ✓ | [`.github/plugins/microsoft-365-agents-toolkit/skills/declarative-agent-developer/SKILL.md`](.github/plugins/microsoft-365-agents-toolkit/skills/declarative-agent-developer/SKILL.md) |
-| 185 | ✓ | [`.github/plugins/microsoft-365-agents-toolkit/skills/install-atk/SKILL.md`](.github/plugins/microsoft-365-agents-toolkit/skills/install-atk/SKILL.md) |
-| 186 | ✓ | [`.github/plugins/microsoft-365-agents-toolkit/skills/m365-agent-evaluator/SKILL.md`](.github/plugins/microsoft-365-agents-toolkit/skills/m365-agent-evaluator/SKILL.md) |
-| 187 | ✓ | [`.github/plugins/microsoft-365-agents-toolkit/skills/teams-app-developer/SKILL.md`](.github/plugins/microsoft-365-agents-toolkit/skills/teams-app-developer/SKILL.md) |
-| 188 | ✓ | [`.github/plugins/microsoft-365-agents-toolkit/skills/teams-app-developer/slack-to-teams/SKILL.md`](.github/plugins/microsoft-365-agents-toolkit/skills/teams-app-developer/slack-to-teams/SKILL.md) |
-| 189 | ✓ | [`.github/plugins/microsoft-365-agents-toolkit/skills/ui-widget-developer/SKILL.md`](.github/plugins/microsoft-365-agents-toolkit/skills/ui-widget-developer/SKILL.md) |
-| 190 | ✓ | [`.github/prompts/add-endpoint.prompt.md`](.github/prompts/add-endpoint.prompt.md) |
-| 191 | ✓ | [`.github/prompts/code-review.prompt.md`](.github/prompts/code-review.prompt.md) |
-| 192 | ✓ | [`.github/prompts/create-node.prompt.md`](.github/prompts/create-node.prompt.md) |
-| 193 | ✓ | [`.github/prompts/create-store.prompt.md`](.github/prompts/create-store.prompt.md) |
-| 194 | ✓ | [`.github/prompts/scaffold-foundry-app.prompt.md`](.github/prompts/scaffold-foundry-app.prompt.md) |
-| 195 | ✓ | [`.github/skills/applicationinsights-web-ts/SKILL.md`](.github/skills/applicationinsights-web-ts/SKILL.md) |
-| 196 | ✓ | [`.github/skills/cloud-solution-architect/SKILL.md`](.github/skills/cloud-solution-architect/SKILL.md) |
-| 197 | ✓ | [`.github/skills/continual-learning/SKILL.md`](.github/skills/continual-learning/SKILL.md) |
-| 198 | ✓ | [`.github/skills/copilot-sdk/SKILL.md`](.github/skills/copilot-sdk/SKILL.md) |
-| 199 | ✓ | [`.github/skills/debugview/SKILL.md`](.github/skills/debugview/SKILL.md) |
-| 200 | ✓ | [`.github/skills/entra-agent-id/SKILL.md`](.github/skills/entra-agent-id/SKILL.md) |
-| 201 | ✓ | [`.github/skills/frontend-design-review/SKILL.md`](.github/skills/frontend-design-review/SKILL.md) |
-| 202 | ✓ | [`.github/skills/github-issue-creator/SKILL.md`](.github/skills/github-issue-creator/SKILL.md) |
-| 203 | ✓ | [`.github/skills/kql/SKILL.md`](.github/skills/kql/SKILL.md) |
-| 204 | ✓ | [`.github/skills/mcp-builder/SKILL.md`](.github/skills/mcp-builder/SKILL.md) |
-| 205 | ✓ | [`.github/skills/microsoft-docs/SKILL.md`](.github/skills/microsoft-docs/SKILL.md) |
-| 206 | ✓ | [`.github/skills/podcast-generation/SKILL.md`](.github/skills/podcast-generation/SKILL.md) |
-| 207 | ✓ | [`.github/skills/skill-creator/SKILL.md`](.github/skills/skill-creator/SKILL.md) |
-| 208 | ✓ | [`docs/llms.txt`](docs/llms.txt) |
-| 209 | ✓ | [`tests/AGENTS.md`](tests/AGENTS.md) |
+| 184 | ✓ | [`.github/plugins/foundry-iq-skills/skills/foundry-iq/SKILL.md`](.github/plugins/foundry-iq-skills/skills/foundry-iq/SKILL.md) |
+| 185 | ✓ | [`.github/plugins/microsoft-365-agents-toolkit/skills/declarative-agent-developer/SKILL.md`](.github/plugins/microsoft-365-agents-toolkit/skills/declarative-agent-developer/SKILL.md) |
+| 186 | ✓ | [`.github/plugins/microsoft-365-agents-toolkit/skills/install-atk/SKILL.md`](.github/plugins/microsoft-365-agents-toolkit/skills/install-atk/SKILL.md) |
+| 187 | ✓ | [`.github/plugins/microsoft-365-agents-toolkit/skills/m365-agent-evaluator/SKILL.md`](.github/plugins/microsoft-365-agents-toolkit/skills/m365-agent-evaluator/SKILL.md) |
+| 188 | ✓ | [`.github/plugins/microsoft-365-agents-toolkit/skills/teams-app-developer/SKILL.md`](.github/plugins/microsoft-365-agents-toolkit/skills/teams-app-developer/SKILL.md) |
+| 189 | ✓ | [`.github/plugins/microsoft-365-agents-toolkit/skills/teams-app-developer/slack-to-teams/SKILL.md`](.github/plugins/microsoft-365-agents-toolkit/skills/teams-app-developer/slack-to-teams/SKILL.md) |
+| 190 | ✓ | [`.github/plugins/microsoft-365-agents-toolkit/skills/ui-widget-developer/SKILL.md`](.github/plugins/microsoft-365-agents-toolkit/skills/ui-widget-developer/SKILL.md) |
+| 191 | ✓ | [`.github/prompts/add-endpoint.prompt.md`](.github/prompts/add-endpoint.prompt.md) |
+| 192 | ✓ | [`.github/prompts/code-review.prompt.md`](.github/prompts/code-review.prompt.md) |
+| 193 | ✓ | [`.github/prompts/create-node.prompt.md`](.github/prompts/create-node.prompt.md) |
+| 194 | ✓ | [`.github/prompts/create-store.prompt.md`](.github/prompts/create-store.prompt.md) |
+| 195 | ✓ | [`.github/prompts/scaffold-foundry-app.prompt.md`](.github/prompts/scaffold-foundry-app.prompt.md) |
+| 196 | ✓ | [`.github/skills/applicationinsights-web-ts/SKILL.md`](.github/skills/applicationinsights-web-ts/SKILL.md) |
+| 197 | ✓ | [`.github/skills/cloud-solution-architect/SKILL.md`](.github/skills/cloud-solution-architect/SKILL.md) |
+| 198 | ✓ | [`.github/skills/continual-learning/SKILL.md`](.github/skills/continual-learning/SKILL.md) |
+| 199 | ✓ | [`.github/skills/copilot-sdk/SKILL.md`](.github/skills/copilot-sdk/SKILL.md) |
+| 200 | ✓ | [`.github/skills/debugview/SKILL.md`](.github/skills/debugview/SKILL.md) |
+| 201 | ✓ | [`.github/skills/entra-agent-id/SKILL.md`](.github/skills/entra-agent-id/SKILL.md) |
+| 202 | ✓ | [`.github/skills/frontend-design-review/SKILL.md`](.github/skills/frontend-design-review/SKILL.md) |
+| 203 | ✓ | [`.github/skills/github-issue-creator/SKILL.md`](.github/skills/github-issue-creator/SKILL.md) |
+| 204 | ✓ | [`.github/skills/kql/SKILL.md`](.github/skills/kql/SKILL.md) |
+| 205 | ✓ | [`.github/skills/mcp-builder/SKILL.md`](.github/skills/mcp-builder/SKILL.md) |
+| 206 | ✓ | [`.github/skills/microsoft-docs/SKILL.md`](.github/skills/microsoft-docs/SKILL.md) |
+| 207 | ✓ | [`.github/skills/podcast-generation/SKILL.md`](.github/skills/podcast-generation/SKILL.md) |
+| 208 | ✓ | [`.github/skills/skill-creator/SKILL.md`](.github/skills/skill-creator/SKILL.md) |
+| 209 | ✓ | [`docs/llms.txt`](docs/llms.txt) |
+| 210 | ✓ | [`tests/AGENTS.md`](tests/AGENTS.md) |
 
 ---
 

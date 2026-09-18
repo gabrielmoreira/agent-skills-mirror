@@ -3,7 +3,7 @@
 > **适用**: 想给一个**没有 MTP head 的微调模型**（尤其社区无审查微调）加上投机解码能力，
 > 而官方同基座量化版**自带 head**。
 > **实测结果**: 解码 **64.28 → 86.51 t/s（+34.6%）**，acceptance **0.736**（16 GiB 卡，Qwen3.6-35B-A3B 系）
-> **首次验证**: 2026-09-13 | llama.cpp build 10713 | 参考实现 `<llama-cpp-dir>\plan\_mtp_graft.py`
+> **首次验证**: 2026-09-13 | llama.cpp build 10713 | 参考实现 [`../../scripts/mtp_graft.py`](../../scripts/mtp_graft.py)
 
 ---
 
@@ -209,23 +209,74 @@ llama-server -m <grafted.gguf> ... --spec-type draft-mtp --spec-draft-n-max 2
 
 ## 7. 参考实现
 
-实现位于项目仓库：`<llama-cpp-dir>\plan\_mtp_graft.py`（纯标准库，可独立运行）。
-**本 `references/` 目录不含该脚本的副本** —— 它是仓库内工具，路径以 [`../INDEX.md`](../INDEX.md) §5.5 为准。
-- `--check`（默认）：只读，报告 head 字节数、磁盘空间，以及**结构性兼容性结论**
-- `--go --out <path>`：写入 + **写后自检**（`--go` 必须带 `--out`；`--check`/`--go` 互斥）
-- **兼容性是一道闸门，不是一份报告。** 不满足下列任一条即**拒绝写入**
-  （退出码 1，什么都不落盘，无需清理）：
-  - 架构不同（`general.architecture` 不一致）
-  - `block_count` 关系不对（必须 donor = target + 1）
-  - 有 target 张量在 donor 中找不到（命名不同 ⇒ 不是同一基座）
-  - 有张量 **shape 不一致**（⇒ 不是同一模型）
-  - donor 存在既不属于 target、也不属于 head 的额外张量
-  - 目标已自带 head 张量（防重复添加）
-  - donor 没有 `nextn_predict_layers`；`block_count` 不是 u32
+**权威实现已在项目内：`scripts/mtp_graft.py`** —— 纯标准库、单文件、可直接运行
+（实测：只带一个 Python 3.8+ 即可工作，**无任何外部模块依赖**）。
+
+> 此前这里是「实现位于 `<llama-cpp-dir>\plan\_mtp_graft.py`（纯标准库，可独立运行）」。
+> **那句话是错的** —— 该脚本 `import update_launchers as U`（用了它的 `GGML_TYPE_BYTES`
+> 与 `read_gguf_tensors`），脱离 `<llama-cpp-dir>\launcher\` 就 `ModuleNotFoundError`。
+> 两个符号现已**内联**进 `scripts/mtp_graft.py`，它才真正可独立运行。
+
+- `--check`（默认）：只读，报告 head 张量清单与字节数、磁盘空间、**结构性兼容性结论**
+- `--go --out <path>`：写入 + **写后自检**；必须带 `--out`，且**拒绝覆盖已存在的输出**
+- `--audit`：只打印目标模型里所有 per-layer KV 数组（见下）
+- `--donor/--target` 直接给文件；或 `--preset qwen36-35b-a3b --models-dir <models-dir>`
+- `--json` 机器可读摘要 ｜ `--check`/`--go`/`--audit` 互斥
+
+### 兼容性是一道闸门，不是一份报告
+
+任一条不满足即**拒绝写入**（退出码 1，什么都不落盘，无需清理）。
+
+**结构性（硬性，全部由两份文件当场推导）**
+
+| # | 条件 |
+|---:|---|
+| 1 | 两份都是可解析的 GGUF v2/v3 |
+| 2 | `general.architecture` 一致 |
+| 3 | `block_count(donor) == block_count(target) + nextn` |
+| 4 | target 的**每一个**张量都在 donor 中，且 **dims 完全一致** |
+| 5 | donor 多出的张量**恰好**是 head 块区间内的那些 |
+| 6 | target **不得**已自带 head（含已声明 `nextn_predict_layers`） |
+| 7 | donor **必须**声明可用的 `nextn_predict_layers` —— 缺了就拒，不猜 |
+| 8 | `block_count` 是 **u32**（否则不能原地改写） |
+| 9 | head 块区间内**确实有张量** |
+| 10 | head 的每个量化类型都在尺寸表内（否则无法算布局） |
+| 11 | **per-layer 数组 KV 不会失配**（见下） |
+| 12 | 磁盘空间足够 |
+
+**架构建议层（来自上游调研，2026-09）**
+
+- 头张量**会被加载但永不执行**的架构（`glm4` `exaone4` `exaone_moe` `bailingmoe2` `dots3note`）
+  ⇒ **只警告，不拒绝** —— 上游名单在变，用过期表拒绝会挡掉本来可用的嫁接
+- `granite-switch` **复用** `n_layer_nextn` 作 router 层 ⇒ **拒绝**（写它是语义污染）
+- `gemma4-assistant` 的头在 `blk.N.*` **之外**（顶层 `nextn.pre_projection`）⇒ **拒绝**（本写入器搬不动）
+- 多块头用在**断言单块**的架构上 ⇒ **拒绝**（加载会 `GGML_ASSERT`）
 
 > ⚠️ **量化类型差异不是拒绝条件。** 同一基座的两种量化配方（如 `UD-Q4_K_XL` vs `Q4_K_P`）
-> 本来就对不同张量用不同类型；GGUF 每张量自带类型，嫁接不受影响 —— 它只作为提示输出。
+> 本来就对不同张量用不同类型；GGUF 每张量自带类型，嫁接不受影响 —— 只作为提示输出。
 > （第一版把这个当硬条件，**误拒了已知可用的真实组合**：381/733 个张量类型不同但 shape 全一致。）
 
-**磁盘**：need ≈ 原模型 + 0.5 GiB（实例：22.37 GiB）。
+### ★ 头必须按 **block index 区间** 识别，不能按名字
+
+`bailingmoe3` 的头张量用**普通后缀**命名（`blk.%d.layer_out_norm`），名字里根本没有 `nextn`。
+按名字过滤会漏掉这个架构。区间算法是纯算术：头 = `[block_count - nextn, block_count)`。
+
+### ★ per-layer 数组 KV 陷阱
+
+加块会让任何「长度恰好等于 `block_count`」的 KV 数组与新层数不一致：有的加载器按下标访问会越界，
+有的会静默用到错误的条目。**写之前必须审计**，`--audit` 会列出全部候选：
+
+```
+python scripts/mtp_graft.py --audit --donor <head.gguf> --target <base.gguf>
+```
+
+已知会按层索引的键（不限于此 —— 工具还会按「长度恰好等于 `block_count`」兜底发现）：
+`compress_ratios` / `shared_kv_layers` / `recurrent_layers` / `deepstack_layers` / `layer_types`。
+
+### 等价性已实测
+
+用本工具对 2026-09-13 那次嫁接的**同一对模型**重跑，产物与原工具**SHA-256 完全相同**
+（22.31 GiB，`5AF97A49…72D272`）。即改写是**保真等价**，不是「看起来能用」。
+
+**磁盘**：need ≈ 原模型 + head 字节（实例：22.37 GiB）。
 **可逆**：原模型不动，产物直接删即可。
