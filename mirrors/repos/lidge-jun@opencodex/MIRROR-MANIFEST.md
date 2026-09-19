@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `lidge-jun/opencodex` — 26 default patterns, 5 followed patterns, 28 file(s) materialized.
+Mirror of `lidge-jun/opencodex` — 26 default patterns, 5 followed patterns, 29 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `lidge-jun/opencodex` — 26 default patterns, 5 followed patterns, 28
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 5 |
-| Files         | 28 |
+| Files         | 29 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -83,14 +83,15 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 18 | ✓ | [`structure/design-methodology.md`](structure/design-methodology.md) |
 | 19 | ✓ | [`structure/gui-and-management-api.md`](structure/gui-and-management-api.md) |
 | 20 | ✓ | [`structure/overview.md`](structure/overview.md) |
-| 21 | ✓ | [`structure/remote-workspace.md`](structure/remote-workspace.md) |
-| 22 | ✓ | [`structure/runtime.md`](structure/runtime.md) |
-| 23 | ✓ | [`structure/subagents.md`](structure/subagents.md) |
-| 24 | → | [`AGENTS_INSTALL.md`](AGENTS_INSTALL.md) |
-| 25 | → | [`CREDITS.md`](CREDITS.md) |
-| 26 | → | [`MAINTAINERS.md`](MAINTAINERS.md) |
-| 27 | → | [`SECURITY.md`](SECURITY.md) |
-| 28 | → | [`structure/INDEX.md`](structure/INDEX.md) |
+| 21 | ✓ | [`structure/providers-and-adapters.md`](structure/providers-and-adapters.md) |
+| 22 | ✓ | [`structure/remote-workspace.md`](structure/remote-workspace.md) |
+| 23 | ✓ | [`structure/runtime.md`](structure/runtime.md) |
+| 24 | ✓ | [`structure/subagents.md`](structure/subagents.md) |
+| 25 | → | [`AGENTS_INSTALL.md`](AGENTS_INSTALL.md) |
+| 26 | → | [`CREDITS.md`](CREDITS.md) |
+| 27 | → | [`MAINTAINERS.md`](MAINTAINERS.md) |
+| 28 | → | [`SECURITY.md`](SECURITY.md) |
+| 29 | → | [`structure/INDEX.md`](structure/INDEX.md) |
 
 ---
 

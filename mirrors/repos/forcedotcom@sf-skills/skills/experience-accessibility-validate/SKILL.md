@@ -11,7 +11,7 @@ metadata:
     - "design-systems-slds-validate"
     - "experience-lwc-generate"
 ---
-<!-- adk-managed-skill -->
+<!-- a11y-expert-managed-skill -->
 
 # Web Component Accessibility
 
@@ -47,16 +47,19 @@ Key Review Criteria:
 4. Component Library Usage
 
 - Assume that well-known component libraries (e.g., Salesforce Lightning, Material UI, Chakra UI) are accessible out of the box when correctly implemented. Unless they are used specifically in conflict with WCAG, library-provided components can be ignored for this review, as they are implemented in an accessible way beneath the abstraction.
+- Lightning base components (`lightning-input`, `lightning-combobox`, `lightning-textarea`, `lightning-icon`, and similar components) provide accessible labeling, ARIA, and error handling through dedicated attributes such as `label` and `alternative-text`. A `label` remains programmatic even with `variant="label-hidden"`; do not require a sibling or wrapper `<label>` to target the component. Navigation, button-icon, and other self-labeling base components likewise expose supplied label text as their accessible name and treat their internal icon as decorative. Do not report a missing association merely because that implementation is hidden inside the component.
+- The same self-labeling logic applies to **imported or custom control components in any framework** (React/JSX, Angular, Vue, Web Components), not only Lightning. A capitalized or imported component tag (`<Input>`, `<TextField>`, `<Button>`, `<Select>`, `<Checkbox>`, `<SearchField>`, and design-system wrappers from Material UI, Chakra, Radix, or an internal library) is **not** a bare HTML element — assume it renders its own accessible label, ARIA, and error handling beneath the abstraction (see the component-library grounding rule). When such a component is given a labeling prop — `label`, `aria-label`, `aria-labelledby`, `title`, or visible child text/`children` — treat it as already programmatically labeled and do **not** flag it for a missing `<label>`, a missing `for`/`id` association, or a missing accessible name. Only flag when **no** labeling prop or text is supplied, or the supplied value is clearly empty or nonsensical. Do not demand a native `<label for>` for a component whose internal control you cannot see.
+- Resolve dynamic `id` / `htmlFor` / `for` expressions before judging a label association. When a `<label htmlFor={X}>` (or `for={X}`) and its control's `id={X}` are bound to the **same expression** — the same variable, prop, `useId()` value, or template literal (e.g. both `htmlFor` and `id` set to the same interpolation such as `${id}-email`) — treat the association as **matching**, even though the literal string cannot be resolved at review time. A dynamic `id`/`htmlFor` pair is a mismatch only when the two expressions are demonstrably different. Do **not** flag identical dynamic `id`/`htmlFor` expressions as unmatched or mismatched labels.
+
+5. Source Interpretation
+
+- Resolve expressions according to the framework's binding semantics before judging them. Trace a dynamic value to every source available in that context. In React/JSX, an expression may reference local variables, props, hook results, or imported bindings; Vue, Svelte, and Astro expose their own template or script scopes. In an LWC template specifically, `{someValue}` resolves to a field, property, or getter on the component class (`.js` or `.ts`), including `@api` properties; module-level imported constants are not directly bindable. In Aura markup, follow the expression's value provider, such as `v.` or `c.`, to the corresponding component attribute or controller logic. Do not conclude that a value is undefined, empty, or missing until you have inspected the applicable source. In a diff, verify which side contains the corrected code rather than assuming that the change introduced the problem.
 
 **Focus**: Provide actionable feedback to ensure the component meets the necessary WCAG accessibility requirements, avoiding extraneous feedback unrelated to the prompt's scope. Identify issues in code only if there is an immediate fix. You MUST conduct the review, and subsequently suggest the code fix that solves this issue.
 
-
-
 ## Success Criteria Reviewers
 
-Identify which Success Criteria apply to the code under review, then open the reference files relevant to that code. Each reference is a
-self-contained reviewer with analysis framework, examples, and remediation
-guidance.
+Identify which Success Criteria apply to the code under review, then open the reference files relevant to that code. Each reference supplies criterion-specific analysis, examples, and remediation guidance; the review-wide rules above continue to apply.
 
 ### Perceivable
 

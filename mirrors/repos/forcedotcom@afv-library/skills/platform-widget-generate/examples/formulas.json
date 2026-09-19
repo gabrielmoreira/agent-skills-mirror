@@ -1,0 +1,191 @@
+{
+  "type": "lightning__agentforceWidget",
+  "contentBody": {
+    "widgetBody": {
+      "definition": "tile/widget",
+      "children": [
+        {
+          "definition": "tile/column",
+          "attributes": { "gap": "md" },
+          "children": [
+
+            {
+              "definition": "tile/column",
+              "attributes": { "gap": "xs" },
+              "children": [
+                { "definition": "tile/text", "attributes": { "text": "1. Arithmetic operators", "variant": "h3" } },
+                { "definition": "tile/text", "attributes": { "text": "Base: ${!$attrs.price}" } },
+                { "definition": "tile/text", "attributes": { "text": "Discount: -${!$attrs.price * $attrs.discountPercentage / 100}" } },
+                { "definition": "tile/text", "attributes": { "text": "Tax: ${!$attrs.price * $attrs.taxRate}" } },
+                { "definition": "tile/text", "attributes": { "text": "Total: ${!$attrs.price * (1 + $attrs.taxRate) - ($attrs.price * $attrs.discountPercentage / 100)}", "variant": "h4", "color": "primary" } },
+                { "definition": "tile/text", "attributes": { "text": "Division: {!$attrs.price / $attrs.durationInMin}  |  Exponent: {!2 ^ 8}" } }
+              ]
+            },
+
+            { "definition": "tile/spacer", "attributes": { "size": "sm" } },
+
+            {
+              "definition": "tile/column",
+              "attributes": { "gap": "xs" },
+              "children": [
+                { "definition": "tile/text", "attributes": { "text": "2. Comparison operators", "variant": "h3" } },
+                { "definition": "tile/text", "attributes": { "text": "Equal: {!IF($attrs.status = 'boarding', 'yes', 'no')}  |  Not equal: {!IF($attrs.status <> 'boarding', 'yes', 'no')}" } },
+                { "definition": "tile/text", "attributes": { "text": "Greater than: {!IF($attrs.price > 1000, 'yes', 'no')}  |  Less than: {!IF($attrs.price < 1000, 'yes', 'no')}" } },
+                { "definition": "tile/text", "attributes": { "text": ">= : {!IF($attrs.price >= 1250, 'yes', 'no')}  |  <= : {!IF($attrs.price <= 1250, 'yes', 'no')}" } }
+              ]
+            },
+
+            { "definition": "tile/spacer", "attributes": { "size": "sm" } },
+
+            {
+              "definition": "tile/column",
+              "attributes": { "gap": "xs" },
+              "children": [
+                { "definition": "tile/text", "attributes": { "text": "3. Logical functions — IF / CASE / AND / OR / NOT", "variant": "h3" } },
+                { "definition": "tile/text", "attributes": { "text": "IF: {!IF($attrs.price > 1000, 'PREMIUM', 'standard')}" } },
+                { "definition": "tile/text", "attributes": { "text": "IF nested: {!IF($attrs.status = 'boarding', 'Now boarding!', IF($attrs.status = 'delayed', 'Delayed', 'Scheduled'))}" } },
+                { "definition": "tile/text", "attributes": { "text": "CASE: {!CASE($attrs.status, 'boarding', 'Now boarding', 'delayed', 'Please wait', 'cancelled', 'Refunded', 'On schedule')}" } },
+                { "definition": "tile/text", "attributes": { "text": "AND: {!IF(AND($attrs.isPriority, $attrs.price > 500), 'yes', 'no')}" } },
+                { "definition": "tile/text", "attributes": { "text": "OR: {!IF(OR($attrs.isPriority, $attrs.price > 5000), 'yes', 'no')}" } },
+                { "definition": "tile/text", "attributes": { "text": "NOT: {!IF(NOT($attrs.isPetAllowed), 'no pets', 'pets ok')}" } },
+                {
+                  "definition": "tile/badge",
+                  "attributes": {
+                    "label": "{!IF($attrs.status = 'boarding', 'Boarding', IF($attrs.status = 'delayed', 'Delayed', 'Scheduled'))}",
+                    "variant": "{!IF($attrs.status = 'boarding', 'info', IF($attrs.status = 'delayed', 'warning', 'secondary'))}"
+                  }
+                }
+              ]
+            },
+
+            { "definition": "tile/spacer", "attributes": { "size": "sm" } },
+
+            {
+              "definition": "tile/column",
+              "attributes": { "gap": "xs" },
+              "children": [
+                { "definition": "tile/text", "attributes": { "text": "4. Text functions", "variant": "h3" } },
+                { "definition": "tile/text", "attributes": { "text": "UPPER: {!UPPER($attrs.airline)}  |  LOWER: {!LOWER($attrs.airline)}" } },
+                { "definition": "tile/text", "attributes": { "text": "LEFT/RIGHT/MID: {!LEFT($attrs.airline, 3)}  |  {!RIGHT($attrs.airline, 4)}  |  {!MID($attrs.airline, 1, 3)}" } },
+                { "definition": "tile/text", "attributes": { "text": "LEN / TRIM / REVERSE: {!LEN($attrs.airline)}  |  [{!TRIM($attrs.notes)}]  |  {!REVERSE($attrs.flightId)}" } },
+                { "definition": "tile/text", "attributes": { "text": "SUBSTITUTE / FIND: {!SUBSTITUTE($attrs.airline, 'Indigo', 'IndiGo')}  |  {!FIND('IX', $attrs.flightId)}" } },
+                { "definition": "tile/text", "attributes": { "text": "LPAD / RPAD: [{!LPAD($attrs.flightId, 12, '.')}]  |  [{!RPAD($attrs.flightId, 12, '.')}]" } },
+                { "definition": "tile/text", "attributes": { "text": "TEXT / VALUE: {!TEXT($attrs.price)}  |  {!VALUE('42.5')}" } },
+                { "definition": "tile/text", "attributes": { "text": "CONTAINS / BEGINS: {!IF(CONTAINS($attrs.airline, 'Indi'), 'yes', 'no')}  |  {!IF(BEGINS($attrs.flightId, 'IX'), 'yes', 'no')}" } },
+                { "definition": "tile/text", "attributes": { "text": "Concat: {!$attrs.airline & ' — ' & $attrs.flightId}", "variant": "h4" } }
+              ]
+            },
+
+            { "definition": "tile/spacer", "attributes": { "size": "sm" } },
+
+            {
+              "definition": "tile/column",
+              "attributes": { "gap": "xs" },
+              "children": [
+                { "definition": "tile/text", "attributes": { "text": "5. Math functions", "variant": "h3" } },
+                { "definition": "tile/text", "attributes": { "text": "MOD/MAX/MIN: {!MOD($attrs.price, 100)}  |  {!MAX($attrs.price, 2000)}  |  {!MIN($attrs.price, 2000)}" } },
+                { "definition": "tile/text", "attributes": { "text": "ROUND/ABS/SQRT: {!ROUND($attrs.discountPercentage, 1)}  |  {!ABS(-42.5)}  |  {!SQRT($attrs.durationInMin)}" } },
+                { "definition": "tile/text", "attributes": { "text": "CEILING/FLOOR: {!CEILING(4.2)}  |  {!FLOOR(4.8)}" } },
+                { "definition": "tile/text", "attributes": { "text": "MCEILING/MFLOOR: {!MCEILING(-4.2)}  |  {!MFLOOR(-4.8)}" } },
+                { "definition": "tile/text", "attributes": { "text": "LOG/EXP/LN: {!LOG(1000)}  |  {!EXP(1)}  |  {!LN(2.718281828)}" } }
+              ]
+            },
+
+            { "definition": "tile/spacer", "attributes": { "size": "sm" } },
+
+            {
+              "definition": "tile/column",
+              "attributes": { "gap": "xs" },
+              "children": [
+                { "definition": "tile/text", "attributes": { "text": "6. Date & time functions", "variant": "h3" } },
+                { "definition": "tile/text", "attributes": { "text": "departureDate: {!$attrs.departureDate}" } },
+                { "definition": "tile/text", "attributes": { "text": "DAY/MONTH/YEAR: {!DAY(DATEVALUE($attrs.departureDate))}  |  {!MONTH(DATEVALUE($attrs.departureDate))}  |  {!YEAR(DATEVALUE($attrs.departureDate))}" } },
+                { "definition": "tile/text", "attributes": { "text": "WEEKDAY: {!WEEKDAY(DATEVALUE($attrs.departureDate))}" } },
+                { "definition": "tile/text", "attributes": { "text": "ADDMONTHS+3: {!ADDMONTHS(DATEVALUE($attrs.departureDate), 3)}" } },
+                { "definition": "tile/text", "attributes": { "text": "TODAY/NOW/TIMENOW: {!TODAY()}  |  {!NOW()}  |  {!TIMENOW()}" } },
+                { "definition": "tile/text", "attributes": { "text": "DATE(2026,12,31): {!DATE(2026,12,31)}" } },
+                { "definition": "tile/text", "attributes": { "text": "HOUR/MINUTE/SECOND/MILLISECOND from NOW: {!HOUR(NOW())} · {!MINUTE(NOW())} · {!SECOND(NOW())} · {!MILLISECOND(NOW())}" } }
+              ]
+            },
+
+            { "definition": "tile/spacer", "attributes": { "size": "sm" } },
+
+            {
+              "definition": "tile/column",
+              "attributes": { "gap": "xs" },
+              "children": [
+                { "definition": "tile/text", "attributes": { "text": "7. Validation & encoding functions", "variant": "h3" } },
+                { "definition": "tile/text", "attributes": { "text": "ISNULL/ISBLANK: {!IF(ISNULL($attrs.notes), 'null', 'has-value')}  |  {!IF(ISBLANK($attrs.notes), 'blank', 'has-value')}" } },
+                { "definition": "tile/text", "attributes": { "text": "NULLVALUE/BLANKVALUE: {!NULLVALUE($attrs.notes, 'n/a')}  |  {!BLANKVALUE($attrs.notes, 'empty')}" } },
+                { "definition": "tile/text", "attributes": { "text": "HTMLENCODE: {!HTMLENCODE($attrs.airline & ' <b>tag</b>')}" } },
+                { "definition": "tile/text", "attributes": { "text": "JSENCODE: {!JSENCODE($attrs.airline & \"'quote\")}" } }
+              ]
+            },
+
+            { "definition": "tile/spacer", "attributes": { "size": "sm" } },
+
+            {
+              "definition": "tile/column",
+              "attributes": { "gap": "xs" },
+              "children": [
+                { "definition": "tile/text", "attributes": { "text": "8. Pattern matching — ISNUMBER, REGEX", "variant": "h3" } },
+                { "definition": "tile/text", "attributes": { "text": "ISNUMBER '42.5': {!IF(ISNUMBER('42.5'), 'numeric', 'not-numeric')}" } },
+                { "definition": "tile/text", "attributes": { "text": "ISNUMBER 'abc': {!IF(ISNUMBER('abc'), 'numeric', 'not-numeric')}" } },
+                { "definition": "tile/text", "attributes": { "text": "REGEX flightId ^[A-Z]{2} [0-9]+$: {!IF(REGEX($attrs.flightId, '^[A-Z]{2} [0-9]+$'), 'match', 'no-match')}" } },
+                { "definition": "tile/text", "attributes": { "text": "REGEX airline ^[A-Za-z ]+$: {!IF(REGEX($attrs.airline, '^[A-Za-z ]+$'), 'match', 'no-match')}" } }
+              ]
+            },
+
+            { "definition": "tile/spacer", "attributes": { "size": "sm" } },
+
+            {
+              "definition": "tile/column",
+              "meta": { "if": "{!AND($attrs.isPriority, $attrs.price > 500)}" },
+              "children": [
+                {
+                  "definition": "tile/row",
+                  "attributes": { "gap": "sm", "align": "center" },
+                  "children": [
+                    { "definition": "tile/icon", "attributes": { "name": "lightning", "color": "warning" } },
+                    { "definition": "tile/text", "attributes": { "text": "9. Formula-driven meta.if: priority fare over $500 — expedited handling" } }
+                  ]
+                }
+              ]
+            },
+
+            { "definition": "tile/spacer", "attributes": { "size": "sm" } },
+
+            {
+              "definition": "tile/column",
+              "meta": { "forEach": "{!$attrs.flights}", "forItem": "$flight" },
+              "attributes": { "gap": "xs" },
+              "children": [
+                { "definition": "tile/text", "attributes": { "text": "10. forEach + per-row formula", "variant": "h3" } },
+                {
+                  "definition": "tile/row",
+                  "attributes": { "justify": "between", "align": "center" },
+                  "children": [
+                    {
+                      "definition": "tile/column",
+                      "attributes": { "gap": "xs" },
+                      "children": [
+                        { "definition": "tile/text", "attributes": { "text": "{!$flight.airline} — {!$flight.flightId}", "variant": "h4" } },
+                        { "definition": "tile/text", "attributes": { "text": "Total with tax: ${!$flight.price * (1 + $flight.taxRate)}", "color": "muted" } }
+                      ]
+                    },
+                    {
+                      "definition": "tile/badge",
+                      "meta": { "if": "{!$flight.price > 1000}" },
+                      "attributes": { "label": "PREMIUM", "variant": "primary" }
+                    }
+                  ]
+                }
+              ]
+            }
+
+          ]
+        }
+      ]
+    }
+  }
+}

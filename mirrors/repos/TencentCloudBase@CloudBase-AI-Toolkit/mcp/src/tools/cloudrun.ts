@@ -74,7 +74,7 @@ export function maskCloudRunDetailEnvParams<
 
 // Input schema for queryCloudRun tool
 const queryCloudRunInputSchema = {
-  action: z.enum(['list', 'detail', 'templates', 'getDeployLog', 'getProcessLog', 'getDeployRecords', 'envStatus']).describe('cloudrun.schema.query.action'),
+  action: z.enum(['list', 'detail', 'templates', 'getDeployLog', 'getProcessLog', 'getDeployRecords', 'envStatus', 'getManageTask']).describe('cloudrun.schema.query.action'),
 
   // List operation parameters
   pageSize: z.number().min(1).max(100).optional().default(10).describe('cloudrun.schema.query.pageSize'),
@@ -93,10 +93,33 @@ const queryCloudRunInputSchema = {
 /** init 缺省模板，与 schema 默认值保持一致（SDK 侧同样回退到该模板） */
 const DEFAULT_INIT_TEMPLATE = "helloworld";
 
+/**
+ * Service naming rule, matching `cloudrun.schema.manage.serverName`: upper/lowercase letters,
+ * digits, hyphens and underscores, starting with a letter, 3-45 characters.
+ *
+ * The value doubles as an on-disk path segment. `action=init` resolves it against `targetPath`
+ * (the Manager SDK calls `path.resolve(targetPath, serverName)` and extracts the downloaded
+ * template archive there) and then writes `targetPath/<serverName>/cloudbaserc.json`. Anchoring
+ * the pattern keeps it a single path segment, so `..`, `/` and `\` are rejected before the
+ * handler runs.
+ */
+const CLOUDRUN_SERVER_NAME_PATTERN = /^[a-zA-Z][a-zA-Z0-9_-]{2,44}$/;
+
+/**
+ * `initEnv` provisions the environment rather than a service, so it is the single manage action that
+ * never reads `serverName` — its own parameter description says so. Presence is enforced in the
+ * handler for every action not listed here, which also keeps a newly added action from silently
+ * receiving `undefined`.
+ */
+const CLOUDRUN_MANAGE_ACTIONS_WITHOUT_SERVER_NAME = new Set(['initEnv']);
+
 // Input schema for manageCloudRun tool
 const ManageCloudRunInputSchema = {
   action: z.enum(['init', 'download', 'run', 'deploy', 'delete', 'createAgent', 'updateConfig', 'initEnv', 'traffic']).describe('cloudrun.schema.manage.action'),
-  serverName: z.string().describe('cloudrun.schema.manage.serverName'),
+  // Optional so that `initEnv` can be called the way it is documented (envId only) instead of forcing
+  // callers to invent a placeholder name. The pattern still applies whenever a value is present; the
+  // handler fails closed on a missing value for every action that actually uses it.
+  serverName: z.string().regex(CLOUDRUN_SERVER_NAME_PATTERN).optional().describe('cloudrun.schema.manage.serverName'),
 
   // Traffic management operation parameters (action=traffic)
   trafficOp: z.enum(['set', 'promote', 'rollback']).optional().describe('cloudrun.schema.manage.trafficOp'),
@@ -185,10 +208,13 @@ const ManageCloudRunInputSchema = {
   // Common parameters
   force: z.boolean().optional().default(false).describe('cloudrun.schema.manage.force'),
   serverType: z.enum(CLOUDRUN_SERVICE_TYPES).optional().describe('cloudrun.schema.manage.serverType'),
+
+  // Deploy operation parameters
+  waitRegistration: z.boolean().optional().default(true).describe('cloudrun.schema.manage.waitRegistration'),
 };
 
 type queryCloudRunInput = {
-  action: 'list' | 'detail' | 'templates' | 'getDeployLog' | 'getProcessLog' | 'getDeployRecords' | 'envStatus';
+  action: 'list' | 'detail' | 'templates' | 'getDeployLog' | 'getProcessLog' | 'getDeployRecords' | 'envStatus' | 'getManageTask';
   pageSize?: number;
   pageNum?: number;
   serverName?: string;
@@ -202,6 +228,11 @@ type queryCloudRunInput = {
 
 type ManageCloudRunInput = {
   action: 'init' | 'download' | 'run' | 'deploy' | 'delete' | 'createAgent' | 'updateConfig' | 'initEnv' | 'traffic';
+  /**
+   * Required by every action except `initEnv`. The schema types it as optional (initEnv takes no
+   * service name), so the handler enforces presence before any branch reads it — see the guard at the
+   * top of the manage handler.
+   */
   serverName: string;
   targetPath?: string;
   imageUrl?: string;
@@ -229,6 +260,7 @@ type ManageCloudRunInput = {
     description?: string;
     template?: string;
   };
+  waitRegistration?: boolean;
 };
 
 /**
@@ -298,6 +330,31 @@ function validateAndNormalizePath(inputPath: string): string {
   return normalizedPath;
 }
 
+/**
+ * Resolve `<targetPath>/<serverName>` and refuse anything that is not a direct child of `targetPath`.
+ *
+ * `CLOUDRUN_SERVER_NAME_PATTERN` already rejects separators and dots, so a well-formed name cannot
+ * escape — this is the second line at the sink, where the name becomes a local directory: `init` and
+ * `download` hand it to the Manager SDK (which resolves it against `targetPath` and extracts the
+ * downloaded archive there), and `createAgent` writes a project skeleton into it. Widening the naming
+ * rule later must not be able to re-open traversal, and callers take the resolved path from here
+ * instead of re-joining the name themselves.
+ *
+ * Exported for tests: the schema rejects the hostile inputs, so containment is exercised directly.
+ */
+export function resolveCloudRunProjectDir(targetPath: string, serverName: string): string {
+  const base = path.resolve(targetPath);
+  const projectDir = path.resolve(base, serverName);
+  const relative = path.relative(base, projectDir);
+  // One segment, directly under `targetPath`: the basename equality rejects a value carrying
+  // separators ('.', '/tmp/x', 'a/../b'), and the relative check rejects everything that leaves `base`.
+  const isSingleSegment = path.basename(projectDir) === serverName;
+  if (!isSingleSegment || !relative || relative.startsWith('..') || path.isAbsolute(relative)) {
+    throw new Error(t("cloudrun.error.serverNameOutsideTargetPath", { serverName, targetPath }));
+  }
+  return projectDir;
+}
+
 export function buildManageCloudRunErrorMessage(action: ManageCloudRunInput["action"] | string, serverName: string, error: unknown): string {
   const baseMessage = error instanceof Error ? error.message : String(error);
   const suggestions: string[] = [];
@@ -308,7 +365,7 @@ export function buildManageCloudRunErrorMessage(action: ManageCloudRunInput["act
 
   if (/已有部署发布任务运行中|部署发布任务运行中/i.test(baseMessage)) {
     suggestions.push(t("cloudrun.error.deployTaskRunning", { serverName }));
-    suggestions.push(t("cloudrun.error.deployTaskRunningForce"));
+    suggestions.push(t("cloudrun.error.deployTaskRunningForce", { serverName }));
   }
 
   if (/云托管资源未开通|无法使用系统创建网络|VpcInfo/i.test(baseMessage)) {
@@ -1627,6 +1684,98 @@ export function registerCloudRunTools(server: ExtendedMcpServer) {
             };
           }
 
+          case 'getManageTask': {
+            const serverName = getCloudRunQueryServerName(input);
+
+            if (!serverName) {
+              return {
+                content: [
+                  {
+                    type: "text",
+                    text: JSON.stringify({
+                      success: false,
+                      error: t("cloudrun.error.serverNameRequired", { action: "getManageTask" }),
+                      message: t("cloudrun.error.provideServerName")
+                    }, null, 2)
+                  }
+                ]
+              };
+            }
+
+            const envId = input.envId?.trim() || (await getEnvId(cloudBaseOptions));
+
+            if (!manager.commonService) {
+              throw new Error(
+                "Current CloudBase Manager does not support commonService; cannot query CloudRun deploy task.",
+              );
+            }
+
+            // tcbr/DescribeServerManageTask：TaskId=0 表示查询该服务最近一次发布任务
+            let rawTask: Record<string, unknown> | null = null;
+            let queryError: string | undefined;
+            try {
+              const resp = await manager
+                .commonService("tcbr", "2022-02-17")
+                .call({
+                  Action: "DescribeServerManageTask",
+                  Param: { EnvId: envId, ServerName: serverName, TaskId: 0 },
+                });
+              const respObj = (resp ?? {}) as Record<string, unknown>;
+              const task = respObj.Task ?? respObj.task;
+              if (task && typeof task === "object") {
+                rawTask = task as Record<string, unknown>;
+              }
+            } catch (error) {
+              queryError = error instanceof Error ? error.message : String(error);
+            }
+
+            const { taskId, taskStatus } = extractServerManageTaskInfo(rawTask ?? {});
+
+            // 任务状态 + 版本状态合看，才能判断部署是在推进还是已经卡住
+            let latestDeploy: Record<string, unknown> | null = null;
+            try {
+              const recordsResult: any = await cloudrunService.getDeployRecords({ serverName });
+              const first = Array.isArray(recordsResult?.DeployRecords)
+                ? recordsResult.DeployRecords[0]
+                : null;
+              if (first && typeof first === "object") {
+                latestDeploy = first;
+              }
+            } catch {
+              // 部署记录不可用时只返回任务信息
+            }
+
+            const deployStatus =
+              typeof latestDeploy?.Status === "string" ? latestDeploy.Status : undefined;
+
+            return {
+              content: [
+                {
+                  type: "text",
+                  text: JSON.stringify({
+                    success: true,
+                    data: {
+                      envId,
+                      serverName,
+                      taskId: taskId ?? null,
+                      taskStatus: taskStatus ?? null,
+                      task: rawTask,
+                      latestDeployStatus: deployStatus ?? null,
+                      latestDeploy,
+                      ...(queryError ? { taskQueryError: queryError } : {}),
+                    },
+                    message: t("cloudrun.manageTask.message", {
+                      serverName,
+                      taskId: taskId ?? "-",
+                      taskStatus: taskStatus ?? "-",
+                      deployStatus: deployStatus ?? "-",
+                    }),
+                  }, null, 2)
+                }
+              ]
+            };
+          }
+
           case 'envStatus': {
             const envId = input.envId?.trim() || (await getEnvId(cloudBaseOptions));
 
@@ -1715,6 +1864,14 @@ export function registerCloudRunTools(server: ExtendedMcpServer) {
     },
     async (args: ManageCloudRunInput) => {
       const input = args;
+
+      // Presence guard for the parameter the schema leaves optional. Checked before any credential or
+      // network work, so a missing name fails closed here instead of reaching a path join or a cloud
+      // call as `undefined`.
+      if (!CLOUDRUN_MANAGE_ACTIONS_WITHOUT_SERVER_NAME.has(input.action) && !input.serverName) {
+        throw new Error(t("cloudrun.error.manageServerNameRequired", { action: input.action }));
+      }
+
       const manager = await getManager();
 
       if (!manager) {
@@ -1971,7 +2128,7 @@ export function registerCloudRunTools(server: ExtendedMcpServer) {
             });
 
             // Create project directory
-            const projectDir = path.join(targetPath, input.serverName);
+            const projectDir = resolveCloudRunProjectDir(targetPath, input.serverName);
             if (!fs.existsSync(projectDir)) {
               fs.mkdirSync(projectDir, { recursive: true });
             }
@@ -2277,6 +2434,8 @@ for await (let x of res.textStream) {
               envId: currentEnvId,
               serverName: input.serverName,
               mode: deployType,
+              // waitRegistration=false：只做一次探测即返回，把「等注册」交给调用方按需查询
+              ...(input.waitRegistration === false ? { maxWaitMs: 0 } : {}),
             });
 
             let cloudbasercGenerated = false;
@@ -2762,6 +2921,9 @@ for await (let x of res.textStream) {
               throw new Error(t("cloudrun.error.targetPathRequired", { action: "download" }));
             }
 
+            // The SDK extracts into <targetPath>/<serverName>; check that destination at the sink too.
+            resolveCloudRunProjectDir(targetPath, input.serverName);
+
             const result = await cloudrunService.download({
               serverName: input.serverName,
               targetPath: targetPath,
@@ -2844,6 +3006,8 @@ for await (let x of res.textStream) {
               throw new Error(t("cloudrun.error.targetPathRequired", { action: "init" }));
             }
 
+            const resolvedProjectDir = resolveCloudRunProjectDir(targetPath, input.serverName);
+
             const result = await cloudrunService.init({
               serverName: input.serverName,
               targetPath: targetPath,
@@ -2852,7 +3016,7 @@ for await (let x of res.textStream) {
 
             // Generate cloudbaserc.json configuration file
             const currentEnvId = await getEnvId(cloudBaseOptions);
-            const cloudbasercPath = path.join(targetPath, input.serverName, 'cloudbaserc.json');
+            const cloudbasercPath = path.join(resolvedProjectDir, 'cloudbaserc.json');
             const cloudbasercContent = {
               envId: currentEnvId,
               cloudrun: {
@@ -2876,7 +3040,7 @@ for await (let x of res.textStream) {
                       serviceName: input.serverName,
                       template: input.template,
                       initPath: targetPath,
-                      projectDir: result.projectDir || path.join(targetPath, input.serverName),
+                      projectDir: result.projectDir || resolvedProjectDir,
                       cloudbasercGenerated: true
                     },
                     message: t("cloudrun.init.message", { serverName: input.serverName, template: input.template ?? DEFAULT_INIT_TEMPLATE, targetPath })

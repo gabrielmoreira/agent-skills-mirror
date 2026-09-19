@@ -1,8 +1,8 @@
 # Skill Catalog
 
-Generated at: 2026-09-16T16:59:38.000Z
+Generated at: 2026-09-18T03:54:02.000Z
 
-Total skills: 2126
+Total skills: 2130
 
 ## agent-behavior (5)
 
@@ -21,7 +21,7 @@ Total skills: 2126
 | `agent-evaluation-reporting` | Use when summarizing agent evaluations where autonomous, assisted, failed, timed-out, or invalid outcomes must remain distinct and comparable. | none | self | agent-evaluation, metrics, reporting, reliability, benchmarking | agent-evaluation, metrics, reporting, reliability, benchmarking, agent, evaluation, summarizing, evaluations, where, autonomous, assisted |
 | `run-deep-swe` | Run reproducible DeepSWE coding-agent benchmark evaluations through OpenRouter and mini-swe-agent. | critical | davidondrej/skills | benchmark, deepswe, openrouter, evaluation | benchmark, deepswe, openrouter, evaluation, run, deep, swe, reproducible, coding, agent, evaluations, through |
 
-## agent-orchestration (25)
+## agent-orchestration (26)
 
 | Skill | Description | Risk | Source | Tags | Triggers |
 | --- | --- | --- | --- | --- | --- |
@@ -40,6 +40,7 @@ Total skills: 2126
 | `goal-loop` | Draft and explain persistent goal-loop prompts for long-running agent work with clear stop conditions. | safe | davidondrej/skills | goals, autonomy, planning | goals, autonomy, planning, goal, loop, draft, explain, persistent, prompts, long, running, agent |
 | `grok-build` | Delegate well-specified implementation tasks to xAI's Grok Build CLI running headlessly while the orchestrating agent plans, writes task specs, reviews every... | critical | sanjay3290/ai-skills | grok, delegation, code-generation, xai | grok, delegation, code-generation, xai, delegate, well, specified, tasks, cli, running, headlessly, while |
 | `grok-delegate` | Delegate coding tasks to the Grok Build CLI only when the user explicitly requests it, while the orchestrator retains review and landing responsibility. | critical | amElnagdy/delegate-skills | grok, delegate | grok, delegate, coding, tasks, cli, user, explicitly, requests, while, orchestrator, retains, review |
+| `idea-evaluator` | Evaluates an idea by hosting a multi-turn debate between a Pro and Con agent, delivering a final verdict on whether it's worth pursuing. | safe | self | ideation, validation, debate, multi-agent | ideation, validation, debate, multi-agent, idea, evaluator, evaluates, hosting, multi, turn, between, pro |
 | `kimi-delegate` | Delegate coding tasks to the Kimi Code CLI (`kimi`) only when the user explicitly requests it, while the orchestrator retains review and landing responsibility. | critical | amElnagdy/delegate-skills | kimi, delegate | kimi, delegate, coding, tasks, code, cli, user, explicitly, requests, while, orchestrator, retains |
 | `multi-agent-task-orchestrator` | Route tasks to specialized AI agents with anti-duplication, quality gates, and 30-minute heartbeat monitoring | safe | milkomida77/guardian-agent-prompts | multi-agent, orchestration, task-routing, quality-gates, anti-duplication | multi-agent, orchestration, task-routing, quality-gates, anti-duplication, multi, agent, task, orchestrator, route, tasks, specialized |
 | `omp-delegate` | Delegate coding tasks to Oh My Pi (`omp`) only when the user explicitly requests it, while the orchestrator retains review and landing responsibility. | critical | amElnagdy/delegate-skills | omp, delegate | omp, delegate, coding, tasks, oh, my, pi, user, explicitly, requests, while, orchestrator |
@@ -50,6 +51,13 @@ Total skills: 2126
 | `vibe-delegate` | Delegate coding tasks to the Mistral Vibe CLI (`vibe`) only when the user explicitly requests it, while the orchestrator retains review and landing responsib... | critical | amElnagdy/delegate-skills | vibe, delegate | vibe, delegate, coding, tasks, mistral, cli, user, explicitly, requests, while, orchestrator, retains |
 | `warp-delegate` | Delegate coding tasks to the Warp Agent CLI (`oz`) only when the user explicitly requests it, while the orchestrator retains review and landing responsibility. | critical | amElnagdy/delegate-skills | warp, delegate | warp, delegate, coding, tasks, agent, cli, oz, user, explicitly, requests, while, orchestrator |
 | `zcode-delegate` | Delegate coding tasks to the Z.AI ZCode CLI only when the user explicitly requests it, while the orchestrator retains review and landing responsibility. | critical | amElnagdy/delegate-skills | zcode, delegate | zcode, delegate, coding, tasks, ai, cli, user, explicitly, requests, while, orchestrator, retains |
+
+## agent-persona (2)
+
+| Skill | Description | Risk | Source | Tags | Triggers |
+| --- | --- | --- | --- | --- | --- |
+| `idea-evaluator/idea-evaluator-con` | The Con Agent persona for idea evaluation. Critiques an idea by identifying potential flaws, risks, and market challenges. | safe | self | ideation, validation, persona, critic | ideation, validation, persona, critic, idea, evaluator, con, agent, evaluation, critiques, identifying, potential |
+| `idea-evaluator/idea-evaluator-pro` | The Pro Agent persona for idea evaluation. Logically supports an idea, arguing for its market fit, feasibility, and potential. | safe | self | ideation, validation, persona, supporter | ideation, validation, persona, supporter, idea, evaluator, pro, agent, evaluation, logically, supports, arguing |
 
 ## agent-squad (8)
 
@@ -845,7 +853,7 @@ Total skills: 2126
 | `liuguang-banlan-ui` | Builds two parameterized UI modes—流光溢彩白 (iridescent white) and 五彩斑斓黑 (colorful black)—with OKLCH, WebGL/CSS fallback, vision gating, screenshot QA, and total... | critical | self | ui, frontend, oklch, webgl, accessibility | ui, frontend, oklch, webgl, accessibility, liuguang, banlan, two, parameterized, modes, iridescent, white |
 | `modellix` | Integrate the Modellix API/CLI for async AI image, video, and speech generation or transcription (model run --wait, task download). | critical | Modellix/modellix-plugin | image-generation, video-generation, audio-generation, text-to-speech, speech-to-text, speech-to-speech, modellix, cli, api | image-generation, video-generation, audio-generation, text-to-speech, speech-to-text, speech-to-speech, modellix, cli, api, integrate, async, ai |
 
-## data (25)
+## data (26)
 
 | Skill | Description | Risk | Source | Tags | Triggers |
 | --- | --- | --- | --- | --- | --- |
@@ -872,6 +880,7 @@ Total skills: 2126
 | `sql-pro` | Master modern SQL with cloud-native databases, OLTP/OLAP optimization, and advanced query techniques. Expert in performance tuning, data modeling, and hybrid... | critical | community | sql | sql, pro, cloud, native, databases, oltp, olap, optimization, query, techniques, performance, tuning |
 | `sql-sentinel` | Audit SQL for the cost & performance anti-patterns that burn warehouse credits. Scores warehouse health 0-100 and outputs a prioritized cost-reduction plan f... | critical | takeaseatventure/sql-sentinel | sql, bigquery, snowflake, redshift, postgres, data-warehouse, cost-optimization, performance, audit, finops | sql, bigquery, snowflake, redshift, postgres, data-warehouse, cost-optimization, performance, audit, finops, sentinel, cost |
 | `warehouse` | Plan and review read-only data warehouse analysis with explicit scope, privacy, provenance, and validation checks. | critical | self | analytics, data-warehouse, sql, data-quality | analytics, data-warehouse, sql, data-quality, warehouse, plan, review, read, data, analysis, explicit, scope |
+| `weather-model-data-fetching` | Retrieve numerical weather prediction data from public AWS S3 and HTTP archives using GRIB2 inventories, byte ranges, Herbie, provider fallbacks, and verifie... | safe | self | weather, grib2, aws-s3, herbie, noaa, nwp | weather, grib2, aws-s3, herbie, noaa, nwp, model, data, fetching, retrieve, numerical, prediction |
 | `web-scraper` | Web scraping inteligente multi-estrategia. Extrai dados estruturados de paginas web (tabelas, listas, precos). Paginacao, monitoramento e export CSV/JSON. | safe | community | scraping, data-extraction, automation, csv | scraping, data-extraction, automation, csv, web, scraper, inteligente, multi, estrategia, extrai, dados, estruturados |
 | `x-twitter-scraper` | Use Xquik for X data workflows: tweet search, user lookup, follower export, media downloads, monitors, webhooks, REST API, MCP, SDK setup, and approval-gated... | critical | Xquik-dev/x-twitter-scraper | twitter, x, social-media, x-api, tweet-search, follower-export, automation, mcp, sdk, webhooks | twitter, x, social-media, x-api, tweet-search, follower-export, automation, mcp, sdk, webhooks, scraper, xquik |
 

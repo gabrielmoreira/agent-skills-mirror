@@ -1,5 +1,7 @@
 # Provider Management — 护栏
 
+> 2026-09-18：`google-ai-studio` 是独立的 Google 文本 API preset，位于官方 API 分组，使用 AI Studio key 与 `generativelanguage.googleapis.com/v1beta`。它不复用 `gemini-image` 或 Vertex；连接测试必须走 Google generateContent，不能落入 Anthropic messages。模型、思考档位与上下文窗口由 catalog 提供。回归：`gemini-native.test.ts`、`gemini-native.spec.ts`。
+
 Settings > Providers 是 CodePilot 的"服务资产中心"，所有 provider 的连接 / 编辑 / 删除 / 默认设定都从这里出。这块不变量被破坏时，用户的体验是：刚连接的 provider 不出现、点删除连带把别的 session 搞坏、添加流程把生产 endpoint 写错、或者全局默认模型被悄悄改成另一个 provider 的。每条都很难复现，且都是真实发生过的回归。
 
 ## 1. 词汇表
@@ -274,6 +276,8 @@ UI 展示在 Models 页 row 上的 source badge。删除按钮**仅**对 `source
 
 
 ## TokenDance 接入合同（2026-09-05）
+
+- 2026-09-18 用户指定：添加服务菜单的 TokenDance 卡片位于“授权登录”，不再在“第三方 / 中转兼容”重复展示；仍打开原来的授权码/手动 Key 双入口对话框。此调整只涉及添加入口，保存后仍是普通 DB Provider，不能伪装为 OAuth 虚拟订阅或据此改写已连接服务分类。
 
 - 添加菜单只显示 `tokendance`；同一连接 Native/Codex 使用 Chat Completions，Claude Code 使用 Messages relay。保留旧 `tokendance-anthropic` 编辑/重授权；不改已有 protocol、ID、Key 和聊天。模型能力由 exact-host + 官方协议快照限定，不能把 Kimi K3 等未声明 Messages 的模型标成 Claude 可用；实时目录必须按 `supported_protocols` 筛选，不以名称推测协议。只排除未声明聊天协议的模型；声明 Chat Completions 的 TTS 可以进入发现列表，但默认隐藏，不宣称适合聊天。公开目录不证明 Key 有效，连接测试必须执行真实协议小请求。
 - OAuth 创建的是普通 API Key，沿用加密 provider 存储与原连接 ID；不得变成虚拟订阅或以重建聊天完成重授权。取消/超时/替换 flow 后迟到兑换不得落库，完整 Key/code/verifier 不得进入状态 API、UI 或日志。

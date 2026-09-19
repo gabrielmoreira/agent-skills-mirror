@@ -6,14 +6,15 @@ This page documents what NBI sends to external services, when, and how administr
 
 The table below describes what each LLM provider receives **when you actively use a feature** (chat message, inline completion, agent action). An idle JupyterLab does not contact the provider.
 
-| Provider                          | What is sent                                                                                            | When                                                 | Destination                                                                           |
-| --------------------------------- | ------------------------------------------------------------------------------------------------------- | ---------------------------------------------------- | ------------------------------------------------------------------------------------- |
-| **GitHub Copilot**                | Prompt, surrounding cell source, attached files (when you click _attach_)                               | Per request (chat) and as you type (inline complete) | `api.githubcopilot.com`, `api.github.com` (auth)                                      |
-| **OpenAI-compatible**             | Prompt, surrounding cell source, attached files                                                         | Per request and per inline-completion request        | The Base URL you configured (`api.openai.com` by default)                             |
-| **LiteLLM-compatible**            | Same as OpenAI-compatible; the LiteLLM proxy forwards to the upstream model you configured              | Per request                                          | The Base URL of your LiteLLM proxy                                                    |
-| **Ollama (local)**                | Prompt, surrounding cell source, attached files                                                         | Per request                                          | Localhost (or the host you configured); **no external network**                       |
-| **Anthropic API** (Claude mode)   | Prompt, surrounding cell source, attached files                                                         | Per inline-chat or auto-complete request             | `api.anthropic.com` (or your configured Base URL)                                     |
-| **Claude Code CLI** (Claude mode) | Prompt, working-directory file reads requested by Claude, shell-command output for tools Claude invokes | Per agent turn in the chat panel                     | Whatever the Claude Code CLI is configured to talk to (typically `api.anthropic.com`) |
+| Provider                          | What is sent                                                                                                     | When                                                          | Destination                                                                                                                               |
+| --------------------------------- | ---------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| **GitHub Copilot**                | Prompt, surrounding cell source, attached files (when you click _attach_)                                        | Per request (chat) and as you type (inline complete)          | `api.githubcopilot.com`, `api.github.com` (auth)                                                                                          |
+| **OpenAI-compatible**             | Prompt, surrounding cell source, attached files                                                                  | Per request and per inline-completion request                 | The Base URL you configured (`api.openai.com` by default)                                                                                 |
+| **LiteLLM-compatible**            | Same as OpenAI-compatible; the LiteLLM proxy forwards to the upstream model you configured                       | Per request                                                   | The Base URL of your LiteLLM proxy                                                                                                        |
+| **Ollama (local)**                | Prompt, surrounding cell source, attached files                                                                  | Per request                                                   | Localhost (or the host you configured); **no external network**                                                                           |
+| **Anthropic API** (Claude mode)   | Prompt, surrounding cell source, attached files                                                                  | Per inline-chat or auto-complete request                      | `api.anthropic.com` (or your configured Base URL)                                                                                         |
+| **Claude Code CLI** (Claude mode) | Prompt, working-directory file reads requested by Claude, shell-command output for tools Claude invokes          | Per agent turn in the chat panel                              | Whatever the Claude Code CLI is configured to talk to (typically `api.anthropic.com`)                                                     |
+| **ACP agent** (ACP mode)          | Prompt and NBI's notebook context, plus whatever files the agent reads and command output it collects on its own | Per agent turn in the chat panel, and per Chatbook generation | Whatever the agent is configured to talk to (`api.openai.com` or your Base URL on the API-key path, or the agent's own signed-in backend) |
 
 ### Cell outputs are included when the cell is attached
 
@@ -28,19 +29,19 @@ If your cells contain sensitive outputs (PHI, PII, secrets), clear them before i
 
 Hosts NBI may contact, depending on which features are enabled:
 
-| Host                                            | Purpose                                                                                                          |
-| ----------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
-| `api.githubcopilot.com`                         | GitHub Copilot chat and inline completion                                                                        |
-| `api.github.com`                                | GitHub Copilot device-flow login; managed-skills manifest fetches when hosted on github.com; skill imports       |
-| `github.com`, `codeload.github.com`             | Skill tarball downloads (Import from GitHub and the managed-skills reconciler)                                   |
-| `raw.githubusercontent.com`                     | Manifest fetches when `NBI_SKILLS_MANIFEST` points at a `raw.githubusercontent.com` URL                          |
-| `api.anthropic.com`                             | Anthropic API for Claude-mode inline chat and auto-complete; also the default destination of the Claude Code CLI |
-| `api.openai.com`                                | OpenAI-compatible provider (default Base URL)                                                                    |
-| Your configured Base URL                        | OpenAI-compatible, LiteLLM-compatible, or Claude when pointed at a self-hosted endpoint                          |
-| `localhost:11434` (or your Ollama host)         | Ollama local model serving                                                                                       |
-| `registry.npmjs.org` and configured npm mirrors | Only if MCP servers are configured to launch via `npx -y` — `npx` fetches the package on first run               |
+| Host                                            | Purpose                                                                                                                                                                 |
+| ----------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `api.githubcopilot.com`                         | GitHub Copilot chat and inline completion                                                                                                                               |
+| `api.github.com`                                | GitHub Copilot device-flow login; managed-skills manifest fetches when hosted on github.com; skill imports                                                              |
+| `github.com`, `codeload.github.com`             | Skill tarball downloads (Import from GitHub and the managed-skills reconciler)                                                                                          |
+| `raw.githubusercontent.com`                     | Manifest fetches when `NBI_SKILLS_MANIFEST` points at a `raw.githubusercontent.com` URL                                                                                 |
+| `api.anthropic.com`                             | Anthropic API for Claude-mode inline chat and auto-complete; also the default destination of the Claude Code CLI                                                        |
+| `api.openai.com`                                | OpenAI-compatible provider (default Base URL)                                                                                                                           |
+| Your configured Base URL                        | OpenAI-compatible, LiteLLM-compatible, or Claude when pointed at a self-hosted endpoint                                                                                 |
+| `localhost:11434` (or your Ollama host)         | Ollama local model serving                                                                                                                                              |
+| `registry.npmjs.org` and configured npm mirrors | MCP servers configured to launch via `npx -y`, and ACP mode, which launches its adapter with `npx` on every agent start unless `NBI_ACP_AGENT_COMMAND` points elsewhere |
 
-For the configurable destinations above (Base URLs, Ollama host, MCP `npx` packages), the destination is whatever you or your admin set. There is no other implicit network activity.
+For the configurable destinations above (Base URLs, Ollama host, MCP `npx` packages), the destination is whatever you or your admin set. NBI itself starts no other network activity. In ACP mode the agent subprocess makes its own calls, which NBI neither proxies nor enumerates: the destinations there are the agent's to document, and blocking egress at the network layer is the only way to bound them from outside.
 
 For air-gapped or egress-restricted environments, see [`docs/admin-guide.md`](docs/admin-guide.md#air-gap-deployment).
 
@@ -55,6 +56,7 @@ For air-gapped or egress-restricted environments, see [`docs/admin-guide.md`](do
 | `~/.claude/skills/`             | User-scope Claude skills                                                   |
 | `<project>/.claude/skills/`     | Project-scope Claude skills                                                |
 | `~/.claude/projects/`           | Claude Code session transcripts (managed by Claude CLI, not NBI)           |
+| `~/.jupyter/nbi/codex-home/`    | ACP agent configuration and session files, when an API key is configured   |
 
 > Treat `~/.jupyter/nbi/config.json` and `~/.jupyter/nbi/user-data.json` as secrets. They contain your API keys and (encrypted) GitHub token. Do not commit them to git, share them, or sync them across users. If a key leaks, rotate it at the provider immediately.
 
@@ -74,7 +76,7 @@ LLM outputs are non-deterministic. Pinning the model name, temperature, and seed
 
 For HIPAA, FedRAMP, classroom, or otherwise restricted environments:
 
-- **Force local-only models.** Disable every cloud provider via `disabled_providers` and use Ollama. See the [HIPAA / sensitive-data preset](docs/admin-guide.md#hipaa--sensitive-data-preset) in the admin guide.
+- **Force local-only models.** Disable every cloud provider via `disabled_providers`, force both agent modes off with `claude_mode_policy` and `acp_mode_policy`, and use Ollama. Disabling providers is not sufficient on its own: neither agent mode is a provider, and Claude mode is available to users unless an admin turns it off. See the [HIPAA / sensitive-data preset](docs/admin-guide.md#hipaa--sensitive-data-preset) in the admin guide.
 - **Restrict skill imports.** Block egress to `github.com` and serve managed skills from an internal manifest URL.
 - **Disable "remember GitHub Copilot login"** for shared systems where users share home directories.
 - **Pre-pull MCP servers** rather than allowing `npx -y` (which downloads from npmjs).

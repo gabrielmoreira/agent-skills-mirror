@@ -12,6 +12,8 @@ NBI is free and open-source. Connect it to a free or paid LLM provider of your c
 - [Feature highlights](#feature-highlights)
   - [Claude mode](#claude-mode)
   - [Agent mode](#agent-mode)
+  - [ACP agent mode](#acp-agent-mode)
+  - [Chatbook](#chatbook)
   - [Code generation with inline chat](#code-generation-with-inline-chat)
   - [Auto-complete](#auto-complete)
   - [Chat interface](#chat-interface)
@@ -41,7 +43,7 @@ NBI is free and open-source. Connect it to a free or paid LLM provider of your c
 
 - Python 3.10+
 - JupyterLab 4.x
-- Node.js — only required for [Claude mode](#claude-mode) (the Claude Code CLI) and for MCP servers that launch via `npx`.
+- Node.js — required for [Claude mode](#claude-mode) (the Claude Code CLI), for [ACP agent mode](#acp-agent-mode), which launches its adapter with `npx` on every start, and for MCP servers that launch via `npx`.
 - A fresh virtualenv or conda env is recommended so NBI doesn't conflict with system Python.
 
 ## Quick start
@@ -150,6 +152,20 @@ In Agent mode, the built-in AI agent creates, edits, and executes notebooks for 
 
 ![Agent mode](media/agent-mode.gif)
 
+### ACP agent mode
+
+An experimental second agent mode that drives an external coding agent over the [Agent Client Protocol](https://agentclientprotocol.com/), with OpenAI Codex as the only agent type today. The agent runs as a subprocess and does its own file and command work, asking for approval through NBI's confirmation cards; NBI deliberately does not lend it the Jupyter server's filesystem or terminal.
+
+It is off by default and the Settings tab stays hidden until an admin allows the mode, and it cannot be used at the same time as Claude mode. See [`docs/acp.md`](docs/acp.md).
+
+### Chatbook
+
+A Chatbook is a notebook whose cells can be written in English. Running a prompt cell generates code for the notebook's backend kernel and runs it; each cell carries a badge showing whether it is a prompt (**NL**) or ordinary code (**Cd**), and `Ctrl J` switches between them.
+
+What happens to generated code before it runs is yours to choose: **Always confirm** (the default) shows the code and waits, **Confirm if risky** waits only when a scan finds destructive calls, and **Auto-run** executes straight away. Admins can cap that choice fleet-wide, or turn Chatbook off entirely.
+
+Prompts can pull in context with `@` mentions, rules apply to generation the same way they apply to chat, the backend kernel need not be Python, and a Chatbook exports to a plain code notebook when you want to hand someone the result instead of the prompts. See [`docs/chatbook.md`](docs/chatbook.md).
+
 ### Code generation with inline chat
 
 Use the sparkle icon on the cell toolbar or the keyboard shortcut to show the inline chat popover.
@@ -160,7 +176,7 @@ Use the sparkle icon on the cell toolbar or the keyboard shortcut to show the in
 
 ### Auto-complete
 
-Auto-complete suggestions are shown as you type. `Tab` accepts. NBI provides auto-complete in code cells and Python file editors.
+Auto-complete suggestions are shown as you type. `Tab` accepts one while it is on screen, and indents otherwise. NBI provides auto-complete in code cells and Python file editors.
 
 <img src="media/inline-completion.gif" alt="Auto-complete" width=700 />
 
@@ -179,6 +195,8 @@ Right-click a cell output (or hover for the toolbar) to send it straight into th
 - **Show output toolbar** — the floating toolbar above each output with quick **Explain** / **Ask** / **Troubleshoot** actions.
 
 Each is per-user toggleable from Settings (saved as `enable_explain_error`, `enable_output_followup`, `enable_output_toolbar` in `config.json`, default on) and admin-lockable via `NBI_EXPLAIN_ERROR_POLICY` / `NBI_OUTPUT_FOLLOWUP_POLICY` / `NBI_OUTPUT_TOOLBAR_POLICY`.
+
+A revert is skipped while that document's kernel is busy, so a change landing mid-execution is applied when the cell finishes rather than swapped in under it, and the notice naming the reloaded file is shown only for the document you are looking at.
 
 ### Notebook toolbar generation
 
@@ -486,7 +504,8 @@ Full guide, including the span and event reference, the probe thresholds, worked
 - [`docs/admin-guide.md`](docs/admin-guide.md) — deployment, env vars, security model, air-gap, multi-tenancy.
 - [`docs/skills.md`](docs/skills.md) — Claude Skills management and the org-manifest reconciler.
 - [`docs/rulesets.md`](docs/rulesets.md) — ruleset frontmatter and discovery.
-- [`docs/chatbook.md`](docs/chatbook.md) — Chatbook execution modes and why there is no per-cell sandbox.
+- [`docs/acp.md`](docs/acp.md) — using the experimental ACP agent mode, and its limits.
+- [`docs/chatbook.md`](docs/chatbook.md) — writing Chatbook cells, execution modes, export, and why there is no per-cell sandbox.
 - [`docs/chatbook-extensions.md`](docs/chatbook-extensions.md) — dynamic Chatbook context and mention providers.
 - [`docs/troubleshooting.md`](docs/troubleshooting.md) — common problems with copy-pasteable fixes.
 - [`docs/performance-diagnostics.md`](docs/performance-diagnostics.md): turn timelines, the environment probe, and how to read both.
@@ -504,7 +523,7 @@ Full guide, including the span and event reference, the probe thresholds, worked
 
 ## Roadmap
 
-NBI 5.x is stable. New features land in minor releases (5.1, 5.2, …); breaking changes are reserved for the next major (6.x) and will be announced in the [changelog](CHANGELOG.md). Upgrading from 4.x? See the [5.0.0 migration note](CHANGELOG.md#migration-note) for the `fastmcp` → `mcp` dependency swap, the new path sandboxes, and the workspace-file-attach behavior change.
+NBI 6.x is the current line. New features land in minor releases (6.1, 6.2, …); breaking changes are reserved for a major release and announced in the [changelog](CHANGELOG.md). 6.0 itself is not a breaking release: it marks Chatbook's arrival, and no traitlet, env var, REST route, or on-disk format was renamed or removed, so upgrading from 5.x needs no migration. Upgrading from 4.x? See the [5.0.0 migration note](CHANGELOG.md#migration-note) for the `fastmcp` → `mcp` dependency swap, the new path sandboxes, and the workspace-file-attach behavior change.
 
 ## License
 

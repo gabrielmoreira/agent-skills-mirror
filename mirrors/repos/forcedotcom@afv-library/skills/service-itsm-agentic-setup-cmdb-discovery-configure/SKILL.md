@@ -1,8 +1,8 @@
 ---
 name: service-itsm-agentic-setup-cmdb-discovery-configure
-description: "Enable CMDB Asset Discovery in Service Cloud ITSM against a production or sandbox org by turning on the service-cloud-itsm-discovery-integration feature, then grant a user the Discovery page by assigning the IT Service Discovery Manager permission set and its license — the final CMDB setup layer, run after the CMDB feature, user access, and content bundle are in place. Use when the user asks to enable CMDB discovery, turn on asset discovery, enable service-cloud-itsm-discovery-integration, grant Discovery page access, or assign the Discovery Manager permission set. Triggers on: enable CMDB discovery, turn on asset discovery, service-cloud-itsm-discovery-integration, assign Discovery Manager access, CMDB discovery not enabled. DO NOT TRIGGER when: the user wants to enable the base CMDB feature, provision the ITOM tenant, assign the four CMDB Configuration-Item permission sets, install a CMDB content bundle, or work with CMDB records directly — those are earlier CMDB layers."
+description: "Enable CMDB Asset Discovery in Service Cloud ITSM against a production or sandbox org by turning on the service-cloud-itsm-discovery-integration feature, then grant a user the Discovery page by assigning the IT Service Discovery Manager permission set and its license — the final CMDB setup layer, run after the CMDB feature, user access, and content bundle are in place. Use when the user asks to enable CMDB discovery, turn on asset discovery, enable service-cloud-itsm-discovery-integration, grant Discovery page access, or assign the Discovery Manager permission set. Triggers on: enable CMDB discovery, turn on asset discovery, service-cloud-itsm-discovery-integration, assign Discovery Manager access, CMDB discovery not enabled. DO NOT TRIGGER when: the user wants to enable the base CMDB feature, provision the CMDB tenant, assign the four CMDB Configuration-Item permission sets, install a CMDB content bundle, or work with CMDB records directly — those are earlier CMDB layers."
 metadata:
-  version: "1.0"
+  version: "1.1"
   domains: ["Service"]
   minApiVersion: "67.0"
   relatedSkills:
@@ -45,7 +45,7 @@ CMDB is enabled in ordered layers, each gated on the prior one:
 
 ```text
 Layer 0  Org SKU / license      Org perm ITSrvcsCnfgMgmnt (verify only — no API can set it).
-Layer 1  Tenant provisioning    ITOM tenant must reach status PROVISIONED (async).
+Layer 1  Tenant provisioning    CMDB tenant must reach status PROVISIONED (async).
 Layer 2  CMDB feature           Enable service-cloud-itsm-cmdb-integration (lifts the 403 gate).
 Layer 3  User access            Assign the PSL + CMDB permission sets to the user(s).
 Layer 4  Content bundle         Install the CMDB Foundation (base) content bundle.
@@ -53,10 +53,14 @@ Layer 5  Asset Discovery        Enable service-cloud-itsm-discovery-integration 
                                 IT Service Discovery Manager permission set  ← THIS SKILL
 ```
 
-Discovery is enabled **last**: it builds on the base CMDB feature and depends on the earlier layers
-being complete. The pre-check step below (`enableBlockedReasons`) is the authoritative signal that
-the prerequisites are met — if the base CMDB feature is not yet enabled, discovery cannot be enabled
-and the org reports a blocking reason rather than turning it on.
+Discovery is *recommended* **last**, but it does **not** require the base CMDB feature to already be
+on: the enable **cascade-enables** its dependency (the base CMDB feature) as part of turning Discovery
+on, provided that feature's own prerequisites (e.g. a provisioned CMDB tenant) are met. The
+`enableBlockedReasons` array in the pre-check is the authoritative blocker signal — a base CMDB feature
+that is merely `NOT_ENABLED` appears under `dependencyStatuses` with **empty** `enableBlockedReasons`
+and is **not** a blocker. So never tell the user a direct enable "will error out"; tell them it will
+turn on CMDB first, then Discovery. Only a **non-empty** `enableBlockedReasons` (e.g. tenant not
+provisioned) is a genuine unmet prerequisite that stops the enable.
 
 > **Enabling the feature lifts the org-level gate; the Discovery permission set gives a user the
 > Discovery page.** This skill does **both**: it turns Discovery on for the org (Step 2) and then
@@ -73,7 +77,7 @@ and the org reports a blocking reason rather than turning it on.
 - **In scope**: pre-checking, enabling, and verifying the `service-cloud-itsm-discovery-integration`
   feature; and — as a follow-up — assigning the **IT Service Discovery Manager** permission set (and its
   permission-set license) to the target user so they can access the Discovery page.
-- **Out of scope**: enabling the base CMDB feature / provisioning the tenant (Layer 2 —
+- **Out of scope**: enabling the base CMDB feature / provisioning the CMDB tenant (Layer 2 —
   `service-itsm-agentic-setup-cmdb-configure`), assigning the four Configuration-Item permission sets
   for CMDB *data* access (Layer 3 — `service-itsm-agentic-setup-cmdb-access-assign`), bundle
   installation (Layer 4 — `service-itsm-agentic-setup-cmdb-bundle-deploy`), CMDB record CRUD, Service
@@ -139,11 +143,16 @@ dispatch_readonly({ "url": "/services/data/v67.0/connect/setup/discovery/feature
 
 - `status == ENABLED` → feature already on; skip to verification (Step 3), then proceed to the access
   follow-up (Steps 4–7).
-- `status == NOT_ENABLED` with `enableBlockedReasons: []` → clear to enable (Step 2).
+- `status == NOT_ENABLED` with `enableBlockedReasons: []` → clear to enable (Step 2). **Before
+  confirming, inspect `dependencyStatuses`:** if the base CMDB feature
+  (`service-cloud-itsm-cmdb-integration`) is listed there as `NOT_ENABLED`, that is **not** a blocker —
+  enabling Discovery will **cascade-enable the base CMDB feature first, then Discovery**. Tell the user
+  exactly that ("this will turn on CMDB first, then Asset Discovery"). Do **not** warn that it "will
+  error out" or offer to "let it report the dependency error" — neither happens.
 - `enableBlockedReasons` non-empty → **STOP** and relay each reason to the user in plain language.
-  These are prerequisites the org still needs — most commonly the base CMDB feature is not yet
-  enabled. Point the user to the earlier CMDB setup skills (see "Common failures") and do **not**
-  attempt the enable.
+  These are genuine unmet prerequisites the org still needs (e.g. the CMDB tenant is not provisioned,
+  so the base feature cannot be enabled). Point the user to the earlier CMDB setup skills (see "Common
+  failures") and do **not** attempt the enable.
 - `403 FUNCTIONALITY_NOT_ENABLED` on this GET → the base CMDB gate itself is still closed; the org
   needs `service-itsm-agentic-setup-cmdb-configure` first. Stop and route the user there.
 
@@ -232,7 +241,7 @@ Re-run the two Step 5 assignment queries. The user has Discovery page access onl
 
 | Constraint | Rationale |
 |-----------|-----------|
-| Run only after the base CMDB feature is enabled | Discovery is the final layer and depends on Layers 0–4; the pre-check `enableBlockedReasons` enforces this |
+| Running after the base CMDB feature is recommended, not required | Discovery depends on the base CMDB feature, but the enable **cascade-enables** it when it is only `NOT_ENABLED` (empty `enableBlockedReasons`); message the cascade — never claim a direct enable "will error out". The pre-check `enableBlockedReasons` is what actually gates the enable |
 | Read the pre-check before enabling; verify with a read after enabling | The feature is stateful; the POST response can lag the real state |
 | Do not attempt the enable when `enableBlockedReasons` is non-empty | Those are unmet prerequisites — relay them and route the user to the earlier CMDB skills |
 | Always follow the enable with the Discovery-Manager assignment | The feature being on does not give any user the Discovery page; the permission set is what grants page access |
@@ -289,7 +298,8 @@ into what it means ("CMDB isn't fully set up yet"), rather than echoing the code
 
 | Symptom | Likely cause | What to tell the user |
 |---------|--------------|-----------------------|
-| Pre-check `enableBlockedReasons` non-empty | An earlier CMDB layer is incomplete (most often the base CMDB feature) | Relay each reason; finish CMDB setup first — run `service-itsm-agentic-setup-cmdb-configure` (base feature), then `-access-assign` (user access) and `-bundle-deploy` (content bundle), then retry discovery |
+| Pre-check `enableBlockedReasons` non-empty | A deeper prerequisite is genuinely unmet (e.g. the CMDB tenant is not provisioned — note a base CMDB feature that is only `NOT_ENABLED` does **not** populate this array; it cascade-enables) | Relay each reason; finish CMDB setup first — run `service-itsm-agentic-setup-cmdb-configure` (provision tenant + base feature), then `-access-assign` (user access) and `-bundle-deploy` (content bundle), then retry discovery |
+| Base CMDB feature was `NOT_ENABLED` before the discovery enable, and enabling discovery turned it on too | Expected — the discovery enable **cascade-enables** its base CMDB dependency; this is **not** a failure | Tell the user upfront (before enabling) that this will turn on CMDB first, then Discovery; never warn it "will error out" |
 | `403 FUNCTIONALITY_NOT_ENABLED` on the status GET | Base CMDB gate still closed (CMDB feature not enabled) | Not a discovery failure — enable the base CMDB feature first with `service-itsm-agentic-setup-cmdb-configure`, then retry |
 | Enable blocked (`enableBlockedReasons` non-empty) after a partial setup | Missing dependency the org still needs | Relay each reason; resolve those prerequisites, then retry |
 | Enable returned success but verification GET is not `ENABLED` | State lag or a downstream issue | Re-run the verification GET after a short wait; if it persists, treat it as not enabled and investigate |
@@ -305,7 +315,7 @@ into what it means ("CMDB isn't fully set up yet"), rather than echoing the code
 
 | When | Skill |
 |------|-------|
-| The base CMDB feature is not enabled yet (Discovery pre-check is blocked) | `service-itsm-agentic-setup-cmdb-configure` (Layers 0–2 — enable the base feature first, then return here) |
+| The pre-check reports a genuine blocker (`enableBlockedReasons` non-empty — e.g. the CMDB tenant is not provisioned) | `service-itsm-agentic-setup-cmdb-configure` (Layers 0–2 — provision the tenant and enable the base feature, then return here). A base feature that is only `NOT_ENABLED` is **not** a blocker — Discovery cascade-enables it |
 | A user needs the underlying CMDB **data** roles (Configuration Item Reader / Owner / Type Reader / Type Manager) | `service-itsm-agentic-setup-cmdb-access-assign` (Layer 3 — CMDB data access, distinct from Discovery page access) |
 
 ---

@@ -67,7 +67,7 @@ Both `enforce_egress` and `local_only_tool_block` read the live mode via
   `integrations/composio/execute_dispatch.rs` — backend and Composio calls.
 - `tools/impl/network/{curl,http_request,web_fetch}.rs` — agent network-fetch
   tools.
-- `search/tools/{tavily/client,exa}.rs`, `inference/embeddings/cloud_adapter.rs`,
+- `search/tools/{tavily/client,exa}.rs`, `embeddings/cloud_adapter.rs`,
   `inference/provider/factory.rs` and its `factory/` submodules — search and
   cloud inference/embedding providers.
 - `web_chat/event_bus.rs` — subscribes to `ExternalTransferPending` and

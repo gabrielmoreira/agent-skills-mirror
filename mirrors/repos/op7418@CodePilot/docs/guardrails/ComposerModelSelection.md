@@ -294,3 +294,12 @@ if (!resolvedProviderId || !resolvedModel) return;
 - **2026-08-26** 失效收藏留在 Favorites lane 管理、V1 fail closed — badge 必须对应可见可删条目，缺 Runtime 的旧格式不得靠当前 UI 状态猜执行 identity
 - **2026-08-26** capability requested/effective 分层 — 模型归一化是 session-local，不允许自动污染 provider 共享设置
 - **2026-08-26** footer 菜单收窄 — capability 固定 240px，permission 固定 256px 且动态原因换行；短说明只辅助扫读，完整权限告警继续由确认弹窗承担
+
+
+## 2026-09-14 #685：已选路由与运行时回报分离
+
+- `chat_sessions.model` 是用户提交的 route model identity；SDK/Native `status.model` 是运行时观察值，collector 不得用它覆盖 route，也不得借 status 绕过 `route_revision` CAS。续接引用 `sdk_session_id` 仍由现有 lock owner gate 写入；模型观察值继续留在 SSE/usage 元数据中。
+- `resolveChatMessageRoute` 是普通消息的 identity gate。Provider 未随请求回显时仍固定使用 session Provider，不能回退默认/env；明确不同 Provider 立即拒绝。
+- 兼容旧版已写成 upstream 的会话只作读取：必须在同一 Provider 的 live enabled catalog 唯一匹配到本次请求的 modelId，并且当前 Runtime 兼容、实际 resolver upstream 一致。stored ID 若本身是另一条 catalog modelId，或多个 alias 共享它、映射隐藏/删除/修改，不能自动解释为同一路线。虚拟账号路线继续精确 identity。
+- 兼容不改 owner、历史、Provider 或 route_revision；真正改 route 仍走用户显式 CAS。无法无歧义恢复的旧会话继续要求明确重选，不能按显示名或跨 Provider 猜测。
+- 回归：`chat-message-route.test.ts`（多 Provider 连续/重开、旧 upstream、反例和 Native/Codex owner 兼容）、`chat-message-route-http.test.ts`（真实 POST 双回合与错路由在持久化/Runtime 前拒绝）、`collect-owner-gate.test.ts`（owner 也不覆盖 model、stale owner 不写续接状态）。

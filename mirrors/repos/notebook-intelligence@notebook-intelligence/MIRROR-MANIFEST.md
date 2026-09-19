@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `notebook-intelligence/notebook-intelligence` — 26 default patterns, 12 followed patterns, 18 file(s) materialized.
+Mirror of `notebook-intelligence/notebook-intelligence` — 26 default patterns, 13 followed patterns, 19 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `notebook-intelligence/notebook-intelligence` — 26 default patterns,
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 12 |
-| Files         | 18 |
+| Followed pats | 13 |
+| Files         | 19 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -56,6 +56,7 @@ Mirror of `notebook-intelligence/notebook-intelligence` — 26 default patterns,
 - `docs/troubleshooting.md`
 - `SECURITY.md`
 - `RELEASE.md`
+- `docs/acp.md`
 - `docs/chatbook.md`
 - `docs/rulesets.md`
 - `docs/performance-diagnostics.md`
@@ -78,16 +79,17 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 6 | ✓ | [`ui-tests/README.md`](ui-tests/README.md) |
 | 7 | → | [`CHANGELOG.md`](CHANGELOG.md) |
 | 8 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 9 | → | [`docs/admin-guide.md`](docs/admin-guide.md) |
-| 10 | → | [`docs/chatbook-extensions.md`](docs/chatbook-extensions.md) |
-| 11 | → | [`docs/chatbook.md`](docs/chatbook.md) |
-| 12 | → | [`docs/performance-diagnostics.md`](docs/performance-diagnostics.md) |
-| 13 | → | [`docs/rulesets.md`](docs/rulesets.md) |
-| 14 | → | [`docs/troubleshooting.md`](docs/troubleshooting.md) |
-| 15 | → | [`PRIVACY.md`](PRIVACY.md) |
-| 16 | → | [`README.md`](README.md) |
-| 17 | → | [`RELEASE.md`](RELEASE.md) |
-| 18 | → | [`SECURITY.md`](SECURITY.md) |
+| 9 | → | [`docs/acp.md`](docs/acp.md) |
+| 10 | → | [`docs/admin-guide.md`](docs/admin-guide.md) |
+| 11 | → | [`docs/chatbook-extensions.md`](docs/chatbook-extensions.md) |
+| 12 | → | [`docs/chatbook.md`](docs/chatbook.md) |
+| 13 | → | [`docs/performance-diagnostics.md`](docs/performance-diagnostics.md) |
+| 14 | → | [`docs/rulesets.md`](docs/rulesets.md) |
+| 15 | → | [`docs/troubleshooting.md`](docs/troubleshooting.md) |
+| 16 | → | [`PRIVACY.md`](PRIVACY.md) |
+| 17 | → | [`README.md`](README.md) |
+| 18 | → | [`RELEASE.md`](RELEASE.md) |
+| 19 | → | [`SECURITY.md`](SECURITY.md) |
 
 ---
 

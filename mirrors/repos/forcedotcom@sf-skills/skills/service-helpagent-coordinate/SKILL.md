@@ -13,6 +13,7 @@ metadata:
     - "integration-connectivity-connected-app-configure"
     - "platform-metadata-deploy"
     - "service-agentforce-channel-configure"
+    - "service-agentforce-contact-center-coordinate"
     - "service-concierge-portal-generate"
     - "service-digital-engagement-channel-configure"
     - "service-digital-engagement-deployment-configure"
@@ -193,7 +194,7 @@ Deploy new channels with Queue routing (`service-digital-engagement-channel-conf
 
 - **Help Portal** → delegate to `service-concierge-portal-generate` (deploys an Agentforce Concierge experience on an LWR site). Pass the resolved `$ORG`, `$BOT_ID`, and `$BOT_DEV_NAME` so it can skip its entry-point questions.
 
-- **Voice** → read `references/channel-voice.md` and follow it fully. Voice wires an existing `PstnVoice` MessagingChannel via `service-agentforce-channel-configure` Branch B — it does not provision a phone number.
+- **Voice** → read `references/channel-voice.md` and follow it fully. Wires a `PstnVoice` MessagingChannel via `service-agentforce-channel-configure` Branch B; if none exists, the reference delegates procurement to `service-agentforce-contact-center-coordinate`.
 
 - **Any other existing channel (WhatsApp, SMS, Facebook, Apple Business Chat, Line, Email-to-Case, Custom)** → no dedicated reference file. List channels of that type from discovery, let the user pick one (`"Add agent to: {MasterLabel}"`), and delegate straight to `service-agentforce-channel-configure` with the agent and channel DeveloperNames — it resolves the fallback queue and picks the routing branch itself (Branch A for Enhanced Chat/Messaging, Branch C for Email-to-Case). This skill only wires an agent to a channel that already exists; it never provisions the underlying 3rd-party/email infrastructure.
 
@@ -256,5 +257,5 @@ The one deliverable is a single `report.md`: a **status report of what was decid
 | `references/agent-script.md` | At agent creation only (after Checkpoint 2) — the canonical agent script + placeholders |
 | `references/channel-web-chat.md` | Only if the user selects Web Chat at Checkpoint 3 |
 | `service-concierge-portal-generate` (external skill) | Only if the user selects Help Portal at Checkpoint 3 — delegate, do not inline |
-| `references/channel-voice.md` | Only if the user selects Voice (wires an existing `PstnVoice` channel; no number provisioning) |
+| `references/channel-voice.md` | Only if the user selects Voice (wires a `PstnVoice` channel; delegates procurement when none exists) |
 | `references/output-report-format.md` | Right before writing the final `report.md` — the two report shapes, templates, and scored-failure list |

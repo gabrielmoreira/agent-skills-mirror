@@ -94,13 +94,15 @@ fallback for a branch that truly cannot merge in reasonable time; done
 casually it reads as taking the work even when credit is preserved.
 
 - **Never make a contributor rebase around our churn.** If their PR conflicts
-  only because main moved, a maintainer resolves it. Read their diff against
-  the merge base first so you know exactly what they added, and re-apply that,
-  rather than hand-merging two large sides and hoping.
+  only because main moved, a maintainer resolves it. Start from their diff
+  against the merge base so you know exactly what they added, and re-apply
+  that, rather than hand-merging two large sides and hoping.
 - **Conflicts that split mid-function do not resolve by keeping both sides.**
   Git's markers can land inside a body, so a both-sides resolution produces
-  unbalanced braces that look plausible and do not compile. Take one side
-  whole, then re-insert the other side's additions at their original anchor.
+  unbalanced braces that look plausible and do not compile. Default: take
+  one side whole, then re-insert the other side's additions at their
+  original anchor. When a conflict doesn't fit that pattern, resolve it
+  however is correct and let the compiler judge.
 - **`maintainerCanModify` does not guarantee push access to the fork.** When
   the push is refused, land the resolved merge on
   `integration/<topic>-<pr>-<date>` in this repo and land from there. An
@@ -145,16 +147,18 @@ casually it reads as taking the work even when credit is preserved.
 
 ## Current contracts
 
-- The model-facing subagent tool is `agent`. Do not revive removed
-  `agent_open`/`agent_eval`/`agent_close`/`delegate_to_agent` surfaces or parallel
-  lifecycle/tag systems.
-- `BASE_PROMPT` in `crates/tui/src/prompts/text.rs` is the sole base prompt.
+- The model-facing subagent tool is `agent`; `agent_open`/`agent_eval`/
+  `agent_close`/`delegate_to_agent` are removed surfaces. If the shape must
+  move, move the code and add the guard test that judges the new shape.
+- `BASE_PROMPT` in `crates/tui/src/prompts/text.rs` is the sole base prompt
+  by convention. Same rule: move the code, not the prose, if that changes.
 - There is exactly one turn loop: `Engine::run_turn` in
   `crates/tui/src/core/engine/turn_loop.rs`. Note that `crates/tui/src/core/`
   is a module inside the TUI crate — it is not `crates/core`, which owns
   request construction, bounded fragments, and thread/session types and
-  runs no turns. Do not add a second loop beside the one that exists; a
-  guard test (`crates/core/tests/single_turn_loop.rs`) fails if you do.
+  runs no turns. A guard test (`crates/core/tests/single_turn_loop.rs`)
+  fails on a second loop; changing the shape means changing the guard
+  with it.
 - The system prompt + tool catalog are a session-pinned KV-cache prefix
   (`docs/CACHE.md`). Any new session-context contributor must state its
   KV-cache effect: frozen prefix vs. append-only history. Never splice a

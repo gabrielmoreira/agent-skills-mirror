@@ -148,8 +148,15 @@ the org is not CMDB-licensed — stop and report.
 
 ---
 
-## Step 4 — Check existing assignments (read — idempotency)
+## Step 4 — Check existing assignments (read — idempotency, permission-set-group–aware)
 
+A role's permission set can be held **directly** or as a **member of a permission set group (PSG)** the
+user is assigned. A PSG-delivered grant produces a `PermissionSetAssignment` whose `PermissionSetGroupId`
+is populated and whose `PermissionSetId` is the group's internal *aggregate* set — **not** the member
+permission set — so filtering on `PermissionSetId = '<psId>'` alone returns `0` for it. Run **both**
+permission-set reads; the permission set is present if **either** returns `totalSize >= 1`.
+
+### Directly assigned
 ```json
 mcp__headless-360__dispatch_readonly({
   "url":    "/services/data/v67.0/query",
@@ -158,6 +165,16 @@ mcp__headless-360__dispatch_readonly({
 })
 ```
 
+### Via a permission set group (top-level semi-join — nesting this inside an `OR` throws `MALFORMED_QUERY`)
+```json
+mcp__headless-360__dispatch_readonly({
+  "url":    "/services/data/v67.0/query",
+  "method": "GET",
+  "queryParams": { "q": "SELECT Id FROM PermissionSetAssignment WHERE AssigneeId = '<userId>' AND PermissionSetGroupId IN (SELECT PermissionSetGroupId FROM PermissionSetGroupComponent WHERE PermissionSetId = '<psId>')" }
+})
+```
+
+### Backing license (a PSG that includes the role assigns its PSL directly, so this one read covers the PSG case)
 ```json
 mcp__headless-360__dispatch_readonly({
   "url":    "/services/data/v67.0/query",
@@ -166,8 +183,9 @@ mcp__headless-360__dispatch_readonly({
 })
 ```
 
-`totalSize == 1` on both → that role is already assigned; skip its writes. Otherwise assign what is
-missing (PSL and/or permission set).
+Permission set present by **either** path **and** the license read `totalSize >= 1` → that role is
+already assigned; skip its writes. Otherwise assign what is missing (PSL and/or permission set). Do
+**not** re-assign the member permission set directly when the user already holds it through a PSG.
 
 ---
 
@@ -204,8 +222,9 @@ Response on success: `{ "id": "0Pa...", "success": true }` (`201`). On `400`, re
 
 ## Step 6 — Verify (read)
 
-Re-run the Step 4 queries. A role counts as assigned only when **both** the `PermissionSetAssignment`
-and the `PermissionSetLicenseAssign` return `totalSize == 1` for the user. Report per role.
+Re-run the Step 4 reads — **both** the direct and the via-PSG permission-set checks, plus the license
+check. A role counts as assigned only when its permission set is present by **either** path **and** the
+`PermissionSetLicenseAssign` returns `totalSize >= 1` for the user. Report per role.
 
 ---
 
@@ -257,4 +276,5 @@ before the assignment can succeed.
 | `PermissionSet` query `totalSize == 0` | Org not CMDB-licensed / not set up | CMDB is not available on this org; confirm it is licensed and enabled |
 | `User` query `totalSize == 0` / `> 1` | User not found / ambiguous | Ask the user to confirm the username, or pick from the listed candidates |
 | `403 FUNCTIONALITY_NOT_ENABLED` on a bundle-management read (`bundles/details`, `bundleListView`) after assign | User lacks **Type Manager** — bundle operations require it, Reader/Owner/Type Reader do not clear it | Assign the **Type Manager** role (PS `ItSrvcCnfgItmTypManagerPermissionSet` + its own PSL `ItSrvcCnfgItmTypMgrPsl`), then re-verify via Step 6 |
+| Step 4 reports a role missing (skill asks to assign it) but the user already has it via a **permission set group** | Direct-only `PermissionSetId` filter is blind to PSG-delivered grants — the PSA row carries `PermissionSetGroupId` and the group's aggregate `PermissionSetId`, not the member set | Use the via-PSG semi-join in Step 4; a role present by **either** path is already assigned — do not re-assign it |
 | `dispatch*` auth error | headless-360 MCP session not authenticated / token expired | Re-authenticate the headless-360 MCP connection; confirm the session points at the intended org |

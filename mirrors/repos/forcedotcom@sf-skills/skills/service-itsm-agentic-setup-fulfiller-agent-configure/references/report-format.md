@@ -19,8 +19,8 @@ Stage 2 — install & activate the agent from its template:
 | Preflight | Studio hasAccess=<true/false/cannot-confirm>; template agentScript present=<yes/no>; verdict=<READY/NOT-READY/CANNOT-CONFIRM> |
 | Enumerate | target agent exists before write=<yes/no>; latest version status=<Active/Inactive/n/a>; verdict=<exists:...> |
 | Confirm-to-write | user-confirmed=<true/false/pending> |
-| Create bundle | <bundleVersionId=... / ALREADY-CREATED / skipped (reactivation path) / pending confirmation / skipped / FAILED> |
-| Publish | <publishedBotId=... / skipped / pending confirmation / FAILED> |
+| Create bundle | <succeeded (created) / ALREADY-CREATED / skipped (reactivation path) / pending confirmation / skipped / FAILED> |
+| Publish | <succeeded / skipped / pending confirmation / FAILED> |
 | Activate | <succeeded (created) / succeeded (reactivated existing) / skipped / pending confirmation / FAILED> |
 | Verify | <BotDefinition present: yes/no; latest version Active: yes/no / skipped / pending> |
 
@@ -32,6 +32,8 @@ Next steps:
 ```
 
 The helper enforces a validated verdict set and picks the `Next steps` line from the verdict, so the file never drifts from that shape.
+
+**No internal record IDs in the report.** The stage rows carry status only — the bundle version `id`, `publishedBotId`/`BotDefinition`, and `BotVersion` are captured solely to drive the publish/activate/verify calls and are meaningless to an admin, so they are never displayed. The helper renders status-only rows and defensively scrubs any ID that a caller passes inside a stage-status string, so a report can never leak one regardless of the phase-state input. Do not add IDs back in turn-side narration either (never "Bundle created (version id …)" / "Published (BotDefinition …)").
 
 ## Checkpoint writes (harness / non-interactive runs)
 

@@ -245,6 +245,8 @@ If desired, this marker class can be used alongside one or more [`ToolOutput`](#
 
 Like other output functions, text output functions can optionally take [`RunContext`][pydantic_ai.tools.RunContext] as the first argument, and can raise [`ModelRetry`][pydantic_ai.exceptions.ModelRetry] to ask the model to try again with modified arguments (or with a different output type).
 
+Some models cannot write text at all, and say so through [`supports_text_output=False`][pydantic_ai.profiles.ModelProfile.supports_text_output] on their profile — [TypeSafe's Jev](models/typesafe.md) is one. On those, any `output_type` that leaves text output available is a [`UserError`][pydantic_ai.exceptions.UserError] before a request is sent: the default `str`, a `str` among several output types, a `TextOutput` function, and [`PromptedOutput`](#prompted-output), which asks for its structured data as text. Give such a model one structured `output_type`, such as a `BaseModel`, instead.
+
 !!! note
     When streaming, [`stream_text()`][pydantic_ai.result.StreamedRunResult.stream_text] does **not** apply the `TextOutput` function. To stream the value it produces, use [`stream_output()`][pydantic_ai.result.StreamedRunResult.stream_output] instead. See [Streaming Text](#streaming-text) for details.
 
@@ -325,6 +327,8 @@ Pydantic AI implements three different methods to get a model to output structur
 In the default Tool Output mode, the output JSON schema of each output type (or function) is provided to the model as the parameters schema of a special output tool. This is the default as it's supported by virtually all models and has been shown to work very well.
 
 If you'd like to change the name of the output tool, pass a custom description to aid the model, or turn on or off [strict mode](tools-advanced.md#strict-mode), you can wrap the type(s) in the [`ToolOutput`][pydantic_ai.output.ToolOutput] marker class and provide the appropriate arguments. Note that by default, the description is taken from the docstring specified on a Pydantic model or output function, so specifying it using the marker class is typically not necessary.
+
+Field descriptions reach the model as in [tool schemas](tools.md#docstrings), including a Pydantic model's field docstrings when it sets `use_attribute_docstrings`. An `Enum` that mixes in [`UseEnumMemberDocstrings`][pydantic_ai.UseEnumMemberDocstrings] additionally describes each of its options by the docstring written under that member, wherever the enum appears — in an output model, in a tool parameter, or as a bare `Enum` `output_type`. Without the mix-in the docstrings are ignored; see [enum options](tools.md#enum-options).
 
 When using output tools, each tool gets its own retry counter — the output side of the agent retry budget (set with [`AgentRetries`][pydantic_ai.agent.AgentRetries] via `Agent(retries={'output': N})`, or per-run via `agent.run(retries={'output': N})`) is the *default per-tool limit*. To override the limit for an individual output tool, pass [`max_retries`][pydantic_ai.output.ToolOutput.max_retries] on `ToolOutput`: `ToolOutput(Fruit, max_retries=2)`. See [How output retries are enforced](agent.md#how-output-retries-are-enforced) for the relationship to the text-output path's global budget.
 

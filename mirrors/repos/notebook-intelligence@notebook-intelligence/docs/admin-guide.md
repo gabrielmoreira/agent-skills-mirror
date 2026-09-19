@@ -248,7 +248,7 @@ To preconfigure autocomplete as well, add an `inline_completion_model` block of 
 
 Bake the base config into your image and let users select their model from the dropdown; the dropdown writes back to these same two keys.
 
-To confirm the file was picked up rather than silently ignored, check the Status card in NBI Settings or `GET /notebook-intelligence/readiness` (see [Configuration readiness](#configuration-readiness)). It reports whether a provider and model are selected and whether the endpoint actually serves the configured model id, which is the fastest way to catch a typo in one of these blocks.
+To confirm the file was picked up rather than silently ignored, check the Status card in NBI Settings or `GET /notebook-intelligence/readiness` (see [Configuration readiness](#configuration-readiness)). It reports whether a provider and model are selected, whether the provider's model name was left blank, and whether the endpoint actually serves the configured model id, which is the fastest way to catch a typo in one of these blocks.
 
 ---
 
@@ -278,7 +278,8 @@ Steps for deploying to a network with no general internet egress:
 2. **Manifest hosting.** Set `NBI_SKILLS_MANIFEST` to either a `file://` path (a manifest baked into the image) or an internal `https://` URL on a network the pod can reach.
 3. **Skill bundles.** Either bake the skills into the image under `~/.claude/skills/` (managed status will reset since they aren't from the manifest), or host the GitHub-style tarballs at an internal mirror and write the manifest URLs to point at it.
 4. **Disable user-initiated GitHub imports** at the network layer — block `github.com`, `codeload.github.com`, and `raw.githubusercontent.com`. Users can still install skills from the local filesystem by dropping bundles into `~/.claude/skills/`.
-5. **MCP `npx -y` is incompatible with air-gap.** Pre-install the server binary and reference it directly:
+5. **ACP mode is `npx`-only by default.** The adapter is fetched with `npx` on every agent start, so an air-gapped deployment must either leave ACP off (it is `force-off` by default) or pre-install the adapter and point `NBI_ACP_AGENT_COMMAND` at it. A replacement command must still accept the `-c` overrides NBI passes, or the approval posture those pin is lost.
+6. **MCP `npx -y` is incompatible with air-gap.** Pre-install the server binary and reference it directly:
 
    ```json
    {
@@ -291,7 +292,7 @@ Steps for deploying to a network with no general internet egress:
    }
    ```
 
-6. **LLM endpoint.** Air-gap requires a self-hosted endpoint (vLLM, TGI, or a LiteLLM proxy in front of a VPC-endpoint Bedrock, etc.). See [Self-hosted LLM endpoints](#self-hosted-llm-endpoints).
+7. **LLM endpoint.** Air-gap requires a self-hosted endpoint (vLLM, TGI, or a LiteLLM proxy in front of a VPC-endpoint Bedrock, etc.). See [Self-hosted LLM endpoints](#self-hosted-llm-endpoints).
 
 ---
 
@@ -309,7 +310,16 @@ c.NotebookIntelligence.disabled_providers = [
 c.NotebookIntelligence.allow_enabling_providers_with_env = False  # users cannot override
 c.NotebookIntelligence.disabled_tools = ["nbi-command-execute", "nbi-file-edit"]
 c.NotebookIntelligence.allow_enabling_tools_with_env = False
+
+# Both agent modes reach a cloud provider without going through the provider
+# list above, so disabling providers alone does not make a deployment
+# local-only. acp_mode is already force-off by default; it is pinned here so
+# the preset keeps working if that default is ever relaxed.
+c.NotebookIntelligence.claude_mode_policy = "force-off"
+c.NotebookIntelligence.acp_mode_policy = "force-off"
 ```
+
+> **`disabled_providers` does not gate Claude mode or ACP mode.** Whether an agent mode handles a turn is read from its own settings (`claude_settings.enabled` / `acp_settings.enabled`), not from the provider list, and `claude_mode_policy` otherwise defaults to `user-choice`. Without the two policy lines above, a user can enable Claude mode and send data to Anthropic through the Claude Code CLI, which can hold a subscription login the deployment never issued a key for.
 
 Pair with `<env-prefix>/share/jupyter/nbi/config.json` selecting the Ollama provider and your local models:
 
@@ -811,7 +821,7 @@ Opt-in timing instrumentation for diagnosing slow deployments (internal gateways
 
 **Fleet baselining.** `force-on` plus `log_to_file` gives every user's turns as JSON Lines under `NBI_PERF_LOG_DIR`. The schema is documented in [`performance-diagnostics.md`](performance-diagnostics.md#collecting-across-sessions-and-machines) and is stable behind `schema_version`. The first line of each daily file is a `{"meta": ...}` record carrying the log directory's own filesystem type, so a log that landed on the slow filesystem being diagnosed is visible in the log itself. Cancelled turns are recorded with `status: "cancelled"` rather than as fast successes, so they do not drag aggregate percentiles down.
 
-**Data governance.** The recorder enforces a fixed attribute allowlist; prompt/response text, file contents, absolute paths, env var values, exception messages, and hostnames are never recorded. Default `attr_detail: redacted` additionally hashes file basenames and model/tool/server names, including the model name carried in the turn header. The turns report carries no hostname at all: the probe target the confirm dialog names is served on the capabilities response instead, so a report pasted into a ticket cannot leak the gateway. Probe output replaces home paths with `~` and the login name with `~user`, filters mount options down to a fixed safe list (CIFS/SMB options otherwise carry the server address and the mount credential, and the withheld count shows as `+N redacted`), and carries a `contains_internal_hostnames` flag when the network check ran, since the configured gateway host appears in its own rows.
+**Data governance.** The recorder enforces a fixed attribute allowlist; prompt/response text, file contents, absolute paths, env var values, exception messages, and hostnames are never recorded. Default `attr_detail: redacted` additionally hashes file basenames and model/tool/server names, including the model name carried in the turn header. The turn's backend label is the exception and is recorded in the clear, so a provider a site registers under an internal name reaches the log under that name. The turns report carries no hostname at all: the probe target the confirm dialog names is served on the capabilities response instead, so a report pasted into a ticket cannot leak the gateway. Probe output replaces home paths with `~` and the login name with `~user`, filters mount options down to a fixed safe list (CIFS/SMB options otherwise carry the server address and the mount credential, and the withheld count shows as `+N redacted`), and carries a `contains_internal_hostnames` flag when the network check ran, since the configured gateway host appears in its own rows.
 
 ## Configuration readiness
 
@@ -821,7 +831,7 @@ A misconfigured NBI fails at the far end of a chat turn, where the user sees a g
 
 It is deliberately **not** gated behind the perf-diagnostics setting the way the two `/perf` routes are: a user who cannot tell "the admin has not set this up" from "I did something wrong" needs the answer whether or not diagnostics are enabled, and an admin verifying a rollout needs it before anyone has opened the settings dialog. It reports configuration state the authenticated user can already read from the capabilities response and the settings panel, so it exposes nothing new. Exception messages are never included, only exception class names, because provider errors routinely carry the base URL and sometimes the key.
 
-**What runs by default (bills nothing):** which path is serving chat; for the native provider path, whether a provider and model are selected, whether the provider is registered (a provider removed by `disabled_providers` looks identical to a typo from the user's side, so the remedy names both), whether the model list is reachable and non-empty, and whether the selected model id is one the endpoint actually serves; for Claude mode, whether the CLI resolves **and answers `--version`** (a CLI that resolves and then fails to start is the usual cause of a turn hanging on "Thinking...", which a path check alone would call healthy) and whether an Anthropic key is present; for ACP mode, the resolved adapter command, whether `npx` is available when the adapter needs it, and whether an agent key is present.
+**What runs by default (bills nothing):** which path is serving chat; for the native provider path, whether a provider and model are selected, whether the provider's model name was left blank, whether the provider is registered (a provider removed by `disabled_providers` looks identical to a typo from the user's side, so the remedy names both), whether the model list is reachable and non-empty, and whether the selected model id is one the endpoint actually serves; for Claude mode, whether the CLI resolves **and answers `--version`** (a CLI that resolves and then fails to start is the usual cause of a turn hanging on "Thinking...", which a path check alone would call healthy) and whether an Anthropic key is present; for ACP mode, the resolved adapter command, whether `npx` is available when the adapter needs it, and whether an agent key is present.
 
 Missing credentials are reported as a **warning, not a blocker**, in both agent modes. The Claude CLI and the ACP agent can each hold a subscription or OAuth login that NBI cannot see, and calling that configuration broken would be wrong.
 
@@ -912,6 +922,7 @@ NBI is tested against the JupyterLab and `jupyter_server` versions declared in [
 
 | NBI version | JupyterLab | jupyter_server | Python    |
 | ----------- | ---------- | -------------- | --------- |
+| 6.0.x       | 4.x        | 2.x            | 3.10+     |
 | 5.4.x       | 4.x        | 2.x            | 3.10+     |
 | 5.3.x       | 4.x        | 2.x            | 3.10+     |
 | 5.2.x       | 4.x        | 2.x            | 3.10+     |

@@ -47,7 +47,7 @@ from always-compiled code.
 - `pub mod discovery_tools` — `SuggestWorkflowsTool`.
 - `pub mod memory_tools` — `FlowMemoryRecallTool`, `FlowMemoryRememberTool`, plus `flow_namespace` / `FLOW_MEMORY_NAMESPACE_PREFIX` / `cross_flow_recall` (re-exported from `mod.rs` because the tinyflows `memory` node's `OpenHumanMemory` adapter needs byte-identical `scope: "flows"` results).
 - `pub mod agents` — first-class built-in sub-agents: `workflow_builder` (authoring copilot) and `flow_discovery` (read-only suggestion scout); their `agent.toml` and `prompt::build` are referenced by path from the `BUILTINS` slice in `agent/registry/agents/loader.rs`.
-- `pub mod skills` (needs both `flows` and `skills` features) — bundles `skills/flow-authoring/WORKFLOW.md`, a skill teaching flows authoring.
+- `pub mod skills` (needs both `flows` and `skills` features) — registers the portable `tinyflows-copilot` `flow-authoring` manual with OpenHuman's native skill runtime.
 - `pub mod tinyflows` — the capability seam (`caps/`) implementing `tinyflows`'s traits over real OpenHuman services, plus `observability.rs` (`FlowRunObserver`), `memory_adapter.rs` (`OpenHumanMemory`), and `langfuse_export.rs`. Has its own [README](tinyflows/README.md).
 - Re-exported model types (from `tinyflows_catalog`, not owned here): `Flow`, `FlowConnection`, `FlowDraft`, `FlowImport`, `FlowRevision`, `FlowRun`, `FlowRunStep`, `FlowRunTrigger`, `FlowSuggestion`, `FlowValidation`, `FlowValidationError`, `SuggestionStatus`, `DraftOrigin`, plus `types`, `run_registry`, `build_registry`, and `n8n_import` (the format importer).
 
@@ -57,7 +57,7 @@ from always-compiled code.
 - `crates/openhuman-core/src/agent/tinyagents/` — message/tool-call/usage conversions used by the `llm` and `prompt` capabilities, and `thread_context::with_thread_id` around a run; `agent` nodes run a nested harness turn through the `agent` capability (`tinyflows/caps/agent.rs`).
 - `crates/openhuman-core/src/cron/` — `add_flow_schedule_job` arms a schedule-triggered flow as a `JobType::Flow` cron job; the scheduler fires it by publishing `DomainEvent::FlowScheduleTick`, which `bus::FlowTriggerSubscriber` picks up.
 - `crates/openhuman-core/src/platform/socket/medulla/workflows.rs` — `WorkflowBridge` trait implemented by `medulla_bridge`.
-- `crates/openhuman-core/src/skills/` — the `Workflow` / `WorkflowScope` catalogue types used by `catalogue.rs`, and the `BundledSkill` mechanism used by `skills/flow-authoring/`.
+- `crates/openhuman-core/src/skills/` — the `Workflow` / `WorkflowScope` catalogue types used by `catalogue.rs`, and the native `BundledSkill` mechanism that exposes the portable `tinyflows-copilot` authoring manual.
 - `crates/openhuman-core/src/memory/` — `memory_tools`/`tinyflows::memory_adapter` read/write agent memory under the `flows` scope.
 
 ## Called by

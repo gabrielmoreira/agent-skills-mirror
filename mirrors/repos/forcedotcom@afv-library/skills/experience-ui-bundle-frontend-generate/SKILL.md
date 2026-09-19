@@ -60,11 +60,11 @@ A request to rename/rebrand the app (e.g. "call it X everywhere a user would see
 Some capabilities ship as pre-built, tested feature packages. The catalog **evolves and is not something you can know from memory** — never decide from the request wording alone whether a capability "is" or "isn't" a feature. Before hand-writing any non-trivial capability (anything beyond a plain page, component, or styling change) in this skill:
 
 1. **Consult the authoritative catalog.** Invoke `experience-ui-bundle-features-generate`, which runs `list` to show the *current* set of installable features. Do not rely on a hardcoded or remembered list — this skill deliberately names none, because any names it listed would go stale.
-2. **Detect whether a matching feature is already installed** in the bundle — inspect `package.json` dependencies and existing `src/` files. If present, use it as-is; do not reinstall or re-implement.
+2. **Detect whether a matching feature is already installed** in the bundle — inspect `package.json` dependencies and existing `src/` files. If present, do not reinstall or re-implement it — **but you must still adopt it**: invoke `experience-ui-bundle-features-generate` to `describe` it (which reads the feature's README — the adoption contract), wire it into the app, and, if the feature ships config (e.g. a `config.json`), set that for this app's data and use case. Installed-but-unconfigured is not done.
 3. **If a matching feature exists in the catalog but isn't installed**, let `experience-ui-bundle-features-generate` install the tested package. Do not build it from scratch here.
 4. **Only hand-build** a capability that has no matching catalog feature.
 
-This gate is **idempotent**: when this skill runs as a phase of `experience-ui-bundle-app-coordinate` (which installs features earlier in its sequence), step 2 finds the feature already present and this collapses to a no-op. It only does real work when the skill was reached directly — the path that would otherwise skip feature detection.
+When this skill runs as a phase of `experience-ui-bundle-app-coordinate`, a matching feature is often already present — installed by an earlier phase, or shipped by the template. Already-present is **not** a reason to skip: step 2 still requires adopting and configuring that feature for this app. Only the install/re-implement work is ever skipped — never the wiring and configuration.
 
 ---
 

@@ -126,7 +126,42 @@ touches the edge (a key-tinted blend pixel with low alpha), so a "framed too tig
 message with a small residual count is still a framing problem, not a key problem.
 `--allow-edge-contact` accepts the clipping on purpose.
 
-## 4. Loop — period first, seam second
+## 3a. Spill — key colour the model painted into the subject
+
+A video model does not only leave the key around the subject; it paints it *onto* the
+subject — a green sheen across polished metal, a tint on a pale surface. Those pixels are
+opaque, often many pixels in from the edge, and form patches far larger than the chroma
+engine's trapped-spill cap (clusters up to 0.5 % of the subject). The engine leaves a large
+key-tinted patch alone on purpose, because in a still it is usually the subject's own
+key-coloured material. In a clip it usually is not.
+
+The still the clip was made from settles it. `video-frames --spill` takes:
+
+| Mode | What is corrected |
+|---|---|
+| `small` (default) | only small key-tinted clusters — the still pipeline's rule, byte-identical output |
+| `full` | every key-tinted cluster, whatever its size (colour only: alpha is unchanged) |
+| `auto` | keys `--reference` (the still) with the same matte and counts its strongly key-tinted pixels; a share ≤ 0.5 % means the still has no key-coloured material of its own → `full`, otherwise `small` |
+
+`video-set` passes `--spill auto` with each item's `canvas.png` as the reference (override
+with `--spill small|full`), so a green-free character loses the reflections while a
+character that *is* green keeps its colour. The decision and its numbers are recorded in
+the frames report under `spill`. The correction is the engine's own `despill_color` blend
+model (observed = (1−k)·subject + k·key, solved for the subject), so colours without key
+tint are untouched. Faint tints whose cluster never crosses the strong-tint bar are left
+as they are.
+
+## 3b. Canvas shape for raised limbs and wide costumes
+
+`video-set` picks the canvas from the state row alone. Two things that are not a jump or
+an attack still leave a 1:1 frame: limbs raised in a celebration, and a costume that is
+wider than the body (a skirt, a veil, a held object). Both fail `video-frames`'s
+edge-contact check — the clip was made, the frames were cut, and the run stops at the
+gate. The state table now routes `cheer`, `wave` and `celebrate` to the wide canvas, and
+`video-set --shape wide` forces it for every state of a batch when the costume is the
+reason. The same `--shape` is what `video-canvas` already took for a single still.
+
+## 4. Loop — period first, seam second, then the gait floor
 
 The 2026-09-08 lesson: a single-start "most similar later frame" search lands on the
 **1.5-cycle look-alike** of a gait (legs swapped) and produces a loop that hitches at
@@ -225,3 +260,38 @@ the synthetic fixtures under `tests/video/` pin every rule named here.
 ## Related
 
 - [docs/README.md](README.md) — documentation index
+
+### One-shot length is the clip's own fact
+
+The periodic window (`LoopProfile.min_frac` / `max_frac`) bounds *repeats*. A one-shot
+(`--cycle one-shot`, or the `auto` failover for action states) has no repeat to bound:
+the excursion is as long as the model performed it. `detect_one_shot` therefore no longer
+refuses an excursion shorter than the periodic window's lower edge — only a degenerate
+cut under `ONE_SHOT_MIN_LEN` (4 frames) or one longer than the clip is refused. A short
+set-down, a nod, a flinch come back as the frames they are.
+
+### `--anchor feet` — undo in-canvas drift
+
+"Stays centered in the frame" is a request, not a guarantee: the model may walk the
+subject across an in-place canvas, and the union crop that `build_strip` uses keeps that
+drift inside every cell, so a runtime that places the strip by its cell box sees the body
+slide back and forth once per cycle. `--anchor feet` (on `video-loop` and `video-set`)
+removes that drift and nothing else. Drift is a slow translation and a gait is periodic,
+so a straight line fitted to the body's centre (the mean x of every opaque pixel) across
+the cycle carries the drift and not the step. Each cell is shifted by that line only,
+so every cell stands on the same **mean** foot line — the mean x of the opaque pixels in
+the lowest `FOOT_BAND` (8 %) of each frame's bbox, averaged over the cycle.
+
+Do not pin each frame's own foot line. In an in-place walk one foot is lifted out of the
+floor band every step, so the per-frame foot line jumps to the planted foot by about the
+stride; pinning it makes a body that stood still lurch back and forth by that much. The
+first version of this option did exactly that, and the synthetic lifting-leg walker in
+`tests/video` pins the rule.
+
+The strip meta gains `foot_anchor`, `drift_px` (the drift removed across the cycle, in
+source pixels), `foot_sway_px` (how far the planted foot moves within the gait — kept, only
+reported) and `foot_x` (the mean foot column inside every cell), plus the spec loader's
+`anchor` as `[foot_x, h]` so a scene stands the sprite on its foot line; `video-set`'s
+table row carries `drift_px`. The default stays `none`: existing strips do not change,
+and `drift_px` / `foot_sway_px` are 0 when they were not measured.
+

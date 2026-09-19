@@ -397,6 +397,31 @@ AI 在写业务/权限/存储代码前必须先看这三项：PG 模式下新业
       description: `购买或续费时长（月），action=create/renew 时可选，默认 1`,
     },
     {
+      name: "externalStorage",
+      type: "object",
+      description: `云存储共享桶配置（action=create 时可选）。传入该对象表示该环境不再自动分配独立 COS 桶，而是使用指定桶作为云存储介质，通过 basePath 与同桶其他环境隔离；仅作用于云存储，静态托管的存储桶由平台在开通托管时分配。三个字段必须完整传入。⚠️ 与 region 同理：二次调用（confirm="yes"）只读本次参数，漏传会创建出使用独立桶的环境且不报错。`,
+      children: [
+        {
+          name: "bucketName",
+          type: "string",
+          required: true,
+          description: `共享桶名称（COS 桶名）`,
+        },
+        {
+          name: "region",
+          type: "string",
+          required: true,
+          description: `共享桶所属地域，例如 ap-shanghai`,
+        },
+        {
+          name: "basePath",
+          type: "string",
+          required: true,
+          description: `基础路径前缀，在同一共享桶内需唯一，用于与同桶其他环境隔离`,
+        }
+      ],
+    },
+    {
       name: "region",
       type: "string",
       description: `创建地域（仅 action=create 时有效）。按 X-TC-Region 语义透传，决定新环境所在地域；等价 CLI：tcb env create --region ap-shanghai。不传则用当前会话地域（cloudBaseOptions.region → TCB_REGION → 项目配置 / rc 绑定 → 站点默认地域：国内站 ap-shanghai、国际站 ap-singapore）。注意：region 不写进 CreateEnv 请求体，而是通过请求层地域上下文生效——这与「请勿把 Region 放进 params」的 callCloudApi 约定一致。⚠️ ap-singapore 同时属于国内站与国际站，未显式指定站点时会被判定为国际站（site=intl）；如需在国内站该地域创建，请先 auth(site="domestic") 或设置 TCB_SITE=domestic。 可填写的值: "ap-shanghai", "ap-guangzhou", "ap-singapore"`,
@@ -2042,7 +2067,7 @@ CloudBase 云函数统一写入口。支持创建函数、更新代码、更新�
 
       返回内容包含该 skill 的 SKILL.md 全文，以及它在远端聚合仓（CNB raw）中的全部 .md 文件地址清单（SKILL.md 与 references/ 等，可直接 HTTP 抓取）。正文中代码栅栏之外的相对链接也会改写为绝对地址；若该 skill 在远端仓中不存在，则只返回内联内容并明确标注，不返回失效链接。
 
-      不确定该选哪个时：mode=skill 下不传 skillName、mode=openapi 下不传 apiName 直接调用，会返回当前可用清单及各自的适用场景 / 接口简介，再带上名称重新调用即可。可选名称也见本工具的 skillName / apiName 枚举（skill 共 31 个，API 共 8 个）。
+      不确定该选哪个时：mode=skill 下不传 skillName、mode=openapi 下不传 apiName 直接调用，会返回当前可用清单及各自的适用场景 / 接口简介，再带上名称重新调用即可。可选名称也见本工具的 skillName / apiName 枚举（skill 共 30 个，API 共 8 个）。
 
       注意：OpenAPI 文档 (openapi) 查询只需要传 mode="openapi" 和 apiName，不要传 action；action 仅用于 mode="docs"。
 
@@ -2059,7 +2084,7 @@ CloudBase 云函数统一写入口。支持创建函数、更新代码、更新�
     {
       name: "skillName",
       type: "string",
-      description: `mode=skill 时指定。技能名称。 可填写的值: "ai-model-nodejs", "ai-model-web", "ai-model-wechat", "auth-nodejs-cloudbase", "auth-tool-cloudbase", "auth-web-cloudbase", "auth-wechat-miniprogram", "cloud-api-operations", "cloud-functions", "cloud-storage-web", "cloudbase-agent", "cloudbase-cli", "cloudbase-code-review", "cloudbase-declarative-deploy", "cloudbase-document-database-in-wechat-miniprogram", "cloudbase-document-database-web-sdk", "cloudbase-platform", "cloudbase-wechat-integration", "cloudrun-development", "data-model-creation", "http-api-cloudbase", "minimal-web-baas-demo", "miniprogram-development", "ops-inspector", "postgresql-best-practices-cloudbase", "postgresql-development-cloudbase", "relational-database-mcp-cloudbase", "relational-database-web-cloudbase", "spec-workflow", "ui-design", "web-development"`,
+      description: `mode=skill 时指定。技能名称。 可填写的值: "ai-model-nodejs", "ai-model-web", "ai-model-wechat", "auth-nodejs-cloudbase", "auth-tool-cloudbase", "auth-web-cloudbase", "auth-wechat-miniprogram", "cloud-api-operations", "cloud-functions", "cloud-storage-web", "cloudbase-agent", "cloudbase-cli", "cloudbase-code-review", "cloudbase-declarative-deploy", "cloudbase-document-database-in-wechat-miniprogram", "cloudbase-document-database-web-sdk", "cloudbase-platform", "cloudbase-wechat-integration", "cloudrun-development", "data-model-creation", "http-api-cloudbase", "minimal-web-baas-demo", "miniprogram-development", "ops-inspector", "postgresql-development-cloudbase", "relational-database-mcp-cloudbase", "relational-database-web-cloudbase", "spec-workflow", "ui-design", "web-development"`,
     },
     {
       name: "apiName",
@@ -2107,7 +2132,7 @@ CloudBase 云函数统一写入口。支持创建函数、更新代码、更新�
       name: "action",
       type: "string",
       required: true,
-      description: `查询操作类型：list=获取云托管服务列表（支持分页和筛选），detail=查询指定服务的详细信息（包含服务配置和最新部署状态），templates=获取可用的项目模板列表（用于初始化新项目），getDeployLog=获取构建日志（仅云端源码构建有意义，走 CODING/DescribeCloudRunBuildLog；已有镜像部署无构建过程；未登录 CODING 的账号会报错），getProcessLog=获取运行日志（部署阶段步骤+容器启动/运行日志，走 tcbr/DescribeCloudRunProcessLog；镜像部署与源码构建均可用，不依赖 CODING；RunId 来自 detail/getDeployRecords 的 latestDeploy.RunId），getDeployRecords=获取指定服务的部署记录列表（按部署时间倒序，含 BuildId/RunId/FlowRatio/Status 等字段，用于查看历史发布与回滚上下文），envStatus=查询当前环境云托管是否已开通及开通状态（Status=creating开通中/normal已开通），用于initEnv之后轮询进度或deploy之前确认环境是否就绪 可填写的值: "list", "detail", "templates", "getDeployLog", "getProcessLog", "getDeployRecords", "envStatus"`,
+      description: `查询操作类型：list=获取云托管服务列表（支持分页和筛选），detail=查询指定服务的详细信息（包含服务配置和最新部署状态），templates=获取可用的项目模板列表（用于初始化新项目），getDeployLog=获取构建日志（仅云端源码构建有意义，走 CODING/DescribeCloudRunBuildLog；已有镜像部署无构建过程；未登录 CODING 的账号会报错），getProcessLog=获取运行日志（部署阶段步骤+容器启动/运行日志，走 tcbr/DescribeCloudRunProcessLog；镜像部署与源码构建均可用，不依赖 CODING；RunId 来自 detail/getDeployRecords 的 latestDeploy.RunId），getDeployRecords=获取指定服务的部署记录列表（按部署时间倒序，含 BuildId/RunId/FlowRatio/Status 等字段，用于查看历史发布与回滚上下文），envStatus=查询当前环境云托管是否已开通及开通状态（Status=creating开通中/normal已开通），用于initEnv之后轮询进度或deploy之前确认环境是否就绪，getManageTask=查询指定服务的发布任务状态（走 tcbr/DescribeServerManageTask），返回任务 Id/Status 与最新部署记录状态，用于判断部署是在推进还是已经卡住（例如版本长时间停在 creating）；遇到「已有部署发布任务运行中」时先用它确认任务真实状态，不要盲目重试 可填写的值: "list", "detail", "templates", "getDeployLog", "getProcessLog", "getDeployRecords", "envStatus", "getManageTask"`,
     },
     {
       name: "pageSize",
@@ -2160,7 +2185,7 @@ CloudBase 云函数统一写入口。支持创建函数、更新代码、更新�
 ---
 
 ### `manageCloudRun`
-管理云托管服务，按开发顺序支持：开通云托管环境（initEnv）、初始化项目（可从模板开始，模板列表可通过 queryCloudRun 查询）、下载服务代码、本地运行（仅函数型服务）、部署代码、仅更新配置（updateConfig，无需重新上传代码）、删除服务。deploy 支持两种方式：1) 源码构建（传入 targetPath，本地代码打包上传，默认路径）；2) 已有镜像部署（传入 imageUrl，如 ccr.ccs.tencentyun.com/ns/img:v1，走 DeployType=image 容器型部署，targetPath 可省略）。deploy 语义为「触发部署 + 轻量等待任务注册」（最多约 45s）。源码构建返回 buildId，用 getDeployLog 轮询构建进度后再 getProcessLog；镜像部署（imageUrl）BuildId 常为 0，跳过 getDeployLog，返回 runId/next_step 引导 getProcessLog（或先 getDeployRecords 取 RunId）。若用户明确指定镜像或无需重新构建，必须传 imageUrl，不要仅因本地有源码目录就回退到源码构建。deploy 对已存在服务会先读取远程配置再合并（保留 VpcConf/EnvParams/OpenAccessTypes）。updateConfig 对齐控制台服务设置页。删除操作需要确认，建议设置force=true。新环境首次部署前若提示未开通云托管，先调用 initEnv 开通（异步、幂等）。
+管理云托管服务，按开发顺序支持：开通云托管环境（initEnv）、初始化项目（可从模板开始，模板列表可通过 queryCloudRun 查询）、下载服务代码、本地运行（仅函数型服务）、部署代码、仅更新配置（updateConfig，无需重新上传代码）、删除服务。deploy 支持两种方式：1) 源码构建（传入 targetPath，本地代码打包上传，默认路径）；2) 已有镜像部署（传入 imageUrl，如 ccr.ccs.tencentyun.com/ns/img:v1，走 DeployType=image 容器型部署，targetPath 可省略）。deploy 语义为「触发部署 + 轻量等待任务注册」（最多约 45s；不需要 buildId 时可传 waitRegistration=false 跳过等待）。源码构建返回 buildId，用 getDeployLog 轮询构建进度后再 getProcessLog；镜像部署（imageUrl）BuildId 常为 0，跳过 getDeployLog，返回 runId/next_step 引导 getProcessLog（或先 getDeployRecords 取 RunId）。若用户明确指定镜像或无需重新构建，必须传 imageUrl，不要仅因本地有源码目录就回退到源码构建。deploy 对已存在服务会先读取远程配置再合并（保留 VpcConf/EnvParams/OpenAccessTypes）。updateConfig 对齐控制台服务设置页。删除操作需要确认，建议设置force=true。新环境首次部署前若提示未开通云托管，先调用 initEnv 开通（异步、幂等）。
 
 #### 参数
 
@@ -2175,7 +2200,6 @@ CloudBase 云函数统一写入口。支持创建函数、更新代码、更新�
     {
       name: "serverName",
       type: "string",
-      required: true,
       description: `云托管服务名称，用于标识和管理服务。命名规则：支持大小写字母、数字、连字符和下划线，必须以字母开头，长度3-45个字符。在init操作中会作为在targetPath下创建的子目录名，在其他操作中作为目标服务名。initEnv 操作不需要此参数`,
     },
     {
@@ -2535,6 +2559,11 @@ CloudBase 云函数统一写入口。支持创建函数、更新代码、更新�
       name: "serverType",
       type: "string",
       description: `服务类型配置：function=函数型云托管（仅支持Node.js，有特殊的开发要求和限制，适合简单的API服务），container=容器型服务（推荐使用，支持任意语言和框架如Java/Go/Python/PHP/.NET等，适合大多数应用场景）。不提供时自动检测：1)现有服务类型 2)有Dockerfile→container 3)有@cloudbase/aiagent-framework依赖→function 4)其他情况→container 可填写的值: "function", "container"`,
+    },
+    {
+      name: "waitRegistration",
+      type: "boolean",
+      description: `deploy 时是否等待平台登记本次发布（默认 true，最多约 45 秒）。等待是为了拿到后续查询所需的标识（源码构建的 BuildId / 镜像部署的 RunId）；设为 false 时只做一次探测就返回，响应更快，适合不需要 buildId、之后再按需查询发布任务状态的场景`,
     }
   ]}
 />

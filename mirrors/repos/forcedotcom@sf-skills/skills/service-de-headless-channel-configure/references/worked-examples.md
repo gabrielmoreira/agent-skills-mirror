@@ -26,7 +26,7 @@ Returns `{ok:true, channelId:"0MjSG...", mcuId:"0gLSG...", developerName:"WHATSA
 
 **Stage 3** (route): `service-de-channel-routing-configure` prompts user. User picks existing `Messaging_Queue` (`00GSG0000000LSf2AM`). PATCH lands. `STEPS_RUN=["insert","route"]`.
 
-**Stage 3.5** (consent): `service-de-channel-consent-configure` runs. The insert auto-seeded `ConsentType=ImplicitOptIn` + a default opt-out `MsgChannelLanguageKeyword` (STOP-family + confirmation), so the leaf's Stage 1 finds the channel already activation-ready and returns `noop:true` — no write needed. (Had the user asked for ExplicitOptIn/DoubleOptIn or custom keywords, the leaf would upgrade it here.) `STEPS_RUN=["insert","route"]`, `STEPS_SKIPPED=["consent"]`.
+**Stage 3.5** (consent): `service-de-channel-settings-configure` runs. The insert auto-seeded `ConsentType=ImplicitOptIn` + a default opt-out `MsgChannelLanguageKeyword` (STOP-family + confirmation), so the leaf's Stage 1 finds the channel already activation-ready and returns `noop:true` — no write needed. (Had the user asked for ExplicitOptIn/DoubleOptIn or custom keywords, the leaf would upgrade it here.) `STEPS_RUN=["insert","route"]`, `STEPS_SKIPPED=["consent"]`.
 
 **Stage 4** (activate): `service-de-channel-activate` PATCHes `MessagingChannelUsage.DeploymentStatus='Provisioning'` via REST. The PATCH blocks synchronously until the server-side observer chain finishes, then returns 204 with `DeploymentStatus=Active` → `channel.IsActive=true` in ~15-21s (Meta `/register` round-trip). `STEPS_RUN=["insert","route","activate"]`.
 

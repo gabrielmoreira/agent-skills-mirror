@@ -88,6 +88,8 @@ MCP stdio servers run as subprocesses of the user's Jupyter Server. If a server 
 3. For `npx -y` servers, confirm Node.js is installed (`node --version`).
 4. Use the **Reload MCP servers** action from NBI Settings → MCP after fixing the config — this re-runs discovery without restarting JupyterLab.
 
+If the configured command is not an MCP server at all, it never answers the MCP handshake. NBI gives up on it after 60 seconds (`NBI_MCP_CONNECT_TIMEOUT`), marks the server failed, and logs that the command may not be an MCP server. A command that writes non-JSON output in a loop would otherwise fill the log with one parse error per line, so those records are capped at a few per 10 seconds and the number withheld is reported with the failure.
+
 If the LLM is connected but tools aren't being called, confirm the model supports tool calling. All GitHub Copilot models do; for other providers, check the provider's docs.
 
 ## Where do logs live, and how do I turn on debug?
@@ -133,6 +135,18 @@ Ask-mode requests are fitted to 80% of the active model's context window, so a l
 Pruning only happens when NBI knows the window. GitHub Copilot models report theirs through the models API. **OpenAI-compatible and LiteLLM-compatible providers do not**, so NBI uses whatever **Context window** you set on the model in Settings, and if you leave it blank it passes history through untouched rather than pruning against a guessed number. If a self-hosted or gateway-fronted model starts failing on context length in long chats, setting that value is the fix.
 
 Agent-mode tool loops are not budgeted; this applies to ask mode and the built-in generation commands.
+
+## Tab indents instead of accepting a suggestion
+
+Tab accepts an inline suggestion only while one is actually on screen; otherwise it indents, which is what Tab does everywhere else in a notebook. Earlier releases bound accept whenever the completer was active, so Tab could be swallowed in a cell with nothing to accept. If suggestions never appear at all, that is a different problem: see the two entries below.
+
+## Settings says "Ready" but every chat turn fails
+
+An OpenAI-compatible or LiteLLM-compatible provider needs an explicit **Model**. A blank field used to persist as an empty string, and the readiness card answered "Ready. Nothing needs configuring" while every turn went out with no model name and failed at the provider. Readiness now reports a blank required field as a blocking row naming the field. On an older release, check Settings for an empty Model box.
+
+## A file changed on disk but the open tab did not reload
+
+Two deliberate limits. A revert is skipped while that document's kernel is busy, so an agent edit made during a long-running cell appears when the cell finishes rather than mid-execution. And the reload notice is only shown for the document you are looking at, so files reverted in background tabs change without a message. Neither is an error; nothing is logged.
 
 ## Inline completion is too aggressive or too quiet
 

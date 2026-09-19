@@ -1,6 +1,6 @@
 ---
 name: service-de-headless-channel-configure
-description: "Top-level orchestrator: given a messaging channel type and its type-specific inputs, produces an activated Enhanced `MessagingChannel` in the target Salesforce org — without the Meta/LINE/Apple setup popups. Prompts for `{MESSAGE_TYPE}` if not supplied, then sequences insert → route → consent → activate via the type-agnostic dispatcher (`service-de-channel-create`) plus the shared routing/consent/activation leaves. Resumes from partial state on re-run. Use this skill when the user wants to set up an Enhanced messaging channel (WhatsApp, Facebook, LINE, Apple, or SMS/Text) end-to-end from the command line, bypassing the in-org setup popups."
+description: "Top-level orchestrator: given a messaging channel type and its inputs, produces an activated Enhanced `MessagingChannel` in the target org — without the Meta/LINE/Apple setup popups. Prompts for `{MESSAGE_TYPE}` if not supplied, then sequences insert → route → consent → activate via the type-agnostic dispatcher (`service-de-channel-create`) plus the shared routing/consent/activation leaves. Resumes from partial state on re-run. Use to set up an Enhanced channel (WhatsApp, Facebook, LINE, Apple, SMS) end-to-end, bypassing in-org setup popups. Do not use for a single stage of an already-inserted channel — use the matching leaf skill (`service-de-channel-activate`, `service-de-channel-settings-configure`, `service-de-channel-routing-configure`) instead."
 metadata:
   version: "1.0"
   minApiVersion: "67.0"
@@ -10,9 +10,9 @@ metadata:
       semver: ">=2.0.0"
   relatedSkills:
     - "service-de-channel-activate"
-    - "service-de-channel-consent-configure"
     - "service-de-channel-create"
     - "service-de-channel-routing-configure"
+    - "service-de-channel-settings-configure"
     - "service-de-waba-integrate"
 ---
 
@@ -25,7 +25,7 @@ Takes a channel type (`WhatsApp` | `Line` | `AppleBusinessChat` | `Facebook` | `
 0. **Accept Terms and Conditions** — renders the Enhanced Messaging disclaimer and requires the user to certify they have authority to bind their org, mirroring the in-org "Add a Channel" wizard. Blocking — a decline ends the run before any org work. *(Stage 0.5, in this skill)*
 1. **Insert the channel** — invokes `service-de-channel-create`, which handles the per-type third-party prereq internally (e.g. WhatsApp's `service-de-waba-integrate` runs inside `service-de-channel-create`). *(skill: `service-de-channel-create`)*
 2. **Configure routing** — sets `SessionHandlerId` to an Omni-Channel Queue (pick existing or create new). Message-type-agnostic. *(skill: `service-de-channel-routing-configure`)*
-3. **Configure consent** — ensures a valid `ConsentType` + matching `MsgChannelLanguageKeyword` record. The Connect insert auto-seeds a default `ConsentType=ImplicitOptIn` + opt-out keyword, so on a fresh channel this step is frequently a **no-op** — or an *upgrade* if the caller wants ExplicitOptIn/DoubleOptIn. Activation's readiness check requires both routing AND consent, so this runs before activation. *(skill: `service-de-channel-consent-configure`)*
+3. **Configure consent** — ensures a valid `ConsentType` + matching `MsgChannelLanguageKeyword` record. The Connect insert auto-seeds a default `ConsentType=ImplicitOptIn` + opt-out keyword, so on a fresh channel this step is frequently a **no-op** — or an *upgrade* if the caller wants ExplicitOptIn/DoubleOptIn. Activation's readiness check requires both routing AND consent, so this runs before activation. *(skill: `service-de-channel-settings-configure`)*
 4. **Activate** — PATCHes `MessagingChannelUsage.DeploymentStatus` to `Provisioning` via REST; the server-side save-hook drives the full observer chain synchronously and returns 204 once the MCU reaches `Active` and `MessagingChannel.IsActive=true`. Message-type-agnostic. *(skill: `service-de-channel-activate`)*
 
 **Resume-by-default.** Each step is idempotent — if you re-run after a failure, the orchestrator detects existing state and skips steps that already succeeded.
@@ -49,7 +49,7 @@ Takes a channel type (`WhatsApp` | `Line` | `AppleBusinessChat` | `Facebook` | `
 
 **This orchestrator MUST run all stages (0-5) in a SINGLE response without stopping between stages.**
 
-When you invoke a leaf skill (service-de-channel-create, service-de-channel-routing-configure, service-de-channel-consent-configure, service-de-channel-activate) and it returns via function_results:
+When you invoke a leaf skill (service-de-channel-create, service-de-channel-routing-configure, service-de-channel-settings-configure, service-de-channel-activate) and it returns via function_results:
 
 - **DO:** Immediately parse the function_results return value and continue to the next stage
 - **DO:** Run Stage 0.5 → Stage 1 → Stage 2 → Stage 3 → Stage 3.5 → Stage 4 → Stage 5 consecutively in ONE response
@@ -209,7 +209,7 @@ Handle the envelope:
 
 ## Stage 3.5: Configure consent (before activation)
 
-Activation's readiness check requires **consent AND routing** — a fully-routed channel still fails to activate if consent isn't configured. Invoke `service-de-channel-consent-configure`:
+Activation's readiness check requires **consent AND routing** — a fully-routed channel still fails to activate if consent isn't configured. Invoke `service-de-channel-settings-configure`:
 
 - `{CHANNEL_ID}` = recorded above
 - `{CONSENT_TYPE}`, `{LANGUAGE}`, and the keyword/prompt values — forward whatever the user supplied; omit what they didn't
@@ -248,7 +248,7 @@ Handle the envelope:
 | `{ok: true, isActive: true, ...}` (including `noop: true`) | Record results. Append `"activate"` to `STEPS_RUN`. Continue to Stage 5. |
 | `{ok: false, kind: "no-routing"}` | Unusual (we just set it) — probably a race or permission issue. Emit failure with a hint about the permissions check. Return. |
 | `{ok: false, kind: "no-mcu" \| "channel-missing"}` | Shouldn't happen after successful insert. Emit failure with the leaf's envelope. Return. |
-| `{ok: false, kind: "readiness-failed", errorMessage}` | `validateChannelReadinessOnProvisioning` rejected the PATCH — missing consent (STOP/HELP keyword record). Stage 3.5 should have caught this; if it re-appears, re-run `service-de-channel-consent-configure` for the channel. Emit failure and pass through the resume hint. Return. |
+| `{ok: false, kind: "readiness-failed", errorMessage}` | `validateChannelReadinessOnProvisioning` rejected the PATCH — missing consent (STOP/HELP keyword record). Stage 3.5 should have caught this; if it re-appears, re-run `service-de-channel-settings-configure` for the channel. Emit failure and pass through the resume hint. Return. |
 | `{ok: false, kind: "provisioning-error", errorReason, errorDetails}` | Third-party side rejected (Meta `/register` failed, etc.). MCU is now in `Error`. Emit failure and pass through `errorReason`/`errorDetails`. Return. |
 | `{ok: false, kind: "auth" \| "transport"}` | REST call failed at the HTTP layer (401 from `sf` auth, 5xx from the instance). Pass through. Return. |
 

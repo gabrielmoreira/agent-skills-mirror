@@ -53,13 +53,11 @@ instead (see `agent::plan_review`).
 
 ## Related
 
-- `agent::task_board` re-exports the board types
+- `agent::todos::types` re-exports the todo types
   (`tinyagents_graph::todos::{TaskBoard, TaskBoardCard, TaskCardStatus, ...}`)
   used throughout this module.
-- `threads::todos/` is the compatibility surface that maps `BoardLocation`
-  onto the TinyAgents stores, exposes the `openhuman.todos_*` RPC and
-  `todo_*` tools, and owns the run ledger (`runs.rs`) this dispatcher reads
-  and writes through.
+- `agent::todos/` maps `BoardLocation` onto the TinyAgents stores, exposes the
+  `todo_*` tools, and owns the run adapter (`runs.rs`) this dispatcher uses.
 - Selection and backoff policy (`pick_next_card`, `requires_plan_approval`,
   `PollCadence`) live in `tinyagents_graph::todos::dispatch::select`; this
   crate only tunes and wires them.

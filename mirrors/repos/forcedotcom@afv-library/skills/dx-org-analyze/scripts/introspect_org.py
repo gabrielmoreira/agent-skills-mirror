@@ -24,7 +24,7 @@ PERM_CATEGORIES = [
     ("Einstein/AI",  ["einstein", "ai", "predict", "ml", "copilot", "agent"]),
     ("Service",      ["service", "case", "knowledge", "chat", "messaging", "omni", "entitlement"]),
     ("Data",         ["data", "record", "report", "dashboard", "analytics", "tableau"]),
-    ("Trialforce",   ["trial", "trialforce", "tso", "tmo", "signup", "template", "edition"]),
+    ("Trialforce",   ["trialforce", "tso", "tmo", "signup", "template"]),
     ("Sales",        ["sales", "opportunity", "lead", "forecast", "quote", "contract"]),
     ("Work/HR",      ["work", "hr", "employee", "shift", "wellness"]),
 ]
@@ -32,8 +32,8 @@ PERM_CATEGORIES = [
 VALUE_CATEGORIES = [
     ("Identity",       ["name", "edition", "org", "domain", "id", "type", "instance", "locale"]),
     ("Storage",        ["storage", "file", "size", "space", "quota"]),
-    ("Feature Limits", ["max", "limit", "count", "num", "enable"]),
-    ("API",            ["api", "call", "request", "bandwidth"]),
+    ("API",            ["api", "request", "daily", "hourly", "concurrent", "streaming", "bulk"]),
+    ("Feature Limits", ["custom", "rule", "flow", "process", "workflow", "approval", "limit", "max"]),
 ]
 
 
@@ -84,23 +84,10 @@ def analyze_metadata(data):
     for mtype, items in sorted(components.items()):
         org_native = [c for c in items if not c.get("namespace")]
         namespaced = [c for c in items if c.get("namespace")]
-        org_native_names = sorted(
-            c.get("fullName") or c.get("name", "") for c in org_native
-        )
-        namespaced_by_ns = {}
-        for c in namespaced:
-            ns = c.get("namespace", "unknown")
-            namespaced_by_ns.setdefault(ns, []).append(
-                c.get("fullName") or c.get("name", "")
-            )
-        for ns in namespaced_by_ns:
-            namespaced_by_ns[ns] = sorted(namespaced_by_ns[ns])
         by_type[mtype] = {
             "total": len(items),
             "org_native": len(org_native),
             "namespaced": len(namespaced),
-            "org_native_names": org_native_names,
-            "namespaced_by_ns": namespaced_by_ns,
         }
         total += len(org_native)
         namespaced_total += len(namespaced)
@@ -246,24 +233,6 @@ def render_markdown(data, meta, perms, vals, pkgs, lics, sys_perms, deep, label)
     lines.append(f"| **Total** | **{meta['total_org_native']}** | **{meta['total_namespaced']}** | **{meta['total_org_native'] + meta['total_namespaced']}** |")
     lines.append("")
 
-    # Detailed metadata listing
-    lines.append("---\n")
-    lines.append("## Metadata Components by Type\n")
-    for mtype, counts in sorted(meta["by_type"].items()):
-        if counts["total"] == 0:
-            continue
-        lines.append(f"#### {mtype} ({counts['org_native']} org-native, {counts['namespaced']} namespaced)\n")
-        if counts["org_native_names"]:
-            lines.append(f"**Org-native ({counts['org_native']}):** " +
-                         ", ".join(f"`{n}`" for n in counts["org_native_names"]))
-            lines.append("")
-        if counts["namespaced_by_ns"]:
-            for ns, names in sorted(counts["namespaced_by_ns"].items()):
-                lines.append(f"**Namespaced — `{ns}` ({len(names)}):** " +
-                             ", ".join(f"`{n}`" for n in names))
-                lines.append("")
-    lines.append("")
-
     # Installed packages
     lines.append("---\n")
     lines.append("## Installed Packages\n")
@@ -314,12 +283,7 @@ def render_markdown(data, meta, perms, vals, pkgs, lics, sys_perms, deep, label)
                     lines.append("| " + " | ".join(keys) + " |")
                     lines.append("| " + " | ".join(["---"] * len(keys)) + " |")
                     for item in info["items"]:
-                        vals_row = []
-                        for k in keys:
-                            v = item.get(k, "")
-                            if k in ("AllowedLicenses", "TotalLicenses") and v == -1:
-                                v = "-1 (unlimited)"
-                            vals_row.append(str(v))
+                        vals_row = [str(item.get(k, "")) for k in keys]
                         lines.append("| " + " | ".join(vals_row) + " |")
             else:
                 for item in info["items"]:

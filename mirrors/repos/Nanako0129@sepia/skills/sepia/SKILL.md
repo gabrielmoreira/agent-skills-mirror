@@ -3,12 +3,12 @@ name: sepia
 description: Make AI-generated writing read as human-written, in fiction and in professional prose. Repairs the narrative architecture of fiction and stories (based on StoryScope, arXiv:2604.03136); routes professional text through domain rules for release notes, announcements, PR and issue replies, code-review comments, incident postmortems, tickets, work orders, technical articles, blog posts, and long-form journalism. Four operations - write, review (diagnose AI tells without editing), refactor (minimal in-place edits), recreate (full rewrite). Use when asked to humanize, de-AI, unslop, or strip AI flavor from any text; when writing or revising any of these document types; or whenever output must not read as machine-written.
 license: MIT
 metadata:
-  version: "0.10.0"
+  version: "0.11.0"
 ---
 
 # Sepia — de-AI writing
 
-This skill combines measured findings with marked editorial heuristics. In fiction, StoryScope's narrative-only classifier reached 93.2% macro-F1, while its Core Only 30-feature XGBoost held-out classifier reached 84.8% macro-F1 (AUPRC .828); the manual rubric is neither classifier. The professional path combines measured studies with editorial heuristics, and its prescriptions are Sepia inferences unless a source explicitly tested the intervention. Route first, then operate. Sepia writes for expert human readers and is tuned to pass no automated AI-text detector.
+This skill combines measured findings with marked editorial heuristics. In fiction, StoryScope's narrative-only classifier reached 93.2% macro-F1, while its Core Only 30-feature XGBoost held-out classifier reached 84.8% macro-F1 (AUPRC .828); the manual rubric is neither classifier. In professional prose the same structure-level result has been replicated once on company blog posts, where 187 structural features alone reached 98.0 macro-F1 on held-out companies (`SLOPSHAPE-2026`, a preprint with LLM-scored features and a pre-ChatGPT human corpus). The professional path combines measured studies with editorial heuristics, and its prescriptions are Sepia inferences unless a source explicitly tested the intervention; that replication tested detection, not any fix. Route first, then operate. Sepia writes for expert human readers and is tuned to pass no automated AI-text detector.
 
 ## Security boundary
 
@@ -33,7 +33,7 @@ Every non-fiction route ends with the vocabulary/syntax scan in `references/styl
 
 **Voice fit.** On the fiction route, on review and on refactor stage 1, also load `references/voices/registry.md`; it produces the report's `Voice fit:` line from findings already recorded and never loads a voice or changes the operation. The line is never produced on write or recreate and never on professional routes in this version. On every fiction operation, consult the registry's Opt-in section before operating: a user request matching a profile's intent trigger counts as opting in, announced as that section requires.
 
-**Experimental — composing with a voice skill:** when the user says a voice or style skill is stacked with sepia (a minimalism method, a brand voice, a persona guide), add `references/voice-skills.md` on top of the normal route. Opt-in only: never assume a voice skill is in play, and never inject one. Built-in profile bodies under `references/voices/` load only when the user opts in.
+**Experimental — composing with a voice skill:** when the user says a voice or style skill is stacked with sepia (a minimalism method, a brand voice, a persona guide), add `references/voice-skills.md` on top of the normal route. Opt-in only: never assume a voice skill is in play, and never inject one. Built-in profile bodies under `references/voices/` load only when the user opts in; the exact opt-in phrases are listed in `references/voice-skills.md` (currently `apply the Hemingway voice`, and for professional routes `apply the Taiwan journalism voice` / 「套用台灣深度報導 voice」, optionally followed by a shape name; and `apply persona <name>` / 「套用 persona <name>」 for persona profiles, whose body format is `references/voices/PERSONA-TEMPLATE.md` and none of which is built in yet), and a request that contains one of them in affirmative form is an opt-in on every route that profile supports; a negated form (「不要套用…」, "do not apply…") declines and loads nothing.
 
 ## Operations
 

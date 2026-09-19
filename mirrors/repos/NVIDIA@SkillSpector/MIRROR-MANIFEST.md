@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `NVIDIA/SkillSpector` — 26 default patterns, 0 followed patterns, 26 file(s) materialized.
+Mirror of `NVIDIA/SkillSpector` — 26 default patterns, 0 followed patterns, 27 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `NVIDIA/SkillSpector` — 26 default patterns, 0 followed patterns, 26
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 26 |
+| Files         | 27 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -85,6 +85,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 24 | ✓ | [`tests/fixtures/ssd/ssd2_novel_phrasing/SKILL.md`](tests/fixtures/ssd/ssd2_novel_phrasing/SKILL.md) |
 | 25 | ✓ | [`tests/fixtures/ssd/ssd3_nl_exfiltration/SKILL.md`](tests/fixtures/ssd/ssd3_nl_exfiltration/SKILL.md) |
 | 26 | ✓ | [`tests/fixtures/ssd/ssd4_narrative_deception/SKILL.md`](tests/fixtures/ssd/ssd4_narrative_deception/SKILL.md) |
+| 27 | ✓ | [`tests/fixtures/tp4_markdown_fenced_code/SKILL.md`](tests/fixtures/tp4_markdown_fenced_code/SKILL.md) |
 
 ---
 

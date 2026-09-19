@@ -176,7 +176,7 @@ announcements, team), `medulla/client/`, `integrations/` and
 re-exports; consumes `BackendOAuthClient`, `flatten_authed_error`,
 `decode_jwt_exp`, and re-exports the OAuth types), `voice/`,
 `agent/progress_tracing/` (Langfuse ingestion URL and `x-sdk-name`), and
-`inference/provider/`, `inference/embeddings/`, `inference/voice/` (backend
+`inference/provider/`, `embeddings/`, `inference/voice/` (backend
 inference proxy and cloud transcription/embeddings).
 
 ## Tests

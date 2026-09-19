@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `trycua/cua` — 26 default patterns, 2 followed patterns, 25 file(s) materialized.
+Mirror of `trycua/cua` — 26 default patterns, 2 followed patterns, 27 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `trycua/cua` — 26 default patterns, 2 followed patterns, 25 file(s) 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 2 |
-| Files         | 25 |
+| Files         | 27 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -79,12 +79,14 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 17 | ✓ | [`libs/cua-bench/datasets/cua-bench-basic/video-player/CLAUDE.md`](libs/cua-bench/datasets/cua-bench-basic/video-player/CLAUDE.md) |
 | 18 | ✓ | [`libs/cua-bench/example_tasks/minesweeper_game_env/CLAUDE.md`](libs/cua-bench/example_tasks/minesweeper_game_env/CLAUDE.md) |
 | 19 | ✓ | [`libs/cua-driver/rust/Skills/cua-driver/SKILL.md`](libs/cua-driver/rust/Skills/cua-driver/SKILL.md) |
-| 20 | ✓ | [`libs/typescript/cua-cli/CLAUDE.md`](libs/typescript/cua-cli/CLAUDE.md) |
-| 21 | ✓ | [`rfcs/0000-template.md`](rfcs/0000-template.md) |
-| 22 | ✓ | [`skills/gui-automation/references/command-reference.md`](skills/gui-automation/references/command-reference.md) |
-| 23 | ✓ | [`skills/gui-automation/SKILL.md`](skills/gui-automation/SKILL.md) |
-| 24 | → | [`rfcs/README.md`](rfcs/README.md) |
-| 25 | → | [`SECURITY.md`](SECURITY.md) |
+| 20 | ✓ | [`libs/cua-s1/SECURITY.md`](libs/cua-s1/SECURITY.md) |
+| 21 | ✓ | [`libs/typescript/cua-cli/CLAUDE.md`](libs/typescript/cua-cli/CLAUDE.md) |
+| 22 | ✓ | [`rfcs/0000-template.md`](rfcs/0000-template.md) |
+| 23 | ✓ | [`skills/gui-automation/references/command-reference.md`](skills/gui-automation/references/command-reference.md) |
+| 24 | ✓ | [`skills/gui-automation/SKILL.md`](skills/gui-automation/SKILL.md) |
+| 25 | ✓ | [`skills/jev-use/SKILL.md`](skills/jev-use/SKILL.md) |
+| 26 | → | [`rfcs/README.md`](rfcs/README.md) |
+| 27 | → | [`SECURITY.md`](SECURITY.md) |
 
 ---
 

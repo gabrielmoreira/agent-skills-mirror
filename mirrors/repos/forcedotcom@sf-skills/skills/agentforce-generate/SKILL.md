@@ -327,6 +327,14 @@ change. Never invent unavailable action inputs, outputs, or model reasoning.
 3. Present the exact target org and version state. Obtain explicit user approval
    before publishing or activating.
 4. Publish, activate, and verify the user-facing agent only after approval.
+5. **Voice agents — wiring a telephony channel is a separate, opt-in step; never
+   auto-wire it.** Attaching a phone number creates real routing infrastructure
+   (flows, a queue, an active `MessagingChannel`) and consumes a provisioned
+   number, so do it only when the user **explicitly asks** and has supplied a
+   **provisioned phone number** (confirm it exists — do not assume or invent
+   one). If either is missing, stop and say what's needed. When both hold, attach
+   it headless via the CLI — do not send the user to Agent Builder. Follow
+   [Headless Telephony CLI](references/voice-telephony-cli.md).
 
 ### Delete or Rename an Agent
 

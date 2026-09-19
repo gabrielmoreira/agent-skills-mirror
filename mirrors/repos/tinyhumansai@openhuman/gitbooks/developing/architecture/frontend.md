@@ -241,9 +241,9 @@ const result = await apiClient.post<LoginResponse>("/auth/login", {
 \~50 domain-scoped modules, one per feature surface, each wrapping either backend REST endpoints or core RPC methods. Representative examples:
 
 - `authApi` / `userApi` — auth + user profile
-- `threadApi`, `threadGoalApi`, `threadUsageApi` — chat threads
+- `threadApi`, `threadUsageApi` — chat threads
 - `agentProfilesApi`, `agentTeamApi`, `agentWorkApi`, `subagentApi` — agents
-- `skillsApi`, `skillRegistryApi`, `flowsApi`, `workflowRunsApi`, `todosApi` — skills & automation
+- `skillsApi`, `skillRegistryApi`, `flowsApi`, `workflowRunsApi` — skills & automation
 - `channelConnectionsApi`, `mcpClientsApi`, `mcpSetupApi`, `tunnelsApi` — connections
 - `memoryTimelineApi`, `memoryFreshnessApi`, `graphCentralityApi`, `namespaceOverviewApi` — memory/graph
 - `billingApi`, `creditsApi`, `referralApi`, `rewardsApi`, `inviteApi` — commerce

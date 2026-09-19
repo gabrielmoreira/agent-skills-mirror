@@ -75,7 +75,7 @@ instead of a manifest-consistency error.
 3. Canvas pads to /32 on the request chroma color; the prompt requires the same flat
    chroma background so the extractor keys it out later.
 4. `tween_prompt` composes the prompt deterministically from request truth (character
-   description, chroma color, t) and `sprite_gen.gen.generate_image` runs the provider
+   description, chroma color, t) and `sprite_gen.gen.generate_image()` runs the provider
    with both frames attached as refs.
 5. The generated mid frame is saved as the take raw; extraction re-derives the state
    row (the frame appears labeled `<label>#0`) and pixel-unfake quantization snaps it

@@ -1,6 +1,6 @@
 ---
 name: dx-org-shape-manage
-description: "ALWAYS USE THIS SKILL to create, list, or delete org shapes. An org shape is a captured baseline configuration (features, limits, edition, and Metadata API settings) of a source org, without its data or metadata. Use when the user asks to create/make/take an org shape, capture or replicate an org's configuration/edition/limits, list/show/view existing org shapes (including INACTIVE/superseded ones) or their IDs and status, or delete/remove org shapes for a source org. Requires a source org with Dev Hub and Org Shape for Scratch Orgs enabled. DO NOT TRIGGER for creating snapshots or scratch orgs (use dx-org-manage)."
+description: "ALWAYS USE THIS SKILL to create, list, or delete org shapes. An org shape is a captured baseline configuration (features, limits, edition, and Metadata API settings) of a source org, without its data or metadata. Use when the user asks to create/make/take an org shape, capture or replicate an org's configuration/edition/limits, list/show/view existing org shapes (including INACTIVE/superseded ones) or their IDs and status, or delete/remove org shapes for a source org. Requires a source org with Dev Hub and Org Shape for Scratch Orgs enabled. DO NOT TRIGGER for creating/checking/listing/deleting snapshots (use dx-org-snapshot-manage) or for creating scratch orgs (use dx-org-manage)."
 metadata:
   version: "1.0"
   domains: ["Developer Experience"]
@@ -33,7 +33,7 @@ Coordinates the full lifecycle of Salesforce org shapes — **create**, **list**
 ## Scope
 
 - **In scope**: Creating (`sf org create shape`), listing (`sf org list shape`), listing including inactive shapes for a specific source org (SOQL against `ShapeRepresentation`), and deleting (`sf org delete shape`) org shapes
-- **Out of scope**: Creating snapshots, creating scratch orgs (use `dx-org-manage`)
+- **Out of scope**: Creating/checking/listing/deleting snapshots (use `dx-org-snapshot-manage`), creating scratch orgs (use `dx-org-manage`)
 
 ---
 
@@ -136,7 +136,8 @@ See the example files referenced below for full response structures.
 
 | Need | Delegate to |
 |------|-------------|
-| Create a scratch org, or create/use a snapshot | `dx-org-manage` skill |
+| Create a scratch org, or create/use a snapshot to make one | `dx-org-manage` skill |
+| Create, check status of, list, or delete a snapshot itself | `dx-org-snapshot-manage` skill |
 
 ---
 

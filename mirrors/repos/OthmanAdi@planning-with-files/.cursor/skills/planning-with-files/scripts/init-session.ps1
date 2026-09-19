@@ -350,16 +350,23 @@ if ($Mode -ne "") {
     # (c) auto-attest (attestation default-on in v3 modes, security strand rec 1).
     # attest-plan.ps1 intentionally refuses non-Windows hosts because its secure
     # no-follow implementation uses Win32 handles. On Unix, use the POSIX
-    # attester instead. Bind slug mode to the plan we just created so an
-    # inherited PLAN_ID cannot redirect attestation to another plan.
+    # attester instead. Slug mode binds PWF_PLAN_ROOT and PLAN_ID to the plan
+    # we just created so an inherited pin or slug cannot redirect attestation
+    # to another project or plan (#261, #237). Root mode clears both instead:
+    # the attester only falls back to the legacy ./task_plan.md when no
+    # selector is set, and a bound pin would make it refuse the root plan.
     $PlanFilePwf = Join-Path $PlanDirPwf "task_plan.md"
     if (Test-Path -LiteralPath $PlanFilePwf) {
         $HadPlanId = Test-Path Env:PLAN_ID
         $PreviousPlanId = $env:PLAN_ID
+        $HadPlanRoot = Test-Path Env:PWF_PLAN_ROOT
+        $PreviousPlanRoot = $env:PWF_PLAN_ROOT
         try {
             if ($UsePlanDir) {
+                $env:PWF_PLAN_ROOT = (Get-Location).Path
                 $env:PLAN_ID = $PlanId
             } else {
+                Remove-Item Env:PWF_PLAN_ROOT -ErrorAction SilentlyContinue
                 Remove-Item Env:PLAN_ID -ErrorAction SilentlyContinue
             }
 
@@ -383,6 +390,11 @@ if ($Mode -ne "") {
                 $env:PLAN_ID = $PreviousPlanId
             } else {
                 Remove-Item Env:PLAN_ID -ErrorAction SilentlyContinue
+            }
+            if ($HadPlanRoot) {
+                $env:PWF_PLAN_ROOT = $PreviousPlanRoot
+            } else {
+                Remove-Item Env:PWF_PLAN_ROOT -ErrorAction SilentlyContinue
             }
         }
     }

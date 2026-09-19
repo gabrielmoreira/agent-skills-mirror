@@ -19,7 +19,7 @@ description: >-
 
 ## Overview
 
-This skill creates an isolated-but-shared profile system for Claude Code CLI. Each profile gets its own `.claude.json` state file (credentials and session history) while sharing skills, projects, hook scripts, agents, and installed plugin state across all profiles — and converging each profile's `settings.json` (hook registration, marketplaces, env feature flags, permissions, preferences) plus the **behavior slice of its `.claude.json`** (e.g. `workflowSizeGuideline`) from the default profile, so the only intended difference between profiles is the model/provider.
+This skill creates an isolated-but-shared profile system for Claude Code CLI. Each profile gets its own `.claude.json` state file (provider credentials and session history) while sharing skills, projects, hook scripts, agents, and installed plugin state across all profiles — and converging each profile's `settings.json` (hook registration, marketplaces, env feature flags, permissions, preferences) plus the **behavior slice of its `.claude.json`** (e.g. `workflowSizeGuideline`) from the default profile, so the only intended difference between profiles is the model/provider.
 
 The result: you can open one terminal with Kimi, another with DeepSeek, another with Anthropic — each running as a fully independent Claude Code process, without configuration bleed.
 
@@ -260,6 +260,7 @@ The full step-2-16k template-correctness war-story (why an internally-consistent
 |------|----------|---------|
 | Session history | `~/.claude-profiles/<name>/.claude.json` | **Isolated per profile** |
 | Auth tokens/cache | `~/.claude-profiles/<name>/.claude.json` | **Isolated per profile** |
+| Account + MCP OAuth tokens | macOS Keychain, entry named from the config dir | **Isolated by default**; set `CLAUDE_SECURESTORAGE_CONFIG_DIR=""` to make every profile share one entry, so an MCP server authorized once is connected everywhere — see [credential-storage.md](references/credential-storage.md) |
 | Skills | `~/.claude/skills/` | Shared via symlink |
 | Plugin content | `~/.claude/plugins/marketplaces`, `cache`, `data`, ... | Shared via symlink |
 | Plugin install registry | `~/.claude/plugins/installed_plugins.json` | Shared via symlink |
@@ -269,6 +270,7 @@ The full step-2-16k template-correctness war-story (why an internally-consistent
 | Hook scripts | `~/.claude/hooks/`, `~/.claude/commands/` | Shared via symlink (scripts only — NOT registration) |
 | `settings.json` config: hook registration, marketplaces, env flags, permissions, preferences | `<profile>/settings.json` | **Converged from default profile** by `sync-profile-settings.py` at session start (identity keys like `model` and provider-routing/isolation env vars are never synced) |
 | `.claude.json` behavior keys (`workflowSizeGuideline`, notification/UI preferences) | `~/.claude.json` → `<profile>/.claude.json` | **Behavior allowlist converged** by the same script; state/cache/counter/migration/credential keys (incl. `projects`, `oauthAccount`, `userID`) are never synced; unknown drifted keys are reported for human classification |
+| MCP server registry (`mcpServers`) | `~/.claude.json` → `<profile>/.claude.json` | **Converged as a union**: main's entries propagate, a server defined only in one profile survives, main wins on a shared name. It is a behavior key, not a credential — the OAuth token it needs lives in the Keychain and is governed by the row above, so a registry entry without a shared credential store still costs one authorization per profile |
 | Provider settings | `~/.claude/settings/<name>.json` | Shared source, loaded per profile |
 
 ## Troubleshooting

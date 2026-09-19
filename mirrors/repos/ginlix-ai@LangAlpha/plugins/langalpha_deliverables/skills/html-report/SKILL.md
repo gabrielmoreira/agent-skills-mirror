@@ -112,6 +112,7 @@ Define the fallback palette once at the top of your `<style>`. The private `--fb
 
 ```css
 :root {
+  color-scheme: light dark; /* scrollbars and form controls follow the palette */
   --fb-bg-page: #fbfaf8; --fb-bg-card: #ffffff; --fb-bg-elevated: #ffffff;
   --fb-bg-subtle: #f4f2ee; --fb-bg-hover: #efece7;
   --fb-text-primary: #1a1a1a; --fb-text-secondary: #5a5a5a; --fb-text-tertiary: #8a8a8a;

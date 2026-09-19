@@ -4,103 +4,38 @@ Information, structure, and relationships conveyed through presentation can be p
 
 ## SC: 1.3.1 (ii) - Tables Only
 
-Analyze the given files using the following framework:
+For every `<table>` element in the source, apply the criteria below and produce one fix entry per violation. Other SC 1.3.1 concerns (lists, regions, form-labels, groups) are out of scope — they are owned by sibling reviewers.
 
-Review the provided HTML and JS files for accessibility violations per WCAG 2.2 SC 1.3.1 (ii), 'Tables'.
-(Only tables from this rule should be considered). For all tables on the components, ensure that any information conveyed through presentation is programmatically determinable in order to determine if they meet SC 1.3.1 (ii).
+### Structural criteria
 
-For each of these elements, check if any of the following conditions of WCAG 2.2 SC 1.3.1 (ii), 'Tables' are true:
+For each `<table>`, verify:
 
-- The objective of this technique is to present tabular information in a way that preserves relationships within the information even when users cannot see the table or the presentation format is changed. Information is considered tabular when logical relationships among text, numbers, images, or other data exist in two dimensions (vertical and horizontal). These relationships are represented in columns and rows, and the columns and rows must be recognizable in order for the logical relationships to be perceived.
-  Check for the presence of tabular information.
-  For each instance of the `<table>` element found, perform the following checks:
-- Verify the presence of table rows (`<tr>`): Ensure that each `<table>` element contains at least one `<tr>` element
-- Verify the presence of table data cells (`<td>`) within rows (`<tr>`): For each `<tr>` element within a `<table>`, confirm that it contains one or more `<td>` elements representing the data cells
-- Verify the presence of table header cells (`<th>`) when applicable: If the table includes headers, ensure that the header information is marked up using `<th>` elements, typically within the first `<tr>` element or within `<thead>` elements
-- Check that all data content within the table is enclosed within `<td>` cell elements and that header content (if present) is within `<th>` elements
-- For every `<table>` element identified, verify that it contains at least the following elements: `<tr>`, `<th>` (if headers are present, otherwise `<td>`), and `<td>`
-- Providing an accessible name for a table is considered a best practice that significantly enhances usability for all users, especially those relying on assistive technologies.The accessible name can be provided in various ways:
-- By either using a `aria-label` or `aria-labelledby` attributes or `<caption>` element in the table. Its a best practice and absence of accessible name is acceptable but not a violation.
-- The objective of this technique is to associate header cells with data cells in simple data tables using the `scope` attribute.
-- The `scope` attribute identifies whether the cell is a header for a row, column, or group of rows or columns
-- Valid `scope` values: `row`, `col`, `rowgroup`, `colgroup`
+- Contains at least one `<tr>` element.
+- Each `<tr>` contains one or more cells appropriate to its content: `<th>` for headers and `<td>` for data. A header-only row containing only `<th>` cells is valid.
+- Header content (if present) is marked up with `<th>` (typically in the first `<tr>` or inside `<thead>`).
+- All data content is inside `<td>` cells; all header content is inside `<th>` cells.
+- The table is either a recognizable data table (`<tr>`, `<td>`, plus `<th>` when headers exist) or a layout table (no relationships across rows and columns).
 
-For simple data tables:
+### Header-association criteria
 
-- If headers are in the first row or column:
-  - `th` elements without `scope` are sufficient
-- If headers are not in the first row or column:
-  - Check that all `th` elements have a `scope` attribute
-  - Verify `scope` values match the header's role (`row`/`col`/`rowgroup`/`colgroup`)
-    Note: For complex tables (multiple levels of headers, headers spanning rows/columns), use id and headers attributes instead (see H43)
-- The objective of this technique is to associate each data cell (in a data table) with the appropriate headers.
-  Check for layout tables and data tables:
-- For layout tables:
-  - Determine if content has a relationship with other content in both its column and row
-  - If "no", the table is a layout table
-- For data tables:
-  - Check that any cell associated with multiple row/column headers contains a headers attribute listing all associated header IDs
-  - For cells with id or headers attributes:
-    - Verify each id in headers attribute matches a header element's id
-    - Verify headers attribute contains all associated header IDs
-    - Ensure all IDs are unique within the component
+- **Simple data tables** with headers in the first row or column: `<th>` without `scope` is sufficient.
+- **Simple data tables** with headers NOT in the first row or column: every `<th>` must carry a valid `scope` (`row` / `col` / `rowgroup` / `colgroup`) matching the header's role.
+- **Irregular tables** with headers spanning rows or columns may use explicitly defined row or column groups with `scope="rowgroup"` or `scope="colgroup"`. Do not require `id` + `headers` solely because a table uses `rowspan`, `colspan`, or multiple header levels when groups and `scope` express the relationships.
+- **Complex tables** whose data-cell relationships are too complex to identify using `<th>` alone or `<th>` with `scope` must provide programmatically determinable header-to-cell associations. Use `id` + `headers` attributes (see H43), or simplify the table so `<th>` and `scope` can express the relationships. Complex cases include tables whose headers repeat or change partway through the table or whose data cells are associated with three or more headers. When `id` + `headers` is used, verify that every `<th>` `id` is unique within the component and every id in a cell's `headers` attribute resolves to an actual `<th>`.
 
-In order to fix a violation for a given element, you must examine the given component code and apply the most logical fix available such that the element satisfies one of the following conditions of WCAG 2.2 SC 1.3.1 (ii), 'Tables':
+### Accessible-name criterion
 
-- The objective of this technique is to present tabular information in a way that preserves relationships within the information even when users cannot see the table or the presentation format is changed. Information is considered tabular when logical relationships among text, numbers, images, or other data exist in two dimensions (vertical and horizontal). These relationships are represented in columns and rows, and the columns and rows must be recognizable in order for the logical relationships to be perceived.
-  Check for the presence of tabular information.
-  For each instance of the `<table>` element found, perform the following checks:
-- Verify the presence of table rows (`<tr>`): Ensure that each `<table>` element contains at least one `<tr>` element
-- Verify the presence of table data cells (`<td>`) within rows (`<tr>`): For each `<tr>` element within a `<table>`, confirm that it contains one or more `<td>` elements representing the data cells
-- Verify the presence of table header cells (`<th>`) when applicable: If the table includes headers, ensure that the header information is marked up using `<th>` elements, typically within the first `<tr>` element or within `<thead>` elements
-- Check that all data content within the table is enclosed within `<td>` cell elements and that header content (if present) is within `<th>` elements
-- For every `<table>` element identified, verify that it contains at least the following elements: `<tr>`, `<th>` (if headers are present, otherwise `<td>`), and `<td>`
-- Providing an accessible name for a table is considered a best practice that significantly enhances usability for all users, especially those relying on assistive technologies.The accessible name can be provided in various ways:
-- By either using a `aria-label` or `aria-labelledby` attributes or `<caption>` element in the table. Its a best practice and absence of accessible name is acceptable but not a violation.
-- The objective of this technique is to associate header cells with data cells in simple data tables using the `scope` attribute.
-- The `scope` attribute identifies whether the cell is a header for a row, column, or group of rows or columns
-- Valid `scope` values: `row`, `col`, `rowgroup`, `colgroup`
+Providing an accessible name (via `aria-label`, `aria-labelledby`, or `<caption>`) is a best practice but not a violation when absent. Do not produce a fix entry purely for a missing accessible name.
 
-For simple data tables:
+### Layout-table criterion
 
-- If headers are in the first row or column:
-  - `th` elements without `scope` are sufficient
-- If headers are not in the first row or column:
-  - Check that all `th` elements have a `scope` attribute
-  - Verify `scope` values match the header's role (`row`/`col`/`rowgroup`/`colgroup`)
-    Note: For complex tables (multiple levels of headers, headers spanning rows/columns), use id and headers attributes instead (see H43)
-- The objective of this technique is to associate each data cell (in a data table) with the appropriate headers.
-  Check for layout tables and data tables:
-- For layout tables:
-  - Determine if content has a relationship with other content in both its column and row
-  - If "no", the table is a layout table
-- For data tables:
-  - Check that any cell associated with multiple row/column headers contains a headers attribute listing all associated header IDs
-  - For cells with id or headers attributes:
-    - Verify each id in headers attribute matches a header element's id
-    - Verify headers attribute contains all associated header IDs
-    - Ensure all IDs are unique within the component
+When a table's content has no row/column relationships, classify it as a layout table. Layout tables should not use `<th>` or `scope`; emit a fix entry if they do.
 
-Note: A complex table is one where:
+### Output contract
 
-- Headers span multiple rows or columns
-- Headers are not in the first row or column
-- Multiple levels of headers exist
-- Cells are associated with multiple headers
-- The table structure requires additional context to understand relationships between data
+For each violation, produce one entry with: file + line number, which criterion above failed, and the corrected markup snippet. If every table satisfies the criteria, produce an empty list.
 
-If they do not meet this success criterion, then flag this as a violation.
-
-Rules to follow:
-
-- Find all violations of SC 1.3.1 (ii) 'Tables' in the provided HTML and JS files
-- Do not worry about violations of SC 1.3.1 that are not specific to tables (handled by other reviewers)
-- If no changes are needed, then produce an empty list
-  - For each issue found, provide a separate, detailed report.
+- For each issue found, provide a separate, detailed report.
 - Keep issues concise, avoid duplicated issues or unnecessary or non-applicable problems.
 - Assume that any imported functionality works as expected and was already analyzed.
 - Components do not supplement or provide global functionalities.
-- Lightning base components (`lightning-input`, `lightning-combobox`, `lightning-textarea`, `lightning-icon`, etc.) provide their own accessible labeling, ARIA, and error handling in shadow DOM via their dedicated attributes (`label`, `alternative-text`, field-level validation). When such a component is given a `label` attribute it is already programmatically labeled — even with `variant="label-hidden"`, which hides the label visually but keeps it for assistive technology. Do **not** flag a sibling/wrapper `<label>` or `<span>` for a missing `for`/`id` when the actual control is a self-labeling Lightning component, and do not treat a visible heading as if it were the control's only label. This also covers navigation and icon base components (`lightning-vertical-navigation-item`, `lightning-vertical-navigation-item-icon`, `lightning-button-icon`, etc.): when a `label` (or `alternative-text`) attribute is supplied, the base component renders it as the visible link/control text **and** exposes it as the accessible name, and any `icon-name` is decorative — do not emit a 4.1.2 "verify the label is associated with the icon" warning, even a hedged one. The presence of the `label` attribute is the association.
-- Resolve template bindings before judging them. A template expression like `{someValue}` refers to a property or getter on the component's controller (`.js`/`.ts`) — including `@api` properties and `get someValue()` getters — not to a module-level imported constant (which LWC templates cannot bind to). Check the controller for the binding's definition before concluding a value is undefined, empty, or missing. When reviewing a diff, verify which side is the corrected code; do not assume the change introduced the problem.
-- Prefer a real `<button>` for actions; for a link, `href="#"` with `event.preventDefault()` (the canonical SLDS pattern). Don't recommend `href="javascript:void(0)"` as a first-line remediation — it's a no-op-anchor anti-pattern. It is acceptable only as a last resort when moving `<a>` → `<button>` is genuinely impossible, and even then only when paired with the full set of attributes that make the anchor behave as an accessible button (`role="button"`, keyboard activation, etc.) — `void(0)` on its own is an incomplete fix. Don't flag existing `javascript:void(0)` as a violation.
-- ARIA attribute spelling depends on the element type. On a **plain HTML element** (`div`, `span`, `button`, `input`, `a`, `img`, `iframe`, …) the only valid spelling is the W3C form `aria-labelledby` / `aria-describedby`; the hyphen-split `aria-labelled-by` / `aria-described-by` there **is** a real bug — keep flagging it. But on an **LWC component tag** (`lightning-*` or a custom `ns-name` element), the hyphen-split form is the kebab-case binding of the component's `@api ariaLabelledBy` / `ariaDescribedBy` property (each capital letter maps to `-` + lowercase), and LWC reflects it to the spec-correct `aria-labelledby` in the rendered DOM. Do **not** flag `aria-labelled-by` on a component tag as a misspelling, and do not claim it "breaks the accessible name computation" — you cannot determine that from the attribute name alone, because both `aria-labelled-by` (via `@api` property kebab-casing) and `aria-labelledby` (via LWC's ARIA reflection) can wire to the same property depending on the component. Treat a hyphen-split ARIA attribute on a component tag as a valid binding, not a violation.

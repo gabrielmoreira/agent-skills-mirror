@@ -60,3 +60,7 @@ python3 packages/omo-native/test/pty-signal-qa.py packages/omo-native/bin/omo.js
 ```
 
 Release mechanics and the beta-channel contract: `docs/reference/omo-ai-publishing.md`.
+
+## omo daemon
+
+`bin/lib/daemon.js`: `omo daemon run|attach|status|stop|handoff`, a thin wrapper over the engine's `senpi host`. Exit codes 2/3/4/5; `run`/`attach` map to the engine's `ensure`. The compiled entry re-runs ITSELF with `host ...` to reach the engine (process.execPath is omo there). Reference: `docs/reference/omo-daemon.md`.

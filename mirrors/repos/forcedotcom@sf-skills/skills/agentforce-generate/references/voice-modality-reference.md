@@ -138,14 +138,31 @@ Supported pronunciation types: `IPA` (International Phonetic Alphabet), `CMU` (C
 Voice interactions differ from text. When authoring instructions for voice agents:
 
 1. **Keep responses concise.** Users cannot scan/skim voice responses. Aim for 1-2 sentences per turn, not paragraphs. (Long turns also risk tripping the silence/nudge timer — see [voice-latency-heuristics.md](voice-latency-heuristics.md) §5.)
-2. **Avoid lists longer than 3 items.** Users lose track of spoken lists. Offer to repeat or narrow down.
-3. **Use confirmation patterns.** Repeat back key information (account numbers, dates, amounts) before taking action.
+2. **Avoid lists longer than 3 items — and batch long ones.** Users lose track of spoken lists. For a list that can be long, read at most **2 items per turn** and offer to continue (*"Would you like the next two?"*) rather than reading the whole set. **Never speak a raw total count** ("I found forty-seven results") — it's meaningless aloud; summarize or offer to narrow instead.
+3. **Use confirmation patterns — and split capture from action.** Repeat back key information (account numbers, dates, amounts) before taking action. For anything that triggers an irreversible action (sending an email/SMS, creating a record), make **capture and send two separate steps**: capture and store the value, read it back, get a yes, and only *then* call the action that acts on it. Don't let a single turn both collect a misheard value and act on it.
 4. **Design for barge-in.** Users may interrupt. Instructions should handle partial inputs gracefully. Add: *"If the caller starts talking, stop speaking immediately, listen, and respond to what they said — don't finish your sentence."*
 5. **Avoid formatting references.** Do not reference links, bullet points, tables, or visual formatting in instructions — they don't render in voice.
-6. **Acknowledge slow actions with a filler phrase.** Before calling any action that takes more than ~800ms (SOQL, external HTTP, retrieval), have the agent say a short filler so the caller knows it's working. Rotate a few: *"One moment", "Let me pull that up", "Checking now"*. For a known-slow action, be specific: *"When calling `LookupAccountHistory`, say 'This can take a few seconds — hang with me.'"* This is the instruction-level fix for the latency patterns in [voice-latency-heuristics.md](voice-latency-heuristics.md).
-7. **Render numbers, prices, and IDs in spoken form.** TTS reads `$19.99` and `+14155551212` as garble. Instruct: *"When reading numbers, prices, phone numbers, IDs, or dates, use natural spoken form — never read punctuation, currency symbols, or raw digits."* Spell out numbers under 100 ("twenty-five"); prices as *"nineteen dollars and ninety-nine cents"*; phone numbers digit-by-digit grouped naturally; dates as *"May tenth, twenty twenty-six"*.
+6. **Acknowledge slow actions — prefer the platform's progress indicator over LLM filler.** Any action over ~800ms (SOQL, external HTTP, retrieval) needs a "still working" signal. **Best practice:** set a `progress_indicator_message` on the action itself (*"Just a moment while I look that up"*) so the platform speaks the hold phrase and the agent's own turn begins **with the answer** — don't have the LLM vocalize "one moment" as well, or the caller hears it twice. Reserve LLM-spoken filler (*"Let me pull that up"*) for cases where you can't set a progress message. Mark truly instant actions out of the progress indicator so they don't announce a delay that isn't there. This is the instruction-level fix for the latency patterns in [voice-latency-heuristics.md](voice-latency-heuristics.md).
+7. **Render numbers, prices, and IDs in spoken form.** TTS reads `$19.99` and `+14155551212` as garble. Instruct: *"When reading numbers, prices, phone numbers, IDs, or dates, use natural spoken form — never read punctuation, currency symbols, or raw digits."* Spell out numbers under 100 ("twenty-five"); prices as *"nineteen dollars and ninety-nine cents"*; phone numbers digit-by-digit grouped naturally; dates as *"May tenth, twenty twenty-six"*. Author this guidance **once** — do not stack extra rules or tag overrides trying to force phone-number grouping, country-code suppression, or a specific date format. Those are platform-controlled; see "Entity Confirmation & Normalization" below.
 8. **Add ASR repair prompts for misheard input.** Speech recognition isn't perfect. Instruct: *"If the caller's response doesn't match an expected value, or you're unsure what you heard, repeat it back and ask them to confirm — e.g. 'I heard four four two, is that right?'"*
 9. **Give empty results a caller-friendly fallback.** Any lookup that can return zero results needs a graceful recovery. Instruct: *"If a lookup returns nothing, don't say 'no records found.' Say something like 'I couldn't find that account — could you spell your last name?' or offer a different search."* (Pair with voice-friendly action error shapes — see [actions-reference.md](actions-reference.md) "Voice-Safe Action Authoring".)
+10. **Never claim an action happened unless it did.** The most common voice failure mode is the agent saying *"I've sent that to you"* or *"you'll get a text shortly"* when no action actually fired. Instruct explicitly: *"Never state or imply that an email, SMS, or record action has happened, is happening, or will happen unless you actually executed the corresponding action this turn."* Confirm delivery only *after* the action returns success.
+11. **Never expose internals to the caller.** Action names, variable names, JSON, tool inputs, and retriever/knowledge-source names must never be spoken aloud. Instruct: *"When invoking an action, say only the configured progress message or the final customer-facing answer — never read out action names, field names, or raw data structures."*
+
+### Entity Confirmation & Normalization — what you CANNOT control from instructions
+
+How spoken entities are **read back and confirmed** (phone numbers, currency, dates, numerals, IDs) is decided by the platform's voice normalization layer, **downstream of your agent instructions**. A few specific behaviors are **not** reliably controllable from the `.agent` file — and trying to control them makes things *worse*, not better:
+
+- **Country code on phone numbers** (e.g. a "plus one" prepended to a US number). Whether it appears is decided by the normalization layer, not your prompt.
+- **Digit grouping when reading numbers back** (e.g. `980 23 222 45` vs. an even digit-by-digit read). Grouping is applied at the language level and can vary run-to-run.
+- **Dropping the current year from a date** (e.g. reading a same-year date as month and day only).
+
+**Do NOT author custom instructions or tag overrides to fight these.** Adding rules like "always emit the phone tag with an empty country code," "read phone numbers as area-code / prefix / last-four," or "always include the year" **conflicts with the platform's built-in tagging and makes readback *less* consistent, not more.** In practice these overrides produce unreliable, ~50/50 results and can destabilize otherwise-correct normalization.
+
+**What to do instead:**
+- Write the spoken-form guidance in item 7 **once**, and stop there. Tag entities correctly (say the value is a phone number, a price, a date) and let the platform normalize it.
+- If a customer needs a specific readback format or wants to **suppress an out-of-the-box confirmation**, that is **platform/product configuration, not agent-script authoring**. Per-entity confirmation configurability is active platform work — surface the requirement to the voice product team rather than encoding a workaround in the `.agent` file.
+- Set the customer's expectations: these three behaviors may still occur regardless of instructions, and are being addressed at the platform layer.
 
 ### Instruction Example — Voice vs Text
 
@@ -184,7 +201,7 @@ connection customer_web_client:
     adaptive_response_allowed: True
 ```
 
-> **Choosing a surface — ECv2 (`customer_web_client`) vs Telephony.** Both ECv2 and Telephony (Service Cloud Voice) are voice-capable channels. In Agent Builder, adding *either* connection auto-enables Voice Settings. ADLC authors **`customer_web_client` (ECv2)** because it is the surface that is reliably created via the CLI/DSL today and is what Agent Builder Preview requires; Telephony/SCV channel attachment (phone number / SIP) is a UI-only step (see "Known Limitation" below). If your deployment target is Service Cloud Voice telephony, author `customer_web_client` for authoring/preview and complete the telephony channel wiring in the UI.
+> **Choosing a surface — ECv2 (`customer_web_client`) vs Telephony.** Both ECv2 and Telephony (Service Cloud Voice) are voice-capable channels. In Agent Builder, adding *either* connection auto-enables Voice Settings. ADLC authors **`customer_web_client` (ECv2)** because it is the surface that is reliably created via the CLI/DSL today and is what Agent Builder Preview requires. If your deployment target is Service Cloud Voice telephony, author `customer_web_client` for authoring/preview, then complete the telephony channel wiring **headless via the CLI** — see [voice-telephony-cli.md](voice-telephony-cli.md) (`MessagingChannel` + routing flow + `Atlas__VoiceAgent` planner). It is *not* a UI-only step.
 >
 > **Do not** invent `connection voice:`, and do not remove an existing `connection messaging:` block when enabling voice — enabling voice **adds** the `modality voice:` block, the `VoiceCallId` variable, and `connection customer_web_client:`.
 
@@ -207,24 +224,43 @@ The `modality voice:` block is validated during `sf agent validate`. Common issu
 - Out-of-range floats — `outbound_speed` must be 0.5–2.0, others must be 0.0–1.0
 - Timing values out of bounds — speak-up timers: 10s–5min, endpointing/beepboop: 0.5s–60s
 
-## Known Limitation — Voice-Channel Deploy Is UI-Only
+## Telephony Channel Setup Is Headless (CLI) — No UI Step Required
 
-You can **author** and **validate** a voice bundle entirely headless (CLI/API): `sf agent validate authoring-bundle` and `sf agent publish authoring-bundle` compile and deploy the agent metadata, including the `modality voice:` block. What the CLI **cannot** do today is wire the published agent to the actual telephony/voice channel — that last-mile connection step is only available in the Agent Builder UI.
+You can **author**, **validate**, **publish**, AND **wire to a telephony channel** entirely
+headless (CLI/API). `sf agent validate/publish authoring-bundle` compile and deploy the agent
+metadata (including the `modality voice:` block); the last-mile telephony/voice channel
+attachment — creating the `MessagingChannel`, wiring the routing flow, and going Live on a
+phone number — is done with `sf data create record`, `sf project deploy`, and `sf api request
+rest`. See **[voice-telephony-cli.md](voice-telephony-cli.md)** for the full procedure.
 
-After publishing, the user must open the agent in **Agent Builder → Connections → Voice** and click **Continue** to:
-1. Attach the agent to a voice channel (phone number / SIP endpoint), and
-2. Optionally customize the voice and tuning (see "Default Voice — start here" above).
+> **Correction to prior guidance.** Earlier versions of this doc treated voice-channel deploy as
+> UI-only (open Agent Builder → Connections → Voice → Continue). That is **no longer accurate** —
+> the same channel wiring is fully scriptable via the CLI (proven by the Contact Center
+> `afv-pstn-setup-cli` skill: "fully headless, no browser"). Do **not** tell the user the channel
+> step requires the UI.
 
-This is the one break in an otherwise headless flow. It is a tracked Project Codey "Steel Thread 2" gap (deploy-to-voice-channel not supported in CLI) — surface it to the user rather than implying `sf agent publish` fully activates the voice channel. Until CLI support lands, treat the UI step as a required manual handoff and tell the user exactly which screen to open.
+The **one** thing that still needs the UI is picking a **non-default voice ID / tuning** — the
+voice picklist (names, gender, accent, locale) is not enumerable via CLI, so ADLC authors the
+platform default voice and the user customizes later in Agent Builder → Connections → Voice
+(see "Default Voice — start here" above). This is a voice-*selection* limitation, not a
+channel-*attachment* one.
+
+Headless telephony wiring, in brief (full detail + gotchas in
+[voice-telephony-cli.md](voice-telephony-cli.md)):
+1. Planner: `plannerType=Atlas__VoiceAgent` + a `SurfaceAction__Telephony` plannerSurface, with ≥1 topic.
+2. Deploy escalation flow → voice queue (`RoutingModel=ExternalRouting`) → inbound routing flow (`routingType=Copilot`).
+3. `MessagingChannel` (`MessageType=PstnVoice`, `MessagingPlatformKey=<phone>`), then PATCH `SessionHandlerId` (FlowDefinition `300…`) + `FallbackQueueId`.
+4. Poll the phone number to `CodeStatus=Live`; smoke-test with a call.
 
 ## Steel Thread Alignment (Project Codey)
 
 Voice work in ADLC targets **Steel Thread 2 — "Voice-Enabled Agent with Knowledge Grounding"**: build voice agents with subagents, actions, and knowledge integration (ADL / Salesforce Knowledge), then deploy to the voice channel. Two implications for authoring:
 
 - **Pair voice with knowledge grounding.** Voice service agents are almost always FAQ/policy-backed, so `/agentforce-generate` proactively asks the Knowledge Grounding question when it detects a voice agent. The combined template is `assets/agents/voice-knowledge-grounded.agent`.
-- **Deploy is the known gap.** See "Known Limitation" above — authoring and validation are headless; channel wiring is UI-only.
+- **Deploy is now fully headless.** Authoring, validation, publish, AND telephony-channel wiring are all CLI — see [voice-telephony-cli.md](voice-telephony-cli.md). (Formerly a Steel Thread 2 gap; the channel step no longer requires the UI. Only non-default voice-ID selection remains UI-only.)
 
 ## Related References
 
+- [voice-telephony-cli.md](voice-telephony-cli.md) — headless PSTN/telephony channel setup via SF CLI (MessagingChannel, routing flows, `Atlas__VoiceAgent` planner, troubleshooting).
 - [voice-latency-heuristics.md](voice-latency-heuristics.md) — latency anti-patterns (sync writes, bulky retrieval, long turns) for authoring and trace diagnosis.
 - [actions-reference.md](actions-reference.md) "Voice-Safe Action Authoring" — voice-safe action descriptions, parameter names, enums, error shapes.

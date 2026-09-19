@@ -84,6 +84,7 @@ Grep-verified 2026-09-04 (`npm run docs:verify` re-checks every path). This is t
 - **Agent display name:** `getAgentDisplayName()` in `src/shared/agentMetadata.ts`
 - **Whether an agent is working right now (main process):** `isAgentBusy(session, processManager)`, `isAiTabProcessActive(...)` in `src/main/utils/agent-busy.ts`
 - **Which provider account an agent runs as:** `resolveAgentProfile()`, `effectiveAgentCustomEnvVars()`, `PROVIDER_PROFILE_CONFIGS` in `src/shared/providerProfiles.ts`
+- **Keeping a plan account on the Usage Dashboard after its agents leave:** `rememberQuotaAccounts()`, `pruneMissingQuotaAccounts()` in `src/main/stores/quotaAccountsStore.ts`; `partitionSnapshotsByAge()`, `SNAPSHOT_RETENTION_MS` in `src/main/stores/usageSnapshotRetention.ts`
 - **SSH remote lookup:** `getSshRemoteById()` in `src/main/stores/getters.ts`
 - **Deferred main-process store persistence:** `deferStoreWrites()`, `flushPendingSessionWrites()` in `src/main/stores/deferred-writes.ts` / `src/main/stores/instances.ts`
 - **Toast notifications:** `notifyToast({ color, title, message, dismissible? })`, `theme` in `src/renderer/stores/notificationStore.ts`
@@ -193,6 +194,7 @@ Grep-verified 2026-09-04 (`npm run docs:verify` re-checks every path). This is t
 - **Whether a Force Send control exists at all:** `shouldOfferForceSend(eligibility)`, `getForceSendEligibility()` in `src/renderer/utils/executionQueue.ts`
 - **Model tier / effort level (`'low' | 'medium' | 'high'`):** `resolveTierModel()`, `resolveEffortLevel()` in `src/shared/modelTiers.ts`
 - **Ordering the Auto Run run list from the picker:** `applySelectionOrder()`, `selectFolderFiles()` in `src/renderer/utils/documentSelectionOrder.ts`
+- **Whether an Auto Run is parked waiting on the user:** `useAutoRunErrorPaused(sessionId)` in `src/renderer/hooks/batch/useAutoRunPause.ts` (never read `errorPaused` off the `batchRunState` prop; the chain drops it)
 - **Auto Run markers (HITL / halt / model hint):** `scanMaestroMarkers()`, `findPendingHitlGate()` in `src/shared/autorunMarkers.ts`
 - **Fence-aware markdown scanning:** `forEachMarkdownLine()`, `UNCHECKED_TASK_REGEX` in `src/shared/markdownTaskScan.ts`
 - **Encore Feature flags and their defaults:** `DEFAULT_ENCORE_FEATURES`, `resolveEncoreFeatures()` in `src/shared/encoreFeatures.ts`

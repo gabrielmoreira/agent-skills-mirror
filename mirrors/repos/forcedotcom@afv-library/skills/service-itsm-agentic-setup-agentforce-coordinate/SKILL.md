@@ -2,10 +2,11 @@
 name: service-itsm-agentic-setup-agentforce-coordinate
 description: "Orchestrator for setting up Agentforce in Salesforce Service Cloud ITSM — Agentforce Studio enablement, the IT Service Fulfiller agent, the IT Service Employee agent, specialized employee agents, and human escalation. Use when the user asks to set up Agentforce for ITSM, enable Studio and the Fulfiller/Employee agents together, configure employee-agent escalation, wants a guided Agentforce ITSM walkthrough, or asks what Agentforce features are available for IT Service. Presents available Agentforce capabilities and delegates each selection to a specialized child skill while tracking progress. Triggers on: set up agentforce for itsm, configure agentforce studio and fulfiller, agentforce itsm walkthrough, what agentforce features for it service. DO NOT TRIGGER when: the user asks to enable Agentforce Studio alone, asks to create or activate the Fulfiller or Employee agent alone, asks to configure escalation alone, or asks about CMDB, Incident Management, Teams, or general ITSM setup without Agentforce intent."
 metadata:
-  version: "1.8"
+  version: "2.0"
   domains: ["Service", "Agentforce"]
   relatedSkills:
     - "service-agentforce-human-escalation-configure"
+    - "service-itsm-agentic-setup-agent-runtime-access-assign"
     - "service-itsm-agentic-setup-agentforce-studio-configure"
     - "service-itsm-agentic-setup-agentforce-studio-validate"
     - "service-itsm-agentic-setup-employee-agent-configure"
@@ -65,6 +66,8 @@ undifferentiated list. Only features with a working child skill appear in the me
 
 **Escalation-after-Employee rule (#5 depends on #3).** Employee Agent escalation (#5) configures the Employee agent's hand-off to a human, so it **requires the Employee Agent (#3) to exist and be Active** first. If #5 is selected, ensure #3 has completed successfully in this run (or was already done) before delegating to it; otherwise queue #3 ahead of #5. #5 never runs before Studio (#1) either.
 
+**Runtime-access-after-creation rule (unconditional).** Whenever any Stage 2 agent (#2, #3, #4) returns a live verdict this session (`CREATED`/`ALREADY-CREATED`/`ACTIVATED`), append an automatic **Stage 3 runtime-access** step at the **back** of the queue — the post-requisite mirror of the Studio-first pre-requisite: appended always, never a menu pick — and delegate it **once** after the last Stage 2 agent to `service-itsm-agentic-setup-agent-runtime-access-assign`, covering every newly-live agent (its own target-user + confirm-to-write gates govern the grants; Stage 3 guarantees the *offer*, never a silent grant). It is non-negotiable: a live agent's actions fail on missing user permissions until this sets them up. Do **NOT** append it when only Studio ran or no agent went live (`FAILED`/`PARTIAL`/`PENDING CONFIRMATION`/`DECLINED`, or a Stage 2 verify that stopped the queue). Narration + status mapping: **Runtime access hand-off** in `examples/output-templates.md`.
+
 | # | Feature | Stage | Child Skill |
 |---|---------|-------|-------------|
 | 1 | Agentforce Studio enablement (Foundation for all agents) | 1 | `service-itsm-agentic-setup-agentforce-studio-configure` |
@@ -72,21 +75,22 @@ undifferentiated list. Only features with a working child skill appear in the me
 | 3 | IT Service Employee Agent | 2 | `service-itsm-agentic-setup-employee-agent-configure` |
 | 4 | Specialized Agents for Employee | 2 | `service-itsm-agentic-setup-employee-agent-configure` |
 | 5 | Employee Agent escalation | Post | `service-agentforce-human-escalation-configure` (pass the IT scenario inputs: agent `IT_Service_Employee_Agent`, queue `General_IT_Queue`, `CONTEXT_OBJECT=MessagingSession`) |
+| — | Runtime access (auto after any Stage 2 create/activate; never a user pick) | 3 | `service-itsm-agentic-setup-agent-runtime-access-assign` |
 
-**How #3 and #4 relate.** Both #3 and #4 delegate to the same child skill,
-`service-itsm-agentic-setup-employee-agent-configure` — the difference is which template it installs.
-#3 (IT Service Employee Agent) installs the **broad, ready-to-go** employee agent, which is the child
-skill's default whenever no specialization is named. #4 (Specialized Agents for Employee) installs a
-**specialized** employee agent instead — but the child skill only takes the specialized path when it
-is handed the name of a specialized template; handed nothing, it silently falls back to the broad
-agent, which would just re-create #3. So when the user selects #4, **ask which specialized employee
-agent they want before delegating** — offer common examples (Password Manager, Certificate Management,
-Onboarding, Hardware Request) and note that more are available; the child skill holds the full catalog
-and will disambiguate a partial or ambiguous name. Then delegate to the child skill **with that named
-specialization**, and it will pin the matching template (the chosen template names the agent it
-creates). **Never delegate #4 without a named specialization** — that is the one case that produces a
-duplicate broad agent. The specialized templates themselves are turned on in Stage 1 (Agentforce
-Studio enablement); #4 is where an agent is built and activated from one of them.
+**IT Service Employee Agent vs Specialized Agents for Employee.** Both delegate to the same child
+skill, `service-itsm-agentic-setup-employee-agent-configure` — the difference is which template it
+installs. The IT Service Employee Agent installs the **broad, ready-to-go** employee agent (the child
+skill's default when no specialization is named). Specialized Agents for Employee installs a
+**specialized** one instead — but the child skill only takes the specialized path when handed a
+specialized template name; handed nothing it silently falls back to the broad agent, re-creating the
+IT Service Employee Agent. So **before delegating Specialized Agents for Employee, ask which
+specialized employee agent the user wants** — offer common examples (Password Manager, Certificate
+Management, Onboarding, Hardware Request), note more are available, and let the child skill
+disambiguate a partial or ambiguous name; then delegate **with that named specialization** (the chosen
+template names the agent). **Never delegate Specialized Agents for Employee without a named
+specialization** — that is the one case that produces a duplicate broad agent. The specialized
+templates themselves are turned on in Stage 1; this item is where an agent is built and activated from
+one of them.
 
 `service-itsm-agentic-setup-agentforce-studio-configure` performs its own read-and-classify
 preflight (reading live toggle state before writing) rather than delegating to
@@ -99,11 +103,11 @@ to call it as part of the delegation flow above.
 Once a child skill finishes:
 
 1. **Verify** the child skill's own deterministic verdict by running
-   `node "<skill_dir>/scripts/verify-child-verdict.mjs" <studio|fulfiller|employee|escalation> <verdict>` — never
+   `node "<skill_dir>/scripts/verify-child-verdict.mjs" <studio|fulfiller|employee|escalation|runtime> <verdict>` — never
    re-derive the success/failure comparison in prose. Pass Studio's `overall` field from
-   `classify-final-report.mjs`, Fulfiller/Employee Agent's Phase 8 aggregate verdict, or the escalation
-   leaf's `status` (`CONFIGURED`/`ALREADY-CONFIGURED`), as
-   `<verdict>`. Exit code `0` means advance; exit code `1` means **stop and surface the failure in
+   `classify-final-report.mjs`, Fulfiller/Employee Agent's Phase 8 aggregate verdict, the escalation
+   leaf's `status` (`CONFIGURED`/`ALREADY-CONFIGURED`), or the runtime-access skill's Phase-7 aggregate,
+   as `<verdict>`. Exit code `0` means advance; exit code `1` means **stop and surface the failure in
    plain language — do not advance to the next feature in the queue.** A partially-enabled Studio
    (e.g. Einstein GenAI on but the parent umbrella still blocked, `overall: PARTIAL`) will make
    Fulfiller/Employee Agent creation fail too, so the script treats `PARTIAL` the same as `FAILED`
@@ -111,6 +115,10 @@ Once a child skill finishes:
 2. **Update the status** — mark the completed feature as "Done"
 3. **Suggest the next logical step** — if another feature is available, recommend it based on the dependency order
 4. **Re-present the menu** with updated status — use the **Post-feature progress** template in `examples/output-templates.md`
+5. **Stage 3 after the Stage 2 queue drains.** Once no Stage 2 agent remains queued and at least one
+   went live this session, delegate the appended **Stage 3** once (per the rule above) and verify with
+   `verify-child-verdict.mjs runtime <verdict>` — exit `0` ⇒ Stage 3 Done → completion summary; exit
+   `1` ⇒ stop and surface in plain language.
 
 ### 6. Completion summary
 
@@ -133,20 +141,21 @@ Stage 2 — Agent templates: install & activate   (only after Stage 1)
   3. IT Service Employee Agent           (install the broad employee agent from its template and activate it)
   4. Specialized Agents for Employee     (install a specialized employee agent — user picks the template — and activate it)
 
+Stage 3 — Runtime access   (AUTO — after any Stage 2 agent goes live, not a menu pick)
+  •  Grant the live agent(s)' runtime feature permissions + an Agent Access permission set
+
 Post-setup — Human escalation   (only after item 3 is active)
   5. Employee Agent escalation           (configure canEscalate, outbound routing, a staffed General IT queue, and failure-threshold directives)
 ```
 
-Stage 1 (Agentforce Studio enablement) is the **foundation**: it turns on the org-level Agentforce
-and Einstein GenAI feature toggles that all the agents are **built on top of** (including the
-specialized employee templates). Enable it first — attempting to install or activate any agent
-before this foundation is enabled will fail. The three Stage 2 items (Fulfiller, Employee, and
-Specialized Agents for Employee) are independent siblings (none depends on the others) — they can be
-selected together and installed in any order once Stage 1 is done. Specialized Agents for Employee
-is listed right after the IT Service Employee Agent because both build employee agents from the same
-child skill: #3 the broad default, #4 a specialized template the user chooses. Employee Agent
-escalation (#5) is a post-setup action that builds on a live Employee agent, so it runs only after
-item 3 has succeeded.
+Stage 1 (Agentforce Studio enablement) is the **foundation** — it turns on the org-level Agentforce
+and Einstein GenAI toggles every agent (and the specialized employee templates) is built on, so
+enable it first; any agent install/activate attempted before it will fail. The three Stage 2 items
+are independent siblings, orderable freely once Stage 1 is done, and Specialized Agents for Employee
+sits right after the IT Service Employee Agent because both build employee agents from the same child
+skill (the broad default vs. a specialized template the user picks). Employee Agent escalation (a
+post-setup action on a live Employee agent) and **Stage 3 (Runtime access)** (automatic after any
+Stage 2 agent goes live — not a menu pick) are governed by their rules above.
 
 ---
 
@@ -159,7 +168,7 @@ item 3 has succeeded.
 - NEVER show features that do not have a working child skill
 - If the user says "set up everything" or "all", walk through each available feature sequentially in the recommended order, confirming between each step
 - Track progress across the conversation — do not re-present completed features as "Not done"
-- Specialized Agents for Employee (#4) is **re-selectable** — each run builds a *different* specialized employee agent from a template the user picks. Mark the agent just built as `Done`, but keep #4 available to run again for additional specialized agents; do not treat a completed #4 as permanently finished the way #1–#3 are. If the user picks #4 again, ask which specialized template to use next
+- Specialized Agents for Employee (#4) is **re-selectable** — each run builds a *different* specialized employee agent from a template the user picks. Mark the agent just built as `Done`, but keep #4 available to run again for additional specialized agents; do not treat a completed #4 as permanently finished the way the one-and-done items are. If the user picks #4 again, ask which specialized template to use next
 - Employee Agent escalation (#5) is a **post-setup** action that requires the IT Service Employee Agent (#3) to be Active first — never delegate #5 before #3 has succeeded in this run (or was already done)
 - NEVER advance to the next feature in the queue if the current one failed or only partially
   succeeded — stop and surface the failure in plain language instead
@@ -172,6 +181,13 @@ item 3 has succeeded.
   `DUPLICATE_VALUE`, …), internal endpoint/API names, developer names (feature apiNames like
   `sales-cloud-agent-studio`), and CLI/tooling internals. Translate everything to plain, human-readable
   language. Child-skill names shown as next-step pointers are fine.
+- NEVER name a feature by a bare item number in user-facing prose. The `#1`–`#5` labels (and the
+  menu's `#` column) are **internal shorthand** for this skill's ordering/delegation rules and a menu
+  selection handle only (where the user replies `1, 2`) — not feature names. In every message the user
+  reads — opt-out/skip, prerequisite/blocked, progress, next-step, and the completion summary — name
+  each feature in full, never a bare number or range like `#4` or `#1–#3`. This matters most when a
+  Stage 1 toggle is skipped: name the blocked and still-available features, don't say "#4 is blocked,
+  #1–#3 can proceed". See **Naming features in prose** in `examples/output-templates.md`.
 - If the user asks about Agentforce features that are not yet available (e.g., Requester agent, custom topic packs, agent metrics dashboards), tell them those features are not yet available in this orchestrator and will be added as their child skills merge
 
 ---
@@ -192,8 +208,10 @@ Before emitting any menu or summary in this skill, mentally confirm each of the 
 - [ ] For a completion summary, the header line and closing line are chosen by the rubric in `examples/output-templates.md` (all `Done` → *Complete*; any `Not done`/`In progress` → *Finished*)
 - [ ] A feature is being configured only because the user explicitly selected it (or is being walked through sequentially with confirmation under an "all" / "everything" request)
 - [ ] Studio enablement is verified done before delegating to any Stage 2 agent (Fulfiller, Employee, or Specialized Agents for Employee)
+- [ ] If any Stage 2 agent went live, Stage 3 runtime access was appended once and delegated to `service-itsm-agentic-setup-agent-runtime-access-assign` (skipped otherwise)
 - [ ] The next action delegates to a child skill, never configures a feature inline
 - [ ] No Salesforce record IDs appear in the output — human-readable names only
+- [ ] No feature is named by a bare item number or range (`#4`, `#1–#3`) in user-facing prose — every feature is named in full; digits appear only as menu selection handles
 
 ---
 

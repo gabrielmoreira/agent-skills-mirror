@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `oxylabs/agent-skills` — 26 default patterns, 0 followed patterns, 14 file(s) materialized.
+Mirror of `oxylabs/agent-skills` — 26 default patterns, 0 followed patterns, 19 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `oxylabs/agent-skills` — 26 default patterns, 0 followed patterns, 1
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 14 |
+| Files         | 19 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,20 +59,25 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`skills/headless-browser/examples.md`](skills/headless-browser/examples.md) |
-| 2 | ✓ | [`skills/headless-browser/SKILL.md`](skills/headless-browser/SKILL.md) |
-| 3 | ✓ | [`skills/proxies/dedicated-datacenter.md`](skills/proxies/dedicated-datacenter.md) |
-| 4 | ✓ | [`skills/proxies/dedicated-isp.md`](skills/proxies/dedicated-isp.md) |
-| 5 | ✓ | [`skills/proxies/examples.md`](skills/proxies/examples.md) |
-| 6 | ✓ | [`skills/proxies/proxy-types.md`](skills/proxies/proxy-types.md) |
-| 7 | ✓ | [`skills/proxies/SKILL.md`](skills/proxies/SKILL.md) |
-| 8 | ✓ | [`skills/video-data/examples.md`](skills/video-data/examples.md) |
-| 9 | ✓ | [`skills/video-data/SKILL.md`](skills/video-data/SKILL.md) |
-| 10 | ✓ | [`skills/web-scraper-api/examples.md`](skills/web-scraper-api/examples.md) |
-| 11 | ✓ | [`skills/web-scraper-api/SKILL.md`](skills/web-scraper-api/SKILL.md) |
-| 12 | ✓ | [`skills/web-scraper-api/sources.md`](skills/web-scraper-api/sources.md) |
-| 13 | ✓ | [`skills/web-unblocker/examples.md`](skills/web-unblocker/examples.md) |
-| 14 | ✓ | [`skills/web-unblocker/SKILL.md`](skills/web-unblocker/SKILL.md) |
+| 1 | ✓ | [`skills/headless-browser/errors.md`](skills/headless-browser/errors.md) |
+| 2 | ✓ | [`skills/headless-browser/examples.md`](skills/headless-browser/examples.md) |
+| 3 | ✓ | [`skills/headless-browser/parameters.md`](skills/headless-browser/parameters.md) |
+| 4 | ✓ | [`skills/headless-browser/scripts/playwright_scrape.js`](skills/headless-browser/scripts/playwright_scrape.js) |
+| 5 | ✓ | [`skills/headless-browser/scripts/playwright_scrape.py`](skills/headless-browser/scripts/playwright_scrape.py) |
+| 6 | ✓ | [`skills/headless-browser/SKILL.md`](skills/headless-browser/SKILL.md) |
+| 7 | ✓ | [`skills/headless-browser/targets.md`](skills/headless-browser/targets.md) |
+| 8 | ✓ | [`skills/proxies/dedicated-datacenter.md`](skills/proxies/dedicated-datacenter.md) |
+| 9 | ✓ | [`skills/proxies/dedicated-isp.md`](skills/proxies/dedicated-isp.md) |
+| 10 | ✓ | [`skills/proxies/examples.md`](skills/proxies/examples.md) |
+| 11 | ✓ | [`skills/proxies/proxy-types.md`](skills/proxies/proxy-types.md) |
+| 12 | ✓ | [`skills/proxies/SKILL.md`](skills/proxies/SKILL.md) |
+| 13 | ✓ | [`skills/video-data/examples.md`](skills/video-data/examples.md) |
+| 14 | ✓ | [`skills/video-data/SKILL.md`](skills/video-data/SKILL.md) |
+| 15 | ✓ | [`skills/web-scraper-api/examples.md`](skills/web-scraper-api/examples.md) |
+| 16 | ✓ | [`skills/web-scraper-api/SKILL.md`](skills/web-scraper-api/SKILL.md) |
+| 17 | ✓ | [`skills/web-scraper-api/sources.md`](skills/web-scraper-api/sources.md) |
+| 18 | ✓ | [`skills/web-unblocker/examples.md`](skills/web-unblocker/examples.md) |
+| 19 | ✓ | [`skills/web-unblocker/SKILL.md`](skills/web-unblocker/SKILL.md) |
 
 ---
 

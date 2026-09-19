@@ -1,0 +1,58 @@
+{
+  "_meta": {
+    "source": "PRD 'Call Coaching Codey configure skill', section 'Current OOTB competency agent instructions' (Google Doc 1XKEDq9ig4du14qWOMv33mHcpBjF-bBwkVQhTTocnFS0, snapshot 2026-08-10). Extracted verbatim; do not paraphrase.",
+    "entity": "EnablementCompetencyDef",
+    "sobjectFamily": "TOOLING",
+    "count": 6
+  },
+  "competencies": [
+    {
+      "MasterLabel": "Active Listening Skills",
+      "DeveloperNameBase": "CCH_ActiveListening",
+      "SourceCompetencyTemplate": "ACTIVE_LISTENING",
+      "Description": "Evaluate the rep's active listening behaviors — reflective statements, paraphrasing, avoiding interruptions, follow-up questions.",
+      "EvaluationInstructions": "Evaluate the rep's active listening behaviors throughout the call. Look for reflective statements, paraphrasing of customer concerns, avoidance of interruptions, and follow-up questions that build on what the customer shared. Score based on how fully the rep engaged with and incorporated the customer's input.",
+      "EvaluationScope": "AllCalls"
+    },
+    {
+      "MasterLabel": "Relationship Building",
+      "DeveloperNameBase": "CCH_RelationshipBuilding",
+      "SourceCompetencyTemplate": "RELATIONSHIP_BUILDING",
+      "Description": "Evaluate personalization, active listening, empathy, and communication-style matching.",
+      "EvaluationInstructions": "Evaluate the rep's use of personalization, active listening, and empathy. Look for moments where the rep referenced prior conversations, showed genuine interest, or matched the customer's communication style. Score based on warmth and authenticity.",
+      "EvaluationScope": "AllCalls"
+    },
+    {
+      "MasterLabel": "Discovery Questioning",
+      "DeveloperNameBase": "CCH_DiscoveryQuestioning",
+      "SourceCompetencyTemplate": "DISCOVERY_QUESTIONING",
+      "Description": "Evaluate depth and quality of discovery questions — business challenges, budget, timeline, decision-making process.",
+      "EvaluationInstructions": "Evaluate the quality and depth of discovery questions asked by the rep. Look for open-ended questions that explore business challenges, budget, timeline, and decision-making process. Score based on how effectively the rep uncovered actionable insights.",
+      "EvaluationScope": "AllCalls"
+    },
+    {
+      "MasterLabel": "Objection Handling",
+      "DeveloperNameBase": "CCH_ObjectionHandling",
+      "SourceCompetencyTemplate": "OBJECTION_HANDLING",
+      "Description": "Evaluate acknowledgment, clarifying questions, reframing, and evidence-based responses to objections.",
+      "EvaluationInstructions": "Evaluate how the rep responded to objections. Look for acknowledgment of the concern, clarifying questions, reframing responses, and evidence-based answers. Score based on how effectively the rep turned objections into opportunities.",
+      "EvaluationScope": "AllCalls"
+    },
+    {
+      "MasterLabel": "Value Proposition Focus",
+      "DeveloperNameBase": "CCH_ValueProposition",
+      "SourceCompetencyTemplate": "VALUE_PROPOSITION_FOCUS",
+      "Description": "Evaluate whether the rep tailored the product/service to the customer's stated needs.",
+      "EvaluationInstructions": "Evaluate whether the rep tailored the product or service presentation to the customer's stated needs. Look for clear benefit articulation, use of relevant examples, and avoidance of irrelevant features. Score based on relevance and clarity of the value proposition.",
+      "EvaluationScope": "AllCalls"
+    },
+    {
+      "MasterLabel": "Closing Urgency",
+      "DeveloperNameBase": "CCH_ClosingUrgency",
+      "SourceCompetencyTemplate": "CLOSING_URGENCY",
+      "Description": "Evaluate close attempts and next-step commitment — trial closes, direct asks, urgency articulation.",
+      "EvaluationInstructions": "Evaluate whether the rep attempted to close or set a concrete next step. Look for trial closes, direct asks, and clear articulation of urgency and the next milestone. Score based on the quality and assertiveness of closing attempts.",
+      "EvaluationScope": "AllCalls"
+    }
+  ]
+}

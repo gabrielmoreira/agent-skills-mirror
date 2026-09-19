@@ -396,10 +396,10 @@ mcp__headless-360__dispatch({
     "businessHoursId":  "<BusinessHoursId>",
     "timeTrigger":      60,
     "order":            1,
-    "startTimeBasedOn": "SlaProcessCreatedDate",
+    "startTimeBasedOn": "MILESTONE_CRITERIA",
     "milestoneCriteria": [
       {
-        "milestoneState":         "Active",
+        "milestoneState":         "ACTIVE",
         "milestoneAgreementType": "SLA",
         "filterType":             "RuleFilter",
         "filterItems": [
@@ -411,7 +411,11 @@ mcp__headless-360__dispatch({
 })
 ```
 
-`milestoneCriteria` is mandatory. `milestoneAgreementType` is mandatory per the UI and lives **inside each `milestoneCriteria[]` item** (it maps to the `MilestoneCriteria.MilestoneAgreementType` sub-entity field — sending it at the top level of the milestone body returns `JSON_PARSER_ERROR: Unrecognized field`). Valid UI values are **`SLA`** (customer-facing agreement) or **`OLA`** (internal / operational). The API accepts any string because the underlying field is plain `Text(40)` with no server-side picklist enforcement — an unrecognized value persists to the DB but the UI treats it as blank; omitting the field entirely also succeeds silently but leaves the record's Milestone Agreement Type null (W-23959162). Success: `body.id` is the new Milestone Id.
+**`startTimeBasedOn`** controls when the timer starts. Send **`"MILESTONE_CRITERIA"`** (matches OOB and every default pattern) to start the clock when the milestone's ACTIVE criteria first match. It is a free string with two recognized values — **`MILESTONE_CRITERIA`** (criteria-based / dynamic start) and **`SLA_PROCESS`** (the fallback); any other value silently defaults to the `SLA_PROCESS` behavior (no error). The fallback anchors the timer to the **Incident's `SlaStartDate`** (→ its `CreatedDate` if `SlaStartDate` is null) — **not** the SLA-process record's created date. **This choice is not runtime-verifiable in the standard verify flow:** for a test Incident that matches the SLA at creation, both settings compute the same `TargetDate` (≈ `SlaStartDate + timeTrigger`) — they diverge only when the criteria first match *after* creation (e.g. a later field change), which the Phase 3 test does not exercise. So send the OOB value and rely on it; there is no Phase-3 assertion that distinguishes the two (unlike the ACTIVE criterion, whose effect **is** observable via tiering — see below). `milestoneCriteria` is mandatory. `milestoneAgreementType` is mandatory per the UI and lives **inside each `milestoneCriteria[]` item** (it maps to the `MilestoneCriteria.MilestoneAgreementType` sub-entity field — sending it at the top level of the milestone body returns `JSON_PARSER_ERROR: Unrecognized field`). Valid UI values are **`SLA`** (customer-facing agreement) or **`OLA`** (internal / operational). The API accepts any string because the underlying field is plain `Text(40)` with no server-side picklist enforcement — an unrecognized value persists to the DB but the UI treats it as blank; omitting the field entirely also succeeds silently but leaves the record's Milestone Agreement Type null (W-23959162). Success: `body.id` is the new Milestone Id.
+
+**`milestoneState` MUST be UPPERCASE and comes from a fixed set — this is load-bearing.** Valid values are **`ACTIVE`**, **`COMPLETE`**, **`PAUSE`**, **`UNPAUSE`** (there is **no `CANCEL`** state). `MilestoneService` compares `milestoneState` against `"ACTIVE"` with a **case-sensitive** `String.equals`, so `"Active"`/`"active"` (or any wrong case) **silently fails to register the ACTIVE criterion** — the create still returns `201 success:true`, but the priority/entry filter is never written and the Setup UI shows blank Activation Criteria. The milestone loses its Priority gate, so **in practice every Incident engages the lowest-`order` milestone of that MilestoneType regardless of its Priority** — a priority-tiered policy collapses to one tier. Use `ACTIVE` for the engagement (Priority) criterion and `COMPLETE` for the completion (Status) criterion; never send `CANCEL` (once the `ACTIVE` Priority criterion is correct it gates engagement, making a cancel criterion redundant).
+
+**The create response NEVER echoes `milestoneCriteria` — it always returns `milestoneCriteria: []` even on success** (the create handler only sets `id`/`success`; only a subsequent GET/read-back populates criteria). So the `201` proves nothing about whether criteria persisted. **Verify by runtime, not the response:** after seeding, create a **non-matching-tier** test Incident (e.g. a Moderate/Low one for a Critical-first policy) and confirm its `EntityMilestone.TargetResponseInMins` matches that tier's `timeTrigger`, not order-1's. A Critical-only test can't catch a dropped criterion because Critical maps to order-1, which is also the collapse fallback.
 
 ---
 
@@ -573,11 +577,15 @@ Success: `body.id`.
 ## Predefined Incident Policy (Phase 0.6 detect + Phase 2-OOB seed)
 
 The out-of-box **"Standard Support for Incidents"** policy is what Salesforce seeds from Setup's
-"Create Predefined Policies" step (Incident process type only). That step is Aura-only and not
-headless-reachable, but it seeds via the **same backend** as the public `/connect/sla-management/*`
-routes above — so the skill replicates it exactly with routes it already uses. The full template
-(policy flags, 2 milestone types, 8 priority-tiered milestones, entitlement criterion) lives in
-**`assets/predefined-incident-policy.json`** — load and follow it; the values below are the shape.
+"Create Predefined Policies" step (Incident process type only). That step is **Aura-only** — the
+checkbox calls `DefaultSlaPolicyController.saveSelectedOptions`, an `@AuraEnabled` controller whose
+only caller of `DefaultSlaService.createDefaultSlaPolicies` is that Aura action; there is **no public
+REST/Connect wrapper**, so the headless MCP cannot invoke the seeder directly. But the seeder just
+reads core's `default-sla-policies/incident.json` and writes it through the **same backend** as the
+public `/connect/sla-management/*` routes above — so the skill replicates that resource's exact
+output with routes it already uses. The full template (policy flags, 2 milestone types, **6
+milestones**, entitlement criterion) lives in **`assets/predefined-incident-policy.json`** — load
+and follow it; the values below are the shape.
 
 ### Detect first (no server idempotency → mandatory)
 
@@ -607,17 +615,24 @@ Uses the Phase 2 routes above, in this order:
    First read the catalog — SOQL `SELECT Id, Name FROM MilestoneType WHERE Name IN ('Acknowledge
    Within', 'Resolve Within')` (or `GET .../milestone-types`) — **reuse any match by id**, and `POST
    .../milestone-types` (`recurrenceType: OneTime`) **only** for the name(s) not already present.
-   Capture both ids (whether reused or created).
+   Capture both ids (whether reused or created) **for chaining only — when you narrate the reuse,
+   name the type ("reusing the existing First Response type"); never append its queried Id, masked or
+   full (Output contract).**
 2. Create the SLA Policy `Standard Support for Incidents` (`POST .../sla-policies`) with
    `processType: "Incident"`, `businessHourId` = default, `createdDateEntryCriteria: true`,
    `closedExitCriteria: true`, `versionDefault: true`, **`active: true`** (create it active directly —
-   do **not** use the Connect activate PATCH, which can 500 headless). Verify via SOQL on `SlaProcess`.
-3. Attach the **8 priority-tiered milestones** (`POST .../sla-policies/<id>/milestones`, one per row).
-   Reuse `assets/attach-milestone.json`. Validate each Priority/Status value against the live
-   `Incident` picklist first. For the **mid tier**, map to the org's actual mid-priority label —
-   `Moderate` on the standard ITSM picklist, but many orgs label it `Medium` — and seed orders 5–6
-   with whichever the live picklist carries rather than dropping the tier. Drop a row **only** when its
-   value is genuinely absent from the picklist, and note any dropped or relabeled tier in the report.
+   do **not** use the Connect activate PATCH, which can 500 headless). Verify via SOQL on `SlaProcess`,
+   then narrate the policy by that verified name — never the captured/queried Id (Output contract).
+3. Attach the **6 milestones** (`POST .../sla-policies/<id>/milestones`, one per row). Reuse
+   `assets/attach-milestone.json`. Send **`startTimeBasedOn: "MILESTONE_CRITERIA"`** on every
+   milestone — the OOB timer starts when the milestone criteria first match; the public route reads
+   this exact token (`MilestoneService` treats `MILESTONE_CRITERIA` as the criteria-based/dynamic
+   start; its only other recognized value, `SLA_PROCESS`, anchors to the Incident's `SlaStartDate`).
+   Validate each Priority/Status value against the live `Incident` picklist first. For the **mid
+   tier**, map to the org's actual mid-priority label — `Moderate` on the standard ITSM picklist, but
+   many orgs label it `Medium` — inside the merged orders 5–6 `Priority` OR rows (keep the `Low` row).
+   Drop a row from the OR **only** when its value is genuinely absent from the picklist, and note any
+   dropped or relabeled tier in the report.
 
 | order | milestoneType | timeTrigger | active criterion (Priority) | completion (Status) |
 |-------|---------------|-------------|-----------------------------|---------------------|
@@ -625,23 +640,31 @@ Uses the Phase 2 routes above, in this order:
 | 2 | Resolve Within     | 120 | `Equals Critical` | `In [Resolved, Completed, Closed]` |
 | 3 | Acknowledge Within | 60  | `Equals High` | `NotEqual New` |
 | 4 | Resolve Within     | 240 | `Equals High` | `In [Resolved, Completed, Closed]` |
-| 5 | Acknowledge Within | 240 | `Equals Moderate` | `NotEqual New` |
-| 6 | Resolve Within     | 960 | `Equals Moderate` | `In [Resolved, Completed, Closed]` |
-| 7 | Acknowledge Within | 240 | `Equals Low` | `NotEqual New` |
-| 8 | Resolve Within     | 960 | `Equals Low` | `In [Resolved, Completed, Closed]` |
+| 5 | Acknowledge Within | 240 | `Equals Moderate` OR `Equals Low` (`filterLogic: "1 OR 2"`) | `NotEqual New` |
+| 6 | Resolve Within     | 960 | `Equals Moderate` OR `Equals Low` (`filterLogic: "1 OR 2"`) | `In [Resolved, Completed, Closed]` |
 
-The **active** criterion (`Priority Equals <tier>`) is the one the public Attach-Milestone
-`milestoneCriteria` carries (`milestoneState: Active`, `milestoneAgreementType: SLA`,
-`filterType: RuleFilter`) — seeding it engages each milestone. The OOB also carries completion
-(`Status In …`) and cancel (`Priority NotEqual <tier>`) criteria (`milestoneState` Complete / Cancel);
-confirm the route accepts those states in the smoke test — if not, the active criterion alone is
-sufficient for engagement (matches `examples/milestone-patterns.md` Pattern 3).
+This mirrors core's `default-sla-policies/incident.json` shape: Critical and High are per-tier;
+**Moderate and Low are one merged tier** (ACTIVE `filterLogic "1 OR 2"` over two Priority Equals rows).
 
-**OR / In have no single-row form.** `filterItems` AND by default and there is no `In` operator. The
-Priority tiers are already pre-split above (each row is a single `Priority Equals <tier>`, Moderate and
-Low as separate rows 5–8), so no OR is needed for Priority. For the `Status In` completion sets, either
-use `filterLogic: "1 OR 2"` if the route accepts it (verify live) or split into one row per value —
-behavior-equivalent.
+The **active** criterion is the one the public Attach-Milestone `milestoneCriteria` carries
+(`milestoneState: ACTIVE`, `milestoneAgreementType: SLA`, `filterType: RuleFilter`) — seeding it
+**is what tiers the policy**: it gates which Incidents engage each milestone. Because all three tiers
+reuse the same two MilestoneTypes, if the ACTIVE criterion fails to persist (e.g. a wrong-case
+`milestoneState` — see the case-sensitivity warning above), the milestone loses its Priority gate and
+in practice every Incident engages the lowest-`order` milestone (Critical, 30/120) regardless of Priority. Each milestone also carries a
+completion criterion (`milestoneState: COMPLETE`, `Status In …`). **The core template's per-tier
+CANCEL criterion is intentionally dropped** — the public route has no `CANCEL` state, and once the
+ACTIVE Priority criterion is correct it already prevents off-tier engagement, so a cancel criterion is
+redundant. **Verify tiering by runtime** (see the case-sensitivity warning): seed, then create a
+**Moderate/Low** test Incident and confirm its `EntityMilestone` lands on the 240/960 tier, not 30/120.
+
+**Priority OR is expressed via `filterLogic`, not an `In` operator.** `filterItems` AND by default and
+there is no `In` operator, but the merged Moderate-or-Low tier's ACTIVE criterion uses
+`filterLogic: "1 OR 2"` across two `Priority Equals` rows — the same `customLogicExpression` the
+public milestone-criteria route consumes, so no separate per-value milestone is needed. If the live
+route rejects `filterLogic`, fall back to two separate `Priority Equals` milestones (Moderate, Low)
+with the same timeTriggers — behavior-equivalent. The `Status In` completion sets use the same
+`filterLogic: "1 OR 2 OR 3"` pattern (split into one row per value if the route rejects it).
 
 4. Create the Entitlement (`POST /sobjects/Entitlement`) on the resolved Account, `SlaProcessId` =
    the seeded policy, backdated `StartDate`. **Attempt** the OOB always-match entitlement criterion
@@ -658,8 +681,11 @@ behavior-equivalent.
    fields (a wrong-payload `400`, not a platform gap), and misattributing it reads as a bug. Never
    surface the raw sentinel string or a `JSON_PARSER_ERROR` in the customer report. The date-windowed
    Entitlement plus the milestone criteria are still enough to engage the Phase 3 test Incident.
-5. Verify per **Verify SLA engagement** below with a **Critical** test Incident (a Critical Priority
-   matches orders 1–2, so an `EntityMilestone` spawns), then **STOP** — do not offer custom.
+   Narrate the Entitlement by name/Account, never its returned Id (Output contract).
+5. Verify per **Verify SLA engagement** below with a **Moderate/Low** test Incident — its
+   `EntityMilestone` must land on the 240/960 tier, not 30/120. Use a non-lowest tier: Critical is
+   order-1, the collapse fallback, so it spawns a milestone even when the ACTIVE criterion was dropped
+   and can't detect the bug. Then **STOP** — do not offer custom.
 
 ---
 
@@ -705,10 +731,10 @@ mcp__headless-360__dispatch_readonly({
 | `dispatch` shape is raw HTTP | Pass `{url, method, body?, query_params?}` — NOT `{operation_id, arguments}`. |
 | Response wrapper | Connect/`/sobjects`/`/query` are singly wrapped — read `body`. Aura `/headless/invoke/…` routes (not used here) are doubly wrapped. |
 | Corpus vs. registry drift | `discover` may not rank the SLA POST routes at the top — the routes are still known-good; `describe` + `dispatch` on the canonical path works either way. |
-| SLA Policy create response is null | `POST /sla-policies` echoes most fields as `null` — always verify via SOQL on `SlaProcess`. |
+| SLA Policy create response is null | `POST /sla-policies` echoes most fields as `null` — always verify via SOQL on `SlaProcess`; then narrate the policy by the **verified name**, never the captured/queried Id (Output contract). |
 | Milestone filter payload | `milestoneCriteria` is mandatory (omitting it → `400: Criteria details cannot be empty`). Use `filterType: "RuleFilter"` with concrete `filterItems[]` — `filterType: "Formula"` triggers a 500. Operators are `Equals` (not `Equal`) and `NotEqual` (not `NotEquals`/`NotEqualTo`/`!=`); wrong forms → `POST_BODY_PARSE_ERROR: Invalid value for Filter Operation Enum`. |
 | `slaProcessId` rejected in body | The server returns `JSON_PARSER_ERROR: Unrecognized field "slaProcessId"` — the id is in the path only. |
 | Entitlement create + status | Create via `POST /sobjects/Entitlement` (standard sObject, not the Connect surface). Status is date-computed: a future `StartDate` → `Inactive`; backdate `StartDate` to yesterday for immediate SLA engagement in testing. |
 | OOB seed has no idempotency | `POST .../sla-policies` does not dedupe — re-seeding "Standard Support for Incidents" duplicates every artifact. Detect first via `GET .../sla-policies?processTypes=Incident` and name-match before seeding. |
 | Connect activate PATCH may 500 | The OOB backend flips the policy active via a Connect activate call; headless, that PATCH can 500. Create the SlaProcess with `active: true` directly instead (as the custom flow does). |
-| Never leak a record Id | In **every** user-facing message (interim narration *and* the final report, incl. "created milestone …" progress lines), refer to the Phase-3 test Incident by its **`IncidentNumber`** (the verify SOQL selects it) and milestones by their **`MilestoneType.Name`** — never the 15/18-char record Id. |
+| Never leak a record Id (SKILL.md Output contract) | In **every** user-facing message — interim narration *and* the final report, incl. "created milestone …" / "policy created …" / "reusing existing … →" progress lines — refer to the Phase-3 test Incident by its **`IncidentNumber`** (the verify SOQL selects it) and milestones/policy by their **name** — never the 15/18-char record Id (full **or masked**, e.g. `557VW…R3XVYA0`) or a `triggerId`. This covers **detected/reused** artifacts too — no `→ <Id>` "proof of reuse". Ids stay internal (chaining only). |

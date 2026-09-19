@@ -39,7 +39,7 @@ identically against **production** and sandbox with no per-user MCP install.
 
 - **In scope**: confirming CMDB is enabled, reading the live bundle catalog, resolving the exact
   version of the base bundle, installing the **base** (`CMDB Foundation`) bundle, and verifying.
-- **Out of scope**: enabling the CMDB feature / provisioning the ITOM tenant (Layers 0–2 —
+- **Out of scope**: enabling the CMDB feature / provisioning the CMDB tenant (Layers 0–2 —
   `service-itsm-agentic-setup-cmdb-configure`), assigning permission sets (Layer 3 —
   `service-itsm-agentic-setup-cmdb-access-assign`), installing **optional add-on** bundles (e.g.
   Component Identification Rules), CMDB record CRUD, or Discovery.

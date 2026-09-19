@@ -1,6 +1,6 @@
 ---
 name: service-itsm-agentic-setup-cmdb-configure
-description: "Enable the CMDB (Configuration Management Database) feature in Service Cloud ITSM against a production or sandbox org: verify the CMDB org SKU, provision the ITOM tenant, and enable the service-cloud-itsm-cmdb-integration feature that lifts the CMDB access gate. Use when the user asks to enable CMDB, turn on the Configuration Management Database, provision the ITOM tenant, enable the CMDB feature, or fix a CMDB 403 FUNCTIONALITY_NOT_ENABLED error. Triggers on: enable CMDB feature, provision ITOM tenant, turn on CMDB, CMDB not enabled, CMDB 403 error, service-cloud-itsm-cmdb-integration. DO NOT TRIGGER when: the user only wants to assign CMDB permission sets to users, only install a CMDB content bundle, or work with CMDB records directly."
+description: "Enable the CMDB (Configuration Management Database) feature in Service Cloud ITSM against a production or sandbox org: verify the CMDB org SKU, provision the CMDB tenant, and enable the service-cloud-itsm-cmdb-integration feature that lifts the CMDB access gate. Use when the user asks to enable CMDB, turn on the Configuration Management Database, provision the CMDB tenant, enable the CMDB feature, or fix a CMDB 403 FUNCTIONALITY_NOT_ENABLED error. Triggers on: enable CMDB feature, provision CMDB tenant, turn on CMDB, CMDB not enabled, CMDB 403 error, service-cloud-itsm-cmdb-integration. DO NOT TRIGGER when: the user only wants to assign CMDB permission sets to users, only install a CMDB content bundle, or work with CMDB records directly."
 metadata:
   version: "1.0"
   domains: ["Service"]
@@ -57,7 +57,7 @@ Layer 2. This skill's job is to make that gate return true.
 
 ## Scope
 
-- **In scope**: verifying the CMDB org permission (Layer 0), triggering + polling ITOM tenant
+- **In scope**: verifying the CMDB org permission (Layer 0), triggering + polling CMDB tenant
   provisioning (Layer 1), pre-checking + enabling + verifying the CMDB feature (Layer 2).
 - **Out of scope**: permission-set assignment (Layer 3 — `service-itsm-agentic-setup-cmdb-access-assign`),
   bundle installation (Layer 4 — `service-itsm-agentic-setup-cmdb-bundle-deploy`), CMDB record CRUD,
@@ -126,9 +126,9 @@ The core Connect API `GET /services/data/v63.0/setup/org/permissions/ITSrvcsCnfg
 `references/mcp-invocation.md` for the details. If no probe resolves, report that the org perm could
 not be verified and ask the user to confirm the org has CMDB licensed before continuing.
 
-### Layer 1 — Provision the ITOM tenant
+### Layer 1 — Provision the CMDB tenant
 
-CMDB runs on an ITOM tenant that must reach status `PROVISIONED` (asynchronous).
+CMDB runs on a dedicated tenant (the CMDB tenant) that must reach status `PROVISIONED` (asynchronous).
 
 1. **Check current status** (read):
    ```text
@@ -261,7 +261,7 @@ CMDB Feature Enable — Complete (via service-itsm-agentic-setup-cmdb-configure)
 Target org: <org>
 
   CMDB license .................. Present
-  ITOM tenant ................... Provisioned
+  CMDB tenant ................... Provisioned
   CMDB feature .................. Enabled
 
 CMDB is now enabled on this org. Next steps:

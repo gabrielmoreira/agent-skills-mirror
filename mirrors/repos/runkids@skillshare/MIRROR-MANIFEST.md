@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `runkids/skillshare` — 26 default patterns, 0 followed patterns, 23 file(s) materialized.
+Mirror of `runkids/skillshare` — 26 default patterns, 0 followed patterns, 29 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `runkids/skillshare` — 26 default patterns, 0 followed patterns, 23 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 23 |
+| Files         | 29 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -73,15 +73,21 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 12 | ✓ | [`skills/skillshare/references/init.md`](skills/skillshare/references/init.md) |
 | 13 | ✓ | [`skills/skillshare/references/install.md`](skills/skillshare/references/install.md) |
 | 14 | ✓ | [`skills/skillshare/references/log.md`](skills/skillshare/references/log.md) |
-| 15 | ✓ | [`skills/skillshare/references/status.md`](skills/skillshare/references/status.md) |
-| 16 | ✓ | [`skills/skillshare/references/sync.md`](skills/skillshare/references/sync.md) |
-| 17 | ✓ | [`skills/skillshare/references/targets.md`](skills/skillshare/references/targets.md) |
-| 18 | ✓ | [`skills/skillshare/references/trash.md`](skills/skillshare/references/trash.md) |
-| 19 | ✓ | [`skills/skillshare/references/TROUBLESHOOTING.md`](skills/skillshare/references/TROUBLESHOOTING.md) |
-| 20 | ✓ | [`skills/skillshare/scripts/run.sh`](skills/skillshare/scripts/run.sh) |
-| 21 | ✓ | [`skills/skillshare/SKILL.md`](skills/skillshare/SKILL.md) |
-| 22 | ✓ | [`website/docs/reference/commands/extras.md`](website/docs/reference/commands/extras.md) |
-| 23 | ✓ | [`website/docs/reference/commands/trash.md`](website/docs/reference/commands/trash.md) |
+| 15 | ✓ | [`skills/skillshare/references/mcp.md`](skills/skillshare/references/mcp.md) |
+| 16 | ✓ | [`skills/skillshare/references/native-agents.md`](skills/skillshare/references/native-agents.md) |
+| 17 | ✓ | [`skills/skillshare/references/plugins.md`](skills/skillshare/references/plugins.md) |
+| 18 | ✓ | [`skills/skillshare/references/status.md`](skills/skillshare/references/status.md) |
+| 19 | ✓ | [`skills/skillshare/references/sync.md`](skills/skillshare/references/sync.md) |
+| 20 | ✓ | [`skills/skillshare/references/targets.md`](skills/skillshare/references/targets.md) |
+| 21 | ✓ | [`skills/skillshare/references/trash.md`](skills/skillshare/references/trash.md) |
+| 22 | ✓ | [`skills/skillshare/references/TROUBLESHOOTING.md`](skills/skillshare/references/TROUBLESHOOTING.md) |
+| 23 | ✓ | [`skills/skillshare/scripts/run.sh`](skills/skillshare/scripts/run.sh) |
+| 24 | ✓ | [`skills/skillshare/SKILL.md`](skills/skillshare/SKILL.md) |
+| 25 | ✓ | [`website/docs/reference/commands/backup.md`](website/docs/reference/commands/backup.md) |
+| 26 | ✓ | [`website/docs/reference/commands/extras.md`](website/docs/reference/commands/extras.md) |
+| 27 | ✓ | [`website/docs/reference/commands/mcp.md`](website/docs/reference/commands/mcp.md) |
+| 28 | ✓ | [`website/docs/reference/commands/sync.md`](website/docs/reference/commands/sync.md) |
+| 29 | ✓ | [`website/docs/reference/commands/trash.md`](website/docs/reference/commands/trash.md) |
 
 ---
 

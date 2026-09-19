@@ -84,7 +84,20 @@ All three must return a record, and the `ProductTerritoryAvailability.TerritoryI
 
 Creates the goal definitions, the goal-product link, and the action-plan template (with its items) that back the KAM account plan, then publishes it (by setting its version to `Final`) and assigns it. Run entirely as the **admin** (`--target-org <admin>`), immediately after Part A — Part B links to the Part A `LifeSciMarketableProduct`.
 
-Only the record **names** are confirmed with the admin. All other fields are auto-derived from this reference and shown for confirmation.
+Only the record **names** are the user-supplied values; all other fields are auto-derived from this reference. The names must be confirmed with the admin **before any record is created**.
+
+> **STOP-GATE (confirm names — MANDATORY, do this FIRST).** Before running any `sf data create record` in Part B, **present the full set of proposed names below and WAIT for the admin to confirm or edit them.** Do **not** create any record until the admin explicitly responds. Present them as an editable list:
+>
+> | # | Record | Proposed name |
+> |---|--------|----------------|
+> | 1 | GoalDefinition (Strategic) | `Immunexis: Secure Q3 Formulary Position` |
+> | 2 | GoalDefinition (Individual) | `Immunexis: Prepare Pharmacy & Therapeutics (P&T) Strategy` |
+> | 3 | ActionPlanTemplate | `Immunexis: Formulary Submission & Review Prep` |
+> | 4 | Template item 1 | `Identify key P&T committee members and influencers` |
+> | 5 | Template item 2 | `Gather HEOR data supporting our value proposition` |
+> | 6 | Template item 3 | `Compile the competitive landscape and formulary access gaps` |
+>
+> Ask: *"These are the goal, action-plan-template, and item names I'll create. Confirm as-is, or tell me which to change."* Apply any edits the admin gives, then use the confirmed names verbatim in every step below. **Only the names are editable** — `ActionPlanType`, `TargetEntityType`, goal types, categories, and other fields are auto-derived and are not changed here. Never skip this gate or assume the defaults are accepted.
 
 ## Step 1 — Two GoalDefinition records
 

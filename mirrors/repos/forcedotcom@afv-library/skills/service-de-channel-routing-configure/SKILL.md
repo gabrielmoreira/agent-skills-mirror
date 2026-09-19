@@ -1,6 +1,6 @@
 ---
 name: service-de-channel-routing-configure
-description: "Configure routing on a newly-inserted Enhanced `MessagingChannel` so that activation will accept it. Given a `{CHANNEL_ID}`, walks the user through picking a routing type (Omni-Channel Queue, Omni-Flow, Agentforce Service Agent, Digital Worker, or direct User), locates or provisions the routing target, then PATCHes the channel's `SessionHandlerId` (plus `FallbackQueueId` where required) to it. Use between the insertion skill and the activation skill — activation fails server-side with `nullQueueId` / `LiveMessageSetupException` if no valid `SessionHandlerId` is set on the channel."
+description: "Configure routing on a newly-inserted Enhanced `MessagingChannel` so activation will accept it. Given a `{CHANNEL_ID}`, walks through picking a routing type (Omni-Channel Queue, Omni-Flow, Agentforce Service Agent, Digital Worker, or direct User), locates or provisions the target, then PATCHes `SessionHandlerId` (plus `FallbackQueueId` where required). Use between insertion and activation — activation fails server-side with `nullQueueId`/`LiveMessageSetupException` if no valid `SessionHandlerId` is set. Do not use for full end-to-end setup — use `service-de-headless-channel-configure`."
 metadata:
   version: "1.1"
   minApiVersion: "67.0"
@@ -14,8 +14,8 @@ metadata:
       semver: ">=2.0.0"
   relatedSkills:
     - "service-de-channel-activate"
-    - "service-de-channel-consent-configure"
     - "service-de-channel-create"
+    - "service-de-channel-settings-configure"
     - "service-de-headless-channel-configure"
 ---
 
@@ -27,7 +27,7 @@ Ensures a `MessagingChannel` has valid routing configured before activation. The
 
 These skills create **Enhanced** channels (`PlatformType=Enhanced`, SCRT2). All five SessionHandler domains are writable on Enhanced channels. (A Standard/SCRT1 channel would only accept a Flow as SessionHandler — the server rejects any other domain with "Only flows of type Omni-Channel are supported". These skills never create Standard channels, so that path isn't handled here.)
 
-**Where this fits:** the channel is inserted by `service-de-channel-create` (or a per-type leaf); this skill sets routing; `service-de-channel-consent-configure` sets consent; then `service-de-channel-activate` flips it live — activation requires both routing and consent. The `service-de-headless-channel-configure` orchestrator runs all four in sequence.
+**Where this fits:** the channel is inserted by `service-de-channel-create` (or a per-type leaf); this skill sets routing; `service-de-channel-settings-configure` sets consent; then `service-de-channel-activate` flips it live — activation requires both routing and consent. The `service-de-headless-channel-configure` orchestrator runs all four in sequence.
 
 Supported routing types — all set `SessionHandlerId`, some also set `FallbackQueueId`:
 

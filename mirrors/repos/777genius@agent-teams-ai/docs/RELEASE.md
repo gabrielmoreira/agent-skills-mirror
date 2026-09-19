@@ -28,19 +28,19 @@ Before publishing:
 - Confirm version numbers, runtime gates, asset names, and download links.
 - Keep the body in this document identical to the GitHub release body.
 
-## Draft: v2.15.0 (2026-09-17)
+## Draft: v2.15.0 (2026-09-18)
 
 Target branch: `main`.
 
 Runtime gate:
 
-- Agent Teams runtime: `v0.0.98`.
+- Agent Teams runtime: `v0.0.99`.
 - Terminal Platform runtime: `v0.3.3`.
 
 Release body source for GitHub release:
 
 <!-- RELEASE_BODY_START v2.15.0 -->
-Recover stalled teammate work from the team page, chat 1:1 in Messages, keep local OpenCode models such as Ollama visible, and show why SuperGrok models failed to load.
+Recover stalled teammate work from the team page, chat 1:1 in Messages, keep local OpenCode models visible, and block local teammates that cannot call tools.
 
 ### What's New
 
@@ -52,12 +52,12 @@ Recover stalled teammate work from the team page, chat 1:1 in Messages, keep loc
 
 ### Fixes
 
-- Keep Ollama, LM Studio, and llama.cpp models visible after a catalog refresh.
+- Keep Ollama, LM Studio, llama.cpp, and experimental local models visible after refresh and mixed relaunch.
 - Show why SuperGrok or other OpenCode models failed to load, and keep Test results after search.
+- Block local OpenCode teammates that cannot actually call tools.
 - Stop leftover remaining work from resuming after you stop a mixed Claude, Codex, or OpenCode team.
-- Start without restoring backups for teams that are already healthy.
-- Stop recovered task comments from replaying as toasts.
-- Block dependent tasks until they are approved, and notify when review is needed.
+- Start without restoring backups for healthy teams, and stop recovered comments from replaying as toasts.
+- Keep team trash, messages, and pane selection from mixing when you switch teams.
 
 ### Downloads
 

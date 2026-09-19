@@ -62,7 +62,7 @@ transport. The user's Grok subscription login (`GROK_HOME` or `~/.grok`) takes
 precedence even when `XAI_API_KEY` is set. Only an absent login file permits the
 API key (console credits); an invalid, expired or rejected login never does. See
 [authentication and expiry](video.md#setup--pick-one-credential)
-for setup. No Grok executable is needed during generation with a valid credential.
+for setup; the video modes (last-frame pin, references, `video-extend`, `video-edit`) are in [video.md](video.md#modes--which-flags-call-what). No Grok executable is needed during generation with a valid credential.
 No agent, credential fallback or automatic retry is started on failure.
 
 New images use `/v1/images/generations`; one reference uses `/v1/images/edits`
@@ -211,3 +211,16 @@ for tighter prompt adherence.
 ## Related
 
 - [docs/README.md](README.md) — documentation index
+
+## `--trim-alpha` — the bottom edge is the foot line
+
+A generated transparent still carries an unpredictable band of empty alpha under the
+feet and around the sides; two stills placed on the same floor line then stand at
+different heights, and a still swapped for a strip cell (whose feet sit on the cell
+bottom) jumps. `--trim-alpha` (only with `--transparent`) crops the published PNG to the
+bbox of its opaque pixels (alpha ≥ 8) after the transparency step, so the image's bottom
+edge *is* the ground-contact line. The subject is never cut — only fully transparent
+margin goes — and the report records `extra.trim_alpha` with the `bbox`, `before` /
+`after` sizes and the `margin_px` removed on each side. The `.raw.png` beside the output
+is untouched.
+

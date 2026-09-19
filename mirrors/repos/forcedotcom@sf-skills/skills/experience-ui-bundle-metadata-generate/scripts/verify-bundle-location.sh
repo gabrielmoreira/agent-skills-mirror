@@ -1,25 +1,40 @@
 #!/bin/bash
 # Verifies that a UI bundle was created under force-app/main/default/uiBundles/
 # (and not at the repo root, which would be non-deployable), AND that the
-# scaffold itself is complete (package.json, src/, index.html present) — not
-# just a hand-authored metadata-only directory.
+# scaffold itself is complete (package.json, src/, entry index.html present) —
+# not just a hand-authored metadata-only directory.
+#
+# The entry index.html lives at the bundle root for React (reactbasic) and at
+# src/index.html for Angular (angularbasic), so both locations are accepted.
 #
 # If a custom output directory was used (--output-dir on the scaffold command),
 # pass it as the second argument. The script then verifies the bundle exists
-# there instead of assuming the default location.
+# there instead of assuming the default location. Pass the framework
+# (react|angular) as the third argument so the remediation hint uses the right
+# --template flag; pass "" for the second argument to supply only a framework.
 
 set -e
 
-if [[ $# -lt 1 || $# -gt 2 ]]; then
+if [[ $# -lt 1 || $# -gt 3 ]]; then
   echo "ERROR: Bundle name required"
-  echo "Usage: bash verify-bundle-location.sh <BundleName> [<CustomOutputDir>]"
+  echo "Usage: bash verify-bundle-location.sh <BundleName> [<CustomOutputDir>] [<framework>]"
   exit 1
 fi
 
 BUNDLE_NAME="$1"
 CUSTOM_OUTPUT_DIR="${2:-}"
+FRAMEWORK="${3:-}"
 
-# Checks that the scaffold actually produced a full React project, not just
+# Pick the remediation template and the expected entry-HTML location from the
+# framework. When the framework is not supplied we stay lenient: default the
+# hint to reactbasic and accept the entry index.html at either location.
+case "$FRAMEWORK" in
+  angular) TEMPLATE="angularbasic"; ENTRY="src/index.html" ;;
+  react)   TEMPLATE="reactbasic";   ENTRY="index.html" ;;
+  *)       TEMPLATE="reactbasic";   ENTRY="" ;;
+esac
+
+# Checks that the scaffold actually produced a full project, not just
 # hand-written metadata files. Returns 1 (and prints guidance) if incomplete.
 # Pass a second argument with the --output-dir value when checking a bundle
 # in a custom location, so the remediation command matches where the bundle
@@ -30,10 +45,17 @@ check_scaffold_complete() {
   local missing=()
   [[ -f "$bundle_path/package.json" ]] || missing+=("package.json")
   [[ -d "$bundle_path/src" ]] || missing+=("src/")
-  [[ -f "$bundle_path/index.html" ]] || missing+=("index.html")
+  # Entry HTML lives at the bundle root for React and at src/index.html for
+  # Angular. When the framework is known, require the correct location; when it
+  # is unknown, accept either.
+  if [[ -n "$ENTRY" ]]; then
+    [[ -f "$bundle_path/$ENTRY" ]] || missing+=("$ENTRY")
+  else
+    [[ -f "$bundle_path/index.html" || -f "$bundle_path/src/index.html" ]] || missing+=("index.html")
+  fi
 
   if [[ ${#missing[@]} -gt 0 ]]; then
-    local scaffold_cmd="sf template generate ui-bundle -n $BUNDLE_NAME --template reactbasic"
+    local scaffold_cmd="sf template generate ui-bundle -n $BUNDLE_NAME --template $TEMPLATE"
     if [[ -n "$output_dir" ]]; then
       scaffold_cmd="$scaffold_cmd --output-dir \"$output_dir\""
     fi

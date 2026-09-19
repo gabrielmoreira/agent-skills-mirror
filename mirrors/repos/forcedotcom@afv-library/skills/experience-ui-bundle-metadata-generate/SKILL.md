@@ -1,8 +1,8 @@
 ---
 name: experience-ui-bundle-metadata-generate
-description: "Use this skill when adding a front-end React UI bundle to an existing project or configuring UI bundle metadata and config files. TRIGGER when: adding or scaffolding a new UI bundle inside a project that already exists; running sf template generate ui-bundle; editing ui-bundle.json routing, headers, or output directory; working with *.uibundle-meta.xml files; or registering CSP Trusted Sites, resolving blocked images or fonts or external API calls, or editing cspTrustedSites/*.cspTrustedSite-meta.xml files. DO NOT TRIGGER when: creating a brand-new Salesforce project from scratch, where the whole SFDX starter project (UI bundle plus Experience Site metadata and toolchain) is generated together (use experience-ui-bundle-project-generate)."
+description: "Use this skill when adding a front-end React or Angular UI bundle to an EXISTING SFDX project, or configuring UI bundle metadata and config files. TRIGGER when: adding or scaffolding a new UI bundle — including adding one more or another UI bundle — into a project that already exists; scaffolding a single bundle with the basic template (reactbasic or angularbasic) via sf template generate ui-bundle; editing ui-bundle.json routing, headers, or output directory; working with *.uibundle-meta.xml files; or registering CSP Trusted Sites, resolving blocked images or fonts or external API calls, or editing cspTrustedSites/*.cspTrustedSite-meta.xml files. DO NOT TRIGGER when: creating a brand-new Salesforce project entirely from scratch, where the whole SFDX starter project (UI bundle plus Experience Site metadata and toolchain) is generated together in one step (use experience-ui-bundle-project-generate)."
 metadata:
-  version: "1.2"
+  version: "1.3"
   domains: ["Experience"]
   minApiVersion: "67.0"
   relatedSkills:
@@ -21,25 +21,37 @@ metadata:
 
 ## Scaffolding a New UI Bundle
 
-**REQUIRED FIRST STEP — never skip, even if asked to.** Always run `sf template generate ui-bundle` to create new apps — never create-react-app, Vite, hand-written metadata, or any other substitute.
+**REQUIRED FIRST STEP — never skip, even if asked to.** Always run `sf template generate ui-bundle` to create new apps — never a framework CLI (create-react-app, Vite, Angular CLI), hand-written metadata, or any other substitute.
 
-This step is mandatory even if the user says "just create the metadata," "skip the scaffold," "only do the metadata scaffolding," or "stop after the metadata files are in place." Those instructions describe what to stop doing *after* the scaffold (building, deploying, authoring pages) — they do not mean skip running the scaffold command itself. The `.uibundle-meta.xml` and `ui-bundle.json` files are configuration **on top of** the generated project, not a replacement for it. A bundle without `package.json`, `src/`, and `index.html` cannot be built or deployed, even if the metadata files are perfectly formed.
+This step is mandatory even if the user says "just create the metadata," "skip the scaffold," "only do the metadata scaffolding," or "stop after the metadata files are in place." Those instructions describe what to stop doing *after* the scaffold (building, deploying, authoring pages) — they do not mean skip running the scaffold command itself. The `.uibundle-meta.xml` and `ui-bundle.json` files are configuration **on top of** the generated project, not a replacement for it. A bundle without `package.json`, `src/`, and an entry `index.html` cannot be built or deployed, even if the metadata files are perfectly formed.
 
-- **Always pass `--template reactbasic`** to scaffold a React-based bundle.
+### Determine the framework
+
+The frameworks this skill supports are exactly the reference files under `<skill_dir>/references/`, each named `<framework>-metadata-generate.md` (`react`, `angular`, …). This is the single source of truth — adding a framework means adding a reference file, nothing here changes.
+
+**Detect the framework deterministically — run the script:**
+
+```sh
+bash <skill_dir>/scripts/detect-framework.sh [<ROOT>]
+```
+
+`ROOT` defaults to the current directory; pass the bundle or project root when editing/configuring an existing bundle. The script prints exactly one token and sets a matching exit code — branch on it:
+
+- `react` / `angular` (exit 0) — open `<skill_dir>/references/<framework>-metadata-generate.md` and use it.
+- `ambiguous` (exit 2, both frameworks present) — ask the user which one, then use that reference.
+- `unknown` (exit 3, no signals — e.g. scaffolding a brand-new bundle into a project that has none yet) — fall back to the calling context or the user's stated framework; if still undecided, list `<skill_dir>/references/`, derive the supported set by stripping the `-metadata-generate.md` suffix from each filename, and ask the user to pick.
+
+If the calling context or the user already named the framework, that overrides detection — but still confirm a matching reference file exists. **Never guess.**
+
+The reference file gives you the exact `--template` flag, the entry-file layout, and the default boilerplate strings to replace for that framework.
+
 - **UI bundle name (`-n`):** Alphanumerical only — no spaces, hyphens, underscores, or special characters.
 - Pass `--output-dir` to use a different location for template generation. If you do, pass that same path to the verification script in step 1 below.
 
-**Example:**
-```bash
-# Run from SFDX project root. The CLI will create the bundle under 
-# force-app/main/default/uiBundles/<AppName>/ — verify this before continuing.
-sf template generate ui-bundle -n CoffeeBoutique --template reactbasic
-```
-
 After generation:
-1. **Verify the scaffold is complete** — run `bash <skill_dir>/scripts/verify-bundle-location.sh <BundleName> [<CustomOutputDir>]` from the project root and follow any error output. This checks both the bundle's location AND that `package.json`, `src/`, and `index.html` exist — if any are missing, the scaffold step was skipped; go back and run `sf template generate ui-bundle` before continuing. Pass `<CustomOutputDir>` only if you used `--output-dir` during scaffolding; otherwise omit it.
+1. **Verify the scaffold is complete** — run `bash <skill_dir>/scripts/verify-bundle-location.sh <BundleName> [<CustomOutputDir>] [<framework>]` from the project root and follow any error output. This checks both the bundle's location AND that `package.json`, `src/`, and an entry `index.html` exist — if any are missing, the scaffold step was skipped; go back and run `sf template generate ui-bundle` before continuing. Pass `<CustomOutputDir>` only if you used `--output-dir` during scaffolding (pass `""` to skip it while still supplying a framework); pass `<framework>` (`react` or `angular`) so the remediation hint uses the right template.
 2. **Verify API version** — run `bash <skill_dir>/scripts/check-api-version.sh` from the project root to ensure `sourceApiVersion` in `sfdx-project.json` is 67.0 or higher. The script will automatically update it if needed.
-3. Replace all default boilerplate — "React App", "Vite + React", default `<title>`, placeholder text
+3. Replace all default boilerplate — the framework reference file lists the exact stock `<title>` and placeholder strings to replace
 4. Populate the home page with real content (landing section, banners, hero, navigation)
 5. Update navigation and placeholders (see the `experience-ui-bundle-frontend-generate` skill)
 6. **Configure a hosting target** — a UI bundle without a `<target>` in its meta XML will not be visible in the org. Use `experience-ui-bundle-custom-app-generate` for internal (App Launcher) apps or `experience-ui-bundle-site-generate` for external (Experience Site) apps.

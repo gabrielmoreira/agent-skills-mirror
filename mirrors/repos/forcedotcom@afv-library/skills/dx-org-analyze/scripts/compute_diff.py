@@ -845,7 +845,7 @@ def render_markdown(a_data, b_data, meta_stats, perm_diff, val_diff, pkg_diff, l
         items = val_diff["cats"].get(cat_name, [])
         if not items:
             continue
-        w(f"**{cat_name}** ({len(items)} {'difference' if len(items) == 1 else 'differences'}):")
+        w(f"**{cat_name}** ({len(items)} differences):")
         w()
         w(f"| Setting | {label_a} | {label_b} |")
         w("|---------|-----|-----|")
@@ -958,10 +958,8 @@ def render_markdown(a_data, b_data, meta_stats, perm_diff, val_diff, pkg_diff, l
             if ld["diffs"]:
                 w(f"| License | {label_a} Total | {label_b} Total |")
                 w("|---------|-----|-----|")
-                def _fmt_lic(v):
-                    return "-1 (unlimited)" if v == -1 else str(v)
                 for d in ld["diffs"]:
-                    w(f"| {d['name']} | {_fmt_lic(d['a_total'])} | {_fmt_lic(d['b_total'])} |")
+                    w(f"| {d['name']} | {d['a_total']} | {d['b_total']} |")
                 w()
             if ld["a_only"]:
                 names = [l.get("Name") or l.get("DeveloperName") or l.get("NamespacePrefix", "?") for l in ld["a_only"]]

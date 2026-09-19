@@ -1,11 +1,11 @@
 ---
 name: automation-sandbox-post-copy-config-generate
-description: "Generate the JSON config file that the Salesforce sandbox post-copy automation tool consumes, from a customer SOP in any format (PDF, xlsx, csv, JSON, docx, Markdown, plain text, or a screenshot of an endpoint table). Use when the user asks to create, build, generate, produce, or convert a post-copy or post-refresh automation config — turning a sandbox-refresh SOP into a JSON array of OutboundMessages and RemoteSiteSettings entries with ConfigurationName, Label, Fields, IsActive, and ExecutionOrder. Also trigger for phrasings like \"post-copy config\", \"post-refresh automation JSON\", \"update the outbound message (OBM) endpoints after refresh\", \"convert this SOP to config\", \"remote site settings JSON\", \"refresh planner to JSON\", or \"sandbox refresh config\". DO NOT TRIGGER when: user wants to deploy the generated config to an org (use platform-metadata-deploy), or apply/execute/run/dry-run the post-copy automation JSON against a sandbox (use automation-sandbox-post-copy-configure)."
+description: "Generate the JSON config file that the Salesforce sandbox post-copy automation tool consumes, from a customer SOP in any format (PDF, xlsx, csv, JSON, docx, Markdown, plain text, or a screenshot of an endpoint table). Use when the user asks to create, build, generate, produce, or convert a post-copy or post-refresh automation config — turning a sandbox-refresh SOP into a JSON array of OutboundMessages, RemoteSiteSettings, and ScheduledApex entries with ConfigurationName, Label, Fields, IsActive, and ExecutionOrder. Also trigger for phrasings like \"post-copy config\", \"post-refresh automation JSON\", \"update the outbound message (OBM) endpoints after refresh\", \"convert this SOP to config\", \"remote site settings JSON\", \"refresh planner to JSON\", or \"sandbox refresh config\". DO NOT TRIGGER when: user wants to deploy the generated config to an org (use platform-metadata-deploy), or apply/execute/run/dry-run the post-copy automation JSON against a sandbox (use automation-sandbox-post-copy-configure)."
 metadata:
   relatedSkills:
     - "automation-sandbox-post-copy-configure"
     - "platform-metadata-deploy"
-  version: "1.0"
+  version: "1.1"
   domains: ["Automation"]
 ---
 
@@ -20,7 +20,7 @@ fields are involved, whether it is active, and what order it runs in.
 
 Do **not** compose the output from memory. Before you write the file, you
 MUST open and read `assets/config_template.json` and copy an entry from it
-for each action. Every output entry is exactly one of these two shapes —
+for each action. Every output entry is exactly one of these three shapes —
 five top-level keys, no others, no wrapper object:
 
 ```json
@@ -38,12 +38,19 @@ five top-level keys, no others, no wrapper object:
     "Fields": { "RemoteSiteUrl": "https://uat.example.com" },
     "IsActive": true,
     "ExecutionOrder": 2
+  },
+  {
+    "ConfigurationName": "ScheduledApex",
+    "Label": "Nightly Data Sync",
+    "Fields": { "ApexClassName": "NightlyDataSyncScheduler", "CronExpression": "0 0 2 * * ?", "JobName": "Nightly Data Sync" },
+    "IsActive": true,
+    "ExecutionOrder": 3
   }
 ]
 ```
 
-- `ConfigurationName`: exactly `OutboundMessages` or `RemoteSiteSettings` — never `Type`, `Name`, or `Operation`.
-- OBM `Fields`: `EndpointUrl` + `Object` (both required). RemoteSite `Fields`: `RemoteSiteUrl` only — never `Url`/`RemoteSiteURL`.
+- `ConfigurationName`: exactly `OutboundMessages`, `RemoteSiteSettings`, or `ScheduledApex` — never `Type`, `Name`, or `Operation`.
+- OBM `Fields`: `EndpointUrl` + `Object` (both required). RemoteSite `Fields`: `RemoteSiteUrl` only — never `Url`/`RemoteSiteURL`. ScheduledApex `Fields`: `ApexClassName` + `CronExpression` + `JobName` (all three required).
 - Top level is a JSON array. No `steps`/`actions`/`records` wrapper. No `<…>` or `REPLACE_WITH_…` placeholder ever survives into the output.
 
 If you announce "I will now write …" without having read the template and
@@ -127,18 +134,20 @@ having read `assets/config_template.json` and
 
 3. **Map each action to a `ConfigurationName`** — load
    `references/configuration_catalog.md`. The catalog currently supports
-   only `OutboundMessages` and `RemoteSiteSettings`. Any action that
-   targets a different configuration type is out of scope: skip it and
-   list it in the response so the user can extend the catalog later.
+   `OutboundMessages`, `RemoteSiteSettings`, and `ScheduledApex`. Any
+   action that targets a different configuration type is out of scope:
+   skip it and list it in the response so the user can extend the
+   catalog later.
 
 4. **Read the JSON template** — load `assets/config_template.json`. It
-   shows the exact required shape of one `OutboundMessages` entry and one
-   `RemoteSiteSettings` entry, with `<…>` placeholder slots. Copy an
-   entry, replace every `<…>` slot with the concrete SOP value, and keep
-   the exact top-level keys (`ConfigurationName`, `Label`, `Fields`,
-   `IsActive`, `ExecutionOrder`) — never rename them to `Type`, `Name`,
-   `Operation`, etc. Never emit an entry that still contains a `<…>`
-   placeholder; if you cannot fill a slot, skip the entry (see Rules).
+   shows the exact required shape of one `OutboundMessages` entry, one
+   `RemoteSiteSettings` entry, and one `ScheduledApex` entry, with
+   `<…>` placeholder slots. Copy an entry, replace every `<…>` slot
+   with the concrete SOP value, and keep the exact top-level keys
+   (`ConfigurationName`, `Label`, `Fields`, `IsActive`, `ExecutionOrder`)
+   — never rename them to `Type`, `Name`, `Operation`, etc. Never emit
+   an entry that still contains a `<…>` placeholder; if you cannot fill
+   a slot, skip the entry (see Rules).
 
 5. **Validate against the schema** — load `assets/json_schema.json`. Every
    entry must conform: `ConfigurationName` is one of the catalog values,

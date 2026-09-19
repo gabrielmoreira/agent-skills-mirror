@@ -13,7 +13,7 @@ Here are the features available for CMDB. Select one or more to configure:
 ┌───┬───────────────────────────────┬──────────────────────────────────────────────────┬──────────┐
 │ # │ Feature                       │ Description                                      │ Status   │
 ├───┼───────────────────────────────┼──────────────────────────────────────────────────┼──────────┤
-│ 1 │ CMDB feature enablement       │ Verify org SKU, provision the ITOM tenant, and   │ Not done │
+│ 1 │ CMDB feature enablement       │ Verify org SKU, provision the CMDB tenant, and   │ Not done │
 │   │                               │ turn on the service-cloud-cmdb feature           │          │
 │ 2 │ CMDB Foundation bundle        │ Install the CMDB Foundation base content bundle  │ Not done │
 │   │                               │ (CI types, layouts, sample records)              │          │

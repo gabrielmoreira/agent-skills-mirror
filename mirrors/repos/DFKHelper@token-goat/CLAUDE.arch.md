@@ -185,7 +185,7 @@ token-goat is a TypeScript CLI bundled to `dist/token-goat.mjs` via esbuild. The
 | [`src/languages/cobol.ts`](src/languages/cobol.ts) | COBOL adapter: programs, procedure-division sections and paragraphs, level-01/77 data items and FD/SD file descriptions, `COPY` imports, and `PERFORM`/`GO TO`/`CALL 'x'` references |
 | [`src/languages/common_lisp.ts`](src/languages/common_lisp.ts) | Common Lisp adapter: `defun`, `defmacro`, `defvar`/`defparameter`/`defconstant`, `defclass`, `defgeneric`, `defmethod`, `defstruct`, `defpackage`, `deftype`, `define-condition`, `d |
 | [`src/languages/common.ts`](src/languages/common.ts) | Shared helpers: `buildLineIndex()`, `offsetToLine()`, `makeSymbolEmitter()`, `assignFlatEndLines()`, comment-strip utilities |
-| [`src/languages/csharp.ts`](src/languages/csharp.ts) | C# extractor (`extractCsharp`) — namespace, class, method, property, constructor, delegate |
+| [`src/languages/csharp.ts`](src/languages/csharp.ts) | C# extractor (`extractCsharp`) — namespace, class, method, property, constructor, event, delegate |
 | [`src/languages/dart.ts`](src/languages/dart.ts) | Dart symbol extractor — regex-based (no tree-sitter grammar needed). |
 | [`src/languages/elixir.ts`](src/languages/elixir.ts) | Elixir symbol extractor — regex-based (no tree-sitter grammar needed). |
 | [`src/languages/emacs_lisp.ts`](src/languages/emacs_lisp.ts) | Emacs Lisp adapter: `defun`, `defmacro`, `defvar`, `defcustom`, `defconst`, `defgroup`, `defface`, `define-derived-mode`, `define-minor-mode`, and the `cl-lib` forms `cl-defun`, `c |
@@ -320,6 +320,7 @@ token-goat is a TypeScript CLI bundled to `dist/token-goat.mjs` via esbuild. The
 | Module | Role |
 |--------|------|
 | [`src/image_engine.ts`](src/image_engine.ts) | Pure TypeScript / JavaScript Image Processing Engine for token-goat. |
+| [`src/image_gif_encode.ts`](src/image_gif_encode.ts) | Re-encode an already-decoded animated GIF as delta frames. |
 | [`src/image_ocr.ts`](src/image_ocr.ts) | OCR — extract text from text-heavy images (screenshots of a terminal, a stack trace, a table, an editor, a doc page) instead of paying vision tokens to reconstruct their pixels. |
 | [`src/json_query.ts`](src/json_query.ts) | Narrow structural summary + path-based extraction for `token-goat json-outline` / `json-query`, so a multi-thousand-line JSON document never needs a full `Read` just to answer "wha |
 | [`src/pdf_extract.ts`](src/pdf_extract.ts) | PDF -> plain text extraction for `token-goat pdf-extract`, so a PDF's useful content reaches the model as text instead of forcing a full binary `Read` (which token-goat can't index |

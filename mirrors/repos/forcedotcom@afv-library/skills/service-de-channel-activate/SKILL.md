@@ -1,6 +1,6 @@
 ---
 name: service-de-channel-activate
-description: "Activate an Enhanced `MessagingChannel` (WhatsApp / Apple / Facebook / SMS / RCS) by PATCHing `MessagingChannelUsage.DeploymentStatus` from `Disabled` to `Provisioning` via the standard REST sobject endpoint. The UDD save-hook fires on the REST write, dispatches by `MessageType` for the external callout (`WHATS_APP` → Meta `/register`, `FACEBOOK` → `subscribeFacebookPage`, `TEXT` → `registerCsotSms`; Apple, LINE, and others need no external call), writes the terminal `Active` or `Error`, and flips `MessagingChannel.IsActive`. The chain is synchronous on the HTTP response — WhatsApp returns 204 only after Meta confirms registration (~15-21s); channels with no external callout are near-instant (~1s on Apple). No Aura RPC; no CSRF cookies. Use this skill when the user needs to activate an already-inserted Enhanced messaging channel headlessly via REST."
+description: "Activate an Enhanced `MessagingChannel` (WhatsApp/Apple/Facebook/SMS/RCS) by PATCHing `MessagingChannelUsage.DeploymentStatus` from `Disabled` to `Provisioning` via the REST sobject endpoint. The UDD save-hook dispatches by `MessageType` for the external callout (`WHATS_APP`→Meta `/register`, `FACEBOOK`→`subscribeFacebookPage`, `TEXT`→`registerCsotSms`; Apple/LINE need none), writes the terminal `Active`/`Error`, and flips `IsActive`. Synchronous on the HTTP response — WhatsApp returns 204 after Meta confirms (~15-21s); no-callout channels are near-instant. No Aura RPC, no CSRF cookies. Use to activate an already-inserted Enhanced channel headlessly via REST. Do not use for full end-to-end setup — use `service-de-headless-channel-configure`."
 metadata:
   version: "1.0"
   minApiVersion: "67.0"
@@ -13,9 +13,10 @@ metadata:
     - tool: ["sf"]
       semver: ">=2.0.0"
   relatedSkills:
-    - "service-de-channel-consent-configure"
     - "service-de-channel-create"
     - "service-de-channel-routing-configure"
+    - "service-de-channel-settings-configure"
+    - "service-de-headless-channel-configure"
 ---
 
 # Activating a Messaging Channel
@@ -88,7 +89,7 @@ Unlike the old Aura-based version of this skill, there are no `{POLL_TIMEOUT_S}`
 **Failure — validator or server-side provisioning error:**
 ```json
 {"ok": false, "kind": "readiness-failed", "errorCode": "FIELD_INTEGRITY_EXCEPTION",
- "message": "...", "hint": "validateChannelReadinessOnProvisioning rejected the write — most commonly missing consent; run service-de-channel-consent-configure first"}
+ "message": "...", "hint": "validateChannelReadinessOnProvisioning rejected the write — most commonly missing consent; run service-de-channel-settings-configure first"}
 {"ok": false, "kind": "provisioning-error", "mcuId": "0gL...", "errorReason": "MetaRegistrationFailed", "errorDetails": "..."}
 {"ok": false, "kind": "verification-failed", "hint": "WhatsApp phone number verification failed or was declined by user"}
 {"ok": false, "kind": "verification-request-failed", "errorCode": "...", "message": "...", "hint": "Could not request verification code from Meta"}
@@ -170,7 +171,7 @@ Classify by HTTP status:
 | Message fragment | Meaning | Envelope |
 | --- | --- | --- |
 | "invalid deployment status transition" | The current status doesn't allow `→ Provisioning` (e.g. MCU is already `Active` — Stage 1 should have caught this, but there's a race window). | Re-read MCU; if now `Active`, emit success-noop. If `Provisioning`, Stage 3 poll. Otherwise emit `{ok:false, kind:"readiness-failed", ...}`. |
-| "consent" / "keyword" / mentions of STOP/HELP | `validateChannelReadinessOnProvisioning` rejected — channel doesn't have required consent configured. | `{ok:false, kind:"readiness-failed", errorCode:"FIELD_INTEGRITY_EXCEPTION", message, hint:"channel requires a ConsentType and a matching MsgChannelLanguageKeyword record (opt-out keyword + confirmation) before activation — run service-de-channel-consent-configure"}`. |
+| "consent" / "keyword" / mentions of STOP/HELP | `validateChannelReadinessOnProvisioning` rejected — channel doesn't have required consent configured. | `{ok:false, kind:"readiness-failed", errorCode:"FIELD_INTEGRITY_EXCEPTION", message, hint:"channel requires a ConsentType and a matching MsgChannelLanguageKeyword record (opt-out keyword + confirmation) before activation — run service-de-channel-settings-configure"}`. |
 | "routing" / "queue" / "SessionHandler" | Routing precondition (Stage 1 should have caught, but the validator re-checks). | `{ok:false, kind:"no-routing", message, hint:"run service-de-channel-routing-configure first"}`. |
 | other | Unrecognized validator error. | `{ok:false, kind:"readiness-failed", errorCode, message}`. |
 
@@ -252,7 +253,7 @@ If this skill is the leaf (user invoked it directly), render:
 - `Info: Already active — MessagingChannel {CHANNEL_ID} is IsActive=true. No changes.` (no-op path)
 - `Error: Routing not configured — run 'service-de-channel-routing-configure' skill first.` (no-routing)
 - `Error: No MessagingChannelUsage row — run the insertion skill first.` (no-mcu)
-- `Error: Readiness check failed: {message} — if it mentions consent/keywords, run 'service-de-channel-consent-configure' first.` (readiness-failed)
+- `Error: Readiness check failed: {message} — if it mentions consent/keywords, run 'service-de-channel-settings-configure' first.` (readiness-failed)
 - `Error: Activation failed: {errorReason} — {errorDetails}` (provisioning-error)
 - `Error: WhatsApp phone number verification failed: {hint}` (verification-failed)
 - `Error: Could not request verification code: {message}` (verification-request-failed)

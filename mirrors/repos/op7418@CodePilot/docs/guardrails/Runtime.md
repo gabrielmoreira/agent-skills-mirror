@@ -1,5 +1,9 @@
 # Runtime Compatibility Filtering — 护栏
 
+> 2026-09-18 Google 文本协议使用 `native_only`：只暴露 `codepilot_runtime`，Claude/Codex 均有不支持原因，Codex proxy parity 为 pending。Gemini 3.8 Flash 的 low/medium/high、默认 medium、始终思考和采样参数剔除按精确模型生效；辅助 generateText 也使用相同 middleware。Native 从 DB 读取历史必须遵守摘要 rowid 边界，并把摘要带入上下文，不能重放已压缩消息。回归：`gemini-native.test.ts`（真实 SDK wire + DB）、`gemini-native.spec.ts`（真实 API 过滤与 UI）。
+
+- **Native 通用范围**：压缩 rowid 边界、摘要注入和 `finishReason=length` 的结束/截断通知作用于所有 Native Provider；65,536 输出上限及思考/采样规则才是 Gemini 3.8 专属。摘要必须合并进首条 user 消息（保留全部多模态 parts）；只有历史不以 user 开头时才可前置独立 user，不得为摘要制造连续 user turn。length 即便伴随工具调用也结束当前循环，已执行的工具及已有输出保持原记录，不自动开启下一 step。
+
 CodePilot 有三条 chat 运行路径：**Claude Code Runtime**（SDK 子进程）、**CodePilot Runtime**（@ai-sdk/* 直连）和 **Codex Runtime**（app-server thread）。Provider / Model / Composer 三层过滤契约必须严格对齐，否则 picker 看到的、resolver 选中的、wire 上发出去的会出现三方不一致。
 
 ## 0. 会话 Runtime owner（2026-09-01）
@@ -291,3 +295,12 @@ Provider 或模型切换后，descriptor 必须从同一 runtime-filtered group 
 
 - Codex replacement 在冷缓存时允许通过已经运行的 client 有界调用 model/list（2.5 秒），供历史图片与 effort 使用；不得借此从被动目录启动 app-server。失败继续 unknown 与显式图片降级。回归：codex-models-dual-schema。
 - Fable 5.1 使用精确 upstream `claude-fable-5-1`，作为独立选项保留旧 Fable/角色默认。adaptive 始终开启、effort low/medium/high/xhigh/max；Native 使用 auto/none 工具选择。不得为强制工具需求静默转换用户语义。多步 SDK 请求的 signed thinking 之前 system/tools/messages 必须保持不变；跨回合 DB 重建不携带过期 thinking，摘要/模型切换不得再混回旧签名。当前测试验证 Native 的真实 SDK wire，不能冒充 Anthropic 真签名校验；新增 per-message effort/turn system/progress beta 须另立协议验证。
+
+
+## 2026-09-14 #685：已选路由与运行时回报分离
+
+- `chat_sessions.model` 是用户提交的 route model identity；SDK/Native `status.model` 是运行时观察值，collector 不得用它覆盖 route，也不得借 status 绕过 `route_revision` CAS。续接引用 `sdk_session_id` 仍由现有 lock owner gate 写入；模型观察值继续留在 SSE/usage 元数据中。
+- `resolveChatMessageRoute` 是普通消息的 identity gate。Provider 未随请求回显时仍固定使用 session Provider，不能回退默认/env；明确不同 Provider 立即拒绝。
+- 兼容旧版已写成 upstream 的会话只作读取：必须在同一 Provider 的 live enabled catalog 唯一匹配到本次请求的 modelId，并且当前 Runtime 兼容、实际 resolver upstream 一致。stored ID 若本身是另一条 catalog modelId，或多个 alias 共享它、映射隐藏/删除/修改，不能自动解释为同一路线。虚拟账号路线继续精确 identity。
+- 兼容不改 owner、历史、Provider 或 route_revision；真正改 route 仍走用户显式 CAS。无法无歧义恢复的旧会话继续要求明确重选，不能按显示名或跨 Provider 猜测。
+- 回归：`chat-message-route.test.ts`（多 Provider 连续/重开、旧 upstream、反例和 Native/Codex owner 兼容）、`chat-message-route-http.test.ts`（真实 POST 双回合与错路由在持久化/Runtime 前拒绝）、`collect-owner-gate.test.ts`（owner 也不覆盖 model、stale owner 不写续接状态）。

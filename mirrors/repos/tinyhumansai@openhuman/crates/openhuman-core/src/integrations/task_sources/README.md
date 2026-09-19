@@ -132,7 +132,7 @@ Additive idempotent column migrations (`add_column_if_missing`) backfill `ingest
 - `crate::config` (+ `config::rpc`) — `Config`, `load_config_with_timeout`; reads the `[task_sources]` block for defaults and the master switch.
 - `crate::integrations::composio::providers` — `NormalizedTask`, `TaskContainer`, `TaskFetchFilter`, `TaskKind` (contract types re-exported from `tinymemory_api::composio::tasks`). The old `get_provider` / `ProviderContext` / `ComposioProvider::fetch_tasks` registry no longer exists; `mod.rs`'s intra-doc link to `fetch_tasks` is stale.
 - `crate::agent::triage` — `run_triage`, `apply_decision`, `TriageOutcome`, `TriggerEnvelope`; dispatches the proactive agent turn for `AgentTodoProactive` sources.
-- `crate::threads::todos` (`todos::ops`) — `add`/`remove`, `BoardLocation`, `CardPatch`; the thread-scoped board cards are stored here. Also references `agent::task_board::TaskBoardCard` for `board_cards`.
+- `crate::agent::todos` (`todos::ops`) — `add`/`remove`, `BoardLocation`, `CardPatch`; the thread-scoped cards are stored here. Card types come from `agent::todos::types`.
 - `crate::cron::scheduler_gate` — `wait_for_capacity` capacity semaphore; gates proactive triage turns behind background-AI throttling.
 
 ## Used by

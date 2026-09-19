@@ -1,6 +1,6 @@
 ---
 name: mm-save-session
-version: 0.8.1
+version: 0.8.2
 description: Закрывает текущую Claude Code сессию — сохраняет лог в Obsidian/Claude/Sessions/, обновляет project note, обновляет INDEX.md, перегенерирует handoff.md (для Project Knowledge claude.ai) через /mm-handoff. Если в проекте есть GSD (.planning/ или .gsd/) — также вызывает /gsd-pause-work для technical state в HANDOFF.json. Use when user says "закругляемся", "сохрани", "до завтра", "конец дня", "save session", "/mm-save-session", "закрываемся".
 ---
 
@@ -187,6 +187,17 @@ tags: [claude-session, проект-<project_name>, <topical-tags>]
    - Выполни пуш: `git push origin main`
    - **Обработка сбоев пуша:** Если команда `git push` завершилась с ошибкой (например, проблемы с сетью, авторизацией или non-fast-forward коммиты), **не прерывай работу скилла** (сессия локально сохранена). Выведи пользователю заметное предупреждение: `⚠️ vault push не прошёл — Knowledge не обновится, запушь вручную.` и укажи причину сбоя.
 3. Если `<vault_root>` не является репозиторием или в нем нет настроенного remote, пропусти push, но **выведи предупреждение** (не no-op): `⚠️ Vault-синк пропущен: <vault_root> не git-репозиторий с origin. handoff.md НЕ запушен и не попадёт в Project Knowledge. Запусти /mm vault для этого проекта, затем повтори /mm save.` (подставь реальный путь вместо `<vault_root>`).
+
+### Шаг 5.8. Автопуш корня Claude-vault (INDEX.md, Sessions/, Bridge/) — если он репозиторий
+
+`<obsidian_claude_root>` (папка `Claude/`) может быть отдельным git-репозиторием: в нём живут `INDEX.md`, глобальные `Sessions/`, `Bridge/` и одиночные заметки `Projects/*.md`. Каталоги проектов `Projects/*/` в нём игнорируются — у них свои vault-репозитории (Шаг 5.7). Без этого шага `INDEX.md` остаётся локальным файлом одной машины.
+
+1. Проверь: `git -C "<obsidian_claude_root>" rev-parse --show-toplevel` возвращает сам `<obsidian_claude_root>` (а не репозиторий выше) и `git -C "<obsidian_claude_root>" remote get-url origin` успешен. Если нет — **молча пропусти шаг** (корневой репозиторий опционален, предупреждение не нужно).
+2. Перед записью подтяни чужие изменения: `git -C "<obsidian_claude_root>" pull --rebase --autostash origin main`. При конфликте — не разрешай автономно: выведи `⚠️ корень Claude-vault: конфликт при pull, INDEX.md НЕ запушен — разреши вручную` и переходи к Шагу 6.
+3. Secret-scan изменённых файлов — тем же механизмом и с той же реакцией на Класс A, что в Шаге 5.7.
+4. Если чисто: `git add -A` → `git commit -m "auto-sync: index <session_file_basename>"` → `git push origin main`. Сбой пуша обрабатывай как в Шаге 5.7: не прерывай скилл, выведи `⚠️ push корня Claude-vault не прошёл — INDEX.md на другой машине не обновится`.
+
+**В начале работы на другой машине** корень подтягивается вручную или через `/mm resume`: `git -C "<obsidian_claude_root>" pull --rebase --autostash`.
 
 ### Шаг 6. Подтверди
 

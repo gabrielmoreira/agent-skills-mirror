@@ -7,7 +7,7 @@ user-invocable: true
 
 # llama.cpp Windows 多模型部署与优化集成技能
 
-> **版本**: v3.6.0 | **基准硬件**: RTX 5060 Ti 16GB + Intel U7 270K / CPU-only (48GB DDR5) | **平台**: Windows 10/11 + WSL2 | **llama.cpp 版本**: b10056 – b10713+ | **更新**: 2026-09-13（**references 目录重整**为 `sessions/` / `guides/` / `assets/` 三类 + 新增 [`reference index`](./references/INDEX.md)（路径索引，**§5A 项目内 / §5B 部署侧** 分开）；`model-profiles.json` 同步补入 `moe` 块；新增第五章 MoE 显存预算与卸载、内建 MTP head 嫁接手册）
+> **版本**: v3.7.0 | **基准硬件**: RTX 5060 Ti 16GB + Intel U7 270K / CPU-only (48GB DDR5) | **平台**: Windows 10/11 + WSL2 | **llama.cpp 版本**: b10056 – b10713+ | **更新**: 2026-09-18（收紧公开发布边界：移除维护者本地材料与机器路径，补全可移植性与发布门禁）
 >
 > 📚 **references 导航**：先看 [`./references/INDEX.md`](./references/INDEX.md) —— 目录结构、每份文档的用途，以及**权威代码路径表**（历史文档中的旧路径一律以该表为准）。
 
@@ -653,10 +653,12 @@ N = ceil( (W_non + KV + mmproj + draft + compute_buf − (VRAM − margin)) / E_
 
 - [ ] 1. 更新 SKILL.md 头部版本行（`**版本**: vX.Y`）与更新日期/一句话摘要
 - [ ] 2. 在 `CHANGELOG.md` 顶部追加版本条目（Added/Changed/Fixed 三段）
-- [ ] 3. 同步 `.agents` 部署副本 —— **只同步技能载荷**：`SKILL.md`、`references/`、`scripts/`。
-       `docs/` 与 `scripts/mtp-graft-package/` 不同步（见 `references/INDEX.md` §7）
-- [ ] 4. 记录 one-line reason（可选写入 repo memory）
-- [ ] 5. **验证副本逐字节一致**（载荷范围）；若新文档引入了本机绝对路径，先改占位符再同步
+- [ ] 3. 同步 `.agents` 部署副本 —— **只同步技能载荷**：`SKILL.md`、`CHANGELOG.md`、`README.md`、
+       `LICENSE`、`references/`、`scripts/`（见 `references/INDEX.md` §7「发布边界」）
+- [ ] 4. **确认没有维护者本地材料混进公开仓库** —— 开发过程材料、一次性维护脚本与
+  内部 provenance 记录均**既不同步也不提交**；提交前看清暂存集
+- [ ] 5. 记录 one-line reason（可选写入 repo memory）
+- [ ] 6. **验证副本逐字节一致**（载荷范围）；若新文档引入了本机绝对路径，先改占位符再同步
 
 > ⚠️ **禁止**往技能载荷里写本机绝对路径（`D:\...`）。技能要能「换一台机器照样跑」——
 > 部署侧路径一律用 `<llama-cpp-dir>` / `<models-dir>` 这类占位符。

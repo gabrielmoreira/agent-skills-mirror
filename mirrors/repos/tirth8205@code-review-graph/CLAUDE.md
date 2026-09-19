@@ -25,7 +25,7 @@ Core package `code_review_graph/` (Python 3.10+):
 - `prompts.py`: 5 MCP prompts (review_changes, architecture_map, debug_issue, onboard_developer, pre_merge_check).
 - `cli.py`: the `code-review-graph` command. `daemon.py` and `daemon_cli.py`: the `crg-daemon` multi-repo watch daemon.
 - `parser.py`: Tree-sitter multi-language parser with fallbacks for notebooks and other formats. `custom_languages.py`: languages defined in `.code-review-graph/languages.toml` (see docs/CUSTOM_LANGUAGES.md).
-- `graph.py`: SQLite graph store (nodes, edges, impact analysis). `migrations.py`: schema migrations; the current schema version is 10 and must equal `SUPPORTED_SCHEMA_VERSION` in the VS Code extension (CI checks this).
+- `graph.py`: SQLite graph store (nodes, edges, impact analysis). `migrations.py`: schema migrations; the current schema version is 13 and must equal `SUPPORTED_SCHEMA_VERSION` in the VS Code extension (CI checks this).
 - `incremental.py`: full build, Git/SVN change detection, incremental update, stale-file reconciliation, watch mode. `postprocessing.py`: shared post-build pipeline (signatures, flows, communities, FTS).
 - Post-build resolvers: `python_resolver.py`, `jedi_resolver.py` (optional `enrichment` extra), `spring_resolver.py`, `event_resolver.py`, `temporal_resolver.py`, `config_keys.py`, `scoped_resolver.py` (PHP, Rust, C#), `rescript_resolver.py`, `hcl_resolver.py`, `tsconfig_resolver.py` (tsconfig and jsconfig path aliases).
 - `flows.py`: execution flows and criticality. `communities.py`: Leiden via igraph (optional) or file-based grouping, plus the architecture overview. `analysis.py`: hub and bridge nodes, knowledge gaps, surprise scoring, suggested questions.
@@ -131,8 +131,16 @@ bd close <id>         # Complete work
 
 Three long-lived branches, one direction: feature PR → `staging` (default) → `testing` → `main` → tag → PyPI.
 Open every PR against `staging`. Never push to or open PRs against `testing` or `main`; those only
-receive promotion PRs, which the maintainer merges by hand with a merge commit. Full rules in
-CONTRIBUTING.md "Branching and promotion".
+receive promotion PRs, always merged with a merge commit.
+
+`staging` → `testing` is automatic: `.github/workflows/auto-promote.yml` runs once a day and merges
+the promotion PR when `staging` is ahead, every required check is green, and the promotion gate has
+not failed on `testing`. The decision lives in `scripts/auto_promote.py`. It merges only a PR it
+opened itself — same repository, correctly aimed, labelled `auto-promotion`, pinned to the commit
+whose checks were read — so a promotion PR you open by hand is left alone. It needs Settings →
+Actions → General → Workflow permissions → *Allow GitHub Actions to create and approve pull
+requests*. **Promotion to `main` is never automatic** — the maintainer opens and merges that PR by
+hand. Full rules in CONTRIBUTING.md "Branching and promotion".
 
 ## Session Completion
 

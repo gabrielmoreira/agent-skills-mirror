@@ -75,7 +75,7 @@ user to confirm CMDB is licensed before proceeding.
 
 ---
 
-## Layer 1 — Provision the ITOM tenant
+## Layer 1 — Provision the CMDB tenant
 
 ### Check current provisioning status (read)
 

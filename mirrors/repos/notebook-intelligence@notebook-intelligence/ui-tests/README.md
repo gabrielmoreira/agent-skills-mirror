@@ -20,13 +20,15 @@ on-every-commit check. Treat this Galata suite as top-of-the-pyramid coverage.
 
 ## What's covered
 
-| Spec                       | Flows                                                                                                                                                                           |
-| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `extension.spec.ts`        | Smoke: extension activates, chat sidebar opens.                                                                                                                                 |
-| `chat-sidebar.spec.ts`     | Footer icons + labels, gear-icon title, prefix popover via typed `/`, slash-button toggle, workspace file picker open + close, **regression #262** (Escape from picker search). |
-| `notebook-toolbar.spec.ts` | Toolbar button renders, popover structure, **regression #231** (textarea focus on open), submit gating, Escape + outside-click dismissal.                                       |
-| `cell-output.spec.ts`      | Hover toolbar renders Explain + Ask on clean cells, Troubleshoot only on errored cells, click activates the hovered cell.                                                       |
-| `launcher.spec.ts`         | **Regression #260/#268** (Coding Agent tiles must add / dispose dynamically on capability change, not rely on `isVisible`).                                                     |
+| Spec                               | Flows                                                                                                                                                                           |
+| ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `extension.spec.ts`                | Smoke: extension activates, chat sidebar opens.                                                                                                                                 |
+| `chat-sidebar.spec.ts`             | Footer icons + labels, gear-icon title, prefix popover via typed `/`, slash-button toggle, workspace file picker open + close, **regression #262** (Escape from picker search). |
+| `notebook-toolbar.spec.ts`         | Toolbar button renders, popover structure, **regression #231** (textarea focus on open), submit gating, Escape + outside-click dismissal.                                       |
+| `cell-output.spec.ts`              | Hover toolbar renders Explain + Ask on clean cells, Troubleshoot only on errored cells, click activates the hovered cell.                                                       |
+| `launcher.spec.ts`                 | **Regression #260/#268** (Coding Agent tiles must add / dispose dynamically on capability change, not rely on `isVisible`).                                                     |
+| `claude-mcp-patch.spec.ts`         | Claude MCP panel: paste-to-add parsing and the shapes it accepts.                                                                                                               |
+| `chatbook-cell-mode-badge.spec.ts` | Chatbook cell badge renders and switches a cell between prompt and code.                                                                                                        |
 
 When a flow needs a real LLM round trip to pass we skip it rather than mock
 the network — these tests are about UI state, not model output. Tests that
@@ -53,7 +55,8 @@ jlpm test
 
 `jlpm test:debug` opens the Playwright inspector for stepwise debugging;
 `jlpm test:update` regenerates snapshots when an intentional UI change makes
-the existing reference image stale.
+the existing reference image stale; `jlpm test:list` prints the tests without
+running them.
 
 ## Layout
 
@@ -65,6 +68,8 @@ the existing reference image stale.
 - `tests/` — `*.spec.ts` files. Galata's `test`/`expect` come from
   `@jupyterlab/galata` and provide a `page` fixture that's already inside the
   lab shell.
+- `tests/helpers.ts` — shared helpers (opening the chat sidebar, reading
+  `NBIAPI.config`). Keep it thin: every spec depends on it.
 
 ## Adding tests
 

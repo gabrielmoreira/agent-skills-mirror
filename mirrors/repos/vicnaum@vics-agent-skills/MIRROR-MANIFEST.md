@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `vicnaum/vics-agent-skills` — 26 default patterns, 0 followed patterns, 80 file(s) materialized.
+Mirror of `vicnaum/vics-agent-skills` — 26 default patterns, 0 followed patterns, 84 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `vicnaum/vics-agent-skills` — 26 default patterns, 0 followed patter
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 80 |
+| Files         | 84 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -135,10 +135,14 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 74 | ✓ | [`skills/session-stripper/tests/test_strip_thinking_offchain.py`](skills/session-stripper/tests/test_strip_thinking_offchain.py) |
 | 75 | ✓ | [`skills/session-stripper/tests/test_strip_tools_is_error.py`](skills/session-stripper/tests/test_strip_tools_is_error.py) |
 | 76 | ✓ | [`skills/session-stripper/tests/test_tool_use_result_sidecar.py`](skills/session-stripper/tests/test_tool_use_result_sidecar.py) |
-| 77 | ✓ | [`skills/tasx/references/format.md`](skills/tasx/references/format.md) |
-| 78 | ✓ | [`skills/tasx/scripts/board.html`](skills/tasx/scripts/board.html) |
-| 79 | ✓ | [`skills/tasx/scripts/tasx`](skills/tasx/scripts/tasx) |
-| 80 | ✓ | [`skills/tasx/SKILL.md`](skills/tasx/SKILL.md) |
+| 77 | ✓ | [`skills/slopcheck/references/rules-template.md`](skills/slopcheck/references/rules-template.md) |
+| 78 | ✓ | [`skills/slopcheck/scripts/slopcheck`](skills/slopcheck/scripts/slopcheck) |
+| 79 | ✓ | [`skills/slopcheck/scripts/slopmark`](skills/slopcheck/scripts/slopmark) |
+| 80 | ✓ | [`skills/slopcheck/SKILL.md`](skills/slopcheck/SKILL.md) |
+| 81 | ✓ | [`skills/tasx/references/format.md`](skills/tasx/references/format.md) |
+| 82 | ✓ | [`skills/tasx/scripts/board.html`](skills/tasx/scripts/board.html) |
+| 83 | ✓ | [`skills/tasx/scripts/tasx`](skills/tasx/scripts/tasx) |
+| 84 | ✓ | [`skills/tasx/SKILL.md`](skills/tasx/SKILL.md) |
 
 ---
 

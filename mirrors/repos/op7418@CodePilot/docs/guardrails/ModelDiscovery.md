@@ -1,5 +1,7 @@
 # Model Discovery — 护栏
 
+> 2026-09-18 Google：使用配置的 base URL，key 仅放 `x-goog-api-key` header；禁跟随重定向，不回显原始错误体。读取全部分页、去重、去掉 `models/` 前缀，只纳入支持 `generateContent` 的条目。分页失败/重复游标必须整体失败，不把部分结果用于 diff；不能破坏既有用户启用/隐藏守卫。回归：`gemini-native.test.ts`。
+
 模型发现 (`/api/providers/[id]/discover-models`) 是 Provider Management 和 Composer 之间的桥梁：从上游拉模型列表，让用户决定哪些进 picker。
 
 **当前 (Phase B) 写入模型**：probe 路由 read-only，apply 路由保守自动写入并由 `enable_source` 守卫保护用户选择：

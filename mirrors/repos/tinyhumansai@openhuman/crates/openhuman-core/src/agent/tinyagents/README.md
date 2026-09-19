@@ -46,10 +46,10 @@ The **adapter seam** between OpenHuman and the vendored [`tinyagents`](../../../
 | `steering_forwarder.rs` | `SteeringForwarderGuard`: forwards `RunQueue` steer/collect messages into the harness `SteeringHandle`; abort-on-drop so drop-based cancellation always deregisters it (issue #4456). |
 | `stop_hooks.rs` | `StopHookMiddleware`: evaluates OpenHuman `StopHook`s after each model call and pauses the run via steering on the first `Stop` decision. |
 | `summarize.rs` | `ModelSummarizer` / `FaultTolerantCachingSummarizer` plus a context-window-aware `SummarizationPolicy` driving the crate's `ContextCompressionMiddleware`. |
-| `embeddings.rs` | `ProviderEmbeddingModel`: adapts `crate::inference::embeddings::EmbeddingProvider` onto the crate's `EmbeddingModel` trait. |
+| `embeddings.rs` | `ProviderEmbeddingModel`: adapts `crate::inference::embedding_host::EmbeddingProvider` onto the crate's `EmbeddingModel` trait. |
 | `retriever.rs` | `recall_through_facade` / `build_retriever`: wraps `Memory::recall`, projects onto the crate's `ScoredDoc`, applies the `path_scope` dedupe rule, emits `MemoryLoaded`. |
 | `thread_context.rs` | Task-local ambient `thread_id` (`with_thread_id`, `current_thread_id`) read by the OpenAI-compatible provider when serialising request bodies. |
-| `todos.rs` | `todos_store` / `scratch_todos_store` (the crate `Store` behind per-thread task boards, `tinyagents_graph::todos`) and `migrate_legacy_task_boards`, the one-shot import run at startup. |
+| `todos.rs` | `todos_store` / `scratch_todos_store` (the crate `Store` behind per-thread agent todos, `tinyagents_graph::todos`). |
 | `config.rs` | Maps OpenHuman's `Config` (including model pins) onto `tinyagents_harness::config` structs. |
 | `*_tests.rs` | Sibling test suites for each file/part group above. |
 
@@ -92,8 +92,8 @@ Responses project the crate's own `AgentObservation` and `HarnessRunStatus` serd
 - `agent/harness/subagent_runner/ops/graph.rs`: the sub-agent spawn route. It and the session route both build their context-window summarizer through `TurnModelSource::build_summarizer`.
 - `agent/harness/session/builder/setters.rs`, `agent/harness/subagent_runner/ops/{provider,runner}.rs`, `channels/`: construct `TurnModelSource`.
 - `agent/bus.rs`: reads `resolved_route` after a turn.
-- `core/all.rs` (replay controllers), `core/runtime/builder.rs` (`reaper::reap_orphaned_runs`), `core/runtime/services.rs` (`todos::migrate_legacy_task_boards`).
-- `threads/todos/` and `agent/task_board.rs`: `todos::*` stores.
+- `core/all.rs` (replay controllers) and `core/runtime/builder.rs` (`reaper::reap_orphaned_runs`).
+- `agent/todos/`: `todos::*` stores.
 - `memory/tools/{recall,store}.rs` and `memory/auto_recall/`: `host::agent_memory::DEFAULT_AGENT_MEMORY_NAMESPACE`.
 - `flows/tinyflows/caps/{llm,prompt}.rs`: the message-conversion re-exports and `model::usage_info_from_response`.
 - `tools/README.md` names `SharedToolAdapter` and `ToolPolicyMiddleware` as the primary tinyagents-side tool consumers.

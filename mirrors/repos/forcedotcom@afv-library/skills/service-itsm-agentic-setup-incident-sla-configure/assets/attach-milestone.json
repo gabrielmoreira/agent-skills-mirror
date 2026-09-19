@@ -3,10 +3,10 @@
   "businessHoursId": "<businessHoursId resolved in Phase 1>",
   "timeTrigger": 60,
   "order": 1,
-  "startTimeBasedOn": "SlaProcessCreatedDate",
+  "startTimeBasedOn": "MILESTONE_CRITERIA",
   "milestoneCriteria": [
     {
-      "milestoneState": "Active",
+      "milestoneState": "ACTIVE",
       "milestoneAgreementType": "SLA",
       "filterType": "RuleFilter",
       "filterItems": [

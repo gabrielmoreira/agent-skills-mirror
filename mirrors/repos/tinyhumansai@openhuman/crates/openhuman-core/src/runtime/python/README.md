@@ -46,7 +46,7 @@ This module reads `config.runtime_python` (`enabled`, `prefer_system`,
 
 - `crate::modules::runtime` — the module client this delegates to.
 - `crate::config` — the settings each request carries.
-- `crate::inference::local::process_util` — the Windows no-console
+- `crate::inference::host_runtime::process_util` — the Windows no-console
   hook, shared with the other child-spawning paths.
 
 External crates: `tinyruntime-bus`, `tokio`, `anyhow`, `tracing`. No HTTP

@@ -17,6 +17,11 @@ omission restores LangChain's 4000-token default.
 Persisted delegation verdicts are untrusted durable context; ledger rendering revalidates them and ignores malformed values.
 Completed is not accepted; retain useful work and address acceptance gaps.
 
+On new user turns, DurableContext cancels earlier-run unanswered delegations.
+It preserves resumes, same-run continuations, and entries without `run_id`.
+Any reply prevents cancellation; legacy replies without status metadata may
+stay `in_progress`. Never infer status from reply text.
+
 Assembly order: `tool_error_handling_middleware.py::_build_runtime_middlewares` (exposed as `build_lead_runtime_middlewares`), then `../lead_agent/agent.py::build_middlewares` appends lead-only entries. Optional entries require their config/runtime condition.
 
 **Message provenance.** At injection/rewrite, always stamp `additional_kwargs`
@@ -52,6 +57,8 @@ strict providers reject.
 **Shared runtime base** (`build_lead_runtime_middlewares`; subagents reuse most of this via `build_subagent_runtime_middlewares`):
 
 1. **InputSanitizationMiddleware** - First, so it is the outermost `wrap_model_call` wrapper; every inner middleware (including LLM retries) sees sanitized messages. `additional_kwargs.original_user_content` is server-owned provenance: Gateway strips caller-supplied values for non-internal run requests, trusted IM calls may carry the string they captured before adding transport/file context, and the middleware replaces any non-string value before wrapping. Uploads and sanitization retain first-writer-wins only for validated strings. Caller markers are marked `untrusted_input`, never stripped; scope is every turn.
+
+   **KnowledgeScopeMiddleware** follows input sanitization: it exposes only Gateway-admitted execution scope, removes scope/display data from model messages, and blocks `knowledge_search` when disabled without reading storage or RAGFlow.
 2. **ToolOutputBudgetMiddleware** - Caps model-bound tool output per app config. Externalizes oversized results to `tool_output.storage_subdir` (default `.tool-results`, constant `TOOL_RESULTS_DIRNAME`) under thread outputs, leaving a typed synopsis + `read_file` reference. These process-feedback files are excluded from workspace-change scans and delivery verification. `wrap_model_call` elides successful `write_file` content only in model-bound requests (#5328) after a later successful same-path `read_file`/`write_file`/`str_replace`; the on-disk file becomes the reference. Preserves the newest `keep_recent_writes` writes. Pairs call occurrences via `tool_call_args.pair_tool_call_results` and rewrites through shared `tool_call_args` helpers; controls: `elide_superseded_writes`, `superseded_write_min_chars`.
 3. **ToolResultSanitizationMiddleware** - Neutralizes framework/injection tags (e.g. `<system-reminder>`) and boundary markers in *remote-content* tool results (`web_fetch`/`web_search`/`image_search`/`web_capture`) so attacker-controlled fetched pages cannot forge trusted framework context. Mirrors `InputSanitizationMiddleware`'s user-input guardrail for the other untrusted-content entry point; sits inner of `ToolOutputBudgetMiddleware` (neutralizes the raw output, then the budget truncates). Local tool output (bash/read_file) is left untouched. Scope is a name-based allowlist for the first-party web tools, plus every MCP-sourced tool via its `deerflow_mcp` metadata tag, so an MCP server naming its fetcher `fetch_url` is still covered
 

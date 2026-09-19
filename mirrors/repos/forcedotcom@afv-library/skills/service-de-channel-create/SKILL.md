@@ -1,6 +1,6 @@
 ---
 name: service-de-channel-create
-description: "**INTERNAL USE ONLY — invoked by `service-de-headless-channel-configure` orchestrator.** Insert an Enhanced messaging `MessagingChannel` record (plus its child `MessagingChannelUsage` as a free server-side side-effect) of any supported type — WhatsApp, LINE, Apple Business Chat, Facebook, or SMS (Text). Given a `{MESSAGE_TYPE}` and the corresponding type-specific inputs, runs the shared preflight → Connect-insert → verify flow and branches only where a type genuinely differs (request body, prerequisites, error classes). Uses the sanctioned `POST /services/data/v{V}/connect/livemessage/channels` Connect REST endpoint — no Aura session, no token extracted into shell state. **Users should always invoke `service-de-headless-channel-configure` instead — it handles insert → route → activate in one flow.** Use this skill when inserting a messaging channel of any type; it replaces the four former per-type creation skills."
+description: "**INTERNAL USE ONLY — invoked by `service-de-headless-channel-configure`.** Insert an Enhanced messaging `MessagingChannel` (plus child `MessagingChannelUsage` as a free side-effect) of any type — WhatsApp, LINE, Apple Business Chat, Facebook, or SMS. Given a `{MESSAGE_TYPE}` and its inputs, runs the shared preflight → Connect-insert → verify flow, branching only where a type differs. Uses `POST /services/data/v{V}/connect/livemessage/channels` — no Aura session, no shell-stored token. **Invoke `service-de-headless-channel-configure` instead** — it handles insert → route → activate in one flow; replaces the four former per-type creation skills."
 metadata:
   version: "1.0"
   minApiVersion: "67.0"
@@ -14,8 +14,8 @@ metadata:
       semver: ">=2.0.0"
   relatedSkills:
     - "service-de-channel-activate"
-    - "service-de-channel-consent-configure"
     - "service-de-channel-routing-configure"
+    - "service-de-channel-settings-configure"
     - "service-de-headless-channel-configure"
     - "service-de-waba-integrate"
 ---
@@ -349,7 +349,7 @@ Rendered (when invoked directly rather than by the orchestrator):
 - `Error: {kind}: {message or hint}`
 
 On success the caller can immediately invoke `service-de-channel-routing-configure` with the
-returned `channelId`, then `service-de-channel-consent-configure`, then
+returned `channelId`, then `service-de-channel-settings-configure`, then
 `service-de-channel-activate`. Those three are message-type-agnostic (they operate on
 `MessagingChannel.Id` + `MessagingChannelUsage.Id`), so there's no downstream dispatch concern.
 

@@ -1,1 +1,0 @@
-cache/repos/github.com/openclaw@openclaw/src/channels/plugins/contracts/test-helpers/AGENTS.md

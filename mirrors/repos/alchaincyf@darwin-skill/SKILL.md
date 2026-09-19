@@ -98,7 +98,7 @@ skill 应当能在 Claude Code / Codex / Cursor / OpenClaw / Hermes / Gemini CLI
 grep -nE "(在 Claude Code|Claude Code skill|Claude Code 用户|Cursor only|Codex 中|^\[!\[Claude Code|~/\.claude/skills/[a-z]|/plugin install\b)" SKILL.md README.md 2>/dev/null
 ```
 
-输出非空 = 红灯命中 → 强制把 Phase 2 第一轮定为 P0「runtime drift 修复」（写入 results.tsv 的 note 列 `runtime_warn=N`）。
+输出非空 = 红灯命中，**但须先读命中行上下文排除假阳性**（grep 命令本身/反例引用/讲解该规则的元陈述=假阳性，记 `runtime_scan=false_positive` 不改；判别表见 references/runtime-neutrality.md）→ 确认是真红灯（指令性用法）才强制把 Phase 2 第一轮定为 P0「runtime drift 修复」（写入 results.tsv 的 note 列 `runtime_warn=N`）。
 
 ### 例外（允许的「Claude Code 痕迹」）
 

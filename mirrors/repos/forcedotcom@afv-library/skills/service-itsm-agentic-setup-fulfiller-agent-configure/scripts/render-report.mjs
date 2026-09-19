@@ -111,22 +111,28 @@ const gatedFallback = isPending
   : isFailed ? 'skipped'
   : 'pending';
 
-const bundleVersionId = field(state.bundleVersionId, '');
-const bundleVersionIdSuffix = bundleVersionId ? ` bundleVersionId=${bundleVersionId}` : '';
-const onBundleVersionId = bundleVersionId ? ` on bundleVersionId=${bundleVersionId}` : '';
-
-function withCreateSuffix(base) {
-  if (base === 'pending' || base.startsWith('skipped') || base === 'pending confirmation') return base;
-  return `${base}${bundleVersionIdSuffix}`;
+// Internal record IDs (bundleVersionId `1bZ…`, BotDefinition `0Xx…`, BotVersion
+// `0Xv…`) are meaningless to an admin and must never appear in the user-facing
+// report — they are captured only to drive the publish/activate/verify calls.
+// The stage rows carry status only; `scrubInternalIds` strips any ID a caller
+// passed inside a status string, so the "single source of report text" stays
+// ID-free regardless of input (belt-and-braces, like `cell` below).
+function scrubInternalIds(s) {
+  return String(s)
+    // "bundleVersionId=1bZ…", "on bundleVersionId 1bZ…", "publishedBotId=0Xx…", "BotDefinition 0Xx…", …
+    .replace(/\s*\b(?:on\s+)?(?:bundleVersionId|bundleId|publishedBotId|publishedBotVersionId|botDefinitionId|BotDefinition|BotVersion|agentId)\b\s*[:=]?\s*[a-zA-Z0-9]{15,18}\b/g, '')
+    // any remaining bare Salesforce-ID token (15/18 alphanumeric, must contain a digit)
+    .replace(/\s*\b(?=[a-zA-Z0-9]*[0-9])[a-zA-Z0-9]{15}(?:[a-zA-Z0-9]{3})?\b/g, '')
+    // tidy separators orphaned by the removals above
+    .replace(/\s*[;,]\s*(?=[;,])/g, '')
+    .replace(/[;,\s]+$/g, '')
+    .replace(/\s{2,}/g, ' ')
+    .trim();
 }
-function withPublishActivateSuffix(base) {
-  if (base === 'pending' || base.startsWith('skipped') || base === 'pending confirmation') return base;
-  return `${base}${onBundleVersionId}`;
-}
 
-const createBundle = withCreateSuffix(field(state.createBundle, gatedFallback));
-const publish = withPublishActivateSuffix(field(state.publish, gatedFallback));
-const activate = withPublishActivateSuffix(field(state.activate, gatedFallback));
+const createBundle = scrubInternalIds(field(state.createBundle, gatedFallback));
+const publish = scrubInternalIds(field(state.publish, gatedFallback));
+const activate = scrubInternalIds(field(state.activate, gatedFallback));
 const verifyFallback = isDeclined || isPending || isFailed
   ? 'skipped'
   : isAlready
@@ -141,8 +147,15 @@ if (
 ) {
   verify = `${verify}; exists:true; latestVersionStatus=Active`;
 }
+verify = scrubInternalIds(verify);
 
-const reason = String(state.reason ?? '').trim();
+// `reason` is the FAILED/DECLINED-path field most likely to carry a raw upstream
+// platform error (e.g. an INSUFFICIENT_ACCESS message quoting a BotDefinitionId),
+// so it gets the same scrub as the stage rows above — an internal record ID must
+// never reach the user-facing report/chat (CWE-200/209). Scrubbing here, before
+// NEXT_STEPS, also keeps the FAILED next-step's `reason ? …` branch consistent
+// with what is actually shown in the Reason line.
+const reason = scrubInternalIds(String(state.reason ?? '').trim());
 
 // The "set up access" next step below is the handoff to the
 // `service-itsm-agentic-setup-agent-runtime-access-assign` skill (declared in

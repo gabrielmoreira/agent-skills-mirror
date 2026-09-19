@@ -1,0 +1,13 @@
+[
+  {
+    "ConfigurationName": "ScheduledApex",
+    "Label": "Nightly Data Sync",
+    "Fields": {
+      "ApexClassName": "NightlyDataSyncScheduler",
+      "CronExpression": "0 0 2 * * ?",
+      "JobName": "Nightly Data Sync"
+    },
+    "IsActive": true,
+    "ExecutionOrder": 3
+  }
+]

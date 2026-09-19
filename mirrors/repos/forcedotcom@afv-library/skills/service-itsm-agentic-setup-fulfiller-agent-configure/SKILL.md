@@ -2,7 +2,7 @@
 name: service-itsm-agentic-setup-fulfiller-agent-configure
 description: "Create and activate the IT Service Fulfiller agent as a Next-Gen Authoring (NGA) native agent from the shipped ITSM Fulfiller template's Agent Script, using the Salesforce CLI (sf): read the template, check idempotency, create the NGA bundle then publish and activate it, then verify it is live. Idempotent per developer name. The Fulfiller agent is the IT-technician-facing assistant for incident triage, case summarization, field updates, and related-record automations. Use when asked to create the Fulfiller agent, set up the IT Service Fulfiller agent, provision the fulfiller assistant, or activate the Fulfiller agent. Triggers: create fulfiller agent, set up fulfiller agent, provision fulfiller agent, activate fulfiller agent. DO NOT TRIGGER: checking org prerequisites (service-itsm-agentic-setup-agentforce-studio-validate), or CMDB CRUD."
 metadata:
-  version: "3.7"
+  version: "3.10"
   domains: ["Service", "Agentforce"]
   minApiVersion: "67.0"
   relatedSkills:
@@ -136,7 +136,8 @@ Substitute `<alias>` with the collected target org and `<developerName>` / `<lab
 7. **Phase 5 — Publish.** `POST /nextgen-authoring/bundle-versions/<bundleVersionId>/publish --body '{}'` (empty body required). Success: `{ lastPublishedOn, publishedBotId, publishedBotVersionId }` — this call creates the underlying `BotDefinition`/`BotVersion`. Any error ⇒ surface verbatim; never activate an unpublished version.
 8. **Phase 6 — Activate.** `POST /nextgen-authoring/bundle-versions/<bundleVersionId>/activate --body '{}'` captured to `${SCRATCH_DIR}/activate-response.json`, then `node "<skill_dir>/scripts/classify-activate-result.mjs" ${SCRATCH_DIR}/activate-response.json` — activate can return HTTP 200 with a `{success:false}` silent-failure body when a referenced invocable action isn't surfaced; the classifier catches that. `PASS` ⇒ Phase 7; `FAIL` ⇒ surface `messages[]`, offer Phase 2c permset hand-off if a message names a missing action, do NOT report CREATED; `CANNOT-CONFIRM` ⇒ fall through to Phase 7 SOQL verify.
 9. **Phase 7 — Verify.** SOQL `BotDefinition WHERE Id='<id>'` (+ `BotVersions` subquery) and classify — `<id>` is the create path's `publishedBotId` (captured from Phase 5) or, on the ALREADY-CREATED / reactivation path, the **live matched Id the Phase-2 classifier returned** (its `botDefinitionId`/`agentId` output — the actual `BotDefinition.Id` of the matched record), **not** the Phase-1 template `botDefinitionId` (which is always null for the Fulfiller, so on any existing-agent hit the verify would run `WHERE Id=''` and falsely report failure after a successful skip/activation). Confirm `exists:true, count:1, latestVersionStatus:"Active"`. Any discrepancy ⇒ report verbatim, do not fabricate success.
-10. **Phase 8 — Aggregate verdict.** Emit CREATED / ALREADY-CREATED / ACTIVATED / FAILED (ACTIVATED on the Phase-2b path) + `BotDefinition` Id / bundle `id` by re-invoking `render-report.mjs` — the single source of report text. If `${outputDir}` was provided, overwrite `${outputDir}/report.md`; otherwise emit stdout as the turn-side report.
+10. **Phase 8 — Aggregate verdict.** Emit CREATED / ALREADY-CREATED / ACTIVATED / FAILED (ACTIVATED on the Phase-2b path) by re-invoking `render-report.mjs` — the single source of report text. **Never surface internal record IDs** — the bundle version `id`, `publishedBotId`/`BotDefinition`, or `BotVersion` — in the verdict, chat narration, or the report; they are captured only to drive the publish/activate/verify calls and mean nothing to the admin. Report by status/name only ("created and activated"), never "Bundle created (version id …)" / "Published (BotDefinition …)". If `${outputDir}` was provided, overwrite `${outputDir}/report.md`; otherwise emit stdout as the turn-side report.
+11. **Phase 9 — Runtime-access hand-off (REQUIRED on a live-agent verdict).** When the Phase-8 verdict is `CREATED`, `ALREADY-CREATED`, or `ACTIVATED` (a live agent now exists), raise an `AskUserQuestion` — the same enforced hand-off pattern as the Phase-1 prerequisite and Phase-2c permset offers — asking whether to set up the agent's **runtime access** now: _"The agent is live, but its actions call platform features (Prompt Templates, Data Cloud, Unified Catalog) a user can't run until access is granted, so it fails when opened. Set up runtime access now?"_. On **Yes**, delegate to `service-itsm-agentic-setup-agent-runtime-access-assign` (it runs its own target-user selection + confirm-to-write gate). On **No**, stop — the report's "set up access" next-step line stands as the record. Do **NOT** raise this on `PENDING CONFIRMATION`, `DECLINED`, or `FAILED` (no live agent to grant access to). This is an enforced `AskUserQuestion`, not report prose — `render-report.mjs` still emits its plain-language "set up access" line unchanged; the question is what guarantees the offer is actually made every time.
 
 ---
 
@@ -152,7 +153,8 @@ Substitute `<alias>` with the collected target org and `<developerName>` / `<lab
 | Enumerate `BotDefinition` **with the `BotVersions` subquery**; skip create when Active; offer Phase-2b reactivation when Inactive — never silent skip, never duplicate create | Subquery is what distinguishes Active/Inactive; the server rejects a duplicate `DeveloperName` at publish (unique-constraint → bundle cleanup), so this read is what turns a repeat into a graceful skip instead of that hard error |
 | **REQUIRED confirm-to-write checkpoint** before create sequence or reactivation call | Both change live org state — explicit user approval required |
 | On `hasAccess=false` / `403 FUNCTIONALITY_NOT_ENABLED`, offer the readiness hand-off — never enable features here; never call legacy `/connect/service-itsm/createAgent` | Enablement is a Setup-UI/admin action; `createAgent` produces a Setup-page bot with an external-link icon (wrong kind of agent for this skill) |
-| Report exact CLI response text on any error | Enables support to diagnose failures |
+| **Never surface internal record IDs** — the bundle version `id` (`1bZ…`), `publishedBotId`/`BotDefinition` (`0Xx…`), `BotVersion` (`0Xv…`) — in chat narration, the confirm-to-write step, or the report; report progress and verdict by status/name only | These IDs are captured solely to drive the publish → activate → verify → verify-read calls; they are meaningless to an admin going through setup and only add noise. `render-report.mjs` renders status-only rows and defensively scrubs any ID; the model must likewise not echo them (never "Bundle created (version id 1bZ…)" / "Published (BotDefinition 0Xx…)") |
+| Report exact CLI response text on any error | Enables support to diagnose failures — this is the one place a raw ID may appear, inside a verbatim error the user must relay to support |
 
 ---
 
@@ -165,7 +167,8 @@ Substitute `<alias>` with the collected target org and `<developerName>` / `<lab
 - [ ] Bundle body built by `build-create-body.mjs`, POSTed via `--body @<file>` with the collected `developerName`/`label`; or write correctly skipped.
 - [ ] Same `bundleVersionId` (response `id`) used for publish + activate; reactivation used `POST /connect/bot-versions/<id>/activation`; legacy `createAgent` never called.
 - [ ] Phase-7 verify confirmed `BotDefinition` present + latest version Active.
-- [ ] Access token never extracted; final verdict + `BotDefinition`/bundle Id reported.
+- [ ] On a live-agent verdict (CREATED / ALREADY-CREATED / ACTIVATED), the Phase-9 runtime-access hand-off was raised as an `AskUserQuestion` (delegating to `service-itsm-agentic-setup-agent-runtime-access-assign` on "yes"); NOT raised on PENDING CONFIRMATION / DECLINED / FAILED.
+- [ ] Access token never extracted; final verdict reported with **no internal record IDs** (bundle version `id`, `publishedBotId`/`BotDefinition`, `BotVersion`) surfaced in chat, the confirm-to-write step, or the report — status/name only (raw IDs allowed only inside a verbatim error).
 
 ---
 
@@ -173,7 +176,7 @@ Substitute `<alias>` with the collected target org and `<developerName>` / `<lab
 
 The report layout is generated deterministically by `scripts/render-report.mjs` — the single source of report text for both the chat turn and the harness's `${outputDir}/report.md`. Never hand-compose the layout in prose (A9); always shell out to the helper. Full rendered shape, report-state JSON schema, and checkpoint-write rules live in `references/report-format.md`.
 
-Terminal verdicts: `CREATED | ALREADY-CREATED | ACTIVATED | PENDING CONFIRMATION | DECLINED | FAILED`. When `${outputDir}` is set, write at Phase 3, Phase 6 (or Phase 2b), and Phase 8 — each write overwrites the same file. Skip these writes in interactive/chat surfaces.
+Terminal verdicts: `CREATED | ALREADY-CREATED | ACTIVATED | PENDING CONFIRMATION | DECLINED | FAILED`. When `${outputDir}` is set, write at Phase 3, Phase 6 (or Phase 2b), and Phase 8 — each write overwrites the same file. Skip these writes in interactive/chat surfaces. The Phase-9 runtime-access hand-off fires after the Phase-8 report on a live-agent verdict; it does not change the verdict or re-render the report.
 
 ---
 

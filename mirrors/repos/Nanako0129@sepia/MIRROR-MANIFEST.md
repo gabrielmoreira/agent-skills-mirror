@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Nanako0129/sepia` — 26 default patterns, 0 followed patterns, 25 file(s) materialized.
+Mirror of `Nanako0129/sepia` — 26 default patterns, 0 followed patterns, 27 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Nanako0129/sepia` — 26 default patterns, 0 followed patterns, 25 fi
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 25 |
+| Files         | 27 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -82,8 +82,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 21 | ✓ | [`skills/sepia/references/style-pass.md`](skills/sepia/references/style-pass.md) |
 | 22 | ✓ | [`skills/sepia/references/voice-skills.md`](skills/sepia/references/voice-skills.md) |
 | 23 | ✓ | [`skills/sepia/references/voices/hemingway.md`](skills/sepia/references/voices/hemingway.md) |
-| 24 | ✓ | [`skills/sepia/references/voices/registry.md`](skills/sepia/references/voices/registry.md) |
-| 25 | ✓ | [`skills/sepia/SKILL.md`](skills/sepia/SKILL.md) |
+| 24 | ✓ | [`skills/sepia/references/voices/PERSONA-TEMPLATE.md`](skills/sepia/references/voices/PERSONA-TEMPLATE.md) |
+| 25 | ✓ | [`skills/sepia/references/voices/registry.md`](skills/sepia/references/voices/registry.md) |
+| 26 | ✓ | [`skills/sepia/references/voices/tw-journalism.md`](skills/sepia/references/voices/tw-journalism.md) |
+| 27 | ✓ | [`skills/sepia/SKILL.md`](skills/sepia/SKILL.md) |
 
 ---
 

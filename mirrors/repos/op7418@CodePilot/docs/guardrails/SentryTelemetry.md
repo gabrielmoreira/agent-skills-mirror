@@ -30,6 +30,8 @@
 | ST-16 | packaged Next utility 的运行期 fatal/error/unexpected exit 每个 generation 最多上报一个 normalized product-fault event。事件只允许稳定 reason、平台定义的有界整数退出码和 utility/host memory 数值；退出码接受 signed int32 至 Windows DWORD 范围，内存指标仍只接受非负有限数。已知 Windows logoff/OS teardown 状态（当前 `0x40010004`、`0xC000026B`）是 expected lifecycle：0 event；但退出码本身不拥有 recovery 决策，Main 未进入独立 `isQuitting` 门禁时仍启动既有 bounded recovery，防止同码外部终止留下死后端。其他 unexpected exit 只按 clean/nonzero/platform-termination 等低基数 class 分组，精确 exit code 仅作数值 extra。Electron diagnostic report 原文、argv、env、路径和 server stdout/stderr 禁止进入 Sentry。SDK `ChildProcess` 必须保留 breadcrumb 但以 `events:[]` 关闭自动 message event，避免 `abnormal-exit` 与自定义边界双报。启动探测失败、dev、正常 quit 与 telemetry opt-out 必须为 0 event。 |
 | ST-17 | exception/message/breadcrumb 中出现 POSIX 或 Windows 用户目录时，必须把整个剩余本地路径替换为固定 `[local-path]`，包括空格与多语言目录，不能只隐藏用户名后保留项目/文件名。stack frame 与 debug_meta 走独立 source-path canonicalization，可保留用户名后的源码相对结构与行列/debug ID 以支持 symbolication。 |
 
+后台 chat collector 的 rejected Promise 由单一边界上报 `chat.collection_failed`，renderer detach 后仍有效。只保留安全栈与固定产品分类，不发送 DB message/SQL/回复/cause；SDK import 仍在显式 `NODE_ENV !== development` block 内，防止 Turbopack dev 引入遥测依赖图。dev/preview/遥测关闭时同样输出固定本地日志码：只有精确匹配的 `CODEPILOT_MESSAGE_PERSISTENCE_FAILED` 可以作为具体码，其余统一 `CHAT_COLLECTION_FAILED`，不得透传 error/message/cause。上报同步失败也必须在 finally 中执行 lock cleanup。真实 SDK transport 的 stable 阳性与 dev/preview 阴性、一次上报、本地码和敏感内容排除由 `chat-collection-telemetry.test.ts` 覆盖（2026-09-07）。
+
 ## 3. 关键文件与责任
 
 - `src/lib/telemetry/contract.ts`：ST-01/02/06/07/08/15。

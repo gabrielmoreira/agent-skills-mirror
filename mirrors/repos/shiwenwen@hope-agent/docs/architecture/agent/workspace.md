@@ -286,7 +286,7 @@ flowchart LR
 
 `mergeArtifacts` 按 key 合并：**live tail 在前**（它总是最新的窗口，保证当前轮再次触及的文件 / URL 稳定置顶），后端独有条目续在其后；两侧重叠时取 live 条目，再由可选的 `reconcile` 从后端条目补字段。目前两个 reconcile：
 
-- `reconcileFile`：live 条目缺语言而后端摘要有时，补上 Shiki language。
+- `reconcileFile`：live 条目缺语言而后端摘要有时，补上 Shiki language；窗口内只有一次读取而后端记录了窗口外的改写时，保留 `modified` 及摘要行数，避免历史改写被降级为只读。
 - `reconcileSource`：任一侧把 URL 认作 `web_search` 时，保留该 origin 徽标。
 
 合并 key 三类：
@@ -294,6 +294,12 @@ flowchart LR
 - **文件**：`path`。
 - **来源**：`sessionSourceKey`——URL → `url:<归一化 URL>`；附件 → `attachment:<localPath ?? url ?? quotePath ?? name>:<quoteLines>:<sizeBytes>`（后端对应 `attachment_source_key`）。
 - **浏览器活动**：`call:<callId>`，`callId` 缺失时回退 `browser:<at>:<action>:<op>:<targetId>:<url>`。
+
+### 文件差异入口
+
+工作台带结构化快照的文件行，文件名与“查看 diff”按钮均打开该工具快照。仅有后端摘要的改写文本 / 未知类型文件打开 DiffPanel 的“无 diff 数据”空态；本入口不自动回读窗口外的工具消息，也不以当前文件内容或 Git 状态推测历史。图片、音视频、PDF / Office 产物若无工具快照，保持原来的预览 / 打开 / 下载主操作；所有文件的当前内容预览仍在右键 / `⋯` 菜单内。
+
+消息底部改写文件标签沿同样的历史审阅入口传递快照，折叠到最终回复时保留各路径最近一次改写的快照。前端兼容旧消息的成功文本结果时，如果较新的写入缺少快照，清除先前快照，避免把旧变更冒充这次变更；失败的写入不清除已有快照。`before: null` 的新建文件仍可显示全新增差异，Git 忽略规则不参与工具快照选择。
 
 ### dedup / 排序是跨语言双实现
 
@@ -313,7 +319,7 @@ flowchart LR
 - 工具产出的媒体文件（`send_attachment` / `image_generate` / `exec` 经 `__MEDIA_ITEMS__` 头带出的 `localPath`）以 `modified` 登记。命中已有条目时两侧行为一致：**刷新活动顺序，并把既有 `read` 升级为 `modified`**（产物落盘比只读更重要），但保留已有 write 条目更丰富的 diff / 行数 / read_lines。由 `upsert_media`（Rust）与 `useSessionFileChanges.ts` 媒体分支（TS）实现，`media_after_read_upgrades_to_modified_and_bumps` / `media_after_write_keeps_diff_and_bumps` 两个 Rust 测试锁定。
 - 同一条消息内的处理次序：先结构化 file metadata，再该消息的媒体产物。后端刻意写成单次交错遍历，就是为了对齐前端按 tool 逐个处理的顺序。
 - 排序：最近触及在前。
-- **已登记的有意分歧**：前端 live tail 会用 `extractModifiedFiles` 对没有结构化 metadata 的旧消息做兜底；后端不做，只读结构化 metadata。窗口内的旧消息由 live tail 覆盖，更早的属已知缺口——这是刻意取舍，不是待修漂移。
+- **已登记的有意分歧**：前端 live tail 会用 `extractMessageFileAttachments` 对没有结构化 metadata 的旧消息做兜底，并按工具顺序处理，避免旧兜底覆盖后续删除快照或打乱最近触及顺序；后端不做，只读结构化 metadata。窗口内的旧消息由 live tail 覆盖，更早的属已知缺口——这是刻意取舍，不是待修漂移。
 
 **来源（`aggregate_sources` ↔ `aggregateSessionUrlSources`）**
 

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `zubair-trabzada/geo-seo-claude` — 26 default patterns, 0 followed patterns, 21 file(s) materialized.
+Mirror of `zubair-trabzada/geo-seo-claude` — 26 default patterns, 0 followed patterns, 22 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `zubair-trabzada/geo-seo-claude` — 26 default patterns, 0 followed p
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 21 |
+| Files         | 22 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -64,22 +64,23 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 3 | ✓ | [`agents/geo-platform-analysis.md`](agents/geo-platform-analysis.md) |
 | 4 | ✓ | [`agents/geo-schema.md`](agents/geo-schema.md) |
 | 5 | ✓ | [`agents/geo-technical.md`](agents/geo-technical.md) |
-| 6 | ✓ | [`geo/SKILL.md`](geo/SKILL.md) |
-| 7 | ✓ | [`skills/geo-audit/SKILL.md`](skills/geo-audit/SKILL.md) |
-| 8 | ✓ | [`skills/geo-brand-mentions/SKILL.md`](skills/geo-brand-mentions/SKILL.md) |
-| 9 | ✓ | [`skills/geo-citability/SKILL.md`](skills/geo-citability/SKILL.md) |
-| 10 | ✓ | [`skills/geo-compare/SKILL.md`](skills/geo-compare/SKILL.md) |
-| 11 | ✓ | [`skills/geo-content/SKILL.md`](skills/geo-content/SKILL.md) |
-| 12 | ✓ | [`skills/geo-crawlers/SKILL.md`](skills/geo-crawlers/SKILL.md) |
-| 13 | ✓ | [`skills/geo-llmstxt/SKILL.md`](skills/geo-llmstxt/SKILL.md) |
-| 14 | ✓ | [`skills/geo-platform-optimizer/SKILL.md`](skills/geo-platform-optimizer/SKILL.md) |
-| 15 | ✓ | [`skills/geo-proposal/SKILL.md`](skills/geo-proposal/SKILL.md) |
-| 16 | ✓ | [`skills/geo-prospect/SKILL.md`](skills/geo-prospect/SKILL.md) |
-| 17 | ✓ | [`skills/geo-report-pdf/SKILL.md`](skills/geo-report-pdf/SKILL.md) |
-| 18 | ✓ | [`skills/geo-report/SKILL.md`](skills/geo-report/SKILL.md) |
-| 19 | ✓ | [`skills/geo-schema/SKILL.md`](skills/geo-schema/SKILL.md) |
-| 20 | ✓ | [`skills/geo-technical/SKILL.md`](skills/geo-technical/SKILL.md) |
-| 21 | ✓ | [`skills/geo-update/SKILL.md`](skills/geo-update/SKILL.md) |
+| 6 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 7 | ✓ | [`geo/SKILL.md`](geo/SKILL.md) |
+| 8 | ✓ | [`skills/geo-audit/SKILL.md`](skills/geo-audit/SKILL.md) |
+| 9 | ✓ | [`skills/geo-brand-mentions/SKILL.md`](skills/geo-brand-mentions/SKILL.md) |
+| 10 | ✓ | [`skills/geo-citability/SKILL.md`](skills/geo-citability/SKILL.md) |
+| 11 | ✓ | [`skills/geo-compare/SKILL.md`](skills/geo-compare/SKILL.md) |
+| 12 | ✓ | [`skills/geo-content/SKILL.md`](skills/geo-content/SKILL.md) |
+| 13 | ✓ | [`skills/geo-crawlers/SKILL.md`](skills/geo-crawlers/SKILL.md) |
+| 14 | ✓ | [`skills/geo-llmstxt/SKILL.md`](skills/geo-llmstxt/SKILL.md) |
+| 15 | ✓ | [`skills/geo-platform-optimizer/SKILL.md`](skills/geo-platform-optimizer/SKILL.md) |
+| 16 | ✓ | [`skills/geo-proposal/SKILL.md`](skills/geo-proposal/SKILL.md) |
+| 17 | ✓ | [`skills/geo-prospect/SKILL.md`](skills/geo-prospect/SKILL.md) |
+| 18 | ✓ | [`skills/geo-report-pdf/SKILL.md`](skills/geo-report-pdf/SKILL.md) |
+| 19 | ✓ | [`skills/geo-report/SKILL.md`](skills/geo-report/SKILL.md) |
+| 20 | ✓ | [`skills/geo-schema/SKILL.md`](skills/geo-schema/SKILL.md) |
+| 21 | ✓ | [`skills/geo-technical/SKILL.md`](skills/geo-technical/SKILL.md) |
+| 22 | ✓ | [`skills/geo-update/SKILL.md`](skills/geo-update/SKILL.md) |
 
 ---
 

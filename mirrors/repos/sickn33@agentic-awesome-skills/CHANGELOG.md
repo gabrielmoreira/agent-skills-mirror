@@ -7,6 +7,59 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [17.5.0] - 2026-09-18 - "Beatra Video Studio, Meteora DLMM Screening, and Catalog Validation Hardening"
+
+> Adds two reviewed skills (one official vendor catalog pointer, one read-only
+> community screening skill) and hardens the hosted catalog input boundary.
+
+A maintenance release for Claude Code, Cursor, Codex CLI and Gemini CLI.
+It adds one official vendor catalog entry and one community skill reviewed and
+merged through the protected maintainer workflow, and hardens the hosted catalog
+input boundary; the catalog contains 2,126 skills and existing installation
+interfaces remain supported.
+
+### Start here
+
+- Install: `npx agentic-awesome-skills@17.5.0`
+- [Choose your tool](README.md#choose-your-tool)
+- [Best skills by tool](README.md#best-skills-by-tool)
+- [Bundles](docs/users/bundles.md)
+- [Workflows](docs/users/workflows.md)
+
+### Added
+
+- `beatra-ai-video-studio`: official Beatra catalog entry pinned to a verified
+  archive digest and a full commit SHA, with explicit install approval gates,
+  `risk: critical`, and a documented self-update opt-out.
+- `meteora-dlmm-pool-screening`: read-only ranking of Meteora DLMM pools from
+  public APIs, with the screener script embedded in the skill references.
+
+### Fixed
+
+- Workbench stack/plan parsing now enforces the published profile limits
+  (at least one goal, 128-character profile values, 256-character projectType).
+- The hosted catalog validates every skills-index record before accepting it
+  and falls back to the next source on malformed payloads; one shared validator
+  serves `SkillProvider` and `OutcomeExplorer`.
+
+### Improved
+
+- Refreshed canonical indexes, catalogs, plugin mirrors, editorial bundles, and
+  web assets for the 2,126-skill release.
+- Official Beatra AI sponsorship attribution and README credits in
+  `### Official Sources` and `### Community Contributors`.
+
+### Validation scope
+
+The source PRs passed maintainer repair, exact-head review, repository
+validation, reference and documentation-security checks, protected CI, CodeQL,
+dependency review, package publication and release-only Pages verification.
+
+Thanks to @beatra-ai (#1467), @romankurnovskii (#1466), and @jhuang-tt
+(#1464, #1465) for their contributions.
+
+---
+
 ## [17.4.0] - 2026-09-16 - "YouTube Transcript Skill, SEO-AEO Audit-First Overhaul, and Catalog Persistence"
 
 > Adds one reviewed community skill, rewrites the SEO-AEO family around an audit-first evidence workflow, and hardens catalog persistence.

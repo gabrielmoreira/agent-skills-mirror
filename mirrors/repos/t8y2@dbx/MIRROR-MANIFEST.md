@@ -661,7 +661,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 592 | ✓ | [`apps/desktop/src/lib/sql/doris/README.md`](apps/desktop/src/lib/sql/doris/README.md) |
 | 593 | ✓ | [`apps/desktop/src/lib/sql/semantic/README.md`](apps/desktop/src/lib/sql/semantic/README.md) |
 | 594 | ✓ | [`apps/README.md`](apps/README.md) |
-| 595 | ✓ | [`crates/dbx-core/src/mq/README.md`](crates/dbx-core/src/mq/README.md) |
+| 595 | ✓ | [`crates/dbx-core/src/admin/mq/README.md`](crates/dbx-core/src/admin/mq/README.md) |
 | 596 | ✓ | [`crates/README.md`](crates/README.md) |
 | 597 | ✓ | [`deploy/1panel/README.md`](deploy/1panel/README.md) |
 | 598 | ✓ | [`deploy/database/consul/2.0.2/init/README.md`](deploy/database/consul/2.0.2/init/README.md) |

@@ -1,5 +1,7 @@
 # StreamSession Guardrail
 
+> 2026-09-18 Gemini Native：每个已完成 SDK step 通过 `native_step` 保存 canonical response.messages 到 content block 的隐藏 `nativeStep`。只接受 assistant/tool role；桌面 collector 与 bridge 均沿用 owner gate。仅相同 Provider ID + upstream model 回放签名，跨路线/旧记录降级为可见历史；后续未完成 step 必须保留，不能被前一 step 元数据覆盖。UI/摘要不渲染 opaque 元数据，token 估算不重复计算。`length` 结束保留正文并发送本地化桌面截断通知；通知不是持久化的完成质量标记。回归：`gemini-native.test.ts`。
+
 > **Status: Active** — 2026-07-22 因同 Runtime 子 Agent 的 tool stream、历史配对与侧栏 transcript 接线完成首次 on-touch 激活。
 > **为什么先读**：聊天主路径——双入口（`/chat` page.tsx 首消息 + `/chat/[id]` ChatView.tsx 后续）必须**独立**管理 effort / thinking / runtime override 并各自向 `/api/chat` 传递。这是上一次 SDK 0.2.111 接入的重灾区，也是即将到来的 Phase 6 上下文可视化的主要触及点。
 > **已知关键文件**：`src/lib/claude-client.ts`、`src/lib/stream-session-manager.ts`、`src/hooks/useSSEStream.ts`、`src/app/chat/page.tsx`、`src/components/chat/ChatView.tsx`。
@@ -46,6 +48,16 @@
 | 30 | 每个父聊天第一次 execution 必须先完成 Runtime binding，再 resolve Provider 或启动 child。bound 后请求 Runtime 只能与 owner 一致；legacy/unbound 的自动执行必须在任何 transcript、工具调用和费用发生前 fail closed | `/api/chat` + `thread-execution-binding.ts` |
 | 31 | 跨 Runtime 只能以新 session handoff 继续。目标首轮从 `runtime_handoff` fragment 消费同一份有边界、可截断、已脱敏事实；不得复制原生 SDK/thread ref，也不得把 handoff card 写成用户消息 | handoff API + `handoff-payload.ts` + `ChatView.tsx` |
 | 32 | v2 usage 中 missing cache/cost 是 unknown，不是 0。Native 必须核对 provider raw usage，不能接受 AI SDK 合成的缓存零；聚合与 UI 只有在每轮 denominator/source 完整时才显示 rate/金额 | `turn-usage.ts` + collector + usage UI |
+
+## 保存失败的后台与客户端边界（2026-09-07）
+
+- `/api/chat` 启动 collector 后立即用 `observeChatCollection` 拥有 rejection，客户端 detach 后仍捕获一次安全遥测；失败处理自身不得产生新的未处理拒绝。
+- runtime SSE 的 done 不是保存确认。响应结束前只等待 terminal persistence 的独立 one-shot 信号，不能等待 collector finally 中的 onboarding/check-in 模型调用或通知；整个 collector 仍有独立 rejection owner。失败发送固定 `CODEPILOT_CHAT_SAVE_UNCONFIRMED`，双聊天入口通过共同错误映射显示“未确认保存、先复制后刷新”的双语提示。后续 finally 失败不能撤销已经确认的保存。
+- 首条聊天保存未确认时不得自动跳转到 DB 历史页；在 `/chat` 内把真实 session 与内存消息交给 ChatView，后续发送复用该 session 和既有 route CAS / 权限 / Stop 行为。只重读 session metadata，不能重读历史覆盖正文；正常首条继续跳转。
+- 明确保存错误通过 SSE parser 的原始码传到 snapshot.saveUnconfirmed，再写入 renderer-only Message.saveUnconfirmed；不能解析翻译后正文猜状态。snapshot rebuild 必须保留标记。ChatView 的 DB reconcile 在 state updater 内检查未确认回复（含 fetch 期间到达的警告），后续成功回合也不能将其覆盖；流在页面切走后结束时，恢复从 snapshot 追加本地正文，不用 DB 替代，initialMessages 初始化不得覆盖这次追加。
+- client tee branch cancel 不能取消 server collector，也不能 await 需要另一分支结束的 tee cancel Promise。所有追加 SSE/关闭走 `SingleOwnerStreamWriter`。
+- 不修改 DB 空读的 fail-closed 事务语义，不声称修复初始空读或保证数据已落库。测试必须同时覆盖正常保存和首次/兜底保存失败，并验证失败时 cleanup/lock 释放。
+- 回归：`chat-collection-response.test.ts`（真实 onboarding 处理器的模型请求被测试 fetch 阻塞时 SSE 已关闭、finally 在 onComplete 前抛错仍有 owner）、`chat-collection-telemetry.test.ts`、`chat-save-warning.spec.ts`（中英文、双入口、失败后续聊同 session、长会话裁剪、离页恢复、正常首条跳转对照）。
 
 ## 关键文件 + 责任
 
@@ -207,3 +219,12 @@
 - 2026-08-07：0.65 真实 Sentry stack 证明 `AI_MissingToolResultsError` 发生在下一轮 prompt conversion；根因是终止回合可持久化只有 tool_use 的 transcript。未来收口补诚实 missing-result，legacy replay 再防御性修复；真实 AI SDK 正/反对照证明修复前拒绝、修复后进入模型调用。
 - 2026-08-24：marketplace 与 CLI/media subprocess stream 的 cancel/exit 同时争抢 controller，生产出现 closed-controller Sentry。统一由 `SingleOwnerStreamWriter` 认领终态；cancel 先 close owner 再 kill，迟到 callback 只会 no-op。行为测试覆盖 writer 的迟到写入，并逐条钉住四个 route attach/cancel/no-raw-controller 接线；`safe-stream.ts` 仅保留给尚未迁移的 callback-heavy 旧流，不再宣称每个 ReadableStream 都必须使用。
 - 2026-08-27：生产 Sentry 暴露两条持久化边界：合法 JSON 但缺 `output_tokens` 会在历史 UI 崩溃；assistant insert 后非原子回读可能让 collector 访问 `saved.id`。UI 改为运行时 shape 验证且不补假 0，`addMessage` 改为 insert/update/select 同事务并以稳定错误回滚空读。
+
+
+## 2026-09-14 #685：已选路由与运行时回报分离
+
+- `chat_sessions.model` 是用户提交的 route model identity；SDK/Native `status.model` 是运行时观察值，collector 不得用它覆盖 route，也不得借 status 绕过 `route_revision` CAS。续接引用 `sdk_session_id` 仍由现有 lock owner gate 写入；模型观察值继续留在 SSE/usage 元数据中。
+- `resolveChatMessageRoute` 是普通消息的 identity gate。Provider 未随请求回显时仍固定使用 session Provider，不能回退默认/env；明确不同 Provider 立即拒绝。
+- 兼容旧版已写成 upstream 的会话只作读取：必须在同一 Provider 的 live enabled catalog 唯一匹配到本次请求的 modelId，并且当前 Runtime 兼容、实际 resolver upstream 一致。stored ID 若本身是另一条 catalog modelId，或多个 alias 共享它、映射隐藏/删除/修改，不能自动解释为同一路线。虚拟账号路线继续精确 identity。
+- 兼容不改 owner、历史、Provider 或 route_revision；真正改 route 仍走用户显式 CAS。无法无歧义恢复的旧会话继续要求明确重选，不能按显示名或跨 Provider 猜测。
+- 回归：`chat-message-route.test.ts`（多 Provider 连续/重开、旧 upstream、反例和 Native/Codex owner 兼容）、`chat-message-route-http.test.ts`（真实 POST 双回合与错路由在持久化/Runtime 前拒绝）、`collect-owner-gate.test.ts`（owner 也不覆盖 model、stale owner 不写续接状态）。

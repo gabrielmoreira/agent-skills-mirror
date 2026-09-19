@@ -113,9 +113,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 52 | ✓ | [`.agents/design/core/workflow/index.md`](.agents/design/core/workflow/index.md) |
 | 53 | ✓ | [`.agents/design/core/workflow/interactive.md`](.agents/design/core/workflow/interactive.md) |
 | 54 | ✓ | [`.agents/design/core/workflow/loop-run/development.md`](.agents/design/core/workflow/loop-run/development.md) |
-| 55 | ✓ | [`.agents/design/core/workflow/node-response-append-only-interactive-id.md`](.agents/design/core/workflow/node-response-append-only-interactive-id.md) |
-| 56 | ✓ | [`.agents/design/core/workflow/parallel-node/design.md`](.agents/design/core/workflow/parallel-node/design.md) |
-| 57 | ✓ | [`.agents/design/core/workflow/runtime.md`](.agents/design/core/workflow/runtime.md) |
+| 55 | ✓ | [`.agents/design/core/workflow/parallel-node/design.md`](.agents/design/core/workflow/parallel-node/design.md) |
+| 56 | ✓ | [`.agents/design/core/workflow/runtime.md`](.agents/design/core/workflow/runtime.md) |
+| 57 | ✓ | [`.agents/design/core/workflow/summary-and-node-response.md`](.agents/design/core/workflow/summary-and-node-response.md) |
 | 58 | ✓ | [`.agents/design/core/workflow/tool-params-custom-json-schema.md`](.agents/design/core/workflow/tool-params-custom-json-schema.md) |
 | 59 | ✓ | [`.agents/design/core/workflow/workflow-file-context.md`](.agents/design/core/workflow/workflow-file-context.md) |
 | 60 | ✓ | [`.agents/design/outlink/wechat-clawbot.md`](.agents/design/outlink/wechat-clawbot.md) |

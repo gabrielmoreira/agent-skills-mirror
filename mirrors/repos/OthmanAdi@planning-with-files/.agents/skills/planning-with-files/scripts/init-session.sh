@@ -103,6 +103,7 @@ slugify() {
     # Lowercase, non-alphanumerics → '-', collapse repeats, trim leading/trailing '-'
     printf '%s' "$1" \
         | tr '[:upper:]' '[:lower:]' \
+        | tr '\r\n' '--' \
         | sed -e 's/[^a-z0-9]/-/g' -e 's/-\{2,\}/-/g' -e 's/^-//' -e 's/-$//' \
         | cut -c1-40
 }
@@ -202,12 +203,20 @@ apply_v3_mode() {
 
     # (c) auto-attest the plan (attestation default-on in v3 modes, security
     #     strand rec 1). attest-plan.sh resolves the same way init-session just
-    #     pinned things: in slug mode PLAN_ID points at this plan dir; in legacy
-    #     mode it is empty and the script falls back to ./task_plan.md at root.
-    #     Run from the project root (CWD here) so both resolutions land.
+    #     pinned things. Slug mode binds both selectors to the plan that was
+    #     just created, so an inherited PWF_PLAN_ROOT or PLAN_ID cannot
+    #     redirect attestation to another project or plan (#261, #237). Root
+    #     mode clears both instead: the attester only falls back to the legacy
+    #     ./task_plan.md when no selector is set, and a bound pin would make it
+    #     refuse the root plan. Run from the project root (CWD here) so both
+    #     resolutions land.
     _attest="${SCRIPT_DIR}/attest-plan.sh"
     if [ -f "${_attest}" ] && [ -f "${_mode_plan}" ]; then
-        PLAN_ID="${PLAN_ID:-}" sh "${_attest}" >/dev/null 2>&1 || true
+        if [ "$SLUG_MODE" -eq 1 ]; then
+            PWF_PLAN_ROOT="$PWD" PLAN_ID="${PLAN_ID}" sh "${_attest}" >/dev/null 2>&1 || true
+        else
+            PWF_PLAN_ROOT="" PLAN_ID="" sh "${_attest}" >/dev/null 2>&1 || true
+        fi
     fi
 }
 

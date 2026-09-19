@@ -1,5 +1,7 @@
 # Performance diagnostics
 
+> Chatbook generation is not instrumented: turns recorded here come from the chat path only, so a Chatbook-only session shows an empty Recent turns table even with diagnostics on.
+
 NBI can record where each chat turn spends its time and measure the machine it
 is running on. This document covers turning that on, reading what it produces,
 and the three diagnoses it was built to make.
@@ -321,6 +323,16 @@ additionally hashes file basenames (keeping the extension, so
 `notebook.ipynb` becomes `a1b2c3d4.ipynb`) and hashes model, tool, server, and
 provider names in full, including tool names embedded in span names.
 
+A turn's `mode` is the exception: it is recorded in the clear, because it is
+the label the Recent turns table shows and hashing it would leave the column
+unreadable. Its values are `claude`, `acp`, the id of the configured chat
+provider (`github-copilot`, `openai-compatible`, `litellm-compatible`,
+`ollama`, or the id a plugin registered), or `chat` when no provider is
+configured. A Chatbook turn carries the surface as well, as
+`chatbook:<provider>`, so it can be told apart from a chat turn on the same
+provider. A site that registers a provider under an internal name should
+know that name reaches the report.
+
 The probe output is separately scrubbed: home directory paths and the resolved
 real home are replaced with `~`, and the username is replaced with `~user`.
 Probe output carries `contains_internal_hostnames: true` when the network check
@@ -339,6 +351,6 @@ Attach:
    thing that shows interception.
 3. Which verdict the slow turns show, and what you expected instead.
 
-Check the attribute detail setting first. `redacted` is safe to send as-is;
+Check the attribute detail setting first. `redacted` is safe to send as-is, with the backend label the one plaintext field;
 `full` contains model, tool, and server names and file basenames in the clear.
 Neither mode contains prompt text, response text, or hostnames.

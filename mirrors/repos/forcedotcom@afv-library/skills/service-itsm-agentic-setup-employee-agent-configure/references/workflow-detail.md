@@ -162,7 +162,7 @@ Confirm `exists:true` with `count:1`, and — on the create or reactivation path
 
 ## Phase 8 — Aggregate verdict
 
-Report the verdict (CREATED / ALREADY-CREATED / ACTIVATED / FAILED) and the resulting `BotDefinition` Id / bundle `id`. Use **ACTIVATED** when Phase 2b's reactivation path was taken (existing agent found inactive, activated instead of creating new). Emit the final report by re-invoking `scripts/render-report.mjs` with the fully populated phase-state JSON. If `${outputDir}` was provided, overwrite `${outputDir}/report.md`; otherwise emit the helper's stdout as the turn-side report.
+Report the verdict (CREATED / ALREADY-CREATED / ACTIVATED / FAILED). Use **ACTIVATED** when Phase 2b's reactivation path was taken (existing agent found inactive, activated instead of creating new). **Do not surface internal record IDs** (the bundle version `id`, `publishedBotId`/`BotDefinition`, `BotVersion`) in the verdict, report, or chat narration — they drive the publish/activate/verify calls but mean nothing to the admin; report by status/name only. Emit the final report by re-invoking `scripts/render-report.mjs` with the fully populated phase-state JSON (it renders status-only rows and scrubs any stray ID). If `${outputDir}` was provided, overwrite `${outputDir}/report.md`; otherwise emit the helper's stdout as the turn-side report.
 
 ```bash
 node "<skill_dir>/scripts/render-report.mjs" ${SCRATCH_DIR}/report-state.json "${outputDir}/report.md"

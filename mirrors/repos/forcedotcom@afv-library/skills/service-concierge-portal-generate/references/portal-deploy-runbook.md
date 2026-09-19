@@ -43,6 +43,7 @@ At the end of the run, print the live customer-facing portal URL for the operato
 >
 > | # | Step | Command / surface | Verify |
 > |---|---|---|---|
+> | 0 | **MCP authorization pre-check** | Confirm the `metadata-experts` MCP server (tool `execute_metadata_action`) is authorized *before* asking §A's branding questions — Stage 6 below hard-depends on it to author `sfdc_cms__brandingSet/*/content.json` (no reliable static fallback for the exhaustive branding-token schema). If the server is unauthorized, tell the operator now and ask whether to (a) pause here and authorize it via `claude mcp` / `/mcp`, or (b) proceed and stop before Stage 6 once colors are already collected. Do not silently discover this at Stage 6. | MCP tool call succeeds, or operator has explicitly chosen how to proceed |
 > | 1 | Collect branding + access | §A `AskUserQuestion` × 7 | User confirms values |
 > | 2 | Prerequisite check | §B — `GET /connect/communities` returns 200 | JSON has `communities` array |
 > | 3 | Provision the site | §C — `POST /connect/communities` | Returns `id` (Network Id) |

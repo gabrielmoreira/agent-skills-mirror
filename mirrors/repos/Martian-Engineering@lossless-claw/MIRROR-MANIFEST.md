@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Martian-Engineering/lossless-claw` — 26 default patterns, 2 followed patterns, 10 file(s) materialized.
+Mirror of `Martian-Engineering/lossless-claw` — 26 default patterns, 2 followed patterns, 11 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Martian-Engineering/lossless-claw` — 26 default patterns, 2 followe
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 2 |
-| Files         | 10 |
+| Files         | 11 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -62,14 +62,15 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`.agents/skills/land-pr/SKILL.md`](.agents/skills/land-pr/SKILL.md) |
 | 2 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 3 | ✓ | [`skills/lossless-claw/references/architecture.md`](skills/lossless-claw/references/architecture.md) |
-| 4 | ✓ | [`skills/lossless-claw/references/config.md`](skills/lossless-claw/references/config.md) |
-| 5 | ✓ | [`skills/lossless-claw/references/diagnostics.md`](skills/lossless-claw/references/diagnostics.md) |
-| 6 | ✓ | [`skills/lossless-claw/references/recall-tools.md`](skills/lossless-claw/references/recall-tools.md) |
-| 7 | ✓ | [`skills/lossless-claw/references/session-lifecycle.md`](skills/lossless-claw/references/session-lifecycle.md) |
-| 8 | ✓ | [`skills/lossless-claw/SKILL.md`](skills/lossless-claw/SKILL.md) |
-| 9 | → | [`docs/configuration.md`](docs/configuration.md) |
-| 10 | → | [`RELEASING.md`](RELEASING.md) |
+| 3 | ✓ | [`docs/context-explorer.md`](docs/context-explorer.md) |
+| 4 | ✓ | [`skills/lossless-claw/references/architecture.md`](skills/lossless-claw/references/architecture.md) |
+| 5 | ✓ | [`skills/lossless-claw/references/config.md`](skills/lossless-claw/references/config.md) |
+| 6 | ✓ | [`skills/lossless-claw/references/diagnostics.md`](skills/lossless-claw/references/diagnostics.md) |
+| 7 | ✓ | [`skills/lossless-claw/references/recall-tools.md`](skills/lossless-claw/references/recall-tools.md) |
+| 8 | ✓ | [`skills/lossless-claw/references/session-lifecycle.md`](skills/lossless-claw/references/session-lifecycle.md) |
+| 9 | ✓ | [`skills/lossless-claw/SKILL.md`](skills/lossless-claw/SKILL.md) |
+| 10 | → | [`docs/configuration.md`](docs/configuration.md) |
+| 11 | → | [`RELEASING.md`](RELEASING.md) |
 
 ---
 

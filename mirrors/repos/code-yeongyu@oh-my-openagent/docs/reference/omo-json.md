@@ -76,7 +76,7 @@ No default profiles ship. A profile exists only when you write one under `profil
     }
   },
   "task": {
-    "default_execution_mode": "in-process",
+    "default_execution_mode": "auto",
     "default_concurrency": 5
   },
   "teams": {
@@ -319,11 +319,16 @@ Team members always spawn in `process` mode, which cannot carry the curated pers
 
 ### `task`
 
-Task engine settings. The whole object is optional, but `provider_concurrency`, `model_concurrency`, `state_dir`, and `reattach_on_reconcile` are optional and remain unset when omitted (`schema/task.ts`).
+Task engine settings. The whole object is optional, but `provider_concurrency`, `model_concurrency`, `state_dir`, `host_idle_exit_ms`, and `reattach_on_reconcile` are optional and remain unset when omitted (`schema/task.ts`).
+
+`default_execution_mode: "auto"` (the default) defers the in-process/process choice to the shared engine daemon: children run as daemon sessions when the platform is not Windows, `process_runner` is `host`, and the ensured daemon advertises `session_context` + `generation_handoff`; otherwise they run in-process. The decision is made ONCE per parent session, so a child's mode never changes because the daemon died later, and an explicit `in-process`/`process` always wins over it. Curated read-only agents (`explore`, `librarian`, `plan-consultant`, `plan-reviewer`) stay in-process regardless. `process_runner: "child-process"` keeps every process child in its own OS process (the only behaviour on Windows), `host_engine_policy` decides whether a daemon running a different engine build is handed over (`upgrade`) or left alone while children run as their own processes (`fallback`), and `host_idle_exit_ms` overrides the idle lifetime of a daemon this client starts. There is no socket key: one daemon, one public socket under the agent dir.
 
 | Field | Type | Default |
 |-------|------|---------|
-| `default_execution_mode` | `in-process \| process` | `in-process` |
+| `default_execution_mode` | `auto \| in-process \| process` | `auto` |
+| `process_runner` | `host \| child-process` | `host` |
+| `host_engine_policy` | `upgrade \| fallback` | `upgrade` |
+| `host_idle_exit_ms` | positive int | unset (the launch profile's tunable) |
 | `default_concurrency` | non-negative int (0 = unlimited) | `5` |
 | `provider_concurrency` | record<string, non-negative int (0 = unlimited)> | unset |
 | `model_concurrency` | record<string, non-negative int (0 = unlimited)> | unset |
@@ -417,7 +422,7 @@ The migration engine rewrites the persisted config in place, and doctor reports 
 // .omo/omo.jsonc
 {
   "task": {
-    "default_execution_mode": "in-process",
+    "default_execution_mode": "auto",
     "default_concurrency": 4,
     "wait": { "default_ms": 90000 }
   },

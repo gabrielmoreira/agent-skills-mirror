@@ -25,6 +25,7 @@ Manage Salesforce sandbox environments through Connect REST API — list invento
 Use `platform-sandbox-configure` when the work involves:
 - Listing or retrieving all sandboxes (GET /sandbox/reports)
 - Getting details or status of a specific sandbox by name or by ID (07E prefix)
+- Checking license usage and remaining capacity by license type (GET /sandbox/licenses)
 - Activating a sandbox after a refresh completes (applying the refresh)
 - Discarding a completed refresh (keeping existing sandbox data unchanged)
 - Permanently deleting a sandbox to free up licenses
@@ -51,6 +52,7 @@ The agent MUST respond with this exact markdown (not in a code block — render 
 - a. List all sandboxes — Names, types, statuses, IDs
 - b. Get details (by name) — Status, license, config
 - c. Get details (by ID) — Provide a 07E ID directly
+- d. Check license usage — Available vs. used counts by license type
 
 **2. Create & Refresh**
 - a. Create a new sandbox — Dev, Dev Pro, Partial, Full
@@ -78,8 +80,9 @@ Reply with a code (e.g. "3a") or describe what you need.
 | 1a | No input needed — proceed immediately |
 | 1b | "What's the sandbox name?" |
 | 1c | "What's the sandbox ID? (starts with 07E)" |
-| 2a | "What name for the new sandbox, and what license type? (Developer, Developer_Pro, Partial_Copy, Full)" |
-| 2b | "Which sandbox do you want to refresh? Optionally, provide a new name and/or description." |
+| 1d | No input needed — proceed immediately |
+| 2a | First call `GET /sandbox/licenses` (Section 9) and show available/used counts; then ask for name + license type (Developer, Developer_Pro, Partial_Copy, Full) |
+| 2b | First call `GET /sandbox/reports` (Section 1) and list refresh-eligible sandboxes (`isPendingActivation: false`); then ask which to refresh |
 | 3a | "Which sandbox? Provide a name or 07E ID." |
 | 3b | "Which sandbox? Provide a name or 07E ID." |
 | 3c | "Which sandbox? Provide a name or 07E ID." |
@@ -88,11 +91,7 @@ Reply with a code (e.g. "3a") or describe what you need.
 | 5a | "Delegating to the post-copy config generator — please share the SOP (file, text, or screenshot)." |
 | 5b | "Delegating to the post-copy config runner — please share the config JSON file and the target sandbox." |
 
-Execute the corresponding operation from the Operations section below. **Exception: 5a and 5b delegate to a different skill instead of an in-skill operation:**
-- 5a → Invoke the `automation-sandbox-post-copy-config-generate` skill.
-- 5b → Invoke the `automation-sandbox-post-copy-configure` skill.
-
-This skill does not implement post-copy automation itself — it only routes to the two skills above. Do not attempt to generate or apply a post-copy config directly from this skill.
+Execute the corresponding operation below. **Exception:** 5a/5b delegate — 5a → `automation-sandbox-post-copy-config-generate`; 5b → `automation-sandbox-post-copy-configure`. This skill does not implement post-copy automation; do not generate or apply a config directly.
 
 ---
 
@@ -105,48 +104,28 @@ This skill does not implement post-copy automation itself — it only routes to 
 Both paths return sandbox records with `sandboxId` (prefix `07E`) which is required for all lifecycle mutation operations.
 
 ```bash
-# List all sandboxes (Connect REST API)
 sf api request rest "/services/data/v66.0/sandbox/reports" --method GET
-
-# Response format:
-# {
-#   "count": 3,
-#   "sandboxes": [
-#     {
-#       "sandbox": {
-#         "sandboxId": "07E...",        # Required for all operations
-#         "sandboxName": "mybox",       # Top-level field — use this for name lookup
-#         "license": "Developer",
-#         "isPendingActivation": false,
-#         "canActivate": true,
-#         "canDelete": true,
-#         ...
-#       }
-#     }
-#   ]
-# }
 ```
 
-**IMPORTANT:** Do NOT use Tooling API (`SandboxInfo` or `SandboxProcess`) for sandbox discovery. The mutation endpoints (activate/discard/delete) require the `sandboxId` (07E prefix) from the Connect REST API response, NOT the `SandboxInfo.Id` (0GQ prefix) or `SandboxProcess.Id` (0GR prefix).
+See `references/api-response-shapes.md` for the full response shape.
 
-**NEVER use SOQL / `run_soql_query` / `sf data query` for sandbox lifecycle reads — status, inventory, details, license, or pending-activation state (e.g. a "get details / status / license / pending-activation for sandbox X" request).** This data lives ONLY in the Connect REST API response (`GET /sandbox/reports` for name lookup, `GET /sandbox/sandboxes/{07E-id}` for ID lookup); there is no SObject that returns it correctly. (`sf data query --use-tooling-api` on `SandboxInfo` remains valid for the Create and Refresh flows in Operations 7 and 8, which look up the `SandboxInfo` record to mutate it — that is not a lifecycle read.) If a name lookup returns an empty inventory (`count: 0`), the sandbox does not exist — report an honest `not_found`; do NOT retry the lookup via SOQL and do NOT fabricate details.
+**IMPORTANT:** Do NOT use Tooling API (`SandboxInfo`/`SandboxProcess`) for discovery — mutation endpoints require the Connect REST API's `sandboxId` (07E), NOT `SandboxInfo.Id` (0GQ) or `SandboxProcess.Id` (0GR).
 
-**Report the API result exactly as it comes back — never invent an error or a cause.** A `count: 0` response is a *successful* result meaning the sandbox is absent: record it directly as `not_found` with the endpoint and empty inventory as evidence. Do NOT reinterpret an empty list as an API failure. If the Connect REST API genuinely returns an error, capture that error body verbatim as the outcome — but do NOT speculate about *why* (e.g. "this must be a scratch org", "sandbox endpoints aren't supported here"). This endpoint does not report the org's edition or type, so any such explanation is a fabrication and must not appear in the output.
+**NEVER use SOQL / `run_soql_query` / `sf data query` for lifecycle reads (status, inventory, details, license, pending-activation).** This data lives ONLY in the Connect REST API — no SObject returns it. (`sf data query --use-tooling-api` on `SandboxInfo` is still valid for Create/Refresh mutations, not a lifecycle read.)
 
-**Discovery Patterns:**
-
-**When user provides a sandbox NAME:**
-1. Call `GET /sandbox/reports` to get the full list
-2. Iterate through `sandboxes[]` array
-3. Check `sandbox.sandboxName` (top-level field) to find the matching sandbox
-4. Extract `sandbox.sandboxId` from that record
-5. Use the `sandboxId` in subsequent mutation operations
-
-**When user provides a sandboxId (07E prefix) directly:**
-1. Call `GET /sandbox/sandboxes/{sandboxId}` to verify it exists and check current status
-2. Use the same `sandboxId` directly in the mutation endpoint — do NOT call `/sandbox/reports`
+**Report API results exactly as they come back — never invent an error or a cause.** `count: 0` is a *successful* result (sandbox absent) — record `not_found`, don't reinterpret as a failure or retry via SOQL. If the API errors, capture the error body verbatim — do NOT speculate why (e.g. "must be a scratch org"); this endpoint doesn't report org edition/type, so any such guess is a fabrication.
 
 Required permission: `ManageSandboxes`
+
+## Irreversible Actions — Always Confirm First
+
+| Action | Why irreversible |
+|---|---|
+| Create | Consumes a license of the selected type |
+| Activate | Overwrites sandbox with refreshed data |
+| Discard | Refresh data is lost |
+| Delete | Sandbox permanently removed |
+| Refresh with `AutoActivate=true` | Auto-applies on completion — same effect as Activate |
 
 ---
 
@@ -162,25 +141,7 @@ Returns a list of all sandboxes with their IDs, names, statuses, and license typ
 sf api request rest "/services/data/v66.0/sandbox/reports" --method GET
 ```
 
-**Response format:**
-```json
-{
-  "count": 3,
-  "sandboxes": [
-    {
-      "sandbox": {
-        "sandboxId": "07E...",
-        "sandboxName": "DevBox1",
-        "license": "Developer",
-        "isPendingActivation": false,
-        "canActivate": true,
-        "canDelete": true,
-        "canDiscard": false
-      }
-    }
-  ]
-}
-```
+See `references/api-response-shapes.md` for the full response shape.
 
 **Use when:** User asks "show me all sandboxes", "how many sandboxes do I have", "what's the status of my sandboxes"
 
@@ -223,6 +184,7 @@ Returns detailed info for a specific sandbox.
 **Before calling PATCH /activate:**
 - [ ] Confirmed sandbox is in `Pending Activation` status via GET `/sandbox/sandboxes/{id}` (`isPendingActivation: true`)
 - [ ] Confirmed a refresh has completed successfully
+- [ ] Received explicit user confirmation — this overwrites the sandbox with the refreshed data and cannot be undone
 
 **Use when:** User says "activate it", "apply the refresh", "use the latest data"
 
@@ -256,6 +218,7 @@ Poll this endpoint after activation to confirm status changed to `Active`. This 
 **Before calling DELETE /discardsandbox:**
 - [ ] Confirmed sandbox is in `Pending Activation` status via GET `/sandbox/sandboxes/{id}` (`isPendingActivation: true`)
 - [ ] Confirmed this is a discard (reject refresh), NOT a delete (permanent removal)
+- [ ] Received explicit user confirmation — the refresh data will be permanently lost and cannot be undone
 
 **Use when:** User says "discard the refresh", "keep existing data", "don't apply the refresh", "reject the refresh"
 
@@ -280,11 +243,33 @@ Permanently removes a sandbox and frees the license.
 
 **WARNING:** This is irreversible. Always confirm with the user before executing. Surface the sandbox name, license, and status as a safety check.
 
+**If asked to restore a deleted sandbox:** No recovery path is documented today — escalate to Support rather than guessing at one.
+
 ---
 
 ### 7. Create a New Sandbox
 
 Creates a new sandbox from scratch. Two approaches are supported — pick based on the user's preference; default to Approach A unless the user asks for a definition file or a repeatable DX blueprint.
+
+**Pre-conditions:**
+- Available license of the requested type must exist in the org
+- Sandbox name must be unique and not already in use
+- User must have `ManageSandboxes` permission
+
+**Before creating — always confirm first:**
+- [ ] Collected Name/License; asked about that license's optional inputs (`references/definition-file-approach.md`)
+- [ ] Shown this confirmation summary — common fields plus the license's own fields:
+
+  > **Creating a new sandbox — please confirm:**
+  > - **Name:** `<SandboxName>`
+  > - **Description:** `<Description or "(none)">`
+  > - **Create From:** Production
+  > - **License:** `<Developer | Developer Pro | Partial Copy | Full>`
+  > - *(plus this license's fields — see `references/definition-file-approach.md`)*
+  >
+  > Feel free to change any of these before I proceed.
+
+- [ ] Received explicit confirmation — this consumes a license of the selected type
 
 #### Approach A — Tooling API record (direct)
 
@@ -295,10 +280,11 @@ Creates a new sandbox from scratch. Two approaches are supported — pick based 
 - `LicenseType` — One of: `Developer`, `Developer_Pro`, `Partial_Copy`, `Full`
 
 **Optional inputs:**
-- `Description` — Description of the sandbox purpose
-- `Features` — `true` to upgrade sandbox data storage to 400 MB (WARNING: once enabled, cannot be decreased)
-- `ApexClassId` — ID of an Apex class that implements `SandboxPostCopy` interface (runs after creation completes)
-- `ActivationUserGroupId` — ID of a Group that determines which users can access the sandbox
+- `Description` — sandbox purpose
+- `Features` — storage upgrade: `Developer`→400 MB, `Developer_Pro`→2 GB (irreversible); not for `Partial_Copy`/`Full`
+- `ApexClassId` — Apex class implementing `SandboxPostCopy` (runs post-creation)
+- `ActivationUserGroupId` — Access group (default: All Active Users)
+- `TemplateId` / `HistoryDays` / `CopyChatter` / `CopyArchivedActivities` — `Partial_Copy`/`Full`-only; per-license table in `references/definition-file-approach.md`
 
 ```bash
 # Create a Developer sandbox
@@ -307,39 +293,13 @@ sf data create record --sobject SandboxInfo --use-tooling-api --values "SandboxN
 
 #### Approach B — Sandbox definition file (Salesforce CLI)
 
-The DX-native path: write a JSON definition file (a reusable blueprint), then create the sandbox from it with `sf org create sandbox`. Prefer this when the user wants a checked-in, repeatable config or name-based Apex/group references (no ID lookups).
-
-```json
-// config/dev-sandbox-def.json
-{
-  "sandboxName": "mybox",
-  "licenseType": "Developer"
-}
-```
-
-```bash
-sf org create sandbox --definition-file config/dev-sandbox-def.json --alias mybox --target-org prod
-```
-
-**Definition file fields:**
-
-| Field | Required | Notes |
-|-------|----------|-------|
-| `sandboxName` | Yes | Alphanumeric, max 10 chars |
-| `licenseType` | Yes | `Developer`, `Developer_Pro`, `Partial`, `Full` — **note: `Partial`, not `Partial_Copy`** in the definition file |
-| `description` | No | Purpose of the sandbox (≤1000 chars) |
-| `apexClassName` / `apexClassId` | No | Apex class implementing `SandboxPostCopy`; the definition file adds the *Name* variant so no ID lookup is needed |
-| `activationUserGroupName` / `activationUserGroupId` | No | Public group controlling sandbox access; *Name* variant avoids an ID lookup |
-| `features` | No | `"['SandboxStorage']"` to upgrade data storage (Developer → 400 MB, Dev Pro → 2 GB); not for Partial/Full |
-| `templateId` | Partial (required), Full (optional) | Sandbox template (15-char ID beginning `1ps`) selecting which objects to copy |
-| `historyDays` / `copyChatter` / `copyArchivedActivities` | No | Full sandboxes only |
-
-**Pre-conditions:**
-- Available license of the requested type must exist in the org
-- Sandbox name must be unique and not already in use
-- User must have `ManageSandboxes` permission
+DX-native path: write a JSON definition file, then `sf org create sandbox --definition-file <file> --alias <name> --target-org <org>`. Prefer for a checked-in, repeatable config or name-based Apex/group references. See `references/definition-file-approach.md` for the JSON example, command, and field table.
 
 **After creation:** A `SandboxProcess` record is created with Status = `Processing`. The sandbox copy begins immediately.
+
+**Wrong type created:** Delete and recreate with the correct type.
+
+**Renaming:** Not a standalone action — only takes effect via a Refresh's `SandboxName` input.
 
 ---
 
@@ -360,41 +320,39 @@ Refreshes by updating the existing `SandboxInfo` record.
 - `SandboxName` — New name for the refreshed sandbox (if user wants to rename it; alphanumeric, max 10 chars)
 - `Description` — New or updated description for the sandbox
 - `AutoActivate` — `true` to auto-activate when refresh completes (default: false)
-- `Features` — `true` to upgrade sandbox data storage to 400 MB (WARNING: once enabled, cannot be decreased)
-- `ApexClassId` — ID of an Apex class that implements `SandboxPostCopy` interface (runs after refresh completes)
-- `ActivationUserGroupId` — ID of a Group that determines which users can access the sandbox
+- `Features` — storage upgrade: `Developer`→400 MB, `Developer_Pro`→2 GB (irreversible); not for `Partial_Copy`/`Full`
+- `ActivationUserGroupId` — Access group (default: All Active Users)
+- `TemplateId` / `HistoryDays` / `CopyChatter` — `Partial_Copy`/`Full`-only; per-license table in `references/definition-file-approach.md`
 
-**Ask the user:** "Which sandbox do you want to refresh? Optionally, provide a new name and/or description if you'd like to change them."
+**Before triggering refresh — always confirm first:**
+- [ ] Collected the sandbox name; asked about its license's optional inputs (`references/definition-file-approach.md`)
+- [ ] Shown this confirmation summary:
+
+  > **Refreshing sandbox `<name>` — please confirm:**
+  > - **Rename to:** `<SandboxName or "(no change)">`
+  > - **Description:** `<Description or "(no change)">`
+  > - **Auto-Activate:** `<Yes | No (default)>`
+  > - **Sandbox Access:** `<ActivationUserGroupId or "All Active Users">`
+  > - *(plus this license's fields — see `references/definition-file-approach.md`)*
+  >
+  > Feel free to change any of these before I proceed.
+
+- [ ] Received explicit confirmation — refresh overwrites the sandbox with production data; Auto-Activate=Yes applies automatically (equivalent to Activate)
 
 **Steps:**
 
 ```bash
-# 1. Look up the SandboxInfo record Id by name
+# 1. Look up SandboxInfo record Id by name
 sf data query --query "SELECT Id, SandboxName, LicenseType, Description FROM SandboxInfo WHERE SandboxName = '<name>'" --use-tooling-api --json
 
-# 2. Update the record to trigger refresh (PATCH the SandboxInfo record)
-# Include SandboxName and Description only if the user provided new values
+# 2. PATCH to trigger refresh; include SandboxName/Description only if the user changed them
+# Description is free text — escape any embedded single quotes (' -> \') before interpolating
 sf data update record --sobject SandboxInfo --use-tooling-api --record-id <0GQ-id> --values "AutoActivate=true SandboxName='<newName>' Description='<description>'"
 ```
 
-**Note:** Only include `SandboxName` in `--values` if the user wants to rename. Only include `Description` if the user provides one. Always include `AutoActivate`.
-
 #### Approach B — Sandbox definition file (Salesforce CLI)
 
-Refresh from the same JSON definition-file blueprint used for create (see Operation 7 for the full field table), using `sf org refresh sandbox`. Use the existing sandbox's name; the definition file supplies any changed settings (e.g., `autoActivate`, `apexClassName`).
-
-```json
-// config/dev-sandbox-def.json
-{
-  "sandboxName": "mybox",
-  "licenseType": "Developer",
-  "autoActivate": true
-}
-```
-
-```bash
-sf org refresh sandbox --name mybox --definition-file config/dev-sandbox-def.json --target-org prod
-```
+Refresh from the same JSON definition-file blueprint used for create, using `sf org refresh sandbox --name <name> --definition-file <file> --target-org <org>`. See `references/definition-file-approach.md` for the JSON example, command, and field table.
 
 **Pre-conditions:**
 - Sandbox must exist and be in a refreshable state
@@ -403,28 +361,45 @@ sf org refresh sandbox --name mybox --definition-file config/dev-sandbox-def.jso
 
 **After refresh:** A new `SandboxProcess` record is created with Status = `Processing`. If `AutoActivate=true`, the sandbox activates automatically when done. Otherwise it enters `Pending Activation` state.
 
+**Refresh interval not met:** State the last-refreshed date and eligible date. For a fresher copy sooner, a clone (delegated) works if a spare license exists.
+
+---
+
+### 9. Check License Usage
+
+**Endpoint:** `GET /services/data/v66.0/sandbox/licenses`
+
+Returns license capacity, usage, and remaining counts per license type — no sandbox name or ID needed.
+
+```bash
+sf api request rest "/services/data/v66.0/sandbox/licenses" --method GET
+```
+
+See `references/api-response-shapes.md` for the full response shape.
+
+**Use when:** User asks "how many sandbox licenses do I have left", "what's my license usage", "can I create another Full sandbox", or before creating/refreshing a sandbox to confirm capacity exists for that `licenseType`.
+
+**Key response fields:**
+- `licenseType` — `DEVELOPER`, `DEVELOPER_PRO`, `PARTIAL`, `FULL`
+- `limit` — Total licenses of this type
+- `used` — Currently allocated
+- `available` — Remaining (i.e. `limit - used`)
+
+**Create/Refresh blocked by a license limit:** offer to pick an available type, free one up by deleting a stale sandbox, ask the admin for a license increase, or — if it's an expired Courtesy Full Copy — purchase/convert it.
+
 ---
 
 ## Decision Guide for Agents
 
-### When user provides a sandbox NAME (lookup required)
+Resolve `sandboxId` first: by name, call `GET /sandbox/reports` and match `sandboxName`; by ID (07E prefix), call `GET /sandbox/sandboxes/{sandboxId}` directly — don't call `/sandbox/reports`.
 
 | User says... | Operation | Key check |
 |---|---|---|
 | "Show all my sandboxes" | GET /sandbox/reports | — |
-| "What's the status of X?" | GET /sandbox/reports, filter by sandboxName | — |
-| "Activate sandbox sbxtest" | 1. GET /sandbox/reports to find sandboxId by name<br>2. PATCH /sandbox/activate/{sandboxId} | Must be isPendingActivation: true |
-| "Discard the refresh on sbxtest" | 1. GET /sandbox/reports to find sandboxId by name<br>2. DELETE /sandbox/discardsandbox/{sandboxId} | Must be isPendingActivation: true |
-| "Delete sandbox sbxtest" | 1. GET /sandbox/reports to find sandboxId by name<br>2. DELETE /sandbox/deletesandbox/{sandboxId} | Confirm with user first |
-
-### When user provides a sandboxId (07E prefix) directly
-
-| User says... | Operation | Key check |
-|---|---|---|
-| "Get details for 07E..." | GET /sandbox/sandboxes/{sandboxId} | — |
-| "Activate sandbox 07E..." | 1. GET /sandbox/sandboxes/{sandboxId} to verify status<br>2. PATCH /sandbox/activate/{sandboxId} | Must be isPendingActivation: true |
-| "Discard refresh on 07E..." | 1. GET /sandbox/sandboxes/{sandboxId} to verify status<br>2. DELETE /sandbox/discardsandbox/{sandboxId} | Must be isPendingActivation: true |
-| "Delete sandbox 07E..." | 1. GET /sandbox/sandboxes/{sandboxId} to verify existence<br>2. DELETE /sandbox/deletesandbox/{sandboxId} | Confirm with user first |
+| "What's the status of X?" | GET /sandbox/reports (by name) or GET /sandbox/sandboxes/{id} (by ID) | — |
+| "Activate sandbox X" | 1. Resolve `sandboxId`<br>2. PATCH /sandbox/activate/{sandboxId} | Must be isPendingActivation: true; confirm with user first |
+| "Discard the refresh on X" | 1. Resolve `sandboxId`<br>2. DELETE /sandbox/discardsandbox/{sandboxId} | Must be isPendingActivation: true; confirm with user first |
+| "Delete sandbox X" | 1. Resolve `sandboxId`<br>2. DELETE /sandbox/deletesandbox/{sandboxId} | Confirm with user first |
 
 ---
 
@@ -435,6 +410,6 @@ sf org refresh sandbox --name mybox --definition-file config/dev-sandbox-def.jso
 | Using activate to "start" any sandbox | Activate ONLY applies completed refreshes |
 | Using discard to "hide" or "soft-delete" | Discard ONLY rejects a pending refresh |
 | Activating without checking status first | Always verify isPendingActivation = true |
-| Activating without user confirmation | Always confirm with the user before applying a refresh — this replaces existing sandbox data |
-| Discarding without user confirmation | Always confirm with the user before discarding — this is irreversible and the refresh data is lost |
-| Deleting without user confirmation | Always show sandbox info and ask for explicit confirmation |
+| Skipping confirmation on Create, Activate, Discard, Delete, or Refresh with `AutoActivate=true` | See Irreversible Actions above — always confirm first |
+| Offering `AutoActivate` during Create | Refresh-only field |
+| Offering `ApexClassId` during Refresh | Create-only field |

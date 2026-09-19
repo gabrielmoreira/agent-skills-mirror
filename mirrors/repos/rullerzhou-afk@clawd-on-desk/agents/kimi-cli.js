@@ -4,6 +4,11 @@
 // The agent id stays "kimi-cli" for prefs/state compatibility; the display
 // name follows the current upstream product name.
 
+const {
+  KIMI_PROCESS_NAMES,
+  KIMI_STARTUP_RECOVERY_PROCESS_NAMES,
+} = require("../hooks/kimi-process-names");
+
 module.exports = {
   id: "kimi-cli",
   name: "Kimi Code",
@@ -11,8 +16,8 @@ module.exports = {
   // (install-script) build. The npm build of Kimi Code runs under node and is
   // caught by command-line matching in the hook's pid resolver and the
   // startup-recovery process scan, not by these names.
-  processNames: { mac: ["kimi", "Kimi Code"], linux: ["kimi"], win: ["kimi.exe"] },
-  startupRecoveryProcessNames: { mac: ["kimi", "Kimi Code"], linux: ["kimi", "Kimi Code"], win: ["kimi.exe"] },
+  processNames: KIMI_PROCESS_NAMES,
+  startupRecoveryProcessNames: KIMI_STARTUP_RECOVERY_PROCESS_NAMES,
   eventSource: "hook",
   // PascalCase event names — identical stdin shape across both generations.
   eventMap: {

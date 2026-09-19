@@ -163,16 +163,16 @@ Search project code (src/) for existing implementations
     v
 Install dependencies (npm install)
     v
-Search, describe, and install features (auth, shadcn, search, navigation, GraphQL)
+Search, describe, and adopt features (auth, shadcn, search, navigation, GraphQL)
     v
 Resolve conflicts (two-pass: --on-conflict error, then --conflict-resolution)
     v
 Integrate __examples__ files into target files (verify build succeeds), then delete them
 ```
 
-Installs pre-built, tested feature packages. See "Prompt Classification Keywords" above for the full trigger keyword list and negative-phrasing handling — these features provide the foundation that UI components build on top of.
+Loads the feature skill to install pre-built packages, or adopt ones the template already shipped — never build your own version of a catalog feature. See "Prompt Classification Keywords" for triggers and negative-phrasing handling.
 
-Only skip this phase if the app is truly a minimal "hello world" with no interactive features (no trigger keywords present at all).
+Skip only for a minimal "hello world" with no interactive features; pre-shipped features still require this phase.
 
 ### Phase 2.5: Custom Objects (Required if the prompt requires a new custom Salesforce object the org doesn't have)
 
@@ -378,14 +378,14 @@ Execute each phase sequentially following the standard pattern in `references/ph
 ---
 
 **Phase 0 -- Template Offer & Bootstrap**
-- Load `experience-ui-bundle-project-generate`, offer templates. If chosen: skip Phase 1, continue at Phase 4. If declined: run `scripts/check-sfdx-project.sh`, create project if missing.
+- Load `experience-ui-bundle-project-generate`, offer templates. If chosen: skip Phase 1, continue at Phase 2. If declined: run `scripts/check-sfdx-project.sh`, create project if missing.
 
 **Phase 1 -- Scaffolding** (skip if template used in Phase 0)
 - **Precondition**: `scripts/check-sfdx-project.sh` passes
 - Load `experience-ui-bundle-metadata-generate`. Determine hosting target FIRST. Run `sf template generate ui-bundle --template reactbasic`, configure meta XML with `<target>`.
 - **Post-verification**: `scripts/check-phase-1-complete.sh` passes
 
-**Phase 2 -- Features** (skip if no feature keywords present — see "Prompt Classification Keywords")
+**Phase 2 -- Features** (run on any feature keyword, even if pre-installed — see "Prompt Classification Keywords")
 - Load `experience-ui-bundle-features-generate`. Install features, integrate examples. Verify with `npm run build`.
 
 **Phase 2.5 -- Custom Objects** (skip if org has all needed objects)

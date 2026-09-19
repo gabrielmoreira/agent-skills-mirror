@@ -7,7 +7,8 @@ ElevenLabs Agents bootstrap, and a standalone voice **dictation server**
 (hotkey → record → transcribe → insert text). Routing between the hosted
 backend proxy, local Piper, and third-party providers is decided by a provider
 factory driven by config. The low-level inference implementations (cloud STT,
-local speech, streaming, postprocess) live under `crate::inference::voice` and
+local speech, streaming, and postprocess) are built by `tinyinference-voice` with
+OpenHuman policy adapters in `crate::voice`, and
 are re-exported through this module's surface for back-compat.
 
 **There is no local STT engine.** The bundled whisper.cpp engine was removed
@@ -18,7 +19,7 @@ has a local option (Piper) alongside the hosted proxy and third-party APIs.
 ## Compile-time gate (`voice` feature)
 
 `pub mod voice` is always compiled — it is a facade. The real implementation
-(the submodules below and the `inference::voice` re-exports) is gated behind
+(the submodules below) is gated behind
 the default-ON `voice` Cargo feature. When the feature is off, [`stub`] takes
 its place and mirrors the subset of the public surface that always-on / other
 gated callers depend on (`server`, `dictation_listener`, `streaming`,
@@ -138,7 +139,7 @@ transcription count, rolling recent-transcript buffer for context) behind a
 
 ## Dependencies
 
-- `crate::inference` — local AI runtime (`local::global`, model id/path resolution) and the relocated voice inference impls (`inference::voice::{cloud_transcribe, local_speech, postprocess, streaming}`); also `inference::provider::factory::lookup_key_for_slug` for provider API keys.
+- `tinyinference-voice` — hosted STT transport, Piper execution, transcription cleanup, and streaming PCM mechanics; `crate::inference` supplies the local runtime and provider policy.
 - `crate::config` — `Config`, `config::rpc::load_config_with_timeout`, voice-server / dictation config sections, and `config::schema::voice_providers` (`VoiceProviderCreds`, capability/auth/API-style enums).
 - `crate::desktop::accessibility` (macOS only) — focused-text inspection (`focused_text_context_verbose`) and the Swift globe-key listener (`globe_listener_start` / `globe_listener_poll`) used in place of rdev for the Fn key.
 - `crate::api` — `BackendOAuthClient`, `effective_backend_api_url`, `get_session_token` for backend-proxied reply-speech and the realtime signed-URL bootstrap.

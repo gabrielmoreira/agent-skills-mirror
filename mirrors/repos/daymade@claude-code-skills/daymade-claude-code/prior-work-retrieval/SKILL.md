@@ -141,6 +141,17 @@ Open promising candidates at their original path. Check:
 - **Outcome evidence**: prefer code/tests/accepted deliverables and operating
   results over a process that merely looks complete.
 
+**Dismissing a batch of hits is itself a claim.** When a carrier returns many
+matches and you judge all of them irrelevant — "those are just the term being
+quoted in documentation", "that is an unrelated module" — that judgement is a
+finding you are about to report, not a filtering step you did on the way to one.
+Open at least one hit per distinct shape you are dismissing, and say in the
+receipt which shapes you ruled out and on what evidence. A carrier that returns
+47 matches and contributes nothing to the answer is the same observation as a
+carrier that returns nothing, and it deserves the same scepticism as any other
+negative result: the run that produced it may be fine while your reading of it
+is not.
+
 ### 5. Complete the reuse receipt
 
 When an archived request contains an actual file read, first use
@@ -299,6 +310,7 @@ path remain possible so the agent can repair the gate without bypassing it.
 | Archived WeChat text/voice transcription | Declared WeChat archive carrier |
 | Live/latest WeChat | `read-wechat-messages`; record manual coverage |
 | Current code behavior | Open implementation/tests at current Git revision |
+| Work targets a remote box or a foreign checkout (deploy dir, upstream fork) | That repo's own `docs/`, `Makefile`, deploy README **first** — they are not manifest carriers, so record them as manual coverage; never reconstruct a build/deploy command the box already documents |
 
 ## Boundaries
 

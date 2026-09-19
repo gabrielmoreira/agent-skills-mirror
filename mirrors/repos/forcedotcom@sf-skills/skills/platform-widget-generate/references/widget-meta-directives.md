@@ -1,4 +1,4 @@
-# Widget Meta Directives Reference
+# Widget Meta Directives
 
 The `meta` object on a UEM block carries runtime directives for iteration (`forEach` / `forItem`) and conditional rendering (`if`). Read this file when a widget needs either.
 
@@ -79,8 +79,8 @@ The inner `forEach` references an array on the outer loop variable and uses a di
 ### Rules
 
 - Place `if` on the `meta` object of the block.
-- Use `if` only when the schema has a `lightning__booleanType` property suited to the condition. Bind directly to that property (or to a loop variable holding such a value). If no suitable boolean exists in the schema, do not use `if` — render the block unconditionally instead.
-- Do not lean on the truthiness of strings (`""` vs `"value"`), numbers (`0` vs `1`), or nullable fields — that may render today but is not guaranteed across surfaces. Comparisons, arithmetic, and string operations are not supported.
+- `if` accepts either a bare `lightning__booleanType` property (or a loop variable holding one) OR a **formula expression** that evaluates to a boolean — comparisons (`{!$attrs.fieldName > 1000}`) and logical functions (`{!AND($attrs.fieldName1, $attrs.fieldName2 > 500)}`) are both valid. See `references/widget-formulas.md` for the full formula syntax and supported-function list.
+- Do not lean on the truthiness of a raw string (`""` vs `"value"`) or number (`0` vs `1`) bound directly — that relies on implicit coercion and is unreliable. Bind to a real boolean property, or use an explicit formula comparison instead.
 - `if` may coexist with `forEach` on the same `meta`. `if` is evaluated first — if `false`, the loop is skipped entirely.
 
 ### Example — top-level boolean
@@ -126,5 +126,5 @@ The inner `forEach` references an array on the outer loop variable and uses a di
 
 | Issue | Resolution |
 |---|---|
-| `if` bound to a non-boolean (string or number) does not behave as expected | Use `if` only when the schema has a `lightning__booleanType` property; otherwise render the block unconditionally |
+| `if` bound directly to a raw string or number relies on truthiness and is unreliable | Bind to a `lightning__booleanType` property, or use a formula comparison that evaluates to boolean — see `references/widget-formulas.md` |
 | Nested loops share the same `forItem` name | Pick distinct names (e.g. `$item` outer, `$line` inner) — there is no validation error on collision |

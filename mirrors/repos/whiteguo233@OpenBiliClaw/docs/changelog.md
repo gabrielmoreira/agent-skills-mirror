@@ -2,6 +2,15 @@
 
 > 按里程碑记录各阶段交付内容。每次分支合回 main 时追加条目。
 
+## v0.3.224：自定义回复语气与设置页一键测试（2026-09-19）
+
+### 自定义回复语气配置（issue #255）
+
+- **`[soul]` 新增自由文本字段 `reply_style`（默认 `""`）**：非空时作为一行 `- 回复风格: <文本>` 追加进 `_render_tone_profile()` 语气块，覆盖对话回复、推荐文案（单条 + 批量）、画像文本四类 prompt；为空时所有 prompt 输出逐字节不变（回放门守护）。解析时把空白折叠为单行，上限 200 字符（`_collect_config_issues()` blocking 校验）。透传链：`SoulEngine._reply_style` → `LLMService.reply_style`（对话）+ `ProfileBuilder.reply_style`（画像），`RecommendationEngine._reply_style`（单条 + 批量文案）；CLI、`serve-api` 热重载与 OpenClaw bootstrap 三处构造点均已接线，`SocraticDialogue` 的 LLMService fallback 复用 `SoulEngine._reply_style`，工具调用路径（`_respond_with_tools`）同样从 `service.reply_style` 透传。新增 builder 级逐字节不变 / 注入断言（`tests/test_llm_prompts.py`）、config round-trip 与长度校验（`tests/test_config.py`）、LLMService / ProfileBuilder / RecommendationEngine / 工具路径接线回归。
+- **`[soul]` 新增 `dialogue_tone_prompt`（默认 `""`）：对话语气块整体替换**。`reply_style` 只能在语气块末尾追加一行；本字段非空（strip 后）时用用户原文（允许多行，上限 1000 字符 blocking 校验）整体替换 `build_socratic_dialogue_prompt` 里的 `_render_tone_profile()` 语气块——此时 `reply_style` 对对话的追加行一并被替换。system prompt 的身份、苏格拉底行为说明、能力边界与 core memory 引导段落逐字节不变；推荐文案与画像 prompt 不接受此参数（`inspect.signature` 断言锁定），功能行为零变化；为空时对话 prompt 逐字节不变。TOML 渲染新增 `_toml_multiline_string()`（换行转义为 `\n` 序列，round-trip 逐字节还原）。透传链：`SoulEngine._dialogue_tone_prompt` → `LLMService.dialogue_tone_prompt` → 对话 builder（含 `_respond_with_tools` 工具路径与 fallback 构造），CLI、`serve-api` 热重载与 OpenClaw bootstrap 均已接线；RecommendationEngine / ProfileBuilder 刻意不接。
+- **修复 `PUT /api/config` 静默丢弃两个语气字段**：soul 段合并逻辑原有字段白名单（prompt view / posture gate / 三个 int），`reply_style` 与 `dialogue_tone_prompt` 经 API 设置时被丢弃——落盘值与热重载重建都拿不到。现按 `_build_config` 同款归一化合并（`reply_style` 折叠单行、`dialogue_tone_prompt` 仅 strip），并加入 `SoulConfigOut` 回显。注意生效语义：经设置 API（`PUT /api/config` / 设置页保存）修改即时热重载；**直接编辑 config.toml 文件不会触发文件监听，需重启后端**。已用真实 LLM 请求端到端验证：PUT 设置 `reply_style="使用文言文"` 后下一句对话即转为文言文；PUT 切换 `dialogue_tone_prompt` 后语气块即时整体替换。回归测试 `test_put_config_persists_soul_tone_fields`（写入 + 回显 + 落盘 round-trip）。
+- **设置页 UI：两端可编辑 + 一键测试**。桌面 Web（`/web` 设置页「回复语气」section）与插件 side panel（「画像理解」页签）新增两个字段的编辑控件（`reply_style` 单行 input maxlength=200、`dialogue_tone_prompt` 多行 textarea maxlength=1000），加载自 `GET /api/config` 回显、保存并入 soul 提交对象（空串照常提交以支持清空）。两端均新增「测试语气」按钮：先 `PUT /api/config` 局部保存这两个字段（即时热重载），再 POST `/api/chat` 发固定试句并把真实回复内联展示在按钮下方，无需切到聊天页。已用 Playwright + 真实后端 + 真实 LLM 端到端验证：页面填「毒舌影评人」语气块 → 点测试 → 按钮下方直接展示毒舌短回复；刷新页面后字段从后端正确回填。回归：`tests/test_cognition_budget_settings_ui.py` 新增两端控件静态契约测试，`extension/tests/popup-settings.test.ts` 补加载 / 保存 / maxlength 断言。
+
 ## v0.3.223：Windows 稳定性、推荐入口与画像一致性修复（2026-09-17）
 
 ### LLM 输出预算下限与评估分批自愈

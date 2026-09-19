@@ -45,7 +45,7 @@ is mounted as a submodule of `load/dirs.rs` via `#[path]`.
 | `[runtime_python]` | `runtime_python.rs` | `RuntimePythonConfig` |
 | `[scheduler_gate]` | `scheduler_gate.rs` | `SchedulerGateConfig`, `SchedulerGateMode` |
 | `[memory]`, `[memory_tree]`, `[storage]` | `storage_memory.rs` | `MemoryConfig`, `MemoryTreeConfig`, `StorageConfig`, `StorageProviderConfig`, `LlmBackend` |
-| `[subconscious]` | `subconscious.rs` | `SubconsciousConfig`, `MedullaLocalConfig`, `SubconsciousEngine` |
+| `[subconscious]` | `subconscious.rs` | `SubconsciousConfig`, `SubconsciousEngine` (`local`) |
 | `[subsystems]` | `subsystems.rs` | `SubsystemsConfig`, `MemorySubsystemConfig` |
 | `[task_sources]` | `task_sources.rs` | `TaskSourcesConfig` |
 | `[tokenjuice]` | `tokenjuice.rs` | `TokenjuiceConfig` |

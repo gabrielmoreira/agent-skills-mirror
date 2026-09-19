@@ -51,6 +51,37 @@
             }
           }
         }
+      },
+      {
+        "if": {
+          "properties": { "ConfigurationName": { "const": "ScheduledApex" } }
+        },
+        "then": {
+          "properties": {
+            "Fields": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["ApexClassName", "CronExpression", "JobName"],
+              "properties": {
+                "ApexClassName": {
+                  "description": "Bare Apex identifier of the class that implements Schedulable. Must match ^[A-Za-z_][A-Za-z0-9_]*$.",
+                  "type": "string",
+                  "pattern": "^[A-Za-z_][A-Za-z0-9_]*$"
+                },
+                "CronExpression": {
+                  "description": "Salesforce cron expression — 6 or 7 whitespace-separated fields.",
+                  "type": "string",
+                  "minLength": 1
+                },
+                "JobName": {
+                  "description": "Human-readable job name. Appears in Setup > Scheduled Jobs and equals CronTrigger.CronJobDetail.Name post-schedule.",
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            }
+          }
+        }
       }
     ],
     "properties": {
@@ -59,7 +90,8 @@
         "type": "string",
         "enum": [
           "OutboundMessages",
-          "RemoteSiteSettings"
+          "RemoteSiteSettings",
+          "ScheduledApex"
         ]
       },
       "Label": {

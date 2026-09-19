@@ -20,7 +20,7 @@ Use this reference when the user wants to:
 5. [Enumerate `_mtc` metrics and screen for time-grain fit](#enumerate-_mtc-metrics-and-screen-for-time-grain-fit)
 6. [List the agents available for alert filters](#list-the-agents-available-for-alert-filters)
 7. [Create an alert](#create-an-alert) — POST vs GET field names, `filterContext`, thresholds, full schema, enums, troubleshooting
-8. [Update an alert](#update-an-alert) (not yet available — delete + recreate)
+8. [Update an alert](#update-an-alert) — PUT in place
 9. [Delete an alert](#delete-an-alert)
 10. [Trigger history — inspect triggered notifications](#trigger-history--inspect-triggered-notifications)
 11. [Verify metric value via Semantic Engine Gateway](#verify-metric-value-via-semantic-engine-gateway-condensed)
@@ -100,13 +100,13 @@ AHM alerts are a special flavor of Salesforce data alerts — `dataAlertType: "a
 
 They are **not** served from `/wave/dataAlerts` (CRM Analytics) or `/analytics/dataAlerts`. The "tableau" namespace here is Tableau Next / Data Cloud analytics, distinct from classic Wave — `/tableau/dataAlerts` does **not** require Wave / CRM Analytics.
 
-| Method | Path | Purpose |
-|--------|------|---------|
+| Method | Path | Purpose                                     |
+|--------|------|---------------------------------------------|
 | GET    | `/services/data/v66.0/tableau/dataAlerts?ownerId={userId}` | List alerts for a user (requires `ownerId`) |
-| POST   | `/services/data/v66.0/tableau/dataAlerts` | Create |
-| PUT    | `/services/data/v66.0/tableau/dataAlerts/{alertId}` | Update (not yet available — see below) |
-| DELETE | `/services/data/v66.0/tableau/dataAlerts/{alertId}` | Delete |
-| GET    | `/services/data/v66.0/tableau/dataAlerts/{alertId}` | Not supported — 405 Method Not Allowed |
+| POST   | `/services/data/v66.0/tableau/dataAlerts` | Create                                      |
+| PUT    | `/services/data/v66.0/tableau/dataAlerts/{alertId}` | Update (same input representation as POST)  |
+| DELETE | `/services/data/v66.0/tableau/dataAlerts/{alertId}` | Delete                                      |
+| GET    | `/services/data/v66.0/tableau/dataAlerts/{alertId}` | Not supported — 405 Method Not Allowed      |
 
 Single-alert GET is not supported — list all and filter client-side. Omitting `ownerId` on the list GET returns `400 MISSING_PARAM: Owner ID cannot be empty`. There is no "list all alerts across the org" shape; always scope to a user.
 
@@ -602,7 +602,68 @@ Conventional encoded format the AHM UI parses (the backend accepts arbitrary str
 
 ## Update an alert
 
-The PUT API (`PUT /services/data/v66.0/tableau/dataAlerts/{alertId}`) is **not yet available** (expected later 2026). Until then, **delete** the existing alert and **create** a new one with the updated configuration.
+`PUT /services/data/v66.0/tableau/dataAlerts/{alertId}` updates an alert **in place** — same `id`, no delete + recreate. It takes the **same input representation as POST** (PascalCase `type` discriminators, `utterance` not `alertName`, `RawValue`/`Metric`/`EveryNMinutes`, threshold as a raw-ratio string, etc. — see [Create an alert](#create-an-alert)). Send the **full** alert body, not a partial patch: the representation is replaced, so include every field you want to keep (schedule, content, all `thresholds.conditions`, `deliveryConfigurations`). Returns **HTTP 200** with the updated alert in GET-shape (lowercased enums); `id` is unchanged, `lastModifiedDate` is bumped.
+
+> **Addressed by alert id.** Like `DELETE`, `PUT` targets the alert via its `{alertId}` in the **path** (`/tableau/dataAlerts/{alertId}`) — the id is *not* in the body. A metricId (`1HU…`) in the path 404s; use the alert id (`3VR…`).
+>
+> **Read-modify-write.** Fetch the current alert first (`GET tableau/dataAlerts?ownerId=$USER_ID`, filter by `id`), change only the fields you intend to, and PUT the whole thing back — translating the GET response's field names/casing to the POST input names (`alertName`→`utterance`, lowercase `type`s→PascalCase). Keep the existing `metricId` in the body: PUT preserves it (no sub-metric churn) as long as `filterContext` is unchanged.
+
+### Example: change a threshold (e.g. `80` → `85`)
+
+Build the full body in a private temp file (see the `mktemp` idiom above), then PUT it. This mirrors the POST schema with the alert's current values, changing only `rightOperand.value` (and, optionally, `utterance`):
+
+```bash
+ALERT_ID="3VRSG0000001uBR4AY"
+body=$(mktemp) && chmod 600 "$body"
+trap 'rm -f "$body"' EXIT
+cat > "$body" <<'JSON'
+{
+  "utterance": "Task Resolution Rate Less Than 85% for AgentRuntimeInsights262",
+  "dataAlertType": "agenthealthmonitoring",
+  "schedule": { "type": "EveryNMinutes", "minuteLevelFrequency": 10 },
+  "content": { "type": "Metric", "modelApiNameOrId": ["2SMSG000000bPXf4AM"] },
+  "thresholds": {
+    "conditions": [
+      {
+        "leftOperand": {
+          "type": "Metric",
+          "modelApiNameOrId": "2SMSG000000bPXf4AM",
+          "metricId": "1HUSG0000010Un74AE",
+          "insightType": "Popc",
+          "factKey": "FACT_KEY_TARGET_PERIOD_VALUE",
+          "params": {},
+          "filterContext": [],
+          "timeContext": { "operator": "LastNMinutes", "values": ["15"] }
+        },
+        "operator": "LessThan",
+        "rightOperand": { "type": "RawValue", "dataType": "Number", "value": "85" }
+      }
+    ],
+    "customLogicalOperation": "1"
+  },
+  "deliveryConfigurations": {
+    "receivers": [
+      { "type": "Notification", "recipients": ["005SG00000ZEQePYAX"] },
+      { "type": "Email", "recipients": ["005SG00000ZEQePYAX"] }
+    ]
+  }
+}
+JSON
+
+sf api request rest "/services/data/v66.0/tableau/dataAlerts/$ALERT_ID" \
+  -X PUT -H "Content-Type: application/json" -b "@$body" -o <org> \
+  | python3 -m json.tool
+```
+
+When the new name/threshold/recipients come from **data** rather than being typed by hand, do not string-substitute into the heredoc — reject values containing `"`/`\` then build the JSON with the same `python3` JSON-dump idiom shown under [Create an alert](#create-an-alert) (the injection risk is identical for PUT).
+
+**Verified (org `ahm-test-notifications`, 2026-09-02):** PUT on alert `3VRSG0000001uBR4AY` with the POST-style body above returned HTTP 200, changed `rightOperand.value` `80`→`85` and `alertName`, kept the same `id` and `metricId` (`1HUSG0000010Un74AE`), and bumped `lastModifiedDate` — a true in-place update. Reverting to `80` via a second PUT worked identically.
+
+### Troubleshooting
+
+- **Same `JSON_PARSER_ERROR` / casing / array-shape errors as POST** — the input grammar is identical; see [Create an alert → Troubleshooting](#troubleshooting).
+- **`404` on the PUT** — confirm the `{alertId}` is a real alert `id` (`3VR…`) from the list; a metricId (`1HU…`) will 404. If the id is valid and it still 404s, retry at the org's current API version.
+- **Fields silently reverting** — PUT replaces the representation; a field you omitted reverts to server default. Always send the full body (read-modify-write), not a partial patch.
 
 ---
 
@@ -619,28 +680,146 @@ Returns **HTTP 204** (No Content) on success — no response body. Use `--includ
 
 ## Trigger history — inspect triggered notifications
 
-When an alert's condition is met it generates a **system notification** and optionally an **email** (per `deliveryConfigurations.receivers`).
+When an alert's condition is met it generates a **system notification** and optionally an **email** (per `deliveryConfigurations.receivers`). AHM alert notifications carry the notification `type` **`templatized_data_alert`** and their `target` field holds the **sub-metric id** (`1HU…`) — the same value as the alert's `thresholds.conditions[0].leftOperand.metricId`.
 
-### Check notification counts via CLI (org-global signal only)
+**Attribute by alert id only.** The notification's `targetPageRef` (an HTML-encoded JSON string) embeds the owning alert id under `state.c__alertId` (or `state.c__dataAlertId`, or nested `attributes.pageRef.state.c__alertId`/`c__dataAlertId`). That id is the **precise** attribution key — match on it. **Do not fall back to the `target == metricId` join**: it is only correct when there's one alert per metric — two alerts on the same bare `_mtc` (both with empty `filterContext`) share a `metricId`, so the metricId join returns the **union** of their firings and cannot tell them apart. A notification whose alert id can't be recovered is simply **not attributed** (see the null-handling note below), not routed through metricId.
 
-```bash
-sf api request rest "/services/data/v66.0/connect/notifications/status" -o <org> | python3 -m json.tool
+### Extracting and matching the alert id
+
+```python
+import json, html
+
+def extract_alert_id(n):
+    """Return the owning alert id from a notification, or None. Degrades to None
+    (never raises) on missing / non-JSON / key-absent targetPageRef → 'no match'."""
+    ref = n.get("targetPageRef")
+    if not ref:
+        return None
+    try:
+        if isinstance(ref, str):
+            ref = json.loads(html.unescape(ref))   # API HTML-encodes the quotes (&quot;)
+    except Exception:
+        return None
+    top = (ref or {}).get("state") or {}
+    if top.get("c__dataAlertId"): return top["c__dataAlertId"]
+    if top.get("c__alertId"):     return top["c__alertId"]
+    nested = (((ref or {}).get("attributes") or {}).get("pageRef") or {}).get("state") or {}
+    return nested.get("c__dataAlertId") or nested.get("c__alertId")
+
+def ids_match(a, b):
+    """15/18-char-safe Salesforce id equality."""
+    if not a or not b:                       # None from a failed extraction ⇒ no match, drop
+        return False
+    return a == b or a[:15] == b[:15]         # 18-char = 15-char + 3-char checksum suffix
 ```
 
-Returns `unreadCount` and `unseenCount`. **These are org-global counts across *all* notification types — not per-alert, and not AHM-specific.** A non-zero count means *some* notification was generated (it could be any alert or any other notification), so treat it only as a coarse "something fired" signal, never as confirmation that *this* alert fired. For per-alert trigger history, use the UI Incidents tab below.
+- **`None` extraction is a non-match, not an error.** A missing/malformed/key-absent `targetPageRef` yields `None`; `ids_match` returns `False` on a `None` operand, so the notification is simply **dropped** (not attributed to any alert) — nothing throws, and it is **not** routed through a metricId fallback.
+- **Compare the first 15 chars.** The id embedded in `targetPageRef` is frequently the **15-char** form; the alert id from `GET tableau/dataAlerts` is the **18-char** form (15-char + 3-char case-insensitive checksum). Strict `===` fails on the same record (`3VRSG0000001vHB` vs `3VRSG0000001vHB4AY`); try exact first, then `a[:15] == b[:15]`.
+- **Casing caveat.** The 15-char id is case-sensitive and the 18-char checksum encodes that casing; `ids_match` does **not** case-normalize, so truncating to 15 is correct only because both sides preserve the true casing (they do in this flow — neither source upper/lower-cases the id). Do not add a `.lower()` on either side.
+- **Verified (org `ahm-test-notifications`):** all fired notifications carried `state.c__alertId` (18-char, e.g. `3VRSG0000001vHB4AY`) matching a listed alert 1:1; the nested branches and `c__dataAlertId` are defensive fallbacks for other page-ref shapes.
+
+### The `X-UNS-Type-Filter: all` header is REQUIRED to see AHM notifications
+
+The Connect Notifications API (`connect/notifications*`) **defaults to returning *custom* notification types only**. AHM/Tableau-Next alerts are **standard/platform** types (`templatized_data_alert`), so a plain call returns an empty list / empty types even when alerts have genuinely fired. **Always pass `-H "X-UNS-Type-Filter: all"`** on every `connect/notifications*` call to include standard/platform types:
+
+```bash
+# Status (counts). WITHOUT the header these are custom-types-only and read 0 for AHM.
+sf api request rest "/services/data/v66.0/connect/notifications/status" \
+  -H "X-UNS-Type-Filter: all" -o <org> | python3 -m json.tool
+
+# List all notifications (includes AHM). The header is what surfaces them.
+sf api request rest "/services/data/v66.0/connect/notifications" \
+  -H "X-UNS-Type-Filter: all" -o <org> | python3 -m json.tool
+
+# Which notification types the org exposes (verify templatized_data_alert is present).
+sf api request rest "/services/data/v66.0/connect/notifications/types" \
+  -H "X-UNS-Type-Filter: all" -o <org> | python3 -m json.tool
+```
+
+> **Symptom of the missing header:** `connect/notifications` → `{ "notifications": [] }`, `connect/notifications/types` → `{ "notificationTypes": [] }`, and `status` → `unreadCount: 0` — even though the alerts fired and are visible in the UI bell. This empty result is a **false negative**, not proof of "not fired." (The UI bell uses the internal Aura controller `ui-notifications-components-notifications-controller.Notifications.getNotifications`, which reads the full store; the CLI must opt in with the header.)
+
+Each notification object includes: `type`, `messageTitle` (metric + agent + current value), `messageBody` (`The current value (X) is above/below the alert condition (Y)`), `lastModified` (fire time), `read`/`seen`, `target` (the sub-metric id), and `targetPageRef` (an HTML-encoded JSON string). The **owning alert id** is in `targetPageRef.state.c__alertId` — that, not `target`, is the attribution key (see "Extracting and matching the alert id" above).
+
+### Answering "get notifications" (default response)
+
+When the user asks to get / list / check notifications for an org, report **both**:
+1. **Status** — `unreadCount` / `unseenCount` from the `status` call (with the header).
+2. **Notifications** — the list from the `notifications` call (with the header), summarized (title, body, fire time, type).
+
+Filter to `type == "templatized_data_alert"` to isolate AHM/agent-health alerts (the type is shared with other templatized Tableau data alerts, so it is **not** AHM-exclusive — filter, don't assume).
+
+### Answering "notifications for a specific alert"
+
+There is **no per-alert notification endpoint** (`…/dataAlerts/{id}/notifications` → 404). Instead, fetch **all** notifications once, then **filter client-side by alert id** (exact — see "Extracting and matching the alert id" above):
+
+1. Fetch all notifications with the header (above).
+2. For each notification, `extract_alert_id(n)` and keep those where `ids_match(extracted, targetAlertId)` (15/18-char-safe). Those are the firings of that alert.
+3. A notification whose `targetPageRef` is missing/unparseable (`extract_alert_id` → `None`) is **dropped**, not attributed. Do **not** fall back to a `target == metricId` join — it mis-attributes when two alerts share a metric.
+
+Present title / current value / threshold / `lastModified` per firing.
+
+```bash
+# Attribute every notification to its owning alert (by alert id from targetPageRef — NOT metricId).
+ORG=<org>
+USER_ID=$(sf org display user --target-org "$ORG" --json | python3 -c 'import sys,json;print(json.load(sys.stdin)["result"]["id"])')
+sf api request rest "/services/data/v66.0/tableau/dataAlerts?ownerId=$USER_ID" -o "$ORG" > /tmp/alerts.json
+sf api request rest "/services/data/v66.0/connect/notifications" -H "X-UNS-Type-Filter: all" -o "$ORG" > /tmp/notifs.json
+python3 - <<'PY'
+import json, html
+from collections import defaultdict
+
+def extract_alert_id(n):
+    ref = n.get("targetPageRef")
+    if not ref:
+        return None
+    try:
+        if isinstance(ref, str):
+            ref = json.loads(html.unescape(ref))
+    except Exception:
+        return None
+    top = (ref or {}).get("state") or {}
+    if top.get("c__dataAlertId"): return top["c__dataAlertId"]
+    if top.get("c__alertId"):     return top["c__alertId"]
+    nested = (((ref or {}).get("attributes") or {}).get("pageRef") or {}).get("state") or {}
+    return nested.get("c__dataAlertId") or nested.get("c__alertId")
+
+def norm(x):
+    return x[:15] if x else x   # 15/18-char-safe: truncate both sides to the 15-char id
+
+alerts = json.load(open('/tmp/alerts.json')).get("dataAlerts", [])
+notifs = json.load(open('/tmp/notifs.json')).get("notifications", [])
+by_alert = {norm(a.get("id")): a for a in alerts}         # key on the alert id (15-char-normalized)
+groups = defaultdict(list)
+for n in notifs:
+    groups[norm(extract_alert_id(n))].append(n)           # None-key bucket = no recoverable alert id
+for aid, a in by_alert.items():
+    ns = sorted(groups.get(aid, []), key=lambda x: x.get("lastModified", ""))
+    print(f"\nALERT: {a.get('alertName')}  (id={a.get('id')}) -> {len(ns)} fired")
+    for n in ns:
+        print("   %s | %s" % (n.get("lastModified", "")[:19], html.unescape(n.get("messageTitle", ""))))
+# notifications whose extracted alert id matches no listed alert (deleted/renamed), or None (no recoverable id — dropped, NOT routed to metricId)
+for aid, ns in groups.items():
+    if aid in by_alert:
+        continue
+    for n in ns:
+        label = ("UNMATCHED alertId=%s" % aid) if aid else "UNATTRIBUTED (no alert id in targetPageRef)"
+        print("%s | %s" % (label, html.unescape(n.get("messageTitle", ""))))
+PY
+```
 
 ### Other verification paths
 
-- **UI (per-alert trigger history)** — `/lightning/n/standard-AgentforceStudio?c__nav=alerts` → **Incidents** tab is the only surface with the full, per-alert notification list and details. Route the user here whenever they need to confirm a *specific* alert fired or see its history.
+- **UI (per-alert trigger history)** — `/lightning/n/standard-AgentforceStudio?c__nav=alerts` → **Incidents** tab shows the full, per-alert notification list with details. Use it to corroborate the CLI attribution above or when the header path is unavailable.
 - **Email** — if `deliveryConfigurations` includes `"type": "Email"`, the owner receives an email when it fires.
 - **Metric value** — confirm the underlying metric actually crosses the threshold (see next section).
 
 ### Troubleshooting alerts that don't fire
 
-`unreadCount: 0` is a weak signal (it means no *unread* notifications org-wide — already-read ones don't count). Confirm in the Incidents tab that the specific alert has no history, then check:
+First rule out the **missing-header false negative**: if the list is empty, retry with `-H "X-UNS-Type-Filter: all"` before concluding the alert never fired. If it is still empty (no notification attributed to that alert id — see attribution above), then check:
 1. **Does the SDM return data?** If the semantic gateway (below) returns null/0, the alert evaluation also returns null and the condition is never met.
 2. **Is the schedule running?** Alerts evaluate on their `minuteLevelFrequency`; a freshly created alert may take a few cycles.
 3. **Does the threshold make sense?** A 10% rate with threshold `>= 0.5` (50%) never fires — remember the raw-0–1-ratio scale.
+4. **Does the filter match live data?** An agent name in `filterContext` that never had a session selects zero rows — nothing to alert on.
 
 ---
 

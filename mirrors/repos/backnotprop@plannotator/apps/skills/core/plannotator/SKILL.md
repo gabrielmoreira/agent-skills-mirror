@@ -72,6 +72,7 @@ Targets:
 
 - Markdown and text files: `.md`, `.mdx`, `.txt`.
 - Plain-text config and data files, rendered as text: `.yaml`, `.yml`, `.json`, `.jsonc`, `.json5`, `.toml`, `.ini`, `.cfg`, `.conf`, `.properties`, `.csv`, `.tsv`, `.log`, `.xml`, `.env.example`. `.env` itself is deliberately refused (it commonly holds secrets, and annotate history copies file contents). Source-code files belong to `plannotator review`, not annotate.
+- Diagram sources, opened in the full diagram viewer (zoom, pan, popout, click a node/edge/cluster to comment): `.mmd`, `.mermaid` (Mermaid) and `.dot`, `.gv` (Graphviz). The file is the whole diagram — no fence needed — and comments carry the part's id plus its real file line.
 - HTML files (`.html`, `.htm`): rendered as the raw page by default; `--markdown` converts to markdown instead. `--render-html` is accepted for compatibility; raw rendering is already the default.
 - URLs (`https://...`): fetched and converted via Jina Reader by default; `--no-jina` uses plain fetch plus Turndown instead.
 - Running local apps: a loopback `http://localhost:PORT/` URL whose probe returns HTML opens in live-app mode (annotate the real running page). `--app` forces live mode and fails loudly when it cannot apply; `--static` forces the classic conversion pipeline. Non-loopback URLs always use the conversion pipeline.

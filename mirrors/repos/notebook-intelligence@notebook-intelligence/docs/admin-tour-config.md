@@ -137,7 +137,7 @@ The loader logs WARN and falls back to defaults for:
 - File exceeds the 32 KB cap.
 - YAML/JSON parse error.
 - Top-level value is not a mapping.
-- Unknown top-level key (`steps`, `ui` are the only recognized ones).
+- Unknown top-level key (`steps`, `ui`, and `command` are the only recognized ones).
 - Unknown step id under `steps`.
 - Unknown field under a step (e.g. `placement: top`).
 - Type mismatch (`enabled: "true"` as a string, `title: 42` as an int).

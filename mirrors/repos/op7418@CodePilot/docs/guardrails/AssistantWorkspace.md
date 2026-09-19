@@ -3,6 +3,10 @@
 > **Status: Active contract** — 覆盖默认助理建立、旧目录 no-touch、规则文件解析、心跳 desired/actual 状态与系统通知可观测性。
 > **为什么先读**：这条链同时触及用户文件、模型费用、后台调度和系统通知。任一层 fail-open 都可能覆盖用户目录、产生幽灵模型调用，或把页面提示伪装成系统通知成功。
 
+## 快捷建议失败冷却（2026-09-07）
+
+动态 quick-actions 是可降级的辅助调用：成功缓存 10 分钟；失败或无动态结果仅返回静态建议，冷却 1 分钟后可重试。同一 workspace 的 in-flight 请求合并，切换 workspace 不复用另一工作区的建议/冷却，旧异步结果不得覆盖当前 cache slot。缓存只保留一个 workspace slot；single-flight 仅在当前 slot 成立，A→B→A 在 A 尚未完成时会重新生成（已知有界缓存取舍），不能宣称跨 workspace 交替仍全局去重。不以用户内容构造遥测字段。调用仍通过既有 Provider 解析与 reportProviderFailure；不能以冷却逻辑吞掉首次真实失败的诊断。回归：`quick-action-suggestions.test.ts` 覆盖失败→冷却→恢复、成功 TTL、并发、workspace 切换与空结果后配置恢复。
+
 ## 1. 词汇表
 
 | 词汇 | 含义 |

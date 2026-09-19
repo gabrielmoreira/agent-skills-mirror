@@ -6,6 +6,7 @@ Build, staging, sync, and install pipeline for the `@code-yeongyu/omo-senpi` Pi 
 
 | Script | Role |
 |--------|------|
+| `build-daemon-launch-spec.mjs` | Writes `plugin/daemon-launch-spec.json` (the ONE daemon launch profile; relative extension paths). `--check` verifies byte freshness. Invoked from `build:senpi-plugin` and from `build-extension.mjs --check`. |
 | `build-extension.mjs` | Bundles the five extension artifacts. Entry/output map: `src/extension/bundled-index.ts` -> `extensions/omo.js`, `src/extension/omo-task.ts` -> `extensions/omo-task.js`, `packages/senpi-task/src/team/member-extension/index.ts` -> `extensions/omo-member.js`, `src/components/memory/worker/memory-run-supervisor.ts` -> `extensions/memory-run-supervisor.mjs`, `src/components/init-deep-advisor/runtime.ts` -> `extensions/omo-init-deep-advisor.js`. Exports `buildExtension`, `checkExtensionCurrent`, `resolveBunExecutable`, `SENPI_LOADER_ALIASES`, `toPortableBuildPath`; type surface in `build-extension.d.mts`. |
 | `build-artifact.mjs` | Shared artifact helpers: `normalizeBuiltinImports`, `minifyBundle` (secondary terser pass), `attachBuildMarker`, `artifactsMatch`, `toPortableBuildPath`. |
 | `build-install.mjs` / `install.mjs` | Installer build and the installer itself (largest script here): atomic settings writes with backups, platform launchers, package dedup, legacy builtin shadow removal, superseded Omo package cleanup, agent-dir context resolution, CLI dispatch. |

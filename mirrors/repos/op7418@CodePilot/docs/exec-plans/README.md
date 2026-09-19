@@ -103,9 +103,10 @@
 
 | 文件 | 主题 | 状态 |
 |------|------|------|
+| [active/gemini-native-ai-studio.md](active/gemini-native-ai-studio.md) | AI Studio Gemini 3.8 Flash Native 接入、历史状态/思考参数/截断提示与 AI SDK 能力审计 | Shipped v0.67.16；full 5584 pass / 1 skip、并行 UI 4/4；CI 与 20 资产复核通过，真实 API 与 Windows 会话 smoke 待执行 |
 | [active/astra-openai-oauth-compatibility.md](active/astra-openai-oauth-compatibility.md) | **Astra / OpenAI OAuth / Fable 5.1 兼容修复**：刷新并发、非阻塞目录、恢复提示、冷缓存能力与 Fable 协议 | 🟡 Code complete + Tests pass：5518 pass / 1 skip、后续旧聊天 E2E 2 pass；真实账号 smoke 待验证 |
 | [active/cli-maintenance-and-release-notes-rendering-2026-08-28.md](active/cli-maintenance-and-release-notes-rendering-2026-08-28.md) | **CLI 更新提醒、一键升级与 Release Notes 安全渲染**：按 selected binary/package-root 证明 Claude/Codex 安装渠道，same-channel latest、Windows shim/WinGet/standalone 更新、provider maintenance lease、app-update/quit lifecycle latch 与 post-version 验证；GitHub Atom HTML 经 strict sanitize 渲染 | 🟡 Review accepted，已随 `v0.67.11` Shipped；正式 package/资产门禁通过，真实 UpdateDialog、CLI before→after 与 Windows clean VM smoke 待执行 |
-| [active/post-sentry-scan-remediation-2026-08-27.md](active/post-sentry-scan-remediation-2026-08-27.md) | **2026-08-27 Sentry 生产问题修复闭环**：修复 updater auto-download Promise、utility 生命周期误分类、token usage 非法结构、assistant 消息原子持久化、media expected-error 误报与本地路径后缀泄漏 | 🟡 已随 `v0.67.11` Shipped；Code/Tests/Build/Review/package 门禁通过，official stable Sentry cohort 停增待观察 |
+| [active/post-sentry-scan-remediation-2026-08-27.md](active/post-sentry-scan-remediation-2026-08-27.md) | **2026-08-27 Sentry 生产问题修复闭环**：原 updater/utility/token/DB/media 修复；09-07 增补 collector 异常所有权、保存失败双语提示与快捷建议冷却 | Shipped v0.67.16；最终 full 5584 pass / 1 skip、UI 5/5；初始 DB 空读、Windows EOF 与生产停增验证仍开放 |
 | [active/windows-unsigned-native-auto-update-2026-08-26.md](active/windows-unsigned-native-auto-update-2026-08-26.md) | **Windows 无签名原生自动更新与差分下载**：不申请 Microsoft/Azure/PFX 签名，固定 GitHub 单一信任根；stable 发布 `latest.yml` + NSIS blockmap，Linux 保持手动 | ✅ `v0.67.10` bootstrap 与 `v0.67.11` 后继 stable 均已 Shipped；20 资产 Latest immutable Release、Mac/Windows metadata、blockmap/checksum/provenance 已复核；Windows 真实差分/完整回退 smoke 待执行 |
 | [active/composer-model-route-permission-consolidation.md](active/composer-model-route-permission-consolidation.md) | **Composer 模型路线、能力参数与权限入口收口**：Favorites 精确组合 + Runtime 左栏、Provider 分组模型右栏、能力描述符、上下文/Send 末端布局与权限档位双向映射 | 🟡 本轮 UI/定向 unit/scoped E2E 通过；三 Runtime 真实 effective-wire smoke 待执行（Tier 2） |
 | [active/runtime-thread-ownership-and-handoff.md](active/runtime-thread-ownership-and-handoff.md) | **Runtime 会话所有权、交接与成本可见性（P0/P1）**：首次执行锁定 Runtime；完整路线原子写入；同 Runtime 在原聊天跨服务商换模型并承接历史；目录校验对齐执行层；普通 Picker 不创建或跳转聊天 | 🟡 9 月 5 日两项 P2 续接修复 Tests pass：5485 pass / 1 skip、E2E 3/3；已有原聊天切换 Dev smoke；真实视觉 smoke、独立复审与原计划其他长历史 smoke 待跑 |
@@ -177,6 +178,7 @@
 
 | 文件 | 主题 | 完成日期 |
 |------|------|----------|
+| [completed/issue-685-route-identity.md](completed/issue-685-route-identity.md) | #685：保持已选路由、同 Provider 唯一 upstream 兼容；targeted 27/27，发版 full 5584 pass / 1 skip；Shipped v0.67.16、Windows 会话真机待验 | 2026-09-14 |
 | [completed/site-visual-refresh-2026-09-04.md](completed/site-visual-refresh-2026-09-04.md) | 官网与 README 视觉更新；Phase 8 恢复完整中英文 Dev 截图（接受系统标记）、两层连续贝塞尔圆角；typecheck/lint/UI smoke 通过，未部署 | 2026-09-05 |
 | [completed/windows-runtime-recovery-hardening.md](completed/windows-runtime-recovery-hardening.md) | **Windows Runtime 诊断、恢复与凭据加固**：统一 Path Identity 与三 Runtime Doctor，展示 Codex sandbox 真实阶段；desktop_only 恢复入口经 Windows DEV 用户验收；Provider key 从明文 SQLite 迁到 safeStorage 保护的版本化密文；跨机真实凭据与 standalone sandbox 矩阵保留为复查清单 | 2026-08-07 |
 | [completed/codex-thread-storage-isolation.md](completed/codex-thread-storage-isolation.md) | **Codex 会话存储隔离**：CodePilot-owned `CODEX_HOME` / SQLite、只迁移 `codex_codepilot` 历史、Harness live mirror 与凭据降级模式可观察；真实 app-server resume/索引 smoke 通过 | 2026-08-03 |

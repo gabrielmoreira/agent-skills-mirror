@@ -54,7 +54,19 @@ Verification:
 Chain: MilestoneTypes > SLA Policy > Milestones > Entitlement > Incident > EntityMilestones
 ```
 
+If a test Incident was not created (verification partial), replace the Verification block with:
+
+```text
+Verification:
+  SLA Policy confirmed active (Incident) with all <N> milestones attached.
+  No test Incident was created, so EntityMilestone firing was not exercised in this run.
+```
+
 ## Success — milestone actions (Phase 2.5, when Warn/Escalate was requested)
+
+Append this **Milestone Actions** block to the multi-milestone success report above — do not emit it
+alone. The report must still carry the policy, both milestones (name, time, criteria), the
+Entitlement, the Verification section, and the scope line below.
 
 ```text
 Milestone Actions attached:
@@ -65,11 +77,16 @@ Milestone Actions attached:
     - Warning:   fires <Y> min before target  ->  <action summary>
     - Violation: fires at breach               ->  <action summary>
 
+  Warn offsets are computed per milestone (offset = round(target * (1 - warn%))); each milestone
+  keeps its own offset. Escalate-on-breach is a Violation at the target (offset 0).
+
 Confirmation: each action was confirmed from its create response (success + action mapping
 returned). The attached warning/escalation settings can't be independently queried after creation,
 so that create-response confirmation is the verification.
+
+Scope: only the Incident SLA setup was configured — no other Setup preference was changed.
 ```
 
-No record IDs in user-facing output — this applies to **every interim progress/narration message too**, not just these final templates: refer to the test Incident by its **`IncidentNumber`** and to milestones by their **`MilestoneType` name**, never the 15/18-char record Id.
+No record Ids in user-facing text — **every interim progress/narration message too**, not just these final templates (this enforces the SKILL.md **Output contract**): refer to the test Incident by its **`IncidentNumber`** and to milestones by their **`MilestoneType` name**, never the 15/18-char record Id.
 
 **No implementation/MCP jargon in user-facing text.** Terms like "headless", "read-back", "dispatch", "Connect API", or operation ids are internal — never surface them in the report or narration. Say "the settings can't be independently queried after creation", **not** "no headless read-back". No files are produced — the skill mutates org configuration in place through headless-360 MCP dispatch.

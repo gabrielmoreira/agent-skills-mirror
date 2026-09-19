@@ -236,7 +236,7 @@ Before presenting the workflow, establish which org to use. Do this **every time
     - **Stage 2**: objects/profiles/config records deployed, `<N>` layouts + `<N>` flexipages deployed, 28 trigger handlers activated.
     - **Stage 3**: Territory Model `<model name>` (Active); Level-3 Territory `<territory name>`.
     - **Stage 4**: User `<firstName> <lastName>` (`<username>`); Profile `LSC Custom Profile`; permission sets Life Sciences Core, Life Sciences Field Sales Representative, Health Cloud Starter, Life Sciences Key Account Management; Territory `<territory name>`; admin also assigned to the territory.
-    - **Stage 5**: Account + Healthcare Provider created; Visit `<subject>` (Territory `<territory name>`); product detailing/discussion records; mobile metadata cache generated (Connect API).
+    - **Stage 5**: Account + Healthcare Provider created; Visit `<name>` (Territory `<territory name>`); product detailing/discussion records; mobile metadata cache generated (Connect API).
 
     Close with: "The org is ready for Life Sciences Cloud field sales workflows."
 

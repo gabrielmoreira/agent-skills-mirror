@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `astral-sh/uv` — 26 default patterns, 0 followed patterns, 32 file(s) materialized.
+Mirror of `astral-sh/uv` — 26 default patterns, 0 followed patterns, 31 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `astral-sh/uv` — 26 default patterns, 0 followed patterns, 32 file(s
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 32 |
+| Files         | 31 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -90,7 +90,6 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 29 | ✓ | [`agents/scripts/install-codex-security.sh`](agents/scripts/install-codex-security.sh) |
 | 30 | ✓ | [`agents/scripts/load-github-action-thread.sh`](agents/scripts/load-github-action-thread.sh) |
 | 31 | ✓ | [`agents/templates/issue-context-template.md`](agents/templates/issue-context-template.md) |
-| 32 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 
 ---
 

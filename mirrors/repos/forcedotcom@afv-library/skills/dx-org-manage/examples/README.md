@@ -1,20 +1,21 @@
 # Examples Directory
 
-This directory contains example outputs for the three workflows supported by the `dx-org-manage` skill.
+This directory contains example outputs for the workflows supported by the `dx-org-manage` skill.
+
+Snapshot lifecycle examples (create/get/list/delete the snapshot itself) live in the `dx-org-snapshot-manage` skill's `examples/` directory — this skill only *consumes* an existing snapshot (see `success_snapshot.json` below).
 
 ## Structure
 
 ```text
 examples/
 ├── README.md                          # This file
-├── scratch-orgs/                      # Scratch org creation examples
-│   ├── success_definition_file.json
-│   ├── success_edition.json
-│   ├── error_no_devhub.json
-│   └── error_timeout.json
-└── snapshots/                         # Snapshot creation examples
-    ├── success_output.json
-    └── error_output.json
+└── scratch-orgs/                      # Scratch org creation examples
+    ├── success_definition_file.json
+    ├── success_edition.json
+    ├── success_snapshot.json
+    ├── success_shape.json
+    ├── error_no_devhub.json
+    └── error_timeout.json
 ```
 
 ## scratch-orgs/
@@ -26,13 +27,6 @@ Examples of `sf org create scratch` command outputs for all four creation method
 - **success_snapshot.json** - Successful creation using `--snapshot`
 - **error_no_devhub.json** - Error when Dev Hub not authenticated
 - **error_timeout.json** - Timeout error (exit code 69)
-
-## snapshots/
-
-Examples of `sf org create snapshot` command outputs.
-
-- **success_output.json** - Successful snapshot creation
-- **error_output.json** - Common error scenario (duplicate snapshot name)
 
 ## Usage
 

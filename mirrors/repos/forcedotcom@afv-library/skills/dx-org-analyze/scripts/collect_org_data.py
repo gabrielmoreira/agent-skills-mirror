@@ -623,13 +623,13 @@ def collect_deep_data(org_alias, base_url, access_token):
     queries = {
         "apex_classes": (
             "SELECT Name, ApiVersion, LengthWithoutComments, Status, Body FROM ApexClass WHERE NamespacePrefix = null",
-            lambda r: {"name": r.get("Name", ""), "apiVersion": r.get("ApiVersion"),
+            lambda r: {"name": r["Name"], "apiVersion": r.get("ApiVersion"),
                        "loc": r.get("LengthWithoutComments", 0), "status": r.get("Status"),
                        "bodyHash": hashlib.sha256(r.get("Body", "").encode()).hexdigest() if r.get("Body") else None}
         ),
         "apex_triggers": (
             "SELECT Name, ApiVersion, Status, Body FROM ApexTrigger WHERE NamespacePrefix = null",
-            lambda r: {"name": r.get("Name", ""), "apiVersion": r.get("ApiVersion"),
+            lambda r: {"name": r["Name"], "apiVersion": r.get("ApiVersion"),
                        "status": r.get("Status"),
                        "bodyHash": hashlib.sha256(r.get("Body", "").encode()).hexdigest() if r.get("Body") else None}
         ),

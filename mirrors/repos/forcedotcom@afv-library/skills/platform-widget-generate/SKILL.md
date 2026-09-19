@@ -2,7 +2,7 @@
 name: platform-widget-generate
 description: "Use this skill to author a complete HXL WidgetBundle (UEM body + schema.json + -meta.xml). TRIGGER when: user asks for a widget, mosaic, fragment, card, or rich UI surface for any subject, domain, feature, or entity noun; the prompt names only an entity or data shape without invoking Lightning Types, CLTs, or Apex-backed types. DO NOT TRIGGER when: the prompt explicitly says 'Lightning Type', 'CLT', 'Custom Lightning Type', 'Apex-backed type', or references '@apexClassType/...' (use platform-lightning-type-widget-coordinate); authoring a custom-LWC renderer for a Custom Lightning Type (use platform-custom-lightning-type-generate); or editing only an LWC component."
 metadata:
-  version: "1.3"
+  version: "1.4"
   domains: ["Platform", "Agentforce"]
   minApiVersion: "68.0"
   relatedSkills:
@@ -93,6 +93,7 @@ The first child of `tile/widget.children` SHOULD be a single `tile/column`. All 
 
 - Bind a block property to runtime data with `{!$attrs.<attrName>}`. `<attrName>` MUST match a property name in `schema.json`.
 - Inside a `forEach`, reference the loop variable instead — e.g. `"text": "{!$item.name}"`. See `references/widget-meta-directives.md`.
+- A binding may be a **formula expression** instead of a bare field reference. See `references/widget-formulas.md` for the full supported-function list, syntax, and gotchas.
 
 ---
 
@@ -180,15 +181,19 @@ Widgets express *intent*, not pixels. Each surface provides a default look and f
    |---|---|
    | Single object (no iteration) | `<skill-root>/examples/single-object.json` |
    | Any list iteration (root-level array, nested list, or list embedded in a single-object widget) | `<skill-root>/examples/list-with-foreach.json` |
-   | Conditional rendering (`if` bound to a boolean) | `<skill-root>/examples/conditional.json` |
+   | Conditional rendering (`if` bound to a boolean or formula) | `<skill-root>/examples/conditional.json` |
+   | Computed values, text/number transforms, or `if` driven by a formula (not a bare boolean field) | `<skill-root>/examples/formulas.json` |
 
    A spec may match multiple patterns (e.g. a list of items where some items render conditionally reads both `list-with-foreach.json` and `conditional.json`). **Read every matching example, and only those — do not skip the read because the pattern feels familiar.**
+
+   **Before writing any formula**, read `references/widget-formulas.md` in full — it is the authoritative list of supported operators and functions; do not improvise a function name or operator that isn't documented there.
 
    Then:
    - Map each widget-spec property to a block property; preserve spec order.
    - **Decide root iteration:** single object → properties directly under root `tile/column`. Collection → wrap repeating block in `forEach`/`forItem`. See `references/widget-meta-directives.md`.
    - Bind values with `{!$attrs.X}` (or `{!$item.X}` inside `forEach`).
-   - For conditional blocks, add `"if"` on `meta` — only when the schema has a matching `lightning__booleanType` property.
+   - For conditional blocks, add `"if"` on `meta` — either a bare `lightning__booleanType` property, or a formula expression that evaluates to boolean. See `references/widget-formulas.md`.
+   - **When the widget spec calls for a computed value** (a total, a derived label, a formatted string) rather than a raw field, express it as a formula inside `{!...}` per `references/widget-formulas.md` — do not invent a new schema property to hold a value that can be computed from existing ones.
 
 6. **Author `schema.json`.** Build the JSON Schema from the widget spec. Fields live one level deep under an `attributes` wrapper:
 
@@ -235,7 +240,8 @@ Widgets express *intent*, not pixels. Each surface provides a default look and f
     - **`schema-parses`** — `<pkgDir>/uiWidgets/<widgetName>/schema.json` parses as JSON.
     - **`schema-root-keys`** — root has `title` (string), `type: "object"`, and `properties.attributes` (object) — where `properties.attributes` carries `lightning:type: "lightning__objectType"` and a nested `properties` map. No `unevaluatedProperties: false`.
     - **`schema-leaf-types`** — every leaf under `properties.attributes.properties` carries a `lightning:type`. Singular nested inner-class fields carry `lightning:type` set to the inner Apex class reference (`@apexClassType/<namespace>__<OuterClass>$<InnerClass>`); the nested shape is not redeclared. `List<InnerClass>` fields carry `lightning:type: "lightning__listType"` with `items.lightning:type` set to the inner Apex class reference (`@apexClassType/<namespace>__<OuterClass>$<InnerClass>`), not a redeclared field map — see `references/schema-from-lightning-type.md`. **When the list has no Apex-backed type** (schema inferred from the prompt), `items.lightning:type: "lightning__objectType"` MUST carry an inline nested `properties` map for every item field the body binds via `{!$item.X}`.
-    - **`bindings-resolve`** — every `{!$attrs.X}` (or `{!$attrs.<outerField>.<innerField>}` for nested objects) in `<widgetName>.json` resolves to a property under `schema.json` `properties.attributes.properties`, and every `{!$item.X}` resolves to a `forItem` loop variable defined upstream.
+    - **`bindings-resolve`** — every `{!$attrs.X}` (or `{!$attrs.<outerField>.<innerField>}` for nested objects) in `<widgetName>.json` resolves to a property under `schema.json` `properties.attributes.properties`, and every `{!$item.X}` resolves to a `forItem` loop variable defined upstream. This applies to `$attrs`/`$item` references **inside formula expressions** too.
+    - **`formulas-supported`** — every function name used inside a `{!...}` expression appears in the *Supported functions* list in `references/widget-formulas.md`.
     - **`body-envelope`** — `<widgetName>.json` root has `type: "lightning__agentforceWidget"` and a `contentBody` object whose `widgetBody` carries the UEM tree rooted at `tile/widget`. No node in the tree — root or non-root — carries a `type` key.
     - **`metaxml-wellformed`** — `<widgetName>.uiwidget-meta.xml` parses as well-formed XML.
     - **`metaxml-elements`** — `<widgetName>.uiwidget-meta.xml` has root `<UiWidgetBundle>` and contains `<masterLabel>` (non-empty), `<description>` (non-empty), and `<widgetType>JSON</widgetType>`.
@@ -259,24 +265,26 @@ Widgets express *intent*, not pixels. Each surface provides a default look and f
 
 ## Gotchas
 
-| Issue | Resolution |
-|---|---|
-| `getUiComponentSchemas` returns a partial-failure entry | Pick a different block from `discoverUiComponents`; do not silently continue without a schema |
-| Body references `{!$attrs.foo}` but `foo` is not under `schema.json` `properties.attributes.properties` | Add `foo` to `schema.json` `properties.attributes.properties` OR remove the body reference |
+| Issue | Resolution                                                                                                                                                                                                                                                     |
+|---|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `getUiComponentSchemas` returns a partial-failure entry | Pick a different block from `discoverUiComponents`; do not silently continue without a schema                                                                                                                                                                  |
+| Body references `{!$attrs.foo}` but `foo` is not under `schema.json` `properties.attributes.properties` | Add `foo` to `schema.json` `properties.attributes.properties` OR remove the body reference                                                                                                                                                                     |
 | Output written outside `<pkgDir>/uiWidgets/<widgetName>/` | `<pkgDir>` = `<packageDirectories[].path>/main/default` (see `references/widget-bundle-layout.md`). Dropping the `main/default/` segment is the common cause of widgets landing at `force-app/uiWidgets/...` instead of `force-app/main/default/uiWidgets/...` |
-| `if` bound to a non-boolean | Use `if` only when the schema has a `lightning__booleanType` property |
-| `tile/button` renders but does nothing when clicked | No `actions.click` entry was set — an action-less button renders disabled by design. Add one (see *Actions* above) |
-| Using `action/sendMessage` for pure navigation, or `action/openLink` when the agent should respond | `action/openLink` is synchronous and does not consume a turn; `action/sendMessage` is asynchronous and earns a fresh turn. Pick the one matching the intended UX |
+| `if` bound directly to a raw string or number relies on truthiness and is unreliable | Bind to a `lightning__booleanType` property, or use a formula comparison that evaluates to boolean                                                                                                                                                             |
+| `tile/button` renders but does nothing when clicked | No `actions.click` entry was set — an action-less button renders disabled by design. Add one (see *Actions* above)                                                                                                                                             |
+| Using `action/sendMessage` for pure navigation, or `action/openLink` when the agent should respond | `action/openLink` is synchronous and does not consume a turn; `action/sendMessage` is asynchronous and earns a fresh turn. Pick the one matching the intended UX                                                                                               |
 
 ---
 
 ## Reference File Index
 
-| File | When to read |
-|---|---|
-| `references/widget-meta-directives.md` | For `forEach` / `forItem` (iteration) and `if` (conditional rendering), including nested loops |
-| `references/schema-from-lightning-type.md` | When `lightningTypeSchema` is provided; how to derive the widget `schema.json` from an Apex-backed Lightning Type |
-| `references/widget-bundle-layout.md` | Folder layout, `-meta.xml` shape, `<pkgDir>` resolution rules |
-| `examples/single-object.json` | Single-object pattern (root binding via `{!$attrs.X}`, no iteration) |
+| File | When to read                                                                                                                                                                        |
+|---|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `references/widget-meta-directives.md` | For `forEach` / `forItem` (iteration) and `if` (conditional rendering), including nested loops                                                                                      |
+| `references/schema-from-lightning-type.md` | When `lightningTypeSchema` is provided; how to derive the widget `schema.json` from an Apex-backed Lightning Type                                                                   |
+| `references/widget-bundle-layout.md` | Folder layout, `-meta.xml` shape, `<pkgDir>` resolution rules                                                                                                                       |
+| `references/widget-formulas.md` | Supported formula functions and operators                                                                                                                                           |
+| `examples/single-object.json` | Single-object pattern (root binding via `{!$attrs.X}`, no iteration)                                                                                                                |
 | `examples/list-with-foreach.json` | Any list-iteration case — root-level collections, nested lists, and lists embedded inside a single-object widget (e.g. iterating a `List<InnerClass>` inside an outer Apex payload) |
-| `examples/conditional.json` | Conditional pattern (`if` on `meta`, including `if` + `forEach` together) |
+| `examples/conditional.json` | Conditional pattern (`if` on `meta`, including `if` + `forEach` together)                                                                                                           |
+| `examples/formulas.json` | Formula usage — text/arithmetic/date transforms, `IF`/`AND`/`NOT` driving both a `tile/text` and `meta.if`                                                                          |

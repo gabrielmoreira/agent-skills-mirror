@@ -1,8 +1,8 @@
 ---
 name: service-itsm-agentic-setup-cmdb-access-assign
-description: "Grant a specific user access to CMDB (Configuration Management Database) data in Service Cloud ITSM against a production or sandbox org by assigning the license-backed CMDB permission sets (Configuration Item Reader, Owner, Type Reader, Type Manager) and their permission-set licenses. Use when the user asks to give someone CMDB access, assign CMDB permission sets, grant a user the Configuration Item Reader/Owner role, or fix a CMDB 403 FUNCTIONALITY_NOT_ENABLED that a user still hits after the CMDB feature is already enabled. Triggers on: assign CMDB permission set, grant CMDB access, give user Configuration Item access, CMDB access for user, user still gets CMDB 403 after enable. DO NOT TRIGGER when: the user wants to turn on the CMDB feature or provision the ITOM tenant for the whole org (that is the CMDB feature-enable skill), only install a CMDB content bundle, work with CMDB records directly, or assign general (non-CMDB) permission sets to users (use dx-org-permission-set-assign)."
+description: "Grant a specific user access to CMDB (Configuration Management Database) data in Service Cloud ITSM against a production or sandbox org by assigning the license-backed CMDB permission sets (Configuration Item Reader, Owner, Type Reader, Type Manager) and their permission-set licenses. Use when the user asks to give someone CMDB access, assign CMDB permission sets, grant a user the Configuration Item Reader/Owner role, or fix a CMDB 403 FUNCTIONALITY_NOT_ENABLED that a user still hits after the CMDB feature is already enabled. Triggers on: assign CMDB permission set, grant CMDB access, give user Configuration Item access, CMDB access for user, user still gets CMDB 403 after enable. DO NOT TRIGGER when: the user wants to turn on the CMDB feature or provision the CMDB tenant for the whole org (that is the CMDB feature-enable skill), only install a CMDB content bundle, work with CMDB records directly, or assign general (non-CMDB) permission sets to users (use dx-org-permission-set-assign)."
 metadata:
-  version: "1.0"
+  version: "1.1"
   domains: ["Service"]
   minApiVersion: "67.0"
   relatedSkills:
@@ -13,6 +13,9 @@ metadata:
     headless-360:
       tools: ["describe", "discover", "dispatch", "dispatch_readonly"]
       semver: ">=1.0.0"
+  accessCheck:
+    - type: "orgPerm"
+      value: "ITSrvcsCnfgMgmnt"
 allowed-tools: |
   Read AskUserQuestion
   mcp__headless-360__discover
@@ -71,7 +74,7 @@ not specify a role, ask (see Clarifying questions) — default to **Reader + Typ
 
 - **In scope**: resolving the target user, resolving the requested CMDB permission set(s), checking
   existing assignments, assigning the permission-set license(s) and permission set(s), and verifying.
-- **Out of scope**: enabling the CMDB feature / provisioning the ITOM tenant (Layers 0–2 —
+- **Out of scope**: enabling the CMDB feature / provisioning the CMDB tenant (Layers 0–2 —
   `service-itsm-agentic-setup-cmdb-configure`), installing content bundles, CMDB record CRUD,
   creating custom permission sets, or org-permission/edition changes.
 
@@ -173,17 +176,37 @@ Use the `Name` values from the table above. Capture each `Id` (the permission se
 (the PSL to assign). If a permission set is not found, the org likely is not CMDB-licensed — stop and
 report that CMDB does not appear to be set up on this org.
 
-### Step 4 — Check existing assignments (read — idempotency)
+### Step 4 — Check existing assignments (read — idempotency, permission-set-group–aware)
 
-For each target user + permission set, check whether the assignment already exists:
+A role can be granted **two ways**, and this check must accept **both** — or it falsely reports an
+already-granted role as missing and wrongly asks to assign it:
+
+1. **Directly** — a `PermissionSetAssignment` whose `PermissionSetId` is the role's own permission set.
+2. **Via a permission set group (PSG)** — when the role's permission set is a *member* of a PSG the
+   user is assigned. There the user's `PermissionSetAssignment` row carries a `PermissionSetGroupId` and
+   its `PermissionSetId` is the group's internal *aggregate* set — **not** the member permission set —
+   so a query filtering on `PermissionSetId = '<psId>'` returns **zero** even though the user
+   effectively holds the role.
+
+Run **both** permission-set reads per role; the permission set is present if **either** returns
+`totalSize >= 1` (the second is a top-level semi-join — nesting it inside an `OR` throws `MALFORMED_QUERY`):
 
 ```text
 dispatch_readonly({ "url": "/services/data/v67.0/query", "method": "GET", "queryParams": { "q": "SELECT Id FROM PermissionSetAssignment WHERE AssigneeId = '<userId>' AND PermissionSetId = '<psId>'" } })
+dispatch_readonly({ "url": "/services/data/v67.0/query", "method": "GET", "queryParams": { "q": "SELECT Id FROM PermissionSetAssignment WHERE AssigneeId = '<userId>' AND PermissionSetGroupId IN (SELECT PermissionSetGroupId FROM PermissionSetGroupComponent WHERE PermissionSetId = '<psId>')" } })
+```
+
+Then check the backing license (a PSG that includes the role also assigns its backing PSL directly, so
+this single read already covers the PSG case):
+
+```text
 dispatch_readonly({ "url": "/services/data/v67.0/query", "method": "GET", "queryParams": { "q": "SELECT Id FROM PermissionSetLicenseAssign WHERE AssigneeId = '<userId>' AND PermissionSetLicenseId = '<pslId>'" } })
 ```
 
-If both already exist for a role, that role is **already assigned** — skip its writes and record it as
-already-done. Only assign what is missing.
+If the permission set is present by **either** path **and** the license read returns `totalSize >= 1`,
+that role is **already assigned** — skip its writes and record it as already-done. Only assign what is
+genuinely missing, and do **not** re-assign the member permission set directly when the user already
+holds it through a PSG.
 
 ### Step 5 — Assign the permission-set license, then the permission set (write — confirm first)
 
@@ -204,9 +227,10 @@ dispatch({ "url": "/services/data/v67.0/sobjects/PermissionSetAssignment", "meth
 
 ### Step 6 — Verify (read — do NOT trust the POST response alone)
 
-Re-run the Step 4 queries. Confirm each requested role now has **both** a `PermissionSetAssignment`
-and a `PermissionSetLicenseAssign` for the user. Report per-role: assigned / already had it. Only
-roles confirmed present in this read count as done.
+Re-run the Step 4 reads — **both** the direct and the via-PSG permission-set checks, plus the license
+check. A role counts as done only when its permission set is present by **either** path **and** its
+backing license reads back. Report per-role: assigned / already had it. Only roles confirmed present in
+this read count as done.
 
 ---
 
@@ -266,6 +290,7 @@ into what it means ("CMDB isn't turned on for this org yet"), rather than echoin
 | Feature status not `ENABLED` (or `403` on the status read) | Org-level CMDB gate not lifted | CMDB must be turned on for the org first; this is a separate setup step — point to the feature-enable skill |
 | Permission set not found | Org is not CMDB-licensed / not set up | CMDB does not appear to be available on this org; confirm it is licensed and enabled |
 | `403 FUNCTIONALITY_NOT_ENABLED` on a **bundle-management** read (e.g. `bundles/details`, `bundleListView`) after assignment, feature ENABLED | The user holds Reader/Owner/Type Reader but not **Type Manager** — bundle operations require it | Assign **Type Manager** — this role is required for CMDB bundle management; the other CMDB roles do not cover bundle operations |
+| Skill says a CMDB role is missing and asks to assign it, but the user already has it (e.g. through a permission set group) | Idempotency check saw only *directly* assigned permission sets and was blind to group-delivered grants — fixed in Step 4, which now also checks group membership | The user already has that access through a permission set group; treat the role as already granted — no new assignment is needed |
 | `400 DUPLICATE_VALUE` on assign | User already has that access | Not an error — report the role as already assigned |
 | License-limit / no-seats error on assign | CMDB permission-set license seats exhausted | Report seats in use vs available; a seat must free up (or more licenses added) before assigning |
 | `dispatch*` auth error | headless-360 MCP session not authenticated / token expired | Re-authenticate the headless-360 MCP connection and confirm the session points at the intended org |

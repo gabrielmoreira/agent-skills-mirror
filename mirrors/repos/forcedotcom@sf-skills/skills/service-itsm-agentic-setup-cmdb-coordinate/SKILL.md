@@ -38,7 +38,7 @@ CMDB is gated by a 4-layer stack. Every CMDB Connect API checks `orgHasCMDBEnabl
 ```text
 Layer 0  Org SKU / license      Org perm ITSrvcsCnfgMgmnt must already be granted (edition/
                                 license/template). NOT settable by any API — verify only.
-Layer 1  Tenant provisioning    ITOM tenant must reach status PROVISIONED (async).
+Layer 1  Tenant provisioning    CMDB tenant must reach status PROVISIONED (async).
 Layer 2  Feature enable         Enable feature service-cloud-itsm-cmdb-integration. This is
                                 what internally sets CMDBEnabled and lifts the 403 gate.
 Layer 3  User access            Assign the PSL + CMDB permission sets to the user(s).
@@ -85,7 +85,7 @@ CMDB is enabled in ordered layers. Each must succeed before the next:
 | #   | Layer                    | What it does                                                 | Status  |
 | --- | ------------------------ | ------------------------------------------------------------ | ------- |
 | 0   | License check            | Confirm this org is licensed for CMDB (set by edition/license — can't be turned on) | Pending |
-| 1–2 | Provision & enable CMDB  | Set up the CMDB service, then turn on the CMDB feature so it's available to use | Pending |
+| 1–2 | Provision & enable CMDB  | Set up the CMDB tenant, then turn on the CMDB feature so it's available to use | Pending |
 | 3   | Assign user access       | Grant CMDB access to the chosen users                        | Pending |
 | 4   | Install content bundle   | Install the CMDB Foundation (base) content                   | Pending |
 | 5   | Enable Asset Discovery   | Turn on asset discovery and grant Discovery page access (final step — needs the steps above done first) | Pending |

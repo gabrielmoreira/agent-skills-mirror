@@ -228,6 +228,14 @@ Generate tailwind.config.js with custom theme:
 python scripts/tailwind_config_gen.py --colors brand:blue --fonts display:Inter
 ```
 
+The generator refuses to create or replace a config when any sibling
+`tailwind.config.js`, `.cjs`, `.mjs`, or `.ts` file already exists. Review the
+reported config first, then pass `--force` only when the competing output is
+intentional:
+```bash
+python scripts/tailwind_config_gen.py --colors brand:blue --force
+```
+
 ## Best Practices
 
 1. **Component Composition**: Build complex UIs from simple, composable primitives

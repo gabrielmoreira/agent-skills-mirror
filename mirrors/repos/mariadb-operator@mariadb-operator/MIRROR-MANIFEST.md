@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `mariadb-operator/mariadb-operator` — 26 default patterns, 0 followed patterns, 4 file(s) materialized.
+Mirror of `mariadb-operator/mariadb-operator` — 26 default patterns, 0 followed patterns, 5 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `mariadb-operator/mariadb-operator` — 26 default patterns, 0 followe
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 4 |
+| Files         | 5 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -61,8 +61,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`.agents/skills/mariadb-operator-comment/SKILL.md`](.agents/skills/mariadb-operator-comment/SKILL.md) |
 | 2 | ✓ | [`.agents/skills/mariadb-operator-pr-review/SKILL.md`](.agents/skills/mariadb-operator-pr-review/SKILL.md) |
-| 3 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 4 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 3 | ✓ | [`.agents/skills/mariadb-operator-release-notes/SKILL.md`](.agents/skills/mariadb-operator-release-notes/SKILL.md) |
+| 4 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 5 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 
 ---
 

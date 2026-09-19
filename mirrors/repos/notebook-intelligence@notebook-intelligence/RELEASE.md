@@ -14,12 +14,21 @@ Python package. Before generating a package, you first need to install some tool
 pip install build twine hatch
 ```
 
-Bump the version using `hatch`. By default this will create a tag.
-See the docs on [hatch-nodejs-version](https://github.com/agoose77/hatch-nodejs-version#semver) for details.
+Bump the version using `hatch`. See the docs on
+[hatch-nodejs-version](https://github.com/agoose77/hatch-nodejs-version#semver) for details.
 
 ```bash
 hatch version <new-version>
 ```
+
+`hatch version` writes the version; it does not tag. Tag the release yourself
+afterwards, and spell the tag the way the existing history does
+(`v5.4.0`, `v5.4.0a1`) rather than with a hyphen before the prerelease segment.
+
+Before tagging, add the release's entry to [`CHANGELOG.md`](CHANGELOG.md) above
+the `<!-- <START NEW CHANGELOG ENTRY> -->` marker, date the heading, and add its
+compare link at the foot of the file. The Jupyter Releaser workflows below read
+that marker, so an entry added after the fact is not picked up.
 
 Make sure to clean up all the development files before building the package:
 

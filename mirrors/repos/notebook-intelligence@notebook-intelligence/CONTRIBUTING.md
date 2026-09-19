@@ -37,6 +37,9 @@ NBI has two halves:
   - `notebook_intelligence/rule_manager.py`, `rule_injector.py`, `ruleset.py` — ruleset discovery and prompt injection.
   - `notebook_intelligence/built_in_toolsets.py` — built-in tool implementations (`nbi-notebook-edit`, `nbi-command-execute`, etc.).
   - `notebook_intelligence/github_copilot.py` — GitHub Copilot device-flow auth and token storage.
+  - `notebook_intelligence/chatbook_kernel/` — the Chatbook kernel: `kernel.py` (the wrapper that proxies to a backend kernelspec), `codegen.py`, `execution.py` (execution modes), `danger.py` (the risk scan), and the shipped kernelspec.
+  - `notebook_intelligence/chatbook_generate.py` — the generate, summarize, and danger-scan endpoint behind Chatbook cells.
+  - `notebook_intelligence/acp_agent.py`, `acp_registry.py` — ACP agent mode: the protocol client, what NBI serves or refuses an agent, and adapter launch.
 - **Frontend extension** — TypeScript package `src/`. Compiled to a JupyterLab labextension. Key entry points:
   - `src/index.ts` — JupyterLab plugin registration.
   - `src/chat-sidebar.tsx` — chat sidebar React tree.
@@ -44,6 +47,7 @@ NBI has two halves:
   - `src/components/skills-panel.tsx` — Claude Skills management UI.
   - `src/api.ts` — high-level client for the server extension (chat WebSocket, capabilities, config).
   - `src/handler.ts` — thin wrapper over Jupyter's `ServerConnection.makeRequest`.
+  - `src/chatbook.ts`, `src/chatbook-core.ts` — Chatbook cell behavior: mode switching, the confirm bar, export, and the cell metadata format.
 
 The two halves communicate over the routes registered in `extension.py` (REST and WebSocket). All routes live under `/notebook-intelligence/`. See [`docs/admin-guide.md`](docs/admin-guide.md#http-api-surface) for the full list.
 
@@ -159,9 +163,10 @@ The `jupyter labextension develop` command leaves a symlink behind. Run `jupyter
 
 ## Running tests
 
-TypeScript unit tests:
+TypeScript type check and unit tests:
 
 ```bash
+jlpm tsc --noEmit
 jlpm test
 ```
 
@@ -172,7 +177,7 @@ pip install -e ".[test]"
 pytest tests/ -q
 ```
 
-CI runs both suites on every push, in that order. Every test is capped at 30 seconds by `pytest-timeout`, so a hung subprocess or pipe fails the run instead of stalling the job.
+CI runs both suites on every push, Python first, then TypeScript. Every test is capped at 30 seconds by `pytest-timeout`, so a hung subprocess or pipe fails the run instead of stalling the job.
 
 ## Linting
 

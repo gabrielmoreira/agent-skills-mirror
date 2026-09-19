@@ -100,7 +100,7 @@ Expected: at least 2 records (new user + admin).
 ### After Stage 5 — Visit Creation
 
 ```bash
-sf data query --query "SELECT Id, Subject, TerritoryId FROM Visit ORDER BY CreatedDate DESC LIMIT 1" --target-org <org> --json
+sf data query --query "SELECT Id, Name, TerritoryId FROM Visit ORDER BY CreatedDate DESC LIMIT 1" --target-org <org> --json
 ```
 
 Expected: at least 1 Visit record (created against the level-3 territory).

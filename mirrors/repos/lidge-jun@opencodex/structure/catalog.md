@@ -1,6 +1,7 @@
 # Model Catalog
 
 Native result continuations and function-result injection follow [the mode-specific result and control contract](transports/streaming-health.md#experimental-native-function-result-injection); this surface does not infer upstream support or alter its defaults.
+Explicit Codex CLI installation observation supplies no selected-runtime proof to catalog discovery or publication. See the [read-only observation contract](runtime.md#explicit-codex-cli-installation-observation).
 
 Native steering follows [the shared WebSocket contract](transports/streaming-health.md#experimental-native-mid-turn-steering); this surface's defaults remain unchanged.
 
@@ -15,6 +16,9 @@ Shared parsing and streaming follow the [request-copy](transports/byte-accountin
 ## Remote catalog HTTP proxy routing
 
 `src/codex/catalog/remote.ts` permits loopback HTTP only when Bun fetch has no effective HTTP proxy or a matching NO_PROXY bypass. Its local matcher follows [Bun fetch semantics](https://github.com/oven-sh/bun/blob/744846f844374847c902b5e7fd59b4342a51ef99/src/dotenv/env_loader.rs#L369), including non-empty lowercase-variable priority, ASCII whitespace, literal host/port comparison and bracket-preserving IPv6. It does not normalize URL-shaped bypass entries, paths, wildcard prefixes, trailing dots or Unicode whitespace, and leaves the broader WebSocket proxy grammar unchanged. It refuses before authentication headers and fetch with a content-free `insecure_http_refused` error. ALL_PROXY and HTTPS-only settings do not affect HTTP acquisition; HTTPS and existing redirect, size, validation and coordinated-installation contracts are preserved. `tests/codex-integration/catalog-remote-pull.test.ts` covers these routing and non-disclosure boundaries.
+
+Accounts added through the [Orca import](codex-home.md#orca-source-owned-account-import) remain
+validation-pending. Import alone supplies no entitlement evidence for the model catalog.
 
 ## Shared catalog
 
@@ -116,6 +120,20 @@ while explicit target limits remain authoritative. Because the affected renderer
 native alias also omits disabled bare native rows from the effective catalog. Dashboard rows remain
 derived from the static native set, and sync retains bundled/pristine native recovery sources so a
 later re-enable or alias removal restores native metadata.
+
+Without such an alias, a disabled bare native keeps a `visibility: "hide"` row, and that retention
+has an operator-visible consequence. `visibleNativeSlugs` in `src/codex/catalog/metadata.ts` drops
+the slug from `/v1/models` and the dashboard while `applyNativeVisibility` keeps the catalog row, so
+a renderer that ignores `visibility` can still offer a model every other surface calls disabled.
+Selecting it is not refused: `disabledModels` is a catalog control, and `src/router.ts` never
+consults it, so the turn resolves by the ordinary routing rules instead of failing as disabled.
+Retention is the deliberate trade — it preserves real upstream metadata for a later re-enable
+rather than synthesizing a guess — and a `nativeAlias` combo is the lever that omits the row
+outright.
+
+Nothing in the catalog validates Codex's own root `model` pin against this exposed set;
+`readConfiguredDefaultModel` in `src/codex/catalog/parsing.ts` reads the pin, and `ocx doctor`
+reports it (see [Runtime](runtime.md)).
 
 Provider live-model lists are cached with a configured TTL (`src/codex/model-cache.ts`). Adding,
 deleting, or editing a provider's shape clears that per-provider cache; a disabled-only change
@@ -252,6 +270,16 @@ Pool mode routes across main plus added Codex credentials. Key rules:
   account targets are not advertised, and private account ids never become catalog labels.
   `codexAccountPickerEnabled: false` hides generated rows without deleting exact routing bindings;
   an omitted flag preserves the established behavior of a nonempty hand-written selector map.
+- **An omitted Luna Reserve row explains itself once.** The Reserve projection is
+  account-qualified (`<selector>/gpt-reserve`), so it cannot be written without a selector that
+  targets the main Codex account, and a fresh authless install has an empty selector map. Because
+  an omission has no row to carry a reason, catalog sync emits one warn-once line naming the
+  cause — absent canonical OpenAI provider, explicitly disabled picker, empty selector map, or a
+  map with no main-account target — and the action that restores it
+  (`src/codex/catalog/reserve-warn.ts`). It is scoped to an install where authless Codex Desktop
+  routing is effective, so an install that never opted in is never told about a Reserve row it
+  did not ask for. An install that stores the flag where it cannot take effect is a different
+  silence, reported as `inertReason` by `describeCodexDesktopSwitches` rather than repeated here.
 - **Rotation is sticky.** A conversation stays on its selected account while that account is
   usable; failure moves it, success does not (`src/codex/pool-rotation.ts`).
 - **A transient hold is probed half-open, never opened all at once.** While a bound account is
@@ -352,6 +380,17 @@ Ultra is always advertised in the catalog regardless of the `multi_agent_v2` tog
 controls only the multi-agent collab surface, not ultra visibility. The `nativeEffortClamp` function
 wire-clamps ultra/max to each model's real top rung (e.g. gpt-5.5 ultra → xhigh on the wire).
 
+For routed models, `modelSuppressSyntheticMax` is a catalog-only per-model setting. A true value
+prevents `src/codex/catalog/effort.ts` from adding a missing synthetic `max` and prevents
+`src/codex/catalog/build-entries.ts` from repairing that missing rung during observed-state merge.
+It never removes a provider-declared `max`, and `ultra` remains advertised. If the configured default
+names a suppressed missing `max`, the catalog selects the highest real rung below it. A degraded sync
+also preserves any `max` already recorded on disk: without persisted provenance OpenCodex cannot
+distinguish an older synthetic rung from a real provider rung, so only a later healthy provider rebuild
+can remove the former. Codex uses this same membership for the picker and explicit `spawn_agent`
+effort validation; an explicit `max` spawn can therefore fail client-side before proxy wire clamping,
+while retained `ultra` remains the supported harness path.
+
 `effortCap` and `subagentEffortCap` are hard ceilings applied on the V2 path
 (`src/server/effort-policy.ts`): they lower or preserve the requested effort rather than rejecting
 the request, and they never raise it.
@@ -385,7 +424,7 @@ spelling; the V1 and compaction cap exemptions are preserved.
 
 > Decision record: [ADR-0026](decisions/ADR-0026-ultra-reasoning-level.md)
 
-Codex display-cache expiry, retained main-policy evidence, and reset history follow the
+Codex display-cache expiry, retained blocking main-policy evidence, and reset history follow the
 [quota cache contract](providers/openai-tiers.md#quota-cache-and-short-window-history).
 
 Usage consumers preserve positive incomplete-history metadata as specified in [usage accounting](gui-and-management-api.md#usage-accounting); readable totals are not represented as a complete ledger. Upstream API-key usage follows the [physical-attempt account attribution contract](gui-and-management-api.md#upstream-key-account-attribution), independently of subscription quota observations.
@@ -413,7 +452,7 @@ Provider `showThinkingSummary` is a Responses request default; it does not rewri
 
 `src/codex/history-provider.ts` refuses external writes to paginated or migration-capable history. `src/codex/inject.ts` checks affected rows and manifest-owned restore targets before and after config/profile/journal changes, including successful journal and fallback restores, and compensates refused restore/removal transitions. Failed config restore stops later catalog/history work and rolls back a coordinated remove transition. Apply retains an existing provider definition before candidate admission even when history preflight passes, so migration after artifact commit or during worker startup cannot leave earlier conversations without their provider. See the [history writer contract](codex-home.md#paginated-history-writer-boundary) for guarantees and concurrent-writer limits.
 
-Codex pool settings and their consumers follow the [reset-first ordering contract](providers/openai-tiers.md#reset-first-account-ordering), including independent-quota fallback and preserved affinity.
+Codex pool settings and their consumers follow the [reset-first ordering contract](providers/openai-tiers.md#reset-first-account-ordering), including independent-quota fallback, preserved affinity, strategy-specific threshold summaries, and shared short-observation freshness for switch warnings.
 
 Claude replay carries [Go conversation affinity](data-planes/inbound-compat.md#claude-affinity-at-final-go-dispatch)
 privately to final dispatch; preliminary route selection does not inject Go-only headers.
@@ -444,3 +483,5 @@ Shared response-log retention and native SSE inspection pacing follow the [bound
 Native steering retains fixed phase deadlines and reconciled replay output; see the [steering stability contract](transports/streaming-health.md#steering-deadlines-and-replay-completeness).
 
 Native steering generation overrides, explicit public-API eligibility and the consent-gated wire probe follow the [shared control contract](transports/streaming-health.md#steering-settings-public-api-and-diagnostic-probe); this owner does not change routing or execute diagnostic tools.
+
+Dashboard Fast-row persistence and client refresh follow the [Fast selector rows setting contract](gui-and-management-api.md#fast-selector-rows-setting).

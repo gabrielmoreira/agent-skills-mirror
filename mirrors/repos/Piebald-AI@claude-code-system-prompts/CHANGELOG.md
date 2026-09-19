@@ -4,6 +4,32 @@ Note: Only use **NEW:** for entirely new prompt files, NOT for new additions/sec
 
 ### Claude Code System Prompts Changelog
 
+# [2.1.277](https://github.com/Piebald-AI/claude-code-system-prompts/commit/4507665)
+
+_+5,234 tokens_
+
+- **NEW:** Data: SDK frame_received_wall_ms field — Records when a triggering send's frame arrived over the session server's SSE stream, separating transit from queue wait.
+- **NEW:** Data: Turn handoff available event schema — A cloud worker announces its turn-handoff tools and options once after registering; readers keep only the newest worker life's entry.
+- **NEW:** Skill: /plugin-types tsconfig setup — Points a plugin's tsconfig or jsconfig at the generated declarations, names the compiler options, and validates the plugin as the engine reads it.
+- **NEW:** System Reminder: Directory sync attached machine guidance — The checkout now syncs files with a machine of the user's while staying the session's own; their arriving work must not be reset or absorbed.
+- **NEW:** System Reminder: Directory sync snapshot commit reset — Warns that the work branch points at one of sync's own bookkeeping snapshots, and to reset only when the session caused it.
+- **NEW:** System Reminder: Remote machine branch transfer review — Work crosses between copies only by pushing a branch and reviewing it by full commit id, flagging agent-config, submodule and checkout-time hazards.
+- **NEW:** System Reminder: Remote machine separate project copies — The session's own checkout is primary and the folder on the user's machine is a separate, unsynced copy; reports must say which.
+- **NEW:** System Reminder: Still-running tool call — A call still loading while the user's new message is answered; its result arrives later and must not be repeated or described as cancelled.
+- **NEW:** Tool Description: FetchInboxMessage project thread wake envelope — Appended when the relaying thread is a project thread: only the triggering human element is the request, everything else quoted is context.
+- **NEW:** Tool Description: SuggestPluginInstall — Renders an inline card for catalog plugins that could take the task over, drawn from a search first and skipped when nothing relevant returns.
+- **NEW:** Tool Parameters: Artifact auto-open timing (both wordings) — `auto_open: "after_first_write"` delays opening a type-based Artifact until its first write, so the user never first sees it empty.
+- Agent Prompts: Claude Test explorer and author — Bar the source mapper and the spec-draft author from the Claude Test browser plugin's `claude_test_app_up` tool as well.
+- Data: Structured usage rate-limit rows field — Carries only the server's current reply, so the header-derived fallback row and earlier snapshots no longer appear here.
+- Skill: Setup Cowork — Falls back to the productivity plugin only after a `productivity` search returns one, skipping the recommendations widget when nothing comes back.
+- Tool Description: Artifact type discovery guidance — Drops `type_query` from the first `list_types` call and extends the `auto_open` hint to a next step that writes the type's store.
+- Tool Description: Publish audience-facing deliverables (app wording) — Publishes when a destination such as a channel or meeting is named, and keeps verdict-only answers in the terminal only when no other reader is named.
+- Tool Descriptions: Artifact action reference (both wordings) — The `read` action names both claude.ai artifact link forms and claims them, so Claude reads them there rather than through WebFetch or curl.
+- Tool Descriptions: Artifact quickstart and type discovery guidance (both wordings) — Treat a design system as something the user can ask to have made, built from a listed Design System type, with a files-in-codebase alternative mentioned.
+- Tool Descriptions: Artifact quickstart and type discovery guidance (both wordings) — Answer a question about the user's design system by listing that type's artifacts and reading one, checking their files before reporting none.
+- Tool Descriptions: Artifact quickstart and type discovery guidance (both wordings) — A deck to be emailed or attached is not a request for a file format; one made from the Slides type downloads as .pptx or PDF.
+- Tool Descriptions: WebFetch (concise) and WebFetch private URL warning — The claude.ai artifact-link exception is no longer fixed text; a handling mode now selects the note shown beside the private-URL rule.
+
 #### [2.1.276](https://github.com/Piebald-AI/claude-code-system-prompts/commit/d76741e)
 
 <sub>_No changes to the system prompts in v2.1.276._</sub>
