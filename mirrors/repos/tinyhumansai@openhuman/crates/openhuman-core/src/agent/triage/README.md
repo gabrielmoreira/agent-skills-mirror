@@ -13,9 +13,7 @@ ingest) — those build a `TriggerEnvelope` and call in.
    `from_composio`, `from_webhook`, `from_cron` or `from_external`, or by
    filling the struct directly (`desktop/notifications/rpc.rs` does this for
    `TriggerSource::WebviewIntegration`). Carries the `TriggerSource`, the raw
-   payload (truncated to 8 KB when rendered into the prompt), and an
-   optional `TaskCardLink` (`with_task_card`) when the trigger concerns a
-   task-board card.
+   payload (truncated to 8 KB when rendered into the prompt).
 2. **Evaluator** (`evaluator*.rs`) — `run_triage` sends the `trigger_triage`
    agent turn over the native bus (`agent.run_turn`, zero tools, origin
    `AgentTurnOrigin::ExternalChannel`) through a tiered chain: cloud, one
@@ -30,15 +28,12 @@ ingest) — those build a `TriggerEnvelope` and call in.
    commas, wrong-case action).
 3. **Escalation** (`escalation.rs`) — `apply_decision` publishes
    `TriggerEvaluated` for every action. `drop`/`acknowledge` do no work
-   except, for a card-linked trigger, moving a still-pending card to
-   `Rejected` so the board poller does not re-run it. `react`/`escalate`
+   . `react`/`escalate`
    first pass `ApprovalGate::intercept_audited` with tool key
    `triage.react` / `triage.escalate`, then build a root
    `ParentExecutionContext` (`orchestration::parent_context::build_root_parent`)
    and dispatch `trigger_reactor` or `orchestrator` via
-   `agent::harness::subagent_runner::run_subagent`. A card-linked trigger
-   instead goes to `agent::task_dispatcher::dispatch_card` (claim +
-   autonomous run + write-back).
+   `agent::subagent_host::run_subagent`.
 4. **Origin** (`origin.rs`) — every caller scopes an `AgentTurnOrigin` around
    `apply_decision` because `AGENT_TURN_ORIGIN` is a task-local and none of
    the callers inherit one; an unscoped call reads `Unknown` and the gate
@@ -77,8 +72,7 @@ delivered notification for display.
 
 Re-exported from `mod.rs`:
 
-- `TriggerEnvelope`, `TriggerSource` — `envelope.rs` (`TaskCardLink` and
-  `with_task_card` are `pub` on the module but not re-exported).
+- `TriggerEnvelope`, `TriggerSource` — `envelope.rs`.
 - `TriageAction`, `TriageDecision`, `parse_triage_decision`, `ParseError` —
   `decision.rs`.
 - `run_triage(&envelope) -> anyhow::Result<TriageOutcome>`, `TriageOutcome`,
@@ -118,8 +112,6 @@ Re-exported from `mod.rs`:
   single-step sub-agent `react` decisions dispatch to.
 - `crates/openhuman-core/src/cron/scheduler_gate/README.md` — the LLM-permit
   gate the local arm waits on.
-- `crates/openhuman-core/src/agent/task_dispatcher/` — where card-linked
-  `react`/`escalate` decisions go.
 
 ## Tests
 

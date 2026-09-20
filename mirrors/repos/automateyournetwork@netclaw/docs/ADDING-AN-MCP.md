@@ -127,6 +127,53 @@ cannot start. Use it on your own server before pushing:
 scripts/check-server-startup.py --only <your-server-key>
 ```
 
+Add or update an offline contract harness at `tests/<suite>/run-tests.sh`, then declare it in
+`tests/contract-suites.json`. The manifest and discovered harness directories must match exactly;
+CI generates its matrix from that manifest, so there is no second hand-maintained suite list.
+
+```bash
+python3 scripts/run-contract-tests.py --list
+python3 scripts/run-contract-tests.py --suite <suite> --prepare
+python3 tests/runner/test_run_contract_tests.py
+```
+
+`--prepare` creates only the suite's declared virtual environment and may download declared packages
+or pinned artifacts. It never installs into the shared Python interpreter. A normal run reports four
+offline outcomes: `PASS`, `FAIL`, `BLOCKED_DEPENDENCY`, or `ERROR`. Optional live credentials and
+Docker/service posture are additive `NEEDS_LIVE_CREDENTIALS` or `NEEDS_DOCKER` capability lines; they
+do not turn passing offline contracts into failures unless `--strict-capabilities` is requested.
+
+A suite that is collected by pytest rather than wrapped in a shell harness declares `kind: pytest`
+and one or more `paths` instead of a `command`. Both kinds travel through the same entry point, the
+same isolated environment, the same status vocabulary, and the same generated CI matrix:
+
+```jsonc
+"myserver": {
+  "kind": "pytest",
+  "paths": ["tests/myserver"],
+  "environment": { "path": ".contract-test-envs/myserver", "packages": ["pytest>=8,<9"], ... },
+  "timeout_seconds": 600
+}
+```
+
+Parity is enforced for both kinds: a `tests/*` directory holding `run-tests.sh` must be declared as a
+shell suite, and one holding tests but no harness must be declared as a pytest suite. A new directory
+of either kind that is not declared fails the gate before any test runs.
+
+A suite whose greenness is not yet established can be declared and run locally while staying out of
+the CI matrix:
+
+```jsonc
+"ci": { "include": false, "reason": "why this is not gated yet" }
+```
+
+The reason is mandatory — an exclusion without one is a manifest error, because a silent omission is
+exactly what this manifest exists to prevent. `python3 scripts/run-contract-tests.py --list` prints
+every held-out suite with its reason.
+
+Keep the default harness offline. Live API, device, controller, or measurement calls must remain
+explicitly opt-in, and output must name environment variables without printing their values.
+
 A **timeout is success** — a server that imports cleanly and then blocks reading stdio is behaving
 correctly. Only a fatal startup error (missing module, absent entry point, syntax error) is a
 finding. This surface currently reports as `WARN` rather than failing the build, because seven
@@ -172,6 +219,9 @@ history they all passed while seven registered servers could not start.
 [ ] .env.example updated (names only)
 [ ] TOOLS.md updated
 [ ] mcp-servers/<name>/README.md created
+[ ] tests/<suite>/run-tests.sh added or updated with an offline default, or a `kind: pytest` entry with its `paths`
+[ ] tests/contract-suites.json declares its isolated dependencies and optional capabilities
+[ ] python3 scripts/run-contract-tests.py --suite <suite> --prepare passes
 [ ] scripts/reconcile-mcp.py exits 0
 [ ] GAIT session logged
 

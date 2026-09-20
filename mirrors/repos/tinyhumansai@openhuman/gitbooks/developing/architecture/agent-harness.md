@@ -24,7 +24,7 @@ the runtime's base `Config`, applies the spec, and derives a child
 `CoreContext` (`CoreContext::derive_with`) carrying that config, the agent's
 domain set, tool groups and skill-root policy. Every turn is dispatched under
 that context (`CoreRuntime::run_in` → `agent_chat_for` with an explicit
-`AgentDefinition` and `AgentProfile`), so the config loader, the domain gate,
+`AgentDefinition`), so the config loader, the domain gate,
 the tool-group filter and skill discovery all read the agent's own settings.
 Transcripts are keyed by agent id and a turn resumes only its own thread.
 
@@ -66,7 +66,7 @@ runtime-wide".
 > (`run_turn_via_tinyagents_shared`). The legacy `run_turn_engine`, the three
 > hand-rolled loops, `turn_engine_adapter`, and the custom `agent_graph/` engine
 > described later in this page have been **removed**; the surviving shared seam,
-> `TurnProgress`, lives in `agent/harness/session/tool_progress.rs`. The dead
+> `TurnProgress`, lives in `agent/session_host/tool_progress.rs`. The dead
 > `token_budget.rs` (context trimming is now `MessageTrimMiddleware`) and the
 > vestigial `interrupt.rs` fence (cancellation is the tinyagents steering channel)
 > are gone; policy **stop hooks** (budget / thread-goal / iteration caps) now fire
@@ -223,13 +223,23 @@ loop {
 
 Every iteration emits a real-time `AgentProgress` event so the UI can render token-by-token streaming, "calling tool X" status, and per-iteration cost updates.
 
-**One engine, three entry points.** The loop lives in one place (the tinyagents `AgentHarness`, entered via `run_turn_via_tinyagents_shared` in `crates/openhuman-core/src/agent/tinyagents/mod.rs`) and every caller drives it: the chat turn (`harness/session/turn/core.rs` → `session/turn/graph.rs`), the channel/CLI bus turn (`harness/graph.rs`), and spawned sub-agents (`harness/subagent_runner/ops/graph.rs`). What varies per caller is supplied through the adapter seam: OpenHuman's provider wrapped as a `ChatModel` (`tinyagents/model.rs`), tools wrapped as tinyagents `Tool`s (`tinyagents/tools.rs`), an event bridge that projects harness `AgentEvent`s into `AgentProgress` + cost telemetry (`tinyagents/observability.rs`), `RunPolicy::unknown_tool` for hallucinated tool recovery, and a named middleware stack (`tinyagents/middleware.rs`) carrying the OpenHuman cross-cuts: approval/security gating (`ApprovalSecurityMiddleware`), tool policy and CLI/RPC-only denial (`ToolPolicyMiddleware`, `CliRpcOnlyMiddleware`), malformed-argument recovery (`ArgRecoveryMiddleware`), cost budget pre-checks (`CostBudgetMiddleware`), the repeated-tool-failure circuit breaker (`RepeatedToolFailureMiddleware`), and context trimming/compression. Policy stop hooks fire through `StopHookMiddleware` (`tinyagents/stop_hooks.rs`). The surviving OpenHuman-owned seam, `TurnProgress`, lives in `harness/session/tool_progress.rs`. Because all three entry points assemble the same harness, they can't drift.
+**One engine, three entry points.** The loop lives in TinyAgents. OpenHuman's
+chat host, channel/CLI route and sub-agent host each supply product policy at
+the adapter seam; spawned sub-agents enter through
+`agent/subagent_host`, which drives the neutral
+`tinyagents_orchestration::subagent::SubagentDriver` rather than an OpenHuman
+runner. The host owns provider/model choice, tool and security narrowing,
+workspace/artifact handling, progress and durable product projection. The
+neutral driver owns lifecycle ordering, task-key coalescing and the exclusive
+pause-or-terminal persistence decision. This direct cutover is in progress:
+the removed `harness/subagent_runner` path must not return as a facade or
+compatibility export.
 
 ### Tool dispatch and tool-call dialects
 
 Live turns speak **native tool calling**: the tinyagents harness sends structured tool specs through the `ChatModel` adapter and gets structured tool calls back, for every provider (Claude, GPT, Gemini, local Ollama alike).
 
-The older `ToolDispatcher` trait (`crates/openhuman-core/src/agent/dispatcher.rs`) with its three dialects still exists, but as a **transcript-compatibility layer**, not a live routing choice:
+Canonical `tinytools_agent::dialect::ToolDialect` implementations provide transcript-compatible parsing and rendering directly; OpenHuman converts durable/provider records only at those I/O boundaries:
 
 - **Native** - structured tool-call fields, the shape live turns produce today.
 - **XML** - `<tool_call>{...}</tool_call>` tags in assistant text, produced by older sessions.
@@ -349,18 +359,22 @@ When the orchestrator calls `spawn_subagent`, the default contract is durable an
 - If a compatible worker is idle or paused with reusable history, the harness starts a new transient run for the same durable `subagent_session_id` and passes the saved child history through `SubagentRunOptions.initial_history`, with the new instruction appended as a user-visible follow-up.
 - If the shape is incompatible, the worker was closed, `fresh: true` was passed, or no session exists, the harness creates a new durable session and worker thread.
 
-The child run itself still uses the same runner:
+The child run is prepared and executed by the OpenHuman host through the
+neutral TinyAgents lifecycle:
 
-1. Reads the parent's execution context from a task-local - the parent's provider, sandbox mode, cancellation fence, transcript root.
+1. Receives parent cancellation and workspace from its typed run context; remaining legacy provider, sandbox, and transcript inputs stay scoped until their explicit migration lands.
 2. Resolves the sub-agent's model - inline `model` override first, then config-level pins (`[orchestrator].model`, `[teams.*].lead_model`, `[teams.*].agent_model`), then the archetype hint or inherited parent model.
 3. Filters the parent's tool registry per the definition's `tools`, `disallowed_tools`, and `skill_filter`. In `fork` mode, the parent's full registry is inherited verbatim.
 4. Builds a narrow system prompt, omitting the sections the definition asks to strip.
-5. Runs an inner tool-call loop using the same machinery as the parent.
-6. Persists the child history and worker thread pointer under the durable `subagent_session_id` so later turns can resume or inspect it.
+5. Passes the prepared child to `tinyagents-orchestration` for lifecycle
+   ordering and exactly one pause-or-terminal persistence action.
+6. Persists the child history and worker thread pointer under the durable
+   `subagent_session_id` so later turns can resume or inspect it. Pause
+   continuation also retains its complete TinyAgents task key.
 
 `wait_subagent` and `steer_subagent` accept either the durable `subagent_session_id` or the transient `task_id`; durable ids are preferred across turns. `list_subagents` shows reusable children for the current parent thread, and `close_subagent` marks a worker non-reusable and cancels it if it is still running. Inline blocking is explicit via `blocking: true`; it is no longer the default.
 
-The synthesized archetype delegations (`delegate_*`, `build_workflow`, and the other `delegate_name` tools) follow the same contract: they route through the durable async path by default, returning an `[async_subagent_ref]` (with `subagent_session_id` + `task_id`) immediately, and the finished result is inserted into the parent chat as a new system turn via `background_completions`/`background_delivery`. That delivery turn (`task_dispatcher::run_system_turn_on_thread`, the same runner autonomous task sessions use) persists its own closing message — `sender: "agent"`, id `agent:<run_id>`, `extraMetadata.requestId = run_id` — **before** it emits `chat_done` as `client_id: "system"`; the frontend reuses that id, so its usual `chat_done` append collapses onto the same row (the conversation store is idempotent for these deterministic `agent:`-prefixed ids; every other id is UUID-fresh and keeps the constant-time append path) instead of persisting the delivered result a second time (#5933). **Interactive turns follow the same contract since #6034**: `web_chat::presentation::deliver_response` stores the reply under `agent:<request_id>` before publishing `chat_done`, so an answer the core produced exists on disk whether or not a client is there to receive the announcement — a dropped socket, a failed append or a reloaded webview costs a repaint, not the reply. The exception is a segmented delivery, where the client owns one row per segment and the core stores none; the frontend keeps generated ids there for exactly that reason. They fall back to inline blocking automatically when there is no parent agent turn or no chat thread to deliver into (cron/CLI), or when `blocking: true` is passed. Cross-turn continuity comes from three pieces: the per-turn `[active_subagents]` roster merges the live in-memory registry with the durable `subagent_sessions` store (so a cold-booted orchestrator still sees earlier workers); `continue_subagent` falls back from pause checkpoints to the durable store, resuming an idle worker with its persisted history; and a `workflow_proposal` payload found in a finished child's history is persisted as a parent-thread message (`extraMetadata.scope = "workflow_proposal"`) that the frontend rehydrates into the proposal card on thread load.
+The synthesized archetype delegations (`delegate_*`, `build_workflow`, and the other `delegate_name` tools) follow the same contract: they route through the durable async path by default, returning an `[async_subagent_ref]` (with `subagent_session_id` + `task_id`) immediately, and the finished result is inserted into the parent chat as a new system turn via `background_completions`/`background_delivery`. The delivery turn persists its own closing message — `sender: "agent"`, id `agent:<run_id>`, `extraMetadata.requestId = run_id` — **before** it emits `chat_done` as `client_id: "system"`; the frontend reuses that id, so its usual `chat_done` append collapses onto the same row (the conversation store is idempotent for these deterministic `agent:`-prefixed ids; every other id is UUID-fresh and keeps the constant-time append path) instead of persisting the delivered result a second time (#5933). **Interactive turns follow the same contract since #6034**: `web_chat::presentation::deliver_response` stores the reply under `agent:<request_id>` before publishing `chat_done`, so an answer the core produced exists on disk whether or not a client is there to receive the announcement — a dropped socket or a reloaded webview costs a repaint, not the reply. The exception is a segmented delivery, where the client owns one row per segment and the core stores none; the frontend keeps generated ids there for exactly that reason. They fall back to inline blocking automatically when there is no parent agent turn or no chat thread to deliver into (cron/CLI), or when `blocking: true` is passed. Cross-turn continuity comes from three pieces: the per-turn `[active_subagents]` roster merges the live in-memory registry with the durable `subagent_sessions` store (so a cold-booted orchestrator still sees earlier workers); `continue_subagent` falls back from pause checkpoints to the durable store, resuming an idle worker with its persisted history; and a `workflow_proposal` payload found in a finished child's history is persisted as a parent-thread message (`extraMetadata.scope = "workflow_proposal"`) that the frontend rehydrates into the proposal card on thread load.
 
 ### Spawn hierarchy and tiers
 
@@ -486,9 +500,28 @@ Every provider response carries a `UsageInfo` block - input tokens, output token
 
 When the backend doesn't surface a charged amount (older builds, providers that don't bill through it), a small per-tier rate table provides a token-rate floor estimate. Direct cost from the backend always wins when available.
 
-## Fork context - KV-cache reuse across the harness
+## Explicit run context and host capabilities
 
-The harness uses a task-local `ParentExecutionContext` to thread parent state into sub-agents without exploding every function signature. The same pattern carries the current sandbox mode, the interrupt fence, and the stop-hook list. Sub-agents that inherit the parent's provider, model, and prompt prefix get to **share the parent's KV-cache prefix** on the inference backend - measurably cheaper than re-prefilling from scratch.
+`OpenHumanRunContext` is now the live carrier at the shared chat, channel, and
+sub-agent turn seam. Roots snapshot their currently scoped origin, progress,
+stop hooks, dispatch state, thread, route slot, and workspace grant, then own
+or explicitly receive one cancellation token before passing the context to the
+runner; a recursive sub-agent forks it with
+`child()`, preserving shared cancellation/policy handles while isolating route
+observation and usage accounting. The shared runner creates
+`RunContext<OpenHumanRunContext>` through `into_tinyagents`, and the OpenHuman
+assembly and middleware registry consume that typed context directly. Route,
+and thread scopes still surround the drive only for legacy tool/model APIs
+outside the typed harness boundary. Recursive fan-out receives cancellation and
+workspace from its typed parent `RunContext` through `ToolDispatch`; it never
+reads ambient cancellation state.
+
+`OpenHumanHostBundleFactory` is the B1 host composition point. It constructs
+the context, definition, security, model, memory, budget, progress, learning,
+tool-outcome and experience adapters from the same session/runtime inputs.
+OpenHuman retains all policy decisions; TinyAgents receives only the resulting
+canonical run context today. Wiring the complete host-capability bundle into
+every invocation remains a later cutover step.
 
 ## Self-healing recap
 
@@ -506,17 +539,17 @@ The harness shell lives under `crates/openhuman-core/src/agent/`, with the tinya
 
 | File / dir                               | What lives there                                                                                              |
 | ---------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
-| `harness/session/turn/core.rs`           | `Agent::turn` - the lifecycle described above; routes into the tinyagents runner via `session/turn/graph.rs`. |
+| `session_host/turn/core.rs`           | `Agent::turn` - the lifecycle described above; routes into the tinyagents runner via `session/turn/graph.rs`. |
 | `../tinyagents/mod.rs`                   | `run_turn_via_tinyagents_shared` - the shared tinyagents harness assembly (the live loop).                    |
 | `../tinyagents/middleware.rs`            | The named OpenHuman middleware stack (approval/security, tool policy, recovery, budgets, circuit breaker).    |
 | `harness/graph.rs`                       | The channel/CLI bus turn route into the tinyagents runner.                                                    |
-| `harness/subagent_runner/`               | `run_subagent`, history replay, fork-mode, oversized-result handoff; `ops/graph.rs` is its tinyagents route.  |
+| `subagent_host/`                         | Direct OpenHuman planner/executor/persistence adapters for `tinyagents-orchestration::subagent`; product prompt/tool/model/security/artifact/progress behavior remains here. |
 | `orchestration/subagent_sessions/`       | Durable reusable sub-agent identity, compatibility matching, persisted status/history.                        |
 | `harness/definition.rs`                  | `AgentDefinition` - what an archetype declares.                                                               |
-| `harness/tool_filter.rs`                 | Toolkit-action ranking for integrations sub-agents.                                                           |
+| `subagent_host/ops/runner.rs`            | Integration-tool ranking and the host execution leaf; generic lifecycle stays in `tinyagents-orchestration`.  |
 | `../tinyagents/payload_summarizer.rs`    | Oversized-tool-result detour.                                                                                 |
-| `harness/session/tool_progress.rs`       | Surviving OpenHuman seam: `TurnProgress`.                                                                     |
-| `dispatcher.rs`                          | Tool-call dialect abstraction (persisted-transcript compatibility).                                           |
+| `session_host/tool_progress.rs`       | Surviving OpenHuman seam: `TurnProgress`.                                                                     |
+| `message_convert.rs`                     | Concrete durable/provider conversion around canonical tool-call dialect APIs.                                  |
 | `triage/`                                | External-trigger classification + escalation.                                                                 |
 | `registry/agents/`                       | Built-in archetypes - one subdirectory per agent.                                                             |
 | `hooks.rs` / `stop_hooks.rs`             | Post-turn and mid-turn hook surfaces.                                                                         |
@@ -577,7 +610,10 @@ Most agents reuse `blueprint::canonical_turn(id)` (the standard tool-calling loo
 
 ## Agent engine + orchestration on tinyagents (live)
 
-Every agent turn (chat via `harness/session/turn/core.rs`, channel/CLI via `harness/graph.rs`, and sub-agent via `harness/subagent_runner/ops/graph.rs`) drives through `crate::agent::tinyagents::run_turn_via_tinyagents_shared`, which runs the crate's `AgentHarness`. There is no in-house turn engine, tool loop, or routing gate left; dispatch is unconditional. The seam:
+Every agent turn uses TinyAgents. Chat and channel/CLI callers invoke the
+session/turn host, while a sub-agent call enters `agent/subagent_host` and its
+direct `tinyagents-orchestration::subagent` lifecycle. There is no
+`harness/subagent_runner` compatibility path. The surrounding OpenHuman seam:
 
 | File (`crates/openhuman-core/src/agent/tinyagents/`)          | Role                                                                                                                                                                                                                                                                           |
 | ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -596,7 +632,12 @@ Every agent turn (chat via `harness/session/turn/core.rs`, channel/CLI via `harn
 
 **Deliberately kept off the crate's primitives** (documented engineering decisions, not gaps):
 
-- **Sub-agent build pipeline** (`subagent_runner/`) stays openhuman-owned: definition resolution, archetype tool filtering, provider resolution, narrow prompt building, memory context, worker-thread mirror, handoff cache, checkpoint/resume. Sub-agents already _execute_ on the harness; the crate's generic `SubAgentTool` would discard this pipeline for marginal crate-native depth tracking (openhuman's `spawn_depth_context` already bounds recursion).
+- **Sub-agent host policy** (`subagent_host/`) stays OpenHuman-owned: definition
+  resolution, archetype tool filtering, provider resolution, narrow prompt
+  building, memory context, worker-thread mirror, handoff configuration and
+  product checkpoint/session projection. It implements the TinyAgents
+  planner/executor/persistence traits directly. The neutral driver, not a
+  host-local runner, owns lifecycle sequencing and task-key coalescing.
 - **Durable run ledgers** (`workflow_runs`, `agent_teams`, `command_center`, `subagent_sessions`) stay on openhuman SQLite/JSON until their controller projections and restart semantics are mapped onto TinyAgents task/status/journal records. The `agent_teams` race-safe SQL compare-and-swap task claim remains OpenHuman-owned.
 
 > **Note:** TinyAgents 2.1 ships harness store/cache/session primitives (`harness::store` with JSONL append stores, `harness::cache`, `harness::subagent`, lineage-aware status), graph task stores, the detached runtime registry, and conformance contracts. The session shell and product-specific sub-agent build/delivery pipeline remain OpenHuman-owned.
@@ -607,10 +648,15 @@ Three cooperating mechanisms keep runs from wandering or dying silently:
 
 **No-progress circuit breaker** (`RepeatedToolFailureMiddleware`, `crates/openhuman-core/src/agent/tinyagents/middleware.rs`) is a thin driver over the crate's `NoProgressTracker`. It fingerprints each tool call's arguments and feeds outcomes into an escalation ladder: `Continue` → `Nudge` (a structured "no progress since step X" corrective injected via `SteeringCommand::InjectMessage`, which is safe inside interactive turns) → `Halt` (record a root-cause summary into the `HaltSummarySlot`, pause via the steering handle). Identical arguments retried count toward the trip (threshold 3 consecutive identical failures); _recoverable_ failures (timeouts, connection resets, rate limits, 5xx) get an extended headroom ladder instead of the fixed crate thresholds.
 
-**Sub-agent handback** (`subagent_runner/ops/runner.rs`): a sub-agent run resolves to one of three statuses:
+**Sub-agent handback** (`subagent_host/`): a sub-agent run resolves to one of
+three statuses:
 
 - `Completed`: clean final response.
-- `AwaitingUser { question, options }`: the child called `ask_user_clarification`; a full checkpoint (history, question, options, overrides) is written to `{workspace}/.openhuman/subagent_checkpoints/{task_id}.json`, and the run resumes from it when the user answers.
+- `AwaitingUser { question, options }`: the child called
+  `ask_user_clarification`; the host projects its full checkpoint (history,
+  question, options and overrides) under the complete TinyAgents task key
+  `(root_run_id, parent_run_id, thread_id, task_id)`. Resume recovers that
+  original key rather than deriving a new one from the fresh parent turn.
 - `Incomplete { reason }`: the child was halted by the breaker or hit its model-call cap. The delegating parent **relays the blocker** instead of treating a halted child as a finished answer or re-spinning the identical delegation.
 
 A breaker halt at the top level is likewise never a silent finish, and the breaker's root-cause summary is not shown to the user as is either: it is worded for a model ("Report this back instead of retrying"). `hit_cap` / `breaker_halt` are surfaced on the turn result, and the chat turn closes the halted run the same way it closes a tool turn that ended without final text (`turn/core/grounded_close.rs`, #4093 / #6278 / #6279):

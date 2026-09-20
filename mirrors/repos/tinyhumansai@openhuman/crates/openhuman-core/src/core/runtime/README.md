@@ -98,6 +98,12 @@ are compiled out, or whose `DomainGroup` is off, stays absent.
 - `.action_dir(dir)` — sugar over `.config()` for the agent's read/write
   root.
 - `.backend_url(url)`.
+- `.backend_transport(Arc<dyn BackendTransport>)` — bind the transport this
+  core's handlers reach the hosted backend through (`api::transport`). The
+  context carries it and every `derive_with` child inherits it. Optional:
+  without it the core resolves the process-global transport
+  (`api::transport::install_backend_transport`), and with neither every
+  backend-touching call degrades to a typed "backend unavailable" error.
 
 ## `CoreContext` and initialization order
 

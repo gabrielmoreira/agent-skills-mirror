@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `partme-ai/full-stack-skills` — 26 default patterns, 3 followed patterns, 12 file(s) materialized.
+Mirror of `partme-ai/full-stack-skills` — 26 default patterns, 3 followed patterns, 25 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `partme-ai/full-stack-skills` — 26 default patterns, 3 followed patt
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 3 |
-| Files         | 12 |
+| Files         | 25 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -61,18 +61,31 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 2 | ✓ | [`agents/fullstack-engineer.md`](agents/fullstack-engineer.md) |
-| 3 | ✓ | [`agents/pencil-ui-designer.md`](agents/pencil-ui-designer.md) |
-| 4 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 5 | ✓ | [`docs/external-skills.md`](docs/external-skills.md) |
-| 6 | ✓ | [`docs/integration-plan.md`](docs/integration-plan.md) |
-| 7 | ✓ | [`docs/nvm-skills.md`](docs/nvm-skills.md) |
-| 8 | ✓ | [`docs/skill-group-mapping.md`](docs/skill-group-mapping.md) |
-| 9 | ✓ | [`docs/tauri-skills.md`](docs/tauri-skills.md) |
-| 10 | → | [`docs/pipeline-stage-to-skills.md`](docs/pipeline-stage-to-skills.md) |
-| 11 | → | [`docs/skills-ecosystem.md`](docs/skills-ecosystem.md) |
-| 12 | → | [`docs/speckit-agent-skills.md`](docs/speckit-agent-skills.md) |
+| 1 | ✓ | [`.agents/skills/.openspec-target`](.agents/skills/.openspec-target) |
+| 2 | ✓ | [`.agents/skills/openspec-apply-change/SKILL.md`](.agents/skills/openspec-apply-change/SKILL.md) |
+| 3 | ✓ | [`.agents/skills/openspec-archive-change/SKILL.md`](.agents/skills/openspec-archive-change/SKILL.md) |
+| 4 | ✓ | [`.agents/skills/openspec-explore/SKILL.md`](.agents/skills/openspec-explore/SKILL.md) |
+| 5 | ✓ | [`.agents/skills/openspec-propose/SKILL.md`](.agents/skills/openspec-propose/SKILL.md) |
+| 6 | ✓ | [`.kimi-code/skills/openspec-apply-change/SKILL.md`](.kimi-code/skills/openspec-apply-change/SKILL.md) |
+| 7 | ✓ | [`.kimi-code/skills/openspec-archive-change/SKILL.md`](.kimi-code/skills/openspec-archive-change/SKILL.md) |
+| 8 | ✓ | [`.kimi-code/skills/openspec-explore/SKILL.md`](.kimi-code/skills/openspec-explore/SKILL.md) |
+| 9 | ✓ | [`.kimi-code/skills/openspec-propose/SKILL.md`](.kimi-code/skills/openspec-propose/SKILL.md) |
+| 10 | ✓ | [`.zcode/skills/openspec-apply-change/SKILL.md`](.zcode/skills/openspec-apply-change/SKILL.md) |
+| 11 | ✓ | [`.zcode/skills/openspec-archive-change/SKILL.md`](.zcode/skills/openspec-archive-change/SKILL.md) |
+| 12 | ✓ | [`.zcode/skills/openspec-explore/SKILL.md`](.zcode/skills/openspec-explore/SKILL.md) |
+| 13 | ✓ | [`.zcode/skills/openspec-propose/SKILL.md`](.zcode/skills/openspec-propose/SKILL.md) |
+| 14 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 15 | ✓ | [`agents/fullstack-engineer.md`](agents/fullstack-engineer.md) |
+| 16 | ✓ | [`agents/pencil-ui-designer.md`](agents/pencil-ui-designer.md) |
+| 17 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 18 | ✓ | [`docs/external-skills.md`](docs/external-skills.md) |
+| 19 | ✓ | [`docs/integration-plan.md`](docs/integration-plan.md) |
+| 20 | ✓ | [`docs/nvm-skills.md`](docs/nvm-skills.md) |
+| 21 | ✓ | [`docs/skill-group-mapping.md`](docs/skill-group-mapping.md) |
+| 22 | ✓ | [`docs/tauri-skills.md`](docs/tauri-skills.md) |
+| 23 | → | [`docs/pipeline-stage-to-skills.md`](docs/pipeline-stage-to-skills.md) |
+| 24 | → | [`docs/skills-ecosystem.md`](docs/skills-ecosystem.md) |
+| 25 | → | [`docs/speckit-agent-skills.md`](docs/speckit-agent-skills.md) |
 
 ---
 

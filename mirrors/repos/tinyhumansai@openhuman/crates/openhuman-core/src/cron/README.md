@@ -23,7 +23,7 @@ Scheduled-job runtime. Owns cron-expression and human-delay parsing, the persist
 
 ### Agent jobs
 
-`run_agent_job` prefixes the prompt (`[cron:<id> <name>] <prompt>`), applies a per-job `model` override to a cloned `Config`, and, when `job.agent_id` names a definition in `AgentDefinitionRegistry`, resolves that definition's `ModelSpec` onto the cloned config (the iteration cap is left to the session builder, see #4868). `build_agent_for_cron_job` then picks the constructor: `Agent::from_config_for_agent_with_profile` when `job.profile_id` still resolves through `agent::profiles::load_profiles` (the same profile-aware path the task dispatcher uses, so the run inherits the profile's SOUL, memory scope, and tool/skill/MCP allowlists), `Agent::from_config_for_agent` when only `agent_id` is set (falling back to `Agent::from_config` if the definition fails to build), or `Agent::from_config` otherwise. A deleted profile is warned about and the job runs profile-less.
+`run_agent_job` prefixes the prompt (`[cron:<id> <name>] <prompt>`), applies a per-job `model` override to a cloned `Config`, and, when `job.agent_id` names a definition in `AgentDefinitionRegistry`, resolves that definition's `ModelSpec` onto the cloned config (the iteration cap is left to the session builder, see #4868). `build_agent_for_cron_job` uses `Agent::from_config_for_agent` for a recognized `agent_id`, falling back to `Agent::from_config` when it cannot build a definition or no id was supplied.
 
 `execute_job_with_retry` wraps every job type with `config.reliability.scheduler_retries` attempts and exponential backoff. For agent jobs it classifies failures before retrying: backend session-expired, provider insufficient-credits (402), managed-backend budget-exhausted (400), API-key-unset, and local-LLM-unreachable all halt the loop immediately and suppress the retries-exhausted error report. The user-facing message is a canned string from `classify_agent_anyhow_for_user`; the raw error goes only to observability.
 
@@ -33,7 +33,7 @@ Cron publishes through `core/bus.rs` using variants declared in `core/events.rs`
 
 ## Calls into
 
-- `crates/openhuman-core/src/agent/` — `Agent::from_config[_for_agent[_with_profile]]` for agent jobs; `agent::harness::definition::AgentDefinitionRegistry` to resolve `agent_id`; `agent::profiles::load_profiles` to resolve `profile_id`.
+- `crates/openhuman-core/src/agent/` — `Agent::from_config_for_agent` for agent jobs and `agent::harness::definition::AgentDefinitionRegistry` to resolve `agent_id`.
 - `crates/openhuman-core/src/security/` — `SecurityPolicy::from_config` gates shell jobs.
 - `crates/openhuman-core/src/config/` — `Config` provides poll interval, workspace dir, autonomy policy, retry counts, and per-job model overrides.
 - `crates/openhuman-core/src/inference/` — `provider::create_chat_model_with_model_id` resolves workload-hint model specs on agent-definition overrides.

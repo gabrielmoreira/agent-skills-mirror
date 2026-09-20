@@ -252,7 +252,7 @@ git add → commit → push`"]
 
 ---
 
-## Dotfiles Manager Compatibility
+## Dotfiles Manager Compatibility {#dotfiles-manager-compatibility}
 
 If you use a dotfiles manager (GNU Stow, chezmoi, yadm, bare-git) that symlinks your source or target directories, skillshare handles it transparently:
 
@@ -293,7 +293,7 @@ If none of these targets exist (or they already run `copy`), no compatibility hi
 
 See [Sync Modes](/docs/understand/sync-modes) for a neutral decision matrix.
 
-### Per-target include/exclude filters
+### Per-target include/exclude filters {#per-target-includeexclude-filters}
 
 In merge and copy modes, each target can define `include` / `exclude` patterns in config:
 
@@ -320,7 +320,7 @@ See [Configuration](/docs/reference/targets/configuration#include--exclude-targe
 These are just one of three filtering layers. See [Filtering Skills](/docs/how-to/daily-tasks/filtering-skills) for a complete guide covering `.skillignore`, SKILL.md `targets`, and target filters.
 :::
 
-### Filter behavior examples
+### Filter behavior examples {#filter-behavior-examples}
 
 Assume source contains:
 - `core-auth`
@@ -625,7 +625,7 @@ Commands
 
 ---
 
-## Context Cost
+## Context Cost {#context-cost}
 
 After syncing, skillshare displays a token cost summary:
 

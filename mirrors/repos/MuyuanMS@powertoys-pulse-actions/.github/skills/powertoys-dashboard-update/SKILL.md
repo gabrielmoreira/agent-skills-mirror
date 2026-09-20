@@ -353,6 +353,14 @@ in a way that starves the oldest reserve.
 
 ### PR freshness
 
+Author rebuttals and invalid-finding reports require a substantive grounding
+revalidation even on an unchanged head. Read the rebuttal and pinned upstream
+source, distinguish upstream defects from review-introduced regressions, and
+withdraw unsupported proposals. Do not treat an unchanged SHA, recent timestamp,
+or previously clean fork as proof the finding is valid. Preserve the rejection
+reason privately so later runs do not recreate it. An explicitly requested
+targeted rerun overrides normal freshness skipping, but still obeys the run budget.
+
 Every open, non-draft PR must end the run in exactly one state:
 
 - **current clean review** — artifact `head_sha` exactly matches the live head,
@@ -387,8 +395,8 @@ If the author has pushed or replied after the author-wait signal, clear
 in the review queue so the update agent makes a fresh decision.
 
 Never skip an eligible PR merely because it is old or absent from the recent
-activity query. Never re-review an unchanged, converged head with no newer
-relevant activity.
+activity query. Do not routinely re-review an unchanged, converged head with no newer relevant
+activity; explicit targeted reruns and invalid-finding reports are exceptions.
 
 ### Mandatory stale-review queue gate
 
@@ -697,8 +705,9 @@ only mode that may select every stale PR in one conversation; it runs up to six
 active workers by default and relies on checkpointed fork branches plus
 incremental publication instead of a time cap. Prioritize resumable in-progress
 reviews, stale proposed reviews, stale artifact heads, then missing artifacts.
-Do not re-review an unchanged head that already has a current clean fork result
-and no relevant newer activity.
+Do not routinely re-review an unchanged head with a current clean result and
+no relevant newer activity; explicit targeted reruns and invalid-finding
+reports still require substantive revalidation.
 Do not call a PR review complete, approval-ready, or "clean" unless the latest
 freshly requested Copilot review has zero new comments, zero unresolved threads,
 the required local build has passed, and that build covers the exact upstream
@@ -869,10 +878,24 @@ Also verify validation-tree consistency:
   finding as exact inline prose or a detailed companion comment. Never
   normalize an entire file as part of an unrelated suggestion.
 
-Never copy fork-only tests, documentation, braces, or behavior into the
-artifact summary as if they exist upstream. If the converged fork differs from
-the upstream head, every meaningful hunk must remain represented as a proposed
-comment or explicit author request; the artifact cannot be `review_ready`.
+Never copy fork-only tests, documentation, braces, or behavior into the artifact
+summary as if they exist upstream. Account for each fork-only hunk privately as
+an independently justified upstream correction, a review-introduced regression,
+or a rejected/optional experiment. Only independently justified upstream defects
+become author requests. Do not force every fork delta into a public comment.
+A zero-finding result requires review and validation of the exact upstream tree,
+not transferred evidence from the altered fork.
+
+Every PR worker, including comment-repair and context-revalidation workers, must
+follow the sibling PR skill's `references/finding-grounding.md`. Require private
+per-finding origin, upstream source excerpts, counterevidence, failure-path
+reasoning, actual verification and final-body hashes. Trace callers/guards and
+check whether the requested fix already exists before drafting. Rewrites require
+semantic revalidation, not just adding sections or recomputing hashes.
+For keyboard/focus/accessibility timing claims, a compile-only pass is not
+behavioral evidence. Omit unsupported findings rather than inflate confidence.
+Workers return the private grounding dossier to the coordinator; never put it
+in public artifacts. This applies to prose as well as apply-ready suggestions.
 
 Use a local manual-review or validation action only when no defensible
 author-facing comment can be drafted from the current head—for example, the
@@ -1089,11 +1112,19 @@ new output:
 pwsh -NoProfile -File `
   "$SkillRoot\scripts\Test-DashboardArtifacts.ps1" `
   -Dashboard $Dashboard -Numbers $ProcessedNumbers `
-  -RequireDetailedDesign -RequireIssueContext
+  -RequireDetailedDesign -RequireIssueContext -RequireFindingGrounding `
+  -GroundingPath $PrivateGroundingPath -SourceRepository $PowerToysClone
 ```
 
-Do not publish when validation reports an error. Fix the artifact or honestly
-leave the workflow queued/in-progress; never shorten a design merely to pass.
+Use a private session dossier in the format specified by
+`powertoys-pr-review/references/finding-grounding.md`. SourceRepository is
+optional (otherwise the gate reads GitHub blobs). Missing evidence for a newly
+processed PR finding blocks publication. The gate verifies the exact post-sanitize
+body and pinned source, not the working-tree approximation. Whole-feed legacy
+compatibility is not permission to skip the gate for processed numbers.
+Do not publish when validation reports an error. Fix the artifact or remove
+unsupported executable proposals and honestly leave the workflow queued/in-progress;
+never shorten a design or manufacture evidence merely to pass.
 
 For any approved upstream review decision consumed during the run, validate
 schema-version-2 data with `Test-ReviewData.ps1` and publish only through

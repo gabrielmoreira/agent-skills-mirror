@@ -18,10 +18,8 @@ Trigger phrases and the role registry live in `references/workflow-registry.md`;
 - `omh-application-threat-model`: [omh] Application threat model workflow: turn a system's components and data flows into assets, trust boundaries, attack scenarios, controls, and the security test that proves each control holds.
 - `omh-ask`: [omh] Hermes adaptation for consulting an external advisor when configured.
 - `omh-automation-blueprint`: [omh] Hermes Scheduled Ops Blueprint workflow: design recurring Hermes operations with schedule, delivery, silence policy, context chain, and prepared-vs-observed status.
-- `omh-autoresearch-goal`: [omh] Hermes adaptation for durable research-goal execution.
 - `omh-award-bar-score`: [omh] Hermes award-bar score workflow: score a web surface against published design-award judging axes and name the binding constraint.
 - `omh-backend`: [omh] Hermes backend workflow: prepare server, API, and data-layer contracts — auth boundary, error paths, response shape, and schema/migration discipline — before implementation.
-- `omh-best-practice-research`: [omh] Hermes adaptation for bounded official/upstream best-practice research.
 - `omh-browser`: [omh] Policy overlay for browser tasks - add auth, confirmation, and observed-trace gates after preferring the native browser for ordinary URL, click, login, and form actions.
 - `omh-build-failure-triage`: [omh] Hermes Build Failure Triage workflow: classify build, typecheck, lint, test, CI, and DCO failures into minimal safe fix handoffs.
 - `omh-buzz`: [omh] Connect and operate Hermes as a native Buzz community agent, deliver local media with verified relay receipts, or diagnose a self-hosted Buzz relay without inventing transport evidence.
@@ -89,7 +87,6 @@ Trigger phrases and the role registry live in `references/workflow-registry.md`;
 - `omh-paper-learning`: [omh] Hermes Paper Learning workflow: explain a supplied paper or paper/PDF at a selected level while preserving full section coverage and source evidence boundaries.
 - `omh-parallel-tools`: [omh] Hermes Parallel Tools workflow: check version currency and parallel-tool capability status, then apply an update only after diff approval.
 - `omh-people-ops`: [omh] Turn hiring and people context into a fair, structured recruiting or people-operations brief.
-- `omh-performance-goal`: [omh] Hermes adaptation for measurable performance-goal execution.
 - `omh-physical-device-readiness`: [omh] Physical device readiness - gate robots, 3D printers, IoT relays, sensors, and lab hardware before trials; use external-connector-readiness for provider or connector adoption and toolbelt-readiness for missing control tools.
 - `omh-plan`: [omh] Hermes Plan workflow: structured planning before execution.
 - `omh-product-brief`: [omh] Turn product evidence into a decision-ready PRD, prioritization frame, and roadmap brief.
@@ -102,7 +99,7 @@ Trigger phrases and the role registry live in `references/workflow-registry.md`;
 - `omh-refactor-plan`: [omh] Hermes refactor planning workflow: turn a decided boundary-changing refactor into a phased plan - reconnaissance, contracts-first phase order, per-phase verification and rollback, a files table, and an explicit approval gate before any edit.
 - `omh-reliability-review`: [omh] Hermes Reliability Review workflow: postmortems, SLOs, error budgets, incident follow-ups, and service reliability evidence.
 - `omh-report-package`: [omh] Hermes Report Package workflow: weekly/monthly reports, executive briefs, PPT-ready outlines, and upload packages.
-- `ulw-research`: [omh] Deep research engine - grounding for specs and decisions: study open-source reference implementations with pinned refs, gather live web evidence with citation discipline, verify contested claims, and distill a decision-grounding dossier that planning consumes; for a decision brief use research-brief, for upstream guidance use best-practice-research.
+- `ulw-research`: [omh] Deep research engine - grounding for specs and decisions: study open-source reference implementations with pinned refs, gather live web evidence with citation discipline, verify contested claims, and distill a decision-grounding dossier that planning consumes; for a decision brief use research-brief, for upstream guidance use web-research.
 - `omh-research-brief`: [omh] Business research brief - turns a market, competitor, pricing, or customer question into a structured evidence-vs-inference brief; for raw link gathering use ulw-research, and for ongoing multi-role research use research-department.
 - `omh-research-department`: [omh] Research operations department - coordinate Scout, Analyst, and Briefer work with source-inbox and status boundaries; for one decision brief use research-brief, and for typed candidates before research starts use source-finder.
 - `omh-rules-distill`: [omh] Hermes Rules Distill workflow: extract repeated principles from skills, prompts, traces, reviews, and failures into reviewed rule candidates without auto-mutating guidance.

@@ -96,10 +96,13 @@ If a prerequisite is missing, guide the user through setup ([references/prerequi
     successful build of a fork branch proves only that exact fork tree. Before
     declaring the upstream PR clean, verify the upstream head itself. If the
     converged fork contains any fix not present upstream, the PR is not
-    `review_ready`: account for every fork-only change as an author-facing
-    inline suggestion or companion request, or remove it from the reviewed
-    fork tree. Never summarize fork-only tests, documentation, braces, or logic
-    as though they already exist in the upstream head.
+    `review_ready` on that evidence alone. Account for each fork-only hunk as
+    an independently proven upstream fix, a review-introduced regression, or
+    a rejected/optional experiment. Only the first category can become an
+    author request. Preserve the audit trail and remove rejected experiments
+    with ordinary commits, never by resetting shared work. Verify the exact
+    upstream tree separately before a zero-finding result. Never summarize
+    fork-only tests, documentation, braces, or logic as though they exist upstream.
 22. **Build the exact suggestion result before presenting it.** Materialize
     every apply-ready suggestion, together and independently where applicable,
     on a clean worktree at the pinned upstream head. Run the smallest build or
@@ -134,6 +137,15 @@ If a prerequisite is missing, guide the user through setup ([references/prerequi
     member must be selected, validated, and posted together; partial groups
     are invalid. Do not downgrade the whole fix to a companion note merely
     because it spans files, but do not group optional or out-of-diff work.
+
+26. **Ground every proposed finding in upstream, not the review fork.** Follow
+    [finding-grounding.md](./references/finding-grounding.md) before drafting,
+    rewriting, revalidating, or publishing. Store per-item origin, exact source
+    ranges/excerpts, counterevidence and body hashes privately. A fix for an
+    agent-introduced regression is not an upstream defect. A no-comment fork
+    review, build, confidence score or unchanged head cannot establish that a
+    finding is necessary. Run `Test-ReviewData.ps1 -RequireFindingGrounding
+    -CheckGitHub`; the live publisher enforces this gate too.
 
 ## Phase 0: Context & Process Review
 
@@ -191,6 +203,7 @@ Auto-detect these at the start of each session with [scripts/Get-ForkConfig.ps1]
 | [Sync-ForkMain.ps1](./scripts/Sync-ForkMain.ps1) | Fast-forward the clone's `main` from upstream and push it to the fork |
 | [Test-SuggestionLineEndings.ps1](./scripts/Test-SuggestionLineEndings.ps1) | Reject apply-ready suggestions whose pinned target blobs mix line-ending styles |
 | [Test-ReviewData.ps1](./scripts/Test-ReviewData.ps1) | Validate public payloads, decisions, pinned heads, and current diff ranges |
+| [FindingGrounding.Common.ps1](./scripts/FindingGrounding.Common.ps1) | Verify per-finding provenance, body hashes and exact pinned source excerpts |
 | [Publish-ApprovedReview.ps1](./scripts/Publish-ApprovedReview.ps1) | Idempotently stage, verify, and submit approved GitHub reviews |
 | [Show-ReviewDashboard.ps1](./scripts/Show-ReviewDashboard.ps1) | Serve a single-window HTML dashboard for a batch of PRs: live status tracker while reviews run (polls `/status`), then an approval surface capturing per-PR/per-suggestion decisions to a file the agent resumes from |
 

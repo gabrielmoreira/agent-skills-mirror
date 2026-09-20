@@ -4,7 +4,7 @@ The agent tool layer. Defines the core [`Tool`] trait every agent-callable capab
 
 ## Responsibilities
 
-- Define the [`Tool`] async trait and its supporting value types (`ToolResult`, `ToolSpec`, `PermissionLevel`, `ToolScope`, `ToolCategory`, `ToolCallOptions`, `ToolExposure`) — sourced from `tinytools` and re-exported through `traits.rs`.
+- Use the [`tinytools::Tool`] async trait and its supporting value types (`ToolResult`, `ToolSpec`, `PermissionLevel`, `ToolScope`, `ToolCategory`, `ToolCallOptions`, `ToolExposure`) directly from `tinytools`.
 - Assemble the registry the agent loop runs against — `default_tools[_with_runtime]` (minimal: shell + file read/write) and `all_tools[_with_runtime]` (full, config-gated set).
 - Gate registration on config flags / env (`browser.enabled`, `node.enabled`, `runtime_python.enabled`, `learning.*`, `integrations.*`, `search.engine`, `gitbooks.enabled`, MCP registry presence, `OPENHUMAN_LSP_ENABLED`).
 - Own the cross-cutting built-in tool impls under `impl/` (filesystem, browser, generic system, generic network, meta, and the `documents`-gated document/presentation tools).
@@ -22,7 +22,7 @@ The agent tool layer. Defines the core [`Tool`] trait every agent-callable capab
 | File | Role |
 | --- | --- |
 | `crates/openhuman-core/src/tools/mod.rs` | Export hub. Declares submodules, re-exports the built-in impls and every domain-owned tool set, and the `all_tools_*` controller pair. |
-| `crates/openhuman-core/src/tools/traits.rs` | Stable in-crate import path for the `tinytools` vocabulary: `Tool`, `ToolResult`, `ToolContent`, `ToolExposure`, `ToolSpec`, `PermissionLevel`, `ToolScope`, `ToolCategory`, `ToolCallOptions`, `ToolRunContext`, `ToolTimeout`. The per-tool hooks (`permission_level[_with_args]`, `scope`, `category`, `exposure`, `is_concurrency_safe`, `external_effect[_with_args]`, `max_result_size_chars`, `timeout_policy`, `supports_markdown`) are defined on the `tinytools::Tool` trait, not here. Adds three readers over the erased `host_extension` slots: `pack_registry_handle`, `delegation_target`, `generated_runtime_context`. |
+| `crates/openhuman-core/src/tools/host_extensions.rs` | OpenHuman-only readers over erased `host_extension` slots: `pack_registry_handle`, `delegation_target`, and `generated_runtime_context`. Import the shared `Tool` vocabulary from `tinytools` directly. |
 | `crates/openhuman-core/src/tools/ops.rs` | Registry assembly: `default_tools`, `default_tools_with_runtime`, `all_tools`, `all_tools_with_runtime`, `browser_allowed_domains`. All config-gating logic lives here. |
 | `crates/openhuman-core/src/tools/schemas.rs` (thin shell over the `schemas/` submodule: `apify.rs`, `composio.rs`, `registry.rs`, `web_search.rs`) | JSON-RPC `tools` namespace controllers + `handle_*` fns. `all_controller_schemas` / `all_registered_controllers` (re-exported as `all_tools_*`). |
 | `crates/openhuman-core/src/tools/policy.rs` | `ToolPolicy` trait + `PolicyDecision` (`Allow`/`Deny`) + allow-all `DefaultToolPolicy`. Evaluated on the agent hot path before each `execute()`. |
@@ -49,7 +49,7 @@ The agent tool layer. Defines the core [`Tool`] trait every agent-callable capab
 ## Public surface
 
 - Trait + types: `Tool`, `ToolSpec`, `ToolResult`, `ToolContent`, `ToolExposure`, `PermissionLevel`, `ToolScope`, `ToolCategory`, `ToolCallOptions`.
-- Registry constructors: `default_tools`, `default_tools_with_runtime`, `all_tools`, `all_tools_with_runtime` (via `pub use ops::*`).
+- Registry constructors: `ops::default_tools`, `ops::default_tools_with_runtime`, `ops::all_tools`, `ops::all_tools_with_runtime`.
 - Policy: `ToolPolicy`, `DefaultToolPolicy`, `PolicyDecision`.
 - Schema: `SchemaCleanr`, `CleaningStrategy`.
 - Controllers: `all_tools_controller_schemas`, `all_tools_registered_controllers`.
@@ -104,7 +104,7 @@ None. No `store.rs`; the module holds no persisted state. Tools that persist (me
 - `crate::integrations::composio` — `all_composio_agent_tools`, mode-aware client (`create_composio_client`) for `openhuman.tools_composio_execute`.
 - `crate::runtime::javascript` / `crate::runtime::python` — `NodeBootstrap` shared by shell/node_exec/npm_exec (behind `runtime-node`), `PythonBootstrap` for `python_exec`.
 - `crate::mcp::config_servers` (`McpServerRegistry` behind the `mcp_*` bridge tools and the gitbooks MCP source) and `crate::mcp::registry` (tool re-exports; `connections` for the discovery registry) — `mcp` feature.
-- `tinytools` (vendored via `vendor/tinyagents/`) — the `Tool` trait itself and its vocabulary, re-exported through `traits.rs`.
+- `tinytools` (vendored via `vendor/tinyagents/`) — the `Tool` trait itself and its vocabulary, imported directly by each consumer.
 - `crate::skills` — skill-run spawning and skill-owned tools (`skills` feature).
 - `crate::agent::learning` — LinkedIn enrichment scrape/render for the Apify RPC handler.
 - `crate::web3::wallet`, `crate::cron`, `crate::voice::audio_toolkit` — domain-owned tools re-exported and registered (behind their respective features).
@@ -115,7 +115,7 @@ None. No `store.rs`; the module holds no persisted state. Tools that persist (me
 ## Used by
 
 - `crates/openhuman-core/src/core/all.rs` — registers the `tools` RPC controllers + schemas.
-- `crate::agent` harness (`agent/harness/session/builder/`, `dispatcher`, `subagent_runner`, `agent/tools/*`) and the `crate::agent::tinyagents` seam (`SharedToolAdapter`, `ToolPolicyMiddleware`) — primary consumers; build the registry and execute/police tools on the tinyagents harness path.
+- `crate::agent` host layers (`agent/session_host/builder/`, `agent/subagent_host/`, `agent/tools/*`) and the `crate::agent::tinyagents` seam (`CanonicalSharedToolAdapter`, `ToolPolicyMiddleware`) — primary consumers; build the registry and execute/police tools on the TinyAgents path.
 - `crate::channels::runtime::dispatch::routing` — calls `orchestrator_tools::collect_orchestrator_tools` to build per-subagent orchestrator tool sets.
 - `crate::tools::agent_policy`, `crate::security::approval` — read tool metadata (category, external-effect) for policy/approval decisions.
 - `crate::tools::registry` (reads `all_tools_controller_schemas`) and `crate::mcp::server` (reuses `SEARXNG_MAX_RESULTS` / `normalize_categories` for its stdio tool specs).
@@ -124,7 +124,7 @@ None. No `store.rs`; the module holds no persisted state. Tools that persist (me
 ## Notes / gotchas
 
 - **Ownership rule**: only genuinely cross-cutting tool families (filesystem, browser, generic system/network, meta, and the `documents`-gated document/presentation tools) belong in `impl/`. New domain tools go in the owning domain's `tools.rs` and are re-exported via `mod.rs` — do not add them under `impl/`.
-- **One unified `ToolResult`**: `traits.rs` re-exports it from `tinytools`, so every tool uses the same type.
+- **One unified `ToolResult`**: every tool imports it from `tinytools`, so every tool uses the same type.
 - **Browser allowlist is fail-safe**: the browser shares `http_request.allowed_domains` but `browser_allowed_domains` strips the `"*"` wildcard — unifying can only narrow browser reach. Allow-all stays behind `OPENHUMAN_BROWSER_ALLOW_ALL`.
 - **Node tools are co-gated**: `shell`, `node_exec`, and `npm_exec` share one memoised `NodeBootstrap`; with `node.enabled = false` (or the `runtime-node` feature off), node/npm tools are not registered and shell skips PATH injection.
 - **`external_effect_with_args`** is the hook the harness checks at the gate-decision point (not the arg-less variant) — override it for per-call gating (e.g. composio `execute` vs `list`).

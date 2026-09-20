@@ -1008,3 +1008,79 @@ Key points:
 - Trace data is local-only (IndexedDB), never transmitted
 - Offscreen proxy only forwards provider SDK traffic
 - Finance adapters inject extra confirmation guidance
+
+### Jev scheduled-task verification
+
+The static Jev card lives in Settings → Assistive Models, after Vision and
+Speech to text, outside the dynamic provider list. It never participates in
+chat model selection. The tab retains its internal `multimodal` identifier for
+existing links and remembered selections. `systemone-judge.js` owns the pinned HTTP contract,
+strict typed responses and a shared deadline for retries. `systemone-evidence.js`
+collects bounded allowlisted observations and invalidates them on page changes.
+Scheduler evaluation returns keep/downgrade/skip plus metadata, revalidates the
+execution after awaiting the response and never requeues a downgraded action.
+The agent supplies the original run cost state and trace ID to the sidecar.
+No evidence is written to additional diagnostic logs. Watch baselines alone
+persist a bounded observation to support change comparisons after an actual
+judgment. Skips leave the stored verdict and Jev baseline unchanged and do not
+create verdict trace notes; billable responses still record usage. If the tab's
+run changes during verification, the still-owned scheduler execution enters
+reconciliation instead of remaining running. Post-response cost enforcement
+rejects a judgment that crosses the allowance; an already sent request can
+still incur charges.
+
+### Experimental Jev decisions
+
+`systemone-fast.js` produces existing tool calls, a fallback, or a completion
+candidate. Separate default-off settings control read-scope/Ask-handoff
+classification and Act/Dev browser decisions. The normal planner and intent
+checks still precede the loop. Both streaming and non-streaming loops dispatch
+Jev-selected calls through `_executeToolBatch`, including final submit/save/send
+clicks. Ask cannot use this browser path.
+
+The existing AX walk supplies at most 24 structured controls with its own refs;
+page-authored ref strings are never parsed. Internal snapshots are stripped from
+public tool results and diagnostics. Identity, document, form structure, options,
+value and occlusion are checked again before dispatch. Frames, shadow roots,
+unsupported actions and pages containing credential, payment, OTP or file controls
+fall back as a whole. The request includes only operations that have observed
+candidates and omits target questions that would contain only the `none` choice.
+Field values come from
+the active provider only after a confident fill action/target is selected. The
+first uncached fill uses a second Jev request to map those prepared values;
+clicks, completion candidates and fallbacks do not prepare text. Cached values
+and queued independent writes avoid repeated preparation. Each write is
+executed separately with a new observation. Labels must match the prepared
+field purpose, and ambiguous labels fall back. Changed form/document context
+invalidates queued writes and cached values.
+
+Choice probability and confidence must both reach 85% for classifiers and 90%
+for browser decisions. Each Jev request has one second and no retry. Errors or
+low confidence fall back in the current step. Two fallbacks on the same observed
+snapshot suspend further paid decisions until a new snapshot changes the
+context. A malformed usage/model/answer response permanently stops Jev for that
+run after the first response, even if the page changes, and the trace stores a
+bounded reason code rather than the response. This suspension is separate from
+the permanent run stop for unknown outcomes or no progress. Completion guidance is added only to the model's system
+message copy, never to persisted user messages. Two unchanged observations after
+Jev decisions disable the path for the rest of the run. Unknown outcomes and
+denied/cancelled calls also disable it. Strict Secret Mode, offline connectivity,
+run cancellation and model cost limits apply. `done` remains an active-model
+operation using existing evidence checks. RAG, skill routing and direct watch
+poll optimization are not part of this integration. See `test/jev/README.md` for
+benchmark protocol and its unverified live-performance status.
+
+An action such as a submitted search field can lose its original-document
+verification while successfully navigating. When that result is successful,
+verified, marked `outcomeUnknown`, and reports a real URL change, a later
+successful read of the resulting URL can reconcile the generic plan-execution
+counter. A read from before the action, a failed read, or a different document
+cannot do so. This does not satisfy submit/send/publish/payment or site-workflow
+terminal contracts; those still require their existing bound evidence.
+
+Initial-page and automatic browser screenshots do not make the AX-only path
+ineligible, and their pixels are never included in a Jev request. A current user
+attachment, explicit screenshot-tool result or unknown non-text input routes that
+decision to the active provider. The fast path may resume after that provider has
+consumed the input. Trace exports render Jev routing, fallback and usage metadata,
+including skip reasons, without exporting evidence.

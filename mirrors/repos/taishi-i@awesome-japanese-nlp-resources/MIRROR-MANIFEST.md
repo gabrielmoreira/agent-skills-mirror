@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `taishi-i/awesome-japanese-nlp-resources` — 26 default patterns, 0 followed patterns, 4 file(s) materialized.
+Mirror of `taishi-i/awesome-japanese-nlp-resources` — 26 default patterns, 0 followed patterns, 5 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `taishi-i/awesome-japanese-nlp-resources` — 26 default patterns, 0 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 4 |
+| Files         | 5 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,10 +59,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`plugins/awesome-japanese-nlp-resources/skills/compare/SKILL.md`](plugins/awesome-japanese-nlp-resources/skills/compare/SKILL.md) |
-| 2 | ✓ | [`plugins/awesome-japanese-nlp-resources/skills/discover/SKILL.md`](plugins/awesome-japanese-nlp-resources/skills/discover/SKILL.md) |
-| 3 | ✓ | [`plugins/awesome-japanese-nlp-resources/skills/research/SKILL.md`](plugins/awesome-japanese-nlp-resources/skills/research/SKILL.md) |
-| 4 | ✓ | [`plugins/awesome-japanese-nlp-resources/skills/search/SKILL.md`](plugins/awesome-japanese-nlp-resources/skills/search/SKILL.md) |
+| 1 | ✓ | [`.agents/plugins/marketplace.json`](.agents/plugins/marketplace.json) |
+| 2 | ✓ | [`plugins/awesome-japanese-nlp-resources/skills/compare/SKILL.md`](plugins/awesome-japanese-nlp-resources/skills/compare/SKILL.md) |
+| 3 | ✓ | [`plugins/awesome-japanese-nlp-resources/skills/discover/SKILL.md`](plugins/awesome-japanese-nlp-resources/skills/discover/SKILL.md) |
+| 4 | ✓ | [`plugins/awesome-japanese-nlp-resources/skills/research/SKILL.md`](plugins/awesome-japanese-nlp-resources/skills/research/SKILL.md) |
+| 5 | ✓ | [`plugins/awesome-japanese-nlp-resources/skills/search/SKILL.md`](plugins/awesome-japanese-nlp-resources/skills/search/SKILL.md) |
 
 ---
 

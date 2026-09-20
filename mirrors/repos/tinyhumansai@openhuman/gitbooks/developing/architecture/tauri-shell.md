@@ -5,7 +5,7 @@ icon: desktop
 
 # Tauri shell (`crates/openhuman-app/`)
 
-The desktop host for OpenHuman: Tauri v2 + WebView, IPC commands, window management, and bridging to the embedded `openhuman-core` Rust runtime (core JSON-RPC). It does **not** duplicate the full domain stack; that lives in `crates/openhuman-core` (library `openhuman_core`, CLI at `crates/openhuman-core/src/main.rs`).
+The desktop host for OpenHuman: Tauri v2 + WebView, IPC commands, window management, and bridging to the embedded `openhuman-core` Rust runtime (core JSON-RPC). It does **not** duplicate the full domain stack; that lives in `crates/openhuman-core` (library `openhuman_core`; the `openhuman-core` binary is `crates/openhuman-cli/src/main.rs`).
 
 ## Responsibilities
 
@@ -13,7 +13,7 @@ The desktop host for OpenHuman: Tauri v2 + WebView, IPC commands, window managem
 2. **IPC**. Expose an explicit set of Tauri commands (see [Commands](#tauri-ipc-commands-app-src-tauri)).
 3. **Core lifecycle**. Run the core JSON-RPC server as an in-process tokio task (`core_process.rs`) and hand the renderer its URL/bearer via `core_rpc_url` / `core_rpc_token`.
 4. **Window + tray**. Desktop window behavior (main, mascot, notch, overlay windows) and system tray (see `lib.rs`).
-5. **Session ownership**. Log the user in and keep the current user fresh (`session/`, backed by `crates/openhuman-session`): exchange the login token, validate the JWT against `GET /auth/me`, cache `/auth/me`, and hand the resulting credential to the core with `auth.set_credential`. The core never talks to the backend's auth endpoints itself.
+5. **Session ownership**. Log the user in and keep the current user fresh (`session/`, backed by `openhuman_tinyhumans::session`): exchange the login token, validate the JWT against `GET /auth/me`, cache `/auth/me`, and hand the resulting credential to the core with `auth.set_credential`. The core never talks to the backend's auth endpoints itself.
 
 ## Core process model
 
@@ -57,7 +57,7 @@ crates/openhuman-app/src/
 ├── workspace_paths.rs      # Safe workspace-relative file open/reveal/preview
 ├── app_update.rs           # Updater support (commands live in lib.rs)
 ├── loopback_oauth.rs       # Localhost OAuth redirect listener
-├── session/                # Session owner: auth_* commands over openhuman-session
+├── session/                # Session owner: auth_* commands over openhuman_tinyhumans::session
 ├── claude_code.rs          # Claude Code login launch
 ├── mcp_commands.rs         # MCP client helpers
 ├── file_logging.rs         # Log file sink + logs-folder commands
@@ -179,7 +179,7 @@ Frontend: **`app/src/services/gatewayService.ts`**, surfaced in Settings → Cor
 
 ### Session (`session/`)
 
-The shell is the session owner on the desktop: it talks to the TinyHumans backend's auth endpoints so the core never has to. `openhuman-session` does the work; the shell adds the link to the core (`HttpCoreLink`, the same `(url, token)` the renderer uses, so a gateway switch is followed) and these commands. Errors carry a stable `PREFIX:` (`REJECTED`, `EXPIRED`, `TRANSIENT`, `CONSUME_FAILED`, `USER_ID_UNAVAILABLE`, `CORE`) the renderer classifies on.
+The shell is the session owner on the desktop: it talks to the TinyHumans backend's auth endpoints so the core never has to. `openhuman_tinyhumans::session` does the work; the shell adds the link to the core (`HttpCoreLink`, the same `(url, token)` the renderer uses, so a gateway switch is followed) and these commands. Errors carry a stable `PREFIX:` (`REJECTED`, `EXPIRED`, `TRANSIENT`, `CONSUME_FAILED`, `USER_ID_UNAVAILABLE`, `CORE`) the renderer classifies on.
 
 | Command                 | Purpose                                                                                                                        |
 | ----------------------- | ------------------------------------------------------------------------------------------------------------------------------ |

@@ -1,6 +1,6 @@
 ---
 name: "omh-plan"
-description: "[omh] Hermes Plan workflow: structured planning before execution. Use when the user says: plan, implementation plan, task breakdown, safe feature, safely add a feature, add a feature, feature request, new feature."
+description: "[omh] Hermes Plan workflow: structured planning before execution. Use when the user says: plan, implementation plan, make a plan, write a plan, write the plan, task breakdown, safe feature, safely add a feature."
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, planning]
@@ -54,7 +54,7 @@ Bad example:
 
 Use for structured planning when implementation is not ready to start safely, including feature work that needs a safe plan before handoff.
 
-    Strong routing signals: `plan`, `$plan`, `implementation plan`, `task breakdown`, `safe feature`, `safely add a feature`, `add a feature`, `feature request`, `new feature`, `product triage`, `bug triage`, `issue triage`, `reproduction plan`, `workflow hub`, `coding handoff`, `project template`, `github pr workflow`, `実装計画`, `タスク分解`, `安全に機能追加`, `機能追加の計画`, `답할 차례`, `준비할 차례`, `재현 계획`, `요구사항 정리`, `작업 허브`, `작업 허브가 필요`, `상태와 다음 행동`, `프로젝트별 운영`, `实现计划`, `任务拆解`, `安全地新增功能`, `新增功能计划`
+    Strong routing signals: `plan`, `$plan`, `implementation plan`, `make a plan`, `write a plan`, `write the plan`, `task breakdown`, `safe feature`, `safely add a feature`, `add a feature`, `feature request`, `new feature`, `product triage`, `bug triage`, `issue triage`, `reproduction plan`, `workflow hub`, `coding handoff`, `project template`, `github pr workflow`, `実装計画`, `タスク分解`, `安全に機能追加`, `機能追加の計画`, `답할 차례`, `준비할 차례`, `재현 계획`, `요구사항 정리`, `작업 허브`, `작업 허브가 필요`, `상태와 다음 행동`, `프로젝트별 운영`, `实现计划`, `任务拆解`, `安全地新增功能`, `新增功能计划`
 
 ## Catalog Metadata
 
@@ -66,6 +66,7 @@ Reasoning demand: `standard`
 Quality bar:
 
 - Make goals, non-goals, risks, acceptance criteria, and verification shape explicit.
+- Where the repository declares non-negotiable principles, load `references/project-constitution.md` and record the check: a plan conflicting with a MUST is resolved by changing the plan, never by reinterpreting the principle.
 - Keep draft plans unapproved until a user or wrapper accepts them.
 - Only prepare coding handoff guidance after the plan is accepted.
 - Plan acceptance approves the plan content, not execution: after acceptance, recommend the follow-on path that fits the work's shape — `ultrawork` durable checkpoints for progress that must survive sessions as a checkpointed ledger, `ultrawork` coordinated lanes for an accepted plan split into disjoint parallel lanes, `ultrawork` single-owner persistence for one already-scoped task with a single owner, `ultrawork` for one bounded delivery cycle, or a direct selected executor/runtime handoff for a single prepared coding change — state the fit reason in one line, and start it only after the user's explicit go-ahead.

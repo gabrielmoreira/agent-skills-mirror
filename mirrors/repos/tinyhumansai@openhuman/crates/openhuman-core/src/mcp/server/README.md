@@ -79,7 +79,8 @@ No `store.rs`. The only durable side effect is the **MCP write-audit log**, writ
 - `crate::core::logging` (`CliLogDefault`, `init_for_cli_run`) — install the stderr tracing subscriber for the MCP subprocess.
 - `crate::config` (`Config`, `rpc::load_config_with_timeout`, `McpAuthConfig`/`McpClientIdentityConfig` in tests) — load config for policy/searxng gating and per-call config.
 - `crate::security` (`SecurityPolicy`, `ToolOperation`) — enforce read/act autonomy policy per tool call.
-- `crate::agent` (`Agent`, `registry::agents::BUILTINS`, `harness::AgentDefinitionRegistry`, `tinyagents::convert::spec_to_schema`) — build the orchestrator agent for `core.list_tools`/`core.tool_instructions`, list/run subagents, and cross-check the resource catalog.
+- `crate::agent` (`Agent`, `registry::agents::BUILTINS`, `harness::AgentDefinitionRegistry`) — build the orchestrator agent for `core.list_tools`/`core.tool_instructions`, list/run subagents, and cross-check the resource catalog.
+- `tinyinference_llm::tool::ToolSchema` — directly materialize model-visible tool declarations for `core.tool_instructions`.
 - `tinyagents_harness::tool::prompt_tool_instructions` — render the markdown tool-use instructions block for `core.tool_instructions`.
 - `crate::tools` (`SEARXNG_MAX_RESULTS`, `normalize_categories`) — SearXNG bounds + category normalization for `searxng_search`.
 - `crate::mcp::audit` (`record_write`, `NewMcpWriteRecord`, list/query helpers in tests) — durable write-audit log.

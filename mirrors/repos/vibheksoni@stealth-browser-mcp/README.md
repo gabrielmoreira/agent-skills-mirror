@@ -122,13 +122,13 @@ Use promo code `RAPID10` for **10% off**.
 ## Features
 
 - **Anti-bot resistance** - Has passed Cloudflare and Queue-It style challenges in testing; results vary by site, region, browser version, and detector version.
-- **97 tools across 11 sections** - From basic navigation to advanced CDP function execution.
-- **Modular loading** - Run the full 97-tool surface or a minimal 20-tool core; disable sections you do not need.
+- **98 tools across 11 sections** - From basic navigation to advanced CDP function execution.
+- **Modular loading** - Run the full 98-tool surface or a minimal 21-tool core; disable sections you do not need.
 - **Pixel-accurate element cloning** - Extract complete elements with CSS, DOM structure, events, animations, and assets via CDP.
 - **Network inspection** - Inspect requests, responses, headers, payloads, and captured bodies through your AI agent.
 - **Dynamic hook system** - Restricted Python hooks can intercept, block, redirect, fulfill, or modify request/response flows.
 - **CDP execution** - Run JavaScript, direct CDP commands, and pre-document scripts through trusted local MCP clients.
-- **Instant text input** - Paste large content via CDP or type with human-like keystrokes and newline support.
+- **Instant text input** - Paste large content via CDP, type with human-like keystrokes, or press real keys with trusted CDP key events.
 - **Cross-platform** - Windows, macOS, Linux, Docker, and CI environments with automatic browser/platform detection.
 - **Browser support** - Chrome, Chromium, and Microsoft Edge with automatic executable discovery.
 - **Clean MCP integration** - Works through standard MCP clients without custom brokers.
@@ -250,14 +250,14 @@ Treat the MCP client or agent as the security principal. The recommended deploym
 
 ## Modular Architecture
 
-Choose exactly what functionality you need. Run the full 97-tool suite or strip it down to the 20-tool core.
+Choose exactly what functionality you need. Run the full 98-tool suite or strip it down to the 21-tool core.
 
 | Mode | Tools | Use Case |
 |------|-------|----------|
-| **Full** (default) | 97 | Complete browser automation and debugging |
-| **Minimal** (`--minimal`) | 20 | Core browser automation and interaction |
+| **Full** (default) | 98 | Complete browser automation and debugging |
+| **Minimal** (`--minimal`) | 21 | Core browser automation and interaction |
 | **Custom** (`--disable-*`) | Your choice | Disable specific sections |
-| **Xpool safe** (`--xpool-safe`) | 83 | Disable CDP function tools that trigger `Runtime.enable` |
+| **Xpool safe** (`--xpool-safe`) | 84 | Disable CDP function tools that trigger `Runtime.enable` |
 
 ```bash
 python src/server.py --minimal
@@ -274,7 +274,7 @@ Use `--debug` or set `STEALTH_BROWSER_DEBUG=1` to enable verbose server diagnost
 | Section | Tools | Description |
 |---------|-------|-------------|
 | `browser-management` | 8 | Core browser operations |
-| `element-interaction` | 12 | Page interaction and manipulation |
+| `element-interaction` | 13 | Page interaction and manipulation |
 | `element-extraction` | 9 | Element cloning and extraction |
 | `file-extraction` | 9 | File-based extraction tools |
 | `network-debugging` | 10 | Network monitoring and capture |
@@ -371,7 +371,7 @@ client = Client(
 </details>
 
 <details>
-<summary><strong>Element Interaction (12)</strong></summary>
+<summary><strong>Element Interaction (13)</strong></summary>
 
 | Tool | Description |
 |------|-------------|
@@ -379,6 +379,7 @@ client = Client(
 | `click_element()` | Click an element |
 | `type_text()` | Human-like typing with newline support |
 | `paste_text()` | Instant text paste via CDP |
+| `press_key()` | Press a real key with trusted CDP key events (Enter, Tab, arrows, modifiers) |
 | `file_upload()` | Upload allowlisted local files to file inputs |
 | `select_option()` | Select dropdown options |
 | `get_element_state()` | Inspect element state |
@@ -554,8 +555,8 @@ Detection results are point-in-time and depend on site policy, region, browser v
 | Network debugging | Full request/response inspection through AI tools | Basic |
 | API reverse engineering | Payload inspection through chat | Manual tools only |
 | Dynamic hook system | Restricted Python hooks for real-time interception | Not available |
-| Modular architecture | 11 sections, 20-97 tools | Fixed tool surface |
-| Total tools | 97 customizable tools | About 20 |
+| Modular architecture | 11 sections, 21-98 tools | Fixed tool surface |
+| Total tools | 98 customizable tools | About 20 |
 
 ---
 

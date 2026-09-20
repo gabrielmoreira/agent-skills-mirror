@@ -4,7 +4,7 @@ disable-model-invocation: true
 effort: low
 model: sonnet
 name: todo-archive
-description: Archive checked TODO.md tasks into `.ai/todos/YYYY-MM/DD.md`, leaving unchecked tasks.
+description: Archive checked `.ai/TODO.md` tasks into `.ai/todos/YYYY-MM/DD.md`, leaving unchecked tasks.
 ---
 
 # TODO Archive
@@ -17,7 +17,7 @@ do not invoke this skill again through a skill tool.
 - `path` (optional): Repository root or any path inside the repository. Default to the current directory.
 - `--hint TEXT` (optional): Archive only the section whose heading contains `TEXT` (case-insensitive substring),
   including its subsections. Without it, archive checked tasks from the whole file. Checked tasks outside the matched
-  section stay in `TODO.md`.
+  section stay in `.ai/TODO.md`.
 - `--date YYYY-MM-DD|YYYY_MM_DD` (optional): Archive date. Default to today's local date.
 - `--dry-run` (optional): Preview target paths and rendered content without writing.
 
@@ -34,7 +34,7 @@ do not invoke this skill again through a skill tool.
    Store the result as `repo_root`. When `start_dir` is outside a Git repository, use it as `repo_root`. Stop on a
    missing input path or another resolution error.
 
-2. Verify `TODO.md` exists at the root. If it is missing, stop and report the path checked.
+2. Verify `.ai/TODO.md` exists under the root. If it is missing, stop and report the path checked.
 
 3. Resolve the skill directory and run its helper:
 
@@ -44,21 +44,21 @@ do not invoke this skill again through a skill tool.
 
    Pass through `--hint`, `--date`, or `--dry-run` when the user requested them.
 
-4. Report the rewritten `TODO.md`, the created or merged archive path, the matched section (when `--hint` was given),
-   and the archived/remaining task counts. If an archive for the date already exists, the helper appends the new batch
-   to it, retaining one matching top-level heading. If the helper reports no checked tasks, treat it as a no-op. If
-   `--hint` matches no heading, the helper exits non-zero and lists the available sections; relay them.
+4. Report the rewritten `.ai/TODO.md`, the created or merged archive path, the matched section (when `--hint` was
+   given), and the archived/remaining task counts. If an archive for the date already exists, the helper appends the new
+   batch to it, retaining one matching top-level heading. If the helper reports no checked tasks, treat it as a no-op.
+   If `--hint` matches no heading, the helper exits non-zero and lists the available sections; relay them.
 
-5. If useful, inspect only `<repo_root>/TODO.md` and the exact archive path returned by the helper. Verify their
+5. If useful, inspect only `<repo_root>/.ai/TODO.md` and the exact archive path returned by the helper. Verify their
    contents directly; when Git ignores them, compare filesystem snapshots rather than relying on `git diff`.
 
 ## Helper Behavior
 
-`scripts/archive_todo.py` reads only `<root>/TODO.md`, writes archived tasks to `<root>/.ai/todos/YYYY-MM/DD.md`, and
-rewrites `<root>/TODO.md` with the remaining tasks. It preserves task-free sections and prose verbatim (a minimal
-`# TODO` stub only if everything was archived). With `--hint`, it restricts archiving to the matched heading's subtree
-and exits non-zero listing available headings when nothing matches. A same-day re-run appends its batch to that day's
-file, removing the new leading H1 only when it exactly matches the existing archive's leading H1.
+`scripts/archive_todo.py` reads only `<root>/.ai/TODO.md`, writes archived tasks to `<root>/.ai/todos/YYYY-MM/DD.md`,
+and rewrites `<root>/.ai/TODO.md` with the remaining tasks. It preserves task-free sections and prose verbatim (a
+minimal `# TODO` stub only if everything was archived). With `--hint`, it restricts archiving to the matched heading's
+subtree and exits non-zero listing available headings when nothing matches. A same-day re-run appends its batch to that
+day's file, removing the new leading H1 only when it exactly matches the existing archive's leading H1.
 
 ## Completion
 

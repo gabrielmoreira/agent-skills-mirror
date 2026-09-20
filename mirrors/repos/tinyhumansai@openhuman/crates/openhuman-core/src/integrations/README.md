@@ -9,7 +9,8 @@ task-source sub-domains, and the remaining non-search tool families.
 
 ## Responsibilities
 
-- Provide `IntegrationClient`, a shared `reqwest` HTTP client for backend-proxied integrations: backend URL sanitization, bearer auth, `{success,data,error}` envelope parsing, bounded error-detail extraction, and pricing cache.
+- Provide `IntegrationClient`, the shared client for backend-proxied integrations: backend URL sanitization, bearer auth, `{success,data,error}` envelope parsing, bounded error-detail extraction, and pricing cache. JSON traffic rides the process `BackendTransport` (`api::transport`, `TransportProfile::Integrations`); only the binary download client is built here.
+- Own the managed-tool budget gate (`client/budget_gate.rs`): the `/teams/me/usage` probe, its per-backend failure backoff (#4153) and the cached "credits exhausted" pre-check every `/agent-integrations/*` call runs first. The hosted `team_get_usage` RPC reads the same probe.
 - Build the client from root config (`build_client`), resolving backend URL and app-session JWT; return `None` when the user is not signed in.
 - Fetch per-integration pricing from `/agent-integrations/pricing`, with a Composio direct-mode short-circuit (`pricing_for_config`).
 - Implement and export non-search, non-connector tools: Google Places, stock/market data, and Twilio.
@@ -17,10 +18,9 @@ task-source sub-domains, and the remaining non-search tool families.
 - Own the [`file_storage`](file_storage/README.md) managed cloud file-storage tool family as a child module.
 - Classify transport and user-state failures through `core::observability::report_error_or_expected`.
 
-Every request `IntegrationClient` sends through the `tinyhumans-sdk` client
-carries the sanitized `x-sdk-name` product identity
-(`crate::api::product::product_identity_headers()` applied via
-`with_default_headers` in `client/construct.rs`; asserted by
+Every request `IntegrationClient` sends through the backend transport
+carries the sanitized `x-sdk-name` product identity (part of the
+`Integrations` profile's attribution headers in `api::headers`; asserted by
 `integration_requests_carry_the_default_product_identity` in
 `client_error_propagation_tests.rs`). The one deliberate exception, per AGENTS.md
 "Backend API", is `get_bytes`: it uses a separate untagged `download_client`

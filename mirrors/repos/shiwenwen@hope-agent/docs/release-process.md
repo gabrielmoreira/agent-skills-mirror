@@ -427,6 +427,10 @@ git cherry-pick --abort          # 整段放弃
 
 dry-run 不改任何 GitHub 状态：不打 tag、不建 Release、不碰 latest.json，失败重跑无副作用。
 
+**Intel macOS 独立构建**：[`build-macos-x64.yml`](../.github/workflows/build-macos-x64.yml) 使用原生 `macos-15-intel` runner；旧 `macos-13` 已退役，不能靠重试恢复。Intel 构建保持独立，在发布后补传 x64 DMG 和裸二进制，不阻塞主发布矩阵。只有 Release 中实际出现 x64 DMG 后，才能认为该版本有 Intel 安装包。
+
+修改该独立流程时，在 PR 分支执行 `gh workflow run build-macos-x64.yml --ref <PR分支> -f tag=v<当前源码版本> -f dry_run=true`。验证模式检出派发时的精确提交，保留版本匹配检查、Intel 原生构建、DMG 上传路径准备和签名，并将 DMG / 裸二进制保存为保留 7 天的 Actions artifact；四个发布步骤（两次 Release 上传、清单补写、Homebrew 派发）全部跳过。Tauri 本地产物名为 `Hope Agent_<版本>_x64.dmg`，上传前复制为渠道使用的 `Hope.Agent_<版本>_x64.dmg`，两种模式均检查源文件存在。验证与发布使用不同并发组，避免被旧的发布排队占住。普通发布与未开启验证模式的手动补构建仍严格检出目标 tag。
+
 ### 4.2 `latest.json` 并发上传竞态
 
 4 条 build lane 往**同一个** draft Release 推产物，而 tauri-action 的 `uploadVersionJSON` 是对同一个 `latest.json` 做**读-改-写**：列 asset → 找到就下载、把已有 `platforms` 读进来 → 合并自己这条 lane 的 → 删旧 asset → 传新的。两条 lane 同时走到这里，都看到「还没有 latest.json」，于是都发 create，输的那条拿 `422 already_exists` 直接失败。

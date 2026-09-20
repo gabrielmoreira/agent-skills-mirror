@@ -23,7 +23,7 @@ This is a Hermes-native `inference-serving` workflow skill.
 - A new model generation needs recognition, calibration, routing, and pricing onboarding; use `model-optimization`.
 - The user wants their own machine's model routing or providers configured; use `model-setup`.
 - The question is whether a coding runtime/executor can run at all; use `executor-runtime-readiness`.
-- The goal is application or system performance rather than the serving endpoint itself; use `performance-goal` or `ultraperf`.
+- The goal is application or system performance rather than the serving endpoint itself; use `ultraperf`.
 
 ## Examples
 
@@ -54,7 +54,7 @@ Bad example:
 
 ## Workflow Lane
 
-- Current lane: **Research and company ops** (`product-docs`, `source-finder`, `web-research`, `research`, `best-practice-research`, `autoresearch-goal`, `model-optimization`, `inference-serving`, `+20 more`) - research, signals, ops, and briefings.
+- Current lane: **Research and company ops** (`product-docs`, `source-finder`, `web-research`, `research`, `model-optimization`, `inference-serving`, `research-brief`, `strategy-brief`, `+18 more`) - research, signals, ops, and briefings.
 - If intent belongs to another lane, hand back to `oh-my-hermes` or name the adjacent workflow.
 - Shared product, routing, compatibility, and evidence rules: `omh-routing/references/skill-common-rail.md`.
 
@@ -112,12 +112,6 @@ Safety rules:
 - If the workflow started a server for a benchmark, the workflow stops it.
 
 ## Runtime Evidence
-
-Preferred harness for this skill: `coding-handling`.
-
-```sh
-omh runtime record --skill inference-serving --harness coding-handling --status started
-```
 
 Record observed delegation results; otherwise return `not_available` or `not_observed`.
 Prepared OMH routing is not execution, review, CI, merge-readiness, or merge evidence.

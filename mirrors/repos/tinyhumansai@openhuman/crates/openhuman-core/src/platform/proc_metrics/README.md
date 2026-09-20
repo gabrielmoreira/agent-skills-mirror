@@ -47,7 +47,7 @@ are skipped with a stderr note rather than aborting the sample.
 
 ## Used by
 
-- `crates/openhuman-core/src/bin/rss_bench.rs` and `bin/library_profile/`
+- `crates/openhuman-cli/src/bin/rss_bench.rs` and `bin/library_profile/`
   (feature `rss-bench`) — the RSS/memory benchmark binaries this module was
   built for.
 - [`docs/library-benchmarking.md`](../../../../../docs/library-benchmarking.md)

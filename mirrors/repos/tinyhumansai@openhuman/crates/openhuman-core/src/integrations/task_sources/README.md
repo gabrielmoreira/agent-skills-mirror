@@ -109,9 +109,9 @@ Startup wiring is split across three sites; both entry points are idempotent
 - `crates/openhuman-core/src/core/jsonrpc.rs` (~2159) calls
   `crate::integrations::task_sources::bus::register_task_sources_subscriber()`.
 - `crates/openhuman-core/src/core/runtime/services.rs` (~349) calls
-  `crate::integrations::task_sources::start_periodic_poll()` (alongside
-  `agent::task_dispatcher::start_board_poller()`) when the `ServiceSet`'s
-  `proactive_task_pollers` bootstrap job is enabled (documented at ~212).
+  `crate::integrations::task_sources::start_periodic_poll()` when the
+  `ServiceSet`'s task-source polling bootstrap job is enabled (documented at
+  ~212).
 - `crates/openhuman-core/src/channels/runtime/startup/start_channels.rs`
   (`start_channels`, ~182) calls both `register_task_sources_subscriber()`
   and `start_periodic_poll()` again for the channels runtime path.
@@ -120,10 +120,10 @@ Startup wiring is split across three sites; both entry points are idempotent
 
 SQLite at `<workspace_dir>/task_sources/sources.db` (WAL, 5s busy timeout, migrate-on-open):
 
-- **`task_sources`** — configured sources: provider, optional connection_id/name, enabled, filter JSON, interval_secs, target, max_tasks_per_fetch, created_at, last_fetch_at/last_status, assigned_executor.
+- **`task_sources`** — configured sources: provider, optional connection_id/name, enabled, filter JSON, interval_secs, target, max_tasks_per_fetch, created_at, and last_fetch_at/last_status.
 - **`ingested_tasks`** — per-(source, external_id) dedup ledger: edit-aware `content_hash` (SHA-256 over title/body/status/updated_at/url), normalized task `payload`, `ingested_at`, and `card_id` (board card UUID) so an edited upstream item removes its stale card before re-routing. FK to `task_sources` with `ON DELETE CASCADE`.
 
-Additive idempotent column migrations (`add_column_if_missing`) backfill `ingested_tasks.card_id` and `task_sources.assigned_executor` on older DBs. App-level defaults (enabled flag, default interval, per-fetch cap, auto_proactive) live in config (`TaskSourcesConfig`), not the store.
+The additive idempotent `ingested_tasks.card_id` migration preserves older databases. App-level defaults (enabled flag, default interval, per-fetch cap, auto_proactive) live in config (`TaskSourcesConfig`), not the store.
 
 ## Dependencies
 
@@ -139,7 +139,7 @@ Additive idempotent column migrations (`add_column_if_missing`) backfill `ingest
 
 - `crates/openhuman-core/src/core/all.rs` — registers controllers + schemas into the global RPC registry.
 - `crates/openhuman-core/src/core/jsonrpc.rs` — at startup registers the connection subscriber (bus.rs).
-- `crates/openhuman-core/src/core/runtime/services.rs` — at startup starts the periodic poll as part of the `proactive_task_pollers` bootstrap job.
+- `crates/openhuman-core/src/core/runtime/services.rs` — at startup starts the periodic poll as part of the task-source polling bootstrap job.
 - `crates/openhuman-core/src/channels/runtime/startup/start_channels.rs` — `start_channels` registers the subscriber and starts the poll for the channels runtime.
 - `crates/openhuman-core/src/core/events.rs` — defines/classifies the three `TaskSource*` event variants under domain `"task_sources"`.
 - `crates/openhuman-core/src/tools/mod.rs` — re-exports `tools.rs`'s agent tools into the global tool registry.
@@ -152,7 +152,6 @@ Additive idempotent column migrations (`add_column_if_missing`) backfill `ingest
 - **Pipeline is infallible at the boundary.** `run_source_once` captures any error into `FetchOutcome::error` (and a failure event) so the scheduler loop never unwinds.
 - **Route-then-mark ordering.** A task is marked ingested only after routing succeeds, so a routing failure retries next pass instead of being silently dropped.
 - **Edit-aware dedup.** `content_hash` includes `url` deliberately (it drives card notes/metadata and external write-back); a changed hash re-ingests and removes the stale board card via the persisted `card_id`.
-- **Static executor routing (G7).** A source's optional `assigned_executor` is pre-stamped onto each card's `assigned_agent` so the dispatcher can run it deterministically without the LLM router. `add` applies it as a follow-up patch to keep `store::add_source`'s signature stable.
 - **`route.rs` is the only writer of card `source_metadata`** (provider/source_id/external_id/urgency, plus url and — GitHub-only — repo).
 - **`update_source` TOCTOU.** Documented theoretical read-modify-write window across three connections; acceptable at settings-panel scale.
 - **Enrichment is intentionally LLM-free** — deterministic and unit-testable; the heavy reasoning happens in the downstream triage turn.

@@ -23,7 +23,7 @@ This is an OMH `inference-serving` workflow skill, projected for Agent Skills ho
 - A new model generation needs recognition, calibration, routing, and pricing onboarding; use `model-optimization`.
 - The user wants their own machine's model routing or providers configured; use `model-setup`.
 - The question is whether a coding runtime/executor can run at all; use `executor-runtime-readiness`.
-- The goal is application or system performance rather than the serving endpoint itself; use `performance-goal` or `ultraperf`.
+- The goal is application or system performance rather than the serving endpoint itself; use `ultraperf`.
 
 ## Examples
 

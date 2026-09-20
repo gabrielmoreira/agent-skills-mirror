@@ -30,6 +30,8 @@ npx tsc --noEmit     # type check
 
 **Lib** (`src/lib/`): `hooks.ts` · `state.ts` · `resolve-caliber.ts` · `builtin-skills.ts` · `sanitize.ts` · `git-diff.ts`
 
+**Compaction** (`src/compaction/`): `index.ts` · `transcript.ts` · `cursor-transcript.ts` · `generic-transcript.ts` · `detect-transcript.ts` · vendor Jev library
+
 **Other**: `src/constants.ts` · `src/test/setup.ts` · `github-action/` · `packages/mcp-server/` · `packages/shared/` · `apps/`
 
 ## Conventions

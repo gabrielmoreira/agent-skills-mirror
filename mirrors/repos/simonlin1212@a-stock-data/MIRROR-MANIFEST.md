@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `simonlin1212/a-stock-data` — 26 default patterns, 1 followed patterns, 2 file(s) materialized.
+Mirror of `simonlin1212/a-stock-data` — 26 default patterns, 2 followed patterns, 3 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `simonlin1212/a-stock-data` — 26 default patterns, 1 followed patter
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 1 |
-| Files         | 2 |
+| Followed pats | 2 |
+| Files         | 3 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,6 +51,7 @@ Mirror of `simonlin1212/a-stock-data` — 26 default patterns, 1 followed patter
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
+- `docs/source-integration-v3.9.0.md`
 - `docs/source-integration-v3.8.0.md`
 
 ## File Index
@@ -61,6 +62,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`SKILL.md`](SKILL.md) |
 | 2 | → | [`docs/source-integration-v3.8.0.md`](docs/source-integration-v3.8.0.md) |
+| 3 | → | [`docs/source-integration-v3.9.0.md`](docs/source-integration-v3.9.0.md) |
 
 ---
 

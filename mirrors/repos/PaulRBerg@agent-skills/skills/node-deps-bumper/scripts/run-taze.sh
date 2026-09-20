@@ -73,8 +73,10 @@ fi
 
 cd "$target_dir"
 
+# Refresh registry metadata so cached scans cannot hide newly published releases.
+taze_args=(major --force)
+
 # Auto-detect monorepo
-taze_args=(major)
 if grep -q '"workspaces"' package.json 2>/dev/null ||
   [[ -f pnpm-workspace.yaml ]]; then
   taze_args+=("-r")

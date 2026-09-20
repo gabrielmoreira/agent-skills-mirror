@@ -25,6 +25,13 @@
 - One test per invariant. Don't re-test Zod or a library, and don't repeat an output-schema round-trip in every happy path.
 - Don't mock ORM builder chains. Test repositories through services or real SQL evaluation; chain mocks break on refactors that change no behavior.
 
+## Documentation audience
+
+- `docs/` and `web/content/docs/` are public, user-facing documentation. Write only material that helps users understand, use, or self-host the product.
+- Do not put internal working notes, content briefs, drafts, asset-sourcing notes, implementation logs, or agent handoffs in those directories.
+- Use `maintainer-docs/` for engineering decisions, development workflows, and maintenance notes that should be shared and versioned. This directory is tracked in Git but is not part of the user-facing documentation site. Create notes only when requested or useful for future maintenance; never include secrets.
+- Keep PR review and validation details in the PR description. Continue using the dedicated papercut log for repository friction.
+
 ## Log papercuts
 
 When small, non-blocking repository friction occurs—a retried tool call, confusing setup step, flaky command, stale cache, misleading error, or non-obvious gotcha—use the `papercuts` skill and append it to `.agents/PAPERCUTS.md` in the moment. Continue the current task. Real bugs and tracked work are not papercuts, and sensitive data must never be logged.

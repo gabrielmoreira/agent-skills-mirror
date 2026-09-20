@@ -20,11 +20,13 @@ member — don't add one.
 
 ## Registering a new target (read this before adding a file)
 
-`crates/openhuman-core/Cargo.toml` sets `autotests = false` and
-`autoexamples = false`, because Cargo's autodiscovery only scans beside the
-manifest and this crate's tests live at the repo root instead. That means
-`cargo test` silently runs **nothing** for a new `tests/<name>.rs` until it is
-declared:
+These targets belong to **`crates/openhuman-cli`** — the crate that owns the
+`openhuman-core` binary and depends on `openhuman-tinyhumans` for the backend
+transport the core library does not carry. Its manifest sets
+`autotests = false` and `autoexamples = false`, because Cargo's autodiscovery
+only scans beside the manifest and the tests live at the repo root instead.
+That means `cargo test` silently runs **nothing** for a new `tests/<name>.rs`
+until it is declared in `crates/openhuman-cli/Cargo.toml`:
 
 ```toml
 [[test]]
@@ -42,11 +44,22 @@ default contributor build, and a bare `cargo test` skips such targets silently
 `tests/raw_coverage/` need no `[[test]]` entry — they ride in through
 `raw_coverage_all`.
 
+Run a target as `cargo test -p openhuman-cli --test <name>` (a bare
+`cargo test --test <name>` at the workspace root also resolves, since the
+name is unique across members).
+
+A suite that boots the core **in-process** and reaches the mock backend must
+call `tinyhumans_boot::boot()` (`tests/support/tinyhumans_boot.rs`) before
+its first backend-touching call; the core answers `BACKEND_UNAVAILABLE:`
+otherwise. Suites that spawn the binary (`CARGO_BIN_EXE_openhuman-core`) get
+the transport from `main.rs`.
+
 `pnpm rust:layout` (`scripts/ci/check-openhuman-rust-layout.mjs`, run in CI
 Lite) fails the build on:
 
 - a `tests/*.rs` file with no matching `[[test]]` entry
 - a stale `[[test]]` entry pointing at a removed file
+- any `[[bin]]` / `[[test]]` / `[[example]]` table in the core manifest
 - inline `#[cfg(test)] mod` blocks in `src/`
 - files named `tests.rs` or `test.rs`
 

@@ -60,12 +60,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 3 | ✓ | [`skills/agent-ready/evals/evals.json`](skills/agent-ready/evals/evals.json) |
-| 4 | ✓ | [`skills/agent-ready/references/api-surfaces.md`](skills/agent-ready/references/api-surfaces.md) |
-| 5 | ✓ | [`skills/agent-ready/references/docs-afdocs.md`](skills/agent-ready/references/docs-afdocs.md) |
-| 6 | ✓ | [`skills/agent-ready/references/site-discovery.md`](skills/agent-ready/references/site-discovery.md) |
-| 7 | ✓ | [`skills/agent-ready/references/verification.md`](skills/agent-ready/references/verification.md) |
+| 2 | ✓ | [`skills/agent-ready/evals/evals.json`](skills/agent-ready/evals/evals.json) |
+| 3 | ✓ | [`skills/agent-ready/references/api-surfaces.md`](skills/agent-ready/references/api-surfaces.md) |
+| 4 | ✓ | [`skills/agent-ready/references/docs-afdocs.md`](skills/agent-ready/references/docs-afdocs.md) |
+| 5 | ✓ | [`skills/agent-ready/references/site-discovery.md`](skills/agent-ready/references/site-discovery.md) |
+| 6 | ✓ | [`skills/agent-ready/references/verification.md`](skills/agent-ready/references/verification.md) |
+| 7 | ✓ | [`skills/agent-ready/scripts/check-surfaces.sh`](skills/agent-ready/scripts/check-surfaces.sh) |
 | 8 | ✓ | [`skills/agent-ready/SKILL.md`](skills/agent-ready/SKILL.md) |
 | 9 | ✓ | [`skills/agent-skills-creator/evals/evals.json`](skills/agent-skills-creator/evals/evals.json) |
 | 10 | ✓ | [`skills/agent-skills-creator/references/adopt-adapt-author.md`](skills/agent-skills-creator/references/adopt-adapt-author.md) |

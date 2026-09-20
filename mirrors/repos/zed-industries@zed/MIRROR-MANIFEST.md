@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `zed-industries/zed` — 26 default patterns, 0 followed patterns, 12 file(s) materialized.
+Mirror of `zed-industries/zed` — 26 default patterns, 0 followed patterns, 13 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `zed-industries/zed` — 26 default patterns, 0 followed patterns, 12 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 12 |
+| Files         | 13 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -69,8 +69,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 8 | ✓ | [`docs/.conventions/brand-writer/SKILL.md`](docs/.conventions/brand-writer/SKILL.md) |
 | 9 | ✓ | [`docs/AGENTS.md`](docs/AGENTS.md) |
 | 10 | ✓ | [`docs/src/ai/agent-panel.md`](docs/src/ai/agent-panel.md) |
-| 11 | ✓ | [`docs/src/ai/skills.md`](docs/src/ai/skills.md) |
-| 12 | ✓ | [`docs/src/ai/tool-permissions.md`](docs/src/ai/tool-permissions.md) |
+| 11 | ✓ | [`docs/src/ai/external-agents.md`](docs/src/ai/external-agents.md) |
+| 12 | ✓ | [`docs/src/ai/skills.md`](docs/src/ai/skills.md) |
+| 13 | ✓ | [`docs/src/ai/tool-permissions.md`](docs/src/ai/tool-permissions.md) |
 
 ---
 

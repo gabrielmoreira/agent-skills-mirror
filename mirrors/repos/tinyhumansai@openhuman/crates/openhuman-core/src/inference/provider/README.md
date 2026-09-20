@@ -45,8 +45,8 @@ domain.
   `Config::claude_agent_sdk`, abstract tier model constants.
 - `crate::security::credentials` — auth-profile store for BYOK keys and OAuth
   tokens.
-- `crate::agent::tinyagents::{routes, thread_context}` — workload routing and
-  ambient thread-context plumbing consumed while building a model.
+- `crate::agent::tinyagents::{routes, host}` — workload routing and explicit run
+  explicit run-thread plumbing consumed while building a managed model.
 - `crate::security::live_policy` + `crate::security::egress` — Privacy-Mode
   `LocalOnly` refusal and `EgressDescriptor` emission at the factory chokepoint
   (`factory/access_gates.rs`).
@@ -68,8 +68,8 @@ domain.
 ## Called by
 
 `grep -rn 'inference::provider::' crates/openhuman-core/src` shows the main
-consumers: the agent harness (`agent/harness/session/builder/factory.rs`,
-`agent/harness/session/runtime*.rs`, `agent/harness/subagent_runner/ops/*`,
+consumers: the agent harness (`agent/session_host/builder/factory.rs`,
+`agent/session_host/runtime*.rs`, `agent/subagent_host/ops/*`,
 `agent/tinyagents/host/model_resolver.rs`), `web_chat/session.rs` and
 `web_chat/web_errors/` (`classify.rs`, `budget.rs`, `retry.rs`, `timeout.rs`,
 `backend_error_code.rs`, `provider_detail.rs`, `response_predicates.rs`), `voice/factory/{helpers,mod}.rs`,

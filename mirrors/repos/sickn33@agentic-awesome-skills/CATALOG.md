@@ -1,8 +1,8 @@
 # Skill Catalog
 
-Generated at: 2026-09-18T03:54:02.000Z
+Generated at: 2026-09-19T18:17:10.000Z
 
-Total skills: 2130
+Total skills: 2141
 
 ## agent-behavior (5)
 
@@ -21,7 +21,7 @@ Total skills: 2130
 | `agent-evaluation-reporting` | Use when summarizing agent evaluations where autonomous, assisted, failed, timed-out, or invalid outcomes must remain distinct and comparable. | none | self | agent-evaluation, metrics, reporting, reliability, benchmarking | agent-evaluation, metrics, reporting, reliability, benchmarking, agent, evaluation, summarizing, evaluations, where, autonomous, assisted |
 | `run-deep-swe` | Run reproducible DeepSWE coding-agent benchmark evaluations through OpenRouter and mini-swe-agent. | critical | davidondrej/skills | benchmark, deepswe, openrouter, evaluation | benchmark, deepswe, openrouter, evaluation, run, deep, swe, reproducible, coding, agent, evaluations, through |
 
-## agent-orchestration (26)
+## agent-orchestration (27)
 
 | Skill | Description | Risk | Source | Tags | Triggers |
 | --- | --- | --- | --- | --- | --- |
@@ -48,6 +48,7 @@ Total skills: 2130
 | `orchestrate` | Coordinate focused subagents on substantial work, keep their ownership non-overlapping, and integrate verified results. Use for large-scope Codex tasks; keep... | safe | provencher/codex-skills | codex, orchestration, multi-agent, delegation, subagents | codex, orchestration, multi-agent, delegation, subagents, orchestrate, coordinate, substantial, work, keep, ownership, non |
 | `pi-delegate` | Delegate coding tasks to the Pi coding agent CLI (`pi`) only when the user explicitly requests it, while the orchestrator retains review and landing responsi... | critical | amElnagdy/delegate-skills | pi, delegate | pi, delegate, coding, tasks, agent, cli, user, explicitly, requests, while, orchestrator, retains |
 | `qoder-delegate` | Delegate coding tasks to the Qoder CLI (`qodercli`) only when the user explicitly requests it, while the orchestrator retains review and landing responsibility. | critical | amElnagdy/delegate-skills | qoder, delegate | qoder, delegate, coding, tasks, cli, qodercli, user, explicitly, requests, while, orchestrator, retains |
+| `ralph-loop-yylo` | Execute exactly one explicitly assigned YYLO Ledger task through the Ralph loop to a validated queued commit. Use only when the user explicitly requests ralp... | critical | yylo-dev/yylo-skills | ralph, loop, yylo | ralph, loop, yylo, execute, exactly, one, explicitly, assigned, ledger, task, through, validated |
 | `vibe-delegate` | Delegate coding tasks to the Mistral Vibe CLI (`vibe`) only when the user explicitly requests it, while the orchestrator retains review and landing responsib... | critical | amElnagdy/delegate-skills | vibe, delegate | vibe, delegate, coding, tasks, mistral, cli, user, explicitly, requests, while, orchestrator, retains |
 | `warp-delegate` | Delegate coding tasks to the Warp Agent CLI (`oz`) only when the user explicitly requests it, while the orchestrator retains review and landing responsibility. | critical | amElnagdy/delegate-skills | warp, delegate | warp, delegate, coding, tasks, agent, cli, oz, user, explicitly, requests, while, orchestrator |
 | `zcode-delegate` | Delegate coding tasks to the Z.AI ZCode CLI only when the user explicitly requests it, while the orchestrator retains review and landing responsibility. | critical | amElnagdy/delegate-skills | zcode, delegate | zcode, delegate, coding, tasks, ai, cli, user, explicitly, requests, while, orchestrator, retains |
@@ -335,7 +336,7 @@ Total skills: 2130
 | `site-architecture` | Plan or restructure website hierarchy, navigation, URL patterns, breadcrumbs, and internal linking. Use when mapping pages, sections, and site structure, but... | safe | https://github.com/coreyhaines31/marketingskills | site, architecture | site, architecture, plan, restructure, website, hierarchy, navigation, url, breadcrumbs, internal, linking, mapping |
 | `software-architecture` | Guide for quality focused software architecture. This skill should be used when users want to write code, design architecture, analyze code, in any case that... | critical | community | software, architecture | software, architecture, quality, skill, should, used, users, want, write, code, analyze, any |
 
-## automation (55)
+## automation (56)
 
 | Skill | Description | Risk | Source | Tags | Triggers |
 | --- | --- | --- | --- | --- | --- |
@@ -362,6 +363,7 @@ Total skills: 2130
 | `google-analytics-automation` | Automate Google Analytics tasks via Rube MCP (Composio): run reports, list accounts/properties, funnels, pivots, key events. Always search tools first for cu... | critical | community | google, analytics | google, analytics, automation, automate, tasks, via, rube, mcp, composio, run, reports, list |
 | `google-docs-automation` | Read and edit Google Docs through an available authenticated connector or reviewed API integration, with scoped changes and read-back verification. | critical | community | google, docs | google, docs, automation, read, edit, through, available, authenticated, connector, reviewed, api, integration |
 | `google-drive-automation` | Lightweight Google Drive integration with standalone OAuth authentication. No MCP server required. Full read/write access. | critical | community | google, drive | google, drive, automation, lightweight, integration, standalone, oauth, authentication, no, mcp, server, required |
+| `google-no-code` | Design Google Forms and wire Apps Script triggers (onFormSubmit) for email alerts, spreadsheet logging, and dynamic questions — no code editor required. | safe | self | google, forms, apps-script | google, forms, apps-script, no, code, wire, apps, script, triggers, onformsubmit, email, alerts |
 | `helpdesk-automation` | Automate HelpDesk tasks via Rube MCP (Composio): list tickets, manage views, use canned responses, and configure custom fields. Always search tools first for... | critical | community | helpdesk | helpdesk, automation, automate, tasks, via, rube, mcp, composio, list, tickets, views, canned |
 | `hubspot-automation` | Automate HubSpot CRM operations (contacts, companies, deals, tickets, properties) via Rube MCP using Composio integration. | critical | community | hubspot | hubspot, automation, automate, crm, operations, contacts, companies, deals, tickets, properties, via, rube |
 | `intercom-automation` | Automate Intercom tasks via Rube MCP (Composio): conversations, contacts, companies, segments, admins. Always search tools first for current schemas. | critical | community | intercom | intercom, automation, automate, tasks, via, rube, mcp, composio, conversations, contacts, companies, segments |
@@ -853,7 +855,7 @@ Total skills: 2130
 | `liuguang-banlan-ui` | Builds two parameterized UI modes—流光溢彩白 (iridescent white) and 五彩斑斓黑 (colorful black)—with OKLCH, WebGL/CSS fallback, vision gating, screenshot QA, and total... | critical | self | ui, frontend, oklch, webgl, accessibility | ui, frontend, oklch, webgl, accessibility, liuguang, banlan, two, parameterized, modes, iridescent, white |
 | `modellix` | Integrate the Modellix API/CLI for async AI image, video, and speech generation or transcription (model run --wait, task download). | critical | Modellix/modellix-plugin | image-generation, video-generation, audio-generation, text-to-speech, speech-to-text, speech-to-speech, modellix, cli, api | image-generation, video-generation, audio-generation, text-to-speech, speech-to-text, speech-to-speech, modellix, cli, api, integrate, async, ai |
 
-## data (26)
+## data (27)
 
 | Skill | Description | Risk | Source | Tags | Triggers |
 | --- | --- | --- | --- | --- | --- |
@@ -881,6 +883,7 @@ Total skills: 2130
 | `sql-sentinel` | Audit SQL for the cost & performance anti-patterns that burn warehouse credits. Scores warehouse health 0-100 and outputs a prioritized cost-reduction plan f... | critical | takeaseatventure/sql-sentinel | sql, bigquery, snowflake, redshift, postgres, data-warehouse, cost-optimization, performance, audit, finops | sql, bigquery, snowflake, redshift, postgres, data-warehouse, cost-optimization, performance, audit, finops, sentinel, cost |
 | `warehouse` | Plan and review read-only data warehouse analysis with explicit scope, privacy, provenance, and validation checks. | critical | self | analytics, data-warehouse, sql, data-quality | analytics, data-warehouse, sql, data-quality, warehouse, plan, review, read, data, analysis, explicit, scope |
 | `weather-model-data-fetching` | Retrieve numerical weather prediction data from public AWS S3 and HTTP archives using GRIB2 inventories, byte ranges, Herbie, provider fallbacks, and verifie... | safe | self | weather, grib2, aws-s3, herbie, noaa, nwp | weather, grib2, aws-s3, herbie, noaa, nwp, model, data, fetching, retrieve, numerical, prediction |
+| `weather-observation-fetching` | Retrieve surface and upper-air weather observations from authoritative APIs and archives with station identity, time, units, and quality flags preserved. | safe | self | weather, observations, metar, radiosonde, noaa, quality-control | weather, observations, metar, radiosonde, noaa, quality-control, observation, fetching, retrieve, surface, upper, air |
 | `web-scraper` | Web scraping inteligente multi-estrategia. Extrai dados estruturados de paginas web (tabelas, listas, precos). Paginacao, monitoramento e export CSV/JSON. | safe | community | scraping, data-extraction, automation, csv | scraping, data-extraction, automation, csv, web, scraper, inteligente, multi, estrategia, extrai, dados, estruturados |
 | `x-twitter-scraper` | Use Xquik for X data workflows: tweet search, user lookup, follower export, media downloads, monitors, webhooks, REST API, MCP, SDK setup, and approval-gated... | critical | Xquik-dev/x-twitter-scraper | twitter, x, social-media, x-api, tweet-search, follower-export, automation, mcp, sdk, webhooks | twitter, x, social-media, x-api, tweet-search, follower-export, automation, mcp, sdk, webhooks, scraper, xquik |
 
@@ -1381,10 +1384,11 @@ Total skills: 2130
 | `ui-ux-pro-max` | Comprehensive design guide for web and mobile applications. Use when designing new UI components or pages, choosing color palettes and typography, or reviewi... | critical | community | ui, ux, max | ui, ux, max, pro, web, mobile, applications, designing, new, components, pages, choosing |
 | `web-performance-optimization` | Optimize website and web application performance including loading speed, Core Web Vitals, bundle size, caching strategies, and runtime performance | critical | community | web, performance, optimization | web, performance, optimization, optimize, website, application, including, loading, speed, core, vitals, bundle |
 
-## frontend (32)
+## frontend (33)
 
 | Skill | Description | Risk | Source | Tags | Triggers |
 | --- | --- | --- | --- | --- | --- |
+| `anti-slop-design` | Autonomous Principal Design Technologist. Cures vibe-coded software from AI frontend slop using curated token archetypes and 7-axis quality gating. | safe | wwewtech/anti-slop-design | ui-ux, design-systems, anti-slop, frontend, tailwind | ui-ux, design-systems, anti-slop, frontend, tailwind, anti, slop, autonomous, principal, technologist, cures, vibe |
 | `anti-ui-slop` | Stop coding agents from shipping generic UI. Extend the product's design system, use UIZZE evidence only when useful, cover required states, and inspect the ... | safe | uizze/uizze | ui, ux, frontend, design, anti-ui-slop | ui, ux, frontend, design, anti-ui-slop, anti, slop, stop, coding, agents, shipping, generic |
 | `astro` | Build content-focused websites with Astro — zero JS by default, islands architecture, multi-framework components, and Markdown/MDX support. | safe | community | astro, ssg, ssr, islands, content, markdown, mdx, performance | astro, ssg, ssr, islands, content, markdown, mdx, performance, websites, zero, js, default |
 | `design-it` | Routes frontend design tasks to 48 specific UI styles. Triggers for websites, app screens, or UI components requesting a specific aesthetic. | safe | self | design, ui, frontend | design, ui, frontend, routes, tasks, 48, specific, styles, triggers, websites, app, screens |
@@ -1845,10 +1849,11 @@ Total skills: 2130
 | `trading-ledger` | A trading journal that captures the decision, not just the fill: thesis, plan, and emotion at the moment of entry, written to the user's own Notion database;... | critical | cruisekkk/trading-ledger | trading-journal, notion, journaling, market-wizards, decision-making | trading-journal, notion, journaling, market-wizards, decision-making, trading, ledger, journal, captures, decision, just, fill |
 | `workorai` | WorkorAI talent-marketplace skill: candidates search jobs and manage applications; employers run the job lifecycle and get ranked candidate matches with whit... | critical | work0r-ai/agent-kit | job-search, hiring, recruiting, talent-marketplace, mcp | job-search, hiring, recruiting, talent-marketplace, mcp, workorai, talent, marketplace, skill, candidates, search, jobs |
 
-## project-management (22)
+## project-management (29)
 
 | Skill | Description | Risk | Source | Tags | Triggers |
 | --- | --- | --- | --- | --- | --- |
+| `artifact-yylo` | Capture and retrieve durable YYLO Ledger artifact Records with intentional profiles, payload modes, provenance, retention, and secret-safe immutable evidence. | safe | yylo-dev/yylo-skills | artifact, yylo | artifact, yylo, capture, retrieve, durable, ledger, records, intentional, profiles, payload, modes, provenance |
 | `asana-automation` | Automate Asana tasks via Rube MCP (Composio): tasks, projects, sections, teams, workspaces. Always search tools first for current schemas. | critical | community | asana | asana, automation, automate, tasks, via, rube, mcp, composio, sections, teams, workspaces, always |
 | `basecamp-automation` | Automate Basecamp project management, to-dos, messages, people, and to-do list organization via Rube MCP (Composio). Always search tools first for current sc... | critical | community | basecamp | basecamp, automation, automate, dos, messages, people, do, list, organization, via, rube, mcp |
 | `confluence-automation` | Automate Confluence page creation, content search, space management, labels, and hierarchy navigation via Rube MCP (Composio). Always search tools first for ... | critical | community | confluence | confluence, automation, automate, page, creation, content, search, space, labels, hierarchy, navigation, via |
@@ -1856,12 +1861,15 @@ Total skills: 2130
 | `freshservice-automation` | Automate Freshservice ITSM tasks via Rube MCP (Composio): create/update tickets, bulk operations, service requests, and outbound emails. Always search tools ... | critical | community | freshservice | freshservice, automation, automate, itsm, tasks, via, rube, mcp, composio, update, tickets, bulk |
 | `github-issue-creator` | Turn error logs, screenshots, voice notes, and rough bug reports into crisp, developer-ready GitHub issues with repro steps, impact, and evidence. | critical | community | github, issue, creator | github, issue, creator, turn, error, logs, screenshots, voice, notes, rough, bug, reports |
 | `jira-automation` | Automate Jira tasks via Rube MCP (Composio): issues, projects, sprints, boards, comments, users. Always search tools first for current schemas. | critical | community | jira | jira, automation, automate, tasks, via, rube, mcp, composio, issues, sprints, boards, comments |
+| `ledger-tasks-yylo` | Use YYLO Ledger task management: create, list, search, get, mark, update, archive, deps, ready, order and merge with dependencies. | safe | yylo-dev/yylo-skills | ledger, tasks, yylo | ledger, tasks, yylo, task, list, search, get, mark, update, archive, deps, order |
 | `linear-automation` | Automate Linear tasks via Rube MCP (Composio): issues, projects, cycles, teams, labels. Always search tools first for current schemas. | critical | community | linear | linear, automation, automate, tasks, via, rube, mcp, composio, issues, cycles, teams, labels |
 | `linear-claude-skill` | Manage Linear issues, projects, and teams | safe | https://github.com/wrsmith108/linear-claude-skill | linear, claude, skill | linear, claude, skill, issues, teams |
 | `miro-automation` | Automate Miro tasks via Rube MCP (Composio): boards, items, sticky notes, frames, sharing, connectors. Always search tools first for current schemas. | critical | community | miro | miro, automation, automate, tasks, via, rube, mcp, composio, boards, items, sticky, notes |
 | `monday-automation` | Automate Monday.com work management including boards, items, columns, groups, subitems, and updates via Rube MCP (Composio). Always search tools first for cu... | critical | community | monday | monday, automation, automate, com, work, including, boards, items, columns, groups, subitems, updates |
+| `plan-ledger-tasks-yylo` | Create a concise Product Development Requirement and one or more implementation-sized YYLO Ledger tasks when the user explicitly asks to plan or register work. | safe | yylo-dev/yylo-skills | plan, ledger, tasks, yylo | plan, ledger, tasks, yylo, concise, product, development, requirement, one, sized, user, explicitly |
 | `progressive-estimation` | Estimate AI-assisted and hybrid human+agent development work with research-backed PERT statistics and calibration feedback loops | safe | community | estimation, project-management, pert, sprint-planning, ai-agents | estimation, project-management, pert, sprint-planning, ai-agents, progressive, estimate, ai, assisted, hybrid, human, agent |
 | `project-state-governor` | Govern evidence-backed canonical project state across sessions, branches, reviews, and research cycles without inventing product intent. | critical | Ghost011118/project-state-governor | project-state, project-memory, documentation, governance, context-engineering, multi-agent | project-state, project-memory, documentation, governance, context-engineering, multi-agent, state, governor, govern, evidence, backed, canonical |
+| `resumable-implementation-contracts` | Create repository-based execution contracts for multi-session implementation work, with stable task IDs, evidence, checkpoints, and exact resume state. | safe | self | project-management, execution-contracts, checkpoints, verification, agent-workflows | project-management, execution-contracts, checkpoints, verification, agent-workflows, resumable, contracts, repository, execution, multi, session, work |
 | `sred-project-organizer` | Take a list of projects and their related documentation, and organize them into the SRED format for submission. | critical | community | sred, organizer | sred, organizer, take, list, related, documentation, organize, them, format, submission |
 | `sred-work-summary` | Go back through the previous year of work and create a Notion doc that groups relevant links into projects that can then be documented as SRED projects. | critical | community | sred, work, summary | sred, work, summary, go, back, through, previous, year, notion, doc, groups, relevant |
 | `team-collaboration-issue` | You are a GitHub issue resolution expert specializing in systematic bug investigation, feature implementation, and collaborative development workflows. Your ... | safe | community | team, collaboration, issue | team, collaboration, issue, github, resolution, specializing, systematic, bug, investigation, feature, collaborative, development |
@@ -1870,6 +1878,9 @@ Total skills: 2130
 | `to-prd` | Turn the current conversation into a PRD and publish it to the project issue tracker — no interview, just synthesis of what you've already discussed. | safe | mattpocock/skills | project-management, workflow, coding-agents | project-management, workflow, coding-agents, prd, turn, current, conversation, publish, issue, tracker, no, interview |
 | `todoist-automation` | Automate Todoist task management, projects, sections, filtering, and bulk operations via Rube MCP (Composio). Always search tools first for current schemas. | critical | community | todoist | todoist, automation, automate, task, sections, filtering, bulk, operations, via, rube, mcp, composio |
 | `trello-automation` | Automate Trello boards, cards, and workflows via Rube MCP (Composio). Create cards, manage lists, assign members, and search across boards programmatically. | critical | community | trello | trello, automation, automate, boards, cards, via, rube, mcp, composio, lists, assign, members |
+| `understand-project-yylo` | Inspect the current product architecture, dependencies, and validation loops before planning or implementing a requested change. | safe | yylo-dev/yylo-skills | understand, yylo | understand, yylo, inspect, current, product, architecture, dependencies, validation, loops, before, planning, implementing |
+| `wiki-yylo` | Use YYLO Ledger wiki Records as durable project knowledge. Search before creating, classify information correctly, and make revision-safe Markdown updates wi... | safe | yylo-dev/yylo-skills | wiki, yylo | wiki, yylo, ledger, records, durable, knowledge, search, before, creating, classify, information, correctly |
+| `workflow-yylo` | Create and maintain validated YYLO Ledger workflow Records while keeping storage, execution, and run evidence as separate explicit boundaries. | safe | yylo-dev/yylo-skills | yylo | yylo, maintain, validated, ledger, records, while, keeping, storage, execution, run, evidence, separate |
 | `wrike-automation` | Automate Wrike project management via Rube MCP (Composio): create tasks/folders, manage projects, assign work, and track progress. Always search tools first ... | critical | community | wrike | wrike, automation, automate, via, rube, mcp, composio, tasks, folders, assign, work, track |
 
 ## prompt-engineering (1)

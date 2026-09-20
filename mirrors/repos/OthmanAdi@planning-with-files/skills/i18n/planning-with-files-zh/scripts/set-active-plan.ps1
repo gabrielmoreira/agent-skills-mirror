@@ -121,9 +121,13 @@ function Test-SafeActiveFile {
     param([switch]$AllowLink)
     $item = Get-Item -LiteralPath $ActiveFile -Force -ErrorAction SilentlyContinue
     if (-not $item) { return $false }
-    # Reading may follow a verified in-project link; writing must not.
+    # Reading may follow a verified in-project link; writing must not. A link
+    # is a symlink or junction by LinkType, never the bare ReparsePoint
+    # attribute: OneDrive Files On-Demand marks every synced file as a
+    # reparse point, and the pointer must stay writable there (#275).
+    $linked = ([string]$item.LinkType) -in @('SymbolicLink', 'Junction')
     return -not $item.PSIsContainer -and
-        ($AllowLink -or (($item.Attributes -band [IO.FileAttributes]::ReparsePoint) -eq 0)) -and
+        ($AllowLink -or -not $linked) -and
         (Test-WithinRoot $ActiveFile)
 }
 
@@ -204,6 +208,8 @@ function Show-PlanList {
     Write-Output "[active] marks the shared .active_plan pointer; listing does not bind this session."
     $found = $false
     foreach ($plan in (Get-ChildItem -LiteralPath $PlanRoot -Directory -ErrorAction SilentlyContinue | Sort-Object Name)) {
+        # A linked plan directory is never a plan (#270): no resolver selects it.
+        if (([string]$plan.LinkType) -in @('SymbolicLink', 'Junction')) { continue }
         if (-not (Test-ValidSlug $plan.Name) -or -not (Test-WithinRoot $plan.FullName)) { continue }
         $planFile = Join-Path $plan.FullName "task_plan.md"
         if (-not (Test-Path -LiteralPath $planFile -PathType Leaf) -or -not (Test-WithinRoot $planFile)) { continue }
@@ -279,6 +285,11 @@ $PlanDir = Join-Path $PlanRoot $PlanId
 if (-not (Test-Path -LiteralPath $PlanDir -PathType Container)) {
     Write-Error "Error: plan directory not found: $PlanDir"
     Write-Error "Run: init-session.sh `"$PlanId`" to create it, or check .planning\ for available plans."
+    exit 1
+}
+$planDirItem = Get-Item -LiteralPath $PlanDir -Force -ErrorAction SilentlyContinue
+if ($planDirItem -and (([string]$planDirItem.LinkType) -in @('SymbolicLink', 'Junction'))) {
+    Write-Error "Error: plan directory is a symlink or junction and no route selects it: $PlanDir"
     exit 1
 }
 if (-not (Test-WithinRoot $PlanRoot) -or -not (Test-WithinRoot $PlanDir)) {

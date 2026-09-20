@@ -1,11 +1,13 @@
 # `openhuman-core`
 
-Cargo package `openhuman`, library `openhuman_core`, binary `openhuman-core`
-(`src/main.rs`). Owns business rules, persistence, execution policy, the
-JSON-RPC/Socket.IO server, and the CLI for OpenHuman. Hosted in-process by
-`crates/openhuman-app` (the Tauri shell), `crates/openhuman-embed` (the typed
-facade for third-party embedders such as Medulla and OpenCompany), and
-`crates/openhuman-tui`.
+Cargo package `openhuman`, library `openhuman_core`. Owns business rules,
+persistence, execution policy, the JSON-RPC/Socket.IO server, and the CLI
+dispatcher for OpenHuman. The `openhuman-core` binary itself lives in
+`crates/openhuman-cli` (it needs the `openhuman-tinyhumans` backend transport
+this library does not carry). Hosted in-process by `crates/openhuman-app`
+(the Tauri shell), `crates/openhuman-embed` (the typed facade for third-party
+embedders such as Medulla and OpenCompany), `crates/openhuman-tui`, and
+`crates/openhuman-cli`.
 
 See `crates/openhuman-core/src/lib.rs` for the crate-level doc comment and
 AGENTS.md ("Rust domain structure") for the preferred per-domain module shape.
@@ -30,7 +32,6 @@ contents inside `mod.rs` behind the feature of the same name. See the
 | `desktop` | Desktop-shell-facing surfaces | |
 | `flows`* | Saved automation workflows (tinyflows graphs) | [README](src/flows/README.md) |
 | `hooks` | User-authored scripts that observe and gate the agent | [README](src/hooks/README.md) |
-| `hosted` | Clients of the hosted TinyHumans backend | |
 | `hosting`* | Putting a workspace on the internet | [README](src/hosting/README.md) |
 | `http_host`* (feature `http-server`) | Static directory hosting over ad-hoc HTTP listeners | [README](src/http_host/README.md) |
 | `inference` | Unified inference domain | [README](src/inference/README.md) |
@@ -61,13 +62,9 @@ they are not redefined in this crate.
 
 ## Binaries
 
-| Binary | Path | Required features |
-| --- | --- | --- |
-| `openhuman-core` | `src/main.rs` | none |
-| `test-mcp-stub` | `src/bin/test_mcp_stub.rs` | none |
-| `openhuman-fleet` | `src/bin/fleet.rs` | `http-server`, `bin-tools` |
-| `rss-bench` | `src/bin/rss_bench.rs` | `rss-bench` |
-| `library-profile` | `src/bin/library_profile/main.rs` | `rss-bench` |
+None. This package is the library only; `crates/openhuman-cli` declares the
+`openhuman-core` binary, `test-mcp-stub`, `openhuman-fleet`, `rss-bench` and
+`library-profile`, plus every root `tests/*.rs` / `examples/*.rs` target.
 
 `openhuman-fleet` is a process-per-user supervisor and reverse proxy, part of
 the pluggable-core work (see `src/core/runtime/`). `test-mcp-stub` is the
@@ -89,7 +86,7 @@ Gate names (see `Cargo.toml` for the full rationale behind each): `http-server`,
 `inference`, `documents`, `hosting`, `modules`, `voice`, `web3`,
 `runtime-node`, `contacts`, `media`, `flows`, `skills`, `mcp`,
 `crash-reporting`, `medulla`, `channels`, `sandbox-landlock`,
-`sandbox-bubblewrap`, `peripheral-rpi`, `browser-native`, `fantoccini`,
+`sandbox-bubblewrap`, `browser-native`, `fantoccini`,
 `landlock`, `whatsapp-web`, `e2e-test-support`, `rss-bench`,
 `rss-bench-dhat`, `file-logging`, `scheduler-gate`, `bin-tools`. Read the
 policy comments above `[features]` in `Cargo.toml` before changing either
@@ -99,7 +96,7 @@ feature list.
 
 ```bash
 cargo check --manifest-path Cargo.toml
-cargo build --manifest-path Cargo.toml --bin openhuman-core
+cargo build --manifest-path Cargo.toml -p openhuman-cli --bin openhuman-core
 cargo test -p openhuman
 pnpm debug rust [filter]
 scripts/test-rust-with-mock.sh   # tests that need the shared mock backend
@@ -119,7 +116,8 @@ what ships.
 ## Public entry points
 
 - [`run_core_from_args`](src/lib.rs) — the CLI entry point used by both
-  `src/main.rs` and the desktop shell binary's `core` and `mcp` subcommands.
+  `crates/openhuman-cli/src/main.rs` and the desktop shell binary's `core`
+  and `mcp` subcommands.
   Order: load dotenv, apply the startup restart delay, initialize the keyring
   master key, then dispatch to `core::cli`.
 - [`CoreBuilder` → `CoreRuntime`](src/core/runtime/builder.rs) — the

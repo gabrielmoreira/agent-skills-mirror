@@ -114,8 +114,7 @@ behavior, to make a feature work:
 
 - `crates/openhuman-core/src/agent/tinyagents/host/security_gate.rs` — bridges
   `SecurityPolicy` into the tinyagents tool-call gate.
-- `crates/openhuman-core/src/agent/profiles/guard.rs`,
-  `agent/turn_workspace.rs` — profile and per-turn workspace grants.
+- `crates/openhuman-core/src/agent/turn_workspace.rs` — per-turn workspace grants.
 - `crates/openhuman-core/src/tools/ops.rs` and nearly every
   `tools/impl/{filesystem,network,system,browser,document,presentation}/*.rs`
   — every executable tool consults `SecurityPolicy` before acting.

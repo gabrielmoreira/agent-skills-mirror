@@ -14,7 +14,7 @@ opt in.
 
 On supported Chromium browsers, WebBrain VL 2 450M is an optional local vision fallback.
 Apocalypse Mode never enables or downloads it. The dedicated **Use local
-fallback** control in **Settings → Multimodal → Vision** checks WebGPU support,
+fallback** control in **Settings → Assistive Models → Vision** checks WebGPU support,
 records explicit consent, and starts caching the approximately 810 MB model
 from Hugging Face. The download continues in the background, but screenshot
 operations report its status and never wait for it. Wikipedia archives still

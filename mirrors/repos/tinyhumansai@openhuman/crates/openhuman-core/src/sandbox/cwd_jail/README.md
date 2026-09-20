@@ -72,9 +72,9 @@ The Linux backend's docstring references `crate::security::landlock` as conceptu
 - `crates/openhuman-core/src/agent/platform_shell.rs` — doc references to
   `cwd_jail::spawn` when explaining why shell-spawning is routed through a
   shared, Windows-aware command builder.
-- `crates/openhuman-core/src/tools/impl/system/{node_exec,npm_exec}.rs` and
-  `agent/profiles/guard.rs` mention `cwd_jail` in comments/docs when
-  describing the `Local` sandbox backend.
+- `crates/openhuman-core/src/tools/impl/system/{node_exec,npm_exec}.rs`
+  mention `cwd_jail` in comments/docs when describing the `Local` sandbox
+  backend.
 
 ## Notes / gotchas
 

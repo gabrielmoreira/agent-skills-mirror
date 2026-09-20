@@ -13,7 +13,7 @@ Responsibilities:
 - Define the built-in `skill_executor` delegate agent.
 
 A run is an `orchestrator` `Agent` built per run
-(`Agent::from_config_for_agent_with_profile(&config, "orchestrator", ..)`),
+(`Agent::from_config_for_agent(&config, "orchestrator")`),
 given the skill body as its task prompt, capped at
 `WORKFLOW_RUN_MAX_ITERATIONS`, and raced against the cancellation token
 registered in `run_log`. Progress events drain to the run log; the footer
@@ -40,7 +40,7 @@ It reuses, rather than duplicates:
 | --- | --- |
 | `mod.rs` | Facade: gates the real modules behind the `skills` feature, re-exports the run machinery and controller aggregators, or pulls in `stub` |
 | `ops.rs` | `RuntimeRequirement` (`all` / `node` / `python`) and `resolve_runtimes` returning `ResolveRuntimesOutcome` |
-| `run_machinery.rs` | `spawn_workflow_run_background[_with_profile]`, `WorkflowRunStarted`, `await_run_outcome` |
+| `run_machinery.rs` | `spawn_workflow_run_background`, `WorkflowRunStarted`, `await_run_outcome` |
 | `schemas.rs` | `skill_runtime` controllers: `run`, `cancel`, `recent_runs`, `read_run_log`, `resolve_runtimes`, `schemas` |
 | `tools.rs` | `SkillRuntimeResolveRuntimesTool` (`skill_runtime_resolve_runtimes`), re-exported through `tools/mod.rs` under the `skills` gate |
 | `stub.rs` | Disabled-feature facade: only the two controller aggregators, both returning empty vectors |

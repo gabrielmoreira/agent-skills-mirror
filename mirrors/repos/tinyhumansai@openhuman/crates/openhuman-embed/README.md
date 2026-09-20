@@ -99,9 +99,9 @@ println!("{}", again.reply);
 
 What each agent owns: its provider route and model, its access tier and
 turn origin, its `action_dir`, its MCP servers, its skills root
-(`<workspace>/personalities/<id>/skills/`), its system prompt, tool scope and
-sandbox mode (`AgentDefinitionSpec`), its allowlists (`allowed_tools`,
-`allowed_skills`), and a narrowed `DomainSet` / `ToolGroups`. Every turn is
+(`<workspace>/agents/<id>/skills/`), its system prompt, tool scope and
+sandbox mode (`AgentDefinitionSpec`), and a narrowed `DomainSet` /
+`ToolGroups`. Every turn is
 dispatched under the agent's own `CoreContext`, so the core's config loader,
 domain gate, tool-group filter and skill discovery all read that agent's
 settings and never another's. Transcripts are keyed by agent id and a turn
@@ -116,9 +116,20 @@ Layout under a runtime-owned root:
 
 ```text
 <root>/config.toml, auth-profiles.json, core.token
-<root>/workspace/session_db/, session_raw/<ts>_<agent>.jsonl, personalities/<agent>/skills/
+<root>/workspace/session_db/, session_raw/<ts>_<agent>.jsonl, agents/<agent>/skills/
 <root>/agents/<agent>/action/                  default action_dir
 ```
+
+### Backend connection
+
+The core knows the hosted TinyHumans backend only through
+`BackendTransport` (re-exported here). `openhuman-embed` alone installs
+none: agents, memory, skills, tools and RPC run without any TinyHumans
+connection, and every hosted-backend surface (billing, `/agent-integrations/*`
+tools, channel relay, cloud voice) answers with a typed
+`BACKEND_UNAVAILABLE:` error. Use `openhuman-tinyhumans` — its
+`RuntimeBuilder` mirrors this one and installs the SDK-backed transport on
+`build()` — or pass your own to `RuntimeBuilder::backend_transport`.
 
 ### Authentication
 
@@ -132,7 +143,7 @@ its own `Provider` (BYOK) never touches the key. `HarnessBuilder::session`
 remains for hosts that drive backend features on behalf of a signed-in user;
 the core stores that session as handed over (`auth.set_credential`) and never
 validates it — obtaining and validating a JWT is the host's job (see
-`crates/openhuman-session`).
+`openhuman_tinyhumans::session`).
 
 ### `Harness`: the one-agent shorthand
 
@@ -219,10 +230,6 @@ are documented rather than hidden; each is a candidate follow-up in the core.
 - `install_skill` / `create_skill` still write to `~/.openhuman`. With
   `include_user_skills(false)` (the default) an agent does not *discover* the
   operator's skills, but an install by the agent lands there.
-- `AgentSpec::dedicated_memory` opens a separate memory store through the
-  memory module, which a library runtime only has when its host preloads
-  modules (`ServiceSet::memory_queue`). Without it the open times out; leave
-  the default (shared memory, per-agent transcripts) unless the module runs.
 - One API key (or session) is shared by all agents.
 - `IntegrationClient` (backend-proxied Composio/search/media tools) only
   ever reads the app-session JWT (`api::jwt::get_session_token`), never the
@@ -252,7 +259,7 @@ Every feature on this crate is a pass-through to the same-named feature on
 `inference`, `documents`, `hosting`, `modules`, `voice`, `web3`,
 `runtime-node`, `contacts`, `media`, `flows`, `skills`, `mcp`,
 `crash-reporting`, `medulla`, `channels`, `sandbox-landlock`,
-`sandbox-bubblewrap`, `peripheral-rpi`, `browser-native`, `whatsapp-web`,
+`sandbox-bubblewrap`, `browser-native`, `whatsapp-web`,
 `file-logging`, `scheduler-gate`.
 
 Three of them also gate items on this crate's own public surface:

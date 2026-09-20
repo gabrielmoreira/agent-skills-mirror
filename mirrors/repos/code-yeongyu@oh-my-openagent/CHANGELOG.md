@@ -9,7 +9,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- **omob:** a repeat dev build no longer packs the previous build's engine copies. The reusable senpi cache clone kept the publish staging that the last build wrote into its workspaces, and the bundler resolved the agent core from that stale copy instead of the commit being built; the staging is now discarded before every install ([#8477](https://github.com/code-yeongyu/oh-my-openagent/issues/8477))
+**Writing memory no longer steals focus on Windows.** Every `memory` tool write auto-commits, and each git command behind it spawned `git.exe` with no `windowsHide`, so Windows built a fresh console window and brought it to the front. The lock protocol's start-time probe did the same with `powershell.exe`, and on a Node runtime it did it on every probe. That probe falls back from an in-process kernel32 reader reached through `bun:ffi`, which Node cannot import, so the visible fallback was the normal path there. Both spawns are hidden now, along with the formatter, the worktree-root lookups and the init-deep git probes that flashed the same way. The interactive launcher keeps its console on purpose and says so at the call site. ([#8501](https://github.com/code-yeongyu/oh-my-openagent/issues/8501))
+
+## [5.0.0-beta.79] - 2026-09-19
+
+### Fixed
+
+**Task children can use providers installed through configured packages.** Process-mode children
+now inherit the package extensions actually loaded by the parent, so providers such as glm-zcode
+and commandcode are available when a task resolves its model. Every child-launch path resolves the
+same list, so a revived child keeps the provider it started with, and team members and pool workers
+get it too instead of only a first spawn. ([#8492](https://github.com/code-yeongyu/oh-my-openagent/issues/8492))
+
+**A task that cannot serve its model now says so.** A `task({ category })` spawn whose model was missing from the child's own profile died with `Task runner failed to start.` and nothing else. The admission probe knew the real reason and said it plainly, but the manager mapped only four failure kinds to a message and `model_unavailable` was not one of them, so the useful half never reached the caller. The reason now travels as a closed set of parent-authored codes rather than as text, which is what makes it safe to show: the child's stderr stays out of every record and tool result, and the caller gets a sentence that names the cause. ([#8492](https://github.com/code-yeongyu/oh-my-openagent/issues/8492))
+
+**A category with four spare models stops giving up on the first one.** A category resolves to a chain, but only the leading entry was ever attempted. When admission refused it, the spawn failed outright and the remaining entries were never tried, even when the next one was a built-in provider that would have worked. In a graph run that also skip-cascaded every dependent node. A refusal that means "this child cannot serve this model" now walks to the next entry in the chain; every other kind of start failure still fails immediately, because it would repeat identically on the rest of the chain. ([#8492](https://github.com/code-yeongyu/oh-my-openagent/issues/8492))
+
+## [5.0.0-beta.78] - 2026-09-19
+
+### Engine: senpi 2026.9.19-2
+
+**Goal-driven sessions compact before the wall.** A session running under a goal loop had every one of its turns started by the goal extension, and those turns skipped the compaction extension's proactive policy entirely: nothing compacted between the 80% threshold and the hard reserve valve at 96% of the window, the idle warm summary was never applied, and the turn that finally crossed the valve paid a from-scratch summarization while the screen sat on `Compacting...` for five to eight minutes. On a 1M-token model that looked like omo hanging. Hidden trigger turns now pass through `before_agent_start` the way a typed prompt does, so the proactive policy and the warm summary apply to them too (senpi#1329).
+
+## [5.0.0-beta.77] - 2026-09-19
+
+### Engine: senpi 2026.9.19
+
+**Extensions that pull in jsdom or whatwg-url load again.** The engine's extension loader wrapped every CommonJS dependency in a prologue that declared `exports` as a constant, so a module written as `module.exports = exports = { ... }` (the published shape of `whatwg-url/lib/utils.js` and jsdom's generated IDL utils) failed to parse and took the whole extension graph down with `This assignment will throw because "exports" is a constant`. pi-webfetch was the reported casualty. CommonJS now evaluates inside Node's module function wrapper, the per-file `require` carries a `resolve` that returns the file's absolute path (jsdom locates its XHR sync worker that way), and a module inside a require cycle receives the partially built exports of the module still evaluating instead of `undefined`, so `@acemir/cssom`'s mutual requires resolve. A dependency whose body throws is evicted, so a later require re-throws instead of returning a half-built module, and `.mjs` / `.mts` files stay on the ESM path even without import or export statements.
+
+### Fixed
+
+**A repeat omob build no longer ships the previous build's engine copies.** The reusable senpi cache clone kept the publish staging that the last build wrote into its workspaces, and the bundler resolved the agent core from that stale copy instead of the commit being built. Once the engine gained an export that copy lacked, every refresh failed with `No matching export ... for import "prepareReadFolder"` and the launcher refused to start; before that, it silently bundled a three-day-old agent core. The staging is now discarded before every install. ([#8477](https://github.com/code-yeongyu/oh-my-openagent/issues/8477))
 
 ## [5.0.0-beta.76] - 2026-09-19
 

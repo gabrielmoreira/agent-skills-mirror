@@ -2,6 +2,8 @@
 
 Use these copyable contracts after `tracks-and-clips.md`. Global math: **consumed source = timeline duration × rate**; **natural timeline duration = remaining source / rate**.
 
+Before any edit, run `npx hyperframes timeline` (add `--json` for a machine-readable list) to see the project's tracks and clips instead of reading the HTML.
+
 These recipes keep sound on a separate `<audio>` element with the `<video>` muted, which is the pattern to reach for when picture and sound are cut independently. An unmuted `<video>` that declares `data-has-audio="true"` is also mixed, so a separate track is a choice, not a requirement.
 
 **Every `<video>` and `<audio>` below carries an `id`, and that is not cosmetic**: `lint` errors with `media_missing_id` on timed media without one, and an id-less `<audio>` is never picked up by the mixer, so the render comes out silent. Keep the ids when you copy a recipe.
@@ -416,6 +418,56 @@ Timeline math: an audio element in the root composition has `data-start` in abso
 ```
 
 Timeline math: pick the clips first and say which ones you picked (by id) if the request does not match the file exactly; then add one `delta` to every member's `data-start`, so relative spacing is preserved (here `delta = 40`). Give each copy a new unique `id` and the next unused `data-track-index`; keep `src`, `data-duration`, `data-media-start`, `data-volume` and any `data-automation` as they are. Leave the originals untouched. Check the copies still end inside the composition's duration. Owner: `/hyperframes-core`. Limit: copies of a `<video>` or a sub-composition host follow the same rule, and a copied sub-composition needs its own host `id`.
+
+## Add media (image, video, audio)
+
+Write what Studio writes when a person drops a file on the timeline, so an agent-added clip behaves the same as a dropped one; the one difference is that video and audio need no `data-duration`. Studio's source of truth is `DEFAULT_TIMELINE_ASSET_DURATION` in `packages/studio/src/utils/studioHelpers.ts` and `buildTimelineAssetInsertHtml` in `packages/studio/src/utils/timelineAssetDrop.ts`; a test keeps this section equal to them.
+
+- **Image: `data-duration` is optional and defaults to 3 seconds**, the same as a dropped image, because a still has no length of its own. Write it only for another length. A test keeps the 3 equal to the default in code.
+- **Video and audio: `data-start` is enough.** The length comes from the media itself. An authored `data-duration` shorter than the file is a trim, never a requirement; leave it out unless the request asks for a shorter clip.
+- **Start: the playhead or the requested time, never a silent `0`.** Studio's asset-panel Add uses the playhead time on track `0`; a drop uses the drop point.
+- Give every clip `id`, `class="clip"`, `data-start` and `data-track-index`. Video is `muted playsinline`; audio carries `data-volume="1"`.
+- Then make sure the root composition's `data-duration` is at least the clip's end (`data-start` plus its length: 3 for an image unless you set another, the media's length for video and audio): Studio raises a declared root duration to cover the new clip, so an agent must too, or the clip lies past the end and never plays.
+- **Images and video fill the whole frame**: absolutely positioned at `left: 0; top: 0`, `width` and `height` equal to the composition's `data-width` and `data-height`, `object-fit: contain`. Studio does not know a dropped file's natural size, so it does not centre a smaller one.
+- `z-index` is the number of top-level clips already in that file plus one (at least `1`); later clips stack above earlier ones.
+- Several files dropped together share the drop's track and run end to end.
+
+```html
+<img
+  id="photo"
+  class="clip"
+  src="assets/photo.png"
+  data-start="4"
+  data-track-index="1"
+  style="position: absolute; left: 0px; top: 0px; width: 1920px; height: 1080px; object-fit: contain; z-index: 2"
+/>
+```
+
+```html
+<video
+  id="broll"
+  class="clip"
+  src="assets/broll.mp4"
+  data-start="4"
+  data-track-index="2"
+  muted
+  playsinline
+  style="position: absolute; left: 0px; top: 0px; width: 1920px; height: 1080px; object-fit: contain; z-index: 3"
+></video>
+```
+
+```html
+<audio
+  id="whoosh"
+  class="clip"
+  src="assets/whoosh.mp3"
+  data-start="4"
+  data-track-index="3"
+  data-volume="1"
+></audio>
+```
+
+Inside a sub-composition file, `data-start` is scene-local (see `## Align a sound to an on-screen event`). Owner: `/hyperframes-core`.
 
 ## Swap a media file
 

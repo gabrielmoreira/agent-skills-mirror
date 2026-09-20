@@ -97,7 +97,7 @@ Owned in `tools/`, re-exported via `tools.rs`:
 - `WalletTxReceiptTool` — `wallet_tx_receipt`
 - `WalletLookupTxTool` — `wallet_lookup_tx`
 
-All implement `crate::tools::traits::Tool` and delegate to the matching `wallet::*` functions. (There is no agent tool for `execute_prepared` here; execution is reached via RPC.)
+All implement `tinytools::Tool` and delegate to the matching `wallet::*` functions. (There is no agent tool for `execute_prepared` here; execution is reached via RPC.)
 
 ## Events
 
@@ -116,7 +116,7 @@ None. The module publishes/subscribes no `DomainEvent`s and has no `bus.rs`. Cha
 - `crate::security::encryption::rpc` (`encrypt_secret`/`decrypt_secret`) — chain executors decrypt the recovery phrase before handing it to the wallet module.
 - `crate::modules::wallet` (`derive_account`, `sign_transaction_in_module`, `sign_message`) — the loaded `tinywallet` native module does every derivation and signature; the phrase is only sent after the module passes the attestation check (`modules::wallet::attested_proxy`).
 - `crate::security::approval::APPROVAL_CHAT_CONTEXT` — task-local chat owner (`thread_id`/`client_id`) used to bind quotes to their originating thread.
-- `crate::tools::traits` — `Tool`/`ToolResult`/`ToolCallOptions` for the agent tools.
+- `tinytools` — `Tool`/`ToolResult`/`ToolCallOptions` for the agent tools.
 - `crate::core::all` (`ControllerFuture`, `RegisteredController`) and `crate::core` (`ControllerSchema`, `FieldSchema`, `TypeSchema`) — RPC controller registry wiring.
 - `crate::rpc::RpcOutcome` — standard RPC return shape.
 - `tinywallet-bus` (`vendor/tinywallet/crates/tinywallet-bus`, optional, gated by the `web3` feature; features `btc`, `evm`, `solana`, `tron`, `keccak`, `net`, `wire`, `eip712`, `abi`, `tx-codec`) — the contract crate. It owns address formats (parsing/validation/conversion) and the wire types crossing the `Transport` seam (`SecretMaterial`, `TransactionSpec`, `NetworkId`), the ERC-20/EIP-712 encoders, and the Tron verifier. Per Cargo.toml's own rationale: taken as the contract crate and NOT the root `tinywallet` crate — key derivation, transaction building, signing and the chain clients (including the `bitcoin` crate and its native secp256k1 build) live inside that loaded module now, so this binary links none of it. The root `tinywallet` crate is still a dev-dependency, used only so test fixtures can derive a known account from a BIP-39 vector phrase.

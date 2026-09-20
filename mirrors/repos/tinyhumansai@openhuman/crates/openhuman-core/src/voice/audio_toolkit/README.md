@@ -68,7 +68,7 @@ No durable domain store. Side effects are filesystem writes within the workspace
 - `crate::channels::email_channel::EmailChannel` — SMTP delivery of the built message.
 - `crate::config::Config` / `config::rpc` — workspace dir, `local_ai.tts_provider`, `channels_config.email`; `load_config_with_timeout` in RPC handlers.
 - `crate::security` — `SecurityPolicy` / `ToolOperation` to gate the agent tools.
-- `crate::tools::traits` — `Tool`, `ToolResult`, `PermissionLevel`.
+- `tinytools` — `Tool`, `ToolResult`, `PermissionLevel`.
 - `crate::core::all` / `crate::core` — `RegisteredController`, `ControllerFuture`, `ControllerSchema`, `FieldSchema`, `TypeSchema` for RPC registration.
 - `crate::rpc::RpcOutcome` — controller/op return contract.
 - External crates: `lettre` (email message + attachment), `base64`, `chrono`, `uuid`.

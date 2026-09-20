@@ -56,7 +56,7 @@ No dependency on any other `openhuman` domain or on `crate::core::*`.
 
 Consumed in-process across the codebase (discoverable via `grep scheduler_gate`):
 
-- **Background workers / pipelines**: `memory/schema.rs`, `memory_queue/worker.rs`, `memory_tree/tree/rpc.rs`, `memory_sync/composio/periodic.rs`, `subconscious/engine.rs`, `learning/reflection.rs`, `autocomplete/core/engine.rs`, `task_sources/route.rs`, `agent/task_dispatcher.rs`, `agent/triage/evaluator.rs`.
+- **Background workers / pipelines**: `memory/schema.rs`, `memory_queue/worker.rs`, `memory_tree/tree/rpc.rs`, `memory_sync/composio/periodic.rs`, `subconscious/engine.rs`, `learning/reflection.rs`, `autocomplete/core/engine.rs`, `task_sources/route.rs`, `agent/triage/evaluator.rs`.
 - **Inference layer**: `inference/provider/openhuman_backend.rs`, `inference/provider/factory.rs`, `inference/local/service/{vision_embed.rs,public_infer.rs}`, `inference/voice/postprocess.rs`.
 - **Credentials lifecycle** (signed-out kill switch): `credentials/ops.rs`, `credentials/bus.rs`.
 - **Bootstrap / transport**: `core/jsonrpc.rs` (calls `init_global` during server bootstrap), `core/observability.rs`, plus the domain wiring in `openhuman/mod.rs` and config schema in `config/schema/scheduler_gate.rs`.

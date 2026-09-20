@@ -50,11 +50,11 @@ Bad example:
 
 - If no evaluator command exists, stop the loop and produce one before touching code.
 - If the re-measure does not move, revert the change and re-rank hypotheses instead of stacking fixes.
-- If the goal turns out to be one declared metric with a budget, hand off to `performance-goal`.
+- If the goal turns out to be one declared metric with a budget, keep the loop and start from that baseline instead of profiling for a hot path.
 
 ## Workflow Lane
 
-- Current lane: **Intent -> plan** (`oh-my-hermes`, `meta-router`, `deep-interview`, `context`, `plan`, `ralplan`, `adversarial-consensus`, `codebase-onboarding`, `+9 more`) - clarify, plan, ship, or loop goals.
+- Current lane: **Intent -> plan** (`oh-my-hermes`, `meta-router`, `deep-interview`, `context`, `plan`, `ralplan`, `adversarial-consensus`, `codebase-onboarding`, `+8 more`) - clarify, plan, ship, or loop goals.
 - If intent belongs to another lane, hand back to `oh-my-hermes` or name the adjacent workflow.
 - Shared product, routing, compatibility, and evidence rules: `omh-routing/references/skill-common-rail.md`.
 
@@ -62,7 +62,7 @@ Bad example:
 
 Use when performance problems are suspected but not yet localized, or when several cost hotspots across domains need a measured inspect-and-fix loop.
 
-    Strong routing signals: `ultraperf`, `$ultraperf`, `ulw-perf`, `performance audit`, `performance bottleneck`, `find the bottleneck`, `profile the hot path`, `memory leak investigation`, `token cost hotspot`, `storage footprint audit`, `rendering jank`, `model inference hotspot`, `slow ci pipeline`, `query performance audit`, `성능 병목`, `메모리 누수`, `느려진 원인`, `성능 전반 점검`
+    Strong routing signals: `ultraperf`, `$ultraperf`, `ulw-perf`, `performance audit`, `performance bottleneck`, `find the bottleneck`, `profile the hot path`, `memory leak investigation`, `token cost hotspot`, `storage footprint audit`, `rendering jank`, `model inference hotspot`, `slow ci pipeline`, `query performance audit`, `performance-goal`, `performance goal`, `latency`, `throughput`, `benchmark`, `성능 병목`, `메모리 누수`, `느려진 원인`, `성능 전반 점검`
 
 ## Catalog Metadata
 
@@ -125,7 +125,7 @@ omh runtime record --skill ultraperf --harness goal-execution --status started
 
 Record observed delegation results; otherwise return `not_available` or `not_observed`.
 Prepared OMH routing is not execution, review, CI, merge-readiness, or merge evidence.
-- Treat wrapper memory/context summaries as advisory local context, not proof of opaque Hermes memory reads or changes.
+- When wrapper metadata includes `memory_review_card/v1` or `handoff_context_pack/v1`, treat it as reviewed OMH-local or wrapper-supplied context only. Use conflict-free context summaries to shape plans and handoffs, but do not claim Hermes internal memory was read or changed.
 Preserve workflow intent and stop conditions; verify before claiming completion.
 
 Use Hermes-native subagent/delegation features when available: native subagents -> Hermes delegation when available, otherwise sequential lanes.

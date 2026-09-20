@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `runkids/skillshare` — 26 default patterns, 0 followed patterns, 29 file(s) materialized.
+Mirror of `runkids/skillshare` — 26 default patterns, 0 followed patterns, 50 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `runkids/skillshare` — 26 default patterns, 0 followed patterns, 29 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 29 |
+| Files         | 50 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -83,11 +83,32 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 22 | ✓ | [`skills/skillshare/references/TROUBLESHOOTING.md`](skills/skillshare/references/TROUBLESHOOTING.md) |
 | 23 | ✓ | [`skills/skillshare/scripts/run.sh`](skills/skillshare/scripts/run.sh) |
 | 24 | ✓ | [`skills/skillshare/SKILL.md`](skills/skillshare/SKILL.md) |
-| 25 | ✓ | [`website/docs/reference/commands/backup.md`](website/docs/reference/commands/backup.md) |
-| 26 | ✓ | [`website/docs/reference/commands/extras.md`](website/docs/reference/commands/extras.md) |
-| 27 | ✓ | [`website/docs/reference/commands/mcp.md`](website/docs/reference/commands/mcp.md) |
-| 28 | ✓ | [`website/docs/reference/commands/sync.md`](website/docs/reference/commands/sync.md) |
-| 29 | ✓ | [`website/docs/reference/commands/trash.md`](website/docs/reference/commands/trash.md) |
+| 25 | ✓ | [`website/CLAUDE.md`](website/CLAUDE.md) |
+| 26 | ✓ | [`website/docs/reference/commands/backup.md`](website/docs/reference/commands/backup.md) |
+| 27 | ✓ | [`website/docs/reference/commands/extras.md`](website/docs/reference/commands/extras.md) |
+| 28 | ✓ | [`website/docs/reference/commands/mcp.md`](website/docs/reference/commands/mcp.md) |
+| 29 | ✓ | [`website/docs/reference/commands/sync.md`](website/docs/reference/commands/sync.md) |
+| 30 | ✓ | [`website/docs/reference/commands/trash.md`](website/docs/reference/commands/trash.md) |
+| 31 | ✓ | [`website/i18n/ja/docusaurus-plugin-content-docs/current/reference/commands/backup.md`](website/i18n/ja/docusaurus-plugin-content-docs/current/reference/commands/backup.md) |
+| 32 | ✓ | [`website/i18n/ja/docusaurus-plugin-content-docs/current/reference/commands/extras.md`](website/i18n/ja/docusaurus-plugin-content-docs/current/reference/commands/extras.md) |
+| 33 | ✓ | [`website/i18n/ja/docusaurus-plugin-content-docs/current/reference/commands/mcp.md`](website/i18n/ja/docusaurus-plugin-content-docs/current/reference/commands/mcp.md) |
+| 34 | ✓ | [`website/i18n/ja/docusaurus-plugin-content-docs/current/reference/commands/sync.md`](website/i18n/ja/docusaurus-plugin-content-docs/current/reference/commands/sync.md) |
+| 35 | ✓ | [`website/i18n/ja/docusaurus-plugin-content-docs/current/reference/commands/trash.md`](website/i18n/ja/docusaurus-plugin-content-docs/current/reference/commands/trash.md) |
+| 36 | ✓ | [`website/i18n/ko/docusaurus-plugin-content-docs/current/reference/commands/backup.md`](website/i18n/ko/docusaurus-plugin-content-docs/current/reference/commands/backup.md) |
+| 37 | ✓ | [`website/i18n/ko/docusaurus-plugin-content-docs/current/reference/commands/extras.md`](website/i18n/ko/docusaurus-plugin-content-docs/current/reference/commands/extras.md) |
+| 38 | ✓ | [`website/i18n/ko/docusaurus-plugin-content-docs/current/reference/commands/mcp.md`](website/i18n/ko/docusaurus-plugin-content-docs/current/reference/commands/mcp.md) |
+| 39 | ✓ | [`website/i18n/ko/docusaurus-plugin-content-docs/current/reference/commands/sync.md`](website/i18n/ko/docusaurus-plugin-content-docs/current/reference/commands/sync.md) |
+| 40 | ✓ | [`website/i18n/ko/docusaurus-plugin-content-docs/current/reference/commands/trash.md`](website/i18n/ko/docusaurus-plugin-content-docs/current/reference/commands/trash.md) |
+| 41 | ✓ | [`website/i18n/zh-Hans/docusaurus-plugin-content-docs/current/reference/commands/backup.md`](website/i18n/zh-Hans/docusaurus-plugin-content-docs/current/reference/commands/backup.md) |
+| 42 | ✓ | [`website/i18n/zh-Hans/docusaurus-plugin-content-docs/current/reference/commands/extras.md`](website/i18n/zh-Hans/docusaurus-plugin-content-docs/current/reference/commands/extras.md) |
+| 43 | ✓ | [`website/i18n/zh-Hans/docusaurus-plugin-content-docs/current/reference/commands/mcp.md`](website/i18n/zh-Hans/docusaurus-plugin-content-docs/current/reference/commands/mcp.md) |
+| 44 | ✓ | [`website/i18n/zh-Hans/docusaurus-plugin-content-docs/current/reference/commands/sync.md`](website/i18n/zh-Hans/docusaurus-plugin-content-docs/current/reference/commands/sync.md) |
+| 45 | ✓ | [`website/i18n/zh-Hans/docusaurus-plugin-content-docs/current/reference/commands/trash.md`](website/i18n/zh-Hans/docusaurus-plugin-content-docs/current/reference/commands/trash.md) |
+| 46 | ✓ | [`website/i18n/zh-Hant/docusaurus-plugin-content-docs/current/reference/commands/backup.md`](website/i18n/zh-Hant/docusaurus-plugin-content-docs/current/reference/commands/backup.md) |
+| 47 | ✓ | [`website/i18n/zh-Hant/docusaurus-plugin-content-docs/current/reference/commands/extras.md`](website/i18n/zh-Hant/docusaurus-plugin-content-docs/current/reference/commands/extras.md) |
+| 48 | ✓ | [`website/i18n/zh-Hant/docusaurus-plugin-content-docs/current/reference/commands/mcp.md`](website/i18n/zh-Hant/docusaurus-plugin-content-docs/current/reference/commands/mcp.md) |
+| 49 | ✓ | [`website/i18n/zh-Hant/docusaurus-plugin-content-docs/current/reference/commands/sync.md`](website/i18n/zh-Hant/docusaurus-plugin-content-docs/current/reference/commands/sync.md) |
+| 50 | ✓ | [`website/i18n/zh-Hant/docusaurus-plugin-content-docs/current/reference/commands/trash.md`](website/i18n/zh-Hant/docusaurus-plugin-content-docs/current/reference/commands/trash.md) |
 
 ---
 

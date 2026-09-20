@@ -42,13 +42,13 @@ Bad example:
 ## Completion Checklist
 
 - Exactly one item is active, or the list is complete and every item is done.
-- Every write sent the whole list back, so no item was dropped by omission.
+- Every state change went through `action=advance`, or an `action=set` write sent the whole list back, so no item was dropped by omission.
 - Item states are described as declarations; observed results are cited separately or named as missing.
 - A stopped plan names which of the two reasons applies -- an item that cannot proceed, or a person steering elsewhere.
 
 ## Recovery Notes
 
-- If items disappeared after a write, the write sent a partial list; re-send every item, since `action=set` replaces rather than merges.
+- If items disappeared after a write, the write sent a partial list to `action=set`, which replaces rather than merges; re-send every item, and use `action=advance` for a state change.
 - If the panel shows nothing, read the current projection with `action=show` before re-declaring, so an existing checklist is not overwritten.
 - If the user redirects the session away from the plan, record that on the write rather than deleting the checklist or marking its items done.
 
@@ -76,9 +76,10 @@ Quality bar:
 
 - Items are plan declarations and never execution evidence: marking one done records that you say it is done, which is not an observed result and never substitutes for one.
 - Keep exactly one item active. Two active items make the HUD unable to say where the run is, which is the only thing the panel exists to answer.
-- `action=set` replaces the whole list: send every item back on every write, including the ones that did not change, or the omitted ones are silently dropped. There is no partial update.
+- Change one item's state with `action=advance`: the item number, the start of its text as a guard, and the new state. `action=set` replaces the whole list, so a write that reaches for it to tick one item must send every item back or the omitted ones are silently dropped.
 - The checklist belongs to the session that declared it -- another TUI, Slack, or Discord session neither sees nor overwrites it -- so do not tell a user their checklist is visible somewhere it is not.
 - Two different things stop a plan advancing and they are not interchangeable: an item that cannot proceed carries `blocked_reason`, and a person steering the session elsewhere is `deferred_reason` on the write. Load `references/checklist-discipline.md` before using either.
+- To review whether requirements are fit to build from rather than to track work, load `references/requirements-quality-checklist.md`; its items interrogate the spec, and the party that generates them may not tick them.
 
 Handoff policy:
 
@@ -103,12 +104,6 @@ Safety rules:
 - Do not declare a checklist for work that is one step, already finished, or answerable directly; the checklist costs a tool call and a panel, and buys nothing on work that does not span turns.
 
 ## Runtime Evidence
-
-Preferred harness for this skill: `coding-handling`.
-
-```sh
-omh runtime record --skill todo-checklist --harness coding-handling --status started
-```
 
 Record observed delegation results; otherwise return `not_available` or `not_observed`.
 Prepared OMH routing is not execution, review, CI, merge-readiness, or merge evidence.

@@ -13,6 +13,7 @@ npm run test         # vitest run
 npm run lint         # eslint src/
 npx tsc --noEmit     # type check
 npx vitest run src/scoring/__tests__/accuracy.test.ts  # single test
+caliber sync --status # what each agent holds
 ```
 
 ## Architecture
@@ -31,7 +32,11 @@ npx vitest run src/scoring/__tests__/accuracy.test.ts  # single test
 
 **Writers** (`src/writers/`): `index.ts` · `claude/index.ts` · `cursor/index.ts` · `codex/index.ts` · `opencode/index.ts` · `github-copilot/index.ts` · `refresh.ts` · `staging.ts` · `backup.ts` · `manifest.ts` · `pre-commit-block.ts`
 
-**Scanner** (`src/scanner/`): `index.ts` — detects local `.mcp.json`, `.cursor/mcp.json` MCP servers, rules, and skills across platforms
+**Scanner** (`src/scanner/`): `index.ts` — detects local MCP servers, rules, skills and enabled plugins across platforms
+
+**Sync** (`src/sync/`): `types.ts` · `adapters.ts` · `reconcile.ts` · `state.ts` · `frontmatter.ts` · `plugins.ts` · `index.ts`
+
+**Compaction** (`src/compaction/`): `index.ts` · `transcript.ts` · `cursor-transcript.ts` · `generic-transcript.ts` · `detect-transcript.ts` · **Vendor** (`src/vendor/caliber-jev-compaction/`) — MIT upstream copy, see `VENDOR.md`
 
 **Lib** (`src/lib/`): `hooks.ts` · `learning-hooks.ts` · `state.ts` · `resolve-caliber.ts` · `builtin-skills.ts` · `sanitize.ts` · `notifications.ts` · `git-diff.ts` · `lock.ts` · `debug-report.ts` · `config-discovery.ts` · `terminal.ts`
 
@@ -40,8 +45,6 @@ npx vitest run src/scoring/__tests__/accuracy.test.ts  # single test
 **Telemetry** (`src/telemetry/`): `index.ts` · `config.ts` · `events.ts` · **Learner** (`src/learner/`): `writer.ts` · `storage.ts` · `attribution.ts` · `roi.ts` · `utils.ts` · `stdin.ts`
 
 **Other**: `github-action/action.yml` · `github-action/index.js` · `assets/video/` (Remotion) · `scripts/` · `docs/FLOW.md` · `src/constants.ts` · `src/test/setup.ts` · `CHANGELOG.md` · `TODOS.md`
-
-**Workspaces**: `packages/shared/` · `packages/mcp-server/` (MCP server) · `apps/web/` · `apps/api/`
 
 @./CONTRIBUTING.md
 
@@ -66,7 +69,10 @@ npx vitest run src/scoring/__tests__/accuracy.test.ts  # single test
 - `validateModel()` skips seat-based providers (`isSeatBased()` in `src/llm/types.ts`)
 - Scoring: deterministic, no LLM · Backups via `src/writers/backup.ts`
 - Scanner: `src/scanner/index.ts` detects local MCP servers, rules, skills for state comparison
-- MCP server workspace: `packages/mcp-server/` · Config discovery: `src/lib/config-discovery.ts`
+- Config discovery: `src/lib/config-discovery.ts`
+- **Sync adapters**: implement `ProviderAdapter` from `src/sync/types.ts` (`project()` + `read()`); capability matrix drives degradation
+- Sync is deterministic (no LLM) — `refresh` owns prose, `sync` owns skills/rules/plugins/MCP
+- `src/vendor/**` holds byte-for-byte upstream copies: do not reformat, keep changes in `src/compaction/`
 - Builtin skills (`src/lib/builtin-skills.ts`): `find-skills`, `save-learning`, `setup-caliber`
 
 <!-- caliber:managed:pre-commit -->

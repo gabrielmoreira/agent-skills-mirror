@@ -140,6 +140,20 @@
   font: 11px/20px system-ui, sans-serif;
 }
 
+.ce-annotate-pin-tip {
+  position: fixed;
+  z-index: 2147483646;
+  box-sizing: border-box;
+  max-width: 260px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  background: #1f2328;
+  color: #fff;
+  font: 12px/1.4 system-ui, sans-serif;
+  white-space: pre-wrap;
+  pointer-events: none;
+}
+
 .ce-annotate-pin.is-working {
   background: #9ecbff;
 }

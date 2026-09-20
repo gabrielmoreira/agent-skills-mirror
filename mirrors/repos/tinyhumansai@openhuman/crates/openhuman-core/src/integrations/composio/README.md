@@ -142,7 +142,7 @@ Handlers delegate to `ops/`; scope handlers delegate to `ops::user_scopes`. Expo
 
 ## Agent tools
 
-From `tools.rs` (`all_composio_agent_tools`, registered only when `subagent_runner::user_is_signed_in_to_composio` is true): `composio_list_toolkits`, `composio_list_connections`, `composio_authorize`, `composio_connect` (inline OAuth approval card, #3993), `composio_list_tools`, `composio_execute`. Plus `ComposioActionTool` (one tool per action, spawned for `integrations_agent`, gated by `contract_gate.rs` on first call) and the direct-mode `ComposioTool` provider (`tools/direct.rs`). Scope elevation is deliberately NOT an agent tool — the user toggles it in the UI. Visibility/execution is gated by curated catalogs (`providers::` contract re-exports) + per-toolkit user-scope prefs and sandbox mode; unparseable slugs default to `Write` (fail-closed).
+From `tools.rs` (`all_composio_agent_tools`, registered only when `agent::subagent_host::user_is_signed_in_to_composio` is true): `composio_list_toolkits`, `composio_list_connections`, `composio_authorize`, `composio_connect` (inline OAuth approval card, #3993), `composio_list_tools`, `composio_execute`. Plus `ComposioActionTool` (one tool per action, spawned for `integrations_agent`, gated by `contract_gate.rs` on first call) and the direct-mode `ComposioTool` provider (`tools/direct.rs`). Scope elevation is deliberately NOT an agent tool — the user toggles it in the UI. Visibility/execution is gated by curated catalogs (`providers::` contract re-exports) + per-toolkit user-scope prefs and sandbox mode; unparseable slugs default to `Write` (fail-closed).
 
 ## Events
 
@@ -172,10 +172,10 @@ Published from `ops/` via `crate::core::bus::BUS.publish` (`crate::core::events:
 - `crate::memory::binding` — the workspace's bound memory driver. Connection-scoped cleanup deletes through `MemorySourceSink::forget_matching`; identity facets and user-scope prefs are also read/written through this binding.
 - `crate::memory::sync::composio` — still owns the trigger/config-change bus subscribers (this module re-exports them via `bus.rs`) and the `slack` RPC layer re-exported from `providers/mod.rs`.
 - `crate::agent::harness` — sandbox mode (`current_sandbox_mode` / `SandboxMode`) for tool gating; `current_task_recency_window` consumed by `task_window.rs`.
-- `crate::tools::traits` — `Tool`, `ToolResult`, `ToolCategory`, `PermissionLevel`, `ToolCallOptions`.
+- `tinytools` — `Tool`, `ToolResult`, `ToolCategory`, `PermissionLevel`, `ToolCallOptions`.
 - `crate::security` — `SecurityPolicy` / `ToolOperation` for direct-tool gating.
 - `crate::security::credentials` — encrypted store for the direct-mode API key.
-- `crate::agent::context::prompt`, `agent::prompts` — prompt/profile injection of connected identities.
+- `crate::agent::prompts`, `agent::prompts` — prompt/profile injection of connected identities.
 - `crate::core::all` — `ControllerFuture` / `RegisteredController` registry types.
 - `crate::core::bus` (`BUS`) / `crate::core::events::DomainEvent` — event publish/subscribe.
 - `crate::core::observability` — Sentry error classification/reporting.
@@ -187,7 +187,7 @@ Published from `ops/` via `crate::core::bus::BUS.publish` (`crate::core::events:
 - `crates/openhuman-core/src/tools/{mod,ops}.rs`, `tools/schemas/composio.rs` — wires agent tools into the tool registry.
 - `crates/openhuman-core/src/core/jsonrpc.rs` — at startup initializes trigger history and registers the three bus subscribers.
 - `crates/openhuman-core/src/channels/runtime/startup/start_channels.rs` (`start_channels`) — the one caller of `start_periodic_sync()`. `core/runtime/services.rs`'s `composio_integration_sync` job only runs `memory::sources::reconcile::ensure_composio_sources`; its comment explains why the periodic loop is not started there.
-- `crates/openhuman-core/src/agent/**` — harness/session/subagent spawning (`integrations_agent`), triage escalation, debug (e.g. `agent/harness/subagent_runner/`, `agent/orchestration/tools/`, `agent/debug/mod.rs`).
+- `crates/openhuman-core/src/agent/**` — session-host/subagent spawning (`integrations_agent`), triage escalation and debug (e.g. `agent/subagent_host/`, `agent/orchestration/tools/`, `agent/debug/mod.rs`).
 - `crates/openhuman-core/src/platform/socket/event_handlers.rs` — parses `composio:trigger` and publishes `ComposioTriggerReceived`.
 - `crates/openhuman-core/src/agent/learning/linkedin_enrichment*.rs`, `agent/learning/profile_md_renderer.rs` — connected-identity enrichment consumers.
 - `crates/openhuman-core/src/agent/prompts/connected_identities.rs` — renders connected identities into the agent prompt.

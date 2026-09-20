@@ -56,6 +56,11 @@
   layer.className = "ce-annotate-layer"
   shadow.appendChild(layer)
 
+  const pinTip = document.createElement("div")
+  pinTip.className = "ce-annotate-pin-tip"
+  pinTip.hidden = true
+  shadow.appendChild(pinTip)
+
   const composer = document.createElement("form")
   composer.className = "ce-annotate-composer"
   composer.hidden = true
@@ -80,7 +85,7 @@
 
   const overlaySession = document.currentScript?.getAttribute("data-ce-session") || ""
   const STATE_KEY = overlaySession ? `ce-annotate-state:${overlaySession}` : "ce-annotate-state"
-  const PIN_STATUS = { held: "pending", queued: "pending", working: "working", done: "attached" }
+  const PIN_STATUS = { held: "pending", queued: "pending", working: "working" }
   let commentToolOn = false
   let sessionEnded = false
   let lastPointer = { x: 0, y: 0 }
@@ -155,6 +160,7 @@
         pins.push(pin)
       }
     }
+    dropAppliedPins()
     if (saved.sessionEnded) {
       markEnded()
       return true
@@ -198,12 +204,21 @@
   function applyAnnotationStates(states) {
     if (!states || typeof states !== "object") return
     annotationStates = states
+    dropAppliedPins()
     for (const pin of pins) {
       const status = PIN_STATUS[states[pin.id]]
       if (status) pin.status = status
     }
     reattachPins()
     syncStopButton()
+  }
+
+  // An applied note is answered by the revised screen. Its pin would only
+  // point at whatever the old selector matches now.
+  function dropAppliedPins() {
+    for (let i = pins.length - 1; i >= 0; i--) {
+      if (annotationStates[pins[i].id] === "done") pins.splice(i, 1)
+    }
   }
 
   function unflushedCount() {
@@ -310,7 +325,22 @@
     syncSubmit()
   }
 
+  // Pins stay click-through so a note on a control never blocks that control;
+  // the comment shows by pointer position instead of a hover target.
+  const PIN_SIZE = 22
+  function showPinTipAt(x, y) {
+    const pin = pins.findLast(
+      (p) => pinOnThisPage(p) && x >= p.x && x <= p.x + PIN_SIZE && y >= p.y && y <= p.y + PIN_SIZE,
+    )
+    pinTip.hidden = !pin
+    if (!pin) return
+    pinTip.textContent = pin.comment
+    pinTip.style.left = `${Math.max(0, Math.min(pin.x + PIN_SIZE + 4, window.innerWidth - 260))}px`
+    pinTip.style.top = `${pin.y}px`
+  }
+
   function renderPins() {
+    pinTip.hidden = true
     layer.replaceChildren()
     for (const pin of pins) {
       if (!pinOnThisPage(pin)) continue
@@ -366,6 +396,8 @@
     stop.hidden = true
     setStatus("Session ended")
     closeComposer()
+    pins.length = 0
+    renderPins()
   }
 
   function openComposer(target, event) {
@@ -704,6 +736,7 @@
     sawPointer = true
     lastPointer.x = event.clientX
     lastPointer.y = event.clientY
+    showPinTipAt(event.clientX, event.clientY)
   }, { capture: true, passive: true })
 
   document.addEventListener("keydown", (event) => {

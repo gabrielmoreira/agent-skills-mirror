@@ -100,10 +100,10 @@ These are subscriber registrations rather than a single `bus.rs`; subscriptions 
 - `tinymemory_api` — `provider::{MemoryProfile, ProfileFacet, FacetState, FacetType, UserState}` behind `FacetCache`, and the candidate taxonomy re-exported by `candidate.rs` (`learning::{CueFamily, FacetClass, LearningCandidate}`, `host::EvidenceRef`).
 - `crate::memory` — the `Memory` trait + `MemoryCategory` for KV persistence (hooks, transcript ingest), `guard::MemoryGuard` and `ops::guard::active_memory_guard` for the facet store, and `memory::api::provider::MemoryProvider` / `api::types` for the enrichment document upsert.
 - `crate::agent::hooks` — `PostTurnHook` / `TurnContext` / `ToolCallRecord` implemented by the three hooks.
-- `crate::agent::harness::session::transcript` — `SessionTranscript` parsing for transcript ingestion.
+- `tinyagents_session::transcript` — `SessionTranscript` parsing for transcript ingestion.
 - `crate::inference::provider::create_chat_model_from_string_with_model_id` (profile summarisation) and `crate::inference::host_runtime::global` (local reflection route); `ReflectionHook` also accepts an optional `tinyinference_llm::model::ChatModel` for the cloud fallback.
 - `crate::config` — `Config` / `LearningConfig` / `ReflectionSource` feature flags and `config::rpc` loader.
-- `crate::agent::context::prompt` — `PromptContext` / `PromptSection` / `LearnedContextData` for prompt injection.
+- `crate::agent::prompts` — `PromptContext` / `PromptSection` / `LearnedContextData` for prompt injection.
 - `crate::integrations::composio` — `composio::client` (Gmail fetch for enrichment) and `composio::profile_md` (`replace_managed_block` for `PROFILE.md`).
 - `crate::integrations` — `build_client` / `IntegrationClient` for the Apify scrape call.
 - `crate::core::bus` / `crate::core::events` / `tinybus` — `BUS.publish` / `BUS.subscribe`, `DomainEvent::CacheRebuilt`, and `tinybus::{EventHandler, SubscriptionHandle}`.
@@ -112,7 +112,7 @@ These are subscriber registrations rather than a single `bus.rs`; subscriptions 
 ## Used by
 
 - `crates/openhuman-core/src/core/all.rs` — registers the `learning.*` controllers + schemas.
-- `crates/openhuman-core/src/agent/harness/session/builder/factory.rs` (registers `LearnedContextSection` / `UserProfileSection` and the `ReflectionHook` when `config.learning.enabled`), `builder/helpers.rs` (`MemoryAccessSection` / `MemoryWriteSection` gated by `any_tool_offered`), `turn/context.rs` (reads the `learning_observations` / `learning_patterns` / reflections namespaces into `PromptContext.learned`), `turn/session_io/background_tasks.rs` (`transcript_ingest::ingest_transcript_path`), and `agent/tinyagents/host/learning_sink.rs` (`ToolTrackerHook` + `UserProfileHook` post-turn fan-out).
+- `crates/openhuman-core/src/agent/session_host/builder/factory.rs` (registers `LearnedContextSection` / `UserProfileSection` and the `ReflectionHook` when `config.learning.enabled`), `builder/helpers.rs` (`MemoryAccessSection` / `MemoryWriteSection` gated by `any_tool_offered`), `turn/context.rs` (reads the `learning_observations` / `learning_patterns` / reflections namespaces into `PromptContext.learned`), `turn/session_io/background_tasks.rs` (`transcript_ingest::ingest_transcript_path`), and `agent/tinyagents/host/learning_sink.rs` (`ToolTrackerHook` + `UserProfileHook` post-turn fan-out).
 - `learning::startup::register_learning_subscribers` is the entry point that wires the Phase 2/3/4 subscribers; it is invoked from `crates/openhuman-core/src/core/jsonrpc.rs` (`register_domain_subscribers`, inside the `plan.agent` block — i.e. whenever the `DomainSet` allows `DomainGroup::Agent` — guarded by `learning_first_time()`), not from the skippable `channels::runtime::startup` path — see the "why" note in `startup.rs` (#5003).
 - `crates/openhuman-core/src/modules/memory/people_chunks_retrieval.rs` (`impl MemoryProfile for ModuleMemoryProvider`, the driver `FacetCache` reaches through the guard), `integrations/composio/profile_md.rs` (`replace_managed_block`, used by `profile_md_renderer.rs`), `tools/impl/system/tool_stats.rs`, `tools/schemas.rs` — consume facet/learning types.
 

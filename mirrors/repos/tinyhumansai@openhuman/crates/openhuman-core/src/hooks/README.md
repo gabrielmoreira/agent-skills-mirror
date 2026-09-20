@@ -127,7 +127,7 @@ therefore has no derived pre-event — denying it belongs to `preToolUse`. The
   `all_hooks_registered_controllers` in `core/all.rs`.
 - `web_chat/ops/start_chat.rs` calls `hooks::ops::prompt_submitted` before a
   submitted prompt reaches the agent.
-- `agent/harness/subagent_runner/ops/runner.rs` calls
+- `agent/subagent_host/` calls
   `hooks::ops::subagent_starting` before spawning a sub-agent.
 
 ## Tests

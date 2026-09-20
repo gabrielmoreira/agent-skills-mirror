@@ -55,6 +55,9 @@ agent-deck add [path] [options]
 | `--attach` | Start and attach to the session immediately after creating it (requires an interactive terminal; not supported with `--ssh`/`--json`) |
 | `--ssh <user@host>` | Run the session over SSH; this is a destination, not a registered remote name |
 | `--remote-path <absolute-path>` | Working directory on the SSH host; an absolute positional path with `--ssh` is equivalent |
+| `--hint key=value` | Durable recall hint (repeatable; single-valued per key, see `session annotate`) |
+| `--tag <tag>` | Recall tag (repeatable) |
+| `--ticket <id>` / `--why <text>` | Shorthands for `--hint ticket=` / `--hint why=` |
 
 ```bash
 agent-deck add -t "My Project" -c claude .
@@ -95,6 +98,7 @@ Notes:
 - `--account <name>` selects a named slot from `[profiles.<name>.claude].config_dir` for this session, matching `add --account`.
 - `--model <id>` and `--effort <level>` are the per-session overrides behind the TUI's Model ID and Reasoning effort rows (also on `add`). Effort levels: claude `low|medium|high|xhigh|max`, codex `minimal|low|medium|high|xhigh`; other tools refuse the flag. Both are echoed in `--json` output (`model`, `effort`) and by `session show --json`.
 - `--account` requires an explicit name. If the next token is another launch flag, launch stops with an error before resolving a fallback account or creating a session; use `--account=<name>` when a name intentionally begins with a dash.
+- `--hint/--tag/--ticket/--why` (also on `add`): durable recall hints written to state.db at creation (`docs/recall.md`). `launch` additionally derives `purpose` from the first line of `-m` and both commands derive `parent` for a child; an explicit `--hint purpose=` wins. Echoed in `--json` as `hints` and `tags`.
 - `--no-identity` (also on `add`): skip the harness identity injection for this session only. By default every spawn tells the model it runs inside agent-deck, its session metadata and how to use the CLI (`[launch] inject_identity` in config-reference.md, `documentation/HARNESS_IDENTITY.md`). Persisted, so restarts honour it.
 
 ### accounts - List named account slots
@@ -548,6 +552,59 @@ Per-session numbers for evals, derived on demand from the profile's local sessio
 Unknown values are `null`, never `0`. `--all` returns a JSON array for every session with events in the window. Over `remote exec`, an older remote without the command answers with one line saying so (exit 2).
 
 **How to read these numbers.** Turn duration is measured at the daemon's poll cadence (1–3 s), so treat it as coarse: compare medians across many turns, not single values. A rising `unconfirmed_rate` means sends are landing without a visible accept signal (a busy composer, a tool without hooks), a rising `waiting_ms` means the session is blocked on a human, restarts and dead letters are the "something broke" counters. An eval compares two builds on the same window: `agent-deck health --json` gives the profile roll-up (turns/day, median turn, unconfirmed send rate, restarts/day, sessions with dead letters).
+
+### session annotate
+
+```bash
+agent-deck session annotate <id|title> [--hint k=v] [--set-hint k=v] [--unset k] [--tag t] [--remove-tag t]
+    [--ticket id] [--why text] [--decision text] [--outcome worked|failed|...] [--note-stdin] [--json]
+agent-deck session annotate --self [...]          # the calling session (AGENTDECK_INSTANCE_ID)
+agent-deck remote exec <name> session annotate <id> --outcome worked
+```
+
+Records durable intent about a session for recall (`docs/recall.md`): hints are single-valued per key (setting a key again replaces it), tags are a set. With no edit flags it prints the current hints, tags and harness links. `--note-stdin` stores stdin as the `note` hint (8 KiB cap). Exit 2 when the session is unknown. `--json` returns `hints`, `tags`, `links` and the applied `changes`.
+
+```bash
+agent-deck session annotate auth-fix --decision "root cause was clock skew" --outcome worked --tag clock-skew
+agent-deck session annotate auth-fix --set-hint ticket=SB-413 --remove-tag flaky --unset why
+agent-deck session annotate --self --note-stdin < summary.md
+```
+
+### recall
+
+```bash
+agent-deck recall backfill [--since 90d] [--budget 5m] [--force] [--json]
+agent-deck recall sweep [--full] [--force] [--json]
+agent-deck recall status [--json]
+agent-deck recall sessions [--harness claude|codex|pi|gemini|opencode|hermes] [--profile P] [--project PATH] [--since 30d] [--hint k=v] [--tag t] [--session ID] [--subagents] [--limit 20] [--json]
+agent-deck recall search "<q>" [same filters] [--role user|assistant] [--phrase] [--phrase-scan-limit 2000] [--limit 20] [--no-sweep] [--remote <host>]... [--all-remotes] [--json]
+agent-deck recall show <session> [--tier card|excerpt|raw] [--turns 40] [--json]
+agent-deck recall context <session> [--tier card|brief|excerpt] [--budget 4000] [--into current|<session>] [--no-wait] [--json]
+agent-deck recall open <session> [--title T] [--dry-run] [--json]
+agent-deck recall enrich [--cost-class cheap] [--kind lost_time,session_kind,outcome] [--limit N] [--budget 30s] [--retry-failed] [--force] [--json]
+agent-deck recall gc [--keep-days 30] [--json]
+agent-deck recall rebuild [--force] [--json]
+agent-deck recall export --cards [--since 30d] [--json]
+agent-deck recall import --host <alias> [file|-] [--json]
+agent-deck recall pull <host> [--full] [--json]
+agent-deck recall mcp
+agent-deck remote <host> recall search|sessions|show|context|export|status ...
+```
+
+The transcript index over every harness on the machine (`docs/recall.md`); every command needs `[recall] enabled = true` and exits 2 otherwise. `<session>` is the `#number` from a listing, a harness conversation id or unique prefix, or an agent-deck session id. The TUI `G` key is the same search over the same index (typing = `search`, the preview = `show`, Enter = `open`). `backfill`/`sweep`/`rebuild` exit 3 while a session of the active profile is `running` or the load is above `max_loadavg` (`--force` overrides) and while another sweep holds the lock. `search` ranks sessions (title/hint/tag hits first, then body hit count, then recency), AND-s terms, keeps identifiers like `SB-412` whole, joins `--hint`/`--tag` against `state.db` live, applies the structural filters before the 5,000-message body ceiling (newest matches first), runs a 150 ms / 32 MB sweep first and reports what it deferred; `--phrase` verifies the literal phrase and reports how many candidates it checked. `open` starts the bound session (any harness, under the profile whose `state.db` holds the link) or re-registers a Claude transcript with `add --resume-session`; an unowned Codex/pi/Gemini/OpenCode/Hermes conversation exits 2 with the `recall show` command to read it. Sweeps read links, hints and tags from every profile's `state.db` and write cost events to the profile that holds the link. Every `sweep` drains `recall/queue.jsonl` (the lines Claude hooks, `session stop`, `worker_done` and the daemon's turn-end edge append) and parses those files first; `status` reports `queued`, `by_harness` and the harness roots. `--json` returns `result` (search: `hits`, `candidates`, `ceiling_hit`, `scanned`, `verified`) plus an `index` note (`swept`, `deferred`, `deferred_bytes`).
+
+Phase 4 (`docs/recall.md` "Phase 4"): `show` and `context` print the derived artifacts (`lost_time`, `session_kind`, `outcome`, written by the rules classifiers in `rules.json` over the indexed rows) and mark one whose session changed since it was produced as `[stale ...]` (in the text of every `show` tier and of `context --tier brief|excerpt`; under `--json` every tier carries `stale`); every sweep drains the classifier queue within its budget and `enrich` drains the rest, first queueing every session whose artifacts are stale or missing, so `enrich` after a stale marker always rewrites it (exit 3 under the load gate; `--cost-class llm` is never drained automatically and exits 1). `context` renders a session as plain text for any harness (`card` about 60 tokens, `brief` adds the derived lines and touched files, `excerpt` adds the newest turns under `--budget`); `--into current` delivers it to the calling session (`AGENTDECK_INSTANCE_ID`) through `session send`, `--into <session>` to another one (an `--ssh` target is refused unless `[recall] remote_cards = true`, exit 2); a card pulled from another machine stops at `brief` (exit 2). `search --remote <host>` / `--all-remotes` run the same search on each remote's own index over SSH (one round trip each, nothing copied), print its hits under the remote's name labelled `remote <host>`, and put them in `remotes[]` under `--json`; a remote whose agent-deck predates recall, has `[recall] enabled = false`, or runs v1.16.13 without the phase-4 verb asked for (`pull`, remote `context`, remote `export`) is reported in one line naming its version and the fix, the command exits 1, and under `--json` that remote's entry (or, for the forwarded `remote <host> recall ...` form, the whole output) is `{error, remote, remote_version}`. `export`, `import` and `pull` need `[recall] remote_cards = true` on both ends (exit 2 otherwise): `export` writes NDJSON cards (never bodies, offsets or paths) stamped with the machine's `host_uid`; `import` requires an explicit `--host` alias and refuses a stream without a `host_uid`, a `host_uid` that disagrees with the one recorded for that alias, a machine already imported under another alias, and this machine's own cards; `pull` runs `export` on the remote from the last cursor and imports. Pulled rows are cards only (`digest_only`, labelled in every listing). `mcp` serves `recall_search`, `recall_show` and `recall_context` over stdio; `mcp list` offers it as the built-in `recall` entry while `[recall] enabled = true`, so `mcp attach <session> recall` works like any MCP.
+
+```bash
+agent-deck recall search "clock skew" --since 30d --profile work
+agent-deck recall search SB-412 --hint ticket=SB-412 --phrase --json
+agent-deck recall search "retry budget" --all-remotes --json
+agent-deck recall show 91fd7978 --tier card
+agent-deck recall context 91fd7978 --tier brief --into current
+agent-deck recall open 91fd7978 --dry-run
+agent-deck recall enrich --json
+agent-deck mcp attach my-session recall && agent-deck session restart my-session
+```
 
 ### session set-parent / unset-parent
 

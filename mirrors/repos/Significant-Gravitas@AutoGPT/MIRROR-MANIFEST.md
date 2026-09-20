@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `Significant-Gravitas/AutoGPT` — 26 default patterns, 0 followed patterns, 33 file(s) materialized.
+Mirror of `Significant-Gravitas/AutoGPT` — 26 default patterns, 0 followed patterns, 34 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Significant-Gravitas/AutoGPT` — 26 default patterns, 0 followed pat
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 33 |
+| Files         | 34 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -79,19 +79,20 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 18 | ✓ | [`autogpt_platform/backend/backend/copilot/graphiti/AGENTS.md`](autogpt_platform/backend/backend/copilot/graphiti/AGENTS.md) |
 | 19 | ✓ | [`autogpt_platform/backend/backend/copilot/graphiti/CLAUDE.md`](autogpt_platform/backend/backend/copilot/graphiti/CLAUDE.md) |
 | 20 | ✓ | [`autogpt_platform/backend/CLAUDE.md`](autogpt_platform/backend/CLAUDE.md) |
-| 21 | ✓ | [`autogpt_platform/CLAUDE.md`](autogpt_platform/CLAUDE.md) |
-| 22 | ✓ | [`autogpt_platform/frontend/AGENTS.md`](autogpt_platform/frontend/AGENTS.md) |
-| 23 | ✓ | [`autogpt_platform/frontend/CLAUDE.md`](autogpt_platform/frontend/CLAUDE.md) |
-| 24 | ✓ | [`autogpt_platform/frontend/src/tests/AGENTS.md`](autogpt_platform/frontend/src/tests/AGENTS.md) |
-| 25 | ✓ | [`autogpt_platform/frontend/src/tests/CLAUDE.md`](autogpt_platform/frontend/src/tests/CLAUDE.md) |
-| 26 | ✓ | [`classic/CLAUDE.md`](classic/CLAUDE.md) |
-| 27 | ✓ | [`classic/direct_benchmark/CLAUDE.md`](classic/direct_benchmark/CLAUDE.md) |
-| 28 | ✓ | [`classic/forge/CLAUDE.md`](classic/forge/CLAUDE.md) |
-| 29 | ✓ | [`classic/original_autogpt/CLAUDE.md`](classic/original_autogpt/CLAUDE.md) |
-| 30 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 31 | ✓ | [`docs/AGENTS.md`](docs/AGENTS.md) |
-| 32 | ✓ | [`docs/CLAUDE.md`](docs/CLAUDE.md) |
-| 33 | ✓ | [`docs/platform/gemini.md`](docs/platform/gemini.md) |
+| 21 | ✓ | [`autogpt_platform/backend/test/fixtures/skills/webapp-testing/SKILL.md`](autogpt_platform/backend/test/fixtures/skills/webapp-testing/SKILL.md) |
+| 22 | ✓ | [`autogpt_platform/CLAUDE.md`](autogpt_platform/CLAUDE.md) |
+| 23 | ✓ | [`autogpt_platform/frontend/AGENTS.md`](autogpt_platform/frontend/AGENTS.md) |
+| 24 | ✓ | [`autogpt_platform/frontend/CLAUDE.md`](autogpt_platform/frontend/CLAUDE.md) |
+| 25 | ✓ | [`autogpt_platform/frontend/src/tests/AGENTS.md`](autogpt_platform/frontend/src/tests/AGENTS.md) |
+| 26 | ✓ | [`autogpt_platform/frontend/src/tests/CLAUDE.md`](autogpt_platform/frontend/src/tests/CLAUDE.md) |
+| 27 | ✓ | [`classic/CLAUDE.md`](classic/CLAUDE.md) |
+| 28 | ✓ | [`classic/direct_benchmark/CLAUDE.md`](classic/direct_benchmark/CLAUDE.md) |
+| 29 | ✓ | [`classic/forge/CLAUDE.md`](classic/forge/CLAUDE.md) |
+| 30 | ✓ | [`classic/original_autogpt/CLAUDE.md`](classic/original_autogpt/CLAUDE.md) |
+| 31 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 32 | ✓ | [`docs/AGENTS.md`](docs/AGENTS.md) |
+| 33 | ✓ | [`docs/CLAUDE.md`](docs/CLAUDE.md) |
+| 34 | ✓ | [`docs/platform/gemini.md`](docs/platform/gemini.md) |
 
 ---
 

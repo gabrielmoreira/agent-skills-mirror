@@ -49,8 +49,8 @@ Async request paths use the `blocking` wrappers. Grepping
 [`channels/`](../../channels/) (`host/adapters.rs`,
 `providers/telegram/remote_control.rs`, `runtime/startup/start_channels.rs`) for
 mirroring channel turns, and by the agent harness/orchestration layer
-(`agent/harness/subagent_runner/`, `agent/orchestration/tools/`,
-`agent/task_session.rs`, `agent/tinyagents/host/agent_memory.rs`) for
+(`agent/subagent_host/`, `agent/orchestration/tools/`,
+`agent/tinyagents/host/agent_memory.rs`) for
 sub-agent and worker-thread transcripts.
 
 ## Tests

@@ -2,7 +2,7 @@
 
 Aggregator that the React shell polls every few seconds (`openhuman.app_state_snapshot`) to render the OS-level chrome: the stored credential and user, local-AI status, service health, onboarding tasks, keyring status, config-recovery notice. Owns the on-disk `app-state.json` and the merge/patch surface for shell-managed local fields. Does NOT own any of the underlying domain state — it assembles snapshots from peer domains and persists shell-side onboarding metadata.
 
-The snapshot never talks to the backend. The user it reports is the payload the host handed the core with `auth.set_credential` (the host's own `/auth/me` answer); the *live* current user is the session owner's business — the Tauri shell's `openhuman-session` cache (`crates/openhuman-session`) — and the frontend merges it in (`app/src/services/coreStateApi.ts`).
+The snapshot never talks to the backend. The user it reports is the payload the host handed the core with `auth.set_credential` (the host's own `/auth/me` answer); the *live* current user is the session owner's business — the Tauri shell's session cache (`openhuman_tinyhumans::session::CurrentUserCache`) — and the frontend merges it in (`app/src/services/coreStateApi.ts`).
 
 ## Key files
 
@@ -42,7 +42,7 @@ The signed-in identity for prompts and Sentry is `security::credentials::identit
 
 - `crates/openhuman-core/src/core/all.rs` — registers `all_app_state_registered_controllers()`; the shell reaches them through `coreRpcClient` → `relay_http_rpc`.
 - `crates/openhuman-core/src/core/jsonrpc.rs` — `latch_from_config` at runtime bootstrap.
-- `crates/openhuman-core/src/agent/harness/session/builder/factory.rs` — `load_stored_app_state` to read `onboarding_tasks.enabled_tools` for tool filtering.
+- `crates/openhuman-core/src/agent/session_host/builder/factory.rs` — `load_stored_app_state` to read `onboarding_tasks.enabled_tools` for tool filtering.
 - `crates/openhuman-core/src/security/keyring_consent/ops.rs` — persists the consent choice through `update_local_state`.
 
 ## Tests

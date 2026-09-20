@@ -7,6 +7,12 @@ Cloudflare Pages project. A Git push alone does not publish it.
 
 ## Homepage
 
+The homepage is frozen for routine marketing additions. Correct demonstrated
+errors, but do not add another slogan, feature section, animation or synthetic
+proof example merely to accommodate a new capability. Prefer an existing
+section's link when it serves the reader. The next evidence investment is
+reproducible third-party repository work, with misses and limits retained.
+
 Edit [`index.html`](../templates/distribution/landing-page/index.html) for the
 story and [`home.css`](../templates/distribution/landing-page/home.css) for its
 layout. Homepage styles are scoped to `.home-page`; shared navigation, fonts,
@@ -60,6 +66,17 @@ retain the windows and prices of their recorded or illustrative engagements.
 The binding check catches known shapes, not every possible contradiction in
 natural language; review the whole diff and search current offer wording too.
 
+Keep offer and policy ownership explicit: `dev/site-product-policy.json` owns
+adopted availability and bound offer facts; the signed SOW/order form governs
+engagement terms; Terms and Refund explain those terms; Privacy owns processing
+disclosures. Governance may describe a by-request evidence review, not invent a
+parallel priced product or promise a future checkout. Planned subscription
+mechanics must remain conditional wherever repeated. Update visible revision
+dates and structured metadata when clarifying policy pages, retaining the
+original effective date separately. Changes to customer rights need an explicit
+commercial decision and legal review, not an automatic copy cleanup. Existing
+signed terms are not rewritten by updating a page or generator.
+
 `/measurements` is the public reading guide to runnable examples and historical
 records. Preserve engine/date/source identity, denominator, baseline, misses,
 and missing artifacts beside each result. The historical archive remains in
@@ -69,6 +86,35 @@ resolving artifact location. Tests of examples establish bounded behavior,
 not detector accuracy, human comprehension, agent outcomes or savings.
 
 ## Shared typography, navigation, and writing
+
+### Downloadable identity and report preview
+
+The Press page previews the existing logo in color, ink and white, plus the node
+mark. Files in `brand/` include outlined SVGs and transparent PNGs; they are not a
+new identity. The navigation and `landing.css` remain the mark and palette owners.
+`scripts/build_brand_assets.py --write` derives mark geometry, colors, font weight
+and tracking from the current site, outlining the bundled Space Grotesk typeface.
+Its optional authoring dependency is `fonttools[woff]`; it is not needed to serve
+the site or run the ordinary test suite. Without `--write`, it checks SVG drift.
+After regeneration, run `node scripts/render_brand_assets.cjs` with the optional
+`sharp` authoring package available. This rasterizes those exact SVGs, not a
+separate drawing. No new browser/runtime dependency is introduced.
+
+Check all four variants on suitable light/dark backgrounds. SVGs must contain no
+font fetches, scripts or external assets; PNGs retain transparency. Keep the
+Press image dimensions aligned with their SVG viewBoxes. Preserve the existing
+favicon and social image unless a separate review justifies changing them.
+`tests/test_site_brand_assets.py` checks geometry, source font identity, download
+targets, dimensions, PNG alpha-channel format and report-excerpt provenance.
+These source checks do not replace inspection of the rendered assets.
+
+The Audit deliverable section uses real HTML for its synthetic report preview,
+so its text wraps and remains selectable. The quotation comes from the linked
+Team example, not a real engagement. Keep the synthetic label, unperformed
+repository review, unrun tests and fictional findings visible alongside it.
+Do not replace these with success badges or imply that the preview is a PDF.
+
+### Shared foundation
 
 `landing.css` owns the site's design foundation. All HTML routes load it;
 `home.css` and `atlas.css` provide scoped layouts, not separate color themes.
@@ -460,7 +506,8 @@ representation: it is portable across Git checkout line endings, not a raw-byte
 checksum of the checkout. Other source-byte changes still change the digest.
 
 The metadata gate preserves the atlas SVG's two reviewed, exact accessibility
-text elements. Other titles/descriptions and authoring metadata remain checked;
+text elements and the downloadable logos' exact "Roam" and "Roam mark" titles.
+Other titles/descriptions and authoring metadata remain checked;
 a filename or ARIA attribute does not exempt them. When changing this accessible
 copy, review the replacement and update the exact elements in
 `scripts/strip_metadata.py`, keeping the mixed benign/private metadata controls
@@ -638,9 +685,42 @@ compare the remaining content; do not strip arbitrary markup until hashes match.
 Verify the rendered address and contact link in a browser too. An explained
 transformation is separate from raw-byte identity and from cache-policy success.
 
-`make site-check` compares the served changelog with the declared version; it
-does not verify every page or asset. Record the source commit, deployment ID,
-checked URLs, content/asset comparisons, redirects, and header results separately
-from browser/device/accessibility testing. Keep the prior verified deployment
+`uv run --no-sync make site-check` now runs the maintained production acceptance
+check against the clean current commit, not just the first changelog version.
+It retains raw responses and a JSON receipt in a fresh ignored
+`internal/site-acceptance/` directory. The deploy recipe runs the same custom-domain
+check after uploading. A failed post-deploy check does not undo an upload or
+authorize automatic rollback: inspect its receipt and the prior verified export.
+
+Qualify both hostnames explicitly after publication (replace both placeholders):
+
+```bash
+uv run --no-sync python scripts/verify_site_deployment.py \
+  --commit FULL_REVIEWED_COMMIT_ID \
+  --base-url https://roam-code.com \
+  --base-url https://DEPLOYMENT_ID.roam-code.pages.dev \
+  --output-dir internal/site-acceptance/NEW_RECEIPT_DIRECTORY
+```
+
+The check binds its inventory to regular committed Git blobs, refuses a dirty or
+changed HEAD, checks canonical source facts, and requests every served file.
+It verifies HTTP status, MIME type, ten configured security/cache headers and
+content identity. Known Cloudflare email obfuscation is accepted only if reversing
+those exact shapes restores the committed HTML byte for byte; other differences
+fail. Historical changelog bytes remain historical, not rewritten to current
+counts. Transport failure is UNKNOWN; an empty or incomplete inventory cannot pass.
+
+Run `scripts/verify_site_deployment.py --source-only` in CI before deployment;
+it makes no HTTP requests and does not pretend an unpublished commit is live.
+Its additional current-fact scan is a bounded phrase check, not a semantic proof:
+source version is not a fresh package-registry observation, and human review must
+still distinguish dated measurements, current claims and offer qualifications.
+The synthetic Team report at `/examples/team-replay-report.md` demonstrates the
+deliverable format, not a performed customer audit. Its current offer bindings
+are generated; fictional scenarios and the separately dated real fixture stay distinct.
+
+Record redirects, missing-page behavior, indexing policy, browser/device checks,
+copy interactions and accessibility separately; file acceptance does not exercise
+those behaviors or certify the site's claims. Keep the prior verified deployment
 available for recovery. For a package release, use the separate
 [release guide](releases.md).

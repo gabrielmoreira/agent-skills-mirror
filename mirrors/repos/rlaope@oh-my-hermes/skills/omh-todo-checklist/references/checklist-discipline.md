@@ -43,11 +43,11 @@ It clears itself. It is stored with a digest of the item list it was sent with, 
 
 **When both could apply, `blocked_reason` wins.** An item that genuinely cannot proceed carries it whatever the person is doing, because the two describe different facts: one is about the work, the other about the conversation.
 
-## 5. Writes replace, they do not merge
+## 5. One item, or the whole list
 
-`action=set` writes the whole list. Every write sends every item back, including unchanged ones and including the ones you only want to re-state. An item left out of a write is deleted, silently and without error.
+`action=advance` changes one item's state. It takes the item number (1 for the first), the start of that item's current text as a guard, and the new state; `blocked_reason` rides with it, and omitting that field clears one. A guard that no longer describes the text at that position is refused rather than applied, so a reference computed against a list that has since been re-set cannot change the wrong item. It is the same write as `action=set` by a narrower route: same validator, same stamp, same record.
 
-This applies to every edit, including adding or clearing a `blocked_reason` on one item. There is no partial update and no per-item endpoint.
+`action=set` writes the whole list. Every write sends every item back, including unchanged ones and including the ones you only want to re-state. An item left out of a write is deleted, silently and without error. Declare and re-scope with it; tick with `action=advance`.
 
 Read before re-declaring: `action=show` returns the current projection. Declaring over an existing list without reading it first is how a checklist someone else in this session was walking gets replaced.
 

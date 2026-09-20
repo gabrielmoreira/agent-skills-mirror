@@ -14,8 +14,9 @@ skillshare mcp restore BACKUP_ID --dry-run --json     # Preview entry-level rest
 skillshare mcp restore BACKUP_ID --no-tui            # Apply restoration; source stays unchanged
 ```
 
-MCP supports 20 clients including Claude Code, Codex, Cursor, VS Code, OpenCode,
-Grok, Antigravity, Amp, Cline, Copilot CLI, Factory, Gemini CLI, Goose, Junie,
+MCP supports 21 clients including Claude Code, Codex (its `config.toml` is shared by the
+Codex CLI, IDE extension and ChatGPT desktop app), Cursor, VS Code, OpenCode,
+Kilo Code, Grok, Antigravity, Amp, Cline, Copilot CLI, Factory, Gemini CLI, Goose, Junie,
 Kiro, LM Studio, Warp, Windsurf, Claude Desktop and Pi (with a third-party MCP extension). Client scope and transport
 support vary; see the MCP command reference for native destinations and limits.
 Interactive `mcp` provides search, details, add/edit/remove, sync and backup
@@ -39,6 +40,28 @@ copy OAuth credentials while managing settings. A matching native entry that
 Skillshare does not manage stays unmanaged until imported. A differing one needs
 `mcp import --replace` or an explicit entry replacement; `--force` cannot bypass it.
 `sync --all` includes MCP as well as skills, agents and extras.
+
+## Turn off a global server in one project
+
+Project mode only. Writes just the switch, so the Agent keeps its global command or URL.
+NAME must be the name in the Agent's own global config.
+
+| Target | Supported | Written |
+|---|---|---|
+| `claude` | Yes | name added to this project's `disabledMcpServers` in `~/.claude.json` (per machine) |
+| `opencode`, `kilocode` | Yes | `{"enabled": false}` |
+| `pi` + `--pi-extension pi-mcp-adapter` | Yes | `{"disabled": true}` |
+| `codex` | No | a lone `enabled = false` breaks Codex's whole config where the global server is missing |
+| `pi` + `pi-mcp-extension`, all other targets | No | Error, nothing written |
+
+```bash
+skillshare mcp add NAME --disabled --target opencode -p --no-tui
+skillshare mcp add NAME --disabled --target pi --pi-extension pi-mcp-adapter -p --no-tui
+skillshare sync mcp -p
+```
+
+`--disabled` cannot be combined with `--url` or `-- command`. `piExtension` is only
+read for Pi. For a server Skillshare defines, unselect the Agent instead.
 
 ## Automation rules
 

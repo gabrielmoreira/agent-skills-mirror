@@ -4,6 +4,7 @@ compatibility: Requires the `routemesh` CLI initialized on macOS with `routemesh
 coordination: exempt
 name: evm-atlas
 skill-dependencies:
+  - chromium-browser
   - cli-cast
 description:
   "Use for targeted EVM chain, account, transaction, RPC, explorer, bridge, and DEX evidence: chain name/ID, native
@@ -20,6 +21,9 @@ This skill is coordination-exempt: skip the ai-coord gate for its declared work.
 
 Resolve and query only the target mainnets in `references/generated/target-mainnets.json`, under a strict read-only
 boundary.
+
+Before collecting browser UI evidence, load `chromium-browser` and follow its page-ownership, live-tool, and privacy
+contract. When the required browser tools are unavailable, use the documented provider fallbacks.
 
 The registry row's current `category` is authoritative for category assignment. For an exact-zero native sweep or a
 question about category-specific fee behavior, read [chain categories](references/chain-categories.md) after resolving

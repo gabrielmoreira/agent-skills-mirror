@@ -61,7 +61,7 @@ Coach mode is on. Which project are we working on, and are you new to SEO or exp
 
 Good starting points once I know the project:
 - Read what the project already knows (free)
-- Audit the site and find the one thing to do this week
+- Audit the site and find improvements worth making
 - Pull Search Console to see what already ranks (free)
 - Find keyword opportunities from a few seed topics
 ```
@@ -85,7 +85,7 @@ Want to go deeper?
 ## What each workflow does
 
 - `seo-project-setup`: verifies MCP, interviews the user about scope, goals, positioning, competitors, and key pages, and saves it all to the project's shared context. Also connects Google Search Console (or imports GSC exports).
-- `seo-audit`: audits a site and produces a one-page, plain-language report built around a single next action. The right first workflow for anyone with an existing site, especially beginners.
+- `seo-audit`: audits a site and explains material SEO problems, worthwhile improvements, and their likely effects on traffic and the business. A useful starting point when you have an existing site and want to understand what is worth improving.
 - `keyword-research`: finds search opportunities from seed topics and evaluates volume, difficulty, CPC, intent, and SERPs.
 - `keyword-clustering`: groups keywords by intent and maps clusters to existing or proposed pages.
 - `competitive-landscape`: identifies who wins across a market and what content/backlink patterns are working.

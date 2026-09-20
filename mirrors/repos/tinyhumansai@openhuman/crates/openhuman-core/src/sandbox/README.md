@@ -108,9 +108,6 @@ resolved `SandboxBackendKind` as a security boundary on its own.
 - `crates/openhuman-core/src/agent/platform_shell.rs` — doc references
   only; it is the shared Windows-aware command builder that
   `execute_unsandboxed`/`execute_local_jail` call into.
-- `crates/openhuman-core/src/agent/profiles/guard.rs` — doc comment noting
-  that its profile-path scan is not an OS sandbox and pointing at
-  `cwd_jail` as the confinement layer.
 - `crates/openhuman-core/src/config/ops/sandbox.rs` — RPC settings surface
   (`get_sandbox_settings`) reads `SANDBOX_ENV_PASSTHROUGH` and
   `[security.sandbox]` config.

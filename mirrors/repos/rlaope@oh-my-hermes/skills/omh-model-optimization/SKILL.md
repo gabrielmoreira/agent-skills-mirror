@@ -21,7 +21,7 @@ This is a Hermes-native `model-optimization` workflow skill.
 ## Do Not Use When
 
 - The user wants their own machine's model routing configured or providers connected; use `model-setup`.
-- The goal is measurable performance of an application or system, not model handling; use `performance-goal` or `ultraperf`.
+- The goal is measurable performance of an application or system, not model handling; use `ultraperf`.
 - The user wants benchmark-superiority or provider-readiness claims without measurements.
 
 ## Examples
@@ -54,7 +54,7 @@ Bad example:
 
 ## Workflow Lane
 
-- Current lane: **Research and company ops** (`product-docs`, `source-finder`, `web-research`, `research`, `best-practice-research`, `autoresearch-goal`, `model-optimization`, `inference-serving`, `+20 more`) - research, signals, ops, and briefings.
+- Current lane: **Research and company ops** (`product-docs`, `source-finder`, `web-research`, `research`, `model-optimization`, `inference-serving`, `research-brief`, `strategy-brief`, `+18 more`) - research, signals, ops, and briefings.
 - If intent belongs to another lane, hand back to `oh-my-hermes` or name the adjacent workflow.
 - Shared product, routing, compatibility, and evidence rules: `omh-routing/references/skill-common-rail.md`.
 

@@ -95,7 +95,7 @@ outside `build_file_storage_tools`.
   backend-proxied HTTP client; see the [parent README](../README.md).
 - `crate::security::SecurityPolicy` — gates the mutating tools under
   read-only autonomy.
-- `crate::tools::traits` — `Tool`, `ToolResult`, `PermissionLevel`,
+- `tinytools` — `Tool`, `ToolResult`, `PermissionLevel`,
   `ToolCategory`.
 - `tinytools::ToolRunContext` — supplies the TinyAgents workspace root when
   running inside an agent turn.

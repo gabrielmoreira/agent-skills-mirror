@@ -32,7 +32,7 @@ Both are referenced from `.github/PULL_REQUEST_TEMPLATE.md`.
 
 Resource-footprint work for the embeddable core. Drivers live in
 `scripts/profile/`; the scenario binary is
-`crates/openhuman-core/src/bin/library_profile/main.rs` (`library-profile`,
+`crates/openhuman-cli/src/bin/library_profile/main.rs` (`library-profile`,
 behind the `rss-bench` feature).
 
 - `library-benchmarking.md` — the benchmark environment: scenarios, driver
@@ -48,5 +48,19 @@ Translations of the root `README.md`, linked from its language bar:
 `README.de.md`, `README.ja-JP.md`, `README.ko.md`, `README.ur-pk.md`,
 `README.zh-CN.md`.
 
-There is no `docs/plans/`; it was removed in `0017c58d86` and design notes now
-live beside the code.
+Domain-local design notes live beside their code. The agent-runtime migration is
+a temporary exception because it coordinates four repositories and cannot be
+owned accurately by one source directory:
+
+- `specs/agent-runtime-upstream-boundary.md` — normative ownership boundary and
+  deletion criteria.
+- `plans/migrate-agent-runtime-to-tinyagents.md` — bottom-up, test-first work
+  packages.
+- `plans/migrate-agent-runtime-helper-packages.md` — executable RED/GREEN tasks
+  for audited host-free helpers.
+- `plans/migrate-agent-runtime-waves.md` — non-overlapping ownership waves,
+  handoff gates, and final validation.
+
+Remove these four cross-repository migration documents when the final
+OpenHuman cutover lands; durable architecture changes must be reflected in
+`gitbooks/developing/architecture/` and the beside-code agent README instead.

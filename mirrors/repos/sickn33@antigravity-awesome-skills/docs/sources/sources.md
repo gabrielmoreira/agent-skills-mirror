@@ -173,6 +173,14 @@ The following skills were added during the March 2026 skills update:
 
 ---
 
+## Skills from yylo-dev/yylo-skills
+
+The following 7 skills were adapted from [yylo-skills](https://github.com/yylo-dev/yylo-skills) (MIT, v2.0.1) — repo-resident task and state management for coding-agent CLIs (Kanban/task ledger, wiki, workflows, artifacts, Ralph execution loop). Docs-only import: the `ralph-loop-yylo` `scripts/kanban.sh` wrapper is intentionally not bundled; `references/` holds the worker contract.
+
+| Skill | Original Source | License | Notes |
+| :---- | :-------------- | :------ | :---- |
+| `ledger-tasks-yylo`, `plan-ledger-tasks-yylo`, `ralph-loop-yylo`, `understand-project-yylo`, `wiki-yylo`, `workflow-yylo`, `artifact-yylo` | [yylo-dev/yylo-skills](https://github.com/yylo-dev/yylo-skills) | MIT | Kanban ledger lifecycle, PDR planning, Ralph single-task execution loop, project understanding, wiki/workflow/artifact records; adapted with upstream frontmatter, When to Use/Limitations, and fail-closed safety boundaries. |
+
 ## License Policy
 
 - **Code**: All original code in this repository is **MIT**.

@@ -73,12 +73,11 @@ appears in prompts comes from the curated-memory snapshot
 Editing these files changes the shipped default agent's persona/style without
 a code change.
 
-## Compat shim
+## Canonical module
 
-`agent::context::prompt` (`agent/context/prompt.rs`) is `pub use
-crate::agent::prompts::*` — prompt plumbing used to live there and was moved
-here so it sits next to the agents that consume it. The shim is a stable
-import path only; do not add logic to it.
+`agent::prompts` is the canonical prompt-plumbing module. Prompt logic lives
+here so it sits next to the agents that consume it; do not add a forwarding
+module for this API.
 
 ## Extension points (owned elsewhere)
 
@@ -86,14 +85,11 @@ Other domains contribute prompt content without living in this directory:
 
 - `agent/learning/prompt_sections.rs` — `LearnedContextSection`,
   `UserProfileSection`, `MemoryAccessSection`, `MemoryWriteSection`
-  (`PromptSection` impls, config-gated; `agent/harness/session/builder/factory.rs`
+  (`PromptSection` impls, config-gated; `agent/session_host/builder/factory.rs`
   and `.../builder/helpers.rs` append them with `add_section` /
   `insert_section_before` when learning or explicit preferences are enabled).
-- `agent/profiles/prompt_section.rs` — `AgentProfilePromptSection`, the
-  `## Agent profile` persona body plus the optional cross-profile workspace
-  notice; added by `agent/harness/session/builder/factory.rs`.
 - `tools/agent_policy/prompt.rs` — `render_tool_policy_boundary` is not a
-  section: `agent/harness/session/turn/context.rs` string-appends its
+  section: `agent/session_host/turn/context.rs` string-appends its
   `## Tool Policy Boundary` block after the builder output so the
   session-scoped bytes land at the tail of the prompt.
 
@@ -101,7 +97,7 @@ Built-in archetype system prompts (orchestrator, welcome, integrations_agent,
 …) live in `agent/registry/agents/<name>/prompt.rs` and
 `flows/agents/{flow_discovery,workflow_builder}/prompt.rs`, not here. Each is a
 `PromptSource::Dynamic` function that hand-assembles its body via the
-`render_*` helpers; `agent/harness/session/builder/factory.rs` wraps it with
+`render_*` helpers; `agent/session_host/builder/factory.rs` wraps it with
 `SystemPromptBuilder::from_dynamic`.
 
 ## Builder entry points
@@ -126,7 +122,7 @@ three chains share the same anti-fabrication floor and style rules.
 ## KV-cache / prefix stability
 
 The rendered prompt is built once per session and reused on every turn
-(`agent/harness/session/turn/context.rs`) so the inference backend's prefix
+(`agent/session_host/turn/context.rs`) so the inference backend's prefix
 cache hits. `PromptSection::tier()` (`PromptTier::Stable` / `Context` /
 `Volatile`, default `Stable`) controls emission order in
 `SystemPromptBuilder::build_tiered`: stable bytes (identity, tools, safety,
@@ -143,12 +139,11 @@ rather than "N days ago".
 
 ## Used by
 
-- `agent/harness/session/turn/context.rs` — loads `AGENTS.md` layers and
+- `agent/session_host/turn/context.rs` — loads `AGENTS.md` layers and
   connected identities into `PromptContext`, calls the builder, appends the
   tool-policy boundary.
-- `agent/harness/session/builder/factory.rs` — picks the entry point per
+- `agent/session_host/builder/factory.rs` — picks the entry point per
   `PromptSource` and registers the learning/profile sections.
 - `agent/debug/` — `dump_agent_prompt` / `dump_all_agent_prompts` (`mod.rs`)
   build the same `PromptContext` to render each agent's prompt,
   `dump_writer.rs` writes it to disk, `prompt_size.rs` measures it.
-- `agent/context/prompt.rs` — compat re-export shim (see above).

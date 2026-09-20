@@ -88,9 +88,13 @@ function Resolve-CursorPlanContext {
     # inject-plan.sh is. A stale pointer text, a dot-named directory or an
     # invalid slug is ignored the way inject-plan.sh ignores it, so the legacy
     # root applies, as on every other route.
+    # A pointer that is a directory or a symlink is unsafe. LinkType, not the
+    # ReparsePoint attribute: OneDrive Files On-Demand marks every synced file
+    # as a reparse point and such a pointer is a plain file to every other
+    # route; the attribute test made this hook go silent on OneDrive (#275).
     $activeItem = Get-Item -LiteralPath (Join-Path $planRoot '.active_plan') -Force -ErrorAction SilentlyContinue
     if ($activeItem -and ($activeItem.PSIsContainer -or
-            (($activeItem.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0))) {
+            (([string]$activeItem.LinkType) -in @('SymbolicLink', 'Junction')))) {
         return (New-CursorPlanContext $null 'invalid' 'unsafe-pointer')
     }
     if ($planRootExists) {

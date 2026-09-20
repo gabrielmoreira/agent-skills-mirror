@@ -9,7 +9,7 @@ description: "Write and save an OpenSEO report as one self-contained HTML page. 
 
 Turn finished research into one self-contained HTML page, saved to the project with `save_report`, so anyone on the team can open it in the app, read it on a phone, and print it to PDF.
 
-Every OpenSEO skill that produces a recommendation delivers through this skill. Chat gets the link, the verdict, and the top action. The report gets everything else.
+Every OpenSEO skill that produces a recommendation delivers through this skill. Chat gets the link, the verdict, and the leading recommendation with its expected benefit, if there is one. The report gets everything else.
 
 ## Before you write
 
@@ -25,21 +25,25 @@ Use a template only when the user names it, or asks for the kind of report a tem
 
 ## Writing rules
 
-- **Write notes, not essays.** The reader scans. A finding is a heading and two or three short bullets: Status (what is true, with the number), Fix (the step), and Why only when it is not obvious. No paragraph runs past two sentences. A section opens with one sentence or none. A summary section (a verdict, a snapshot, a market read) is a bullet list, one fact per line, never prose. How the data was gathered goes in the closing "How this report was made" section, not in the finding.
-- **Be specific and numeric.** "Position 4.6, one click on 1,085 impressions" beats "underperforming". Every claim carries the number, the quoted tag, or the URL that proves it.
+When the producing skill specifies a recommendation format, use that format instead of the generic Problem / Change / Expected effect structure below. For example, an SEO audit can use short Do this / Why bullet lists. Keep the same requirements for concrete actions, supporting evidence, business benefit, and honest uncertainty. The starter template's finding markup is an example, not an override of that skill's format.
+
+- **Write notes, not essays.** The reader scans. A recommendation is a heading and three short bullets: Problem (what is true, with evidence), Change (the step and how it addresses the problem), and Expected effect (what could improve, why the business cares, and the likely scale and uncertainty). For descriptive findings, use the relevant subset; do not invent a fix. No paragraph runs past two sentences. A section opens with one sentence or none. A summary section (a verdict, a snapshot, a market read) is a bullet list, one fact per line, never prose. How the data was gathered goes in the closing "How this report was made" section, not in the finding.
+- **Make the reasoning visible.** Use numbers and specific pages to support observations. Explain the mechanism and expected benefit of recommendations in plain language; do not omit that explanation for brevity or replace it with generic claims such as "builds trust." Distinguish measured outcomes, estimates, and hypotheses. A supported qualitative assessment is better than invented precision.
 - **Be honest about confidence.** Say which numbers came from a tool and which you verified yourself. When you could not check something, put it in a `.note` and say so.
 - **Plain language.** Gloss every term of art on first use: canonical, meta description, crawler, 301, structured data. No drama words, no exclamation points, no filler.
-- **One report, one spine.** Lead with the verdict, then the single most important action, then the supporting detail. A report with twenty findings has failed.
+- **One report, one spine.** Lead with the verdict and its business implication, then the material findings and worthwhile recommendations. If the research does not establish a worthwhile action, state that conclusion and the relevant limits. A report with twenty findings has failed.
 - **Print the numbers.** A chart never carries a value that is not also written out in text.
 
 ## Title and summary
 
-- `title`: names the subject and the period, under 120 characters. "badseo.dev SEO audit, Sep 2026". Never "SEO Report" or "Analysis".
-- `summary`: markdown under 2,500 characters, in this order — the verdict, the single top action, then the key numbers. This is what `list_reports` returns and what you or another agent read instead of the HTML, so write it for a reader who will never open the page.
+- `title`: names the report type or specific subject and the full report date, under 120 characters. Use "Competitive Landscape — Sep 17, 2026" or "Keyword Research — Sep 17, 2026". Use the actual report date in `MMM D, YYYY` format, including the day and four-digit year; put the data coverage period in the report body. Never a generic "SEO Report" or "Analysis".
+- Omit the website from the title when the report is about the project's website. Compare hostnames, ignoring the protocol, `www.`, and trailing slash. If the subject is a different website, include its bare hostname, for example "Competitor Analysis: example.com — Sep 17, 2026". Also include the subject hostname when the project has no website set. Never put `https://` or a full URL in the title.
+- Use the same title in `save_report`, the HTML `<title>`, and the visible `<h1>` so the report list, share preview, and report agree.
+- `summary`: markdown under 2,500 characters, in this order — the verdict, the leading recommendation and expected benefit (or why no material action is established), then the key evidence. This is what `list_reports` returns and what you or another agent read instead of the HTML, so write it for a reader who will never open the page.
 
 ## The closing section: how this report was made
 
-Every report ends with an `h2` titled "How this report was made" (id `how-this-report-was-made`), after "What to do next". It is the only section with a fixed opening line: one sentence naming the skill that produced the report and linking its docs page, so a reader who was handed the link can learn what the workflow does and rerun it.
+Every report ends with an `h2` titled "How this report was made" (id `how-this-report-was-made`). When "What to do next" is included, place it immediately before this section. It is the only section with a fixed opening line: one sentence naming the skill that produced the report and linking its docs page, so a reader who was handed the link can learn what the workflow does and rerun it.
 
 ```html
 <p>Generated by the <a href="https://openseo.so/docs/skills/seo-audit" target="_blank" rel="noopener">OpenSEO SEO Audit skill</a>, run by AGENT NAME on MONTH D, YYYY.</p>
@@ -62,7 +66,7 @@ These are enforced by the viewer, not by taste. A report that breaks them render
 
 ## After you save
 
-- `save_report` returns `{ reportId, url, htmlBytes }`. The whole reply is at most three short bullets, then the link last on its own line as `Read the full report: <url>`. The bullets: the verdict, the top action, and anything the user has to act on (a project you created, a question you need answered). Nothing else: no account of the run, no reviewer notes, no list of what worked, no restating the report. The report is how they learn; chat only points at it.
+- `save_report` returns `{ reportId, url, htmlBytes }`. The whole reply is at most three short bullets, then the link last on its own line as `Read the full report: <url>`. The bullets: the verdict, the leading recommendation and expected benefit if supported, and anything the user has to act on (a project you created, a question you need answered). Nothing else: no account of the run, no reviewer notes, no list of what worked, no restating the report. The report is how they learn; chat only points at it.
 - The skill you are running appends its own research-log line; add one only if it does not: `{ appendResearchLog: { summary: "Report: <title>. Verdict: <conclusion>" } }`.
 - If the save fails, the error names the limit and the value. Fix that one thing and save again. Never paste the report into chat instead.
 
@@ -74,7 +78,7 @@ Copy this, keep the CSS as it is, and replace the ALL-CAPS placeholders. Each pr
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>DOMAIN — REPORT TITLE</title>
+<title>REPORT TITLE</title>
 <style>
 /* One light look, on screen and on paper. The report is read inside the app,
    which has its own theme toggle, and a saved document has no way to hear about
@@ -182,14 +186,15 @@ footer{max-width:660px;margin:64px 0 0;padding:26px 0 0;border-top:1px solid var
   </div></aside>
   <article>
 
-    <p>One or two sentences: the state of things and the one action.</p>
+    <p>One or two sentences: the state of things and what it means for the business.</p>
 
     <h2 id="section-heading">SECTION HEADING</h2>
 
     <h3>FINDING TITLE</h3>
     <ul class="finding">
-      <li><b>Status:</b> what is true, with the number or the quoted tag that proves it.</li>
-      <li><b>Fix:</b> the concrete step, doable this week by a non-technical person.</li>
+      <li><b>Problem:</b> the observed gap, with the evidence and affected page.</li>
+      <li><b>Change:</b> the concrete step and how it addresses the gap.</li>
+      <li><b>Expected effect:</b> what could improve, why the business cares, and the likely scale and uncertainty.</li>
     </ul>
 
     <div class="note"><p>A caveat, a confidence note, or something you could not verify.</p></div>
@@ -211,7 +216,7 @@ footer{max-width:660px;margin:64px 0 0;padding:26px 0 0;border-top:1px solid var
 
     <hr>
     <h2 id="what-to-do-next">What to do next</h2>
-    <ol><li>The top priority, first.</li></ol>
+    <ol><li>The first step for worthwhile work and how to check the intended result. Omit if no action is supported.</li></ol>
 
     <h2 id="how-this-report-was-made">How this report was made</h2>
     <p>Generated by the <a href="https://openseo.so/docs/skills/SKILL-NAME" target="_blank" rel="noopener">OpenSEO SKILL TITLE skill</a>, run by AGENT NAME on MONTH D, YYYY.</p>
@@ -232,7 +237,7 @@ footer{max-width:660px;margin:64px 0 0;padding:26px 0 0;border-top:1px solid var
 - **Header** — `h1` (the report title) and `.byline` (who it is for and the date): "Prepared for badseo.dev · September 3, 2026".
 - **`.rail` contents** — the table of contents, sticky to the right of the text on a wide screen, dropped on a phone and in print. Every `h2` has an id, and the contents list links to each one with a plain `href="#id"` — in-page anchors are the one kind of link that must **not** use `target="_blank"`. Ids are the kebab-case of the heading text.
 - **`h2` / `h3`** — `h2` opens a section, `h3` names one finding. Do not skip levels.
-- **Finding** — `h3`, then a `.finding` list: `<li><b>Status:</b> …</li>`, `<li><b>Fix:</b> …</li>`, and `<li><b>Why:</b> …</li>` only when the reason is not obvious. Each bullet is one or two sentences. This is the workhorse; most of a report is a run of these.
+- **Finding** — use the producing skill's recommendation structure when specified; otherwise `h3`, then a `.finding` list with Problem, Change, and Expected effect, each one or two sentences. Keep the expected benefit visible beside the proposed work, including when it is uncertain or limited. Descriptive findings can use only the relevant bullets.
 - **`.note`** — one left-ruled callout for a caveat, a confidence limit, or something you could not verify. Two or three in a report, never a row of them.
 - **`.tw` table** — every numeric column gets `class="n"` on both the `th` and the `td` so the digits line up. Keep tables to five columns or fewer, put the long-text column last, and keep cell text short; a wide table scrolls on a phone and clips in print.
 - **`figure` + `.bars`** — one small bar chart where a comparison reads faster than a sentence. One row per item: `.label`, a `.track` holding a `.bar` whose inline width is the value as a percentage of the largest, and `.value`. Inline SVG is fine for anything that is not a bar chart; give it a `viewBox` and real `<text>` labels.

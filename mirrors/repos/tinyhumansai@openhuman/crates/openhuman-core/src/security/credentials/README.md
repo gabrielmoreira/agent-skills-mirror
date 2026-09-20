@@ -2,7 +2,7 @@
 
 Credential management for the backend credential the core authenticates with and for provider/OAuth auth profiles. Owns the on-disk **auth-profiles** store (encrypted JSON + OS keychain), the `app-session` / `api-key` credential slots and everything the core does when one is installed or removed, per-provider token storage (e.g. API keys, OAuth token sets), the backend OAuth connect/handoff flows, and the Composio direct-mode (BYO key) credential slot. Exposes everything under the `auth.*` JSON-RPC / CLI namespace and runs the canonical sign-out teardown when a `SessionExpired` event fires.
 
-**The core never obtains, validates, exchanges or refreshes a credential.** Login-token exchange, `GET /auth/me` validation and the current-user cache are the host's job — the Tauri shell and the TUI through `crates/openhuman-session`, an embedder through `openhuman_embed::Auth`, an operator through the CLI or the boot env vars. They hand the result over with `auth.set_credential`.
+**The core never obtains, validates, exchanges or refreshes a credential.** Login-token exchange, `GET /auth/me` validation and the current-user cache are the host's job — the Tauri shell and the TUI through `openhuman_tinyhumans::session`, an embedder through `openhuman_embed::Auth`, an operator through the CLI or the boot env vars. They hand the result over with `auth.set_credential`.
 
 ## Responsibilities
 
@@ -99,7 +99,7 @@ Note: `list_provider_credentials_by_prefix` and the Composio-direct/secret helpe
 
 ## Used by
 
-Many domains consume `AuthService` / session helpers / Composio-direct key, including (paths under `crates/openhuman-core/src/`): `core/{all,auth,jsonrpc}.rs` and `core/runtime/{context,services}.rs` (controller wiring, auth gate, gated services, boot seeding, identity seeding), `api/jwt.rs`, `desktop/app_state/ops/` (snapshot), `channels/controllers/ops/*` and `channels/runtime/startup/credentials.rs` (managed credentials), `integrations/composio/{client/direct,ops/direct_mode}.rs` (BYO key), `config/ops/model.rs`, `config/migrations/unify_ai_provider_settings.rs`, `embeddings/{cloud_adapter,factory,rpc/api_keys}.rs`, `security/encryption/ops.rs`, `http_host/auth.rs`, `inference/{openai_oauth,provider}/*` (provider auth, OpenAI OAuth), `hosted/{announcements,billing,team}/ops.rs`, `flows/*`, `modules/{connectors,memory_host}.rs`, `web3/wallet/ops.rs`, and the prompt-layer identity readers (`agent/tinyagents/host/context_composer.rs`, `agent/harness/session/turn/context.rs`, …).
+Many domains consume `AuthService` / session helpers / Composio-direct key, including (paths under `crates/openhuman-core/src/`): `core/{all,auth,jsonrpc}.rs` and `core/runtime/{context,services}.rs` (controller wiring, auth gate, gated services, boot seeding, identity seeding), `api/jwt.rs`, `desktop/app_state/ops/` (snapshot), `channels/controllers/ops/*` and `channels/runtime/startup/credentials.rs` (managed credentials), `integrations/composio/{client/direct,ops/direct_mode}.rs` (BYO key), `config/ops/model.rs`, `config/migrations/unify_ai_provider_settings.rs`, `embeddings/{cloud_adapter,factory,rpc/api_keys}.rs`, `security/encryption/ops.rs`, `http_host/auth.rs`, `inference/{openai_oauth,provider}/*` (provider auth, OpenAI OAuth), `hosted/{announcements,billing,team}/ops.rs`, `flows/*`, `modules/{connectors,memory_host}.rs`, `web3/wallet/ops.rs`, and the prompt-layer identity readers (`agent/tinyagents/host/context_composer.rs`, `agent/session_host/turn/context.rs`, …).
 
 ## Notes / gotchas
 

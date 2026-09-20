@@ -75,7 +75,7 @@ None. The module has no `bus.rs` and no `DomainEvent` publishers/subscribers.
 
 - `crates/openhuman-core/src/core/all.rs` — registers `all_cost_registered_controllers` / `all_cost_controller_schemas`.
 - `crates/openhuman-core/src/core/jsonrpc.rs` — calls `cost::init_global(cfg.cost.clone(), &workspace_dir)` at bootstrap.
-- `crates/openhuman-core/src/agent/tinyagents/observability/event_bridge.rs`, `agent/tinyagents/turn_outcome.rs`, `agent/tinyagents/host/budget_gate.rs`, and `agent/harness/subagent_runner/ops/graph/dispatch.rs` — call `cost::record_provider_usage` after provider calls to log per-turn (and subagent) usage.
+- `crates/openhuman-core/src/agent/tinyagents/observability/event_bridge.rs`, `agent/tinyagents/turn_outcome.rs`, `agent/tinyagents/host/budget_gate.rs`, and `agent/subagent_host/` — call `cost::record_provider_usage` after provider calls to log per-turn (and subagent) usage.
 - `crates/openhuman-core/src/tools/mod.rs` — re-exports `platform::cost::tools::*`.
 - `crates/openhuman-core/src/config/schema/identity_cost.rs` — `CostConfig` definition references `check_budget` / `record_provider_usage` semantics in docs.
 

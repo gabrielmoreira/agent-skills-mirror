@@ -31,7 +31,7 @@ class Node:
 
 def main() -> int:
     parser = argparse.ArgumentParser(
-        description="Archive checked Markdown tasks from TODO.md into .ai/todos/."
+        description="Archive checked Markdown tasks from .ai/TODO.md into .ai/todos/."
     )
     parser.add_argument("--root", default=None, help="repository root; defaults to git root or cwd")
     parser.add_argument("--date", default=None, help="YYYY-MM-DD or YYYY_MM_DD; defaults to today")
@@ -44,7 +44,7 @@ def main() -> int:
     args = parser.parse_args()
 
     root = resolve_root(args.root)
-    todo_path = root / "TODO.md"
+    todo_path = root / ".ai" / "TODO.md"
     if not todo_path.exists():
         print(f"TODO.md not found: {todo_path}", file=sys.stderr)
         return 1
@@ -93,7 +93,7 @@ def main() -> int:
             print(f"NOTE: {archive_path.name} exists; this batch will be merged into it.")
         print(f"Checked tasks to archive: {archive_count}")
         print(f"Tasks remaining: {remaining_count}")
-        print("\n--- TODO.md ---")
+        print("\n--- .ai/TODO.md ---")
         print(remaining_text, end="")
         print("\n--- archive ---")
         print(archive_text, end="")

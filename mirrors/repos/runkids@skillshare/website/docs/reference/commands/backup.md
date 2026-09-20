@@ -103,7 +103,7 @@ This same policy runs automatically after every `sync`, so `--cleanup` is only n
 
 The skill directories present depend on the target's mode — see [What Gets Backed Up](#what-gets-backed-up).
 
-## What Gets Backed Up
+## What Gets Backed Up {#what-gets-backed-up}
 
 A backup protects only what `sync` could destroy: **local content that exists in the target but not in your source.**
 
@@ -117,7 +117,7 @@ This means:
 
 If a target contains nothing but symlinks, no backup is created and `backup` reports nothing to do — an empty restore point is not useful.
 
-## Backups & Disk Space
+## Backups & Disk Space {#backups--disk-space}
 
 Backups never copy your source, so they stay small. Three separate mechanisms are easy to confuse:
 
@@ -139,7 +139,7 @@ skillshare backup --cleanup --dry-run      # Preview what retention would remove
 
 Copy-mode targets are the one case where snapshots can still grow: those are real files, so anything under a skill directory is copied. Keep runtime caches and large artifacts outside the skill tree, or exclude them with `ignore:` so they never reach the target in the first place.
 
-## Agent Backup
+## Agent Backup {#agent-backup}
 
 Agents have their own backup flow that runs alongside skill backups, with two distinctions worth knowing:
 

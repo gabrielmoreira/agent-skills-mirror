@@ -126,10 +126,8 @@ Namespace `channel`, registered via
 
 ## Calls into
 
-- `crate::agent::harness` — `Agent::from_config_for_agent_with_profile`,
+- `crate::agent::harness` — `Agent::from_config_for_agent`,
   `run_queue::{RunQueue, QueueMode}`, and the tool-calling loop itself.
-- `crate::agent::profiles::AgentProfileStore` — resolves the active profile
-  for `build_session_agent`.
 - `crate::threads::turn_state::{TurnStateStore, TurnStateMirror}` — the
   progress bridge mirrors turn state here for cross-surface visibility.
 - `crate::inference::provider::provider_for_role` — resolves the provider
@@ -160,12 +158,12 @@ Namespace `channel`, registered via
   `channels/providers/telegram/remote_control.rs` calls
   `invalidate_thread_sessions`.
 - `flows/ops/streaming.rs` and
-  `agent/task_dispatcher/executor.rs` — core-initiated turns reuse
+  `agent/orchestration/background_delivery.rs` — core-initiated turns reuse
   `spawn_progress_bridge` and `presentation::deliver_response*` so they render
   on the same socket surface.
 - `publish_web_channel_event` is also called from `cron`, `voice`,
-  `memory/tree/health`, `channels/proactive.rs`, and
-  `agent/task_dispatcher/registry.rs` for surface-level notifications.
+  `memory/tree/health`, and `channels/proactive.rs` for surface-level
+  notifications.
 
 ## Tests
 

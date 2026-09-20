@@ -1,84 +1,140 @@
 ---
 name: seo-audit
-description: "Audit a website and deliver a one-page, plain-language SEO report anyone can act on, centered on a single do-this-week action."
+description: "Audit a website, investigate its real search opportunities, and deliver a short data-backed report on the few changes most likely to grow organic traffic that converts."
 ---
 
 # OpenSEO SEO Audit
 
 ## Goal
 
-Audit a domain and produce a one-page HTML report that anyone, including a complete SEO beginner, can read once and act on. The whole report exists to support ONE action the owner can take this week; everything else is supporting detail.
+Find the work that would most improve a site's useful organic traffic, then explain it so a non-expert can act on it. Research broadly; recommend selectively. The report leads with one to three recommendations that either capture meaningfully more qualified search demand or stop a real loss.
 
-Use this when asked for an SEO audit or review of a domain, especially when the output is a shareable report for a non-expert. For expert-facing analysis of a competitor or market, use `competitor-analysis` or `competitive-landscape` instead.
+Use this when asked for an SEO audit or review of a domain, especially for a shareable report. For expert-facing analysis of a competitor or market, use `competitor-analysis` or `competitive-landscape` instead.
 
-## Required inputs
+## Inputs and project context
 
-- Domain to audit
-- `projectId` (use `list_projects`; if no project matches the domain, create one with `create_project`)
+- Domain to audit and `projectId` (`list_projects`; if no project matches, `create_project`).
+- Call `get_project_context` first. This skill needs `business_overview`. If it is empty, infer what the business does from the site, confirm it with the user in one question, write it back with `update_project_context`, and continue. Suggest `seo-project-setup` at the end for the rest; never front-load the full interview.
+- Reuse research-log results under 30 days old for discovery. A ranking claim that drives a recommendation still needs a live check made during this audit.
+- On finish, write back what is durable with `update_project_context` (a corrected `business_overview`, the pages the report names via `addKeyPages`) and append `{ appendResearchLog: { summary: "Site audit: <domain>. Verdict: <conclusion>" } }`.
 
-## Project context
-
-The project-context tools are free and shared with the app and other agents.
-
-1. Call `get_project_context` first and ground the report in it — what the business does decides which findings matter and what the one thing should be.
-2. This skill needs `business_overview`. If it is empty, run a minimal inline setup: infer what the business does from the site and confirm it with the user in one question, write it back with `update_project_context`, then continue the audit. Never front-load the full interview; suggest `seo-project-setup` at the end for the rest.
-3. Before spending credits, check the research log. If the same research ran within the last 30 days, reuse that result and say so instead of re-buying it.
-4. On finish, write back what is durable — a corrected `business_overview`, the pages the report singles out via `addKeyPages` — and append a research log entry: `{ appendResearchLog: { summary: "Site audit: <domain>. Verdict: <conclusion>" } }`.
-
-## Deliver as a report
-
-Deliver through the `seo-report` skill, saving with `skill: "seo-audit"`. If that skill is not available, say so and stop before writing HTML.
+Deliver through the `seo-report` skill, saving with `skill: "seo-audit"`. If that skill is unavailable, say so and stop before writing HTML.
 
 ## OpenSEO MCP tools
 
-- `whoami`: confirm connection and remaining credits before spending anything. If OpenSEO is not connected, stop and ask the user to connect it.
-- `list_projects` / `create_project`: resolve the `projectId`.
-- `run_site_audit`: start the crawl (default page budget). Leave Lighthouse off (its default) — it adds several minutes and this report doesn't need it; pass `runLighthouse: true` only when the user asks for performance/Core Web Vitals depth. Then check `get_audit_status` (the crawl takes a minute or two — wait between checks rather than polling in a loop) and read `get_audit_issues`. Use `get_audit_pages` when per-page evidence helps.
-- `get_backlinks_overview`: backlink and referring-domain picture; usually the deciding data for the "one thing".
-- `get_domain_overview`: estimated organic traffic and organic keyword count. Skip when the site is clearly dead.
-- `research_keywords`: keyword ideas with volume and difficulty, used to propose a starting focus area. One call with 1-3 seeds taken from what the site is actually about. Skip when the site is down.
+- `whoami`: confirm the connection and credits before spending. If OpenSEO is not connected, stop and ask the user to connect it.
+- `run_site_audit`, then `get_audit_status` (wait a minute or two between checks), `get_audit_issues`, `get_audit_pages`. Leave Lighthouse off unless the user asked for performance depth. Crawl reads are free.
+- `get_backlinks_overview` and `get_domain_overview`: orientation only. Provider traffic and keyword counts are estimates with no single observation date; they are not measured visits.
+- `get_ranked_keywords`: which queries send which pages traffic. Start with one domain-level call with `resultTypes: ["organic"]`; use `scope: "exact_url"` for the specific pages you compare. A page missing from a limited domain sample is not proof it has no rankings. Ranking rows carry their own `last_updated_time`; keyword metric dates are not ranking dates.
+- `get_serp_results`: the live check behind every ranking claim in the report. The returned `rank` counts every result block, so count organic (unpaid) listings yourself and report the spot with its page, ten spots per page: "#10 (page 1)", "#11 (page 2)". Request depth 20; a page not seen is "not in the first 20 results". Record the exact query, country, language, date, how many organic listings came back, and the matching URL; those details go in the evidence appendix, not the tables. A failed lookup is unknown, not "not in the first 20 results".
+- `get_search_console_performance`: when connected, first-party clicks and impressions separate low visibility from low click-through. Missing access is a coverage gap, not a blocker.
+- `get_keyword_metrics` and `research_keywords`: demand for the queries a candidate page targets. One focused metrics batch usually suffices; one research call with 1–3 seeds when a demand gap could change the decision.
+- Web reading (fetch, scrape, or search): the site's own pages, sitemap, the leading results for a query, and competitor pages.
 
-Keep total spend modest: one audit, one backlinks overview, at most one domain overview, and at most one keyword-research call. Only the overview and keyword lookups spend credits.
+Research until another lookup is unlikely to change which opportunities lead. Respect an explicit user budget and say which comparison it prevented.
 
 ## Workflow
 
-1. `whoami`, then resolve the `projectId`.
-2. `run_site_audit` for the domain (Lighthouse stays off unless the user asked for performance depth). While it crawls, fetch `get_backlinks_overview`.
-3. When the crawl finishes, read `get_audit_issues` (and `get_domain_overview` if the site is alive).
-4. If the audit comes back broken or nearly empty (certificate errors, 5xx, one page crawled): investigate before writing. Check the certificate and redirect variants yourself, and search the web for the business. A dead domain often has a live successor site, which flips the whole recommendation to "redirect the old domain".
-5. Verify every finding you plan to report against the live page HTML by fetching pages yourself. Report nothing you have not seen evidence for.
-6. Decide the one thing. Derive it from the data, never from generic advice. Common patterns:
-   - Clean site, no backlinks: outreach to guests, partners, or directories, with a ready-to-send message.
-   - Dead domain, live successor site: permanent redirect via hosting support, with the exact sentence to send them.
-   - Blocked or noindexed pages: remove the block.
-   It must be doable this week by a non-technical person, with copy-paste-ready mechanics included.
-7. When the site is healthy, propose a starting focus area: run one `research_keywords` call seeded from the site's actual topic, then pick one theme and 3 to 5 specific, low-difficulty keywords the site can realistically rank for, each with the page or post to make. This is a starting direction, not a keyword strategy; point the user at the `keyword-research` skill for the full workflow. Skip this step entirely when the site is down — the one thing is all that matters there.
-8. Review before delivering: run an adversarial pass with a second agent or model if your environment has one, otherwise do a fresh self-review. Give the reviewer the verified facts and have it attack four things: claims beyond the facts, unglossed jargon, anything overwhelming for a beginner, and dramatic language. The reviewer may also flag true facts it was not given; check those against your evidence instead of "fixing" them.
-9. Write and save the report through the `seo-report` skill (see Output format).
+### 1. Orient
+
+`whoami`, resolve the project, start `run_site_audit`. While it crawls: backlinks overview, domain overview, the domain-level ranked-keyword sample, and the sitemap plus navigation. Write down the site's page families from the sitemap, not just the crawl sample: product, pricing, comparison or alternative, tools and templates, guides, categories, services, locations, whatever the site actually has.
+
+If the crawl is broken or nearly empty (certificate error, 5xx, one page), investigate before anything else. Check redirects and certificate variants yourself and search for the business; a dead domain with a live successor flips the whole recommendation to "redirect the old domain".
+
+### 2. Investigate every family that matters to the goal
+
+For each family that could bring buyers, read at least two pages' main content (ignore navigation and shared templates): the page performing best in the ranking data and one performing worst or typical. For each page ask: what decision or question does its searcher have, and does the page answer it with specific, accurate, sourced information, or does it substitute a name, location, or keyword into a shared answer? Compare against what the leading results for that query provide.
+
+A common SaaS pattern worth checking directly: competitor comparison or alternative pages and competitor pricing pages are two separate families, each answering a different buying question. Read siblings side by side. Investigate uneven visibility between siblings (intent, content specificity, links, authority); a sibling that already ranks near the top is something to protect rather than rewrite.
+
+Check the basics for any page you might name: status, canonical (the URL the page declares as its preferred version), index directives, and how visitors reach it internally. Broaden when a family is missing from the crawl, when siblings perform very differently, when a tool or template page turns out to rank, or when a live query returns a different page than expected.
+
+Run the live checks now, not after drafting: the query cluster each candidate page serves (the head term plus the variants buyers actually use), including both sides of any stronger-versus-weaker comparison. Re-run the queries that decide the leading recommendation before writing. If two checks disagree, write the later one and the earlier in brackets, for example "#10, page 1 (first check: not in the first 20 results)"; that spread is same-day variation, not a trend. One snapshot is not a baseline.
+
+### 3. Shortlist before you decide
+
+Write `opportunities.md` in your working folder (working notes, not the deliverable): one row per serious candidate, usually five to ten, drawn from at least three different kinds of opportunity:
+
+- an existing page underperforming the demand it targets
+- real demand with no page that answers it, including feature, framework, or use-case queries taken from the product's own claims
+- a winning page to protect or correct
+- an access, indexing, or redirect defect that is costing visits
+- helping existing visitors take the next step
+
+Columns: pages | problem observed | evidence (query cluster with US monthly volumes, spot and page or "not in the first 20 results", date) | proposed change | who searches and why they matter to this business | plausible benefit | effort | main uncertainty.
+
+If a row's ranking would change with one more lookup (a missing volume, an unchecked sibling, a query you never ran live), do that lookup before ranking.
+
+### 4. Choose
+
+Prefer a bounded change that directly fixes a demonstrated problem for searchers likely to become customers, with a credible path to a meaningful gain. A larger raw-volume opportunity with a weaker diagnosis does not automatically outrank it. A genuine access or indexing blocker, a measurable traffic loss, or a dead domain jumps the queue.
+
+None of these decides on its own: the volume of one sampled query; how easy the fix is; a crawler warning; a hypothetical position-one traffic figure; a navigation or redirect repair with no demonstrated traffic loss. Those belong in the checked table, not the top three. Do not recommend rewriting a page that already ranks near the top for its target query.
+
+Every shortlist row ends in one of two places: a recommendation, or a row in the report's "What else we checked" table with a real reason. "Later, if sales asks for it" is not a reason; "demand is a quarter of the leading candidate's and the page already ranks seventh" is. For the runner-up, write one sentence on why the leader beats it; that sentence goes in the report.
+
+### 5. Size the benefit honestly
+
+- Name the mechanism: a new ranking, a higher position on an existing ranking, or more clicks at the current position. A page that already ranks already receives part of the volume, so a scenario on total volume overstates the gain.
+- Size against the cluster the change serves, not one exact term; note overlap instead of adding variants as if they were different people.
+- Demand figures are US unless stated; never multiply into an invented global number.
+- Search volume is not visits. Use a stated click-share assumption and show it in a scenario table; a position-one scenario is allowed when labeled hypothetical, not promised.
+- If the current traffic baseline is unknown, call the figure total potential visits, not additional visits. Do not add overlapping queries.
+- Business relevance can be inferred from intent and product fit; say so and label it. Never invent a conversion rate or revenue.
+- When there is no number, give a directional assessment and its reason ("already third for its main query, so headroom is small").
+
+### 6. Review, then write
+
+Draft the report body (markdown or HTML, not yet saved). Give the reviewer (a second agent or model if your environment can run one, otherwise a fresh self-review) that draft and the shortlist. The reviewer must: argue the case for the strongest rejected row and say whether the draft answers it; confirm the leading recommendation's evidence is in the draft; confirm every material diagnosis from step 2 survived as a recommendation or a table row; check dates, geography, and rank conventions; and flag paragraph-length bullets and jargon. Fix what it finds, verify any new factual claim against the evidence, then write and save through `seo-report`.
 
 ## Output format
 
-`h1`: the domain. Then one or two opening sentences: the overall state and the one thing.
+Use the title conventions in `seo-report`. Sections, in order:
 
-If a report template applies (see `seo-report`), its sections and tone replace this list.
+1. **Your next SEO move**: two or three bullets. First action, next action if any, and what is already working. These bullets replace the starter template's opening paragraph and its closing "What to do next" section; include neither.
+2. **Recommendations**: one to three, in priority order. Each is an `h3` naming the action and the page or small group, then:
+   - **Do this**: two to four bullets. Start with a verb, name what changes, link the page.
+   - **Why**: two to four bullets. The observed gap, who searches and why they matter, the plausible benefit, the main uncertainty. Benefit and confidence stay together.
+   - A small evidence table (demand and current visibility, or stronger-versus-weaker sibling, or observed content versus proposed). Make the table explain itself: put geography and date in the column header, write positions as "#10 (page 1)" or "not in the first 20 results" (never "10/17", arrows, or listing counts), and say "estimated" in the volume header. Add a "How to read this" bullet only for a limit the headers cannot carry. Optionally a two-row scenario table labeled hypothetical.
+3. **What else we checked**: one table: Opportunity | What we found | Decision. One row per shortlist row that did not become a recommendation, starting with the runner-up and its sentence from step 4, plus one row grouping maintenance. Keep cells to a line.
+4. **How this report was made**: the fixed skill link line from `seo-report` (URL `https://openseo.so/docs/skills/seo-audit`, text "OpenSEO SEO Audit skill"), a two-line coverage and limits note, then a `<details><summary>Evidence and methodology</summary>` block, closed by default, holding the crawl sample, page families read, the full live-check table (query, volume, position, organic listings returned, time), calculations, and sources. Keep it self-contained; local file paths are not evidence.
 
-Sections in this order:
+Writing rules: short bullets, one idea each, usually 8–20 words. No Problem / Change / Expected effect paragraphs and no repeated summaries. There is no word target; if the main body outgrows about two screens, move supporting detail into the disclosure instead of deleting it. If the research establishes no worthwhile action, say what is working and what the audit could not establish rather than filling the format.
 
-1. **Verdict** — three to five bullets, one line each: the state of the site, the numbers that matter (pages crawled and indexable, search terms and estimated visits, linking sites), and the biggest gap. No prose.
-2. **Top priority** — one finding, with copy-paste-ready mechanics.
-3. **Small fixes** — one finding each, 5 to 10 max, ordered by impact. Each shows the exact evidence: a quoted tag, a number, or a URL.
-4. **Where to focus first** (healthy sites only) — one sentence, then a table of 3 to 5 keywords with volume and difficulty and the page or post to make for each, plus a bar chart when the volumes are worth comparing. Omit the whole section when the site is down.
-5. **What's working now** — a short list.
-6. **What to do next** — an ordered list, the one thing first.
-7. **How this report was made** — opens with the skill link line from `seo-report`, pointing at `https://openseo.so/docs/skills/seo-audit` ("OpenSEO SEO Audit skill"), then what the tools reported and what you verified by hand.
+Skeleton for one recommendation and the checked table (keep the `seo-report` CSS unchanged; every `h2` needs an id and a contents-rail entry):
 
-Use a note for anything you could not verify or where the site's goal makes a standard recommendation the wrong call.
+```html
+<h2 id="recommendations">Recommendations</h2>
+<h3>Make the Northwind comparison answer a switching decision</h3>
+<p><strong>Do this</strong></p>
+<ul>
+  <li>Replace the shared table on <a href="URL" target="_blank" rel="noopener">/northwind-alternative</a> with Northwind-specific tradeoffs.</li>
+  <li>Add a sourced migration section: policies, evidence, audit continuity.</li>
+</ul>
+<p><strong>Why</strong></p>
+<ul>
+  <li>Same comparison text as two siblings; only the vendor name changes.</li>
+  <li>Searchers are already evaluating a switch, the closest fit to a demo.</li>
+  <li>Position-one scenario: about 40–60 total US visits a month. Hypothetical, not a forecast.</li>
+</ul>
+<div class="tw"><table>
+  <thead><tr><th>Query</th><th class="n">Est. US searches/mo</th><th>Acme position, US, Sep 18, 2026</th></tr></thead>
+  <tbody><tr><td>northwind alternative</td><td class="n">50</td><td>#9 (page 1)</td></tr></tbody>
+</table></div>
+
+<h2 id="what-else-we-checked">What else we checked</h2>
+<div class="tw"><table>
+  <thead><tr><th>Opportunity</th><th>What we found</th><th>Decision</th></tr></thead>
+  <tbody><tr><td>Software buying guide</td><td>390 est. US searches/mo; not in the first 20 results; page explains criteria, compares no vendors</td><td>Runner-up. Larger demand, but a weaker diagnosis and a full rewrite; test the comparison page first.</td></tr></tbody>
+</table></div>
+```
 
 ## Guardrails
 
-- Tone: calm and plain. No exclamation points, no drama words, no em dashes, no "Not X. Y." contrasts, no filler. Severity words only where literally true (a down site is critical; a long title is not).
-- Gloss every term of art in plain English on first use: canonical, meta description, alt text, crawler, 301, structured data.
-- Skip nitpicks that do not matter for the specific site. A beginner report with twenty findings has failed.
-- Missing backlink or ranking data means "no recorded data", not a penalty; say so rather than dramatizing it.
-- Favor keywords the site can win now: specific intent, low difficulty. Do not list head terms a new site cannot rank for yet.
-- Separate what the tools reported from what you verified yourself, and note both in the method footer.
+- Calm, plain tone. No exclamation points, drama words, or filler; no em dashes in prose (the report title convention in `seo-report` is the exception). Severity words only where literally true.
+- Gloss each term of art in plain English on first use: canonical, meta description, crawler, 301, structured data.
+- Observations are not causes. Similar content plus uneven rankings, a crawler warning, or missing provider rows never prove a penalty, an indexing exclusion, or the reason a page ranks where it does.
+- Retrieval date is not observation date. Say when a ranking was observed, or say unknown.
+- Missing backlink or ranking data means "no recorded data", not a problem.
+- Treat difficulty and volume as inputs, not goals. A small query can matter to a high-value business; an easy one is not automatically worthwhile.
+- Separate what the tools reported from what you verified yourself, and say both in the closing section.

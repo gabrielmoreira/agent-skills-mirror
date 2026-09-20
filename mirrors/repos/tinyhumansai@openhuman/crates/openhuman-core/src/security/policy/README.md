@@ -24,17 +24,17 @@ trusted roots, and the per-hour action budget.
 
 | File | Purpose |
 | --- | --- |
-| `types.rs` | `SecurityPolicy` fields, `AutonomyLevel`, `CommandRiskLevel`, `CommandClass`, `GateDecision`, `ToolOperation`, `ActionTracker`, `TrustedRoot`/`TrustedAccess`, `ActiveProfileGuard`, `WORKSPACE_INTERNAL_DIRS`/`WORKSPACE_INTERNAL_FILES`, the two policy markers |
+| `types.rs` | `SecurityPolicy` fields, `AutonomyLevel`, `CommandRiskLevel`, `CommandClass`, `GateDecision`, `ToolOperation`, `ActionTracker`, `TrustedRoot`/`TrustedAccess`, `WORKSPACE_INTERNAL_DIRS`/`WORKSPACE_INTERNAL_FILES`, the two policy markers |
 | `path_checks.rs` | `is_workspace_internal_path`, `is_always_forbidden`, `check_cross_profile`, `is_within_trusted_root`, `is_resolved_path_allowed[_for]`, `check_resolved_against_forbidden` |
 | `command_checks.rs` | `classify_command`, `gate_decision`, `check_gated_command`, `is_command_allowed`, `command_risk_level`, `parse_declared_class`, `is_command_executor`, `split_unquoted_segments` |
-| `enforcement.rs` | `can_act`, `enforce_write_tier`, `enforce_tool_operation`, `record_action`/`is_rate_limited`, `from_config`, `with_active_profile`/`with_privacy_mode`, `openhuman_scratch_dir`/`ensure_openhuman_scratch_dir`, `validate_path_within_root` |
+| `enforcement.rs` | `can_act`, `enforce_write_tier`, `enforce_tool_operation`, `record_action`/`is_rate_limited`, `from_config`, `with_privacy_mode`, `openhuman_scratch_dir`/`ensure_openhuman_scratch_dir`, `validate_path_within_root` |
 | `policy_command/` (`quoting.rs`, `env_guard.rs`, `command_name.rs`, `classification.rs`) | Shell-parsing helpers behind the command checks: `split_unquoted_segments`, `skip_env_assignments`, `normalized_command_name`, `is_command_executor`, `classify_segment`, `has_hidden_execution`, `contains_unquoted_char` |
 
 ## Public surface
 
 Re-exported through `policy/mod.rs` and then through `security/mod.rs`:
 `SecurityPolicy`, `AutonomyLevel`, `CommandClass`, `CommandRiskLevel`,
-`GateDecision`, `ToolOperation`, `ActionTracker`, `ActiveProfileGuard`,
+`GateDecision`, `ToolOperation`, `ActionTracker`,
 `TrustedRoot`, `TrustedAccess`, `POLICY_BLOCKED_MARKER`,
 `POLICY_DENIED_MARKER`, `validate_path_within_root`,
 `ensure_openhuman_scratch_dir`, `openhuman_scratch_dir`.

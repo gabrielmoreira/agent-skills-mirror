@@ -99,6 +99,38 @@ on login, layout, or timeout failures. Turning Research escalation off removes
 both the delegation tool and the Ask-mode consent schema from later model
 requests.
 
+### Optional Jev (TypeSafe) scheduled-task verification
+
+Settings → Assistive Models → Jev (TypeSafe) contains the Jev controls, disabled by default,
+with separate watch and completion switches. Turning the master switch off
+preserves those preferences. Removing the key disables all uses and resets
+probability thresholds to 70%. Settings import/export preserves the original
+`systemOne*` keys and `typesafeApiKey` (plaintext local storage).
+
+The scheduler sends at most 16,000 serialized characters to
+`https://api.typesafe.ai/v1/systemone`, pinned to `jev-1.13.0`. State contains
+the bounded task, allowlisted textual tool observations from this run, and a
+bounded real previous observation for watches. It excludes agent success
+summaries, conversation history, screenshots, audio, attachments, raw request
+bodies and credential fields. Text is redacted and wrapped as untrusted data.
+An action invalidates earlier observations. Missing eligible evidence skips
+verification. Redaction is best effort: ordinary page text can contain personal
+data, so enabling Jev authorizes sending that limited evidence to TypeSafe.
+
+Jev never upgrades a result. A low judgment on a read-only watch permits another
+poll. If an action was dispatched or its outcome is uncertain, a downgrade
+preserves its record and requests reconciliation instead of repeating it;
+this also applies to recurring tasks. Cancellation or replaced execution
+invalidates late responses. Invalid responses, unavailable service, Strict
+Secret Mode, offline operation or cost restrictions retain the existing result.
+
+Requests have one total five-second deadline, including up to two retries for
+429/529. Connection testing occurs only on a button press and sends one fixed
+synthetic example with no retries. Input usage is estimated at $0.042 per million
+tokens; output tokens are free under the documented model price. Usage, duration,
+model and decision reasons enter cost/trace accounting without raw evidence.
+TypeSafe may charge your account; no SDK is installed.
+
 ### WebBrain Compass improvement data
 
 Help Improve WebBrain is available under Settings -> General and is
@@ -203,6 +235,11 @@ to the local `webbrain_traces` IndexedDB database in one of two privacy tiers:
   Lossless payloads have per-request, per-result, per-run, and aggregate
   storage bounds; old completed lossless runs may be evicted to remain within
   the aggregate limit. These runs are visibly marked in the Traces UI.
+
+`click_ax_timing` trace notes retain only bounded stage durations, input-event
+counts, outcome categories, and safety-status booleans. URL, target labels,
+accessibility references, and other page content are excluded in both tiers,
+including lossless traces.
 
 Default trace redaction does not disable `/workflow --save`. While a traced run
 is active, the recorder keeps bounded raw tool payloads in memory only. On
@@ -628,3 +665,24 @@ data-flow patterns are otherwise the same, except:
 - No slash-driven tab/screen recording
 - Conversation, rendered chat, and detached-run UI journals use
   `browser.storage.session`, matching Chrome's session-scoped persistence.
+
+### Experimental Jev decisions
+
+The two additional Jev switches are independent opt-ins. Existing enabled keys
+or scheduler settings do not enable them. Fast classification sends bounded
+request context; fast browser decisions send the task, up to 24 structured AX
+controls, observed options and bounded prepared field values. These may include
+ordinary personal text explicitly supplied for a form. Credential-related tasks
+and pages containing credential, payment, OTP or file controls are excluded from
+the fast path as a whole. Redaction remains best effort. Initial and automatic
+browser screenshots do not disable the AX-only path, but their pixels are never
+sent to Jev. A current user attachment, explicit screenshot-tool result or unknown
+non-text input keeps that decision on the active chat provider. That provider also
+prepares free text and gives the final answer; Jev receives neither screenshots nor
+full conversation history for browser decisions. Separate requests use the same
+pinned model, cost accounting and untrusted-data boundaries, with a one-second
+deadline and zero retries. Unsupported operations and their target questions are
+omitted rather than sending a one-option placeholder Choice. A malformed model,
+usage or answer response stops further Jev requests for that run; exported traces
+show only its bounded reason code along with Jev decisions and usage, never the
+response or bounded request evidence.

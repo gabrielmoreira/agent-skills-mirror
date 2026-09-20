@@ -39,6 +39,14 @@ Before adding one, both of these must be true:
    there: whoever reopens the question is reading that code, not this directory. An ADR is for
    reasoning that spans files, or that argues against a road with no single line to attach to.
 
+**Write the `Trail:` line first, and make it name the opponent.** Every ADR opens with a `Trail:`
+header naming the PR, the issue or the thread where somebody argued for the other road, beside the
+files the decision reaches. Write that line before the body. If you cannot fill it, condition 1 has
+not been met and what you have is a header comment — put it at the line and stop. This is the whole
+bar above, reduced to something answerable in the moment: 0049 has issue #243; the two candidates
+turned down below had nothing to put there, and neither did the update-screen write-up that became
+0044, which is the one entry in this directory no source file cites.
+
 When in doubt, don't. A comment at the point of change costs nothing and is read by exactly the
 person who needs it; an ADR that didn't need writing dilutes the ones that did. Two candidates were
 turned down on this basis in one day (bundled-font laziness, and the direct-typing lifecycle) — both
@@ -115,6 +123,7 @@ the pointer, it was a supersede.
 | [0046](./0046-an-urgent-patch-keeps-the-daily-cadence.md) | An urgent patch keeps the daily cadence | Accepted |
 | [0047](./0047-muse-panes-render-natively.md) | Muse panes render natively: no light-theme inversion | Accepted |
 | [0048](./0048-the-input-box-is-found-by-its-own-frame.md) | The input box is found by its own frame; the statusline bound only bounds what is stripped (amends 0004) | Accepted |
+| [0049](./0049-no-child-inherits-a-relocated-repository.md) | No child of Collie inherits a variable that relocates a git repository | Accepted |
 
 Numbers are claimed across **both** branches: 0011–0016 were accepted here on `v1` while `main` was
 still at 0010, so a new ADR continues from the highest number in use anywhere, not the highest one on

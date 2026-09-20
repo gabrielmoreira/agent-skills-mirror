@@ -13,6 +13,11 @@ description:
 Operate the configured Chrome DevTools MCP against the existing shared browser without disrupting unrelated tabs or
 authenticated state.
 
+This skill owns rendered browser UI interaction, inspection, automation, and verification through shared Chromium. Use
+search, fetch, APIs, CLIs, or connectors for retrieval when they fit, and host native-app tools for non-browser UI. Do
+not use native-app tools as a fallback around this skill's shared-browser attachment, page-ownership, or privacy rules.
+If the user selects another available browser integration, follow its tool contract without mixing controllers.
+
 ## Environment Contract
 
 - Treat `~/.local/libexec/mcp/chrome-devtools` and the tools exposed in the current session as authoritative. The

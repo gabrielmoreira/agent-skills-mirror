@@ -1,3 +1,4 @@
+lastReviewed: 2026-09-19
 ---
 name: mall-self-curation
 description: Operate the Plugin Mall's canonical vendor, contribution, scan, score, render, and validation workflows. Use when importing or refreshing curated plugins, reviewing contributor PRs, running first-party maintenance, debugging the weekly catalog refresh, or onboarding to Mall internals.
@@ -33,6 +34,12 @@ All plugin packaging routes through `scripts/lib/plugin-package.cjs`. Do not
 author a second copier or validator for one plugin. The shared library owns
 component-path normalization, prompt renaming, metadata generation, secret and
 symlink rejection, the 100-file limit, and atomic replacement.
+
+A curated plugin can declare `retirement` in `.mall-metadata.json` only with
+`state: "withdrawn"`, a reader-facing message, and a replacement plugin name
+plus marketplace. The catalog retains and labels the entry with its replacement
+command; the generated install marketplace omits it. Add or change retirement
+metadata through a reviewed plugin PR, never through the generated refresh lane.
 
 ## Two PR lanes
 

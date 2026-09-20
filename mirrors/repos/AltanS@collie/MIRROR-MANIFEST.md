@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `AltanS/collie` — 26 default patterns, 63 followed patterns, 78 file(s) materialized.
+Mirror of `AltanS/collie` — 26 default patterns, 63 followed patterns, 79 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `AltanS/collie` — 26 default patterns, 63 followed patterns, 78 file
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 63 |
-| Files         | 78 |
+| Files         | 79 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -132,73 +132,74 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 9 | ✓ | [`.adr/0042-notification-kinds-and-the-cache-watch.md`](.adr/0042-notification-kinds-and-the-cache-watch.md) |
 | 10 | ✓ | [`.adr/0044-the-update-screen-is-one-reducer-and-one-shared-poll.md`](.adr/0044-the-update-screen-is-one-reducer-and-one-shared-poll.md) |
 | 11 | ✓ | [`.adr/0047-muse-panes-render-natively.md`](.adr/0047-muse-panes-render-natively.md) |
-| 12 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 13 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 14 | ✓ | [`packaging/aur/README.md`](packaging/aur/README.md) |
-| 15 | ✓ | [`packaging/omarchy/README.md`](packaging/omarchy/README.md) |
-| 16 | → | [`.adr/0001-one-managed-front-door.md`](.adr/0001-one-managed-front-door.md) |
-| 17 | → | [`.adr/0002-invert-the-light-terminal-mirror.md`](.adr/0002-invert-the-light-terminal-mirror.md) |
-| 18 | → | [`.adr/0003-one-shared-seen.md`](.adr/0003-one-shared-seen.md) |
-| 19 | → | [`.adr/0004-the-statusline-run-is-bounded.md`](.adr/0004-the-statusline-run-is-bounded.md) |
-| 20 | → | [`.adr/0005-a-composed-key-queue-never-outlives-its-dock.md`](.adr/0005-a-composed-key-queue-never-outlives-its-dock.md) |
-| 21 | → | [`.adr/0006-update-advances-the-checkout-herdr-installed.md`](.adr/0006-update-advances-the-checkout-herdr-installed.md) |
-| 22 | → | [`.adr/0007-the-idle-lock-is-a-pause-not-a-gate.md`](.adr/0007-the-idle-lock-is-a-pause-not-a-gate.md) |
-| 23 | → | [`.adr/0008-collie-does-not-run-a-terminal-emulator.md`](.adr/0008-collie-does-not-run-a-terminal-emulator.md) |
-| 24 | → | [`.adr/0009-a-generic-menu-is-driven-by-the-keys-it-names.md`](.adr/0009-a-generic-menu-is-driven-by-the-keys-it-names.md) |
-| 25 | → | [`.adr/0010-long-sends-are-verified-via-the-paste-placeholder.md`](.adr/0010-long-sends-are-verified-via-the-paste-placeholder.md) |
-| 26 | → | [`.adr/0011-the-pack-protocol-is-the-mux-driver-seam.md`](.adr/0011-the-pack-protocol-is-the-mux-driver-seam.md) |
-| 27 | → | [`.adr/0012-every-machine-runs-a-collie-and-the-pack-has-a-lead.md`](.adr/0012-every-machine-runs-a-collie-and-the-pack-has-a-lead.md) |
-| 28 | → | [`.adr/0013-a-peer-listens-without-becoming-a-front-door.md`](.adr/0013-a-peer-listens-without-becoming-a-front-door.md) |
-| 29 | → | [`.adr/0014-promote-is-a-confirm-on-the-lead.md`](.adr/0014-promote-is-a-confirm-on-the-lead.md) |
-| 30 | → | [`.adr/0016-updates-ride-the-operators-ssh.md`](.adr/0016-updates-ride-the-operators-ssh.md) |
-| 31 | → | [`.adr/0017-recognising-a-password-prompt-changes-what-collie-says.md`](.adr/0017-recognising-a-password-prompt-changes-what-collie-says.md) |
-| 32 | → | [`.adr/0018-operator-command-rows-replace-the-catalog.md`](.adr/0018-operator-command-rows-replace-the-catalog.md) |
-| 33 | → | [`.adr/0019-oxlint-and-vendored-anti-slop-are-the-lint-gate.md`](.adr/0019-oxlint-and-vendored-anti-slop-are-the-lint-gate.md) |
-| 34 | → | [`.adr/0021-the-path-name-is-a-pointer-never-a-copy.md`](.adr/0021-the-path-name-is-a-pointer-never-a-copy.md) |
-| 35 | → | [`.adr/0022-the-mux-seam-is-a-port-collie-owns.md`](.adr/0022-the-mux-seam-is-a-port-collie-owns.md) |
-| 36 | → | [`.adr/0025-the-wire-guard-forces-a-decision-never-a-bump.md`](.adr/0025-the-wire-guard-forces-a-decision-never-a-bump.md) |
-| 37 | → | [`.adr/0026-the-operator-is-the-quorum.md`](.adr/0026-the-operator-is-the-quorum.md) |
-| 38 | → | [`.adr/0027-the-deputy-is-named-ahead-of-time.md`](.adr/0027-the-deputy-is-named-ahead-of-time.md) |
-| 39 | → | [`.adr/0028-the-standby-door-is-a-second-listener.md`](.adr/0028-the-standby-door-is-a-second-listener.md) |
-| 40 | → | [`.adr/0029-speech-to-text-is-a-provider-seam-collie-owns.md`](.adr/0029-speech-to-text-is-a-provider-seam-collie-owns.md) |
-| 41 | → | [`.adr/0030-the-ui-is-translated-by-a-typed-dictionary-not-a-library.md`](.adr/0030-the-ui-is-translated-by-a-typed-dictionary-not-a-library.md) |
-| 42 | → | [`.adr/0031-freshness-is-a-declared-promise.md`](.adr/0031-freshness-is-a-declared-promise.md) |
-| 43 | → | [`.adr/0033-the-app-face-is-a-device-preference.md`](.adr/0033-the-app-face-is-a-device-preference.md) |
-| 44 | → | [`.adr/0034-collie-collects-nothing-and-opt-in-is-the-ceiling.md`](.adr/0034-collie-collects-nothing-and-opt-in-is-the-ceiling.md) |
-| 45 | → | [`.adr/0035-a-packaged-install-is-not-ours-to-update.md`](.adr/0035-a-packaged-install-is-not-ours-to-update.md) |
-| 46 | → | [`.adr/0036-the-map-of-machines-is-collies-a-mux-reports-one-machine.md`](.adr/0036-the-map-of-machines-is-collies-a-mux-reports-one-machine.md) |
-| 47 | → | [`.adr/0038-the-group-is-a-crew-the-wire-keeps-pack.md`](.adr/0038-the-group-is-a-crew-the-wire-keeps-pack.md) |
-| 48 | → | [`.adr/0039-the-machine-says-crew-too.md`](.adr/0039-the-machine-says-crew-too.md) |
-| 49 | → | [`.adr/0043-operator-bar-rows-replace-the-bar-not-the-palette.md`](.adr/0043-operator-bar-rows-replace-the-bar-not-the-palette.md) |
-| 50 | → | [`.adr/0045-a-build-below-the-protocol-floor-is-a-red-preflight.md`](.adr/0045-a-build-below-the-protocol-floor-is-a-red-preflight.md) |
-| 51 | → | [`.adr/0046-an-urgent-patch-keeps-the-daily-cadence.md`](.adr/0046-an-urgent-patch-keeps-the-daily-cadence.md) |
-| 52 | → | [`.adr/0048-the-input-box-is-found-by-its-own-frame.md`](.adr/0048-the-input-box-is-found-by-its-own-frame.md) |
-| 53 | → | [`.adr/README.md`](.adr/README.md) |
-| 54 | → | [`ARCHITECTURE.md`](ARCHITECTURE.md) |
-| 55 | → | [`CHANGELOG.md`](CHANGELOG.md) |
-| 56 | → | [`contrib/windows/README.md`](contrib/windows/README.md) |
-| 57 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 58 | → | [`CREW_PROTOCOL.md`](CREW_PROTOCOL.md) |
-| 59 | → | [`DESIGN.md`](DESIGN.md) |
-| 60 | → | [`docs/commands.md`](docs/commands.md) |
-| 61 | → | [`docs/configure.md`](docs/configure.md) |
-| 62 | → | [`docs/crew.md`](docs/crew.md) |
-| 63 | → | [`docs/deployment.md`](docs/deployment.md) |
-| 64 | → | [`docs/install.md`](docs/install.md) |
-| 65 | → | [`docs/multiplexers.md`](docs/multiplexers.md) |
-| 66 | → | [`docs/security.md`](docs/security.md) |
-| 67 | → | [`docs/troubleshooting.md`](docs/troubleshooting.md) |
-| 68 | → | [`docs/upgrading.md`](docs/upgrading.md) |
-| 69 | → | [`docs/voice-and-push.md`](docs/voice-and-push.md) |
-| 70 | → | [`HARNESS_CONTRIBUTING.md`](HARNESS_CONTRIBUTING.md) |
-| 71 | → | [`HERDR_API.md`](HERDR_API.md) |
-| 72 | → | [`MUX_CONTRACT.md`](MUX_CONTRACT.md) |
-| 73 | → | [`MUX_CONTRIBUTING.md`](MUX_CONTRIBUTING.md) |
-| 74 | → | [`README.md`](README.md) |
-| 75 | → | [`tools/oxlint/README.md`](tools/oxlint/README.md) |
-| 76 | → | [`web/src/fixtures/panes/README.md`](web/src/fixtures/panes/README.md) |
-| 77 | → | [`web/src/lib/grammar/PLAN_FEEDBACK_NOTES.md`](web/src/lib/grammar/PLAN_FEEDBACK_NOTES.md) |
-| 78 | → | [`web/src/lib/grammar/WIZARD_NOTES.md`](web/src/lib/grammar/WIZARD_NOTES.md) |
+| 12 | ✓ | [`.adr/0049-no-child-inherits-a-relocated-repository.md`](.adr/0049-no-child-inherits-a-relocated-repository.md) |
+| 13 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 14 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 15 | ✓ | [`packaging/aur/README.md`](packaging/aur/README.md) |
+| 16 | ✓ | [`packaging/omarchy/README.md`](packaging/omarchy/README.md) |
+| 17 | → | [`.adr/0001-one-managed-front-door.md`](.adr/0001-one-managed-front-door.md) |
+| 18 | → | [`.adr/0002-invert-the-light-terminal-mirror.md`](.adr/0002-invert-the-light-terminal-mirror.md) |
+| 19 | → | [`.adr/0003-one-shared-seen.md`](.adr/0003-one-shared-seen.md) |
+| 20 | → | [`.adr/0004-the-statusline-run-is-bounded.md`](.adr/0004-the-statusline-run-is-bounded.md) |
+| 21 | → | [`.adr/0005-a-composed-key-queue-never-outlives-its-dock.md`](.adr/0005-a-composed-key-queue-never-outlives-its-dock.md) |
+| 22 | → | [`.adr/0006-update-advances-the-checkout-herdr-installed.md`](.adr/0006-update-advances-the-checkout-herdr-installed.md) |
+| 23 | → | [`.adr/0007-the-idle-lock-is-a-pause-not-a-gate.md`](.adr/0007-the-idle-lock-is-a-pause-not-a-gate.md) |
+| 24 | → | [`.adr/0008-collie-does-not-run-a-terminal-emulator.md`](.adr/0008-collie-does-not-run-a-terminal-emulator.md) |
+| 25 | → | [`.adr/0009-a-generic-menu-is-driven-by-the-keys-it-names.md`](.adr/0009-a-generic-menu-is-driven-by-the-keys-it-names.md) |
+| 26 | → | [`.adr/0010-long-sends-are-verified-via-the-paste-placeholder.md`](.adr/0010-long-sends-are-verified-via-the-paste-placeholder.md) |
+| 27 | → | [`.adr/0011-the-pack-protocol-is-the-mux-driver-seam.md`](.adr/0011-the-pack-protocol-is-the-mux-driver-seam.md) |
+| 28 | → | [`.adr/0012-every-machine-runs-a-collie-and-the-pack-has-a-lead.md`](.adr/0012-every-machine-runs-a-collie-and-the-pack-has-a-lead.md) |
+| 29 | → | [`.adr/0013-a-peer-listens-without-becoming-a-front-door.md`](.adr/0013-a-peer-listens-without-becoming-a-front-door.md) |
+| 30 | → | [`.adr/0014-promote-is-a-confirm-on-the-lead.md`](.adr/0014-promote-is-a-confirm-on-the-lead.md) |
+| 31 | → | [`.adr/0016-updates-ride-the-operators-ssh.md`](.adr/0016-updates-ride-the-operators-ssh.md) |
+| 32 | → | [`.adr/0017-recognising-a-password-prompt-changes-what-collie-says.md`](.adr/0017-recognising-a-password-prompt-changes-what-collie-says.md) |
+| 33 | → | [`.adr/0018-operator-command-rows-replace-the-catalog.md`](.adr/0018-operator-command-rows-replace-the-catalog.md) |
+| 34 | → | [`.adr/0019-oxlint-and-vendored-anti-slop-are-the-lint-gate.md`](.adr/0019-oxlint-and-vendored-anti-slop-are-the-lint-gate.md) |
+| 35 | → | [`.adr/0021-the-path-name-is-a-pointer-never-a-copy.md`](.adr/0021-the-path-name-is-a-pointer-never-a-copy.md) |
+| 36 | → | [`.adr/0022-the-mux-seam-is-a-port-collie-owns.md`](.adr/0022-the-mux-seam-is-a-port-collie-owns.md) |
+| 37 | → | [`.adr/0025-the-wire-guard-forces-a-decision-never-a-bump.md`](.adr/0025-the-wire-guard-forces-a-decision-never-a-bump.md) |
+| 38 | → | [`.adr/0026-the-operator-is-the-quorum.md`](.adr/0026-the-operator-is-the-quorum.md) |
+| 39 | → | [`.adr/0027-the-deputy-is-named-ahead-of-time.md`](.adr/0027-the-deputy-is-named-ahead-of-time.md) |
+| 40 | → | [`.adr/0028-the-standby-door-is-a-second-listener.md`](.adr/0028-the-standby-door-is-a-second-listener.md) |
+| 41 | → | [`.adr/0029-speech-to-text-is-a-provider-seam-collie-owns.md`](.adr/0029-speech-to-text-is-a-provider-seam-collie-owns.md) |
+| 42 | → | [`.adr/0030-the-ui-is-translated-by-a-typed-dictionary-not-a-library.md`](.adr/0030-the-ui-is-translated-by-a-typed-dictionary-not-a-library.md) |
+| 43 | → | [`.adr/0031-freshness-is-a-declared-promise.md`](.adr/0031-freshness-is-a-declared-promise.md) |
+| 44 | → | [`.adr/0033-the-app-face-is-a-device-preference.md`](.adr/0033-the-app-face-is-a-device-preference.md) |
+| 45 | → | [`.adr/0034-collie-collects-nothing-and-opt-in-is-the-ceiling.md`](.adr/0034-collie-collects-nothing-and-opt-in-is-the-ceiling.md) |
+| 46 | → | [`.adr/0035-a-packaged-install-is-not-ours-to-update.md`](.adr/0035-a-packaged-install-is-not-ours-to-update.md) |
+| 47 | → | [`.adr/0036-the-map-of-machines-is-collies-a-mux-reports-one-machine.md`](.adr/0036-the-map-of-machines-is-collies-a-mux-reports-one-machine.md) |
+| 48 | → | [`.adr/0038-the-group-is-a-crew-the-wire-keeps-pack.md`](.adr/0038-the-group-is-a-crew-the-wire-keeps-pack.md) |
+| 49 | → | [`.adr/0039-the-machine-says-crew-too.md`](.adr/0039-the-machine-says-crew-too.md) |
+| 50 | → | [`.adr/0043-operator-bar-rows-replace-the-bar-not-the-palette.md`](.adr/0043-operator-bar-rows-replace-the-bar-not-the-palette.md) |
+| 51 | → | [`.adr/0045-a-build-below-the-protocol-floor-is-a-red-preflight.md`](.adr/0045-a-build-below-the-protocol-floor-is-a-red-preflight.md) |
+| 52 | → | [`.adr/0046-an-urgent-patch-keeps-the-daily-cadence.md`](.adr/0046-an-urgent-patch-keeps-the-daily-cadence.md) |
+| 53 | → | [`.adr/0048-the-input-box-is-found-by-its-own-frame.md`](.adr/0048-the-input-box-is-found-by-its-own-frame.md) |
+| 54 | → | [`.adr/README.md`](.adr/README.md) |
+| 55 | → | [`ARCHITECTURE.md`](ARCHITECTURE.md) |
+| 56 | → | [`CHANGELOG.md`](CHANGELOG.md) |
+| 57 | → | [`contrib/windows/README.md`](contrib/windows/README.md) |
+| 58 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 59 | → | [`CREW_PROTOCOL.md`](CREW_PROTOCOL.md) |
+| 60 | → | [`DESIGN.md`](DESIGN.md) |
+| 61 | → | [`docs/commands.md`](docs/commands.md) |
+| 62 | → | [`docs/configure.md`](docs/configure.md) |
+| 63 | → | [`docs/crew.md`](docs/crew.md) |
+| 64 | → | [`docs/deployment.md`](docs/deployment.md) |
+| 65 | → | [`docs/install.md`](docs/install.md) |
+| 66 | → | [`docs/multiplexers.md`](docs/multiplexers.md) |
+| 67 | → | [`docs/security.md`](docs/security.md) |
+| 68 | → | [`docs/troubleshooting.md`](docs/troubleshooting.md) |
+| 69 | → | [`docs/upgrading.md`](docs/upgrading.md) |
+| 70 | → | [`docs/voice-and-push.md`](docs/voice-and-push.md) |
+| 71 | → | [`HARNESS_CONTRIBUTING.md`](HARNESS_CONTRIBUTING.md) |
+| 72 | → | [`HERDR_API.md`](HERDR_API.md) |
+| 73 | → | [`MUX_CONTRACT.md`](MUX_CONTRACT.md) |
+| 74 | → | [`MUX_CONTRIBUTING.md`](MUX_CONTRIBUTING.md) |
+| 75 | → | [`README.md`](README.md) |
+| 76 | → | [`tools/oxlint/README.md`](tools/oxlint/README.md) |
+| 77 | → | [`web/src/fixtures/panes/README.md`](web/src/fixtures/panes/README.md) |
+| 78 | → | [`web/src/lib/grammar/PLAN_FEEDBACK_NOTES.md`](web/src/lib/grammar/PLAN_FEEDBACK_NOTES.md) |
+| 79 | → | [`web/src/lib/grammar/WIZARD_NOTES.md`](web/src/lib/grammar/WIZARD_NOTES.md) |
 
 ---
 

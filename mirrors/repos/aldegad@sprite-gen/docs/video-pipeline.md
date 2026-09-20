@@ -175,13 +175,22 @@ was 17). `video-loop` therefore:
 3. only then picks the **start** with the best seam for that period (± 1 frame):
    `seam = D[i][i+L]` over the mean adjacent distance inside the cycle.
 
-Windows come from the state profile (`STATE_PROFILES`, fractions of the clip length):
-idle 60–95 % (breathing is slow and not periodic — the lowest seam is a long window,
-and idle is exempt from the periodicity gate), walk 6–31 %, run 7–23 %, jump/attack
-11–45 %. `--min-len/--max-len` override. The walk floor is low on purpose: a legless
-body "walks" as a fast bounce (about 13 frames at 24 fps) while a gait is 24–28, and it
-is the 15 % depth rule — not the window — that rejects the one-step half period (on a
-biped and a quadruped the half period dipped only 55–70 % as deep as the full one).
+Windows come from the state profile (`STATE_PROFILES`). **Gait states take theirs in
+seconds**, because a stride is a fact about the body, not about the clip length: walk
+0.5–1.6 s, run 0.3–1.2 s, the ceiling capped at half the clip (a cycle must be seen twice
+to be confirmed). The other states are fractions of the clip length: idle 60–95 %
+(breathing is slow and not periodic — the lowest seam is a long window, and idle is
+exempt from the periodicity gate), jump/attack 11–45 %. `--min-len/--max-len` override.
+The walk floor is low on purpose: a legless body "walks" as a fast bounce (about 13
+frames at 24 fps) while a gait is 24–28, and it is the 15 % depth rule and the gait
+floor — not the window — that reject the one-step half period (on a biped and a
+quadruped the half period dipped only 55–70 % as deep as the full one). Walk used to be
+6–31 % of the clip; at the 3 s default that ceiling was 0.96 s and put a 1.0–1.3 s
+stride out of reach (2026-09-18: one of four walks refused, another cut at a half step).
+The ceiling is a bound in seconds rather than simply "half the clip" because the
+periodicity gate measures the period's dip against the profile mean over the whole
+window, and a ceiling that grows with the clip inflates that mean until a single hop
+in a jittering stand passes as a walk.
 
 Gates, all fail-loud: no period (profile flat, `periodicity < 0.15`), loop seam ratio
 above `--seam-max` (2.0), GIF/WebP re-opened and checked (frame count, `loop=0`,
@@ -198,10 +207,20 @@ distance to it rises more than 3 MADs above the rest noise are the excursion, an
 longest such run padded by 2 rest frames on each side is the cycle — so the seam is
 rest → rest by construction. The failover is explicit and recorded, not silent: the
 report carries `cycle.kind = "one-shot"` plus `periodic_attempt` (the periodicity that
-failed and the window), `table.md` has a `kind` column, and the same seam and
-animation gates still apply. `--cycle periodic` keeps the old hard failure; `--cycle
+failed and the window), `table.md` has a `kind` column, the strip sidecar carries
+`kind` and `loop: false` (so `sprite-gen scene` and any loader of `<name>.strip.json`
+play it once on a trigger rather than repeating it), and the same seam and animation
+gates still apply. `--cycle periodic` keeps the old hard failure; `--cycle
 one-shot` forces the excursion cut. A clip that never leaves its rest pose fails loud
-in both detectors. `--cycle fixed --start N --length L` skips detection and cuts exactly
+in both detectors. The excursion is admitted by either of two measures, and the report
+says which (`cycle.excursion_rule`): the peak's height in MADs of the rest noise
+(`excursion_contrast` ≥ 3), or the fraction of the rest frame's pixel mass the peak moves
+(`excursion_moved` ≥ 0.4). The second exists because the MAD is not rest noise when the
+rest is not one pose — a body that walks a few steps, hops once and freezes has its
+frames spread between the walking preamble and the frozen tail, and a 42 px hop scored
+1.8 MADs (2026-09-20). Moved mass is scale-free: a hop shifts the whole silhouette out of
+its own footprint (0.54–1.07 on eight measured jumps), a jittering stand does not
+(0.12–0.24). Under the mass rule the active frames are those above half the peak. `--cycle fixed --start N --length L` skips detection and cuts exactly
 those frames — for a clip that holds too few repeats for the periodicity gate but whose
 cycle is known (the 2026-09-09 reel jump: 2.3 hops in 145 frames). It is an explicit
 instruction, not a failover: the report says `kind = "fixed"`, and the seam gate still

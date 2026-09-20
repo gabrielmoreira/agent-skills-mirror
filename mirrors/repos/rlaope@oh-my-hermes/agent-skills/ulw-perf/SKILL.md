@@ -50,7 +50,7 @@ Bad example:
 
 - If no evaluator command exists, stop the loop and produce one before touching code.
 - If the re-measure does not move, revert the change and re-rank hypotheses instead of stacking fixes.
-- If the goal turns out to be one declared metric with a budget, hand off to `performance-goal`.
+- If the goal turns out to be one declared metric with a budget, keep the loop and start from that baseline instead of profiling for a hot path.
 
 
 
@@ -58,7 +58,7 @@ Bad example:
 
 Use when performance problems are suspected but not yet localized, or when several cost hotspots across domains need a measured inspect-and-fix loop.
 
-    Strong routing signals: `ultraperf`, `$ultraperf`, `ulw-perf`, `performance audit`, `performance bottleneck`, `find the bottleneck`, `profile the hot path`, `memory leak investigation`, `token cost hotspot`, `storage footprint audit`, `rendering jank`, `model inference hotspot`, `slow ci pipeline`, `query performance audit`, `성능 병목`, `메모리 누수`, `느려진 원인`, `성능 전반 점검`
+    Strong routing signals: `ultraperf`, `$ultraperf`, `ulw-perf`, `performance audit`, `performance bottleneck`, `find the bottleneck`, `profile the hot path`, `memory leak investigation`, `token cost hotspot`, `storage footprint audit`, `rendering jank`, `model inference hotspot`, `slow ci pipeline`, `query performance audit`, `performance-goal`, `performance goal`, `latency`, `throughput`, `benchmark`, `성능 병목`, `메모리 누수`, `느려진 원인`, `성능 전반 점검`
 
 ## Catalog Metadata
 
