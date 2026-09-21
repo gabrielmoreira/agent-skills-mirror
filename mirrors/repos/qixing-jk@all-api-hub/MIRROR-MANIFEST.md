@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `qixing-jk/all-api-hub` — 26 default patterns, 5 followed patterns, 12 file(s) materialized.
+Mirror of `qixing-jk/all-api-hub` — 26 default patterns, 6 followed patterns, 13 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `qixing-jk/all-api-hub` — 26 default patterns, 5 followed patterns, 
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 5 |
-| Files         | 12 |
+| Followed pats | 6 |
+| Files         | 13 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -53,6 +53,7 @@ Mirror of `qixing-jk/all-api-hub` — 26 default patterns, 5 followed patterns, 
 
 - `docs/agents/site-integrations.md`
 - `docs/agents/product.md`
+- `docs/agents/storage.md`
 - `docs/agents/i18n.md`
 - `CONTRIBUTING.md`
 - `.husky/README.md`
@@ -75,6 +76,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 10 | → | [`docs/agents/i18n.md`](docs/agents/i18n.md) |
 | 11 | → | [`docs/agents/product.md`](docs/agents/product.md) |
 | 12 | → | [`docs/agents/site-integrations.md`](docs/agents/site-integrations.md) |
+| 13 | → | [`docs/agents/storage.md`](docs/agents/storage.md) |
 
 ---
 

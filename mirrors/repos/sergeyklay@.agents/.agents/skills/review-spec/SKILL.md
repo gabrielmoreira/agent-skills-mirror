@@ -1,7 +1,6 @@
 ---
 name: review-spec
 description: "Architectural review of a specification or design document, performed before implementation begins. Use whenever a spec or design proposal is in scope and the user asks any quality question — even when not phrased explicitly: 'review this spec', 'evaluate this design', 'is this spec implementable', 'is this ready to build', 'check this architecture proposal', 'review the design for feature X', 'is this design sound', 'what's missing from this spec'. Also triggers when a file under `.specs/` is being evaluated without an existing implementation. Do NOT use for verifying an existing implementation against a spec, reviewing a PR or implementation changes, reviewing an existing system's architecture, or security review. Identify the spec and any review focus in the arguments; the skill does not infer them from the conversation."
-context: fork
 metadata:
   author: Serghei Iakovlev
   version: "2.1"
@@ -45,8 +44,8 @@ Before evaluating the spec, study the project the spec lives in. A review withou
 
 **Project documentation.** Search and read:
 
-- Context files: `CLAUDE.md`, `AGENTS.md`, `GEMINI.md`, `CURSOR.md`
-- Project docs: `README.md`, `CONTRIBUTING.md`, `ARCHITECTURE.md`, plus `docs/` or `doc/` directories
+- Context file: `AGENTS.md`
+- Project docs: `README.md`, `CONTRIBUTING.md`, plus `docs/` or `doc/` directories
 - Decision records: `ADR/`, `adr/`, `docs/adr/`, `docs/decisions/`
 - Build manifests: `package.json`, `go.mod`, `Cargo.toml`, `pyproject.toml`, etc.
 - Runtime model: `.env.example`, `compose.yml`, `docker-compose.yml`, `Makefile`

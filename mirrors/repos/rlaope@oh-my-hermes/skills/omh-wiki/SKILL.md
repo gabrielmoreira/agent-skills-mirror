@@ -66,6 +66,10 @@ Settle structure before capture: audience scale, whether an agent reads it, the 
 
 Load `references/wiki-blueprint.md` for the interview turns and `wiki_blueprint/v1` fields, `wiki-patterns.md` for models and what breaks them, `wiki-operations.md` for solo-versus-shared rules, and `wiki-ecosystem.md` for existing skills.
 
+## Closing A Long Piece Of Work
+
+When work finishes, the capture for the next reader is three artifacts: a deep guide, an ELI5 pass at level `very_easy`, and a quiz that checks the guide rather than the reader. Build them from the plan record (`omh runtime todo show`, the only source that outlives the session) plus whatever verification, review, and QA output the session still holds, and record which of those you could actually read. Load `references/handover-artifacts.md` for the admissible sources and the quiz's citation rule.
+
 ## Boundary
 
 A `wiki_blueprint/v1` is prepared design context, not evidence that a store was created, written to, or migrated. OMH does not host the wiki; the user's own store does.

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `tobihagemann/turbo` — 26 default patterns, 15 followed patterns, 175 file(s) materialized.
+Mirror of `tobihagemann/turbo` — 26 default patterns, 11 followed patterns, 176 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `tobihagemann/turbo` — 26 default patterns, 15 followed patterns, 17
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 15 |
-| Files         | 175 |
+| Followed pats | 11 |
+| Files         | 176 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -52,20 +52,16 @@ Mirror of `tobihagemann/turbo` — 26 default patterns, 15 followed patterns, 17
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
 - `README.md`
+- `docs/workflows.md`
 - `codex/SKILL-CONVENTIONS.md`
 - `SKILL-CONVENTIONS.md`
 - `claude/SETUP.md`
 - `codex/SETUP.md`
-- `SETUP.md`
-- `claude/ADDITIONS.md`
-- `claude/docs/skill-loading-reasoning.md`
-- `codex/ADDITIONS.md`
+- `docs/examples.md`
+- `docs/customization.md`
 - `claude/SKILL-INDEX.md`
 - `codex/SKILL-INDEX.md`
 - `claude/SKILL-CONVENTIONS.md`
-- `UPDATE.md`
-- `codex/UPDATE.md`
-- `claude/UPDATE.md`
 
 ## File Index
 
@@ -75,179 +71,180 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 2 | ✓ | [`assets/CLAUDE.md`](assets/CLAUDE.md) |
-| 3 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 4 | ✓ | [`claude/AGENTS.md`](claude/AGENTS.md) |
-| 5 | ✓ | [`claude/CLAUDE.md`](claude/CLAUDE.md) |
-| 6 | ✓ | [`claude/skills/answer-reviewer-questions/SKILL.md`](claude/skills/answer-reviewer-questions/SKILL.md) |
-| 7 | ✓ | [`claude/skills/apply-findings/SKILL.md`](claude/skills/apply-findings/SKILL.md) |
-| 8 | ✓ | [`claude/skills/assess-technical-debt/SKILL.md`](claude/skills/assess-technical-debt/SKILL.md) |
-| 9 | ✓ | [`claude/skills/audit/SKILL.md`](claude/skills/audit/SKILL.md) |
-| 10 | ✓ | [`claude/skills/changelog-rules/SKILL.md`](claude/skills/changelog-rules/SKILL.md) |
-| 11 | ✓ | [`claude/skills/code-style/SKILL.md`](claude/skills/code-style/SKILL.md) |
-| 12 | ✓ | [`claude/skills/codex-exec/SKILL.md`](claude/skills/codex-exec/SKILL.md) |
-| 13 | ✓ | [`claude/skills/codex-review/SKILL.md`](claude/skills/codex-review/SKILL.md) |
-| 14 | ✓ | [`claude/skills/commit-rules/SKILL.md`](claude/skills/commit-rules/SKILL.md) |
-| 15 | ✓ | [`claude/skills/commit-staged-push/SKILL.md`](claude/skills/commit-staged-push/SKILL.md) |
-| 16 | ✓ | [`claude/skills/commit-staged/SKILL.md`](claude/skills/commit-staged/SKILL.md) |
-| 17 | ✓ | [`claude/skills/consult-codex/SKILL.md`](claude/skills/consult-codex/SKILL.md) |
-| 18 | ✓ | [`claude/skills/consult-oracle/SKILL.md`](claude/skills/consult-oracle/SKILL.md) |
-| 19 | ✓ | [`claude/skills/contribute-turbo/SKILL.md`](claude/skills/contribute-turbo/SKILL.md) |
-| 20 | ✓ | [`claude/skills/create-changelog/SKILL.md`](claude/skills/create-changelog/SKILL.md) |
-| 21 | ✓ | [`claude/skills/create-handoff/SKILL.md`](claude/skills/create-handoff/SKILL.md) |
-| 22 | ✓ | [`claude/skills/create-issue/SKILL.md`](claude/skills/create-issue/SKILL.md) |
-| 23 | ✓ | [`claude/skills/create-pr/SKILL.md`](claude/skills/create-pr/SKILL.md) |
-| 24 | ✓ | [`claude/skills/create-project-skills/SKILL.md`](claude/skills/create-project-skills/SKILL.md) |
-| 25 | ✓ | [`claude/skills/create-skill/SKILL.md`](claude/skills/create-skill/SKILL.md) |
-| 26 | ✓ | [`claude/skills/create-test-plan/SKILL.md`](claude/skills/create-test-plan/SKILL.md) |
-| 27 | ✓ | [`claude/skills/create-threat-model/SKILL.md`](claude/skills/create-threat-model/SKILL.md) |
-| 28 | ✓ | [`claude/skills/discuss-change/SKILL.md`](claude/skills/discuss-change/SKILL.md) |
-| 29 | ✓ | [`claude/skills/draft-plan/SKILL.md`](claude/skills/draft-plan/SKILL.md) |
-| 30 | ✓ | [`claude/skills/evaluate-findings/SKILL.md`](claude/skills/evaluate-findings/SKILL.md) |
-| 31 | ✓ | [`claude/skills/explain-this/SKILL.md`](claude/skills/explain-this/SKILL.md) |
-| 32 | ✓ | [`claude/skills/exploratory-test/SKILL.md`](claude/skills/exploratory-test/SKILL.md) |
-| 33 | ✓ | [`claude/skills/fetch-pr-comments/SKILL.md`](claude/skills/fetch-pr-comments/SKILL.md) |
-| 34 | ✓ | [`claude/skills/finalize/SKILL.md`](claude/skills/finalize/SKILL.md) |
-| 35 | ✓ | [`claude/skills/find-dead-code/SKILL.md`](claude/skills/find-dead-code/SKILL.md) |
-| 36 | ✓ | [`claude/skills/frontend-design/SKILL.md`](claude/skills/frontend-design/SKILL.md) |
-| 37 | ✓ | [`claude/skills/github-voice/SKILL.md`](claude/skills/github-voice/SKILL.md) |
-| 38 | ✓ | [`claude/skills/implement-improvements/SKILL.md`](claude/skills/implement-improvements/SKILL.md) |
-| 39 | ✓ | [`claude/skills/implement-plan/SKILL.md`](claude/skills/implement-plan/SKILL.md) |
-| 40 | ✓ | [`claude/skills/implement/SKILL.md`](claude/skills/implement/SKILL.md) |
-| 41 | ✓ | [`claude/skills/interpret-feedback/SKILL.md`](claude/skills/interpret-feedback/SKILL.md) |
-| 42 | ✓ | [`claude/skills/investigate/SKILL.md`](claude/skills/investigate/SKILL.md) |
-| 43 | ✓ | [`claude/skills/map-codebase/SKILL.md`](claude/skills/map-codebase/SKILL.md) |
-| 44 | ✓ | [`claude/skills/note-improvement/SKILL.md`](claude/skills/note-improvement/SKILL.md) |
-| 45 | ✓ | [`claude/skills/onboard/SKILL.md`](claude/skills/onboard/SKILL.md) |
-| 46 | ✓ | [`claude/skills/peer-review/SKILL.md`](claude/skills/peer-review/SKILL.md) |
-| 47 | ✓ | [`claude/skills/pick-next-issue/SKILL.md`](claude/skills/pick-next-issue/SKILL.md) |
-| 48 | ✓ | [`claude/skills/polish-code/SKILL.md`](claude/skills/polish-code/SKILL.md) |
-| 49 | ✓ | [`claude/skills/preview/SKILL.md`](claude/skills/preview/SKILL.md) |
-| 50 | ✓ | [`claude/skills/prototype/SKILL.md`](claude/skills/prototype/SKILL.md) |
-| 51 | ✓ | [`claude/skills/quick-finalize/SKILL.md`](claude/skills/quick-finalize/SKILL.md) |
-| 52 | ✓ | [`claude/skills/recall-reasoning/SKILL.md`](claude/skills/recall-reasoning/SKILL.md) |
-| 53 | ✓ | [`claude/skills/refine-plan/SKILL.md`](claude/skills/refine-plan/SKILL.md) |
-| 54 | ✓ | [`claude/skills/reply-to-pr-conversation/SKILL.md`](claude/skills/reply-to-pr-conversation/SKILL.md) |
-| 55 | ✓ | [`claude/skills/reply-to-pr-threads/SKILL.md`](claude/skills/reply-to-pr-threads/SKILL.md) |
-| 56 | ✓ | [`claude/skills/resolve-findings/SKILL.md`](claude/skills/resolve-findings/SKILL.md) |
-| 57 | ✓ | [`claude/skills/resolve-pr-comments/SKILL.md`](claude/skills/resolve-pr-comments/SKILL.md) |
-| 58 | ✓ | [`claude/skills/review-agentic-setup/SKILL.md`](claude/skills/review-agentic-setup/SKILL.md) |
-| 59 | ✓ | [`claude/skills/review-code/SKILL.md`](claude/skills/review-code/SKILL.md) |
-| 60 | ✓ | [`claude/skills/review-dependencies/SKILL.md`](claude/skills/review-dependencies/SKILL.md) |
-| 61 | ✓ | [`claude/skills/review-plan/SKILL.md`](claude/skills/review-plan/SKILL.md) |
-| 62 | ✓ | [`claude/skills/review-pr/SKILL.md`](claude/skills/review-pr/SKILL.md) |
-| 63 | ✓ | [`claude/skills/review-tooling/SKILL.md`](claude/skills/review-tooling/SKILL.md) |
-| 64 | ✓ | [`claude/skills/run-checks/SKILL.md`](claude/skills/run-checks/SKILL.md) |
-| 65 | ✓ | [`claude/skills/self-improve/SKILL.md`](claude/skills/self-improve/SKILL.md) |
-| 66 | ✓ | [`claude/skills/ship/SKILL.md`](claude/skills/ship/SKILL.md) |
-| 67 | ✓ | [`claude/skills/simplify-all/SKILL.md`](claude/skills/simplify-all/SKILL.md) |
-| 68 | ✓ | [`claude/skills/simplify-code/SKILL.md`](claude/skills/simplify-code/SKILL.md) |
-| 69 | ✓ | [`claude/skills/simplify-docs/SKILL.md`](claude/skills/simplify-docs/SKILL.md) |
-| 70 | ✓ | [`claude/skills/smoke-test/SKILL.md`](claude/skills/smoke-test/SKILL.md) |
-| 71 | ✓ | [`claude/skills/split-and-ship/SKILL.md`](claude/skills/split-and-ship/SKILL.md) |
-| 72 | ✓ | [`claude/skills/stage-commit-push/SKILL.md`](claude/skills/stage-commit-push/SKILL.md) |
-| 73 | ✓ | [`claude/skills/stage-commit/SKILL.md`](claude/skills/stage-commit/SKILL.md) |
-| 74 | ✓ | [`claude/skills/stage/SKILL.md`](claude/skills/stage/SKILL.md) |
-| 75 | ✓ | [`claude/skills/survey-patterns/SKILL.md`](claude/skills/survey-patterns/SKILL.md) |
-| 76 | ✓ | [`claude/skills/turboplan/SKILL.md`](claude/skills/turboplan/SKILL.md) |
-| 77 | ✓ | [`claude/skills/understand-change/SKILL.md`](claude/skills/understand-change/SKILL.md) |
-| 78 | ✓ | [`claude/skills/update-changelog/SKILL.md`](claude/skills/update-changelog/SKILL.md) |
-| 79 | ✓ | [`claude/skills/update-dependencies/SKILL.md`](claude/skills/update-dependencies/SKILL.md) |
-| 80 | ✓ | [`claude/skills/update-pr/SKILL.md`](claude/skills/update-pr/SKILL.md) |
-| 81 | ✓ | [`claude/skills/update-turbo/SKILL.md`](claude/skills/update-turbo/SKILL.md) |
-| 82 | ✓ | [`claude/skills/user-experience/SKILL.md`](claude/skills/user-experience/SKILL.md) |
-| 83 | ✓ | [`codex/AGENTS.md`](codex/AGENTS.md) |
-| 84 | ✓ | [`codex/CLAUDE.md`](codex/CLAUDE.md) |
-| 85 | ✓ | [`codex/skills/answer-reviewer-questions/SKILL.md`](codex/skills/answer-reviewer-questions/SKILL.md) |
-| 86 | ✓ | [`codex/skills/apply-findings/SKILL.md`](codex/skills/apply-findings/SKILL.md) |
-| 87 | ✓ | [`codex/skills/assess-technical-debt/SKILL.md`](codex/skills/assess-technical-debt/SKILL.md) |
-| 88 | ✓ | [`codex/skills/audit/SKILL.md`](codex/skills/audit/SKILL.md) |
-| 89 | ✓ | [`codex/skills/changelog-rules/SKILL.md`](codex/skills/changelog-rules/SKILL.md) |
-| 90 | ✓ | [`codex/skills/claude-print/SKILL.md`](codex/skills/claude-print/SKILL.md) |
-| 91 | ✓ | [`codex/skills/code-style/SKILL.md`](codex/skills/code-style/SKILL.md) |
-| 92 | ✓ | [`codex/skills/commit-rules/SKILL.md`](codex/skills/commit-rules/SKILL.md) |
-| 93 | ✓ | [`codex/skills/commit-staged-push/SKILL.md`](codex/skills/commit-staged-push/SKILL.md) |
-| 94 | ✓ | [`codex/skills/commit-staged/SKILL.md`](codex/skills/commit-staged/SKILL.md) |
-| 95 | ✓ | [`codex/skills/consult-claude/SKILL.md`](codex/skills/consult-claude/SKILL.md) |
-| 96 | ✓ | [`codex/skills/consult-oracle/SKILL.md`](codex/skills/consult-oracle/SKILL.md) |
-| 97 | ✓ | [`codex/skills/contribute-turbo/SKILL.md`](codex/skills/contribute-turbo/SKILL.md) |
-| 98 | ✓ | [`codex/skills/create-changelog/SKILL.md`](codex/skills/create-changelog/SKILL.md) |
-| 99 | ✓ | [`codex/skills/create-handoff/SKILL.md`](codex/skills/create-handoff/SKILL.md) |
-| 100 | ✓ | [`codex/skills/create-issue/SKILL.md`](codex/skills/create-issue/SKILL.md) |
-| 101 | ✓ | [`codex/skills/create-pr/SKILL.md`](codex/skills/create-pr/SKILL.md) |
-| 102 | ✓ | [`codex/skills/create-project-skills/SKILL.md`](codex/skills/create-project-skills/SKILL.md) |
-| 103 | ✓ | [`codex/skills/create-skill/SKILL.md`](codex/skills/create-skill/SKILL.md) |
-| 104 | ✓ | [`codex/skills/create-test-plan/SKILL.md`](codex/skills/create-test-plan/SKILL.md) |
-| 105 | ✓ | [`codex/skills/create-threat-model/SKILL.md`](codex/skills/create-threat-model/SKILL.md) |
-| 106 | ✓ | [`codex/skills/discuss-change/SKILL.md`](codex/skills/discuss-change/SKILL.md) |
-| 107 | ✓ | [`codex/skills/draft-plan/SKILL.md`](codex/skills/draft-plan/SKILL.md) |
-| 108 | ✓ | [`codex/skills/evaluate-findings/SKILL.md`](codex/skills/evaluate-findings/SKILL.md) |
-| 109 | ✓ | [`codex/skills/explain-this/SKILL.md`](codex/skills/explain-this/SKILL.md) |
-| 110 | ✓ | [`codex/skills/exploratory-test/SKILL.md`](codex/skills/exploratory-test/SKILL.md) |
-| 111 | ✓ | [`codex/skills/fetch-pr-comments/SKILL.md`](codex/skills/fetch-pr-comments/SKILL.md) |
-| 112 | ✓ | [`codex/skills/finalize/SKILL.md`](codex/skills/finalize/SKILL.md) |
-| 113 | ✓ | [`codex/skills/find-dead-code/SKILL.md`](codex/skills/find-dead-code/SKILL.md) |
-| 114 | ✓ | [`codex/skills/frontend-design/SKILL.md`](codex/skills/frontend-design/SKILL.md) |
-| 115 | ✓ | [`codex/skills/github-voice/SKILL.md`](codex/skills/github-voice/SKILL.md) |
-| 116 | ✓ | [`codex/skills/implement-improvements/SKILL.md`](codex/skills/implement-improvements/SKILL.md) |
-| 117 | ✓ | [`codex/skills/implement-plan/SKILL.md`](codex/skills/implement-plan/SKILL.md) |
-| 118 | ✓ | [`codex/skills/implement/SKILL.md`](codex/skills/implement/SKILL.md) |
-| 119 | ✓ | [`codex/skills/interpret-feedback/SKILL.md`](codex/skills/interpret-feedback/SKILL.md) |
-| 120 | ✓ | [`codex/skills/investigate/SKILL.md`](codex/skills/investigate/SKILL.md) |
-| 121 | ✓ | [`codex/skills/map-codebase/SKILL.md`](codex/skills/map-codebase/SKILL.md) |
-| 122 | ✓ | [`codex/skills/note-improvement/SKILL.md`](codex/skills/note-improvement/SKILL.md) |
-| 123 | ✓ | [`codex/skills/onboard/SKILL.md`](codex/skills/onboard/SKILL.md) |
-| 124 | ✓ | [`codex/skills/peer-review/SKILL.md`](codex/skills/peer-review/SKILL.md) |
-| 125 | ✓ | [`codex/skills/pick-next-issue/SKILL.md`](codex/skills/pick-next-issue/SKILL.md) |
-| 126 | ✓ | [`codex/skills/polish-code/SKILL.md`](codex/skills/polish-code/SKILL.md) |
-| 127 | ✓ | [`codex/skills/preview/SKILL.md`](codex/skills/preview/SKILL.md) |
-| 128 | ✓ | [`codex/skills/prototype/SKILL.md`](codex/skills/prototype/SKILL.md) |
-| 129 | ✓ | [`codex/skills/quick-finalize/SKILL.md`](codex/skills/quick-finalize/SKILL.md) |
-| 130 | ✓ | [`codex/skills/recall-reasoning/SKILL.md`](codex/skills/recall-reasoning/SKILL.md) |
-| 131 | ✓ | [`codex/skills/refine-plan/SKILL.md`](codex/skills/refine-plan/SKILL.md) |
-| 132 | ✓ | [`codex/skills/reply-to-pr-conversation/SKILL.md`](codex/skills/reply-to-pr-conversation/SKILL.md) |
-| 133 | ✓ | [`codex/skills/reply-to-pr-threads/SKILL.md`](codex/skills/reply-to-pr-threads/SKILL.md) |
-| 134 | ✓ | [`codex/skills/resolve-findings/SKILL.md`](codex/skills/resolve-findings/SKILL.md) |
-| 135 | ✓ | [`codex/skills/resolve-pr-comments/SKILL.md`](codex/skills/resolve-pr-comments/SKILL.md) |
-| 136 | ✓ | [`codex/skills/review-agentic-setup/SKILL.md`](codex/skills/review-agentic-setup/SKILL.md) |
-| 137 | ✓ | [`codex/skills/review-code/SKILL.md`](codex/skills/review-code/SKILL.md) |
-| 138 | ✓ | [`codex/skills/review-dependencies/SKILL.md`](codex/skills/review-dependencies/SKILL.md) |
-| 139 | ✓ | [`codex/skills/review-plan/SKILL.md`](codex/skills/review-plan/SKILL.md) |
-| 140 | ✓ | [`codex/skills/review-pr/SKILL.md`](codex/skills/review-pr/SKILL.md) |
-| 141 | ✓ | [`codex/skills/review-tooling/SKILL.md`](codex/skills/review-tooling/SKILL.md) |
-| 142 | ✓ | [`codex/skills/run-checks/SKILL.md`](codex/skills/run-checks/SKILL.md) |
-| 143 | ✓ | [`codex/skills/self-improve/SKILL.md`](codex/skills/self-improve/SKILL.md) |
-| 144 | ✓ | [`codex/skills/ship/SKILL.md`](codex/skills/ship/SKILL.md) |
-| 145 | ✓ | [`codex/skills/simplify-all/SKILL.md`](codex/skills/simplify-all/SKILL.md) |
-| 146 | ✓ | [`codex/skills/simplify-code/SKILL.md`](codex/skills/simplify-code/SKILL.md) |
-| 147 | ✓ | [`codex/skills/simplify-docs/SKILL.md`](codex/skills/simplify-docs/SKILL.md) |
-| 148 | ✓ | [`codex/skills/smoke-test/SKILL.md`](codex/skills/smoke-test/SKILL.md) |
-| 149 | ✓ | [`codex/skills/split-and-ship/SKILL.md`](codex/skills/split-and-ship/SKILL.md) |
-| 150 | ✓ | [`codex/skills/stage-commit-push/SKILL.md`](codex/skills/stage-commit-push/SKILL.md) |
-| 151 | ✓ | [`codex/skills/stage-commit/SKILL.md`](codex/skills/stage-commit/SKILL.md) |
-| 152 | ✓ | [`codex/skills/stage/SKILL.md`](codex/skills/stage/SKILL.md) |
-| 153 | ✓ | [`codex/skills/survey-patterns/SKILL.md`](codex/skills/survey-patterns/SKILL.md) |
-| 154 | ✓ | [`codex/skills/turboplan/SKILL.md`](codex/skills/turboplan/SKILL.md) |
-| 155 | ✓ | [`codex/skills/understand-change/SKILL.md`](codex/skills/understand-change/SKILL.md) |
-| 156 | ✓ | [`codex/skills/update-changelog/SKILL.md`](codex/skills/update-changelog/SKILL.md) |
-| 157 | ✓ | [`codex/skills/update-dependencies/SKILL.md`](codex/skills/update-dependencies/SKILL.md) |
-| 158 | ✓ | [`codex/skills/update-pr/SKILL.md`](codex/skills/update-pr/SKILL.md) |
-| 159 | ✓ | [`codex/skills/update-turbo/SKILL.md`](codex/skills/update-turbo/SKILL.md) |
-| 160 | ✓ | [`codex/skills/user-experience/SKILL.md`](codex/skills/user-experience/SKILL.md) |
-| 161 | → | [`claude/ADDITIONS.md`](claude/ADDITIONS.md) |
-| 162 | → | [`claude/docs/skill-loading-reasoning.md`](claude/docs/skill-loading-reasoning.md) |
-| 163 | → | [`claude/SETUP.md`](claude/SETUP.md) |
-| 164 | → | [`claude/SKILL-CONVENTIONS.md`](claude/SKILL-CONVENTIONS.md) |
-| 165 | → | [`claude/SKILL-INDEX.md`](claude/SKILL-INDEX.md) |
-| 166 | → | [`claude/UPDATE.md`](claude/UPDATE.md) |
-| 167 | → | [`codex/ADDITIONS.md`](codex/ADDITIONS.md) |
-| 168 | → | [`codex/SETUP.md`](codex/SETUP.md) |
-| 169 | → | [`codex/SKILL-CONVENTIONS.md`](codex/SKILL-CONVENTIONS.md) |
-| 170 | → | [`codex/SKILL-INDEX.md`](codex/SKILL-INDEX.md) |
-| 171 | → | [`codex/UPDATE.md`](codex/UPDATE.md) |
-| 172 | → | [`README.md`](README.md) |
-| 173 | → | [`SETUP.md`](SETUP.md) |
-| 174 | → | [`SKILL-CONVENTIONS.md`](SKILL-CONVENTIONS.md) |
-| 175 | → | [`UPDATE.md`](UPDATE.md) |
+| 3 | ✓ | [`assets/logo/README.md`](assets/logo/README.md) |
+| 4 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 5 | ✓ | [`claude/ADDITIONS.md`](claude/ADDITIONS.md) |
+| 6 | ✓ | [`claude/AGENTS.md`](claude/AGENTS.md) |
+| 7 | ✓ | [`claude/CLAUDE.md`](claude/CLAUDE.md) |
+| 8 | ✓ | [`claude/skills/answer-reviewer-questions/SKILL.md`](claude/skills/answer-reviewer-questions/SKILL.md) |
+| 9 | ✓ | [`claude/skills/apply-findings/SKILL.md`](claude/skills/apply-findings/SKILL.md) |
+| 10 | ✓ | [`claude/skills/assess-technical-debt/SKILL.md`](claude/skills/assess-technical-debt/SKILL.md) |
+| 11 | ✓ | [`claude/skills/audit/SKILL.md`](claude/skills/audit/SKILL.md) |
+| 12 | ✓ | [`claude/skills/changelog-rules/SKILL.md`](claude/skills/changelog-rules/SKILL.md) |
+| 13 | ✓ | [`claude/skills/code-style/SKILL.md`](claude/skills/code-style/SKILL.md) |
+| 14 | ✓ | [`claude/skills/codex-exec/SKILL.md`](claude/skills/codex-exec/SKILL.md) |
+| 15 | ✓ | [`claude/skills/codex-review/SKILL.md`](claude/skills/codex-review/SKILL.md) |
+| 16 | ✓ | [`claude/skills/commit-rules/SKILL.md`](claude/skills/commit-rules/SKILL.md) |
+| 17 | ✓ | [`claude/skills/commit-staged-push/SKILL.md`](claude/skills/commit-staged-push/SKILL.md) |
+| 18 | ✓ | [`claude/skills/commit-staged/SKILL.md`](claude/skills/commit-staged/SKILL.md) |
+| 19 | ✓ | [`claude/skills/consult-codex/SKILL.md`](claude/skills/consult-codex/SKILL.md) |
+| 20 | ✓ | [`claude/skills/consult-oracle/SKILL.md`](claude/skills/consult-oracle/SKILL.md) |
+| 21 | ✓ | [`claude/skills/contribute-turbo/SKILL.md`](claude/skills/contribute-turbo/SKILL.md) |
+| 22 | ✓ | [`claude/skills/create-changelog/SKILL.md`](claude/skills/create-changelog/SKILL.md) |
+| 23 | ✓ | [`claude/skills/create-handoff/SKILL.md`](claude/skills/create-handoff/SKILL.md) |
+| 24 | ✓ | [`claude/skills/create-issue/SKILL.md`](claude/skills/create-issue/SKILL.md) |
+| 25 | ✓ | [`claude/skills/create-pr/SKILL.md`](claude/skills/create-pr/SKILL.md) |
+| 26 | ✓ | [`claude/skills/create-project-skills/SKILL.md`](claude/skills/create-project-skills/SKILL.md) |
+| 27 | ✓ | [`claude/skills/create-skill/references/workflows.md`](claude/skills/create-skill/references/workflows.md) |
+| 28 | ✓ | [`claude/skills/create-skill/SKILL.md`](claude/skills/create-skill/SKILL.md) |
+| 29 | ✓ | [`claude/skills/create-test-plan/SKILL.md`](claude/skills/create-test-plan/SKILL.md) |
+| 30 | ✓ | [`claude/skills/create-threat-model/SKILL.md`](claude/skills/create-threat-model/SKILL.md) |
+| 31 | ✓ | [`claude/skills/discuss-change/SKILL.md`](claude/skills/discuss-change/SKILL.md) |
+| 32 | ✓ | [`claude/skills/draft-plan/SKILL.md`](claude/skills/draft-plan/SKILL.md) |
+| 33 | ✓ | [`claude/skills/evaluate-findings/SKILL.md`](claude/skills/evaluate-findings/SKILL.md) |
+| 34 | ✓ | [`claude/skills/explain-this/SKILL.md`](claude/skills/explain-this/SKILL.md) |
+| 35 | ✓ | [`claude/skills/exploratory-test/SKILL.md`](claude/skills/exploratory-test/SKILL.md) |
+| 36 | ✓ | [`claude/skills/fetch-pr-comments/SKILL.md`](claude/skills/fetch-pr-comments/SKILL.md) |
+| 37 | ✓ | [`claude/skills/finalize/SKILL.md`](claude/skills/finalize/SKILL.md) |
+| 38 | ✓ | [`claude/skills/find-dead-code/SKILL.md`](claude/skills/find-dead-code/SKILL.md) |
+| 39 | ✓ | [`claude/skills/frontend-design/SKILL.md`](claude/skills/frontend-design/SKILL.md) |
+| 40 | ✓ | [`claude/skills/github-voice/SKILL.md`](claude/skills/github-voice/SKILL.md) |
+| 41 | ✓ | [`claude/skills/implement-improvements/SKILL.md`](claude/skills/implement-improvements/SKILL.md) |
+| 42 | ✓ | [`claude/skills/implement-plan/SKILL.md`](claude/skills/implement-plan/SKILL.md) |
+| 43 | ✓ | [`claude/skills/implement/SKILL.md`](claude/skills/implement/SKILL.md) |
+| 44 | ✓ | [`claude/skills/interpret-feedback/SKILL.md`](claude/skills/interpret-feedback/SKILL.md) |
+| 45 | ✓ | [`claude/skills/investigate/SKILL.md`](claude/skills/investigate/SKILL.md) |
+| 46 | ✓ | [`claude/skills/map-codebase/SKILL.md`](claude/skills/map-codebase/SKILL.md) |
+| 47 | ✓ | [`claude/skills/note-improvement/SKILL.md`](claude/skills/note-improvement/SKILL.md) |
+| 48 | ✓ | [`claude/skills/onboard/SKILL.md`](claude/skills/onboard/SKILL.md) |
+| 49 | ✓ | [`claude/skills/peer-review/SKILL.md`](claude/skills/peer-review/SKILL.md) |
+| 50 | ✓ | [`claude/skills/pick-next-issue/SKILL.md`](claude/skills/pick-next-issue/SKILL.md) |
+| 51 | ✓ | [`claude/skills/polish-code/SKILL.md`](claude/skills/polish-code/SKILL.md) |
+| 52 | ✓ | [`claude/skills/preview/SKILL.md`](claude/skills/preview/SKILL.md) |
+| 53 | ✓ | [`claude/skills/prototype/SKILL.md`](claude/skills/prototype/SKILL.md) |
+| 54 | ✓ | [`claude/skills/quick-finalize/SKILL.md`](claude/skills/quick-finalize/SKILL.md) |
+| 55 | ✓ | [`claude/skills/recall-reasoning/SKILL.md`](claude/skills/recall-reasoning/SKILL.md) |
+| 56 | ✓ | [`claude/skills/refine-plan/SKILL.md`](claude/skills/refine-plan/SKILL.md) |
+| 57 | ✓ | [`claude/skills/reply-to-pr-conversation/SKILL.md`](claude/skills/reply-to-pr-conversation/SKILL.md) |
+| 58 | ✓ | [`claude/skills/reply-to-pr-threads/SKILL.md`](claude/skills/reply-to-pr-threads/SKILL.md) |
+| 59 | ✓ | [`claude/skills/resolve-findings/SKILL.md`](claude/skills/resolve-findings/SKILL.md) |
+| 60 | ✓ | [`claude/skills/resolve-pr-comments/SKILL.md`](claude/skills/resolve-pr-comments/SKILL.md) |
+| 61 | ✓ | [`claude/skills/review-agentic-setup/SKILL.md`](claude/skills/review-agentic-setup/SKILL.md) |
+| 62 | ✓ | [`claude/skills/review-code/SKILL.md`](claude/skills/review-code/SKILL.md) |
+| 63 | ✓ | [`claude/skills/review-dependencies/SKILL.md`](claude/skills/review-dependencies/SKILL.md) |
+| 64 | ✓ | [`claude/skills/review-plan/SKILL.md`](claude/skills/review-plan/SKILL.md) |
+| 65 | ✓ | [`claude/skills/review-pr/SKILL.md`](claude/skills/review-pr/SKILL.md) |
+| 66 | ✓ | [`claude/skills/review-tooling/SKILL.md`](claude/skills/review-tooling/SKILL.md) |
+| 67 | ✓ | [`claude/skills/run-checks/SKILL.md`](claude/skills/run-checks/SKILL.md) |
+| 68 | ✓ | [`claude/skills/self-improve/SKILL.md`](claude/skills/self-improve/SKILL.md) |
+| 69 | ✓ | [`claude/skills/ship/SKILL.md`](claude/skills/ship/SKILL.md) |
+| 70 | ✓ | [`claude/skills/simplify-all/SKILL.md`](claude/skills/simplify-all/SKILL.md) |
+| 71 | ✓ | [`claude/skills/simplify-code/SKILL.md`](claude/skills/simplify-code/SKILL.md) |
+| 72 | ✓ | [`claude/skills/simplify-docs/SKILL.md`](claude/skills/simplify-docs/SKILL.md) |
+| 73 | ✓ | [`claude/skills/smoke-test/SKILL.md`](claude/skills/smoke-test/SKILL.md) |
+| 74 | ✓ | [`claude/skills/split-and-ship/SKILL.md`](claude/skills/split-and-ship/SKILL.md) |
+| 75 | ✓ | [`claude/skills/stage-commit-push/SKILL.md`](claude/skills/stage-commit-push/SKILL.md) |
+| 76 | ✓ | [`claude/skills/stage-commit/SKILL.md`](claude/skills/stage-commit/SKILL.md) |
+| 77 | ✓ | [`claude/skills/stage/SKILL.md`](claude/skills/stage/SKILL.md) |
+| 78 | ✓ | [`claude/skills/survey-patterns/SKILL.md`](claude/skills/survey-patterns/SKILL.md) |
+| 79 | ✓ | [`claude/skills/turboplan/SKILL.md`](claude/skills/turboplan/SKILL.md) |
+| 80 | ✓ | [`claude/skills/understand-change/SKILL.md`](claude/skills/understand-change/SKILL.md) |
+| 81 | ✓ | [`claude/skills/update-changelog/SKILL.md`](claude/skills/update-changelog/SKILL.md) |
+| 82 | ✓ | [`claude/skills/update-dependencies/SKILL.md`](claude/skills/update-dependencies/SKILL.md) |
+| 83 | ✓ | [`claude/skills/update-pr/SKILL.md`](claude/skills/update-pr/SKILL.md) |
+| 84 | ✓ | [`claude/skills/update-turbo/SKILL.md`](claude/skills/update-turbo/SKILL.md) |
+| 85 | ✓ | [`claude/skills/user-experience/SKILL.md`](claude/skills/user-experience/SKILL.md) |
+| 86 | ✓ | [`codex/ADDITIONS.md`](codex/ADDITIONS.md) |
+| 87 | ✓ | [`codex/AGENTS.md`](codex/AGENTS.md) |
+| 88 | ✓ | [`codex/CLAUDE.md`](codex/CLAUDE.md) |
+| 89 | ✓ | [`codex/skills/answer-reviewer-questions/SKILL.md`](codex/skills/answer-reviewer-questions/SKILL.md) |
+| 90 | ✓ | [`codex/skills/apply-findings/SKILL.md`](codex/skills/apply-findings/SKILL.md) |
+| 91 | ✓ | [`codex/skills/assess-technical-debt/SKILL.md`](codex/skills/assess-technical-debt/SKILL.md) |
+| 92 | ✓ | [`codex/skills/audit/SKILL.md`](codex/skills/audit/SKILL.md) |
+| 93 | ✓ | [`codex/skills/changelog-rules/SKILL.md`](codex/skills/changelog-rules/SKILL.md) |
+| 94 | ✓ | [`codex/skills/claude-print/SKILL.md`](codex/skills/claude-print/SKILL.md) |
+| 95 | ✓ | [`codex/skills/code-style/SKILL.md`](codex/skills/code-style/SKILL.md) |
+| 96 | ✓ | [`codex/skills/commit-rules/SKILL.md`](codex/skills/commit-rules/SKILL.md) |
+| 97 | ✓ | [`codex/skills/commit-staged-push/SKILL.md`](codex/skills/commit-staged-push/SKILL.md) |
+| 98 | ✓ | [`codex/skills/commit-staged/SKILL.md`](codex/skills/commit-staged/SKILL.md) |
+| 99 | ✓ | [`codex/skills/consult-claude/SKILL.md`](codex/skills/consult-claude/SKILL.md) |
+| 100 | ✓ | [`codex/skills/consult-oracle/SKILL.md`](codex/skills/consult-oracle/SKILL.md) |
+| 101 | ✓ | [`codex/skills/contribute-turbo/SKILL.md`](codex/skills/contribute-turbo/SKILL.md) |
+| 102 | ✓ | [`codex/skills/create-changelog/SKILL.md`](codex/skills/create-changelog/SKILL.md) |
+| 103 | ✓ | [`codex/skills/create-handoff/SKILL.md`](codex/skills/create-handoff/SKILL.md) |
+| 104 | ✓ | [`codex/skills/create-issue/SKILL.md`](codex/skills/create-issue/SKILL.md) |
+| 105 | ✓ | [`codex/skills/create-pr/SKILL.md`](codex/skills/create-pr/SKILL.md) |
+| 106 | ✓ | [`codex/skills/create-project-skills/SKILL.md`](codex/skills/create-project-skills/SKILL.md) |
+| 107 | ✓ | [`codex/skills/create-skill/references/workflows.md`](codex/skills/create-skill/references/workflows.md) |
+| 108 | ✓ | [`codex/skills/create-skill/SKILL.md`](codex/skills/create-skill/SKILL.md) |
+| 109 | ✓ | [`codex/skills/create-test-plan/SKILL.md`](codex/skills/create-test-plan/SKILL.md) |
+| 110 | ✓ | [`codex/skills/create-threat-model/SKILL.md`](codex/skills/create-threat-model/SKILL.md) |
+| 111 | ✓ | [`codex/skills/discuss-change/SKILL.md`](codex/skills/discuss-change/SKILL.md) |
+| 112 | ✓ | [`codex/skills/draft-plan/SKILL.md`](codex/skills/draft-plan/SKILL.md) |
+| 113 | ✓ | [`codex/skills/evaluate-findings/SKILL.md`](codex/skills/evaluate-findings/SKILL.md) |
+| 114 | ✓ | [`codex/skills/explain-this/SKILL.md`](codex/skills/explain-this/SKILL.md) |
+| 115 | ✓ | [`codex/skills/exploratory-test/SKILL.md`](codex/skills/exploratory-test/SKILL.md) |
+| 116 | ✓ | [`codex/skills/fetch-pr-comments/SKILL.md`](codex/skills/fetch-pr-comments/SKILL.md) |
+| 117 | ✓ | [`codex/skills/finalize/SKILL.md`](codex/skills/finalize/SKILL.md) |
+| 118 | ✓ | [`codex/skills/find-dead-code/SKILL.md`](codex/skills/find-dead-code/SKILL.md) |
+| 119 | ✓ | [`codex/skills/frontend-design/SKILL.md`](codex/skills/frontend-design/SKILL.md) |
+| 120 | ✓ | [`codex/skills/github-voice/SKILL.md`](codex/skills/github-voice/SKILL.md) |
+| 121 | ✓ | [`codex/skills/implement-improvements/SKILL.md`](codex/skills/implement-improvements/SKILL.md) |
+| 122 | ✓ | [`codex/skills/implement-plan/SKILL.md`](codex/skills/implement-plan/SKILL.md) |
+| 123 | ✓ | [`codex/skills/implement/SKILL.md`](codex/skills/implement/SKILL.md) |
+| 124 | ✓ | [`codex/skills/interpret-feedback/SKILL.md`](codex/skills/interpret-feedback/SKILL.md) |
+| 125 | ✓ | [`codex/skills/investigate/SKILL.md`](codex/skills/investigate/SKILL.md) |
+| 126 | ✓ | [`codex/skills/map-codebase/SKILL.md`](codex/skills/map-codebase/SKILL.md) |
+| 127 | ✓ | [`codex/skills/note-improvement/SKILL.md`](codex/skills/note-improvement/SKILL.md) |
+| 128 | ✓ | [`codex/skills/onboard/SKILL.md`](codex/skills/onboard/SKILL.md) |
+| 129 | ✓ | [`codex/skills/peer-review/SKILL.md`](codex/skills/peer-review/SKILL.md) |
+| 130 | ✓ | [`codex/skills/pick-next-issue/SKILL.md`](codex/skills/pick-next-issue/SKILL.md) |
+| 131 | ✓ | [`codex/skills/polish-code/SKILL.md`](codex/skills/polish-code/SKILL.md) |
+| 132 | ✓ | [`codex/skills/preview/SKILL.md`](codex/skills/preview/SKILL.md) |
+| 133 | ✓ | [`codex/skills/prototype/SKILL.md`](codex/skills/prototype/SKILL.md) |
+| 134 | ✓ | [`codex/skills/quick-finalize/SKILL.md`](codex/skills/quick-finalize/SKILL.md) |
+| 135 | ✓ | [`codex/skills/recall-reasoning/SKILL.md`](codex/skills/recall-reasoning/SKILL.md) |
+| 136 | ✓ | [`codex/skills/refine-plan/SKILL.md`](codex/skills/refine-plan/SKILL.md) |
+| 137 | ✓ | [`codex/skills/reply-to-pr-conversation/SKILL.md`](codex/skills/reply-to-pr-conversation/SKILL.md) |
+| 138 | ✓ | [`codex/skills/reply-to-pr-threads/SKILL.md`](codex/skills/reply-to-pr-threads/SKILL.md) |
+| 139 | ✓ | [`codex/skills/resolve-findings/SKILL.md`](codex/skills/resolve-findings/SKILL.md) |
+| 140 | ✓ | [`codex/skills/resolve-pr-comments/SKILL.md`](codex/skills/resolve-pr-comments/SKILL.md) |
+| 141 | ✓ | [`codex/skills/review-agentic-setup/SKILL.md`](codex/skills/review-agentic-setup/SKILL.md) |
+| 142 | ✓ | [`codex/skills/review-code/SKILL.md`](codex/skills/review-code/SKILL.md) |
+| 143 | ✓ | [`codex/skills/review-dependencies/SKILL.md`](codex/skills/review-dependencies/SKILL.md) |
+| 144 | ✓ | [`codex/skills/review-plan/SKILL.md`](codex/skills/review-plan/SKILL.md) |
+| 145 | ✓ | [`codex/skills/review-pr/SKILL.md`](codex/skills/review-pr/SKILL.md) |
+| 146 | ✓ | [`codex/skills/review-tooling/SKILL.md`](codex/skills/review-tooling/SKILL.md) |
+| 147 | ✓ | [`codex/skills/run-checks/SKILL.md`](codex/skills/run-checks/SKILL.md) |
+| 148 | ✓ | [`codex/skills/self-improve/SKILL.md`](codex/skills/self-improve/SKILL.md) |
+| 149 | ✓ | [`codex/skills/ship/SKILL.md`](codex/skills/ship/SKILL.md) |
+| 150 | ✓ | [`codex/skills/simplify-all/SKILL.md`](codex/skills/simplify-all/SKILL.md) |
+| 151 | ✓ | [`codex/skills/simplify-code/SKILL.md`](codex/skills/simplify-code/SKILL.md) |
+| 152 | ✓ | [`codex/skills/simplify-docs/SKILL.md`](codex/skills/simplify-docs/SKILL.md) |
+| 153 | ✓ | [`codex/skills/smoke-test/SKILL.md`](codex/skills/smoke-test/SKILL.md) |
+| 154 | ✓ | [`codex/skills/split-and-ship/SKILL.md`](codex/skills/split-and-ship/SKILL.md) |
+| 155 | ✓ | [`codex/skills/stage-commit-push/SKILL.md`](codex/skills/stage-commit-push/SKILL.md) |
+| 156 | ✓ | [`codex/skills/stage-commit/SKILL.md`](codex/skills/stage-commit/SKILL.md) |
+| 157 | ✓ | [`codex/skills/stage/SKILL.md`](codex/skills/stage/SKILL.md) |
+| 158 | ✓ | [`codex/skills/survey-patterns/SKILL.md`](codex/skills/survey-patterns/SKILL.md) |
+| 159 | ✓ | [`codex/skills/turboplan/SKILL.md`](codex/skills/turboplan/SKILL.md) |
+| 160 | ✓ | [`codex/skills/understand-change/SKILL.md`](codex/skills/understand-change/SKILL.md) |
+| 161 | ✓ | [`codex/skills/update-changelog/SKILL.md`](codex/skills/update-changelog/SKILL.md) |
+| 162 | ✓ | [`codex/skills/update-dependencies/SKILL.md`](codex/skills/update-dependencies/SKILL.md) |
+| 163 | ✓ | [`codex/skills/update-pr/SKILL.md`](codex/skills/update-pr/SKILL.md) |
+| 164 | ✓ | [`codex/skills/update-turbo/SKILL.md`](codex/skills/update-turbo/SKILL.md) |
+| 165 | ✓ | [`codex/skills/user-experience/SKILL.md`](codex/skills/user-experience/SKILL.md) |
+| 166 | → | [`claude/SETUP.md`](claude/SETUP.md) |
+| 167 | → | [`claude/SKILL-CONVENTIONS.md`](claude/SKILL-CONVENTIONS.md) |
+| 168 | → | [`claude/SKILL-INDEX.md`](claude/SKILL-INDEX.md) |
+| 169 | → | [`codex/SETUP.md`](codex/SETUP.md) |
+| 170 | → | [`codex/SKILL-CONVENTIONS.md`](codex/SKILL-CONVENTIONS.md) |
+| 171 | → | [`codex/SKILL-INDEX.md`](codex/SKILL-INDEX.md) |
+| 172 | → | [`docs/customization.md`](docs/customization.md) |
+| 173 | → | [`docs/examples.md`](docs/examples.md) |
+| 174 | → | [`docs/workflows.md`](docs/workflows.md) |
+| 175 | → | [`README.md`](README.md) |
+| 176 | → | [`SKILL-CONVENTIONS.md`](SKILL-CONVENTIONS.md) |
 
 ---
 

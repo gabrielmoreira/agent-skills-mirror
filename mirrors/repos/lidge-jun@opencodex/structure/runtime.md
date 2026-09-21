@@ -1,5 +1,21 @@
 # Runtime
 
+## Resolved static model policy
+
+`src/router.ts` attaches one frozen `ResolvedModelPolicy` to every `RouteResult`. Policy/combo
+route spreads retain that object. Every initial, fallback, and recovery route is recaptured for the
+request's original inbound protocol before route-dependent normalization, and all adapter rebuilds
+consume its recorded adapter. A translated Chat or Anthropic replay therefore cannot inherit a
+Responses-only default. Credential, account, quota, health, cooldown, and observed transport
+evidence remain late and cannot widen a captured static limit.
+
+Virtual models are the sole model-identity transition: the ordinary and compact paths preserve the
+selected public id in diagnostics, rewrite `route.modelId` to the upstream wire id, and atomically
+replace `route.staticPolicy` before adapter or capability decisions continue. Model aliases are
+resolved before the route result is built, so their policy is already keyed by the native wire id.
+
+Routed Meta Muse requests use the registry-owned [Muse effort and header contract](providers-and-adapters.md); `max` reaches the provider through the existing reasoning mapper.
+
 Native result continuations and function-result injection follow [the mode-specific result and control contract](transports/streaming-health.md#experimental-native-function-result-injection); this surface does not infer upstream support or alter its defaults.
 
 Native steering follows [the shared WebSocket contract](transports/streaming-health.md#experimental-native-mid-turn-steering); this surface's defaults remain unchanged.
@@ -87,6 +103,7 @@ does not perform OAuth, and runtime credential resolution rereads the owned sour
 | --- | --- |
 | `bin/ocx.mjs` | Published npm `bin` entry (Node shim). Resolves the bundled or explicit Bun binary before project dotenv can load, stamps its runtime provenance plus a proof-bound Anthropic parent-env snapshot, lazy-runs `bun/install.js` if only the placeholder stub is present, then execs `src/cli/index.ts` under Bun. Lets `npm install -g` work without a separately-installed Bun. The exact `system codex-cli-update` inspection namespace skips both boot repair and lazy Bun installation; missing runtime support fails closed instead of mutating state. |
 | `src/lib/bun-runtime.ts` | Bundled-Bun resolution: `isRealBunBinary()` (size gate vs the ~450-byte placeholder stub), `bundledBunPath()`, and `durableBunPath()` (path baked into service/shim artifacts). Durable selection accepts only the source/path pair already stamped for the running executable; it never re-reads a project-dotenv `OPENCODEX_BUN_PATH`. |
+| `src/lib/plain-data.ts` | Detached copies for a consumer that must not observe later edits. Descriptor-based reads, including array elements, so an accessor is refused rather than invoked; refuses cycles, functions, class instances and anything else JSON could not have produced, and returns a copy-or-refusal union rather than degrading silently. Symbol-keyed process bookkeeping is skipped. |
 | `src/cli/index.ts` | `ocx` / `opencodex` CLI. Lifecycle: init, start, stop, restart, status, sync, restore/eject, gui, service, update. `restart` refuses an in-place restart requested by a CLI whose version differs from the attested `/healthz` version, because the replacement respawns from the live installation; placeholder versions (unknown/0.0.0) stay incomparable and keep the restart path. Configuration: provider, account, models, combo/route, access, integrations, v2. Client launchers: Claude, OpenCode, MiniMax Code, and MiniMax CLI text. The MMX launcher owns a child-lifetime loopback path bridge from the client's hard-coded `/anthropic/v1/messages` path to the canonical `/v1/messages` data plane; the server does not expose an extra auth surface. Diagnostics: doctor, debug, observe, health. Windows adds tray. The full command surface is `src/cli/help.ts`; this table names the groups, not every verb. After help/version early exits, ordinary commands run the bounded best-effort Codex-shim auto-restore policy before dispatch. `system codex-cli-update` is the deliberate read-only exception and suppresses auto-restore for its whole namespace, including malformed invocations. Keeps the `#!/usr/bin/env bun` shebang for from-source dev (`bun run src/cli/index.ts`). |
 | `src/server/index.ts` | Bun server entrypoint: `startServer`, `/v1/responses` HTTP + WebSocket routing (compact handled before generic Responses), exact `POST /v1/images/generations` and `POST /v1/images/edits` routing, `/v1/models`, the Anthropic-shaped `/v1/messages` and OpenAI-shaped `/v1/chat/completions` compatibility surfaces, the Live/Realtime surface, the hosted-search relay, artifact serving, `/healthz`, the `/api/*` auth gate, the `/v1/*` JSON 404 guard, GUI fallback, the opt-in loopback-only hub-management listener, and facade re-exports for split server modules. The route table itself is built by `src/server/index/serve-options.ts`; this entry file owns the listener and the startup transaction. |
 | `src/server/images.ts` | Standalone Images data plane: default OpenAI or explicit custom-provider selection, Codex account affinity, bounded opaque request relay, single-attempt upstream fetch, pool health recording, and safe response/cancellation relay. |
@@ -96,6 +113,7 @@ does not perform OAuth, and runtime credential resolution rereads the owned sour
 | `src/config/paths.ts` | Resolves `OPENCODEX_HOME`, `config.json`, and owner-only directory hardening. |
 | `src/config/atomic-write.ts` | Shared synchronous/asynchronous temp-harden-rename writer and residual-temp failure contract. The temp is ACL-hardened before it holds a byte and again before the rename, both `required: true`; the second call is a memo hit rather than a second icacls sequence because the writer re-asserts descriptor/path identity after the content write and re-attributes the harden through `reattributeHardenedSecretPath`. Windows takes no `chmod` on that path — it sets the read-only attribute, not the DACL, and its ChangeTime bump is what used to retire the memo. |
 | `src/config/process-state.ts` | Owns `ocx.pid`, `runtime-port.json`, cheap liveness, full command-line identity verification, and snapshot-guarded cleanup. |
+| `src/config/admitted-identity.ts` | Which configuration a derived artifact was built from. Detaches the resident configuration as plain data so one pass cannot gather under one state and project under another, and records the complete structure beside the configuration file's bytes. Refuses an accessor, a cycle, a value JSON could not produce, an unreadable file and a file the loader would have had to salvage; a callable `providers[name].fetch` is the one non-data field, held and compared by reference, while a written one is ordinary data on both sides, as the outbound transport also reads it. It does NOT require the resident configuration to equal the file: the proxy routes by what it holds, and live reconciliation retains live changes and the active listener binding on purpose. Evidence stays in a module WeakMap, never on the config and never in a response. |
 | `src/server/ports.ts` | Owns bind availability and ephemeral-port selection. Temporary probes dispose accepted peers and wait for listener close before reporting success. |
 | `src/cli/status.ts` / `src/cli/status-probes.ts` | Status snapshot assembly and the shared read-only health/stale-process probes used by status and doctor. Probe evidence keeps recorded-port choice, before/after snapshots and per-call timer cleanup together. |
 | `src/cli/doctor.ts` | Read-only environment diagnostics. Sections print through `console.log`; each is a `collect*` helper above `runDoctor` so it is testable without the command. Only a `FAIL`-level condition records a doctor failure — a degraded-but-working install must not break a green pipeline. `collectDefaultModelExposure` compares Codex's root `model` pin against the exposed set, which it READS rather than recomputes: the running proxy's `/v1/models` when one answers, otherwise the on-disk catalog's `visibility: "list"` slugs. It reports exposed, not exposed, or undeterminable, and never the second when it could not read either surface. |
@@ -105,6 +123,10 @@ does not perform OAuth, and runtime credential resolution rereads the owned sour
 | `src/reasoning-effort.ts` | Codex reasoning-level definitions (`low`/`medium`/`high`/`xhigh`), per-model effort mapping, and catalog effort sanitization. |
 | `src/codex/shim.ts` | Codex autostart shim: replaces the `codex` binary with a wrapper that auto-starts the proxy on demand. It skips startup for management subcommands even when value-taking global flags precede the subcommand, and transactionally restores complete, stable external launcher replacements without a watcher or PATH rediscovery. |
 | `src/service.ts` | OS service manager (macOS launchd, Linux systemd, Windows schtasks): always-on proxy with crash restart. Facade over the `src/service/` leaves — `src/service/launchd.ts`, `src/service/systemd.ts`, `src/service/windows-ops.ts`, `src/service/windows-scheduler.ts`, `src/service/windows-taskxml.ts`, `src/service/state.ts`, `src/service/guards.ts`, `src/service/health.ts`, `src/service/repair.ts`, `src/service/orchestration.ts`, `src/service/diagnostics.ts`, `src/service/cli.ts`. |
+
+`src/cli/provider.ts` accepts the Google-only `--google-tool-schema-policy` creation flag and rejects
+an unknown value or non-Google effective adapter before persistence. The persisted field and default
+are owned by the [config contract](config.md#config-surface).
 
 The `src/` root stays thin: process entry (`src/cli.ts`, `src/index.ts`), shared config/types,
 router, bridge, service manager, reasoning-effort definitions, and the stall-timeout budget live
@@ -161,6 +183,18 @@ holder is refused with the same message the owner check prints (exit 0 instead u
 is reported as such rather than called foreign, because an identity probe cannot distinguish a
 foreign server from an unreachable one. An explicit `--port` still never hops — it waits for the
 pin through `src/server/port-reclaim.ts` — and a configured `port: 0` still means "ask the OS".
+
+Every `startServer` invocation acquires the `src/lib/spend-ledger-owner.ts` SQLite writer lease
+for its resolved OpenCodex state directory before loading configuration or binding a listener.
+References share one lease only inside one process and one directory; a different directory in
+that process is refused while the lease is held, because the shared ledger is process-wide. The
+refusal is about two directories owned at once, not forever: releasing the final reference
+discards the singleton with its binding, so the same process may then own a different directory
+and build a ledger by replaying that directory's own journal. A second process on the same
+directory is refused even for observe-only spend configuration, while a separate directory is
+independent. Ordinary stop releases the final reference after listener teardown, and every thrown
+startup path releases its reference. SQLite and the OS release a crashed owner; no PID, timestamp,
+TTL or lock-file deletion participates in recovery.
 
 An explicit Codex integration OFF skips startup cache invalidation before the user-scoped catalog
 serialization lock is resolved. Explicit `sync` and `sync-cache` retain their catalog-only override.
@@ -355,9 +389,7 @@ The relay is transparent in both directions, and that includes the close: a down
 
 `OCX_LIVE_FRAME_LOG` records both frame metadata and sideband lifecycle stages (`upstream-open`, `upstream-failed`, `relay-attached`, `relay-closed`) in one JSONL, content-free in both shapes. The lifecycle half is what separates a join that never reached this proxy from one whose upstream handshake was refused and from a live relay that carried nothing; frame records alone leave all three as an empty file. `tests/server/server-live-realtime-fixtures.test.ts` drives each sideband stage against de-identified Frameless v3 fixtures in `tests/fixtures/realtime-voice-sideband/` so a failure names the stage.
 
-## Paginated history writer boundary
-
-`src/codex/history-provider.ts` refuses external writes to paginated or migration-capable history. `src/codex/inject.ts` checks affected rows and manifest-owned restore targets before and after config/profile/journal changes, including successful journal and fallback restores, and compensates refused restore/removal transitions. Failed config restore stops later catalog/history work and rolls back a coordinated remove transition. Apply retains an existing provider definition before candidate admission even when history preflight passes, so migration after artifact commit or during worker startup cannot leave earlier conversations without their provider. See the [history writer contract](codex-home.md#paginated-history-writer-boundary) for guarantees and concurrent-writer limits.
+Paginated and migration-capable history follows the [authoritative writer contract](codex-home.md#paginated-history-writer-boundary); this document adds no independent writer guarantee.
 
 Codex pool settings and their consumers follow the [reset-first ordering contract](providers/openai-tiers.md#reset-first-account-ordering), including independent-quota fallback, preserved affinity, strategy-specific threshold summaries, and shared short-observation freshness for switch warnings.
 
@@ -382,9 +414,9 @@ The account history response can include a [low-confidence effective capacity es
 
 Account quota surfaces use [safe probe diagnostics](transports/inventory.md#account-quota-failure-diagnostics) separately from quota validity, credential health and routing authority.
 
-Translated Chat request construction uses the [inline-image budget](transports/streaming-health.md#translated-chat-inline-image-budget); the shared normalizer counts retained bytes even when a wire-specific drop callback keeps the image attached.
+Translated Chat request construction uses the [inline-image budget](transports/streaming-health.md#translated-chat-inline-image-budget); the shared normalizer counts retained bytes even when a wire-specific drop callback keeps the image attached, rejects inputs above the safe decoded-pixel ceiling, caps native decode work process-wide, and stops queued work when the request is cancelled.
 
-OpenCode catalog discovery in `src/cli/opencode.ts` uses the local admin credential and a validated numeric-loopback management origin. It dials through `src/server/direct-local-http.ts`, rejects redirects and preserves the request/body deadline. Hub ingress selection stays separate from exported inference settings.
+OpenCode catalog discovery in `src/cli/opencode.ts` derives a catalog-only bearer from the local admin credential and uses a validated numeric-loopback management origin. `src/server/management-auth.ts` accepts that derived bearer only for the exact `GET /api/models` read, so a spoofed listener cannot capture reusable administrator authority; that read can still finalize a pending initial model selection, so the bearer is catalog-scoped rather than strictly read-only. The launcher dials through `src/server/direct-local-http.ts`, rejects redirects and preserves the request/body deadline. Hub ingress selection stays separate from exported inference settings.
 
 The [explicit model-capability contract](config.md#explicit-per-model-capability-declarations) preserves operator declarations through provider storage and catalog capture. Vision dispatch consumes those declarations together with registry/vendor metadata before any image-bearing upstream send.
 
@@ -396,7 +428,7 @@ declare `modelInputModalities: ["text", "image"]` per model for the nine Claude 
 explicit operator overrides; unknown models receive no new declaration. Client eligibility filters
 and Anthropic image wire handling remain unchanged.
 
-`src/vision/plan.ts` prevents raw image bytes from reaching any target whose effective capability is positively known to exclude image input. Evidence from the resolved runtime provider and explicit operator declarations takes precedence, followed by backend-specific/registry/vendor metadata. A proven text-only target is preprocessed through the configured Vision Sidecar; a positively image-capable target receives the image directly. Genuinely unknown custom models retain the existing compatibility path rather than being guessed text-only.
+`src/vision/plan.ts` prevents raw image bytes from reaching any target whose effective capability is positively known to exclude image input. Evidence is consulted highest-first: `modelCapabilities`, an explicit custom row for the same routed identity, `noVisionModels`, an explicit per-model modality list without `image`, then backend-specific/registry/vendor metadata. A proven text-only target is preprocessed through the configured Vision Sidecar; a positively image-capable target receives the image directly. Genuinely unknown custom models retain the existing compatibility path rather than being guessed text-only.
 
 Canonical ChatGPT Codex forwarding uses the generated `openai-codex` capability bundle rather than the public `openai` bundle. This matters when the two backends differ: for example, the vendored metadata records `gpt-5.3-codex-spark` as text-only on `openai-codex` while the public OpenAI row lists image input. The native Chat fast path and web-search image verbalization consume the same effective-capability decision.
 
@@ -411,11 +443,15 @@ Renamed fixed-key providers receive [missing reasoning metadata](catalog.md#rena
 Translated audio/file admission follows the [final-adapter input contract](adapters/registry.md#untranslated-input-media); native raw passthrough remains separate.
 ## Request-local target compatibility
 
+Google's final adapter compiler may emit an opt-in, content-free
+[tool-schema loss diagnostic](providers/google.md#google-tool-schema-loss-reporting). It observes
+adapter-local narrowing only and changes neither provider routing nor the serialized request body.
+
 `src/adapters/openai-responses.ts` omits only top-level `user` at the canonical ChatGPT Codex forward destination. Claude translation retains its original identity and prompt-cache key; public API and noncanonical gateways retain their `user` field. Input roles, tool-schema properties, safety identifiers and original replay bodies are not changed.
 
-`src/combos/failover.ts` treats three intact HTTP 400 invalid-request envelopes as request-local incompatibilities: exactly `Unsupported parameter: user`; `unsupported_value` naming `reasoning.effort` or `reasoning_effort` with an explicit unsupported-value message; and `param: input` with a bounded model-scoped `does not support image inputs` message. A null provider code is accepted only for that observed image envelope. Only the exact proxy wrapper is unwrapped, within three envelopes and 16,384 characters; conflicting codes, malformed/truncated envelopes and reflected JSON do not gain hop permission.
+`src/combos/failover.ts` treats four intact HTTP 400 invalid-request envelopes as request-local incompatibilities: exactly `Unsupported parameter: user`; `unsupported_value` naming `reasoning.effort` or `reasoning_effort` with an explicit unsupported-value message; `param: input` with a bounded model-scoped `does not support image inputs` message; and the exact null-code `gpt-6-astra` function-tool routing mismatch that tells an existing Responses request to use `/v1/responses`, allowing only the bare model name or its strict `YYYY-MM-DD` deployment suffix. A null provider code is accepted only for the two observed envelopes that require it. Only the exact proxy wrapper is unwrapped, within three envelopes and 16,384 characters; conflicting codes, malformed/truncated envelopes and reflected JSON do not gain hop permission.
 
-A `response_format` capability refusal is a fourth envelope, kept separate because it needs one code and one frame the three above do not admit. The refusal must name `response_format` AND state that it is unavailable or unsupported; a message that merely names the field, such as an invalid-schema complaint, stays terminal, because replaying a malformed request at every later target is the outcome this distinction exists to avoid. `param` may be absent or explicitly null and a param naming another field fails closed. Its code set is the shared generic one plus `invalid_parameter_error`, held separately so the `user` and image branches are not widened by it. It also unwraps a single `data:` SSE frame on a one-line body — the reported gateway answers on the stream, so the error object is never extracted and the structured code arrives undefined — while a multi-event body is left alone. The next target receives the same request with `response_format` intact: no field is dropped and the output contract the caller asked for is unchanged. Traversal stays finite because combo excludes each attempted target. This verdict records no cooldown, and cancellation, origin/cyber-policy rejection and the non-replayable post-send codes are all tested before it (#4903).
+A `response_format` capability refusal is a fifth envelope, kept separate because it needs one code and one frame the four above do not admit. The refusal must name `response_format` AND state that it is unavailable or unsupported; a message that merely names the field, such as an invalid-schema complaint, stays terminal, because replaying a malformed request at every later target is the outcome this distinction exists to avoid. `param` may be absent or explicitly null and a param naming another field fails closed. Its code set is the shared generic one plus `invalid_parameter_error`, held separately so the `user` and image branches are not widened by it. It also unwraps a single `data:` SSE frame on a one-line body — the reported gateway answers on the stream, so the error object is never extracted and the structured code arrives undefined — while a multi-event body is left alone. The next target receives the same request with `response_format` intact: no field is dropped and the output contract the caller asked for is unchanged. Traversal stays finite because combo excludes each attempted target. This verdict records no cooldown, and cancellation, origin/cyber-policy rejection and the non-replayable post-send codes are all tested before it (#4903).
 
 The combo may advance to its next eligible unattempted target before output commitment. It records no target/provider cooldown for these request-local mismatches and does not silently drop reasoning controls or raise `none` to a supported rung. Cancellation, origin/cyber-policy rejection, non-replayable post-send errors and the existing streaming commit boundary stay authoritative. Apart from the definite context overflow below, other invalid requests remain terminal.
 
@@ -452,3 +488,6 @@ Native steering retains fixed phase deadlines and reconciled replay output; see 
 Native steering generation overrides, explicit public-API eligibility and the consent-gated wire probe follow the [shared control contract](transports/streaming-health.md#steering-settings-public-api-and-diagnostic-probe); this owner does not change routing or execute diagnostic tools.
 
 Unicode pattern normalization uses [copy-on-write traversal](transports/byte-accounting.md#unicode-pattern-normalization) while preserving the existing schema and wire semantics.
+
+Codex compaction uses a request-local model override for the configured triggers; the
+[Responses compaction contract](transports/responses.md#compaction-routing-overrides) owns its trigger and replay boundaries.

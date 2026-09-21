@@ -4,6 +4,19 @@
 
 ## v0.3.224：自定义回复语气与设置页一键测试（2026-09-19）
 
+### 发布日期偏好软模式入库门修复（issue #257）
+
+- **修复配置 `[sources.<name>].recommendation_date_preset != "all"` 后软模式来源被静默饿死**：统一候选入队的 `_source_publication_date_candidate_is_eligible()` 此前取 `PublicationDateDecision.in_range` 判定，把「范围外」和「无法判定发布时间」都当成必须丢弃——软模式（`weight<1`，默认 0.5）同样被硬过滤，且 `published_at` 缺失的来源（YouTube 主路径、X、小红书等）在配置任意非 `all` 预设后候选全部在入库前被丢弃，`discovery_candidates` 不再新增、来源池恒为 0。现改按 `eligible` 准入：严格模式（`weight=1`）行为不变（`eligible == in_range`，仍排除范围外/无法解析时间的候选）；软模式保留候选入队。策略内联 LLM 评估路径的 `filter_candidates_for_eval()` 同步改为 `eligible`，与 raw 入库门一致。日期偏好统一在 discovery 层分流：`1 - weight` 分数乘数仍只作用于 B 站池/推荐打分路径，非 B 站来源软模式只保留候选、不降权（`docs/modules/config.md`）。该修复同时恢复 `docs/modules/discovery.md` 已记录的「缺失/异常值默认不影响候选入队」契约。回归测试：`tests/test_source_publication_preference.py` 新增「软模式保留范围外 + 缺失发布时间候选」「严格模式仍排除缺失时间」「内联评估软模式不预过滤」三条。
+- **文档与设置页文案同步**：`docs/modules/config.md`、`docs/modules/recommendation.md`、`docs/modules/discovery.md`、`config.example.toml` 与桌面设置页来源卡片说明改为按严格/软模式描述，并显式标注非 B 站来源日期偏好只做 discovery 层分流、不进入池评分乘数。
+
+### 发布日期偏好入队门可观测性（issue #257 后续）
+
+- **新增按来源的日期门诊断计数与 100% 丢弃告警**：`Database.enqueue_discovery_candidates()` 按来源累计 `input` / `filtered_by_publication_date` / `inserted` 与最后时间戳，`Database.publication_date_filter_stats()` 返回快照；某一轮某来源候选全部被发布日期偏好丢弃时按来源 10 分钟限流写 WARNING，解决「生产者 ledger 只见 fetch 成功、来源已经静默饿死」的盲区（issue #257 潜伏一个月的直接原因）。配置热更新会清空告警限流，修正配置后下一轮立即复报。`GET /api/runtime-status` 新增 `publication_date_filter` 字段透出计数。回归：`tests/test_source_publication_preference.py` 断言计数与告警，`tests/test_api_app.py` 锁定 runtime-status 字段。
+
+### YouTube 精确发布时间补全（issue #257 建议 2）
+
+- **非 `all` 日期偏好下按频道 RSS 补 `published_at`**：scrapetube / InnerTube / yt-dlp flat 主路径只提供相对 `publishedTimeText`，原先只写 `published_label`，导致严格日期偏好下 YouTube 候选全被排除、软模式又完全没有时间依据。现在 `YtScraperClient.enrich_missing_published_at()` 从 renderer（`ownerText` / `shortBylineText` / `longBylineText` / `bylineText` 的 browseEndpoint）或 yt-dlp（`channel_id` / `channel_url`）解析 `UC...` channel id，按频道抓取公开 Atom feed（缓存 10 分钟、单轮上限 12 个 feed、并发 4），把精确 `<published>` 写入 `publishedAt`；相对 label 永不伪造成精确时间，RSS 只覆盖频道最近约 15 条，未覆盖的旧视频保持 label-only。`YoutubeSearchStrategy` / `YoutubeTrendingStrategy` / `YoutubeChannelStrategy` 仅在来源日期偏好非 `all` 时触发补全，默认路径零额外请求。真实环境验证：trending 10/10 补全后 `last_7_days` 严格模式 10/10 入队（补全前 0/10），`yt_channel` 5/5 命中；search 的多年常青视频不在频道最近 15 条内，保持 label-only 并按严格模式排除。回归：`tests/test_youtube_published_at.py`（RSS 解析 / channel id 提取 / 注入 / 缓存 / 上限）与 `tests/test_youtube_discovery_strategy.py` 的 search / trending 接线断言。
+
 ### 自定义回复语气配置（issue #255）
 
 - **`[soul]` 新增自由文本字段 `reply_style`（默认 `""`）**：非空时作为一行 `- 回复风格: <文本>` 追加进 `_render_tone_profile()` 语气块，覆盖对话回复、推荐文案（单条 + 批量）、画像文本四类 prompt；为空时所有 prompt 输出逐字节不变（回放门守护）。解析时把空白折叠为单行，上限 200 字符（`_collect_config_issues()` blocking 校验）。透传链：`SoulEngine._reply_style` → `LLMService.reply_style`（对话）+ `ProfileBuilder.reply_style`（画像），`RecommendationEngine._reply_style`（单条 + 批量文案）；CLI、`serve-api` 热重载与 OpenClaw bootstrap 三处构造点均已接线，`SocraticDialogue` 的 LLMService fallback 复用 `SoulEngine._reply_style`，工具调用路径（`_respond_with_tools`）同样从 `service.reply_style` 透传。新增 builder 级逐字节不变 / 注入断言（`tests/test_llm_prompts.py`）、config round-trip 与长度校验（`tests/test_config.py`）、LLMService / ProfileBuilder / RecommendationEngine / 工具路径接线回归。

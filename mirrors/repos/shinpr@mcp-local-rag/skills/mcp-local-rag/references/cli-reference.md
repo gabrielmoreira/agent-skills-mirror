@@ -117,7 +117,7 @@ npx mcp-local-rag [global-options] query [--limit <n>] [--scope <prefix>]... <te
 
 | Option | Default | Description |
 |--------|---------|-------------|
-| `--limit <n>` | `10` | Max results (1–20) |
+| `--limit <n>` | `10` | Max results; `--help` states the accepted range |
 | `--scope <prefix>` | — | Restrict to an absolute path prefix (matches a filePath equal to or under it). Repeat for multiple prefixes (unioned). Relative prefixes match nothing. |
 
 Output: JSON array to stdout. Every result includes `images`, ordered by `imageIndex`, with items

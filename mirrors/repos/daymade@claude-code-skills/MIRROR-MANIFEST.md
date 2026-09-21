@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `daymade/claude-code-skills` — 26 default patterns, 15 followed patterns, 125 file(s) materialized.
+Mirror of `daymade/claude-code-skills` — 26 default patterns, 15 followed patterns, 126 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `daymade/claude-code-skills` — 26 default patterns, 15 followed patt
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 15 |
-| Files         | 125 |
+| Files         | 126 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -104,100 +104,101 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 29 | ✓ | [`daymade-claude-code/read-claude-web-conversation/SKILL.md`](daymade-claude-code/read-claude-web-conversation/SKILL.md) |
 | 30 | ✓ | [`daymade-claude-code/read-codex-history/SKILL.md`](daymade-claude-code/read-codex-history/SKILL.md) |
 | 31 | ✓ | [`daymade-claude-code/statusline-generator/SKILL.md`](daymade-claude-code/statusline-generator/SKILL.md) |
-| 32 | ✓ | [`daymade-claude-code/terminal-screenshot/SKILL.md`](daymade-claude-code/terminal-screenshot/SKILL.md) |
-| 33 | ✓ | [`daymade-codex/codex-1m-context-window-setup/SKILL.md`](daymade-codex/codex-1m-context-window-setup/SKILL.md) |
-| 34 | ✓ | [`daymade-codex/codex-image-gallery/SKILL.md`](daymade-codex/codex-image-gallery/SKILL.md) |
-| 35 | ✓ | [`daymade-codex/design-style-picker/SKILL.md`](daymade-codex/design-style-picker/SKILL.md) |
-| 36 | ✓ | [`daymade-codex/interaction-design-board/SKILL.md`](daymade-codex/interaction-design-board/SKILL.md) |
-| 37 | ✓ | [`daymade-codex/local-codex/SKILL.md`](daymade-codex/local-codex/SKILL.md) |
-| 38 | ✓ | [`daymade-docs/doc-to-markdown/SKILL.md`](daymade-docs/doc-to-markdown/SKILL.md) |
-| 39 | ✓ | [`daymade-docs/docs-cleaner/SKILL.md`](daymade-docs/docs-cleaner/SKILL.md) |
-| 40 | ✓ | [`daymade-docs/docx-creator/SKILL.md`](daymade-docs/docx-creator/SKILL.md) |
-| 41 | ✓ | [`daymade-docs/excel-automation/SKILL.md`](daymade-docs/excel-automation/SKILL.md) |
-| 42 | ✓ | [`daymade-docs/mermaid-tools/SKILL.md`](daymade-docs/mermaid-tools/SKILL.md) |
-| 43 | ✓ | [`daymade-docs/pdf-creator/SKILL.md`](daymade-docs/pdf-creator/SKILL.md) |
-| 44 | ✓ | [`daymade-docs/pdf-to-html/SKILL.md`](daymade-docs/pdf-to-html/SKILL.md) |
-| 45 | ✓ | [`daymade-docs/photo-to-scanned-pdf/SKILL.md`](daymade-docs/photo-to-scanned-pdf/SKILL.md) |
-| 46 | ✓ | [`daymade-docs/ppt-creator/SKILL.md`](daymade-docs/ppt-creator/SKILL.md) |
-| 47 | ✓ | [`daymade-docs/read-docx-review/SKILL.md`](daymade-docs/read-docx-review/SKILL.md) |
-| 48 | ✓ | [`daymade-financial/ashare-news-fetcher/SKILL.md`](daymade-financial/ashare-news-fetcher/SKILL.md) |
-| 49 | ✓ | [`daymade-financial/benchmark-due-diligence/SKILL.md`](daymade-financial/benchmark-due-diligence/SKILL.md) |
-| 50 | ✓ | [`daymade-financial/bigdata-skill/SKILL.md`](daymade-financial/bigdata-skill/SKILL.md) |
-| 51 | ✓ | [`daymade-financial/daymade-sector-research/SKILL.md`](daymade-financial/daymade-sector-research/SKILL.md) |
-| 52 | ✓ | [`daymade-financial/devils-advocate/SKILL.md`](daymade-financial/devils-advocate/SKILL.md) |
-| 53 | ✓ | [`daymade-financial/financial-data-collector/SKILL.md`](daymade-financial/financial-data-collector/SKILL.md) |
-| 54 | ✓ | [`daymade-financial/gangtise-copilot/SKILL.md`](daymade-financial/gangtise-copilot/SKILL.md) |
-| 55 | ✓ | [`daymade-financial/pharma-daily-report/SKILL.md`](daymade-financial/pharma-daily-report/SKILL.md) |
-| 56 | ✓ | [`daymade-macos/capture-screen/SKILL.md`](daymade-macos/capture-screen/SKILL.md) |
-| 57 | ✓ | [`daymade-macos/developing-ios-apps/SKILL.md`](daymade-macos/developing-ios-apps/SKILL.md) |
-| 58 | ✓ | [`daymade-macos/macos-cleaner/SKILL.md`](daymade-macos/macos-cleaner/SKILL.md) |
-| 59 | ✓ | [`daymade-macos/macos-permissions/SKILL.md`](daymade-macos/macos-permissions/SKILL.md) |
-| 60 | ✓ | [`daymade-macos/macos-watchdog/SKILL.md`](daymade-macos/macos-watchdog/SKILL.md) |
-| 61 | ✓ | [`daymade-skill/CLAUDE.md`](daymade-skill/CLAUDE.md) |
-| 62 | ✓ | [`daymade-skill/skill-creator/SKILL.md`](daymade-skill/skill-creator/SKILL.md) |
-| 63 | ✓ | [`daymade-skill/skill-governance/SKILL.md`](daymade-skill/skill-governance/SKILL.md) |
-| 64 | ✓ | [`daymade-skill/skill-reviewer/SKILL.md`](daymade-skill/skill-reviewer/SKILL.md) |
-| 65 | ✓ | [`daymade-skill/skills-search/SKILL.md`](daymade-skill/skills-search/SKILL.md) |
-| 66 | ✓ | [`debugging-network-issues/SKILL.md`](debugging-network-issues/SKILL.md) |
-| 67 | ✓ | [`deep-research/SKILL.md`](deep-research/SKILL.md) |
-| 68 | ✓ | [`douban-skill/SKILL.md`](douban-skill/SKILL.md) |
-| 69 | ✓ | [`download-gemini-images/SKILL.md`](download-gemini-images/SKILL.md) |
-| 70 | ✓ | [`excalidraw-use/SKILL.md`](excalidraw-use/SKILL.md) |
-| 71 | ✓ | [`fact-checker/SKILL.md`](fact-checker/SKILL.md) |
-| 72 | ✓ | [`feishu-doc-scraper/SKILL.md`](feishu-doc-scraper/SKILL.md) |
-| 73 | ✓ | [`frontend-visual-qa/SKILL.md`](frontend-visual-qa/SKILL.md) |
-| 74 | ✓ | [`gemini-history-analyzer/SKILL.md`](gemini-history-analyzer/SKILL.md) |
-| 75 | ✓ | [`git-safety-net/SKILL.md`](git-safety-net/SKILL.md) |
-| 76 | ✓ | [`github-contributor/SKILL.md`](github-contributor/SKILL.md) |
-| 77 | ✓ | [`github-ops/SKILL.md`](github-ops/SKILL.md) |
-| 78 | ✓ | [`github-review-pr/SKILL.md`](github-review-pr/SKILL.md) |
-| 79 | ✓ | [`github-sensitive-data-cleanup/SKILL.md`](github-sensitive-data-cleanup/SKILL.md) |
-| 80 | ✓ | [`i18n-expert/SKILL.md`](i18n-expert/SKILL.md) |
-| 81 | ✓ | [`ima-copilot/SKILL.md`](ima-copilot/SKILL.md) |
-| 82 | ✓ | [`kimi-use/SKILL.md`](kimi-use/SKILL.md) |
-| 83 | ✓ | [`llm-eval-harness/SKILL.md`](llm-eval-harness/SKILL.md) |
-| 84 | ✓ | [`llm-icon-finder/SKILL.md`](llm-icon-finder/SKILL.md) |
-| 85 | ✓ | [`llm-wiki-setup/SKILL.md`](llm-wiki-setup/SKILL.md) |
-| 86 | ✓ | [`marketplace-health-check/SKILL.md`](marketplace-health-check/SKILL.md) |
-| 87 | ✓ | [`meme-creator/SKILL.md`](meme-creator/SKILL.md) |
-| 88 | ✓ | [`notify-wecom/SKILL.md`](notify-wecom/SKILL.md) |
-| 89 | ✓ | [`openclaw-model-switch/SKILL.md`](openclaw-model-switch/SKILL.md) |
-| 90 | ✓ | [`openclaw/SKILL.md`](openclaw/SKILL.md) |
-| 91 | ✓ | [`peer-message/SKILL.md`](peer-message/SKILL.md) |
-| 92 | ✓ | [`product-analysis/SKILL.md`](product-analysis/SKILL.md) |
-| 93 | ✓ | [`prompt-optimizer/SKILL.md`](prompt-optimizer/SKILL.md) |
-| 94 | ✓ | [`promptfoo-evaluation/SKILL.md`](promptfoo-evaluation/SKILL.md) |
-| 95 | ✓ | [`qa-expert/SKILL.md`](qa-expert/SKILL.md) |
-| 96 | ✓ | [`repomix-safe-mixer/SKILL.md`](repomix-safe-mixer/SKILL.md) |
-| 97 | ✓ | [`repomix-unmixer/SKILL.md`](repomix-unmixer/SKILL.md) |
-| 98 | ✓ | [`scrapling-skill/SKILL.md`](scrapling-skill/SKILL.md) |
-| 99 | ✓ | [`setup-notifications-via-wecom/SKILL.md`](setup-notifications-via-wecom/SKILL.md) |
-| 100 | ✓ | [`slides-creator/SKILL.md`](slides-creator/SKILL.md) |
-| 101 | ✓ | [`teams-channel-post-writer/SKILL.md`](teams-channel-post-writer/SKILL.md) |
-| 102 | ✓ | [`terraform-skill/SKILL.md`](terraform-skill/SKILL.md) |
-| 103 | ✓ | [`tibo-reset-codex/SKILL.md`](tibo-reset-codex/SKILL.md) |
-| 104 | ✓ | [`tunnel-doctor/SKILL.md`](tunnel-doctor/SKILL.md) |
-| 105 | ✓ | [`twitter-reader/SKILL.md`](twitter-reader/SKILL.md) |
-| 106 | ✓ | [`ui-designer/SKILL.md`](ui-designer/SKILL.md) |
-| 107 | ✓ | [`video-comparer/SKILL.md`](video-comparer/SKILL.md) |
-| 108 | ✓ | [`windows-remote-desktop-connection-doctor/SKILL.md`](windows-remote-desktop-connection-doctor/SKILL.md) |
-| 109 | ✓ | [`wps-doc-scraper/SKILL.md`](wps-doc-scraper/SKILL.md) |
-| 110 | ✓ | [`youtube-downloader/SKILL.md`](youtube-downloader/SKILL.md) |
-| 111 | → | [`cloudflare-troubleshooting/references/email-routing.md`](cloudflare-troubleshooting/references/email-routing.md) |
-| 112 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 113 | → | [`daymade-audio/transcript-fixer/references/native_review_packets.md`](daymade-audio/transcript-fixer/references/native_review_packets.md) |
-| 114 | → | [`daymade-claude-code/claude-switch-models-setup/references/context-window-config.md`](daymade-claude-code/claude-switch-models-setup/references/context-window-config.md) |
-| 115 | → | [`daymade-claude-code/claude-switch-models-setup/references/local-source-sync-architecture.md`](daymade-claude-code/claude-switch-models-setup/references/local-source-sync-architecture.md) |
-| 116 | → | [`daymade-skill/skill-creator/references/sanitization_checklist.md`](daymade-skill/skill-creator/references/sanitization_checklist.md) |
-| 117 | → | [`daymade-skill/skill-creator/references/source-snapshot-archives.md`](daymade-skill/skill-creator/references/source-snapshot-archives.md) |
-| 118 | → | [`feishu-doc-scraper/references/archive-storage-contract.md`](feishu-doc-scraper/references/archive-storage-contract.md) |
-| 119 | → | [`feishu-doc-scraper/references/comments-and-feedback.md`](feishu-doc-scraper/references/comments-and-feedback.md) |
-| 120 | → | [`references/new-skill-guide.md`](references/new-skill-guide.md) |
-| 121 | → | [`references/plugin-architecture.md`](references/plugin-architecture.md) |
-| 122 | → | [`references/plugin-troubleshooting.md`](references/plugin-troubleshooting.md) |
-| 123 | → | [`references/promotion-policy.md`](references/promotion-policy.md) |
-| 124 | → | [`tibo-reset-codex/references/account-usage.md`](tibo-reset-codex/references/account-usage.md) |
-| 125 | → | [`youtube-downloader/references/internal-sop.md`](youtube-downloader/references/internal-sop.md) |
+| 32 | ✓ | [`daymade-claude-code/tech-selection/SKILL.md`](daymade-claude-code/tech-selection/SKILL.md) |
+| 33 | ✓ | [`daymade-claude-code/terminal-screenshot/SKILL.md`](daymade-claude-code/terminal-screenshot/SKILL.md) |
+| 34 | ✓ | [`daymade-codex/codex-1m-context-window-setup/SKILL.md`](daymade-codex/codex-1m-context-window-setup/SKILL.md) |
+| 35 | ✓ | [`daymade-codex/codex-image-gallery/SKILL.md`](daymade-codex/codex-image-gallery/SKILL.md) |
+| 36 | ✓ | [`daymade-codex/design-style-picker/SKILL.md`](daymade-codex/design-style-picker/SKILL.md) |
+| 37 | ✓ | [`daymade-codex/interaction-design-board/SKILL.md`](daymade-codex/interaction-design-board/SKILL.md) |
+| 38 | ✓ | [`daymade-codex/local-codex/SKILL.md`](daymade-codex/local-codex/SKILL.md) |
+| 39 | ✓ | [`daymade-docs/doc-to-markdown/SKILL.md`](daymade-docs/doc-to-markdown/SKILL.md) |
+| 40 | ✓ | [`daymade-docs/docs-cleaner/SKILL.md`](daymade-docs/docs-cleaner/SKILL.md) |
+| 41 | ✓ | [`daymade-docs/docx-creator/SKILL.md`](daymade-docs/docx-creator/SKILL.md) |
+| 42 | ✓ | [`daymade-docs/excel-automation/SKILL.md`](daymade-docs/excel-automation/SKILL.md) |
+| 43 | ✓ | [`daymade-docs/mermaid-tools/SKILL.md`](daymade-docs/mermaid-tools/SKILL.md) |
+| 44 | ✓ | [`daymade-docs/pdf-creator/SKILL.md`](daymade-docs/pdf-creator/SKILL.md) |
+| 45 | ✓ | [`daymade-docs/pdf-to-html/SKILL.md`](daymade-docs/pdf-to-html/SKILL.md) |
+| 46 | ✓ | [`daymade-docs/photo-to-scanned-pdf/SKILL.md`](daymade-docs/photo-to-scanned-pdf/SKILL.md) |
+| 47 | ✓ | [`daymade-docs/ppt-creator/SKILL.md`](daymade-docs/ppt-creator/SKILL.md) |
+| 48 | ✓ | [`daymade-docs/read-docx-review/SKILL.md`](daymade-docs/read-docx-review/SKILL.md) |
+| 49 | ✓ | [`daymade-financial/ashare-news-fetcher/SKILL.md`](daymade-financial/ashare-news-fetcher/SKILL.md) |
+| 50 | ✓ | [`daymade-financial/benchmark-due-diligence/SKILL.md`](daymade-financial/benchmark-due-diligence/SKILL.md) |
+| 51 | ✓ | [`daymade-financial/bigdata-skill/SKILL.md`](daymade-financial/bigdata-skill/SKILL.md) |
+| 52 | ✓ | [`daymade-financial/daymade-sector-research/SKILL.md`](daymade-financial/daymade-sector-research/SKILL.md) |
+| 53 | ✓ | [`daymade-financial/devils-advocate/SKILL.md`](daymade-financial/devils-advocate/SKILL.md) |
+| 54 | ✓ | [`daymade-financial/financial-data-collector/SKILL.md`](daymade-financial/financial-data-collector/SKILL.md) |
+| 55 | ✓ | [`daymade-financial/gangtise-copilot/SKILL.md`](daymade-financial/gangtise-copilot/SKILL.md) |
+| 56 | ✓ | [`daymade-financial/pharma-daily-report/SKILL.md`](daymade-financial/pharma-daily-report/SKILL.md) |
+| 57 | ✓ | [`daymade-macos/capture-screen/SKILL.md`](daymade-macos/capture-screen/SKILL.md) |
+| 58 | ✓ | [`daymade-macos/developing-ios-apps/SKILL.md`](daymade-macos/developing-ios-apps/SKILL.md) |
+| 59 | ✓ | [`daymade-macos/macos-cleaner/SKILL.md`](daymade-macos/macos-cleaner/SKILL.md) |
+| 60 | ✓ | [`daymade-macos/macos-permissions/SKILL.md`](daymade-macos/macos-permissions/SKILL.md) |
+| 61 | ✓ | [`daymade-macos/macos-watchdog/SKILL.md`](daymade-macos/macos-watchdog/SKILL.md) |
+| 62 | ✓ | [`daymade-skill/CLAUDE.md`](daymade-skill/CLAUDE.md) |
+| 63 | ✓ | [`daymade-skill/skill-creator/SKILL.md`](daymade-skill/skill-creator/SKILL.md) |
+| 64 | ✓ | [`daymade-skill/skill-governance/SKILL.md`](daymade-skill/skill-governance/SKILL.md) |
+| 65 | ✓ | [`daymade-skill/skill-reviewer/SKILL.md`](daymade-skill/skill-reviewer/SKILL.md) |
+| 66 | ✓ | [`daymade-skill/skills-search/SKILL.md`](daymade-skill/skills-search/SKILL.md) |
+| 67 | ✓ | [`debugging-network-issues/SKILL.md`](debugging-network-issues/SKILL.md) |
+| 68 | ✓ | [`deep-research/SKILL.md`](deep-research/SKILL.md) |
+| 69 | ✓ | [`douban-skill/SKILL.md`](douban-skill/SKILL.md) |
+| 70 | ✓ | [`download-gemini-images/SKILL.md`](download-gemini-images/SKILL.md) |
+| 71 | ✓ | [`excalidraw-use/SKILL.md`](excalidraw-use/SKILL.md) |
+| 72 | ✓ | [`fact-checker/SKILL.md`](fact-checker/SKILL.md) |
+| 73 | ✓ | [`feishu-doc-scraper/SKILL.md`](feishu-doc-scraper/SKILL.md) |
+| 74 | ✓ | [`frontend-visual-qa/SKILL.md`](frontend-visual-qa/SKILL.md) |
+| 75 | ✓ | [`gemini-history-analyzer/SKILL.md`](gemini-history-analyzer/SKILL.md) |
+| 76 | ✓ | [`git-safety-net/SKILL.md`](git-safety-net/SKILL.md) |
+| 77 | ✓ | [`github-contributor/SKILL.md`](github-contributor/SKILL.md) |
+| 78 | ✓ | [`github-ops/SKILL.md`](github-ops/SKILL.md) |
+| 79 | ✓ | [`github-review-pr/SKILL.md`](github-review-pr/SKILL.md) |
+| 80 | ✓ | [`github-sensitive-data-cleanup/SKILL.md`](github-sensitive-data-cleanup/SKILL.md) |
+| 81 | ✓ | [`i18n-expert/SKILL.md`](i18n-expert/SKILL.md) |
+| 82 | ✓ | [`ima-copilot/SKILL.md`](ima-copilot/SKILL.md) |
+| 83 | ✓ | [`kimi-use/SKILL.md`](kimi-use/SKILL.md) |
+| 84 | ✓ | [`llm-eval-harness/SKILL.md`](llm-eval-harness/SKILL.md) |
+| 85 | ✓ | [`llm-icon-finder/SKILL.md`](llm-icon-finder/SKILL.md) |
+| 86 | ✓ | [`llm-wiki-setup/SKILL.md`](llm-wiki-setup/SKILL.md) |
+| 87 | ✓ | [`marketplace-health-check/SKILL.md`](marketplace-health-check/SKILL.md) |
+| 88 | ✓ | [`meme-creator/SKILL.md`](meme-creator/SKILL.md) |
+| 89 | ✓ | [`notify-wecom/SKILL.md`](notify-wecom/SKILL.md) |
+| 90 | ✓ | [`openclaw-model-switch/SKILL.md`](openclaw-model-switch/SKILL.md) |
+| 91 | ✓ | [`openclaw/SKILL.md`](openclaw/SKILL.md) |
+| 92 | ✓ | [`peer-message/SKILL.md`](peer-message/SKILL.md) |
+| 93 | ✓ | [`product-analysis/SKILL.md`](product-analysis/SKILL.md) |
+| 94 | ✓ | [`prompt-optimizer/SKILL.md`](prompt-optimizer/SKILL.md) |
+| 95 | ✓ | [`promptfoo-evaluation/SKILL.md`](promptfoo-evaluation/SKILL.md) |
+| 96 | ✓ | [`qa-expert/SKILL.md`](qa-expert/SKILL.md) |
+| 97 | ✓ | [`repomix-safe-mixer/SKILL.md`](repomix-safe-mixer/SKILL.md) |
+| 98 | ✓ | [`repomix-unmixer/SKILL.md`](repomix-unmixer/SKILL.md) |
+| 99 | ✓ | [`scrapling-skill/SKILL.md`](scrapling-skill/SKILL.md) |
+| 100 | ✓ | [`setup-notifications-via-wecom/SKILL.md`](setup-notifications-via-wecom/SKILL.md) |
+| 101 | ✓ | [`slides-creator/SKILL.md`](slides-creator/SKILL.md) |
+| 102 | ✓ | [`teams-channel-post-writer/SKILL.md`](teams-channel-post-writer/SKILL.md) |
+| 103 | ✓ | [`terraform-skill/SKILL.md`](terraform-skill/SKILL.md) |
+| 104 | ✓ | [`tibo-reset-codex/SKILL.md`](tibo-reset-codex/SKILL.md) |
+| 105 | ✓ | [`tunnel-doctor/SKILL.md`](tunnel-doctor/SKILL.md) |
+| 106 | ✓ | [`twitter-reader/SKILL.md`](twitter-reader/SKILL.md) |
+| 107 | ✓ | [`ui-designer/SKILL.md`](ui-designer/SKILL.md) |
+| 108 | ✓ | [`video-comparer/SKILL.md`](video-comparer/SKILL.md) |
+| 109 | ✓ | [`windows-remote-desktop-connection-doctor/SKILL.md`](windows-remote-desktop-connection-doctor/SKILL.md) |
+| 110 | ✓ | [`wps-doc-scraper/SKILL.md`](wps-doc-scraper/SKILL.md) |
+| 111 | ✓ | [`youtube-downloader/SKILL.md`](youtube-downloader/SKILL.md) |
+| 112 | → | [`cloudflare-troubleshooting/references/email-routing.md`](cloudflare-troubleshooting/references/email-routing.md) |
+| 113 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 114 | → | [`daymade-audio/transcript-fixer/references/native_review_packets.md`](daymade-audio/transcript-fixer/references/native_review_packets.md) |
+| 115 | → | [`daymade-claude-code/claude-switch-models-setup/references/context-window-config.md`](daymade-claude-code/claude-switch-models-setup/references/context-window-config.md) |
+| 116 | → | [`daymade-claude-code/claude-switch-models-setup/references/local-source-sync-architecture.md`](daymade-claude-code/claude-switch-models-setup/references/local-source-sync-architecture.md) |
+| 117 | → | [`daymade-skill/skill-creator/references/sanitization_checklist.md`](daymade-skill/skill-creator/references/sanitization_checklist.md) |
+| 118 | → | [`daymade-skill/skill-creator/references/source-snapshot-archives.md`](daymade-skill/skill-creator/references/source-snapshot-archives.md) |
+| 119 | → | [`feishu-doc-scraper/references/archive-storage-contract.md`](feishu-doc-scraper/references/archive-storage-contract.md) |
+| 120 | → | [`feishu-doc-scraper/references/comments-and-feedback.md`](feishu-doc-scraper/references/comments-and-feedback.md) |
+| 121 | → | [`references/new-skill-guide.md`](references/new-skill-guide.md) |
+| 122 | → | [`references/plugin-architecture.md`](references/plugin-architecture.md) |
+| 123 | → | [`references/plugin-troubleshooting.md`](references/plugin-troubleshooting.md) |
+| 124 | → | [`references/promotion-policy.md`](references/promotion-policy.md) |
+| 125 | → | [`tibo-reset-codex/references/account-usage.md`](tibo-reset-codex/references/account-usage.md) |
+| 126 | → | [`youtube-downloader/references/internal-sop.md`](youtube-downloader/references/internal-sop.md) |
 
 ---
 

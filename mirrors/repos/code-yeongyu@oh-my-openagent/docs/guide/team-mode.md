@@ -56,7 +56,7 @@ Team specs live under `~/.omo/teams/{name}/config.json` (user scope) or `<projec
   "name": "ccapi-explorers",
   "description": "Explore the ccapi project structure.",
   "members": [
-    { "kind": "category", "name": "scout-1", "category": "deep", "prompt": "Scout the source directory for auth patterns." },
+    { "kind": "category", "name": "scout-1", "category": "deep-low", "prompt": "Scout the source directory for auth patterns." },
     { "kind": "category", "name": "scout-2", "category": "quick", "prompt": "Scout tests for auth coverage." },
     { "kind": "subagent_type", "name": "auditor", "subagent_type": "my-security-auditor", "prompt": "Audit the auth findings the scouts report." }
   ]

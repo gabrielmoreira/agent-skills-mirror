@@ -7,7 +7,7 @@ inside function bodies so the kernel loads instantly.
 Public API (names are stable — other skills reference them):
     apply_figure_style, set_frame, panel_letter, focal_palette,
     bar_with_points, strip_with_median, goodness_arrow, two_tier_label,
-    end_of_line_labels, panel_crops
+    end_of_line_labels, panel_crops, save_panel_crops
 """
 
 META_GREY = "#888888"
@@ -415,6 +415,37 @@ def panel_crops(fig, dpi=None, pad_px=6, bbox_inches=None, pad_inches=None):
             min(int(y1) + pad_px, h_px),
         )
     return out
+
+
+def save_panel_crops(png_path, boxes, out_dir=".cache/figure-style"):
+    """Write the QA crops to scratch and return ``{letter: path}``.
+
+    A crop exists to be looked at once with ``view_image``; it is never a
+    deliverable, so it must not land beside the figure — crops written into
+    the figures directory leave nobody able to tell products from inspection
+    debris. They go under ``.cache/`` instead (pdf-explore's convention for
+    page renders), and the directory is emptied on every call so one QA pass
+    never piles onto the last.
+
+        >>> fig.savefig("figure.png")
+        >>> save_panel_crops("figure.png", panel_crops(fig))
+        {'a': '.cache/figure-style/a.png', 'b': '.cache/figure-style/b.png'}
+    """
+    import os
+    import shutil
+    from PIL import Image
+
+    shutil.rmtree(out_dir, ignore_errors=True)
+    os.makedirs(out_dir, exist_ok=True)
+    paths = {}
+    # Context-managed: on Windows an open handle on the PNG blocks re-saving
+    # the figure after a fix.
+    with Image.open(png_path) as image:
+        for letter, box in boxes.items():
+            path = os.path.join(out_dir, f"{letter}.png")
+            image.crop(box).save(path)
+            paths[letter] = path
+    return paths
 
 
 def figure_style_self_check():

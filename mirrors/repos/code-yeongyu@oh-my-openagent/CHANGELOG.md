@@ -7,7 +7,60 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+**The frontend skill now refuses the coloured accent border.**
+
+A selected row no longer earns a `border-l-2 border-primary` stripe, and a focused card no longer gets a primary-tinted outline — the skill names that pattern as the most recognizable AI-generated-UI tell and treats it as a defect, including instances that already exist on a surface it touches. State is expressed the way this repo's design systems already express it: washes of one ink, a check glyph for selection, tonal layering for focus. Keyboard focus rings stay coloured.
+
+
+## [5.0.0-beta.80] - 2026-09-20
+
+### Changed
+
+**The engine moves to senpi 2026.9.20, and two long-standing TUI annoyances go with it.**
+
+Provider network failures now collapse into a single retry status instead of printing their whole error payload on every attempt. The status updates in place, clears itself when the provider recovers, and stops claiming a failed retry when you cancel a turn. An exhausted chain leaves one notice with a next step, and partial answers and the stored error detail survive reopening the session.
+
+Answering an `ask_user_question` card with the mouse no longer kills the keyboard. Clicking the option rows and the Submit line handed focus to the wrapper around them, which has no key handler, so every later keystroke went nowhere while output and tools carried on as usual. Focus now resolves to a component that can receive keys, and a focus change made by a click handler is no longer overwritten afterwards.
+
+Picking a model the conversation does not fit into yet no longer discards the choice. The switch is held, your next message compacts first, summarized by the model that can still read the whole transcript and sized for the window it is moving into, and the new model takes over from there. An automatic fallback repairs a rung the same way instead of rejecting it, and Ctrl+P passes over only a model that could never serve the session. Fable 5 also has a default fallback chain again, and it stays in the Anthropic family: Opus 5, then Opus 4.8, then Opus 4.6.
+
+Startup and session opens got faster. The `senpi` command was still booting an unbundled module graph, which took a real TUI launch from 6.3 s to 1.2 s. The shared host stopped rebuilding the same model catalog and re-resolving the same installed packages for every session, so a single open lands about 40% sooner and eight at once about 30% sooner. An open that waits behind other opens now reports its place in the queue as soon as the request is accepted, so a slow start can be told apart from a broken one, and each open is given its own deadline measured from when it was sent.
+
+Also from the engine: Ctrl+V pastes in the published bundle again, skills shipped inside the packaged binary load instead of being dropped with a conflict warning, an extension's `import ... with { type: "file" }` returns a path again, sending `.` resumes a blocked goal, pending questions survive a reload without resetting their deadline or answering twice, and reopening a session file joins the existing session instead of starting a second one on top of it.
+
+**A managed `omob` launch spends about half as long before the engine starts, and an omo-only rebuild finishes about a third sooner.** The launcher ran a refresh check before it execed the engine, and that check cost more than the engine's own startup: the `senpi` and `omo` cache clones were fetched one after the other, each clone answered the same question with four git processes, and the installed binary was spawned purely so the check could read its `--version`. The two fetches now run together, a single `git log` answers both the commit and its date, and the version comes from a provenance marker written beside the executable. The marker records a sha256 of the bytes it describes, so it is believed only while it still describes the file on disk, and a missing, stale, malformed or mismatched marker falls back to spawning the executable as before. Measured pre-exec overhead: 1287.7 ms to 649.8 ms. Separately, every `omob` build produced the Senpi plugin payload twice, because `bun install` in the cache clone ran the whole product graph while the binary embeds only what the native build step produces itself. The build graph now accepts a profile naming the nodes a consumer needs, which takes an omo-only rebuild from 15.27 s to 9.53 s across 17 graph nodes down to 3. With no profile the graph is unchanged, so `bun run build`, publish and CI still build what they built before. ([#8521](https://github.com/code-yeongyu/oh-my-openagent/issues/8521), [#8522](https://github.com/code-yeongyu/oh-my-openagent/issues/8522))
+
+**`deep` is now two lanes, and the cheaper one is the default.** The old category announced itself as MANDATORY for backend, logic, algorithms, browser use and multimodal work. Almost every coding task matches that list, so almost every delegated task ran on `gpt-6-astra` at high reasoning, and the `gpt-5.6-sol` rung beneath it was reached only when no Astra was connected. The lane you get is now decided by capability instead of by domain. `deep-low` (`gpt-5.6-sol` medium) is the default and takes any goal whose decisions the child can settle from what it reads. `deep-high` (`gpt-6-astra` high) takes a goal whose central decision cannot be settled that way: a trade-off with no single right answer, a contract change crossing a package or process boundary, a mechanism with no pattern in the repo to copy, or correctness that has to be argued from invariants. Breadth alone does not qualify; wide but mechanical work stays in `deep-low`. The domain list moved to the caller-facing `deep-low` description, where the routing choice is actually made, and left the child prompts, which never chose a category. A `deep-low` child that runs into one of those decisions stops before editing and returns `ESCALATE: deep-high` with what it read and the options it saw, and the caller re-spawns the same brief on the escalation lane. Each lane is one rung gated on its own model, so a machine missing Astra loses `deep-high` instead of quietly getting Sol under that name. ([#8516](https://github.com/code-yeongyu/oh-my-openagent/issues/8516))
+
+**The writing category runs at low reasoning and keeps a Claude fallback.** The builtin `writing` chain led with `claude-fable-5-1` at medium and fell back to `kimi-k3` at max, so prose delegation paid a reasoning budget it does not need, and a Fable outage moved every writing task onto a max-variant Kimi run with no Claude rung left. The chain is three rungs at low now: `claude-fable-5-1`, then `kimi-k3`, then `claude-opus-4-6`. ([#8525](https://github.com/code-yeongyu/oh-my-openagent/issues/8525))
+
+### Deprecated
+
+**The `deep` category name, with nothing for you to do.** If your `omo.json` configures `categories.deep`, the first launch renames it to `categories.deep-low`, along with `deep` used as a team member's category or as the memory reflection category, in the base block, in `[senpi]`/`[opencode]`/`[codex]`, and inside every profile. A config that never mentioned `deep` is not touched at all: no rewrite, no backup file, no migration marker. A file the rewrite cannot reach, because the run is locked or the file is read-only, still works, because the name is canonicalized when the config is read and a startup notice names the key to rename. `task(category: "deep")` from a skill or an AGENTS.md still runs, on `deep-low`. ([#8516](https://github.com/code-yeongyu/oh-my-openagent/issues/8516))
+
 ### Fixed
+
+- A machine that cannot persist its telemetry stamp no longer reports itself active on every launch. The daily-active gate read the stamp, wrote it back, and decided from the read while swallowing any write failure, so an unwritable state directory reported a new active day indefinitely, and several processes starting at once on a fresh day each reported one. The decision is now the result of an exclusive file create, so exactly one caller per UTC day proceeds and an unwritable directory is capped at one report per process. Event names, properties and identity derivation are untouched, and a day already stamped still returns without writing anything. ([#8519](https://github.com/code-yeongyu/oh-my-openagent/issues/8519))
+
+- The memory pressure advisory counts the text your model is actually shown again. A recent change estimated from the sizes git stored, which reads low for any `system/` file holding invalid UTF-8 and reported no pressure at all when the repository could not be read; both are restored, and the estimate is still computed once per commit rather than once per prompt.
+
+- `omo doctor` sees your running sessions again. It recognised engines by one spelling of their command line, and the launcher stopped producing that spelling when it moved onto the engine's pre-linked bundle, so the stale-session report and its reap command had been looking at an empty list on current installs.
+
+- The reminder that your soul files changed no longer re-reads the whole memory history to find out. It asked git for every commit since the last notice that touched `system/`, which on an identity with thousands of commits costs most of a second on every prompt; it now reads a page and only looks further when that page is entirely memory-tool writes. The notice it produces is the same one.
+
+- Every prompt in a directory with a memory identity re-read the same files from git. The memory pressure advisory listed the repository tree and read each `system/*.md` blob again on every turn, and the save reminder asked git for the entire commit history and searched it here. Both answers only change when the memory repository gains a commit, so both are now derived once per commit: five fewer git processes per prompt, and a megabyte of commit history that no longer crosses the process boundary on a repository with three thousand commits. What the model receives is unchanged.
+
+**A detached task session no longer crashes the host during heartbeat or shutdown.** State polling
+now catches synchronous connection errors, and shutdown stops polling before dropping the
+connection. A failed abort is logged without preventing the child from closing.
+Child-process heartbeat calls have the same protection, and disposal observes and logs a failed
+detach instead of leaving an unhandled rejection.
+Thanks to @ayden94 for the heartbeat fix.
+([#8494](https://github.com/code-yeongyu/oh-my-openagent/issues/8494))
+
+**The architect nudge follows the refusal now, not one model id.** When a model refuses a turn and the session falls back, omo injects a hidden directive telling the agent to route the hard parts to `task(category: "architect")`. It armed only when the refusing model was `claude-fable-5`, so a session on `claude-fable-5-1`, which is the model the architect category itself runs, never saw it. Any refusal-driven fallback arms it now, and the directive no longer calls the consultant the model that just refused unless it is. ([#8513](https://github.com/code-yeongyu/oh-my-openagent/issues/8513))
 
 **Writing memory no longer steals focus on Windows.** Every `memory` tool write auto-commits, and each git command behind it spawned `git.exe` with no `windowsHide`, so Windows built a fresh console window and brought it to the front. The lock protocol's start-time probe did the same with `powershell.exe`, and on a Node runtime it did it on every probe. That probe falls back from an in-process kernel32 reader reached through `bun:ffi`, which Node cannot import, so the visible fallback was the normal path there. Both spawns are hidden now, along with the formatter, the worktree-root lookups and the init-deep git probes that flashed the same way. The interactive launcher keeps its console on purpose and says so at the call site. ([#8501](https://github.com/code-yeongyu/oh-my-openagent/issues/8501))
 

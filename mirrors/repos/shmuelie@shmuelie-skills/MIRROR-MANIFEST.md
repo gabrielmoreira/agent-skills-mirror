@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `shmuelie/shmuelie-skills` — 26 default patterns, 0 followed patterns, 35 file(s) materialized.
+Mirror of `shmuelie/shmuelie-skills` — 26 default patterns, 0 followed patterns, 44 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `shmuelie/shmuelie-skills` — 26 default patterns, 0 followed pattern
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 35 |
+| Files         | 44 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -90,10 +90,19 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 29 | ✓ | [`.github/plugin/shmuelie-dotnet/skills/roslyn-sourcegen/SKILL.md`](.github/plugin/shmuelie-dotnet/skills/roslyn-sourcegen/SKILL.md) |
 | 30 | ✓ | [`.github/plugin/shmuelie-dotnet/skills/winui3-msix/packaging-troubleshooting.md`](.github/plugin/shmuelie-dotnet/skills/winui3-msix/packaging-troubleshooting.md) |
 | 31 | ✓ | [`.github/plugin/shmuelie-dotnet/skills/winui3-msix/SKILL.md`](.github/plugin/shmuelie-dotnet/skills/winui3-msix/SKILL.md) |
-| 32 | ✓ | [`.github/plugin/shmuelie-systems/skills/embedded-cpp/SKILL.md`](.github/plugin/shmuelie-systems/skills/embedded-cpp/SKILL.md) |
-| 33 | ✓ | [`.github/plugin/shmuelie-systems/skills/homelab-infra/SKILL.md`](.github/plugin/shmuelie-systems/skills/homelab-infra/SKILL.md) |
-| 34 | ✓ | [`.github/plugin/shmuelie-systems/skills/qualcomm-aic/SKILL.md`](.github/plugin/shmuelie-systems/skills/qualcomm-aic/SKILL.md) |
-| 35 | ✓ | [`.github/plugin/shmuelie-typescript/skills/typescript-cli/SKILL.md`](.github/plugin/shmuelie-typescript/skills/typescript-cli/SKILL.md) |
+| 32 | ✓ | [`.github/plugin/shmuelie-github/skills/github-issue-triage/SKILL.md`](.github/plugin/shmuelie-github/skills/github-issue-triage/SKILL.md) |
+| 33 | ✓ | [`.github/plugin/shmuelie-github/skills/github-pull-requests/SKILL.md`](.github/plugin/shmuelie-github/skills/github-pull-requests/SKILL.md) |
+| 34 | ✓ | [`.github/plugin/shmuelie-github/skills/github-releases/SKILL.md`](.github/plugin/shmuelie-github/skills/github-releases/SKILL.md) |
+| 35 | ✓ | [`.github/plugin/shmuelie-github/skills/github-repository-management/SKILL.md`](.github/plugin/shmuelie-github/skills/github-repository-management/SKILL.md) |
+| 36 | ✓ | [`.github/plugin/shmuelie-github/skills/prepare-issue/SKILL.md`](.github/plugin/shmuelie-github/skills/prepare-issue/SKILL.md) |
+| 37 | ✓ | [`.github/plugin/shmuelie-nuget/skills/dotnet-library-ci/SKILL.md`](.github/plugin/shmuelie-nuget/skills/dotnet-library-ci/SKILL.md) |
+| 38 | ✓ | [`.github/plugin/shmuelie-nuget/skills/dotnet-library-projects/SKILL.md`](.github/plugin/shmuelie-nuget/skills/dotnet-library-projects/SKILL.md) |
+| 39 | ✓ | [`.github/plugin/shmuelie-nuget/skills/nuget-package-authoring/SKILL.md`](.github/plugin/shmuelie-nuget/skills/nuget-package-authoring/SKILL.md) |
+| 40 | ✓ | [`.github/plugin/shmuelie-nuget/skills/nuget-release/SKILL.md`](.github/plugin/shmuelie-nuget/skills/nuget-release/SKILL.md) |
+| 41 | ✓ | [`.github/plugin/shmuelie-systems/skills/embedded-cpp/SKILL.md`](.github/plugin/shmuelie-systems/skills/embedded-cpp/SKILL.md) |
+| 42 | ✓ | [`.github/plugin/shmuelie-systems/skills/homelab-infra/SKILL.md`](.github/plugin/shmuelie-systems/skills/homelab-infra/SKILL.md) |
+| 43 | ✓ | [`.github/plugin/shmuelie-systems/skills/qualcomm-aic/SKILL.md`](.github/plugin/shmuelie-systems/skills/qualcomm-aic/SKILL.md) |
+| 44 | ✓ | [`.github/plugin/shmuelie-typescript/skills/typescript-cli/SKILL.md`](.github/plugin/shmuelie-typescript/skills/typescript-cli/SKILL.md) |
 
 ---
 

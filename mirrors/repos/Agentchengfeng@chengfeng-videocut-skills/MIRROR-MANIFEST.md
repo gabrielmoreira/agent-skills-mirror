@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Agentchengfeng/chengfeng-videocut-skills` — 26 default patterns, 0 followed patterns, 8 file(s) materialized.
+Mirror of `Agentchengfeng/chengfeng-videocut-skills` — 26 default patterns, 0 followed patterns, 9 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Agentchengfeng/chengfeng-videocut-skills` — 26 default patterns, 0 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 8 |
+| Files         | 9 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -65,8 +65,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 4 | ✓ | [`plugins/chengfeng-videocut/skills/chengfeng-export/SKILL.md`](plugins/chengfeng-videocut/skills/chengfeng-export/SKILL.md) |
 | 5 | ✓ | [`plugins/chengfeng-videocut/skills/chengfeng-report-bug/SKILL.md`](plugins/chengfeng-videocut/skills/chengfeng-report-bug/SKILL.md) |
 | 6 | ✓ | [`plugins/chengfeng-videocut/skills/chengfeng-subtitle/SKILL.md`](plugins/chengfeng-videocut/skills/chengfeng-subtitle/SKILL.md) |
-| 7 | ✓ | [`plugins/chengfeng-videocut/skills/chengfeng-visual/animation-styles/ian-xiaohei-svg-motion/SKILL.md`](plugins/chengfeng-videocut/skills/chengfeng-visual/animation-styles/ian-xiaohei-svg-motion/SKILL.md) |
-| 8 | ✓ | [`plugins/chengfeng-videocut/skills/chengfeng-visual/SKILL.md`](plugins/chengfeng-videocut/skills/chengfeng-visual/SKILL.md) |
+| 7 | ✓ | [`plugins/chengfeng-videocut/skills/chengfeng-videocut-workbench/SKILL.md`](plugins/chengfeng-videocut/skills/chengfeng-videocut-workbench/SKILL.md) |
+| 8 | ✓ | [`plugins/chengfeng-videocut/skills/chengfeng-visual/animation-styles/ian-xiaohei-svg-motion/SKILL.md`](plugins/chengfeng-videocut/skills/chengfeng-visual/animation-styles/ian-xiaohei-svg-motion/SKILL.md) |
+| 9 | ✓ | [`plugins/chengfeng-videocut/skills/chengfeng-visual/SKILL.md`](plugins/chengfeng-videocut/skills/chengfeng-visual/SKILL.md) |
 
 ---
 

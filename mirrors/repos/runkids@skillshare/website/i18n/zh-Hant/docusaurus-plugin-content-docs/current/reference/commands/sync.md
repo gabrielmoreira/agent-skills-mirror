@@ -82,6 +82,18 @@ skillshare sync -p       # 明確指定 project mode
 └── ...                             └── local/    (preserved)
 ```
 
+### 預設路徑變更後的清理 {#project-path-cleanup}
+
+Project config 儲存的是 target 名稱而不是路徑，因此每個 target 都會沿用它的內建預設路徑。當某個工具改變了這個預設路徑——例如 goose 與 openhands 改用 `.agents/skills`——skillshare 先前寫進舊目錄的 skills 會留在原地，該工具就會同時讀取兩個位置，把每個 skill 都列出兩次。
+
+Project sync 會把它們清掉。對於每個沒有明確指定 `path:` 的 target，它會檢查該 target 的 runtime 同樣會掃描的目錄，並在其中沒有任何已設定 target 會寫入的目錄裡，移除由 skillshare 建立的條目。你自己建立的資料夾，以及指向專案外部的 symlinks，都不會被動到。
+
+```
+→ Cleaned 1 leftover skill(s) from .goose/skills: the default path for 'goose' moved to .agents/skills
+```
+
+為某個 target 明確設定 `path:` 就能讓它排除在這項清理之外；`--dry-run` 只會預覽將被移除的內容，不會實際變更任何東西。
+
 ---
 
 ## Sync

@@ -83,7 +83,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 22 | ✓ | [`skills/skillshare/references/TROUBLESHOOTING.md`](skills/skillshare/references/TROUBLESHOOTING.md) |
 | 23 | ✓ | [`skills/skillshare/scripts/run.sh`](skills/skillshare/scripts/run.sh) |
 | 24 | ✓ | [`skills/skillshare/SKILL.md`](skills/skillshare/SKILL.md) |
-| 25 | ✓ | [`website/CLAUDE.md`](website/CLAUDE.md) |
+| 25 | ✓ | [`website/AGENTS.md`](website/AGENTS.md) |
 | 26 | ✓ | [`website/docs/reference/commands/backup.md`](website/docs/reference/commands/backup.md) |
 | 27 | ✓ | [`website/docs/reference/commands/extras.md`](website/docs/reference/commands/extras.md) |
 | 28 | ✓ | [`website/docs/reference/commands/mcp.md`](website/docs/reference/commands/mcp.md) |

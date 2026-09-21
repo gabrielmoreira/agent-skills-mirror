@@ -74,9 +74,13 @@ user approves the plan and accepts that agents can read, modify, or delete any f
 runner pins every Codex process to the `default` service tier, overriding inherited fast or priority selection without
 changing persisted Codex configuration.
 
-Before implementation wave 1, the Claude parent acquires one ai-coord item over the union of every manifest write scope.
-Name exact files individually and use `--recursive` only for true subtrees. Hold that claim through reconciliation,
-required polish, and commit; the parent claim authorizes each delegate's assigned writes and is not a conflict.
+Before implementation wave 1, the Claude parent promotes the named draft recorded over the full manifest write-scope
+union during the shared Plan Phase: `ai-coord start --draft <plan-slug>` (or `ai-coord bundle start --draft <plan-slug>`
+for two or more Git roots). Only when promotion reports `no draft named ...`, use the plan's explicit
+`ai-coord start '<label>' '<path>'...` fallback (or `ai-coord bundle start '<label>' '<absolute-path>'...`) over that
+union. Name exact files individually and use `--recursive` only for true subtrees; require `READY` before launch. Hold
+that claim through reconciliation, required polish, and commit; the parent claim authorizes each delegate's assigned
+writes and is not a conflict.
 
 One work item per session requires the full union up front. When follow-on work expands the scope, do so only at a wave
 boundary: run `ai-coord done`, then start a fresh item over the enlarged union before launching the next wave.
@@ -106,12 +110,13 @@ and always terminates itself. Start sequential agents only after reconciling the
 parallel wave in the same turn. Pass the same `--coord-identity` on every fresh or resumed implementation launch.
 Research launches omit it because read-only agents make no writes and remain separately visible.
 
-Delegate prompts contain no ai-coord lifecycle commands. Delegates launched with `--coord-identity` share the
-orchestrating session's coordination identity, so an ordinary `ai-coord draft`, `ai-coord start`, `ai-coord wait`,
-`ai-coord done`, or `ai-coord bundle` from a delegate replaces the parent's claim and can break coordination for every
-sibling. Require every implementation prompt to say this explicitly, permitting only the read-only commands
-`ai-coord status` and `ai-coord touched`; also state that the parent's claim authorizes the assigned writes rather than
-conflicting with them.
+Delegate prompts forbid ai-coord lifecycle commands. Delegates launched with `--coord-identity` share the orchestrating
+session's coordination identity. The guard now rejects a delegate's `ai-coord draft`, `ai-coord start`,
+`ai-coord bundle draft`, `ai-coord bundle start`, `ai-coord wait`, or `ai-coord done` with exit 64 and
+`lifecycle commands are not allowed from a delegate of <client>/<session>; the parent's claim covers this work`. Require
+every implementation prompt to say this explicitly, permitting only `ai-coord status`, `ai-coord touched`,
+`ai-coord inbox`, `ai-coord msg`, and `ai-coord finding`; also state that the parent's claim authorizes the assigned
+writes rather than conflicting with them.
 
 Delegate claims and work no longer appear as separate `ai-coord status` work rows; transient Codex thread inventory may
 remain visible while delegates run, and per-delegate progress lives in handoff artifacts.
@@ -161,7 +166,8 @@ line or failure forensics. Do not read or print background-task output; artifact
 Parse implementation results against `result.schema.json` before applying the shared reconciliation rules.
 
 At each wave boundary, if `ai-coord status` shows that a delegate narrowed the parent's claim, re-run the parent's full
-`ai-coord start` before continuing.
+`ai-coord start` before continuing. This recovery applies only if a delegate bypassed the guard, for example with an
+unrelated identity; normally the lifecycle attempt is rejected with exit 64 in the delegate's stderr artifact.
 
 Treat timeouts, nonzero runner exits, and watcher `no-sentinel` settlements as failed settlements, not returned plan
 blockers. For a `handoff.failed` sentinel with reason `error`, inspect stderr first. When it evidences a transport,

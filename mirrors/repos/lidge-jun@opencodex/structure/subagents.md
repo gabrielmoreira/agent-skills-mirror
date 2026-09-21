@@ -149,10 +149,13 @@ featured or picker rank. Canonical `opencode-go` rows retain their configured re
 and provider-scoped context metadata both when generated and when merged from retained catalog
 state; `deepseek-v4.1-flash` therefore keeps its 1,048,576-token window, while synthetic max/ultra
 choices are not added to that provider's declared ladder.
+`meta-muse` declares `max` for both seeded models under the [Muse provider contract](providers-and-adapters.md), so routed-client catalogs can expose it without extending OpenCode Go's ladder.
 The first-party DeepSeek `deepseek-flash` row declares native `text` and `image` input and therefore
 does not require the vision sidecar by default; explicit `noVisionModels` or text-only declarations
 remain authoritative. First-party `deepseek-chat`, `deepseek-reasoner`, and `deepseek-v4-flash`
-remain sidecar-backed by default. Zen routes are unchanged and unprobed in this update.
+remain sidecar-backed by default. OpenCode Go's `deepseek-v4.1-flash` was reclassified as native
+vision on 2026-09-19 (probed on that gateway); its sibling `deepseek-v4-flash` stays sidecar-backed,
+and the Zen tiers keep their classification because they could not be measured.
 
 Full derivation with per-line citations: `devlog/_plan/260816_codexrs_multiagent_v2_and_history_perf/013_five_cap_v1_vs_v2.md`.
 
@@ -361,9 +364,7 @@ its defaults and exclusions are owned by [Responses transport](transports/respon
 
 Final-route summary visibility is recomputed after fallback from the original Responses preference; an earlier provider opt-in does not carry into a later provider. See [reasoning presentation](providers/chat-compat.md).
 
-## Paginated history writer boundary
-
-`src/codex/history-provider.ts` refuses external writes to paginated or migration-capable history. `src/codex/inject.ts` checks affected rows and manifest-owned restore targets before and after config/profile/journal changes, including successful journal and fallback restores, and compensates refused restore/removal transitions. Failed config restore stops later catalog/history work and rolls back a coordinated remove transition. Apply retains an existing provider definition before candidate admission even when history preflight passes, so migration after artifact commit or during worker startup cannot leave earlier conversations without their provider. See the [history writer contract](codex-home.md#paginated-history-writer-boundary) for guarantees and concurrent-writer limits.
+Paginated and migration-capable history follows the [authoritative writer contract](codex-home.md#paginated-history-writer-boundary); this document adds no independent writer guarantee.
 
 Codex pool settings and their consumers follow the [reset-first ordering contract](providers/openai-tiers.md#reset-first-account-ordering), including independent-quota fallback, preserved affinity, strategy-specific threshold summaries, and shared short-observation freshness for switch warnings.
 
@@ -411,3 +412,5 @@ Native steering generation overrides, explicit public-API eligibility and the co
 Startup provider-id migration preserves the account binding between configuration and OAuth credentials; see the [runtime contract](runtime.md).
 
 Dashboard Fast-row persistence and client refresh follow the [Fast selector rows setting contract](gui-and-management-api.md#fast-selector-rows-setting).
+
+The [compaction routing override](transports/responses.md#compaction-routing-overrides) uses explicit request-kind and trigger metadata, independently of spawned-child markers.

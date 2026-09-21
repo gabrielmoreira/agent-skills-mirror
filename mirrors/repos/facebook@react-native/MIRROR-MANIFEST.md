@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `facebook/react-native` — 26 default patterns, 4 followed patterns, 8 file(s) materialized.
+Mirror of `facebook/react-native` — 26 default patterns, 4 followed patterns, 7 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `facebook/react-native` — 26 default patterns, 4 followed patterns, 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 4 |
-| Files         | 8 |
+| Files         | 7 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -64,12 +64,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`__docs__/GUIDELINES.md`](__docs__/GUIDELINES.md) |
 | 2 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 3 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 4 | ✓ | [`packages/react-native-compatibility-check/AGENTS.md`](packages/react-native-compatibility-check/AGENTS.md) |
-| 5 | → | [`__docs__/README.md`](__docs__/README.md) |
-| 6 | → | [`packages/rn-tester/README.md`](packages/rn-tester/README.md) |
-| 7 | → | [`private/react-native-fantom/__docs__/README.md`](private/react-native-fantom/__docs__/README.md) |
-| 8 | → | [`scripts/build/README.md`](scripts/build/README.md) |
+| 3 | ✓ | [`packages/react-native-compatibility-check/AGENTS.md`](packages/react-native-compatibility-check/AGENTS.md) |
+| 4 | → | [`__docs__/README.md`](__docs__/README.md) |
+| 5 | → | [`packages/rn-tester/README.md`](packages/rn-tester/README.md) |
+| 6 | → | [`private/react-native-fantom/__docs__/README.md`](private/react-native-fantom/__docs__/README.md) |
+| 7 | → | [`scripts/build/README.md`](scripts/build/README.md) |
 
 ---
 

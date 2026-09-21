@@ -270,25 +270,22 @@ LOOP:
        gh api repos/<FORK_REPO>/pulls/P/requested_reviewers -X POST \
          -f "reviewers[]=copilot-pull-request-reviewer[bot]"
      - Reviewer name MUST be exactly copilot-pull-request-reviewer[bot] (plain "copilot" silently no-ops).
-     - VERIFY the response's requested_reviewers array is non-empty. If empty, the reviewer
-       isn't enabled → stop and tell the user to enable Copilot code review, then retry.
+     - Prefer the sibling powertoys-pr-review/scripts/Request-CopilotReview.ps1
+       helper; use -TimeoutMinutes 0 for bounded workers. Save its request time,
+       fork head and baseline review ID. Empty requested_reviewers is not proof
+       that Copilot is unavailable; a fast review may already have completed.
 
-  2. POLL for the new review to land (every 60s, up to 10 min):
-       gh api repos/<FORK_REPO>/pulls/P/reviews
-     → a review from copilot-pull-request-reviewer[bot] with submitted_at > last_ts.
-     The fresh review has COMPLETED when ANY of these is true (check all three — the
-     reviews list alone can lag):
-       (a) a new review row from the bot with submitted_at > last_ts appears; OR
-       (b) Copilot was removed from requested_reviewers (it consumed the request):
-             gh api repos/<FORK_REPO>/pulls/P --jq '.requested_reviewers[].login'
-           no longer lists the bot; OR
-       (c) a `reviewed` event fires after last_ts on the timeline:
-             gh api repos/<FORK_REPO>/issues/P/timeline --paginate \
-               --jq '.[] | select(.event=="reviewed") | .submitted_at'
-     (If none arrives after 10 min, re-request once more, then continue polling.)
+  2. CHECK with sibling powertoys-pr-review/scripts/Get-CopilotReviewStatus.ps1:
+       -ForkRepo <FORK_REPO> -PRNumber P -HeadSha <saved-fork-head>
+       -RequestedAt <saved-request-time> -AfterReviewId <saved-baseline-ID>
+     This exhausts all review pages and requires an actual matching-head
+     submitted review. Empty assignments/timeline events alone cannot establish
+     completion or a clean pass. Do not re-request on timeout; persist the
+     request and resume read-only. Bounded workers check once and return their
+     slot; standalone work may poll up to 10 minutes.
 
   3. FETCH this round's new inline comments:
-       gh api repos/<FORK_REPO>/pulls/P/comments
+       gh api --paginate "repos/<FORK_REPO>/pulls/P/comments?per_page=100" --jq '.[]'
      → keep only created_at > last_ts AND user.login == copilot-pull-request-reviewer[bot].
      Capture each comment's id (for replies) AND node_id (for resolving).
      LOGIN-FILTER GOTCHA (critical — miscounts cause false "clean"): the SAME bot has

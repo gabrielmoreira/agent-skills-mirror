@@ -83,8 +83,17 @@ access to the named repositories but none of this transcript. Include:
 - changes keyed to stable paths, symbols, interfaces, schemas, or commands rather than line numbers;
 - task-specific evidence, procedure, material edge cases, and failure behavior;
 - targeted validation, acceptance scenarios, and rollout, compatibility, or authority requirements;
-- exact repository-relative write scopes and a ready-to-run `ai-coord start '<label>' '<path>'...` command derived from
-  those scopes, using `--recursive` only when the handoff genuinely cannot enumerate a subtree;
+- exact repository-relative write scopes, recorded before publication with
+  `ai-coord draft --name <handoff-slug> '<label>' '<path>'...`; for two or more Git roots, use
+  `ai-coord bundle draft --name <handoff-slug> '<label>' '<absolute-path>'...`. Derive the name from the handoff
+  filename stem: lowercase it, replace `_` and characters outside `[A-Za-z0-9._-]` with `-`, and truncate to 40
+  characters (for example `NAMED_DRAFTS_IN_HANDOFF_SKILLS.md` becomes `named-drafts-in-handoff-skills`). Include the
+  ready-to-run promote command `ai-coord start --draft <handoff-slug>` (or
+  `ai-coord bundle start --draft <handoff-slug>`) ahead of the explicit `ai-coord start '<label>' '<path>'...` fallback
+  (or `ai-coord bundle start '<label>' '<absolute-path>'...`) over the same scope union. Use the fallback only when
+  promotion reports `no draft named ...`, such as after the draft expires in seven days or the ledger is replaced. Use
+  `--recursive` only when the handoff genuinely cannot enumerate a subtree. Recording a draft changes coordination state
+  only, grants no scope, and remains within this skill's coordination exemption;
 - assumptions resolved from repository evidence or explicit user decisions.
 
 Add a `## Execution approach` section. For a simple task, direct the receiving session to execute this one isolated
@@ -104,13 +113,14 @@ alternatives, and recommendation criteria. An audit handoff specifies the assess
 and severity or prioritization model. An operations handoff specifies preconditions, ordered state transitions,
 authority boundaries, observability, and rollback or recovery.
 
-For a cross-repository handoff, add a `## Repository order` section with a numbered sequence. Its first item must name
-the repository to tackle first; every item must name the canonical root, role, exact write scope, prerequisite or
-handoff condition, repository-local validation, and its own ready-to-run `ai-coord start` command. Also state the
-combined acceptance criteria. Use literal repository-relative paths without globs; use directories only with
-`--recursive`. Use direct transcript excerpts when exact wording is material; otherwise summarize relevant context to
-keep the handoff compact. Leave no placeholders, open task choices, or references that require the old chat. The CLI
-requires the exact line `## Repository order` in every cross-repository draft.
+For a cross-repository handoff, add a `## Repository order` section with the single bundle promote command above a
+numbered sequence; retain the explicit bundle fallback alongside it. Its first item must name the repository to tackle
+first; every item must name the canonical root, role, exact write scope, prerequisite or handoff condition,
+repository-local validation, and its own ready-to-run `ai-coord start` command. Also state the combined acceptance
+criteria. Use literal repository-relative paths without globs; use directories only with `--recursive`. Use direct
+transcript excerpts when exact wording is material; otherwise summarize relevant context to keep the handoff compact.
+Leave no placeholders, open task choices, or references that require the old chat. The CLI requires the exact line
+`## Repository order` in every cross-repository draft.
 
 When placement or the repository set is uncertain, pre-validate before investing in the body. Pass every involved
 repository with `--repo`; for cross-repository work, pass the first repository to tackle as `--launch-repo`. Omit

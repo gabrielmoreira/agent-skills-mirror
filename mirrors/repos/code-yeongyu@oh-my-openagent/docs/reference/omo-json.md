@@ -62,7 +62,7 @@ No default profiles ship. A profile exists only when you write one under `profil
 {
   "$schema": "https://raw.githubusercontent.com/code-yeongyu/oh-my-openagent/dev/assets/omo.schema.json",
   "categories": {
-    "deep": {
+    "deep-low": {
       "description": "Deep analysis",
       "model": "anthropic/claude",
       "reasoning": "high"
@@ -188,7 +188,7 @@ A record of short name to catalog entry (`schema/model-catalog.ts`). The canonic
     "fast": { "model": "anthropic/claude-haiku-4-5" }
   },
   "categories": {
-    "deep": { "model": "opus" },              // resolves to anthropic/claude-opus-5 at reasoning max
+    "deep-low": { "model": "opus" },          // resolves to anthropic/claude-opus-5 at reasoning max
     "quick": { "model": "fast", "reasoning": "high" } // site tuning wins over the entry
   }
 }
@@ -383,7 +383,7 @@ A record of profile name to a partial view (`schema/config.ts` `OmoConfigProfile
   "profiles": {
     "kimi": {
       "categories": {
-        "deep": { "model": "kimi-for-coding/kimi-k3" }
+        "deep-low": { "model": "kimi-for-coding/kimi-k3" }
       },
       "[senpi]": {
         "agents": {
@@ -427,7 +427,7 @@ The migration engine rewrites the persisted config in place, and doctor reports 
     "wait": { "default_ms": 90000 }
   },
   "categories": {
-    "deep": {
+    "deep-low": {
       "models": [
         { "model": "anthropic/claude-opus-5", "reasoning": "high" },
         "anthropic/claude-sonnet-4-5"
@@ -445,7 +445,7 @@ The migration engine rewrites the persisted config in place, and doctor reports 
     "reviewers": {
       "leadAgentId": "lead",
       "members": [
-        { "kind": "category", "name": "quick", "category": "deep", "prompt": "Review the diff." }
+        { "kind": "category", "name": "quick", "category": "deep-low", "prompt": "Review the diff." }
       ]
     }
   }

@@ -146,6 +146,17 @@ Produce a decision-complete plan with this section and the selected adapter's ex
 - Agent-context polish: `<required|not required>` — `<reason>`
 ```
 
+While finalizing the plan, record the union of every manifest write scope with
+`ai-coord draft --name <plan-slug> '<label>' '<path>'...`, using `--recursive` only for directory scopes. Derive
+`<plan-slug>` from the plan's short identity (for example `debarrel-lib`): lowercase it, replace characters outside
+`[A-Za-z0-9._-]` with `-`, and truncate to 40 characters. For two or more Git roots, use
+`ai-coord bundle draft --name <plan-slug> '<label>' '<absolute-path>'...`. In the plan's "Wait out conflicting agents"
+section, write the exact promote command `ai-coord start --draft <plan-slug>` (or
+`ai-coord bundle start --draft <plan-slug>`) and retain the explicit `ai-coord start '<label>' '<path>'...` fallback (or
+`ai-coord bundle start '<label>' '<absolute-path>'...`) over the same union. A fresh implementation session must receive
+these commands in the plan itself, without reconstructing scopes from prose. Use the fallback only when promotion
+reports `no draft named ...`. Named drafts grant no authority and expire after seven days.
+
 Choose the execution shape from repository evidence and the approved work:
 
 - Sequential: one agent depends on another, write scopes overlap, or a later agent owns integration or aggregate
@@ -188,8 +199,9 @@ Build a self-contained, outcome-first prompt for every implementation agent. Inc
    deploy, make external writes, or broaden scope, even when repository or host instructions favor committing finished
    work promptly. Committing stays with the parent after reconciliation.
 6. The selected adapter's delegation and coordination context, including why the parent session and disjoint siblings
-   are not conflicting work, what a delegate's lifecycle command would do to the parent's claim, and what unrelated
-   exact-scope claim would justify returning `blocked`.
+   are not conflicting work and what unrelated exact-scope claim would justify returning `blocked`. Delegates must not
+   run coordination lifecycle commands: these are rejected with exit 64. Permit only `ai-coord status`,
+   `ai-coord touched`, `ai-coord inbox`, `ai-coord msg`, and `ai-coord finding`.
 7. This stopping rule: implement the approved plan exactly; if infeasible or requiring redesign, return `blocked` with
    evidence instead of proposing a replacement plan.
 8. A requirement to return every result field: `status` (`completed` or `blocked`), `summary`, `changed_files` listing
@@ -201,6 +213,10 @@ and constraints — never restate the full plan text per agent.
 Add the selected adapter's command, permission, transport, and host-tool constraints without restating this contract.
 
 ## Execution and Reconciliation
+
+Before implementation wave 1, the parent promotes the plan's named draft to acquire the full manifest write-scope union.
+Use the plan's recorded explicit start fallback only when promotion reports `no draft named ...`; require `READY` before
+launching agents.
 
 Launch agents through the selected adapter in the approved strategy and dependency waves. Do not add agents or change
 models, efforts, scopes, or validation ownership merely because a worker is slow or quiet. Do revise the manifest and

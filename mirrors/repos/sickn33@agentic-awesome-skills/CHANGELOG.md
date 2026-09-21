@@ -7,6 +7,191 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [17.8.4] - 2026-09-20 - "Core SearchAction for Pages SEO"
+
+> Aligns the Pages SEO verifier SearchAction expectation with `/core` so the
+> neon landing release can deploy to GitHub Pages.
+
+A catalog-surface hotfix for Claude Code, Cursor, Codex CLI and Gemini CLI.
+It finishes publishing the neon homepage to the hosted site while keeping the
+**2,406**-skill catalog at `/core`. Existing installation interfaces remain
+supported.
+
+### Start here
+
+- Install: `npx agentic-awesome-skills@17.8.4`
+- [Choose your tool](README.md#choose-your-tool)
+- [Best skills by tool](README.md#best-skills-by-tool)
+- [Bundles](docs/users/bundles.md)
+- [Workflows](docs/users/workflows.md)
+
+### Fixed
+
+- **Pages SearchAction gate** — expect WebSite SearchAction targets at
+  `/core/?q={search_term_string}` after the catalog moved off `/`.
+
+### Validation scope
+
+Protected source PR, release checks for v17.8.4, and the release-only Pages
+deploy from the immutable `v17.8.4` tag.
+
+---
+
+## [17.8.3] - 2026-09-20 - "Landing JSON-LD Identity for Pages"
+
+> Fixes neon landing SoftwareSourceCode/WebSite JSON-LD so the release-only
+> Pages SEO gate accepts `/` after the catalog moved to `/core`.
+
+A catalog-surface hotfix for Claude Code, Cursor, Codex CLI and Gemini CLI.
+It completes hosted deployment of the neon homepage while keeping the
+**2,406**-skill catalog at `/core`. Existing installation interfaces remain
+supported.
+
+### Start here
+
+- Install: `npx agentic-awesome-skills@17.8.3`
+- [Choose your tool](README.md#choose-your-tool)
+- [Best skills by tool](README.md#best-skills-by-tool)
+- [Bundles](docs/users/bundles.md)
+- [Workflows](docs/users/workflows.md)
+
+### Fixed
+
+- **Landing JSON-LD identities** — dedupe root `sameAs`, align WebSite URL shape,
+  and treat `/` as the brand landing while `/core` keeps rich catalog identity
+  checks required by the Pages SEO verifier.
+
+### Validation scope
+
+Protected source PR, release checks for v17.8.3, and the release-only Pages
+deploy from the immutable `v17.8.3` tag.
+
+---
+
+## [17.8.2] - 2026-09-20 - "Pages Deploy for Neon Landing"
+
+> Unblocks GitHub Pages for the neon AAS homepage by allowing `/core` in the
+> SEO sitemap verifier and verifying Core catalog metadata on `/core`.
+
+A catalog-surface hotfix for Claude Code, Cursor, Codex CLI and Gemini CLI.
+It finishes publishing the neon landing from #1527 / v17.8.1 onto the hosted
+site while keeping the **2,406**-skill catalog at `/core`. Existing installation
+interfaces remain supported.
+
+### Start here
+
+- Install: `npx agentic-awesome-skills@17.8.2`
+- [Choose your tool](README.md#choose-your-tool)
+- [Best skills by tool](README.md#best-skills-by-tool)
+- [Bundles](docs/users/bundles.md)
+- [Workflows](docs/users/workflows.md)
+
+### Fixed
+
+- **Pages SEO gate for `/core`** — treat `/core` as an allowed non-skill sitemap
+  route, assert the prerendered Core catalog page, and keep landing `/` on
+  WebPage discovery metadata so the release-only Pages deploy can ship the neon
+  homepage.
+- **Plugins coverage timeout** — raise the specialized plugins render test
+  timeout so release npm publication is not blocked by a slow CI worker.
+
+### Validation scope
+
+Source PR plus protected release checks for v17.8.2, including web-app SEO
+verification, coverage, CI, CodeQL, and the release-only Pages deploy from the
+immutable `v17.8.2` tag.
+
+---
+
+## [17.8.1] - 2026-09-20 - "Neon AAS Landing Homepage"
+
+> Ships a brand-first neon AAS homepage at `/` and moves the searchable catalog
+> to `/core`, with matching SEO, sitemap, and prerender routes.
+
+A catalog-surface release for Claude Code, Cursor, Codex CLI and Gemini CLI.
+It publishes the neon AAS landing experience (#1527) while keeping the
+**2,406**-skill catalog on Core. Existing installation interfaces remain
+supported.
+
+### Start here
+
+- Install: `npx agentic-awesome-skills@17.8.1`
+- [Choose your tool](README.md#choose-your-tool)
+- [Best skills by tool](README.md#best-skills-by-tool)
+- [Bundles](docs/users/bundles.md)
+- [Workflows](docs/users/workflows.md)
+
+### Added
+
+- **Neon AAS landing homepage (#1527)** — brand-first intro at `/` with install
+  hero, agent compatibility tiles, Core/Workbench/Plugins surfaces, guided
+  Search→Choose→Validate→Preview steps, and maintainer strip. The searchable
+  catalog now lives at `/core` with updated nav, SEO, sitemap, and prerender
+  routes.
+
+### Improved
+
+- Pages redirect bridge sitemap route lock bumped for `/core`.
+
+### Validation scope
+
+PR #1527 passed repository web-app tests and typecheck, protected CI
+(`pr-policy`, `pr-evidence`, `source-validation`, `artifact-preview`), CodeQL,
+dependency review, and maintainer attestation on the exact merge head, then
+canonical synchronization.
+
+---
+
+## [17.8.0] - 2026-09-20 - "OpenCode #126 Catalog Expansion and Jev Judgment Routing"
+
+> Imports 264 reviewed skills from opencode-skills-collection #126 across DevSec,
+> BugHunter, and starter bundles, plus `jev-use` for batched judgment-model
+> routing through MCP.
+
+A maintenance release for Claude Code, Cursor, Codex CLI and Gemini CLI.
+It merges the FrancoStino opencode-skills-collection #126 batch (#1512–#1517)
+and the community `jev-use` skill (#1511), refreshes catalog and plugin surfaces
+for **2,406** skills, and converges canonical indexes through the protected bot
+lane. Existing installation interfaces remain supported.
+
+### Start here
+
+- Install: `npx agentic-awesome-skills@17.8.0`
+- [Choose your tool](README.md#choose-your-tool)
+- [Best skills by tool](README.md#best-skills-by-tool)
+- [Bundles](docs/users/bundles.md)
+- [Workflows](docs/users/workflows.md)
+
+### Added
+
+- **OpenCode #126 batch (264 skills, #1512–#1517)** — docs-only DevSec compliance,
+  DevOps, infrastructure, and security skills; gated BugHunter assessment workflows;
+  and starter bundles (productivity, career-ops, geo/SEO, and related collections)
+  sourced from the MIT-licensed opencode-skills-collection #126 import, with
+  maintainer repairs for policy, provenance, and documentation-security gates.
+- **`jev-use` (#1511)** — routes enumerable no-text judgment steps (success checks,
+  option picks, risk gates) to the Jev judgment model through `jev_judge` and
+  `jev_gate` MCP tools, with explicit escalation back to the orchestrator for
+  steps that require generated text or non-enumerable choices.
+
+### Improved
+
+- Refreshed canonical indexes, catalogs, plugin mirrors, editorial bundles, and
+  web assets for the 2,406-skill release.
+
+### Validation scope
+
+PRs #1512–#1517 and #1511 passed maintainer attestation on their exact merge
+heads, repository validation, reference and documentation-security checks,
+protected CI, CodeQL, dependency review, and canonical synchronization.
+Tessl was unavailable for several heads; maintainer semantic review covered
+every changed canonical skill subtree.
+
+Thanks to @FrancoStino (#1512–#1517) for the opencode-skills-collection #126
+import and to @shitianfang (#1511) for `jev-use`.
+
+---
+
 ## [17.7.0] - 2026-09-19 - "YYLO Ledger Skills Suite"
 
 > Adds seven community skills for YYLO Ledger task, wiki, workflow, and artifact

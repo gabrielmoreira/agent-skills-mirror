@@ -199,6 +199,17 @@ report; it cannot supply repair or merge permission. Only a unique valid
 value in leading canonical frontmatter counts; body or fenced examples cannot
 supply it. This compatibility limit means old false-positive prose needs a fresh
 producer assessment, not a guess from its summary, rating, or automation markers.
+The producer keeps only unresolved concerns in `risks`: each entry becomes a
+blocking checklist item. Explicit maintainer acceptance resolves only the
+specific tradeoff it covers at the reviewed change. The limitation and cited
+decision remain visible in evidence and any applicable merge-risk label rationale;
+they do not reopen the same decision or populate `mergeRiskOptions`. A nonempty
+merge-risk label list therefore permits empty options when `risks` is empty;
+labeled unresolved risks still require options. Proposed or conditional acceptance, contributor assertions, and changed scope remain
+unresolved. The renderer does not infer acceptance from prose or labels, and
+historical reports require a fresh review to change their assessment. Acceptance
+does not grant merge authority or waive enforced gates.
+
 Independent findings, security concerns, risks, contributor proof, historical
 verification, decisions, failed reviews, and low-quality remediation still render
 and count. Scores retain their existing policy. A required action prevents a pass,
@@ -374,9 +385,17 @@ does not erase recorded parents or prove their objects are available. Neither
 workspace/test-merge ancestry nor fetched main or the merge base may substitute
 for original parentage; raw parents do not establish causality or authorship.
 
-The reviewer also receives fetched main, the unique merge base, introduced files
-and patch from merge-base to head, base-branch changes, and a separately labeled
-base-to-head endpoint comparison. A file that differs only because main advanced is not
+The reviewer also receives fetched main, the unique merge base, introduced-file
+metadata from merge-base to head, base-branch changes, and a separately labeled
+base-to-head endpoint comparison. Prompt serialization omits only the `patch` and
+`patchComplete` fields of host-selected source records: introduced evidence and
+PR pull-file records. Captured patches remain unchanged for deterministic policy
+and hydration; the input scanner still scans complete committed patches and blobs
+with their provenance. Reviewers read hunks from the checkout using the supplied
+immutable bounds. Discussion, review comments, maintainer requests, and issue-only
+context remain scanner-visible. Hydrated PR cache preflight uses the same projection
+for current and persisted file records while retaining complete discussion evidence.
+A file that differs only because main advanced is not
 automatically a PR edit. Findings in untouched files remain valid when an
 introduced hunk elsewhere causes the failure; risks, labels, scores, and fixups
 must use that same ownership boundary.
@@ -398,6 +417,8 @@ merges and final merge commits cannot establish what this merge would change.
 A clean merge does not rule out semantic regressions.
 
 This is reviewer input, not a new persistent decision or repair contract.
+The [source-prompt proof](proof/review-source-prompt/README.md) records native
+admission and prompt/source refusal controls for the projection boundary.
 OpenClaw Bay is unaffected: no observer fields, routes, or controls change.
 
 Security defaults to `None.` when there are no concerns. Do not spend public

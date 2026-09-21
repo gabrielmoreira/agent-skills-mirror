@@ -488,6 +488,25 @@ record the conflict privately and resolve it with the owner before publication;
 do not silently change commercial terms. Legal templates with placeholders are
 templates, not executed agreements or evidence of business readiness.
 
+The September 20, 2026 PR Replay finding-review revision is prospective:
+new engagements must expressly adopt it, and already-agreed rights remain
+unchanged. Keep Audit FAQ + JSON-LD, Refund, and SOW sections 6/8 aligned on
+the evidence test, original finding denominator, 5-business-day objection
+window, 10-business-day response, and 30-calendar-day unresolved fallback.
+Information requests cannot reset that deadline. Preserve both full-refund
+thresholds and the attorney-review gate before binding execution. The regression
+checks in `tests/test_site_finding_review_terms.py` pin these boundaries; they
+are not legal review. Credit amounts and launch-based conditions remain in
+SOW section 7; avoid hypothetical future subscription-bill arithmetic in Audit.
+The MCP and integration tutorials link to the offer without duplicating its
+commercial scope or future subscription-credit pitch. Keep temporary-clone
+retention descriptions consistent with the DPA's calendar-day window; do not
+shorten that promise to immediate deletion or imply the report and ledger share
+the clone's retention period. Use concrete provider/location descriptions rather
+than undefined compliance labels. Delivery-speed predictions need evidence;
+agreed schedules belong in the written scope. Editorial regressions are covered
+by `tests/test_site_offer_clarity.py`, not a legal or operational certification.
+
 Styles for the existing pricing/report pages are scoped to `.selling-page` in
 `landing.css`. Preserve the homepage's own styling and existing route/fragment
 links. FAQ structured data must match every visible answer. Keep unavailable
@@ -497,6 +516,11 @@ a named `region` linked to the table caption, and explicit row/column header
 scopes. Reuse the shared focus-visible styling. Source checks enforce that
 markup; actual keyboard scrolling and assistive-technology behavior still need
 browser testing.
+
+Short three-column fee/credit tables opt into `.compare-table--compact` to
+remove the wide comparison table's minimum width without reducing text size.
+Keep the scroll wrapper for enlarged-text overflow. Check 320px and 390px
+layouts and a wide-table control; do not apply compact styling to every table.
 
 ## Check and publish
 

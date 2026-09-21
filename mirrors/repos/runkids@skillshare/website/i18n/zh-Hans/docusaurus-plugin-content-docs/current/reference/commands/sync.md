@@ -84,6 +84,25 @@ symlink 模式。不会创建 Backup（project Target 可以从 Source 重新生
 └── ...                             └── local/    (preserved)
 ```
 
+### 默认路径变更后的清理 {#project-path-cleanup}
+
+Project 配置保存的是 target 名称而不是路径，因此 Target 会跟随其内置的默认路径。
+当某个工具变更了这个默认值 —— 例如 goose 和 openhands 改用 `.agents/skills` ——
+skillshare 先前写入旧目录的 skills 会留在原地，而该工具会同时读取两个位置，
+把每个 skill 列出两次。
+
+Project sync 会清理它们。对于每个没有显式设置 `path:` 的 Target，sync 会检查
+该 Target 的运行时同样会扫描的目录；在其中任何没有已配置 Target 写入的目录里，
+移除 skillshare 创建的条目。你自己建立的文件夹，以及指向 project 之外的 symlink，
+一律不会改动。
+
+```
+→ Cleaned 1 leftover skill(s) from .goose/skills: the default path for 'goose' moved to .agents/skills
+```
+
+为某个 Target 设置显式的 `path:` 即可让它跳过这项清理；`--dry-run` 只预览会移除
+哪些内容，不做任何改动。
+
 ---
 
 ## Sync

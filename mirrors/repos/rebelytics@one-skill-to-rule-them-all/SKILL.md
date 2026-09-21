@@ -1,21 +1,6 @@
 ---
-name: task-observer
-description: >
-  Monitors task execution for skill improvement opportunities. Use during ANY
-  multi-step task, agentic workflow, or work session where the agent uses
-  tools and produces deliverables. Captures patterns, user corrections,
-  workflow insights, and methodology worth preserving as reusable skills.
-  Also triggers in post-task feedback discussions and when the user mentions
-  skill observations, improvements, the observation log, skill taxonomy, or
-  asks the agent to watch for skill opportunities.
-  Also known as "One Skill to Rule Them All" — trigger on this phrase too.
-  IMPORTANT: invoke this skill before the FIRST tool call of any session and
-  before writing or proposing a plan — any turn that will involve a tool call
-  counts, however simple the opener looks. This sentence is the
-  session-start trigger and the only activation layer that survives an
-  unreachable config file; pair it with a CLAUDE.md instruction or a harness
-  session-start hook (references/environments.md) — description matching
-  alone is not enforceable.
+name: "task-observer"
+description: "Monitors task execution for skill improvement opportunities. Use during ANY multi-step task, agentic workflow, or work session. Captures patterns, user corrections and methodology worth preserving as reusable skills. Also triggers in post-task feedback discussions and when the user mentions skill observations, the observation log, or skill taxonomy. Also known as \"One Skill to Rule Them All\" — trigger on this phrase too. IMPORTANT: invoke this skill before the FIRST tool call of any session and before writing or proposing a plan — any turn that will involve a tool call counts. This sentence is the session-start trigger and the only activation layer that survives an unreachable config file; pair it with a CLAUDE.md instruction or a harness session-start hook (references/environments.md) — description matching alone is not enforceable."
 ---
 
 # Task Observer — Continuous Skill Discovery & Improvement
@@ -44,23 +29,17 @@ shared folder; in Claude Code, the stable project identity (e.g.
 `~/.claude/projects/<project-id>/`), NOT the current working directory. A
 cwd inside an ephemeral checkout — a git worktree under
 `.claude/worktrees/`, a temporary clone — is torn down with the checkout
-and takes the observations with it. Scope the workspace to what is
-observed: globally installed skills need one path shared across projects,
-tools and agents, never one derived per session — and "stable" is not
-the same as "single". In Claude Code the project identity is derived
-from the directory a session starts in, so a habit of starting sessions
-in per-project subfolders yields one stable anchor per subfolder, each
-a silent shard of the same log; a per-project default scatters
-observations about a globally installed skill across every project
-touched, and a review run in any one of them looks complete while seeing
-a fraction of the backlog. The rule: if the skills being observed are
-installed at user or global scope, pin the log to one matching
-user-scope path (for example `~/.claude/skill-observations/` or the
-equivalent outside any project) and keep the per-project default only
-for skills that exist in that project alone. Never place it inside a
-skills-discovery directory. Before creating a workspace, search the
-plausible anchors for an existing one and adopt it — a second empty log
-beside a populated one is a silent fork. **The observation log is a
+and takes the observations with it. **Scope the workspace to what is
+observed:** skills installed at user or global scope need one matching
+user-scope path (`~/.claude/skill-observations/` or the equivalent outside
+any project), shared across projects, tools and agents; keep a per-project
+anchor only for skills that exist in that project alone. "Stable" is not
+the same as "single", and a per-project default silently shards one log
+into many, each of which looks complete from inside. Never place the
+workspace inside a skills-discovery directory. Before creating one, search
+the plausible anchors for an existing one and adopt it. Load
+`references/environments.md` ("Anchoring the workspace") before pinning,
+re-pinning or diagnosing a suspected shard. **The observation log is a
 directory:**
 `[workspace folder]/skill-observations/observation-log/`, one Markdown file
 with a YAML frontmatter header per observation, with resolved entries under
@@ -105,9 +84,15 @@ was handled without its reference loaded, log an observation.
   **Load when setting up the log for the first time, when archiving, when
   an id or frontmatter looks wrong, or before changing how anything reads
   the log.**
+  Also load it, as the pointers below direct, before resolving, dismissing
+  or citing an observation, when setting `parked` or `reference:`, before
+  adding or changing an enforcement trigger or writing a new instrument
+  over the log, and whenever a scan, sweep or id probe comes back empty.
 - `references/signals.md` — the full catalogue of what is and isn't worth
   logging. **Load when unsure whether something is an observation, or when
   sorting many candidates.**
+  Also load it when a defect that is not the deliverable is consuming the
+  session, and before writing any "later" into a recommendation.
 - `references/environments.md` — activation and config setup, compaction
   behaviour, bundle manifest, handoff-doc mode for storage-less
   environments. **Load for setup questions, after compaction, or when
@@ -130,34 +115,39 @@ was handled without its reference loaded, log an observation.
    not the "no filesystem" branch: handoff-doc mode
    (`references/environments.md`) is for environments that have no
    filesystem at all, and it is reached too easily when a missing mount is
-   read as one. Never assert the mount's state — connected or not — from
-   an environment flag, the presence of a config file in context, or
-   memory of an earlier turn; a claim about mount state needs a probe in
-   the same turn. Once the path resolves: if
+   read as one — and that request can itself come back refused by the
+   harness's permission classifier rather than by the user (a classifier
+   denial names the classifier and carries a bracketed reason; a user
+   decline does not), so retry it once with an identical call before the
+   folder-picker path is treated as having failed and before the "no
+   filesystem" branch is even considered; the rule under **How to Log** —
+   consecutive denials from a probabilistic gatekeeper are noise, not a
+   wall — is stated there about log writes but governs every gated call,
+   this one included. Never assert the mount's state — connected or not —
+   from an environment flag, a config file's presence in context, or memory
+   of an earlier turn: a claim about mount state needs a probe in the same
+   turn. **A successful probe does not mean the activation config fired.**
+   On turn 1 a config that is merely late is indistinguishable from an
+   absent one, so load the session-start skills directly rather than
+   assuming the config did, and read the config file yourself if the mount
+   resolves but its content is not in context. Why this guard is only the
+   backup, and which channel the primary one belongs in, is in
+   `references/environments.md` ("Activation config — late, intermittent,
+   and why the guard cannot live inside it"); load it when setting up or
+   diagnosing activation. Once the path resolves: if
    `skill-observations/observation-log/` (with its `archive/`
    subdirectory) or `skill-observations/cross-cutting-principles.md`
    don't exist, create them (principles template:
    `references/skill-authoring.md`). Then the **starter-set
    reconciliation**, due whenever
-   `skill-observations/starter-principles-reviewed.txt` is absent or holds
-   a starter-set version older than the one in
-   `references/starter-principles.md` (the `Starter set version: N` line
-   in its header, below the title) — which covers a fresh install, an existing
-   install upgrading to a bundle that ships the file, and every later
-   growth of the set. Load the starter file, match each starter entry
-   against the adopter's existing principles by substance (a rule that
-   says the same thing under a different title counts as covered), and
-   offer once, in one line: "the bundle ships N starter principles; M are
-   not covered by your file — want to see them?" On yes, show only the
-   uncovered ones, let the adopter pick, and import the picks in the
-   template format with `**Origin:** imported from starter set`, so the
-   adopter's own reviews can prune them like any other rule. On a fresh
-   file M equals N and the choice is simply "start empty, or seed". Either
-   way, write the starter set's version into the marker file, so the
-   offer never repeats until the shipped set changes. Never pre-populate
-   silently: the file's authority comes from the adopter's own evidence
-   trail, and unexamined imported rules contradict the pruning principle
-   the file itself carries.
+   `skill-observations/starter-principles-reviewed.txt` is absent or holds a
+   starter-set version older than the one in
+   `references/starter-principles.md` — a fresh install, an upgrade to a
+   bundle that ships the file, and every later growth of the set. Load that
+   file and follow its **Reconciliation** section: match by substance, offer
+   once in one line, import only what the adopter picks, then write the
+   shipped version into the marker file so the offer never repeats until the
+   set changes. Never pre-populate silently.
    Create `skill-observations/last-review-date.txt` containing the literal
    value `never` if it doesn't exist — never write a date into it at setup;
    a date means a review actually ran. If a legacy single-file
@@ -176,24 +166,15 @@ was handled without its reference loaded, log an observation.
    format: the scan stays cheap once hundreds of observations exist.
 
    **This scan does not satisfy the per-skill check** (the grep run each
-   time a skill loads — `references/environments.md`, activation block).
-   Different scope (every skill vs one), different depth (frontmatter vs
-   body), different moment (session start vs the point the skill's rules
-   are applied). Both answer "have I looked at the log?", so running this
-   one discharges the felt obligation and makes the targeted one feel
-   redundant while leaving its function unperformed — awareness of a
-   hundred titles does not survive as recall of the one relevant body
-   twenty tool calls later. Retrieval has to happen where the decision is
-   made.
+   time a skill loads — `references/environments.md`, activation block):
+   different scope, depth and moment. Load `references/observation-log.md`
+   ("Why the session-start scan does not satisfy the per-skill check")
+   whenever the per-skill grep feels redundant because this scan already ran.
 
    **An empty scan in a log known to be non-empty is a broken command
-   until proven otherwise**, never the finding "no relevant observations".
-   Count the files independently of the parse — a literal path, not the
-   variable the loop uses — and halt if files exist but nothing parsed.
-   Re-derive every path inside the same tool call: shell state does not
-   carry between calls in most harnesses, and a path variable that
-   silently resolves to empty turns a filter into a match-nothing glob
-   rather than an error.
+   until proven otherwise** — the snippet's guard halts on it. When the guard
+   fires, or before adapting the snippet, load `references/observation-log.md`
+   ("An empty scan over a non-empty log is a broken command").
 
    ```bash
    d="[ABSOLUTE PATH]/skill-observations/observation-log"   # the pinned workspace path — re-derive in EVERY call, never relative to the cwd; run under bash, not sh
@@ -213,25 +194,20 @@ was handled without its reference loaded, log an observation.
    fi
    [ "$suspect" -gt 0 ] && echo "NOTE: $suspect of $n headers carry an unquoted ': ' in a value — quote those values (File format)"
    printf 'files: %s  parsed: %s  suspect: %s\n' "$n" "$parsed" "$suspect"
-   printf '%s session-start scan: files=%s parsed=%s\n' "$(date +%F)" "$n" "$parsed" \
-     >> "[ABSOLUTE PATH]/skill-observations/checkpoints.log"   # the protocol's own trace
+   printf '%s [%s] session-start scan: files=%s parsed=%s\n' "$(date '+%F %H:%M')" "${PWD##*/}" "$n" "$parsed" \
+     >> "[ABSOLUTE PATH]/skill-observations/checkpoints.log"   # date+time+source: one line per session, not per day
    ```
 
-   **The scan ends in a write, not only a print.** Loading this skill and
-   executing this protocol are two acts, and only the load leaves an
-   artefact in the transcript — which discharges the felt obligation, so a
-   session that loaded and then ran nothing looks from outside exactly
-   like one that did both. The appended `checkpoints.log` line is the
-   protocol's own trace, for the same reason the checkpoint rule is a
-   write: a step whose value lies in happening at a specific moment needs
-   its own entry in the tool record. (Where the workspace prices every
-   write — the exception under "How to Log" — fold this line into the
-   session's first write instead.)
+   **The scan ends in a write, not only a print** — the appended
+   `checkpoints.log` line is the protocol's own trace (in a priced-write
+   workspace, fold it into the session's first write instead). Load
+   `references/observation-log.md` ("The scan ends in a write, not only a
+   print") before removing, moving or replacing that line.
 3. **Review trigger.** Read `skill-observations/last-review-date.txt`. The
    value carries the truth: a date = when the last review actually ran;
    `never` = no review has run yet. A missing file is abnormal (step 1
    creates it) — recreate it with `never`, don't invent a date. If the
-   value is `never` or older than 7 days AND there are OPEN observations:
+   value is `never` or 7 or more days old AND there are OPEN observations:
    in an interactive session, offer the review in one line and proceed
    with the user's task unless they opt in; never gate their work on the
    review. Scale the offer's CONTENT with the backlog, never its
@@ -265,25 +241,25 @@ was handled without its reference loaded, log an observation.
 6. **Targets and staged work.** Resolve each distinct `skill:` value in
    the scanned frontmatter against the installed skill set and mention, in
    one line, any that no longer resolve — a deleted skill can accumulate
-   dozens of observations before a review discovers the target is gone.
+   dozens of observations before a review notices. Say what you resolved
+   against (this checkout, this install): an unresolved target is a fact
+   about where you looked, not about the world.
    If `skill-updates/PENDING.md` lists staged updates, reconcile the list
    before announcing it — installation happens outside any session, so no
    session observes the install itself, and the session that reads the
-   ledger owns its cleanup. For each entry, `diff -rq` the staged copy
-   against the live skill and classify three ways (live legitimately moves
-   on, so a bare "differs" is not a verdict): identical → installed,
-   remove the entry; live strictly newer/superset → superseded, remove
-   with a note; staged content absent from live → NOT installed, keep the
-   entry, surface it, and base any new staging of that skill on the staged
-   copy. Then say "N staged updates awaiting review" in one line.
-7. **First run.** If the log is empty and the project has history
-   (handover or decision docs, commit history, test scripts, an existing
-   CLAUDE.md — which is largely a record of corrections nobody logged),
-   offer a one-off backfill pass over those artefacts. Backfilled entries
-   cite the durable artefact (file and section) in `session_context`
-   instead of a session, and the same-turn immediacy rule is satisfied by
-   one batched write. The pass is one-off; the scheduled review takes
-   over afterwards.
+   ledger owns its cleanup. `diff -rq` each staged copy against live and
+   classify it; a bare "differs" is not a verdict, because live moves on
+   legitimately. The classification and its cases are in
+   `references/weekly-review.md` ("Staged-work reconciliation gate") —
+   load it before judging any entry. Then say "N staged updates awaiting
+   review" in one line.
+7. **First run.** If the log is empty and the project has history (handover
+   or decision docs, commit history, test scripts, an existing CLAUDE.md —
+   largely a record of corrections nobody logged), offer a one-off backfill
+   pass over those artefacts. Backfilled entries cite the durable artefact
+   (file and section) in `session_context` instead of a session, and one
+   batched write satisfies the same-turn rule. One-off; the scheduled
+   review takes over afterwards.
 
 ## When to Observe
 
@@ -310,66 +286,70 @@ agent consistently fails to follow — convert to structural enforcement or
 remove. Full catalogue with examples: `references/signals.md`.
 
 **An unresolved defect is an observation, at a bounded point.** When a
-defect that is not itself the deliverable is consuming the session — one
-more hypothesis, one more root-cause probe — there is a point at which the
-right output is a precise, evidenced problem report, logged as an
-observation (or as an issue where the defect belongs to someone else's
-code) and the deliverables resumed. Set that point before the second
-hypothesis, not after the fifth: a report that names the symptom, what was
-ruled out and the cheapest next test is a legitimate deliverable, and it
-is what the next session or the upstream maintainer needs; the fix found
-in a file the project's own rules protect from unapproved edits was never
-going to ship from this session anyway. This skill does not carry
-debugging methodology — only the observation-capture rule at the boundary.
+defect that is not itself the deliverable takes a second hypothesis, load
+`references/signals.md` ("An unresolved defect is an observation, at a
+bounded point") and log the evidenced problem report instead of a fifth
+probe.
 
 **Do NOT log:** one-off corrections that don't generalise; preferences
 already captured in a skill; tool bugs unrelated to methodology;
-observations that would need proprietary client information to be useful
-in an open-source skill (unless an internal skill is the right home). The
+observations needing proprietary client information to be useful in an
+open-source skill (unless an internal skill is the right home). The
 generalisability test, when unsure: would this still make sense in another
 project, and for another task using the same skill? Does it name a missing
 rule, step or principle rather than fix this task? Is it likely to recur?
 Mostly no → task context, not an observation. Before minting a
-`proposes_skill` name, check the existing candidates and reuse a fitting
-one — independently logged proposals for one skill rarely share a name.
+`proposes_skill` name, reuse a fitting existing candidate — independently
+logged proposals for one skill rarely share a name.
 
 **Check for a restatement before writing.** Before creating the file,
 list the open observations that name the same target skill (the scan at
-session start already holds their titles; otherwise
-`grep -l "skill:.*<skill>" observation-log/*.md`) and read those titles.
-If the finding is the same one restated — the same rule, the same
-failure shape, a different example — extend the existing entry instead:
-append the new instance to its body and add the session to its
-`session_context`, editing that one file. Duplication is only visible in
-aggregate; measured on one log, roughly forty of ninety-one open entries
-were one finding restated, and a dozen separately minted skill proposals
-described two skills. A near-duplicate costs a capture every session and
-a triage every review, and adds nothing the first entry did not.
+session start already holds their titles; otherwise `find observation-log
+-name '*.md' -exec grep -l "skill:.*<skill>" {} +`) and read those titles.
+If the finding is the same one restated — the same rule, the same failure
+shape, a different example — extend the existing entry instead: append the
+new instance to its body, add the session to `session_context`, edit that
+one file. Duplication is only visible in aggregate (measured on one log:
+roughly forty of ninety-one open entries were one finding restated), and a
+near-duplicate costs a capture every session and a triage every review.
 
-**Validate the target at write time.** A name in `skill:` must be a skill
-that exists now; if it doesn't, the observation proposes a skill instead.
-Checking is cheap at write time and expensive forty entries later.
+**Validate the target at write time.** `skill:` names a skill that exists
+now. If the right home is not a skill — an instructions file, a memory
+note, the register a routine reads — put that path in `target_file:`
+instead of mapping the entry onto the nearest skill; if the skill does not
+exist yet, use `proposes_skill:`.
 
 **Check the target's siblings at write time, and record that you did.**
-Libraries accumulate *families* — several skills implementing one
-methodology for different tools, one structure for different subjects, one
-companion pattern for different base skills. An insight found while using
-one member usually applies to the rest, but nothing in the workflow asks,
-so `skill:` collapses to a single entry and the family silently diverges.
 Before writing, resolve the target against the family registry
-(`skill-observations/skill-families.md`; spec, coherence models and the
-no-registry fallback in `references/observation-log.md`), and for each
-sibling either add it to `skill:` or state in the body why it does not
-apply. Fast test: **could this sentence survive having the tool's or
-subject's name removed?** If yes it belongs to every sibling — and a rule
-that declares itself generic inside one artefact ("this applies to any
-file-writing script, not just X") is the cheapest possible propagation
-signal, so treat that phrasing as an automatic multi-skill flag. Then
-record the outcome in the mandatory `siblings_checked:` frontmatter field,
-including the verdict "checked — instance-specific, no propagation": a
-one-entry `skill:` list is byte-identical whether the siblings were
-evaluated or never considered, and only the recorded field makes the
-*absence* of the judgement visible to a review or a drift audit.
+(`skill-observations/skill-families.md`) and for each sibling either add it
+to `skill:` or say in the body why it does not apply. Fast test: **could
+this sentence survive having the tool's or subject's name removed?** If
+yes it belongs to every sibling. Record the outcome in the mandatory
+`siblings_checked:` field, including the verdict "checked —
+instance-specific, no propagation": a one-entry `skill:` list is
+byte-identical whether the siblings were evaluated or never considered,
+and only the recorded field makes the *absence* of the judgement visible.
+Load `references/observation-log.md` ("Skill families and the sibling
+check") for the registry spec, the coherence models and the fallback when
+no registry exists.
+
+**Log your own rule violations.** Breaking a rule that a skill or a project
+instruction file documents is a first-class observation, not an
+embarrassment to move past: it is the only evidence that the rule's
+*enforcement* is too weak, and nobody but the agent can see it. Log it in
+the same turn, and name which protection was actually in play — written
+down, loaded into context, or backed by a checkpoint. The restatement check
+above surfaces the earlier entry when one exists, so the count arrives
+without extra work.
+
+**Second violation of the same rule: stop proposing text.** A rule that has
+failed twice with no intervening `actioned` fix has a protection problem,
+not a wording problem. From the second occurrence the proposed improvement
+must be a structural barrier — a hook that refuses the call, a lint rule, a
+default that makes the wrong path unavailable — never a clearer sentence, a
+bolder warning, or the same rule moved somewhere more prominent. Load
+`references/signals.md` ("Second violation — why a barrier, not a
+rewording") before proposing either.
 
 ## How to Log
 
@@ -378,87 +358,47 @@ never batch mentally for later; the act of writing is the enforcement
 mechanism.
 
 **Mandatory checkpoint after every 3rd completed todo item.** After marking
-the 3rd, 6th, 9th (etc.) item complete, you must **write to disk** — not
-merely ask yourself whether anything is pending. Either write any pending
-observation files, or, if genuinely none have accumulated, append a
-one-line `no observations` acknowledgement to
-`skill-observations/checkpoints.log`. The required action is a concrete
-write; a remembered "ask whether" is not enforcement. The count need not be
-precise; roughly every third completion is the rule. (Exception: where the
-workspace is a shared hosted document store in which every write is priced
-and invalidates other sessions' context, suppress the empty marker and
-keep only the check — see `references/environments.md`.)
+the 3rd, 6th, 9th (etc.) item complete you must **write to disk** — not
+merely ask yourself whether anything is pending. Write any pending
+observation files, or append a one-line `no observations` acknowledgement
+to `skill-observations/checkpoints.log`. The required action is a concrete
+write; a remembered "ask whether" is not enforcement. Roughly every third
+completion is the rule; the count need not be precise. (Exception for a
+priced-write workspace: `references/environments.md`.)
 
 **A denied or failed write is not a read-only log.** Retry once before
-concluding the workspace is unwritable, and try a second tool that reaches
-the same path — a permission classifier can deny one interface while
-allowing another, and consecutive denials from a probabilistic gatekeeper
-are noise, not a wall. Report "failed N times", never "cannot be done",
-unless retries and alternate interfaces are actually exhausted; otherwise
-observations are silently lost for the rest of the session.
+concluding the workspace is unwritable, and try a second tool reaching the
+same path — a classifier can deny one interface while allowing another,
+and consecutive denials from a probabilistic gatekeeper are noise, not a
+wall. Report "failed N times", never "cannot be done", unless retries and
+alternate interfaces are exhausted; otherwise observations are silently
+lost for the rest of the session.
 
-**Deliverable-event flush.** Whenever you take any action by which a unit
-of work is declared complete to a human — presenting a major deliverable
-(a file handed to the user, a deck or PDF render, a staged skill file),
-sending a completion notification, writing a final report or a status
-entry that says "done", or completing a task/todo batch — write any
-pending observation files at that moment, before moving on. These checkpoints already involve a
-tool call; piggy-backing the flush onto them makes the write a side effect
-of work you were doing anyway. (Why both checkpoints are writes rather than
-questions: `references/observation-log.md`.)
+**Deliverable-event flush.** Whenever a unit of work is declared complete
+to a human — a file handed over, a render, a staged skill file, a
+completion notification, a final report, a finished todo batch — write any
+pending observation files at that moment. These checkpoints already
+involve a tool call, so the flush rides on work you were doing anyway.
+(Why both checkpoints are writes rather than questions:
+`references/observation-log.md`.)
 
 **A failed write to an external system is a flush trigger in its own
 right** — a tool result carrying `permission stream closed`, `permission
-denied`, or a harness interrupt. It is not a completion, but it has both
+denied`, or a harness interrupt. Not a completion, but it has both
 properties the flush needs: it is a literal string in the tool record
 rather than a judgement about whether the moment qualifies, and it lands
-at the point where a run has just discovered something worth reporting and
-is therefore most likely to stop instead. Flush before doing anything else
-with the failure, including deciding what to do about it. (Observed: an
-unattended run completed every substantive step, took a permission error
-on its first write to an external system, and ended without a report or a
-logged observation.)
+where a run has just found something worth reporting and is most likely to
+stop instead. Flush before doing anything else with the failure, including
+deciding what to do about it. (Observed: an unattended run completed every
+step, took a permission error on its first external write, and ended with
+no report and no logged observation.)
 
-**Two gaps this pairing still leaves — both observed across full working days
-in which nothing was logged at all.**
-
-1. *A session can contain no todo items whatsoever.* The 3rd-completion
-   checkpoint is bound to ONE tool; work driven entirely through direct tool
-   calls and shell commands never trips it. It is armed only in sessions that
-   happen to use todos, so it is not a safety net that is always present. When
-   a session runs without them, the deliverable flush is the only enforcement
-   left and must be applied deliberately.
-2. *"Is this a major deliverable?" is a self-assessment, and self-assessment is
-   what fails under load.* Prefer triggers unmistakable in the tool record over
-   ones needing a judgement call. The flush point is a **property, not a
-   command list**: any action by which a unit of work is declared complete to
-   a human. A deploy, release, publish, or push qualifies — but so does a
-   completion notification, a final report, or a status file set to "done".
-   Each is a concrete tool call, as hard a trigger as a completed todo, and it
-   reliably marks the end of a unit of work where insights have accumulated.
-   A command list cannot be the definition: it inherits the shape of the
-   sessions it was derived from and is silently inert in any session that
-   declares completion through other tools — no deploy and no version control
-   does not mean no completions.
-
-The rule behind both: an enforcement trigger must hang on an event objectively
-visible in the tool record, never on the agent noticing that a moment qualifies. Visibility is
-necessary, not sufficient: a trigger's pattern is a claim about the future tool
-record, so before it counts as armed, run the literal event string the project
-actually produces through it as a positive control, and one known non-event
-from the real tool record as a negative control — never invented examples,
-which sample the author's model of the input, the same model that produced
-the gap. Record both results next to the trigger. (Observed: a reminder hook
-whose six patterns were derived from what the deploy script does internally
-never matched the command the project actually types to run it, and had been
-inert on its own target since installation; the same day it fired on a
-read-only command whose test string merely contained a signal word.)
-And a counter bound to a single tool is silently inert in every session that does
-not use it — such triggers always need a second, independent path. Nor may a
-trigger pre-empt a delivery decision a later layer already owns ("the recipient
-is right there, no need to send"): fire the action and let the owning layer
-suppress it — a suppressed send leaves a trace in the tool record, an unsent one
-leaves nothing.
+**Two gaps this pairing still leaves:** the 3rd-completion checkpoint is
+inert in a session using no todos, and "is this a major deliverable?" is a
+self-assessment — so the deliverable flush is the only enforcement left
+and must be applied deliberately. Before adding or changing any
+enforcement trigger, load `references/observation-log.md` ("Two gaps the
+checkpoint pairing still leaves — and the rule behind both").
 
 **Id and filename.** Each observation is `NNNN-short-slug.md` (zero-padded
 id + a kebab-case slug from the title). The id is the highest of three
@@ -479,12 +419,12 @@ seen=$(find "$d" -maxdepth 1 -name '*.md' -print0 | { n=0   # -print0/-d '': nev
     n=$(( n + 1 ))
     hdr=$(awk 'NR==1 && /^---[[:space:]]*$/ {fm=1; next}
                fm && /^---[[:space:]]*$/ {exit} fm' "$f")
-    case $hdr in
-      *"status: actioned"*|*"status: declined"*|*"status: superseded"*) ;;
-      *) continue ;;
+    case $hdr in   # patterns parenthesised: required inside $( ) on bash 3.2
+      (*"status: actioned"*|*"status: declined"*|*"status: superseded"*) ;;
+      (*) continue ;;
     esac
     r=$(printf '%s\n' "$hdr" | sed -n 's/^resolved:[[:space:]]*//p' | head -1)
-    case $r in [0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]) ;; *) continue ;; esac
+    case $r in ([0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]) ;; (*) continue ;; esac
     [ "$r" != "$today" ] && \
       [ "$(printf '%s\n%s\n' "$r" "$today" | sort | head -1)" = "$r" ] && \
       mv "$f" "$d/archive/"
@@ -505,66 +445,34 @@ leading-zero number as octal, so `$(( 0105 + 1 ))` yields 70, and a
 prefix containing an 8 or 9 errors out.
 
 The guard line distinguishes "the log says zero" from "I could not read
-the log": a command that fails to empty rather than to error would
-otherwise propose id 1 in a populated log. The sweep carries the same
-guard in its own right — it counts the files it actually examined and
-halts if that count is zero while `find` reports files present. An
-archival loop that never enters its body moves nothing and exits
-successfully, so without the count "nothing was due for archival" and
-"the loop never ran" are the same output. A new file never touches another entry's bytes, so it cannot truncate,
-overwrite or renumber anyone else's work — provided it is a new file. If
-two parallel sessions pick the same id and different slugs, two files
-share a number — harmless; the next review renumbers one and logs a
-meta-observation. If they pick the same id and the same slug (two
-sessions logging the same finding at the same moment), the path is
-identical and the second writer would silently replace the first, which is
-why the snippet refuses an existing path and creates the file under
-`noclobber` — write the body only after that create succeeds, and on a
-collision re-derive the id rather than overwrite.
+the log", the sweep's own count does the same for the archival loop, and
+the `noclobber` create refuses an existing path — write the body only after
+that create succeeds, and on a collision re-derive the id. Load
+`references/observation-log.md` ("The guard line, the sweep's count and the
+noclobber create") when any of the three fires.
 
 **Run the snippet immediately before EVERY write, including the first and
-only one of a session.** Having already read the log directory earlier for
-some other reason — the session-start frontmatter scan, a grep for
-observations naming the skills in use, a status check — does not substitute
-for it, and is the state in which skipping feels most reasonable. A filter
-and a maximum are different questions over the same data, and the answer to
-one is never evidence about the other; no ad-hoc listing reads `archive/`
-or `.id-floor`, which are two of the three inputs and the reason the
-command exists. If a collision happens anyway it is harmless but should be
-fixed on discovery: derive a correct id, `mv` the file to that prefix, and
-edit its `id:` frontmatter field to match.
+only one of a session** — an earlier read of the log for any other purpose
+is not a substitute. Load `references/observation-log.md` ("Run the snippet
+immediately before every write") when skipping it feels reasonable, or when
+two files turn out to share an id.
 
-**Batch writes: resolve each id at its own write time.** When logging more
-than one observation in a session that may overlap a scheduled review or
-another writer, run the id snippet before EACH file — never pre-compute a
-range and hardcode sequential numbers into a batch. A batch append is N
-separate races, not one; pre-baked numbers collapse N independent
-max-checks into a single stale read (observed: a hardcoded id collided
-with one a parallel review issued between the check and the write).
+**Resolve each id at its own write time** — run the snippet before EACH
+file, never pre-compute a range, and put the value it printed into both the
+filename and the `id:` field. Load `references/observation-log.md`
+("Resolve each id at its own write time") before batching or parallelising.
 
 **Every instrument gets the same guard: an empty or zero result is a
 claim about the instrument until an independent probe shows the
-population is empty.** `SCAN COMMAND BROKEN` and `ID COMMAND BROKEN` are
-two instances of one rule, not two rules — a frontmatter scan, an id
-derivation, a status grep, a count in a hook, a query in a script all
-report on two possibilities at once (the data is absent, or the question
-never got asked), and only the second is a defect that a "0" conceals.
-So the guard is a property every new instrument arrives with, never a
-line added after its first silent failure: pair each number-or-list
-producing command with a second count derived by a different means from
-a literal path, and halt on the disagreement. A guard enumerated per
-snippet is unguarded for the next snippet by construction; a guard stated
-as a property of instruments covers the one nobody has written yet.
+population is empty.** Load `references/observation-log.md` ("Every
+instrument gets the same guard") before writing any new scan, count, grep
+or query over the log.
 
 **A structural probe that comes back empty where content existed before is
-a stop signal, not a create.** If the directory or file you logged to
-earlier in the session is suddenly missing, or the id check returns empty
-in a log you know is populated, HALT and re-probe the structure (is there
-an `observation-log/`? a `log.md.migrated`?) — a parallel session may have
-migrated or reorganised the storage. Never let an append silently recreate
-a missing target: that converts a migration signal into corruption
-(observed: a stale session recreated the retired `log.md` with a fresh
-"Observation 1" after the per-file migration renamed it).
+a stop signal, not a create** — HALT and re-probe; never let an append
+recreate a missing target. Load `references/observation-log.md` ("A
+structural probe that comes back empty is a stop signal") before writing
+anything after such a probe.
 
 **File format.** YAML frontmatter (the metadata every scan reads) followed
 by the Issue → Improvement → Principle body. **The frontmatter is mandatory;
@@ -585,6 +493,8 @@ skill: [skill-a, skill-b]        # existing skills this improves — always a
 proposes_skill: []               # new skills this argues for, by working
                                  # name; an observation can fill either
                                  # list or both
+target_file: []                  # when the right home is not a skill at all:
+                                 # the path the fix will be written to
 siblings_checked: "family-name: a, b — shared, both added"
                                  # MANDATORY, never blank: the family name,
                                  # the members evaluated and the verdict —
@@ -613,49 +523,23 @@ section or rule; for new skills, scope and key components.]
 **Every prose value is double-quoted.** `title`, `siblings_checked`,
 `area`, `session_context`, `resolution`, `parked_until` and `reference`
 carry free text, and free text contains `: ` as the common case, not the
-exotic one ("resolution: Actioned: principle #8 extended…"). Unquoted,
-that is invalid YAML: the frontmatter still extracts, so nothing in the
-scan notices, but every consumer that PARSES it — a review reading
-`status`, a hook counting `skill:` — throws on the file. Measured on one
-live log at last verification: 27 of 292 files unreadable, 25 of them in
-`resolution:`, every one written by following the earlier unquoted
-template. Quote the value (`"…"`, with inner `"` written as `\"`), keep
-lists in `[]` with bare kebab-case names, and leave dates and status
-words bare. The scan reports suspect headers — a value with an unquoted
-`: ` — beside the file count, so a log drifting into this state announces
-itself at session start.
+exotic one. Unquoted, that is invalid YAML: the frontmatter still
+extracts, so the scan notices nothing, but every consumer that PARSES it
+throws on the file. Quote the value (`"…"`, inner `"` as `\"`), keep
+lists in `[]` with bare kebab-case names, leave dates and status words
+bare. Load `references/observation-log.md` ("Frontmatter fields") for how
+far this drifts unnoticed and what the scan's suspect count means.
 
-**`parked` means decided, not pending.** Use it when an observation is sound
-but cannot be acted on until an external precondition is met — the scheduled
-task that produced it is disabled, the tool it describes is out of use, a
-dependency has not landed. A parked entry is OUT of the work queue: reviews
-must not re-escalate it, and the decision belongs in `status:`, not in a
-free-text note beside a `status: open` (a note nothing classifies on leaves
-the entry in the queue and it gets re-raised at every review). It is not
-resolved either, so it never archives — archival needs a resolved status plus
-a `resolved:` date. It stays in `observation-log/` indefinitely until either
-its `parked_until:` condition is met — set it back to `open` and queue it — or
-it is genuinely resolved. `parked_until:` is mandatory whenever status is
-`parked`: one line stating the condition, phrased so a later session can
-actually answer whether it has happened — and checked, before parking, for
-whether it can happen at all: ask who or what would have to act to meet the
-condition, and whether that party has a reason to do exactly the opposite
-(sometimes as the intended effect of the very thing the entry is waiting to
-observe). If the condition cannot occur, the entry is not waiting: close it on
-the substitute evidence available today, or park it on a trigger that can
-actually fire.
+**`parked` means decided, not pending:** sound but blocked on an external
+precondition, out of the work queue, never archived, `parked_until:`
+mandatory and naming a condition that can actually occur. Load
+`references/observation-log.md` ("The `parked` status — decided, not
+pending") before setting, reviewing or unparking a parked status.
 
-**Context preservation:** if an observation depends on session-local data
-(uploads, API output), save that context into the workspace first and set
-`reference:` to its path — an observation whose evidence dies with the
-session is incomplete. The pointer must survive the handoff too:
-`reference:` — like any pointer that hands work to a later session — must
-name a durable path, one that outlives the session and a reboot and that
-a session other than this one can resolve. A session-scoped temp
-directory fails both tests, and a role name ("the scratchpad", "my
-notes") is not a path at all. Such a pointer cannot fail at write time,
-only at read time, when its author is no longer there to repair it — a
-pointer a fresh session cannot follow is not preservation.
+**Context preservation:** if an observation depends on session-local data,
+save it into the workspace first and set `reference:` to a durable path a
+fresh session can resolve. Load `references/observation-log.md` ("Context
+preservation — the `reference:` field") when setting `reference:`.
 
 **Confidentiality at logging time:** for `type: open-source` observations,
 the Issue/Improvement fields may reference specifics for context, but the
@@ -671,20 +555,19 @@ never batch-rewrite the directory. Archival is a plain `mv` (below).
 ## Referencing Observations
 
 Cite an observation by the `id` field in its frontmatter (= the `NNNN-`
-filename prefix). Never cite a `grep -n` line number as if it were the id —
-search-tool line numbers are positional metadata, not identifiers. A cited
-id must fall within the range that exists across `observation-log/`,
-`archive/` and `.id-floor`; a number far outside it is almost certainly a
-line number misread as an id.
+filename prefix), never a `grep -n` line number — those are positional
+metadata, not identifiers. A cited id must fall inside the range across
+`observation-log/`, `archive/` and `.id-floor`; one far outside it is
+almost certainly a line number misread as an id.
 
 ## Taxonomy (quick version)
 
 **Open-source** — client-agnostic, methodology-driven, useful to other
 practitioners. **Internal** — contains user/client/project specifics or
 personal preferences. Default to open-source when it could go either way,
-stripping specifics. The boundary is also a confidentiality boundary, and
-the two errors are not symmetric: over-classifying as internal costs only
-reach, under-classifying can leak — when genuinely uncertain, prefer
+stripping specifics. The boundary is also a confidentiality boundary and
+the two errors are not symmetric — over-classifying as internal costs only
+reach, under-classifying can leak — so when genuinely uncertain, prefer
 internal and promote later. Full requirements (attribution, licensing,
 structure): `references/skill-authoring.md`.
 
@@ -694,12 +577,11 @@ Archival is not a preamble duty to remember before writing — it rides
 inside the id-derivation snippet above: the same command that computes the
 next id first `mv`s already-resolved files from `observation-log/` to
 `observation-log/archive/`, so the sweep runs whenever an id is issued and
-cannot be skipped without failing the write. (The prose form of this rule
-— "on every write, first archive" — under-fires: a duty attached as a
-preamble to another action inherits none of that action's enforcement; if
-a step must always accompany a tool call, put it inside the same command,
-not beside it in prose.) The scheduled review archives too, at its Step 1,
-as an independent backstop. "Already resolved" is read from the file's
+cannot be skipped without failing the write. (The prose form — "on every
+write, first archive" — under-fires: a duty attached as a preamble to
+another action inherits none of that action's enforcement. If a step must
+always accompany a tool call, put it inside the same command.) The
+scheduled review archives too, at Step 1, as an independent backstop. "Already resolved" is read from the file's
 own frontmatter: `status: actioned`, `declined` or `superseded` AND a
 `resolved:` date **before today**. Files resolved today stay until the next
 day, whichever session resolved them — the grace period lives in the file,
@@ -717,24 +599,11 @@ suggested type; ask which to act on. Surface earlier when an observation
 needs user input to be complete, when a skill is actively producing wrong
 output, or when observations cluster on one skill.
 
-**Deferral wears a second disguise: not a promise, but an argument.** "Let's
-wait until this has seen a few days of real use", "we should gather more data
-first" — this reads as diligence, which is exactly why it goes unchallenged,
-including by the person saying it. It is not an announcement, so a rule about
-executing rather than announcing does not catch it. So before writing *any*
-"later" into a recommendation, name two things: **which specific observation
-would change the decision, and when it could realistically arrive.** If you
-cannot name one, the evidence is either already conclusive (act now) or waiting
-adds nothing (act now). A criterion you *can* name must also be able to occur:
-ask who or what would have to act for it to fire, and whether that party has a
-reason to do exactly the opposite — a deferral whose criterion cannot occur is
-indistinguishable from a silent drop, only more expensive, and it looks better
-than a vague one because it is precisely phrased. Then ask what the delay
-costs — if a known-defective
-state stays live meanwhile, the burden of proof is on deferring, not on acting.
-A deferral is a decision and needs the same justification as acting; "more
-evidence would be better" is not one, because the question is whether more
-evidence could change the OUTCOME.
+**Deferral wears a second disguise: not a promise, but an argument** ("let's
+gather more data first"). Before writing any "later" into a
+recommendation, load `references/signals.md` ("Deferral disguised as
+diligence") and name which specific observation would change the decision
+and when it could arrive.
 
 **Default to log-and-defer.** Surfacing an observation is not an invitation
 to act on it: state that it is logged for the next review, and stop.
@@ -742,6 +611,21 @@ Reserve in-session application strictly for the triggers under "Acting on
 Observations". Do NOT routinely offer a binary "apply now vs leave for next
 review" choice; for users who run regular reviews that offer is unwanted
 friction, and if a user has said they always defer, suppress it entirely.
+
+**Log-and-defer means the observation is the sole carrier of the change**,
+and applying an insight to the work in front of you is not the same act.
+Letting an open observation change what you do in THIS task is the point of
+the log. Writing the rule anywhere a later run reads it — a state file the
+skill loads (registry, dossier, config note), a prompt, a handoff doc, a
+project instruction file — is acting on it. The test: **does it leave a
+durable change outside the observation log?** The disguise is a bridge —
+"the rule has to live somewhere until the review runs". It does, and that
+somewhere is the observation; a parked copy has no update path, so when the
+review edits the skill the next run reads both. A state file that genuinely
+needs to point at the rule gets one line naming the owner and the pending
+change, never a restatement. A harness's skill-save control is the sharper
+version: it installs a copy rather than parking one, possibly over what a
+parallel review has staged. See "Acting on Observations".
 
 **Self-check before surfacing:** observations were logged throughout the
 whole session (including discussion phases); logged silently; each follows
@@ -759,19 +643,37 @@ skill", "act on observation #N"); (3) in-session correction when a skill is
 producing wrong output the user should know about. Otherwise: log, don't
 act.
 
-**Read the full body before resolving, dismissing, fixing, or citing.** A
-tracked item's title (observation, GitHub issue, ticket) is an index entry,
-not its content — it compresses away the failure story, the reporter's
-context, and often the proposed fix. Dismissal is the path with no
-downstream checkpoint: a resolved or cited item gets reviewed later, a
-dismissed one silently disappears. Harvest fix designs from issue bodies —
-reporters frequently include the correct solution, which also settles
-attribution. When a parallel agent logs a finding that appears to duplicate
-your own, diff the two bodies, not the titles: two entries about the same
-mechanism can carry opposite operational conclusions, and the second is
-often the refinement, not the echo. Apparent agreement suppresses
-verification more effectively than disagreement does, so this rule binds
-hardest exactly where it feels least necessary.
+**An outcome-level ask is not trigger (2).** "Make this part of the
+workflow", "make sure it happens every week", "make sure this is included
+going forward" name an outcome, not a mechanism. They are satisfied by
+logging the observation and saying it will be applied at the review —
+trigger (2) needs the user to name the change and the moment ("update skill
+X now", "act on observation #N"). A request about an outcome is never a
+licence to choose the change path: the workspace's own path — log, review,
+stage, install — wins over any route that reaches the installed skill
+sooner.
+
+**A harness's own skill-proposal or skill-save control is an install path,
+not a staging path.** Where the environment offers to save or propose a
+skill from inside the conversation — and its tool description may well say
+that is how a skill change is delivered — that control writes the installed
+copy; it produces nothing under `skill-updates/`. Never use it in a
+workspace that stages there. And before any in-session skill change, check
+the staging manifest (`skill-updates/PENDING.md`) and today's
+`skill-updates/<date>/` for the same skill: a review running in parallel
+may already have staged it, built on the live file plus other changes.
+Installing a conversation-side copy over that drops those changes, and
+installing the review's copy afterwards silently reverts the one the
+control installed — a shortcut taken while another session stages the same
+artefact turns a one-line rule into a merge conflict the user has to catch.
+
+**Read the full body before resolving, dismissing, fixing, or citing** — a
+title is an index entry, not content. **A change you did not make resolves
+an observation point by point, never title against title:** list the points
+the body makes, name the line of the fix covering each, and any point
+without a line stays open on a carrier. Load
+`references/observation-log.md` ("Read the full body before resolving,
+dismissing, fixing or citing") before any resolve, dismiss or cite step.
 
 When acting: small, clearly-additive, low-risk changes (a new rule, a
 clarification, a factual fix) may be applied without waiting for the next
@@ -791,17 +693,20 @@ in-session must have its frontmatter updated — `status: actioned`,
 ends. The work and the bookkeeping are two acts, and the second is the one
 that gets dropped; a stale `open` entry then invites redoing finished work
 over a section that has since moved on. The write is the enforcement,
-exactly as it is for logging.
+exactly as it is for logging. **"Acted on" includes a fix that lands as
+ordinary work** — the rule written into the instructions file, the code
+corrected — with the observation not in mind; and a later session finding
+the remedy already in place closes the entry the same way. Neither looks
+like acting on an observation, which is why both are missed (measured on
+one first review: 10 of 27 entries were already applied while `open`).
 
 **Acting on only a subset of a multi-skill observation's `skill:` list?**
 Neither plain move is honest — left `open`, the finished portion gets
 re-applied by another session; marked `actioned`, the unfinished portions
-silently leave every future queue. Use the carrier pattern: note the claim
-in the body while the partial work is in progress, then mark the
-observation `actioned` with a `resolution:` naming which portions were
-applied, and log a carrier observation holding the remainder with only the
-outstanding skills in its `skill:` list. Full protocol:
-`references/observation-log.md`.
+silently leave every future queue. Use the carrier pattern: mark the
+observation `actioned` with a `resolution:` naming the portions applied,
+then log a carrier holding the remainder, with only the outstanding skills
+in its `skill:` list. Full protocol: `references/observation-log.md`.
 
 ## Quick Reference
 
@@ -816,6 +721,7 @@ outstanding skills in its `skill:` list. Full protocol:
 | Citing an observation number? | From the `id:` frontmatter field (= the `NNNN-` filename prefix); never a `grep -n` line number; sanity-check against the known id range |
 | Open-source or internal? | Default open-source; the boundary is confidential |
 | Small fix or substantial? | Additive → apply directly; restructuring/new skill → `references/skill-authoring.md` |
+| Same rule broken twice? | The fix is a structural barrier (hook, lint, default) — never a third rewording |
 | Changing an observation (status/archival)? | Re-read that one file, edit only its frontmatter, or `mv` it to `observation-log/archive/` — no shared-file rewrite |
 | Upgrading from a single-file `log.md`? | Scripted, once — `references/migration.md` |
 | Weekly review? | Trigger check at session start; procedure in `references/weekly-review.md` |

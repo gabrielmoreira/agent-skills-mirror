@@ -1,7 +1,6 @@
 ---
 name: review-arch
 description: "Conduct a principal-level architecture review of a system, specification, diagram, or set of design decisions. Use when asked to review an architecture, evaluate a design, assess coupling/cohesion, check for anti-patterns, audit system boundaries, or produce an Architecture Review Board (ARB) style verdict. Also use when someone says 'review this architecture', 'is this design sound', 'what's wrong with this topology', 'evaluate these tradeoffs', or 'audit this system'. Produces a structured verdict organized around critical risks, significant concerns, observations, strengths, and open questions, grounded in evidence from the codebase and cited against established methodology (ATAM, ISO/IEC 25010, documented anti-pattern catalogues). Do NOT use for line-by-line code review, spec-vs-implementation verification, or PR-level correctness checks. Name the system, spec, or design to be reviewed in the arguments; the skill does not infer the target from the conversation."
-context: fork
 metadata:
   author: Serghei Iakovlev
   version: "1.2"
@@ -39,7 +38,7 @@ Before evaluating anything, establish:
 
 If the review input is a codebase or specification, also read:
 
-- `CLAUDE.md`, `AGENTS.md`, `GEMINI.md`, `CURSOR.md`, `README.md`, `ARCHITECTURE.md`, `CONTRIBUTING.md`
+- `AGENTS.md`, `README.md`, `CONTRIBUTING.md`
 - `docs/` or `doc/` directories, especially ADR / `adr/` / `docs/adr/` entries
 - Build and dependency manifests (`package.json`, `go.mod`, `Cargo.toml`, `pyproject.toml`)
 - Runtime configuration (`.env.example`, `docker-compose.yml`, `Makefile`, `k8s/`)

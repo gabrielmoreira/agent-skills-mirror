@@ -140,16 +140,34 @@ The still the clip was made from settles it. `video-frames --spill` takes:
 | Mode | What is corrected |
 |---|---|
 | `small` (default) | only small key-tinted clusters — the still pipeline's rule, byte-identical output |
-| `full` | every key-tinted cluster, whatever its size (colour only: alpha is unchanged) |
-| `auto` | keys `--reference` (the still) with the same matte and counts its strongly key-tinted pixels; a share ≤ 0.5 % means the still has no key-coloured material of its own → `full`, otherwise `small` |
+| `full` | key-tinted clusters of any size, including faint tints (colour only: alpha is unchanged) |
+| `auto` | keys `--reference` (the still) with the same matte and counts its interior key-hued pixels at the same threshold used by `full`; a share ≤ 0.5 % means the still has no key-coloured material of its own → `full`, otherwise `small` |
 
 `video-set` passes `--spill auto` with each item's `canvas.png` as the reference (override
 with `--spill small|full`), so a green-free character loses the reflections while a
 character that *is* green keeps its colour. The decision and its numbers are recorded in
 the frames report under `spill`. The correction is the engine's own `despill_color` blend
 model (observed = (1−k)·subject + k·key, solved for the subject), so colours without key
-tint are untouched. Faint tints whose cluster never crosses the strong-tint bar are left
-as they are.
+tint are untouched. `small` keeps the conservative tint threshold of 40; `full` lowers it to 8.
+For `full`, a key hue requires every keyed channel to exceed every non-keyed
+channel: `G − max(R, B)` for green, `min(R, B) − G` for magenta. This same
+excess selects pixels for correction and drives the `auto` reference check, so yellow/cyan
+are not mistaken for green, or red/blue for magenta. The average-channel tint
+metric remains unchanged in `small` and the edge matte.
+
+The blend fraction still uses the linear average-channel tint, not hue excess.
+Full correction recovers mean brightness but does not amplify colour differences
+within the keyed or non-keyed channel group. Otherwise a small red/blue imbalance
+can become a strong secondary cast when much of the observed colour is key light.
+This is bounded colour recovery, not reconstruction of the original material:
+blue or purple already present without the key hue remains unchanged.
+
+The `auto` reference test discounts dark pixels (all channels below 64) in the
+matte's 4-pixel edge-unmix band. Such contamination along an antialiased outline
+is weak evidence of an intentional material. Bright green/magenta accents still
+count even on an edge. The report names the metric, band and dark-only policy.
+Genuine key-coloured material above the 0.5% share still keeps the conservative
+mode. Tiny accents or dark, edge-only material can fall below that reference test; use `--spill small` when preserving those is essential.
 
 ## 3b. Canvas shape for raised limbs and wide costumes
 
@@ -172,8 +190,22 @@ was 17). `video-loop` therefore:
 2. reads the **global period profile** `P[L] = mean_j |f[j] − f[j+L]|` and takes the
    *smallest* local minimum that is within 15 % of the deepest one — exact repeats dip
    again at 2× and 3× the period, the half-period look-alike dips noticeably less;
-3. only then picks the **start** with the best seam for that period (± 1 frame):
-   `seam = D[i][i+L]` over the mean adjacent distance inside the cycle.
+3. only then ranks **starts** for that period (± 1 frame):
+   `seam = D[i+L-1][i]` over the mean adjacent distance inside the cycle.
+   Penalise distance from 1 in log space, so a repeated pose at the wrap does
+   not win just because its distance is small. For walks and runs, also compare
+   corresponding frames one cycle apart in the neighbourhood of the cut: a
+   quarter-cycle on either side, clipped to available source pairs. Add their
+   mean distance divided by the candidate's mean adjacent distance to the wrap
+   penalty. This favours a coherent repeating region over an accidental endpoint
+   match, without preferring an early or late start. Other states keep wrap-only
+   ranking. `cycle.selection` records the half-open source-pair range, repeat
+   error, normalised error, wrap penalty and combined score; `next_frame_distance`
+   retains the single-frame diagnostic. Fixed cuts do not use this ranking.
+
+This neighbourhood check measures temporal consistency, not anatomical leg
+identity. A consistently repeated malformed motion can still score well; visual
+review remains necessary when correct limb alternation matters.
 
 Windows come from the state profile (`STATE_PROFILES`). **Gait states take theirs in
 seconds**, because a stride is a fact about the body, not about the clip length: walk
@@ -191,6 +223,16 @@ The ceiling is a bound in seconds rather than simply "half the clip" because the
 periodicity gate measures the period's dip against the profile mean over the whole
 window, and a ceiling that grows with the clip inflates that mean until a single hop
 in a jittering stand passes as a walk.
+
+For gait states, a duration above the floor is not proof that both phases are present.
+If a local minimum near twice the chosen period is within the existing 25 % repeat-error
+tolerance and still passes the periodicity gate, the detector retains the longer candidate
+once, inside the requested window. Near-exact repeats (repeat error at most 10 % of an
+ordinary adjacent step) stay short. This is a conservative response to ambiguous harmonics:
+a genuine short gait may be shown twice, at the same source speed. It does not identify
+anatomical left/right contacts. The report records `half_period_guard.reason =
+"ambiguous-harmonic"` and `cycle.review_recommended = true`. See [loop review](loop-review.md)
+for the visual review contract and manual overrides.
 
 Gates, all fail-loud: no period (profile flat, `periodicity < 0.15`), loop seam ratio
 above `--seam-max` (2.0), GIF/WebP re-opened and checked (frame count, `loop=0`,
@@ -313,4 +355,3 @@ reported) and `foot_x` (the mean foot column inside every cell), plus the spec l
 `anchor` as `[foot_x, h]` so a scene stands the sprite on its foot line; `video-set`'s
 table row carries `drift_px`. The default stays `none`: existing strips do not change,
 and `drift_px` / `foot_sway_px` are 0 when they were not measured.
-

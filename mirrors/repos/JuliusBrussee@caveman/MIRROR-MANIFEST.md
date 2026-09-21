@@ -192,7 +192,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 131 | ✓ | [`skills/lean-build/SKILL.md`](skills/lean-build/SKILL.md) |
 | 132 | ✓ | [`skills/migration/agents/openai.yaml`](skills/migration/agents/openai.yaml) |
 | 133 | ✓ | [`skills/migration/SKILL.md`](skills/migration/SKILL.md) |
-| 134 | ✓ | [`skills/native-core.md`](skills/native-core.md) |
+| 134 | ✓ | [`skills/native/native-core.md`](skills/native/native-core.md) |
 | 135 | ✓ | [`skills/registry.json`](skills/registry.json) |
 | 136 | ✓ | [`skills/safe-refactor/agents/openai.yaml`](skills/safe-refactor/agents/openai.yaml) |
 | 137 | ✓ | [`skills/safe-refactor/SKILL.md`](skills/safe-refactor/SKILL.md) |

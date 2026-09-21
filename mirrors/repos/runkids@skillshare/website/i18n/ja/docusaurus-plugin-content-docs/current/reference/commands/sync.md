@@ -82,6 +82,18 @@ skillshare sync -p       # 明示的な project mode
 └── ...                             └── local/    (preserved)
 ```
 
+### デフォルトパスが移動した後のクリーンアップ {#project-path-cleanup}
+
+Project の設定はパスではなく target 名を保存するため、target は組み込みのデフォルトパスに従います。ツールがそのデフォルトを変更すると — goose と openhands が `.agents/skills` を採用したときのように — skillshare が以前のディレクトリに書き込んだ Skill が残り、ツールは両方の場所を読み込んですべての Skill を二重に一覧表示してしまいます。
+
+Project sync はそれらを削除します。明示的な `path:` を持たない各 target について、その target のランタイムがあわせてスキャンするディレクトリを調べ、そのうち設定済みのどの target も書き込まないディレクトリから、skillshare が作成したエントリを削除します。自分で作成したフォルダや、project の外を指すシンボリックリンクが変更されることはありません。
+
+```
+→ Cleaned 1 leftover skill(s) from .goose/skills: the default path for 'goose' moved to .agents/skills
+```
+
+target に明示的な `path:` を設定すると、その target はクリーンアップの対象外になります。また `--dry-run` は、何も変更せずに削除される対象をプレビューします。
+
 ---
 
 ## Sync

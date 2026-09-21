@@ -88,7 +88,10 @@ If a prerequisite is missing, guide the user through setup ([references/prerequi
     `review_in_progress`.
 20. **Consume an outstanding review request before making another one.** On
     resume, read the checkpoint/request timestamp and inspect reviews already
-    submitted for that fork head. If the requested review is still pending,
+    submitted for that fork head using `Get-CopilotReviewStatus.ps1`. Exhaust
+    all review/comment pages and all thread cursors; a default 30-row response
+    or a single 100-row page is not complete history. Save request time, fork
+    head, baseline review ID and submitted review ID. If the request is pending,
     preserve `waiting_copilot` and return; do not create duplicate requests. If
     it arrived, process that result before deciding whether another review
     round is needed.
@@ -198,6 +201,7 @@ Auto-detect these at the start of each session with [scripts/Get-ForkConfig.ps1]
 | [Get-ForkConfig.ps1](./scripts/Get-ForkConfig.ps1) | Resolve fork owner/repo/remote and clone path |
 | [Get-PRContext.ps1](./scripts/Get-PRContext.ps1) | Fetch author, association, size, and labels to calibrate Phase 0 |
 | [Request-CopilotReview.ps1](./scripts/Request-CopilotReview.ps1) | Request Copilot as reviewer and poll until the review posts |
+| [Get-CopilotReviewStatus.ps1](./scripts/Get-CopilotReviewStatus.ps1) | Read all review pages and match a saved fork-head/request without making a new request |
 | [Get-UnresolvedCopilotThreads.ps1](./scripts/Get-UnresolvedCopilotThreads.ps1) | Count unresolved Copilot threads (stranded-loop / resume check) |
 | [Get-ReviewResumeState.ps1](./scripts/Get-ReviewResumeState.ps1) | Discover durable branches, review PRs, worktrees, rounds, and unresolved threads across sessions |
 | [Sync-ForkMain.ps1](./scripts/Sync-ForkMain.ps1) | Fast-forward the clone's `main` from upstream and push it to the fork |

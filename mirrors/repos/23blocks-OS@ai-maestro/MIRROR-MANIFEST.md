@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `23blocks-OS/ai-maestro` — 26 default patterns, 26 followed patterns, 36 file(s) materialized.
+Mirror of `23blocks-OS/ai-maestro` — 26 default patterns, 27 followed patterns, 37 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `23blocks-OS/ai-maestro` — 26 default patterns, 26 followed patterns
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 26 |
-| Files         | 36 |
+| Followed pats | 27 |
+| Files         | 37 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -64,6 +64,7 @@ Mirror of `23blocks-OS/ai-maestro` — 26 default patterns, 26 followed patterns
 - `backlog/B002-wterm-and-ws-updates.md`
 - `backlog/B003-option-click-missing-enter.md`
 - `backlog/B004-shell-string-external-command-audit.md`
+- `backlog/B005-listener-network-posture.md`
 - `CONTRIBUTING.md`
 - `docs/WINDOWS-INSTALLATION.md`
 - `docs/QUICKSTART.md`
@@ -99,27 +100,28 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 13 | → | [`backlog/B002-wterm-and-ws-updates.md`](backlog/B002-wterm-and-ws-updates.md) |
 | 14 | → | [`backlog/B003-option-click-missing-enter.md`](backlog/B003-option-click-missing-enter.md) |
 | 15 | → | [`backlog/B004-shell-string-external-command-audit.md`](backlog/B004-shell-string-external-command-audit.md) |
-| 16 | → | [`backlog/F001-shared-agent-filesystem.md`](backlog/F001-shared-agent-filesystem.md) |
-| 17 | → | [`backlog/F002-microvm-agent-deployment.md`](backlog/F002-microvm-agent-deployment.md) |
-| 18 | → | [`backlog/F003-ios-terminal-selection.md`](backlog/F003-ios-terminal-selection.md) |
-| 19 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 20 | → | [`docs/AGENT-COMMUNICATION-ARCHITECTURE.md`](docs/AGENT-COMMUNICATION-ARCHITECTURE.md) |
-| 21 | → | [`docs/AGENT-INTELLIGENCE.md`](docs/AGENT-INTELLIGENCE.md) |
-| 22 | → | [`docs/AGENT-MESSAGING-GUIDE.md`](docs/AGENT-MESSAGING-GUIDE.md) |
-| 23 | → | [`docs/CEREBELLUM.md`](docs/CEREBELLUM.md) |
-| 24 | → | [`docs/CHAT-ARCHITECTURE.md`](docs/CHAT-ARCHITECTURE.md) |
-| 25 | → | [`docs/CONCEPTS.md`](docs/CONCEPTS.md) |
-| 26 | → | [`docs/ECOSYSTEM.md`](docs/ECOSYSTEM.md) |
-| 27 | → | [`docs/NETWORK-ACCESS.md`](docs/NETWORK-ACCESS.md) |
-| 28 | → | [`docs/OPERATIONS-GUIDE.md`](docs/OPERATIONS-GUIDE.md) |
-| 29 | → | [`docs/QUICKSTART.md`](docs/QUICKSTART.md) |
-| 30 | → | [`docs/REQUIREMENTS.md`](docs/REQUIREMENTS.md) |
-| 31 | → | [`docs/SETUP-TUTORIAL.md`](docs/SETUP-TUTORIAL.md) |
-| 32 | → | [`docs/TROUBLESHOOTING.md`](docs/TROUBLESHOOTING.md) |
-| 33 | → | [`docs/USE-CASES.md`](docs/USE-CASES.md) |
-| 34 | → | [`docs/WINDOWS-INSTALLATION.md`](docs/WINDOWS-INSTALLATION.md) |
-| 35 | → | [`README.md`](README.md) |
-| 36 | → | [`SECURITY.md`](SECURITY.md) |
+| 16 | → | [`backlog/B005-listener-network-posture.md`](backlog/B005-listener-network-posture.md) |
+| 17 | → | [`backlog/F001-shared-agent-filesystem.md`](backlog/F001-shared-agent-filesystem.md) |
+| 18 | → | [`backlog/F002-microvm-agent-deployment.md`](backlog/F002-microvm-agent-deployment.md) |
+| 19 | → | [`backlog/F003-ios-terminal-selection.md`](backlog/F003-ios-terminal-selection.md) |
+| 20 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 21 | → | [`docs/AGENT-COMMUNICATION-ARCHITECTURE.md`](docs/AGENT-COMMUNICATION-ARCHITECTURE.md) |
+| 22 | → | [`docs/AGENT-INTELLIGENCE.md`](docs/AGENT-INTELLIGENCE.md) |
+| 23 | → | [`docs/AGENT-MESSAGING-GUIDE.md`](docs/AGENT-MESSAGING-GUIDE.md) |
+| 24 | → | [`docs/CEREBELLUM.md`](docs/CEREBELLUM.md) |
+| 25 | → | [`docs/CHAT-ARCHITECTURE.md`](docs/CHAT-ARCHITECTURE.md) |
+| 26 | → | [`docs/CONCEPTS.md`](docs/CONCEPTS.md) |
+| 27 | → | [`docs/ECOSYSTEM.md`](docs/ECOSYSTEM.md) |
+| 28 | → | [`docs/NETWORK-ACCESS.md`](docs/NETWORK-ACCESS.md) |
+| 29 | → | [`docs/OPERATIONS-GUIDE.md`](docs/OPERATIONS-GUIDE.md) |
+| 30 | → | [`docs/QUICKSTART.md`](docs/QUICKSTART.md) |
+| 31 | → | [`docs/REQUIREMENTS.md`](docs/REQUIREMENTS.md) |
+| 32 | → | [`docs/SETUP-TUTORIAL.md`](docs/SETUP-TUTORIAL.md) |
+| 33 | → | [`docs/TROUBLESHOOTING.md`](docs/TROUBLESHOOTING.md) |
+| 34 | → | [`docs/USE-CASES.md`](docs/USE-CASES.md) |
+| 35 | → | [`docs/WINDOWS-INSTALLATION.md`](docs/WINDOWS-INSTALLATION.md) |
+| 36 | → | [`README.md`](README.md) |
+| 37 | → | [`SECURITY.md`](SECURITY.md) |
 
 ---
 

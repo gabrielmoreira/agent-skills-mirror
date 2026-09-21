@@ -298,6 +298,16 @@ The curl registry is exactly:
   `curl_download_body_stall`, `curl_download_cancel`,
   `curl_download_close_reopen`.
 
+Curl download scenarios use the outer scenario watchdog for TLS setup, baseline
+transfers, RPCs, and recovery. Only the second asset transfer receives the real
+libcurl one-second low-speed guard, retaining the original `(0.5, 0.5)` pair's
+one-second fault budget. Stall, cancellation, and close/reopen scenarios must
+observe the server's body gate before checking the outcome. This prevents a busy
+Windows runner's initial TLS handshake from substituting a connection timeout
+for the intended body fault. The slow-TLS integration regression deliberately
+delays the handshake past the former connect deadline and still requires valid
+baseline bytes, fault handling, same-client recovery, and complete cleanup.
+
 Fixture provenance remains in the owning module and its unit tests. Principal
 sources are `test_source_upload_pipeline.py`, Android source proto/upload tests,
 `test_artifact_downloads_coverage.py`, `test_prepared_artifact_downloads.py`,

@@ -143,13 +143,14 @@ When the plan annotates a todo with `Recommended task executor category:`, follo
 | `visual-engineering` (medium) | frontend, UI/UX, styling, animation |
 | `writing` (low) | documentation and prose |
 | `git` (low) | git operations |
-| `deep` (high) | hairy debugging, research-heavy or subtle cross-module work |
+| `deep-low` (medium) | hairy debugging, research-heavy or subtle cross-module work the worker can settle from what it reads |
+| `deep-high` (high) | the same, when the central decision cannot be settled from evidence: a trade-off, a cross-package contract, or correctness argued from invariants |
 | `ultrabrain` (high) | ONE genuinely hard, logic-heavy problem — hand it the goal, not step-by-step instructions |
 
 Sizing is a two-branch decision made per checkbox, before dispatch:
 
 - **Splittable work splits.** When the checkbox decomposes into independent pieces, dispatch them as a swarm of `quick`/`unspecified-low` workers in ONE parallel burst — many small cheap workers in parallel beat one large delegation.
-- **Cohesive hard work stays whole.** When splitting would sever shared reasoning (one algorithm, one migration, one subtle bug), send the WHOLE problem to `deep` or `ultrabrain` as ONE delegation. Never force-split work whose parts share one insight.
+- **Cohesive hard work stays whole.** When splitting would sever shared reasoning (one algorithm, one migration, one subtle bug), send the WHOLE problem to `deep-low`, `deep-high` or `ultrabrain` as ONE delegation. Never force-split work whose parts share one insight.
 
 Each sub-task message must include:
 

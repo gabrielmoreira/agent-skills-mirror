@@ -66,7 +66,9 @@ Resolution order is fixed for both images and videos: **the Grok subscription
 login wins**, even when `XAI_API_KEY` is set. `GROK_HOME` relocates `~/.grok`.
 Only when no login file exists can the configured API key use console credits.
 An expired, unreadable, corrupt or API-rejected login stops the request; it never
-switches to API credit. An empty API key is ignored when the login is usable,
+switches to API credit. A clip that does leave on `XAI_API_KEY` says so on stderr
+before it uploads — one line per submitted job, naming the duration and resolution
+it is billed on; the subscription route stays silent. An empty API key is ignored when the login is usable,
 but is an error when no login exists. With neither credential, the run stops
 with both setup paths spelled out.
 

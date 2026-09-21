@@ -82,6 +82,25 @@ skillshare sync -p       # Explicit project mode
 └── ...                             └── local/    (preserved)
 ```
 
+### Cleanup after a default path moves {#project-path-cleanup}
+
+A project config stores target names, not paths, so a target follows its built-in
+default. When a tool changes that default — as goose and openhands did when they
+adopted `.agents/skills` — the skills skillshare wrote to the old directory stay
+behind, and the tool reads both locations and lists every skill twice.
+
+Project sync removes them. For each target without an explicit `path:`, it looks
+at the directories that target's runtime also scans, and in any of them that no
+configured target writes to, it removes the entries skillshare created. Folders
+you made yourself and symlinks pointing outside the project are never touched.
+
+```
+→ Cleaned 1 leftover skill(s) from .goose/skills: the default path for 'goose' moved to .agents/skills
+```
+
+Setting an explicit `path:` for a target opts it out of the cleanup, and
+`--dry-run` previews what would be removed without changing anything.
+
 ---
 
 ## Sync

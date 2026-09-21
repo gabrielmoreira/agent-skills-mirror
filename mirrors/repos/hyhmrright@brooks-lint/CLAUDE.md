@@ -29,6 +29,7 @@ Guidance for Claude Code when modifying this repository. For repo layout, instal
 - **`_shared/` is not a skill:** It holds shared framework files (Iron Law, Report Template, decay-risk definitions). Skills must explicitly read these via the Read tool — they are NOT auto-loaded. Claude Code ignores directories without `SKILL.md`.
 - **SKILL.md Process vs guide steps:** Convention — `SKILL.md` Process provides a high-level skeleton (3–6 items) that cites the guide's step ranges inline, e.g. `Scan decay risks (Steps 1–7 of the guide)`. The guide owns the detailed numbered steps. The two do NOT need to match 1:1 — the skeleton is for orientation, the guide for execution. `npm run validate` enforces guide step continuity (no gaps, no duplicates; sub-steps like `Step 2a`, `Step 6b` are allowed) and SKILL.md Process-section presence. When renaming or renumbering guide steps, update any Step range citations in the SKILL.md Process.
 - **SKILL.md trigger descriptions:** Every `description:` field MUST include a "Do NOT trigger for:" clause. Without it, false triggering occurs (e.g. `brooks-debt` firing on HTTP `/health` questions).
+- **OpenCode slash opt-in:** Every `skills/*/SKILL.md` frontmatter must carry `metadata:` › `opencode/slash: "true"`. OpenCode v2 reads it in `packages/core/src/config/plugin/skill-file.ts` (`metadataBoolean(frontmatter.metadata, "opencode/slash")`) and only then lists the skill in the `/` menu; 1.x ignores the key harmlessly. No other platform reads it, so a seventh skill would ship with a silently missing `/brooks-*` on OpenCode — `checkOpencodeSlashFlag()` in `validate-repo.mjs` is the only thing that catches it. Do **not** ship `commands/opencode/*.md` wrappers instead (PR #34): on v2 a command that shares a skill's name *shadows* the skill — the `/` popup skips skills already registered as commands (`autocomplete.tsx:526`) and submit checks `isCommand` before `isSkill` (`index.tsx:1292`).
 - **Book count is derived, never hardcoded:** `validate-repo.mjs` reads `source-coverage.md` frontmatter and derives `sourceCount` from it. Adding a book = update the frontmatter list + add the corresponding section; the validator auto-adapts.
 - **`package.json` is ESM:** `"type": "module"` enables ESM for everything in `scripts/`. Skills are plain markdown — no bundling.
 - **Slash commands:** Plugin skills register as `/brooks-lint:brooks-review`. Short forms (`/brooks-review`, `/brooks-audit`, `/brooks-debt`, `/brooks-test`, `/brooks-health`, `/brooks-sweep`) are auto-installed to `~/.claude/commands/` by the session-start hook — they are thin wrappers, not separate definitions. Each wrapper body must **`Read` its skill's `SKILL.md` directly**, NOT "use the Skill tool to invoke …" — a purely self-referential body loops forever when the skill is model-invoked (upstream re-injects the body without the `<command-name>` tag; issue #21 / `anthropics/claude-code#54535`). The hook substitutes `${CLAUDE_PLUGIN_ROOT}` → the absolute plugin path when installing short forms, because that variable does not expand in user commands. `commands/*.md` is shared: the Gemini extension (`gemini-extension.json`) consumes it as-is; Codex loads `skills/` only.
@@ -51,7 +52,7 @@ Guidance for Claude Code when modifying this repository. For repo layout, instal
 
 ## Adding a New Skill
 
-1. `skills/{name}/SKILL.md` — frontmatter with `name`, `description` (must include the "Do NOT trigger for:" clause), and a `Process` section (3–6 bullets citing guide step ranges)
+1. `skills/{name}/SKILL.md` — frontmatter with `name`, `description` (must include the "Do NOT trigger for:" clause) and `metadata:` › `opencode/slash: "true"`, plus a `Process` section (3–6 bullets citing guide step ranges)
 2. `skills/{name}/{name}-guide.md` — sequentially numbered steps, no gaps; sub-steps like `Step 2a` allowed
 3. Add ≥1 happy-path eval scenario + ≥1 false-positive scenario (`no_risk_codes: true`) to `evals/evals.json`
 4. `npm run validate` (structure + step continuity) and `npm run evals` (eval schema)
@@ -74,6 +75,7 @@ To add a scenario: append to the `evals` array with the next sequential `id` and
 ```bash
 npm run bump              # Propagate the package.json version to all manifests + every version-bearing text file (NOT changelog)
 npm run validate          # Repo consistency: manifests, version refs, changelog, source inventory, skills structure
+npm run changelog:audit   # Release-time: account for every commit since the last tag (see Release Process)
 npm test                  # Unit tests for validate-repo helpers
 npm run evals             # Eval structural validation (IDs, fields, risk-code refs)
 npm run evals:live        # Live evals against the AI (requires ANTHROPIC_API_KEY)
@@ -87,4 +89,25 @@ CLAUDE_PLUGIN_ROOT=1 bash hooks/session-start   # plugin platform branch
 
 ## Release Process
 
-Set the new version in `package.json` (e.g. `npm version <v> --no-git-tag-version`), then `npm run bump` (propagates the version to all manifests plus every version-bearing text file listed by `scripts/version-refs.mjs` — all six README badges and the docs landing-page JSON-LD) → add the new `CHANGELOG.md` section by hand → `npm run validate` → commit, push, tag GitHub release.
+Set the new version in `package.json` (e.g. `npm version <v> --no-git-tag-version`), then `npm run bump` (propagates the version to all manifests plus every version-bearing text file listed by `scripts/version-refs.mjs` — all six README badges and the docs landing-page JSON-LD) → add the new `CHANGELOG.md` section by hand → **audit the commit range** (below) → `npm run validate` → commit, push, tag GitHub release.
+
+**Check the version number against the backlog first.** The bump is decided by what is *unreleased*, not by the size of the change in front of you. `npm run changelog:audit` prints the range before you choose the number — a "small doc fix" on top of an unreleased new platform is a minor, not a patch. v1.5.1 was cut, then deleted and re-cut as v1.6.0 for exactly this reason.
+
+**Audit the commit range against the changelog — every commit, no sampling.** `npm run changelog:audit` (`scripts/changelog-audit.mjs`) derives the range from the last release tag (`v[0-9]*`) and prints it as a checklist to walk, with three exemptions applied for you: the release bump itself, a merge commit (its branch commits are listed separately), and the weekly star-history refresh — a `[bot]` author's commit touching only the files `gen-star-history.mjs` exports as `STAR_HISTORY_FILES`. That last one is judged by what the commit *changed*, not by its subject: `[bot]` plus `chore:` was wide enough to exempt a `dependabot[bot]` `chore(deps): bump …`, and a dependency bump is a change this changelog records. **Nothing else is exempt** — internal hardening with no user-visible behavior change (a new validator check, a test-only guard) earns an entry, and so does a maintainer-facing doc fix from an outside contributor, who gets credited by `@handle` like any other.
+
+Between releases the command reports the same range as the *next* release's backlog and exits 0; it only enforces while a release is in progress, because nobody edits a section that already shipped.
+
+The script fails on the one gap it can *prove*: a pull request merged in the range whose `#N` the section never cites. `checkChangelogCoverage()` runs that same check inside `npm run validate`, but **only while a release is in progress** — derived as "`package.json`'s version has no `v<version>` tag yet", so it is a no-op during normal work and unskippable at the one moment it matters. It needs tags, which is why `validate.yml` checks out with `fetch-depth: 0`. Whenever it stands down it says so on stdout (`Changelog coverage: not audited — …`); a gate whose off-state looks like a pass is the silence this check exists to remove. Everything else on the checklist is judgment and stays yours.
+
+**Do not read a green audit as proof the changelog is complete.** Three things it cannot see, by construction:
+- **A bare number anywhere clears the gate.** Citation is matched as `#N` or a `/pull/N` link *anywhere in the section* — including a mention in passing, which is the exact 1.6.0 trap ("it reads as prior state when a later entry mentions it"). The check proves the number was written, not that an entry was written.
+- **A rebase-merged PR is invisible.** It leaves neither a `(#N)` subject nor a merge commit, so it is an ordinary checklist line with nothing enforced behind it.
+- **Whatever rides along in the release bump is never audited.** Step 5 stages everything `npm run bump` rewrote, and step 4 says "fix and re-run until clean" — so a fix made during validation lands inside the exempt commit and no release ever sees it. Land such fixes as their own commit before bumping.
+
+**A commit that defers its changelog entry says so in a `Changelog:` trailer**, so the audit can surface it in the checklist:
+
+```
+Changelog: added — platform docs and installer mappings are cross-checked
+```
+
+Use it when a change lands without a version bump. A trailer rather than a sentence in the body, because prose cannot tell a commit deferring its own entry from one quoting another commit that did. This is what 1.6.0 got wrong twice: `d4b5c40` asked in plain prose to be logged in the next release and was missed anyway, and PR #25 went uncredited in a release that credited two other contributors. Both were found only by auditing after publishing.

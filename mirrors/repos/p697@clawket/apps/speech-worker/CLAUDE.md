@@ -1,0 +1,1 @@
+cache/repos/github.com/p697@clawket/apps/speech-worker/AGENTS.md

@@ -87,6 +87,8 @@ Tracked custom names must not contain path separators (`/`, `\`) or `..`.
 
 **No-arg install:** `skillshare install` (global) or `skillshare install -p` (project) installs all remote skills listed in `config.yaml`. Useful for new machines, new team members, or reproducing a skill setup from a shared config.
 
+**Lockfile (project mode):** `.skillshare/skills.lock.json` pins every remote skill to the commit it was installed from. It is written automatically and meant to be committed. `install -p` installs the pinned commits, and moves an already-installed skill that is at another commit. `update -p` moves a skill forward and rewrites its pin; `uninstall -p` removes it. Never edit the file by hand.
+
 **`.skillignore`:** Repo authors can add a `.skillignore` file at the repo root to hide skills from discovery. Supports exact match (`my-skill`), trailing wildcard (`prefix-*`), and group match (`feature-radar` excludes all skills under that directory). Applied before any selection prompt.
 
 **`--exclude`:** Skip specific skills during multi-skill install. Filters before the interactive prompt so excluded skills never appear. Example: `skillshare install user/repo --exclude debug --exclude experimental`.

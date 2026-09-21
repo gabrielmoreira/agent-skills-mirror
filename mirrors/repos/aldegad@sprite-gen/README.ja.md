@@ -155,7 +155,7 @@ python3 ~/.codex/skills/.system/skill-installer/scripts/install-skill-from-githu
   --repo aldegad/sprite-gen --path . --name sprite-gen
 ```
 
-画像生成はこのエンジンの一部です（`sprite_gen.gen`、プロバイダは `codex` と `grok`。汎用の `image-gen` スキルはその上の薄いシャトルです）。動画には**あなた自身の**認証情報 — `grok` CLI ログインまたは `XAI_API_KEY` — を使い、リポジトリには何も同梱されていません（[docs/video.md](docs/video.md)）。
+画像生成はこのエンジンの一部です（`sprite_gen.gen`、すでに契約しているサブスクリプションで動くプロバイダ `codex` と `grok`、さらにサーバーや SaaS 向けに呼び出しごとに課金され、明示的に指定したときだけ動く `openai` プロバイダ。汎用の `image-gen` スキルはその上の薄いシャトルです）。動画には**あなた自身の**認証情報 — `grok` CLI ログインまたは `XAI_API_KEY` — を使い、リポジトリには何も同梱されていません（[docs/video.md](docs/video.md)）。
 
 `sprite-gen` は CPython 3.10+ をサポートし、CI は 3.10 と 3.14 で実行されます。クイックスタートには `venv`/`ensurepip` が動作する Python が必要です。
 

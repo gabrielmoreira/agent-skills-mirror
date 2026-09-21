@@ -70,7 +70,7 @@ Grep-verified 2026-09-04 (`npm run docs:verify` re-checks every path). This is t
 - **Saving generated image bytes to disk:** `saveImageDataUrlToDisk(dataUrl, defaultName?)` in `src/renderer/utils/imageExport.ts`
 - **Screenshotting a surface as it is painted:** `window.maestro.shell.capturePage(rect?)` in `src/main/preload/system.ts`
 - **Classifying a file by extension:** `getFileCategory()`, `isPreviewableFile()` in `src/shared/fileCategories.ts`
-- **Strip ANSI:** `stripAnsiCodes()` in `src/shared/stringUtils.ts`
+- **Strip ANSI / collapse progress overwrites:** `stripAnsiCodes()`, `processCarriageReturns()` in `src/shared/stringUtils.ts`
 - **Reading what a TUI painted from a raw capture:** `replayTerminalScreen()`, `capturedAlternateScreen()` in `src/maestro-p/screen-replay.ts`
 - **Shell escape:** `shellEscape()`, `shellEscapeArgs()` in `src/main/utils/shell-escape.ts`
 - **Platform detection:** `isWindows()`, `isMacOS()` in `src/shared/platformDetection.ts`
@@ -129,7 +129,8 @@ Grep-verified 2026-09-04 (`npm run docs:verify` re-checks every path). This is t
 - **Whether a surface is the topmost layer:** `useIsTopLayer(priority)`, `MODAL_PRIORITIES` in `src/renderer/hooks/ui/useIsTopLayer.ts`
 - **Who asked for this turn (interactive vs automation):** `QUERY_SOURCE_ENV_VAR`, `QuerySource` in `src/shared/querySource.ts`
 - **An agent's effective environment:** `resolveAgentEnvironment()`, `isSecretEnvKey()` in `src/shared/agentEnvironment.ts`
-- **Whether a configured env value means "unset":** `isBlankEnvValue()`, `stripBlankEnvVars()` in `src/shared/agentEnvironment.ts`
+- **Whether a configured env value means "unset":** `isBlankEnvValue()`, `isBlankEnvKey()`, `stripBlankEnvVars()` in `src/shared/agentEnvironment.ts`
+- **Suggesting an env-var name:** `suggestEnvVarKeys()`, `PROVIDER_ENV_VAR_SUGGESTIONS`, `withBlankEnvVarRow()` in `src/shared/envVarCatalog.ts`; `EnvVarKeyInput` in `src/renderer/components/shared/EnvVarKeyInput.tsx`
 - **Whether a login flow can fix an auth failure:** `classifyCredentialKind()`, `credentialKindBlocksLogin()` in `src/shared/providerAuthIdentity.ts`
 - **Typing a login command into a shell:** `formatAgentLoginCommand(login, syntax?)`, `loginShellSyntaxFor(shellId, isWindows)` in `src/shared/agentMetadata.ts`
 - **Bucketing Director's Notes bullets:** `bucketNarrativeItems()`, `shouldRenderBuckets()` in `src/shared/directorNotesGrouping.ts`
@@ -162,6 +163,7 @@ Grep-verified 2026-09-04 (`npm run docs:verify` re-checks every path). This is t
 - **A label that must not truncate:** `useOptionalLabelFits(rowRef)` in `src/renderer/hooks/ui/useOptionalLabelFits.ts`
 - **Usage Dashboard metric tile:** `MetricCard` in `src/renderer/components/UsageDashboard/MetricCard.tsx`
 - **Recording wizard usage:** `beginWizardRun()`, `recordWizardDocuments()` in `src/renderer/services/wizardStats.ts`
+- **Naming an agent from its folder (vs naming the project):** `projectNameFromPath()`, `defaultAgentNameForPath()` in `src/renderer/components/Wizard/shared/projectIdentity.ts`
 - **Font-family fallback chain:** `withMonoFallback()`, `resolveSurfaceFont()`, `MONO_FALLBACK_STACK`, `WORDMARK_FONT_STACK` in `src/shared/fontStack.ts`
 - **Fixed-pitch font for shell text:** `resolveFixedPitchFontFamily()`, `resolveTerminalFontFamily()`, `isFixedPitchStack()` in `src/renderer/utils/fixedPitchFont.ts` (composes with `withMonoFallback`, do not reintroduce `ensureMonospaceFallback`)
 - **Saving the user's own font setup:** `captureTypographySnapshot()`, `typographySnapshotPatch()`, `typographySnapshotMatches()` in `src/shared/typographySnapshot.ts`; keys from `TYPOGRAPHY_SURFACE_LIST` in `src/shared/typography.ts`

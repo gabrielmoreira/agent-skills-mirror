@@ -3,7 +3,7 @@
 > **Read [`FLYWHEEL.md`](./FLYWHEEL.md) first.** It is how you ship a change end to end here (code → PR → green CI → `[RELEASE]` → PyPI → cloud → verified live) and the non-negotiable "done" bar. This file is the architecture reference; FLYWHEEL.md is the shipping loop.
 
 ## What is this?
-ClawMetry is an open-source, real-time observability and governance layer for **32 AI agent runtimes** — [OpenClaw](https://github.com/openclaw/openclaw), NVIDIA NemoClaw and Goose free in OSS, the other 28 (Claude Code, Codex, Cursor, Copilot, Gemini CLI, Hermes, Aider, opencode, ...) with the optional Pro plugin. **Never type that number or that list anywhere new: [`SUPPORTED_RUNTIMES.txt`](./SUPPORTED_RUNTIMES.txt) is the generated single source every surface derives from** (`python3 scripts/sync_runtime_count.py`; `--check` fails CI on drift). `pip install clawmetry && clawmetry` — that's it. Zero config, observation by default.
+ClawMetry is an open-source, real-time observability and governance layer for **32 AI agent runtimes** — [OpenClaw](https://github.com/openclaw/openclaw), NVIDIA NemoClaw, Goose and Qwen Code free in OSS, the other 28 (Claude Code, Codex, Cursor, Copilot, Gemini CLI, Hermes, Aider, opencode, ...) with the optional Pro plugin. **Never type that number or that list anywhere new: [`SUPPORTED_RUNTIMES.txt`](./SUPPORTED_RUNTIMES.txt) is the generated single source every surface derives from** (`python3 scripts/sync_runtime_count.py`; `--check` fails CI on drift). `pip install clawmetry && clawmetry` — that's it. Zero config, observation by default.
 
 **Never hardcode the runtime count or the runtime list anywhere new.** The authoritative sources are `entitlements.FREE_RUNTIMES | entitlements.PAID_RUNTIMES` (the catalogue, and what every quoted number is derived from) and `sync._FAMILY_ADAPTER_SPECS` (what the daemon actually loads — a `clawmetry-pro` adapter is inert until it is named there). `scripts/sync_runtime_count.py` rewrites the number in prose and CI fails on drift; the same script checks the chat-channel count against `entitlements.ALL_CHANNELS`.
 
@@ -99,7 +99,7 @@ All HTTP endpoints live here, organised by feature: 70 modules, 82 blueprints, l
 | `clawmetry/config.py` | Configuration dataclass |
 | `clawmetry/extensions.py` | Plugin/hook system — the `clawmetry.extensions` entry point `clawmetry-pro` registers through |
 | `clawmetry/track.py` | Zero-config interceptor shorthand |
-| `clawmetry/adapters/` | The FREE runtime adapters (OpenClaw, NemoClaw, Goose) plus the adapter base SDK the paid ones build on |
+| `clawmetry/adapters/` | The FREE runtime adapters (OpenClaw, NemoClaw, Goose, Qwen Code) plus the adapter base SDK the paid ones build on |
 | `clawmetry/providers/` | Pluggable data provider layer (LocalDataProvider, TursoDataProvider) |
 
 ### Config & Build
@@ -276,6 +276,7 @@ CLAWMETRY_REVIEW_SAMPLE_MAX=200        # Review queue: per-agent cap in percent 
 # Guard / enforcement. Every one of these defaults to the safe side.
 CLAWMETRY_DETECTORS=1                  # Trajectory + behavioural detectors on/off
 CLAWMETRY_GUARD_POLICIES=1             # Evaluate Guard policies at all (0 = skip the pass entirely)
+CLAWMETRY_NATIVE_APPROVALS=1           # Import OpenClaw's own pending approvals (0 = never shell out to `openclaw approvals`; auto-skipped when openclaw isn't installed)
 CLAWMETRY_DESKTOP_ALERTS=1             # Urgent incidents (critical, or an agent blocked on you) pop a desktop notification (0 = off)
 CLAWMETRY_CLOUD_INCIDENT_ALERTS=1      # Connected nodes hand urgent incidents to cloud, which always emails the account owner (0 = off)
 CLAWMETRY_POLICY_ENFORCE=0             # Let a policy actually signal a process. Default 0 = dry run; this one env var disables every policy on the node

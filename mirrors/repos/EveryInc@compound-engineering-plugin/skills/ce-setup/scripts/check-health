@@ -286,6 +286,67 @@ read_work_engine_preferences() {
   ' "$config_file"
 }
 
+# Emits KEY<TAB>harness per map entry, or ERROR when the value is not a map.
+# An entry is exactly `harness: token`, optionally quoted, because an effort must
+# be a plain token; this is the data contract, not a YAML parser. Effort levels
+# are not checked: they belong to the ce-work adapter, which this skill cannot call.
+read_work_engine_effort_keys() {
+  local config_file="$1"
+  awk '
+    function emit_entry(entry) {
+      sub(/[[:space:]]+#.*$/, "", entry)
+      gsub(/^[[:space:]]+|[[:space:]]+$/, "", entry)
+      # A key or value is a bare token or one wrapped in a matching quote pair.
+      token = "[A-Za-z0-9][A-Za-z0-9_-]*"
+      quoted = "(" token "|\"" token "\"|\047" token "\047)"
+      if (entry !~ ("^" quoted "[[:space:]]*:[[:space:]]*" quoted "$")) not_a_map()
+      sub(/[[:space:]]*:.*$/, "", entry)
+      gsub(/["\047]/, "", entry)
+      print "KEY\t" entry
+      entries++
+    }
+    function not_a_map() {
+      print "ERROR"
+      reported = 1
+      exit
+    }
+    # A block that ends with no entries is a null value, not the explicit empty map {}.
+    function close_block() {
+      if (active && !entries) not_a_map()
+      active = 0
+    }
+    /^[^[:space:]#-][^:]*[[:space:]]*:/ { close_block() }
+    /^work_engine_effort[[:space:]]*:/ {
+      active = 1
+      entries = 0
+      line = $0
+      sub(/^work_engine_effort[[:space:]]*:/, "", line)
+      sub(/[[:space:]]+#.*$/, "", line)
+      gsub(/^[[:space:]]+|[[:space:]]+$/, "", line)
+      if (line == "") next
+      if (line !~ /^\{.*\}$/) not_a_map()
+      line = substr(line, 2, length(line) - 2)
+      count = split(line, pairs, ",")
+      for (i = 1; i <= count; i++) {
+        if (pairs[i] ~ /^[[:space:]]*$/) {
+          if (i < count) not_a_map()
+          continue
+        }
+        emit_entry(pairs[i])
+      }
+      active = 0
+      next
+    }
+    active {
+      line = $0
+      if (line ~ /^[[:space:]]*($|#)/) next
+      if (line !~ /^[[:space:]]/) not_a_map()
+      emit_entry(line)
+    }
+    END { if (!reported) close_block() }
+  ' "$config_file"
+}
+
 has_brew=$(command -v brew >/dev/null 2>&1 && echo "yes" || echo "no")
 in_repo=$(git rev-parse --is-inside-work-tree >/dev/null 2>&1 && echo "yes" || echo "no")
 
@@ -452,6 +513,21 @@ if [ "$in_repo" = "yes" ]; then
     done < <(read_work_engine_preferences "$structured_file")
   fi
 
+  work_engine_effort_notes=()
+  resolve_structured_layer "$local_config_path" "$tracked_config_path" "work_engine_effort"
+  if [ -n "$structured_file" ]; then
+    while IFS=$'\t' read -r effort_kind effort_harness; do
+      case "$effort_kind:$effort_harness" in
+        ERROR:*) effort_problem="is not a map of harness to effort; ce-work ignores the value and keeps each harness default" ;;
+        KEY:cursor) effort_problem="names 'cursor', which takes no effort; ce-work treats Cursor entries as unavailable while it is set" ;;
+        KEY:codex|KEY:claude|KEY:grok|KEY:opencode) continue ;;
+        KEY:*) effort_problem="names unknown harness '${effort_harness}'; ce-work ignores that entry" ;;
+        *) continue ;;
+      esac
+      work_engine_effort_notes+=("work_engine_effort in $(basename "$structured_file") ${effort_problem}")
+    done < <(read_work_engine_effort_keys "$structured_file")
+  fi
+
   case "$work_engine_mode" in
     ""|off)
       work_engine_cfg="native"
@@ -616,6 +692,10 @@ if [ "$in_repo" = "yes" ]; then
     warn "CE Work implementation engine: ${work_engine_detail}"
   fi
   [ -n "$work_engine_migration_note" ] && warn "$work_engine_migration_note"
+  for effort_note in ${work_engine_effort_notes[@]+"${work_engine_effort_notes[@]}"}; do
+    warn "$effort_note"
+    project_issues=$((project_issues + 1))
+  done
 
   if [ "$example_cfg" = "ok" ]; then
     ok "Example config is current"

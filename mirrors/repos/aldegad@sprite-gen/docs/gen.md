@@ -1,6 +1,6 @@
 # `sprite-gen gen` — provider-backed image generation (engine SSoT)
 
-> Owns: `sprite-gen gen` / `gen-set`: providers, default resolution, transparency strategy per provider, row usage · Index: [docs/README.md](README.md)
+> Owns: `sprite-gen gen` / `gen-set`: providers, default resolution, transparency strategy per provider, the billed knobs (`--quality`, `--resolution`), row usage · Index: [docs/README.md](README.md)
 
 Generation is a first-class engine module (`sprite_gen/gen/`), not an external
 skill. One call = a prompt (+ optional reference images) → one **verified** PNG on
@@ -16,14 +16,36 @@ whose terms forbid reaching a subscription login from third-party software is no
 added, however it is invoked
 ([#36](https://github.com/aldegad/sprite-gen/pull/36), Antigravity).
 
-| Provider | Backend | Auth | Output truth | Transparency strategy |
-|---|---|---|---|---|
-| `codex` | codex `image_gen` | ChatGPT OAuth | inline base64 in the session rollout jsonl, decoded deterministically | **`native`** — image_gen returns a real alpha channel when asked (measured, then published) |
-| `grok` | direct Imagine `/images/generations` or `/images/edits` | Grok login or `XAI_API_KEY` | inline bytes decoded and re-encoded as a verified PNG | `chroma` — Imagine returns JPEG only; generate on a key and matte it out |
+| Provider | Backend | Auth | Billing | Output truth | Transparency strategy |
+|---|---|---|---|---|---|
+| `codex` | codex `image_gen` | ChatGPT OAuth | your ChatGPT subscription | inline base64 in the session rollout jsonl, decoded deterministically | **`native`** — image_gen returns a real alpha channel when asked (measured, then published) |
+| `grok` | direct Imagine `/images/generations` or `/images/edits` | Grok login (preferred) or `XAI_API_KEY` | your SuperGrok Imagine quota; console credit only on the key route | inline bytes decoded and re-encoded as a verified PNG | `chroma` — Imagine returns JPEG only; generate on a key and matte it out |
+| `openai` | direct Images `/v1/images/generations` or `/v1/images/edits` | `OPENAI_API_KEY` | **billed per call** — for servers and SaaS | inline base64 decoded and published as a verified PNG | **`native`** — `background: transparent` returns a real alpha channel |
 
 The strategy is declared **once**, on the adapter (`Provider.transparency`), and is
 the only place that says what a backend can do. See
 [Transparent output](#transparent-output--strategy-per-provider).
+
+## Subscription first — `openai` is named or it does not run
+
+`codex` and `grok` run on a subscription the user already pays for. `openai`
+reaches the same family of GPT image models over the REST API with nothing but a
+key — which is what a headless container (a Modal worker, CI, a SaaS backend) can
+have, and where an interactive ChatGPT login cannot exist — and every call is
+billed against that key. So it is registered, documented, and **explicit-only**
+(maintainer 확정 2026-09-20):
+
+- it runs only when `--provider openai` names it;
+- `SPRITE_GEN_DEFAULT_PROVIDER=openai` is **refused**, not honoured;
+- the guided flow (`sprite-gen workflow`) never offers it and never saves it as a
+  preference;
+- no availability fallback targets it — a codex outage reaches `grok`, another
+  subscription route, or it fails; it never reaches metered credit;
+- having `OPENAI_API_KEY` in the environment changes no route by itself;
+- every call it does make prints one stderr line naming the charge *before* the
+  request leaves.
+
+If you are one person generating sprites, use `codex` or `grok`.
 
 ## Default provider selection
 
@@ -31,7 +53,8 @@ the only place that says what a backend can do. See
 precedence (maintainer 확정 2026-07-17):
 
 1. **`SPRITE_GEN_DEFAULT_PROVIDER`** env var (`codex` or `grok`) — the user override.
-   An unknown value fails loud.
+   An unknown value fails loud, and so does `openai`: a per-call API backend is
+   named at the call site or not used ([subscription first](#subscription-first--openai-is-named-or-it-does-not-run)).
 2. **`codex`** — the hard default (GPT `image_gen`).
 
 If the resolved default is `codex` but codex is unavailable here (CLI not on PATH,
@@ -39,7 +62,8 @@ or `codex login status` reports not-logged-in), the resolution **falls back to
 `grok` — observably, never silently**: a stderr notice is printed and the report
 JSON records `provider_fallback` (`from`/`to`/`reason`/`default_source`). The
 grok default (`SPRITE_GEN_DEFAULT_PROVIDER=grok`) has no reverse fallback — a down
-grok fails loud at generation time.
+grok fails loud at generation time. The fallback target is a subscription route by
+construction; `openai` is never one.
 
 An **explicit `--provider`** is always honored verbatim — it is never overridden by
 the availability fallback. An explicitly named provider that is down fails loud
@@ -82,17 +106,68 @@ API contracts: [image generation](https://docs.x.ai/developers/model-capabilitie
 [image editing](https://docs.x.ai/developers/model-capabilities/images/editing),
 [multi-image editing](https://docs.x.ai/developers/model-capabilities/images/multi-image-editing).
 
+## Direct OpenAI calls and authentication
+
+`sprite-gen gen --provider openai` → `OpenAIProvider` → the OpenAI Images REST API.
+No `codex` CLI, no browser sign-in, no subprocess: the whole credential is
+`OPENAI_API_KEY`, read from the environment at call time and never written
+anywhere. Unset, the run stops naming the variable and where to get a key; set but
+empty, it says so. It never falls back to the codex ChatGPT login, to another key,
+or to a retry — and see [subscription first](#subscription-first--openai-is-named-or-it-does-not-run)
+for why nothing routes here on its own.
+
+The default model is `gpt-image-2.5-flare`; `--model` selects another gpt-image
+model. New images use `POST /v1/images/generations` (JSON); attaching `--ref` uses
+`POST /v1/images/edits`, which takes **multipart/form-data** with the references as
+repeated `image[]` parts in the order given (up to 16). A reference that is not a
+readable PNG, JPEG or WebP fails before upload, and parts are named by position, not
+by the local filename.
+
+gpt-image models always answer with inline base64 (the API does not accept
+`response_format`), so there is no signed URL to follow and no bearer token to
+forward. The payload is decoded, verified as a PNG and published atomically without
+resizing; a missing, malformed or multi-image response fails without replacing an
+existing raw output. HTTP 401/403 names the credential; any other non-200 fails
+with the status only — an error body can echo the prompt or a key, so it is not
+printed.
+
+`--aspect-ratio` picks the `size`. gpt-image has no long-edge preset, so the ratio
+maps to one concrete size out of a table that satisfies the documented constraints
+(both sides divisible by 16, ratio within 1:3..3:1, 655,360–8,294,400 pixels) and is
+checked by the test suite: `1:1` 1024x1024, `3:2` 1536x1024, `2:3` 1024x1536, `4:3`
+1024x768, `3:4` 768x1024, `16:9` 1536x864, `9:16` 864x1536, `2:1` 1440x720, `1:2`
+720x1440, `3:1` 1536x512, `1:3` 512x1536, plus `auto`. Omitted = 1024x1024. A ratio
+with no exact gpt-image size (`19.5:9`, say) is refused rather than rounded to a
+nearby one you would be billed for.
+
+`--transparent` asks for `background: transparent` with `output_format: png` —
+genuine alpha, the same `native` strategy as codex, and the same measurement gate
+afterwards. Measured 2026-09-20 on `gpt-image-2.5-flare` at `--quality low`: 84 % of
+the frame at alpha 0, the subject itself at alpha 251–254 (so `partial_alpha_pct`
+covers the body, exactly as codex `image_gen` does — downstream extraction treats
+`alpha ≤ 16` as transparent, so this is usable as-is).
+
+Image reports include `extra.auth_source`, `extra.transport: "openai-api"`,
+`extra.endpoint`, `extra.quality`, `extra.size`, `extra.background` and, when the
+API returns it, `extra.usage` (token counts only — what the call cost, never what it
+contained).
+
+API contract: [OpenAI Images](https://developers.openai.com/api/images/) (field names
+and enums confirmed there 2026-09-20).
+
 ## CLI
 
 ```bash
 sprite-gen gen \
-  [--provider codex|grok] # optional; default = SPRITE_GEN_DEFAULT_PROVIDER env → codex (observable grok fallback if codex is down)
+  [--provider codex|grok|openai] # optional; default = SPRITE_GEN_DEFAULT_PROVIDER env → codex (observable grok fallback if codex is down). openai only when named here — it bills per call
   --prompt "…"            # or --prompt-file PROMPT.txt
   --out DEST.png \
-  [--ref REF.png ...]     # repeatable; Grok accepts up to five references
+  [--ref REF.png ...]     # repeatable; Grok accepts up to five references, openai up to sixteen
   [--transparent [--alpha-mode auto|native|chroma] [--chroma-key magenta|green]] \
   [--white-check CHECK.png] \
-  [--aspect-ratio 1:1]    # grok only, e.g. 1:1 or 16:9; single-ref edits inherit the source ratio
+  [--aspect-ratio 1:1]    # grok and openai, e.g. 1:1 or 16:9; grok single-ref edits inherit the source ratio; openai maps it to a gpt-image size
+  [--quality low|medium|high|xhigh|max|auto] # billed effort; openai takes the range, grok takes auto/low/medium
+  [--resolution 1k|1.5k|2k]  # grok output-size tier, priced with --quality
   [--model ID] \
   [--report REPORT.json] \
   [--keep-session]        # codex: keep the rollout jsonl instead of deleting it
@@ -110,7 +185,40 @@ Backward-compatible wrapper: `$SPRITE_GEN_ROOT/.venv/bin/python $SPRITE_GEN_ROOT
   `raw_bytes`, `elapsed_seconds`, `session_id` (codex), an `alpha` block
   (`strategy` + the measured stats), the `chroma` stats when chroma keying ran, and the
   provider-resolution fields (`provider_resolved_from`, and `provider_fallback` when a
-  codex→grok default fallback occurred).
+  codex→grok default fallback occurred), plus the provider `extra` block
+  (`auth_source`, `transport`, `endpoint`, and the knobs the request actually
+  carried).
+
+## `--quality` and `--resolution` — the two billed knobs
+
+They are one shared vocabulary; what a backend can honour is a per-provider
+capability, declared in its adapter:
+
+| Provider | `--quality` | `--resolution` |
+|---|---|---|
+| `codex` | refused — `image_gen` exposes no effort dial | refused |
+| `grok` | `auto` `low` `medium` | `1k` `1.5k` `2k` |
+| `openai` | `auto` `low` `medium` `high` `xhigh` `max` | refused — a gpt-image `size` comes from `--aspect-ratio` |
+
+- **Omitted = the provider's own default.** The request body is then byte-identical
+  to what the same call already sent, so nothing about existing runs changes.
+- **A level a provider cannot honour fails before the call.** It is never dropped
+  from a body you are about to pay for, and never downgraded to whatever the
+  backend felt like returning (No Silent Fallback). "Refused" above is a loud error
+  naming the flag, not a silently ignored argument.
+- **grok prices an image on the pair**, so `2k` + `medium` costs more than `1k` +
+  `low`. The resolution names are **tiers, not pixel counts**: the service decides
+  the pixels, and `1.5k` came back 1408x1408 at `--aspect-ratio 1:1` (실측
+  2026-09-20) — not 1536, and not 1024. Nothing here derives a size from the name.
+- The grok subsets were read off the server, not off the prose (2026-09-20 probes):
+  `quality` deserializes the wider shared enum and *then* refuses per model
+  (`high` → HTTP 400 "This model only supports the following quality value(s):
+  low, medium, auto."), `resolution: 1.5k` renders (HTTP 200) although the
+  capability guide's prose lists only 1k and 2k, and an **unknown field is not
+  refused at all** — a probe carrying one rendered normally. That last one is why
+  these names are checked locally instead of being left to the service to notice.
+- Every call that spends API credit rather than a subscription prints the knobs it
+  is being billed on in the same stderr line as the charge.
 
 ## Transparent output — strategy per provider
 
@@ -119,15 +227,17 @@ strategy it can execute, and `--alpha-mode auto` (the default) follows it:
 
 | Strategy | Who | What happens | Refused when |
 |---|---|---|---|
-| `native` | `codex` (**first choice**, 2026-09-08) | The transport prompt asks image_gen for a genuinely transparent background (the bundled `imagegen` skill honours "transparent background" and keeps the generated alpha; codex reports `transparentBackground: true` on the completed item). The decoded PNG's alpha is **measured**: no alpha band or `alpha_zero_pct: 0.0` refuses to publish, RGB under alpha 0 is scrubbed, partial alpha (1–254) is left as produced and reported as `partial_alpha_pct`. | The model drew a checkerboard / flat background (RGB image) — nothing can recover alpha from that, so the run fails instead of silently keying. |
+| `native` | `codex` (**first choice**, 2026-09-08), `openai` (`background: transparent`) | On codex the transport prompt asks image_gen for a genuinely transparent background (the bundled `imagegen` skill honours "transparent background" and keeps the generated alpha; codex reports `transparentBackground: true` on the completed item); on openai the request carries `background: transparent` with `output_format: png`, which the API answers with a real alpha channel. Either way the decoded PNG's alpha is **measured**: no alpha band or `alpha_zero_pct: 0.0` refuses to publish, RGB under alpha 0 is scrubbed, partial alpha (1–254) is left as produced and reported as `partial_alpha_pct`. | The model drew a checkerboard / flat background (RGB image) — nothing can recover alpha from that, so the run fails instead of silently keying. |
 | `chroma` | `grok` (only option), `codex` with `--alpha-mode chroma` | Generate on a `#FF00FF` (or `#00FF00`) background — pick the key by subject colour (magenta subjects → green key) — and matte it out through the frame extractor's canonical YCbCr matte (`remove_chroma_background_ycbcr`), which keys from the background chroma it detects on the borders (`detect_background_key_ycc`) rather than from the pure key alone — the RGB matte behind `cutout`/`extract`/`slice-sheet` does the same since 2026-09-11 (`detect_background_key_rgb`), so every chroma path tolerates the slightly-off green/magenta generators actually paint. Gradients and texture within that chroma family are supported. | `alpha_zero_pct: 0.0` after keying, or stale RGB under alpha 0. |
 
-- **`auto` steps down to `chroma` when `--ref` is attached**, even on codex. Measured
+- **`auto` steps down to `chroma` when `--ref` is attached**, on either native provider. Measured
   2026-09-08 (plan `sprite-gen/parts-rig`): codex `image_gen` with reference images
   returned real alpha in 1/6 runs and drew a checkerboard (RGB) in 5/6, while the same
   prompts on a `#00FF00` key + chroma keying succeeded 6/6. The decision is made before
   the model runs, printed to stderr, and recorded as `alpha.strategy_source:
-  "refs-attached"` (`provider-default` / `explicit` otherwise). `--alpha-mode native`
+  "refs-attached"` (`provider-default` / `explicit` otherwise). The measurement is
+  codex's; openai's edit path is not separately measured and inherits the same
+  conservative default. `--alpha-mode native`
   still forces native alpha with refs — and fails loud on an RGB result. So a ref run's
   prompt must carry the chroma key, exactly as the sprite-row pipeline already does.
 - `--alpha-mode chroma` on codex is for prompts that already carry a key background
@@ -176,6 +286,10 @@ change it; and no `config.toml` feature toggle grants it. The remedy is to point
 (`codex login status`), or to use `--provider grok`. The adapter fails loudly with
 exactly that, rather than falling back on its own.
 - **grok** — uses the [direct API contract](#direct-grok-calls-and-authentication) above.
+- **openai** — uses the [direct API contract](#direct-openai-calls-and-authentication)
+  above: one HTTPS request on `OPENAI_API_KEY`, no CLI and no subprocess, which is
+  the whole reason it exists (a container has a key, not a browser). Explicit-only,
+  and billed per call.
 
 ## Sprite-row usage
 

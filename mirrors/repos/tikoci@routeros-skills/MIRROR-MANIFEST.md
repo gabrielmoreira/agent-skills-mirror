@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `tikoci/routeros-skills` — 26 default patterns, 0 followed patterns, 14 file(s) materialized.
+Mirror of `tikoci/routeros-skills` — 26 default patterns, 0 followed patterns, 15 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `tikoci/routeros-skills` — 26 default patterns, 0 followed patterns,
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 14 |
+| Files         | 15 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,19 +60,20 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`routeros-app-yaml/SKILL.md`](routeros-app-yaml/SKILL.md) |
-| 2 | ✓ | [`routeros-command-tree/SKILL.md`](routeros-command-tree/SKILL.md) |
-| 3 | ✓ | [`routeros-container/SKILL.md`](routeros-container/SKILL.md) |
-| 4 | ✓ | [`routeros-firewall/SKILL.md`](routeros-firewall/SKILL.md) |
-| 5 | ✓ | [`routeros-fundamentals/SKILL.md`](routeros-fundamentals/SKILL.md) |
-| 6 | ✓ | [`routeros-hotspot/SKILL.md`](routeros-hotspot/SKILL.md) |
-| 7 | ✓ | [`routeros-mac-telnet/SKILL.md`](routeros-mac-telnet/SKILL.md) |
-| 8 | ✓ | [`routeros-mndp/SKILL.md`](routeros-mndp/SKILL.md) |
-| 9 | ✓ | [`routeros-netinstall/SKILL.md`](routeros-netinstall/SKILL.md) |
-| 10 | ✓ | [`routeros-qemu-chr/SKILL.md`](routeros-qemu-chr/SKILL.md) |
-| 11 | ✓ | [`routeros-quickchr/SKILL.md`](routeros-quickchr/SKILL.md) |
-| 12 | ✓ | [`routeros-scripting/SKILL.md`](routeros-scripting/SKILL.md) |
-| 13 | ✓ | [`routeros-sniffer/SKILL.md`](routeros-sniffer/SKILL.md) |
-| 14 | ✓ | [`routeros-syntax-inspection/SKILL.md`](routeros-syntax-inspection/SKILL.md) |
+| 2 | ✓ | [`routeros-centrs/SKILL.md`](routeros-centrs/SKILL.md) |
+| 3 | ✓ | [`routeros-command-tree/SKILL.md`](routeros-command-tree/SKILL.md) |
+| 4 | ✓ | [`routeros-container/SKILL.md`](routeros-container/SKILL.md) |
+| 5 | ✓ | [`routeros-firewall/SKILL.md`](routeros-firewall/SKILL.md) |
+| 6 | ✓ | [`routeros-fundamentals/SKILL.md`](routeros-fundamentals/SKILL.md) |
+| 7 | ✓ | [`routeros-hotspot/SKILL.md`](routeros-hotspot/SKILL.md) |
+| 8 | ✓ | [`routeros-mac-telnet/SKILL.md`](routeros-mac-telnet/SKILL.md) |
+| 9 | ✓ | [`routeros-mndp/SKILL.md`](routeros-mndp/SKILL.md) |
+| 10 | ✓ | [`routeros-netinstall/SKILL.md`](routeros-netinstall/SKILL.md) |
+| 11 | ✓ | [`routeros-qemu-chr/SKILL.md`](routeros-qemu-chr/SKILL.md) |
+| 12 | ✓ | [`routeros-quickchr/SKILL.md`](routeros-quickchr/SKILL.md) |
+| 13 | ✓ | [`routeros-scripting/SKILL.md`](routeros-scripting/SKILL.md) |
+| 14 | ✓ | [`routeros-sniffer/SKILL.md`](routeros-sniffer/SKILL.md) |
+| 15 | ✓ | [`routeros-syntax-inspection/SKILL.md`](routeros-syntax-inspection/SKILL.md) |
 
 ---
 

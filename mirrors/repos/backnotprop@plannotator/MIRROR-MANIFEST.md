@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `backnotprop/plannotator` — 26 default patterns, 0 followed patterns, 23 file(s) materialized.
+Mirror of `backnotprop/plannotator` — 26 default patterns, 0 followed patterns, 22 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `backnotprop/plannotator` — 26 default patterns, 0 followed patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 23 |
+| Files         | 22 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,29 +59,28 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`.agents/skills/pierre-guard/SKILL.md`](.agents/skills/pierre-guard/SKILL.md) |
-| 2 | ✓ | [`.agents/skills/release/references/release-notes-v0.12.0.md`](.agents/skills/release/references/release-notes-v0.12.0.md) |
-| 3 | ✓ | [`.agents/skills/release/references/release-notes-v0.13.0.md`](.agents/skills/release/references/release-notes-v0.13.0.md) |
-| 4 | ✓ | [`.agents/skills/release/references/release-notes-v0.13.1.md`](.agents/skills/release/references/release-notes-v0.13.1.md) |
-| 5 | ✓ | [`.agents/skills/release/SKILL.md`](.agents/skills/release/SKILL.md) |
-| 6 | ✓ | [`.agents/skills/review-renovate/SKILL.md`](.agents/skills/review-renovate/SKILL.md) |
-| 7 | ✓ | [`.agents/skills/update-deps/SKILL.md`](.agents/skills/update-deps/SKILL.md) |
-| 8 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 9 | ✓ | [`apps/kiro-cli/skills/plannotator-annotate/SKILL.md`](apps/kiro-cli/skills/plannotator-annotate/SKILL.md) |
-| 10 | ✓ | [`apps/kiro-cli/skills/plannotator-review/SKILL.md`](apps/kiro-cli/skills/plannotator-review/SKILL.md) |
-| 11 | ✓ | [`apps/skills/claude/plannotator-annotate/SKILL.md`](apps/skills/claude/plannotator-annotate/SKILL.md) |
-| 12 | ✓ | [`apps/skills/claude/plannotator-last/SKILL.md`](apps/skills/claude/plannotator-last/SKILL.md) |
-| 13 | ✓ | [`apps/skills/claude/plannotator-review/SKILL.md`](apps/skills/claude/plannotator-review/SKILL.md) |
-| 14 | ✓ | [`apps/skills/core/plannotator-annotate/SKILL.md`](apps/skills/core/plannotator-annotate/SKILL.md) |
-| 15 | ✓ | [`apps/skills/core/plannotator-last/SKILL.md`](apps/skills/core/plannotator-last/SKILL.md) |
-| 16 | ✓ | [`apps/skills/core/plannotator-review/SKILL.md`](apps/skills/core/plannotator-review/SKILL.md) |
-| 17 | ✓ | [`apps/skills/core/plannotator/SKILL.md`](apps/skills/core/plannotator/SKILL.md) |
-| 18 | ✓ | [`apps/skills/extra/plannotator-compound/SKILL.md`](apps/skills/extra/plannotator-compound/SKILL.md) |
-| 19 | ✓ | [`apps/skills/extra/plannotator-setup-goal/SKILL.md`](apps/skills/extra/plannotator-setup-goal/SKILL.md) |
-| 20 | ✓ | [`apps/skills/extra/plannotator-visual-explainer/SKILL.md`](apps/skills/extra/plannotator-visual-explainer/SKILL.md) |
-| 21 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 22 | ✓ | [`packages/ui/AGENTS.md`](packages/ui/AGENTS.md) |
-| 23 | ✓ | [`packages/ui/CLAUDE.md`](packages/ui/CLAUDE.md) |
+| 1 | ✓ | [`.agents/skills/release/references/release-notes-v0.12.0.md`](.agents/skills/release/references/release-notes-v0.12.0.md) |
+| 2 | ✓ | [`.agents/skills/release/references/release-notes-v0.13.0.md`](.agents/skills/release/references/release-notes-v0.13.0.md) |
+| 3 | ✓ | [`.agents/skills/release/references/release-notes-v0.13.1.md`](.agents/skills/release/references/release-notes-v0.13.1.md) |
+| 4 | ✓ | [`.agents/skills/release/SKILL.md`](.agents/skills/release/SKILL.md) |
+| 5 | ✓ | [`.agents/skills/review-renovate/SKILL.md`](.agents/skills/review-renovate/SKILL.md) |
+| 6 | ✓ | [`.agents/skills/update-deps/SKILL.md`](.agents/skills/update-deps/SKILL.md) |
+| 7 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 8 | ✓ | [`apps/kiro-cli/skills/plannotator-annotate/SKILL.md`](apps/kiro-cli/skills/plannotator-annotate/SKILL.md) |
+| 9 | ✓ | [`apps/kiro-cli/skills/plannotator-review/SKILL.md`](apps/kiro-cli/skills/plannotator-review/SKILL.md) |
+| 10 | ✓ | [`apps/skills/claude/plannotator-annotate/SKILL.md`](apps/skills/claude/plannotator-annotate/SKILL.md) |
+| 11 | ✓ | [`apps/skills/claude/plannotator-last/SKILL.md`](apps/skills/claude/plannotator-last/SKILL.md) |
+| 12 | ✓ | [`apps/skills/claude/plannotator-review/SKILL.md`](apps/skills/claude/plannotator-review/SKILL.md) |
+| 13 | ✓ | [`apps/skills/core/plannotator-annotate/SKILL.md`](apps/skills/core/plannotator-annotate/SKILL.md) |
+| 14 | ✓ | [`apps/skills/core/plannotator-last/SKILL.md`](apps/skills/core/plannotator-last/SKILL.md) |
+| 15 | ✓ | [`apps/skills/core/plannotator-review/SKILL.md`](apps/skills/core/plannotator-review/SKILL.md) |
+| 16 | ✓ | [`apps/skills/core/plannotator/SKILL.md`](apps/skills/core/plannotator/SKILL.md) |
+| 17 | ✓ | [`apps/skills/extra/plannotator-compound/SKILL.md`](apps/skills/extra/plannotator-compound/SKILL.md) |
+| 18 | ✓ | [`apps/skills/extra/plannotator-setup-goal/SKILL.md`](apps/skills/extra/plannotator-setup-goal/SKILL.md) |
+| 19 | ✓ | [`apps/skills/extra/plannotator-visual-explainer/SKILL.md`](apps/skills/extra/plannotator-visual-explainer/SKILL.md) |
+| 20 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 21 | ✓ | [`packages/ui/AGENTS.md`](packages/ui/AGENTS.md) |
+| 22 | ✓ | [`packages/ui/CLAUDE.md`](packages/ui/CLAUDE.md) |
 
 ---
 

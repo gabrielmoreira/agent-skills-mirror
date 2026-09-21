@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `addyosmani/agent-skills` — 26 default patterns, 3 followed patterns, 40 file(s) materialized.
+Mirror of `addyosmani/agent-skills` — 26 default patterns, 3 followed patterns, 41 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `addyosmani/agent-skills` — 26 default patterns, 3 followed patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 3 |
-| Files         | 40 |
+| Files         | 41 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -92,15 +92,16 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 29 | ✓ | [`skills/observability-and-instrumentation/SKILL.md`](skills/observability-and-instrumentation/SKILL.md) |
 | 30 | ✓ | [`skills/performance-optimization/SKILL.md`](skills/performance-optimization/SKILL.md) |
 | 31 | ✓ | [`skills/planning-and-task-breakdown/SKILL.md`](skills/planning-and-task-breakdown/SKILL.md) |
-| 32 | ✓ | [`skills/security-and-hardening/SKILL.md`](skills/security-and-hardening/SKILL.md) |
-| 33 | ✓ | [`skills/shipping-and-launch/SKILL.md`](skills/shipping-and-launch/SKILL.md) |
-| 34 | ✓ | [`skills/source-driven-development/SKILL.md`](skills/source-driven-development/SKILL.md) |
-| 35 | ✓ | [`skills/spec-driven-development/SKILL.md`](skills/spec-driven-development/SKILL.md) |
-| 36 | ✓ | [`skills/test-driven-development/SKILL.md`](skills/test-driven-development/SKILL.md) |
-| 37 | ✓ | [`skills/using-agent-skills/SKILL.md`](skills/using-agent-skills/SKILL.md) |
-| 38 | → | [`docs/agents.md`](docs/agents.md) |
-| 39 | → | [`docs/skill-anatomy.md`](docs/skill-anatomy.md) |
-| 40 | → | [`references/orchestration-patterns.md`](references/orchestration-patterns.md) |
+| 32 | ✓ | [`skills/security-and-hardening/references/hardening-patterns.md`](skills/security-and-hardening/references/hardening-patterns.md) |
+| 33 | ✓ | [`skills/security-and-hardening/SKILL.md`](skills/security-and-hardening/SKILL.md) |
+| 34 | ✓ | [`skills/shipping-and-launch/SKILL.md`](skills/shipping-and-launch/SKILL.md) |
+| 35 | ✓ | [`skills/source-driven-development/SKILL.md`](skills/source-driven-development/SKILL.md) |
+| 36 | ✓ | [`skills/spec-driven-development/SKILL.md`](skills/spec-driven-development/SKILL.md) |
+| 37 | ✓ | [`skills/test-driven-development/SKILL.md`](skills/test-driven-development/SKILL.md) |
+| 38 | ✓ | [`skills/using-agent-skills/SKILL.md`](skills/using-agent-skills/SKILL.md) |
+| 39 | → | [`docs/agents.md`](docs/agents.md) |
+| 40 | → | [`docs/skill-anatomy.md`](docs/skill-anatomy.md) |
+| 41 | → | [`references/orchestration-patterns.md`](references/orchestration-patterns.md) |
 
 ---
 

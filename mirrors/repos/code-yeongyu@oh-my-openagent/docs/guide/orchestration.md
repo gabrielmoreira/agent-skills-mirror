@@ -232,7 +232,7 @@ Some categories gate on a model being present in your registry (`ultrabrain` and
 
 ```typescript
 task({ category: "visual-engineering", load_skills: ["frontend"], prompt: "..." });
-task({ category: "deep", load_skills: ["playwright"], prompt: "..." });
+task({ category: "deep-low", load_skills: ["playwright"], prompt: "..." });
 ```
 
 The main agent's own skills (`ulw-plan`, `ulw-execute`, `ulw-loop`, `mass-ulw`, `hyperplan`, `ultrawork`, `ulw-research`) are invoked by name; workers get skills only through `load_skills`.

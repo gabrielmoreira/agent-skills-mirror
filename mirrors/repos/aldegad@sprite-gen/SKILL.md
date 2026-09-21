@@ -1,6 +1,6 @@
 ---
 name: sprite-gen
-version: 2.4.1
+version: 2.5.2
 description: "Generates images and game sprites through GPT or Grok with guided provider choices, separate saved defaults, automatic cleanup and optional curation. Handles sprite requests, ordinary image generation/editing, standalone image-to-video clips (i2v, animate this still, 그록 영상, 이매진 비디오, 스틸 움직여줘, first/last frame, reference-to-video, 영상 이어붙이기, 영상 편집, extend/edit a clip), chroma removal, animation atlases, video loops, 큐레이션뷰, image candidates, 팔레트 스왑, palette swap, recolor, rig layers, engine exports, repeating backgrounds, projected shadows, motion/contact inspection and optional scene composition from existing assets."
 license: Apache-2.0
 depends_on:
@@ -67,7 +67,8 @@ Pass choices already stated in the request. The guide checks access, combines ex
 | Standalone video / animate a still, pin a last frame, reference images | `video` (`--image`, `--last-frame`, `--reference`) | [video](docs/video.md) |
 | Continue or edit an existing clip | `video-extend`, `video-edit` | [video](docs/video.md) |
 | Grok video sprites | `video-set` | [video-pipeline](docs/video-pipeline.md) |
-| Ordinary image or edit | `gen --provider codex` or `gen --provider grok` | [gen](docs/gen.md) |
+| Ordinary image or edit | `gen --provider codex` or `gen --provider grok` (subscription routes) | [gen](docs/gen.md) |
+| Image generation with no login available (server, container, SaaS) | `gen --provider openai` — server/SaaS route on `OPENAI_API_KEY`, **billed per call**, never a default or a fallback | [gen](docs/gen.md#subscription-first--openai-is-named-or-it-does-not-run) |
 | Base and direction anchors | `anchor` | [directional-anchor-workflow](docs/directional-anchor-workflow.md) |
 | Curation view or existing image candidates | `curation`, `unpack-atlas --pngs-dir` | [curation](docs/curation.md) |
 | Uniform background removal or imported sheets | `cutout`, `slice-sheet` | [sheet-slicing](docs/sheet-slicing.md) |

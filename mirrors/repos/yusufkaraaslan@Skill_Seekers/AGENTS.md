@@ -209,6 +209,7 @@ cd ui && npm run build
 ```bash
 # Core commands
 skill-seekers create <source>              # Create skill from any source (auto-detects type)
+skill-seekers create <source> --index      # ...plus an opt-in SQLite search index + scripts/search.py
 skill-seekers scan <dir>                   # AI-detect a project's tech stack and emit per-framework configs
 skill-seekers enhance <directory>          # AI-powered enhancement
 skill-seekers package <directory>          # Package skill for target platform
@@ -217,7 +218,8 @@ skill-seekers install <source>             # One-command workflow (scrape + enha
 
 # Utilities
 skill-seekers estimate <source>            # Estimate page count before scraping
-skill-seekers doctor                       # Health check for dependencies
+skill-seekers detect <source> [--json]     # Read-only: how create would classify a source (exit 2 if invalid)
+skill-seekers doctor [--json]              # Health check for dependencies (--json for CI/agents)
 skill-seekers config                       # Configure API keys and settings
 skill-seekers workflows                    # List and apply workflow presets
 skill-seekers resume <job_id>              # Resume interrupted scraping

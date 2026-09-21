@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `oven-sh/bun` — 26 default patterns, 0 followed patterns, 24 file(s) materialized.
+Mirror of `oven-sh/bun` — 26 default patterns, 0 followed patterns, 25 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `oven-sh/bun` — 26 default patterns, 0 followed patterns, 24 file(s)
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 24 |
+| Files         | 25 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -71,18 +71,19 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 10 | ✓ | [`.github/workflows/CLAUDE.md`](.github/workflows/CLAUDE.md) |
 | 11 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 12 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 13 | ✓ | [`scripts/build/CLAUDE.md`](scripts/build/CLAUDE.md) |
-| 14 | ✓ | [`scripts/verify-baseline-static/CLAUDE.md`](scripts/verify-baseline-static/CLAUDE.md) |
-| 15 | ✓ | [`src/AGENTS.md`](src/AGENTS.md) |
-| 16 | ✓ | [`src/CLAUDE.md`](src/CLAUDE.md) |
-| 17 | ✓ | [`src/js/AGENTS.md`](src/js/AGENTS.md) |
-| 18 | ✓ | [`src/js/CLAUDE.md`](src/js/CLAUDE.md) |
-| 19 | ✓ | [`src/jsc/bindings/v8/AGENTS.md`](src/jsc/bindings/v8/AGENTS.md) |
-| 20 | ✓ | [`src/jsc/bindings/v8/CLAUDE.md`](src/jsc/bindings/v8/CLAUDE.md) |
-| 21 | ✓ | [`test/AGENTS.md`](test/AGENTS.md) |
-| 22 | ✓ | [`test/CLAUDE.md`](test/CLAUDE.md) |
-| 23 | ✓ | [`test/internal/source-lints/CLAUDE.md`](test/internal/source-lints/CLAUDE.md) |
-| 24 | ✓ | [`test/js/node/test/parallel/CLAUDE.md`](test/js/node/test/parallel/CLAUDE.md) |
+| 13 | ✓ | [`scripts/build/ci-images/CLAUDE.md`](scripts/build/ci-images/CLAUDE.md) |
+| 14 | ✓ | [`scripts/build/CLAUDE.md`](scripts/build/CLAUDE.md) |
+| 15 | ✓ | [`scripts/verify-baseline-static/CLAUDE.md`](scripts/verify-baseline-static/CLAUDE.md) |
+| 16 | ✓ | [`src/AGENTS.md`](src/AGENTS.md) |
+| 17 | ✓ | [`src/CLAUDE.md`](src/CLAUDE.md) |
+| 18 | ✓ | [`src/js/AGENTS.md`](src/js/AGENTS.md) |
+| 19 | ✓ | [`src/js/CLAUDE.md`](src/js/CLAUDE.md) |
+| 20 | ✓ | [`src/jsc/bindings/v8/AGENTS.md`](src/jsc/bindings/v8/AGENTS.md) |
+| 21 | ✓ | [`src/jsc/bindings/v8/CLAUDE.md`](src/jsc/bindings/v8/CLAUDE.md) |
+| 22 | ✓ | [`test/AGENTS.md`](test/AGENTS.md) |
+| 23 | ✓ | [`test/CLAUDE.md`](test/CLAUDE.md) |
+| 24 | ✓ | [`test/internal/source-lints/CLAUDE.md`](test/internal/source-lints/CLAUDE.md) |
+| 25 | ✓ | [`test/js/node/test/parallel/CLAUDE.md`](test/js/node/test/parallel/CLAUDE.md) |
 
 ---
 

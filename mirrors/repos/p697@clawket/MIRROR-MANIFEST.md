@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `p697/clawket` — 26 default patterns, 0 followed patterns, 12 file(s) materialized.
+Mirror of `p697/clawket` — 26 default patterns, 0 followed patterns, 14 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `p697/clawket` — 26 default patterns, 0 followed patterns, 12 file(s
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 12 |
+| Files         | 14 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -64,13 +64,15 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 3 | ✓ | [`apps/bridge-cli/CLAUDE.md`](apps/bridge-cli/CLAUDE.md) |
 | 4 | ✓ | [`apps/mobile/AGENTS.md`](apps/mobile/AGENTS.md) |
 | 5 | ✓ | [`apps/mobile/CLAUDE.md`](apps/mobile/CLAUDE.md) |
-| 6 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 7 | ✓ | [`packages/agent-protocol/AGENTS.md`](packages/agent-protocol/AGENTS.md) |
-| 8 | ✓ | [`packages/agent-protocol/CLAUDE.md`](packages/agent-protocol/CLAUDE.md) |
-| 9 | ✓ | [`packages/bridge-runtime/AGENTS.md`](packages/bridge-runtime/AGENTS.md) |
-| 10 | ✓ | [`packages/bridge-runtime/CLAUDE.md`](packages/bridge-runtime/CLAUDE.md) |
-| 11 | ✓ | [`packages/relay-shared/AGENTS.md`](packages/relay-shared/AGENTS.md) |
-| 12 | ✓ | [`packages/relay-shared/CLAUDE.md`](packages/relay-shared/CLAUDE.md) |
+| 6 | ✓ | [`apps/speech-worker/AGENTS.md`](apps/speech-worker/AGENTS.md) |
+| 7 | ✓ | [`apps/speech-worker/CLAUDE.md`](apps/speech-worker/CLAUDE.md) |
+| 8 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 9 | ✓ | [`packages/agent-protocol/AGENTS.md`](packages/agent-protocol/AGENTS.md) |
+| 10 | ✓ | [`packages/agent-protocol/CLAUDE.md`](packages/agent-protocol/CLAUDE.md) |
+| 11 | ✓ | [`packages/bridge-runtime/AGENTS.md`](packages/bridge-runtime/AGENTS.md) |
+| 12 | ✓ | [`packages/bridge-runtime/CLAUDE.md`](packages/bridge-runtime/CLAUDE.md) |
+| 13 | ✓ | [`packages/relay-shared/AGENTS.md`](packages/relay-shared/AGENTS.md) |
+| 14 | ✓ | [`packages/relay-shared/CLAUDE.md`](packages/relay-shared/CLAUDE.md) |
 
 ---
 

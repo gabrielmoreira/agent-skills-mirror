@@ -155,7 +155,7 @@ python3 ~/.codex/skills/.system/skill-installer/scripts/install-skill-from-githu
   --repo aldegad/sprite-gen --path . --name sprite-gen
 ```
 
-이미지 생성은 이 엔진의 일부다 (`sprite_gen.gen`, 프로바이더 `codex` 와 `grok`; 범용 `image-gen` 스킬은 그 위에 얹힌 얇은 셔틀이다). 비디오는 **본인의** 자격 증명 — `grok` CLI 로그인 또는 `XAI_API_KEY` — 을 사용하며, 레포에는 아무것도 함께 배포되지 않는다 ([docs/video.md](docs/video.md)).
+이미지 생성은 이 엔진의 일부다 (`sprite_gen.gen`, 이미 내고 있는 구독으로 도는 프로바이더 `codex` 와 `grok`, 그리고 서버·SaaS 용으로 호출당 과금되며 명시해야만 도는 `openai` 프로바이더; 범용 `image-gen` 스킬은 그 위에 얹힌 얇은 셔틀이다). 비디오는 **본인의** 자격 증명 — `grok` CLI 로그인 또는 `XAI_API_KEY` — 을 사용하며, 레포에는 아무것도 함께 배포되지 않는다 ([docs/video.md](docs/video.md)).
 
 `sprite-gen` 은 CPython 3.10+ 를 지원하고, CI 는 3.10 과 3.14 에서 돈다. 퀵스타트에는 `venv`/`ensurepip` 이 동작하는 Python 이 필요하다.
 

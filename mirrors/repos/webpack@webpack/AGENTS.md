@@ -60,37 +60,80 @@ The directory listings below are the canonical map of the repository. **Whenever
   - `lib/async-modules/` — Top-level await.
   - `lib/bun/` — Bun target externals preset (`bun:*` and node.js built-in modules).
   - `lib/cache/` — Filesystem and memory caches.
-  - `lib/config/` — Config defaults, normalization, target presets.
+  - `lib/config/` — Everything between a user's config object and a `Compiler`:
+    `validateSchema` checks it against the schema, `normalization.js` canonicalizes its
+    shape, `defaults.js` fills values in, and `WebpackOptionsApply` reads the result into
+    the plugins it implies. `WebpackOptionsDefaulter` is the normalize-then-default pair
+    under one deprecated name, and `OptionsApply` the base class the apply step extends.
+    Also holds the target presets, `defineConfig`, and `PlatformPlugin`, which pins the
+    target platform a `target: false` build cannot infer.
   - `lib/container/` — Module Federation.
   - `lib/context/` — Context modules (`require.context`, dynamic request directories) and the plugins narrowing them.
   - `lib/css/` — CSS Modules, CSS parsing and generation.
   - `lib/debug/` — Debug helpers.
-  - `lib/dependencies/` — `Dependency` classes and their templates (HarmonyImport, CommonJsRequire, RequireContext, …).
+  - `lib/define/` — Replacing a free identifier with a constant at parse time:
+    `DefinePlugin`, and the two plugins that are a `DefinePlugin` fed from somewhere
+    else — `EnvironmentPlugin` from `process.env` and `DotenvPlugin` from a `.env`
+    file. `ProvidePlugin` substitutes an import rather than a value, so it is not one
+    of these.
+  - `lib/dependencies/` — The concrete `Dependency` subclasses and their templates
+    (HarmonyImport, CommonJsRequire, RequireContext, …); the `Dependency` they extend is
+    in `lib/graph/` and the `DependencyTemplate` in `lib/template/`.
   - `lib/devtool/` — Source maps: the `devtool` plugins and the filename helpers they template with.
+  - `lib/diagnostics/` — Plugins that raise a build-wide error or warning of their own:
+    a case-insensitive filesystem collision, a deprecated option, a missing `mode`, and
+    `IgnoreWarningsPlugin`, which filters what the others produced. `NoEmitOnErrorsPlugin`
+    joins them because it reacts to the errors rather than raising one. The classes they
+    construct live in `lib/errors/`, and the `performance` hints in `lib/performance/`.
   - `lib/dll/` — DllPlugin / DllReferencePlugin.
   - `lib/deno/`, `lib/electron/`, `lib/node/`, `lib/web/`, `lib/webworker/` — Target-specific runtime templates and externals presets.
   - `lib/entry/` — The `entry` option: `EntryPlugin`, the `EntryOptionPlugin` that reads
     the option into it, and `DynamicEntryPlugin` for a function entry. `Entrypoint` is a
-    `ChunkGroup` rather than one of these, so it stays beside `ChunkGroup`.
+    `ChunkGroup` rather than one of these, so it lives beside `ChunkGroup` in `lib/graph/`.
   - `lib/errors/` — Error and warning class hierarchy.
   - `lib/esm/` — ESM-specific output (e.g. `import.meta`).
   - `lib/externals/` — External modules: the `externals` option's module, factory plugin and the presets built on them.
-  - `lib/graph/` — The module and chunk graphs a compilation holds: `ModuleGraph` and its
-    connections, `ChunkGraph` and the `buildChunkGraph` that fills it, and the `ExportsInfo`
-    recording what each module exports and who uses it.
-  - `lib/hmr/` — Hot Module Replacement plugins.
+  - `lib/graph/` — The module and chunk graphs a compilation holds, and the things they
+    are graphs of: `ModuleGraph` and its connections, `ChunkGraph` and the
+    `buildChunkGraph` that fills it, and the `ExportsInfo` recording what each module
+    exports and who uses it. The edges are `Dependency`, held by a `DependenciesBlock`
+    (`AsyncDependenciesBlock` where the block is loaded on demand); the chunk side holds
+    `Chunk`, `ChunkGroup`, `Entrypoint` and `HotUpdateChunk`. A `Dependency` subclass a
+    plugin owns lives in `lib/dependencies/` and the `DependencyTemplate` it prints
+    through in `lib/template/` — this holds the base classes every build has.
+  - `lib/hmr/` — Hot Module Replacement: `HotModuleReplacementPlugin` and the runtime
+    modules, lazy-compilation backend and helpers it drives.
   - `lib/html/` — Experimental HTML support.
-  - `lib/ids/` — Module/chunk id assignment plugins.
+  - `lib/ids/` — Module/chunk id assignment plugins, and `RecordIdsPlugin`, which persists
+    the assignment across builds through `recordsPath`.
   - `lib/javascript/` — JavaScript parsing (webpack's own ECMAScript parser, ported from acorn), generation, exports analysis. `syntax.js` serves every production a build reaches, so `grammar.js` (the full grammar) and `regexp.js` (the pattern validator) are installed onto the parser's prototype only when something asks for one — keep it that way and never `require` either from a path a build takes.
   - `lib/json/` — JSON modules.
-  - `lib/library/` — UMD/AMD/ESM/CommonJS library output formats.
-  - `lib/loaders/` — Loader execution runtime (vendored loader-runner): pitching/normal loader iteration and loader module loading.
+  - `lib/library/` — UMD/AMD/ESM/CommonJS library output formats, and the deprecated
+    `LibraryTemplatePlugin` that reaches them through the old two-argument API.
+  - `lib/loaders/` — Loader execution runtime (vendored loader-runner): pitching/normal loader
+    iteration and loader module loading, plus the `LoaderOptionsPlugin` and
+    `LoaderTargetPlugin` that feed the loader context.
   - `lib/logging/` — Logger API and console formatting.
-  - `lib/optimize/` — Optimization plugins (`SplitChunksPlugin`, `ConcatenatedModule`, …).
+  - `lib/module/` — What a module is and what makes one: the `Module` base class and
+    `NormalModule`, the `ModuleFactory` hierarchy that builds them (`NormalModuleFactory`,
+    `NullFactory`, `SelfModuleFactory`), the `Generator` base class and the
+    `CodeGenerationResults` its output lands in, `ModuleProfile`, and the two constant
+    files naming module and source types. A module subclass a plugin owns lives with
+    that plugin — `ExternalModule` in `lib/externals/`, `CssModule` in `lib/css/` — so
+    this holds the ones every build has.
+  - `lib/optimize/` — Optimization plugins (`SplitChunksPlugin`, `ConcatenatedModule`, …),
+    including `CircularModulesPlugin`, which flags the import cycles the others reason
+    about, and `LazyBarrel`, which finds the barrel files worth deferring.
+    `ConcatenationScope` is the protocol scope hoisting runs on: `ConcatenatedModule`
+    is the only thing that constructs one, and a generator anywhere in `lib/` renders
+    through it.
   - `lib/performance/` — Asset/entrypoint size hints.
   - `lib/prefetch/` — Prefetch and preload, which are two mechanisms sharing a word:
     the runtime modules emitting `<link rel="prefetch">` for a chunk, and `PrefetchPlugin`
     and `AutomaticPrefetchPlugin`, which resolve a module eagerly at build time instead.
+  - `lib/resolve/` — Turning a request into a file: the `ResolverFactory` every resolve goes
+    through, and the two plugins that redirect a request before it gets there —
+    `IgnorePlugin` and `NormalModuleReplacementPlugin`.
   - `lib/rules/` — `module.rules` matching engine.
   - `lib/runtime/` — Runtime modules emitted into bundles (chunk loaders, public-path, …),
     the `RuntimeModule` base class they extend, the `RuntimeGlobals` symbols they declare,
@@ -101,15 +144,18 @@ The directory listings below are the canonical map of the repository. **Whenever
   - `lib/stats/` — Stats output (default printer, JSON factories).
   - `lib/template/` — Source templates and init fragments the generators print through,
     including `RuntimeTemplate`, the printing helper every generator and dependency
-    template is handed.
+    template is handed, the `DependencyTemplate` base class, and
+    `ModuleInfoHeaderPlugin`, which prints the per-module comment header into the
+    generated bundle.
   - `lib/typescript/` — Experimental TypeScript module support (strip types via the Node.js TypeScript API).
   - `lib/url/` — `new URL(asset, import.meta.url)` references.
-  - `lib/util/` — Utility helpers.
+  - `lib/util/` — Utility helpers, including `RequestShortener`, which renders a request
+    relative to the context for every message a user reads.
   - `lib/wasm/`, `lib/wasm-async/`, `lib/wasm-sync/` — WebAssembly module support.
   - `lib/watch/` — Watch mode: the watching handles a compiler returns, and `WatchIgnorePlugin`.
 - `hot/` — Runtime code shipped to browsers for HMR (browser-side, not Node tooling).
 - `bin/` — `webpack` CLI entry point.
-- `tooling/` — Repo-internal scripts: build/codegen (runtime/wasm generators, hash-debug tool, and `generate-types.js`, the one entry point and one file for everything derived from `schemas/**/*.json` — it reads each schema once, emits that schema's declaration and its precompiled validator, then emits `types.d.ts`, so ordering is internal and one check run names every stale output) invoked by `yarn fix:special`, plus standalone analysis tools such as `compare-css-tools.js` / `compare-html-tools.js` / `compare-js-tools.js` (`yarn benchmark:css-tools`, `yarn benchmark:html-tools`, `yarn benchmark:js-tools`), which share the measuring harness in `compare-tools-harness.js`. Those three need no arguments and no reading of their source: each runs what webpack owns for that language and the ecosystem's equivalents over popular framework stylesheets, real documents and shipped JavaScript bundles, printing **three tables per fixture** — parsing alone, parsing and printing readably (`beautify`), and parsing and printing minified (`minify`) — so what a parse costs is separated from what the printing and the transforms on top of it cost. Every table reports best-of-3 wall and cpu ms and the worker's own peak RSS (each tool × fixture measured in its own process, so the numbers are attributable; read from `/proc/self/status`, since Linux carries `maxRSS` across `fork`+`exec` and a worker asking for its own would report the parent's). **Read wall and cpu together**: cpu above wall is a tool using more than one core (V8's background threads, a native thread pool), cpu below it is a tool waiting rather than computing. A tool that works in a service process of its own says so in its name and reports `-` for cpu and peak, which are spent where nothing here can see them — esbuild is the one today. The two printing tables add output size raw and under gzip/brotli/zstd (the `test:size` settings) and whether the output lost classes / changed the DOM / stopped naming a property ("rejects it" rows mean the tool errored on that input), plus what printing the output a second time moved (`2nd`). The JavaScript one is shaped by webpack owning a parser there and no printer: webpack has a row in the parse table only, and that table's last column holds every ESTree parser against acorn's tree and names the first node where the two differ — which is how a divergence in `lib/javascript/syntax.js` is caught — while a parser answering in a dialect of its own reads as `own dialect` rather than as a disagreement. A round-trip printer that reformats nothing — postcss for CSS, parse5 for HTML — sits in the `beautify` table as the floor the others are read against. `FIXTURE=`, `TOOL=` and `STAGE=` narrow a run to matching rows. They install the packages they compare against into `node_modules/.cache/` on first run rather than into webpack's dependencies; expect the first run to install for a minute and every full run to take upwards of ten. `type-coverage.js` (`yarn types:cover`) reports how much of `lib/` is precisely typed. `find-deep-webpack-imports.js` (`yarn find-deep-imports`) answers which `webpack/lib/…` paths the published ecosystem imports directly: it ranks the most downloaded `webpack`, `webpack-plugin` and `webpack-loader` packages off the registry's search endpoint — which carries weekly downloads with each hit, so `api.npmjs.org` is never needed — then reads each one's tarball rather than installing it, so no lifecycle script of a stranger's package runs. It counts a path only where it is imported, never a bare string, because a package that bundled webpack carries webpack's own `makeSerializable` requests and imports none of them. What it finds is kept in `tooling/deep-webpack-imports.json`, which `--write` refreshes and whose `removed` map names the paths no webpack 5 build can reach with the reason — deleted with the webpack 4 API, imported only by a package that is webpack 4 only, or probed for inside a `try` to detect webpack 4, where a re-export would pick the wrong branch — so only a genuine break fails. `--check` reads that record and nothing else — no network, and no install, so the `Deep Imports` job runs it on every pull request in under a second, comments what broke and what imports it, and fails; it names the packages and the downloads behind each one, and retracts the comment once the paths resolve again; `test/unitCases/deepPathShims.unittest.js` asserts the same thing off the same record, so a move out of `lib/` root learns it owes a re-export from a test rather than from a bug report. `COUNT=` sets how many packages per keyword (default 200), and a package the broad keyword shares with a narrow one is scanned once; tarballs cache under `node_modules/.cache/`, so a re-run costs nothing. Only the collecting half needs the network. `measure-color-agreement.js` (`yarn measure:color-agreement`) is the third: it asks a real browser for its own color conversions rather than for a pixel, and prints how far they sit from webpack's — which is where the rounding margins in `lib/css/syntax.js` and the list of spaces an engine reads through another transfer come from. Re-run it (a few seconds; `PUPPETEER_EXECUTABLE_PATH` picks the binary) rather than adjusting either by hand. **The CSS and HTML comparisons open with a section no one has to ask for**: before the install, each holds webpack's own printer to what it owes whatever it printed, over `test/**/*.css` / `test/**/*.html` plus its own fixtures and whatever the cache already holds, in seconds rather than minutes. `--invariants` runs that section and stops, for a caller that wants the relations without the comparison behind them. Two relations, under each option set the script's own webpack rows are measured with: minifying an already-minified source changes nothing, and (HTML) how a value was spelled does not decide what it minifies to. This is the shape of defect a comparison cannot see, because being a few bytes off its own best is not being worse than another tool: `method=GET` folding only where the source quoted it went unnoticed until this sweep, which is what #22095 fixed. A respelling is lexical (a delimiter, a character reference, the case of a name) and is checked against webpack's own tokenizer before use, so a mutation that moved the document is dropped rather than reported; whitespace inside a tag is deliberately not one, since a tag nothing beats is echoed as written. Each finding is bisected to what carries it and re-run on the enclosing tag alone, so the report names a repro, and groups by it — one printer defect reaches hundreds of pages. `FIXTURE=`, `RELATION=`, `PRESET=` and `SPELLING=` narrow a run. `--invariants` exits non-zero while any finding stands and findings stand today, so read it rather than gating on it, and no embedded body is minified: the CSS minifier has a fixed point of its own and reaching it here would report every page holding a `<style>`. The same question is asked of every other tool in the comparison's own tables, where the `2nd` column is what a second pass over the tool's own output moved — `-` being the answer a printer that is done printing gives.
+- `tooling/` — Repo-internal scripts: build/codegen (runtime/wasm generators, hash-debug tool, and `generate-types.js`, the one entry point and one file for everything derived from `schemas/**/*.json` — it reads each schema once, emits that schema's declaration and its precompiled validator, then emits `types.d.ts`, so ordering is internal and one check run names every stale output) invoked by `yarn fix:special`, plus standalone analysis tools such as `compare-css-tools.js` / `compare-html-tools.js` / `compare-js-tools.js` (`yarn benchmark:css-tools`, `yarn benchmark:html-tools`, `yarn benchmark:js-tools`), which share the measuring harness in `compare-tools-harness.js`. Those three need no arguments and no reading of their source: each runs what webpack owns for that language and the ecosystem's equivalents over popular framework stylesheets, real documents and shipped JavaScript bundles, printing **three tables per fixture** — parsing alone, parsing and printing readably (`beautify`), and parsing and printing minified (`minify`) — so what a parse costs is separated from what the printing and the transforms on top of it cost. Every table reports best-of-3 wall and cpu ms and the worker's own peak RSS (each tool × fixture measured in its own process, so the numbers are attributable; read from `/proc/self/status`, since Linux carries `maxRSS` across `fork`+`exec` and a worker asking for its own would report the parent's). **Read wall and cpu together**: cpu above wall is a tool using more than one core (V8's background threads, a native thread pool), cpu below it is a tool waiting rather than computing. A tool that works in a service process of its own says so in its name and reports `-` for cpu and peak, which are spent where nothing here can see them — esbuild is the one today. The two printing tables add output size raw and under gzip/brotli/zstd (the `test:size` settings) and whether the output lost classes / changed the DOM / stopped naming a property ("rejects it" rows mean the tool errored on that input), plus what printing the output a second time moved (`2nd`). The JavaScript one is shaped by webpack owning a parser there and no printer: webpack has a row in the parse table only, and that table's last column holds every ESTree parser against acorn's tree and names the first node where the two differ — which is how a divergence in `lib/javascript/syntax.js` is caught — while a parser answering in a dialect of its own reads as `own dialect` rather than as a disagreement. A round-trip printer that reformats nothing — postcss for CSS, parse5 for HTML — sits in the `beautify` table as the floor the others are read against. `FIXTURE=`, `TOOL=` and `STAGE=` narrow a run to matching rows. They install the packages they compare against into `node_modules/.cache/` on first run rather than into webpack's dependencies; expect the first run to install for a minute and every full run to take upwards of ten. `type-coverage.js` (`yarn types:cover`) reports how much of `lib/` is precisely typed. `find-deep-webpack-imports.js` (`yarn find-deep-imports`) answers which `webpack/lib/…` paths the published ecosystem imports directly: it ranks the most downloaded `webpack`, `webpack-plugin` and `webpack-loader` packages off the registry's search endpoint — which carries weekly downloads with each hit, so `api.npmjs.org` is never needed — then reads each one's tarball rather than installing it, so no lifecycle script of a stranger's package runs. It counts a path only where it is imported, never a bare string, because a package that bundled webpack carries webpack's own `makeSerializable` requests and imports none of them. What it finds is kept in `tooling/deep-webpack-imports.json`, which `--write` refreshes and whose `removed` map names the paths no webpack 5 build can reach with the reason — deleted with the webpack 4 API, imported only by a package that is webpack 4 only, or probed for inside a `try` to detect webpack 4, where a re-export would pick the wrong branch — so only a genuine break fails. `--check` reads that record and nothing else — no network, and no install, so the `Deep Imports` job runs it on every pull request in under a second, comments what broke and what imports it, and fails; it names the packages and the downloads behind each one, and retracts the comment once the paths resolve again; `test/unitCases/deepPathShims.unittest.js` asserts the same thing off the same record, so a move out of `lib/` root learns it owes a re-export from a test rather than from a bug report. `COUNT=` sets how many packages per keyword (default 200), and a package the broad keyword shares with a narrow one is scanned once; tarballs cache under `node_modules/.cache/`, so a re-run costs nothing. Only the collecting half needs the network. `measure-color-agreement.js` (`yarn measure:color-agreement`) is the third: it asks a real browser for its own color conversions rather than for a pixel, and prints how far they sit from webpack's — which is where the rounding margins in `lib/css/syntax.js` and the list of spaces an engine reads through another transfer come from. Re-run it (a few seconds; `PUPPETEER_EXECUTABLE_PATH` picks the binary) rather than adjusting either by hand. **The CSS and HTML comparisons open with a section no one has to ask for**: before the install, each holds webpack's own printer to what it owes whatever it printed, over `test/**/*.css` / `test/**/*.html` plus its own fixtures and whatever the cache already holds, in seconds rather than minutes. `--invariants` runs that section and stops, for a caller that wants the relations without the comparison behind them. Two relations, under each option set the script's own webpack rows are measured with: minifying an already-minified source changes nothing, and (HTML) how a value was spelled does not decide what it minifies to. This is the shape of defect a comparison cannot see, because being a few bytes off its own best is not being worse than another tool: `method=GET` folding only where the source quoted it went unnoticed until this sweep, which is what #22095 fixed. A respelling is lexical (a delimiter, a character reference, the case of a name) and is checked against webpack's own tokenizer before use, so a mutation that moved the document is dropped rather than reported; whitespace inside a tag is deliberately not one, since a tag nothing beats is echoed as written, and a tag another language writes into is skipped whole, since `=""` on a `{% endif %}` restates no value. Each finding is bisected to what carries it and re-run on the enclosing tag alone, so the report names a repro, and groups by it — one printer defect reaches hundreds of pages. `FIXTURE=`, `RELATION=`, `PRESET=` and `SPELLING=` narrow a run. `--invariants` exits non-zero on any finding, which is what the `invariants` job gates every pull request on (`yarn test:invariants`, or `:css` / `:html` for one of them) — a relation is cheap to hold and a regression in one is a defect, so it fails rather than reporting. A divergence the printer owes nothing for is carried in the script's own `EXPECTED` table with the reason beside it, never suppressed by a passing gate, and an entry there that stops matching is itself a finding, so a fix retires its expectation rather than leaving it to rot. No embedded body is minified: the CSS minifier has a fixed point of its own and reaching it here would report every page holding a `<style>`. The same question is asked of every other tool in the comparison's own tables, where the `2nd` column is what a second pass over the tool's own output moved — `-` being the answer a printer that is done printing gives. `retry.js` is the one that runs a command rather than reporting on one: it runs a setup command again when it fails, so a registry 503 or a dropped browser download reds no job. Every command in `.github/workflows/` that reaches the network goes through it — installs, `yarn upgrade`, the Firefox and WebKit downloads and the `git submodule update` fetches — as `node tooling/retry.js <command>`, with `RETRY_ATTEMPTS` (3) and `RETRY_DELAY` (5000ms) tuning it; a value that is not a positive integer or a non-negative number is refused rather than defaulted, since one reaching the loop as `NaN` retried until the job timed out. It uses node builtins only, because each caller runs before `yarn install` has written `node_modules`.
 - `assembly/` — WebAssembly source for the hash function.
 - `setup/` — One-time setup. `setup.js` (`yarn setup`) is the only entry point and picks its own path: a contributor at a terminal gets the interactive one, which installs yarn when it is missing and links through yarn's registry, while everything else gets the non-interactive one — it verifies the lockfile instead of rewriting it, installs no global yarn, and links the checkout in as `node_modules/webpack` without touching yarn's machine-global registry. What it reads is both streams being a terminal plus an unset `CI`, never a list of vendor variables, so an agent nobody has heard of yet takes the safe path — but one that allocates a PTY reads as a contributor, and should set `WEBPACK_SETUP=automated`, which with `interactive` forces either path. Safe to re-run.
 
@@ -148,7 +194,7 @@ Keep `--depth 1`: `wpt` alone is ~161k files. `--remote` changes the commit the 
 
 - `declarations.d.ts`, `declarations.test.d.ts`, `module.d.ts`.
 
-The loader context is not one of these: `LoaderContext` and the loader-definition types are JSDoc in `lib/` like every other type, declared where the code that adds each part lives (`lib/NormalModule.js`, `lib/loaders/LoaderRunner.js`, `lib/dependencies/LoaderPlugin.js`, `lib/HotModuleReplacementPlugin.js`) and re-exported from `lib/index.js`, which is the file `generate-types.js` reads webpack's public type surface from.
+The loader context is not one of these: `LoaderContext` and the loader-definition types are JSDoc in `lib/` like every other type, declared where the code that adds each part lives (`lib/module/NormalModule.js`, `lib/loaders/LoaderRunner.js`, `lib/dependencies/LoaderPlugin.js`, `lib/hmr/HotModuleReplacementPlugin.js`) and re-exported from `lib/index.js`, which is the file `generate-types.js` reads webpack's public type surface from.
 
 **Configuration**
 
@@ -194,6 +240,47 @@ The two config layers differ: **`normalization.js`** canonicalizes the user-supp
 **Finding a hook:** hook definitions live on the class that owns them — compiler-wide hooks in `lib/Compiler.js`, per-`Compilation` hooks in `lib/Compilation.js`; tap them with a unique plugin-name string.
 
 **Adding a runtime requirement:** declare the symbol in `lib/runtime/RuntimeGlobals.js`, emit its code with a `RuntimeModule` subclass, and inject it by tapping `runtimeRequirementInTree`/`additionalTreeRuntimeRequirements` on `compilation.hooks` (the `…InModule` variants for per-module needs).
+
+### Moving a file out of `lib/` root
+
+> [!REQUIRED]
+
+**Run `yarn find-deep-imports:check` on every move, before the commit.** A path that
+leaves `lib/` root breaks any published package importing it, and the recorded scan in
+`tooling/deep-webpack-imports.json` is what says which those are. `--write` refreshes it
+off the registry; `--check` needs no network and is what CI runs. Its `removed` map names
+the paths no webpack 5 build can reach, and the two maps are disjoint — `--write` skips a
+path `removed` names rather than recording it as a request.
+
+**A re-export is owed only to a webpack-5 package that imports the path unconditionally.**
+Read the importer's tarball, not its download count: a package whose `peerDependencies`
+or `dependencies` name webpack 5 and which requires the path at the top level gets a
+`// TODO remove in webpack 6` re-export at the old path. One that is webpack 4 only — it
+imports something webpack 5 deleted — or that probes for the path inside a `try` to detect
+webpack 4 gets an entry under `removed` with that reason instead, because a re-export
+would send it down the wrong branch.
+
+**Five things carry a path, and only the first is obvious.** Rewrite every one, then
+confirm the move by regenerating rather than by reading:
+
+1. `require("…")` and `require.resolve("…")`, including template literals and a string
+   sitting in a ternary branch lines away from its call.
+2. `@import … from "…"` in a JSDoc block.
+3. `@typedef {import("…")}` — a different form from the one above, and missing it drops
+   the type from webpack's public surface without failing anything.
+4. `tsType` in `schemas/**/*.json`, which can fail loudly in `fix:special` or silently
+   degrade a public type to `any`.
+5. `makeSerializable(Class, "webpack/lib/…")` — the request moves with the class and the
+   old one stays restorable through `registerLegacyRequest`, or a pre-move cache pack
+   stops loading.
+
+`yarn fix:special` leaving `types.d.ts` byte-identical is the check that 3 and 4 are done;
+`ConfigCacheTestCases` reporting no `Pack got invalid` line is the check that 5 is. Nothing
+static catches 1 — only building `lib/index.js` does.
+
+**Update the Architecture listing above in the same commit**, and grep it for the old path:
+prose elsewhere in this guide names files too, and those references go stale just as
+quietly.
 
 ### Diagnostics and hints
 
@@ -324,6 +411,16 @@ A perf/memory claim needs evidence, and the cheap kinds are the trustworthy ones
 4. **Wall/CPU timing** — last resort. Interleave the arms in one process, report `n` and dispersion, and treat a difference smaller than the run-to-run spread as no result.
 
 `FILTER="<case-name>" yarn benchmark` drives the repo's own cases; `test/benchmarkCases/` is the fixture set.
+
+**Some hot methods are sized to V8's inlining budget, and an edit can undo that silently.** TurboFan declines to inline a callee over its bytecode limit (460 at the time of writing), so a method sitting just under it loses the inlining — and the speed that came with it — the moment anything is added. `lib/javascript/syntax.js` keeps `readWord`, `readString` and `finishToken` under that limit deliberately, with their rare arms split into `_readWordIntoCache`, `_readWordUncacheable`, `_readStringCold` and `_updateContext`; `readWord` has about six bytes of headroom, and once cost 1.4% from one added argument. Read the size back before and after touching them:
+
+```sh
+node --print-bytecode --print-bytecode-filter=readWord <script that parses something>
+```
+
+`node --trace-turbo-inlining` names what was inlined where, and reports `Cannot consider <name> for inlining (reason: 5)` for a callee that is too large.
+
+**Instruction counts and time are not the same claim.** Callgrind over a warmed parse (`valgrind --tool=callgrind --smc-check=all-non-file`, differencing two run lengths so startup and tier-up drop out) resolves work to about ±0.2% and is the right tool for "does this do less". It does not establish that a build gets faster: CPU time on a shared machine needs tens of fresh processes per arm before it resolves a few percent, and an allocation change moves GC timing in steps that swamp the mutator delta. Say which of the two a number is.
 
 A claim about **webpack's CSS or HTML minifier, or its JavaScript parser, versus the ecosystem's** (size, speed, memory, or safety) is already harnessed: run `yarn benchmark:css-tools` / `yarn benchmark:html-tools` / `yarn benchmark:js-tools` and read the tables — see the `tooling/` entry in [Architecture](#architecture) for what they report — rather than hand-rolling a comparison.
 

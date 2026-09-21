@@ -108,6 +108,12 @@ still cover the rule, which is a judgement only review makes.
 - **INV-AUTH-01** — The management plane (`/api/*`) and the data plane (`/v1/*`) never share an
   admission credential.
   Enforced by `tests/server/server-management-auth.test.ts`.
+- **INV-LAB-01** — The protected core entrypoints carry no load-time import chain into optional
+  Lab code (static, side-effect, and re-export edges are walked transitively) and never name
+  Lab even in a direct dynamic import; deferred lazy edges through non-Lab modules behind
+  activation checks are the sanctioned pattern. Gated Lab activation also stays synchronous
+  until `startServer` returns; see [`compatibility-lab.md`](adapters/compatibility-lab.md).
+  Enforced by `tests/lab/core-lab-boundary.test.ts`.
 - **INV-RESTORE-01** — `ocx restore` restores native Codex from the pristine catalog with
   retired bare/account-qualified native rows omitted from the output; the original backup stays
   unchanged. The service-stop and uninstall paths of the same promise are covered
@@ -133,6 +139,11 @@ platform suite's file set. Its dedicated batch step sets `OCX_TEST_NO_QUEUE=1`: 
 processes are one logical runner, while each process still installs its own isolated home and test
 guards. The workflow contract and process bounds live in
 [`ops/docs-and-release.md`](ops/docs-and-release.md#cross-platform-ci).
+
+`structure/manifest.json` declares both source-review coverage and cross-cutting contract authority.
+`scripts/structure-ssot.ts` validates that topology, and generated `structure/INDEX.md` publishes it.
+The [structure rules](AGENTS.md#the-source-to-doc-map) define when review requires a content edit;
+contract authority never reduces the source map's many-to-many review fan-out.
 
 Two invariants are stated here without a binding, and `grace.unboundInvariants` in
 [`manifest.json`](manifest.json) carries the reason for each. They are true statements about the system;
@@ -172,7 +183,7 @@ Pool quota producers and account commands follow the [bounded raw-observation co
 
 Account quota surfaces use [safe probe diagnostics](transports/inventory.md#account-quota-failure-diagnostics) separately from quota validity, credential health and routing authority.
 
-Translated Chat request construction uses the [inline-image budget](transports/streaming-health.md#translated-chat-inline-image-budget); the shared normalizer counts retained bytes even when a wire-specific drop callback keeps the image attached.
+Translated Chat request construction uses the [inline-image budget](transports/streaming-health.md#translated-chat-inline-image-budget); the shared normalizer counts retained bytes even when a wire-specific drop callback keeps the image attached, rejects inputs above the safe decoded-pixel ceiling, caps native decode work process-wide, and stops queued work when the request is cancelled.
 
 The [explicit model-capability contract](config.md#explicit-per-model-capability-declarations) preserves operator declarations through provider storage and catalog capture; it does not infer upstream capability or change this surface's routing behavior.
 
@@ -183,3 +194,7 @@ Shared response-log retention and native SSE inspection pacing follow the [bound
 Native steering generation overrides, explicit public-API eligibility and the consent-gated wire probe follow the [shared control contract](transports/streaming-health.md#steering-settings-public-api-and-diagnostic-probe); this owner does not change routing or execute diagnostic tools.
 
 Dashboard Fast-row persistence and client refresh follow the [Fast selector rows setting contract](gui-and-management-api.md#fast-selector-rows-setting).
+
+Codex compaction can select a request-local model through the
+[existing Responses handlers](transports/responses.md#compaction-routing-overrides) for the configured
+manual and automatic triggers, while subsequent turns keep their conversation settings.

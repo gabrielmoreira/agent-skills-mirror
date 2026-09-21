@@ -1,6 +1,6 @@
 ---
 name: figure-style
-description: "Correctness and legibility checklist for publication figures, plus a matplotlib sidecar. Load before plotting anything and call `apply_figure_style()` (role-mapped font ladder, outward ticks, frameless legends, 300-dpi saves, CJK-safe fonts). Covers data fidelity, label budgets, axis/colour/type rules, chart choice by data shape, composition, and a mandatory render-then-inspect QA pass (bbox collisions + per-panel visual crops). Helpers: focal_palette, bar_with_points, strip_with_median, end_of_line_labels, panel_letter, set_frame, panel_crops. Multi-panel assembly lives in figure-composer; whole-paper figure ordering in paper-narrative."
+description: "Correctness and legibility checklist for publication figures, plus a matplotlib sidecar. Load before plotting anything and call `apply_figure_style()` (role-mapped font ladder, outward ticks, frameless legends, 300-dpi saves, CJK-safe fonts). Covers data fidelity, label budgets, axis/colour/type rules, chart choice by data shape, composition, and a mandatory render-then-inspect QA pass (bbox collisions + per-panel visual crops). Helpers: focal_palette, bar_with_points, strip_with_median, end_of_line_labels, panel_letter, set_frame, panel_crops, save_panel_crops (QA crops go to .cache/, never into the output figures directory). Multi-panel assembly lives in figure-composer; whole-paper figure ordering in paper-narrative."
 license: Apache-2.0
 ---
 
@@ -231,17 +231,22 @@ leaders, or two confusable series colours. Crop each panel to its own file
 and inspect every crop with Wisp's `view_image` tool:
 
 ```python
-from PIL import Image
-
 fig.savefig("figure.png")
-for letter, box in panel_crops(fig).items():
-    Image.open("figure.png").crop(box).save(f"figure-{letter}.png")
+save_panel_crops("figure.png", panel_crops(fig))  # → .cache/figure-style/
 ```
 
-Leave Python, then `view_image` each crop asking: every glyph legible
-against its background? smallest element still has a stroke or stub? leaders
-uncrossed? any two series colours confusable? legend beside what it keys?
-A visual defect that passed the collision scan is still a defect.
+Leave Python, then `view_image` each returned path asking: every glyph
+legible against its background? smallest element still has a stroke or stub?
+leaders uncrossed? any two series colours confusable? legend beside what it
+keys? A visual defect that passed the collision scan is still a defect.
+
+**Crops are not products.** They are throwaway inspection files and never
+go in the figures/output directory, not even in a subfolder of it — only
+the figure itself is delivered. `save_panel_crops` keeps them in
+`.cache/figure-style/` and wipes that directory on every call; if you crop
+by hand, write to the same place. Delete it once the figure passes
+(`shutil.rmtree(".cache/figure-style", ignore_errors=True)`), and never
+report a crop as an output.
 
 **3. R output.** Prefer explicit `ggsave(filename, plot = p, dpi = 300,
 bg = "white", ...)` over the active device; for base graphics open

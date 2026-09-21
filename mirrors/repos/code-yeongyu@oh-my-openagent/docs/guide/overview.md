@@ -181,7 +181,7 @@ Override specific categories or curated agents in `omo.json`:
     "ultrabrain": { "model": "openai/gpt-6-astra", "reasoning": "max" },
 
     // Autonomous research and execution: GPT-6 Astra high, then GPT-5.6 Sol medium
-    "deep": { "model": "openai/gpt-6-astra", "reasoning": "high" },
+    "deep-high": { "model": "openai/gpt-6-astra", "reasoning": "high" },
 
     // Creative and design work
     "artistry": { "model": "anthropic/claude-fable-5-1", "reasoning": "max" },
@@ -196,7 +196,7 @@ Override specific categories or curated agents in `omo.json`:
     "unspecified-high": { "model": "openai/gpt-6-astra", "reasoning": "high" },
 
     // Prose and documentation
-    "writing": { "model": "anthropic/claude-fable-5-1", "reasoning": "medium" }
+    "writing": { "model": "anthropic/claude-fable-5-1", "reasoning": "low" }
   }
 }
 ```

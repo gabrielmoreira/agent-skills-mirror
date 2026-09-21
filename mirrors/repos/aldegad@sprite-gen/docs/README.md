@@ -76,6 +76,7 @@ grouping is derived from `sprite_gen/_modules.py`, the one taxonomy table.
 | [gen.md](gen.md) | `sprite-gen gen` / `gen-set`: providers, default resolution, transparency strategy per provider, row usage |
 | [video.md](video.md) | `sprite-gen video` / `video-extend` / `video-edit`: stills and clips to mp4 through Grok Imagine (image-to-video, last-frame pin, references, extension, editing) with the user's own credential |
 | [video-pipeline.md](video-pipeline.md) | Pipeline B engine contract: state canvas, keyed frames, true-period and one-shot cycles, strip/GIF/WebP, the batch |
+| [loop-review.md](loop-review.md) | Automatic loop decisions, ambiguous gait review, visual evidence and explicit cut/alignment overrides |
 | [frame-interpolation.md](frame-interpolation.md) | Generative in-betweens for sprite frames, recorded as a take |
 | [seamless-video-loop.md](seamless-video-loop.md) | Making a non-looping ambient clip loop forever (RIFE seam bridge) — a different job from pipeline B |
 

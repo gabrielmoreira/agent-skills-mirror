@@ -1,0 +1,86 @@
+# Loop automation and visual review
+
+Use the normal pipeline first. No model needs to choose every cut:
+
+```bash
+sprite-gen video-loop --frames-dir keyed/ --out-dir loop/ --state run --fps 24
+```
+
+The caller must pass the **measured source fps**, not always 24. `video-set` obtains it
+from `video-frames`. The default anchor is `none` in both commands. The default clip
+request remains 3 seconds; it does not determine the playback speed.
+
+## What the script decides
+
+- It measures repeat candidates from the keyed frames and the state's time window.
+- It scores the last displayed frame -> first frame against ordinary adjacent motion,
+  reducing repeated-pose stalls at a loop boundary.
+- Gaits below the duration floor may use a double period, as before. Above that floor,
+  similarly credible non-exact candidates at P and approximately 2P now retain 2P once
+  when it fits the window and passes the periodicity gate. Keeping two real repetitions
+  is preferable to discarding a potentially distinct phase. This may produce a two-cycle
+  loop of a genuine short gait; frames keep their original timing.
+- Near-exact short repeats, implausible longer repeats, and non-gait states are not
+  extended by that ambiguity policy. There is no character-specific frame count.
+- Alpha, frame counts and seam metrics are checked before the output is accepted.
+
+A numeric pass establishes those facts. It does **not** establish correct foot contact,
+anatomical left/right alternation, a believable gait, or that the source was drawn well.
+`cycle.review_recommended = true` marks an ambiguous-harmonic choice; `false` means
+that this particular heuristic did not flag ambiguity, not that visual quality is certified.
+The direct CLI summary preserves that flag and the guard evidence. `video-set` also
+propagates them in its item report and marks the table row `OK (review gait)`.
+
+## Material for a vision-capable reviewer
+
+Provide the original clip, the generated loop played at source speed for at least three
+repeats, the JSON report, and an ordered contact sheet with original frame indices. For
+an ambiguous harmonic include both P and 2P candidates using the same size and fps.
+A single still cannot establish a gait cycle. If the model cannot consume video, provide
+ordered frames spanning at least two candidate cycles, including several frames on both
+sides of the wrap. Do not ask it to judge motion from an unordered image collage.
+
+A human or a vision-capable model should check:
+
+1. Do the limbs alternate, or does one phase restart before its counterpart appears?
+2. At the wrap, does motion stall, snap, or reverse compared with nearby frames?
+3. Does the torso translate across the canvas, or are only the limbs/clothing moving?
+4. Are deformation or contact errors already present in the source clip?
+
+Return the evidence frame indices, chosen mode/start/length, anchor, reason and any
+uncertainty. Keep that decision separate from the unmodified automatic report. A model
+without the required visual input must not claim it reviewed the gait. Ambiguous or
+contradictory visual evidence should remain unresolved rather than inventing a precise cut.
+
+## Explicit adjustments
+
+If the visible full cycle is clear but the automatic candidate is wrong, make the choice
+explicit and keep the report's `kind = fixed`:
+
+```bash
+sprite-gen video-loop --frames-dir keyed/ --out-dir reviewed/ --state run \
+  --fps 24 --cycle fixed --start <zero-based-index> --length <frame-count>
+```
+
+Do not double a frame count unconditionally or duplicate existing frames. Choose a
+continuous interval in the original sequence. `--min-len/--max-len` can instead narrow
+an evidenced search interval while leaving the exact cut to the detector.
+
+Use `--anchor feet` only when the source shows slow in-canvas translation. It removes a
+linear horizontal trend; it is not a universal stabilizer, does not pin each planted foot,
+and can alter an already stationary subject. Start with the default `none`. Compare with
+`feet` on identical frames before selecting it. Normal body bounce, clothing motion and
+a model's changing anatomy are not position drift.
+
+Do not raise `--seam-max` merely to make a failed result pass. A source lacking a complete
+usable cycle may require a longer/new clip. Regeneration is a new generation request,
+not a hidden fallback inside loop extraction.
+
+## Reproducibility
+
+Store the source identity, engine version, exact CLI arguments, selected report and
+whether a person/model overrode the automatic choice. Keep the same fps for comparisons.
+Render comparison videos from PNG strips or lossless frame outputs, not palette GIFs.
+A reviewed example is not evidence that all future inputs will automatically attain its
+quality. Consumers can route `review_recommended` to review while retaining the automatic
+result as an explicitly labelled candidate.

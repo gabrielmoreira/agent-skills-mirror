@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `aldegad/sprite-gen` — 26 default patterns, 27 followed patterns, 37 file(s) materialized.
+Mirror of `aldegad/sprite-gen` — 26 default patterns, 27 followed patterns, 38 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `aldegad/sprite-gen` — 26 default patterns, 27 followed patterns, 37
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 27 |
-| Files         | 37 |
+| Files         | 38 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -87,41 +87,42 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`docs/frame-interpolation.md`](docs/frame-interpolation.md) |
 | 2 | ✓ | [`docs/locomotion-curation.md`](docs/locomotion-curation.md) |
-| 3 | ✓ | [`docs/qa-motion.md`](docs/qa-motion.md) |
-| 4 | ✓ | [`docs/rename-gate.md`](docs/rename-gate.md) |
-| 5 | ✓ | [`docs/seamless-video-loop.md`](docs/seamless-video-loop.md) |
-| 6 | ✓ | [`docs/states-and-frames.md`](docs/states-and-frames.md) |
-| 7 | ✓ | [`docs/subject-profiles.md`](docs/subject-profiles.md) |
-| 8 | ✓ | [`docs/troubleshooting.md`](docs/troubleshooting.md) |
-| 9 | ✓ | [`scripts/dev/README.md`](scripts/dev/README.md) |
-| 10 | ✓ | [`SKILL.md`](SKILL.md) |
-| 11 | → | [`CONTRIBUTORS.md`](CONTRIBUTORS.md) |
-| 12 | → | [`docs/architecture.md`](docs/architecture.md) |
-| 13 | → | [`docs/asset-tools.md`](docs/asset-tools.md) |
-| 14 | → | [`docs/atlas-workflow.md`](docs/atlas-workflow.md) |
-| 15 | → | [`docs/breathing.md`](docs/breathing.md) |
-| 16 | → | [`docs/chroma-alpha.md`](docs/chroma-alpha.md) |
-| 17 | → | [`docs/curation.md`](docs/curation.md) |
-| 18 | → | [`docs/directional-anchor-workflow.md`](docs/directional-anchor-workflow.md) |
-| 19 | → | [`docs/engine-export.md`](docs/engine-export.md) |
-| 20 | → | [`docs/gen.md`](docs/gen.md) |
-| 21 | → | [`docs/interpreter.md`](docs/interpreter.md) |
-| 22 | → | [`docs/layer-tracks.md`](docs/layer-tracks.md) |
-| 23 | → | [`docs/pixel-unfake.md`](docs/pixel-unfake.md) |
-| 24 | → | [`docs/README.md`](docs/README.md) |
-| 25 | → | [`docs/recolor.md`](docs/recolor.md) |
-| 26 | → | [`docs/run-contract.md`](docs/run-contract.md) |
-| 27 | → | [`docs/scene.md`](docs/scene.md) |
-| 28 | → | [`docs/sheet-slicing.md`](docs/sheet-slicing.md) |
-| 29 | → | [`docs/user-workflow.md`](docs/user-workflow.md) |
-| 30 | → | [`docs/video-pipeline.md`](docs/video-pipeline.md) |
-| 31 | → | [`docs/video.md`](docs/video.md) |
-| 32 | → | [`README.es.md`](README.es.md) |
-| 33 | → | [`README.fr.md`](README.fr.md) |
-| 34 | → | [`README.ja.md`](README.ja.md) |
-| 35 | → | [`README.ko.md`](README.ko.md) |
-| 36 | → | [`README.md`](README.md) |
-| 37 | → | [`README.zh-Hans.md`](README.zh-Hans.md) |
+| 3 | ✓ | [`docs/loop-review.md`](docs/loop-review.md) |
+| 4 | ✓ | [`docs/qa-motion.md`](docs/qa-motion.md) |
+| 5 | ✓ | [`docs/rename-gate.md`](docs/rename-gate.md) |
+| 6 | ✓ | [`docs/seamless-video-loop.md`](docs/seamless-video-loop.md) |
+| 7 | ✓ | [`docs/states-and-frames.md`](docs/states-and-frames.md) |
+| 8 | ✓ | [`docs/subject-profiles.md`](docs/subject-profiles.md) |
+| 9 | ✓ | [`docs/troubleshooting.md`](docs/troubleshooting.md) |
+| 10 | ✓ | [`scripts/dev/README.md`](scripts/dev/README.md) |
+| 11 | ✓ | [`SKILL.md`](SKILL.md) |
+| 12 | → | [`CONTRIBUTORS.md`](CONTRIBUTORS.md) |
+| 13 | → | [`docs/architecture.md`](docs/architecture.md) |
+| 14 | → | [`docs/asset-tools.md`](docs/asset-tools.md) |
+| 15 | → | [`docs/atlas-workflow.md`](docs/atlas-workflow.md) |
+| 16 | → | [`docs/breathing.md`](docs/breathing.md) |
+| 17 | → | [`docs/chroma-alpha.md`](docs/chroma-alpha.md) |
+| 18 | → | [`docs/curation.md`](docs/curation.md) |
+| 19 | → | [`docs/directional-anchor-workflow.md`](docs/directional-anchor-workflow.md) |
+| 20 | → | [`docs/engine-export.md`](docs/engine-export.md) |
+| 21 | → | [`docs/gen.md`](docs/gen.md) |
+| 22 | → | [`docs/interpreter.md`](docs/interpreter.md) |
+| 23 | → | [`docs/layer-tracks.md`](docs/layer-tracks.md) |
+| 24 | → | [`docs/pixel-unfake.md`](docs/pixel-unfake.md) |
+| 25 | → | [`docs/README.md`](docs/README.md) |
+| 26 | → | [`docs/recolor.md`](docs/recolor.md) |
+| 27 | → | [`docs/run-contract.md`](docs/run-contract.md) |
+| 28 | → | [`docs/scene.md`](docs/scene.md) |
+| 29 | → | [`docs/sheet-slicing.md`](docs/sheet-slicing.md) |
+| 30 | → | [`docs/user-workflow.md`](docs/user-workflow.md) |
+| 31 | → | [`docs/video-pipeline.md`](docs/video-pipeline.md) |
+| 32 | → | [`docs/video.md`](docs/video.md) |
+| 33 | → | [`README.es.md`](README.es.md) |
+| 34 | → | [`README.fr.md`](README.fr.md) |
+| 35 | → | [`README.ja.md`](README.ja.md) |
+| 36 | → | [`README.ko.md`](README.ko.md) |
+| 37 | → | [`README.md`](README.md) |
+| 38 | → | [`README.zh-Hans.md`](README.zh-Hans.md) |
 
 ---
 

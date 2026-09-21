@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `infiniflow/ragflow` — 26 default patterns, 0 followed patterns, 9 file(s) materialized.
+Mirror of `infiniflow/ragflow` — 26 default patterns, 0 followed patterns, 8 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `infiniflow/ragflow` — 26 default patterns, 0 followed patterns, 9 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 9 |
+| Files         | 8 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -63,11 +63,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 2 | ✓ | [`.agents/skills/go-naming/SKILL.md`](.agents/skills/go-naming/SKILL.md) |
 | 3 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
 | 4 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 5 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 6 | ✓ | [`mcp/client/client.py`](mcp/client/client.py) |
-| 7 | ✓ | [`mcp/client/streamable_http_client.py`](mcp/client/streamable_http_client.py) |
-| 8 | ✓ | [`mcp/server/server.py`](mcp/server/server.py) |
-| 9 | ✓ | [`web/CLAUDE.md`](web/CLAUDE.md) |
+| 5 | ✓ | [`mcp/client/client.py`](mcp/client/client.py) |
+| 6 | ✓ | [`mcp/client/streamable_http_client.py`](mcp/client/streamable_http_client.py) |
+| 7 | ✓ | [`mcp/server/server.py`](mcp/server/server.py) |
+| 8 | ✓ | [`web/AGENTS.md`](web/AGENTS.md) |
 
 ---
 

@@ -1,7 +1,6 @@
 ---
 name: verify-impl
 description: "Forensic audit of an implementation against its authoritative specification. Use whenever a specification document and an implementation are both in scope and the user asks any conformance question - even when not phrased explicitly: 'does this code match the spec', 'verify this implementation', 'check spec conformance', 'audit compliance between design and code', 'is the implementation faithful', 'verify spec coverage', 'audit against requirements', 'spec-vs-code'. Also triggers when a file path under `.specs/` is mentioned alongside an implementation. Do NOT use for general code review, specification design review before implementation begins, security review, or architecture review without a spec document. Pass both the spec and the implementation scope as arguments; the skill does not infer them from the conversation."
-context: fork
 metadata:
   author: Serghei Iakovlev
   version: "3.1"
@@ -38,8 +37,8 @@ Before verifying anything, understand the system the spec lives within.
 
 **Project documentation.** Search and read:
 
-- Context files: `CLAUDE.md`, `AGENTS.md`, `GEMINI.md`, `CURSOR.md`
-- Project docs: `README.md`, `CONTRIBUTING.md`, `ARCHITECTURE.md`, plus `docs/` or `doc/` directories - especially design and ADR sets
+- Context files: `AGENTS.md`
+- Project docs: `README.md`, `CONTRIBUTING.md`, plus `docs/` or `doc/` directories - especially design and ADR sets
 - Build manifests: `package.json`, `go.mod`, `Cargo.toml`, `pyproject.toml`, etc. - to understand the tech stack
 - Runtime model: `.env.example`, `docker-compose.yml`, `compose.yml`, `Makefile`
 

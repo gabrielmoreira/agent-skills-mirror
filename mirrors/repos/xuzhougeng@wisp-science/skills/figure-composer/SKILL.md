@@ -31,9 +31,13 @@ yourself; pixels cannot reveal the source data path.
    with `python`.
 5. Compose returned paths with `compose_figure(...)`. Do not pass placeholder
    markers to the composer.
-6. Use `compose_crops(...)` with Pillow to save temporary crop files, then call
+6. Save the `compose_crops(...)` boxes with figure-style's
+   `save_panel_crops(composite_path, compose_crops(outline))`, then call
    `view_image` on the composite and every crop. Fix seams, clipped labels,
-   aliases, empty space, and misplaced panel letters before review.
+   aliases, empty space, and misplaced panel letters before review. The crops
+   are inspection debris, not products: they live in `.cache/figure-style/`,
+   never beside the composite or under the output figures directory, and get
+   deleted once the composite passes.
 7. Build one reviewer instruction with `composite_review_task(...)`. Delegate it
    with `image_inspection`, `project_read`, and `reasoning` when those capability
    ids are advertised; otherwise perform the review in the current Agent.

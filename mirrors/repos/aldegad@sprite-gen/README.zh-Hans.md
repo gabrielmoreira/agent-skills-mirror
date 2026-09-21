@@ -155,7 +155,7 @@ python3 ~/.codex/skills/.system/skill-installer/scripts/install-skill-from-githu
   --repo aldegad/sprite-gen --path . --name sprite-gen
 ```
 
-图像生成是本引擎的一部分（`sprite_gen.gen`，提供方 `codex` 与 `grok`；通用的 `image-gen` 技能只是覆在其上的一层薄封装）。视频使用**你自己的**凭据 —— `grok` CLI 登录或 `XAI_API_KEY` —— 仓库中不附带任何凭据（[docs/video.md](docs/video.md)）。
+图像生成是本引擎的一部分（`sprite_gen.gen`，跑在你已经付费的订阅上的提供方 `codex` 与 `grok`，以及面向服务器与 SaaS、按调用计费、必须显式指定才会运行的 `openai` 提供方；通用的 `image-gen` 技能只是覆在其上的一层薄封装）。视频使用**你自己的**凭据 —— `grok` CLI 登录或 `XAI_API_KEY` —— 仓库中不附带任何凭据（[docs/video.md](docs/video.md)）。
 
 `sprite-gen` 支持 CPython 3.10+；CI 运行 3.10 与 3.14。快速开始需要一个 `venv`/`ensurepip` 可用的 Python。
 

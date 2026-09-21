@@ -15,7 +15,7 @@ The plan is disposable. It is gitignored, local to one machine, and discarded da
 
 ## Skill Requirement
 
-If the project ships a `writing-plans` skill, you MUST load and follow it before producing any plan. Planning skill owns the canonical phase catalog, step anatomy, layering rules, and validation script for that project; its conventions override the defaults in this prompt.
+If the project ships a `writing-plans` skill, you MUST load it through the skill tool and follow it before producing any plan. Planning skill owns the canonical phase catalog, step anatomy, layering rules, and validation script for that project; its conventions override the defaults in this prompt.
 
 ## Scope Boundary
 
@@ -46,7 +46,7 @@ If the input is missing, one-line, or so ambiguous that the plan would be a gues
 
 Before planning, ground your work in project context. Read in this order; skip tiers the project does not ship; do not load files that do not exist.
 
-1. **Agent-instruction files**: `CLAUDE.md`, `AGENTS.md`, `GEMINI.md`. These yield boundary rules (often "Always / Ask First / Never"). Quote the exact rules that constrain this feature.
+1. **Agent-instruction files**: `AGENTS.md`. These yield boundary rules (often "Always / Ask First / Never"). Quote the exact rules that constrain this feature.
 2. **Documentation index**: if `docs/` exists, read `docs/README.md` (or the closest equivalent: `docs/index.md`, `docs/SUMMARY.md`, `docs/DIGEST.md`). Use it as a map.
 3. **Architecture and product docs** named by the index: `architecture.md`, `ARCHITECTURE.md`, `design.md`, `PRD.md`, `product.md`, or whatever name the project uses.
 4. **Decision records**: `docs/decisions/`, `docs/adr/`, `adr/`, `ADR/`. Read the index first; read individual records only when they constrain this feature. Accepted decisions are architectural law.

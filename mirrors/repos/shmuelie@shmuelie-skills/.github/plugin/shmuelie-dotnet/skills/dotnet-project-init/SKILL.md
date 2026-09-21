@@ -1,6 +1,6 @@
 ---
 name: dotnet-project-init
-description: Directory.Build.props, CI workflows, project scaffolding, copilot-instructions.md, Keep a Changelog, and Semantic Versioning
+description: General .NET repository and application setup, Directory.Build.props, test runners, solution formats, CI, and project instructions
 ---
 
 When working on projects related to .net project initialization, apply this domain knowledge.
@@ -81,10 +81,12 @@ This automatically reflects the `<Version>` set in the csproj.
 - Platform-specific builds required (not AnyCPU).
 
 ## NuGet Package Patterns
-- Plugin projects: use `<ExcludeAssets>runtime</ExcludeAssets>` on host framework references
-  to avoid bundling the host's assemblies.
-- Test projects: full asset inclusion is fine.
-- For tools/analyzers: `PrivateAssets="all"` prevents transitive dependency.
+
+Ordinary library dependencies generally flow to consumers; build/test-only tools
+can be private. Do not copy specialized host/plugin dependency exclusions into
+every library. Detailed package layout, dependency exposure, Source Link, and
+symbols now belong to
+[nuget-package-authoring](https://github.com/shmuelie/shmuelie-skills/blob/main/.github/plugin/shmuelie-nuget/skills/nuget-package-authoring/SKILL.md).
 
 ## CI Workflow Patterns (GitHub Actions)
 
@@ -130,45 +132,10 @@ steps:
 
 ## Versioning and Changelog
 
-### Semantic Versioning (SemVer)
-- All projects should follow [Semantic Versioning](https://semver.org/): `MAJOR.MINOR.PATCH`.
-- **MAJOR**: incompatible API or behavioral changes.
-- **MINOR**: new functionality that is backward-compatible.
-- **PATCH**: backward-compatible bug fixes.
-- Pre-release versions use a hyphen suffix: `1.0.0-alpha`, `1.0.0-beta.1`.
-- Start new projects at `0.1.0` (initial development) or `1.0.0` (first stable release).
-
-### Keep a Changelog
-- All projects should maintain a `CHANGELOG.md` following [Keep a Changelog](https://keepachangelog.com/).
-- Format:
-  ```markdown
-  # Changelog
-
-  All notable changes to this project will be documented in this file.
-
-  The format is based on [Keep a Changelog](https://keepachangelog.com/),
-  and this project adheres to [Semantic Versioning](https://semver.org/).
-
-  ## [Unreleased]
-
-  ### Added
-  - New feature description
-
-  ### Changed
-  - Changed behavior description
-
-  ### Fixed
-  - Bug fix description
-
-  ## [1.0.0] - 2026-03-22
-
-  ### Added
-  - Initial release
-
-  [Unreleased]: https://github.com/owner/repo/compare/v1.0.0...HEAD
-  [1.0.0]: https://github.com/owner/repo/releases/tag/v1.0.0
-  ```
-- Section types: **Added**, **Changed**, **Deprecated**, **Removed**, **Fixed**, **Security**.
-- Always keep an `[Unreleased]` section at the top for in-progress work.
-- Use comparison links at the bottom for each version.
-- When releasing, move `[Unreleased]` entries into a new versioned section with the release date.
+Use [SemVer](https://semver.org/) and
+[Keep a Changelog](https://keepachangelog.com/): keep `[Unreleased]` for ongoing
+work, classify user-visible changes, and move released notes into dated sections.
+Select major/minor/patch according to compatibility rather than commit count.
+The detailed library procedure, templates, and publication gates belong to
+[nuget-release](https://github.com/shmuelie/shmuelie-skills/blob/main/.github/plugin/shmuelie-nuget/skills/nuget-release/SKILL.md).
+Application-specific build/MSIX guidance remains here.

@@ -77,6 +77,7 @@ Quality bar:
 - Generate hostile scenarios from changed behavior and known risk areas.
 - Report pass/fail evidence separately from proposed fixes.
 - Delegate code mutations discovered by QA to the selected coding executor.
+- A check no automation can hold gets a manual test guide, never a done claim: load `references/manual-test-guide.md` for the step shape (setup, do, expect, broken), the four reasons a step may stay manual, and why it stays `prepared_not_observed` until a run records a fresh `observed_check_results/v1`. `code-story` phase `VI. Manual test guide`; rendered surfaces go to `visual-qa`.
 - For probes that must run in Hermes-owned isolation or outlive this session, load `references/board-fanin.md`: one probe row per scenario in its own worktree, one fixer row whose `parents` is every probe, re-verification through the review lane, and findings only through bounded readback.
 - When Hermes owns the coding path, read `hermes_coding_harness/v1` before saying build, verification, review, docs, or PR-prep evidence exists.
 

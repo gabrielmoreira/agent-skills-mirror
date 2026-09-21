@@ -26,7 +26,7 @@ metadata:
 
 Before evaluating any changes, build a mental model of the system:
 
-1. Read project context files: `CLAUDE.md`, `AGENTS.md`, `GEMINI.md`, `README.md`, `ARCHITECTURE.md`, and anything in `docs/`.
+1. Read project context files: `AGENTS.md`, `README.md`, `CONTRIBUTING.md`, and anything in `docs/`.
 2. List the project root and key subdirectories to understand module structure and layering.
 3. Read build/dependency manifests to understand the tech stack.
 4. Search for code review standards or guidelines the project defines.
@@ -70,7 +70,7 @@ When the change is a bug fix that ships a test, reading the test is not enough. 
 
 Run the control:
 
-1. Check the change out in a throwaway `git worktree`, so nothing here reaches the tree you work in.
+1. Copy the change into an isolated scratch directory; a throwaway worktree is optional. Keep the control away from the working checkout and other sessions' changes.
 2. Revert only the production hunk, leaving the new test in place.
 3. Run just the new test.
 4. Restore, re-run, and confirm it is green again.

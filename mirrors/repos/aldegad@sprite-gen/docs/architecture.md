@@ -35,7 +35,7 @@ flowchart TB
     subgraph pkg["sprite_gen/  (_modules.py owns the mapping)"]
         direction LR
         spec["spec<br/>read-only asset adapters · sprite-request schema · layout resolver · runio · migrations"]
-        gen["gen<br/>prepare · gen (codex / grok) · gen-set · video (Grok Imagine)"]
+        gen["gen<br/>prepare · gen (codex / grok / openai) · gen-set · video (Grok Imagine)"]
         video["video<br/>canvas · frames · loop · batch (video-set)"]
         frames["frames<br/>extract · cutout · slice-sheet · unpack-atlas · segment"]
         curate["curate<br/>curation sidecar · direction anchors"]

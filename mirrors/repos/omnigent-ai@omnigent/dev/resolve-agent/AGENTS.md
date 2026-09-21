@@ -452,10 +452,33 @@ reproduction test is your objective instrument.
    "Best" means the strongest maintainable fit for this codebase and bug, not a
    license to replace a sound, idiomatic contribution with a theoretically purer
    rewrite or a personal style preference.
+
+   **Check the full PR for scope**, including changes made before you arrived.
+   Establish one concrete reported failure or requested outcome and its
+   acceptance criteria from `bug_url` and the PR's linked issue. Different
+   layers or root causes can contribute to that outcome. If the issue bundles
+   independent problems, ask the author to split them or track them separately;
+   stop with `needs_more_info` if the intended scope is unclear.
+
+   For each change, ask whether removing it would leave the intended fix
+   incomplete, incorrect, unsafe, or inadequately tested or documented.
+   Necessary refactors and repairs for regressions introduced by this PR belong
+   with the fix. Independent features, bug fixes, cleanup, and upgrades do not,
+   even in the same file or when tests pass. Identify the unrelated files/hunks
+   and remove clearly separable changes when branch edits are permitted;
+   otherwise ask the author to split or remove them. Do not guess when changes
+   are entangled. Carry only in-scope work into any fork takeover.
+
+   Address Polly's scope findings through the ordinary review process in Step
+   4.3 before approving this existing PR. Keep your own edits within the same
+   scope. Request clarification when its relationship to the reported bug is
+   uncertain; do not approve until clarified. Record unresolved scope concerns
+   in the review and `fix_summary`.
 5. **Report on the existing PR.** Post your fail→pass (or fail→still-fails) result
    and any diff concerns now as a `gh pr comment` / `gh pr review --comment`, and
    record its `pr_url` in your output. The `outcome` reflects what you found
-   (`fixed` when the PR resolves every live facet and the diff is sound;
+   (`fixed` when the PR resolves every live facet, the diff is sound, and the
+   changes stay within the reported problem;
    `partially_fixed` / `not_fixed` otherwise, with specifics). **Default to
    commenting, not competing** — if the PR is close and its approach is sound,
    review it and let the author iterate; don't open a rival PR over fixable nits.
@@ -470,7 +493,8 @@ reproduction test is your objective instrument.
    *indicator* for that maintainer. Choose:
    - **`fixed` and you never pushed to or authored this code** (pure reviewer: the
      repro test passes against the PR as-is, CI green, Polly clean, **the branch is
-     mergeable** — not `CONFLICTING`/`DIRTY` — and no fix from you was needed) →
+     mergeable** — not `CONFLICTING`/`DIRTY` — the current diff stays within the
+     reported problem, and no fix from you was needed) →
      submit an **approving** review: `gh pr review <pr> --approve
      --body '…'`. A genuine independent verification — the "someone checked it, take
      your pass" signal a maintainer wants. Note in the body that it's an automated
@@ -484,7 +508,8 @@ reproduction test is your objective instrument.
      that states the fail→pass evidence *and* that a Polly review could not be
      obtained, and let a maintainer take over the review from there.
    - **`not_fixed` / `partially_fixed`** → `gh pr review <pr> --request-changes
-     --body '…'` naming what still fails.
+     --body '…'` naming what still fails or which unrelated changes must be
+     removed or split out, even if the reproduction passes.
    - **You pushed fixes to this PR** (in-repo branch) **or took it over** (fork) →
      do **not** approve: that's self-approval of your own commits (branch
      protection rejects it anyway). Leave a `--comment` review and let a human
@@ -1100,6 +1125,13 @@ PR whose automatic run skipped:
 ```
 gh workflow run polly-review.yml -R omnigent-ai/omnigent -f pr=<pr>
 ```
+
+Polly reviews scope as part of its ordinary prose findings. Clearly unrelated
+changes belong under **Blocking issues**; uncertain scope belongs under
+**Non-blocking notes** as clarification questions. A missing issue link alone
+is not a finding. On the existing-PR review path, resolve those questions
+against the reported bug before approving. Review findings do not fail the
+Polly workflow, so a green check alone does not mean the review is clean.
 
 Your App token carries `actions: write`, so this dispatch is expected to succeed;
 a `403` means the App lost that permission — record `polly_review` as "could not

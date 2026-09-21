@@ -745,6 +745,23 @@ work/`reviewing_findings`, and local validation/`building`. A worker waiting on
 GitHub Copilot performs one immediate status check only; if the result is not
 ready, it checkpoints and returns instead of polling.
 
+Use the sibling PR skill's `Request-CopilotReview.ps1 -TimeoutMinutes 0` only
+for a new round, and its read-only `Get-CopilotReviewStatus.ps1` for resume.
+Persist the returned request timestamp, fork head and baseline review ID.
+Before publishing a `waiting_copilot` checkpoint, recheck that request once:
+if a matching review has arrived, record its ID/time/head and continue or queue
+finding processing/building rather than publishing a false external wait.
+Review/comment discovery must exhaust REST pages; thread discovery must exhaust
+GraphQL cursors. An empty assignment is not completion, and an API error is not
+a timeout. Do not make duplicate requests to compensate for stale polling.
+An arrived zero-new-comment pass still requires accounting for prior accepted
+findings, exact-upstream grounding, build/suggestion validation and drafting.
+
+Recompute each worker's cutoff from the **current run's** deadline; never reuse
+an expired prior-run `stop_new_rounds_after_utc`. If finalization is deferred
+repeatedly, prioritize that remaining work on the next pass and name the exact
+unfinished steps. Timestamp-only checkpoint rewrites are not review progress.
+
 ### Incremental publication during long PR loops
 
 Long-running PR reviews must not block fresh dashboard data. Before launching

@@ -32,6 +32,8 @@ skillshare sync --all
 | `--url URL` | `add`용 Streamable HTTP 엔드포인트 |
 | `-- command args...` | `add`용 로컬 실행 파일과 리터럴 인자 |
 | `--disabled` | project mode에서 `add`와 함께 사용: Agent의 global 설정이 정의한 서버를 끕니다. [아래](#turn-off-a-global-server-in-one-project) 참고 |
+| `--pi-extension PACKAGE` | target에 Pi가 있으면 필수, `add`, `edit` 또는 `import`와 함께 사용: `pi-mcp-adapter` 또는 `pi-mcp-extension` 중 Pi에 설치한 것. [아래](#pi-choose-your-mcp-extension) 참고 |
+| `--direct-tools VALUE` | `pi-mcp-adapter`를 사용하는 Pi, `add` 또는 `edit`와 함께 사용: `true`, `false`, `search`, 또는 쉼표로 구분한 도구 이름. [아래](#pi-direct-tools) 참고 |
 | `--from CLIENT` | import할 기존 client, 또는 `--file`의 형식 |
 | `--file PATH` | 네이티브 JSON/JSONC, TOML 또는 Goose YAML; `.toml`은 기본적으로 Codex로 처리되며, 다른 형식은 MCP 섹션에서 감지됨; 명시적인 방언을 지정하려면 `--from` 사용 |
 | `--sync` | 저장 후 동기화; noninteractive add/import/remove는 그렇지 않으면 저장만 함 |
@@ -97,7 +99,8 @@ source가 한 번 저장되기 전에 검증되며, 이후의 네이티브 파�
 ## Source fields
 
 인라인 `mcp.servers` 또는 `sources.mcp`로 지정한 외부 파일 중 하나를 선택하세요.
-외부 파일에는 최상위 `servers` 매핑이 있습니다. `mcp.targets`는 Skillshare 설정에
+외부 파일에는 최상위 `servers` 매핑이 있습니다. `mcp.targets`와
+[`mcp.projects`](#manage-several-projects-from-the-global-config)는 Skillshare 설정에
 남아 있습니다. 스키마는 저장소의 `schemas/mcp.schema.json`입니다.
 
 | Server field | Meaning |
@@ -110,7 +113,8 @@ source가 한 번 저장되기 전에 검증되며, 이후의 네이티브 파�
 | `bearerToken` | `{fromEnv: VARIABLE}`; Authorization 헤더와 공존 불가 |
 | `transport` | 선택적으로 `stdio` 또는 `streamable-http`; 생략 시 추론됨 |
 | `targets` | 선택적 수신 client; `mcp.targets`를 재정의 |
-| `disabled` | `true`만 가능, project mode 전용, 다른 연결 필드 불가. [아래](#turn-off-a-global-server-in-one-project) 참고 |
+| `directTools` | `pi-mcp-adapter`를 사용하는 Pi 전용: `true`, `false`, `"search"` 또는 도구 이름 목록. [아래](#pi-direct-tools) 참고 |
+| `disabled` | `true`만 가능, 다른 연결 필드 불가, 그리고 project가 scope 안에 있어야 합니다: project mode이거나 `mcp.projects` 아래의 root. [아래](#turn-off-a-global-server-in-one-project) 참고 |
 
 Client ID는 `claude`, `codex`, `cursor`, `vscode`, `opencode`, `kilocode`,
 `grok`, `antigravity`, `amp`, `claude-desktop`, `cline`, `copilot`, `factory`, `gemini`,
@@ -364,8 +368,10 @@ mcp:
 
 ### Rules
 
-- **Project mode only.** `skillshare init -p`로 생성된 `.skillshare/config.yaml`이
-  있는 프로젝트 안에서 실행하거나 `-p`를 전달하세요. global mode에서는 거부됩니다.
+- **project가 scope 안에 있어야 합니다.** `skillshare init -p`로 생성된
+  `.skillshare/config.yaml`이 있는 프로젝트 안에서 실행하거나, `-p`를 전달하거나,
+  항목을 [`mcp.projects`](#manage-several-projects-from-the-global-config)의 프로젝트
+  root 아래에 두세요. project가 scope에 없는 global `mcp.servers`에서는 거부됩니다.
 - **`disabled`는 단독으로 사용됩니다.** 항목은 `targets`와, Pi의 경우
   `piExtension`을 받습니다. `command`, `url`, `env`, `headers`를 추가하면 오류입니다.
 - **`targets`는 명시하는 것이 좋습니다.** 명시하지 않으면 항목은 `mcp.targets`를
@@ -374,12 +380,116 @@ mcp:
   이 이름의 서버가 그곳에 존재하는지 확인할 수 없습니다. 아무것도 일치하지 않는
   이름은 문제가 되지 않습니다: Agent가 이를 무시할 뿐입니다.
 - **다시 켜려면**, 항목을 제거하고(`skillshare mcp remove company-docs`) sync하세요.
-  프로젝트 파일에서 스위치가 제거됩니다.
+  스위치가 작성된 파일에서 제거됩니다: 프로젝트 자체 파일, 또는 Claude Code의 경우
+  `~/.claude.json`.
 - **Skillshare가 직접 정의하는 서버는 이것이 필요 없습니다.** 대신 해당 서버에서
   Agent 선택을 해제하면, 다음 sync에서 그 항목이 제거됩니다.
 
-대시보드에서는 서버를 추가할 때 `stdio`와 `streamable-http` 옆에 있는 **Off in
-this project** 선택지가 이에 해당합니다. project mode에서만 표시됩니다.
+대시보드에서는 **서버 추가** 옆에 있는 **전역 서버 끄기** 버튼이 이에 해당합니다.
+project mode와 프로젝트의 MCP 탭에 표시됩니다.
+
+## Manage several projects from the global config {#manage-several-projects-from-the-global-config}
+
+Project mode는 각 프로젝트의 MCP 설정을 해당 프로젝트의 `.skillshare/config.yaml`에
+보관하며, 그 폴더 안에서 sync합니다. 모든 프로젝트를 한곳에서 관리하고 싶다면,
+**global** 설정의 `mcp.projects` 아래에 프로젝트 폴더를 나열하세요. 그러면 어디서든
+`skillshare sync mcp`를 한 번 실행하는 것만으로 global 파일과 모든 프로젝트의 파일이
+하나의 plan으로 작성됩니다.
+
+```yaml
+# ~/.config/skillshare/config.yaml
+mcp:
+  servers:
+    context7:
+      command: npx
+      args: ["-y", "@upstash/context7-mcp"]
+      targets: [opencode, pi]
+      piExtension: pi-mcp-adapter
+  projects:
+    ~/work/project01:
+      targets: [opencode, pi]
+      servers:
+        context7:                  # 이 프로젝트에서만 꺼짐
+          disabled: true
+          piExtension: pi-mcp-adapter
+    ~/work/project02:
+      servers:
+        internal-docs:             # 이 프로젝트에만 존재
+          url: https://example.com/mcp
+          targets: [opencode]
+```
+
+프로젝트에는 global 설정과 다른 부분만 나열합니다. `context7` 같은 global 서버는
+여기에 항목이 필요 없습니다. Agent는 자체 global 파일과 프로젝트 파일을 함께 읽으므로,
+이미 모든 프로젝트에서 로드됩니다. `disabled` 항목은 그곳에 나열된 client에 대해
+[그 폴더에서 서버를 끕니다](#turn-off-a-global-server-in-one-project).
+
+각 키는 프로젝트 폴더입니다: 절대 경로이거나 `~`로 시작하는 경로입니다. 그 아래에는
+해당 프로젝트의 자체 `config.yaml`이 `mcp` 아래에 담았을 것과 동일한 `targets`와
+`servers`가 들어가며, 동일한 [프로젝트 파일](#native-destinations)에 작성됩니다.
+`targets`가 없는 프로젝트는 global `mcp.targets`를 상속하며, `directTools`가 없는
+프로젝트는 global [`mcp.directTools`](#pi-direct-tools)를 상속합니다.
+
+하나의 서버가 둘 이상의 위치에 나타나면 미리보기에 파일 이름이 표시됩니다:
+
+```text
+context7     add          opencode (~/.config/opencode/opencode.json)
+context7     add          opencode (~/work/project01/opencode.json)
+```
+
+목록에서 프로젝트를 제거하면, 서버를 제거할 때와 마찬가지로 Skillshare가 그곳에
+작성한 항목이 다음 sync에서 제거됩니다.
+
+여러 프로젝트에 같은 서버를 제공하려면, YAML anchor로 한 번 정의하고 재사용하세요:
+
+```yaml
+mcp:
+  projects:
+    ~/work/project01:
+      servers:
+        internal-docs: &internal-docs
+          url: https://example.com/mcp
+          targets: [opencode]
+    ~/work/project02:
+      servers:
+        internal-docs: *internal-docs
+```
+
+anchor는 `mcp.projects` 안에 두세요. `mcp.servers`에 있는 anchor를 가리키는 alias도
+동작하지만, `skillshare mcp add`와 대시보드는 `mcp.servers`를 다시 씁니다. 저장할 때
+파일이 유효하게 유지되도록 그런 alias를 전체 내용으로 풀어서 작성하므로, 이후 global
+서버를 수정해도 더 이상 따라가지 않습니다.
+
+### Projects in the dashboard {#projects-in-the-dashboard}
+
+Global mode에서는 대시보드에 **프로젝트** 페이지가 있습니다. 이 페이지는
+[`projects`](/docs/reference/targets/configuration#projects)와 `mcp.projects` 아래의 모든 폴더를 나열하며, 각
+프로젝트에는 **MCP** 탭이 있습니다.
+
+- **프로젝트 추가**는 폴더와 그 target을 받습니다. **MCP**를 체크하면 해당 폴더가
+  `mcp.projects` 아래에도 나열됩니다.
+- **MCP** 탭은 모든 global 서버를 스위치와 함께 나열합니다. 하나를 끄면
+  프로젝트별 스위치가 있는 Agent에 대해 `disabled` 항목이 저장되고, 다시 켜면 그
+  항목이 제거됩니다. 그 아래에는 해당 프로젝트에만 존재하는 서버가 있습니다.
+- MCP 페이지 하단의 **기본값**은 `mcp.targets`와 `mcp.directTools`를 편집합니다.
+
+저장하면 변경한 프로젝트만 다시 씁니다. 다른 프로젝트는 anchor와 alias를 포함해
+YAML이 작성된 그대로 유지되며, `~/work/app`으로 작성된 폴더는 `~`를 그대로
+유지합니다. 이 페이지의 다른 곳과 마찬가지로 저장은 `config.yaml`만 변경하며, 파일은
+Sync가 작성합니다.
+
+제한 사항:
+
+- `mcp.projects`는 global 설정에서만 읽습니다. 이를 포함한 프로젝트 설정은
+  거부됩니다.
+- 이를 편집하는 명령은 없습니다. `skillshare mcp add`는 `mcp.servers`를 관리하며
+  `mcp.projects`는 작성된 그대로 둡니다. `config.yaml`에서 직접 편집하거나
+  [대시보드](#projects-in-the-dashboard)에서 편집하세요.
+- Claude Code에 대한 `disabled` 항목은 global 서버가 작성되는 것과 같은 파일인
+  `~/.claude.json`에 작성됩니다. Claude Code가 프로젝트별 off 목록을 그곳에 보관하기
+  때문입니다. 서버 자체는 그대로 둡니다.
+- 폴더에 같은 항목을 관리하는 자체 `.skillshare/config.yaml`도 있으면, plan은 이를
+  덮어쓰지 않고 충돌로 보고합니다.
 
 ## Safety and limitations
 
@@ -479,7 +589,70 @@ adapter는 환경 변수와 HTTP 헤더에서 `fromEnv`를 지원합니다. exte
 거부됩니다. 이런 경우에는 adapter를 사용하세요. Skillshare는 시크릿 값을 절대
 읽거나 복사하지 않습니다.
 
-`--from pi`로 import하면 Pi 전용 파일을 읽습니다. import한 연결을 저장할 때
+### Direct tools {#pi-direct-tools}
+
+`pi-mcp-adapter`는 보통 하나의 proxy 도구를 통해 서버의 도구에 접근합니다.
+`directTools` 설정을 사용하면 대신 각 도구가 개별 Pi 도구로 등록됩니다. 이 값은
+서버에 설정하며, Pi만 이 값을 받으므로 동일한 서버를 다른 Agent에도 계속 보낼 수
+있습니다:
+
+```yaml
+mcp:
+  servers:
+    context7:
+      command: npx
+      args: ["-y", "@upstash/context7-mcp"]
+      piExtension: pi-mcp-adapter
+      directTools: true            # 또는 [resolve-library-id], 또는 "search"
+      targets: [opencode, pi]
+```
+
+| Value | What the adapter does |
+|---|---|
+| `true` | 이 서버의 모든 도구를 등록 |
+| 이름 목록 | 원래 MCP 이름 기준으로 해당 도구만 등록 |
+| `"search"` | 도구를 비활성 상태로 등록; 검색 시 일치하는 도구가 활성화됨 |
+| `false` | proxy만 사용, 명시적으로 기록됨 |
+| 생략 | Skillshare가 이 필드를 건드리지 않음 |
+
+생략은 건드리지 않는다는 뜻입니다. Pi 파일에 직접 추가한 `directTools`는 그대로
+유지되며, config에서 이 필드를 제거해도 파일에서 제거되지 않습니다. 끄려면
+`directTools: false`를 작성하세요. 이 필드는 `piExtension: pi-mcp-adapter`가
+필요하며 `disabled`와 함께 사용할 수 없습니다.
+
+명령줄에서는 `mcp add` 또는 `mcp edit`에 `--direct-tools`를 전달하세요. 대시보드에서는
+`pi-mcp-adapter`를 선택하면 Pi extension 아래에 동일한 선택지가 나타납니다:
+
+```bash
+skillshare mcp add context7 --target pi --pi-extension pi-mcp-adapter --direct-tools true -- npx -y @upstash/context7-mcp
+skillshare mcp edit context7 --direct-tools resolve-library-id,get-library-docs
+```
+
+모든 서버에 대해 한 번만 설정하려면 `directTools`를 `mcp` 바로 아래에 두세요. 이 값은
+자체 `directTools`가 없는 각 `pi-mcp-adapter` 서버를 채우며, 서버 자체의 값이 우선합니다.
+이는 Skillshare의 기본값으로, 각 서버 항목에 작성됩니다. adapter 자체의
+`settings.directTools`는 서버와 같은 파일에 있으며 사용자가 직접 관리합니다.
+
+```yaml
+mcp:
+  directTools: search              # 아래의 pi-mcp-adapter 서버 전체에 적용, 서버가 달리 지정하지 않는 한
+  servers:
+    context7:
+      command: npx
+      args: ["-y", "@upstash/context7-mcp"]
+      piExtension: pi-mcp-adapter
+      targets: [pi]
+```
+
+[`mcp.projects`](#manage-several-projects-from-the-global-config) 아래의 프로젝트는
+자체 `directTools`를 가질 수 있으며, 이는 해당 프로젝트의 global 기본값을 대체합니다.
+기본값을 편집하는 명령은 없습니다. `config.yaml`에서 설정하거나, 대시보드의 MCP
+페이지에 있는 **기본값**에서 설정하세요. 이 항목은 Pi가 기본 target 중 하나일 때
+나타납니다.
+
+`--from pi`로 import하면 Pi 전용 파일을 읽습니다. `directTools`가 있는 항목은 해당
+값과 함께, 그리고 `pi-mcp-adapter`가 선택된 상태로 import됩니다. 이 필드는
+adapter에만 있기 때문입니다. import한 연결을 저장할 때
 `--pi-extension`을 선택하세요. 파일만으로는 어떤 패키지가 설치되어 있는지 식별할
 수 없습니다. 지원되지 않는 레거시 SSE는 계속 차단됩니다. OAuth와 패키지 전용
 옵션은 Pi 안에서 계속 관리됩니다. Sync 성공은 구성이 작성되었음을 의미할 뿐, 확장이

@@ -78,14 +78,18 @@ A whole-page render can't resolve axis labels on a dense figure. Render at
 high dpi, crop to the figure with PIL, and view the crop:
 
 ```python
-page = pdf_pages("report.pdf", mode="image", pages=[7], dpi=200)[0]
+import os
 from PIL import Image
-Image.open(page["image_path"]).crop((x0, y0, x1, y1)).save("panel7.png")
+page = pdf_pages("report.pdf", mode="image", pages=[7], dpi=200)[0]
+crop = os.path.join(os.path.dirname(page["image_path"]), "panel7.png")
+Image.open(page["image_path"]).crop((x0, y0, x1, y1)).save(crop)
 ```
 
 `view_image` the crop (or the full `image_path` once, to locate the
 figure). Every viewed image stays in context until `/compact` ages it out —
-view the few crops that matter, never the whole render set.
+view the few crops that matter, never the whole render set. Crops belong
+beside the renders under `.cache/`, never in the project's output
+directories: they are reading aids, not products.
 
 ## Boundaries
 

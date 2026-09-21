@@ -533,7 +533,7 @@ After OpenCode sees the provider, reference models with the OpenCode provider pr
     "plan-reviewer": { "model": "amazon-bedrock/us.anthropic.claude-opus-5" }
   },
   "categories": {
-    "deep": { "model": "amazon-bedrock/us.anthropic.claude-opus-5" }
+    "deep-low": { "model": "amazon-bedrock/us.anthropic.claude-opus-5" }
   }
 }
 ```
@@ -668,7 +668,7 @@ If the user wants to override which model a curated agent or category uses, edit
     "plan-reviewer": { "model": "openai/gpt-6-astra" }, // the plan gate; keep it on a strong reasoning model
   },
   "categories": {
-    "deep": { "model": "openai/gpt-5.6-sol" },
+    "deep-low": { "model": "openai/gpt-5.6-sol" },
   },
 }
 ```

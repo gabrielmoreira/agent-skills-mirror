@@ -309,8 +309,8 @@ The `agents` block of the OpenCode edition quick start, with the per-agent overr
     }
   },
   "categories": {
-    "deep": {
-      "prompt_append": "file:///path/to/deep-category-append.md"
+    "deep-low": {
+      "prompt_append": "file:///path/to/deep-low-category-append.md"
     }
   }
 }

@@ -149,6 +149,13 @@ Rules:
 - Hand-editing a generated `skills/*/SKILL.md` — the change is silently lost on
   regeneration and fails the byte gates. Edit `src/skills/catalog.py` /
   `render.py` instead.
+- Expecting a `docs ... --check` gate to notice a skill BODY change. Those are
+  drift gates: they compare a producer against its generated file, and a real
+  body edit moves both, so all ten stay green. The pinned sha256 per body in
+  `tests/fixtures/agent_skills_hermes_digests.json` is what fires, through
+  `test_hermes_projection_byte_stable`, and its failure names the bodies that
+  moved. Re-derive that fixture in the same commit as the edit, sorted-key,
+  and check the named list is the set you meant to change.
 - Adding a routing fixture or skill without updating exact-count assertions —
   breaks `tests/test_routing_precision.py`, `tests/test_cli.py`,
   `tests/test_hermes_ux_quality.py`, and `tests/test_release_smoke.py`, plus

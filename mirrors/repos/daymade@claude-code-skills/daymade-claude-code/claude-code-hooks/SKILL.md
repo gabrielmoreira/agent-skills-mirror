@@ -105,7 +105,9 @@ The loop may be created entirely by an agent repeatedly applying a prose rule.
   right reason to route such a rule to Stop). That guarantee, however, does
   not extend to proving the `.prompt` field always originated from a
   keystroke: a background task-notification's own report text can populate
-  it too, with nothing in the stdin JSON marking the difference — #30. A rule like "the model must not invent a shorthand name
+  it too, and so can a teammate's or another session's message — no field in
+  the stdin JSON marks the difference, only the wrapper tag the text opens
+  with — #30. A rule like "the model must not invent a shorthand name
   for something it hasn't verified" belongs on Stop; put it on
   `UserPromptSubmit` instead and it will (a) never once catch what it was
   built for, since that text never flows through that event, and (b)
@@ -405,6 +407,23 @@ skeleton: Pattern C in [references/hook_patterns.md](references/hook_patterns.md
     **does not block the tool call** — so an unanswered dialog does not become a
     "no", it becomes an allow. Bound your wait well under the timeout and make
     no-answer resolve to block *yourself*, before the harness resolves it for you.
+  - ⚠️ **A human gate is only worth raising where its dialog can carry the decision.**
+    The person sees what the hook puts in the box and nothing else — so on a path
+    where the hook's own evidence is empty (it reads state *before* the command runs,
+    and this command creates that state), the dialog is empty too, and what comes
+    back is a reflexive click, not a judgement. On those paths block mechanically and
+    tell the model how to restructure the command so the state becomes observable;
+    keep the dialog for paths that can name the target, the command and the objects.
+    Whatever model-authored text the dialog shows (command, paths) gets
+    whitespace-folded first. Symptom, fix and the recorder-stub calibration:
+    [references/hook_pitfalls.md](references/hook_pitfalls.md) #44.
+  - ⚠️ **The remedy you print instead has to be executable — prove it by running it.**
+    Where the hook blocks mechanically, the `stderr` instruction is the whole product of
+    that interception, and a string folded for display (above) is not one the model can
+    paste back. Test each printed remedy the only way that counts: assemble the exact
+    bytes, run them, drive the same event through the hook again, assert it now passes.
+    That some *other* parser decodes the string is not evidence — the checkpoint is the
+    gate's own tokenizer. [references/hook_pitfalls.md](references/hook_pitfalls.md) #45.
   - The docs also carry an in-UI channel — PreToolUse `hookSpecificOutput`
     `permissionDecision: "ask"`, which prompts through Claude Code's own interface.
     It is worth knowing about, but **unverified here under `bypassPermissions` /

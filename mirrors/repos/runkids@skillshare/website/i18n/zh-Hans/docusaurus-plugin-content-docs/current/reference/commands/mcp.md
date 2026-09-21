@@ -32,6 +32,8 @@ skillshare sync --all
 | `--url URL` | 用于 `add` 的 Streamable HTTP 端点 |
 | `-- command args...` | 用于 `add` 的本地可执行文件及其字面参数 |
 | `--disabled` | Project mode，配合 `add` 使用：关闭一个由 Agent 全局配置定义的 server。参见[下文](#turn-off-a-global-server-in-one-project) |
+| `--pi-extension PACKAGE` | target 包含 Pi 时必填，用于 `add`、`edit` 或 `import`：`pi-mcp-adapter` 或 `pi-mcp-extension`，填你在 Pi 里安装的那一个。参见[下文](#pi-choose-your-mcp-extension) |
+| `--direct-tools VALUE` | 配合 `pi-mcp-adapter` 使用的 Pi，用于 `add` 或 `edit`：`true`、`false`、`search`，或用逗号分隔的工具名称。参见[下文](#pi-direct-tools) |
 | `--from CLIENT` | 要导入的现有 client，或 `--file` 的格式 |
 | `--file PATH` | 原生 JSON/JSONC、TOML 或 Goose YAML；`.toml` 默认对应 Codex，其他格式会根据其 MCP 区块自动检测；如需明确指定方言请使用 `--from` |
 | `--sync` | 保存并同步；非交互式的 add/import/remove 默认仅保存 |
@@ -98,7 +100,8 @@ only** 之前显示预览。Escape 会取消待处理的草稿。Restore 会预�
 ## Source 字段
 
 选择内联的 `mcp.servers`，或使用 `sources.mcp` 指定的外部文件。
-外部文件有一个顶层的 `servers` 映射。`mcp.targets` 保留在
+外部文件有一个顶层的 `servers` 映射。`mcp.targets` 和
+[`mcp.projects`](#manage-several-projects-from-the-global-config) 保留在
 Skillshare 配置中。schema 是仓库中的 `schemas/mcp.schema.json`。
 
 | Server 字段 | 含义 |
@@ -111,7 +114,8 @@ Skillshare 配置中。schema 是仓库中的 `schemas/mcp.schema.json`。
 | `bearerToken` | `{fromEnv: VARIABLE}`；不能与 Authorization header 共存 |
 | `transport` | 可选的 `stdio` 或 `streamable-http`；省略时会自动推断 |
 | `targets` | 可选的接收方 client；覆盖 `mcp.targets` |
-| `disabled` | 仅限 `true`，仅限 project mode，且不能有其他连接字段。参见[下文](#turn-off-a-global-server-in-one-project) |
+| `directTools` | 仅限使用 `pi-mcp-adapter` 的 Pi：`true`、`false`、`"search"` 或工具名称列表。参见[下文](#pi-direct-tools) |
+| `disabled` | 仅限 `true`，不能有其他连接字段，且必须有 project 在作用范围内：project mode，或 `mcp.projects` 下的某个项目根目录。参见[下文](#turn-off-a-global-server-in-one-project) |
 
 Client ID 有 `claude`、`codex`、`cursor`、`vscode`、`opencode`、`kilocode`、
 `grok`、`antigravity`、`amp`、`claude-desktop`、`cline`、`copilot`、`factory`、`gemini`、
@@ -364,8 +368,10 @@ mcp:
 
 ### 规则
 
-- **仅限 Project mode。** 在拥有 `.skillshare/config.yaml`（由 `skillshare init -p`
-  创建）的项目内运行，或传入 `-p`。在 global mode 下会被拒绝。
+- **必须有 project 在作用范围内。** 在拥有 `.skillshare/config.yaml`（由 `skillshare init -p`
+  创建）的项目内运行，传入 `-p`，或者把该条目放在
+  [`mcp.projects`](#manage-several-projects-from-the-global-config) 下的某个项目根目录里。
+  在 global `mcp.servers` 中没有 project 在作用范围内，因此会被拒绝。
 - **`disabled` 必须单独存在。** 该条目可以带 `targets`，对 Pi 而言还可以带
   `piExtension`。添加 `command`、`url`、`env` 或 `headers` 会报错。
 - **应当列出 `targets`。** 如果不写，该条目会继承 `mcp.targets`，其中
@@ -374,12 +380,117 @@ mcp:
   无法检查该文件中是否确实存在这个名称的 server。如果名称什么都没匹配到也无妨：
   Agent 会忽略它。
 - **要重新打开它**，移除该条目（`skillshare mcp remove company-docs`）
-  并同步。该开关会从 project 文件中被移除。
+  并同步。该开关会从它被写入的那个文件中移除：project 自己的文件，
+  对 Claude Code 而言则是 `~/.claude.json`。
 - **Skillshare 自身定义的 server 不需要这个方法。** 只需在该 server 上取消选择
   该 Agent，下一次同步就会移除它的条目。
 
-在仪表盘中，这就是添加 server 时 `stdio` 和
-`streamable-http` 旁边的 **Off in this project** 选项。它只出现在 project mode 中。
+在仪表盘中，这就是 **添加服务器** 旁边的 **关闭全局服务器** 按钮。它会出现在
+project mode，以及项目的 MCP 标签页中。
+
+## 通过 global 配置管理多个项目 {#manage-several-projects-from-the-global-config}
+
+Project mode 会把每个项目的 MCP 设置保存在该项目的
+`.skillshare/config.yaml` 中，并且需要在该文件夹内同步。如果你更希望
+把所有项目放在同一个地方，可以在 **global** 配置的 `mcp.projects` 下列出这些项目文件夹。
+之后在任意位置运行一次 `skillshare sync mcp`，就会在同一个计划中写入 global
+文件和每个项目的文件。
+
+```yaml
+# ~/.config/skillshare/config.yaml
+mcp:
+  servers:
+    context7:
+      command: npx
+      args: ["-y", "@upstash/context7-mcp"]
+      targets: [opencode, pi]
+      piExtension: pi-mcp-adapter
+  projects:
+    ~/work/project01:
+      targets: [opencode, pi]
+      servers:
+        context7:                  # 仅在此项目中关闭
+          disabled: true
+          piExtension: pi-mcp-adapter
+    ~/work/project02:
+      servers:
+        internal-docs:             # 仅存在于此项目中
+          url: https://example.com/mcp
+          targets: [opencode]
+```
+
+项目只需列出与 global 配置不同的部分。像 `context7` 这样的 global server 不需要在这里
+添加条目：Agent 会同时读取它的 global 文件和 project 的文件，因此它已经会在每个项目中
+加载。一条 `disabled` 条目会[在该文件夹中将它关闭](#turn-off-a-global-server-in-one-project)，
+对其中列出的所有 client 生效。
+
+每个 key 都是一个项目文件夹：可以是绝对路径，也可以是以 `~` 开头的路径。它下面写的是
+该项目自己的 `config.yaml` 在 `mcp` 下会包含的同样的 `targets` 和 `servers`，
+并且它们会被写入相同的 [project 文件](#native-destinations)。没有 `targets` 的
+项目会继承 global 的 `mcp.targets`；没有 `directTools` 的项目则会继承 global 的
+[`mcp.directTools`](#pi-direct-tools)。
+
+当同一个 server 出现在多个位置时，预览会指明对应的文件：
+
+```text
+context7     add          opencode (~/.config/opencode/opencode.json)
+context7     add          opencode (~/work/project01/opencode.json)
+```
+
+从列表中移除某个项目后，下一次同步会移除 Skillshare 在那里写入的条目，
+与移除一个 server 的行为相同。
+
+要让多个项目使用同一个 server，可以用 YAML anchor 定义一次，然后
+复用它：
+
+```yaml
+mcp:
+  projects:
+    ~/work/project01:
+      servers:
+        internal-docs: &internal-docs
+          url: https://example.com/mcp
+          targets: [opencode]
+    ~/work/project02:
+      servers:
+        internal-docs: *internal-docs
+```
+
+请把 anchor 保留在 `mcp.projects` 内部。指向 `mcp.servers` 上某个 anchor 的别名（alias）
+也能工作，但 `skillshare mcp add` 和仪表盘会重写 `mcp.servers`；它们在
+保存时会把这样的别名完整展开写出，以保证文件仍然有效，此后它就不再
+跟随对该 global server 的后续修改。
+
+### 仪表盘中的项目 {#projects-in-the-dashboard}
+
+在 global mode 下，仪表盘中有一个 **项目** 页面。它会列出
+[`projects`](/docs/reference/targets/configuration#projects) 和 `mcp.projects` 下的每个文件夹，
+每个项目都有一个 **MCP** 标签页。
+
+- **添加项目** 需要填写文件夹和它的 targets。勾选 **MCP** 可以让该文件夹同时列在
+  `mcp.projects` 下。
+- **MCP** 标签页列出每个 global server，并各带一个开关。关闭其中一个，会为
+  支持按项目开关的 Agent 保存一条 `disabled` 条目；重新打开则会
+  移除该条目。其下方是只存在于该项目中的 server。
+- **默认值** 位于 **MCP** 标签页底部，用于编辑 `mcp.targets` 和
+  `mcp.directTools`。
+
+保存只会重写你修改过的那个项目。其他项目的 YAML 保持原样，
+包括 anchor 和别名（alias），写成 `~/work/app` 的文件夹也会保留它的 `~`。与
+本页其他地方一样，保存只会修改 `config.yaml`；写入文件的是 Sync。
+
+限制：
+
+- `mcp.projects` 只会从 global 配置中读取。包含它的 project 配置会
+  被拒绝。
+- 没有命令可以编辑它：`skillshare mcp add` 管理 `mcp.servers`，并让
+  `mcp.projects` 保持原样。请在 `config.yaml` 中编辑它，或者在
+  [仪表盘](#projects-in-the-dashboard)中编辑。
+- 以 Claude Code 为 target 的 `disabled` 条目会写入 `~/.claude.json`，也就是写入
+  global server 的同一个文件，因为 Claude Code 把自己按项目区分的关闭列表保存在那里。
+  server 本身则保持原样。
+- 如果某个文件夹同时也有自己的 `.skillshare/config.yaml` 在管理同一个条目，
+  计划会报告冲突，而不是将其覆盖。
 
 ## 安全性与限制
 
@@ -478,7 +589,68 @@ extension **不会**插值环境引用：匹配的 stdio
 重命名变量以及基于环境变量的 HTTP 凭据会被拒绝。
 遇到这些情况请使用 adapter。Skillshare 绝不会读取或复制密钥值。
 
-使用 `--from pi` 导入会读取 Pi 专属的文件。保存导入的连接时请选择
+### 直接工具 {#pi-direct-tools}
+
+`pi-mcp-adapter` 通常通过一个 proxy 工具来访问 server 的工具。它的
+`directTools` 设置会改为将这些工具注册为独立的 Pi 工具。请在 server 上
+设置它；只有 Pi 会收到该设置，因此同一个 server 仍然可以提供给其他 Agent：
+
+```yaml
+mcp:
+  servers:
+    context7:
+      command: npx
+      args: ["-y", "@upstash/context7-mcp"]
+      piExtension: pi-mcp-adapter
+      directTools: true            # 或 [resolve-library-id]，或 "search"
+      targets: [opencode, pi]
+```
+
+| 值 | adapter 的行为 |
+|---|---|
+| `true` | 注册此 server 的所有工具 |
+| 名称列表 | 只注册这些工具，使用它们原始的 MCP 名称 |
+| `"search"` | 以未激活状态注册工具；搜索会激活匹配的工具 |
+| `false` | 仅使用 proxy，显式写入 |
+| 省略 | Skillshare 不会改动该字段 |
+
+省略表示不改动：你自己添加到 Pi 文件中的 `directTools` 会保留，并且
+从配置中移除该字段并不会将它从文件中移除。要关闭它，请写入
+`directTools: false`。它需要 `piExtension: pi-mcp-adapter`，并且
+不能与 `disabled` 同时使用。
+
+在命令行中，可以将 `--direct-tools` 传给 `mcp add` 或 `mcp edit`。选定
+`pi-mcp-adapter` 后，仪表盘中 Pi extension 下也有相同的选项：
+
+```bash
+skillshare mcp add context7 --target pi --pi-extension pi-mcp-adapter --direct-tools true -- npx -y @upstash/context7-mcp
+skillshare mcp edit context7 --direct-tools resolve-library-id,get-library-docs
+```
+
+如果想为每个 server 统一设置一次，可以将 `directTools` 直接写在 `mcp` 下。它会为
+每个没有自己 `directTools` 的 `pi-mcp-adapter` server 填入该值；server 自己的值
+优先。这是一个 Skillshare 默认值，会被写入每个 server 自己的条目。adapter 自身的
+`settings.directTools` 与 server 定义在同一个文件中，需要你自行维护。
+
+```yaml
+mcp:
+  directTools: search              # 除非另有说明，否则应用于下面每个 pi-mcp-adapter server
+  servers:
+    context7:
+      command: npx
+      args: ["-y", "@upstash/context7-mcp"]
+      piExtension: pi-mcp-adapter
+      targets: [pi]
+```
+
+[`mcp.projects`](#manage-several-projects-from-the-global-config) 下的项目可以
+持有自己的 `directTools`，它会替换该项目的全局默认值。没有
+命令可以编辑这个默认值。请在 `config.yaml` 中设置它，或者在仪表盘 MCP 页面的
+**默认值** 下设置；当 Pi 是默认 target 之一时，它就会出现在那里。
+
+使用 `--from pi` 导入会读取 Pi 专属的文件。带有 `directTools` 的条目
+会连同该字段一起导入，并选定 `pi-mcp-adapter`，因为只有 adapter 才有
+该字段。保存导入的连接时请选择
 `--pi-extension`；仅凭文件本身无法识别安装的是哪个软件包。
 仍不支持旧版 SSE。OAuth 和仅限软件包内的选项
 仍由 Pi 自身管理。同步成功只代表配置已被写入，并不代表
