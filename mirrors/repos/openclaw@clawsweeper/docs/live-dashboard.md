@@ -83,6 +83,13 @@ exact-review queue response within the same default 180-second readiness budget.
 verifies the queue schema, unsigned-request rejection, Bay policy, and assets.
 A persistently unavailable queue still fails readiness.
 
+A status contract failure keeps its original error and nonzero smoke exit, with
+one bounded diagnostic summary: projection completeness, freshness, cache state,
+Bay tide classification, and validated numeric tide, diagnostic count, and fetch
+duration. It excludes response text, timestamps, and diagnostic error messages.
+These are observed fields; an unavailable projection does not identify which
+upstream request or cache entry caused it. The smoke adds no status retry.
+
 When a change updates both the Worker and a GitHub Actions workflow, keep the
 cross-component protocol compatible in both deployment orders. The exact-review
 v2 rollout dispatches the immutable lease tuple under `queue_claim` plus a bounded v1 snapshot; the
@@ -224,7 +231,7 @@ twenty-way fanout and caches error/recovery telemetry for 120 seconds. That leav
 enough distinct completed-item evidence to drive a 20-outcome tide despite
 repeated targets or excluded runs while still bounding telemetry pressure.
 This bounds
-telemetry pressure without changing the 32-worker fleet budget. Worker details
+telemetry pressure independently of the 128-worker fleet budget. Worker details
 paginate up to 300 jobs per workflow run so retained large matrix runs contribute to a
 complete internal census. Titles, job names, raw URLs, opaque target keys, and
 raw errors are removed before the status snapshot is persisted or returned.
@@ -262,6 +269,13 @@ Public observer routes validate a fixed response schema rather than forwarding
 their backing store. Unsupported identifying query parameters are ignored; a
 malformed or inconsistent backing document fails closed with a fixed
 unavailable response.
+
+Run-level observer writes validate and retain the first terminal tuple per run
+attempt without reading queue items or rescheduling work. Their existing 30-day
+retention cleanup runs on telemetry writes and queue status computation; actual
+queue and auxiliary work retain ownership of alarm scheduling.
+The [controlled local proof](../scripts/proof-review-run-telemetry.mjs) exercises
+the signed HTTP route and file-backed SQLite after `pnpm run build:node`.
 
 - `/api/review-observability` returns the four closed review lanes and global
   health, completeness, run counts, item counts, and timestamps for a normalized
@@ -382,7 +396,7 @@ Do not move these into the dashboard:
 
 The dashboard Worker owns durable exact-review admission only: it deduplicates
 webhook deliveries, coalesces each repository/item pair, and leases at most
-32 Actions executors, with up to 24 active leases per target repository. It does
+80 Actions executors, with up to 64 active leases per target repository. It does
 not decide review outcomes or perform target repository mutations. For
 command-triggered reviews, the queue retains the bounded review prompt and
 command-status identifiers so the leased GitHub Actions executor can update the

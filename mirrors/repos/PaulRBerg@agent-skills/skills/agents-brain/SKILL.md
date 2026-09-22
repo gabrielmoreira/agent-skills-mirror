@@ -18,10 +18,10 @@ If these instructions are already present in the conversation from a slash or do
 do not invoke this skill again through a skill tool.
 
 Create or polish repo-local context as one coherent system: human-facing README.md files, agent-facing AGENTS.md files
-with companion CLAUDE.md symlinks, existing project-installed skills under `.agents/skills`, eligible source-catalog
-skills under `skills/<name>/`, and context docs — any other Markdown files, under any name or directory, whose content
-is durable guidance for agents or humans, such as conventions, command catalogs, data-format rules, workflow runbooks,
-and reference material.
+(with companion CLAUDE.md symlinks only for pre-native Claude Code, per Claude Code Compatibility below), existing
+project-installed skills under `.agents/skills`, eligible source-catalog skills under `skills/<name>/`, and context docs
+— any other Markdown files, under any name or directory, whose content is durable guidance for agents or humans, such as
+conventions, command catalogs, data-format rules, workflow runbooks, and reference material.
 
 Success means every selected target is grounded in repository evidence, respects its audience and scope, spends agent
 context only on guidance that changes behavior, and passes the narrowest repository-defined validation. Stop after
@@ -78,8 +78,10 @@ If the intent is unclear, select `polish` in `--dry-run` mode and report the sma
 
 - Explicit create, update, polish, repair, fix, or equivalent intent authorizes in-scope local writes. Inspection-only
   intent and `--dry-run` do not.
-- Require explicit confirmation before deleting README.md, AGENTS.md, CLAUDE.md, or context-doc targets. `--force`
-  authorizes documented overwrites, not deletions.
+- Require explicit confirmation before deleting README.md, AGENTS.md, regular CLAUDE.md files, or context-doc targets.
+  `--force` authorizes documented overwrites, not deletions. The one standing exception is a CLAUDE.md symlink to a
+  sibling AGENTS.md when the installed Claude Code reads AGENTS.md natively (see Claude Code Compatibility): delete it
+  without asking.
 - Treat a broad write request as authorization for the requested scope. Otherwise, preview a change set larger than a
   handful of files and stop before writing.
 - Do not expand from documentation work into source changes, skill creation, or external writes.
@@ -136,6 +138,32 @@ report that the skill must be edited in its source catalog. `--force` does not o
 Outside managed agent-config roots, eligible git-tracked `skills/<name>/` source catalogs are in scope for `polish` per
 `references/polish.md`.
 
+## Claude Code Compatibility
+
+Claude Code v2.1.277 and later read `AGENTS.md` directly whenever no `CLAUDE.md`, `.claude/CLAUDE.md`, or
+`CLAUDE.local.md` exists in the working directory or above it, so a CLAUDE.md symlink is no longer needed. Detect the
+installed version once per run before either workflow touches CLAUDE.md:
+
+```sh
+claude_version=$(claude --version 2>/dev/null | awk '{ print $1; exit }')
+agents_md_native=false
+if [ -n "$claude_version" ] &&
+  [ "$(printf '%s\n' 2.1.277 "$claude_version" | sort -V | head -n 1)" = 2.1.277 ]; then
+  agents_md_native=true
+fi
+```
+
+When `agents_md_native=true`:
+
+- Do not create CLAUDE.md symlinks.
+- Delete every CLAUDE.md that is a symlink resolving to its sibling AGENTS.md, in the same pass and across the whole
+  selected tree, using `git rm` when tracked. Leave regular CLAUDE.md and CLAUDE.local.md files untouched and report
+  them: any such file at or above the repository root still suppresses direct AGENTS.md loading unless the user sets
+  **Project instructions** to `claude-md-and-agents-md` in `/config`.
+
+When `claude` is missing or older, keep the pre-native behavior: create or refresh a sibling symlink only where
+CLAUDE.md is missing or already a symlink, and never delete one.
+
 Snapshot `git status --short` before broad edits. Preserve unrelated pre-existing changes and re-check expected paths
 after generators or broad commands.
 
@@ -157,9 +185,9 @@ candidate.
 ## Completion and Report
 
 After writes, run repository-defined Markdown formatting or checks when present. If skill frontmatter or
-`agents/openai.yaml` changed in a project-installed skill, run its invocation metadata check. Verify changed CLAUDE.md
-symlinks resolve to sibling AGENTS.md. In `--dry-run`, report commands that would depend on planned files instead of
-running them.
+`agents/openai.yaml` changed in a project-installed skill, run its invocation metadata check. Verify that no CLAUDE.md
+symlink remains when `agents_md_native=true`, and that every retained or created symlink resolves to its sibling
+AGENTS.md otherwise. In `--dry-run`, report commands that would depend on planned files instead of running them.
 
 Lead with `### ✅ Context updated` only after writes and required validation pass,
 `### ⚠️ Context updated — validation failed` when files were written but required checks fail,

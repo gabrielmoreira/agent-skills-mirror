@@ -66,7 +66,7 @@ A tool may instead be bound to the **direct** path, where the model calls it as 
 
 - Request path: `POST /api/v1/threads/{id}/messages` → resolve LLM + admission → build sandbox-backed graph → stream SSE events, **buffered in Redis** for reconnection and **replayed from the LangGraph checkpoint** (contract in `src/server/AGENTS.md`).
 - **No ORM** — raw `psycopg3` async (`AsyncConnectionPool`); Alembic migrations use raw SQL via `op.execute()`. **Two separate pools**: app data + LangGraph checkpointer.
-- Hierarchy: **User → Workspace (1:1 Daytona sandbox) → Thread → Turns**.
+- Hierarchy: **User → Computer → Workspace → Thread → Turns**. A computer owns one Daytona or Docker sandbox; each workspace owns a project folder on it. Start, stop, resource tier, and always-on apply to the computer and every workspace bound to it. Workspaces on the same computer are mutually trusted: their code shares an OS user and can access sibling files and MCP credentials. Workspace tool selection is a routing convention, not a security boundary; use separate computers for isolation.
 
 ### Prompts, memory & memos
 

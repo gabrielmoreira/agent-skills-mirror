@@ -22,6 +22,7 @@ the arguments to `openhuman_core::run_core_from_args`.
 | `test-mcp-stub` | `test_mcp_stub.rs` | none (built by every `cargo test`) | Tiny stdio MCP server for tests |
 | `openhuman-fleet` | `fleet.rs` | `http-server`, `bin-tools` | Process-per-user supervisor + reverse proxy |
 | `rss-bench` | `rss_bench.rs` | `rss-bench` | Steady-state RSS benchmark for an embedded agent roster |
+| `tool-dialect-bench` | `tool_dialect_bench.rs` | none | Manual A/B of the text tool-call dialects against a local Ollama model |
 | `library-profile` | `library_profile/main.rs` (+ `harness.rs`, `mock.rs`, `scenarios/`) | `rss-bench` (add `rss-bench-dhat` for heap profiles) | Hermetic library-embedding profiling scenarios |
 
 `http-server` is in `default`; `bin-tools`, `rss-bench` and `rss-bench-dhat`
@@ -35,7 +36,7 @@ for one `echo` tool over newline-delimited JSON-RPC on stdin/stdout, exiting
 when stdin closes. `initialize` reports `PROTOCOL_VERSION` (`2025-11-25`).
 Dependency-free beyond `serde_json`. Tests spawn it through
 `env!("CARGO_BIN_EXE_test-mcp-stub")`: `tests/mcp_registry_e2e.rs`,
-`tests/mcp_registry_multi_server.rs`, `tests/mcp_setup_e2e.rs`,
+`tests/mcp_registry_multi_server.rs`,
 `tests/json_rpc_e2e.rs` and
 `tests/raw_coverage/tool_registry_approval_raw_coverage_e2e.rs`.
 
@@ -96,6 +97,29 @@ fixture and process driver. Build:
 ```
 cargo build --release --features rss-bench --bin rss-bench
 ```
+
+### `tool-dialect-bench`
+
+Manual, network-touching A/B of `agent.tool_dispatcher` values (`xml`,
+`pformat`, `python`, `typescript`) against a local Ollama model. For every
+dialect × task it composes the system prompt the way `ToolsSection` and the
+dialect's protocol block do, sends one user turn with no schemas on the wire,
+parses the answer with `tinytools_agent::parse_text` and the harness's
+registry, and records provider-reported prompt/output tokens, system-prompt
+bytes, call recovery, tool-name and argument accuracy, latency and the
+`CallSource`. Prints a markdown summary table; `--json` appends every row.
+Never run by CI.
+
+```
+ollama pull qwen3:8b
+cargo run -p openhuman-cli --bin tool-dialect-bench -- \
+    --model qwen3:8b --dialects xml,pformat,python,typescript --trials 3
+```
+
+`OLLAMA_HOST` / `OPENHUMAN_LOCAL_INFERENCE_URL` pick the server, as for the
+product. `--tasks 0,5` narrows to fixture tasks, `--max-output-tokens N`
+raises the per-call cap for thinking models, `-v` prints each prompt and
+answer.
 
 ### `library-profile`
 

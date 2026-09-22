@@ -1,13 +1,18 @@
-# mcp/registry — user-installed MCP servers
+# mcp/registry — user-declared MCP servers
 
-Host half of the dynamic, user-installed MCP server surface. The registry
+Host half of the dynamic, user-declared MCP server surface. The registry
 itself — the Smithery and official catalogs, the SQLite store, the live
-connection map, the subprocess/browser-sign-in supervisor, and the setup
-secret vault — moved to [`tinymcp`](https://github.com/tinyhumansai/tinymcp).
-What is left here is what belongs to this application: the `mcp_clients` and
-`mcp_setup` RPC surface, the agent-facing tools, the prompt-injection scan
-over remote tool definitions, and turning what the reconnect supervisor
-observed into this application's own events.
+connection map, and the subprocess/browser-sign-in supervisor — moved to
+[`tinymcp`](https://github.com/tinyhumansai/tinymcp). What is left here is
+what belongs to this application: the `mcp_clients` RPC surface, the
+`mcp.json` document that is the only way a server is added or removed, the
+agent-facing tools, the prompt-injection scan over remote tool definitions,
+and turning what the reconnect supervisor observed into this application's
+own events.
+
+The catalogs are **browse-only**. There is no install-from-catalog RPC, no
+install tool and no setup agent: a user finds a server in the Registry tab,
+opens its own page, and declares it in `mcp.json`.
 
 The RPC namespace and the on-disk database filename are still `mcp_clients`,
 unchanged across the move — existing frontend code and existing on-disk state
@@ -19,12 +24,13 @@ keep working. The Rust module path is `crate::mcp::registry`.
 | --- | --- |
 | `mod.rs` | Module declarations, the `connections`/`store`/`boot`/`supervisor`/`oauth` re-export facades, and `tools_safe_for_agent` (the prompt-injection scan). |
 | `ops.rs` / `ops_tests.rs` | `mcp_clients_*` RPC handler bodies — each delegates to the service `mcp::host` holds. |
-| `setup_ops.rs` / `setup_ops_tests.rs` | `mcp_setup_*` guided-setup handler bodies. |
-| `schemas.rs`, `schemas/` (`mod.rs`, `registry.rs`, `handlers.rs`, `params.rs`, `setup_registry.rs`, `setup_handlers.rs`), `schemas_tests.rs` | Controller schema registry and dispatch. |
+| `config_doc.rs` / `config_doc_tests.rs` | The `mcp.json` contract: how the store renders as a document (credential names only), what a written one may say, and the reconciliation helpers. |
+| `config_ops.rs` | `mcp_clients_config_get` / `config_set`: replace the store with what the document declares. |
+| `schemas/` (`mod.rs`, `registry.rs`, `handlers.rs`, `params.rs`), `schemas_tests.rs` | Controller schema registry and dispatch. |
 | `supervisor_events.rs` / `supervisor_events_tests.rs` | Maps a supervisor tick's `TickReport` into `DomainEvent`s. |
 | `bus.rs` / `bus_tests.rs` | `McpClientEventSubscriber` — logs lifecycle events for observability. |
 | `tools.rs` / `tools_tests.rs` | Agent-facing `mcp_registry_*` tools, thin shims over `ops.rs`. |
-| `helpers.rs` | Shared identifier validation, workspace-service resolution, and env-key injection used by both `ops.rs` and `setup_ops.rs`. |
+| `helpers.rs` | Shared identifier validation, workspace-service resolution, and env-key injection used by the handlers. |
 | `stub.rs` | The `mcp`-less mirror of the always-on surface: `all_mcp_registry_registered_controllers` (empty), `boot`, `bus`, `supervisor`, `oauth`, and the three `connections` lookups always-on callers name. |
 
 ## Modules re-exported over `tinymcp`
@@ -57,29 +63,33 @@ keep working. The Rust module path is `crate::mcp::registry`.
 ## RPC surface
 
 `ops.rs` implements the `mcp_clients` namespace: `registry_search`,
-`registry_get`, `installed_list`, `install`, `update_env`, `uninstall`,
-`detect_auth`, `oauth_begin`, `connect`, `disconnect`, `status`, `tool_call`,
-`config_assist`, `registry_settings_get`, `registry_settings_set`,
-`set_enabled`. `setup_ops.rs` implements the `mcp_setup` namespace: `search`,
-`get`, `request_secret`, `submit_secret`, `test_connection`,
-`install_and_connect`. Both are registered together by
-`schemas::all_registered_controllers` (`schemas/registry.rs`).
+`registry_get`, `installed_list`, `update_env`, `uninstall`, `detect_auth`,
+`oauth_begin`, `connect`, `disconnect`, `status`, `tool_call`,
+`registry_settings_get`, `registry_settings_set`, `set_enabled`.
+`config_ops.rs` adds `config_get` and `config_set` — the `mcp.json`
+document. All are registered by `schemas::all_registered_controllers`
+(`schemas/registry.rs`).
+
+`config_set` is a *replace*: a server absent from the document is
+uninstalled, a new one is inserted as an `InstalledServer` built straight
+from its declaration (`command`/`args` → stdio, `url` → HTTP-remote), and one
+whose dial changed is rewritten under the same `server_id` so the row the
+frontend and the connection map address stays the same row. Credentials are
+the exception: `env` (stdio) and `headers` (HTTP) are write-only — a read
+renders only `envKeys` and `authConfigured` — so an entry saved without a
+credential block keeps what is stored, and a key set to `""` removes that one
+value. Enabled servers that were added or rewritten are connected in the
+background; the status poll reports the outcome.
 
 What stayed host-side inside these handlers, on purpose:
 
 - **Events** — `tinymcp` reports outcomes in its return values and publishes
-  nothing; `ops.rs`/`setup_ops.rs` turn those into `DomainEvent`s because the
-  vocabulary is this application's.
+  nothing; the handlers turn those into `DomainEvent`s because the vocabulary
+  is this application's.
 - **The prompt-injection scan** — `tools_safe_for_agent` filters remote tool
   definitions before they reach the agent.
-- **The configuration-assistant agent turn** — `tinymcp` gathers catalog
-  detail and the credential names an install would need; running the model
-  turn needs the agent, the tool surface, and the approval gate, all of which
-  live in this crate.
-- **Setup secret handles** — the `secret://…` opaque handle flow: `tinymcp`
-  owns the vault, this layer publishes the event that prompts the user
-  out-of-band and waits for the answer. The raw value never crosses the
-  model-facing surface.
+- **The document** — `tinymcp` has no notion of `mcp.json`; the shape, the
+  refusals and the reconciliation are this application's.
 
 ## Reconnect-supervisor events
 
@@ -100,14 +110,13 @@ for the stays-down/restored/parked cases, the desktop notification bridge.
 `mcp_registry_installed_list`, `mcp_registry_status`,
 `mcp_registry_list_tools`, `mcp_registry_connect`,
 `mcp_registry_disconnect`, `mcp_registry_tool_call`,
-`mcp_registry_config_assist`, `mcp_registry_install`,
 `mcp_registry_uninstall` — thin shims over `ops.rs`. Discovery/observe/
-connect/call tools are default-ON; `install`/`uninstall` (persistent writes
-of installed state and secrets) ship default-OFF, gated behind the
-`mcp_manage` toggle in `tools/user_filter.rs`. Re-exported by
-`tools/mod.rs` behind `#[cfg(feature = "mcp")]`. The `mcp_setup_*`
-setup-agent tools and the generic `mcp_list_servers`/`mcp_call_tool` bridge
-tools live elsewhere and are a distinct surface from these
+connect/call tools are default-ON; `uninstall` (a persistent write of
+installed state) ships default-OFF, gated behind the `mcp_manage` toggle in
+`tools/user_filter.rs`. There is no install tool: servers are declared by
+the user in `mcp.json`. Re-exported by `tools/mod.rs` behind
+`#[cfg(feature = "mcp")]`. The generic `mcp_list_servers`/`mcp_call_tool`
+bridge tools live elsewhere and are a distinct surface from these
 `mcp_registry_*` tools.
 
 ## Compile-time gate (`mcp` feature)
@@ -136,8 +145,6 @@ same real type in both builds.
   supervisor.
 - `crates/openhuman-core/src/core/jsonrpc.rs` — the `/oauth/mcp/callback`
   route calls `oauth::complete`.
-- `crates/openhuman-core/src/tools/impl/network/mcp_setup.rs` — the
-  `mcp_setup_*` agent tools wrap `setup_ops`.
 - `crates/openhuman-core/src/tools/registry/ops.rs` and
   `crates/openhuman-core/src/agent/registry/agents/orchestrator/prompt.rs` —
   read `mcp::registry::connections` to list connected servers/tools for the

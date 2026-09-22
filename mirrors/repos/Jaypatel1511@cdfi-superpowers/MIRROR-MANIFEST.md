@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Jaypatel1511/cdfi-superpowers` — 26 default patterns, 0 followed patterns, 4 file(s) materialized.
+Mirror of `Jaypatel1511/cdfi-superpowers` — 26 default patterns, 0 followed patterns, 6 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Jaypatel1511/cdfi-superpowers` — 26 default patterns, 0 followed pa
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 4 |
+| Files         | 6 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,9 +60,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`.agents/skills/cdfi-peer-benchmark/SKILL.md`](.agents/skills/cdfi-peer-benchmark/SKILL.md) |
-| 2 | ✓ | [`.agents/skills/hmda-analysis/SKILL.md`](.agents/skills/hmda-analysis/SKILL.md) |
-| 3 | ✓ | [`.agents/skills/nmtc-eligibility/SKILL.md`](.agents/skills/nmtc-eligibility/SKILL.md) |
-| 4 | ✓ | [`llms.txt`](llms.txt) |
+| 2 | ✓ | [`.agents/skills/credit-memo/SKILL.md`](.agents/skills/credit-memo/SKILL.md) |
+| 3 | ✓ | [`.agents/skills/fair-lending-screening/SKILL.md`](.agents/skills/fair-lending-screening/SKILL.md) |
+| 4 | ✓ | [`.agents/skills/hmda-analysis/SKILL.md`](.agents/skills/hmda-analysis/SKILL.md) |
+| 5 | ✓ | [`.agents/skills/nmtc-eligibility/SKILL.md`](.agents/skills/nmtc-eligibility/SKILL.md) |
+| 6 | ✓ | [`llms.txt`](llms.txt) |
 
 ---
 

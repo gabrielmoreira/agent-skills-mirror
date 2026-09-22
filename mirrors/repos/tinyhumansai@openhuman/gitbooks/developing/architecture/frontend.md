@@ -245,7 +245,7 @@ const result = await apiClient.post<LoginResponse>("/auth/login", {
 - `skillsApi`, `skillRegistryApi`, `flowsApi`, `workflowRunsApi` — skills & automation
 - `channelConnectionsApi`, `mcpClientsApi`, `mcpSetupApi`, `tunnelsApi` — connections
 - `memoryTimelineApi`, `memoryFreshnessApi`, `graphCentralityApi`, `namespaceOverviewApi` — memory/graph
-- `billingApi`, `creditsApi`, `referralApi`, `rewardsApi`, `inviteApi` — commerce
+- `billingApi`, `creditsApi`, `referralApi`, `inviteApi` — commerce
 - `voiceSettingsApi`, `voiceInstallApi`, `aiSettingsApi`, `modelCouncilApi` — AI/voice config
 
 For the full list, `ls app/src/services/api/`. New feature surfaces get their own module here rather than growing `apiClient`.
@@ -411,7 +411,6 @@ Current desktop routes (read `AppRoutes.tsx` for the authoritative table — the
 /invites               → Invites
 /feedback              → Feedback
 /notifications         → Notifications
-/rewards               → Rewards
 /ptt-overlay           → PttOverlayPage (push-to-talk overlay window)
 /dev/agent-insights    → dev-only preview
 *                      → DefaultRedirect
@@ -508,7 +507,7 @@ components/
 ├── BootCheckGate/, daemon/  # Boot + service gates in the provider chain
 ├── commands/                # CommandProvider (command palette)
 ├── Announcement/, upsell/, userErrors/, walkthrough/  # Shell-level overlays
-├── keyring/, mcp-setup/, InitProgressScreen/          # Consent + init overlays
+├── keyring/, InitProgressScreen/                     # Consent + init overlays
 └── intelligence/            # Memory/vault surfaces (ObsidianVaultSection, VaultHealthChecklist, WorkflowsTab, …)
 ```
 

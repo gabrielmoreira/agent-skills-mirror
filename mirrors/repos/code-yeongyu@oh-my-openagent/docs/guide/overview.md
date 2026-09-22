@@ -187,13 +187,13 @@ Override specific categories or curated agents in `omo.json`:
     "artistry": { "model": "anthropic/claude-fable-5-1", "reasoning": "max" },
 
     // Quick tasks: fast and cheap
-    "quick": { "model": "kimi-coding/kimi-for-coding-highspeed" },
+    "quick": { "model": "openai/gpt-5.6-luna-fast", "reasoning": "low" },
 
     // Low-effort fallback: Grok 4.6 xhigh
     "unspecified-low": { "model": "xai/grok-4.6", "reasoning": "xhigh" },
 
-    // High-effort fallback: GPT-6 Astra, then Opus 5, GLM 5.3, and Kimi K3
-    "unspecified-high": { "model": "openai/gpt-6-astra", "reasoning": "high" },
+    // High-effort fallback: Opus 5, then GLM 5.3 and Kimi K3
+    "unspecified-high": { "model": "anthropic/claude-opus-5", "reasoning": "xhigh" },
 
     // Prose and documentation
     "writing": { "model": "anthropic/claude-fable-5-1", "reasoning": "low" }
@@ -211,7 +211,7 @@ Override specific categories or curated agents in `omo.json`:
 
 **GPT models** (explicit reasoning, principle-driven):
 
-- GPT-6 Astra: OpenAI's most capable model; default for `plan-reviewer` (xhigh, high on Copilot), `ultrabrain` (max), `deep` (high), and `unspecified-high` (high), with `gpt-6-astra-fast` as the Fast-mode variant
+- GPT-6 Astra: OpenAI's most capable model; default for `plan-reviewer` (xhigh, high on Copilot), `ultrabrain` (max), and `deep-high` (high), with `gpt-6-astra-fast` as the Fast-mode variant
 - GPT-5.6 Sol: the GPT-recommended main-agent configuration; the fallback rung under Astra for `ultrabrain` (max) and `deep` (medium)
 - GPT-5.6 Terra: balanced mid-tier; second rung in `unspecified-low`
 - GPT 5.6 Luna Fast: fast and cheap; default for `explore` and `librarian`

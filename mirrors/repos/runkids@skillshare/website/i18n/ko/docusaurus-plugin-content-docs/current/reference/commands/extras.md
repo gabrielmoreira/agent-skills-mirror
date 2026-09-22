@@ -330,7 +330,7 @@ manifest가 없는 단순 단일 파일 실행 파일은 직접 exec됩니다 (U
 
 ### Reference extensions
 
-skillshare 저장소는 `extensions/` 아래에 예제 extension(`gemini-commands`, `codex-agents`)을 제공합니다. 하나를 extensions 디렉터리로 복사하여 조정하세요 — 이들은 참조용이며 자동으로 설치되지 않습니다. 각 참조 extension은 `convert.js`를 짧게 유지하여 필드 매핑만 편집하면 되도록 하며, `md-toml.js`가 markdown 읽기, 단순 frontmatter 파싱, TOML 작성을 처리합니다.
+skillshare 저장소는 `extensions/` 아래에 예제 extension(`gemini-commands`, `codex-agents`, `opencode-agents`)을 제공합니다. 하나를 extensions 디렉터리로 복사하여 조정하세요 — 이들은 참조용이며 자동으로 설치되지 않습니다. 각 참조 extension은 `convert.js`를 짧게 유지하여 필드 매핑만 편집하면 되도록 하며, `md-toml.js`가 markdown 읽기, 단순 frontmatter 파싱, TOML 작성을 처리합니다.
 
 ### Recipe: Codex agents
 
@@ -346,6 +346,8 @@ extras:
 ```
 
 `skillshare sync extras`는 각 `<agent>.md`를 `~/.codex/agents/<agent>.toml`로 변환하여, frontmatter의 `name`, `description`, `model`을 매핑하고 markdown 본문을 `developer_instructions`로 접어 넣습니다 (다른 frontmatter 키는 제거됩니다). [Codex custom agent schema](https://developers.openai.com/codex/subagents#custom-agent-file-schema)는 `name`, `description`, `developer_instructions`를 요구하므로, 참조 transform은 해석된 name, description, 또는 Markdown 본문이 비어 있을 경우 명확한 오류를 보고합니다. agents의 별도 사본은 필요하지 않습니다.
+
+Agent target은 extra 없이도 `extension`을 직접 사용할 수 있습니다. [extension으로 agent 변환하기](/docs/understand/agents#extensions)를 참고하세요.
 
 ---
 

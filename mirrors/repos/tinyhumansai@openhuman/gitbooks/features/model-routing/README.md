@@ -55,6 +55,10 @@ The subscription is the default, not a requirement. The same router works agains
 - **Per call**. pass a concrete model name (no `hint:` prefix) and the router falls through to the default provider with that exact model.
 - **For a skill**. skills can pin a hint or a model in their manifest.
 
+## Default model
+
+Settings → Connections → LLM → Routing has a **Default model** row: a model from the managed catalog that every managed chat turn runs on instead of the anonymous chat tier (it opens on DeepSeek V4 Flash). The composer's model pill can still override it for one conversation, and the specialised tiers (reasoning, coding, vision, summarisation) keep their own routing. The rows beneath it route each workload to Managed, a BYOK provider, a local runtime, or Claude Code.
+
 ## Per-agent model pins
 
 Sub-agents can also pin an exact model without disabling automatic routing for the rest of the app. Use this when an orchestrator or team lead needs a stronger model, while high-volume leaf agents should stay on a cheaper one.

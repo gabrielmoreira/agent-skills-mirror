@@ -99,12 +99,15 @@ MCP 面直接调 `service`，请求里没有 `session_id`，因此**没有 incog
 
 ## 3. 协议层
 
-newline-delimited JSON-RPC 2.0 over stdio，`PROTOCOL_VERSION = "2025-03-26"`（与 `knowledge::agent_mcp` 同一版本号）。每行一条消息，host 逐行处理。
+newline-delimited JSON-RPC 2.0 over stdio；平台 Server 与 `knowledge::agent_mcp` 共用 `mcp_protocol`。旧 `initialize` 仅协商 2025-03-26 / 06-18 / 11-25，未知版本回落 2025-11-25。现代请求在 `params._meta` 中携带 `io.modelcontextprotocol/protocolVersion=2026-07-28` 和对象形状的 `clientCapabilities`，不需要 initialize、不修改旧连接状态；未知版本返回 `-32022` 及 supported/requested，能力字段缺失返回 `-32602`。
+
+2026 普通结果带 `resultType=complete`，列表另带 `ttlMs=0`、`cacheScope=private`；旧版结果不增加这些字段。现代请求不接受 initialize/ping，`server/discover` 提供版本与能力探测。本地 fixture 只证明这些 wire 切片；完整 conformance、MRTR、并发与入站容量验证未据此宣称完成。[官方版本边界](https://modelcontextprotocol.io/specification/2026-07-28/basic/versioning)
 
 ### 3.1 支持的方法
 
 | method | 有 `id` | 行为 |
 | --- | --- | --- |
+| `server/discover` | 是 | 返支持版本、能力及服务器身份 |
 | `initialize` | 是 | 返 `protocolVersion` + `serverInfo{name:"hope-agent", version}` + capabilities；`instructions` = 固定开场白拼接每个 enabled provider 的 `instructions()` |
 | `ping` | 是 | 返 `{}` |
 | `notifications/initialized` | 否 | 通知，无响应 |

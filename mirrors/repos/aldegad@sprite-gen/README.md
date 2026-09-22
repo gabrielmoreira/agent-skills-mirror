@@ -26,6 +26,17 @@ Ask an image model for a "sprite sheet" and you know what you get: a character w
 
 `sprite-gen` is a Codex/Claude skill and a Python CLI that closes that gap. Give it **one base image** — it drives generation row by row, locks the character's identity, strips the chroma background to real alpha, extracts each pose as a clean transparent frame, and bakes a runtime atlas **with a machine-readable `manifest.json.frame_layout`**. Or hand the same still to a video model and get back a seamless, transparent loop per motion state. For the last 10% that generation never gets right, a **curation webview** lets you compare, reject, nudge and watch the loop live before you bake.
 
+For side sprites, `video-set` uses `--facing right|left` consistently across canvas placement and clip prompts. Its direction detector is **record-only by default** (`--facing-fix none`) and can be wrong even at high confidence. Use `gen --ref image.png --facing right` to request orientation in the generation prompt; `gen` otherwise preserves orientation. Prompts request direction but cannot guarantee the result. Correction is opt-in: `--facing-fix mirror`, or `gen --facing-fix regen`; review the still before using either. See [facing options](SKILL.md#side-view-facing).
+
+<p align="center">
+  <img src="docs/assets/attack-claudecy-samurai.gif" height="160" alt="Samurai Claudecy two-handed katana cut loop">
+  <img src="docs/assets/attack-claudecy-samurai-onehand.gif" height="160" alt="Samurai Claudecy one-handed katana cut loop">
+  <img src="docs/assets/attack-slime.gif" height="160" alt="Slime attack loop">
+  <img src="docs/assets/attack-fox-hood.gif" height="160" alt="Hooded fox attack loop">
+  <img src="docs/assets/attack-paladin.gif" height="160" alt="Paladin attack loop">
+</p>
+<p align="center"><sub>v2.5.3 attack loops straight out of the video pipeline: one still each, Grok Imagine clip, frames gate, automatic loop selection. No manual cut points.</sub></p>
+
 ## Start with a request
 
 Ask for **sprites** or **an image**. The agent checks access, asks only for missing provider/motion choices, runs the existing pipeline, and delivers the files. The curation view is optional. Save your choices once to reuse separate sprite and image defaults; a one-off request does not overwrite them. [User workflow and defaults](docs/user-workflow.md).
@@ -157,7 +168,7 @@ python3 ~/.codex/skills/.system/skill-installer/scripts/install-skill-from-githu
 
 Image generation is part of this engine (`sprite_gen.gen`, providers `codex` and `grok` on a subscription you already pay for, plus an explicit-only `openai` provider for servers and SaaS that bills per call; the general `image-gen` skill is a thin shuttle over it). Video uses **your own** credential — the `grok` CLI login or an `XAI_API_KEY` — and nothing is shipped with the repo ([docs/video.md](docs/video.md)).
 
-`sprite-gen` supports CPython 3.10+; CI runs 3.10 and 3.14. The quickstart needs a Python with working `venv`/`ensurepip`.
+`sprite-gen` supports CPython 3.11+; CI runs only 3.14. Python 3.10 is no longer supported. The quickstart needs a Python with working `venv`/`ensurepip`.
 
 ## Attribution
 

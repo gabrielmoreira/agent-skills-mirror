@@ -330,7 +330,7 @@ The mechanism is cross-platform; whether an extension runs depends on its interp
 
 ### Reference extensions
 
-The skillshare repo ships example extensions under `extensions/` (`gemini-commands`, `codex-agents`). Copy one into your extensions directory and adapt it — they are references, not installed automatically. Each reference extension keeps `convert.js` short so you edit only the field mapping; `md-toml.js` handles reading markdown, parsing simple frontmatter, and writing TOML.
+The skillshare repo ships example extensions under `extensions/` (`gemini-commands`, `codex-agents`, `opencode-agents`). Copy one into your extensions directory and adapt it — they are references, not installed automatically. Each reference extension keeps `convert.js` short so you edit only the field mapping; `md-toml.js` handles reading markdown, parsing simple frontmatter, and writing TOML.
 
 ### Recipe: Codex agents
 
@@ -346,6 +346,8 @@ extras:
 ```
 
 `skillshare sync extras` converts each `<agent>.md` into `~/.codex/agents/<agent>.toml`, mapping frontmatter `name`, `description`, and `model` and folding the markdown body into `developer_instructions` (other frontmatter keys are dropped). The [Codex custom agent schema](https://developers.openai.com/codex/subagents#custom-agent-file-schema) requires `name`, `description`, and `developer_instructions`, so the reference transform reports a clear error when the resolved name, description, or Markdown body is blank. No separate copy of the agents is needed.
+
+Agent targets can also take `extension` directly, without an extra. See [Converting agents with an extension](/docs/understand/agents#extensions).
 
 ---
 

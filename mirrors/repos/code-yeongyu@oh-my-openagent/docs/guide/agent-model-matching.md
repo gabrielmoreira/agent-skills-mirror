@@ -84,8 +84,8 @@ Delegation goes through the `task` tool. Four curated read-only agents have thei
 
 | Agent | Job | Primary | Chain |
 | --- | --- | --- | --- |
-| `explore` | Fast codebase grep and pattern discovery | `gpt-5.6-luna-fast` (low) | `openai\|openai-codex/gpt-5.6-luna-fast (low)` -> `deepseek/deepseek-v4-flash (max)` -> `opencode-go\|bailian-coding-plan/qwen3.7-plus` -> cheaper utility rungs -> `anthropic\|github-copilot/claude-haiku-4-5` -> `openai\|openai-codex/gpt-5.4-nano` |
-| `librarian` | Documentation and OSS code search | `gpt-5.6-luna-fast` (low) | Same chain as `explore`. |
+| `explore` | Fast codebase grep and pattern discovery | `kimi-for-coding-highspeed` (off) | `kimi-coding\|kimi-for-coding/kimi-for-coding-highspeed (off)` -> `openai\|openai-codex/gpt-5.6-luna-fast (low)` -> `deepseek/deepseek-v4-flash (max)` -> `opencode-go\|bailian-coding-plan/qwen3.7-plus` -> cheaper utility rungs -> `anthropic\|github-copilot/claude-haiku-4-5` -> `openai\|openai-codex/gpt-5.4-nano` |
+| `librarian` | Documentation and OSS code search | `kimi-for-coding-highspeed` (off) | Same chain as `explore`. |
 | `plan-consultant` | Pre-planning gap analysis for `/ulw-plan` | `claude-fable-5-1` (max) | `anthropic\|github-copilot\|opencode/claude-fable-5-1 (max)` -> `anthropic\|github-copilot\|opencode/claude-opus-5 (max)` -> `opencode-go\|kimi-for-coding\|moonshotai\|opencode/kimi-k3 (max)` |
 | `plan-reviewer` | One-shot plan review against clarity, verification, and context criteria | `gpt-6-astra` (xhigh) | `openai\|openai-codex/gpt-6-astra (xhigh)` -> `github-copilot/gpt-6-astra (high)` -> `openai\|openai-codex\|opencode/gpt-6-astra (high)` -> `anthropic\|github-copilot\|opencode/claude-opus-5 (max)` -> two lower rungs listed in the source file -> `opencode-go/glm-5.2` |
 
@@ -127,9 +127,9 @@ When the main agent delegates implementation work, it doesn't pick a model name.
 | `ultrabrain` | Genuinely hard, logic-heavy tasks; goals only, no step-by-step | `openai/gpt-6-astra (max)` | `gpt-6-astra (max)` across `openai`, `openai-codex`, `github-copilot`, `opencode` -> `gpt-5.6-sol (max)` across the same providers |
 | `deep` | 3D graphics, computer use, browser use, backend, algorithms, multimodal work, complex research | `openai/gpt-6-astra (high)` | `openai\|openai-codex\|github-copilot\|opencode/gpt-6-astra (high)` -> same providers `/gpt-5.6-sol (medium)` |
 | `artistry` | Unconventional, creative problem-solving | `anthropic/claude-fable-5-1 (max)` | `claude-fable-5-1 (max)` -> `kimi-k3 (max)` -> `claude-opus-5 (xhigh)` |
-| `quick` | Trivial tasks: single-file changes, typos | `kimi-coding/kimi-for-coding-highspeed` | `kimi-for-coding-highspeed` -> `openai-codex/gpt-5.6-luna-fast (low)` -> `deepseek/deepseek-v4-flash (off)` -> `qwen3.6-flash (low)` -> cheaper utility rungs -> `xai/grok-4.20-0309-non-reasoning` -> `claude-haiku-4-5 (off)` |
+| `quick` | Trivial tasks: single-file changes, typos | `openai-codex/gpt-5.6-luna-fast (low)` | `openai-codex/gpt-5.6-luna-fast (low)` -> `deepseek/deepseek-v4-flash (off)` -> `qwen3.6-flash (low)` -> cheaper utility rungs -> `xai/grok-4.20-0309-non-reasoning` -> `claude-haiku-4-5 (off)` |
 | `unspecified-low` | Doesn't fit elsewhere, low effort | `xai/grok-4.6 (xhigh)` | `xai\|github-copilot\|opencode/grok-4.6 (xhigh)` -> `gpt-5.6-terra (high)` -> `claude-sonnet-5 (low)` -> `qwen3.8-max-preview (max)` -> `deepseek\|opencode-go/deepseek-v4-pro (max)` -> `xiaomi\|opencode-go/mimo-v2.5-pro (max)` |
-| `unspecified-high` | Doesn't fit elsewhere, high effort | `openai/gpt-6-astra (high)` | `gpt-6-astra (high)` -> `claude-opus-5 (xhigh)` -> `zai-coding-plan\|opencode-go/glm-5.3 (max)` -> `kimi-k3 (max)` |
+| `unspecified-high` | Doesn't fit elsewhere, high effort | `anthropic/claude-opus-5 (xhigh)` | `claude-opus-5 (xhigh)` -> `zai-coding-plan\|opencode-go/glm-5.3 (max)` -> `kimi-k3 (max)` |
 | `writing` | Documentation, prose, technical writing | `anthropic/claude-fable-5-1 (low)` | `claude-fable-5-1 (low)` -> `kimi-k3 (low)` -> `claude-opus-4-6 (low)` |
 
 The `quick` category ships a caller warning: small fast models need an explicit prompt with numbered must-do steps, forbidden deviations, and concrete success criteria. `deep` is one goal plus one deliverable per call; fan out multiple goals as parallel `deep` calls.

@@ -119,3 +119,7 @@
 - 2026-08-03 — native delivery 改为 Electron Main 单 owner 的 durable claim/ack；设置页的测试入口不产生模型或聊天副作用。
 - 2026-08-28 — 用户取消 renderer notification surface：low/normal/urgent 全部走系统通知。已有 queued renderer delivery 在保留历史 row 的前提下迁到 native；交互聊天新增服务端审批与真实成功完成通知，点击回原会话。
 - 2026-08-29 — Claude 复审发现 Codex Stop 后会先发 `finish_reason: interrupted`、再发 usage-only result，旧 collector 会被第二帧重新置为成功。完成状态新增 sticky 非成功终态并同步抑制 native/Telegram completion 与标题生成；claim/ack HTTP 面同时收口为 native-only，Settings 测试动作改用独立 Renderer policy。
+
+- 2026-09-21 — Memory 工具与自动服务仅启用已绑定助理会话；普通项目仅保留一般文件工具，不挂 Memory。升级前已有助理会话一次性保留绑定，新会话不按 cwd 暗中启用；Bridge 明确选择助理目录才绑定，UI 使用后端同一判定。成功回合生命周期、三 Runtime 共享工具与来源/更正/忘记另见 [Memory Guardrail](Memory.md)。宠物不作为基础记忆入口门禁。
+
+- 2026-09-22：checkin 复用仅筛选 source=user，task 不能显式绑定或被读路径识别为助理。Bridge/wizard 创建会话与绑定失败必须回滚数据库事务，避免未绑定孤立会话；wizard 已建立的目录/文件不属于该事务保证。

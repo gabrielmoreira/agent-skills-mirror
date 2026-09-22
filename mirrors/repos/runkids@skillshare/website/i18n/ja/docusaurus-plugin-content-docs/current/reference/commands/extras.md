@@ -276,7 +276,7 @@ extras:
 
 ---
 
-## 拡張子変換（Extension transforms）
+## 拡張子変換（Extension transforms） {#extension-transforms}
 
 一部のツールは markdown を読み込みません。Gemini CLI は TOML の commands を、Codex CLI は TOML の agents を期待します。Target の `extension` フィールドは、sync 時に各 Source ファイルを Target のネイティブ形式に変換する外部スクリプトを実行します。
 
@@ -330,7 +330,7 @@ description: "Markdown command → Gemini CLI TOML"
 
 ### 参照用の Extension
 
-skillshare リポジトリは、`extensions/` 配下にサンプル extension（`gemini-commands`、`codex-agents`）を同梱しています。いずれかを自分の extensions ディレクトリにコピーして調整してください — これらは参照用であり、自動的にはインストールされません。各参照用 extension は、フィールドマッピングだけを編集すれば済むよう `convert.js` を短く保っています。`md-toml.js` が markdown の読み込み、簡易フロントマターの解析、TOML の書き出しを担当します。
+skillshare リポジトリは、`extensions/` 配下にサンプル extension（`gemini-commands`、`codex-agents`、`opencode-agents`）を同梱しています。いずれかを自分の extensions ディレクトリにコピーして調整してください — これらは参照用であり、自動的にはインストールされません。各参照用 extension は、フィールドマッピングだけを編集すれば済むよう `convert.js` を短く保っています。`md-toml.js` が markdown の読み込み、簡易フロントマターの解析、TOML の書き出しを担当します。
 
 ### レシピ: Codex agents
 
@@ -346,6 +346,8 @@ extras:
 ```
 
 `skillshare sync extras` は各 `<agent>.md` を `~/.codex/agents/<agent>.toml` に変換し、フロントマターの `name`、`description`、`model` をマッピングし、markdown 本文を `developer_instructions` に折り込みます（その他のフロントマターキーは破棄されます）。[Codex custom agent schema](https://developers.openai.com/codex/subagents#custom-agent-file-schema) は `name`、`description`、`developer_instructions` を必須としているため、参照用の変換スクリプトは解決された name、description、または markdown 本文が空の場合に明確なエラーを報告します。agents の別コピーを用意する必要はありません。
+
+Agent の Target には、extras を介さず `extension` を直接設定することもできます。詳細は [extension を使った agent の変換](/docs/understand/agents#extensions) を参照してください。
 
 ---
 

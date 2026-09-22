@@ -415,6 +415,12 @@ sequenceDiagram
 
 OAuth HTTP 客户端拒绝自动重定向，防止已经校验的目标通过重定向扩大访问范围或转发令牌表单；授权浏览器链接不写日志。
 
+刷新按 server ID 在进程内串行合并：取得锁后重新读取凭据，复用已刷新的结果；等待中的同一失败令牌不反复刷新。刷新写入在同步凭据锁内比较原记录，登出、重新授权或其它写入已改变记录时拒绝发布，不能复活删除的凭据。此锁不是跨进程 refresh single-flight，也不替代完整 issuer/resource/CIMD 身份键迁移。
+
+已有 origin-root 发现路径核对返回的 issuer；授权回调带 `iss` 时，兑换前必须与发现记录精确相等。手工固定端点而没有 issuer 证据时，不能从回调反推信任，带 `iss` 的回调会拒绝；缺少 issuer/PRM 的完整兼容仍待后续合同与 fixture。回调网页仅确认收到回调，持久化成功后才发布授权成功。
+
+URL/DNS、客户端构造和本地认证参数等预检成功后，在刷新请求实际发送前建立当前进程的旧令牌拒绝重试标记，成功条件写后才清除；响应丢失、任务取消或本地保存失败都要求重新授权，避免重复消费可能已轮换的令牌。纯本地预检失败不设置该标记，允许下次重试；新的浏览器授权在收到并验证回调后，与刷新共用同一锁完成令牌兑换和发布；只有发布成功才清除旧标记，允许服务端合法复用未轮换的刷新令牌值，保存失败不清除。该标记不跨进程持久化。
+
 ### 关键安全细节
 
 - **SSRF 固定 `Default` policy**：所有 OAuth 出站 URL（discovery / registration / token / refresh）都过 `check_url(url, SsrfPolicy::Default, &trusted_hosts)`。OAuth server 必然公网，`Strict` 会误伤，但 metadata IP 仍被拒

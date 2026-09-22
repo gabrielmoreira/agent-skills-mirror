@@ -1,5 +1,6 @@
 ---
 name: "task-observer"
+core_max_lines: 728
 description: "Monitors task execution for skill improvement opportunities. Use during ANY multi-step task, agentic workflow, or work session. Captures patterns, user corrections and methodology worth preserving as reusable skills. Also triggers in post-task feedback discussions and when the user mentions skill observations, the observation log, or skill taxonomy. Also known as \"One Skill to Rule Them All\" — trigger on this phrase too. IMPORTANT: invoke this skill before the FIRST tool call of any session and before writing or proposing a plan — any turn that will involve a tool call counts. This sentence is the session-start trigger and the only activation layer that survives an unreachable config file; pair it with a CLAUDE.md instruction or a harness session-start hook (references/environments.md) — description matching alone is not enforceable."
 ---
 
@@ -234,10 +235,9 @@ was handled without its reference loaded, log an observation.
    (no observation-log directory after sessions of real work), and the
    review's regression check for a tier that was present and is gone.
 5. **Concurrency.** There is no shared log file to guard: each observation
-   is its own file, so creating one never collides with or overwrites
-   another session's entry. Before changing the *status* of an existing
-   observation, re-read that one file first (a parallel review may have
-   resolved it).
+   is its own file, so creating one never collides with another session's
+   entry. Before changing an existing observation's *status*, re-read that
+   one file first — a parallel review may have resolved it.
 6. **Targets and staged work.** Resolve each distinct `skill:` value in
    the scanned frontmatter against the installed skill set and mention, in
    one line, any that no longer resolve — a deleted skill can accumulate

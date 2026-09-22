@@ -4,22 +4,28 @@
 > thejaypatel1511; GitHub Jaypatel1511). No new analytical code — skills that pip-install and call
 > already-published, independently versioned packages, so an AI answers CDFI
 > questions from audited tooling instead of hallucinating. Grounds NMTC
-> eligibility, bank-CDFI peer benchmarking, and descriptive HMDA analysis.
+> eligibility, bank-CDFI peer benchmarking, descriptive HMDA analysis, IC credit
+> memo generation, and fair-lending disparity screening.
 
 Guiding rules for any AI using these skills: if a tool errors, report the error
 (never estimate NMTC eligibility from general knowledge); render NaN/None/N-A as
 N/A (never fabricate a number); hmda-analysis is descriptive only (no
-fair-lending inference, no CRA performance interpretation).
+fair-lending inference, no CRA performance interpretation) — inferential
+fair-lending work is fair-lending-screening's, and its results are screening
+signals, never findings of discrimination; credit-memo structures the user's
+deal inputs and never invents a figure.
 
 ## Skills
 
 - [nmtc-eligibility](.agents/skills/nmtc-eligibility/SKILL.md): Is an address/tract NMTC eligible? Distress tier, LIC status, project feasibility. Backed by nmtc-mapper >=0.6.1 + nmtc-screener 0.1.0.
-- [cdfi-peer-benchmark](.agents/skills/cdfi-peer-benchmark/SKILL.md): Benchmark a bank CDFI against FDIC peers (NIM, ROAA, ROAE, efficiency, Tier 1, NPL). Bank CDFIs only. Backed by cdfi-benchmark >=0.3.0 (resolves to 0.3.1).
-- [hmda-analysis](.agents/skills/hmda-analysis/SKILL.md): Pull HMDA LAR data and produce descriptive cuts + a CRA-proxy income distribution. Descriptive only. Backed by hmda-analyzer >=0.6.0 (resolves to 0.6.1; Python >=3.9).
+- [cdfi-peer-benchmark](.agents/skills/cdfi-peer-benchmark/SKILL.md): Benchmark a bank CDFI against FDIC peers (NIM, ROAA, ROAE, efficiency, Tier 1, NPL). Bank CDFIs only. Backed by cdfi-benchmark >=0.3.0.
+- [hmda-analysis](.agents/skills/hmda-analysis/SKILL.md): Pull HMDA LAR data and produce descriptive cuts + a CRA-proxy income distribution. Descriptive only. Backed by hmda-analyzer >=0.6.0 (0.6.0 itself needs Python >=3.11; 0.6.1 relaxed that to >=3.9).
+- [credit-memo](.agents/skills/credit-memo/SKILL.md): Generate structured IC credit memos from deal inputs (CDFI loans, NMTC, equity, grants, guarantees) — collects deal data, builds the package's data classes, renders Markdown or Word. Every number is the user's; the package computes only Total Jobs, Cost per Job, a revenue-trend sentence, and three NMTC derived amounts. Backed by credit-memo >=0.2.2 (import: creditmemo).
+- [fair-lending-screening](.agents/skills/fair-lending-screening/SKILL.md): Adjusted denial-disparity screening on public HMDA data — logistic regression with FFIEC-standard controls (income, loan amount, LTV, DTI, property value, MSA fixed effects), reporting an odds ratio with 95% CI and p-value. The inferential counterpart to hmda-analysis; results are screening signals, not findings of discrimination. Alpha status, race only, methodology not externally reviewed. Backed by fair-lending-screener >=0.2.2 (import: fair_lending_screener; 0.1.1 is yanked).
 
 ## References
 
 - [cdfi-industry-primer](references/cdfi-industry-primer.md): Plain-language orientation — NMTC, LIHTC, CRA, HMDA, BEA, CMF; CDFI Fund, CDEs, QALICBs, QEIs.
 - [data-source-map](references/data-source-map.md): Which host backs what, which are cloud-blocked, and the honest-UA convention.
-- [package-index](references/package-index.md): All 22 portfolio packages — PyPI-verified version, dist/repo/import names, one-line purpose.
-- [caveats-and-limits](references/caveats-and-limits.md): What the plugin deliberately does NOT do — inferential fair lending, CRA ratings, credit-union benchmarking, pre-2018 TLR.
+- [package-index](references/package-index.md): All 22 portfolio packages — current non-yanked version (CI-checked against live PyPI on every run), dist/repo/import names, one-line purpose, and which packages have withdrawn releases. **Read this before installing any of them; four carry yanked releases.**
+- [caveats-and-limits](references/caveats-and-limits.md): What the plugin deliberately does NOT do — fair-lending *findings* (screening only, and never from hmda-analysis), CRA ratings, credit-union benchmarking, pre-2018 TLR.

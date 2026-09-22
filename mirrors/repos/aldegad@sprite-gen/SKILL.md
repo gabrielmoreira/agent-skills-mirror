@@ -1,6 +1,6 @@
 ---
 name: sprite-gen
-version: 2.5.2
+version: 2.5.4
 description: "Generates images and game sprites through GPT or Grok with guided provider choices, separate saved defaults, automatic cleanup and optional curation. Handles sprite requests, ordinary image generation/editing, standalone image-to-video clips (i2v, animate this still, 그록 영상, 이매진 비디오, 스틸 움직여줘, first/last frame, reference-to-video, 영상 이어붙이기, 영상 편집, extend/edit a clip), chroma removal, animation atlases, video loops, 큐레이션뷰, image candidates, 팔레트 스왑, palette swap, recolor, rig layers, engine exports, repeating backgrounds, projected shadows, motion/contact inspection and optional scene composition from existing assets."
 license: Apache-2.0
 depends_on:
@@ -59,6 +59,29 @@ $SPRITE_GEN_ROOT/.venv/bin/sprite-gen workflow --kind image
 
 Pass choices already stated in the request. The guide checks access, combines explicit choices with saved defaults, and returns only missing questions. Follow its start and finish stages. Always pass the resolved provider explicitly to generation tools. Deliver checked files before offering the curation view; save defaults only when the user agrees. The complete conversation and settings contract is owned by the linked document, not duplicated in individual pipeline docs.
 
+## Side-view facing
+
+Keep the side still, canvas placement and motion prompt facing the same direction.
+`video-set` observes each side input once before canvas placement and uses the requested
+`--facing` for both the canvas and clip prompt. Observation is record-only by default;
+it never changes the requested direction. Image correction requires explicit opt-in.
+
+| Command option | Values and default | Behavior |
+|---|---|---|
+| `gen --facing` | `preserve` (default), `right`, `left` | With `--ref`, an explicit direction adds a prompt requirement and checks the generated still. |
+| `gen --facing-fix` | `none` (default), `mirror`, `regen` | Record without correction; opt into mirroring an observed opposite or regenerating once and rechecking. A still-opposite regeneration is mirrored. |
+| `video --direction` | `side`, `front`, `back`; unset by default | `side` opts into facing inspection and a matching prompt requirement; front/back skip it. |
+| `video --facing`, `video-set --facing` | `right` (default), `left` | Required side direction. |
+| `video --facing-fix`, `video-set --facing-fix` | `none` (default), `mirror` | Record the observation; opt into mirroring an observed opposite in a copy. Batch side inspection is enabled by default. |
+
+Direction is requested through the generation and motion prompts, which cannot guarantee model compliance.
+The detector can be wrong even at high confidence: review the still before choosing `mirror` or `regen`.
+Generation reports record direction, model, requested direction, model-reported confidence and correction
+under `extra.facing`; video reports and batch items use `facing`. `final_direction` is an observation
+or a value derived from it, not independent verification; `final_direction_source` identifies which.
+An uncertain or failed inspection records `unknown` and its reason and continues without correction;
+front-facing observations also remain unchanged. Mirroring does not preserve left/right accessory handedness.
+
 ## Execution routes
 
 | Task | Entry | Contract |
@@ -83,6 +106,8 @@ Pass choices already stated in the request. The guide checks access, combines ex
 | Defaults | `defaults show`, `defaults save`, `defaults clear` | [user-workflow](docs/user-workflow.md#one-settings-owner) |
 
 Use existing automatic pipeline stages for background removal, extraction, alignment and export. Do not ask users to select each script. For a direct utility request, run that utility; no unrelated generation questions are needed. Preserve the row pipeline and component extraction for image sprites. One-shot grid generation and fixed cell cutting are not an alternative sprite-generation route.
+
+For attack repeat coverage, observed one-shot returns and structured loop failure reports, follow [video-pipeline](docs/video-pipeline.md#one-shot-actions--cycle-autoperiodicone-shot).
 
 Scene creation consumes finished assets and remains optional. Asset metadata owns frames, native durations and anchors; scene specs own placement, scale, playback rate, planes, camera and light. Measure stride only with declared same-foot contact and an isolated foot ROI; unknown contact stays unverified. Apply only a verified report for the exact selected asset with an explicit scene direction. Never infer walking direction from the bottommost silhouette, reverse frames or change source assets to make a scene work.
 

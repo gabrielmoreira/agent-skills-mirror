@@ -73,9 +73,15 @@ selected replay when rendered inspection adds evidence.
 
 - If closing an owned page returns `The selected page has been closed` and `list_pages` repeats it, the close may have
   succeeded while MCP retained a stale selection. Select a previously observed surviving page with
-  `bringToFront: false`, then call `list_pages` and confirm the owned page ID is absent. This only repairs MCP context:
-  do not navigate, inspect, or close the surviving page, and suppress unrelated titles and content from results. Do not
-  repeat the close or create another tab to recover selection.
+  `bringToFront: false`, then call `list_pages` and confirm the owned page ID is absent. This recovery attempts only to
+  repair MCP context: do not navigate, inspect, or close the surviving page, and suppress unrelated titles and content
+  from results. Do not repeat the close or create another tab to recover selection.
+- If `select_page` also returns the same closed-page error, stop MCP recovery attempts and report the stale session
+  context. A read-only `/json/list` request at the configured debugging endpoint can confirm that a task page's known,
+  unique, unchanged URL is absent; filter locally and return only that result, never unrelated targets. This is closure
+  evidence, not MCP recovery or authorization to control the browser through another route. MCP `pageId` values are not
+  CDP target IDs. If the owned page cannot be identified reliably, report cleanup as unverified; do not infer ownership
+  from the endpoint list or use it to close tabs.
 - On attachment or transport failure, distinguish the browser endpoint from the MCP process: check the debugging
   endpoint at `http://127.0.0.1:${PRB_AGENT_CHROMIUM_PORT:-9222}/json/version`, then inspect the newest per-process log
   under `$XDG_CACHE_HOME/chrome-devtools-mcp/logs/` or, when unset, `~/.cache/chrome-devtools-mcp/logs/`.

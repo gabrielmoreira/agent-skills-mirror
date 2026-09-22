@@ -80,7 +80,14 @@ CLAUDE.md symlink, and require explicit confirmation.
 
 ## CLAUDE.md Decisions
 
-Create or refresh a sibling symlink only when CLAUDE.md is missing or already a symlink:
+Run the version check from Claude Code Compatibility in SKILL.md.
+
+When `agents_md_native=true`, delete every CLAUDE.md in the selected tree that is a symlink resolving to its sibling
+AGENTS.md (`git rm` when tracked), without confirmation. Also retire repository checks, hooks, and instructions that
+require the symlink, and report any remaining regular CLAUDE.md or CLAUDE.local.md that still suppresses direct
+AGENTS.md loading.
+
+Otherwise, create or refresh a sibling symlink only when CLAUDE.md is missing or already a symlink:
 
 ```sh
 (cd "$dir" && ln -sfn AGENTS.md CLAUDE.md)

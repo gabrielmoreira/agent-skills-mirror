@@ -36,7 +36,9 @@ RPC/tool formatting, and OpenHuman's worktree policy.
   finished background results back into chat, and settling run-ledger rows
   from the global bus regardless of the parent turn's lifecycle
   (`running_subagents*.rs`, `background_completions.rs`,
-  `background_delivery.rs`, `run_ledger_finalize.rs`).
+  `background_delivery.rs`, `run_ledger_finalize.rs`). The delivery turn runs
+  on the originating thread's cached chat session via
+  `web_chat::run_system_turn_on_thread`, never on a throwaway host.
 - A shared root `ParentExecutionContext` builder for surfaces that spawn real
   sub-agents from a background task with no enclosing agent turn on the stack
   (`parent_context/builder.rs`).

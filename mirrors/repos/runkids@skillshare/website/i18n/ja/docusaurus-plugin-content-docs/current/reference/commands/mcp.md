@@ -28,12 +28,13 @@ skillshare sync --all
 
 | オプション | 意味 |
 |---|---|
-| `--target CLIENT` | 受け取り側クライアント。複数のクライアントを選択するには繰り返し指定 |
+| `--target CLIENT` | 受け取り側クライアント。複数のクライアントを選択するには繰り返し指定。`--target none` はサーバーをどのクライアントにも書き込まずに Skillshare 内に保持する。[下記](#keep-a-server-without-syncing-it)を参照 |
 | `--url URL` | `add` 用の Streamable HTTP エンドポイント |
 | `-- command args...` | `add` 用のローカル実行ファイルとリテラルな引数 |
 | `--disabled` | project mode で `add` と併用: Agent の global config が定義するサーバーをオフにする。[下記](#turn-off-a-global-server-in-one-project)を参照 |
 | `--pi-extension PACKAGE` | target に Pi を含む場合は必須。`add`、`edit`、`import` と併用: `pi-mcp-adapter` または `pi-mcp-extension` のうち、Pi にインストールした方。[下記](#pi-choose-your-mcp-extension)を参照 |
 | `--direct-tools VALUE` | `pi-mcp-adapter` を使う Pi で `add` または `edit` と併用: `true`、`false`、`search`、またはカンマ区切りのツール名。[下記](#pi-direct-tools)を参照 |
+| `--pi-options JSON` | `pi-mcp-adapter` を使う Pi で `add` または `edit` と併用: その他の adapter フィールドを JSON オブジェクトで指定する。`{}` でクリアする。[下記](#pi-options)を参照 |
 | `--from CLIENT` | インポート元の既存クライアント、または `--file` のフォーマット |
 | `--file PATH` | ネイティブの JSON/JSONC、TOML、または Goose の YAML。`.toml` はデフォルトで Codex とみなされ、他のフォーマットはその MCP セクションから検出される。明示的な方言を指定するには `--from` を使う |
 | `--sync` | 保存して同期する。非インタラクティブな add/import/remove ではそうしない限り保存のみ |
@@ -86,8 +87,9 @@ Add、edit、remove、import では、**Save and sync** または **Save only** 
 | `headers` | HTTP ヘッダー: 文字列または `{fromEnv: VARIABLE}` |
 | `bearerToken` | `{fromEnv: VARIABLE}`。Authorization ヘッダーと共存不可 |
 | `transport` | 任意の `stdio` または `streamable-http`。省略時は推測される |
-| `targets` | 任意の受け取り側クライアント。`mcp.targets` を上書きする |
+| `targets` | 任意の受け取り側クライアント。`mcp.targets` を上書きする。空のリストにすると、サーバーは Skillshare 内にのみ保持される。[下記](#keep-a-server-without-syncing-it)を参照 |
 | `directTools` | `pi-mcp-adapter` を使う Pi 限定: `true`、`false`、`"search"`、またはツール名のリスト。[下記](#pi-direct-tools)を参照 |
+| `piOptions` | `pi-mcp-adapter` を使う Pi 限定: その他の adapter フィールド。Pi のエントリにそのまま書き込まれる。[下記](#pi-options)を参照 |
 | `disabled` | `true` のみ、他の接続フィールドを伴わない、かつ project がスコープ内にあること: project mode、または `mcp.projects` 配下の root。[下記](#turn-off-a-global-server-in-one-project)を参照 |
 
 クライアント ID は `claude`、`codex`、`cursor`、`vscode`、`opencode`、`kilocode`、
@@ -95,7 +97,39 @@ Add、edit、remove、import では、**Save and sync** または **Save only** 
 `goose`、`junie`、`kiro`、`lmstudio`、`warp`、`windsurf`、`pi` です。
 `grok` は公式の xAI Grok CLI を意味します。サーバー名には文字、
 数字、ドット、アンダースコア、ハイフンを使用します。サーバーは同期前に、直接または
-`mcp.targets` 経由で少なくとも 1 つのクライアントを選択する必要があります。
+`mcp.targets` 経由で少なくとも 1 つのクライアントを選択する必要があります。ただし、サーバー自身の
+`targets` が空のリストである場合は除きます。
+
+### 同期せずにサーバーを保持する {#keep-a-server-without-syncing-it}
+
+`targets: []` を持つサーバーは Skillshare の source に残り、どのクライアントにも書き込まれません。
+定義を後のために残したまま、サーバーをすべてのクライアントから外したいときに使います。
+以前に同期されていた場合、次の sync でそれらのクライアントからエントリが削除されます。
+
+```yaml
+mcp:
+  targets: [claude, codex]
+  servers:
+    docs:
+      url: https://example.com/mcp
+      targets: []
+```
+
+```bash
+skillshare mcp add docs --url https://example.com/mcp --target none
+skillshare mcp edit docs --target none
+skillshare mcp edit docs --target claude   # 元に戻す
+```
+
+- **`targets` を省略するのとは異なります。** その場合、サーバーは `mcp.targets` を継承し、
+  そのリストも空であれば拒否されます。
+- `none` はクライアントと組み合わせられません。
+- ターミナルの選択メニューでは、クライアントを何も選択せずに確定します。ダッシュボードでは、
+  すべてのクライアントのチェックを外します。サーバーには **Agent 未選択** のタグが付きます。
+- project のサーバーでも、`mcp.projects` 配下のサーバーでも同じように動作します。
+- `disabled` エントリには引き続き少なくとも 1 つのクライアントが必要です。どこかでサーバーを
+  オフにする必要があるためです。
+- `mcp list` では、このようなサーバーは `kept no targets` と表示されます。
 
 Grok の場合、名前は文字またはアンダースコアで始まり、文字、数字、ハイフン、単一のアンダースコアのみを含み、アンダースコアで終わってはいけません。
 `company-docs` のような名前は、すべての対応クライアントで動作します。
@@ -171,7 +205,7 @@ Antigravity は現在の[公式 MCP 設定](https://antigravity.google/docs/mcp)
 Antigravity 内で対応している OAuth ログインを完了してください。Skillshare は参照を平文の認証情報に展開することは決してありません。
 
 OpenCode は、global ディレクトリについて `XDG_CONFIG_HOME` を尊重します。既存の
-`opencode.jsonc` は `opencode.json` を作成する代わりに使用されます。選択したディレクトリに両方存在する場合は、sync する前に統合してください。カスタムの OpenCode config パス、ディレクトリオーバーライド、インラインの config、継承された祖先ファイルは管理対象外です。これらは OpenCode 内で選択した送信先を上書きすることがあります。
+`opencode.jsonc` は `opencode.json` を作成する代わりに使用されます。project では、OpenCode は `.opencode/` からも両方の名前を読み込みます。そのため、そこに置かれたファイルがあれば Skillshare はそのファイルに書き込み、新しいファイルは project ルートに作成されます。複数存在する場合は、sync する前に統合してください。カスタムの OpenCode config パス、ディレクトリオーバーライド、インラインの config、継承された祖先ファイルは管理対象外です。これらは OpenCode 内で選択した送信先を上書きすることがあります。
 
 Kilo Code は OpenCode と同じフォーマットを使用します。project ルートと `.kilo/` から `kilo.jsonc` と `kilo.json` を読み込み、
 それらをマージします。そのため Skillshare は既に存在する方に書き込み、どちらも存在しない場合にのみ `kilo.jsonc` を作成します。
@@ -287,8 +321,12 @@ mcp:
   置いてください。project がスコープ内にない global の `mcp.servers` では拒否されます。
 - **`disabled` は単独で指定します。** このエントリが取れるのは `targets` と、Pi の場合は
   `piExtension` のみです。`command`、`url`、`env`、`headers` を追加するとエラーになります。
-- **`targets` は明示的に列挙すべきです。** これがない場合、エントリは `mcp.targets` を継承し、
-  そのリスト内の非対応クライアントはエラーになります。
+- **`targets` は省略できます。** その場合、エントリは project の target に従います。sync のたびに、
+  project が使うクライアントのうち、project ごとのスイッチを持つものに書き込まれます。Skillshare が同名の
+  global サーバーも把握している `mcp.projects` 配下では、そのサーバーの書き込み先クライアントにさらに
+  絞り込まれ、Pi は global サーバーの `piExtension` を引き継ぎます。後から project の target を変更しても、
+  エントリの編集は不要です。自分で決めたい場合は `targets` を列挙してください。そのリスト内の
+  非対応クライアントはエラーになります。
 - **名前は一致している必要があります。** Skillshare は Agent の global ファイルを読み込まないため、
   この名前のサーバーがそこに存在するかを確認できません。何にも一致しない名前は無害です。Agent はそれを無視します。
 - **再びオンにするには**、エントリを削除し（`skillshare mcp remove company-docs`）
@@ -376,9 +414,14 @@ global mode では、ダッシュボードに **プロジェクト** ページ�
 
 - **プロジェクトを追加** では、フォルダーとその target を指定します。**MCP** にチェックを入れると、そのフォルダーは
   `mcp.projects` にも一覧されます。
-- **MCP** タブには、すべての global サーバーがスイッチ付きで一覧表示されます。オフにすると、project ごとの
-  スイッチを持つ Agent に対して `disabled` エントリが保存され、オンに戻すとそのエントリは削除されます。
+- **MCP** タブには、すべての global サーバーがスイッチ付きで一覧表示されます。オフにすると、`targets` を
+  持たない `disabled` エントリが保存されるため、[上記](#turn-off-a-global-server-in-one-project)のとおり
+  project の target に従います。オンに戻すとそのエントリは削除されます。
   その下には、その project にのみ存在するサーバーが並びます。
+- オフになっているサーバーには、オフになっている Agent のロゴが表示されます。project の Agent の中に
+  project ごとのスイッチを持たないものがある場合、その行にはサーバーがそこでは引き続き読み込まれることが
+  表示されます。project のものとは異なる独自の `targets` を持つエントリには **プロジェクトに合わせる** が
+  表示され、`targets` なしでそのエントリを保存し直します。
 - MCP ページの一番下にある **デフォルト** では、`mcp.targets` と `mcp.directTools` を編集します。
 
 保存時に書き換えられるのは、変更した project だけです。他の project は、アンカーやエイリアスも含めて
@@ -419,8 +462,10 @@ YAML が書かれたまま保持され、`~/work/app` と書かれたフォル�
   例えば project を移動した後などでは、そのエントリは管理外のままです。
   サーバーを削除しても、インポートするまではそのまま残ります。別の
   管理外エントリには、インポートまたは明示的なエントリ単位の replace が必要です。別の
-  Skillshare config の所有権は、その config ファイルがまだ存在する限り上書きできません。それが移動または削除された場合、それは決して
-  そのエントリを解放しないため、明示的なインポートまたは replace がそれを引き継ぎます。競合は所有しているファイルの名前を示します。
+  Skillshare config の所有権は、その config ファイルがまだ存在する限り上書きできません。そのファイルがなくなっている場合、それは決して
+  そのエントリを解放しないため、競合はそのエントリが取り残されていることを伝え、該当するファイルの名前を示します。そして
+  ターミナルでも、ダッシュボードのその競合からでも、明示的なインポートまたは replace によってそれを引き継げます。
+  マウントされていないドライブ上のファイルなど、読み取れないだけのファイルは、所有者がまだ存在しているものとみなされます。
 - ダッシュボードの MCP 設定は、ブラウザがダッシュボードを `localhost` または IP アドレスで開いている場合にのみ機能します。ドメイン名経由（reverse proxy を含む）では、MCP リクエストは 403 を返します。
   なぜなら DNS rebinding 攻撃は常にドメイン名を使うからです。
 - 認証情報は環境変数参照を使用します。secret ストア、OAuth セッション同期、
@@ -546,3 +591,40 @@ mcp:
 `--pi-extension` を選択してください。ファイル単体では、どちらの package がインストールされているかを識別できません。非対応のレガシー SSE は引き続きブロックされます。OAuth と package 固有のオプションは
 Pi 側で管理されたままになります。sync の成功は、設定が書き込まれたことを意味するだけであり、
 extension がインストールされていることやサーバーが接続されたことを意味しません。
+
+### その他の adapter 設定 {#pi-options}
+
+`pi-mcp-adapter` には、`excludeTools` や `approveTools` のように、Skillshare に設定項目がない
+サーバーごとのフィールドがほかにもあります。それらを `piOptions` の下に置くと、Pi のファイルにある
+そのサーバーのエントリにそのまま書き込まれます。
+
+```yaml
+mcp:
+  servers:
+    github:
+      command: npx
+      args: [-y, "@modelcontextprotocol/server-github"]
+      piExtension: pi-mcp-adapter
+      targets: [pi]
+      piOptions:
+        excludeTools: ["*emulator*"]
+        approveTools: ["delete_*", "merge_pull_request"]
+```
+
+コマンドラインからは、`mcp add` または `mcp edit` に JSON オブジェクトを渡します。これは
+`piOptions` 全体を置き換え、`{}` でクリアします。ダッシュボードでは、サーバーのダイアログの
+**Direct tools** の下に同じ入力欄があり、保存する前にテキストが JSON オブジェクトであることを確認します。
+
+```bash
+skillshare mcp edit github --pi-options '{"excludeTools":["*emulator*"]}'
+```
+
+- Skillshare はフィールド名や値をチェックしません。それらを知っているのは adapter だけです。
+- Skillshare 自身が書き込むフィールドは、ここでは拒否されます: `command`、`args`、`env`、`url`、
+  `headers`、`transport`、`enabled`、`disabled`、`directTools`。
+- 値はそのままコピーされます。認証情報はここではなく、`fromEnv` を使って `env` または `headers` に
+  置いてください。
+- `directTools` と同様に、`piOptions` から削除したフィールドは Pi のファイルに残ります。そちらで
+  削除してください。
+- これには `piExtension: pi-mcp-adapter` が必要で、`disabled` とは併用できません。他の Agent が
+  これを受け取ることはなく、`import --from pi` はこれらのフィールドを読み戻しません。

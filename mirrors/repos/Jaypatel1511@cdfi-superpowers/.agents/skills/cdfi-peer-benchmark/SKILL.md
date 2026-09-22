@@ -119,8 +119,16 @@ publishes:
 sha256 3f90077f200206a1d09929b868df2af43a6da325eb3e695da35f6f4ebbde9083
 ```
 
-Latest on PyPI **2026-09-07: cdfi-benchmark 0.3.1** (`pip index versions
-cdfi-benchmark` -> `LATEST: 0.3.1`). The `>=0.3.0` floor resolves to it.
+**This skill deliberately does not name the newest release.** A note of the form
+*"newest on PyPI, as of «date»: «version»"* is a claim that decays into a
+falsehood while sitting still, and this paragraph used to be one: it named the
+release current on 2026-09-07, a successor published two days later, and the
+sentence sat here wrong for a fortnight. A date stamp does not make a false
+statement true — it only records when it stopped being checked.
+
+For today's answer run `pip index versions cdfi-benchmark`, or read
+`references/package-index.md`, whose version cells CI re-derives from live PyPI
+on every run. The `>=0.3.0` floor above is unaffected by either release.
 
 **Import name is `cdfibenchmark`** (no underscore, no hyphen). There is no
 `cdfi_benchmark` alias — `import cdfi_benchmark` will fail.

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `MoizIbnYousaf/ai-agent-skills` — 26 default patterns, 0 followed patterns, 25 file(s) materialized.
+Mirror of `MoizIbnYousaf/ai-agent-skills` — 26 default patterns, 0 followed patterns, 44 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `MoizIbnYousaf/ai-agent-skills` — 26 default patterns, 0 followed pa
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 25 |
+| Files         | 44 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -84,6 +84,25 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 23 | ✓ | [`skills/review-a-skill/SKILL.md`](skills/review-a-skill/SKILL.md) |
 | 24 | ✓ | [`skills/share-a-library/SKILL.md`](skills/share-a-library/SKILL.md) |
 | 25 | ✓ | [`skills/update-installed-skills/SKILL.md`](skills/update-installed-skills/SKILL.md) |
+| 26 | ✓ | [`skills/verification-agent/assets/embeds.example.json`](skills/verification-agent/assets/embeds.example.json) |
+| 27 | ✓ | [`skills/verification-agent/assets/records.schema.json`](skills/verification-agent/assets/records.schema.json) |
+| 28 | ✓ | [`skills/verification-agent/assets/refs.example.json`](skills/verification-agent/assets/refs.example.json) |
+| 29 | ✓ | [`skills/verification-agent/README.md`](skills/verification-agent/README.md) |
+| 30 | ✓ | [`skills/verification-agent/references/domains.md`](skills/verification-agent/references/domains.md) |
+| 31 | ✓ | [`skills/verification-agent/references/failure-modes.md`](skills/verification-agent/references/failure-modes.md) |
+| 32 | ✓ | [`skills/verification-agent/references/matching-and-normalization.md`](skills/verification-agent/references/matching-and-normalization.md) |
+| 33 | ✓ | [`skills/verification-agent/references/protocol.md`](skills/verification-agent/references/protocol.md) |
+| 34 | ✓ | [`skills/verification-agent/references/providers.md`](skills/verification-agent/references/providers.md) |
+| 35 | ✓ | [`skills/verification-agent/scripts/content-index.mjs`](skills/verification-agent/scripts/content-index.mjs) |
+| 36 | ✓ | [`skills/verification-agent/scripts/lib/corpus.mjs`](skills/verification-agent/scripts/lib/corpus.mjs) |
+| 37 | ✓ | [`skills/verification-agent/scripts/lib/io.mjs`](skills/verification-agent/scripts/lib/io.mjs) |
+| 38 | ✓ | [`skills/verification-agent/scripts/lib/match.mjs`](skills/verification-agent/scripts/lib/match.mjs) |
+| 39 | ✓ | [`skills/verification-agent/scripts/lib/normalize.mjs`](skills/verification-agent/scripts/lib/normalize.mjs) |
+| 40 | ✓ | [`skills/verification-agent/scripts/lib/providers.mjs`](skills/verification-agent/scripts/lib/providers.mjs) |
+| 41 | ✓ | [`skills/verification-agent/scripts/qa-records.mjs`](skills/verification-agent/scripts/qa-records.mjs) |
+| 42 | ✓ | [`skills/verification-agent/scripts/render-check.mjs`](skills/verification-agent/scripts/render-check.mjs) |
+| 43 | ✓ | [`skills/verification-agent/scripts/verify.mjs`](skills/verification-agent/scripts/verify.mjs) |
+| 44 | ✓ | [`skills/verification-agent/SKILL.md`](skills/verification-agent/SKILL.md) |
 
 ---
 

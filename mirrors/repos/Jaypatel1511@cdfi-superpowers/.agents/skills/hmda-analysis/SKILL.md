@@ -37,9 +37,11 @@ the descriptive/inferential distinction:** this skill counts and distributes
 what was lent (descriptive); disparity/disparate-impact analysis draws
 inferential conclusions about *why* and *whether lending is discriminatory*,
 which requires court-defensible methodology, protected-class stratification, and
-significance testing that this skill deliberately does not do. Do **not** point
-the user to any fair-lending tool as the "v1 alternative" — just hold the line
-on the distinction.
+significance testing that this skill deliberately does not do. Route the user
+to the `fair-lending-screening` skill — the plugin's inferential counterpart,
+which wraps `fair-lending-screener` under its own guardrails (screening signal
+only, never a finding of discrimination) — and hold the line on the
+distinction here. Never produce the inferential output from this skill.
 
 The installed `hmda-analyzer` package *does* expose disparity functions
 (`disparity_ratio`, `denial_rate_by_race`, `denial_reasons_by_race`,
@@ -697,8 +699,9 @@ which is why you must not write one around any call in this skill.
 - **A pre-0.6.0 install** — an old pin, a stale environment, a vendored wheel →
   no geography-vintage refusal at all. Check `h.__version__` before quoting
   anything.
-- **User asks for disparity / fair lending / CRA performance** → decline per the
-  FIREWALL.
+- **User asks for disparity / fair lending** → decline per the FIREWALL and
+  route to `fair-lending-screening`. **CRA performance** → decline per the
+  FIREWALL; no skill in this plugin rates CRA performance.
 - **CFPB API down** → `CFPBAPIError`; report it.
 
 ## Caveats

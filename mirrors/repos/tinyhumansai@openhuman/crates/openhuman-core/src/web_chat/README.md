@@ -25,11 +25,14 @@ surfaces.
    `CancellationToken`, the wall-clock backstop (`web_turn_deadline`), the
    `AgentTurnOrigin::WebChat` scope, and the
    `APPROVAL_CHAT_CONTEXT` task-local scope all wrap the same future.
-4. `run_chat_task` resolves the session `Agent` (`session.rs`), reusing the
-   `THREAD_SESSIONS` entry when its `SessionCacheFingerprint` still matches
-   (a `Parallel` fork always builds a fresh agent and never touches the
-   cache), spawns [`spawn_progress_bridge`] (`progress_bridge.rs`), and awaits
-   `agent.run_single`. The bridge forwards `AgentProgress` into
+4. `run_chat_task` checks the session `Agent` out of the per-thread cache
+   (`session.rs::checkout_session_agent`), reusing the `THREAD_SESSIONS` entry
+   when its `SessionCacheFingerprint` still matches and otherwise building one
+   and cold-boot resuming it from the thread's `session_raw` transcript (or
+   the conversation log). A `Parallel` fork always builds a fresh agent and
+   never touches the cache. It then spawns [`spawn_progress_bridge`]
+   (`progress_bridge.rs`), awaits `agent.run_single`, and checks the agent
+   back in (`checkin_session_agent`) unless the turn poisoned it. The bridge forwards `AgentProgress` into
    `WebChannelEvent` socket events, mirrors turn state into
    `crate::threads::turn_state::TurnStateStore`, and emits an
    `inference_heartbeat` beat every `INFERENCE_HEARTBEAT_SECS` (20s) so a long
@@ -50,6 +53,20 @@ surfaces.
    (budget-exhausted, non-retryable rate limit, fallback-chain-exhausted, turn
    timeout, …) and decides via `sentry_suppression_reason` whether it pages.
 
+Host-authored turns — background-delivery notices
+(`agent::orchestration::background_delivery`) and goal continuations
+(`agent::goals::continuation`) — enter through `run_system_turn_on_thread`
+(`ops/system_turn.rs`) instead of `start_chat`. They skip ingress, `IN_FLIGHT`
+and the progress bridge but go through the **same** session checkout, so the
+model sees the conversation and the turn lands in the thread's transcript. A
+turn run on a throwaway host bound to the thread wrote a competing root
+transcript that the next cold-boot resume preferred, dropping every earlier
+turn. Such a turn checks out with `CheckoutPolicy::AdoptCached` (reuse the
+thread's agent under whatever settings the user's last turn chose, rather than
+rebuilding on a fingerprint miss) and checks in with
+`checkin_session_agent_if_vacant`: a user turn that started meanwhile and
+re-cached its own agent wins.
+
 ## Public surface
 
 - Event bus (`event_bus.rs`): `subscribe_web_channel_events`,
@@ -60,7 +77,9 @@ surfaces.
   the JSON-RPC `/events` SSE stream.
 - Operations (`ops.rs` thin shell over the `ops/` submodule: `start_chat.rs`,
   `channel_ops.rs`, `parallel_turn.rs`, `turn_guards.rs`, `state.rs`,
-  `budget_correlation.rs`, `test_hooks.rs`): `start_chat`, `cancel_chat`,
+  `budget_correlation.rs`, `system_turn.rs`, `test_hooks.rs`): `start_chat`,
+  `run_system_turn_on_thread` (+ `SYSTEM_CLIENT_ID`,
+  `SESSION_CHECKOUT_FAILURE`), `cancel_chat`,
   `cancel_chat_scoped`, `cancel_should_target`, `channel_web_chat`,
   `channel_web_cancel`, `channel_web_queue_status`, `channel_web_queue_clear`,
   `invalidate_thread_sessions`, plus `in_flight_entries_for_test` (exported

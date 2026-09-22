@@ -7,7 +7,7 @@ ref: dev
 
 # Mirror Manifest
 
-Mirror of `coleam00/Archon` — 26 default patterns, 7 followed patterns, 31 file(s) materialized.
+Mirror of `coleam00/Archon` — 26 default patterns, 8 followed patterns, 32 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `coleam00/Archon` — 26 default patterns, 7 followed patterns, 31 fil
 | Ref Type      | `branch` |
 | Ref           | `dev` |
 | Default pats  | 26 |
-| Followed pats | 7 |
-| Files         | 31 |
+| Followed pats | 8 |
+| Files         | 32 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -54,6 +54,7 @@ Mirror of `coleam00/Archon` — 26 default patterns, 7 followed patterns, 31 fil
 - `.archon/direction.md`
 - `.archon/workflow-language-constitution.md`
 - `.archon/engineering.md`
+- `CONTRIBUTING.md`
 - `.github/pull_request_template.md`
 - `packages/docs-web/src/content/docs/reference/cli.md`
 - `packages/docs-web/src/content/docs/guides/authoring-workflows.md`
@@ -93,9 +94,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 26 | → | [`.archon/engineering.md`](.archon/engineering.md) |
 | 27 | → | [`.archon/workflow-language-constitution.md`](.archon/workflow-language-constitution.md) |
 | 28 | → | [`.github/pull_request_template.md`](.github/pull_request_template.md) |
-| 29 | → | [`packages/docs-web/src/content/docs/guides/authoring-workflows.md`](packages/docs-web/src/content/docs/guides/authoring-workflows.md) |
-| 30 | → | [`packages/docs-web/src/content/docs/reference/cli.md`](packages/docs-web/src/content/docs/reference/cli.md) |
-| 31 | → | [`packages/docs-web/src/content/docs/reference/database.md`](packages/docs-web/src/content/docs/reference/database.md) |
+| 29 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 30 | → | [`packages/docs-web/src/content/docs/guides/authoring-workflows.md`](packages/docs-web/src/content/docs/guides/authoring-workflows.md) |
+| 31 | → | [`packages/docs-web/src/content/docs/reference/cli.md`](packages/docs-web/src/content/docs/reference/cli.md) |
+| 32 | → | [`packages/docs-web/src/content/docs/reference/database.md`](packages/docs-web/src/content/docs/reference/database.md) |
 
 ---
 

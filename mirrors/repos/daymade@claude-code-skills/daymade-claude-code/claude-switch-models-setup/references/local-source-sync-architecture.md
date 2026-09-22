@@ -70,6 +70,27 @@ Profile state uses `.claude.json` inside each `CLAUDE_CONFIG_DIR`. Older `claude
 
 Accepted marketplace identities are defined only by `LOCAL_MARKETPLACE_NAMES`, and conventional workspace candidates only by `infer_repos()` in `scripts/sync-local-skill-sources.py`. Do not copy either current set into documentation. The script's default dry-run prints the resolved source inventory; if none qualify, it fails fast instead of guessing. Non-conventional checkout paths require `--repo`, `DAYMADE_SKILL_SOURCE_REPOS`, or a registered directory-source marketplace.
 
+A repo is identified by `.claude-plugin/marketplace.json`, read by `marketplace_name()`. Only one state is silent; the rest raise, so a repo stops vanishing from discovery because of a manifest it does have:
+
+| State | Answer |
+|---|---|
+| The manifest path does not exist (`os.lstat` raises `FileNotFoundError`/`NotADirectoryError`) | `None`, silently. Discovery calls this for every ancestor of the script path, for hardcoded base candidates that do not exist, and for a `.claude-plugin` that is a plain file (there the manifest path genuinely is not there), so silence is required here. |
+| The manifest path exists but cannot be read — `OSError`, `json.JSONDecodeError`, or `UnicodeDecodeError` | Raises `UnreadableMarketplaceManifest`, naming the manifest path and the underlying error. `UnicodeDecodeError` is a `ValueError`, not an `OSError`/`JSONDecodeError`, and is the realistic shape for a CJK-heavy manifest torn mid-multibyte-character, so it must be in the tuple. A read that fails only because a writer is mid-flight clears on its own, so the message asks for one retry after that writer finishes. |
+| The manifest path exists but is not a readable regular file (dangling symlink, the manifest is a directory) | Same `UnreadableMarketplaceManifest`. `is_file()` would answer False here, which is the "no manifest" answer. |
+| The manifest path exists but cannot even be looked at (`EACCES` on `.claude-plugin`) | Same `UnreadableMarketplaceManifest`. `Path.is_file()` raises `PermissionError` here; `os.path.lexists()` would return False, which is the "no manifest" answer, so a checkout with drifted ownership would silently drop out of discovery. Ask `os.lstat` directly and treat everything except `FileNotFoundError`/`NotADirectoryError` as "exists but unusable". |
+| It reads whole, but declares no usable non-empty string `name` | Raises `InvalidMarketplaceManifest`, naming the manifest path and that the file itself is malformed in that checkout, so retrying will not help. |
+
+Every state but the first used to return the same `None` as "no manifest". That mattered: a repo whose manifest was momentarily unreadable dropped out of discovery, and a later hard check against the activation manifest reported `marketplace activation fields name repos not discovered: <name>` — an error pointing at the wrong cause, sending the reader to look for a repo that had never moved.
+
+**On the cause of the incident that prompted this.** The failure record supports only two facts: it happened at 21:39:05, and it self-cleared. That is "some writer was writing that file at the time" — not *which* writer. Two hypotheses were each mechanically tested, and both readings were wrong before the measurement:
+
+- *"git cannot be the writer, because checkout replaces a changed file whole"* — wrong. A changed inode does not imply atomicity. Measured on a 160 KB CJK manifest with branch switches in flight, a concurrent reader saw **43 torn reads and 232 momentary `FileNotFoundError`s** out of ~20k reads (baseline: zero of each). A rename-based atomic swap could never make the file *absent* to a reader; git unlinks and rewrites in place, so it can.
+- *"the usual cause is a shared checkout being rewritten by git"* — right as a **class** of writer (this file is touched by all of the last 8 commits in that checkout, and it is one of the sync daemon's WatchPaths), never established as the cause of *that* read. `git commit` genuinely does not touch the working-tree file at all.
+
+So the message names the class and the measurement, and claims no specific cause. The corrective action is the same either way: one retry after the writer finishes.
+
+A manifest that names a marketplace outside `LOCAL_MARKETPLACE_NAMES` is a normal answer, not a failure: `add_repo()` skips it and keeps the others. A name padded with whitespace falls into that same silent path by design — `marketplace_name()` does not know the activation manifest, so it cannot tell "an unmanaged foreign marketplace" from "our marketplace with a typo'd name". The activation-aware split is deliberately not implemented, which is why the blanket claim "every input that fed this bug is now caught" does not hold. Note also that `skill-install-audit.py` still decides "does this repo have a manifest" with `.is_file()`, so a dangling-symlink or directory manifest is silently skipped there exactly as it used to be here; that is pre-existing behaviour outside this change.
+
 ## Host-Specific User-Skill Activation
 
 The machine-local manifest is
@@ -227,6 +248,30 @@ success line, not a historical line or `launchctl` exit status:
 tail -50 ~/Library/Logs/claude-switch-models-setup/source-sync.err.log
 tail -50 ~/Library/Logs/claude-switch-models-setup/source-sync.out.log
 ```
+
+### Optional failure recorder
+
+`scripts/sync-daemon-recorder.sh` wraps the daemon entry so a **failed** pass leaves a
+trace. The upstream runner prints its `verified` line only after every step succeeds,
+so a failing pass writes nothing to `source-sync.out.log` at all — the success log can
+stay fresh forever while passes keep failing. The wrapper appends one line (timestamp,
+exit code, last stderr line) to `source-sync.failures.log` on a non-zero exit, collapses
+consecutive identical failures, rotates at 1 MB, and re-raises the original exit code so
+launchd still records it. That reason is scoped to the current pass by a byte-count
+snapshot taken before the run: `err.log` is append-only, so a bare `tail -n 1` would
+blame whatever failed last time, and a silent pass would inherit a stranger's traceback.
+When this pass wrote no stderr at all the line says `(no new stderr this pass)` instead
+of guessing. It adds no notification and no remediation, which is why it is not installed
+by default.
+
+Install it by pointing the plist's `ProgramArguments` at the wrapper instead of the
+daemon entry, then `bootout` + `bootstrap`; remove it by repointing back.
+
+**Liveness.** A fresh `verified` line proves that *some* pass succeeded, never that
+*every* pass did. The health signal is the failure path — `source-sync.failures.log`
+with the wrapper, `source-sync.err.log` without it — not the success log's freshness.
+`launchctl` reports only the last exit code, so an intermittently failing job reads as
+healthy between failures.
 
 Uninstall:
 

@@ -160,3 +160,7 @@
 - 2026-08-24 — fresh-start marker 不再授权 bootstrap 自动删除后来出现的 DB。marker 绑定已验证备份身份，冲突页由用户明确保留当前恢复或再次校验后继续空库；Main/utility/资产路径统一到共享 data-dir resolver，DB marker 快速失败，完整备份只保留最新 10 份。
 - 2026-08-28 — `project-panel.spec.ts` 本地复用日常 dev server，三类 fixture 只删临时目录、不删 session，累计把 44 条 `codepilot-sidebar-*` 会话写入真实侧栏。已按标题+系统临时目录双证据精确删除 44 条（总会话 627→583，匹配残留 0），并另删 1 条目录已不存在的 `/tmp/codepilot-codex-image-smoke` 明确 smoke（583→582）；Playwright 改由单 owner 启动器创建临时 DB 与 `.next-e2e-*`，配置拒绝直接/复用启动，global setup 只初始化隔离库，fixture 仍在 `finally` 回收。
 - 2026-08-28 — 用户将产品通知面统一为系统通知。schema 不增列，启动事务把仍 queued 的 `renderer-toast` 原位迁到 `electron-native`；若同 event 已有 native peer，只把冗余 renderer row 标记 skipped。历史 terminal delivery 全部保留，revision bump 保障 dev HMR 生效。
+
+- 2026-09-21：`assistant-memory-migration.ts` 在 DB bootstrap migration lock 内、版本 marker 同事务一次性保留旧版已按配置目录识别的非 task 助理会话（包括字段出现前/手工创建）。只新增 settings binding，不改 session/message/provider 或 Runtime owner；marker 存在则 no-op，无配置也写 marker，避免以后把普通会话追认为助理。读路径禁止顺便写绑定。`memory-scope-entrypoints.test.ts` 覆盖启动 marker、幂等、新会话反例及 UI/上下文一致性。
+
+- 2026-09-22：Bridge 创建 session/助理 binding/channel binding 在同一 DB 事务内；wizard 的 session/binding 也同事务（不承诺目录文件初始化一并回滚）。删除 session 同事务清理精确的 memory.assistant-binding.<id>。一次性迁移先 SQL 排除 task/已绑定/空目录并 DISTINCT working_directory，每个目录只做一次 canonical 检查，再批量回填；不使用字面路径粗筛丢失合法别名。

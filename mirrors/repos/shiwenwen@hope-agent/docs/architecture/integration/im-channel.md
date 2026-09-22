@@ -139,7 +139,7 @@ graph TB
 | **Signal / iMessage / WhatsApp** | 全 7 类 | 本地路径直传；URL / bytes 先物化到临时文件 |
 | **Slack** | 全 7 类 | `files.getUploadURLExternal` + `completeUploadExternal`（v2，需 `files:write`） |
 | **微信** | Photo / Video / Document / Voice | 获取 CDN 上传 URL → AES-128-ECB 加密上传 → 引用消息项，单文件 100 MB |
-| **Discord** | Photo / Video / Audio / Document | 单 POST multipart，单条 25 MiB 硬上限，超限退化链接 |
+| **Discord** | Photo / Video / Audio / Document | 单 POST multipart，单条 20 MiB 默认单附件上限，超限退化链接 |
 | **飞书** | Photo / Video / Audio / Document | 两步：`im/v1/images` 或 `im/v1/files` 换 key → `im/v1/messages`；image/file 不带 caption |
 | **QQ Bot** | Photo / Video / Audio / Voice / Animation（c2c/group 条件） | 上传拿 `file_info` 再发 `media` 消息；需 `server.publicBaseUrl`，channel/dms 端点仍走链接 |
 | **LINE** | Photo / Audio / Voice（条件） | Reply/Push 的 `image` / `audio` message object；需 `server.publicBaseUrl` |
@@ -905,7 +905,7 @@ Bot API 的 token 天然在 URL path，所有 Telegram request error 进 watchdo
 - **心跳**：按 HELLO 的 `heartbeat_interval` 定期发；**重连**：RESUME（带 session_id + seq）失败则重新 IDENTIFY，指数退避最多 50 次。
 - **斜杠命令同步**：启动 `PUT /applications/{app_id}/commands` 批量注册全局 Application Commands。
 - **格式**：原生 Markdown，`markdown_to_native` 透传。
-- **出站附件**：单条 `POST .../messages` multipart，`payload_json` 带 `attachments:[{id,filename}]`，`files[N]` 对齐 id。25 MiB 硬上限，超限走链接兜底。`payload.text` 与各 media caption 在 `merge_captions` 合成单段 `content` 避免拆条。
+- **出站附件**：单条 `POST .../messages` multipart，`payload_json` 带 `attachments:[{id,filename}]`，`files[N]` 对齐 id。20 MiB 默认单附件上限，超限走链接兜底。`payload.text` 与各 media caption 在 `merge_captions` 合成单段 `content` 避免拆条。
 - **隐藏频道混淆**：账号级 `discordChannelObfuscation` 默认关闭；开启后 `IDENTIFY.capabilities` 带 `1<<15`。缓存识别 `CHANNEL_OBFUSCATED (1<<17)`，隐藏频道及其子线程不进入消息处理；完整 `CHANNEL_UPDATE` 会原位恢复记录。
 - **文件请求**：账号级 `discordFileRequests` 默认关闭。开启后 `ask_user` 的受限文件题编译为 Button → Modal → Label → File Upload（组件类型 `19`）；提交的 `resolved.attachments` 只转成延迟媒体引用，仍须通过账号权限、精确会话绑定、实际字节类型、10 MiB 上限与会话附件目录校验。
 

@@ -103,7 +103,8 @@
 
 | 文件 | 主题 | 状态 |
 |------|------|------|
-| [active/gemini-native-ai-studio.md](active/gemini-native-ai-studio.md) | AI Studio Gemini 3.8 Flash Native 接入、历史状态/思考参数/截断提示与 AI SDK 能力审计 | Shipped v0.67.16；full 5584 pass / 1 skip、并行 UI 4/4；CI 与 20 资产复核通过，真实 API 与 Windows 会话 smoke 待执行 |
+| [memory-runtime-decoupling.md](active/memory-runtime-decoupling.md) | Runtime 无关记忆核心/来源更正遗忘/成功回合生命周期；辅助凭据与遥测治理，用户授权全部问题修复 | Shipped v0.67.17；第三轮 Review passed，5704 pass / 1 skip、隔离UI、正式CI与公开20资产审计通过；真账号 smoke / Sentry发布后观察待验 |
+| [active/gemini-native-ai-studio.md](active/gemini-native-ai-studio.md) | AI Studio Gemini 3.8 Flash Native 接入、历史状态/思考参数/截断提示与 AI SDK 能力审计 | Shipped v0.67.17（含数字枚举修复）；SDK执行校验、正式CI与公开20资产审计通过，full 5704 pass / 1 skip，真实Gemini问候通过；完整工具执行与Windows会话smoke待执行 |
 | [active/astra-openai-oauth-compatibility.md](active/astra-openai-oauth-compatibility.md) | **Astra / OpenAI OAuth / Fable 5.1 兼容修复**：刷新并发、非阻塞目录、恢复提示、冷缓存能力与 Fable 协议 | 🟡 Code complete + Tests pass：5518 pass / 1 skip、后续旧聊天 E2E 2 pass；真实账号 smoke 待验证 |
 | [active/cli-maintenance-and-release-notes-rendering-2026-08-28.md](active/cli-maintenance-and-release-notes-rendering-2026-08-28.md) | **CLI 更新提醒、一键升级与 Release Notes 安全渲染**：按 selected binary/package-root 证明 Claude/Codex 安装渠道，same-channel latest、Windows shim/WinGet/standalone 更新、provider maintenance lease、app-update/quit lifecycle latch 与 post-version 验证；GitHub Atom HTML 经 strict sanitize 渲染 | 🟡 Review accepted，已随 `v0.67.11` Shipped；正式 package/资产门禁通过，真实 UpdateDialog、CLI before→after 与 Windows clean VM smoke 待执行 |
 | [active/post-sentry-scan-remediation-2026-08-27.md](active/post-sentry-scan-remediation-2026-08-27.md) | **2026-08-27 Sentry 生产问题修复闭环**：原 updater/utility/token/DB/media 修复；09-07 增补 collector 异常所有权、保存失败双语提示与快捷建议冷却 | Shipped v0.67.16；最终 full 5584 pass / 1 skip、UI 5/5；初始 DB 空读、Windows EOF 与生产停增验证仍开放 |

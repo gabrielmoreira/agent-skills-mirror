@@ -5,7 +5,8 @@ workflows**.
 
 Worktrunk's three core commands make worktrees as easy as branches.
 Plus, Worktrunk has a bunch of quality-of-life features to simplify working
-with many parallel changes, including hooks to automate local workflows.
+with many parallel changes, including hooks to automate local workflows &
+copy-on-write build caches.
 
 A quick demo:
 
@@ -141,7 +142,7 @@ This creates a new branch and worktree, then switches to it. Do your work, then 
 ```console
 $ wt list
   Branch        Status      HEAD±     main↕    main…±    Remote⇅  Commit    Age  Message
-@ feature-auth  +   ↑      +27   -8   ↑1       +31                4bc72dc    2h  Add authenticati…
+@ feature-auth  +   ↑      +27   -8   ↑1       +31                4bc72dc    2h  Add authenticatio…
 ^ main              ^⇡                                    ⇡1      0e631ad    1d  Initial commit
 
 ○ Showing 2 worktrees, 1 with changes, 1 ahead, hidden: Path

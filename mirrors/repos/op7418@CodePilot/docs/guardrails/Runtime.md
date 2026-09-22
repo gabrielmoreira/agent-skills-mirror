@@ -2,6 +2,8 @@
 
 > 2026-09-18 Google 文本协议使用 `native_only`：只暴露 `codepilot_runtime`，Claude/Codex 均有不支持原因，Codex proxy parity 为 pending。Gemini 3.8 Flash 的 low/medium/high、默认 medium、始终思考和采样参数剔除按精确模型生效；辅助 generateText 也使用相同 middleware。Native 从 DB 读取历史必须遵守摘要 rowid 边界，并把摘要带入上下文，不能重放已压缩消息。回归：`gemini-native.test.ts`（真实 SDK wire + DB）、`gemini-native.spec.ts`（真实 API 过滤与 UI）。
 
+- **Google 工具参数兼容（2026-09-19）**：当前 Google SDK 将 JSON Schema 转为 `parameters`，其中数字 `literal/enum` 会成为 API 不接受的数字枚举；即使用户只发问候，也会拒绝整轮请求。Native 视频工具使用 numeric input → `6 | 10` 校验 pipe，wire 以数字类型和描述声明时长，执行前仍严格拒绝其他数值、字符串和 null。回归必须装配真实媒体工具，对照 Grok 视频授权可用/不可用两条路径，检查实际 SDK wire，不能只用空工具集或自造 lookup 工具证明可用。新增其他带枚举的工具也需检查此兼容边界。`gemini-native.test.ts` 还必须经过真实 `streamText` + 模拟 Google SSE 验证执行门禁：duration=7 产生 invalid tool-call 和 tool-error，execute 不运行；6/10 的对照各执行一次。直接 safeParse 不能替代这项 SDK 级验证。
+
 - **Native 通用范围**：压缩 rowid 边界、摘要注入和 `finishReason=length` 的结束/截断通知作用于所有 Native Provider；65,536 输出上限及思考/采样规则才是 Gemini 3.8 专属。摘要必须合并进首条 user 消息（保留全部多模态 parts）；只有历史不以 user 开头时才可前置独立 user，不得为摘要制造连续 user turn。length 即便伴随工具调用也结束当前循环，已执行的工具及已有输出保持原记录，不自动开启下一 step。
 
 CodePilot 有三条 chat 运行路径：**Claude Code Runtime**（SDK 子进程）、**CodePilot Runtime**（@ai-sdk/* 直连）和 **Codex Runtime**（app-server thread）。Provider / Model / Composer 三层过滤契约必须严格对齐，否则 picker 看到的、resolver 选中的、wire 上发出去的会出现三方不一致。
@@ -304,3 +306,10 @@ Provider 或模型切换后，descriptor 必须从同一 runtime-filtered group 
 - 兼容旧版已写成 upstream 的会话只作读取：必须在同一 Provider 的 live enabled catalog 唯一匹配到本次请求的 modelId，并且当前 Runtime 兼容、实际 resolver upstream 一致。stored ID 若本身是另一条 catalog modelId，或多个 alias 共享它、映射隐藏/删除/修改，不能自动解释为同一路线。虚拟账号路线继续精确 identity。
 - 兼容不改 owner、历史、Provider 或 route_revision；真正改 route 仍走用户显式 CAS。无法无歧义恢复的旧会话继续要求明确重选，不能按显示名或跨 Provider 猜测。
 - 回归：`chat-message-route.test.ts`（多 Provider 连续/重开、旧 upstream、反例和 Native/Codex owner 兼容）、`chat-message-route-http.test.ts`（真实 POST 双回合与错路由在持久化/Runtime 前拒绝）、`collect-owner-gate.test.ts`（owner 也不覆盖 model、stale owner 不写续接状态）。
+
+## 2026-09-21：辅助执行与 Memory
+
+- Claude settings 的 SDK 子进程可用性与 Native transport 可用性分别判断；settings-only 不能证明 direct transport 持有 key。辅助请求使用显式 Provider 快照与场景 policy，瞬态失败及非凭据 4xx 有界冷却，仅明确 credentials 根因等待配置变化；缺失/不可执行有可见状态，不偷切厂商。辅助 Haiku 选择不能改变共享 resolver 的 small 默认语义。
+- Memory 数据、查询、来源和写入由中立服务拥有，Runtime 只包装协议。读写权限分离、显式助理绑定、成功回合事件与验证边界见 [Memory Guardrail](Memory.md)。
+
+- 2026-09-22：可选记忆重排在构造期捕获 identity 故障，不得打断 Runtime 聊天或丢掉基础 Memory 工具。超时/非法输出/异常均明确报告确定性降级；主聊天可用性不依赖辅助 HMAC 文件。

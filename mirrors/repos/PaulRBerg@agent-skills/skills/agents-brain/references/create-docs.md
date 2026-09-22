@@ -3,8 +3,9 @@
 Create missing README.md and AGENTS.md context from repository evidence. Regenerate existing targets only with `--force`
 or an equally explicit overwrite instruction. Create other context docs only on explicit request. Never create skills.
 
-Success means each selected package root has the requested human and agent context, every created AGENTS.md has a safe
-companion CLAUDE.md symlink where possible, and generated claims pass repository-defined validation.
+Success means each selected package root has the requested human and agent context, CLAUDE.md handling matches the
+installed Claude Code (see Claude Code Compatibility in SKILL.md), and generated claims pass repository-defined
+validation.
 
 ## Select Targets
 
@@ -67,9 +68,11 @@ Keep AGENTS.md concise, imperative, and scoped:
 
 Parent files hold shared defaults; nested files contain only local deltas.
 
-## Create CLAUDE.md Symlinks
+## Handle CLAUDE.md
 
-For each created AGENTS.md, create a sibling compatibility symlink:
+Run the version check from Claude Code Compatibility in SKILL.md. When `agents_md_native=true`, create no CLAUDE.md
+symlinks and delete any existing symlink to a sibling AGENTS.md in the selected tree. Otherwise, create a sibling
+compatibility symlink for each created AGENTS.md:
 
 ```sh
 (cd "$dir" && ln -sfn AGENTS.md CLAUDE.md)

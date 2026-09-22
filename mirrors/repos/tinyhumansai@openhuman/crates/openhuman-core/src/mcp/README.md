@@ -13,9 +13,9 @@ MCP hosts.
 
 - Hold the `tinymcp` service — one per workspace — and open it at boot
   ([`host`]).
-- Expose the `mcp_clients` and `mcp_setup` RPC namespaces, the agent-facing
-  `mcp_registry_*` tools, and the prompt-injection scan over remote tool
-  definitions ([`registry`]).
+- Expose the `mcp_clients` RPC namespace (including the user's `mcp.json`
+  document), the agent-facing `mcp_registry_*` tools, and the
+  prompt-injection scan over remote tool definitions ([`registry`]).
 - Expose the RPC surface over the write-audit log ([`audit`]).
 - Run the `openhuman mcp` stdio/HTTP server that serves this application's
   own tools to external MCP clients ([`server`]) — the *server* side, which
@@ -49,7 +49,7 @@ than protocol:
 | --- | --- |
 | `mod.rs` | Family root, entry points, and the two re-export facades below. |
 | `host.rs` / `host_tests.rs` | The per-workspace `tinymcp` service holder — see [its own doc comment](host.rs) for the shape (`HOSTS` map, `McpHost`, `for_config`/`try_service`/`init`, `client_config`, `proxy_for_mcp`). |
-| [`registry/README.md`](registry/README.md) | `mcp_clients`/`mcp_setup` RPC, agent tools, reconnect-supervisor events. |
+| [`registry/README.md`](registry/README.md) | `mcp_clients` RPC (incl. `mcp.json`), agent tools, reconnect-supervisor events. |
 | [`audit/README.md`](audit/README.md) | `mcp_audit` RPC over the write-audit log. |
 | [`server/README.md`](server/README.md) | The `openhuman mcp` server (this application as an MCP host's target). |
 

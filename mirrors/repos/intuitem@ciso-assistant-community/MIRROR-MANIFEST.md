@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `intuitem/ciso-assistant-community` — 26 default patterns, 0 followed patterns, 5 file(s) materialized.
+Mirror of `intuitem/ciso-assistant-community` — 26 default patterns, 0 followed patterns, 6 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `intuitem/ciso-assistant-community` — 26 default patterns, 0 followe
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 5 |
+| Files         | 6 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -63,7 +63,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 2 | ✓ | [`.claude/skills/ciso-assistant-basic-risk-assessment/SKILL.md`](.claude/skills/ciso-assistant-basic-risk-assessment/SKILL.md) |
 | 3 | ✓ | [`.claude/skills/ciso-assistant-bootstrap/SKILL.md`](.claude/skills/ciso-assistant-bootstrap/SKILL.md) |
 | 4 | ✓ | [`.claude/skills/mapping-builder/SKILL.md`](.claude/skills/mapping-builder/SKILL.md) |
-| 5 | ✓ | [`.claude/skills/reference-controls-enricher/SKILL.md`](.claude/skills/reference-controls-enricher/SKILL.md) |
+| 5 | ✓ | [`.claude/skills/product-docs-screenshots/SKILL.md`](.claude/skills/product-docs-screenshots/SKILL.md) |
+| 6 | ✓ | [`.claude/skills/reference-controls-enricher/SKILL.md`](.claude/skills/reference-controls-enricher/SKILL.md) |
 
 ---
 

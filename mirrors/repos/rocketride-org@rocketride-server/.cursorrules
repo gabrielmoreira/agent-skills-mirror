@@ -1,0 +1,9 @@
+# RocketRide — AI assistant instructions
+
+The canonical contributor guide is `AGENTS.md` at the repository root. Read it
+first; it routes every task (integration code, nodes, clients, MCP, engine) to
+the right documentation under `docs/`.
+
+Before writing any RocketRide integration code, read
+`docs/agents/context/ROCKETRIDE_README.md` and the other `ROCKETRIDE_*` files in
+`docs/agents/context/`. If a request is ambiguous, stop and ask — do not guess.

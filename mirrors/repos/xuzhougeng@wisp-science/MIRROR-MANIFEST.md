@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `xuzhougeng/wisp-science` — 26 default patterns, 1 followed patterns, 132 file(s) materialized.
+Mirror of `xuzhougeng/wisp-science` — 26 default patterns, 1 followed patterns, 135 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `xuzhougeng/wisp-science` — 26 default patterns, 1 followed patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 132 |
+| Files         | 135 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -127,70 +127,73 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 66 | ✓ | [`skills/distill-concept-books/SKILL.md`](skills/distill-concept-books/SKILL.md) |
 | 67 | ✓ | [`skills/figure-composer/runtime.py`](skills/figure-composer/runtime.py) |
 | 68 | ✓ | [`skills/figure-composer/SKILL.md`](skills/figure-composer/SKILL.md) |
-| 69 | ✓ | [`skills/figure-duplicate-audit/references/review-protocol.md`](skills/figure-duplicate-audit/references/review-protocol.md) |
-| 70 | ✓ | [`skills/figure-duplicate-audit/scripts/audit_figures.py`](skills/figure-duplicate-audit/scripts/audit_figures.py) |
-| 71 | ✓ | [`skills/figure-duplicate-audit/SKILL.md`](skills/figure-duplicate-audit/SKILL.md) |
-| 72 | ✓ | [`skills/figure-duplicate-audit/tests/fixtures/known-reuse-panels.json`](skills/figure-duplicate-audit/tests/fixtures/known-reuse-panels.json) |
-| 73 | ✓ | [`skills/figure-duplicate-audit/tests/test_audit_figures.py`](skills/figure-duplicate-audit/tests/test_audit_figures.py) |
-| 74 | ✓ | [`skills/figure-style/runtime.py`](skills/figure-style/runtime.py) |
-| 75 | ✓ | [`skills/figure-style/SKILL.md`](skills/figure-style/SKILL.md) |
-| 76 | ✓ | [`skills/indication-dossier/references/phases.md`](skills/indication-dossier/references/phases.md) |
-| 77 | ✓ | [`skills/indication-dossier/references/standards.md`](skills/indication-dossier/references/standards.md) |
-| 78 | ✓ | [`skills/indication-dossier/references/waypoints.md`](skills/indication-dossier/references/waypoints.md) |
-| 79 | ✓ | [`skills/indication-dossier/SKILL.md`](skills/indication-dossier/SKILL.md) |
-| 80 | ✓ | [`skills/journal-club-ppt/SKILL.md`](skills/journal-club-ppt/SKILL.md) |
-| 81 | ✓ | [`skills/literature-review/runtime.py`](skills/literature-review/runtime.py) |
-| 82 | ✓ | [`skills/literature-review/SKILL.md`](skills/literature-review/SKILL.md) |
-| 83 | ✓ | [`skills/local-env-setup/SKILL.md`](skills/local-env-setup/SKILL.md) |
-| 84 | ✓ | [`skills/paper-narrative/runtime.py`](skills/paper-narrative/runtime.py) |
-| 85 | ✓ | [`skills/paper-narrative/SKILL.md`](skills/paper-narrative/SKILL.md) |
-| 86 | ✓ | [`skills/pdf-explore/runtime.py`](skills/pdf-explore/runtime.py) |
-| 87 | ✓ | [`skills/pdf-explore/SKILL.md`](skills/pdf-explore/SKILL.md) |
-| 88 | ✓ | [`skills/pixi-environment-builder/SKILL.md`](skills/pixi-environment-builder/SKILL.md) |
-| 89 | ✓ | [`skills/probe-compute-environment/agents/openai.yaml`](skills/probe-compute-environment/agents/openai.yaml) |
-| 90 | ✓ | [`skills/probe-compute-environment/SKILL.md`](skills/probe-compute-environment/SKILL.md) |
-| 91 | ✓ | [`skills/public-data-access/references/download-plan-schema.md`](skills/public-data-access/references/download-plan-schema.md) |
-| 92 | ✓ | [`skills/public-data-access/references/geokit.md`](skills/public-data-access/references/geokit.md) |
-| 93 | ✓ | [`skills/public-data-access/references/provider-routing.md`](skills/public-data-access/references/provider-routing.md) |
-| 94 | ✓ | [`skills/public-data-access/scripts/public_data_plan.py`](skills/public-data-access/scripts/public_data_plan.py) |
-| 95 | ✓ | [`skills/public-data-access/SKILL.md`](skills/public-data-access/SKILL.md) |
-| 96 | ✓ | [`skills/remote-compute-ssh/SKILL.md`](skills/remote-compute-ssh/SKILL.md) |
-| 97 | ✓ | [`skills/self-awareness/SKILL.md`](skills/self-awareness/SKILL.md) |
-| 98 | ✓ | [`skills/singlecell-qc/assets/gene_sets/chrY_genes_human.txt`](skills/singlecell-qc/assets/gene_sets/chrY_genes_human.txt) |
-| 99 | ✓ | [`skills/singlecell-qc/assets/gene_sets/hbb_genes_human.txt`](skills/singlecell-qc/assets/gene_sets/hbb_genes_human.txt) |
-| 100 | ✓ | [`skills/singlecell-qc/assets/gene_sets/hbb_genes_mouse.txt`](skills/singlecell-qc/assets/gene_sets/hbb_genes_mouse.txt) |
-| 101 | ✓ | [`skills/singlecell-qc/assets/qc_thresholds.example.yaml`](skills/singlecell-qc/assets/qc_thresholds.example.yaml) |
-| 102 | ✓ | [`skills/singlecell-qc/references/filtering-strategies.md`](skills/singlecell-qc/references/filtering-strategies.md) |
-| 103 | ✓ | [`skills/singlecell-qc/references/human-in-the-loop.md`](skills/singlecell-qc/references/human-in-the-loop.md) |
-| 104 | ✓ | [`skills/singlecell-qc/references/metrics-catalog.md`](skills/singlecell-qc/references/metrics-catalog.md) |
-| 105 | ✓ | [`skills/singlecell-qc/references/project-layout.md`](skills/singlecell-qc/references/project-layout.md) |
-| 106 | ✓ | [`skills/singlecell-qc/references/python-scanpy.md`](skills/singlecell-qc/references/python-scanpy.md) |
-| 107 | ✓ | [`skills/singlecell-qc/references/r-seurat.md`](skills/singlecell-qc/references/r-seurat.md) |
-| 108 | ✓ | [`skills/singlecell-qc/scripts/calculate_metrics.py`](skills/singlecell-qc/scripts/calculate_metrics.py) |
-| 109 | ✓ | [`skills/singlecell-qc/scripts/calculate_metrics.R`](skills/singlecell-qc/scripts/calculate_metrics.R) |
-| 110 | ✓ | [`skills/singlecell-qc/scripts/inspect_qc_metadata.py`](skills/singlecell-qc/scripts/inspect_qc_metadata.py) |
-| 111 | ✓ | [`skills/singlecell-qc/SKILL.md`](skills/singlecell-qc/SKILL.md) |
-| 112 | ✓ | [`skills/skill-creator/scripts/package_skill.py`](skills/skill-creator/scripts/package_skill.py) |
-| 113 | ✓ | [`skills/skill-creator/scripts/quick_validate.py`](skills/skill-creator/scripts/quick_validate.py) |
-| 114 | ✓ | [`skills/skill-creator/SKILL.md`](skills/skill-creator/SKILL.md) |
-| 115 | ✓ | [`skills/social-note/SKILL.md`](skills/social-note/SKILL.md) |
-| 116 | ✓ | [`skills/THIRD_PARTY_LICENSES.md`](skills/THIRD_PARTY_LICENSES.md) |
-| 117 | ✓ | [`skills/word-zotero-citations/assets/templates/offline-run-summary.md`](skills/word-zotero-citations/assets/templates/offline-run-summary.md) |
-| 118 | ✓ | [`skills/word-zotero-citations/evals/task-cases.json`](skills/word-zotero-citations/evals/task-cases.json) |
-| 119 | ✓ | [`skills/word-zotero-citations/evals/trigger-cases.json`](skills/word-zotero-citations/evals/trigger-cases.json) |
-| 120 | ✓ | [`skills/word-zotero-citations/references/contracts.md`](skills/word-zotero-citations/references/contracts.md) |
-| 121 | ✓ | [`skills/word-zotero-citations/references/implementation-map.md`](skills/word-zotero-citations/references/implementation-map.md) |
-| 122 | ✓ | [`skills/word-zotero-citations/references/live-refresh-protocol.md`](skills/word-zotero-citations/references/live-refresh-protocol.md) |
-| 123 | ✓ | [`skills/word-zotero-citations/references/live-run-recipe.md`](skills/word-zotero-citations/references/live-run-recipe.md) |
-| 124 | ✓ | [`skills/word-zotero-citations/references/recovery-and-rollback.md`](skills/word-zotero-citations/references/recovery-and-rollback.md) |
-| 125 | ✓ | [`skills/word-zotero-citations/references/verification-matrix.md`](skills/word-zotero-citations/references/verification-matrix.md) |
-| 126 | ✓ | [`skills/word-zotero-citations/references/zotero-mcp-configuration.md`](skills/word-zotero-citations/references/zotero-mcp-configuration.md) |
-| 127 | ✓ | [`skills/word-zotero-citations/scripts/refresh_word_zotero.ps1`](skills/word-zotero-citations/scripts/refresh_word_zotero.ps1) |
-| 128 | ✓ | [`skills/word-zotero-citations/scripts/run_live_workflow.py`](skills/word-zotero-citations/scripts/run_live_workflow.py) |
-| 129 | ✓ | [`skills/word-zotero-citations/scripts/validate_word_zotero_ui.ps1`](skills/word-zotero-citations/scripts/validate_word_zotero_ui.ps1) |
-| 130 | ✓ | [`skills/word-zotero-citations/scripts/verify_skill.py`](skills/word-zotero-citations/scripts/verify_skill.py) |
-| 131 | ✓ | [`skills/word-zotero-citations/SKILL.md`](skills/word-zotero-citations/SKILL.md) |
-| 132 | → | [`docs/app-updates.md`](docs/app-updates.md) |
+| 69 | ✓ | [`skills/figure-style/runtime.py`](skills/figure-style/runtime.py) |
+| 70 | ✓ | [`skills/figure-style/SKILL.md`](skills/figure-style/SKILL.md) |
+| 71 | ✓ | [`skills/indication-dossier/references/phases.md`](skills/indication-dossier/references/phases.md) |
+| 72 | ✓ | [`skills/indication-dossier/references/standards.md`](skills/indication-dossier/references/standards.md) |
+| 73 | ✓ | [`skills/indication-dossier/references/waypoints.md`](skills/indication-dossier/references/waypoints.md) |
+| 74 | ✓ | [`skills/indication-dossier/SKILL.md`](skills/indication-dossier/SKILL.md) |
+| 75 | ✓ | [`skills/journal-club-ppt/SKILL.md`](skills/journal-club-ppt/SKILL.md) |
+| 76 | ✓ | [`skills/literature-review/runtime.py`](skills/literature-review/runtime.py) |
+| 77 | ✓ | [`skills/literature-review/SKILL.md`](skills/literature-review/SKILL.md) |
+| 78 | ✓ | [`skills/local-env-setup/SKILL.md`](skills/local-env-setup/SKILL.md) |
+| 79 | ✓ | [`skills/paper-narrative/runtime.py`](skills/paper-narrative/runtime.py) |
+| 80 | ✓ | [`skills/paper-narrative/SKILL.md`](skills/paper-narrative/SKILL.md) |
+| 81 | ✓ | [`skills/pdf-explore/runtime.py`](skills/pdf-explore/runtime.py) |
+| 82 | ✓ | [`skills/pdf-explore/SKILL.md`](skills/pdf-explore/SKILL.md) |
+| 83 | ✓ | [`skills/pixi-environment-builder/SKILL.md`](skills/pixi-environment-builder/SKILL.md) |
+| 84 | ✓ | [`skills/probe-compute-environment/agents/openai.yaml`](skills/probe-compute-environment/agents/openai.yaml) |
+| 85 | ✓ | [`skills/probe-compute-environment/SKILL.md`](skills/probe-compute-environment/SKILL.md) |
+| 86 | ✓ | [`skills/public-data-access/references/download-plan-schema.md`](skills/public-data-access/references/download-plan-schema.md) |
+| 87 | ✓ | [`skills/public-data-access/references/geokit.md`](skills/public-data-access/references/geokit.md) |
+| 88 | ✓ | [`skills/public-data-access/references/provider-routing.md`](skills/public-data-access/references/provider-routing.md) |
+| 89 | ✓ | [`skills/public-data-access/scripts/public_data_plan.py`](skills/public-data-access/scripts/public_data_plan.py) |
+| 90 | ✓ | [`skills/public-data-access/SKILL.md`](skills/public-data-access/SKILL.md) |
+| 91 | ✓ | [`skills/remote-compute-ssh/SKILL.md`](skills/remote-compute-ssh/SKILL.md) |
+| 92 | ✓ | [`skills/research-integrity-audit/references/data-protocol.md`](skills/research-integrity-audit/references/data-protocol.md) |
+| 93 | ✓ | [`skills/research-integrity-audit/references/review-protocol.md`](skills/research-integrity-audit/references/review-protocol.md) |
+| 94 | ✓ | [`skills/research-integrity-audit/scripts/audit_data.py`](skills/research-integrity-audit/scripts/audit_data.py) |
+| 95 | ✓ | [`skills/research-integrity-audit/scripts/audit_figures.py`](skills/research-integrity-audit/scripts/audit_figures.py) |
+| 96 | ✓ | [`skills/research-integrity-audit/SKILL.md`](skills/research-integrity-audit/SKILL.md) |
+| 97 | ✓ | [`skills/research-integrity-audit/tests/fixtures/known-reuse-panels.json`](skills/research-integrity-audit/tests/fixtures/known-reuse-panels.json) |
+| 98 | ✓ | [`skills/research-integrity-audit/tests/test_audit_data.py`](skills/research-integrity-audit/tests/test_audit_data.py) |
+| 99 | ✓ | [`skills/research-integrity-audit/tests/test_audit_figures.py`](skills/research-integrity-audit/tests/test_audit_figures.py) |
+| 100 | ✓ | [`skills/self-awareness/SKILL.md`](skills/self-awareness/SKILL.md) |
+| 101 | ✓ | [`skills/singlecell-qc/assets/gene_sets/chrY_genes_human.txt`](skills/singlecell-qc/assets/gene_sets/chrY_genes_human.txt) |
+| 102 | ✓ | [`skills/singlecell-qc/assets/gene_sets/hbb_genes_human.txt`](skills/singlecell-qc/assets/gene_sets/hbb_genes_human.txt) |
+| 103 | ✓ | [`skills/singlecell-qc/assets/gene_sets/hbb_genes_mouse.txt`](skills/singlecell-qc/assets/gene_sets/hbb_genes_mouse.txt) |
+| 104 | ✓ | [`skills/singlecell-qc/assets/qc_thresholds.example.yaml`](skills/singlecell-qc/assets/qc_thresholds.example.yaml) |
+| 105 | ✓ | [`skills/singlecell-qc/references/filtering-strategies.md`](skills/singlecell-qc/references/filtering-strategies.md) |
+| 106 | ✓ | [`skills/singlecell-qc/references/human-in-the-loop.md`](skills/singlecell-qc/references/human-in-the-loop.md) |
+| 107 | ✓ | [`skills/singlecell-qc/references/metrics-catalog.md`](skills/singlecell-qc/references/metrics-catalog.md) |
+| 108 | ✓ | [`skills/singlecell-qc/references/project-layout.md`](skills/singlecell-qc/references/project-layout.md) |
+| 109 | ✓ | [`skills/singlecell-qc/references/python-scanpy.md`](skills/singlecell-qc/references/python-scanpy.md) |
+| 110 | ✓ | [`skills/singlecell-qc/references/r-seurat.md`](skills/singlecell-qc/references/r-seurat.md) |
+| 111 | ✓ | [`skills/singlecell-qc/scripts/calculate_metrics.py`](skills/singlecell-qc/scripts/calculate_metrics.py) |
+| 112 | ✓ | [`skills/singlecell-qc/scripts/calculate_metrics.R`](skills/singlecell-qc/scripts/calculate_metrics.R) |
+| 113 | ✓ | [`skills/singlecell-qc/scripts/inspect_qc_metadata.py`](skills/singlecell-qc/scripts/inspect_qc_metadata.py) |
+| 114 | ✓ | [`skills/singlecell-qc/SKILL.md`](skills/singlecell-qc/SKILL.md) |
+| 115 | ✓ | [`skills/skill-creator/scripts/package_skill.py`](skills/skill-creator/scripts/package_skill.py) |
+| 116 | ✓ | [`skills/skill-creator/scripts/quick_validate.py`](skills/skill-creator/scripts/quick_validate.py) |
+| 117 | ✓ | [`skills/skill-creator/SKILL.md`](skills/skill-creator/SKILL.md) |
+| 118 | ✓ | [`skills/social-note/SKILL.md`](skills/social-note/SKILL.md) |
+| 119 | ✓ | [`skills/THIRD_PARTY_LICENSES.md`](skills/THIRD_PARTY_LICENSES.md) |
+| 120 | ✓ | [`skills/word-zotero-citations/assets/templates/offline-run-summary.md`](skills/word-zotero-citations/assets/templates/offline-run-summary.md) |
+| 121 | ✓ | [`skills/word-zotero-citations/evals/task-cases.json`](skills/word-zotero-citations/evals/task-cases.json) |
+| 122 | ✓ | [`skills/word-zotero-citations/evals/trigger-cases.json`](skills/word-zotero-citations/evals/trigger-cases.json) |
+| 123 | ✓ | [`skills/word-zotero-citations/references/contracts.md`](skills/word-zotero-citations/references/contracts.md) |
+| 124 | ✓ | [`skills/word-zotero-citations/references/implementation-map.md`](skills/word-zotero-citations/references/implementation-map.md) |
+| 125 | ✓ | [`skills/word-zotero-citations/references/live-refresh-protocol.md`](skills/word-zotero-citations/references/live-refresh-protocol.md) |
+| 126 | ✓ | [`skills/word-zotero-citations/references/live-run-recipe.md`](skills/word-zotero-citations/references/live-run-recipe.md) |
+| 127 | ✓ | [`skills/word-zotero-citations/references/recovery-and-rollback.md`](skills/word-zotero-citations/references/recovery-and-rollback.md) |
+| 128 | ✓ | [`skills/word-zotero-citations/references/verification-matrix.md`](skills/word-zotero-citations/references/verification-matrix.md) |
+| 129 | ✓ | [`skills/word-zotero-citations/references/zotero-mcp-configuration.md`](skills/word-zotero-citations/references/zotero-mcp-configuration.md) |
+| 130 | ✓ | [`skills/word-zotero-citations/scripts/refresh_word_zotero.ps1`](skills/word-zotero-citations/scripts/refresh_word_zotero.ps1) |
+| 131 | ✓ | [`skills/word-zotero-citations/scripts/run_live_workflow.py`](skills/word-zotero-citations/scripts/run_live_workflow.py) |
+| 132 | ✓ | [`skills/word-zotero-citations/scripts/validate_word_zotero_ui.ps1`](skills/word-zotero-citations/scripts/validate_word_zotero_ui.ps1) |
+| 133 | ✓ | [`skills/word-zotero-citations/scripts/verify_skill.py`](skills/word-zotero-citations/scripts/verify_skill.py) |
+| 134 | ✓ | [`skills/word-zotero-citations/SKILL.md`](skills/word-zotero-citations/SKILL.md) |
+| 135 | → | [`docs/app-updates.md`](docs/app-updates.md) |
 
 ---
 

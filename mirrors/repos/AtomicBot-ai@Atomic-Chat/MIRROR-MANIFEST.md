@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `AtomicBot-ai/Atomic-Chat` — 26 default patterns, 9 followed patterns, 283 file(s) materialized.
+Mirror of `AtomicBot-ai/Atomic-Chat` — 26 default patterns, 10 followed patterns, 347 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `AtomicBot-ai/Atomic-Chat` — 26 default patterns, 9 followed pattern
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 9 |
-| Files         | 283 |
+| Followed pats | 10 |
+| Files         | 347 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -52,6 +52,7 @@ Mirror of `AtomicBot-ai/Atomic-Chat` — 26 default patterns, 9 followed pattern
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
 - `docs/decisions/INDEX.md`
+- `docs/ui-layout-rules.md`
 - `DEVELOP.md`
 - `README.md`
 - `CONTRIBUTING.md`
@@ -307,49 +308,113 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 238 | ✓ | [`docs/decisions/2026-09-04-sanitize-appimage-environment-before-launching-host-processes.md`](docs/decisions/2026-09-04-sanitize-appimage-environment-before-launching-host-processes.md) |
 | 239 | ✓ | [`docs/decisions/2026-09-07-answer-a-blocked-send-with-a-widget-not-a-red-line.md`](docs/decisions/2026-09-07-answer-a-blocked-send-with-a-widget-not-a-red-line.md) |
 | 240 | ✓ | [`docs/decisions/2026-09-09-resolve-the-reply-model-on-send-instead-of-asking.md`](docs/decisions/2026-09-09-resolve-the-reply-model-on-send-instead-of-asking.md) |
-| 241 | ✓ | [`docs/decisions/2026-09-11-list-the-hub-picks-under-the-onboarding-offer.md`](docs/decisions/2026-09-11-list-the-hub-picks-under-the-onboarding-offer.md) |
-| 242 | ✓ | [`docs/decisions/2026-09-11-make-starting-the-local-api-server-idempotent.md`](docs/decisions/2026-09-11-make-starting-the-local-api-server-idempotent.md) |
-| 243 | ✓ | [`docs/decisions/2026-09-11-one-rule-keeps-speculative-heads-out-of-both-model-import-paths.md`](docs/decisions/2026-09-11-one-rule-keeps-speculative-heads-out-of-both-model-import-paths.md) |
-| 244 | ✓ | [`docs/decisions/2026-09-11-pick-the-model-and-its-effort-from-one-composer-pill.md`](docs/decisions/2026-09-11-pick-the-model-and-its-effort-from-one-composer-pill.md) |
-| 245 | ✓ | [`docs/decisions/2026-09-11-show-engine-state-in-the-model-dot-and-let-a-stop-hold.md`](docs/decisions/2026-09-11-show-engine-state-in-the-model-dot-and-let-a-stop-hold.md) |
-| 246 | ✓ | [`docs/decisions/2026-09-14-carry-per-thread-agent-mode-onto-the-global-toggle.md`](docs/decisions/2026-09-14-carry-per-thread-agent-mode-onto-the-global-toggle.md) |
-| 247 | ✓ | [`docs/decisions/2026-09-14-one-gpu-vram-floor-for-every-os.md`](docs/decisions/2026-09-14-one-gpu-vram-floor-for-every-os.md) |
-| 248 | ✓ | [`docs/decisions/2026-09-14-re-pin-filesystem-mcp-specs-the-app-wrote-itself.md`](docs/decisions/2026-09-14-re-pin-filesystem-mcp-specs-the-app-wrote-itself.md) |
-| 249 | ✓ | [`docs/decisions/2026-09-14-re-read-skill-bodies-when-a-skill-changes.md`](docs/decisions/2026-09-14-re-read-skill-bodies-when-a-skill-changes.md) |
-| 250 | ✓ | [`docs/README.md`](docs/README.md) |
-| 251 | ✓ | [`extensions/assistant-extension/README.md`](extensions/assistant-extension/README.md) |
-| 252 | ✓ | [`foundation-models-server/README.md`](foundation-models-server/README.md) |
-| 253 | ✓ | [`mlx-server/README.md`](mlx-server/README.md) |
-| 254 | ✓ | [`scripts/concurrent-demo/README.md`](scripts/concurrent-demo/README.md) |
-| 255 | ✓ | [`src-tauri/resources/agent-skills/apple-calendar/SKILL.md`](src-tauri/resources/agent-skills/apple-calendar/SKILL.md) |
-| 256 | ✓ | [`src-tauri/resources/agent-skills/apple-notes/SKILL.md`](src-tauri/resources/agent-skills/apple-notes/SKILL.md) |
-| 257 | ✓ | [`src-tauri/resources/agent-skills/apple-reminders/SKILL.md`](src-tauri/resources/agent-skills/apple-reminders/SKILL.md) |
-| 258 | ✓ | [`src-tauri/resources/agent-skills/audio-transcribe/SKILL.md`](src-tauri/resources/agent-skills/audio-transcribe/SKILL.md) |
-| 259 | ✓ | [`src-tauri/resources/agent-skills/currency/SKILL.md`](src-tauri/resources/agent-skills/currency/SKILL.md) |
-| 260 | ✓ | [`src-tauri/resources/agent-skills/docker/SKILL.md`](src-tauri/resources/agent-skills/docker/SKILL.md) |
-| 261 | ✓ | [`src-tauri/resources/agent-skills/ffmpeg/SKILL.md`](src-tauri/resources/agent-skills/ffmpeg/SKILL.md) |
-| 262 | ✓ | [`src-tauri/resources/agent-skills/github/SKILL.md`](src-tauri/resources/agent-skills/github/SKILL.md) |
-| 263 | ✓ | [`src-tauri/resources/agent-skills/gog-workspace/SKILL.md`](src-tauri/resources/agent-skills/gog-workspace/SKILL.md) |
-| 264 | ✓ | [`src-tauri/resources/agent-skills/imagemagick/SKILL.md`](src-tauri/resources/agent-skills/imagemagick/SKILL.md) |
-| 265 | ✓ | [`src-tauri/resources/agent-skills/notion/SKILL.md`](src-tauri/resources/agent-skills/notion/SKILL.md) |
-| 266 | ✓ | [`src-tauri/resources/agent-skills/obsidian/SKILL.md`](src-tauri/resources/agent-skills/obsidian/SKILL.md) |
-| 267 | ✓ | [`src-tauri/resources/agent-skills/pandoc/SKILL.md`](src-tauri/resources/agent-skills/pandoc/SKILL.md) |
-| 268 | ✓ | [`src-tauri/resources/agent-skills/pdf/SKILL.md`](src-tauri/resources/agent-skills/pdf/SKILL.md) |
-| 269 | ✓ | [`src-tauri/resources/agent-skills/skill-creator/SKILL.md`](src-tauri/resources/agent-skills/skill-creator/SKILL.md) |
-| 270 | ✓ | [`src-tauri/resources/agent-skills/wikipedia/SKILL.md`](src-tauri/resources/agent-skills/wikipedia/SKILL.md) |
-| 271 | ✓ | [`src-tauri/resources/agent-skills/wttr-weather/SKILL.md`](src-tauri/resources/agent-skills/wttr-weather/SKILL.md) |
-| 272 | ✓ | [`src-tauri/resources/agent-skills/xlsx/SKILL.md`](src-tauri/resources/agent-skills/xlsx/SKILL.md) |
-| 273 | ✓ | [`web-app/README.md`](web-app/README.md) |
-| 274 | ✓ | [`web-app/src/services/AGENTS.md`](web-app/src/services/AGENTS.md) |
-| 275 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 276 | → | [`core/CONTRIBUTING.md`](core/CONTRIBUTING.md) |
-| 277 | → | [`DEVELOP.md`](DEVELOP.md) |
-| 278 | → | [`docs/decisions/INDEX.md`](docs/decisions/INDEX.md) |
-| 279 | → | [`extensions/CONTRIBUTING.md`](extensions/CONTRIBUTING.md) |
-| 280 | → | [`README.md`](README.md) |
-| 281 | → | [`src-tauri/CONTRIBUTING.md`](src-tauri/CONTRIBUTING.md) |
-| 282 | → | [`src-tauri/plugins/CONTRIBUTING.md`](src-tauri/plugins/CONTRIBUTING.md) |
-| 283 | → | [`web-app/CONTRIBUTING.md`](web-app/CONTRIBUTING.md) |
+| 241 | ✓ | [`docs/decisions/2026-09-10-arbitrate-the-gpu-between-chat-and-diffusion-in-the-web-app.md`](docs/decisions/2026-09-10-arbitrate-the-gpu-between-chat-and-diffusion-in-the-web-app.md) |
+| 242 | ✓ | [`docs/decisions/2026-09-10-curate-the-diffusion-model-catalog-in-atomic-chat-conf.md`](docs/decisions/2026-09-10-curate-the-diffusion-model-catalog-in-atomic-chat-conf.md) |
+| 243 | ✓ | [`docs/decisions/2026-09-10-generate-images-locally-with-stable-diffusion-cpp-in-its-own-plugin.md`](docs/decisions/2026-09-10-generate-images-locally-with-stable-diffusion-cpp-in-its-own-plugin.md) |
+| 244 | ✓ | [`docs/decisions/2026-09-10-mirror-pin-and-verify-stable-diffusion-cpp-prebuilts-in-atomic-chat-conf.md`](docs/decisions/2026-09-10-mirror-pin-and-verify-stable-diffusion-cpp-prebuilts-in-atomic-chat-conf.md) |
+| 245 | ✓ | [`docs/decisions/2026-09-10-pin-the-text-encoder-to-cpu-under-metal-and-restart-on-cpu-after-a-ggml-abort.md`](docs/decisions/2026-09-10-pin-the-text-encoder-to-cpu-under-metal-and-restart-on-cpu-after-a-ggml-abort.md) |
+| 246 | ✓ | [`docs/decisions/2026-09-10-serve-openai-images-generations-from-the-local-api-server.md`](docs/decisions/2026-09-10-serve-openai-images-generations-from-the-local-api-server.md) |
+| 247 | ✓ | [`docs/decisions/2026-09-10-store-generated-media-under-the-data-folder-with-recipes-in-png-chunks.md`](docs/decisions/2026-09-10-store-generated-media-under-the-data-folder-with-recipes-in-png-chunks.md) |
+| 248 | ✓ | [`docs/decisions/2026-09-11-list-the-hub-picks-under-the-onboarding-offer.md`](docs/decisions/2026-09-11-list-the-hub-picks-under-the-onboarding-offer.md) |
+| 249 | ✓ | [`docs/decisions/2026-09-11-make-starting-the-local-api-server-idempotent.md`](docs/decisions/2026-09-11-make-starting-the-local-api-server-idempotent.md) |
+| 250 | ✓ | [`docs/decisions/2026-09-11-one-rule-keeps-speculative-heads-out-of-both-model-import-paths.md`](docs/decisions/2026-09-11-one-rule-keeps-speculative-heads-out-of-both-model-import-paths.md) |
+| 251 | ✓ | [`docs/decisions/2026-09-11-pick-the-model-and-its-effort-from-one-composer-pill.md`](docs/decisions/2026-09-11-pick-the-model-and-its-effort-from-one-composer-pill.md) |
+| 252 | ✓ | [`docs/decisions/2026-09-11-show-engine-state-in-the-model-dot-and-let-a-stop-hold.md`](docs/decisions/2026-09-11-show-engine-state-in-the-model-dot-and-let-a-stop-hold.md) |
+| 253 | ✓ | [`docs/decisions/2026-09-14-ask-before-updating-an-inference-engine.md`](docs/decisions/2026-09-14-ask-before-updating-an-inference-engine.md) |
+| 254 | ✓ | [`docs/decisions/2026-09-14-carry-per-thread-agent-mode-onto-the-global-toggle.md`](docs/decisions/2026-09-14-carry-per-thread-agent-mode-onto-the-global-toggle.md) |
+| 255 | ✓ | [`docs/decisions/2026-09-14-one-gpu-vram-floor-for-every-os.md`](docs/decisions/2026-09-14-one-gpu-vram-floor-for-every-os.md) |
+| 256 | ✓ | [`docs/decisions/2026-09-14-one-update-banner-in-the-corner-at-a-time.md`](docs/decisions/2026-09-14-one-update-banner-in-the-corner-at-a-time.md) |
+| 257 | ✓ | [`docs/decisions/2026-09-14-re-pin-filesystem-mcp-specs-the-app-wrote-itself.md`](docs/decisions/2026-09-14-re-pin-filesystem-mcp-specs-the-app-wrote-itself.md) |
+| 258 | ✓ | [`docs/decisions/2026-09-14-re-read-skill-bodies-when-a-skill-changes.md`](docs/decisions/2026-09-14-re-read-skill-bodies-when-a-skill-changes.md) |
+| 259 | ✓ | [`docs/decisions/2026-09-14-register-shared-http-commands-on-mobile-and-surface-network-failures.md`](docs/decisions/2026-09-14-register-shared-http-commands-on-mobile-and-surface-network-failures.md) |
+| 260 | ✓ | [`docs/decisions/2026-09-15-ask-for-a-model-with-the-same-rows-and-list-as-onboarding.md`](docs/decisions/2026-09-15-ask-for-a-model-with-the-same-rows-and-list-as-onboarding.md) |
+| 261 | ✓ | [`docs/decisions/2026-09-15-fail-truncated-tool-calls-as-budget-and-size-the-repair.md`](docs/decisions/2026-09-15-fail-truncated-tool-calls-as-budget-and-size-the-repair.md) |
+| 262 | ✓ | [`docs/decisions/2026-09-15-list-the-rest-of-hugging-face-under-the-picks.md`](docs/decisions/2026-09-15-list-the-rest-of-hugging-face-under-the-picks.md) |
+| 263 | ✓ | [`docs/decisions/2026-09-15-mark-full-access-by-icon-and-words-not-colour.md`](docs/decisions/2026-09-15-mark-full-access-by-icon-and-words-not-colour.md) |
+| 264 | ✓ | [`docs/decisions/2026-09-15-restore-loaded-skills-from-disk-not-from-the-session.md`](docs/decisions/2026-09-15-restore-loaded-skills-from-disk-not-from-the-session.md) |
+| 265 | ✓ | [`docs/decisions/2026-09-15-say-what-a-model-load-is-waiting-on-and-let-it-be-cancelled.md`](docs/decisions/2026-09-15-say-what-a-model-load-is-waiting-on-and-let-it-be-cancelled.md) |
+| 266 | ✓ | [`docs/decisions/2026-09-15-say-what-a-project-upload-is-waiting-on.md`](docs/decisions/2026-09-15-say-what-a-project-upload-is-waiting-on.md) |
+| 267 | ✓ | [`docs/decisions/2026-09-15-show-every-tool-call-as-its-own-line.md`](docs/decisions/2026-09-15-show-every-tool-call-as-its-own-line.md) |
+| 268 | ✓ | [`docs/decisions/2026-09-16-bound-the-model-load-wait-on-backend-configuration.md`](docs/decisions/2026-09-16-bound-the-model-load-wait-on-backend-configuration.md) |
+| 269 | ✓ | [`docs/decisions/2026-09-16-check-disk-space-before-a-download-starts.md`](docs/decisions/2026-09-16-check-disk-space-before-a-download-starts.md) |
+| 270 | ✓ | [`docs/decisions/2026-09-16-confirm-full-access-before-enabling-it.md`](docs/decisions/2026-09-16-confirm-full-access-before-enabling-it.md) |
+| 271 | ✓ | [`docs/decisions/2026-09-16-effort-setting-applies-only-to-new-messages.md`](docs/decisions/2026-09-16-effort-setting-applies-only-to-new-messages.md) |
+| 272 | ✓ | [`docs/decisions/2026-09-16-explain-why-images-need-a-vision-model.md`](docs/decisions/2026-09-16-explain-why-images-need-a-vision-model.md) |
+| 273 | ✓ | [`docs/decisions/2026-09-16-mark-each-recommended-row-with-its-fit.md`](docs/decisions/2026-09-16-mark-each-recommended-row-with-its-fit.md) |
+| 274 | ✓ | [`docs/decisions/2026-09-16-migrate-jan-branded-assistant-prompts.md`](docs/decisions/2026-09-16-migrate-jan-branded-assistant-prompts.md) |
+| 275 | ✓ | [`docs/decisions/2026-09-16-model-selector-download-picks.md`](docs/decisions/2026-09-16-model-selector-download-picks.md) |
+| 276 | ✓ | [`docs/decisions/2026-09-16-name-connectors-by-what-they-do.md`](docs/decisions/2026-09-16-name-connectors-by-what-they-do.md) |
+| 277 | ✓ | [`docs/decisions/2026-09-16-offer-the-manifest-recommendation-on-the-reminder-card-too.md`](docs/decisions/2026-09-16-offer-the-manifest-recommendation-on-the-reminder-card-too.md) |
+| 278 | ✓ | [`docs/decisions/2026-09-16-reserve-the-thinking-budget-on-top-of-the-tool-call-budget.md`](docs/decisions/2026-09-16-reserve-the-thinking-budget-on-top-of-the-tool-call-budget.md) |
+| 279 | ✓ | [`docs/decisions/2026-09-16-show-the-running-download-first-in-the-reply-gate.md`](docs/decisions/2026-09-16-show-the-running-download-first-in-the-reply-gate.md) |
+| 280 | ✓ | [`docs/decisions/2026-09-16-stay-on-the-welcome-screen-until-the-download-lands.md`](docs/decisions/2026-09-16-stay-on-the-welcome-screen-until-the-download-lands.md) |
+| 281 | ✓ | [`docs/decisions/2026-09-16-unfold-release-notes-inside-the-update-banner.md`](docs/decisions/2026-09-16-unfold-release-notes-inside-the-update-banner.md) |
+| 282 | ✓ | [`docs/decisions/2026-09-17-agent-approval-composer-stack.md`](docs/decisions/2026-09-17-agent-approval-composer-stack.md) |
+| 283 | ✓ | [`docs/decisions/2026-09-17-approval-menu-copy-width.md`](docs/decisions/2026-09-17-approval-menu-copy-width.md) |
+| 284 | ✓ | [`docs/decisions/2026-09-17-chat-code-block-wrap.md`](docs/decisions/2026-09-17-chat-code-block-wrap.md) |
+| 285 | ✓ | [`docs/decisions/2026-09-17-compact-model-loaded-snackbar.md`](docs/decisions/2026-09-17-compact-model-loaded-snackbar.md) |
+| 286 | ✓ | [`docs/decisions/2026-09-17-connector-card-state-actions.md`](docs/decisions/2026-09-17-connector-card-state-actions.md) |
+| 287 | ✓ | [`docs/decisions/2026-09-17-connector-icon-rounded-square.md`](docs/decisions/2026-09-17-connector-icon-rounded-square.md) |
+| 288 | ✓ | [`docs/decisions/2026-09-17-default-system-prompt-short.md`](docs/decisions/2026-09-17-default-system-prompt-short.md) |
+| 289 | ✓ | [`docs/decisions/2026-09-17-expose-the-local-api-server-through-a-cloudflare-tunnel-and-on-the-lan.md`](docs/decisions/2026-09-17-expose-the-local-api-server-through-a-cloudflare-tunnel-and-on-the-lan.md) |
+| 290 | ✓ | [`docs/decisions/2026-09-17-fallback-to-keyless-search-when-hosted-exa-is-unavailable.md`](docs/decisions/2026-09-17-fallback-to-keyless-search-when-hosted-exa-is-unavailable.md) |
+| 291 | ✓ | [`docs/decisions/2026-09-17-keep-the-download-panel-readout-on-one-line.md`](docs/decisions/2026-09-17-keep-the-download-panel-readout-on-one-line.md) |
+| 292 | ✓ | [`docs/decisions/2026-09-17-model-load-stable-copy.md`](docs/decisions/2026-09-17-model-load-stable-copy.md) |
+| 293 | ✓ | [`docs/decisions/2026-09-17-model-selector-format-width.md`](docs/decisions/2026-09-17-model-selector-format-width.md) |
+| 294 | ✓ | [`docs/decisions/2026-09-17-model-settings-popover-reading-width.md`](docs/decisions/2026-09-17-model-settings-popover-reading-width.md) |
+| 295 | ✓ | [`docs/decisions/2026-09-17-onboarding-row-polish.md`](docs/decisions/2026-09-17-onboarding-row-polish.md) |
+| 296 | ✓ | [`docs/decisions/2026-09-17-onboarding-skip-no-autostart.md`](docs/decisions/2026-09-17-onboarding-skip-no-autostart.md) |
+| 297 | ✓ | [`docs/decisions/2026-09-17-one-anatomy-for-every-connector-card.md`](docs/decisions/2026-09-17-one-anatomy-for-every-connector-card.md) |
+| 298 | ✓ | [`docs/decisions/2026-09-17-one-button-column-and-a-fit-badge-on-the-onboarding-rows.md`](docs/decisions/2026-09-17-one-button-column-and-a-fit-badge-on-the-onboarding-rows.md) |
+| 299 | ✓ | [`docs/decisions/2026-09-17-reasoning-stream-layout-stability.md`](docs/decisions/2026-09-17-reasoning-stream-layout-stability.md) |
+| 300 | ✓ | [`docs/decisions/2026-09-17-recover-installed-upstream-backend-before-catalog-wait.md`](docs/decisions/2026-09-17-recover-installed-upstream-backend-before-catalog-wait.md) |
+| 301 | ✓ | [`docs/decisions/2026-09-17-reply-gate-shows-the-full-recommended-list.md`](docs/decisions/2026-09-17-reply-gate-shows-the-full-recommended-list.md) |
+| 302 | ✓ | [`docs/decisions/2026-09-17-repoint-web-app-test-storage-globals-at-jsdom-on-node-25.md`](docs/decisions/2026-09-17-repoint-web-app-test-storage-globals-at-jsdom-on-node-25.md) |
+| 303 | ✓ | [`docs/decisions/2026-09-17-seed-one-web-search-and-lay-out-connector-rows-like-model-rows.md`](docs/decisions/2026-09-17-seed-one-web-search-and-lay-out-connector-rows-like-model-rows.md) |
+| 304 | ✓ | [`docs/decisions/2026-09-17-text-fonts-lead-the-stack-the-emoji-face-is-carved-out-by-unicode-range.md`](docs/decisions/2026-09-17-text-fonts-lead-the-stack-the-emoji-face-is-carved-out-by-unicode-range.md) |
+| 305 | ✓ | [`docs/decisions/2026-09-17-tool-call-friendly-copy.md`](docs/decisions/2026-09-17-tool-call-friendly-copy.md) |
+| 306 | ✓ | [`docs/decisions/2026-09-17-unload-clears-model-selection.md`](docs/decisions/2026-09-17-unload-clears-model-selection.md) |
+| 307 | ✓ | [`docs/decisions/2026-09-17-warn-before-a-download-that-wont-fit-in-memory.md`](docs/decisions/2026-09-17-warn-before-a-download-that-wont-fit-in-memory.md) |
+| 308 | ✓ | [`docs/decisions/2026-09-17-web-search-reliability.md`](docs/decisions/2026-09-17-web-search-reliability.md) |
+| 309 | ✓ | [`docs/decisions/2026-09-18-image-viewer-live-selection.md`](docs/decisions/2026-09-18-image-viewer-live-selection.md) |
+| 310 | ✓ | [`docs/decisions/2026-09-21-add-zcode-as-a-launch-page-coding-agent.md`](docs/decisions/2026-09-21-add-zcode-as-a-launch-page-coding-agent.md) |
+| 311 | ✓ | [`docs/decisions/2026-09-21-catalog-qwen-image-2-1-for-non-commercial-use.md`](docs/decisions/2026-09-21-catalog-qwen-image-2-1-for-non-commercial-use.md) |
+| 312 | ✓ | [`docs/decisions/2026-09-21-gate-qwen-image-2-1-on-installed-engine.md`](docs/decisions/2026-09-21-gate-qwen-image-2-1-on-installed-engine.md) |
+| 313 | ✓ | [`docs/README.md`](docs/README.md) |
+| 314 | ✓ | [`extensions/assistant-extension/README.md`](extensions/assistant-extension/README.md) |
+| 315 | ✓ | [`foundation-models-server/README.md`](foundation-models-server/README.md) |
+| 316 | ✓ | [`mlx-server/README.md`](mlx-server/README.md) |
+| 317 | ✓ | [`scripts/concurrent-demo/README.md`](scripts/concurrent-demo/README.md) |
+| 318 | ✓ | [`src-tauri/resources/agent-skills/apple-calendar/SKILL.md`](src-tauri/resources/agent-skills/apple-calendar/SKILL.md) |
+| 319 | ✓ | [`src-tauri/resources/agent-skills/apple-notes/SKILL.md`](src-tauri/resources/agent-skills/apple-notes/SKILL.md) |
+| 320 | ✓ | [`src-tauri/resources/agent-skills/apple-reminders/SKILL.md`](src-tauri/resources/agent-skills/apple-reminders/SKILL.md) |
+| 321 | ✓ | [`src-tauri/resources/agent-skills/audio-transcribe/SKILL.md`](src-tauri/resources/agent-skills/audio-transcribe/SKILL.md) |
+| 322 | ✓ | [`src-tauri/resources/agent-skills/currency/SKILL.md`](src-tauri/resources/agent-skills/currency/SKILL.md) |
+| 323 | ✓ | [`src-tauri/resources/agent-skills/docker/SKILL.md`](src-tauri/resources/agent-skills/docker/SKILL.md) |
+| 324 | ✓ | [`src-tauri/resources/agent-skills/ffmpeg/SKILL.md`](src-tauri/resources/agent-skills/ffmpeg/SKILL.md) |
+| 325 | ✓ | [`src-tauri/resources/agent-skills/github/SKILL.md`](src-tauri/resources/agent-skills/github/SKILL.md) |
+| 326 | ✓ | [`src-tauri/resources/agent-skills/gog-workspace/SKILL.md`](src-tauri/resources/agent-skills/gog-workspace/SKILL.md) |
+| 327 | ✓ | [`src-tauri/resources/agent-skills/imagemagick/SKILL.md`](src-tauri/resources/agent-skills/imagemagick/SKILL.md) |
+| 328 | ✓ | [`src-tauri/resources/agent-skills/notion/SKILL.md`](src-tauri/resources/agent-skills/notion/SKILL.md) |
+| 329 | ✓ | [`src-tauri/resources/agent-skills/obsidian/SKILL.md`](src-tauri/resources/agent-skills/obsidian/SKILL.md) |
+| 330 | ✓ | [`src-tauri/resources/agent-skills/pandoc/SKILL.md`](src-tauri/resources/agent-skills/pandoc/SKILL.md) |
+| 331 | ✓ | [`src-tauri/resources/agent-skills/pdf/SKILL.md`](src-tauri/resources/agent-skills/pdf/SKILL.md) |
+| 332 | ✓ | [`src-tauri/resources/agent-skills/skill-creator/SKILL.md`](src-tauri/resources/agent-skills/skill-creator/SKILL.md) |
+| 333 | ✓ | [`src-tauri/resources/agent-skills/wikipedia/SKILL.md`](src-tauri/resources/agent-skills/wikipedia/SKILL.md) |
+| 334 | ✓ | [`src-tauri/resources/agent-skills/wttr-weather/SKILL.md`](src-tauri/resources/agent-skills/wttr-weather/SKILL.md) |
+| 335 | ✓ | [`src-tauri/resources/agent-skills/xlsx/SKILL.md`](src-tauri/resources/agent-skills/xlsx/SKILL.md) |
+| 336 | ✓ | [`web-app/README.md`](web-app/README.md) |
+| 337 | ✓ | [`web-app/src/services/AGENTS.md`](web-app/src/services/AGENTS.md) |
+| 338 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 339 | → | [`core/CONTRIBUTING.md`](core/CONTRIBUTING.md) |
+| 340 | → | [`DEVELOP.md`](DEVELOP.md) |
+| 341 | → | [`docs/decisions/INDEX.md`](docs/decisions/INDEX.md) |
+| 342 | → | [`docs/ui-layout-rules.md`](docs/ui-layout-rules.md) |
+| 343 | → | [`extensions/CONTRIBUTING.md`](extensions/CONTRIBUTING.md) |
+| 344 | → | [`README.md`](README.md) |
+| 345 | → | [`src-tauri/CONTRIBUTING.md`](src-tauri/CONTRIBUTING.md) |
+| 346 | → | [`src-tauri/plugins/CONTRIBUTING.md`](src-tauri/plugins/CONTRIBUTING.md) |
+| 347 | → | [`web-app/CONTRIBUTING.md`](web-app/CONTRIBUTING.md) |
 
 ---
 

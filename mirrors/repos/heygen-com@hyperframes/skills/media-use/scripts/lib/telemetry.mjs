@@ -1,15 +1,5 @@
-// Opt-out usage tracking for media-use, sharing the hyperframes CLI/studio
-// identity (packages/cli/src/telemetry): the same install id from
-// ~/.hyperframes/config.json, plus a $identify to the HeyGen account on sign-in,
-// so a person is one PostHog profile across surfaces — not a fresh id per tool.
-// Not fully anonymous by design (it must dedupe): pseudonymous before sign-in,
-// account-linked after. Event PROPERTIES stay coarse — media TYPE, resolution
-// SOURCE, winning PROVIDER — never the intent text, file names, or paths.
-//
-// Same public PostHog project key as the CLI (a write-only ingestion key, safe
-// to ship), same opt-outs (DO_NOT_TRACK / HYPERFRAMES_NO_TELEMETRY / CI / dev),
-// and $ip:null so no IP is recorded. Fire-and-forget: telemetry never blocks a
-// resolve and never throws into it.
+// Usage tracking shares the CLI and Studio identity. Properties stay coarse and
+// never carry intent text, file names, or paths.
 
 import { randomUUID } from "node:crypto";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
@@ -22,10 +12,6 @@ const TIMEOUT_MS = 1500;
 let identifiedAccount = false;
 let warnedNonDefaultHost = false;
 
-// Same CI/test signals the test suite itself sets (resolve.test.mjs's U7 test
-// sets NODE_ENV=test and clears CI to prove the interception seam works) —
-// reused here, not a new heuristic, so that deliberate test usage never
-// triggers the warning below.
 function isTestOrCiContext() {
   return (
     process.env.CI === "true" ||
@@ -35,16 +21,6 @@ function isTestOrCiContext() {
   );
 }
 
-// Test-only interception seam: a real HTTP destination a test can point at,
-// so a spawned-child test (resolve.test.mjs) can prove track() never reaches
-// production rather than trusting DO_NOT_TRACK alone (a future call site or
-// test could forget to set that env var). Falls back to the real production
-// host whenever unset — production behavior is unchanged.
-//
-// Safety net: if this ever leaks into a real user's shell, track() would
-// silently redirect to a likely-dead host and postBatch()'s catch{} would
-// swallow the failure with zero signal. Surface one stderr warning outside
-// test/CI contexts so a real user gets some indication instead of silence.
 function posthogHost() {
   const override = process.env.MEDIA_USE_TELEMETRY_HOST;
   if (override && !warnedNonDefaultHost && !isTestOrCiContext()) {
@@ -67,12 +43,7 @@ export function optedOut() {
   );
 }
 
-// CLI + studio share one install identity in ~/.hyperframes/config.json
-// (packages/cli/src/telemetry/config.ts — same path, same `anonymousId` /
-// `telemetryNoticeShown` fields). Read and write that same file so media-use is
-// the same PostHog person and shows the notice once per person, not per tool.
-// Computed per call (not a module const) so it honors HOME at runtime — tests
-// sandbox HOME, and os.homedir() re-reads it each call.
+// Read and write the shared config so media-use keeps one identity per install.
 function sharedConfigPath() {
   return join(homedir(), ".hyperframes", "config.json");
 }

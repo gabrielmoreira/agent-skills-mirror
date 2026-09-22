@@ -26,10 +26,13 @@ skillshare mcp restore BACKUP_ID --no-tui            # Apply restoration; source
   need a name or backup ID when noninteractive.
 - Receiving clients use repeated `--target` (singular), not `--targets`. `--force` is
   unsupported and cannot bypass a conflict.
+- `--target none` (YAML `targets: []`) keeps a server in Skillshare and writes it to no
+  client; the next sync removes entries it had. Omitting `--target` inherits
+  `mcp.targets` instead, and fails when that is empty. Not valid with `--disabled`.
 - `add`, `edit`, `import` and `remove` save the source only. Add `--sync` to write the
   Agent files too. `sync --all` includes MCP along with skills, agents and extras.
-- Scripted `edit` accepts `--url`, repeated `--target`, `--pi-extension`, `--direct-tools`
-  or `-- command args`. Switching transport clears the fields of the other one.
+- Scripted `edit` accepts `--url`, repeated `--target`, `--pi-extension`, `--direct-tools`,
+  `--pi-options` or `-- command args`. Switching transport clears the fields of the other one.
 - Preview with `skillshare sync mcp --dry-run --json`, then apply with
   `skillshare sync mcp --revision <revision>` to reject a stale plan.
 - Noninteractive `import` without a name only lists candidates. Use `--replace` only
@@ -64,8 +67,8 @@ mcp:
 | `command`, `args`, `env` | Local stdio server. `env` values are strings or `{fromEnv: VARIABLE}` |
 | `url`, `headers`, `bearerToken` | Streamable HTTP server. `bearerToken` is `{fromEnv: VARIABLE}` and cannot coexist with an Authorization header |
 | `transport` | Optional `stdio` or `streamable-http`; inferred when omitted. Legacy SSE is not supported |
-| `targets` | Receiving clients for this server |
-| `piExtension`, `directTools` | Pi only. See [Pi](#pi) |
+| `targets` | Receiving clients for this server. `[]` keeps it in Skillshare only |
+| `piExtension`, `directTools`, `piOptions` | Pi only. See [Pi](#pi) |
 | `disabled` | `true` only, no connection fields, and a project must be in scope: project mode, or a root under `mcp.projects`. See [Turn off a global server in one project](#turn-off-a-global-server-in-one-project) |
 
 Client IDs: `claude`, `codex`, `cursor`, `vscode`, `opencode`, `kilocode`, `grok`,
@@ -148,9 +151,10 @@ setups usually go wrong.
 - Entries are written in OpenCode's own shape: `local` / `remote` types under `mcp`,
   and `{env:VARIABLE}` for `fromEnv`. Write the portable form in the source; Skillshare
   converts it.
-- An existing `opencode.jsonc` is used instead of creating `opencode.json`. If both
-  exist in the same directory, sync stops; the user consolidates them first. Comments
-  and unrelated settings are preserved.
+- An existing `opencode.jsonc` is used instead of creating `opencode.json`. A project
+  file kept in `.opencode/` is reused too; a new one goes in the project root. If more
+  than one exists, sync stops; the user consolidates them first. Comments and unrelated
+  settings are preserved.
 - `OPENCODE_CONFIG`, `OPENCODE_CONFIG_DIR`, inline config and ancestor-directory files
   are not managed and may override what Skillshare wrote.
 - `--disabled` writes `{"enabled": false}` for the named server in the project file.
@@ -207,6 +211,21 @@ skillshare mcp edit context7 --direct-tools resolve-library-id,get-library-docs 
   `piExtension: pi-mcp-adapter`.
 - `import --from pi` keeps an entry's `directTools` and selects `pi-mcp-adapter` for it.
 
+`piOptions` (adapter only) holds adapter fields Skillshare has no setting for, such as
+`excludeTools` or `approveTools`. They are written into Pi's entry as given.
+
+```bash
+skillshare mcp edit github --pi-options '{"excludeTools":["*emulator*"]}' --no-tui
+```
+
+- The flag takes a JSON object and replaces the whole of `piOptions`; `{}` clears it.
+- Field names and values are not checked. Fields Skillshare writes itself (`command`,
+  `args`, `env`, `url`, `headers`, `transport`, `enabled`, `disabled`, `directTools`)
+  are an error.
+- Values are literal: no `fromEnv`, so keep credentials out.
+- A field removed from `piOptions` stays in Pi's file, and import does not read these
+  fields back.
+
 ## Turn off a global server in one project
 
 Needs a project in scope: `-p`, a folder with `.skillshare/config.yaml`, or a root under
@@ -228,8 +247,10 @@ skillshare mcp add NAME --disabled --target pi --pi-extension pi-mcp-adapter -p 
 skillshare sync mcp -p
 ```
 
-- `--disabled` cannot be combined with `--url` or `-- command`. List `--target`
-  explicitly: an inherited `mcp.targets` containing an unsupported client is an error.
+- `--disabled` cannot be combined with `--url` or `-- command`. Without `--target` the
+  entry follows the project's targets: each sync sends it to the clients that have a
+  switch (under `mcp.projects`, also only those the global server of that name goes to).
+  With `--target`, an unsupported client is an error.
 - `piExtension` is only read for Pi, so one entry can cover `[opencode, kilocode, pi]`.
 - Claude's off list is per machine and keyed by the project's absolute path. Each
   teammate syncs once in their own checkout, and a moved project needs a new sync. A

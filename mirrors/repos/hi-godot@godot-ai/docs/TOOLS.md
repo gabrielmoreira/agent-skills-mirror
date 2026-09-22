@@ -26,7 +26,7 @@ not the MCP tool names.
 | `batch_execute` | Run multiple plugin commands atomically (rollback on first error) |
 | `node_create` / `node_set_property` / `node_find` | Common node writes + search |
 | `scene_open` / `scene_save` | Open and save scenes |
-| `script_create` / `script_attach` / `script_patch` | Create, attach, anchor-edit GDScript files |
+| `script_create` / `script_attach` / `script_patch` | Create, attach, anchor-edit script files (GDScript validated; C# text-only, see [C# support](#c-support)) |
 | `project_run` | Play the project, then wait briefly for game liveness (autosave persists in-memory MCP edits unless `autosave=False`) |
 | `test_run` | Run GDScript test suites in the editor — see [testing.md](testing.md) for writing suites and the `McpTestSuite` API |
 | `logs_read` | Read plugin / game / editor / combined log buffers. `source="editor"` surfaces parse errors, GDScript reload warnings, @tool/EditorPlugin runtime errors, push_error/push_warning, and visible Debugger dock Errors-tab rows — use this when the editor's Output or Debugger Errors panel shows red/yellow rows |
@@ -173,6 +173,41 @@ field is the reliable error channel for MCP-written code: the parse failure
 may never ring the `new_errors_since_last_call` doorbell (see "Headless
 sessions" above, #766).
 
+### C# support
+
+GDScript (`.gd`) is the full contract above. C# (`.cs`) is **text-only**
+(#908): the plugin writes, reads, patches and outlines `.cs` files, but it
+never compiles .NET, so nothing on this surface reports a C# compiler error.
+
+- `script_create` and `script_patch` accept `.cs`. The response carries
+  `language: "csharp"`, an empty `diagnostics` array with
+  `diagnostics_status: "not_checked"` (never `"checked"`), a
+  `validation_hint` telling the caller to build, and `dotnet_editor`
+  (whether the connected editor build has .NET at all). Overwrites and
+  patches report `reloaded: false, reload_reason: "csharp_requires_build"`
+  — C# only picks up new source when the assembly is rebuilt.
+- To see compiler errors, use the editor **Build** button and inspect its
+  Build panel, or run `dotnet build` and inspect the terminal output.
+  `logs_read` can surface engine runtime/load errors; it does not capture
+  the .NET build output.
+- On a non-.NET editor build a `.cs` is not a resource: `script_create`
+  replies synchronously (no import-settle wait), `cleanup.rm` lists only the
+  `.cs` (no `.uid` sidecar), and `script_attach` returns
+  `VALUE_OUT_OF_RANGE` naming the missing .NET support instead of a generic
+  "Script not found". Overwriting also reports `import_settled: false` and
+  `import_settle: "not_waited"` on a non-.NET build. On a .NET build, resource
+  recognition does not verify compilation; build before expecting executable
+  behavior from an attached script.
+- `script_manage(op="find_symbols")` outlines a `.cs` from a line scan:
+  the first `class` and its base type, methods, `[Signal]` delegates (the
+  Godot `EventHandler` suffix is dropped) and `[Export]` members. Response
+  `language` says which parser ran.
+- Any other extension is still rejected; `filesystem_manage(op="write_text")`
+  handles arbitrary text files.
+
+A .NET build/diagnostics channel is tracked separately from this text-only
+contract.
+
 ## Domain rollups (`<domain>_manage`)
 
 Each rollup is a single MCP tool dispatched by `op` name + `params` dict.
@@ -196,13 +231,13 @@ Calls take the form:
 |------|-----|
 | `scene_manage` | `create`, `save_as`, `get_roots` |
 | `node_manage` | `get_children`, `get_groups`, `delete`, `duplicate`, `rename`, `move`, `reparent`, `add_to_group`, `remove_from_group` |
-| `script_manage` | `read`, `detach`, `find_symbols` |
+| `script_manage` | `read`, `detach`, `find_symbols` (`.gd` and `.cs`) |
 | `project_manage` | `stop`, `settings_get`, `settings_set`, `set_main_scene` |
 | `editor_manage` | `state`, `selection_get`, `selection_set`, `monitors_get`, `quit`, `logs_clear`, `game_eval` |
 | `session_manage` | `list` |
 | `test_manage` | `results_get` |
 | `animation_manage` | `player_create`, `delete`, `validate`, `add_property_track`, `add_method_track`, `set_autoplay`, `play`, `stop`, `list`, `get`, `create_simple`, `preset_fade`, `preset_slide`, `preset_shake`, `preset_pulse` |
-| `material_manage` | `create`, `set_param`, `set_shader_param`, `get`, `list`, `assign`, `apply_to_node`, `apply_preset` |
+| `material_manage` | `create`, `set_param`, `set_shader_param`, `get`, `list`, `assign`, `apply_to_node`, `apply_preset`, `visual_shader_create_graph`, `visual_shader_get`, `visual_shader_node_catalog`, `visual_shader_edit`, `shader_create`, `shader_get`, `shader_validate`, `shader_patch` |
 | `audio_manage` | `player_create`, `player_set_stream`, `player_set_playback`, `play`, `stop`, `list` |
 | `particle_manage` | `create`, `set_main`, `set_process`, `set_draw_pass`, `restart`, `get`, `apply_preset` |
 | `camera_manage` | `create`, `configure`, `set_limits_2d`, `set_damping_2d`, `follow_2d`, `get`, `list`, `apply_preset` |
@@ -210,17 +245,24 @@ Calls take the form:
 | `input_map_manage` | `list`, `add_action`, `ensure_action`, `remove_action`, `bind_event`, `ensure_binding` |
 | `game_manage` | `get_scene_tree`, `get_node_info`, `get_ui_elements`, `suspend`, `resume`, `next_frame`, `debug_status`, `input_key`, `input_mouse`, `input_gamepad`, `input_action`, `input_sequence`, `input_state` |
 | `autoload_manage` | `list`, `add`, `remove` |
-| `filesystem_manage` | `read_text`, `write_text`, `reimport`, `scan`, `search` |
-| `theme_manage` | `create`, `set_color`, `set_constant`, `set_font_size`, `set_stylebox_flat`, `apply` |
-| `ui_manage` | `set_anchor_preset`, `set_text`, `build_layout`, `draw_recipe` |
-| `resource_manage` | `search`, `load`, `assign`, `get_info`, `create`, `curve_set_points`, `environment_create`, `physics_shape_autofit`, `physics_shape_generate`, `gradient_texture_create`, `noise_texture_create` |
+| `filesystem_manage` | `read_text`, `write_text`, `reimport`, `scan`, `search`, `move`, `rename`, `remove` |
+| `theme_manage` | `create`, `set_color`, `set_constant`, `set_font_size`, `set_stylebox_flat`, `set_stylebox_texture`, `set_font`, `set_icon`, `stylebox_override`, `apply` |
+| `ui_manage` | `set_anchor_preset`, `set_text`, `set_richtext`, `build_layout`, `draw_recipe` |
+| `resource_manage` | `search`, `load`, `inspect`, `assign`, `get_info`, `create`, `curve_set_points`, `environment_create`, `physics_shape_autofit`, `physics_shape_generate`, `gradient_texture_create`, `noise_texture_create` |
 | `api_manage` | `get_class` |
 | `client_manage` | `status`, `configure`, `remove` |
 | `tilemap_manage` | `tilemap_set_cell`, `tilemap_set_cells_rect`, `tilemap_clear`, `tilemap_get_cells` |
 | `tileset_manage` | `tileset_get_atlas_tiles`, `tileset_get_atlas_image` |
 | `gridmap_manage` | `gridmap_set_item`, `gridmap_fill`, `gridmap_clear`, `gridmap_get_used_cells`, `gridmap_list_library_items` |
+| `navigation_manage` | `bake`, `path_get` |
 | `csg_manage` | `csg_create`, `csg_set_operation` |
 | `custom_manage` | `list`, `invoke` |
+
+`resource_manage(op="physics_shape_generate")` keeps `shape_type="box"` as its default.
+Explicit `shape_type="auto"` chooses box, sphere, capsule or cylinder for the corresponding
+BoxMesh, SphereMesh, CapsuleMesh or CylinderMesh; all other meshes use box bounds.
+These are bounding fits, including tapered cylinders. Each created item reports its
+resolved `shape_type`. Existing scale, ownership and undo rules still apply.
 
 Third-party addons register custom tools in-editor (see
 `docs/plugin-architecture.md` → "Custom Tools"). All enabled custom tools are
@@ -230,11 +272,41 @@ schema (capped; overflow stays behind `custom_manage`). The dock's Tools tab
 lists registered custom tools with per-tool enable/disable that applies
 immediately.
 
+Composed motion effects that are not built-in presets — bounce, orbit, sweep,
+drift — are documented as keyframe recipes in
+[animation-recipes.md](animation-recipes.md), including a custom-tool addon
+example for wrapping project-specific recipes.
+
 `filesystem_manage.reimport` is intended for imported assets such as textures,
 models, and audio. Godot scripts (`.gd`) are not imported resources: a successful
 `.gd` entry only refreshes its editor filesystem cache entry and does not prove the
 script was parsed or diagnostics were produced. Use `script_patch` or
 `script_create` to save scripts and receive fresh diagnostics.
+
+`filesystem_manage(op="move"|"rename"|"remove")` performs bounded,
+fail-closed resource-group mutations. Moves carry `.uid`/`.import` sidecars and
+preserve verified UID references; they refuse literal-path dependencies,
+project-setting references, affected open scene tabs and missing destination
+parents. Automatic dependency rewriting is not supported. Discovery includes
+literal relative, `res://` and `uid://` references in .gd, .cs, .gdshader, .gdshaderinc, .tscn and .tres owners. Binary
+ownership, unreadable/oversized inputs and linked paths are refused, including
+when `force=true`; computed runtime paths are outside static owner discovery.
+Engine metadata, VCS internals and the loaded plugin implementation are excluded.
+
+Remove defaults to OS trash. `force=true` permits known dangling references,
+not unknown ownership. `permanent=true` supports files only; permanent directory
+removal is refused. None of these operations participates in editor undo.
+Call directly rather than through `batch_execute`. Directory mutations return
+`scan_required=true`; follow with `filesystem_manage(op="scan")` to refresh the
+editor tree. Discovery yields between bounded work units and refuses operations
+exceeding 10,000 project entries, 256 affected resources, 256 KiB per inspected file
+or 64 MiB of inspected bytes, including revalidation.
+
+Required fixups never fail silently: errors include `data.outcome` (`unchanged`,
+`rolled_back` or `partial`) and actual affected/unrestored paths. A partial result
+has `retry_safe=false`; inspect it before taking further action. File and sidecar
+moves attempt rollback on failure, but multi-file disk operations and separate
+OS trash calls are not claimed to be atomic against crashes or external writers.
 
 `api_manage(op="get_class")` inspects Godot API/ClassDB metadata for a class
 without creating an instance. By default it returns **only `properties`**
@@ -324,6 +396,8 @@ don't, and the only path that supports `session_id` pinning.
 | `godot://project/info` | Active project metadata |
 | `godot://project/settings` | Common project settings subset |
 | `godot://materials` | All Material resources under res:// |
+| `godot://visual_shader/{path}` | VisualShader graph: stages, nodes, params, connections, varyings |
+| `godot://shader/{path}` | Raw `.gdshader` / `.gdshaderinc` source + parsed metadata |
 | `godot://input_map` | Project input actions and their bound events |
 | `godot://performance` | Performance singleton snapshot |
 | `godot://test/results` | Most recent `test_run` results |
@@ -334,3 +408,53 @@ don't, and the only path that supports `session_id` pinning.
 preloaded GDScript dependencies can remain stale after edits in the same
 editor. Restart the editor before validating dependency changes; see the
 [freshness contract](tool-surface.md#test-run-freshness-after-dependency-edits).
+
+### Inspect a live native resource
+
+`resource_manage(op="inspect", params={"node_path":"/Main/Collider","property":"shape","depth":2})`
+reads a Resource already assigned to a native node property. It does not load,
+save, duplicate, or mutate resources. Existing node reads and `load` keep their
+current response shapes. `session_id` remains a top-level rollup parameter.
+
+The result has `root`, an ordered `resources` list, and `truncations`. Resource
+values use response-local `ref` identifiers; repeated identities share a record.
+Each record has `id`, `type`, `path`, and `properties`. Arrays are lists; dictionary
+values use an `entries` list of key/value pairs so bounded keys cannot collide.
+
+Supported native families are Shape2D/3D, Mesh, Material, PhysicsMaterial,
+StyleBox, Gradient, Curve/Curve2D/Curve3D, GradientTexture1D/2D, CurveTexture, and
+CurveXYZTexture. Scripted or unsupported roots are refused. Nested scripted or
+unsupported resources retain a bounded type/path summary and an omission reason.
+Only native editor-visible properties are read; script and dynamic getters are
+excluded. Native engine getter execution time is not bounded by this operation.
+
+Resource depth is 0 through 3, with the root at depth 0. Fixed upper limits are
+32 resource records, 64 properties per resource, 64 entries per collection,
+512 visited values, and 8 nested containers. Strings and keys are limited to
+256 characters and 1,024 encoded JSON bytes. Up to 32 truncation records explain
+omissions; repeated truncations may collapse to `truncation_limit`. A conservative
+construction budget can stop traversal sooner. The complete encoded operation
+result is capped at 64 KiB, including graph and truncation metadata. This is not
+a cap on the surrounding MCP wire frame. A result that cannot fit is refused
+with an explicit size error; reducing depth can make the request fit.
+
+### Refresh generated physics shapes
+
+`resource_manage(op="physics_shape_generate", params={"paths":["/Main/Mesh"],"overwrite":true})`
+refreshes the shape and collision transform of a collider generated with provenance
+markers by this version. It preserves the body and collision node identities, body
+settings, scripts and other children. Body type and wrapping options must match the
+existing layout. The default remains refusal when a collider already exists.
+
+Unmarked legacy colliders, stale links, and topology changes are refused. The
+markers are typed relative NodePaths saved with the scene; renaming or moving a
+node can invalidate a link. A refreshed collider receives a new Shape3D, leaving
+shared old resources untouched; undo restores the exact old resource and transform.
+Convex/trimesh vertices are fitted in the existing body coordinate system, including
+rotation, translation and mirrored winding. Existing hull budgets and scale guards
+still apply. Mixed creation and refresh requests prepare resources across frames,
+revalidate against intervening edits, then commit one undo action. Each returned
+`created` item includes `operation` (`create` or `refresh`).
+
+The 4 ms budget applies to cooperative preparation. Final validation and the
+atomic undo action cannot yield; a maximum-size batch can exceed that budget.

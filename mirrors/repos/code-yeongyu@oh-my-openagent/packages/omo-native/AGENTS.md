@@ -2,7 +2,7 @@
 
 **Role:** Adapter - distribution package for the senpi-based omo native edition.
 
-Publishes npm package `omo-ai` (bin `omo`) on the BETA channel only. The launcher in `bin/` spawns the
+Publishes npm package `omo-ai` (bin `omo`) on the BETA channel only. The launcher in `bin/` runs the
 exact-pinned `@code-yeongyu/senpi` CLI with `--extension <pkgRoot>/plugin`, where `plugin/` is the staged
 omo-senpi plugin payload produced by `bun run build:omo-native` (gitignored, never committed).
 
@@ -23,11 +23,11 @@ omo-senpi plugin payload produced by `bun run build:omo-native` (gitignored, nev
     bun-global install trusts the bun that installed it, every other install (npm, project-local,
     bunx) probes the discovered bun once per node boot and hands over when it is >= `BUN_MIN_VERSION`
     (1.4.0); `OMO_RUNTIME=node` always stays on node, `OMO_RUNTIME=bun` always re-execs (no floor).
-    Both spawn layers are ASYNC on purpose: `spawnSync` blocks the event loop, so a signaled launcher
-    dies before any handler runs and orphans the engine. `runChild` forwards `SIGTERM`/`SIGHUP` to the
-    child, waits out a bounded grace window (`OMO_SIGNAL_GRACE_MS`, default 10s) and re-raises the
-    signal on itself if the child ignores it; `SIGINT` is never forwarded (the tty already delivers it
-    to the whole foreground process group) but is still waited out. Never reintroduce `spawnSync` here.
+    POSIX handoffs use `execve` with argv[0], preserving the PID, args and environment without a
+    resident wrapper. Windows, missing execve and thrown execve retain async `runChild`; daemon
+    attach also stays spawn-based. The fallback forwards `SIGTERM`/`SIGHUP`, waits up to
+    `OMO_SIGNAL_GRACE_MS` (default 10s), then re-raises an ignored signal. It waits for `SIGINT`
+    without forwarding it twice. Never use `spawnSync` for these long-lived handoffs.
   - `bun-bin-shim.js` — `ensureBunBinShim`: keeps the user-facing bun-global bin an sh shim that
     execs bun directly (POSIX only, self-healing across `bun add -g` updates, fail-open)
   - `doctor.js` — diagnostics plus stale-orphan detection: `classifyEngineProcesses` splits live

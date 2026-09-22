@@ -118,7 +118,7 @@ TOOLS=(
   "frida-ps|reverse-engineering|Frida process listing|frida-ps|frida-ps --version|$HOME/.local/bin/frida-ps"
   "r2|radare2|radare2 CLI analysis|r2|r2 -v|"
   "rabin2|radare2|Binary metadata extraction|rabin2|rabin2 -v|"
-  "ghidra|reverse-engineering|Ghidra reverse-engineering suite|ghidraRun|ghidraRun --version|$HOME/tools/ghidra/ghidraRun;/Applications/Ghidra.app"
+  "ghidra|reverse-engineering|Ghidra reverse-engineering suite|ghidraRun,analyzeHeadless,ghidra-analyzeHeadless,ghidra|ghidraRun --version|$HOME/tools/ghidra/ghidraRun;/opt/ghidra/ghidraRun;/usr/share/ghidra/ghidraRun;/opt/ghidra/support/analyzeHeadless;/usr/share/ghidra/support/analyzeHeadless;/Applications/Ghidra.app"
   "idapro|ida-reverse|IDA Pro commercial reverse-engineering suite|idat|idat -v|/opt/idapro/idat;/Applications/IDA Professional.app;/Applications/IDA Free.app"
   "burpsuite|burp-mcp|BurpSuite desktop application|burpsuite|burpsuite --version|/Applications/Burp Suite Professional.app;/Applications/Burp Suite Community Edition.app"
   "graphviz|diagram-generator|Graphviz diagram rendering|dot|dot -V|"

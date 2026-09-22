@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `QwenLM/qwen-code` — 26 default patterns, 8 followed patterns, 124 file(s) materialized.
+Mirror of `QwenLM/qwen-code` — 26 default patterns, 8 followed patterns, 125 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `QwenLM/qwen-code` — 26 default patterns, 8 followed patterns, 124 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 8 |
-| Files         | 124 |
+| Files         | 125 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -176,20 +176,21 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 108 | ✓ | [`packages/node-repl/README.md`](packages/node-repl/README.md) |
 | 109 | ✓ | [`packages/qwen-live/README.md`](packages/qwen-live/README.md) |
 | 110 | ✓ | [`packages/sdk-java/client/README.md`](packages/sdk-java/client/README.md) |
-| 111 | ✓ | [`packages/sdk-typescript/src/daemon-mcp/serve-bridge/README.md`](packages/sdk-typescript/src/daemon-mcp/serve-bridge/README.md) |
-| 112 | ✓ | [`packages/vscode-ide-companion/README.md`](packages/vscode-ide-companion/README.md) |
-| 113 | ✓ | [`packages/web-shell/README.md`](packages/web-shell/README.md) |
-| 114 | ✓ | [`packages/zed-extension/README.md`](packages/zed-extension/README.md) |
-| 115 | ✓ | [`scripts/sandbox-runtime/README.md`](scripts/sandbox-runtime/README.md) |
-| 116 | ✓ | [`scripts/tui-parity/README.md`](scripts/tui-parity/README.md) |
-| 117 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 118 | → | [`docs/design/README.md`](docs/design/README.md) |
-| 119 | → | [`docs/developers/development/integration-tests.md`](docs/developers/development/integration-tests.md) |
-| 120 | → | [`docs/users/support/tos-privacy.md`](docs/users/support/tos-privacy.md) |
-| 121 | → | [`packages/sdk-java/qwencode/README.md`](packages/sdk-java/qwencode/README.md) |
-| 122 | → | [`packages/sdk-python/README.md`](packages/sdk-python/README.md) |
-| 123 | → | [`packages/sdk-typescript/README.md`](packages/sdk-typescript/README.md) |
-| 124 | → | [`README.md`](README.md) |
+| 111 | ✓ | [`packages/sdk-java/runtime-broker/README.md`](packages/sdk-java/runtime-broker/README.md) |
+| 112 | ✓ | [`packages/sdk-typescript/src/daemon-mcp/serve-bridge/README.md`](packages/sdk-typescript/src/daemon-mcp/serve-bridge/README.md) |
+| 113 | ✓ | [`packages/vscode-ide-companion/README.md`](packages/vscode-ide-companion/README.md) |
+| 114 | ✓ | [`packages/web-shell/README.md`](packages/web-shell/README.md) |
+| 115 | ✓ | [`packages/zed-extension/README.md`](packages/zed-extension/README.md) |
+| 116 | ✓ | [`scripts/sandbox-runtime/README.md`](scripts/sandbox-runtime/README.md) |
+| 117 | ✓ | [`scripts/tui-parity/README.md`](scripts/tui-parity/README.md) |
+| 118 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 119 | → | [`docs/design/README.md`](docs/design/README.md) |
+| 120 | → | [`docs/developers/development/integration-tests.md`](docs/developers/development/integration-tests.md) |
+| 121 | → | [`docs/users/support/tos-privacy.md`](docs/users/support/tos-privacy.md) |
+| 122 | → | [`packages/sdk-java/qwencode/README.md`](packages/sdk-java/qwencode/README.md) |
+| 123 | → | [`packages/sdk-python/README.md`](packages/sdk-python/README.md) |
+| 124 | → | [`packages/sdk-typescript/README.md`](packages/sdk-typescript/README.md) |
+| 125 | → | [`README.md`](README.md) |
 
 ---
 

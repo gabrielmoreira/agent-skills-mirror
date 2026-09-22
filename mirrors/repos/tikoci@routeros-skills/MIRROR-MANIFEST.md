@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `tikoci/routeros-skills` — 26 default patterns, 0 followed patterns, 15 file(s) materialized.
+Mirror of `tikoci/routeros-skills` — 26 default patterns, 0 followed patterns, 16 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `tikoci/routeros-skills` — 26 default patterns, 0 followed patterns,
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 15 |
+| Files         | 16 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -70,10 +70,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 9 | ✓ | [`routeros-mndp/SKILL.md`](routeros-mndp/SKILL.md) |
 | 10 | ✓ | [`routeros-netinstall/SKILL.md`](routeros-netinstall/SKILL.md) |
 | 11 | ✓ | [`routeros-qemu-chr/SKILL.md`](routeros-qemu-chr/SKILL.md) |
-| 12 | ✓ | [`routeros-quickchr/SKILL.md`](routeros-quickchr/SKILL.md) |
-| 13 | ✓ | [`routeros-scripting/SKILL.md`](routeros-scripting/SKILL.md) |
-| 14 | ✓ | [`routeros-sniffer/SKILL.md`](routeros-sniffer/SKILL.md) |
-| 15 | ✓ | [`routeros-syntax-inspection/SKILL.md`](routeros-syntax-inspection/SKILL.md) |
+| 12 | ✓ | [`routeros-quickchr-cli/SKILL.md`](routeros-quickchr-cli/SKILL.md) |
+| 13 | ✓ | [`routeros-quickchr/SKILL.md`](routeros-quickchr/SKILL.md) |
+| 14 | ✓ | [`routeros-scripting/SKILL.md`](routeros-scripting/SKILL.md) |
+| 15 | ✓ | [`routeros-sniffer/SKILL.md`](routeros-sniffer/SKILL.md) |
+| 16 | ✓ | [`routeros-syntax-inspection/SKILL.md`](routeros-syntax-inspection/SKILL.md) |
 
 ---
 

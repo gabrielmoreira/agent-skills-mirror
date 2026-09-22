@@ -1,15 +1,6 @@
 import { wordListsFromMediaMeta } from "./words.mjs";
 
-/**
- * Speech spans from word timestamps.
- *
- * audio_meta.json word times are relative to EACH LINE'S OWN FILE, not to the
- * composition. Without placement info, multiple lines would overlap at t=0 and
- * merge into one bogus span. Placement options:
- *   offsets:    { [voiceId]: startSeconds } explicit composition placement
- *   sequential: stack lines back to back (plus `gap` seconds between lines)
- * A single word list (bare transcript) needs neither.
- */
+// audio_meta.json word times are relative to each line's own file.
 export function speechSpans(meta, { mergeGap = 0.6, offsets, sequential = false, gap = 0 } = {}) {
   const merge = Number(mergeGap);
   const lists = wordListsFromMediaMeta(meta);

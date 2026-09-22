@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `tobihagemann/turbo` — 26 default patterns, 11 followed patterns, 176 file(s) materialized.
+Mirror of `tobihagemann/turbo` — 26 default patterns, 12 followed patterns, 177 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `tobihagemann/turbo` — 26 default patterns, 11 followed patterns, 17
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 11 |
-| Files         | 176 |
+| Followed pats | 12 |
+| Files         | 177 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -55,12 +55,13 @@ Mirror of `tobihagemann/turbo` — 26 default patterns, 11 followed patterns, 17
 - `docs/workflows.md`
 - `codex/SKILL-CONVENTIONS.md`
 - `SKILL-CONVENTIONS.md`
+- `claude/SKILL-INDEX.md`
+- `codex/SKILL-INDEX.md`
+- `docs/requirements.md`
 - `claude/SETUP.md`
 - `codex/SETUP.md`
 - `docs/examples.md`
 - `docs/customization.md`
-- `claude/SKILL-INDEX.md`
-- `codex/SKILL-INDEX.md`
 - `claude/SKILL-CONVENTIONS.md`
 
 ## File Index
@@ -242,9 +243,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 171 | → | [`codex/SKILL-INDEX.md`](codex/SKILL-INDEX.md) |
 | 172 | → | [`docs/customization.md`](docs/customization.md) |
 | 173 | → | [`docs/examples.md`](docs/examples.md) |
-| 174 | → | [`docs/workflows.md`](docs/workflows.md) |
-| 175 | → | [`README.md`](README.md) |
-| 176 | → | [`SKILL-CONVENTIONS.md`](SKILL-CONVENTIONS.md) |
+| 174 | → | [`docs/requirements.md`](docs/requirements.md) |
+| 175 | → | [`docs/workflows.md`](docs/workflows.md) |
+| 176 | → | [`README.md`](README.md) |
+| 177 | → | [`SKILL-CONVENTIONS.md`](SKILL-CONVENTIONS.md) |
 
 ---
 

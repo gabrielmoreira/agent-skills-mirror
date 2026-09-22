@@ -1,6 +1,6 @@
 ---
 name: academic-paper
-description: "12-agent academic paper writing pipeline. 11 modes (full/plan/outline/revision/revision-coach/abstract/lit-review/format-convert/citation-check/disclosure/rebuttal-audit). 6 paper types, 5 citation formats, bilingual abstracts, LaTeX/DOCX-via-Pandoc/PDF output. Style Calibration + Writing Quality Check + Anti-Patterns with IRON RULE markers. Triggers: write paper, academic paper, guide my paper, parse reviews, I got reviewer comments, revision roadmap, should we push back, conference rebuttal, grant panel response, audit my rebuttal, check my response draft, AI disclosure, 寫論文, 學術論文, 引導我寫論文, 審查意見, 我收到審查意見, 修訂路線圖, 評估回覆, 논문 작성, 초록 작성, 논문 수정, 논문 계획을 도와줘, 심사 의견을 받았어, 심사 의견 반영, 답변서 점검, AI 사용 고지, enmendar mi artículo, redactar artículo, guía mi artículo, analizar reseñas, auditar mi respuesta, verificar borrador de respuesta, verificar citas, divulgación de IA."
+description: "12-agent academic paper writing pipeline. 11 modes (full/plan/outline/revision/revision-coach/abstract/lit-review/format-convert/citation-check/disclosure/rebuttal-audit). 6 paper types, 5 citation formats, bilingual abstracts, LaTeX/DOCX-via-Pandoc/PDF output. Style Calibration + Writing Quality Check + Anti-Patterns with IRON RULE markers. Triggers: write paper, academic paper, guide my paper, parse reviews, I got reviewer comments, revision roadmap, should we push back, conference rebuttal, grant panel response, audit my rebuttal, check my response draft, AI disclosure, check citations, citation check, check my references, verify references, look over the refs, 寫論文, 學術論文, 引導我寫論文, 審查意見, 我收到審查意見, 修訂路線圖, 評估回覆, 檢查引用, 引用檢查, 檢查參考文獻, 核對文獻, 논문 작성, 초록 작성, 논문 수정, 논문 계획을 도와줘, 심사 의견을 받았어, 심사 의견 반영, 답변서 점검, AI 사용 고지, 인용 확인, 인용 형식 검사, enmendar mi artículo, redactar artículo, guía mi artículo, analizar reseñas, auditar mi respuesta, verificar borrador de respuesta, verificar citas, divulgación de IA."
 metadata:
   version: "3.3.1"
   last_updated: "2026-08-15"
@@ -339,6 +339,16 @@ peer-review Schema 11.
 ### Mode Selection Logic
 
 > See `references/mode_selection_guide.md` for trigger-to-mode mappings and the full selection flowchart.
+
+---
+
+## Citation-Check Mode
+
+Before auditing, load `agents/citation_compliance_agent.md`. For APA 7 with
+Chinese citations, also read `references/apa7_chinese_citation_guide.md`; use
+its locale-specific abbreviation and ordering checks rather than applying
+the Latin-script alphabetical checklist to Chinese names. Preserve supplied
+venue overrides and the guide's disambiguation exceptions.
 
 ---
 

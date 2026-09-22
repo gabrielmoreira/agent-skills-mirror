@@ -28,12 +28,13 @@ skillshare sync --all
 
 | 选项 | 含义 |
 |---|---|
-| `--target CLIENT` | 接收方 client；重复此标志可选择多个 client |
+| `--target CLIENT` | 接收方 client；重复此标志可选择多个 client。`--target none` 会把 server 保留在 Skillshare 中，而不写入任何 client。参见[下文](#keep-a-server-without-syncing-it) |
 | `--url URL` | 用于 `add` 的 Streamable HTTP 端点 |
 | `-- command args...` | 用于 `add` 的本地可执行文件及其字面参数 |
 | `--disabled` | Project mode，配合 `add` 使用：关闭一个由 Agent 全局配置定义的 server。参见[下文](#turn-off-a-global-server-in-one-project) |
 | `--pi-extension PACKAGE` | target 包含 Pi 时必填，用于 `add`、`edit` 或 `import`：`pi-mcp-adapter` 或 `pi-mcp-extension`，填你在 Pi 里安装的那一个。参见[下文](#pi-choose-your-mcp-extension) |
 | `--direct-tools VALUE` | 配合 `pi-mcp-adapter` 使用的 Pi，用于 `add` 或 `edit`：`true`、`false`、`search`，或用逗号分隔的工具名称。参见[下文](#pi-direct-tools) |
+| `--pi-options JSON` | 配合 `pi-mcp-adapter` 使用的 Pi，用于 `add` 或 `edit`：以 JSON 对象传入 adapter 的其他字段；`{}` 会清空它们。参见[下文](#pi-options) |
 | `--from CLIENT` | 要导入的现有 client，或 `--file` 的格式 |
 | `--file PATH` | 原生 JSON/JSONC、TOML 或 Goose YAML；`.toml` 默认对应 Codex，其他格式会根据其 MCP 区块自动检测；如需明确指定方言请使用 `--from` |
 | `--sync` | 保存并同步；非交互式的 add/import/remove 默认仅保存 |
@@ -113,8 +114,9 @@ Skillshare 配置中。schema 是仓库中的 `schemas/mcp.schema.json`。
 | `headers` | HTTP header：字符串或 `{fromEnv: VARIABLE}` |
 | `bearerToken` | `{fromEnv: VARIABLE}`；不能与 Authorization header 共存 |
 | `transport` | 可选的 `stdio` 或 `streamable-http`；省略时会自动推断 |
-| `targets` | 可选的接收方 client；覆盖 `mcp.targets` |
+| `targets` | 可选的接收方 client；覆盖 `mcp.targets`。空列表会让该 server 只保留在 Skillshare 中。参见[下文](#keep-a-server-without-syncing-it) |
 | `directTools` | 仅限使用 `pi-mcp-adapter` 的 Pi：`true`、`false`、`"search"` 或工具名称列表。参见[下文](#pi-direct-tools) |
+| `piOptions` | 仅限使用 `pi-mcp-adapter` 的 Pi：adapter 的其他字段，会原样写入 Pi 中的条目。参见[下文](#pi-options) |
 | `disabled` | 仅限 `true`，不能有其他连接字段，且必须有 project 在作用范围内：project mode，或 `mcp.projects` 下的某个项目根目录。参见[下文](#turn-off-a-global-server-in-one-project) |
 
 Client ID 有 `claude`、`codex`、`cursor`、`vscode`、`opencode`、`kilocode`、
@@ -122,7 +124,39 @@ Client ID 有 `claude`、`codex`、`cursor`、`vscode`、`opencode`、`kilocode`
 `goose`、`junie`、`kiro`、`lmstudio`、`warp`、`windsurf` 和 `pi`。
 `grok` 指的是官方的 xAI Grok CLI。Server 名称使用字母、
 数字、点、下划线和连字符。一个 server 在同步之前，必须
-直接或通过 `mcp.targets` 选择至少一个 client。
+直接或通过 `mcp.targets` 选择至少一个 client，除非它自己的
+`targets` 是空列表。
+
+### 保留 server 但不同步 {#keep-a-server-without-syncing-it}
+
+带有 `targets: []` 的 server 会保留在 Skillshare source 中，不会被写入任何 client。
+可以用它把一个 server 从所有 client 中拿掉，同时保留它的定义以备日后使用。
+如果它之前同步过，下一次同步会从那些 client 中移除它的条目。
+
+```yaml
+mcp:
+  targets: [claude, codex]
+  servers:
+    docs:
+      url: https://example.com/mcp
+      targets: []
+```
+
+```bash
+skillshare mcp add docs --url https://example.com/mcp --target none
+skillshare mcp edit docs --target none
+skillshare mcp edit docs --target claude   # 把它加回来
+```
+
+- **不写 `targets` 则是另一回事。** 此时该 server 会继承 `mcp.targets`，如果
+  那个列表也是空的，它就会被拒绝。
+- `none` 不能与 client 一起使用。
+- 在终端的选择菜单中，不选择任何 client 直接确认。在仪表盘中，取消勾选
+  所有 client；该 server 会被标记为 **尚未选择 Agent**。
+- 对 project 的 server 以及 `mcp.projects` 下的 server，行为相同。
+- `disabled` 条目仍然需要至少一个 client，因为它必须在某个地方把该 server
+  关闭。
+- `mcp list` 会把这样的 server 显示为 `kept no targets`。
 
 对于 Grok，名称必须以字母或下划线开头，只能包含字母、
 数字、连字符和单个下划线，且不能以下划线结尾。
@@ -242,8 +276,10 @@ Antigravity 使用当前的[官方 MCP 配置](https://antigravity.google/docs/m
 受支持的 OAuth 登录。Skillshare 绝不会将引用展开为明文凭据。
 
 OpenCode 会为其 global 目录遵循 `XDG_CONFIG_HOME`。如果已存在
-`opencode.jsonc`，会使用它而不是创建 `opencode.json`；如果所选目录中
-两者都存在，请在同步之前先合并它们。自定义的 OpenCode 配置
+`opencode.jsonc`，会使用它而不是创建 `opencode.json`。在项目中，
+OpenCode 还会从 `.opencode/` 读取这两个文件名，因此如果文件放在那里，Skillshare 就会
+写入那个文件；新文件则会创建在项目根目录。如果存在多个
+文件，请在同步之前先合并它们。自定义的 OpenCode 配置
 路径、目录覆盖、内联配置以及继承的祖先文件不受管理。
 它们可能会在 OpenCode 中覆盖所选的目标位置。
 
@@ -374,8 +410,11 @@ mcp:
   在 global `mcp.servers` 中没有 project 在作用范围内，因此会被拒绝。
 - **`disabled` 必须单独存在。** 该条目可以带 `targets`，对 Pi 而言还可以带
   `piExtension`。添加 `command`、`url`、`env` 或 `headers` 会报错。
-- **应当列出 `targets`。** 如果不写，该条目会继承 `mcp.targets`，其中
-  任何不受支持的 client 都会报错。
+- **`targets` 可以省略。** 此时该条目会跟随项目的 targets：每次同步时，它都会写入
+  该项目所用且支持按项目开关的 client。在 `mcp.projects` 下，Skillshare 还知道
+  同名的 global server，因此范围会进一步缩小到该 server 写入的那些 client，并且 Pi 会
+  沿用该 global server 的 `piExtension`。之后更改项目的 targets 时，无需修改该条目。
+  如果想自行决定，请列出 `targets`；该列表中出现不受支持的 client 会报错。
 - **名称必须匹配。** Skillshare 不会读取 Agent 的 global 文件，因此
   无法检查该文件中是否确实存在这个名称的 server。如果名称什么都没匹配到也无妨：
   Agent 会忽略它。
@@ -469,9 +508,13 @@ mcp:
 
 - **添加项目** 需要填写文件夹和它的 targets。勾选 **MCP** 可以让该文件夹同时列在
   `mcp.projects` 下。
-- **MCP** 标签页列出每个 global server，并各带一个开关。关闭其中一个，会为
-  支持按项目开关的 Agent 保存一条 `disabled` 条目；重新打开则会
-  移除该条目。其下方是只存在于该项目中的 server。
+- **MCP** 标签页列出每个 global server，并各带一个开关。关闭其中一个，会保存一条
+  不带 `targets` 的 `disabled` 条目，因此它会如[上文](#turn-off-a-global-server-in-one-project)所述
+  跟随项目的 targets；重新打开则会移除该条目。其下方是只存在于该项目中的 server。
+- 已关闭的 server 会显示它在哪些 Agent 中被关闭的 logo。如果项目的某个 Agent 没有
+  按项目的开关，该行会说明这个 server 在那里仍会加载。如果某个条目列出了自己的
+  `targets`，且与项目的 targets 不同，就会出现 **改成与项目一致**：它会把该条目重新保存为
+  不带 `targets` 的形式。
 - **默认值** 位于 **MCP** 标签页底部，用于编辑 `mcp.targets` 和
   `mcp.directTools`。
 
@@ -516,9 +559,10 @@ mcp:
   移动项目之后，它就会保持无人管理状态：移除该 server 时它会原样保留，
   直到你导入它为止。一个不同的、无人管理的条目需要导入或显式的
   按条目替换；只要另一个 Skillshare 配置文件仍然存在，就不能覆盖它的
-  所有权。如果该文件被移动或删除，它就永远无法释放
-  该条目，因此需要显式的导入或替换才能接管它。冲突信息会指明
-  拥有该条目的文件。
+  所有权。如果该文件已经不在了，它就永远无法释放该条目，因此冲突会说明
+  这是一个残留条目，并指出是哪个文件，然后在你执行显式的导入或替换时
+  接管它；在终端中和在仪表盘的那条冲突上都可以这样做。只是读取不到的
+  文件，例如位于未挂载的磁盘上，仍然算作拥有者还在。
 - 仪表盘的 MCP 设置只有在浏览器通过 `localhost` 或 IP 地址打开
   仪表盘时才能工作。通过域名访问，包括反向
   代理，MCP 请求会返回 403，因为 DNS 重绑定攻击总是使用
@@ -655,3 +699,40 @@ mcp:
 仍不支持旧版 SSE。OAuth 和仅限软件包内的选项
 仍由 Pi 自身管理。同步成功只代表配置已被写入，并不代表
 某个 extension 已安装，或某个 server 已建立连接。
+
+### 其他 adapter 设置 {#pi-options}
+
+`pi-mcp-adapter` 的每个 server 字段比 Skillshare 提供的设置更多，例如
+`excludeTools` 和 `approveTools`。把它们放在 `piOptions` 下，它们会原样写入
+Pi 文件中该 server 的条目：
+
+```yaml
+mcp:
+  servers:
+    github:
+      command: npx
+      args: [-y, "@modelcontextprotocol/server-github"]
+      piExtension: pi-mcp-adapter
+      targets: [pi]
+      piOptions:
+        excludeTools: ["*emulator*"]
+        approveTools: ["delete_*", "merge_pull_request"]
+```
+
+在命令行中，可以将一个 JSON 对象传给 `mcp add` 或 `mcp edit`。它会替换整个
+`piOptions`，而 `{}` 会将其清空。仪表盘的 server 对话框中，**Direct tools**
+下方也有相同的输入框，保存前会检查内容是否为 JSON 对象。
+
+```bash
+skillshare mcp edit github --pi-options '{"excludeTools":["*emulator*"]}'
+```
+
+- Skillshare 不会检查字段名称或值。只有 adapter 才了解它们。
+- 由 Skillshare 自己写入的字段在这里会被拒绝：`command`、`args`、`env`、`url`、
+  `headers`、`transport`、`enabled`、`disabled` 和 `directTools`。
+- 这些值会按字面原样复制。凭据请通过 `fromEnv` 放在 `env` 或 `headers` 中，
+  不要放在这里。
+- 与 `directTools` 一样，从 `piOptions` 中移除的字段仍会留在 Pi 的文件中。请到
+  那里自行删除。
+- 它需要 `piExtension: pi-mcp-adapter`，并且不能与 `disabled` 同时使用。其他
+  Agent 都不会收到它，`import --from pi` 也不会读回这些字段。

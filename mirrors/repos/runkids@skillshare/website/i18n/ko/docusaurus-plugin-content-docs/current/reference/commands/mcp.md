@@ -28,12 +28,13 @@ skillshare sync --all
 
 | Option | Meaning |
 |---|---|
-| `--target CLIENT` | 수신 client; 여러 client를 선택하려면 반복 지정 |
+| `--target CLIENT` | 수신 client; 여러 client를 선택하려면 반복 지정. `--target none`은 서버를 어떤 client에도 쓰지 않고 Skillshare에만 유지합니다. [아래](#keep-a-server-without-syncing-it) 참고 |
 | `--url URL` | `add`용 Streamable HTTP 엔드포인트 |
 | `-- command args...` | `add`용 로컬 실행 파일과 리터럴 인자 |
 | `--disabled` | project mode에서 `add`와 함께 사용: Agent의 global 설정이 정의한 서버를 끕니다. [아래](#turn-off-a-global-server-in-one-project) 참고 |
 | `--pi-extension PACKAGE` | target에 Pi가 있으면 필수, `add`, `edit` 또는 `import`와 함께 사용: `pi-mcp-adapter` 또는 `pi-mcp-extension` 중 Pi에 설치한 것. [아래](#pi-choose-your-mcp-extension) 참고 |
 | `--direct-tools VALUE` | `pi-mcp-adapter`를 사용하는 Pi, `add` 또는 `edit`와 함께 사용: `true`, `false`, `search`, 또는 쉼표로 구분한 도구 이름. [아래](#pi-direct-tools) 참고 |
+| `--pi-options JSON` | `pi-mcp-adapter`를 사용하는 Pi, `add` 또는 `edit`와 함께 사용: 그 밖의 adapter 필드를 JSON 객체로 전달; `{}`는 이를 비웁니다. [아래](#pi-options) 참고 |
 | `--from CLIENT` | import할 기존 client, 또는 `--file`의 형식 |
 | `--file PATH` | 네이티브 JSON/JSONC, TOML 또는 Goose YAML; `.toml`은 기본적으로 Codex로 처리되며, 다른 형식은 MCP 섹션에서 감지됨; 명시적인 방언을 지정하려면 `--from` 사용 |
 | `--sync` | 저장 후 동기화; noninteractive add/import/remove는 그렇지 않으면 저장만 함 |
@@ -112,8 +113,9 @@ source가 한 번 저장되기 전에 검증되며, 이후의 네이티브 파�
 | `headers` | HTTP 헤더: 문자열 또는 `{fromEnv: VARIABLE}` |
 | `bearerToken` | `{fromEnv: VARIABLE}`; Authorization 헤더와 공존 불가 |
 | `transport` | 선택적으로 `stdio` 또는 `streamable-http`; 생략 시 추론됨 |
-| `targets` | 선택적 수신 client; `mcp.targets`를 재정의 |
+| `targets` | 선택적 수신 client; `mcp.targets`를 재정의. 빈 목록이면 서버를 Skillshare에만 유지합니다. [아래](#keep-a-server-without-syncing-it) 참고 |
 | `directTools` | `pi-mcp-adapter`를 사용하는 Pi 전용: `true`, `false`, `"search"` 또는 도구 이름 목록. [아래](#pi-direct-tools) 참고 |
+| `piOptions` | `pi-mcp-adapter`를 사용하는 Pi 전용: 그 밖의 adapter 필드로, Pi의 항목에 그대로 작성됩니다. [아래](#pi-options) 참고 |
 | `disabled` | `true`만 가능, 다른 연결 필드 불가, 그리고 project가 scope 안에 있어야 합니다: project mode이거나 `mcp.projects` 아래의 root. [아래](#turn-off-a-global-server-in-one-project) 참고 |
 
 Client ID는 `claude`, `codex`, `cursor`, `vscode`, `opencode`, `kilocode`,
@@ -121,7 +123,38 @@ Client ID는 `claude`, `codex`, `cursor`, `vscode`, `opencode`, `kilocode`,
 `goose`, `junie`, `kiro`, `lmstudio`, `warp`, `windsurf`, `pi`입니다.
 `grok`은 공식 xAI Grok CLI를 의미합니다. 서버 이름은 문자, 숫자, 점, 밑줄, 하이픈을
 사용합니다. 서버는 동기화 전에 직접 또는 `mcp.targets`를 통해 최소 하나의 client를
-선택해야 합니다.
+선택해야 합니다. 단, 서버 자체의 `targets`가 빈 목록인 경우는 예외입니다.
+
+### Keep a server without syncing it {#keep-a-server-without-syncing-it}
+
+`targets: []`인 서버는 Skillshare source에 남아 있으며 어떤 client에도 작성되지 않습니다.
+정의는 나중을 위해 유지하면서 서버를 모든 client에서 빼고 싶을 때 사용하세요.
+이전에 동기화된 적이 있다면, 다음 sync에서 해당 client의 항목이 제거됩니다.
+
+```yaml
+mcp:
+  targets: [claude, codex]
+  servers:
+    docs:
+      url: https://example.com/mcp
+      targets: []
+```
+
+```bash
+skillshare mcp add docs --url https://example.com/mcp --target none
+skillshare mcp edit docs --target none
+skillshare mcp edit docs --target claude   # 다시 되돌리기
+```
+
+- **`targets`를 생략하는 것은 다릅니다.** 그 경우 서버는 `mcp.targets`를 상속하며,
+  해당 목록도 비어 있으면 거부됩니다.
+- `none`은 client와 함께 지정할 수 없습니다.
+- 터미널 선택 메뉴에서는 client를 선택하지 않은 채로 확인하세요. 대시보드에서는 모든
+  client의 체크를 해제하세요. 서버에 **아직 Agent 없음** 태그가 붙습니다.
+- project의 서버와 `mcp.projects` 아래의 서버에도 동일하게 동작합니다.
+- `disabled` 항목은 어딘가에서 서버를 꺼야 하므로 여전히 최소 하나의 client가
+  필요합니다.
+- `mcp list`는 이러한 서버를 `kept no targets`로 표시합니다.
 
 Grok의 경우, 이름은 문자나 밑줄로 시작해야 하고, 문자·숫자·하이픈·단일 밑줄만 포함할
 수 있으며, 밑줄로 끝날 수 없습니다. `company-docs`와 같은 이름은 지원되는 모든
@@ -239,8 +272,10 @@ Antigravity의 `fromEnv`와 `bearerToken` export는 문서화된 구성에 환�
 참조를 평문 자격 증명으로 확장하지 않습니다.
 
 OpenCode는 global 디렉터리에 대해 `XDG_CONFIG_HOME`을 존중합니다. 기존
-`opencode.jsonc`는 `opencode.json`을 생성하는 대신 사용됩니다. 선택한 디렉터리에
-둘 다 존재하면 동기화 전에 통합하세요. 사용자 지정 OpenCode 구성 경로, 디렉터리
+`opencode.jsonc`는 `opencode.json`을 생성하는 대신 사용됩니다. 프로젝트에서는
+OpenCode가 `.opencode/`에서도 두 이름을 모두 읽으므로, 그곳에 둔 파일이 있으면
+Skillshare는 그 파일에 쓰며, 새 파일은 프로젝트 루트에 생성됩니다. 둘 이상
+존재하면 동기화 전에 통합하세요. 사용자 지정 OpenCode 구성 경로, 디렉터리
 오버라이드, 인라인 구성, 상속된 상위 파일은 관리되지 않습니다. 이들은 OpenCode에서
 선택한 대상을 재정의할 수 있습니다.
 
@@ -374,8 +409,13 @@ mcp:
   root 아래에 두세요. project가 scope에 없는 global `mcp.servers`에서는 거부됩니다.
 - **`disabled`는 단독으로 사용됩니다.** 항목은 `targets`와, Pi의 경우
   `piExtension`을 받습니다. `command`, `url`, `env`, `headers`를 추가하면 오류입니다.
-- **`targets`는 명시하는 것이 좋습니다.** 명시하지 않으면 항목은 `mcp.targets`를
-  상속하며, 해당 목록에 지원되지 않는 client가 있으면 오류입니다.
+- **`targets`는 생략할 수 있습니다.** 그러면 항목은 프로젝트의 target을
+  따릅니다: sync할 때마다 프로젝트가 사용하는 client 중 프로젝트별 스위치가 있는
+  client에 작성됩니다. Skillshare가 같은 이름의 global 서버도 알고 있는
+  `mcp.projects` 아래에서는 그 서버가 작성되는 client로 더 좁혀지며, Pi는 global
+  서버의 `piExtension`을 사용합니다. 나중에 프로젝트의 target을 변경해도 항목을
+  수정할 필요가 없습니다. 직접 정하려면 `targets`를 명시하세요. 그 목록에 지원되지
+  않는 client가 있으면 오류입니다.
 - **이름이 일치해야 합니다.** Skillshare는 Agent의 global 파일을 읽지 않으므로,
   이 이름의 서버가 그곳에 존재하는지 확인할 수 없습니다. 아무것도 일치하지 않는
   이름은 문제가 되지 않습니다: Agent가 이를 무시할 뿐입니다.
@@ -469,8 +509,14 @@ Global mode에서는 대시보드에 **프로젝트** 페이지가 있습니다.
 - **프로젝트 추가**는 폴더와 그 target을 받습니다. **MCP**를 체크하면 해당 폴더가
   `mcp.projects` 아래에도 나열됩니다.
 - **MCP** 탭은 모든 global 서버를 스위치와 함께 나열합니다. 하나를 끄면
-  프로젝트별 스위치가 있는 Agent에 대해 `disabled` 항목이 저장되고, 다시 켜면 그
-  항목이 제거됩니다. 그 아래에는 해당 프로젝트에만 존재하는 서버가 있습니다.
+  `targets` 없이 `disabled` 항목이 저장되므로,
+  [위](#turn-off-a-global-server-in-one-project)에서 설명한 대로 프로젝트의
+  target을 따릅니다. 다시 켜면 그 항목이 제거됩니다. 그 아래에는 해당
+  프로젝트에만 존재하는 서버가 있습니다.
+- 꺼져 있는 서버는 꺼져 있는 Agent의 로고를 표시합니다. 프로젝트의 Agent 중 하나에
+  프로젝트별 스위치가 없으면, 해당 행은 그 Agent에서는 서버가 여전히 로드된다고
+  알려줍니다. 프로젝트의 target과 다른 자체 `targets`를 나열한 항목에는
+  **프로젝트에 맞추기**가 표시되며, 이는 `targets` 없이 항목을 다시 저장합니다.
 - MCP 페이지 하단의 **기본값**은 `mcp.targets`와 `mcp.directTools`를 편집합니다.
 
 저장하면 변경한 프로젝트만 다시 씁니다. 다른 프로젝트는 anchor와 alias를 포함해
@@ -514,9 +560,11 @@ Sync가 작성합니다.
   관리하지 않았다면 unmanaged 상태로 남습니다: 서버를 제거해도 import하기 전까지는
   그대로 남습니다. 다른 unmanaged 항목은 import나 명시적인 항목별 replace가
   필요합니다. 소유하는 구성 파일이 여전히 존재하는 동안에는 다른 Skillshare
-  구성의 소유권을 재정의할 수 없습니다. 이동하거나 삭제된 경우에는 그 항목을 영원히
-  해제할 수 없으므로, 명시적인 import나 replace가 이를 가져옵니다. 충돌 메시지는
-  소유 파일의 이름을 표시합니다.
+  구성의 소유권을 재정의할 수 없습니다. 그 파일이 사라진 경우에는 그 항목을 영원히
+  해제할 수 없으므로, 충돌은 해당 항목이 남겨진 항목임을 알리고 그 파일의 이름을
+  표시하며, 터미널에서든 대시보드의 충돌에서든 명시적인 import나 replace로 이를
+  가져옵니다. 마운트되지 않은 드라이브에 있는 파일처럼 읽기만 불가능한 경우는
+  여전히 소유자가 존재하는 것으로 간주됩니다.
 - 대시보드의 MCP 설정은 브라우저가 `localhost`나 IP 주소로 대시보드를 열 때만
   동작합니다. 리버스 프록시를 포함한 도메인 이름을 통하면 MCP 요청은 403을
   반환합니다. DNS rebinding 공격은 항상 도메인 이름을 사용하기 때문입니다.
@@ -657,3 +705,40 @@ adapter에만 있기 때문입니다. import한 연결을 저장할 때
 수 없습니다. 지원되지 않는 레거시 SSE는 계속 차단됩니다. OAuth와 패키지 전용
 옵션은 Pi 안에서 계속 관리됩니다. Sync 성공은 구성이 작성되었음을 의미할 뿐, 확장이
 설치되었거나 서버가 연결되었음을 의미하지 않습니다.
+
+### Other adapter settings {#pi-options}
+
+`pi-mcp-adapter`에는 `excludeTools`, `approveTools`처럼 Skillshare가 설정으로 제공하는
+것보다 더 많은 서버별 필드가 있습니다. 이런 필드를 `piOptions` 아래에 두면 Pi 파일의
+해당 서버 항목에 그대로 작성됩니다:
+
+```yaml
+mcp:
+  servers:
+    github:
+      command: npx
+      args: [-y, "@modelcontextprotocol/server-github"]
+      piExtension: pi-mcp-adapter
+      targets: [pi]
+      piOptions:
+        excludeTools: ["*emulator*"]
+        approveTools: ["delete_*", "merge_pull_request"]
+```
+
+명령줄에서는 `mcp add` 또는 `mcp edit`에 JSON 객체를 전달하세요. 이 값은 `piOptions`
+전체를 대체하며, `{}`는 이를 비웁니다. 대시보드에서는 서버 대화 상자의 **Direct tools**
+아래에 동일한 입력란이 있으며, 저장하기 전에 입력한 텍스트가 JSON 객체인지 확인합니다.
+
+```bash
+skillshare mcp edit github --pi-options '{"excludeTools":["*emulator*"]}'
+```
+
+- Skillshare는 필드 이름이나 값을 검사하지 않습니다. 이를 아는 것은 adapter뿐입니다.
+- Skillshare가 직접 작성하는 필드는 여기서 거부됩니다: `command`, `args`, `env`, `url`,
+  `headers`, `transport`, `enabled`, `disabled`, `directTools`.
+- 값은 있는 그대로 복사됩니다. 자격 증명은 여기가 아니라 `fromEnv`를 사용해 `env` 또는
+  `headers`에 두세요.
+- `directTools`와 마찬가지로, `piOptions`에서 제거한 필드는 Pi 파일에 그대로 남습니다.
+  Pi 파일에서 직접 삭제하세요.
+- `piExtension: pi-mcp-adapter`가 필요하며 `disabled`와 함께 사용할 수 없습니다. 다른
+  Agent는 이 값을 받지 않으며, `import --from pi`는 이 필드들을 다시 읽어오지 않습니다.

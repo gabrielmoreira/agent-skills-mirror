@@ -36,12 +36,15 @@ is a property of the motion state, owned by one table (`STATE_CANVAS`):
 | State | Shape | Ratio | Room | Why |
 |---|---|---|---|---|
 | `jump` | tall | 3:4 | 34 % head-room above the still | airborne frames need height |
-| `attack` | wide | 16:9 | 28 % in front (facing side) | swings and weapons extend forward |
+| `attack` | wide | 16:9 | 35 % above the still, at least 28 % in front (facing side), 20 % behind | weapon swings rise overhead and extend in front; a long weapon drawn back reaches behind |
 | `projectile` | wide | 16:9 | 34 % in front | the projectile travels away |
 | everything else | square | 1:1 | — | in-place motion fits the still |
 
-`--shape tall|wide|square` overrides the row; `--headroom` / `--lead` tune the room;
-`--facing left` mirrors the wide layout. A still whose corners are not one flat colour
+`--shape tall|wide|square` overrides the row; `--headroom` / `--lead` / `--trail` tune the room
+(`--trail` is the empty fraction of the width kept behind the subject, for a weapon drawn
+back before the strike); `--facing left` mirrors the wide layout. Headroom is a fraction of the full canvas
+height; wide canvases grow both dimensions to preserve their ratio without shrinking
+the still. A still whose corners are not one flat colour
 is refused — a non-flat background cannot be extended without guessing.
 
 **The canvas owns key normalization.** Image models paint "`#00FF00`" a little
@@ -212,7 +215,13 @@ seconds**, because a stride is a fact about the body, not about the clip length:
 0.5–1.6 s, run 0.3–1.2 s, the ceiling capped at half the clip (a cycle must be seen twice
 to be confirmed). The other states are fractions of the clip length: idle 60–95 %
 (breathing is slow and not periodic — the lowest seam is a long window, and idle is
-exempt from the periodicity gate), jump/attack 11–45 %. `--min-len/--max-len` override.
+exempt from the periodicity gate), jump 11–45 %. Attack keeps the 11 % floor and
+searches up to 2.5 seconds while retaining at least 0.5 seconds (and at least eight
+frames) of observed repeat context. `--min-len/--max-len` override the window.
+Attack's periodicity floor is `0.15 + 0.85 * max(0, 1 - (n - lag) / lag)`:
+less than a full period of comparison requires a deeper dip. Reports include both
+available pairs and the every-other-frame profile sample count. This is a coverage
+policy, not a statistical confidence estimate. Gait windows and ranking are unchanged.
 The walk floor is low on purpose: a legless body "walks" as a fast bounce (about 13
 frames at 24 fps) while a gait is 24–28, and it is the 15 % depth rule and the gait
 floor — not the window — that reject the one-step half period (on a biped and a
@@ -234,7 +243,7 @@ anatomical left/right contacts. The report records `half_period_guard.reason =
 "ambiguous-harmonic"` and `cycle.review_recommended = true`. See [loop review](loop-review.md)
 for the visual review contract and manual overrides.
 
-Gates, all fail-loud: no period (profile flat, `periodicity < 0.15`), loop seam ratio
+Gates, all fail-loud: no period (profile flat, below the recorded `periodicity_min`), loop seam ratio
 above `--seam-max` (2.0), GIF/WebP re-opened and checked (frame count, `loop=0`,
 transparent corners, no RGB under alpha 0 in the WebP).
 
@@ -244,25 +253,29 @@ A video model asked to jump "over and over" sometimes jumps once and stands for 
 rest of the clip. That is not a period, and the periodicity gate says so. For states
 that *are* single actions by nature (`jump`, `attack`, unknown states; never `walk`,
 `run`, `idle`) `auto` then runs a second, different detector instead of failing: the
-**rest pose** is the medoid frame (smallest mean distance to all others), frames whose
-distance to it rises more than 3 MADs above the rest noise are the excursion, and the
-longest such run padded by 2 rest frames on each side is the cycle — so the seam is
-rest → rest by construction. The failover is explicit and recorded, not silent: the
-report carries `cycle.kind = "one-shot"` plus `periodic_attempt` (the periodicity that
-failed and the window), `table.md` has a `kind` column, the strip sidecar carries
-`kind` and `loop: false` (so `sprite-gen scene` and any loader of `<name>.strip.json`
-play it once on a trigger rather than repeating it), and the same seam and animation
-gates still apply. `--cycle periodic` keeps the old hard failure; `--cycle
-one-shot` forces the excursion cut. A clip that never leaves its rest pose fails loud
-in both detectors. The excursion is admitted by either of two measures, and the report
-says which (`cycle.excursion_rule`): the peak's height in MADs of the rest noise
-(`excursion_contrast` ≥ 3), or the fraction of the rest frame's pixel mass the peak moves
-(`excursion_moved` ≥ 0.4). The second exists because the MAD is not rest noise when the
-rest is not one pose — a body that walks a few steps, hops once and freezes has its
-frames spread between the walking preamble and the frozen tail, and a 42 px hop scored
-1.8 MADs (2026-09-20). Moved mass is scale-free: a hop shifts the whole silhouette out of
-its own footprint (0.54–1.07 on eight measured jumps), a jittering stand does not
-(0.12–0.24). Under the mass rule the active frames are those above half the peak. `--cycle fixed --start N --length L` skips detection and cuts exactly
+detector finds close endpoint poses enclosing an excursion. The endpoints must differ
+by at most a quarter of the departure, with two observed rest frames on either side
+of at least four active frames. A component touching the clip's start or end is
+rejected, never repaired with padding. Departure must span at least three ordinary
+playback steps to reject incoherent jitter. Among candidates containing at least
+95 % of the largest departure, the shortest cut wins (then lower seam ratio).
+
+Acceptance uses either peak contrast above the distance-profile median (3 MADs) or
+departure from the endpoint pair relative to their mean subject mass (0.4). Unlike a
+global medoid, the pair can identify ready poses even when a held strike occupies
+most of the clip. `cycle.excursion_rule`, `return_pair`, `excursion_over_step` and
+`return_distance_over_departure` expose that evidence. These pixel measurements do
+not identify an anatomical ready pose or guarantee character consistency.
+
+The failover is explicit: `cycle.kind = "one-shot"` and `periodic_attempt` preserve
+both decisions. The strip sidecar carries `kind` and `loop: false`, so scene loaders
+play it once on a trigger. GIF/WebP previews still loop, and the same seam and
+animation gates apply. `--cycle periodic` refuses a weak periodic candidate;
+`--cycle one-shot` forces return detection. Stationary clips, jitter and actions
+without an observed return fail loud. Selection and seam refusals write the requested
+report before exiting: `status = "failed"`, error, window, candidate start/length,
+seam numerator/denominator and repetition/return evidence. Undefined ratios are JSON
+`null`; success records `status = "passed"`. `--cycle fixed --start N --length L` skips detection and cuts exactly
 those frames — for a clip that holds too few repeats for the periodicity gate but whose
 cycle is known (the 2026-09-09 reel jump: 2.3 hops in 145 frames). It is an explicit
 instruction, not a failover: the report says `kind = "fixed"`, and the seam gate still

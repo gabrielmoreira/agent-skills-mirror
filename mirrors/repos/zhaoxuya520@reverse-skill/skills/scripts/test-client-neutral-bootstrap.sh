@@ -14,6 +14,10 @@ CLAUDE_CFG="$SCRATCH/client/claude.json"
 CODEX_CFG="$SCRATCH/client/codex.toml"
 mkdir -p "$HOME_DIR" "$BIN_DIR" "$TOOLS_DIR" "$(dirname "$CLAUDE_CFG")"
 
+for name in bash date dirname head mktemp python3 rm sed tr uname; do
+  ln -s "$(command -v "$name")" "$BIN_DIR/$name"
+done
+
 for name in node npm npx; do
   cat > "$BIN_DIR/$name" <<'STUB'
 #!/usr/bin/env bash
@@ -23,6 +27,12 @@ STUB
   chmod +x "$BIN_DIR/$name"
 done
 
+cat > "$BIN_DIR/ghidra" <<'STUB'
+#!/usr/bin/env bash
+exit 0
+STUB
+chmod +x "$BIN_DIR/ghidra"
+
 export PATH="$BIN_DIR:$PATH"
 export HOME="$HOME_DIR"
 export REVERSE_SKILL_TOOLS_DIR="$TOOLS_DIR"
@@ -31,10 +41,10 @@ export CODEX_CONFIG_PATH="$CODEX_CFG"
 
 MD="$SCRATCH/tool-index.md"
 JSON="$SCRATCH/tool-index.json"
-bash "$REFRESH" "$MD" "$JSON" >/dev/null
+PATH="$BIN_DIR" "$BIN_DIR/bash" "$REFRESH" "$MD" "$JSON" >/dev/null
 
-python3 - "$JSON" <<'PY'
-import json, sys
+python3 - "$JSON" "$BIN_DIR/ghidra" <<'PY'
+import json, os, sys
 data = json.load(open(sys.argv[1], encoding='utf-8'))
 tools = data['tools']
 assert sum(t['name'] == 'binwalk' for t in tools) == 1, 'binwalk must appear exactly once'
@@ -42,6 +52,8 @@ by_tool = {t['name']: t for t in tools}
 assert by_tool['npx']['available'] is True
 assert by_tool['jshookmcp']['available'] is False, 'npx must not masquerade as jshookmcp'
 assert by_tool['reqable-mcp']['available'] is False, 'npx must not masquerade as reqable-mcp'
+assert by_tool['ghidra']['available'] is True, 'the distro-provided ghidra launcher must be discovered'
+assert os.path.realpath(by_tool['ghidra']['path']) == os.path.realpath(sys.argv[2])
 by_cap = {c['name']: c for c in data['capabilities']}
 assert by_cap['jshookmcp']['ready'] is False
 assert by_cap['reqable-mcp']['ready'] is False

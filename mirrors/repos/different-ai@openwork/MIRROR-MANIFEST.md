@@ -7,7 +7,7 @@ ref: dev
 
 # Mirror Manifest
 
-Mirror of `different-ai/openwork` — 26 default patterns, 0 followed patterns, 29 file(s) materialized.
+Mirror of `different-ai/openwork` — 26 default patterns, 0 followed patterns, 30 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `different-ai/openwork` — 26 default patterns, 0 followed patterns, 
 | Ref           | `dev` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 29 |
+| Files         | 30 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -66,28 +66,29 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 5 | ✓ | [`.opencode/skills/daytona/SKILL.md`](.opencode/skills/daytona/SKILL.md) |
 | 6 | ✓ | [`.opencode/skills/diagnose-a-red-run/SKILL.md`](.opencode/skills/diagnose-a-red-run/SKILL.md) |
 | 7 | ✓ | [`.opencode/skills/get-env-var/SKILL.md`](.opencode/skills/get-env-var/SKILL.md) |
-| 8 | ✓ | [`.opencode/skills/openwork-models/SKILL.md`](.opencode/skills/openwork-models/SKILL.md) |
-| 9 | ✓ | [`.opencode/skills/preview-my-work/SKILL.md`](.opencode/skills/preview-my-work/SKILL.md) |
-| 10 | ✓ | [`.opencode/skills/publish-evidence/SKILL.md`](.opencode/skills/publish-evidence/SKILL.md) |
-| 11 | ✓ | [`.opencode/skills/record-a-demo/SKILL.md`](.opencode/skills/record-a-demo/SKILL.md) |
-| 12 | ✓ | [`.opencode/skills/release/SKILL.md`](.opencode/skills/release/SKILL.md) |
-| 13 | ✓ | [`.opencode/skills/review-a-contributor-pr/SKILL.md`](.opencode/skills/review-a-contributor-pr/SKILL.md) |
-| 14 | ✓ | [`.opencode/skills/run-tests/SKILL.md`](.opencode/skills/run-tests/SKILL.md) |
-| 15 | ✓ | [`.opencode/skills/shadcn/cli.md`](.opencode/skills/shadcn/cli.md) |
-| 16 | ✓ | [`.opencode/skills/shadcn/customization.md`](.opencode/skills/shadcn/customization.md) |
-| 17 | ✓ | [`.opencode/skills/shadcn/SKILL.md`](.opencode/skills/shadcn/SKILL.md) |
-| 18 | ✓ | [`.opencode/skills/upload-photo/SKILL.md`](.opencode/skills/upload-photo/SKILL.md) |
-| 19 | ✓ | [`.opencode/skills/validate-a-release/SKILL.md`](.opencode/skills/validate-a-release/SKILL.md) |
-| 20 | ✓ | [`.opencode/skills/write-a-spec/SKILL.md`](.opencode/skills/write-a-spec/SKILL.md) |
-| 21 | ✓ | [`.warden/skills/confidentiality-review/SKILL.md`](.warden/skills/confidentiality-review/SKILL.md) |
-| 22 | ✓ | [`.warden/skills/design-spec-review/SKILL.md`](.warden/skills/design-spec-review/SKILL.md) |
-| 23 | ✓ | [`.warden/skills/desktop-den-sync-review/SKILL.md`](.warden/skills/desktop-den-sync-review/SKILL.md) |
-| 24 | ✓ | [`.warden/skills/diff-security-review/SKILL.md`](.warden/skills/diff-security-review/SKILL.md) |
-| 25 | ✓ | [`.warden/skills/spec-provenance-review/SKILL.md`](.warden/skills/spec-provenance-review/SKILL.md) |
-| 26 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 27 | ✓ | [`ee/apps/landing/public/.well-known/agent-skills/workspace-guide/SKILL.md`](ee/apps/landing/public/.well-known/agent-skills/workspace-guide/SKILL.md) |
-| 28 | ✓ | [`ee/apps/landing/public/llms.txt`](ee/apps/landing/public/llms.txt) |
-| 29 | ✓ | [`integrations/agent-plugins/openwork-connect/skills/openwork-connect/SKILL.md`](integrations/agent-plugins/openwork-connect/skills/openwork-connect/SKILL.md) |
+| 8 | ✓ | [`.opencode/skills/hunt-a-prod-error/SKILL.md`](.opencode/skills/hunt-a-prod-error/SKILL.md) |
+| 9 | ✓ | [`.opencode/skills/open-a-pr/SKILL.md`](.opencode/skills/open-a-pr/SKILL.md) |
+| 10 | ✓ | [`.opencode/skills/openwork-models/SKILL.md`](.opencode/skills/openwork-models/SKILL.md) |
+| 11 | ✓ | [`.opencode/skills/preview-my-work/SKILL.md`](.opencode/skills/preview-my-work/SKILL.md) |
+| 12 | ✓ | [`.opencode/skills/record-a-demo/SKILL.md`](.opencode/skills/record-a-demo/SKILL.md) |
+| 13 | ✓ | [`.opencode/skills/release/SKILL.md`](.opencode/skills/release/SKILL.md) |
+| 14 | ✓ | [`.opencode/skills/review-a-contributor-pr/SKILL.md`](.opencode/skills/review-a-contributor-pr/SKILL.md) |
+| 15 | ✓ | [`.opencode/skills/run-tests/SKILL.md`](.opencode/skills/run-tests/SKILL.md) |
+| 16 | ✓ | [`.opencode/skills/shadcn/cli.md`](.opencode/skills/shadcn/cli.md) |
+| 17 | ✓ | [`.opencode/skills/shadcn/customization.md`](.opencode/skills/shadcn/customization.md) |
+| 18 | ✓ | [`.opencode/skills/shadcn/SKILL.md`](.opencode/skills/shadcn/SKILL.md) |
+| 19 | ✓ | [`.opencode/skills/upload-photo/SKILL.md`](.opencode/skills/upload-photo/SKILL.md) |
+| 20 | ✓ | [`.opencode/skills/validate-a-release/SKILL.md`](.opencode/skills/validate-a-release/SKILL.md) |
+| 21 | ✓ | [`.opencode/skills/write-a-spec/SKILL.md`](.opencode/skills/write-a-spec/SKILL.md) |
+| 22 | ✓ | [`.warden/skills/confidentiality-review/SKILL.md`](.warden/skills/confidentiality-review/SKILL.md) |
+| 23 | ✓ | [`.warden/skills/design-spec-review/SKILL.md`](.warden/skills/design-spec-review/SKILL.md) |
+| 24 | ✓ | [`.warden/skills/desktop-den-sync-review/SKILL.md`](.warden/skills/desktop-den-sync-review/SKILL.md) |
+| 25 | ✓ | [`.warden/skills/diff-security-review/SKILL.md`](.warden/skills/diff-security-review/SKILL.md) |
+| 26 | ✓ | [`.warden/skills/spec-provenance-review/SKILL.md`](.warden/skills/spec-provenance-review/SKILL.md) |
+| 27 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 28 | ✓ | [`ee/apps/landing/public/.well-known/agent-skills/workspace-guide/SKILL.md`](ee/apps/landing/public/.well-known/agent-skills/workspace-guide/SKILL.md) |
+| 29 | ✓ | [`ee/apps/landing/public/llms.txt`](ee/apps/landing/public/llms.txt) |
+| 30 | ✓ | [`integrations/agent-plugins/openwork-connect/skills/openwork-connect/SKILL.md`](integrations/agent-plugins/openwork-connect/skills/openwork-connect/SKILL.md) |
 
 ---
 

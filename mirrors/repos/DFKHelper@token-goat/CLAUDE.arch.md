@@ -28,6 +28,7 @@ token-goat is a TypeScript CLI bundled to `dist/token-goat.mjs` via esbuild. The
 | [`src/index_prune.ts`](src/index_prune.ts) | `pruneDeletedFiles()` deletes file/symbol/ref/chunk rows under a root prefix for paths no longer on disk (used by `token-goat index` and the worker sweep); `recordKnownRootThrottled()` (called from `postEditHandler`) upserts the edited file's project root into the `known_roots` table; `sweepKnownRoots()` prunes dead rows for reachable known roots, tombstones unreachable roots for `KNOWN_ROOT_MISSING_GRACE_MS` (7 days) before forgetting them, and flags rather than prunes a root where the deletion would remove an anomalous share of its rows |
 | [`src/parser_fingerprint.ts`](src/parser_fingerprint.ts) | Exports: `PARSER_FINGERPRINT` |
 | [`src/parser_refs.ts`](src/parser_refs.ts) | Call-site reference extraction via tree-sitter AST traversal. |
+| [`src/parser_stamp.ts`](src/parser_stamp.ts) | Resolves the `files.parser_sha` stamp a row of a given language is expected to carry, from the generated digests in `parser_fingerprint.ts`. |
 | [`src/parser_structured.ts`](src/parser_structured.ts) | Extractors for structured textual formats (Markdown, JSON, YAML, TOML, CSS, Dockerfile) and fallback regex symbol recovery. |
 | [`src/parser_treesitter.ts`](src/parser_treesitter.ts) | Tree-sitter symbol extractors for typed and compiled languages (TS/JS, Python, Go, Rust, Ruby, Java, C/C++). |
 | [`src/parser_ts_types.ts`](src/parser_ts_types.ts) | Minimal structural typings for the node-tree-sitter API surface we touch. |
@@ -50,8 +51,10 @@ token-goat is a TypeScript CLI bundled to `dist/token-goat.mjs` via esbuild. The
 
 | Module | Role |
 |--------|------|
+| [`src/embed_backfill.ts`](src/embed_backfill.ts) | One-time-per-release sweep that deletes chunk rows an already-indexed file would no longer be allowed to contribute. |
 | [`src/embed_fingerprint.ts`](src/embed_fingerprint.ts) | Exports: `EMBED_FINGERPRINT` |
 | [`src/embed_model.ts`](src/embed_model.ts) | The embedding backend: fetch the pinned model, verify it, run it, pool it. |
+| [`src/embed_stamp.ts`](src/embed_stamp.ts) | Resolves which extraction kind a file's embedding stamp belongs to, and which digest from `embed_fingerprint.ts` that kind carries. |
 | [`src/embed_tokenizer.ts`](src/embed_tokenizer.ts) | A BERT WordPiece tokenizer for exactly the spec `bge-small-en-v1.5`'s `tokenizer.json` declares: BertNormalizer(clean_text, handle_chinese_chars, strip_accents=null, lowercase=true |
 | [`src/embeddings.ts`](src/embeddings.ts) | [`src/embed_model.ts`](src/embed_model.ts) (pinned `Xenova/bge-small-en-v1.5`, 384 dimensions, over `onnxruntime-node`) and [`src/embed_tokenizer.ts`](src/embed_tokenizer.ts); `chunkFile()` splits source into overlapping windows; `upsertChunks()` writes to `chunks` and `chunk_vectors`; `searchSemantic()` queries `chunk_vectors` via vec0 KNN |
 
@@ -175,11 +178,13 @@ token-goat is a TypeScript CLI bundled to `dist/token-goat.mjs` via esbuild. The
 |--------|------|
 | [`src/languages/abap.ts`](src/languages/abap.ts) | ABAP adapter: the REPORT/PROGRAM/FUNCTION-POOL name, local and global classes (DEFINITION and IMPLEMENTATION, each to its ENDCLASS) with their METHOD blocks as children, interfaces |
 | [`src/languages/abl.ts`](src/languages/abl.ts) | Progress OpenEdge ABL adapter: internal PROCEDUREs and FUNCTIONs, CLASS, INTERFACE and ENUM types with their METHODs, CONSTRUCTORs and DESTRUCTORs as children, and DEFINE TEMP-TABL |
+| [`src/languages/apache.ts`](src/languages/apache.ts) | Extracts symbols from Apache HTTP Server configurations (<VirtualHost>, <Directory>, <Location>, etc.). |
 | [`src/languages/apex.ts`](src/languages/apex.ts) | Salesforce Apex extractor (`extractApex`) — class, interface, trigger, method |
 | [`src/languages/asm.ts`](src/languages/asm.ts) | Assembly adapter for GNU as (`.s`, `.S`), NASM (`.asm`, `.nasm`) and IBM High Level Assembler, which share `.asm`: one adapter that picks its dialect from the file's own content. |
 | [`src/languages/bash_idx.ts`](src/languages/bash_idx.ts) | Shell/Bash symbol extractor. |
 | [`src/languages/batch.ts`](src/languages/batch.ts) | Windows batch adapter for `.bat` and `.cmd` files: the labels cmd.exe jumps to, each running to the line before the next label or to the end of the file, with the batch files a `ca |
 | [`src/languages/brace_engine.ts`](src/languages/brace_engine.ts) | Shared scanner for the brace-language adapters (Objective-C, Groovy, Solidity, Thrift, GLSL, HLSL, WGSL, Metal). |
+| [`src/languages/caddy.ts`](src/languages/caddy.ts) | Extracts symbols from Caddyfile configurations (global options, snippets, site blocks, directives). |
 | [`src/languages/clojure.ts`](src/languages/clojure.ts) | Clojure adapter: `defn`, `defn-`, `def`, `defmacro`, `defprotocol`, `defrecord`, `deftype`, `defmulti`, `defmethod`, `definterface`, `ns`. |
 | [`src/languages/cmake.ts`](src/languages/cmake.ts) | CMake adapter for `CMakeLists.txt` and `.cmake` files: `function` and `macro` definitions (closed by `endfunction` and `endmacro`), the targets `add_library`, `add_executable` and |
 | [`src/languages/cobol.ts`](src/languages/cobol.ts) | COBOL adapter: programs, procedure-division sections and paragraphs, level-01/77 data items and FD/SD file descriptions, `COPY` imports, and `PERFORM`/`GO TO`/`CALL 'x'` references |
@@ -207,6 +212,7 @@ token-goat is a TypeScript CLI bundled to `dist/token-goat.mjs` via esbuild. The
 | [`src/languages/makefile_idx.ts`](src/languages/makefile_idx.ts) | Makefile extractor (`extractMakefile`) |
 | [`src/languages/matlab.ts`](src/languages/matlab.ts) | MATLAB and Octave adapter: functions (nested and local ones too), classdef classes with their properties, methods, events and enumeration members. |
 | [`src/languages/natural.ts`](src/languages/natural.ts) | Software AG Natural adapter: the object itself (named by its file stem, kind by extension), inline `DEFINE SUBROUTINE` blocks, the `DEFINE DATA` block and its level-1 fields (also |
+| [`src/languages/nginx.ts`](src/languages/nginx.ts) | Nginx configuration language extractor and symbol parser. |
 | [`src/languages/nix.ts`](src/languages/nix.ts) | Nix (Nix Reference Manual, "Syntax" https://nix.dev/manual/nix/latest/language/syntax and "String literals" https://nix.dev/manual/nix/latest/language/string-literals) adapter. |
 | [`src/languages/objc.ts`](src/languages/objc.ts) | Objective-C and Objective-C++ symbol extractor. |
 | [`src/languages/ocaml.ts`](src/languages/ocaml.ts) | OCaml (The OCaml Manual, chapter 11 "The OCaml language", section 1 "Lexical conventions", https://v2.ocaml.org/manual/lex.html) adapter: `module`, `module type`, `type`, `exceptio |
@@ -246,7 +252,10 @@ token-goat is a TypeScript CLI bundled to `dist/token-goat.mjs` via esbuild. The
 | [`src/bash_compress.ts`](src/bash_compress.ts) | Bash output compression filters (vitest, npm, docker, ruff, and others) |
 | [`src/bash_extractors.ts`](src/bash_extractors.ts) | Command line extractors, classification, and surgical hint builders for bash hook handlers. |
 | [`src/bash_output_cache.ts`](src/bash_output_cache.ts) | Bash stdout/stderr disk store (byte cap plus 4096 file-count cap, oldest-first eviction) |
+| [`src/bash_range_savings.ts`](src/bash_range_savings.ts) | Prices a line-range read's proposed surgical replacement against the read itself, so a hint that redirects a line-range read can be required to prove it saves something before it i |
 | [`src/bash_runner.ts`](src/bash_runner.ts) | Exports: `DEFAULT_TIMEOUT_SECONDS`, `MAX_CAPTURE_BYTES`, `RunOptions`, `run` |
+| [`src/bash_structural_index.ts`](src/bash_structural_index.ts) | Recognizes a plain-enumeration `rg`/`grep` invocation over a single, already-fresh-indexed file whose pattern maps exactly to a token-goat index answer (`outline`/`imports`), and r |
+| [`src/bash_surgical_target.ts`](src/bash_surgical_target.ts) | Resolves one real, runnable target inside a file the whole-file deny is about to block on. |
 | [`src/filters.ts`](src/filters.ts) | Shared output-filter helpers |
 | [`src/tool_filters/ai_clis.ts`](src/tool_filters/ai_clis.ts) | Bash output compression and normalization filter for ai_clis |
 | [`src/tool_filters/base.ts`](src/tool_filters/base.ts) | Bash output compression and normalization filter for base |
@@ -334,12 +343,15 @@ token-goat is a TypeScript CLI bundled to `dist/token-goat.mjs` via esbuild. The
 | Module | Role |
 |--------|------|
 | [`src/affected.ts`](src/affected.ts) | `token-goat affected` -- which test files a set of changed source files can reach. |
+| [`src/answer_router.ts`](src/answer_router.ts) | `token-goat answer` -- a deterministic question router. |
 | [`src/archive_query.ts`](src/archive_query.ts) | Entry listing + single-member extraction for `token-goat zip-list` / `zip-read`, so a .zip/.jar/.whl/.vsix/.nupkg (all zip-format containers under the hood) never needs its whole a |
+| [`src/asset_extensions.ts`](src/asset_extensions.ts) | Extension-based classification of files whose bytes are not text, kept in one leaf module with no imports of its own so every consumer shares a single list. |
 | [`src/baseline.ts`](src/baseline.ts) | Project map / overview (`token-goat map`). |
 | [`src/batch_serve.ts`](src/batch_serve.ts) | `--batch-serve`: run many CLI invocations inside one already-started process. |
 | [`src/bridges_status.ts`](src/bridges_status.ts) | Bridge hook-event parity matrix. |
 | [`src/cache_session_commands.ts`](src/cache_session_commands.ts) | Cache and history commands: bash-history, web-history, clean-cache, prune-cache, cache-audit. |
 | [`src/capabilities.ts`](src/capabilities.ts) | A machine-readable statement of every capability token-goat has that can send data off the machine or leave data on it, with its effective state and the place that state is enforce |
+| [`src/claude_config_dir.ts`](src/claude_config_dir.ts) | Where Claude Code keeps its own per-user configuration, and nothing else. |
 | [`src/cli_bench.ts`](src/cli_bench.ts) | Exports: `BenchCase`, `BenchCaseResult`, `BenchReport`, `loadCorpus` |
 | [`src/cli_bootstrap_audit.ts`](src/cli_bootstrap_audit.ts) | Exports: `BootstrapAuditOptions`, `BootstrapAuditResult`, `buildBootstrapAudit`, `runBootstrapAudit` |
 | [`src/cli_commands.ts`](src/cli_commands.ts) | Machine-readable command manifest. |
@@ -395,6 +407,7 @@ token-goat is a TypeScript CLI bundled to `dist/token-goat.mjs` via esbuild. The
 | [`src/hint_stats.ts`](src/hint_stats.ts) | Efficacy tracking + auto-suppression for token-goat's discretionary hint hooks (`token-goat hint-stats`). |
 | [`src/hint_suggestion_guard.ts`](src/hint_suggestion_guard.ts) | Strip shell commands that a path broke out of, from hint and deny text on its way to the model. |
 | [`src/hints.ts`](src/hints.ts) | Session-hint text builder |
+| [`src/hook_latency.ts`](src/hook_latency.ts) | Read/render side of Batch S's hook wall-clock timing: `token-goat stats --hooks` and `doctor`'s Hook latency check both go through hookLatencyBreakdown(). |
 | [`src/hook_lib.ts`](src/hook_lib.ts) | In-process hook library entry point. |
 | [`src/html_query.ts`](src/html_query.ts) | HTML structure inspection, querying, and structural linting for token-goat. |
 | [`src/import_export_extract.ts`](src/import_export_extract.ts) | Language-specific import and export extractors. |
@@ -405,11 +418,13 @@ token-goat is a TypeScript CLI bundled to `dist/token-goat.mjs` via esbuild. The
 | [`src/injection_scan.ts`](src/injection_scan.ts) | Lexical scan for prompt-injection attack patterns in untrusted fetched content. |
 | [`src/language_specs.ts`](src/language_specs.ts) | The one table of languages token-goat indexes. |
 | [`src/lazy_module.ts`](src/lazy_module.ts) | Shared factory for the "lazily load an optional npm dependency" pattern used by every optional-dependency reader (pdf_extract.ts, xlsx_extract.ts, ooxml_extract.ts, screenshot.ts, |
+| [`src/line_regions.ts`](src/line_regions.ts) | Maps a requested line span onto the file regions that cover it. |
 | [`src/markdown_lines.ts`](src/markdown_lines.ts) | Iterate markdown lines, skipping fenced-code-block content (``` or ~~~ blocks) and the fence delimiter lines themselves, so a `#` comment inside a code fence is never mistaken for |
 | [`src/mcp_compress_packs.ts`](src/mcp_compress_packs.ts) | Schema-aware compression packs for two specific MCP servers, layered on top of {@link mcp_compress.ts}'s generic structural pass. |
 | [`src/mcp_compress.ts`](src/mcp_compress.ts) | Deterministic, structural compression for MCP tool results. |
 | [`src/mcp_jsonrpc.ts`](src/mcp_jsonrpc.ts) | A minimal Model Context Protocol server, in-house. |
 | [`src/mcp_stdio.ts`](src/mcp_stdio.ts) | The stdio transport for token-goat's MCP server -- newline-delimited JSON over the process's own stdin and stdout, which is the only transport `token-goat mcp-serve` has ever offer |
+| [`src/mcp_tool_pattern.ts`](src/mcp_tool_pattern.ts) | The `toolPattern` every MCP tool name matches, shared by hooks_mcp.ts's registerHook calls and cli_doctor.ts's unmapped-tools cleanup so the two can never drift into two different |
 | [`src/memory_prune.ts`](src/memory_prune.ts) | Automatic pruning and analysis of Claude Code's native auto-memory store. |
 | [`src/modules.ts`](src/modules.ts) | Module detection over the project's internal import graph. |
 | [`src/notebook_compact.ts`](src/notebook_compact.ts) | Strip cell outputs from Jupyter notebooks to reduce token burn. |
@@ -433,6 +448,7 @@ token-goat is a TypeScript CLI bundled to `dist/token-goat.mjs` via esbuild. The
 | [`src/screenshot.ts`](src/screenshot.ts) | Local screenshot capture for `token-goat screenshot`, so a page render can reach the model as a small shrunk image instead of round-tripping through a separate browser-automation M |
 | [`src/secret_redact.ts`](src/secret_redact.ts) | Defense-in-depth secret redaction for {@link file://./disk_cache.ts}'s `storeBlob()` choke point. |
 | [`src/served_lines.ts`](src/served_lines.ts) | Finding the stretches of a delivered file window that this session has already served. |
+| [`src/sessions_dir.ts`](src/sessions_dir.ts) | Where per-session state blobs live on disk, and nothing else. |
 | [`src/sharepoint_resolve.ts`](src/sharepoint_resolve.ts) | Best-effort resolution of a SharePoint/OneDrive sharing URL to a local synced file path, so `token-goat` can read a document an agent was only given a share link for instead of fai |
 | [`src/shell.ts`](src/shell.ts) | Exports: `locateBashOnPath`, `resolveWindowsBash`, `wrappedShell`, `canRunWrappedShell` |
 | [`src/skill_version_drift.ts`](src/skill_version_drift.ts) | Session-scoped nudge for token-goat's own version drift. |

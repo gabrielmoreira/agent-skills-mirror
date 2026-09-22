@@ -135,13 +135,13 @@ Here's a practical starting `~/.omo/omo.jsonc`. OpenCode plugin settings live in
 
     "categories": {
       // quick - Kimi high-speed by default
-      "quick": { "model": "kimi-for-coding/kimi-for-coding-highspeed" },
+      "quick": { "model": "openai/gpt-5.6-luna-fast", "reasoning": "low" },
 
       // unspecified-low - moderate tasks
       "unspecified-low": { "model": "xai/grok-4.6", "reasoning": "xhigh" },
 
       // unspecified-high - complex work
-      "unspecified-high": { "model": "openai/gpt-6-astra", "reasoning": "high" },
+      "unspecified-high": { "model": "anthropic/claude-opus-5", "reasoning": "xhigh" },
 
       // writing - docs/prose
       "writing": { "model": "anthropic/claude-fable-5-1", "reasoning": "low" },
@@ -345,9 +345,9 @@ Domain-specific model delegation used by the `task()` tool. When the main agent 
 | `deep-low`           | `openai/gpt-5.6-sol` (medium)   | Default deep lane: 3D graphics, computer use, browser use, backend, logic, algorithms, CAPTCHA solving, multimodal, and complex research whose decisions the child can settle from evidence. Single rung, no model fallback. |
 | `deep-high`          | `openai/gpt-6-astra` (high)     | Escalation deep lane for a goal whose central decision cannot be settled from evidence. Single rung, no model fallback. |
 | `artistry`           | `anthropic/claude-fable-5-1` (max) | Creative/unconventional approaches             |
-| `quick`              | `kimi-for-coding/kimi-for-coding-highspeed` | Trivial tasks, typo fixes, single-file changes |
+| `quick`              | `openai/gpt-5.6-luna-fast` (low) | Trivial tasks, typo fixes, single-file changes |
 | `unspecified-low`    | `xai/grok-4.6` (xhigh)          | General tasks, low effort                      |
-| `unspecified-high`   | `openai/gpt-6-astra` (high) | General tasks, high effort                     |
+| `unspecified-high`   | `anthropic/claude-opus-5` (xhigh) | General tasks, high effort                     |
 | `writing`            | `anthropic/claude-fable-5-1` (low)     | Documentation, prose, technical writing        |
 
 > **Note**: Built-in category defaults are available automatically. User-defined category config merges over the built-in defaults or adds custom categories.
@@ -439,7 +439,7 @@ This table mirrors the authoritative hardcoded category fallback chains: the cha
 | **Ultrabrain** | `gpt-6-astra` | `openai\|openai-codex/gpt-6-astra (max)` → `github-copilot/gpt-6-astra (max)` → `openai\|openai-codex\|opencode/gpt-6-astra (max)` → `openai\|openai-codex/gpt-5.6-sol (max)` → `github-copilot/gpt-5.6-sol (max)` → `openai\|openai-codex\|opencode/gpt-5.6-sol (max)` |
 | **Deep** | `gpt-6-astra` | `openai\|openai-codex\|github-copilot\|opencode/gpt-6-astra (high)` → `openai\|openai-codex\|github-copilot\|opencode/gpt-5.6-sol (medium)` |
 | **Artistry** | `claude-fable-5-1` | `anthropic\|anthropic-api\|github-copilot\|opencode/claude-fable-5-1 (max)` → `kimi-for-coding\|moonshotai\|opencode-go\|opencode/kimi-k3 (max)` → `anthropic\|anthropic-api\|github-copilot\|opencode/claude-opus-5 (xhigh)` |
-| **Quick** | `kimi-for-coding-highspeed` | `kimi-for-coding/kimi-for-coding-highspeed` → `openai-codex/gpt-5.6-luna-fast (low)` → `deepseek/deepseek-v4-flash (off)` → `qwen-token-plan\|alibaba-token-plan\|bailian-coding-plan/qwen3.6-flash (low)` → `opencode-go/minimax-m3 (max)` → `opencode-go/minimax-m2.7 (max)` → `xai/grok-4.20-0309-non-reasoning` → `anthropic\|anthropic-api\|github-copilot/claude-haiku-4-5 (off)` |
+| **Quick** | `gpt-5.6-luna-fast` | `openai-codex/gpt-5.6-luna-fast (low)` → `deepseek/deepseek-v4-flash (off)` → `qwen-token-plan\|alibaba-token-plan\|bailian-coding-plan/qwen3.6-flash (low)` → `opencode-go/minimax-m3 (max)` → `opencode-go/minimax-m2.7 (max)` → `xai/grok-4.20-0309-non-reasoning` → `anthropic\|anthropic-api\|github-copilot/claude-haiku-4-5 (off)` |
 | **Unspecified Low** | `grok-4.6` | `xai\|github-copilot\|opencode/grok-4.6 (xhigh)` → `openai\|openai-codex\|github-copilot\|opencode/gpt-5.6-terra (high)` → `anthropic\|anthropic-api\|github-copilot\|opencode/claude-sonnet-5 (low)` → `qwen-token-plan\|alibaba-token-plan\|qwen-token-plan-cn\|alibaba-token-plan-cn/qwen3.8-max-preview (max)` → `deepseek\|opencode-go/deepseek-v4-pro (max)` → `xiaomi\|opencode-go/mimo-v2.5-pro (max)` |
 | **Unspecified High** | `gpt-6-astra` | `openai\|openai-codex\|github-copilot\|opencode/gpt-6-astra (high)` → `anthropic\|anthropic-api\|github-copilot\|opencode/claude-opus-5 (xhigh)` → `zai-coding-plan\|opencode-go/glm-5.3 (max)` → `kimi-for-coding\|moonshotai\|opencode-go\|opencode/kimi-k3 (max)` |
 | **Writing** | `claude-fable-5-1` | `anthropic\|anthropic-api\|github-copilot\|opencode/claude-fable-5-1 (medium)` → `kimi-for-coding\|moonshotai\|opencode-go\|opencode/kimi-k3 (max)` |

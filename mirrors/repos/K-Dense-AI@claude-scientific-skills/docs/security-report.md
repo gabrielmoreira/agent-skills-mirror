@@ -1,12 +1,12 @@
 # Security Scan Report
 
-**Generated:** 2026-09-14 09:27 UTC  
+**Generated:** 2026-09-21 09:27 UTC  
 **Skills scanned:** 166  
 **Total findings:** 674  
 **Critical:** 28 | **High:** 4 | **Safe skills:** 155/166
 
 **Scanner:** cisco-ai-skill-scanner 2.1.0 · **Model:** claude-opus-5  
-**This run:** 1 skill(s) rescanned; 165 unchanged since the last scan and carried forward unmodified. Per-skill scan dates are in [`security-report.json`](security-report.json) (`last_scanned`).  
+**This run:** 0 skill(s) rescanned; 166 unchanged since the last scan and carried forward unmodified. Per-skill scan dates are in [`security-report.json`](security-report.json) (`last_scanned`).  
 
 ## Summary
 
@@ -91,6 +91,7 @@
 | vaex | 🔵 LOW | 1 | ✅ | 21.3s |
 | venue-templates | 🔵 LOW | 1 | ✅ | 26.4s |
 | ncats-arax | ⚪ INFO | 1 | ✅ | 10.8s |
+| alphagenome | 🟢 SAFE | 0 | ✅ | 14.4s |
 | analytical-method-validation | 🟢 SAFE | 0 | ✅ | 26.2s |
 | anndata | 🟢 SAFE | 0 | ✅ | 15.1s |
 | arbor | 🟢 SAFE | 0 | ✅ | 13.2s |
@@ -177,7 +178,6 @@
 | what-if-oracle | 🟢 SAFE | 0 | ✅ | 6.0s |
 | xlsx | 🟢 SAFE | 0 | ✅ | 18.7s |
 | zarr-python | 🟢 SAFE | 0 | ✅ | 14.1s |
-| alphagenome | 🟢 SAFE | 0 | ✅ | 14.4s |
 
 ## Detailed Findings
 

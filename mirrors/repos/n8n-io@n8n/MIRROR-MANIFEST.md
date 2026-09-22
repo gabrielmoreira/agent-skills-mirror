@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `n8n-io/n8n` — 26 default patterns, 10 followed patterns, 119 file(s) materialized.
+Mirror of `n8n-io/n8n` — 26 default patterns, 10 followed patterns, 120 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `n8n-io/n8n` — 26 default patterns, 10 followed patterns, 119 file(s
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 10 |
-| Files         | 119 |
+| Files         | 120 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -154,39 +154,40 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 84 | ✓ | [`packages/@n8n/instance-ai/skills/debugging-executions/SKILL.md`](packages/@n8n/instance-ai/skills/debugging-executions/SKILL.md) |
 | 85 | ✓ | [`packages/@n8n/instance-ai/skills/instance-awareness/SKILL.md`](packages/@n8n/instance-ai/skills/instance-awareness/SKILL.md) |
 | 86 | ✓ | [`packages/@n8n/instance-ai/skills/intent-recognition/SKILL.md`](packages/@n8n/instance-ai/skills/intent-recognition/SKILL.md) |
-| 87 | ✓ | [`packages/@n8n/instance-ai/skills/n8n-docs-assistant/SKILL.md`](packages/@n8n/instance-ai/skills/n8n-docs-assistant/SKILL.md) |
-| 88 | ✓ | [`packages/@n8n/instance-ai/skills/one-off-operations/SKILL.md`](packages/@n8n/instance-ai/skills/one-off-operations/SKILL.md) |
-| 89 | ✓ | [`packages/@n8n/instance-ai/skills/planned-task-runtime/SKILL.md`](packages/@n8n/instance-ai/skills/planned-task-runtime/SKILL.md) |
-| 90 | ✓ | [`packages/@n8n/instance-ai/skills/planning/SKILL.md`](packages/@n8n/instance-ai/skills/planning/SKILL.md) |
-| 91 | ✓ | [`packages/@n8n/instance-ai/skills/post-build-flow/SKILL.md`](packages/@n8n/instance-ai/skills/post-build-flow/SKILL.md) |
-| 92 | ✓ | [`packages/@n8n/instance-ai/skills/progressive-building/SKILL.md`](packages/@n8n/instance-ai/skills/progressive-building/SKILL.md) |
-| 93 | ✓ | [`packages/@n8n/instance-ai/skills/workflow-builder/SKILL.md`](packages/@n8n/instance-ai/skills/workflow-builder/SKILL.md) |
-| 94 | ✓ | [`packages/@n8n/node-cli/src/template/templates/shared/default/AGENTS.md`](packages/@n8n/node-cli/src/template/templates/shared/default/AGENTS.md) |
-| 95 | ✓ | [`packages/@n8n/node-cli/src/template/templates/shared/default/CLAUDE.md`](packages/@n8n/node-cli/src/template/templates/shared/default/CLAUDE.md) |
-| 96 | ✓ | [`packages/cli/AGENTS.md`](packages/cli/AGENTS.md) |
-| 97 | ✓ | [`packages/cli/src/modules/n8n-packages/CLAUDE.md`](packages/cli/src/modules/n8n-packages/CLAUDE.md) |
-| 98 | ✓ | [`packages/frontend/@n8n/design-system/AGENTS.md`](packages/frontend/@n8n/design-system/AGENTS.md) |
-| 99 | ✓ | [`packages/frontend/AGENTS.md`](packages/frontend/AGENTS.md) |
-| 100 | ✓ | [`packages/frontend/CLAUDE.md`](packages/frontend/CLAUDE.md) |
-| 101 | ✓ | [`packages/frontend/editor-ui/src/app/stores/workflowDocument/CLAUDE.md`](packages/frontend/editor-ui/src/app/stores/workflowDocument/CLAUDE.md) |
-| 102 | ✓ | [`packages/nodes-base/AGENTS.md`](packages/nodes-base/AGENTS.md) |
-| 103 | ✓ | [`packages/nodes-base/CLAUDE.md`](packages/nodes-base/CLAUDE.md) |
-| 104 | ✓ | [`packages/testing/janitor/CLAUDE.md`](packages/testing/janitor/CLAUDE.md) |
-| 105 | ✓ | [`packages/testing/playwright/AGENTS.md`](packages/testing/playwright/AGENTS.md) |
-| 106 | ✓ | [`packages/testing/playwright/CLAUDE.md`](packages/testing/playwright/CLAUDE.md) |
-| 107 | ✓ | [`packages/testing/playwright/CONTRIBUTING.md`](packages/testing/playwright/CONTRIBUTING.md) |
-| 108 | ✓ | [`packages/testing/playwright/tests/infrastructure/benchmarks/AGENTS.md`](packages/testing/playwright/tests/infrastructure/benchmarks/AGENTS.md) |
-| 109 | ✓ | [`scripts/instance-seeding/AGENTS.md`](scripts/instance-seeding/AGENTS.md) |
-| 110 | → | [`.claude/plugins/n8n/README.md`](.claude/plugins/n8n/README.md) |
-| 111 | → | [`.devcontainer/codespaces/README.md`](.devcontainer/codespaces/README.md) |
-| 112 | → | [`.github/DEVELOPING_V3.md`](.github/DEVELOPING_V3.md) |
-| 113 | → | [`.github/pull_request_title_conventions.md`](.github/pull_request_title_conventions.md) |
-| 114 | → | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
-| 115 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 116 | → | [`CONTRIBUTOR_LICENSE_AGREEMENT.md`](CONTRIBUTOR_LICENSE_AGREEMENT.md) |
-| 117 | → | [`packages/cli/test/integration/eventbus/README-manual-test-syslog.md`](packages/cli/test/integration/eventbus/README-manual-test-syslog.md) |
-| 118 | → | [`packages/testing/containers/README.md`](packages/testing/containers/README.md) |
-| 119 | → | [`packages/testing/playwright/README.md`](packages/testing/playwright/README.md) |
+| 87 | ✓ | [`packages/@n8n/instance-ai/skills/model-selection/SKILL.md`](packages/@n8n/instance-ai/skills/model-selection/SKILL.md) |
+| 88 | ✓ | [`packages/@n8n/instance-ai/skills/n8n-docs-assistant/SKILL.md`](packages/@n8n/instance-ai/skills/n8n-docs-assistant/SKILL.md) |
+| 89 | ✓ | [`packages/@n8n/instance-ai/skills/one-off-operations/SKILL.md`](packages/@n8n/instance-ai/skills/one-off-operations/SKILL.md) |
+| 90 | ✓ | [`packages/@n8n/instance-ai/skills/planned-task-runtime/SKILL.md`](packages/@n8n/instance-ai/skills/planned-task-runtime/SKILL.md) |
+| 91 | ✓ | [`packages/@n8n/instance-ai/skills/planning/SKILL.md`](packages/@n8n/instance-ai/skills/planning/SKILL.md) |
+| 92 | ✓ | [`packages/@n8n/instance-ai/skills/post-build-flow/SKILL.md`](packages/@n8n/instance-ai/skills/post-build-flow/SKILL.md) |
+| 93 | ✓ | [`packages/@n8n/instance-ai/skills/progressive-building/SKILL.md`](packages/@n8n/instance-ai/skills/progressive-building/SKILL.md) |
+| 94 | ✓ | [`packages/@n8n/instance-ai/skills/workflow-builder/SKILL.md`](packages/@n8n/instance-ai/skills/workflow-builder/SKILL.md) |
+| 95 | ✓ | [`packages/@n8n/node-cli/src/template/templates/shared/default/AGENTS.md`](packages/@n8n/node-cli/src/template/templates/shared/default/AGENTS.md) |
+| 96 | ✓ | [`packages/@n8n/node-cli/src/template/templates/shared/default/CLAUDE.md`](packages/@n8n/node-cli/src/template/templates/shared/default/CLAUDE.md) |
+| 97 | ✓ | [`packages/cli/AGENTS.md`](packages/cli/AGENTS.md) |
+| 98 | ✓ | [`packages/cli/src/modules/n8n-packages/CLAUDE.md`](packages/cli/src/modules/n8n-packages/CLAUDE.md) |
+| 99 | ✓ | [`packages/frontend/@n8n/design-system/AGENTS.md`](packages/frontend/@n8n/design-system/AGENTS.md) |
+| 100 | ✓ | [`packages/frontend/AGENTS.md`](packages/frontend/AGENTS.md) |
+| 101 | ✓ | [`packages/frontend/CLAUDE.md`](packages/frontend/CLAUDE.md) |
+| 102 | ✓ | [`packages/frontend/editor-ui/src/app/stores/workflowDocument/CLAUDE.md`](packages/frontend/editor-ui/src/app/stores/workflowDocument/CLAUDE.md) |
+| 103 | ✓ | [`packages/nodes-base/AGENTS.md`](packages/nodes-base/AGENTS.md) |
+| 104 | ✓ | [`packages/nodes-base/CLAUDE.md`](packages/nodes-base/CLAUDE.md) |
+| 105 | ✓ | [`packages/testing/janitor/CLAUDE.md`](packages/testing/janitor/CLAUDE.md) |
+| 106 | ✓ | [`packages/testing/playwright/AGENTS.md`](packages/testing/playwright/AGENTS.md) |
+| 107 | ✓ | [`packages/testing/playwright/CLAUDE.md`](packages/testing/playwright/CLAUDE.md) |
+| 108 | ✓ | [`packages/testing/playwright/CONTRIBUTING.md`](packages/testing/playwright/CONTRIBUTING.md) |
+| 109 | ✓ | [`packages/testing/playwright/tests/infrastructure/benchmarks/AGENTS.md`](packages/testing/playwright/tests/infrastructure/benchmarks/AGENTS.md) |
+| 110 | ✓ | [`scripts/instance-seeding/AGENTS.md`](scripts/instance-seeding/AGENTS.md) |
+| 111 | → | [`.claude/plugins/n8n/README.md`](.claude/plugins/n8n/README.md) |
+| 112 | → | [`.devcontainer/codespaces/README.md`](.devcontainer/codespaces/README.md) |
+| 113 | → | [`.github/DEVELOPING_V3.md`](.github/DEVELOPING_V3.md) |
+| 114 | → | [`.github/pull_request_title_conventions.md`](.github/pull_request_title_conventions.md) |
+| 115 | → | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
+| 116 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 117 | → | [`CONTRIBUTOR_LICENSE_AGREEMENT.md`](CONTRIBUTOR_LICENSE_AGREEMENT.md) |
+| 118 | → | [`packages/cli/test/integration/eventbus/README-manual-test-syslog.md`](packages/cli/test/integration/eventbus/README-manual-test-syslog.md) |
+| 119 | → | [`packages/testing/containers/README.md`](packages/testing/containers/README.md) |
+| 120 | → | [`packages/testing/playwright/README.md`](packages/testing/playwright/README.md) |
 
 ---
 

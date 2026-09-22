@@ -377,6 +377,14 @@ Tauri `dashboard_control_plane` / HTTP `POST /api/dashboard/control-plane` 接�
 
 前端一级 Tab 位于「综合概览」之后，内部为「概览 / Goal / Workflow / Loop / Plan 与 Task」。attention 深链先切回所属 session，再打开 Workspace 对应 section；Workflow / Loop 同时定位具体 run / schedule，Plan review 打开 Plan 面板。
 
+### 保存工作流的跨周复用概念验证（FTR-004）
+
+`scripts/experiments/workflow_cohort.py` 是显式运行的合成数据实验，不接 Dashboard/API、不读取产品数据库、不进入默认 CI。它只创建内存 SQLite 和固定八周样本，沿保存模板 `origin=template:<id>` 聚合；普通会话相似度、正文及 prompt hash 不参与识别。
+
+自然周以 Asia/Shanghai 周一零点开始。`nextWeekReturn` 是本周活跃模板中下周再次使用的比例；最后一周后续不可观察、零分母都为 null。completed/failed/blocked/cancelled 独立计数；Goal linked/accepted coverage 分母都是同一 created-week cohort 的 completed 次数，不借重复失败/取消证明成功。已禁用模板的历史使用仍计入，删除最初 source run 不影响稳定模板关联；模板与会话同时按项目限制，无痕、Cron、子会话和孤儿会话排除，跨会话 Goal 不归因。
+
+直接运行 `python3 scripts/experiments/workflow_cohort.py` 会验证固定返回率、终态、Goal 覆盖、零分母、末周截尾和作用域负例，输出 `synthetic-only` JSON。该简化 schema 尚未对接生产模板/Goal revision 台账，结果不是用户留存、真实收益或生产 SQL 验收；产品文案、最小样本门和生产只读查询需 owner 决策及进一步验证。
+
 ## Plan 统计（plan_stats.rs）
 
 Dashboard「Plans」的数据源。Tauri `dashboard_plan_stats` / HTTP `POST /api/dashboard/plan-stats`。前端已不再把它作为独立一级 Tab，Plan 指标并入「目标与执行 → Plan 与 Task」；旧命令与路由继续兼容，独立 Plans 历史页仍负责正文、版本、`@plan` 引用与跳回会话。

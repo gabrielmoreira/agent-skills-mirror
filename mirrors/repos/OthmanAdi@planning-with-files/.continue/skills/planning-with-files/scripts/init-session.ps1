@@ -80,6 +80,26 @@ function Get-InheritedMode([string]$CurrentMode) {
     return $CurrentMode
 }
 
+function Format-AttestationFailureReason {
+    param([object[]]$Output, [string]$Fallback)
+
+    $Reason = @(
+        $Output |
+            ForEach-Object {
+                if ($null -ne $_) { ($_.ToString()).Trim() }
+            } |
+            Where-Object { $_ }
+    ) -join " "
+    $Reason = ($Reason -replace '\s+', ' ').Trim()
+    if ([string]::IsNullOrWhiteSpace($Reason)) {
+        return $Fallback
+    }
+    if ($Reason.Length -gt 300) {
+        return ($Reason.Substring(0, 297) + "...")
+    }
+    return $Reason
+}
+
 # Validate template
 if ($Template -ne "default" -and $Template -ne "analytics") {
     Write-Host "Unknown template: $Template (available: default, analytics). Using default."
@@ -136,20 +156,7 @@ if ($UsePlanDir) {
         $Counter++
     }
     $TargetDir = Join-Path $PlanningRoot $PlanId
-    New-Item -ItemType Directory -Path $TargetDir -Force | Out-Null
-    # Reuse the selector's contained, atomic pointer replacement. Set-Content
-    # would follow a reparse point and truncate a hardlinked pointer in place,
-    # overwriting whichever file shares that inode.
-    $global:LASTEXITCODE = 0
-    try {
-        & $PlanSelector $PlanId *> $null
-    } catch {
-        $global:LASTEXITCODE = 1
-    }
-    if ($LASTEXITCODE -ne 0) {
-        Write-Error "Error: could not safely update the active plan pointer at $(Join-Path $PlanningRoot '.active_plan')."
-        exit 1
-    }
+    New-Item -ItemType Directory -Path $TargetDir -Force -ErrorAction Stop | Out-Null
     $Mode = Get-InheritedMode $Mode
 } else {
     $TargetDir = (Get-Location).Path
@@ -173,11 +180,12 @@ if ($UsePlanDir) {
     Write-Host "PLAN_ID=$PlanId"
 }
 
+try {
 # Create task_plan.md if it doesn't exist
 if (-not (Test-Path -LiteralPath $TaskPlanPath)) {
     $AnalyticsPlan = Join-Path $TemplateDir "analytics_task_plan.md"
     if ($Template -eq "analytics" -and (Test-Path $AnalyticsPlan)) {
-        Copy-Item -LiteralPath $AnalyticsPlan -Destination $TaskPlanPath
+        Copy-Item -LiteralPath $AnalyticsPlan -Destination $TaskPlanPath -ErrorAction Stop
     } else {
         @"
 # Task Plan: [Brief Description]
@@ -226,7 +234,7 @@ Phase 1
 ## Errors Encountered
 | Error | Resolution |
 |-------|------------|
-"@ | Out-File -LiteralPath $TaskPlanPath -Encoding UTF8
+"@ | Out-File -LiteralPath $TaskPlanPath -Encoding UTF8 -ErrorAction Stop
     }
     Write-Host "Created $TaskPlanDisplay"
 } else {
@@ -237,7 +245,7 @@ Phase 1
 if (-not (Test-Path -LiteralPath $FindingsPath)) {
     $AnalyticsFindings = Join-Path $TemplateDir "analytics_findings.md"
     if ($Template -eq "analytics" -and (Test-Path $AnalyticsFindings)) {
-        Copy-Item -LiteralPath $AnalyticsFindings -Destination $FindingsPath
+        Copy-Item -LiteralPath $AnalyticsFindings -Destination $FindingsPath -ErrorAction Stop
     } else {
         @"
 # Findings & Decisions
@@ -258,7 +266,7 @@ if (-not (Test-Path -LiteralPath $FindingsPath)) {
 
 ## Resources
 -
-"@ | Out-File -LiteralPath $FindingsPath -Encoding UTF8
+"@ | Out-File -LiteralPath $FindingsPath -Encoding UTF8 -ErrorAction Stop
     }
     Write-Host "Created $FindingsDisplay"
 } else {
@@ -287,7 +295,7 @@ if (-not (Test-Path -LiteralPath $ProgressPath)) {
 ### Errors
 | Error | Resolution |
 |-------|------------|
-"@ | Out-File -LiteralPath $ProgressPath -Encoding UTF8
+"@ | Out-File -LiteralPath $ProgressPath -Encoding UTF8 -ErrorAction Stop
     } else {
         @"
 # Progress Log
@@ -308,11 +316,31 @@ if (-not (Test-Path -LiteralPath $ProgressPath)) {
 ### Errors
 | Error | Resolution |
 |-------|------------|
-"@ | Out-File -LiteralPath $ProgressPath -Encoding UTF8
+"@ | Out-File -LiteralPath $ProgressPath -Encoding UTF8 -ErrorAction Stop
     }
     Write-Host "Created $ProgressDisplay"
 } else {
     Write-Host "$ProgressDisplay already exists, skipping"
+}
+} catch {
+    Write-Error "Error: could not initialize planning files in '$TargetDir': $($_.Exception.Message)"
+    exit 1
+}
+
+if ($UsePlanDir) {
+    # Activate the named plan only after all three planning files are ready.
+    # This matches init-session.sh and prevents a failed initialization from
+    # leaving .active_plan pointed at a partial plan directory.
+    $global:LASTEXITCODE = 0
+    try {
+        & $PlanSelector $PlanId *> $null
+    } catch {
+        $global:LASTEXITCODE = 1
+    }
+    if ($LASTEXITCODE -ne 0) {
+        Write-Error "Error: could not safely update the active plan pointer at $(Join-Path $PlanningRoot '.active_plan')."
+        exit 1
+    }
 }
 
 Write-Host ""
@@ -355,8 +383,11 @@ if ($Mode -ne "") {
     # to another project or plan (#261, #237). Root mode clears both instead:
     # the attester only falls back to the legacy ./task_plan.md when no
     # selector is set, and a bound pin would make it refuse the root plan.
+    $AttestationSucceeded = $false
+    $AttestationCommand = "attest-plan"
+    $AttestationReason = "task_plan.md was not available for attestation"
     $PlanFilePwf = Join-Path $PlanDirPwf "task_plan.md"
-    if (Test-Path -LiteralPath $PlanFilePwf) {
+    if (Test-Path -LiteralPath $PlanFilePwf -PathType Leaf) {
         $HadPlanId = Test-Path Env:PLAN_ID
         $PreviousPlanId = $env:PLAN_ID
         $HadPlanRoot = Test-Path Env:PWF_PLAN_ROOT
@@ -370,21 +401,54 @@ if ($Mode -ne "") {
                 Remove-Item Env:PLAN_ID -ErrorAction SilentlyContinue
             }
 
+            # A called script can return without changing $LASTEXITCODE, so
+            # clear the inherited value before every attempt. Both a non-zero
+            # status and a terminating exception mean the plan is not attested.
+            $global:LASTEXITCODE = 0
+            $AttestOutput = @()
             $IsWindowsHost = [Environment]::OSVersion.Platform -eq [PlatformID]::Win32NT
             if ($IsWindowsHost) {
-                $AttestPs1 = Join-Path $ScriptDir "attest-plan.ps1"
-                if (Test-Path -LiteralPath $AttestPs1) {
-                    & $AttestPs1 *> $null
+                $AttestationCommand = "attest-plan.ps1"
+                $AttestPs1 = Join-Path $ScriptDir $AttestationCommand
+                if (Test-Path -LiteralPath $AttestPs1 -PathType Leaf) {
+                    $AttestOutput = @(& $AttestPs1 2>&1)
+                    $AttestExitCode = $LASTEXITCODE
+                    if ($AttestExitCode -eq 0) {
+                        $AttestationSucceeded = $true
+                        $AttestationReason = ""
+                    } else {
+                        $AttestationReason = Format-AttestationFailureReason `
+                            -Output $AttestOutput `
+                            -Fallback "$AttestationCommand exited with code $AttestExitCode"
+                    }
+                } else {
+                    $AttestationReason = "$AttestationCommand was not found beside init-session.ps1"
                 }
             } else {
-                $AttestSh = Join-Path $ScriptDir "attest-plan.sh"
+                $AttestationCommand = "attest-plan.sh"
+                $AttestSh = Join-Path $ScriptDir $AttestationCommand
                 $Sh = Get-Command sh -ErrorAction SilentlyContinue
-                if ($Sh -and (Test-Path -LiteralPath $AttestSh)) {
-                    & $Sh.Path $AttestSh *> $null
+                if ($Sh -and (Test-Path -LiteralPath $AttestSh -PathType Leaf)) {
+                    $AttestOutput = @(& $Sh.Path $AttestSh 2>&1)
+                    $AttestExitCode = $LASTEXITCODE
+                    if ($AttestExitCode -eq 0) {
+                        $AttestationSucceeded = $true
+                        $AttestationReason = ""
+                    } else {
+                        $AttestationReason = Format-AttestationFailureReason `
+                            -Output $AttestOutput `
+                            -Fallback "$AttestationCommand exited with code $AttestExitCode"
+                    }
+                } elseif (-not $Sh) {
+                    $AttestationReason = "sh was not found; $AttestationCommand could not run"
+                } else {
+                    $AttestationReason = "$AttestationCommand was not found beside init-session.ps1"
                 }
             }
         } catch {
-            # attestation failure must not abort init; the mode marker still stands.
+            $AttestationReason = Format-AttestationFailureReason `
+                -Output @($_) `
+                -Fallback "$AttestationCommand failed"
         } finally {
             if ($HadPlanId) {
                 $env:PLAN_ID = $PreviousPlanId
@@ -399,5 +463,9 @@ if ($Mode -ne "") {
         }
     }
 
-    Write-Host "Mode: $MarkerText (attested, gate counter reset)"
+    if ($AttestationSucceeded) {
+        Write-Host "Mode: $MarkerText (attested, gate counter reset)"
+    } else {
+        Write-Host "Mode: $MarkerText (NOT attested: $AttestationReason; run $AttestationCommand before the first hook fire)"
+    }
 }

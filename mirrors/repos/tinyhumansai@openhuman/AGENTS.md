@@ -131,6 +131,30 @@ Shared mock backend:
 - E2E adapter: `app/test/e2e/mock-server.ts`
 - Manual start: `pnpm mock:api`
 
+Debugging what the core actually sends to inference (prompt size, tool
+schemas, cache keys, which endpoint answered, time to first byte, cached
+tokens): put the capture proxy between the core and its backend instead of
+guessing from logs.
+
+- `CAPTURE_ALL=1 pnpm debug capture` (`scripts/debug/capture-first-inference.mjs`)
+  listens on `127.0.0.1:18765`, forwards everything to `CAPTURE_UPSTREAM`
+  (default `https://api.tinyhumans.ai`; `https://openrouter.ai` for a direct
+  BYOK route), dumps every inference request body under
+  `target/debug-logs/inference-sequence/`, and prints one line per response:
+  `served_by`, `ttfb`, `prompt`, `cached`, `cache_key`, status, error.
+- Point a core at it with `api_url = "http://127.0.0.1:18765"` in the user
+  `config.toml` or `BACKEND_URL=http://127.0.0.1:18765` on a headless
+  `openhuman-core run`; drive turns over JSON-RPC (`channel_web_chat`).
+- Read the lines as claims to check: `cache_key` must be identical across the
+  turns of one thread, `served_by` should not change mid-thread, and `cached`
+  should approach `prompt` from the second call on. Any of those drifting is
+  the finding.
+- Self-test: `scripts/__tests__/capture-first-inference.test.mjs` (runs in the
+  CI scripts lane). The static prompt on its own comes from
+  `openhuman-core agent dump-prompt --agent <id> --json --with-tools`
+  (`scripts/debug-agent-prompts.sh`); the proxy shows the request the harness
+  assembles from it per turn.
+
 ## Configuration and security
 
 - Copy environment settings from `.env.example` and `app/.env.example`.

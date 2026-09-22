@@ -112,8 +112,9 @@ adapter's read-only mechanism. Give each agent a self-contained prompt containin
 - exact result fields: `status`, `findings`, `open_questions`, `evidence`, and `blockers`.
 
 A research agent that returns `blocked` citing only its time budget while most of that budget is unused and no concrete
-obstacle is named has not settled its scope: continue the same agent once through the adapter's same-agent mechanism
-with the uncovered files and the remaining budget. This continuation is not a new research agent.
+obstacle is named has not settled its scope, and neither has one that returns `completed` while its evidence still lists
+uninspected scope paths: continue the same agent once through the adapter's same-agent mechanism with the uncovered
+files and the remaining budget. This continuation is not a new research agent.
 
 When every required research agent settles, fold its findings and evidence into the implementation plan or the
 research-only response. Surface open questions or blockers through the host's user-question mechanism only when they

@@ -99,7 +99,6 @@ The 29 archetypes in this directory:
 | `image_agent` | Image generation/edit specialist |
 | `integrations_agent` | Drives a single Composio toolkit (gmail, notion, github, …) per spawn |
 | `mcp_agent` (feature `mcp`) | Calls tools on an already-connected MCP server |
-| `mcp_setup` | Walks the user through installing/connecting a new MCP server |
 | `morning_briefing` | Proactive scheduled daily summary (tasks, calendar, email, skills) |
 | `orchestrator` | Default user-facing `chat`-tier agent; direct-first, delegates only when it materially helps |
 | `planner` | Read-only `reasoning`-tier architect: breaks a task into a DAG of subtasks with acceptance criteria |

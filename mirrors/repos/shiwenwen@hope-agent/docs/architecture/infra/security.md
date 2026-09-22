@@ -162,7 +162,7 @@ reqwest 的 `redirect::Policy::custom` 回调是同步上下文，没法 `.await
 3. host 是 IP 字面量 → `classify_ip` 后判策略
 4. **未知 hostname → 返回 `false` 放行**——它无法在同步上下文里 resolve；如果 client 自动 follow，单靠这个回调并不存在可靠的“下一跳业务代码再检查”保证
 
-因此新代码不应把同步回调当完整 SSRF 边界。`http_redirect::checked_get` 要求调用方构造 `Policy::none()` client，自行解析相对 `Location`、限制跳数 / loop，并在下一次 `send()` 前对完整目标异步 `check_url`。`web_fetch`、远程 PDF、`url_preview` 与 Knowledge URL / 远程媒体采集已走这条共享原语。
+因此新代码不应把同步回调当完整 SSRF 边界。`http_redirect::checked_get` 要求调用方构造 `Policy::none()` client，自行解析相对 `Location`、限制跳数 / loop，并在下一次 `send()` 前对完整目标异步 `check_url`。`web_fetch`、远程 PDF、`url_preview` 与 Knowledge URL / 远程媒体采集已走这条共享原语。SearXNG 的完整查询 URL 同样逐跳校验，使用 `checked_get_with_client_factory` 在每个已核验目标上重新选择代理；错误仅保留阶段，不包含查询或重定向 URL。
 
 `check_host_blocking_sync` 的返回值语义和 `check_url` **相反**：`true = 应该 block，false = 放行`。它只用于仍受 reqwest 同步 callback 形状限制的兼容入口；迁移这些入口时应改用手动逐跳协议。
 

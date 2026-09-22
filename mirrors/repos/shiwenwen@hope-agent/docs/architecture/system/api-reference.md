@@ -1759,8 +1759,8 @@ Team 生命周期 HTTP 响应保持原有 `status` 字段并追加可观测结�
 | `set_approval_timeout_action` | `POST /api/config/approval-timeout-action` | ✅ |
 | `get_unattended_approval_action` | `GET /api/config/unattended-approval-action` | ✅ |
 | `set_unattended_approval_action` | `POST /api/config/unattended-approval-action` | ✅ |
-| `get_tool_result_disk_threshold` | `GET /api/config/tool-result-threshold` | ✅ |
-| `set_tool_result_disk_threshold` | `POST /api/config/tool-result-threshold` | ✅ |
+| `get_tool_result_disk_threshold` | `GET /api/config/tool-result-threshold` | ✅ 兼容读取；当前不启用磁盘持久化 |
+| `set_tool_result_disk_threshold` | `POST /api/config/tool-result-threshold` | 兼容注册但固定拒写（HTTP `403` / Tauri error）；该项只读 |
 | `get_tool_limits` | `GET /api/config/tool-limits` | ✅ |
 | `set_tool_limits` | `POST /api/config/tool-limits` | ✅ |
 

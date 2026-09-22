@@ -62,11 +62,10 @@ shape. Older V2 collectors can supply local patterns, but check for stale style 
   `src/go/plugin/framework/chartengine/README.md#named-active-template-sets`.
 - `Collect(ctx)` MUST return `error` and write metrics to `metrix`; it MUST NOT
   return a V1 `map[string]int64`.
-- Long-running side-effect loops that must start only with the running job MAY
-  implement optional `collectorapi.CollectorV2Runner`. `Run(ctx)` MUST return
-  promptly after cancellation. Do not start operational polling from `Init()` or
-  `Check()`, because DynCfg `test` and autodetection use those methods without
-  starting the runtime job.
+- Receivers and long-running background loops MAY implement optional `collectorapi.CollectorV2Runner.Run(ctx, ready)`.
+  Keep exclusive acquisition and operational polling out of `Init`/`Check`, which may run while an incumbent is active.
+  Readiness, retry, cancellation, panic, cleanup and output fencing MUST follow
+  `src/go/plugin/framework/jobruntime/README.md#runtime-readiness-and-termination`.
 - Collector `Cleanup(ctx)` MUST be idempotent. The framework may call it more
   than once, including after partial `Init` / `Check` setup.
 - `Check()` MUST stay a cheap detection path: no reservation, no remote side
@@ -187,8 +186,9 @@ shape. Older V2 collectors can supply local patterns, but check for stale style 
     A `Group` you decoded yourself per job is already owned and needs no clone.
 - For native snapshots, handle `NewTemplateSet` errors where content is selected and retain the resulting pointer.
   Use the live provider and store with `collecttest.AssertChartCoverage`; do not reconstruct a second test-only set.
-- Skip empty distributions -- e.g. a summary whose every quantile is NaN -- so a
-  chart waits for real data, matching how scalar NaN values are already skipped.
+- Collectors MUST choose whether an empty observation window omits the family or publishes unavailable fields.
+  Snapshot MeasureSet gauge availability and its effect on chart lifetime are owned by
+  `src/go/pkg/metrix/README.md#field-availability`; do not universally skip all-NaN families.
 - For dynamic surfaces whose label sets churn, `metrix`'s `Vec` handle cache is
   unbounded; cache per-series instruments yourself and evict handles unseen for N
   cycles to stay bounded. Prefer a framework fix if the need is general

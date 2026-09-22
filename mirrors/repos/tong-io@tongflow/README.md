@@ -24,6 +24,19 @@ Text, images, audio, video and 3D are your materials. Decide how they transform 
 
 Open-source core · Your models · Self-hostable · [tongflow.com](https://www.tongflow.com) · [Open the canvas](https://app.tongflow.com)
 
+## Sponsors
+
+<table>
+  <tr>
+    <td width="190" align="center">
+      <a href="https://metaso.cn/minimax-h3/?s=TongFlow" target="_blank" rel="noopener noreferrer"><img src="docs/assets/sponsor-metaso.png" width="163" alt="Metaso / 秘塔科技"></a>
+    </td>
+    <td>
+      <strong>MiniMax H3 video generation API — Metaso (秘塔科技)</strong> Metaso runs MiniMax H3 video generation at <strong>¥0.09/second for 768P and ¥0.15/second for 2K</strong>. Native 2K, synced audio and picture, an <strong>OpenAI-compatible</strong> API, and <strong>ComfyUI</strong> support — no GPU to deploy yourself. 🎁 Sign up through the <a href="https://metaso.cn/minimax-h3/?s=TongFlow" target="_blank" rel="noopener noreferrer">TongFlow link</a> to claim bonus credits and a partner discount.
+    </td>
+  </tr>
+</table>
+
 ## Demo Examples
 
 | Workflow | Result |
@@ -160,8 +173,8 @@ Every node below is a capability from the ABI, grouped by the four operations. M
 - ✅ **Image fusion**: blend or edit multiple references into one image.
 - ✅ **Lip sync**: audio + video → video (lip-sync); also audio + image → video and audio + text → video variants.
 - ✅ **Emotive speech**: text + voice reference → speech in that voice, with emotion control.
-- ✅ **Character swap**: video + reference (scene blend / character replacement), Animate Mix-style generation.
-- ✅ **Motion transfer**: video + reference (motion / retarget), Animate Move-style generation.
+- ✅ **Character swap**: video + reference (scene blend / character replacement).
+- ✅ **Motion transfer**: character image + driving video, end-to-end (no pose extraction).
 - ✅ **Combine text**: merge multiple text nodes into one.
 - ✅ **Concatenate clips**: join multiple videos end to end.
 - ✅ **Mux audio + video**: merge into one file.
@@ -186,10 +199,11 @@ First-party providers (a lab's own models):
 
 - [tongflow-api-gemini](https://github.com/tong-io/tongflow-api-gemini) — Google Gemini with a per-node **model picker**: text, vision, image (Nano Banana / Imagen 4), Veo video, TTS and transcription
 - [tongflow-api-openai](https://github.com/tong-io/tongflow-api-openai) — OpenAI with a per-node **model picker**: `gen_text`, image gen/edit/fusion (`gpt-image-2`), vision, document OCR, Whisper transcription and TTS
-- [tongflow-api-deepseek](https://github.com/tong-io/tongflow-api-deepseek) — DeepSeek V4 (`flash` / `pro`, with a streaming **thinking** bubble) for `gen_text` / text tools
+- [tongflow-api-deepseek](https://github.com/tong-io/tongflow-api-deepseek) — DeepSeek with a per-node **model picker** (V4.1 Flash / V4 Pro, streaming **thinking** bubble): `gen_text` / text tools, plus image understanding on Flash
 - [tongflow-api-bytedance](https://github.com/tong-io/tongflow-api-bytedance) — ByteDance Volcengine Ark with a per-node **model picker**: Doubao text & vision, Seedream image gen/edit/fusion, Seedance text/image/audio → video
 - [tongflow-api-xai](https://github.com/tong-io/tongflow-api-xai) — xAI Grok with a per-node **model picker**: `gen_text` (Grok 4.x), image understanding, and Grok Imagine text-to-image
 - [tongflow-api-runway](https://github.com/tong-io/tongflow-api-runway) — Runway Dev unified API with a per-node **model picker**: video (Gen-4.5, Gen-4 Turbo, Aleph edit, Act-Two, Seedance, Veo), image (GPT Image 2, Seedream 5, Gemini image 3) and ElevenLabs TTS
+- [tongflow-api-metaso](https://github.com/tong-io/tongflow-api-metaso) — MiniMax H3 video generation hosted by [Metaso](https://metaso.cn/minimax-h3/?s=TongFlow): text / image → video at ¥0.09/s (768P) or ¥0.15/s (2K), through an OpenAI-compatible Videos API
 
 ### Router plugins
 
@@ -213,8 +227,8 @@ Aggregators — one key, many third-party models across labs:
 - [tongflow-modal-qwen-image-edit](https://github.com/tong-io/tongflow-modal-qwen-image-edit) — Qwen-Image 2.1: text-to-image, instruction editing, multi-image fusion (up to 10 references) and transparent background removal (headless ComfyUI, int8; weights Qwen Research Licence, non-commercial)
 - [tongflow-modal-boogu](https://github.com/tong-io/tongflow-modal-boogu) — Boogu-Image-0.1 (fp8) text-to-image (dense bilingual text) & single-reference image editing
 - [tongflow-modal-infinitetalk](https://github.com/tong-io/tongflow-modal-infinitetalk) — InfiniteTalk audio-driven lip-sync (audio + image / video → talking-head video)
-- [tongflow-modal-wan-animate](https://github.com/tong-io/tongflow-modal-wan-animate) — Wan-Animate character swap & motion transfer (video + reference)
-- [tongflow-modal-scail2](https://github.com/tong-io/tongflow-modal-scail2) — SCAIL-2 controlled character animation (image + driving video; same two slots as wan-animate)
+- [tongflow-modal-wan-animate](https://github.com/tong-io/tongflow-modal-wan-animate) — Wan-Animate-2 end-to-end character animation (character image + driving video, no pose extraction)
+- [tongflow-modal-scail2](https://github.com/tong-io/tongflow-modal-scail2) — SCAIL-2 controlled character animation (image + driving video), and character swap
 - [tongflow-modal-minimax-h3](https://github.com/tong-io/tongflow-modal-minimax-h3) — MiniMax-H3 33B video generation with native stereo audio (text / first- & last-frame / multi-image / omni-reference)
 - [tongflow-modal-bernini](https://github.com/tong-io/tongflow-modal-bernini) — Bernini-R 1.3B unified video renderer (text/image → image/video, video editing, subtitle / watermark removal)
 - [tongflow-modal-sam3](https://github.com/tong-io/tongflow-modal-sam3) — SAM 3 / SAM 3.1 text-guided matting: cut every instance of a described concept out of an image (transparent PNG) or track it through a video (green-screen matte)

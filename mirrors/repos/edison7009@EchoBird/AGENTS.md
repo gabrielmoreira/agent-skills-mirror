@@ -12,6 +12,14 @@ bundled copy and a remote copy (e.g. `src/data/<x>.json` vs
 files unless told otherwise; they share one schema and the remote wins at
 runtime. Prettier governs the frontend JSON/TS; rustfmt governs `src-tauri/`.
 
+## Desktop interaction rules
+
+- EchoBird is a desktop application, not a website. Do not add custom hover
+  tips, custom tooltips, or other web-style hover-only guidance.
+- Keep the mouse cursor as the system default everywhere. Do not use
+  `cursor: pointer` or any other cursor-changing style for buttons, links,
+  draggable areas, disabled controls, or other interactive elements.
+
 ## CI gates (must pass locally before pushing)
 
 CI runs two jobs in parallel, each with this order — **format runs first and

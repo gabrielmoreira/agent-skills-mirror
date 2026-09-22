@@ -276,7 +276,7 @@ extras:
 
 ---
 
-## Extension 转换
+## Extension 转换 {#extension-transforms}
 
 有些工具不读取 markdown。Gemini CLI 需要 TOML commands；Codex CLI 需要 TOML agents。target 上的 `extension` 字段会在 sync 期间运行一个外部脚本，将每个 source 文件转换为该 target 的原生格式。
 
@@ -330,7 +330,7 @@ description: "Markdown command → Gemini CLI TOML"
 
 ### 参考 Extension
 
-skillshare 仓库在 `extensions/` 下提供了示例 extensions（`gemini-commands`、`codex-agents`）。将其中一个复制到你的 extensions 目录并按需调整 —— 它们是参考实现，不会自动安装。每个参考 extension 都让 `convert.js` 保持简短，你只需编辑字段映射；`md-toml.js` 负责读取 markdown、解析简单的 frontmatter 并写出 TOML。
+skillshare 仓库在 `extensions/` 下提供了示例 extensions（`gemini-commands`、`codex-agents`、`opencode-agents`）。将其中一个复制到你的 extensions 目录并按需调整 —— 它们是参考实现，不会自动安装。每个参考 extension 都让 `convert.js` 保持简短，你只需编辑字段映射；`md-toml.js` 负责读取 markdown、解析简单的 frontmatter 并写出 TOML。
 
 ### Recipe: Codex agents
 
@@ -346,6 +346,8 @@ extras:
 ```
 
 `skillshare sync extras` 会将每个 `<agent>.md` 转换为 `~/.codex/agents/<agent>.toml`，映射 frontmatter 中的 `name`、`description` 和 `model`，并将 markdown 正文折叠进 `developer_instructions`（其他 frontmatter 字段会被丢弃）。[Codex custom agent schema](https://developers.openai.com/codex/subagents#custom-agent-file-schema) 要求 `name`、`description` 和 `developer_instructions`，因此当解析出的 name、description 或 Markdown 正文为空时，参考 transform 会报出明确的错误。不需要单独再复制一份 agents。
+
+agent target 也可以直接设置 `extension`，不需要 extra。参见[使用 extension 转换 agent](/docs/understand/agents#extensions)。
 
 ---
 

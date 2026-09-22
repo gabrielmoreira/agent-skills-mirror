@@ -14,7 +14,7 @@ compatibility aliases in `crates/openhuman-core/src/core/legacy_aliases.rs`.
 - Manage the local AI runtime: detect/spawn/adopt `ollama serve`, probe LM Studio over HTTP (never spawned), select OpenHuman-owned artifact paths, invoke TinyInference's Ollama/Piper installers, and enforce a minimum-context-window floor. Local STT (whisper.cpp) was retired; STT is now cloud/engine-configurable via `voice_server.stt_engine` (see `config/migrations/retire_local_whisper_stt.rs`).
 - Provide chat, vision (multimodal), summarization, embeddings, sentiment, and "should react" inference operations.
 - Preserve product-specific config-rejection, billing, and authentication policy while TinyInference owns provider-failure classification and TinyAgents owns model-call retry execution.
-- Resolve abstract tier names (`reasoning-v1`, `agentic-v1`, `coding-v1`, etc.) through the TinyAgents `ModelRouter` in `crates/openhuman-core/src/agent/tinyagents/routes.rs` and the provider factory here.
+- Resolve abstract tier names (`hint:reasoning`, `hint:agentic`, `hint:coding`, etc.) through the TinyAgents `ModelRouter` in `crates/openhuman-core/src/agent/tinyagents/routes.rs` and the provider factory here.
 - Run ChatGPT/Codex OAuth (PKCE) for the `openai` cloud slug and persist tokens in the encrypted auth-profile store.
 - Expose an OpenAI-compatible `/v1/*` HTTP endpoint guarded by a stable user-managed external bearer.
 - Detect device hardware profile and recommend/apply local model presets/tiers.

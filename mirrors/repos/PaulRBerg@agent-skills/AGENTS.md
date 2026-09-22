@@ -54,7 +54,7 @@ Treat visual structure as information architecture, not decoration.
 - `skills/<name>/assets/` contains bundled media or other static assets.
 - `.agents/internal-skills/<name>.md` contains repo-private internal skills referenced with `@`.
 - `README.md` lists every skill and stays minimal.
-- `CLAUDE.md` is a symlink to `AGENTS.md`; do not edit it separately.
+- Claude Code reads `AGENTS.md` directly; do not add a `CLAUDE.md`.
 
 ## Commands
 

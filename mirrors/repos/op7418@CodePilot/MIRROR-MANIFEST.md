@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `op7418/CodePilot` — 26 default patterns, 7 followed patterns, 29 file(s) materialized.
+Mirror of `op7418/CodePilot` — 26 default patterns, 7 followed patterns, 30 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `op7418/CodePilot` — 26 default patterns, 7 followed patterns, 29 fi
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 7 |
-| Files         | 29 |
+| Files         | 30 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -76,24 +76,25 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 9 | ✓ | [`docs/guardrails/HarnessHome.md`](docs/guardrails/HarnessHome.md) |
 | 10 | ✓ | [`docs/guardrails/i18n.md`](docs/guardrails/i18n.md) |
 | 11 | ✓ | [`docs/guardrails/MCP.md`](docs/guardrails/MCP.md) |
-| 12 | ✓ | [`docs/guardrails/ModelDiscovery.md`](docs/guardrails/ModelDiscovery.md) |
-| 13 | ✓ | [`docs/guardrails/Onboarding.md`](docs/guardrails/Onboarding.md) |
-| 14 | ✓ | [`docs/guardrails/PermissionBoundary.md`](docs/guardrails/PermissionBoundary.md) |
-| 15 | ✓ | [`docs/guardrails/ProviderManagement.md`](docs/guardrails/ProviderManagement.md) |
-| 16 | ✓ | [`docs/guardrails/Release.md`](docs/guardrails/Release.md) |
-| 17 | ✓ | [`docs/guardrails/Runtime.md`](docs/guardrails/Runtime.md) |
-| 18 | ✓ | [`docs/guardrails/SentryTelemetry.md`](docs/guardrails/SentryTelemetry.md) |
-| 19 | ✓ | [`docs/guardrails/StreamSession.md`](docs/guardrails/StreamSession.md) |
-| 20 | ✓ | [`docs/guardrails/Updater.md`](docs/guardrails/Updater.md) |
-| 21 | ✓ | [`docs/guardrails/WorkspaceSidebar.md`](docs/guardrails/WorkspaceSidebar.md) |
-| 22 | ✓ | [`src/lib/bridge/CLAUDE.md`](src/lib/bridge/CLAUDE.md) |
-| 23 | → | [`ARCHITECTURE.md`](ARCHITECTURE.md) |
-| 24 | → | [`docs/design.md`](docs/design.md) |
-| 25 | → | [`docs/exec-plans/README.md`](docs/exec-plans/README.md) |
-| 26 | → | [`docs/guardrails/README.md`](docs/guardrails/README.md) |
-| 27 | → | [`docs/rules/README.md`](docs/rules/README.md) |
-| 28 | → | [`docs/rules/release.md`](docs/rules/release.md) |
-| 29 | → | [`docs/rules/reporting.md`](docs/rules/reporting.md) |
+| 12 | ✓ | [`docs/guardrails/Memory.md`](docs/guardrails/Memory.md) |
+| 13 | ✓ | [`docs/guardrails/ModelDiscovery.md`](docs/guardrails/ModelDiscovery.md) |
+| 14 | ✓ | [`docs/guardrails/Onboarding.md`](docs/guardrails/Onboarding.md) |
+| 15 | ✓ | [`docs/guardrails/PermissionBoundary.md`](docs/guardrails/PermissionBoundary.md) |
+| 16 | ✓ | [`docs/guardrails/ProviderManagement.md`](docs/guardrails/ProviderManagement.md) |
+| 17 | ✓ | [`docs/guardrails/Release.md`](docs/guardrails/Release.md) |
+| 18 | ✓ | [`docs/guardrails/Runtime.md`](docs/guardrails/Runtime.md) |
+| 19 | ✓ | [`docs/guardrails/SentryTelemetry.md`](docs/guardrails/SentryTelemetry.md) |
+| 20 | ✓ | [`docs/guardrails/StreamSession.md`](docs/guardrails/StreamSession.md) |
+| 21 | ✓ | [`docs/guardrails/Updater.md`](docs/guardrails/Updater.md) |
+| 22 | ✓ | [`docs/guardrails/WorkspaceSidebar.md`](docs/guardrails/WorkspaceSidebar.md) |
+| 23 | ✓ | [`src/lib/bridge/CLAUDE.md`](src/lib/bridge/CLAUDE.md) |
+| 24 | → | [`ARCHITECTURE.md`](ARCHITECTURE.md) |
+| 25 | → | [`docs/design.md`](docs/design.md) |
+| 26 | → | [`docs/exec-plans/README.md`](docs/exec-plans/README.md) |
+| 27 | → | [`docs/guardrails/README.md`](docs/guardrails/README.md) |
+| 28 | → | [`docs/rules/README.md`](docs/rules/README.md) |
+| 29 | → | [`docs/rules/release.md`](docs/rules/release.md) |
+| 30 | → | [`docs/rules/reporting.md`](docs/rules/reporting.md) |
 
 ---
 

@@ -127,8 +127,8 @@ Per-strategy command rendering (`CommandShape` docs in `_base.gd`):
   (Codex, Grok).
 - **YAML** — FLAT with flow-style `args` (Hermes); `url`/`headers` are the
   legacy keys there because Hermes infers transport from key presence.
-- **JSON, typeless** — Antigravity, Pi Agent: FLAT `command`/`args`/`env`
-  with no `type` discriminator; transport is inferred from key presence
+- **JSON, typeless** — Antigravity, Pi Agent, Oh My Pi: FLAT `command`/`args`/
+  `env` with no `type` discriminator; transport is inferred from key presence
   (`command` vs `url`), so `url`, `headers`, and any leftover `type` key
   from a previous http-era entry join `command_legacy_keys` and are
   scrubbed on reconfigure.
@@ -141,6 +141,17 @@ Per-strategy command rendering (`CommandShape` docs in `_base.gd`):
   rollback on partial failure. Because project tiers are relative to Pi's own
   working directory, the dock identifies plausible overrides but fails closed
   with the exact path instead of mutating an inferred project root.
+  Oh My Pi keeps the *first* definition instead of the last
+  (`config_merge_first_wins`): its tiers are declared in omp's read order
+  — user `mcp.json` before `.mcp.json` — so Configure updates the file
+  that already owns the server, a fresh entry lands on the primary
+  `mcp.json`, and a compatibility entry's user state is never shadowed.
+  Because the active omp profile relocates the user scope per launch,
+  `config_scope_globs` (`~/.omp/profiles/*`) makes Configure and Remove
+  fail closed while any named profile exists, and known relocation
+  environment variables also cause refusal. The
+  primary file owns `disabledServers` (`config_denylist_key`): Configure
+  and status refuse a suppressed server name without changing either tier.
 
 - **DSH** — DeepSeek Harness (dsh) has no `mcp` CLI verb. MCP servers register
   as `@deepseek-ai/dsh-mcp-client` plugin entries in the HOME patch layer
@@ -193,7 +204,9 @@ removes its legacy `transport` key and honors `$KIMI_CODE_HOME`; DeepSeek
 Harness writes the loader `insert` row into `$DSH_HOME/cordis.patch.yml`
 (the home patch layer, not a per-profile file), requires `transport` next to
 command fields, rejects `url` next to them, and honors `$DSH_HOME` for the
-whole home root.
+whole home root; ZCode nests its server map under `mcp.servers`, spells its
+user-state key `enable` (not `enabled`), and stays manual-edit-only because a
+`.zcode` entry makes ZCode skip that scope's `.agents/mcp.json` fallback.
 
 `automatic_config_edits = false` marks a client whose settings file the dock
 never rewrites: Configure and Remove return the manual entry instead.
@@ -349,3 +362,68 @@ reporter of #941. For project scope, use the file opened by CodeBuddy IDE's
 MCP settings and the dock's manual attach entry. Project paths vary between
 CodeBuddy IDE and CodeBuddy Code (CLI); automatic project-scope selection is
 not part of this descriptor.
+
+### ZCode
+
+ZCode (Z.AI's GLM coding agent) reads MCP servers from a native
+`~/.zcode/cli/config.json` under the **nested** `mcp.servers` map, with flat
+`command`/`args`/`env` entries and `type: "stdio"` ([official MCP
+documentation](https://zcode.z.ai/en/docs/mcp-services)). Configure is
+manual-only: the dock shows the exact entry to add under `mcp.servers` in the
+user scope (`%USERPROFILE%/.zcode/cli/config.json` on Windows) and never
+rewrites the file. The workspace scope (`<project>/.zcode/config.json`) is left
+to the user because ZCode's working directory is unknown to the editor.
+ZCode's user-state key is `enable` (singular) — absence means enabled — so it is
+preserved, never written. `type: "stdio"` also repins a stale `type: "http"`
+left on a hand-added remote entry.
+
+ZCode also accepts an industry-standard `~/.agents/mcp.json` (`mcpServers`), but
+it is only a fallback: once any server exists in a `.zcode` config, ZCode skips
+the `.agents` file for that scope entirely — no merging. An automatic write
+would therefore silently disable every server a user keeps in that fallback, so
+Godot AI never writes the native file. Move those entries into
+`~/.zcode/cli/config.json` first if both are needed, then add the Godot AI entry
+shown by Configure.
+
+### Oh My Pi
+
+Oh My Pi (`omp`) uses a typeless `command`/`args`/`env` entry under
+`mcpServers`. omp keeps the *first* definition of a duplicated server, so the
+tiers are declared in omp's read order and every fold is first-wins: the
+default-profile destination is `~/.omp/agent/mcp.json`
+(`%USERPROFILE%/.omp/agent/mcp.json` on Windows), read before
+`~/.omp/agent/.mcp.json`.
+
+Configure updates the file that already owns the entry — a compatibility
+entry in `~/.omp/agent/.mcp.json` is edited in place with its `enabled`,
+`timeout` (including `0`, which disables it), and `env` preserved, instead of
+being shadowed by a new primary definition. A fresh entry is only created when
+no tier defines the server, and it lands on the primary `mcp.json` (omp itself
+never writes the compatibility files). Project `.omp/mcp.json` precedes
+`.omp/.mcp.json` and overrides the user files; duplicate names are not merged,
+so Configure fails closed with the exact project path instead of mutating an
+inferred project root. Configure and status also check the primary file's
+top-level `disabledServers`
+array, even when the entry lives in the compatibility file. A suppressed server
+is refused with the primary path to review manually; neither file is changed.
+Remove can still clear entries and preserves the denylist. An effective entry
+with `enabled: false` (also string `"false"` or `"0"`, case-insensitive) reports
+`CONFIGURED_MISMATCH` and Configure leaves it unchanged. The primary file's
+`enabledServers` can override this toggle; `disabledServers` always wins.
+Automatic post-update repinning leaves deliberately disabled entries alone.
+
+The active profile is chosen per client launch (`omp --profile`,
+`OMP_PROFILE`/`PI_PROFILE`) and is not persisted where the editor can read it,
+and `~/.omp/profiles/<name>/agent/mcp.json` relocates the user scope entirely.
+While any named profile directory exists, Configure and Remove fail closed
+with the matched paths and the status row reports the ambiguity — the
+default-profile files describe only the default profile. Known `PI_CONFIG_DIR`,
+`PI_CODING_AGENT_DIR`, `OMP_PROFILE`, or `PI_PROFILE` environment settings also
+make Configure, Remove and status refuse. The error names the variable without
+disclosing its value; confirm the active client config path and edit manually.
+
+The suggested fresh entry sets `timeout: 300000` milliseconds because omp's
+30-second default can interrupt long Godot calls; an existing timeout is
+preserved on reconfigure. `OMP_MCP_TIMEOUT_MS` takes precedence over this
+per-server value. See the [upstream MCP configuration
+guide](https://github.com/can1357/oh-my-pi/blob/main/docs/mcp-config.md).

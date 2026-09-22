@@ -250,7 +250,7 @@ officecli add "$FILE" / --type footer --prop type=first --prop text=""
 officecli add "$FILE" / --type footer --prop type=default --prop align=center --prop size=9pt --prop text="Page " --prop field=page
 ```
 
-When both exist, the default footer is `/footer[2]`; alone it is `/footer[1]`. **Verify**: `get --depth 3` must show `fldChar` children, not just a run with literal `"Page"` (`view outline` prints "Footer: Page" for both live fields AND static text — don't rely on it). Do NOT `set --prop differentFirstPage=true` — that prop is unsupported (rejected with exit 2, not silently); adding a first-type footer flips the bit. For composite **Page X of Y**, see recipe (b).
+When both exist, the default footer is `/footer[2]`; alone it is `/footer[1]`. **Verify**: `get --depth 3` must show `fldChar` children, not just a run with literal `"Page"` (`view outline` prints "Footer: Page" for both live fields AND static text — don't rely on it). Do NOT `set --prop differentFirstPage=true` — that prop is unsupported (exit 2 with `WARNING: UNSUPPORTED`; the element itself is still created — check `success` in `--json`); adding a first-type footer flips the bit. For composite **Page X of Y**, see recipe (b).
 
 ### Table of Contents
 

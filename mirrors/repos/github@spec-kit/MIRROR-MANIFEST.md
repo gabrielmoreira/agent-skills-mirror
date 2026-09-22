@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `github/spec-kit` — 26 default patterns, 0 followed patterns, 3 file(s) materialized.
+Mirror of `github/spec-kit` — 26 default patterns, 1 followed patterns, 4 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `github/spec-kit` — 26 default patterns, 0 followed patterns, 3 file
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 0 |
-| Files         | 3 |
+| Followed pats | 1 |
+| Files         | 4 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,7 +51,7 @@ Mirror of `github/spec-kit` — 26 default patterns, 0 followed patterns, 3 file
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-_None._
+- `design/cli.md`
 
 ## File Index
 
@@ -62,6 +62,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 1 | ✓ | [`.github/skills/add-community-extension/SKILL.md`](.github/skills/add-community-extension/SKILL.md) |
 | 2 | ✓ | [`.github/skills/code-review/SKILL.md`](.github/skills/code-review/SKILL.md) |
 | 3 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 4 | → | [`design/cli.md`](design/cli.md) |
 
 ---
 

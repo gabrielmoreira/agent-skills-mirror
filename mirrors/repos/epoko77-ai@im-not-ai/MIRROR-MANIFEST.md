@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `epoko77-ai/im-not-ai` — 26 default patterns, 0 followed patterns, 29 file(s) materialized.
+Mirror of `epoko77-ai/im-not-ai` — 26 default patterns, 0 followed patterns, 31 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `epoko77-ai/im-not-ai` — 26 default patterns, 0 followed patterns, 2
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 29 |
+| Files         | 31 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -70,24 +70,26 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 9 | ✓ | [`agents/translationese-research-distiller.md`](agents/translationese-research-distiller.md) |
 | 10 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 | 11 | ✓ | [`codex/skills/humanize-korean/SKILL.md`](codex/skills/humanize-korean/SKILL.md) |
-| 12 | ✓ | [`GEMINI.md`](GEMINI.md) |
-| 13 | ✓ | [`skills/humanize-korean/references/ai-tell-taxonomy.md`](skills/humanize-korean/references/ai-tell-taxonomy.md) |
-| 14 | ✓ | [`skills/humanize-korean/references/baseline_v2.json`](skills/humanize-korean/references/baseline_v2.json) |
-| 15 | ✓ | [`skills/humanize-korean/references/baseline.json`](skills/humanize-korean/references/baseline.json) |
-| 16 | ✓ | [`skills/humanize-korean/references/design-notes.md`](skills/humanize-korean/references/design-notes.md) |
-| 17 | ✓ | [`skills/humanize-korean/references/diagnosis-rules.md`](skills/humanize-korean/references/diagnosis-rules.md) |
-| 18 | ✓ | [`skills/humanize-korean/references/empirical-validation.md`](skills/humanize-korean/references/empirical-validation.md) |
-| 19 | ✓ | [`skills/humanize-korean/references/metrics_v2.py`](skills/humanize-korean/references/metrics_v2.py) |
-| 20 | ✓ | [`skills/humanize-korean/references/metrics.py`](skills/humanize-korean/references/metrics.py) |
-| 21 | ✓ | [`skills/humanize-korean/references/quick-rules.footer.md`](skills/humanize-korean/references/quick-rules.footer.md) |
-| 22 | ✓ | [`skills/humanize-korean/references/quick-rules.header.md`](skills/humanize-korean/references/quick-rules.header.md) |
-| 23 | ✓ | [`skills/humanize-korean/references/quick-rules.md`](skills/humanize-korean/references/quick-rules.md) |
-| 24 | ✓ | [`skills/humanize-korean/references/rewriting-playbook.md`](skills/humanize-korean/references/rewriting-playbook.md) |
-| 25 | ✓ | [`skills/humanize-korean/references/scholarship.md`](skills/humanize-korean/references/scholarship.md) |
-| 26 | ✓ | [`skills/humanize-korean/references/web-service-spec.md`](skills/humanize-korean/references/web-service-spec.md) |
-| 27 | ✓ | [`skills/humanize-korean/SKILL.md`](skills/humanize-korean/SKILL.md) |
-| 28 | ✓ | [`skills/humanize-redo/SKILL.md`](skills/humanize-redo/SKILL.md) |
-| 29 | ✓ | [`skills/humanize/SKILL.md`](skills/humanize/SKILL.md) |
+| 12 | ✓ | [`extras/skills/commit-ko/SKILL.md`](extras/skills/commit-ko/SKILL.md) |
+| 13 | ✓ | [`GEMINI.md`](GEMINI.md) |
+| 14 | ✓ | [`skills/humanize-korean/references/ai-tell-taxonomy.md`](skills/humanize-korean/references/ai-tell-taxonomy.md) |
+| 15 | ✓ | [`skills/humanize-korean/references/baseline_v2.json`](skills/humanize-korean/references/baseline_v2.json) |
+| 16 | ✓ | [`skills/humanize-korean/references/baseline.json`](skills/humanize-korean/references/baseline.json) |
+| 17 | ✓ | [`skills/humanize-korean/references/design-notes.md`](skills/humanize-korean/references/design-notes.md) |
+| 18 | ✓ | [`skills/humanize-korean/references/diagnosis-rules.md`](skills/humanize-korean/references/diagnosis-rules.md) |
+| 19 | ✓ | [`skills/humanize-korean/references/empirical-validation.md`](skills/humanize-korean/references/empirical-validation.md) |
+| 20 | ✓ | [`skills/humanize-korean/references/metrics_v2.py`](skills/humanize-korean/references/metrics_v2.py) |
+| 21 | ✓ | [`skills/humanize-korean/references/metrics.py`](skills/humanize-korean/references/metrics.py) |
+| 22 | ✓ | [`skills/humanize-korean/references/quick-rules.footer.md`](skills/humanize-korean/references/quick-rules.footer.md) |
+| 23 | ✓ | [`skills/humanize-korean/references/quick-rules.header.md`](skills/humanize-korean/references/quick-rules.header.md) |
+| 24 | ✓ | [`skills/humanize-korean/references/quick-rules.md`](skills/humanize-korean/references/quick-rules.md) |
+| 25 | ✓ | [`skills/humanize-korean/references/rewriting-playbook.md`](skills/humanize-korean/references/rewriting-playbook.md) |
+| 26 | ✓ | [`skills/humanize-korean/references/scholarship.md`](skills/humanize-korean/references/scholarship.md) |
+| 27 | ✓ | [`skills/humanize-korean/references/web-service-spec.md`](skills/humanize-korean/references/web-service-spec.md) |
+| 28 | ✓ | [`skills/humanize-korean/SKILL.md`](skills/humanize-korean/SKILL.md) |
+| 29 | ✓ | [`skills/humanize-redo/SKILL.md`](skills/humanize-redo/SKILL.md) |
+| 30 | ✓ | [`skills/humanize-scan/SKILL.md`](skills/humanize-scan/SKILL.md) |
+| 31 | ✓ | [`skills/humanize/SKILL.md`](skills/humanize/SKILL.md) |
 
 ---
 

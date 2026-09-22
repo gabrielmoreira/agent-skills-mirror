@@ -237,15 +237,16 @@ compatibility export.
 
 ### Tool dispatch and tool-call dialects
 
-Live turns speak **native tool calling**: the tinyagents harness sends structured tool specs through the `ChatModel` adapter and gets structured tool calls back, for every provider (Claude, GPT, Gemini, local Ollama alike).
+`agent.tool_dispatcher` (overridable for one launch with `OPENHUMAN_TOOL_DISPATCHER`) picks how tools are spoken to the model. `auto` (the default) uses **native tool calling** — structured tool specs through the `ChatModel` adapter and structured calls back — whenever the provider profile supports it, and falls back to JSON-in-tag for prompt-guided providers such as local Ollama. The session composes its prompt for the chosen dialect and pins the same dialect on the turn harness, so a text dialect keeps its schemas off the wire and the harness recovers calls with the matching grammar.
 
 Canonical `tinytools_agent::dialect::ToolDialect` implementations provide transcript-compatible parsing and rendering directly; OpenHuman converts durable/provider records only at those I/O boundaries:
 
-- **Native** - structured tool-call fields, the shape live turns produce today.
-- **XML** - `<tool_call>{...}</tool_call>` tags in assistant text, produced by older sessions.
-- **P-Format** - a compact text format some earlier local models used.
+- **Native** (`native`) — structured tool-call fields.
+- **XML** (`xml`) — `<tool_call>{...}</tool_call>` tags in assistant text, with full JSON schemas in the prompt.
+- **P-Format** (`pformat`) — compact positional `<tool_call>name[0|a|1|b]</tool_call>` with `name[0|<a>|1|<b>]` signatures in the prompt; opt-in.
+- **Code** (`python` / `typescript`) — the catalogue is a list of function signatures (`def read_file(path: str, limit: int = None) -> str` or `function read_file(path: string, limit?: number): string;`) and the model writes a function call inside the tag: `read_file(path="src/main.rs", limit=20)` or `read_file({path: "src/main.rs", limit: 20})`. Compact like P-Format but a syntax small code-trained models already write; opt-in.
 
-Persisted session histories can contain suffixes in any of the three shapes, so the session shell keeps the dispatcher around to parse and replay them faithfully when a transcript is resumed.
+Every text dialect shares one parser: a `<tool_call>` body is tried as P-Format, then as a code call, then as JSON, so a model that mixes forms is still understood. Persisted session histories can contain suffixes in any of these shapes, so the session shell keeps the dispatcher around to parse and replay them faithfully when a transcript is resumed.
 
 ### Context management mid-loop
 
@@ -681,7 +682,7 @@ The remaining store cutover runs on **shadow scaffolding** (product behavior unc
 
 ## Workload routes and the burst tier
 
-`tinyagents/routes.rs` is the declarative TinyAgents `ModelRouter` for the OpenHuman tiers `chat`, `reasoning`, `agentic`, `coding`, `burst`, `summarization`, and `vision`. It owns fallback chains and capability gates; `inference::provider::factory` resolves each selected tier to its configured native `ChatModel`. The **`burst-v1`** tier serves low-context, high-fanout workers on a fast/cheap model.
+`tinyagents/routes.rs` is the declarative TinyAgents `ModelRouter` for the OpenHuman workload roles `chat`, `reasoning`, `agentic`, `coding`, `burst`, `summarization`, and `vision`, keyed by their `hint:*` aliases. It owns fallback chains and capability gates; `inference::provider::factory` resolves each selected role to its configured native `ChatModel` — on the managed backend, the pinned default model (`openrouter/deepseek/deepseek-v4-flash` unless changed under Settings → Routing → Default model); there are no per-role tier endpoints any more. The **`burst`** role serves low-context, high-fanout workers.
 
 ## See also
 

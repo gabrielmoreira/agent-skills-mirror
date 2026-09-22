@@ -97,6 +97,7 @@ process violation.
 | Shared UI data access, OpenCode SDK or server routes, `RuntimeAPIs`, runtime auth/URLs, bridges, or runtime switching | `ui-api-decoupling` |
 | Electron main/preload, IPC, native UI, updater, deep links, SSH/tunnels, packaging, or child processes | `desktop-shell` |
 | Session sync, bootstrap/reconnect, reducers, polling, optimistic state, queues, live status, reconciliation, or directory-scoped caches | `sync-state-invariants` |
+| Isolated-space trust boundaries: hardening, networks and gatekeeper policy, exec and lifecycle, grants and credentials, code transfer and apply, dispatcher isolation, preview content, or protection tests | `isolated-space-boundary` |
 | Render/store/event hot paths, large lists, caches/indexes, or reported lag, freezes, CPU/memory, startup, or performance regressions | `performance-engineering` |
 | WebSocket, SSE, streaming transport, runtime transport internals, or private relay | `relay-transport` |
 | UI components, styling, colors, buttons, or icons | `theme-system` |
@@ -120,6 +121,7 @@ Keep each cross-cutting rule with one canonical owner; companion skills add only
 |---|---|
 | Change scope, abstraction discipline, and validation risk | `openchamber-change-discipline` |
 | State authority, reconciliation, optimistic state, and lifecycle correctness | `sync-state-invariants` |
+| Isolated-space trust boundaries and the evidence that each one holds | `isolated-space-boundary` |
 | Measurement, hot-path cost, caching performance, and optimization evidence | `performance-engineering` |
 | Shared UI API and runtime boundaries | `ui-api-decoupling` |
 | WebSocket/SSE and private relay mechanics | `relay-transport` |
@@ -147,5 +149,5 @@ Before adding guidance to a skill, identify its canonical owner. If another skil
 Before creating or updating a pull request, read `CONTRIBUTING.md` and
 `.github/PULL_REQUEST_TEMPLATE.md`. Complete the template with concrete,
 current evidence for the final PR HEAD; do not make the reviewer reconstruct
-intent, affected surfaces, applicable guidance, validation, visual behavior,
-or failure and rollback considerations from the diff alone.
+intent, affected surfaces, validation, visual behavior, or failure and
+rollback considerations from the diff alone.

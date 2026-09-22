@@ -28,12 +28,13 @@ skillshare sync --all
 
 | Option | Meaning |
 |---|---|
-| `--target CLIENT` | Receiving client; repeat to select multiple clients |
+| `--target CLIENT` | Receiving client; repeat to select multiple clients. `--target none` keeps the server in Skillshare without writing it to any client. See [below](#keep-a-server-without-syncing-it) |
 | `--url URL` | Streamable HTTP endpoint for `add` |
 | `-- command args...` | Local executable and literal arguments for `add` |
 | `--disabled` | Project mode, with `add`: turn off a server the Agent's global config defines. See [below](#turn-off-a-global-server-in-one-project) |
 | `--pi-extension PACKAGE` | Required when Pi is a target, with `add`, `edit` or `import`: `pi-mcp-adapter` or `pi-mcp-extension`, the one installed in Pi. See [below](#pi-choose-your-mcp-extension) |
 | `--direct-tools VALUE` | Pi with `pi-mcp-adapter`, with `add` or `edit`: `true`, `false`, `search`, or tool names separated by commas. See [below](#pi-direct-tools) |
+| `--pi-options JSON` | Pi with `pi-mcp-adapter`, with `add` or `edit`: other adapter fields as a JSON object; `{}` clears them. See [below](#pi-options) |
 | `--from CLIENT` | Existing client to import, or the format of `--file` |
 | `--file PATH` | Native JSON/JSONC, TOML or Goose YAML; `.toml` defaults to Codex, other formats are detected from their MCP section; use `--from` for an explicit dialect |
 | `--sync` | Save and synchronize; noninteractive add/import/remove otherwise save only |
@@ -114,8 +115,9 @@ Skillshare config. The schema is `schemas/mcp.schema.json` in the repository.
 | `headers` | HTTP headers: strings or `{fromEnv: VARIABLE}` |
 | `bearerToken` | `{fromEnv: VARIABLE}`; cannot coexist with an Authorization header |
 | `transport` | Optional `stdio` or `streamable-http`; inferred when omitted |
-| `targets` | Optional receiving clients; overrides `mcp.targets` |
+| `targets` | Optional receiving clients; overrides `mcp.targets`. An empty list keeps the server in Skillshare only. See [below](#keep-a-server-without-syncing-it) |
 | `directTools` | Pi with `pi-mcp-adapter` only: `true`, `false`, `"search"` or a list of tool names. See [below](#pi-direct-tools) |
+| `piOptions` | Pi with `pi-mcp-adapter` only: other adapter fields, written into Pi's entry as given. See [below](#pi-options) |
 | `disabled` | `true` only, no other connection fields, and a project must be in scope: project mode, or a root under `mcp.projects`. See [below](#turn-off-a-global-server-in-one-project) |
 
 Client IDs are `claude`, `codex`, `cursor`, `vscode`, `opencode`, `kilocode`,
@@ -123,7 +125,39 @@ Client IDs are `claude`, `codex`, `cursor`, `vscode`, `opencode`, `kilocode`,
 `goose`, `junie`, `kiro`, `lmstudio`, `warp`, `windsurf`, and `pi`.
 `grok` means the official xAI Grok CLI. Server names use letters,
 digits, dots, underscores and hyphens. A server must select at least one client
-either directly or through `mcp.targets` before synchronization.
+either directly or through `mcp.targets` before synchronization, unless its own
+`targets` is an empty list.
+
+### Keep a server without syncing it
+
+A server with `targets: []` stays in the Skillshare source and is written to no client.
+Use it to take a server out of every client while keeping its definition for later.
+If it was synced before, the next sync removes its entries from those clients.
+
+```yaml
+mcp:
+  targets: [claude, codex]
+  servers:
+    docs:
+      url: https://example.com/mcp
+      targets: []
+```
+
+```bash
+skillshare mcp add docs --url https://example.com/mcp --target none
+skillshare mcp edit docs --target none
+skillshare mcp edit docs --target claude   # bring it back
+```
+
+- **Leaving `targets` out is different.** The server then inherits `mcp.targets`, and
+  it is refused when that list is empty too.
+- `none` cannot be combined with a client.
+- In the terminal picker, confirm with no client selected. In the dashboard, untick
+  every client; the server is tagged **No Agents yet**.
+- It works the same for a project's servers and for servers under `mcp.projects`.
+- A `disabled` entry still needs at least one client, since it has to turn the server
+  off somewhere.
+- `mcp list` shows such a server as `kept no targets`.
 
 For Grok, names must start with a letter or underscore, contain only letters,
 digits, hyphens and single underscores, and cannot end with an underscore.
@@ -245,8 +279,10 @@ supported OAuth login inside Antigravity. Skillshare never expands references
 into plaintext credentials.
 
 OpenCode respects `XDG_CONFIG_HOME` for its global directory. An existing
-`opencode.jsonc` is used instead of creating `opencode.json`; if both exist in
-the selected directory, consolidate them before syncing. Custom OpenCode config
+`opencode.jsonc` is used instead of creating `opencode.json`. In a project,
+OpenCode also reads both names from `.opencode/`, so a file kept there is the one
+Skillshare writes to; a new file is created at the project root. If more than one
+exists, consolidate them before syncing. Custom OpenCode config
 paths, directory overrides, inline config and inherited ancestor files are not
 managed. They may override the selected destination in OpenCode.
 
@@ -378,8 +414,13 @@ mcp:
   `mcp.servers`, where no project is in scope, it is refused.
 - **`disabled` stands alone.** The entry takes `targets` and, for Pi, `piExtension`.
   Adding `command`, `url`, `env` or `headers` is an error.
-- **`targets` should be listed.** Without it the entry inherits `mcp.targets`, and
-  any unsupported client in that list is an error.
+- **`targets` can be left out.** The entry then follows the project's targets: on every
+  sync it goes to the clients the project uses that have a per-project switch. Under
+  `mcp.projects`, where Skillshare also knows the global server of that name, it is
+  narrowed further to the clients that server is written to, and Pi takes the global
+  server's `piExtension`. Changing the project's targets later needs no edit to the
+  entry. List `targets` to decide for yourself; an unsupported client in that list is
+  an error.
 - **The name must match.** Skillshare does not read the Agent's global file, so it
   cannot check that a server with this name exists there. A name that matches
   nothing is harmless: the Agent ignores it.
@@ -475,8 +516,13 @@ project has an **MCP** tab.
 - **Add project** takes the folder and its targets. Tick **MCP** to list the folder under
   `mcp.projects` as well.
 - The **MCP** tab lists every global server with a switch. Turning one off saves a
-  `disabled` entry for the Agents that have a per-project switch; turning it back on
-  removes the entry. Below it are the servers that exist in that project only.
+  `disabled` entry without `targets`, so it follows the project's targets as described
+  [above](#turn-off-a-global-server-in-one-project); turning it back on removes the
+  entry. Below it are the servers that exist in that project only.
+- A server that is off shows the logos of the Agents it is off in. When one of the
+  project's Agents has no per-project switch, the row says that the server still loads
+  there. An entry that lists its own `targets`, which differ from the project's, gets
+  **Match the project**: it saves the entry again without `targets`.
 - **Defaults**, at the bottom of the MCP page, edits `mcp.targets` and
   `mcp.directTools`.
 
@@ -522,9 +568,11 @@ Limits:
   removing the server leaves it in place until you import it. A different
   unmanaged entry requires import or an explicit per-entry replacement; another
   Skillshare configuration's ownership cannot be overridden while that
-  configuration file still exists. If it was moved or deleted it can never release
-  the entry, so an explicit import or replacement takes it over. The conflict names
-  the owning file.
+  configuration file still exists. If that file is gone it can never release the
+  entry, so the conflict says the entry is left over, names the file, and takes it
+  over on an explicit import or replacement, in the terminal and from the conflict
+  in the dashboard. A file that only cannot be read, such as one on a drive that is
+  not mounted, still counts as the owner being there.
 - The dashboard's MCP settings work only when the browser opens the dashboard by
   `localhost` or an IP address. Through a domain name, including a reverse
   proxy, MCP requests return 403, because DNS rebinding attacks always use a
@@ -662,3 +710,40 @@ saving an imported connection; a file alone cannot identify which package is
 installed. Unsupported legacy SSE remains blocked. OAuth and package-only options
 stay managed in Pi. Sync success means the configuration was written, not that
 an extension is installed or a server has connected.
+
+### Other adapter settings {#pi-options}
+
+`pi-mcp-adapter` has more per-server fields than Skillshare has settings for, such as
+`excludeTools` and `approveTools`. Put them under `piOptions` and they are written into
+the server's entry in Pi's file as given:
+
+```yaml
+mcp:
+  servers:
+    github:
+      command: npx
+      args: [-y, "@modelcontextprotocol/server-github"]
+      piExtension: pi-mcp-adapter
+      targets: [pi]
+      piOptions:
+        excludeTools: ["*emulator*"]
+        approveTools: ["delete_*", "merge_pull_request"]
+```
+
+From the command line, pass a JSON object to `mcp add` or `mcp edit`. It replaces the
+whole of `piOptions`, and `{}` clears it. The dashboard has the same box in the server
+dialog, under **Direct tools**, and checks that the text is a JSON object before saving.
+
+```bash
+skillshare mcp edit github --pi-options '{"excludeTools":["*emulator*"]}'
+```
+
+- Skillshare does not check the field names or values. Only the adapter knows them.
+- Fields Skillshare writes itself are refused here: `command`, `args`, `env`, `url`,
+  `headers`, `transport`, `enabled`, `disabled` and `directTools`.
+- The values are copied literally. Keep credentials in `env` or `headers` with
+  `fromEnv`, not here.
+- Like `directTools`, a field removed from `piOptions` stays in Pi's file. Delete it
+  there.
+- It needs `piExtension: pi-mcp-adapter` and cannot be combined with `disabled`. No
+  other Agent receives it, and `import --from pi` does not read these fields back.

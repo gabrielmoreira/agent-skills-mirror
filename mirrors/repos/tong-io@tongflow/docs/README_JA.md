@@ -24,6 +24,19 @@
 
 オープンソース · モデルを選べる · セルフホスト対応 · [tongflow.com](https://www.tongflow.com/ja) · [キャンバスを開く](https://app.tongflow.com)
 
+## スポンサー
+
+<table>
+  <tr>
+    <td width="190" align="center">
+      <a href="https://metaso.cn/minimax-h3/?s=TongFlow" target="_blank" rel="noopener noreferrer"><img src="assets/sponsor-metaso.png" width="163" alt="Metaso / 秘塔科技"></a>
+    </td>
+    <td>
+      <strong>MiniMax H3 動画生成 API｜秘塔科技（Metaso）</strong> 秘塔科技の MiniMax H3 動画生成は <strong>768P が 0.09 元/秒、2K が 0.15 元/秒</strong>。ネイティブ 2K と音声同期に対応し、API は <strong>OpenAI 互換</strong>、<strong>ComfyUI</strong> からも使えます。GPU を自分で用意する必要はありません。 🎁 <a href="https://metaso.cn/minimax-h3/?s=TongFlow" target="_blank" rel="noopener noreferrer">TongFlow 専用リンク</a>から登録すると、無料クレジットと特典を受け取れます。
+    </td>
+  </tr>
+</table>
+
 ## Demo デモ
 
 | ワークフローのスクリーンショット | 出力結果 |
@@ -160,8 +173,8 @@ Google または WeChat でサインインすれば、すぐに創作を始め�
 - ✅ **画像融合**: 複数の参照画像を1枚に融合または編集。
 - ✅ **リップシンク**: 音声 + 動画 → 動画（リップシンク）。音声 + 画像 → 動画、音声 + テキスト → 動画などのバリエーションにも対応。
 - ✅ **感情音声**: テキスト + 参照音声 → その声で読み上げ、感情制御に対応。
-- ✅ **キャラクター置換**: 動画 + 参照（シーン融合 / キャラクター置換）、Animate Mix スタイルの生成。
-- ✅ **モーション転送**: 動画 + 参照（モーション / リターゲット）、Animate Move スタイルの生成。
+- ✅ **キャラクター置換**: 動画 + 参照（シーン融合 / キャラクター置換）。
+- ✅ **モーション転送**: キャラクター画像 + 駆動動画によるエンドツーエンド生成（姿勢抽出なし）。
 - ✅ **テキスト結合**: 複数のテキストノードを1つに結合。
 - ✅ **クリップ連結**: 複数の動画を前後につなげる。
 - ✅ **音声・映像の結合**: 1つのファイルに統合。
@@ -186,10 +199,11 @@ Google または WeChat でサインインすれば、すぐに創作を始め�
 
 - [tongflow-api-gemini](https://github.com/tong-io/tongflow-api-gemini) — Google Gemini、ノードごとの**モデルピッカー**：テキスト、視覚、画像（Nano Banana / Imagen 4）、Veo 動画、TTS、文字起こし
 - [tongflow-api-openai](https://github.com/tong-io/tongflow-api-openai) — OpenAI、ノードごとの**モデルピッカー**：`gen_text`、画像生成/編集/融合（`gpt-image-2`）、視覚、ドキュメント OCR、Whisper 文字起こし、TTS
-- [tongflow-api-deepseek](https://github.com/tong-io/tongflow-api-deepseek) — DeepSeek V4（`flash` / `pro`、ストリーミング**思考**バブル付き）ベースの `gen_text` およびテキストツール
+- [tongflow-api-deepseek](https://github.com/tong-io/tongflow-api-deepseek) — DeepSeek、ノードごとの**モデルピッカー**（V4.1 Flash / V4 Pro、ストリーミング**思考**バブル付き）：`gen_text` およびテキストツール、Flash は画像理解も
 - [tongflow-api-bytedance](https://github.com/tong-io/tongflow-api-bytedance) — ByteDance Volcengine Ark、ノードごとの**モデルピッカー**：Doubao テキスト・視覚、Seedream 画像生成/編集/融合、Seedance テキスト / 画像 / 音声 → 動画
 - [tongflow-api-xai](https://github.com/tong-io/tongflow-api-xai) — xAI Grok、ノードごとの**モデルピッカー**：`gen_text`（Grok 4.x）、画像理解、Grok Imagine テキスト→画像
 - [tongflow-api-runway](https://github.com/tong-io/tongflow-api-runway) — Runway Dev 統合 API、ノードごとの**モデルピッカー**：動画（Gen-4.5、Gen-4 Turbo、Aleph 編集、Act-Two、Seedance、Veo）、画像（GPT Image 2、Seedream 5、Gemini image 3）、ElevenLabs TTS
+- [tongflow-api-metaso](https://github.com/tong-io/tongflow-api-metaso) — [Metaso（秘塔科技）](https://metaso.cn/minimax-h3/?s=TongFlow)がホストする MiniMax H3 動画生成：テキスト / 画像 → 動画、768P は 0.09 元/秒、2K は 0.15 元/秒。OpenAI 互換の Videos API 経由
 
 ### ルーター / 集約プラグイン
 
@@ -213,8 +227,8 @@ Google または WeChat でサインインすれば、すぐに創作を始め�
 - [tongflow-modal-qwen-image-edit](https://github.com/tong-io/tongflow-modal-qwen-image-edit) — Qwen-Image 2.1：テキスト → 画像、指示ベースの画像編集、マルチ画像融合（最大 10 枚の参照画像）、背景除去（透過 PNG）（ヘッドレス ComfyUI、int8。重みは Qwen Research License、非商用のみ）
 - [tongflow-modal-boogu](https://github.com/tong-io/tongflow-modal-boogu) — Boogu-Image-0.1（fp8）テキストから画像生成（高密度な多言語テキスト）と単一参照画像編集
 - [tongflow-modal-infinitetalk](https://github.com/tong-io/tongflow-modal-infinitetalk) — InfiniteTalk 音声駆動リップシンク（音声 + 画像 / 動画 → デジタルヒューマン動画）
-- [tongflow-modal-wan-animate](https://github.com/tong-io/tongflow-modal-wan-animate) — Wan-Animate キャラクター置換とモーション転送（動画 + 参照）
-- [tongflow-modal-scail2](https://github.com/tong-io/tongflow-modal-scail2) — SCAIL-2 制御可能なキャラクターアニメーション（画像 + 駆動動画；wan-animate と同じ 2 スロット）
+- [tongflow-modal-wan-animate](https://github.com/tong-io/tongflow-modal-wan-animate) — Wan-Animate-2 エンドツーエンドのキャラクターアニメーション（キャラクター画像 + 駆動動画、姿勢抽出なし）
+- [tongflow-modal-scail2](https://github.com/tong-io/tongflow-modal-scail2) — SCAIL-2 制御可能なキャラクターアニメーション（画像 + 駆動動画）とキャラクター置換
 - [tongflow-modal-minimax-h3](https://github.com/tong-io/tongflow-modal-minimax-h3) — MiniMax-H3 33B 動画生成、ネイティブステレオ音声（テキスト / 最初と最後のフレーム / 複数画像 / マルチ参照）
 - [tongflow-modal-bernini](https://github.com/tong-io/tongflow-modal-bernini) — Bernini-R 1.3B 統合動画レンダラー（テキスト/画像 → 画像/動画、動画編集、字幕 / ウォーターマーク除去）
 - [tongflow-modal-sam3](https://github.com/tong-io/tongflow-modal-sam3) — SAM 3 / SAM 3.1 テキスト誘導マッティング：記述した概念の全インスタンスを画像から切り抜き（透過 PNG）、動画では全編トラッキング（グリーンバック出力）
