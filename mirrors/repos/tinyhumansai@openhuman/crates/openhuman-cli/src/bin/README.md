@@ -23,6 +23,7 @@ the arguments to `openhuman_core::run_core_from_args`.
 | `openhuman-fleet` | `fleet.rs` | `http-server`, `bin-tools` | Process-per-user supervisor + reverse proxy |
 | `rss-bench` | `rss_bench.rs` | `rss-bench` | Steady-state RSS benchmark for an embedded agent roster |
 | `tool-dialect-bench` | `tool_dialect_bench.rs` | none | Manual A/B of the text tool-call dialects against a local Ollama model |
+| `tool-search-bench` | `tool_search_bench.rs` | none (`jev`, in `default`, for the Jev rankers) | `tool_search` ranker comparison (bm25 / overlap / embedding / jev) over the real orchestrator registry plus the recorded Composio catalogues, against `tests/fixtures/tool_search/intents.jsonl` |
 | `library-profile` | `library_profile/main.rs` (+ `harness.rs`, `mock.rs`, `scenarios/`) | `rss-bench` (add `rss-bench-dhat` for heap profiles) | Hermetic library-embedding profiling scenarios |
 
 `http-server` is in `default`; `bin-tools`, `rss-bench` and `rss-bench-dhat`

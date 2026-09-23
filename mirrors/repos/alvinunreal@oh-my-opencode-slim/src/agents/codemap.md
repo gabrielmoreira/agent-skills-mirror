@@ -2,7 +2,7 @@
 
 ## Responsibility
 
-Defines agent personalities (Orchestrator, Explorer, Librarian, etc.) and manages their configuration lifecycle. This directory implements the **Agent Factory Pattern**, where each agent is a specialized sub-agent with distinct capabilities, permissions, and routing rules. The Orchestrator agent (src/agents/index.ts) coordinates task delegation to these specialists.
+Defines agent personalities (Orchestrator, Explorer, Librarian, etc.) and manages their configuration lifecycle. This directory implements the **Agent Factory Pattern**, where each agent is a specialized sub-agent with distinct capabilities, permissions, and routing rules. The Orchestrator agent (src/agents/index.ts) coordinates task delegation to these specialists. Note: Council and Councillor agents are included for multi-model consensus, with Councillors created dynamically per preset.
 
 ## Design
 
@@ -19,8 +19,8 @@ Each agent is a **prompt-driven specialist** with a factory function that create
 | **designer** | `createDesignerAgent()` | UI/UX design, review, and implementation | Read/write (read, glob, grep, write, edit) | DEFAULT_MODELS.designer |
 | **fixer** | `createFixerAgent()` | Fast implementation specialist for bounded tasks | Read/write (read, glob, grep, write, edit) | DEFAULT_MODELS.fixer |
 | **observer** | `createObserverAgent()` | Visual analysis specialist (images, PDFs, diagrams) | Read-only (read, glob, grep, ast_grep_search) | DEFAULT_MODELS.observer |
-| **council** | `createCouncilAgent()` | Multi-LLM consensus synthesis from councillor responses | Read-only | DEFAULT_MODELS.council |
-| **councillor** | `createCouncillorAgent()` | Read-only council advisor; registered dynamically per preset seat as `councillor-<name>` by `buildCouncillorAgents()` (`council-agents.ts`) | Read-only (read, glob, grep, ast_grep_search) | Inherited from council preset |
+| **council** | `createCouncilAgent()` | Multi-model consensus synthesis (read-only, no tools) | Read-only (council permission) | DEFAULT_MODELS.council |
+| **councillor** | Created dynamically by `buildCouncillorAgents()` | Read-only council advisor; registered per preset seat as `councillor-<name>` | Read-only (read, glob, grep, ast_grep_search) | Inherited from council preset |
 
 ### Configuration System
 
@@ -30,6 +30,7 @@ Each agent is a **prompt-driven specialist** with a factory function that create
 - **Permission wildcards**: Applied via `applyDefaultPermissions()` in `index.ts`
 - **Model resolution**: Supports string models, explicit `inheritModelFrom` policies, and priority-ordered arrays (`_modelArray`) for runtime fallback
 - **Skill permissions**: Per-agent MCP and tool access controlled via `getSkillPermissionsForAgent()`
+- **Council synthesis**: Uses `createSynthesisOnlyPermission()` to block tool calls while allowing synthesis from councillor responses
 
 ### Agent Lifecycle
 
@@ -80,43 +81,14 @@ injectDisplayNames(orchestrator, displayNameMap);
 return [orchestrator, ...allSubAgents];
 ```
 
-### Agent Configuration Export
+### Council Synthesis Flow
 
-```typescript
-export function getAgentConfigs(config?: PluginConfig): Record<string, SDKAgentConfig> {
-  const agents = createAgents(config);
-  
-  const applyClassification = (name: string, sdkConfig: SDKAgentConfig) => {
-    if (name === 'council') {
-      sdkConfig.mode = 'all'; // Primary + subagent
-    } else if (name === 'councillor') {
-      sdkConfig.mode = 'subagent';
-      sdkConfig.hidden = true; // Internal only
-    } else if (isSubagent(name)) {
-      sdkConfig.mode = 'subagent';
-    } else if (name === 'orchestrator') {
-      sdkConfig.mode = 'primary';
-    }
-  };
-  
-  // Build SDK config with classification and MCP permissions
-  const entries: Array<[string, SDKAgentConfig]> = [];
-  for (const a of agents) {
-    const sdkConfig = { ...a.config, description: a.description };
-    applyClassification(a.name, sdkConfig);
-    
-    // Handle display names: create both displayName and hidden alias
-    if (a.displayName) {
-      entries.push([normalizeAgentName(a.displayName), sdkConfig]);
-      entries.push([a.name, { ...sdkConfig, hidden: true }]);
-    } else {
-      entries.push([a.name, sdkConfig]);
-    }
-  }
-  
-  return Object.fromEntries(entries);
-}
-```
+The council agent is a synthesis-only specialist:
+- Receives raw responses from multiple councillors (different models) via orchestrator dispatch
+- Has NO tools - cannot read, glob, grep, or run shell commands
+- Follows mandatory Synthesis Process steps before producing output
+- Formats output with Council Response, Per-Councillor Details, and Council Summary sections
+- Uses `ensureCouncilCompactionException()` to inject compaction exception idempotently
 
 ### Model Resolution and Fallback
 
@@ -181,7 +153,7 @@ These rules are filtered based on disabled agents and injected into the orchestr
 - `designer.ts` - UI/UX design specialist
 - `fixer.ts` - Implementation execution specialist
 - `observer.ts` - Visual analysis specialist
-- `council.ts` - Multi-LLM council agent
+- `council.ts` - Multi-model consensus synthesis agent (synthesis only)
 - `councillor.ts` - Read-only council advisor (internal)
 - `council-agents.ts` - Dynamic `councillor-<name>` agent builders from council presets
 - `task-rejection.ts` - Task-rejection instruction appended to specialist prompts

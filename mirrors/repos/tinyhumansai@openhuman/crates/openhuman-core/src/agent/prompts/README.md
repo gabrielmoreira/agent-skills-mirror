@@ -122,20 +122,35 @@ three chains share the same anti-fabrication floor and style rules.
 ## KV-cache / prefix stability
 
 The rendered prompt is built once per session and reused on every turn
-(`agent/session_host/turn/context.rs`) so the inference backend's prefix
-cache hits. `PromptSection::tier()` (`PromptTier::Stable` / `Context` /
+(`agent/session_host/runtime_session.rs::prepare`) so the inference backend's
+prefix cache hits. `PromptSection::tier()` (`PromptTier::Stable` / `Context` /
 `Volatile`, default `Stable`) controls emission order in
-`SystemPromptBuilder::build_tiered`: stable bytes (identity, tools, safety,
-datetime rules) first, then per-session context (`AGENTS.md`, workspace,
-runtime), then volatile bytes (user files, memory, reflections, signed-in
-identity, personality roster, the dynamic archetype body) last, with a
-breakpoint offset recorded after each non-empty tier. A prefix is reusable
-only up to the first differing byte, so a volatile section rendered early
-invalidates every stable byte behind it. Two consequences visible in this
-module: `DateTimeSection` renders only the clock *rules* and is `Stable` (the
-live timestamp rides the user message via `current_datetime_line`), and
-`memory_date_label` renders `NamespaceSummary.updated_at` as an absolute date
-rather than "N days ago".
+`SystemPromptBuilder::build_tiered`: every section renders once through
+`PromptSection::build_parts` and its parts are bucketed by tier. Stable bytes
+(identity, rules, tool protocol, datetime rules, the shared grounding contract
+and `STYLE.md`) come first, then per-session context (`AGENTS.md`, workspace,
+model-gated execution discipline), then volatile bytes (user files, memory,
+reflections, standing preferences, installed skills, connected integrations
+and MCP servers) last.
+
+A `PromptSource::Dynamic` builder declares its own tiers by emitting
+`PROMPT_TIER_CONTEXT_MARKER` / `PROMPT_TIER_VOLATILE_MARKER` on their own lines
+(`split_prompt_tiers`); a builder that emits neither stays wholly `Volatile`.
+The orchestrator does this so its identity and rules lead the stable tier
+instead of trailing the memory sections.
+
+`TieredPrompt::system_messages()` hands the session one system message for
+`Stable + Context` and a second for `Volatile`. The tinyagents harness gives
+each leading system message its own cacheable segment
+(`PromptBuilder::push_system_messages`), so a rewritten memory file or a newly
+connected service changes the second segment and leaves the first
+byte-identical; `PromptCacheSegmentMiddleware` mirrors that split in the
+segment ids it declares. A prefix is reusable only up to the first differing
+byte, so a volatile section rendered early invalidates every stable byte
+behind it. Two consequences visible in this module: `DateTimeSection` renders
+only the clock *rules* and is `Stable` (the live timestamp rides the user
+message via `current_datetime_line`), and `memory_date_label` renders
+`NamespaceSummary.updated_at` as an absolute date rather than "N days ago".
 
 ## Used by
 

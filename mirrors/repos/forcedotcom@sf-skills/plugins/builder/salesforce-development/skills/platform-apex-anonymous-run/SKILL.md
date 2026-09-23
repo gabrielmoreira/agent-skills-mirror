@@ -1,6 +1,6 @@
 ---
 name: platform-apex-anonymous-run
-description: "Use this skill to run anonymous Apex against the connected Salesforce org — from a .apex file or a pasted snippet — capturing the debug log, surfacing compile and runtime errors, and summarizing results. Trigger on phrases like \"run this anonymous apex\", \"execute this script against my org\", \"run this snippet of Apex\", \"what does this code return\", or \"execute scripts/foo.apex\". Wraps verification-style scripts in a savepoint and rollback so org state is untouched, and warns before running against production. DO NOT TRIGGER for authoring .cls or .trigger files (use platform-apex-generate), running Apex unit tests (use platform-apex-test-run), or deep debug-log analysis (use platform-apex-logs-debug)."
+description: "Runs anonymous Apex against the connected org (.apex file or pasted snippet), capturing the debug log, surfacing errors. Triggers on \"run this anonymous apex\", \"execute this script against my org\", \"what does this code return\", or \"execute scripts/foo.apex\". Wraps scripts in savepoint+rollback; warns before running in production. DO NOT TRIGGER for authoring .cls/.trigger files (platform-apex-generate), Apex unit tests (platform-apex-test-run), or debug-log analysis (platform-apex-logs-debug)."
 metadata:
   version: "1.0"
   relatedSkills:

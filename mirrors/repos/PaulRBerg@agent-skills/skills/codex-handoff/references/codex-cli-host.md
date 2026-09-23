@@ -114,4 +114,5 @@ that agent and its dependents.
 Rely on native thread rendering while work runs. At settlement, render `### 🏁 Codex handoff — <completed|blocked>` with
 the strategy, total agent count, and wave count. Include a compact per-agent table with model, effort, result, and
 summary, then `### 📦 Changed`, `### 🧪 Verification`, `### 🧹 Polish` when applicable, automatic cross-repository
-commit hashes when any, and an always-present `### ⚠️ Risks / blockers`; write `none` when empty.
+commit hashes when any, and `### Issues and caveats` with the shared contract's `Resolved` and `Open` groups. Omit empty
+issue groups and the whole section when empty; write `none` for other applicable empty values.

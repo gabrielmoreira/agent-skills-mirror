@@ -1,11 +1,19 @@
 ---
 name: skill-test
-description: "Validate skill files for structural compliance and behavioral correctness. Three modes: static (linter), spec (behavioral), audit (coverage report)."
+description: "Validate skill files for structural compliance and behavioral correctness. Four modes: static linter, spec, category rubric, audit."
 argument-hint: "static [skill-name | all] | spec [skill-name] | category [skill-name | all] | audit"
 user-invocable: true
 allowed-tools: Read, Glob, Grep, Write
 model: sonnet
 ---
+
+!`source "${CLAUDE_PROJECT_DIR:-.}/.claude/hooks/yaml-helper.sh" 2>/dev/null && resolve_config --keys automation`
+
+**Automation mode**: Resolve `modes.automation` (`project.local.yaml` →
+`project.yaml` → default `collaborative`). Every `AskUserQuestion` call and
+every file write follows `.claude/docs/automation-modes.md`
+(collaborative asks always · guided major-only · autonomous logs and proceeds;
+`automation_always_ask` categories always prompt).
 
 # Skill Test
 
@@ -62,10 +70,29 @@ The skill must have ≥2 numbered phase headings. Look for patterns like:
 **FAIL** if fewer than 2 phase-like headings are found.
 
 ### Check 3 — Verdict Keywords
-The skill must contain at least one of: `PASS`, `FAIL`, `CONCERNS`, `APPROVED`,
-`BLOCKED`, `COMPLETE`, `READY`, `COMPLIANT`, `NON-COMPLIANT`
 
-**FAIL** if none are present.
+The skill must communicate a clear outcome. Accept any of:
+
+- **Gate / review verdicts** — `PASS`, `FAIL`, `CONCERNS`, `APPROVED`,
+  `BLOCKED`, `COMPLETE`, `READY`, `COMPLIANT`, `NON-COMPLIANT`
+- **Go / no-go verdicts** — `PROCEED`, `PIVOT`, `KILL`, `GO`, `NO-GO`
+- **Severity scales** — `CRITICAL`, `HIGH`, `MEDIUM`, `LOW`. Audit skills rank
+  findings by severity instead of issuing one verdict for the whole run.
+
+**FAIL** if none are present **and** the skill produces an assessment — its
+description or body promises a review, audit, check, gate, or readiness
+judgement.
+
+**WARN** (never FAIL) if none are present and the skill's output is an artifact
+or a value rather than a judgement. `/settings` is the reference case: it prints
+and writes configuration and has no verdict to give. Do not invent one to
+satisfy this check.
+
+> The narrow earlier list (gate verdicts only, hard FAIL) failed 5 of 74 skills
+> for reasons that were not their fault — `/prototype` and `/vertical-slice`
+> advertise `PROCEED`/`PIVOT`/`KILL` in their own descriptions, `/adopt` and
+> `/security-audit` rank by severity, and `/settings` has no verdict by design.
+> A linter that cries wolf on 7% of the corpus stops being read.
 
 ### Check 4 — Collaborative Protocol Language
 The skill must contain ask-before-write language. Look for:
@@ -120,7 +147,7 @@ Recommended: Add a "Follow-Up Actions" section at the end of the skill.
 
 For `static all`, produce a summary table then list any non-compliant skills:
 ```
-=== Skill Static Check: All 52 Skills ===
+=== Skill Static Check: All 74 Skills ===
 
 Skill                  | Result       | Issues
 -----------------------|--------------|-------
@@ -129,9 +156,19 @@ design-review          | COMPLIANT    |
 story-readiness        | WARNINGS     | Check 5: no handoff
 ...
 
-Summary: 48 COMPLIANT, 3 WARNINGS, 1 NON-COMPLIANT
-Aggregate Verdict: N WARNINGS / N FAILURES
+Summary: 48 COMPLIANT, 3 WARNINGS, 1 NON-COMPLIANT, 1 NOT ASSESSED
+Aggregate Verdict: N WARNINGS / N FAILURES / N NOT ASSESSED
 ```
+
+**`NOT ASSESSED` is a per-skill result here, not only an aggregate line.** A skill
+whose file could not be read or parsed, or whose checks could not run, is reported
+as `NOT ASSESSED` with the reason — never omitted from the table and never counted
+as COMPLIANT. Ranked **above COMPLIANT**, **below WARNINGS and NON-COMPLIANT**.
+
+**And state the denominator.** `All 74 Skills` in the header must be the number
+actually examined, not the number that exist: report `[N] of [M] skills checked`
+whenever they differ. A summary whose counts silently sum to less than its own
+title is the failure this skill is supposed to catch in others.
 
 ---
 
@@ -169,6 +206,14 @@ Mark each assertion:
 - **PASS** — skill instructions clearly satisfy this assertion
 - **PARTIAL** — skill instructions partially address it, but with ambiguity
 - **FAIL** — skill instructions would NOT satisfy this assertion given the fixture
+- **NOT ASSESSED** — the assertion could not be evaluated at all: it names a
+  fixture state the spec never defines, depends on runtime behavior no static
+  read can settle, or references a file or section that does not exist. Rank it
+  **above PASS** (an assertion nobody could evaluate has not been satisfied) and
+  **below PARTIAL and FAIL** (an ambiguity somebody identified is more actionable
+  than one nobody could reach). Do not resolve an unevaluable assertion to PASS
+  because the skill "probably" handles it — that judgement is what the spec exists
+  to replace.
 
 For **Protocol Compliance** assertions (always present):
 - Check whether the skill requires "May I write" before file writes
@@ -308,8 +353,8 @@ For each agent in catalog's `agents:` section:
 === Skill Test Coverage Audit ===
 Date: [date]
 
-SKILLS (72 total)
-Specs written: 72 (100%) | Never static tested: 72 | Never category tested: 72
+SKILLS (74 total)
+Specs written: 72 (97%) | Never static tested: 74 | Never category tested: 74
 
 Skill                  | Cat      | Has Spec | Last Static | S.Result | Last Cat | C.Result | Priority
 -----------------------|----------|----------|-------------|----------|----------|----------|----------

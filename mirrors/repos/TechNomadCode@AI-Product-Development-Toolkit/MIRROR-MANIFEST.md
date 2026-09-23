@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `TechNomadCode/AI-Product-Development-Toolkit` — 26 default patterns, 0 followed patterns, 1 file(s) materialized.
+Mirror of `TechNomadCode/AI-Product-Development-Toolkit` — 26 default patterns, 0 followed patterns, 2 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `TechNomadCode/AI-Product-Development-Toolkit` — 26 default patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 1 |
+| Files         | 2 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,7 +59,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`agent-configs/claude-code-desktop/claude-opus-5/CLAUDE.md`](agent-configs/claude-code-desktop/claude-opus-5/CLAUDE.md) |
+| 1 | ✓ | [`agent-configs/claude-code-desktop/claude-opus-5-5/CLAUDE.md`](agent-configs/claude-code-desktop/claude-opus-5-5/CLAUDE.md) |
+| 2 | ✓ | [`agent-configs/claude-code-desktop/claude-opus-5/CLAUDE.md`](agent-configs/claude-code-desktop/claude-opus-5/CLAUDE.md) |
 
 ---
 

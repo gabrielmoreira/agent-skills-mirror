@@ -1,13 +1,16 @@
 ---
 name: vertical-slice
-description: "Pre-Production validation — build a production-quality end-to-end build to confirm the full game loop is achievable before committing to Production. Run after GDDs, architecture, and UX specs are complete. Produces a PROCEED/PIVOT/KILL verdict that gates the Pre-Production → Production transition."
+description: "Pre-production validation — end-to-end build to confirm the full loop is achievable before committing to Production. After GDDs, architecture, UX specs."
 argument-hint: "[--review full|lean|solo]"
 user-invocable: true
-allowed-tools: Read, Glob, Grep, Write, Edit, Bash, Task, AskUserQuestion
+allowed-tools: Read, Glob, Grep, Write, Edit, Bash, Agent, AskUserQuestion
 model: sonnet
-agent: prototyper
 isolation: worktree
 ---
+
+!`source "${CLAUDE_PROJECT_DIR:-.}/.claude/hooks/yaml-helper.sh" 2>/dev/null && resolve_config --keys review_mode,automation`
+
+
 
 ## Purpose
 
@@ -36,12 +39,13 @@ whether the core idea is worth designing, run `/prototype` (concept prototype) i
 
 ## Phase 1: Resolve Review Mode and Load Context
 
-Resolve the review mode:
-1. If `--review [full|lean|solo]` was passed → use that
-2. Else read `production/review-mode.txt` → use that value
-3. Else → default to `lean`
 
-See `.claude/docs/director-gates.md` for the full check pattern.
+See `.claude/docs/director-gates.md` for the full check pattern. Individual gate definitions live in `.claude/docs/director-gates/[gate-id].md` — the spawned agent reads its own gate file; do not read it in the parent session.
+
+
+Every `AskUserQuestion` call follows `.claude/docs/automation-modes.md`
+(collaborative asks always · guided major-only · autonomous logs and proceeds;
+`automation_always_ask` categories always prompt).
 
 Read the following files to understand the full design intent:
 - `CLAUDE.md` — tech stack and engine
@@ -118,7 +122,7 @@ If yes, create the directory. Every file must begin with:
 
 **Quality standards** — higher than concept prototype, not full production:
 - Follow architecture layers from `docs/architecture/control-manifest.md`
-- Naming conventions from `.claude/docs/technical-preferences.md`
+- Naming conventions — `naming.*` from `project.yaml`; for any key absent or empty (including when `project.yaml` has no `naming` block), from `.claude/docs/technical-preferences.md`
 - No hardcoded gameplay values — use constants or config files
 - Basic error handling on critical paths
 - Placeholder art acceptable; representative art preferred
@@ -260,8 +264,8 @@ the project — cross-reference it with sprint estimates.
 **Review mode check:**
 - `solo` → skip. Note: "CD-PLAYTEST skipped — Solo mode."
 - `lean` → skip (not a PHASE-GATE). Note: "CD-PLAYTEST skipped — Lean mode."
-- `full` → spawn `creative-director` via Task using gate **CD-PLAYTEST**
-  (`.claude/docs/director-gates.md`).
+- `full` → spawn `creative-director` via `Agent` using gate **CD-PLAYTEST**
+  (`.claude/docs/director-gates/cd-playtest.md`).
 
 Pass: the full REPORT.md content, the validation question, game pillars and core
 fantasy from `design/gdd/game-concept.md`.

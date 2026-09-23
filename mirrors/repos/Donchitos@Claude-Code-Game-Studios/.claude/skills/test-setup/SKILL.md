@@ -1,11 +1,19 @@
 ---
 name: test-setup
-description: "Scaffold the test framework and CI/CD pipeline for the project's engine. Creates the tests/ directory structure, engine-specific test runner configuration, and GitHub Actions workflow. Run once during Technical Setup phase before the first sprint begins."
+description: "Scaffold the test framework and CI — tests/ directory, engine test runner, GitHub Actions workflow. Once, before the first sprint."
 argument-hint: "[force]"
 user-invocable: true
 allowed-tools: Read, Glob, Grep, Bash, Write
 model: sonnet
 ---
+
+!`source "${CLAUDE_PROJECT_DIR:-.}/.claude/hooks/yaml-helper.sh" 2>/dev/null && resolve_config --keys automation`
+
+**Automation mode**: Resolve `modes.automation` (`project.local.yaml` →
+`project.yaml` → default `collaborative`). Every `AskUserQuestion` call and
+every file write follows `.claude/docs/automation-modes.md`
+(collaborative asks always · guided major-only · autonomous logs and proceeds;
+`automation_always_ask` categories always prompt).
 
 # Test Setup
 
@@ -25,8 +33,12 @@ A test framework installed at sprint four costs 3 sprints.
 ## Phase 1: Detect Engine and Existing State
 
 1. **Read engine config**:
-   - Read `.claude/docs/technical-preferences.md` and extract the `Engine:` value.
-   - If engine is not configured (`[TO BE CONFIGURED]`), stop:
+   - Read `engine.name` from `project.yaml`; if that key is absent or empty
+     (including when `project.yaml` has no `engine:` block), fall back to the
+     `Engine:` value in `.claude/docs/technical-preferences.md`.
+   - If neither source yields a configured engine (project.yaml `engine.name`
+     absent/empty and technical-preferences.md shows `[TO BE CONFIGURED]` or is
+     missing), stop:
      "Engine not configured. Run `/setup-engine` first, then re-run `/test-setup`."
 
 2. **Check for existing test infrastructure**:
@@ -61,8 +73,10 @@ tests/
   unit/           — Isolated unit tests for formulas, state, and logic
   integration/    — Cross-system tests and save/load round-trips
   smoke/          — Critical path test list (15-minute manual gate)
-  evidence/       — Screenshot and manual test sign-off records
   README.md       — Test framework documentation
+
+production/qa/
+  evidence/       — Screenshot and manual test sign-off records
 
 [Engine-specific files — see per-engine details below]
 
@@ -74,7 +88,11 @@ Estimated time: ~5 minutes to create all files.
 Ask: "May I create these files? I will not overwrite any test files that
 already exist at these paths."
 
-Do not proceed without approval.
+**At `collaborative` and `guided`** — do not proceed without approval. These are
+**new** files, and `automation-modes.md:81` gates new-file writes in `guided` too,
+so the answer is the same in both modes. **At `autonomous`** — create them and log
+the decision; do not block. An unconditional gate here would read as "block even
+in autonomous" and contradict this skill's own header.
 
 ---
 
@@ -99,8 +117,19 @@ tests/
   unit/           # Isolated unit tests (formulas, state machines, logic)
   integration/    # Cross-system and save/load tests
   smoke/          # Critical path test list for /smoke-check gate
+```
+
+```
+production/qa/
   evidence/       # Screenshot logs and manual test sign-off records
 ```
+
+> **Manual evidence lives under `production/qa/evidence/`, not `tests/`.** That is
+> where every consumer reads it — `/smoke-check`, `/test-evidence-review`,
+> `/qa-plan`, and the evidence table in `.claude/docs/coding-standards.md`. This
+> scaffold and this skill's completion summary must name the same path: listing
+> `tests/evidence/` here while the summary reports `production/qa/evidence/`
+> creates a directory nothing reads and skips the one everything does.
 
 ## Running Tests
 
@@ -118,8 +147,8 @@ tests/
 |---|---|---|
 | Logic | Automated unit test — must pass | `tests/unit/[system]/` |
 | Integration | Integration test OR playtest doc | `tests/integration/[system]/` |
-| Visual/Feel | Screenshot + lead sign-off | `tests/evidence/` |
-| UI | Manual walkthrough OR interaction test | `tests/evidence/` |
+| Visual/Feel | Screenshot + lead sign-off | `production/qa/evidence/` |
+| UI | Manual walkthrough OR interaction test | `production/qa/evidence/` |
 | Config/Data | Smoke check pass | `production/qa/smoke-*.md` |
 
 ## CI
@@ -391,7 +420,7 @@ Files created:
 - tests/unit/ (directory)
 - tests/integration/ (directory)
 - tests/smoke/critical-paths.md
-- tests/evidence/ (directory)
+- production/qa/evidence/ (directory)
 [engine-specific files]
 - .github/workflows/tests.yml
 

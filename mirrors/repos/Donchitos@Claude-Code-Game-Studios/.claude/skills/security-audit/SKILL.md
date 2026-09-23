@@ -1,12 +1,19 @@
 ---
 name: security-audit
-description: "Audit the game for security vulnerabilities: save tampering, cheat vectors, network exploits, data exposure, and input validation gaps. Produces a prioritised security report with remediation guidance. Run before any public release or multiplayer launch."
+description: "Security audit — save tampering, cheat vectors, network exploits, data exposure, input validation. Before public or multiplayer release."
 argument-hint: "[full | network | save | input | quick]"
 user-invocable: true
-allowed-tools: Read, Glob, Grep, Bash, Write, Task
+allowed-tools: Read, Glob, Grep, Bash, Write, Agent
 model: sonnet
-agent: security-engineer
 ---
+
+!`source "${CLAUDE_PROJECT_DIR:-.}/.claude/hooks/yaml-helper.sh" 2>/dev/null && resolve_config --keys automation`
+
+**Automation mode**: Resolve `modes.automation` (`project.local.yaml` →
+`project.yaml` → default `collaborative`). Every `AskUserQuestion` call and
+every file write follows `.claude/docs/automation-modes.md`
+(collaborative asks always · guided major-only · autonomous logs and proceeds;
+`automation_always_ask` categories always prompt).
 
 # Security Audit
 
@@ -36,19 +43,46 @@ remediation plan.
 - `quick` — high-severity checks only (fastest, for iterative use)
 - No argument — run `full`
 
-Read `.claude/docs/technical-preferences.md` to determine:
-- Engine and language (affects which patterns to search for)
-- Target platforms (affects which attack surfaces apply)
-- Whether multiplayer/networking is in scope
+Read `project.yaml` to determine the following, falling back to `.claude/docs/technical-preferences.md` for engine/language/platforms when a key is absent or empty:
+- `engine.name` and `engine.language` — **load-bearing: they select the Phase 3
+  pattern set, and an engine with no sourced set for a category forces
+  `NOT ASSESSED` for it.** If `engine.name` is absent or empty, say so in the
+  report and treat every grep category as `NOT ASSESSED`; do not fall back to
+  the Godot lists because they are the ones written out in full
+- `platform.targets` (affects which attack surfaces apply)
+- `platform.multiplayer` and `platform.online` — whether multiplayer/networking is
+  in scope. `technical-preferences.md` has no equivalent fields, so the legacy
+  fallback cannot supply them.
+
+  > **ABSENT DOES NOT MEAN `false`.** These keys have a reader —
+  > this skill — and **no writer anywhere in the framework**: neither
+  > `/setup-engine` nor `/start` nor any other skill emits a `platform:` block,
+  > so on essentially every CCGS project both keys are absent. The previous rule
+  > here defaulted them to `false`, which meant **Category 2 (Network and
+  > Multiplayer Security) was skipped on every project including genuinely
+  > multiplayer ones** — a security category failing open on a value nothing
+  > sets.
+  >
+  > When either key is absent or empty: **do not assume single-player, and do not
+  > skip Category 2.** Ask the user whether the game has multiplayer or online
+  > features. If you cannot ask, run Category 2 anyway and mark it
+  > `NOT ASSESSED — multiplayer scope unconfirmed (platform.multiplayer unset,
+  > and no skill sets it)`, which makes `CLEAR TO SHIP` unreachable per Phase 5.
+  > Over-scanning a single-player game costs a few minutes; under-scanning a
+  > multiplayer one ships the category unrun.
+  >
+  > Set them explicitly with `/settings platform.multiplayer=true` (they are
+  > project-wide, so `--local` is refused). Recording it in `project.yaml` is the
+  > fix; this rule is the guard for until someone does.
 
 ---
 
 ## Phase 2: Spawn Security Engineer
 
-Spawn `security-engineer` via Task. Pass:
+Spawn `security-engineer` via `Agent`. Pass:
 - The audit scope/mode
-- Engine and language from technical preferences
-- A manifest of all source directories: `src/`, `assets/data/`, any config files
+- Engine and language (from `project.yaml`, else technical preferences)
+- A manifest of all source directories: the resolved **code root** (per `.claude/docs/code-root-resolution.md`), `assets/data/`, any config files
 
 The security-engineer runs the audit across 6 categories (see Phase 3). Collect their full findings before proceeding.
 
@@ -58,6 +92,39 @@ The security-engineer runs the audit across 6 categories (see Phase 3). Collect 
 
 The security-engineer evaluates each of the following. Skip categories not applicable to the project scope.
 
+### Engine pattern sets — read this before any Category below
+
+**Every pattern list in Categories 1–3 was written for Godot.** On a Unity or
+Unreal project they match nothing, and this skill already states what a zero-hit
+scan means: it renders the report clean, "the most dangerous possible failure for
+a security audit". That warning was earned along the **version** axis
+(`File.open` vs `FileAccess`) and the identical hole along the **engine** axis
+shipped anyway. Use the table for `engine.name` resolved in Phase 1.
+
+| Category | Godot | Unity | Unreal |
+|---|---|---|---|
+| 1 — Save / serialization | the Godot list below | **NOT SOURCEABLE** | **NOT SOURCEABLE** |
+| 2 — Network / multiplayer | the Godot list below | `ServerRpc`, `ClientRpc`, `NetworkVariable`, `NetworkObject`, `NetworkManager`, `NetworkBehaviour`, `IsServer`, `IsOwner` | `UFUNCTION`, `Server`, `Client`, `NetMulticast`, `Replicated`, `DOREPLIFETIME`, `GetLifetimeReplicatedProps`, `HasAuthority` |
+| 3 — Input | the Godot list below | `InputSystem`, `PlayerInput`, `ReadValue`, `InputValue` | `EnhancedInput`, `UInputAction`, `InputMappingContext`, `BindAction`, `FInputActionValue` |
+| 4 — Data exposure | engine-agnostic — the list below applies to all three | | |
+| 5, 6 | judgement and manifests, not greps — no engine set needed | | |
+
+The Unity and Unreal names above are **sourced from this repo's pinned
+references** (`docs/engine-reference/unity/modules/{networking,input}.md`,
+`docs/engine-reference/unreal/modules/{networking,input}.md`), not from recall.
+Verify them against the pin before use and add what the reference documents that
+this table omits — it is a floor, not a complete set.
+
+> **`NOT SOURCEABLE` is a verdict, not a gap to fill from memory.** Neither
+> reference tree carries a serialization/save module, so the save-API names for
+> Unity and Unreal cannot be confirmed here. **Do not write them from training
+> data.** A confidently wrong pattern list is worse in this skill than in any
+> other: it produces a scan that looks thorough, finds nothing, and reads as a
+> pass. Where the table says NOT SOURCEABLE, that category is **`NOT ASSESSED`**
+> for this engine — see Phase 5. To close it properly, add the module to
+> `docs/engine-reference/<engine>/` first; then this table can cite it.
+
+
 ### Category 1: Save File and Serialization Security
 - Are save files validated before loading? (no blind deserialization)
 - Are save file paths constructed from user input? (path traversal risk)
@@ -65,7 +132,22 @@ The security-engineer evaluates each of the following. Skip categories not appli
 - Does the game trust numeric values from save files without bounds checking?
 - Are there any eval() or dynamic code execution calls near save loading?
 
-Grep patterns: `File.open`, `load`, `deserialize`, `JSON.parse`, `from_json`, `read_file` — check each for validation.
+Grep patterns — **check the pinned engine reference before trusting this list**
+(see the API-name warning below): `FileAccess`, `File.open`, `open(`, `load`,
+`deserialize`, `parse`, `parse_string`, `from_json`, `read_file`, `get_var`,
+`bytes_to_var` — check each for validation.
+
+> **API names are version-specific and this list is a starting point, not a
+> complete set.** `File.open` is **Godot 3.x**; Godot 4 renamed the class to
+> `FileAccess` (`docs/engine-reference/godot/breaking-changes.md`). Before relying
+> on these patterns, read `docs/engine-reference/<engine>/` for the version this
+> project pins and add the names it documents. A grep for a class that no longer
+> exists returns zero hits, and **zero hits in this category renders the report
+> clean** — which is the most dangerous possible failure for a security audit.
+> Searching only `File.open` against a Godot 4 project finds nothing and reports
+> CLEAR TO SHIP on a codebase nobody checked. If you cannot confirm the correct
+> names for the pinned version, say so in the report rather than presenting a
+> zero-hit scan as a pass.
 
 ### Category 2: Network and Multiplayer Security (skip if single-player only)
 - Is game state authoritative on the server, or does the client dictate outcomes?
@@ -75,7 +157,14 @@ Grep patterns: `File.open`, `load`, `deserialize`, `JSON.parse`, `from_json`, `r
 - Are authentication tokens handled correctly (never sent in plaintext)?
 - Does the game expose any debug endpoints in release builds?
 
-Grep for: `recv`, `receive`, `PacketPeer`, `socket`, `NetworkedMultiplayerPeer`, `rpc`, `rpc_id` — check each call site for validation.
+Grep for: `recv`, `receive`, `PacketPeer`, `socket`, `MultiplayerPeer`,
+`ENetMultiplayerPeer`, `NetworkedMultiplayerPeer`, `rpc`, `rpc_id`,
+`@rpc` — check each call site for validation.
+
+> Same version caveat as Category 1. `NetworkedMultiplayerPeer` is **Godot 3.x**;
+> Godot 4 uses `ENetMultiplayerPeer`
+> (`docs/engine-reference/godot/modules/networking.md`). The bare substring
+> `MultiplayerPeer` matches both and is the safer probe.
 
 ### Category 3: Input Validation
 - Are any player-supplied strings used in file paths? (path traversal)
@@ -86,7 +175,7 @@ Grep for: `recv`, `receive`, `PacketPeer`, `socket`, `NetworkedMultiplayerPeer`,
 Grep for: `get_input`, `Input.get_`, `input_map`, user-facing text fields — check validation.
 
 ### Category 4: Data Exposure
-- Are any API keys, credentials, or secrets hardcoded in `src/` or `assets/`?
+- Are any API keys, credentials, or secrets hardcoded in the code root or `assets/`?
 - Are debug symbols or verbose error messages included in release builds?
 - Does the game log sensitive player data to disk or console?
 - Are any internal file paths or system information exposed to players?
@@ -148,7 +237,21 @@ For each finding, assign:
 | MEDIUM | [N] | Recommended |
 | LOW | [N] | Optional |
 
-**Release recommendation**: [CLEAR TO SHIP / FIX CRITICALS FIRST / DO NOT SHIP]
+**Release recommendation**: [NOT ASSESSED — INSUFFICIENT IMPLEMENTATION / CLEAR TO SHIP / FIX CRITICALS FIRST / DO NOT SHIP]
+
+> **`NOT ASSESSED` is required when there was not enough implemented surface to
+> audit**, or when the API names for the pinned engine version could not be
+> confirmed. A zero-finding scan over two files of source is not a clean bill of
+> health, and `CLEAR TO SHIP` must never be reachable by having nothing to look
+> at. Name what was missing and which skill produces it.
+>
+> **The engine axis is part of that rule, not a separate one.** If
+> the Phase 3 table marks a category `NOT SOURCEABLE` for this project's
+> `engine.name`, that category is `NOT ASSESSED` — state it by name in the
+> Executive Summary, and **`CLEAR TO SHIP` is unreachable for the run**. Report
+> `NOT ASSESSED — <category> has no sourced pattern set for <engine>` instead.
+> A scan that could not look is not a scan that found nothing, and only the
+> report can tell the reader which of the two happened.
 
 ---
 

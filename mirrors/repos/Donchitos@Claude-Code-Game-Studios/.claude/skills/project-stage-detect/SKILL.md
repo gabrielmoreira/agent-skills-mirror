@@ -1,6 +1,6 @@
 ---
 name: project-stage-detect
-description: "Automatically analyze project state, detect stage, identify gaps, and recommend next steps based on existing artifacts. Use when user asks 'where are we in development', 'what stage are we in', 'full project audit'."
+description: "Analyze project state, detect stage, identify gaps, recommend next steps. 'Where are we in development?'"
 argument-hint: "[optional: role filter like 'programmer' or 'designer']"
 user-invocable: true
 allowed-tools: Read, Glob, Grep, Bash, Write
@@ -21,19 +21,62 @@ of artifacts, and gaps that need attention. It's especially useful when:
 
 ## Workflow
 
+!`source "${CLAUDE_PROJECT_DIR:-.}/.claude/hooks/yaml-helper.sh" 2>/dev/null && resolve_config --keys workflow,automation`
+
+**Automation mode**: Resolve `modes.automation` (`project.local.yaml` →
+`project.yaml` → default `collaborative`). Every `AskUserQuestion` call and
+every file write follows `.claude/docs/automation-modes.md`
+(collaborative asks always · guided major-only · autonomous logs and proceeds;
+`automation_always_ask` categories always prompt).
+
+Resolved above — use as-is. No block → defaults in
+`.claude/docs/config-resolution.md`.
+
+> **Resolve the tier — do not assume it.** Saying "surface gaps per the **resolved** workflow
+> tier" without resolving it — no bootstrap, no helper call — leaves
+> the tier as whatever the model assumed. The tier decides what counts as a gap
+> at all: at `full` every missing doc is one; at `minimal` none of them are,
+> because a brief plus an engine is the normal state and code is the expected
+> next step. Guessing high tells a jam project it is missing GDDs, an art bible
+> and ADRs — the exact "process feels mismatched to my project" experience
+> `modes.rigor` exists to prevent. A missing bootstrap is invisible to a static
+> read — the config block simply does not render — so verify it by running.
+
+**`workflow`** (per `.claude/docs/workflow-modes.md`). The tier governs
+which absent documents count as gaps (step 3) — below `full`, optional docs are
+not flagged.
+
 ### 1. Scan Key Directories
 
-Analyze project structure and content:
+**Start with the deterministic pass — it answers "what exists" for every
+catalogued artifact in one call:**
+
+```
+Bash: bash .claude/scripts/artifact-check.sh
+```
+
+With no `--phase` it reports every phase, so a single call covers the whole
+project: per step, `PRESENT` / `ABSENT` / `SHORT` (with `count=` and `min=`) /
+`PATTERN_MISS` / `NO_CHECK`. Use it instead of hand-globbing each artifact
+below, and treat its `NO_CHECK` total as the honest bound on what existence
+checks can tell you.
+
+It reports observations only — this skill still decides what stage those
+observations imply, and the tier still governs which absences are gaps at all
+(see the workflow-tier note below).
+
+Then analyze what the script cannot: content quality, counts it does not
+track, and the judgement calls.
 
 **Design Documentation** (`design/`):
 - Count GDD files in `design/gdd/*.md`
-- Check for game-concept.md, game-pillars.md, systems-index.md
+- Check for game-concept.md (or `design/game-brief.md` at `minimal`), game-pillars.md, systems-index.md
 - If systems-index.md exists, count total systems vs. designed systems
 - Analyze completeness (Overview, Detailed Design, Edge Cases, etc.)
 - Count narrative docs in `design/narrative/`
 - Count level designs in `design/levels/`
 
-**Source Code** (`src/`):
+**Source Code** (the code root — `src/` Godot, `Assets/` Unity, `Source/` Unreal; resolve per `.claude/docs/code-root-resolution.md`):
 - Count source files (language-agnostic)
 - Identify major systems (directories with 5+ files)
 - Check for core/, gameplay/, ai/, networking/, ui/ directories
@@ -59,23 +102,46 @@ Analyze project structure and content:
 
 ### 2. Classify Project Stage
 
-Based on scanned artifacts, determine stage. Check `production/stage.txt` first —
-if it exists, use its value (explicit override from `/gate-check`). Otherwise,
-auto-detect using these heuristics (check from most-advanced backward):
+Based on scanned artifacts, determine stage. Check `project.stage` in `project.yaml` first (if present); else `production/stage.txt` (legacy fallback) — either is an explicit override from `/gate-check`. Otherwise, auto-detect using these heuristics (check from most-advanced backward):
+
+> **Always run the heuristics, even when a stage is configured — then COMPARE.**
+> The configured value is authoritative for what the stage *is*; it is not
+> evidence that the artifacts support it. Report both, and when they disagree say
+> so explicitly:
+>
+> > "Configured stage: **Release**. Observed artifacts indicate
+> > **Pre-Production** (2 source files, 0 ADRs, no architecture doc, no epics).
+> > These disagree — the configured stage may be stale, or work exists outside
+> > this repo."
+>
+> Reading config and reporting it back is not detection. This skill's own
+> description promises "analyze project state, detect stage", and a stage
+> detector that cannot contradict its input is the one thing it must never be.
+> Observed live: it reported `Release` for a project whose artifacts matched its
+> own Pre-Production row, four stages below, and said nothing.
 
 | Stage | Indicators |
 |-------|-----------|
 | **Concept** | No game concept doc, brainstorming phase |
 | **Systems Design** | Game concept exists, systems index missing or incomplete |
 | **Technical Setup** | Systems index exists, engine not configured |
-| **Pre-Production** | Engine configured, `src/` has <10 source files |
-| **Production** | `src/` has 10+ source files, active development |
+| **Pre-Production** | Engine configured, code root has <10 source files |
+| **Production** | code root has 10+ source files, active development |
 | **Polish** | Explicit only (set by `/gate-check` Production → Polish gate) |
 | **Release** | Explicit only (set by `/gate-check` Polish → Release gate) |
 
 ### 3. Collaborative Gap Identification
 
-**DO NOT** just list missing files. Instead, **ask clarifying questions**:
+**Surface gaps per the resolved workflow tier:**
+- **`full`** — flag every missing doc type (GDDs, art bible, UX specs, ADRs) as a gap.
+- **`standard`** — flag only required docs: missing GDDs for built systems and
+  missing critical (Foundation-layer) ADRs. Do NOT flag an absent art bible unless
+  visual-asset stories exist, and do NOT flag non-core UX specs.
+- **`minimal`** — a `design/game-brief.md` + engine present is the normal state. Do NOT flag
+  absent GDDs, art bible, UX specs, or ADRs as gaps; the expected next step is code.
+
+**DO NOT** just list missing files. Instead, **ask clarifying questions** (only
+for gaps the tier above says to surface):
 
 - "I see combat code (`src/gameplay/combat/`) but no `design/gdd/combat-system.md`. Was this prototyped first, or should we reverse-document?"
 - "You have 15 ADRs but no architecture overview. Should I create one to help new contributors?"
@@ -171,7 +237,10 @@ Wait for user approval before creating the file.
 
 ## Follow-Up Actions
 
-After generating the report, suggest relevant next steps:
+After generating the report, suggest relevant next steps — **only for gaps the
+resolved workflow tier surfaces** (step 3). At `standard`/`minimal`, do not
+suggest authoring optional docs (e.g. don't suggest `/reverse-document` for an
+absent GDD at `minimal`, where code is the expected next step):
 
 - **Concept exists but no systems index?** → `/map-systems` to decompose into systems
 - **Missing design docs?** → `/reverse-document design src/[system]`

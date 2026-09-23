@@ -1,6 +1,6 @@
 ---
 name: threejs-spectral-ocean
-description: Build large procedural oceans and coast transitions in Three.js. Use for WebGPU/TSL FFT oceans, multi-cascade wavelength bands, hybrid FFT plus Gerstner clear-water oceans, coastal breakers, signed-distance coastlines, shallow-water swash films, wet-sand transitions, stylized above/below surface optics, permanently submerged Snell-window views, total internal reflection, forward-refracted structures through an interface, pixel-footprint spectral LOD, aquatic perspective, caustic god rays, choppy displacement, spectral derivatives, Jacobian whitecaps, windrow and temporal foam, analytic sky reflection, underwater absorption, crest scatter, and GPU validation.
+description: Build large procedural oceans and coast transitions in Three.js. Use for WebGPU/TSL FFT oceans, multi-cascade wavelength bands, coastal breakers, finite-volume shallow-water beach waves, signed-distance coastlines, shallow-water swash films, wet-sand transitions, rock-impact spray, stylized above/below surface optics, permanently submerged Snell-window views, total internal reflection, forward-refracted structures through an interface, pixel-footprint spectral LOD, aquatic perspective, caustic god rays, choppy displacement, spectral derivatives, Jacobian whitecaps, windrow and temporal foam, analytic sky reflection, underwater absorption, crest scatter, and GPU validation.
 ---
 
 # Spectral Ocean
@@ -43,13 +43,6 @@ production WebGPU/TSL architecture described in the reference when the target
 supports it.
 
 Read the
-[hybrid clear-water ocean material](examples/hybrid-clear-water-ocean/hybrid-ocean-material.js)
-when the target needs FFT displacement with authored long swell, clear shallow
-refraction, animated sand-bed caustics, Beer-Lambert color, shared sky
-reflection, side-aware above/below surface normals, GGX sun highlights, and
-foam diagnostics.
-
-Read the
 [stylized above/below ocean material](examples/stylized-above-below-ocean/stylized-ocean-material.js)
 when the target needs a stylized FFT ocean that can be inspected from both
 above and below the surface: height-gradient water color, sun-path glints,
@@ -73,6 +66,13 @@ band-limited gravity and capillary fields, a signed-distance mainland and
 island coast, coast-normal shallow-water swash chains, persistent breaker and
 film foam, camera-following warped geometry, wet-sand optics, and shared sky
 radiance.
+
+Read the
+[ocean beach waves implementation](examples/ocean-beach-waves/ocean-beach-waves.js)
+when the beach is owned by a positivity-preserving finite-volume solver: it
+provides a rocky coastal grid, reconstructed water and wet-sand fields,
+advected foam, shallow-film optics, reflected and refracted sky radiance, and
+impact-triggered spray.
 
 ## Spectral non-negotiable gates
 

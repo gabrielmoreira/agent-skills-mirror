@@ -4,7 +4,6 @@ description: "Searches for and downloads ethically-licensed stock images via the
 metadata:
   version: "1.0"
   domains: ["Experience"]
-  accessCheck: []
   relatedSkills:
     - "experience-search-coordinate"
   cliTools:

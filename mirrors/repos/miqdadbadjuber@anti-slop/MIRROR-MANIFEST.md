@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `miqdadbadjuber/anti-slop` — 26 default patterns, 0 followed patterns, 9 file(s) materialized.
+Mirror of `miqdadbadjuber/anti-slop` — 26 default patterns, 0 followed patterns, 10 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `miqdadbadjuber/anti-slop` — 26 default patterns, 0 followed pattern
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 9 |
+| Files         | 10 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -68,6 +68,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 7 | ✓ | [`skills/antislop-layoutmobile/SKILL.md`](skills/antislop-layoutmobile/SKILL.md) |
 | 8 | ✓ | [`skills/antislop-ui/SKILL.md`](skills/antislop-ui/SKILL.md) |
 | 9 | ✓ | [`skills/antislop/SKILL.md`](skills/antislop/SKILL.md) |
+| 10 | ✓ | [`skills/antislop/VERSION`](skills/antislop/VERSION) |
 
 ---
 

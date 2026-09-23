@@ -106,6 +106,7 @@ from `index.ts`) that returns the hook points OpenCode invokes.
 
 | Directory | Responsibility |
 |---|---|
+| `absolute-path-rescue/` | Rewrites misguessed absolute tool paths by re-anchoring the longest workspace-suffix match (ENOENT-only, unambiguous candidates only) |
 | `apply-patch/` | Structured `apply_patch` parsing, matching, recovery, rewrite pipeline |
 | `auto-update-checker/` | Startup update detection, cache handling, optional install prompt |
 | `cache-monitor/` | Observation-only prompt-cache telemetry watchdog |
@@ -120,6 +121,7 @@ from `index.ts`) that returns the hook points OpenCode invokes.
 | `reflect/` | `/reflect` runtime command |
 | `search-path-guard/` | Pre-checks `grep`/`glob` `args.path` validity in `tool.execute.before`, using each host tool's path resolution semantics, and fails fast with an actionable error instead of upstream "ripgrep execution failed" noise or silent parent-directory searches |
 | `task-session-manager/` | Resumable task session tracking, job-board injection, reconciliation |
+| `tool-loop-guard/` | Detects byte-identical repeated tool calls: warns at 3, blocks at 5, with task-lifecycle exemptions and per-turn wait-tool counting |
 
 ### Dependencies
 

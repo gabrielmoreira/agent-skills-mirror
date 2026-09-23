@@ -1,6 +1,6 @@
 ---
 name: platform-environment-validate
-description: "Validate and configure the local Salesforce development environment. Runs a prerequisite scan showing 🔴/🟡/🟢 status for all required tools (Salesforce CLI, Code Analyzer plugin, Node.js, NPM, Git, Salesforce MCP, Source Tracking) and offers to install or update missing/outdated items. TRIGGER when the user runs /salesforce-development:platform-environment-validate, asks to 'check my setup', 'validate tools', 'verify prerequisites', 'am I set up correctly', or reports that a tool is missing or not working. DO NOT TRIGGER for: org authentication issues (use /salesforce-development:login), deployment problems (use platform-metadata-deploy), or general status checks (use /salesforce-development:status)."
+description: "Validate and configure the local Salesforce development environment. Runs a prerequisite scan across required tools with per-tool status and offers to install or update missing items. Use when the user asks to 'check my setup', 'validate tools', 'verify prerequisites', 'am I set up correctly', or reports a tool is missing or not working. DO NOT TRIGGER for org auth (/salesforce-development:login), deployment problems (platform-metadata-deploy), or status checks (/salesforce-development:status)."
 allowed-tools:
   - Bash
   - Read

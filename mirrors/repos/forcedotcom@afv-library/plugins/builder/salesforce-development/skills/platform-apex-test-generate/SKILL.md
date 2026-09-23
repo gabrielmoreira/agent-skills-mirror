@@ -1,6 +1,6 @@
 ---
 name: platform-apex-test-generate
-description: "Generate and validate Apex test classes with TestDataFactory patterns, bulk testing (251+ records), mocking strategies, assertion best practices, and disciplined test-fix loops. Use this skill when creating new Apex test classes, improving test coverage, debugging and fixing failing Apex tests, running test execution and coverage analysis, or implementing testing patterns for triggers, services, controllers, batch jobs, queueables, and integrations. Triggers on *Test.cls, *_Test.cls files, sf apex run test workflows, coverage reports, test-fix loops. Do NOT trigger for production Apex code (use platform-apex-generate) or Jest/LWC tests."
+description: "Use to generate and validate Apex test classes with TestDataFactory patterns, bulk testing (251+ records), mocking, assertions, and disciplined test-fix loops. Use when creating Apex test classes (for triggers, services, controllers, batch jobs, queueables, and callouts), improving coverage, debugging or fixing failing Apex tests, or running test/coverage analysis. Triggers on *Test.cls files, sf apex run test, coverage reports. Do NOT trigger for production Apex (use platform-apex-generate) or Jest/LWC tests."
 metadata:
   version: "1.1"
   domains: ["Platform"]

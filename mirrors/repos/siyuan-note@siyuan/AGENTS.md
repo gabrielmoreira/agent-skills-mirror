@@ -56,6 +56,8 @@ SiYuan repository guide. Module path `github.com/siyuan-note/siyuan`, license AG
    - If no existing icon is suitable, source one from the official [Lucide icon library](https://lucide.dev/icons/) and adapt only attributes such as stroke width to match the established icon style; preserve the upstream path data
    - When adding an icon to `app/appearance/icons/litheness/icon.js`, add its preview entry to `app/appearance/icons/index.html` in the same change and keep the order aligned
 4. **User guide:** When editing the user guide, follow `docs/SY-FORMAT.md`
+   - User-guide changes must be synchronized across all four bundled languages: English (`app/guide/20210808180117-6v0mkxr`), Simplified Chinese (`app/guide/20210808180117-czj9bvb`), Traditional Chinese (`app/guide/20211226090932-5lcq56f`), and Japanese (`app/guide/20240530133126-axarxgx`). Do not omit Japanese or discover corresponding pages only by Chinese/English title matching
+   - Before finishing a guide change, enumerate the language directories under `app/guide/` and verify the corresponding section in each language. Translate the content, preserve existing document/block IDs, generate fresh IDs for new blocks, and validate the changed `.sy` JSON. `docs/` developer documentation does not replace the bundled user guide
    - When a feature adds or changes shortcuts, update the shortcut documentation in the user guide in the same change; if the appropriate section is unclear, ask the user where it should be placed
    - List item text must not end with a period or equivalent sentence-ending mark (for example `.`, `。`, or `।`)
    - Represent in-app UI navigation paths as segmented `kbd` text marks: use one `NodeTextMark` with `TextMarkType: "kbd"` per navigation level, and place a plain `NodeText` containing ` - ` between adjacent levels
@@ -89,10 +91,13 @@ SiYuan repository guide. Module path `github.com/siyuan-note/siyuan`, license AG
    - The menu `ignore` option controls conditional rendering and must not be used to opt an entry out of visibility or order configuration
 10. **API contracts:**
     - Follow [docs/API-CONTRACTS.md](docs/API-CONTRACTS.md) when adding or changing kernel HTTP APIs. Define new endpoints in `kernel/apicontract/` and bind their handlers through `contractHandler`; keep contracts synchronized when changing existing endpoints
+    - Treat `docs/API-CONTRACTS.md` and its localized versions as maintenance guides. For routine endpoint or feature changes, do not append endpoint-specific behavior, feature summaries, verification results, or focused test commands. Update these guides only when the contract mechanism, compatibility policy, generation workflow, or test discovery/verification rules change, or when the user explicitly requests a documentation update; keep localized versions aligned
+    - Document endpoint behavior, defaults, constraints, and compatibility in comments on the corresponding contract source declarations. Synchronize plugin-facing explanations in the corresponding maintained declarations in `petal`, following the Petal documentation rule below. Put user-facing feature instructions in the bundled user guide
+    - Do not automatically add newly implemented endpoints to `docs/API.md` or its localized versions (`docs/API.zh-CN.md`, `docs/API.ja.md`); add such documentation only when explicitly requested by the user. Continue maintaining API contracts, generated declarations, and required regression tests. These documentation scope rules take precedence over broader documentation instructions in the maintenance guides
     - Preserve existing input compatibility, response variants, authorization, and encrypted notebook lease behavior; cover affected behavior with regression tests
     - Remove migrated or deleted routes from `kernel/apicontract/legacy_routes.json`; never add new routes to this legacy list or bypass contract checks with `any` or type assertions
     - After contract changes, run `pnpm run api:generate --petal ../../petal` and `pnpm run api:check --petal ../../petal` from `app/`; synchronize related public declarations in `petal` and do not hand-edit generated declarations or schemas
-    - Run `pnpm run lint` from `app/`, `go test ./apicontract/...` from `kernel/`, and the applicable API compatibility and route coverage tests described in the maintenance document; keep new regression cases included in the CI selections and documented commands
+    - Run `pnpm run lint` from `app/`, `go test ./apicontract/...` from `kernel/`, and the applicable API compatibility and route coverage tests described in the maintenance document. Verify that existing CI selections and documented commands discover new regression cases; automatic discovery or coverage by an existing full-suite command satisfies this requirement without a documentation edit. Update CI selections and documented commands only when they would otherwise miss the new tests. Report task-specific verification commands and results in the task response or PR description
 
 ---
 
@@ -105,7 +110,20 @@ SiYuan repository guide. Module path `github.com/siyuan-note/siyuan`, license AG
 5. **TypeScript/JavaScript:** Semicolons required, use double quotes, indent with spaces
    - When moving or extracting a symbol into another module, update all affected imports to reference its defining module directly. Do not leave forwarding re-exports in the original module merely to avoid updating callers
 6. **CSS:** Do not use the `:has()` selector because of its performance impact
+   - Before adding or styling a basic control, inspect and reuse the existing component, markup pattern, and shared styles in `app/src/assets/scss/component/` (for example, `b3-button`, `b3-select`, and `b3-text-field`), including existing modifiers; use `block__icon` for established icon-button patterns
+   - Apply the same reuse-first rule to menus, dialogs, tooltips, and drag interactions: inspect existing implementations and APIs before adding a feature-specific replacement
+   - Feature styles should describe layout (such as placement, width constraints, gaps, and wrapping), rather than duplicate or override basic control appearance (such as height, padding, typography, colors, borders, shadows, and hover/focus/disabled states). Do not use deeper selectors, inline styles, or `!important` merely to restyle a shared control
+   - If existing controls cannot meet a requirement, explain the concrete need and prefer extending a shared component or modifier when the need is reusable. Keep necessary feature-specific exceptions narrowly scoped; use theme variables for appearance and retain keyboard focus and disabled feedback
+   - Reuse components according to their purpose; do not borrow an unrelated component (for example, menu items for a form) and then cancel its styles. Preserve useful feature classes as theme hooks when switching to shared controls
+   - When reviewing control-style changes, check consistency with shared controls, theme overrides through shared classes, light/dark themes, narrow layouts, and large editor fonts. Preserve necessary layout and touch-target constraints; do not remove all feature styles indiscriminately
 7. **CSS positioning and scrolling:** When changing `position`, `transform`, `contain`, or `overflow` on a shared container, check the effects on descendant positioning reference frames, overlay coverage, and clipping. Prefer a dedicated container when a local control needs a positioning reference. For settings dialog changes, verify detail overlays, the top drag area, and scrollbar placement at different window widths
+
+8. **Built-in custom attributes:** Use the `custom-sy-` prefix for custom attributes owned by built-in features
+   - Define custom attribute name constants in `app/src/constants.ts`, alongside similar constants in `Constants`, rather than in individual feature modules
+
+9. **Frontend preference storage:** Do not use browser `localStorage` directly, including `window.localStorage` and `globalThis.localStorage`
+   - Read preferences from `window.siyuan.storage`; when changing a preference, update its in-memory value and persist it with `setStorageVal` from `app/src/protyle/util/compatibility.ts`
+   - SiYuan persists these values in the workspace's `data/storage/local.json`; do not use browser `storage` events to observe changes to this store
 
 ---
 

@@ -92,6 +92,30 @@ An adapter earns capability incrementally. Ship a lower tier first; each is inde
   - a green **`describeAdapterConformance`** run (the CI gate, below), and
   - **maintainer live-verification against a real pane** before the send path is enabled.
 
+### `cancelKey` — the way out of a modal you never taught Collie to read
+
+**Declare the key your harness's own modals print as the way OUT of them**, as
+`cancelKey` on your adapter, beside `composerReady`. It is a Herdr key token (`"Escape"`,
+`"ctrl+c"`), and a comment at the line must cite the capture or notes file you read it from.
+
+It buys one thing: when every grammar you wrote declines a screen, your `composerReady` still
+answers a definite `false`, and the pane is not blank, Collie draws the **unread-dialog card** over
+the raw mirror — one button, that key, under "Collie cannot read this dialog"
+([ADR 0053](./.adr/0053-an-unread-dialog-still-has-a-way-out.md)). The card is built by a post-pass
+OUTSIDE every adapter, so nothing about your fail-closed contract is loosened to make one, and it
+reads nothing off the screen: a declaration cannot be fooled by a phrase, which is the failure the
+card exists for.
+
+**Do not assume Escape.** On grok, Escape opens the scrollback view and `Ctrl+c` is the cancel. On
+Muse, Escape steps back rather than dismisses — still the right key, and the reason the card names
+the key and never a verb.
+
+**Declaring nothing is a supported answer, and it has a visible cost:** no card for that agent, ever,
+so an unread modal leaves the operator with the raw mirror and the Keys pad. Take it when your
+`composerReady` has a false-negative mode you do not trust. `omp` does: one ZWJ emoji in a statusline
+template makes its composer scanner return null on every frame, so `composerReady` would be false
+forever on a healthy pane and the card would paint itself permanently over a live composer.
+
 ### The fail-closed contract (non-negotiable)
 
 **A detector MUST return `null` on anything it does not confidently recognise.** A partial lift is a
@@ -130,6 +154,36 @@ What your adapter must satisfy (all pinned by `describeAdapterConformance`):
    `revision` is a stub, so it is the entire race guard (the generic one — see the next section).
 4. Menu detection runs **last**, after every specific grammar you have, and must decline a screen with
    a live input box; your `composerReady` must answer `false` while the modal is up.
+5. **When the screen prints the WHOLE scale the arrows move along, put it in
+   `nav.leftRight.values`** — the values in the order the screen printed them on one row, with
+   `label` one of them. The card then renders one tappable chip per value and sends a tap as the
+   delta in presses of the arrow the footer named, so the operator sees every option and reaches one
+   in a single tap. Set it only where the screen really printed the scale: a row that shows the
+   current value alone (Claude's `/model` picker) leaves it undefined and keeps the plain arrows.
+   The scale is part of menu identity, so it must be stable across polls
+   ([ADR 0054](./.adr/0054-a-printed-scale-is-tappable.md)). **A narrow pane wraps that scale**, so
+   read the footer as the rows the terminal wrapped it onto (`readKeyHintFooter` in
+   `web/src/lib/harness/menu-hints.ts`, which joins them) and rebuild each value from its head and
+   the fragment printed under it, in the same column; merge only when every fragment lines up, and
+   decline the screen when a merge makes anything but one word.
+6. **A footer phrase may never be the whole reason a grammar declines.** Menu detection stands down
+   when a family classifier says another grammar owns the screen, so that classifier must be
+   answerable from the dialog it names, its title or its body, not from one line any screen may
+   print. Claude's `/effort` slider prints "Enter to confirm", was filed as the folder-trust prompt
+   on that phrase alone, and lost every button it had
+   ([ADR 0053](./.adr/0053-an-unread-dialog-still-has-a-way-out.md)).
+7. **A POINTED list is walked, not numbered.** The same arithmetic covers a modal that prints a
+   column of unnumbered rows with a `❯` on one of them and a commit key in its footer: a tap is the
+   arrow walk from the pointed row to the target row, then that commit key, sent as one batch.
+   Claude's folder-trust prompt is the reference case since 2.1.278 — it prints no digit, so none may
+   be synthesised, and ADR 0009 holds here exactly as it does above
+   ([ADR 0055](./.adr/0055-a-pointed-list-is-walked-then-confirmed.md)). Two things are load-bearing.
+   The arrow COUNT is a claim about where the pointer was, so the kind's committing comparator must
+   see the pointer row, or a highlight moved by a second device sends the wrong number of arrows.
+   And the row a bare commit key would take is the DEFAULT, which on the trust prompt quits the
+   agent, so the card has to show which row it is. This lift lives in Claude's prompt-select grammar
+   rather than in the generic menu, because a walk is only safe when the dialog is one you have
+   modelled; the menu's own bar (only the keys the footer named) is unchanged.
 
 ## Every dialog model is a contract, and the race guard is generic
 

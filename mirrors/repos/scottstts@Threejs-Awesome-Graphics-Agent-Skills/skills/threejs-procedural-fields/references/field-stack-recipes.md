@@ -173,10 +173,10 @@ Amplitudes relative to the base:
 
 The three smallest bands are attenuated from screen derivatives using their
 wavenumbers. Foam consumes the returned crest metric; it does not sample an
-unrelated scrolling mask. The `analytic-wave-optics` example under
-`$threejs-water-optics` applies the same contract: `resolvedNormalAndCrest()`
-returns the resolved normal and crest from one evaluation and attenuates its
-three smallest bands by their derivative footprint.
+unrelated scrolling mask. The bounded analytic-water path under
+`$threejs-water-optics` applies the same contract: one evaluation returns the
+resolved normal and crest, and the three smallest bands are attenuated by
+their derivative footprint.
 
 ## Structured stochastic placement
 

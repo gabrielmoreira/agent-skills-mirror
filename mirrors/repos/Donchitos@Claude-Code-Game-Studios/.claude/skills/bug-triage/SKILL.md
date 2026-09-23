@@ -1,11 +1,19 @@
 ---
 name: bug-triage
-description: "Read all open bugs in production/qa/bugs/, re-evaluate priority vs. severity, assign to sprints, surface systemic trends, and produce a triage report. Run at sprint start or when the bug count grows enough to need re-prioritization."
+description: "Re-evaluate open bugs — priority vs severity, assign to sprints, surface systemic trends. Run when the count grows."
 argument-hint: "[sprint | full | trend]"
 user-invocable: true
 allowed-tools: Read, Glob, Grep, Write, Edit
 model: sonnet
 ---
+
+!`source "${CLAUDE_PROJECT_DIR:-.}/.claude/hooks/yaml-helper.sh" 2>/dev/null && resolve_config --keys automation`
+
+**Automation mode**: Resolve `modes.automation` (`project.local.yaml` →
+`project.yaml` → default `collaborative`). Every `AskUserQuestion` call and
+every file write follows `.claude/docs/automation-modes.md`
+(collaborative asks always · guided major-only · autonomous logs and proceeds;
+`automation_always_ask` categories always prompt).
 
 # Bug Triage
 
@@ -49,6 +57,18 @@ If no bug files found:
 > nothing to triage."
 
 Stop and report. Do not proceed if no bugs exist.
+
+**In `trend` mode, do not read full bug bodies.** Trend metrics (volume, severity
+mix, by-system, by-date) are computable from the header fields alone:
+```
+Grep pattern="\*\*(Severity|Priority|Status|System|Category|Reported)\*\*" glob="production/qa/bugs/*.md" output_mode="content"
+```
+(Bug-report fields are bolded — `**Severity**:`, `- **System**:` — so match the
+`**field**` form, not a bare line-start `Field:`.)
+Full bug bodies are needed only for the priority-vs-severity **re-evaluation** in
+`sprint`/`full` modes; `trend` is a read-only report and skips it. (The one
+deviation check that needs a story's status — "bug filed against a Complete
+story" — is a targeted story-status grep either way, not a bug-body read.)
 
 ### Step 2b — Load sprint context
 

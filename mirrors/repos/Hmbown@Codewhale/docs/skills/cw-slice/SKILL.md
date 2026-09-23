@@ -24,19 +24,12 @@ Stage 2 of the loop: [cw-orient](../cw-orient/SKILL.md) → **slice** →
 
 ## Workflow
 
-1. **Walk the ladder before opening an editor.** Stop at the first rung
-   that answers:
-   1. Does this need to exist? → skip it.
-   2. Already in this codebase? → reuse it.
-   3. Stdlib does it? → use it.
-   4. Native platform feature? → use it.
-   5. Installed dependency? → use it.
-   6. One line? → one line.
-   7. Only then: the minimum that works.
-
-   The ladder runs *after* reading the code, never instead of it. A short diff
-   written without reading the call sites is a guess, not a small change.
-   State the rung only when the choice isn't obvious from the diff itself.
+1. **Walk the ladder before opening an editor** (`AGENTS.md`, "The ponytail
+   method" — not restated here, since a second copy is what rung 2 forbids).
+   Stop at the first rung that answers. The ladder runs *after* reading the
+   code, never instead of it: a short diff written without reading the call
+   sites is a guess, not a small change. State the rung only when the choice
+   isn't obvious from the diff itself.
 
 2. **Grep for the predecessor.** This is the step that gets skipped and the one
    that costs the most:
@@ -78,13 +71,9 @@ Stage 2 of the loop: [cw-orient](../cw-orient/SKILL.md) → **slice** →
    `docs/design/`, not in a prototype file someone left in a sibling directory.
 
 5. **Bound the slice.** One coherent change, reviewable in one sitting, that
-   leaves the tree building and green. Two rules keep slices honest:
-   - **An abstraction must delete caller code.** If adopting it is pure
-     obligation — required methods, no default bodies that do work — it will be
-     built, adopted once, and abandoned. Don't build it.
-   - **Migrate the last consumer, or do not start.** Framework, one caller,
-     ticket the rest, silence the warning: that is how two systems ship. If the
-     migration will not fit in this slice, narrow the slice — never the adoption.
+   leaves the tree building and green. `AGENTS.md`'s two corollaries keep
+   slices honest: an abstraction must delete caller code, and a migration
+   ships its last consumer or does not start.
 
 6. **Fix the evidence bar now, not after.** Decide before writing code what will
    prove this works, and write it into your plan:
@@ -94,11 +83,9 @@ Stage 2 of the loop: [cw-orient](../cw-orient/SKILL.md) → **slice** →
    - whether it is cross-cutting enough to need the full sweep in
      [cw-gates](../cw-gates/SKILL.md).
 
-7. **Write the implementation first.** Code first, then tests — this repo does
-   not practice TDD, and that overrides any skill that says otherwise. Build it,
-   prove it runs, then add or adjust tests to cover what you actually built. A
-   regression test written after the fix still has to be shown failing without
-   the fix.
+7. **Write the implementation first.** Code first, then tests (see `AGENTS.md`
+   — this repo does not practice TDD). Build it, prove it runs, then add or
+   adjust tests to cover what you actually built.
 
 ## Red flags / don't
 

@@ -71,6 +71,9 @@ Canonical texts — reuse verbatim, adjusting only bracketed parts. Tone rules: 
 **duplicate-close**
 > Closing as a duplicate of #[N], which will be reviewed instead[: one-clause reason it was kept].
 
+**discussion-after-the-fact** (the linked Ideas discussion is a summary of the finished PR, posted after the implementation)
+> Closing this one. The Ideas discussion linked here describes what you already built, so there was never a point where the shape of this could be discussed — by the time it was posted the decision was made. That's the one thing the discussions are for; see the pinned post in [Ideas](https://github.com/openchamber/openchamber/discussions/categories/ideas). If you still want this, open a discussion about the problem itself, before any code, and we'll work out from there whether and how it should exist.
+
 **oversized-split** (single PR bundling several concerns)
 > Closing this one. It bundles several unrelated concerns — [list] — into a single [size] change across [n] files, which isn't reviewable in this form. If you'd like to pursue [the worthwhile part], please open an Ideas discussion first to agree on scope, and then a focused PR for that single concern.
 

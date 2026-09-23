@@ -4,10 +4,13 @@
 
 ```bash
 bun install          # install dependencies
-bun run test         # run free tests via the strict parallel runner (~90-100s full suite)
+bun run test:quick   # measured fast deterministic subset for edit feedback
+bun run test         # complete free suite via the strict parallel runner
+bun run test:pr      # changed fast live probes + selected judges (CI PR default)
 bun run test:evals   # run paid evals: LLM judge + E2E (diff-based, ~$4.35/run max)
 bun run test:evals:all  # run ALL paid evals regardless of diff
-bun run test:gate    # run gate-tier tests only (CI default, blocks merge)
+bun run test:gate    # broad gate-tier tests (legacy diff-based command)
+bun run test:release # fresh full gate + periodic censuses
 bun run test:periodic  # run periodic-tier tests only (weekly cron / manual)
 bun run test:gate:sharded    # gate tier via the sharded paid runner (one Bun process per test file)
 bun run test:periodic:sharded  # periodic tier via the sharded paid runner (implies EVALS_ALL=1)
@@ -49,9 +52,10 @@ variants to force all tests. Run `eval:select` to preview which tests would run.
 
 **Two-tier system:** Tests are classified as `gate` or `periodic` in `E2E_TIERS`
 (in `test/helpers/touchfiles.ts` — a facade over `touchfiles-data.ts` +
-`test-selection.ts`). CI runs gate tests per PR via evals.yml's sliced lane
+`test-selection.ts`). CI runs the changed fast PR profile and selected judges
+per PR via evals.yml's sliced lane
 (planner manifest → executors → fail-closed report; engine =
-scripts/test-paid-shards.ts, the same runner as local eval:bg:gate); the free
+scripts/test-paid-shards.ts, the same runner as local eval:bg:pr); the free
 suite runs on every PR via `.github/workflows/free-tests.yml` (a REQUIRED
 check, secretless — fork PRs get real signal); ALL periodic tests run weekly
 via evals-periodic.yml (EVALS_ALL, minus the reasoned exclusions in
@@ -71,9 +75,14 @@ in sync.
 ## Testing
 
 ```bash
-bun run test         # run before every commit — free, ~90-100s for the full ~8,700-test suite
-bun run test:evals   # run before shipping — paid, diff-based (~$4.35/run max)
+bun run test         # final full free acceptance after focused repairs and source freeze
+bun run eval:bg:pr   # required changed PR coverage, with explicit deferrals
 ```
+
+Follow [Validation discipline in AGENTS.md](AGENTS.md#validation-discipline):
+prove repairs with focused checks first, complete required selected evaluations,
+then run the full free suite once on the final integrated code. During repairs,
+focused checks replace a full-suite run before every commit.
 
 `bun run test` routes through `scripts/test-free-shards.ts` (N concurrent
 shard processes, serial within each, packed by recorded per-file durations
@@ -88,8 +97,16 @@ walks the whole repo, loading paid eval files and missing the strict
 classifier.
 It covers skill validation, gen-skill-docs quality checks, browse
 integration tests, the Aside contract pins, and the render-wrapper pins.
-`bun run test:evals` runs LLM-judge quality evals and E2E tests via
-`claude -p`. Both must pass before creating a PR. Anything that needs Aside
+`bun run test:pr` runs the selected short live behaviors and quality judges.
+It reports deferred broad coverage; unknown dependencies restore the full gate,
+and an unmapped prompt without registered coverage blocks planning. Full free
+acceptance and required PR checks must pass before publishing. CI can reuse the
+14 workflow-judge passes for 24 hours when their complete consumed inputs and
+runtime match; records preserve original provenance. The other 11 judge cases,
+dynamic agent tests, and local runs without scoped cache configuration stay fresh.
+Scheduled/manual full coverage and `test:release` always run fresh.
+See [testing policy](CONTRIBUTING.md#test-tiers) for commands and measured targets.
+Anything that needs Aside
 itself (`test/skill-e2e-aside.test.ts`, the Aside qa/design E2E cases, the
 live render in `test/aside-render.test.ts`) runs only on a Mac with the Aside
 app open and self-skips elsewhere (`asideAvailable()`). make-pdf's render
@@ -714,7 +731,7 @@ the run can also die to idle-sleep. `gstack-detach` fixes both: a fresh session
   (stray `claude`/`codex` grandchildren included), a per-shard
   `GSTACK_EVAL_DIR=<evalDir>/shards/<slug>/` honored by the `EvalCollector`
   constructor, and an aggregate that separates failed vs timed-out vs
-  never-started shards — the detach timeouts (25200s gate / 37800s periodic;
+  never-started shards — the detach timeouts (28800s gate / 60600s periodic;
   floor enforced against the live shard census by
   test/eval-detach-timeout-floor.test.ts)
   are sized against worst-case shard wall clock. `EVALS_JOBS` sets the shard

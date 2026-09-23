@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `YaoApp/yao` — 26 default patterns, 0 followed patterns, 15 file(s) materialized.
+Mirror of `YaoApp/yao` — 26 default patterns, 0 followed patterns, 16 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `YaoApp/yao` — 26 default patterns, 0 followed patterns, 15 file(s) 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 15 |
+| Files         | 16 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -66,14 +66,15 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 5 | ✓ | [`tools/skills/yao-agent/SKILL.md`](tools/skills/yao-agent/SKILL.md) |
 | 6 | ✓ | [`tools/skills/yao-audio/SKILL.md`](tools/skills/yao-audio/SKILL.md) |
 | 7 | ✓ | [`tools/skills/yao-board/SKILL.md`](tools/skills/yao-board/SKILL.md) |
-| 8 | ✓ | [`tools/skills/yao-doc/SKILL.md`](tools/skills/yao-doc/SKILL.md) |
-| 9 | ✓ | [`tools/skills/yao-image/SKILL.md`](tools/skills/yao-image/SKILL.md) |
-| 10 | ✓ | [`tools/skills/yao-ocr/SKILL.md`](tools/skills/yao-ocr/SKILL.md) |
-| 11 | ✓ | [`tools/skills/yao-process/SKILL.md`](tools/skills/yao-process/SKILL.md) |
-| 12 | ✓ | [`tools/skills/yao-secret/SKILL.md`](tools/skills/yao-secret/SKILL.md) |
-| 13 | ✓ | [`tools/skills/yao-web/SKILL.md`](tools/skills/yao-web/SKILL.md) |
-| 14 | ✓ | [`tools/skills/yao-workspace-config/SKILL.md`](tools/skills/yao-workspace-config/SKILL.md) |
-| 15 | ✓ | [`tools/skills/yao-workspace/SKILL.md`](tools/skills/yao-workspace/SKILL.md) |
+| 8 | ✓ | [`tools/skills/yao-decision/SKILL.md`](tools/skills/yao-decision/SKILL.md) |
+| 9 | ✓ | [`tools/skills/yao-doc/SKILL.md`](tools/skills/yao-doc/SKILL.md) |
+| 10 | ✓ | [`tools/skills/yao-image/SKILL.md`](tools/skills/yao-image/SKILL.md) |
+| 11 | ✓ | [`tools/skills/yao-ocr/SKILL.md`](tools/skills/yao-ocr/SKILL.md) |
+| 12 | ✓ | [`tools/skills/yao-process/SKILL.md`](tools/skills/yao-process/SKILL.md) |
+| 13 | ✓ | [`tools/skills/yao-secret/SKILL.md`](tools/skills/yao-secret/SKILL.md) |
+| 14 | ✓ | [`tools/skills/yao-web/SKILL.md`](tools/skills/yao-web/SKILL.md) |
+| 15 | ✓ | [`tools/skills/yao-workspace-config/SKILL.md`](tools/skills/yao-workspace-config/SKILL.md) |
+| 16 | ✓ | [`tools/skills/yao-workspace/SKILL.md`](tools/skills/yao-workspace/SKILL.md) |
 
 ---
 

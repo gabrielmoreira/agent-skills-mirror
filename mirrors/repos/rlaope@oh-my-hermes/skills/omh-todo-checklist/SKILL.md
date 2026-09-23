@@ -1,6 +1,6 @@
 ---
 name: "omh-todo-checklist"
-description: "[omh] Hermes adaptation for declaring and advancing the metadata-only plan todo checklist the OMH HUD renders above the prompt input, in an ordinary session with no delivery engine running. Use when the user says: todo-checklist, plan checklist, todo checklist, phase checklist, declare a plan checklist, declare the plan todo, show the plan todo, clear the plan todo."
+description: "[omh] Continue or finish the accepted work from conversation context, preserve rejected ideas, and report evidence-bounded completion. Also declare and advance the metadata-only plan checklist without starting a delivery engine. Use when the user says: todo-checklist, plan checklist, todo checklist, phase checklist, declare a plan checklist, declare the plan todo, show the plan todo, clear the plan todo."
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, operator]
@@ -42,13 +42,13 @@ Bad example:
 ## Completion Checklist
 
 - Exactly one item is active, or the list is complete and every item is done.
-- Every state change went through `action=advance`, or an `action=set` write sent the whole list back, so no item was dropped by omission.
+- Use `action=advance` or a complete `action=set` list; never drop an item by omission.
 - Item states are described as declarations; observed results are cited separately or named as missing.
-- A stopped plan names which of the two reasons applies -- an item that cannot proceed, or a person steering elsewhere.
+- Name whether work is blocked or human-deferred.
 
 ## Recovery Notes
 
-- If items disappeared after a write, the write sent a partial list to `action=set`, which replaces rather than merges; re-send every item, and use `action=advance` for a state change.
+- After a partial `action=set`, resend every item; use `action=advance` for state changes.
 - If the panel shows nothing, read the current projection with `action=show` before re-declaring, so an existing checklist is not overwritten.
 - If the user redirects the session away from the plan, record that on the write rather than deleting the checklist or marking its items done.
 
@@ -60,7 +60,7 @@ Bad example:
 
 ## Use When
 
-Use when the user wants a declared, HUD-visible plan checklist for the work at hand, or wants to read, advance, or clear one, without starting a delivery engine.
+Use when the user wants a declared, HUD-visible plan checklist for the work at hand, or wants to read, advance, or clear one, without starting a delivery engine. Also use when the person asks in ordinary language to finish or resume the previously accepted work; infer intent from conversation, not isolated keywords.
 
     Strong routing signals: `todo-checklist`, `$todo`, `plan checklist`, `todo checklist`, `phase checklist`, `declare a plan checklist`, `declare the plan todo`, `show the plan todo`, `clear the plan todo`
 
@@ -74,13 +74,15 @@ Reasoning demand: `light`
 
 Quality bar:
 
-- Items are plan declarations and never execution evidence: marking one done records that you say it is done, which is not an observed result and never substitutes for one.
-- Keep exactly one item active. Two active items make the HUD unable to say where the run is, which is the only thing the panel exists to answer.
-- Change one item's state with `action=advance`: the item number, the start of its text as a guard, and the new state. `action=set` replaces the whole list, so a write that reaches for it to tick one item must send every item back or the omitted ones are silently dropped.
-- The checklist belongs to the session that declared it -- another TUI, Slack, or Discord session neither sees nor overwrites it -- so do not tell a user their checklist is visible somewhere it is not.
-- Two different things stop a plan advancing and they are not interchangeable: an item that cannot proceed carries `blocked_reason`, and a person steering the session elsewhere is `deferred_reason` on the write. Load `references/checklist-discipline.md` before using either.
-- To review whether requirements are fit to build from rather than to track work, load `references/requirements-quality-checklist.md`; its items interrogate the spec, and the party that generates them may not tick them.
-- Closing a story is reading this record, not ticking it: every `done` is a declaration, a phase marked `done` with a `blocked_reason` was skipped, and landing the change is observed evidence OMH never sees. Load `references/closing-a-story.md` before writing the close report.
+- A `done` item is a declaration, never observed evidence.
+- For accepted multi-turn work, load `references/closing-a-story.md` before checkpoint, recall, explicit resume or recording verification/review/QA declarations. Preserve rejected ideas separately; templates remain optional.
+- Current intent overrides old plans. Stop, analysis-only and topic changes take precedence; ask only when scope is ambiguous. Missing, stale or malformed evidence is not clean; waiting for a child remains open.
+- Keep exactly one item active so the HUD names the current step.
+- Use `action=advance` with item number, text-prefix guard and new state. `action=set` replaces the whole list: send every item or omitted ones are lost.
+- The live checklist is session-owned; another TUI, Slack or Discord session cannot see or overwrite it.
+- Load `references/checklist-discipline.md`: `blocked_reason` is an item unable to proceed; `deferred_reason` on the write is human redirection. Do not interchange them.
+- For spec fitness, load `references/requirements-quality-checklist.md`; its generator may not tick its items.
+- Before closing, read `references/closing-a-story.md`, not just ticks: `done` with `blocked_reason` means skipped; OMH never observes landing.
 
 Handoff policy:
 
@@ -101,8 +103,8 @@ Artifact expectations:
 
 Safety rules:
 
-- Do not present checklist states as execution, verification, review, CI, or merge evidence; an item marked done records a declaration, not an observed result.
-- Do not declare a checklist for work that is one step, already finished, or answerable directly; the checklist costs a tool call and a panel, and buys nothing on work that does not span turns.
+- Checklist states never prove execution, verification, review, CI or merge.
+- Do not declare a checklist for one-step, finished or directly answerable work.
 
 ## Runtime Evidence
 

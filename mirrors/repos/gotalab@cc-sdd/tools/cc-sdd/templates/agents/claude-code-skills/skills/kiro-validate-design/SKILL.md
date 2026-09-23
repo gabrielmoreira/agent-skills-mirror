@@ -24,14 +24,14 @@ You are a specialized skill for conducting interactive quality review of technic
 
 ### Step 1: Gather Context
 
-If steering/spec context is already available from conversation, skip redundant file reads.
-Otherwise, load all necessary context:
+Reuse steering/spec context already available from conversation; load missing context below.
+Select skills for the current task even when steering/spec context is already available:
 - Read `{{KIRO_DIR}}/specs/{feature}/spec.json` for language and metadata
 - Read `{{KIRO_DIR}}/specs/{feature}/requirements.md` for requirements
 - Read `{{KIRO_DIR}}/specs/{feature}/design.md` for design document
 - Core steering context: `product.md`, `tech.md`, `structure.md`
 - Additional steering files only when directly relevant to architecture boundaries, integrations, runtime prerequisites, domain rules, security/performance constraints, or team conventions that affect implementation readiness
-- Relevant local agent skills or playbooks only when they clearly match the feature's host environment or use case and provide review-relevant context
+- Use explicitly requested skills and task-relevant local skills/playbooks, including design, accessibility, and UX. Select by description and read only needed guidance, even for small tasks; preserve required checks and host/project rules.
 
 #### Parallel Research
 
@@ -59,7 +59,7 @@ After all parallel research completes, synthesize findings for review.
 - **Interactive approach**: Engage in dialogue, ask clarifying questions, propose alternatives
 - **Balanced assessment**: Recognize both strengths and weaknesses
 - **Actionable feedback**: All suggestions must be implementable
-- **Context Discipline**: Start with core steering and expand only with review-relevant steering or use-case-aligned local agent skills/playbooks
+- **Context Discipline**: Start with core steering and expand only with review-relevant steering or local skills/playbooks selected above
 
 ## Tool Guidance
 - **Read first**: Load spec, core steering, relevant local playbooks/agent skills, and rules before review

@@ -1,6 +1,6 @@
 ---
 name: platform-manifest-generate
-description: "Use this skill to generate a package.xml (and optionally destructiveChanges.xml, destructiveChangesPre.xml, or destructiveChangesPost.xml) from a local source directory, an explicit component list, or org introspection. Trigger when the user says \"generate a package.xml from this folder\", \"create a manifest for these classes\", \"I need a deploy manifest\", \"build package.xml for the contacts changes\", or \"create both package.xml and destructiveChanges.xml for these deletions\". Encodes which metadata types accept a wildcard member and which must be enumerated, avoiding the common \"Wildcards are not supported for this metadata type\" deploy failure. DO NOT TRIGGER for executing a deploy (use platform-metadata-deploy), performing the deletion in destructiveChanges.xml (use platform-destructive-deploy), or retrieving metadata (use platform-metadata-retrieve)."
+description: "Use to generate a package.xml (and optionally destructiveChanges.xml / Pre / Post) from a source dir, a component list, or org introspection. Trigger on 'generate a package.xml from this folder', 'create a manifest for these classes', 'I need a deploy manifest', or 'destructiveChanges.xml for deletions'. Encodes wildcard-vs-explicit-member rules per metadata type. DO NOT TRIGGER to deploy (platform-metadata-deploy), delete (platform-destructive-deploy), or retrieve (platform-metadata-retrieve)."
 metadata:
   version: "1.0"
   relatedSkills:

@@ -277,6 +277,16 @@ progress events.
 - Use the `tinytools` copy vendored through `vendor/tinyagents/`; a second path
   creates incompatible Rust types.
 - Keep conversions mechanical. Policy decisions belong in OpenHuman.
+- **Put a change in the repo that owns it, not where it is easiest to land.**
+  Tool-call parsing, grammars, the `Tool` trait and generic tool types go to
+  `vendor/tinyagents/vendor/tinytools`; the agent loop, dialects, prompt
+  cache layout, run policy, progress events and generic harness tools (the
+  session todo list, goals, delegation graph) go to `vendor/tinyagents`
+  (`tinyagents-harness` / `tinyagents-graph`); OpenHuman keeps only the host
+  adapters (scope, dispatch, approvals, progress projection). Open the
+  upstream PR in that repo first, then move the gitlink here. A host-side
+  workaround for a harness or parser bug is a stopgap, not a fix: file or
+  fix it upstream in the same PR.
 - `openhuman_embed::Runtime` → `Agent` is the public library API: one runtime
   per process (features, services, backend URL, TinyHumans API key), then any
   number of independently configured agents on it (`AgentSpec`: provider,

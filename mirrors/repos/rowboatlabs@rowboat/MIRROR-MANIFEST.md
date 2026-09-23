@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `rowboatlabs/rowboat` — 26 default patterns, 0 followed patterns, 2 file(s) materialized.
+Mirror of `rowboatlabs/rowboat` — 26 default patterns, 0 followed patterns, 8 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `rowboatlabs/rowboat` — 26 default patterns, 0 followed patterns, 2 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 2 |
+| Files         | 8 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,8 +59,14 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`apps/x/apps/mobile/AGENTS.md`](apps/x/apps/mobile/AGENTS.md) |
-| 2 | ✓ | [`apps/x/apps/mobile/CLAUDE.md`](apps/x/apps/mobile/CLAUDE.md) |
+| 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 2 | ✓ | [`apps/harbor/AGENTS.md`](apps/harbor/AGENTS.md) |
+| 3 | ✓ | [`apps/harbor/CLAUDE.md`](apps/harbor/CLAUDE.md) |
+| 4 | ✓ | [`apps/harbor/CONTRACT.md`](apps/harbor/CONTRACT.md) |
+| 5 | ✓ | [`apps/harbor/SPEC.md`](apps/harbor/SPEC.md) |
+| 6 | ✓ | [`apps/x/apps/mobile/AGENTS.md`](apps/x/apps/mobile/AGENTS.md) |
+| 7 | ✓ | [`apps/x/apps/mobile/CLAUDE.md`](apps/x/apps/mobile/CLAUDE.md) |
+| 8 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 
 ---
 

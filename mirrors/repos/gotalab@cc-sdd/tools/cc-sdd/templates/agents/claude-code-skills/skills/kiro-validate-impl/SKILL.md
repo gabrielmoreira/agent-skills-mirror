@@ -51,14 +51,15 @@ This skill's main question is: when the completed tasks are viewed together, do 
 
 ### Step 2: Gather Context
 
-If steering/spec context is already available from conversation, skip redundant file reads.
-Otherwise, for each detected feature:
+Reuse steering/spec context already available from conversation; load missing context below for each detected feature.
+Select skills for the current task even when steering/spec context is already available:
 - Read `{{KIRO_DIR}}/specs/<feature>/spec.json` for metadata
 - Read `{{KIRO_DIR}}/specs/<feature>/requirements.md` for requirements
 - Read `{{KIRO_DIR}}/specs/<feature>/design.md` for design structure
 - Read `{{KIRO_DIR}}/specs/<feature>/tasks.md` for task list and Implementation Notes
 - Core steering context: `product.md`, `tech.md`, `structure.md`
 - Additional steering files only when directly relevant to the validated boundaries, runtime prerequisites, integrations, domain rules, security/performance constraints, or team conventions that affect the GO/NO-GO call
+- Use explicitly requested skills and task-relevant local skills/playbooks, including design, accessibility, and UX. Select by description and read only needed guidance, even for small tasks; preserve required checks and host/project rules.
 
 **Discover canonical validation commands**:
 - Inspect repository-local sources of truth in this order: project scripts/manifests (`package.json`, `pyproject.toml`, `go.mod`, `Cargo.toml`, app manifests), task runners (`Makefile`, `justfile`), CI/workflow files, existing e2e/integration configs, then `README*`

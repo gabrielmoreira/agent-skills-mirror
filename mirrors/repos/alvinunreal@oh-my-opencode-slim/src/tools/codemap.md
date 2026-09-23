@@ -207,7 +207,7 @@ Tools Layer → Web Layer
 
 ### Configuration Integration
 
-- **ACP Agents**: Defined in `src/config/agents.ts`, consumed by `acp_run.ts`
+- **ACP Agents**: Defined in `src/config/schema.ts`, consumed by `acp_run.ts`
 - **Presets**: Defined in plugin config (`oh-my-opencode-slim.jsonc`), persisted by `preset-switch.ts` for the TUI `/preset` manager
 - **Task Status**: `task-status.ts` consumes `summarizeTaskStatus` from `task-policy.ts` and the live session-status snapshot
 
@@ -246,7 +246,7 @@ Preset switching is not a tool: `preset-switch.ts` exposes on-disk helpers
 
 
 #### ACP Agents (acp-run.ts)
-- Configured in `src/config/agents.ts` as `AcpAgentsConfig`
+- Configured in `src/config/schema.ts` as `AcpAgentsConfig`
 - Each agent requires: `command`, `args`, `cwd`, `permissionMode`
 - Supports: `ask` (prompt user), `reject` (auto-deny), `allow` (auto-approve)
 

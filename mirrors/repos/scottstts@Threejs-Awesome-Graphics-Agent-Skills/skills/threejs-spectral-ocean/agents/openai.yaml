@@ -1,4 +1,4 @@
 interface:
   display_name: "Three.js Spectral Ocean"
   short_description: "Build FFT oceans, coastal breakers, and underwater media"
-  default_prompt: "Use $threejs-spectral-ocean to build a validated multi-cascade FFT ocean, coupled coastal-breaker and swash transition, hybrid clear-water surface, stylized above/below ocean, or permanently submerged Snell-window scene whose displacement, derivatives, coast state, foam, sky, refraction, absorption, caustics, god rays, shading, and diagnostics form one coherent GPU system."
+  default_prompt: "Use $threejs-spectral-ocean to build a validated multi-cascade FFT ocean, finite-volume ocean beach with wet sand and rock-impact spray, coupled coastal-breaker and swash transition, stylized above/below ocean, or permanently submerged Snell-window scene whose displacement, derivatives, coast state, foam, sky, refraction, absorption, caustics, god rays, shading, and diagnostics form one coherent GPU system."

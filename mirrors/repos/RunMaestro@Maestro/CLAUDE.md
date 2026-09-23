@@ -74,6 +74,7 @@ Grep-verified 2026-09-04 (`npm run docs:verify` re-checks every path). This is t
 - **Reading what a TUI painted from a raw capture:** `replayTerminalScreen()`, `capturedAlternateScreen()` in `src/maestro-p/screen-replay.ts`
 - **Shell escape:** `shellEscape()`, `shellEscapeArgs()` in `src/main/utils/shell-escape.ts`
 - **Platform detection:** `isWindows()`, `isMacOS()` in `src/shared/platformDetection.ts`
+- **Whether a working directory can be spawned into:** `unusableCwdReason()` in `src/main/process-manager/utils/spawnCwd.ts`. node-pty's Windows path throws ERROR_DIRECTORY from an async callback nothing can catch, so `ProcessManager.spawn()` refuses a missing cwd up front rather than falling back to home.
 - **Modifier-key display text:** `formatKey()`, `formatShortcutKeys()` in `src/renderer/utils/shortcutFormatter.ts`
 - **Advertising a shortcut next to the control that fires it:** `ShortcutHint`, `shortcutSuffix(keys)` in `src/renderer/components/ui/ShortcutHint.tsx`
 - **Whether a chord may be bound at all:** `findReservedShortcutCombo(keys)`, `RESERVED_SHORTCUT_COMBOS` in `src/shared/shortcutKeys.ts`
@@ -87,6 +88,7 @@ Grep-verified 2026-09-04 (`npm run docs:verify` re-checks every path). This is t
 - **Keeping a plan account on the Usage Dashboard after its agents leave:** `rememberQuotaAccounts()`, `pruneMissingQuotaAccounts()` in `src/main/stores/quotaAccountsStore.ts`; `partitionSnapshotsByAge()`, `SNAPSHOT_RETENTION_MS` in `src/main/stores/usageSnapshotRetention.ts`
 - **SSH remote lookup:** `getSshRemoteById()` in `src/main/stores/getters.ts`
 - **Deferred main-process store persistence:** `deferStoreWrites()`, `flushPendingSessionWrites()` in `src/main/stores/deferred-writes.ts` / `src/main/stores/instances.ts`
+- **Recovering from a store file that is not JSON:** `createStoreDeserializer()`, `corruptStorePath()` in `src/main/stores/corrupt-store-recovery.ts`. conf rethrows a `SyntaxError` from the Store constructor, so one torn file bricks startup forever; the file is quarantined to a stamped `.corrupt-` sidecar and the store falls back to defaults. Never `clearInvalidConfig`.
 - **Toast notifications:** `notifyToast({ color, title, message, dismissible? })`, `theme` in `src/renderer/stores/notificationStore.ts`
 - **What a toast click does:** `ToastClickAction`, `parseToastClickAction()` in `src/shared/toastClickAction.ts`; `dispatchToastClickAction()` in `src/renderer/services/toastClickActions.ts`
 - **Center flash (rapid acks):** `notifyCenterFlash({ message, color, detail?, duration? })`, `flashCopiedToClipboard()` in `src/renderer/stores/centerFlashStore.ts`

@@ -35,6 +35,14 @@
       <strong>MiniMax H3 動画生成 API｜秘塔科技（Metaso）</strong> 秘塔科技の MiniMax H3 動画生成は <strong>768P が 0.09 元/秒、2K が 0.15 元/秒</strong>。ネイティブ 2K と音声同期に対応し、API は <strong>OpenAI 互換</strong>、<strong>ComfyUI</strong> からも使えます。GPU を自分で用意する必要はありません。 🎁 <a href="https://metaso.cn/minimax-h3/?s=TongFlow" target="_blank" rel="noopener noreferrer">TongFlow 専用リンク</a>から登録すると、無料クレジットと特典を受け取れます。
     </td>
   </tr>
+  <tr>
+    <td width="190" align="center">
+      <a href="https://www.infistar.cc/register?aff=Y8S76PTA&amp;ref_source=link" target="_blank" rel="noopener noreferrer"><img src="assets/sponsor-infistar.png" width="96" alt="Infistar / 无限星河AI"></a>
+    </td>
+    <td>
+      <strong>キャンバス全体をひとつの Key で｜Infistar（无限星河AI）</strong> OpenAI 互換のゲートウェイです。Key ひとつ・残高ひとつで、キャンバスのテキスト / 画像 / 動画 / 文字起こしノードをまかなえます。GPT-6、Claude Opus 5、Gemini 3 Pro、Grok、DeepSeek に加えて、中国系モデルの品揃えが厚いのが特徴です（Qwen、GLM、Doubao、MiniMax、Kimi、StepFun）。画像は GPT Image 2.5、Seedream 5、Qwen-Image、動画は Wan / Seedance。<strong>画像は 1 枚 0.06 元から。</strong><a href="https://github.com/tong-io/tongflow-router-infistar">tongflow-router-infistar</a> プラグインから利用できます。🎁 <a href="https://www.infistar.cc/register?aff=Y8S76PTA&amp;ref_source=link" target="_blank" rel="noopener noreferrer">TongFlow 専用リンク</a>から登録すると 5 ドル分のお試しクレジットがもらえます。
+    </td>
+  </tr>
 </table>
 
 ## Demo デモ
@@ -215,6 +223,7 @@ Google または WeChat でサインインすれば、すぐに創作を始め�
 - [tongflow-router-apimart](https://github.com/tong-io/tongflow-router-apimart) — APIMart ゲートウェイ。ノード上で**モデルを選択**可能：画像生成 / 編集（Z-Image、Seedream、Nano Banana、GPT-Image）、テキスト / 画像 → 動画（Kling、VEO3、Sora2、Seedance）、`gen_text`（GPT-5、Claude、Gemini）、Whisper 文字起こしと TTS
 - [tongflow-router-replicate](https://github.com/tong-io/tongflow-router-replicate) — Replicate、ノードごとの**モデルピッカー**でカタログ全体をカバー：テキスト、視覚、画像 生成/編集/融合/アップスケール/切り抜き、テキスト / 画像 → 動画、文字起こし、TTS / ボイスクローン、音楽、画像 → 3D（FLUX、Seedream、Veo、Kling、Whisper、Hunyuan3D…）
 - [tongflow-router-fal](https://github.com/tong-io/tongflow-router-fal) — fal.ai、ノードごとの**モデルピッカー**：画像（生成/編集/融合/アップスケール/切り抜き/ポーズ/法線/セグメンテーション）、動画（テキスト / 画像 → 動画、最初・最後フレーム、トーキングヘッド、リップシンク、アップスケール）、音声（文字起こし、TTS、ボイスクローン、音楽、音源分離）、画像 → 3D
+- [tongflow-router-infistar](https://github.com/tong-io/tongflow-router-infistar) — Infistar（无限星河AI）ゲートウェイ、ノードごとの**モデルピッカー**（**キー自身のモデル一覧**も表示）：`gen_text` とテキストツール（GPT-5.6、Claude、Gemini、Qwen、DeepSeek、GLM、Kimi、Doubao、MiniMax、Grok）、画像理解、画像の生成/編集/融合（GPT Image 2、Qwen-Image、Seedream、Wan）、テキスト / 画像 → 動画（Wan 3.0、Seedance、MiniMax H3）、音声文字起こし
 
 ### GPU/CPU プラグイン
 

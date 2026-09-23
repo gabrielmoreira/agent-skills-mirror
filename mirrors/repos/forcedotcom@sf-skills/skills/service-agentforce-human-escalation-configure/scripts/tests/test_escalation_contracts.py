@@ -17,6 +17,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from _bootstrap import (  # noqa: E402
     SKILLS_ROOT,
+    FLAT_SKILLS_ROOT,
     SKILL_DIR,
     SCRIPT,
     VERDICT_SCRIPT,
@@ -700,13 +701,13 @@ class NgaClassifierHardeningTests(unittest.TestCase):
 
 class CoordinatorGateTests(unittest.TestCase):
     def test_escalation_verdict_mapping(self):
-        rc, out = run_node(VERDICT_SCRIPT, ["escalation", "CONFIGURED"])
+        rc, out = run_node(VERDICT_SCRIPT, ["escalation", "CONFIGURED"], root=FLAT_SKILLS_ROOT)
         self.assertEqual(rc, 0, out)
-        rc, _ = run_node(VERDICT_SCRIPT, ["escalation", "ALREADY-CONFIGURED"])
+        rc, _ = run_node(VERDICT_SCRIPT, ["escalation", "ALREADY-CONFIGURED"], root=FLAT_SKILLS_ROOT)
         self.assertEqual(rc, 0)
-        rc, _ = run_node(VERDICT_SCRIPT, ["escalation", "INCOMPLETE"])
+        rc, _ = run_node(VERDICT_SCRIPT, ["escalation", "INCOMPLETE"], root=FLAT_SKILLS_ROOT)
         self.assertEqual(rc, 1)
-        rc, _ = run_node(VERDICT_SCRIPT, ["escalation", "BLOCKED"])
+        rc, _ = run_node(VERDICT_SCRIPT, ["escalation", "BLOCKED"], root=FLAT_SKILLS_ROOT)
         self.assertEqual(rc, 1)
 
 

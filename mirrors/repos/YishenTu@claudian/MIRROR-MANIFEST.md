@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `YishenTu/claudian` — 26 default patterns, 0 followed patterns, 60 file(s) materialized.
+Mirror of `YishenTu/claudian` — 26 default patterns, 0 followed patterns, 62 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `YishenTu/claudian` — 26 default patterns, 0 followed patterns, 60 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 60 |
+| Files         | 62 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -119,6 +119,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 58 | ✓ | [`src/providers/pi/CLAUDE.md`](src/providers/pi/CLAUDE.md) |
 | 59 | ✓ | [`src/style/AGENTS.md`](src/style/AGENTS.md) |
 | 60 | ✓ | [`src/style/CLAUDE.md`](src/style/CLAUDE.md) |
+| 61 | ✓ | [`tests/AGENTS.md`](tests/AGENTS.md) |
+| 62 | ✓ | [`tests/CLAUDE.md`](tests/CLAUDE.md) |
 
 ---
 

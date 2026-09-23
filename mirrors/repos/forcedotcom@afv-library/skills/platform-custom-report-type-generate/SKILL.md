@@ -1,6 +1,6 @@
 ---
 name: platform-custom-report-type-generate
-description: "Use this skill when users need to create, generate, or validate Salesforce Custom Report Type metadata. Trigger when users mention custom report types, report types, CRTs, reporting frameworks, cross-object reports, report builder data sources, or ask to expose fields for reporting across related objects. Also use when users mention primary and related objects for reports, inner vs outer joins in reports, report type categories, or encounter deployment errors for .reportType-meta.xml files. Do NOT trigger for: running, editing, or filtering existing reports; creating report folders, dashboards, or list views; or general reporting questions that don't involve authoring a .reportType-meta.xml file."
+description: "Use to create, generate, or validate Salesforce Custom Report Type metadata. Trigger on custom report types, CRTs, cross-object reports, report builder data sources, exposing fields for reporting across related objects, inner vs outer joins in reports, report type categories, or deployment errors for .reportType-meta.xml files. Do NOT trigger for running, editing, or filtering existing reports; creating report folders, dashboards, or list views; or non-authoring reporting questions."
 metadata:
   version: "1.0"
   domains: ["Platform"]

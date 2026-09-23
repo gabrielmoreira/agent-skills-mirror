@@ -1,11 +1,19 @@
 ---
 name: tech-debt
-description: "Track, categorize, and prioritize technical debt across the codebase. Scans for debt indicators, maintains a debt register, and recommends repayment scheduling."
+description: "Track, categorize and prioritize technical debt across the codebase — scans for debt indicators, maintains a register."
 argument-hint: "[scan|add|prioritize|report]"
 user-invocable: true
 allowed-tools: Read, Glob, Grep, Write, AskUserQuestion
 model: sonnet
 ---
+
+!`source "${CLAUDE_PROJECT_DIR:-.}/.claude/hooks/yaml-helper.sh" 2>/dev/null && resolve_config --keys automation`
+
+
+
+Every `AskUserQuestion` call follows `.claude/docs/automation-modes.md`
+(collaborative asks always · guided major-only · autonomous logs and proceeds;
+`automation_always_ask` categories always prompt).
 
 ## Phase 1: Parse Subcommand
 
@@ -40,6 +48,22 @@ Categorize each finding:
 - **Documentation Debt**: Missing docs, outdated docs, undocumented APIs
 - **Dependency Debt**: Outdated packages, deprecated APIs, version conflicts
 - **Performance Debt**: Known slow paths, unoptimized queries, memory issues
+
+**Before presenting anything, establish that there was something to scan.**
+Count the source files the scan actually covered. If that count is **zero** —
+no `src/` directory, or it holds no source files — report:
+
+> **NOT ASSESSED — no source files to scan.** `src/` contains no code, so
+> "no debt indicators found" would be a statement about an empty search, not
+> about the codebase. Run this once implementation is under way.
+
+and stop. Do not write to the register and do not emit a COMPLETE verdict.
+
+The distinction is the whole point of the scan: **zero findings over 400 files
+is a clean codebase; zero findings over zero files is no information at all.**
+Rendering both as "COMPLETE — scan findings written to register" reads as the
+first. State the denominator whenever findings are reported,
+including when it is large and the count is genuinely zero.
 
 Present the findings to the user.
 

@@ -63,7 +63,8 @@ uv run "<skill-dir>/scripts/sweep-ledger.py" mark \
   --path <path> [--path <path>...] [--reason <text>]
 ```
 
-`excluded` requires an agent-written reason. Unknown paths or invalid batches fail without a partial update.
+`excluded` requires an agent-written reason. Unknown paths or invalid batches fail without a partial update. Concurrent
+`mark` calls serialize on a sidecar `<scratch.json>.lock`, so parallel subagents may mark their own paths.
 
 ```sh
 uv run "<skill-dir>/scripts/sweep-ledger.py" pending --ledger <scratch.json> [--limit <n>]

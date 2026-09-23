@@ -1,9 +1,9 @@
 ---
 name: team-audio
-description: "Orchestrate audio team: audio-director + sound-designer + technical-artist + gameplay-programmer for full audio pipeline from direction to implementation."
+description: "Orchestrate the audio team — audio-director, sound-designer, technical-artist, gameplay-programmer — direction through implementation."
 argument-hint: "[feature or area to design audio for] [--review full|lean|solo]"
 user-invocable: true
-allowed-tools: Read, Glob, Grep, Write, Edit, Bash, Task, AskUserQuestion, TodoWrite
+allowed-tools: Read, Glob, Grep, Write, Edit, Bash, Agent, AskUserQuestion, TaskCreate, TaskGet, TaskList, TaskUpdate
 model: sonnet
 ---
 
@@ -15,20 +15,58 @@ When this skill is invoked with an argument, orchestrate the audio team through 
 **Decision Points:** At each step transition, use `AskUserQuestion` to present
 the user with the subagent's proposals as selectable options. Write the agent's
 full analysis in conversation, then capture the decision with concise labels.
-The user must approve before moving to the next step.
+In `collaborative` mode, the user must approve before moving to the next step.
+In `guided` mode the pipeline advances automatically unless a step is BLOCKED;
+in `autonomous` mode it runs end to end, recording each step outcome via
+`log_decision`. Decisions in `automation_always_ask` categories
+(`is_always_ask_category` helper) always prompt regardless of mode. See
+`.claude/docs/automation-modes.md`.
 
-## Phase 0: Resolve Review Mode
+## Phase 0: Resolve Config
 
-1. If `--review [mode]` was passed as an argument, use that mode.
-2. Else read `production/review-mode.txt` — use whatever is written there.
-3. Else default to `lean`.
+!`source "${CLAUDE_PROJECT_DIR:-.}/.claude/hooks/yaml-helper.sh" 2>/dev/null && resolve_config --keys review_mode,automation,team.size`
 
-Modes:
+Resolved above — use as-is; `--review` overrides `review_mode`. No block →
+defaults in `.claude/docs/config-resolution.md`.
+
+`review_mode` sets gate depth:
 - `full` — spawn all director and lead gates as described
 - `lean` — skip director gates unless they are PHASE-GATE type (CD-PHASE-GATE, TD-PHASE-GATE, PR-PHASE-GATE, AD-PHASE-GATE)
 - `solo` — skip all director gate spawning entirely; run the skill without any agent gates
 
-Store the resolved mode for use in all subsequent phases.
+`automation` drives the Decision Points note above. See the Decision Points note above and
+`.claude/docs/automation-modes.md` for how each mode changes pipeline behavior.
+
+**`team.size`**: which agents are active (orthogonal to review_mode gate-depth and workflow docs).
+- **`individual`** (default): `sound-designer` only. Other agents consulted via the sound-designer, not spawned separately.
+- **`small`**: + `audio-director` + `technical-artist`.
+- **`studio`**: + `localization-lead` + per-system audio reviewers.
+Directors (CD/TD/PR) still spawn at phase gates regardless of size; a non-core agent needed at `individual` routes through the nearest active core agent with an informational note. **"Phase gate" means any phase that ends in an `AskUserQuestion` decision point before the pipeline advances** — not every phase. Apply the test literally: if the phase below has no decision point, it is not a gate, and an agent restricted to "phase gates only" is not spawned for it. This active-set scoping applies throughout the pipeline below: any phase that names an agent outside the active set routes through the nearest core agent rather than spawning it.
+
+**Announce the active set before Step 1 — never let the collapse be silent.**
+Before spawning anything, state in one line which agents this run will actually
+spawn, and which the pipeline below names but will **not** spawn at the resolved
+`team.size`. For example:
+
+> `Active set (team.size: <resolved>): <the agents listed for that size above>.`
+> `Not spawned this run: <every other agent this pipeline names> — consulted`
+> `through <nearest active core agent>. Raise team.size (or modes.rigor) to widen.`
+
+Fill it from the `team.size` list directly above and the agents this file's own
+pipeline names — not from an example. Both sets differ per orchestrator.
+
+The pipeline below reads as a multi-agent fan-out and at the shipped default it
+is one or two agents — `team-release` names eight and runs one, `team-narrative`
+names six across five phases and runs `writer` alone. **The collapse is correct**:
+`team.size` is rigor-fronted and the narrow default is the token lever, measured
+at roughly 10x. What was wrong is that nothing said so, so a reader could not
+distinguish a correctly-collapsed run from a broken pipeline, and the per-agent
+"routes through the nearest core agent with an informational note" rule above
+fires at routing time and never states the shape of the run as a whole.
+
+This is the same rule as the skipped-check reporting elsewhere in this file: **a constraint that is enforced but never surfaced is
+indistinguishable, to the person reading the output, from one that was never
+enforced.**
 
 1. **Read the argument** for the target feature or area (e.g., `combat`,
    `main menu`, `forest biome`, `boss encounter`).
@@ -41,14 +79,18 @@ Store the resolved mode for use in all subsequent phases.
 
 ## How to Delegate
 
-Use the Task tool to spawn each team member as a subagent:
+Use the `Agent` tool to spawn each team member as a subagent:
 - `subagent_type: audio-director` — Sonic identity, emotional tone, audio palette
 - `subagent_type: sound-designer` — SFX specifications, audio events, mixing groups
 - `subagent_type: technical-artist` — Audio middleware, bus structure, memory budgets
 - `subagent_type: [primary engine specialist]` — Validate audio integration patterns for the engine
 - `subagent_type: gameplay-programmer` — Audio manager, gameplay triggers, adaptive music
 
-Always provide full context in each agent's prompt (feature description, existing audio assets, design doc references).
+**Brief each agent — do not dump context.** Read the shared inputs **once** and pass a distilled brief inline: the lines each agent actually needs, never a file path for a document you have already read (an agent handed a path re-reads the whole file). Pass a path only for a document you have not read and only that agent needs.
+
+**End every agent prompt with a return contract:** "Write your full output to `[path]` — that named path is your write authorisation under the bounded exception below, so write it without a separate approval prompt. Return **only** (1) the path written, (2) a ≤5-bullet summary of decisions, (3) any BLOCKED/CONCERNS items, one line each. Do not restate the documents you read." Without it, an agent returns everything it read back into this session.
+
+> **Why this does not violate the Collaboration Protocol.** `CLAUDE.md` requires an agent to ask "May I write this to [filepath]?" before Write/Edit. A subagent spawned here writes **without** asking, and that is a deliberate, bounded exception rather than an oversight — the same call already made for `consistency-check` appending to `active.md`. The exception holds only when all three are true: (1) the path is one **you** named in the prompt, so the user approved the destination when they approved the phase; (2) it is a new artifact under `production/`, `docs/` or `tests/`, never an edit to existing source or config; (3) the phase that produced it is itself gated by an `AskUserQuestion` before the pipeline advances. Outside those three, the agent must ask. **Do not "fix" this by asking per subagent** — a prompt per agent per phase makes an orchestrator unusable, which is why the exception exists.
 
 3. **Orchestrate the audio team** in sequence:
 
@@ -83,13 +125,13 @@ Spawn the `technical-artist` agent to:
 - Plan streaming vs preloaded asset strategy
 - Design any audio-reactive visual effects
 
-Spawn the **primary engine specialist** in parallel (from `.claude/docs/technical-preferences.md` Engine Specialists) to validate the integration approach:
+Spawn the **primary engine specialist** in parallel (`<engine>-specialist` derived from `engine.name` — Godot→`godot-specialist`, Unity→`unity-specialist`, Unreal→`unreal-specialist`; fall back to the Primary line of `## Engine Specialists` in `.claude/docs/technical-preferences.md`) to validate the integration approach:
 - Is the proposed audio middleware integration idiomatic for the engine? (e.g., Godot's built-in AudioStreamPlayer vs FMOD, Unity's Audio Mixer vs Wwise, Unreal's MetaSounds vs FMOD)
 - Any engine-specific audio node/component patterns that should be used?
 - Known audio system changes in the pinned engine version that affect the integration plan?
 - Output: engine audio integration notes to merge with the technical-artist's plan
 
-If no engine is configured, skip the specialist spawn.
+If no engine is configured, skip the specialist spawn. **Record `Engine validation: NOT ASSESSED — no engine configured (`engine.name` unset in `project.yaml`)` in this run's output.** A skipped check that says nothing is indistinguishable from a check that passed; the reader cannot tell engine guidance was never sought.
 
 ### Step 4: Code Integration (gameplay-programmer)
 Spawn the `gameplay-programmer` agent to:
@@ -101,7 +143,16 @@ Spawn the `gameplay-programmer` agent to:
 
 4. **Compile the audio design document** combining all team outputs.
 
-5. **Save to** `design/audio/audio-[feature].md`.
+5. **Save to** `design/audio/audio-[feature].md` — **but ask first.** `design/` is
+   NOT one of the three directories the bounded write exception covers
+   (`production/`, `docs/`, `tests/`), so a sub-agent handed this path must
+   prompt, and one has done exactly that. Do not
+   resolve that by widening the exception. Instead, follow the same pattern
+   `team-level` uses: **you** already hold every sub-agent's output, so compile
+   the document yourself and ask directly via `AskUserQuestion` — "May I write the
+   audio design to `design/audio/audio-[feature].md`?" — then write it on
+   approval. Sub-agent working artifacts stay under `production/` where the
+   exception does reach them.
 
    Note: If `design/audio/` does not exist, the sub-agent writing the document should create it (the directory will be created automatically when the file is written).
 
@@ -117,8 +168,12 @@ Verdict: **BLOCKED** — [reason]
 ## File Write Protocol
 
 All file writes (audio design docs, SFX specs, implementation files) are delegated
-to sub-agents spawned via Task. Each sub-agent enforces the "May I write to [path]?"
-protocol. This orchestrator does not write files directly.
+to sub-agents spawned via `Agent`. Those writes follow the **bounded exception**
+documented above under "Why this does not violate the Collaboration Protocol" —
+the path is one you named, the artifact is new under `production/`, `docs/` or
+`tests/`, and the phase is gated by an `AskUserQuestion`. A sub-agent does **not**
+prompt per write inside those bounds; outside them it must ask. This orchestrator
+does not write files directly.
 
 ## Next Steps
 
@@ -128,15 +183,17 @@ protocol. This orchestrator does not write files directly.
 
 ## Error Recovery Protocol
 
-If any spawned agent (via Task) returns BLOCKED, errors, or cannot complete:
+**First, verify the artifact.** If the return contract named a path, check the
+path exists before treating the phase as done — **a named artifact that is not
+on disk is a failed phase, however fluent the response reads.** An agent can
+burn a full phase and return a plausible preamble having written nothing, which
+is neither BLOCKED nor an error nor "cannot complete", so the trigger below
+never fires. Resume it naming the unmet contract; the context is
+usually still there.
 
-1. **Surface immediately**: Report "[AgentName]: BLOCKED — [reason]" to the user before continuing to dependent phases
-2. **Assess dependencies**: Check whether the blocked agent's output is required by subsequent phases. If yes, do not proceed past that dependency point without user input.
-3. **Offer options** via AskUserQuestion with choices:
-   - Skip this agent and note the gap in the final report
-   - Retry with narrower scope
-   - Stop here and resolve the blocker first
-4. **Always produce a partial report** — output whatever was completed. Never discard work because one agent blocked.
+If any spawned agent returns BLOCKED, errors, or cannot complete: **surface it
+immediately, don't proceed past a dependency it blocks, and always produce a
+partial report.** Full procedure: `.claude/docs/error-recovery-protocol.md`.
 
 Common blockers:
 - Input file missing (story not found, GDD absent) → redirect to the skill that creates it

@@ -4,12 +4,14 @@
 from __future__ import annotations
 
 import argparse
+import fcntl
 import json
 import math
 import os
 import subprocess
 import sys
 import tempfile
+from contextlib import contextmanager
 from pathlib import Path
 from typing import Any
 
@@ -91,6 +93,18 @@ def atomic_write(path: Path, payload: dict[str, Any]) -> None:
             temporary.unlink()
 
 
+@contextmanager
+def exclusive(path: Path):
+    """Serialize read-modify-write cycles from concurrent subagents on a sidecar lock."""
+    lock = path.with_name(f"{path.name}.lock")
+    with lock.open("a") as handle:
+        fcntl.flock(handle, fcntl.LOCK_EX)
+        try:
+            yield
+        finally:
+            fcntl.flock(handle, fcntl.LOCK_UN)
+
+
 def load(path: Path) -> dict[str, Any]:
     try:
         payload = json.loads(path.read_text(encoding="utf-8"))
@@ -164,21 +178,22 @@ def init_command(args: argparse.Namespace) -> dict[str, Any]:
 
 
 def mark_command(args: argparse.Namespace) -> dict[str, Any]:
-    payload = load(args.ledger)
     paths = list(dict.fromkeys(args.path))
     if not paths:
         raise LedgerError("mark requires at least one --path")
     if args.status == "excluded" and not args.reason:
         raise LedgerError("excluded status requires --reason")
-    by_path = {item["path"]: item for item in payload["files"]}
-    missing = [path for path in paths if path not in by_path]
-    if missing:
-        raise LedgerError(f"paths are not in the ledger: {', '.join(missing)}")
-    for path in paths:
-        by_path[path]["status"] = args.status
-        by_path[path]["reason"] = args.reason if args.status == "excluded" else None
-    payload["revision"] += 1
-    atomic_write(args.ledger, payload)
+    with exclusive(args.ledger):
+        payload = load(args.ledger)
+        by_path = {item["path"]: item for item in payload["files"]}
+        missing = [path for path in paths if path not in by_path]
+        if missing:
+            raise LedgerError(f"paths are not in the ledger: {', '.join(missing)}")
+        for path in paths:
+            by_path[path]["status"] = args.status
+            by_path[path]["reason"] = args.reason if args.status == "excluded" else None
+        payload["revision"] += 1
+        atomic_write(args.ledger, payload)
     return {"schemaVersion": 1, "updated": paths, "status": args.status, **summary(payload)}
 
 

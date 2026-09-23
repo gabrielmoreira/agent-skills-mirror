@@ -1,17 +1,26 @@
 ---
 name: a-stock-data
-description: 当任务需要写代码实际获取A股及相关市场数据时使用——行情/K线(腾讯日周月前后复权+分钟线、通达信官网全市场盘后包、百度、mootdx)、研报(东财+新浪+同花顺+iwencai)、信号(热点/北向/龙虎榜/解禁/行业/板块资金流)、资金面(融资融券/大宗/股东户数/分红/资金流/ETF份额)、新闻(财联社/东财/华尔街见闻/新闻联播)、财务三表/F10/估值历史/ST名单、公告(巨潮)、打板(涨停池/连板/炸板率/监控池/异动)、ETF期权、舆情互动(互动易/上证e互动/热榜)、筹码分布、复权因子、申万行业变迁、宏观与利率(社融/PMI/中债收益率曲线/回购定盘利率/LPR/全球宏观日历)、指数成分/权重/估值/交易日历、期货与大宗商品(五家期货交易所日行情/商品与股指期权/持仓排名/实时期货/A50/上海金)、事件驱动(业绩预告/机构调研/增减持/回购/股权质押/新股申购)、可转债等真实数据。十五层·85端点(含5备胎)·34个来源·内嵌全部可运行代码，自包含零外部文件；优先用腾讯/交易所官方等不封IP源，东财接口已内置限流防封，主源被封可查「备用源速查」降级。仅在需要调用数据接口取数时使用：A股概念解释、投资观点讨论、策略问答等无需取数的话题不要加载本skill。
+description: 当任务需要写代码实际获取A股及相关市场数据时使用——行情/K线/逐笔(腾讯日周月前后复权+分钟线+当日逐笔、通达信官网全市场盘后包、百度)、研报(东财+新浪+同花顺+iwencai)、信号(热点/北向/龙虎榜/解禁/行业/板块资金流)、资金面(融资融券/大宗/股东户数/分红/资金流/ETF份额)、新闻(财联社/东财/华尔街见闻/新闻联播)、财务三表/F10/估值历史/ST名单、公告(巨潮)、打板(涨停池/连板/炸板率/监控池/异动)、ETF期权、舆情互动(互动易/上证e互动/热榜)、筹码分布、复权因子、申万行业变迁、宏观与利率(社融/PMI/中债收益率曲线/回购定盘利率/LPR/全球宏观日历)、指数成分/权重/估值/交易日历、期货与大宗商品(五家期货交易所日行情/商品与股指期权/持仓排名/期货日K含大商所/实时期货/A50/上海金)、事件驱动(业绩预告/机构调研/增减持/回购/股权质押/新股申购)、可转债等真实数据。十五层·87端点(含5备胎)·34个来源·内嵌全部可运行代码，自包含零外部文件；优先用腾讯/交易所官方等不封IP源，东财接口已内置限流防封，主源被封可查「备用源速查」降级。仅在需要调用数据接口取数时使用：A股概念解释、投资观点讨论、策略问答等无需取数的话题不要加载本skill。
 origin: custom
-version: 3.9.0
+version: 3.10.0
 ---
 
 > 📦 项目主页：https://github.com/simonlin1212/a-stock-data — 更新、反馈、支持作者
 > 
 > 作者：Simon 林 · X [@linsizhen](https://x.com/linsizhen) · 邮箱：simonlin0423@gmail.com
 
-# A股全栈数据工具包 V3.9.0
+# A股全栈数据工具包 V3.10.0
 
-十五层数据架构，85 个能力端点（80 主端点 + 5 备胎）、34 个来源。V3.9 新增的 25 个入口于 2026-09-20 实测；旧端点的验证日期见各章节。覆盖主板/创业板/科创板/ST，北交所覆盖依端点而异；已有备胎的数据可按「备用源速查」降级。
+十五层数据架构，87 个能力端点（82 主端点 + 5 备胎）、34 个来源。V3.10 新增的 2 个入口于 2026-09-22 实测，V3.9 新增的 25 个入口于 2026-09-20 实测；旧端点的验证日期见各章节。覆盖主板/创业板/科创板/ST，北交所覆盖依端点而异；已有备胎的数据可按「备用源速查」降级。
+
+> **V3.10.0（逐笔替代 / 期货日 K / 行情层重排，2026-09-22）：** 85→87 个能力入口（82 主 + 5 备胎），来源数不变（34）。
+> - **§1.4 腾讯逐笔 `tencent_ticks()`**：替代 #52 后返回空的 mootdx `transaction()`。最近一个交易日的全部分笔（沪深个股 + ETF），
+>   收盘后与行情快照的当日成交额核对，连续竞价段缺笔直接报错；只有当日、不含北交所。
+> - **§13.7 新浪期货日 K `futures_kline()`**：单个合约或主力连续的逐日 K 线，六家交易所含大商所（此前大商所只有实时价）；
+>   实测价格与交易所官方逐日一致。
+> - **行情层重排**：能用的在前，mootdx 行情命令移到 §1.7 留档。新旧编号对照见 Layer 1 开头；下面历史版本说明里写的仍是旧编号。
+> - **期货修正**：上期能源在各类数据首日前抛 `ValueError`（此前报成「格式可能已变」的 `RuntimeError`），期权首日更正为 2021-06-21；
+>   上期所日行情实测最早 2002-01-07、中金所 2010-04-16，文档原写 2015 年。
 
 > **V3.9.0（期货大宗 / 事件驱动 / 可转债 / 利率 + 四个 issue，2026-09-20）：** 新增 §13 期货与大宗商品、§14 事件驱动、
 > §15 可转债三层，并在原有各层补齐 K 线、研报、ETF 份额、新闻、ST 名单、沪市问答、利率曲线等入口。
@@ -101,12 +110,13 @@ version: 3.9.0
 
 ```
 行情层（实时，不封IP）
-├── mootdx        → K线 + 五档盘口 + 逐笔成交 (TCP 7709；⚠️ 2026-09 起行情命令返回空，#52)
 ├── 腾讯财经 API   → PE/PB/市值/换手率/涨跌停/指数/ETF (HTTP)
+├── 腾讯 K 线      → 沪深日/周/月前后复权 + 1~60 分钟，三入口轮换 (V3.9 新增)
+├── 通达信盘后包   → 某交易日沪深北全市场日线含成交额 (tdx.com.cn HTTP，V3.9 新增)
+├── 腾讯逐笔       → 最近一个交易日的分笔成交明细，沪深个股 + ETF (HTTP，V3.10 新增)
 ├── 百度股市通     → K线带MA5/10/20 (V3.0 新增，HTTP)
 ├── 新浪复权因子   → qfq/hfq 因子序列 + 套用到不复权K线 (V3.7 新增)
-├── 腾讯 K 线      → 沪深日/周/月前后复权 + 1~60 分钟，三入口轮换 (V3.9 新增)
-└── 通达信盘后包   → 某交易日沪深北全市场日线含成交额 (tdx.com.cn HTTP，V3.9 新增)
+└── mootdx        → K线 + 五档盘口 + 逐笔成交 (TCP 7709；⚠️ 2026-09 起行情命令返回空，#52，留档)
 
 研报层
 ├── 东财 reportapi → 个股研报 + 行业研报 + PDF下载 + 评级 + 三年EPS
@@ -192,6 +202,7 @@ ETF期权层 (V3.3 新增)
 ├── 期权日行情     → 商品期权 + 股指期权，Delta / 隐含波动率（中金所不公布这两项）
 ├── 持仓排名       → 会员成交量 / 持买 / 持卖前 20 名
 ├── 实时期货       → 新浪实时价（含大商所品种）
+├── 期货日 K       → 新浪单合约 / 主力连续逐日 K 线（含大商所，V3.10 新增）
 ├── A50 期指       → 富时中国 A50 连续合约报价
 └── 上海金现货     → 上金所 Au99.99 / Au(T+D) / Ag(T+D) 日线
 
@@ -215,12 +226,13 @@ ETF期权层 (V3.3 新增)
 |---|------|--------|----|
 | 前置 | `norm_ticker(code)` | 任意写法→纯6位（`SH600519`/`600519.SH`/`600519.XSHG` 皆可；解析失败抛错不返空） | 本地 |
 | 前置 | `to_joinquant(code)` | 转聚宽代码 `600519.XSHG` / `000001.XSHE`（北交所不转换） | 本地 |
-| 1.1 | `tdx_client()` → `.bars()` / `.quotes()` / `.transaction()` | K线(多周期,不复权) / 五档盘口 / 逐笔成交（⚠️ 2026-09 起返回空，#52） | 通达信 |
-| 1.2 | `tencent_quote(codes)` | 实时价/PE/PB/市值/换手/涨跌停/指数/ETF（带 `is_stale` 僵尸报价标志） | 腾讯 |
-| 1.3 | `baidu_kline_with_ma(code)` | 日K线带 MA5/10/20 | 百度 |
-| 1.4 | `sina_adjust_factor(code, kind)` / `apply_adjust(bars, factors)` | 复权因子 qfq/hfq + 套用到不复权K线 | 新浪 |
-| 1.5 | `tencent_kline(code, period, adjust, start, end, count)` | 日/周/月前后复权 + 1~60 分钟 K 线（沪深，不含北交所） | 腾讯 |
-| 1.6 | `tdx_daily_package(date)` | 某交易日沪深北全部证券日线（含成交额） | 通达信官网 |
+| 1.1 | `tencent_quote(codes)` | 实时价/PE/PB/市值/换手/涨跌停/指数/ETF（带 `is_stale` 僵尸报价标志） | 腾讯 |
+| 1.2 | `tencent_kline(code, period, adjust, start, end, count)` | 日/周/月前后复权 + 1~60 分钟 K 线（沪深，不含北交所） | 腾讯 |
+| 1.3 | `tdx_daily_package(date)` | 某交易日沪深北全部证券日线（含成交额） | 通达信官网 |
+| 1.4 | `tencent_ticks(code)` | 最近一个交易日的分笔成交（价/手/元/主动买卖；沪深个股+ETF，不含北交所） | 腾讯 |
+| 1.5 | `baidu_kline_with_ma(code)` | 日K线带 MA5/10/20 | 百度 |
+| 1.6 | `sina_adjust_factor(code, kind)` / `apply_adjust(bars, factors)` | 复权因子 qfq/hfq + 套用到不复权K线 | 新浪 |
+| 1.7 | `tdx_client()` → `.bars()` / `.quotes()` / `.transaction()` | K线(多周期,不复权) / 五档盘口 / 逐笔成交（⚠️ 2026-09 起返回空，#52，留档） | 通达信 |
 | 2.1 | `eastmoney_reports(code)` / `download_pdf(rec)` | 个股研报+评级+三年EPS / 研报PDF | 东财 |
 | 2.1 | `eastmoney_industry_reports(industry_code)` | 行业研报 | 东财 |
 | 2.2 | `ths_eps_forecast(code)` | 机构一致预期 EPS | 同花顺 |
@@ -282,6 +294,7 @@ ETF期权层 (V3.3 新增)
 | 13.4 | `futures_realtime(symbols)` | 实时期货（含大商所品种） | 新浪 |
 | 13.5 | `a50_futures()` | 富时中国 A50 期指 | 新浪 |
 | 13.6 | `sge_spot(instrument)` | 上海金交所现货日线（黄金/白银/铂金） | 上金所 |
+| 13.7 | `futures_kline(symbol, start, end)` | 期货日 K：单个合约 / 主力连续的逐日序列（含大商所） | 新浪 |
 | 14.1 | `earnings_forecast(code, report_date, limit)` | 业绩预告 | 东财 |
 | 14.2 | `institution_survey(code, start, end, detail, limit)` | 机构调研（汇总 / 逐机构） | 东财 |
 | 14.3 | `holder_trades(code, direction, start, end, limit)` | 股东增减持 | 东财 |
@@ -300,7 +313,7 @@ ETF期权层 (V3.3 新增)
 
 | 优先级 | 数据源 | 协议 | 封 IP 风险 | 覆盖 |
 |--------|--------|------|-----------|------|
-| **1（首选）** | **腾讯财经** | HTTP | **不封 IP**（K 线单入口约 600 次后限流，§1.5 三入口轮换） | 实时价、PE/PB/市值/换手率/涨跌停、指数、ETF、日周月/分钟 K 线 |
+| **1（首选）** | **腾讯财经** | HTTP | **不封 IP**（K 线单入口约 600 次后限流，§1.2 三入口轮换） | 实时价、PE/PB/市值/换手率/涨跌停、指数、ETF、日周月/分钟 K 线、当日逐笔 |
 | **2** | **交易所 / 官方机构** | HTTP | 极低（避免高频） | 通达信盘后包、沪深北交易所、五家期货交易所、上金所、中债、货币网、中证/国证 |
 | **3** | 新浪 / 巨潮 / 同花顺 / 华尔街见闻 | HTTP | 低 | 财报三表、复权因子、公告、一致预期/热点、研报列表、快讯 |
 | **4** | **mootdx（通达信）** | TCP 7709 二进制 | 不封 IP | 财务快照、F10 正常；**K 线 / 盘口 / 逐笔 2026-09 起返回空（#52）** |
@@ -459,7 +472,7 @@ def _probe(ip, port, timeout=2.0):
 def _validate(client, market: str = 'std', check: str = 'bars') -> bool:
     """真实取数验活：坏服务器可 TCP 握手通过却回 2 字节空 body → 静默空表。用一次真实请求兜底。
 
-    check='bars'   ：用 K 线请求验活（§1.1 行情类调用）；
+    check='bars'   ：用 K 线请求验活（§1.7 行情类调用）；
     check='finance'：财务快照、F10 类别表里的「最新提示」及其正文都要取到才算活（§6.1 财务 / §6.2、§7.2 F10 调用），
                      只验财务会选中「财务正常、F10 为空」的服务器，F10 随后静默给空文本；
                      只看类别表非空，又会放过只回别的类别或畸形对象的服务器。
@@ -516,11 +529,12 @@ def tdx_client(market='std', check='bars'):
     hint = ("海外网络通常全部超时（TCP 7709），请走国内代理或更新 _TDX_SERVERS 列表。")
     if check == 'bars':
         hint += ("若国内网络也如此：2026-09 起通达信公开服务器的 K 线 / 盘口 / 逐笔命令普遍返回空（#52），"
-                 "K 线改用 §1.5 tencent_kline()（日周月 + 1~60 分钟）或 §1.6 tdx_daily_package()"
-                 "（全市场当日日线含成交额）；财务与 F10 用 tdx_client(check='finance') 仍可取。")
+                 "K 线改用 §1.2 tencent_kline()（日周月 + 1~60 分钟）或 §1.3 tdx_daily_package()"
+                 "（全市场当日日线含成交额），逐笔改用 §1.4 tencent_ticks()（当日）；"
+                 "财务与 F10 用 tdx_client(check='finance') 仍可取。")
     raise RuntimeError("所有 mootdx 服务器均无法取到数据（TCP 可达但返回空 / 被 reset）。" + hint)
 
-# 用法：client = tdx_client()                  # K 线 / 盘口 / 逐笔（#52：目前普遍取不到，见 §1.1 警告）
+# 用法：client = tdx_client()                  # K 线 / 盘口 / 逐笔（#52：目前普遍取不到，见 §1.7 警告）
 #       client = tdx_client(check='finance')   # 财务快照 / F10（正常）
 ```
 
@@ -528,7 +542,7 @@ def tdx_client(market='std', check='bars'):
 >
 > **⚠️ 行情命令失效（#52，2026-09-20 实测）：** 内置 10 台服务器逐台测试，TCP 均可达，`finance` / `xdxr` 正常、
 > `F10` 只剩「最新提示」一类（见 §6.2），但 `bars` / `quotes` / `transaction` 全部返回 0 行。财务与 F10 调用请传 `check='finance'`；
-> K 线改走 §1.5 腾讯 / §1.6 通达信盘后包，实时价与五档走 §1.2 腾讯。
+> K 线改走 §1.2 腾讯 / §1.3 通达信盘后包，实时价与五档走 §1.1 腾讯，当日逐笔走 §1.4 腾讯。
 
 ### 市场前缀规则（全局通用）
 
@@ -573,7 +587,7 @@ def get_prefix(code: str) -> str:
 >
 > 老码行情价与真实价可差 17%~100%+，直接拿去算估值会得出完全错误的结论。
 >
-> **判定僵尸报价：** `成交量 == 0 且 最新价 == 昨收` → 极可能是已迁移的废码（真停牌股同样满足，两者都不该用于估值）。`tencent_quote()` 已内置该检测并置 `is_stale` 标志，见 §1.2。
+> **判定僵尸报价：** `成交量 == 0 且 最新价 == 昨收` → 极可能是已迁移的废码（真停牌股同样满足，两者都不该用于估值）。`tencent_quote()` 已内置该检测并置 `is_stale` 标志，见 §1.1。
 >
 > **拿新码：** 用 `push2` 北交所全量清单 `fs=m:0+t:81+s:2048` 按名称反查现行代码。
 
@@ -775,7 +789,7 @@ def eastmoney_datacenter(report_name: str, columns: str = "ALL",
     return []
 ```
 
-### V3.9.0 共用 helper（§1.5 起的所有 V3.9.0 新端点都依赖它）
+### V3.9.0 共用 helper（§1.2 腾讯 K 线起的所有 V3.9.0 / V3.10.0 新端点都依赖它）
 
 先执行上面的 `get_prefix` / `norm_ticker` / 东财 `em_get` 代码块，再执行本块。V3.9.0 新端点统一返回 DataFrame，
 末尾附 `source` / `source_url` / `fetched_at` 三列。**「确实没有数据」与「接口坏了」分开处理**：前者返回空表或抛
@@ -1006,48 +1020,11 @@ def _em_day(value):
 
 ## Layer 1: 行情层（实时，不封IP）
 
-### 1.1 mootdx — K线 + 五档盘口 + 逐笔成交
+> **V3.10.0 起本层重排：能用的在前，2026-09 起失效的 mootdx 行情命令移到最后（§1.7，留档）。**
+> 旧编号 → 新编号：1.2→1.1 腾讯实时、1.5→1.2 腾讯 K 线、1.6→1.3 通达信盘后包、1.3→1.5 百度、1.4→1.6 新浪复权因子、1.1→1.7 mootdx；
+> §1.4 腾讯逐笔为新增。CHANGELOG 与文件开头的历史版本说明里写的仍是旧编号。
 
-TCP 二进制协议，连通达信服务器(7709)，无需注册，不封IP。
-
-> **⚠️ 2026-09 起本节普遍取不到数（#52）：** 通达信公开服务器 TCP 仍可达，但 `bars` / `quotes` / `transaction`
-> 返回 0 行（2026-09-20 逐台实测内置 10 台，全部如此）；`tdx_client()` 会在约 1 分钟测速后抛出带指引的 RuntimeError。
-> 替代：**K 线 → §1.5 `tencent_kline()`**（沪深日周月前/后复权 + 1~60 分钟）或 **§1.6 `tdx_daily_package()`**（沪深北全市场某日含成交额，北交所日线只能走这里）；
-> **实时价 / 五档 → §1.2 腾讯**。财务与 F10（§6.1 / §6.2 / §7.2）不受影响。以下代码保留，服务器恢复后可照常使用。
-
-```python
-from mootdx.quotes import Quotes
-
-client = tdx_client()  # 见 Prerequisites 的 tdx_client() helper（规避 0.11.x BESTIP bug；等价 Quotes.factory(market='std')）
-
-# === K线数据 ===
-# ⚠️ 参数名是 frequency（不是 category！传 category 会被 **kwargs 静默吞掉，
-#    永远退化成默认 frequency=9 日线，拿不到分钟数据）。
-# mootdx 0.11.7 实测频率值表：
-#   0=5分钟  1=15分钟  2=30分钟  3=60分钟(1小时)  4=日线  5=周线  6=月线
-#   8=1分钟  9=日线(默认)  10=季线  11=年线        （7=1分钟除权口径,少用）
-klines = client.bars(symbol='688017', frequency=9, offset=10)    # 日线
-min1   = client.bars(symbol='688017', frequency=8, offset=240)   # 1分钟（一个交易日≈240根）
-min5   = client.bars(symbol='688017', frequency=0, offset=48)    # 5分钟
-# 返回: open, close, high, low, vol, amount, datetime
-# ⚠️ 复权：bars 返回【不复权】原始价（通达信原始数据，无 adjust 参数）。
-#    跨除权除息日做估值/回测前需自行复权，或改用带前复权的日K数据源（腾讯财经）。
-
-# === 实时报价 ===
-quotes = client.quotes(symbol=['688017', '300476'])
-# 返回 46 个字段:
-#   price(现价), open, high, low, last_close(昨收)
-#   bid1~bid5, ask1~ask5, bid_vol1~bid_vol5, ask_vol1~ask_vol5
-#   vol(成交量), amount(成交额), servertime
-
-# === 逐笔成交（非交易时间返回空）===
-trades = client.transaction(symbol='688017', date='20260502')
-# 返回: time, price, vol, num, buyorsell(0买/1卖/2中性)
-```
-
-**mootdx 不提供 PE / PB / 市值 / 换手率 / 涨跌停价** — 这些走腾讯财经。
-
-### 1.2 腾讯财经 API — PE/PB/市值/换手率/涨跌停/指数/ETF
+### 1.1 腾讯财经 API — PE/PB/市值/换手率/涨跌停/指数/ETF
 
 HTTP GET，GBK 编码，`~` 分隔 88 个字段，不封IP。
 
@@ -1177,210 +1154,11 @@ etf_quotes = tencent_quote(["510050", "510300"])
 > 用市值做筛选时取错会把大市值公司误判成小盘股。可用 `f[45] ÷ 现价` 反推总股本核对（与东财 `f84` 一致）。
 > 参考：东财 push2 的 `f116`=总市值 / `f117`=流通市值 方向与腾讯相反，实测确认无误，勿混用。
 
-### 1.3 百度股市通 K线 — 带MA5/MA10/MA20（V3.0 新增）
+### 1.2 腾讯 K 线 — 日/周/月前后复权 + 1~60 分钟（V3.9.0 新增 · #52）
 
-**核心价值：** 返回时自带均线数据，无需本地计算。
-
-```python
-import requests
-
-def baidu_kline_with_ma(code: str, start_time: str = "") -> dict:
-    """百度股市通K线 — 独有能力: 返回时自带 ma5/ma10/ma20 均价"""
-    url = "https://finance.pae.baidu.com/selfselect/getstockquotation"
-    params = {
-        "all": "1", "isIndex": "false", "isBk": "false", "isBlock": "false",
-        "isFutures": "false", "isStock": "true", "newFormat": "1",
-        "group": "quotation_kline_ab", "finClientType": "pc",
-        "code": code, "start_time": start_time, "ktype": "1",
-    }
-    headers = {
-        "User-Agent": "Mozilla/5.0",
-        "Accept": "application/vnd.finance-web.v1+json",
-        "Origin": "https://gushitong.baidu.com",
-        "Referer": "https://gushitong.baidu.com/",
-    }
-    r = requests.get(url, params=params, headers=headers, timeout=10)
-    d = r.json()
-    result = d.get("Result", {})
-    md = result.get("newMarketData", {})
-    keys = md.get("keys", [])  # includes: ma5avgprice, ma10avgprice, ma20avgprice
-    rows = md.get("marketData", "").split(";")
-    return {"keys": keys, "rows": rows}
-
-# 用法
-data = baidu_kline_with_ma("600519")
-print("字段:", data["keys"][:10])
-print("最近5根K线:", data["rows"][-5:])
-# keys 包含: time, open, close, high, low, volume, amount, ma5avgprice, ma10avgprice, ma20avgprice 等
-```
-
----
-
-### 1.4 新浪复权因子 — qfq / hfq（V3.7.0 新增）
-
-**核心价值：** §1.1 `tdx_client().bars()`、§1.5 `tencent_kline(adjust='')`、§1.6 `tdx_daily_package()` 返回的是**不复权**数据，跨除权日直接比价必然出错。
-本端点给出复权因子序列，一次 HTTP、约 1.8KB、零鉴权。
-
-```python
-import json
-import re
-
-import requests
-
-
-def sina_adjust_factor(code: str, kind: str = "qfq") -> list:
-    """新浪复权因子序列 — kind='qfq'(前复权) | 'hfq'(后复权)，按日期倒序（最新在前）"""
-    if kind not in ("qfq", "hfq"):
-        raise ValueError(f"kind 只能是 'qfq' 或 'hfq'，收到 {kind!r}")
-    # 数字位用 norm_ticker() 剥掉前后缀（否则 "sz000016" 会拼成 "szsz000016" ——
-    # zfill(6) 对 8 字符输入不做任何事）。
-    raw = str(code).strip()
-    digits = norm_ticker(raw)
-    # 市场：**显式写法优先**——前缀或 `.SH` 后缀直接采信（V3.7.1 起 get_prefix() 也认后缀，
-    # 本地显式匹配保留，语义不变）。都没写显式市场时，才用 get_prefix() 按号段推断
-    # （它已处理 92 必须先于 9x）。
-    m = re.match(r"^(sh|sz|bj)", raw, re.I) or re.search(r"\.(sh|sz|bj|xshg|xshe)$", raw, re.I)
-    prefix = {"xshg": "sh", "xshe": "sz"}.get(m.group(1).lower(), m.group(1).lower()) if m else get_prefix(digits)
-    symbol = f"{prefix}{digits}"
-    url = f"https://finance.sina.com.cn/realstock/company/{symbol}/{kind}.js"
-    r = requests.get(url, headers={"User-Agent": "Mozilla/5.0",
-                                   "Referer": "https://finance.sina.com.cn/"}, timeout=10)
-    r.raise_for_status()
-    # 🔴 响应形如 `var sh600519qfq={...}` 且**末尾挂着 /* base64 */ 注释块**，
-    #    不能用 $ 锚定正则。从第一个 { 起用 raw_decode，让解析器自己在 JSON 结束处停下。
-    text = r.text
-    brace = text.find("{")
-    if brace < 0:
-        raise RuntimeError(f"新浪复权因子响应无 JSON（{symbol}/{kind}）: {text[:120]}")
-    try:
-        data, _ = json.JSONDecoder().raw_decode(text[brace:])
-    except json.JSONDecodeError as e:
-        raise RuntimeError(f"新浪复权因子 JSON 解析失败（{symbol}/{kind}）: {e}") from e
-    return [{"date": it["d"], "factor": float(it["f"])} for it in data.get("data", [])]
-
-
-def apply_adjust(bars, factors: list, kind: str = "qfq",
-                 price_keys=("open", "high", "low", "close")):
-    """把复权因子套到不复权 K 线上。
-
-    `bars` 接受两种形态：
-      - **§1.1 `tdx_client().bars()` 的 DataFrame**（日期列名是 `datetime`）或 §1.5 `tencent_kline(adjust='')` 的 DataFrame（`date` 列）→ 返回 DataFrame
-      - list[dict]（需含 `date` 键）→ 返回 list[dict]
-
-    🔴 **qfq 与 hfq 的运算方向相反，必须传对 kind**：
-      - `qfq`（前复权）因子是**除数**：`前复权价 = 不复权价 ÷ factor`
-      - `hfq`（后复权）因子是**乘数**：`后复权价 = 不复权价 × factor`
-    传错方向不会报错，只会把历史价格放大/缩小几倍（见下方实测对照表）。
-
-    因子表是「生效日 → 因子」的阶梯，每根 K 线取**不晚于它**的最近一个因子。
-    """
-    if kind not in ("qfq", "hfq"):
-        raise ValueError(f"kind 只能是 'qfq' 或 'hfq'，收到 {kind!r}")
-    # 🔴 因子为空时绝不能「原样返回」—— 那会把不复权价当成复权价交出去，
-    #    调用方拿到的数字看着正常却是错的（新浪对不支持的标的就返回空 data）。
-    if not factors:
-        raise ValueError(
-            "复权因子列表为空，无法复权。请先确认 sina_adjust_factor() 是否取到数据"
-            "（新浪对不支持的标的会返回空 data），不要用未复权价继续计算。"
-        )
-
-    is_df = hasattr(bars, "columns") and hasattr(bars, "to_dict")
-    if is_df:
-        # mootdx bars() 的日期列叫 datetime，且可能带时分秒，统一截成 YYYY-MM-DD
-        date_col = next((c for c in ("date", "datetime") if c in bars.columns), None)
-        if date_col is None:
-            raise ValueError(f"DataFrame 需含 date 或 datetime 列，实际列={list(bars.columns)}")
-        rows = bars.to_dict("records")
-        for r in rows:
-            r["date"] = str(r[date_col])[:10]
-    else:
-        rows = [dict(b) for b in bars]
-        for r in rows:
-            if "date" not in r:
-                raise ValueError(f"每根 K 线需含 'date' 键，实际键={sorted(r)}")
-            r["date"] = str(r["date"])[:10]
-
-    fac = sorted(factors, key=lambda x: x["date"])
-    out, i, cur = [], 0, None
-    for bar in sorted(rows, key=lambda b: b["date"]):
-        while i < len(fac) and fac[i]["date"] <= bar["date"]:
-            cur = fac[i]["factor"]
-            i += 1
-        # 🔴 早于最早因子日的 K 线不能原样放行 —— 那会让一份结果里混着「已复权」和
-        #    「未复权」两种价格且无从分辨。新浪的因子表通常带 1900-01-01 哨兵
-        #    （实测 600519/000001/300750/688981/000004/601398 六只均是），
-        #    真出现未覆盖行，说明因子表异常，必须显式失败。
-        if cur is None:
-            raise RuntimeError(
-                f"K 线日期 {bar['date']} 早于因子序列最早日 {fac[0]['date']}，"
-                "无法复权；不返回未复权价以免与已复权行混淆。"
-            )
-        if cur == 0:
-            raise RuntimeError(f"复权因子为 0（{bar['date']}），无法换算")
-        nb = dict(bar)
-        for k in price_keys:
-            if k in nb and nb[k] is not None:
-                v = float(nb[k])
-                nb[k] = round(v / cur if kind == "qfq" else v * cur, 4)
-        nb["adj_factor"] = cur
-        out.append(nb)
-    if is_df:
-        import pandas as pd
-        res = pd.DataFrame(out)
-        # mootdx 的 bars() 带 DatetimeIndex，重建 DataFrame 会退化成 RangeIndex，
-        # 下游按时间切片 / resample / 时间对齐 join 都会失效。按排序后的顺序还原索引。
-        if getattr(bars, "index", None) is not None and not isinstance(
-            bars.index, pd.RangeIndex
-        ):
-            order = sorted(range(len(bars)), key=lambda n: str(bars.iloc[n][date_col])[:10])
-            res.index = bars.index[order]
-            res.index.name = bars.index.name
-        return res
-    return out
-
-
-# 用法
-qfq = sina_adjust_factor("600519", "qfq")
-hfq = sina_adjust_factor("600519", "hfq")
-print(len(qfq), "条 | 最新", qfq[0], "| 最早", qfq[-1])
-# 实测 2026-08-19：33 条
-#   qfq 最新 {'date': '2026-06-26', 'factor': 1.0}          ← 前复权以最新为基准
-#   hfq 最早 {'date': '1900-01-01', 'factor': 1.0}          ← 后复权以最早为基准
-
-bars = [{"date": "2015-01-05", "close": 202.52}]         # 茅台当日不复权收盘价
-print(apply_adjust(bars, qfq, kind="qfq"))                # → 143.46（前复权，除法）
-print(apply_adjust(bars, hfq, kind="hfq"))                # → 1274.28（后复权，乘法）
-```
-
-**方向实测对照（2026-08-19，以 baostock `adjustflag` 为基准交叉验证）**
-
-| 日期 | 不复权 | baostock 前复权 | `raw × qfq` | `raw ÷ qfq` |
-|------|--------|----------------|-------------|-------------|
-| 2015-01-05 | 202.52 | **143.46** | 285.90 ❌ | **143.46** ✅ |
-| 2026-08-14 | 1341.99 | 1341.99 | 1341.99 ✅ | 1341.99 ✅ |
-
-> `qfq` 因子恒 ≥ 1 且越往历史越大，**乘上去会把历史价格放大**，必须做除法。
-> 2026 那行两种算法都对，是因为最新日因子恰为 1.0 —— **只用最近日期做验证会漏掉这个 bug**。
->
-> ⚠️ **hfq 的基准与 baostock 不同**：新浪 `raw × hfq` 与 baostock 后复权价差一个**恒定倍数**
-> （实测 1.1582，2015 与 2026 两点一致）。后复权序列整体缩放不影响收益率与形态，
-> 但**不要把新浪后复权价与其它源的后复权价直接比数值**。
-
-> ⚠️ **北交所无复权因子**：实测 `bj920982` 返回 **404**（新浪未提供北交所的 qfq/hfq 文件），
-> 本函数会抛 `HTTPError`。北交所标的请改用 §1.1 通达信不复权价，并自行按分红送转推导。
->
-> **自检口径（实测 2026-08-19 校准）：**
-> - `qfq` 序列**最新**一条因子恒为 `1.0`；`hfq` 序列**最早**一条恒为 `1.0`。
-> - 同一日期上 **`qfq(d) × hfq(d)` 恒等于一个常数**（该标的全期总复权系数，茅台实测 `8.882513`）。
->   ⚠️ 两者**不是倒数**（乘积不为 1），比值 `hfq/qfq` 也**不恒定**（茅台 33 个日期有 32 种取值）——
->   两个基准不同的归一化序列，只有乘积守恒。
-> 不满足以上任一条，说明响应被截断或标的代码写错。
-
-### 1.5 腾讯 K 线 — 日/周/月前后复权 + 1~60 分钟（V3.9.0 新增 · #52）
-
-§1.1 mootdx K 线失效（#52）后的主力 K 线源。三个入口是同一后端、限流各自独立：某入口返回空或异常时冷却 120 秒、换下一个，
+§1.7 mootdx K 线失效（#52）后的主力 K 线源。三个入口是同一后端、限流各自独立：某入口返回空或异常时冷却 120 秒、换下一个，
 三个都不可用才抛错（#52 实测单入口约 600 次后返回空 JSON）。**只支持沪深**：腾讯对北交所只返回最新 1 根日线、
-区间和分钟线都是空的（2026-09-20 实测 920021 / 920982 / 920185），函数遇北交所代码直接抛 `ValueError`，北交所日线用 §1.6。
+区间和分钟线都是空的（2026-09-20 实测 920021 / 920982 / 920185），函数遇北交所代码直接抛 `ValueError`，北交所日线用 §1.3。
 
 | 参数 | 说明 |
 |---|---|
@@ -1390,7 +1168,7 @@ print(apply_adjust(bars, hfq, kind="hfq"))                # → 1274.28（后复
 
 > ⚠️ **腾讯前复权是等差口径**（逐次减去每股分红）：茅台 2020-01-02 原始价 1130.00、腾讯 qfq 870.741，差额正是此后累计分红；
 > 高分红老股早年会被减成负数（茅台 2015 年约 -117.6）。本函数遇到 ≤0 价格直接抛错。**长区间回测请取 `adjust=''`，
-> 再用 §1.4 的比例因子复权**。本接口**没有成交额**，需要成交额用 §1.6。
+> 再用 §1.6 的比例因子复权**。本接口**没有成交额**，需要成交额用 §1.3。
 
 <!-- v39-tencent-kline:start -->
 ```python
@@ -1442,13 +1220,13 @@ def tencent_kline(code, period="day", adjust=None, start=None, end=None, count=3
     adjust: None=日周月默认 qfq、分钟默认不复权；可显式传 'qfq' / 'hfq' / ''（不复权）
     start/end: 仅日周月可用，'YYYY-MM-DD'；给了 start 会自动按段分页（单次最多 640 根）
     count: 不给 start 时取最近 count 根；日周月 ≤ 640，分钟 ≤ 320
-    成交量单位是「手」；本接口**没有成交额**，需要成交额用 §1.6 通达信盘后包。
+    成交量单位是「手」；本接口**没有成交额**，需要成交额用 §1.3 通达信盘后包。
     不支持北交所：腾讯对北交所只返回最新 1 根日线，区间与分钟线为空（2026-09-20 实测），直接抛 ValueError。
     """
     period = str(period).lower()
     if get_prefix(code) == "bj":
         raise ValueError("腾讯 K 线不支持北交所（只返回最新 1 根日线、分钟线为空）；"
-                         "北交所日线请用 §1.6 tdx_daily_package(date) 按交易日取")
+                         "北交所日线请用 §1.3 tdx_daily_package(date) 按交易日取")
     symbol = get_prefix(code) + norm_ticker(code)
     if period in _TENCENT_MINUTES:
         if adjust not in (None, ""):
@@ -1547,10 +1325,10 @@ def tencent_kline(code, period="day", adjust=None, start=None, end=None, count=3
         raise RuntimeError(f"腾讯 K 线 {symbol} {period} 在所给区间内 0 根（未上市/停牌区间/代码有误）")
     # 腾讯 qfq 是「逐次减去每股分红」的等差口径（茅台 2020-01-02：原始 1130.00，qfq 870.741，
     # 差额 259.259 正是此后累计分红），高分红股的早年价格会被减成负数（茅台 2015 年 -117.6）。
-    # 负价不能拿去算收益率，直接拒绝；长区间请用 adjust='' 再按 §1.4 比例口径复权。
+    # 负价不能拿去算收益率，直接拒绝；长区间请用 adjust='' 再按 §1.6 比例口径复权。
     if any(min(r["open"], r["high"], r["low"], r["close"]) <= 0 for r in rows):
         raise RuntimeError(f"腾讯 {adjust or '原始'} 价格出现 ≤0（等差复权口径的副作用）；"
-                           "请改用 adjust='' 取不复权价，再用 §1.4 sina_adjust_factor + apply_adjust")
+                           "请改用 adjust='' 取不复权价，再用 §1.6 sina_adjust_factor + apply_adjust")
     # 分段请求可能落在不同入口，source_url 列出实际用到的全部入口
     frame = _v39_frame(rows, "tencent", " | ".join(h + "/appstock/app/fqkline/get" for h in used_hosts))
     frame.insert(0, "code", symbol)
@@ -1561,15 +1339,15 @@ def tencent_kline(code, period="day", adjust=None, start=None, end=None, count=3
 
 ```python
 day = tencent_kline("600519", start="2025-01-01")            # 前复权日线，自动分段
-raw = tencent_kline("600519", adjust="", count=250)            # 不复权 → 可交给 §1.4 apply_adjust
+raw = tencent_kline("600519", adjust="", count=250)            # 不复权 → 可交给 §1.6 apply_adjust
 m5 = tencent_kline("300750", period="m5", count=96)           # 最近 96 根 5 分钟线
 idx = tencent_kline("sh000001", period="week", count=100)     # 指数（上证指数要写 sh 前缀）
 ```
 
-### 1.6 通达信官网盘后包 — 某交易日全市场日线含成交额（V3.9.0 新增 · #52）
+### 1.3 通达信官网盘后包 — 某交易日全市场日线含成交额（V3.9.0 新增 · #52）
 
 通达信官网每天发布的增量数据包（HTTP 下载约 2.7MB），一次拿到**沪深北全部证券**当日的昨收、开高低收、成交量（股）、
-成交额（元）。它走 HTTP，和 §1.1 失效的 TCP 行情命令是两条路。适合收盘后全市场截面筛选、每日落库。
+成交额（元）。它走 HTTP，和 §1.7 失效的 TCP 行情命令是两条路。适合收盘后全市场截面筛选、每日落库。
 二进制布局参考 [jing2uo/tdx2db](https://github.com/jing2uo/tdx2db)（MIT），已与腾讯收盘价对拍。
 非交易日、或当天包还没发布（通常收盘后数小时）抛 `ValueError`，不返回空表。
 
@@ -1685,6 +1463,381 @@ def tdx_daily_package(date):
 snap = tdx_daily_package("2026-09-18")
 print(len(snap), snap[snap.code == "600519"][["close", "volume", "amount"]])
 ```
+
+### 1.4 腾讯逐笔成交 — 当日分笔明细（V3.10.0 新增 · 替代 §1.7 mootdx `transaction`）
+
+§1.7 mootdx `transaction()` 2026-09 起返回空（#52）后的逐笔来源：腾讯行情页「成交明细」接口，一页 70 笔，逐页翻到空页为止，
+全天 60–70 页、约 10–20 秒。先执行 Prerequisites 的 V3.9.0 共用 helper。
+
+- **只有最近一个交易日**，没有历史；覆盖沪深个股（含创业板、科创板）与 ETF。北交所、指数没有，直接抛 `ValueError`。
+- 是约 3 秒一笔的**分笔**（同一时刻撮合的多笔合并成一笔），不是交易所 Level-2 逐笔委托 / 逐笔成交。
+  09:25 那一笔就是开盘集合竞价的撮合结果。
+- `volume` 单位「手」（科创板也是手）、`amount` 单位元；`side`：B = 主动买、S = 主动卖、M = 中性（集合竞价、盘后定价多为 M）。
+- 收盘后 15:05–15:30 的盘后定价（固定价格）成交也在结果里（`time` 晚于 15:00:59 的行）；实测沪深主板、创业板、科创板、ETF 都有，
+  不计入腾讯行情的当日成交额。
+- **完整性核对：** 收盘后调用时，连续竞价段（≤ 15:00:59）的成交额合计要与腾讯行情快照的当日成交额相符，差超过 0.1% 抛 `RuntimeError`
+  （2026-09-22 实测 000001 / 600519 / 300750 / 688981 / 159915 / 000002 / 603286 相差 0–285 元）。
+  盘中调用拿到的是截至取数时刻的逐笔，成交额还在变，不做这项核对。
+- 腾讯偶尔缓存了盘后某一页的旧版本，会缺几笔盘后成交（实测 300750 缺 6 笔、159915 缺 7 笔，都在 15:14 以后），
+  缺的序号记在 `frame.attrs["missing_seq"]`；连续竞价段缺号直接抛 `RuntimeError`，稍后重试。
+- 开盘前（9:25 撮合前）调用可能拿不到上一交易日的逐笔。
+
+<!-- v310-tencent-ticks:start -->
+```python
+import re
+import time
+
+TENCENT_TICK_URL = "https://stock.gtimg.cn/data/index.php"
+TENCENT_QT_URL = "https://qt.gtimg.cn/q="
+_TICK_MAX_PAGES = 300            # 一页 70 笔；2026-09-22 实测最活跃的票全天约 4800 笔 / 69 页
+_TICK_SESSION_END = "15:00:59"   # 连续竞价 + 收盘集合竞价到此为止（科创板收盘那笔在 15:00:02），之后是盘后定价
+
+
+def _tencent_qt_snapshot(symbol):
+    """腾讯行情快照 → (交易日 'YYYY-MM-DD', 时刻 'HHMMSS', 当日成交额 元)。代码不存在抛 ValueError。"""
+    response = _v39_http(TENCENT_QT_URL + symbol)
+    text = response.content.decode("gbk", "replace")
+    if "v_pv_none_match" in text:
+        raise ValueError(f"腾讯没有 {symbol} 这个代码")
+    match = re.search(rf'v_{symbol}="([^"]*)"', text)
+    if not match:
+        raise RuntimeError(f"腾讯行情快照 {symbol} 的返回里没有 v_{symbol} 变量，格式可能已变")
+    fields = match.group(1).split("~")
+    if len(fields) < 36 or not re.fullmatch(r"[0-9]{14}", fields[30]):
+        raise RuntimeError(f"腾讯行情快照 {symbol} 字段数 {len(fields)} 或时间字段不对，格式可能已变")
+    parts = fields[35].split("/")          # 「最新价/成交量/成交额(元)」；科创板的成交量是股、其余是手，所以只用成交额
+    if len(parts) != 3:
+        raise RuntimeError(f"腾讯行情快照 {symbol} 的价/量/额字段是 {fields[35]!r}，格式可能已变")
+    return _v39_src_date(fields[30][:8]), fields[30][8:], _v39_req_num(parts[2], "成交额")
+
+
+def _tencent_tick_page(symbol, page):
+    """第 page 页逐笔（0 起）→ 记录列表；翻过最后一页时腾讯返回空内容，返回 None。"""
+    response = _v39_http(TENCENT_TICK_URL, params={"appn": "detail", "action": "data", "c": symbol, "p": page})
+    text = response.content.decode("gbk", "replace").strip()
+    if not text:
+        return None
+    match = re.fullmatch(rf'v_detail_data_{symbol}=\[(\d+),"([^"]*)"\];?', text)
+    if not match or int(match.group(1)) != page:
+        raise RuntimeError(f"腾讯逐笔 {symbol} 第 {page} 页不是预期格式: {text[:80]!r}")
+    if not match.group(2):
+        return None
+    records = []
+    try:
+        for item in match.group(2).split("|"):
+            seq, clock, price, change, volume, amount, side = item.split("/")
+            if not re.fullmatch(r"\d\d:\d\d:\d\d", clock) or side not in ("B", "S", "M"):
+                raise ValueError(item)
+            records.append({"seq": int(seq), "time": clock, "price": _v39_req_num(price, "price"),
+                            "change": _v39_req_num(change, "change"), "volume": _v39_req_num(volume, "volume"),
+                            "amount": _v39_req_num(amount, "amount"), "side": side})
+    except ValueError as exc:      # 字段数不对 / 序号不是整数 / 方向认不出：源格式变了，不是参数错
+        raise RuntimeError(f"腾讯逐笔 {symbol} 第 {page} 页记录格式改变: {exc}") from exc
+    return records
+
+
+@_v39_contract
+def tencent_ticks(code):
+    """腾讯逐笔成交（分笔）— 最近一个交易日的全部成交明细，沪深个股与 ETF。
+
+    一行一笔：date / code / time / seq（腾讯序号）/ price / change（较上一笔）/ volume（手）/ amount（元）/
+    side（B 主动买 · S 主动卖 · M 中性）。约 3 秒一笔的分笔，不是 Level-2 逐笔。
+    北交所、指数、代码不存在、当日没有成交抛 ValueError。收盘后调用会用行情快照的当日成交额核对连续竞价段，
+    对不上抛 RuntimeError；盘后定价段腾讯偶尔缺几笔，缺的序号在 frame.attrs["missing_seq"]。
+    """
+    prefix, ticker = get_prefix(code), norm_ticker(code)
+    if prefix == "bj":
+        raise ValueError("腾讯逐笔不支持北交所（返回空）；北交所日线见 §1.3 tdx_daily_package")
+    if (prefix, ticker[:3]) in (("sh", "000"), ("sz", "399")):
+        raise ValueError(f"{prefix}{ticker} 是指数，没有逐笔成交")
+    symbol = prefix + ticker
+    day, clock, amount_before = _tencent_qt_snapshot(symbol)
+    if amount_before == 0:
+        raise ValueError(f"{symbol} 在 {day} 没有成交（停牌、尚未开盘或集合竞价未撮合）")
+    rows, missing = [], []
+    for page in range(_TICK_MAX_PAGES):
+        records = _tencent_tick_page(symbol, page)
+        if records is None:
+            break
+        for r in records:
+            expected = rows[-1]["seq"] + 1 if rows else 0
+            if r["seq"] < expected or (rows and r["time"] < rows[-1]["time"]):
+                raise RuntimeError(f"腾讯逐笔 {symbol} 序号或时间倒退（第 {page} 页 {r['seq']} {r['time']}），结果不可信")
+            if r["seq"] > expected:
+                if r["time"] <= _TICK_SESSION_END:
+                    raise RuntimeError(f"腾讯逐笔 {symbol} 缺序号 {expected}–{r['seq'] - 1}（{r['time']} 之前，第 {page} 页），"
+                                       "腾讯该页缓存不完整，稍后重试")
+                missing.extend(range(expected, r["seq"]))
+            rows.append(r)
+        time.sleep(0.1)
+    else:
+        raise RuntimeError(f"腾讯逐笔 {symbol} 翻到第 {_TICK_MAX_PAGES} 页仍未结束，格式可能已变")
+    if not rows:
+        if clock < "092500":
+            raise ValueError(f"{symbol} 集合竞价尚未撮合（{clock}），还没有逐笔")
+        raise RuntimeError(f"{symbol} 在 {day} 成交 {amount_before:.0f} 元，腾讯逐笔却为空："
+                           "开盘前腾讯可能已清空上一交易日的明细，否则是接口变了")
+    day_after, _, amount_after = _tencent_qt_snapshot(symbol)
+    if day_after != day:
+        raise RuntimeError(f"取数期间交易日从 {day} 变成 {day_after}，请重试")
+    session = sum(r["amount"] for r in rows if r["time"] <= _TICK_SESSION_END)
+    # 两次快照成交额相同说明取数期间没有新成交（收盘后 / 午休 / 停牌），此时连续竞价段逐笔合计应与当日成交额相符
+    if amount_after == amount_before and abs(session - amount_before) > amount_before * 0.001 + 1000:
+        raise RuntimeError(f"腾讯逐笔 {symbol} 连续竞价段成交额 {session:.0f} 元，与行情快照 {amount_before:.0f} 元对不上，"
+                           "逐笔可能不全")
+    frame = _v39_frame(rows, "tencent", f"{TENCENT_TICK_URL}?appn=detail&action=data&c={symbol}",
+                       ["time", "seq", "price", "change", "volume", "amount", "side"])
+    frame.insert(0, "date", day)
+    frame.insert(1, "code", symbol)
+    frame.attrs["missing_seq"] = missing
+    return frame
+```
+<!-- v310-tencent-ticks:end -->
+
+```python
+ticks = tencent_ticks("000001")                     # 平安银行最近一个交易日全部分笔
+auction = ticks[ticks.time < "09:30:00"]            # 开盘集合竞价撮合那一笔（科创板在 09:25:0x）
+buy = ticks.loc[ticks.side == "B", "amount"].sum()  # 主动买入额
+etf = tencent_ticks("510300")                       # ETF 同样可用
+```
+
+### 1.5 百度股市通 K线 — 带MA5/MA10/MA20（V3.0 新增）
+
+**核心价值：** 返回时自带均线数据，无需本地计算。
+
+```python
+import requests
+
+def baidu_kline_with_ma(code: str, start_time: str = "") -> dict:
+    """百度股市通K线 — 独有能力: 返回时自带 ma5/ma10/ma20 均价"""
+    url = "https://finance.pae.baidu.com/selfselect/getstockquotation"
+    params = {
+        "all": "1", "isIndex": "false", "isBk": "false", "isBlock": "false",
+        "isFutures": "false", "isStock": "true", "newFormat": "1",
+        "group": "quotation_kline_ab", "finClientType": "pc",
+        "code": code, "start_time": start_time, "ktype": "1",
+    }
+    headers = {
+        "User-Agent": "Mozilla/5.0",
+        "Accept": "application/vnd.finance-web.v1+json",
+        "Origin": "https://gushitong.baidu.com",
+        "Referer": "https://gushitong.baidu.com/",
+    }
+    r = requests.get(url, params=params, headers=headers, timeout=10)
+    d = r.json()
+    result = d.get("Result", {})
+    md = result.get("newMarketData", {})
+    keys = md.get("keys", [])  # includes: ma5avgprice, ma10avgprice, ma20avgprice
+    rows = md.get("marketData", "").split(";")
+    return {"keys": keys, "rows": rows}
+
+# 用法
+data = baidu_kline_with_ma("600519")
+print("字段:", data["keys"][:10])
+print("最近5根K线:", data["rows"][-5:])
+# keys 包含: time, open, close, high, low, volume, amount, ma5avgprice, ma10avgprice, ma20avgprice 等
+```
+
+### 1.6 新浪复权因子 — qfq / hfq（V3.7.0 新增）
+
+**核心价值：** §1.7 `tdx_client().bars()`、§1.2 `tencent_kline(adjust='')`、§1.3 `tdx_daily_package()` 返回的是**不复权**数据，跨除权日直接比价必然出错。
+本端点给出复权因子序列，一次 HTTP、约 1.8KB、零鉴权。
+
+```python
+import json
+import re
+
+import requests
+
+
+def sina_adjust_factor(code: str, kind: str = "qfq") -> list:
+    """新浪复权因子序列 — kind='qfq'(前复权) | 'hfq'(后复权)，按日期倒序（最新在前）"""
+    if kind not in ("qfq", "hfq"):
+        raise ValueError(f"kind 只能是 'qfq' 或 'hfq'，收到 {kind!r}")
+    # 数字位用 norm_ticker() 剥掉前后缀（否则 "sz000016" 会拼成 "szsz000016" ——
+    # zfill(6) 对 8 字符输入不做任何事）。
+    raw = str(code).strip()
+    digits = norm_ticker(raw)
+    # 市场：**显式写法优先**——前缀或 `.SH` 后缀直接采信（V3.7.1 起 get_prefix() 也认后缀，
+    # 本地显式匹配保留，语义不变）。都没写显式市场时，才用 get_prefix() 按号段推断
+    # （它已处理 92 必须先于 9x）。
+    m = re.match(r"^(sh|sz|bj)", raw, re.I) or re.search(r"\.(sh|sz|bj|xshg|xshe)$", raw, re.I)
+    prefix = {"xshg": "sh", "xshe": "sz"}.get(m.group(1).lower(), m.group(1).lower()) if m else get_prefix(digits)
+    symbol = f"{prefix}{digits}"
+    url = f"https://finance.sina.com.cn/realstock/company/{symbol}/{kind}.js"
+    r = requests.get(url, headers={"User-Agent": "Mozilla/5.0",
+                                   "Referer": "https://finance.sina.com.cn/"}, timeout=10)
+    r.raise_for_status()
+    # 🔴 响应形如 `var sh600519qfq={...}` 且**末尾挂着 /* base64 */ 注释块**，
+    #    不能用 $ 锚定正则。从第一个 { 起用 raw_decode，让解析器自己在 JSON 结束处停下。
+    text = r.text
+    brace = text.find("{")
+    if brace < 0:
+        raise RuntimeError(f"新浪复权因子响应无 JSON（{symbol}/{kind}）: {text[:120]}")
+    try:
+        data, _ = json.JSONDecoder().raw_decode(text[brace:])
+    except json.JSONDecodeError as e:
+        raise RuntimeError(f"新浪复权因子 JSON 解析失败（{symbol}/{kind}）: {e}") from e
+    return [{"date": it["d"], "factor": float(it["f"])} for it in data.get("data", [])]
+
+
+def apply_adjust(bars, factors: list, kind: str = "qfq",
+                 price_keys=("open", "high", "low", "close")):
+    """把复权因子套到不复权 K 线上。
+
+    `bars` 接受两种形态：
+      - **§1.7 `tdx_client().bars()` 的 DataFrame**（日期列名是 `datetime`）或 §1.2 `tencent_kline(adjust='')` 的 DataFrame（`date` 列）→ 返回 DataFrame
+      - list[dict]（需含 `date` 键）→ 返回 list[dict]
+
+    🔴 **qfq 与 hfq 的运算方向相反，必须传对 kind**：
+      - `qfq`（前复权）因子是**除数**：`前复权价 = 不复权价 ÷ factor`
+      - `hfq`（后复权）因子是**乘数**：`后复权价 = 不复权价 × factor`
+    传错方向不会报错，只会把历史价格放大/缩小几倍（见下方实测对照表）。
+
+    因子表是「生效日 → 因子」的阶梯，每根 K 线取**不晚于它**的最近一个因子。
+    """
+    if kind not in ("qfq", "hfq"):
+        raise ValueError(f"kind 只能是 'qfq' 或 'hfq'，收到 {kind!r}")
+    # 🔴 因子为空时绝不能「原样返回」—— 那会把不复权价当成复权价交出去，
+    #    调用方拿到的数字看着正常却是错的（新浪对不支持的标的就返回空 data）。
+    if not factors:
+        raise ValueError(
+            "复权因子列表为空，无法复权。请先确认 sina_adjust_factor() 是否取到数据"
+            "（新浪对不支持的标的会返回空 data），不要用未复权价继续计算。"
+        )
+
+    is_df = hasattr(bars, "columns") and hasattr(bars, "to_dict")
+    if is_df:
+        # mootdx bars() 的日期列叫 datetime，且可能带时分秒，统一截成 YYYY-MM-DD
+        date_col = next((c for c in ("date", "datetime") if c in bars.columns), None)
+        if date_col is None:
+            raise ValueError(f"DataFrame 需含 date 或 datetime 列，实际列={list(bars.columns)}")
+        rows = bars.to_dict("records")
+        for r in rows:
+            r["date"] = str(r[date_col])[:10]
+    else:
+        rows = [dict(b) for b in bars]
+        for r in rows:
+            if "date" not in r:
+                raise ValueError(f"每根 K 线需含 'date' 键，实际键={sorted(r)}")
+            r["date"] = str(r["date"])[:10]
+
+    fac = sorted(factors, key=lambda x: x["date"])
+    out, i, cur = [], 0, None
+    for bar in sorted(rows, key=lambda b: b["date"]):
+        while i < len(fac) and fac[i]["date"] <= bar["date"]:
+            cur = fac[i]["factor"]
+            i += 1
+        # 🔴 早于最早因子日的 K 线不能原样放行 —— 那会让一份结果里混着「已复权」和
+        #    「未复权」两种价格且无从分辨。新浪的因子表通常带 1900-01-01 哨兵
+        #    （实测 600519/000001/300750/688981/000004/601398 六只均是），
+        #    真出现未覆盖行，说明因子表异常，必须显式失败。
+        if cur is None:
+            raise RuntimeError(
+                f"K 线日期 {bar['date']} 早于因子序列最早日 {fac[0]['date']}，"
+                "无法复权；不返回未复权价以免与已复权行混淆。"
+            )
+        if cur == 0:
+            raise RuntimeError(f"复权因子为 0（{bar['date']}），无法换算")
+        nb = dict(bar)
+        for k in price_keys:
+            if k in nb and nb[k] is not None:
+                v = float(nb[k])
+                nb[k] = round(v / cur if kind == "qfq" else v * cur, 4)
+        nb["adj_factor"] = cur
+        out.append(nb)
+    if is_df:
+        import pandas as pd
+        res = pd.DataFrame(out)
+        # mootdx 的 bars() 带 DatetimeIndex，重建 DataFrame 会退化成 RangeIndex，
+        # 下游按时间切片 / resample / 时间对齐 join 都会失效。按排序后的顺序还原索引。
+        if getattr(bars, "index", None) is not None and not isinstance(
+            bars.index, pd.RangeIndex
+        ):
+            order = sorted(range(len(bars)), key=lambda n: str(bars.iloc[n][date_col])[:10])
+            res.index = bars.index[order]
+            res.index.name = bars.index.name
+        return res
+    return out
+
+
+# 用法
+qfq = sina_adjust_factor("600519", "qfq")
+hfq = sina_adjust_factor("600519", "hfq")
+print(len(qfq), "条 | 最新", qfq[0], "| 最早", qfq[-1])
+# 实测 2026-08-19：33 条
+#   qfq 最新 {'date': '2026-06-26', 'factor': 1.0}          ← 前复权以最新为基准
+#   hfq 最早 {'date': '1900-01-01', 'factor': 1.0}          ← 后复权以最早为基准
+
+bars = [{"date": "2015-01-05", "close": 202.52}]         # 茅台当日不复权收盘价
+print(apply_adjust(bars, qfq, kind="qfq"))                # → 143.46（前复权，除法）
+print(apply_adjust(bars, hfq, kind="hfq"))                # → 1274.28（后复权，乘法）
+```
+
+**方向实测对照（2026-08-19，以 baostock `adjustflag` 为基准交叉验证）**
+
+| 日期 | 不复权 | baostock 前复权 | `raw × qfq` | `raw ÷ qfq` |
+|------|--------|----------------|-------------|-------------|
+| 2015-01-05 | 202.52 | **143.46** | 285.90 ❌ | **143.46** ✅ |
+| 2026-08-14 | 1341.99 | 1341.99 | 1341.99 ✅ | 1341.99 ✅ |
+
+> `qfq` 因子恒 ≥ 1 且越往历史越大，**乘上去会把历史价格放大**，必须做除法。
+> 2026 那行两种算法都对，是因为最新日因子恰为 1.0 —— **只用最近日期做验证会漏掉这个 bug**。
+>
+> ⚠️ **hfq 的基准与 baostock 不同**：新浪 `raw × hfq` 与 baostock 后复权价差一个**恒定倍数**
+> （实测 1.1582，2015 与 2026 两点一致）。后复权序列整体缩放不影响收益率与形态，
+> 但**不要把新浪后复权价与其它源的后复权价直接比数值**。
+
+> ⚠️ **北交所无复权因子**：实测 `bj920982` 返回 **404**（新浪未提供北交所的 qfq/hfq 文件），
+> 本函数会抛 `HTTPError`。北交所标的请改用 §1.3 通达信盘后包的不复权日线，并自行按分红送转推导。
+>
+> **自检口径（实测 2026-08-19 校准）：**
+> - `qfq` 序列**最新**一条因子恒为 `1.0`；`hfq` 序列**最早**一条恒为 `1.0`。
+> - 同一日期上 **`qfq(d) × hfq(d)` 恒等于一个常数**（该标的全期总复权系数，茅台实测 `8.882513`）。
+>   ⚠️ 两者**不是倒数**（乘积不为 1），比值 `hfq/qfq` 也**不恒定**（茅台 33 个日期有 32 种取值）——
+>   两个基准不同的归一化序列，只有乘积守恒。
+> 不满足以上任一条，说明响应被截断或标的代码写错。
+
+### 1.7 mootdx — K线 + 五档盘口 + 逐笔成交（⚠️ 2026-09 起行情命令失效，留档）
+
+TCP 二进制协议，连通达信服务器(7709)，无需注册，不封IP。
+
+> **⚠️ 2026-09 起本节普遍取不到数（#52）：** 通达信公开服务器 TCP 仍可达，但 `bars` / `quotes` / `transaction`
+> 返回 0 行（2026-09-20 逐台实测内置 10 台，全部如此）；`tdx_client()` 会在约 1 分钟测速后抛出带指引的 RuntimeError。
+> 替代：**K 线 → §1.2 `tencent_kline()`**（沪深日周月前/后复权 + 1~60 分钟）或 **§1.3 `tdx_daily_package()`**（沪深北全市场某日含成交额，北交所日线只能走这里）；
+> **实时价 / 五档 → §1.1 腾讯**；**逐笔 → §1.4 `tencent_ticks()`**（只有当日）。财务与 F10（§6.1 / §6.2 / §7.2）不受影响。以下代码保留，服务器恢复后可照常使用。
+
+```python
+from mootdx.quotes import Quotes
+
+client = tdx_client()  # 见 Prerequisites 的 tdx_client() helper（规避 0.11.x BESTIP bug；等价 Quotes.factory(market='std')）
+
+# === K线数据 ===
+# ⚠️ 参数名是 frequency（不是 category！传 category 会被 **kwargs 静默吞掉，
+#    永远退化成默认 frequency=9 日线，拿不到分钟数据）。
+# mootdx 0.11.7 实测频率值表：
+#   0=5分钟  1=15分钟  2=30分钟  3=60分钟(1小时)  4=日线  5=周线  6=月线
+#   8=1分钟  9=日线(默认)  10=季线  11=年线        （7=1分钟除权口径,少用）
+klines = client.bars(symbol='688017', frequency=9, offset=10)    # 日线
+min1   = client.bars(symbol='688017', frequency=8, offset=240)   # 1分钟（一个交易日≈240根）
+min5   = client.bars(symbol='688017', frequency=0, offset=48)    # 5分钟
+# 返回: open, close, high, low, vol, amount, datetime
+# ⚠️ 复权：bars 返回【不复权】原始价（通达信原始数据，无 adjust 参数）。
+#    跨除权除息日做估值/回测前需自行复权，或改用带前复权的日K数据源（腾讯财经）。
+
+# === 实时报价 ===
+quotes = client.quotes(symbol=['688017', '300476'])
+# 返回 46 个字段:
+#   price(现价), open, high, low, last_close(昨收)
+#   bid1~bid5, ask1~ask5, bid_vol1~bid_vol5, ask_vol1~ask_vol5
+#   vol(成交量), amount(成交额), servertime
+
+# === 逐笔成交（非交易时间返回空）===
+trades = client.transaction(symbol='688017', date='20260502')
+# 返回: time, price, vol, num, buyorsell(0买/1卖/2中性)
+```
+
+**mootdx 不提供 PE / PB / 市值 / 换手率 / 涨跌停价** — 这些走腾讯财经。
 
 ---
 
@@ -2976,7 +3129,7 @@ total_main = sum(d["main_net"] for d in recent_20)
 print(f"\n近20日主力累计净流入: {total_main/1e8:.2f}亿")
 ```
 
-> **⚠️ 大陆住宅 IP 间歇封锁（#18）：** push2/push2his 系列对**部分大陆住宅宽带 IP** 有连接级风控，表现为偶发 `HTTP 000`（连接被拒/超时）或返回空——**这不是代码问题**（同一代码在其他网络/时段实测正常）。遇到时：① 隔几分钟重试；② 换网络环境（如手机热点）；③ 降低请求频率（调大 `EM_MIN_INTERVAL`）。日级资金流务实替代：用 §1.5 腾讯 K 线或 §1.6 通达信盘后包的量价数据（mootdx 行情命令已失效，#52），或换时段重试。
+> **⚠️ 大陆住宅 IP 间歇封锁（#18）：** push2/push2his 系列对**部分大陆住宅宽带 IP** 有连接级风控，表现为偶发 `HTTP 000`（连接被拒/超时）或返回空——**这不是代码问题**（同一代码在其他网络/时段实测正常）。遇到时：① 隔几分钟重试；② 换网络环境（如手机热点）；③ 降低请求频率（调大 `EM_MIN_INTERVAL`）。日级资金流务实替代：用 §1.2 腾讯 K 线或 §1.3 通达信盘后包的量价数据（mootdx 行情命令已失效，#52），或换时段重试。
 
 ---
 
@@ -2987,7 +3140,7 @@ print(f"\n近20日主力累计净流入: {total_main/1e8:.2f}亿")
 
 🔴 **东财没有公开 CYQ 接口**（2026-08-19 实测 `push2/api/qt/stock/cyq/get` 与 `push2his` 两种写法**均 404**）。
 业界通行做法是**本地推演**：历史筹码按换手率衰减，当日成交量按三角分布撒进 `[low, high]` 区间。
-**零新增数据源** —— OHLC 用 §1.1 通达信，换手率用 §6.5 baostock。
+**零新增数据源** —— OHLC 与换手率都从 §6.5 baostock 一次取齐（见下方用法）。
 
 ```python
 import numpy as np
@@ -3679,7 +3832,7 @@ llb = sina_financial_report("600519", "llb")
 
 ### 6.5 baostock 估值历史 — PE/PB/PS/PCF + 换手率 + 停牌 + ST（V3.7.0 新增）
 
-**核心价值：** §1.2 腾讯只给**当日**估值快照，本端点给**日频历史序列**（可回溯至 2016），
+**核心价值：** §1.1 腾讯只给**当日**估值快照，本端点给**日频历史序列**（可回溯至 2016），
 一次调用同时拿到四个我们此前完全没有的字段：**换手率**（筹码分布的必需输入）、
 **停牌状态**、**ST 标记**、**历史估值**。
 
@@ -3725,7 +3878,7 @@ def _bs_code(code: str) -> str:
         return f"sz.{code}"
     raise ValueError(
         f"baostock 不支持该代码: {code}（北交所 4/8/92/920 号段会被服务端拒绝，"
-        f"报 10004011 股票代码未标识sh或sz）。北交所估值请改用 §1.2 腾讯当日快照。"
+        f"报 10004011 股票代码未标识sh或sz）。北交所估值请改用 §1.1 腾讯当日快照。"
     )
 
 
@@ -3736,7 +3889,7 @@ def baostock_valuation_history(code: str, start_date: str, end_date: str) -> pd.
     with bs_session():
         rs = bs.query_history_k_data_plus(
             bs_code, fields, start_date=start_date, end_date=end_date,
-            frequency="d", adjustflag="3",     # 3=不复权，与 §1.1 通达信口径一致
+            frequency="d", adjustflag="3",     # 3=不复权，与 §1.2 tencent_kline(adjust='') 口径一致
         )
         df = _rs_to_df(rs)
     for c in ("close", "peTTM", "pbMRQ", "psTTM", "pcfNcfTTM", "turn"):
@@ -3771,7 +3924,7 @@ print("停牌天数:", (df["tradestatus"] == "0").sum())
 
 ### 6.6 baostock 标的基本信息 — 上市日 / 退市日 / 状态（V3.7.0 新增）
 
-**核心价值：** 唯一能拿到**退市日期**的零鉴权源。配合 §1.2 的 `is_stale` 僵尸报价标志，
+**核心价值：** 唯一能拿到**退市日期**的零鉴权源。配合 §1.1 的 `is_stale` 僵尸报价标志，
 可以在回测/筛选阶段直接剔除已退市标的。
 
 ```python
@@ -5511,7 +5664,7 @@ print(days.loc[days.is_open, "date"].tolist())
 
 ## Layer 13: 期货与大宗商品（V3.9.0 新增 · #49）
 
-A 股之外的商品与股指衍生品：交易所官方日行情、商品期权、会员持仓排名，加新浪实时行情、A50 期指与上海金交所现货。
+A 股之外的商品与股指衍生品：交易所官方日行情、商品期权、会员持仓排名，加新浪日 K 与实时行情、A50 期指与上海金交所现货。
 先执行 Prerequisites 的 V3.9.0 共用 helper，再执行下面整块。
 
 | 函数 | 覆盖 | 说明 |
@@ -5520,19 +5673,20 @@ A 股之外的商品与股指衍生品：交易所官方日行情、商品期权
 | `options_daily(date, exchange)` | 同上五所的商品期权 / 股指期权 | 行权价、看涨看跌、Delta、隐含波动率（逐合约或按系列） |
 | `futures_position_rank(date, exchange, symbol=None)` | SHFE / INE / CZCE / CFFEX | 成交量 / 持买单 / 持卖单前 20 名会员 |
 | `futures_realtime(symbols)` | 全部六家（含大商所） | 新浪实时价 / 盘口；`RB0` 主力连续、`CU2610` 具体合约 |
+| `futures_kline(symbol, start, end)` | 全部六家（含大商所） | 新浪日 K：单个合约或主力连续的逐日开高低收、结算、成交量、持仓（V3.10.0） |
 | `a50_futures()` | 富时中国 A50 | 新浪连续合约报价，盘前 / 夜盘看外资情绪 |
 | `sge_spot(instrument)` | 上海黄金交易所 | 现货日线 2016-12 至今：`Au99.99` / `Au(T+D)` / `Ag(T+D)` … |
 
-**边界：** 大商所（DCE）官网有 JS 反爬（纯 HTTP 返回 412），日行情未接入，大商所品种（豆粕 M、铁矿 I…）用 `futures_realtime`。
-各所实测可用起点：上期所 2015 年仍有（2021 年及以前无成交额，`turnover_10k` 为 None）；上期能源 2018-03 开业；
-郑商所 2015-09-21 起（更早是另一套格式，未接入）；中金所 2015 年可用；广期所 2022-12 开业。
+**边界：** 大商所（DCE）官网有 JS 反爬（纯 HTTP 返回 412），官方日行情未接入；大商所品种（豆粕 M、铁矿 I…）的逐日 K 线用 `futures_kline`（新浪），实时用 `futures_realtime`。
+各所实测可用起点：上期所 2002-01-07 起（2021 年及以前无成交额，`turnover_10k` 为 None）；上期能源 2018-03 开业；
+郑商所 2015-09-21 起（更早是另一套格式，未接入）；中金所 2010-04-16 开业即有；广期所 2022-12 开业。
 上期所的官方文件里混着上期能源的品种，已按能源中心同日文件剔除，SHFE 与 INE 两次调用不会重复；能源中心对照文件在它开始发布之后缺失时抛错，不会把能源品种算进上期所。
 中金所持仓排名按各品种上市日确定当天应有的品种（IF 2010-04-16 … TL 2023-04-21），已上市品种缺文件抛错，不返回部分品种。
 中金所日行情 / 期权的 CSV 里没有交易日列，用同目录 `index.xml` 每行的 tradingday 核对，并逐合约比对成交量 / 收盘价 / 持仓量，对不上抛错。
 非交易日 / 未发布 / 该品种当时未上市抛 `ValueError`；交易所返回其他日期、表头改变、代码重复、文件不全抛 `RuntimeError`。
 ETF 期权不在这里，见 Layer 9。
 
-### 13.1–13.6 自包含实现
+### 13.1–13.7 自包含实现
 
 <!-- v39-futures:start -->
 ```python
@@ -5554,10 +5708,12 @@ CFFEX_RANK_FIRST_DAY = {"IF": "20100416", "IH": "20150416", "IC": "20150416", "I
                         "TS": "20180817", "TF": "20130906", "T": "20150320", "TL": "20230421"}
 GFEX_DAILY_URL = "http://www.gfex.com.cn/u/interfacesWebTiDayQuotes/loadList"
 SINA_HQ_URL = "https://hq.sinajs.cn/list="
+SINA_FUT_KLINE_URL = ("https://stock2.finance.sina.com.cn/futures/api/jsonp.php/var%20_{code}="
+                      "/InnerFuturesNewService.getDailyKLine")
 SGE_DAILY_URL = "https://www.sge.com.cn/graph/Dailyhq"
 _CFFEX_SINA_PRODUCTS = ("IF", "IH", "IC", "IM", "TS", "TF", "T", "TL")
-_DCE_HINT = ("大商所官网有 JS 反爬（纯 HTTP 返回 412），不提供日行情；"
-             "大商所品种（豆粕 M、铁矿 I、塑料 L…）请用 futures_realtime('M0') 取实时/收盘快照")
+_DCE_HINT = ("大商所官网有 JS 反爬（纯 HTTP 返回 412），不提供官方日行情；大商所品种（豆粕 M、铁矿 I、塑料 L…）"
+             "请用 futures_kline('M0') 取逐日 K 线（新浪），futures_realtime('M0') 取实时/收盘快照")
 _FUT_COLUMNS = ["date", "exchange", "symbol", "product", "open", "high", "low", "close", "settle",
                 "pre_settle", "volume", "open_interest", "oi_change", "turnover_10k"]
 _OPT_COLUMNS = ["date", "exchange", "symbol", "series", "option_type", "strike", "open", "high",
@@ -5587,7 +5743,7 @@ def _fut_exchange(exchange):
     if exchange == "DCE":
         raise ValueError(_DCE_HINT)
     if exchange not in FUTURES_EXCHANGES:
-        raise ValueError("exchange 只能是 " + " / ".join(FUTURES_EXCHANGES) + "（大商所见 futures_realtime）")
+        raise ValueError("exchange 只能是 " + " / ".join(FUTURES_EXCHANGES) + "（大商所见 futures_kline / futures_realtime）")
     return exchange
 
 
@@ -5595,6 +5751,12 @@ def _shfe_json(exchange, path, ymd, key, allow_missing=False):
     """上期所 / 上期能源的 .dat（实为 JSON）。非交易日官网 404；allow_missing 时返回 (None, url)。
     key 是调用方要读的行列表字段（o_curinstrument / o_cursor）；顶层不是对象、它不是由对象组成的列表，抛 RuntimeError。"""
     url = f"{_SHFE_HOSTS[exchange]}/data/tradedata/{path}{ymd}.dat"
+    first = _INE_FIRST_DAY.get(path) if exchange == "INE" else None
+    if first and ymd < first:
+        # 能源中心首日前有些日子也发文件，但里面没有该类合约；按「当时还没有」处理，不能报成格式改变
+        if allow_missing:
+            return None, url
+        raise ValueError(f"上期能源该类数据从 {first} 起才有（{ymd} 早于首日）")
     response = _v39_http(url, timeout=(10, 60), allow_status=(404,))
     payload = None
     if response.status_code != 404:
@@ -5767,9 +5929,10 @@ def _gfex_rows(ymd, trade_type):
 
 
 # 能源中心各文件的第一天（2026-09-20 二分实测）：日行情 2018-03-26 开业即有；持仓排名 2020-07-03 起
-# （07-02 仍是空壳，当时上期所排名里也没有能源品种）；期权日行情 2021-06-15 起（06-11 无文件）
+# （07-02 仍是空壳，当时上期所排名里也没有能源品种）；期权日行情 2021-06-21 原油期权上市起
+# （06-15~18 已发文件但里面没有期权合约，2026-09-22 复测）
 _INE_FIRST_DAY = {"future/dailydata/kx": "20180326", "future/dailydata/pm": "20200703",
-                  "option/dailydata/kx": "20210615"}
+                  "option/dailydata/kx": "20210621"}
 
 
 def _shfe_ine_ids(path, ymd, key, field):
@@ -5788,12 +5951,12 @@ def _shfe_ine_ids(path, ymd, key, field):
 def futures_daily(date, exchange):
     """期货日行情（交易所官方收盘数据）— 上期所 / 上期能源 / 郑商所 / 中金所 / 广期所。
 
-    exchange: 'SHFE' / 'INE' / 'CZCE' / 'CFFEX' / 'GFEX'；大商所（DCE）官网有反爬，见 futures_realtime。
+    exchange: 'SHFE' / 'INE' / 'CZCE' / 'CFFEX' / 'GFEX'；大商所（DCE）官网有反爬，见 futures_kline / futures_realtime。
     一行一个合约（不含小计），settle 为当日结算价，turnover_10k 单位万元，价格为 0 的统一成 None。
     上期所的官方文件里也包含上期能源的品种（原油、20号胶等），这里按能源中心同日文件剔除，
     所以 SHFE 与 INE 两次调用不会重复。非交易日抛 ValueError。
-    实测可用起点：上期所 2015 年仍有（2021 年及以前没有成交额，turnover_10k 为 None）；
-    上期能源 2018-03 开业；郑商所 2015-09-21 起（更早是另一套格式，未接入）；中金所 2015 年可用；广期所 2022-12 开业。
+    实测可用起点：上期所 2002-01-07 起（2021 年及以前没有成交额，turnover_10k 为 None）；
+    上期能源 2018-03 开业；郑商所 2015-09-21 起（更早是另一套格式，未接入）；中金所 2010-04-16 开业即有；广期所 2022-12 开业。
     """
     exchange = _fut_exchange(exchange)
     day = _v39_date(date)
@@ -6151,6 +6314,60 @@ def futures_realtime(symbols):
 
 
 @_v39_contract
+def futures_kline(symbol, start=None, end=None):
+    """国内期货日 K 线（新浪）— 单个合约或主力连续的逐日序列，覆盖全部六家交易所（含大商所）。
+
+    symbol: 'RB0' / 'M0'（主力连续）或 'RB2601' / 'M2601' / 'IF2612'；郑商所也写 4 位年月（'MA2601'），带不带 'nf_' 前缀都行。
+    start/end: 'YYYY-MM-DD'，可只给一端。主力连续换月当天会跳空，未做复权。
+    实测（2026-09-22）价格与交易所官方 futures_daily 逐日一致，成交量 / 持仓偶有 ≤0.1% 的出入，精确值以 futures_daily 为准。
+    结算价新浪给得不全（给 0 的统一成 None）：中金所品种基本没有；主力连续早年缺得多（CU0 5285 根缺 1364 根，
+    最晚缺到 2024-09-25），需要结算价用 futures_daily。具体合约只能取到约 2022 年起到期的，更早的新浪返回空。
+    代码不存在 / 太老、区间内没有 K 线抛 ValueError；返回格式改变抛 RuntimeError。
+    """
+    code = str(symbol).strip()
+    code = code[3:] if code.lower().startswith("nf_") else code
+    if not re.fullmatch(r"[A-Za-z]{1,2}\d{1,4}", code):
+        raise ValueError(f"期货代码格式不对: {symbol}（例 RB0 / RB2601 / MA2601）")
+    code = code.upper()
+    lo = _v39_date(start) if start else None
+    hi = _v39_date(end) if end else None
+    if lo and hi and lo > hi:
+        raise ValueError(f"start {lo} 晚于 end {hi}")
+    response = _v39_http(SINA_FUT_KLINE_URL.format(code=code), params={"symbol": code},
+                         headers={"Referer": "https://finance.sina.com.cn/"})
+    text = response.content.decode("gbk", "replace")
+    match = re.search(rf"var _{re.escape(code)}=\((.*)\);?\s*$", text, re.S)
+    if not match:
+        raise RuntimeError(f"新浪期货日 K {code} 的返回不是预期的 JSONP（{response.url}），格式可能已变")
+    body = match.group(1).strip()
+    if body == "null":
+        raise ValueError(f"新浪没有期货 {code} 的日 K：代码不存在，或是约 2022 年以前到期的老合约"
+                         "（郑商所也要写 4 位年月，如 MA2601）")
+    try:
+        items = json.loads(body)
+    except ValueError as exc:
+        raise RuntimeError(f"新浪期货日 K {code} 的返回不是 JSON，格式可能已变") from exc
+    rows, seen = [], set()
+    for r in _v39_rows(items, f"新浪期货日 K {code}"):
+        day = _v39_src_date(r["d"])
+        if day in seen:
+            raise RuntimeError(f"新浪期货日 K {code} 同一天 {day} 出现两次，结果不可信")
+        seen.add(day)
+        if (lo and day < lo) or (hi and day > hi):
+            continue
+        rows.append({"date": day, "symbol": code,
+                     "open": _fut_price(r["o"]), "high": _fut_price(r["h"]),
+                     "low": _fut_price(r["l"]), "close": _fut_price(r["c"]),
+                     "settle": _fut_price(r["s"]),       # 新浪没有结算价时给 0 → None
+                     "volume": _v39_num(r["v"]), "open_interest": _v39_num(r["p"])})
+    if not rows:
+        raise ValueError(f"新浪期货 {code} 在所给区间内没有日 K（合约当时未上市或已到期）")
+    rows.sort(key=lambda row: row["date"])
+    return _v39_frame(rows, "sina", response.url,
+                      ["date", "symbol", "open", "high", "low", "close", "settle", "volume", "open_interest"])
+
+
+@_v39_contract
 def a50_futures():
     """富时中国 A50 期指（新浪 hf_CHA50CFD，连续合约报价）— 盘前/夜盘看 A 股外资情绪。"""
     data, url = _sina_hq(["hf_CHA50CFD"])
@@ -6212,6 +6429,7 @@ cu = futures_daily("2026-09-18", "SHFE")
 io_opt = options_daily("2026-09-18", "CFFEX")                  # 沪深300 股指期权 IO
 rank = futures_position_rank("2026-09-18", "CFFEX", symbol="IF2610")
 live = futures_realtime(["RB0", "M0", "IF0"])                   # M0 = 大商所豆粕主力
+m_hist = futures_kline("M0", start="2026-01-01")                # 大商所豆粕主力连续的逐日 K 线
 print(a50_futures()[["datetime", "last"]], sge_spot("Au99.99").tail(3))
 ```
 
@@ -7043,7 +7261,7 @@ bj_quote = bse_quote_backup("2026-09-04", code="920021")
 
 | 优先级 | 数据源 | 用途 | 可靠性 | 封IP风险 |
 |--------|--------|------|--------|---------|
-| 1 | **腾讯财经** (HTTP) | 实时PE/PB/市值/换手率/涨跌停/指数/ETF + 日周月/分钟 K 线（§1.5） | 稳定 | 低（K 线单入口约 600 次后限流，已三入口轮换） |
+| 1 | **腾讯财经** (HTTP) | 实时PE/PB/市值/换手率/涨跌停/指数/ETF + 日周月/分钟 K 线（§1.2）+ 当日逐笔（§1.4） | 稳定 | 低（K 线单入口约 600 次后限流，已三入口轮换） |
 | 2 | **mootdx** (TCP) | 财务快照+F10；K线/五档/逐笔 2026-09 起返回空（#52） | 财务/F10 稳定，行情命令失效 | 极低 |
 | 3 | **东财 datacenter** (HTTP) | 龙虎榜/解禁/融资融券/大宗交易/股东户数/分红/个股信息 | 稳定 | 低 |
 | 4 | **东财 push2/push2his** (HTTP) | 行业板块/个股资金流分钟级+120日 | 稳定 | 低 |
@@ -7078,12 +7296,13 @@ bj_quote = bse_quote_backup("2026-09-04", code="920021")
 | 33 | **广期所** (HTTP，V3.9) | 工业硅 / 碳酸锂等期货期权日行情 | 官方源 | 零鉴权，避免高频请求 |
 | 34 | **上金所** (HTTP，V3.9) | 黄金 / 白银 / 铂金现货日线 | 官方源 | 零鉴权，避免高频请求 |
 
-> V3.9 复用的已有来源不重复计数：腾讯（§1.5 K 线）、新浪（§2.4 研报、§13.4 实时期货、§13.5 A50）、
+> V3.9 复用的已有来源不重复计数：腾讯（§1.2 K 线）、新浪（§2.4 研报、§13.4 实时期货、§13.5 A50）、
 > 东财（§6.8 ST 名单、§11.5 LPR、Layer 14 事件驱动、Layer 15 可转债）、上交所 / 深交所（§4.7 ETF 份额）。
 > 上证e互动虽由上交所运营，但域名和接口独立，单列为第 26 个来源。
-> 大商所官网有反爬，未接入；大商所品种的实时价可用 §13.4 新浪。
+> V3.10 的 §1.4 腾讯逐笔、§13.7 新浪期货日 K 同样复用已有来源，来源数不变。
+> 大商所官网有反爬，未接入；大商所品种的逐日 K 线用 §13.7、实时价用 §13.4（均为新浪）。
 
-**原则：** 行情走腾讯（§1.5 K 线）+ 通达信官网盘后包，mootdx 只用于财务 / F10（#52）；研报走东财+iwencai，新浪作第二来源；资金面走东财 datacenter+push2，**信号层走同花顺+百度+东财直连接口**；期货、利率、黄金走交易所与官方机构。除 mootdx / baostock 两个 TCP 客户端外全部直连 HTTP。
+**原则：** 行情走腾讯（§1.2 K 线、§1.4 逐笔）+ 通达信官网盘后包，mootdx 只用于财务 / F10（#52）；研报走东财+iwencai，新浪作第二来源；资金面走东财 datacenter+push2，**信号层走同花顺+百度+东财直连接口**；期货、利率、黄金走交易所与官方机构。除 mootdx / baostock 两个 TCP 客户端外全部直连 HTTP。
 
 **降级：** 任一主源被封/失效时，先查下方「备用源速查 & 降级策略」——每类数据都备有一条**不同域名、不同风控面**的独立备胎（交易所官方/新浪/同花顺），东财被封时它们不受牵连。
 
@@ -7097,9 +7316,10 @@ bj_quote = bse_quote_backup("2026-09-04", code="920021")
 |---|---|---|---|
 | 实时行情+五档 | 腾讯（mootdx 盘口 #52 失效） | 交易所官方 | 沪 `yunhq.sse.com.cn:32041/v1/sh1/snap/{code}`、深 `szse.cn/api/market/ssjjhq/getTimeData?marketId=1&code={code}`；北 `bse_quote_backup(date, code)` 是当前快照，盘中延迟未标定 |
 | 融资融券 | 东财 datacenter | 上交所/深交所官方 | `margin_trading_backup(date, "SH"/"SZ", code=None)`，按交易所分别取；上交所融券余额金额可能为空 |
-| K线(全历史) | 腾讯 §1.5 / 百度 | 同花顺 | `d.10jqka.com.cn/v6/line/hs_{code}/01/last.js`（01日/11周/21月/30/60分；2001至今；JSONP剥壳） |
-| K线(当日全市场) | 通达信盘后包 §1.6 | 腾讯 §1.5 逐只取 | 盘后包实测 2022-01-04、2023-01-03 可取（2021-01-04 已 404），取不到的日期逐只走 §1.5 |
-| K线(分钟) | 腾讯 §1.5（m1~m60，≤320根） | 同花顺 | 同上一行，只有 30 / 60 分钟；1 / 5 / 15 分钟在 mootdx 恢复前暂无独立备胎 |
+| K线(全历史) | 腾讯 §1.2 / 百度 | 同花顺 | `d.10jqka.com.cn/v6/line/hs_{code}/01/last.js`（01日/11周/21月/30/60分；2001至今；JSONP剥壳） |
+| K线(当日全市场) | 通达信盘后包 §1.3 | 腾讯 §1.2 逐只取 | 盘后包实测 2022-01-04、2023-01-03 可取（2021-01-04 已 404），取不到的日期逐只走 §1.2 |
+| K线(分钟) | 腾讯 §1.2（m1~m60，≤320根） | 同花顺 | 同上一行，只有 30 / 60 分钟；1 / 5 / 15 分钟在 mootdx 恢复前暂无独立备胎 |
+| 逐笔成交 | 腾讯 §1.4（只有当日；mootdx 逐笔 #52 失效） | 暂无 | 新浪 `CN_Bill.GetBillList` 只返回大单，不是全部成交，不能当备胎 |
 | 研报列表 | 东财 reportapi | 新浪 §2.4 | `sina_research_reports()`：只有标题/类型/机构/研究员/日期，无评级与目标价 |
 | 龙虎榜 | 东财 datacenter | 沪深交易所官方 | `dragon_tiger_backup()`（见下，含营业部席位） |
 | 个股资金流 | 东财 push2 | 新浪 | `fund_flow_backup()`（见下，日度四档单净额） |
@@ -7110,9 +7330,9 @@ bj_quote = bse_quote_backup("2026-09-04", code="920021")
 | 券商评级+目标价 | 同花顺一致预期 | 巨潮 webapi | `p_sysapi1089?tdate=YYYY-MM-DD`，需头 `Accept-Enckey`=base64(AES-128-CBC(unix秒, key=iv=`1234567887654321`)) |
 | 北向(权威) | 同花顺 hexin | HKEX 官方 | `hkex.com.hk/chi/csm/DailyStat/data_tab_daily_{YYYYMMDD}c.js`（成交额/额度/十大活跃股） |
 
-> ⛔ **已死透别用**（2026-07 实测）：网易财经(126.net 整站下线)、和讯、凤凰行情、腾讯资金流(ff_ 已死)、雪球免登录深度数据(需 token)。mootdx **库**已烂尾(2024 停更)；**2026-09 起通达信公开服务器的 K 线 / 盘口 / 逐笔命令返回空（#52）**，财务与 F10 照常——行情改走 §1.5 / §1.6，财务用 `tdx_client(check='finance')`。
+> ⛔ **已死透别用**（2026-07 实测）：网易财经(126.net 整站下线)、和讯、凤凰行情、腾讯资金流(ff_ 已死)、雪球免登录深度数据(需 token)。mootdx **库**已烂尾(2024 停更)；**2026-09 起通达信公开服务器的 K 线 / 盘口 / 逐笔命令返回空（#52）**，财务与 F10 照常——行情改走 §1.1–§1.4（腾讯实时 / 腾讯 K 线 / 盘后包 / 腾讯逐笔），财务用 `tdx_client(check='finance')`。
 >
-> ⚠️ **腾讯分钟 K 线字段坑**（§1.5 `tencent_kline()` 已按此解析，不返回成交额）：返回数组 `[时间, 开, 收, 高, 低, 量(手), {}, 换手率基点]`——第 7 个字段**不是成交额，是换手率基点**（当日各根累加 ÷100 = 当日换手率%）。当成交额读会小三个数量级；成交额需自算 `量(手) × 100 × 均价`。
+> ⚠️ **腾讯分钟 K 线字段坑**（§1.2 `tencent_kline()` 已按此解析，不返回成交额）：返回数组 `[时间, 开, 收, 高, 低, 量(手), {}, 换手率基点]`——第 7 个字段**不是成交额，是换手率基点**（当日各根累加 ÷100 = 当日换手率%）。当成交额读会小三个数量级；成交额需自算 `量(手) × 100 × 均价`。
 
 ```python
 import json, urllib.request, ssl
@@ -7193,9 +7413,10 @@ A: 已复活（V3.4.0，见 §5.2）。2026-05 死的是旧 `nodeapi` 系接口�
 
 ### Q: mootdx 取不到 K 线 / `tdx_client()` 报「所有 mootdx 服务器均无法取到数据」（#52）
 A: 2026-09-20 逐台实测内置 10 台服务器，TCP 都能连上，财务、除权除息正常，F10 只剩「最新提示」一类，但 K 线、五档盘口、逐笔成交都返回 0 行。这是服务器端的变化，换 mootdx 版本解决不了。替代方案：
-- 沪深日 / 周 / 月 K 线（前后复权）和 1~60 分钟 K 线 → §1.5 `tencent_kline()`
-- 某交易日沪深北全市场日线（含成交额；北交所日线只能走这里）→ §1.6 `tdx_daily_package()`
-- 实时价与五档 → §1.2 腾讯，或「备用源速查」里的交易所官方五档
+- 沪深日 / 周 / 月 K 线（前后复权）和 1~60 分钟 K 线 → §1.2 `tencent_kline()`
+- 某交易日沪深北全市场日线（含成交额；北交所日线只能走这里）→ §1.3 `tdx_daily_package()`
+- 实时价与五档 → §1.1 腾讯，或「备用源速查」里的交易所官方五档
+- 当日逐笔成交 → §1.4 `tencent_ticks()`（只有最近一个交易日，不含北交所）
 - 财务快照 / F10 → `tdx_client(check='finance')`，照常可用
 
 `tdx_client()` 在 K 线模式下要先测速，全部失败大约需要 1 分钟才报错。
@@ -7209,7 +7430,7 @@ A: 以前互补：mootdx 管价格 / 盘口 / K 线，腾讯管估值（PE/PB/�
 ### Q: 能直接回测吗？能接聚宽吗？（#55）
 A: 本 skill 只负责取数，**不带回测引擎**。回测要把数据交给自己的框架或聚宽。
 - 代码格式：`norm_ticker()` / `get_prefix()` 认聚宽写法 `600519.XSHG` / `000001.XSHE`；`to_joinquant()` 把任意写法转成聚宽代码。聚宽公开文档没有北交所后缀，北交所代码会直接报错，不做转换。
-- 复权：聚宽 `get_price` 默认前复权（`fq='pre'`）。对拍时用 §1.5 `tencent_kline(adjust='qfq')`，或用 §1.4 复权因子自己换算。
+- 复权：聚宽 `get_price` 默认前复权（`fq='pre'`）。对拍时用 §1.2 `tencent_kline(adjust='qfq')`，或用 §1.6 复权因子自己换算。
 - 防未来函数：历史估值用 §6.5，历史行业归属用 §6.7，历史指数成分要注意 §12 只给当前快照。
 
 ### Q: 研报只能从东财拿吗？（#53）

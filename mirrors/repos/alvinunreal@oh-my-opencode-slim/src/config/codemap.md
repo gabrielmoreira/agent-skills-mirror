@@ -29,6 +29,9 @@ The config system follows a layered architecture:
 | `CouncilConfig` | Multi-LLM council configuration with presets and execution modes | council-schema.ts |
 | `MultiplexerConfig` | Unified pane management configuration (tmux/zellij) | schema.ts |
 | `AgentMcpPolicy` | Per-agent default MCP lists and wildcard/exclusion parsing | agent-mcps.ts |
+| `ProviderModelIdSchema` | Zod schema enforcing `provider/model` ID format (provider segment excludes slashes/whitespace) | model-id-schema.ts |
+| Preset resolver | Preset normalization, layered merge (`mergePresetMaps`), and depth-first named-preset resolution (`resolvePresets` atomic, `PresetResolutionError` on unresolvable refs) | presets.ts |
+| `discoverProjectLocalSkillNames` | Project-local `.opencode/skills` discovery from `SKILL.md` frontmatter names, symlink-confined to the project root | project-skills.ts |
 | `RuntimeConfig` | Per-directory runtime config singleton with derived getters, host-config snapshot, and preset/model overrides | runtime.ts |
 
 ## Flow

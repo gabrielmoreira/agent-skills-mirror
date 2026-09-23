@@ -196,6 +196,10 @@ A single JSON object to stdout:
 
 Existing queue, `QueueSobject`, `QueueRoutingConfig`, queue members, and an already-active outbound flow are reused, not recreated (members are only added when the queue has zero active members and `QUEUE_MEMBER_USERNAMES` is supplied; already-present members are left untouched). The doc-driven edits (`canEscalate`, `outboundRouteConfigs`) are set-if-absent. A second run against a fully configured org performs no writes and returns `CONFIGURED`.
 
+## Classifier contracts
+
+Before investigating or changing any of the deterministic Node classifiers referenced above (`scripts/classify-agent-active.mjs`, `scripts/verify-escalation-config.mjs`, `scripts/extract-outbound-route.mjs`, `scripts/classify-nga-escalation.mjs`), read [references/classifier-contracts.md](references/classifier-contracts.md) for each one's exact input/output contract.
+
 ## Verification
 
 Run the bundled escalation contract tests after changing this skill or its scripts:

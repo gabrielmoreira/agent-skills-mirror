@@ -80,6 +80,10 @@ Replace an existing installed skill:
 scripts/install-skills --force autoreview
 ```
 
+Install targets must not contain or sit inside the source skills. The installer
+checks every selected destination before changing files, including with `--force`
+or `--dry-run`; installing directly over the same source directory is skipped.
+
 Symlinks are best for local development because changes in this checkout are
 immediately visible. Copies are better for portable or locked-down setups.
 Node-based skills declare their module format locally, so copied helpers also
@@ -202,6 +206,8 @@ HTML as local/private output unless it has been separately redacted and reviewed
 - Prefer helper scripts for repeatable command logic.
 - Do not update vendored downstream snapshots by hand. Update this repo, then
   sync.
+
+See [docs/RELEASING.md](docs/RELEASING.md) for the source-release process.
 
 ## License
 

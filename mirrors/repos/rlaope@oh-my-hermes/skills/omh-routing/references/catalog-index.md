@@ -116,7 +116,7 @@ Trigger phrases and the role registry live in `references/workflow-registry.md`;
 - `omh-decide`: [omh] Decide between options: tradeoffs, a recommendation, and a decision note you can act on.
 - `omh-support-operations`: [omh] Turn a support case into a clear customer reply, severity path, and owned next step.
 - `omh-tech-debt-audit`: [omh] Hermes Tech Debt Audit workflow: build the severity-by-effort debt ledger from observed repo evidence - orient, audit the named dimensions with file:line citations, rank fixes and quick wins - and reconcile RESOLVED/NEW/CARRIED against the previous ledger on rerun.
-- `omh-todo-checklist`: [omh] Hermes adaptation for declaring and advancing the metadata-only plan todo checklist the OMH HUD renders above the prompt input, in an ordinary session with no delivery engine running.
+- `omh-todo-checklist`: [omh] Continue or finish the accepted work from conversation context, preserve rejected ideas, and report evidence-bounded completion. Also declare and advance the metadata-only plan checklist without starting a delivery engine.
 - `omh-toolbelt-readiness`: [omh] Toolbelt readiness - inventory which MCP servers, CLIs, APIs, credentials, and connectors a workflow needs; use external-connector-readiness to assess one named integration and executor-runtime-readiness to choose the coding owner.
 - `ulw-perf`: [omh] Ultraperf - find where a system is actually slow, leaking, or expensive across runtime, memory, token cost, storage, rendering, inference, CI, and query domains, then fix one measured hot path at a time behind a regression budget.
 - `ulw-qa`: [omh] Hermes UltraQA workflow: adversarial QA and fix loops.

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `23blocks-OS/ai-maestro` — 26 default patterns, 27 followed patterns, 37 file(s) materialized.
+Mirror of `23blocks-OS/ai-maestro` — 26 default patterns, 28 followed patterns, 38 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `23blocks-OS/ai-maestro` — 26 default patterns, 27 followed patterns
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 27 |
-| Files         | 37 |
+| Followed pats | 28 |
+| Files         | 38 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,6 +60,7 @@ Mirror of `23blocks-OS/ai-maestro` — 26 default patterns, 27 followed patterns
 - `backlog/F001-shared-agent-filesystem.md`
 - `backlog/F002-microvm-agent-deployment.md`
 - `backlog/F003-ios-terminal-selection.md`
+- `backlog/F004-codex-chat-transcript.md`
 - `backlog/B001-multi-client-terminal-sizing.md`
 - `backlog/B002-wterm-and-ws-updates.md`
 - `backlog/B003-option-click-missing-enter.md`
@@ -104,24 +105,25 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 17 | → | [`backlog/F001-shared-agent-filesystem.md`](backlog/F001-shared-agent-filesystem.md) |
 | 18 | → | [`backlog/F002-microvm-agent-deployment.md`](backlog/F002-microvm-agent-deployment.md) |
 | 19 | → | [`backlog/F003-ios-terminal-selection.md`](backlog/F003-ios-terminal-selection.md) |
-| 20 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 21 | → | [`docs/AGENT-COMMUNICATION-ARCHITECTURE.md`](docs/AGENT-COMMUNICATION-ARCHITECTURE.md) |
-| 22 | → | [`docs/AGENT-INTELLIGENCE.md`](docs/AGENT-INTELLIGENCE.md) |
-| 23 | → | [`docs/AGENT-MESSAGING-GUIDE.md`](docs/AGENT-MESSAGING-GUIDE.md) |
-| 24 | → | [`docs/CEREBELLUM.md`](docs/CEREBELLUM.md) |
-| 25 | → | [`docs/CHAT-ARCHITECTURE.md`](docs/CHAT-ARCHITECTURE.md) |
-| 26 | → | [`docs/CONCEPTS.md`](docs/CONCEPTS.md) |
-| 27 | → | [`docs/ECOSYSTEM.md`](docs/ECOSYSTEM.md) |
-| 28 | → | [`docs/NETWORK-ACCESS.md`](docs/NETWORK-ACCESS.md) |
-| 29 | → | [`docs/OPERATIONS-GUIDE.md`](docs/OPERATIONS-GUIDE.md) |
-| 30 | → | [`docs/QUICKSTART.md`](docs/QUICKSTART.md) |
-| 31 | → | [`docs/REQUIREMENTS.md`](docs/REQUIREMENTS.md) |
-| 32 | → | [`docs/SETUP-TUTORIAL.md`](docs/SETUP-TUTORIAL.md) |
-| 33 | → | [`docs/TROUBLESHOOTING.md`](docs/TROUBLESHOOTING.md) |
-| 34 | → | [`docs/USE-CASES.md`](docs/USE-CASES.md) |
-| 35 | → | [`docs/WINDOWS-INSTALLATION.md`](docs/WINDOWS-INSTALLATION.md) |
-| 36 | → | [`README.md`](README.md) |
-| 37 | → | [`SECURITY.md`](SECURITY.md) |
+| 20 | → | [`backlog/F004-codex-chat-transcript.md`](backlog/F004-codex-chat-transcript.md) |
+| 21 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 22 | → | [`docs/AGENT-COMMUNICATION-ARCHITECTURE.md`](docs/AGENT-COMMUNICATION-ARCHITECTURE.md) |
+| 23 | → | [`docs/AGENT-INTELLIGENCE.md`](docs/AGENT-INTELLIGENCE.md) |
+| 24 | → | [`docs/AGENT-MESSAGING-GUIDE.md`](docs/AGENT-MESSAGING-GUIDE.md) |
+| 25 | → | [`docs/CEREBELLUM.md`](docs/CEREBELLUM.md) |
+| 26 | → | [`docs/CHAT-ARCHITECTURE.md`](docs/CHAT-ARCHITECTURE.md) |
+| 27 | → | [`docs/CONCEPTS.md`](docs/CONCEPTS.md) |
+| 28 | → | [`docs/ECOSYSTEM.md`](docs/ECOSYSTEM.md) |
+| 29 | → | [`docs/NETWORK-ACCESS.md`](docs/NETWORK-ACCESS.md) |
+| 30 | → | [`docs/OPERATIONS-GUIDE.md`](docs/OPERATIONS-GUIDE.md) |
+| 31 | → | [`docs/QUICKSTART.md`](docs/QUICKSTART.md) |
+| 32 | → | [`docs/REQUIREMENTS.md`](docs/REQUIREMENTS.md) |
+| 33 | → | [`docs/SETUP-TUTORIAL.md`](docs/SETUP-TUTORIAL.md) |
+| 34 | → | [`docs/TROUBLESHOOTING.md`](docs/TROUBLESHOOTING.md) |
+| 35 | → | [`docs/USE-CASES.md`](docs/USE-CASES.md) |
+| 36 | → | [`docs/WINDOWS-INSTALLATION.md`](docs/WINDOWS-INSTALLATION.md) |
+| 37 | → | [`README.md`](README.md) |
+| 38 | → | [`SECURITY.md`](SECURITY.md) |
 
 ---
 

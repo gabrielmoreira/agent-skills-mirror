@@ -77,7 +77,7 @@ These apply to every SKILL.md and every md under references/.
 - Present knowledge as the skill's own contracts and recipes — definitional or imperative ("the planetary material performs tangential warp: …", "preallocate a fixed sprite pool") — never as a description of someone else's system.
 - Banned attribution vocabulary anywhere under skills/: ref project, source(s), original, upstream, distilled, extracted, copied, reviewed, bundled, "host integration". Write as if the leak-check regex didn't exist; it is a backstop, not the standard. Sole exception: THIRD_PARTY_LICENSES.md files under assets/ carry legally required attribution and stay minimal.
 - No placeholder codenames standing in for scrubbed project names. If a sentence only parses with a project name in it, rewrite the sentence.
-- If a described system IS an example, name the example (e.g., "the `analytic-wave-optics` example"); every constant and formula in that section must match the example code exactly.
+- If a described system IS an example, name the example (e.g., "the `spectral-dispersive-glass` example"); every constant and formula in that section must match the example code exactly.
 - When a reference documents a mechanism variant whose constants differ from an example, present both as the skill's own tiers/variants and state which one each example implements. A reader must never mistake one variant's constants for another's.
 - Defect and hazard notes are written as properties of this contract or as failure patterns to avoid ("a split CPU/GPU field stack is a defect; share one field"), never as history ("the original had this bug"). Verify every defect/limitation claim against the shipped example code before writing it.
 

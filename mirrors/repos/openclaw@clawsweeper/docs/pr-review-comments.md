@@ -245,6 +245,12 @@ review metrics, stored-data warnings, root-cause clusters, proof suggestions,
 merge-risk options, full review comments, labels, evidence, optional rank-up
 moves, the rank legend, workflow notes, and review history.
 
+The label section explicitly says `No label changes.` when the publisher supplies
+confirmed previous labels, the review is not failed, and owned-label
+justifications remain but there are no add/remove transitions. Report metadata
+alone does not establish this no-op claim. Existing nonempty transitions and
+automation markers are unchanged.
+
 For OpenClaw, the PR surface table and config detector share explicit test-role
 names: test/spec code leaves, Go `*_test.go` files, terminal dotted or hyphenated
 `test-support`, `test-helpers`, `test-utils`, `test-harness`, and `test-fixtures`
@@ -255,15 +261,24 @@ evidence and truncated-list warnings. Reviewer production/test metrics remain
 separately assessed. Test roles grant no contributor-proof exemption. Storage
 warnings retain their separate persistence-evidence and upgrade-proof rules.
 
-Compatibility classification reads the recorded Real Behavior Proof summary only
-when its canonical front matter status (or section status when absent) is
-`sufficient`. Serialized metadata such as `Needs contributor action: false`
-does not become evidence of outstanding upgrade work. A `proof: override` label
-preserves sufficient recorded evidence but does not itself establish compatibility.
-Solution Assessment and Evidence remain independent inputs. Reproduce the
-rendering contract with `pnpm run build` followed by
-`node scripts/e2e/data-model-proof.ts`; the synthetic reports exercise sufficient
-and missing evidence with and without override, without publishing to GitHub.
+Codex assesses stored-data compatibility in
+`realBehaviorProof.dataModelCompatibility`, independently of general behavior
+proof. The report writer persists it as the canonical
+`real_behavior_proof_data_model_compatibility` field. Only a unique, valid
+`sufficient` value clears a detected data-model compatibility hold. Missing,
+malformed, duplicate, `insufficient`, and contradictory `not_applicable` values
+retain the hold. Summaries, evidence prose, ratings, general proof sufficiency,
+`proof: override`, and maintainer/bot or docs-only exemptions cannot grant it.
+
+Historical reports remain readable. A report with a stored-data change but no
+typed compatibility assessment requires a fresh Codex review; deployment alone
+does not reinterpret its old prose or markers. Prompt/schema changes use the
+existing review policy hash to invalidate cached assessments.
+Run `pnpm run build` followed by `node scripts/e2e/data-model-proof.ts` to exercise
+the compiled parser, report writer, reader and renderer with synthetic assessments.
+The proof retains input/output Markdown and receipts under
+`.artifacts/typed-compatibility-proof/`, without publishing to GitHub or claiming
+to exercise an actual database upgrade.
 OpenClaw Bay needs no change because its observer API and data contract are unchanged.
 
 The recorded reviewer proof assessment and the host's existing proof requirement

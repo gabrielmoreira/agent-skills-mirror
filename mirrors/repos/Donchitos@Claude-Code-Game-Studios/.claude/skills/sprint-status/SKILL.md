@@ -1,11 +1,15 @@
 ---
 name: sprint-status
-description: "Fast sprint status check. Reads the current sprint plan, scans story files for status, and produces a concise progress snapshot with burndown assessment and emerging risks. Run at any time during a sprint for quick situational awareness. Use when user asks 'how is the sprint going', 'sprint update', 'show sprint progress'."
+description: "Fast, concise sprint snapshot — burndown and emerging risks for situational awareness. 'How is the sprint going?'"
 argument-hint: "[sprint-number or blank for current]"
 user-invocable: true
 allowed-tools: Read, Glob, Grep
 model: haiku
 ---
+
+!`source "${CLAUDE_PROJECT_DIR:-.}/.claude/hooks/yaml-helper.sh" 2>/dev/null && resolve_config --keys story_granularity`
+
+
 
 # Sprint Status
 
@@ -16,6 +20,10 @@ concise snapshot in under 30 lines. For detailed sprint management, use
 
 **This skill is read-only.** It never proposes changes, never asks to write
 files, and makes at most one concrete recommendation.
+
+**`story_granularity`** — it sets the
+grain of the burn-down read: **feature-sized** chunks at `coarse`, **task-sized**
+at `balanced` (default), **AC-sized** at `fine`.
 
 ---
 
@@ -74,7 +82,7 @@ fall back to markdown scanning:
 When using the fallback, add a note at the bottom of the output:
 "⚠ No `sprint-status.yaml` found — status inferred from markdown. Run `/sprint-plan update` to generate one."
 
-Optionally (fast check only — do not do a deep scan): grep `src/` for a
+Optionally (fast check only — do not do a deep scan): grep the code root for a
 directory or file name that matches the story's system slug to check for
 implementation evidence. This is a hint only, not a definitive status.
 
@@ -82,10 +90,22 @@ implementation evidence. This is a hint only, not a definitive status.
 
 After collecting status for all stories, check each IN PROGRESS story for staleness:
 
-- For each story that has a referenced file, read the file and look for a
-  `Last Updated:` field in the frontmatter or header (e.g., `Last Updated: 2026-04-01`
-  or `updated: 2026-04-01`). Accept any reasonable date field name: `Last Updated`,
-  `Updated`, `last-updated`, `updated_at`.
+- Resolve the dates with **one grep across the story set, not a read per story**
+  — a date is a single line, and opening every in-progress story to find it is
+  the whole cost of this check:
+  ```
+  Grep pattern="\*{0,2}(Last Updated|Updated|last-updated|updated_at)\*{0,2}[[:space:]]*:" glob="production/epics/**/story-*.md" output_mode="content"
+  ```
+  That one pattern accepts every field-name variant. A story with no match has
+  **no date**, which is not the same as being stale — report it as "never
+  stamped" and do not compute an age for it.
+
+> **The `\*{0,2}` wrappers are why this works at all.** `/create-stories` emits
+> `> **Last Updated**: …`, so a pattern requiring `:` immediately after the word
+> matched no story ever written. Combined with the "no match = never stamped"
+> rule directly above — which is correct in itself — the failure was completely
+> silent: every in-progress story reported as never stamped, and stale-story
+> detection never once fired. A bare `Updated:` anchor will regress it.
 - Calculate days since that date using today's date.
 - If the date is more than 4 days ago, flag the story as **STALE**. (4-day threshold accounts for weekends — a story last touched on Friday won't appear stale until Wednesday.)
 - If no date field is found in the story file, note "no timestamp — cannot check staleness."

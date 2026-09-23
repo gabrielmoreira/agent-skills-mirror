@@ -38,8 +38,8 @@ Use this skill when the user needs **OAuth app configuration** in Salesforce: Co
 
 **Out of scope — delegate elsewhere:**
 - Configuring Named Credentials or runtime callouts → [integration-connectivity-generate](../integration-connectivity-generate/SKILL.md)
-- Deploying metadata to orgs → [platform-metadata-deploy](../platform-metadata-deploy/SKILL.md)
-- Writing Apex token-handling code → [platform-apex-generate](../platform-apex-generate/SKILL.md)
+- Deploying metadata to orgs → the `platform-metadata-deploy` skill
+- Writing Apex token-handling code → the `platform-apex-generate` skill
 
 ---
 
@@ -206,8 +206,8 @@ Score: <x>/120
 | Need | Delegate to | Reason |
 |---|---|---|
 | Named Credential / callout runtime config | [integration-connectivity-generate](../integration-connectivity-generate/SKILL.md) | runtime integration setup |
-| Deploy app metadata | [platform-metadata-deploy](../platform-metadata-deploy/SKILL.md) | org validation and deployment |
-| Apex token or refresh handling | [platform-apex-generate](../platform-apex-generate/SKILL.md) | implementation logic |
+| Deploy app metadata | `platform-metadata-deploy` skill | org validation and deployment |
+| Apex token or refresh handling | `platform-apex-generate` skill | implementation logic |
 
 ---
 

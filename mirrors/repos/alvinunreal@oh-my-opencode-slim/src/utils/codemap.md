@@ -3,91 +3,93 @@
 ## Responsibility
 
 Centralized utilities and shared abstractions used across the oh-my-opencode-slim plugin. This folder provides:
-- Background job lifecycle management (board + store + coordinator + supervisor)
-- Live session-status reads and session metadata tracking
-- In-process opencode client access and client call-shape contracts
-- Environment and configuration utilities
-- Type guards and validation helpers
-- Session and timeout utilities for council dispatch
-- Logging infrastructure with automatic rotation
-- Task output parsing utilities
-- System message utilities, agent-variant/model helpers, and platform compat
+
+- **Background Job Lifecycle Management**: Singleton registry, lifecycle management, persistence, and supervision for background tasks spawned by sub-agents
+- **Session Management**: Session status tracking, metadata, selection, and utilities for prompt timeout and extraction
+- **Background Task Concurrency**: Process-local admission scheduler for native background task launches
+- **Evidence & Transcript Handling**: Child session transcript evidence extraction, terminal evidence verification, and session info reads
+- **Projection & State Management**: TUI projection for sidebar state from board records
+- **Infrastructure Utilities**: Logging with rotation, environment parsing, configuration, type guards, validation, and global store patterns
+- **Platform Compatibility**: Cross-platform spawn, zip extraction, and native runtime probes
+- **Data Processing & Security**: Secret redaction, XML/HTML escaping, frontmatter parsing, and task output parsing
 
 ## Design
 
 ### Core Abstractions
 
-- **BackgroundJobBoard** (`background-job-board.ts`): Singleton registry and lifecycle manager for background tasks spawned by sub-agents. Implements a reusable session pool pattern with automatic cleanup and reconciliation hooks. Tracks task state (running, stopped, completed, error, cancelled), maintains context files, and provides prompt-ready summaries for agent coordination. `stopped` records an ended runtime session without fabricated task success and is never reusable through `task()`; recovery is `task_revive`, and acknowledged stopped jobs appear under Retained / Recovery. Idle/absent observations start a 5s stop-confirmation grace (`stopConfirmationStartedAt`); live busy resets it. After a confirmed stop has been acknowledged, stale busy cannot reopen the job.
+- **BackgroundJobBoard** (`background-job-board.ts`): Singleton registry and lifecycle manager for background tasks with reusable session pool patterns, automatic cleanup, and reconciliation hooks
+- **BackgroundJobStore** (`background-job-store.ts`): Atomic state-store contract for terminal transitions, leases, and deadline claims implemented by the board
+- **BackgroundJobCoordinator** (`background-job-coordinator.ts`): Lifecycle policy layer between board and consumers with terminal-state subscriptions, deferred-close policy, and metadata shaping
+- **BackgroundJobSupervisor** (`background-job-supervisor.ts`): One-shot wall-clock deadline supervision with timer/generation/abort mechanics
+- **BackgroundTaskConcurrency** (`background-task-concurrency.ts`): Process-local admission scheduler for native background task launches with model/provider capacity tracking
+- **Runtime Session Status** (`session-runtime-status.ts`): Reads and validates the in-process OpenCode session-status map with absent/unknown distinction
+- **Session Metadata** (`session-metadata.ts`): Bounded session → agent/directory map with LRU eviction and active orchestrator protection
+- **Session Selection** (`session-selection.ts`): Session selection resolution with provenance tracking (host-persisted, observed-external, unknown)
+- **Child Transcript** (`child-transcript.ts`): Child session transcript evidence extraction and terminal evidence classification
+- **BackgroundJobTerminalGate** (`background-job-terminal-gate.ts`): Terminal evidence verification with host outcome attribution, evidence deadlines, and reading leases
+- **BackgroundJobPersistence** (`background-job-persistence.ts`): Persistence layer for lifecycle state with tombstone and epoch tracking across host restarts
+- **BackgroundJobFixture** (`background-job-fixture.ts`): Test-only board fixtures for adapter/state-machine tests (not for production)
+- **TUI Reusable Projection** (`tui-reusable-projection.ts`): Board → tui-state projection for sidebar reusable dot display
+- **JSDOM Probe** (`jsdom.ts`): JSDOM runtime detection without making it a prerequisite
+- **Redact** (`redact.ts`): Shape-based secret redaction for logging and task output structure masking
 
-- **BackgroundJobStore** (`background-job-store.ts`): Atomic state-store contract (terminal transitions, leases, wall-clock deadline claims) implemented by the board; the single terminal-publication boundary.
+### Session & Task Utilities
 
-- **BackgroundJobCoordinator** (`background-job-coordinator.ts`): Lifecycle policy layer between the board and its consumers — terminal-state subscriptions (replaces fire-and-forget), deferred-close policy, and prompt-metadata shaping.
+- **Session** (`session.ts`): Timeout handling, session abort coordination, model reference parsing, and session content extraction utilities
+- **Task** (`task.ts`): XML-inspired task output parsing for extracting task IDs, states, and results from tool output strings
+- **Agent Variant** (`agent-variant.ts`): Agent name normalization (trim/@ prefix) and display name rewriting utilities
 
-- **BackgroundJobSupervisor** (`background-job-supervisor.ts`): One-shot wall-clock deadline supervision for background task runs: deadline timer → abort → grace timer → terminal finalization. Owns only timer/generation/abort mechanics.
+### Infrastructure & Security Utilities
 
-- **BackgroundTaskConcurrency** (`background-task-concurrency.ts`): Process-local admission scheduler for native background tasks. Tracks queued tickets and active provider/model capacity without owning Job Board lifecycle state.
-
-- **Runtime Session Status** (`session-runtime-status.ts`): Reads and validates the in-process OpenCode session-status map once per observation (5s bounded timeout). It distinguishes a valid absent session (`idle`) from malformed data or lookup failure (`unknown`) so lifecycle policy never treats schema drift as completion.
-
-- **Session Metadata** (`session-metadata.ts`): `SessionMetadataStore` — bounded session → agent/directory map with LRU eviction that never evicts active orchestrator sessions.
-
-- **Opencode Client** (`opencode-client.ts`): `getClient(input)` returns the in-process host client (no loopback HTTP, no caching).
-
-- **Session Calls Contract** (`session-calls.contract.ts`): Type-only compile-time contract pinning the nested `{ path, query, body }` client call shapes and asserting the v2-flat shapes are rejected; compiled by `bun run typecheck`.
-
-- **Logger** (`logger.ts`): File-based logging with 7-day retention, automatic directory creation, and write queuing. Logs are written to `~/.local/share/opencode/log/oh-my-opencode-slim.<sessionId>.log` and cleaned up on initialization.
-
-- **Session Utilities** (`session.ts`): Timeout handling, session abort coordination, model reference parsing, and session content extraction. Provides `promptWithTimeout` and `extractSessionResult` for safe session operations.
-
-- **Task Utilities** (`task.ts`): XML-inspired task output parsing for extracting task IDs, states, and results from tool output strings. Used for resumption and status tracking.
-
-- **Type Guards** (`guards.ts`): Simple type checking utilities (`isRecord`) for runtime validation.
-
-- **Global Store** (`global-store.ts`): `getGlobalStore(key, init)` — process-local lazy singleton on `globalThis` via the `Symbol.for` registry; shared store pattern for the orchestrator-wake and user-wait gates.
-
-- **Environment Utilities** (`env.ts`): Environment variable parsing and plugin disable flag checking.
-
-- **Internal Initiator** (`internal-initiator.ts`): Marker system for identifying internally-initiated agent messages to prevent infinite loops.
-
-- **System Collapse** (`system-collapse.ts`): Utility for collapsing multiple system messages into a single entry by joining with double-newlines.
-
-- **Agent Variant** (`agent-variant.ts`): `normalizeAgentName` (`@`-strip/trim) and `escapeRegExp` for display-name rewriting.
-
-- **Councillor Models** (`councillor-models.ts`): Pure helpers resolving councillor model fallback chains without pulling zod/schema into runtime consumers.
-
-- **Polling** (`polling.ts`): Generic `poll()` helper with interval/max-time/stable-threshold/abort options.
-
-- **Compat & Zip** (`compat.ts`, `zip-extractor.ts`): `crossSpawn` (cross-platform spawn with stdout/stderr collection) and `extractZip` (Windows-aware tar/pwsh fallbacks).
-
-- **Misc** (`escape-html.ts`, `frontmatter.ts`): HTML escaping (interview UI) and frontmatter parsing (interview documents).
+- **Logger** (`logger.ts`): File-based logging with 7-day retention, automatic directory creation, and write queuing
+- **Environment** (`env.ts`): Environment variable parsing and plugin disable flag checking
+- **Global Store** (`global-store.ts`): Process-local lazy singleton on globalThis with Symbol.for keyed registry
+- **Internal Initiator** (`internal-initiator.ts`): Marker system for identifying internally-initiated agent messages
+- **System Collapse** (`system-collapse.ts`): System message collapsing by joining with double-newlines
+- **Compat** (`compat.ts`): Cross-platform spawn with output collection and Windows command resolution
+- **Zip Extractor** (`zip-extractor.ts`): Cross-platform zip extraction with Windows-aware fallbacks
+- **Escape HTML** (`escape-html.ts`): HTML escaping helper for interview UI
+- **Frontmatter** (`frontmatter.ts`): Frontmatter parsing for interview documents
+- **Guards** (`guards.ts`): Type checking utilities (isRecord) for runtime validation
 
 ### Design Patterns
 
-- **Singleton**: BackgroundJobBoard is a singleton registry with global state for all background tasks
+- **Singleton**: BackgroundJobBoard is a singleton registry with global state
 - **Strategy**: Task parsing adapts to multiple output formats (XML tags, plain text headers)
-- **Observer**: Logger uses write queuing to avoid blocking the main thread
+- **Observer**: Logger uses write queuing to avoid blocking
+- **Projection**: Board changes trigger TUI state projections
 - **Utility**: Each utility module provides focused, composable functions
 
 ## Flow
 
 ### Background Job Lifecycle
-1. Agent launches a background task via BackgroundJobBoard.registerLaunch() (supervisor arms the wall-clock deadline)
+1. Agent launches a background task via BackgroundJobBoard.registerLaunch() (supervisor arms wall-clock deadline)
 2. Task runs and updates status via BackgroundJobBoard.updateStatus()
-3. On completion/error/cancellation, task is marked terminal and added to reusable pool; supervisor timers are cleared
-4. Subsequent tasks from same agent/session can reuse completed sessions via aliases
+3. On completion/error/cancellation, task is marked terminal and added to reusable pool; supervisor timers cleared
+4. Subsequent tasks reuse completed sessions via aliases
 5. Unused reusable sessions are automatically trimmed based on maxReusablePerAgent
-6. A deadline exceeded while running → coordinator claims it, supervisor aborts the session, and a grace timer finalizes the terminal state
+6. Deadline exceeded during execution → coordinator claims it, supervisor aborts, grace timer finalizes terminal state
+
+### Session Selection Flow
+1. resolveCurrentSelection() reads session.get() with bounded timeout
+2. Falls back to metadata store if host read hangs or fails
+3. Resolves model selection with provenance tracking
+
+### Child Transcript Flow
+1. fetchChildTranscript() retrieves child session messages via SDK
+2. classifyAssistantTurnEvidence() evaluates each turn for completion
+3. verdictFromEvidence() produces terminal evidence verdict
 
 ### Logging Flow
 1. Plugin initializes logger with session ID via initLogger(sessionId)
-2. Logs are appended to `~/.local/share/opencode/log/oh-my-opencode-slim.<sessionId>.log`
-3. Old logs (>7 days) are automatically cleaned up on initialization
-4. Log writes are queued to avoid blocking. File logging falls back to stderr after initialization failure or a write failure in the active generation; stale queued writes cannot replace a newer sink
+2. Logs appended to ~/.local/share/opencode/log/oh-my-opencode-slim.<sessionId>.log
+3. Old logs (>7 days) cleaned up on initialization
+4. Write queuing prevents blocking; fallback to stderr on failure
 
-### Session Operations
-1. Council dispatch uses `promptWithTimeout()` to send prompts with configurable timeout
-2. On timeout, session is aborted and OperationTimeoutError is thrown
-3. Results are extracted via `extractSessionResult()` which collects all assistant message text
+### Redaction Flow
+1. redactSecretsForLog() applies token masking and structure-preserving value hiding
+2. Pattern-based token redaction keeps 4 leading + 2 trailing characters
+3. XML/HTML/structured format masking fully hides values behind [masked] placeholder
 
 ## Integration
 
@@ -95,7 +97,7 @@ Centralized utilities and shared abstractions used across the oh-my-opencode-sli
 
 - **Council Agents** (`src/agents/council.ts`, `src/agents/council-agents.ts`):
   - Uses BackgroundJobBoard for background task management
-  - Uses session utilities for prompt timeout and session extraction
+  - Uses session utilities for prompt timeout and extraction
   - Uses logger for debug and audit logging
 
 - **Multiplexer** (`src/multiplexer/`):
@@ -118,15 +120,19 @@ Centralized utilities and shared abstractions used across the oh-my-opencode-sli
 ### Export Chain
 
 `src/utils/index.ts` re-exports all utilities, providing a single entry point:
+
 ```typescript
 export * from './agent-variant';
 export * from './background-job-board';
 export * from './background-job-coordinator';
+export * from './background-job-persistence';
 export * from './background-job-store';
 export * from './background-job-supervisor';
+export * from './background-task-concurrency';
 export * from './internal-initiator';
 export { initLogger, log } from './logger';
 export * from './polling';
+export * from './redact';
 export * from './session';
 export * from './session-runtime-status';
 export * from './task';
@@ -134,9 +140,7 @@ export { extractZip } from './zip-extractor';
 ```
 
 This allows consumers to import from `src/utils` rather than individual files.
-Session metadata, the opencode client accessor, and the type-only call-shape
-contract are intentionally imported directly from their modules (not
-re-exported).
+Session metadata, the opencode client accessor, and the type-only call-shape contract are intentionally imported directly from their modules (not re-exported).
 
 ## Files
 
@@ -148,21 +152,30 @@ re-exported).
 | `background-job-coordinator.ts` | Lifecycle policy and terminal-state subscriptions |
 | `background-job-store.ts` | Atomic store contract and terminal transitions |
 | `background-job-supervisor.ts` | Wall-clock deadline supervision and abort grace |
-| `compat.ts` | Cross-platform spawn with output collection |
-| `councillor-models.ts` | Councillor model fallback chain helpers |
-| `env.ts` | Environment variable utilities |
-| `escape-html.ts` | HTML escaping helper |
-| `frontmatter.ts` | Frontmatter parsing for interview documents |
-| `global-store.ts` | Process-local lazy singleton store on `globalThis` (`getGlobalStore`) |
-| `guards.ts` | Type guard utilities |
-| `internal-initiator.ts` | Internal agent message marker system |
-| `logger.ts` | File-based logging with rotation |
-| `opencode-client.ts` | In-process host client accessor |
-| `polling.ts` | Generic poll helper |
-| `session-calls.contract.ts` | Compile-time client call-shape contract (type-only) |
+| `background-task-concurrency.ts` | Process-local admission scheduler for background tasks |
+| `background-job-persistence.ts` | Persistence for lifecycle state (tombstones, deletion) |
+| `background-job-terminal-gate.ts` | Terminal evidence verification and attribution |
+| `background-job-fixture.ts` | Test-only board fixtures for adapter/state-machine tests |
+| `tui-reusable-projection.ts` | Board → tui-state projection for sidebar reusable dots |
+| `session.ts` | Session timeout, abort, and extraction utilities |
 | `session-metadata.ts` | Bounded session → agent/directory store |
 | `session-runtime-status.ts` | Bounded live session-status map reads |
-| `session.ts` | Session timeout, abort, and extraction utilities |
+| `session-selection.ts` | Session selection resolution with provenance |
+| `child-transcript.ts` | Child session transcript evidence extraction |
+| `jsdom.ts` | JSDOM runtime detection without prerequisite |
+| `redact.ts` | Shape-based secret redaction for logging |
+| `logger.ts` | File-based logging with rotation |
+| `env.ts` | Environment variable parsing and plugin disable checking |
+| `global-store.ts` | Process-local lazy singleton store on globalThis |
+| `internal-initiator.ts` | Internal agent message marker system |
 | `system-collapse.ts` | System message collapsing utility |
-| `task.ts` | Task output parsing utilities |
+| `compat.ts` | Cross-platform spawn and Windows command resolution |
 | `zip-extractor.ts` | Cross-platform zip extraction |
+| `escape-html.ts` | HTML escaping helper |
+| `frontmatter.ts` | Frontmatter parsing for interview documents |
+| `guards.ts` | Type checking utilities |
+| `task.ts` | Task output parsing utilities |
+| `polling.ts` | Generic poll helper |
+| `councillor-models.ts` | Pure zod-free helpers normalizing councillor model fallback chains (single model or ordered `id`/`variant` entries) |
+| `opencode-client.ts` | In-process opencode client accessor (imported directly, not re-exported) |
+| `session-calls.contract.ts` | Type-only client call-shape contract (imported directly, not re-exported) |

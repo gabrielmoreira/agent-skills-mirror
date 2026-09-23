@@ -175,7 +175,7 @@ A new component built from this workflow is "done" only when **every** item belo
   - Optional: add o11y instrumentation as a separate pass once the component stabilizes.
   - `experience-lwc-typescript-migrate` — optional once JS is green.
   - When the new component ships behind a flag, gate it with a feature flag during rollout.
-  - `experience-lwc-api-docs-generate` — once the public API surface is stable.
+  - Generate API-surface documentation once the public API is stable (no dedicated skill for this yet).
 - Org-aware inputs used by this workflow:
   - Figma URL + screenshot (and, if available, the developer's Dev Mode metadata export) — Phase 1.2 Figma input.
   - `experience-lds-data-requirements-generate` owns the org-schema introspection and data-spec validation used in Phase 1 when the component needs org-backed data — hand off to that skill rather than duplicating its work here.

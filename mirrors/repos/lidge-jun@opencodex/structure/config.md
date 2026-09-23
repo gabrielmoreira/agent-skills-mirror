@@ -64,7 +64,8 @@ owner-only state and is validated before a record is returned. `src/config.ts` r
 symbols for compatibility, but new lifecycle-only callers import the process-state leaf directly.
 
 Replacing config and process-state writes use `src/config/atomic-write.ts`. The leaf preserves the shared
-process-wide temp sequence, symlink target resolution, real-home test guard, owner manifest,
+process-wide temp sequence, symlink target resolution, no-follow directory-entry replacement for
+externally writable integration directories, real-home test guard, owner manifest,
 Windows ACL hardening, scrub-before-unlink failure path, and explicit residual-temp errors. A caller
 must not replace it with a local temp-and-rename shortcut.
 
@@ -89,6 +90,7 @@ matters for maintainers is which groups exist and who resolves them:
 | Retained state | `appOwnedMemoryBudgetMb` | Process-wide eviction target for app-owned logs, caches, blobs, and continuation payloads. Default 256 MiB, valid 64..4096; pinned state may temporarily exceed the target, but every pin-capable store has a finite local cap and their documented aggregate stays below `APP_OWNED_WORST_CASE_PINNED_BYTES` (512 MiB). Neither value caps RSS or native runtime memory. |
 | Spend | `spend.root`, `spend.identity`, `spend.pool`, `spend.retentionDays` | Durable token ceilings for the spend-reservation ledger. Absent is the default and means observe-only accounting: spend is still journaled and nothing is refused, so observe-only and enforced servers take the same state-directory writer lease. One live process may write one directory; explicit sibling instances need separate `OPENCODEX_HOME` directories. There is no default figure for any scope — the ledger is on by default, so a shipped ceiling would refuse real traffic on upgrade against a number nobody chose. Strictly validated and positive-integer only, because 0 would read as a budget and refuse everything; a malformed section degrades to no ceiling, which is why the write path rejects it and load diagnostics report it. Resolution and application live in `src/lib/spend-reservation-ledger.ts`; see [`transports/responses.md`](transports/responses.md). |
 | Transport | stream mode, timeouts, proxy settings, `websockets`, `emptyCompletionRetry` | `streamMode` persists in config.json; Windows services need a persisted input, and macOS uses it for explicit eager-relay opt-in. Empty-completion replay is an explicit top-level opt-in because its second upstream request may be billable. |
+| Provider egress | `providers.<name>.proxy`, `providers.<name>.noProxy` | An absent `proxy` inherits global egress; `"direct"` or `null` forces direct egress; HTTP(S) and SOCKS5(H) URLs select a provider-owned proxy. `noProxy` uses NO_PROXY syntax and sends a matching destination direct across either a provider-owned or inherited global proxy. `src/lib/provider-egress.ts` owns parsing and request-local resolution. |
 | Credentials | `apiKeys` | Data-plane only; never admitted to `/api/*`. |
 | Lifecycle | `codexAutoStart`, shim/start behavior, resume-history sync, storage cleanup | Startup safety reads these; see [`gui-and-management-api.md`](gui-and-management-api.md). |
 
@@ -229,9 +231,24 @@ converged and suppress the relabel permanently.
 
 That stand-down applies only when the provider tags left in place still resolve through the
 resulting configuration. A provider-table transition that finds a paginated `openai` row returns
-`history_paginated_openai_requires_native_writer` and refuses the artifact transaction: removing
-the root `openai_base_url` without relabeling that row would route a resumed conversation through
-Codex's built-in OpenAI provider instead of this proxy.
+`history_paginated_openai_requires_native_writer`, because removing the root `openai_base_url`
+without relabeling that row would route a resumed conversation through Codex's built-in OpenAI
+provider instead of this proxy. That reason selects a third state rather than a refusal:
+`src/codex/inject/paginated-openai-compat.ts` keeps the marker-owned root override beside the
+provider table, exactly as the client-compaction form already does, and the transition completes
+with the relabel standing down. Codex merges the override onto its built-in `openai` entry when
+it builds the provider map, so the row keeps reaching this proxy while never being rewritten, and
+the retained value is journaled as OpenCodex's own so restore can still take it out.
+
+Two cases cannot reach that state. An admission-token form cannot use the root key at all —
+Codex's built-in entry carries no `x-opencodex-api-key` header — so it keeps the refusal, and the
+message names the two configuration keys that resolve it (`unauthenticatedLoopbackListener`,
+`syncResumeHistory`) instead of saying only "do not retry". A root line the user owns is left
+alone and the conversation follows the destination they chose, which is the same guarantee the
+injector makes everywhere else about a line it does not own. Refusing the whole transition with
+no named way forward was the 2.60.0 regression in #5321: nothing was written, the integration
+stayed disabled, and the only exits a reporter could find were deleting the affected
+conversations or downgrading.
 
 Rows this home tagged `opencodex` resolve through a `[model_providers.opencodex]` table.
 Apply retains that existing definition before building the candidate witness, even when
@@ -504,7 +521,7 @@ being treated as a text model by one and an image target by the other.
 
 ## Catalog auto-refresh
 
-`catalogAutoRefresh` on `src/types/config.ts` stores an optional `enabled` / `intervalMinutes` section that defaults off: an absent key, an explicit false, and a malformed value all leave the scheduler dormant. `src/config/feature-flags.ts` resolves the cadence; an explicit `intervalMinutes: 0` keeps the unref'd timer idle, and any other value is clamped up to 15 minutes because upstream `/models` caches have not moved below that and a shorter tick only multiplies rate-limit exposure. `src/codex/catalog-auto-refresh.ts` is the module-singleton interval `src/server/background-lifecycle.ts` starts beside the quota reset poller; a tick that is enabled and non-dormant drives the same catalog-only converge funnel management mutations drive. The last-outcome record lives in `src/codex/catalog-refresh-status.ts` (when the tick finished, the normalized `CatalogDisposition`, whether the served model set changed, consecutive failures) and carries no provider or account detail.
+`catalogAutoRefresh` on `src/types/config.ts` stores an optional `enabled` / `intervalMinutes` section that defaults off: an absent key, an explicit false, and a malformed value all leave the scheduler dormant. `src/config/feature-flags.ts` resolves the cadence; an explicit `intervalMinutes: 0` keeps the unref'd timer idle, and any other value is clamped up to 15 minutes because upstream `/models` caches have not moved below that and a shorter tick only multiplies rate-limit exposure. `src/codex/catalog-auto-refresh.ts` is the module-singleton interval `src/server/background-lifecycle.ts` starts beside the quota reset poller; a tick that is enabled and non-dormant drives the same catalog-only converge funnel management mutations drive. Each tick arms its independently loaded config snapshot as a detached baseline before provider work, so the discovery save rebases every field — the listener binding and sections absent from the snapshot included — against the disk state at save time and concurrent hand edits survive the tick — `disabledModels` merges by member, so an overlapping visibility edit survives alongside the discovery additions. Detached saves capture explicit persisted top-level deletion intent before reconciliation, so a changed discovery snapshot cannot erase a current disk tombstone by temporarily restoring its key. A defined value reintroduced on disk removes stale deletion authority; ordinary live-config conflict precedence remains unchanged. The last-outcome record lives in `src/codex/catalog-refresh-status.ts` (when the tick finished, the normalized `CatalogDisposition`, whether the served model set changed, consecutive failures) and carries no provider or account detail.
 
 ## Aggregate request metrics export
 
@@ -535,3 +552,8 @@ exclusive `--socks5-off`. The start owner persists only an explicitly requested
 change; the off flag refuses to erase a non-SOCKS proxy. Invalid-address errors
 never echo user-supplied credentials, and status messages redact proxy URLs.
 The parser regression cases live in `tests/cli/start-args.test.ts`.
+The config CLI masks credential-bearing `proxy` URLs in show, get, and mutation output:
+userinfo is stripped while host and port stay visible, `direct` and credential-less values
+print unchanged, and a non-URL value that is not `direct` is masked whole. `config export`
+keeps the raw file so exports can restore credentials. Get and mutation output select
+redaction by the normalized final path segment, matching lookup and mutation semantics.

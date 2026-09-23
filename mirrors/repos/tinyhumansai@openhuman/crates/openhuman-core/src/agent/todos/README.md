@@ -1,12 +1,13 @@
 # Agent todos
 
 TinyAgents owns todo types, persistence, normalization, status transitions,
-claims, dispatch, and markdown rendering. This directory contains only
-OpenHuman agent-runtime adapters:
+and markdown rendering (`tinyagents_graph::todos`). This directory contains
+only OpenHuman agent-runtime adapters:
 
-- `ops.rs`: maps OpenHuman execution locations onto TinyAgents stores.
-- `tools.rs`: exposes the model-facing todo tools.
-- `types.rs`: re-exports TinyAgents types and normalizes timestamps at the
-  OpenHuman transcript boundary.
+- `ops.rs`: maps OpenHuman execution scopes (agent session, scratch) onto the
+  one in-process TinyAgents store.
+- `types.rs`: re-exports the TinyAgents types.
 
-There is no frontend task board and no `openhuman.todos_*` JSON-RPC API.
+The model-facing `todo` tool lives in `crate::agent::tools::todo`. The list
+reaches the frontend through the `todo` tool call in the turn's progress
+events; there is no `openhuman.todos_*` JSON-RPC API.

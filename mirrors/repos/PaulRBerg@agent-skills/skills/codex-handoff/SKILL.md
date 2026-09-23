@@ -288,5 +288,10 @@ placeholder.
   requested it.
 - Finish with the selected adapter's completion report, including strategy, wave and agent counts, each agent's
   requested configuration, status, and summary, plus combined changed files, verification, polish when run (listing each
-  pass and outcome), automatic cross-repository commit hashes when any, blockers, and residual risks. Write `none` for
-  applicable empty values and never expose machine result payloads.
+  pass and outcome), automatic cross-repository commit hashes when any, and `Issues and caveats` when present. Write
+  `none` for other applicable empty values and never expose machine result payloads.
+- Group issues and caveats as `Resolved` (verified fixes with evidence) and `Open` (remaining problems, limitations, or
+  unverified assumptions, with impact and next step). Omit empty groups and the whole section when empty. Report each
+  item once; put neutral context and agreed decisions under changes or scope. Reserve `blocker` for something preventing
+  required work and `risk` for a specific potential adverse outcome. A workaround leaves an item open when the
+  underlying issue still affects the result.

@@ -1,12 +1,13 @@
 ---
 name: service-de-waba-integrate
-description: "Confirm the customer's WhatsApp Business Account is shared with Salesforce on Meta's side. Pure instruction + one user-confirmation prompt — no API calls, no token handling. The actual sharing happens in Meta Business Suite (UI-only; Meta provides no Graph endpoint to automate this step). Renders step-by-step instructions with Salesforce's Business Manager ID substituted in, then asks the user to confirm whether \"Salesforce\" appears in the WABA's Partners list."
+description: "Confirm the customer's WhatsApp Business Account is shared with Salesforce on Meta's side. TRIGGER when the user asks to link, share, or confirm sharing of a WhatsApp Business Account with Salesforce, or to verify Salesforce appears in the WABA's Partners list. Pure instruction + one user-confirmation prompt — no API calls, no token handling. Sharing happens in Meta Business Suite (UI-only; Meta has no Graph endpoint for this). Renders step-by-step instructions with Salesforce's Business Manager ID substituted in, then asks the user to confirm whether \"Salesforce\" appears in the WABA's Partners list. DO NOT TRIGGER when the user needs full end-to-end WhatsApp setup (use `service-de-headless-channel-configure`) or to insert the channel record itself (use `service-de-channel-create`)."
 metadata:
   version: "1.0"
   minApiVersion: "67.0"
   domains: ["Service"]
   relatedSkills:
     - "service-de-channel-create"
+    - "service-de-headless-channel-configure"
 ---
 
 # Linking a WABA to Salesforce

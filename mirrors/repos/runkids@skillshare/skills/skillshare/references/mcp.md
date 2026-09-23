@@ -16,6 +16,7 @@ skillshare mcp import docs --from claude --target claude --sync --no-tui
 skillshare sync mcp --dry-run --json                 # Preview without executing servers
 skillshare sync mcp                                 # Apply native settings
 skillshare mcp remove docs --sync --no-tui           # Remove unchanged managed entries
+skillshare mcp remove docs --keep-files --no-tui     # Stop managing; Agent entries stay as they are
 skillshare mcp restore BACKUP_ID --dry-run --json     # Preview entry-level restoration
 skillshare mcp restore BACKUP_ID --no-tui            # Apply restoration; source stays unchanged
 ```
@@ -102,6 +103,13 @@ setups usually go wrong.
 | Global | `~/.claude.json` (honors `CLAUDE_CONFIG_DIR`) |
 | Project | `.mcp.json` |
 
+- Another account: a target with `agent:` and `config_dir: <dir>` is an MCP target by its own
+  name, and `mcp import --from <name>` reads that file. `claude` (`CLAUDE_CONFIG_DIR`) writes
+  `<dir>/.claude.json`, `codex` (`CODEX_HOME`) writes `<dir>/config.toml`, `pi`
+  (`PI_CODING_AGENT_DIR`) writes `<dir>/mcp.json` and needs `piExtension: pi-mcp-adapter`,
+  because `pi-mcp-extension` always reads `~/.pi/agent/mcp.json`. Global scope only; a project
+  uses the Agent's own name, and a project's off switch goes to every account that has the
+  server.
 - Reserved names: a server called `workspace`, `claude-in-chrome` or `computer-use` is
   skipped by Claude Code. Skillshare refuses them for `claude`.
 - Claude Code never sends its own credentials to a remote server.

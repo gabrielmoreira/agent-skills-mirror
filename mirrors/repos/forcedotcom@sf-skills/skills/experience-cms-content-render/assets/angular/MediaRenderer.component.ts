@@ -30,6 +30,7 @@ import {
   type CmsMediaBody,
   type CmsMediaType,
 } from '../shared/cmsCore.types';
+import { deriveDownloadLabel, effectiveAudioLabel } from '../shared/mediaLabels';
 
 @Component({
   selector: 'cms-media',
@@ -48,10 +49,21 @@ import {
           @if (src) { <img [class]="className" [src]="src" [alt]="alt" loading="lazy" /> }
         }
         @case ('audio') {
-          @if (src) { <audio [class]="className" controls [src]="src" [attr.aria-label]="alt || null"></audio> }
+          <!-- [attr.aria-label]="alt || null" would REMOVE the attribute when alt is
+               empty (Angular attribute-binding semantics) — audioLabel always has a
+               value, so the control never loses its accessible name. -->
+          @if (src) { <audio [class]="className" controls [src]="src" [attr.aria-label]="audioLabel"></audio> }
         }
         @case ('video') {
-          @if (src) { <video [class]="className" controls [src]="src" [attr.aria-label]="alt || null"></video> }
+          <!-- Captions render only when the ref supplies `captionsSrc` (SKILL.md §B4)
+               — there is no fetched-body field to derive real caption text from. -->
+          @if (src) {
+            <video [class]="className" controls [src]="src" [attr.aria-label]="alt || null">
+              @if (captionsSrc) {
+                <track kind="captions" [src]="captionsSrc" [label]="captionsLabel" default />
+              }
+            </video>
+          }
         }
         @case ('document') {
           <!-- Download link only — no inline preview (SKILL.md §B3). Named with the
@@ -75,12 +87,24 @@ export class MediaRendererComponent implements OnChanges {
   /** Resolved src + alt for the template (recomputed after each load). */
   src: string | undefined;
   alt = '';
-  /** Accessible name for the document download link (altText → title → "Download"). */
-  docLabel = 'Download';
+  /** Accessible name for the document download link (altText → title → derived
+   *  filename → "Download file"; see `deriveDownloadLabel`). */
+  docLabel = 'Download file';
+  /** Caller-supplied captions-track URL/label for `<video>` (foreign ref only —
+   *  see `CmsExternalRef.captionsSrc` in cmsCore.types.ts). Absent on the
+   *  contentKey path, since the fetched media body carries no captions field. */
+  captionsSrc: string | undefined;
+  captionsLabel = 'Captions';
 
   private loadedRefName?: string;
 
   constructor(private readonly cms: CmsItemService) {}
+
+  /** Accessible name for `<audio>` when `altText` is empty — never falls back to
+   *  `null`/removed, unlike `[attr.aria-label]="alt || null"`. */
+  get audioLabel(): string {
+    return effectiveAudioLabel(this.alt, this.src);
+  }
 
   ngOnChanges(): void {
     const ref = this.ref;
@@ -92,14 +116,18 @@ export class MediaRendererComponent implements OnChanges {
     this.error = undefined;
     this.src = undefined;
     this.alt = '';
-    this.docLabel = 'Download';
+    this.docLabel = 'Download file';
+    this.captionsSrc = undefined;
+    this.captionsLabel = 'Captions';
 
     // Foreign media ref: the unauthenticatedUrl is the asset src directly — no load
     // (Rule 1). alt/title ride on the ref (search hand-off or Ref Registration ask).
     if ('url' in ref && typeof ref.url === 'string') {
       this.src = ref.url;
       this.alt = ref.altText ?? '';
-      this.docLabel = ref.altText || ref.title || 'Download';
+      this.docLabel = deriveDownloadLabel(ref.url, ref.altText, ref.title);
+      this.captionsSrc = ref.captionsSrc;
+      this.captionsLabel = ref.captionsLabel || 'Captions';
       this.loading = false;
       return;
     }
@@ -123,7 +151,7 @@ export class MediaRendererComponent implements OnChanges {
   private resolveSrc(cmsType: CmsMediaType, body: CmsMediaBody): void {
     const media = body['sfdc_cms:media'];
     this.alt = body.altText ?? '';
-    this.docLabel = body.altText || body.title || 'Download';
+    this.docLabel = deriveDownloadLabel(media?.url, body.altText, body.title);
     if (cmsType === 'image') {
       this.src = resolveCmsImageUrl(media);
       return;

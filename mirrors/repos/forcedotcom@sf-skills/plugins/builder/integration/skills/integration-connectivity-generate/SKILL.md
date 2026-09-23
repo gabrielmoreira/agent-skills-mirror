@@ -39,9 +39,9 @@ Use `integration-connectivity-generate` when the work involves:
 
 Delegate elsewhere when the user is:
 - configuring the OAuth app itself → [integration-connectivity-connected-app-configure](../integration-connectivity-connected-app-configure/SKILL.md)
-- writing Apex-only business logic → [platform-apex-generate](../platform-apex-generate/SKILL.md)
-- deploying metadata → [platform-metadata-deploy](../platform-metadata-deploy/SKILL.md)
-- importing/exporting data → [platform-data-manage](../platform-data-manage/SKILL.md)
+- writing Apex-only business logic → the `platform-apex-generate` skill
+- deploying metadata → the `platform-metadata-deploy` skill
+- importing/exporting data → the `platform-data-manage` skill
 
 ---
 
@@ -93,9 +93,9 @@ Check:
 
 ### 5. Hand off deployment or implementation details
 Use:
-- [platform-metadata-deploy](../platform-metadata-deploy/SKILL.md) for deployment
-- [platform-apex-generate](../platform-apex-generate/SKILL.md) for deeper service / retry code
-- [automation-flow-generate](../automation-flow-generate/SKILL.md) for declarative HTTP callout orchestration
+- the `platform-metadata-deploy` skill for deployment
+- the `platform-apex-generate` skill for deeper service / retry code
+- the `automation-flow-generate` skill for declarative HTTP callout orchestration
 
 ---
 
@@ -142,10 +142,10 @@ Next step: <deploy, register, test, or implement>
 | Need | Delegate to | Reason |
 |---|---|---|
 | OAuth app setup | [integration-connectivity-connected-app-configure](../integration-connectivity-connected-app-configure/SKILL.md) | consumer key / cert / app config |
-| advanced callout service code | [platform-apex-generate](../platform-apex-generate/SKILL.md) | Apex implementation |
-| declarative HTTP callout / Flow wrapper | [automation-flow-generate](../automation-flow-generate/SKILL.md) | Flow orchestration |
-| deploy integration metadata | [platform-metadata-deploy](../platform-metadata-deploy/SKILL.md) | validation and rollout |
-| use integration from Agentforce | [agentforce-generate](../agentforce-generate/SKILL.md) | agent action composition |
+| advanced callout service code | `platform-apex-generate` skill | Apex implementation |
+| declarative HTTP callout / Flow wrapper | `automation-flow-generate` skill | Flow orchestration |
+| deploy integration metadata | `platform-metadata-deploy` skill | validation and rollout |
+| use integration from Agentforce | `agentforce-generate` skill | agent action composition |
 
 ---
 

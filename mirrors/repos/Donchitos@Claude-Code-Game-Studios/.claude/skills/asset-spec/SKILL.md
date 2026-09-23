@@ -1,11 +1,15 @@
 ---
 name: asset-spec
-description: "Generate per-asset visual specifications and AI generation prompts from GDDs, level docs, or character profiles. Produces structured spec files and updates the master asset manifest. Run after art bible and GDD/level design are approved, before production begins."
+description: "Per-asset visual specs plus AI generation prompts from GDDs and character profiles. After the art bible."
 argument-hint: "[system:<name> | level:<name> | character:<name>] [--review full|lean|solo]"
 user-invocable: true
-allowed-tools: Read, Glob, Grep, Write, Edit, Task, AskUserQuestion
+allowed-tools: Read, Glob, Grep, Write, Edit, Agent, AskUserQuestion
 model: sonnet
 ---
+
+!`source "${CLAUDE_PROJECT_DIR:-.}/.claude/hooks/yaml-helper.sh" 2>/dev/null && resolve_config --keys review_mode,automation`
+
+
 
 If no argument is provided, check whether `design/assets/entity-inventory.md` exists:
 - If it exists: read it, find the first entity or screen with status "Needed" but no spec file yet, and use `AskUserQuestion`:
@@ -16,6 +20,15 @@ If no argument is provided, check whether `design/assets/entity-inventory.md` ex
 
 ---
 
+Every `AskUserQuestion` call follows `.claude/docs/automation-modes.md`
+(collaborative asks always · guided major-only · autonomous logs and proceeds;
+`automation_always_ask` categories always prompt). **Note**: actually invoking an external image
+generator (calling an image API) always prompts regardless of
+`modes.automation` — it is an irreversible external action guarded
+unconditionally, independent of whether `external_calls` is listed in
+`automation_always_ask`. (Today this skill only emits generation-prompt
+*text*; the guard applies if live generation is ever wired in.)
+
 ## Phase 0b: Entity & Screen Inventory (runs when no arguments and no existing inventory)
 
 This flow produces `design/assets/entity-inventory.md` — the master list of everything
@@ -24,7 +37,16 @@ the game needs visually. Run once before asset spec work begins.
 ### Step 1 — Gather from docs
 Read all available source material in parallel:
 - `design/gdd/systems-index.md` — extract every system listed
-- All GDDs in `design/gdd/` — extract: Visual/Audio Requirements sections, UI elements mentioned, VFX events, any named entities (characters, enemies, buildings, items)
+- GDD asset content — do **not** full-read every GDD. The two wanted sections are
+  standard headings, and named entities live in the registry:
+  ```
+  Grep pattern="## (Visual/Audio Requirements|UI Requirements)" glob="design/gdd/*.md" output_mode="content" -A 25
+  ```
+  For named entities (characters, enemies, buildings, items), read
+  `design/registry/entities.yaml` (`entities`/`items`) if it exists and has
+  entries; otherwise grep the GDDs for named content. Full-read a GDD only when
+  its Visual/Audio section is missing or reads `[To be designed]` (Phase 1 already
+  handles that case). VFX events surface in the Visual/Audio grep context.
 - `design/art/art-bible.md` — extract: any named visual categories, asset type expectations
 - `design/narrative/` — scan for any character or world entity documents if they exist (optional — not required)
 
@@ -108,8 +130,13 @@ Extract:
 - **Target name**: the name after the colon (normalize to kebab-case)
 - **Review mode**: `--review [full|lean|solo]` if present
 
+The effective mode is the one already resolved at the top of this skill via
+`resolve_config --keys review_mode`, which applies the full chain and
+defaults to `lean` — not `full`. A `--review` argument overrides it for this
+run only.
+
 **Mode behavior:**
-- `full` (default): spawn both `art-director` and `technical-artist` in parallel
+- `full`: spawn both `art-director` and `technical-artist` in parallel
 - `lean`: spawn `art-director` only — faster, skips technical constraint pass
 - `solo`: no agent spawning — main session writes specs from art bible rules alone. Use for simple asset categories or when speed matters more than depth.
 
@@ -122,9 +149,9 @@ Read all source material **before** asking the user anything.
 ### Required reads:
 - **Art bible**: Read `design/art/art-bible.md` — fail if missing:
   > "No art bible found. Run `/art-bible` first — asset specs are anchored to the art bible's visual rules and asset standards."
-  Extract: Visual Identity Statement, Color System (semantic colors), Shape Language, Asset Standards (Section 8 — dimensions, formats, polycount budgets, texture resolution tiers).
+  Extract: Visual Identity Statement, Color System (semantic colors), Shape Language, Asset Standards (art bible Section 8 — dimensions, formats, polycount budgets, texture resolution tiers).
 
-- **Technical preferences**: Read `.claude/docs/technical-preferences.md` — extract performance budgets and naming conventions.
+- **Project config**: Read `performance.*` and `naming.*` from `project.yaml`; for any key absent or empty (including when `project.yaml` has no `performance` or `naming` block), fall back to `.claude/docs/technical-preferences.md`. Extract performance budgets and naming conventions.
 
 ### Source doc reads (by target type):
 - **system**: Read `design/gdd/[target-name].md`. Extract the **Visual/Audio Requirements** section. If it doesn't exist or reads `[To be designed]`:
@@ -179,17 +206,17 @@ Do NOT proceed to Phase 3 without user confirmation of the asset list.
 
 ## Phase 3: Spec Generation
 
-Spawn specialist agents based on review mode. **Issue all Task calls simultaneously — do not wait for one before starting the next.**
+Spawn specialist agents based on review mode. **Issue all `Agent` calls simultaneously — do not wait for one before starting the next.**
 
 ### Full mode — spawn in parallel:
 
-**`art-director`** via Task:
+**`art-director`** via `Agent`:
 - Provide: full asset list from Phase 2, art bible Visual Identity Statement, Color System, Shape Language, the source doc's visual requirements, and any reference games/art mentioned in the art bible Section 9
 - Ask: "For each asset in this list, produce: (1) a 2–3 sentence visual description anchored to the art bible's shape language and color system — be specific enough that two different artists would produce consistent results; (2) a generation prompt ready for use with AI image tools (Midjourney/Stable Diffusion style — include style keywords, composition, color palette anchors, negative prompts); (3) which art bible rules directly govern this asset (cite by section). For audio assets, describe the sonic character instead of a generation prompt."
 
-**`technical-artist`** via Task:
-- Provide: full asset list, art bible Asset Standards (Section 8), technical-preferences.md performance budgets, engine name and version
-- Ask: "For each asset in this list, specify: (1) exact dimensions or polycount (match the art bible Asset Standards tiers — do not invent new sizes); (2) file format and export settings; (3) naming convention (from technical-preferences.md); (4) any engine-specific constraints this asset type must respect; (5) LOD requirements if applicable. Flag any asset type where the art bible's preferred standard conflicts with the engine's constraints."
+**`technical-artist`** via `Agent`:
+- Provide: full asset list, art bible Asset Standards (Section 8), performance budgets (`performance.*` from `project.yaml`, else `technical-preferences.md`), engine name and version
+- Ask: "For each asset in this list, specify: (1) exact dimensions or polycount (match the art bible Asset Standards tiers — do not invent new sizes); (2) file format and export settings; (3) naming convention (`naming.*` from `project.yaml`, else `technical-preferences.md`); (4) any engine-specific constraints this asset type must respect; (5) LOD requirements if applicable. Flag any asset type where the art bible's preferred standard conflicts with the engine's constraints."
 
 ### Lean mode — spawn art-director only (skip technical-artist).
 
@@ -335,6 +362,10 @@ If any spawned agent returns BLOCKED or cannot complete:
 ---
 
 ## Collaborative Protocol
+
+**Applies in `collaborative` mode (the default).** For `guided` and
+`autonomous` modes, see `.claude/docs/automation-modes.md` — the rules below
+describe what collaborative mode requires, not universal behavior.
 
 Every phase follows: **Identify → Confirm → Generate → Review → Approve → Write**
 

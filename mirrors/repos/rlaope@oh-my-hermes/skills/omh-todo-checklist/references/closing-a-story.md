@@ -19,21 +19,72 @@ lets a reader infer the first has claimed a merge nobody observed.
 | Source | Held where | Read these | What it supplies |
 | --- | --- | --- | --- |
 | Plan record (`omh_todo/v1` item) | durable record, read with `omh runtime todo show` | `state`, `phase`, `blocked_reason` | what was done, which stage it belonged to, and what was skipped with its reason |
-| Verification gate (`verification-gate`) | this session only | `observed_check_results/v1`, `claim_verdict/v1` | which command actually ran, its exit status, and which checks are missing or failed |
-| Review (`code-review`) | this session only | `ranked findings per axis` | what a reader misses unless someone tells them |
-| QA (`ultraqa`) | this session only | `pass/fail evidence` | what nobody thought of the first time |
+| Verification gate (`verification-gate`) | optional durable model declaration, read with `omh_todo action=recall`; absent unless recorded | `observed_check_results/v1`, `claim_verdict/v1` | which command actually ran, its exit status, and which checks are missing or failed |
+| Review (`code-review`) | optional durable model declaration, read with `omh_todo action=recall`; absent unless recorded | `ranked findings per axis` | what a reader misses unless someone tells them |
+| QA (`ultraqa`) | optional durable model declaration, read with `omh_todo action=recall`; absent unless recorded | `pass/fail evidence` | what nobody thought of the first time |
 
-One of those four outlives the session: the plan record, at
-`$OMH_HOME/runtime/todos/<session key>.json`, read with `omh runtime todo show`.
-The other three - Verification gate, Review and QA - are declared outputs: OMH asks a
-model to produce them and stores none of them, so they are in this
-conversation or they are gone. Whether that changes is a product question
-filed separately.
+Read the live plan with `omh runtime todo show`, and the accepted scope checkpoint
+with `omh_todo action=recall`. Verification gate, Review and QA can now survive the session as
+bounded declarations written with `omh_todo action=record`. No write promotes
+a claim to proof: even `claimed_evidence_state=observed` retains
+`standing=model_declaration` and `observed=false`.
 
-So a close judgement that reads records reads the plan record and nothing
-else today. If a verdict, a finding, or a QA result is still in context, cite
-it as a declared output of this session and say so, because the next reader
-cannot go back to it.
+## Natural continuation, without a second engine
+
+Resolve the person's intent from conversation context, in their language; do
+not require a workflow name or finishing keyword. For an accepted three-point
+plan, a request such as “Ja, mach alles Besprochene fertig” means those three
+accepted points, not every brainstormed idea. Stop or analysis-only instructions
+and intervening topic changes outrank an old plan. An unrelated story, modal or
+book is not a continuation request merely because the same words occur.
+
+For multi-turn work, declare just the accepted items with `omh_todo action=set`,
+then `action=checkpoint`, `accepted=true`, short `rejected` summaries and the
+exact revision/worktree and environment fingerprints. This freezes scope; it
+does not approve an edit or change `plan_stage`. Read `action=show` before
+replacing an existing plan. The code-story template remains optional.
+
+On resume, `action=recall` without an ID lists the current profile/project's
+checkpoints. Read the intended ID with current revision/environment. If more
+than one could be meant, ask rather than choosing the newest silently. A later
+session may explicitly declare that same scope using `action=set`; recall
+itself changes no checklist and starts no work. Keep blocked, skipped or
+waiting-child obligations open and report the actual reason. Never busy-poll
+merely to avoid returning the turn to Hermes.
+
+Before closing, use `omh_todo action=record` for each applicable verification
+verdict, review finding set and QA result. Supply `checkpoint_id`, current
+`revision` and `environment` fingerprints, and a `result` object containing the
+original `item` number, `kind` (`verification`, `review` or `qa`), `verdict`
+(`PASS`, `HOLD` or `BLOCK`), short `summary`, explicit `findings`, `claimed_source`,
+`claimed_evidence_state` and bounded `references`. Preserve `model`, `host_exit`,
+`independent_review` and `ci` provenance separately; none is authenticated by
+this declaration. An empty
+finding list declares none found, not a missing source. Keep raw outputs outside
+the dossier. Read back the exact checkpoint with `action=recall`: missing, stale
+and malformed differ from declared clean. The
+completion projection covers verification declarations for every accepted item;
+review and QA are applicable source records, not mandatory extra phases. A
+reported review/QA blocker also prevents declaration completeness. Even complete
+declarations remain `not_verified` until the agent checks original evidence.
+
+`verification_receipt/v1` references reuse the existing immutable receipt key,
+which binds revision, command, toolchain, environment and claim scope. A stored
+key is not a validated receipt: read the original through its existing owner
+and check every binding. Native declarations do not manufacture receipts, host
+exit observations, independent-review attestations or CI observations.
+
+The dossier is bounded to 32 checkpoints, 64 results per checkpoint and 512 KiB
+per OMH home. Full stores refuse writes without evicting history. Results older
+than 30 days or with different revision/environment are stale. Bindings are
+caller-declared revision/environment fingerprints, not host-attested Git state;
+never reuse a fingerprint after editing the worktree. Scope and identity are
+host-bound; no raw transcripts, logs or environment values belong here.
+
+Offline fixtures prove callable tools, ownership, storage, resume and claim
+boundaries. They do not prove that a live model selects this workflow or follows
+it for German, typos or a later conversational turn. That needs a separately
+authorized model evaluation, not more keyword rules.
 
 ## What `done` means here, and what it does not
 

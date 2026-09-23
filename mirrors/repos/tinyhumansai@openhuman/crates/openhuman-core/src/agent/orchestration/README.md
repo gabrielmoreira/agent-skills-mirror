@@ -124,9 +124,11 @@ name:
 - Control: `steer_subagent`, `continue_subagent`, `close_subagent`,
   `wait_subagent`, `wait`, `wait_loop`, `list_subagents`.
 - Delegation: `DelegateGraphTool` (`delegate_graph.rs`),
-  `ArchetypeDelegationTool` and `SkillDelegationTool` (names set per
-  instance, e.g. `delegate_to_integrations_agent`), `CollapsedDelegationTool`
-  (`delegate_to`), and `agent_prepare_context`.
+  `ArchetypeDelegationTool` (name set per instance, e.g. `research`),
+  `CollapsedDelegationTool` (`delegate_to`), and `agent_prepare_context`.
+  There is no integrations delegate: connected Composio actions are
+  `Deferred` tools on the orchestrator's own belt, found through
+  `tool_search` and called directly (`tools/orchestrator_tools.rs`).
 
 `dispatch.rs` (`dispatch_subagent`, the shared spawn path every tool above
 calls), `awaiting_user.rs` (the awaiting-user envelope), and

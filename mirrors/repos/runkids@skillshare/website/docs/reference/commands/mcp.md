@@ -20,6 +20,7 @@ skillshare mcp import docs --from claude --target claude --target cursor --sync
 skillshare mcp import docs --file ./provider.json --target claude
 skillshare mcp list --json
 skillshare mcp remove docs --sync
+skillshare mcp remove docs --keep-files
 skillshare mcp restore BACKUP_ID --dry-run
 skillshare sync mcp --dry-run --json
 skillshare sync mcp
@@ -38,6 +39,7 @@ skillshare sync --all
 | `--from CLIENT` | Existing client to import, or the format of `--file` |
 | `--file PATH` | Native JSON/JSONC, TOML or Goose YAML; `.toml` defaults to Codex, other formats are detected from their MCP section; use `--from` for an explicit dialect |
 | `--sync` | Save and synchronize; noninteractive add/import/remove otherwise save only |
+| `--keep-files` | With `remove`: stop managing the server and leave its Agent entries as they are. Not with `--sync`. See [below](#stop-managing-a-server) |
 | `--replace` | Explicitly replace an existing source definition during add/import; on import, also rewrite the imported client's entry when it differs |
 | `--dry-run`, `-n` | Preview without saving or writing native configuration |
 | `--json` | Structured output; sync/preview reports contain names, paths and actions, not server values |
@@ -84,7 +86,8 @@ targets. Arguments accept one literal argument per line or a JSON array. Switchi
 transport clears fields that do not apply to the new connection type.
 
 Add, edit, remove and import show a preview before **Save and sync** or **Save
-only**. Escape cancels the pending draft. Restore previews and confirms changes
+only**. Remove also offers **Stop managing**, the same as `--keep-files`. Escape
+cancels the pending draft. Restore previews and confirms changes
 to Agent entries; it does not rewrite the source definition.
 
 Import without a server name supports multiple selections (`Space` toggles,
@@ -202,7 +205,8 @@ The dashboard only offers destinations available in the current scope and host
 platform. Each server is one row; the count button on the right opens the full
 client list for that server. Global-only clients cannot be selected in project mode.
 The **Sync** box on the right lists the changes not yet written: ticking a client
-only edits the source, and the files are written after you confirm on the Sync page.
+only edits the source. **Sync MCP** lists those changes and, after you confirm, writes
+only the MCP config files, keeping a backup of each.
 Below it, **Agents** lists the clients detected on this machine. A client counts as
 detected when its MCP file exists, or when the folder that client keeps its settings in
 exists, so a fresh install with no MCP file yet still appears. In project mode a client
@@ -317,6 +321,32 @@ Global Claude, Codex, Grok and Copilot paths respect `CLAUDE_CONFIG_DIR`, `CODEX
 platforms using their `.config` paths.
 Project destinations are relative to the selected project root. Project trust,
 server approval and authentication remain the receiving Agent's responsibility.
+
+### Another account of an Agent {#accounts}
+
+A target declared as [another account of an Agent](/docs/reference/targets/configuration#agent-config-dir) is an MCP target too, for `claude` (`CLAUDE_CONFIG_DIR`), `codex` (`CODEX_HOME`) and `pi` (`PI_CODING_AGENT_DIR`). Its servers are written in that Agent's format, into the account's own file: `<config_dir>/.claude.json` for Claude, `<config_dir>/config.toml` for Codex, `<config_dir>/mcp.json` for Pi.
+
+```yaml
+targets:
+  claude-work:
+    agent: claude
+    config_dir: ~/.claude-work
+
+mcp:
+  targets: [claude, claude-work]      # both accounts get every server
+  servers:
+    docs:
+      url: https://example.com/mcp
+    jira:
+      command: jira-mcp
+      targets: [claude-work]          # the work account only
+```
+
+Here `docs` goes to `~/.claude.json` and `~/.claude-work/.claude.json`, and `jira` to the second file only. `--target claude-work` works with `mcp add` and `mcp edit`, and the dashboard lists the account next to the Agents.
+
+`pi-mcp-extension` always reads `~/.pi/agent/mcp.json`, so a Pi account needs `piExtension: pi-mcp-adapter`.
+
+Every account reads the same project files, so inside `mcp.projects` and in project mode use the Agent's own name. Claude Code keeps a project's off list in each account's file: [turning a server off in a project](#turn-off-a-global-server-in-one-project) writes the switch to every account that has the server. `mcp import --from claude-work`, and the dashboard's Import from target, read the account's own file. `mcp import --file <path> --from claude-work` reads a file you exported yourself, in that account's Agent format.
 
 ## Turn off a global server in one project {#turn-off-a-global-server-in-one-project}
 
@@ -523,8 +553,13 @@ project has an **MCP** tab.
   project's Agents has no per-project switch, the row says that the server still loads
   there. An entry that lists its own `targets`, which differ from the project's, gets
   **Match the project**: it saves the entry again without `targets`.
+- **Sync MCP** in the tab's Sync box writes the whole MCP plan, and says how many of
+  its changes are outside this project. **Sync project**, at the top of the project
+  page, writes only this project's skills, agents and MCP.
 - **Defaults**, at the bottom of the MCP page, edits `mcp.targets` and
   `mcp.directTools`.
+- When the project's own Agent files hold servers Skillshare does not manage, the tab
+  says so above the lists, with **Import**. See [below](#unmanaged-servers).
 
 Saving rewrites only the project you changed. Other projects keep their YAML as written,
 anchors and aliases included, and a folder written as `~/work/app` keeps its `~`. As
@@ -542,6 +577,45 @@ Limits:
   list. The servers themselves are left as they are.
 - If a folder also has its own `.skillshare/config.yaml` managing the same entry, the
   plan reports a conflict rather than overwriting it.
+
+## Stop managing a server {#stop-managing-a-server}
+
+```bash
+skillshare mcp remove docs --keep-files
+```
+
+This removes `docs` from the source and forgets which Agent entries Skillshare wrote
+for it. No Agent file changes. From then on those entries are yours: sync neither
+removes nor updates them. `--keep-files` cannot be combined with `--sync`. The
+terminal remove wizard offers it as **Stop managing**, and so does the dashboard's
+remove dialog, on the MCP page and in a project's **MCP** tab.
+
+Only the scope you remove it from changes. Stopping a global server leaves a project's
+server of the same name managed, and the other way round. To manage an entry again,
+import it.
+
+## Servers Skillshare does not manage {#unmanaged-servers}
+
+The dashboard reads the Agent config files of the current scope, and of every folder
+under `mcp.projects`, for servers that this source does not define and no Skillshare
+configuration manages. When it finds some, a note above the server list says how many
+and in which Agents. **Import** opens the import with the first of those Agents
+selected. A project's **MCP** tab shows the same note for that project's own files;
+its import reads the project's file and saves the servers to that project. Entries
+with nothing to connect to, such as Goose's built-in extensions, are not counted.
+
+### Take over an entry an Agent already has
+
+When you add a server under a name an Agent file already uses, sync does not
+overwrite that entry. The plan reports a conflict, `existing entry is not managed`,
+and writes no files until you choose for that entry:
+
+- Import it from that Agent: `skillshare mcp import NAME --from CLIENT`, or the
+  conflict's **Import from** button in the dashboard, such as **Import from Cursor**.
+  An entry that matches the source is adopted as it is. For a conflict in a folder under
+  `mcp.projects`, the button reads that folder's file and imports into that project.
+- Replace it with the source definition: **Replace with source** in the dashboard, or
+  `--replace` on import.
 
 ## Safety and limitations
 
@@ -733,6 +807,9 @@ mcp:
 From the command line, pass a JSON object to `mcp add` or `mcp edit`. It replaces the
 whole of `piOptions`, and `{}` clears it. The dashboard has the same box in the server
 dialog, under **Direct tools**, and checks that the text is a JSON object before saving.
+A server ticked for Pi with **Direct tools** or **Other adapter settings** set shows them
+on a line under its endpoint; other adapter settings only say that they are set. Unticking
+Pi while editing keeps both in the source, so ticking Pi again brings them back.
 
 ```bash
 skillshare mcp edit github --pi-options '{"excludeTools":["*emulator*"]}'

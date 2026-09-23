@@ -7,7 +7,7 @@ framework. It is self-contained and separate from any game project.
 
 | File | Purpose |
 |------|---------|
-| `catalog.yaml` | Master registry for all 73 skills and 49 agents. Contains category, spec path, and last-test tracking fields. Always read this first when running any test command. |
+| `catalog.yaml` | Master registry for all 74 skills and 49 agents. Contains category, spec path, and last-test tracking fields. Always read this first when running any test command. |
 | `quality-rubric.md` | Category-specific pass/fail metrics. Read the matching `###` section for the skill's category when running `/skill-test category`. |
 | `skills/[category]/[name].md` | Behavioral spec for a skill — 5 test cases + protocol compliance assertions. |
 | `agents/[tier]/[name].md` | Behavioral spec for an agent — 5 test cases + protocol compliance assertions. |
@@ -34,7 +34,7 @@ authoring   → design-system, quick-design, architecture-decision, art-bible,
               create-architecture, ux-design, ux-review
 readiness   → story-readiness, story-done
 pipeline    → create-epics, create-stories, dev-story, create-control-manifest,
-              propagate-design-change, map-systems
+              propagate-design-change, map-systems, vertical-slice
 analysis    → consistency-check, balance-check, content-audit, code-review,
               tech-debt, scope-check, estimate, perf-profile, asset-audit,
               security-audit, test-evidence-review, test-flakiness
@@ -48,22 +48,23 @@ utility     → all remaining skills
 ## Agent tiers
 
 ```
-directors   → creative-director, technical-director, producer, art-director
-leads       → lead-programmer, narrative-director, audio-director, ux-designer,
-              qa-lead, release-manager, localization-lead
-specialists → gameplay-programmer, engine-programmer, ui-programmer,
-              tools-programmer, network-programmer, ai-programmer,
-              level-designer, sound-designer, technical-artist
-godot       → godot-specialist, godot-gdscript-specialist, godot-csharp-specialist,
-              godot-shader-specialist, godot-gdextension-specialist
-unity       → unity-specialist, unity-ui-specialist, unity-shader-specialist,
-              unity-dots-specialist, unity-addressables-specialist
-unreal      → unreal-specialist, ue-gas-specialist, ue-replication-specialist,
-              ue-umg-specialist, ue-blueprint-specialist
-operations  → devops-engineer, security-engineer, performance-analyst,
-              analytics-engineer, community-manager
-creative    → writer, world-builder, game-designer, economy-designer,
-              systems-designer, prototyper
+directors      → creative-director, technical-director, producer, art-director
+leads          → lead-programmer, narrative-director, audio-director, game-designer,
+                 systems-designer, level-designer, qa-lead
+specialists    → gameplay-programmer, engine-programmer, network-programmer,
+                 ai-programmer, tools-programmer, ui-programmer, ux-designer,
+                 technical-artist, sound-designer, performance-analyst, prototyper,
+                 writer, world-builder
+engine/godot   → godot-specialist, godot-gdscript-specialist, godot-csharp-specialist,
+                 godot-shader-specialist, godot-gdextension-specialist
+engine/unity   → unity-specialist, unity-ui-specialist, unity-shader-specialist,
+                 unity-dots-specialist, unity-addressables-specialist
+engine/unreal  → unreal-specialist, ue-gas-specialist, ue-replication-specialist,
+                 ue-umg-specialist, ue-blueprint-specialist
+operations     → devops-engineer, release-manager, live-ops-designer,
+                 community-manager, analytics-engineer, economy-designer,
+                 localization-lead
+qa             → qa-tester, security-engineer, accessibility-specialist
 ```
 
 ## Workflow for testing a skill

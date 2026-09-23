@@ -1,6 +1,6 @@
 ---
 name: platform-flexipage-generate
-description: "Use this skill when users need to create, generate, modify, or validate Salesforce Lightning pages (FlexiPages). Trigger when users mention RecordPage, AppPage, HomePage, Lightning pages, page layouts, adding components to pages, or page customization. Also use when users say things like 'create a Lightning page', 'add a component to a page', 'customize the record page', 'generate a FlexiPage', or when they're working with FlexiPage XML files and need help with components, regions, or deployment errors. Always use this skill for any FlexiPage-related work, even if they just mention 'page' in the context of Salesforce. DO NOT TRIGGER when users ask about Visualforce pages, Aura components without FlexiPage context, page layout assignments in the UI, or Lightning Web Component development that does not involve placing components on a FlexiPage."
+description: "Use when users create, generate, modify, or validate Salesforce Lightning pages (FlexiPages). Trigger on RecordPage, AppPage, HomePage, Lightning pages, adding components to a page, page customization (e.g. 'customize the record page'), or .flexipage-meta.xml files (regions, components, deployment errors). DO NOT TRIGGER for Visualforce pages, page layout assignments in the UI, UI Bundle/Experience Cloud site pages, or Aura/Lightning Web Component development without FlexiPage context."
 allowed-tools: Bash Read Write
 metadata:
   version: "1.1"

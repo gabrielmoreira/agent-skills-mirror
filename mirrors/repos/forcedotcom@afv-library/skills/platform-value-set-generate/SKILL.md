@@ -1,6 +1,6 @@
 ---
 name: platform-value-set-generate
-description: "Use this skill when users need to create, generate, or validate a Salesforce global value set or customize a standard value set. Trigger when users mention a global value set, GlobalValueSet, standard value set, StandardValueSet, a reusable picklist, a picklist value set shared across fields, or customizing standard picklists like Industry, Lead Source, or Opportunity Stage. Also use when users hit deployment errors adding values to a standard picklist, referencing a value set from a custom field, or working with .globalValueSet-meta.xml or .standardValueSet-meta.xml files. DO NOT TRIGGER for an inline one-off picklist on a single field with no reuse, or for general custom field metadata work that does not involve a GlobalValueSet or StandardValueSet — use platform-custom-field-generate instead."
+description: "Use to create, generate, or validate a Salesforce GlobalValueSet (reusable picklist shared across fields) or customize a StandardValueSet (built-in picklists like Industry, Lead Source, Opportunity Stage). Trigger on global/standard value set, reusable picklist, .globalValueSet-meta.xml or .standardValueSet-meta.xml, or deploy errors adding values to a standard picklist. DO NOT TRIGGER for a one-off inline picklist on a single field with no reuse — use platform-custom-field-generate."
 metadata:
   version: "1.0"
   domains: ["Platform"]

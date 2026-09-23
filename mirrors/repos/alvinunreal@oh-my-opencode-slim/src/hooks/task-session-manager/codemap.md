@@ -11,12 +11,21 @@ The directory follows a **Facade + Strategy** pattern where `index.ts` acts as t
 - **index.ts**: Main facade that wires hooks into OpenCode's lifecycle and coordinates between the job board, pending calls, task context tracking, and explicit user waits. Implements the plugin hook interface (`tool.execute.before`, `tool.execute.after`, `experimental.chat.messages.transform`, `event`) and exposes `beginUserWait()` to the `wait_for_user` tool.
 - **../../utils/background-job-terminal-gate.ts**: Shared execution/observation gate for every terminal publication. Runtime quiescence and attributable result evidence authorize one board commit; busy withdraws terminal publications. Grace, bounded retries and single-open reads are shared across adapters.
 - **input-wait-tracker.ts**: Provides the single `hasInputWait()` seam used by idle reconciliation and continuation evaluation. It combines local question/permission waits with the process-global explicit user-wait latch.
-- **continuation-attempt-gate.ts**: Owns process-global continuation epochs, reservations, and explicit user waits across hook recreation. The wait is encoded as an `attempts` sentinel so pre-upgrade #856 hooks sharing the store also fail closed. Distinct external user-message identity rearms both states.
 - **continuation-model-selection.ts**: Normalizes current-session and chat-hook model shapes before forwarding runtime model and variant choices to idle continuation prompts.
 - **pending-call-tracker.ts**: Tracks in-flight task calls using a capped ordered map (`MAX_PENDING_TASK_CALLS`) to correlate launch output safely. Provides call ID generation, storage, retrieval, and cleanup for pending task invocations.
 - **admission-runtime.ts**: Re-exports the per-directory admission runtime
   lease used by plugin generations; its scheduler and pending-call tracker are
   torn down only after the final unclaimed owner release.
+- **fallback-observation-transfer.ts**: Terminal-observation handoff
+  (`createBackgroundFallbackHandoff`) for background children re-prompted by
+  the foreground fallback — `prepare`/`admit`/`reject`/`settleUnresolved`
+  brackets the re-prompt admission so the stop-evidence gate defers terminal
+  publication until a delivery owner exists; unresolved outcomes convert the
+  preparation into the owning run.
+- **same-provider-policy.ts**: Opt-in per-provider rewrite
+  (`backgroundJobs.sameProviderPolicy: { <provider>: "foreground" }`)
+  converting same-provider `background: true` task requests to the foreground
+  path for shared single-runtime backends; fail-open on unknown model/provider.
 - **task-context-tracker.ts**: Manages read context from child sessions with line-count and file caps. Stores context per task ID and provides pruning to prevent unbounded growth.
 
 All modules depend on `BackgroundJobBoard` from `src/utils/background-job-board.ts` as the single source of truth for active jobs, terminal unreconciled jobs, reusable completed sessions, aliases, read context, and LRU caps.

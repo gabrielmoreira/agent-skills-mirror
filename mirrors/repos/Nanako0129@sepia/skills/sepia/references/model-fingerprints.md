@@ -75,6 +75,8 @@ Keep responses focused, brief, and concise. Keep disclaimers and caveats short, 
 
 Consulted with no prose-layer statement (2026-09-03): the Claude Sonnet 5 page says only that "prose style on long-form writing may shift"; Claude Opus 4.7, Opus 4.6, and Sonnet 4.6 have no model-specific prompting page. Those releases have no operative row; per the rule in `SKILL.md`, the Claude prose tables above apply to them as priors.
 
+Consulted with no prose-layer statement (2026-09-23): *Prompting Claude Opus 5.5* covers effort calibration, always-on thinking, progress updates between tool calls, unattended runs, pasted-content marking and frontend defaults. On writing it says only that the model "tends to finish the same task with fewer tokens", that its reports "say plainly what it did, what it found, and what it needs from you", and that "existing Claude Opus 5 prompts should perform well without changes"; *What's new in Claude Opus 5.5* adds nothing on prose. No release-anchored default, so Opus 5.5 has no operative row and the Claude tables, the Opus 5 one first among them, apply as priors.
+
 ## GPT
 
 ### Narrative layer (S; GPT-5.4) — the gossip and the long lens
@@ -110,6 +112,8 @@ Avoid using slop words or phrases like "Bottom Line:" in conclusions, "delve," "
 State the intended action directly. Avoid adding what you won't do, what will remain unchanged, or how you'll separate or categorize results. Do not use contrastive framing such as "X, not Y" or "X—not Y" that introduces an unprompted alternative that the user didn't ask about. Avoid invented compound labels like "exact-head checks" and "editorial-row layouts", vague qualifiers, and canned transitions; use plain verbs and prepositions to state the actual relationship directly.
 ```
 
+Consulted with no prose-layer statement (2026-09-23): the GPT-6 family now also names GPT-6 Sol and GPT-6 Luna on OpenAI's *Model guidance* page, but its "Personality and writing style" section is scoped to GPT-6 Astra ("GPT-6 Astra tends to use lists, tables and Markdown"), neither model has a pinned guidance page (both `latest-model/gpt-6-sol.md` and `gpt-6-luna.md` return 404), and their model pages say nothing about writing. They have no operative row; the GPT tables above apply to them as priors. The GPT-6 Astra verbatim block was re-compared against its pinned page the same day and still matches.
+
 ## Gemini
 
 ### Narrative layer (S; Gemini 3 Flash) — the tidy pessimist
@@ -122,13 +126,13 @@ State the intended action directly. Avoid adding what you won't do, what will re
 | Protagonist's social circle always expands | Allow shrinking or static trajectories |
 | Direct speech dominates exchanges | Mix in indirect and summarized speech |
 
-### Prose layer (V; Gemini 3 series, `GOOGLE-GEMINI-3-DEV-GUIDE`)
+### Prose layer (V; Gemini 3 and 3.1, `GOOGLE-GEMINI-3-DEV-GUIDE`)
 
-The vendor scopes its statements to the series (Gemini 3 Flash through Gemini 3.8 Flash), so any Gemini 3.x release matches this table.
+The vendor's own wording scopes the statement to Gemini 3 and 3.1, so those releases match this table and it is operative for them. Re-read 2026-09-23 (pages updated 2026-09-17): the developer guide says "Gemini 3 is less verbose" and lists models only up to 3.1; *What's new in Gemini 3.5* writes "By default, Gemini 3 and 3.1 is less verbose", leaving 3.5 out on its own page; *Prompt design strategies* says "Gemini 3 models" and names neither 3.5 nor 3.8 in its text. No page names Gemini 3.5 or 3.8 Flash as covered, so for those releases this table is a prior, not operative. An earlier version of this line said the scope ran through Gemini 3.8 Flash; the current pages do not support that.
 
 | Vendor-stated default | Handling |
 |---|---|
-| "By default, Gemini 3 is less verbose and prefers providing direct, efficient answers"; a conversational or "chatty" persona appears only when explicitly prompted | Terse and unadorned is this series' default, so brevity is not evidence of a human here. In non-narrative text, check density in the other direction (professional-pass check 2): required caveats and next steps dropped for efficiency |
+| "By default, Gemini 3 is less verbose and prefers providing direct, efficient answers"; a conversational or "chatty" persona appears only when explicitly prompted | Terse and unadorned is these releases' stated default, so brevity is not evidence of a human here. In non-narrative text, check density in the other direction (professional-pass check 2): required caveats and next steps dropped for efficiency |
 
 ## DeepSeek
 

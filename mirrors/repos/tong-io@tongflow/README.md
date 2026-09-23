@@ -35,6 +35,14 @@ Open-source core · Your models · Self-hostable · [tongflow.com](https://www.t
       <strong>MiniMax H3 video generation API — Metaso (秘塔科技)</strong> Metaso runs MiniMax H3 video generation at <strong>¥0.09/second for 768P and ¥0.15/second for 2K</strong>. Native 2K, synced audio and picture, an <strong>OpenAI-compatible</strong> API, and <strong>ComfyUI</strong> support — no GPU to deploy yourself. 🎁 Sign up through the <a href="https://metaso.cn/minimax-h3/?s=TongFlow" target="_blank" rel="noopener noreferrer">TongFlow link</a> to claim bonus credits and a partner discount.
     </td>
   </tr>
+  <tr>
+    <td width="190" align="center">
+      <a href="https://www.infistar.cc/register?aff=Y8S76PTA&amp;ref_source=link" target="_blank" rel="noopener noreferrer"><img src="docs/assets/sponsor-infistar.png" width="96" alt="Infistar / 无限星河AI"></a>
+    </td>
+    <td>
+      <strong>One key for the whole canvas — Infistar (无限星河AI)</strong> An OpenAI-compatible gateway: one key and one balance cover the canvas's text, image, video and transcription nodes — GPT-6, Claude Opus 5, Gemini 3 Pro, Grok and DeepSeek alongside the broadest Chinese lineup (Qwen, GLM, Doubao, MiniMax, Kimi, StepFun), plus GPT Image 2.5, Seedream 5 and Qwen-Image for stills and Wan / Seedance for video. <strong>Images from ¥0.06 each.</strong> Use it through the <a href="https://github.com/tong-io/tongflow-router-infistar">tongflow-router-infistar</a> plugin. 🎁 Sign up through the <a href="https://www.infistar.cc/register?aff=Y8S76PTA&amp;ref_source=link" target="_blank" rel="noopener noreferrer">TongFlow link</a> for $5 of trial credit.
+    </td>
+  </tr>
 </table>
 
 ## Demo Examples
@@ -215,6 +223,7 @@ Aggregators — one key, many third-party models across labs:
 - [tongflow-router-apimart](https://github.com/tong-io/tongflow-router-apimart) — APIMart gateway with a per-node **model picker**: image gen/edit (Z-Image, Seedream, Nano Banana, GPT-Image), text/image → video (Kling, VEO3, Sora2, Seedance), `gen_text` (GPT-5, Claude, Gemini), Whisper transcription and TTS
 - [tongflow-router-replicate](https://github.com/tong-io/tongflow-router-replicate) — Replicate with a per-node **model picker** across the catalog: text, vision, image gen/edit/fusion/upscale/matting, text/image → video, transcription, TTS / voice clone, music, and image → 3D (FLUX, Seedream, Veo, Kling, Whisper, Hunyuan3D…)
 - [tongflow-router-fal](https://github.com/tong-io/tongflow-router-fal) — fal.ai with a per-node **model picker**: image (gen/edit/fusion/upscale/matting/pose/normal/seg), video (text/image → video, first-last frame, talking-head, lip-sync, upscale), audio (transcription, TTS, voice clone, music, source separation) and image → 3D
+- [tongflow-router-infistar](https://github.com/tong-io/tongflow-router-infistar) — Infistar (无限星河AI) gateway with a per-node **model picker** that also lists the **key's own model list**: `gen_text` / text tools (GPT-5.6, Claude, Gemini, Qwen, DeepSeek, GLM, Kimi, Doubao, MiniMax, Grok), image understanding, image gen/edit/fusion (GPT Image 2, Qwen-Image, Seedream, Wan), text / image → video (Wan 3.0, Seedance, MiniMax H3) and transcription
 
 ### GPU/CPU plugins
 

@@ -18,6 +18,15 @@ import {
 import type { AnyCmsRef, CmsRef } from '../shared/cmsCore.types';
 import { CMS_CHANNEL_ID_FALLBACK } from '../shared/externalRefs';
 
+/** Runtime guard before the cache's `as TBody` cast: a CMS body is always an
+ *  object/array, so this screens out a stale primitive from a `ref.name` reused
+ *  under a different, incompatible `TBody` — it cannot verify the object's shape
+ *  actually matches `TBody` (no schema is available here), so callers must still
+ *  keep `ref.name` unique per content shape. */
+function isCacheableBody(value: unknown): boolean {
+  return value !== null && typeof value === 'object';
+}
+
 /** Resolved state for one ref read — the component maps this onto signals. */
 export interface CmsItemResult<TBody> {
   body: TBody | undefined;
@@ -38,9 +47,9 @@ export class CmsItemService {
   async load<TBody = unknown>(ref: AnyCmsRef): Promise<CmsItemResult<TBody>> {
     const name = ref.name;
 
-    const cached = this.cache.get(name) as TBody | undefined;
-    if (cached !== undefined) {
-      return { body: cached, error: undefined };
+    const rawCached = this.cache.get(name);
+    if (isCacheableBody(rawCached)) {
+      return { body: rawCached as TBody, error: undefined };
     }
 
     let promise = this.inflight.get(name) as Promise<TBody> | undefined;
@@ -89,7 +98,7 @@ export class CmsItemService {
     ) {
       return err;
     }
-    return err instanceof Error ? err : new Error('Unknown CMS fetch error');
+    return err instanceof Error ? err : new Error('Unknown CMS fetch error', { cause: err });
   }
 
   /** Test-only escape hatch — reset the cache between test runs. */

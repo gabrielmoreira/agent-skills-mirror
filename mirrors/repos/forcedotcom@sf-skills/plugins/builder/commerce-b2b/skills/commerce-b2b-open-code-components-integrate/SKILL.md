@@ -1,7 +1,7 @@
 ---
 name: commerce-b2b-open-code-components-integrate
 description: "Integrate the official Salesforce B2B Commerce open source component library from GitHub into an existing store's site metadata. Use this skill to copy the library's components and labels so they become available in Experience Builder. TRIGGER when: the user asks to integrate or add open code components, names forcedotcom/b2b-commerce-open-source-components, or wants the official open source library copied into a B2B store. DO NOT TRIGGER when: the user needs to create or retrieve a B2B store (use commerce-b2b-store-create), only map or replace OOTB component definitions (use commerce-b2b-open-code-components-replace), author custom LWCs, or perform general Experience Builder work unrelated to this library."
-allowed-tools: Bash(git clone:*) Bash(cp:*) Bash(python3:*) Read
+allowed-tools: Bash(git clone:*) Bash(cp:*) Bash(python3:*) Bash(sf org list:*) Bash(sf config get:*) Bash(sf project retrieve start:*) Read
 metadata:
   version: "1.0"
   domains: ["Commerce", "Experience"]

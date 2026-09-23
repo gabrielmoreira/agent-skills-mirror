@@ -154,6 +154,9 @@
   - manual file/discovery settings.
 - Existing tests cover service, parser, manager, server, dashboard, and helpers
   under `src/interview/*.test.ts`.
+- `test-port.ts` provides test-only port binding infrastructure for dashboard
+  mode testing, holding ports and failing fast on health probes to prevent
+  TOCTOU windows between port discovery and real server binding.
 
 ## Repaired lifecycle details
 

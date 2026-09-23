@@ -69,6 +69,7 @@ Quality bar:
 - Tie every completion claim to the smallest check that proves it, then broaden for shared surfaces.
 - When a diff touches a declared generated path, name its source of truth and regeneration command before the edit rather than after a byte gate rejects it; a diff touching a generator and its output together is the correct shape, not a violation — load `references/generated-artifact-provenance.md` for the declaration and reporting rules.
 - Record command/source, freshness, exit status, and scope for each observed result.
+- For native `omh_todo` checkpoints, load the todo-checklist closing recipe; `record` then `recall` this verification declaration. Stored declarations are not proof.
 - When the change answers to a written spec, plan, or issue, load `references/requirement-coverage-map.md` and map requirement to task to evidence under stable ids before claiming coverage.
 - Return PASS only when required checks pass and stale or missing evidence is resolved.
 - Keep fixes, reruns, review, CI, and merge as separate observed states.

@@ -10,6 +10,8 @@ metadata:
     - "platform-permission-set-generate"
     - "service-digital-engagement-channel-configure"
   cliTools:
+    - tool: ["python3"]
+      semver: ">=3.8"
     - tool: ["sf"]
       semver: ">=2.0.0"
 ---

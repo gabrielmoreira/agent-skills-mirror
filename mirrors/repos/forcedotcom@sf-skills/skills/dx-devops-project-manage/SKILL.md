@@ -1,6 +1,6 @@
 ---
 name: dx-devops-project-manage
-description: "Use this skill to list, view, or manage DevOps Center projects in a Salesforce org — show all projects, create a new project, or update an existing project's name, description, or active status. Invoke it to run sf devops project list whenever the user wants to show, see, view, display, or list available projects, check which or how many DevOps Center projects exist, or look up a project ID — even a plain listing request should use this skill rather than a raw tool or a direct answer. Also invoke to create a project, set up a new deployment pipeline foundation, initialize DevOps Center for a new feature, update project settings like name and description, or activate/deactivate (archive) a project. Consolidates sf devops project list/create/update operations. DO NOT TRIGGER for work item, pipeline, promotion, or conflict operations — those are separate skills."
+description: "Use to list, view, or manage DevOps Center projects in a Salesforce org — show all projects, create a project, or update an existing project's name, description, or active status. Invoke to run sf devops project list on any listing request, or to create a project, set up a new pipeline foundation, initialize DevOps Center for a feature, update project settings, or activate/deactivate (archive) a project. Consolidates sf devops project list/create/update. DO NOT TRIGGER for work item, pipeline, promotion, or conflict operations — those are separate skills."
 metadata:
   version: "1.0"
   domains: ["Developer Experience"]

@@ -5,10 +5,10 @@
 [![简体中文](https://img.shields.io/badge/README-%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87-1677ff)](./README.md)
 [![English](https://img.shields.io/badge/README-English-111111)](./README.en.md)
 [![OpenClaw](https://img.shields.io/badge/OpenClaw-Compatible-00b894)](./openclaw-skills/README.md)
-[![Skills](https://img.shields.io/badge/Skills-285-7c3aed)](./skills/)
+[![Skills](https://img.shields.io/badge/Skills-286-7c3aed)](./skills/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 
-面向全球 AI 开发者与 Agent 工作流构建者的高价值 Skills 仓库，覆盖开发工程、DevOps、产品设计、运营、办公自动化、金融投资、AI 平台与安全治理等高频任务场景。当前共 **16 个分类 / 285 个技能**。
+面向全球 AI 开发者与 Agent 工作流构建者的高价值 Skills 仓库，覆盖开发工程、DevOps、产品设计、运营、办公自动化、金融投资、AI 平台与安全治理等高频任务场景。当前共 **16 个分类 / 286 个技能**。
 
 ## 为什么值得收藏
 
@@ -386,10 +386,10 @@ openclaw-skills/                        # 为 OpenClaw 生成的扁平兼容导�
 2. 打开对应技能的 `SKILL.md` 查看触发条件、操作流程和脚本说明。
 3. 若技能下含 `scripts/`、`references/`、`assets/`，优先复用现成内容。
 
-## 技能总览（按分类，16 类 / 285 技能）
+## 技能总览（按分类，16 类 / 286 技能）
 
 <a id="cat-developer-engineering"></a>
-### 1. 开发工程（developer-engineering，47）
+### 1. 开发工程（developer-engineering，49）
 
 - `agent-designer`：设计智能体的职责、工具、记忆、协作架构和评测方法。
 - `api-design-reviewer`：用于评审 API 设计的一致性、可用性、版本策略、错误语义、安全性和开发者体验。
@@ -419,6 +419,8 @@ openclaw-skills/                        # 为 OpenClaw 生成的扁平兼容导�
 - `nextjs-app-router`：用于 Next.js App Router 项目开发、路由设计和服务端渲染实践。
 - `performance-profiler`：分析 CPU、内存、I/O 和查询瓶颈并验证优化效果。
 - `pr-review-expert`：审查 PR 的正确性、安全、兼容性和测试覆盖变化。
+- `prisma-client-api`：用于 Prisma Client 查询、关联写入、事务、分页与原生 SQL 审查。
+- `prisma-upgrade-v7`：用于 Prisma ORM 6 到 7 的 SQL 项目迁移、驱动适配器、客户端导入与配置升级。
 - `promptfoo-evaluation`：配置和运行 Promptfoo 提示词、模型及输出质量评测。
 - `python-performance`：用于 Python 性能分析、内存优化、热点路径调优和并发模式评审。
 - `qa-expert`：制定测试策略、风险用例、执行计划和缺陷跟踪流程。
@@ -522,11 +524,11 @@ openclaw-skills/                        # 为 OpenClaw 生成的扁平兼容导�
 - `latch`：配置和维护生命周期钩子、质量门禁和自动化守卫。
 - `playwright`：用于使用 Playwright 编写、运行和调试端到端测试。
 - `playwright-pro`：用于高级 Playwright 测试、诊断、稳定性和浏览器自动化。
-- `web-scraper`：用于网页抓取、结构化数据提取、爬取策略、选择器设计和反爬应对。
+- `web-scraper`：用于网页抓取、结构化数据提取、爬取策略、选择器设计和增量更新。
 - `yeet`：按用户要求暂存、提交、推送改动并创建 GitHub PR。
 
 <a id="cat-devops-sre"></a>
-### 5. DevOps / SRE（devops-sre，13）
+### 5. DevOps / SRE（devops-sre，12）
 
 - `azure-kubernetes`：用于 Azure Kubernetes 集群管理、部署、排障和运维。
 - `beacon`：可观测性、服务目标、告警、容量和可靠性设计。
@@ -539,7 +541,6 @@ openclaw-skills/                        # 为 OpenClaw 生成的扁平兼容导�
 - `observability-designer`：设计日志、指标、链路追踪、告警和服务运行目标。
 - `release-manager`：组织版本、变更记录、发布制品和发布后验证。
 - `senior-architect`：分析系统架构、依赖、扩展性和关键技术取舍。
-- `senior-devops`：建设可观测、可回滚的基础设施与持续交付流程。
 - `triage`：事故首响、影响范围识别、恢复步骤和复盘整理。
 
 <a id="cat-finance-investing"></a>

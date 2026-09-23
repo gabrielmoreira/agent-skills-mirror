@@ -78,21 +78,28 @@ renderer (skip if it already exists — never overwrite):
 |-------------------------|------------------------------|
 | `assets/react/MediaRenderer.tsx` *(react)* | `src/cms/react/MediaRenderer.tsx` |
 | `assets/angular/MediaRenderer.component.ts` *(angular)* | `src/cms/angular/MediaRenderer.component.ts` |
+| `assets/shared/mediaLabels.ts` | `src/cms/shared/mediaLabels.ts` |
+
+Both `MediaRenderer.tsx` and `MediaRenderer.component.ts` import `deriveDownloadLabel`/
+`effectiveAudioLabel` from `../shared/mediaLabels`, so `mediaLabels.ts` MUST be copied
+in the same pass as the renderer — copying the renderer without it leaves an
+unresolved import and breaks the app's build. Skip if it already exists, exactly like
+the renderer files.
 
 The media types (`CmsMediaBody`, `CmsMediaField`, `CmsMediaType`) ship inside the
 always-written `shared/cmsCore.types.ts`, so a media embed onto an existing runtime
-needs only the one renderer file plus the ref entry — provided the runtime's
+needs only the renderer, `mediaLabels.ts`, and the ref entry — provided the runtime's
 `cmsCore.types.ts` carries the media exports (a pre-media scaffold that lacks them is
 Init drift on that file; HALT, don't silently patch). On the `contentKey` path URL
 resolution is entirely toolkit-owned (`resolveCmsImageUrl` / `resolveMediaUrl`); no
 local prefix helper ships. On the foreign `url` path the renderer uses `ref.url`
 directly — no resolver, no fetch (Rule 1/Rule 2).
 
-**The media renderer is NOT in the foundation sets below.** Init/Embed detection is
-unchanged: a runtime scaffolded before media existed is still a complete `embed`
-runtime, and the media renderer is written lazily on the first media embed exactly
-like a per-type `<type>.ts`. Do not add `MediaRenderer.*` to the detection sets, or
-every pre-media app would mis-classify as drift.
+**The media renderer and `mediaLabels.ts` are NOT in the foundation sets below.**
+Init/Embed detection is unchanged: a runtime scaffolded before media existed is still
+a complete `embed` runtime, and both files are written lazily on the first media embed
+exactly like a per-type `<type>.ts`. Do not add `MediaRenderer.*` or `mediaLabels.ts`
+to the detection sets, or every pre-media app would mis-classify as drift.
 
 ## Foundation sets (used by Init vs Embed detection)
 

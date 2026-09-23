@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `earendil-works/pi` — 26 default patterns, 2 followed patterns, 21 file(s) materialized.
+Mirror of `earendil-works/pi` — 26 default patterns, 2 followed patterns, 23 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `earendil-works/pi` — 26 default patterns, 2 followed patterns, 21 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 2 |
-| Files         | 21 |
+| Files         | 23 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -61,26 +61,28 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 2 | ✓ | [`packages/coding-agent/docs/skills.md`](packages/coding-agent/docs/skills.md) |
-| 3 | ✓ | [`packages/coding-agent/examples/extensions/dynamic-resources/SKILL.md`](packages/coding-agent/examples/extensions/dynamic-resources/SKILL.md) |
-| 4 | ✓ | [`packages/coding-agent/test/fixtures/skills-collision/first/calendar/SKILL.md`](packages/coding-agent/test/fixtures/skills-collision/first/calendar/SKILL.md) |
-| 5 | ✓ | [`packages/coding-agent/test/fixtures/skills-collision/second/calendar/SKILL.md`](packages/coding-agent/test/fixtures/skills-collision/second/calendar/SKILL.md) |
-| 6 | ✓ | [`packages/coding-agent/test/fixtures/skills/consecutive-hyphens/SKILL.md`](packages/coding-agent/test/fixtures/skills/consecutive-hyphens/SKILL.md) |
-| 7 | ✓ | [`packages/coding-agent/test/fixtures/skills/disable-model-invocation/SKILL.md`](packages/coding-agent/test/fixtures/skills/disable-model-invocation/SKILL.md) |
-| 8 | ✓ | [`packages/coding-agent/test/fixtures/skills/invalid-name-chars/SKILL.md`](packages/coding-agent/test/fixtures/skills/invalid-name-chars/SKILL.md) |
-| 9 | ✓ | [`packages/coding-agent/test/fixtures/skills/invalid-yaml/SKILL.md`](packages/coding-agent/test/fixtures/skills/invalid-yaml/SKILL.md) |
-| 10 | ✓ | [`packages/coding-agent/test/fixtures/skills/long-name/SKILL.md`](packages/coding-agent/test/fixtures/skills/long-name/SKILL.md) |
-| 11 | ✓ | [`packages/coding-agent/test/fixtures/skills/missing-description/SKILL.md`](packages/coding-agent/test/fixtures/skills/missing-description/SKILL.md) |
-| 12 | ✓ | [`packages/coding-agent/test/fixtures/skills/multiline-description/SKILL.md`](packages/coding-agent/test/fixtures/skills/multiline-description/SKILL.md) |
-| 13 | ✓ | [`packages/coding-agent/test/fixtures/skills/name-mismatch/SKILL.md`](packages/coding-agent/test/fixtures/skills/name-mismatch/SKILL.md) |
-| 14 | ✓ | [`packages/coding-agent/test/fixtures/skills/nested/child-skill/SKILL.md`](packages/coding-agent/test/fixtures/skills/nested/child-skill/SKILL.md) |
-| 15 | ✓ | [`packages/coding-agent/test/fixtures/skills/no-frontmatter/SKILL.md`](packages/coding-agent/test/fixtures/skills/no-frontmatter/SKILL.md) |
-| 16 | ✓ | [`packages/coding-agent/test/fixtures/skills/root-skill-preferred/nested-child/SKILL.md`](packages/coding-agent/test/fixtures/skills/root-skill-preferred/nested-child/SKILL.md) |
-| 17 | ✓ | [`packages/coding-agent/test/fixtures/skills/root-skill-preferred/SKILL.md`](packages/coding-agent/test/fixtures/skills/root-skill-preferred/SKILL.md) |
-| 18 | ✓ | [`packages/coding-agent/test/fixtures/skills/unknown-field/SKILL.md`](packages/coding-agent/test/fixtures/skills/unknown-field/SKILL.md) |
-| 19 | ✓ | [`packages/coding-agent/test/fixtures/skills/valid-skill/SKILL.md`](packages/coding-agent/test/fixtures/skills/valid-skill/SKILL.md) |
-| 20 | → | [`.pi/skills/interactive-testing.md`](.pi/skills/interactive-testing.md) |
-| 21 | → | [`.pi/skills/release.md`](.pi/skills/release.md) |
+| 2 | ✓ | [`packages/coding-agent/docs/packages.md`](packages/coding-agent/docs/packages.md) |
+| 3 | ✓ | [`packages/coding-agent/docs/settings.md`](packages/coding-agent/docs/settings.md) |
+| 4 | ✓ | [`packages/coding-agent/docs/skills.md`](packages/coding-agent/docs/skills.md) |
+| 5 | ✓ | [`packages/coding-agent/examples/extensions/dynamic-resources/SKILL.md`](packages/coding-agent/examples/extensions/dynamic-resources/SKILL.md) |
+| 6 | ✓ | [`packages/coding-agent/test/fixtures/skills-collision/first/calendar/SKILL.md`](packages/coding-agent/test/fixtures/skills-collision/first/calendar/SKILL.md) |
+| 7 | ✓ | [`packages/coding-agent/test/fixtures/skills-collision/second/calendar/SKILL.md`](packages/coding-agent/test/fixtures/skills-collision/second/calendar/SKILL.md) |
+| 8 | ✓ | [`packages/coding-agent/test/fixtures/skills/consecutive-hyphens/SKILL.md`](packages/coding-agent/test/fixtures/skills/consecutive-hyphens/SKILL.md) |
+| 9 | ✓ | [`packages/coding-agent/test/fixtures/skills/disable-model-invocation/SKILL.md`](packages/coding-agent/test/fixtures/skills/disable-model-invocation/SKILL.md) |
+| 10 | ✓ | [`packages/coding-agent/test/fixtures/skills/invalid-name-chars/SKILL.md`](packages/coding-agent/test/fixtures/skills/invalid-name-chars/SKILL.md) |
+| 11 | ✓ | [`packages/coding-agent/test/fixtures/skills/invalid-yaml/SKILL.md`](packages/coding-agent/test/fixtures/skills/invalid-yaml/SKILL.md) |
+| 12 | ✓ | [`packages/coding-agent/test/fixtures/skills/long-name/SKILL.md`](packages/coding-agent/test/fixtures/skills/long-name/SKILL.md) |
+| 13 | ✓ | [`packages/coding-agent/test/fixtures/skills/missing-description/SKILL.md`](packages/coding-agent/test/fixtures/skills/missing-description/SKILL.md) |
+| 14 | ✓ | [`packages/coding-agent/test/fixtures/skills/multiline-description/SKILL.md`](packages/coding-agent/test/fixtures/skills/multiline-description/SKILL.md) |
+| 15 | ✓ | [`packages/coding-agent/test/fixtures/skills/name-mismatch/SKILL.md`](packages/coding-agent/test/fixtures/skills/name-mismatch/SKILL.md) |
+| 16 | ✓ | [`packages/coding-agent/test/fixtures/skills/nested/child-skill/SKILL.md`](packages/coding-agent/test/fixtures/skills/nested/child-skill/SKILL.md) |
+| 17 | ✓ | [`packages/coding-agent/test/fixtures/skills/no-frontmatter/SKILL.md`](packages/coding-agent/test/fixtures/skills/no-frontmatter/SKILL.md) |
+| 18 | ✓ | [`packages/coding-agent/test/fixtures/skills/root-skill-preferred/nested-child/SKILL.md`](packages/coding-agent/test/fixtures/skills/root-skill-preferred/nested-child/SKILL.md) |
+| 19 | ✓ | [`packages/coding-agent/test/fixtures/skills/root-skill-preferred/SKILL.md`](packages/coding-agent/test/fixtures/skills/root-skill-preferred/SKILL.md) |
+| 20 | ✓ | [`packages/coding-agent/test/fixtures/skills/unknown-field/SKILL.md`](packages/coding-agent/test/fixtures/skills/unknown-field/SKILL.md) |
+| 21 | ✓ | [`packages/coding-agent/test/fixtures/skills/valid-skill/SKILL.md`](packages/coding-agent/test/fixtures/skills/valid-skill/SKILL.md) |
+| 22 | → | [`.pi/skills/interactive-testing.md`](.pi/skills/interactive-testing.md) |
+| 23 | → | [`.pi/skills/release.md`](.pi/skills/release.md) |
 
 ---
 

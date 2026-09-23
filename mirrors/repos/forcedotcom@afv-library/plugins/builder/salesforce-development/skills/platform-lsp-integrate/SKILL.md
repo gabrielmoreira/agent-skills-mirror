@@ -1,6 +1,6 @@
 ---
 name: platform-lsp-integrate
-description: "Reference for how to call the Salesforce LSP MCP tools and what to do when they are unavailable. Use when the user asks how to use the Salesforce LSP, which LSP/MCP tools exist, what apex.diagnostics / validate_soql / complete_soql do, why an LSP tool returned an error like lsp_disabled or no_apex_workspace or no_org_connected, how to debug the LSP host, or how to turn the LSP off. Also the contract other skills follow when they call an LSP tool: which tool to prefer, how to read its result, and the fallback when the LSP host is absent. DO NOT TRIGGER for generating or editing Apex/LWC/metadata (use platform-apex-generate), running deploys (use platform-metadata-deploy), or SOQL authoring (use platform-soql-query); this skill is a reference and contract document — use it only when the question is specifically about the LSP layer or its MCP tools."
+description: "Reference/contract for the Salesforce LSP MCP tools and unavailability handling. Use when asking how to use the LSP, which tools exist, what apex.diagnostics / validate_soql / complete_soql do, why a tool errors with lsp_disabled, no_apex_workspace, or no_org_connected, or how to debug/disable it. DO NOT TRIGGER for editing Apex/LWC/metadata (platform-apex-generate), deploys (platform-metadata-deploy), or SOQL authoring (platform-soql-query); scoped to LSP-layer/MCP-tool questions only."
 allowed-tools: Bash Read mcp__plugin_salesforce-development_salesforce-lsp__lsp_health
 metadata:
   mcpTools:

@@ -1,9 +1,10 @@
 ---
 name: hotfix
-description: "Emergency fix workflow that bypasses normal sprint processes with a full audit trail. Creates hotfix branch, tracks approvals, and ensures the fix is backported correctly."
+description: "Emergency fix bypassing normal sprint process — hotfix branch, approvals tracked, backport verified, full audit trail."
 argument-hint: "[bug-id or description]"
 user-invocable: true
-allowed-tools: Read, Glob, Grep, Write, Edit, Bash, Task, AskUserQuestion
+disable-model-invocation: true
+allowed-tools: Read, Glob, Grep, Write, Edit, Bash, Agent, AskUserQuestion
 model: sonnet
 ---
 
@@ -85,11 +86,17 @@ Only run `git checkout -b hotfix/[short-name] [base-ref]` if user selects [A]. I
 
 ---
 
-## Phase 4: Investigate and Implement
+## Phase 4: Investigate and Propose
 
-Focus on the minimal change that resolves the issue. Do NOT refactor, clean up, or add features alongside the hotfix.
+Find the root cause. Draft the minimal fix: which files change, what the change does, and what it deliberately leaves alone. Do NOT refactor, clean up, or add features alongside the hotfix.
 
-Validate the fix by running targeted tests for the affected system. Check for regressions in adjacent systems.
+Present the root cause and proposed fix, then ask: "May I implement this fix?" Do not modify any code before this approval — an emergency flow earns its audit trail by approving the change *before* it exists, not after.
+
+---
+
+## Phase 4b: Implement (only after approval)
+
+Implement the approved minimal change. Validate the fix by running targeted tests for the affected system. Check for regressions in adjacent systems.
 
 Update the hotfix record with root cause, fix details, and test results.
 
@@ -97,7 +104,7 @@ Update the hotfix record with root cause, fix details, and test results.
 
 ## Phase 5: Collect Approvals
 
-Use the Task tool to request sign-off in parallel:
+Use the `Agent` tool to request sign-off in parallel:
 
 - `subagent_type: lead-programmer` — Review the fix for correctness and side effects
 - `subagent_type: qa-tester` — Run targeted regression tests on the affected system
@@ -109,7 +116,7 @@ All three must return APPROVE before proceeding. If any returns CONCERNS or REJE
 
 ## Phase 5b: QA Re-Entry Gate
 
-After approvals, determine the QA scope required before deploying the hotfix. Spawn `qa-lead` via Task with:
+After approvals, determine the QA scope required before deploying the hotfix. Spawn `qa-lead` via `Agent` with:
 - The hotfix description and affected system
 - The regression test results from Phase 5
 - A list of all systems that touch the changed files (use Grep to find callers)
@@ -121,11 +128,42 @@ Apply the verdict:
 - **Targeted QA pass required** — run `/team-qa [affected-system]` scoped to the changed system only. If QA returns APPROVED or APPROVED WITH CONDITIONS, proceed to Phase 6.
 - **Full QA required** — S1 fixes that touch core systems may require a full `/team-qa sprint`. This delays deployment but prevents a bad patch.
 
+**If the QA step returns `NOT ASSESSED`, the gate did not run — treat it as unmet,
+not as met.** `/smoke-check` returns it when the suite never executed and
+`/team-qa` when a cycle produced no executed evidence. **A NOT ASSESSED result is
+not a pass** — from either skill — and under time pressure the permissive reading
+is the one that will feel reasonable,
+which is exactly why it is written down here. Either obtain the missing result —
+the verdict names what would make it runnable — or take the decision to the
+producer explicitly, as a decision to deploy an unverified hotfix rather than as a
+gate that quietly cleared.
+
 Do not skip this gate. A hotfix that breaks something else is worse than the original bug.
 
 ---
 
 ## Phase 6: Update Bug Status and Deploy
+
+> **STOP — deployment requires explicit approval, unconditionally.** Merging a
+> hotfix to a release branch is the one irreversible act in this skill, so it is
+> gated even though branch creation (reversible) already is. Before any merge,
+> tag, or deploy, use `AskUserQuestion`:
+>
+> - Prompt: "Hotfix validated and approved. Merge to the release branch and
+>   deploy?"
+> - Options: `[A] Yes — merge and deploy` / `[B] Merge to development only — hold
+>   the release` / `[C] Stop here`
+>
+> This holds regardless of `modes.automation`, including `autonomous`. An
+> emergency process is exactly where an unreviewed irreversible step is most
+> likely and least recoverable.
+
+> **Backport is not verified unless you verify it.** The frontmatter advertises
+> "backport verified", and until this note the word `backport` appeared **once in
+> this file — in that claim**. After merging, confirm the fix is present on BOTH
+> the release branch and the development branch, and state the result. An
+> unbackported hotfix means the bug returns in the next release from development,
+> which is the single most common hotfix regression.
 
 Update the original bug file if one exists:
 
@@ -146,8 +184,11 @@ Output a deployment summary:
 **Severity**: [S1/S2]
 **Root cause**: [one line]
 **Fix**: [one line]
-**QA gate**: [Smoke check PASS / Team-QA APPROVED]
+**QA gate**: [Smoke check PASS / Team-QA APPROVED / NOT ASSESSED — [why, and whose
+             explicit decision it was to deploy anyway]]
 **Approvals**: lead-programmer ✓ / qa-tester ✓ / producer ✓
+**Backport**: [verified present on release AND development — or NOT VERIFIED, with
+              what was not checked]
 **Rollback plan**: [from Phase 2 record]
 
 Merge to: release branch AND development branch

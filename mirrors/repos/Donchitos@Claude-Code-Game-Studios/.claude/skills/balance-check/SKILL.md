@@ -1,11 +1,48 @@
 ---
 name: balance-check
-description: "Analyzes game balance data files, formulas, and configuration to identify outliers, broken progressions, degenerate strategies, and economy imbalances. Use after modifying any balance-related data or design. Use when user says 'balance report', 'check game balance', 'run a balance check'."
+description: "Find balance outliers, broken progressions, degenerate strategies, economy imbalances in formulas and data. 'Check game balance'."
 argument-hint: "[system-name|path-to-data-file]"
 user-invocable: true
 allowed-tools: Read, Glob, Grep, Write, AskUserQuestion
 model: sonnet
-agent: economy-designer
+---
+
+!`source "${CLAUDE_PROJECT_DIR:-.}/.claude/hooks/yaml-helper.sh" 2>/dev/null && resolve_config --keys automation`
+
+
+
+Every `AskUserQuestion` call follows `.claude/docs/automation-modes.md`
+(collaborative asks always · guided major-only · autonomous logs and proceeds;
+`automation_always_ask` categories always prompt).
+
+## Insufficient input — check this before producing any report
+
+**If the inputs this skill needs do not exist, the answer is "could not run" —
+not a filled-in report.** Check first, and stop if the check fails.
+
+1. List the inputs this skill reads (data files, prior reports, profiler output,
+   test results, registries, source code).
+2. For each, record `FOUND` or `ABSENT` — not "assumed present".
+3. If any input required for a section is ABSENT, that section is
+   **`NOT ASSESSED — NO DATA`**. Do not estimate it, do not infer it from an
+   adjacent artifact, and do not leave a mandated cell to be filled by whoever
+   reads the template next.
+4. If **every** required input is ABSENT, stop and report
+   **`NOT ASSESSED — NO DATA`** as the whole verdict, naming what was missing and
+   which skill produces it.
+
+**A verdict of `NOT ASSESSED` is a success.** It is the correct, useful answer to
+"what does the data say?" when there is no data. The failure mode this prevents is
+specific and has been observed in practice: report templates whose verdict
+enum had no "could not run" state produced **false clean passes** — an asset audit
+returning COMPLIANT on a project with no assets and no standards, and a
+performance profile reporting ">99% headroom against a 16.67ms budget" with zero
+profiler data and no budget ever set.
+
+**Absence of evidence is never evidence of absence.** A scan that finds no
+matches because there are no files to scan has not verified anything. Say which of
+the two happened — a reader cannot tell from a green result.
+
 ---
 
 ## Phase 1: Identify Balance Domain
@@ -31,8 +68,22 @@ Note every file read — they will appear in the Data Sources section of the rep
 
 ## Phase 3: Read Design Document
 
-Read the GDD for the system from `design/gdd/` to understand intended design targets,
-tuning knobs, and expected value ranges. This is the baseline for "correct" behaviour.
+**Registry first.** If `design/registry/entities.yaml` exists, read it before the
+GDD. Its `constants` and `formulas` sections hold the cross-GDD named values and
+output ranges — the balance targets — already distilled, each with a `source:`
+GDD and any `revised:` date:
+```
+Grep pattern="^  - name:" path="design/registry/entities.yaml" output_mode="content" -A 6
+```
+Take the intended values from the registry for any constant or formula it lists
+(the `constants:` and `formulas:` blocks); these are the authoritative cross-doc
+figures a GDD must not contradict. **If `design/registry/entities.yaml` does not
+exist or has no entries** (it ships as an empty stub until `/design-system`
+populates it), skip this and use the GDD alone.
+
+Then read the GDD for the system from `design/gdd/` to understand intended design
+targets, tuning knobs, and expected value ranges — for anything the registry did
+not already supply. This is the baseline for "correct" behaviour.
 
 ---
 
@@ -77,7 +128,7 @@ Run domain-specific checks:
 ### Data Sources Analyzed
 - [List of files read]
 
-### Health Summary: [HEALTHY / CONCERNS / CRITICAL ISSUES]
+### Health Summary: [NOT ASSESSED / HEALTHY / CONCERNS / CRITICAL ISSUES]
 
 ### Outliers Detected
 | Item/Value | Expected Range | Actual | Issue |

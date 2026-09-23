@@ -23,22 +23,21 @@ Some of the reasons were written down while they were still true.
 | Source | Held where | Read these | What it supplies |
 | --- | --- | --- | --- |
 | Plan record (`omh_todo/v1` item) | durable record, read with `omh runtime todo show` | `state`, `phase`, `blocked_reason` | what was done, which stage it belonged to, and what was skipped with its reason |
-| Verification gate (`verification-gate`) | this session only | `observed_check_results/v1`, `claim_verdict/v1` | which command actually ran, its exit status, and which checks are missing or failed |
-| Review (`code-review`) | this session only | `ranked findings per axis` | what a reader misses unless someone tells them |
-| QA (`ultraqa`) | this session only | `pass/fail evidence` | what nobody thought of the first time |
+| Verification gate (`verification-gate`) | optional durable model declaration, read with `omh_todo action=recall`; absent unless recorded | `observed_check_results/v1`, `claim_verdict/v1` | which command actually ran, its exit status, and which checks are missing or failed |
+| Review (`code-review`) | optional durable model declaration, read with `omh_todo action=recall`; absent unless recorded | `ranked findings per axis` | what a reader misses unless someone tells them |
+| QA (`ultraqa`) | optional durable model declaration, read with `omh_todo action=recall`; absent unless recorded | `pass/fail evidence` | what nobody thought of the first time |
 
-**Read the "held where" column before planning the work.** Exactly one of those
-is a record that outlives the session: the plan record, at
+**Read the "held where" column before planning the work.** The live plan is at
 `$OMH_HOME/runtime/todos/<session key>.json`, read with `omh runtime todo show`.
-The other three -- Verification gate, Review and QA -- are
-declared outputs: OMH asks a model to produce them and stores none of them, so
-they live in this session's context and nowhere else.
+The other three -- Verification gate, Review and QA -- can be recorded as bounded declarations
+with `omh_todo action=record` under a scope checkpoint, then read in a later
+session with `omh_todo action=recall`. Read the checkpoint index first if its ID
+is no longer in context. Only the active profile and logical project are visible.
 
-That means the three transcript-resident sources are subject to the same
-compaction as the reasoning above, and a guide written late in a long story may
-find nothing left in them. That is a property of the tooling today, not a
-failure of the person writing. Do not reconstruct what is gone; record which
-sources you could actually read, and write the guide from what is there.
+Recording preserves what a model claimed, not what actually happened. Original
+outputs remain separate; absent, stale or malformed records are not clean runs.
+Do not reconstruct missing findings from conversation memory. A declared empty
+finding set means only that the writer declared none found.
 
 Every sentence in all three artifacts either restates one of those fields or is
 marked as the writer's own inference. There is no third category. Quote the
@@ -61,8 +60,8 @@ of the middle - and it works exactly as far as there is a record to read.
 The next reader has the diff. What they do not have is why it looks like that,
 and that is all the deep guide carries.
 
-- Start from the plan record, because it is the only source you can still read
-  in full: `omh runtime todo show`. One section per done item, taken in plan
+- Start from the plan record or accepted scope checkpoint, in stored order.
+  Read the live checklist with: `omh runtime todo show`. One section per done item, taken in plan
   order and grouped by `phase` where items carry one. There is no phase
   order to sort by: `phase` is a free-text label with no canonical sequence,
   and it is absent entirely on an item that was given none. The list's own
@@ -118,8 +117,8 @@ written.** Three entry kinds are admissible and no others.
 
 | Admissible entry | Where it comes from | What it proves |
 | --- | --- | --- |
-| A review finding | Review (this session only) | a reader misses this unless told |
-| A failed check | QA (this session only), Verification gate (this session only) | nobody thought of it the first time |
+| A review finding | Review (recorded declaration, if available) | a reader misses this unless told |
+| A failed check | QA (recorded declaration, if available), Verification gate (recorded declaration, if available) | nobody thought of it the first time |
 | A recorded `blocked_reason` | Plan record | a judgement was made and needs explaining |
 
 Each one is a record of something that actually went wrong or was actually

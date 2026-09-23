@@ -9,6 +9,7 @@ Core plugin implementation for **oh-my-opencode-slim**, providing:
 - Client-side multiplexer pane lifecycle, wired only from the TUI entry (`src/multiplexer/client/`)
 - TUI state persistence and synchronization across sessions (`tui-state.ts`)
 - Three-level TUI `/preset` manager (`tui-preset.ts`)
+- Emergency kill-all for running subagents (`tui-kill.ts`)
 - Installer-managed plugin-entry marker (`plugin-entry.ts`)
 - Plugin init health-check thresholds and helpers (`health-check.ts`)
 

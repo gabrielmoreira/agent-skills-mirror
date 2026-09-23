@@ -190,6 +190,7 @@ Grok's composer is a rounded box at the tail: `╭─…─╮` / `│ ❯ … �
 | `claude--fresh-idle.txt` | Fresh session: empty input box between rules, statusline, usage-limit banner, shell MOTD scrollback above | `idle` |
 | `claude--done.txt` | Completed turn: `⏺ Write(hello.txt)` call, `⎿` result, `●` summary, idle input box | `done` |
 | `claude--trust-prompt.txt` | Folder-trust dialog: `❯ 1. Yes… / 2. No…`, "Enter to confirm · Esc to cancel" | `blocked` |
+| `claude--trust-prompt-unnumbered.txt` | The SAME dialog on Claude Code 2.1.278 (captured 2026-09-22, 120 columns, sanitised length-preservingly: the shell prompt's username and hostname only): the rows lost their numbers and the pointer parks on the QUIT row — `❯ No, exit` / `  Yes, I trust this folder`, same "Enter to confirm · Esc to cancel" footer. Lifted by the pointed-list arm of the prompt-select grammar ([ADR 0055](../../../.adr/0055-a-pointed-list-is-walked-then-confirmed.md)): a tap is the arrow walk from the pointer plus Enter, and no digit is synthesised because the screen printed none | `blocked` |
 | `claude--select-menu.txt` | AskUserQuestion: chip line, question, numbered options **with description sub-lines**, "Type something." free-text row, separated "5. Chat about this", "Enter to select · ↑/↓ · Esc" footer | `blocked` |
 | `claude--select-multi.txt` | **Multi-question** AskUserQuestion: a stepper header `←  ☒ Focus area  ☐ Scope  ☐ Workflow  ✔ Submit  →` above the current question, "Tab/Arrow keys to navigate" footer. prompt-select deliberately BAILS on this; since T7 the wizard grammar (`grammar/wizard.ts`) claims it | `blocked` |
 | `claude--permission-edit.txt` | Edit permission: diff preview, "Do you want to create hello.txt?", `❯ 1. Yes / 2. Yes, allow all edits… (shift+tab) / 3. No`, "Esc to cancel · Tab to amend" | `blocked` |
@@ -248,6 +249,24 @@ is why a composer send used to be typed straight into it. Claimed by the last-re
 | `claude--menu-model-picker.txt` | Picker open, `❯` on row 1: title `Select model`, five numbered rows with description columns, an `◐ Medium effort ←/→ to adjust` row, and the key-hint footer `Enter to set as default · s to use this session only · Esc to cancel`. Lifts a `menu` block with three actions + Up/Down + Left/Right |
 | `claude--menu-model-picker-moved.txt` | The same picker after `2×Down` (`❯` on row 3) — same title and actions, **different signature**. The race-guard fixture: a committing key must refuse a tap on the earlier render, an arrow must not |
 | `claude--menu-model-picker-dismissed.txt` | After `Esc`: the ordinary input box + statusline are back. The **negative control** — its statusline is `·`-separated like a key-hint footer, so only the input-box gate keeps it raw |
+| `claude--menu-effort-slider.txt` | The `/effort` slider (82 × 49, promoted from `claude-lab--menu-effort-slider--w82.txt`): a full-width rule, the title `Effort`, a `───` scale with a `▲` marker and a row of labels, **no numbered options**, and the key-hint footer `←/→ to adjust · Enter to confirm · s for this session only · Esc to cancel`. Its footer phrase used to file it as the folder-trust prompt and silence the generic menu ([`.adr/0053`](../../../../.adr/0053-an-unread-dialog-still-has-a-way-out.md)); it now lifts a `menu` block titled `Effort` with Enter (Confirm), `s` (This session only), Escape (Cancel) and the Left/Right arrows labelled with the value under the `▲` — `xhigh` here |
+| `claude--menu-effort-slider--w120.txt` | The same slider at 120 × 49, captured 2026-09-21 from a fresh isolated config with `/effort` opened and no arrow pressed, so its value is `high` where the 82-column file reads `xhigh`. It is the position-independence fixture: the labels sit at other columns and the Effort grammar still names the value. **Wider, not narrower, on purpose** — Claude lays the slider out as a flex row, so under about 86 columns the scale and the footer both wrap, the labels break mid-word, and the screen names no keys on one line. 40 and 60 columns were captured and discarded then; they are back below as `--w40` and `--w60`, because the grammar reads the wrapped shape too since 2026-09-22 |
+| `claude--menu-effort-slider--w132.txt` | The same slider at 132 columns, captured live 2026-09-22. **Cropped to the dialog**: the file holds three blank rows, then the region's opening rule down to the footer, and nothing above it. The transcript this dialog opened over was the operator's own work and does not belong in a public repo, so it was cut rather than scrubbed; the kept rows are byte-identical to the capture. It is the WHOLE-SCALE fixture: six levels `low medium high xhigh max ultracode` on one label row, a `┆` divider in the track before `ultracode`, and a second label row `xhigh + workflows` under it that the grammar ignores because only the first non-blank row under the marker is the label row. The marker stands over `medium`, so `nav.leftRight` reads `label: "medium"` with all six in `values`, and the card renders one tappable chip per level ([`.adr/0054`](../../../../.adr/0054-a-printed-scale-is-tappable.md)) |
+| `claude--menu-effort-slider--w80.txt` | The same slider at 80 × 40, captured live 2026-09-22 on Claude Code 2.1.278. **The narrowest width that still renders whole**: one label row with all six levels, one track row, one footer row. It is the control for the two wrapped captures below — same session, same reading, `label: "medium"` with all six in `values` — so a difference between it and them is the wrap and nothing else. The whole 40-row capture is kept, welcome banner included; the pane held no transcript above the dialog, so there was nothing to crop and nothing to scrub. Plain text: this capture carries no SGR bytes |
+| `claude--menu-effort-slider--w60.txt` | The same slider at 60 × 40, captured live 2026-09-22. **Wrapped three ways at once.** `Faster` and `Smarter` break mid-word, the track runs over TWO rows with the `▲` on the first, three of the six levels break into a head and a fragment printed under it in the same column (`mediu` over `m`, `hig` over `h`, `ultracod` over `e`), and the footer runs over two rows. The grammar steps over the second track row, rebuilds each level from its two halves, and joins the footer rows back before parsing them, so it reads the same six levels and the same three keys as the 132-column file. `xhigh + workflows` sits two rows below the labels and stays out of `values`. Same whole-capture and plain-text notes as `--w80` |
+| `claude--menu-effort-slider--w40.txt` | The same slider at 40 × 40, captured live 2026-09-22, and **the most wrapped shape there is**: ALL SIX levels break in two (`lo` over `w`, `medi` over `um`, `ultra` over `code`) and the footer runs over THREE rows. Everything else reads as at 60 columns, which is the point of having both — the merge is alignment, not a label list. Same whole-capture and plain-text notes as `--w80` |
+| `claude--menu-effort-slider--w80-low.txt` | 80 × 40, `low` selected, captured live 2026-09-22: lifts exactly as `--w80` does, `label: "low"` |
+| `claude--menu-effort-slider--w80-ultracode.txt` | 80 × 40, `ultracode` selected, captured live 2026-09-22: lifts exactly as `--w80` does, `label: "ultracode"` |
+| `claude--menu-effort-slider--w60-low.txt` | 60 × 40, `low` selected, captured live 2026-09-22: wraps and rebuilds exactly as `--w60` does, `label: "low"` |
+| `claude--menu-effort-slider--w60-ultracode.txt` | 60 × 40, `ultracode` selected, captured live 2026-09-22: **lifts**, with the marker over `ultracode` and all six levels. With `ultracode` selected the dialog repaints flush-left and unwrapped, and the footer runs onto a second row the TERMINAL broke at column 0 rather than Claude's flex wrap: the first row ends at column 57 of 60 and `only` could not follow it. It is the evidence for `readKeyHintFooter`'s soft-wrap exception — an indent-0 continuation joins the block when the row above had no room for its first word — so the three footer keys and the `←/→` phrase all survive the join |
+| `claude--menu-effort-slider--w40-low.txt` | 40 × 40, `low` selected, captured live 2026-09-22: **declines.** At 40 columns with the marker leftmost Claude draws no `▲` at all — `low` is marked by colour alone — so no grammar lifts the screen and the unread-dialog card shows instead |
+| `claude--menu-effort-slider--w40-ultracode.txt` | 40 × 40, `ultracode` selected, captured live 2026-09-22: **declines.** A genuine Claude Code 2.1.278 render glitch — labels truncated (`xhigh      m`), no marker, no divider — so the Effort grammar declines and the generic `menu` grammar lifts with Cancel only |
+| `claude--menu-resume-picker--w120-first.txt` | The `/resume` session picker at 120 × 40, captured live 2026-09-22 on Claude Code 2.1.278 in `/tmp/resume-lab`, pointer on the first of four sessions. Lifts as a `prompt-select` list (resume.ts, ADR 0058): four sessions, each with its meta row as the description, the pointed one sending Enter and the rest walking Down, then Cancel. The footer wraps onto two rows and never names Enter or the arrows |
+| `claude--menu-resume-picker--w120-third.txt` | The same picker, pointer on the third session: the rows above walk Up, the row below walks Down |
+| `claude--menu-resume-picker--w120-search.txt` | The same picker with `hi` typed into the search box: one match, **no pointer glyph**, and the footer changes to `Type to Search · Enter to select · Esc to clear`. The single session sends Enter; the Esc row reads Clear |
+| `claude--menu-resume-picker--w60-first.txt` | 60 × 40, pointer on the first session: the footer wraps onto three rows and still reads whole. The weekly-limit banner above the dialog is kept |
+| `claude--menu-resume-picker--w80-second.txt` | 80 × 40, pointer on the second session |
+| `claude--menu-resume-picker--w120-all-sanitized.txt` | **Sanitized.** The Ctrl+A all-projects view at 120 × 40: title `Resume session (1 of 50)`, a `now` age on the first row, a project path on every meta row, and a `↓` scroll marker in the pointer column of the last visible row, which is still a session. The capture listed real paths and session titles from other repositories; each one outside `/tmp/resume-lab` was replaced by an invented string of the same length, so every row keeps its width |
 
 ## Slash-autocomplete corpus (captured 2026-09-01, Claude Code v2.1.257, live pane)
 
@@ -296,9 +315,9 @@ hostname, home path, email, session id or credential-shaped string appears in th
 `model` key in `~/.claude/settings.json` really moved. Put it back by hand after capturing, or capture
 with an isolated `CLAUDE_CONFIG_DIR`.
 
-## Capture lab corpus (captured 2026-09-17, Claude Code 2.1.274, throwaway Herdr session)
+## Capture lab corpus (captured 2026-09-17, re-verified 2026-09-22 against Claude Code 2.1.278, throwaway Herdr session)
 
-64 byte-faithful `pane.read format:ansi` captures from ONE real Claude Code session, driven through
+66 byte-faithful `pane.read format:ansi` captures from ONE real Claude Code session, driven through
 a throwaway Herdr session (`--session claude-lab`) in a `/tmp` git project seeded with fake
 commands and skills, at seven pane widths from 40 to 200 columns. Taken for tracker M31 to prove the
 box-anchored locator ([ADR 0048](../../../../.adr/0048-the-input-box-is-found-by-its-own-frame.md))
@@ -306,6 +325,24 @@ against real screens instead of hand-built ones. **Width is a recorded fact here
 file name (`--w<cols>`, plus `--h<rows>` where the pane was short), and it is in the table below.
 The renderer was the classic TUI, the config directory was isolated, and no user plugins, hooks or
 skills were loaded.
+
+**The 2026-09-22 ritual run.** The lab was stood up again against Claude Code 2.1.278 and every
+state in the table below was re-captured at its recorded widths. Sixty-three states came back with
+the SAME reading the corpus already records, so nothing regressed. Fifty of those files carry the
+2026-09-22 bytes; thirteen keep their 2026-09-17 bytes on purpose, because swapping them would break
+a curated per-fixture table in another suite: the five `menu-*` and four `permission-*`/three
+`plan-approval*` captures are pinned byte-exactly in `harness/prompt-binding-contract.test.ts`, and
+on the new permission and plan screens the welcome banner has scrolled away so the word "Claude"
+never appears — the `isAlienBuffer` promotion trap described further down. `statusline-numbered-rows`
+is held for the same reason. One state, `survey-rating-above-box`, could not be reproduced: the
+session-quality survey is time- and sample-gated, and it did not fire during the run. Its string is
+still in the 2.1.278 binary, so the screen still exists; the fixture is left alone.
+
+Kept fresh by a standing tracker ritual, owned and scheduled:
+`tracker ritual run claude-capture-lab`. The ritual's trigger is a Claude Code
+version change, not the calendar; its first step compares the machine's
+`claude --version` against `claudeCodeVersion` in `claude-lab-corpus.json`
+below.
 
 `claude-lab-corpus.json` beside
 [`harness/claude/claude-lab-corpus.test.ts`](../../lib/harness/claude/claude-lab-corpus.test.ts)
@@ -315,6 +352,15 @@ with a live dialog the locator reports **no** box. Four screens are pinned as kn
 its reason in the table entry — the background-agents screen, a wrapped draft whose continuation row
 opens with `❯`, shell (`!`) mode, and a statusline printing numbered rows. Deleting a gap's fields
 when a fix lands is how the table signals the fix.
+
+Since tracker M34 every entry also declares `expected.blockKind`, the block kind a correct pipeline
+would lift from that screen, and `expected.keys` where that kind is interactive, the keystrokes the
+screen itself offers, spelled the way Collie sends them. The test asserts both against the pipeline,
+so a Claude release that changes a dialog's layout turns into a red line instead of a silent raw
+mirror. An entry whose screen shows a dialog the pipeline still returns raw carries `knownRaw` with a
+reason that names the grammar which would claim it, and one whose kind is right but whose key set is
+short carries `knownKeyGap` with the set it emits today. Both follow the same ritual as the other
+gaps: when the grammar lands, delete the field, do not edit the expectation.
 
 **Two captures the lab recommended are deliberately NOT here:** its 82-column Edit-permission
 screens, at 49 and at 30 rows. Every other Claude capture in this directory names Claude somewhere
@@ -340,8 +386,8 @@ username, hostname, home path or real project path appears in any file: the sess
 
 | Fixture | Cols × rows | State / what's in it |
 |---|---|---|
-| `claude-lab--agents-screen--w40.txt` | 40 × 49 | background agents screen (← from the composer): a typeable box whose Enter starts an agent task, key-hint footer under the box |
-| `claude-lab--agents-screen--w82.txt` | 82 × 49 | background agents screen (← from the composer): a typeable box whose Enter starts an agent task, key-hint footer under the box |
+| `claude-lab--agents-screen--w40.txt` | 40 × 49 | background agents screen (← from the composer): a typeable box whose Enter returns to the conversation, one-row key-hint footer under the box |
+| `claude-lab--agents-screen--w82.txt` | 82 × 49 | background agents screen (← from the composer): a typeable box whose Enter returns to the conversation, key-hint footer under the box (enter · space · ctrl+x · ?) |
 | `claude-lab--compacting--w82.txt` | 82 × 49 | /compact running: progress bar row above a live empty box |
 | `claude-lab--draft-adversarial--w120.txt` | 120 × 49 | multiline draft holding a ❯ row, numbered rows and a ─── rule inside the box |
 | `claude-lab--draft-adversarial--w40.txt` | 40 × 49 | multiline draft holding a ❯ row, numbered rows and a ─── rule inside the box |
@@ -400,9 +446,11 @@ username, hostname, home path or real project path appears in any file: the sess
 | `claude-lab--statusline-prompt-row--w82.txt` | 82 × 49 | statusline whose first row starts with '❯ ' — a frame mark below the box |
 | `claude-lab--statusline-rule-row--w82.txt` | 82 × 49 | statusline whose first row is '─ main ─────' — a rule below the box |
 | `claude-lab--survey-rating-above-box--w82.txt` | 82 × 49 | session rating prompt ('1: Bad 2: Fine 3: Good 0: Dismiss') sits ABOVE a live box; digits go to the survey |
+| `claude-lab--tasks-panel--w40.txt` | 40 × 49 | /tasks background-task panel (new in Claude Code 2.1.277): ▔ top rule, 'Background' title, empty-state row, key-hint footer wrapped onto two rows |
+| `claude-lab--tasks-panel--w82.txt` | 82 × 49 | /tasks background-task panel (new in Claude Code 2.1.277): ▔ top rule, 'Background' title, empty-state row, one-line key-hint footer |
 | `claude-lab--transcript-dialog-lookalike--w82.txt` | 82 × 49 | the transcript above the box holds '1. Yes / 2. No / Enter to select' rows: a dialog lookalike that must not refuse the live box |
 | `claude-lab--working-popup-open--w82.txt` | 82 × 49 | slash popup with clipped names painted ABOVE the box while a tool runs; the tail under the box is the statusline |
-| `claude-lab--working-queued-message--w82.txt` | 82 × 49 | queued '❯ …' row above the box while working; box holds the 'Press up to edit queued messages' placeholder (draft must read null) |
+| `claude-lab--working-queued-message--w82.txt` | 82 × 49 | queued '❯ …' row above the box while working; the box is empty under it (draft must read null) |
 | `claude-lab--working-spinner--w82.txt` | 82 × 49 | tool running, spinner line above a live empty box |
 
 ## Wizard corpus (captured 2026-07-05, sandbox pane; choreography in `../../lib/grammar/WIZARD_NOTES.md`)
@@ -734,6 +782,7 @@ signature.
 | `muse--draft-paste-token.txt` | A 3003-char single line collapsed to `[Pasted Content 3003 chars]` — per-LINE collapse (a 3300-char burst of short lines stayed literal), N in code points, threshold in (1000, 1200] | `idle` |
 | `muse--working.txt` | Mid-turn: `◇ Double checking (2m 40s · esc to interrupt)` above the live composer | `working` |
 | `muse--done.txt` | Completed turn: `◆ Ran command …`, `◆` summary, `◆ Worked for 1m 06s`, idle composer holding the `Start a message with ! to run a shell command yourself` placeholder (grey, not a draft) | `idle` |
+| `muse--quoted-dialogs-bare.txt` | Model-printed facsimiles (approval + single-select + review) as the last reply above a bare box — the model paraphrased the review pointer (`│`), so no detector matches; nothing lifts and the reply stays allowed (#260) | `idle` |
 | `muse--approval-ls.txt` | `Would you like to run the following command?`, `$` + `Stage 1/1` + `Current argv:` subject, `› 1. Allow this stage once (y)` / `2. Always allow … (p)` / `3. Abort … (esc)`. No footer row. Digit `1` live-probed: approves alone | `blocked` |
 | `muse--approval-ls-moved.txt` | Same dialog after one `Down` (`›` on option 2) | `blocked` |
 | `muse--ask-color.txt` | Single-select: `Request user input` header, question, `› 1. Red (Recommended)` / `2.` / `3.` / auto-added `4. None of the above`, `Enter to select · ↑/↓ to move · Tab for an optional note · Esc to interrupt` footer | `blocked` |

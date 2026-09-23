@@ -97,7 +97,7 @@ The 29 archetypes in this directory:
 | `goals_agent` | Background: keeps `MEMORY_GOALS.md` fresh from session context |
 | `help` | Answers "how does OpenHuman work" questions from the bundled GitBook docs |
 | `image_agent` | Image generation/edit specialist |
-| `integrations_agent` | Drives a single Composio toolkit (gmail, notion, github, …) per spawn |
+| `integrations_agent` | Drives a single Composio toolkit (gmail, notion, github, …) per spawn; no chat agent delegates to it — the orchestrator searches for and calls connected actions itself |
 | `mcp_agent` (feature `mcp`) | Calls tools on an already-connected MCP server |
 | `morning_briefing` | Proactive scheduled daily summary (tasks, calendar, email, skills) |
 | `orchestrator` | Default user-facing `chat`-tier agent; direct-first, delegates only when it materially helps |
@@ -109,7 +109,7 @@ The 29 archetypes in this directory:
 | `settings_agent` | App/core config, health/model diagnostics, service lifecycle, security policy |
 | `skill_creator` | Creates/updates SKILL.md packages and Node-backed JS helpers |
 | `summarizer` | Runtime-dispatched only: compresses oversized tool results for the orchestrator |
-| `task_manager_agent` | Task-board/task-source specialist: cards, feeds, artifacts, status |
+| `task_manager_agent` | Task-source/workflow/artifact specialist: proactive feeds, workflow bundles, artifacts |
 | `tool_maker` | Narrow self-healer: writes a polyfill when a host command is missing |
 | `tools_agent` | Generalist heavy execution (shell/HTTP/web/files) that never touches a repo or git; wildcard tool scope |
 | `trigger_reactor` | One or two tool calls in direct reaction to an external trigger, no planning |

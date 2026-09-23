@@ -56,11 +56,12 @@ base prompt". Two more corollaries earned here:
   lane is obsolete, preserve its intent and evidence rather than merging stale
   code mechanically.
 - A small coherent change may be committed directly to `main` when that checkout
-  is current, clean, and owns the affected files. Do not create worktrees: work
-  in the checkout that already exists, and when several agents share it,
-  partition by file, stage only the paths your slice touched, and retry a commit
-  that fails on `index.lock`. Local commit permission never implies push, merge,
-  tag, release, or deploy permission.
+  is current, clean, and owns the affected files. Default to the checkout that
+  already exists: when several agents share it, partition by file, stage only
+  the paths your slice touched, and retry a commit that fails on `index.lock`.
+  A fresh worktree is for conflicting, dirty, stale, or independent lanes
+  (see `cw-land`), not for parallel agents on the same lane. Local commit
+  permission never implies push, merge, tag, release, or deploy permission.
 - When the task is local-only, stay fully offline: no browsing, GitHub or remote
   Git operations, downloads, dependency installation, provider calls, or
   source/diff transmission. Record the missing external receipt and keep working
@@ -81,6 +82,12 @@ base prompt". Two more corollaries earned here:
 - **Write down what a design does not do**, beside the behaviour it owns — a
   short known-limitations note in the owning module. A stated limit stops the
   next reader from assuming a capability that was never built.
+- **Agents do not comment on issues or PRs** (founder, 2026-09-22). Spend the
+  time on code: evidence goes in the commit message and PR body, claims go in
+  Linear. Do not reply to review bots or post status, "superseded", or
+  "for the record" notes. The one exception is closing or superseding a human
+  contributor's PR or issue: one sentence saying why, with the link. The PR and
+  issue review workflows are disabled; re-enable one only by founder decision.
 
 ## Landing other people's work
 
@@ -94,26 +101,10 @@ fallback for a branch that truly cannot merge in reasonable time; done
 casually it reads as taking the work even when credit is preserved.
 
 - **Never make a contributor rebase around our churn.** If their PR conflicts
-  only because main moved, a maintainer resolves it. Start from their diff
-  against the merge base so you know exactly what they added, and re-apply
-  that, rather than hand-merging two large sides and hoping.
-- **Conflicts that split mid-function do not resolve by keeping both sides.**
-  Git's markers can land inside a body, so a both-sides resolution produces
-  unbalanced braces that look plausible and do not compile. Default: take
-  one side whole, then re-insert the other side's additions at their
-  original anchor. When a conflict doesn't fit that pattern, resolve it
-  however is correct and let the compiler judge.
-- **`maintainerCanModify` does not guarantee push access to the fork.** When
-  the push is refused, land the resolved merge on
-  `integration/<topic>-<pr>-<date>` in this repo and land from there. An
-  integration branch is the normal path for anything with conflicts or several
-  moving PRs — it is cheaper than repeatedly rebasing onto a main that keeps
-  moving, and it keeps the contributor's branch untouched.
-- **Check the contribution gate before assuming a PR is stalled.** An unlisted
-  author's workflow runs sit at `action_required` and never start, so the PR
-  looks abandoned when nobody has actually looked at it. Approve the runs, then
-  fix the cause: add them to `.github/APPROVED_CONTRIBUTORS` (`all:username`),
-  or comment `/lgtm` (PR scope) / `/lgtmi` (issue scope) on their thread.
+  only because main moved, a maintainer resolves it.
+- Landing mechanics — merge-base diffing, mid-function conflicts, fork-push
+  refusal, the contribution gate — live in `cw-land`. Follow them instead of
+  improvising.
 - **Preserve credit in the mechanical sense, not just the polite one.** Commit
   authorship and `Co-authored-by` trailers must use the contributor's own
   GitHub-linked address. `AUTHOR_MAP` and `.mailmap` are project conventions —
@@ -137,9 +128,8 @@ casually it reads as taking the work even when credit is preserved.
   already been mistaken for a pass here.
 - Prefer proving a regression test fails without the fix. A test that passes
   either way pins the implementation, not the defect.
-- Audit any harness before trusting its score. `ok = ok and X or True` parses
-  as `(ok and X) or True` and silently reported twelve unevaluated rows as
-  passing.
+- Audit any hand-rolled scorer before trusting its score: quote the counts it
+  actually evaluated, not the verdict line alone.
 - Match the evidence to the surface. Run the tests that cover the change, not the
   whole suite, and do not repeat a check that already passed in order to commit.
   CI owns exhaustive coverage; a full local run is for CI diagnosis or for an
@@ -171,16 +161,11 @@ casually it reads as taking the work even when credit is preserved.
 - Environment-specific behavior belongs in `docs/ENVIRONMENTS.md`, not here.
 - Blocking-call convention (#6149): code on the Tokio runtime — tool
   handlers, engine tasks, the UI event loop, anything reached through an
-  `async` call chain — must not run blocking operations inline.
-  `std::fs`/`std::process` calls inside `async` code use `tokio::fs`/
-  `tokio::process`, or move the synchronous work into
-  `tokio::task::spawn_blocking` (`utils::spawn_blocking_supervised` for
-  fire-and-forget). `thread::sleep` is for dedicated `std::thread`s and
-  bounded contention retries in synchronous APIs that are only reachable
-  from blocking scopes — an async-path wait uses `tokio::time`. A sync
-  helper containing blocking calls must only be called under
-  `spawn_blocking` or from a dedicated thread; `scripts/
-  check-blocking-calls-budget.py` ratchets the unprotected-site count.
+  `async` call chain — must not run blocking operations inline. Use
+  `tokio::fs` / `tokio::process`, or move the work into `spawn_blocking`;
+  a sync helper containing blocking calls runs only under `spawn_blocking`
+  or on a dedicated thread. `scripts/check-blocking-calls-budget.py`
+  ratchets the unprotected-site count.
 
 ## Code, migrations, and evidence
 
@@ -227,14 +212,9 @@ cargo test --workspace
 cargo build --release -p codewhale-cli -p codewhale-tui
 ```
 
-`cargo nextest run` (config in `.config/nextest.toml`) is the fast way to
-run an intentionally selected suite; `cargo test --no-run` can answer a compile
-question without spending time executing unrelated cases, and `cargo test --doc`
-covers doc examples when those examples changed.
-`scripts/dev-test.sh <area>` maps a code area to its fastest `-p` invocation
-and applies the portable isolated build-dir topology for new worktrees
-(`scripts/dev-cache.sh`, `scripts/dev-cargo.sh`). See
-`docs/BUILD_PERFORMANCE.md`.
+`scripts/dev-test.sh <area|path> [filter]` maps a code area to its fastest
+invocation — see `cw-gates` for the verification ladder and
+`docs/BUILD_PERFORMANCE.md` for the build topology.
 
 Report commands actually run and distinguish source, local tests, packaged
 artifacts, CI, and public release state. Describe the evidence actually needed
@@ -249,11 +229,6 @@ lands as our commit, that commit carries `Harvested from PR #N by @handle` and a
 `auto-close-harvested.yml` closes their PR with credit and the contribution
 graph reflects reality. Canonical human identities come from
 `.github/AUTHOR_MAP`.
-
-**Whether a bot or agent also appears in a trailer no longer matters.** The CI
-check that policed trailer identities was removed: it rejected ordinary agent
-commits and cost more than the tidiness it bought. Give humans their credit; do
-not spend time scrubbing tool trailers.
 
 Leave unrelated work intact and keep new enforcement dry-run unless explicitly
 approved.

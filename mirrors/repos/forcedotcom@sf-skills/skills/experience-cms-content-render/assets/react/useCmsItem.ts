@@ -30,6 +30,15 @@ interface UseCmsItemState<TBody> {
 const cache = new Map<string, unknown>();
 const inflight = new Map<string, Promise<unknown>>();
 
+/** Runtime guard before the cache's `as TBody` cast: a CMS body is always an
+ *  object/array, so this screens out a stale primitive from a `ref.name` reused
+ *  under a different, incompatible `TBody` — it cannot verify the object's shape
+ *  actually matches `TBody` (no schema is available here), so callers must still
+ *  keep `ref.name` unique per content shape. */
+function isCacheableBody(value: unknown): boolean {
+  return value !== null && typeof value === 'object';
+}
+
 /** Shared request for a ref — NO abort signal. `CMS_CHANNEL_ID_FALLBACK` is passed
  *  as `options.channelId` only when set (empty → catalog supplies it). */
 function createItemRequest<TBody>(ref: AnyCmsRef): Promise<TBody> {
@@ -46,7 +55,8 @@ export function useCmsItem<TBody = unknown>(
   ref: AnyCmsRef,
 ): UseCmsItemState<TBody> {
   const [state, setState] = useState<UseCmsItemState<TBody>>(() => {
-    const cached = cache.get(ref.name) as TBody | undefined;
+    const rawCached = cache.get(ref.name);
+    const cached = isCacheableBody(rawCached) ? (rawCached as TBody) : undefined;
     return {
       body: cached,
       loading: cached === undefined,
@@ -64,9 +74,9 @@ export function useCmsItem<TBody = unknown>(
     let cancelled = false;
     const name = ref.name;
 
-    const cached = cache.get(name) as TBody | undefined;
-    if (cached !== undefined) {
-      setState({ body: cached, loading: false, error: undefined });
+    const rawCached = cache.get(name);
+    if (isCacheableBody(rawCached)) {
+      setState({ body: rawCached as TBody, loading: false, error: undefined });
       return () => {
         cancelled = true;
       };

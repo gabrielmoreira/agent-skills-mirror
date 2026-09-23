@@ -1,12 +1,17 @@
 ---
 name: create-architecture
-description: "Guided, section-by-section authoring of the master architecture document for the game. Reads all GDDs, the systems index, existing ADRs, and the engine reference library to produce a complete architecture blueprint before any code is written. Engine-version-aware: flags knowledge gaps and validates decisions against the pinned engine version."
+description: "Author the architecture blueprint before code is written. Validates decisions against the pinned engine, flags knowledge gaps."
 argument-hint: "[focus-area: full | layers | data-flow | api-boundaries | adr-audit] [--review full|lean|solo]"
 user-invocable: true
-allowed-tools: Read, Glob, Grep, Write, Bash, AskUserQuestion, Task
+allowed-tools: Read, Glob, Grep, Write, Bash, AskUserQuestion, Agent
 model: sonnet
-agent: technical-director
 ---
+
+!`source "${CLAUDE_PROJECT_DIR:-.}/.claude/hooks/yaml-helper.sh" 2>/dev/null && resolve_config --keys review_mode,automation,workflow,docs.density`
+
+Resolved above — use as-is; `--review` overrides `review_mode`. No block →
+defaults in `.claude/docs/config-resolution.md`.
+
 
 # Create Architecture
 
@@ -17,12 +22,26 @@ It sits between design and implementation, and must exist before sprint planning
 **Distinct from `/architecture-decision`**: ADRs record individual point decisions.
 This skill creates the whole-system blueprint that gives ADRs their context.
 
-Resolve the review mode (once, store for all gate spawns this run):
-1. If `--review [full|lean|solo]` was passed → use that
-2. Else read `production/review-mode.txt` → use that value
-3. Else → default to `lean`
 
-See `.claude/docs/director-gates.md` for the full check pattern.
+See `.claude/docs/director-gates.md` for the full check pattern. Individual gate definitions live in `.claude/docs/director-gates/[gate-id].md` — the spawned agent reads its own gate file; do not read it in the parent session.
+
+
+Every `AskUserQuestion` call follows `.claude/docs/automation-modes.md`
+(collaborative asks always · guided major-only · autonomous logs and proceeds;
+`automation_always_ask` categories always prompt).
+
+**`docs.density`** — it controls per-section *depth*, where `workflow`
+controls which sections exist. `modes.rigor` sets both together; set
+`docs.density` explicitly to vary depth alone: `terse` = layer diagrams + decision bullets,
+no essays; `balanced` = diagrams + paragraph explanations of layer choices
+(default); `thorough` = full prose with rationale, trade-offs, and alternatives
+considered per layer. Apply it to every section you author.
+
+**`workflow`** (see `.claude/docs/workflow-modes.md`):
+- `full` — full architecture: all layers, module ownership, data flow, API
+  boundaries, full ADR audit.
+- `standard` — simplified: system layer map + critical ADR list only.
+- `minimal` — not required. Can still be run voluntarily.
 
 **Argument modes:**
 - **No argument / `full`**: Full guided walkthrough — all sections, start to finish
@@ -39,7 +58,8 @@ Before anything else, load the full project context in this order:
 
 ### 0a. Engine Context (Critical)
 
-Read the engine reference library completely:
+Read the four project-wide engine documents in full — they are small, and every
+part of each is used:
 
 1. `docs/engine-reference/[engine]/VERSION.md`
    → Extract: engine name, version, LLM cutoff, post-cutoff risk levels
@@ -49,8 +69,22 @@ Read the engine reference library completely:
    → Extract: APIs to avoid
 4. `docs/engine-reference/[engine]/current-best-practices.md`
    → Extract: post-cutoff best practices that differ from training data
-5. All files in `docs/engine-reference/[engine]/modules/`
+
+Then read **only the module docs whose domain this game actually uses** —
+not the whole `modules/` directory:
+
+5. `docs/engine-reference/[engine]/modules/` — glob it to establish what exists,
+   then match against the domains present in `design/gdd/systems-index.md`
+   (the same domain vocabulary the ADR template uses: Physics, Rendering, UI,
+   Audio, Navigation, Animation, Networking, Core, Input). Read the matching
+   modules; skip the rest.
    → Extract: current API patterns per domain
+
+   A game with no multiplayer system does not need the networking module loaded
+   to write its architecture, and loading it costs the same as one that does.
+   **If the domain match is ambiguous, read the module** — a missed engine
+   constraint is far more expensive here than a redundant read, because this
+   phase is where those constraints get baked into the architecture.
 
 If no engine is configured, stop and prompt:
 > "No engine is configured. Run `/setup-engine` first. Architecture cannot be
@@ -58,13 +92,52 @@ If no engine is configured, stop and prompt:
 
 ### 0b. Design Context + Technical Requirements Extraction
 
-Read all approved design documents and extract technical requirements from each:
+Load the approved design documents and extract technical requirements from each:
 
 1. `design/gdd/game-concept.md` — game pillars, genre, core loop
 2. `design/gdd/systems-index.md` — all systems, dependencies, priority tiers
-3. `.claude/docs/technical-preferences.md` — naming conventions, performance budgets,
-   allowed libraries, forbidden patterns
-4. **Every GDD in `design/gdd/`** — for each, extract technical requirements:
+
+**Check both exist before reading either. Neither is optional here, and both
+need an absence branch** — §0a stops for an unconfigured engine, and these two
+matter just as much:
+
+- **`systems-index.md` absent** — stop:
+  > "No systems index found. Run `/map-systems` first. An architecture written
+  > without it invents layers for systems nobody mapped, and every ADR, epic and
+  > story downstream inherits that invention."
+  At `minimal` the index is not required (§ tier note above) — say so and proceed
+  from the brief instead.
+- **`game-concept.md` absent** — at `standard`/`full`, stop and point at
+  `/brainstorm`. At `minimal`, read `design/game-brief.md` in its place; if that
+  is absent too, stop — there is no design record to architect against.
+- **Either present but empty or still template placeholders** — treat as absent.
+  Present-but-empty is the case that most looks like present.
+
+Do not proceed on a partial read and note it later. This phase is where design
+assumptions get baked into ADRs, and an assumption made here is re-derived by
+everything downstream rather than re-checked.
+3. Project config — `naming.*` and `performance.*` from `project.yaml` (for any
+   key absent or empty, fall back to `.claude/docs/technical-preferences.md`);
+   allowed libraries and forbidden patterns from
+   `.claude/docs/technical-preferences.md` (not migrated to project.yaml)
+4. **Every GDD in `design/gdd/`** — extract technical requirements from the
+   sections that carry them, **not from whole files**. Establish the denominator
+   first (glob `design/gdd/*.md`, count **N**), then:
+   ```
+   Grep pattern="^## (Detailed Rules|Detailed Design|Formulas|Dependencies|Tuning Knobs|Acceptance Criteria)" glob="design/gdd/*.md" output_mode="content" -A 40
+   ```
+   Overview and Player Fantasy are narrative and imply no architecture; the
+   scanned set is where rules, numbers, and cross-system contracts live. Accept
+   either `## Detailed Rules` or `## Detailed Design` — the design standard and
+   the GDD template disagree on the name and they denote the same section.
+
+   Full-read a GDD when it matched **zero** sections (it predates the template —
+   a zero-match means "unstructured", never "no requirements") or when a scanned
+   section refers to material outside itself. **Never treat an absent section as
+   an absent requirement**: report any GDD that contributed nothing, rather than
+   letting it drop silently out of the baseline below.
+
+   For each, extract:
    - Data structures implied by the game rules
    - Performance constraints stated or implied
    - Engine capabilities the system requires
@@ -92,8 +165,17 @@ left without an architectural decision to support it by the end of this session.
 
 ### 0c. Existing Architecture Decisions
 
-Read all files in `docs/architecture/` to understand what has already been decided.
-List any ADRs found and their domains.
+To learn **what has already been decided and in which domain**, scan the ADR
+headers — do not full-read every ADR to produce a list of numbers and domains:
+```
+Grep pattern="^## (Status|Summary)" glob="docs/architecture/adr-*.md" output_mode="content" -A 4
+Grep pattern="\*\*Domain\*\*" glob="docs/architecture/adr-*.md" output_mode="content"
+```
+`## Summary` (a 2-sentence what-and-why) plus `## Status` and the Engine
+Compatibility `Domain` field are exactly "what was decided and its domain". List
+the ADRs found, their status, and their domains from the scan. Full-read a
+specific ADR only when a new decision this session would collide with it and you
+need its reasoning — not to build the inventory.
 
 ### 0d. Generate Knowledge Gap Inventory
 
@@ -346,14 +428,14 @@ After writing the master architecture document, perform an explicit sign-off bef
 
 **Step 1 — Technical Director self-review** (this skill runs as technical-director):
 
-Apply gate **TD-ARCHITECTURE** (`.claude/docs/director-gates.md`) as a self-review. Check all four criteria from that gate definition against the completed document.
+Apply gate **TD-ARCHITECTURE** (`.claude/docs/director-gates/td-architecture.md`) as a self-review. Check all four criteria from that gate definition against the completed document.
 
 **Review mode check** — apply before spawning LP-FEASIBILITY:
 - `solo` → skip. Note: "LP-FEASIBILITY skipped — Solo mode." Proceed to Phase 8 handoff.
 - `lean` → skip (not a PHASE-GATE). Note: "LP-FEASIBILITY skipped — Lean mode." Proceed to Phase 8 handoff.
 - `full` → spawn as normal.
 
-**Step 2 — Spawn `lead-programmer` via Task using gate LP-FEASIBILITY (`.claude/docs/director-gates.md`):**
+**Step 2 — Spawn `lead-programmer` via `Agent` using gate LP-FEASIBILITY (`.claude/docs/director-gates/lp-feasibility.md`):**
 
 Pass: architecture document path, technical requirements baseline summary, ADR list.
 
@@ -438,6 +520,10 @@ Omit this section entirely if there are no open QQs.
 ---
 
 ## Collaborative Protocol
+
+**Applies in `collaborative` mode (the default).** For `guided` and
+`autonomous` modes, see `.claude/docs/automation-modes.md` — the rules below
+describe what collaborative mode requires, not universal behavior.
 
 This skill follows the collaborative design principle at every phase:
 

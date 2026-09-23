@@ -1,12 +1,15 @@
 ---
 name: create-control-manifest
-description: "After architecture is complete, produces a flat actionable rules sheet for programmers — what you must do, what you must never do, per system and per layer. Extracted from all Accepted ADRs, technical preferences, and engine reference docs. More immediately actionable than ADRs (which explain why)."
+description: "Flat must-do/never-do rules sheet per system and layer, extracted from Accepted ADRs. ADRs explain why; this is actionable."
 argument-hint: "[update — regenerate from current ADRs]"
 user-invocable: true
-allowed-tools: Read, Glob, Grep, Write, Task
+allowed-tools: Read, Glob, Grep, Write, Agent, AskUserQuestion
 model: sonnet
-agent: technical-director
 ---
+
+!`source "${CLAUDE_PROJECT_DIR:-.}/.claude/hooks/yaml-helper.sh" 2>/dev/null && resolve_config --keys automation`
+
+
 
 # Create Control Manifest
 
@@ -22,18 +25,37 @@ status. Re-run whenever new ADRs are accepted or existing ADRs are revised.
 
 ---
 
+Every `AskUserQuestion` call follows `.claude/docs/automation-modes.md`
+(collaborative asks always · guided major-only · autonomous logs and proceeds;
+`automation_always_ask` categories always prompt).
+
 ## 1. Load All Inputs
 
 ### ADRs
-- Glob `docs/architecture/adr-*.md` and read every file
-- Filter to only Accepted ADRs (Status: Accepted) — skip Proposed, Deprecated,
-  Superseded
-- Note the ADR number and title for every rule sourced
+**Establish the denominator first.** Glob `docs/architecture/adr-*.md`. Call the
+count **N**. If N is 0: "No ADRs found — run `/architecture-decision` before
+building a control manifest." Stop.
 
-### Technical Preferences
-- Read `.claude/docs/technical-preferences.md`
-- Extract: naming conventions, performance budgets, approved libraries/addons,
-  forbidden patterns
+**Resolve status without reading the ADRs** — the filter must precede the read,
+not follow it:
+```
+Grep pattern="^## Status" glob="docs/architecture/adr-*.md" output_mode="content" -A 3
+```
+Interpret against N:
+
+| Result | Meaning | Action |
+|---|---|---|
+| **N matches, some read `Accepted`** | Normal. | The Accepted set is **A**; proceed with A. |
+| **N matches, none `Accepted`** | Genuinely no Accepted ADRs. | "[N] ADRs found, none Accepted. A manifest built from Proposed ADRs would encode decisions that may still change." Ask whether to proceed with Proposed or stop. **Do not silently emit an empty manifest.** |
+| **0 matches, N > 0** | **Malformed ADRs — not an empty Accepted set.** `## Status` is BLOCKING-if-missing. | "[N] ADRs found, none has a `## Status` section — acceptance cannot be determined. Run `/architecture-decision [file] retrofit` on each." **Stop.** Do not treat all ADRs as Accepted; do not emit a manifest. |
+
+- Note the ADR number and title for every rule sourced.
+
+### Project Config
+- Read `naming.*` and `performance.*` from `project.yaml`; for any key absent or
+  empty, fall back to `.claude/docs/technical-preferences.md`
+- Read approved libraries/addons and forbidden patterns from
+  `.claude/docs/technical-preferences.md` (not migrated to project.yaml)
 
 ### Engine Reference
 - Read `docs/engine-reference/[engine]/VERSION.md` for engine + version
@@ -47,10 +69,28 @@ Report: "Loaded [N] Accepted ADRs, engine: [name + version]."
 
 ## 2. Extract Rules from Each ADR
 
+Read **only these four sections** per Accepted ADR — not the whole file. Context,
+Consequences, Migration Plan and Validation Criteria explain *why* a decision was
+made; the manifest records *what to do*, so they are not needed here:
+```
+Grep pattern="^## (Decision|Alternatives Considered|Performance Implications|Engine Compatibility)" glob="docs/architecture/adr-*.md" output_mode="content" -A 30
+```
+Filter the results to the Accepted set **A** resolved above. If a section is
+absent for a given ADR, note it per ADR and continue; if a section is absent
+across **all** of A, report "No Accepted ADR contains a `[section]` section — the
+manifest's [category] rules will be empty. Verify this is intended." Escalate to
+a full read of one ADR only when its scanned sections cross-reference material
+outside them (e.g. a Decision that says "subject to the constraints in Context").
+
 For each Accepted ADR, extract:
 
-### Required Patterns (from "Implementation Guidelines" section)
-- Every "must", "should", "required to", "always" statement
+### Required Patterns (from the `## Decision` section)
+- Every "must", "should", "required to", "always" statement in the Decision body
+  — including any `### Implementation Guidelines` sub-heading when the ADR has one
+  (newer ADRs emit it; older ones state mandates directly in `## Decision`). Never
+  scan for `### Implementation Guidelines` alone — it is absent from many
+  skill-authored ADRs, and scanning for it yields an empty Required Patterns
+  section on a manifest that should have been full.
 - Every specific pattern or approach mandated
 
 ### Forbidden Approaches (from "Alternatives Considered" sections)
@@ -82,12 +122,21 @@ If an ADR spans multiple layers, duplicate the rule into each relevant layer.
 
 Combine rules that apply to all layers:
 
-### From technical-preferences.md:
-- Naming conventions (classes, variables, signals/events, files, constants)
-- Performance budgets (target framerate, frame budget, draw call limits, memory ceiling)
+### From project config (`project.yaml`, else `technical-preferences.md`):
+- Naming conventions — `naming.*`: classes, variables, signals/events, files, constants
+- Performance budgets — `performance.*`: target framerate, frame budget, draw call limits, memory ceiling
 
 ### From deprecated-apis.md:
-- All deprecated APIs → Forbidden API entries
+- Deprecated APIs → Forbidden API entries, **filtered for relevance to this
+  project**. Do not copy the deprecation table wholesale.
+  > Each entry must apply to what this project actually builds. `deprecated-apis.md`
+  > mixes dimensions and subsystems: its `GodotPhysics3D → Jolt Physics 3D` row is
+  > **3D-only**, so emitting it unqualified gives a 2D project a global rule about
+  > a physics engine it never uses. If you cannot tell whether an entry applies —
+  > 2D vs 3D, a module the project does not include — either scope the rule
+  > ("when using 3D physics: ...") or omit it and note it as unresolved. A manifest
+  > of rules that do not apply is one nobody reads, and `/create-stories` consumes
+  > this file.
 
 ### From current-best-practices.md (if available):
 - Engine-recommended patterns → Required entries
@@ -130,7 +179,7 @@ Use `AskUserQuestion`:
 - `lean` → skip. Note: "TD-MANIFEST skipped — Lean mode." Proceed to Phase 5.
 - `full` → spawn as normal.
 
-Spawn `technical-director` via Task using gate **TD-MANIFEST** (`.claude/docs/director-gates.md`).
+Spawn `technical-director` via `Agent` using gate **TD-MANIFEST** (`.claude/docs/director-gates/td-manifest.md`).
 
 Pass: the Control Manifest Preview from Phase 4 (rule counts per layer, full extracted rule list), the list of ADRs covered, engine version, and any rules sourced from technical-preferences.md or engine reference docs.
 
@@ -238,19 +287,19 @@ rule, see the referenced ADR.
 ### Naming Conventions
 | Element | Convention | Example |
 |---------|-----------|---------|
-| Classes | [from technical-preferences] | [example] |
-| Variables | [from technical-preferences] | [example] |
-| Signals/Events | [from technical-preferences] | [example] |
-| Files | [from technical-preferences] | [example] |
-| Constants | [from technical-preferences] | [example] |
+| Classes | [from naming.* in project.yaml, else technical-preferences.md] | [example] |
+| Variables | [from naming.* in project.yaml, else technical-preferences.md] | [example] |
+| Signals/Events | [from naming.* in project.yaml, else technical-preferences.md] | [example] |
+| Files | [from naming.* in project.yaml, else technical-preferences.md] | [example] |
+| Constants | [from naming.* in project.yaml, else technical-preferences.md] | [example] |
 
 ### Performance Budgets
 | Target | Value |
 |--------|-------|
-| Framerate | [from technical-preferences] |
-| Frame budget | [from technical-preferences] |
-| Draw calls | [from technical-preferences] |
-| Memory ceiling | [from technical-preferences] |
+| Framerate | [from performance.* in project.yaml, else technical-preferences.md] |
+| Frame budget | [from performance.* in project.yaml, else technical-preferences.md] |
+| Draw calls | [from performance.* in project.yaml, else technical-preferences.md] |
+| Memory ceiling | [from performance.* in project.yaml, else technical-preferences.md] |
 
 ### Approved Libraries / Addons
 - [library] — approved for [purpose]
@@ -278,6 +327,10 @@ After writing the manifest:
 ---
 
 ## Collaborative Protocol
+
+**Applies in `collaborative` mode (the default).** For `guided` and
+`autonomous` modes, see `.claude/docs/automation-modes.md` — the rules below
+describe what collaborative mode requires, not universal behavior.
 
 1. **Load silently** — read all inputs before presenting anything
 2. **Show the summary first** — let the user see the scope before writing

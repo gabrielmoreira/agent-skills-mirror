@@ -27,6 +27,7 @@ import {
   type CmsMediaBody,
   type CmsMediaType,
 } from '../shared/cmsCore.types';
+import { deriveDownloadLabel, effectiveAudioLabel } from '../shared/mediaLabels';
 
 export interface MediaRendererProps {
   /** A media ref — `cmsType` selects the element; a non-media ref is a compile error. */
@@ -43,16 +44,30 @@ function mediaElement(
   src: string,
   alt: string,
   docLabel: string,
+  captionsSrc: string | undefined,
+  captionsLabel: string | undefined,
   className?: string,
 ): ReactNode {
   switch (cmsType) {
     case 'image':
       return <img className={className} src={src} alt={alt} loading="lazy" />;
     case 'audio':
-      // altText is typically absent on audio → aria-label only when present.
-      return <audio className={className} controls src={src} aria-label={alt || undefined} />;
+      // `aria-label={alt || undefined}` would drop the attribute entirely when alt
+      // is empty (same JSX-prop-omission semantics as Angular's `|| null` binding) —
+      // effectiveAudioLabel always returns a value, so the control never loses its
+      // accessible name.
+      return <audio className={className} controls src={src} aria-label={effectiveAudioLabel(alt, src)} />;
     case 'video':
-      return <video className={className} controls src={src} aria-label={alt || undefined} />;
+      // Captions require a caller-supplied `captionsSrc` (SKILL.md §B4) — the CMS
+      // media body/ref carries no captions-track field, so there is no data to
+      // fabricate a `<track>` from when the caller hasn't provided one.
+      return (
+        <video className={className} controls src={src} aria-label={alt || undefined}>
+          {captionsSrc && (
+            <track kind="captions" src={captionsSrc} label={captionsLabel || 'Captions'} default />
+          )}
+        </video>
+      );
     case 'document':
       // Download link only — no inline preview (SKILL.md §B3). Name the link so it
       // identifies WHAT downloads (WCAG 2.4.4), never a bare "Download" that is
@@ -72,11 +87,13 @@ function DirectMedia(props: {
   url: string;
   alt: string;
   title?: string;
+  captionsSrc?: string;
+  captionsLabel?: string;
   className?: string;
 }): ReactNode {
-  const { cmsType, url, alt, title, className } = props;
-  const docLabel = alt || title || 'Download';
-  return mediaElement(cmsType, url, alt, docLabel, className);
+  const { cmsType, url, alt, title, captionsSrc, captionsLabel, className } = props;
+  const docLabel = deriveDownloadLabel(url, alt, title);
+  return mediaElement(cmsType, url, alt, docLabel, captionsSrc, captionsLabel, className);
 }
 
 /**
@@ -93,7 +110,7 @@ function FetchedMedia(props: { ref: AnyCmsRef<CmsMediaType>; className?: string 
 
   const media = body['sfdc_cms:media'];
   const alt = body.altText ?? '';
-  const docLabel = body.altText || body.title || 'Download';
+  const docLabel = deriveDownloadLabel(media?.url, body.altText, body.title);
 
   // Src resolution SPLITS by medium (Rule 2): image → resolveCmsImageUrl;
   // audio/video/document → resolveMediaUrl. Both toolkit helpers resolve the
@@ -102,7 +119,10 @@ function FetchedMedia(props: { ref: AnyCmsRef<CmsMediaType>; className?: string 
     ref.cmsType === 'image' ? resolveCmsImageUrl(media) : media?.url ? resolveMediaUrl(media.url) : undefined;
   if (!src) return null;
 
-  return mediaElement(ref.cmsType, src, alt, docLabel, className);
+  // No fetched-body field carries a captions-track URL today (SKILL.md §B4), so the
+  // contentKey path never has real caption data to pass — only a foreign ref with a
+  // caller-supplied `captionsSrc` (see DirectMedia) can render a `<track>`.
+  return mediaElement(ref.cmsType, src, alt, docLabel, undefined, undefined, className);
 }
 
 export function MediaRenderer(props: MediaRendererProps): ReactNode {
@@ -117,6 +137,8 @@ export function MediaRenderer(props: MediaRendererProps): ReactNode {
         url={ref.url}
         alt={ref.altText ?? ''}
         title={ref.title}
+        captionsSrc={ref.captionsSrc}
+        captionsLabel={ref.captionsLabel}
         className={className}
       />
     );

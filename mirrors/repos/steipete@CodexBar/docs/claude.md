@@ -214,8 +214,9 @@ The accepted multi-account design in
   accounts the stacked menu switches to a compact layout (`AccountMenuLayoutPlanner`): the active account keeps its full
   card, inactive accounts become one-line rows sorted by remaining headroom (most constrained first, red/amber below
   50%/10% left, a star on the healthiest activatable account), and healthy rows fold behind a "N more accounts ready"
-  summary row. Clicking a compact row expands that account's full card for the current menu session; the summary row
-  reveals the hidden rows. `codexbar cards` keeps the full per-account output. The same compact layout applies to
+  summary row. Clicking a compact row expands that account's full card; clicking an inactive card collapses it again.
+  This choice is remembered locally across menu opens and app restarts. The summary row reveals the hidden rows for
+  the current menu session. `codexbar cards` keeps the full per-account output. The same compact layout applies to
   every stacked multi-account list (token accounts on any provider, and flat Codex account lists; workspace-grouped
   Codex lists keep their sectioned stacked layout). To use this
   presentation with one account, enable “Show account card when only one account is available” or set
@@ -241,6 +242,9 @@ The accepted multi-account design in
   Fable) plus its reset time — not "Usage fetch failed." A first refresh that is already `unavailable` with no
   retained windows says usage is unavailable, without assuming why the source could not fetch it. Active rows are marked `[active]`; no claude-swap row infers
   a plan badge.
+- Read-only adapters may set top-level `supportsAccountSwitching: false` in their schema-v1 list response. Usage,
+  account details, and active markers remain visible, while switching and re-authentication actions are suppressed.
+  Omitting the capability preserves existing switching behavior; a present value must be a JSON boolean.
 - Switching: an inactive account with usable source credentials shows “Switch Account…”. Clicking it runs exactly
   `cswap --switch-to <slot> --json`, validates the versioned result and requested slot, then refreshes both ambient
   Claude usage and every claude-swap account card. Switches are serialized; no automatic switching occurs. While
@@ -282,9 +286,13 @@ Model-scoped weekly-window proof (synthetic data, no real accounts or credential
   1) Start CLI with `--allowed-tools ""` (no tools).
   2) Auto-respond to first-run prompts (trust files, workspace, telemetry).
   3) Send `/usage`, wait for rendered panel; send Enter retries if needed.
-  4) Optionally send `/status` to extract identity fields.
+  4) Dismiss the open panel with Escape before reusing the session for `/status` identity or the next `/usage` refresh.
+  5) Optionally send `/status` to extract identity fields.
 - Parsing (`ClaudeStatusProbe`):
-  - Strips ANSI, locates "Current session" + "Current week" headers.
+  - Replays cursor-based `/usage` and `/status` captures onto a bounded screen with the same geometry as the PTY, then locates
+    "Current session" + "Current week" headers. Cursor jumps preserve unchanged cells from earlier frames, keeping
+    scoped weekly percentages, reset spacing, and account identity intact. Erased content is not reused as history.
+  - Plain reports, including color-only ANSI output and legacy CR-delimited text, retain their existing parsing behavior.
   - Extracts percent left/used and reset text near those headers.
   - When a reset date cannot be parsed, the menu preserves its description and normalizes leading `Reset` or `Resets` labels once, including scoped weekly limits.
   - Parses `Account:` and `Org:` lines when present.
@@ -298,6 +306,7 @@ Model-scoped weekly-window proof (synthetic data, no real accounts or credential
 - Source roots:
   - Native Claude logs:
     - `$CLAUDE_CONFIG_DIR` selects one literal directory and uses `<root>/projects`; commas are part of its path.
+    - Also includes claude-swap session profiles at `~/.claude-swap-backup/sessions/<slot>-<label>/projects`. On Linux, also checks `$XDG_DATA_HOME/claude-swap/sessions` (default `~/.local/share/claude-swap/sessions`). Discovery examines only immediate positive-numbered slot directories and their `projects` child; it does not read credentials or run cswap.
     - Fallback roots:
       - `~/.config/claude/projects`
       - `~/.claude/projects` (Claude Code and current Claude Desktop Code/Cowork CLI sessions)
@@ -323,6 +332,8 @@ Model-scoped weekly-window proof (synthetic data, no real accounts or credential
   - pi and OMP sessions attribute `anthropic` assistant usage to Claude and bucket it by assistant-turn timestamp, so a
     single pi-compatible session can contribute to multiple models/days.
   - Matching assistant entry IDs within the same session are counted once across roots; distinct turns are retained.
+  - Claude-swap history contributes to the combined Claude total, including when an explicit `$CLAUDE_CONFIG_DIR` is set. Shared-history symlinks are scanned once, copied responses use the same deduplication as native logs, and missing profile directories do not prevent other homes from contributing. Local cost records do not establish per-account attribution.
+- Quota-week menu cards reuse the immutable snapshot’s day projection, warmed in the background. New snapshots and changed bucket time zones rebuild it; reset observations and the current time remain live on every card build.
 - Cache:
   - GPT usage recorded through Claude Code uses the bundled OpenAI model's long-context boundary (272K for supported models), while retaining catalog rates. Uncached input and cache-read/create tokens all contribute to the prompt length. Saved reports are recalculated after pricing corrections without discarding retained Codex history.
   - Native provider cache: `~/Library/Caches/CodexBar/cost-usage/claude-v6.json`

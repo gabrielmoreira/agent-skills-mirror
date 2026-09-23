@@ -26,13 +26,8 @@ For large stochastic seas driven by directional spectra and GPU FFTs, use
 8. Filter unresolved normal bands from derivatives.
 
 Read [references/water-surface-system.md](references/water-surface-system.md)
-for the exact five-wave displaced ocean, six-band normal-only water, optical
-hierarchy, and the limits that distinguish both from the spectral-ocean skill.
-
-Read the
-[analytic wave optics implementation](examples/analytic-wave-optics/water-system.js) for
-shared displacement/normals, derivative filtering, reflection, screen-space
-refraction, absorption, Fresnel, and crest-linked foam diagnostics.
+for the authored displacement/normal contract, optical hierarchy, side-aware
+refraction, absorption fallback, and diagnostic channels.
 
 Read the
 [interactive pool volume implementation](examples/interactive-pool-volume/water-volume-system.js)

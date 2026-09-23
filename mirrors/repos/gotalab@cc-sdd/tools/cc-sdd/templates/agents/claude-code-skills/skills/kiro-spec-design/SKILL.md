@@ -21,12 +21,14 @@ metadata:
 
 ### Step 1: Gather Context
 
-If steering/spec context is already available from conversation, skip redundant file reads.
-Otherwise, load all necessary context:
+Reuse steering/spec context already available from conversation; load missing context below.
+Select skills for the current task even when steering/spec context is already available:
 - `{{KIRO_DIR}}/specs/{feature}/spec.json`, `requirements.md`, `design.md` (if exists)
 - `{{KIRO_DIR}}/specs/{feature}/research.md` (if exists, contains gap analysis from `/kiro-validate-gap`)
 - Core steering context: `product.md`, `tech.md`, `structure.md`
 - Additional steering files only when directly relevant to requirement coverage, architecture boundaries, integrations, runtime prerequisites, security/performance constraints, or team conventions that affect implementation readiness
+- Use explicitly requested skills and task-relevant local skills/playbooks, including design, accessibility, and UX. Select by description and read only needed guidance, even for small tasks; preserve required checks and host/project rules.
+- Consult relevant domain skills even when building by hand without adopting a new library.
 - `{{KIRO_DIR}}/settings/templates/specs/design.md` for document structure
 - Read `rules/design-principles.md` from this skill's directory for design principles
 - `{{KIRO_DIR}}/settings/templates/specs/research.md` for discovery log structure
@@ -89,6 +91,7 @@ After all findings return, synthesize in main context before proceeding.
    - Summarize discovery scope and key findings
    - Record investigations with sources and implications
    - Document architecture pattern evaluation, design decisions, and risks
+   - If `research.md` already exists, briefly record consulted skills and the guidance used in its existing research notes.
    - Use the language specified in spec.json when writing or updating `research.md`
 
 ### Step 3: Synthesis

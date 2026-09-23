@@ -73,6 +73,9 @@ envelope. CodexBar does not need
 - Execute exactly the argument array `cswap --list --json`. Never invoke a shell or accept config-defined passthrough
   arguments.
 - Require `schemaVersion == 1`; reject unknown versions and partial top-level shapes.
+- The optional top-level `supportsAccountSwitching` boolean defaults to `true` for schema-v1 compatibility.
+  With `false`, account cards and chips remain inspectable but never offer switching or re-authentication actions.
+  A present non-boolean value (including `null` or a number) is rejected as a malformed capability.
 - Bound runtime and stdout, terminate on timeout, and retain the last successful snapshot with a stale marker.
 - Parse only slot number, active state, usage status, 5-hour/7-day percentages, optional `usage.scoped` display names
   and percentages, reset timestamps, display-only `organizationName` (always present, may be empty), and optional
@@ -92,9 +95,11 @@ envelope. CodexBar does not need
   When two or more slots share an email, disambiguate with `email · organizationName` or `email · Account N`; a
   user-chosen alias wins. Unique emails stay email-only.
 - Use the source-issued numeric slot for identity (`claude-swap:<slot>`), not email or credential-derived values.
-- CodexBar never reads `claude-swap` storage, Claude Code storage, environment credentials, or Keychain entries. The
+- The claude-swap usage adapter never reads `claude-swap` storage, Claude Code storage, environment credentials, or Keychain entries. The
   subprocess remains solely responsible for its own credential access. The adapter copies only allow-listed
   usage/identity fields into its model and never logs or persists raw stdout.
+  Separately, the local cost scanner reads only session `projects` logs under known claude-swap profile roots, as
+  documented in [claude.md](claude.md#cost-usage-local-log-scan); it does not read the adapter's credential storage.
 - Never run `auto`, `run`, `--switch`, `--switch-to`, `--add-account`, export, import, purge, or any other command in
   Phase 1.
 - Isolate adapter failure from ambient Claude usage and discard canceled list/version reads. Users without

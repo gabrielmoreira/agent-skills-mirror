@@ -1,0 +1,157 @@
+# F004 — Codex chat support (multi-provider transcript reader)
+
+**Status:** Done (P1 v0.38.35 history+live; P2a v0.38.36 working indicator; P2b v0.38.37 sidebar dot; approval cards deferred — codex keeps approval state in the TUI only, see finding)
+**Type:** Feature
+**Created:** 2026-09-22
+
+## Description
+
+The chat panel shows "no messages" for any agent that isn't running Claude Code.
+It is not a per-agent toggle and it is not that the other program has no
+conversation — it is that **the chat is a Claude Code transcript viewer**, welded
+to one program's data at three points:
+
+| what chat needs | Claude Code | Codex |
+|---|---|---|
+| **locate** transcript | `~/.claude/projects/<enc cwd>/*.jsonl` | `~/.codex/sessions/YYYY/MM/DD/rollout-*.jsonl` (cwd is *inside* the file) |
+| **parse** it | `{type:'assistant', message:{content:[tool_use…]}}` | `{timestamp, ordinal, type, payload}` envelope |
+| **live state** (status dot, questions, permission cards) | AI Maestro hook in `~/.claude/settings.json` | codex's own `hooks.json`, different approval UX |
+| **send** a message | send-keys to the pane | **already works** (program-agnostic) |
+
+So the tab shows the empty state because the reader looked in the Claude directory
+and found nothing. Codex keeps a full, well-structured transcript — the chat just
+has no reader for it.
+
+This item makes the chat multi-provider so AI Maestro genuinely works with the
+two main AI coding CLIs (Claude Code + Codex), not "Claude Code with others bolted
+on".
+
+## Why It's Needed
+
+Codex is the second-most-common agent runtime our users run (the reporter created
+a codex agent and could not use the chat at all). A dashboard that advertises
+multi-agent orchestration but whose primary interaction surface only works for one
+vendor is half a product. The terminal tab works for codex, but the chat — with
+history, message bubbles, and one-click send — is where the value is.
+
+## Business Case
+
+- **Positioning:** "works with Claude Code AND Codex" is a materially stronger
+  claim than "works with Claude Code". It is the difference between a Claude
+  tool and an agent-orchestration platform.
+- **Unblocks real use:** at least one user is running codex agents today and
+  cannot use the chat.
+- **Cheap for the value:** codex already writes a complete JSONL transcript;
+  Phase 1 is a locator + a parser mapping its events to the shape ChatView
+  already renders. No UI changes.
+- **Sets the pattern:** the same seam admits Gemini, Aider, etc. later — one
+  adapter each.
+
+## Implementation Plan
+
+### Findings from eval (codex rollout schema, verified against the live corpus)
+
+Codex session file: `~/.codex/sessions/YYYY/MM/DD/rollout-<ts>-<session_id>.jsonl`.
+Every line: `{timestamp, ordinal, type, payload}`. Relevant `type`s and, for
+`response_item`, the `payload.type`:
+
+- `session_meta` → carries **`cwd`** (line 1) — the agent↔transcript key.
+- `response_item` / `message` with `role`:
+  - `user` → user message (some are injected AGENTS.md context — collapse/skip)
+  - `assistant` (+ `agent_message`) → assistant message
+  - `developer` → system/setup — **skip**
+- `response_item` / `reasoning` → codex's thinking, but **`summary:[]` +
+  `encrypted_content`** — not displayable, **skip** (a codex limitation, not ours)
+- `response_item` / `custom_tool_call` (+ older `function_call`, `tool_search_call`)
+  → tool call `{call_id, name, input/arguments}`
+- `response_item` / `custom_tool_call_output` (+ `function_call_output`,
+  `tool_search_output`) → tool result, paired to the call by `call_id`
+- `event_msg` / `item_completed` → **mirrors** response_items (UserMessage /
+  AgentMessage / CommandExecution) — **ignore** (use response_item as truth)
+- `token_usage_record`, `token_count`, `task_started`, `task_complete`,
+  `turn_context`, `world_state` → metadata (candidates for the status line later)
+
+Content parts are `{type: input_text|output_text, text}` — concatenate the text.
+
+### The seam (minimal-touch, both call sites unchanged)
+
+`getChatHistory` and the incremental JSONL watcher both go through
+`resolveJsonlPath(agent)` + `parseJsonlLines(lines, limit)`. So:
+
+1. **`resolveJsonlPath(agent)`** dispatches by `agent.program`: codex →
+   `resolveCodexTranscriptForDir(cwd)` (scan `~/.codex/sessions` newest-first,
+   read each file's `session_meta` cwd, early-exit on match); else the existing
+   Claude locator.
+2. **`parseJsonlLines(lines, limit)`** detects the format **per line** (a codex
+   envelope has `payload` + a codex `type`) and routes to the codex mapper; else
+   the existing Claude handling. Per-line detection is required because the
+   watcher passes only the delta (no `session_meta` in it) — and codex lines are
+   self-identifying, so it works.
+
+New module `lib/transcript-codex.mjs`: `isCodexLine`, `codexLineToMessages`,
+`resolveCodexTranscriptForDir`. Emits the SAME message shapes ChatView already
+renders (`user` / `assistant` with `content:[{type:'text'|'tool_use'}]`,
+`tool_result_marker`), so **no component changes**.
+
+### Phases
+
+- **Phase 1 (this delivery): history + live updates.** Locator + parser + dispatch.
+  The Chat tab shows codex's real conversation and updates live via the existing
+  watcher. Sending already works. NO status dot / question cards for codex.
+- **Phase 2 (later): live state.** A codex-side hook (codex has `hooks.json`)
+  reporting status the way the Claude hook does, plus mapping codex's approval
+  model to the permission-card path. Bigger lift; codex approvals ≠
+  `AskUserQuestion`.
+
+### Effort / risks
+- Phase 1: **M**. Risk: `resolveCodexTranscriptForDir` scanning cost on a large
+  `~/.codex/sessions` — mitigated by newest-first + early-exit + a scan cap.
+- Tests: a real-schema codex rollout fixture → asserts the mapped message shapes,
+  tool pairing by `call_id`, developer/reasoning skipped, `event_msg` ignored.
+- Open question (Phase 2): does codex's approval prompt surface anywhere the
+  hook can read it, or only in the TUI? Determines whether permission cards are
+  feasible for codex at all.
+
+## Phase 2a — live working indicator (shipped v0.38.36)
+
+Codex has no AI Maestro hook, but it brackets every turn in its transcript with
+`event_msg` `task_started` … `task_complete`. `codexLiveStatus` reads the LAST
+such event: `task_started` (mid-turn) → **working**, `task_complete` → idle.
+Surfaced through the same `readHookState` seam the chat already polls
+(`getChatHistory` + the 2.5s `broadcastHookState`), as `hookState.status:
+'working'` → an amber "working" pulse in both renderers. No codex config, no
+per-agent install — it rides the Phase 1 watcher. Verified: Nico reads `idle`
+after a completed turn.
+
+## Phase 2b — sidebar dot (shipped v0.38.37) + approval-card finding
+
+**Sidebar / session-list dot — DONE.** `/api/sessions` read the hook-populated
+`sessionActivity` map, so a codex agent showed `disconnected` even while working.
+`sessions-service` now derives a codex session's status from the same
+`codexLiveStatus` (working → `active`, idle → `idle`) when the agent's program is
+codex. Verified: Nico now reads `idle` there instead of `disconnected`.
+
+**Approval / permission cards — EVALUATED, deferred with reason.** The eval is
+conclusive: codex does **not** write a "waiting for approval" event to its
+transcript. `turn_context` records the `approval_policy` (`untrusted` /
+`UnlessTrusted`) and `sandbox_policy`, and under the sandbox codex often
+*auto-handles* a disallowed command (observed: a `function_call_output` reading
+"approval policy is UnlessTrusted; reject command"). When it does need a human,
+the approval prompt lives **only in the TUI** — there is no readable event to
+build a clickable card from.
+
+So clickable approval cards for codex would require **parsing codex's approval
+menu out of the pane** (a codex-specific analogue of `parsePermissionMenu`), and
+that needs a **captured sample of the actual prompt**, which we do not have — Nico
+runs in `auto mode`, which does not prompt. Building a parser against an
+unobserved menu format would be a fragile guess, so it is deferred rather than
+shipped. **Today, codex approvals are handled in the terminal tab** (which works).
+
+### To build approval cards later (when a sample exists)
+1. Capture a real codex approval prompt from a session's pane (`tmux capture-pane`)
+   with a non-auto approval policy.
+2. Write a codex menu parser beside `lib/pane-permission.mjs`, matched to that
+   format, feeding the same `hookState.status: 'permission_request'` + options
+   the chat already renders — reuse `paneCardBelongsToTranscriptQuestion`'s
+   sibling logic so a stale codex menu cannot resurrect.
+3. Answer via send-keys (already program-agnostic).

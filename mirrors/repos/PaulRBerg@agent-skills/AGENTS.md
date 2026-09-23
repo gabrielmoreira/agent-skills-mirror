@@ -24,7 +24,11 @@ Treat visual structure as information architecture, not decoration.
   caveat/approval/risk, `⛔` blocked/not written, `❓` unknown, and `↩` reverted/rolled back. When a status icon is
   used, pair it with a status word; never make color or emoji the only carrier of meaning.
 - Lead reports with one outcome line. Use at most one non-status domain icon per heading for identity, then add compact
-  headings for changed artifacts, verification, and risks only when those sections are useful.
+  headings for changed artifacts, verification, and issues only when those sections are useful.
+- Use `Issues and caveats` for report findings, grouped as `Resolved` (verified fixes) and `Open` (remaining problems,
+  limitations, or unverified assumptions). State resolution evidence or the remaining impact and next step; omit empty
+  groups and report each item once. Reserve `blocker` for something preventing required work and `risk` for a specific
+  potential adverse outcome. Put neutral context and agreed decisions under changes or scope.
 - Use tables for repeated fields, trees for real hierarchy or file structure, and progress bars only when a measured
   numerator and denominator exist. Never imply progress from elapsed time, activity, or guesswork.
 - Keep JSON, JSONL, DOT, CSV/TSV, exact commands, confirmation tokens, identifiers, addresses, hashes, signatures,

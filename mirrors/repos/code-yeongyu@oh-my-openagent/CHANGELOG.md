@@ -7,7 +7,73 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+**GPT-6 Sol and GPT-6 Luna are supported models, and Hephaestus now runs on GPT-6 Sol.** Both tiers are registered with their published capabilities: a 1.05M context window, a 128K output limit, text and image input, no temperature, and a reasoning ladder of `none` through `max`. Hephaestus leads with `gpt-6-sol` at medium effort across OpenAI, OpenAI Codex, GitHub Copilot and OpenCode Zen, and keeps its previous `gpt-5.6-sol` medium rung as a fallback, so the agent still resolves on a provider that has not shipped GPT-6 Sol yet. The Fast service-tier ids `gpt-6-sol-fast` and `gpt-6-luna-fast` canonicalize to their base models the same way `gpt-6-astra-fast` already did. GPT-6 Luna is not a default for any agent or category and is available as a manual override.
+
 ### Changed
+
+**The model profiles are now Capable and Deep work; Simple work is removed.** ([#8704](https://github.com/code-yeongyu/oh-my-openagent/issues/8704))
+
+The profile picker lists `capable`, then `deep-work`. Capable starts on Claude Fable 5.1 at `xhigh` instead of `max`, then Claude Opus 5.5, Kimi K3 and GLM 5.3 at `max` as before. Deep work is GPT-6 Astra at `high`, then GPT-6 Sol at `medium`, and stops there instead of continuing to GPT-5.6 Sol. The `simple-work` profile no longer ships: a configuration that still sets `"model_profile": "simple-work"` shows the unknown-profile notice listing the remaining profiles and keeps the default model, and a `model_profiles.simple-work` entry you wrote yourself keeps working as your own profile.
+
+**`deep-low` runs on GPT-6 Sol, and every Luna rung is GPT-6 Luna Fast.** ([#8701](https://github.com/code-yeongyu/oh-my-openagent/issues/8701))
+
+The default deep lane leads with `gpt-6-sol` at `medium` across OpenAI, ChatGPT Subscription, GitHub Copilot and OpenCode Zen and keeps `gpt-5.6-sol` at `medium` as its fallback rung, so a registry that has not picked up GPT-6 Sol yet still opens the lane; `deep-high` stays Astra-only. Wherever a builtin chain, default or profile named `gpt-5.6-luna-fast` it now names `gpt-6-luna-fast` at the same `low` effort: the `quick` category, the `explore` and `librarian` agents, the OpenAI-only installer catalog and the installer's explore default. The `deep-work` profile picks up the new Sol rung, `gpt-6-luna` and `gpt-6-luna-fast` join the telemetry vocabulary, the post-compaction budget knows the GPT-6 Sol (400k) and Luna (922k) prompt budgets, and `gpt-6-luna-fast` has a capability entry so the model-capability guardrail no longer reports a built-in model missing from the snapshot. The docs, shipped example configs and the generated telemetry schema follow.
+
+**Fable 5.1 chains step down to Claude Opus 5.5 before Kimi.** ([#8701](https://github.com/code-yeongyu/oh-my-openagent/issues/8701))
+
+The `artistry` category and the `prometheus` agent, both led by `claude-fable-5-1`, now carry `claude-opus-5-5` at `max` as their second rung ahead of `kimi-k3`, matching senpi's own Fable 5.1 fallback ladder. `architect` is unchanged: it is hard-gated on Fable 5.1 and never falls back.
+
+### Fixed
+
+**Claude Opus 5.5 works on a fresh OmO Native install with a Claude subscription.** ([#8705](https://github.com/code-yeongyu/oh-my-openagent/pull/8705))
+
+Every request to `claude-opus-5-5` on a subscription login was rejected with `400 claude_code_version_too_old` (`Claude Code 2.1.251 does not support this model; version 2.1.280 or newer is required`) and the turn fell back to Claude Opus 5, so the recommended Anthropic model never answered. The postinstall step that raises the advertised Claude Code version only rewrote the pi-ai module, while the launcher runs the engine's pre-linked `dist/bundle`, which carries its own copy of the version. The floor is now `2.1.280` and postinstall applies it to every declaration under `dist/bundle` as well, rewriting only the version string and never lowering one that is already higher. Thanks to youngminsw for the diagnosis and the fix.
+
+**The Capable model profile no longer bills a Claude subscription user through OpenCode Zen.** ([#8704](https://github.com/code-yeongyu/oh-my-openagent/issues/8704)) On a machine logged in to a Claude subscription that also held an OpenCode Zen key, the Capable profile picked the metered `opencode` copy of Claude Fable 5.1, because the profile's Claude rungs never listed the subscription lane. Every Claude rung in the builtin profiles now tries the subscription first, the same order the delegation categories already use.
+
+**A reasoning effort of `none` is no longer silently raised to `low` on GPT-6 models that support it.** Every model id containing `gpt-6` shared one capability rule, which was written for GPT-6 Astra and therefore mapped `none` onto `low`. GPT-6 Sol and GPT-6 Luna both document `none` as a supported effort, so anyone who configured the cheapest tier on those models was quietly billed and throttled at `low` instead, with the change recorded as `unsupported-by-model-family`. The Astra rule is now matched on its own id and keeps its documented clamp, while the rest of the GPT-6 family accepts `none`. A per-model capability override could not have fixed this, because family effort aliases are applied before capability metadata.
+
+## [5.0.0-beta.84] - 2026-09-22
+
+### Changed
+
+**Claude Opus 5.5 is the Opus every default reaches for now, and it runs at `max`.** ([#8684](https://github.com/code-yeongyu/oh-my-openagent/issues/8684))
+
+Every rung that named `claude-opus-5` now names `claude-opus-5-5`: the `visual-engineering`, `artistry`, `unspecified-high` and `writing` category chains, the Sisyphus, Oracle, Metis and Momus agent chains, the senpi-task category and builtin-agent tables, `unspecified-high`'s builtin config, and the Capable model profile. The rungs that ran at `xhigh` run at `max`, because that is the level Opus 5.5 is recommended at. Claude Opus 5 stays selectable and keeps its own prompt variant; it is no longer what you get without asking.
+
+**The `writing` category chain is Fable 5.1, then Opus 5.5, then Opus 4.6.** ([#8684](https://github.com/code-yeongyu/oh-my-openagent/issues/8684))
+
+`writing` ran Fable 5.1 at `low`, then Kimi K3 at `low`, then Opus 4.6 at `low`. It now runs Fable 5.1 at `low`, then Claude Opus 5.5 at `low`, then Claude Opus 4.6 at `max`, so prose work stays inside the Claude family end to end. The chain was declared in two places that had drifted apart - `model-core` and `senpi-task` disagreed on both the rungs and their levels - and both now read the same three rungs.
+
+**A Claude Opus 5.5 session no longer introduces itself as Opus 5.** ([#8684](https://github.com/code-yeongyu/oh-my-openagent/issues/8684))
+
+Opus 5.5 routes to the Opus 5 orchestrator prompt, which is right - the Opus 5 patterns carry over - but its self-knowledge block hardcoded the name and id of the earlier model, so the running model was told it was something else. The block now names whichever of the two is running. Telemetry gained the new id while keeping the old one, so a session on an older pinned engine is still recorded rather than masked to `custom`.
+
+## [5.0.0-beta.83] - 2026-09-22
+
+### Added
+
+**`oh-my-openagent install --platform=native` now installs OmO Native for you, so you no longer have to know the package name or the recommended runtime.** `native` is a public platform now, listed in `install --help` and in the interactive picker beside OpenCode, Codex and Both. Choosing it performs the real install - `bun add -g omo-ai@beta` when bun is on PATH, `npm i -g omo-ai@beta` when it is not, with bun named as the recommended runtime - and then points you at `omo setup`. When the global install fails, the exact command to run by hand and the reason it failed are printed instead of a raw error. The in-repo development adapter keeps today's behaviour under `--platform=native-dev`, still gated by an environment flag (`OMO_ENABLE_NATIVE_DEV_PLATFORM`, and the old `OMO_ENABLE_SENPI_PLATFORM` is still accepted). ([#8618](https://github.com/code-yeongyu/oh-my-openagent/issues/8618))
+
+**An OpenCode session can point you at OmO Native from inside the TUI.** The only pointer used to print at install time, which npm hides by default and which scrolls away for everyone else. A throttled toast on session start now names OmO Native and the install command, and `/native` in the command palette opens a dialog: install prints the command for you to run, or you can open the guide, be reminded in a week, or stop asking. The toast stays off when Native is already installed, when `native-edition-nudge` is in `disabled_hooks`, in a child session, and when the toast cannot record itself - a showing that cannot be remembered is skipped, so it cannot nag every session. Automatic showings stop after four, with widening gaps, and at most once per process. ([#8619](https://github.com/code-yeongyu/oh-my-openagent/issues/8619))
+
+### Changed
+
+**The `unspecified-low` category now runs on MiMo V2.6 Pro first, and its Grok rung moves to Grok 4.7.** ([#8652](https://github.com/code-yeongyu/oh-my-openagent/issues/8652))
+
+`unspecified-low` is where delegated work lands when no specialist category fits and the job is contained. The chain led with Grok 4.6 at `xhigh`; it now leads with MiMo V2.6 Pro at `max`, served by Xiaomi or opencode-go, with Grok 4.7 at `xhigh` right behind it. Grok 4.7 is not served by the opencode provider, so that lane left the rung and opencode-go joined it. The rest of the chain - GPT-5.6 Terra, Claude Sonnet 5, Qwen 3.8 Max Preview, DeepSeek V4 Pro - is unchanged, and MiMo V2.5 Pro stays as the last rung.
+
+**Write your harness block as `[native]` in `omo.json`, and delegate to the `omo-native-*` reviewers.** ([#8620](https://github.com/code-yeongyu/oh-my-openagent/issues/8620))
+
+The standalone edition is branded OmO Native, but the block you write in `omo.json` to override settings for it was spelled `[senpi]`, and the reviewer agents you delegate to by name were `omo-senpi-code-reviewer`, `omo-senpi-qa-executor` and `omo-senpi-gate-reviewer`. Both spellings came from the engine's package name.
+
+`[senpi]` keeps working. It is canonicalized when the config is read, so a config nothing can rewrite still applies every value it sets, and first launch rewrites the key in the file once and names it in a startup notice. A file carrying both blocks resolves `[native]` and reports the ignored one. A config that never mentioned `[senpi]` is not touched at all.
+
+The reviewer agents now answer to `omo-native-code-reviewer`, `omo-native-qa-executor` and `omo-native-gate-reviewer`. The old names still resolve for one release line, so existing skills and AGENTS.md files keep working while you rename them.
+
+The engine underneath OmO Native is still senpi and still called senpi. The `senpi` command, `@code-yeongyu/senpi`, `SENPI_CODING_AGENT_DIR` and the telemetry identifiers are unchanged.
 
 **The catch-all `unspecified-high` category no longer runs on GPT-6 Astra.** ([#8616](https://github.com/code-yeongyu/oh-my-openagent/issues/8616))
 
@@ -17,11 +83,67 @@ The chain now starts at the rung that already sat behind Astra: Claude Opus 5 at
 
 Astra stays where it was chosen on purpose: `ultrabrain`, `deep-high`, and the plan reviewer. Point the category back at a GPT-6 model in your own config and the child still gets the Astra-tuned prompt append.
 
-**`quick` drops its Kimi HighSpeed rung, and the two search agents pick it up with thinking off.** ([#8616](https://github.com/code-yeongyu/oh-my-openagent/issues/8616))
+**`quick` drops Kimi HighSpeed from its model chain, and the two search agents (`explore`, `librarian`) pick it up with thinking off.** ([#8616](https://github.com/code-yeongyu/oh-my-openagent/issues/8616))
 
 Kimi HighSpeed led the `quick` chain and no other lane used it. The `quick` chain now starts at GPT-5.6 Luna Fast at `low`, followed by DeepSeek V4 Flash at `off`.
 
 `explore` and `librarian` now lead with Kimi HighSpeed at variant `off`. The Kimi endpoint rejects an explicit disabled-thinking block, so senpi sends the request with no thinking parameter and the lowest adaptive effort, which is what a grep-and-report agent needs. A machine with no Kimi Code subscription falls through to Luna Fast, the model those two agents ran on before this change.
+
+**The standalone edition is called OmO Native everywhere.** The installer hint, the package postinstall notice, the installation guide, the README and its four translations, and the `omo-ai` package description called it the "Senpi edition" - a name the product itself never used, having said `OmO Native` in the TUI footer and `Edition: Native` in `omo doctor` all along. The telemetry, model-profile and config-startup notices on that same screen opened with `omo-senpi`. They all say OmO Native now, and the hint names what you get: the same omo as one `omo` command, with no OpenCode host required, while the install you already have keeps working. `senpi` still names the engine, in `omo doctor`, in this file's engine headings, and in its own environment variables and paths. Telemetry identifiers are unchanged. A regression test fails if the old edition wording comes back. ([#8618](https://github.com/code-yeongyu/oh-my-openagent/issues/8618), [#8629](https://github.com/code-yeongyu/oh-my-openagent/issues/8629))
+
+### Engine: senpi 2026.9.22-2
+
+**A shared RPC host compiles one extension module generation per source version, not one per session.** Opening a session used to compile a fresh copy of every extension and leave it in the module registry for the life of the host, so a long-lived daemon retained another full graph each time. Sources are compiled once and reused until a source file changes; each session still gets its own extension instance. Measured on one machine, retained size per session fell from 74.6 MiB to 3.1 MiB. (senpi [#1952](https://github.com/code-yeongyu/senpi/issues/1952))
+
+**Grok 4.7 is a supported model family.** Every grok-4.7 id shape - including aggregator ids like `openrouter/x-ai/grok-4.7` and Venice's dashed `grok-4-7` - reuses the Grok 4.6 system prompt, `grok-4.7` is a `promptPreset` value, and the xAI provider default moves from grok-4.5 to grok-4.7. (senpi [#1990](https://github.com/code-yeongyu/senpi/issues/1990))
+
+**A hard OpenAI usage-limit 429 is terminal on the first failure.** `usage_limit_reached` / "The usage limit has been reached" used to classify as a transient rate limit, so a turn spent five retries over about a minute on an account that cannot serve another request until the quota resets. The same wording now pins a billing fallback for the rest of the session. Warnings that only approach the limit still retry. (senpi [#1969](https://github.com/code-yeongyu/senpi/issues/1969))
+
+**Normalizing a tool call's arguments no longer rewrites the assistant message the model produced.** Two argument normalizers — the 80-character clamp on an eval cell's summary and the edit tool's rewrite of its `edits` list — used to change that message in place. On the `claude-sdk-oauth` lane that was the usual cause of `Session continuity lost - resent the full conversation (assistant_rewritten)`. They now run on a detached copy. The 80-character eval summary limit is unchanged: it is enforced on the rendered line. (senpi [#1472](https://github.com/code-yeongyu/senpi/issues/1472))
+
+**A supervised RPC host whose supervisor loses its observer keeps reconnecting, and a host whose socket file is deleted drains and exits.** The supervisor retried a lost observer once and then gave up, which kept an idle window from ever elapsing because an unhealthy observer counts as busy; reconnects now continue until they succeed, and an observer that stays unhealthy for a whole idle window no longer counts as busy. Removing the workspace or deleting the socket used to leave the pair running until reboot; attached sessions finish, then the host exits. A host started as `persistent` still never exits for idleness. (senpi [#1979](https://github.com/code-yeongyu/senpi/issues/1979), [#1961](https://github.com/code-yeongyu/senpi/issues/1961))
+
+**Opening a second terminal on a live Claude SDK session no longer throws away the resumable binding (the saved link that lets the next turn continue the conversation instead of resending it).** The startup notice it appends used to retire the binding, so the next turn re-sent the entire conversation as `registry_miss`. Append-only entries after the committed assistant keep the binding; a later assistant message, a compaction, a branch summary and an explicit invalidation still discard it. A fork point (the message the conversation branched from) that Claude Code reports missing is dropped instead of being requested again every turn. (senpi [#1964](https://github.com/code-yeongyu/senpi/issues/1964), [#1958](https://github.com/code-yeongyu/senpi/issues/1958), [#1973](https://github.com/code-yeongyu/senpi/issues/1973))
+
+**A session whose worker dies while it is being opened now reports `open_failed` carrying the worker's reason**, instead of `session_closing`, which means a session somebody else is tearing down. (senpi [#1953](https://github.com/code-yeongyu/senpi/issues/1953))
+
+### Fixed
+
+**A DAG snapshot now carries what each node actually returned, and shows when a running node's child last did anything.** ([#8674](https://github.com/code-yeongyu/oh-my-openagent/issues/8674))
+
+`workflow` tells you to detach and peek with `action=snapshot`, but the snapshot never carried a node's output. The text was being saved - it just was not reachable except through the blocking wait, so a run you were supervising showed six nodes with nothing to read, and the only way to learn what a child had done was to look at the files it wrote.
+
+A settled node now carries `output` (the child's final message, up to 2000 characters) and `outputBytes` (its full size, so you can tell a truncated preview from the whole thing, and a node that returned nothing reads as `0` rather than as nothing recorded). A running node carries `lastActivityAt`, the last time its child wrote anything at all, and `snapshot` names any running node that has been silent for more than ten minutes. Silence is reported, never judged - one long tool call looks the same as a stalled child - but a node quiet for fifty minutes is now something you can see instead of something you have to guess.
+
+The end time was already recorded, under the name `completed_at`. A node stuck in `running` because its child finished but was never reaped is a separate defect, tracked in [#8659](https://github.com/code-yeongyu/oh-my-openagent/issues/8659).
+
+**A crashed reclaimer's stale sentinel can no longer wedge DAG lock acquisition on Windows.** ([#8671](https://github.com/code-yeongyu/oh-my-openagent/issues/8671))
+
+Clearing a stale `.reclaim` sentinel renames and unlinks files that the host's antivirus or search indexer can briefly hold open; on win32 that surfaces as EPERM/EBUSY sharing violations that POSIX rename does not have. The quarantining rename threw the refusal raw, and the lock-wait budget — which resets only when the canonical holder changes — charged the reclaim's own I/O until acquisition timed out behind an unchanged dead holder. The rename now retries transient refusals the way the final unlink already did, clearing a stale sentinel republishes the reclaim mutex in place instead of handing a wasted poll back to the waiter, and a pass that cleared a sentinel resets the wait budget: the loop observes the sentinel's disappearance, not the clock. `LOCK_WAIT_TIMEOUT_MS` is unchanged and nothing is skipped on win32.
+
+**A git that dies mid-command no longer hangs isolation work until its helpers exit.** `runGit` settled on the child `close` event, which fires only after every stdio pipe closes — but git's `!` alias shells inherit those pipes. On Windows, killing git alone (`TerminateProcess` has no tree semantics) left those shells holding every handle, so a run whose git had already failed stayed pending until the last survivor exited; in CI that raced the 30-second test budget and intermittently lost, with the survivor's locked working directory surfacing as an `EBUSY` on fixture teardown. A git that exits to a signal death or a disallowed exit code now settles at once: what remains of the tree is killed immediately, and pipes still held a second later are force-closed so the typed `GitCommandError` surfaces with the output kept so far. Normal commands are unaffected — their pipes close in milliseconds anyway. ([#8663](https://github.com/code-yeongyu/oh-my-openagent/issues/8663))
+
+**A resumed DAG no longer shows nodes as running when nothing is running them.** ([#8657](https://github.com/code-yeongyu/oh-my-openagent/issues/8657))
+
+Resuming a session re-adopted every DAG node whose child task record still said `running`, without asking whether anything in the resuming process still held that child. A child whose host went away is kept as `running` on purpose, so it can be reopened from its transcript later - but a DAG node waiting on one waits forever, because the run folds a node only when its child settles here. The node therefore stayed `running` in the run's saved state through restart after restart, with the work behind it blocked, and the widget kept counting hours on children that had died hours ago.
+
+Such a node now fails at resume with a reason naming the task and why it cannot be reached, the nodes behind it skip as they would for any failure, and retry or send still revives it. A node whose child this session really does hold is reattached as before.
+
+**Resuming a session that has DAG history no longer freezes the TUI.** Listing DAG runs parsed every checkpoint in the runs directory on each call, and the status widget asked for that list about once a second, so a resume - a burst of checkpoint writes - starved the screen while the process stayed alive and still answered prompts. The list now keeps a per-run summary cache. On a directory of 710 checkpoints, one call fell from 473 ms median to 3.4 ms. ([#8649](https://github.com/code-yeongyu/oh-my-openagent/issues/8649))
+
+**DAG run history is pruned on the advertised 7-day retention.** The prune existed, was tested, and was called from nowhere, so checkpoints, event logs, results and keys accumulated forever. A long-lived project directory held 711 checkpoints, the oldest 25 days old against a 7-day policy. The sweep now runs once per DAG runtime after session start, off the start path so a stale file cannot fail the session, and indexes the keys and locks directories once per sweep. A paused run whose lease holder is still alive is kept. Against a copy of a 170 MB state directory the sweep cut 10,623 files to 1,779 and 170 MB to 38 MB. ([#8651](https://github.com/code-yeongyu/oh-my-openagent/issues/8651))
+
+**Migrating a leftover `config.jsonc` writes `[native]`, and a `[native]` block gets the same reasoning cleanup as the old name.** First launch used to copy the retired harness key into the new file, so a later pass had to rename it. The leftover-file transform now emits `[native]`. Reasoning-key unification walks `[native]` as well as the old spelling, because that cleanup runs before the rename pass and a file already written with the documented name was being skipped. ([#8631](https://github.com/code-yeongyu/oh-my-openagent/issues/8631))
+
+**A failed turn in a delegated task is no longer counted as a turn.** When a provider error ends an assistant turn, that turn now lands in a new `failed_turns` stat instead of inflating `turns`, and its usage - typically an all-zero block the provider sends alongside the error - contributes no tokens, no cost and no generation time. A run that never produced a successful turn reports token and cost coverage as `unavailable` and omits the cost field entirely, instead of claiming `turns: 6` for six consecutive failures. A successful turn that cost $0 keeps reporting a cost of 0, and a failure re-anchors the generation window so the next successful turn's throughput is measured from the failure, not from spawn. The live task row now tells the same story: it reads `starting` until the first successful turn lands - no phantom `turn 0`, no cost token - shows `failed N` with the verb `retrying` while provider attempts keep failing, and returns to `running` only after a real turn. Both the TUI status line and the background task row draw their stats tokens from one shared builder, so the two grammars cannot drift apart again. ([#8627](https://github.com/code-yeongyu/oh-my-openagent/issues/8627))
+
+**The ulw-loop gate reviewer is enforced again on the Codex surface.** ([#8630](https://github.com/code-yeongyu/oh-my-openagent/issues/8630))
+
+Renaming the reviewer agents to `omo-native-*` left the Codex-side ulw-loop guard (which checks that a gate reviewer only starts after a manual-QA artifact exists) matching only the retired `omo-senpi-*` spellings. Because the resolver (which maps a reviewer's old name to its new one before any check runs) canonicalizes a name before the guard sees it, the guard received a name it did not recognize and treated the spawn as ordinary work: the gate reviewer could start without a manual-QA artifact, and the per-reviewer no-progress cap stopped counting. Both checks apply again, and either spelling is recognized, so nothing that named the old reviewer breaks. The denial message and the spawn counter now name the reviewer that actually ran.
+
+### Known issues
+
+**One Windows-only test flake is not fixed in this release.** On a slow Windows CI runner, the DAG lock test in `senpi-task` (`store.test.ts`) can still fail with `Timed out acquiring DAG lock` when an earlier run crashed while it was clearing a lock. The fix ([#8672](https://github.com/code-yeongyu/oh-my-openagent/pull/8672)) ships in 5.0.0-beta.84. It changes only how that leftover lock file is cleared on Windows; nothing in this build behaves differently for users.
 
 ## [5.0.0-beta.82] - 2026-09-21
 

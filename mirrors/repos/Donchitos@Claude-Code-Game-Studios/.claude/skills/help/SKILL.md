@@ -1,11 +1,9 @@
 ---
 name: help
-description: "Analyzes what is done and the users query and offers advice on what to do next. Use if user says what should I do next or what do I do now or I'm stuck or I don't know what to do"
+description: "What should I do next? Use when stuck or you don't know what to do."
 argument-hint: "[optional: what you just finished, e.g. 'finished design-review' or 'stuck on ADRs']"
 user-invocable: true
-allowed-tools: Read, Glob, Grep
-context: |
-  !echo "=== Live Project State ===" && echo "Stage: $(cat production/stage.txt 2>/dev/null | tr -d '[:space:]' || echo 'not set')" && echo "Latest sprint: $(ls -t production/sprints/*.md 2>/dev/null | head -1 || echo 'none')" && echo "Session state: $(head -5 production/session-state/active.md 2>/dev/null || echo 'none')"
+allowed-tools: Read, Glob, Grep, Bash
 model: haiku
 ---
 
@@ -16,6 +14,21 @@ This skill is read-only — it reports findings but writes no files.
 This skill figures out exactly where you are in the game development pipeline and
 tells you what comes next. It is **lightweight** — not a full audit. For a full
 gap analysis, use `/project-stage-detect`.
+
+## Live Project State
+
+!`source "${CLAUDE_PROJECT_DIR:-.}/.claude/hooks/yaml-helper.sh" 2>/dev/null && resolve_config --keys project.stage,workflow`
+
+!`echo "Latest sprint: $(ls -t production/sprints/*.md 2>/dev/null | head -1 || echo 'none')"; echo "Session state: $(head -5 production/session-state/active.md 2>/dev/null || echo 'none')"`
+
+Both blocks are resolved before this skill runs. Use them as-is:
+
+- **`project.stage`** from the config block is the authoritative phase for Step 2
+  — it already applies the `project.yaml` → `production/stage.txt` fallback, and
+  preserves values containing spaces (`Systems Design`).
+- **`workflow`** from the config block is the tier for Step 5 — do not re-read it.
+- If no config block rendered, shell preprocessing is disabled; fall back to the
+  defaults in `.claude/docs/config-resolution.md`.
 
 ---
 
@@ -54,8 +67,7 @@ skills in production/polish, etc.).
 
 Check in this order:
 
-1. **Read `production/stage.txt`** — if it exists and has content, this is the
-   authoritative phase name. Map it to a catalog phase key:
+1. **Take `project.stage` from the config block above** — it is already resolved. Map its value to a catalog phase key:
    - "Concept" → `concept`
    - "Systems Design" → `systems-design`
    - "Technical Setup" → `technical-setup`
@@ -64,19 +76,23 @@ Check in this order:
    - "Polish" → `polish`
    - "Release" → `release`
 
-2. **If stage.txt is missing**, infer phase from artifacts (most-advanced match wins):
-   - `src/` has 10+ source files → `production`
-   - `production/stories/*.md` exists → `pre-production`
+2. **If neither is set**, infer phase from artifacts (most-advanced match wins):
+   - code root has 10+ source files → `production`
+   - `production/epics/**/story-*.md` exists → `pre-production`
    - `docs/architecture/adr-*.md` exists → `technical-setup`
    - `design/gdd/systems-index.md` exists → `systems-design`
-   - `design/gdd/game-concept.md` exists → `concept`
+   - `design/gdd/game-concept.md` (or `design/game-brief.md`) exists → `concept`
    - Nothing → `concept` (fresh project)
+
+3. **Take `workflow` from the config block above** (per
+   `.claude/docs/workflow-modes.md`). It controls whether optional docs are
+   surfaced as next steps (Step 5).
 
 ---
 
 ## Step 3: Read Session Context
 
-Read `production/session-state/active.md` if it exists. Extract:
+Read `production/session-state/active.md` if it exists — it is append-only and grows unbounded, and only the latest block is relevant, so read just the tail rather than the whole file: grep the last heading (`Grep pattern="^## (Session Extract|STATUS)" path="production/session-state/active.md" output_mode="content" -n`, take the highest line number) and `Read(offset=that line)`. Extract:
 - What was most recently worked on
 - Any in-progress tasks or open questions
 - Current epic/feature/task from STATUS block (if present)
@@ -92,18 +108,33 @@ For each step in the current phase (from the catalog):
 
 ### Artifact-based checks
 
-If the step has `artifact.glob`:
-- Use Glob to check if files matching the pattern exist
-- If `min_count` is specified, verify at least that many files match
-- If `artifact.pattern` is specified, use Grep to verify the pattern exists in the matched file
-- **Complete** = artifact condition is met
-- **Incomplete** = artifact is missing or pattern not found
+**Resolve these deterministically — one call, not a glob per step:**
 
-If the step has `artifact.note` (no glob):
-- Mark as **MANUAL** — cannot auto-detect, will ask user
+```
+Bash: bash .claude/scripts/artifact-check.sh --phase [current-phase]
+```
 
-If the step has no `artifact` field:
-- Mark as **UNKNOWN** — completion not trackable (e.g. repeatable implementation work)
+It evaluates every `glob`, `pattern`, `min_count` and `any_of` in the catalog
+against the working tree and reports one line per step. Map its statuses:
+
+| status | Report as |
+|---|---|
+| `PRESENT` | **Complete** |
+| `ABSENT` | **Incomplete** |
+| `SHORT` | **Incomplete** — say how far short (`count=`/`min=` are given) |
+| `PATTERN_MISS` | **Incomplete** — the file exists but lacks its marker; say so, since "missing" would send the user to recreate a file they already have |
+| `NO_CHECK` | **MANUAL** if the step carries a `note=`, else **UNKNOWN** — completion is not trackable (e.g. repeatable implementation work) |
+
+Do not re-derive any of this with Glob/Grep. `any_of` in particular is a list of
+**alternatives** — one match is enough — and hand-evaluating it has already
+produced a false "incomplete" once: `engine-setup` is satisfied by `engine.name`
+in `project.yaml` **or** by the legacy `Engine:` line in
+`.claude/docs/technical-preferences.md`, and the script reports which alternative
+matched (`alt=`/`match=`).
+
+**`NO_CHECK` never means done.** The script prints a `NO_CHECK:` total before the
+rows; if most of a phase is NO_CHECK, say that plainly rather than implying the
+phase is nearly complete.
 
 ### Special case: production phase — read `sprint-status.yaml`
 
@@ -134,7 +165,11 @@ From the completion data, determine:
 2. **Current blocker** — the first incomplete *required* step (this is what the
    user must do next)
 3. **Optional opportunities** — incomplete *optional* steps that can be done
-   before or alongside the blocker
+   before or alongside the blocker. **Surface these per the workflow tier**: at
+   `full`, list all of them; at `standard`, list an optional doc only if it is
+   required for the current system/phase (do not flag genuinely-optional docs as
+   gaps); at `minimal`, do not surface optional docs at all — once the brief,
+   engine, and a sprint plan exist, the next step is code
 4. **Upcoming required steps** — required steps after the current blocker
    (show as "coming up" so user can plan ahead)
 
@@ -211,10 +246,19 @@ Need more detail?
 - `/project-stage-detect` — full gap analysis with all missing artifacts listed
 - `/gate-check` — formal readiness check for your next phase
 - `/start` — re-orient from scratch
+- `/settings` — if the process feels mismatched to your project, adjust
+  `modes.rigor`. Apply the change-triggers in
+  `.claude/docs/settings-guidance.md § 4`: a **lower** tier when the user sounds
+  overwhelmed by process (and rigor isn't already `minimal`), or a **higher** tier
+  when the project has outgrown it (many systems, or in Production on
+  `workflow: minimal`)
 ```
 
 Only show this if the user's input suggested confusion (e.g. "I don't know", "stuck",
-"lost", "not sure"). Don't show it for simple "what's next?" queries.
+"lost", "not sure"). Don't show it for simple "what's next?" queries. Show the
+`/settings` rigor line only when a `settings-guidance.md § 4` trigger actually
+fires — the user sounds overwhelmed (and rigor isn't already `minimal`), or the
+project has outgrown its tier — not on every confused query.
 
 ---
 

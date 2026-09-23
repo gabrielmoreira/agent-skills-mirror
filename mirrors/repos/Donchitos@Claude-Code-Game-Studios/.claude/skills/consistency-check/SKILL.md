@@ -1,11 +1,15 @@
 ---
 name: consistency-check
-description: "Scan all GDDs against the entity registry to detect cross-document inconsistencies: same entity with different stats, same item with different values, same formula with different variables. Grep-first approach — reads registry then targets only conflicting GDD sections rather than full document reads."
+description: "Scan GDDs against the entity registry for cross-document conflicts. Grep-first approach targets conflicting sections, different stats."
 argument-hint: "[full | since-last-review | entity:<name> | item:<name>]"
 user-invocable: true
 allowed-tools: Read, Glob, Grep, Write, Edit, Bash, AskUserQuestion
 model: sonnet
 ---
+
+!`source "${CLAUDE_PROJECT_DIR:-.}/.claude/hooks/yaml-helper.sh" 2>/dev/null && resolve_config --keys automation,workflow`
+
+
 
 # Consistency Check
 
@@ -27,6 +31,15 @@ catches too late.
 **Output:** Conflict report + optional registry corrections
 
 ---
+
+Every `AskUserQuestion` call follows `.claude/docs/automation-modes.md`
+(collaborative asks always · guided major-only · autonomous logs and proceeds;
+`automation_always_ask` categories always prompt).
+
+**`workflow`** (see `.claude/docs/workflow-modes.md`):
+- `full` — full entity-registry cross-check against all GDD sections.
+- `standard` — cross-check against the required sections only.
+- `minimal` — not meaningful (no GDDs to check).
 
 ## Phase 1: Parse Arguments and Load Registry
 
@@ -281,8 +294,14 @@ Then append the new conflict entries. Never skip logging — a missing file is n
 Silently append to `production/session-state/active.md` (create the file if it does not exist):
 
 ```
-<!-- CONSISTENCY-CHECK: [date] | GDDs checked: [N] | Conflicts found: [N] | Report: docs/consistency-report-[date].md -->
+<!-- CONSISTENCY-CHECK: [date] | GDDs checked: [N] | Conflicts found: [N] | Log: docs/consistency-failures.md -->
 ```
+
+> **Point at `docs/consistency-failures.md` — the file Phase 6 actually appends
+> to.** A breadcrumb is a pointer left for a future session to follow. One that
+> names a file nothing writes sends that session looking for conflict history it
+> will never find, and nothing errors along the way. Never invent a report
+> filename here.
 
 Then close with an `AskUserQuestion` widget:
 
@@ -293,7 +312,9 @@ Then close with an `AskUserQuestion` widget:
   - `[C] Run /design-review on the most conflicted GDD`
   - `[D] Stop here`
 
-Never end the skill with plain text. Always close with this widget.
+In collaborative and guided modes, never end the skill with plain text — always
+close with this widget. In autonomous mode, print the findings and recommended
+next step, then record via `log_decision` (no widget).
 
 ---
 

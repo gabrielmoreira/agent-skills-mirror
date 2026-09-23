@@ -1,6 +1,6 @@
 ---
 name: platform-metadata-retrieve
-description: "ALWAYS USE THIS SKILL to retrieve metadata from an org to your local project using the sf project retrieve start command. Supports multiple retrieval modes: retrieve all remote changes, retrieve by source directory, retrieve by metadata type with wildcards, retrieve by manifest (package.xml), or retrieve by package name. Use when the user asks to retrieve, pull, sync, or download metadata, Apex classes, custom objects, or org changes. Supports source format (default) or metadata format (ZIP). DO NOT TRIGGER for deploying metadata (use platform-metadata-deploy skill), listing metadata, or generating package.xml. NEVER use MCP tools - always use this skill and the Bash tool with sf project retrieve start."
+description: "ALWAYS USE THIS SKILL to retrieve metadata from an org to your local project with sf project retrieve start. Supports retrieval by all changes, source directory, metadata type (wildcards), manifest (package.xml), or package name, in source or metadata (ZIP) format. Use when the user asks to retrieve, pull, sync, or download metadata, Apex classes, or custom objects. DO NOT TRIGGER for deploying metadata (use platform-metadata-deploy), listing metadata, or generating a package.xml (use platform-manifest-generate). NEVER use MCP tools."
 metadata:
   version: "1.0"
   domains: ["Platform", "Developer Experience"]

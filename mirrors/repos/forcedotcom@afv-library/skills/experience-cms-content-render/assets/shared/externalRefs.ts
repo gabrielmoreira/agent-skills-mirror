@@ -4,7 +4,7 @@
  * src/cms/shared/externalRefs.ts; each embed appends one entry inside the marker block.
  * Names are EXT_<TITLE_SNAKE>, unique — object-literal keys collide at compile time.
  *
- * ⚠ Do NOT edit the marker block by hand. Add entries via the skill.
+ * Warning: do NOT edit the marker block by hand. Add entries via the skill.
  */
 // Only `AnyCmsRef` is used in the empty template; Ref Registration adds
 // CmsExternalRef/CmsRef when it appends an entry (importing them eagerly trips

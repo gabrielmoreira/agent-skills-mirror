@@ -4,6 +4,37 @@ Note: Only use **NEW:** for entirely new prompt files, NOT for new additions/sec
 
 ### Claude Code System Prompts Changelog
 
+# [2.1.280](https://github.com/Piebald-AI/claude-code-system-prompts/commit/a8b8057)
+
+_+1,283 tokens_
+
+- **NEW:** Data: Artifact capability verification pass — Pages whose capabilities were declared this session get one functional check before the link is handed over, plus a one-line report of what was exercised.
+- **NEW:** Data: MCP read resource control request — Documents `mcp_read_resource`, which reads an MCP Apps `ui://` resource from a CLI-connected server for sandboxed host rendering; SDK-type servers are rejected.
+- **NEW:** Data: Prompt suggestions paused control request — Documents `set_prompt_suggestions_paused`, an internal runtime toggle for prompt suggestions that lives only in the CLI process and resets on respawn or resume.
+- **NEW:** Data: Remote tools reannounce control request — Documents `remote_tools_reannounce`, letting a replacement worker ask the attached client to re-announce a machine missing from its tool roster, with rate limits.
+- **NEW:** Data: Self-hosted runner git-lfs hook warning — Warns that git inside runner lifecycle hooks skips git-lfs's pre-push hook, so post-session pushes send LFS pointers without objects, and gives workarounds.
+- **NEW:** Data: Working tree upload refusal for duplicated withheld file — Refuses an upload when an index entry appears holding a withheld file's exact bytes under an unexpected name, meaning something else wrote the index.
+- **NEW:** System Prompt: Responsive mode — Requires a one- or two-sentence acknowledgement before any thinking or tool use each turn, and plain conversational English without flattery, filler, or wrap-ups.
+- **NEW:** System Reminder: Memory sync mass-deletion guard — When many synced memory files vanish at once, sync withholds the deletions and restores them; deliberate removals must go in small, spaced batches.
+- **NEW:** Tool Description: Artifact preview action — `preview` renders one local page file the way publish wraps it, in both themes at desktop and phone widths, returning screenshots and a layout checklist.
+- **NEW:** Tool Descriptions: SearchPlugins purpose, examples, result handling, and up-front guidance — Splits the description into fragments; a flag-gated up-front variant, used with SuggestPluginInstall, has Claude search unasked when a task needs the team's own processes, systems or data.
+- **REMOVED:** Data: Platform availability — The provider feature-availability matrix no longer ships as extractable text; Claude Code now bundles it as a compressed skill document.
+- **REMOVED:** Tool Description: SearchPlugins — Replaced by the purpose, examples, and result-handling fragments, which together keep the default description's wording unchanged.
+- Data: Artifact connector call observation requirement — Notes that some viewers reject a page's view-time `describeTool` call, and that a rejection must be treated as no schema available.
+- Data: Claude Code gateway customer-routed inference protocol — Broadens the `mid_conv_system` error class to rejections of the system role itself, of where the message is placed, or of a cache breakpoint on it.
+- Data: Review upload excluded changes error — Adds files linked from the user's Claude Code configuration to the withheld files that stay on this machine and are not uploaded.
+- Data: SDK API error kind field — Adds `safety_monitor_blocked`, a turn-terminal kind for responses blocked by a server-side safety monitor; consumers replaying history must not re-send the triggering prompt.
+- Data: SDK set model system prompt field — A replacement system prompt is now first sent after the next compaction, or from the next turn only under `systemPromptSnapshot: false`.
+- Skill: Setup Cowork — Leaves SuggestPluginInstall's trigger unset for setup-flow recommendations, since a setup card is neither a plugin request nor an unprompted offer.
+- System Prompt: Minimal mode — Clarifies that only hooks from settings and installed plugins are skipped; features built into Claude Code are unaffected.
+- System Prompt: Saving skills via file delivery — Tells Claude to say the user can download the delivered skill or save it if their organization allows, never telling them outright to save it.
+- System Reminder: Artifact capability declaration revocation warning — Inlines the capabilities union only when it passes upstream size and safety checks, instead of whenever it is under 600 characters; otherwise gives read-back instructions.
+- System Reminder: /btw side question — The user's side question is no longer appended inside the reminder text; it now follows as a separate message block.
+- System Reminder: Remote machine branch transfer review — Uses the remote machine's own shell tool and syntax, and runs the sensitive-path check as the raw branch diff limited to those paths.
+- Tool Description: Agent (usage notes) — When enabled, tells Claude to give each parallel agent editing files in the same repository `isolation: "worktree"` so they don't overwrite each other.
+- Tool Descriptions: Artifact publishing and update guidance and Artifact page implementation requirements (app wording) — Document the viewer frame's limits: unreliable `mailto:`/`tel:`/`sms:` links, and no dialogs, printing, embeds, device APIs, clipboard reads, or real form submissions.
+- Tool Descriptions: Artifact theme-aware styling and Artifact page implementation requirements (app wording) — Set `color-scheme: dark` wherever the dark palette applies so form controls and scrollbars follow the theme.
+
 #### [2.1.278](https://github.com/Piebald-AI/claude-code-system-prompts/commit/5ba38bd)
 
 <sub>_No changes to the system prompts in v2.1.278._</sub>

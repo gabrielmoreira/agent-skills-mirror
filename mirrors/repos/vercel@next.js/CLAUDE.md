@@ -1,1 +1,0 @@
-cache/repos/github.com/vercel@next.js/AGENTS.md

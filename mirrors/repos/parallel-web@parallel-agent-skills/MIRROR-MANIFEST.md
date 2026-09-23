@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `parallel-web/parallel-agent-skills` — 26 default patterns, 0 followed patterns, 26 file(s) materialized.
+Mirror of `parallel-web/parallel-agent-skills` — 26 default patterns, 0 followed patterns, 27 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `parallel-web/parallel-agent-skills` — 26 default patterns, 0 follow
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 26 |
+| Files         | 27 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -81,10 +81,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 20 | ✓ | [`skills/parallel-mcp-setup/SKILL.md`](skills/parallel-mcp-setup/SKILL.md) |
 | 21 | ✓ | [`skills/parallel-memory/SKILL.md`](skills/parallel-memory/SKILL.md) |
 | 22 | ✓ | [`skills/parallel-monitor/SKILL.md`](skills/parallel-monitor/SKILL.md) |
-| 23 | ✓ | [`skills/parallel-web-extract/SKILL.md`](skills/parallel-web-extract/SKILL.md) |
-| 24 | ✓ | [`skills/parallel-web-search/SKILL.md`](skills/parallel-web-search/SKILL.md) |
-| 25 | ✓ | [`skills/result/SKILL.md`](skills/result/SKILL.md) |
-| 26 | ✓ | [`skills/status/SKILL.md`](skills/status/SKILL.md) |
+| 23 | ✓ | [`skills/parallel-search-setup/SKILL.md`](skills/parallel-search-setup/SKILL.md) |
+| 24 | ✓ | [`skills/parallel-web-extract/SKILL.md`](skills/parallel-web-extract/SKILL.md) |
+| 25 | ✓ | [`skills/parallel-web-search/SKILL.md`](skills/parallel-web-search/SKILL.md) |
+| 26 | ✓ | [`skills/result/SKILL.md`](skills/result/SKILL.md) |
+| 27 | ✓ | [`skills/status/SKILL.md`](skills/status/SKILL.md) |
 
 ---
 

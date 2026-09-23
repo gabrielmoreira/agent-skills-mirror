@@ -1,11 +1,19 @@
 ---
 name: test-helpers
-description: "Generate engine-specific test helper libraries for the project's test suite. Reads existing test patterns and produces tests/helpers/ with assertion utilities, factory functions, and mock objects tailored to the project's systems. Reduces boilerplate in new test files."
+description: "Generate engine-specific test helper libraries — assertion utilities, factory functions, mocks in tests/helpers/. Reduces boilerplate."
 argument-hint: "[system-name | all | scaffold]"
 user-invocable: true
 allowed-tools: Read, Glob, Grep, Write
 model: sonnet
 ---
+
+!`source "${CLAUDE_PROJECT_DIR:-.}/.claude/hooks/yaml-helper.sh" 2>/dev/null && resolve_config --keys automation`
+
+**Automation mode**: Resolve `modes.automation` (`project.local.yaml` →
+`project.yaml` → default `collaborative`). Every `AskUserQuestion` call and
+every file write follows `.claude/docs/automation-modes.md`
+(collaborative asks always · guided major-only · autonomous logs and proceeds;
+`automation_always_ask` categories always prompt).
 
 # Test Helpers
 
@@ -23,6 +31,36 @@ and systems — so every developer writes less boilerplate and more assertions.
 
 ---
 
+## Assertions: use the project's test framework, never bare `assert()`
+
+**Generated helpers must assert through the configured test framework's assertion
+API**, resolved from `testing.framework` — not through GDScript's built-in
+`assert()`.
+
+Two things go wrong with a bare `assert()` in a helper, and both are silent:
+
+1. **It aborts the run instead of failing the test.** A framework assertion
+   records a failure and continues, so one broken expectation yields one red test.
+   A bare `assert()` halts execution, so the first failure hides every result
+   after it.
+2. **It is stripped in release builds.** A helper library built on `assert()`
+   stops asserting entirely in exactly the build you most want checked, and does
+   so without any error — the tests still "pass".
+
+**Look up the assertion form for the configured framework before generating
+code.** Do not copy the forms in this file or in other skills' examples as
+authoritative — they are illustrative and have drifted (`assert_eq`,
+`assert_true` and `assert_that` all appear across the repo). If you cannot
+confirm the correct API for the project's framework, say so and generate no
+helper rather than guessing.
+
+**Helpers must not extend the framework's test-suite base class.** A file in
+`tests/helpers/` that extends the suite type is discovered by the runner as a
+test suite containing zero tests. Helpers are plain classes; only real test files
+extend the suite.
+
+---
+
 ## 1. Parse Arguments
 
 **Modes:**
@@ -37,12 +75,12 @@ and systems — so every developer writes less boilerplate and more assertions.
 
 ## 2. Detect Engine and Language
 
-Read `.claude/docs/technical-preferences.md` and extract:
-- `Engine:` value
-- `Language:` value
-- `Framework:` from the Testing section
+Read from `project.yaml` first, falling back to `.claude/docs/technical-preferences.md` for any key that is absent or empty:
+- `engine.name` (else the `Engine:` value)
+- `engine.language` (else the `Language:` value)
+- `testing.framework` (else `Framework:` from the Testing section)
 
-If engine is not configured: "Engine not configured. Run `/setup-engine` first."
+If the engine is not configured in either source: "Engine not configured. Run `/setup-engine` first."
 
 ---
 
@@ -74,15 +112,32 @@ Also read:
 
 ### Godot 4 (GDUnit4 / GDScript)
 
+> **`FAIL_IF(...)` in the example below is a PLACEHOLDER, not an API.** It marks
+> the one line you must resolve from the project's actual test framework before
+> emitting any of this, per the rule in §2. Substitute the framework's real
+> failure call — the form that **registers a failure with the runner and lets the
+> suite continue** — and delete the marker comment.
+>
+> **It is deliberately not spelled `assert_that`, `assert_eq` or `assert_true`.**
+> All three appear somewhere in this repo, they disagree, and **GdUnit4's API is
+> not covered by `docs/engine-reference/`** — so writing any of them here would be
+> asserting an API this repo cannot source, in the file whose whole job is to stop
+> people doing that. If you cannot confirm the correct call for the configured
+> framework, §2 already tells you the answer: **generate no helper.** An
+> unresolved `FAIL_IF` reaching disk is a bug; a missing helper is a task.
+>
+> Worked examples must obey §2 too — a bare `assert()` here would be the exact
+> form §2 forbids, sixty lines below §2 forbidding it. A rule stated in prose
+> does not reach its own worked example unless someone makes it.
+
 **Base helper** (`tests/helpers/game_assertions.gd`):
 
 ```gdscript
 ## Game-specific assertion utilities for [Project Name] tests.
-## Extends GdUnitAssertions with domain-specific helpers.
+## Domain-specific helpers built on the project's test framework.
 ##
-## Usage:
-##   var assert = GameAssertions.new()
-##   assert.health_in_range(entity, 0, entity.max_health)
+## Usage (static — no instance needed):
+##   GameAssertions.assert_in_range(entity.health, 0, entity.max_health, "health")
 
 class_name GameAssertions
 extends RefCounted
@@ -95,8 +150,9 @@ static func assert_in_range(
     max_val: float,
     label: String = "value"
 ) -> void:
-    assert(
-        value >= min_val and value <= max_val,
+    # FRAMEWORK ASSERT — resolve per the rule above; do not emit `assert()`.
+    FAIL_IF(
+        not (value >= min_val and value <= max_val),
         "%s %.2f is outside expected range [%.2f, %.2f]" % [label, value, min_val, max_val]
     )
 
@@ -110,7 +166,8 @@ static func assert_signal_emitted(
     var emitted := false
     obj.connect(signal_name, func(_args): emitted = true)
     action.call()
-    assert(emitted, "Expected signal '%s' to be emitted, but it was not." % signal_name)
+    # FRAMEWORK ASSERT — resolve per the rule above; do not emit `assert()`.
+    FAIL_IF(not emitted, "Expected signal '%s' to be emitted, but it was not." % signal_name)
 
 ## Assert that a callable does NOT emit a signal.
 static func assert_signal_not_emitted(
@@ -121,12 +178,14 @@ static func assert_signal_not_emitted(
     var emitted := false
     obj.connect(signal_name, func(_args): emitted = true)
     action.call()
-    assert(not emitted, "Expected signal '%s' NOT to be emitted, but it was." % signal_name)
+    # FRAMEWORK ASSERT — resolve per the rule above; do not emit `assert()`.
+    FAIL_IF(emitted, "Expected signal '%s' NOT to be emitted, but it was." % signal_name)
 
 ## Assert a node exists at path within a parent.
 static func assert_node_exists(parent: Node, path: NodePath) -> void:
-    assert(
-        parent.has_node(path),
+    # FRAMEWORK ASSERT — resolve per the rule above; do not emit `assert()`.
+    FAIL_IF(
+        not parent.has_node(path),
         "Expected node at path '%s' to exist." % str(path)
     )
 ```
@@ -303,7 +362,7 @@ namespace GameTestHelpers
 
 For `[system-name]` or `all` modes, generate a helper per system:
 
-Read the system's GDD to extract:
+Read only the GDD sections this needs — `Grep pattern="^## (Formulas|Edge Cases|Detailed Rules|Detailed Design)" path="design/gdd/[system].md" output_mode="content" -A 30` — rather than a full read (every peer skill section-greps GDDs; in `all` mode a full read multiplies across each system's 400+-line GDD). Extract:
 - Data types (entity types, component names)
 - Formula variables and their bounds
 - Common test scenarios mentioned in Edge Cases

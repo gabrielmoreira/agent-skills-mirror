@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Enderfga/claw-orchestrator` — 26 default patterns, 0 followed patterns, 22 file(s) materialized.
+Mirror of `Enderfga/claw-orchestrator` — 26 default patterns, 0 followed patterns, 23 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Enderfga/claw-orchestrator` — 26 default patterns, 0 followed patte
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 22 |
+| Files         | 23 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,28 +59,29 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 2 | ✓ | [`skills/claw-orchestrator/SKILL.md`](skills/claw-orchestrator/SKILL.md) |
-| 3 | ✓ | [`skills/references/acp.md`](skills/references/acp.md) |
-| 4 | ✓ | [`skills/references/autoloop.md`](skills/references/autoloop.md) |
-| 5 | ✓ | [`skills/references/claude-cli-tracking.md`](skills/references/claude-cli-tracking.md) |
-| 6 | ✓ | [`skills/references/cli.md`](skills/references/cli.md) |
-| 7 | ✓ | [`skills/references/council.md`](skills/references/council.md) |
-| 8 | ✓ | [`skills/references/dashboard.md`](skills/references/dashboard.md) |
-| 9 | ✓ | [`skills/references/getting-started.md`](skills/references/getting-started.md) |
-| 10 | ✓ | [`skills/references/inbox.md`](skills/references/inbox.md) |
-| 11 | ✓ | [`skills/references/mcp.md`](skills/references/mcp.md) |
-| 12 | ✓ | [`skills/references/multi-engine.md`](skills/references/multi-engine.md) |
-| 13 | ✓ | [`skills/references/observability.md`](skills/references/observability.md) |
-| 14 | ✓ | [`skills/references/openai-compat.md`](skills/references/openai-compat.md) |
-| 15 | ✓ | [`skills/references/sessions.md`](skills/references/sessions.md) |
-| 16 | ✓ | [`skills/references/tools.md`](skills/references/tools.md) |
-| 17 | ✓ | [`skills/references/ultra.md`](skills/references/ultra.md) |
-| 18 | ✓ | [`skills/references/ultraapp.md`](skills/references/ultraapp.md) |
-| 19 | ✓ | [`skills/references/verification.md`](skills/references/verification.md) |
-| 20 | ✓ | [`skills/references/workflow.md`](skills/references/workflow.md) |
-| 21 | ✓ | [`skills/SKILL.md`](skills/SKILL.md) |
-| 22 | ✓ | [`skills/ultraapp/SKILL.md`](skills/ultraapp/SKILL.md) |
+| 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 3 | ✓ | [`skills/claw-orchestrator/SKILL.md`](skills/claw-orchestrator/SKILL.md) |
+| 4 | ✓ | [`skills/references/acp.md`](skills/references/acp.md) |
+| 5 | ✓ | [`skills/references/autoloop.md`](skills/references/autoloop.md) |
+| 6 | ✓ | [`skills/references/claude-cli-tracking.md`](skills/references/claude-cli-tracking.md) |
+| 7 | ✓ | [`skills/references/cli.md`](skills/references/cli.md) |
+| 8 | ✓ | [`skills/references/council.md`](skills/references/council.md) |
+| 9 | ✓ | [`skills/references/dashboard.md`](skills/references/dashboard.md) |
+| 10 | ✓ | [`skills/references/getting-started.md`](skills/references/getting-started.md) |
+| 11 | ✓ | [`skills/references/inbox.md`](skills/references/inbox.md) |
+| 12 | ✓ | [`skills/references/mcp.md`](skills/references/mcp.md) |
+| 13 | ✓ | [`skills/references/multi-engine.md`](skills/references/multi-engine.md) |
+| 14 | ✓ | [`skills/references/observability.md`](skills/references/observability.md) |
+| 15 | ✓ | [`skills/references/openai-compat.md`](skills/references/openai-compat.md) |
+| 16 | ✓ | [`skills/references/sessions.md`](skills/references/sessions.md) |
+| 17 | ✓ | [`skills/references/tools.md`](skills/references/tools.md) |
+| 18 | ✓ | [`skills/references/ultra.md`](skills/references/ultra.md) |
+| 19 | ✓ | [`skills/references/ultraapp.md`](skills/references/ultraapp.md) |
+| 20 | ✓ | [`skills/references/verification.md`](skills/references/verification.md) |
+| 21 | ✓ | [`skills/references/workflow.md`](skills/references/workflow.md) |
+| 22 | ✓ | [`skills/SKILL.md`](skills/SKILL.md) |
+| 23 | ✓ | [`skills/ultraapp/SKILL.md`](skills/ultraapp/SKILL.md) |
 
 ---
 

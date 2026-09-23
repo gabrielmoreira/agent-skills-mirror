@@ -1,0 +1,192 @@
+<!doctype html>
+<!--
+  Lightning Out 2.0 host-page template.
+
+  Copy this file as the starting point for a migrated host page, then fill in
+  the CONFIGURATION constants and replace `c-your-component` with the migrated
+  component tag + its kebab-case attributes. This template already satisfies the
+  six non-negotiable LO 2.0 rules; run scripts/validate-lo20-page.py against your
+  filled-in copy to confirm nothing regressed.
+
+  Placeholders to replace:
+    YOUR_ORG            -> your org My Domain host (…my.salesforce.com)
+    YOUR_ECA_CONSUMER_KEY, YOUR_18_CHAR_APP_ID (optional)
+    c-your-component    -> the migrated component tag (see scripts/convert-lo-names.py)
+    /lo20.html          -> this page's own filename (lo2_returnTo)
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Your Page Title</title>
+    <style>
+      .card { border: 1px solid #d8dde6; padding: 16px; border-radius: 4px; }
+      .muted { color: #706e6b; font-size: 0.8rem; }
+    </style>
+    <!-- LO 2.0 library: My Domain host, versioned path, loaded async -->
+    <script async src="https://YOUR_ORG.my.salesforce.com/lightning/lightning.out.latest/index.iife.prod.js"></script>
+  </head>
+  <body>
+    <h1>Your Page Title</h1>
+
+    <div class="card">
+      <div id="loading" role="status" aria-live="polite">
+        <div><strong>Loading…</strong></div>
+        <div class="muted">
+          If this hangs, confirm your <code>app-id</code> and <code>frontdoor-url</code> values.
+        </div>
+        <div style="margin-top: 10px">
+          <button id="connectBtn" type="button">Connect to Salesforce</button>
+          <span class="muted" style="margin-left: 8px">(opens auth in this tab)</span>
+        </div>
+      </div>
+
+      <!-- LO 2.0 mount point -->
+      <div id="loAppMount"></div>
+
+      <!-- Component tag (NO inline display style on the tag itself) -->
+      <c-your-component></c-your-component>
+    </div>
+
+    <script>
+      // ======= 1. CONFIGURATION =======
+      const ECA_CONSUMER_KEY = "YOUR_ECA_CONSUMER_KEY";
+      const LO_APP_ID = "YOUR_18_CHAR_APP_ID"; // Optional — empty string if not required
+      const ORG_MYDOMAIN_URL = "https://YOUR_ORG.my.salesforce.com";
+      const components = "c-your-component";
+
+      // ======= 2. DOM REFERENCES =======
+      const loadingEl = document.getElementById('loading');
+      const connectBtn = document.getElementById('connectBtn');
+      const loAppMount = document.getElementById('loAppMount');
+
+      // ======= 3. HELPER FUNCTIONS =======
+      function setLoading(text) {
+        const strong = loadingEl?.querySelector?.('div strong');
+        if (strong) strong.textContent = text;
+      }
+
+      function showError(msg) {
+        console.error('LO 2.0 Error:', msg);
+        if (loadingEl) {
+          loadingEl.innerHTML = "<strong>Failed to start LO 2.0.</strong><div class='muted'>" + msg + '</div>';
+        }
+      }
+
+      function readCachedResult() {
+        try {
+          const raw = localStorage.getItem('lo2_frontdoor_result');
+          if (!raw) return null;
+          return JSON.parse(raw);
+        } catch {
+          return null;
+        }
+      }
+
+      function clearCachedResult() {
+        try {
+          localStorage.removeItem('lo2_frontdoor_result');
+        } catch {
+          // ignore
+        }
+      }
+
+      // ======= 4. MOUNT FUNCTION (two parameters) =======
+      function mountLo20(frontdoorUrl, orgUrl) {
+        setLoading('Initializing Lightning Out 2.0…');
+
+        // Prevent duplicate mounts
+        if (loAppMount && loAppMount.querySelector('lightning-out-application')) return;
+
+        function tryMount() {
+          if (!customElements?.get?.('lightning-out-application')) return false;
+
+          const el = document.createElement('lightning-out-application');
+          el.setAttribute('components', components);
+          if (LO_APP_ID) el.setAttribute('app-id', LO_APP_ID);
+          el.setAttribute('frontdoor-url', frontdoorUrl);
+
+          (loAppMount || document.body).appendChild(el);
+          return true;
+        }
+
+        const start = Date.now();
+        (function tick() {
+          if (tryMount()) return;
+          if (Date.now() - start > 15000) {
+            showError('Failed to initialize Lightning Out 2.0 (custom element not registered).');
+            return;
+          }
+          setTimeout(tick, 50);
+        })();
+
+        // Rule 1: literal string, NOT the `components` variable
+        customElements.whenDefined('c-your-component').then(() => {
+          if (loadingEl) loadingEl.style.display = 'none';
+        });
+      }
+
+      // ======= 5. BOOT FUNCTION (ALL INIT LOGIC) =======
+      function boot() {
+        try {
+          setLoading('Ready to authenticate.');
+
+          // Store config for the callback page
+          localStorage.setItem('orgMyDomainURL', ORG_MYDOMAIN_URL);
+          localStorage.setItem('loAppID', LO_APP_ID);
+          localStorage.setItem('loECAKey', ECA_CONSUMER_KEY);
+          localStorage.setItem('lo2_returnTo', '/lo20.html'); // this page's filename
+
+          // Listen for callback results by multiple mechanisms
+          window.addEventListener('message', (evt) => {
+            const data = evt?.data;
+            if (!data) return;
+            if (data.error) return showError(`Auth error: ${data.error}`);
+            if (!data.frontdoorUrl) return;
+            clearCachedResult();
+            mountLo20(data.frontdoorUrl, data.orgUrl);
+          });
+
+          try {
+            const bc = new BroadcastChannel('lo2auth');
+            bc.onmessage = (evt) => {
+              const data = evt?.data;
+              if (!data) return;
+              if (data.error) return showError(`Auth error: ${data.error}`);
+              if (!data.frontdoorUrl) return;
+              clearCachedResult();
+              mountLo20(data.frontdoorUrl, data.orgUrl);
+            };
+          } catch (e) {
+            // BroadcastChannel not supported, ignore
+          }
+
+          window.addEventListener('storage', (evt) => {
+            if (evt.key !== 'lo2_frontdoor_result') return;
+            const data = readCachedResult();
+            if (!data) return;
+            if (data.error) return showError(`Auth error: ${data.error}`);
+            if (!data.frontdoorUrl) return;
+            mountLo20(data.frontdoorUrl, data.orgUrl);
+          });
+
+          // If the user already completed auth in another tab, pick up the cached result
+          const cached = readCachedResult();
+          if (cached?.frontdoorUrl) {
+            mountLo20(cached.frontdoorUrl, cached.orgUrl);
+          }
+
+          connectBtn?.addEventListener('click', () => {
+            clearCachedResult();
+            setLoading('Redirecting to OAuth…');
+            window.location.assign('/frontdoor-url.html');
+          });
+        } catch (e) {
+          showError((e && (e.stack || e.message)) || String(e));
+        }
+      }
+
+      // ======= 6. CALL BOOT =======
+      boot();
+    </script>
+  </body>
+</html>

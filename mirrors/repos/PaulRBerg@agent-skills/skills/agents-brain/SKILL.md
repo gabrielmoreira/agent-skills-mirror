@@ -45,7 +45,7 @@ materially disputed guidance, or conflicts with observed model behavior. Interpr
 - `revalidated` refreshed validation metadata after a successful conditional `304` response.
 - `fetched` atomically replaced the cache with integrity-valid content from the pinned official URL.
 - `stale` reused a guide validated no more than seven days ago after live retrieval failed. Proceed only after reading
-  it and disclose the validation timestamp and retrieval failure in the final risks.
+  it and disclose the validation timestamp and retrieval failure under open issues and caveats.
 
 Forced refreshes, expired entries, integrity failures, and unexpected redirects fail closed. If either required guide
 cannot be returned, stop qualifying work before writing instead of substituting memory or another source. Never create
@@ -197,7 +197,11 @@ pre-write stop. Then report only:
 1. `🧭 Mode and scope`: workflow, dry-run status, target counts, and relative paths in a compact table.
 2. `📦 Changes`: completed or planned changes grouped by directory; use a tree when it makes path ownership clearer.
 3. `🧪 Validation`: exact commands, result, and any justified skip in a table.
-4. `⚠️ Blockers and risks`: conflicts, advisories, and unrecognized flags; omit when empty.
+4. `Issues and caveats`: conflicts, advisories, unrecognized flags, limitations, and unverified assumptions, grouped as
+   `Resolved` (verified fixes with evidence) and `Open` (remaining impact and next step). Omit empty groups and the
+   whole section when empty. Report each item once; put neutral context and agreed decisions under changes or scope.
+   Reserve `blocker` for something preventing required work and `risk` for a specific potential adverse outcome. A
+   workaround leaves an item open when the underlying issue still affects the result.
 
 Keep paths, commands, guard-rail errors, symlink targets, and user-authored content exact and undecorated. Omit empty
 detail and stop once the selected targets meet the completion bar.

@@ -132,9 +132,9 @@ before the skill is loaded (or if it is removed), the tools are absent. Ask mode
 still filters out mutating and download tools even when their owning skill is
 loaded. See [skills](skills.md).
 
-**WebMCP (experimental, opt-in).** The `list_webmcp_tools` /
-`execute_webmcp_tool` rows apply only when **Experimental WebMCP** is enabled
-under Settings → General → Advanced. The setting is off by default; while off,
+**WebMCP (experimental, on by default).** The `list_webmcp_tools` /
+`execute_webmcp_tool` rows apply when **Experimental WebMCP** is enabled
+under Settings → General → Advanced. The setting is on by default; while off,
 the tools and their prompt guidance are omitted from model requests. WebMCP
 annotations such as `readOnly` are page-authored hints, not a security boundary.
 Every invocation requires Act or Dev, fresh per-call confirmation, and the

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `CopilotKit/CopilotKit` — 26 default patterns, 7 followed patterns, 520 file(s) materialized.
+Mirror of `CopilotKit/CopilotKit` — 26 default patterns, 7 followed patterns, 522 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `CopilotKit/CopilotKit` — 26 default patterns, 7 followed patterns, 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 7 |
-| Files         | 520 |
+| Files         | 522 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -565,26 +565,28 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 498 | ✓ | [`skills/inspector-docs/SKILL.md`](skills/inspector-docs/SKILL.md) |
 | 499 | ✓ | [`skills/inspector-workbench/SKILL.md`](skills/inspector-workbench/SKILL.md) |
 | 500 | ✓ | [`skills/intelligence-docs/SKILL.md`](skills/intelligence-docs/SKILL.md) |
-| 501 | ✓ | [`skills/setup-slack-channel/assets/slack-app-manifest.yaml`](skills/setup-slack-channel/assets/slack-app-manifest.yaml) |
-| 502 | ✓ | [`skills/setup-slack-channel/references/intelligence-channel.md`](skills/setup-slack-channel/references/intelligence-channel.md) |
-| 503 | ✓ | [`skills/setup-slack-channel/references/local-runtime.md`](skills/setup-slack-channel/references/local-runtime.md) |
-| 504 | ✓ | [`skills/setup-slack-channel/references/optional-e2e.md`](skills/setup-slack-channel/references/optional-e2e.md) |
-| 505 | ✓ | [`skills/setup-slack-channel/references/secrets-and-credentials.md`](skills/setup-slack-channel/references/secrets-and-credentials.md) |
-| 506 | ✓ | [`skills/setup-slack-channel/references/slack-workspace-and-app.md`](skills/setup-slack-channel/references/slack-workspace-and-app.md) |
-| 507 | ✓ | [`skills/setup-slack-channel/references/troubleshooting.md`](skills/setup-slack-channel/references/troubleshooting.md) |
-| 508 | ✓ | [`skills/setup-slack-channel/SKILL.md`](skills/setup-slack-channel/SKILL.md) |
-| 509 | ✓ | [`tools/compatibility-monitor/README.md`](tools/compatibility-monitor/README.md) |
-| 510 | ✓ | [`tools/learned-skill-conformance/README.md`](tools/learned-skill-conformance/README.md) |
-| 511 | ✓ | [`tools/runtime-conformance/AGENTS.md`](tools/runtime-conformance/AGENTS.md) |
-| 512 | ✓ | [`tools/runtime-conformance/README.md`](tools/runtime-conformance/README.md) |
-| 513 | ✓ | [`tools/runtime-conformance/REGRESSIONS.md`](tools/runtime-conformance/REGRESSIONS.md) |
-| 514 | → | [`.claude/docs/architecture.md`](.claude/docs/architecture.md) |
-| 515 | → | [`.claude/docs/documentation.md`](.claude/docs/documentation.md) |
-| 516 | → | [`.claude/docs/git.md`](.claude/docs/git.md) |
-| 517 | → | [`.claude/docs/hooks.md`](.claude/docs/hooks.md) |
-| 518 | → | [`.claude/docs/workflow.md`](.claude/docs/workflow.md) |
-| 519 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 520 | → | [`README.md`](README.md) |
+| 501 | ✓ | [`skills/intelligence-vocabulary/references/words.md`](skills/intelligence-vocabulary/references/words.md) |
+| 502 | ✓ | [`skills/intelligence-vocabulary/SKILL.md`](skills/intelligence-vocabulary/SKILL.md) |
+| 503 | ✓ | [`skills/setup-slack-channel/assets/slack-app-manifest.yaml`](skills/setup-slack-channel/assets/slack-app-manifest.yaml) |
+| 504 | ✓ | [`skills/setup-slack-channel/references/intelligence-channel.md`](skills/setup-slack-channel/references/intelligence-channel.md) |
+| 505 | ✓ | [`skills/setup-slack-channel/references/local-runtime.md`](skills/setup-slack-channel/references/local-runtime.md) |
+| 506 | ✓ | [`skills/setup-slack-channel/references/optional-e2e.md`](skills/setup-slack-channel/references/optional-e2e.md) |
+| 507 | ✓ | [`skills/setup-slack-channel/references/secrets-and-credentials.md`](skills/setup-slack-channel/references/secrets-and-credentials.md) |
+| 508 | ✓ | [`skills/setup-slack-channel/references/slack-workspace-and-app.md`](skills/setup-slack-channel/references/slack-workspace-and-app.md) |
+| 509 | ✓ | [`skills/setup-slack-channel/references/troubleshooting.md`](skills/setup-slack-channel/references/troubleshooting.md) |
+| 510 | ✓ | [`skills/setup-slack-channel/SKILL.md`](skills/setup-slack-channel/SKILL.md) |
+| 511 | ✓ | [`tools/compatibility-monitor/README.md`](tools/compatibility-monitor/README.md) |
+| 512 | ✓ | [`tools/learned-skill-conformance/README.md`](tools/learned-skill-conformance/README.md) |
+| 513 | ✓ | [`tools/runtime-conformance/AGENTS.md`](tools/runtime-conformance/AGENTS.md) |
+| 514 | ✓ | [`tools/runtime-conformance/README.md`](tools/runtime-conformance/README.md) |
+| 515 | ✓ | [`tools/runtime-conformance/REGRESSIONS.md`](tools/runtime-conformance/REGRESSIONS.md) |
+| 516 | → | [`.claude/docs/architecture.md`](.claude/docs/architecture.md) |
+| 517 | → | [`.claude/docs/documentation.md`](.claude/docs/documentation.md) |
+| 518 | → | [`.claude/docs/git.md`](.claude/docs/git.md) |
+| 519 | → | [`.claude/docs/hooks.md`](.claude/docs/hooks.md) |
+| 520 | → | [`.claude/docs/workflow.md`](.claude/docs/workflow.md) |
+| 521 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 522 | → | [`README.md`](README.md) |
 
 ---
 

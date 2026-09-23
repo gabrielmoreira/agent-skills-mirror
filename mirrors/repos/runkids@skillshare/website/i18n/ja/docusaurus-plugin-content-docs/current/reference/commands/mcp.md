@@ -20,6 +20,7 @@ skillshare mcp import docs --from claude --target claude --target cursor --sync
 skillshare mcp import docs --file ./provider.json --target claude
 skillshare mcp list --json
 skillshare mcp remove docs --sync
+skillshare mcp remove docs --keep-files
 skillshare mcp restore BACKUP_ID --dry-run
 skillshare sync mcp --dry-run --json
 skillshare sync mcp
@@ -38,6 +39,7 @@ skillshare sync --all
 | `--from CLIENT` | インポート元の既存クライアント、または `--file` のフォーマット |
 | `--file PATH` | ネイティブの JSON/JSONC、TOML、または Goose の YAML。`.toml` はデフォルトで Codex とみなされ、他のフォーマットはその MCP セクションから検出される。明示的な方言を指定するには `--from` を使う |
 | `--sync` | 保存して同期する。非インタラクティブな add/import/remove ではそうしない限り保存のみ |
+| `--keep-files` | `remove` と併用: サーバーの管理をやめ、Agent のエントリはそのまま残す。`--sync` とは併用できない。[下記](#stop-managing-a-server)を参照 |
 | `--replace` | add/import 中に既存の source 定義を明示的に置き換える。import では、インポート元クライアントのエントリが異なる場合にそれも書き換える |
 | `--dry-run`, `-n` | 保存もネイティブ設定への書き込みも行わずにプレビュー |
 | `--json` | 構造化出力。sync/preview のレポートには name、path、action が含まれ、サーバーの値は含まれない |
@@ -68,7 +70,7 @@ skillshare sync --all
 
 `mcp edit`、`mcp remove`、`mcp restore` は、name またはバックアップ ID が省略された場合に選択メニューを提供します。エディタは command/URL、引数、環境変数、HTTP ヘッダー、bearer-token の環境変数参照、受け取り側の target をカバーします。引数は 1 行につき 1 つのリテラル引数、または JSON 配列で受け付けます。トランスポートを切り替えると、新しい接続タイプに適用されないフィールドはクリアされます。
 
-Add、edit、remove、import では、**Save and sync** または **Save only** の前にプレビューが表示されます。Escape で保留中のドラフトをキャンセルできます。Restore は Agent のエントリへの変更をプレビューし確認しますが、source 定義自体は書き換えません。
+Add、edit、remove、import では、**Save and sync** または **Save only** の前にプレビューが表示されます。Remove には **Stop managing** もあり、`--keep-files` と同じ動作です。Escape で保留中のドラフトをキャンセルできます。Restore は Agent のエントリへの変更をプレビューし確認しますが、source 定義自体は書き換えません。
 
 サーバー名を指定しないインポートは複数選択に対応しています（`Space` でトグル、`a` ですべて選択）。無効な候補はスキップされます。既存の source 名は `--replace` を指定しない限りスキップされます。バッチに対しては、互換性のある受け取り側クライアントを 1 セット選択してください。バッチ全体が検証された後、source は一度だけ保存されます。その後のネイティブファイル I/O 失敗については、既存の復旧動作が維持されます。
 
@@ -164,7 +166,7 @@ Grok の場合、名前は文字またはアンダースコアで始まり、文
 JSON エントリは、そのファイル自体のインデントに合わせて 1 行に 1 フィールドで書き込まれます。Skillshare が所有しているにもかかわらず 1 行にまとまっているエントリは `update` として報告され、改めてレイアウトされて書き込まれます。Skillshare が所有していないエントリや、手動でフォーマットされたエントリは、そのレイアウトを保持します。
 
 ダッシュボードは、現在の scope とホストのプラットフォームで利用可能な送信先のみを提供します。各サーバーは 1 行として表示され、右側のカウントボタンからそのサーバーの全クライアント一覧を開けます。Global 専用のクライアントは project mode では選択できません。
-右側の **Sync** ボックスには、まだ書き込まれていない変更が一覧表示されます。クライアントにチェックを入れるだけでは source のみが編集され、Sync ページで確認した後にファイルが書き込まれます。その下の **Agents** には、このマシン上で検出されたクライアントが一覧表示されます。クライアントの MCP ファイルが存在するか、そのクライアントが設定を保存するフォルダが存在すれば「検出済み」と見なされるため、MCP ファイルがまだない新規インストールでも表示されます。project mode では、project が MCP ファイルを持っているか、そのクライアントが global で検出されている場合に一覧表示されます。
+右側の **Sync** ボックスには、まだ書き込まれていない変更が一覧表示されます。クライアントにチェックを入れるだけでは source のみが編集されます。**Sync MCP** はそれらの変更を一覧表示し、確認後に MCP の設定ファイルだけを書き込み、それぞれのバックアップを保存します。その下の **Agents** には、このマシン上で検出されたクライアントが一覧表示されます。クライアントの MCP ファイルが存在するか、そのクライアントが設定を保存するフォルダが存在すれば「検出済み」と見なされるため、MCP ファイルがまだない新規インストールでも表示されます。project mode では、project が MCP ファイルを持っているか、そのクライアントが global で検出されている場合に一覧表示されます。
 
 追加のクライアント詳細:
 
@@ -233,6 +235,32 @@ Global の Claude、Codex、Grok、Copilot のパスは、`CLAUDE_CONFIG_DIR`、
 `GROK_HOME`、`COPILOT_HOME` を尊重します。`OPENCODE_CONFIG` と `OPENCODE_CONFIG_DIR` は管理対象外です。Amp と Goose は、`.config` パスを使うプラットフォームでは `XDG_CONFIG_HOME` を尊重します。
 project の送信先は、選択された project ルートからの相対パスです。project の trust、
 サーバーの承認、認証は引き続き受け取り側 Agent の責任です。
+
+### Agent の別のアカウント {#accounts}
+
+[Agent の別のアカウント](/docs/reference/targets/configuration#agent-config-dir)として宣言された Target は、`claude`（`CLAUDE_CONFIG_DIR`）、`codex`（`CODEX_HOME`）、`pi`（`PI_CODING_AGENT_DIR`）については MCP の Target でもあります。そのサーバーは、その Agent のフォーマットで、アカウント自身のファイル（Claude は `<config_dir>/.claude.json`、Codex は `<config_dir>/config.toml`、Pi は `<config_dir>/mcp.json`）に書き込まれます。
+
+```yaml
+targets:
+  claude-work:
+    agent: claude
+    config_dir: ~/.claude-work
+
+mcp:
+  targets: [claude, claude-work]      # 両方のアカウントがすべてのサーバーを受け取る
+  servers:
+    docs:
+      url: https://example.com/mcp
+    jira:
+      command: jira-mcp
+      targets: [claude-work]          # 仕事用アカウントのみ
+```
+
+この例では、`docs` は `~/.claude.json` と `~/.claude-work/.claude.json` に、`jira` は 2 つ目のファイルにのみ書き込まれます。`--target claude-work` は `mcp add` と `mcp edit` で使え、ダッシュボードではそのアカウントが Agent と並んで一覧表示されます。
+
+`pi-mcp-extension` は常に `~/.pi/agent/mcp.json` を読み込むため、Pi のアカウントには `piExtension: pi-mcp-adapter` が必要です。
+
+どのアカウントも同じ project ファイルを読み込むため、`mcp.projects` 内と project mode では Agent 自身の名前を使ってください。Claude Code は project のオフリストを各アカウントのファイルに保持します。[project でサーバーをオフにする](#turn-off-a-global-server-in-one-project)と、そのサーバーを持つすべてのアカウントにスイッチが書き込まれます。`mcp import --from claude-work` とダッシュボードの Import from target は、そのアカウント自身のファイルを読み込みます。`mcp import --file <path> --from claude-work` は、自分でエクスポートしたファイルを、そのアカウントの Agent のフォーマットとして読み込みます。
 
 ## 1 つの project だけで global サーバーをオフにする {#turn-off-a-global-server-in-one-project}
 
@@ -422,7 +450,12 @@ global mode では、ダッシュボードに **プロジェクト** ページ�
   project ごとのスイッチを持たないものがある場合、その行にはサーバーがそこでは引き続き読み込まれることが
   表示されます。project のものとは異なる独自の `targets` を持つエントリには **プロジェクトに合わせる** が
   表示され、`targets` なしでそのエントリを保存し直します。
+- タブの Sync ボックスにある **Sync MCP** は MCP の計画全体を書き込み、そのうち何件の変更がこの project の外に
+  あるかを表示します。project ページの上部にある **Sync project** は、この project の skills、agents、MCP だけを
+  書き込みます。
 - MCP ページの一番下にある **デフォルト** では、`mcp.targets` と `mcp.directTools` を編集します。
+- project 自身の Agent ファイルに Skillshare が管理していないサーバーがある場合、タブの一覧の上にそのことが
+  **Import** 付きで表示されます。[下記](#unmanaged-servers)を参照してください。
 
 保存時に書き換えられるのは、変更した project だけです。他の project は、アンカーやエイリアスも含めて
 YAML が書かれたまま保持され、`~/work/app` と書かれたフォルダーは `~` のまま残ります。このページの他の箇所と同様に、
@@ -439,6 +472,41 @@ YAML が書かれたまま保持され、`~/work/app` と書かれたフォル�
   サーバー自体はそのままにされます。
 - フォルダーが同じエントリを管理する独自の `.skillshare/config.yaml` も持っている場合、プランは上書きせずに
   競合を報告します。
+
+## サーバーの管理をやめる {#stop-managing-a-server}
+
+```bash
+skillshare mcp remove docs --keep-files
+```
+
+これは source から `docs` を削除し、Skillshare がそのために書き込んだ Agent のエントリの記録を消去します。
+Agent ファイルは変更されません。以降、それらのエントリはあなたのものになり、sync は削除も更新もしません。
+`--keep-files` は `--sync` と併用できません。ターミナルの削除ウィザードでは **Stop managing** として表示され、
+ダッシュボードの削除ダイアログでも、MCP ページと project の **MCP** タブの両方で同じ選択肢が表示されます。
+
+変更されるのは削除したスコープだけです。global サーバーの管理をやめても、同じ名前の project のサーバーは
+管理されたままで、その逆も同様です。エントリを再び管理するには、それをインポートしてください。
+
+## Skillshare が管理していないサーバー {#unmanaged-servers}
+
+ダッシュボードは、現在のスコープと `mcp.projects` の下にあるすべてのフォルダーの Agent 設定ファイルを読み、
+この source が定義しておらず、どの Skillshare 設定も管理していないサーバーを探します。見つかった場合は、
+サーバー一覧の上に、その件数とどの Agent にあるかが表示されます。**Import** は、それらの Agent のうち
+最初のものを選択した状態でインポートを開きます。project の **MCP** タブでは、その project 自身のファイルに
+ついて同じ表示が出ます。そのインポートは project のファイルを読み、サーバーをその project に保存します。
+Goose の組み込み拡張機能のように接続先を持たないエントリは数に含まれません。
+
+### Agent がすでに持っているエントリを引き継ぐ
+
+Agent ファイルがすでに使っている名前でサーバーを追加しても、sync はそのエントリを上書きしません。
+プランは競合 `existing entry is not managed` を報告し、そのエントリについて次のどちらかを選ぶまで
+ファイルを書き込みません。
+
+- その Agent からインポートする: `skillshare mcp import NAME --from CLIENT`、またはダッシュボードの
+  競合にある **Import from** ボタン（**Import from Cursor** など）。source と一致するエントリはそのまま
+  採用されます。`mcp.projects` 配下のフォルダーでの競合では、ボタンはそのフォルダーのファイルを読み込み、
+  その project にインポートします。
+- source の定義で置き換える: ダッシュボードの **Replace with source**、またはインポート時の `--replace`。
 
 ## 安全性と制限事項
 
@@ -614,6 +682,9 @@ mcp:
 コマンドラインからは、`mcp add` または `mcp edit` に JSON オブジェクトを渡します。これは
 `piOptions` 全体を置き換え、`{}` でクリアします。ダッシュボードでは、サーバーのダイアログの
 **Direct tools** の下に同じ入力欄があり、保存する前にテキストが JSON オブジェクトであることを確認します。
+Pi にチェックが入り、**Direct tools** または **Other adapter settings** が設定されているサーバーは、その行に
+アイコンが表示されます。ホバーすると設定されている項目がわかり、クリックするとダイアログが開きます。編集中に Pi の
+チェックを外しても両方とも source に残るため、Pi に再びチェックを入れると元に戻ります。
 
 ```bash
 skillshare mcp edit github --pi-options '{"excludeTools":["*emulator*"]}'

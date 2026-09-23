@@ -1,11 +1,66 @@
 ---
 name: patch-notes
-description: "Generate player-facing patch notes from git history, sprint data, and internal changelogs. Translates developer language into clear, engaging player communication."
+description: "Player-facing patch notes from git history and changelogs. Translates developer language into player communication."
 argument-hint: "[version] [--style brief|detailed|full]"
 user-invocable: true
 allowed-tools: Read, Glob, Grep, Write, Bash
-model: haiku
-agent: community-manager
+model: sonnet
+---
+
+!`source "${CLAUDE_PROJECT_DIR:-.}/.claude/hooks/yaml-helper.sh" 2>/dev/null && resolve_config --keys automation`
+
+**Automation mode**: Resolve `modes.automation` (`project.local.yaml` →
+`project.yaml` → default `collaborative`). Every `AskUserQuestion` call and
+every file write follows `.claude/docs/automation-modes.md`
+(collaborative asks always · guided major-only · autonomous logs and proceeds;
+`automation_always_ask` categories always prompt).
+
+## Provenance check — before reading any history
+
+**Confirm the history you are about to read belongs to THIS game.** Run this
+before Phase 2 and stop if it fails.
+
+1. Sample the recent log: `git log --oneline -20`.
+2. **Classify every commit in the range, one at a time**, into exactly one of:
+   - **Game** — changes the game the player plays: mechanics, content, balance,
+     art, audio, UI, a bug in any of those.
+   - **Framework / maintenance** — changes CCGS itself or the project's tooling:
+     subjects naming skills, hooks, agents, the test plan, CI, the framework's
+     own docs. **Excluded from player-facing notes, but not a reason to stop.**
+   - **Unclear** — treat as framework. A commit you cannot confidently place is
+     not one to write player copy from.
+3. Then decide from the counts:
+   - **At least one Game commit** → proceed, using **only** those. Say how many
+     of how many you used, so the reader can see the filter ran.
+   - **Zero Game commits** → stop, using the message below.
+
+> **Filter per commit; do not stop on a repo that merely contains maintenance
+> work.** Every project built on this framework accumulates commits touching
+> hooks, CI and skills — the game repo *is* the framework repo. An earlier
+> version of this check listed "subjects naming the framework, its skills, hooks,
+> agents or test plan" as a hard STOP, which fires on virtually every real
+> project and contradicted its own step 2 whenever a history was mostly the
+> game's. The danger was never that such commits *exist*; it is that they get
+> **rendered as player-facing copy**. Excluding them addresses that exactly, and
+> a repo-level stop does not.
+
+Corroborate before you proceed, cheaply: the Game commits should name systems
+that appear in `design/` and `src/`. If they name a product those directories
+never mention, that is the real wrong-history signal — stop.
+
+If **no** commit in the range is this game's, say so and stop:
+
+> "The git history in this repo does not appear to belong to [game]. The recent
+> commits describe [what they actually describe]. I cannot generate release notes
+> from it — point me at the right history, or supply the change list directly."
+
+**Why this is a hard stop, not a warning.** This exact failure is real, not
+hypothetical: a batch of framework-internal commits produced player-facing copy
+reading *"Fixed an issue where progress from your last session could be lost on launch"*
+— a session-hook timeout rendered as a gameplay fix for a game with **no save
+system**. It was fluent, plausible, and entirely false. A reader cannot tell the
+difference; only this check can.
+
 ---
 
 ## Phase 1: Parse Arguments

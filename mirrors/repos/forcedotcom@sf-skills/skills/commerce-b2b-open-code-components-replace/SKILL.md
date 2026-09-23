@@ -3,10 +3,10 @@ name: commerce-b2b-open-code-components-replace
 description: "Replace OOTB (out-of-the-box) B2B Commerce components with open source equivalents in site metadata content.json files, or look up the equivalent open code `site:` component for OOTB definitions. Use when users mention \"replace OOTB components\", \"replace commerce components with open code\", \"swap OOTB for open source\", \"replace commerce_builder:\", \"replace OOTB in site\", \"replace component in site metadata\", \"replace component definition\", \"find open code equivalent\", \"equivalent open code component\", \"OOTB to open code mapping\", \"what is the site component for\", components \"in this view\" or \"for a given view\", or a specific list of component names — and want to update or only discover mappings in their store metadata."
 allowed-tools: Bash(grep:*) Bash(ls:*) Read Write
 metadata:
-  relatedSkills:
-    - "commerce-b2b-open-code-components-integrate"
   version: "1.0"
   domains: ["Commerce", "Experience"]
+  relatedSkills:
+    - "commerce-b2b-open-code-components-integrate"
 ---
 
 # Replacing OOTB B2B Commerce Components with Open Code
@@ -94,10 +94,10 @@ Then present the replaceable components as a **multi-select list** so the user c
 ```text
 Which components would you like to replace?
 
-☐ commerce_builder:heading → site:productHeading
-☐ commerce_builder:cartBadge → site:cartBadge
-☐ commerce_builder:searchInput → site:searchInput
-☐ All of the above
+[ ] commerce_builder:heading → site:productHeading
+[ ] commerce_builder:cartBadge → site:cartBadge
+[ ] commerce_builder:searchInput → site:searchInput
+[ ] All of the above
 ```
 
 If user provided specific component name(s) in the original request, pre-filter to those and skip the selection prompt.
@@ -119,7 +119,7 @@ The affected files are already known from Step 1. For each file that contains se
 ### Step 3: Report
 
 ```text
-✅ Replacement Complete!
+Replacement Complete!
 
 Replaced X components across Y files:
 - commerce_builder:heading → site:productHeading (3 files)
@@ -152,9 +152,9 @@ Next Steps:
 **User:** "Replace OOTB components with open code versions"
 
 **Agent:** "Before replacing components, I need to verify that the open code components are set up in your store. Let me check..."
-- ✓ Open source repo cloned
-- ✓ Store metadata available for My_B2B_Store1
-- ✓ Open code components are integrated
+- [done] Open source repo cloned
+- [done] Store metadata available for My_B2B_Store1
+- [done] Open code components are integrated
 
 **Agent:** "I'm scanning your store's site metadata to find all OOTB commerce components and checking which have open code equivalents."
 
@@ -174,11 +174,11 @@ No mapping available (not in mapping table):
 ```text
 Which components would you like to replace?
 
-☐ commerce_builder:heading → site:productHeading
-☐ commerce_builder:cartBadge → site:cartBadge
-☐ commerce_builder:searchInput → site:searchInput
-☐ commerce_builder:cartSummary → site:cartSummary
-☐ All of the above
+[ ] commerce_builder:heading → site:productHeading
+[ ] commerce_builder:cartBadge → site:cartBadge
+[ ] commerce_builder:searchInput → site:searchInput
+[ ] commerce_builder:cartSummary → site:cartSummary
+[ ] All of the above
 ```
 
 **User:** _(selects heading and cartBadge)_
@@ -188,7 +188,7 @@ Which components would you like to replace?
 _(Files already known from scan — one Read/Write pass per affected file, all replacements batched)_
 
 ```text
-✅ Replacement Complete!
+Replacement Complete!
 
 Replaced 2 components across 5 files:
 - commerce_builder:heading → site:productHeading (3 files)

@@ -131,8 +131,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 70 | ✓ | [`contributing/samples/environment_and_skills/skills_inject_state/skills/code-review-skill/SKILL.md`](contributing/samples/environment_and_skills/skills_inject_state/skills/code-review-skill/SKILL.md) |
 | 71 | ✓ | [`contributing/samples/environment_and_skills/skills/skills/weather-skill/SKILL.md`](contributing/samples/environment_and_skills/skills/skills/weather-skill/SKILL.md) |
 | 72 | ✓ | [`llms.txt`](llms.txt) |
-| 73 | ✓ | [`src/google/adk/tools/bigquery/skills/bigquery-ai-ml/SKILL.md`](src/google/adk/tools/bigquery/skills/bigquery-ai-ml/SKILL.md) |
-| 74 | ✓ | [`src/google/adk/tools/bigquery/skills/bigquery-graph/SKILL.md`](src/google/adk/tools/bigquery/skills/bigquery-graph/SKILL.md) |
+| 73 | ✓ | [`src/google/adk/integrations/bigquery/skills/bigquery-ai-ml/SKILL.md`](src/google/adk/integrations/bigquery/skills/bigquery-ai-ml/SKILL.md) |
+| 74 | ✓ | [`src/google/adk/integrations/bigquery/skills/bigquery-graph/SKILL.md`](src/google/adk/integrations/bigquery/skills/bigquery-graph/SKILL.md) |
 
 ---
 

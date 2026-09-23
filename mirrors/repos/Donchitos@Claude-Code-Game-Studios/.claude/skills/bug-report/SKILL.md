@@ -1,11 +1,19 @@
 ---
 name: bug-report
-description: "Creates a structured bug report from a description, or analyzes code to identify potential bugs. Ensures every bug report has full reproduction steps, severity assessment, and context."
+description: "Structured bug report from a description, or analyze code for potential bugs. Reproduction steps, severity."
 argument-hint: "[description] | analyze [path-to-file]"
 user-invocable: true
-allowed-tools: Read, Glob, Grep, Write
+allowed-tools: Read, Glob, Grep, Bash, Write, Edit
 model: sonnet
 ---
+
+!`source "${CLAUDE_PROJECT_DIR:-.}/.claude/hooks/yaml-helper.sh" 2>/dev/null && resolve_config --keys automation`
+
+**Automation mode**: Resolve `modes.automation` (`project.local.yaml` →
+`project.yaml` → default `collaborative`). Every `AskUserQuestion` call and
+every file write follows `.claude/docs/automation-modes.md`
+(collaborative asks always · guided major-only · autonomous logs and proceeds;
+`automation_always_ask` categories always prompt).
 
 ## Phase 1: Parse Arguments
 
@@ -35,7 +43,14 @@ If no argument is provided, ask the user for a bug description before proceeding
 **Title**: [Concise, descriptive title]
 **ID**: BUG-[NNNN]
 **Severity**: [S1-Critical / S2-Major / S3-Minor / S4-Trivial]
-**Priority**: [P1-Immediate / P2-Next Sprint / P3-Backlog / P4-Wishlist]
+**Priority**: [P1-Fix this sprint / P2-Fix soon / P3-Backlog / P4-Won't fix]
+
+> **These labels must match `/bug-triage`'s priority table exactly** — it parses
+> this field out of the file you are writing. P4 is the easiest to get wrong:
+> `P4-Wishlist` ("would be nice someday") and `P4 — Won't fix / Deferred`
+> ("accepted risk, not doing it") mean opposite things, and nothing at runtime
+> surfaces a disagreement between the producer and consumer of the field. If you change this ladder, change
+> `.claude/skills/bug-triage/SKILL.md` in the same commit.
 **Status**: Open
 **Reported**: [Date]
 **Reporter**: [Name]

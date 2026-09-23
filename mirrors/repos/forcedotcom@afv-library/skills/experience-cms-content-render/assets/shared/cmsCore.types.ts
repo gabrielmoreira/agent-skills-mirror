@@ -25,9 +25,19 @@ export interface CmsExternalRef<K extends string = string> {
    *  from. The skill threads these off the search hand-off (or asks the user) at Ref
    *  Registration so the accessible name survives. Ignored on non-media refs (news
    *  reads its title from the fetched envelope). Both optional; `altText` absent → `''`
-   *  (decorative image, WCAG 1.1.1); `title` names the document download link. */
+   *  (decorative image, WCAG 1.1.1); `title` names the document download link.
+   *
+   *  `captionsSrc` is MEDIA-ONLY (video), also foreign-ref only: a caller who has a
+   *  captions/subtitles track (e.g. a VTT file) for this video supplies its URL here
+   *  so MediaRenderer can render an accessible `<track kind="captions">`. There is no
+   *  fetched-body equivalent for the uiBundle-space (`contentKey`) path today — the
+   *  predefined media body carries no captions field — so captions render only when
+   *  a caller populates this on a foreign ref. `captionsLabel` names the track
+   *  (defaults to "Captions" when omitted). */
   readonly altText?: string;
   readonly title?: string;
+  readonly captionsSrc?: string;
+  readonly captionsLabel?: string;
 }
 
 /**

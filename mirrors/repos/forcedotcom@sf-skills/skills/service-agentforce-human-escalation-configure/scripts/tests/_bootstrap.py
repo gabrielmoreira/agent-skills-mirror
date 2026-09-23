@@ -6,12 +6,30 @@ import subprocess
 import tempfile
 from pathlib import Path
 
-# skills/ root is three levels up (.../<skill>/scripts/tests/_bootstrap.py).
+# skills/ root is three levels up (.../<skill>/scripts/tests/_bootstrap.py). In the flat copy
+# this is the repo's skills/ directory; in a plugin mirror it is that plugin's own bundled
+# skills/ directory, which only contains its own roster.
 SKILLS_ROOT = Path(__file__).resolve().parents[3]
+
+
+def _find_flat_skills_root(start: Path) -> Path:
+    """Walk up from this file to the repo's flat skills/ root, which bundles every skill
+    exactly once. Cross-skill references that aren't part of this skill's own plugin roster
+    (like the ITSM coordinator's verdict script below) must resolve here, not under
+    SKILLS_ROOT, since a plugin mirror's SKILLS_ROOT only contains its own bundled skills."""
+    for parent in start.parents:
+        candidate = parent / "skills" / "service-itsm-agentic-setup-agentforce-coordinate"
+        if candidate.is_dir():
+            return parent / "skills"
+    raise RuntimeError("could not locate the repo's flat skills/ root")
+
+
+FLAT_SKILLS_ROOT = _find_flat_skills_root(Path(__file__).resolve())
 
 SKILL_DIR = "service-agentforce-human-escalation-configure"
 SCRIPT = f"{SKILL_DIR}/scripts/verify-and-configure.sh"
-# The ITSM coordinator's advancement gate - exercised for the escalation verdict mapping.
+# The ITSM coordinator's advancement gate - exercised for the escalation verdict mapping. Not
+# bundled per-plugin, so resolved against FLAT_SKILLS_ROOT (see run_node's root parameter).
 VERDICT_SCRIPT = "service-itsm-agentic-setup-agentforce-coordinate/scripts/verify-child-verdict.mjs"
 
 # A fake `sf` that reports a PRODUCTION customer org so the safe_to_write guard must refuse.
@@ -220,11 +238,13 @@ def run(args, path_prefix=None, scrub_sf=False, extra_env=None):
     return proc.returncode, (proc.stdout or "") + (proc.stderr or "")
 
 
-def run_node(script_rel, args):
-    """Run a bundled Node helper; return (returncode, stdout)."""
+def run_node(script_rel, args, root=None):
+    """Run a bundled Node helper; return (returncode, stdout). Pass `root=FLAT_SKILLS_ROOT`
+    for cross-skill scripts not bundled in this skill's own plugin roster."""
+    base = root if root is not None else SKILLS_ROOT
     proc = subprocess.run(
-        ["node", str(SKILLS_ROOT / script_rel), *args],
-        capture_output=True, text=True, cwd=str(SKILLS_ROOT),
+        ["node", str(base / script_rel), *args],
+        capture_output=True, text=True, cwd=str(base),
     )
     return proc.returncode, (proc.stdout or "")
 

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `magnus919/agent-skills` — 26 default patterns, 7 followed patterns, 379 file(s) materialized.
+Mirror of `magnus919/agent-skills` — 26 default patterns, 8 followed patterns, 382 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `magnus919/agent-skills` — 26 default patterns, 7 followed patterns,
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 7 |
-| Files         | 379 |
+| Followed pats | 8 |
+| Files         | 382 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -58,6 +58,7 @@ Mirror of `magnus919/agent-skills` — 26 default patterns, 7 followed patterns,
 - `CONTRIBUTING.md`
 - `CODE_OF_CONDUCT.md`
 - `LICENSE.md`
+- `docs/jev-ci-reference-runlog.md`
 
 ## File Index
 
@@ -356,94 +357,97 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 289 | ✓ | [`stripe/SKILL.md`](stripe/SKILL.md) |
 | 290 | ✓ | [`supabase/README.md`](supabase/README.md) |
 | 291 | ✓ | [`supabase/SKILL.md`](supabase/SKILL.md) |
-| 292 | ✓ | [`systematic-debugging/README.md`](systematic-debugging/README.md) |
-| 293 | ✓ | [`systematic-debugging/SKILL.md`](systematic-debugging/SKILL.md) |
-| 294 | ✓ | [`tailscale/AGENTS.md`](tailscale/AGENTS.md) |
-| 295 | ✓ | [`tailscale/README.md`](tailscale/README.md) |
-| 296 | ✓ | [`tailscale/SKILL.md`](tailscale/SKILL.md) |
-| 297 | ✓ | [`tailscale/skills/headscale-backup/README.md`](tailscale/skills/headscale-backup/README.md) |
-| 298 | ✓ | [`tailscale/skills/headscale-backup/SKILL.md`](tailscale/skills/headscale-backup/SKILL.md) |
-| 299 | ✓ | [`tailscale/skills/headscale-deploy/README.md`](tailscale/skills/headscale-deploy/README.md) |
-| 300 | ✓ | [`tailscale/skills/headscale-deploy/SKILL.md`](tailscale/skills/headscale-deploy/SKILL.md) |
-| 301 | ✓ | [`tailscale/skills/headscale-derp/README.md`](tailscale/skills/headscale-derp/README.md) |
-| 302 | ✓ | [`tailscale/skills/headscale-derp/SKILL.md`](tailscale/skills/headscale-derp/SKILL.md) |
-| 303 | ✓ | [`tailscale/skills/headscale-node-lifecycle/README.md`](tailscale/skills/headscale-node-lifecycle/README.md) |
-| 304 | ✓ | [`tailscale/skills/headscale-node-lifecycle/SKILL.md`](tailscale/skills/headscale-node-lifecycle/SKILL.md) |
-| 305 | ✓ | [`tailscale/skills/headscale-routing/README.md`](tailscale/skills/headscale-routing/README.md) |
-| 306 | ✓ | [`tailscale/skills/headscale-routing/SKILL.md`](tailscale/skills/headscale-routing/SKILL.md) |
-| 307 | ✓ | [`tailscale/skills/tailnet-policy/README.md`](tailscale/skills/tailnet-policy/README.md) |
-| 308 | ✓ | [`tailscale/skills/tailnet-policy/SKILL.md`](tailscale/skills/tailnet-policy/SKILL.md) |
-| 309 | ✓ | [`tailscale/skills/tailscale-client/README.md`](tailscale/skills/tailscale-client/README.md) |
-| 310 | ✓ | [`tailscale/skills/tailscale-client/SKILL.md`](tailscale/skills/tailscale-client/SKILL.md) |
-| 311 | ✓ | [`technical-documentation/README.md`](technical-documentation/README.md) |
-| 312 | ✓ | [`technical-documentation/SKILL.md`](technical-documentation/SKILL.md) |
-| 313 | ✓ | [`technical-program-management/README.md`](technical-program-management/README.md) |
-| 314 | ✓ | [`technical-program-management/SKILL.md`](technical-program-management/SKILL.md) |
-| 315 | ✓ | [`technical-project-management/README.md`](technical-project-management/README.md) |
-| 316 | ✓ | [`technical-project-management/SKILL.md`](technical-project-management/SKILL.md) |
-| 317 | ✓ | [`technology-radar/README.md`](technology-radar/README.md) |
-| 318 | ✓ | [`technology-radar/SKILL.md`](technology-radar/SKILL.md) |
-| 319 | ✓ | [`telemetry/README.md`](telemetry/README.md) |
-| 320 | ✓ | [`telemetry/SKILL.md`](telemetry/SKILL.md) |
-| 321 | ✓ | [`tempest/README.md`](tempest/README.md) |
-| 322 | ✓ | [`tempest/SKILL.md`](tempest/SKILL.md) |
-| 323 | ✓ | [`terraform/README.md`](terraform/README.md) |
-| 324 | ✓ | [`terraform/SKILL.md`](terraform/SKILL.md) |
-| 325 | ✓ | [`three/README.md`](three/README.md) |
-| 326 | ✓ | [`three/SKILL.md`](three/SKILL.md) |
-| 327 | ✓ | [`tmdb/README.md`](tmdb/README.md) |
-| 328 | ✓ | [`tmdb/SKILL.md`](tmdb/SKILL.md) |
-| 329 | ✓ | [`traefik/README.md`](traefik/README.md) |
-| 330 | ✓ | [`traefik/SKILL.md`](traefik/SKILL.md) |
-| 331 | ✓ | [`training-data-annotation/README.md`](training-data-annotation/README.md) |
-| 332 | ✓ | [`training-data-annotation/SKILL.md`](training-data-annotation/SKILL.md) |
-| 333 | ✓ | [`trakt/README.md`](trakt/README.md) |
-| 334 | ✓ | [`trakt/SKILL.md`](trakt/SKILL.md) |
-| 335 | ✓ | [`transistor/README.md`](transistor/README.md) |
-| 336 | ✓ | [`transistor/SKILL.md`](transistor/SKILL.md) |
-| 337 | ✓ | [`travel-guide/README.md`](travel-guide/README.md) |
-| 338 | ✓ | [`travel-guide/SKILL.md`](travel-guide/SKILL.md) |
-| 339 | ✓ | [`vercel-eve/README.md`](vercel-eve/README.md) |
-| 340 | ✓ | [`vercel-eve/SKILL.md`](vercel-eve/SKILL.md) |
-| 341 | ✓ | [`verification-methodology/README.md`](verification-methodology/README.md) |
-| 342 | ✓ | [`verification-methodology/SKILL.md`](verification-methodology/SKILL.md) |
-| 343 | ✓ | [`verified-delivery/README.md`](verified-delivery/README.md) |
-| 344 | ✓ | [`verified-delivery/SKILL.md`](verified-delivery/SKILL.md) |
-| 345 | ✓ | [`vite/README.md`](vite/README.md) |
-| 346 | ✓ | [`vite/SKILL.md`](vite/SKILL.md) |
-| 347 | ✓ | [`vllm/README.md`](vllm/README.md) |
-| 348 | ✓ | [`vllm/SKILL.md`](vllm/SKILL.md) |
-| 349 | ✓ | [`waiting-list/README.md`](waiting-list/README.md) |
-| 350 | ✓ | [`waiting-list/SKILL.md`](waiting-list/SKILL.md) |
-| 351 | ✓ | [`web-accessibility/README.md`](web-accessibility/README.md) |
-| 352 | ✓ | [`web-accessibility/SKILL.md`](web-accessibility/SKILL.md) |
-| 353 | ✓ | [`woodpecker-ci/README.md`](woodpecker-ci/README.md) |
-| 354 | ✓ | [`woodpecker-ci/SKILL.md`](woodpecker-ci/SKILL.md) |
-| 355 | ✓ | [`workflow-architect/AGENTS.md`](workflow-architect/AGENTS.md) |
-| 356 | ✓ | [`workflow-architect/README.md`](workflow-architect/README.md) |
-| 357 | ✓ | [`workflow-architect/references/example-output/developer-pipeline-kanban/kanban/README.md`](workflow-architect/references/example-output/developer-pipeline-kanban/kanban/README.md) |
-| 358 | ✓ | [`workflow-architect/references/example-output/developer-pipeline-kanban/README.md`](workflow-architect/references/example-output/developer-pipeline-kanban/README.md) |
-| 359 | ✓ | [`workflow-architect/references/example-output/developer-triage/README.md`](workflow-architect/references/example-output/developer-triage/README.md) |
-| 360 | ✓ | [`workflow-architect/SKILL.md`](workflow-architect/SKILL.md) |
-| 361 | ✓ | [`workflow-architect/skills/bundle-builder/README.md`](workflow-architect/skills/bundle-builder/README.md) |
-| 362 | ✓ | [`workflow-architect/skills/bundle-builder/SKILL.md`](workflow-architect/skills/bundle-builder/SKILL.md) |
-| 363 | ✓ | [`workflow-architect/skills/interviewer/README.md`](workflow-architect/skills/interviewer/README.md) |
-| 364 | ✓ | [`workflow-architect/skills/interviewer/SKILL.md`](workflow-architect/skills/interviewer/SKILL.md) |
-| 365 | ✓ | [`workflow-architect/skills/observer/README.md`](workflow-architect/skills/observer/README.md) |
-| 366 | ✓ | [`workflow-architect/skills/observer/SKILL.md`](workflow-architect/skills/observer/SKILL.md) |
-| 367 | ✓ | [`writers-helper/README.md`](writers-helper/README.md) |
-| 368 | ✓ | [`writers-helper/SKILL.md`](writers-helper/SKILL.md) |
-| 369 | ✓ | [`yc-default-alive-calculator/README.md`](yc-default-alive-calculator/README.md) |
-| 370 | ✓ | [`yc-default-alive-calculator/SKILL.md`](yc-default-alive-calculator/SKILL.md) |
-| 371 | ✓ | [`yc-weekly-growth-compass/README.md`](yc-weekly-growth-compass/README.md) |
-| 372 | ✓ | [`yc-weekly-growth-compass/SKILL.md`](yc-weekly-growth-compass/SKILL.md) |
-| 373 | → | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
-| 374 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 375 | → | [`data-scientist/README.md`](data-scientist/README.md) |
-| 376 | → | [`FAILURE-MODE-INDEX.md`](FAILURE-MODE-INDEX.md) |
-| 377 | → | [`LICENSE.md`](LICENSE.md) |
-| 378 | → | [`README.md`](README.md) |
-| 379 | → | [`references/skill-triggers.md`](references/skill-triggers.md) |
+| 292 | ✓ | [`system-one/README.md`](system-one/README.md) |
+| 293 | ✓ | [`system-one/SKILL.md`](system-one/SKILL.md) |
+| 294 | ✓ | [`systematic-debugging/README.md`](systematic-debugging/README.md) |
+| 295 | ✓ | [`systematic-debugging/SKILL.md`](systematic-debugging/SKILL.md) |
+| 296 | ✓ | [`tailscale/AGENTS.md`](tailscale/AGENTS.md) |
+| 297 | ✓ | [`tailscale/README.md`](tailscale/README.md) |
+| 298 | ✓ | [`tailscale/SKILL.md`](tailscale/SKILL.md) |
+| 299 | ✓ | [`tailscale/skills/headscale-backup/README.md`](tailscale/skills/headscale-backup/README.md) |
+| 300 | ✓ | [`tailscale/skills/headscale-backup/SKILL.md`](tailscale/skills/headscale-backup/SKILL.md) |
+| 301 | ✓ | [`tailscale/skills/headscale-deploy/README.md`](tailscale/skills/headscale-deploy/README.md) |
+| 302 | ✓ | [`tailscale/skills/headscale-deploy/SKILL.md`](tailscale/skills/headscale-deploy/SKILL.md) |
+| 303 | ✓ | [`tailscale/skills/headscale-derp/README.md`](tailscale/skills/headscale-derp/README.md) |
+| 304 | ✓ | [`tailscale/skills/headscale-derp/SKILL.md`](tailscale/skills/headscale-derp/SKILL.md) |
+| 305 | ✓ | [`tailscale/skills/headscale-node-lifecycle/README.md`](tailscale/skills/headscale-node-lifecycle/README.md) |
+| 306 | ✓ | [`tailscale/skills/headscale-node-lifecycle/SKILL.md`](tailscale/skills/headscale-node-lifecycle/SKILL.md) |
+| 307 | ✓ | [`tailscale/skills/headscale-routing/README.md`](tailscale/skills/headscale-routing/README.md) |
+| 308 | ✓ | [`tailscale/skills/headscale-routing/SKILL.md`](tailscale/skills/headscale-routing/SKILL.md) |
+| 309 | ✓ | [`tailscale/skills/tailnet-policy/README.md`](tailscale/skills/tailnet-policy/README.md) |
+| 310 | ✓ | [`tailscale/skills/tailnet-policy/SKILL.md`](tailscale/skills/tailnet-policy/SKILL.md) |
+| 311 | ✓ | [`tailscale/skills/tailscale-client/README.md`](tailscale/skills/tailscale-client/README.md) |
+| 312 | ✓ | [`tailscale/skills/tailscale-client/SKILL.md`](tailscale/skills/tailscale-client/SKILL.md) |
+| 313 | ✓ | [`technical-documentation/README.md`](technical-documentation/README.md) |
+| 314 | ✓ | [`technical-documentation/SKILL.md`](technical-documentation/SKILL.md) |
+| 315 | ✓ | [`technical-program-management/README.md`](technical-program-management/README.md) |
+| 316 | ✓ | [`technical-program-management/SKILL.md`](technical-program-management/SKILL.md) |
+| 317 | ✓ | [`technical-project-management/README.md`](technical-project-management/README.md) |
+| 318 | ✓ | [`technical-project-management/SKILL.md`](technical-project-management/SKILL.md) |
+| 319 | ✓ | [`technology-radar/README.md`](technology-radar/README.md) |
+| 320 | ✓ | [`technology-radar/SKILL.md`](technology-radar/SKILL.md) |
+| 321 | ✓ | [`telemetry/README.md`](telemetry/README.md) |
+| 322 | ✓ | [`telemetry/SKILL.md`](telemetry/SKILL.md) |
+| 323 | ✓ | [`tempest/README.md`](tempest/README.md) |
+| 324 | ✓ | [`tempest/SKILL.md`](tempest/SKILL.md) |
+| 325 | ✓ | [`terraform/README.md`](terraform/README.md) |
+| 326 | ✓ | [`terraform/SKILL.md`](terraform/SKILL.md) |
+| 327 | ✓ | [`three/README.md`](three/README.md) |
+| 328 | ✓ | [`three/SKILL.md`](three/SKILL.md) |
+| 329 | ✓ | [`tmdb/README.md`](tmdb/README.md) |
+| 330 | ✓ | [`tmdb/SKILL.md`](tmdb/SKILL.md) |
+| 331 | ✓ | [`traefik/README.md`](traefik/README.md) |
+| 332 | ✓ | [`traefik/SKILL.md`](traefik/SKILL.md) |
+| 333 | ✓ | [`training-data-annotation/README.md`](training-data-annotation/README.md) |
+| 334 | ✓ | [`training-data-annotation/SKILL.md`](training-data-annotation/SKILL.md) |
+| 335 | ✓ | [`trakt/README.md`](trakt/README.md) |
+| 336 | ✓ | [`trakt/SKILL.md`](trakt/SKILL.md) |
+| 337 | ✓ | [`transistor/README.md`](transistor/README.md) |
+| 338 | ✓ | [`transistor/SKILL.md`](transistor/SKILL.md) |
+| 339 | ✓ | [`travel-guide/README.md`](travel-guide/README.md) |
+| 340 | ✓ | [`travel-guide/SKILL.md`](travel-guide/SKILL.md) |
+| 341 | ✓ | [`vercel-eve/README.md`](vercel-eve/README.md) |
+| 342 | ✓ | [`vercel-eve/SKILL.md`](vercel-eve/SKILL.md) |
+| 343 | ✓ | [`verification-methodology/README.md`](verification-methodology/README.md) |
+| 344 | ✓ | [`verification-methodology/SKILL.md`](verification-methodology/SKILL.md) |
+| 345 | ✓ | [`verified-delivery/README.md`](verified-delivery/README.md) |
+| 346 | ✓ | [`verified-delivery/SKILL.md`](verified-delivery/SKILL.md) |
+| 347 | ✓ | [`vite/README.md`](vite/README.md) |
+| 348 | ✓ | [`vite/SKILL.md`](vite/SKILL.md) |
+| 349 | ✓ | [`vllm/README.md`](vllm/README.md) |
+| 350 | ✓ | [`vllm/SKILL.md`](vllm/SKILL.md) |
+| 351 | ✓ | [`waiting-list/README.md`](waiting-list/README.md) |
+| 352 | ✓ | [`waiting-list/SKILL.md`](waiting-list/SKILL.md) |
+| 353 | ✓ | [`web-accessibility/README.md`](web-accessibility/README.md) |
+| 354 | ✓ | [`web-accessibility/SKILL.md`](web-accessibility/SKILL.md) |
+| 355 | ✓ | [`woodpecker-ci/README.md`](woodpecker-ci/README.md) |
+| 356 | ✓ | [`woodpecker-ci/SKILL.md`](woodpecker-ci/SKILL.md) |
+| 357 | ✓ | [`workflow-architect/AGENTS.md`](workflow-architect/AGENTS.md) |
+| 358 | ✓ | [`workflow-architect/README.md`](workflow-architect/README.md) |
+| 359 | ✓ | [`workflow-architect/references/example-output/developer-pipeline-kanban/kanban/README.md`](workflow-architect/references/example-output/developer-pipeline-kanban/kanban/README.md) |
+| 360 | ✓ | [`workflow-architect/references/example-output/developer-pipeline-kanban/README.md`](workflow-architect/references/example-output/developer-pipeline-kanban/README.md) |
+| 361 | ✓ | [`workflow-architect/references/example-output/developer-triage/README.md`](workflow-architect/references/example-output/developer-triage/README.md) |
+| 362 | ✓ | [`workflow-architect/SKILL.md`](workflow-architect/SKILL.md) |
+| 363 | ✓ | [`workflow-architect/skills/bundle-builder/README.md`](workflow-architect/skills/bundle-builder/README.md) |
+| 364 | ✓ | [`workflow-architect/skills/bundle-builder/SKILL.md`](workflow-architect/skills/bundle-builder/SKILL.md) |
+| 365 | ✓ | [`workflow-architect/skills/interviewer/README.md`](workflow-architect/skills/interviewer/README.md) |
+| 366 | ✓ | [`workflow-architect/skills/interviewer/SKILL.md`](workflow-architect/skills/interviewer/SKILL.md) |
+| 367 | ✓ | [`workflow-architect/skills/observer/README.md`](workflow-architect/skills/observer/README.md) |
+| 368 | ✓ | [`workflow-architect/skills/observer/SKILL.md`](workflow-architect/skills/observer/SKILL.md) |
+| 369 | ✓ | [`writers-helper/README.md`](writers-helper/README.md) |
+| 370 | ✓ | [`writers-helper/SKILL.md`](writers-helper/SKILL.md) |
+| 371 | ✓ | [`yc-default-alive-calculator/README.md`](yc-default-alive-calculator/README.md) |
+| 372 | ✓ | [`yc-default-alive-calculator/SKILL.md`](yc-default-alive-calculator/SKILL.md) |
+| 373 | ✓ | [`yc-weekly-growth-compass/README.md`](yc-weekly-growth-compass/README.md) |
+| 374 | ✓ | [`yc-weekly-growth-compass/SKILL.md`](yc-weekly-growth-compass/SKILL.md) |
+| 375 | → | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
+| 376 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 377 | → | [`data-scientist/README.md`](data-scientist/README.md) |
+| 378 | → | [`docs/jev-ci-reference-runlog.md`](docs/jev-ci-reference-runlog.md) |
+| 379 | → | [`FAILURE-MODE-INDEX.md`](FAILURE-MODE-INDEX.md) |
+| 380 | → | [`LICENSE.md`](LICENSE.md) |
+| 381 | → | [`README.md`](README.md) |
+| 382 | → | [`references/skill-triggers.md`](references/skill-triggers.md) |
 
 ---
 

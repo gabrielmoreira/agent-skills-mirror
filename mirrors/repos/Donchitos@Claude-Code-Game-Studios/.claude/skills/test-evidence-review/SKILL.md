@@ -1,11 +1,19 @@
 ---
 name: test-evidence-review
-description: "Quality review of test files and manual evidence documents. Goes beyond existence checks — evaluates assertion coverage, edge case handling, naming conventions, and evidence completeness. Produces ADEQUATE/INCOMPLETE/MISSING verdict per story. Run before QA sign-off or on demand."
+description: "Quality review of test files and evidence — goes beyond existence, evaluates assertion coverage. ADEQUATE/INCOMPLETE/MISSING/NOT ASSESSED per story."
 argument-hint: "[story-path | sprint | system-name]"
 user-invocable: true
 allowed-tools: Read, Glob, Grep, Write
 model: sonnet
 ---
+
+!`source "${CLAUDE_PROJECT_DIR:-.}/.claude/hooks/yaml-helper.sh" 2>/dev/null && resolve_config --keys automation`
+
+**Automation mode**: Resolve `modes.automation` (`project.local.yaml` →
+`project.yaml` → default `collaborative`). Every `AskUserQuestion` call and
+every file write follows `.claude/docs/automation-modes.md`
+(collaborative asks always · guided major-only · autonomous logs and proceeds;
+`automation_always_ask` categories always prompt).
 
 # Test Evidence Review
 
@@ -40,17 +48,45 @@ Based on the argument:
 **Single story**: Read the story file directly. Extract: Story Type, Test
 Evidence section, story slug, system name.
 
-**Sprint**: Read the most recently modified file in `production/sprints/`.
-Extract the list of story file paths from the sprint plan. Read each story file.
+**Sprint**: Read the most recently modified file in `production/sprints/`; extract
+the list of story file paths from the sprint plan.
 
-**System**: Glob `production/epics/[system-name]/story-*.md`. Read each.
+**System**: Glob `production/epics/[system-name]/story-*.md`.
 
-For each story, collect:
-- `Type:` field (Logic / Integration / Visual/Feel / UI / Config/Data)
-- `## Test Evidence` section — the stated expected test file path or evidence doc
-- Story slug (from file name)
-- System name (from directory path)
-- Acceptance Criteria list (all checkbox items)
+> **If the resolved scope contains ZERO stories, stop here.** Report
+> `NOT ASSESSED — no stories in scope`, name which scope was searched and which
+> path was empty, and route: no sprint file → `/sprint-plan new`; a sprint plan
+> listing no stories → `/create-stories [epic-slug]`; a `[system-name]` glob that
+> matched nothing → name the glob. Do not continue to Section 3.
+>
+> **Guard the empty scope, not just the per-story unknown.** The verdict
+> vocabulary here — ADEQUATE / INCOMPLETE / MISSING — needs a "could not check"
+> value, or an unverifiable story acquires a verdict claiming somebody verified
+> it; that is what `NOT ASSESSED` is for. **But giving the per-story unknown a
+> home does nothing for the empty-scope unknown.** With no stories
+> the Section 6 report renders an empty Summary table and ends
+> `BLOCKING items: 0 / ADVISORY items: 0` — which reads as *everything reviewed,
+> all fine*. This skill gates story closure, and `coding-standards.md` marks Logic,
+> Integration, Visual/Feel and UI evidence BLOCKING, so a false-clean closes stories nobody
+> reviewed.
+>
+> This is a recurring shape: the sophisticated inner rule present, the outer
+> boundary unguarded. Ask it of any skill that aggregates —
+> **what does this emit when the set is empty?**
+
+For the resulting story set, collect the fields below with **targeted section
+greps, not a full read of each story**:
+```
+Grep pattern="## Test Evidence" glob="production/epics/**/story-*.md" output_mode="content" -A 8
+Grep pattern="## Acceptance Criteria" glob="production/epics/**/story-*.md" output_mode="content" -A 15
+```
+- **Story Type** (Logic / Integration / Visual/Feel / UI / Config/Data) and the
+  stated evidence path — both live under `## Test Evidence`, so the first grep's
+  `-A 8` captures them.
+- Acceptance Criteria list — the `## Acceptance Criteria` block from the second grep.
+- Story slug (from the file name) and System (from the directory path) — no read.
+Full-read a story only when its Test Evidence section is missing or ambiguous.
+(In Sprint mode, scope the globs to the sprint plan's story paths.)
 
 ---
 
@@ -141,11 +177,13 @@ closed without all required sign-offs.
 
 ### Screenshot / artefact completeness
 
-For Visual/Feel stories: check whether screenshot file paths are referenced
-in the evidence doc. If referenced, Glob for them to confirm they exist.
+For Visual/Feel stories: Glob `production/qa/evidence/` for a retained image
+(`*.png`, `*.jpg`, `*.gif`) belonging to this story. A doc that describes a
+visual check but retains no image is INCOMPLETE — this gate is BLOCKING by
+default, and a description is an assertion rather than evidence.
 
-For UI stories: check whether a walkthrough sequence (step-by-step interaction
-log) is present.
+For UI stories: require the same retained screenshot of each screen touched,
+plus a walkthrough sequence (step-by-step interaction log).
 
 ### Date coverage
 
@@ -165,8 +203,36 @@ For each story, assign a verdict:
 | **ADEQUATE** | Test/evidence exists, passes quality checks, all criteria covered |
 | **INCOMPLETE** | Test/evidence exists but has quality gaps (thin assertions, missing sign-offs) |
 | **MISSING** | No test or evidence found for a story type that requires it |
+| **NOT ASSESSED** | The review could not be performed for this story — see below |
 
-The overall sprint/system verdict is the worst story verdict present.
+> **`NOT ASSESSED` is required, and it is not a softer `MISSING`.**
+> The other three verdicts all presume the review actually ran. `MISSING` means
+> *I looked and there was nothing there* — a real, reportable failure. It must
+> never be used for *I could not look*, which is not a finding about the story
+> at all. Use `NOT ASSESSED` when:
+>
+> - the story's **type cannot be determined**, so the required evidence is
+>   unknown (the type→evidence mapping in `.claude/docs/coding-standards.md` is
+>   what makes any other verdict meaningful);
+> - the evidence path is named but **unreadable or outside this run's scope**;
+> - the story file itself could not be parsed.
+>
+> **Say which of those it was, per story.** A reader cannot act on a bare
+> `NOT ASSESSED`, and the whole point of separating it from `MISSING` is that
+> the two have different fixes: one needs a test written, the other needs the
+> reviewer given access or the story classified.
+
+The overall sprint/system verdict is the worst story verdict present, and
+**`NOT ASSESSED` outranks `ADEQUATE`**: a run that could not assess part of its
+scope has not established that the scope is adequate. It does not outrank
+`INCOMPLETE` or `MISSING` — a known failure is more actionable than an unknown,
+and demoting a real failure behind an access problem would bury it.
+
+> Why this needed saying: evidence review **gates story completion**, and
+> `coding-standards.md` makes Logic, Integration, Visual/Feel and UI evidence BLOCKING. A verdict
+> vocabulary with no way to express "I could not check" forces every unknown
+> into one of three claims about the story — which is how a story nobody
+> verified acquires a verdict that says somebody did.
 
 ```markdown
 ## Test Evidence Review
@@ -174,13 +240,13 @@ The overall sprint/system verdict is the worst story verdict present.
 > **Date**: [date]
 > **Scope**: [single story path | Sprint [N] | [system name]]
 > **Stories reviewed**: [N]
-> **Overall verdict**: ADEQUATE / INCOMPLETE / MISSING
+> **Overall verdict**: ADEQUATE / INCOMPLETE / MISSING / NOT ASSESSED
 
 ---
 
 ### Story-by-Story Results
 
-#### [Story Title] — [Type] — [ADEQUATE/INCOMPLETE/MISSING]
+#### [Story Title] — [Type] — [ADEQUATE/INCOMPLETE/MISSING/NOT ASSESSED]
 
 **Test/evidence path**: `[path]` (found) / (not found)
 

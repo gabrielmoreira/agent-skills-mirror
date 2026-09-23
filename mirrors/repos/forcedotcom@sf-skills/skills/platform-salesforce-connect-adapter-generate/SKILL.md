@@ -1,6 +1,6 @@
 ---
 name: platform-salesforce-connect-adapter-generate
-description: "Custom Apex adapter generation for Salesforce Connect — connects any external REST API to Salesforce as live, queryable External Objects without ETL or data copying. TRIGGER when: user wants to connect a non-standard external API to Salesforce, asks to write a DataSource.Provider or DataSource.Connection, wants to surface external data as Salesforce records, says \"connect my API to Salesforce without copying data\", or asks whether custom Apex is the right approach for any system. Also trigger on: \"custom adapter\", \"ExternalId field\", \"DataSource namespace\". DO NOT TRIGGER when: user is configuring a standard adapter they already have and is NOT asking about custom Apex (e.g., OData endpoint setup, Snowflake connector config). DO NOT TRIGGER when: user wants to copy or bulk-sync data — use platform-data-manage. DO NOT TRIGGER for Apex callouts outside Connect — use platform-apex-generate or integration-connectivity-generate."
+description: "Custom Apex adapter generation for Salesforce Connect — connects any external REST API to Salesforce as live, queryable External Objects without ETL or copying. TRIGGER when: connecting a non-standard external API, writing a DataSource.Provider/Connection or a `.cls`/`.cls-meta.xml` custom adapter class, adding a `.namedCredential-meta.xml` for the adapter's callout, surfacing external data as records, \"custom adapter\", \"ExternalId field\", \"DataSource namespace\", or whether custom Apex fits. DO NOT TRIGGER when: a standard adapter is already configured (OData, Snowflake), for copy/bulk-sync (use platform-data-manage), or for Apex callouts outside Connect (use platform-apex-generate or integration-connectivity-generate)."
 metadata:
   version: "1.0"
   minApiVersion: "66.0"
@@ -26,7 +26,7 @@ Route the user through building a complete custom Salesforce Connect Apex adapte
 
 **In scope:** Generating `DataSource.Connection` and `DataSource.Provider` Apex classes, Named Credential metadata, deployment via sf CLI, and step-by-step Setup registration guidance for any REST API.
 
-**Out of scope:** Configuring standard adapters (OData, Snowflake, GraphQL — those have their own flows). Generating the External Data Source metadata file (not deployable via sf CLI — must be registered manually in Setup). Writing Apex that calls external APIs outside the Salesforce Connect framework (use [platform-apex-generate](../platform-apex-generate/SKILL.md) or [integration-connectivity-generate](../integration-connectivity-generate/SKILL.md)).
+**Out of scope:** Configuring standard adapters (OData, Snowflake, GraphQL — those have their own flows). Generating the External Data Source metadata file (not deployable via sf CLI — must be registered manually in Setup). Writing Apex that calls external APIs outside the Salesforce Connect framework (use the platform-apex-generate or integration-connectivity-generate skills).
 
 ## Before starting
 
@@ -37,11 +37,11 @@ Confirm two things. If either is missing, ask before proceeding.
 | The user wants to… | Right tool |
 |---|---|
 | Query external data live without copying it — read-only or read-write, appears as Salesforce records | **This skill** |
-| Copy or sync data into Salesforce on a schedule | [platform-data-manage](../platform-data-manage/SKILL.md) |
+| Copy or sync data into Salesforce on a schedule | the platform-data-manage skill |
 | Connect to OData, GraphQL, DynamoDB, Athena, or Cross-Org | Standard adapter setup — no Apex needed, different flow |
 | Connect to Snowflake via Salesforce's native Snowflake adapter (direct Snowflake protocol) | Built-in Snowflake adapter — no Apex needed |
 | Access Snowflake (or any database) data via a REST or HTTP API | **This skill** — Snowflake REST endpoint → custom Apex adapter |
-| Call an external API from Apex or Flow logic | [platform-apex-generate](../platform-apex-generate/SKILL.md) or [integration-connectivity-generate](../integration-connectivity-generate/SKILL.md) |
+| Call an external API from Apex or Flow logic | the platform-apex-generate skill or [integration-connectivity-generate](../integration-connectivity-generate/SKILL.md) |
 | Expose Salesforce data to an external system | [integration-connectivity-generate](../integration-connectivity-generate/SKILL.md) |
 | Receive real-time pushed data or subscribe to external events | Not Salesforce Connect — Connect is pull-only. Use Platform Events or Change Data Capture instead |
 | Sync or copy data for analytics or bulk processing | Data Cloud or ETL — Connect is zero-copy virtualization only |

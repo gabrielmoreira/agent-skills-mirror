@@ -235,5 +235,6 @@ actual elapsed, output tokens when available, and summary. For a resumed retry, 
 minus the prior run's total as that attempt's usage.
 
 Follow the table with `### 📦 Changed`, `### 🧪 Verification`, `### 🧹 Polish` when applicable, automatic
-cross-repository commit hashes when any, and `### ⚠️ Risks / blockers`; write `none` for applicable empty values. Never
+cross-repository commit hashes when any, and `### Issues and caveats` with the shared contract's `Resolved` and `Open`
+groups. Omit empty issue groups and the whole section when empty; write `none` for other applicable empty values. Never
 expose result JSON.

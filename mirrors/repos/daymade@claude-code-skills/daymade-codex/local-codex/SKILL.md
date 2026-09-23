@@ -18,18 +18,39 @@ Delegate coding tasks to the local OpenAI Codex CLI agent using your ChatGPT Pro
 
 **CRITICAL**: This skill uses OAuth authentication from `~/.codex/auth.json` (ChatGPT Pro flat-rate subscription). **Do NOT set `OPENAI_API_KEY` or pass API keys** — that would switch to pay-per-use billing.
 
-- Codex desktop app and CLI share the same auth cache
+- The ChatGPT.app desktop bundle and CLI share the same auth cache
 - If auth fails, run `codex login` in terminal (browser OAuth flow)
 - For auth issues, see [references/oauth-guide.md](references/oauth-guide.md)
 
 ## Codex CLI Path
 
 The skill auto-detects Codex CLI in this order:
-1. `/Applications/Codex.app/Contents/Resources/codex` (desktop app)
-2. `/usr/local/bin/codex` (npm global)
-3. `/opt/homebrew/bin/codex` (Homebrew)
-4. `~/.npm-global/bin/codex`
-5. `which codex` fallback
+1. `CODEX_BIN` env var, if set — explicit override. A non-executable path fails loudly
+   instead of silently falling through to a different build (that would make whatever
+   the wrapper measured unattributable).
+2. `which codex` — whatever is first on PATH. **This is the build the surrounding
+   environment actually runs**, so it is the right default: npm global installs under
+   nvm (`~/.nvm/versions/node/*/bin/codex`) resolve here.
+3. `/Applications/ChatGPT.app/Contents/Resources/codex` — the copy bundled inside
+   ChatGPT.app, fallback only. Its version tracks the Desktop app and can diverge from
+   the npm build, so it is deliberately last.
+
+If a bad `CODEX_BIN` was set, the wrapper exits 1 with
+`{"error": "CODEX_BIN not executable", "path": <value>}` — the offending value is in
+the error itself, and `searched_paths` is not emitted for this case (no other search
+step ran). If neither PATH nor the app bundle has a codex, the wrapper exits 1 with
+the actual search order in `searched_paths`.
+
+Whichever binary wins, attribute behaviour to it by versioning **the binary that
+ran**, not `codex --version`: the bare command always resolves the PATH copy, which is
+the wrong build to quote when the fallback picked the app-bundled one. Use the
+`codex_path` field from the wrapper's status output:
+
+```
+"<codex_path from status output>" --version
+```
+
+Two builds on one machine is the normal state, not an anomaly.
 
 ## Usage Patterns
 
@@ -113,6 +134,6 @@ The wrapper currently runs single-shot exec. For multi-step workflows, use raw `
 ## Limitations
 
 - Desktop app must be running for OAuth token refresh (or token must be fresh)
-- `codex doctor` is buggy in current version (alpha), avoid using
+- `codex doctor` works and is the first thing to run when Codex misbehaves. Run it **without** `--summary` — `--summary` cuts reachability down to a bare `✗ reachability ... unreachable` line (it actually prints twice, once under Notes and once under Connectivity) with no host and no remedy, in both the fail and the warning state. The full form names the host, the endpoint statuses, and a `→ check proxy, ...` remedy line, likewise in both states; what differs between fail and warning is which endpoint failed and whether it is marked `(required)`. For `--json`, everything lives under `checks["network.provider_reachability"]`: `details` maps endpoint → status, and `issues` is a list whose objects carry `severity` / `cause` / `measured` / `expected` / `remedy` / `fields` (the last three are optional). Two traps: there is **no top-level `issues` key at all** — do not write `report["issues"]` (KeyError) or `report.get("issues")` (silently None); and a check's own `issues` key is **omitted entirely when empty** rather than sent as `[]`, so `check.get("issues")` returns None for the 20+ checks that have nothing to report. Top level has exactly 5 keys, `generatedAt` is a string like `"1790057704s since unix epoch"` rather than a timestamp, and exit 1 fires on **any** failed check, not just reachability — `rollout_db_parity` is ⚠ on this install, and if it ever flips to fail it turns that exit code red for a reason unrelated to your network, which is what gates like `codex-1m-context-window-setup`'s `returncode == 0` check read. Verified 2026-09-22 on 0.155.1 (npm) and 0.155.0-alpha.9.2 (ChatGPT.app-bundled); the remedy wording quoted here is specific to those builds — upstream has since changed it.
 - Environment variables are NOT inherited into Codex's sandbox; pass via config or prompt
 - Large file operations may need increased timeout

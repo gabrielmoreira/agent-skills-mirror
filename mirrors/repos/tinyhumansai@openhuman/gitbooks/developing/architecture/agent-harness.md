@@ -237,14 +237,14 @@ compatibility export.
 
 ### Tool dispatch and tool-call dialects
 
-`agent.tool_dispatcher` (overridable for one launch with `OPENHUMAN_TOOL_DISPATCHER`) picks how tools are spoken to the model. `auto` (the default) uses **native tool calling** — structured tool specs through the `ChatModel` adapter and structured calls back — whenever the provider profile supports it, and falls back to JSON-in-tag for prompt-guided providers such as local Ollama. The session composes its prompt for the chosen dialect and pins the same dialect on the turn harness, so a text dialect keeps its schemas off the wire and the harness recovers calls with the matching grammar.
+`agent.tool_dispatcher` (overridable for one launch with `OPENHUMAN_TOOL_DISPATCHER`) picks how tools are spoken to the model. `python` (the default) renders the catalogue as Python function signatures and reads code-style calls back. `auto` uses **native tool calling** — structured tool specs through the `ChatModel` adapter and structured calls back — whenever the provider profile supports it, and falls back to JSON-in-tag for prompt-guided providers such as local Ollama. The session composes its prompt for the chosen dialect and pins the same dialect on the turn harness, so a text dialect keeps its schemas off the wire and the harness recovers calls with the matching grammar.
 
 Canonical `tinytools_agent::dialect::ToolDialect` implementations provide transcript-compatible parsing and rendering directly; OpenHuman converts durable/provider records only at those I/O boundaries:
 
 - **Native** (`native`) — structured tool-call fields.
 - **XML** (`xml`) — `<tool_call>{...}</tool_call>` tags in assistant text, with full JSON schemas in the prompt.
 - **P-Format** (`pformat`) — compact positional `<tool_call>name[0|a|1|b]</tool_call>` with `name[0|<a>|1|<b>]` signatures in the prompt; opt-in.
-- **Code** (`python` / `typescript`) — the catalogue is a list of function signatures (`def read_file(path: str, limit: int = None) -> str` or `function read_file(path: string, limit?: number): string;`) and the model writes a function call inside the tag: `read_file(path="src/main.rs", limit=20)` or `read_file({path: "src/main.rs", limit: 20})`. Compact like P-Format but a syntax small code-trained models already write; opt-in.
+- **Code** (`python` / `typescript`) — the catalogue is a list of function signatures (`def read_file(path: str, limit: int = None) -> str` or `function read_file(path: string, limit?: number): string;`) and the model writes a function call inside the tag: `read_file(path="src/main.rs", limit=20)` or `read_file({path: "src/main.rs", limit: 20})`. Compact like P-Format but a syntax small code-trained models already write; `python` is the default.
 
 Every text dialect shares one parser: a `<tool_call>` body is tried as P-Format, then as a code call, then as JSON, so a model that mixes forms is still understood. Persisted session histories can contain suffixes in any of these shapes, so the session shell keeps the dispatcher around to parse and replay them faithfully when a transcript is resumed.
 
@@ -344,7 +344,7 @@ Each archetype lives under `agents/<name>/` with an `agent.toml` (metadata, tool
 | `archivist`          | Memory distillation - what to persist, what to forget.                                   |
 | `tool_maker`         | Self-healing - writes polyfills for missing shell commands.                              |
 | `tools_agent`        | Generic specialist for arbitrary tool-bound tasks.                                       |
-| `integrations_agent` | Bound to a specific Composio toolkit (Gmail, GitHub, Slack…) for that toolkit's actions. |
+| `integrations_agent` | Bound to a specific Composio toolkit (Gmail, GitHub, Slack…) for that toolkit's actions. Not reachable from chat: the orchestrator finds a connected action through `tool_search` and calls it directly. |
 | `trigger_triage`     | Classifies incoming external events into drop / notify / spawn-reactor / spawn-agent.    |
 | `trigger_reactor`    | Lightweight reaction to a triaged trigger that doesn't need a full orchestrator turn.    |
 | `morning_briefing`   | Curated daily digest run by cron.                                                        |
@@ -399,7 +399,7 @@ Each `AgentDefinition` carries an `agent_tier` field (`chat` / `reasoning` / `wo
 | `reasoning` | `worker`              | another `reasoning`, any `chat` | `planner` (today the canonical one)                                             |
 | `worker`    | nothing[^1]           | anything                        | researcher, code_executor, critic, archivist, tool_maker, integrations_agent, … |
 
-[^1]: Skill-wildcard entries (`{ skills = "*" }`) are exempt because they collapse to a single `delegate_to_integrations_agent` tool whose target is a worker; they're a fan-out delegation surface, not a recursive spawn.
+[^1]: Skill-wildcard entries (`{ skills = "*" }`) are exempt because they name no agent: they expand to the connected Composio actions as `Deferred` tools the agent reaches through `tool_search`, not to a spawn.
 
 **Why the rules.**
 
@@ -677,8 +677,8 @@ Every run appends to a durable **event journal** (`tinyagents/journal.rs`): a `S
 The remaining store cutover runs on **shadow scaffolding** (product behavior unchanged; divergences logged):
 
 - **Session dual-write / shadow read** (`session/turn/session_io.rs`): session messages dual-write into the TinyAgents store (default-ON flag `config.session_dual_write`); loads shadow-read for parity while the legacy file store stays authoritative.
-- **Task-board shadow** (`todos/graph_shadow.rs`): mirrors the board into the crate `graph.todos` `TaskBoard` and shadow-runs its `claim_card` CAS.
-- **Goals shadow** (`thread_goals/crate_adapter.rs`): faithful copy into the crate `graph.goals` KV store, keyed by thread id.
+
+Goals and todos are crate-backed outright, with no shadow: thread goals live in the crate `graph.goals` KV store (`agent/goals/store.rs`), and the session todo list lives in the in-process crate `graph.todos` store (`agent/todos/ops.rs`); see [Goals & Todos](../../features/goals-and-todos.md).
 
 ## Workload routes and the burst tier
 
@@ -689,4 +689,4 @@ The remaining store cutover runs on **shadow scaffolding** (product behavior unc
 - [Architecture overview](README.md) - where the harness sits in the bigger picture.
 - [Memory Tree](../../features/obsidian-wiki/memory-tree.md) - what the memory loader reads from and post-turn hooks write to.
 - [Automatic Model Routing](../../features/model-routing/) - how `model: "hint:reasoning"` resolves to a concrete provider+model.
-- [Native Tools - Agent Coordination](../../features/native-tools/agent-coordination.md) - the user-facing surface for `spawn_subagent`, `delegate_*`, `todo_write`.
+- [Native Tools - Agent Coordination](../../features/native-tools/agent-coordination.md) - the user-facing surface for `spawn_subagent`, `delegate_*`, `todo`.

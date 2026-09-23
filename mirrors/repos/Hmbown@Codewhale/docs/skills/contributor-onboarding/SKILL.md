@@ -6,10 +6,10 @@ invocation: explicit-only
 
 # Contributor Onboarding
 
-Requested by @JayBeest in issue #4227: a first-run path for a contributor who
-has cloned the repo and wants to know *am I current, does it build, does it
-pass, and what changed while I was away* — without a wall of prose and without
-anything touching their working tree behind their back.
+A first-run path for a contributor who has cloned the repo and wants to know
+*am I current, does it build, does it pass, and what changed while I was
+away* — without a wall of prose and without anything touching their working
+tree behind their back.
 
 ## Invocation
 
@@ -77,23 +77,22 @@ the run: do not proceed to the gate and do not report gate results.
 
 ### 4. Verification gate — the repository's exact CI command
 
-Run what CI runs, not a paraphrase of it:
+Run what CI runs, not a paraphrase of it. Read `.github/workflows/ci.yml`
+first and run its Rust steps verbatim; the list below is a snapshot that
+loses to the workflow when they disagree:
 
 ```
 cargo fmt --all -- --check
-cargo clippy --workspace --all-features --locked -- \
+cargo clippy --workspace --all-targets --all-features --locked -- \
   -D warnings \
   -A clippy::uninlined_format_args \
   -A clippy::too_many_arguments \
-  -A clippy::unnecessary_map_or \
-  -A clippy::collapsible_if \
-  -A clippy::assertions_on_constants
+  -A clippy::unnecessary_map_or
 cargo test --workspace
 ```
 
-These are copied from `.github/workflows/ci.yml`. If that file changes, this
-list is stale — read the workflow and say so rather than running a command CI
-no longer uses.
+If the workflow uses flags this snapshot lacks (or vice versa), say so and
+follow the workflow.
 
 Known suite papercut: `run_verifiers_background_*` is flaky under full-suite
 parallelism and passes in isolation. Attribute it to the known flake, not to

@@ -39,10 +39,10 @@ Multi-agent orchestration domain. Owns the LLM tool-calling loop, sub-agent disp
 | `session_import/` | One-time import of legacy OpenHuman session JSONL/Markdown into TinyAgents stores ([README](session_import/README.md)) |
 | `subagent_host/` | OpenHuman planner, executor and persistence adapters for `tinyagents-orchestration::subagent`; policy, provider/model selection, tool narrowing, progress, artifacts and durable product projection live here |
 | `tinyagents/` | Integration with the vendored `tinyagents` loop/replay crate: `TurnModelSource`, middleware, journal, `replay/schemas.rs` ([README](tinyagents/README.md)) |
-| `tools/` | Agent-loop control tools (`ask_clarification`, `delegate`, `plan_exit`, `remember_preference`, `save_preference`, `run_workflow`, `todo`, `update_task`), re-exported through `crate::tools` |
+| `tools/` | Agent-loop control tools (`ask_clarification`, `delegate`, `plan_exit`, `remember_preference`, `save_preference`, `run_workflow`, `todo`), re-exported through `crate::tools` |
 | `triage/` | Classifies external `TriggerEnvelope`s and escalates to sub-agents ([README](triage/README.md)) |
 
-Flat files: `bus.rs` (`agent.run_turn` native request handler), `cost.rs` (`pub(crate)`, per-turn token/cost accounting), `error.rs` (typed retryable/permanent loop errors), `hooks.rs` (post-turn self-learning hooks), `host_runtime.rs` (native shell execution backend), `message_convert.rs` (`pub(crate)`, transcript/provider conversion), `messages.rs` (transcript types), `multimodal.rs` (attachment handling), `platform_shell.rs` (cross-platform shell selection shared with `host_runtime` and `sandbox::ops`), `progress.rs` (`AgentProgress` channel), `progress_sink.rs` (task-local progress sink for in-process embedders), `stop_hooks.rs` (mid-turn policy halts), `task_board.rs` (per-thread task board over `tinyagents_graph::todos`), `tool_policy.rs` (pre-execution tool-call policy hook), `turn_origin.rs` (task-local trust/routing label read by the approval gate), `turn_workspace.rs` (task-local per-turn filesystem root).
+Flat files: `bus.rs` (`agent.run_turn` native request handler), `cost.rs` (`pub(crate)`, per-turn token/cost accounting), `error.rs` (typed retryable/permanent loop errors), `hooks.rs` (post-turn self-learning hooks), `host_runtime.rs` (native shell execution backend), `message_convert.rs` (`pub(crate)`, transcript/provider conversion), `messages.rs` (transcript types), `multimodal.rs` (attachment handling), `platform_shell.rs` (cross-platform shell selection shared with `host_runtime` and `sandbox::ops`), `progress.rs` (`AgentProgress` channel), `progress_sink.rs` (task-local progress sink for in-process embedders), `stop_hooks.rs` (mid-turn policy halts), `tool_policy.rs` (pre-execution tool-call policy hook), `turn_origin.rs` (task-local trust/routing label read by the approval gate), `turn_workspace.rs` (task-local per-turn filesystem root).
 
 ## RPC namespaces owned by this tree
 
@@ -75,7 +75,7 @@ Flat files: `bus.rs` (`agent.run_turn` native request handler), `cost.rs` (`pub(
 
 ## Tests
 
-- Unit: `agent_tests.rs`, `multimodal_tests.rs`, and direct TinyTools Agent dialect coverage in `pformat_tests.rs`, plus `*_tests.rs` files colocated with `bus.rs`, `cost.rs`, `error.rs`, `hooks.rs`, `host_runtime.rs`, `message_convert.rs`, `platform_shell.rs`, `progress_sink.rs`, `schemas.rs`, `stop_hooks.rs`, `task_board.rs`, `tool_policy.rs`, `turn_origin.rs`, `turn_workspace.rs`, and under `harness/`, `session_host/`, `triage/`.
+- Unit: `agent_tests.rs`, `multimodal_tests.rs`, and direct TinyTools Agent dialect coverage in `pformat_tests.rs`, plus `*_tests.rs` files colocated with `bus.rs`, `cost.rs`, `error.rs`, `hooks.rs`, `host_runtime.rs`, `message_convert.rs`, `platform_shell.rs`, `progress_sink.rs`, `schemas.rs`, `stop_hooks.rs`, `tool_policy.rs`, `turn_origin.rs`, `turn_workspace.rs`, and under `harness/`, `session_host/`, `triage/`.
 - Integration: `tests/agent_builder_public.rs`, `tests/agent_harness_public.rs`, `tests/agent_harness_e2e.rs`, `tests/agent_multimodal_public.rs`, `tests/agent_turn_overrides_e2e.rs`, `tests/agent_approval_memory_coverage_e2e.rs`.
 - Schema regression: `schemas_tests.rs` (`controller_schema_inventory_is_stable`).
 

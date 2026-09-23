@@ -61,8 +61,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`skills/prd/agents/openai.yaml`](skills/prd/agents/openai.yaml) |
 | 2 | ✓ | [`skills/prd/SKILL.md`](skills/prd/SKILL.md) |
-| 3 | ✓ | [`skills/review-implementation/agents/openai.yaml`](skills/review-implementation/agents/openai.yaml) |
-| 4 | ✓ | [`skills/review-implementation/SKILL.md`](skills/review-implementation/SKILL.md) |
+| 3 | ✓ | [`skills/review/agents/openai.yaml`](skills/review/agents/openai.yaml) |
+| 4 | ✓ | [`skills/review/SKILL.md`](skills/review/SKILL.md) |
 | 5 | ✓ | [`templates/AGENTS.md`](templates/AGENTS.md) |
 | 6 | ✓ | [`templates/CLAUDE.md`](templates/CLAUDE.md) |
 

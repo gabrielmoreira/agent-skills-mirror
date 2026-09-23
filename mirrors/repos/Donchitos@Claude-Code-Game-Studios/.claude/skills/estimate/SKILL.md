@@ -1,6 +1,6 @@
 ---
 name: estimate
-description: "Estimates task effort by analyzing complexity, dependencies, historical velocity, and risk factors. Produces a structured estimate with confidence levels."
+description: "Estimate task effort from complexity, dependencies, velocity, risk. Structured estimate with confidence levels."
 argument-hint: "[task-description]"
 user-invocable: true
 allowed-tools: Read, Glob, Grep
