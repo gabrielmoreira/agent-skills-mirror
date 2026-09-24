@@ -2,7 +2,7 @@
 
 ## Responsibility
 
-Provides a unified abstraction for tmux, Zellij, Herdr, cmux, and kitty to
+Provides a unified abstraction for tmux, Zellij, Herdr, cmux-tui, and kitty to
 spawn, manage, and close panes for child OpenCode agent sessions — **from the
 TUI client process that displays the parent session**, never from the server.
 
@@ -32,7 +32,9 @@ multiplexer-specific command translation.
     `KITTY_WINDOW_ID`, `--next-to=id:<parent>`, layout via
     `goto-layout --match=window_id:<id>`
   - `CmuxMultiplexer`: new-generation TUI (`cmux.protocol/2`), noun-first CLI
-    (`pane <sel> split/run/close`), two-hop anchor from
+    (`pane <sel> run --name <parent/child>`, `tab <sel> focus`,
+    `terminal <sel> close`, `terminal list` / `terminal <sel> process show`),
+    sibling-tab placement inside the parent pane, two-hop anchor from
     `CMUX_TUI_TERMINAL_ID`, protocol read self-check (never `--version`)
 - **Client lifecycle core** (`client/`): see below.
 - **Shared Utilities** (`shared.ts`): `quoteShellArg`,
@@ -48,18 +50,25 @@ multiplexer-specific command translation.
   URL). Owns the in-process `Map<childSessionId, PaneRecord>` that guarantees
   per-client uniqueness, the stable-idle debounce timers, busy-driven rebuilds
   of idle-closed children, and the reconnect backfill (FR-3/4/6/7/9/10/11).
-- **`tui-wiring.ts` — `createTuiPaneWiring`**: The v1 TUI host wiring. Owns
+- **`tui-wiring.ts` — `createTuiPaneWiring`**: The v1 TUI host wiring. The
+  caller scopes it to the displayed session's persisted directory (falling
+  back to the TUI launch directory), so resumed cross-directory sessions keep
+  their child panes. Owns
   admission (`multiplexer.type` × client environment), config reading, plugin
   log initialization, serverUrl reflection (`api.client.client.getConfig()
   .baseUrl` + `/session/status` probe, embedded-sentinel fail-closed), raw
   event projection (`properties.info.directory`, `properties.status.type`),
   the periodic reconcile pass, and best-effort disposal. The v2 `setup()` is
   deliberately not wired.
-- **`sweep.ts`**: FR-8 crash-leftover sweep. Closes panes whose encoded owner
-  pid is dead **and** whose child session is gone; positive evidence only,
+- **`sweep.ts`**: FR-8 crash-leftover sweep. Closes views whose encoded owner
+  pid is dead **and** whose child session is gone; candidates come from pane
+  titles (tmux/zellij/herdr/kitty) or, for cmux-tui, `terminal list` +
+  `terminal <sel> process show` argv markers; positive evidence only,
   fail-soft.
-- **`pane-title.ts`**: `omosc:<pid>:<childSessionId>` pane-title metadata
-  encoding and strict parsing (NFR-5: title content is data, never a command).
+- **`pane-title.ts`**: `omosc:<pid>:<childSessionId>` metadata encoding and
+  strict parsing (NFR-5: metadata content is data, never a command). cmux-tui
+  extracts the `omosc:` token from the `# omosc:...` data marker in the
+  spawned process's argv before handing it to the core.
 - **`diagnostics.ts`**: Structured FR-13 records (`multiplexer.no-pane`,
   `multiplexer.pane-created`) through the plugin file logger, plus the
   once-per-process gate.
@@ -72,7 +81,7 @@ multiplexer-specific command translation.
 
 ```typescript
 export interface Multiplexer {
-  readonly type: 'tmux' | 'zellij' | 'herdr' | 'cmux' | 'kitty';
+  readonly type: 'tmux' | 'zellij' | 'herdr' | 'cmux-tui' | 'kitty';
   isAvailable(): Promise<boolean>;
   isInsideSession(): boolean;
   spawnPane(sessionId: string, description: string, serverUrl: string, directory: string, options?: PaneSpawnOptions): Promise<PaneResult>;
@@ -105,8 +114,10 @@ The TUI client subscribes to the host event bus for `session.created`,
   session (so panes cannot leak after switching views); rebuilds still require
   the parent to be displayed.
 - **Reconcile**: the event bus exposes no reconnect signal, so a bounded
-  30 s periodic pass triggers server-list difference compensation and the
-  FR-8 sweep.
+  30 s periodic pass triggers server-list difference compensation (FR-7). The
+  FR-8 sweep runs once at startup and on each unreachable → reachable
+  transition, not on the periodic tick (candidate discovery costs one
+  `process show` read per terminal).
 
 ## Flow
 
@@ -124,7 +135,8 @@ The TUI client subscribes to the host event bus for `session.created`,
    ├─ create adapter (unavailable → adapter-unavailable)
    ├─ readiness gate: /session/status?directory=<dir>, bounded retries
    │  └─ timeout → readiness-timeout, no pane
-   ├─ adapter.spawnPane() → split the client's own parent pane
+   ├─ adapter.spawnPane() → create the view in the client's own parent pane
+   │  (split it, or append a sibling tab inside it for cmux-tui)
    ├─ record in the in-process map + log pane created (identity fields)
    └─ deletion racing the spawn closes the pane right after registration
 3. adapter failure → adapter-not-found / adapter-hard / adapter-unavailable
@@ -144,8 +156,8 @@ The TUI client subscribes to the host event bus for `session.created`,
    authoritative — missing children are backfilled (same eligibility/dedup
    guards), local panes whose child is gone are closed, already-held children
    log backfill-skipped
-5. FR-8 sweep (startup/reconcile): close encoded leftovers with a dead owner
-   and a gone child, best-effort
+5. FR-8 sweep (startup / unreachable → reachable): close encoded leftovers
+   with a dead owner and a gone child, best-effort
 ```
 
 ## Integration
@@ -174,7 +186,7 @@ The server entry (`src/index.ts`) must not reach `src/multiplexer/client/*` or
 
 ```typescript
 interface MultiplexerConfig {
-  type: 'tmux' | 'zellij' | 'herdr' | 'cmux' | 'kitty' | 'auto' | 'none';
+  type: 'tmux' | 'zellij' | 'herdr' | 'cmux-tui' | 'kitty' | 'auto' | 'none';
   layout: 'main-horizontal' | 'main-vertical' | 'tiled' | 'even-horizontal' | 'even-vertical';
   main_pane_size?: number; // Percentage for main pane (20-80), tmux main-* only
 }
@@ -187,7 +199,7 @@ once-per-process diagnostic.
 
 ### Environment Detection
 
-- **Auto / admission order**: cmux (`CMUX_TUI_SOCKET` or legacy
+- **Auto / admission order**: cmux-tui (`CMUX_TUI_SOCKET` or legacy
   `CMUX_MUX_SOCKET`) → tmux (`TMUX_PANE`) → Zellij (`ZELLIJ_PANE_ID`) → Herdr
   (`HERDR_PANE_ID`) → kitty (`KITTY_WINDOW_ID`).
 - **Explicit adapter**: only enabled when it matches the detected adapter;
@@ -234,14 +246,27 @@ once-per-process diagnostic.
   placement, `goto-layout --match=window_id:<parent>` for the mapped layout;
   the active tab is never modified.
 
-### cmux Implementation
+### cmux-tui Implementation
 
 - Detection `CMUX_TUI_SOCKET` (preferred) / legacy `CMUX_MUX_SOCKET`;
   explicit `--socket` / `--session` control plane.
 - Anchor two-hop resolution: `CMUX_TUI_TERMINAL_ID` → `terminal <id> show`
   (tab) → `tab <id> show` (pane).
-- `pane <sel> split --right/--down`, `pane <sel> run --on-exit keep -- <argv>`,
-  `pane <sel> close`; availability by `session current ping` protocol read.
+- Placement is a **sibling tab appended inside the parent pane**:
+  `pane <sel> run --on-exit keep --name <parent_name/child_name> -- <argv>`
+  (created already named; appended at the end, never reordered), followed by
+  `tab <pre-spawn active tab> focus` to restore the user's view (falling back
+  to the parent tab when it cannot be determined). No screen-level split.
+- Display name is human-readable `parent_name/child_name`: `parent_name` is the
+  parent tab's `name`, else `Agent<plugin pid>`; `child_name` is
+  `<subagent_type>:<up to 5-char child session id suffix>`. The name never
+  carries the `omosc:` sweep metadata (that lives in the spawn argv marker).
+- Close uses `terminal <sel> close` (removes every view and ends the process);
+  the handle is the terminal id. FR-8 candidates are discovered from
+  `terminal list` and confirmed by `terminal <sel> process show` argv markers;
+  availability by `session current ping` protocol read.
+- Layout is ignored: `multiplexer.layout` / `multiplexer.main_pane_size`
+  produce no commands.
 - Deliberately absent: `equalize`, readiness polling, mutation queues, orphan
   cooldowns, close budgets, deferred spawns, hot-reload takeover, and global
   pane registries.
@@ -286,4 +311,4 @@ once-per-process diagnostic.
 | `zellij/index.ts` | zellij-specific implementation |
 | `herdr/index.ts` | herdr-specific implementation |
 | `kitty/index.ts` | kitty-specific implementation |
-| `cmux/index.ts` | cmux new-generation TUI adapter |
+| `cmux/index.ts` | cmux-tui new-generation TUI adapter |

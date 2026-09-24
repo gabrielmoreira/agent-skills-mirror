@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `CopilotKit/CopilotKit` — 26 default patterns, 7 followed patterns, 522 file(s) materialized.
+Mirror of `CopilotKit/CopilotKit` — 26 default patterns, 7 followed patterns, 523 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `CopilotKit/CopilotKit` — 26 default patterns, 7 followed patterns, 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 7 |
-| Files         | 522 |
+| Files         | 523 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -550,43 +550,44 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 483 | ✓ | [`showcase/integrations/strands/src/app/demos/subagents/README.md`](showcase/integrations/strands/src/app/demos/subagents/README.md) |
 | 484 | ✓ | [`showcase/integrations/strands/src/app/demos/tool-rendering/README.md`](showcase/integrations/strands/src/app/demos/tool-rendering/README.md) |
 | 485 | ✓ | [`showcase/README.md`](showcase/README.md) |
-| 486 | ✓ | [`showcase/shell-docs/README.md`](showcase/shell-docs/README.md) |
-| 487 | ✓ | [`showcase/shell-docs/src/app/llms.txt/route.test.ts`](showcase/shell-docs/src/app/llms.txt/route.test.ts) |
-| 488 | ✓ | [`showcase/shell-docs/src/app/llms.txt/route.ts`](showcase/shell-docs/src/app/llms.txt/route.ts) |
-| 489 | ✓ | [`showcase/test-fixtures/promote-notify/README.md`](showcase/test-fixtures/promote-notify/README.md) |
-| 490 | ✓ | [`showcase/tests/repro/async-wedge/README.md`](showcase/tests/repro/async-wedge/README.md) |
-| 491 | ✓ | [`showcase/tests/repro/stdout-wedge/README.md`](showcase/tests/repro/stdout-wedge/README.md) |
-| 492 | ✓ | [`skills/channels-setup/SKILL.md`](skills/channels-setup/SKILL.md) |
-| 493 | ✓ | [`skills/copilotkit-channels/SKILL.md`](skills/copilotkit-channels/SKILL.md) |
-| 494 | ✓ | [`skills/copilotkit-channels/sources.md`](skills/copilotkit-channels/sources.md) |
-| 495 | ✓ | [`skills/copilotkit-cli/SKILL.md`](skills/copilotkit-cli/SKILL.md) |
-| 496 | ✓ | [`skills/copilotkit/SKILL.md`](skills/copilotkit/SKILL.md) |
-| 497 | ✓ | [`skills/inspector-docs/references/pane-map.md`](skills/inspector-docs/references/pane-map.md) |
-| 498 | ✓ | [`skills/inspector-docs/SKILL.md`](skills/inspector-docs/SKILL.md) |
-| 499 | ✓ | [`skills/inspector-workbench/SKILL.md`](skills/inspector-workbench/SKILL.md) |
-| 500 | ✓ | [`skills/intelligence-docs/SKILL.md`](skills/intelligence-docs/SKILL.md) |
-| 501 | ✓ | [`skills/intelligence-vocabulary/references/words.md`](skills/intelligence-vocabulary/references/words.md) |
-| 502 | ✓ | [`skills/intelligence-vocabulary/SKILL.md`](skills/intelligence-vocabulary/SKILL.md) |
-| 503 | ✓ | [`skills/setup-slack-channel/assets/slack-app-manifest.yaml`](skills/setup-slack-channel/assets/slack-app-manifest.yaml) |
-| 504 | ✓ | [`skills/setup-slack-channel/references/intelligence-channel.md`](skills/setup-slack-channel/references/intelligence-channel.md) |
-| 505 | ✓ | [`skills/setup-slack-channel/references/local-runtime.md`](skills/setup-slack-channel/references/local-runtime.md) |
-| 506 | ✓ | [`skills/setup-slack-channel/references/optional-e2e.md`](skills/setup-slack-channel/references/optional-e2e.md) |
-| 507 | ✓ | [`skills/setup-slack-channel/references/secrets-and-credentials.md`](skills/setup-slack-channel/references/secrets-and-credentials.md) |
-| 508 | ✓ | [`skills/setup-slack-channel/references/slack-workspace-and-app.md`](skills/setup-slack-channel/references/slack-workspace-and-app.md) |
-| 509 | ✓ | [`skills/setup-slack-channel/references/troubleshooting.md`](skills/setup-slack-channel/references/troubleshooting.md) |
-| 510 | ✓ | [`skills/setup-slack-channel/SKILL.md`](skills/setup-slack-channel/SKILL.md) |
-| 511 | ✓ | [`tools/compatibility-monitor/README.md`](tools/compatibility-monitor/README.md) |
-| 512 | ✓ | [`tools/learned-skill-conformance/README.md`](tools/learned-skill-conformance/README.md) |
-| 513 | ✓ | [`tools/runtime-conformance/AGENTS.md`](tools/runtime-conformance/AGENTS.md) |
-| 514 | ✓ | [`tools/runtime-conformance/README.md`](tools/runtime-conformance/README.md) |
-| 515 | ✓ | [`tools/runtime-conformance/REGRESSIONS.md`](tools/runtime-conformance/REGRESSIONS.md) |
-| 516 | → | [`.claude/docs/architecture.md`](.claude/docs/architecture.md) |
-| 517 | → | [`.claude/docs/documentation.md`](.claude/docs/documentation.md) |
-| 518 | → | [`.claude/docs/git.md`](.claude/docs/git.md) |
-| 519 | → | [`.claude/docs/hooks.md`](.claude/docs/hooks.md) |
-| 520 | → | [`.claude/docs/workflow.md`](.claude/docs/workflow.md) |
-| 521 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 522 | → | [`README.md`](README.md) |
+| 486 | ✓ | [`showcase/shell-docs/public/videos/product-tour/README.md`](showcase/shell-docs/public/videos/product-tour/README.md) |
+| 487 | ✓ | [`showcase/shell-docs/README.md`](showcase/shell-docs/README.md) |
+| 488 | ✓ | [`showcase/shell-docs/src/app/llms.txt/route.test.ts`](showcase/shell-docs/src/app/llms.txt/route.test.ts) |
+| 489 | ✓ | [`showcase/shell-docs/src/app/llms.txt/route.ts`](showcase/shell-docs/src/app/llms.txt/route.ts) |
+| 490 | ✓ | [`showcase/test-fixtures/promote-notify/README.md`](showcase/test-fixtures/promote-notify/README.md) |
+| 491 | ✓ | [`showcase/tests/repro/async-wedge/README.md`](showcase/tests/repro/async-wedge/README.md) |
+| 492 | ✓ | [`showcase/tests/repro/stdout-wedge/README.md`](showcase/tests/repro/stdout-wedge/README.md) |
+| 493 | ✓ | [`skills/channels-setup/SKILL.md`](skills/channels-setup/SKILL.md) |
+| 494 | ✓ | [`skills/copilotkit-channels/SKILL.md`](skills/copilotkit-channels/SKILL.md) |
+| 495 | ✓ | [`skills/copilotkit-channels/sources.md`](skills/copilotkit-channels/sources.md) |
+| 496 | ✓ | [`skills/copilotkit-cli/SKILL.md`](skills/copilotkit-cli/SKILL.md) |
+| 497 | ✓ | [`skills/copilotkit/SKILL.md`](skills/copilotkit/SKILL.md) |
+| 498 | ✓ | [`skills/inspector-docs/references/pane-map.md`](skills/inspector-docs/references/pane-map.md) |
+| 499 | ✓ | [`skills/inspector-docs/SKILL.md`](skills/inspector-docs/SKILL.md) |
+| 500 | ✓ | [`skills/inspector-workbench/SKILL.md`](skills/inspector-workbench/SKILL.md) |
+| 501 | ✓ | [`skills/intelligence-docs/SKILL.md`](skills/intelligence-docs/SKILL.md) |
+| 502 | ✓ | [`skills/intelligence-vocabulary/references/words.md`](skills/intelligence-vocabulary/references/words.md) |
+| 503 | ✓ | [`skills/intelligence-vocabulary/SKILL.md`](skills/intelligence-vocabulary/SKILL.md) |
+| 504 | ✓ | [`skills/setup-slack-channel/assets/slack-app-manifest.yaml`](skills/setup-slack-channel/assets/slack-app-manifest.yaml) |
+| 505 | ✓ | [`skills/setup-slack-channel/references/intelligence-channel.md`](skills/setup-slack-channel/references/intelligence-channel.md) |
+| 506 | ✓ | [`skills/setup-slack-channel/references/local-runtime.md`](skills/setup-slack-channel/references/local-runtime.md) |
+| 507 | ✓ | [`skills/setup-slack-channel/references/optional-e2e.md`](skills/setup-slack-channel/references/optional-e2e.md) |
+| 508 | ✓ | [`skills/setup-slack-channel/references/secrets-and-credentials.md`](skills/setup-slack-channel/references/secrets-and-credentials.md) |
+| 509 | ✓ | [`skills/setup-slack-channel/references/slack-workspace-and-app.md`](skills/setup-slack-channel/references/slack-workspace-and-app.md) |
+| 510 | ✓ | [`skills/setup-slack-channel/references/troubleshooting.md`](skills/setup-slack-channel/references/troubleshooting.md) |
+| 511 | ✓ | [`skills/setup-slack-channel/SKILL.md`](skills/setup-slack-channel/SKILL.md) |
+| 512 | ✓ | [`tools/compatibility-monitor/README.md`](tools/compatibility-monitor/README.md) |
+| 513 | ✓ | [`tools/learned-skill-conformance/README.md`](tools/learned-skill-conformance/README.md) |
+| 514 | ✓ | [`tools/runtime-conformance/AGENTS.md`](tools/runtime-conformance/AGENTS.md) |
+| 515 | ✓ | [`tools/runtime-conformance/README.md`](tools/runtime-conformance/README.md) |
+| 516 | ✓ | [`tools/runtime-conformance/REGRESSIONS.md`](tools/runtime-conformance/REGRESSIONS.md) |
+| 517 | → | [`.claude/docs/architecture.md`](.claude/docs/architecture.md) |
+| 518 | → | [`.claude/docs/documentation.md`](.claude/docs/documentation.md) |
+| 519 | → | [`.claude/docs/git.md`](.claude/docs/git.md) |
+| 520 | → | [`.claude/docs/hooks.md`](.claude/docs/hooks.md) |
+| 521 | → | [`.claude/docs/workflow.md`](.claude/docs/workflow.md) |
+| 522 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 523 | → | [`README.md`](README.md) |
 
 ---
 

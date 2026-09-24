@@ -1,0 +1,75 @@
+# StyleKit
+
+> StyleKit is an open-source visual style library for AI-generated web interfaces. Its catalog currently contains 148 curated visual and layout styles. Every catalog style includes machine-readable design tokens, component recipes, AI rules, and React + Tailwind examples.
+
+StyleKit helps developers give ChatGPT, Claude, Claude Code, Codex, and other coding tools concrete visual constraints instead of relying on a vague style name. The public site supports English and Chinese style discovery; some editorial content is English-only and is identified as such by its canonical URL.
+
+## Start Here
+
+- [English style catalog](https://www.stylekit.top/en/styles): Browse all 148 UI and web design styles.
+- [中文前端风格库](https://www.stylekit.top/zh/styles): 浏览网页设计风格、UI 风格与实现约束。
+- [UI design prompt library](https://www.stylekit.top/en/ui-prompts): Copy prompt structures for websites, dashboards, landing pages, dark mode, and Tailwind UI.
+- [中文 UI 与前端提示词](https://www.stylekit.top/zh/ui-prompts): 面向 ChatGPT、Claude、Claude Code 与 Codex 的提示词入口。
+- [Page templates](https://www.stylekit.top/en/templates): Browse complete page structures without replacing the curated style previews.
+- [Theme collections](https://www.stylekit.top/en/collections): Find styles by dark mode, retro, game UI, anime, hand-drawn, and other themes.
+- [Color catalog](https://www.stylekit.top/en/colors): Browse and copy palettes from the style catalog.
+- [Community styles and discussions](https://www.stylekit.top/en/community): Read public style discussions, explore reviewed contributions, and find the submission workflow.
+- [中文风格社区](https://www.stylekit.top/zh/community): 参与风格讨论、浏览审核通过的社区作品，或提交原创风格。
+
+## Prompt Collections
+
+- [Landing page prompts](https://www.stylekit.top/en/landing-page-prompts)
+- [8 dashboard UI prompts with review checklist](https://www.stylekit.top/en/dashboard-prompts)
+- [Tailwind CSS and shadcn/ui prompts](https://www.stylekit.top/en/tailwind-ui-prompts)
+- [Dark mode UI prompts](https://www.stylekit.top/en/dark-mode-ui-prompts)
+- [中文落地页提示词](https://www.stylekit.top/zh/landing-page-prompts)
+- [中文仪表盘 UI 提示词与验收清单](https://www.stylekit.top/zh/dashboard-prompts)
+- [中文 Tailwind UI 提示词](https://www.stylekit.top/zh/tailwind-ui-prompts)
+- [中文暗色模式 UI 提示词](https://www.stylekit.top/zh/dark-mode-ui-prompts)
+
+## Machine-Readable Style Data
+
+Each style has a canonical web page and a read-only Markdown representation:
+
+- Web page pattern: `https://www.stylekit.top/en/styles/{slug}`
+- Chinese page pattern: `https://www.stylekit.top/zh/styles/{slug}`
+- Markdown pattern: `https://www.stylekit.top/api/styles/{slug}/md`
+- shadcn registry pattern: `https://www.stylekit.top/r/{slug}.json`
+
+Example resources:
+
+- [Neo-Brutalist style](https://www.stylekit.top/en/styles/neo-brutalist)
+- [Neo-Brutalist Markdown](https://www.stylekit.top/api/styles/neo-brutalist/md)
+- [Glassmorphism style](https://www.stylekit.top/en/styles/glassmorphism)
+- [Corporate Clean style](https://www.stylekit.top/en/styles/corporate-clean)
+- [Corporate SaaS prompt](https://www.stylekit.top/en/prompts/corporate-saas)
+
+Install a registry theme in a compatible shadcn project:
+
+```bash
+npx shadcn add https://www.stylekit.top/r/neo-brutalist.json
+```
+
+Install the StyleKit knowledge skill in a compatible coding-agent environment:
+
+```bash
+npx skills add AnxForever/stylekit-skill
+```
+
+The repository also contains published public-beta [CLI](https://www.npmjs.com/package/stylekit-cli) and [MCP](https://www.npmjs.com/package/stylekit-mcp) packages. Check each package listing for its current release rather than assuming the repository and npm versions are identical.
+
+## Product Boundaries
+
+- StyleKit provides design constraints, prompts, examples, and registry assets; it does not guarantee that every AI-generated interface is production-ready.
+- The existing catalog previews are curated visual references. General-purpose preview infrastructure is intended for future styles and does not replace those previews.
+- `llms.txt` is an emerging community convention, not a confirmed ranking signal for Google, ChatGPT, Claude, Gemini, or Perplexity.
+- Community comments are user feedback, not official documentation. Approved community styles are public; only promoted community style pages are included in the sitemap and promoted Markdown reference sections.
+
+## Additional References
+
+- [Concise Markdown index](https://www.stylekit.top/llms.md)
+- [Generated catalog reference](https://www.stylekit.top/llms-full.txt)
+- [GitHub repository](https://github.com/AnxForever/stylekit)
+- [Issue tracker](https://github.com/AnxForever/stylekit/issues)
+- [XML sitemap](https://www.stylekit.top/sitemap.xml)
+- [Robots policy](https://www.stylekit.top/robots.txt)

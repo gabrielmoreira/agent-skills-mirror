@@ -4,12 +4,26 @@ Reproducible benchmarking scripts for the OpenHuman Rust core as an embedded
 library (no RPC server), built around the `library-profile` and `rss-bench`
 binaries (see `crates/openhuman-cli/src/bin/library_profile/main.rs`).
 
-Five driver scripts: `library-bench.sh` (per-scenario RSS/duration),
+Six driver scripts: `library-bench.sh` (per-scenario RSS/duration),
 `library-cpu.sh` (samply), `library-heap.sh` (dhat), `library-fleet.sh`
-(fleet-scale sweep + budget gate), and `library-instances.sh` (multi-process
-instance sweep).
+(fleet-scale sweep + budget gate), `library-instances.sh` (multi-process
+instance sweep), and `rss-bench.sh` (embedded-roster RSS, #5046).
+
+Benchmarks run from these scripts, not in CI.
 
 ## Scripts
+
+### `rss-bench.sh` — embedded agent-roster RSS (#5046)
+
+Builds the stripped-release `rss-bench` binary, runs its fixture tests, then
+measures steady-state RSS/PSS of 5 fresh processes × {1, 8} agents against the
+20 MiB target and 30 MiB hard cap. This was the report-only `rust-rss-bench`
+CI job until benchmarks moved out of CI.
+
+```bash
+./scripts/profile/rss-bench.sh                        # build + run, JSON to target/profile/rss-bench.json
+./scripts/profile/rss-bench.sh --skip-build --out /path/rss.json
+```
 
 ### `library-bench.sh` — RSS/duration benchmark
 

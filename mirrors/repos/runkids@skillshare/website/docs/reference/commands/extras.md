@@ -213,10 +213,12 @@ Source files and synced targets are not deleted — only the config entry is rem
 
 ### `extras collect`
 
-Collect local files from a target back into the extras source directory. Files are copied to source and replaced with symlinks.
+Collect local files from a target back into the extras source directory. Files are copied to source and replaced with symlinks. Copy-mode targets keep their files as regular copies.
+
+Files that already exist in source are skipped. Use `--force` to overwrite them with the target version — for example, to pull back edits made directly in a copy-mode target. Files whose content already matches source are still skipped.
 
 ```bash
-skillshare extras collect <name> [--from <path>] [--dry-run] [-p|-g]
+skillshare extras collect <name> [--from <path>] [--force] [--dry-run] [-p|-g]
 ```
 
 **Options:**
@@ -224,6 +226,7 @@ skillshare extras collect <name> [--from <path>] [--dry-run] [-p|-g]
 | Flag | Description |
 |------|-------------|
 | `--from <path>` | Target directory to collect from (required if multiple targets) |
+| `--force`, `-f` | Overwrite files that already exist in source |
 | `--dry-run` | Show what would be collected without making changes |
 
 **Example:**
@@ -234,6 +237,9 @@ skillshare extras collect rules --from ~/.claude/rules
 
 # Preview what would be collected
 skillshare extras collect rules --from ~/.claude/rules --dry-run
+
+# Pull target edits back over existing source files
+skillshare extras collect rules --force
 ```
 
 ---

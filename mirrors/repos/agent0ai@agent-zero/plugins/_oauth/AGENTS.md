@@ -22,7 +22,7 @@
 ## Local Contracts
 
 - Core model code such as `models.py` must stay provider-agnostic. Do not add Codex, GitHub Copilot, Gemini, xAI, or other OAuth provider knowledge outside plugin-owned config or plugin hooks.
-- Ship the tested Codex client version in `default_config.yaml` so default catalog discovery does not require an installed CLI. Existing saved plugin settings take precedence; this default does not migrate blank or explicit overrides.
+- Ship the tested Codex client version in `default_config.yaml` for upstream version headers and catalog discovery without an installed CLI. Existing saved plugin settings take precedence; this default does not migrate blank or explicit overrides.
 - Add OAuth model providers in `_oauth/conf/model_providers.yaml`, not `_model_config/provider_metadata.yaml`.
 - Provider cards and model slot actions must be driven by backend provider status. Do not reintroduce hardcoded frontend provider lists or fallback provider catalogs.
 - OAuth account surfaces in settings, discovery, and onboarding must use the provider registry/status summary rather than Codex-only frontend state.
@@ -53,6 +53,8 @@
 - Non-streaming Codex proxy responses must retain completed SSE output items when the final `response.completed` envelope omits them.
 - The Codex Chat compatibility route maps real Responses usage to Chat token/detail fields. Honor `stream_options.include_usage` with a terminal empty-choices usage chunk; never fabricate missing totals. The Codex main-model hook requests usage in Chat mode unless the caller supplies stream options. Responses mode keeps its existing request shape.
 - Chat compatibility replies preserve incomplete finish reasons and do not turn failed responses into successful stops. Streaming forwards upstream errors, rejects premature EOF as an error, and closes the upstream stream on completion or cancellation.
+- Native OAuth streaming responses attach upstream cleanup to the Flask response lifecycle, including closure before the first chunk, cancellation, completion, and read errors.
+- `codex.request_codex` sends through the module-level keep-alive `_UPSTREAM_SESSION` with cookie persistence disabled, so each request carries only its explicit headers; tests stub `_UPSTREAM_SESSION.request`.
 - OAuth providers intentionally using Responses must set `a0_api_mode: responses`; all others inherit the Chat Completions default, since a local proxy route alone does not prove upstream support.
 
 ## Work Guidance

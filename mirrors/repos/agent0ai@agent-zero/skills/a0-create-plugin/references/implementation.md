@@ -27,6 +27,8 @@ Activation defaults to ON when no toggle rule exists. Set `per_project_config` a
 
 ## Backend API & Context
 
+For a messaging integration that should expose Agent Zero slash commands, read [Channel Commands](channel-commands.md). It covers the shared catalog/resolver, effects, context binding, and transport-specific menus; forwarding slash text alone does not provide full command compatibility.
+
 ### Import Paths
 - Correct: `from agent import AgentContext, AgentContextType`
 - Correct: `from initialize import initialize_agent`

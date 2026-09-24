@@ -5,6 +5,94 @@ All notable changes to the Programming Languages and Frameworks Agent Skills wil
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [cybersecurity-v1.0.0] - Unreleased
+
+**Category**: Governed cybersecurity skills
+
+### Added
+
+- Opt-in `cybersecurity` category with eleven original skills: authorization,
+  evidence, framework mapping, exercise control, exercise adjudication,
+  engagement planning, scoped validation, incident triage, detection engineering,
+  threat hunting and detection validation. Includes synthetic/offline eval cases,
+  pressure scenarios and lazy primary references.
+- Canonical `cyber-exercise`, `cyber-triage` and `cyber-purple-validation`
+  workflows, category discovery/indexes and `cybersecurity-v*` release routing.
+  The initial category version is `1.0.0`; this PR does not publish its tag.
+
+### Changed
+
+- Skill sync transports complete supported package resources, including binary
+  assets and root LICENSE/NOTICE attribution, rather than reconstructing them
+  from UTF-8 text. Incomplete packages are rejected and replacements are staged.
+- New eval runs fingerprint the full package and preserve immutable inputs;
+  resource-only drift invalidates skill-loaded evidence while compatible
+  baseline/activation evidence remains reusable. Legacy runs stay readable,
+  but cannot stand in for fresh whole-package promotion evidence.
+- Retrospectives and learning logs distinguish redacted proposals, authorized
+  canonical edits, candidate/current/no-skill comparisons, independent review,
+  promotion and rollback. `retro-learn`, `pentest` and LLM-security guidance now
+  preserve blocked/not-tested evidence and reject unsupported runtime claims.
+- Engagement restart gates require both current authorization and verified host
+  enforcement; owner exceptions cannot replace either. Triage makes unassigned
+  ownership explicit, mapping revisions retain prior evidence, and blocked
+  validation responses must offer safe offline alternatives.
+- Frontmatter accepts standard scalar or list `allowed-tools`; supported native
+  exports project that metadata without claiming enforcement on other hosts.
+
+### Fixed
+
+- Binary lockfile verification hashes the original bytes; distinct invalid
+  UTF-8 payloads can no longer collapse into the same decoded text hash.
+- Failed selected-package assembly aborts sync before installation or lockfile
+  replacement, rather than retaining a package on disk but silently dropping
+  its integrity coverage. Unsafe write paths propagate a failure too.
+- Raw eval and skill bytes are rehashed before scoring and portable verification;
+  changing parsed assertions while retaining copied hash strings is rejected.
+- Zod risk-tier validation uses the supported v4 error option.
+
+### Security boundaries
+
+- Package hashes verify integrity, not authorship or authorization. Reviewer
+  names record attribution, not authenticated independent approval.
+- Host runtimes remain responsible for permissions, credentials, network and
+  filesystem restrictions, cancellation and audit controls. Unsupported live
+  execution stays blocked; safe offline analysis remains available.
+- No production attacks, control-efficacy claims, compliance certification or
+  autonomous self-promotion is introduced. No external cybersecurity pack was
+  imported or executed.
+
+### Versions
+
+- **Cybersecurity Skills**: new → `1.0.0` (unreleased; no tag or release created)
+
+## [common-v2.6.0] - Unreleased
+
+**Category**: Decision-oriented diagrams and local evidence integrity
+
+### Added
+
+- First-class `component` diagrams in the existing draw.io renderer, with a paired container/component fixture demonstrating canonical HLD-to-LLD identities and relationship refinement.
+- Optional `view-manifest.json` validation for scoped identities, ownership/refinement cycles, expected relationships, and cross-view direction consistency. Local evidence sources are allowlisted, size-bounded, and SHA-256 checked; stale or unavailable captures return `review-needed`, not a runtime-drift claim.
+- Separate lifecycle, source kind, evidence confidence, and metric provenance on nodes and edges, including ERD entities/relations and sequence messages.
+
+### Changed
+
+- Selected views describe their question, decision, scenario, invariant, scope, status, evidence, and omissions. Code/document citations do not prove runtime deployment.
+- Generated draw.io output carries its own content baseline. Regeneration permits ordinary spec changes but preserves and refuses hand-edited or untracked output unless replacement is explicitly acknowledged.
+- The renderer validates input before writing. Compact citation-only nodes and relationships remain visibly `UNVERIFIED`; a pointer alone no longer establishes confidence.
+- Schema-to-ERD generation supplies documented code provenance for parsed declarations and relationships; unresolved referenced tables remain unverified rather than implying a deployed schema.
+- Diagram evals cover HLD/LLD routing near-misses and documentary provenance. Lexical assertions remain smoke checks, not proof of semantic correctness.
+
+### Migration
+
+- Return semantic draw.io edits to the JSON spec before regeneration. Existing outputs without a generated baseline require deliberate review and `--acknowledge-manual-edits` before replacement.
+- Add explicit provenance metadata to establish documentary or observed confidence; complete view contracts and captured source digests are required for manifest participation. Citations use a local `path:positive-line` form.
+
+### Versions
+
+- **Common Skills**: `2.5.0` → `2.6.0` (unreleased; no tag or release created)
+
 ## [quality-engineering-v1.6.0] - Unreleased
 
 **Category**: Test-loop program P0–P3, requirement-to-TC hardening, automation health, UI automation driver ladders
@@ -35,7 +123,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Versions
 - quality-engineering: 1.6.0
 
-## [specialists-v1.3.0] - Unreleased
+## [specialists-v1.4.0] - Unreleased
+
+**Category**: HLD-to-LLD deep-dive and diagrammer provenance alignment
+
+### Changed
+
+- `specialist-system-architect`: bounded HLD-to-LLD briefs carry scope and evidence status; responses include invariant-linked verification hooks and measurable ADR reversal triggers.
+- `specialist-solution-diagrammer`: component and ERD output share the existing renderer; node/edge provenance, metric provenance, optional manifests, and protected regeneration use the canonical diagram contract.
+
+### Versions
+
+- **Specialists**: `1.3.0` → `1.4.0` (unreleased; no tag or release created)
+
+## [specialists-v1.3.0] - 2026-09-15
 
 **Category**: Test-loop specialists (planner, testid-inserter, healer), solution diagrammer, driver-aware generation
 
@@ -72,7 +173,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [system-design-v1.1.0] - Unreleased
+## [system-design-v1.2.0] - Unreleased
+
+**Category**: HLD-to-LLD decision quality, production case packs, and nine-axis review profiles
+
+### Added
+
+- **Ten lazy-loaded production case packs**: payment timeout/duplicate webhook, flash-sale expiry/payment race, tenant isolation, cache stampede, notification outage, chat reconnect, live migration, a small internal-app counterexample, video publishing, and ride dispatch. Each states synthetic workload/SLO/team/budget assumptions, an invariant, minimal design, rejected alternative, failure/recovery timeline, changed constraint, acceptance criteria, and review thresholds.
+- **Independent semantic evaluation rubric**: recomputes quantities and checks mechanisms, invariants, recovery, justified exclusions, and view routing. Paired eval cases and scorer regressions reject vocabulary-only shortcuts while accepting ordinary rounding and multiline calculations; no aggregate quality uplift is claimed.
+
+### Changed
+
+- **`system-design-methodology`**: explicit `HLD`, `LLD`, and `low-level design` routing; stable requirement → HLD decision → component → LLD contract → verification trace. Choose diagrams by audience/question rather than requiring a fixed view set. Omit unstated metrics instead of inventing numbers.
+- **`system-design-artifact-intake`**: the fact-sheet re-draw uses the draw.io pipeline. Documentary rows carry `evidence_kind: document` and `evidence_confidence: documented`; inferred rows remain unverified. Citations point to numbered fact-sheet evidence and never imply runtime deployment.
+- **`system-design-review`**: nine axes with declared profile weighting, justified `N/A` exclusions, and applicable-axis denominators. Adding caches, queues, replicas, or regions does not earn credit without a demonstrated need and recovery plan.
+- **Workflows** `system-design-session`, `review-system-design`, `design-solution`: keep the common renderer as the only production diagram lane; carry selected-view contracts, precise provenance, HLD/LLD trace, and specialist verification/reversal hooks into handoffs.
+
+### Migration
+
+- Sync the updated common diagramming contract with these system-design and specialist changes. Component views, explicit provenance, manifests, and protected regeneration require the `common-v2.6.0` feature set.
+
+### Versions
+
+- **System Design Skills**: `1.1.0` → `1.2.0` (unreleased; no tag or release created)
+
+## [system-design-v1.1.0] - 2026-09-15
 
 **Category**: One diagram lane
 

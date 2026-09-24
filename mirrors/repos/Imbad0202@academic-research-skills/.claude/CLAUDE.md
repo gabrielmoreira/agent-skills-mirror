@@ -9,7 +9,14 @@ A suite of Claude Code skills for rigorous academic research, paper writing, pee
 | `deep-research` v2.12.1 | 13-agent research team | full, quick, socratic, review, lit-review, three-way-scan, fact-check, systematic-review |
 | `academic-paper` v3.3.1 | 12-agent paper writing | full, plan, outline-only, revision, revision-coach, abstract-only, lit-review, format-convert, citation-check, disclosure, rebuttal-audit |
 | `academic-paper-reviewer` v1.11.1 | Multi-perspective paper review (5 reviewers + optional cross-model DA critique) | full, re-review, quick, methodology-focus, guided, calibration |
-| `academic-pipeline` v3.22.0 | Full pipeline orchestrator | (coordinates all above) |
+| `academic-pipeline` v3.22.1 | Full pipeline orchestrator | (coordinates all above) |
+
+## v3.22.1 Key Additions (Opus 5.5 model currency + citation-check loading and Chinese APA 7 repairs + Pi wrapper fix)
+
+- **Claude Opus 5.5 joins Claude Fable 5.1 as a supported session model (#883).** A two-reader audit of the Opus 5.5 system card (`audits/harness-retirement-2026-09-opus-5-5.md`, DM-001 to DM-021) retires no guardrail. `docs/PERFORMANCE.md` (en / zh-TW) adds effort guidance (heavy runs at `high` or above, since Claude Code starts Opus 5.5 at `medium`), one 2026-09 list-price re-derivation for both models, tiering guidance for the pair, and a files-over-pastes recommendation; `shared/model_tiering.md` defines family and tier (tier order is lineup order, not a capability ranking) and corrects the classifier-fallback note. No command `model:` or `effort:` setting changes.
+- **The revision coach treats pasted third-party text as data (DG-1).** It inlines the canonical instruction/data boundary, pinned by `scripts/check_instruction_data_boundary.py`, whose mutation tests are now parametrized over every hot-spot agent; `docs/RISK_REGISTER.md` R3 names pasted text. The guard is prompt-level and its effect is unmeasured.
+- **Mode-loading and citation-check repairs (#857, #882, #858, #864).** The 13 plugin mode commands invoke their namespaced core skill and use plugin-root reference paths; Chinese APA 7 checks cover missing author abbreviation, ambiguity exceptions, reference-list author fields, and ordering evidence; citation checks distinguish visible syntax errors from unverified resolution or source claims; English, Traditional Chinese, and Korean trigger phrases route citation-check, with a CI bound of 1,024 code points per skill description.
+- **Pi wrapper (#880).** String-array system prompts are accepted without flattening blocks or mutating host input.
 
 ## v3.22.0 Key Additions (output-language-pair contract + locale track + plugin eval suites + Windows / transport repairs)
 
@@ -313,12 +320,13 @@ Spec: `docs/design/2026-05-17-ars-v3.9.0-cross-index-triangulation-measurement-s
 
 **Routing precedence:** This section runs BEFORE Routing Rules 1-5. Once this section settles on a destination, Rules 1-5 apply within that destination's skill family.
 
-**Step 0 — Escape hatch check (before any classification):** If the user's first message begins with `[direct-mode]` (case-insensitive byte-0 token, optionally preceded by whitespace/newlines that are stripped on parse), record this fact, strip the prefix and surrounding whitespace from the message, and skip directly to **Step 1 explicit-intent handling** on the stripped content. The literal `[direct-mode]` is NOT passed through to the dispatched agent. If the stripped message itself has no clear skill named, Step 1 falls through to Step 3 clarification (the escape hatch bypasses cross-phase clarification (Step 2), not all routing).
+**Step 0 — Escape hatch check (before any classification):** If the user's first message begins with `[direct-mode]` (case-insensitive byte-0 token, optionally preceded by whitespace/newlines that are stripped on parse), record this fact, strip the prefix and surrounding whitespace from the message, and skip directly to **Step 1 explicit-intent handling** on the stripped content. The literal `[direct-mode]` is NOT passed through to the dispatched agent. If the stripped message itself has no clear skill named, Step 1 falls through to Step 3 clarification (the escape hatch bypasses cross-phase clarification (Step 2), not all routing). When the token is honored and the named agent or skill needs inputs the message does not supply, read that agent's or skill's file and ask for what it requires, in its terms. Without the byte-0 token, naming an agent is not explicit intent: such a message goes through Steps 1-3 like any other, so cross-phase materials still get Step 2 clarification.
 
 Otherwise, classify the user's input:
 
 1. **Explicit clear intent** — user invokes a specific skill via `/ars-*` slash command, or uses an unambiguous trigger keyword that maps to a single skill (e.g., "lit-review this", "review my paper", "draft an abstract"):
    → Route directly; no clarification, no orchestrator detour.
+   → The request stays explicit when the mode's usual input is absent or a word in it has other everyday senses. A revision request with no reviewer comments is revision mode's "feel certain sections need improvement" case, and "revisar artículo" is the reviewer's trigger. Route to that mode and let the mode handle what is missing; do not reopen the choice of workflow.
 
 2. **Cross-phase materials detected** — user provides artifacts spanning ≥ 2 pipeline phases without naming a specific skill (e.g., pre-written abstract + pre-collected literature; full draft + reviewer comments + bibliography):
    → **Clarify**. Do NOT auto-route to a single-phase agent. List candidate workflows as a-d options in markdown body (NOT via AskUserQuestion tool). See `shared/references/intent_clarification_protocol.md` for the message template.
@@ -380,7 +388,7 @@ Materials: Complete paper text. field_analyst_agent auto-detects domain and conf
 Materials: Editorial Decision Letter, Revision Roadmap, Per-reviewer detailed comments
 
 ## Version Info
-- **Suite version**: 3.22.0 (per CHANGELOG.md)
-- **Last Updated**: 2026-09-16
+- **Suite version**: 3.22.1 (per CHANGELOG.md)
+- **Last Updated**: 2026-09-23
 - **Author**: Cheng-I Wu
 - **License**: CC-BY-NC 4.0

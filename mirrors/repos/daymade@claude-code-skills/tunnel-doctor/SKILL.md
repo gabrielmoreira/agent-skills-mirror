@@ -1,19 +1,11 @@
 ---
 name: tunnel-doctor
 description: >-
-  Diagnoses concrete tunnel and proxy-path failures across macOS and Windows/WSL:
-  Tailscale routing, proxy env/system bypass, SSH double tunneling, VM/container
-  propagation, stalled DNS, TUN DIRECT split-brain, Windows-host TUN cascades, and
-  single-hop or chained proxy node/exit throughput. Use when Tailscale ping works but
-  SSH/HTTP fails, browser returns 503 while curl works, Git SSH closes through the
-  proxy, Docker pull/build fails behind TUN, getaddrinfo stalls while nslookup is fast,
-  raw probes report physically impossible results, domestic DIRECT-routed sites fail
-  while proxied sites work, a blocked port could be your tunnel or the destination's
-  firewall, or the proxy is reachable but real downloads and full Git clones crawl. Also
-  use when Git reports "failed to begin relaying via HTTP", ssh -vvv freezes at "debug2:
-  resolving", ping works but dig times out, or setting up Tailscale SSH to WSL. Use
-  debugging-network-issues only when the root cause remains unknown or belongs to an
-  application/protocol layer.
+  MUST be used first for tunnel / proxy-path connectivity failures or slow throughput (网络故障 / 连不上 /
+  代理或隧道下超时). Diagnoses Tailscale, proxy, TUN, DNS and SSH-tunnel problems on macOS and Windows/WSL,
+  e.g. Tailscale ping works but SSH fails, curl works but browser gets 503, Git/Docker fails behind
+  the proxy, or downloads crawl despite a reachable proxy. Not for application-layer bugs (use
+  debugging-network-issues).
 allowed-tools: Read, Grep, Edit, Bash
 ---
 

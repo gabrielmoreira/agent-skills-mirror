@@ -126,7 +126,8 @@ Record only what is observed. A task card, route, plan, `coding_delegation.json`
   - question renderers -> one concise question in the current Hermes interface,
   - native subagents -> Hermes delegation when available, otherwise sequential lanes,
   - shell bridge commands -> optional bridge mode only.
-- Record observed delegation results when exposed. If unavailable, say `not_available` or `not_observed`.
+- Record observed delegation results when exposed. If unavailable, record `not_available` or `not_observed`.
+- Reply in the user's own words and the host's own voice: OMH's record terms (surface, lane, wrapper, handoff, evidence boundary, not_observed) stay in records and tool calls, never in the sentence the user reads unless they ask about one; and when a stop condition or a decision the user owns ends the turn, offer the next action as a question rather than declaring what will not be done.
 
 ## Progressive Disclosure References
 

@@ -12,10 +12,18 @@ reasoning about anything that touches Hermes Agent.
 oh-my-hermes (OMH) is a Hermes-native wrapper orchestration layer: a
 deterministic skill catalog, router, and prepared-handoff generator installed
 next to Hermes Agent. Core `omh` code makes no LLM, API, or network calls and
-never patches Hermes. Pure Python 3.11+, zero runtime dependencies. One scoped
-exception: `omh coding fanout dispatch` (explicit opt-in) spawns local agent
+never patches Hermes. Pure Python 3.11+, zero runtime dependencies. Two scoped
+exceptions. `omh coding fanout dispatch` (explicit opt-in) spawns local agent
 CLIs as subprocesses — those CLIs make their own network calls; omh itself
-still makes none, and nothing executes without that explicit command.
+makes none there, and nothing executes without that explicit command. The
+`omh_jev_ask` plugin tool is the one place OMH itself opens a connection: it
+POSTs typed questions to Jev (TypeSafe, or OpenRouter only with the operator
+setting in `<omh_home>/jev/settings.json`) with the user's own key, only when
+the user named Jev in that turn and a key resolves. Stdlib only, HTTPS only, a
+fixed two-host route table, redirects refused;
+`src/plugin_bundle/omh/jev_ask_client.py` is the only network client in
+`src/`, pinned by INVARIANT 2's `NETWORK_CLIENT_BRIDGES`. Third-party Jev
+plugins are still never called.
 
 ## Build & Test
 
@@ -126,7 +134,10 @@ Rules:
   and the command that proves each. Only one of them produces a PR.
 - One user goal → one PR. Do not frame partial slices; see Delivery Grain in
   `AGENTS.md` for the only valid split reasons.
-- Branch before the first edit: `claude/<topic>` (or `agent/`, `hermes/`).
+- Branch before the first edit, named by the kind of change, never by the
+  executor: `feature/<topic>` for a capability, `fix/<topic>` for a defect,
+  `omh/<topic>` for everything else (docs, release, maintenance). See Git And
+  Commits in `AGENTS.md`.
 - Every commit needs DCO `Signed-off-by:` plus the Lore-style trailers listed
   in `AGENTS.md` (Constraint / Rejected / Confidence / Scope-risk / Directive /
   Tested / Not-tested).
@@ -177,11 +188,15 @@ Rules:
   print(routing_precision_errors(payload))  # must be []
   ```
 
-  Confirm with `drift_report()["ok"]` before continuing the rebase. Two
-  adjacent budgets can fire in the same change and are raised the same way,
-  with the reason written at the entry: the per-skill Hangul freeze in
-  `tests/test_routing_language_policy.py` and
-  `FULL_PROFILE_SKILL_BODY_CHAR_LIMIT` in `src/maintenance/release.py`.
+  Confirm with `drift_report()["ok"]` before continuing the rebase. Adjacent
+  budgets can fire in the same change and are raised the same way, with the
+  reason written at the entry: the per-skill Hangul freeze in
+  `tests/test_routing_language_policy.py` and the zero-slack ratchets in
+  `src/maintenance/release.py` (the per-request index, schema, and
+  `pre_llm_call` limits). `FULL_PROFILE_SKILL_BODY_CHAR_LIMIT` and
+  `FULL_PROFILE_SKILL_BODY_REPEATED_CHAR_LIMIT` are ceilings with headroom,
+  not ratchets: re-derive them from the producer by the policy written beside
+  them, and only when a test says to.
 - Advancing `reviewed_ref` in `docs/SKILL-SOURCES.md` without appending the
   closure receipt, or landing the skill change and leaving the row behind.
   `docs skill-sources --check` fails either half by name

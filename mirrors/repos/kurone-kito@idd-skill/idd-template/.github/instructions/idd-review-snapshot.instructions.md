@@ -69,8 +69,8 @@ CI pass exists yet for this HEAD.
 **Non-Copilot advisory safety net.** Snapshot and Step 2
 watermark cover non-Copilot bots in this phase. Not exclusive:
 configured F2 `secondaryQuietWindow` waits until `elapsed`
-since last substantive review activity, not until
-`secondaryBotLogin` reviews HEAD.
+since last substantive review activity, not until every login
+configured under `secondaryBotLogin` reviews HEAD.
 
 **Step 2 — Record the watermark.** Using the `{head-SHA}` stored at the
 start of Step 1, compute `{max-activity-updatedAt}` as the highest
@@ -158,9 +158,7 @@ ignore them and rerun E1 under the successor claim.
 
 **Hide superseded same-claim watermarks.** After the new watermark is
 verified on GitHub, minimize every strictly older trusted **same-claim**
-`review-watermark`/`review-baseline` comment as `OUTDATED`. Find
-candidate subject IDs (older trusted same-claim watermarks), then
-call:
+`review-watermark`/`review-baseline` comment as `OUTDATED`, then call:
 
 `--subject-ids` needs a GraphQL node id, not a REST numeric id;
 convert with `gh api repos/{owner}/{repo}/issues/comments/{comment_id}
@@ -182,9 +180,9 @@ not be hidden here — see the claim takeover hide path in
 
 Do not create or edit the PR live status digest after posting this
 watermark unless the next route is E1, an F3 blocked reroute that
-leaves the F2 restart path (F1/D4), a hold/stop, or post-merge cleanup
-— a digest edit after the watermark counts as new review-currency
-activity and would require a fresh E1 snapshot before F2 can pass.
+leaves the F2 restart path (F1/D4), a hold/stop, post-merge cleanup,
+or an F2 `secondaryQuietWindow`-only block — any other edit counts as
+new review-currency activity, requiring a fresh E1 snapshot before F2.
 
 **Step 3 — Filter into ReviewItems_snapshot.** Select and combine into
 **ReviewItems_snapshot**, recording the source URL for each item.

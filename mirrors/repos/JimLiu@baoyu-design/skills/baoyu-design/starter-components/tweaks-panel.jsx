@@ -578,8 +578,8 @@ Object.assign(window, {
   document.head.appendChild(s);
 })();
 
-const __twkSendChat = (text) =>
-  window.parent.postMessage({ type: '__edit_mode_chat', text }, '*');
+const __twkSendChat = (text, kind) =>
+  window.parent.postMessage({ type: '__edit_mode_chat', text, kind }, '*');
 
 const __TWK_SPARK_PATH = 'M18.3658 62.2435L36.7823 51.9165L37.0858 51.012L36.7823 50.5083H35.8716L32.7853 50.3206L22.2616 50.0389L13.1546 49.6634L4.30054 49.194L2.07438 48.7246L0 45.9551L0.202378 44.5938L2.07438 43.3264L4.75589 43.5611L10.6755 43.9836L19.5801 44.5938L26.0056 44.9693L35.568 45.9551H37.0858L37.2882 45.3448L36.7823 44.9693L36.3775 44.5938L27.1693 38.3507L17.2022 31.7789L11.9909 27.9767L9.20822 26.0522L7.79157 24.2684L7.18443 20.3254L9.71416 17.5089L13.1546 17.7436L14.0147 17.9783L17.5057 20.654L24.9431 26.4277L34.6573 33.5627L36.0739 34.7362L36.6444 34.3512L36.7317 34.079L36.0739 32.9994L30.8121 23.4704L25.1961 13.7537L22.6664 9.71675L22.0086 7.32277C21.7539 6.31812 21.6039 5.48695 21.6039 4.45938L24.4878 0.516349L26.1068 0L30.0026 0.516349L31.6216 1.92457L34.0502 7.46359L37.9459 16.1476L44.0173 27.9767L45.7881 31.4973L46.7494 34.7362L47.1036 35.722H47.7107V35.1587L48.2166 28.4931L49.1274 20.3254L50.0381 9.81063L50.3416 6.85336L51.8089 3.28586L54.7434 1.36128L57.0201 2.44092L58.8921 5.11655L58.6391 6.85336L57.5261 14.0822L55.3505 25.395L53.9338 32.9994H54.7434L55.7047 32.0136L59.5498 26.944L65.9753 18.8702L68.8086 15.6782L72.1479 12.1577L74.2729 10.4678H78.3204L81.2549 14.8802L79.9395 19.4335L75.7907 24.6909L72.3503 29.1503L67.4173 35.7593L64.3563 41.0732L64.6308 41.5116L65.3682 41.4487L76.499 39.0548L82.5198 37.9751L89.7042 36.7547L92.9423 38.2568L93.2964 39.8058L92.0316 42.9509L84.3412 44.8285L75.3354 46.6592L61.9245 49.8162L61.776 49.9356L61.9513 50.1956L67.9991 50.743L70.5795 50.8839H76.9038L88.6923 51.7757L91.7786 53.7942L93.6 56.282L93.2964 58.2066L88.5405 60.6006L82.1656 59.0985L67.2402 55.531L62.1302 54.2636H61.4218V54.6861L65.6718 58.8638L73.514 65.9049L83.2787 75.0114L83.7846 77.2646L82.5198 79.0483L81.2043 78.8606L72.6032 72.3827L69.264 69.4724L61.776 63.1354H61.2701V63.7926L62.9903 66.3274L72.1479 80.081L72.6032 84.3057L71.9455 85.667L69.5676 86.5119L66.9872 86.0425L61.5736 78.4851L56.0588 70.0357L51.6065 62.4313L51.0687 62.7708L48.419 91.0652L47.2048 92.5204L44.3715 93.6L41.9935 91.8162L40.7286 88.9059L41.9935 83.1322L43.5114 75.6217L44.7256 69.6602L45.8387 62.2435L46.5185 59.7659L46.4584 59.6001L45.9153 59.6914L40.3239 67.3601L31.824 78.8606L25.0949 86.0425L23.4759 86.6997L20.6932 85.2445L20.9462 82.6628L22.5146 80.3627L31.824 68.5336L37.44 61.1639L41.0595 56.9335L41.0243 56.3216L40.8245 56.3046L16.0891 72.4297L11.6874 72.993L9.76476 71.2092L10.0177 68.2989L10.9284 67.3601L18.3658 62.2435Z';
 
@@ -608,6 +608,18 @@ function TweakSuggestionBar({
   const inputRef = React.useRef(null);
   const tw = useTwkTypewriter(suggestions, { placeholder, enabled: !val && !ghost && !focused });
 
+  // Impression (telemetry only): once per session. Tweak-value writes
+  // reload the guest frame, so an undeduped effect would fire per slider
+  // drag; the typewriter's __twk_played key is per-suggestion-set and
+  // doesn't cover the regenerated-ideas case.
+  React.useEffect(() => {
+    try {
+      if (sessionStorage.getItem('__twk_bar_seen') === '1') return;
+      sessionStorage.setItem('__twk_bar_seen', '1');
+    } catch {}
+    window.parent.postMessage({ type: '__edit_mode_bar_shown' }, '*');
+  }, []);
+
   const freeze = () => {
     tw.markPlayed();
     if (val || ghost) return;
@@ -619,7 +631,10 @@ function TweakSuggestionBar({
   const submit = () => {
     const v = (val || ghost).trim();
     if (!v) return;
-    __twkSendChat(v);
+    // 'suggestion' = one of the model-authored items (verbatim ghost, or
+    // Tab-accepted then sent unedited). Anything else is the user's words.
+    const kind = suggestions.includes(v) ? 'suggestion' : 'freetext';
+    __twkSendChat(v, kind);
     setVal('');
     setGhost('');
   };
@@ -637,7 +652,7 @@ function TweakSuggestionBar({
     }
   };
 
-  const requestIdeas = () => __twkSendChat(ideasPrompt);
+  const requestIdeas = () => __twkSendChat(ideasPrompt, 'ideas');
 
   const showAnim = !val && !ghost && !focused && !tw.done;
   const showStatic = !val && !ghost && !focused && tw.done;

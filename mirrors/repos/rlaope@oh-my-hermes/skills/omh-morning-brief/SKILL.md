@@ -16,7 +16,7 @@ This is a Hermes-native `morning-brief` workflow skill.
 
 ## Why This Exists
 
-`morning-brief` exists to connect mail and calendar access for an on-demand brief while keeping the connection strictly read and draft-only and the user's credentials unstored.
+`morning-brief` exists to connect mail and calendar access for an on-demand brief while keeping the connection strictly read and draft-only and credential entry outside chat, with explicit storage authorization.
 
 ## Do Not Use When
 
@@ -47,11 +47,11 @@ Bad example:
 ## Recovery Notes
 
 - If the mail or calendar prerequisite is unmet, mark that surface "not applicable" and offer the brief scoped to whichever surface is connected.
-- If a pasted token fails validation, ask the user to reissue it rather than storing or retrying the same value silently.
+- If authentication fails, guide reauthorization or reissuance through secure entry or user-side setup; do not request the failed credential in chat or silently retry it.
 
 ## Workflow Lane
 
-- Current lane: **Automation and status** (`achievements`, `workspace-audit`, `production-audit`, `live-incident-response`, `automation-blueprint`, `github-event-ops`, `github-issue-intake`, `buzz`, `+37 more`) - schedules, status, health, and ops review.
+- Current lane: **Automation and status** (`achievements`, `workspace-audit`, `production-audit`, `live-incident-response`, `automation-blueprint`, `github-event-ops`, `github-issue-intake`, `buzz`, `+39 more`) - schedules, status, health, and ops review.
 - If intent belongs to another lane, hand back to `oh-my-hermes` or name the adjacent workflow.
 - Shared product, routing, compatibility, and evidence rules: `omh-routing/references/skill-common-rail.md`.
 
@@ -71,21 +71,21 @@ Reasoning demand: `light`
 
 Quality bar:
 
-- Prerequisite check: confirm the subscription, account, or capability the step needs exists before continuing; mark unmet prerequisites "not applicable" and skip them explicitly.
-- Read-only diagnose: read the current Hermes config, `.env` keys, and installed version without writing anything.
-- Guide: walk the user through any account creation, OAuth, or token issuance they must complete themselves.
-- Diff-approved apply: show the exact config or `.env` diff and write only after the user explicitly approves it.
-- Verify: re-read the updated config and report a completion checklist covering every applicable item.
+- Prerequisite check: confirm required access; mark unmet prerequisites "not applicable" and skip them.
+- Read-only diagnose: inspect non-secret config metadata, `.env` key names and presence only, and version; no secret reads or writes.
+- Guide: use Hermes-native secure entry or user-side OAuth/token setup, never chat secrets.
+- Diff-approved apply: show the config or `.env` diff with redacted placeholders; apply only after the user explicitly approves.
+- Verify: confirm applicable items using non-secret metadata, never secret values.
 - Keep the read/draft-only access boundary — never enable Send permission — as a hard constraint on every apply step, not an optional recommendation.
 
 Handoff policy:
 
-Run diagnosis and guidance directly in Hermes for the mail/calendar connection. Diagnosis only reads the existing Hermes config, `.env` keys, and installed version; it never writes anything on its own. Show the exact diff for any config or `.env` change and write it only after the user explicitly approves that diff. Secret values such as tokens and API keys are pasted by the user directly in chat and are never stored, logged, or echoed back beyond the immediate diff confirmation. Delegate to a selected coding executor only if the user needs a change outside chat-driven MCP config edits.
+Run diagnosis and guidance directly in Hermes for the mail/calendar connection. Diagnosis reads non-secret metadata only; no writes. Show redacted placeholders in the config or `.env` diff; apply only after the user explicitly approves. Never ask the user to paste secrets into chat. Use Hermes-native secure entry or user-side OAuth/token setup; if unavailable, stop credential application and guide user-side setup. Use only a user-authorized credential store or local configuration; disclose destination and scope first. Keep secrets out of chat, previews, logs and evidence. Do not promise chat or platform non-retention. Delegate to a selected coding executor only if the user needs a change outside chat-driven MCP config edits.
 
 Required inputs:
 
 - mail and calendar MCP connection status
-- OAuth token or app password supplied by the user
+- OAuth/app-password availability; value through secure entry or user-side setup only
 
 Expected outputs:
 
@@ -100,7 +100,7 @@ Artifact expectations:
 Safety rules:
 
 - Configure mail and calendar MCP access as read and draft only; never enable Send permission, even if the user asks — drafts stay for the user to send themselves.
-- OAuth tokens or app passwords are pasted by the user directly in chat and are never stored, logged, or persisted beyond the immediate diff confirmation.
+- Use Hermes-native secure entry or user-side OAuth/app-password setup, never chat; disclose authorized storage without exposing secrets.
 - Do not treat a prepared connection as an observed brief; only report a brief after the connection is verified.
 
 ## Runtime Evidence
@@ -115,6 +115,7 @@ Record observed delegation results; otherwise return `not_available` or `not_obs
 Prepared OMH routing is not execution, review, CI, merge-readiness, or merge evidence.
 - Treat wrapper memory/context summaries as advisory local context, not proof of opaque Hermes memory reads or changes.
 Preserve workflow intent and stop conditions; verify before claiming completion.
+Reply in the user's own words and the host's own voice: OMH's record terms (surface, lane, wrapper, handoff, evidence boundary, not_observed) stay in records and tool calls, never in the sentence the user reads unless they ask about one; and when a stop condition or a decision the user owns ends the turn, offer the next action as a question rather than declaring what will not be done.
 
 Use Hermes-native subagent/delegation features when available: native subagents -> Hermes delegation when available, otherwise sequential lanes.
 

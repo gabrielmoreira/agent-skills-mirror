@@ -1,17 +1,16 @@
 ---
 name: seo-content
 description: >
-  Content quality and E-E-A-T analysis with AI citation readiness assessment,
-  plus last-mile draft cleanup (AI-typical phrasing and invisible Unicode
-  watermark characters). Use when user says "content quality", "E-E-A-T",
-  "content analysis", "readability check", "thin content", "content audit",
-  "humanize", "AI phrasing", "remove watermarks", or "invisible characters".
+  Evaluate page content for usefulness, E-E-A-T, readability, thinness, and AI
+  citation readiness, plus last-mile draft cleanup (AI-typical phrasing and
+  invisible Unicode watermark characters). Use for content-only analysis, not
+  full-page technical checks.
 user-invocable: true
 argument-hint: "[url]"
 license: MIT
 metadata:
   author: AgriciDaniel
-  version: "2.3.1"
+  version: "2.4.0"
   category: seo
 ---
 
@@ -37,7 +36,7 @@ merged into core during the March 2024 update).
 
 ## E-E-A-T Framework (updated Sept 2025 QRG)
 
-Read `skills/seo/references/eeat-framework.md` for full criteria.
+Read `${CLAUDE_PLUGIN_ROOT}/skills/seo/references/eeat-framework.md` for full criteria.
 
 ### Experience (first-hand signals)
 - Original research, case studies, before/after results
@@ -115,7 +114,7 @@ Compare against page type minimums:
 - Open in new tab for user experience
 - Reasonable count (not excessive)
 
-## AI Content Assessment (Sept 2025 QRG addition)
+## AI Content Assessment (QRG: generative-AI guidance added January 2025; current version September 11, 2025)
 
 Google's raters assess low-quality, scaled, copied, or AI-generated main content patterns rather than AI authorship as a standalone issue.
 
@@ -177,7 +176,7 @@ Optimize for AI search engines (ChatGPT, Perplexity, Google AI Overviews):
 
 ### AI Search Visibility & GEO (2025-2026)
 
-**Google AI Mode** is Google's conversational AI search surface. Google's last official model naming for AI Mode / AI Overviews is a custom version of **Gemini 2.5**. Treat third-party AI Mode usage, citation, and link-share figures as methodology-dependent unless primary-sourced, and optimize for both AI Mode and AI Overviews (see the `seo-geo` skill).
+**Google AI Mode** is Google's conversational AI search surface. Google upgrades the AI Mode model often (Gemini 3.5 Flash became the default on 2026-05-19, and newer Flash models have shipped since, per blog.google); never tie advice to a model version. Treat third-party AI Mode usage, citation, and link-share figures as methodology-dependent unless primary-sourced, and optimize for both AI Mode and AI Overviews (see the `seo-geo` skill).
 
 **Key optimization strategies for AI citation:**
 - **Structured answers:** Clear question-answer formats, definition patterns, and step-by-step instructions that AI systems can extract and cite
@@ -188,13 +187,26 @@ Optimize for AI search engines (ChatGPT, Perplexity, Google AI Overviews):
 - **Multi-platform tracking:** Monitor visibility across Google AI Overviews, AI Mode, ChatGPT, Perplexity, and Bing Copilot, not just traditional rankings. Treat AI citation as a standalone KPI alongside organic rankings and traffic.
 
 **Generative Engine Optimization (GEO):**
-Per Google's AI optimization guide, "AEO" and "GEO" are rebranded labels for SEO: AI Overviews and AI Mode are grounded in the same ranking and quality systems as classic Search. The optimization signals that matter (quotability, attribution, heading hierarchy, freshness) are SEO fundamentals applied to AI-search surfaces, not a separate discipline. Cross-reference the `seo-geo` skill for detailed workflows; both surfaces share the primary-source synthesis in `skills/seo-geo/references/google-ai-optimization-guide.md`.
+Per Google's AI optimization guide, "optimizing for generative AI search is optimizing for the search experience, and thus still SEO": AI Overviews and AI Mode are grounded in the same ranking and quality systems as classic Search. The optimization signals that matter (quotability, attribution, heading hierarchy, freshness) are SEO fundamentals applied to AI-search surfaces, not a separate discipline. Cross-reference the `seo-geo` skill for detailed workflows; both surfaces share the primary-source synthesis in `${CLAUDE_PLUGIN_ROOT}/skills/seo-geo/references/google-ai-optimization-guide.md`.
 
 ## Content Freshness
 
 - Publication date visible
 - Last updated date if content has been revised
 - Flag content older than 12 months without update for fast-changing topics
+
+## Google Update Correlation (content and spam updates)
+
+Before attributing a traffic or ranking change to anything, list the confirmed
+Google updates in that window from the primary-source ledger:
+
+```bash
+"${CLAUDE_PLUGIN_ROOT}/scripts/claude-seo" run seo_updates.py --since <yyyy-mm> --json
+```
+
+Every entry cites a Google-owned URL. If `freshness.stale` is true, say the
+ledger may miss recent updates and check status.search.google.com before
+drawing conclusions. A date overlap is a hypothesis, never proof of cause.
 
 ## Output
 

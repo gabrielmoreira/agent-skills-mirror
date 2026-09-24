@@ -66,7 +66,7 @@ antislop never updates itself, and nothing announces a new release. Answer from 
 
 - **The installer** (`npx antislop-ai`): run it again, answer as before, and pick **Overwrite them**. It prints the version already on disk next to the version it carries, so nothing has to be compared by hand. *Keep what is there* installs nothing.
 - **The skills directory** (`npx skills add miqdadbadjuber/anti-slop`): run the same command again.
-- **A plugin door** (Claude Code, Antigravity, Codex, Cursor, Kimi Code): each agent has its own update command. `GUIDE.md` in the repo lists them one by one.
+- **A plugin door** (Claude Code, Antigravity, Codex, Cursor, Kimi Code, Cline): each agent has its own update command. `GUIDE.md` in the repo lists them one by one.
 - **This file alone**: download it again and replace the copy.
 
 The folder this skill sits in holds a `VERSION` file naming the release it came from, unless it was installed before that file shipped. The current release is on the repo's releases page.

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `mark3labs/mcp-go` — 26 default patterns, 0 followed patterns, 46 file(s) materialized.
+Mirror of `mark3labs/mcp-go` — 26 default patterns, 0 followed patterns, 47 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `mark3labs/mcp-go` — 26 default patterns, 0 followed patterns, 46 fi
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 46 |
+| Files         | 47 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -101,10 +101,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 40 | ✓ | [`mcp/utils_additional_test.go`](mcp/utils_additional_test.go) |
 | 41 | ✓ | [`mcp/utils_envelope_test.go`](mcp/utils_envelope_test.go) |
 | 42 | ✓ | [`mcp/utils_helpers_test.go`](mcp/utils_helpers_test.go) |
-| 43 | ✓ | [`mcp/utils_test.go`](mcp/utils_test.go) |
-| 44 | ✓ | [`mcp/utils.go`](mcp/utils.go) |
-| 45 | ✓ | [`mcp/version_test.go`](mcp/version_test.go) |
-| 46 | ✓ | [`mcp/version.go`](mcp/version.go) |
+| 43 | ✓ | [`mcp/utils_task_result_test.go`](mcp/utils_task_result_test.go) |
+| 44 | ✓ | [`mcp/utils_test.go`](mcp/utils_test.go) |
+| 45 | ✓ | [`mcp/utils.go`](mcp/utils.go) |
+| 46 | ✓ | [`mcp/version_test.go`](mcp/version_test.go) |
+| 47 | ✓ | [`mcp/version.go`](mcp/version.go) |
 
 ---
 

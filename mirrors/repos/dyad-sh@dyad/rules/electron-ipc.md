@@ -168,6 +168,17 @@ pre-hydration atoms can erase unrelated restored entities.
 
 **Custom-protocol debugging:** Before using `git bisect` on a `dyad://` flow, quit every dev and packaged Dyad instance and verify which build owns the protocol registration. macOS may route the link to a different running/registered build, producing a convincing but false good/bad result.
 
+Custom-protocol delivery (`open-url`, argv, or `second-instance`) carries only
+the callback URL, not a trustworthy web origin. Credential-bearing callbacks
+must present a provider-bound, expiring, single-use correlation value minted at
+the authoritative flow-start boundary; an unmatched or unsolicited callback
+must not perform the credential write. Browser protocol-launch prompts are UX,
+not an authentication boundary.
+Test-only producers (`neon:fake-connect`, `supabase:fake-connect-and-set-project`)
+that call `runOAuthReturnExchange` without a ref must pass
+`allowUnclaimedExchange: true`: integration tests invoke them without starting a
+connection flow and otherwise fail with "OAuth return did not match an active connection flow".
+
 ## Handler expectations
 
 - Keep handler registration free of database-dependent startup work. Handlers
@@ -286,6 +297,13 @@ late output from overwriting the current stream.
 **Zod schema contract changes:** Making a field optional (e.g., `messages` → `messages.optional()`) causes TypeScript errors in all consumers that assume the field is always present. Search for all destructuring/usage sites and add guards before committing.
 
 **Renderer-visible fields must be in the output schema:** `createTypedHandler` validates handler output through the contract's Zod schema. If the handler returns extra fields that are not declared in the output schema, renderer code cannot type-safely consume them and they may be stripped by parsing. Add any consumed fields (for example `appId` on `ChatSchema`) to the IPC output schema when relying on them in renderer code.
+
+Test-run `infraError` can accompany completed results (for example when restoring
+`.env.local` fails). Preserve those results; use each file's `incomplete` marker
+to prevent interrupted preview reports from becoming whole-file passes.
+Canonicalize the app root before constructing Playwright selectors and report keys.
+Resolve discovery and execution paths against `config.rootDir`, then make them app-relative.
+Mixed logical/physical roots or differing report keys break selection, split cases, and lose incomplete status.
 
 When one IPC producer needs stronger presentation semantics (for example, a persistent multiline error toast), carry that intent as an explicit optional event field and scope it at the producer. Do not infer global renderer behavior from message shape such as the presence of a newline; shared toast/event consumers serve unrelated features and tests.
 

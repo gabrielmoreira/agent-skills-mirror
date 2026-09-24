@@ -1,7 +1,7 @@
 # Agent Protocol
 
 **Server:** obsidian-mcp-server
-**Version:** 3.5.5
+**Version:** 3.6.0
 **Framework:** [@cyanheads/mcp-ts-core](https://www.npmjs.com/package/@cyanheads/mcp-ts-core) `^0.13.6`
 **Engines:** Bun ≥1.4.0, Node ≥24.0.0
 **MCP SDK:** `@modelcontextprotocol/server` ^2.0.0
@@ -266,7 +266,9 @@ src/
   services/
     obsidian/
       obsidian-service.ts               # Local REST API client (init/accessor pattern)
-      frontmatter-ops.ts                # YAML frontmatter parse/serialize/edit helpers
+      frontmatter-ops.ts                # YAML frontmatter parse/serialize/edit helpers + inline tag reader
+      markdown-blocks.ts                # Block structure (code, HTML, math, tables) for inline tag detection
+      patch-instruction.ts              # markdown-patch 1.x headers / 2.0 instructions, format negotiation, 2.0 map flattening
       section-extractor.ts              # Heading/block/frontmatter section extraction
       types.ts                          # Domain types (NoteJson, NoteTarget, etc.)
   mcp-server/

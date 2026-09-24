@@ -14,9 +14,11 @@
 
 ## Local Contracts
 
+- API-key reveal returns the complete stored key list without advancing rotation, so editing a provider preserves every configured key.
 - `Default` is the first global preset and cannot be deleted or renamed. It owns the complete main, utility, and embedding baseline; its Vision Model slot is optional.
 - Preset definitions are global. Global, project, agent-profile, and project/profile plugin configs persist only `model_preset`; chats may persist a preset reference as their explicit override.
 - Preserve scoped plugin resolution order and fall back invalid or missing scope/chat references to `Default`.
+- `get_presets()` caches the parsed global collection in `model_presets(plugins)`, keyed by the stat signature of the user, fallback, and legacy config files, and returns deep copies. Missing files allow caching; read or parse failures return uncached fallback results so recovery needs no file edit. `save_presets` and `reset_presets` clear it; other writers must change those files or clear the area.
 - Project Settings `llm` payloads are owned here through the generic `helpers.projects` project extension-data hooks; keep project helper code agnostic to `_model_config` paths, presets, and inheritance rules.
 - Keep provider metadata and API-key checks safe around secrets.
 - Check API-key readiness only for the effective model configuration; unused global presets must not produce Welcome-screen warnings.
@@ -32,11 +34,13 @@
 - In model overviews, render the effective Vision Model as a text-only `Vision override / Provider / Model` child aligned with Main's provider column, not as an icon-bearing peer row.
 - Changing a model provider in the settings UI must clear `api_base` and `kwargs` because both may be provider-specific.
 - Repair provider-specific model-config aliases at the model-config read/build boundary; keep provider-specific repairs out of provider-agnostic core wrappers such as `models.py`.
+- The `Agent.read_prompt/end` Anthropic hook adapts only the two bundled thoughts instructions in main/communication/solving prompt results when the effective main provider or model name contains `anthropic` (case-insensitive, including OpenRouter). Keep prompt files, JSON fields, history, custom wording, and other models unchanged; standalone communication reads must match main-prompt rendering for native protocol projection. Verify with `tests/test_anthropic_thoughts_prompt.py`.
 - `modelConfig.createPresetEditor()` owns local preset drafts, row actions, and stable UI-only row keys so deletion or renaming cannot rebind nested model fields.
 - The preset editor maps each model provider's API-key field to the shared API-key store; saving the editor persists dirty keys separately and never writes secrets into preset YAML.
 - The compact chat selector label combines the effective preset with only the leaf name of its main model; utility and provider text stay out of the closed selector.
 - The compact selector strip exposes `model-context-strip-end` after the agent
   profile selector so adjacent bundled controls can stay plugin-owned.
+- The selector strip uses the shared `x-overflow` directive for built-in and plugin controls. Its root must remain shrinkable; overflow entries open the original selector panels and retain their Alpine state. The profile avatar uses `data-overflow-icon` so its color, initials, or image also appear in overflow.
 - The adjacent agent-profile selector reads the always-enabled Agent Editor list
   endpoint directly so the active profile shows its effective title and avatar,
   and omits profiles disabled in the chat's current scope plus the exact

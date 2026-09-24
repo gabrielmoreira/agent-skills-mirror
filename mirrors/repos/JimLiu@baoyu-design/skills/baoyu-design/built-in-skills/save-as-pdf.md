@@ -8,9 +8,11 @@ Export the current HTML design as a print-friendly HTML file optimized for PDF e
 
 ## Steps
 
-1. **Read the current HTML design file** to understand its structure and content.
+1. **Read the current HTML design file** on every PDF request, including current tweak values. Always rebuild the print copy from this fresh read; never reuse an earlier print copy or merely refresh its provenance stamp. If the harness provides a source version token, record it for the print copy.
 
 2. **Create a print-ready HTML file**. The print file path is the source path with `-print` inserted before the extension — same directory, same basename. If the source is `slides/deck.html`, write `slides/deck-print.html`; if the source is `web/index.html`, write `web/index-print.html`. **Do NOT** use the deck title or project name as the filename, and **do NOT** write to the project root if the source is in a subdirectory — any change in directory depth breaks every relative URL (`@font-face` `src: url(...)`, `<img src>`, `<link href>`, CSS `background: url(...)`) and the print tab shows missing images and system-font fallbacks.
+
+   If the harness returns a `[version: v<N>]` token, add `<meta name="omelette-print-source" content="v<N> source/path.html">` to the fresh copy’s `<head>`, using the actual version and project-relative source path. If a hosted export reports a stale copy, re-read and regenerate it. File-based harnesses without version tokens omit this tag; do not invent a version.
 
    - If the source already uses `<doc-page>` or `<deck-stage>`, preserve that
      component and its print ownership. Do not add a competing `@page` rule;

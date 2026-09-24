@@ -31,5 +31,7 @@ job or the coverage gate red.
 
 ## Docker
 
-The container image and everything about running it — ports, volumes, where
-secrets go — is in [Running the Inspector in Docker](./docker.md).
+The container image and everything about running it — ports, volumes, making
+secrets durable — is in [Running the Inspector in Docker](./docker.md). How the
+secret store is chosen on every runtime is in
+[Where secrets are stored](./secret-storage.md).

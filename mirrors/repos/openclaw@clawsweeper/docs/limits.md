@@ -230,7 +230,18 @@ events never supersede an existing item; only a fresh source revision can revoke
 an active review. Duplicate workflow deliveries remain non-cancelling and rely
 on the lease claim tuple, so they cannot terminate the sole valid owner. An older
 unclaimed workflow cannot pass the replacement lease tuple and exits before
-review compute. Explicit command work and publication work bypass the delay.
+review compute. After setup, generation also checks the full lease tuple
+synchronously before either ordinary or oversized review starts. Known
+`lease_superseded` / `lease_not_active` conflicts exit as successful no-ops;
+unverified ownership fails before generation and leaves recovery to the queue.
+This adds one heartbeat request per generation attempt (with the existing
+bounded transport retries), not a faster polling loop. Earlier checkout/setup
+is not interrupted, and supersession after that check still relies on the
+ordinary-review one-minute heartbeat plus request/termination time. Oversized
+generation retains its post-generation finalization check rather than an active
+stop loop. Finalization and publication fences remain unchanged. The [startup proof](proof/exact-review-start/README.md)
+records the isolated workflow/process boundary and its limits.
+Explicit command work and publication work bypass the delay.
 When pending depth reaches
 `EXACT_REVIEW_PENDING_SOFT_LIMIT` (600 by default), new recovery and scheduled
 feed work is shed; this threshold counts review work only, so publication
@@ -269,6 +280,13 @@ four concurrent size-8 batches. Canonical Worker publication removes that
 shared Git writer constraint, so production now admits 8 preparation
 batches (up to 64 publication members) while retaining the Durable Object's
 transactional SQLite ownership boundaries.
+
+Each batch now prepares at most two members concurrently. This changes only
+per-batch preparation: publication maximum 32, eight batch owners, review and
+worker budgets, and intake limits are unchanged. A quota observation still
+defers later members without charging their retry budgets; at most the two
+already-started members may have requests in flight. The controlled trial and
+rollback criteria are in [backlog recovery proof](proof/backlog-recovery/README.md).
 
 The durable control plane owns reset-aware GitHub credential circuits for both
 review authority reads and publication batching. The

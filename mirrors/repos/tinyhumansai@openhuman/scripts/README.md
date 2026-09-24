@@ -59,8 +59,7 @@ above.
   prompts, skills) distinct from the `debug/` runner directory.
 - **`check-*`** (outside `ci/`) — repo-level gates: `check-coverage-matrix.mjs`,
   `check-domain-e2e-coverage.mjs`, `check-pr-checklist.mjs`,
-  `check-kernel-floor.sh` (dependency-floor ratchet), `check-prompt-budget.sh`
-  (fixed-prefix byte ratchet, run in CI by `rust-quality`), `check-linux-tls-dependencies.sh`.
+  `check-kernel-floor.sh` (dependency-floor ratchet), `check-linux-tls-dependencies.sh`.
 - **`i18n-*`** — translation coverage and audit tools (`i18n-coverage.ts`,
   `i18n-find-english.ts`, `i18n-react-audit.ts`, behind `pnpm i18n:*`);
   `i18n-doc-scan.sh` scans the Chinese GitBook docs instead of the app.

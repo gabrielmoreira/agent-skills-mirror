@@ -53,10 +53,23 @@ ClawSweeper preserves the final error classification and lets the durable queue
 own any fresh review attempt. The repair lane's review/fix iteration budget is
 separate from transport recovery.
 
-On POSIX, the worker owns its Codex process group through cancellation and
-timeout cleanup. Repeated signals do not interrupt escalation, and a direct
-child's exit does not cancel cleanup of its descendants. The app-server worker
-also finishes group cleanup after completed or failed turns before it exits.
+On POSIX, the shared Codex spawn helper kills remaining group members when the
+direct child exits naturally, including descendants holding output pipes open.
+Requested termination retains the existing graceful interval and worker-owned
+final cleanup, including asynchronous errors after the leader exits. Result
+capture still waits for stdio to close. Repeated signals do not interrupt
+escalation, and the app-server worker also finishes group cleanup after
+completed or failed turns before it exits.
+
+The shared OpenClaw source setup script bounds only its network Codex tag fetch.
+Its default deadline is two minutes; the first present setting among
+`CLAWSWEEPER_OPENCLAW_CODEX_SOURCE_TIMEOUT_MS`,
+`CLAWSWEEPER_GH_COMMAND_TIMEOUT_MS`, and
+`CLAWSWEEPER_NETWORK_COMMAND_TIMEOUT_MS` overrides it. Invalid or unsupported
+timer values use the default. Both the composite Action and review runtime use
+this one fetch owner, which stops Git's process group before returning and leaves
+Git low-speed settings untouched. Existing cache, pin validation, and retry
+classification remain unchanged.
 
 A batch publisher hydrates only the complete record tuples named by its review
 artifacts, reconciles those selected tuples against current GitHub state, then

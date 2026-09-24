@@ -1,19 +1,15 @@
 ---
 name: seo-local
 description: >
-  Local SEO analysis covering Google Business Profile optimization, NAP
-  consistency, citation health, review signals, local schema markup,
-  location page quality, multi-location SEO, and industry-specific
-  recommendations. Detects business type (brick-and-mortar, SAB, hybrid)
-  and industry vertical. Use when user says "local SEO", "Google Business
-  Profile", "GBP", "map pack", "local pack", "citations", "NAP
-  consistency", "service area", or "multi-location".
+  Audit local SEO, including Google Business Profile, NAP consistency,
+  citations, reviews, local schema, location pages, and multi-location
+  structure.
 user-invocable: true
 argument-hint: "[url]"
 license: MIT
 metadata:
   author: AgriciDaniel
-  version: "2.3.1"
+  version: "2.4.0"
   category: seo
 ---
 
@@ -88,7 +84,7 @@ Primary category is the **single most important local pack factor** (Whitespark 
 - Evidence of secondary categories (optimal: 4 additional per BrightLocal)
 - GBP posts presence (no direct ranking impact per WebFX, but triggers Post Justifications)
 - Photos/video evidence (45% more direction requests with photos, Agency Jet)
-- Q&A content: check whether GBP Q&A is available for the business category/region; optimize questions and owner answers when available
+- Q&A content: Google discontinued its Q&A API on 2025-11-03 and public Q&A is reportedly being phased out; answer common questions on the website and in the business description instead, and treat any remaining public Q&A as a bonus
 - Google Verified badge eligibility (replaced Guaranteed/Screened in Oct 2025)
 - GBP link URL strategy: do NOT link to strongest website page (Sterling Sky Diversity Update -- risks suppressing organic rankings)
 - Business hours visibility on page (businesses open at search time rank higher, factor #5)
@@ -167,6 +163,7 @@ Citations declining for traditional pack rankings but **3 of top 5 AI visibility
 - Bing Places awareness (powers ChatGPT, Copilot, Alexa -- recommend claiming and optimizing)
 - Industry-specific directory recommendations: load `../seo/references/local-schema-types.md` for per-vertical citation sources
 - Data aggregator awareness: Data Axle, Foursquare, Neustar/TransUnion (recommend submission for downstream distribution)
+- Regional Search units: in the EEA, Google's aggregator and supplier units also cover local business queries since 2026-09-18; Türkiye has separate places-site features (see `seo-hreflang` section 5c); note this for businesses serving those markets
 
 **Scoring guide:**
 - Full: Consistent NAP across page/schema, Tier 1 citations detected, industry directories present

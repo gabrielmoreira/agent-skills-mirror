@@ -16,12 +16,13 @@
 ## Local Contracts
 
 - Automatic naming reads scoped plugin config through the active chat agent.
-- Automatic naming runs after the monologue completes, so it cannot delay the Main Model.
+- Automatic naming is scheduled from `monologue_end` as a background task; never await its Utility Model request in the main inference path.
 - Utility Model input contains the current name and user messages only; assistant work and tool results are excluded.
 - The complete naming prompt must remain within 70% of the effective Utility Model context window, preserving the newest user context when trimming is required.
-- `once` names only unnamed user chats from their first user message; `always` considers the latest user message plus recent user context.
+- `always` is the default and considers the latest user message plus recent user context; `once` names only unnamed user chats from their first user message. Preserve explicitly saved modes.
 - Generated names are concise and normalized before persistence.
 - Renaming a parallel child updates both its context name and sidebar label.
+- Automatic naming skips delegated child contexts; their labels belong to `call_subordinate` or an explicit rename action, in both direct and parallel execution.
 - Manual task renames update both scheduler metadata and the task context name.
 - `/rename auto` uses the same generation and persistence helpers as the rename modal; any other non-empty argument is saved as the custom chat name.
 

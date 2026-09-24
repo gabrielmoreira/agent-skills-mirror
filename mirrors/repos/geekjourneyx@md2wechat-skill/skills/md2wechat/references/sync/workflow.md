@@ -5,7 +5,7 @@
 ## 准备
 
 1. 已取得本次未变更原稿的成功准备结果时直接复用；否则通过 `md2wechat capabilities --json` 确认 `sync prepare` 可用，再运行 `md2wechat sync prepare <article.md> --output <new-dir> --json`。失败先处理返回的问题，不开始远端写入。`action_required` 只表示本地准备完成。
-2. 读取结果中的 `title`、`body_html`、`images`、`heading_levels`，以及目标平台说明：`md2wechat skills read md2wechat references/sync/<platform>.md`，其中 `<platform>` 为 `zhihu`、`csdn` 或 `toutiao`。只读本次目标。
+2. 读取结果中的 `title`、`body_html`、`images`、`heading_levels`，以及目标平台说明：`md2wechat skills read md2wechat references/sync/<platform>.md`，其中 `<platform>` 为 `zhihu`、`csdn`、`toutiao` 或 `tencent-cloud`。只读本次目标。
 3. 按平台说明检查输入限制。标题计数不确定时，在上传正文前填写标题并检查页面校验；不自动截断或改写原稿。
 4. 按下方“浏览器选择”确认现有会话、页面读取、正常 HTML 粘贴；有图片时还需文件上传。
 5. 核对指定账号。已有本次草稿地址时恢复同稿；新开标签从当前列表取得。账号或草稿归属不明时先澄清。
@@ -23,6 +23,8 @@
 切换工具后先恢复并核对原草稿，再执行未完成步骤；保存结果不明时按下方恢复流程检查，不重新创建。两种工具共用同一平台说明和核验要求。
 
 ## 写入
+
+先确认目标平台是否规定不同的图文写入顺序。腾讯云按 `tencent-cloud.md` 先粘贴正文、再逐处原生插图，跳过下方图片地址回填与整体替换步骤；其余平台沿用下方流程。
 
 控件必须在正文区域或当前弹层内唯一匹配；结构不符时停止该步骤，不猜位置。不同工具句柄须指向同一草稿。
 

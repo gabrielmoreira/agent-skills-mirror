@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `tinyplex/tinybase` — 26 default patterns, 0 followed patterns, 6 file(s) materialized.
+Mirror of `tinyplex/tinybase` — 26 default patterns, 0 followed patterns, 12 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `tinyplex/tinybase` — 26 default patterns, 0 followed patterns, 6 fi
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 6 |
+| Files         | 12 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,11 +60,17 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`docs/llms.txt`](docs/llms.txt) |
-| 2 | ✓ | [`docs/skills/build-with-tinybase/SKILL.md`](docs/skills/build-with-tinybase/SKILL.md) |
-| 3 | ✓ | [`site/extras/llms.txt`](site/extras/llms.txt) |
-| 4 | ✓ | [`skills/build-with-tinybase/agents/openai.yaml`](skills/build-with-tinybase/agents/openai.yaml) |
-| 5 | ✓ | [`skills/build-with-tinybase/references/architecture.md`](skills/build-with-tinybase/references/architecture.md) |
-| 6 | ✓ | [`skills/build-with-tinybase/SKILL.md`](skills/build-with-tinybase/SKILL.md) |
+| 2 | ✓ | [`docs/skills/build-with-tinybase/references/durable-objects.md`](docs/skills/build-with-tinybase/references/durable-objects.md) |
+| 3 | ✓ | [`docs/skills/build-with-tinybase/references/import-paths.md`](docs/skills/build-with-tinybase/references/import-paths.md) |
+| 4 | ✓ | [`docs/skills/build-with-tinybase/references/lifecycle.md`](docs/skills/build-with-tinybase/references/lifecycle.md) |
+| 5 | ✓ | [`docs/skills/build-with-tinybase/SKILL.md`](docs/skills/build-with-tinybase/SKILL.md) |
+| 6 | ✓ | [`site/extras/llms.txt`](site/extras/llms.txt) |
+| 7 | ✓ | [`skills/build-with-tinybase/agents/openai.yaml`](skills/build-with-tinybase/agents/openai.yaml) |
+| 8 | ✓ | [`skills/build-with-tinybase/references/architecture.md`](skills/build-with-tinybase/references/architecture.md) |
+| 9 | ✓ | [`skills/build-with-tinybase/references/durable-objects.md`](skills/build-with-tinybase/references/durable-objects.md) |
+| 10 | ✓ | [`skills/build-with-tinybase/references/import-paths.md`](skills/build-with-tinybase/references/import-paths.md) |
+| 11 | ✓ | [`skills/build-with-tinybase/references/lifecycle.md`](skills/build-with-tinybase/references/lifecycle.md) |
+| 12 | ✓ | [`skills/build-with-tinybase/SKILL.md`](skills/build-with-tinybase/SKILL.md) |
 
 ---
 

@@ -12,7 +12,7 @@ argument-hint: "[url]"
 license: MIT
 metadata:
   author: AgriciDaniel
-  version: "2.3.1"
+  version: "2.4.0"
   category: seo
 ---
 
@@ -201,10 +201,12 @@ When DataForSEO MCP is available, enhance the image audit with competitive data.
 
 ### `/seo images serp <keyword>`
 
-Cross-reference on-page images with Google Images SERP rankings.
+Cross-reference on-page images with the image results visible in the Google SERP.
 
 **Workflow:**
-1. Fetch Google Images results via `serp_google_images_live_advanced` (depth=100)
+1. The pinned DataForSEO MCP server (2.8.10) has no Google Images SERP tool.
+   Use the `images` element of `serp_organic_live_advanced` (depth=100) when the
+   SERP has one, and say plainly when no image SERP data is available
 2. Extract: top domains, image types, alt text patterns
 3. Output competitor image SERP landscape
 

@@ -19,6 +19,7 @@
 - Keep the Xpra server, client modules, and GTK introspection runtime present as one compatible stack; Xpra shadow sessions import all three even when users connect only through HTML5.
 - Route APT commands through `system_packages.run_runtime_apt` so existing Kali containers repair from the build's snapshot. Preserve the installed Xpra component version. If GTK needs a missing ATK typelib, align ATK's version-locked libraries and any installed optional components with the build's pinned snapshot version; do not fetch dependencies from rolling.
 - Keep desktop state injected into prompts accurate and bounded.
+- Rename open LibreOffice documents through native Save As so unsaved edits and subsequent WebUI/native saves follow the new path. `helpers/rename_office_document.py` runs with system Python/UNO, connects to the existing profile through a local named pipe, and matches the full document URL; never select a document by basename alone. Retain the document's format/filter and encryption properties, and disallow target overwrite. Closed documents retain filesystem rename behavior.
 - Do not expose desktop routes without the expected auth protections.
 - Keep Desktop host visibility tied to an attached modal or canvas host; modal cleanup may preserve the iframe in keepalive, but must not leave stale modal mode behind.
 - Keep LibreOffice Writer as the default handler for Markdown and plain text files; keep Agent Zero Editor available as a secondary Open With target through the desktop intent bridge.

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `geekjourneyx/md2wechat-skill` — 26 default patterns, 0 followed patterns, 9 file(s) materialized.
+Mirror of `geekjourneyx/md2wechat-skill` — 26 default patterns, 0 followed patterns, 16 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `geekjourneyx/md2wechat-skill` — 26 default patterns, 0 followed pat
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 9 |
+| Files         | 16 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -64,10 +64,17 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 3 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 | 4 | ✓ | [`platforms/openclaw/md2wechat/SKILL.md`](platforms/openclaw/md2wechat/SKILL.md) |
 | 5 | ✓ | [`skills/md2wechat/references/sync/csdn.md`](skills/md2wechat/references/sync/csdn.md) |
-| 6 | ✓ | [`skills/md2wechat/references/sync/toutiao.md`](skills/md2wechat/references/sync/toutiao.md) |
-| 7 | ✓ | [`skills/md2wechat/references/sync/workflow.md`](skills/md2wechat/references/sync/workflow.md) |
-| 8 | ✓ | [`skills/md2wechat/references/sync/zhihu.md`](skills/md2wechat/references/sync/zhihu.md) |
-| 9 | ✓ | [`skills/md2wechat/SKILL.md`](skills/md2wechat/SKILL.md) |
+| 6 | ✓ | [`skills/md2wechat/references/sync/tencent-cloud.md`](skills/md2wechat/references/sync/tencent-cloud.md) |
+| 7 | ✓ | [`skills/md2wechat/references/sync/toutiao.md`](skills/md2wechat/references/sync/toutiao.md) |
+| 8 | ✓ | [`skills/md2wechat/references/sync/workflow.md`](skills/md2wechat/references/sync/workflow.md) |
+| 9 | ✓ | [`skills/md2wechat/references/sync/zhihu.md`](skills/md2wechat/references/sync/zhihu.md) |
+| 10 | ✓ | [`skills/md2wechat/references/writing/baidu-baike.md`](skills/md2wechat/references/writing/baidu-baike.md) |
+| 11 | ✓ | [`skills/md2wechat/references/writing/forms.md`](skills/md2wechat/references/writing/forms.md) |
+| 12 | ✓ | [`skills/md2wechat/references/writing/platforms.md`](skills/md2wechat/references/writing/platforms.md) |
+| 13 | ✓ | [`skills/md2wechat/references/writing/search-strategies.md`](skills/md2wechat/references/writing/search-strategies.md) |
+| 14 | ✓ | [`skills/md2wechat/references/writing/toutiao-baike.md`](skills/md2wechat/references/writing/toutiao-baike.md) |
+| 15 | ✓ | [`skills/md2wechat/references/writing/workflow.md`](skills/md2wechat/references/writing/workflow.md) |
+| 16 | ✓ | [`skills/md2wechat/SKILL.md`](skills/md2wechat/SKILL.md) |
 
 ---
 

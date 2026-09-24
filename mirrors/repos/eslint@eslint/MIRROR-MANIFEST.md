@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `eslint/eslint` — 26 default patterns, 1 followed patterns, 3 file(s) materialized.
+Mirror of `eslint/eslint` — 26 default patterns, 1 followed patterns, 2 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `eslint/eslint` — 26 default patterns, 1 followed patterns, 3 file(s
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 3 |
+| Files         | 2 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,8 +60,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 3 | → | [`docs/src/contribute/ai-policy.md`](docs/src/contribute/ai-policy.md) |
+| 2 | → | [`docs/src/contribute/ai-policy.md`](docs/src/contribute/ai-policy.md) |
 
 ---
 

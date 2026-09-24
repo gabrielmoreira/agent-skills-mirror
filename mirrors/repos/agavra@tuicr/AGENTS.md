@@ -120,6 +120,7 @@ src/
     ├── status_bar.rs    # Header, status bar, command line rendering
     ├── help_popup.rs    # Help overlay (? key)
     ├── summary_popup.rs # :summary view of pending local-draft comments
+    ├── theme_picker.rs  # :theme runtime picker modal (live preview, / filter)
     ├── comment_panel.rs # Comment input dialog, confirm dialog
     └── styles.rs        # Color constants and style helper functions
 ```
@@ -188,6 +189,7 @@ Repository-managed agent integrations:
 - `Confirm` - Y/N confirmation dialog
 - `CommitSelect` - selecting commits to review
 - `VisualSelect` - visual mode for range comments
+- `ThemePicker` - runtime `:theme` picker (`src/app/theme_picker.rs`, `src/ui/theme_picker.rs`): `j`/`k` live-previews a theme by reassigning `App::theme` (cheap, no extra invalidation — every renderer reads `&app.theme` per frame); `/` opens a filter draft (same shape as the file tree's `i`/`e`/`/` prompts, committed on `Enter`, discarded on `Esc` without touching the applied filter); `Enter` on the picker keeps the preview for the session — like every other `:set`/`:vim`/`:wrap` toggle it never writes `config.toml`; `Esc` on the picker reverts to a `Theme` snapshot taken on entry (`Theme` has a manual `Clone` impl since its `OnceLock` syntax-highlighter cache isn't `Clone`) `:theme <name>` applies directly without opening the picker.
 
 **ReviewSession** (`src/model/review.rs`):
 

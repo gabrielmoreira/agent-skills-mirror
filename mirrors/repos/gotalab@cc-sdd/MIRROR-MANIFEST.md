@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `gotalab/cc-sdd` — 26 default patterns, 0 followed patterns, 159 file(s) materialized.
+Mirror of `gotalab/cc-sdd` — 26 default patterns, 0 followed patterns, 177 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `gotalab/cc-sdd` — 26 default patterns, 0 followed patterns, 159 fil
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 159 |
+| Files         | 177 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -141,83 +141,101 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 80 | ✓ | [`tools/cc-sdd/templates/agents/cursor-skills/skills/kiro-validate-impl/SKILL.md`](tools/cc-sdd/templates/agents/cursor-skills/skills/kiro-validate-impl/SKILL.md) |
 | 81 | ✓ | [`tools/cc-sdd/templates/agents/cursor-skills/skills/kiro-verify-completion/SKILL.md`](tools/cc-sdd/templates/agents/cursor-skills/skills/kiro-verify-completion/SKILL.md) |
 | 82 | ✓ | [`tools/cc-sdd/templates/agents/cursor/docs/AGENTS.md`](tools/cc-sdd/templates/agents/cursor/docs/AGENTS.md) |
-| 83 | ✓ | [`tools/cc-sdd/templates/agents/gemini-cli-skills/docs/GEMINI.md`](tools/cc-sdd/templates/agents/gemini-cli-skills/docs/GEMINI.md) |
-| 84 | ✓ | [`tools/cc-sdd/templates/agents/gemini-cli-skills/skills/kiro-debug/SKILL.md`](tools/cc-sdd/templates/agents/gemini-cli-skills/skills/kiro-debug/SKILL.md) |
-| 85 | ✓ | [`tools/cc-sdd/templates/agents/gemini-cli-skills/skills/kiro-discovery/SKILL.md`](tools/cc-sdd/templates/agents/gemini-cli-skills/skills/kiro-discovery/SKILL.md) |
-| 86 | ✓ | [`tools/cc-sdd/templates/agents/gemini-cli-skills/skills/kiro-impl/SKILL.md`](tools/cc-sdd/templates/agents/gemini-cli-skills/skills/kiro-impl/SKILL.md) |
-| 87 | ✓ | [`tools/cc-sdd/templates/agents/gemini-cli-skills/skills/kiro-review/SKILL.md`](tools/cc-sdd/templates/agents/gemini-cli-skills/skills/kiro-review/SKILL.md) |
-| 88 | ✓ | [`tools/cc-sdd/templates/agents/gemini-cli-skills/skills/kiro-spec-batch/SKILL.md`](tools/cc-sdd/templates/agents/gemini-cli-skills/skills/kiro-spec-batch/SKILL.md) |
-| 89 | ✓ | [`tools/cc-sdd/templates/agents/gemini-cli-skills/skills/kiro-spec-design/SKILL.md`](tools/cc-sdd/templates/agents/gemini-cli-skills/skills/kiro-spec-design/SKILL.md) |
-| 90 | ✓ | [`tools/cc-sdd/templates/agents/gemini-cli-skills/skills/kiro-spec-init/SKILL.md`](tools/cc-sdd/templates/agents/gemini-cli-skills/skills/kiro-spec-init/SKILL.md) |
-| 91 | ✓ | [`tools/cc-sdd/templates/agents/gemini-cli-skills/skills/kiro-spec-quick/SKILL.md`](tools/cc-sdd/templates/agents/gemini-cli-skills/skills/kiro-spec-quick/SKILL.md) |
-| 92 | ✓ | [`tools/cc-sdd/templates/agents/gemini-cli-skills/skills/kiro-spec-requirements/SKILL.md`](tools/cc-sdd/templates/agents/gemini-cli-skills/skills/kiro-spec-requirements/SKILL.md) |
-| 93 | ✓ | [`tools/cc-sdd/templates/agents/gemini-cli-skills/skills/kiro-spec-status/SKILL.md`](tools/cc-sdd/templates/agents/gemini-cli-skills/skills/kiro-spec-status/SKILL.md) |
-| 94 | ✓ | [`tools/cc-sdd/templates/agents/gemini-cli-skills/skills/kiro-spec-tasks/SKILL.md`](tools/cc-sdd/templates/agents/gemini-cli-skills/skills/kiro-spec-tasks/SKILL.md) |
-| 95 | ✓ | [`tools/cc-sdd/templates/agents/gemini-cli-skills/skills/kiro-steering-custom/SKILL.md`](tools/cc-sdd/templates/agents/gemini-cli-skills/skills/kiro-steering-custom/SKILL.md) |
-| 96 | ✓ | [`tools/cc-sdd/templates/agents/gemini-cli-skills/skills/kiro-steering/SKILL.md`](tools/cc-sdd/templates/agents/gemini-cli-skills/skills/kiro-steering/SKILL.md) |
-| 97 | ✓ | [`tools/cc-sdd/templates/agents/gemini-cli-skills/skills/kiro-validate-design/SKILL.md`](tools/cc-sdd/templates/agents/gemini-cli-skills/skills/kiro-validate-design/SKILL.md) |
-| 98 | ✓ | [`tools/cc-sdd/templates/agents/gemini-cli-skills/skills/kiro-validate-gap/SKILL.md`](tools/cc-sdd/templates/agents/gemini-cli-skills/skills/kiro-validate-gap/SKILL.md) |
-| 99 | ✓ | [`tools/cc-sdd/templates/agents/gemini-cli-skills/skills/kiro-validate-impl/SKILL.md`](tools/cc-sdd/templates/agents/gemini-cli-skills/skills/kiro-validate-impl/SKILL.md) |
-| 100 | ✓ | [`tools/cc-sdd/templates/agents/gemini-cli-skills/skills/kiro-verify-completion/SKILL.md`](tools/cc-sdd/templates/agents/gemini-cli-skills/skills/kiro-verify-completion/SKILL.md) |
-| 101 | ✓ | [`tools/cc-sdd/templates/agents/gemini-cli/docs/GEMINI.md`](tools/cc-sdd/templates/agents/gemini-cli/docs/GEMINI.md) |
-| 102 | ✓ | [`tools/cc-sdd/templates/agents/github-copilot-skills/docs/AGENTS.md`](tools/cc-sdd/templates/agents/github-copilot-skills/docs/AGENTS.md) |
-| 103 | ✓ | [`tools/cc-sdd/templates/agents/github-copilot-skills/skills/kiro-debug/SKILL.md`](tools/cc-sdd/templates/agents/github-copilot-skills/skills/kiro-debug/SKILL.md) |
-| 104 | ✓ | [`tools/cc-sdd/templates/agents/github-copilot-skills/skills/kiro-discovery/SKILL.md`](tools/cc-sdd/templates/agents/github-copilot-skills/skills/kiro-discovery/SKILL.md) |
-| 105 | ✓ | [`tools/cc-sdd/templates/agents/github-copilot-skills/skills/kiro-impl/SKILL.md`](tools/cc-sdd/templates/agents/github-copilot-skills/skills/kiro-impl/SKILL.md) |
-| 106 | ✓ | [`tools/cc-sdd/templates/agents/github-copilot-skills/skills/kiro-review/SKILL.md`](tools/cc-sdd/templates/agents/github-copilot-skills/skills/kiro-review/SKILL.md) |
-| 107 | ✓ | [`tools/cc-sdd/templates/agents/github-copilot-skills/skills/kiro-spec-batch/SKILL.md`](tools/cc-sdd/templates/agents/github-copilot-skills/skills/kiro-spec-batch/SKILL.md) |
-| 108 | ✓ | [`tools/cc-sdd/templates/agents/github-copilot-skills/skills/kiro-spec-design/SKILL.md`](tools/cc-sdd/templates/agents/github-copilot-skills/skills/kiro-spec-design/SKILL.md) |
-| 109 | ✓ | [`tools/cc-sdd/templates/agents/github-copilot-skills/skills/kiro-spec-init/SKILL.md`](tools/cc-sdd/templates/agents/github-copilot-skills/skills/kiro-spec-init/SKILL.md) |
-| 110 | ✓ | [`tools/cc-sdd/templates/agents/github-copilot-skills/skills/kiro-spec-quick/SKILL.md`](tools/cc-sdd/templates/agents/github-copilot-skills/skills/kiro-spec-quick/SKILL.md) |
-| 111 | ✓ | [`tools/cc-sdd/templates/agents/github-copilot-skills/skills/kiro-spec-requirements/SKILL.md`](tools/cc-sdd/templates/agents/github-copilot-skills/skills/kiro-spec-requirements/SKILL.md) |
-| 112 | ✓ | [`tools/cc-sdd/templates/agents/github-copilot-skills/skills/kiro-spec-status/SKILL.md`](tools/cc-sdd/templates/agents/github-copilot-skills/skills/kiro-spec-status/SKILL.md) |
-| 113 | ✓ | [`tools/cc-sdd/templates/agents/github-copilot-skills/skills/kiro-spec-tasks/SKILL.md`](tools/cc-sdd/templates/agents/github-copilot-skills/skills/kiro-spec-tasks/SKILL.md) |
-| 114 | ✓ | [`tools/cc-sdd/templates/agents/github-copilot-skills/skills/kiro-steering-custom/SKILL.md`](tools/cc-sdd/templates/agents/github-copilot-skills/skills/kiro-steering-custom/SKILL.md) |
-| 115 | ✓ | [`tools/cc-sdd/templates/agents/github-copilot-skills/skills/kiro-steering/SKILL.md`](tools/cc-sdd/templates/agents/github-copilot-skills/skills/kiro-steering/SKILL.md) |
-| 116 | ✓ | [`tools/cc-sdd/templates/agents/github-copilot-skills/skills/kiro-validate-design/SKILL.md`](tools/cc-sdd/templates/agents/github-copilot-skills/skills/kiro-validate-design/SKILL.md) |
-| 117 | ✓ | [`tools/cc-sdd/templates/agents/github-copilot-skills/skills/kiro-validate-gap/SKILL.md`](tools/cc-sdd/templates/agents/github-copilot-skills/skills/kiro-validate-gap/SKILL.md) |
-| 118 | ✓ | [`tools/cc-sdd/templates/agents/github-copilot-skills/skills/kiro-validate-impl/SKILL.md`](tools/cc-sdd/templates/agents/github-copilot-skills/skills/kiro-validate-impl/SKILL.md) |
-| 119 | ✓ | [`tools/cc-sdd/templates/agents/github-copilot-skills/skills/kiro-verify-completion/SKILL.md`](tools/cc-sdd/templates/agents/github-copilot-skills/skills/kiro-verify-completion/SKILL.md) |
-| 120 | ✓ | [`tools/cc-sdd/templates/agents/github-copilot/docs/AGENTS.md`](tools/cc-sdd/templates/agents/github-copilot/docs/AGENTS.md) |
-| 121 | ✓ | [`tools/cc-sdd/templates/agents/opencode-agent/docs/AGENTS.md`](tools/cc-sdd/templates/agents/opencode-agent/docs/AGENTS.md) |
-| 122 | ✓ | [`tools/cc-sdd/templates/agents/opencode-skills/docs/AGENTS.md`](tools/cc-sdd/templates/agents/opencode-skills/docs/AGENTS.md) |
-| 123 | ✓ | [`tools/cc-sdd/templates/agents/opencode-skills/skills/kiro-debug/SKILL.md`](tools/cc-sdd/templates/agents/opencode-skills/skills/kiro-debug/SKILL.md) |
-| 124 | ✓ | [`tools/cc-sdd/templates/agents/opencode-skills/skills/kiro-discovery/SKILL.md`](tools/cc-sdd/templates/agents/opencode-skills/skills/kiro-discovery/SKILL.md) |
-| 125 | ✓ | [`tools/cc-sdd/templates/agents/opencode-skills/skills/kiro-impl/SKILL.md`](tools/cc-sdd/templates/agents/opencode-skills/skills/kiro-impl/SKILL.md) |
-| 126 | ✓ | [`tools/cc-sdd/templates/agents/opencode-skills/skills/kiro-review/SKILL.md`](tools/cc-sdd/templates/agents/opencode-skills/skills/kiro-review/SKILL.md) |
-| 127 | ✓ | [`tools/cc-sdd/templates/agents/opencode-skills/skills/kiro-spec-batch/SKILL.md`](tools/cc-sdd/templates/agents/opencode-skills/skills/kiro-spec-batch/SKILL.md) |
-| 128 | ✓ | [`tools/cc-sdd/templates/agents/opencode-skills/skills/kiro-spec-design/SKILL.md`](tools/cc-sdd/templates/agents/opencode-skills/skills/kiro-spec-design/SKILL.md) |
-| 129 | ✓ | [`tools/cc-sdd/templates/agents/opencode-skills/skills/kiro-spec-init/SKILL.md`](tools/cc-sdd/templates/agents/opencode-skills/skills/kiro-spec-init/SKILL.md) |
-| 130 | ✓ | [`tools/cc-sdd/templates/agents/opencode-skills/skills/kiro-spec-quick/SKILL.md`](tools/cc-sdd/templates/agents/opencode-skills/skills/kiro-spec-quick/SKILL.md) |
-| 131 | ✓ | [`tools/cc-sdd/templates/agents/opencode-skills/skills/kiro-spec-requirements/SKILL.md`](tools/cc-sdd/templates/agents/opencode-skills/skills/kiro-spec-requirements/SKILL.md) |
-| 132 | ✓ | [`tools/cc-sdd/templates/agents/opencode-skills/skills/kiro-spec-status/SKILL.md`](tools/cc-sdd/templates/agents/opencode-skills/skills/kiro-spec-status/SKILL.md) |
-| 133 | ✓ | [`tools/cc-sdd/templates/agents/opencode-skills/skills/kiro-spec-tasks/SKILL.md`](tools/cc-sdd/templates/agents/opencode-skills/skills/kiro-spec-tasks/SKILL.md) |
-| 134 | ✓ | [`tools/cc-sdd/templates/agents/opencode-skills/skills/kiro-steering-custom/SKILL.md`](tools/cc-sdd/templates/agents/opencode-skills/skills/kiro-steering-custom/SKILL.md) |
-| 135 | ✓ | [`tools/cc-sdd/templates/agents/opencode-skills/skills/kiro-steering/SKILL.md`](tools/cc-sdd/templates/agents/opencode-skills/skills/kiro-steering/SKILL.md) |
-| 136 | ✓ | [`tools/cc-sdd/templates/agents/opencode-skills/skills/kiro-validate-design/SKILL.md`](tools/cc-sdd/templates/agents/opencode-skills/skills/kiro-validate-design/SKILL.md) |
-| 137 | ✓ | [`tools/cc-sdd/templates/agents/opencode-skills/skills/kiro-validate-gap/SKILL.md`](tools/cc-sdd/templates/agents/opencode-skills/skills/kiro-validate-gap/SKILL.md) |
-| 138 | ✓ | [`tools/cc-sdd/templates/agents/opencode-skills/skills/kiro-validate-impl/SKILL.md`](tools/cc-sdd/templates/agents/opencode-skills/skills/kiro-validate-impl/SKILL.md) |
-| 139 | ✓ | [`tools/cc-sdd/templates/agents/opencode-skills/skills/kiro-verify-completion/SKILL.md`](tools/cc-sdd/templates/agents/opencode-skills/skills/kiro-verify-completion/SKILL.md) |
-| 140 | ✓ | [`tools/cc-sdd/templates/agents/opencode/docs/AGENTS.md`](tools/cc-sdd/templates/agents/opencode/docs/AGENTS.md) |
-| 141 | ✓ | [`tools/cc-sdd/templates/agents/windsurf-skills/docs/AGENTS.md`](tools/cc-sdd/templates/agents/windsurf-skills/docs/AGENTS.md) |
-| 142 | ✓ | [`tools/cc-sdd/templates/agents/windsurf-skills/skills/kiro-debug/SKILL.md`](tools/cc-sdd/templates/agents/windsurf-skills/skills/kiro-debug/SKILL.md) |
-| 143 | ✓ | [`tools/cc-sdd/templates/agents/windsurf-skills/skills/kiro-discovery/SKILL.md`](tools/cc-sdd/templates/agents/windsurf-skills/skills/kiro-discovery/SKILL.md) |
-| 144 | ✓ | [`tools/cc-sdd/templates/agents/windsurf-skills/skills/kiro-impl/SKILL.md`](tools/cc-sdd/templates/agents/windsurf-skills/skills/kiro-impl/SKILL.md) |
-| 145 | ✓ | [`tools/cc-sdd/templates/agents/windsurf-skills/skills/kiro-review/SKILL.md`](tools/cc-sdd/templates/agents/windsurf-skills/skills/kiro-review/SKILL.md) |
-| 146 | ✓ | [`tools/cc-sdd/templates/agents/windsurf-skills/skills/kiro-spec-batch/SKILL.md`](tools/cc-sdd/templates/agents/windsurf-skills/skills/kiro-spec-batch/SKILL.md) |
-| 147 | ✓ | [`tools/cc-sdd/templates/agents/windsurf-skills/skills/kiro-spec-design/SKILL.md`](tools/cc-sdd/templates/agents/windsurf-skills/skills/kiro-spec-design/SKILL.md) |
-| 148 | ✓ | [`tools/cc-sdd/templates/agents/windsurf-skills/skills/kiro-spec-init/SKILL.md`](tools/cc-sdd/templates/agents/windsurf-skills/skills/kiro-spec-init/SKILL.md) |
-| 149 | ✓ | [`tools/cc-sdd/templates/agents/windsurf-skills/skills/kiro-spec-quick/SKILL.md`](tools/cc-sdd/templates/agents/windsurf-skills/skills/kiro-spec-quick/SKILL.md) |
-| 150 | ✓ | [`tools/cc-sdd/templates/agents/windsurf-skills/skills/kiro-spec-requirements/SKILL.md`](tools/cc-sdd/templates/agents/windsurf-skills/skills/kiro-spec-requirements/SKILL.md) |
-| 151 | ✓ | [`tools/cc-sdd/templates/agents/windsurf-skills/skills/kiro-spec-status/SKILL.md`](tools/cc-sdd/templates/agents/windsurf-skills/skills/kiro-spec-status/SKILL.md) |
-| 152 | ✓ | [`tools/cc-sdd/templates/agents/windsurf-skills/skills/kiro-spec-tasks/SKILL.md`](tools/cc-sdd/templates/agents/windsurf-skills/skills/kiro-spec-tasks/SKILL.md) |
-| 153 | ✓ | [`tools/cc-sdd/templates/agents/windsurf-skills/skills/kiro-steering-custom/SKILL.md`](tools/cc-sdd/templates/agents/windsurf-skills/skills/kiro-steering-custom/SKILL.md) |
-| 154 | ✓ | [`tools/cc-sdd/templates/agents/windsurf-skills/skills/kiro-steering/SKILL.md`](tools/cc-sdd/templates/agents/windsurf-skills/skills/kiro-steering/SKILL.md) |
-| 155 | ✓ | [`tools/cc-sdd/templates/agents/windsurf-skills/skills/kiro-validate-design/SKILL.md`](tools/cc-sdd/templates/agents/windsurf-skills/skills/kiro-validate-design/SKILL.md) |
-| 156 | ✓ | [`tools/cc-sdd/templates/agents/windsurf-skills/skills/kiro-validate-gap/SKILL.md`](tools/cc-sdd/templates/agents/windsurf-skills/skills/kiro-validate-gap/SKILL.md) |
-| 157 | ✓ | [`tools/cc-sdd/templates/agents/windsurf-skills/skills/kiro-validate-impl/SKILL.md`](tools/cc-sdd/templates/agents/windsurf-skills/skills/kiro-validate-impl/SKILL.md) |
-| 158 | ✓ | [`tools/cc-sdd/templates/agents/windsurf-skills/skills/kiro-verify-completion/SKILL.md`](tools/cc-sdd/templates/agents/windsurf-skills/skills/kiro-verify-completion/SKILL.md) |
-| 159 | ✓ | [`tools/cc-sdd/templates/agents/windsurf/docs/AGENTS.md`](tools/cc-sdd/templates/agents/windsurf/docs/AGENTS.md) |
+| 83 | ✓ | [`tools/cc-sdd/templates/agents/devin-skills/docs/AGENTS.md`](tools/cc-sdd/templates/agents/devin-skills/docs/AGENTS.md) |
+| 84 | ✓ | [`tools/cc-sdd/templates/agents/devin-skills/skills/kiro-debug/SKILL.md`](tools/cc-sdd/templates/agents/devin-skills/skills/kiro-debug/SKILL.md) |
+| 85 | ✓ | [`tools/cc-sdd/templates/agents/devin-skills/skills/kiro-discovery/SKILL.md`](tools/cc-sdd/templates/agents/devin-skills/skills/kiro-discovery/SKILL.md) |
+| 86 | ✓ | [`tools/cc-sdd/templates/agents/devin-skills/skills/kiro-impl/SKILL.md`](tools/cc-sdd/templates/agents/devin-skills/skills/kiro-impl/SKILL.md) |
+| 87 | ✓ | [`tools/cc-sdd/templates/agents/devin-skills/skills/kiro-review/SKILL.md`](tools/cc-sdd/templates/agents/devin-skills/skills/kiro-review/SKILL.md) |
+| 88 | ✓ | [`tools/cc-sdd/templates/agents/devin-skills/skills/kiro-spec-batch/SKILL.md`](tools/cc-sdd/templates/agents/devin-skills/skills/kiro-spec-batch/SKILL.md) |
+| 89 | ✓ | [`tools/cc-sdd/templates/agents/devin-skills/skills/kiro-spec-design/SKILL.md`](tools/cc-sdd/templates/agents/devin-skills/skills/kiro-spec-design/SKILL.md) |
+| 90 | ✓ | [`tools/cc-sdd/templates/agents/devin-skills/skills/kiro-spec-init/SKILL.md`](tools/cc-sdd/templates/agents/devin-skills/skills/kiro-spec-init/SKILL.md) |
+| 91 | ✓ | [`tools/cc-sdd/templates/agents/devin-skills/skills/kiro-spec-quick/SKILL.md`](tools/cc-sdd/templates/agents/devin-skills/skills/kiro-spec-quick/SKILL.md) |
+| 92 | ✓ | [`tools/cc-sdd/templates/agents/devin-skills/skills/kiro-spec-requirements/SKILL.md`](tools/cc-sdd/templates/agents/devin-skills/skills/kiro-spec-requirements/SKILL.md) |
+| 93 | ✓ | [`tools/cc-sdd/templates/agents/devin-skills/skills/kiro-spec-status/SKILL.md`](tools/cc-sdd/templates/agents/devin-skills/skills/kiro-spec-status/SKILL.md) |
+| 94 | ✓ | [`tools/cc-sdd/templates/agents/devin-skills/skills/kiro-spec-tasks/SKILL.md`](tools/cc-sdd/templates/agents/devin-skills/skills/kiro-spec-tasks/SKILL.md) |
+| 95 | ✓ | [`tools/cc-sdd/templates/agents/devin-skills/skills/kiro-steering-custom/SKILL.md`](tools/cc-sdd/templates/agents/devin-skills/skills/kiro-steering-custom/SKILL.md) |
+| 96 | ✓ | [`tools/cc-sdd/templates/agents/devin-skills/skills/kiro-steering/SKILL.md`](tools/cc-sdd/templates/agents/devin-skills/skills/kiro-steering/SKILL.md) |
+| 97 | ✓ | [`tools/cc-sdd/templates/agents/devin-skills/skills/kiro-validate-design/SKILL.md`](tools/cc-sdd/templates/agents/devin-skills/skills/kiro-validate-design/SKILL.md) |
+| 98 | ✓ | [`tools/cc-sdd/templates/agents/devin-skills/skills/kiro-validate-gap/SKILL.md`](tools/cc-sdd/templates/agents/devin-skills/skills/kiro-validate-gap/SKILL.md) |
+| 99 | ✓ | [`tools/cc-sdd/templates/agents/devin-skills/skills/kiro-validate-impl/SKILL.md`](tools/cc-sdd/templates/agents/devin-skills/skills/kiro-validate-impl/SKILL.md) |
+| 100 | ✓ | [`tools/cc-sdd/templates/agents/devin-skills/skills/kiro-verify-completion/SKILL.md`](tools/cc-sdd/templates/agents/devin-skills/skills/kiro-verify-completion/SKILL.md) |
+| 101 | ✓ | [`tools/cc-sdd/templates/agents/gemini-cli-skills/docs/GEMINI.md`](tools/cc-sdd/templates/agents/gemini-cli-skills/docs/GEMINI.md) |
+| 102 | ✓ | [`tools/cc-sdd/templates/agents/gemini-cli-skills/skills/kiro-debug/SKILL.md`](tools/cc-sdd/templates/agents/gemini-cli-skills/skills/kiro-debug/SKILL.md) |
+| 103 | ✓ | [`tools/cc-sdd/templates/agents/gemini-cli-skills/skills/kiro-discovery/SKILL.md`](tools/cc-sdd/templates/agents/gemini-cli-skills/skills/kiro-discovery/SKILL.md) |
+| 104 | ✓ | [`tools/cc-sdd/templates/agents/gemini-cli-skills/skills/kiro-impl/SKILL.md`](tools/cc-sdd/templates/agents/gemini-cli-skills/skills/kiro-impl/SKILL.md) |
+| 105 | ✓ | [`tools/cc-sdd/templates/agents/gemini-cli-skills/skills/kiro-review/SKILL.md`](tools/cc-sdd/templates/agents/gemini-cli-skills/skills/kiro-review/SKILL.md) |
+| 106 | ✓ | [`tools/cc-sdd/templates/agents/gemini-cli-skills/skills/kiro-spec-batch/SKILL.md`](tools/cc-sdd/templates/agents/gemini-cli-skills/skills/kiro-spec-batch/SKILL.md) |
+| 107 | ✓ | [`tools/cc-sdd/templates/agents/gemini-cli-skills/skills/kiro-spec-design/SKILL.md`](tools/cc-sdd/templates/agents/gemini-cli-skills/skills/kiro-spec-design/SKILL.md) |
+| 108 | ✓ | [`tools/cc-sdd/templates/agents/gemini-cli-skills/skills/kiro-spec-init/SKILL.md`](tools/cc-sdd/templates/agents/gemini-cli-skills/skills/kiro-spec-init/SKILL.md) |
+| 109 | ✓ | [`tools/cc-sdd/templates/agents/gemini-cli-skills/skills/kiro-spec-quick/SKILL.md`](tools/cc-sdd/templates/agents/gemini-cli-skills/skills/kiro-spec-quick/SKILL.md) |
+| 110 | ✓ | [`tools/cc-sdd/templates/agents/gemini-cli-skills/skills/kiro-spec-requirements/SKILL.md`](tools/cc-sdd/templates/agents/gemini-cli-skills/skills/kiro-spec-requirements/SKILL.md) |
+| 111 | ✓ | [`tools/cc-sdd/templates/agents/gemini-cli-skills/skills/kiro-spec-status/SKILL.md`](tools/cc-sdd/templates/agents/gemini-cli-skills/skills/kiro-spec-status/SKILL.md) |
+| 112 | ✓ | [`tools/cc-sdd/templates/agents/gemini-cli-skills/skills/kiro-spec-tasks/SKILL.md`](tools/cc-sdd/templates/agents/gemini-cli-skills/skills/kiro-spec-tasks/SKILL.md) |
+| 113 | ✓ | [`tools/cc-sdd/templates/agents/gemini-cli-skills/skills/kiro-steering-custom/SKILL.md`](tools/cc-sdd/templates/agents/gemini-cli-skills/skills/kiro-steering-custom/SKILL.md) |
+| 114 | ✓ | [`tools/cc-sdd/templates/agents/gemini-cli-skills/skills/kiro-steering/SKILL.md`](tools/cc-sdd/templates/agents/gemini-cli-skills/skills/kiro-steering/SKILL.md) |
+| 115 | ✓ | [`tools/cc-sdd/templates/agents/gemini-cli-skills/skills/kiro-validate-design/SKILL.md`](tools/cc-sdd/templates/agents/gemini-cli-skills/skills/kiro-validate-design/SKILL.md) |
+| 116 | ✓ | [`tools/cc-sdd/templates/agents/gemini-cli-skills/skills/kiro-validate-gap/SKILL.md`](tools/cc-sdd/templates/agents/gemini-cli-skills/skills/kiro-validate-gap/SKILL.md) |
+| 117 | ✓ | [`tools/cc-sdd/templates/agents/gemini-cli-skills/skills/kiro-validate-impl/SKILL.md`](tools/cc-sdd/templates/agents/gemini-cli-skills/skills/kiro-validate-impl/SKILL.md) |
+| 118 | ✓ | [`tools/cc-sdd/templates/agents/gemini-cli-skills/skills/kiro-verify-completion/SKILL.md`](tools/cc-sdd/templates/agents/gemini-cli-skills/skills/kiro-verify-completion/SKILL.md) |
+| 119 | ✓ | [`tools/cc-sdd/templates/agents/gemini-cli/docs/GEMINI.md`](tools/cc-sdd/templates/agents/gemini-cli/docs/GEMINI.md) |
+| 120 | ✓ | [`tools/cc-sdd/templates/agents/github-copilot-skills/docs/AGENTS.md`](tools/cc-sdd/templates/agents/github-copilot-skills/docs/AGENTS.md) |
+| 121 | ✓ | [`tools/cc-sdd/templates/agents/github-copilot-skills/skills/kiro-debug/SKILL.md`](tools/cc-sdd/templates/agents/github-copilot-skills/skills/kiro-debug/SKILL.md) |
+| 122 | ✓ | [`tools/cc-sdd/templates/agents/github-copilot-skills/skills/kiro-discovery/SKILL.md`](tools/cc-sdd/templates/agents/github-copilot-skills/skills/kiro-discovery/SKILL.md) |
+| 123 | ✓ | [`tools/cc-sdd/templates/agents/github-copilot-skills/skills/kiro-impl/SKILL.md`](tools/cc-sdd/templates/agents/github-copilot-skills/skills/kiro-impl/SKILL.md) |
+| 124 | ✓ | [`tools/cc-sdd/templates/agents/github-copilot-skills/skills/kiro-review/SKILL.md`](tools/cc-sdd/templates/agents/github-copilot-skills/skills/kiro-review/SKILL.md) |
+| 125 | ✓ | [`tools/cc-sdd/templates/agents/github-copilot-skills/skills/kiro-spec-batch/SKILL.md`](tools/cc-sdd/templates/agents/github-copilot-skills/skills/kiro-spec-batch/SKILL.md) |
+| 126 | ✓ | [`tools/cc-sdd/templates/agents/github-copilot-skills/skills/kiro-spec-design/SKILL.md`](tools/cc-sdd/templates/agents/github-copilot-skills/skills/kiro-spec-design/SKILL.md) |
+| 127 | ✓ | [`tools/cc-sdd/templates/agents/github-copilot-skills/skills/kiro-spec-init/SKILL.md`](tools/cc-sdd/templates/agents/github-copilot-skills/skills/kiro-spec-init/SKILL.md) |
+| 128 | ✓ | [`tools/cc-sdd/templates/agents/github-copilot-skills/skills/kiro-spec-quick/SKILL.md`](tools/cc-sdd/templates/agents/github-copilot-skills/skills/kiro-spec-quick/SKILL.md) |
+| 129 | ✓ | [`tools/cc-sdd/templates/agents/github-copilot-skills/skills/kiro-spec-requirements/SKILL.md`](tools/cc-sdd/templates/agents/github-copilot-skills/skills/kiro-spec-requirements/SKILL.md) |
+| 130 | ✓ | [`tools/cc-sdd/templates/agents/github-copilot-skills/skills/kiro-spec-status/SKILL.md`](tools/cc-sdd/templates/agents/github-copilot-skills/skills/kiro-spec-status/SKILL.md) |
+| 131 | ✓ | [`tools/cc-sdd/templates/agents/github-copilot-skills/skills/kiro-spec-tasks/SKILL.md`](tools/cc-sdd/templates/agents/github-copilot-skills/skills/kiro-spec-tasks/SKILL.md) |
+| 132 | ✓ | [`tools/cc-sdd/templates/agents/github-copilot-skills/skills/kiro-steering-custom/SKILL.md`](tools/cc-sdd/templates/agents/github-copilot-skills/skills/kiro-steering-custom/SKILL.md) |
+| 133 | ✓ | [`tools/cc-sdd/templates/agents/github-copilot-skills/skills/kiro-steering/SKILL.md`](tools/cc-sdd/templates/agents/github-copilot-skills/skills/kiro-steering/SKILL.md) |
+| 134 | ✓ | [`tools/cc-sdd/templates/agents/github-copilot-skills/skills/kiro-validate-design/SKILL.md`](tools/cc-sdd/templates/agents/github-copilot-skills/skills/kiro-validate-design/SKILL.md) |
+| 135 | ✓ | [`tools/cc-sdd/templates/agents/github-copilot-skills/skills/kiro-validate-gap/SKILL.md`](tools/cc-sdd/templates/agents/github-copilot-skills/skills/kiro-validate-gap/SKILL.md) |
+| 136 | ✓ | [`tools/cc-sdd/templates/agents/github-copilot-skills/skills/kiro-validate-impl/SKILL.md`](tools/cc-sdd/templates/agents/github-copilot-skills/skills/kiro-validate-impl/SKILL.md) |
+| 137 | ✓ | [`tools/cc-sdd/templates/agents/github-copilot-skills/skills/kiro-verify-completion/SKILL.md`](tools/cc-sdd/templates/agents/github-copilot-skills/skills/kiro-verify-completion/SKILL.md) |
+| 138 | ✓ | [`tools/cc-sdd/templates/agents/github-copilot/docs/AGENTS.md`](tools/cc-sdd/templates/agents/github-copilot/docs/AGENTS.md) |
+| 139 | ✓ | [`tools/cc-sdd/templates/agents/opencode-agent/docs/AGENTS.md`](tools/cc-sdd/templates/agents/opencode-agent/docs/AGENTS.md) |
+| 140 | ✓ | [`tools/cc-sdd/templates/agents/opencode-skills/docs/AGENTS.md`](tools/cc-sdd/templates/agents/opencode-skills/docs/AGENTS.md) |
+| 141 | ✓ | [`tools/cc-sdd/templates/agents/opencode-skills/skills/kiro-debug/SKILL.md`](tools/cc-sdd/templates/agents/opencode-skills/skills/kiro-debug/SKILL.md) |
+| 142 | ✓ | [`tools/cc-sdd/templates/agents/opencode-skills/skills/kiro-discovery/SKILL.md`](tools/cc-sdd/templates/agents/opencode-skills/skills/kiro-discovery/SKILL.md) |
+| 143 | ✓ | [`tools/cc-sdd/templates/agents/opencode-skills/skills/kiro-impl/SKILL.md`](tools/cc-sdd/templates/agents/opencode-skills/skills/kiro-impl/SKILL.md) |
+| 144 | ✓ | [`tools/cc-sdd/templates/agents/opencode-skills/skills/kiro-review/SKILL.md`](tools/cc-sdd/templates/agents/opencode-skills/skills/kiro-review/SKILL.md) |
+| 145 | ✓ | [`tools/cc-sdd/templates/agents/opencode-skills/skills/kiro-spec-batch/SKILL.md`](tools/cc-sdd/templates/agents/opencode-skills/skills/kiro-spec-batch/SKILL.md) |
+| 146 | ✓ | [`tools/cc-sdd/templates/agents/opencode-skills/skills/kiro-spec-design/SKILL.md`](tools/cc-sdd/templates/agents/opencode-skills/skills/kiro-spec-design/SKILL.md) |
+| 147 | ✓ | [`tools/cc-sdd/templates/agents/opencode-skills/skills/kiro-spec-init/SKILL.md`](tools/cc-sdd/templates/agents/opencode-skills/skills/kiro-spec-init/SKILL.md) |
+| 148 | ✓ | [`tools/cc-sdd/templates/agents/opencode-skills/skills/kiro-spec-quick/SKILL.md`](tools/cc-sdd/templates/agents/opencode-skills/skills/kiro-spec-quick/SKILL.md) |
+| 149 | ✓ | [`tools/cc-sdd/templates/agents/opencode-skills/skills/kiro-spec-requirements/SKILL.md`](tools/cc-sdd/templates/agents/opencode-skills/skills/kiro-spec-requirements/SKILL.md) |
+| 150 | ✓ | [`tools/cc-sdd/templates/agents/opencode-skills/skills/kiro-spec-status/SKILL.md`](tools/cc-sdd/templates/agents/opencode-skills/skills/kiro-spec-status/SKILL.md) |
+| 151 | ✓ | [`tools/cc-sdd/templates/agents/opencode-skills/skills/kiro-spec-tasks/SKILL.md`](tools/cc-sdd/templates/agents/opencode-skills/skills/kiro-spec-tasks/SKILL.md) |
+| 152 | ✓ | [`tools/cc-sdd/templates/agents/opencode-skills/skills/kiro-steering-custom/SKILL.md`](tools/cc-sdd/templates/agents/opencode-skills/skills/kiro-steering-custom/SKILL.md) |
+| 153 | ✓ | [`tools/cc-sdd/templates/agents/opencode-skills/skills/kiro-steering/SKILL.md`](tools/cc-sdd/templates/agents/opencode-skills/skills/kiro-steering/SKILL.md) |
+| 154 | ✓ | [`tools/cc-sdd/templates/agents/opencode-skills/skills/kiro-validate-design/SKILL.md`](tools/cc-sdd/templates/agents/opencode-skills/skills/kiro-validate-design/SKILL.md) |
+| 155 | ✓ | [`tools/cc-sdd/templates/agents/opencode-skills/skills/kiro-validate-gap/SKILL.md`](tools/cc-sdd/templates/agents/opencode-skills/skills/kiro-validate-gap/SKILL.md) |
+| 156 | ✓ | [`tools/cc-sdd/templates/agents/opencode-skills/skills/kiro-validate-impl/SKILL.md`](tools/cc-sdd/templates/agents/opencode-skills/skills/kiro-validate-impl/SKILL.md) |
+| 157 | ✓ | [`tools/cc-sdd/templates/agents/opencode-skills/skills/kiro-verify-completion/SKILL.md`](tools/cc-sdd/templates/agents/opencode-skills/skills/kiro-verify-completion/SKILL.md) |
+| 158 | ✓ | [`tools/cc-sdd/templates/agents/opencode/docs/AGENTS.md`](tools/cc-sdd/templates/agents/opencode/docs/AGENTS.md) |
+| 159 | ✓ | [`tools/cc-sdd/templates/agents/windsurf-skills/docs/AGENTS.md`](tools/cc-sdd/templates/agents/windsurf-skills/docs/AGENTS.md) |
+| 160 | ✓ | [`tools/cc-sdd/templates/agents/windsurf-skills/skills/kiro-debug/SKILL.md`](tools/cc-sdd/templates/agents/windsurf-skills/skills/kiro-debug/SKILL.md) |
+| 161 | ✓ | [`tools/cc-sdd/templates/agents/windsurf-skills/skills/kiro-discovery/SKILL.md`](tools/cc-sdd/templates/agents/windsurf-skills/skills/kiro-discovery/SKILL.md) |
+| 162 | ✓ | [`tools/cc-sdd/templates/agents/windsurf-skills/skills/kiro-impl/SKILL.md`](tools/cc-sdd/templates/agents/windsurf-skills/skills/kiro-impl/SKILL.md) |
+| 163 | ✓ | [`tools/cc-sdd/templates/agents/windsurf-skills/skills/kiro-review/SKILL.md`](tools/cc-sdd/templates/agents/windsurf-skills/skills/kiro-review/SKILL.md) |
+| 164 | ✓ | [`tools/cc-sdd/templates/agents/windsurf-skills/skills/kiro-spec-batch/SKILL.md`](tools/cc-sdd/templates/agents/windsurf-skills/skills/kiro-spec-batch/SKILL.md) |
+| 165 | ✓ | [`tools/cc-sdd/templates/agents/windsurf-skills/skills/kiro-spec-design/SKILL.md`](tools/cc-sdd/templates/agents/windsurf-skills/skills/kiro-spec-design/SKILL.md) |
+| 166 | ✓ | [`tools/cc-sdd/templates/agents/windsurf-skills/skills/kiro-spec-init/SKILL.md`](tools/cc-sdd/templates/agents/windsurf-skills/skills/kiro-spec-init/SKILL.md) |
+| 167 | ✓ | [`tools/cc-sdd/templates/agents/windsurf-skills/skills/kiro-spec-quick/SKILL.md`](tools/cc-sdd/templates/agents/windsurf-skills/skills/kiro-spec-quick/SKILL.md) |
+| 168 | ✓ | [`tools/cc-sdd/templates/agents/windsurf-skills/skills/kiro-spec-requirements/SKILL.md`](tools/cc-sdd/templates/agents/windsurf-skills/skills/kiro-spec-requirements/SKILL.md) |
+| 169 | ✓ | [`tools/cc-sdd/templates/agents/windsurf-skills/skills/kiro-spec-status/SKILL.md`](tools/cc-sdd/templates/agents/windsurf-skills/skills/kiro-spec-status/SKILL.md) |
+| 170 | ✓ | [`tools/cc-sdd/templates/agents/windsurf-skills/skills/kiro-spec-tasks/SKILL.md`](tools/cc-sdd/templates/agents/windsurf-skills/skills/kiro-spec-tasks/SKILL.md) |
+| 171 | ✓ | [`tools/cc-sdd/templates/agents/windsurf-skills/skills/kiro-steering-custom/SKILL.md`](tools/cc-sdd/templates/agents/windsurf-skills/skills/kiro-steering-custom/SKILL.md) |
+| 172 | ✓ | [`tools/cc-sdd/templates/agents/windsurf-skills/skills/kiro-steering/SKILL.md`](tools/cc-sdd/templates/agents/windsurf-skills/skills/kiro-steering/SKILL.md) |
+| 173 | ✓ | [`tools/cc-sdd/templates/agents/windsurf-skills/skills/kiro-validate-design/SKILL.md`](tools/cc-sdd/templates/agents/windsurf-skills/skills/kiro-validate-design/SKILL.md) |
+| 174 | ✓ | [`tools/cc-sdd/templates/agents/windsurf-skills/skills/kiro-validate-gap/SKILL.md`](tools/cc-sdd/templates/agents/windsurf-skills/skills/kiro-validate-gap/SKILL.md) |
+| 175 | ✓ | [`tools/cc-sdd/templates/agents/windsurf-skills/skills/kiro-validate-impl/SKILL.md`](tools/cc-sdd/templates/agents/windsurf-skills/skills/kiro-validate-impl/SKILL.md) |
+| 176 | ✓ | [`tools/cc-sdd/templates/agents/windsurf-skills/skills/kiro-verify-completion/SKILL.md`](tools/cc-sdd/templates/agents/windsurf-skills/skills/kiro-verify-completion/SKILL.md) |
+| 177 | ✓ | [`tools/cc-sdd/templates/agents/windsurf/docs/AGENTS.md`](tools/cc-sdd/templates/agents/windsurf/docs/AGENTS.md) |
 
 ---
 

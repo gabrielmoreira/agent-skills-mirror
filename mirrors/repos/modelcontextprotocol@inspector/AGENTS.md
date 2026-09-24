@@ -25,6 +25,7 @@ users invoke them by name.
 | [`pr-flow`](.claude/skills/pr-flow/SKILL.md)                     | Branch naming, DCO signoff, screenshots, opening the PR, requesting a Copilot review, responding, closing out                                                                                                        | Model-invoked, or `/pr-flow`       |
 | [`pre-push-gate`](.claude/skills/pre-push-gate/SKILL.md)         | Running `npm run local:gate` and diagnosing a failing stage                                                                                                                                                          | Model-invoked, or `/pre-push-gate` |
 | [`release`](.claude/skills/release/SKILL.md)                     | Cutting a release: bump on `v2/main`, milestone merge, tag `origin/main`, publish                                                                                                                                    | `/release`                         |
+| [`security-advisory`](.claude/skills/security-advisory/SKILL.md) | A privately reported vulnerability end to end: the draft card, who owns the code path, which release lines are affected, accepting, the private fork, publishing, public tracking per line (v2 converts; v1 files)   | Model-invoked, or `/security-advisory` |
 | [`test-servers`](.claude/skills/test-servers/SKILL.md)           | Picking and running a showcase test server; the stale-build hazard                                                                                                                                                   | Model-invoked, or `/test-servers`  |
 
 Longer-form human documentation lives in [`docs/`](./docs) — see the table in the
@@ -255,7 +256,7 @@ node/field/option IDs, and the option-deletion hazard` was cut at `#28`, so 90
    skill at all: it is absent from the listing and the Skill tool refuses it. The
    costs are asymmetric — a spurious load costs ~250 characters, a missed one
    costs a wrong base branch or an unsigned commit — and the budget is not tight
-   (nine of the ten are model-invoked today and total ~3.2k of 4k). Reserve
+   (ten of the eleven are model-invoked today and total ~3.7k of 4k). Reserve
    `true` for a procedure that is genuinely only ever started deliberately —
    `release` is the only one left, because nobody cuts a release by implication.
    ⚠️ **A `true` skill cannot be reached by another skill either.** If a
@@ -267,7 +268,7 @@ node/field/option IDs, and the option-deletion hazard` was cut at `#28`, so 90
    cases (n=4) and `testing` from 3/5 to 2/5, while the six new skills all
    measured 100% and every negative case stayed clean. So the ceiling is
    attention, not characters — we were at 2.8k of a 4k budget throughout _that
-   experiment_ (it is ~3.2k now; the point is that nothing was near the cap). Adding
+   experiment_ (it is ~3.7k now; the point is that nothing was near the cap). Adding
    a skill therefore has a cost paid by the _existing_ ones, which only
    `skills:eval` can see. **Re-run the full eval after any flip _or description
    edit_**, not just the changed skill's own cases.
@@ -295,8 +296,14 @@ node/field/option IDs, and the option-deletion hazard` was cut at `#28`, so 90
    variance: each prompt is scored on its own `passes / RUNS`, so more prompts
    steady nothing, they cover more of the ways someone might reach the skill and
    expose a description that only fires on one narrow phrasing; `npm run skills:eval` actually runs them (it needs the
-   `claude` CLI and real model calls, so it is deliberately **not** in the gate —
+   selected agent's CLI — `claude` by default, `copilot` with `AGENT=copilot` — and real model calls, so it is deliberately **not** in the gate —
    run it when adding a skill or editing a model-invoked description).
+   **The skills serve GitHub Copilot users too, from where they are.** The
+   Copilot CLI discovers `.claude/skills/` alongside `.github/skills/`, so a
+   Copilot session reaches the same procedures with no second copy — and none
+   may be added. `AGENT=copilot npm run skills:eval` measures that side with the
+   same cases; one run measures one agent and never folds the two rates together
+   (#2397, details in `docs/skill-authoring.md`).
    Two things learned writing the first set, both of which make a case measure
    the wrong thing: a prompt whose answer is **already in this file** is not a
    trigger case — the model answers correctly without the skill, and the case
@@ -335,7 +342,7 @@ node/field/option IDs, and the option-deletion hazard` was cut at `#28`, so 90
    overflows, and drops the least-invoked entries **first** — which are exactly the
    model-invoked skills that must fire on their own. `verify:skills` prints the
    current cost against the budget recorded in `scripts/lib/skill-manifest.mjs`
-   (3,234/4,000 characters as of this writing) and fails when it is exceeded. Raise
+   (3,729/4,000 characters as of this writing) and fails when it is exceeded. Raise
    the budget deliberately, or tighten a description; each entry is capped at 1,536
    characters regardless, so **put the key use case first**.
 
@@ -358,12 +365,13 @@ skills; the rules are here.
 
 - **Before starting work, check the board for the relevant item.**
 - **Every board item is a real GitHub issue.** No draft cards. Before creating a new issue, check the board for a matching item — **never create a duplicate**.
+  - **The one exception is a GitHub security advisory**, which is tracked by a **draft card** titled `[GHSA-xxxx-yyyy-zzzz] - <summary>`. An advisory is private until it is published, so a real issue would disclose the vulnerability before a fix exists — the thing the whole advisory flow is for. The card is made by hand (no `PROJECT_TOKEN` exists in this org, and `GITHUB_TOKEN` cannot hold `organization projects: write`), and it becomes public tracking **once the advisory is published** — never merely once the fix ships, since the release can precede publication. How depends on the line: a `v2` issue is **converted** from the draft on #28, while a `v1` issue is **filed** on #11 and the #28 draft is deleted, because a draft cannot convert onto another board and a `v1` issue on #28 is a wrong-board card. An advisory affecting both lines produces one issue per line. The `[GHSA-` prefix is load-bearing: it is what the board audit's draft carve-out keys on, so **any other draft card is still a defect to delete**. The flow itself — verifying who owns the code path, accepting, the private fork, publishing — is the `security-advisory` skill. **Accepting and publishing an advisory are outward-facing and stay human-gated; never automate or bulk-apply either.**
 - **Only issues go on a board — never PRs.** A PR gets the `v2` label but is tracked through its linked issue's card (via `Closes #N`), not its own board item.
 - **Label by version — every issue and every PR, no exceptions.** Exactly one of `v1` (work targeting `v1/main`, the deprecated security-fix-only line) or `v2` (active development; the default for anything new). There is no unlabeled state and no "decide later": an issue with neither label belongs to no version line and is invisible to every version-filtered query. Set it at **create time** (`gh issue create --label v2 …`), never by backfilling. **If the target version isn't obvious, it's `v2`.**
 - **Label by type — exactly one of `bug` / `enhancement` / `documentation` / `chore` / `question`** on every issue you create or triage. The version label says which line the work belongs to; the type label says what kind of work it is, and the two are independent. Don't force the binary: pressing a docs task or a dependency pin into `enhancement` degrades it to "not a bug", at which point filtering by it stops telling you anything. A **PR** needs no type label — it is classified through the issue it closes.
 - **Every v2 issue you create gets a milestone.** Milestones are _release_ buckets, so pick by when the work ships. Never leave a v2 issue you filed unmilestoned pending a decision. Two exceptions, both deliberate: an issue that arrives **unboarded** stays unmilestoned in `Incoming` until a maintainer approves it — there, the _absence_ of a milestone is the signal; and **every milestone is a v2 release bucket, so a `v1` issue has none to take**. Say so when filing one rather than dropping it in a v2.x bucket.
 - **Every v2 board item has a Priority.** Priority is a **board field**, not a label, so an unboarded issue has nowhere to store it. Derive it with the rubric in the `issue-triage` skill rather than asserting it. Board #11 has no Priority field; a v1 issue gets a Status and nothing else.
-- **`Incoming` ⇔ no milestone; everything past it ⇔ milestoned — on board #28.** Board #11 is exempt for the reason above: a v1 issue has no bucket to take, so its Status is set on its own and the audit's milestone checks do not apply to it. The rest of the invariant is unchanged: assigning the milestone _is_ the approval act, so the two always go together. `Todo` asserts a maintainer signed off, so never park an unreviewed issue there — that erases the distinction and quietly promotes unreviewed work into the queue. An issue created through the documented flow skips `Incoming` entirely, because filing it _was_ the approval.
+- **`Incoming` ⇔ no milestone; everything past it ⇔ milestoned — on board #28.** Board #11 is exempt for the reason above: a v1 issue has no bucket to take, so its Status is set on its own and the audit's milestone checks do not apply to it. A `[GHSA-` **advisory draft** on #28 is exempt too, for a different reason: a draft card cannot carry a milestone, so its approval act is **accepting the advisory**, which moves it `Incoming` → `Todo`; its milestone arrives with the public issue after publication. The rest of the invariant is unchanged: assigning the milestone _is_ the approval act, so the two always go together. `Todo` asserts a maintainer signed off, so never park an unreviewed issue there — that erases the distinction and quietly promotes unreviewed work into the queue. An issue created through the documented flow skips `Incoming` entirely, because filing it _was_ the approval.
 - **`Done` means the work shipped.** Exactly two things earn a card a place in Done: its **PR merged**, or it is a **parent whose last sub-issue closed**. Anything else — duplicate, won't fix, not planned, obsolete, superseded — means nothing shipped, so the card is **deleted**. Done is read as the record of what a milestone actually delivered; a duplicate sitting there makes that record wrong in a way nobody can detect later. Deleting a card touches the board only — the issue keeps its labels and comments and stays searchable forever.
 - **When work begins**, create a feature branch and set Status to **In Progress**. **Branch names start with the target version segment** — `v2/fix/2071-oauth-resource-metadata`, `v1/fix/proxy-ssrf-pin` — matching the base branches themselves.
 - **When work is complete**, run `npm run format` then `npm run local:gate`, **sign off every commit** (`git commit -s` — the DCO check is a hard merge gate with no partial credit), open a PR against the matching base branch with **`Closes #<ISSUE_NUMBER>` as the body's first line**, and set Status to **In Review**.

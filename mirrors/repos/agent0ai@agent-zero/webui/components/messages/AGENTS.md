@@ -15,6 +15,7 @@
 - Keep message DOM helpers compatible with extension points that modify rendered messages.
 - Sanitize or safely render model/user-provided content through shared rendering paths.
 - Avoid layout shifts that break long-running message streaming.
+- Terminal output keeps text-size adjustment at 100% so mobile browsers do not inflate its wide, unwrapped content when streamed or expanded; preserve horizontal scrolling and normal browser zoom.
 - Keep message action chrome out of text selection so copy/paste captures message content without button labels or icons.
 - Reconcile standard action buttons in place during streamed updates so hover, focus, tooltips, and click feedback survive while handlers receive the latest message data; preserve extension-owned buttons in the same action bar.
 - Order standard message actions as Detail, Copy, then Speak; omit unavailable actions without changing the relative order of the remaining controls. Plugin-rendered message actions must follow the same order.

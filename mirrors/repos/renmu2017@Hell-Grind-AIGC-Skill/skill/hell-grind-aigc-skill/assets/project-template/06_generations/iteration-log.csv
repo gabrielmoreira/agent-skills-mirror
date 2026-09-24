@@ -1,0 +1,1 @@
+iteration_id,shot_id,prompt_id,batch_id,observed_failure_codes,responsibility_layer,changed_variables,hypothesis,expected_improvement,result_generation_ids,decision,next_action

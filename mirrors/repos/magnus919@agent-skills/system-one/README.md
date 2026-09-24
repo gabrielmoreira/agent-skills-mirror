@@ -22,15 +22,15 @@ on your own workload.
 | Directory | Purpose |
 |---|---|
 | `SKILL.md` | Core integration workflow, model-selection rules, guardrails, and stopping criteria |
-| `references/` | Jev and Laya guides, local/VPC service walkthrough, use-case recipes, evaluation, troubleshooting, and model survey |
+| `references/` | Jev and Laya guides, native laya.cpp option, local/VPC service walkthrough, use-case recipes, evaluation, troubleshooting, and model survey |
 | `templates/decision-contract.md` | Fillable contract for state, questions, thresholds, authority, and fallback |
 | `templates/action-control-contract.md` | Preflight for observed app actions, confirmation, freshness, and rollback |
 | `templates/benchmark-record.md` | Reproducible model/latency/calibration comparison record |
 | `examples/` | Synthetic request, response, and labeled evaluation cases, including a frozen Jev semantic-audit fixture |
-| `scripts/` | Offline/live probe, read-only routing demo, Jev QA pilot and advisory eval audit, binary evaluator, and private Laya HTTP adapter |
+| `scripts/` | Offline/live probe, read-only routing demo, Jev QA pilot, advisory eval audit, private review and model-teacher screening, binary evaluator, and private Laya HTTP adapter |
 | `templates/laya.Dockerfile` | Container starting point using a pinned local model artifact |
 | `tests/` and `scripts/test_*.py` | Offline checks for contracts, policy, evaluation, and service behavior |
-| `evals/evals.json` | Nine output-quality cases for model integration and operations |
+| `evals/evals.json` | Eleven output-quality cases for model integration and operations |
 
 ## Quick Start
 
@@ -41,6 +41,7 @@ references/jev.md     # hosted Jev
 references/laya.md    # self-hosted Laya
 references/laya-self-hosting.md  # local-to-private-service walkthrough
 references/use-case-patterns.md # browser, routing, ranking, guardrail recipes
+references/jev-ci-reference-deployment.md # reproduce and operate this repo's Jev CI audit
 ```
 
 Validate a request contract without calling a model:
@@ -51,6 +52,8 @@ python3 scripts/decision_demo.py
 python3 scripts/evaluate_noul.py --cases examples/noul.synthetic.jsonl --threshold 0.8
 python3 scripts/jev_qa_pilot.py  # synthetic rules-only baseline; no API call
 python3 scripts/jev_eval_audit.py --reports /path/to/paired-eval-artifacts  # offline selection check
+python3 scripts/jev_eval_calibration.py --help  # private review, scoring, and offline repeatability
+python3 scripts/jev_teacher_label.py --help  # optional blind model-teacher screening
 ```
 
 For Laya, follow `references/laya-self-hosting.md` to stage a commit-pinned

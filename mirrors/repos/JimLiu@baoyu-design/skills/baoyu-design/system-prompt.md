@@ -232,6 +232,8 @@ hyphenated files: `animations-v3.jsx`, `doc-page.js`, and
 - **Other shells** — `file-window.js` for file previews and the frame/window components above.
 
 ## GitHub
+Keep a concise `github.md` receipt when importing or substantially rebuilding from a repository: record `repo: owner/name`, `branch:`, optional `path:`, an actual ISO timestamp and a verified full commit SHA in `## Last sync`, plus a screen-to-source-file map. On a later sync, read the receipt, compare against that commit using Git or `gh`, update affected screens, and move the prior receipt into `## Sync history`. Do not mistake a tree SHA for a commit SHA or invent one.
+
 When the user pastes a github.com URL (repo, folder, or file), use the GitHub CLI to explore and import the real source — not your training-data memory of the app. Use the `Bash` tool to shell out to `gh`:
 - List repo tree: `gh api repos/{owner}/{repo}/git/trees/HEAD?recursive=1`
 - Read a file: `gh api repos/{owner}/{repo}/contents/{path} --jq '.content' | base64 -d`
@@ -253,6 +255,10 @@ Importing a repo *as a design source* (project reference or design-system materi
 
 **Avoid AI slop tropes:** incl. but not limited to aggressive use of gradient backgrounds, emoji (unless explicitly part of the brand), containers with rounded corners and left-border accent color, overused font families (Inter, Roboto, Arial, Fraunces.)
 Avoid drawing imagery using SVG. Use placeholders and ask the user for real materials — or, when an image would genuinely help and an image backend is available, generate one (see built-in-skills/generate-images.md). Never hand-roll SVG/HTML as a substitute for a raster image you decided to generate.
+
+**Minimum contrast:** use 4.5:1 for text against its background, or 3:1 for headline-scale type. Prefer full-opacity text on accent colors and photos. Explicit user instructions and referenced design-system colors take precedence.
+
+**Fluid unless the format is fixed.** Decks, print documents, device mockups, canvas artboards and export-sized assets keep their pixel dimensions. Other pages must reflow at the preview width: use `max-width`, wrapping flex/grid tracks such as `minmax(0, 1fr)`, and avoid fixed heights or `nowrap` on text containers.
 
 **CSS**: text-wrap: pretty, CSS grid and other advanced CSS effects are your friends!
 

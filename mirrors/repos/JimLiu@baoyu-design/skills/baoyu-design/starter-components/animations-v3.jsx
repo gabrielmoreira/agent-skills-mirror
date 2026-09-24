@@ -26,6 +26,62 @@
 //   <Captions items={[{at, until?, text}, ...]} /> — ONE caption element,
 //     at most one visible at a time, keyed to T; 'until' defaults to the
 //     next item's 'at'; a last item with no 'until' stays to the end
+//   WATERCOLOR (only when the Watercolor illustration skill is active —
+//   otherwise ignore these entries). A painting is a function(p) written
+//   against the paint kit, on a width x height sheet; it needs
+//   watercolor_kit.js loaded by a <script> tag before this engine, must
+//   be a stable function defined once (module scope, never an inline
+//   arrow), and every component below renders <img> elements, so it all
+//   exports by construction.
+//   <WatercolorPainting painting={fn} from={CUES.X} to={CUES.Y} width height
+//     seed scale quality style /> — the painting assembled from its own
+//     STROKES: each wash / ink line / splatter is a separate layer
+//     stacked over the paper, appearing in painting order between two
+//     authored times (washes bloom in, ink draws tip to tail). This is the
+//     default way to show a watercolor being painted. It keeps the sheet's
+//     aspect ratio (size it with style, e.g. {position:'absolute', left,
+//     top, width}). scale is the layers' render resolution over width x
+//     height (default 1, a deliberate weight-over-dpi trade — raise it
+//     toward the zoom factor if the composition zooms into the painting,
+//     or toward the devicePixelRatio for a hero-sized sheet); quality is
+//     0..1 layer image quality (default 0.92; 1 is the encoder's maximum).
+//   useWatercolorLayers(fn, {width, height, seed, scale, quality}) -> L
+//     (null if the kit isn't loaded — load watercolor_kit.js before the
+//     engine — or if the painting fails to build) — the painting taken apart into strokes, for
+//     choreography beyond in-order painting: L.count strokes, L.kind(i)
+//     ('wash' | 'gradedWash' | 'glaze' | 'ink' | 'hatch' | 'splatter' |
+//     'dryStroke' | 'reserve' | 'caption'), L.span(i) = the stroke's
+//     {from, to} share of the painting's 0..1 timeline; call L.warm()
+//     once after load so finished strokes pre-render off the critical
+//     path (WatercolorPainting does this itself). Compose with:
+//   <WatercolorSheet layers={L} style>children</WatercolorSheet> — the
+//     paper the strokes sit on (keeps the sheet's aspect ratio), and
+//   <WatercolorStroke index={i} at={0..1} style /> — stroke i as its own
+//     element, placed where it was painted; at is its painting progress
+//     (0 hidden, 1 finished — drive it from T with animate()); style lets
+//     you move, scale, rotate, or fade the stroke (transform / opacity).
+//     Strokes are paint, so they multiply: overlapping strokes darken
+//     where they cross, as in the still image, within a few 8-bit levels
+//     (tighter still at quality 1). The sheet clips to its
+//     box — for strokes that fly in from outside it, set
+//     style={{overflow: 'visible'}} on the WatercolorSheet. 'reserve' strokes
+//     are erasures (lifted paper) — keep them where they were painted and
+//     reveal them in order after the strokes they erase; moving an erase
+//     around has no sensible meaning.
+//   <WatercolorReveal painting={fn} from={CUES.X} to={CUES.Y} width height
+//     seed steps scale format quality style />, or <WatercolorReveal
+//     frames={[src, ...]} from to /> — the whole painting as ONE flat
+//     image that paints on (frames pre-baked in the background, so it is
+//     the lightest option and the one to zoom or pan over as a single
+//     picture). Prefer WatercolorPainting when the strokes themselves
+//     should appear one by one or be individually animated. format is
+//     the image MIME type (default image/jpeg), quality 0..1 (default
+//     0.88). Frames bake at width x height times scale (default: the
+//     device pixel ratio, capped at 2) — if the composition zooms INTO
+//     the painting, raise scale toward the maximum zoom so frames stay
+//     crisp. The kit caps a sheet at ~12M pixels and the components clamp
+//     scale to stay under it; exported video sharpness also depends on
+//     the export dialog's own resolution choice.
 //   Motion: Easing.{linear, easeIn|Out|InOutQuad/Cubic/Quart/Expo/Sine,
 //     easeIn|Out|InOutBack, easeOutElastic}, interpolate(input, output, ease),
 //     animate({from, to, start, end, ease}) -> fn(T), clamp(v, min, max)
@@ -1096,9 +1152,194 @@ function CompositionStage(props) {
   );
 }
 
+
+// Strokes as layers: paint multiplies, so stroke images stacked with
+// mix-blend-mode:multiply over the paper reproduce the flat render.
+
+var WC_PIXEL_CAP = 11000000;
+
+function wcLayerOpts(props) {
+  var w = +props.width || 900, h = +props.height || 1200;
+  var askScale = +props.scale || 1;
+  return { width: w, height: h, scale: Math.min(askScale, Math.sqrt(WC_PIXEL_CAP / (w * h))), seed: props.seed == null ? undefined : +props.seed, quality: props.quality == null ? undefined : +props.quality };
+}
+
+var wcWarned = {};
+function wcWarnOnce(key, message, err) {
+  if (wcWarned[key]) return;
+  wcWarned[key] = true;
+  console.warn(message, err);
+}
+
+function useWatercolorLayers(painting, opts) {
+  var kit = window.WatercolorKit;
+  if (typeof painting !== 'function' || !kit || typeof kit.layers !== 'function') return null;
+  try {
+    return kit.layers(painting, wcLayerOpts(opts || {}));
+  } catch (e) {
+    wcWarnOnce('layers:' + e, 'watercolor painting failed to build; rendering the fallback sheet', e);
+    return null;
+  }
+}
+
+var WatercolorSheetContext = React.createContext(null);
+
+function WatercolorSheet(props) {
+  var L = props.layers || null;
+  var style = Object.assign({
+    position: 'relative', display: 'block', width: '100%',
+    aspectRatio: L ? L.width + ' / ' + L.height : '3 / 4',
+    isolation: 'isolate', overflow: 'hidden',
+  }, props.style);
+  if (!L) {
+    return (
+      <div style={Object.assign(style, { background: '#f4f1e8', color: '#8a8270', font: '12px system-ui, sans-serif', display: 'flex', alignItems: 'center', justifyContent: 'center' })}>
+        watercolor-kit.js not loaded (or the painting failed to build)
+      </div>
+    );
+  }
+  return (
+    <WatercolorSheetContext.Provider value={L}>
+      <div style={style} data-om-watercolor-sheet>
+        <img src={L.paper} alt={props.alt || ''} style={{ position: 'absolute', left: 0, top: 0, width: '100%', height: '100%', display: 'block' }} />
+        {props.children}
+      </div>
+    </WatercolorSheetContext.Provider>
+  );
+}
+
+function WatercolorStroke(props) {
+  var fromSheet = React.useContext(WatercolorSheetContext);
+  var L = props.layers || fromSheet;
+  if (!L) return null;
+  var i = +props.index;
+  if (!(i >= 0) || i >= L.count) return null;
+  var at = props.at == null ? 1 : clamp(+props.at, 0, 1);
+  if (!(at > 0)) return null;
+  var box, src;
+  try {
+    box = L.box(i);
+    src = box ? L.src(i, at) : null;
+  } catch (e) {
+    wcWarnOnce('stroke:' + i + ':' + e, 'watercolor stroke ' + i + ' failed to render; skipping it', e);
+    return null;
+  }
+  if (!box || !src) return null;
+  var style = Object.assign({
+    position: 'absolute', display: 'block',
+    left: box.x * 100 + '%', top: box.y * 100 + '%',
+    width: box.w * 100 + '%', height: box.h * 100 + '%',
+    mixBlendMode: L.kind(i) === 'reserve' ? 'normal' : 'multiply',
+    pointerEvents: 'none',
+  }, props.style);
+  return <img src={src} alt="" data-om-watercolor-stroke={i} data-om-stroke-kind={L.kind(i)} style={style} />;
+}
+
+// The default watercolor moment: the painting assembled from its strokes,
+// each appearing in painting order (a pure function of T).
+function WatercolorPainting(props) {
+  var c = useComposition();
+  var from = +props.from || 0;
+  var to = props.to == null ? from + 6 : +props.to;
+  var u = clamp((c.T - from) / Math.max(to - from, 0.001), 0, 1);
+  var eased = Easing.easeInOutQuad(u);
+  var L = useWatercolorLayers(props.painting, props);
+  var tick = React.useState(0)[1];
+  var warmed = React.useRef(null);
+  React.useEffect(function () {
+    if (!L || typeof L.warm !== 'function') return;
+    var p = L.warm();
+    if (warmed.current === p) return;
+    var live = true;
+    p.then(function () { warmed.current = p; if (live) tick(function (x) { return x + 1; }); });
+    return function () { live = false; };
+  }, [L && L.paper, props.painting]);
+  var strokes = [];
+  if (L) {
+    for (var i = 0; i < L.count; i++) {
+      var sp = L.span(i);
+      var at = clamp((eased - sp.from) / Math.max(sp.to - sp.from, 1e-6), 0, 1);
+      if (at <= 0) break;
+      strokes.push(<WatercolorStroke key={i} layers={L} index={i} at={at} />);
+    }
+  }
+  return <WatercolorSheet layers={L} style={props.style} alt={props.alt}>{strokes}</WatercolorSheet>;
+}
+
+// Paint-on watercolor reveal as a pure function of T — an <img> with a data:
+// URL (the exporter serializes those as-is; a live canvas would export blank).
+function WatercolorReveal(props) {
+  var c = useComposition();
+  var from = +props.from || 0;
+  var to = props.to == null ? from + 6 : +props.to;
+  var u = clamp((c.T - from) / Math.max(to - from, 0.001), 0, 1);
+  var style = Object.assign({ display: 'block', width: '100%', height: '100%', objectFit: 'contain' }, props.style);
+  var frames = Array.isArray(props.frames) && props.frames.length ? props.frames : null;
+  var steps = frames ? frames.length - 1 : Math.max(1, Math.round(+props.steps || 36));
+  var i = Math.min(steps, Math.round(Easing.easeInOutQuad(u) * steps));
+  var painting = typeof props.painting === 'function' ? props.painting : null;
+  var kit = window.WatercolorKit;
+  var w = +props.width || 900, h = +props.height || 1200;
+  var askScale = +props.scale || Math.min(2, window.devicePixelRatio || 1);
+  var opts = {
+    width: w, height: h,
+    scale: Math.min(askScale, Math.sqrt(11000000 / (w * h))),
+    seed: props.seed == null ? undefined : +props.seed, steps: steps,
+    type: props.format || 'image/jpeg', quality: props.quality == null ? 0.88 : +props.quality,
+  };
+  var key = opts.width + 'x' + opts.height + '#' + opts.seed + '@' + opts.scale + '/' + steps + ':' + opts.type + '/' + opts.quality;
+  var cache = React.useRef({ fn: null, key: '', frames: {}, baking: false }).current;
+  var tick = React.useState(0)[1];
+  if ((cache.fn !== painting && String(cache.fn) !== String(painting)) || cache.key !== key) {
+    cache.key = key;
+    cache.frames = {};
+    cache.baking = false;
+  }
+  cache.fn = painting;
+  React.useEffect(function () {
+    if (frames || cache.baking || !painting || !kit || typeof kit.bake !== 'function') return;
+    cache.baking = true;
+    var target = cache.frames;
+    try {
+      kit.bake(painting, opts, function (n, _t, url) {
+        target[n] = url;
+      }).then(function (all) {
+        if (cache.frames !== target) return;
+        for (var n = 0; n < all.length; n++) target[n] = all[n];
+        tick(function (x) { return x + 1; });
+      }).catch(function () {
+        /* failed bake: the guarded lazy path below still renders */
+      });
+    } catch (e) {
+      /* oversized painting: the guarded lazy path below still renders */
+    }
+  });
+  if (frames) return <img src={frames[i]} alt={props.alt || ''} style={style} />;
+  if (!kit || !painting) {
+    return (
+      <div style={Object.assign({ width: '100%', height: '100%', background: '#f4f1e8', color: '#8a8270', font: '12px system-ui, sans-serif', display: 'flex', alignItems: 'center', justifyContent: 'center' }, props.style)}>
+        watercolor-kit.js not loaded (or no painting function)
+      </div>
+    );
+  }
+  if (!cache.frames[i]) {
+    try {
+      cache.frames[i] = kit.frame(painting, Object.assign({}, opts, { at: i / steps }));
+    } catch (e) {
+      return (
+        <div style={Object.assign({ width: '100%', height: '100%', background: '#f4f1e8', color: '#8a8270', font: '12px system-ui, sans-serif', display: 'flex', alignItems: 'center', justifyContent: 'center' }, props.style)}>
+          painting too large to render ({String(e && e.message).slice(0, 80)})
+        </div>
+      );
+    }
+  }
+  return <img src={cache.frames[i]} alt={props.alt || ''} style={style} />;
+}
+
 Object.assign(window, {
   Easing, interpolate, animate, clamp,
   TimelineContext, useTime, useTimeline,
   Stage, PlaybackBar,
-  CompositionStage, useComposition, Shot, Captions,
+  CompositionStage, useComposition, Shot, Captions, WatercolorReveal,
+  WatercolorPainting, WatercolorSheet, WatercolorStroke, useWatercolorLayers,
 });

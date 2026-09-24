@@ -68,7 +68,7 @@ Quality bar:
 
 - Tie every completion claim to the smallest check that proves it, then broaden for shared surfaces.
 - When a diff touches a declared generated path, name its source of truth and regeneration command before the edit rather than after a byte gate rejects it; a diff touching a generator and its output together is the correct shape, not a violation — load `references/generated-artifact-provenance.md` for the declaration and reporting rules.
-- Record command/source, freshness, exit status, and scope for each observed result.
+- Record every field the `observed_check_results/v1` artifact expectation below names, for each observed result; a field left out is a gap in the record, not a shorter record.
 - For native `omh_todo` checkpoints, load the todo-checklist closing recipe; `record` then `recall` this verification declaration. Stored declarations are not proof.
 - When the change answers to a written spec, plan, or issue, load `references/requirement-coverage-map.md` and map requirement to task to evidence under stable ids before claiming coverage.
 - Return PASS only when required checks pass and stale or missing evidence is resolved.
@@ -94,7 +94,7 @@ Expected outputs:
 Artifact expectations:
 
 - verification_matrix/v1 covering build, lint, typecheck, unit/integration/e2e tests, generated docs, static/security checks, diff hygiene, and CI/DCO when applicable
-- observed_check_results/v1 with command, timestamp/source, exit status, summary, and stale-output flag
+- observed_check_results/v1 with command (verbatim, not a description of it), source (this checkout, a CI job, or an operator report), exit status, summary (what the output said), scope (what that run covered, since a narrower run proves less), and freshness (when it ran, and whether the tree has moved since)
 - claim_verdict/v1 with PASS, HOLD, or BLOCK and exact missing or failed checks
 - generated_artifact_provenance/v1 with one row per touched generated path: the source of truth that produces it, the regeneration command, and the drift gate that catches it, or the single state `map_not_declared` when the repository declares no generated-artifact map
 
@@ -113,10 +113,16 @@ Safety rules:
 Use the current host's own tools and subagent/task mechanism when available;
 otherwise run the same lanes sequentially or name the unavailable capability.
 A prepared plan, handoff, checklist, or skill installation is not execution,
-review, CI, merge-readiness, or merge evidence. Report actual tool results or
-`not_observed` / `not_available`; never invent dispatch or host accounting.
+review, CI, merge-readiness, or merge evidence. Record actual tool results, or
+`not_observed` / `not_available`, in the record; never invent dispatch or host
+accounting.
 Treat supplied context as advisory, not proof of hidden memory reads or writes.
 State scope, constraints, verification, and the stop condition before work.
+Reply in the user's own words and the host's own voice: OMH's record terms
+(surface, lane, wrapper, handoff, evidence boundary, not_observed) stay in
+records and tool calls, never in the sentence the user reads unless they ask
+about one; and when a stop condition or a decision the user owns ends the turn,
+offer the next action as a question rather than declaring what will not be done.
 Supporting paths are relative to this skill directory; sibling skill paths are
 relative to its parent. Resolve them from the host-provided skill base directory
 (`{baseDir}` on hosts that provide it), never a hardcoded install location.

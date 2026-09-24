@@ -89,7 +89,7 @@ Give each a distinct charter. At least two receive no grep and no keyword list, 
 
 ### Analyze: adjudicate each candidate
 
-Pool the candidates, dedupe, and analyze each against the data-safety invariants in `CLAUDE.md` and the FAQ "What can Worktrunk delete?" inventory: does it preserve data on failure, require explicit consent for destructive ops, and avoid silent side-effect deletion? Mark each real risk / acceptable / needs change, with the reasoning.
+Pool the candidates, dedupe, and analyze each against the data-safety invariants in `AGENTS.md` and the FAQ "What can Worktrunk delete?" inventory: does it preserve data on failure, require explicit consent for destructive ops, and avoid silent side-effect deletion? Mark each real risk / acceptable / needs change, with the reasoning.
 
 Surface the full adjudicated list and get explicit sign-off before tagging. Do not tag a release with an unresolved deletion-surface candidate, even if it looks acceptable.
 
@@ -325,11 +325,11 @@ Recommendation: Minor release (0.3.0) — new features, no breaking changes
 - **Second digit** (0.1.0 → 0.2.0): Backward incompatible changes
 - **Third digit** (0.1.0 → 0.1.1): Everything else
 
-Current project status: maturing mode (see [CLAUDE.md › Project Status](../../../CLAUDE.md)). External interfaces — the config file format (`wt.toml`, user config) and CLI flags/arguments — carry compatibility weight, so breaks there need justification (a real improvement, not cleanup) and prefer deprecation warnings over silent breaks. Everything else, including the internal and library APIs, stays flexible: worktrunk ships breaking library changes freely and bumps the version each time, putting no weight on the existing internal APIs.
+Current project status: maturing mode (see [AGENTS.md › Project Status](../../../AGENTS.md)). External interfaces — the config file format (`wt.toml`, user config) and CLI flags/arguments — carry compatibility weight, so breaks there need justification (a real improvement, not cleanup) and prefer deprecation warnings over silent breaks. Everything else, including the internal and library APIs, stays flexible: worktrunk ships breaking library changes freely and bumps the version each time, putting no weight on the existing internal APIs.
 
 ## Library API Compatibility
 
-Worktrunk is a CLI tool. The `[lib]` crate in `Cargo.toml` does expose a public API, but it is **not a compatibility surface** — per [CLAUDE.md › Project Status](../../../CLAUDE.md) there are no Rust library compatibility concerns, and the project ships breaking library changes freely, bumping the version each time (see the "Breaking library API" entries in `CHANGELOG.md`). Downstream crates are expected to pin.
+Worktrunk is a CLI tool. The `[lib]` crate in `Cargo.toml` does expose a public API, but it is **not a compatibility surface** — per [AGENTS.md › Project Status](../../../AGENTS.md) there are no Rust library compatibility concerns, and the project ships breaking library changes freely, bumping the version each time (see the "Breaking library API" entries in `CHANGELOG.md`). Downstream crates are expected to pin.
 
 `cargo-semver-checks` is therefore an **advisory bump-level input**, not a gate that commits us to keeping the API stable for downstream crates. It compares the current public API against the last version published to crates.io and reports semver-relevant changes — a useful signal for choosing the bump:
 

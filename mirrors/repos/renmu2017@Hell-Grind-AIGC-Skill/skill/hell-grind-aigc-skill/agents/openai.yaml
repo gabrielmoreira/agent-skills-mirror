@@ -1,0 +1,4 @@
+interface:
+  display_name: "Hell Grind AIGC Skill"
+  short_description: "Manage, prompt, audit, and diagnose AIGC video production"
+  default_prompt: "Use $hell-grind-aigc-skill to structure, prompt, audit, or diagnose this model-agnostic AIGC video production."

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `feiskyer/codex-settings` — 26 default patterns, 0 followed patterns, 51 file(s) materialized.
+Mirror of `feiskyer/codex-settings` — 26 default patterns, 0 followed patterns, 53 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `feiskyer/codex-settings` — 26 default patterns, 0 followed patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 51 |
+| Files         | 53 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -74,42 +74,44 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 13 | ✓ | [`skills/claude-skill/references/examples.md`](skills/claude-skill/references/examples.md) |
 | 14 | ✓ | [`skills/claude-skill/references/flags-and-permissions.md`](skills/claude-skill/references/flags-and-permissions.md) |
 | 15 | ✓ | [`skills/claude-skill/SKILL.md`](skills/claude-skill/SKILL.md) |
-| 16 | ✓ | [`skills/deep-research/agents/openai.yaml`](skills/deep-research/agents/openai.yaml) |
-| 17 | ✓ | [`skills/deep-research/scripts/aggregate.py`](skills/deep-research/scripts/aggregate.py) |
-| 18 | ✓ | [`skills/deep-research/scripts/run_children.py`](skills/deep-research/scripts/run_children.py) |
-| 19 | ✓ | [`skills/deep-research/SKILL.md`](skills/deep-research/SKILL.md) |
-| 20 | ✓ | [`skills/deep-research/tests/test_deep_research_scripts.py`](skills/deep-research/tests/test_deep_research_scripts.py) |
-| 21 | ✓ | [`skills/github-fix-issue/agents/openai.yaml`](skills/github-fix-issue/agents/openai.yaml) |
-| 22 | ✓ | [`skills/github-fix-issue/SKILL.md`](skills/github-fix-issue/SKILL.md) |
-| 23 | ✓ | [`skills/github-review-pr/agents/openai.yaml`](skills/github-review-pr/agents/openai.yaml) |
-| 24 | ✓ | [`skills/github-review-pr/references/gh-commands.md`](skills/github-review-pr/references/gh-commands.md) |
-| 25 | ✓ | [`skills/github-review-pr/references/subagent-prompts.md`](skills/github-review-pr/references/subagent-prompts.md) |
-| 26 | ✓ | [`skills/github-review-pr/SKILL.md`](skills/github-review-pr/SKILL.md) |
-| 27 | ✓ | [`skills/gpt-image-skill/agents/openai.yaml`](skills/gpt-image-skill/agents/openai.yaml) |
-| 28 | ✓ | [`skills/gpt-image-skill/evals/evals.json`](skills/gpt-image-skill/evals/evals.json) |
-| 29 | ✓ | [`skills/gpt-image-skill/gpt_image.py`](skills/gpt-image-skill/gpt_image.py) |
-| 30 | ✓ | [`skills/gpt-image-skill/requirements.txt`](skills/gpt-image-skill/requirements.txt) |
-| 31 | ✓ | [`skills/gpt-image-skill/SKILL.md`](skills/gpt-image-skill/SKILL.md) |
-| 32 | ✓ | [`skills/gpt-image-skill/tests/test_gpt_image.py`](skills/gpt-image-skill/tests/test_gpt_image.py) |
-| 33 | ✓ | [`skills/grill-me/agents/openai.yaml`](skills/grill-me/agents/openai.yaml) |
-| 34 | ✓ | [`skills/grill-me/references/adr.md`](skills/grill-me/references/adr.md) |
-| 35 | ✓ | [`skills/grill-me/references/context-md.md`](skills/grill-me/references/context-md.md) |
-| 36 | ✓ | [`skills/grill-me/SKILL.md`](skills/grill-me/SKILL.md) |
-| 37 | ✓ | [`skills/handoff/agents/openai.yaml`](skills/handoff/agents/openai.yaml) |
-| 38 | ✓ | [`skills/handoff/SKILL.md`](skills/handoff/SKILL.md) |
-| 39 | ✓ | [`skills/minimax-image-skill/agents/openai.yaml`](skills/minimax-image-skill/agents/openai.yaml) |
-| 40 | ✓ | [`skills/minimax-image-skill/minimax_image.py`](skills/minimax-image-skill/minimax_image.py) |
-| 41 | ✓ | [`skills/minimax-image-skill/SKILL.md`](skills/minimax-image-skill/SKILL.md) |
-| 42 | ✓ | [`skills/minimax-image-skill/tests/test_minimax_image.py`](skills/minimax-image-skill/tests/test_minimax_image.py) |
-| 43 | ✓ | [`skills/nanobanana-skill/agents/openai.yaml`](skills/nanobanana-skill/agents/openai.yaml) |
-| 44 | ✓ | [`skills/nanobanana-skill/nanobanana.py`](skills/nanobanana-skill/nanobanana.py) |
-| 45 | ✓ | [`skills/nanobanana-skill/requirements.txt`](skills/nanobanana-skill/requirements.txt) |
-| 46 | ✓ | [`skills/nanobanana-skill/SKILL.md`](skills/nanobanana-skill/SKILL.md) |
-| 47 | ✓ | [`skills/nanobanana-skill/tests/test_nanobanana.py`](skills/nanobanana-skill/tests/test_nanobanana.py) |
-| 48 | ✓ | [`skills/youtube-transcribe-skill/agents/openai.yaml`](skills/youtube-transcribe-skill/agents/openai.yaml) |
-| 49 | ✓ | [`skills/youtube-transcribe-skill/scripts/transcribe_youtube.py`](skills/youtube-transcribe-skill/scripts/transcribe_youtube.py) |
-| 50 | ✓ | [`skills/youtube-transcribe-skill/SKILL.md`](skills/youtube-transcribe-skill/SKILL.md) |
-| 51 | ✓ | [`skills/youtube-transcribe-skill/tests/test_transcribe_youtube.py`](skills/youtube-transcribe-skill/tests/test_transcribe_youtube.py) |
+| 16 | ✓ | [`skills/code-simplifier/agents/openai.yaml`](skills/code-simplifier/agents/openai.yaml) |
+| 17 | ✓ | [`skills/code-simplifier/SKILL.md`](skills/code-simplifier/SKILL.md) |
+| 18 | ✓ | [`skills/deep-research/agents/openai.yaml`](skills/deep-research/agents/openai.yaml) |
+| 19 | ✓ | [`skills/deep-research/scripts/aggregate.py`](skills/deep-research/scripts/aggregate.py) |
+| 20 | ✓ | [`skills/deep-research/scripts/run_children.py`](skills/deep-research/scripts/run_children.py) |
+| 21 | ✓ | [`skills/deep-research/SKILL.md`](skills/deep-research/SKILL.md) |
+| 22 | ✓ | [`skills/deep-research/tests/test_deep_research_scripts.py`](skills/deep-research/tests/test_deep_research_scripts.py) |
+| 23 | ✓ | [`skills/github-fix-issue/agents/openai.yaml`](skills/github-fix-issue/agents/openai.yaml) |
+| 24 | ✓ | [`skills/github-fix-issue/SKILL.md`](skills/github-fix-issue/SKILL.md) |
+| 25 | ✓ | [`skills/github-review-pr/agents/openai.yaml`](skills/github-review-pr/agents/openai.yaml) |
+| 26 | ✓ | [`skills/github-review-pr/references/gh-commands.md`](skills/github-review-pr/references/gh-commands.md) |
+| 27 | ✓ | [`skills/github-review-pr/references/subagent-prompts.md`](skills/github-review-pr/references/subagent-prompts.md) |
+| 28 | ✓ | [`skills/github-review-pr/SKILL.md`](skills/github-review-pr/SKILL.md) |
+| 29 | ✓ | [`skills/gpt-image-skill/agents/openai.yaml`](skills/gpt-image-skill/agents/openai.yaml) |
+| 30 | ✓ | [`skills/gpt-image-skill/evals/evals.json`](skills/gpt-image-skill/evals/evals.json) |
+| 31 | ✓ | [`skills/gpt-image-skill/gpt_image.py`](skills/gpt-image-skill/gpt_image.py) |
+| 32 | ✓ | [`skills/gpt-image-skill/requirements.txt`](skills/gpt-image-skill/requirements.txt) |
+| 33 | ✓ | [`skills/gpt-image-skill/SKILL.md`](skills/gpt-image-skill/SKILL.md) |
+| 34 | ✓ | [`skills/gpt-image-skill/tests/test_gpt_image.py`](skills/gpt-image-skill/tests/test_gpt_image.py) |
+| 35 | ✓ | [`skills/grill-me/agents/openai.yaml`](skills/grill-me/agents/openai.yaml) |
+| 36 | ✓ | [`skills/grill-me/references/adr.md`](skills/grill-me/references/adr.md) |
+| 37 | ✓ | [`skills/grill-me/references/context-md.md`](skills/grill-me/references/context-md.md) |
+| 38 | ✓ | [`skills/grill-me/SKILL.md`](skills/grill-me/SKILL.md) |
+| 39 | ✓ | [`skills/handoff/agents/openai.yaml`](skills/handoff/agents/openai.yaml) |
+| 40 | ✓ | [`skills/handoff/SKILL.md`](skills/handoff/SKILL.md) |
+| 41 | ✓ | [`skills/minimax-image-skill/agents/openai.yaml`](skills/minimax-image-skill/agents/openai.yaml) |
+| 42 | ✓ | [`skills/minimax-image-skill/minimax_image.py`](skills/minimax-image-skill/minimax_image.py) |
+| 43 | ✓ | [`skills/minimax-image-skill/SKILL.md`](skills/minimax-image-skill/SKILL.md) |
+| 44 | ✓ | [`skills/minimax-image-skill/tests/test_minimax_image.py`](skills/minimax-image-skill/tests/test_minimax_image.py) |
+| 45 | ✓ | [`skills/nanobanana-skill/agents/openai.yaml`](skills/nanobanana-skill/agents/openai.yaml) |
+| 46 | ✓ | [`skills/nanobanana-skill/nanobanana.py`](skills/nanobanana-skill/nanobanana.py) |
+| 47 | ✓ | [`skills/nanobanana-skill/requirements.txt`](skills/nanobanana-skill/requirements.txt) |
+| 48 | ✓ | [`skills/nanobanana-skill/SKILL.md`](skills/nanobanana-skill/SKILL.md) |
+| 49 | ✓ | [`skills/nanobanana-skill/tests/test_nanobanana.py`](skills/nanobanana-skill/tests/test_nanobanana.py) |
+| 50 | ✓ | [`skills/youtube-transcribe-skill/agents/openai.yaml`](skills/youtube-transcribe-skill/agents/openai.yaml) |
+| 51 | ✓ | [`skills/youtube-transcribe-skill/scripts/transcribe_youtube.py`](skills/youtube-transcribe-skill/scripts/transcribe_youtube.py) |
+| 52 | ✓ | [`skills/youtube-transcribe-skill/SKILL.md`](skills/youtube-transcribe-skill/SKILL.md) |
+| 53 | ✓ | [`skills/youtube-transcribe-skill/tests/test_transcribe_youtube.py`](skills/youtube-transcribe-skill/tests/test_transcribe_youtube.py) |
 
 ---
 

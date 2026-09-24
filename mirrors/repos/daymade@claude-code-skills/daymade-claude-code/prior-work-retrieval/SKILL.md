@@ -1,15 +1,11 @@
 ---
 name: prior-work-retrieval
 description: >-
-  Only for explicit prior-work/reuse/history requests; never for read-only status or inspection.
-  Finds and verifies existing successful work before substantial new production when reuse is
-  materially plausible. Use when the user explicitly references earlier work, existing code/SOPs,
-  history, prior decisions, another project, or says 以前做过, 已有代码, 别重复造轮子, reuse, or
-  retrieve before produce. A mention of current/现有 tests, README, files, implementation, behavior,
-  or validation is not a prior-work request. Do not infer the trigger merely because new work might
-  duplicate something. Do not invoke for current-file inspection, ordinary bug fixes, mechanical
-  verification, or merely because the final answer is a report/summary.
-  Produces a source-verified reuse/adapt/reject receipt; zero hits never prove absence.
+  Only for explicit prior-work/reuse/history requests, not status checks. Finds and verifies
+  existing work before new production when reuse is plausible. Use when the user explicitly
+  references earlier work, existing code, history, or prior decisions, or says 以前做过, 已有代码, 别重复造轮子.
+  Not for current tests, files, bug fixes, or mechanical verification. Produces a reuse/adapt/reject
+  receipt; zero hits never prove absence.
 argument-hint: "<task or question>"
 ---
 
@@ -19,6 +15,12 @@ Run this before substantial production **only when the trigger above is present*
 current-state checks stay direct unless the user asks for history. Its job is not to generate another
 summary. Its job is to answer: **what already exists, which source is current,
 what should be reused, and what remains genuinely new?**
+
+**Not for**: current-file inspection, ordinary bug fixes, mechanical verification, or a task
+merely because the final answer happens to be a report/summary. A mention of current/现有 tests,
+README, files, implementation, behavior, or validation is not by itself a prior-work request. Do
+not infer the trigger merely because new work might duplicate something — that risk alone does not
+make a request explicit.
 
 ## Completion contract
 
@@ -198,13 +200,10 @@ uv run --no-project python scripts/prior_work.py complete \
 
 If none qualify, use `--no-reuse-reason` with the verified mismatch. “No hits”
 is not a reason; it is a retrieval observation and may require widening terms or
-resolving a failed carrier. And a zero-candidate required carrier cannot be
-reported as "none exists" by paraphrase either: attach the label census — run
-`analyze_sessions.py search --all-projects --exclude-session <CURRENT_ID> '<term>'`
-for each outcome term and report the per-label hit counts (`message` /
-`thinking` / `tool_input:<name>` / `tool_result` / `attachment` / `summary`).
-The census does not change the conclusion; it closes the "re-derive the query
-syntax" path by showing where the terms do live.
+resolving a failed carrier. A zero-candidate required carrier cannot be
+reported as "none exists" by paraphrase either. Check index provider coverage
+and freshness, refine indexed terms, and report the remaining gap. Do not run
+an unindexed whole-history label census.
 
 **Results at low confidence are not zero results.** When a carrier reports
 `result_count > 0` alongside `terms_passed: false`, expand those ranked results

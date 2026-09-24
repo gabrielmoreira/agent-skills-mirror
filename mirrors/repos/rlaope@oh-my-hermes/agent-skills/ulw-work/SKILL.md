@@ -25,7 +25,7 @@ This is an OMH `ultrawork` workflow skill, projected for Agent Skills hosts (Cla
 
 ## Do Not Use When
 
-- The work touches the same files or invariants in ways that need one owner.
+- Avoid conflicting parallel writers; use single-owner or ordered execution.
 - The plan is not accepted, lane boundaries are unclear, or verification commands are missing.
 - The user expects Hermes to secretly execute coding lanes instead of preparing explicit selected-runtime handoffs.
 - For a decision spike, use `decision-prototype`.
@@ -165,10 +165,16 @@ Safety rules:
 Use the current host's own tools and subagent/task mechanism when available;
 otherwise run the same lanes sequentially or name the unavailable capability.
 A prepared plan, handoff, checklist, or skill installation is not execution,
-review, CI, merge-readiness, or merge evidence. Report actual tool results or
-`not_observed` / `not_available`; never invent dispatch or host accounting.
+review, CI, merge-readiness, or merge evidence. Record actual tool results, or
+`not_observed` / `not_available`, in the record; never invent dispatch or host
+accounting.
 Treat supplied context as advisory, not proof of hidden memory reads or writes.
 State scope, constraints, verification, and the stop condition before work.
+Reply in the user's own words and the host's own voice: OMH's record terms
+(surface, lane, wrapper, handoff, evidence boundary, not_observed) stay in
+records and tool calls, never in the sentence the user reads unless they ask
+about one; and when a stop condition or a decision the user owns ends the turn,
+offer the next action as a question rather than declaring what will not be done.
 Supporting paths are relative to this skill directory; sibling skill paths are
 relative to its parent. Resolve them from the host-provided skill base directory
 (`{baseDir}` on hosts that provide it), never a hardcoded install location.

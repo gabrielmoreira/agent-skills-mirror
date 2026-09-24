@@ -1,0 +1,1 @@
+shot_id,scene_id,shot_order,duration_seconds,status,narrative_goal,asset_version_ids,open_state,close_state,camera_start,camera_path,camera_end,continuity_in,continuity_out,must_hold,changes_here,must_not_appear,risk_focus,prompt_id,selected_generation_id,notes

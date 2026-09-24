@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `epoko77-ai/im-not-ai` — 26 default patterns, 0 followed patterns, 31 file(s) materialized.
+Mirror of `epoko77-ai/im-not-ai` — 26 default patterns, 0 followed patterns, 32 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `epoko77-ai/im-not-ai` — 26 default patterns, 0 followed patterns, 3
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 31 |
+| Files         | 32 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -85,11 +85,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 24 | ✓ | [`skills/humanize-korean/references/quick-rules.md`](skills/humanize-korean/references/quick-rules.md) |
 | 25 | ✓ | [`skills/humanize-korean/references/rewriting-playbook.md`](skills/humanize-korean/references/rewriting-playbook.md) |
 | 26 | ✓ | [`skills/humanize-korean/references/scholarship.md`](skills/humanize-korean/references/scholarship.md) |
-| 27 | ✓ | [`skills/humanize-korean/references/web-service-spec.md`](skills/humanize-korean/references/web-service-spec.md) |
-| 28 | ✓ | [`skills/humanize-korean/SKILL.md`](skills/humanize-korean/SKILL.md) |
-| 29 | ✓ | [`skills/humanize-redo/SKILL.md`](skills/humanize-redo/SKILL.md) |
-| 30 | ✓ | [`skills/humanize-scan/SKILL.md`](skills/humanize-scan/SKILL.md) |
-| 31 | ✓ | [`skills/humanize/SKILL.md`](skills/humanize/SKILL.md) |
+| 27 | ✓ | [`skills/humanize-korean/references/taxonomy-candidates.md`](skills/humanize-korean/references/taxonomy-candidates.md) |
+| 28 | ✓ | [`skills/humanize-korean/references/web-service-spec.md`](skills/humanize-korean/references/web-service-spec.md) |
+| 29 | ✓ | [`skills/humanize-korean/SKILL.md`](skills/humanize-korean/SKILL.md) |
+| 30 | ✓ | [`skills/humanize-redo/SKILL.md`](skills/humanize-redo/SKILL.md) |
+| 31 | ✓ | [`skills/humanize-scan/SKILL.md`](skills/humanize-scan/SKILL.md) |
+| 32 | ✓ | [`skills/humanize/SKILL.md`](skills/humanize/SKILL.md) |
 
 ---
 

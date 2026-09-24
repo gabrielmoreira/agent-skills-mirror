@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `tinyhumansai/openhuman` — 26 default patterns, 17 followed patterns, 184 file(s) materialized.
+Mirror of `tinyhumansai/openhuman` — 26 default patterns, 17 followed patterns, 185 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `tinyhumansai/openhuman` — 26 default patterns, 17 followed patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 17 |
-| Files         | 184 |
+| Files         | 185 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -233,32 +233,33 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 156 | ✓ | [`scripts/ci/README.md`](scripts/ci/README.md) |
 | 157 | ✓ | [`scripts/debug/README.md`](scripts/debug/README.md) |
 | 158 | ✓ | [`scripts/dep-audit/README.md`](scripts/dep-audit/README.md) |
-| 159 | ✓ | [`scripts/profile/README.md`](scripts/profile/README.md) |
-| 160 | ✓ | [`scripts/rabbit/README.md`](scripts/rabbit/README.md) |
-| 161 | ✓ | [`scripts/README.md`](scripts/README.md) |
-| 162 | ✓ | [`scripts/shortcuts/README.md`](scripts/shortcuts/README.md) |
-| 163 | ✓ | [`scripts/shortcuts/review/README.md`](scripts/shortcuts/review/README.md) |
-| 164 | ✓ | [`scripts/shortcuts/work/README.md`](scripts/shortcuts/work/README.md) |
-| 165 | ✓ | [`scripts/test-planning/README.md`](scripts/test-planning/README.md) |
-| 166 | ✓ | [`tests/fixtures/memory_golden/README.md`](tests/fixtures/memory_golden/README.md) |
-| 167 | ✓ | [`tests/README.md`](tests/README.md) |
-| 168 | → | [`.github/PULL_REQUEST_TEMPLATE.md`](.github/PULL_REQUEST_TEMPLATE.md) |
-| 169 | → | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
-| 170 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 171 | → | [`docs/community/discussions.md`](docs/community/discussions.md) |
-| 172 | → | [`docs/CONTRIBUTING-BEGINNERS.md`](docs/CONTRIBUTING-BEGINNERS.md) |
-| 173 | → | [`docs/SUPPORT.md`](docs/SUPPORT.md) |
-| 174 | → | [`gitbooks/developing/architecture.md`](gitbooks/developing/architecture.md) |
-| 175 | → | [`gitbooks/developing/architecture/agent-harness.md`](gitbooks/developing/architecture/agent-harness.md) |
-| 176 | → | [`gitbooks/developing/architecture/frontend.md`](gitbooks/developing/architecture/frontend.md) |
-| 177 | → | [`gitbooks/developing/architecture/tauri-shell.md`](gitbooks/developing/architecture/tauri-shell.md) |
-| 178 | → | [`gitbooks/developing/building-rust-core.md`](gitbooks/developing/building-rust-core.md) |
-| 179 | → | [`gitbooks/developing/getting-set-up.md`](gitbooks/developing/getting-set-up.md) |
-| 180 | → | [`gitbooks/features/cloud-deploy.md`](gitbooks/features/cloud-deploy.md) |
-| 181 | → | [`gitbooks/features/native-tools/voice.md`](gitbooks/features/native-tools/voice.md) |
-| 182 | → | [`INSTALL.md`](INSTALL.md) |
-| 183 | → | [`README.md`](README.md) |
-| 184 | → | [`SECURITY.md`](SECURITY.md) |
+| 159 | ✓ | [`scripts/life-scenarios/README.md`](scripts/life-scenarios/README.md) |
+| 160 | ✓ | [`scripts/profile/README.md`](scripts/profile/README.md) |
+| 161 | ✓ | [`scripts/rabbit/README.md`](scripts/rabbit/README.md) |
+| 162 | ✓ | [`scripts/README.md`](scripts/README.md) |
+| 163 | ✓ | [`scripts/shortcuts/README.md`](scripts/shortcuts/README.md) |
+| 164 | ✓ | [`scripts/shortcuts/review/README.md`](scripts/shortcuts/review/README.md) |
+| 165 | ✓ | [`scripts/shortcuts/work/README.md`](scripts/shortcuts/work/README.md) |
+| 166 | ✓ | [`scripts/test-planning/README.md`](scripts/test-planning/README.md) |
+| 167 | ✓ | [`tests/fixtures/memory_golden/README.md`](tests/fixtures/memory_golden/README.md) |
+| 168 | ✓ | [`tests/README.md`](tests/README.md) |
+| 169 | → | [`.github/PULL_REQUEST_TEMPLATE.md`](.github/PULL_REQUEST_TEMPLATE.md) |
+| 170 | → | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
+| 171 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 172 | → | [`docs/community/discussions.md`](docs/community/discussions.md) |
+| 173 | → | [`docs/CONTRIBUTING-BEGINNERS.md`](docs/CONTRIBUTING-BEGINNERS.md) |
+| 174 | → | [`docs/SUPPORT.md`](docs/SUPPORT.md) |
+| 175 | → | [`gitbooks/developing/architecture.md`](gitbooks/developing/architecture.md) |
+| 176 | → | [`gitbooks/developing/architecture/agent-harness.md`](gitbooks/developing/architecture/agent-harness.md) |
+| 177 | → | [`gitbooks/developing/architecture/frontend.md`](gitbooks/developing/architecture/frontend.md) |
+| 178 | → | [`gitbooks/developing/architecture/tauri-shell.md`](gitbooks/developing/architecture/tauri-shell.md) |
+| 179 | → | [`gitbooks/developing/building-rust-core.md`](gitbooks/developing/building-rust-core.md) |
+| 180 | → | [`gitbooks/developing/getting-set-up.md`](gitbooks/developing/getting-set-up.md) |
+| 181 | → | [`gitbooks/features/cloud-deploy.md`](gitbooks/features/cloud-deploy.md) |
+| 182 | → | [`gitbooks/features/native-tools/voice.md`](gitbooks/features/native-tools/voice.md) |
+| 183 | → | [`INSTALL.md`](INSTALL.md) |
+| 184 | → | [`README.md`](README.md) |
+| 185 | → | [`SECURITY.md`](SECURITY.md) |
 
 ---
 

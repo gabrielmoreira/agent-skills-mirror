@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `JimLiu/baoyu-design` — 26 default patterns, 0 followed patterns, 198 file(s) materialized.
+Mirror of `JimLiu/baoyu-design` — 26 default patterns, 0 followed patterns, 200 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `JimLiu/baoyu-design` — 26 default patterns, 0 followed patterns, 19
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 198 |
+| Files         | 200 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -236,27 +236,29 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 175 | ✓ | [`skills/baoyu-design/starter-components/data-overlay.js`](skills/baoyu-design/starter-components/data-overlay.js) |
 | 176 | ✓ | [`skills/baoyu-design/starter-components/deck-stage-patch.md`](skills/baoyu-design/starter-components/deck-stage-patch.md) |
 | 177 | ✓ | [`skills/baoyu-design/starter-components/deck-stage.js`](skills/baoyu-design/starter-components/deck-stage.js) |
-| 178 | ✓ | [`skills/baoyu-design/starter-components/design-canvas.jsx`](skills/baoyu-design/starter-components/design-canvas.jsx) |
-| 179 | ✓ | [`skills/baoyu-design/starter-components/doc-page.js`](skills/baoyu-design/starter-components/doc-page.js) |
-| 180 | ✓ | [`skills/baoyu-design/starter-components/facebook-shell.js`](skills/baoyu-design/starter-components/facebook-shell.js) |
-| 181 | ✓ | [`skills/baoyu-design/starter-components/file-window.js`](skills/baoyu-design/starter-components/file-window.js) |
-| 182 | ✓ | [`skills/baoyu-design/starter-components/image-slot.js`](skills/baoyu-design/starter-components/image-slot.js) |
-| 183 | ✓ | [`skills/baoyu-design/starter-components/instagram-shell.js`](skills/baoyu-design/starter-components/instagram-shell.js) |
-| 184 | ✓ | [`skills/baoyu-design/starter-components/instagram-story.js`](skills/baoyu-design/starter-components/instagram-story.js) |
-| 185 | ✓ | [`skills/baoyu-design/starter-components/ios-frame.jsx`](skills/baoyu-design/starter-components/ios-frame.jsx) |
-| 186 | ✓ | [`skills/baoyu-design/starter-components/ios-shell.js`](skills/baoyu-design/starter-components/ios-shell.js) |
-| 187 | ✓ | [`skills/baoyu-design/starter-components/linkedin-shell.js`](skills/baoyu-design/starter-components/linkedin-shell.js) |
-| 188 | ✓ | [`skills/baoyu-design/starter-components/macos-window.jsx`](skills/baoyu-design/starter-components/macos-window.jsx) |
-| 189 | ✓ | [`skills/baoyu-design/starter-components/pinterest-shell.js`](skills/baoyu-design/starter-components/pinterest-shell.js) |
-| 190 | ✓ | [`skills/baoyu-design/starter-components/post-card.js`](skills/baoyu-design/starter-components/post-card.js) |
-| 191 | ✓ | [`skills/baoyu-design/starter-components/reddit-shell.js`](skills/baoyu-design/starter-components/reddit-shell.js) |
-| 192 | ✓ | [`skills/baoyu-design/starter-components/social-frames.js`](skills/baoyu-design/starter-components/social-frames.js) |
-| 193 | ✓ | [`skills/baoyu-design/starter-components/three-d-stage.js`](skills/baoyu-design/starter-components/three-d-stage.js) |
-| 194 | ✓ | [`skills/baoyu-design/starter-components/tiktok-shell.js`](skills/baoyu-design/starter-components/tiktok-shell.js) |
-| 195 | ✓ | [`skills/baoyu-design/starter-components/tweaks-panel.jsx`](skills/baoyu-design/starter-components/tweaks-panel.jsx) |
-| 196 | ✓ | [`skills/baoyu-design/starter-components/x-shell.js`](skills/baoyu-design/starter-components/x-shell.js) |
-| 197 | ✓ | [`skills/baoyu-design/starter-components/youtube-shell.js`](skills/baoyu-design/starter-components/youtube-shell.js) |
-| 198 | ✓ | [`skills/baoyu-design/system-prompt.md`](skills/baoyu-design/system-prompt.md) |
+| 178 | ✓ | [`skills/baoyu-design/starter-components/design-canvas-patch.md`](skills/baoyu-design/starter-components/design-canvas-patch.md) |
+| 179 | ✓ | [`skills/baoyu-design/starter-components/design-canvas.jsx`](skills/baoyu-design/starter-components/design-canvas.jsx) |
+| 180 | ✓ | [`skills/baoyu-design/starter-components/doc-page.js`](skills/baoyu-design/starter-components/doc-page.js) |
+| 181 | ✓ | [`skills/baoyu-design/starter-components/facebook-shell.js`](skills/baoyu-design/starter-components/facebook-shell.js) |
+| 182 | ✓ | [`skills/baoyu-design/starter-components/file-window.js`](skills/baoyu-design/starter-components/file-window.js) |
+| 183 | ✓ | [`skills/baoyu-design/starter-components/image-slot.js`](skills/baoyu-design/starter-components/image-slot.js) |
+| 184 | ✓ | [`skills/baoyu-design/starter-components/instagram-shell.js`](skills/baoyu-design/starter-components/instagram-shell.js) |
+| 185 | ✓ | [`skills/baoyu-design/starter-components/instagram-story.js`](skills/baoyu-design/starter-components/instagram-story.js) |
+| 186 | ✓ | [`skills/baoyu-design/starter-components/ios-frame.jsx`](skills/baoyu-design/starter-components/ios-frame.jsx) |
+| 187 | ✓ | [`skills/baoyu-design/starter-components/ios-shell.js`](skills/baoyu-design/starter-components/ios-shell.js) |
+| 188 | ✓ | [`skills/baoyu-design/starter-components/linkedin-shell.js`](skills/baoyu-design/starter-components/linkedin-shell.js) |
+| 189 | ✓ | [`skills/baoyu-design/starter-components/macos-window.jsx`](skills/baoyu-design/starter-components/macos-window.jsx) |
+| 190 | ✓ | [`skills/baoyu-design/starter-components/pinterest-shell.js`](skills/baoyu-design/starter-components/pinterest-shell.js) |
+| 191 | ✓ | [`skills/baoyu-design/starter-components/post-card.js`](skills/baoyu-design/starter-components/post-card.js) |
+| 192 | ✓ | [`skills/baoyu-design/starter-components/reddit-shell.js`](skills/baoyu-design/starter-components/reddit-shell.js) |
+| 193 | ✓ | [`skills/baoyu-design/starter-components/social-frames.js`](skills/baoyu-design/starter-components/social-frames.js) |
+| 194 | ✓ | [`skills/baoyu-design/starter-components/three-d-stage.js`](skills/baoyu-design/starter-components/three-d-stage.js) |
+| 195 | ✓ | [`skills/baoyu-design/starter-components/tiktok-shell.js`](skills/baoyu-design/starter-components/tiktok-shell.js) |
+| 196 | ✓ | [`skills/baoyu-design/starter-components/tweaks-panel.jsx`](skills/baoyu-design/starter-components/tweaks-panel.jsx) |
+| 197 | ✓ | [`skills/baoyu-design/starter-components/watercolor-kit.js`](skills/baoyu-design/starter-components/watercolor-kit.js) |
+| 198 | ✓ | [`skills/baoyu-design/starter-components/x-shell.js`](skills/baoyu-design/starter-components/x-shell.js) |
+| 199 | ✓ | [`skills/baoyu-design/starter-components/youtube-shell.js`](skills/baoyu-design/starter-components/youtube-shell.js) |
+| 200 | ✓ | [`skills/baoyu-design/system-prompt.md`](skills/baoyu-design/system-prompt.md) |
 
 ---
 

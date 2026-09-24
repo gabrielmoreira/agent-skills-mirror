@@ -1,0 +1,96 @@
+# LoopX Developer Guide / LoopX 开发者指南
+
+This directory is the stable entry point for contributors changing LoopX
+runtime behavior, public contracts, tests, or release gates. Product users do
+not need these documents to start LoopX.
+
+本目录是修改 LoopX 运行时、公开合同、测试和发布门禁时的稳定入口。普通产品
+用户接入 LoopX 时不需要先阅读或配置这些开发者能力。
+
+## Start Here / 从这里开始
+
+1. Read [Contributing](https://github.com/huangruiteng/loopx/blob/main/CONTRIBUTING.md) for repository boundaries and the
+   pull-request checklist.
+2. Read [Current technical directions](../project/technical-directions.md) to
+   choose an active program, understand its maturity, and find its tracker.
+3. Follow the [Developer Book](/loopx/docs/book/) for the curated external
+   learning path from control-plane foundations to project onboarding and
+   developer contributions.
+4. Read the [LoopX project code tour](project-code-tour.zh-CN.md) for a Chinese,
+   code-linked overview of the architecture and one complete execution path.
+5. Follow the [control-plane developer course](control-plane-course/README.md)
+   for an eleven-lecture, code-led path through the real CLI, state machine, and
+   layered quality gates.
+6. Read [Testing and quality](testing-and-quality.md) before changing agent-facing
+   output, scheduler decisions, todo/gate semantics, onboarding, or release
+   promotion.
+7. Use [What counts as a good smoke](good-smokes.md) before adding, retaining,
+   or consolidating a public smoke.
+8. Use [Architecture](../architecture.md) and the
+   [core control-plane graphs](../product/core-control-plane/README.md) to find
+   the bounded context that owns the behavior.
+9. Check [Public/private boundaries](../public-private-boundary.md) before adding
+   fixtures, examples, evidence, or provider-backed evaluation.
+10. Follow the [documentation layout policy](documentation-layout.md) before
+   adding or moving public documentation.
+
+1. 先阅读[贡献指南](https://github.com/huangruiteng/loopx/blob/main/CONTRIBUTING.md)，了解仓库边界和 PR 检查项。
+2. 阅读[当前技术方向](../project/technical-directions.zh-CN.md)，选择活跃计划、了解
+   成熟度并找到对应 tracker。
+3. 按顺序阅读[开发者手册](/loopx/docs/book/)，从控制面基础到项目接入和开发者贡献。
+4. 先阅读[LoopX 项目代码导读](project-code-tour.zh-CN.md)，通过源码链接了解架构和
+   一次完整执行链路。
+5. 按顺序学习[控制面开发者 11 讲](control-plane-course/README.md)，沿真实 CLI、
+   状态机、核心函数和分层质量门禁建立代码心智模型。
+6. 修改 agent-facing 输出、调度决策、todo/gate 语义、新用户接入或发布流程前，
+   阅读[测试与质量体系](testing-and-quality.md)。
+7. 新增、保留或合并公开 smoke 前，阅读
+   [什么是好的 Smoke](good-smokes.md)。
+8. 通过[架构文档](../architecture.md)和
+   [控制面核心图](../product/core-control-plane/README.md)定位真正拥有该行为的
+   bounded context。
+9. 添加 fixture、示例、证据或模型测试前，检查
+   [公开/私有边界](../public-private-boundary.md)。
+10. 新增或移动公开文档前，遵循
+   [文档布局规则](documentation-layout.md)。
+
+## Core References / 核心参考
+
+| Area / 领域 | Reference / 文档 |
+| --- | --- |
+| Current strategic programs / 当前战略方向 | [Technical directions](../project/technical-directions.md) · [中文](../project/technical-directions.zh-CN.md) |
+| Curated learning path / 开发者学习路径 | [Developer Book](/loopx/docs/book/) |
+| Project architecture tour / 项目架构导读 | [LoopX project code tour](project-code-tour.zh-CN.md) |
+| Control-plane code reading / 控制面代码领读 | [Eleven-lecture developer course](control-plane-course/README.md) |
+| Quality layers and commands / 质量分层与命令 | [Testing and quality](testing-and-quality.md) |
+| Durable smoke design and cleanup / 稳定 Smoke 的设计与清理 | [What counts as a good smoke](good-smokes.md) |
+| Agent-facing size budgets / Agent 输出体积预算 | [Interface budget contract](../reference/contracts/interface-budget-contract.md) |
+| Status and decision payloads / 状态与决策载荷 | [Status data contract](../status-data-contract.md) |
+| Quota and spend semantics / Quota 与 spend 语义 | [Quota allocation](../quota-allocation.md) |
+| Model-behavior shadow qualification / 模型行为影子验证 | [Model behavior qualification v0](../reference/protocols/model-behavior-qualification-v0.md) |
+| Release promotion / 发布晋级 | [Release readiness](../product/release-readiness.md) |
+| Benchmark research / Benchmark 研究 | [Benchmark workspace](https://github.com/huangruiteng/loopx/blob/main/benchmark/README.md) · [Research RFC](../architecture/rfcs/long-horizon-harness-benchmark-research-program-v0.md) |
+
+## Change Loop / 变更闭环
+
+Keep one shipped behavior as the source of truth. Characterize it first, make a
+small change in its owning module, then choose validation by risk. Do not create
+a second product path solely for a test.
+
+始终只保留一套真实交付行为作为 source of truth：先刻画现状，在行为所属模块中做
+小变更，再按风险选择验证层。不要为了测试而维护第二套产品路径。
+
+The usual loop is:
+
+```text
+issue or regression
+  -> deterministic characterization
+  -> focused implementation
+  -> focused tests and durable smoke
+  -> catalog-selected canary
+  -> owner review when behavior is sensitive
+  -> release outcome observation when needed
+```
+
+通常闭环为：问题或回归 -> 确定性刻画 -> 聚焦实现 -> 单测与 durable smoke ->
+catalog 选择的 canary -> 敏感变更 owner review -> 必要时观察发布结果。

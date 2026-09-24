@@ -369,16 +369,21 @@ values are rejected by schema, and runtime normalization falls back to
 
 `advisoryWait.primaryBotLogin` selects the advisory bot whose review the
 advisory-wait gate tracks (default Copilot), and
-`advisoryWait.secondaryBotLogin` names an **optional, non-gating** secondary
-bot. When the primary is cap-exhausted or stalled / rate-limited, the
-secondary is requested once per HEAD as a supplement; it never satisfies the
-primary advisory-wait gate, never receives a primary `advisory-wait` marker,
-and its review is ordinary advisory input. Omitting
-`advisoryWait.secondaryBotLogin` (or setting it equal to the primary) disables
-the supplement, keeping behavior identical to a primary-only policy. Configure
-the secondary to a requestable
-reviewer whose request appears on the PR timeline so the once-per-HEAD guard
-can observe it.
+`advisoryWait.secondaryBotLogin` names one or more **optional, non-gating**
+secondary bots -- a single login string, or an array of login strings
+(#3186; a string is equivalent to a one-element array). When the primary is
+cap-exhausted or stalled / rate-limited, each configured secondary is
+requested once per HEAD as a supplement; none of them ever satisfies the
+primary advisory-wait gate, receives a primary `advisory-wait` marker, or
+changes the primary's request cap -- every secondary bot's review is
+ordinary advisory input. Resolution trims and lowercases each entry, drops
+blanks, drops any entry equal to the primary, and dedupes
+case-insensitively; omitting `advisoryWait.secondaryBotLogin` (or a value
+that normalizes to an empty list -- for example every entry equal to the
+primary) disables the supplement entirely, keeping behavior identical to a
+primary-only policy. Configure each secondary to a requestable reviewer
+whose request appears on the PR timeline so the once-per-HEAD guard can
+observe it.
 
 `advisoryWait.secondaryQuietWindow` (#2335, off by default when omitted)
 requires a configured quiet period to elapse since the last substantive
@@ -391,17 +396,23 @@ extra persisted state: an unresolved item keeps the anchor fresh, and a
 disposition reply, a watermark, or a courtesy bot acknowledgement never
 reopens it. Distinct from `advisoryWait.settledWindow`, which bounds the
 PRIMARY bot's own pending state, not a late secondary-bot arrival. **#2544**:
-once the secondary bot has already posted a genuine review for the current
+once a secondary bot has already posted a genuine review for the current
 HEAD, only a short fixed confirmation buffer applies from that review's own
-timestamp instead of the full configured duration -- a HEAD the bot has not
-yet reviewed still waits the full period unchanged. **#2547**: a rate-limit
-/ skip-review notice for the current HEAD, with no later genuine comment,
-is a third outcome distinct from `#2544`'s pending/settled split -- a
-definitive decline, not "might still be reviewing" -- and skips the wait
-entirely (no buffer, no remaining window). A repository need not configure
-anything extra for this: it applies automatically whenever
-`advisoryWait.secondaryQuietWindow` and `advisoryWait.secondaryBotLogin`
-are both set.
+timestamp instead of the full configured duration -- a HEAD that no
+configured secondary bot has reviewed yet still waits the full period
+unchanged.
+**#2547**: a rate-limit / skip-review notice for the current HEAD, with no
+later genuine comment, is a third outcome distinct from `#2544`'s
+pending/settled split -- a definitive decline, not "might still be
+reviewing" -- and skips the wait entirely (no buffer, no remaining window).
+A repository need not configure anything extra for this: it applies
+automatically whenever `advisoryWait.secondaryQuietWindow` and
+`advisoryWait.secondaryBotLogin` are both set. **#3186**: with several
+secondary logins configured, `pre-merge-readiness` classifies each one's
+settlement independently first -- any login still pending keeps the full
+window; once every login has declined, the wait completes immediately;
+otherwise the short settled buffer anchors on the _latest_ timestamp among
+the settled logins, and a declined login never extends that wait.
 
 `advisoryWait.capExhaustedRoute` is intentionally fail-closed. The
 default `phase-specific` behavior keeps the current E14 skip / F2-F3
@@ -918,6 +929,18 @@ Reusable inputs:
 | `lint-command`     | `pnpm run lint:minimum`                           | Project lint/test command                                |
 | `boundary-command` | `node scripts/check-pnpm-boundary.mjs`            | Check that distributable command rows do not leak `pnpm` |
 
+The `lint-command` and `boundary-command` defaults above are this
+repository's own commands and are source-repository-only:
+`check-pnpm-boundary.mjs` ships in no core file set or helper runtime
+profile, and reads a path relative to `idd-template/` that exists only
+in this source repository; `lint:minimum` is this repository's own
+`package.json` script. A reusable workflow's steps run against the
+caller's checkout, so neither default can run there unmodified —
+running both commands in a scratch imported tree confirms this: the
+boundary command fails with `MODULE_NOT_FOUND`, and even copied in by
+hand, with `ENOENT` (issue #3293). Every downstream caller, Node.js or
+not, must pass its own `lint-command` and `boundary-command`.
+
 Example downstream usage:
 
 ```yaml
@@ -926,7 +949,8 @@ jobs:
     uses: kurone-kito/idd-skill/.github/workflows/pnpm-boundary.yml@main
     with:
       node-version: "24.x"
-      boundary-command: node scripts/check-pnpm-boundary.mjs
+      lint-command: npm run lint # replace with your own lint/test command
+      boundary-command: "true" # replace with your own boundary check, if any
 ```
 
 If a downstream repository is non-Node.js, either skip this workflow or
@@ -1448,6 +1472,7 @@ supports these keys:
 - `critiqueLoop.cPhaseLowSeveritySkipAfter` (default `3`)
 - `critiqueLoop.e10NoProgressHoldAfter` (default `3`)
 - `critiqueLoop.deferAfterRounds` (default `12`)
+- `critiqueLoop.deferByUrgency` (default `off`; `low` or `low-and-medium`)
 - `reviewEscalation.changesRequestedFirstEscalation` /
   `reviewEscalation.changesRequestedSecondEscalation`
   (default `PT24H` / `PT48H`)
@@ -1855,9 +1880,14 @@ helper from an interactive TTY. That flow:
 1. prompts for the issue number before any mutation
 2. inspects live open PR state on the active claim branch and asks for a
    PR number only when PR-scoped evidence is required
-3. prints the generated successor claim plan and requires a final
-   `y/N` confirmation before posting the canonical forced-handoff
-   marker
+3. prompts for an optional successor agent-id (leaving it blank keeps
+   the displaced agent's own id -- the default -- while entering a
+   value selects that entered agent-id as the successor, which may
+   still match the displaced agent-id if re-entered verbatim)
+4. prints the resolved successor claim plan -- with a warning when the
+   resolved successor still matches the displaced agent-id -- and
+   requires a final `y/N` confirmation before posting the canonical
+   forced-handoff marker
 
 The interactive helper is intentionally unavailable to autopilot and
 other unattended contexts. It fails closed outside a TTY instead of

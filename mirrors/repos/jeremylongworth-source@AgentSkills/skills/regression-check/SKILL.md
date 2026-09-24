@@ -12,13 +12,16 @@ license: MIT
    journeys.
 2. Map the change to known invariants, prior bugs, adjacent workflows, and
    compatibility requirements.
-3. Define targeted tests for the direct fix and broader regression tests for
-   likely side effects.
+3. Start with targeted checks for the changed behavior and required repository
+   gates. Add broader regression tests for plausible side effects; do not
+   require every coverage type for a small change.
 4. Separate automated coverage from manual, exploratory, visual, accessibility,
    performance, or data checks.
 5. Specify test data, environment, permissions, feature flags, and observability
    needed for verification.
-6. State residual risk and release gate recommendation.
+6. Stop after relevant checks pass unless new changes, failures, or unresolved
+   risks justify more testing. State residual risk and, when requested, the
+   release gate recommendation.
 
 ## Safety Rules
 
@@ -30,7 +33,8 @@ license: MIT
 
 ## Deliverable Shape
 
-For regression work, provide:
+For regression work, cover the applicable items below; combine them for small
+changes and do not invent a release ceremony for a local fix:
 
 - Changed surface
 - Regression risk areas

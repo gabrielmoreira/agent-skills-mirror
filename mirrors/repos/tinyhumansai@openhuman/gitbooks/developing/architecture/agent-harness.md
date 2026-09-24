@@ -259,7 +259,9 @@ Long tool-calling chains can blow past the context window. Two layers handle tha
 
 Some tool calls return enormous payloads - a Composio action dumping 200 KB of JSON, a web scrape returning 50 KB of markdown, a `file_read` over a multi-thousand-line log. Hard-truncating mid-payload drops whatever happens to land past the cut.
 
-When a tool result exceeds the summarizer's threshold, it gets routed through a dedicated `summarizer` sub-agent before entering the parent's history. The summarizer compresses the payload per an extraction contract that preserves identifiers and key facts, and the parent agent only sees the compressed summary. Hard truncation remains the backstop downstream when summarization fails or the payload is so absurdly large that paying for an LLM call on it makes no economic sense.
+When a tool result exceeds the summarizer's threshold (`summarizer_payload_threshold_tokens`, default 4 000), TinyJuice's summary stage summarizes it before it enters the parent's history. The parent agent sees only the summary. There is one summarizer, and TinyJuice owns it: it decides when a summary is worth writing, writes the extraction prompt (identifiers and key facts first), caches identical summaries, trips a per-thread breaker after three failures, and offloads the original to CCR so the `tinyjuice_retrieve` footer can recover it exactly. The model call itself belongs to the host. `ToolOutputMiddleware` binds a unary child of the current turn through `PayloadSummarizer::prepare`, registers it under a context token (`inference/tokenjuice/generate.rs`), and the module calls back through `MlHost.Generate`. Only the orchestrator carries a summary model, and it always sees `tinyjuice_retrieve`, even with the compaction router off, because a summary's footer names it. A result that qualified for a summary and did not get one is labelled as unsummarized, whether the module or the host failed, so the model does not re-run the tool for one. Summary reuse and the breaker are scoped to the thread, or to the run when there is no thread. Hard truncation remains the downstream backstop when summarization fails, or when the payload is so large that an LLM call on it makes no economic sense.
+
+**Caller focus.** A tool can opt in to an optional `summary_focus` argument by adding `tokenjuice::focus::summary_focus_property()` to its schema; `web_fetch` and `web_search_tool` do. The model uses it to say what it needs from the result, for example "the rate limits". `before_tool` removes the argument from the call before validation, so the tool never sees it. Only a tool whose schema carries that exact property loses it; any other tool with a parameter of the same name keeps it. It reaches TinyJuice with the result, where it steers the summary, keys its cache, and ranks text for the deterministic compressors. A tool that caps its own output, such as `web_fetch`, is normally left to cap-and-spill. When the caller gives a focus, it is summarized as well, because paging the raw page cannot answer a question.
 
 ### Filesystem offload - `outputs/` and `workspace/`
 
@@ -528,7 +530,7 @@ every invocation remains a later cutover step.
 
 A few small adaptive systems sit on top of the main loop:
 
-- **Payload summarizer circuit-breaker** - three consecutive sub-agent failures in a session disable summarization, falling back to truncation.
+- **Tool-output summary circuit-breaker** - three consecutive summary failures in a thread make TinyJuice stop asking for summaries in that thread, so results fall back to compaction and truncation.
 - **Triage local-vs-remote retry** - local LLM first; remote fallback on parse failure.
 - **Unknown-tool and malformed-argument recovery** - middleware rewrites an invalid model tool call into a recoverable result instead of aborting the run.
 
@@ -548,7 +550,7 @@ The harness shell lives under `crates/openhuman-core/src/agent/`, with the tinya
 | `orchestration/subagent_sessions/`       | Durable reusable sub-agent identity, compatibility matching, persisted status/history.                        |
 | `harness/definition.rs`                  | `AgentDefinition` - what an archetype declares.                                                               |
 | `subagent_host/ops/runner.rs`            | Integration-tool ranking and the host execution leaf; generic lifecycle stays in `tinyagents-orchestration`.  |
-| `../tinyagents/payload_summarizer.rs`    | Oversized-tool-result detour.                                                                                 |
+| `../tinyagents/payload_summarizer.rs`    | The model call behind TinyJuice's oversized-tool-result summary.                                              |
 | `session_host/tool_progress.rs`       | Surviving OpenHuman seam: `TurnProgress`.                                                                     |
 | `message_convert.rs`                     | Concrete durable/provider conversion around canonical tool-call dialect APIs.                                  |
 | `triage/`                                | External-trigger classification + escalation.                                                                 |

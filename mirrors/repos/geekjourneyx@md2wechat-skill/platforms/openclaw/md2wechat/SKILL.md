@@ -1,6 +1,6 @@
 ---
 name: md2wechat
-description: Convert Markdown to WeChat Official Account HTML, inspect supported providers/themes/prompts, generate article images, create drafts, write with creator styles, prepare title suggestions, and remove AI writing traces. Also use for unpublished Zhihu, CSDN, or Toutiao drafts through a browser.
+description: Convert Markdown to WeChat Official Account HTML, inspect supported providers/themes/prompts, generate article images, create drafts, write with creator styles, prepare title suggestions, and remove AI writing traces. Also use for unpublished Zhihu, CSDN, Toutiao, or Tencent Cloud Developer Community drafts through a browser. Use for product introductions, encyclopedia articles or entry drafts, and writing tailored to platforms or search targets.
 homepage: https://github.com/geekjourneyx/md2wechat-skill
 metadata: {"openclaw":{"emoji":"📝","requires":{"bins":["md2wechat"]},"install":[{"id":"node","kind":"node","package":"@geekjourneyx/md2wechat","bins":["md2wechat"],"label":"Install md2wechat (npm)"}]}}
 ---
@@ -14,11 +14,12 @@ Use this skill to operate the `md2wechat` CLI. Keep the skill focused on executi
 Choose the command family before taking any publish or generation action:
 
 - Standard article HTML, article preview, metadata inspection, or WeChat article draft: use `inspect`, `preview`, and `convert`.
-- Unpublished Zhihu, CSDN, or Toutiao draft: run `md2wechat skills read md2wechat references/sync/workflow.md --json` for the current CLI's embedded workflow; the CLI prepares content and the Agent operates the browser.
+- Unpublished Zhihu, CSDN, Toutiao, or Tencent Cloud Developer Community draft: run `md2wechat skills read md2wechat references/sync/workflow.md --json` for the current CLI's embedded workflow; the CLI prepares content and the Agent operates the browser.
 - Image-first post, image note, image-text note, `newspic`, or multi-image post: use `create_image_post`, not `convert --draft`.
 - Article cover or article infographic: prefer `generate_cover` or `generate_infographic` over raw `generate_image` when a bundled preset fits.
 - Host-agent image generation request with no provider configured: use image plan mode (`--plan --json`) to get prompt intent, then hand it to the host image-generation tool if one is available outside md2wechat.
 - WeChat title candidates for an existing article: use `title suggest <article.md> --json`; it emits a host-Agent AI request and does not choose or write the final title.
+- Product introductions, encyclopedia articles or entry drafts, and platform/search-directed writing: read `md2wechat skills read md2wechat references/writing/workflow.md --json` and follow it as the host Agent. Prefer this route over `advise` or `write` for these requests; skip it for formatting-only tasks.
 - Existing article or draft, user asks what to improve next: run `md2wechat advise <article.md> --json`; treat it as recommendation-only and keep `inspect --json data.readiness.targets/blockers` as the publish gate.
 - Writing in a creator style or removing AI traces: use `write` or `humanize`.
 - Provider, theme, prompt, or layout uncertainty: run discovery first. Do not guess from memory or repository files.

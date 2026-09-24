@@ -242,6 +242,8 @@ the same handlers. There is no second handler set, no second semantic, and no He
 | `GET` | `/crew/v1/snapshot` | `GET /api/snapshot` (`bridge/server.ts:177`) | **merged** — the only merged route |
 | `GET` | `/crew/v1/pane/:id` | `GET /api/pane/:id` (`:276`) | proxied byte-for-byte |
 | `GET` | `/crew/v1/pane/:id/history` | `GET …/history` (`:277`) | proxied byte-for-byte |
+| `GET` | `/crew/v1/pane/:id/changes` | `GET …/changes` | proxied byte-for-byte — additive-optional (§7.1). Read-only git over the folder of the pane's WORKSPACE on the machine that owns it (ADR 0065); the query (`depth`, `nested`, `repo`, `path`, and `view=commit` for the repo's last commit) rides through untouched. A lead that predates it never calls it, and a peer that predates it answers 404 to a lead that does |
+| `GET` | `/crew/v1/workspace/:id/changes` | `GET …/workspace/:id/changes` | proxied byte-for-byte — additive-optional (§7.1). The same list asked by workspace rather than by pane (ADR 0065), with the same query. A lead that predates it never calls it, and a peer that predates it answers 404 to a lead that does |
 | `POST` | `/crew/v1/pane/:id/reply` | `POST …/reply` (`:279`) | forwarded |
 | `POST` | `/crew/v1/pane/:id/keys` | `POST …/keys` (`:280`) | forwarded |
 | `POST` | `/crew/v1/pane/:id/upload` | `POST …/upload` (`:281`) | forwarded (§13) |
@@ -1156,6 +1158,13 @@ prevents (`web/src/lib/api.ts:201-203`).
 - **Every session and every pane is host-tagged.** `SessionSummary` gains `host: string` and the pane
   wire shape gains `host: string`, so the phone can address what it renders. Absent on a solo
   snapshot (§11).
+
+**The merged `agents` and `shellPanes` run in place order, never by status.** The lead's panes come
+first, then each peer's in member-id order. Inside one machine the order is workspace number, then
+the tab's index in the merged `tabs` list, then `tabPosition`, then the pane id. A status change
+therefore never moves a row. *(added 2026-09-23,
+[ADR 0063](./.adr/0063-a-pane-keeps-its-place-when-its-state-changes.md); the merge used to sort by
+status first.)*
 
 Merging is the *only* place the lead re-serialises. Its ETag over the merged body is **the lead's
 assertion about its own merged view**, not any peer's — it necessarily changes when any peer's
@@ -2896,6 +2905,11 @@ whatever the headers say. It is not a tuning knob — it is the guard against a 
 cycling a member through restarts, and the clock is that member's own run record, so it survives the
 member's restart.
 
+*(Amended 2026-09-23, ADR 0062.)* One step is not a new attempt: when the member's last run
+finished `done` **in the run the turn names**, at a version below the one the lead now states, the
+member takes the next step inside the hour. Each such step needs a strictly higher version than the
+last one that succeeded, and a rolled-back step never qualifies, so a lead cannot go round.
+
 Artifact verification is **inherited, not invented**: the release manifest plus this platform's
 `sha256` on a binary install, an explicit `refs/tags/<tag>` fetch on a checkout. No new mechanism.
 
@@ -2904,6 +2918,28 @@ Artifact verification is **inherited, not invented**: the release manifest plus 
 The lead holds an **in-memory** ordered queue of members that are behind, eligible and
 preflight-clean, sorted by `TrustedMember.enrolledAt` — enrolment order, stated so it is stable and
 explainable rather than incidental. It grants one turn at a time.
+
+*(Amended 2026-09-23, ADR 0062.)* **A turn is granted only while the lead states the run's target**
+in `X-Crew-Lead-Release`. The turn carries no version, so the header is the only target a member can
+read, and a full run opens its queue on the confirm, while the lead still runs its old release. A
+lead that granted then sent a member one release behind to the lead's OLD version under the run's id.
+
+The lead also reads each waiting member's hourly limit off its `updateRun` report: an attempt whose
+`updatedAt` is inside the hour. Such a member is not granted the turn, its leg carries the reason
+`rate-limited, retries in about N min`, and its wall clock starts when the limit lifts. The report
+carries `updatedAt`, not `startedAt`, so the time is an upper bound. That stamp is the member's
+clock, so the lead caps the limit's end at `FOLLOW_ATTEMPT_INTERVAL_MS` plus two minutes after it
+first read that stamp, on its own clock. The reason states a span, never a clock time: the lead's
+time zone is not the phone's. No field and no header changed.
+
+Every run ends. The lead reads its own run record on each sweep. If this run's record ends
+`rolled-back`, `stuck` or `interrupted`, every `waiting` leg closes on that sweep as `unreachable`,
+reason `not started: the lead's update rolled back` (or `ended stuck`, `ended interrupted`). If the
+lead is not in flight and still does not state the target after `LEG_WALL_CLOCK_MS`, the legs close
+with `not started: the lead states <x>, not <target>`. While the lead's own run is in flight, a
+queued leg does not expire. No run stays open past `CREW_RUN_TTL_MS` (2 hours); its open legs close
+with `the run did not finish within 2 hours`. A second confirm while a run is open is refused with
+`update.in_progress`, state `levelling the crew`.
 
 A turn is released on exactly three things: the member reports the new version; the member reports
 `rolled-back`; or the member misses **three consecutive sweeps**, after which it reads `unreachable`

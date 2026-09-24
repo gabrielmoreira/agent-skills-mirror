@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `openclaw/clawhub` — 26 default patterns, 0 followed patterns, 322 file(s) materialized.
+Mirror of `openclaw/clawhub` — 26 default patterns, 0 followed patterns, 350 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `openclaw/clawhub` — 26 default patterns, 0 followed patterns, 322 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 322 |
+| Files         | 350 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -358,29 +358,57 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 297 | ✓ | [`.agents/skills/technical-documentation/references/review.md`](.agents/skills/technical-documentation/references/review.md) |
 | 298 | ✓ | [`.agents/skills/technical-documentation/references/tooling.md`](.agents/skills/technical-documentation/references/tooling.md) |
 | 299 | ✓ | [`.agents/skills/technical-documentation/SKILL.md`](.agents/skills/technical-documentation/SKILL.md) |
-| 300 | ✓ | [`.agents/skills/writing-evals/.meta/.gitkeep`](.agents/skills/writing-evals/.meta/.gitkeep) |
-| 301 | ✓ | [`.agents/skills/writing-evals/README.md`](.agents/skills/writing-evals/README.md) |
-| 302 | ✓ | [`.agents/skills/writing-evals/reference/api-reference.md`](.agents/skills/writing-evals/reference/api-reference.md) |
-| 303 | ✓ | [`.agents/skills/writing-evals/reference/flag-schema-guide.md`](.agents/skills/writing-evals/reference/flag-schema-guide.md) |
-| 304 | ✓ | [`.agents/skills/writing-evals/reference/scorer-patterns.md`](.agents/skills/writing-evals/reference/scorer-patterns.md) |
-| 305 | ✓ | [`.agents/skills/writing-evals/reference/templates/app-scope.ts`](.agents/skills/writing-evals/reference/templates/app-scope.ts) |
-| 306 | ✓ | [`.agents/skills/writing-evals/reference/templates/axiom.config.ts`](.agents/skills/writing-evals/reference/templates/axiom.config.ts) |
-| 307 | ✓ | [`.agents/skills/writing-evals/reference/templates/classification.eval.ts`](.agents/skills/writing-evals/reference/templates/classification.eval.ts) |
-| 308 | ✓ | [`.agents/skills/writing-evals/reference/templates/instrumentation.ts`](.agents/skills/writing-evals/reference/templates/instrumentation.ts) |
-| 309 | ✓ | [`.agents/skills/writing-evals/reference/templates/minimal.eval.ts`](.agents/skills/writing-evals/reference/templates/minimal.eval.ts) |
-| 310 | ✓ | [`.agents/skills/writing-evals/reference/templates/retrieval.eval.ts`](.agents/skills/writing-evals/reference/templates/retrieval.eval.ts) |
-| 311 | ✓ | [`.agents/skills/writing-evals/reference/templates/structured-output.eval.ts`](.agents/skills/writing-evals/reference/templates/structured-output.eval.ts) |
-| 312 | ✓ | [`.agents/skills/writing-evals/reference/templates/tool-use.eval.ts`](.agents/skills/writing-evals/reference/templates/tool-use.eval.ts) |
-| 313 | ✓ | [`.agents/skills/writing-evals/scripts/eval-add-cases`](.agents/skills/writing-evals/scripts/eval-add-cases) |
-| 314 | ✓ | [`.agents/skills/writing-evals/scripts/eval-init`](.agents/skills/writing-evals/scripts/eval-init) |
-| 315 | ✓ | [`.agents/skills/writing-evals/scripts/eval-list`](.agents/skills/writing-evals/scripts/eval-list) |
-| 316 | ✓ | [`.agents/skills/writing-evals/scripts/eval-results`](.agents/skills/writing-evals/scripts/eval-results) |
-| 317 | ✓ | [`.agents/skills/writing-evals/scripts/eval-run`](.agents/skills/writing-evals/scripts/eval-run) |
-| 318 | ✓ | [`.agents/skills/writing-evals/scripts/eval-scaffold`](.agents/skills/writing-evals/scripts/eval-scaffold) |
-| 319 | ✓ | [`.agents/skills/writing-evals/scripts/eval-validate`](.agents/skills/writing-evals/scripts/eval-validate) |
-| 320 | ✓ | [`.agents/skills/writing-evals/scripts/setup`](.agents/skills/writing-evals/scripts/setup) |
-| 321 | ✓ | [`.agents/skills/writing-evals/SKILL.md`](.agents/skills/writing-evals/SKILL.md) |
-| 322 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 300 | ✓ | [`.agents/skills/vercel-cli/command/vercel.md`](.agents/skills/vercel-cli/command/vercel.md) |
+| 301 | ✓ | [`.agents/skills/vercel-cli/references/advanced.md`](.agents/skills/vercel-cli/references/advanced.md) |
+| 302 | ✓ | [`.agents/skills/vercel-cli/references/agent-and-ai.md`](.agents/skills/vercel-cli/references/agent-and-ai.md) |
+| 303 | ✓ | [`.agents/skills/vercel-cli/references/bun.md`](.agents/skills/vercel-cli/references/bun.md) |
+| 304 | ✓ | [`.agents/skills/vercel-cli/references/ci-automation.md`](.agents/skills/vercel-cli/references/ci-automation.md) |
+| 305 | ✓ | [`.agents/skills/vercel-cli/references/comments.md`](.agents/skills/vercel-cli/references/comments.md) |
+| 306 | ✓ | [`.agents/skills/vercel-cli/references/connectors.md`](.agents/skills/vercel-cli/references/connectors.md) |
+| 307 | ✓ | [`.agents/skills/vercel-cli/references/container-registry.md`](.agents/skills/vercel-cli/references/container-registry.md) |
+| 308 | ✓ | [`.agents/skills/vercel-cli/references/deployment.md`](.agents/skills/vercel-cli/references/deployment.md) |
+| 309 | ✓ | [`.agents/skills/vercel-cli/references/domains-and-dns.md`](.agents/skills/vercel-cli/references/domains-and-dns.md) |
+| 310 | ✓ | [`.agents/skills/vercel-cli/references/environment-variables.md`](.agents/skills/vercel-cli/references/environment-variables.md) |
+| 311 | ✓ | [`.agents/skills/vercel-cli/references/firewall.md`](.agents/skills/vercel-cli/references/firewall.md) |
+| 312 | ✓ | [`.agents/skills/vercel-cli/references/flags.md`](.agents/skills/vercel-cli/references/flags.md) |
+| 313 | ✓ | [`.agents/skills/vercel-cli/references/getting-started.md`](.agents/skills/vercel-cli/references/getting-started.md) |
+| 314 | ✓ | [`.agents/skills/vercel-cli/references/global-options.md`](.agents/skills/vercel-cli/references/global-options.md) |
+| 315 | ✓ | [`.agents/skills/vercel-cli/references/integrations.md`](.agents/skills/vercel-cli/references/integrations.md) |
+| 316 | ✓ | [`.agents/skills/vercel-cli/references/local-development.md`](.agents/skills/vercel-cli/references/local-development.md) |
+| 317 | ✓ | [`.agents/skills/vercel-cli/references/microfrontends.md`](.agents/skills/vercel-cli/references/microfrontends.md) |
+| 318 | ✓ | [`.agents/skills/vercel-cli/references/monitoring-and-debugging.md`](.agents/skills/vercel-cli/references/monitoring-and-debugging.md) |
+| 319 | ✓ | [`.agents/skills/vercel-cli/references/monorepos.md`](.agents/skills/vercel-cli/references/monorepos.md) |
+| 320 | ✓ | [`.agents/skills/vercel-cli/references/node-backends.md`](.agents/skills/vercel-cli/references/node-backends.md) |
+| 321 | ✓ | [`.agents/skills/vercel-cli/references/platform-ops.md`](.agents/skills/vercel-cli/references/platform-ops.md) |
+| 322 | ✓ | [`.agents/skills/vercel-cli/references/project-infra.md`](.agents/skills/vercel-cli/references/project-infra.md) |
+| 323 | ✓ | [`.agents/skills/vercel-cli/references/projects-and-teams.md`](.agents/skills/vercel-cli/references/projects-and-teams.md) |
+| 324 | ✓ | [`.agents/skills/vercel-cli/references/routing.md`](.agents/skills/vercel-cli/references/routing.md) |
+| 325 | ✓ | [`.agents/skills/vercel-cli/references/sandbox.md`](.agents/skills/vercel-cli/references/sandbox.md) |
+| 326 | ✓ | [`.agents/skills/vercel-cli/references/storage.md`](.agents/skills/vercel-cli/references/storage.md) |
+| 327 | ✓ | [`.agents/skills/vercel-cli/SKILL.md`](.agents/skills/vercel-cli/SKILL.md) |
+| 328 | ✓ | [`.agents/skills/writing-evals/.meta/.gitkeep`](.agents/skills/writing-evals/.meta/.gitkeep) |
+| 329 | ✓ | [`.agents/skills/writing-evals/README.md`](.agents/skills/writing-evals/README.md) |
+| 330 | ✓ | [`.agents/skills/writing-evals/reference/api-reference.md`](.agents/skills/writing-evals/reference/api-reference.md) |
+| 331 | ✓ | [`.agents/skills/writing-evals/reference/flag-schema-guide.md`](.agents/skills/writing-evals/reference/flag-schema-guide.md) |
+| 332 | ✓ | [`.agents/skills/writing-evals/reference/scorer-patterns.md`](.agents/skills/writing-evals/reference/scorer-patterns.md) |
+| 333 | ✓ | [`.agents/skills/writing-evals/reference/templates/app-scope.ts`](.agents/skills/writing-evals/reference/templates/app-scope.ts) |
+| 334 | ✓ | [`.agents/skills/writing-evals/reference/templates/axiom.config.ts`](.agents/skills/writing-evals/reference/templates/axiom.config.ts) |
+| 335 | ✓ | [`.agents/skills/writing-evals/reference/templates/classification.eval.ts`](.agents/skills/writing-evals/reference/templates/classification.eval.ts) |
+| 336 | ✓ | [`.agents/skills/writing-evals/reference/templates/instrumentation.ts`](.agents/skills/writing-evals/reference/templates/instrumentation.ts) |
+| 337 | ✓ | [`.agents/skills/writing-evals/reference/templates/minimal.eval.ts`](.agents/skills/writing-evals/reference/templates/minimal.eval.ts) |
+| 338 | ✓ | [`.agents/skills/writing-evals/reference/templates/retrieval.eval.ts`](.agents/skills/writing-evals/reference/templates/retrieval.eval.ts) |
+| 339 | ✓ | [`.agents/skills/writing-evals/reference/templates/structured-output.eval.ts`](.agents/skills/writing-evals/reference/templates/structured-output.eval.ts) |
+| 340 | ✓ | [`.agents/skills/writing-evals/reference/templates/tool-use.eval.ts`](.agents/skills/writing-evals/reference/templates/tool-use.eval.ts) |
+| 341 | ✓ | [`.agents/skills/writing-evals/scripts/eval-add-cases`](.agents/skills/writing-evals/scripts/eval-add-cases) |
+| 342 | ✓ | [`.agents/skills/writing-evals/scripts/eval-init`](.agents/skills/writing-evals/scripts/eval-init) |
+| 343 | ✓ | [`.agents/skills/writing-evals/scripts/eval-list`](.agents/skills/writing-evals/scripts/eval-list) |
+| 344 | ✓ | [`.agents/skills/writing-evals/scripts/eval-results`](.agents/skills/writing-evals/scripts/eval-results) |
+| 345 | ✓ | [`.agents/skills/writing-evals/scripts/eval-run`](.agents/skills/writing-evals/scripts/eval-run) |
+| 346 | ✓ | [`.agents/skills/writing-evals/scripts/eval-scaffold`](.agents/skills/writing-evals/scripts/eval-scaffold) |
+| 347 | ✓ | [`.agents/skills/writing-evals/scripts/eval-validate`](.agents/skills/writing-evals/scripts/eval-validate) |
+| 348 | ✓ | [`.agents/skills/writing-evals/scripts/setup`](.agents/skills/writing-evals/scripts/setup) |
+| 349 | ✓ | [`.agents/skills/writing-evals/SKILL.md`](.agents/skills/writing-evals/SKILL.md) |
+| 350 | ✓ | [`AGENTS.md`](AGENTS.md) |
 
 ---
 

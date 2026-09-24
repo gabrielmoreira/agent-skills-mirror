@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "source": "claude-design-v2/ref 2026-07-25",
+  "source": "claude-design-v2/ref assets-proxy design/v2; synced 2026-09-14",
   "projectTypes": [
     {
       "id": "slides",
@@ -30,7 +30,8 @@
       "id": "animation",
       "name": "Animation",
       "skills": ["animated-video", "exportable-video"],
-      "starters": ["animations-v3.jsx", "tweaks-panel.jsx"]
+      "starters": ["animations-v3.jsx", "tweaks-panel.jsx"],
+      "optionalStarters": ["watercolor-kit.js"]
     },
     {
       "id": "ui-mockups",

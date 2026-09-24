@@ -19,7 +19,7 @@ lets a reader infer the first has claimed a merge nobody observed.
 | Source | Held where | Read these | What it supplies |
 | --- | --- | --- | --- |
 | Plan record (`omh_todo/v1` item) | durable record, read with `omh runtime todo show` | `state`, `phase`, `blocked_reason` | what was done, which stage it belonged to, and what was skipped with its reason |
-| Verification gate (`verification-gate`) | optional durable model declaration, read with `omh_todo action=recall`; absent unless recorded | `observed_check_results/v1`, `claim_verdict/v1` | which command actually ran, its exit status, and which checks are missing or failed |
+| Verification gate (`verification-gate`) | optional durable model declaration, read with `omh_todo action=recall`; absent unless recorded | `observed_check_results/v1`, `claim_verdict/v1` | command, source, exit status, summary, scope, and freshness for each check that ran, plus which checks are missing or failed |
 | Review (`code-review`) | optional durable model declaration, read with `omh_todo action=recall`; absent unless recorded | `ranked findings per axis` | what a reader misses unless someone tells them |
 | QA (`ultraqa`) | optional durable model declaration, read with `omh_todo action=recall`; absent unless recorded | `pass/fail evidence` | what nobody thought of the first time |
 

@@ -147,7 +147,7 @@ Domains: `product` `style` `typography` `color` `landing` `chart` `ux` `react` `
 | Situation | Load |
 |---|---|
 | Brand/style not among the 70 in `references/design/`, or the user says "Open Design" | `open-design` skill — the local nexu-io/open-design library (137+ design skills, 150+ design systems) |
-| Driving a browser for the Design QA phase | `visual-qa` skill: Bun.WebView / local-Chrome `playwright-core` scripts from js eval; Codex in-app browser |
+| Driving a browser for the Design QA phase | `visual-qa` skill: omowright from js eval (owned engine for renders, attached engine for signed-in pages) |
 | Pure TypeScript/logic work with zero visual surface | `programming` skill alone — this skill adds nothing there |
 
 ## Activation

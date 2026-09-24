@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `RyanAlberts/best-of-Agent-Harnesses` — 26 default patterns, 0 followed patterns, 10 file(s) materialized.
+Mirror of `RyanAlberts/best-of-Agent-Harnesses` — 26 default patterns, 0 followed patterns, 12 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `RyanAlberts/best-of-Agent-Harnesses` — 26 default patterns, 0 follo
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 10 |
+| Files         | 12 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -69,6 +69,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 8 | ✓ | [`mcp/pyproject.toml`](mcp/pyproject.toml) |
 | 9 | ✓ | [`mcp/README.md`](mcp/README.md) |
 | 10 | ✓ | [`mcp/server.py`](mcp/server.py) |
+| 11 | ✓ | [`templates/agents-md/AGENTS.md`](templates/agents-md/AGENTS.md) |
+| 12 | ✓ | [`templates/agents-md/CLAUDE.md`](templates/agents-md/CLAUDE.md) |
 
 ---
 

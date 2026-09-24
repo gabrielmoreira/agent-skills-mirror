@@ -1,13 +1,13 @@
 ---
 name: seo-backlinks
-description: "Backlink profile analysis: referring domains, anchor text distribution, toxic link detection, competitor gap analysis. Works with free APIs (Moz, Bing Webmaster, Common Crawl) and DataForSEO extension. Use when user says backlinks, link profile, referring domains, anchor text, toxic links, link gap, link building, disavow, or backlink audit."
+description: "Analyze a site's backlink profile, anchors, toxic signals, competitors, gaps, and disavow candidates. Use only when links or referring domains are the requested focus."
 user-invocable: true
 argument-hint: "<url>"
 license: MIT
 compatibility: "Free: Common Crawl + verify always available. Optional: Moz API, Bing Webmaster, Keywords Everywhere (free signup). Premium: DataForSEO extension."
 metadata:
   author: AgriciDaniel
-  version: "2.3.1"
+  version: "2.4.0"
   category: seo
 ---
 
@@ -17,10 +17,10 @@ metadata:
 
 Before analysis, detect available data sources:
 
-1. **DataForSEO MCP** (premium): Check if `dataforseo_backlinks_summary` tool is available
+1. **DataForSEO MCP** (premium): Check if `backlinks_summary` tool is available
 2. **Moz API** (free signup): `"${CLAUDE_PLUGIN_ROOT}/scripts/claude-seo" run backlinks_auth.py --check moz --json`
 3. **Bing Webmaster** (free signup): `"${CLAUDE_PLUGIN_ROOT}/scripts/claude-seo" run backlinks_auth.py --check bing --json`
-4. **Keywords Everywhere** (free signup, single-metric): `"${CLAUDE_PLUGIN_ROOT}/scripts/claude-seo" run backlinks_auth.py --check keywordseverywhere --json`
+4. **Keywords Everywhere** (free signup; domain rank plus referring-domain count): `"${CLAUDE_PLUGIN_ROOT}/scripts/claude-seo" run backlinks_auth.py --check keywordseverywhere --json`
 5. **Common Crawl** (always available): Domain-level graph with PageRank
 6. **Verification Crawler** (always available): Checks if known backlinks still exist
 
@@ -47,11 +47,11 @@ Produce all 7 sections below. Each section lists data sources in preference orde
 
 ### 1. Profile Overview
 
-**DataForSEO:** `dataforseo_backlinks_summary` → total backlinks, referring domains, domain rank, follow ratio, trend.
+**DataForSEO:** `backlinks_summary` → total backlinks, referring domains, domain rank, follow ratio, trend.
 
 **Moz API:** `"${CLAUDE_PLUGIN_ROOT}/scripts/claude-seo" run moz_api.py metrics <url> --json` → Domain Authority, Page Authority, Spam Score, linking root domains, external links.
 
-**Keywords Everywhere:** `"${CLAUDE_PLUGIN_ROOT}/scripts/claude-seo" run keywordseverywhere_api.py rank <domain> --json` → 0-10 domain rank only (no link counts). Use as a fallback when Moz isn't configured; do not use in place of Moz when both are available.
+**Keywords Everywhere:** `"${CLAUDE_PLUGIN_ROOT}/scripts/claude-seo" run keywordseverywhere_api.py rank <domain> --json` → 0-10 Open PageRank (`open_page_rank`), a global `rank`, and a referring-domain count (`referring_domains`), per the current API; no anchors or individual links. Use as a fallback when Moz isn't configured; do not use in place of Moz when both are available.
 
 **Common Crawl:** `"${CLAUDE_PLUGIN_ROOT}/scripts/claude-seo" run commoncrawl_graph.py <domain> --json` → PageRank, harmonic centrality, and low-confidence rank/presence data.
 
@@ -66,7 +66,7 @@ Produce all 7 sections below. Each section lists data sources in preference orde
 
 ### 2. Anchor Text Distribution
 
-**DataForSEO:** `dataforseo_backlinks_anchors`
+**DataForSEO:** `backlinks_anchors`
 
 **Moz API:** `"${CLAUDE_PLUGIN_ROOT}/scripts/claude-seo" run moz_api.py anchors <url> --json`
 
@@ -87,7 +87,7 @@ Flag if exact-match anchors exceed 15% as a review heuristic; it may indicate un
 
 ### 3. Referring Domain Quality
 
-**DataForSEO:** `dataforseo_backlinks_referring_domains`
+**DataForSEO:** `backlinks_referring_domains`
 
 **Moz API:** `"${CLAUDE_PLUGIN_ROOT}/scripts/claude-seo" run moz_api.py domains <url> --json` → domains with DA scores
 
@@ -101,7 +101,7 @@ Analyze:
 
 ### 4. Toxic Link Detection
 
-**DataForSEO:** `dataforseo_backlinks_bulk_spam_score` + toxic patterns from reference
+**DataForSEO:** `backlinks_bulk_spam_score` + toxic patterns from reference
 
 **Moz API:** Raw vendor spam_score from `"${CLAUDE_PLUGIN_ROOT}/scripts/claude-seo" run moz_api.py metrics <url> --json` (source-label the value; apply thresholds only if verified against current Moz docs)
 
@@ -125,7 +125,7 @@ Load `../seo/references/backlink-quality.md` for the full 30 toxic patterns and 
 
 ### 5. Top Pages by Backlinks
 
-**DataForSEO:** `dataforseo_backlinks_backlinks` with target type "page"
+**DataForSEO:** `backlinks_backlinks` with target type "page"
 
 **Moz API:** `"${CLAUDE_PLUGIN_ROOT}/scripts/claude-seo" run moz_api.py pages <domain> --json`
 
@@ -137,7 +137,7 @@ Find:
 
 ### 6. Competitor Gap Analysis
 
-**DataForSEO:** `dataforseo_backlinks_referring_domains` for both domains, then compare
+**DataForSEO:** `backlinks_referring_domains` for both domains, then compare
 
 **Bing Webmaster:** `"${CLAUDE_PLUGIN_ROOT}/scripts/claude-seo" run bing_webmaster.py compare <url1> <url2> --json`
 only when both properties are registered and accessible to the same Bing API
@@ -153,7 +153,7 @@ Output:
 
 ### 7. New and Lost Backlinks
 
-**DataForSEO only:** `dataforseo_backlinks_backlinks` with date filters for 30/60/90 day changes
+**DataForSEO only:** `backlinks_backlinks` with date filters for 30/60/90 day changes
 
 **Verification Crawler:** For known links, verify current status with `"${CLAUDE_PLUGIN_ROOT}/scripts/claude-seo" run verify_backlinks.py --target <url> --links <file> --json`
 
@@ -299,5 +299,5 @@ After completing any backlink analysis command, always offer:
 ## Reference Documentation
 
 Load on demand (do NOT load at startup):
-- `skills/seo/references/backlink-quality.md` -- Detailed toxic link patterns and scoring methodology (shared reference, load when analyzing toxic links or spam scores)
-- `skills/seo/references/free-backlink-sources.md` -- Source comparison, confidence weighting, setup guides (shared reference, load when configuring free backlink APIs)
+- `${CLAUDE_PLUGIN_ROOT}/skills/seo/references/backlink-quality.md` -- Detailed toxic link patterns and scoring methodology (shared reference, load when analyzing toxic links or spam scores)
+- `${CLAUDE_PLUGIN_ROOT}/skills/seo/references/free-backlink-sources.md` -- Source comparison, confidence weighting, setup guides (shared reference, load when configuring free backlink APIs)

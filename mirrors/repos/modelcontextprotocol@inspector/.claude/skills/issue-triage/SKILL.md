@@ -51,13 +51,19 @@ double-boarded (a real defect a past sweep introduced — #1929 reproduced it).
 D=$(mktemp -d)
 gh issue list --repo modelcontextprotocol/inspector --state open --limit 1000 \
   --json number,milestone > "$D/open.json"
-# Union of BOTH boards, filtered to this repo — org boards can hold other repos' issues.
+# item-list truncates SILENTLY past --limit (and a failed call writes nothing), and a
+# missing card reads as an "unboarded" issue that then gets double-carded — so an
+# incomplete dump is deleted, and the steps below fail on the missing file.
 for P in 28 11; do
-  gh project item-list $P --owner modelcontextprotocol --format json --limit 700 \
-    | jq '[.items[] | select(.content.type=="Issue"
-           and .content.repository=="modelcontextprotocol/inspector")
-           | .content.number]'
-done | jq -s 'add' > "$D/boarded.json"
+  gh project item-list $P --owner modelcontextprotocol --format json --limit 2000 > "$D/b$P.json"
+  jq -e '(.items | length) == .totalCount' "$D/b$P.json" >/dev/null \
+    || { echo "board #$P listing INCOMPLETE — raise --limit and re-run" >&2; rm -f "$D/b$P.json"; false; }
+done
+# Union of BOTH boards, filtered to this repo — org boards can hold other repos' issues.
+jq -s '[.[].items[] | select(.content.type=="Issue"
+        and .content.repository=="modelcontextprotocol/inspector")
+        | .content.number]' "$D/b28.json" "$D/b11.json" > "$D/boarded.json" \
+  || rm -f "$D/boarded.json"
 # Prints the destination too: milestoned already → Todo, otherwise → Incoming.
 jq -r --slurpfile b "$D/boarded.json" \
   '.[] | select(.number as $n | ($b[0]|index($n))|not)
@@ -200,8 +206,9 @@ count means the board contradicts a rule, not that the rule needs revisiting.
 | Check | Invariant | Fix |
 | --- | --- | --- |
 | Double-boarded | An issue has a card on **one** board, the one matching its version label | Delete the wrong-board card |
-| Non-Issue items | **Only issues go on a board** — never PRs, never drafts | Delete the item |
+| Non-Issue items | **Only issues go on a board** — never PRs, never drafts, *except* a `[GHSA-…]` **draft** on **#28** | Delete the item |
 | No Status | Every card carries a Status | Set one — `Incoming` if unmilestoned, else by where it actually is |
+| GHSA draft missing Status/Priority | An exempted advisory draft still carries both | Set them — `/security-advisory` |
 | `Incoming` **with** a milestone (#28) | Incoming ⇔ no milestone | Approval was never recorded: move to **Todo**, or clear the milestone |
 | Past Incoming **without** a milestone (#28) | Everything past Incoming ⇔ milestoned | Claims an approval nobody made: milestone it, or move back to Incoming |
 | Wrong board for label | `v1` → #11, `v2` → #28 | Move the card to the right board |
@@ -217,8 +224,14 @@ D=$(mktemp -d); R=modelcontextprotocol/inspector
 # the last check below reads closed issues' state reasons.
 gh issue list --repo $R --state all --limit 2000 \
   --json number,state,stateReason,labels,milestone > "$D/i.json"
+# item-list truncates SILENTLY past --limit (and a failed call writes nothing); an
+# incomplete dump would make every check below lie, so it is deleted and the audit
+# fails on the missing file instead.
 for P in 28 11; do gh project item-list $P --owner modelcontextprotocol \
-  --format json --limit 700 > "$D/b$P.json"; done
+  --format json --limit 2000 > "$D/b$P.json"
+  jq -e '(.items | length) == .totalCount' "$D/b$P.json" >/dev/null \
+    || { echo "board #$P listing INCOMPLETE — raise --limit and re-run" >&2; rm -f "$D/b$P.json"; false; }
+done
 jq -nr --slurpfile o "$D/i.json" --slurpfile a "$D/b28.json" --slurpfile b "$D/b11.json" --arg R "$R" '
   ($o[0] | map({key:(.number|tostring), value:{st:.state, sr:(.stateReason // ""),
                 lab:[.labels[].name], ms:(.milestone.title // null)}}) | from_entries) as $M
@@ -235,7 +248,25 @@ jq -nr --slurpfile o "$D/i.json" --slurpfile a "$D/b28.json" --slurpfile b "$D/b
   | [own($b)[] | select(.content.type=="Issue") | {n:.content.number, s:.status}] as $B11
   | {
     "double-boarded":        [$B28[].n | select(. as $n | [$B11[].n]|index($n))],
-    "non-Issue on a board":  [(own($a)[], own($b)[]) | select(.content.type!="Issue") | .content.number],
+    # An advisory draft card is the ONE legitimate non-Issue item (see AGENTS.md).
+    # The exemption is narrowed three ways, and each one matters: DRAFTS only
+    # (a GHSA-titled PR is still reported), board #28 ONLY (an advisory has no
+    # business on #11), and the `[GHSA-` title prefix (a stray draft is still
+    # reported). Reports the TITLE, since a draft has no number.
+    "non-Issue on a board":  [(own($a)[] | select(.content.type!="Issue"
+                                and ((.content.type=="DraftIssue"
+                                      and ((.content.title // "") | startswith("[GHSA-"))) | not))),
+                              (own($b)[] | select(.content.type!="Issue"))]
+                             | map(.content.title // "(untitled)"),
+    # $B28/$B11 hold only Issue items, so the Status and Priority checks below
+    # cannot see an advisory draft. Exempting drafts from the check above would
+    # therefore have made a half-made advisory card invisible to the whole
+    # audit; this is the narrow replacement.
+    "GHSA draft missing Status/Priority":
+                             [own($a)[] | select(.content.type=="DraftIssue"
+                                and ((.content.title // "") | startswith("[GHSA-")))
+                              | select(.status==null or .priority==null)
+                              | (.content.title[0:24])],
     "no Status":             [($B28[], $B11[]) | select(.s==null) | .n],
     "Incoming w/ milestone": [$B28[] | select(.s=="Incoming" and ms(.n)!=null) | .n],
     "past Incoming, no ms":  [$B28[] | select(.s!=null and .s!="Incoming" and .s!="Done"
@@ -276,7 +307,12 @@ Two things the queries must account for, both learned the hard way:
 - **The two milestone checks are #28-only.** Every milestone in this repo is a
   v2 release bucket, so a `v1` issue has none it could take — running the
   Incoming⇔milestone invariant over board #11 would flag every card on it for a
-  state it cannot reach.
+  state it cannot reach. They also read **Issue items only**, which is what
+  exempts a `[GHSA-` advisory draft on #28: it cannot carry a milestone, and its
+  approval is the advisory's **acceptance** (`/security-advisory` step 3),
+  which lives on the advisory rather than the board. The audit cannot see that,
+  so a GHSA draft past `Incoming` is correct once its advisory is accepted and
+  is not reported.
 - **Count the labels; don't test for presence.** The invariant is *exactly
   one*, so a predicate that only asks "is any version label present" passes an
   issue carrying **both** `v1` and `v2` — which belongs to two lines at once
@@ -286,6 +322,31 @@ Two things the queries must account for, both learned the hard way:
   and that check then reports `0` while the invariant it states (no drafts) is
   being violated (Copilot). The filter admits an item with no repository and
   excludes only cards that name a *different* one.
+- **Advisory drafts are carved out of that check by TITLE, not by type.** A
+  GitHub security advisory is private until it is published, so it is tracked by
+  a draft card titled `[GHSA-xxxx-yyyy-zzzz] - …` — the one exception `AGENTS.md`
+  grants to "no draft cards", and the `security-advisory` skill is the flow. There
+  are enough of them open at any time that counting them would pin this check
+  permanently non-zero, and a check that never prints `0` stops being read at
+  all. The discriminator is deliberately the **title prefix** and nothing
+  broader: exempting *all* drafts, or every card whose Status is `Incoming`,
+  would let an ordinary stray draft through, which is the defect the check
+  exists for. So a draft titled anything else is still reported — by title,
+  since a draft has no issue number to print.
+  ⚠️ **The title prefix alone is not enough, because a title is not a type and
+  not a board.** Matched on its own it would also exempt a **pull request**
+  whose title happens to start `[GHSA-` — a plausible title for a security fix
+  — and an advisory draft misfiled on **#11**, where the replacement field check
+  below does not look either, so both checks would read `0`. The exemption is
+  therefore `DraftIssue` **and** `[GHSA-` **and** board #28; #11 still reports
+  every non-Issue item it carries.
+  ⚠️ **The exemption had to come with a replacement check.** `$B28` and `$B11`
+  are built from `Issue` items only, so the `no Status` and `no Priority`
+  checks never see a draft — before the carve-out the non-Issue check was the
+  *only* thing looking at one, and exempting drafts there alone would have made
+  a half-made advisory card invisible to the entire audit. Hence
+  `GHSA draft missing Status/Priority`, which reads the item-level `.status`
+  and `.priority` that `item-list` exposes for a draft as it does for an issue.
 - **`$M` holds closed issues too** — the lookup is built from
   `gh issue list --state all`, which it has to be, because the last check reads
   closed issues' state reasons. So `isopen` is not there to cope with a missing

@@ -46,7 +46,7 @@ If codecov fails **locally**, investigate with `task coverage` and
 Don't try to `cargo install` them in the sandbox — past attempts at
 source-compiling installs cascaded into bash-tool interrupts that blocked
 even `pwd` and `echo`. Instead, query Codecov directly, following
-`tests/CLAUDE.md` → **Coverage Investigation** for the endpoints and their
+`tests/AGENTS.md` → **Coverage Investigation** for the endpoints and their
 traps. The scratch paths there and below go to `${TMPDIR:-/tmp}` — write new
 ones the same way.
 
@@ -146,7 +146,7 @@ benefit — the maintainer can rerun the failed job directly once `benchmarks`
 clears, or merge regardless if the failure is clearly a flake.
 
 The codecov-failure dismissal pattern is different and remains correct:
-`CLAUDE.md` requires explicit user approval before merging with failing
+`AGENTS.md` requires explicit user approval before merging with failing
 `codecov/patch`, so dismissing the approval until the coverage gap is
 addressed is intentional.
 

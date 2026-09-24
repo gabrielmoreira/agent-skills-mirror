@@ -11,6 +11,14 @@ This guide covers everything you need to contribute to `notebooklm-py`: architec
 
 ---
 
+## Deterministic operation timeout tests
+
+When testing settlement after dispatch, control the event-loop clock so the
+deadline advances only after the simulated response has recorded its commit
+evidence. Then yield to the real operation timer and assert its cancellation and
+journal outcome. A short wall-clock deadline can instead expire during admission
+on a loaded runner, which exercises a different behavior before the write occurs.
+
 ## Architecture
 
 > **Canonical post-refactor map:** see [`docs/architecture.md`](./architecture.md)

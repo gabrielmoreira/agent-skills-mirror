@@ -59,7 +59,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`plugins/ghost/skills/exo/SKILL.md`](plugins/ghost/skills/exo/SKILL.md) |
+| 1 | ✓ | [`plugins/exo/skills/exo/SKILL.md`](plugins/exo/skills/exo/SKILL.md) |
 | 2 | ✓ | [`plugins/ghost/skills/proxy/SKILL.md`](plugins/ghost/skills/proxy/SKILL.md) |
 | 3 | ✓ | [`plugins/ghost/skills/repo-context/SKILL.md`](plugins/ghost/skills/repo-context/SKILL.md) |
 | 4 | ✓ | [`plugins/ghost/skills/report/SKILL.md`](plugins/ghost/skills/report/SKILL.md) |

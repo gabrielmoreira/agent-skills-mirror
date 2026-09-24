@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `lidge-jun/opencodex` — 26 default patterns, 5 followed patterns, 31 file(s) materialized.
+Mirror of `lidge-jun/opencodex` — 26 default patterns, 5 followed patterns, 41 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `lidge-jun/opencodex` — 26 default patterns, 5 followed patterns, 31
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 5 |
-| Files         | 31 |
+| Files         | 41 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -66,34 +66,44 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 1 | ✓ | [`.github/AGENTS.md`](.github/AGENTS.md) |
 | 2 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 3 | ✓ | [`docs-site/AGENTS.md`](docs-site/AGENTS.md) |
-| 4 | ✓ | [`docs-site/src/content/docs/guides/remote-workspace.md`](docs-site/src/content/docs/guides/remote-workspace.md) |
-| 5 | ✓ | [`gui/AGENTS.md`](gui/AGENTS.md) |
-| 6 | ✓ | [`scripts/AGENTS.md`](scripts/AGENTS.md) |
-| 7 | ✓ | [`skills/ocx/references/01_management_surface.md`](skills/ocx/references/01_management_surface.md) |
-| 8 | ✓ | [`skills/ocx/references/02_json_shapes.md`](skills/ocx/references/02_json_shapes.md) |
-| 9 | ✓ | [`skills/ocx/references/03_recipes.md`](skills/ocx/references/03_recipes.md) |
-| 10 | ✓ | [`skills/ocx/references/04_failure_semantics.md`](skills/ocx/references/04_failure_semantics.md) |
-| 11 | ✓ | [`skills/ocx/references/05_remote_hub.md`](skills/ocx/references/05_remote_hub.md) |
-| 12 | ✓ | [`skills/ocx/SKILL.md`](skills/ocx/SKILL.md) |
-| 13 | ✓ | [`src/AGENTS.md`](src/AGENTS.md) |
-| 14 | ✓ | [`structure/AGENTS.md`](structure/AGENTS.md) |
-| 15 | ✓ | [`structure/catalog.md`](structure/catalog.md) |
-| 16 | ✓ | [`structure/codex-home.md`](structure/codex-home.md) |
-| 17 | ✓ | [`structure/companion.md`](structure/companion.md) |
-| 18 | ✓ | [`structure/config.md`](structure/config.md) |
-| 19 | ✓ | [`structure/design-methodology.md`](structure/design-methodology.md) |
-| 20 | ✓ | [`structure/desktop-shell.md`](structure/desktop-shell.md) |
-| 21 | ✓ | [`structure/gui-and-management-api.md`](structure/gui-and-management-api.md) |
-| 22 | ✓ | [`structure/overview.md`](structure/overview.md) |
-| 23 | ✓ | [`structure/providers-and-adapters.md`](structure/providers-and-adapters.md) |
-| 24 | ✓ | [`structure/remote-workspace.md`](structure/remote-workspace.md) |
-| 25 | ✓ | [`structure/runtime.md`](structure/runtime.md) |
-| 26 | ✓ | [`structure/subagents.md`](structure/subagents.md) |
-| 27 | → | [`AGENTS_INSTALL.md`](AGENTS_INSTALL.md) |
-| 28 | → | [`CREDITS.md`](CREDITS.md) |
-| 29 | → | [`MAINTAINERS.md`](MAINTAINERS.md) |
-| 30 | → | [`SECURITY.md`](SECURITY.md) |
-| 31 | → | [`structure/INDEX.md`](structure/INDEX.md) |
+| 4 | ✓ | [`docs-site/src/content/docs/fr/guides/remote-workspace.md`](docs-site/src/content/docs/fr/guides/remote-workspace.md) |
+| 5 | ✓ | [`docs-site/src/content/docs/guides/remote-workspace.md`](docs-site/src/content/docs/guides/remote-workspace.md) |
+| 6 | ✓ | [`docs-site/src/content/docs/ja/guides/remote-workspace.md`](docs-site/src/content/docs/ja/guides/remote-workspace.md) |
+| 7 | ✓ | [`docs-site/src/content/docs/ko/guides/remote-workspace.md`](docs-site/src/content/docs/ko/guides/remote-workspace.md) |
+| 8 | ✓ | [`docs-site/src/content/docs/ru/guides/remote-workspace.md`](docs-site/src/content/docs/ru/guides/remote-workspace.md) |
+| 9 | ✓ | [`docs-site/src/content/docs/tr/guides/remote-workspace.md`](docs-site/src/content/docs/tr/guides/remote-workspace.md) |
+| 10 | ✓ | [`docs-site/src/content/docs/zh-cn/guides/remote-workspace.md`](docs-site/src/content/docs/zh-cn/guides/remote-workspace.md) |
+| 11 | ✓ | [`docs-site/src/content/docs/zh-tw/guides/remote-workspace.md`](docs-site/src/content/docs/zh-tw/guides/remote-workspace.md) |
+| 12 | ✓ | [`gui/AGENTS.md`](gui/AGENTS.md) |
+| 13 | ✓ | [`scripts/AGENTS.md`](scripts/AGENTS.md) |
+| 14 | ✓ | [`skills/ocx/references/01_management_surface.md`](skills/ocx/references/01_management_surface.md) |
+| 15 | ✓ | [`skills/ocx/references/02_json_shapes.md`](skills/ocx/references/02_json_shapes.md) |
+| 16 | ✓ | [`skills/ocx/references/03_recipes.md`](skills/ocx/references/03_recipes.md) |
+| 17 | ✓ | [`skills/ocx/references/04_failure_semantics.md`](skills/ocx/references/04_failure_semantics.md) |
+| 18 | ✓ | [`skills/ocx/references/05_remote_hub.md`](skills/ocx/references/05_remote_hub.md) |
+| 19 | ✓ | [`skills/ocx/SKILL.md`](skills/ocx/SKILL.md) |
+| 20 | ✓ | [`src/AGENTS.md`](src/AGENTS.md) |
+| 21 | ✓ | [`structure/AGENTS.md`](structure/AGENTS.md) |
+| 22 | ✓ | [`structure/catalog.md`](structure/catalog.md) |
+| 23 | ✓ | [`structure/codex-account-controls.md`](structure/codex-account-controls.md) |
+| 24 | ✓ | [`structure/codex-home.md`](structure/codex-home.md) |
+| 25 | ✓ | [`structure/companion.md`](structure/companion.md) |
+| 26 | ✓ | [`structure/config-proxy.md`](structure/config-proxy.md) |
+| 27 | ✓ | [`structure/config.md`](structure/config.md) |
+| 28 | ✓ | [`structure/dashboard-and-usage.md`](structure/dashboard-and-usage.md) |
+| 29 | ✓ | [`structure/design-methodology.md`](structure/design-methodology.md) |
+| 30 | ✓ | [`structure/desktop-shell.md`](structure/desktop-shell.md) |
+| 31 | ✓ | [`structure/gui-and-management-api.md`](structure/gui-and-management-api.md) |
+| 32 | ✓ | [`structure/overview.md`](structure/overview.md) |
+| 33 | ✓ | [`structure/providers-and-adapters.md`](structure/providers-and-adapters.md) |
+| 34 | ✓ | [`structure/remote-workspace.md`](structure/remote-workspace.md) |
+| 35 | ✓ | [`structure/runtime.md`](structure/runtime.md) |
+| 36 | ✓ | [`structure/subagents.md`](structure/subagents.md) |
+| 37 | → | [`AGENTS_INSTALL.md`](AGENTS_INSTALL.md) |
+| 38 | → | [`CREDITS.md`](CREDITS.md) |
+| 39 | → | [`MAINTAINERS.md`](MAINTAINERS.md) |
+| 40 | → | [`SECURITY.md`](SECURITY.md) |
+| 41 | → | [`structure/INDEX.md`](structure/INDEX.md) |
 
 ---
 

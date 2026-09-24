@@ -60,6 +60,12 @@ Trigger phrases and the role registry live in `references/workflow-registry.md`;
 - `omh-image-cards`: [omh] Image prompt cards - turn meetings, reports, PRs, issues, research, and releases into domain-aware image prompt cards.
 - `omh-inference-serving`: [omh] OMH Inference Serving workflow: choose the serving engine and quantization from decision tables, prepare deployment as an idempotent runbook with observed-only verification, and measure the endpoint with the standard TTFT/TPOT/goodput protocol.
 - `omh-instinct-ledger`: [omh] Instinct Ledger workflow: turn repeated project or cross-project lessons into atomic, confidence-scored instinct candidates with scoped promotion and export boundaries.
+- `omh-jev-action-check`: [omh] Jev action check before a risky command: secrets, outbound sends, blast radius; can only add a hold.
+- `omh-jev-ask`: [omh] Jev ask: typed yes/no, pick-one, or scored questions to Jev with your own key; returns probabilities, never prose.
+- `omh-jev-done-check`: [omh] Jev done check: does the gathered evidence support the completion claim? It can only object.
+- `omh-jev-failure-triage`: [omh] Jev failure triage: retry, fix a dependency, ask for access, or change approach on a failing run.
+- `omh-jev-review-gate`: [omh] Jev review flags for a diff: auth, tests, migration risk, severity; flags only, never approves a merge.
+- `omh-jev-route`: [omh] Jev route pick: answer an OMH route question about which workflow fits, recorded without re-routing.
 - `omh-jit-learn`: [omh] Just-in-time learning workflow: select and confirm an immediate learning target, research credible sources, and prepare an application-first brief without popularity ranking.
 - `omh-legal-compliance-review`: [omh] Surface contract and compliance risks, questions, and escalation points before a legal decision or action.
 - `omh-lifecycle-growth`: [omh] Turn an observed onboarding, activation, retention, re-engagement, referral, or monetization problem into one consent-safe in-app journey or growth experiment plan with a bounded readout and an explicit decision.

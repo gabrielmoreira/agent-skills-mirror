@@ -14,12 +14,15 @@ Scale review to the change and requested risk. For a full audit, cover each grou
 
 ## Code And Configuration
 
+- For channel integrations, use [Channel Commands](channel-commands.md) to verify enabled-context discovery, custom precedence, authorization before resolution, effect handling, and a tested once-only handoff into the agent.
+
 - Use `AgentContext` and `UserMessage` from `agent`, API handlers from `helpers.api`, and `Tool`/`Response` from `helpers.tool`.
 - User-plugin imports use `usr.plugins.<name>...`; no `sys.path` hacks or symlink-dependent imports.
 - Read effective settings through `get_plugin_config`; save only intended scope/fields and preserve unowned settings. Caller metadata is not authorization.
 - Keep configurable tool guidance policy-filtered. Validate complete JSON examples and exact tool IDs/args.
 - Gate store-dependent Alpine content, use separate `createStore` modules, bind settings to `config.*`, and use framework notifications. Verify real breakpoint names and existing geometry.
 - **FAIL** if setup, dependency installation/removal, required initialization, update migrations, or uninstall cleanup uses `execute.py` or requires a manual Execute/post-install step. Require `hooks.py:install()` and `hooks.py:uninstall()` for the applicable operations, with `pre_update()` when needed. Verify reruns, failure cleanup, and the actual target interpreter; task-runtime dependencies do not prove framework readiness.
+- For custom message handlers, verify the `get_process_step_types` hook registers every custom type rendered with `drawProcessStep`, the original handler argument is passed as `log`, and the result includes `element`. Test live/replayed records followed by hidden utilities and histories longer than 50 steps; standalone handlers must remain undeclared.
 - Track plugin-owned side effects and cleanup. Removing a plugin must not remove shared packages/services needed by other features.
 
 ## Security And Reliability

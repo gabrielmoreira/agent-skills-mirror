@@ -18,6 +18,27 @@ param(
     [switch]$Gated
 )
 
+# Windows PowerShell 5.1 can silently relocate a -File invocation when the
+# inherited cwd contains wildcard characters such as [ or ]. Recover the
+# physical cwd for a direct invocation before any project-relative paths are
+# resolved.
+if ($PSVersionTable.PSVersion.Major -eq 5 -and
+    [System.Management.Automation.WildcardPattern]::ContainsWildcardCharacters([Environment]::CurrentDirectory)) {
+    $processArgs = [Environment]::GetCommandLineArgs()
+    for ($index = 0; $index -lt ($processArgs.Length - 1); $index++) {
+        if ($processArgs[$index] -ieq '-File') {
+            $entryScript = $processArgs[$index + 1]
+            if (-not [IO.Path]::IsPathRooted($entryScript)) {
+                $entryScript = Join-Path ([Environment]::CurrentDirectory) $entryScript
+            }
+            if ([IO.Path]::GetFullPath($entryScript) -eq [IO.Path]::GetFullPath($PSCommandPath)) {
+                Set-Location -LiteralPath ([Environment]::CurrentDirectory)
+            }
+            break
+        }
+    }
+}
+
 $DATE = Get-Date -Format "yyyy-MM-dd"
 
 # Resolve v3 opt-in mode. -Gated implies autonomous and is the stronger marker.
@@ -331,13 +352,37 @@ if ($UsePlanDir) {
     # Activate the named plan only after all three planning files are ready.
     # This matches init-session.sh and prevents a failed initialization from
     # leaving .active_plan pointed at a partial plan directory.
-    $global:LASTEXITCODE = 0
-    try {
-        & $PlanSelector $PlanId *> $null
-    } catch {
-        $global:LASTEXITCODE = 1
+    $pointerSet = $false
+    for ($attempt = 1; $attempt -le 5; $attempt++) {
+        $global:LASTEXITCODE = 0
+        try {
+            $selectorResult = & $PlanSelector $PlanId 2>&1
+        } catch {
+            $selectorResult = $_
+            $global:LASTEXITCODE = 1
+        }
+        if ($LASTEXITCODE -eq 0) {
+            $pointerSet = $true
+            break
+        }
+        # Another writer can replace the pointer between the selector's
+        # Get-Item and final-path check. Retry only that transient result.
+        $transientPointerRace = $selectorResult -is [System.Management.Automation.ErrorRecord] -and
+            $selectorResult.Exception.Message -ceq
+                'Error: could not set the active plan pointer: the active plan pointer became unsafe during replacement'
+        if ($attempt -eq 5 -or -not $transientPointerRace) {
+            break
+        }
+        Start-Sleep -Milliseconds 50
+        $global:LASTEXITCODE = 0
+        try {
+            & $PlanSelector -VerifyRoot *> $null
+        } catch {
+            $global:LASTEXITCODE = 1
+        }
+        if ($LASTEXITCODE -ne 0) { break }
     }
-    if ($LASTEXITCODE -ne 0) {
+    if (-not $pointerSet) {
         Write-Error "Error: could not safely update the active plan pointer at $(Join-Path $PlanningRoot '.active_plan')."
         exit 1
     }

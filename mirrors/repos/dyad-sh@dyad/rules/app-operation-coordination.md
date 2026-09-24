@@ -34,6 +34,14 @@ subprocess to settle before returning or throwing. `Promise.all` rejects early
 and can release the claim while sibling processes are still mutating or reading
 the protected resource; use an all-settled barrier and rethrow afterward.
 
+Honor boolean process-settlement verdicts: `false` means cleanup must be deferred.
+Before returning or throwing, call `blockConflictingOperations` under the existing claim to reject queued/new conflicts and deletion until recovery.
+Deleting a Supabase user does not revoke issued JWTs; keep provider cleanup markers until test processes are confirmed stopped.
+
+Sanitize copied dotenv files throughout a disposable test workspace's lifetime.
+Preserve only provider-rewritten keys, never whole files, plus public Supabase
+URL/anon/publishable settings for RLS-scoped tests; strip privileged database credentials.
+
 App deletion closes coordinator admission before draining admitted work. Every
 new app-scoped main-process mutation must therefore use the coordinator unless
 it is already owned and drained by a domain-specific actor fence. Deletion-only
@@ -144,6 +152,10 @@ and deleted the temporary Neon branch ~200ms after creating it. Mark such stops
 assuming map-entry ordering distinguishes them.
 
 ## Clearing data on temporary Neon test branches
+
+Batch runs may share the outer provider/runtime claims and temporary branch,
+but must retain the per-case lifecycle hooks and single-worker execution.
+Database data and auth users remain isolated for every case and retry across files.
 
 Preserve `neon_auth.project_config` and `neon_auth.jwks` when clearing test data;
 they configure the auth service, and deleting them causes signup to fail with

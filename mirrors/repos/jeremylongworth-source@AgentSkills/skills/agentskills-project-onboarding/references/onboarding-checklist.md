@@ -52,8 +52,12 @@ repo clearly has multiple durable work modes.
 
 ## Verification
 
+- Distinguish a recommendation request from an authorized install and reuse
+  the user's stated scope without asking them to approve the same action again.
 - Run installer dry run when available.
 - Confirm selected skills are present in the intended scope.
 - Use a small trigger prompt that should activate one selected skill.
+- Label file-copy checks, prompt walkthroughs, and actual host/model runs
+  separately; installation alone does not prove discovery or skill behavior.
 - Confirm the agent reads project instructions from the repo root.
 - Record rollback steps for files and installed skills.

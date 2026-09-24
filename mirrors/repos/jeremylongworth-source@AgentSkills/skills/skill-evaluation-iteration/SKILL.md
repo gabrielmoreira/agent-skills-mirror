@@ -16,6 +16,12 @@ license: MIT
 6. Validate the skill folder with the official validator.
 7. Repeat only when the new test reveals a material gap.
 
+For model-specific evaluations, record the exact model, reasoning setting,
+host, active instructions, available tools, and source inputs. Hold those
+constant when comparing skill versions. Label source reviews and simulations
+separately from live runs; only claim improvements supported by recorded
+outputs. Include a negative case for unnecessary questions or skill use.
+
 ## Output Contract
 
 For skillset improvement work, return:
@@ -35,7 +41,7 @@ Patch a skill only when the test reveals a concrete trigger, workflow, output, v
 
 - Trigger accuracy: skill activates for the right requests and avoids unrelated ones.
 - Metadata sync: `agents/openai.yaml` still reflects the current `SKILL.md` purpose, especially after major edits.
-- Account routing: account-level instructions mention the skill when it should be globally discoverable.
+- Scope and discovery: the skill is installed in the narrowest useful scope with a precise description; global instructions do not accumulate skill-routing lists.
 - Context efficiency: SKILL.md is concise and references are loaded only when needed.
 - Procedural value: skill changes the agent's workflow, not just wording.
 - Quality bar: output includes acceptance criteria, validation, and domain-specific checks.

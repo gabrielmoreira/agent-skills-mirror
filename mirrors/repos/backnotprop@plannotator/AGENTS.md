@@ -83,7 +83,7 @@ plannotator/
 │   │   │   ├── plan-review/      # Scopes for plan-editor surfaces (annotationMode, annotationPanel, annotationToolbar, commentPopover, documentView, goalSetup, htmlAnnotate, imageAnnotator, inputMethod, sidebar, viewer, vimSelection)
 │   │   │   └── code-review/      # Scopes for review-editor surfaces (ai, allFilesDiff, annotationToolbar, fileTree, prComments, suggestionModal, tourDialog)
 │   │   ├── shortcuts.test.ts     # Registry unit tests (parser, dispatcher, validator)
-│   │   ├── utils/                # parser.ts, sharing.ts, storage.ts, planSave.ts, agentSwitch.ts, planDiffEngine.ts, planAgentInstructions.ts
+│   │   ├── utils/                # parser.ts, sharing.ts, storage.ts, planSave.ts, agentSwitch.ts, planDiffEngine.ts, planAgentInstructions.ts, annotateAgentInstructions.ts
 │   │   ├── hooks/                # useAnnotationHighlighter.ts, useSharing.ts, usePlanDiff.ts, useSidebar.ts, useLinkedDoc.ts, useAnnotationDraft.ts, useCodeAnnotationDraft.ts, useArchive.ts
 │   │   └── types.ts
 │   ├── ai/                       # Provider-agnostic AI backbone (providers, sessions, endpoints)
@@ -428,6 +428,14 @@ Code-review drafts (`/api/draft`) are keyed by `contentHash(rawPatch)`, so a loc
 
 Client side (`packages/review-editor`, `utils/codeAnnotationAnchor.ts`): in PR mode `withPRContext` records on each line comment `anchorText` (the anchored lines), `anchorContext` (two lines before and after on the same side plus the hunk header's function context, so a common line like `}` is not "still valid" by coincidence) and `anchorSnapshot` (the review snapshot id whose coordinates it uses). `reanchorCodeAnnotations` runs on restore (every in-scope line comment when `patchChanged`) and whenever the snapshot on screen changes: a comment whose text and context still match at the same side/lines is re-stamped; any other in-scope line comment, including one with no anchor fields, gets `outdated: true` and keeps its old line numbers (never dropped, never moved). File and general comments, and comments bound to another PR or scope, pass through. The app remembers the latest layer snapshot per PR, and `buildReviewSubmission` posts a line comment inline unless `canPostInline` refuses it: an outdated comment, or one stamped on a snapshot other than the one the page KNOWS for its PR. No evidence is not evidence of change: an unstamped comment, or one for a PR whose snapshot this page has not seen (after a reload only the PR on screen is known), posts inline. Refused comments go in the review body with the code they were written on; only a comment an anchor check marked outdated carries `OUTDATED_ANNOTATION_LABEL`. Restoring a draft whose patch changed does not restore Viewed marks on files still in the diff (`restorableViewedFiles`: the draft cannot tell which files the push touched), and every `/api/feedback` post, the platform path's status post included, carries `draftGeneration`. Outdated comments are not drawn on the diff (the review-state context filters them), show an "Outdated" chip and an Edit action in the sidebar, export under `OUTDATED_ANNOTATION_LABEL`, and a sidebar click opens their file without a scroll request.
 
+### Image previews in code review (#1598)
+
+A changed image whose patch chunk has no hunks (git's binary stub, our oversized stub, or a header-only GitHub/GitLab fallback chunk) renders as a Before/After preview (`packages/review-editor/components/ImageDiffPreview.tsx`) instead of the "Binary or oversized file" notice, in the single-file view and the all-files view, when the server advertises `imagePreviewSupported`. Added files show After only, deleted files Before only, identical bytes (pure rename, mode change) one pane plus "Contents unchanged"; panes stack under ~480px of width, in the compact shell, and for tall images. Cards fetch only once near the viewport (IntersectionObserver), abort on unmount, and keep a 64-entry object-URL LRU per snapshot; SVG is only ever shown through `<img src=blob:…>`. The notices stay the fallback: not an image → binary notice, an oversized stub over 10 MB → oversized notice. The all-files view takes the preview through a `renderImagePreview` render prop that only the review app's all-files panel sets, so the guide chain and the guides.show viewer keep the plain notice and never request images.
+
+Freshness: the endpoint checks the snapshot id only, not a per-image VCS fingerprint (that probe per image would be expensive on a large PR). So for a working-tree side (uncommitted, unstaged, since-base, local-vs-remote, GitButler workspace) the After pane can show a file NEWER than the diff on screen if it changed after the snapshot; the "Diff out of date · Refresh" banner (the 5s `/api/diff/fresh` poll) covers that case, and a refresh re-binds every card to the new snapshot. Server reads run behind a 4-wide limiter that takes the request's abort signal (Bun `req.signal`, Pi the response `close`), so reads queued for cards the reviewer scrolled past are dropped before they run, and no platform API call starts for a request that is gone. The client cache holds at most 64 sides and 128 MB, never revokes an object URL a mounted `<img>` still uses, and ignores a response that arrives after the page moved to another snapshot.
+
+Server side, every decision is in `packages/shared/review-image.ts` (vendored to Pi): eligibility via `findPatchFileEntry`, caps (`MAX_REVIEW_IMAGE_PREVIEW_BYTES` 10 MB, `MAX_REVIEW_IMAGE_PREVIEW_PIXELS` 50 MP, both in `packages/core/diff-paths.ts`), sniffing, header dimensions, error mapping and headers; both servers only say where the current mode reads a side, behind a 4-wide read limiter. Which object each side is comes from ONE table per VCS shared with hunk expansion: `resolveDiffSideSources` (git), `resolveJjSideRevs` (jj), `resolveGitButlerSideSources`; bytes come from `readDiffSideBytes` (`git cat-file --batch-check` then `cat-file blob <oid>`, never `show`; worktree reads refuse symlinks and require the realpath inside the repository toplevel) over the optional runtime methods `runGitBytes` / `readFileBytes` / `realPath` / `runJjBytes` (absent means unavailable). PR mode reads the local checkout at the fixed merge-base/head commits first and falls back to `fetchPRFileBytes` (GitHub contents API, then the blobs API for files over 1 MB after a size check; GitLab JSON files API), base64 in both cases so bytes survive the CLI's text stdout. Workspace mode delegates per child repo (`WorkspaceReviewSession.getFileBytes`). Off: static patch, P4, the guide chain and guides.show.
+
 ### GitButler review invariants
 
 GitButler is a distinct VCS provider, ordered after JJ and before Git in both Bun and Pi. It is selected only while symbolic `HEAD` is `refs/heads/gitbutler/workspace` (or legacy `gitbutler/integration`) and the repository has GitButler's local target-ref configuration; a leftover database or an ordinary branch with the reserved name is not detection. An active workspace requires `but >= 0.21.0` on `PATH`, and a missing/incompatible CLI is an explicit error rather than a fallback to ordinary Git staging against the synthetic workspace commit. `--gitbutler` forces this provider; `--git` remains the escape hatch.
@@ -525,6 +533,50 @@ close-with-content warning). Compact/touch rows are generated from the same spec
 positive decision exists in every state; composer rows open `DecisionNoteDialog`. The header flip
 predicate is `hasFeedbackToSend`, so feedback already delivered through the agent terminal shows
 the positive primary rather than a stale Send Feedback.
+
+### Annotate Options menu and Settings parity
+
+Annotate renders the same document app as plan review, so its Options menu and
+Settings dialog match plan review item for item; only rows that describe a PLAN
+decision stay plan-only. Settings `mode="annotate"` shows General, Theme,
+Display (width reads "Document Width"), Saving, Labels, Vim, Shortcuts, Files,
+Obsidian, Bear and Octarine — gated on the optional `annotateParity` prop,
+which `AppHeader` passes and a `@plannotator/ui` host that omits it does not
+(hosts keep the pre-parity annotate tab set; see `packages/ui/HANDOFF.md`).
+The notes-app enable switches are the SAME cookies plan review's approve reads
+(`body.obsidian`/`bear`/`octarine`), so enabling one from annotate also makes
+plan review save every approved plan there; the annotate description says so
+explicitly. Plan-only, and hidden in annotate: the **Hooks**
+tab (plan-time hooks; `/api/hooks/status` exists only on the plan server),
+**Save Plans** (decision snapshots in `plans/` are written on approve/deny),
+the three **Auto-save on Plan Arrival** switches (the arrival auto-save effect
+is gated `!annotateMode`), **Permission Mode**, and OpenCode **Agent
+Switching** (annotate decisions never send `agentSwitch`). The Archive sidebar
+tab stays plan-only too (the annotate server has no `/api/archive/*`).
+
+**Agent Instructions** (Options menu) is offered in every annotate session.
+`buildAnnotateAgentInstructions(origin, surface)`
+(`packages/ui/utils/annotateAgentInstructions.ts`) is the annotate twin of
+`buildPlanAgentInstructions` (plan text is unchanged): same endpoint and
+plan-mode validator, "document" not "plan", no deny/resubmit loop, and one
+section per surface picked by `resolveAnnotateInstructionsSurface` — its own
+read command (`.plan`; `.rawHtml` for raw HTML; `.targetUrl` for a live app;
+`/api/doc?path=<p>&doc=1 | jq -r '.markdown // .rawHtml'` for a folder, so
+HTML and data files print too) plus the targeting rules the validator actually
+supports: `diagramAnchor` on POST for diagram files, `htmlAnchor` by PATCH
+only (POST drops it), `pageUrl` by PATCH for live-app routes. Folder sessions
+are stated plainly: an external comment cannot target a document; it lists in
+the panel whichever document is open, is not highlighted inline, and rides the
+submitted feedback. Not done yet: POST accepting `htmlAnchor`, and a `path`
+field so a folder-session external comment targets one document.
+`packages/server/annotate-agent-instructions.test.ts`
+executes every curl/JSON example in the text against a real annotate server,
+so an instruction that drifts from the server fails there.
+
+Save to Obsidian / Bear / Octarine menu items are hidden (a `Mod+S` quick save
+toasts instead) when the session has no document text (`notesSaveAvailable`: raw-HTML, live-app, a
+folder with no file open) — the server skips an empty `plan`, so those items
+were silent no-ops.
 
 ### Tolerant argument resolution
 
@@ -635,6 +687,7 @@ During normal plan review, an Archive sidebar tab provides the same browsing via
 | `/api/call-flow/install-status` | GET | Poll `{ state, stage?, languageIds?, currentLanguageId?, error?, reason? }` across `downloading` / `verifying` / `installing-deps` / `building`. |
 | `/api/review-analysis` | GET / POST  | GET refreshes capability adverts without mutating settings; POST persists independent `{ semanticDiff, callFlow }` booleans and returns adverts. |
 | `/api/file-content`   | GET    | Returns `{ oldContent, newContent }` for expandable diff context (`?path=&oldPath=&base=`) |
+| `/api/review-image`   | GET    | One side of a changed image as raw bytes for the Before/After preview (`?path=&side=old\|new&snapshot=`; #1598). Serves only a file in the current patch whose chunk has no hunks and whose path is `png jpg jpeg gif webp svg avif bmp ico apng`; the old path is taken from the chunk, never the client. `Content-Type` is sniffed from magic bytes; every image response carries `nosniff`, `Content-Security-Policy: sandbox; …` and `Cross-Origin-Resource-Policy: same-origin`, plus `ETag` (304 on `If-None-Match`) and `X-Image-Width`/`X-Image-Height` when the header parses. Errors are JSON `{ reason, error }`: `400 unavailable\|bad-request`, `404 not-in-diff\|absent\|missing`, `409 stale`, `413 too-large` (10 MB per side or 50 megapixels), `415 not-image\|lfs-pointer`, `502 fetch-failed`. Advertised by `imagePreviewSupported` on every diff payload (false for static-patch and P4 sessions). |
 | `/api/git-add`        | POST   | Stage/unstage a file (body: `{ filePath, undo? }`) |
 | `/api/feedback`       | POST   | Submit review (body: feedback, annotations, agentSwitch) |
 | `/api/image`          | GET    | Serve image by path query param            |

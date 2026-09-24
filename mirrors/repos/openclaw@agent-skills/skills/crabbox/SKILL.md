@@ -134,6 +134,25 @@ Rules:
 - Delegated provider rejects `--fresh-pr`, `--full-resync`, `--script*`,
   `--env-helper`, capture/download flags.
 
+### Verify Synced Inputs
+
+Before interpreting a missing-module or missing-fixture failure, compare required
+inputs with the frozen source. A successful sync can omit tracked files matched
+by its exclusions. Inspect the installed sync rules, including Git-ignore
+negations, rather than assuming Git and rsync select identical files.
+
+Record each required missing path and its exact frozen Git blob. Restore only
+those reviewed inputs in the task-owned remote checkout, then verify their bytes.
+Do not regenerate a baseline, copy unrelated local state, disable exclusions,
+or treat every missing file as acceptable. Account for changed and untracked
+inputs separately from committed blobs. Recheck required inputs after each
+native sync before running the affected proof.
+
+A timeout during sync is not a test result. Establish whether payload dispatch
+occurred before retrying or reporting a command failure. If dispatch is unknown,
+inspect the same lease and invocation first. Preserve completed proof against
+its source identity, and continue only the missing verification.
+
 ## Untrusted AWS
 
 Clean trusted default-branch checkout. Installed trusted Crabbox binary. Fresh

@@ -26,8 +26,56 @@ The two projects have their own field and option IDs and none of them are
 interchangeable — a #28 id passed to #11 is rejected with "option Id does not
 belong to the field", so the mistake is at least loud.
 
+## Finding a card without trusting `--limit`
+
+⚠️ **`gh project item-list --limit N` truncates silently.** Past `N` it returns
+the first `N` items with no error and no warning, so a `select` over the result
+matches nothing and a card that exists reads as missing. Board #28 passed 500
+items in September 2026 — double the figure quoted here two months earlier — and
+the old `--limit 500` lookups reported a carded issue as unboarded and 16 GHSA
+drafts as absent in one session (#2451). A limit is a guess about the board's
+size; don't make the recipes depend on it being right.
+
+- **An issue's card is looked up from the issue**, which is independent of board
+  size — see [Move an existing card](#move-an-existing-card).
+- **A draft card or a whole-board dump** (the GHSA lookup, the snapshot, the
+  recovery dump, `/issue-triage`'s sweep and audit) genuinely needs the full
+  listing. Those recipes use a limit with headroom **and** compare the result's
+  `.items | length` against the `.totalCount` that `item-list --format json`
+  also returns, so a truncated listing fails loudly instead of passing as
+  complete. The check also catches a failed `gh` call, whose empty output has
+  neither key. Where a later step reads the dump from a file, an incomplete dump
+  is deleted, so that step fails on the missing file rather than running on
+  partial data.
+
 **Only issues go on a board — never PRs, never draft cards.** A PR is tracked
 through the card of the issue it closes.
+
+**The one exception is a GitHub security advisory**, tracked by a draft card
+titled `[GHSA-xxxx-yyyy-zzzz] - …` because a real issue would disclose it before
+a fix exists. The flow is `/security-advisory`.
+
+⚠️ **A draft card has no repository and no issue number, so the issue-side
+lookup below cannot find one**, and `item-add --url` has no URL to be given.
+Look it up by **title** in the full listing instead, then feed that item id to
+`item-edit` or `item-delete` exactly as usual:
+
+```sh
+GHSA=GHSA-xxxx-yyyy-zzzz   # the advisory's real id
+ITEM_ID=   # never let an earlier lookup's id survive a failed one
+BOARD=$(gh project item-list 28 --owner modelcontextprotocol --format json --limit 2000)
+if jq -e '(.items | length) == .totalCount' <<<"$BOARD" >/dev/null; then
+  ITEM_ID=$(jq -r '.items[] | select(.content.type=="DraftIssue")
+        | select(.content.title | startswith("['"$GHSA"']")) | .id' <<<"$BOARD")
+  [ -n "$ITEM_ID" ] || echo "no draft card titled [$GHSA] on #28" >&2
+else
+  echo "item-list incomplete or failed — raise --limit; not concluding anything" >&2
+fi
+```
+
+Match on the **bracketed GHSA id**, not on words from the summary — a summary is
+free text and two advisories can share one. Advisory drafts live on #28 only;
+`/issue-triage`'s audit reports one found anywhere else.
 
 ## V2 board (#28) IDs
 
@@ -123,24 +171,48 @@ gh project item-edit --project-id PVT_kwDOCt2Azc4BA5sz --id "$ITEM_ID" \
 
 ### Move an existing card
 
-Look the item id up by issue number rather than re-adding it. Keep `--limit`
-above the board's item count (~265 as of 2026-08-01) — past it `item-list`
-truncates **silently**, `select` matches nothing, and `item-edit --id ""` fails
-with an opaque node-resolution error rather than saying the limit was too low.
+Look the item id up **from the issue** rather than re-adding it. An issue's
+`projectItems` lists the cards it has on every board, so the lookup does not
+depend on how many items the board holds (see [Finding a card without trusting
+`--limit`](#finding-a-card-without-trusting---limit)). Select the card by the
+board's **node id**, not its number: project numbers are per-owner, and an issue
+can also sit on a user-owned project that happens to be numbered 28. Querying
+through the repository also means the issue number cannot match another repo's
+issue — board #11 really does carry a `modelcontextprotocol/servers` card.
 
-⚠️ **Filter by repository, not by number alone.** These are **org** projects and
-issue numbers are **repo-local**, so an unfiltered `select` can match another
-repo's issue that happens to share the number — board #11 really does carry a
-`modelcontextprotocol/servers` card — and then moves or deletes the wrong card,
-or passes two ids at once (Copilot).
+**For a v1 card on #11, swap every #28 id, not just the lookup's.** #11's node
+id `PVT_kwDOCt2Azc4BA5sz` goes in both the lookup's `select` and the edit's
+`--project-id`; the edit also takes #11's own Status field
+`PVTSSF_lADOCt2Azc4BA5szzgzkS-g` and an option id from [its
+table](#v1-board-11-ids); and a delete is `item-delete 11`.
+
+The mutation runs only on a non-empty id: `item-edit --id ""` fails with an
+opaque node-resolution error rather than saying the card was not found. The
+`|| ITEM_ID=` matters too — on a GraphQL error (a number that is a PR, not an
+issue; a rate limit) `gh api` still prints the raw error JSON to stdout, which
+would otherwise land in `ITEM_ID` as a non-empty "id". `first:100` is the
+connection's maximum page; it counts the boards one issue is on, not the cards
+on a board, so it has no board-size exposure.
 
 ```sh
-ITEM_ID=$(gh project item-list 28 --owner modelcontextprotocol --format json --limit 500 \
-  --jq '.items[] | select(.content.repository=="modelcontextprotocol/inspector"
-                          and .content.number==<ISSUE_NUMBER>) | .id')
-# e.g. Status → In Review, when its PR opens
-gh project item-edit --project-id PVT_kwDOCt2Azc4BJVxt --id "$ITEM_ID" \
-  --field-id PVTSSF_lADOCt2Azc4BJVxtzg5iI8c --single-select-option-id 159c8a02
+N=<ISSUE_NUMBER>
+ITEM_ID=$(gh api graphql -F n="$N" -f query='query($n:Int!){
+  repository(owner:"modelcontextprotocol",name:"inspector"){issue(number:$n){
+    projectItems(first:100){nodes{id project{id}}}}}}' \
+  --jq '.data.repository.issue.projectItems.nodes[]
+        | select(.project.id=="PVT_kwDOCt2Azc4BJVxt") | .id') || ITEM_ID=
+[ -n "$ITEM_ID" ] || echo "#$N has no card on #28 (or the lookup failed)" >&2
+```
+
+Then edit it — e.g. Status → In Review, when its PR opens:
+
+```sh
+if [ -n "$ITEM_ID" ]; then
+  gh project item-edit --project-id PVT_kwDOCt2Azc4BJVxt --id "$ITEM_ID" \
+    --field-id PVTSSF_lADOCt2Azc4BJVxtzg5iI8c --single-select-option-id 159c8a02
+else
+  echo "no ITEM_ID — nothing edited" >&2
+fi
 ```
 
 ### Delete a card
@@ -150,10 +222,13 @@ not planned / obsolete / superseded shipped nothing, so its card is **deleted**,
 not parked in Done:
 
 ```sh
-ITEM_ID=$(gh project item-list 28 --owner modelcontextprotocol --format json --limit 500 \
-  --jq '.items[] | select(.content.repository=="modelcontextprotocol/inspector"
-                          and .content.number==<ISSUE_NUMBER>) | .id')
-gh project item-delete 28 --owner modelcontextprotocol --id "$ITEM_ID"
+# ITEM_ID from the issue-side LOOKUP block in "Move an existing card" above —
+# the lookup only, not the item-edit that follows it.
+if [ -n "$ITEM_ID" ]; then
+  gh project item-delete 28 --owner modelcontextprotocol --id "$ITEM_ID"
+else
+  echo "no ITEM_ID — nothing deleted" >&2
+fi
 ```
 
 Deleting the card removes it from the board only — **the issue itself is
@@ -198,7 +273,8 @@ Safe alternatives, in order of preference:
    **including its `id`**, appending only the new one.
    `ProjectV2SingleSelectFieldOptionInput.id` is an optional `String`, so a mixed
    list works. Verify afterward that no card lost its value — snapshot
-   `gh project item-list … --format json` before and after and diff; don't just
+   `gh project item-list … --format json --limit 2000` before and after, check
+   each is complete the way the snapshot below does, and diff; don't just
    spot-check. Send those dumps to `$BOARD_TMP` too, for the reason above.
 
 Both the `Incoming` Status option and the Urgent/High/Medium/Low Priority
@@ -220,10 +296,16 @@ PR (Copilot).
 
 ```sh
 BOARD_TMP=$(mktemp -d)
-gh project item-list 28 --owner modelcontextprotocol --format json --limit 600 \
+gh project item-list 28 --owner modelcontextprotocol --format json --limit 2000 \
   > "$BOARD_TMP/board-snapshot.json"
-echo "snapshot: $BOARD_TMP/board-snapshot.json"   # note the path; you need it to recover
+# A truncated snapshot cannot restore the cards it dropped — refuse to proceed on one.
+jq -e '(.items | length) == .totalCount' "$BOARD_TMP/board-snapshot.json" >/dev/null \
+  && echo "snapshot: $BOARD_TMP/board-snapshot.json" \
+  || { echo "SNAPSHOT INCOMPLETE — raise --limit and retake it before editing options" >&2
+       rm -f "$BOARD_TMP/board-snapshot.json"; false; }
 ```
+
+Note the printed path; you need it to recover.
 
 ### Recovering from a deleted option
 
@@ -241,25 +323,40 @@ and pass the Priority field id `PVTSSF_lADOCt2Azc4BJVxtzg5iJE4`.
 # 0. Same temp dir the snapshot went to — keep every dump out of the worktree.
 BOARD_TMP=${BOARD_TMP:-$(mktemp -d)}
 
-# 1. Which cards lost their value, and what did they hold?
-gh project item-list 28 --owner modelcontextprotocol --format json --limit 600 \
+# 1. Which cards lost their value, and what did they hold? lost-ids.json is
+#    kept ONLY when the dump is complete AND the snapshot reports what those cards
+#    held — step 3 refuses to run without it, so neither a truncated dump nor a
+#    missing snapshot can turn into a silent no-op or an unconfirmed re-apply.
+rm -f "$BOARD_TMP/lost-ids.json"
+gh project item-list 28 --owner modelcontextprotocol --format json --limit 2000 \
   > "$BOARD_TMP/board-broken.json"
-jq -r '[.items[]|select(.status==null)|.id]' "$BOARD_TMP/board-broken.json" \
-  > "$BOARD_TMP/lost-ids.json"
-jq -r --slurpfile L "$BOARD_TMP/lost-ids.json" '($L[0]) as $lost
-  | [.items[] | select(.id as $i | $lost|index($i)) | .status // "(none)"]
-  | group_by(.) | map({s:.[0],c:length}) | .[] | "was \(.s): \(.c)"' \
-  "$BOARD_TMP/board-snapshot.json"
+if jq -e '(.items | length) == .totalCount' "$BOARD_TMP/board-broken.json" >/dev/null; then
+  jq -r '[.items[]|select(.status==null)|.id]' "$BOARD_TMP/board-broken.json" \
+    > "$BOARD_TMP/lost-ids.json" || rm -f "$BOARD_TMP/lost-ids.json"
+  jq -r --slurpfile L "$BOARD_TMP/lost-ids.json" '($L[0]) as $lost
+    | [.items[] | select(.id as $i | $lost|index($i)) | .status // "(none)"]
+    | group_by(.) | map({s:.[0],c:length}) | .[] | "was \(.s): \(.c)"' \
+    "$BOARD_TMP/board-snapshot.json" \
+    || { echo "no usable snapshot — cannot confirm what these cards held; not re-applying" >&2
+         rm -f "$BOARD_TMP/lost-ids.json"; }
+else
+  echo "board-broken.json INCOMPLETE — raise --limit and re-run step 1" >&2
+  rm -f "$BOARD_TMP/board-broken.json"
+fi
 
 # 2. Recreate the option, echoing every surviving option's id (see above).
 #    NOTE: the recreated option gets a NEW id — the deleted one never comes back.
 
 # 3. Re-apply it to the orphaned cards.
-for id in $(jq -r '.[]' "$BOARD_TMP/lost-ids.json"); do
-  gh project item-edit --project-id PVT_kwDOCt2Azc4BJVxt --id "$id" \
-    --field-id PVTSSF_lADOCt2Azc4BJVxtzg5iI8c --single-select-option-id <NEW_OPTION_ID>
-  sleep 0.4
-done
+if [ -s "$BOARD_TMP/lost-ids.json" ]; then
+  for id in $(jq -r '.[]' "$BOARD_TMP/lost-ids.json"); do
+    gh project item-edit --project-id PVT_kwDOCt2Azc4BJVxt --id "$id" \
+      --field-id PVTSSF_lADOCt2Azc4BJVxtzg5iI8c --single-select-option-id <NEW_OPTION_ID>
+    sleep 0.4
+  done
+else
+  echo "no lost-ids.json — step 1 did not complete; nothing re-applied" >&2
+fi
 ```
 
 Step 1's grouping is the safety check: confirm the orphaned set is exactly the

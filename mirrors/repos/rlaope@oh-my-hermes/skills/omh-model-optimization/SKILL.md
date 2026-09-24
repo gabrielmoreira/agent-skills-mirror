@@ -41,7 +41,7 @@ Bad example:
 ## Completion Checklist
 
 - Recognition probe output exists for every new id, and the family label is the expected one.
-- Every research finding is labeled official or community with its source kept.
+- Every research finding is labeled official, official-client, observed, or community with its source kept.
 - The calibration draft counters named traits and marks version-specific rules as such.
 - Routing and pricing changes name their surface (operator config vs repo change) and their approval state.
 - The measurement plan names the benchmark pair, or the recorded reason none can run, and the worse-measured-calibration rule is stated.
@@ -76,9 +76,9 @@ Quality bar:
 
 - Probe recognition before researching: `omh coding model-route --executor hermes --model <id> --effort <effort> --role implementation --json` shows the family label the routing engine assigns; an unknown or generic label means the family prefix table needs a row before any calibration can attach.
 - Check calibration coverage second: the MODEL_OPTI.md coverage matrix plus both calibration tables (subagent high-effort and composer). A recognized family with no calibration is a tracked gap, not an error.
-- Research official docs first — release notes, thinking/tool-calling contract, context and output limits, pricing, speed tiers — then how other open-source harnesses handle the model. Label every finding official or community and keep the source; a community claim never overrides an official contract.
+- Research official docs first — release notes, thinking/tool-calling contract, context and output limits, pricing, speed tiers — then how other open-source harnesses handle the model. Label every finding official, official-client (the vendor's own client source), observed, or community and keep the source; on conflict the earlier label wins.
 - Author calibration as trait-to-counter: name the model's documented or observed behavior, then state the concrete counter-behavior, version-aware where generations differ. Do not restate universal protocol rules inside a family entry.
-- Distinguish speed tiers from separate models before touching routing: a speed tier is the same weights served faster and projects onto its base model; a separately trained sibling is its own chain entry. Place routing through config surfaces first (omh model-chains set, omh coding category-maestro set); shipped editorial defaults change only as a repo change with explicit owner approval, and existing entries stay as fall-through unless the owner says replace.
+- Distinguish speed tiers from separate models before touching routing: a speed tier is the same weights served faster and projects onto its base model; a separately trained sibling is its own chain entry. Place routing through config surfaces first (omh model-chains set, omh coding category-maestro set); shipped editorial defaults change only as a repo change with explicit owner approval; a superseded generation leaves the shipped chains, and its retired alias stays recognized and priced so a machine-level override still resolves.
 - Record cost only from documented list pricing; a model or tier without a documented price gets no entry — absence renders no estimate, never a fabricated number.
 - Close with measurement: a calibration ships measurable, and the baseline-vs-optimized benchmark pair is the named follow-up when no served route exists yet. A calibration that measures worse than baseline is revised or removed in the same change that reports the number, never kept.
 
@@ -120,6 +120,7 @@ Record observed delegation results; otherwise return `not_available` or `not_obs
 Prepared OMH routing is not execution, review, CI, merge-readiness, or merge evidence.
 - Treat wrapper memory/context summaries as advisory local context, not proof of opaque Hermes memory reads or changes.
 Preserve workflow intent and stop conditions; verify before claiming completion.
+Reply in the user's own words and the host's own voice: OMH's record terms (surface, lane, wrapper, handoff, evidence boundary, not_observed) stay in records and tool calls, never in the sentence the user reads unless they ask about one; and when a stop condition or a decision the user owns ends the turn, offer the next action as a question rather than declaring what will not be done.
 
 Use Hermes-native subagent/delegation features when available: native subagents -> Hermes delegation when available, otherwise sequential lanes.
 

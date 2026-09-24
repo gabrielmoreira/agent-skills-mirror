@@ -249,6 +249,17 @@ await oma.runAgent(
 
 The coordinator accepts the same hook via `runTeam(team, goal, { coordinator: { adapter: new AISdkAdapter(...) } })`. For a full application, see [`integrations/with-vercel-ai-sdk`](../packages/core/examples/integrations/with-vercel-ai-sdk/).
 
+## Image models
+
+Image generation and editing do not go through `provider` or `LLMAdapter`. They
+use `ImageModelAdapter` and `runImage()`, with built-in adapters for the OpenAI
+Images API (`OPENAI_API_KEY`, `OPENAI_BASE_URL`), OpenRouter
+(`OPENROUTER_API_KEY`), Seedream on Volcengine Ark (`ARK_API_KEY`), and Black
+Forest Labs (`BFL_API_KEY`). The
+OpenRouter image adapter is separate from the text route above because its
+image endpoint has its own request shape. See
+[image generation](image-generation.md).
+
 ## Extended thinking / reasoning
 
 One `thinking` config on `AgentConfig` maps to each provider's native reasoning setting:
@@ -263,7 +274,7 @@ const agent = {
 }
 ```
 
-- `budgetTokens` maps to Anthropic `thinking.budget_tokens` and Gemini `thinkingConfig.thinkingBudget`.
+- `budgetTokens` maps to Anthropic `thinking.budget_tokens` and Gemini `thinkingConfig.thinkingBudget`. Claude Opus 4.7, Sonnet 5, and later models reject `budget_tokens`; omit `budgetTokens` and the Anthropic adapter sends adaptive thinking instead. Models from before adaptive thinking (Sonnet 3.7 through the 4.5 generation) still receive a 1024-token default budget.
 - `effort` (`'low' | 'medium' | 'high'`) maps to OpenAI-compatible `reasoning_effort`. Values outside the framework union (such as `'minimal'` or `'none'`) can be passed via `extraBody: { reasoning_effort: '<value>' }`.
 - DeepSeek additionally maps `enabled` to `thinking: { type: 'enabled' | 'disabled' }` and accepts `effort: 'max'`. DeepSeek V4 enables thinking by default at `high` effort when no framework-level thinking config is supplied. Other built-in OpenAI-family adapters ignore the DeepSeek-only `max` value. Explicit `extraBody` values take precedence.
 - Adapters ignore fields they don't recognise, so one config is safe across a mixed-provider team.

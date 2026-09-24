@@ -175,6 +175,15 @@ test("non-deck local feature overlays survive the upstream sync", async () => {
   assert.match(tweaks, /TweakSuggestionBar/);
   assert.match(tweaks, /__edit_mode_chat/);
 
+  // design-canvas-patch.md: gentler wheel zoom, latched per wheel burst.
+  const canvas = await readFile(
+    path.join(skillRoot, "starter-components", "design-canvas.jsx"),
+    "utf8",
+  );
+  assert.match(canvas, /const WHEEL_ZOOM_STEP = Math\.log\(1\.1\);/);
+  assert.match(canvas, /const WHEEL_BURST_MS = 200;/);
+  assert.doesNotMatch(canvas, /Math\.sign\(e\.deltaY\) \* 0\.18/);
+
   for (const [file, marker] of [
     ["design-system-authoring-guide.md", "compile-design-system"],
     ["import-from-figma.md", "import-figma"],

@@ -406,6 +406,23 @@ function DCViewport({ children, minScale = 0.1, maxScale = 8, style = {} }) {
       e.deltaMode !== 0 ||
       (e.deltaX === 0 && Number.isInteger(e.deltaY) && Math.abs(e.deltaY) >= 40);
 
+    // Local patch (see design-canvas-patch.md): 10% per wheel click. Upstream's
+    // 0.18 log step (≈20%) was too coarse — 100%→200% in ~4 clicks, so one
+    // flick overshot in either direction.
+    const WHEEL_ZOOM_STEP = Math.log(1.1);
+    // Local patch: decide once per wheel burst (the first event after
+    // WHEEL_BURST_MS of quiet) whether it may zoom, and hold that until the
+    // stream goes quiet. Classifying each event let a trackpad / Magic Mouse
+    // momentum tail — integer deltaY ≥ 40 with deltaX 0 — read as a run of
+    // wheel clicks, each firing a full zoom step. The latch only ever demotes:
+    // a burst that opens as a pan stays a pan, and one that opens as a click
+    // still zooms only on click-shaped events. The window must outlast the
+    // finger-lift → momentum gap. ctrl/meta wheels always zoom and sit
+    // outside the latch.
+    const WHEEL_BURST_MS = 200;
+    let wheelZooms = false;
+    let lastWheelAt = -Infinity;
+
     const onWheel = (e) => {
       // A deck-stage nested on the canvas owns plain scrolling — its
       // thumbnail rail must stay natively scrollable, and panning a
@@ -415,13 +432,21 @@ function DCViewport({ children, minScale = 0.1, maxScale = 8, style = {} }) {
       if (!(e.ctrlKey || e.metaKey) && e.target && e.target.closest && e.target.closest('deck-stage')) return;
       e.preventDefault();
       if (isGesturing) return; // Safari: gesture* owns the pinch — discard concurrent wheels
-      if ((e.ctrlKey || e.metaKey) && !isMouseWheel(e)) {
+      const mod = e.ctrlKey || e.metaKey;
+      if (mod) {
+        lastWheelAt = -Infinity; // the next plain wheel starts a fresh burst
+      } else {
+        const now = performance.now();
+        if (now - lastWheelAt > WHEEL_BURST_MS) wheelZooms = isMouseWheel(e);
+        lastWheelAt = now;
+      }
+      if (mod && !isMouseWheel(e)) {
         // trackpad pinch, or ctrl/cmd + smooth-scroll mouse. Notched
         // wheels fall through to the fixed-step branch below.
         zoomAt(e.clientX, e.clientY, Math.exp(-e.deltaY * 0.01));
-      } else if (isMouseWheel(e)) {
+      } else if (mod || (wheelZooms && isMouseWheel(e))) {
         // notched mouse wheel — fixed-ratio step per click
-        zoomAt(e.clientX, e.clientY, Math.exp(-Math.sign(e.deltaY) * 0.18));
+        zoomAt(e.clientX, e.clientY, Math.exp(-Math.sign(e.deltaY) * WHEEL_ZOOM_STEP));
       } else {
         // trackpad two-finger scroll — pan
         tf.current.x -= e.deltaX;

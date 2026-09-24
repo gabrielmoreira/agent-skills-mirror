@@ -7,15 +7,17 @@
 ## Ownership
 
 - `file-browser.html` owns file list markup, path controls, scoped styles, and modal/canvas footer behavior.
-- `settings.html` uses shared settings fields in a two-column desktop/one-column mobile layout for default sort, list/icon view, and tree visibility; it also owns the saved remote connection list/form and per-connection permissions.
+- `../../settings/file-browser/file-browser-settings.html` owns the shared Settings fields for default sort, list/icon view, tree visibility and starting folder, plus the saved remote connection list/form and per-connection permissions.
 - `file-browser-store.js` owns directory loading, remembered-location state, selection, upload/download/delete actions, and surface handoff state.
 - `file-tree.js` and `file-tree.html` own the shared lazy directory tree; Files and Editor each retain independent tree state.
-- `rename-modal.html` owns rename and create-folder prompts that reuse the file-browser store.
+- `rename-modal.html` owns the rename and create-folder prompt for external callers (Editor, Desktop) that have no live browser footer; inside the browser both flows use the shared footer input.
 
 ## Local Contracts
 
 - Keep `open(path)` as the modal entry point for workflows that await browser close.
-- Keep `openSurface(path)` as the right-canvas entry point; it must load files without opening or awaiting a modal.
+- `openFileLink` path-link clicks reuse a live browser in place: an open browser modal or a visible docked Files surface navigates through `navigateToFolder` instead of stacking a second window; with no live browser it falls back to `open(path)` preserving the clicked path.
+- A picker opened while a canvas surface is mounted must restore the surface listing on close (`openSurface(retainedPath)`), never destroy the shared store state — destroy only runs when no surface is active.
+- Keep `openSurface(path)` as the right-canvas entry point; it must load files without opening or awaiting a modal. Reopening during loading, rename/create, or bulk operations must preserve pending state without starting another load.
 - The floating file-browser modal must use the shared surface modal chrome so it remains draggable/resizable and exposes Focus mode.
 - Preserve remembered-directory behavior: explicit paths win, then remembered path, then `$WORK_DIR`.
 - Empty mounted startup states must self-heal to the `$WORK_DIR` default instead of rendering a blank path and empty list.
@@ -43,19 +45,26 @@
 - Keep the file list readable in narrow canvas/modal containers by hiding the Modified date column before sacrificing the Name or Size columns.
 - Use the shared `surface-workspace` lighter palette, 32px flat toolbar controls, and separators between action groups; the file-tree toggle stays available in the path header.
 - The list pane uses `padding: 0 6px`, a borderless list container/header bottom, and square file rows. Folder rows use the same `folder` Material Symbol as the tree; file-type SVGs remain for files. All list icons use a fixed 22px slot, with a 22px folder glyph, so folder and file names align. Folder glyphs match the muted gray in `webui/public/file.svg`.
-- Keep the list compact: 4px vertical header padding and 5px vertical item padding. The path-submit arrow is borderless and transparent, with opacity-only hover feedback.
-- Keep New file and New folder controls icon-only across canvas and modal modes while preserving accessible labels.
-- Keep Up, path, New file, New folder, the tree toggle, and the settings gear in one compact row, with equal button heights. Do not add a separate search or totals row.
-- New file uses the existing Save As picker and creates an empty file in the shared Editor; existing names must never be overwritten. HTML/XML/SVG retain Browser preview in their action menu and use the same dropdown Edit entry as other editable files.
+- Keep the list compact: 4px vertical header padding and 5px vertical item padding. The path-submit button is borderless and transparent, with subtle hover feedback.
+- One Create new (+) control owns both create actions across canvas and modal modes: its dropdown lists New file and New folder with accessible labels, each item keeping its original permission and picker visibility guards; the menu reuses the teleported dropdown chrome and closes on pick, outside click, Escape, and list scroll.
+- Keep Up, path, the Create new control, the tree toggle, and the settings gear in one compact row, with equal button heights. Do not add a separate search or totals row.
+- Breadcrumbs (`preferences.pathBar = buttons`) and Text (`raw`) share one editable path input. Clicking empty breadcrumb space enters editing; the blank trailing slot remains a named keyboard-operable button with a visible focus outline and loading spinner, without a pencil icon. Enter submits the typed path, Escape cancels, and blur exits editing. Preserve caret position while typing and right-end visibility when unfocused.
+- Autocomplete lists matching directories through the shared API; `/` must request filesystem root. Complete connection roots (`/@connections/<provider>/<id>` and legacy `/@ssh/<id>`) list their children with or without a trailing slash; namespaces and incomplete connection IDs do not trigger requests. Typing debounces requests; cancellation, new input, navigation, and teardown invalidate pending results. Tab accepts a suggestion and lists its children; Enter submits the typed value. Anchor the dropdown to its owning input so hidden hosts cannot show duplicates.
+- Path input and breadcrumb observers belong to their mounted elements and disconnect on destruction. Breadcrumb overflow and toolbar menus are local Alpine state, independent across canvas/modal hosts. Keep whole ancestors accessible through the overflow menu and retain drag/drop on crumbs. Connection provider namespace segments are not browsable ancestors.
+- Toolbar menus close on action, outside click, Escape, navigation, surrounding scroll, and resize. Dropdown scrolling itself must remain usable. Keep the loading indicator slot stable and preserve the current listing during fetches; loading rows must be inert to both keyboard and pointer interaction.
+- Back/Forward move between history stacks only after successful navigation. Fresh successful navigation clears forward history; failed or same-folder navigation does not. Ignore stale directory responses after newer requests or teardown.
+- `beginRename(file)` and `beginNewFolder()` edit names in the shared footer input. `openRenameModal(file, options)` and `openNewFolderModal()` always open `rename-modal.html`; callers need no presentation flags. Rename state captures its directory and duplicate-check entries without retargeting Files. Pending rename/create requests block cancellation until their result is applied. New folder temporarily replaces the Save As filename field and preserves its draft on return. The footer owns its responsive container so filename inputs use the full width on narrow hosts.
+- New file configures the existing Files footer in place and creates an empty file through Editor, never overwriting existing names. External Editor Open/Save As use `open()` and a modal, even if a hidden canvas Files instance exists; an already-open Files modal is activated through the shared modal helper and its close promise preserved, including when parked behind another surface. Mounted canvas listings restore their prior directory after the modal closes. Surface docking preserves active picker state.
+
+- File rows open files and navigate into folders on whole-row click (name cell passive, pointer cursor); the selection label and action cells opt out with `@click.stop`.
 - Preserve surface actions that route supported files to Browser, Desktop, or Editor.
 - Keep native drag moves available outside picker modes: dragging an unselected row moves only that row without changing selection, dragging a selected row moves the selection, folder rows accept drops, and Up moves items to the parent directory. Moves must reject overwrites and self-nesting.
-
 - File and folder entries in the shared tree must not have native or Bootstrap tooltips.
-- Folder names and chevrons both toggle expansion; name clicks navigate only when expanding. Indent branch status messages to the child-name column at each depth.
-- Tree branches load through the existing authenticated file-list API on expansion; filtering covers loaded folders. Keep only the filter above the raw tree, without path, parent, or refresh controls. Preserve expanded ancestors during navigation within the root and reset when moving outside it.
+- Folder names open folders through the host action, expanding them if needed; chevrons toggle branches without navigating. Indent branch status messages to the child-name column at each depth.
+- Tree branches load through the existing authenticated file-list API on expansion; filtering covers loaded folders. Keep only the filter above the raw tree, without path, parent, or refresh controls. Show the root row and retain the hierarchy from the configured local starting folder (default `/a0`) or `/@connections` for remote paths, lazily expanding the current directory's ancestors within that root. Store `treeRoot` in `fileBrowser.preferences`, load it on store initialization for Editor-only sessions, and share it with Editor while retaining independent tree state. Path-bar navigation outside the configured root must not widen it. Preserve other loaded branches within the same root and share pending directory loads.
 - Keep the tree on the right in canvas and modal modes; at narrow panel widths it overlays the content below the toolbar. Tree file clicks reuse picker selection or existing file-opening actions.
+- Scroll the selected row into view after navigation, tree opening, or lazy insertion of that row. Wait for Alpine rendering, skip hidden hosts, and leave manual scrolling alone when unrelated branches expand.
 - Scope unmount cleanup to the owning panel element; destroying an old host must not clean up the active modal.
-
 - In list view, display a dash for folder sizes; only files show byte sizes. Do not recursively scan folders for list metadata.
 
 ## Work Guidance

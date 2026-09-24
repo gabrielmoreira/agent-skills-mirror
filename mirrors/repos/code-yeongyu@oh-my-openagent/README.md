@@ -6,7 +6,7 @@
 
 > **Sponsors**
 > These are our sponsors. They help keep OmO going as a personal side project.
-> | [<img alt="OpenGateway" src="./.github/assets/opengateway-logo.svg" width="156px" />](https://opengateway.ai/) | **[OpenGateway](https://opengateway.ai/)** serves **Kimi K3 Ultrafast at 300 TPS** at the same price as the official list price. Try `opengateway/moonshotai/kimi-k3-ultrafast` today. It enforces a no-logging policy on inference raw content, so your prompts stay private - and since you never request the provider directly, you stay anonymous. |
+> | [<img alt="OpenGateway" src="./.github/assets/opengateway-logo.svg" width="156px" />](https://opengateway.ai/) | **[OpenGateway](https://opengateway.ai/)** sponsors OmO. An OpenAI-compatible gateway that puts many model providers behind one API. Thank you for backing open source. |
 > | :-----| :----- |
 
 
@@ -266,7 +266,7 @@ When the main agent delegates to a subagent, it doesn't pick a model. It picks a
 | `quick`              | Single-file changes, typos         |
 | `ultrabrain`         | Hard logic, architecture decisions |
 
-The agent says what kind of work it needs; the harness picks the right model. `ultrabrain` routes to GPT-6 Astra max and `deep` to GPT-6 Astra high (OpenAI / OpenAI Codex, then GitHub Copilot, then OpenCode); both fall back to GPT-5.6 Sol. You touch nothing.
+The agent says what kind of work it needs; the harness picks the right model. `ultrabrain` routes to GPT-6 Astra max (falling back to GPT-5.6 Sol), `deep-high` to GPT-6 Astra xhigh, and `deep-low` to GPT-6 Sol Fast medium (then GPT-6 Sol where the Fast tier is not served). You touch nothing.
 
 ### Claude Code Compatibility
 

@@ -86,6 +86,8 @@ callback stay here.
   (`"retrieve_tool_output"`) are recognized aliases only. Only
   `RECOVERY_TOOL_VISIBLE` (the live tool) is force-added to a curated
   `ToolScope::Named` belt (`session_host/builder/mod.rs::ensure_recovery_tool_visible`);
-  the aliases stay registered for transcript replay but off the wire.
+  the aliases stay registered for transcript replay but off the wire. It is
+  added when compaction is on or the agent's results can be summarized
+  (`summarizes_tool_output`), since a summary's footer names it too.
 - Contract crate: `tinyjuice-bus` (`vendor/tinyjuice/crates/tinyjuice-bus`,
   path dependency in `crates/openhuman-core/Cargo.toml`).

@@ -418,8 +418,8 @@ CHAIN_THRESHOLD=0.4 CHAIN_MAX_TURNS=20 npm run skills:eval -- test-servers
 The summary is two lines, never one:
 
 ```
-7/7 first-move cases at or above 80%.
-2/2 hand-off cases above 50%.
+7/7 claude first-move cases at or above 80%.
+2/2 claude hand-off cases above 50%.
 ```
 
 Narrowing the run never narrows what a **negative** case is scored against — a
@@ -442,6 +442,114 @@ This is why the eval is **not** in `validate`, `local:gate`, or CI: it spends
 metered calls, it is non-deterministic by construction, and it goes red on a
 rate limit. A case below threshold is a signal to investigate, not a build
 break.
+
+## Measuring GitHub Copilot
+
+Some maintainers work on this repo with the [GitHub Copilot
+CLI](https://www.npmjs.com/package/@github/copilot), so the same committed cases
+also run through it (#2397):
+
+```sh
+npm install -g @github/copilot   # then sign in once: `copilot`, then `/login`
+AGENT=copilot npm run skills:eval
+AGENT=copilot RUNS=5 npm run skills:eval -- pr-flow
+```
+
+**No coercion is needed: Copilot reads `.claude/skills/` as it is.** Its project
+skill sources are `.github/skills/`, `.agents/skills/` **and** `.claude/skills/`,
+and `copilot skill list` on 1.0.85 shows all ten of ours. So there is no symlink,
+no `.github/skills/` copy and no pointer file, and there must not be one — two
+copies of a procedure is how the stale one gets read.
+
+What was verified about how Copilot treats the files, on 1.0.85:
+
+- **It honors `disable-model-invocation: true`, but only as far as its tool
+  goes.** Its `skill` tool refused `release` with `Skill not found`, and the
+  model then opened `.claude/skills/release/SKILL.md` with `view` and read it
+  anyway. A name-only skill is kept out of the automatic listing, not made
+  unreadable — which is equally true of Claude, which can `Read` the file. It
+  still offers `/release` in its interactive slash-command menu.
+- **It honors `user-invocable: false` in that menu.** Driven through a real
+  pty, typing `/pro` lists `pr-flow` and `pre-push-gate` but not
+  `project-structure`, while `/testin` lists `testing`. The model can still load
+  it through its `skill` tool, which is what `user-invocable: false` is for.
+  (Headless `-p "/name"` is no test of this: prompt mode does not expand slash
+  commands, so the model simply loads the named skill as a tool call.)
+- **`AGENTS.md` is loaded as custom instructions**, so the rule in
+  [Do not write a case `AGENTS.md` already answers](#do-not-write-a-case-agentsmd-already-answers)
+  applies to Copilot runs unchanged.
+
+How the Copilot run differs from the Claude run, since a rate only means
+something next to the harness that produced it:
+
+| | Claude | Copilot |
+| --- | --- | --- |
+| Turn budget | `--max-turns` | none exists; `runPrompt` stops the process once the stream shows that many model calls |
+| Availability (the real bound) | `--tools Read,Glob,Grep,Skill` | `--available-tools view,glob,grep,skill` |
+| Pre-approval only | `--allowedTools` | `--allow-tool` |
+| Unconditional deny | `--disallowedTools` by tool name | `--deny-tool shell`, `write`, `url` — permission **kinds**, not names |
+| MCP servers | `--strict-mcp-config` | `--disable-builtin-mcps`; it does not read `.mcp.json` |
+| Model | whatever `claude` defaults to | whatever Copilot's model picker defaults to (Claude Sonnet 5 when measured) |
+
+**Each invocation measures one agent, and every heading and summary line names
+it.** The two rates come from different models behind different harnesses, so
+they are compared side by side and never summed, for the same reason first-move
+and hand-off cases are not.
+
+To probe one prompt the way the Copilot run does:
+
+```sh
+printf '%s' "<prompt>" \
+  | copilot --output-format json \
+      --available-tools view,glob,grep,skill --allow-tool view,glob,grep,skill \
+      --deny-tool shell --deny-tool write --deny-tool url \
+      --disable-builtin-mcps --disallow-temp-dir --no-ask-user --no-auto-update \
+  | jq -r 'select(.type == "assistant.message") | .data.toolRequests[]
+           | if .name == "skill" then "skill:" + .arguments.skill else .name end' \
+  | head -3
+```
+
+⚠️ Like the Claude probe above, **these flags are a copy of `agentArgs` in
+`scripts/skill-eval.mjs`** — change both in the same edit. Unlike the Claude
+probe, nothing here stops the run after the first move, so `head -3` only
+trims the output; the session carries on until it answers.
+
+**First measurement** (2026-09-16, Copilot CLI 1.0.85, Claude Sonnet 5): the
+full suite at `RUNS=3` put **63/63 first-move cases at 100%**, every negative
+clean. The hand-offs were then re-measured at `RUNS=5`, since `RUNS=3` is too
+coarse to read a chain:
+
+| Hand-off case | Copilot, `RUNS=5` | Claude, `RUNS=5` (#2247) |
+| --- | --- | --- |
+| `testing → test-servers`, "Write an integration test that exercises tool listing end to end." | 100% | 100% |
+| `testing → test-servers`, "Add end-to-end coverage for the tool-list pagination path." | **40%** | 100% |
+
+So the pagination prompt was a **Copilot-specific shortfall**, not noise: it
+held below the 50% bar at both sample sizes, while the same case cleared 100%
+under Claude.
+
+**Where it stopped** (#2399), from five recorded Copilot runs of that prompt,
+two of which made the hand-off: one loaded `testing` then `test-servers` as its
+first two moves; one opened with `grep` and reached `testing → test-servers`
+only after about ten searches, inside the turn budget. Of the three misses, two
+loaded `testing` and then went straight to `grep`, never following its pointer,
+and one searched the code throughout without loading any skill. The pointer was
+conditional on "does this test use a `test-servers/` fixture?", and a prompt
+about pagination does not say so, so the model went to the code to find out and
+did not come back once it found `pagination-http.json`. The fix is in
+`testing`'s body only (the description, and so the listing, is unchanged): the
+pointer now names end-to-end or integration coverage of an MCP operation as the
+signal to load `test-servers` **before** searching the code.
+
+| Hand-off case | Copilot, `RUNS=5`, after | Claude, `RUNS=5`, after |
+| --- | --- | --- |
+| `testing → test-servers`, "Write an integration test that exercises tool listing end to end." | 100%, 100% | 100% |
+| `testing → test-servers`, "Add end-to-end coverage for the tool-list pagination path." | **60%, 60%** | 100% |
+
+Two independent Copilot runs are shown because 3/5 sits one run above the bar.
+It clears it without lowering the Claude rate, but it is the weakest hand-off
+measured under either agent, and the first case to re-check when a Copilot
+release changes the default model.
 
 ## Checklist for a new or edited skill
 

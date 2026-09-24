@@ -56,11 +56,13 @@ AI(ChatGPT·Claude·Gemini 등)가 만든 한글 텍스트의 시그니처 패�
 
 ## 이전 산출물이 있을 때의 행동
 
-- `_workspace/taxonomy_changelog.md`가 있으면 읽고 직전 버전 이후 승격/기각 이력을 이어간다.
+- **후보 풀·승격 이력은 `references/taxonomy-candidates.md`가 정본이다**(추적 파일). 읽고 쓴다.
+  `_workspace/taxonomy_changelog.md`는 `.gitignore` 대상이라 작업 머신에만 남는다 — 있으면 참고만 하고,
+  새 승격·기각은 `taxonomy-candidates.md`의 이력 절에 적는다.
 - 기존 SSOT의 항목 ID(A-1, A-2 …)는 유지하고, 새 항목은 최하위 번호로 append (삽입 금지 — 진단·윤문 콜의 ID 핸드오프 계약 안정성 보호).
 
 ## 팀 통신 프로토콜
 
 - **수신**: 오케스트레이터 또는 finalize에서 "미분류 패턴 후보" 수신.
-- **발신**: taxonomy(SSOT) 갱신 후 `build_quick_rules.py`를 돌려 quick-rules를 재생성한다. 런타임 에이전트는 다음 실행 시 갱신본을 자동 로드.
+- **발신**: taxonomy(SSOT) 갱신 후 **생성물 두 개를 모두** 재생성한다 — `python3 scripts/build_quick_rules.py` 와 `python3 scripts/build_diagnosis_rules.py`. 하나만 돌리면 CI 의 `--check` 가 막는다(둘 다 drift 검사 대상). 런타임 에이전트는 다음 실행 시 갱신본을 자동 로드한다.
 - **작업 요청 범위**: 분류 체계 갱신에 한정. 개별 텍스트 진단·윤문은 런타임 3콜에 위임.

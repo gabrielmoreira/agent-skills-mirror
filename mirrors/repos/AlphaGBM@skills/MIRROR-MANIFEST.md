@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `AlphaGBM/skills` — 26 default patterns, 0 followed patterns, 112 file(s) materialized.
+Mirror of `AlphaGBM/skills` — 26 default patterns, 0 followed patterns, 113 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `AlphaGBM/skills` — 26 default patterns, 0 followed patterns, 112 fi
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 112 |
+| Files         | 113 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -162,15 +162,16 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 101 | ✓ | [`skills/stocks/alphagbm-research-reader/SKILL.md`](skills/stocks/alphagbm-research-reader/SKILL.md) |
 | 102 | ✓ | [`skills/stocks/alphagbm-smart-money/agents/openai.yaml`](skills/stocks/alphagbm-smart-money/agents/openai.yaml) |
 | 103 | ✓ | [`skills/stocks/alphagbm-smart-money/references/access.md`](skills/stocks/alphagbm-smart-money/references/access.md) |
-| 104 | ✓ | [`skills/stocks/alphagbm-smart-money/scripts/review_engine.py`](skills/stocks/alphagbm-smart-money/scripts/review_engine.py) |
-| 105 | ✓ | [`skills/stocks/alphagbm-smart-money/scripts/run.py`](skills/stocks/alphagbm-smart-money/scripts/run.py) |
-| 106 | ✓ | [`skills/stocks/alphagbm-smart-money/SKILL.md`](skills/stocks/alphagbm-smart-money/SKILL.md) |
-| 107 | ✓ | [`skills/stocks/alphagbm-stock-analysis/agents/openai.yaml`](skills/stocks/alphagbm-stock-analysis/agents/openai.yaml) |
-| 108 | ✓ | [`skills/stocks/alphagbm-stock-analysis/references/access.md`](skills/stocks/alphagbm-stock-analysis/references/access.md) |
-| 109 | ✓ | [`skills/stocks/alphagbm-stock-analysis/scripts/review_engine.py`](skills/stocks/alphagbm-stock-analysis/scripts/review_engine.py) |
-| 110 | ✓ | [`skills/stocks/alphagbm-stock-analysis/scripts/run.py`](skills/stocks/alphagbm-stock-analysis/scripts/run.py) |
-| 111 | ✓ | [`skills/stocks/alphagbm-stock-analysis/SKILL.md`](skills/stocks/alphagbm-stock-analysis/SKILL.md) |
-| 112 | ✓ | [`skills/stocks/README.md`](skills/stocks/README.md) |
+| 104 | ✓ | [`skills/stocks/alphagbm-smart-money/references/transactions.md`](skills/stocks/alphagbm-smart-money/references/transactions.md) |
+| 105 | ✓ | [`skills/stocks/alphagbm-smart-money/scripts/review_engine.py`](skills/stocks/alphagbm-smart-money/scripts/review_engine.py) |
+| 106 | ✓ | [`skills/stocks/alphagbm-smart-money/scripts/run.py`](skills/stocks/alphagbm-smart-money/scripts/run.py) |
+| 107 | ✓ | [`skills/stocks/alphagbm-smart-money/SKILL.md`](skills/stocks/alphagbm-smart-money/SKILL.md) |
+| 108 | ✓ | [`skills/stocks/alphagbm-stock-analysis/agents/openai.yaml`](skills/stocks/alphagbm-stock-analysis/agents/openai.yaml) |
+| 109 | ✓ | [`skills/stocks/alphagbm-stock-analysis/references/access.md`](skills/stocks/alphagbm-stock-analysis/references/access.md) |
+| 110 | ✓ | [`skills/stocks/alphagbm-stock-analysis/scripts/review_engine.py`](skills/stocks/alphagbm-stock-analysis/scripts/review_engine.py) |
+| 111 | ✓ | [`skills/stocks/alphagbm-stock-analysis/scripts/run.py`](skills/stocks/alphagbm-stock-analysis/scripts/run.py) |
+| 112 | ✓ | [`skills/stocks/alphagbm-stock-analysis/SKILL.md`](skills/stocks/alphagbm-stock-analysis/SKILL.md) |
+| 113 | ✓ | [`skills/stocks/README.md`](skills/stocks/README.md) |
 
 ---
 

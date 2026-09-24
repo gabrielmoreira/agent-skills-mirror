@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `bojieli/ai-agent-book` — 26 default patterns, 0 followed patterns, 9 file(s) materialized.
+Mirror of `bojieli/ai-agent-book` — 26 default patterns, 0 followed patterns, 32 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `bojieli/ai-agent-book` — 26 default patterns, 0 followed patterns, 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 9 |
+| Files         | 32 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -68,6 +68,29 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 7 | ✓ | [`chapter8/curly-quote-sft/SKILL.md`](chapter8/curly-quote-sft/SKILL.md) |
 | 8 | ✓ | [`chapter9/ai-style-skill/skill/SKILL.md`](chapter9/ai-style-skill/skill/SKILL.md) |
 | 9 | ✓ | [`chapter9/browser-use-rpa/browser-use/CLAUDE.md`](chapter9/browser-use-rpa/browser-use/CLAUDE.md) |
+| 10 | ✓ | [`skills/agent-evaluation/SKILL.md`](skills/agent-evaluation/SKILL.md) |
+| 11 | ✓ | [`skills/agent-evolution/SKILL.md`](skills/agent-evolution/SKILL.md) |
+| 12 | ✓ | [`skills/agent-state-bar/SKILL.md`](skills/agent-state-bar/SKILL.md) |
+| 13 | ✓ | [`skills/async-event-agent/SKILL.md`](skills/async-event-agent/SKILL.md) |
+| 14 | ✓ | [`skills/bad-case-to-dpo/SKILL.md`](skills/bad-case-to-dpo/SKILL.md) |
+| 15 | ✓ | [`skills/coding-agent-harness/SKILL.md`](skills/coding-agent-harness/SKILL.md) |
+| 16 | ✓ | [`skills/computer-use/SKILL.md`](skills/computer-use/SKILL.md) |
+| 17 | ✓ | [`skills/context-compression/SKILL.md`](skills/context-compression/SKILL.md) |
+| 18 | ✓ | [`skills/context-engineering/SKILL.md`](skills/context-engineering/SKILL.md) |
+| 19 | ✓ | [`skills/error-recovery/SKILL.md`](skills/error-recovery/SKILL.md) |
+| 20 | ✓ | [`skills/eval-dataset-design/SKILL.md`](skills/eval-dataset-design/SKILL.md) |
+| 21 | ✓ | [`skills/knowledge-org/SKILL.md`](skills/knowledge-org/SKILL.md) |
+| 22 | ✓ | [`skills/kv-cache-design/SKILL.md`](skills/kv-cache-design/SKILL.md) |
+| 23 | ✓ | [`skills/loop-engineering/SKILL.md`](skills/loop-engineering/SKILL.md) |
+| 24 | ✓ | [`skills/mcp-skill-hub/SKILL.md`](skills/mcp-skill-hub/SKILL.md) |
+| 25 | ✓ | [`skills/memory-system/SKILL.md`](skills/memory-system/SKILL.md) |
+| 26 | ✓ | [`skills/multi-agent-design/SKILL.md`](skills/multi-agent-design/SKILL.md) |
+| 27 | ✓ | [`skills/post-training-strategy/SKILL.md`](skills/post-training-strategy/SKILL.md) |
+| 28 | ✓ | [`skills/rag-pipeline/SKILL.md`](skills/rag-pipeline/SKILL.md) |
+| 29 | ✓ | [`skills/README.md`](skills/README.md) |
+| 30 | ✓ | [`skills/reward-design/SKILL.md`](skills/reward-design/SKILL.md) |
+| 31 | ✓ | [`skills/tool-design/SKILL.md`](skills/tool-design/SKILL.md) |
+| 32 | ✓ | [`skills/tool-discovery/SKILL.md`](skills/tool-discovery/SKILL.md) |
 
 ---
 

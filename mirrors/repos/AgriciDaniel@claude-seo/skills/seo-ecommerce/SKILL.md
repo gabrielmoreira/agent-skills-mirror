@@ -1,12 +1,9 @@
 ---
 name: seo-ecommerce
 description: >
-  E-commerce SEO analysis: Google Shopping visibility, Amazon marketplace
-  intelligence, product schema validation, competitor pricing analysis, and
-  marketplace keyword gaps. Combines on-page product SEO with marketplace data
-  from DataForSEO Merchant API. Use when user says "ecommerce SEO", "product SEO",
-  "Google Shopping", "marketplace SEO", "product schema", "Amazon SEO",
-  "product listings", "shopping ads", or "merchant SEO".
+  Analyze ecommerce SEO across product pages, product schema, Shopping
+  visibility, marketplace signals, and keyword gaps. Use only for stores,
+  catalogs, or product listings.
 user-invocable: true
 argument-hint: "<url or keyword>"
 license: MIT
@@ -14,7 +11,7 @@ compatibility: "Enhanced with DataForSEO Merchant API (optional)"
 metadata:
   author: AgriciDaniel
   original_author: "Matej Marjanovic (Pro Hub Challenge)"
-  version: "2.3.1"
+  version: "2.4.0"
   category: seo
 ---
 
@@ -71,7 +68,7 @@ Fetch and parse any product page for on-page SEO quality.
 - [ ] File names are descriptive (not `IMG_001.jpg`)
 - [ ] WebP format served (with JPEG fallback)
 - [ ] At least 3 images per product (hero, detail, lifestyle)
-- [ ] Image dimensions >= 800px for Google Shopping eligibility
+- [ ] High-resolution images: Google recommends at least 50K pixels (width x height) for merchant listings; larger (for example 800px+) is common practice, not a rule
 - [ ] Lazy loading on below-fold images only
 
 #### Internal Linking
@@ -198,8 +195,10 @@ Identify mismatches between organic and Shopping visibility.
 
 1. Fetch organic rankings via seo-dataforseo:
    `dataforseo_labs_google_ranked_keywords` for domain
-2. Fetch Google Shopping presence via Merchant API:
-   `merchant_google_products_search` for top organic keywords
+2. Fetch Google Shopping presence through the Merchant REST script (not an
+   MCP tool; the cost-ledger key is `merchant_google_products_search`):
+   `"${CLAUDE_PLUGIN_ROOT}/scripts/claude-seo" run dataforseo_merchant.py search <keyword>`
+   for the top organic keywords
 3. Cross-reference results
 
 ### Gap Types
@@ -233,7 +232,7 @@ Validate and generate Product schema following Google's current requirements.
 
 ### Confirmed Required Properties (Google Merchant)
 
-Confirmed required fields are `name`, `image`, and `offers`; use `Offer`, not `AggregateOffer`, for merchant listings.
+Confirmed required fields are `name`, `image`, and `offers`; use `Offer`, not `AggregateOffer`, for merchant listings. Merchant listings require a `price` greater than zero, and `priceCurrency` whenever `price` is set.
 
 ```json
 {
@@ -245,7 +244,7 @@ Confirmed required fields are `name`, `image`, and `offers`; use `Offer`, not `A
     "@type": "Offer",
     "url": "",
     "priceCurrency": "USD",
-    "price": "0.00",
+    "price": "49.00",
     "availability": "https://schema.org/InStock"
   }
 }
@@ -275,7 +274,7 @@ Confirmed required fields are `name`, `image`, and `offers`; use `Offer`, not `A
 5. If `brand` is present, `brand.name` must not be empty or "N/A"
 6. Sale periods use `validFrom` plus either `validThrough` or
    `priceValidUntil`, in ISO 8601 format. Include time and timezone when known.
-7. If `aggregateRating` present: `ratingValue` and `reviewCount` required
+7. If `aggregateRating` present: `ratingValue` and `reviewCount` required (the merchant-listing docs list `reviewCount`; the review-snippet docs also accept `ratingCount`)
 8. Do not include fake reviews or undisclosed incentivized reviews in visible
    content or structured data. Clearly and prominently disclose incentives.
 
@@ -301,7 +300,7 @@ Confirmed required fields are `name`, `image`, and `offers`; use `Offer`, not `A
 | **seo-content** | Product description E-E-A-T and uniqueness analysis |
 | **seo-dataforseo** | Organic keyword rankings for gap analysis |
 | **seo-technical** | Core Web Vitals for product pages (LCP on hero image) |
-| **seo-hreflang** | Region-specific result units: product queries in the EEA, South Africa, and Turkiye can show supplier units and carousels with their own eligibility rules (documented 2026-09-08) |
+| **seo-hreflang** | Region-specific result units: in the EEA, product queries can show aggregator and supplier units; the EEA, South Africa and Türkiye also have structured data carousels, each with its own eligibility rules (documented 2026-09-08) |
 | **seo-google** | GSC indexation + Performance data for product URLs (NOT Merchant Center feed validation, that is done in Merchant Center / the **Merchant API**; the legacy Content API for Shopping sunsets 2026-08-18) |
 
 ## UCP: Universal Commerce Protocol (live)
@@ -312,8 +311,8 @@ letting AI agents discover, negotiate, and transact with merchants without
 one-off integrations. Google confirms a first reference implementation for
 conversational buying in AI Mode in Search. Broader Universal Cart rollout
 details are reported from Google I/O 2026 keynote coverage; not confirmed on a
-Google-owned source. ucp.dev lists **2026-04-08** as the latest release in its
-**date-based versioning** scheme, not `1.0`; two integration paths: **Native**
+Google-owned source. ucp.dev lists **2026-08-25** as the latest spec release (Google's merchant
+guide still documents 2026-04-08) in its **date-based versioning** scheme, not `1.0`; two integration paths: **Native**
 (default) and **Embedded** (approved merchants). Pairs with **AP2** (reportedly
 moving toward FIDO governance). Canonical: developers.google.com/merchant/ucp
 and ucp.dev.
@@ -353,7 +352,7 @@ UCP itself is live; what's early is broad merchant adoption. Flag a literal
 | Empty Shopping results | No products for keyword | Suggest broader keyword, check location settings |
 | Amazon API timeout | Network/rate limit | Retry with backoff, fall back to Google-only |
 | Invalid URL | Malformed input | Validate via `google_auth.validate_url()`, show error |
-| Non-product page | URL is category/homepage | Detect page type, suggest `/seo ecommerce schema` instead |
+| Non-product page | URL is category/homepage | Run the store-level checks (UCP profile, category structure, feeds) and ask for a product URL for the product-level checks |
 
 ---
 

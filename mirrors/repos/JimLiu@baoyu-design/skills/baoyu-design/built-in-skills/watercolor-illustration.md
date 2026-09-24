@@ -49,6 +49,11 @@ GOOD DEFAULTS
   eyes / darkest:    {load: 2.2, deckle: 0.5, feather: 0.8, edgePool: 0.3}
   ink:               {width: 1.4, wobble: 1.3, lost: 0.35}
 
+SHOWING THE PAINTING BEING PAINTED (optional surfaces)
+• Live replay in the design: copy the watercolor runtime into the project (`copy_starter_component` with `kind: "watercolor_kit.js"`), load it with `<script src="./watercolor-kit.js"></script>`, add `<watercolor-kit width="900" height="1200" duration="14" controls></watercolor-kit>` and assign its `.painting` property a function (p) => { ... } containing your painting calls (drop the paper()/saveFile lines — the element owns the sheet; pass the sheet size and seed as attributes). The user then watches the washes and strokes appear in painting order, with a paint-again control.
+• Watercolor animation: when the "Animated video" skill teaches the animations_v3 engine, its `<WatercolorPainting>` component assembles the picture from its own brushstrokes on the timeline (each wash and ink line is its own layer, appearing in painting order), `useWatercolorLayers` + `<WatercolorStroke>` let individual strokes be placed and moved as scene objects, and `<WatercolorReveal>` paints the whole picture on as one flat image — only when the brief suits a painterly moment; read that skill for the authoring contract.
+• All of these replay the same picture your script painted: the kit is fully deterministic (seeded), so a painting function always reproduces its PNG — exactly for the live replay and the flat reveal, and within image-encode noise for the stroke layers.
+
 PITFALLS
 • Paint only darkens: a cream belly over a tan body stays tan. Reserve the belly (`p.reserve(shape, {alpha: 0.7, feather: 6})`) and then lay a thin cream wash there.
 • Several ellipses in one Canvas2D path join up with straight lines — use the `['union', […]]` shape instead of hand-rolling multi-ellipse paths.
@@ -78,3 +83,7 @@ WORKED EXAMPLE (a sitting fox on an aqua blob; 900×1200 logical units)
   p.splatter(672, 400, 34, 'teal', {n: 7, size: [1.2, 2.6], seed: 12});
   p.caption('a small watercolour fox', {color: 'grey'});
   await saveFile(OUTPUT_PATH, p.render());
+
+## Portable runtime
+
+If `paint_watercolor` or `copy_starter_component` is unavailable, copy `starter-components/watercolor-kit.js` into the project and author the same painting function against `window.WatercolorKit` in a locally served HTML page. Use `WatercolorKit.frame` for a still PNG or the custom element for replay, then inspect the result with the selected harness’s browser/screenshot tools. Keep the script and generated assets inside the project. This optional code-painted watercolor route does not replace `generate-images.md` for AI-generated raster imagery.

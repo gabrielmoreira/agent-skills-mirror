@@ -472,7 +472,9 @@ in this preamble, since the fallback differs per helper.
   PR claim
 - `scripts/force-handoff.mjs` for the interactive TTY-only
   `idd-force-handoff` operator facade that drives issue input, optional
-  PR confirmation from live branch state, and final `y/N` consent
+  PR confirmation from live branch state, an optional successor
+  agent-id prompt (blank keeps the displaced agent's own id), and
+  final `y/N` consent
 - `scripts/forced-handoff-marker.mjs` for low-level forced-handoff
   marker rendering and inspection when maintainers need the canonical
   payload without the interactive facade
@@ -511,6 +513,20 @@ future inventory reviews do not need to re-infer their role from code.
 - `scripts/phase-id-resolver.mjs` (`idd-phase-id-resolver`) — phase ID
   normalization utility; resolves canonical phase IDs from aliases and
   validates token format.
+- `scripts/verify-import-mirror.mjs` for proving a vendoring commit is a
+  pure mirror of an upstream commit: diffs one target commit
+  (`--target-ref`, default `HEAD`) against its parent baseline and
+  classifies each added/modified/deleted path against the corresponding
+  path in an upstream checkout (`--upstream-path`) or ref
+  (`--upstream-ref`, optionally `--upstream-remote`), using five rules —
+  exact match with a narrow generated-banner-only tolerance (scoped to a
+  caller-supplied `--generated-dir`; never active by default), structural
+  JSON comparison, Markdown-only prose-reflow tolerance, git file-mode
+  comparison, and deletion-matches-upstream recognition. Exits non-zero on
+  any genuine mismatch (referenced in
+  [kurone-kito/idd-skill#3216](https://github.com/kurone-kito/idd-skill/issues/3216)).
+  Source-repo internal helper; not distributed via the package-manager /
+  ephemeral-npx profiles.
 
 ### Discover Roadmap Graph Contract
 
@@ -1016,8 +1032,10 @@ The adopted helper boundaries are intentionally narrow:
 - `force-handoff.mjs` is intentionally operator-facing and interactive;
   it asks for the issue number before any mutation, derives whether PR
   input is required from live open PR state on the active claim branch,
-  previews the generated marker and successor IDs, and posts only after
-  an explicit `y` confirmation
+  prompts for an optional successor agent-id (blank keeps the
+  displaced agent's own id; a warning is shown when the resolved
+  successor still matches it), previews the marker, and posts only
+  after an explicit `y` confirmation
 - it must fail closed outside a TTY and is not available to autopilot
   or unattended agent contexts
 - it does not replace the forced-handoff policy contract; it is the
@@ -1311,8 +1329,11 @@ The adopted helper boundaries are intentionally narrow:
   - asks for issue input before any mutation
   - asks for PR input only when a live open PR exists on the active
     claim branch and PR-scoped evidence is required
-  - prints the generated successor IDs and marker preview before the
-    final confirmation
+  - asks for an optional successor agent-id (blank keeps the displaced
+    agent's own id)
+  - prints the resolved successor IDs and marker preview -- with a
+    warning when the resolved successor still matches the displaced
+    agent-id -- before the final confirmation
   - posts nothing unless the final confirmation is exactly `y`
 
 - Command: `node scripts/forced-handoff-marker.mjs --issue <number> --plan ...`
@@ -2848,6 +2869,10 @@ close.
   a mismatch routes `state`/`reason` to `disputed` /
   `activation-nonce-mismatch` instead of `already_owned`. Omit it (or leave
   the claim-id's nonce not posted) to skip the comparison unchanged.
+- Optional `--format json` (kurone-kito/idd-skill#3188): accepted as a
+  no-op for consistency with sibling helpers such as `live-status-digest`,
+  since this helper only ever emits JSON. Any other value fails with
+  `--format must be json` instead of `unknown argument: --format`.
 - `evidence.forced_handoff` (kurone-kito/idd-skill#2178): populated on
   **any** call, including a bare `--issue` call with no `--claim-id`,
   whenever a trusted, rule-7-valid `forced-handoff` marker's successor
@@ -3012,8 +3037,9 @@ to post it is the consuming track's job.
   `requiredChecks` (`names`, `missingNames`, `allRequiredPresent`,
   `allRequiredPassing`, `anyRequiredPending`, `anyRequiredFailing`,
   `anyRequiredUnknown`, `requiredCheckSourcePinned`,
-  `requiredCheckSourcePinnedUnresolved`, and a top-level `status` of
-  `success|pending|failing|missing|no-required-checks|source-pinned`)
+  `requiredCheckSourcePinnedUnresolved`, `protectionReadsUnreadable`,
+  and a top-level `status` of
+  `success|pending|failing|missing|no-required-checks|source-pinned|unreadable`)
 - **Source-pinned required checks**: when a ruleset `workflows` rule or an
   app/integration-pinned classic required check is in force but cannot be
   enumerated by name, `requiredCheckSourcePinned` is `true` and `status` is
@@ -3033,6 +3059,23 @@ to post it is the consuming track's job.
   clears `status` back to `success` while this is `true`, even when a
   separate, named-and-pinned check on the same required-check set would
   itself qualify.
+- **Unreadable protection/ruleset reads** (#3300): a `404` on the branch
+  rules or classic branch-protection read is unreadable by default,
+  never a vacuous "nothing configured" — mirroring how the full-size
+  `idd-ci.instructions.md`'s Required-check discovery step 4 treats a
+  masked `403`-as-`404` — unless the repository opts in via
+  `ciGate.trustEmptyProtectionReads: true` in `.github/idd/config.json`
+  (the same opt-in `pre-merge-readiness` and `resume-route-selection`
+  already honor). When either read is unreadable and the opt-in is
+  absent, `requiredChecks.protectionReadsUnreadable` is `true` and
+  `status` is `unreadable`, taking precedence over every other status
+  (including `success`) so a passing subset of a possibly incomplete
+  required-check set is never reported as settled. An explicit `403` on
+  either read still fails the command closed with a non-zero exit,
+  unchanged from before. This command resolves `.github/idd/config.json`
+  from the PR's trusted base ref (via the same `loadTrustedIddConfig`
+  `pre-merge-readiness` uses, #2373), never the PR worktree's own local
+  copy, so a PR cannot widen its own CI-wait trust.
 - it remains read-only; the command performs no reruns and posts no
   GitHub comment
 

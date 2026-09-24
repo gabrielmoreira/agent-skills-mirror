@@ -163,19 +163,39 @@ guessing from logs.
 - Rust configuration is defined under
   `crates/openhuman-core/src/config/schema/` and loaded through its config operations.
 
-The autonomy policy is security-sensitive:
+The autonomy policy is **off by default** (`[autonomy] enabled = false`,
+`config/schema/autonomy.rs`). Agents here run inside containers, platform jails
+and Docker sandboxes that already provide the isolation this in-process policy
+was approximating, and a shell tool that refuses ordinary shell syntax is not a
+usable shell. `SecurityPolicy::from_config` carries the flag; every enforcement
+entry point short-circuits on it.
 
-- `action_dir` is the agent's permitted read and write root.
+With the policy **disabled** (the default):
+
+- Command classification, the approval gate, the command allowlist and the
+  hourly action budget are all inert.
+- `workspace_only`, `forbidden_paths` and the workspace-internal boundary are
+  not enforced.
+- `is_always_forbidden` still is: credential stores (`~/.ssh`, `~/.gnupg`,
+  `~/.aws`) and system roots stay unreachable. So do `..` traversal and null
+  bytes in a path. Keep that floor.
+
+With `[autonomy] enabled = true`:
+
+- `action_dir` is the agent's permitted read and write root — and is granted as
+  a `ReadWrite` trusted root by `from_config`, so changing the working folder
+  does not cost the agent write access to it.
 - `workspace_dir` stores internal state and is never an acting-tool target.
 - Unknown commands classify as writes.
-- System and credential paths are always forbidden.
-- The approval gate is on by default. Interactive requests expire as denied
-  after ten minutes.
-- Sandboxed agents use the platform jail or Docker backend. Rust path checks
-  still apply if the sandbox falls back.
+- The approval gate prompts on non-read classes. Interactive requests expire as
+  denied after ten minutes.
 
-Do not weaken `is_workspace_internal_path`, `is_always_forbidden`,
-`classify_command`, or approval behavior to make a feature work.
+Either way, sandboxed agents use the platform jail or Docker backend, and the
+Rust path checks still apply if the sandbox falls back.
+
+A quoted heredoc body (`<< 'EOF' … EOF`) is **data**, not shell:
+`strip_quoted_heredoc_bodies` blanks it before any structural scan. An unquoted
+delimiter (`<< EOF`) is still expanded and still scanned.
 
 ## Frontend
 
@@ -270,9 +290,9 @@ Additional rules:
 ## Tool, harness, and runtime boundaries
 
 `tinyagents` owns tool-call dialects, parsing, catalog rendering, transcript
-replay, and the agent loop. `tinytools` owns the shared `Tool` trait and tool
-types. OpenHuman owns execution policy, approvals, sandboxing, timeouts, and
-progress events.
+replay, session identity, and the agent loop. `tinytools` owns the shared
+`Tool` trait and tool types. OpenHuman owns execution policy, approvals,
+sandboxing, timeouts, and progress events.
 
 - Use the `tinytools` copy vendored through `vendor/tinyagents/`; a second path
   creates incompatible Rust types.
@@ -315,6 +335,32 @@ progress events.
   commands and the TUI, `openhuman_embed::Auth` for embedders, the CLI or
   `OPENHUMAN_BACKEND_API_KEY` / `OPENHUMAN_BACKEND_SESSION_TOKEN` for
   headless hosts. Do not add backend auth endpoints back to the core.
+
+### Sessions
+
+A conversation's durable identity is `tinyagents_session::transcript::SessionRef`,
+derived from the thread id and the agent id. It maps to a transcript stem
+deterministically and **without a timestamp**, so one conversation resolves to
+one file in every process and on every launch. OpenHuman binds it in
+`set_thread_id` and resumes with `ResumeMode::Session`; it does not mint stems,
+seed history by hand, or pick a transcript by recency.
+
+- **The transcript is what the model sees.** Trimming it is legitimate.
+- **A compaction never erases.** It seals the current generation and opens the
+  next (`begin_generation`), which records the sealed one as its parent. The
+  sealed file stays on disk byte-for-byte, so the whole conversation is
+  recoverable by walking `session_chain` even though the model reads only the
+  head.
+- **A resumed session's prompt is frozen.** It reuses its persisted system
+  messages verbatim, which is what keeps the provider's prefix cache warm
+  across a restart. The accepted consequence is that prompt edits, new skills
+  and newly connected integrations do not reach an existing thread.
+- **Pre-identity conversations are adopted once**, on first resume, from the
+  timestamped stems they were written to (`adopt_legacy_session_transcripts`).
+  No legacy file is modified.
+- OpenHuman's session host keeps only the product surface over this: start a
+  session, read it back, list its generations
+  (`agent/session_host/session_api.rs`).
 
 `CoreBuilder` controls background services with `ServiceSet`, runtime domains
 with `DomainSet`, and tool visibility with `ToolGroups`. These controls only

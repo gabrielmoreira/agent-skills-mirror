@@ -460,7 +460,7 @@ This lets one agent session hand off work to another that runs in the background
 
 The [worktrunk skill](https://worktrunk.dev/claude-code/) includes guidance for Claude Code (and other agent CLIs that load it) to execute this pattern. To enable it, request it explicitly ("spawn a parallel worktree for...") or add to your project instructions (`CLAUDE.md` or `AGENTS.md`):
 
-```markdown title="CLAUDE.md"
+```markdown title="AGENTS.md"
 When I ask you to spawn parallel worktrees, use the agent handoff pattern
 from the worktrunk skill.
 ```

@@ -1,19 +1,15 @@
 ---
 name: seo-geo
 description: >
-  Optimize content for AI Overviews (formerly SGE), ChatGPT web search,
-  Perplexity, and other AI-powered search experiences. Generative Engine
-  Optimization (GEO) analysis including brand mention signals, AI crawler
-  accessibility, llms.txt compliance, passage-level citability scoring, and
-  platform-specific optimization. Use when user says "AI Overviews", "SGE",
-  "GEO", "AI search", "LLM optimization", "Perplexity", "AI citations",
-  "ChatGPT search", or "AI visibility".
+  Audit and improve content for AI Overviews and answer engines, including
+  citability, entity clarity, crawler access, brand signals, and passage
+  structure.
 user-invocable: true
 argument-hint: "[url]"
 license: MIT
 metadata:
   author: AgriciDaniel
-  version: "2.3.1"
+  version: "2.4.0"
   category: seo
 ---
 
@@ -23,8 +19,8 @@ metadata:
 
 Google's official position, published under Search Central docs:
 
-> "Optimizing for generative AI search is **still SEO** from Google's
-> perspective. AEO and GEO are rebranded labels for the same work."
+> "From Google Search's perspective, optimizing for generative AI search is
+> optimizing for the search experience, and thus **still SEO**."
 
 Read `references/google-ai-optimization-guide.md` for the full synthesis,
 myth-busting list (`llms.txt`, chunking, AI-rephrasing, mention-farming,
@@ -38,13 +34,16 @@ the contradiction in the report.
 
 ## Key Statistics
 
+Third-party figures below were not re-verified on 2026-09-23. Quote them only
+with their source and date, or leave them out.
+
 | Metric | Value | Source |
 |--------|-------|--------|
 | AI Overviews reach | 2.5 billion+ monthly active users, reported from Google I/O 2026 keynote coverage; not confirmed on a Google-owned source; 200+ countries | Third-party I/O reporting |
 | AI Overviews query coverage | ~50% of queries (third-party measurement; varies by country) | Industry data |
 | AI Mode monthly users | 1B+, reported from Google I/O 2026 keynote coverage; not confirmed on a Google-owned source | Third-party I/O reporting |
-| AI Mode model | custom version of Gemini 2.5 | Google |
-| AI-referred sessions growth | 527% (Jan-May 2025) | SparkToro |
+| AI Mode model | Google upgrades it often (Gemini 3.5 Flash became the default on 2026-05-19, and newer Flash models have shipped since); never tie advice to a model | Google (blog.google) |
+| AI-referred sessions growth | 527% (Jan-May 2025) | Third-party (attributed to SparkToro; not re-verified) |
 | ChatGPT weekly active users | 900 million | OpenAI |
 | Perplexity monthly queries | 500+ million | Perplexity |
 
@@ -69,7 +68,10 @@ the contradiction in the report.
 
 ### 1. Citability Score (25%)
 
-**Optimal passage length: 134-167 words** for AI citation. And **~44% of AI
+**Self-contained answer blocks** are easy for AI systems to quote. Third-party
+studies suggest roughly 130-170 words; this is a readability heuristic, not a
+Google requirement (Google's AI optimization guide says you do not need to chunk
+content for AI). And **~44% of AI
 citations come from the first 30% of a page** (SE Ranking study), front-load
 your most citable, self-contained answer rather than burying it below the fold.
 
@@ -107,7 +109,7 @@ your most citable, self-contained answer rather than burying it below the fold.
 
 ### 3. Multi-Modal Content (15%)
 
-Content with multi-modal elements sees **156% higher selection rates**.
+Multi-modal content can support selection in AI answers (third-party claims only; no primary source gives a figure).
 
 **Check for:**
 - Text + relevant images
@@ -136,12 +138,12 @@ Content with multi-modal elements sees **156% higher selection rates**.
 
 ### 5. Technical Accessibility (20%)
 
-**AI crawlers do NOT execute JavaScript.** Server-side rendering is critical.
+**Many AI crawlers fetch raw HTML without running JavaScript** (for example GPTBot and PerplexityBot in public tests), while Googlebot renders JavaScript and feeds AI Overviews and AI Mode. Server-side rendering keeps content visible to all of them.
 
 **Check for:**
 - Server-side rendering (SSR) vs client-only content
 - AI crawler access in robots.txt
-- llms.txt file presence and configuration
+- llms.txt presence (reported for completeness; it carries **no weight** in this score, see `references/llmstxt-evidence.md`)
 - RSL 1.0 licensing terms
 
 ---
@@ -154,18 +156,19 @@ Check `robots.txt` for these AI crawlers:
 |---------|-------|---------|---|
 | GPTBot | OpenAI | **Model training only** (NOT ChatGPT Search) | yes |
 | OAI-SearchBot | OpenAI | **ChatGPT Search citability** (the crawler that decides it) | yes |
-| ChatGPT-User | OpenAI | ChatGPT browsing (user-triggered) | no (user-triggered) |
+| ChatGPT-User | OpenAI | ChatGPT browsing (user-triggered) | "may not apply" per OpenAI (user-triggered) |
 | ClaudeBot | Anthropic | **Model training only** (NOT Claude's search features) | yes |
 | Claude-SearchBot | Anthropic | **Claude/Claude.ai search-result citability** (the crawler that decides it) | yes |
-| Claude-User | Anthropic | Claude browsing on a user's behalf (user-triggered) | no (user-triggered) |
-| PerplexityBot | Perplexity | Perplexity AI search | yes |
+| Claude-User | Anthropic | Claude browsing on a user's behalf (user-triggered) | **yes** (Anthropic: all three bots honor robots.txt) |
+| PerplexityBot | Perplexity | Perplexity AI search (not used to crawl for foundation-model training) | yes |
+| Perplexity-User | Perplexity | Fetches for a user's question (user-triggered) | generally ignores |
 | CCBot | Common Crawl | Training data (often blocked) | yes |
 | Bytespider | ByteDance | TikTok/Douyin AI | yes |
 | cohere-ai | Cohere | Cohere models | yes |
 | Google-Extended | Google | **Gemini/Vertex training & grounding only** (NOT Google Search) | yes |
 | Google-CloudVertexBot | Google | Site-owner-requested Vertex AI Agent crawls | yes |
-| Google-Agent | Google | Agentic browsing (Project Mariner), acts for a user | **no (user-triggered)** |
-| Google-NotebookLM | Google | Fetches individual user-added source URLs | **no (user-triggered)** |
+| Google-Agent | Google | User-triggered agent fetches (agentic browsing for a user) | **no (user-triggered)** |
+| Google-GeminiNotebook | Google | Fetches individual user-added source URLs (replaced `Google-NotebookLM`, supported until August 2026) | **no (user-triggered)** |
 | Google Messages | Google | User-triggered fetch | **no (user-triggered)** |
 | Applebot-Extended | Apple | **Apple Intelligence / generative-AI training data opt-out only** (NOT Siri, Spotlight, or Safari search; does not itself crawl, it labels content already fetched by Applebot) | yes |
 
@@ -221,7 +224,7 @@ bot's robots.txt status** -- check them separately and report them separately.
 Do not use these names interchangeably in report prose. When reporting crawler access,
 name the specific user-agent that was checked and the specific capability it governs.
 
-> **User-triggered fetchers ignore robots.txt by design** (Google-Agent, Google-NotebookLM, Google Messages, ChatGPT-User). robots.txt cannot block them, use server-side access controls. Google's canonical crawling/robots reference moved to **developers.google.com/crawling** (migrated 2025-11-20); IP-range files now live at `/crawling/ipranges/` and `googlebot.json` was renamed `common-crawlers.json`. Emerging: **Web Bot Auth** (RFC 9421) lets bots authenticate via a `Signature-Agent` header + key directory (used by Google-Agent); reverse-DNS verification remains the fallback.
+> **Google's user-triggered fetchers generally ignore robots.txt rules** (Google-Agent, Google-GeminiNotebook, Google Messages); OpenAI says robots.txt "may not apply" to ChatGPT-User, while Anthropic's Claude-User honors it. robots.txt cannot block them, use server-side access controls. Google's canonical crawling/robots reference moved to **developers.google.com/crawling** (migrated 2025-11-20); IP-range files now live at `/crawling/ipranges/` and `googlebot.json` was renamed `common-crawlers.json`. Emerging: **Web Bot Auth** (RFC 9421) lets bots authenticate via a `Signature-Agent` header + key directory (used by Google-Agent); reverse-DNS verification remains the fallback.
 
 ---
 
@@ -236,7 +239,7 @@ Read `references/llmstxt-evidence.md` for the primary-source evidence (Mueller, 
 > ranking or citation lever. Source:
 > developers.google.com/search/docs/fundamentals/ai-optimization-guide
 
-The emerging **llms.txt** standard provides AI crawlers with structured content guidance.
+**llms.txt** is a community proposal for giving LLMs a curated map of a site; no major AI provider has confirmed using it.
 
 **Location:** `/llms.txt` (root of domain)
 
@@ -277,7 +280,7 @@ New standard (December 2025) for machine-readable AI licensing terms.
 | Platform | Key Citation Sources | Optimization Focus |
 |----------|---------------------|-------------------|
 | **Google AI Overviews** | Strongly ranking-correlated, cites pages that already rank well | Traditional SEO + passage optimization |
-| **Google AI Mode** (custom version of Gemini 2.5) | Weakly ranking-correlated; broader pool (~9 domains cited/query, Ahrefs) | Distinct surface: freshness, entity authority, citable passages beyond position 5 |
+| **Google AI Mode** (Gemini models, upgraded often) | Weakly ranking-correlated; broader pool (~9 domains cited/query, Ahrefs) | Distinct surface: freshness, entity authority, citable passages beyond position 5 |
 | **ChatGPT** | Wikipedia (47.9%), Reddit (11.3%) | Entity presence, authoritative sources |
 | **Perplexity** | Reddit (46.7%), Wikipedia | Community validation, discussions |
 | **Bing Copilot** | Bing index, authoritative sites | Bing SEO, IndexNow |
@@ -309,24 +312,33 @@ Google added many AI citation/source surfaces across AI Overviews **and** AI Mod
   eligible for a preferred badge in AI Mode or AI Overviews. This is a
   **per-user preference**, not a documented general ranking signal. Publishers
   may offer Google's interactive button or a deeplink, but should not promise a
-  site-wide ranking lift. Source:
+  site-wide ranking lift. Since 2026-09-18 the docs also require the site to be
+  included in Search generative AI features (the Search Console "Search generative AI" control) to
+  show as a preferred source in AI Mode and AI Overviews. Source:
   developers.google.com/search/docs/appearance/preferred-sources
 - **"Highly Cited" badges**, earned via original primary reporting that other articles cite.
 - **Community Perspectives**, elevates Reddit/forum/firsthand content.
 - Inline links, desktop hover **Link Previews**, and prominent link carousels.
 
-**Controlling AI-feature appearance:** there is **no AI-specific opt-out file**. Appearance in AI Overviews and AI Mode is governed by standard preview/index directives, `nosnippet`, `data-nosnippet`, `max-snippet`, `noindex` (distinct from the third-party AI-crawler robots controls above). Source: developers.google.com/search/docs/appearance/ai-features
+**Controlling AI-feature appearance:** there is **no AI-specific opt-out file**, but since 2026-08-31 every site has a Search Console control, "Search generative AI" (include by default, exclude, or inherit), that controls eligibility for AI Overviews and AI Mode; it is not a ranking signal or a training control. Beyond that, appearance is governed by standard preview/index directives, `nosnippet`, `data-nosnippet`, `max-snippet`, `noindex` (distinct from the third-party AI-crawler robots controls above). Source: developers.google.com/search/docs/appearance/ai-features
 
-**Search agents (live, not just WebMCP):** Google's "Information Agents" run in the background to monitor topics, plus agentic booking/calling for select categories (rolling out to US users, summer 2026), so agent-friendly-page optimization (real interactive elements, accessibility tree, layout stability) now matters for actions, not only citations.
+**Search agents (live, not just WebMCP):** Google's "Information Agents" run in the background to monitor topics, plus agentic booking/calling for select categories (rolling out to US users, summer 2026), so agent-friendly-page optimization (real interactive elements, accessibility tree, layout stability) now matters for actions, not only citations. Audit that with `/seo agentic` (the `seo-agentic` sub-skill), which also reads Lighthouse's Agentic Browsing fraction.
 
 ---
+
+## Google Update Correlation
+
+For AI Overviews or AI Mode visibility changes, check the dated product and
+core-update entries first:
+`"${CLAUDE_PLUGIN_ROOT}/scripts/claude-seo" run seo_updates.py --kind product --kind core --json`.
+Treat a stale ledger (`freshness.stale`) as incomplete.
 
 ## Output
 
 Generate `GEO-ANALYSIS.md` with:
 
 1. **GEO Readiness Score: XX/100**
-2. **Platform breakdown** (Google AIO, ChatGPT, Perplexity scores)
+2. **Platform breakdown** (Google AIO, ChatGPT, Perplexity): give a score only for platforms measured with a tool (for example DataForSEO or SE Ranking); otherwise report qualitative readiness and say it was not measured
 3. **AI Crawler Access Status** -- report each crawler separately with the
    capability it governs. Training access (`GPTBot`, `Google-Extended`, `CCBot`,
    `ClaudeBot`, `Applebot-Extended`) and search citability (`OAI-SearchBot`,
@@ -334,7 +346,7 @@ Generate `GEO-ANALYSIS.md` with:
    findings and must never be merged into one line.
 4. **llms.txt Status** (present, missing, recommendations)
 5. **Brand Mention Analysis** (presence on Wikipedia, Reddit, YouTube, LinkedIn)
-6. **Passage-Level Citability** (optimal 134-167 word blocks identified)
+6. **Passage-Level Citability** (self-contained answer blocks identified; ~130-170 words is a heuristic, not a Google rule)
 7. **Server-Side Rendering Check** (JavaScript dependency analysis)
 8. **Top 5 Highest-Impact Changes**
 9. **Schema Recommendations** (for AI discoverability)
@@ -345,7 +357,7 @@ Generate `GEO-ANALYSIS.md` with:
 ## Quick Wins
 
 1. Add "What is [topic]?" definition in first 60 words
-2. Create 134-167 word self-contained answer blocks
+2. Create self-contained answer blocks (about 130-170 words is a common heuristic)
 3. Add question-based H2/H3 headings
 4. Include specific statistics with sources
 5. Add publication/update dates

@@ -6,7 +6,7 @@ description: Use when choosing an output format for extracted documents — plai
 <!--
 AI-RULEZ :: GENERATED FILE — DO NOT EDIT
 Content-Hash: blake3:bcdbffe958890e1c589f3ea44540c67c86540196a844e6de5c011faccdd345fc
-Source-Hash: blake3:ae25fbd97b16a40a31dae02d1ae82db94b013d20b96e4fe536eded197716459c
+Source-Hash: blake3:ef1fa958e3b61fa61d2a2275a9c04dfab5c94186e3351a2216afb25cbb36ff1a
 Schema-Version: v1
 -->
 

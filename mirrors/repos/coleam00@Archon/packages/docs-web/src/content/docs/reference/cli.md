@@ -34,6 +34,10 @@ Run AI-powered workflows from your terminal.
 
 **Note:** Examples below use `archon` (after `bun link`). If you skip step 2, use `bun run cli` from the repo directory instead.
 
+## Forge operations
+
+Use `archon forge resolve --data <json>` for an explicit remote, `archon forge checks --data <json>` for a qualified PR, and `workitem.view`, `pr.view`, `pr.create`, `pr.edit-body`, `pr.ready` or `comment.upsert` for the rest. Reads return structured observations; writes report whether they were applied and verified, refused, applied but unverified, or left with an unknown outcome. Pass a request carrying authored text with `--data-file <path>` so it stays out of argv. See [Forge operations](/reference/forge/) for request shapes, plugin configuration, credentials and audit behavior. The bundled SDLC pack still uses `gh` by default; set `ARCHON_SDLC_FORGE=forge` to read and write through the plugin instead.
+
 ## Quick Start
 
 ```bash
@@ -53,6 +57,23 @@ archon workflow run assist --cwd /path/to/repo --no-worktree "Quick question"
 **Note:** Workflow and isolation commands normally require running from within a git repository (running from subdirectories automatically resolves to the repo root). A non-git directory also works if it's a registered [folder project](/getting-started/concepts/#folder-projects-non-git-workspaces) — or on first use by passing `--folder`, which registers it and runs in place. The `version`, `help`, `chat`, `setup`, `serve`, and `doctor` commands work anywhere.
 
 ## Commands
+
+### `trigger`
+
+Start workflows from deployment bindings and inspect durable resource admission. A server with `ARCHON_TRIGGER_HOST` set hosts the same bindings without these commands. See [workflow triggers](/guides/workflow-triggers/) for configuration, capacity, overlap policy, and recovery requirements.
+
+| Command | Behavior |
+| --- | --- |
+| `trigger fire --config <file>` | Record a timer receipt and drain its configured host. |
+| `trigger drain --host <host-id>` | Prepare persisted starts and admit eligible queued work. |
+| `trigger list [--limit <1-1000>]` | List recent safe receipt summaries (default 50). |
+| `trigger inspect <receipt-or-request-id>` | Show source identity, current disposition, blockers, and recovery guidance. |
+| `trigger execute <request-id> --host <host-id>` | Explicitly retry an admitted pending execution using the engine claim. |
+| `trigger withdraw <request-id>` | Withdraw untouched queued work. |
+| `trigger recover-preparation <receipt> <binding> --owner <owner-id> --yes` | Reset preparation only after verifying its recorded owner has stopped. |
+| `trigger schedule <install\|remove> --config <file>` | Manage a native macOS LaunchAgent with an explicitly configured interval. |
+| `trigger whoami` | Print the Archon user ID for your CLI identity, to use as a binding's `runAsUserId`. |
+
 
 ### `chat <message>`
 
@@ -452,7 +473,7 @@ If `cwd` is an unregistered Git checkout, the command falls back to install-wide
 
 The normal human and JSON views include every active node without fetching each run's event
 history. In JSON, `active_nodes` is the ordered list of unresolved node starts: `node_started` adds
-an identifier, while `node_completed`, `node_failed`, `node_skipped`, and
+an identifier and `node_suspended` keeps it active, while `node_completed`, `node_failed`, `node_skipped`, and
 `node_skipped_prior_success` remove it. Retries re-add the node in their new start position. This
 is node lifecycle state, not evidence that a process owner is alive.
 
@@ -503,6 +524,33 @@ failed or paused. A null outcome means the workflow did not declare one, the sel
 authored it yet, or the run predates the field. In that case human output keeps its status-only
 presentation. Foreground `workflow run` uses the same labels when an outcome exists, but its exit
 code remains driven by execution success or failure.
+
+Verbose JSON node summaries include `execution` for newly recorded work. It identifies the
+invocation, attempt, provider, requested model and any model the provider reported. Inner retries
+share an invocation; each retry has its own attempt. A new loop-group iteration creates new body
+invocations. Resuming unfinished work keeps its invocation identity.
+
+The run's starting checkout appears as `checkout_baseline` in JSON and as the `Start:` line
+in human output. The engine observes it once, right after the run wins its execution claim
+and before the first node, and never rewrites it — a resume keeps it. A Git observation gives
+the commit, that commit's tree, whether the worktree was clean or dirty (with staged,
+unstaged, and untracked counts), and, when Archon created the run's branch, the commit it was
+cut from. `not_git` means the directory is not in a Git repository; `unavailable` means the
+engine could not read it. `null` means not recorded: the run predates this field or never
+started. Node execution records carry the same observation as `invocation.checkoutStart` and
+`attempt.checkoutStart`, so you can see which commit each node started at.
+
+Each usage observation is either `{ source: "provider", value: ... }` or unavailable. Reasons
+separate unsupported reporting, a supported value not reported, unknown capability, non-provider
+work and invalid reported numbers. A reported zero stays zero. Historical nodes omit `execution`
+when their rows lack these facts; they do not receive a guessed model or start time.
+
+`timing.durationMs` is elapsed wall time, not active compute time. Resumed loop durations can
+include time spent paused; bare approval retains the duration observed before the pause. Public
+records contain at most eight session-ID characters, never the full continuation handle. JSONL
+transcripts retain the names `node_start`, `node_complete` and `node_error`; their `execution`
+metadata describes the same fact as the durable node event. Suspended nodes remain active and
+appear as running until their gate or wait resolves.
 
 Every `workflow get --json` shape includes `terminal_record`. The API detail endpoint,
 `GET /api/workflows/runs/:runId`, exposes the same value as `run.terminal_record`.
@@ -1015,13 +1063,31 @@ archon version
 | Option | Effect |
 |--------|--------|
 | `--cwd <path>` | Override working directory (default: current directory) |
-| `--quiet`, `-q` | Reduce log verbosity to warnings and errors only |
-| `--verbose`, `-v` | Show debug-level output |
+| `--quiet`, `-q` | Log warnings and errors only (the default for every command except `archon serve`) |
+| `--verbose`, `-v` | Show debug-level logs on stderr (on stdout for `archon serve`) |
 | `--json` | Output machine-readable JSON (workflow `list`, `status`, `runs`, `get`, `wait`, and the write commands `approve`/`reject`/`abandon`/`resume`). Implies log suppression so stdout is exactly the JSON payload. |
 | `--timeout <seconds>` | For `workflow wait`: give up after N seconds and exit `3`. Omitted means wait indefinitely. |
 | `--follow` | For `workflow logs`: wait for the transcript and stream appended rows until the run ends. |
 | `--events` | With verbose JSON workflow `status`/`get`, return raw event rows instead of ordered node summaries. |
 | `--help`, `-h` | Show help message |
+
+### Logs
+
+A command's stdout carries only its output, so `archon workflow list --full > out.txt`
+captures the listing and nothing else. Engine logs go to stderr, and by default only
+warnings and errors appear. `--verbose` (or `LOG_LEVEL=debug`) adds debug logs, still on
+stderr. `--json` and `workflow logs` print no logs at all.
+
+`archon serve` is the exception: its logs are its output, so it logs at `info` (or debug with `--verbose`) on stdout,
+as the server does when started directly.
+
+Workflow definition problems, such as deprecated or unknown keys, are reported by
+`archon validate workflows`, inline under the workflow in `workflow list`, and on stderr
+before `workflow run` starts. A file that fails to load is listed with its error by
+`workflow list` and `validate workflows`, and `workflow run` names the error. These problems
+are logged only at debug, not for every workflow a command happens to discover. An invalid
+value for an optional workflow field (for example a malformed `tags:` block) is dropped with
+a warning log, because no other report names it.
 
 ## Working Directory
 

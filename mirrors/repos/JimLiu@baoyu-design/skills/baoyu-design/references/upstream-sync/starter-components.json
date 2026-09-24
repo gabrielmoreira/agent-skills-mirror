@@ -35,25 +35,18 @@
     "bytes": 4497
   },
   {
-    "kind": "animations_v2.jsx",
-    "filename": "animations-v2.jsx",
-    "description": "Timeline animation engine with scene sequencing and time-stretch editing — the full Stage/Sprite/easing/scrubber/video-export engine plus SceneStage: the document declares its scene list AND its playback setting (loop vs play-N-times) as JSON string literals (in a plain inline <script> of the main file, so host-timeline edits write back into source), scenes play in authored order, duration stays in sync, and the composition reflows live when the user edits timing or playback on the host timeline. Use INSTEAD of animations.jsx (contains the whole engine). For NEW standalone animations use animations_v3.jsx instead (the Animated video skill teaches it); use this only in a project that already builds on it. Never load two engines in one document (shared window globals; last wins).",
-    "hidden": false,
-    "bytes": 60879
-  },
-  {
     "kind": "animations_v3.jsx",
     "filename": "animations-v3.jsx",
     "description": "Continuous-composition animation engine — ONE element tree rendered as a pure function of one authored-time axis, so elements move, morph, and persist across section boundaries by ordinary interpolation (no per-scene components, no mounting at boundaries). The document declares its scene list AND its playback setting as JSON string literals (in a plain inline <script> of the main file, so host-timeline trim/speed edits write back into source); the engine derives the cue table from the scene list, and authored choreography references sections by name through useComposition(). Includes Shot (authored hard cuts), Captions (one visible at a time), and the full easing/scrubber/video-export plumbing. ALWAYS use this for any standalone animation (not embedded in another design) unless the user explicitly asks you not to; projects already built on animations_v2.jsx keep it. Never load two engines in one document (shared window globals; last wins).",
     "hidden": false,
-    "bytes": 43509
+    "bytes": 55237
   },
   {
     "kind": "tweaks_panel.jsx",
     "filename": "tweaks-panel.jsx",
     "description": "Tweaks shell — host protocol wiring + form-control helpers",
     "hidden": false,
-    "bytes": 25202
+    "bytes": 36258
   },
   {
     "kind": "deck_stage.js",
@@ -67,7 +60,7 @@
     "filename": "doc-page.js",
     "description": "Paged-document shell: one continuous sheet on screen; at print the browser paginates the flow onto the declared paper size with no date/URL chrome. Optional slot=\"header\"/slot=\"footer\" repeat on every printed page.",
     "hidden": false,
-    "bytes": 36948
+    "bytes": 38342
   },
   {
     "kind": "image_slot.js",
@@ -187,6 +180,13 @@
     "description": "Interactive chart shell for d3 visualizations — <chart-stage> owns container-driven sizing, wheel/drag/pinch zoom and pan with a reset control, a mouse+touch tooltip, labeled empty/error states, data transitions, and PNG/SVG downloads; you write only the draw function against its layer/view/t/tips contract (usage block in the copied file). Requires the pinned d3 <script> tags from that usage block.",
     "hidden": false,
     "bytes": 22716
+  },
+  {
+    "kind": "watercolor_kit.js",
+    "filename": "watercolor-kit.js",
+    "description": "The code-painted watercolor engine as a page component — <watercolor-kit> plays a deterministic painting function live, stroke by stroke (washes bloom in, ink draws tip to tail), with seek/replay controls; window.WatercolorKit exposes the raw paint API, a frame(paintFn, {at}) data-URL helper, and layers(paintFn, {width, height}) which takes a painting apart into its individual strokes (one image per paint call, stackable over the paper with mix-blend-mode: multiply) for custom and animated uses (usage block in the copied file). Write the painting function against the same paint API the Watercolor illustration skill teaches.",
+    "hidden": false,
+    "bytes": 49249
   },
   {
     "kind": "file_window.js",

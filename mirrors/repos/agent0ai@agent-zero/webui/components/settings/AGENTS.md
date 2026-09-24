@@ -13,11 +13,13 @@
 
 ## Local Contracts
 
-- `file-browser/` owns the Files settings page, with appearance, remote folders/plugin controls, file limits and archives in that order. Use standard stacked Settings field rows rather than a bespoke two-column grid. The Files gear and provider plugin shortcuts open this category. Remember-location is a normal Settings draft; existing immediate Files limit writes also update the open Settings draft to avoid stale overwrite.
+- `file-browser/` owns the Files settings page, with appearance, remote folders/plugin controls, file limits and archives in that order. Use standard stacked Settings field rows rather than a bespoke two-column grid. The Files gear and provider plugin shortcuts open this category. Appearance includes the browser-local tree starting folder shared by Files and Editor, defaulting to `/a0`. Remember-location is a normal Settings draft; existing immediate Files limit writes also update the open Settings draft to avoid stale overwrite. Appearance also owns the Files path bar style (`buttons` breadcrumbs default or `raw` plain text path with the Up button), shown in Settings as Breadcrumbs and Text.
 - Keep settings payloads synchronized with backend APIs and plugin settings contracts.
 - Settings tabs that expose plugin `settings_sections` must mount `settings/plugins/plugins-subsection.html` with matching `data-tab` and sidebar/nav section IDs.
 - Do not store secrets in localStorage, URLs, or console output.
 - Preserve Store Gating and modal footer conventions in settings components.
+- Mobile navigation uses a native section picker grouped by category; desktop keeps the searchable tree. Both use the same section list and scroll state.
+- Save's disabled binding must return a boolean even before the optional File Browser store loads; an undefined Alpine binding disables the button.
 - Interface control visibility is edited as a Save/Cancel draft, persisted with instance settings, and applied through the shared frontend preference store after Settings saves successfully.
 - Bundled controls contributed by plugins add their Interface row through
   `interface-controls-end` and register visibility defaults with the shared

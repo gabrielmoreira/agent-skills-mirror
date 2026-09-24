@@ -1,0 +1,4 @@
+interface:
+  display_name: "LoopX PR Merge"
+  short_description: "Gate approval and self-merge on exact-head review evidence"
+  default_prompt: "Use $loopx-pr-merge to decide approval, merge readiness, or an authorized self-merge only after the exact-head `loopx pr-review` packet exists and its completion gate is applied literally."

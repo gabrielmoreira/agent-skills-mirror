@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `modelcontextprotocol/inspector` — 26 default patterns, 4 followed patterns, 17 file(s) materialized.
+Mirror of `modelcontextprotocol/inspector` — 26 default patterns, 4 followed patterns, 18 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `modelcontextprotocol/inspector` — 26 default patterns, 4 followed p
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 4 |
-| Files         | 17 |
+| Files         | 18 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -70,15 +70,16 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 6 | ✓ | [`.claude/skills/pre-push-gate/SKILL.md`](.claude/skills/pre-push-gate/SKILL.md) |
 | 7 | ✓ | [`.claude/skills/project-structure/SKILL.md`](.claude/skills/project-structure/SKILL.md) |
 | 8 | ✓ | [`.claude/skills/release/SKILL.md`](.claude/skills/release/SKILL.md) |
-| 9 | ✓ | [`.claude/skills/test-servers/SKILL.md`](.claude/skills/test-servers/SKILL.md) |
-| 10 | ✓ | [`.claude/skills/testing/SKILL.md`](.claude/skills/testing/SKILL.md) |
-| 11 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 12 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 13 | ✓ | [`docs/publishing.md`](docs/publishing.md) |
-| 14 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 15 | → | [`docs/quality-gate.md`](docs/quality-gate.md) |
-| 16 | → | [`docs/skill-authoring.md`](docs/skill-authoring.md) |
-| 17 | → | [`SECURITY.md`](SECURITY.md) |
+| 9 | ✓ | [`.claude/skills/security-advisory/SKILL.md`](.claude/skills/security-advisory/SKILL.md) |
+| 10 | ✓ | [`.claude/skills/test-servers/SKILL.md`](.claude/skills/test-servers/SKILL.md) |
+| 11 | ✓ | [`.claude/skills/testing/SKILL.md`](.claude/skills/testing/SKILL.md) |
+| 12 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 13 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 14 | ✓ | [`docs/publishing.md`](docs/publishing.md) |
+| 15 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 16 | → | [`docs/quality-gate.md`](docs/quality-gate.md) |
+| 17 | → | [`docs/skill-authoring.md`](docs/skill-authoring.md) |
+| 18 | → | [`SECURITY.md`](SECURITY.md) |
 
 ---
 

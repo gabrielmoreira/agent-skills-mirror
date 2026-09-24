@@ -16,6 +16,16 @@ test goes, how to run it, and how to clear the gate.
 **If it does, load the `test-servers` skill now — that is step one, before
 choosing a location or writing a line.**
 
+⚠️ **Load it before searching the code, not after.** A task phrased as
+end-to-end or integration coverage of an MCP operation — listing tools,
+paginating a list, calling a tool, reading a resource — almost always stands a
+fixture up, so treat that phrasing as the answer to the question above and load
+`test-servers` *first*. Grepping for an existing test to copy is not a
+substitute: the fixture you find that way (a config under
+`test-servers/configs/`) does not tell you which of the three shapes below
+drives it, or that it can be stale. If the skill then shows the case needs no
+fixture, you have lost one skill load.
+
 The condition is **"does this test depend on a fixture from `test-servers/`?"**
 — not which tier it lands in, and not which directory it lands in. There are two
 ways to depend on one, and they need different halves of that skill:

@@ -10,14 +10,18 @@ license: MIT
 
 1. Separate brainstorming from implementation planning. First clarify what should exist and why; only then decide how to build it.
 2. Identify user, problem, motivation, desired outcome, constraints, risks, non-goals, and decision criteria.
-3. Ask only high-impact questions. Prefer 3-7 targeted questions over a long intake form.
+3. Use supplied context and repository evidence first. Ask only questions whose answers materially change scope, correctness, or the chosen approach; do not require a fixed number of questions.
 4. Explore multiple approaches, including a small MVP, a strong version, and a risky/ambitious version.
-5. Present staged decisions so the user can steer before detailed planning.
+5. Surface decisions that need the user's choice. State reasonable assumptions for routine gaps and continue work that does not depend on the answer.
 6. Convert the selected direction into a build-ready brief with acceptance criteria.
 
 ## Handoff Rule
 
-End brainstorming with a clear next-skill recommendation when the work should continue in a specialized skill. Examples:
+For planning-only requests, finish with the brief and a clear next-skill
+recommendation. When the user also requested implementation and the direction
+is sufficiently specified, continue into the relevant workflow within the same
+task. A skill handoff is not a new approval gate. Preserve explicit planning
+boundaries and any required repository review. Examples:
 
 - Game concepts: hand off to `game-skill-orchestration`.
 - Growth, sales, or marketing ideas: hand off to `growth-strategy-orchestration`.

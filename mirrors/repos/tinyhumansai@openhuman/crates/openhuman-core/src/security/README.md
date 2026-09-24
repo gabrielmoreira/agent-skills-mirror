@@ -74,15 +74,47 @@ AppContainer backend; the two domains are not interchangeable.
   `RpcOutcome<serde_json::Value>` and back the `security.policy_info` RPC
   function; `tools.rs` exposes the same read to the agent.
 
+## The policy is off by default
+
+`AutonomyConfig::enabled` (`config/schema/autonomy.rs`) defaults to `false` and
+`SecurityPolicy::from_config` carries it onto `SecurityPolicy::enabled`. Agents
+here run inside containers, platform jails and Docker sandboxes that already
+provide the isolation this in-process policy was approximating, and a shell tool
+that refuses ordinary shell syntax is not a usable shell.
+
+Every enforcement entry point short-circuits on the flag: `gate_decision`,
+`check_gated_command`, `is_command_allowed`, `validate_command_execution`,
+`can_act`, the rate limiter, `is_path_string_allowed`,
+`is_resolved_path_allowed_for` and `check_resolved_against_forbidden`.
+
+**Two things survive a disabled policy**, and they are the ones a future edit is
+most likely to take with it:
+
+- `is_always_forbidden` — credential stores and system roots (see below).
+- The `..`-traversal and null-byte rejections in `is_path_string_allowed`, which
+  are correctness rather than policy.
+
+`SecurityPolicy::default()` is the opposite — `enabled: true` — because that is
+the fallback for a policy built with no config at all, where fail-closed is
+right. Only `from_config` carries the shipped default.
+
+Tests that exercise the allowlist, the tier or containment must build their
+config with `enabled: true`; otherwise they pass vacuously. See
+`policy_disabled_tests.rs` for the contract of the disabled path itself.
+
 ## Security invariants
 
-These are the invariants AGENTS.md requires of the autonomy policy. Do not
-weaken any of the enforcing functions below, or the default-on approval
-behavior, to make a feature work:
+These hold when `[autonomy] enabled = true`, except `is_always_forbidden`,
+which holds unconditionally. Do not weaken the enforcing functions below to make
+a feature work:
 
 - **`action_dir` is the agent's permitted read and write root.** Tools resolve
   relative paths and default their cwd here (`SecurityPolicy::action_dir`,
-  `policy/types.rs`).
+  `policy/types.rs`), and `from_config` grants it as a `ReadWrite` trusted root
+  so a non-default working folder is actually writable — it is only the *join*
+  base otherwise. Skipped when the action dir sits at or above `workspace_dir`,
+  where the grant would buy a `forbidden_paths` bypass over the whole
+  workspace.
 - **`workspace_dir` stores internal state and is never an acting-tool target.**
   Enforced by `SecurityPolicy::is_workspace_internal_path`
   (`policy/path_checks.rs`) — memory DBs, sessions, tokens, and other core
@@ -94,16 +126,21 @@ behavior, to make a feature work:
   provably read-only is at least `CommandClass::Write`, the highest class
   across `;`/`|`/`&&`/`||` segments wins, and a redirect (`>`, `>>`) or `tee`
   lifts the class to at least `Write` no matter how benign the base command
-  looks.
+  looks. The body of a **quoted** heredoc (`<< 'EOF' … EOF`) is blanked first by
+  `strip_quoted_heredoc_bodies` (`policy_command/quoting.rs`): the shell expands
+  nothing there, so it is document text, not commands. An **unquoted**
+  delimiter (`<< EOF`) is expanded and is still scanned.
 - **System and credential paths are always forbidden.**
   `SecurityPolicy::is_always_forbidden` (`policy/path_checks.rs`) matches
   case-insensitively by path segment (`.ssh`, `.gnupg`, `.aws`, `.azure`,
   `.kube`, `keychains`, Windows `Microsoft\{Protect,Credentials,Crypto,Vault}`)
   and by absolute prefix (`/etc`, `/root`, `/boot`, `/proc`, `/sys`, `/system`,
   `C:\Windows`, `C:\Program Files`, `C:\ProgramData`). This check is
-  unconditional and is **not** overridable by a `trusted_root` grant.
-- **The approval gate is on by default and interactive requests expire as
-  denied after ten minutes.** `security/approval/gate.rs`'s
+  unconditional: **not** overridable by a `trusted_root` grant, and not by
+  `[autonomy] enabled = false` either.
+- **Interactive approval requests expire as denied after ten minutes.**
+  (The gate only ever decides anything with the policy enabled.)
+  `security/approval/gate.rs`'s
   `DEFAULT_APPROVAL_TTL` is 10 minutes and a timed-out park returns `Deny`;
   `approval_gate_boot_decision` (`core/types.rs`, applied in
   `core/jsonrpc.rs`) always installs the gate for `HostKind::TauriShell` and

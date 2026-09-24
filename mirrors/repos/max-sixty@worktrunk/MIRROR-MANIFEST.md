@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `max-sixty/worktrunk` — 26 default patterns, 0 followed patterns, 36 file(s) materialized.
+Mirror of `max-sixty/worktrunk` — 26 default patterns, 0 followed patterns, 44 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `max-sixty/worktrunk` — 26 default patterns, 0 followed patterns, 36
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 36 |
+| Files         | 44 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -63,38 +63,46 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 2 | ✓ | [`.claude/skills/release/SKILL.md`](.claude/skills/release/SKILL.md) |
 | 3 | ✓ | [`.claude/skills/running-tend/SKILL.md`](.claude/skills/running-tend/SKILL.md) |
 | 4 | ✓ | [`.claude/skills/writing-user-outputs/SKILL.md`](.claude/skills/writing-user-outputs/SKILL.md) |
-| 5 | ✓ | [`.github/CLAUDE.md`](.github/CLAUDE.md) |
-| 6 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 7 | ✓ | [`benches/CLAUDE.md`](benches/CLAUDE.md) |
-| 8 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 9 | ✓ | [`docs/CLAUDE.md`](docs/CLAUDE.md) |
-| 10 | ✓ | [`docs/demos/CLAUDE.md`](docs/demos/CLAUDE.md) |
-| 11 | ✓ | [`docs/public/llms.txt`](docs/public/llms.txt) |
-| 12 | ✓ | [`plugins/worktrunk/CLAUDE.md`](plugins/worktrunk/CLAUDE.md) |
-| 13 | ✓ | [`plugins/worktrunk/skills/worktrunk/SKILL.md`](plugins/worktrunk/skills/worktrunk/SKILL.md) |
-| 14 | ✓ | [`plugins/worktrunk/skills/wt-switch-create/SKILL.md`](plugins/worktrunk/skills/wt-switch-create/SKILL.md) |
-| 15 | ✓ | [`skills/worktrunk/reference/claude-code.md`](skills/worktrunk/reference/claude-code.md) |
-| 16 | ✓ | [`skills/worktrunk/reference/code-signing.md`](skills/worktrunk/reference/code-signing.md) |
-| 17 | ✓ | [`skills/worktrunk/reference/config.md`](skills/worktrunk/reference/config.md) |
-| 18 | ✓ | [`skills/worktrunk/reference/extending.md`](skills/worktrunk/reference/extending.md) |
-| 19 | ✓ | [`skills/worktrunk/reference/faq.md`](skills/worktrunk/reference/faq.md) |
-| 20 | ✓ | [`skills/worktrunk/reference/hook.md`](skills/worktrunk/reference/hook.md) |
-| 21 | ✓ | [`skills/worktrunk/reference/list.md`](skills/worktrunk/reference/list.md) |
-| 22 | ✓ | [`skills/worktrunk/reference/llm-commits.md`](skills/worktrunk/reference/llm-commits.md) |
-| 23 | ✓ | [`skills/worktrunk/reference/merge.md`](skills/worktrunk/reference/merge.md) |
-| 24 | ✓ | [`skills/worktrunk/reference/remove.md`](skills/worktrunk/reference/remove.md) |
-| 25 | ✓ | [`skills/worktrunk/reference/shell-integration.md`](skills/worktrunk/reference/shell-integration.md) |
-| 26 | ✓ | [`skills/worktrunk/reference/step.md`](skills/worktrunk/reference/step.md) |
-| 27 | ✓ | [`skills/worktrunk/reference/switch.md`](skills/worktrunk/reference/switch.md) |
-| 28 | ✓ | [`skills/worktrunk/reference/tips-patterns.md`](skills/worktrunk/reference/tips-patterns.md) |
-| 29 | ✓ | [`skills/worktrunk/reference/troubleshooting.md`](skills/worktrunk/reference/troubleshooting.md) |
-| 30 | ✓ | [`skills/worktrunk/reference/worktrunk.md`](skills/worktrunk/reference/worktrunk.md) |
-| 31 | ✓ | [`skills/worktrunk/SKILL.md`](skills/worktrunk/SKILL.md) |
-| 32 | ✓ | [`skills/wt-switch-create/rationale.md`](skills/wt-switch-create/rationale.md) |
-| 33 | ✓ | [`skills/wt-switch-create/SKILL.md`](skills/wt-switch-create/SKILL.md) |
-| 34 | ✓ | [`src/commands/CLAUDE.md`](src/commands/CLAUDE.md) |
-| 35 | ✓ | [`src/commands/list/CLAUDE.md`](src/commands/list/CLAUDE.md) |
-| 36 | ✓ | [`tests/CLAUDE.md`](tests/CLAUDE.md) |
+| 5 | ✓ | [`.github/AGENTS.md`](.github/AGENTS.md) |
+| 6 | ✓ | [`.github/CLAUDE.md`](.github/CLAUDE.md) |
+| 7 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 8 | ✓ | [`benches/AGENTS.md`](benches/AGENTS.md) |
+| 9 | ✓ | [`benches/CLAUDE.md`](benches/CLAUDE.md) |
+| 10 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 11 | ✓ | [`docs/AGENTS.md`](docs/AGENTS.md) |
+| 12 | ✓ | [`docs/CLAUDE.md`](docs/CLAUDE.md) |
+| 13 | ✓ | [`docs/demos/AGENTS.md`](docs/demos/AGENTS.md) |
+| 14 | ✓ | [`docs/demos/CLAUDE.md`](docs/demos/CLAUDE.md) |
+| 15 | ✓ | [`docs/public/llms.txt`](docs/public/llms.txt) |
+| 16 | ✓ | [`plugins/worktrunk/AGENTS.md`](plugins/worktrunk/AGENTS.md) |
+| 17 | ✓ | [`plugins/worktrunk/CLAUDE.md`](plugins/worktrunk/CLAUDE.md) |
+| 18 | ✓ | [`plugins/worktrunk/skills/worktrunk/SKILL.md`](plugins/worktrunk/skills/worktrunk/SKILL.md) |
+| 19 | ✓ | [`plugins/worktrunk/skills/wt-switch-create/SKILL.md`](plugins/worktrunk/skills/wt-switch-create/SKILL.md) |
+| 20 | ✓ | [`skills/worktrunk/reference/claude-code.md`](skills/worktrunk/reference/claude-code.md) |
+| 21 | ✓ | [`skills/worktrunk/reference/code-signing.md`](skills/worktrunk/reference/code-signing.md) |
+| 22 | ✓ | [`skills/worktrunk/reference/config.md`](skills/worktrunk/reference/config.md) |
+| 23 | ✓ | [`skills/worktrunk/reference/extending.md`](skills/worktrunk/reference/extending.md) |
+| 24 | ✓ | [`skills/worktrunk/reference/faq.md`](skills/worktrunk/reference/faq.md) |
+| 25 | ✓ | [`skills/worktrunk/reference/hook.md`](skills/worktrunk/reference/hook.md) |
+| 26 | ✓ | [`skills/worktrunk/reference/list.md`](skills/worktrunk/reference/list.md) |
+| 27 | ✓ | [`skills/worktrunk/reference/llm-commits.md`](skills/worktrunk/reference/llm-commits.md) |
+| 28 | ✓ | [`skills/worktrunk/reference/merge.md`](skills/worktrunk/reference/merge.md) |
+| 29 | ✓ | [`skills/worktrunk/reference/remove.md`](skills/worktrunk/reference/remove.md) |
+| 30 | ✓ | [`skills/worktrunk/reference/shell-integration.md`](skills/worktrunk/reference/shell-integration.md) |
+| 31 | ✓ | [`skills/worktrunk/reference/step.md`](skills/worktrunk/reference/step.md) |
+| 32 | ✓ | [`skills/worktrunk/reference/switch.md`](skills/worktrunk/reference/switch.md) |
+| 33 | ✓ | [`skills/worktrunk/reference/tips-patterns.md`](skills/worktrunk/reference/tips-patterns.md) |
+| 34 | ✓ | [`skills/worktrunk/reference/troubleshooting.md`](skills/worktrunk/reference/troubleshooting.md) |
+| 35 | ✓ | [`skills/worktrunk/reference/worktrunk.md`](skills/worktrunk/reference/worktrunk.md) |
+| 36 | ✓ | [`skills/worktrunk/SKILL.md`](skills/worktrunk/SKILL.md) |
+| 37 | ✓ | [`skills/wt-switch-create/rationale.md`](skills/wt-switch-create/rationale.md) |
+| 38 | ✓ | [`skills/wt-switch-create/SKILL.md`](skills/wt-switch-create/SKILL.md) |
+| 39 | ✓ | [`src/commands/AGENTS.md`](src/commands/AGENTS.md) |
+| 40 | ✓ | [`src/commands/CLAUDE.md`](src/commands/CLAUDE.md) |
+| 41 | ✓ | [`src/commands/list/AGENTS.md`](src/commands/list/AGENTS.md) |
+| 42 | ✓ | [`src/commands/list/CLAUDE.md`](src/commands/list/CLAUDE.md) |
+| 43 | ✓ | [`tests/AGENTS.md`](tests/AGENTS.md) |
+| 44 | ✓ | [`tests/CLAUDE.md`](tests/CLAUDE.md) |
 
 ---
 

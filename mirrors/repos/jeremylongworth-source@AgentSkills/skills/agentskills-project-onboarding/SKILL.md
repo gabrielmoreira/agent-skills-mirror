@@ -20,10 +20,13 @@ license: MIT
    patch instead of replacing them.
 5. Recommend MCP presets only when the repo workflow needs them and explain the
    tool/security implication.
-6. Verify setup with a dry run or a small trigger prompt that should activate
-   one selected skill.
-7. Report the focused setup plan, files touched, commands to run, verification
-   evidence, rollback notes, and remaining questions.
+6. If setup is authorized and the target scope is clear, preview and apply the
+   requested install, then verify the result. Change project instructions only
+   when that is also authorized. For recommendation-only requests, stop at the
+   plan and preview.
+7. Verify installed files separately from discovery: use a fresh host task and
+   a small trigger prompt when available. Report the plan or completed setup,
+   files touched, evidence, rollback notes, and remaining questions.
 
 ## Freshness Rule
 
@@ -37,6 +40,9 @@ current host installer facts.
 - Do not recommend `all` unless the user explicitly wants every skill or is
   maintaining AgentSkills itself.
 - Prefer the narrowest skillset that matches the repo's main job.
+- For durable personal workflows, start with `global-foundation`; keep domain
+  bundles in project scope. The Codex adapter installs skills only by default;
+  MCP setup and project routing are separate explicit options.
 - Prefer atomic skills when the repo needs only a few workflows from different
   bundles.
 - Keep `AGENTS.md` short: repo facts, selected AgentSkills routing, validation
@@ -46,8 +52,11 @@ current host installer facts.
 
 ## Safety Rules
 
-- Do not run install, network, or MCP-enabling commands without explicit user
-  approval.
+- An explicit install request authorizes that install in the stated scope;
+  reuse that authorization after inspecting the source and previewing changes.
+  A recommendation request does not authorize installation. Obtain approval
+  for additional scope or MCP enablement not already requested, and respect
+  host permissions and repository review gates.
 - Do not overwrite existing project instruction files; show a patch or create a
   clearly scoped new section.
 - Do not invent build, test, lint, deploy, or environment commands.
@@ -65,7 +74,7 @@ current host installer facts.
 - Project instruction plan
 - MCP preset recommendation
 - Verification steps and expected trigger prompt
-- Approval-required actions
+- Actions completed and any actions still requiring approval
 - Rollback notes
 - Open questions
 

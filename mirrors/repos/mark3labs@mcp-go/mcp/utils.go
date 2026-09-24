@@ -863,7 +863,11 @@ func ParseResourceContents(contentMap map[string]any) (ResourceContents, error) 
 		return nil, fmt.Errorf("_meta must be an object")
 	}
 
-	if text := ExtractString(contentMap, "text"); text != "" {
+	// Select the variant on the presence of a string "text" or "blob" field,
+	// not on its emptiness. An empty resource is still a resource, and both
+	// fields marshal unconditionally, so treating "" as absent rejected
+	// payloads this library itself produces.
+	if text, ok := contentMap["text"].(string); ok {
 		return TextResourceContents{
 			Meta:     meta,
 			URI:      uri,
@@ -872,7 +876,7 @@ func ParseResourceContents(contentMap map[string]any) (ResourceContents, error) 
 		}, nil
 	}
 
-	if blob := ExtractString(contentMap, "blob"); blob != "" {
+	if blob, ok := contentMap["blob"].(string); ok {
 		return BlobResourceContents{
 			Meta:     meta,
 			URI:      uri,
@@ -1216,37 +1220,31 @@ func ParseTaskResultResult(rawMessage *json.RawMessage) (*TaskResultResult, erro
 		return nil, fmt.Errorf("response is nil")
 	}
 
-	var jsonContent map[string]any
-	if err := json.Unmarshal(*rawMessage, &jsonContent); err != nil {
+	// Content holds interface values, so it is decoded element by element -
+	// the same shape CallToolResult.UnmarshalJSON handles.
+	var raw struct {
+		Meta              *Meta             `json:"_meta"`
+		ResultType        ResultType        `json:"resultType"`
+		Content           []json.RawMessage `json:"content"`
+		StructuredContent any               `json:"structuredContent"`
+		IsError           bool              `json:"isError"`
+	}
+	if err := json.Unmarshal(*rawMessage, &raw); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal response: %w", err)
 	}
 
-	resultResult := TaskResultResult{}
-	meta, ok := jsonContent["_meta"]
-	if ok {
-		if metaMap, ok := meta.(map[string]any); ok {
-			resultResult.Meta = NewMetaFromMap(metaMap)
-		}
+	resultResult := TaskResultResult{
+		Result:            Result{Meta: raw.Meta, ResultType: raw.ResultType},
+		StructuredContent: raw.StructuredContent,
+		IsError:           raw.IsError,
 	}
 
-	result, ok := jsonContent["result"]
-	if ok {
-		if resultMap, ok := result.(map[string]any); ok {
-			if isError, ok := resultMap["isError"].(bool); ok {
-				resultResult.IsError = isError
-			}
-			if contents, ok := resultMap["content"].([]any); ok {
-				for _, content := range contents {
-					if contentMap, ok := content.(map[string]any); ok {
-						parsedContent, err := ParseContent(contentMap)
-						if err != nil {
-							return nil, err
-						}
-						resultResult.Content = append(resultResult.Content, parsedContent)
-					}
-				}
-			}
+	for _, item := range raw.Content {
+		content, err := UnmarshalContent(item)
+		if err != nil {
+			return nil, fmt.Errorf("unmarshal task result content: %w", err)
 		}
+		resultResult.Content = append(resultResult.Content, content)
 	}
 
 	return &resultResult, nil

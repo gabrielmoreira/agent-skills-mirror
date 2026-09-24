@@ -133,6 +133,7 @@ token-goat is a TypeScript CLI bundled to `dist/token-goat.mjs` via esbuild. The
 | [`src/text_logfold.ts`](src/text_logfold.ts) | Text processing, analysis, and transformation for logfold |
 | [`src/text_todo.ts`](src/text_todo.ts) | Text processing, analysis, and transformation for todo |
 | [`src/text_trace.ts`](src/text_trace.ts) | Text processing, analysis, and transformation for trace |
+| [`src/token_estimate.ts`](src/token_estimate.ts) | Bytes-to-tokens estimation, by content class. |
 
 **Harness Bridges**
 
@@ -249,7 +250,6 @@ token-goat is a TypeScript CLI bundled to `dist/token-goat.mjs` via esbuild. The
 
 | Module | Role |
 |--------|------|
-| [`src/bash_compress.ts`](src/bash_compress.ts) | Bash output compression filters (vitest, npm, docker, ruff, and others) |
 | [`src/bash_extractors.ts`](src/bash_extractors.ts) | Command line extractors, classification, and surgical hint builders for bash hook handlers. |
 | [`src/bash_output_cache.ts`](src/bash_output_cache.ts) | Bash stdout/stderr disk store (byte cap plus 4096 file-count cap, oldest-first eviction) |
 | [`src/bash_range_savings.ts`](src/bash_range_savings.ts) | Prices a line-range read's proposed surgical replacement against the read itself, so a hint that redirects a line-range read can be required to prove it saves something before it i |
@@ -263,6 +263,7 @@ token-goat is a TypeScript CLI bundled to `dist/token-goat.mjs` via esbuild. The
 | [`src/tool_filters/ci.ts`](src/tool_filters/ci.ts) | Bash output compression and normalization filter for ci |
 | [`src/tool_filters/cloud.ts`](src/tool_filters/cloud.ts) | Bash output compression and normalization filter for cloud |
 | [`src/tool_filters/containers.ts`](src/tool_filters/containers.ts) | Bash output compression and normalization filter for containers |
+| [`src/tool_filters/diff_blocks.ts`](src/tool_filters/diff_blocks.ts) | Bash output compression and normalization filter for diff_blocks |
 | [`src/tool_filters/dispatch.ts`](src/tool_filters/dispatch.ts) | Bash output compression and normalization filter for dispatch |
 | [`src/tool_filters/families.ts`](src/tool_filters/families.ts) | Bash output compression and normalization filter for families |
 | [`src/tool_filters/generic.ts`](src/tool_filters/generic.ts) | Bash output compression and normalization filter for generic |
@@ -382,6 +383,7 @@ token-goat is a TypeScript CLI bundled to `dist/token-goat.mjs` via esbuild. The
 | [`src/content_store.ts`](src/content_store.ts) | Local, bounded storage for generic compressed text and named handoffs. |
 | [`src/copilot_mcp_names.ts`](src/copilot_mcp_names.ts) | Canonicalise Copilot CLI's MCP tool names into the `mcp__<server>__<tool>` shape every MCP-aware hook in token-goat gates on. |
 | [`src/copilot_mcp_tools.ts`](src/copilot_mcp_tools.ts) | Reads Copilot CLI's on-disk MCP tool-definition cache. |
+| [`src/copilot_tool_names.ts`](src/copilot_tool_names.ts) | Copilot CLI's built-in tool names, mapped to the canonical token-goat names every hook gates on. |
 | [`src/copilot_waste.ts`](src/copilot_waste.ts) | Waste analysis for Copilot CLI sessions. |
 | [`src/coverage_query.ts`](src/coverage_query.ts) | Narrow "gaps only" extraction for `token-goat coverage-report-gaps`, so a code-coverage report (which can run to tens of thousands of lines for a real project) never needs a full ` |
 | [`src/csv_query.ts`](src/csv_query.ts) | Narrow CSV projection/filter for `token-goat csv-query`, so a multi-thousand row CSV never needs a full `Read` just to answer "what's in column X where Y = Z". |
@@ -395,6 +397,7 @@ token-goat is a TypeScript CLI bundled to `dist/token-goat.mjs` via esbuild. The
 | [`src/docx_extract.ts`](src/docx_extract.ts) | Word (.docx) narrow-slice reader. |
 | [`src/dotenv_redact.ts`](src/dotenv_redact.ts) | Value redaction for dotenv files. |
 | [`src/embedding_boundaries.ts`](src/embedding_boundaries.ts) | Exports: `buildEmbeddingBoundaries` |
+| [`src/emit.ts`](src/emit.ts) | The two writers every command surface uses to put its result on stdout and its diagnostics on stderr. |
 | [`src/encoding.ts`](src/encoding.ts) | Source file character encoding and BOM detection / transcoding. |
 | [`src/evidence_cache.ts`](src/evidence_cache.ts) | Exports: `EvidenceRepresentation`, `EvidenceEntry`, `recordEvidence`, `findVerifiedFileEvidence` |
 | [`src/failures_state.ts`](src/failures_state.ts) | Cross-invocation state for `token-goat failures --delta` -- persists the failure-signature set (test names / summary lines, see `failures.ts::failureSignatures`) from the last `fai |
@@ -406,6 +409,7 @@ token-goat is a TypeScript CLI bundled to `dist/token-goat.mjs` via esbuild. The
 | [`src/graph_commands.ts`](src/graph_commands.ts) | CLI command handlers for code-graph commands. |
 | [`src/graph_inspection.ts`](src/graph_inspection.ts) | Code graph inspection commands: dead, deps, types, and scope. |
 | [`src/graph_traversal.ts`](src/graph_traversal.ts) | Core graph traversal, scope analysis, and cycle detection primitives. |
+| [`src/harness_channels.ts`](src/harness_channels.ts) | Which harnesses discard which hook event's response. |
 | [`src/hint_stats.ts`](src/hint_stats.ts) | Efficacy tracking + auto-suppression for token-goat's discretionary hint hooks (`token-goat hint-stats`). |
 | [`src/hint_suggestion_guard.ts`](src/hint_suggestion_guard.ts) | Strip shell commands that a path broke out of, from hint and deny text on its way to the model. |
 | [`src/hints.ts`](src/hints.ts) | Session-hint text builder |
@@ -414,13 +418,16 @@ token-goat is a TypeScript CLI bundled to `dist/token-goat.mjs` via esbuild. The
 | [`src/html_query.ts`](src/html_query.ts) | HTML structure inspection, querying, and structural linting for token-goat. |
 | [`src/import_export_extract.ts`](src/import_export_extract.ts) | Language-specific import and export extractors. |
 | [`src/import_graph.ts`](src/import_graph.ts) | The project's internal import graph, built once and shared by every command that needs it. |
+| [`src/index_freshness.ts`](src/index_freshness.ts) | Whether the index's record of a file still matches what is on disk. |
 | [`src/index_health.ts`](src/index_health.ts) | Shared "this project has zero indexed files" diagnosis, reused by doctor's Symbols check (cli_doctor.ts's checkSymbolCount) and by every query command that can dead-end on an empty |
 | [`src/index_reclaim.ts`](src/index_reclaim.ts) | Index-space reclamation (`token-goat reclaim-index`). |
 | [`src/indexed_source.ts`](src/indexed_source.ts) | Resolves the document a stored symbol line range actually addresses. |
 | [`src/injection_scan.ts`](src/injection_scan.ts) | Lexical scan for prompt-injection attack patterns in untrusted fetched content. |
+| [`src/known_roots.ts`](src/known_roots.ts) | Exports: `isTooShallowToPrune`, `recordKnownRoot`, `sweepExpiredKnownRootMarkers`, `recordKnownRootThrottled` |
 | [`src/language_specs.ts`](src/language_specs.ts) | The one table of languages token-goat indexes. |
 | [`src/lazy_module.ts`](src/lazy_module.ts) | Shared factory for the "lazily load an optional npm dependency" pattern used by every optional-dependency reader (pdf_extract.ts, xlsx_extract.ts, ooxml_extract.ts, screenshot.ts, |
 | [`src/line_regions.ts`](src/line_regions.ts) | Maps a requested line span onto the file regions that cover it. |
+| [`src/manifest.ts`](src/manifest.ts) | The compaction manifest: what this session touched, rendered for whoever reads it next. |
 | [`src/markdown_lines.ts`](src/markdown_lines.ts) | Iterate markdown lines, skipping fenced-code-block content (``` or ~~~ blocks) and the fence delimiter lines themselves, so a `#` comment inside a code fence is never mistaken for |
 | [`src/mcp_compress_packs.ts`](src/mcp_compress_packs.ts) | Schema-aware compression packs for two specific MCP servers, layered on top of {@link mcp_compress.ts}'s generic structural pass. |
 | [`src/mcp_compress.ts`](src/mcp_compress.ts) | Deterministic, structural compression for MCP tool results. |
@@ -436,6 +443,7 @@ token-goat is a TypeScript CLI bundled to `dist/token-goat.mjs` via esbuild. The
 | [`src/ooxml_extract.ts`](src/ooxml_extract.ts) | Shared ZIP+XML core for OOXML formats (.pptx, .docx are both a ZIP container of XML parts). |
 | [`src/openapi_query.ts`](src/openapi_query.ts) | Narrow structural summary + single-operation extraction for `token-goat openapi-outline` / `openapi-op`, so a multi-thousand-line OpenAPI 3.x / Swagger 2.0 spec (JSON or YAML) neve |
 | [`src/overflow_guard.ts`](src/overflow_guard.ts) | Overflow guard — cap oversized output to protect the model's context. |
+| [`src/own_lookup.ts`](src/own_lookup.ts) | Own-property lookup for plain-object maps whose keys arrive from outside this process. |
 | [`src/path_containment.ts`](src/path_containment.ts) | Path canonicalization and the symlink-resolving containment test. |
 | [`src/pending_context.ts`](src/pending_context.ts) | Deferred hint delivery, for harnesses that run a prompt-submit hook but discard its response. |
 | [`src/pptx_extract.ts`](src/pptx_extract.ts) | PowerPoint (.pptx) narrow-slice reader. |
@@ -443,6 +451,7 @@ token-goat is a TypeScript CLI bundled to `dist/token-goat.mjs` via esbuild. The
 | [`src/process_priority.ts`](src/process_priority.ts) | Scheduling priority for the processes that index. |
 | [`src/process_util.ts`](src/process_util.ts) | Process and OS execution utilities. |
 | [`src/purge.ts`](src/purge.ts) | `uninstall --purge`: delete everything token-goat has written to disk. |
+| [`src/query_limits.ts`](src/query_limits.ts) | The sentinel that means "no cap" in a `LIMIT ?` bound parameter. |
 | [`src/recall_index.ts`](src/recall_index.ts) | Cross-cache full-text search index for `token-goat recall`. |
 | [`src/ref_blindness.ts`](src/ref_blindness.ts) | Honest answers for questions the reference index cannot answer. |
 | [`src/regex_guard.ts`](src/regex_guard.ts) | Refusing a regular expression that can stall the process that runs it. |
@@ -457,6 +466,8 @@ token-goat is a TypeScript CLI bundled to `dist/token-goat.mjs` via esbuild. The
 | [`src/sql_path.ts`](src/sql_path.ts) | Exports: `pathEqClause`, `pathSuffixClause`, `projectScopeClause` |
 | [`src/stdin_json.ts`](src/stdin_json.ts) | Reading a JSON payload off stdin, with a timeout and a byte cap. |
 | [`src/symbol_body_probe.ts`](src/symbol_body_probe.ts) | Doctor's oversized-stored-body check, hosted outside cli_doctor.ts. |
+| [`src/symbol_scan.ts`](src/symbol_scan.ts) | Full-scope symbol scanning for the commands that filter symbol names client-side. |
+| [`src/tool_name_fold.ts`](src/tool_name_fold.ts) | The one fold applied to a tool name before it is compared to another tool name. |
 | [`src/transcript_extract.ts`](src/transcript_extract.ts) | Zero-dependency WebVTT/SRT transcript reader. |
 | [`src/ts_refs.ts`](src/ts_refs.ts) | Type-resolved reference disambiguation for TypeScript, using the TypeScript compiler API. |
 | [`src/untrusted_fence.ts`](src/untrusted_fence.ts) | The single decision point for "should this text be fenced, and under what notice". |

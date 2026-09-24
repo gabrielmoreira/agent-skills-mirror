@@ -22,13 +22,13 @@ These surfaces are generated command references, not installed Hermes workflow s
 
 ## Role Registry
 
-- `guide`: `oh-my-hermes`, `meta-router`, `model-setup`, `parallel-tools`, `websearch-setup`, `morning-brief`, `gateway-intent-card`, `voice-operator`, `browser-operator`, `workspace-file-operator`, `command-operator`, `connector-operator`, `live-info-operator`, `external-connector-readiness`, `prompt-import-readiness`, `content-operator`, `media-input-operator`, `data-analysis`
+- `guide`: `oh-my-hermes`, `meta-router`, `model-setup`, `parallel-tools`, `websearch-setup`, `morning-brief`, `jev-ask`, `jev-route`, `gateway-intent-card`, `voice-operator`, `browser-operator`, `workspace-file-operator`, `command-operator`, `connector-operator`, `live-info-operator`, `external-connector-readiness`, `prompt-import-readiness`, `content-operator`, `media-input-operator`, `data-analysis`
 - `handoff-guide`: `ultrawork`, `maestro`, `frontend-refactor`, `ai-slop-cleaner`, `executor-runtime-readiness`
 - `memory-keeper`: `rules-distill`, `wiki`, `memory-new`, `memory-sync`, `decision-recall`
 - `operator`: `strategy-brief`, `meeting-brief`, `feedback-triage`, `finance-analysis`, `people-ops`, `support-operations`, `sales-development`, `ops-review`, `operating-rhythm`, `report-package`, `materials-package`, `img-summary`, `apple-design`, `design-orchestration`, `design-quality-gate`, `award-bar-score`, `frontend`, `visual-qa`, `workspace-audit`, `agent-evaluation`, `automation-blueprint`, `reliability-review`, `idea-to-deploy`, `llm-app-dev`, `cto-loop`, `deploy-and-monitor`, `inference-serving`, `github-issue-intake`, `live-incident-response`, `lifecycle-growth`, `sales-pipeline-review`, `github-event-ops`, `deliverable-package`, `physical-device-readiness`, `agent-debug`, `skill-scout`, `skill-health`, `provider-profile-posture`
 - `planner`: `loop`, `context`, `deep-interview`, `curriculum-design`, `product-brief`, `backend`, `rust`, `codebase-onboarding`, `codegraph-refresh`, `codebase-uml`, `plan`, `ralplan`, `adversarial-consensus`, `refactor-plan`, `decision-prototype`, `product-discovery-validation`
 - `researcher`: `jit-learn`, `research`, `web-research`, `product-docs`, `source-finder`, `research-brief`, `research-department`, `paper-learning`, `long-document-reading`
-- `reviewer`: `legal-compliance-review`, `localization-review`, `native-debugging`, `accessibility-audit`, `build-failure-triage`, `production-audit`, `verification-gate`, `security-safety-review`, `ultraqa`, `code-review`, `tech-debt-audit`, `ask`, `application-threat-model`, `failure-signal-audit`
+- `reviewer`: `legal-compliance-review`, `localization-review`, `native-debugging`, `accessibility-audit`, `build-failure-triage`, `production-audit`, `verification-gate`, `security-safety-review`, `ultraqa`, `code-review`, `tech-debt-audit`, `ask`, `application-threat-model`, `jev-failure-triage`, `jev-review-gate`, `jev-action-check`, `jev-done-check`, `failure-signal-audit`
 - `tracker`: `context-budget-review`, `model-optimization`, `ultraperf`, `cancel`, `skill`, `doctor`, `capability-toggle`, `running-work-board`, `todo-checklist`, `buzz`, `agent-board`, `toolbelt-readiness`, `harness-session-inventory`, `ops-observability-card`, `achievements`, `agent-ops-review`, `instinct-ledger`, `workflow-learning`, `run-efficiency`
 - Installed workflow skill policies live in generated workflow skills; compatibility/reference-only surface policies live in `docs/WORKFLOWS.md` and are not guaranteed to have `skills/<name>/SKILL.md` files.
 
@@ -126,6 +126,12 @@ When Hermes exposes installed skill descriptions to the model, use this registry
 - `lifecycle-growth`: `lifecycle-growth`, `lifecycle growth`, `lifecycle marketing`, `lifecycle messaging`, `in-app journey`, `in-app message campaign`, `onboarding journey`, `onboarding nudge`, `activation campaign`
 - `product-discovery-validation`: `product-discovery-validation`, `product discovery validation`, `product discovery`, `customer discovery`, `customer discovery plan`, `zero to one validation`, `validate the problem before building`, `problem solution interview`, `customer interview guide`
 - `sales-pipeline-review`: `sales-pipeline-review`, `sales pipeline review`, `pipeline review`, `pipeline health`, `pipeline coverage`, `deal review`, `deal health`, `sales forecast review`, `forecast call`
+- `jev-ask`: `jev-ask`, `ask jev`, `jev question`, `jev score`
+- `jev-route`: `jev-route`, `ask jev which workflow`, `jev pick the workflow`
+- `jev-failure-triage`: `jev-failure-triage`, `jev failure triage`, `ask jev if this failure is transient`
+- `jev-review-gate`: `jev-review-gate`, `jev review gate`, `ask jev to review this diff`
+- `jev-action-check`: `jev-action-check`, `jev action check`, `ask jev if this command is safe`, `jev risk check`
+- `jev-done-check`: `jev-done-check`, `jev done check`, `ask jev if this is done`, `jev evidence check`
 - `github-event-ops`: `github-event-ops`, `github event ops`, `github ops`, `github triage`, `github pr`, `github review`, `github action`, `github actions`, `pr opened`
 - `agent-board`: `agent-board`, `agent board`, `kanban`, `multi-agent`, `multi agent`, `multi agent board`, `multiple hermes agents`, `multiple hermes profiles`, `hermes profiles`
 - `memory-new`: `memory-new`, `new memory`, `project memory`, `product memory`, `remember this project`, `remember this product`, `do not save`, `do not save this token`, `memory capture`

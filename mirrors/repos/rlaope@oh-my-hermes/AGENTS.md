@@ -29,7 +29,9 @@ Do not turn OMH into a hidden Hermes runtime patch, transport bot, network
 service, LLM router, or secret coding executor. The one sanctioned execution
 surface is the explicit opt-in fanout dispatch bridge described under
 Implementation Boundaries — operator-invoked, local-only, fully observed,
-never hidden and never a default.
+never hidden and never a default. The one sanctioned network call is the
+`omh_jev_ask` tool, also described there — user-requested per turn, never a
+default.
 
 ## Command Audience
 
@@ -115,7 +117,8 @@ PR without the chat history.
   profiles.
 - The approved Hermes-native child boundary (`omh coding hermes-child dispatch`,
   2026-08 owner approval) is a second explicit operator/maintainer surface for
-  one isolated local `hermes --oneshot` process. It requires
+  one isolated local Hermes single-query process (`hermes chat --query-file -`,
+  the one Hermes transport that reads a prompt from stdin). It requires
   `--confirm-dispatch`, accepts prompts only through stdin/files, enforces a
   depth-one recursion limit and safe-mode file tools, records authenticated
   `routing_observation/v1` evidence, and never runs automatically. This
@@ -147,6 +150,20 @@ PR without the chat history.
   unless the operator types the flag. On Windows the provider starts suspended,
   enters a kill-on-close Job Object, and resumes only after ownership succeeds;
   clean evidence requires the Job Object to report zero active processes.
+- The approved scoped network integration (2026-09-23 owner approval) is the
+  `omh_jev_ask` plugin tool: it POSTs typed questions to Jev with the user's
+  own key and returns probabilities. It runs only when the person's own
+  message for that turn names Jev (a per-turn marker `pre_llm_call` records;
+  otherwise the tool returns `consent_not_observed` and opens no socket), and
+  only when a route resolves — `TYPESAFE_API_KEY`, or `OPENROUTER_API_KEY`
+  plus `{"openrouter_route": true}` in `<omh_home>/jev/settings.json`, which
+  OMH never writes. Stdlib only, HTTPS only, a fixed two-host route table, no
+  redirects, bounded bodies, no retry after a sent request times out. It
+  persists no key, `state`, question text, or reply; one metadata-only ledger
+  row per ask. `src/plugin_bundle/omh/jev_ask_client.py` is the only network
+  client in `src/` and only `tools/jev_ask_tool.py` may import it. Third-party
+  Jev plugins are still never called, and `omh doctor` still reads no
+  credential value.
 - No Hermes core patching.
 - Runtime artifacts are local, deterministic, schema-versioned, and
   metadata-only by default.
@@ -320,9 +337,12 @@ and defer to the two files above, which stay the single source of truth.
 
 ## Git And Commits
 
-Use executor-appropriate branch names. `codex/` is fine for Codex-authored work,
-but use neutral or matching prefixes such as `agent/`, `claude/`, or `hermes/`
-when Claude Code, Hermes, or a generic executor owns the coding work.
+Name a branch by the kind of change, not by the executor that makes it:
+`feature/<topic>` for a new or extended capability, `fix/<topic>` for a
+defect, and `omh/<topic>` for everything else (docs, release, maintenance,
+measurement). Codex, Claude Code, Hermes, and a generic executor all use the
+same three prefixes; `codex/`, `claude/`, `agent/`, and `hermes/` are no longer
+used for new branches. Branches that already exist keep their names.
 Before editing files for a coding task, create or switch to a dedicated
 task branch unless the current branch is already clearly dedicated to that exact
 user goal. Do this before the first implementation edit so the work does not mix

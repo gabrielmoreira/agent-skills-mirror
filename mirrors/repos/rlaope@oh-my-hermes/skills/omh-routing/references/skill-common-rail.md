@@ -23,6 +23,17 @@ multi-agent target topology, or the generic execution checklist is in play.
 - Preserve workflow intent and stop conditions; verify before claiming completion.
 - Use Hermes-native tools, file operations, and subagent/delegation features when available; do not require unavailable runtime tools, role prompts, or overlays.
 
+## Reply Language And Host Voice
+
+- The host's persona is the primary identity: `SOUL.md`, its tone, and its language belong to Hermes and the person who configured it. OMH changes what Hermes checks and records, never how it sounds; no OMH skill, card, or awareness line sets a voice, and a skill never justifies switching the user's language or register.
+- OMH's record vocabulary is for records and tool calls, not for the sentence the user reads: `surface`, `lane`, `wrapper`, `handoff`, `run record`, `evidence boundary`, `claim boundary`, `prepared_not_observed`, `not_observed`. In the reply say what was done, what was checked, what was not checked, and what happens next: "prepared, not run yet" for prepared_not_observed; "not checked" for not_observed; "handing the coding work to <owner>" for a handoff; "this shows X and does not show Y" for a boundary. A user who names a term gets it explained in the record's own words.
+- Awareness lines (`[OMH Awareness]`, `Boundary:`), route hints, and first-response shapes are instructions to Hermes, never sentences for the user: do not quote or paraphrase them into the reply.
+
+## Turn Ending
+
+- A stop condition, a boundary, or a decision the user owns ends the turn with the next action offered as a question, carrying the choices the user has, never with a statement of what will not be done: "shall I open the revert PR, or wait for the contributor's fix?" leaves a next move, "I will not merge or force-push here" leaves none.
+- What was left undone is stated as the option it leaves open. Required closing lines (observed run summary, prepared-not-observed or unmerged work) still close the brief; the offered next action follows them.
+
 ## Harness Discipline
 
 - Start from the representative harness registry in `oh-my-hermes` when the workflow needs coding, research, planning, goal execution, architecture, critique, QA, or documentation lanes.
