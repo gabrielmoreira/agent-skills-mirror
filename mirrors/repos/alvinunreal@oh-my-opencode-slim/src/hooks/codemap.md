@@ -16,8 +16,7 @@ from `index.ts`) that returns the hook points OpenCode invokes.
   `image-hook`, `session-lifecycle`, `types`). `src/index.ts` imports from here
   rather than individual files.
 - **SessionLifecycle** (`session-lifecycle.ts`): Coordinator that owns
-  `session.deleted` cleanup-callback registration and a pending-session
-  signaling channel with consume-once semantics. Stateful hooks register
+  `session.deleted` cleanup-callback registration. Stateful hooks register
   cleanup callbacks instead of implementing their own `session.deleted`
   handlers.
 - **Cache-safe injection** (`cache-safe-injection.ts`): The single supported
@@ -39,7 +38,7 @@ from `index.ts`) that returns the hook points OpenCode invokes.
 
 | Category | Factories | Hook points |
 |---|---|---|
-| Prompt transforms | `createPhaseReminderHook`, `createPostFileToolNudgeHook`, `createChatHeadersHook`, task-session-manager board injection, `processImageAttachments` | `experimental.chat.messages.transform`, `chat.headers` |
+| Prompt transforms | `createPhaseReminderHook`, `createChatHeadersHook`, task-session-manager board injection, `processImageAttachments` | `experimental.chat.messages.transform`, `chat.headers` |
 | Tool interception | `createApplyPatchHook` (tool), `createSearchPathGuardHook`, task-session-manager | `tool.execute.before` / `tool.execute.after` |
 | Error recovery | `createJsonErrorRecoveryHook`, `createAutoUpdateCheckerHook` | message transform, tool-execute after |
 | Lifecycle/event | task-session-manager, `createCacheMonitorHook`, `createOrchestratorWakeScheduler` | `event` |
@@ -117,7 +116,6 @@ from `index.ts`) that returns the hook points OpenCode invokes.
 | `loop-command/` | `/loop` iterative retry command |
 | `orchestrator-wake/` | Periodic orchestrator wake scheduler + process-global gate |
 | `phase-reminder/` | Message-transform reminder enforcing orchestrator workflow phases |
-| `post-file-tool-nudge/` | Post-read/write reminder nudging delegation-aware next steps |
 | `reflect/` | `/reflect` runtime command |
 | `search-path-guard/` | Pre-checks `grep`/`glob` `args.path` validity in `tool.execute.before`, using each host tool's path resolution semantics, and fails fast with an actionable error instead of upstream "ripgrep execution failed" noise or silent parent-directory searches |
 | `task-session-manager/` | Resumable task session tracking, job-board injection, reconciliation |

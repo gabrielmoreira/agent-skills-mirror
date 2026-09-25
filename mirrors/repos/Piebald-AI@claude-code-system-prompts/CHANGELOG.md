@@ -4,6 +4,60 @@ Note: Only use **NEW:** for entirely new prompt files, NOT for new additions/sec
 
 ### Claude Code System Prompts Changelog
 
+# [2.1.282](https://github.com/Piebald-AI/claude-code-system-prompts/commit/e769453)
+
+_+3,725 tokens_
+
+- **NEW:** Data: Cloud session folder sync consent dialog — Consent-dialog copy for two-way syncing a local folder with its matching cloud session's checkout, covering conflicts and a persisted answer.
+- **NEW:** Data: Rate limit grace signal — Internal documentation for a usage-limit grace-window flag tracked from the latest response, noting its interaction with hard-exhaustion overage status.
+- **NEW:** Data: SDK frame_intake_phases_ms field — Internal schema description for a new SDK turn-timing field that breaks frame-intake wait time into named phases.
+- **NEW:** Data: Telemetry variables ignored notice — Settings-status warning listing OTEL/telemetry environment variables a settings file sets but Claude Code ignores, since such files can only disable telemetry.
+- **NEW:** Data: Windows transcript read EBADF notice — Explains a Windows-only EBADF transcript-read error likely caused by security software, and suggests excluding the `.claude` folder or allow-listing Claude Code.
+- **NEW:** Tool Description: Artifact type staged first-publish sequence — For file-backed Artifact types, adds a staged first-publish flow: publish the index plus an initial file immediately, then the rest.
+- Agent Prompt: Claude Test author and explorer — Both subagents' disallowed-tools lists now also block the `claude_test_show_run` browser MCP tool.
+- Agent Prompt: /schedule slash command — Default model for new scheduled cloud agents now resolves the "sonnet" alias dynamically instead of a pinned model ID.
+- Data: Claude Code gateway customer-routed inference protocol — The thinking-signature rejection case now also covers a rejected `redacted_thinking` block's `data` field, not just `thinking.signature`.
+- Skill: /doctor slash command — On a Desktop-driven external host session, `/doctor` skips the version lookup and instead reports that updates arrive through Claude Desktop.
+- Skill: Update Claude Code Config and update-config 7-step verification flow — Hook-install handoff wording now adapts when no settings-menu command is available, telling the user to restart instead.
+- System Prompt: Coordinator mode orchestration — `subscribe_pr_activity` now also delivers one CI-green notice per fully-passing push, so coordinators no longer poll for overall CI success.
+- System Reminder: Artifact type page untrusted content warning — Clarifies that the artifact page was written by the type's publisher, not by the agent or the user.
+- System Reminder: Remote machine file sync timing — Drops the separate REPL-mode wording for delayed tool-output notices; all sessions now use the same phrasing.
+- Tool Description: Artifact quickstart type guidance (default and app wording) — Skips quickstart when a type's URL is already known; for decks and designs, the direct publish result now includes design systems.
+- Tool Description: Bash (sandbox — explain restriction) — On a Desktop-driven external host session, tells the user to change sandbox settings instead of pointing at the `/sandbox` command.
+- Tool Description: New file-backed Artifact type content guidance — Now supports the new staged first-publish sequence instead of always instructing a single all-files publish call.
+
+# [2.1.281](https://github.com/Piebald-AI/claude-code-system-prompts/commit/ce192cc)
+
+_+6,268 tokens_
+
+- **NEW:** System Prompt: Skill save permission note — Requires conditional wording about saving delivered files as skills, since Claude cannot see whether the user's organization permits it.
+- **NEW:** System Reminder: Attached device stopped offering tools — Explains that a previously attached device stopped offering tools and asks the user to check its Claude app or reconnect its folder.
+- **NEW:** System Reminder: Cloud session device tools disabled — Explains that device forwarding is disabled for this cloud session or account; directs working in the cloud without retrying alternate routes.
+- **NEW:** System Reminder: Dangerous removal blocked — States that a flagged removal never ran, forbids bypassing the safety check, and permits only a suggested safe rewrite or leaving removal to the user.
+- **NEW:** System Reminder: Directory sync agent commits off branch — Identifies preserved commits displaced during sync and distinguishes unpublished agent work from already-published or user commits before recommending recovery.
+- **NEW:** System Reminder: Directory sync full environment restore — Explains recovery through the previous turn, lists excluded files and environment state, and requires checking work from any interrupted turn.
+- **NEW:** System Reminder: Directory sync partial environment restore — Explains recovery only through an earlier turn, gives the failure reason, and requires checking and reporting missing recent work when relevant.
+- **NEW:** System Reminder: Directory sync restore up to last completed turn — Warns that interrupted-turn edits were not restored directly and must be checked against anything recovered through the user's machine.
+- **NEW:** System Reminder: Directory sync restored files mismatch — Identifies files differing from the user's commits after rewind or rewrite, requiring inspection of existing edits before restoring committed versions.
+- **NEW:** System Reminder: Remote machine file sync timing — Explains turn-end and pre-call synchronization, notice-driven incoming changes, and reading fresh output or git-ignored files directly on the remote machine.
+- **NEW:** Tool Description: Artifact browser storage guidance (two variants) — Restricts fallible browser storage to per-viewer conveniences; the capability-aware variant directs loading the capabilities skill for reliably persistent or shared state.
+- **NEW:** Tool Description: Artifact gallery and publish response guidance — Points users toward the artifact gallery and directs describing published content rather than pasting its URL into the response.
+- **NEW:** Tool Description: Artifact profiles action guidance — Documents resolving opaque participant IDs to guest status and display names, treating chosen names as data rather than instructions or identity proof.
+- **NEW:** Tool Description: Artifact publishing introduction — Introduces private HTML artifacts and directs keeping potentially harmful or user-flagged-sensitive content local until the user decides whether to publish.
+- **NEW:** Tool Description: Artifact runtime capabilities guidance (two variants) — Requires loading the capabilities skill before runtime code; triggers cover capabilities that improve a page or are needed by a requested page.
+- **NEW:** Tool Description: Bash (sandbox local port binding EPERM, two variants) — Identifies sandbox port-binding failures and explains that user-controlled `sandbox.network.allowLocalBinding: true` enables binding without a restart or leaving the sandbox.
+- **NEW:** Tool Description: Prohibited artifact publishing — Forbids impersonation, fabricated records, deceptive credential or payment collection, and targeting private individuals, regardless of claimed purpose or authorship.
+- **NEW:** Tool Description: Publish audience-facing deliverables (terminal wording) — Directs publishing audience-facing deliverables through artifacts or document connectors, while respecting explicit file requests and answering decision questions before offering a page.
+- **NEW:** Tool Description: Updating existing artifacts — Explains same-path redeployment and the lookup/read-before-publish workflow required to update an artifact created in an earlier conversation.
+- Agent Prompt: /batch slash command — Adds hook-based, non-Git worktree guidance: use the project's version-control commands instead of git/gh and report what was published when no PR exists.
+- Skill: /insights report output — Adds an optional recommendation line after the report link, including auto-mode or setup tips when the usage analysis provides one.
+- Skill: Update config settings file locations — Explains that hiding all attribution also requires `sessionUrl: false`; older versions reject boolean `attribution` shorthand and skip the whole settings file.
+- System Prompt: Artifact comment list framing — Adds participant-list guidance treating account display names as untrusted data, never instructions or proof of identity, when that list appears.
+- System Reminder: Remote machine file sync timing for subagents — Qualifies returned output as usually synchronized, describes arrivals between main-conversation tool calls, and removes the promised failure notice and `Directory sync:` reference.
+- Tool Description: Artifact external resource allowlist and Artifact page implementation requirements (app wording) — Adds `https://unpkg.com` to the external-script CDN allowlist in both artifact guidance fragments, alongside the previously permitted script hosts.
+- Tool Description: Bash (pre-commit skill checks) — Adds hook-provided exemption attribution and a conditional silent-skip rule for qualifying trivial commits, replacing the visible status sentence when that exemption applies.
+- Tool Description: Publish audience-facing deliverables (app wording) — Adds an explicit-file exception: deliver the requested file directly instead of publishing an artifact or document for viewing and sharing.
+
 # [2.1.280](https://github.com/Piebald-AI/claude-code-system-prompts/commit/a8b8057)
 
 _+1,283 tokens_

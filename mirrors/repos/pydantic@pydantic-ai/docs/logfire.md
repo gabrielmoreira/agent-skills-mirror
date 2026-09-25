@@ -1,3 +1,7 @@
+---
+description: "Debug and monitor Pydantic AI agents with Pydantic Logfire or any OpenTelemetry backend, tracing the model requests, tool calls and token usage of every run."
+---
+
 # Pydantic Logfire Debugging and Monitoring
 
 Applications that use LLMs have some challenges that are well known and understood: LLMs are **slow**, **unreliable** and **expensive**.
@@ -243,7 +247,6 @@ The following providers have dedicated documentation on Pydantic AI:
 - [Arize](https://arize.com/docs/ax/observe/tracing-integrations-auto/pydantic-ai)
 - [Openlayer](https://www.openlayer.com/docs/integrations/pydantic-ai)
 - [LangWatch](https://docs.langwatch.ai/integration/python/integrations/pydantic-ai)
-- [Patronus AI](https://docs.patronus.ai/docs/percival/integrations/pydantic)
 - [Opik](https://www.comet.com/docs/opik/tracing/integrations/pydantic-ai)
 - [MLflow](https://mlflow.org/docs/latest/genai/tracing/integrations/listing/pydantic_ai)
 - [Agenta](https://docs.agenta.ai/observability/integrations/pydanticai)

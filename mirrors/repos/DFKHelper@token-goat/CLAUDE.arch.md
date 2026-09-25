@@ -98,7 +98,7 @@ token-goat is a TypeScript CLI bundled to `dist/token-goat.mjs` via esbuild. The
 | [`src/hooks_websearch.ts`](src/hooks_websearch.ts) | WebSearch caching/dedup hooks. |
 | [`src/hooks_write.ts`](src/hooks_write.ts) | pre_tool_use hook for the Write tool: full-rewrite detector (feature-queue #302). |
 | [`src/image_shrink.ts`](src/image_shrink.ts) | `preReadImageHandler()` — intercepts large image Read events, shrinks via system tools, injects the smaller bytes |
-| [`src/install.ts`](src/install.ts) | `installHooks()` / `uninstallHooks()` — idempotently writes/removes hook entries in `.claude/settings.json` and generates the shim at `claudeHookScriptPath()` (`~/.claude/hooks/token-goat-shim.js`); each entry invokes `hookCommandFor(shim, event)` = `"<node>" "<shim>" <event> "<entry>"`. Staleness is decided by exact command equality, so a legacy alias, a pre-shim bare command, and a shim whose baked paths have moved are all replaced in place. `HOOK_EVENT_MAP` registers `PreToolUse`, `PostToolUse`, `PreCompact`, `UserPromptSubmit`, `SubagentStop`, `SessionStart` |
+| [`src/install.ts`](src/install.ts) | `installHooks()` / `uninstallHooks()` — idempotently writes/removes hook entries in `.claude/settings.json` and generates the shim at `claudeHookScriptPath()` (`~/.claude/hooks/token-goat-shim.js`); each entry invokes `hookCommandFor(shim, event)` = `"<node>" "<shim>" <event> "<entry>"`. Staleness is decided by exact command equality, so a legacy alias, a pre-shim bare command, and a shim whose baked paths have moved are all replaced in place. `HOOK_EVENT_MAP` registers `PreToolUse`, `PostToolUse`, `PostToolUseFailure`, `PreCompact`, `PostCompact`, `UserPromptSubmit`, `SubagentStop`, `SessionStart` |
 | [`src/relay.ts`](src/relay.ts) | Entry point for `token-goat hook <event>`: `relay()` reads the JSON payload from stdin, normalizes tool-scoped events via `hooks_cli.ts::normalizePayload()` (harness-aware: maps Codex/Gemini tool names to canonical names), dispatches via `hook_registry.ts::runHook()`, then `serializeOutput()` translates the result back to the harness wire format |
 
 **Session, Compaction, and Audit**
@@ -166,6 +166,7 @@ token-goat is a TypeScript CLI bundled to `dist/token-goat.mjs` via esbuild. The
 | [`src/bridges/registry.ts`](src/bridges/registry.ts) | `detectHarness()` / `getHarnessName()` — env-variable-based harness detection |
 | [`src/bridges/relay_block.ts`](src/bridges/relay_block.ts) | Harness bridge integration and hook configuration for relay_block |
 | [`src/bridges/shim_common.ts`](src/bridges/shim_common.ts) | Text fragments shared by the generated harness hook shims. |
+| [`src/bridges/shim_try_server.ts`](src/bridges/shim_try_server.ts) | The shim fragment that hands a hook call to the resident hook server. |
 | [`src/bridges/shrink_block.ts`](src/bridges/shrink_block.ts) | Harness bridge integration and hook configuration for shrink_block |
 | [`src/bridges/types.ts`](src/bridges/types.ts) | `HarnessName` (`claudecode` \ |
 | [`src/bridges/visualstudio_install.ts`](src/bridges/visualstudio_install.ts) | `install --visualstudio`: Visual Studio's `servers` entry in `.mcp.json` plus a guidance block, no hooks; its block shrinks to an addendum while a VS Code or Copilot CLI gate shares `.github/copilot-instructions.md` (`syncVisualStudioProjectGuidance`) |
@@ -255,7 +256,6 @@ token-goat is a TypeScript CLI bundled to `dist/token-goat.mjs` via esbuild. The
 | [`src/bash_range_savings.ts`](src/bash_range_savings.ts) | Prices a line-range read's proposed surgical replacement against the read itself, so a hint that redirects a line-range read can be required to prove it saves something before it i |
 | [`src/bash_runner.ts`](src/bash_runner.ts) | Exports: `DEFAULT_TIMEOUT_SECONDS`, `MAX_CAPTURE_BYTES`, `RunOptions`, `run` |
 | [`src/bash_structural_index.ts`](src/bash_structural_index.ts) | Recognizes a plain-enumeration `rg`/`grep` invocation over a single, already-fresh-indexed file whose pattern maps exactly to a token-goat index answer (`outline`/`imports`), and r |
-| [`src/bash_surgical_target.ts`](src/bash_surgical_target.ts) | Resolves one real, runnable target inside a file the whole-file deny is about to block on. |
 | [`src/filters.ts`](src/filters.ts) | Shared output-filter helpers |
 | [`src/tool_filters/ai_clis.ts`](src/tool_filters/ai_clis.ts) | Bash output compression and normalization filter for ai_clis |
 | [`src/tool_filters/base.ts`](src/tool_filters/base.ts) | Bash output compression and normalization filter for base |
@@ -351,6 +351,7 @@ token-goat is a TypeScript CLI bundled to `dist/token-goat.mjs` via esbuild. The
 | [`src/batch_serve.ts`](src/batch_serve.ts) | `--batch-serve`: run many CLI invocations inside one already-started process. |
 | [`src/bridges_status.ts`](src/bridges_status.ts) | Bridge hook-event parity matrix. |
 | [`src/cache_session_commands.ts`](src/cache_session_commands.ts) | Cache and history commands: bash-history, web-history, clean-cache, prune-cache, cache-audit. |
+| [`src/call_streak.ts`](src/call_streak.ts) | Call-streak advisories: the two hints that judge a run of tool calls rather than one call. |
 | [`src/canonical_skill.ts`](src/canonical_skill.ts) | The canonical token-goat skill installed by `token-goat install`. |
 | [`src/capabilities.ts`](src/capabilities.ts) | A machine-readable statement of every capability token-goat has that can send data off the machine or leave data on it, with its effective state and the place that state is enforce |
 | [`src/claude_config_dir.ts`](src/claude_config_dir.ts) | Where Claude Code keeps its own per-user configuration, and nothing else. |
@@ -362,6 +363,7 @@ token-goat is a TypeScript CLI bundled to `dist/token-goat.mjs` via esbuild. The
 | [`src/cli_diagnostics.ts`](src/cli_diagnostics.ts) | Diagnostic, inspection, packaging, and budgeting command handlers. |
 | [`src/cli_file_ops.ts`](src/cli_file_ops.ts) | Exports: `cmdNoteAdd`, `cmdWriteFile`, `cmdReplace`, `cmdInsertSection` |
 | [`src/cli_hint_stats.ts`](src/cli_hint_stats.ts) | CLI handler for `token-goat hint-stats`. |
+| [`src/cli_hook_server.ts`](src/cli_hook_server.ts) | `token-goat hook-server`: start, inspect and stop the resident hook servers in `hook_server.ts`. |
 | [`src/cli_mcp_audit.ts`](src/cli_mcp_audit.ts) | CLI handler for `token-goat mcp-audit`. |
 | [`src/cli_memory.ts`](src/cli_memory.ts) | CLI handler for `token-goat memory --analyze` / `--fix`. |
 | [`src/cli_office.ts`](src/cli_office.ts) | Exports: `fenceFileText`, `fenceFileFieldIfMatched`, `fileSizeOrZero`, `recordDocStat` |
@@ -387,6 +389,7 @@ token-goat is a TypeScript CLI bundled to `dist/token-goat.mjs` via esbuild. The
 | [`src/copilot_waste.ts`](src/copilot_waste.ts) | Waste analysis for Copilot CLI sessions. |
 | [`src/coverage_query.ts`](src/coverage_query.ts) | Narrow "gaps only" extraction for `token-goat coverage-report-gaps`, so a code-coverage report (which can run to tens of thousands of lines for a real project) never needs a full ` |
 | [`src/csv_query.ts`](src/csv_query.ts) | Narrow CSV projection/filter for `token-goat csv-query`, so a multi-thousand row CSV never needs a full `Read` just to answer "what's in column X where Y = Z". |
+| [`src/delivering_deny.ts`](src/delivering_deny.ts) | The wording that marks a token-goat deny as the delivery of content rather than a refusal. |
 | [`src/delivery_cap.ts`](src/delivery_cap.ts) | Exports: `CLAUDE_CODE_BASH_OUTPUT_CAP_BYTES`, `bashOutputCapBytes`, `clipToDeliveryCap`, `deliveredOutputBytes` |
 | [`src/dep_docs.ts`](src/dep_docs.ts) | `token-goat dep-docs <package>` — surgical read for an installed npm dependency. |
 | [`src/doc_comment.ts`](src/doc_comment.ts) | Shared doc-comment recovery, used by both the tree-sitter parser (`parser.ts`) and the regex-based language adapters (`languages/common.ts`). |
@@ -409,12 +412,17 @@ token-goat is a TypeScript CLI bundled to `dist/token-goat.mjs` via esbuild. The
 | [`src/graph_commands.ts`](src/graph_commands.ts) | CLI command handlers for code-graph commands. |
 | [`src/graph_inspection.ts`](src/graph_inspection.ts) | Code graph inspection commands: dead, deps, types, and scope. |
 | [`src/graph_traversal.ts`](src/graph_traversal.ts) | Core graph traversal, scope analysis, and cycle detection primitives. |
+| [`src/handle_stat.ts`](src/handle_stat.ts) | File identity taken through an open handle, so it can be compared against a descriptor's fstat. |
 | [`src/harness_channels.ts`](src/harness_channels.ts) | Which harnesses discard which hook event's response. |
 | [`src/hint_stats.ts`](src/hint_stats.ts) | Efficacy tracking + auto-suppression for token-goat's discretionary hint hooks (`token-goat hint-stats`). |
 | [`src/hint_suggestion_guard.ts`](src/hint_suggestion_guard.ts) | Strip shell commands that a path broke out of, from hint and deny text on its way to the model. |
+| [`src/hint_target.ts`](src/hint_target.ts) | Resolves the real name a deny or read hint's suggested command carries -- a heading, symbol, key or table the file actually holds -- so the command it leads with runs as printed, a |
 | [`src/hints.ts`](src/hints.ts) | Session-hint text builder |
+| [`src/hook_client.ts`](src/hook_client.ts) | Thin client for the resident hook server, and the entry of `dist/token-goat-hook-client.mjs`. |
+| [`src/hook_ipc.ts`](src/hook_ipc.ts) | Wire protocol shared by the resident hook server and its thin client. |
 | [`src/hook_latency.ts`](src/hook_latency.ts) | Read/render side of Batch S's hook wall-clock timing: `token-goat stats --hooks` and `doctor`'s Hook latency check both go through hookLatencyBreakdown(). |
 | [`src/hook_lib.ts`](src/hook_lib.ts) | In-process hook library entry point. |
+| [`src/hook_server.ts`](src/hook_server.ts) | Resident hook server: one long-lived process that answers hook calls and read-only CLI calls from an already-loaded module graph. |
 | [`src/html_query.ts`](src/html_query.ts) | HTML structure inspection, querying, and structural linting for token-goat. |
 | [`src/import_export_extract.ts`](src/import_export_extract.ts) | Language-specific import and export extractors. |
 | [`src/import_graph.ts`](src/import_graph.ts) | The project's internal import graph, built once and shared by every command that needs it. |
@@ -467,6 +475,8 @@ token-goat is a TypeScript CLI bundled to `dist/token-goat.mjs` via esbuild. The
 | [`src/stdin_json.ts`](src/stdin_json.ts) | Reading a JSON payload off stdin, with a timeout and a byte cap. |
 | [`src/symbol_body_probe.ts`](src/symbol_body_probe.ts) | Doctor's oversized-stored-body check, hosted outside cli_doctor.ts. |
 | [`src/symbol_scan.ts`](src/symbol_scan.ts) | Full-scope symbol scanning for the commands that filter symbol names client-side. |
+| [`src/tool_error_census.ts`](src/tool_error_census.ts) | Per-tool and per-model tool-error census behind `session-audit --tool-errors`. |
+| [`src/tool_error_class.ts`](src/tool_error_class.ts) | Classifies a failed tool call as `expected` (a known failure shape with a named cause) or `unknown` (everything else). |
 | [`src/tool_name_fold.ts`](src/tool_name_fold.ts) | The one fold applied to a tool name before it is compared to another tool name. |
 | [`src/transcript_extract.ts`](src/transcript_extract.ts) | Zero-dependency WebVTT/SRT transcript reader. |
 | [`src/ts_refs.ts`](src/ts_refs.ts) | Type-resolved reference disambiguation for TypeScript, using the TypeScript compiler API. |

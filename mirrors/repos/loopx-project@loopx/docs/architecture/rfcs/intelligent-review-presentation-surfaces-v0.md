@@ -685,6 +685,46 @@ Draft presentation slice, not a shipped team stream or new scheduling authority.
 Its L1–L3 plan and V1–V7 acceptance extend this RFC's Stage 3 presentation journey;
 they do not close cross-channel or governed settlement acceptance here.
 
+### 8.8 Reusable conversation work surface
+
+Steward Chat, Goal Chat, direct Agent conversations and their frontend/Lark
+projections share one interaction pattern. A short factual question deserves a
+direct answer and source; a complex investigation deserves a leading conclusion,
+readable Markdown report, evidence links, decisions and bounded uncertainty.
+Answer shape follows the task, not a compulsory four-section template. Complete
+answer bytes and a separately addressable report reference are preserved when
+the existing artifact owner supports one. Render model Markdown with an admitted
+safe subset; executable HTML is never accepted from answer text. Channel limits
+may change the presentation density, but cannot silently remove the conclusion
+or evidence path. A report attachment alone does not settle an answer obligation.
+
+Project only real host events into a compact current-phase line and expandable
+history: accepted, queued, started, tool/public progress, waiting, interrupted,
+failed and completed. The final answer has priority; completed routine activity
+folds, while refusal, missing result and lost receiver remain visible. Preserve
+source message, admitted Turn, current continuation owner, event cursor and
+final-result identities separately. Reconnect and replay must neither start a
+second model Turn nor duplicate events or drop the final result. No adapter may
+claim tool activity it did not emit.
+
+Stop and correction bind the current session and Turn. An old control cannot
+affect a later Turn. Stop readback distinguishes actual interruption, already
+terminal and unsupported/refused. A busy correction is accepted as native
+in-Turn steering or explicitly queued for a later Turn with a recoverable ingress
+receipt; completion races and lost acknowledgements cannot silently discard it.
+Stopping a conversation Turn has no implicit effect on a delegated worker's
+Todo/lease or an outstanding return obligation. Frontend and Lark qualify the
+same identity, interruption, replay and audience-isolation cases at their own
+display densities. This shared contract reuses Chat/session, artifact, and
+presentation owners; it creates no second conversation store or scheduler.
+
+Botmux is an interaction reference: its [live card](https://github.com/deepcoldy/botmux/blob/982e2c9f16e4f45ae2581967bc1a35a286e7bfa2/docs-site/docs/zh/cards.md)
+keeps final text ahead of collapsible recorded activity, its [session model](https://github.com/deepcoldy/botmux/blob/982e2c9f16e4f45ae2581967bc1a35a286e7bfa2/docs-site/docs/zh/session-model.md)
+distinguishes talk and operation rights, and its [Codex steering study](https://github.com/deepcoldy/botmux/blob/982e2c9f16e4f45ae2581967bc1a35a286e7bfa2/docs/design/2026-05-28-codex-type-ahead-steer-design.md)
+records merged versus separate replies under type-ahead. Stop support varies by
+backend. These public sources guide the race and display cases; they do not
+qualify LoopX adapters or require installing Botmux on an existing Lark token.
+
 ## 9. Coverage across the long-horizon lifecycle
 
 | Phase | Intelligent surface responsibility |

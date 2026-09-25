@@ -387,6 +387,43 @@ iteration, the delegation prompt excerpt, or final status. The thread timeline
 remains the authoritative detailed view; sub-mascots are only the glanceable
 orchestration layer around the main mascot.
 
+### Tool-call presentation
+
+Every surface that names a tool call (chat cards, the processing panel, the
+status line, the mascot) resolves it through one registry,
+`app/src/features/conversations/tools/toolPresentation.ts`
+(`describeToolCall`). It returns the icon, a translated phrase in two tenses
+("Reading file" while running, "Read file" once settled), the target chip, and
+which rich body the call expands into. The data lives in `toolSpecs.ts` (exact
+names, collapsed tools that switch on an argument, prefix families, named
+agents) and `toolPhrases.ts` (phrases, served as
+`conversations.tools.<id>.active|done`). Composio action slugs
+(`GMAIL_SEND_EMAIL`) resolve through the toolkit catalog in
+`components/composio/toolkitMeta.tsx` to "Used Gmail · Send email" with the
+app's logo. The server's `tool_display_label` is used only for tools the
+registry cannot describe.
+
+Rendering uses assistant-ui's elements, vendored under
+`app/src/components/assistant-ui/elements/` (tool-call, tool-timeline,
+web-search, terminal-block, code-diff, web-preview) with the `tw-shimmer`
+utility. `ChatToolGroup` wraps a run of calls in the tool timeline;
+`AssistantUiToolCallCard` renders each call. The adapters in
+`tools/ToolBodies.tsx` only map tool data onto those elements.
+
+The core's `tool_result` socket event carries `args`, `elapsed_ms`, the
+recomputed `tool_display_label` / `tool_display_detail`, and `structured`
+(the tool's `ToolResult.metadata`; web searches send
+`{ kind: "web_search", query, provider, results: [...] }`).
+`parseWebSearchResult.ts` prefers that payload and falls back to parsing the
+text rendering for older turns.
+
+`tools/__fixtures__/coreToolNames.json` lists every tool the core registers.
+The Rust test `tools/ops_tests_catalog_fixture_tests.rs` keeps it in sync
+(`UPDATE_TOOL_CATALOG=1` regenerates it) and
+`toolPresentation.catalog.test.ts` fails if any listed tool falls through to
+the generic fallback, so a new core tool cannot reach the chat unlabelled.
+`/dev/tools` (dev builds only) renders every state and the whole catalog.
+
 ---
 
 ## Pages & Routing
@@ -531,7 +568,7 @@ Conventions:
 - **`useThreadQueries`** — chat thread fetching.
 - **`useDaemonHealth` / `useDaemonLifecycle`** — core service health.
 - **`useDictationHotkey` / `usePttHotkey`** — global hotkey managers.
-- **`useDeveloperMode`**, **`useMediaQuery`**, **`useEscapeKey`**, **`useStickToBottom`** — UI utilities.
+- **`useDeveloperMode`**, **`useMediaQuery`**, **`useEscapeKey`** — UI utilities.
 - Feature hooks: `useFlowRunProgress`, `useWorkflowBuilderChat`, `useConsciousItems`, `useIntelligenceStats`, `useCostDashboard`, ….
 
 Feature-local hooks live next to their feature under `features/*/`.

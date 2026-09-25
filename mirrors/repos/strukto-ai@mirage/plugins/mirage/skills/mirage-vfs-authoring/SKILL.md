@@ -1,0 +1,166 @@
+---
+name: mirage-vfs-authoring
+description: Build or extend a custom Mirage VFS adapter for a user's API, database, object store, or application data. Use when connecting a new resource to Mirage, implementing a backend, or packaging a reusable adapter. For reading or editing data in an existing mount, use the filesystem workflow instead.
+---
+
+# Author a Mirage VFS
+
+Deliver an adapter in the user's project, a working mount configuration, and
+tests of its filesystem behavior. Use `GenericVFS` with a `VFSAdapter` built from resource capabilities. A normal custom backend needs no Mirage fork.
+
+## Start from the bundled adapter
+
+For a new backend, run `python scripts/new_adapter.py --language python --output <project>/resource.py` from this skill directory, or select `typescript` and a
+`.ts` output. The script refuses to overwrite an existing file. The generated
+adapter uses only an in-memory fixture and includes a read-contract check plus a
+mounted shell smoke test. Run Python with the project's Mirage environment, or
+TypeScript with its `tsx` runner and `@struktoai/mirage-node` dependency.
+
+Replace the fixture client with the resource API, then update the fixture paths
+and expected bytes. Keep credentials in the application's configuration. The
+self-contained templates are [Python](assets/adapter.py) and
+[TypeScript](assets/adapter.ts); no repository checkout is needed to scaffold.
+
+## Establish the resource contract
+
+Inspect the project's Mirage version, language, runtime, and existing client.
+Use the installed API and matching source or documentation; the interface is
+still evolving. Ask only for missing decisions that affect the implementation:
+which resources are visible, the mount prefix, credentials, and required writes.
+
+Reuse a builtin VFS when it already represents the resource. For a new adapter,
+define a small example tree and what each leaf renders before implementing it.
+Separate stored bytes from rendered records, and distinguish a complete
+directory from a paginated or time-windowed view. Use stable resource identities
+when display names can collide or change.
+
+Consult the relevant language's guide and runnable example, using the revision
+matching the target Mirage package:
+
+- [Python guide](https://github.com/strukto-ai/mirage/blob/main/docs/python/vfs/new.mdx)
+  and [example](https://github.com/strukto-ai/mirage/blob/main/examples/python/other/custom_vfs.py).
+- [TypeScript guide](https://github.com/strukto-ai/mirage/blob/main/docs/typescript/vfs/new.mdx)
+  and [example](https://github.com/strukto-ai/mirage/blob/main/examples/typescript/other/custom_vfs.ts).
+
+## Implement the smallest adapter
+
+Keep backend access async. An `Accessor` owns the client; implement its cleanup
+when the adapter owns connections. Reuse connections across calls. Python
+constructors and `build_vfs` are synchronous: perform network initialization
+lazily in async operations. TypeScript class references can use `static async create` when initialization requires I/O.
+
+Implement these resource operations over `PathSpec`:
+
+- `readdir`: return immediate child virtual paths in the format the installed
+  example uses. Avoid fetching each child's contents just to list a directory.
+- `read_bytes` / `readBytes`: return the exact bytes represented by a leaf.
+- `stat`: classify the entry and return its rendered byte length, or
+  `None` / `null` when the length is unknown without reading it.
+
+Group those callbacks as `ReadOps` inside `VFSAdapter`, and pass the adapter
+as `GenericVFS(io=...)` / `new GenericVFS({ io: ... })`. The minimal adapter
+needs only these three callbacks. It derives streaming from bytes and existence
+from stat, and defaults to a remote resource. A derived stream still fetches
+the entire file; it is not a memory-efficient stream.
+
+Builtin adapters use these same contracts. Core functions need not inherit a
+class: wire compatible functions directly and wrap client-specific arguments or
+return values at the VFS boundary. The shared operation types live in `vfs/types`.
+
+Add capabilities independently as the resource needs them:
+
+- `NativeReadOps` supplies native streaming, byte ranges, existence, traversal,
+  or size queries. These preserve the baseline read semantics. Byte ranges
+  take `(accessor, path, index, offset, size)` with an exclusive end implied
+  by offset plus size; an omitted length reads through EOF.
+- `SearchOps` is optional resource search over a `PathSpec` and `SearchQuery`
+  with `query` text and backend-defined JSON `options`. Its optional `meta`
+  describes capabilities; no regex support or grep compatibility is assumed.
+  Return text records, an empty list for no matches, or `None` / `null` to decline.
+  Validate resource-specific options and propagate failures. Opt into grep/rg
+  acceleration only with `meta.grep.mode` (`literal` or `regex`); that integration
+  passes its booleans in `options.grep` using snake_case keys in both languages.
+  It requires complete rendered output lines. `meta.grep.stream` opts into native
+  streams for fallback scans. Semantic queries can use the same callback through
+  a custom command with its own options. Supply optional `search_many` /
+  `searchMany` when ranking and limits must apply once across several scopes. The hierarchy kit can adapt scope-specific
+  callbacks via `make_search_op` / `makeSearchOp`.
+- `WriteOps` supplies individual mutations. A write callback does not imply
+  deletion, rename, append, or directory support. Mount mode still enforces
+  which supported writes may execute.
+
+In Python these groups are frozen dataclasses; TypeScript uses typed objects
+in `new VFSAdapter({ read, native, writes })`. Use the installed version's
+signatures, including optional index parameters. Older versions may require
+assembling `CommandIO` directly, including `read_stream` / `readStream` and
+`is_mounted` / `isMounted`.
+
+Give `GenericVFS` a unique name and a concise prompt describing the tree and
+rendering. Let it derive commands, globbing, and dispatcher ops from the
+assembled table. Add bespoke commands or overrides for behavior the generic
+operations cannot express.
+
+Scope belongs in the resource operations too: a direct read, stream, range
+read, or ID-addressed command must not bypass filters enforced by listing.
+Prove parent membership or resolve through a scoped index. An incomplete
+listing cannot prove an unlisted resource absent. Use Mirage's existing
+hierarchy/index helpers when their documented contract fits; do not import
+private helpers merely to shorten the adapter.
+
+Grep/rg optimizations must return the same matches as searching the rendered
+bytes. Fall back to scanning when equivalence is uncertain. Respect read
+budgets before eagerly materializing results, and report incomplete output.
+
+## Wire configuration and state
+
+For an embedded application, mount the VFS instance directly. For YAML or a
+reusable package, use the supported class reference or registration path:
+
+- Python: `CONFIG_CLS` with `register_vfs`, a `mirage.vfs` package entry point,
+  or a `./backend.py:ResourceVFS` reference.
+- TypeScript: `registerVfsFactory` or a Node-loadable
+  `./backend.mjs:ResourceVFS` reference. Do not assume a browser can load a
+  local Node module.
+
+Validate config at this boundary. Python models should explicitly forbid
+unknown keys; TypeScript needs runtime validation, not a type assertion.
+Use the host's credential mechanism and secret types; avoid serializing
+credentials into state or errors.
+
+Keep the default `needs_override` state for a live external resource unless
+reconstruction is deliberately implemented. For Mirage-owned in-memory data,
+implement state save/load and test restoration. Enable snapshot fingerprints,
+read revalidation, and known-size claims only when the operations fulfill
+those contracts.
+
+## Verify and deliver
+
+Exercise the adapter through `Workspace`, with a fake service or fixture:
+
+- Listing, reading, stat, globbing, and a representative search agree.
+- Nested mount prefixes resolve correctly; missing paths fail consistently.
+- Direct reads of excluded resources fail even when their IDs are known.
+- Pagination and read limits do not silently omit data or prove false absence.
+- A read-only mount refuses supported writes before the mutation reaches the
+  service; unsupported operations fail clearly.
+- Config typos fail, owned clients close, and promised state restoration works.
+
+Use the user's language for an external adapter. When contributing a Mirage
+builtin, follow the repository's mirrored Python/TypeScript layout and gates,
+and add shared integration cases for observable shell behavior.
+
+Deliver the adapter, exact mount configuration, and verification results.
+State which operations and state behavior are supported, and identify any
+live-service checks that could not be run.
+
+## Reuse the conformance check
+
+Run `check_read_contract` / `checkReadContract` with a `ReadFixture` describing a
+small known file, its parent, an absent sibling, and expected bytes. This checks
+listing, stat, byte reads, streams, native ranges, existence, and missing-path
+errors without mutating the resource. It accepts either a `VFSAdapter` or its
+compiled table, so the same probe works for builtins and external adapters.
+
+Add backend-specific tests for pagination, authorization errors, and query options.
+Use disposable fixtures for mutation tests. Verify a read-only mount refuses
+writes and preserves the fixture. Do not run write probes against production data.

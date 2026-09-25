@@ -128,7 +128,7 @@ Key event flows:
 
 3. **Tool Execution**:
    - `tool.execute.before` → apply patch and task session hooks
-   - `tool.execute.after` → post-tool hooks (retry guidance, JSON error recovery, file-tool nudges)
+   - `tool.execute.after` → post-tool hooks (retry guidance, JSON error recovery)
 
 4. **Chat Integration**:
    - `chat.message` → track session → agent mapping and mark TUI activity

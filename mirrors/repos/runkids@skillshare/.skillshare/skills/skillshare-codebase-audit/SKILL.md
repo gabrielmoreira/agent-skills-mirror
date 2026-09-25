@@ -16,13 +16,15 @@ Read-only consistency audit across the skillshare codebase. $ARGUMENTS specifies
 
 **Scope**: This skill only READS and REPORTS. It does not modify any files. Use `implement-feature` to fix issues or `update-docs` to fix documentation gaps.
 
+Before acting, run `python3 scripts/ai-context.py audit`. That topic is the source of truth for audit dimensions, evidence requirements and status meanings; this skill retains the search and report workflow.
+
 ## Audit Dimensions
 
-Run all 4 dimensions in parallel where possible. For each, produce a summary table.
+Run every dimension below in parallel where possible. For each, produce a summary table.
 
 ### 1. CLI Flag Audit
 
-Compare every flag defined in `cmd/skillshare/*.go` against `website/docs/commands/*.md`.
+Compare every flag defined in `cmd/skillshare/*.go` against `website/docs/reference/commands/*.md`.
 
 ```bash
 # Find all flags in Go source
@@ -35,18 +37,7 @@ Report:
 - **STALE**: Flag documented but not found in code
 - **OK**: Flag matches between code and docs
 
-### 2. Spec vs Code
-
-For each spec in `specs/` marked as completed/done:
-- Verify the described feature exists in source code
-- Check that the spec's acceptance criteria are testable
-
-Report:
-- **IMPLEMENTED**: Spec complete, code exists
-- **MISMATCH**: Spec says done but code missing or partial
-- **PENDING**: Spec not yet marked complete (informational)
-
-### 3. Test Coverage
+### 2. Test Coverage
 
 For each command handler in `cmd/skillshare/<cmd>.go`:
 - Check if `tests/integration/<cmd>_test.go` exists
@@ -65,10 +56,10 @@ Report:
 - **PARTIAL**: Test file exists but missing key scenarios
 - **MISSING**: No integration test for this command
 
-### 4. Target Audit
+### 3. Target Audit
 
 Verify `internal/config/targets.yaml` entries:
-- Each target has both `global_path` and `project_path`
+- Each target has `skills.global` and `skills.project`
 - Aliases are consistent
 - No duplicate entries
 
@@ -77,40 +68,7 @@ Report:
 - **INCOMPLETE**: Missing required fields
 - **DUPLICATE**: Name or alias collision
 
-## Output Format
-
-```
-== Skillshare Codebase Audit ==
-
-### CLI Flags (N issues)
-| Command   | Flag        | Status       |
-|-----------|-------------|--------------|
-| install   | --force     | OK           |
-| install   | --into      | UNDOCUMENTED |
-
-### Specs (N issues)
-| Spec File            | Status      |
-|----------------------|-------------|
-| copy-sync-mode.md    | IMPLEMENTED |
-| some-feature.md      | MISMATCH    |
-
-### Test Coverage (N issues)
-| Command   | Status  | Notes              |
-|-----------|---------|--------------------|
-| sync      | COVERED |                    |
-| audit     | PARTIAL | missing edge cases |
-| target    | MISSING |                    |
-
-### Targets (N issues)
-| Target    | Status     | Notes         |
-|-----------|------------|---------------|
-| claude    | OK         |               |
-| newagent  | INCOMPLETE | no project_path |
-
-== Summary: X OK / Y issues found ==
-```
-
-### 5. Handler Split Audit
+### 4. Handler Split Audit
 
 For commands with >300 lines in `cmd/skillshare/<cmd>.go`, verify the handler split convention is followed:
 
@@ -132,7 +90,7 @@ Report:
 - **MONOLITH**: >300 lines without split (should be refactored)
 - **N/A**: Small command, no split needed
 
-### 6. Oplog Coverage
+### 5. Oplog Coverage
 
 Verify all mutating commands have oplog instrumentation:
 
@@ -151,7 +109,7 @@ Report:
 - **MISSING**: Mutating command lacks oplog instrumentation
 - **N/A**: Read-only command (no oplog expected)
 
-### 7. Web API Consistency
+### 6. Web API Consistency
 
 Verify `internal/server/handler_*.go` routes match CLI commands:
 
@@ -179,12 +137,6 @@ Report:
 | install   | --force     | OK           |
 | install   | --into      | UNDOCUMENTED |
 
-### Specs (N issues)
-| Spec File            | Status      |
-|----------------------|-------------|
-| copy-sync-mode.md    | IMPLEMENTED |
-| some-feature.md      | MISMATCH    |
-
 ### Test Coverage (N issues)
 | Command   | Status  | Notes              |
 |-----------|---------|--------------------|
@@ -196,7 +148,7 @@ Report:
 | Target    | Status     | Notes         |
 |-----------|------------|---------------|
 | claude    | OK         |               |
-| newagent  | INCOMPLETE | no project_path |
+| newagent  | INCOMPLETE | no skills.project |
 
 ### Handler Split (N issues)
 | Command   | Lines | Status    | Notes              |
@@ -223,7 +175,4 @@ Report:
 
 ## Rules
 
-- **Read-only** — never modify files, only report
-- **Evidence-based** — every finding must include file path and line number
-- **No false positives** — verify with grep before flagging
-- **Scope $ARGUMENTS** — if user specifies "flags", only run dimension 1; "handlers" for dimension 5, "oplog" for dimension 6, "api" for dimension 7
+Apply the `audit` topic and keep this workflow read-only.

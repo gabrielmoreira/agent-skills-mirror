@@ -3,7 +3,7 @@
 ## Responsibility
 Runtime model fallback system for foreground (interactive) agent sessions. When OpenCode emits rate-limit signals via `message.updated`, `session.error`, or `session.status` events, this manager:
 - Detects retryable conditions using pattern matching against error messages and status codes (rate limits, 429, 403/Forbidden, 401/410 failover errors)
-- Aborts the rate-limited prompt via `client.session.abort()` on the `session.status` retry path; `session.error` and `message.updated` paths re-prompt directly without abort
+- On v1, withholds `session.abort(X)` while the background job board reports running children of X: held retry events do not seal dedup, exhausted chains still stop intervening, and busy replay errors withdraw any armed handoff when the abort is withheld (explicit refusal admits nothing), and settle it only after a failed abort with unknown outcome. v2 and v1 sessions without running children retain their abort behavior. `session.error` and `message.updated` can re-prompt directly without abort.
 - Retrieves the last user message from the session history
 - Re-prompts the session with the next available model from the agent's configured fallback chain
 - Operates reactively through the event system (cannot wrap `prompt()` directly for interactive sessions)
@@ -86,6 +86,7 @@ Log fallback event
   - `createInternalAgentTextPart()`: Internal-initiator provenance for replays
   - `log()`: Structured logging for observability
 - **SessionLifecycle** (`src/hooks/session-lifecycle.ts`): registers `session.deleted` cleanup
+- **Background job board** (`src/index.ts`): supplies a synchronous `hasRunning(sessionID)` child check for the optional v1 abort guard; the failing background job itself is not counted as its own child
 - **Message types** (`src/hooks/types.ts`): `isReplayableUserMessage` / `partsFromReplayMessage` for safe replay
 - **Configuration**: Fallback chains provided at construction from agent configurations
 

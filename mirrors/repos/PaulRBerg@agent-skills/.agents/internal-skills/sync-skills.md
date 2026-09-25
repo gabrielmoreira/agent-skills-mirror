@@ -114,7 +114,7 @@ their content here, the sync run reads both skills directly:
 Out of scope unless the request explicitly names it: host selection, launch, and continuation mechanics; research
 mechanics; Claude-adapter-only content; Codex-adapter-only content; each skill's model defaults and its failed-agent
 re-run rules — model defaults are intentionally different (codex-handoff adapters choose GPT tiers; claude-handoff uses
-`sonnet`) — never normalize them; status reporting style; frontmatter and `references/`/`scripts/` contents.
+`sonnet` or `opus`) — never normalize them; status reporting style; frontmatter and `references/`/`scripts/` contents.
 
 Verification is prose comparison of the in-scope blocks; there is no extractable helper data.
 
@@ -126,7 +126,7 @@ Files:
 - `skills/skill-doctor/SKILL.md`
 - `skills/skill-harmonization/SKILL.md`
 
-Keep the same ai-skillet minimum version, `0.1.0+`. Each consumer must invoke its appropriate ai-skillet subcommand
+Keep the same ai-skillet minimum version, `1.0.0+`. Each consumer must invoke its appropriate ai-skillet subcommand
 directly (`map` for skill-map and skill-harmonization; `doctor` for skill-doctor), with no retired Python, uv, ripgrep,
 helper-resolution, wrapper, or fallback path.
 

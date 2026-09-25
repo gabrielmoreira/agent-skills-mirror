@@ -4,7 +4,7 @@
 - **Delivery maturity:** Partial, proposed implementation; not promoted
 - **Owners:** Quota, scheduler and host-runtime maintainers
 - **Created / last normative revision:** 2026-09-23
-- **Implementation baseline:** `23edcb19c`
+- **Implementation baseline:** `79241d7ef`
 - **Language mirror:** [中文版](automatic-execution-admission-v0.zh-CN.md) is the semantic mirror.
 - **Related contracts:** [roadmap](loopx-overall-roadmap-v0.md), [quota](../../quota-allocation.md), [cadence hint](../../operations/long-task-cadence-policy.md), [session execution modes](agent-session-execution-modes-v0.md)
 
@@ -19,9 +19,11 @@ cannot rewrite it. A quota slot, a timer tick and a model invocation remain
 different events. The target design requires every controlled new host invocation to pass temporal
 admission as well as the existing budget, permission, binding and work gates.
 
-No configured interval preserves existing behavior. The first milestone changes Codex App schedule recommendations, including reset
-and backoff. It does not yet enforce launch admission. M2 will require every new
-host invocation, retry and continuation to pass admission; cached settlement will not.
+No configured interval preserves existing behavior. M1 changes Codex App schedule
+recommendations, including reset and backoff. M2 adds pre-host admission to managed
+`turn run-once`; App timer and other launchers remain separate qualification work.
+Every new managed host invocation and failed-result retry passes admission; cached
+settlement does not.
 This RFC does not authorize changes to existing automations, model selection,
 quota allocation, remote services or public publishing.
 
@@ -108,7 +110,7 @@ protection against clock manipulation.
 
 | Host path | Required contract | Initial boundary |
 | --- | --- | --- |
-| Managed `turn run-once` | Atomic admission immediately before a new host attempt | Planned for M2, including failed-result recovery |
+| Managed `turn run-once` | Atomic admission before a new host attempt, including failed-result recovery | M2 candidate; isolated CLI, concurrency and crash-recovery tests, no external host promotion |
 | Local legacy scheduler / external launchers | Route launches through admitted Turn or implement the same owner call | Not yet qualified; do not advertise enforcement |
 | Codex App automation | Apply floor-compatible timer, read actual schedule, ACK only matching facts | M1 schedule recommendation floor; hook coverage not qualified |
 | Attached interactive/manual session | Explicit manual intent; existing authority gates remain | Caller records reason; automatic continuation cannot masquerade as manual |
@@ -209,10 +211,39 @@ product journey. The broader product goal remains open until M2/M3 acceptance.
 
 ## Appendix: implementation ledger
 
-Baseline audit at `23edcb19c`: no durable owner minimum interval. M1 is an
-unmerged candidate; M2/M3/M4 and live App qualification remain unverified.
-Tests and PR validation must distinguish deterministic evidence from host
-promotion. No existing automation is activated or rebound by this proposal.
+Baseline audit at `23edcb19c`: no durable owner minimum interval. M1 merged in
+[#4921](https://github.com/loopx-project/loopx/pull/4921), and managed Turn
+admission merged in [#4929](https://github.com/loopx-project/loopx/pull/4929).
+The M2 candidate reserves a managed Turn start in the same quota
+policy file and lock before host invocation. Denial returns the next eligible
+time without a host call, writeback or quota spend; a failed host consumes its
+start, and settlement replay skips admission. Goal floors apply per agent;
+automation floors require an explicit stable `--automation-id`. A manual start
+requires `--manual-interval-bypass-reason`, records a start, and bypasses only
+the interval. The local CLI remains a same-UID trust boundary.
+
+A managed start is two-phase in the same store: admission reserves the interval
+slot, and the Turn executor confirms that reservation only after the host
+attempt is durable in its journal. A crash between the two leaves the
+reservation resumable by the same Turn identity once the floor is reached, so a
+reserved-but-unstarted start never strands a Turn; a confirmed start stays
+fail-closed for the same identity, and an explicit manual reason cannot bypass
+that. A store record written without the phase field is read as an attempted
+start, so an older or hand-edited file fails closed rather than resuming.
+
+The M3 settings companion presents the quota-owned Goal/agent/automation policy
+through a revision-locked local preview, apply and readback, and reports stale
+configuration intent as a typed conflict instead of parsing error text. It does
+not edit existing Codex App timers, and next-eligible time plus Lark/CLI wait
+parity remain open. The App timer-to-hook path, non-Turn launchers and live
+model-host promotion remain unqualified; M4 remains a design option. No existing
+automation is activated or rebound by this proposal. Tests and PR validation
+must distinguish deterministic evidence from host promotion.
+
+M1 policy files are read as v1 and upgraded in place to v2 on the first
+configuration write or admitted start. The path stays stable; older binaries
+reject the v2 schema rather than silently discarding start records. Pause the
+launcher before downgrade.
 
 ### Hook research — 2026-09-23
 

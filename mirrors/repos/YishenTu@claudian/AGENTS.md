@@ -2,34 +2,26 @@
 
 ## Loading and verification
 
-- Read ancestor guides and any nested guide governing the files you change. Tests also use their source owner's guides; they do not inherit `src/` instructions automatically.
+- Tests follow the guides of the source they cover; they do not inherit `src/` instructions automatically.
 - Build, dependency, lockfile, locale/static-asset import, and `esbuild.config.mjs` changes also require `scripts/AGENTS.md`. Composition changes require the guides of the services being wired.
 - Use the Node version in `.node-version`. For code changes, the full verification command is:
 
 ```bash
-npm run typecheck && npm run lint && npm run test && npm run build && npm run check:performance
+npm run typecheck && npm run lint && npm run test && npm run test:lan-compatibility && npm run build && npm run check:performance
 ```
 
-- For focused changes, `npm run test:affected -- --base origin/main` selects related tests and applicable LAN compatibility checks; it does not replace typecheck, lint, build, or performance checks. Documentation-only changes need relevant documentation checks, not a production build.
+- For focused changes, `npm run test:affected -- --base origin/main` selects related tests and applicable LAN compatibility checks; it does not replace typecheck, lint, build, or performance checks. `test:lan-compatibility` needs public registry access; when it cannot run, say so and rely on CI. Documentation-only changes need `git diff --check` (CI enforces it on every pull request) and their affected documentation tests, not a production build.
 - Dev and production builds load `.env.local` and may copy artifacts into the configured `OBSIDIAN_VAULT`, including removal of its old `.codex-vendor`. Check that destination before building; clearing the shell variable does not prevent reloading it from the file.
 
 ## Architectural constraints
 
 - `src/main.ts` is the sole concrete composition root and lifecycle publisher. App subcomposition returns complete domains, never a second root or service locator.
-- App repositories/settings/storage depend on core contracts, not feature orchestration or provider-native protocols. Concrete provider imports are confined to composition and provider-default assembly.
-- Features use `FeatureHost` and core registries, never concrete app/provider implementations. Providers use `ProviderHost`, never feature orchestration. Core imports none of these implementations.
-- Existing Claude compatibility re-exports into app settings/storage are exceptions, not precedent. Do not extend them; move shared contracts to core when materially changing those seams.
+- `src/composition/` holds main-owned wiring that must reach both `app/` and `features/`. Only `main.ts` and other composition modules import it; it never imports `main.ts` or concrete providers, and `main.ts` still constructs, registers, and tears it down.
+- App repositories/settings/storage depend on core contracts, not feature orchestration or provider-native protocols. Concrete provider imports are confined to `main.ts` and provider-default assembly.
+- Features use `FeatureHost` and core registries, never concrete app/provider implementations. `FeatureHost` stays feature-neutral; chat-only capabilities belong in chat's `ChatFeatureHost` extension. Providers use `ProviderHost`, never feature orchestration. Core imports none of these implementations.
+- `src/providers/claude/storage/ClaudianSettingsStorage.ts`, a Claude-provider re-export of app settings storage, is the only allowed provider-to-app import. It is an exception, not precedent. Do not extend it; move shared contracts to core when materially changing that seam.
 - Shared ACP code contains protocol mechanics and protocol-level normalization only; provider launch policy, extensions, provider-specific normalization, and history stay provider-owned.
 - `@claudian-collab/protocol` is an exact registry dependency owned by its standalone repository. Import only its package root; do not vendor its source, add source aliases/core re-exports, or copy package-owned registries or compatibility policy. Claudian's LAN compatibility policy remains local.
-
-## Provider policy
-
-- Do not assume provider parity. Check the owning capabilities, registration, and UI config before sharing behavior; use `ProviderRegistry` and `ProviderWorkspaceRegistry`.
-- App/features may store opaque provider state but may not interpret native session/checkpoint fields. Providers normalize native payloads at the core boundary.
-- Live output and history replay remain separate. Application metadata changes never edit or delete native history files; explicit native session operations belong to providers.
-- Persisted provider settings require runtime decoding; invalid permission/tool/sandbox modes fail closed. Writers merge provider-owned configuration.
-- Chat offers only explicitly enabled models from enabled providers; an empty model selection stays empty. No synthetic entry, hidden session model, or default fallback may bypass provider or model enablement.
-- Runtime-discovered commands are read-only. Auxiliary queries own processes/sessions independently from chat.
 
 ## Local conventions
 
@@ -40,8 +32,6 @@ npm run typecheck && npm run lint && npm run test && npm run build && npm run ch
 ## Regression verification
 
 - For behavior changes, demonstrate the intended failing regression before implementation and rerun it afterward. Documentation/mechanical changes are exempt; when automation is infeasible, record a repeatable reproduction and verify the nearest stable contract.
-- Do not weaken tests to hide failures. Correct an expectation when the requested behavior or independent contract evidence justifies it; explain that evidence. Ask only when intended behavior remains ambiguous.
-- Report the checks actually run and any remaining verification gaps.
 
 ## Instruction maintenance
 

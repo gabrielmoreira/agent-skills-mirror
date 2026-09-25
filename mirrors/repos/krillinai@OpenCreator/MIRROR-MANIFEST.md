@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `krillinai/OpenCreator` — 26 default patterns, 0 followed patterns, 20 file(s) materialized.
+Mirror of `krillinai/OpenCreator` — 26 default patterns, 0 followed patterns, 21 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `krillinai/OpenCreator` — 26 default patterns, 0 followed patterns, 
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 20 |
+| Files         | 21 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,26 +59,27 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`.codex/skills/oc-deploy/SKILL.md`](.codex/skills/oc-deploy/SKILL.md) |
-| 2 | ✓ | [`.codex/skills/oc-pr/SKILL.md`](.codex/skills/oc-pr/SKILL.md) |
-| 3 | ✓ | [`.codex/skills/oc-verify/SKILL.md`](.codex/skills/oc-verify/SKILL.md) |
-| 4 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 5 | ✓ | [`apps/daemon/runtime/opencreator-runtime/SKILL.md`](apps/daemon/runtime/opencreator-runtime/SKILL.md) |
-| 6 | ✓ | [`packages/writing-templates/templates/community/khazix-writer/skill/SKILL.md`](packages/writing-templates/templates/community/khazix-writer/skill/SKILL.md) |
-| 7 | ✓ | [`packages/writing-templates/templates/community/research-paper-writing/skill/SKILL.md`](packages/writing-templates/templates/community/research-paper-writing/skill/SKILL.md) |
-| 8 | ✓ | [`packages/writing-templates/templates/community/sun-style-writing/skill/SKILL.md`](packages/writing-templates/templates/community/sun-style-writing/skill/SKILL.md) |
-| 9 | ✓ | [`packages/writing-templates/templates/official/insight/skill/SKILL.md`](packages/writing-templates/templates/official/insight/skill/SKILL.md) |
-| 10 | ✓ | [`packages/writing-templates/templates/official/news-analysis/skill/SKILL.md`](packages/writing-templates/templates/official/news-analysis/skill/SKILL.md) |
-| 11 | ✓ | [`packages/writing-templates/templates/official/story/skill/SKILL.md`](packages/writing-templates/templates/official/story/skill/SKILL.md) |
-| 12 | ✓ | [`packages/writing-templates/templates/official/tutorial/skill/SKILL.md`](packages/writing-templates/templates/official/tutorial/skill/SKILL.md) |
-| 13 | ✓ | [`skills/krillinai-cli/references/cli-contract.md`](skills/krillinai-cli/references/cli-contract.md) |
-| 14 | ✓ | [`skills/krillinai-cli/SKILL.md`](skills/krillinai-cli/SKILL.md) |
-| 15 | ✓ | [`skills/krillinai-cover/SKILL.md`](skills/krillinai-cover/SKILL.md) |
-| 16 | ✓ | [`skills/krillinai-pipeline/SKILL.md`](skills/krillinai-pipeline/SKILL.md) |
-| 17 | ✓ | [`skills/krillinai-render-horizontal/SKILL.md`](skills/krillinai-render-horizontal/SKILL.md) |
-| 18 | ✓ | [`skills/krillinai-render-vertical/SKILL.md`](skills/krillinai-render-vertical/SKILL.md) |
-| 19 | ✓ | [`skills/krillinai-subtitle/SKILL.md`](skills/krillinai-subtitle/SKILL.md) |
-| 20 | ✓ | [`skills/krillinai-tts/SKILL.md`](skills/krillinai-tts/SKILL.md) |
+| 1 | ✓ | [`.codex/skills/oc-bugfix/SKILL.md`](.codex/skills/oc-bugfix/SKILL.md) |
+| 2 | ✓ | [`.codex/skills/oc-deploy/SKILL.md`](.codex/skills/oc-deploy/SKILL.md) |
+| 3 | ✓ | [`.codex/skills/oc-pr/SKILL.md`](.codex/skills/oc-pr/SKILL.md) |
+| 4 | ✓ | [`.codex/skills/oc-verify/SKILL.md`](.codex/skills/oc-verify/SKILL.md) |
+| 5 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 6 | ✓ | [`apps/daemon/runtime/opencreator-runtime/SKILL.md`](apps/daemon/runtime/opencreator-runtime/SKILL.md) |
+| 7 | ✓ | [`packages/writing-templates/templates/community/khazix-writer/skill/SKILL.md`](packages/writing-templates/templates/community/khazix-writer/skill/SKILL.md) |
+| 8 | ✓ | [`packages/writing-templates/templates/community/research-paper-writing/skill/SKILL.md`](packages/writing-templates/templates/community/research-paper-writing/skill/SKILL.md) |
+| 9 | ✓ | [`packages/writing-templates/templates/community/sun-style-writing/skill/SKILL.md`](packages/writing-templates/templates/community/sun-style-writing/skill/SKILL.md) |
+| 10 | ✓ | [`packages/writing-templates/templates/official/insight/skill/SKILL.md`](packages/writing-templates/templates/official/insight/skill/SKILL.md) |
+| 11 | ✓ | [`packages/writing-templates/templates/official/news-analysis/skill/SKILL.md`](packages/writing-templates/templates/official/news-analysis/skill/SKILL.md) |
+| 12 | ✓ | [`packages/writing-templates/templates/official/story/skill/SKILL.md`](packages/writing-templates/templates/official/story/skill/SKILL.md) |
+| 13 | ✓ | [`packages/writing-templates/templates/official/tutorial/skill/SKILL.md`](packages/writing-templates/templates/official/tutorial/skill/SKILL.md) |
+| 14 | ✓ | [`skills/krillinai-cli/references/cli-contract.md`](skills/krillinai-cli/references/cli-contract.md) |
+| 15 | ✓ | [`skills/krillinai-cli/SKILL.md`](skills/krillinai-cli/SKILL.md) |
+| 16 | ✓ | [`skills/krillinai-cover/SKILL.md`](skills/krillinai-cover/SKILL.md) |
+| 17 | ✓ | [`skills/krillinai-pipeline/SKILL.md`](skills/krillinai-pipeline/SKILL.md) |
+| 18 | ✓ | [`skills/krillinai-render-horizontal/SKILL.md`](skills/krillinai-render-horizontal/SKILL.md) |
+| 19 | ✓ | [`skills/krillinai-render-vertical/SKILL.md`](skills/krillinai-render-vertical/SKILL.md) |
+| 20 | ✓ | [`skills/krillinai-subtitle/SKILL.md`](skills/krillinai-subtitle/SKILL.md) |
+| 21 | ✓ | [`skills/krillinai-tts/SKILL.md`](skills/krillinai-tts/SKILL.md) |
 
 ---
 

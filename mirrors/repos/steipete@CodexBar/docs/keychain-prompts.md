@@ -1,0 +1,134 @@
+---
+summary: "Why macOS Keychain prompts appear, how CodexBar limits them, and safe troubleshooting."
+read_when:
+  - Investigating Chromium Safe Storage or Claude credential prompts
+  - Choosing whether to allow or disable Keychain access
+  - Collecting safe support details without exposing secrets
+---
+
+# Keychain prompts
+
+CodexBar uses several credential sources, but two foreign-owned Keychain items are the common authorization surfaces:
+
+- Chromium cookie import needs the browser's Safe Storage secret to decrypt its cookie database. Examples include
+  `Chrome Safe Storage`, `Brave Safe Storage`, and `Microsoft Edge Safe Storage`.
+- Claude OAuth repair can read Claude Code's `Claude Code-credentials` item. Direct access to that foreign item is
+  off by default and requires explicit consent in Claude's provider settings. The default prompt policy reserves
+  interactive repair for a user action.
+
+CodexBar does not need the browser or Claude account password. macOS owns the authorization prompt and should name
+the requesting app or binary. Never send a Keychain item value, cookie header, OAuth token, API key, or password in a
+support report.
+
+## When CodexBar can prompt
+
+Background CodexBar paths are intended to fail or skip when a Keychain read would require interaction. This includes
+scheduled Chromium imports: CodexBar scopes the actual Safe Storage read as non-interactive, not just the preflight.
+A user-initiated import or acknowledged Claude repair may attempt interactive authorization because the user has
+chosen to continue. Denials temporarily suppress repeated Chromium-family attempts so one browser cannot lead to a
+prompt storm across the others.
+
+Scheduled Chromium imports can recover during that denial cooldown when the current no-UI Safe Storage preflight
+explicitly confirms access. Interaction-required, missing, or failed preflights still suppress the import, and the
+actual read remains non-interactive. This recovery does not clear the user-initiated denial cooldown or override
+disabled Keychain access.
+
+An inconclusive no-UI preflight gets at most three attempts, with a 30 ms pause before each retry. Stable authorization
+decisions are never retried. Each distinct preflight can add two 30 ms waits plus the Security calls;
+repeated checks within one operation reuse the final result. This applies to generic-password preflights for
+browser storage, credential repair, and CodexBar caches, without changing their permission requirements.
+
+Concurrent preflights for the same trusted application and executable share an in-flight code-signature validation.
+Completed successful validations and transient failures are not retained process-wide: executable and app metadata
+cannot detect every change to a sealed resource. The existing short, explicit operation memo can still reuse a
+generic-password preflight within that operation; it does not span asynchronous refreshes or deferred work.
+The process-local validation memo holds at most 64 confirmed signature rejections for five minutes. Changes to the
+executable, enclosing app bundle metadata, bundle version, or main executable invalidate those rejections sooner.
+Outside the explicit operation memo, the current Keychain ACL and prompt selector are read on every preflight, and
+background secret reads remain non-interactive.
+
+Provider-owned child processes are a separate boundary. CodexBar may intentionally launch a provider CLI such as
+Claude for usage. That executable owns its credential behavior, which CodexBar cannot constrain or fully inspect.
+
+## Why permission can be requested again
+
+Keychain access control evaluates the requesting executable's code signature and designated requirement, not just its
+filename or install path. A stable, properly signed CodexBar bundle makes grants more durable, while ad-hoc development
+builds or a materially changed identity may need authorization again. The Keychain item's owner can also recreate or
+rotate a foreign item. Chromium or Claude Code updates can therefore replace the previous access-control entry even
+when CodexBar itself has not changed.
+
+The item's accessibility class controls when its data is available, such as after the first unlock. It does not grant
+a changed executable access and does not repair a code-signature ACL mismatch.
+
+If a CodexBar-owned cache item's legacy ACL rejects the installed app, reads share a five-minute preflight cooldown.
+When fresh cache data becomes available, CodexBar can delete and recreate its own item using no-UI queries. A failed
+replacement is attempted at most once per cooldown; a failed retry starts another cooldown even if the old item is
+already gone. Successful replacement clears the rejection immediately, including when another first-party process wins
+the add race. Cache clearing honors an existing repair cooldown and uses no-UI deletion without requiring decrypt access.
+Foreign items are never recreated this way. A direct delete that is only temporarily unavailable stays retryable; it does
+not establish a stale ACL. A temporarily locked Keychain or an incomplete ACL preflight also remains retryable sooner and
+is not replaced.
+
+## Allow Once and Always Allow
+
+- **Allow Once** authorizes the current request or session. A later explicit import or repair may ask again.
+- **Always Allow** adds the current CodexBar identity to that item's access control and is the better choice when you
+  intentionally use automatic browser import or Claude's direct Keychain repair.
+- **Deny** leaves the source unavailable. CodexBar should fail soft and use another configured source where possible.
+
+Only authorize a prompt whose requested item and requesting app match the action you just started. Avoid “Allow all
+applications.” In Keychain Access, adding only the installed, stably signed `CodexBar.app` is the narrower grant.
+
+## Disable CodexBar Keychain access
+
+Open **CodexBar → Settings → Advanced** and enable **Disable Keychain access**. The stored setting is applied
+immediately; relaunching is useful when diagnosing another already-running copy.
+
+Startup resolves the local preference, falling back to the current shared app-group preference only when no local
+value is stored, before legacy credential migration. While access is disabled, permitted file-backed and manual-default
+imports can still be saved, but legacy credential cleanup and migration completion remain pending for a later launch
+with access enabled.
+
+This setting blocks CodexBar-owned Security.framework item reads and writes, including foreign-item readers such as
+Zed, and disables Chromium Safe Storage decryption. Browser-cookie import that needs Keychain is skipped. It does not
+promise that a provider-owned CLI launched by CodexBar will avoid its own credential store; Claude's owner-CLI policy
+is intentionally unchanged.
+
+Alternatives depend on the provider:
+
+- Paste a Cookie header manually instead of importing it from a browser.
+- Configure an API key or OAuth/device flow that does not depend on browser Safe Storage.
+- Use a supported file-backed or local provider source.
+- For Claude, leave direct foreign-item consent off and choose a CLI, Web, or usable credentials-file path.
+
+## Safe troubleshooting
+
+If a prompt appears unexpectedly, first read the full item name and requesting app/path. Quit CodexBar, then check for
+another running or installed copy:
+
+```bash
+pgrep -fl 'CodexBar|CodexBarCLI'
+ls -ld /Applications/CodexBar.app
+brew info --cask codexbar
+mdfind 'kMDItemCFBundleIdentifier == "com.steipete.codexbar"'
+```
+
+Also inspect **Activity Monitor** and **System Settings → General → Login Items**. Deleting an app does not terminate
+an already-running process, and another copy may have launched from a different path. Do not use command-line tools to
+dump Keychain contents while troubleshooting.
+
+For a support report, include:
+
+- CodexBar and macOS versions, installation source, and whether this is a development build.
+- The provider action immediately before the prompt and whether it was automatic or explicitly initiated.
+- The requested item name and requesting app/path from the prompt.
+- Whether Activity Monitor, Login Items, Homebrew, or Spotlight found another CodexBar copy.
+- A screenshot of only the prompt, with usernames and unrelated content redacted and no secret values shown.
+
+## Authoritative references
+
+- Apple: [If you're asked for access to your keychain on Mac](https://support.apple.com/en-ie/guide/keychain-access/kyca1243/mac)
+- Apple: [TN3127 — Inside Code Signing: Requirements](https://developer.apple.com/documentation/technotes/tn3127-inside-code-signing-requirements)
+- Apple: [TN3137 — On Mac keychains](https://developer.apple.com/documentation/technotes/tn3137-on-mac-keychains)
+- Chromium: [official macOS build and source instructions](https://chromium.googlesource.com/chromium/src/+/main/docs/mac_build_instructions.md)

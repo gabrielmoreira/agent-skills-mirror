@@ -802,6 +802,7 @@ LLM 路径走独立线程 + 独立 tokio 运行时（不阻塞 chat 流）；同
 
 ## 关联文档
 
+- [Codex 本机会话记录导入](codex-history-import.md) — JSONL 可见正文的导入、来源台账与只读提交边界
 - [Chat Engine](chat-engine.md) — 对话引擎，Session 的主要调用方；durable stream journal 崩溃恢复
 - [Plan Mode](../agent/plan-mode.md) — Plan Mode 状态机与步骤持久化
 - [Subagent](../agent/subagent.md) — 子 Agent 系统，`subagent_runs` / thread / attempt 控制面
@@ -815,6 +816,7 @@ LLM 路径走独立线程 + 独立 tokio 运行时（不阻塞 chat 流）；同
 | `crates/ha-core/src/session/mod.rs` | 模块声明与 re-export |
 | `crates/ha-core/src/session/types.rs` | SessionMeta / SessionMessage / MessageRole / NewMessage / SessionKind 等类型 |
 | `crates/ha-core/src/session/db.rs` | SessionDB 核心（open、CRUD、FTS、已读、迁移、过滤器、search、fork） |
+| `crates/ha-core/src/session/codex_import.rs` | Codex 本地 JSONL 扫描、可见正文解析与幂等导入 |
 | `crates/ha-core/src/session/helpers.rs` | auto_title / ensure_first_message_title / effective_session_working_dir / is_session_incognito 等 |
 | `crates/ha-core/src/session/subagent_db.rs` | Subagent 运行记录 CRUD |
 | `crates/ha-core/src/session/acp_db.rs` | ACP 运行记录 CRUD |

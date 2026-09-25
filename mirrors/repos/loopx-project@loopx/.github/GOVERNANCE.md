@@ -146,7 +146,7 @@ but do not replace the approval required from an eligible GitHub reviewer.
 
 ## Main Branch Merge Gates
 
-The live [main ruleset](https://github.com/huangruiteng/loopx/rules/18121976)
+The live [main ruleset](https://github.com/loopx-project/loopx/rules/18121976)
 is the operational authority. It requires a pull request, one approving
 review, code-owner approval where applicable, dismissal of stale approvals,
 approval of the last push by another reviewer, resolved review threads, and
@@ -220,7 +220,7 @@ The versioned
 [Current Technical Directions](../docs/project/technical-directions.md) page is
 the canonical map of active strategic programs, maturity, contribution routes,
 and promotion gates. The pinned
-[GitHub Discussion](https://github.com/huangruiteng/loopx/discussions/2851) is
+[GitHub Discussion](https://github.com/loopx-project/loopx/discussions/2851) is
 its community-facing projection; an issue, Discussion, RFC, or integration
 branch does not override merged runtime and stable reference contracts.
 

@@ -4,7 +4,7 @@
 // without an npm install. Node 18+ (stdlib only).
 
 import { existsSync, mkdirSync, readdirSync, readFileSync, realpathSync, writeFileSync } from 'node:fs';
-import { basename, join, resolve } from 'node:path';
+import { basename, join, relative, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 /* ------------------------------------------------------------------ */
@@ -199,58 +199,6 @@ export function slug(name) {
 
 export const DEFAULT_LANG = 'zh';
 
-/* ------------------------------------------------------------------ */
-/* 画风预设                                                             */
-/* ------------------------------------------------------------------ */
-/*
- * 换风格是整套换，不是只换一句「画风」。
- *
- * 最容易踩的坑：两个预设的 negativePrompt 几乎是相反的。写实那套刚把
- * photorealistic 从反向词里删掉，吉卜力恰恰要禁它。毛孔、皮下散射、
- * 顺表情肌的皱纹在写实里是加分项，在吉卜力里是反效果。
- *
- * 所以每个预设自带五块：render / surface / lighting / negative / tags，
- * 生成角色卡时整块取用，不要混搭。
- */
-
-export const DEFAULT_STYLE = 'realistic';
-
-export const STYLE_PRESETS = {
-  realistic: {
-    label: { zh: '半写实厚涂', en: 'Semi-realistic painterly', ja: '半写実・厚塗り' },
-    render:
-      'Semi-realistic character illustration, painterly rendering with soft blended edges and visible brush texture, anatomically grounded',
-    surface:
-      'Skin with visible pores and uneven tone, faint capillaries at the nostrils and ear rims, subtle subsurface scattering; eyes with a wet specular highlight, moist lower lid, visible iris fibres and a limbal ring; eyelids and eyebrows slightly asymmetric — no two sides identical; individual flyaway hair strands breaking the silhouette. Fabric with a visible weave, wear and shine at elbows, cuffs and knees, cloth falling with real weight and self-shadowing in the folds',
-    // 设定表要平光才好抠图，写实要方向光才有体积——分区解决
-    lighting:
-      'LIGHTING IN THE LEFT ZONE ONLY: a soft directional key light from the upper left with gentle falloff, subtle ambient occlusion under the chin, in the eye sockets and where the collar meets the neck, giving the head real volume. LIGHTING IN THE RIGHT ZONES: flat even orthographic lighting with no directional key and no cast shadows, so the figures stay measurable and cleanly cut out',
-    // 注意：这里绝不能禁 photorealistic
-    negative:
-      'plastic or waxy skin, over-smoothed airbrushed complexion, poreless doll face, perfectly symmetrical face, dead flat eyes without specular highlight, helmet-like hair with no loose strands, flat untextured fabric with no weave or wear, stiff mannequin posing, extra fingers, malformed hands, text, watermark, signature, busy or patterned background, harsh cast shadows on the backdrop',
-    tags: ['semi-realistic', 'painterly', 'character sheet', 'subsurface skin', 'directional key light'],
-  },
-
-  ghibli: {
-    label: { zh: '吉卜力动画', en: 'Ghibli-like animation', ja: 'ジブリ風アニメ' },
-    render:
-      'Hand-painted anime cel illustration in the manner of classic Studio Ghibli feature animation: clean confident ink linework of even weight, simple flat cel shading with a single soft shadow tone, gentle rounded forms, warm naturalistic palette, watercolour-like softness',
-    // 写实那套的表面细节在这里全是反效果，整块换掉
-    surface:
-      'Skin as clean flat tone with one soft shadow shape and a warm blush at the cheeks and nose — no pores, no skin texture, no subsurface detail; large clear expressive eyes with a simple round highlight and flat iris colour; hair drawn as grouped strands and clumps with clean silhouettes rather than individual hairs; clothing in simple flat colour with a few decisive fold lines, no fabric weave and no micro-texture',
-    // 平光就是这个风格本身的一部分，不需要分区
-    lighting:
-      'Even, gentle daylight across the whole sheet with a single soft shadow tone; no dramatic key light, no ambient occlusion, no cast shadows — the flat lighting is part of the style and keeps the figures cleanly cut out',
-    // 这里反过来，必须禁写实
-    negative:
-      'photorealistic, 3d render, hyperrealistic skin texture, visible pores, subsurface scattering, harsh contrast, heavy painterly rendering, muddy or desaturated colours, gritty texture overlay, extra fingers, malformed hands, text, watermark, signature, busy or patterned background',
-    tags: ['ghibli-like', 'cel shading', 'hand-painted', 'character sheet', 'flat daylight'],
-  },
-};
-
-export const SUPPORTED_STYLES = Object.keys(STYLE_PRESETS);
-export const stylePreset = (id) => STYLE_PRESETS[id] ?? STYLE_PRESETS[DEFAULT_STYLE];
-
 const STRINGS = {
   zh: {
     kicker: '角色设定集',
@@ -267,7 +215,6 @@ const STRINGS = {
       arc: '人物弧光', relationships: '关系', evidence: '原文依据',
     },
     image: {
-      style: '画风',
       prompt: '出图提示词 · 喂出图模型用这条', promptLocal: '出图提示词（中文对照）',
       negative: '反向提示词', sheet: '角色设定图提示词 EN',
     },
@@ -320,7 +267,6 @@ const STRINGS = {
       arc: 'Arc', relationships: 'Relationships', evidence: 'From the text',
     },
     image: {
-      style: 'Style',
       prompt: 'Image prompt · feed this to the image model', promptLocal: 'Image prompt (local translation)',
       negative: 'Negative prompt', sheet: 'Model sheet prompt',
     },
@@ -372,7 +318,6 @@ const STRINGS = {
       arc: '人物の変化', relationships: '関係', evidence: '原文の根拠',
     },
     image: {
-      style: '画風',
       prompt: '画像プロンプト · 画像モデルにはこれを', promptLocal: '画像プロンプト（対訳）',
       negative: 'ネガティブプロンプト', sheet: 'キャラ設定画プロンプト EN',
     },
@@ -502,7 +447,7 @@ export function seedFromOutline(outline) {
         arc: c?.arc ?? '',
         relationships: [], evidence: [],
       },
-      image: { style: '', prompt: '', promptLocal: '', negativePrompt: '', tags: [], sheet: '' },
+      image: { prompt: '', promptLocal: '', negativePrompt: '', tags: [], sheet: '' },
       voice: { timbre: '', pitch: '', pace: '', accent: '', emotion: '', prompt: '', referenceHint: '' },
       ...(note ? { seedNote: note } : {}),
     };
@@ -510,7 +455,6 @@ export function seedFromOutline(outline) {
   return {
     source: outline?.source ?? '',
     lang: outline?.lang ?? DEFAULT_LANG,
-    style: DEFAULT_STYLE,
     summary: '',
     characters,
   };
@@ -539,37 +483,13 @@ const normalise = (s) => String(s).replace(/\s+/g, '');
  * @param sourceText 原文；null 则跳过逐字引文校验
  * @param lang       报告语言，决定人类可读字段该是什么语言
  */
-export function validateCast(characters, sourceText, lang = DEFAULT_LANG, style = DEFAULT_STYLE) {
+export function validateCast(characters, sourceText, lang = DEFAULT_LANG) {
   const problems = [];
   const flatSource = sourceText === null ? null : normalise(sourceText);
   const at = (name, msg) => problems.push(`[${name}] ${msg}`);
 
   if (!Array.isArray(characters) || characters.length === 0) {
     return ['cast 为空或不是数组'];
-  }
-
-  // --- 同剧角色画风必须一致 ---
-  // 这是整批图"像不像同一部片"的底线。每个角色的 image.style 给人读的画风
-  // 一句话，模型在第二趟出卡时可能按各自服装/年龄自由发挥（藏青/冷灰/大地色
-  // 各写一套），导致同框时像四个画师画的。预设只约束大类别（realistic/ghibli），
-  // 管不到剧内统一，所以用确定性检查兜底：归一化后多于一种值就报错，并点名
-  // 哪些角色用了不同画风。单角色（或未写 image.style 的角色）不触发。
-  const styleByChar = [];
-  for (const c of characters) {
-    const name = c?.name ?? '(无名)';
-    const style = c?.image?.style;
-    if (typeof style === 'string' && style.trim()) styleByChar.push([name, normalise(style)]);
-  }
-  if (styleByChar.length > 1) {
-    const seen = new Map();
-    for (const [name, norm] of styleByChar) {
-      if (!seen.has(norm)) seen.set(norm, []);
-      seen.get(norm).push(name);
-    }
-    if (seen.size > 1) {
-      const groups = [...seen.values()].map((names) => names.join('、')).join('  vs  ');
-      problems.push(`同剧角色画风不一致（image.style 必须统一）：${groups}`);
-    }
   }
 
   // --- 同批角色的提示词不许雷同 ---
@@ -636,7 +556,7 @@ export function validateCast(characters, sourceText, lang = DEFAULT_LANG, style 
     if (!image || typeof image !== 'object') {
       at(name, '缺少 image');
     } else {
-      for (const f of ['style', 'prompt', 'negativePrompt']) {
+      for (const f of ['prompt', 'negativePrompt']) {
         if (typeof image[f] !== 'string' || !image[f].trim()) at(name, `image.${f} 缺失或为空`);
       }
       if (typeof image.sheet !== 'string' || !image.sheet.trim()) {
@@ -721,23 +641,6 @@ export function validateCast(characters, sourceText, lang = DEFAULT_LANG, style 
         if (typeof t === 'string' && CJK.test(t)) at(name, `image.tags 必须英文，但「${t}」含中日韩字符`);
       }
     }
-    // --- 风格与提示词必须匹配 ---
-    // 两个预设的反向提示词几乎是相反的，搞反了整批图都毁。
-    if (image && SUPPORTED_STYLES.includes(style)) {
-      const neg = typeof image.negativePrompt === 'string' ? image.negativePrompt : '';
-      const bansRealism = /photorealistic|3d render/i.test(neg);
-      if (style === 'realistic' && bansRealism) {
-        at(name, 'style=realistic 却在 negativePrompt 里禁 photorealistic／3d render——自相矛盾');
-      }
-      if (style === 'ghibli' && !bansRealism) {
-        at(name, 'style=ghibli 的 negativePrompt 必须禁 photorealistic／3d render');
-      }
-      const preset = stylePreset(style);
-      if (typeof image.sheet === 'string' && !image.sheet.includes(preset.render)) {
-        at(name, `image.sheet 里没有 style=${style} 的渲染句，画风会飘`);
-      }
-    }
-
     // 只有这三种能可靠自动判别，其他语言不猜、跳过——误报比漏报更烦人。
     if (voice) {
       for (const f of HUMAN_VOICE_FIELDS) {
@@ -768,7 +671,7 @@ export function validateCast(characters, sourceText, lang = DEFAULT_LANG, style 
  * 顺序）。不给 order 就保持传入顺序——CLI 按文件名读卡，那是 slug
  * 字典序不是戏份序，所以报告要「按戏份排序」就必须给 order。
  */
-export function assembleCast(cards, { source, lang = DEFAULT_LANG, style = DEFAULT_STYLE, summary = '', ui = null, order = null } = {}) {
+export function assembleCast(cards, { source, lang = DEFAULT_LANG, summary = '', ui = null, order = null } = {}) {
   const rank = (c) => {
     const i = IMPORTANCE.indexOf(c?.importance);
     return i < 0 ? IMPORTANCE.length : i; // 越界的排最后，让 validate 去报，这里不崩
@@ -780,7 +683,7 @@ export function assembleCast(cards, { source, lang = DEFAULT_LANG, style = DEFAU
     .map((card, i) => [card, i])
     .sort((a, b) => rank(a[0]) - rank(b[0]) || byOrder(a[0]) - byOrder(b[0]) || a[1] - b[1])
     .map(([card]) => card);
-  const cast = { source, lang, style };
+  const cast = { source, lang };
   if (ui) cast.ui = ui;
   cast.summary = summary;
   cast.characters = characters;
@@ -826,7 +729,6 @@ export function renderMarkdown(characters, source, summary = '', lang = DEFAULT_
     }
 
     out.push(`### ${t.groups.image}`, '');
-    out.push(`**${t.image.style}**　${image.style}`, '');
     if (image.tags.length) out.push(`\`${image.tags.join('`, `')}\``, '');
     out.push(`**${t.image.prompt}**`, '', '```text', image.prompt, '```', '');
     if (image.promptLocal) out.push(`${image.promptLocal}`, '');
@@ -978,11 +880,13 @@ function renderCharacter(c, index, t) {
         <dl>${HUMAN_VOICE_FIELDS.map((f) => kv(t.voice[f], voice[f])).join('')}</dl>
       </div>
 
-      <div class="card">
-        <h4>${esc(t.image.style)}</h4>
-        <p class="style">${esc(image.style)}</p>
-        ${image.tags.length ? `<ul class="tags">${image.tags.map((x) => `<li>${esc(x)}</li>`).join('')}</ul>` : ''}
-      </div>
+      ${
+        image.tags.length
+          ? `<div class="card"><h4>${esc(t.groups.image)}</h4>
+               <ul class="tags">${image.tags.map((x) => `<li>${esc(x)}</li>`).join('')}</ul>
+             </div>`
+          : ''
+      }
     </aside>
   </div>
 
@@ -1158,8 +1062,8 @@ function renderGraph(ordered, t) {
  * `<` 转成 <：JSON 里 `<` 只可能出现在字符串值中，整体替换是安全的，
  * 而不转的话正文里一个 `</script` 就能把这个数据块提前截断。
  */
-function embedCast(characters, source, summary, lang, ui, style) {
-  const data = { source, lang, style, summary, ...(ui ? { ui } : {}), characters };
+function embedCast(characters, source, summary, lang, ui) {
+  const data = { source, lang, summary, ...(ui ? { ui } : {}), characters };
   return JSON.stringify(data).replace(/</g, '\\u003c');
 }
 
@@ -1169,7 +1073,6 @@ export function renderHtml(
   summary = '',
   lang = DEFAULT_LANG,
   ui = null,
-  style = DEFAULT_STYLE,
 ) {
   const t = strings(lang, ui);
   const shots = characters.filter((c) => c.sheetImage).length;
@@ -1333,7 +1236,6 @@ button{font-family:inherit}
 .kv dt{color:var(--ink-3);flex:none;width:46px}
 .kv dd{margin:0;min-width:0}
 .rel-n{color:var(--ink)!important;width:auto!important;min-width:46px}
-.style{margin:0;font-size:12.5px;line-height:1.7;color:var(--ink-2)}
 .tags{display:flex;flex-wrap:wrap;gap:5px;margin:10px 0 0;padding:0;list-style:none}
 .tags li{font:400 11px/1.5 var(--mono);color:var(--ink-2);border:1px solid var(--rule-2);
   background:var(--paper);border-radius:2px;padding:1px 6px}
@@ -1485,7 +1387,7 @@ button{font-family:inherit}
   <img alt="">
 </div>
 
-<script type="application/json" id="cast-data">${embedCast(characters, source, summary, lang, ui, style)}</script>
+<script type="application/json" id="cast-data">${embedCast(characters, source, summary, lang, ui)}</script>
 
 <script>
 const L = ${JSON.stringify({ copied: t.copied, failed: t.copyFailed })};
@@ -1699,13 +1601,14 @@ const USAGE = `novel-characters.mjs — novel-characters skill 的确定性工�
   merge <workdir>                  归并 roster-*.json，打印 {characters, mergeCandidates}
         [--apply merges.json]      落地复核后的合并决定：{"merges":[{"keep":…,"absorb":[…]}]}
   assemble <workdir> --source <书名>
-        [--lang] [--style] [--out] 把 card-*.json + summary.txt（+ ui.json）合成 cast.json
+        [--lang] [--out]           把 card-*.json + 故事摘要（+ 界面翻译）合成 cast.json
+        [--summary <file>]         故事摘要文件（默认 <workdir>/summary.txt）
+        [--ui <file>]              界面文案翻译（默认 <workdir>/ui.json，内置语言不需要）
         [--order merged.json]      同档角色的戏份顺序（默认自动找 <workdir>/merged.json）
   validate <cast.json> <book.txt>  校验；有违规逐条打印并 exit 1
   render <cast.json> [--html|--md] 渲染报告到 stdout（默认 --md）
   slug <name>                      角色名转安全文件名
   ui-template [lang]               打印界面文案骨架，供翻译成内置表没有的语言
-  styles [id]                      打印画风预设的完整内容
 
 通用选项：
   --lang <code>     报告语言，默认取 cast.json 的 lang，再默认 ${DEFAULT_LANG}
@@ -1713,8 +1616,8 @@ const USAGE = `novel-characters.mjs — novel-characters skill 的确定性工�
 
 render 选项：
   --source <name>   报告标题用的书名（默认取 cast.json 的 source 或文件名）
-  --images <dir>    图片目录名，默认 images
-                    会去找 <dir>/<slug>-sheet.png`;
+  --images <dir>    设定图所在目录，任意路径（相对当前目录解析）；默认 cast.json 同级的 images/
+                    会去找 <dir>/<slug>-sheet.png；报告里的图片路径按「报告写在 cast.json 旁边」计算`;
 
 function readJson(path) {
   return JSON.parse(readFileSync(resolve(path), 'utf8'));
@@ -1737,7 +1640,6 @@ function loadCast(path) {
     summary: Array.isArray(raw) ? '' : (raw.summary ?? ''),
     lang: Array.isArray(raw) ? DEFAULT_LANG : (raw.lang ?? DEFAULT_LANG),
     ui: Array.isArray(raw) ? null : (raw.ui ?? null),
-    style: Array.isArray(raw) ? DEFAULT_STYLE : (raw.style ?? DEFAULT_STYLE),
   };
 }
 
@@ -1801,13 +1703,12 @@ function main(argv) {
   if (cmd === 'assemble') {
     const [workdir] = rest;
     if (!workdir || workdir.startsWith('--')) {
-      throw new Error('用法：assemble <workdir> --source <书名> [--lang zh] [--style realistic] [--out cast.json]');
+      throw new Error('用法：assemble <workdir> --source <书名> [--lang zh] [--out cast.json]');
     }
     const dir = resolve(workdir);
     const sourceName = flag(rest, '--source');
     if (!sourceName) throw new Error('assemble 需要 --source <书名>');
     const lang = flag(rest, '--lang', DEFAULT_LANG);
-    const style = flag(rest, '--style', DEFAULT_STYLE);
 
     const files = readdirSync(dir).filter((f) => /^card-.*\.json$/.test(f)).sort();
     if (!files.length) throw new Error(`${dir} 里没有 card-*.json`);
@@ -1836,14 +1737,15 @@ function main(argv) {
       cards.push(card);
     }
 
-    const summaryPath = join(dir, 'summary.txt');
+    // 三份附带文件都能单独指定路径；不给才去工作目录里找 skill 自己写下的那份
+    const summaryPath = resolve(flag(rest, '--summary', join(dir, 'summary.txt')));
     const summary = existsSync(summaryPath) ? readFileSync(summaryPath, 'utf8').trim() : '';
-    if (!summary) problems.push(`缺 ${summaryPath}（故事摘要）——用报告语言写 3–5 句进去`);
+    if (!summary) problems.push(`缺 ${summaryPath}（故事摘要）——用报告语言写 3–5 句进去，或用 --summary 指定`);
 
-    const uiPath = join(dir, 'ui.json');
+    const uiPath = resolve(flag(rest, '--ui', join(dir, 'ui.json')));
     const ui = existsSync(uiPath) ? readJson(uiPath) : null;
     if (needsUiTranslation(lang) && !ui) {
-      problems.push(`lang=${lang} 不在内置界面语言里，缺 ${uiPath}——用 ui-template 生成骨架翻译后放进去`);
+      problems.push(`lang=${lang} 不在内置界面语言里，缺 ${uiPath}——用 ui-template 生成骨架翻译后放进去，或用 --ui 指定`);
     }
 
     // 同档角色的戏份顺序来自 merge 的输出——卡按文件名读入是 slug 字典序，
@@ -1864,7 +1766,7 @@ function main(argv) {
       process.exit(1);
     }
 
-    const cast = assembleCast(cards, { source: sourceName, lang, style, summary, ui, order });
+    const cast = assembleCast(cards, { source: sourceName, lang, summary, ui, order });
     const json = JSON.stringify(cast, null, 2) + '\n';
     const out = flag(rest, '--out');
     if (out) {
@@ -1879,15 +1781,11 @@ function main(argv) {
   if (cmd === 'validate') {
     const [castPath, bookPath] = rest;
     if (!castPath) throw new Error('用法：validate <cast.json> <book.txt>');
-    const { characters, summary, lang: castLang, ui, style: castStyle } = loadCast(castPath);
+    const { characters, summary, lang: castLang, ui } = loadCast(castPath);
     const lang = flag(rest, '--lang', castLang);
-    const style = flag(rest, '--style', castStyle);
     const source = bookPath ? readFileSync(resolve(bookPath), 'utf8') : null;
     if (!bookPath) console.error('⚠️ 没给原文，跳过逐字引文校验');
-    const problems = validateCast(characters, source, lang, style);
-    if (!SUPPORTED_STYLES.includes(style)) {
-      problems.unshift(`顶层 style=${style} 不是已知预设（${SUPPORTED_STYLES.join('/')}）`);
-    }
+    const problems = validateCast(characters, source, lang);
     // 顶层的故事摘要——报告要用，缺了就没法在顶部交代背景
     if (typeof summary !== 'string' || !summary.trim()) {
       problems.unshift('顶层缺少 summary（故事摘要），报告顶部会空着');
@@ -1905,7 +1803,7 @@ function main(argv) {
       for (const p of problems) console.error('  ' + p);
       process.exit(1);
     }
-    console.log(`✓ ${characters.length} 个角色全部通过校验（lang=${lang}, style=${style}）`);
+    console.log(`✓ ${characters.length} 个角色全部通过校验（lang=${lang}）`);
     return;
   }
 
@@ -1913,23 +1811,26 @@ function main(argv) {
     const [castPath] = rest;
     if (!castPath) throw new Error('用法：render <cast.json> [--html|--md]');
     const html = rest.includes('--html');
-    const imagesDir = flag(rest, '--images', 'images');
+    const imagesFlag = flag(rest, '--images');
     const sourceFlag = flag(rest, '--source');
 
-    const { characters, source, summary, lang: castLang, ui, style } = loadCast(castPath);
+    const { characters, source, summary, lang: castLang, ui } = loadCast(castPath);
     const lang = flag(rest, '--lang', castLang);
     const title = sourceFlag ?? source ?? basename(castPath).replace(/\.[^.]+$/, '');
 
-    // 图存在才挂上去；没有就渲染成占位，不影响其余内容。
+    // 图是用户在下游出好的素材，放哪由用户定：--images 按普通命令行路径解析，
+    // 不给才退回 cast.json 同级的 images/。报告默认写在 cast.json 旁边，
+    // src 写成相对那里的路径，整个目录一起挪也不断。图不存在就渲染成占位。
     const outDir = resolve(castPath, '..');
+    const imagesDir = imagesFlag ? resolve(imagesFlag) : join(outDir, 'images');
     for (const c of characters) {
-      const stem = `${imagesDir}/${slug(c.name)}`;
-      if (existsSync(join(outDir, `${stem}-sheet.png`))) c.sheetImage = `${stem}-sheet.png`;
+      const abs = join(imagesDir, `${slug(c.name)}-sheet.png`);
+      if (existsSync(abs)) c.sheetImage = relative(outDir, abs).split(sep).join('/');
     }
 
     process.stdout.write(
       (html
-        ? renderHtml(characters, title, summary, lang, ui, style)
+        ? renderHtml(characters, title, summary, lang, ui)
         : renderMarkdown(characters, title, summary, lang, ui)) + '\n',
     );
     return;
@@ -1940,26 +1841,6 @@ function main(argv) {
     console.log(
       JSON.stringify(
         { note: `把下面每个值翻译成 ${lang}，整块放进 cast.json 的顶层 "ui"`, ui: uiTemplate() },
-        null,
-        2,
-      ),
-    );
-    return;
-  }
-
-  if (cmd === 'styles') {
-    const only = rest[0];
-    if (only && !SUPPORTED_STYLES.includes(only)) {
-      throw new Error(`未知风格 ${only}（可用：${SUPPORTED_STYLES.join('/')}）`);
-    }
-    const ids = only ? [only] : SUPPORTED_STYLES;
-    console.log(
-      JSON.stringify(
-        {
-          default: DEFAULT_STYLE,
-          note: '整块取用，不要混搭；两个预设的 negative 几乎是相反的',
-          presets: Object.fromEntries(ids.map((id) => [id, STYLE_PRESETS[id]])),
-        },
         null,
         2,
       ),

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `rullerzhou-afk/clawd-on-desk` — 26 default patterns, 0 followed patterns, 34 file(s) materialized.
+Mirror of `rullerzhou-afk/clawd-on-desk` — 26 default patterns, 0 followed patterns, 35 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `rullerzhou-afk/clawd-on-desk` — 26 default patterns, 0 followed pat
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 34 |
+| Files         | 35 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -78,21 +78,22 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 17 | ✓ | [`agents/kimi-log-monitor.js`](agents/kimi-log-monitor.js) |
 | 18 | ✓ | [`agents/kiro-cli.js`](agents/kiro-cli.js) |
 | 19 | ✓ | [`agents/mimocode.js`](agents/mimocode.js) |
-| 20 | ✓ | [`agents/omp.js`](agents/omp.js) |
-| 21 | ✓ | [`agents/openclaw.js`](agents/openclaw.js) |
-| 22 | ✓ | [`agents/opencode-family.js`](agents/opencode-family.js) |
-| 23 | ✓ | [`agents/opencode.js`](agents/opencode.js) |
-| 24 | ✓ | [`agents/pi.js`](agents/pi.js) |
-| 25 | ✓ | [`agents/qoder.js`](agents/qoder.js) |
-| 26 | ✓ | [`agents/qoderwork.js`](agents/qoderwork.js) |
-| 27 | ✓ | [`agents/qwen-code.js`](agents/qwen-code.js) |
-| 28 | ✓ | [`agents/qwenwork.js`](agents/qwenwork.js) |
-| 29 | ✓ | [`agents/reasonix.js`](agents/reasonix.js) |
-| 30 | ✓ | [`agents/registry.js`](agents/registry.js) |
-| 31 | ✓ | [`agents/traecode.js`](agents/traecode.js) |
-| 32 | ✓ | [`agents/workbuddy.js`](agents/workbuddy.js) |
-| 33 | ✓ | [`agents/zcode.js`](agents/zcode.js) |
-| 34 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 20 | ✓ | [`agents/minimax.js`](agents/minimax.js) |
+| 21 | ✓ | [`agents/omp.js`](agents/omp.js) |
+| 22 | ✓ | [`agents/openclaw.js`](agents/openclaw.js) |
+| 23 | ✓ | [`agents/opencode-family.js`](agents/opencode-family.js) |
+| 24 | ✓ | [`agents/opencode.js`](agents/opencode.js) |
+| 25 | ✓ | [`agents/pi.js`](agents/pi.js) |
+| 26 | ✓ | [`agents/qoder.js`](agents/qoder.js) |
+| 27 | ✓ | [`agents/qoderwork.js`](agents/qoderwork.js) |
+| 28 | ✓ | [`agents/qwen-code.js`](agents/qwen-code.js) |
+| 29 | ✓ | [`agents/qwenwork.js`](agents/qwenwork.js) |
+| 30 | ✓ | [`agents/reasonix.js`](agents/reasonix.js) |
+| 31 | ✓ | [`agents/registry.js`](agents/registry.js) |
+| 32 | ✓ | [`agents/traecode.js`](agents/traecode.js) |
+| 33 | ✓ | [`agents/workbuddy.js`](agents/workbuddy.js) |
+| 34 | ✓ | [`agents/zcode.js`](agents/zcode.js) |
+| 35 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 
 ---
 

@@ -86,10 +86,13 @@ Trailing marker recovery stops at visible prose, including prose ending in
 `-->`. An already-closed HTML comment cannot extend across that prose into the
 final marker block; valid contiguous trailing markers remain recoverable.
 
-Review workers coordinate through a separate temporary `clawsweeper-review-lease`
-comment; final publication updates the durable review and removes the owned
-lease. Exact-review workers check queue ownership before creating or cleaning up
-comments and again after acquisition. A definitive ownership rejection completes
+Scheduled and other non-command review workers coordinate through a separate
+temporary `clawsweeper-review-lease` comment; final publication updates the durable
+review and removes the owned lease. Command-triggered exact reviews rewrite their
+existing command acknowledgement and use the durable queue claim directly, without
+posting a second visible lease comment. If that acknowledgement cannot be resolved,
+they fall back to the temporary lease path. Exact-review workers check queue ownership
+before GitHub comment work and again before generation and finalization. A definitive ownership rejection completes
 as superseded without retrying. A transport or service failure retries the check;
 the same authorized run reuses its own active lease instead of posting another
 status comment. Exhausted service failures remain failures for normal queue
@@ -347,6 +350,15 @@ does not make those options persistent. The import must belong to the same diff
 side, and other visible `Console` uses leave the binding conservative. Explicit
 storage changes, other changed fields, and known persistence-owner paths still
 retain their warnings.
+Changing or removing an existing explicit `statePath` variable declaration retains the compatibility hold. The full-file patch owner pairs identical removed and added declaration lines after trimming indentation, including plain moves across hunks; unmatched removed declarations retain the hold. New captures, unchanged declarations, and reference-only awaits do not acquire a hold from this rule. It does not infer semantic equivalence: parentheses-only or other non-identical declaration rewrites may conservatively retain the prior hold.
+
+An in-memory `statePath` field or read-routing argument does not itself define a
+stored format. It needs a known persistence owner or file-I/O evidence in the same semantic diff hunk:
+file reads, read/write streams, append/truncate operations, or filesystem-qualified open/read/write calls. Generic browser and in-memory methods cannot establish storage context by themselves; generic handle calls can still count as changes once that context exists. Filesystem qualification is best-effort hunk evidence from known receivers and explicit named, default, namespace, or `promises` imports; it does not resolve arbitrary JavaScript data flow.
+This preserves dot or bracket members, awaits, nested path builders, and other
+read spellings without parsing JavaScript argument syntax. The association is
+conservative: an unrelated state path and source read colocated in that hunk
+can still require compatibility review. Evidence from separate hunks cannot combine.
 File reads can inspect source or media and need a persistence
 owner, explicit stored-state evidence, or JSON decoding in the same diff hunk.
 Unrelated hunks cannot combine a file read and decoding into storage evidence.

@@ -4,6 +4,12 @@
 
 ## v0.3.224：自定义回复语气与设置页一键测试（2026-09-19）
 
+- **Responses 初始化 JSON 请求修复（issue #265）**：启用 JSON mode 时，OpenAI / OpenAI-compatible Responses 适配器确保 `input` 消息包含 JSON 输出指令，修复 system 被拆到 `instructions` 后部分端点拒绝偏好分析的 HTTP 400。已有 JSON 输入不重复追加，普通文本调用与调用方消息不变。
+
+### 跨平台推荐评分键去碰撞
+
+- **推荐评分与排序统一使用 `DiscoveredContent.scoring_key`**：`PoolCurator` 的同步/异步评分、时效 shadow audit、MMR embedding、视觉/关键帧/弹幕加分、平台归一化与最终排序全部改用平台限定的 `item_key`，旧数据仅在缺失 `item_key` 时回退到 `bvid`。修复 YouTube、X、小红书等非 B 站候选因空 `bvid` 共享 `scores[""]`、互相覆盖的问题，同时避免键迁移期间 B 站视觉与弹幕加分失效。回归测试覆盖跨平台分数不碰撞、B 站封面加分排序、MMR 相似度缓存及各加分映射。
+
 ### 发布日期偏好软模式入库门修复（issue #257）
 
 - **修复配置 `[sources.<name>].recommendation_date_preset != "all"` 后软模式来源被静默饿死**：统一候选入队的 `_source_publication_date_candidate_is_eligible()` 此前取 `PublicationDateDecision.in_range` 判定，把「范围外」和「无法判定发布时间」都当成必须丢弃——软模式（`weight<1`，默认 0.5）同样被硬过滤，且 `published_at` 缺失的来源（YouTube 主路径、X、小红书等）在配置任意非 `all` 预设后候选全部在入库前被丢弃，`discovery_candidates` 不再新增、来源池恒为 0。现改按 `eligible` 准入：严格模式（`weight=1`）行为不变（`eligible == in_range`，仍排除范围外/无法解析时间的候选）；软模式保留候选入队。策略内联 LLM 评估路径的 `filter_candidates_for_eval()` 同步改为 `eligible`，与 raw 入库门一致。日期偏好统一在 discovery 层分流：`1 - weight` 分数乘数仍只作用于 B 站池/推荐打分路径，非 B 站来源软模式只保留候选、不降权（`docs/modules/config.md`）。该修复同时恢复 `docs/modules/discovery.md` 已记录的「缺失/异常值默认不影响候选入队」契约。回归测试：`tests/test_source_publication_preference.py` 新增「软模式保留范围外 + 缺失发布时间候选」「严格模式仍排除缺失时间」「内联评估软模式不预过滤」三条。

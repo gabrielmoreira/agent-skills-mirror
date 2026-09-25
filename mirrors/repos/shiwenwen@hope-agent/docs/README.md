@@ -45,6 +45,7 @@
 | [macOS 控制](architecture/core/macos-control.md)        | 原生 macOS GUI 控制子系统：权限 readiness、AX snapshot、display/window 截图、App/窗口/元素/菜单/dialog 操作与审批分类 | `crates/ha-mac/`, `src-tauri/src/macos_control.rs` |
 | [上下文压缩](architecture/core/context-compact.md)       | 5 层渐进式压缩、API-Round 分组保护、mid-loop checkpoint、runtime ledger 与文件恢复 | `context_compact/` / `agent/context.rs`        |
 | [Session 系统](architecture/core/session.md)          | 会话 + 消息持久化、FTS5 搜索、无痕会话关闭即焚、会话级工作目录、自动会话标题、Subagent/ACP 运行记录 | `session/`, `session_title.rs`                 |
+| [Codex 本机会话记录导入](architecture/core/codex-history-import.md) | 本机 JSONL 一键导入的来源、只读边界、幂等台账与验收条件 | `session/codex_import.rs` |
 | [Project 系统](architecture/core/project.md)          | 会话分组容器、项目记忆/工作目录/指令、7 级 Agent 解析、`/project` 命令、侧边栏树状渲染 | `project/`                                     |
 | [Agent 配置与解析链](architecture/core/agent-config.md) | `agent.json` 磁盘真相源、AgentConfig 能力/记忆/委派模型、运行时装配、7 级默认 Agent 解析链、legacy `default`→`ha-main` 迁移 | `agent_config.rs`, `agent_loader.rs`, `agent/resolver.rs`, `agent/migration.rs` |
 | [记忆系统](architecture/core/memory.md)                 | Core Memory、SQLite + FTS5 + vec0 混合检索、默认关闭的动态召回（Fast / Deep Recall）、自动提取、Dreaming、Recall Summary、向量重建 | `memory/`                                      |

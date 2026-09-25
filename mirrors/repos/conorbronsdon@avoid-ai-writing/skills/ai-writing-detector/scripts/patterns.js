@@ -876,6 +876,16 @@ const AIDetector = (() => {
     /\b(?:that|this)(?:['\u2019]s|\s+(?:is|was))\s+why\s+[^.!?\n]{0,60}\s+mattered\b/gi,
   ];
 
+  const STAGED_DISCOVERY = [
+    // Staged discovery: a judgment framed as a twist the writer found ("the recording
+    // turned out to be the least interesting part"). Superlative + insight noun keeps
+    // ordinary "turned out to be the most expensive option" clean.
+    /\b(?:turned|turns|turning)\s+out\s+to\s+be\s+the\s+(?:least|most)\s+(?:interesting|important|surprising|revealing|valuable|useful)\s+(?:part|thing|piece|bit)\b/gi,
+    // Require a reveal-style continuation; "the real story was covered by..."
+    // describes a literal story and is not a staged discovery.
+    /\bthe\s+real\s+story\s+(?:here\s+)?(?:is|was)\b(?=\s+(?:the|that|how|why|what)\b)/gi,
+  ];
+
   // ─── Negation chains ───────────────────────────────────────────────
   // "No fluff, no filler, no jargon" / "It didn't ask, didn't wait" /
   // "Don't call it X. Call it Y." Precision guards, in order: the
@@ -1911,6 +1921,8 @@ const AIDetector = (() => {
     issues.push(...matchPatterns(text, REAL_ACTUAL_INFLATION, 'real-actual-inflation', 'medium'));
     issues.push(...matchPatterns(text, SOCIAL_CTA_CLOSER, 'social-cta-closer', 'high'));
     issues.push(...matchPatterns(text, PERFORMED_INSIGHT, 'performed-insight', 'medium'));
+    const stagedDiscoveryIssues = matchPatterns(text, STAGED_DISCOVERY, 'performed-insight', 'medium');
+    issues.push(...stagedDiscoveryIssues);
     issues.push(...matchPatterns(text, NEGATION_CHAIN, 'negation-chain', 'high'));
     issues.push(...matchPatterns(text, DEV_BLOG_BOILERPLATE, 'dev-blog-boilerplate', 'medium'));
     issues.push(...findUnnecessaryHyphenation(text));
@@ -2460,7 +2472,20 @@ const AIDetector = (() => {
     // above a list of two items. Now the dedup runs first, then each
     // distinct issue contributes its category weight — so the number
     // reflects the same signals the user actually sees.
-    const deduped = deduplicateIssues(issues);
+    // The staged-discovery phrase can contain the older "the most interesting
+    // part" flatline match or sentence-initial "Turns out". Report the
+    // enclosing signal once while leaving unrelated findings intact.
+    const stagedDiscoverySpans = stagedDiscoveryIssues
+      .map((issue) => ({ start: issue.index, end: issue.index + issue.text.length }));
+    const nonOverlappingIssues = issues.filter((issue) =>
+      (issue.type !== 'emotional-flatline' && issue.type !== 'performed-insight') ||
+      stagedDiscoveryIssues.includes(issue) ||
+      !Number.isInteger(issue.index) ||
+      !stagedDiscoverySpans.some((span) =>
+        issue.index >= span.start && issue.index + issue.text.length <= span.end
+      )
+    );
+    const deduped = deduplicateIssues(nonOverlappingIssues);
     for (const issue of deduped) {
       rawScore += ISSUE_WEIGHTS[issue.type] ?? 2;
     }

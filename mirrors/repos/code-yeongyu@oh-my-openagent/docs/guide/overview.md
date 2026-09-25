@@ -60,7 +60,7 @@ We used to call this "Claude Code on steroids." That was wrong.
 
 This isn't about making Claude Code better. It's about breaking free from the idea that one model, one provider, one way of working is enough. Anthropic wants you locked in. OpenAI wants you locked in. Everyone wants you locked in.
 
-Oh My OpenAgent doesn't play that game. It orchestrates across models, picking the right brain for the right job. Your session model for orchestration. Visual work uses `claude-fable-5-1` max, then `claude-opus-5-5` max, then `kimi-k3` max. GPT-6 Astra for deep reasoning, with GPT-5.6 Sol behind it. Kimi high-speed for quick tasks. All working together, automatically.
+Oh My OpenAgent doesn't play that game. It orchestrates across models, picking the right brain for the right job. Your session model for orchestration. Visual work uses `claude-fable-5-1` max, then `claude-opus-5-5` max, then `kimi-k3` max. GPT-6 Astra for deep reasoning, with GPT-5.6 Sol behind it. GPT-6 Luna Fast for quick tasks, Kimi high-speed for codebase search. All working together, automatically.
 
 ---
 
@@ -101,14 +101,14 @@ The main agent is your session. It runs on your session model (a profile, a pin,
 
 Recommended models, named plainly:
 
-- **Claude Opus 5.5** (or Claude Fable 5). The reference configuration. The orchestration prompt was built against Claude's habit of following long, mechanics-driven instructions.
-- **GPT 5.6 Sol**. The GPT-recommended configuration. It gets a model-aware GPT-native prompt built for autonomous, principle-driven work: give it a goal, not a recipe. Over-orchestration on small bounded tasks is a known risk.
+- **Claude Opus 5.5** (or Claude Fable 5.1). The reference configuration. The orchestration prompt was built against Claude's habit of following long, mechanics-driven instructions.
+- **GPT-6 Astra or GPT-6 Sol**. The GPT-recommended configuration. It gets the GPT-native `gpt-6-astra` prompt preset built for autonomous, principle-driven work: give it a goal, not a recipe. Over-orchestration on small bounded tasks is a known risk.
 
-Kimi K3 and GLM 5.2 / 5.3 have tuned prompt presets too, with lighter validation. Models below the recommended tier aren't supported as the main agent. The **Capable** profile walks the Claude-first slice of this list (Fable 5.1, Opus 5.5, Kimi K3, GLM 5.3), so it's the safe default when you'd rather not choose; pick **Deep work** for the GPT side. Details in the [Agent-Model Matching Guide](./agent-model-matching.md).
+Kimi K3 and GLM 5.3 are on the Recommended list too, lower down and with lighter validation. Models outside it aren't supported as the main agent. You don't have to choose: with no `model_profile`, a fresh session runs **Recommended** (Opus 5.5, Fable 5.1, Kimi K3, GPT-6 Astra, GPT-6 Sol, GLM 5.3) and takes the first one you have connected. The Daily lanes lead with Claude; Geeky · Normal runs GPT-5.6 Sol and Geeky · Heavy GPT-6 Astra. Details in the [Agent-Model Matching Guide](./agent-model-matching.md).
 
 ### The category worker
 
-Every `task(category: ...)` call spawns the category worker: a fresh worker session configured by the category's model and skills. It gets one prompt, does the work, and reports back. Nothing else leaks in. That's what makes a `deep` call on GPT-6 Astra and a `quick` call on Kimi high-speed behave predictably side by side.
+Every `task(category: ...)` call spawns the category worker: a fresh worker session configured by the category's model and skills. It gets one prompt, does the work, and reports back. Nothing else leaks in. That's what makes a `deep-high` call on GPT-6 Astra and a `quick` call on GPT-6 Luna Fast behave predictably side by side.
 
 ### Curated agents
 

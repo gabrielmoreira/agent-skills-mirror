@@ -91,6 +91,33 @@ target. The reviewer cannot read unchanged repository files from its empty
 sandbox; supply relevant source or dependency evidence when the diff is insufficient.
 `--prompt-file` also accepts an absolute path inside the repository; the same
 sensitive-path, symlink, and mutation checks apply. `--dataset` stays repo-relative.
+Repeated paths in the same evidence role share one validated capture. Equal
+content at different paths and prompt-file versus dataset roles stay distinct.
+
+For unchanged committed source, use repeatable `--source-context <repo-relative-path>`
+with branch or commit mode. Use `--source-context-file <repo-relative-path>` when
+that source must stay intact in every review pass. Both read the exact regular-file
+blob from the frozen reviewed commit (branch HEAD or `--commit`), including executable source files.
+Local mode, including an auto-selected local target, is unsupported. No separate
+context revision or working-copy substitution is accepted. The checkout path must
+remain a regular file; its bytes and path topology are revalidated throughout review.
+Repeated normalized source-context paths share one capture after every argument
+is validated; different paths and evidence roles remain distinct.
+
+Both roles use tracked-source filename classification, so source names such as
+`src/token_count.py` are accepted. Credential directories, stores and keyfiles
+remain forbidden. Existing prompt-file and dataset restrictions are unchanged.
+Every source block carries path, commit, blob and mode provenance. `--source-context`
+bytes are partitioned with the change when needed. `--source-context-file` blocks
+stay complete in every pass and must fit with the instructions and change framing;
+the helper refuses an over-capacity plan without dropping required evidence.
+Context never adds finding targets or instruction authority. This is a
+source-provenance contract, not secret-content scanning.
+
+```bash
+"$AUTOREVIEW" --mode branch --base origin/main --source-context src/token_count.py
+"$AUTOREVIEW" --mode branch --base origin/main --source-context-file src/token_count.py
+```
 
 The default threshold is **P0 only**: material blockers to normal operation or
 safety. Use `--max-priority P1`, `P2`, or `P3` when the caller requests a wider
@@ -186,6 +213,31 @@ split context overrides are unsupported when projection is selected.
 | Pi              | CLI 0.79.0+; configured model; no tools or project resources                                          |
 | Kimi            | CLI 0.30.0+; configured model; Python 3.11+ or `tomli` for TOML config                                |
 
+## Image review
+
+Branch mode with Codex supports **added, single-frame PNG, JPEG and WebP** files.
+Install Pillow in the Python environment running the helper (`python -m pip install Pillow`).
+Use a vision-capable Codex model and a CLI supporting `codex exec --image`.
+No new bypass flag is required. Full decoding rejects corrupt and animated files.
+Images must have at most 16,777,216 pixels and no dimension above 16,384 pixels;
+decoder bomb warnings fail closed before pixel loading. Added image paths are
+limited to 20 MiB of encoded bytes each and 100 MiB total, checked against Git
+object sizes before capture. Exceeding a limit fails the entire review.
+
+The helper captures exact bytes from the pinned HEAD, stages only those images
+in its isolated workspace, and attaches them through Codex's native image input.
+Every pass receives the path, media type, byte count and SHA-256 manifest alongside
+the image attachments and text diff. Image findings use the original path and line 1.
+Text-only review does not require Pillow.
+
+Other binaries, modified/deleted images, local/commit image changes and image review
+with other engines remain unsupported and fail closed. Missing Pillow or provider
+image limits fail the review rather than silently dropping assets. Sensitive-path,
+source-mutation, authentication and sandbox controls remain enabled.
+
+For partial clones, materialize required Git objects **before** review. The isolated
+Git reader intentionally disables lazy network fetching; do not weaken that boundary.
+
 ## Runtime boundaries
 
 The helper owns reviewer isolation, sanitized authentication, process cleanup,
@@ -220,10 +272,17 @@ roots before workspace, runtime, or authentication setup; unset a shared
 temporary directory. Other engines and platforms retain their normal isolation.
 Tools installed in shared scratch or requiring writes there will be denied too.
 
-Review files have no size/count cap and are never truncated. Large diffs and
-datasets are partitioned automatically. Intact instructions and required mixed
-source context must still fit the per-pass prompt budget. A failed pass does not
-produce a partial clean verdict.
+Text review files have no size/count cap and are never truncated; image inputs
+use the explicit safety limits above. Large diffs and
+datasets are partitioned automatically. Change partitions retain complete
+datasets when they fit with sufficient change space. This preference may use more
+passes or prompt bytes than evidence batching; the explicit pass budget still applies.
+Terminal fallbacks preserve a feasible complete-evidence plan when batch framing cannot fit.
+Intact instructions, source-context files and required mixed source context must
+fit the per-pass prompt budget. A failed pass does not produce a partial clean verdict.
+Otherwise, the planner compares a bounded set of evidence allocations and keeps the existing
+plan unless total prompt bytes improve without more passes, or equal bytes need
+fewer passes. Every change is still reviewed against every evidence batch.
 
 Each pass is an independent assignment, not a continuing conversation. Its
 private completion field must confirm a finished assessment; deferring to
@@ -233,6 +292,12 @@ Do not edit inputs during a review: the helper verifies captured sources before
 sending and publishing results. Long reviews are normal; advancing heartbeats
 mean progress. Use `--stream-engine-output` for visibility, not extra reviewer
 runs. `--dry-run` checks preparation and startup without contacting a reviewer.
+Both dry runs and execution print planned pass count and total prompt bytes.
+Use `--max-review-passes N` (or `AUTOREVIEW_MAX_REVIEW_PASSES`) to reject the whole
+plan before any reviewer starts when it exceeds an explicit campaign budget.
+There is no default pass ceiling. `--engine-timeout-seconds` remains an optional
+deadline per process attempt. Pass counts, prompt bytes, and deadlines are not
+token hard caps; they do not bound model reasoning or tool use.
 
 ## Results
 
@@ -258,6 +323,18 @@ machine-readable outcome. It preserves the existing exit codes and
 `findings`, `filtered`, `incorrect`, or `incomplete`; a launched reviewer that
 fails or returns an invalid report reports `reviewer_unavailable` with exit 1.
 A failed later pass never publishes a partial review report.
+
+Codex runs collect usage with live display on or off. The final report, status
+sidecar, and terminal summary include `usage`: process attempts, reported,
+unknown and partial attempt counts, `complete`, and observed token totals.
+Each fresh attempt contributes its last valid cumulative snapshot once, including
+access retries and failed passes. Cached input and reasoning output are subsets
+of input and output, not extra totals to add. These are observed tokens, not a
+billing estimate or a cache-hit promise. Missing telemetry, including Codex's
+all-zero defaults when no sample exists, is unknown, never measured zero;
+`tokens: null` means no attempt supplied usable totals. When `complete` is false,
+available totals are a lower bound. Interrupted runs print retained usage but
+still publish no status or review report. Other engines do not yet aggregate usage.
 
 ```json
 {

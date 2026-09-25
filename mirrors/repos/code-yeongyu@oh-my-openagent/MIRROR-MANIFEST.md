@@ -7,7 +7,7 @@ ref: dev
 
 # Mirror Manifest
 
-Mirror of `code-yeongyu/oh-my-openagent` — 26 default patterns, 22 followed patterns, 341 file(s) materialized.
+Mirror of `code-yeongyu/oh-my-openagent` — 26 default patterns, 23 followed patterns, 343 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `code-yeongyu/oh-my-openagent` — 26 default patterns, 22 followed pa
 | Ref Type      | `branch` |
 | Ref           | `dev` |
 | Default pats  | 26 |
-| Followed pats | 22 |
-| Files         | 341 |
+| Followed pats | 23 |
+| Files         | 343 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -68,6 +68,7 @@ Mirror of `code-yeongyu/oh-my-openagent` — 26 default patterns, 22 followed pa
 - `docs/guide/installation.md`
 - `docs/legal/privacy-policy.md`
 - `docs/legal/terms-of-service.md`
+- `docs/guide/migrating-from-opencode.md`
 - `docs/guide/overview.md`
 - `docs/reference/features.md`
 - `docs/guide/orchestration.md`
@@ -379,48 +380,50 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 297 | ✓ | [`packages/shared-skills/skills/ultimate-browsing/SKILL.md`](packages/shared-skills/skills/ultimate-browsing/SKILL.md) |
 | 298 | ✓ | [`packages/shared-skills/skills/ulw-execute/SKILL.md`](packages/shared-skills/skills/ulw-execute/SKILL.md) |
 | 299 | ✓ | [`packages/shared-skills/skills/ulw-plan/SKILL.md`](packages/shared-skills/skills/ulw-plan/SKILL.md) |
-| 300 | ✓ | [`packages/shared-skills/skills/ulw-research/SKILL.md`](packages/shared-skills/skills/ulw-research/SKILL.md) |
-| 301 | ✓ | [`packages/shared-skills/skills/visual-qa/AGENTS.md`](packages/shared-skills/skills/visual-qa/AGENTS.md) |
-| 302 | ✓ | [`packages/shared-skills/skills/visual-qa/SKILL.md`](packages/shared-skills/skills/visual-qa/SKILL.md) |
-| 303 | ✓ | [`packages/skills-loader-core/AGENTS.md`](packages/skills-loader-core/AGENTS.md) |
-| 304 | ✓ | [`packages/skills-loader-core/src/features/builtin-skills/AGENTS.md`](packages/skills-loader-core/src/features/builtin-skills/AGENTS.md) |
-| 305 | ✓ | [`packages/skills-loader-core/src/features/builtin-skills/dev-browser/references/installation.md`](packages/skills-loader-core/src/features/builtin-skills/dev-browser/references/installation.md) |
-| 306 | ✓ | [`packages/skills-loader-core/src/features/builtin-skills/dev-browser/SKILL.md`](packages/skills-loader-core/src/features/builtin-skills/dev-browser/SKILL.md) |
-| 307 | ✓ | [`packages/skills-loader-core/src/features/builtin-skills/frontend/SKILL.md`](packages/skills-loader-core/src/features/builtin-skills/frontend/SKILL.md) |
-| 308 | ✓ | [`packages/skills-loader-core/src/features/builtin-skills/git-master/SKILL.md`](packages/skills-loader-core/src/features/builtin-skills/git-master/SKILL.md) |
-| 309 | ✓ | [`packages/skills-loader-core/src/features/builtin-skills/security-research/SKILL.md`](packages/skills-loader-core/src/features/builtin-skills/security-research/SKILL.md) |
-| 310 | ✓ | [`packages/skills-loader-core/src/features/opencode-skill-loader/AGENTS.md`](packages/skills-loader-core/src/features/opencode-skill-loader/AGENTS.md) |
-| 311 | ✓ | [`packages/team-core/AGENTS.md`](packages/team-core/AGENTS.md) |
-| 312 | ✓ | [`packages/telemetry-core/AGENTS.md`](packages/telemetry-core/AGENTS.md) |
-| 313 | ✓ | [`packages/tmux-core/AGENTS.md`](packages/tmux-core/AGENTS.md) |
-| 314 | ✓ | [`packages/utils/AGENTS.md`](packages/utils/AGENTS.md) |
-| 315 | ✓ | [`packages/web/AGENTS.md`](packages/web/AGENTS.md) |
-| 316 | ✓ | [`script/AGENTS.md`](script/AGENTS.md) |
-| 317 | ✓ | [`script/qa/dependency-audit/README.md`](script/qa/dependency-audit/README.md) |
-| 318 | ✓ | [`scripts/AGENTS.md`](scripts/AGENTS.md) |
-| 319 | ✓ | [`tests/AGENTS.md`](tests/AGENTS.md) |
-| 320 | → | [`.devcontainer/README.md`](.devcontainer/README.md) |
-| 321 | → | [`CHANGELOG.md`](CHANGELOG.md) |
-| 322 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 323 | → | [`docs/guide/installation.md`](docs/guide/installation.md) |
-| 324 | → | [`docs/guide/orchestration.md`](docs/guide/orchestration.md) |
-| 325 | → | [`docs/guide/overview.md`](docs/guide/overview.md) |
-| 326 | → | [`docs/guide/team-mode.md`](docs/guide/team-mode.md) |
-| 327 | → | [`docs/legal/privacy-policy.md`](docs/legal/privacy-policy.md) |
-| 328 | → | [`docs/legal/terms-of-service.md`](docs/legal/terms-of-service.md) |
-| 329 | → | [`docs/manifesto.md`](docs/manifesto.md) |
-| 330 | → | [`docs/reference/configuration.md`](docs/reference/configuration.md) |
-| 331 | → | [`docs/reference/features.md`](docs/reference/features.md) |
-| 332 | → | [`docs/reference/lazycodex-npm-reservation.md`](docs/reference/lazycodex-npm-reservation.md) |
-| 333 | → | [`docs/reference/omo-json.md`](docs/reference/omo-json.md) |
-| 334 | → | [`docs/reference/prompt-async-gate-rfc.md`](docs/reference/prompt-async-gate-rfc.md) |
-| 335 | → | [`docs/reference/release-process.md`](docs/reference/release-process.md) |
-| 336 | → | [`README.ja.md`](README.ja.md) |
-| 337 | → | [`README.ko.md`](README.ko.md) |
-| 338 | → | [`README.md`](README.md) |
-| 339 | → | [`README.ru.md`](README.ru.md) |
-| 340 | → | [`README.zh-cn.md`](README.zh-cn.md) |
-| 341 | → | [`ROADMAP.md`](ROADMAP.md) |
+| 300 | ✓ | [`packages/shared-skills/skills/ulw-research/AGENTS.md`](packages/shared-skills/skills/ulw-research/AGENTS.md) |
+| 301 | ✓ | [`packages/shared-skills/skills/ulw-research/SKILL.md`](packages/shared-skills/skills/ulw-research/SKILL.md) |
+| 302 | ✓ | [`packages/shared-skills/skills/visual-qa/AGENTS.md`](packages/shared-skills/skills/visual-qa/AGENTS.md) |
+| 303 | ✓ | [`packages/shared-skills/skills/visual-qa/SKILL.md`](packages/shared-skills/skills/visual-qa/SKILL.md) |
+| 304 | ✓ | [`packages/skills-loader-core/AGENTS.md`](packages/skills-loader-core/AGENTS.md) |
+| 305 | ✓ | [`packages/skills-loader-core/src/features/builtin-skills/AGENTS.md`](packages/skills-loader-core/src/features/builtin-skills/AGENTS.md) |
+| 306 | ✓ | [`packages/skills-loader-core/src/features/builtin-skills/dev-browser/references/installation.md`](packages/skills-loader-core/src/features/builtin-skills/dev-browser/references/installation.md) |
+| 307 | ✓ | [`packages/skills-loader-core/src/features/builtin-skills/dev-browser/SKILL.md`](packages/skills-loader-core/src/features/builtin-skills/dev-browser/SKILL.md) |
+| 308 | ✓ | [`packages/skills-loader-core/src/features/builtin-skills/frontend/SKILL.md`](packages/skills-loader-core/src/features/builtin-skills/frontend/SKILL.md) |
+| 309 | ✓ | [`packages/skills-loader-core/src/features/builtin-skills/git-master/SKILL.md`](packages/skills-loader-core/src/features/builtin-skills/git-master/SKILL.md) |
+| 310 | ✓ | [`packages/skills-loader-core/src/features/builtin-skills/security-research/SKILL.md`](packages/skills-loader-core/src/features/builtin-skills/security-research/SKILL.md) |
+| 311 | ✓ | [`packages/skills-loader-core/src/features/opencode-skill-loader/AGENTS.md`](packages/skills-loader-core/src/features/opencode-skill-loader/AGENTS.md) |
+| 312 | ✓ | [`packages/team-core/AGENTS.md`](packages/team-core/AGENTS.md) |
+| 313 | ✓ | [`packages/telemetry-core/AGENTS.md`](packages/telemetry-core/AGENTS.md) |
+| 314 | ✓ | [`packages/tmux-core/AGENTS.md`](packages/tmux-core/AGENTS.md) |
+| 315 | ✓ | [`packages/utils/AGENTS.md`](packages/utils/AGENTS.md) |
+| 316 | ✓ | [`packages/web/AGENTS.md`](packages/web/AGENTS.md) |
+| 317 | ✓ | [`script/AGENTS.md`](script/AGENTS.md) |
+| 318 | ✓ | [`script/qa/dependency-audit/README.md`](script/qa/dependency-audit/README.md) |
+| 319 | ✓ | [`scripts/AGENTS.md`](scripts/AGENTS.md) |
+| 320 | ✓ | [`tests/AGENTS.md`](tests/AGENTS.md) |
+| 321 | → | [`.devcontainer/README.md`](.devcontainer/README.md) |
+| 322 | → | [`CHANGELOG.md`](CHANGELOG.md) |
+| 323 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 324 | → | [`docs/guide/installation.md`](docs/guide/installation.md) |
+| 325 | → | [`docs/guide/migrating-from-opencode.md`](docs/guide/migrating-from-opencode.md) |
+| 326 | → | [`docs/guide/orchestration.md`](docs/guide/orchestration.md) |
+| 327 | → | [`docs/guide/overview.md`](docs/guide/overview.md) |
+| 328 | → | [`docs/guide/team-mode.md`](docs/guide/team-mode.md) |
+| 329 | → | [`docs/legal/privacy-policy.md`](docs/legal/privacy-policy.md) |
+| 330 | → | [`docs/legal/terms-of-service.md`](docs/legal/terms-of-service.md) |
+| 331 | → | [`docs/manifesto.md`](docs/manifesto.md) |
+| 332 | → | [`docs/reference/configuration.md`](docs/reference/configuration.md) |
+| 333 | → | [`docs/reference/features.md`](docs/reference/features.md) |
+| 334 | → | [`docs/reference/lazycodex-npm-reservation.md`](docs/reference/lazycodex-npm-reservation.md) |
+| 335 | → | [`docs/reference/omo-json.md`](docs/reference/omo-json.md) |
+| 336 | → | [`docs/reference/prompt-async-gate-rfc.md`](docs/reference/prompt-async-gate-rfc.md) |
+| 337 | → | [`docs/reference/release-process.md`](docs/reference/release-process.md) |
+| 338 | → | [`README.ja.md`](README.ja.md) |
+| 339 | → | [`README.ko.md`](README.ko.md) |
+| 340 | → | [`README.md`](README.md) |
+| 341 | → | [`README.ru.md`](README.ru.md) |
+| 342 | → | [`README.zh-cn.md`](README.zh-cn.md) |
+| 343 | → | [`ROADMAP.md`](ROADMAP.md) |
 
 ---
 

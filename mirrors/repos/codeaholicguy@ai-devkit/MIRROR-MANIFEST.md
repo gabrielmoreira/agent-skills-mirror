@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `codeaholicguy/ai-devkit` — 26 default patterns, 0 followed patterns, 62 file(s) materialized.
+Mirror of `codeaholicguy/ai-devkit` — 26 default patterns, 0 followed patterns, 63 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `codeaholicguy/ai-devkit` — 26 default patterns, 0 followed patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 62 |
+| Files         | 63 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -107,20 +107,21 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 46 | ✓ | [`skills/security-review/agents/openai.yaml`](skills/security-review/agents/openai.yaml) |
 | 47 | ✓ | [`skills/security-review/references/checklist.md`](skills/security-review/references/checklist.md) |
 | 48 | ✓ | [`skills/security-review/SKILL.md`](skills/security-review/SKILL.md) |
-| 49 | ✓ | [`skills/simplify-implementation/agents/openai.yaml`](skills/simplify-implementation/agents/openai.yaml) |
-| 50 | ✓ | [`skills/simplify-implementation/references/readability-guide.md`](skills/simplify-implementation/references/readability-guide.md) |
-| 51 | ✓ | [`skills/simplify-implementation/SKILL.md`](skills/simplify-implementation/SKILL.md) |
-| 52 | ✓ | [`skills/structured-debug/agents/openai.yaml`](skills/structured-debug/agents/openai.yaml) |
-| 53 | ✓ | [`skills/structured-debug/SKILL.md`](skills/structured-debug/SKILL.md) |
-| 54 | ✓ | [`skills/task/agents/openai.yaml`](skills/task/agents/openai.yaml) |
-| 55 | ✓ | [`skills/task/SKILL.md`](skills/task/SKILL.md) |
-| 56 | ✓ | [`skills/tdd/agents/openai.yaml`](skills/tdd/agents/openai.yaml) |
-| 57 | ✓ | [`skills/tdd/SKILL.md`](skills/tdd/SKILL.md) |
-| 58 | ✓ | [`skills/technical-writer/agents/openai.yaml`](skills/technical-writer/agents/openai.yaml) |
-| 59 | ✓ | [`skills/technical-writer/SKILL.md`](skills/technical-writer/SKILL.md) |
-| 60 | ✓ | [`skills/verify/agents/openai.yaml`](skills/verify/agents/openai.yaml) |
-| 61 | ✓ | [`skills/verify/SKILL.md`](skills/verify/SKILL.md) |
-| 62 | ✓ | [`web/public/llms.txt`](web/public/llms.txt) |
+| 49 | ✓ | [`skills/session-compact/SKILL.md`](skills/session-compact/SKILL.md) |
+| 50 | ✓ | [`skills/simplify-implementation/agents/openai.yaml`](skills/simplify-implementation/agents/openai.yaml) |
+| 51 | ✓ | [`skills/simplify-implementation/references/readability-guide.md`](skills/simplify-implementation/references/readability-guide.md) |
+| 52 | ✓ | [`skills/simplify-implementation/SKILL.md`](skills/simplify-implementation/SKILL.md) |
+| 53 | ✓ | [`skills/structured-debug/agents/openai.yaml`](skills/structured-debug/agents/openai.yaml) |
+| 54 | ✓ | [`skills/structured-debug/SKILL.md`](skills/structured-debug/SKILL.md) |
+| 55 | ✓ | [`skills/task/agents/openai.yaml`](skills/task/agents/openai.yaml) |
+| 56 | ✓ | [`skills/task/SKILL.md`](skills/task/SKILL.md) |
+| 57 | ✓ | [`skills/tdd/agents/openai.yaml`](skills/tdd/agents/openai.yaml) |
+| 58 | ✓ | [`skills/tdd/SKILL.md`](skills/tdd/SKILL.md) |
+| 59 | ✓ | [`skills/technical-writer/agents/openai.yaml`](skills/technical-writer/agents/openai.yaml) |
+| 60 | ✓ | [`skills/technical-writer/SKILL.md`](skills/technical-writer/SKILL.md) |
+| 61 | ✓ | [`skills/verify/agents/openai.yaml`](skills/verify/agents/openai.yaml) |
+| 62 | ✓ | [`skills/verify/SKILL.md`](skills/verify/SKILL.md) |
+| 63 | ✓ | [`web/public/llms.txt`](web/public/llms.txt) |
 
 ---
 

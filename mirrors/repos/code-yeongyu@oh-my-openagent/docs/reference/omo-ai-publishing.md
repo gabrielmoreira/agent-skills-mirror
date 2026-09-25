@@ -97,14 +97,18 @@ must point at that release or newer.
 
 ## Install and upgrade order (EEXIST)
 
-Machines that still carry a pre-rename root package (oh-my-openagent or oh-my-opencode at 4.19.4 or earlier) have a global `omo` bin shim from that package. Installing omo-ai on top of it fails with EEXIST because npm refuses to overwrite a bin link owned by another package.
+Machines that still carry a pre-rename root package (oh-my-openagent or oh-my-opencode at 4.19.4 or earlier) have a global `omo` bin shim from that package. `latest` is still 4.19.4, so this is the state of every machine that never moved to the 5.x beta. Two ways it breaks:
 
-Order matters:
+- `npm i -g omo-ai@beta` fails with `EEXIST: file already exists <prefix>/bin/omo`; npm refuses to overwrite a bin link owned by another package.
+- `bun add -g omo-ai@beta` succeeds into the bun prefix, but both bins now exist. With the npm prefix earlier on PATH, `omo --version` keeps printing `4.19.4` and the user is silently running the old CLI.
 
-1. First upgrade oh-my-openagent/oh-my-opencode to a post-rename release (which drops the `omo` bin), or uninstall it.
-2. Then `npm i -g omo-ai@beta`.
+`bunx oh-my-openagent@beta install --platform=native` is the supported path and does the ordering itself (the `@beta` tag is required: `latest` 4.19.4 rejects `--platform=native`):
 
-Machines already on a renamed release have no global `omo` and install cleanly in one step.
+1. It scans the PATH directories and the bun global bin dir for an `omo` command, resolves each to its owning package (symlink target, or the package path inside a launcher shim), and removes only the ones owned by oh-my-openagent / oh-my-opencode, plus the generated `omo` wrapper a pre-rename Codex Light install wrote into `~/.local/bin`. The package itself and its other commands (`oh-my-openagent`, `lazycodex`, ...) stay; only the alias the rename orphaned is dropped, and the removal is printed.
+2. It installs `omo-ai@beta` with bun, or npm when bun is absent.
+3. It runs the resolved `omo --version` and requires the answer to come from omo-ai. If another `omo` still resolves first, or omo-ai landed in a directory that is not on PATH, it prints the exact `export PATH=...` fix instead of claiming success.
+
+By hand, the equivalent is: remove `<prefix>/bin/omo` (or uninstall the old package), then `npm i -g omo-ai@beta`. Uninstalling the old package after omo-ai is in place is not symmetric: `npm uninstall -g oh-my-openagent` unlinks every bin name that package declares, so it also deletes the `omo` in the npm bin dir that npm-installed omo-ai now owns (the installer prints this note on the npm path); reinstall with `npm i -g omo-ai@beta` afterwards. `bun remove -g` keeps a bin another package owns. Machines already on a renamed release have no global `omo` and install cleanly in one step.
 
 ## Runtime selection (bun wherever it exists)
 

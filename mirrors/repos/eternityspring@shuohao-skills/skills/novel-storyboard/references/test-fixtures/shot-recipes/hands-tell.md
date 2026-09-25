@@ -5,5 +5,5 @@ name_en: Hands tell it
 cuts: [1, 2]
 sizes: [close, extreme-close]
 cameras: [Static Shot, Push In]
-must_phrases: [hands only, no face visible]
+must_phrases: [只拍手部, 不露脸]
 ---

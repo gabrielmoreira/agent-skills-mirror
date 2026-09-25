@@ -16,6 +16,8 @@ metadata:
 
 Execute CLI commands and tests inside the devcontainer. The host machine is macOS but the project binary is Linux — running CLI commands on the host will silently produce wrong results or fail. This skill prevents that mistake.
 
+Before acting, run `python3 scripts/ai-context.py testing` and follow that topic. The topic is the source of truth for repository execution boundaries and test rules; this skill retains the interactive workflow and command recipes.
+
 ## When to Use This
 
 - Running `ss` / `skillshare` commands for verification
@@ -143,13 +145,13 @@ Always `cd /workspace` before Go commands — ssenv changes HOME which can break
 
 ### Go tests with auth disabled
 
-Some tests (e.g., `TestResolveToken`, `TestAuthEnv`) need auth credentials removed:
+Token-resolution tests (`TestResolveToken`, `TestAuthEnv` in `internal/install`) need auth credentials removed:
 
 ```bash
-docker exec $CONTAINER bash -c '
+docker exec $CONTAINER bash -lc '
   eval "$(credential-helper --eval off)"
   cd /workspace
-  go test ./internal/github -run TestResolveToken -count=1
+  go test ./internal/install -run "TestResolveToken|TestAuthEnv" -count=1
   eval "$(credential-helper --eval on)"
 '
 ```
@@ -204,8 +206,4 @@ For automation (non-interactive), prefer `ssenv enter <name> -- <command>` over 
 
 ## Rules
 
-- **All CLI execution inside devcontainer** — no exceptions
-- **Use ssenv for stateful tests** — don't pollute default HOME
-- **Always verify** — run the command and check output; never assume it worked
-- **Clean up** — delete ssenv environments after use (or ask user)
-- **Report container ID** — set `$CONTAINER` at the start and reuse throughout
+Apply the `testing` topic. If a command recipe here conflicts with that topic or current repo configuration, verify the current configuration and update both in the same change.

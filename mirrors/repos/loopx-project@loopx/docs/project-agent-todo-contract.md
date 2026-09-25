@@ -159,6 +159,12 @@ requires the caller to place the fresh observation digest in
 `LOOPX_MONITOR_RESULT_HASH` and exposes separate unchanged and material-change
 commands; omitting either the Turn binding or result digest fails closed before
 monitor writeback.
+The generated command transports an existing hard-lease proof with
+`--use-current-task-lease`. It reads the canonical provider's active lease for
+the exact Monitor and agent, or reuses the same Turn's durable transaction
+proof during recovery; it never acquires or renews a lease. Missing, expired,
+or foreign leases fail before creating a provider-pending receipt. The
+canonical TypeScript transaction still checks the proof atomically.
 The canonical watch-only/ordinary-due partition is produced inside the existing
 TypeScript Todo summary and quota-planning owners after Agent scope and
 capability admission; Python compatibility code only adapts legacy facts and
@@ -172,6 +178,10 @@ replan 压力，也不会抢占 runnable advancement；二者同时存在时，
 该 CLI 路由仅在绑定当前 Turn 时可用；调用方必须把本次新鲜 observation digest
 写入 `LOOPX_MONITOR_RESULT_HASH`，并在 unchanged 与 material-change 两条命令中
 明确选择。缺少 Turn 绑定或 result digest 时，monitor writeback 会在写入前失败关闭。
+生成命令使用 `--use-current-task-lease` 传递已有的 hard-lease 证明：从
+canonical provider 读取该 Monitor 与 Agent 的有效租约；若是同一 Turn 的恢复，
+则复用持久交易回执中的原证明。该入口不会获取或续租；租约缺失、过期或归属不符
+会在形成 provider-pending 回执前失败，最终仍由 TypeScript 权威事务原子校验。
 watch-only／普通 due 的权威分区由既有 TypeScript Todo summary 与 quota-planning
 owner 在 Agent scope 和 capability admission 之后生成；Python 兼容层只适配旧事实并
 渲染已选中的 CLI／Lark 路由。

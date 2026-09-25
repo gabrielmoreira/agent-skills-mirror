@@ -16,7 +16,9 @@ metadata:
 
 Sync website documentation with recent code changes. $ARGUMENTS specifies scope: a command name (e.g., `install`), commit range, or omit to auto-detect from `git diff HEAD~1`.
 
-**Scope**: This skill only updates `website/docs/`. It does NOT write Go code (use `implement-feature`) or CHANGELOG (use `changelog`).
+**Scope**: This skill updates `website/docs/`, the built-in skill (`skills/skillshare/`), and `README.md`. It does NOT write Go code (use `implement-feature`) or CHANGELOG (use `changelog`).
+
+Before acting, run `python3 scripts/ai-context.py documentation`. That topic is the source of truth for documentation ownership, code cross-validation and verification; this skill retains the update workflow.
 
 ## Workflow
 
@@ -68,21 +70,18 @@ Map changed files to affected documentation using this guide:
 
 For each affected command:
 
-1. Read the Go source to extract actual flags and behavior:
-   ```bash
-   grep -n 'flag\.\|Usage\|Args' cmd/skillshare/<cmd>.go
-   ```
+1. Read the Go source to extract actual flags and behavior. Commands parse arguments by hand, so flags appear as string literals (`"--force"`) in the parse function of `cmd/skillshare/<cmd>.go`; `ss <cmd> --help` inside the devcontainer lists them too.
 
 2. Read the corresponding doc page:
    ```
-   website/docs/commands/<cmd>.md
+   website/docs/reference/commands/<cmd>.md
    ```
 
 3. Compare and fix:
    - **New flags** in code → add to docs with usage example
    - **Removed flags** from code → remove from docs
    - **Changed behavior** → update description
-   - **Every `--flag` in docs** must have a matching `grep` hit in source
+   - **Every `--flag` in docs** must appear as a string literal in the command's source
 
 ### Step 3: Update Documentation
 
@@ -109,7 +108,7 @@ Review `README.md` for sections that may need updates:
 ### Step 6: Build Verification
 
 ```bash
-cd website && npm run build
+docker exec "$CONTAINER" bash -c 'cd /workspace/website && pnpm run build'
 ```
 
 Confirm no broken links or build errors.
@@ -121,7 +120,7 @@ List all changes made with rationale:
 == Documentation Updates ==
 
 Modified:
-  website/docs/commands/install.md
+  website/docs/reference/commands/install.md
     - Added --into flag documentation
     - Updated install examples
 
@@ -133,9 +132,4 @@ Build: PASS (no broken links)
 
 ## Rules
 
-- **Source of truth is code** — docs must match what the code actually does
-- **Every flag claim must be verified** — grep source before writing docs
-- **No speculative docs** — never document planned but unimplemented features
-- **No code changes** — this skill only touches `website/docs/`, `skills/skillshare/SKILL.md`, and `README.md`
-- **Preserve style** — match existing doc page structure and tone
-- **Built-in skill desc limit** — must stay under 1024 characters
+Apply the `documentation` topic. Keep this adapter scoped to documentation; use the implementation or release workflows for other changes.

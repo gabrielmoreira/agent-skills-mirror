@@ -1,7 +1,7 @@
 # RFC: Live Team Workspace v0
 
 - **RFC status:** Draft; proposed product and presentation decisions.
-- **Delivery maturity:** Partial implementation: bounded team inspection is shipped; the readable result/comparison slice is proposed in [#4828](https://github.com/loopx-project/loopx/pull/4828). Spatial streaming remains a design, not production qualification.
+- **Delivery maturity:** Partial implementation: bounded team inspection and the Goal Chat readable result/comparison slice in merged [#4828](https://github.com/loopx-project/loopx/pull/4828) are shipped. Managed non-Chat result readback and spatial streaming remain unqualified.
 - **Owners:** existing workspace presentation, collaboration and runtime owners.
 - **Created / normative revision:** 2026-09-20.
 - **Implementation baseline:** `e7ef75c08`.
@@ -326,7 +326,61 @@ Markdown. Desktop uses a compact member rail beside the report; narrow screens
 stack the reader below it. Explicit artifact choices survive delivery refresh and
 are revalidated by operation, reference and hash; automatic reads do not take
 keyboard focus. Acceptance and requester adoption remain separate in details.
+When the first inventory page has no accepted artifact, the reader inspects up to
+three live pages before asking the user to continue; manual inspection stops at
+ten pages. Unreadable records and unseen pages remain visible limitations, and
+repeated cursors clear the prior report rather than implying a complete scan.
 This qualifies report readback, not mixed-team launch or stop/recovery.
+The ordinary managed Goal Files view admits only a projected deliverable, such
+as a published report. Latest-run metadata, validation summaries and event
+counts remain execution observations; they cannot become a file or inherit an
+unrelated open Todo ID. A readable managed result still needs a versioned,
+public-safe artifact projection with its own source and acceptance readback.
+For Goal Chat, Files now opens the same session-scoped accepted team report
+reader as the original conversation; source hash and current acceptance are
+rechecked, and failed mode/readback clears the prior report. This does not
+turn managed non-Chat run observations into deliverables.
+
+**Managed runs need a separate result readback.** The original Goal Chat report
+reader is requester-scoped to a delegation operation. A managed non-Chat Turn
+has no such conversation, and a run-history entry or completed Todo alone does
+not identify a readable, currently accepted deliverable. The managed result
+slot in Goal Files must remain empty for a Todo without a verified output;
+it must not turn a run observation into a file or attach an unrelated open
+Todo to it.
+
+The managed result slice captures a bounded, public-safe result reference
+at the managed Todo completion and acceptance boundary: Goal, accountable
+producer, exact output reference and digest, current acceptance identity, and
+the requester/audience allowed to read it. A read-only Goal result projection
+should expose that reference to both CLI and the packaged workspace, then
+revalidate the output and acceptance on read. The presenter may show a readable
+report and its source/acceptance trail only after that readback succeeds. A
+missing source, changed digest, revoked acceptance, unreadable page or failed
+provider read must clear the earlier report and show the specific unverified
+scope. The reader must not infer a report from filesystem discovery, completion
+text, run history or a Chat session belonging to another requester. Reuse the
+existing authority and artifact-read boundaries; do not create a second result
+writer or broaden Goal access as a side effect of presentation.
+
+[PR #4978](https://github.com/loopx-project/loopx/pull/4978) proposes that first
+local producer and reader. `todo complete --result-file` binds declared output
+bytes and their digest to the canonical completion/acceptance receipt under the
+existing Goal/Todo writer; `todo result-read` verifies the current acceptance
+basis and exact bytes. A loopback-only Goal-scoped API revalidates each requested
+page and exact read, and the packaged Goal Files view opens a readable report.
+Missing, changed or stale output is withheld and clears an earlier displayed
+body. Completion without a declared, currently verified output creates no
+result row. This proposal does not grant a remote audience or create a second
+writer.
+
+Local File/SQLite producer and CLI readback, packaged desktop/mobile Files
+readback, stale/rejected output and bounded pagination have focused validation
+on the proposed head. Maintainer review and exact-head CI remain open. The
+original requester conversation still lacks a return route for managed runs;
+that route needs its own audience identity, restart and unauthorized-read
+qualification. Neither this local Files reader nor acceptance of one Todo
+proves requester adoption, mixed-team launch or whole-team stop/recovery.
 Merged [#4814](https://github.com/loopx-project/loopx/pull/4814) adds confirmation
 of one canonical team plan from manager and Goal Lark cards. Authenticated card
 bindings and the shared decision owner prevent a second click from creating a
@@ -334,6 +388,17 @@ second assignment. This strengthens the optional request/intervention entry;
 real dual-card click-through remains post-install acceptance. It does not prove
 execution, result return or whole-team stopping.
 `consume_return` alone still means consumption, not version-bound adoption.
+Implementation checkpoint (2026-09-24): an on-demand correction path can
+cross-check the original, review response, revised output and downstream
+adoption against current version-bound delegation reads. It exposes actor
+identities and opens each accepted artifact; an unavailable adoption or rejected
+review clears the previously verified path. This is a presentation and
+readback slice, not L1 completion: the relation `responds_to` does not certify
+that the response is an objection, and current acceptance lacks an explicit
+verifier identity in this read model. The packaged browser scenario is
+synthetic; the existing real correction run must still be exercised through
+the packaged UI and independently read back, with the missing and lost-observation
+cases in Section 9.
 Motion is retained
 only when it clarifies these transitions;
 remove effects that obscure absent execution, absent acceptance or source loss.

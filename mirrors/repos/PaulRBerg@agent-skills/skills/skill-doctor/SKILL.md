@@ -1,6 +1,6 @@
 ---
-argument-hint: "[--root PATH ...] [--format text|json] [--fix-safe] [--dependencies-only]"
-compatibility: Requires ai-skillet 0.1.0+.
+argument-hint: "[--root PATH ...] [--skill NAME ...] [--format text|json] [--fix-safe] [--dependencies-only]"
+compatibility: Requires ai-skillet 1.0.0+.
 name: skill-doctor
 description:
   "Use to audit Agent Skills catalogs or installed skill roots for metadata and doc-link issues; optionally apply
@@ -15,6 +15,7 @@ skill roots, then apply only narrow metadata repairs when requested.
 ## Arguments
 
 - `--root PATH`: Scan this catalog or installed skill root. Repeatable. Default: current working directory.
+- `--skill NAME`: Restrict diagnostics and fixes to this skill directory name. Repeatable.
 - `--format text|json`: Select report format. Default: `text`.
 - `--fix-safe`: Create missing `agents/openai.yaml` files or update mismatched `policy.allow_implicit_invocation`.
 - `--dependencies-only`: Report only malformed or unresolved `skill-dependencies` declarations. Do not combine with
@@ -22,7 +23,7 @@ skill roots, then apply only narrow metadata repairs when requested.
 
 ## Workflow
 
-1. Require `ai-skillet` 0.1.0 or newer on `PATH`, then run:
+1. Require `ai-skillet` 1.0.0 or newer on `PATH`, then run:
 
    ```sh
    ai-skillet doctor

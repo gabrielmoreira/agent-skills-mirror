@@ -4,7 +4,7 @@
 
 Stage A 已在 [#4094](https://github.com/huangruiteng/loopx/pull/4094) 以 `2ebd921ee989f7c696a7214ba1176d3bd5de6fb3` 合并。历史文件名不表示通用 memory substrate 已交付。[强能力管家与语义交接 RFC](capable-manager-semantic-handoff-v0.zh-CN.md#513-整合已交付的显式接续4094) 将本实现纳入 M2/M3 重构范围。后继方案仍是提案；替代路径验收前，本文继续作为已交付 CLI 兼容性及权威边界参考。
 
-复用 rich/legacy context、既有 note validator 与 claim transfer 边界。接收方接受建议不同于 `handoff adopt` 修改所有权。Stage A note 是可覆盖的当前 Todo 状态，不是私有不可变历史。后继方案将有权限的上下文映射为可恢复 brief，引用当前工作，补齐通用 assessment/result/自动回传关系，不新增 memory ledger 或复制 claim authority。迁移期间 CLI `prepare/inspect/adopt` 保持可用；前端/飞书及自动宿主续接单独验收。同机、注册 Agent、无 lease 限制继续适用于此 adapter，不约束所有通用请求。映射、迁移条件和保留负例见后继 §5.13。
+复用 rich/legacy context、既有 note validator 与 claim transfer 边界。接收方接受建议不同于 `handoff adopt` 修改所有权。Stage A note 是可覆盖的当前 Todo 状态，不是私有不可变历史。后继方案将有权限的上下文映射为可恢复 brief，引用当前工作，补齐通用 assessment/result/自动回传关系，不新增 memory ledger 或复制 claim authority。迁移期间 CLI `prepare/inspect/adopt` 保持可用；前端/飞书及自动宿主续接单独验收。同机、注册 Agent 限制继续适用于此 adapter，不约束所有通用请求；带租约工作使用下述显式转移路径。映射、迁移条件和保留负例见后继 §5.13。
 
 后继 [§5.7](capable-manager-semantic-handoff-v0.zh-CN.md#57-会话与产品连续性) 明确区分原会话恢复、同 Agent 换 session、跨 Agent 接管，只有后者可能需要本 adapter 的所有权变更。自动 brief 捕获、来源消失恢复、执行 session fencing、回原入口报结论是明确的后续集成工作；可选 Obelisk recall 只补缺失历史证据，不替代 transfer grant。
 
@@ -27,17 +27,17 @@ inspect、验证并 adopt Todo。不实现自动上下文捕获、agent 无关�
 ## 实现分工
 
 当前状态、稳定 Todo ID、revision 和 claim/lease 仍归现有 Todo coordination
-边界所有；持久化复用内置 `file_v0` authority。CLI 只做宿主适配，状态规则由
+边界所有；持久化复用选定的 canonical File/SQLite authority。CLI 只做宿主适配，状态规则由
 TypeScript 执行。不新增 capability、数据库、memory store、索引、发现、恢复
 服务或所有权协议。历史检索与长期记忆复用可选 `decision_context` /
 `agent_turn_recall` provider；本流程不调用它们，也不依赖它们可用。
 
 ## 可运行入口和范围
 
-需要已显式提升为本地 file authority 的 goal，以及由注册 agent 持有的
-open、active、无 lease Todo。现有说明写入不能证明 lease 执行实例权限，
-所以阶段 A 明确拒绝 hard-lease goal 和带 lease 的 Todo；不会隐式提升、
-切换模式、释放别人的任务或回退读取 Markdown。
+需要已显式晋升的 canonical authority，以及注册 Agent 持有的 open、active Todo。
+无租约接力继续复用原 claim 事务。带租约工作必须提供当前执行 key/version，
+所有权通过既有 `task-lease transfer --transfer-claim` 原子转移；本入口不晋升
+Goal、不改 handoff mode、不回退到 Markdown。
 
 用户在同一宿主上显式 handoff 给另一个注册 agent。源会话将 revision 保护的
 接续说明（传统 rationale 或 rich context）写入现有 Todo note；目标会话读取
@@ -144,7 +144,7 @@ Todo 投影的可见边界，没有独立 memory ACL；不得写入凭据或原�
 
 薄测试使用隔离真实 file authority，分别运行源、目标 Python CLI 进程，覆盖
 正常重启、丢失确认、写入失败、artifact 缺失、revision 改变、他人接管、已完成、
-rich context 及传统向后兼容等场景。既有 claim/update 回归覆盖默认行为与 lease 拒绝。
+rich context 及传统向后兼容等场景。既有 claim/update 回归覆盖默认行为与缺失、过期、错误执行证明的拒绝。
 
 ```sh
 node --experimental-strip-types --test tests/control_plane_ts/todo_continuation.test.ts
@@ -157,5 +157,25 @@ node --experimental-strip-types --test tests/control_plane_ts/todo_continuation.
 缺少 typed invariant 而被拒绝。
 
 跨 agent transfer 已通过 typed transfer grant 在本交付中实现，由 handoff 流程
-（prepare/inspect/adopt）独占发起，普通 claim 无法构造该 grant。lease-bearing
-Todo 的 transfer 留待现有所有权边界支持后再扩展，不在本次交付中另造协议。
+（prepare/inspect/adopt）独占发起，普通 claim 无法构造该 grant。带租约 Todo 的转移由既有 task-lease lifecycle 所有，adopt 不复制这份权限。
+
+
+## 带租约的接力与显示恢复
+
+完整可运行命令见[英文镜像的租约流程](cross-session-memory-substrate-v0.md#leased-execution-continuation)。
+源 Agent 先凭当前 `--task-lease-idempotency-key` / `--task-lease-expected-version`
+和 provider revision 准备上下文，再执行 `task-lease transfer --transfer-claim`。
+接收 Agent 用新 key/version inspect，取回当前 revision 后 adopt。版本号必须来自实际读回。
+
+- inspect 无执行证明也能读取上下文，但带租约工作不会得到 `can_adopt=true`。
+- 原子 transfer 只延续转移前仍有效的 note，并在同一 CAS 内重绑定 owner 摘要。
+  已过时的 note、变化的任务要求不会被重新认证；普通 metadata 写入不能重绑定。
+- 带租约 adopt 记录绑定 Agent、session、note、revision 和执行证明的 receipt，
+  不申请、续期或转移租约。返回 `adoption.changed=false`；无租约路径保留 `claim`。
+  当前权限必须重新读回，历史回执不能越过过期/释放的租约、换主、任务变化或验收 hold。
+- prepare/adopt 将当前 canonical Todo 投递至既有 Markdown 投影。显示失败保留
+  已提交结果，返回 `projection_delivery=pending`、`retry_business_mutation=false`。
+  修复本地显示输入后可重试同一操作，或运行 `todo project-markdown`；inspect 不写投影。
+
+session ID 仍是来源说明，不是宿主认证或外部工具授权。这是显式 CLI 接力，
+没有新增前端/飞书入口、自动启动目标会话或自动 manager/worker 派工能力。

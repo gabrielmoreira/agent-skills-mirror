@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `unclecatvn/agent-skills` — 26 default patterns, 0 followed patterns, 114 file(s) materialized.
+Mirror of `unclecatvn/agent-skills` — 26 default patterns, 0 followed patterns, 116 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `unclecatvn/agent-skills` — 26 default patterns, 0 followed patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 114 |
+| Files         | 116 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -170,9 +170,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 109 | ✓ | [`skills/odoo-19.0/references/odoo-19-view-guide.md`](skills/odoo-19.0/references/odoo-19-view-guide.md) |
 | 110 | ✓ | [`skills/odoo-19.0/SKILL.md`](skills/odoo-19.0/SKILL.md) |
 | 111 | ✓ | [`skills/odoo-commit/SKILL.md`](skills/odoo-commit/SKILL.md) |
-| 112 | ✓ | [`skills/odoo-workflow/SKILL.md`](skills/odoo-workflow/SKILL.md) |
-| 113 | ✓ | [`skills/odoo-workflow/templates/CLAUDE.md`](skills/odoo-workflow/templates/CLAUDE.md) |
-| 114 | ✓ | [`skills/slide/SKILL.md`](skills/slide/SKILL.md) |
+| 112 | ✓ | [`skills/odoo-workflow/references/definition-of-done.md`](skills/odoo-workflow/references/definition-of-done.md) |
+| 113 | ✓ | [`skills/odoo-workflow/scripts/odoo_trace.py`](skills/odoo-workflow/scripts/odoo_trace.py) |
+| 114 | ✓ | [`skills/odoo-workflow/SKILL.md`](skills/odoo-workflow/SKILL.md) |
+| 115 | ✓ | [`skills/odoo-workflow/templates/CLAUDE.md`](skills/odoo-workflow/templates/CLAUDE.md) |
+| 116 | ✓ | [`skills/slide/SKILL.md`](skills/slide/SKILL.md) |
 
 ---
 

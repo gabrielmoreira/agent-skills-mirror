@@ -2278,6 +2278,18 @@ attributing one session's spend to another run. A host that measures usage
 itself can instead pass one finished per-run
 measurement with `--usage-json`. Without either flag, usage stays unknown.
 
+The explicitly selected rollout is scanned as UTF-8 JSONL through its opening
+file size, one record at a time. This is a complete accounting scan of that
+extent, not a sampled prefix: later appended usage is observed on the next
+read. Transcript-buffer memory scales with the largest record rather than the
+whole file; the reader also retains aggregate metadata and any trailing model
+contexts needed for legacy binding reconciliation. The final incomplete JSON
+record or incomplete UTF-8 codepoint may be ignored while the writer appends.
+Interior corruption, other invalid UTF-8 and an early EOF before the captured
+extent fail closed. Unicode separators inside JSON strings are content, not
+JSONL record boundaries. No discovery, resume, session import or additional
+usage authority is introduced.
+
 Cumulative host snapshots are converted to non-negative deltas at that
 producer boundary, and the run index append is the single commit point: each
 session's delta basis is reconstructed from its own already-booked rows

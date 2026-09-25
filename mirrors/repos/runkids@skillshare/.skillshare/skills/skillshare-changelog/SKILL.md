@@ -19,6 +19,8 @@ Generate a CHANGELOG.md entry for a release. $ARGUMENTS specifies the tag versio
 
 **Scope**: This skill updates `CHANGELOG.md` and syncs the website changelog (`website/src/pages/changelog.md`). It does NOT generate RELEASE_NOTES, update version numbers, or handle the full release workflow — use `/release` for that.
 
+Before acting, run `python3 scripts/ai-context.py release`. That topic is the source of truth for authorization, changelog content and synchronization rules; this skill retains the entry-generation workflow.
+
 ## Workflow
 
 ### Step 1: Determine Version Range
@@ -135,9 +137,4 @@ The website has its own changelog page at `website/src/pages/changelog.md`. Afte
 
 ## Rules
 
-- **User perspective** — write for users, not developers
-- **No fabricated links** — never invent URLs or references
-- **Verify features exist** — grep source before claiming a feature was added
-- **No internal noise** — exclude test-only, CI-only, or refactor-only changes
-- **Conventional format** — follow existing CHANGELOG.md style exactly
-- **Always sync both** — `CHANGELOG.md` and `website/src/pages/changelog.md` must have identical release entries
+Apply the `release` topic. This adapter is changelog-only and does not broaden authorization to commit, tag, push or publish.

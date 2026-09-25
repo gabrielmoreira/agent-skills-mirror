@@ -62,7 +62,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 1 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
 | 2 | ✓ | [`.github/skills/api-client/SKILL.md`](.github/skills/api-client/SKILL.md) |
 | 3 | ✓ | [`.github/skills/compiler-and-fourslash-tests/SKILL.md`](.github/skills/compiler-and-fourslash-tests/SKILL.md) |
-| 4 | ✓ | [`.github/skills/restack/SKILL.md`](.github/skills/restack/SKILL.md) |
+| 4 | ✓ | [`.github/skills/mcfly/SKILL.md`](.github/skills/mcfly/SKILL.md) |
 | 5 | ✓ | [`.github/skills/security-report-check/SKILL.md`](.github/skills/security-report-check/SKILL.md) |
 
 ---

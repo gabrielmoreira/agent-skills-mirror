@@ -4,7 +4,7 @@
 - **交付成熟度：** Partial，候选实现，尚未推广
 - **维护边界：** quota、scheduler、host runtime
 - **创建 / 规范修订：** 2026-09-23
-- **实现基线：** `23edcb19c`
+- **实现基线：** `79241d7ef`
 - **语言镜像：** 本文与 [English](automatic-execution-admission-v0.md) 互为语义镜像。
 - **相关契约：** [路线图](loopx-overall-roadmap-v0.zh-CN.md)、[quota](../../quota-allocation.md)、[节奏提示](../../operations/long-task-cadence-policy.md)、[执行模式](agent-session-execution-modes-v0.md)
 
@@ -16,8 +16,10 @@
 scheduler 退避消费这一约束，不能改写它。配额槽、定时器唤醒和模型调用是三个事件。
 目标设计要求受控执行器启动每次新的 host 调用前，同时满足时间准入、预算、权限、绑定和工作门禁。
 
-未配置时保持原行为。M1 优先修改 Codex App 的调度建议、重置与退避，不宣称已经强制执行启动准入。
-M2 再要求每次新 host 调用、重试与续跑重新准入；缓存结果和结算不重新消耗准入。本 RFC 不授权修改现有自动化、模型选择、配额分配、远程服务或公开发布。
+未配置时保持原行为。M1 修改 Codex App 的调度建议、重置与退避。M2 为 managed
+`turn run-once` 增加 host 启动前准入；App 定时器和其他 launcher 仍需单独验收。
+每次新的 managed host 调用及失败结果重试重新准入；缓存结果和结算不重复消耗准入。
+本 RFC 不授权修改现有自动化、模型选择、配额分配、远程服务或公开发布。
 
 ## 2. 问题与不变量
 
@@ -76,7 +78,7 @@ App、Turn、前端、Lark 不得另存一套策略。共享 authority provider 
 
 | 入口 | 必须履行的契约 | 本阶段边界 |
 | --- | --- | --- |
-| Managed `turn run-once` | 每次新 host 尝试前原子准入 | M2 计划，含错误结果后的恢复 |
+| Managed `turn run-once` | 每次新 host 尝试及失败重试前原子准入 | M2 候选；已做隔离 CLI、并发与跨边界崩溃恢复测试，未推广外部宿主 |
 | 旧 local scheduler / 外部 launcher | 经受控 Turn 启动，或调用相同准入 owner | 尚未验收，不宣传为已强制执行 |
 | Codex App automation | 应用满足下限的定时器，回读真实值，事实匹配后 ACK | M1 调度建议下限；hook 覆盖范围未验收 |
 | 附着式交互 / 手动会话 | 显式手动意图；其余门禁保留 | 记录原因；自动续跑不能冒充手动 |
@@ -155,8 +157,29 @@ M1 对 App 调度管理有独立价值，但不代表多宿主产品旅程完成
 
 ## 附录：实现记录
 
-`23edcb19c` 基线没有持久用户最短间隔。M1 是未合并候选；M2/M3/M4 与真实 App 验收尚未完成。
-测试和 PR 必须区分确定性验证与宿主推广。本提案不激活、不改绑任何已有自动化。
+`23edcb19c` 基线没有持久用户最短间隔。M1 已由
+[#4921](https://github.com/loopx-project/loopx/pull/4921) 合入，受管 Turn 准入已由
+[#4929](https://github.com/loopx-project/loopx/pull/4929) 合入。M2 候选在
+同一 quota 策略文件与锁中预留 managed Turn 的启动位，再调用 host。拒绝时返回下次
+可执行时间，不调用 host、不写回、不花 quota；失败的 host 消耗已预留间隔，结算回放
+跳过准入。Goal 下限按 agent 生效；automation 下限要求显式稳定的 `--automation-id`。
+手动启动要求 `--manual-interval-bypass-reason`，记录这次启动，只绕过时间下限。
+本地 CLI 仍以相同 OS 用户为信任边界。
+
+managed 启动在同一 store 内分两步：准入预留间隔位，Turn executor 只在该 host 尝试
+已写入 Turn journal 之后确认该预留。两步之间进程退出时，同一 Turn 身份在满足时间
+下限后仍可恢复，因此"已预留但未启动"不会永久卡住 Turn；已确认的启动对同一身份保持
+fail-closed，显式手动理由也无法绕过。缺少阶段字段的旧记录按"已尝试启动"读取，
+旧版或手工改写的文件因此 fail-closed，而不是被当作可恢复预留。
+
+M3 设置页阶段成果复用 quota 权威，提供 Goal／Agent／Automation 作用域的修订号锁定
+预览、应用与读回，并把过期的配置意图作为 typed conflict 报出，而不是解析错误文案。
+它不修改已有 Codex App 定时器；下次可运行时间及 Lark／CLI 等待反馈一致性仍未完成。
+App 定时器到 hook、非 Turn launcher 及真实模型宿主推广仍未验收，M4 仍是设计选项。
+本提案不激活、不改绑任何已有自动化；测试和 PR 必须区分确定性验证与宿主推广。
+
+M1 的 v1 策略文件在首次配置写入或获准启动时原地升级为 v2，文件路径保持不变。
+旧版程序会拒绝 v2 schema，避免静默丢弃启动记录；降级前必须暂停 launcher。
 
 ### Hook 调研 — 2026-09-23
 

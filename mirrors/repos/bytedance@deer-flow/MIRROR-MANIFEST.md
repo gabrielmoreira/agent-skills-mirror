@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `bytedance/deer-flow` — 26 default patterns, 30 followed patterns, 194 file(s) materialized.
+Mirror of `bytedance/deer-flow` — 26 default patterns, 31 followed patterns, 197 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `bytedance/deer-flow` — 26 default patterns, 30 followed patterns, 1
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 30 |
-| Files         | 194 |
+| Followed pats | 31 |
+| Files         | 197 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -73,6 +73,7 @@ Mirror of `bytedance/deer-flow` — 26 default patterns, 30 followed patterns, 1
 - `docs/full-stack-plugins.md`
 - `examples/deerflow-extension-bookmarks/README.md`
 - `backend/scripts/benchmark/context_snapshot/README.md`
+- `backend/docs/FILE_UPLOAD.md`
 - `docs/plans/2026-08-24-subagent-batch-capacity-implementation.md`
 - `backend/scripts/benchmark/deermem_scope_isolation/README.md`
 - `docs/OPENVIKING.md`
@@ -142,146 +143,149 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 52 | ✓ | [`docs/plans/2026-07-10-pluggable-authorization-implementation-notes.md`](docs/plans/2026-07-10-pluggable-authorization-implementation-notes.md) |
 | 53 | ✓ | [`examples/deerflow-extension-bookmarks/THIRD_PARTY_NOTICES.md`](examples/deerflow-extension-bookmarks/THIRD_PARTY_NOTICES.md) |
 | 54 | ✓ | [`examples/deerflow-extension-example/README.md`](examples/deerflow-extension-example/README.md) |
-| 55 | ✓ | [`frontend/AGENTS.md`](frontend/AGENTS.md) |
-| 56 | ✓ | [`frontend/CLAUDE.md`](frontend/CLAUDE.md) |
-| 57 | ✓ | [`frontend/public/images/plugins/README.md`](frontend/public/images/plugins/README.md) |
-| 58 | ✓ | [`frontend/README.md`](frontend/README.md) |
-| 59 | ✓ | [`frontend/src/AGENTS.md`](frontend/src/AGENTS.md) |
-| 60 | ✓ | [`scripts/AGENTS.md`](scripts/AGENTS.md) |
-| 61 | ✓ | [`skills/public/academic-paper-review/SKILL.md`](skills/public/academic-paper-review/SKILL.md) |
-| 62 | ✓ | [`skills/public/bootstrap/references/conversation-guide.md`](skills/public/bootstrap/references/conversation-guide.md) |
-| 63 | ✓ | [`skills/public/bootstrap/SKILL.md`](skills/public/bootstrap/SKILL.md) |
-| 64 | ✓ | [`skills/public/bootstrap/templates/SOUL.template.md`](skills/public/bootstrap/templates/SOUL.template.md) |
-| 65 | ✓ | [`skills/public/chart-visualization/references/generate_area_chart.md`](skills/public/chart-visualization/references/generate_area_chart.md) |
-| 66 | ✓ | [`skills/public/chart-visualization/references/generate_bar_chart.md`](skills/public/chart-visualization/references/generate_bar_chart.md) |
-| 67 | ✓ | [`skills/public/chart-visualization/references/generate_boxplot_chart.md`](skills/public/chart-visualization/references/generate_boxplot_chart.md) |
-| 68 | ✓ | [`skills/public/chart-visualization/references/generate_column_chart.md`](skills/public/chart-visualization/references/generate_column_chart.md) |
-| 69 | ✓ | [`skills/public/chart-visualization/references/generate_district_map.md`](skills/public/chart-visualization/references/generate_district_map.md) |
-| 70 | ✓ | [`skills/public/chart-visualization/references/generate_dual_axes_chart.md`](skills/public/chart-visualization/references/generate_dual_axes_chart.md) |
-| 71 | ✓ | [`skills/public/chart-visualization/references/generate_fishbone_diagram.md`](skills/public/chart-visualization/references/generate_fishbone_diagram.md) |
-| 72 | ✓ | [`skills/public/chart-visualization/references/generate_flow_diagram.md`](skills/public/chart-visualization/references/generate_flow_diagram.md) |
-| 73 | ✓ | [`skills/public/chart-visualization/references/generate_funnel_chart.md`](skills/public/chart-visualization/references/generate_funnel_chart.md) |
-| 74 | ✓ | [`skills/public/chart-visualization/references/generate_histogram_chart.md`](skills/public/chart-visualization/references/generate_histogram_chart.md) |
-| 75 | ✓ | [`skills/public/chart-visualization/references/generate_line_chart.md`](skills/public/chart-visualization/references/generate_line_chart.md) |
-| 76 | ✓ | [`skills/public/chart-visualization/references/generate_liquid_chart.md`](skills/public/chart-visualization/references/generate_liquid_chart.md) |
-| 77 | ✓ | [`skills/public/chart-visualization/references/generate_mind_map.md`](skills/public/chart-visualization/references/generate_mind_map.md) |
-| 78 | ✓ | [`skills/public/chart-visualization/references/generate_network_graph.md`](skills/public/chart-visualization/references/generate_network_graph.md) |
-| 79 | ✓ | [`skills/public/chart-visualization/references/generate_organization_chart.md`](skills/public/chart-visualization/references/generate_organization_chart.md) |
-| 80 | ✓ | [`skills/public/chart-visualization/references/generate_path_map.md`](skills/public/chart-visualization/references/generate_path_map.md) |
-| 81 | ✓ | [`skills/public/chart-visualization/references/generate_pie_chart.md`](skills/public/chart-visualization/references/generate_pie_chart.md) |
-| 82 | ✓ | [`skills/public/chart-visualization/references/generate_pin_map.md`](skills/public/chart-visualization/references/generate_pin_map.md) |
-| 83 | ✓ | [`skills/public/chart-visualization/references/generate_radar_chart.md`](skills/public/chart-visualization/references/generate_radar_chart.md) |
-| 84 | ✓ | [`skills/public/chart-visualization/references/generate_sankey_chart.md`](skills/public/chart-visualization/references/generate_sankey_chart.md) |
-| 85 | ✓ | [`skills/public/chart-visualization/references/generate_scatter_chart.md`](skills/public/chart-visualization/references/generate_scatter_chart.md) |
-| 86 | ✓ | [`skills/public/chart-visualization/references/generate_spreadsheet.md`](skills/public/chart-visualization/references/generate_spreadsheet.md) |
-| 87 | ✓ | [`skills/public/chart-visualization/references/generate_treemap_chart.md`](skills/public/chart-visualization/references/generate_treemap_chart.md) |
-| 88 | ✓ | [`skills/public/chart-visualization/references/generate_venn_chart.md`](skills/public/chart-visualization/references/generate_venn_chart.md) |
-| 89 | ✓ | [`skills/public/chart-visualization/references/generate_violin_chart.md`](skills/public/chart-visualization/references/generate_violin_chart.md) |
-| 90 | ✓ | [`skills/public/chart-visualization/references/generate_word_cloud_chart.md`](skills/public/chart-visualization/references/generate_word_cloud_chart.md) |
-| 91 | ✓ | [`skills/public/chart-visualization/scripts/generate.js`](skills/public/chart-visualization/scripts/generate.js) |
-| 92 | ✓ | [`skills/public/chart-visualization/SKILL.md`](skills/public/chart-visualization/SKILL.md) |
-| 93 | ✓ | [`skills/public/claude-to-deerflow/scripts/chat.sh`](skills/public/claude-to-deerflow/scripts/chat.sh) |
-| 94 | ✓ | [`skills/public/claude-to-deerflow/scripts/status.sh`](skills/public/claude-to-deerflow/scripts/status.sh) |
-| 95 | ✓ | [`skills/public/claude-to-deerflow/SKILL.md`](skills/public/claude-to-deerflow/SKILL.md) |
-| 96 | ✓ | [`skills/public/code-documentation/SKILL.md`](skills/public/code-documentation/SKILL.md) |
-| 97 | ✓ | [`skills/public/consulting-analysis/SKILL.md`](skills/public/consulting-analysis/SKILL.md) |
-| 98 | ✓ | [`skills/public/data-analysis/scripts/analyze.py`](skills/public/data-analysis/scripts/analyze.py) |
-| 99 | ✓ | [`skills/public/data-analysis/SKILL.md`](skills/public/data-analysis/SKILL.md) |
-| 100 | ✓ | [`skills/public/deep-research/SKILL.md`](skills/public/deep-research/SKILL.md) |
-| 101 | ✓ | [`skills/public/find-skills/scripts/install-skill.sh`](skills/public/find-skills/scripts/install-skill.sh) |
-| 102 | ✓ | [`skills/public/find-skills/SKILL.md`](skills/public/find-skills/SKILL.md) |
-| 103 | ✓ | [`skills/public/frontend-design/LICENSE.txt`](skills/public/frontend-design/LICENSE.txt) |
-| 104 | ✓ | [`skills/public/frontend-design/SKILL.md`](skills/public/frontend-design/SKILL.md) |
-| 105 | ✓ | [`skills/public/github-deep-research/assets/report_template.md`](skills/public/github-deep-research/assets/report_template.md) |
-| 106 | ✓ | [`skills/public/github-deep-research/scripts/github_api.py`](skills/public/github-deep-research/scripts/github_api.py) |
-| 107 | ✓ | [`skills/public/github-deep-research/SKILL.md`](skills/public/github-deep-research/SKILL.md) |
-| 108 | ✓ | [`skills/public/image-generation/scripts/generate.py`](skills/public/image-generation/scripts/generate.py) |
-| 109 | ✓ | [`skills/public/image-generation/SKILL.md`](skills/public/image-generation/SKILL.md) |
-| 110 | ✓ | [`skills/public/image-generation/templates/doraemon.md`](skills/public/image-generation/templates/doraemon.md) |
-| 111 | ✓ | [`skills/public/music-generation/scripts/generate.py`](skills/public/music-generation/scripts/generate.py) |
-| 112 | ✓ | [`skills/public/music-generation/SKILL.md`](skills/public/music-generation/SKILL.md) |
-| 113 | ✓ | [`skills/public/newsletter-generation/SKILL.md`](skills/public/newsletter-generation/SKILL.md) |
-| 114 | ✓ | [`skills/public/podcast-generation/scripts/generate.py`](skills/public/podcast-generation/scripts/generate.py) |
-| 115 | ✓ | [`skills/public/podcast-generation/SKILL.md`](skills/public/podcast-generation/SKILL.md) |
-| 116 | ✓ | [`skills/public/podcast-generation/templates/tech-explainer.md`](skills/public/podcast-generation/templates/tech-explainer.md) |
-| 117 | ✓ | [`skills/public/ppt-generation/scripts/generate.py`](skills/public/ppt-generation/scripts/generate.py) |
-| 118 | ✓ | [`skills/public/ppt-generation/SKILL.md`](skills/public/ppt-generation/SKILL.md) |
-| 119 | ✓ | [`skills/public/skill-creator/agents/analyzer.md`](skills/public/skill-creator/agents/analyzer.md) |
-| 120 | ✓ | [`skills/public/skill-creator/agents/comparator.md`](skills/public/skill-creator/agents/comparator.md) |
-| 121 | ✓ | [`skills/public/skill-creator/agents/grader.md`](skills/public/skill-creator/agents/grader.md) |
-| 122 | ✓ | [`skills/public/skill-creator/assets/eval_review.html`](skills/public/skill-creator/assets/eval_review.html) |
-| 123 | ✓ | [`skills/public/skill-creator/eval-viewer/generate_review.py`](skills/public/skill-creator/eval-viewer/generate_review.py) |
-| 124 | ✓ | [`skills/public/skill-creator/eval-viewer/viewer.html`](skills/public/skill-creator/eval-viewer/viewer.html) |
-| 125 | ✓ | [`skills/public/skill-creator/LICENSE.txt`](skills/public/skill-creator/LICENSE.txt) |
-| 126 | ✓ | [`skills/public/skill-creator/references/output-patterns.md`](skills/public/skill-creator/references/output-patterns.md) |
-| 127 | ✓ | [`skills/public/skill-creator/references/schemas.md`](skills/public/skill-creator/references/schemas.md) |
-| 128 | ✓ | [`skills/public/skill-creator/references/workflows.md`](skills/public/skill-creator/references/workflows.md) |
-| 129 | ✓ | [`skills/public/skill-creator/scripts/aggregate_benchmark.py`](skills/public/skill-creator/scripts/aggregate_benchmark.py) |
-| 130 | ✓ | [`skills/public/skill-creator/scripts/generate_report.py`](skills/public/skill-creator/scripts/generate_report.py) |
-| 131 | ✓ | [`skills/public/skill-creator/scripts/improve_description.py`](skills/public/skill-creator/scripts/improve_description.py) |
-| 132 | ✓ | [`skills/public/skill-creator/scripts/init_skill.py`](skills/public/skill-creator/scripts/init_skill.py) |
-| 133 | ✓ | [`skills/public/skill-creator/scripts/package_skill.py`](skills/public/skill-creator/scripts/package_skill.py) |
-| 134 | ✓ | [`skills/public/skill-creator/scripts/quick_validate.py`](skills/public/skill-creator/scripts/quick_validate.py) |
-| 135 | ✓ | [`skills/public/skill-creator/scripts/run_eval.py`](skills/public/skill-creator/scripts/run_eval.py) |
-| 136 | ✓ | [`skills/public/skill-creator/scripts/run_loop.py`](skills/public/skill-creator/scripts/run_loop.py) |
-| 137 | ✓ | [`skills/public/skill-creator/scripts/utils.py`](skills/public/skill-creator/scripts/utils.py) |
-| 138 | ✓ | [`skills/public/skill-creator/SKILL.md`](skills/public/skill-creator/SKILL.md) |
-| 139 | ✓ | [`skills/public/skill-reviewer/evals/evals.json`](skills/public/skill-reviewer/evals/evals.json) |
-| 140 | ✓ | [`skills/public/skill-reviewer/evals/fixtures/blocked/SKILL.md`](skills/public/skill-reviewer/evals/fixtures/blocked/SKILL.md) |
-| 141 | ✓ | [`skills/public/skill-reviewer/evals/fixtures/needs-revision/SKILL.md`](skills/public/skill-reviewer/evals/fixtures/needs-revision/SKILL.md) |
-| 142 | ✓ | [`skills/public/skill-reviewer/evals/fixtures/partial-package/SKILL.md`](skills/public/skill-reviewer/evals/fixtures/partial-package/SKILL.md) |
-| 143 | ✓ | [`skills/public/skill-reviewer/evals/fixtures/prompt-injection/SKILL.md`](skills/public/skill-reviewer/evals/fixtures/prompt-injection/SKILL.md) |
-| 144 | ✓ | [`skills/public/skill-reviewer/evals/fixtures/publish-candidate/SKILL.md`](skills/public/skill-reviewer/evals/fixtures/publish-candidate/SKILL.md) |
-| 145 | ✓ | [`skills/public/skill-reviewer/evals/fixtures/zh-output/SKILL.md`](skills/public/skill-reviewer/evals/fixtures/zh-output/SKILL.md) |
-| 146 | ✓ | [`skills/public/skill-reviewer/references/effect-verification.md`](skills/public/skill-reviewer/references/effect-verification.md) |
-| 147 | ✓ | [`skills/public/skill-reviewer/references/eval-design.md`](skills/public/skill-reviewer/references/eval-design.md) |
-| 148 | ✓ | [`skills/public/skill-reviewer/references/report-rendering.md`](skills/public/skill-reviewer/references/report-rendering.md) |
-| 149 | ✓ | [`skills/public/skill-reviewer/references/review-checklist.md`](skills/public/skill-reviewer/references/review-checklist.md) |
-| 150 | ✓ | [`skills/public/skill-reviewer/references/review-rubric.md`](skills/public/skill-reviewer/references/review-rubric.md) |
-| 151 | ✓ | [`skills/public/skill-reviewer/SKILL.md`](skills/public/skill-reviewer/SKILL.md) |
-| 152 | ✓ | [`skills/public/surprise-me/SKILL.md`](skills/public/surprise-me/SKILL.md) |
-| 153 | ✓ | [`skills/public/systematic-literature-review/evals/evals.json`](skills/public/systematic-literature-review/evals/evals.json) |
-| 154 | ✓ | [`skills/public/systematic-literature-review/evals/trigger_eval_set.json`](skills/public/systematic-literature-review/evals/trigger_eval_set.json) |
-| 155 | ✓ | [`skills/public/systematic-literature-review/scripts/arxiv_search.py`](skills/public/systematic-literature-review/scripts/arxiv_search.py) |
-| 156 | ✓ | [`skills/public/systematic-literature-review/SKILL.md`](skills/public/systematic-literature-review/SKILL.md) |
-| 157 | ✓ | [`skills/public/systematic-literature-review/templates/apa.md`](skills/public/systematic-literature-review/templates/apa.md) |
-| 158 | ✓ | [`skills/public/systematic-literature-review/templates/bibtex.md`](skills/public/systematic-literature-review/templates/bibtex.md) |
-| 159 | ✓ | [`skills/public/systematic-literature-review/templates/ieee.md`](skills/public/systematic-literature-review/templates/ieee.md) |
-| 160 | ✓ | [`skills/public/vercel-deploy/scripts/deploy.sh`](skills/public/vercel-deploy/scripts/deploy.sh) |
-| 161 | ✓ | [`skills/public/vercel-deploy/SKILL.md`](skills/public/vercel-deploy/SKILL.md) |
-| 162 | ✓ | [`skills/public/video-generation/scripts/generate.py`](skills/public/video-generation/scripts/generate.py) |
-| 163 | ✓ | [`skills/public/video-generation/SKILL.md`](skills/public/video-generation/SKILL.md) |
-| 164 | ✓ | [`skills/public/web-design-guidelines/SKILL.md`](skills/public/web-design-guidelines/SKILL.md) |
-| 165 | → | [`.github/pull_request_template.md`](.github/pull_request_template.md) |
-| 166 | → | [`backend/docs/CONFIGURATION.md`](backend/docs/CONFIGURATION.md) |
-| 167 | → | [`backend/docs/IM_CHANNEL_CONNECTIONS.md`](backend/docs/IM_CHANNEL_CONNECTIONS.md) |
-| 168 | → | [`backend/docs/MCP_SERVER.md`](backend/docs/MCP_SERVER.md) |
-| 169 | → | [`backend/docs/MEMORY_SETTINGS_REVIEW.md`](backend/docs/MEMORY_SETTINGS_REVIEW.md) |
-| 170 | → | [`backend/docs/TUI.md`](backend/docs/TUI.md) |
-| 171 | → | [`backend/packages/harness/deerflow/agents/memory/backends/honcho/README.md`](backend/packages/harness/deerflow/agents/memory/backends/honcho/README.md) |
-| 172 | → | [`backend/packages/harness/deerflow/agents/memory/backends/mem0/README.md`](backend/packages/harness/deerflow/agents/memory/backends/mem0/README.md) |
-| 173 | → | [`backend/README.md`](backend/README.md) |
-| 174 | → | [`backend/scripts/benchmark/context_snapshot/README.md`](backend/scripts/benchmark/context_snapshot/README.md) |
-| 175 | → | [`backend/scripts/benchmark/deermem_scope_isolation/README.md`](backend/scripts/benchmark/deermem_scope_isolation/README.md) |
-| 176 | → | [`CHANGELOG.md`](CHANGELOG.md) |
-| 177 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 178 | → | [`docker/lark-cli-init/README.md`](docker/lark-cli-init/README.md) |
-| 179 | → | [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) |
-| 180 | → | [`docs/capability-center.md`](docs/capability-center.md) |
-| 181 | → | [`docs/database-forward-revision-recovery.md`](docs/database-forward-revision-recovery.md) |
-| 182 | → | [`docs/full-stack-plugins.md`](docs/full-stack-plugins.md) |
-| 183 | → | [`docs/OPENVIKING.md`](docs/OPENVIKING.md) |
-| 184 | → | [`docs/plans/2026-07-10-pluggable-authorization-rfc.md`](docs/plans/2026-07-10-pluggable-authorization-rfc.md) |
-| 185 | → | [`docs/plans/2026-08-24-subagent-batch-capacity-implementation.md`](docs/plans/2026-08-24-subagent-batch-capacity-implementation.md) |
-| 186 | → | [`examples/deerflow-extension-bookmarks/README.md`](examples/deerflow-extension-bookmarks/README.md) |
-| 187 | → | [`Install.md`](Install.md) |
-| 188 | → | [`README_fr.md`](README_fr.md) |
-| 189 | → | [`README_ja.md`](README_ja.md) |
-| 190 | → | [`README_ru.md`](README_ru.md) |
-| 191 | → | [`README_zh.md`](README_zh.md) |
-| 192 | → | [`README.md`](README.md) |
-| 193 | → | [`RELEASING.md`](RELEASING.md) |
-| 194 | → | [`SECURITY.md`](SECURITY.md) |
+| 55 | ✓ | [`examples/deerflow-extension-jev-classify/README.md`](examples/deerflow-extension-jev-classify/README.md) |
+| 56 | ✓ | [`examples/deerflow-extension-jev-context/README.md`](examples/deerflow-extension-jev-context/README.md) |
+| 57 | ✓ | [`frontend/AGENTS.md`](frontend/AGENTS.md) |
+| 58 | ✓ | [`frontend/CLAUDE.md`](frontend/CLAUDE.md) |
+| 59 | ✓ | [`frontend/public/images/plugins/README.md`](frontend/public/images/plugins/README.md) |
+| 60 | ✓ | [`frontend/README.md`](frontend/README.md) |
+| 61 | ✓ | [`frontend/src/AGENTS.md`](frontend/src/AGENTS.md) |
+| 62 | ✓ | [`scripts/AGENTS.md`](scripts/AGENTS.md) |
+| 63 | ✓ | [`skills/public/academic-paper-review/SKILL.md`](skills/public/academic-paper-review/SKILL.md) |
+| 64 | ✓ | [`skills/public/bootstrap/references/conversation-guide.md`](skills/public/bootstrap/references/conversation-guide.md) |
+| 65 | ✓ | [`skills/public/bootstrap/SKILL.md`](skills/public/bootstrap/SKILL.md) |
+| 66 | ✓ | [`skills/public/bootstrap/templates/SOUL.template.md`](skills/public/bootstrap/templates/SOUL.template.md) |
+| 67 | ✓ | [`skills/public/chart-visualization/references/generate_area_chart.md`](skills/public/chart-visualization/references/generate_area_chart.md) |
+| 68 | ✓ | [`skills/public/chart-visualization/references/generate_bar_chart.md`](skills/public/chart-visualization/references/generate_bar_chart.md) |
+| 69 | ✓ | [`skills/public/chart-visualization/references/generate_boxplot_chart.md`](skills/public/chart-visualization/references/generate_boxplot_chart.md) |
+| 70 | ✓ | [`skills/public/chart-visualization/references/generate_column_chart.md`](skills/public/chart-visualization/references/generate_column_chart.md) |
+| 71 | ✓ | [`skills/public/chart-visualization/references/generate_district_map.md`](skills/public/chart-visualization/references/generate_district_map.md) |
+| 72 | ✓ | [`skills/public/chart-visualization/references/generate_dual_axes_chart.md`](skills/public/chart-visualization/references/generate_dual_axes_chart.md) |
+| 73 | ✓ | [`skills/public/chart-visualization/references/generate_fishbone_diagram.md`](skills/public/chart-visualization/references/generate_fishbone_diagram.md) |
+| 74 | ✓ | [`skills/public/chart-visualization/references/generate_flow_diagram.md`](skills/public/chart-visualization/references/generate_flow_diagram.md) |
+| 75 | ✓ | [`skills/public/chart-visualization/references/generate_funnel_chart.md`](skills/public/chart-visualization/references/generate_funnel_chart.md) |
+| 76 | ✓ | [`skills/public/chart-visualization/references/generate_histogram_chart.md`](skills/public/chart-visualization/references/generate_histogram_chart.md) |
+| 77 | ✓ | [`skills/public/chart-visualization/references/generate_line_chart.md`](skills/public/chart-visualization/references/generate_line_chart.md) |
+| 78 | ✓ | [`skills/public/chart-visualization/references/generate_liquid_chart.md`](skills/public/chart-visualization/references/generate_liquid_chart.md) |
+| 79 | ✓ | [`skills/public/chart-visualization/references/generate_mind_map.md`](skills/public/chart-visualization/references/generate_mind_map.md) |
+| 80 | ✓ | [`skills/public/chart-visualization/references/generate_network_graph.md`](skills/public/chart-visualization/references/generate_network_graph.md) |
+| 81 | ✓ | [`skills/public/chart-visualization/references/generate_organization_chart.md`](skills/public/chart-visualization/references/generate_organization_chart.md) |
+| 82 | ✓ | [`skills/public/chart-visualization/references/generate_path_map.md`](skills/public/chart-visualization/references/generate_path_map.md) |
+| 83 | ✓ | [`skills/public/chart-visualization/references/generate_pie_chart.md`](skills/public/chart-visualization/references/generate_pie_chart.md) |
+| 84 | ✓ | [`skills/public/chart-visualization/references/generate_pin_map.md`](skills/public/chart-visualization/references/generate_pin_map.md) |
+| 85 | ✓ | [`skills/public/chart-visualization/references/generate_radar_chart.md`](skills/public/chart-visualization/references/generate_radar_chart.md) |
+| 86 | ✓ | [`skills/public/chart-visualization/references/generate_sankey_chart.md`](skills/public/chart-visualization/references/generate_sankey_chart.md) |
+| 87 | ✓ | [`skills/public/chart-visualization/references/generate_scatter_chart.md`](skills/public/chart-visualization/references/generate_scatter_chart.md) |
+| 88 | ✓ | [`skills/public/chart-visualization/references/generate_spreadsheet.md`](skills/public/chart-visualization/references/generate_spreadsheet.md) |
+| 89 | ✓ | [`skills/public/chart-visualization/references/generate_treemap_chart.md`](skills/public/chart-visualization/references/generate_treemap_chart.md) |
+| 90 | ✓ | [`skills/public/chart-visualization/references/generate_venn_chart.md`](skills/public/chart-visualization/references/generate_venn_chart.md) |
+| 91 | ✓ | [`skills/public/chart-visualization/references/generate_violin_chart.md`](skills/public/chart-visualization/references/generate_violin_chart.md) |
+| 92 | ✓ | [`skills/public/chart-visualization/references/generate_word_cloud_chart.md`](skills/public/chart-visualization/references/generate_word_cloud_chart.md) |
+| 93 | ✓ | [`skills/public/chart-visualization/scripts/generate.js`](skills/public/chart-visualization/scripts/generate.js) |
+| 94 | ✓ | [`skills/public/chart-visualization/SKILL.md`](skills/public/chart-visualization/SKILL.md) |
+| 95 | ✓ | [`skills/public/claude-to-deerflow/scripts/chat.sh`](skills/public/claude-to-deerflow/scripts/chat.sh) |
+| 96 | ✓ | [`skills/public/claude-to-deerflow/scripts/status.sh`](skills/public/claude-to-deerflow/scripts/status.sh) |
+| 97 | ✓ | [`skills/public/claude-to-deerflow/SKILL.md`](skills/public/claude-to-deerflow/SKILL.md) |
+| 98 | ✓ | [`skills/public/code-documentation/SKILL.md`](skills/public/code-documentation/SKILL.md) |
+| 99 | ✓ | [`skills/public/consulting-analysis/SKILL.md`](skills/public/consulting-analysis/SKILL.md) |
+| 100 | ✓ | [`skills/public/data-analysis/scripts/analyze.py`](skills/public/data-analysis/scripts/analyze.py) |
+| 101 | ✓ | [`skills/public/data-analysis/SKILL.md`](skills/public/data-analysis/SKILL.md) |
+| 102 | ✓ | [`skills/public/deep-research/SKILL.md`](skills/public/deep-research/SKILL.md) |
+| 103 | ✓ | [`skills/public/find-skills/scripts/install-skill.sh`](skills/public/find-skills/scripts/install-skill.sh) |
+| 104 | ✓ | [`skills/public/find-skills/SKILL.md`](skills/public/find-skills/SKILL.md) |
+| 105 | ✓ | [`skills/public/frontend-design/LICENSE.txt`](skills/public/frontend-design/LICENSE.txt) |
+| 106 | ✓ | [`skills/public/frontend-design/SKILL.md`](skills/public/frontend-design/SKILL.md) |
+| 107 | ✓ | [`skills/public/github-deep-research/assets/report_template.md`](skills/public/github-deep-research/assets/report_template.md) |
+| 108 | ✓ | [`skills/public/github-deep-research/scripts/github_api.py`](skills/public/github-deep-research/scripts/github_api.py) |
+| 109 | ✓ | [`skills/public/github-deep-research/SKILL.md`](skills/public/github-deep-research/SKILL.md) |
+| 110 | ✓ | [`skills/public/image-generation/scripts/generate.py`](skills/public/image-generation/scripts/generate.py) |
+| 111 | ✓ | [`skills/public/image-generation/SKILL.md`](skills/public/image-generation/SKILL.md) |
+| 112 | ✓ | [`skills/public/image-generation/templates/doraemon.md`](skills/public/image-generation/templates/doraemon.md) |
+| 113 | ✓ | [`skills/public/music-generation/scripts/generate.py`](skills/public/music-generation/scripts/generate.py) |
+| 114 | ✓ | [`skills/public/music-generation/SKILL.md`](skills/public/music-generation/SKILL.md) |
+| 115 | ✓ | [`skills/public/newsletter-generation/SKILL.md`](skills/public/newsletter-generation/SKILL.md) |
+| 116 | ✓ | [`skills/public/podcast-generation/scripts/generate.py`](skills/public/podcast-generation/scripts/generate.py) |
+| 117 | ✓ | [`skills/public/podcast-generation/SKILL.md`](skills/public/podcast-generation/SKILL.md) |
+| 118 | ✓ | [`skills/public/podcast-generation/templates/tech-explainer.md`](skills/public/podcast-generation/templates/tech-explainer.md) |
+| 119 | ✓ | [`skills/public/ppt-generation/scripts/generate.py`](skills/public/ppt-generation/scripts/generate.py) |
+| 120 | ✓ | [`skills/public/ppt-generation/SKILL.md`](skills/public/ppt-generation/SKILL.md) |
+| 121 | ✓ | [`skills/public/skill-creator/agents/analyzer.md`](skills/public/skill-creator/agents/analyzer.md) |
+| 122 | ✓ | [`skills/public/skill-creator/agents/comparator.md`](skills/public/skill-creator/agents/comparator.md) |
+| 123 | ✓ | [`skills/public/skill-creator/agents/grader.md`](skills/public/skill-creator/agents/grader.md) |
+| 124 | ✓ | [`skills/public/skill-creator/assets/eval_review.html`](skills/public/skill-creator/assets/eval_review.html) |
+| 125 | ✓ | [`skills/public/skill-creator/eval-viewer/generate_review.py`](skills/public/skill-creator/eval-viewer/generate_review.py) |
+| 126 | ✓ | [`skills/public/skill-creator/eval-viewer/viewer.html`](skills/public/skill-creator/eval-viewer/viewer.html) |
+| 127 | ✓ | [`skills/public/skill-creator/LICENSE.txt`](skills/public/skill-creator/LICENSE.txt) |
+| 128 | ✓ | [`skills/public/skill-creator/references/output-patterns.md`](skills/public/skill-creator/references/output-patterns.md) |
+| 129 | ✓ | [`skills/public/skill-creator/references/schemas.md`](skills/public/skill-creator/references/schemas.md) |
+| 130 | ✓ | [`skills/public/skill-creator/references/workflows.md`](skills/public/skill-creator/references/workflows.md) |
+| 131 | ✓ | [`skills/public/skill-creator/scripts/aggregate_benchmark.py`](skills/public/skill-creator/scripts/aggregate_benchmark.py) |
+| 132 | ✓ | [`skills/public/skill-creator/scripts/generate_report.py`](skills/public/skill-creator/scripts/generate_report.py) |
+| 133 | ✓ | [`skills/public/skill-creator/scripts/improve_description.py`](skills/public/skill-creator/scripts/improve_description.py) |
+| 134 | ✓ | [`skills/public/skill-creator/scripts/init_skill.py`](skills/public/skill-creator/scripts/init_skill.py) |
+| 135 | ✓ | [`skills/public/skill-creator/scripts/package_skill.py`](skills/public/skill-creator/scripts/package_skill.py) |
+| 136 | ✓ | [`skills/public/skill-creator/scripts/quick_validate.py`](skills/public/skill-creator/scripts/quick_validate.py) |
+| 137 | ✓ | [`skills/public/skill-creator/scripts/run_eval.py`](skills/public/skill-creator/scripts/run_eval.py) |
+| 138 | ✓ | [`skills/public/skill-creator/scripts/run_loop.py`](skills/public/skill-creator/scripts/run_loop.py) |
+| 139 | ✓ | [`skills/public/skill-creator/scripts/utils.py`](skills/public/skill-creator/scripts/utils.py) |
+| 140 | ✓ | [`skills/public/skill-creator/SKILL.md`](skills/public/skill-creator/SKILL.md) |
+| 141 | ✓ | [`skills/public/skill-reviewer/evals/evals.json`](skills/public/skill-reviewer/evals/evals.json) |
+| 142 | ✓ | [`skills/public/skill-reviewer/evals/fixtures/blocked/SKILL.md`](skills/public/skill-reviewer/evals/fixtures/blocked/SKILL.md) |
+| 143 | ✓ | [`skills/public/skill-reviewer/evals/fixtures/needs-revision/SKILL.md`](skills/public/skill-reviewer/evals/fixtures/needs-revision/SKILL.md) |
+| 144 | ✓ | [`skills/public/skill-reviewer/evals/fixtures/partial-package/SKILL.md`](skills/public/skill-reviewer/evals/fixtures/partial-package/SKILL.md) |
+| 145 | ✓ | [`skills/public/skill-reviewer/evals/fixtures/prompt-injection/SKILL.md`](skills/public/skill-reviewer/evals/fixtures/prompt-injection/SKILL.md) |
+| 146 | ✓ | [`skills/public/skill-reviewer/evals/fixtures/publish-candidate/SKILL.md`](skills/public/skill-reviewer/evals/fixtures/publish-candidate/SKILL.md) |
+| 147 | ✓ | [`skills/public/skill-reviewer/evals/fixtures/zh-output/SKILL.md`](skills/public/skill-reviewer/evals/fixtures/zh-output/SKILL.md) |
+| 148 | ✓ | [`skills/public/skill-reviewer/references/effect-verification.md`](skills/public/skill-reviewer/references/effect-verification.md) |
+| 149 | ✓ | [`skills/public/skill-reviewer/references/eval-design.md`](skills/public/skill-reviewer/references/eval-design.md) |
+| 150 | ✓ | [`skills/public/skill-reviewer/references/report-rendering.md`](skills/public/skill-reviewer/references/report-rendering.md) |
+| 151 | ✓ | [`skills/public/skill-reviewer/references/review-checklist.md`](skills/public/skill-reviewer/references/review-checklist.md) |
+| 152 | ✓ | [`skills/public/skill-reviewer/references/review-rubric.md`](skills/public/skill-reviewer/references/review-rubric.md) |
+| 153 | ✓ | [`skills/public/skill-reviewer/SKILL.md`](skills/public/skill-reviewer/SKILL.md) |
+| 154 | ✓ | [`skills/public/surprise-me/SKILL.md`](skills/public/surprise-me/SKILL.md) |
+| 155 | ✓ | [`skills/public/systematic-literature-review/evals/evals.json`](skills/public/systematic-literature-review/evals/evals.json) |
+| 156 | ✓ | [`skills/public/systematic-literature-review/evals/trigger_eval_set.json`](skills/public/systematic-literature-review/evals/trigger_eval_set.json) |
+| 157 | ✓ | [`skills/public/systematic-literature-review/scripts/arxiv_search.py`](skills/public/systematic-literature-review/scripts/arxiv_search.py) |
+| 158 | ✓ | [`skills/public/systematic-literature-review/SKILL.md`](skills/public/systematic-literature-review/SKILL.md) |
+| 159 | ✓ | [`skills/public/systematic-literature-review/templates/apa.md`](skills/public/systematic-literature-review/templates/apa.md) |
+| 160 | ✓ | [`skills/public/systematic-literature-review/templates/bibtex.md`](skills/public/systematic-literature-review/templates/bibtex.md) |
+| 161 | ✓ | [`skills/public/systematic-literature-review/templates/ieee.md`](skills/public/systematic-literature-review/templates/ieee.md) |
+| 162 | ✓ | [`skills/public/vercel-deploy/scripts/deploy.sh`](skills/public/vercel-deploy/scripts/deploy.sh) |
+| 163 | ✓ | [`skills/public/vercel-deploy/SKILL.md`](skills/public/vercel-deploy/SKILL.md) |
+| 164 | ✓ | [`skills/public/video-generation/scripts/generate.py`](skills/public/video-generation/scripts/generate.py) |
+| 165 | ✓ | [`skills/public/video-generation/SKILL.md`](skills/public/video-generation/SKILL.md) |
+| 166 | ✓ | [`skills/public/web-design-guidelines/SKILL.md`](skills/public/web-design-guidelines/SKILL.md) |
+| 167 | → | [`.github/pull_request_template.md`](.github/pull_request_template.md) |
+| 168 | → | [`backend/docs/CONFIGURATION.md`](backend/docs/CONFIGURATION.md) |
+| 169 | → | [`backend/docs/FILE_UPLOAD.md`](backend/docs/FILE_UPLOAD.md) |
+| 170 | → | [`backend/docs/IM_CHANNEL_CONNECTIONS.md`](backend/docs/IM_CHANNEL_CONNECTIONS.md) |
+| 171 | → | [`backend/docs/MCP_SERVER.md`](backend/docs/MCP_SERVER.md) |
+| 172 | → | [`backend/docs/MEMORY_SETTINGS_REVIEW.md`](backend/docs/MEMORY_SETTINGS_REVIEW.md) |
+| 173 | → | [`backend/docs/TUI.md`](backend/docs/TUI.md) |
+| 174 | → | [`backend/packages/harness/deerflow/agents/memory/backends/honcho/README.md`](backend/packages/harness/deerflow/agents/memory/backends/honcho/README.md) |
+| 175 | → | [`backend/packages/harness/deerflow/agents/memory/backends/mem0/README.md`](backend/packages/harness/deerflow/agents/memory/backends/mem0/README.md) |
+| 176 | → | [`backend/README.md`](backend/README.md) |
+| 177 | → | [`backend/scripts/benchmark/context_snapshot/README.md`](backend/scripts/benchmark/context_snapshot/README.md) |
+| 178 | → | [`backend/scripts/benchmark/deermem_scope_isolation/README.md`](backend/scripts/benchmark/deermem_scope_isolation/README.md) |
+| 179 | → | [`CHANGELOG.md`](CHANGELOG.md) |
+| 180 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 181 | → | [`docker/lark-cli-init/README.md`](docker/lark-cli-init/README.md) |
+| 182 | → | [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) |
+| 183 | → | [`docs/capability-center.md`](docs/capability-center.md) |
+| 184 | → | [`docs/database-forward-revision-recovery.md`](docs/database-forward-revision-recovery.md) |
+| 185 | → | [`docs/full-stack-plugins.md`](docs/full-stack-plugins.md) |
+| 186 | → | [`docs/OPENVIKING.md`](docs/OPENVIKING.md) |
+| 187 | → | [`docs/plans/2026-07-10-pluggable-authorization-rfc.md`](docs/plans/2026-07-10-pluggable-authorization-rfc.md) |
+| 188 | → | [`docs/plans/2026-08-24-subagent-batch-capacity-implementation.md`](docs/plans/2026-08-24-subagent-batch-capacity-implementation.md) |
+| 189 | → | [`examples/deerflow-extension-bookmarks/README.md`](examples/deerflow-extension-bookmarks/README.md) |
+| 190 | → | [`Install.md`](Install.md) |
+| 191 | → | [`README_fr.md`](README_fr.md) |
+| 192 | → | [`README_ja.md`](README_ja.md) |
+| 193 | → | [`README_ru.md`](README_ru.md) |
+| 194 | → | [`README_zh.md`](README_zh.md) |
+| 195 | → | [`README.md`](README.md) |
+| 196 | → | [`RELEASING.md`](RELEASING.md) |
+| 197 | → | [`SECURITY.md`](SECURITY.md) |
 
 ---
 

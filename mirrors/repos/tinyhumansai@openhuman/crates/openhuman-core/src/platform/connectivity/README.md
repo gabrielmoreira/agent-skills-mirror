@@ -8,7 +8,7 @@ Diagnostics for the local core's reachability and the live backend Socket.IO sta
 - Resolve the configured core RPC port from the environment (`OPENHUMAN_CORE_RPC_URL` then `OPENHUMAN_CORE_PORT`, defaulting to `7788`).
 - Snapshot the backend Socket.IO connection state from the global `SocketManager` (reports `"uninitialized"` when the manager singleton isn't registered yet).
 - Probe whether a TCP port on loopback is already bound (`is_port_in_use`).
-- Pick a listen port for the embedded core HTTP listener (`pick_listen_port` / `pick_listen_port_for_host`): try preferred, retry transient `AddrInUse` races, request stale-listener takeover when another OpenHuman core owns the port (#1130), otherwise fall back to a port pool.
+- Pick a listen port for the embedded core HTTP listener (`pick_listen_port` / `pick_listen_port_for_host`): try preferred, retry transient `AddrInUse` races, request stale-listener takeover when another OpenHuman core owns the port (#1130) — the embedded desktop path; headless `serve` passes `OccupiedByCore::Fallback` to `pick_listen_port_for_host_with` and moves on instead — otherwise fall back to a port pool.
 - Handle Windows OS-excluded port ranges (`WSAEACCES` / os error 10013, Sentry OPENHUMAN-TAURI-500) by routing straight to fallback ports instead of failing.
 
 ## Key files

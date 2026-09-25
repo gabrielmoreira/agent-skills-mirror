@@ -7,7 +7,7 @@ ref: develop
 
 # Mirror Manifest
 
-Mirror of `milla-jovovich/mempalace` — 26 default patterns, 0 followed patterns, 17 file(s) materialized.
+Mirror of `milla-jovovich/mempalace` — 26 default patterns, 0 followed patterns, 18 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `milla-jovovich/mempalace` — 26 default patterns, 0 followed pattern
 | Ref           | `develop` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 17 |
+| Files         | 18 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -65,17 +65,18 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 4 | ✓ | [`.claude-plugin/skills/mempalace-recall/SKILL.md`](.claude-plugin/skills/mempalace-recall/SKILL.md) |
 | 5 | ✓ | [`.claude-plugin/skills/mempalace-task/SKILL.md`](.claude-plugin/skills/mempalace-task/SKILL.md) |
 | 6 | ✓ | [`.claude-plugin/skills/mempalace/SKILL.md`](.claude-plugin/skills/mempalace/SKILL.md) |
-| 7 | ✓ | [`.codex-plugin/skills/help/SKILL.md`](.codex-plugin/skills/help/SKILL.md) |
-| 8 | ✓ | [`.codex-plugin/skills/init/SKILL.md`](.codex-plugin/skills/init/SKILL.md) |
-| 9 | ✓ | [`.codex-plugin/skills/mine/SKILL.md`](.codex-plugin/skills/mine/SKILL.md) |
-| 10 | ✓ | [`.codex-plugin/skills/search/SKILL.md`](.codex-plugin/skills/search/SKILL.md) |
-| 11 | ✓ | [`.codex-plugin/skills/status/SKILL.md`](.codex-plugin/skills/status/SKILL.md) |
-| 12 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 13 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 14 | ✓ | [`integrations/openclaw/SKILL.md`](integrations/openclaw/SKILL.md) |
-| 15 | ✓ | [`skills/mempalace-recall/SKILL.md`](skills/mempalace-recall/SKILL.md) |
-| 16 | ✓ | [`skills/mempalace-task/SKILL.md`](skills/mempalace-task/SKILL.md) |
-| 17 | ✓ | [`skills/mempalace/SKILL.md`](skills/mempalace/SKILL.md) |
+| 7 | ✓ | [`.codex-plugin/skills/audit/SKILL.md`](.codex-plugin/skills/audit/SKILL.md) |
+| 8 | ✓ | [`.codex-plugin/skills/help/SKILL.md`](.codex-plugin/skills/help/SKILL.md) |
+| 9 | ✓ | [`.codex-plugin/skills/init/SKILL.md`](.codex-plugin/skills/init/SKILL.md) |
+| 10 | ✓ | [`.codex-plugin/skills/mine/SKILL.md`](.codex-plugin/skills/mine/SKILL.md) |
+| 11 | ✓ | [`.codex-plugin/skills/search/SKILL.md`](.codex-plugin/skills/search/SKILL.md) |
+| 12 | ✓ | [`.codex-plugin/skills/status/SKILL.md`](.codex-plugin/skills/status/SKILL.md) |
+| 13 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 14 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 15 | ✓ | [`integrations/openclaw/SKILL.md`](integrations/openclaw/SKILL.md) |
+| 16 | ✓ | [`skills/mempalace-recall/SKILL.md`](skills/mempalace-recall/SKILL.md) |
+| 17 | ✓ | [`skills/mempalace-task/SKILL.md`](skills/mempalace-task/SKILL.md) |
+| 18 | ✓ | [`skills/mempalace/SKILL.md`](skills/mempalace/SKILL.md) |
 
 ---
 

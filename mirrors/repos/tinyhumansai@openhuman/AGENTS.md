@@ -78,6 +78,40 @@ pnpm debug rust [filter]
 pnpm debug logs last
 ```
 
+Debugging the web UI in a real browser (Chrome DevTools MCP): the desktop
+window is Wry (WKWebView / WebView2 / WebKitGTK), which does not support CDP, so no
+DevTools client can attach to it. Run the same SPA in Chrome instead:
+
+- **Use the desktop app's session:** `pnpm dev:app:web:attach -- --no-browser`
+  finds the running desktop core, starts Vite, and prints
+  `http://127.0.0.1:<core>/dev/connect?app=http://localhost:<vite>`. Open that
+  URL with the chrome-devtools MCP (`new_page` / `navigate_page`). The core's
+  dev-only `GET /dev/connect` (`crates/openhuman-core/src/core/dev_connect.rs`)
+  redirects to Vite's `/__dev-connect` page with the RPC URL and bearer in the
+  URL fragment. That page seeds them into `localStorage`, so the browser runs on
+  the desktop core with its signed-in user, and nothing is pasted. The route
+  exists in debug builds, or in a release build with `OPENHUMAN_DEV_CONNECT=1`.
+  It accepts only a loopback `app` origin and `Host`, and refuses cross-site
+  navigations.
+- **Fresh core instead:** `pnpm dev:app:web --no-browser` builds and starts its
+  own `openhuman-core serve` with a generated bearer and prints
+  `http://localhost:<vite>/__dev-connect`. Sign-in takes one click on a provider:
+  the browser build passes `<origin>/__dev-auth` as the backend `redirectUri`,
+  and the session persists in that core's workspace.
+- Busy ports are fine. Vite moves to the next free port, and so does
+  `openhuman-core serve`, even when another live core holds the port.
+  (`OccupiedByCore::Fallback`; only the desktop shell's embedded core runs the
+  stale-listener takeover.) The printed URL always uses the real ports.
+- Onboarding and the walkthrough tour are skipped by default
+  (`VITE_DEV_SKIP_ONBOARDING`, marked complete in the core for a signed-in
+  user). Pass `--onboarding` to keep them for debugging.
+- Inspect with `take_snapshot`, `list_console_messages`,
+  `list_network_requests` (check the `/rpc` calls), `evaluate_script`, and
+  `take_screenshot`.
+- Env settings: `OPENHUMAN_DEV_PORT`, `OPENHUMAN_CORE_PORT` (in attach mode, the
+  desktop core's port; the default scans 7788-7808), `OPENHUMAN_CORE_TOKEN`, and
+  `OPENHUMAN_WORKSPACE` (point it at a scratch dir for a clean profile).
+
 Long CI build or test commands must run through
 `scripts/ci-cancel-aware.sh`. Do not export `CARGO_TARGET_DIR`; the repository
 already configures shared build output where appropriate.
@@ -355,6 +389,13 @@ seed history by hand, or pick a transcript by recency.
   messages verbatim, which is what keeps the provider's prefix cache warm
   across a restart. The accepted consequence is that prompt edits, new skills
   and newly connected integrations do not reach an existing thread.
+- **So is the tool list it was sent.** Every turn records its tool
+  declarations in the transcript (a `{"kind":"tools"}` record, written only
+  when they change); resume restores them, the prefix, and the committed-turn
+  count. The host never shrinks a thread's tools because a cache went cold:
+  `session_host/recorded_tools.rs` rebuilds recorded Composio actions as
+  deferred executors, and the prelude fetches integrations on the first turn
+  of every session instance, not only on a brand-new thread.
 - **Pre-identity conversations are adopted once**, on first resume, from the
   timestamped stems they were written to (`adopt_legacy_session_transcripts`).
   No legacy file is modified.
@@ -515,4 +556,5 @@ serialization.
 - macOS deep links require a built app bundle.
 - Windows registers `openhuman://` through `tauri-plugin-deep-link`.
 - Standalone debugging uses `./target/debug/openhuman-core serve`. Public
-  endpoints are `GET /health`, `GET /schema`, and `GET /events`.
+  endpoints are `GET /health`, `GET /schema`, and `GET /events`, plus the
+  debug-build-only `GET /dev/connect`.

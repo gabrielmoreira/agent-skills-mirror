@@ -213,9 +213,10 @@ Four builtin lanes ship (`packages/omo-senpi/src/components/model-profile/builti
 
 | Id | Display name | Chain |
 |----|--------------|-------|
+| `recommended` | Recommended (the unset default, not a lane) | `claude-opus-5-5` (medium) -> `claude-fable-5-1` (xhigh) -> `kimi-k3` (max) -> `gpt-6-astra` (xhigh) -> `gpt-6-sol` (medium) -> `glm-5.3` (max); ranked providers only, never a gateway aggregator |
 | `daily-normal` | Daily · Normal | `claude-opus-5-5` (medium) -> `kimi-k3` (max) -> `glm-5.3` (max) |
 | `daily-heavy` | Daily · Heavy | `claude-fable-5-1` (xhigh) |
-| `geeky-normal` | Geeky · Normal | `gpt-6-sol-fast` (medium, ChatGPT subscription/API) -> `gpt-6-sol` (medium, subscription/API/Copilot/OpenCode) |
+| `geeky-normal` | Geeky · Normal | `gpt-5.6-sol` (medium, ChatGPT subscription/API/Copilot/OpenCode) |
 | `geeky-heavy` | Geeky · Heavy | `gpt-6-astra` (xhigh) |
 
 GPT profiles use the same provider coverage as the corresponding task lanes:
@@ -226,7 +227,7 @@ next user-listed candidate, while a bare model id may match any provider.
 
 What happens at session start (`packages/omo-senpi/src/components/model-profile/index.ts`, `resolve.ts`) in OmO Desktop and headless sessions. The interactive TUI does not apply `model_profile` yet; it keeps the model it started with.
 
-- `model_profile` unset: Daily · Normal is applied on a fresh session. The apply is not written back to config.
+- `model_profile` unset: Recommended is applied on a fresh session. The apply is not written back to config. Its rungs are served only by their ranked providers, so a gateway aggregator's copy of a model (for example OpenGateway's `anthropic/claude-opus-5-5`) is never picked; the lanes keep their cross-provider fallback.
 - A literal `provider/model`: that exact model is looked up in the live registry and applied.
 - A profile id: the builtin table is overlaid with `model_profiles`, and the first rung the live registry can serve is applied. The notice names the lane, the pick, and the thinking level, for example `OmO Native: model profile "daily-normal" (Daily · Normal) selected anthropic-subscription/claude-opus-5-5 medium; mid-session fallback follows senpi's retry chains`.
 - No rung resolves: a notice lists the chain against this session's model registry and Senpi's default model stays. Absence from the registry is not reported as disconnected auth.

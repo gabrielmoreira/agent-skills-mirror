@@ -61,7 +61,8 @@ credits_remaining=99880
 At the default 20 credits/call, the free 100K/day tier ≈ 5,000 calls/day. `blockscout-detect-plan.sh` itself costs ~20
 credits — do not re-run mid-session.
 
-Per-instance public hosts are not credit-metered but are rate-limited to **3 req/s (300/min) per IP**.
+Per-instance public hosts are not credit-metered but are rate-limited per IP by instance configuration; the Blockscout
+backend default is **300 requests per minute** (`API_RATE_LIMIT_BY_IP`), and operators may change it.
 
 ## Choosing an Endpoint
 
@@ -319,6 +320,7 @@ Use the completion format in `SKILL.md`: preserve full identifiers and use a com
 | `404` on `api.blockscout.com/{id}/…` | Resolve the target through Chainscout; use its per-instance route only when it qualifies for the exception above. |
 | `429` / `x-ratelimit-remaining: 0`   | Rate limited. Back off until `x-ratelimit-reset` (seconds); retain the keyed gateway route.                       |
 | `503`                                | Transient gateway error. Retry within the bounded policy; otherwise report a coverage gap.                        |
+| `403` HTML "Just a moment..." page   | Bot challenge on a hosted `*.blockscout.com` instance. Use the keyed gateway, not repeated scripted retries.      |
 | Compat `{"status":"0", …}`           | Etherscan-shaped error (`No transactions found`, bad address, etc.).                                              |
 
 ## Reference Files
@@ -337,5 +339,3 @@ For features beyond this skill (blocks, smart contracts, search, stats, NFT inst
 - AI-friendly docs index: `https://docs.blockscout.com/llms.txt`
 - Per-instance interactive schema: `https://{instance}/api-docs`
 - PRO OpenAPI spec: `https://docs.blockscout.com/openapi-specs/pro-api.yaml`
-
-Use `WebFetch` to retrieve these for extended capabilities.

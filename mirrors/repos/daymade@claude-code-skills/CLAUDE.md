@@ -18,7 +18,7 @@ skill-name/
 ├── SKILL.md (required)          # Core skill instructions with YAML frontmatter
 ├── scripts/ (optional)          # Executable Python/Bash scripts
 ├── references/ (optional)       # Documentation loaded as needed
-└── assets/ (optional)           # Templates and resources for output
+└── assets/ (optional)           # Update-owned templates and resources for output
 ```
 
 ### Progressive Disclosure Pattern
@@ -63,6 +63,9 @@ Use [skill-creator](daymade-skill/skill-creator/SKILL.md) before creating or
 changing a skill. It owns change classification, evidence selection, regression
 review, validation, initialization, and packaging.
 
+For customer-approved report forms, follow
+[skill-creator's report-template contract](daymade-skill/skill-creator/SKILL.md#show-the-result-not-just-the-work).
+
 Treat [packaging_policy.py](daymade-skill/skill-creator/scripts/packaging_policy.py)
 as the canonical inclusion policy for packaging, security attestation, source
 audits, and version checks. Keep consumers on this shared implementation. Preserve the recorded policy
@@ -79,9 +82,9 @@ explicitly blocked, unshipped, or pending. Test advisory liveness across later
 fully-due windows, and leave current thresholds in the owning implementation
 rather than copying them into this file.
 
-Synchronous Claude Code/Codex lifecycle hooks and background services
-(LaunchAgents included) must call a fixed direct interpreter **owned by the
-installer that writes it**. Do not register a Python entry point through a
+Python entry points registered as synchronous Claude Code/Codex lifecycle hooks or
+background services (LaunchAgents included) must call a fixed direct interpreter
+**owned by the installer that writes it**. Do not register a Python entry point through a
 package manager, generic interpreter dispatcher, or `.py` shebang lookup: a
 shared environment/cache lock can stall every prompt or tool boundary, and a
 bare `python3` resolves under launchd's minimal PATH to the Developer Tools
@@ -92,7 +95,11 @@ Own the literal path, the way `SYSTEM_GIT` is owned. Explicit maintenance,
 retrieval, validation, and test commands may still use their declared `uv`
 project; the runtime boundary is the rule. The concrete prior-work wrapper and
 profile-converger registration live in their respective Skills rather than
-being copied here.
+being copied here. For a LaunchAgent blocked by TCC, route to
+[`macos-permissions`](daymade-macos/macos-permissions/SKILL.md) to identify the
+permission subject and verify a protected read in the real background job.
+An owning installer may support an already authorized launcher; that does not
+make a package-manager dispatcher the default for Python hooks.
 
 Treat `daymade-skill/skill-creator` as a locked uv project. Run its bundled Python tools from that directory with `uv run --frozen`; the project-local `.venv` is isolated from caller projects while uv's shared cache supplies the pinned packages. Do not reintroduce per-call `--with` overlays for dependencies already in its `pyproject.toml`.
 
@@ -149,6 +156,15 @@ already created by the current prompt. Artifact selection and runtime-read
 comparison are owned by that Skill; a receipt about a locator is not proof of
 the delivered artifact. Detailed retrieval mechanics remain in
 `daymade-claude-code/prior-work-retrieval/SKILL.md`.
+
+### Local Conversation History Boundary
+
+Codex inventory must use the index-only command in
+`daymade-claude-code/read-codex-history/SKILL.md`. If its state database is
+unavailable, report an unknown inventory; do not substitute a raw rollout scan.
+Edit shared reader code in `daymade-claude-code/_conversation_core/`, then run
+`python3 daymade-claude-code/sync_core.py sync` and `check` before shipping;
+bundled `scripts/_core/` copies are generated projections.
 
 ### Local Agent Messaging
 

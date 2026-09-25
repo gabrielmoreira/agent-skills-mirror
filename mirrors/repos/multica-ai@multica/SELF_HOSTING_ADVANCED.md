@@ -177,6 +177,71 @@ rewrite configuration. Its backend fallback therefore accepts
 `BACKEND_PORT` → `API_PORT` → `SERVER_PORT` → `8080`, while an explicit
 `REMOTE_API_URL` or `NEXT_PUBLIC_API_URL` still takes priority.
 
+### Private CA Certificates (Optional)
+
+The backend checks the TLS certificates of the HTTPS services it calls against
+the system trust store in its image. A service whose certificate comes from an
+internal CA — for example a [self-hosted Gitea, Forgejo, or GitLab](https://multica.ai/docs/vcs-integration)
+— fails until the backend trusts that CA. Connecting such a Git provider reports
+that its certificate is signed by a certificate authority the server does not
+trust.
+
+Add the CA to the backend's trust store rather than turning verification off.
+The backend is a Go program: on Linux it loads the system certificate bundle
+plus every PEM file in the directories listed in `SSL_CERT_DIR`. Mount the CA
+into its own read-only directory and list it after the system directory:
+
+```
+SSL_CERT_DIR=/etc/ssl/certs:/etc/multica/ca-certs
+```
+
+**Kubernetes (Helm):** create a ConfigMap whose keys are PEM files, then point
+`backend.extraCACerts.configMap` at it. The chart mounts it at
+`/etc/multica/ca-certs` and sets `SSL_CERT_DIR` as above.
+
+```bash
+kubectl -n multica create configmap multica-extra-ca --from-file=internal-ca.crt
+helm upgrade multica oci://ghcr.io/multica-ai/charts/multica \
+  --version <chart-version> -n multica --reuse-values \
+  --set backend.extraCACerts.configMap=multica-extra-ca
+```
+
+**Docker Compose:** put the PEM files in a directory next to
+`docker-compose.selfhost.yml` (here `./ca-certs`) and add an override file,
+`docker-compose.ca.yml`:
+
+```yaml
+services:
+  backend:
+    environment:
+      SSL_CERT_DIR: /etc/ssl/certs:/etc/multica/ca-certs
+    volumes:
+      - ./ca-certs:/etc/multica/ca-certs:ro
+```
+
+```bash
+docker compose -f docker-compose.selfhost.yml -f docker-compose.ca.yml up -d backend
+```
+
+Pass both files every time you run a command that recreates the backend. A
+command with only `docker-compose.selfhost.yml`, such as `make selfhost`,
+recreates the backend without the CA.
+
+Things to know:
+
+- **The backend reads the CA only when it starts.** After you add or replace a
+  CA file, restart the backend: `kubectl -n multica rollout restart deploy/multica-backend`,
+  or `docker compose -f docker-compose.selfhost.yml -f docker-compose.ca.yml restart backend`.
+  With Compose, `up -d` is not enough here: the container's configuration has
+  not changed, so Compose keeps the running container. With Helm, a
+  `helm upgrade` also restarts the backend when the ConfigMap has changed.
+- **The CA applies to the whole backend process**, not only the Git provider
+  integration: every outbound TLS client in the backend that uses the system
+  trust store trusts it too.
+- **Only the trust problem is fixed.** An expired certificate, or one that does
+  not cover the host name in the URL, is still rejected; fix the certificate
+  itself.
+
 ### WeCom frame tracing
 
 | Variable | Default | Description |

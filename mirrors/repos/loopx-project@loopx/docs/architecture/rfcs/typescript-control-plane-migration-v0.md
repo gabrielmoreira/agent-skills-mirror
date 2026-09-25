@@ -14,6 +14,13 @@
 
 ---
 
+## Current delivery frontier (2026-09-24)
+
+The `d64c4d377`/open-PR audit withdraws earlier “5–8 / 6–8 / 7–9” estimates.
+Implemented code, six relevant open PRs, four proposed new batches (including
+complete-source transport) and D1–D3 evidence are separate units; four batches
+are not a guaranteed total PR count. Use the [reconciled inventory and exits](ledger/shared-goal-authority-state-provider-v0/2026-09-24-default-cutover-reconciliation.md) as the current plan.
+
 ## Cross-RFC execution priority (2026-09-16)
 
 [Roadmap](loopx-overall-roadmap-v0.md) R1–R5 are current product consumers of T0–T4, not another migration ladder. The team confirmation path now uses `work_items/team_plan.ts` for preview, batch planning and immutable operation identity, plus the existing AuthorityStore receipt/CAS boundary. Python retains public-safety and legacy Markdown IO adaptation; the per-lane writer loop is retired. The R1 checkpoint records the delivered assignment/retry delta and remaining receiver/execution boundaries.
@@ -21,6 +28,17 @@
 Retain T0 caller/parity inventory, T1/T2 transaction/effect convergence, T3 complete-source consumption and T4 deletion conditions. #4472 is merged; inspect `todos/public_update.ts` and actual callers before rebuilding Todo update. Converge new team domain rules in existing typed work-items/collaboration ownership; Python retains input/IO adaptation. R1 independent counterexamples and real-path verification gate delivery. More leaf RPCs, enums or files are not migration payoff. Shared-authority retains D1–D3.
 
 ## Current implementation checkpoint
+
+Canonical collection transport now uses snapshot-bound, byte-bounded TS pages.
+The same `canonicalTodoCollection` owner validates both the retained direct list
+and paged reads; Python assembles complete pages and preserves the caller shape.
+This replaces the one-shot cross-language read without raising its 2 MiB budget
+or duplicating Todo/acceptance semantics in Python. Concurrent revisions fail the
+whole read; File read opening cannot create a missing authority. See the
+[paging contract](../../reference/canonical-snapshot-pagination.md) for limits
+and cost. The current shared-authority inventory separates shipped pagination
+from open implementation work and D1–D3 qualification.
+
 
 Canonical command observation now has one typed receipt/head boundary. Team,
 Todo creation/edit/claim/terminal/archive, Monitor, lease maintenance and Goal
@@ -41,8 +59,8 @@ removed; its retained boundary is source projection/locking and capture IO.
 The legacy scan includes event-only claims, and canonical mode receipts reuse
 command recovery with strict historical decisions. Full-source snapshot and
 real-provider validation guard this T1/T2 replacement. This closes a rule and
-caller discrepancy, not a whole default-cutover package; the conditional 5–8
-package estimate remains. [Changed behavior and recovery](../../reference/handoff-mode.md).
+caller discrepancy, not a whole default-cutover package; use the current
+reconciled inventory for remaining work. [Changed behavior and recovery](../../reference/handoff-mode.md).
 
 Terminal review and validation now converge in the existing TS terminal owner.
 Agent completion and Monitor stop reuse Chat's canonical receipt-first recovery
@@ -845,7 +863,7 @@ explicit runtime-root applies to both intent and Todo IO. Frozen editorial
 requests retain their original basis. See [operation and boundaries](../../../loopx/capabilities/periodic_report/README.md#todo-authority-and-report-retries).
 This closes that T3/L5 consumer family, not D1 permanent display freshness,
 D2 durability, D3 whole-Goal qualification or default-provider selection. The
-conditional 5–8 remaining delivery-package estimate is unchanged.
+remaining work is classified in the current reconciled inventory.
 
 Todo summary lanes and pre-limit work counts now share `todos/summary_lanes.ts`.
 Python's lane classification and hidden-work inference loops are removed; quota
@@ -1022,9 +1040,11 @@ lineage. Ambiguous, stale, truncated or unrelated material changes cannot close
 the current obligation. This closes one T3 rule group, not
 the remaining consumers or T1/T2/D1–D3.
 
-Long-chain scope correction (#4667): Agent lanes count 15 claimed advancement
-Todos or 20 claimed open Todos with claimed advancement work. Shared candidates
-remain selectable but no longer impose this duty; unscoped Goal observations
+Long-chain scope corrections (#4667, #5001): Agent lanes require at least 15 claimed
+open advancement Todos. Continuous monitors and shared candidates do not count;
+shared candidates remain selectable. The former 20-claimed-open trigger is
+retired for new Agent-lane obligations, while historical checkpoints and their
+predecessor recovery remain readable. Unscoped Goal observations
 retain the selectable-pool thresholds. Full material revisions include terminal advancement rows;
 timestamp-only maintenance does not rearm them. A complete agent-owned identity
 also keeps an accepted long-chain ACK valid when peers change shared unclaimed
@@ -1035,9 +1055,9 @@ an identity without a revision or an explicitly incomplete checkpoint cannot
 suppress replanning. Other trigger kinds cannot borrow long-chain identity
 matching. The same TS owner now supplies `obligation_identity_revision` from the
 owned basis for the existing Python identity codec and predecessor proof: peer
-churn cannot invalidate an open Turn before its ACK. Numeric thresholds and
-write authority remain unchanged. `replan_semantics.ts` accepts and projects an
-evidence-linked vision path for long-chain review, preserving existing progress
+churn cannot invalidate an open Turn before its ACK. Monitor due selection,
+no-change replan rules and write authority remain unchanged. `replan_semantics.ts`
+accepts and projects an evidence-linked vision path for long-chain review, preserving existing progress
 exits and stricter vision obligations. The real CLI regression follows the
 projected binding through durable ACK, satisfied checkpoint, one spend and next
 Turn readback; maintenance stays quiet and an owned material edit rearms.
@@ -1871,8 +1891,11 @@ Canonical single-Todo and full-source reads now have one read-only TypeScript
 module, separate from mutation orchestration and sharing the provider opening
 boundary. Projection delivery composes a revision confirmation with the existing
 full-source read; ordinary callers retain their response shape. Python owns
-physical Markdown durability/retry, not the current-head comparison. Three-attempt
-recovery and pinned-intent preservation use the existing journal-backed path;
+physical Markdown durability and rendering. TS owns current-head comparison,
+latest/pinned intent and bounded retry. Committed refresh and same-Turn recovery
+reuse that path, with one complete planning snapshot also owning missing-work
+diagnostics. This removes Python retry/admission policy and the promoted record's
+second Markdown-based Todo diagnosis;
 no new RPC method, durable ACK or provider default. The stronger confirmation
 costs one additional read on a stable delivery. Full L5/D1 qualification, D2 and
 cutover remain open; see the [projection contract](../../reference/protocols/active-state-structured-projection-v0.md).
@@ -1890,3 +1913,19 @@ This is a migration orchestration checkpoint, not completion of Stage 3 or a
 default-provider flip. Integrate claim-preserving migration separately, retain
 real-backend and captured-source qualification, and retire Python only where its
 actual callers have moved. [Operator contract](../../reference/reviewed-coordination-promotion.md).
+
+### Todo summary decision ownership
+
+One TS summary batch now owns selected-source counts, display allocation,
+recent-completion chronology, orchestration candidate positions and closure
+proofs. Python retains decoding, public field allowlists and rendering. The
+old Python claimant selector and aggregate branches are retired; the internal
+lane and closure RPC entries are replaced without retaining unused wire paths.
+Public `todo_summary_v0` and persisted records do not change. Full-source
+relationship evaluation is reused before selection, and source completeness is
+preserved independently of query matching. See [semantics and rollback](../../reference/todo-work-counts.md).
+This advances T3/L5; it does not replace D2/D3 or flip a provider default.
+
+2026-09-24: [Typed complete-source assembly and remaining delivery packages](ledger/shared-goal-authority-state-provider-v0/2026-09-24-source-capture.md) unify source construction, identity rejection and current-graph membership; L7/D2/D3 and provider defaults remain open.
+
+2026-09-24: [Leased continuation and remaining local-default packages](ledger/shared-goal-authority-state-provider-v0/2026-09-24-leased-continuation.md).

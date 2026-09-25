@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `steipete/CodexBar` — 26 default patterns, 0 followed patterns, 14 file(s) materialized.
+Mirror of `steipete/CodexBar` — 26 default patterns, 0 followed patterns, 15 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `steipete/CodexBar` — 26 default patterns, 0 followed patterns, 14 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 14 |
+| Files         | 15 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -71,8 +71,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 10 | ✓ | [`docs/claude-multi-account-and-status-items.md`](docs/claude-multi-account-and-status-items.md) |
 | 11 | ✓ | [`docs/claude.md`](docs/claude.md) |
 | 12 | ✓ | [`docs/gemini.md`](docs/gemini.md) |
-| 13 | ✓ | [`docs/llms.txt`](docs/llms.txt) |
-| 14 | ✓ | [`docs/pi.md`](docs/pi.md) |
+| 13 | ✓ | [`docs/keychain-prompts.md`](docs/keychain-prompts.md) |
+| 14 | ✓ | [`docs/llms.txt`](docs/llms.txt) |
+| 15 | ✓ | [`docs/pi.md`](docs/pi.md) |
 
 ---
 

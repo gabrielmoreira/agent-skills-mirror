@@ -1,6 +1,9 @@
-# 设定图出图（场景 + 道具）· codex `$imagegen`
+# 设定图的版面规格（场景 + 道具）
 
-出图走 codex 内置的 `$imagegen` 系统 skill，**不需要任何 API key**——用本机 codex 登录态。**没有 codex 就整步跳过**，只交提示词，其余产出照常。
+`image.sheet` 是**给出图模型的完整版面指令**，本 skill 只负责把它写对，**不负责出图**。
+出图在下游（要选模型、画风、画幅，这三件事在这一层一个都答不了）。
+
+下面这些约束必须逐条写进 `image.sheet` 的英文正文。
 
 ## 每个场景、每件道具各一张图
 
@@ -27,7 +30,8 @@
 
 同一套 L 形版面，差别三处：**纯白背景**（每个面板都是，要抠图）、主视角是主状态的四分之三角度、底行放**其他状态 + 侧面正交视图**。全图**无人且无手**——拿着道具的手是最常见污染，出现就重生成。尺度短语（handheld scale 等）必须在提示词里，否则皮箱会被画成衣柜。
 
-提示词字段 `image.sheet`，场景和道具都落到 `./images/<slug>-sheet.png`（`slug` 命令生成安全文件名）。
+提示词字段 `image.sheet`。`render` 默认去 art.json 同级的 `images/<slug>-sheet.png` 找图（`slug` 命令生成安全文件名），
+图在别处就用 `--images <目录>` 指过去。本 skill 不产生这些文件，下游出完图重跑 `render` 就能捡起来。
 
 ## 三条硬要求
 
@@ -35,21 +39,15 @@
 2. **一张图里只能有一个空间。**角色设定图最容易出「一张图两个长相」，环境图的对应崩法是**面板之间空间对不上**（左边六排坐板、右上变成四排）。提示词里写死 `THE SPACE MUST BE IDENTICAL ACROSS ALL PANELS`。拿到图先核对锚点：每个锚点在主视角里找得到吗？
 3. **透视要稳。**环境图最常见的废图是几何融化、透视歪斜。反向提示词里 `warped perspective, melted geometry` 必须在（预设自带）。
 
-## 调用契约（与 novel-characters 相同）
+## 变体场景：提示词里要挂住母场景
 
-- **跑在 codex 里**：直接用 `$imagegen`，不要再 shell 出去调 `codex exec`
-- **跑在 Claude Code**：shell 调本机 codex，**先探测版本最高的 binary**（旧版直接报错），探测脚本抄 `novel-characters/references/sheet.md` 的 `find_codex`
-- 所有调用套 `env -u NODE_OPTIONS`（codex 继承坏的 NODE_OPTIONS 会启动即崩）
-- **一个场景一次调用，绝不批量**（PNG 字节会撑爆 rollout）
-- 用了 `-i/--image` 这类变长参数时 **prompt 必须走 stdin**
-- 提示词里明写「copy to ./images/<slug>-sheet.png」，别让图留在 codex 默认目录
-- 单个失败跳过不阻断，最后汇总说明
-- **不碰 CLI fallback**（要 `OPENAI_API_KEY`）
+`variantOf` 的场景，`image.sheet` 写的是**母场景主视角 + `changes` 的改动描述**，外加一句
+`keep the structure, materials and wear identical to the reference image`——那句是写给下游的：
+出这张图时要把母场景的成图当参考图挂上去。**变体机制的意义就在这**，从零生成一致不了。
 
-## 变体场景的出图
+## 画风不在这里
 
-`variantOf` 的场景**拿母场景的成图当参考图**（codex 的 `-i` 参数），提示词 = 母场景主视角 + `changes` 的改动描述 + 一句 `keep the structure, materials and wear identical to the reference image`。这比从零生成一致得多——变体机制的意义就在这。
-
-## 画风一致性
-
-同一部剧的所有场景应该像同一个美术组画的。压不住的话，拿第一个主场景的成图当风格参考喂给后面的场景（同样走 `-i` + stdin）。代价与角色 skill 相同：第一张定基调，出得不好就得重来。
+同一部剧的所有场景应该像同一个美术组画的。这靠两件事，**两件都不写进单条提示词**：
+表面处理句是写死的一套（见 `scene-pass.md` 里「要整段带上的是表面处理」那一条），
+画风则由下游在出图时整批附加同一段指令。写进这里只会跟当时选的那一档打架，
+而且换风格要逐条改。

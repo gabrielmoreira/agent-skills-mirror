@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `jackwener/OpenCLI` — 26 default patterns, 0 followed patterns, 38 file(s) materialized.
+Mirror of `jackwener/OpenCLI` — 26 default patterns, 0 followed patterns, 35 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `jackwener/OpenCLI` — 26 default patterns, 0 followed patterns, 38 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 38 |
+| Files         | 35 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -83,20 +83,17 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 22 | ✓ | [`skills/opencli-adapter-author/references/typed-errors.md`](skills/opencli-adapter-author/references/typed-errors.md) |
 | 23 | ✓ | [`skills/opencli-adapter-author/SKILL.md`](skills/opencli-adapter-author/SKILL.md) |
 | 24 | ✓ | [`skills/opencli-autofix/SKILL.md`](skills/opencli-autofix/SKILL.md) |
-| 25 | ✓ | [`skills/opencli-browser-sitemap/SKILL.md`](skills/opencli-browser-sitemap/SKILL.md) |
-| 26 | ✓ | [`skills/opencli-browser/SKILL.md`](skills/opencli-browser/SKILL.md) |
-| 27 | ✓ | [`skills/opencli-sitemap-author/references/sitemap-schema.md`](skills/opencli-sitemap-author/references/sitemap-schema.md) |
-| 28 | ✓ | [`skills/opencli-sitemap-author/SKILL.md`](skills/opencli-sitemap-author/SKILL.md) |
-| 29 | ✓ | [`skills/opencli-usage/SKILL.md`](skills/opencli-usage/SKILL.md) |
-| 30 | ✓ | [`skills/smart-search/references/sources-ai.md`](skills/smart-search/references/sources-ai.md) |
-| 31 | ✓ | [`skills/smart-search/references/sources-info.md`](skills/smart-search/references/sources-info.md) |
-| 32 | ✓ | [`skills/smart-search/references/sources-media.md`](skills/smart-search/references/sources-media.md) |
-| 33 | ✓ | [`skills/smart-search/references/sources-other.md`](skills/smart-search/references/sources-other.md) |
-| 34 | ✓ | [`skills/smart-search/references/sources-shopping.md`](skills/smart-search/references/sources-shopping.md) |
-| 35 | ✓ | [`skills/smart-search/references/sources-social.md`](skills/smart-search/references/sources-social.md) |
-| 36 | ✓ | [`skills/smart-search/references/sources-tech.md`](skills/smart-search/references/sources-tech.md) |
-| 37 | ✓ | [`skills/smart-search/references/sources-travel.md`](skills/smart-search/references/sources-travel.md) |
-| 38 | ✓ | [`skills/smart-search/SKILL.md`](skills/smart-search/SKILL.md) |
+| 25 | ✓ | [`skills/opencli-browser/SKILL.md`](skills/opencli-browser/SKILL.md) |
+| 26 | ✓ | [`skills/opencli-usage/SKILL.md`](skills/opencli-usage/SKILL.md) |
+| 27 | ✓ | [`skills/smart-search/references/sources-ai.md`](skills/smart-search/references/sources-ai.md) |
+| 28 | ✓ | [`skills/smart-search/references/sources-info.md`](skills/smart-search/references/sources-info.md) |
+| 29 | ✓ | [`skills/smart-search/references/sources-media.md`](skills/smart-search/references/sources-media.md) |
+| 30 | ✓ | [`skills/smart-search/references/sources-other.md`](skills/smart-search/references/sources-other.md) |
+| 31 | ✓ | [`skills/smart-search/references/sources-shopping.md`](skills/smart-search/references/sources-shopping.md) |
+| 32 | ✓ | [`skills/smart-search/references/sources-social.md`](skills/smart-search/references/sources-social.md) |
+| 33 | ✓ | [`skills/smart-search/references/sources-tech.md`](skills/smart-search/references/sources-tech.md) |
+| 34 | ✓ | [`skills/smart-search/references/sources-travel.md`](skills/smart-search/references/sources-travel.md) |
+| 35 | ✓ | [`skills/smart-search/SKILL.md`](skills/smart-search/SKILL.md) |
 
 ---
 

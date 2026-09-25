@@ -530,8 +530,10 @@ already signed into through BrowserSkill's daemon and extension;
 `bskSnapshot(session)` returns the same tree-and-refs shape without leaving a
 trace in the page. `bskDoctor()` / `bskOnboard()` (wrapped by the skill's
 `browser-doctor.mjs` / `browser-install.mjs`) install the CLI, start the daemon
-and register the Web Store extension so the user's only step is one **Enable**
-click. Never launch against, clone, or clear the user's live profile; never fall
+and register the Web Store extension in the one browser the user actually uses
+(OS default browser, running app, recent use; `--browser=<id>` overrides, and the
+doctor reports `choose-browser` instead of guessing when those disagree) so the
+user's only step is one **Enable** click. Never launch against, clone, or clear the user's live profile; never fall
 back to the owned engine for a page that needs their login.
 
 **Browser QA capabilities (choose the tier that supports the criterion)**:

@@ -13,6 +13,21 @@
 
 ---
 
+
+## 当前交付边界（2026-09-24）
+
+剩余 PR 估算已按 `d64c4d377` 和开放 PR 重新核对，旧“5–8 / 6–8 / 7–9”数字撤回。
+已合入实现、六个相关在途 PR、四个拟新增批次（含当前完整来源传输）和 D1–D3
+验收分开记录；四批不是承诺总计只剩四个 PR。唯一当前清单见[实现核对与退出证据](ledger/shared-goal-authority-state-provider-v0/2026-09-24-default-cutover-reconciliation.zh-CN.md)。
+
+## canonical collection 分页检查点（2026-09-23）
+
+canonical collection 跨语言传输改为 TS 一致性分页：旧 direct list 和分页共用
+`canonicalTodoCollection` 规则 owner，Python 校验并组装完整分页，保持调用方形状。
+不提高 2 MiB RPC 上限，不在 Python 重建 Todo/acceptance 规则；并发版本变化导致
+整份读取失败，File 只读打开不创建缺失 authority。限制与开销见[分页合同](../../reference/canonical-snapshot-pagination.md)。
+shared-authority 的当前核对表区分已合入实现、在途 PR、新代码边界和 D1–D3 证据，不再以粗粒度包数代替剩余 PR。
+
 ## 跨 RFC 的执行优先级（2026-09-16）
 
 [统一路线](loopx-overall-roadmap-v0.zh-CN.md) 的 R1–R5 是 T0–T4 的当前产品消费者，不另设一套迁移阶段。团队确认路径现在由 `work_items/team_plan.ts` 负责预览、整批规划及不可变操作身份，复用现有 AuthorityStore 回执/CAS 边界。Python 保留公开安全校验与 legacy Markdown IO adapter，逐 lane 写入循环已移除。R1 检查点区分已交付的分配/重试结果与尚未验收的接收者/执行边界。
@@ -34,7 +49,7 @@ receipt，再执行新准入。这修复同 operation 并发竞争，不扩展 p
 删除 Python 的阻塞分类、伪造旧模式和整篇文本重写，保留来源投影、锁与 capture IO。
 旧扫描补齐事件独有 claim，canonical 回执复用 command recovery 并严格校验历史决策。
 完整快照和真实 provider 验证覆盖这一 T1/T2 替换；它关闭一处规则/调用差异，
-不代表关闭整项默认切换交付包，条件性的 5–8 包估算不变。
+不代表关闭整项默认切换交付包，剩余工作以当前核对表为准。
 [行为变化与恢复](../../reference/handoff-mode.md)。
 
 终结审核与验证已收敛到既有 TS terminal owner：Agent 完成、Monitor 停止复用 Chat
@@ -637,7 +652,7 @@ Todo 来源；frontier 和报告事实复用同一完整已求值快照。展示
 归档拒绝记录仍有效，显式 runtime-root 同时约束 intent 和 Todo IO。已冻结的编辑
 请求沿用原始依据，不因重试刷新。见[操作边界](../../../loopx/capabilities/periodic_report/README.md#todo-authority-and-report-retries)。
 这闭合一组 T3/L5 消费者，不代表 D1 永久展示新鲜度、D2 耐久性、D3 整 Goal
-资格或默认 provider 已完成；条件性的 5–8 个后续完整交付批次估算保持不变。
+资格或默认 provider 已完成；剩余工作以当前核对表为准。
 
 Todo 摘要 lane 与裁剪前工作计数现共用 `todos/summary_lanes.ts`，删除 Python 的
 lane 分类和隐藏任务推断循环。quota 在作用域筛选后重新计数，不完整来源状态贯穿
@@ -772,9 +787,10 @@ Python 验证前置 obligation id。压缩保留实质字段 `done`，历史保�
 多后继歧义、过期、来源截断或无关实质变化都不能关闭当前 obligation。
 这闭合一个 T3 规则组，不代表其余 consumer 或 T1/T2/D1–D3 完成。
 
-长链口径修正（#4667）：Agent lane 统计 15 项已认领 advancement，或存在已认领
-advancement 时的 20 项已认领 open Todo。共享候选仍可选，但不再计入本 lane 的
-义务；无 Agent 的 Goal 总览保留原可选池口径。
+长链口径修正（#4667、#5001）：Agent lane 仅在已认领的开放 advancement 达到 15 项时触发。
+持续监控和共享候选均不计入该阈值；共享候选仍可选。新义务不再使用原 20 项已认领
+open Todo 的触发分支，历史 checkpoint 的读取与前置义务恢复保持兼容；无 Agent 的
+Goal 总览保留原可选池口径。
 完整实质 revision 包含终态 advancement；仅更新时间不重新触发。完整的 Agent-owned
 identity 还能在同伴改变共享 unclaimed 工作时保持既有 long-chain ACK 有效。
 自己的实质工作变化仍重新触发；没有认领工作的 lane 不产生长链义务。
@@ -783,7 +799,7 @@ owned identity；只有 identity 而没有 revision、或明确不完整的 chec
 压制 replan；其他 trigger kind 不能借用长链身份匹配。同一 TS owner 现在提供
 基于 owned 实质内容的 `obligation_identity_revision`，供既有 Python 身份 codec
 及 predecessor 校验使用；同伴修改共享池不能在 ACK 前让本 Turn 的义务换 ID。
-阈值数值和写权限不变。`replan_semantics.ts` 为长链 review 接受并投影带证据的
+监控到期选择、无变化重规划规则和写权限不变。`replan_semantics.ts` 为长链 review 接受并投影带证据的
 vision path，保留既有 progress 出口和严格 vision 义务。真实 CLI 回归沿投影绑定
 验证持久 ACK、checkpoint、一次 spend 和下一 Turn 回读；维护不触发，自己任务的
 实质修改重新触发。本次推进总路线 S2/S3 已有 T3 owner，不新增 provider、迁移存储
@@ -1437,6 +1453,15 @@ transaction 只能靠削弱既有行为才能通过 invariant/recovery/performan
 实测交付记录存于[逐条 ledger](ledger/typescript-control-plane-migration-v0/)。
 每条记录说明已交付边界及剩余验收缺口；上方 T1–T4 检查点仍是当前迁移计划。
 
+### Canonical 显示确认与刷新恢复
+
+TS 拥有 canonical revision 比较、最新／固定版本意图及三次重试上限；Python 继续执行
+文件锁、耐久落盘和 Markdown 渲染。已提交刷新与同 Turn 重试复用这一恢复路径，规划
+快照同时供应缺失工作诊断和初始显示，删除 Python 的重试决策及晋升后从旧 Markdown
+再判断 Todo 数量的路径。没有增加 RPC 方法或持久 ACK，正常恢复增加一次确认读取。
+这是 T3／D1 的刷新调用方闭合；其他 consumer、D2 与整 Goal 切换仍需独立资格。
+见[投影合同](../../reference/protocols/active-state-structured-projection-v0.md)。
+
 ### Reviewed coordination cutover ownership
 
 Saved-plan execution and fenced recovery now share the TypeScript promotion
@@ -1450,3 +1475,16 @@ This is a migration orchestration checkpoint, not completion of Stage 3 or a
 default-provider flip. Integrate claim-preserving migration separately, retain
 real-backend and captured-source qualification, and retire Python only where its
 actual callers have moved. [Operator contract](../../reference/reviewed-coordination-promotion.md).
+
+### Todo 摘要决策收口
+
+已选来源的计数、展示分配、最近完成时间顺序、编排候选位置与收尾证明，收口到一个
+TS 摘要批次；Python 保留旧格式解码、公开字段筛选及渲染。删除旧 Python claim 分配
+算法和汇总分支，用一个内部入口替换 lane／closure 两次调用，不保留无调用方的旧 wire。
+公开 `todo_summary_v0` 和持久记录不变；完整来源的关系求值先于筛选，来源完整性不被
+查询命中情况覆盖。见[语义及回滚](../../reference/todo-work-counts.md)。这是 T3/L5 的
+共享读取边界推进，不替代 D2/D3 或 provider 默认切换。
+
+2026-09-24：[完整源捕获的 TS 组装与剩余交付包](ledger/shared-goal-authority-state-provider-v0/2026-09-24-source-capture.zh-CN.md)统一源构造、身份拒绝和当前图成员规则；不关闭 L7/D2/D3 或启用默认 provider。
+
+2026-09-24: [带租约接力与剩余本地默认交付包](ledger/shared-goal-authority-state-provider-v0/2026-09-24-leased-continuation.zh-CN.md).

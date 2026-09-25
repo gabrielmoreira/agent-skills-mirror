@@ -50,6 +50,7 @@ If no antislop pointer exists and this file is being read for the first time, ru
    - Mobile / responsive: `skills/antislop-layoutmobile/SKILL.md`
    - Code comments: `skills/antislop-code/SKILL.md`
    Before starting, ask the user when antislop applies: during the work, or after it is done.
+   To update antislop later: download `antislop.md` again, or run `npx antislop-ai --update` if it was installed as skill folders.
    <!-- antislop:end -->
    ```
    The packaged installers write the same two markers, so whichever install path runs last replaces the block instead of adding a second one. If an older antislop block exists (even without the markers), replace just that block instead of appending a duplicate.
@@ -62,11 +63,17 @@ Notes:
 
 ### Already installed, and the user asks how to update
 
-antislop never updates itself, and nothing announces a new release. Answer from the route the user installed with, and say which route you are assuming when you cannot tell:
+antislop never updates itself, and nothing announces a new release. Answer from the route the user installed with, and say which route you are assuming when you cannot tell. `npx antislop-ai --update` is the shortest path for the first two routes: it replaces every antislop folder it finds, at project and global scope, prints the release it replaced, and asks nothing.
 
 - **The installer** (`npx antislop-ai`): run it again, answer as before, and pick **Overwrite them**. It prints the version already on disk next to the version it carries, so nothing has to be compared by hand. *Keep what is there* installs nothing.
-- **The skills directory** (`npx skills add miqdadbadjuber/anti-slop`): run the same command again.
-- **A plugin door** (Claude Code, Antigravity, Codex, Cursor, Kimi Code, Cline): each agent has its own update command. `GUIDE.md` in the repo lists them one by one.
+- **The skills directory** (`npx skills add miqdadbadjuber/anti-slop`): run the same command again. An installer folder and a skills-directory folder hold the same files, so `--update` covers this route as well.
+- **A plugin door**: each agent keeps its own copy, and `--update` cannot reach those. The installer names the command for any door it finds installed; without it, these are the six:
+  - **Claude Code**: `claude plugin update antislop@anti-slop`
+  - **Antigravity**: `agy plugin install https://github.com/miqdadbadjuber/anti-slop`
+  - **Codex**: `codex plugin marketplace upgrade anti-slop`
+  - **Cursor**: `agent plugin marketplace update https://github.com/miqdadbadjuber/anti-slop`
+  - **Kimi Code**: `/plugins install https://github.com/miqdadbadjuber/anti-slop`
+  - **Cline**: `cline plugin install https://github.com/miqdadbadjuber/anti-slop.git --force`
 - **This file alone**: download it again and replace the copy.
 
 The folder this skill sits in holds a `VERSION` file naming the release it came from, unless it was installed before that file shipped. The current release is on the repo's releases page.

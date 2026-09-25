@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Gentleman-Programming/gentle-ai` — 26 default patterns, 0 followed patterns, 43 file(s) materialized.
+Mirror of `Gentleman-Programming/gentle-ai` — 26 default patterns, 0 followed patterns, 31 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Gentleman-Programming/gentle-ai` — 26 default patterns, 0 followed 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 43 |
+| Files         | 31 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -71,37 +71,25 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 10 | ✓ | [`internal/assets/skills/issue-creation/SKILL.md`](internal/assets/skills/issue-creation/SKILL.md) |
 | 11 | ✓ | [`internal/assets/skills/judgment-day/SKILL.md`](internal/assets/skills/judgment-day/SKILL.md) |
 | 12 | ✓ | [`internal/assets/skills/rdd-defect-workflow/SKILL.md`](internal/assets/skills/rdd-defect-workflow/SKILL.md) |
-| 13 | ✓ | [`internal/assets/skills/sdd-apply/SKILL.md`](internal/assets/skills/sdd-apply/SKILL.md) |
-| 14 | ✓ | [`internal/assets/skills/sdd-archive/SKILL.md`](internal/assets/skills/sdd-archive/SKILL.md) |
-| 15 | ✓ | [`internal/assets/skills/sdd-design/SKILL.md`](internal/assets/skills/sdd-design/SKILL.md) |
-| 16 | ✓ | [`internal/assets/skills/sdd-explore/SKILL.md`](internal/assets/skills/sdd-explore/SKILL.md) |
-| 17 | ✓ | [`internal/assets/skills/sdd-init/SKILL.md`](internal/assets/skills/sdd-init/SKILL.md) |
-| 18 | ✓ | [`internal/assets/skills/sdd-onboard/SKILL.md`](internal/assets/skills/sdd-onboard/SKILL.md) |
-| 19 | ✓ | [`internal/assets/skills/sdd-propose/SKILL.md`](internal/assets/skills/sdd-propose/SKILL.md) |
-| 20 | ✓ | [`internal/assets/skills/sdd-research/SKILL.md`](internal/assets/skills/sdd-research/SKILL.md) |
-| 21 | ✓ | [`internal/assets/skills/sdd-spec/SKILL.md`](internal/assets/skills/sdd-spec/SKILL.md) |
-| 22 | ✓ | [`internal/assets/skills/sdd-tasks/SKILL.md`](internal/assets/skills/sdd-tasks/SKILL.md) |
-| 23 | ✓ | [`internal/assets/skills/sdd-verify/SKILL.md`](internal/assets/skills/sdd-verify/SKILL.md) |
-| 24 | ✓ | [`internal/assets/skills/sdd-verify/strict-tdd-verify.md`](internal/assets/skills/sdd-verify/strict-tdd-verify.md) |
-| 25 | ✓ | [`internal/assets/skills/skill-creator/SKILL.md`](internal/assets/skills/skill-creator/SKILL.md) |
-| 26 | ✓ | [`internal/assets/skills/skill-improver/SKILL.md`](internal/assets/skills/skill-improver/SKILL.md) |
-| 27 | ✓ | [`internal/assets/skills/skill-registry/SKILL.md`](internal/assets/skills/skill-registry/SKILL.md) |
-| 28 | ✓ | [`internal/assets/skills/systemic-issue-triage/SKILL.md`](internal/assets/skills/systemic-issue-triage/SKILL.md) |
-| 29 | ✓ | [`internal/assets/skills/work-unit-commits/SKILL.md`](internal/assets/skills/work-unit-commits/SKILL.md) |
-| 30 | ✓ | [`skills/branch-pr/SKILL.md`](skills/branch-pr/SKILL.md) |
-| 31 | ✓ | [`skills/chained-pr/references/chaining-details.md`](skills/chained-pr/references/chaining-details.md) |
-| 32 | ✓ | [`skills/chained-pr/SKILL.md`](skills/chained-pr/SKILL.md) |
-| 33 | ✓ | [`skills/cognitive-doc-design/SKILL.md`](skills/cognitive-doc-design/SKILL.md) |
-| 34 | ✓ | [`skills/comment-writer/SKILL.md`](skills/comment-writer/SKILL.md) |
-| 35 | ✓ | [`skills/gentle-ai-bench/SKILL.md`](skills/gentle-ai-bench/SKILL.md) |
-| 36 | ✓ | [`skills/gentle-ai-collab-perfect/SKILL.md`](skills/gentle-ai-collab-perfect/SKILL.md) |
-| 37 | ✓ | [`skills/issue-root-resolution/SKILL.md`](skills/issue-root-resolution/SKILL.md) |
-| 38 | ✓ | [`skills/rdd-advisory-transport/references/issue-impact-matrix.md`](skills/rdd-advisory-transport/references/issue-impact-matrix.md) |
-| 39 | ✓ | [`skills/rdd-advisory-transport/references/shared-advisory-transport-proposal.md`](skills/rdd-advisory-transport/references/shared-advisory-transport-proposal.md) |
-| 40 | ✓ | [`skills/rdd-advisory-transport/SKILL.md`](skills/rdd-advisory-transport/SKILL.md) |
-| 41 | ✓ | [`skills/rdd-defect-workflow/SKILL.md`](skills/rdd-defect-workflow/SKILL.md) |
-| 42 | ✓ | [`skills/systemic-issue-triage/SKILL.md`](skills/systemic-issue-triage/SKILL.md) |
-| 43 | ✓ | [`skills/work-unit-commits/SKILL.md`](skills/work-unit-commits/SKILL.md) |
+| 13 | ✓ | [`internal/assets/skills/skill-creator/SKILL.md`](internal/assets/skills/skill-creator/SKILL.md) |
+| 14 | ✓ | [`internal/assets/skills/skill-improver/SKILL.md`](internal/assets/skills/skill-improver/SKILL.md) |
+| 15 | ✓ | [`internal/assets/skills/skill-registry/SKILL.md`](internal/assets/skills/skill-registry/SKILL.md) |
+| 16 | ✓ | [`internal/assets/skills/systemic-issue-triage/SKILL.md`](internal/assets/skills/systemic-issue-triage/SKILL.md) |
+| 17 | ✓ | [`internal/assets/skills/work-unit-commits/SKILL.md`](internal/assets/skills/work-unit-commits/SKILL.md) |
+| 18 | ✓ | [`skills/branch-pr/SKILL.md`](skills/branch-pr/SKILL.md) |
+| 19 | ✓ | [`skills/chained-pr/references/chaining-details.md`](skills/chained-pr/references/chaining-details.md) |
+| 20 | ✓ | [`skills/chained-pr/SKILL.md`](skills/chained-pr/SKILL.md) |
+| 21 | ✓ | [`skills/cognitive-doc-design/SKILL.md`](skills/cognitive-doc-design/SKILL.md) |
+| 22 | ✓ | [`skills/comment-writer/SKILL.md`](skills/comment-writer/SKILL.md) |
+| 23 | ✓ | [`skills/gentle-ai-bench/SKILL.md`](skills/gentle-ai-bench/SKILL.md) |
+| 24 | ✓ | [`skills/gentle-ai-collab-perfect/SKILL.md`](skills/gentle-ai-collab-perfect/SKILL.md) |
+| 25 | ✓ | [`skills/issue-root-resolution/SKILL.md`](skills/issue-root-resolution/SKILL.md) |
+| 26 | ✓ | [`skills/rdd-advisory-transport/references/issue-impact-matrix.md`](skills/rdd-advisory-transport/references/issue-impact-matrix.md) |
+| 27 | ✓ | [`skills/rdd-advisory-transport/references/shared-advisory-transport-proposal.md`](skills/rdd-advisory-transport/references/shared-advisory-transport-proposal.md) |
+| 28 | ✓ | [`skills/rdd-advisory-transport/SKILL.md`](skills/rdd-advisory-transport/SKILL.md) |
+| 29 | ✓ | [`skills/rdd-defect-workflow/SKILL.md`](skills/rdd-defect-workflow/SKILL.md) |
+| 30 | ✓ | [`skills/systemic-issue-triage/SKILL.md`](skills/systemic-issue-triage/SKILL.md) |
+| 31 | ✓ | [`skills/work-unit-commits/SKILL.md`](skills/work-unit-commits/SKILL.md) |
 
 ---
 

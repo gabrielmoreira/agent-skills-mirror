@@ -13,6 +13,8 @@ metadata:
 
 End-to-end release workflow for skillshare. $ARGUMENTS specifies the version (e.g., `v0.19.0`).
 
+Before acting, run `python3 scripts/ai-context.py release testing`. Those topics are the source of truth for authorization, release artifacts and verification; this skill retains the release orchestration and draft formats.
+
 ## Prerequisites
 
 - All feature work merged to current branch
@@ -83,6 +85,8 @@ This ensures `skillshare upgrade --skill` detects the new version correctly.
 
 ### Phase 5: Commit & Tag
 
+Commit and tag only when the release request includes it or the user confirms; the tag is what publishes.
+
 ```bash
 git add CHANGELOG.md website/src/pages/changelog.md skills/skillshare/SKILL.md
 # Only if the user explicitly asked to commit release notes:
@@ -120,12 +124,4 @@ git push origin HEAD --tags
 
 ## Rules
 
-- **Fix, don't skip** — if tests fail, fix them before continuing
-- **User perspective** — all written output is for users, not developers
-- **Short drafts** — announcements default to concise; user will ask for more detail if needed
-- **No fabricated links** — never invent URLs or references
-- **Verify before claiming** — grep source before stating a feature exists
-- **Ask before push** — never push or publish without explicit user confirmation
-- **Release notes stay local by default** — never force-add or commit `specs/RELEASE_NOTES_*.md` unless the user explicitly asks
-- **Commit message** — always `chore: release vX.Y.Z`
-- **No competitive references** — never mention competitor repos in commit messages or notes
+Apply `release` and `testing`. Never infer permission to push or publish from preparation work.

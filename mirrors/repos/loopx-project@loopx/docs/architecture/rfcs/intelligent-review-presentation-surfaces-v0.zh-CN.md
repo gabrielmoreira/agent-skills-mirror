@@ -560,6 +560,16 @@ Adaptive policy 必须 inspectable、resettable，其输出携带 reason codes�
 展示切片，不是已交付的团队流，也不新增调度权限。其 L1–L3 计划与 V1–V7 验收
 展开本 RFC Stage 3 的展示旅程，不关闭本文跨渠道或受治理 settlement 验收。
 
+### 8.8 可复用的对话工作界面
+
+管家 Chat、Goal Chat、直接 Agent 对话及其前端/飞书投影，共用一种交互方式。简单事实问题直接回答并给来源；复杂调查给出先行结论、可读 Markdown 报告、证据链接、判断和有界的不确定性。回答结构适应任务，不强制四段模板。保存完整答复；现有工件 owner 支持时提供可独立打开的报告引用。仅以受控安全子集渲染模型 Markdown，不把答复中的 HTML 当可执行内容。渠道长度限制可以调整密度，不能无声删掉结论或证据入口。只有附件不能结清答复义务。
+
+把宿主真实事件投影成紧凑的当前阶段和可展开历史：已接受、排队、开始、工具/公开进度、等待、中断、失败、完成。最终答复优先；完成的日常过程收起，拒绝、无结果、接收方失联保持可见。分别保留来源消息、已准入 Turn、当前续接 owner、事件游标和最终结果身份。重连及重放不能启动第二次模型 Turn、重复事件或丢失最终结果；adapter 未发出的工具活动不能臆造。
+
+停止和修正绑定当前 session 与 Turn，旧控件不能影响后来的 Turn。停止读回区分真实中断、已经结束、不支持或拒绝。忙时修正要么作为本轮原生 steering 接收，要么带可恢复入口回执明确排入后续回合；完成竞态与丢失 ACK 不能使它无声消失。停止对话 Turn 不隐式影响被委派 worker 的 Todo/lease 或待回传义务。前端与飞书以各自展示密度验收同一身份、中断、重放及受众隔离用例。此共用合同复用 Chat/session、工件和展示 owner，不新增第二套对话存储或调度器。
+
+Botmux 是交互参考：[实时卡片](https://github.com/deepcoldy/botmux/blob/982e2c9f16e4f45ae2581967bc1a35a286e7bfa2/docs-site/docs/zh/cards.md)优先保留最终答复、折叠真实过程；[会话模型](https://github.com/deepcoldy/botmux/blob/982e2c9f16e4f45ae2581967bc1a35a286e7bfa2/docs-site/docs/zh/session-model.md)区分对话权与操作权；[Codex 纠偏研究](https://github.com/deepcoldy/botmux/blob/982e2c9f16e4f45ae2581967bc1a35a286e7bfa2/docs/design/2026-05-28-codex-type-ahead-steer-design.md)记录忙时消息会合并或分开回复。停止能力因后端而异。这些公开来源指导竞态和展示验收，不能替代 LoopX adapter 的真实资格，也不要求把 Botmux 装到已有飞书 token 上。
+
 ## 9. 覆盖长程工作的完整生命周期
 
 | 阶段 | 智能化界面的职责 |

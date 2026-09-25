@@ -231,6 +231,18 @@ For a multi-page or production UI, emit a short `DESIGN.md`-style summary before
 
 For a single component or quick prototype, skip this. The three-line thesis in SKILL.md is sufficient.
 
+## Aesthetic Review Checks
+
+Run before the handoff summary of a new page or visual system; fix any that fail first.
+
+- Is the brand or product unmistakable in the first screen?
+- Is there one strong visual anchor (real imagery, not a decorative gradient)?
+- Can the page be understood by scanning headlines only?
+- Does each section have one job?
+- Are cards actually necessary, or just default styling?
+- Does motion improve hierarchy or atmosphere, or is it ornamental?
+- Would the design still feel premium if all decorative shadows were removed?
+
 ## Pre-Handoff Checklist: Strategic Omissions
 
 These are audit prompts, not automatic implementation scope. Run through them before handoff and report material omissions. Add one only when the current task or target project's public requirements include that surface; never create a route, footer link, consent flow, or policy page as incidental visual polish.

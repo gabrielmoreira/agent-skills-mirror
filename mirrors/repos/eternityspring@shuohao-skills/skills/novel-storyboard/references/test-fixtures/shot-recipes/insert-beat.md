@@ -5,5 +5,5 @@ name_en: Insert beat
 cuts: [1, 1]
 sizes: [close, extreme-close]
 cameras: [Static Shot, Push In]
-must_phrases: [action in progress, isolated detail]
+must_phrases: [动作进行中, 孤立细节]
 ---

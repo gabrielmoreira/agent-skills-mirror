@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `livekit/agent-skills` — 26 default patterns, 0 followed patterns, 9 file(s) materialized.
+Mirror of `livekit/agent-skills` — 26 default patterns, 3 followed patterns, 18 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `livekit/agent-skills` — 26 default patterns, 0 followed patterns, 9
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 0 |
-| Files         | 9 |
+| Followed pats | 3 |
+| Files         | 18 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,7 +51,9 @@ Mirror of `livekit/agent-skills` — 26 default patterns, 0 followed patterns, 9
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-_None._
+- `README.md`
+- `CONTRIBUTING.md`
+- `CODE_OF_CONDUCT.md`
 
 ## File Index
 
@@ -61,13 +63,22 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 3 | ✓ | [`skills/livekit-agents/references/freshness-rules.md`](skills/livekit-agents/references/freshness-rules.md) |
-| 4 | ✓ | [`skills/livekit-agents/SKILL.md`](skills/livekit-agents/SKILL.md) |
-| 5 | ✓ | [`skills/livekit-simulations/references/analyzing-the-agent.md`](skills/livekit-simulations/references/analyzing-the-agent.md) |
-| 6 | ✓ | [`skills/livekit-simulations/references/user-guidance.md`](skills/livekit-simulations/references/user-guidance.md) |
-| 7 | ✓ | [`skills/livekit-simulations/references/writing-scenarios.md`](skills/livekit-simulations/references/writing-scenarios.md) |
-| 8 | ✓ | [`skills/livekit-simulations/scripts/build_scenarios.py`](skills/livekit-simulations/scripts/build_scenarios.py) |
-| 9 | ✓ | [`skills/livekit-simulations/SKILL.md`](skills/livekit-simulations/SKILL.md) |
+| 3 | ✓ | [`evals/output/README.md`](evals/output/README.md) |
+| 4 | ✓ | [`evals/trigger/README.md`](evals/trigger/README.md) |
+| 5 | ✓ | [`skills/building-livekit-agents/references/state-and-effects.md`](skills/building-livekit-agents/references/state-and-effects.md) |
+| 6 | ✓ | [`skills/building-livekit-agents/SKILL.md`](skills/building-livekit-agents/SKILL.md) |
+| 7 | ✓ | [`skills/debugging-livekit-agents/SKILL.md`](skills/debugging-livekit-agents/SKILL.md) |
+| 8 | ✓ | [`skills/operating-livekit-agents/SKILL.md`](skills/operating-livekit-agents/SKILL.md) |
+| 9 | ✓ | [`skills/reading-livekit-docs/SKILL.md`](skills/reading-livekit-docs/SKILL.md) |
+| 10 | ✓ | [`skills/running-livekit-simulations/SKILL.md`](skills/running-livekit-simulations/SKILL.md) |
+| 11 | ✓ | [`skills/testing-livekit-agents/SKILL.md`](skills/testing-livekit-agents/SKILL.md) |
+| 12 | ✓ | [`skills/writing-livekit-scenarios/references/connecting-the-agent.md`](skills/writing-livekit-scenarios/references/connecting-the-agent.md) |
+| 13 | ✓ | [`skills/writing-livekit-scenarios/references/risk-coverage.md`](skills/writing-livekit-scenarios/references/risk-coverage.md) |
+| 14 | ✓ | [`skills/writing-livekit-scenarios/references/scenario-craft.md`](skills/writing-livekit-scenarios/references/scenario-craft.md) |
+| 15 | ✓ | [`skills/writing-livekit-scenarios/SKILL.md`](skills/writing-livekit-scenarios/SKILL.md) |
+| 16 | → | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
+| 17 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 18 | → | [`README.md`](README.md) |
 
 ---
 

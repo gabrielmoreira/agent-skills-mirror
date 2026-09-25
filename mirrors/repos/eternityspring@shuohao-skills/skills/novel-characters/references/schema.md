@@ -6,7 +6,6 @@
 {
   "source": "渡口",
   "lang": "zh",
-  "style": "realistic",
   "summary": "民国年间的清晨，一条河的渡口浓雾未散。摆渡四十年的老船夫照常开船，先后上船的是……",
   "characters": [ /* 角色卡 */ ]
 }
@@ -16,7 +15,6 @@
 | --- | --- | --- |
 | `source` | 是 | 书名/篇名，报告标题用 |
 | `lang` | 是 | 报告语言，默认 `zh` |
-| `style` | 是 | 出图风格，默认 `realistic`；`ghibli` 是吉卜力动画风。见 `style-presets.md` |
 | `ui` | 视情况 | 界面文案翻译。`lang` 是 `zh`/`en`/`ja` 时**不需要**（内置）；其他任何语言**必填**，否则 `validate` 报错。用 `ui-template <lang>` 生成骨架后翻译。只覆盖部分键也可以，缺的用内置英文兜底 |
 | `summary` | 是 | **故事摘要**，中文 3–5 句。交代时空背景、核心情境、人物聚在一起的由头。报告顶部显示，让人不看原文也知道这几个角色是什么关系。不要剧透结局，也不要写成推荐语 |
 | `characters` | 是 | 角色卡数组 |
@@ -46,11 +44,10 @@
   },
 
   "image": {
-    "style": "Flat vector cartoon with ink-wash colouring",
     "prompt": "Character design sheet of an elderly Chinese ferryman ...",
     "promptLocal": "角色设定图：约七十岁的中国老船夫……",
-    "negativePrompt": "photorealistic, 3d render, young face, ...",
-    "tags": ["flat vector", "character sheet", "ink wash palette"],
+    "negativePrompt": "young face, smooth poreless skin, perfectly symmetrical face, dead eyes without catchlights, helmet hair, extra fingers, ...",
+    "tags": ["character sheet", "three-quarter view", "neutral background"],
     "sheet": "Single character model sheet on ONE 16:9 landscape canvas ... LEFT ZONE ... about 34% ... one bust portrait ... RIGHT-TOP ZONE ... three FULL-BODY views ... PROPORTIONS ARE CRITICAL ... RIGHT-BOTTOM ZONE ... four to five small isolated close-up studies ..."
   },
 
@@ -78,11 +75,10 @@
 | `oneLiner` | string | **本地语言** | 一句话抓住这个人 |
 | `persona.*` | — | **本地语言** | `personality` 3–5 个词 |
 | `persona.evidence` | string[] | **原文语言** | **逐字引用**，永远不翻译——翻了就不是证据了。没有就空数组 |
-| `image.style` | string | 本地语言 | 画风一句话 |
-| `image.prompt` | string | **英文** | 单张卡通设定图；**禁止出现人名**；**必须写明族裔／年代／地域** |
+| `image.prompt` | string | **英文** | 单张人物图；**禁止出现人名**；**必须写明族裔／年代／地域，并保留身份对应的可见设计**，不指定渲染画风 |
 | `image.promptLocal` | string | 本地语言 | 上面那条的译文；`lang=en` 时省略；**同样禁止人名** |
 | `image.negativePrompt` | string | **英文** | 逗号分隔 |
-| `image.tags` | string[] | **英文** | 4–8 个风格标签 |
+| `image.tags` | string[] | **英文** | 4–8 个检索标签：题材、年代、色板、材质、光照。**不打画风标**（`semi-realistic`、`painterly` 这类），画风出图时才定 |
 | `image.sheet` | string | **英文** | **角色设定图**，16:9 三区版面：左约 34% 半身像（面部基准）／右上全身三视图／右下细节条，细线分隔；**禁止出现人名**；**必须写明族裔／年代／地域** |
 | `voice.timbre/pitch/pace/accent/emotion/referenceHint` | string | **本地语言** | 最容易写漂的地方，注意 |
 | `voice.prompt` | string | **英文** | 给 TTS 音色设计引擎。**没有 `promptLocal` 对照版，这是有意的**——上面六项已经是本地语言，再给一段中文散文只会让人复制错，把它喂进 TTS（生产里踩过） |
@@ -102,3 +98,5 @@
 ## 校验
 
 `scripts/novel-characters.mjs validate <cast.json> <book.txt>` 会检查：结构完整性、`importance` 枚举、**引文逐字**、**出图提示词不含人名**、**语言分工**。违规逐条列出并 exit 1。
+
+脚本不判断衣着是否符合人物身份。该项由生成角色卡时按 `profile-pass.md` 的身份—外观语义自检完成；通过结构校验不代表造型语义已通过。

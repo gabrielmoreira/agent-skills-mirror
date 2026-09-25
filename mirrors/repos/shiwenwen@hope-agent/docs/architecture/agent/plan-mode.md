@@ -327,9 +327,9 @@ flowchart TD
 
 - **创建时机**：`Review → Executing` 转移瞬间，仅当尚无 checkpoint（`should_create_execution_checkpoint`）。
 - **机制**：在 HEAD 上创建一个临时 **branch**（不是 stash），命名 `hope-agent/checkpoint-{session_short}-{UTC_YYYYMMDDTHHMMSSZ}-{uuid8}`——UTC + UUID 尾巴避免 DST 与同秒跨设备撞名。branch 名记进 `PlanMeta.checkpoint_ref`。
-- **回滚**：`rollback_to_checkpoint` 执行 `git reset --hard <checkpoint_branch>` 撤销执行期全部改动，成功后删掉该 branch。用户可通过 `plan_rollback` 命令显式触发。
+- **回滚**：`rollback_session_to_checkpoint` 先检查会话写权限，再通过内部 `rollback_to_checkpoint` 执行 `git reset --hard <checkpoint_branch>` 撤销执行期全部改动，成功后删掉该 branch。用户可通过 `plan_rollback` 命令显式触发。
 - **清理**：`Executing → Completed` 或 `→ Off` 时 `cleanup_checkpoint` 删 branch（Completed 额外显式清 `checkpoint_ref`，见上文）。
-- 所有 git 调用都经 `git_command()` 包一层（Windows 上 `CREATE_NO_WINDOW` 防止控制台闪窗），入口 `create_checkpoint_for_session` / `rollback_to_checkpoint` / `cleanup_checkpoint` 在 `plan/git.rs`，转移一致性由 `transition_state` 统一保证。
+- 所有 git 调用都经 `git_command()` 包一层（Windows 上 `CREATE_NO_WINDOW` 防止控制台闪窗），入口 `create_checkpoint_for_session` / `rollback_session_to_checkpoint` / `cleanup_checkpoint` 在 `plan/git.rs`，转移一致性由 `transition_state` 统一保证。导入的 Codex 会话在状态转换、计划保存和回滚入口被拒绝，不能创建或回滚 checkpoint。
 
 ### 中途进入 Plan Mode 的执行层收紧
 

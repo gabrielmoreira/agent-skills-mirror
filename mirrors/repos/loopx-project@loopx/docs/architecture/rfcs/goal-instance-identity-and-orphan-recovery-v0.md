@@ -729,9 +729,10 @@ promotion retain their own acceptance. No new paid cohort or soak is authorized.
 1. **Supported package/profile matrix:** release and host owners pin all supported
    object-only, codec-only and enforcement packages and exclusion evidence before
    M2 activation. v2 names are proposed; protocol support requires semantics.
-2. **Exact commit guard:** Goal lifecycle and TS transaction owners must choose
-   and prove the local retirement/commit lock and external-effect drain contract
-   before M2. A digest recheck alone cannot discharge this hold.
+2. **Exact commit guard:** The M2 source-session candidate uses one
+   alias-scoped cross-runtime lock around the project-registry transaction.
+   M3 must still prove the external-effect drain contract before activation.
+   A digest recheck alone cannot discharge that hold.
 3. **Canonical destination/provider import:** reuse the current path owner; follow
    #4915 without assuming merge. Provider-state adoption needs its own reviewed
    import contract; the first file-only slice rejects it.
@@ -754,6 +755,18 @@ promotion retain their own acceptance. No new paid cohort or soak is authorized.
 - **Known gaps:** No instance enforcement, activation or resolution fixture has shipped.
 - **Effect on normative design:** Align with roadmap/TS/shared authority; separate codec
   compatibility from enforcement, specify commit fencing and legacy cleanup.
+
+### 2026-09-23: M2 source-session implementation candidate
+
+- **Baseline:** `cbbdd837f65c8ba28161115cc4ce39093bfa2951`
+- **Proposed:** A fresh-project-only `source_session_v1` profile, exact bind and
+  unbind receipts, journaled A-to-B recreation, and read-only exact resolution.
+- **Evidence:** Real CLI tests cover ABA ordering, pre-publication retry,
+  post-publication forward repair, exact-byte replacement rollback, operation
+  ID conflicts, capacity rejection, and replay at capacity.
+- **Remaining hold:** Every result has `execution_authority: false`. M3 must
+  qualify the remaining effect owners before existing-project activation or
+  global routing can open.
 
 ## Appendix B: Decision log
 

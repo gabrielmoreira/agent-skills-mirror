@@ -58,7 +58,7 @@ baseline/head comparison and a failing-before or mutation check, not just test c
   Documentation-only changes may use a static/manual row and explain runtime N/A.
   A passing row does not waive required real-path/backend gates. -->
 
-See [validation disclosure guidance](https://github.com/huangruiteng/loopx/blob/main/CONTRIBUTING.md#validation-disclosure).
+See [validation disclosure guidance](https://github.com/loopx-project/loopx/blob/main/CONTRIBUTING.md#validation-disclosure).
 
 ## Frontend / Visual Evidence
 

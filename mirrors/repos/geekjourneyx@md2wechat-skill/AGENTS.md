@@ -52,16 +52,16 @@ Treat these commands as the source of truth for:
 - currently supported image providers
 - currently visible themes after override resolution
 - bundled and overridden prompt catalog entries
-- advanced layout counts: 77 recommended source scenarios, 56 recommended syntax names, 3 compatibility modules, 4 base enhancements, and 63 render-layer syntax capabilities
+- advanced layout counts: 83 recommended source scenarios, 59 recommended syntax names, 3 compatibility modules, 4 base enhancements, and 65 render-layer syntax capabilities
 - the nine recommended layout categories: `opening`, `infographic`, `judgment`, `evidence`, `conversion`, `brand`, `sprint4`, `free-layout`, and `interactive`
 - humanizer intensity levels: `gentle` / `medium` / `aggressive` / `authentic`
 
 **高级排版模块约束**：`layout` 模块使用通用 `:::name` 语法，仅在 **API 模式**（`convert` 默认）下渲染。`block` 是保留语法名，不是通用占位符。
 AI 模式（`--mode ai`）不解析 `:::name` 高级排版块，这些块将以普通段落输出。
 
-每个 recommended 语法必须有一个 canonical executable witness；只有结构不同的 renderer 分支才增加 variant witness。77 场景到推荐语法名的 mapping 只保存在测试中，不进入 CLI discovery 或运行时 catalog。
+每个 recommended 语法必须有一个 canonical executable witness；只有结构不同的 renderer 分支才增加 variant witness。83 场景到推荐语法名的 mapping 只保存在测试中，不进入 CLI discovery 或运行时 catalog。
 
-真实 conformance 必须证明 84 个 witness（56 个 recommended canonical、25 个结构不同的 non-default branch、3 个 compatibility）都由目标 API 语义渲染：响应成功、模块 marker 与稳定内容存在、原始 `:::name` fence 不残留。`layout validate` 成功不等于远端 renderer 已部署。
+真实 conformance 必须证明 93 个 witness（59 个 recommended canonical、32 个结构不同的 non-default branch、2 个 compatibility）都由目标 API 语义渲染：响应成功、模块 marker 与稳定内容存在、原始 `:::name` fence 不残留。`layout validate` 成功不等于远端 renderer 已部署。
 
 新内容读取 `layout show` 时，依次读取 `input_positions`、primary `body_format` 与对应 `Opener`/`Fields`/`Rows`/`Body`、canonical `Variants[].Name`、canonical `Example`。`compatible_body_formats` 和 `Variants[].Aliases` 只读且只服务旧稿兼容，不得作为新内容选择。
 
@@ -203,6 +203,7 @@ Coverage guidance:
    - environment variables such as `IMAGE_API_BASE`
    - `config show --format json` output keys such as `image_api_base`
    Do not mix these three layers in docs or agent guidance.
+12. On every version change, re-audit the README top `[!TIP]`, capability table, API comparison, Professional API bullets, and layout section against `VERSION` and source-built CLI discovery.
 
 ## Image Prompt Discipline
 

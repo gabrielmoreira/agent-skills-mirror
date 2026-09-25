@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `topoteretes/cognee` — 26 default patterns, 0 followed patterns, 14 file(s) materialized.
+Mirror of `topoteretes/cognee` — 26 default patterns, 0 followed patterns, 15 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `topoteretes/cognee` — 26 default patterns, 0 followed patterns, 14 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 14 |
+| Files         | 15 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -67,12 +67,13 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 6 | ✓ | [`.claude/skills/cognee-permissions/SKILL.md`](.claude/skills/cognee-permissions/SKILL.md) |
 | 7 | ✓ | [`.claude/skills/cognee-server/SKILL.md`](.claude/skills/cognee-server/SKILL.md) |
 | 8 | ✓ | [`.github/prompts/docs_edit.md`](.github/prompts/docs_edit.md) |
-| 9 | ✓ | [`.github/prompts/docs_scope_plan.md`](.github/prompts/docs_scope_plan.md) |
-| 10 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 11 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 12 | ✓ | [`examples/demos/feedback/skill_feedback_loop/skills/diff-risk-explainer/SKILL.md`](examples/demos/feedback/skill_feedback_loop/skills/diff-risk-explainer/SKILL.md) |
-| 13 | ✓ | [`examples/demos/feedback/skill_feedback_loop/skills/pr-comment-evaluator/SKILL.md`](examples/demos/feedback/skill_feedback_loop/skills/pr-comment-evaluator/SKILL.md) |
-| 14 | ✓ | [`examples/demos/feedback/skill_feedback_loop/skills/skill-feedback-writer/SKILL.md`](examples/demos/feedback/skill_feedback_loop/skills/skill-feedback-writer/SKILL.md) |
+| 9 | ✓ | [`.github/prompts/docs_issue_edit.md`](.github/prompts/docs_issue_edit.md) |
+| 10 | ✓ | [`.github/prompts/docs_scope_plan.md`](.github/prompts/docs_scope_plan.md) |
+| 11 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 12 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 13 | ✓ | [`examples/demos/feedback/skill_feedback_loop/skills/diff-risk-explainer/SKILL.md`](examples/demos/feedback/skill_feedback_loop/skills/diff-risk-explainer/SKILL.md) |
+| 14 | ✓ | [`examples/demos/feedback/skill_feedback_loop/skills/pr-comment-evaluator/SKILL.md`](examples/demos/feedback/skill_feedback_loop/skills/pr-comment-evaluator/SKILL.md) |
+| 15 | ✓ | [`examples/demos/feedback/skill_feedback_loop/skills/skill-feedback-writer/SKILL.md`](examples/demos/feedback/skill_feedback_loop/skills/skill-feedback-writer/SKILL.md) |
 
 ---
 

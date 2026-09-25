@@ -73,6 +73,10 @@ require a separate policy-exception approval. Record its source, transaction typ
 the transaction review. Apply the selected policy to every signer and do not silently substitute a different tier or
 transaction type. Do not reuse Ethereum fee values on another chain.
 
+Elsewhere, absent a selected policy, set an EIP-1559 max fee with headroom over the latest base fee, such as
+`2 * baseFee + priorityFee`, instead of passing `eth_gasPrice` as the cap. The charge stays base fee plus tip, while an
+exact cap can fall below the base fee before signing and force a revised review.
+
 #### Chain-specific gas accounting
 
 Resolve the chain's active fee model before choosing a transaction type or subtracting fees from a balance. Use current
@@ -192,9 +196,10 @@ method is available; never ask for a key in chat or print it.
 `cast send` signs and broadcasts in one command. Run it only after the review approval. So do the Cast 1.8.3+ helpers
 `cast erc20-token transfer|approve|mint|burn`, `cast erc20-token permit --broadcast`,
 `cast erc4626 deposit|mint|withdraw|redeem`, and `cast safe propose|sign|execute`: apply the same Prepare, Simulate, and
-Review phases to them; a Safe proposal or confirmation is a signature artifact that needs its own payload review.
-Signing a message or typed data, including `cast erc20-token permit` without `--broadcast`, also requires a review of
-the exact payload, domain, chain binding, and intended use before approval.
+Review phases to them; a Safe proposal or confirmation is a signature artifact that needs its own payload review. Treat
+any other subcommand whose installed help shows it signs or submits, such as `cast safe create`, `add-delegate`, or
+`remove-delegate`, the same way. Signing a message or typed data, including `cast erc20-token permit` without
+`--broadcast`, also requires a review of the exact payload, domain, chain binding, and intended use before approval.
 
 Pass the selected fees explicitly: EIP-1559 uses `--gas-price` and `--priority-gas-price`; a fixed legacy policy uses
 `--legacy --gas-price` without `--priority-gas-price`. Under the default Ethereum policy, use the approved Rabby Slow

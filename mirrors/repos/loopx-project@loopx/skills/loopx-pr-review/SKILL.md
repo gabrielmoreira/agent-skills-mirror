@@ -68,14 +68,15 @@ Follow `scheduling_policy` and its ranked actionable `review_sequence`; explicit
 When `review_action_kind` is null, the row stays in `pull_requests` inventory but must not appear in `review_sequence`; its `review_plan` and `review_template` are null and `evidence_commands` is empty. Do one compact exact-head conclusion readback and report the existing verdict or bounded invalid/missing reason. Run a fresh audit only when the user explicitly requests fresh evidence despite that no-action result, or supplies a concrete new concern/evidence invalidation; regenerate with `--fresh-audit-exact-head NUMBER@HEAD_OID`, then execute the complete current plan and never inherit the earlier approval. For every actionable PR:
 
 1. Record the packet's exact head. Follow `review_execution_contract.decision_procedure`, starting with the current goal
-   and its delivery judgment in `problem_context`, including on re-review;
+   and `problem_context` judgment of delivery, sustained progress and user experience, including on re-review;
    then run `evidence_commands` and relevant repository-native validation.
 2. Fill `review_plan.result_template` from the shared execution contract;
    preserve missing evidence as `unverified`. Execute its repository-reuse,
    default-off, authority and real-path counterfactual requirements rather than
    repeating them as prose. Never infer `verified` from metadata or CI.
-3. Apply `completion_gate` literally. Save the filled result and check it before
-   publication:
+3. Apply `completion_gate` literally: save final Markdown in `review_body`, then check
+   evidence and that exact body. Follow capability-owned floors and scope
+   counterfactuals; prose cannot replace missing execution:
 
    ```bash
    loopx --format json pr-review --check-result review-result.json --packet review-packet.json
@@ -86,13 +87,12 @@ When `review_action_kind` is null, the row stays in `pull_requests` inventory bu
    an old result relabeled without executing the current plan. Verified rows fill
    their declared fields; validation rows bind typed `case_id` coverage, and
    missing material evidence needs a concrete request-changes reason.
-4. Render the verified result through `review_template`. The five sections are
-   output structure, while the execution contract is the evidence authority.
+4. Publish the checked `review_body`; recheck after edits. Remote readback uses
+   the same body rules. Headings and a verdict alone cannot certify a review.
 5. Re-read the remote head immediately before verdict and publication. Restart
    the evidence pass if it changed.
 
-Each PR gets an independent evidence pass and standalone card; a queue table is
-only a preface. Finish fewer complete cards rather than metadata-only reviews.
+Each PR needs independent evidence and a standalone card; a queue table is only a preface.
 
 For managed review, pass `--goal-id GOAL` and follow the packet’s resolved `wait_for_ci`: false means never fetch, poll, or wait for CI; true retains CI validation. Required local failures/skips always block. Configure one Goal with `configure-goal --goal-id GOAL --no-pr-review-wait-for-ci --execute`; clear with `--clear-pr-review-configuration --execute`.
 

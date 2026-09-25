@@ -162,6 +162,7 @@ Use CLI discovery as the source of truth for layout syntax instead of memorizing
 - Inspect the opener, body schema, canonical executable example, and structurally distinct variants with `layout show <name> --json`. Reuse the canonical witness.
 - Use `layout render` for structured fields and `--body-file` (or `--body-file -` for stdin) for complex bodies, then validate the generated Markdown.
 - Default discovery returns recommended modules. Use `layout list --lifecycle compatibility --json` only for old-content migration. Local validation proves syntax acceptance only; production support is a release-conformance fact.
+- `gallery` is recommended. For `expand`, pass header fields, a standalone `---`, and Markdown body through `--body-file`. `cover-reveal` and `expand` default to complete static output; use `first-layer` only when the user explicitly requests an interaction candidate, and verify the target API before relying on it.
 
 Default module discipline:
 

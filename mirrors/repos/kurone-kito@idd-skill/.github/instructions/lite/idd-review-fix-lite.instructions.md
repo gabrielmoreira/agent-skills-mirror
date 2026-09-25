@@ -22,7 +22,9 @@ review-fix instructions instead.
 - **Command sets**: `fix-validate` (E9) and `post-fix-validate` (E12) are
   read from `.github/idd/config.json`'s `commands` mapping. If that file
   is missing or the command set cannot be read, stop and ask rather than
-  guessing a command.
+  guessing a command. Judge each run by exit status (Bash
+  `${PIPESTATUS[0]}`/`set -o pipefail`); a `tail`/`head` filter can't
+  prove success (#3139).
 
 ## Upstream-triage boundary
 
@@ -97,11 +99,13 @@ other GitHub side effect, confirm all of the following:
 ## E9 — Fix accepted issues
 
 1. PATH A/PATH B (from `idd-review-triage.instructions.md` E4): PATH A
-   is actionable feedback needing a code change or maintainer decision
-   (human reviewer threads, regular comments, `CHANGES_REQUESTED`
-   bodies, critique-pass findings); PATH B is Copilot and CI advisory
-   bot comments included for traceability, even when they do not
-   require a code change.
+   is actionable feedback: human reviewer threads, regular comments,
+   `CHANGES_REQUESTED` bodies, critique-pass findings that require a
+   code change or maintainer decision, and Copilot inline
+   review-thread comments; PATH B is advisory feedback: Copilot's and
+   CI advisory bots' review-summary bodies and regular comments,
+   included for traceability, even when they do not require a code
+   change.
 2. Fix every Accepted PATH A item from the current ReviewItems_snapshot.
 3. Run `fix-validate`.
 4. Commit fixes atomically — one logical change per commit.
@@ -232,14 +236,12 @@ other GitHub side effect, confirm all of the following:
    touched-file scope from step 6; you have accumulated 3 additional
    commits; or 10 minutes have passed since the first accumulated
    commit.
-9. This allowance never delays, holds, or interrupts an in-flight CI
-   wait, and never changes PATH A/B routing or triage timing — only
-   push timing changes. A folded-in comment does **not** get a
-   disposition reply in this round — it keeps its formal PATH
-   classification and individual E6 disposition reply for the next
-   E1/E4-E7 pass, exactly like the standard file. E14 still requests a
-   fresh primary-bot re-review after every push. The per-HEAD
-   `review-watermark` still invalidates on this push.
+9. This never delays/holds/interrupts an in-flight CI wait, or changes
+   PATH A/B routing/triage timing — only push timing changes. A
+   folded-in comment gets **no** disposition reply this round; it
+   keeps its PATH classification and individual E6 reply for
+   E1/E4-E7. E14 still requests a fresh primary-bot re-review each
+   push; `review-watermark` still invalidates too.
 10. Apply the pre-mutation guard immediately before this push.
 11. Re-apply the pre-mutation guard immediately before this edit —
     it is a separate mutation after the already-guarded push. If this

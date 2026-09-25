@@ -9,10 +9,10 @@ channels.
 
 | Need | Channel | Use it for |
 | --- | --- | --- |
-| Reproducible bug or installation failure | [GitHub Issues](https://github.com/huangruiteng/loopx/issues/new/choose) | Public, sanitized reproduction steps for behavior that can be investigated or fixed in the repository. |
-| Feature request | [GitHub Issues](https://github.com/huangruiteng/loopx/issues/new/choose) | A concrete problem, desired outcome, alternatives, and the smallest useful product change. |
-| Usage or design question | [GitHub Discussions: Q&A](https://github.com/huangruiteng/loopx/discussions/categories/q-a) | Questions, configuration help, and design discussion that do not yet identify a repository bug. |
-| Security vulnerability | [Private Vulnerability Reporting](https://github.com/huangruiteng/loopx/security/advisories/new) | Suspected unpatched vulnerabilities. Do not post them in an issue, discussion, or chat. See [`SECURITY.md`](SECURITY.md). |
+| Reproducible bug or installation failure | [GitHub Issues](https://github.com/loopx-project/loopx/issues/new/choose) | Public, sanitized reproduction steps for behavior that can be investigated or fixed in the repository. |
+| Feature request | [GitHub Issues](https://github.com/loopx-project/loopx/issues/new/choose) | A concrete problem, desired outcome, alternatives, and the smallest useful product change. |
+| Usage or design question | [GitHub Discussions: Q&A](https://github.com/loopx-project/loopx/discussions/categories/q-a) | Questions, configuration help, and design discussion that do not yet identify a repository bug. |
+| Security vulnerability | [Private Vulnerability Reporting](https://github.com/loopx-project/loopx/security/advisories/new) | Suspected unpatched vulnerabilities. Do not post them in an issue, discussion, or chat. See [`SECURITY.md`](SECURITY.md). |
 | Informal peer help | [Discord](https://discord.gg/XmGgQyCFZd) | Onboarding, workflow comparison, show and tell, and community conversation. Chat is not an authoritative support or release record. |
 
 Public contributor work belongs on the
@@ -25,14 +25,14 @@ requests should follow
 
 ## Official Publication Sources
 
-- [GitHub Releases](https://github.com/huangruiteng/loopx/releases) is the
+- [GitHub Releases](https://github.com/loopx-project/loopx/releases) is the
   authoritative source for published versions and release notes.
-- [GitHub Discussions: Announcements](https://github.com/huangruiteng/loopx/discussions/categories/announcements)
+- [GitHub Discussions: Announcements](https://github.com/loopx-project/loopx/discussions/categories/announcements)
   is the authoritative source for project announcements that are not tied to
   one release. The pinned
-  [Current technical directions and known limitations](https://github.com/huangruiteng/loopx/discussions/2851)
+  [Current technical directions and known limitations](https://github.com/loopx-project/loopx/discussions/2851)
   post is the community-facing projection of the versioned repository map.
-- [GitHub Security Advisories](https://github.com/huangruiteng/loopx/security/advisories)
+- [GitHub Security Advisories](https://github.com/loopx-project/loopx/security/advisories)
   is the authoritative source for coordinated vulnerability disclosures.
 
 Repository documentation describes the current product and contributor
@@ -49,7 +49,7 @@ official publication source. Reposts, screenshots, personal accounts, and
 third-party communities may be useful, but they are not authoritative project
 communications. When sources conflict, prefer the official GitHub source for
 the relevant topic and ask for clarification in a public
-[Discussion](https://github.com/huangruiteng/loopx/discussions).
+[Discussion](https://github.com/loopx-project/loopx/discussions).
 
 ## Make A Useful Request
 

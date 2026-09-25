@@ -10,7 +10,7 @@ version-specific regression.
 ## Reporting A Vulnerability
 
 Please report suspected vulnerabilities through
-[GitHub Private Vulnerability Reporting](https://github.com/huangruiteng/loopx/security/advisories/new).
+[GitHub Private Vulnerability Reporting](https://github.com/loopx-project/loopx/security/advisories/new).
 Do not open a public issue, discussion, or pull request for an unpatched
 vulnerability.
 

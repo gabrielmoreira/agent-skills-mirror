@@ -16,13 +16,13 @@
 - **两人对话的正反打在一段里一次生成**——全景、A 近景、B 近景各是一个 2–5 秒的分镜，每格构图由自己的分镜图控制，不靠文字赌
 - **对齐指令是推导出来的，不是写出来的** — 多图对齐句式（`Picture 2 aligns with the 3.00-second mark…`）和 `[Shot k] At 00:0X.XXX` 切点时刻全部由分镜秒数推导，validate **逐字对账**：改了秒数忘改提示词，当场拦
 - **提示词按官方口径默认英文、逐镜换行** — 每个镜头独立一行、切点时刻开头；台词/歌词/画面文字按官方规定保留原文（`<d>[Chinese] …</d>` 逐字）。`promptLang: 'zh'` 可切整条中文（对齐指令、字段名、镜头标记都有中文版）。写法规范已内化为 `references/h3-prompt.md`——**本 skill 自包含，不依赖任何外部 skill**
-- **分镜图是资产合成，不是凭空画** — 出图挂场景/角色/道具设定图当参考图，novel-art 和 novel-characters 的图在这一步真正被消费。有 codex 就真出图（可选）
+- **分镜图是资产合成，不是凭空画** — 每一格都带一份挂图清单：场景/角色/道具的设定图。novel-art 和 novel-characters 的图在这一步被消费。**本 skill 不出图**，交付的是提示词和这份清单
 
 产出 `storyboard.json` + Markdown + 一个双击就能开的 `storyboard-report.html`：
 
 ![storyboard-report.html](assets/report.webp)
 
-## 质量门：17 道，全是代码
+## 质量门：18 道，全是代码
 
 与仓库里另外四个 skill 同一主张：**checklist 交给模型自觉是靠不住的**。
 
@@ -35,14 +35,15 @@
 | 每集总时长 | Σ段 落在剧本 `targetSeconds` ±15% 内 |
 | 同框上限 | 单个分镜 ≤ 3 人，超了必须带拆解说明 |
 | 段号纪律 | `E01-01` 格式、按顺序连号——段号就是素材文件名 |
-| 景别短语 | `close-up` 这类英文短语必须出现在分镜图提示词里 |
+| 景别词 | 「特写」这类中文景别词必须出现在分镜图提示词里 |
 | 运镜词表 | 运镜直接用 H3 官方词表（`Push In` / `Pan Left` / `Tracking Shot`…），且必须出现在**自己的 [Shot k] 段落**里 |
 | **H3 结构** | 首行对齐指令**由分镜结构按语言推导、逐字对账**；三字段按序；每个 `[Shot k]` 的切点时刻等于前面分镜秒数的累计 |
 | **H3 台词逐字** | 认领的每句台词逐字出现在 `<d>` 块里，改一个标点都过不去 |
 | **提示词语言一致** | 正文语言与 `promptLang` 双向对账：设定中文写成英文、设定英文混进中文，都拦 |
-| **风格短语统一** | `style` 预设（realistic / ghibli，与角色/场景 skill 同名对齐）的英文短语必须出现在每条分镜图提示词里——同剧不许画风漂 |
-| 分镜图提示词卫生 | 全英文非空 |
-| 提示词不含角色名 | 分镜图提示词恒查；H3 提示词仅英文模式查（中文放行，身份靠分镜图锚定）。给 `--outline` / `--cast` 才查，不给**明说跳过** |
+| 分镜图提示词卫生 | 中文非空（直呼角色名——名字指向挂上去的设定图） |
+| 视频提示词不含角色名 | H3 正文（中英文模式都查）和 Seedance 镜头正文不许出现角色名与别名——H3 与 Seedance 官方规范的要求。给 `--outline` / `--cast` 才查，不给**明说跳过** |
+| **构图量化字段** | 每段有 `blocking`；每镜焦距／机位／构图／视线落点／焦点／稳定性齐全，稳定性在枚举里 |
+| **Seedance 镜头正文** | 每镜 `shot` 中文非空，不写秒数与时间码、镜头编号、图片引用、H3 标记和 `{}` `<>` `（）`——这些由程序按真实结构加 |
 | 引用对账 | 场次/人物/道具全部对账剧本该场 |
 | **镜头配方**（可选挂载） | 给了 `--shots <卡片目录>` 才查：cut 的 `recipe` id 在卡库里、卡片的每条必备短语出现在该切的分镜图提示词里、多格配方的连排格数够。不给 `--shots` **明说跳过**；给了但全篇没引用配方也明说 |
 
@@ -95,7 +96,7 @@ novel-storyboard → storyboard.json （怎么拍：段、分镜、分镜图、H
 
 - `seed <script.json> --eps 1-3` 确定性展开每场的节拍清单（编号、每拍秒数、说话人）当切镜底稿——**每拍几秒是算出来的，不让模型重新估**
 - `validate --script` 是硬前提（分镜离开剧本没有意义）；`--outline` / `--cast` 查提示词人名，`--art` 让报告显示场景名并在批次单嵌设定图
-- 分镜图出图走 codex `$imagegen`，场景/角色/道具设定图当 `-i` 参考图；H3 提示词 + 整套分镜图直接下单给 MiniMax H3
+- 每格交付画面提示词 + 挂图清单（场景/角色/道具设定图），出图在下游；H3 提示词 + 整套分镜图直接下单给 MiniMax H3
 
 ## 命令行直接用
 
@@ -105,7 +106,7 @@ node scripts/novel-storyboard.mjs validate sb.json \
      --script script.json --outline outline.json --cast cast.json
 node scripts/novel-storyboard.mjs checkup sb.json --script script.json
 node scripts/novel-storyboard.mjs validate sb.json --script script.json \
-     --shots /path/to/cards                                              # 可选：开第 17 道配方门
+     --shots /path/to/cards                                              # 可选：开第 18 道配方门
 node scripts/novel-storyboard.mjs render sb.json --html \
      --script script.json --outline outline.json --art art.json > storyboard-report.html
 node scripts/novel-storyboard.mjs render sb.json --html --lang en \
@@ -129,12 +130,12 @@ node scripts/novel-storyboard.mjs export sb.json --script script.json   # H3 投
 SKILL.md                 给 agent 读的工作流
 scripts/
   novel-storyboard.mjs   seed / validate / checkup / render / export / slug
-  selftest.mjs           254 项断言，不调模型
+  selftest.mjs           323 项断言，不调模型
 references/
   schema.md              storyboard.json 结构 + 时长约束链
   h3-prompt.md           H3 提示词写法规范（官方方法论内化版）
   storyboard-pass.md     切镜：分段规则、导演运镜手感、常见病
-  frame.md               分镜图出图的 codex 调用契约
+  frame.md               分镜图的提示词与挂图合同
   report-style.md        报告的设计约定
 examples/
   渡口-storyboard.json    《渡口》第 1 集完整分镜（10 段 34 切认领 35 拍），全部质量门通过，也是自测夹具
@@ -148,6 +149,6 @@ assets/
 node scripts/selftest.mjs
 ```
 
-254 项断言，覆盖节拍展开 / H3 骨架推导 / 统计与批次 / 质量门逐项击穿 / 配方卡库解析与挂载 / seed / 渲染（含中英界面）/ 导出。不调模型、不花额度、1 秒跑完。改完脚本先跑这个。
+323 项断言，覆盖节拍展开 / H3 骨架推导 / Seedance 拼装 / 统计与批次 / 质量门逐项击穿 / 配方卡库解析与挂载 / seed / 渲染（含中英界面）/ H3 与 Seedance 导出。不调模型、不花额度、1 秒跑完。改完脚本先跑这个。
 
 **只在 macOS + Node 24 上实测过。** 代码没有平台相关调用，Linux 和更低版本 Node 理论上没问题，但**没验过**。

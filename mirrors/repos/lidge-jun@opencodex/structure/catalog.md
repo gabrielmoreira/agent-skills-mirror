@@ -75,6 +75,8 @@ provider-wide fallback. Exact model output limits precede the provider default o
   native rows from the output without rewriting the pristine backup or unrelated snapshots;
 - invalidates `$CODEX_HOME/models_cache.json` when model visibility changes.
 
+Cache invalidation reports an unchanged derived cache separately from a failed rewrite. `ocx sync-cache` treats identical bytes as a successful no-op, preserving the cache mtime and avoiding a needless app-server restart; malformed catalogs and write failures remain errors.
+
 `src/codex/catalog/model-visibility.ts` also excludes models owned by disabled providers, including custom rows. `src/codex/catalog/routed-gather.ts` does not inherit provider configuration into custom rows while that provider is disabled.
 
 On the default `opencodex-catalog.json` path, sync deliberately uses two catalog sources: Codex's
@@ -189,7 +191,11 @@ deliberately does not, because a disabled provider is already excluded from the 
 instead. Codex's own `models_cache.json` is a different cache, invalidated by catalog refresh.
 Account-scoped discovery transports remain bound to the credential snapshot that supplied the
 token. Devin discovery uses the allowlisted tenant API base URL from that same snapshot rather
-than pairing a durable account key with the provider registry's default host. If the stored
+than pairing a durable account key with the provider registry's default host. The same holds for
+the provider connection test and for refreshing catalog gathers of every OAuth row: the token and
+its origin come from one snapshot, so a Copilot account switch or a refresh that moves the
+account's API host cannot pair one account's token with another origin, and a key row never
+borrows a stored OAuth account's origin. When the snapshot carries no API host (a legacy credential), the destination comes only from static configuration validated against the vendor allowlist, or the vendor default, and never from the live credential store. If the stored
 destination is invalid, registered Devin discovery and routing use the registry's fixed base URL
 instead of a stale configured override. For Devin, the irreversible roster fingerprint covers
 both credential and validated destination, so switching either observes neither fresh nor stale

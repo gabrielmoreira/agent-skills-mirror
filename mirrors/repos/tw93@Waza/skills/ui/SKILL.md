@@ -1,7 +1,7 @@
 ---
 name: ui
 description: "Produces distinctive production UI and screenshot-grounded visual polish. Use when building or restyling pages, components, or typography. Not for backend logic or data pipelines."
-when_to_use: "做组件, 不好看, 不和谐, 不清晰, 很丑, 很怪, 很傻, 突兀, 不协调, 字体, 字形, 排印, 排版, UI, 截图, build page, create component, make it look good, screenshot with visual complaint, typography, font looks wrong"
+when_to_use: "做组件, 不好看, 不和谐, 不清晰, 很丑, 很怪, 很傻, 突兀, 不协调, 字体, 排版, UI, 截图, build page, create component, make it look good, screenshot with visual complaint, font looks wrong"
 dispatch_intent: "UI, component, page, visual interface, frontend, artifact-grounded screenshot aesthetic complaint"
 ---
 
@@ -66,9 +66,7 @@ When the user provides a repository URL or pastes source code of an existing pro
 - Global stylesheets and layout scaffolds
 - The specific components the user mentioned
 
-Lift exact values: hex codes, spacing scale entries, font stacks, border radii. A rough approximation is not pixel fidelity.
-
-Only attach the target component folder or package. Exclude `.git`, `node_modules`, `dist`, and lock files. Dragging in an entire monorepo pollutes the context with irrelevant code and degrades output quality.
+Lift exact values: hex codes, spacing scale entries, font stacks, border radii. A rough approximation is not pixel fidelity. Read only the target component folder or package, never `.git`, `node_modules`, `dist`, or lock files.
 
 ### Existing-native-app exception (do not propose wholesale platform restyling)
 
@@ -119,15 +117,7 @@ Direction lock loads `references/design-reference.md` for the full rewrites, typ
 
 After significant build phases and at handoff, re-read the visual thesis from direction lock. If what is on screen drifted toward a generic default, identify the specific element that broke first (typeface, color, card treatment, spacing) and fix it before continuing.
 
-Run these checks before the handoff summary:
-- Is the brand or product unmistakable in the first screen?
-- Is there one strong visual anchor (real imagery, not a decorative gradient)?
-- Can the page be understood by scanning headlines only?
-- Does each section have one job?
-- Are cards actually necessary, or just default styling?
-- Does motion improve hierarchy or atmosphere, or is it ornamental?
-- Would the design still feel premium if all decorative shadows were removed?
-- AI Slop Test: would a stranger glancing at the first viewport say "an AI made this"? Scan it for the Absolute Bans and Common Traps in `references/design-reference.md` (reflex font, default gradient, centered hero with two CTAs side by side, three identical cards, generic top nav) and fix typography, color, or layout until any that were not an explicit part of the direction are gone.
+Before the handoff summary, a new page or visual system also runs the Aesthetic Review Checks in `references/design-reference.md`. Every surface runs the AI Slop Test: would a stranger glancing at the first viewport say "an AI made this"? Scan it for the Absolute Bans and Common Traps in `references/design-reference.md` (reflex font, default gradient, centered hero with two CTAs side by side, three identical cards, generic top nav) and fix typography, color, or layout until any that were not an explicit part of the direction are gone.
 
 If any check fails, fix first. Render the product's supported viewport or window range yourself: web breakpoints on both sides, and native minimum width, minimum height, their combination, and normal size. Test samples do not require new layout branches. Only when the host cannot render, say so and hand the user the exact view to check.
 

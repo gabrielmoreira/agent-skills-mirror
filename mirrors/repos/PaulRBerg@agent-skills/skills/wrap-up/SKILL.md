@@ -7,6 +7,7 @@ coordination: exempt
 disable-model-invocation: true
 name: wrap-up
 skill-dependencies:
+  - commit
   - task-handoff
 description:
   Wind down a long-running session fast when the user must leave — freeze new work, preserve active subagents, secure
@@ -94,7 +95,7 @@ scope. Do not turn its still-running assignment into immediately actionable repl
 
 ## Report
 
-Finish with `### 🏁 Hurry-up — session parked` followed by, compactly: completed workstreams with their `$commit`
-receipt OIDs when committed (never a follow-up `git log`), partial workstreams and their exact stopping points,
-active-unsettled workers with their settlement conditions, the handoff command(s) verbatim from task-handoff's report,
-and an always-present risks line (`none` when empty). Keep it short — the user is walking out the door.
+Finish with `### 🏁 Wrap-up — session parked` followed by, compactly: completed workstreams with their `$commit` receipt
+OIDs when committed (never a follow-up `git log`), partial workstreams and their exact stopping points, active-unsettled
+workers with their settlement conditions, the handoff command(s) verbatim from task-handoff's report, and an
+always-present risks line (`none` when empty). Keep it short — the user is walking out the door.

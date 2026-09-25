@@ -3,8 +3,8 @@
 // Zero dependencies on purpose: the skill must work in any directory
 // without an npm install. Node 18+ (stdlib only).
 
-import { appendFileSync, existsSync, mkdirSync, readFileSync, readdirSync, realpathSync, writeFileSync } from 'node:fs';
-import { basename, join, resolve } from 'node:path';
+import { appendFileSync, copyFileSync, existsSync, mkdirSync, readFileSync, readdirSync, realpathSync, writeFileSync } from 'node:fs';
+import { basename, join, relative, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 /* ------------------------------------------------------------------ */
@@ -35,7 +35,7 @@ export function paramsOf(doc) {
   return { ...DEFAULT_PARAMS, ...(doc?.params ?? {}) };
 }
 
-/** 景别枚举：英文短语必须出现在该分镜的分镜图提示词里。 */
+/** 景别枚举：中文词必须出现在该分镜的分镜图提示词里（分镜图提示词是中文）。 */
 export const SHOT_SIZES = {
   'extreme-wide': { zh: '大远景', phrase: 'extreme wide shot' },
   wide: { zh: '全景', phrase: 'wide shot' },
@@ -68,13 +68,14 @@ export const CAMERA_MOVES = {
   'Roll Counterclockwise': '逆旋',
 };
 
-/** 分镜图风格预设：与 novel-characters / novel-art 同名对齐（realistic / ghibli）。
- *  短语必须出现在每条分镜图提示词里——同一部剧的分镜图不许画风漂。 */
-export const STYLE_PRESETS = {
-  realistic: { zh: '半写实电影感', phrase: 'cinematic film still' },
-  ghibli: { zh: '吉卜力手绘', phrase: 'hand-painted anime film still' },
-};
-export const DEFAULT_STYLE = 'realistic';
+/** 稳定性枚举：跟运镜是两件事——固定机位也可以微晃。 */
+export const STABILITY = { stable: '稳定', 'slight-shake': '微晃', handheld: '手持' };
+
+/**
+ * 构图量化字段（每镜必填）。纯参考图出片时没有分镜图替正文说清
+ * 「多近、谁在哪、眼睛看哪」，这些信息要么写成字，要么就地消失。
+ */
+export const COMPOSITION_FIELDS = ['lens', 'cameraPosition', 'composition', 'eyeline', 'focus', 'stability'];
 
 const CJK = /[㐀-鿿぀-ヿ가-힯]/;
 const r1 = (n) => Math.round(n * 10) / 10;
@@ -170,6 +171,113 @@ export function h3CutSlices(prompt, cutCount, lang = 'en') {
     slices.push(body.slice(a, b < 0 ? undefined : b));
   }
   return slices;
+}
+
+/* ------------------------------------------------------------------ */
+/* Seedance 提示词：程序按官方结构拼                                       */
+/* ------------------------------------------------------------------ */
+/*
+ * 写法见 references/seedance-prompt.md。模型只写每一切的镜头正文（cut.shot），
+ * 其余全由这里拼：参考图声明、段级走位、逐镜量化字段、台词 {}、音效 <>、
+ * 配乐（）、编号约束。时间层用镜头顺序表达，不写秒数——官方说精确时间不稳定。
+ * 画风层（视觉风格）不在这里：它由调用方在提交时附加。
+ */
+
+// 运镜行用完整的中文说法；词表里本来就完整的原样用
+const SEEDANCE_CAMERA = { 'Static Shot': '固定镜头', 'Push In': '推镜', 'Pull Out': '拉镜' };
+export const seedanceCamera = (camera) => SEEDANCE_CAMERA[camera] ?? CAMERA_MOVES[camera] ?? '';
+
+/** 镜头正文里不许出现的东西：这些由程序按真实结构加，正文写了就会重复或错位。 */
+export const SEEDANCE_FORBIDDEN = [
+  [/\d+(?:\.\d+)?\s*(?:[–\-~至到]\s*\d+(?:\.\d+)?\s*)?秒|\d{1,2}:\d{2}/, '时间'],
+  [/【镜头|镜头\s*\d/, '镜头编号'],
+  [/@\s*\[?图片|<Picture|\[Shot|<\/?d>/i, '图片引用或 H3 标记'],
+  [/[{}<>（）]/, '协议符号（台词 {} 从剧本取，音效 <> 与配乐（）由程序套）'],
+];
+
+export const SEEDANCE_NO_SUBTITLES = '保持无字幕，避免生成任何文字或字幕';
+export const SEEDANCE_NO_TWINS = '视频全程禁止出现外形、着装、配饰完全一致的人物';
+
+/**
+ * 附件两条路：这一段每切都有分镜图 → 分镜路径，只挂分镜图；否则 → 参考图路径，
+ * 挂场景、人物、道具的设定图，已有的分镜图接在后面并在对应镜头注明构图参考。
+ * 越需要精准参考的越靠前：场景 → 人物 → 道具 → 分镜图。
+ *
+ * @param scene  expandScript 展开后的那一场（取台词原文）；没有剧本时台词行写 {}
+ * @param names  { scene(id), char(id), prop(id) } → 显示名
+ * @param image  (kind, rel) → src|null，与报告同一个定位函数，判断分镜图在不在
+ * @param constraints 调用方的全局约束，逐条拼进【约束】
+ * @returns {{ prompt: string, refs: {kind, label, file}[] }}
+ */
+export function seedancePrompt(seg, { scene = null, names = {}, image = null, constraints = [] } = {}) {
+  const nm = {
+    scene: names.scene ?? ((id) => id),
+    char: names.char ?? ((id) => id),
+    prop: names.prop ?? ((id) => id),
+  };
+  const cuts = seg?.cuts ?? [];
+  const frames = cuts.map((_, ci) => (image ? image('frame', `${seg.id}/f${ci + 1}.png`) : null));
+  const refs = [];
+  if (!cuts.length || !frames.every(Boolean)) {
+    const sheet = (label) => ({ kind: 'sheet', label, file: `${slug(label)}-sheet.png` });
+    if (scene?.sceneId) refs.push(sheet(nm.scene(scene.sceneId)));
+    for (const id of new Set(cuts.flatMap((c) => c?.characters ?? []))) if (id !== 'VO') refs.push(sheet(nm.char(id)));
+    for (const id of new Set(cuts.flatMap((c) => c?.props ?? []))) refs.push(sheet(nm.prop(id)));
+  }
+  const frameRef = new Map();
+  frames.forEach((src, ci) => {
+    if (!src) return;
+    refs.push({ kind: 'frame', label: `分镜图 #${ci + 1}`, file: `${seg.id}/f${ci + 1}.png` });
+    frameRef.set(ci, refs.length);
+  });
+
+  const out = refs.map((r, i) => `@[图片${i + 1}] = ${r.label}`);
+  if (out.length) out.push('');
+  const blocking = String(seg?.blocking ?? '').trim();
+  if (blocking) out.push('【人物关系与构图逻辑】', blocking, '');
+
+  cuts.forEach((cut, ci) => {
+    // 每一行只在有内容时出现；台词行例外——没有台词也写 {}，告诉模型这一镜不说话
+    const line = (k, v) => {
+      const text = String(v ?? '').trim();
+      if (text) out.push(`${k}：${text}`);
+    };
+    out.push(`【镜头${ci + 1}】`);
+    line('焦距', cut?.lens);
+    line('机位', cut?.cameraPosition);
+    line('构图', cut?.composition);
+    line('运镜', seedanceCamera(cut?.camera));
+    line('景别', SHOT_SIZES[cut?.size]?.zh);
+    const ref = frameRef.get(ci);
+    const shot = String(cut?.shot ?? '').trim();
+    if (shot) out.push(`画面：${shot}${ref ? `（构图参考 @图片${ref}）` : ''}`);
+    line('光影', cut?.lighting);
+    const [from, to] = cut?.beats ?? [];
+    const spoken = scene && Number.isInteger(from) && Number.isInteger(to)
+      ? scene.beats.slice(from - 1, to).filter((b) => b.kind === 'line')
+      : [];
+    // 台词逐字进 {}；身份与语气由镜头正文交代，画外音按官方写法标在 {} 外面
+    out.push(`台词：${spoken.length ? spoken.map((b) => `${b.speaker === 'VO' ? '以画外音说' : ''}{${b.text}}`).join(' ') : '{}'}`);
+    line('视线落点', cut?.eyeline);
+    line('焦点', cut?.focus);
+    line('稳定性', STABILITY[cut?.stability] ?? cut?.stability);
+    line('音效', cut?.sfx);
+    out.push('');
+  });
+
+  const soundscape = String(seg?.soundscape ?? '').trim();
+  const music = String(seg?.music ?? '').trim();
+  if (soundscape) out.push(`<${soundscape}>`);
+  if (music) out.push(`（${music}）`);
+  if (soundscape || music) out.push('');
+
+  // 本管线不要字幕；同段多人同框时禁双胞胎——官方已知坑，放进约束末尾
+  const rules = [...constraints.map((c) => String(c).trim()).filter(Boolean)];
+  if (!rules.includes(SEEDANCE_NO_SUBTITLES)) rules.push(SEEDANCE_NO_SUBTITLES);
+  const crowded = cuts.some((c) => (c?.characters ?? []).filter((id) => id !== 'VO').length >= 2);
+  if (crowded && !rules.includes(SEEDANCE_NO_TWINS)) rules.push(SEEDANCE_NO_TWINS);
+  out.push('【约束】', ...rules.map((r, i) => `${i + 1}. ${r}`));
+  return { prompt: out.join('\n'), refs };
 }
 
 /* ------------------------------------------------------------------ */
@@ -425,19 +533,17 @@ export function gateReport(board, ctx = {}) {
   const eps = Array.isArray(board?.episodes) ? board.episodes : [];
   const bad = {
     coverage: [], segCap: [], cutLen: [], fit: [], duration: [], crowd: [],
-    id: [], size: [], camera: [], english: [], names: [], refs: [],
-    h3s: [], h3d: [], h3e: [], style: [], recipe: [],
+    id: [], size: [], camera: [], frame: [], names: [], refs: [],
+    h3s: [], h3d: [], h3e: [], recipe: [], comp: [], sd: [],
   };
   // 配方卡库是可选挂载：ctx.recipes 为空就整门跳过（不是「没有 cut 带 recipe」就跳过）
   const recipes = ctx.recipes ?? null;
   let recipeRefs = 0;
-  const styleId = board?.style ?? DEFAULT_STYLE;
-  const style = STYLE_PRESETS[styleId];
-  if (!style) bad.style.push(`style「${styleId}」不在预设里（${Object.keys(STYLE_PRESETS).join(' / ')}）`);
   // 提示词语言：默认英文——官方规范的口径（台词仍在 <d> 里保留原文）；'zh' 可切整条中文
   const promptLang = board?.promptLang ?? 'en';
 
-  // 提示词禁人名：outline 的名字 + cast 的名字与别名
+  // 视频提示词禁人名：outline 的名字 + cast 的名字与别名。这是 H3 与 Seedance 官方规范的要求，
+  // 不跟着语言变；分镜图提示词反过来直呼其名——名字指向挂上去的那张设定图
   const banned = [];
   for (const c of ctx.outline?.characters ?? []) if (c?.name) banned.push(c.name);
   for (const c of ctx.cast?.characters ?? []) {
@@ -488,13 +594,17 @@ export function gateReport(board, ctx = {}) {
       const rest = h3Remainder(h3);
       if (promptLang === 'en') {
         if (CJK.test(rest)) bad.h3e.push(`${sid} 的 h3Prompt 设定英文却在 <d> 台词之外混入了中文`);
-        // 英文提示词禁人名（图像/视频模型对英文语境的人名有偏见）；中文提示词人名放行——身份靠分镜图锚定
-        for (const name of banned) {
-          if (rest.includes(name)) bad.names.push(`${sid} 的 h3Prompt 在台词之外出现角色名「${name}」`);
-        }
       } else if (!CJK.test(rest)) {
         bad.h3e.push(`${sid} 设定中文提示词（promptLang=${promptLang}），正文却写成了英文`);
       }
+      for (const name of banned) {
+        if (rest.includes(name)) bad.names.push(`${sid} 的 h3Prompt 在台词之外出现角色名「${name}」`);
+      }
+
+      // 段级：走位是整段的空间地基；Seedance 的音效与配乐由程序套符号，字段里不许自带
+      if (!String(seg?.blocking ?? '').trim()) bad.comp.push(`${sid} 缺 blocking（人物关系与构图逻辑）`);
+      if (/[<>]/.test(String(seg?.soundscape ?? ''))) bad.sd.push(`${sid} 的 soundscape 自带了 <>——程序会套`);
+      if (/[（）()]/.test(String(seg?.music ?? ''))) bad.sd.push(`${sid} 的 music 自带了括号——程序会套（）`);
 
       const slices = h3CutSlices(h3, cuts.length, promptLang);
       const scene = sEp ? sEp.scenes[seg?.sceneIndex - 1] : null;
@@ -515,8 +625,8 @@ export function gateReport(board, ctx = {}) {
         }
         if (!SHOT_SIZES[cut?.size]) {
           bad.size.push(`${cid} 景别「${cut?.size}」不在枚举里`);
-        } else if (!String(cut?.frame ?? '').toLowerCase().includes(SHOT_SIZES[cut.size].phrase)) {
-          bad.size.push(`${cid} 分镜图提示词缺景别短语「${SHOT_SIZES[cut.size].phrase}」`);
+        } else if (!String(cut?.frame ?? '').includes(SHOT_SIZES[cut.size].zh)) {
+          bad.size.push(`${cid} 分镜图提示词缺景别词「${SHOT_SIZES[cut.size].zh}」`);
         }
         if (!CAMERA_MOVES[cut?.camera]) {
           bad.camera.push(`${cid} 运镜「${cut?.camera}」不在 H3 词表里`);
@@ -530,13 +640,25 @@ export function gateReport(board, ctx = {}) {
           }
         }
         const frame = String(cut?.frame ?? '');
-        if (!frame.trim()) bad.english.push(`${cid} 的分镜图提示词为空`);
-        if (CJK.test(frame)) bad.english.push(`${cid} 的分镜图提示词混入了非英文`);
-        if (style && !frame.toLowerCase().includes(style.phrase)) {
-          bad.style.push(`${cid} 的分镜图提示词缺风格短语「${style.phrase}」`);
-        }
-        for (const name of banned) {
-          if (frame.includes(name)) bad.names.push(`${cid} 的分镜图提示词出现角色名「${name}」`);
+        if (!frame.trim()) bad.frame.push(`${cid} 的分镜图提示词为空`);
+        else if (!CJK.test(frame)) bad.frame.push(`${cid} 的分镜图提示词不是中文`);
+
+        // 构图量化字段：每镜六项齐全，稳定性在枚举里
+        const missing = COMPOSITION_FIELDS.filter((f) => !String(cut?.[f] ?? '').trim());
+        if (missing.length) bad.comp.push(`${cid} 缺 ${missing.join(' / ')}`);
+        else if (!STABILITY[cut.stability]) bad.comp.push(`${cid} 的 stability「${cut.stability}」不在枚举里（${Object.keys(STABILITY).join(' / ')}）`);
+
+        // Seedance 镜头正文：中文、非空、通用身份，不写程序会加的东西
+        const shot = String(cut?.shot ?? '');
+        if (!shot.trim()) bad.sd.push(`${cid} 缺 shot（Seedance 镜头正文）`);
+        else {
+          if (!CJK.test(shot)) bad.sd.push(`${cid} 的 shot 不是中文`);
+          for (const [re, what] of SEEDANCE_FORBIDDEN) {
+            if (re.test(shot)) bad.sd.push(`${cid} 的 shot 写了${what}`);
+          }
+          for (const name of banned) {
+            if (shot.includes(name)) bad.names.push(`${cid} 的 Seedance 镜头正文出现角色名「${name}」`);
+          }
         }
 
         // 镜头配方：id 在卡库里 + 每条必备短语进了本切的 frame
@@ -655,14 +777,15 @@ export function gateReport(board, ctx = {}) {
   add('ep-duration', `每集总时长在剧本目标 ±${Math.round(params.tolerance * 100)}% 内`, bad.duration.length === 0, script ? bad.duration.join('；') : SKIP_SCRIPT);
   add('crowd', `单个分镜同框 ≤ ${params.maxOnScreen} 人，超了必须带拆解说明`, bad.crowd.length === 0, bad.crowd.join('；'));
   add('segment-id', '段号 E01-01 格式、按顺序连号', bad.id.length === 0, bad.id.join('；'));
-  add('size-phrase', '景别短语写进分镜图提示词', bad.size.length === 0, bad.size.join('；'));
+  add('size-phrase', '景别中文词写进分镜图提示词', bad.size.length === 0, bad.size.join('；'));
   add('camera-phrase', '运镜用 H3 官方词表，且出现在自己的 [Shot k] 段落里', bad.camera.length === 0, bad.camera.join('；'));
   add('h3-structure', 'H3 首行对齐指令由分镜结构推导逐字对账，切点时刻逐个对', eps.length > 0 && bad.h3s.length === 0, bad.h3s.join('；'));
   add('h3-dialogue', '认领节拍的台词逐字进 H3 提示词的 <d> 块', bad.h3d.length === 0, script ? bad.h3d.join('；') : SKIP_SCRIPT);
   add('h3-lang', `H3 提示词语言与设定一致（promptLang=${promptLang}，正文${promptLang === 'en' ? '全英文' : '中文'}、骨架 token 官方英文格式）`, bad.h3e.length === 0, bad.h3e.join('；'));
-  add('style-phrase', `分镜图风格短语统一（${style ? `${styleId}：${style.phrase}` : '预设无效'}）——同剧不许画风漂`, bad.style.length === 0, bad.style.join('；'));
-  add('prompt-english', '分镜图提示词全英文且非空', bad.english.length === 0, bad.english.join('；'));
-  add('prompt-no-names', '英文提示词不含角色名（分镜图提示词恒查；中文 H3 提示词放行）', bad.names.length === 0, banned.length ? bad.names.join('；') : SKIP_NAMES);
+  add('frame-prompt', '分镜图提示词中文且非空', bad.frame.length === 0, bad.frame.join('；'));
+  add('prompt-no-names', '视频提示词不含角色名（H3 正文与 Seedance 镜头正文；分镜图提示词直呼其名放行）', bad.names.length === 0, banned.length ? bad.names.join('；') : SKIP_NAMES);
+  add('composition', '构图量化字段齐全（每段 blocking；每镜焦距／机位／构图／视线落点／焦点／稳定性）', eps.length > 0 && bad.comp.length === 0, bad.comp.join('；'));
+  add('seedance-shot', 'Seedance 镜头正文中文非空，不写时间、镜头编号、图片引用和协议符号', eps.length > 0 && bad.sd.length === 0, bad.sd.join('；'));
   add('refs', '场次／人物／道具对账剧本', bad.refs.length === 0, script ? bad.refs.join('；') : SKIP_SCRIPT);
   // 可选挂载的门放最后：没给 --shots 就跳过；给了但全篇没引用配方也算通过，但要明说，不静默
   add(
@@ -714,7 +837,7 @@ export function validateStoryboard(board, ctx = {}) {
         if (!Array.isArray(cut?.beats) || cut.beats.length !== 2) p(`${cid} 的 beats 必须是 [起, 止] 两个数`);
         if (typeof cut?.seconds !== 'number') p(`${cid} 缺 seconds`);
         if (!Array.isArray(cut?.characters)) p(`${cid} 缺 characters（空镜给空数组）`);
-        if (typeof cut?.frame !== 'string') p(`${cid} 缺 frame（分镜图英文提示词）`);
+        if (typeof cut?.frame !== 'string') p(`${cid} 缺 frame（分镜图提示词，中文）`);
       });
     }
   }
@@ -758,21 +881,56 @@ export function seedFromScript(script, epRange = null) {
 }
 
 /* ------------------------------------------------------------------ */
-/* export — H3 投产包                                                   */
+/* export — 投产包（H3 / Seedance 二选一）                                */
 /* ------------------------------------------------------------------ */
 /*
- * 固定投产结构：每段一个文件夹——E01-01/f1.png … fN.png + prompt.md
- * （h3Prompt 原样），根部一份 manifest：按 Picture 序列出该段要挂的
- * 分镜图路径、秒数、缺图标注。提示词就躺在图旁边，整个文件夹拖给
- * H3 就是一次生成。纯函数返回文件清单，落盘在 CLI 层——可测性。
+ * 固定投产结构：每段一个文件夹，提示词就躺在图旁边，整个文件夹就是一次生成。
+ *
+ * - H3：E01-01/f1.png … fN.png + prompt.md（h3Prompt 原样），根部 manifest.json
+ *   按 Picture 序列出该段要挂的分镜图、秒数、缺图标注
+ * - Seedance：E01-01/seedance.md（程序拼的提示词）+ 附件，根部 seedance-manifest.json
+ *   按 @图片 编号列出每个附件——分镜图就是包里的 f<k>.png，设定图拷成 ref-<n>.png
+ *
+ * 纯函数返回文件清单与要拷的设定图，落盘在 CLI 层——可测性。
+ *
+ * @param opts.protocol     'h3'（默认）| 'seedance'
+ * @param opts.imageExists  包内相对路径 → 是否已有（分镜图）
+ * @param opts.sheetExists  设定图文件名 → 是否找得到（Seedance 参考图路径用）
+ * @param opts.names        { scene, char, prop } → 显示名；opts.constraints 全局约束
  */
-export function exportPack(board, script, { imageExists = () => false, dir = '.' } = {}) {
+export function exportPack(
+  board,
+  script,
+  { imageExists = () => false, sheetExists = () => false, dir = '.', protocol = 'h3', names = {}, constraints = [] } = {},
+) {
   const prefix = dir === '.' ? '' : `${dir}/`;
+  const expanded = expandScript(script);
   const files = [];
   const manifest = [];
+  const copies = [];
   let missingTotal = 0;
   for (const ep of board?.episodes ?? []) {
     for (const seg of ep?.segments ?? []) {
+      if (protocol === 'seedance') {
+        const scene = expanded.get(ep.ep)?.scenes?.[seg.sceneIndex - 1] ?? null;
+        const image = (kind, rel) => (kind === 'frame' && imageExists(`${prefix}${rel}`) ? rel : null);
+        const { prompt, refs } = seedancePrompt(seg, { scene, names, image, constraints });
+        const attachments = refs.map((r, i) => {
+          const path = r.kind === 'frame' ? `${prefix}${r.file}` : `${prefix}${seg.id}/ref-${i + 1}.png`;
+          const present = r.kind === 'frame' ? imageExists(path) : sheetExists(r.file);
+          if (r.kind === 'sheet' && present) copies.push({ file: r.file, to: path });
+          return { ref: `@图片${i + 1}`, label: r.label, kind: r.kind, path, source: r.file, present };
+        });
+        const missing = attachments.filter((a) => !a.present).map((a) => a.path);
+        missingTotal += missing.length;
+        const head = attachments.length
+          ? attachments.map((a) => `- ${a.ref} = ${a.label} → ${a.path.slice(prefix.length + seg.id.length + 1)}${a.present ? '' : '（缺）'}`).join('\n')
+          : '- （无附件）';
+        const md = `# ${seg.id} · Seedance 提示词\n\n附件按 @图片 编号依次上传：\n\n${head}\n\n视觉风格（画风层）在提交时附加，本文不含。总时长由接口参数控制，正文不写秒数。\n\n---\n\n${prompt}\n`;
+        files.push({ path: `${prefix}${seg.id}/seedance.md`, content: md });
+        manifest.push({ segment: seg.id, seconds: segSeconds(seg), cuts: (seg.cuts ?? []).length, prompt: `${prefix}${seg.id}/seedance.md`, attachments, missing });
+        continue;
+      }
       // prompt.md 头部先说清哪个文件是首帧、每张图钉在第几秒——
       // 分隔线以下是 h3Prompt 原样，整段复制就能用
       const starts = cutStarts(seg.cuts);
@@ -795,8 +953,9 @@ export function exportPack(board, script, { imageExists = () => false, dir = '.'
       });
     }
   }
-  files.push({ path: `${prefix}manifest.json`, content: JSON.stringify(manifest, null, 2) + '\n' });
-  return { files, manifest, missingTotal };
+  const manifestName = protocol === 'seedance' ? 'seedance-manifest.json' : 'manifest.json';
+  files.push({ path: `${prefix}${manifestName}`, content: JSON.stringify(manifest, null, 2) + '\n' });
+  return { files, manifest, missingTotal, copies };
 }
 
 /* ------------------------------------------------------------------ */
@@ -832,14 +991,15 @@ const GATE_LABELS_EN = {
   'ep-duration': 'Episode total within ±{0}% of the script\'s target',
   'crowd': 'At most {0} characters on screen per cut; more requires a breakdown note',
   'segment-id': 'Segment IDs in E01-01 format, sequential',
-  'size-phrase': 'Shot-size phrase present in the frame prompt',
+  'size-phrase': 'Chinese shot-size word present in the frame prompt',
   'camera-phrase': 'Camera move from the official H3 vocabulary, inside its own [Shot k] passage',
   'h3-structure': 'H3 alignment line derived from the cut structure, audited verbatim; cut times match',
   'h3-dialogue': 'Claimed dialogue appears verbatim inside the H3 <d> blocks',
   'h3-lang': 'Prompt language matches the promptLang setting',
-  'style-phrase': 'Frame-prompt style phrase consistent — one drama, one look',
-  'prompt-english': 'Frame prompts are English and non-empty',
-  'prompt-no-names': 'English prompts carry no character names',
+  'frame-prompt': 'Frame prompts are Chinese and non-empty',
+  'prompt-no-names': 'Video prompts carry no character names (H3 body and Seedance shot text; frame prompts name characters on purpose)',
+  'composition': 'Composition fields complete (blocking per segment; lens / camera position / composition / eyeline / focus / stability per cut)',
+  'seedance-shot': 'Seedance shot text is Chinese and non-empty, with no timings, shot numbers, image references or protocol symbols',
   'refs': 'Scenes / characters / props audited against the script',
   'shot-recipe': 'Referenced recipes exist, their must-phrases are in the frame prompt, multi-cut recipes run long enough',
 };
@@ -899,6 +1059,10 @@ const I18N = {
     framePrompt: '分镜图提示词',
     h3Prompt: 'H3 提示词',
     h3Section: 'H3 视频提示词',
+    seedancePrompt: 'Seedance 提示词',
+    seedanceSection: 'Seedance 视频提示词',
+    blockingLabel: '走位',
+    compLine: (c) => [c.lens, c.cameraPosition, c.composition, c.eyeline && `视线 ${c.eyeline}`, c.focus && `焦点 ${c.focus}`, STABILITY[c.stability] ?? c.stability].filter(Boolean).join(' · '),
     showSegs: '▾ 展开全部段',
     hideSegs: '▴ 收起',
     copy: '复制', copied: '已复制', copyFailed: '复制失败',
@@ -960,6 +1124,10 @@ const I18N = {
     framePrompt: 'Frame prompt',
     h3Prompt: 'H3 prompt',
     h3Section: 'H3 video prompt',
+    seedancePrompt: 'Seedance prompt',
+    seedanceSection: 'Seedance video prompt',
+    blockingLabel: 'Blocking',
+    compLine: (c) => [c.lens, c.cameraPosition, c.composition, c.eyeline && `eyeline ${c.eyeline}`, c.focus && `focus ${c.focus}`, ({ stable: 'stable', 'slight-shake': 'slight shake', handheld: 'handheld' })[c.stability] ?? c.stability].filter(Boolean).join(' · '),
     showSegs: '▾ Show all segments',
     hideSegs: '▴ Collapse',
     copy: 'Copy', copied: 'Copied', copyFailed: 'Copy failed',
@@ -1058,6 +1226,7 @@ export function renderMarkdown(board, ctx = {}) {
     for (const seg of ep.segments) {
       const scene = sEp?.scenes?.[seg.sceneIndex - 1];
       out.push(`### ${seg.id} · ${scene ? t.withLighting(n.scene(scene.sceneId), scene.lighting) : '?'} · ${t.segHead(segSeconds(seg), seg.cuts.length)}`, '');
+      if (seg.blocking) out.push(`> ${t.blockingLabel}：${seg.blocking}`, '');
       out.push(mdHead(t.cutCols));
       const starts = cutStarts(seg.cuts);
       seg.cuts.forEach((cut, ci) => {
@@ -1073,7 +1242,9 @@ export function renderMarkdown(board, ctx = {}) {
           summary, (cut.characters ?? []).map(n.char).join(t.listSep),
         ]));
       });
+      const sd = seedancePrompt(seg, { scene, names: n, image: ctx.image ?? null, constraints: ctx.constraints ?? [] });
       out.push('', `**${t.h3Section}**`, '', '```text', seg.h3Prompt ?? '', '```', '');
+      out.push(`**${t.seedanceSection}**`, '', '```text', sd.prompt, '```', '');
     }
   }
 
@@ -1092,9 +1263,9 @@ export function renderMarkdown(board, ctx = {}) {
 /* ------------------------------------------------------------------ */
 /*
  * 与另外四份报告同一套视觉语言。设计约定见 references/report-style.md。
- * 分镜图从工作目录下 <段号>/f<切序>.png 找（imageExists 由 CLI 注入，
- * render 时检查相对工作目录的路径），有就内嵌显示 + 点击放大，
- * 没有就显示占位——不猜、不骗。
+ * 图片是用户在下游出好的素材，位置由 CLI 注入的 ctx.image(kind, rel) 决定：
+ * kind 是 'frame'（<段号>/f<切序>.png）或 'sheet'（<场景 slug>-sheet.png），
+ * 返回 src 或 null。有就内嵌显示 + 点击放大，没有就显示占位——不猜、不骗。
  */
 
 function embedDoc(doc) {
@@ -1148,8 +1319,8 @@ export function renderHtml(board, ctx = {}) {
         .map((seg) => {
           const scene = sEp?.scenes?.[seg.sceneIndex - 1];
           const starts = cutStarts(seg.cuts);
-          const frame = (ci) => `${seg.id}/f${ci + 1}.png`;
-          const has = (ci) => (ctx.imageExists ? ctx.imageExists(frame(ci)) : false);
+          const frame = (ci) => (ctx.image ? ctx.image('frame', `${seg.id}/f${ci + 1}.png`) : null);
+          const has = (ci) => frame(ci) != null;
 
           // 主分镜图区：图出全的段保留原 master+subs 层级；有缺图的段每切一格——
           // 有图的格显示原图，无图的格显示整宽提示词卡 + 复制按钮（混合情况按格判断）
@@ -1198,6 +1369,7 @@ export function renderHtml(board, ctx = {}) {
     ${(cut.props ?? []).map((id) => `<span class="chip prop">${esc(n.prop(id))}</span>`).join('')}
     <button class="copy mini" data-copy="${esc(cut.frame ?? '')}">${esc(t.framePrompt)}</button>
   </div>
+  ${t.compLine(cut) ? `<p class="scomp">${esc(t.compLine(cut))}</p>` : ''}
   ${summary}
 </li>`;
             })
@@ -1213,16 +1385,18 @@ export function renderHtml(board, ctx = {}) {
   </header>
   ${master}
   ${subs}
+  ${seg.blocking ? `<p class="seg-block"><b>${esc(t.blockingLabel)}</b>${esc(seg.blocking)}</p>` : ''}
   <div class="duo">
     <ol class="cuts">
 ${cutRows}
     </ol>
     <div class="ppanel">
       <div class="pp-h">
-        <b>${esc(t.h3Prompt)}</b>
+        <span class="ptabs"><button class="ptab on" data-i="0">${esc(t.h3Prompt)}</button><button class="ptab" data-i="1">${esc(t.seedancePrompt)}</button></span>
         <button class="copy" data-copy="${esc(seg.h3Prompt ?? '')}">${esc(t.copy)}</button>
       </div>
       <pre class="pp on">${esc(seg.h3Prompt ?? '')}</pre>
+      <pre class="pp">${esc(seedancePrompt(seg, { scene, names: n, image: ctx.image ?? null, constraints: ctx.constraints ?? [] }).prompt)}</pre>
     </div>
   </div>
   ${seg.note ? `<p class="seg-note">${esc(seg.note)}</p>` : ''}
@@ -1247,8 +1421,8 @@ ${cards}
   // ---- 03 生成批次单 ----
   const batchCards = stats.batches
     .map((b, i) => {
-      const sheet = `images/${slug(n.scene(b.sceneId))}-sheet.png`;
-      const hasSheet = ctx.imageExists ? ctx.imageExists(sheet) : false;
+      const sheet = ctx.image ? ctx.image('sheet', `${slug(n.scene(b.sceneId))}-sheet.png`) : null;
+      const hasSheet = sheet != null;
       return `<article class="batch">
   ${hasSheet ? `<img class="bimg" src="${esc(sheet)}" alt="${esc(n.scene(b.sceneId))}" loading="lazy">` : ''}
   <header class="batch-h"><b>${esc(t.batchLabel(String(i + 1).padStart(2, '0')))}</b><span class="chip">${esc(`${b.sceneId} ${n.scene(b.sceneId)}`)}</span>${b.lighting ? `<span class="chip lite">${esc(b.lighting)}</span>` : ''}</header>
@@ -1381,7 +1555,6 @@ section.top-sec{margin-top:34px}
 @media(max-width:900px){.duo{grid-template-columns:minmax(0,1fr)}}
 .ppanel{border:1px solid var(--rule);border-radius:2px;background:var(--panel);margin-top:7px}
 .pp-h{display:flex;align-items:center;gap:6px;padding:7px 10px;border-bottom:1px solid var(--rule)}
-.pp-h b{font:500 11px/1 var(--sans);letter-spacing:.08em;color:var(--ink-2);margin-right:auto}
 .pp{display:none;margin:0;padding:9px 12px;font:400 12px/1.8 var(--sans);color:var(--ink);
   white-space:pre-wrap;word-break:break-word;max-height:400px;overflow-y:auto;
   scrollbar-width:thin;scrollbar-color:var(--rule-2) transparent}
@@ -1412,6 +1585,14 @@ section.top-sec{margin-top:34px}
 a.chip:hover{border-color:var(--seal);color:var(--seal)}
 .prompts{display:flex;gap:6px}
 .seg-note{margin:0;font-size:11px;color:var(--ink-3)}
+.seg-block{margin:0;font-size:11.5px;line-height:1.7;color:var(--ink-2)}
+.seg-block b{font:500 10.5px/1 var(--sans);letter-spacing:.08em;color:var(--seal);margin-right:8px}
+.cut p.scomp{font:400 10.5px/1.6 var(--sans);color:var(--ink-3)}
+.ptabs{display:flex;gap:2px;margin-right:auto}
+.ptab{font:500 11px/1 var(--sans);letter-spacing:.08em;color:var(--ink-3);background:none;border:0;
+  border-bottom:1.5px solid transparent;padding:4px 6px;cursor:pointer}
+.ptab.on{color:var(--ink);border-bottom-color:var(--seal)}
+.ptab:focus-visible{outline:2px solid var(--seal);outline-offset:2px}
 
 /* 03 generation batches */
 .batches{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;align-items:start}
@@ -1565,6 +1746,17 @@ document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') lb.classList.remove('on');
 });
 
+// 提示词面板：H3 / Seedance 页签，复制键复制当前激活的那一份
+document.addEventListener('click', (e) => {
+  const tab = e.target.closest('.ptab');
+  if (!tab) return;
+  const panel = tab.closest('.ppanel');
+  const i = Number(tab.dataset.i);
+  panel.querySelectorAll('.ptab').forEach((b, k) => b.classList.toggle('on', k === i));
+  panel.querySelectorAll('.pp').forEach((pre, k) => pre.classList.toggle('on', k === i));
+  panel.querySelector('.pp-h .copy').dataset.copy = panel.querySelectorAll('.pp')[i].textContent;
+});
+
 // 复制提示词
 document.addEventListener('click', async (e) => {
   const btn = e.target.closest('.copy');
@@ -1609,11 +1801,20 @@ const USAGE = `novel-storyboard.mjs — novel-storyboard skill 的确定性工�
   checkup <sb.json> --script <script.json>    只打印质量门 ✓/✗，有未过项 exit 1
           [--shots <卡片目录>]
   render <sb.json> --script <script.json>     渲染报告到 stdout（默认 --md）
-         [--html|--md] [--outline] [--art]    分镜图从 ./<段号>/f<切序>.png 找
+         [--html|--md] [--outline] [--art]
+         [--frames <dir>]                     分镜图目录，找 <dir>/<段号>/f<切序>.png（默认当前目录）
+         [--images <dir>]                     场景设定图目录，找 <dir>/<场景 slug>-sheet.png（默认 ./images）
+                                              两个目录都可以是任意路径；报告里的图片路径按「报告写在当前目录」计算
          [--lang zh|en]                       报告界面语言（默认 zh；未指定时读取 JSON 顶层 lang 字段）
          [--shots <卡片目录>]                  报告的「配方」列显示卡名并标注建议景别／运镜的偏离
-  export <sb.json> --script <script.json>     导出 H3 投产包：每段一个文件夹 <段号>/prompt.md
-         [--out .]                            （分镜图 f1..fN.png 同住）+ 根部 manifest.json
+         [--constraints <file>]               Seedance 全局约束，一行一条（程序补上无字幕、多人禁双胞胎）
+  export <sb.json> --script <script.json>     导出投产包，每段一个文件夹
+         [--protocol h3|seedance]             h3（默认）：<段号>/prompt.md + f1..fN.png，根部 manifest.json
+                                              seedance：<段号>/seedance.md + 附件，根部 seedance-manifest.json
+         [--out .]                            输出目录
+         [--frames <dir>]                     从这里把 <段号>/f<切序>.png 拷进投产包；不给就只认包里现成的图
+         [--images <dir>]                     Seedance 参考图路径的设定图目录（默认 ./images），找到就拷进包
+         [--outline] [--art] [--constraints]  名字与全局约束，同 render
   stats                                       读当前目录的 .gates.jsonl，汇总哪道门最常响、
                                               哪道门从没响过（validate/checkup 会自动累积）
   slug <name>                                 剧名转安全文件名
@@ -1651,9 +1852,15 @@ function loadCtx(rest) {
     return path ? readJson(path) : null;
   };
   const shots = flag(rest, '--shots');
+  // Seedance 的全局约束：一行一条，行首编号可有可无（程序会重新编号）
+  const cons = flag(rest, '--constraints');
+  const constraints = cons
+    ? readFileSync(resolve(cons), 'utf8').split('\n').map((l) => l.trim().replace(/^\d+\s*[.、)）]\s*/, '')).filter(Boolean)
+    : [];
   return {
     script: get('--script'), outline: get('--outline'), cast: get('--cast'), art: get('--art'),
     recipes: shots ? loadShots(shots) : null,
+    constraints,
   };
 }
 
@@ -1746,25 +1953,70 @@ function main(argv) {
     // 界面语言：--lang > JSON 顶层 lang 字段 > 'zh'（后两级在渲染器里兜底）
     const langFlag = flag(rest, '--lang');
     if (langFlag) ctx.lang = langFlag;
-    ctx.imageExists = (rel) => existsSync(resolve(rel));
+    // 图放哪由用户定；src 写成相对当前目录的路径（报告默认就写在这里）
+    const framesDir = resolve(flag(rest, '--frames', '.'));
+    const sheetsDir = resolve(flag(rest, '--images', 'images'));
+    ctx.image = (kind, rel) => {
+      const abs = join(kind === 'sheet' ? sheetsDir : framesDir, rel);
+      return existsSync(abs) ? relative(process.cwd(), abs).split(sep).join('/') : null;
+    };
     process.stdout.write((rest.includes('--html') ? renderHtml(board, ctx) : renderMarkdown(board, ctx)) + '\n');
     return;
   }
 
   if (cmd === 'export') {
     const [path] = rest;
-    if (!path) throw new Error('用法：export <storyboard.json> --script <script.json> [--out h3]');
+    if (!path) throw new Error('用法：export <storyboard.json> --script <script.json> [--protocol h3|seedance] [--out h3] [--frames <dir>] [--images <dir>]');
     const board = readJson(path);
     const ctx = loadCtx(rest);
     if (!ctx.script) throw new Error('分镜离开剧本没有意义——必须给 --script <script.json>');
     const dir = flag(rest, '--out', '.');
-    const pack = exportPack(board, ctx.script, { imageExists: (rel) => existsSync(resolve(rel)), dir });
+    const protocol = flag(rest, '--protocol', 'h3');
+    if (!['h3', 'seedance'].includes(protocol)) throw new Error(`--protocol 只能是 h3 或 seedance，实际是 ${protocol}`);
+    // 分镜图在哪由用户指定：给了 --frames 就把找得到的拷进包里，不要求用户先手动放进去
+    const framesFlag = flag(rest, '--frames');
+    let copied = 0;
+    if (framesFlag) {
+      const from = resolve(framesFlag);
+      for (const ep of board?.episodes ?? []) {
+        for (const seg of ep?.segments ?? []) {
+          (seg.cuts ?? []).forEach((_, i) => {
+            const src = join(from, seg.id, `f${i + 1}.png`);
+            const dst = resolve(dir, seg.id, `f${i + 1}.png`);
+            if (!existsSync(src) || src === dst) return;
+            mkdirSync(resolve(dst, '..'), { recursive: true });
+            copyFileSync(src, dst);
+            copied += 1;
+          });
+        }
+      }
+    }
+    // Seedance 参考图路径要挂设定图：从 --images 指定的目录找，找到就拷进包里
+    const sheetsDir = resolve(flag(rest, '--images', 'images'));
+    const pack = exportPack(board, ctx.script, {
+      imageExists: (rel) => existsSync(resolve(rel)),
+      sheetExists: (file) => existsSync(join(sheetsDir, file)),
+      dir,
+      protocol,
+      names: namer(ctx),
+      constraints: ctx.constraints,
+    });
     for (const f of pack.files) {
       mkdirSync(resolve(f.path, '..'), { recursive: true });
       writeFileSync(resolve(f.path), f.content, 'utf8');
     }
+    for (const c of pack.copies) copyFileSync(join(sheetsDir, c.file), resolve(c.to));
     const segN = pack.manifest.length;
+    if (protocol === 'seedance') {
+      console.log(`✓ ${segN} 段 Seedance 投产包 → ${resolve(dir)}/（每段一个文件夹：seedance.md + 附件；根部 seedance-manifest.json）`);
+      if (pack.copies.length) console.log(`  从 ${sheetsDir} 拷入 ${pack.copies.length} 张设定图`);
+      if (framesFlag) console.log(`  从 ${resolve(framesFlag)} 拷入 ${copied} 张分镜图`);
+      if (pack.missingTotal) console.log(`⚠️ 缺 ${pack.missingTotal} 个附件，已在 seedance-manifest.json 的 missing 里标注——提交前先补齐`);
+      console.log('  视觉风格（画风层）不在包里，提交时附加');
+      return;
+    }
     console.log(`✓ ${segN} 段投产包 → ${resolve(dir)}/（每段一个文件夹：分镜图 + prompt.md；根部 manifest.json）`);
+    if (framesFlag) console.log(`  从 ${resolve(framesFlag)} 拷入 ${copied} 张分镜图`);
     if (pack.missingTotal) console.log(`⚠️ 缺 ${pack.missingTotal} 张分镜图，已在 manifest 的 missing 里标注——喂 H3 前先补齐`);
     return;
   }

@@ -14,10 +14,37 @@ in-process core per process — background services, registered domain
 families, backend URL and the TinyHumans API key — and `Runtime::agent(spec)`
 instantiates any number of agents on it. Each `AgentSpec` fully describes
 one agent: provider endpoint and model, access tier, `action_dir`, MCP
-servers, skill bundles, system prompt, tool scope, sandbox mode, allowlists,
-and a narrowed `DomainSet` / `ToolGroups`. A runtime identifies as
+servers, its own in-process tools, skill bundles, system prompt, tool scope,
+sandbox mode, allowlists, and a narrowed `DomainSet` / `ToolGroups`. A runtime identifies as
 `HostKind::Library`: inference does not depend on OpenHuman app login,
 including inference-readiness checks for workflow agent nodes.
+
+### An embedder's own tools
+
+`AgentSpec::tools` takes the host's own `Box<dyn Tool>` objects, which reach
+the model as real tools — their own schema on the wire, called by their own
+name. Before it existed the only road was `AgentSpec::mcp`, and the model paid
+for the indirection: a discovery call to learn what a server offers, and an
+`mcp_call_tool` envelope whose inner `arguments` object no provider can
+validate or constrain decoding against.
+
+It takes a **factory**, not a belt. `Agent` is `Clone` and `Box<dyn Tool>` is
+not, and the session behind a spec is rebuilt from `Config` on every turn, so
+nothing holding a `dyn Tool` could survive in between. The closure therefore
+runs once per turn — which also means a host whose tools belong to something
+shorter-lived than the agent (one episode, one room, one assignment) can
+return a different belt each time instead of registering a second agent.
+
+Implement `Tool` through `openhuman_embed::Tool`, not by depending on
+`tinytools` directly: a second path to that crate produces incompatible Rust
+types, and a tool built against it cannot be handed to a session at all.
+
+One caveat on a varying belt. The prompt's tool catalogue is rendered from the
+same belt in the same build, so the two stay consistent on any turn that
+composes a prompt — but a **resumed** session reuses its persisted system
+messages, so a belt that moves under a long-lived thread is described by the
+prompt that thread opened with. Vary a belt only on turns that run on a
+session of their own.
 
 Per-agent isolation is a context, not a second core. `Runtime::agent` clones
 the runtime's base `Config`, applies the spec, and derives a child
@@ -502,6 +529,34 @@ Every provider response carries a `UsageInfo` block - input tokens, output token
 - Log accurate end-of-turn cost lines.
 
 When the backend doesn't surface a charged amount (older builds, providers that don't bill through it), a small per-tier rate table provides a token-rate floor estimate. Direct cost from the backend always wins when available.
+
+## Web channel events and RPCs (assistant-ui elements pass)
+
+The assistant-ui-elements integration added a batch of additive `WebChannelEvent`s and RPCs so the frontend can render tool args/timing, plan/goal/queue state, and turn lifecycle without polling. `EVENTS_VERSION` (`core/bus.rs`) is `1.4.0`; every new field is optional/defaulted so an older subscriber keeps parsing what a newer publisher emits.
+
+**New/extended socket events** (bridged from `DomainEvent` onto `WebChannelEvent` by `web_chat::event_bus` and `core::socketio`):
+
+- `ts` (epoch ms) is now stamped on every event by `publish_web_channel_event` when the producer left it unset, so the frontend can order/measure latency without guessing at receive time.
+- `chat_done.timing` - `{ first_token_ms, first_tool_ms, total_ms, tokens_per_second }`, threaded from the progress bridge's per-turn `TurnTiming` through `ProgressBridgeHandle::timing_snapshot()`. `tokens_per_second` is derived from `output_tokens / (total_ms / 1000)` when both are known and `total_ms > 0`.
+- `chat_cancelled` - `{ thread_id, client_id, request_id, cancel_reason: "user_stop" | "superseded", superseded_by }`. Emitted alongside (not instead of) the existing `chat_error{error_type:"cancelled"}` for one release, on both the unscoped/scoped stop path and the superseded-by-a-newer-request path, and on the parallel-turn cooperative-cancel path (which previously published no terminal event at all).
+- `chat_error{error_type:"guardrail"}` - carries a `guardrail: { verdict, score, reasons: [{code,message}] }` payload when `start_chat` rejects a message via `StartChatError::Guardrail` (the prompt-injection/security guardrail). Every other rejection stays `error_type:"inference"`. The RPC surface (`channel.web_chat`'s `Result<_, String>`) encodes the same structured verdict as a `GUARDRAIL:<json>` sentinel string (`web_chat::ops::start_chat::{GUARDRAIL_ERROR_PREFIX, is_guardrail_error_message}`, mirroring the existing `BACKEND_UNAVAILABLE:` pattern).
+- `turn_cost` - live per-turn cost readout from `AgentProgress::TurnCostUpdated`, throttled to at most one emission per 750ms per turn (the first update always emits immediately): `{ thread_id, client_id, request_id, round, usage: { input_tokens, output_tokens, cached_input_tokens, cost_usd, context_window, subagents } }`. `subagents` is always empty on this live event (it is the parent's cumulative rollup only); per-sub-agent attribution still only shows up on the terminal `chat_done.usage`.
+- `approval_decided` / `plan_review_decided` - bridged from `DomainEvent::ApprovalDecided` / `PlanReviewDecided`, which gained `thread_id`, `client_id`, `tool_call_id`, and `resolution` (`"expired"` on TTL/sweep, `"cancelled"` on a dropped decision channel, `None` for an ordinary user decision - carried on the wire as the existing `cancel_reason` field). Only surfaced when the original park had both `thread_id` and `client_id` (chat-routed).
+- `run_mode_changed` - `{ thread_id, client_id: "", message: "plan" | "build" }`, bridged from `DomainEvent::ThreadRunModeChanged`, published by `agent::tinyagents::run_mode::set_mode`.
+- `thread_todos_changed`, `queue_item_queued` / `queue_item_delivered` / `queue_item_removed` - `queue_item` carries `{ id, lane, text_preview }`.
+- Sub-agent correlation: `subagent_spawned`/`subagent_completed`/`subagent_failed`/`subagent_awaiting_user` carry `subagent.parent_call_id` (the spawning tool call's id - every worker of one `spawn_parallel_agents` call shares it); `subagent_completed` also carries `subagent.output` (capped final text). `tool_call.args`/`tool_result.args`+`elapsed_ms` now carry real arguments and timing instead of `null` (from tinyagents' `AgentEvent::ToolStarted.input`).
+- Artifact events (`ArtifactPending`/`ArtifactReady`/`ArtifactFailed`) carry `tool_call_id` and `turn_request_id`, the latter filled from the originating turn's `ApprovalChatContext::request_id` so the frontend can bind an artifact card to the exact turn that produced it (`None` for CLI/cron/sub-agent producers with no chat context).
+
+**New RPCs:**
+
+- `agent.set_run_mode { thread_id, mode }` / `agent.get_run_mode { thread_id }` - read/flip a thread's Plan/Build `RunModeHandle`. `channel.web_chat` also accepts an optional `run_mode: "plan" | "build"` param (mirroring the socket `chat:start` payload) so a turn can start with the thread already in the requested mode instead of racing a separate RPC call; unrecognized values are logged and ignored.
+- `threads.goal_get` / `threads.todos_get` - read a thread's current goal/todo state directly (previously only observable via the bridged events).
+- `threads.edit_message { thread_id, message_id, content, client_id? }` / `threads.regenerate { thread_id, message_id?, client_id? }` - both return `{ request_id }`. They cancel the thread's in-flight turn, fork the session transcript at a cut point via `TranscriptLocator::truncate_into_next_generation` (the sealed generation the fork was cut from is never touched - same "compaction never erases" guarantee), truncate the conversation-store message log and the turn-state snapshots for every dropped turn, then restart the turn with the edited content (`edit_message`) or the original prompt (`regenerate`). See `threads::ops::edit`'s module doc for the full UI-message-id -> transcript-cut-point mapping.
+- `channel.web_queue_remove { client_id, thread_id, item_id }` - remove one specific queued item from a thread's run queue.
+- `agent.context_breakdown { agent_id?, thread_id? }` - a UI-friendly view over the agent's rendered prompt size (system/tools/history split) for the composer's context-usage indicator.
+- `commands.list` - merges built-in commands with `skills.list` and `flows.list` into one slash-command catalog.
+
+`plan_exit` (the tool that flips a thread from Plan back to Build) only flips the mode when there is no plan review still parked on that thread (`agent::plan_review::gate::PlanReviewGate::parked_review_for_thread`) - a review resolves before `request_plan_review` returns control to the agent, so this only matters for a mis-timed/concurrent `plan_exit` call racing a still-pending review, which must not unlock every tool before the user has actually approved anything.
 
 ## Explicit run context and host capabilities
 

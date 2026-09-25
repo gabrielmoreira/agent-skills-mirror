@@ -51,7 +51,39 @@ Admin API key setup:
   - Inline 30-day dashboard chart when daily buckets are present.
   - Identity login method: `Admin API`.
 
+## Recover usage when Claude is already signed in
+
+A working Claude Code login or Claude browser tab does not by itself confirm that CodexBar can read that
+session. For example, OAuth can report missing credentials, the CLI probe can time out, and Web can report
+`No Claude session key found in browser cookies.` on the same machine. Diagnose the selected source before
+signing out or replacing credentials.
+
+If Claude works in Chrome but CodexBar cannot import its browser session:
+
+1. Open `https://claude.ai` in Chrome and confirm the intended account is signed in.
+2. In Settings → Providers → Claude, select **Web API (cookies)** and leave the cookie source on **Auto**.
+   This uses the browser session for session, weekly, and available model-specific quotas.
+3. In Settings → Advanced, confirm **Disable Keychain access** is off. Chromium cookie decryption needs
+   the browser's Safe Storage Keychain item; Claude's OAuth prompt policy controls a different credential.
+4. Explicitly retry the import from Terminal:
+
+   ```bash
+   codexbar cookie refresh --provider claude --allow-keychain-prompt
+   ```
+
+   Approve the expected macOS Keychain prompt for the installed CodexBarCLI and the browser's Safe Storage
+   item. The command never prints cookie values. A prior denial can suppress imports for six hours;
+   this explicit retry can bypass that cooldown, while ordinary refresh attempts may remain suppressed.
+   See [Keychain prompts](keychain-prompts.md) for permission details.
+5. Click **Refresh** in Claude's settings and confirm that **Updated just now** appears with current quota
+   bars and no fetch error. Local cost totals or last-known quota bars alone do not prove a successful refresh.
+
+This recovers browser-session access; it does not repair missing OAuth credentials. If the refreshed session
+instead reports a Cloudflare challenge, follow the network guidance under Web API below rather than repeating
+the cookie import.
+
 ## Keychain prompt policy (Claude OAuth)
+
 - Preferences → Providers → Claude → Keychain prompt policy.
 - Options:
   - `Never prompt`: never attempts interactive Claude OAuth Keychain prompts.
@@ -117,8 +149,11 @@ Admin API key setup:
   their baselines are not merged with threshold notification state. OAuth/CLI samples without a warning owner use
   one stable unresolved-account scope, so credential rewrites preserve threshold crossings and predictive warnings
   remain available. When a stable account identity or verified owner binding becomes available, its threshold scope
-  adopts the newest unresolved history and removes that fallback entry. The first sample in a new unresolved episode
-  can issue an initial warning. Unverified credential owners remain independent; changing such an owner can still
+  adopts the newest unresolved history. Later identity gaps reuse the last known account when the reset timestamp
+  is unchanged and remaining quota has not increased. Without that continuity, samples use the stable unresolved
+  scope; once its history has joined an account, subsequent gaps preserve already-fired thresholds rather than
+  starting a new warning episode on every refresh. The first independent unresolved sample can still issue an
+  initial warning. Unverified credential owners remain independent; changing such an owner can still
   produce an initial warning because account continuity cannot be established.
 - Successful OAuth login enables Claude and preserves the selected usage source. With the default Auto source, OAuth
   remains preferred when readable, while CLI/Web fallback stays available when OAuth credentials are not usable.
@@ -224,6 +259,10 @@ The accepted multi-account design in
   `~/.config/codexbar/config.json`; legacy installs may use `~/.codexbar/config.json`). The option defaults off,
   zero accounts still use the ambient presentation, and account identity is `claude-swap:<slot>`, never the display
   email.
+- Provider widgets follow the active claude-swap account under the same multiple-account/single-account presentation
+  rule. Successful list refreshes and clearing the adapter publish a widget snapshot even with account widgets off.
+  Retained quota keeps its original measurement time and is bound to the slot's opaque owner fingerprint; unavailable
+  or replaced accounts never borrow another account's quota. Local cost history remains combined across Claude homes.
 - Terminal scope: this automatic precedence is cards-only and works on every supported CLI platform. An explicit
   Claude provider or `--source auto` remains eligible, while `--account`, `--account-index`, `--all-accounts`, and
   explicit non-auto source flags bypass the adapter. `codexbar usage` and serve `/usage`/`/cost` remain unchanged,

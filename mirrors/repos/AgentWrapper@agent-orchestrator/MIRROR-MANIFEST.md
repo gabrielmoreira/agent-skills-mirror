@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `AgentWrapper/agent-orchestrator` — 26 default patterns, 1 followed patterns, 15 file(s) materialized.
+Mirror of `AgentWrapper/agent-orchestrator` — 26 default patterns, 1 followed patterns, 13 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `AgentWrapper/agent-orchestrator` — 26 default patterns, 1 followed 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 15 |
+| Files         | 13 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -71,9 +71,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 10 | ✓ | [`backend/internal/skillassets/using-ao/SKILL.md`](backend/internal/skillassets/using-ao/SKILL.md) |
 | 11 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 | 12 | ✓ | [`cloud/internal/skillassets/using-ao/SKILL.md`](cloud/internal/skillassets/using-ao/SKILL.md) |
-| 13 | ✓ | [`frontend/src/landing/src/app/blog/llms.txt/route.ts`](frontend/src/landing/src/app/blog/llms.txt/route.ts) |
-| 14 | ✓ | [`frontend/src/landing/src/app/llms.txt/route.ts`](frontend/src/landing/src/app/llms.txt/route.ts) |
-| 15 | → | [`DESIGN.md`](DESIGN.md) |
+| 13 | → | [`DESIGN.md`](DESIGN.md) |
 
 ---
 

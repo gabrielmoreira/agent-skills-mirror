@@ -36,7 +36,7 @@ The camera naturally lowers a little as he walks further along the path beside t
 
 ## E2 · A Cat's Cozy Day Filmed as a Selfie Vlog
 
-- Seedance 2.5 · creator: @ZaraIrahh · heat: 89 · stability: 70
+- Seedance 2.5 · creator: @ZaraIrahh · heat: 88 · stability: 70
 - Evidence: [GoodCase](https://goodcase.ai/cases/zarairahh-seedance-ai-f89372941867) · [finished media](https://media.goodcase.ai/media/video/zarairahh-seedance-ai-f89372941867.mp4) · [poster](https://media.goodcase.ai/media/poster/zarairahh-seedance-ai-f89372941867.jpg) · [original source](https://x.com/ZaraIrahh/status/2091385137133219971)
 - Summary: Just a normal day in the life of a very busy cat 🐱✨ Created with Seedance 2.5 on @wavespeed_ai Prompt: Create a 60-seco
 
@@ -157,7 +157,7 @@ A highly realistic cinematic shot filmed from inside a moving car looking out th
 
 ## E4 · Underwater Animal Orchestra
 
-- Seedance 2.5 · creator: @thisismariaa25 · heat: 79 · stability: 80
+- Seedance 2.5 · creator: @thisismariaa25 · heat: 78 · stability: 80
 - Evidence: [GoodCase](https://goodcase.ai/cases/underwater-animal-orchestra) · [finished media](https://media.goodcase.ai/media/video/underwater-animal-orchestra.mp4) · [poster](https://media.goodcase.ai/media/poster/underwater-animal-orchestra.jpg) · [original source](https://x.com/thisismariaa25/status/2087112692809060493)
 - Summary: A creative cinematic prompt for Seedance 2.5 depicting an orchestra of sea animals like octopuses and dolphins performing deep underwater.
 
@@ -183,7 +183,7 @@ Prompt - REFERENCE & SUBJECT Use "@<image1" as the exact visual reference for th
 
 ## E6 · Dog Steals the Spotlight in a Mirror Selfie
 
-- Seedance 2.5 · creator: @Strength04_X · heat: 70
+- Seedance 2.5 · creator: @Strength04_X · heat: 69
 - Evidence: [GoodCase](https://goodcase.ai/cases/seedance-pov-you-wanted-a-cute-mirror-selfie-but-your-dog-wanted-to-be-the-main-charac-3d3e83219d46) · [finished media](https://media.goodcase.ai/cases/07f0e5bcf1bf.mp4) · [poster](https://media.goodcase.ai/cases/c7768b152872.jpg) · [original source](https://x.com/Strength04_X/status/2097616213371478242)
 - Summary: POV: you wanted a cute mirror selfie, but your dog wanted to be the main character Made with Seedance 2.5 Prompt ↓ REFERENCE & SUBJECT CONSISTENCY Use "@<image1…
 
@@ -201,7 +201,7 @@ REFERENCE & SUBJECT CONSISTENCY Use "@<image1" as the exact visual reference for
 
 ## E7 · POV: Your Kitten Vlog, but the Kitten Chooses Violence
 
-- Seedance 2.5 · creator: @Strength04_X · heat: 64
+- Seedance 2.5 · creator: @Strength04_X · heat: 63
 - Evidence: [GoodCase](https://goodcase.ai/cases/seedance-pov-you-try-to-make-a-cute-kitten-vlog-and-your-kitten-chooses-violence-d052169bcc1d) · [finished media](https://media.goodcase.ai/media/video/seedance-pov-you-try-to-make-a-cute-kitten-vlog-and-your-kitten-chooses-violence-d052169bcc1d.mp4) · [poster](https://media.goodcase.ai/media/poster/seedance-pov-you-try-to-make-a-cute-kitten-vlog-and-your-kitten-chooses-violence-d052169bcc1d.jpg) · [original source](https://x.com/Strength04_X/status/2096540586866270337)
 - Summary: POV: you try to make a cute kitten vlog and your kitten chooses violence Seedance 2.5 on @PixVerse Prompt ↓ REFERENCE & SUBJECT CONSISTENCY Use "@image1" as the…
 
@@ -299,7 +299,7 @@ Her thumb instinctively continues rubbing the kitten's fur a
 
 ## E8 · From the Birth of the Universe to Humanity
 
-- Seedance 2.5 · creator: @RuzainaMeer · heat: 60
+- Seedance 2.5 · creator: @RuzainaMeer · heat: 59
 - Evidence: [GoodCase](https://goodcase.ai/cases/seedance-create-a-30-second-ultra-photorealistic-cinematic-documentary-showing-the-evolu-c0bf04a67f0e) · [finished media](https://media.goodcase.ai/cases/605e2885b55c.mp4) · [poster](https://media.goodcase.ai/cases/abd3f250edd5.jpg) · [original source](https://x.com/RuzainaMeer/status/2096837494000308685)
 - Summary: 13.8 billion years of evolution, from the birth of the universe to modern humanity. A cinematic journey through time, created with Seedance 2.5. Full Prompt: Cr…
 

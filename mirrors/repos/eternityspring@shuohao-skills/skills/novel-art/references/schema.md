@@ -1,11 +1,11 @@
 # art.json 结构
 
-美术设定集（场景 + 叙事道具）的载体。**模型只填设计字段**，场景与道具的出现集、承载爽点都由 `seed` 从 outline.json 搬运；大纲没有 `props` 时道具表留空，由模型按 `prop-pass.md` 从原文提取。Markdown 和报告由 `render` 渲染。
+美术设定集（场景 + 叙事道具）的载体。`dynasty` 是文档级的——整部剧一个具体的真实朝代或年代（`明` / `北宋` / `民国`），场景、道具的形制与纹样都按它写；不许填「古代」「架空」这类含糊词，理由见 `scene-pass.md` 第 1 条。**模型只填设计字段**，场景与道具的出现集、承载爽点都由 `seed` 从 outline.json 搬运；大纲没有 `props` 时道具表留空，由模型按 `prop-pass.md` 从原文提取。Markdown 和报告由 `render` 渲染。
 
 ```json
 {
   "source": "渡口",
-  "style": "realistic",
+  "dynasty": "民国",
   "scenes": [{
     "id": "S01", "name": "渡船船舱", "primary": true,
     "summary": "设计意图：这个空间讲什么故事……",
@@ -32,7 +32,6 @@
 | 字段 | 必填 | 说明 |
 | --- | --- | --- |
 | `source` | 是 | 剧名/书名 |
-| `style` | 是 | `realistic` / `ghibli`，与 novel-characters 的画风同名对齐（内容是环境版，不带皮肤毛孔那套） |
 | `scenes` | 是 | 场景数组 |
 | `props` | 否 | **叙事道具**数组——只收有特写、跨集、承载剧情的（3–8 件为宜），场景陈设归场景锚点。选法见 `prop-pass.md` |
 
@@ -48,8 +47,8 @@
 | `lighting` | ≥1 个 | state 中文 / prompt 英文 | **光照状态**：AI 换时段是重新生成不是重新打灯，每个状态必须落成完整提示词 |
 | `image.prompt` | 是 | **英文** | 主视角单图提示词，**必须写明空景无人** |
 | `image.negativePrompt` | 是 | **英文** | **必须禁人**（people/figure/…），这是空景的硬保证 |
-| `image.sheet` | 是 | **英文** | 环境设定图完整版面指令（见 `sheet.md`），必须整段包含当前风格的渲染句 |
-| `image.tags` | 是 | 英文 | 风格标签数组 |
+| `image.sheet` | 是 | **英文** | 环境设定图完整版面指令（见 `sheet.md`），必须整段包含 `scene-pass.md` 两档表面处理句之一 |
+| `image.tags` | 是 | 英文 | 标签数组：题材、材质、光照、色板。不打画风标，见 `scene-pass.md` |
 | `variantOf` | 否 | — | 变体的母场景 id。AI 生成一个新景很便宜，但**变体复用母场景资产更一致**——outline 里带 reusePlan 的场景优先做成变体 |
 | `changes` | variantOf 时必填 | 中文 | 相对母场景改了什么（换时段/换天气/换前景/删道具） |
 | `usage` | 否 | — | `{episodes, beats}`，seed 自动填，手写也行 |
@@ -68,10 +67,10 @@
 | `carriedBy` | 否 | 中文 | 谁带着它，自由文本 |
 | `image.prompt` | 是 | **英文** | 白底主视角，**必须带尺度短语、无人无手** |
 | `image.negativePrompt` | 是 | **英文** | **必须禁人且禁手**（hands/fingers） |
-| `image.sheet` | 是 | **英文** | 设定图版面指令，**必须写明 pure white background** + 当前风格渲染句 |
+| `image.sheet` | 是 | **英文** | 设定图版面指令，**必须写明 pure white background** + 同一套两档表面处理句之一 |
 | `usage` | 否 | — | `{episodes, beats}` |
 
-## 硬规则（11 道质量门，全是代码）
+## 硬规则（10 道质量门，全是代码）
 
 1. 锚点 3–5 个——少了认不出，多了核对不过来
 2. 光照状态 ≥1 且都有英文提示词
@@ -79,18 +78,17 @@
 4. 出图提示词（主图/反向/设定图/光照）全部英文
 5. 提示词不含角色名（`validate --cast cast.json` 才查，不给就明说跳过）
 6. 变体引用完整：`variantOf` 指向存在的场景且带 `changes`
-7. 风格与反向词匹配：`realistic` 不禁 photorealistic、`ghibli` 必须禁；`sheet` 必须含渲染句
 
 道具专属四道：
 
-8. 状态 ≥1 且都有英文提示词
-9. 尺度参照写进提示词（scale 枚举对应的英文短语）
-10. 反向提示词禁手——拿着道具的手是最常见污染
-11. 设定图纯白背景可抠
+7. 状态 ≥1 且都有英文提示词
+8. 尺度参照写进提示词（scale 枚举对应的英文短语）
+9. 反向提示词禁手——拿着道具的手是最常见污染
+10. 设定图纯白背景可抠
 
 ## 校验
 
 ```bash
 node scripts/novel-art.mjs validate art.json --cast cast.json
-node scripts/novel-art.mjs checkup art.json               # 只打印 11 道门 ✓/✗
+node scripts/novel-art.mjs checkup art.json               # 只打印 10 道门 ✓/✗
 ```

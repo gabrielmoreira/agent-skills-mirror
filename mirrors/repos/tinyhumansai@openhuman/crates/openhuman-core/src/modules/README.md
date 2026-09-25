@@ -2,7 +2,8 @@
 
 The native loadable-module host. A module is a first-party `cdylib` — `tinydocs`,
 `tinywallet`, `tinymemory`, `tinyjuice`, `tinyvoice`, `tinyruntime` (+
-`tinyruntime-nodejs` / `tinyruntime-python`), `tinymcp`, `tinyconnectors` — that
+`tinyruntime-nodejs` / `tinyruntime-python`), `tinymcp`, `tinyconnectors`,
+`tinybox`, `tinychannels`, `tinyhosts` — that
 speaks the tinybus module ABI. It is downloaded from a pinned GitHub release,
 verified against a digest compiled into [`registry.rs`](registry.rs), admitted
 through tinybus's ABI/manifest gates, and attached to a private in-process
@@ -24,7 +25,7 @@ directory on `modules`.
 | Path | Purpose |
 | --- | --- |
 | `mod.rs` | Module rustdoc for the whole loading model; re-exports |
-| `registry.rs` (+ `registry/records_docs_wallet.rs`, `registry/records_mcp_connectors.rs`, `registry/records_memory_juice.rs`, `registry/records_runtime.rs`, `registry/records_voice.rs`) | The compiled-in table: every `ModuleRecord`, its per-platform digests, and `find`/`ALL` |
+| `registry.rs` (+ `registry/records_docs_wallet.rs`, `registry/records_extra.rs`, `registry/records_mcp_connectors.rs`, `registry/records_memory_juice.rs`, `registry/records_runtime.rs`, `registry/records_voice.rs`) | The compiled-in table: every `ModuleRecord`, its per-platform digests, and `find`/`ALL` |
 | `platform.rs` | Which published artifact (`ubuntu-24.04-x86_64`, `macos-15-arm64`, ...) belongs to this host, newest-compatible first |
 | `types.rs` | `LoadPolicy`, `ModuleRecord`, `ModuleSource`, `ModuleState`, `ModuleStatus`, `PlatformAsset` |
 | `host.rs` | The module broker: a dedicated process-lifetime tokio runtime, its `ModuleHost`, and the host's own `Connection` for calling into loaded modules |

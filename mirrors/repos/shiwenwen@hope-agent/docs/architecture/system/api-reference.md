@@ -521,6 +521,7 @@ KB 文件预览端点**仅面向用户本人，无 session 参数、无 owner fa
 | `list_sessions_cmd` | `GET /api/sessions?agentId=&projectId=&unassigned=&parentSession=&pinned=&limit=&offset=&activeSessionId=` | ✅（`parentSession=true/false` 与 `pinned=true/false` 均在分页前筛选；置顶分组用 `pinned=true` 跨项目读取） |
 | `list_archived_sessions_cmd` | `GET /api/sessions/archived?limit=&offset=` | ✅（跨普通 / 项目 / IM / Subagent / Cron / Knowledge / Design 的归档管理列表） |
 | `create_session_cmd` | `POST /api/sessions` | ✅ |
+| `import_local_codex_sessions_cmd` | `POST /api/sessions/import-codex-local` | ✅（无请求体；读取 Hope Agent 运行机器的 Codex 本地会话，返回新增 / 更新 / 未变 / 跳过 / 失败数，不接收任意路径） |
 | `get_session_cmd` | `GET /api/sessions/{id}` | ✅ |
 | `fork_session_cmd` | `POST /api/sessions/{sessionId}/fork` | ✅（body 的 `messageId` 为含边界；`beforeMessageId` 为不含边界，二者互斥且同时传入返回 400；响应保持 `SessionMeta` 扁平字段，并可附带 `draftAttachmentsMeta`） |
 | `create_side_chat_cmd` | `POST /api/sessions/{sessionId}/side-chats` | ✅（从最近稳定历史创建 `kind=side` 会话；主会话在途时排除当前 turn，不中断生成） |

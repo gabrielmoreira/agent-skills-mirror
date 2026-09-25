@@ -2,6 +2,9 @@
      only this repo's URL and asked to install it.
 
        curl -fsSL https://raw.githubusercontent.com/agentlas-ai/Agentlas-OS/main/scripts/install-all-runtimes.sh | bash
+       Desktop app instead (or both, add `-s -- --with-engine`), sha512-verified:
+       curl -fsSL https://agentlas.cloud/install.sh | bash        (app -> /Applications)
+       Windows PowerShell: irm https://agentlas.cloud/install.ps1 | iex
 
      One line, no sudo, nothing written outside $HOME. It downloads a release
      tarball from this repo's GitHub Releases, verifies its SHA-256 before
@@ -37,6 +40,7 @@
   <img alt="hosts" src="https://img.shields.io/badge/Claude%20Code%20%7C%20Codex%20%7C%20Gemini%20%7C%20Cursor%20%7C%20Antigravity%20%7C%20Local-black">
   <img alt="ranking" src="https://img.shields.io/badge/ranking-none%20by%20design-blue">
 </p>
+<p align="center"><a href="https://www.producthunt.com/products/agentlas-science?embed=true&utm_source=badge-featured&utm_medium=badge&utm_campaign=badge-agentlas-science"><picture><source media="(prefers-color-scheme: dark)" srcset="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1250298&theme=dark"><img alt="Agentlas Science on Product Hunt" width="250" height="54" src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1250298&theme=light"></picture></a></p>
 
 <p align="center">
   <a href="README.md">English</a> ·
@@ -48,14 +52,42 @@
 
 **Agentlas Hub is a free agent community.** Publishing and calling public agents requires no agent price, lease, or Agentlas credit purchase. The caller supplies their own model and API access; subscription plans cover Agentlas software and hosted features. Creator settlement for new Hub activity is closed. Existing account balances and historical claims remain subject to the applicable account terms.
 
+### Install Agentlas Desktop
+
+**macOS · Linux**
+
+```bash
+curl -fsSL https://agentlas.cloud/install.sh | bash
+```
+
+**Windows (PowerShell)**
+
+```powershell
+irm https://agentlas.cloud/install.ps1 | iex
+```
+
+<p align="center"><sub>Downloads the latest signed release, checks its sha512, and installs without <code>sudo</code> or an admin prompt · <a href="https://github.com/agentlas-ai/agentlas-desktop-releases/releases/latest">download manually</a> · <a href="https://github.com/agentlas-ai/agentlas-desktop">Agentlas Desktop is open source — view the repo</a></sub></p>
+
+<details>
+<summary><strong>Desktop + Agentlas OS</strong>, or <strong>Agentlas OS only</strong> for Claude Code · Codex · Gemini · Cursor</summary>
+
+Desktop and Agentlas OS together:
+
+```bash
+curl -fsSL https://agentlas.cloud/install.sh | bash -s -- --with-engine
+```
+
+```powershell
+$env:AGENTLAS_WITH_ENGINE="1"; irm https://agentlas.cloud/install.ps1 | iex
+```
+
+Agentlas OS only (no app). No <code>sudo</code>, nothing written outside <code>$HOME</code>. Restart your agent host afterwards and run <code>hephaestus doctor</code>.
+
 ```bash
 curl -fsSL https://raw.githubusercontent.com/agentlas-ai/Agentlas-OS/main/scripts/install-all-runtimes.sh | bash
 ```
 
-<p align="center">
-  <sub>One line. No <code>sudo</code>. Nothing written outside <code>$HOME</code>.<br>
-  Restart your agent host afterwards and run <code>hephaestus doctor</code>.</sub>
-</p>
+</details>
 
 <p align="center">
   <a href="https://agentlas.cloud/desktop">
@@ -284,7 +316,7 @@ the original model comes back on its own once the limit clears.
 | --- | --- |
 | **Agentlas Desktop** | Visual local OS for agent teams, memory, browser work and Hub specialists |
 | **Hephaestus plugin** | This repo — the open-source engine and command surface for your CLI hosts |
-| **Agentlas Hub** | Public surface for publishing and borrowing specialists |
+| **Agentlas Hub** | Public space for publishing, discovering, and using agents for free |
 | **Agentlas Cloud** | Owner-scoped store for privately saving and retrieving your own agents |
 
 ---
@@ -457,7 +489,7 @@ security-conscious), open this link in your browser first:
 </p>
 
 <p align="center">
-  <sub><a href="https://agentlas.cloud/desktop">Build, own, borrow, and run agents across your local workspace, private Agent Cloud, and the public Agentlas Hub.</a></sub>
+  <sub><a href="https://agentlas.cloud/desktop">Build, own, share, and run agents across your local workspace, private Agent Cloud, and the free public Agentlas Hub.</a></sub>
 </p>
 
 <details>
@@ -518,7 +550,7 @@ at [agentlas.cloud/desktop](https://agentlas.cloud/desktop) or the
 
 
 <details>
-<summary><strong>Build, Borrow, Own — the full model</strong></summary>
+<summary><strong>Build, Use, Own — the full model</strong></summary>
 
 
 An agent you create should remain an asset you can move, rather than a
@@ -532,7 +564,7 @@ claim of regulated financial or legal trust services.
 | Value | What Agentlas does | Entry point in an external LLM host |
 | --- | --- | --- |
 | **Build** | Compiles a plain-language request into a runnable single-agent or team package with roles, tools, memory boundaries, permissions, routing, and verification contracts. | `/agentlas build` |
-| **Borrow** | Finds public Hub specialists and brings the selected runtime bundle into your current Agentlas host. The publisher's private source work is not copied into your workspace. | `/agentlas hub` (Hub only) or `/agentlas network` (Local + Cloud + Hub) |
+| **Use** | Finds free public Hub agents and brings the selected runtime bundle into your current Agentlas host. The publisher's private source work is not copied into your workspace. | `/agentlas hub` (Hub only) or `/agentlas network` (Local + Cloud + Hub) |
 | **Own** | Keeps agents you create in a private, owner-scoped Agent Cloud so you can retrieve and call them again after changing models or computers. | Choose **private Agent Cloud** at `/agentlas upload`, then retrieve with `/agentlas cloud` |
 
 ### Portable package, local execution
@@ -674,7 +706,7 @@ fits the work.
 
 | Surface | What it contains | What it is for |
 | --- | --- | --- |
-| **Agentlas Hub** | Public packages from creators and teams | Find and borrow only public specialists with `/agentlas hub`; `/agentlas network` federates Hub with Local and owner Cloud. Publish only through an explicit public-Hub choice. |
+| **Agentlas Hub** | Public packages from creators and teams | Discover and use public agents for free with `/agentlas hub`; `/agentlas network` federates Hub with Local and owner Cloud. Publish only through an explicit public-Hub choice. |
 | **My Agent Cloud** | Only the signed-in owner's Cloud packages | Privately store, restore, and call packages you own with the `/agentlas upload` Cloud choice and `/agentlas cloud`. |
 | **Current host** | The installed runtime, chosen model, local project, credentials, and granted permissions | Execute the selected local, Cloud, or Hub package. |
 
@@ -698,7 +730,7 @@ forcing your work into one model provider:
 | **Memory Management (MMU)** | Two-boundary governed memory: local project memory remains isolated on the machine, while durable promotions are gated by a local Memory Curator. |
 | **Virtual File System** | Production Ontology Runtime: local-first source ingestion, CJK trigram FTS5 search, hybrid Reciprocal Rank Fusion, and GraphRAG retrieval. |
 | **Inter-Process Call (IPC)** | A2A Agent Card Boundary (cryptographic import/export and caller-gating) + Model Context Protocol (MCP) tool registrations. |
-| **Package Manager** | Agentlas Hub for public publishing and borrowing; owner-scoped Agent Cloud for private package storage and retrieval. Neither is a server-side model executor. |
+| **Package Manager** | Agentlas Hub for free public publishing and use; owner-scoped Agent Cloud for private package storage and retrieval. Neither is a server-side model executor. |
 | **Shell Interface** | A small, unified command set in external client runtimes; plain-language intent routing in native Agentlas shells. |
 | **Process Initialization** | Meta-Agent Factory with an integrated Briefing Interview Gate—specifying agent parameters before compiling code. |
 
@@ -721,7 +753,7 @@ forcing your work into one model provider:
 
 Agents generated from vague, single-sentence prompts fail under real-world edge cases. Hephaestus v1.1.0 positions task specification as a first-class OS service through the **Briefing Interview Engine**:
 
-The current v1.2.49 release carries the resolved Work Brief through host-owned Network 2.0 selection, exact release pinning, and server-first tool discovery.
+The current v1.2.50 release carries the resolved Work Brief through host-owned Network 2.0 selection, exact release pinning, and server-first tool discovery.
 
 *   **Quantitative Ambiguity Gates:** The compilation scheduler evaluates prompt clarity across four key vectors (Goal, Constraints, Scope, Context). The build process is strictly gated until the ambiguity score passes a numeric threshold (ambiguity score $\le 0.2$, with per-dimension safety floors). Clear prompts bypass the interview loop entirely via a budget system that caps questions for trivial tasks.
 *   **Lens-Driven System Analysis:** Clarifying questions are dynamically sourced from a structured lens table (Scope, Intent, Challenge, System Architecture) focusing on critical routing indicators: *anti-scope bounds* (what the agent must NOT do), *verifiable acceptance criteria*, and *exit conditions*.
@@ -826,7 +858,7 @@ above; it also writes `~/.claude/commands/agentlas.md` and `hep-*.md`. Claude Co
 
 From your OS terminal:
 ```bash
-codex plugin marketplace add agentlas-ai/Agentlas-OS --ref v1.2.49
+codex plugin marketplace add agentlas-ai/Agentlas-OS --ref v1.2.50
 codex plugin add hephaestus@agentlas-core-engine
 ```
 *Note: Codex does not accept `/plugin marketplace add` inside the app — run the two commands above in your OS terminal. The OS-terminal CLI command is singular (`codex plugin`); inside the Codex app, the plugin browser slash command is plural (`/plugins`). Codex 0.117+ removed custom `/prompts:*` commands; after install, invoke the supported plugin skill as `$hephaestus-network <request>`.*
@@ -1034,9 +1066,9 @@ than copying it.
 
 ### Governed Memory — Curated Promotion
 
-*   **Local Project Memory:** Project documents remain in the local `.agentlas/ontology-runtime.sqlite`; borrowed-agent experience remains in its exact per-agent projection. The two stores share one query engine without collapsing their scope or ownership boundaries.
+*   **Local Project Memory:** Project documents remain in the local `.agentlas/ontology-runtime.sqlite`; experience from selected agents remains in its exact per-agent projection. The two stores share one query engine without collapsing their scope or ownership boundaries.
 *   **Governance Before Ranking:** Exact agent, allowed privacy scope, active status, expiry, and structural supersession are enforced before lexical/cosine ranking. Secret redaction and capsule bounds are applied again before host delivery.
-*   **Workspace Personalization:** Manages summaries, playbooks, plugin locks, and receipts for borrowed Cloud/Hub agents without storing raw prompts, credential values, or private files.
+*   **Workspace Personalization:** Manages summaries, playbooks, plugin locks, and receipts for selected Cloud/Hub agents without storing raw prompts, credential values, or private files.
 *   **Curator Gating:** Skills and durable memory modifications remain candidates until a local curator confirms evidence, rollback coverage, and security policy approval. Automatic experience relations are limited to `similar_to`.
 
 ---

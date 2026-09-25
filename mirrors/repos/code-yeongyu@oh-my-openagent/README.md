@@ -104,7 +104,7 @@ oh-my-openagent ships in three editions of the same product: two plugins that lo
 
 **Light Edition (omo for Codex CLI)** carries the portable components that fit Codex's plugin system: `rules`, `comment-checker`, `git-bash`, `lsp`, `ultrawork`, `ulw-loop`, `ulw-execute-continuation`, and `telemetry` at the core, plus `teammode` and supporting components (`bootstrap`, `lcx`, and more), plugin-scoped MCPs for `grep_app`, `context7`, `git_bash`, and `lsp`, and the shared `ast-grep` skill. It installs Codex agent TOMLs into `~/.codex/agents/`. There are no OpenCode `team_*` tools; Codex CLI's own spawn/collaboration surface does that work.
 
-**OmO Native (standalone, beta)** is the `omo` command with the OMO extension built in. It installs from `omo-ai@beta` and loads into neither OpenCode nor Codex.
+**OmO Native (standalone, beta)** is the `omo` command with the OMO extension built in. It installs from `omo-ai@beta` and loads into neither OpenCode nor Codex. Already on the OpenCode edition? See [Migrating from OpenCode](docs/guide/migrating-from-opencode.md).
 
 Pick the edition(s) you want.
 

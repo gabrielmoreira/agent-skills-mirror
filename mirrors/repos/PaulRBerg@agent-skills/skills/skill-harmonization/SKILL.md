@@ -1,6 +1,6 @@
 ---
 argument-hint: "[task]"
-compatibility: Requires Git and ai-skillet 0.1.0+.
+compatibility: Requires Git and ai-skillet 1.0.0+.
 disable-model-invocation: true
 name: skill-harmonization
 description: Harmonize a repository's skill portfolio across catalog and user-installed skills.
@@ -24,7 +24,7 @@ findings, recommendations, validation, and deliberate no-change conclusions.
 `[task]` is optional free-form guidance. Use it to narrow the question, desired outcome, or authorized implementation
 scope. If it is absent, infer intent from the surrounding request; an invocation without write intent is read-only.
 
-1. Require `ai-skillet` 0.1.0 or newer on `PATH`. If it is unavailable or too old, stop and ask the user to install or
+1. Require `ai-skillet` 1.0.0 or newer on `PATH`. If it is unavailable or too old, stop and ask the user to install or
    upgrade it.
 
 2. Require `git` on `PATH`, then resolve the current repository with `git rev-parse --show-toplevel`. Do not read Git
@@ -66,8 +66,9 @@ Require valid JSON and retain its repository root, present and missing user root
 locations, kinds, clients, symlink identity, hashes, references, and duplicate records. Do not substitute a duplicated
 inventory command or broaden the roots.
 
-When metadata or doc-link evidence is needed, optionally run `ai-skillet doctor --format json` against the repository
-and present user skill roots. Consume its findings as additional evidence; warnings are not conclusions by themselves.
+When metadata or doc-link evidence is needed, optionally run `ai-skillet doctor --format json` with one repeated
+`--root` for the repository and each present user skill root. Consume its findings as additional evidence; warnings are
+not conclusions by themselves.
 
 ## Evidence Boundary
 

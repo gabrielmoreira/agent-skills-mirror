@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `backnotprop/plannotator` — 26 default patterns, 0 followed patterns, 22 file(s) materialized.
+Mirror of `backnotprop/plannotator` — 26 default patterns, 0 followed patterns, 25 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `backnotprop/plannotator` — 26 default patterns, 0 followed patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 22 |
+| Files         | 25 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -78,9 +78,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 17 | ✓ | [`apps/skills/extra/plannotator-compound/SKILL.md`](apps/skills/extra/plannotator-compound/SKILL.md) |
 | 18 | ✓ | [`apps/skills/extra/plannotator-setup-goal/SKILL.md`](apps/skills/extra/plannotator-setup-goal/SKILL.md) |
 | 19 | ✓ | [`apps/skills/extra/plannotator-visual-explainer/SKILL.md`](apps/skills/extra/plannotator-visual-explainer/SKILL.md) |
-| 20 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 21 | ✓ | [`packages/ui/AGENTS.md`](packages/ui/AGENTS.md) |
-| 22 | ✓ | [`packages/ui/CLAUDE.md`](packages/ui/CLAUDE.md) |
+| 20 | ✓ | [`apps/vibe/skills/plannotator-annotate/SKILL.md`](apps/vibe/skills/plannotator-annotate/SKILL.md) |
+| 21 | ✓ | [`apps/vibe/skills/plannotator-last/SKILL.md`](apps/vibe/skills/plannotator-last/SKILL.md) |
+| 22 | ✓ | [`apps/vibe/skills/plannotator-review/SKILL.md`](apps/vibe/skills/plannotator-review/SKILL.md) |
+| 23 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 24 | ✓ | [`packages/ui/AGENTS.md`](packages/ui/AGENTS.md) |
+| 25 | ✓ | [`packages/ui/CLAUDE.md`](packages/ui/CLAUDE.md) |
 
 ---
 

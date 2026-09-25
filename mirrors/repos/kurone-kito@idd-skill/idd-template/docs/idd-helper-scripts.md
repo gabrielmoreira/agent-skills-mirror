@@ -1083,25 +1083,32 @@ The adopted helper boundaries are intentionally narrow:
   unreplied comments, reviewer states, advisory state, CI, claim
   validation, and `waiverEvidence` (parsed external-check waiver comments
   classified as `valid`, `expired`, `wrongHead`, `wrongClaim`,
-  `unauthorized`, `malformed`, `notConfigured`, or `modeDisabled` —
-  `notConfigured` for a valid waiver naming a check the policy never
-  declared waivable in `ciGate.externalChecks.waivable`, `modeDisabled`
-  (`#2046`) for an otherwise-valid, configured-waivable waiver while
-  `ciGate.externalCheckWaivers.mode` is not `maintainer-authorized`
-  (schema default: `disabled`) — mirroring `advisory-convergence.mjs`'s
-  own mode guard, so a `waivable` list left over from a prior
-  `maintainer-authorized` configuration can never make this gate report
-  a check covered on its own; only a `valid` waiver for a
-  configured-waivable check is reported with `coveredByWaiver: true` and
-  treated as passing by the CI gate)
+  `unauthorized`, `malformed`, `notConfigured`, `modeDisabled`, or
+  `edited` — `notConfigured` for a valid waiver naming a check the
+  policy never declared waivable in `ciGate.externalChecks.waivable`,
+  `modeDisabled` (`#2046`) for an otherwise-valid, configured-waivable
+  waiver while `ciGate.externalCheckWaivers.mode` is not
+  `maintainer-authorized` (schema default: `disabled`) — mirroring
+  `advisory-convergence.mjs`'s own mode guard, so a `waivable` list left
+  over from a prior `maintainer-authorized` configuration can never make
+  this gate report a check covered on its own; `edited` (`#3246`) for a
+  marker-shaped waiver comment whose GraphQL `lastEditedAt` is a
+  parseable timestamp (`editState: 'edited'`) or could not be resolved
+  (`editState: 'unknown'`) — checked before every other classification,
+  so a body-edited waiver never reaches `valid` regardless of author,
+  HEAD, claim, or expiry; only a `valid` waiver for a configured-waivable
+  check is reported with `coveredByWaiver: true` and treated as passing
+  by the CI gate)
 - (`#2021`) a `valid` waiver for the `idd-advisory-convergence` selector
   specifically only becomes `coveredByWaiver: true` once the SAME
   deadline/terminal precondition `advisory-convergence.mjs`'s own gate
-  enforces has also opened — a 24h deadline anchored on the current HEAD
-  commit's own `committedDate`, or proven terminal Copilot
+  enforces has also opened — a 24h deadline anchored on when GitHub
+  first recorded the current HEAD (its earliest check suite,
+  `#3253`), or proven terminal Copilot
   unavailability. The output's `advisoryConvergenceWaiverPrecondition`
   field always reports this evaluation (`deadlineMinutes`,
-  `headCommittedAt`, `elapsedMinutes`, `deadlinePassed`,
+  `headCommittedAt` (informational only), `headObservedAt` (the actual
+  clock), `elapsedMinutes`, `deadlinePassed`,
   `terminalUnavailable`, `open`), so an agent never has to re-derive the
   remaining time-to-deadline by hand when a `ci` blocker cites a posted
   but not-yet-active waiver
@@ -1150,6 +1157,14 @@ The adopted helper boundaries are intentionally narrow:
 - it creates or updates only the single current digest comment and
   refuses duplicate marked digests with repair URLs instead of choosing
   one, deleting, or minimizing audit history
+- the ordinary create/update/duplicate-detection path considers only
+  current-digest comments authored by a trusted marker actor
+  (`isTrustedMarkerAuthor`, kurone-kito/idd-skill#3337): an untrusted
+  actor's digest-marker comment is neither updated nor counted toward
+  the duplicate check, so the helper creates or updates its own digest
+  alongside it instead of rewriting a stranger's comment; the
+  maintainer repair mode below still sees every author's current-digest
+  comment, so a maintainer can still retire a stranger's marker there
 - `--repair-duplicate --retain-comment-id <id>` is a separate maintainer
   repair mode for an already-duplicate current-digest set; it requires an
   authenticated owner/maintainer permission check and, in apply mode, all
@@ -1262,6 +1277,17 @@ The adopted helper boundaries are intentionally narrow:
   their own threads, gated independently. The body names the bot by its login
   (never the standalone word "CodeRabbit") so per-HEAD re-disposition is
   preserved.
+- **CodeRabbit in-progress / paused revisions (#3260)**: CodeRabbit edits its
+  summary comment in place, so a revision can carry a `review in progress by
+  coderabbit.ai` or `review paused by coderabbit.ai` marker instead of a
+  completed walkthrough — even while an older "No actionable comments were
+  generated" sentence from the review it superseded is still present in the
+  body. An in-progress revision is skipped with reason
+  `coderabbit-review-in-progress` (the CodeRabbit analog of Codex's own
+  in-progress "Running" state, never `**Accepted**`); a paused revision is a
+  terminal non-review notice —
+  routed through the same `**Rejected**` path as a rate-limit notice, with
+  its own `noticeReason` label, never `**Accepted**`.
 - **Fail-closed**: only classifier-recognized notices are dispositioned;
   real reviews and review threads are never touched. `--apply`
   re-validates the active claim and retries once on a transient post
@@ -1486,6 +1512,14 @@ Interpretation rules:
 - Missing or unparseable body fields, unknown selectors, expired
   comments, wrong HEAD, wrong claim, or untrusted authors must fail
   closed.
+- An edited comment is not waiver evidence (kurone-kito/idd-skill#3246):
+  GitHub GraphQL `lastEditedAt` must be an explicit `null` (never
+  body-edited). A comment whose `lastEditedAt` is a timestamp, or whose
+  edit state cannot be determined, is excluded from `valid` into its own
+  `edited` bucket even when every other check (author, HEAD, claim,
+  expiry) passes -- `updated_at` is not a substitute, since GitHub's
+  `minimizeComment` advances it without touching `lastEditedAt`
+  (kurone-kito/idd-skill#3173).
 - `claim-id` accepts the case-insensitive literal sentinel `none`
   (#1905) alongside an arbitrary claim id, declaring a deliberately
   claimless waiver. It satisfies the claim-binding check only when the
@@ -1939,10 +1973,10 @@ close.
 - Command:
   `node scripts/provider-outage-park.mjs [--park --pr <n> --issue <n>
   --service <name> --blockers <name1,name2> --claim-id <id> --agent-id
-  <id>] [--apply]`
+  <id>] [--parked-issues] [--apply]`
 - Published bin: `idd-provider-outage-park`
 - Stable contract (the posted `idd-provider-outage-park` marker payload,
-  not the list-mode stdout shape below):
+  not the list-mode/`--parked-issues` stdout shapes below):
   [`provider-outage-park.schema.json`][provider-outage-park-schema]
 - Purpose (#2321): every current route for an unavailable external
   service ends in a hold, which keeps the claim live until
@@ -1951,9 +1985,26 @@ close.
   requests stuck the same way. Parking releases the claim immediately
   instead, at no cost to any quality gate: it never resolves a thread,
   satisfies a gate, or merges.
+- **Live-marker rule (`#3277`).** Nothing retires a park marker on its
+  own: a marker counts as **live** only when both hold: its embedded
+  `head:` still equals the pull request's current head SHA (the pull
+  request has not moved since it was parked), and no trusted
+  `claimed-by` on the originating issue (`issue:`) has a GitHub
+  `created_at` later than the park **comment's own** `created_at`
+  (never the embedded `parked:` field, which is the parking agent's
+  local clock) -- a fresh claim and a heartbeat share the same wire
+  format, so either one means a session has touched the issue since
+  parking. A marker whose `service:` is not one of
+  `advisory-review`/`ci-actions` is retired the same way. A retired
+  marker is excluded from `entries`/`count`/`boundReached` and counted
+  in `retiredCount` instead. A failed read of the originating issue's
+  own comments keeps a marker live (fail-open); a failed read of the
+  pull request's own comments (the read that finds the marker) instead
+  marks the report `parkedIssuesComplete: false`, alongside a truncated
+  open-pull-request sample.
 - Modes:
   - default (list, read-only): lists every open pull request carrying a
-    trusted `idd-provider-outage-park` marker, each with its parked
+    LIVE trusted `idd-provider-outage-park` marker, each with its parked
     service's current `provider-health` verdict and `resumable` (true
     only once that verdict is `healthy`). Sorted by `parkedAt` then pull
     request number for deterministic re-entry order. Reports `count` and
@@ -1962,7 +2013,18 @@ close.
     pull request read is bounded (default 50, most-recently-updated
     first); `sampleTruncated` is `true` when more open pull requests may
     exist beyond that sample, and `boundReached` fails closed to `true`
-    in that case regardless of the sampled `count`.
+    in that case regardless of the sampled `count`. Also reports
+    `retiredCount` (markers found but not live), `parkedIssues` (the
+    sorted, de-duplicated issue numbers of live, non-resumable entries),
+    and `parkedIssuesComplete` (see the live-marker rule above).
+  - `--parked-issues`: the cheap mode Discover's own parked-issue skip
+    runs on every pass. Prints only `{ parkedIssues, parkedIssuesComplete
+    }`. Reads the live `provider-health` report first; when EVERY
+    service is `healthy`, `parkedIssues` is empty by construction (a
+    live marker's `resumable` is `true` only once its own service is
+    healthy) and complete, so this returns without any open-pull-request
+    or per-pull-request comment read. Otherwise falls through to the
+    full list-mode collection. Mutually exclusive with `--park`.
   - `--park`: fetches the pull request's live head SHA, re-checks the
     named service's live `provider-health` verdict is `unavailable`, and
     requires every entry in `--blockers` (the caller's own fresh
@@ -1978,9 +2040,9 @@ close.
 - Same claim-gating contract as `post-idd-marker.mjs`: this command
   performs no claim/state gating itself -- the calling phase runs its
   own claim-revalidation gate before `--apply`.
-- Read-only by construction in list mode: exposes no field named or
-  shaped as a merge-readiness or CI-gate result, mirroring the
-  provider-health helper above.
+- Read-only by construction in list mode and `--parked-issues`: exposes
+  no field named or shaped as a merge-readiness or CI-gate result,
+  mirroring the provider-health helper above.
 
 ### Local validation evidence helper
 
@@ -2144,6 +2206,17 @@ close.
 - `checks` remain stable by `id`: `gate_enabled`,
   `author_self_authorized`, `ready_label_present`,
   `ready_comment_fresh`, and `ambiguity_guard`
+- `ready_label_present` verifies the **actor** of the configured ready
+  label's latest `labeled` timeline event against
+  `maintainerApprovalActorPolicy` -- in both `presence-only` and
+  `event-freshness` `labelFreshnessMode` -- not label presence alone. A
+  bot or non-collaborator actor (a known, unauthorized permission read,
+  e.g. a `404`) fails the check with no ambiguity; a missing matching
+  `labeled` event, an unavailable issue timeline, or an actor with no
+  recorded login fails closed with a `ready-label-actor-unverified`
+  ambiguity entry, and an unresolvable actor permission read fails
+  closed with a `ready-label-actor-permission-unavailable` ambiguity
+  entry
 - the helper is intentionally scoped to A5(a); A5(d) open-PR conflict
   checks stay on the written live GitHub path because inheritable-branch
   and linked-issue exceptions do not yet have a supported helper
@@ -2198,17 +2271,21 @@ close.
   `--takeover` override — disambiguated by the optional `reacquired` /
   `forcedTakeover` boolean fields) or `collision` (a different `claim-id`
   already holds the lock, or the existing path is malformed/unreadable —
-  retry with `--takeover` only after
-  `resume-claim-routing.mjs --fresh-claim-gate` authorizes it: a
-  `claimable` verdict, a `stale-reclaimable` verdict, or an
+  retry with `--takeover` only when
+  `resume-claim-routing.mjs --fresh-claim-gate` returns an
   `already-claimed` verdict whose `winning_claim_id` matches a
-  `claim-id` the caller has already independently verified as its own).
-  A released new-format claim with a matching local worktree retains
-  `winning_claim_id` for owner release-then-fresh; unrelated sessions cannot
-  take over. Legacy releases have no claim id and require operator recovery.
-  A `holder`
-  snapshot of the previous occupant is reported on **both** a plain
-  `collision` and an authorized takeover, not only on takeover.
+  `claim-id` the caller has already independently verified as its own
+  **and** whose top-level `reason` is not a `released-claim-*` reason; a
+  `claimable` verdict, a `stale-reclaimable` verdict, or any
+  `released-claim-*` reason means the claim was lost instead). A
+  released new-format claim with a matching local worktree retains
+  `winning_claim_id` for owner release-then-fresh in pre-check (c), but
+  that retained, `released-claim-*`-tagged id never by itself authorizes
+  a lock takeover; unrelated sessions cannot take over. Legacy releases
+  have no claim id and require the §LWR procedure
+  (`docs/idd-resume-detail.md`). A `holder` snapshot of the previous
+  occupant is reported on **both** a plain `collision` and an authorized
+  takeover, not only on takeover.
 - `reacquired: true` also carries an optional `racedCreate: true` flag
   (#2917 review, Codex): set when this exact
   invocation's own first read found the lock absent and its own
@@ -2845,6 +2922,20 @@ close.
   single-marker render+POST primitive, so the calling phase must run its
   claim-revalidation gate before `--apply`, exactly as the manual POST path it
   replaces already requires.
+- **Write-failure classification (#3275)**: the underlying
+  `postWorkItemComment` POST (every `--apply` call above goes through it)
+  retries only a failure that may have landed ambiguously — a timeout,
+  transport error, a `5xx`, or a `403` secondary rate limit — and only
+  after a fresh, successful duplicate-body re-read of the target's
+  comments confirms no match; a found match is returned instead of
+  posting again. A non-retryable status (`401`, `404`, `422`) fails
+  immediately with the original error, no re-read, no further attempt.
+  When the duplicate re-read itself fails, or the failure carries a
+  `Retry-After` (or `x-ratelimit-reset` with `x-ratelimit-remaining: 0`)
+  wait longer than a bounded cap, the call throws instead of retrying —
+  the write's outcome was never confirmed, so the caller must re-read
+  live state before acting again rather than assume either success or
+  failure.
 - Stable contract: [`post-idd-marker.schema.json`][post-idd-marker-schema].
 
 ### Resume claim and route evidence
@@ -2856,13 +2947,39 @@ close.
   `warnings`, and `evidence`
 - Stable enums:
   - `state`:
-    `unclaimed|already_owned|stale|local_worktree_occupied|non_inheritable|disputed`
+    `unclaimed|already_owned|stale|local_worktree_occupied|non_inheritable|owner_evidence_required|disputed`
   - `action`: `re_claim|takeover|keep|stop`
 - When a stale or released claim is inspected against the current clone, the
   helper adds `evidence.local_worktree` with `{status, paths, reason}`.
   `occupied` and `unreadable` are fail-closed stop states; an owner resume or
   authorized forced handoff must be verified before reusing the worktree
   (#3141).
+- `owner_evidence_required` (kurone-kito/idd-skill#3272): when `--claim-id`
+  matches the active claim but a local worktree probe for the claimed branch
+  did not come back `absent` and no independent owner evidence proves this
+  session holds it (see `--worktree` below), the helper reports this state
+  instead of reusing `non_inheritable`. `action`/`reason` stay
+  `stop`/`claim-id-match-without-independent-owner-evidence`. Treat it as
+  distinct from `non_inheritable`: it means "the claim-id matches, but
+  ownership is unproven", not "a live competitor holds this claim" — a
+  genuine later competing claim still routes to `disputed` unchanged.
+- Optional `--worktree <path>` (kurone-kito/idd-skill#3272): when
+  `--claim-id` matches the active claim, read the independent owner-evidence
+  proof (the claim lock, the generated-tokens record, and the current
+  branch) from `<path>` instead of `process.cwd()`. Use this from the
+  primary checkout, before the claimed branch's own worktree exists as the
+  current directory; the occupancy probe must still report the claimed
+  branch as occupied only by that same (canonicalized) path. Omitting it
+  keeps reading from `process.cwd()` unchanged.
+- `--trusted-marker-logins` (kurone-kito/idd-skill#3272): trusted actors now
+  resolve through the same ladder `pre-merge-readiness.mts` uses
+  (`resolveTrustedMarkerActors`: flag, then `IDD_TRUSTED_MARKER_ACTORS`,
+  then the config's `trustedMarkerActors` array), with the viewer login
+  always added on top. A non-empty `--trusted-marker-logins` now REPLACES
+  both the env var and the config array instead of adding to them — a
+  behavior change from the prior union-everything resolution. The output's
+  `policy.trusted_marker_actors_source` field reports which input supplied
+  the ladder's value: `flag|env|config|none`.
 - Optional `--nonce <token>` (kurone-kito/idd-skill#1522): when `--claim-id`
   matches the active claim, also requires it to equal the winning trusted
   `activation-nonce` marker for that claim-id (`evidence.activation_nonce_winner`);
@@ -3274,7 +3391,13 @@ reflexively as any other CLI option.
   pass `--claim-issue`). It skips claim fetch/revalidation and emits
   the not-applicable / unclaimed ownership shape (claim-id `none`); CI,
   review, advisory, thread, and branch-currency gates still run.
-  `idd-merge-execute` still requires `--claim-issue`.
+  `idd-merge-execute` also requires `--claim-id` (or the deprecated
+  `--expected-claim-id` alias) unless `--claimless` is passed
+  (`#3252`). Optional `--closing-issues <n>[,<n>...]` (#3298) declares
+  the deliberate multi-issue closing set for the `closingSet` gate
+  below; it must include `--claim-issue`'s own number and cannot
+  combine with `--claimless`. Omit it for the ordinary single-issue
+  case, where the claimed issue alone is the deliberate set.
 - Stable contract:
   [`pre-merge-readiness.schema.json`][pre-merge-readiness-schema]
 - Stable sections consumed by the instructions: `reviewCurrency`,
@@ -3293,6 +3416,28 @@ reflexively as any other CLI option.
   is a `branch-currency` merge-gate blocker (see below); `UNKNOWN` is the
   async-still-computing state F1 and the E-phase branch-sync check
   already re-poll, not a blocker here.
+- `closingSet` (#3298) is the closing-set / stray-commit-close merge-gate
+  evidence, mirroring `idd-pr-submit.instructions.md`'s D3.5 steps 6-7 so
+  both the lite and standard profiles get this safety check from the
+  helper verdict itself instead of only from prose steps a standard
+  profile session must remember to run. Unlike every other optional
+  evidence section above, `closingSet` is always emitted by a real
+  `collectPreMergeReadiness` run and the schema lists it as `required` --
+  an older report missing it is caught by the lite "missing required
+  field -> stop" rule. `status` is `"match"` (live
+  `closingIssuesReferences` equals the deliberate set from `--claim-issue`
+  or `--closing-issues`, and no branch commit message carries a closing
+  keyword for an issue number outside that set) or
+  `"skipped-non-default-branch"` (the PR base branch is not the live
+  repository default branch -- `closingIssuesReferences` never populates
+  there, the same exemption D3.5 itself applies) -- neither blocks.
+  `"mismatch"` (an extra or missing closing reference, or a stray
+  commit-message close) or `"unavailable"` (the live default branch or
+  the PR's own commit list could not be read, or the commit list hit the
+  REST API's 250-commit pagination cap) is a `closing-set` merge-gate
+  blocker, whose detail names the extra/missing issue numbers (an extra
+  number's detail names `--closing-issues` as the remedy for a genuine
+  multi-issue close) and each stray commit's `sha` + issue number.
 - `ci.discardedNonPassingRequiredChecks` (#1745) surfaces a same-producer
   (name/type/workflowName/workflowPath -- kurone-kito/idd-skill#2919 widened
   this from the original name/type/workflowName 3-tuple) required-check
@@ -3430,6 +3575,23 @@ reflexively as any other CLI option.
   optional flags as `pre-merge-readiness` (`--agent-id`, `--owner`,
   `--repo`, `--trusted-marker-logins`, `--advisory-bot-logins`); add
   `--apply` to merge.
+- **Required claim binding (`#3252`).** `--claim-id` (or the deprecated
+  `--expected-claim-id` alias) is required unless `--claimless` is also
+  given — the same "no-issue PR" exemption `pre-merge-readiness` itself
+  honors — checked before this helper ever collects readiness evidence
+  or merges: the collector's own claim gate only checks whether a
+  _supplied_ claim-id matches the active claim, never whether one was
+  supplied at all, so an `--apply` run with neither flag would merge
+  under whichever claim happened to be active rather than the caller's
+  own.
+- **`--now` is dry-run only (`#3252`).** Passing `--now` together with
+  `--apply` is rejected before any collection or merge call: `--now`
+  overrides every merge-gate clock (claim staleness, waiver expiry,
+  advisory-convergence deadline, terminal-unavailability window,
+  secondary-bot quiet window), which is safe for read-only dry-run
+  evaluation but would otherwise let the caller pick the clock an
+  `--apply` merge is actually gated on. `--now` stays fully supported
+  without `--apply`.
 - Stable contract:
   [`idd-merge-execute.schema.json`][idd-merge-execute-schema]
 - It WRAPS the read-only `pre-merge-readiness` collector and adds no new
@@ -3464,7 +3626,12 @@ reflexively as any other CLI option.
   command fails with GitHub's "base branch policy prohibits the merge"
   error, the helper checks `mergeGate.soloCodeownerAdminFallback` in
   `.github/idd/config.json` (distributed default `auto-admin-retry`;
-  absent behaves the same). Unless the repository has set it to
+  absent behaves the same), read from the PR's **base ref** — falling
+  back to the repository's live default branch when a base ref cannot
+  be determined — never the PR's head SHA and never a local worktree
+  read (`#3252`): either would let the PR under merge steer whether its
+  own plain-merge failure gets retried with `--admin`. Unless the
+  repository has set it to
   `hold-and-report`, it retries exactly once with `--admin`, bound to
   the same validated head, but ONLY when the freshly re-validated
   report's `reviewerStates.codeownerSelfApproval` has `status: "clear"`
@@ -3822,6 +3989,57 @@ same-HEAD reroll recovery path available for it, since `suppressedCount`
 is read from the same static per-submission review snapshot `itemCount`
 is.
 
+**Review-body shape classification (kurone-kito/idd-skill#3258).** GitHub
+Copilot has changed the review-body shape that carries thread-less
+findings twice since the `#1880` fix above shipped, and the original
+`SUPPRESSED_COMMENTS_HEADING_PATTERN` regex only ever matched the
+first (August) form -- every review generated from 2026-09-04 onward
+parsed as `suppressedCount: 0` regardless of its real content.
+`classifyCopilotReviewBody` (a leaf module, `copilot-review-body.mts`,
+importing only `markdown-code.mts`'s code-region stripper)
+recognizes four shapes, reported as the new `review.bodyShape` field
+alongside `suppressedCount`:
+
+- `overview-v2`: the body carries the `<!-- ccr-overview-v2 -->` marker
+  at its own start. `suppressedCount` comes from a
+  `<summary><strong>Previously missed (N)</strong></summary>` section
+  (the `<strong>` wrapper is optional); the `**Findings:**` header and
+  the `Open` / `Resolved since last review` sections are never counted,
+  since those items already link an existing review-thread Clause 2
+  already covers.
+- `overview-legacy`: the pre-2026-09-19 overview (opens with
+  `## Pull request overview`, or carries a `<details>` block summarized
+  `Review details` or `Pull request overview`), or the original,
+  even-older bare August `<summary>Suppressed comments (N)</summary>`
+  form -- either signal independently qualifies, so the `#1880`/`#1884`
+  regression fixtures (the bare August form, with no overview wrapper at
+  all) keep working unmodified. `suppressedCount` comes from a
+  `### Suppressed comments (N)` heading when present, else the bare
+  August `<summary>` form; a `**Previously missed (N)**` bold line
+  nested under that heading is already part of the same count and is
+  never separately added.
+- `error`: Copilot's exact "encountered an error" template (`#3015`,
+  `isCopilotErrorReviewBody`, now itself defined in
+  `copilot-review-body.mts` and re-exported from `protocol-helpers.mts`
+  for its existing importers). Unreachable through
+  `resolveLatestCopilotReviewClause`'s own output in practice, since that
+  function already excludes an error-bodied review before selecting the
+  absolute-latest one (unchanged, `#3015`).
+- `unrecognized`: none of the above, including an absent/empty body.
+
+**Fail-closed on an unrecognized shape (kurone-kito/idd-skill#3258,
+Groom-hearing maintainer decision).** For the Copilot default
+`primaryBotLogin` only, Clause 1's disposition-aware `satisfied`
+override (below) additionally requires `review.bodyShape` to be
+anything other than `unrecognized`, unless a trusted `review-ack`
+already covers the review -- so a review body this gate cannot parse at
+all no longer silently converges. The verdict's `reasons` entry and the
+review-ack next action both name `bodyShape: unrecognized` explicitly.
+A configured non-Copilot `primaryBotLogin` (the `external-bot` review
+policy, `#2137`) has no known body shapes at all -- a reply-only review
+from such a bot can legitimately have an empty body -- so this rule
+never applies outside the Copilot default.
+
 **`suppressedCount` reroll reliability caveat (kurone-kito/idd-skill#1934).**
 The mechanism-sharing argument above is a statement about how the two
 counts are read (same static per-submission snapshot), not a claim
@@ -3859,6 +4077,8 @@ matchesHead
   && (itemCount === 0 || (itemCount is known AND >= itemCount thread(s)
       THIS review opened cover it AND all of them are resolved/dispositioned))
   && (suppressedCount === 0 || hasValidReviewAck)
+  && (primaryBotLogin is not the Copilot default
+      || bodyShape !== 'unrecognized' || hasValidReviewAck)
 ```
 
 The `itemCount` half is bound to the LATEST review specifically
@@ -4252,7 +4472,23 @@ same as `AW4`/`AW5`.
     text, rather than as a normal inline review comment, when it targets a
     line the diff-hunk view cannot host; `N == 0` or an absent block is an
     ordinary walkthrough/summary review with nothing outside the diff and
-    stays unsurfaced. Trusted IDD operational markers, IDD
+    stays unsurfaced. A review from the _configured_ primary advisory bot
+    (`isCopilotReviewerLogin`, `advisoryWait.primaryBotLogin` /
+    `readAdvisoryPrimaryBotLogin`, Copilot by default) is also surfaced when
+    `classifyCopilotReviewBody` reports either a nonzero `suppressedCount`,
+    or — only under the Copilot default — shape `unrecognized`
+    (kurone-kito/idd-skill#3259): Copilot's reviews are always `COMMENTED`,
+    so a thread-less "Previously missed" / `Suppressed comments (N)` finding
+    embedded in the review body never reaches the `CHANGES_REQUESTED` rule
+    above. Unlike every other surfacing rule here, this one has its own
+    narrower escape hatch instead of the whole-PR disposition check: a
+    trusted `review-ack:` marker (`hasTrustedReviewAckAfter`,
+    protocol-helpers.mts — the same check `idd-advisory-convergence`'s own
+    Clause 1 uses) naming that SPECIFIC review's own reviewed commit,
+    posted after it, clears the finding; an unrelated later disposition
+    comment does not, since a thread-less body-embedded finding has no
+    discrete comment or thread an ordinary disposition reply could address.
+    Trusted IDD operational markers, IDD
     disposition comments, any HTML comment beginning with `<!-- idd-` (for
     example cleanup-evidence, excluded regardless of author — including CI
     automation such as `github-actions[bot]`), and a genuine CodeRabbit
@@ -4281,8 +4517,9 @@ same as `AW4`/`AW5`.
     configured `advisoryBotLogins` author) so the operator can prioritize human
     feedback over capricious advisory-bot noise.
 - JSON output keys: `sweepWindow`, `trustedMarkerActors`,
-  `advisoryBotLogins`, `iddAgentLogins`, `prs` (each entry has `number`,
-  `mergedAt`, `mergeCommit`, `unresolvedThreads`, and `unaddressedComments`),
+  `advisoryBotLogins`, `iddAgentLogins`, `primaryBotLogin`, `prs` (each
+  entry has `number`, `mergedAt`, `mergeCommit`, `unresolvedThreads`, and
+  `unaddressedComments`),
   and `summary` (`prCount`, `flaggedPrCount`, `unresolvedThreadCount`,
   `unaddressedCommentCount`).
 - Read-only boundary: the helper performs no minimization, no posting, and no
@@ -4392,6 +4629,61 @@ same as `AW4`/`AW5`.
   when first building the reserved-label guard's bot-login list and
   again after enabling new automation or after a long gap (a bot with
   no history yet can still start labeling later).
+
+### F4 branch-failure routes
+
+Reference detail for `idd-merge.instructions.md` F4 step 4 and step 5
+(issue #3327), which quote only the message fragment each acceptance
+check greps for and point here for the rest. Step 4 fast-forwards
+`{development-branch}` before step 5 removes the issue worktree so
+WorkTrunk's merge-status check sees the branch as merged instead of
+reporting `branch_outcome: retained_unmerged` (issue #2331).
+
+- **`development-branch-in-use`** (step 4): the switch fails because
+  `{development-branch}` is checked out in a sibling worktree —
+  `fatal: '{development-branch}' is already used by worktree at
+  '<path>'`. Its `||` fallback then fails too (`a branch named
+  '{development-branch}' already exists`), so the compound command
+  exits non-zero; chaining the fast-forward behind `&&` instead of
+  running it as a separate command stops it from silently advancing
+  whatever branch the primary worktree happens to be on.
+  Message-independent check: `git worktree list --porcelain` shows the
+  branch's `worktree`/`branch` pair.
+- **`development-branch-diverged`** (step 4): the fast-forward refuses
+  because local `{development-branch}` holds a commit
+  `origin/{development-branch}` lacks — `fatal: Not possible to
+  fast-forward, aborting.`. Never reset or rebase it: `git reset
+  --hard` is on the baseline deny list (`docs/permissions.md`).
+  Message-independent check:
+  `git log origin/{development-branch}..{development-branch}` is
+  non-empty.
+- **`local-branch-unmerged-commits`** (step 5): `git branch -d
+  <branch-name>` still refuses `error: the branch '<branch-name>' is
+  not fully merged` after step 4's fast-forward — expected once the PR
+  merged as a squash or rebase (for example a human merge under
+  `human_merge`), since the squash commit is not an ancestor-of match
+  for the branch's own commits even though nothing is lost. Compare
+  `git rev-parse <branch-name>` against the merged PR's own head via
+  `gh pr view {pr-number} --json state,headRefOid` — the only check
+  that actually proves this; `git branch -vv` showing
+  `[origin/<branch-name>: gone]` is a corroborating symptom (the
+  upstream ref was deleted), never a substitute, since an unmerged or
+  closed PR can show the same marker. Equal tips with a `MERGED` PR
+  mean the branch holds nothing beyond what already merged, so F4
+  keeps it (never `-D`) and tells the operator they may delete it by
+  hand; unequal tips mean genuinely unmerged
+  local work, so F4 holds instead of discarding it.
+
+The two step 4 holds reuse the `primary-worktree-dirty` resume rule
+(#3192): once the hold clears, re-run F4 from step 4 through step 7.
+`local-branch-unmerged-commits` holds after step 5's worktree-removal
+bullet already succeeded, so its resume is narrower: once resolved,
+redo only the `git branch -d` bullet and continue through step 7 —
+re-running step 4 or the worktree-removal bullet is unnecessary and
+the latter would fail against the already-removed path. If step 6
+(remote branch delete) already ran before this hold fired, redoing it
+on resume is a harmless no-op (or a "ref does not exist" error), never
+a destructive re-run.
 
 ## Signed-Commit Merge Wrapper (Shared Git Procedure)
 

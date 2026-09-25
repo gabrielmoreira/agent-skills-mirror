@@ -1,8 +1,9 @@
 # Jev CI reference deployment runlog
 
-Status: advisory CI deployment verified; semantic accuracy calibration remains
-open. This is an evidence log, not a declaration that a Jev decision is
-production-calibrated or authorized to change required CI gates.
+Status: advisory CI deployment is active; semantic accuracy calibration and
+transient provider availability remain open. This is an evidence log, not a
+declaration that a Jev decision is production-calibrated or authorized to
+change required CI gates.
 Times below are UTC. No API keys, unredacted logs, or personal data belong
 here.
 
@@ -1699,3 +1700,1389 @@ implementation, not a prompt tweak to inflate scores. The changed eval will
 receive a new Jev audit on its next successful main run; compare only matching
 assertion/question fingerprints. A Jev shadow re-audit of the old private
 response still requires the separately requested TypeSafe data-flow approval.
+
+## 2026-09-24 — Atomic assertion contract exercised in main CI
+
+Main run [35949075876](https://github.com/magnus919/agent-skills/actions/runs/35949075876)
+at `3dbbd18e5cb5b613a05eedbc727aae553ec7bfaf` completed all four jobs. Its
+standard live Jev audit covered 11/11 selected reports, 22 groups, and all
+158/158 prose assertions with zero skips, omissions, or provider errors. The
+model output was regenerated after the assertion contract changed, so do not
+compare its totals with the preceding 144-assertion run as an accuracy delta.
+
+The approved Nous screen [35950558246](https://github.com/magnus919/agent-skills/actions/runs/35950558246)
+resolved 39/44 labels; five were uncertain. In the 12-item high-probability
+challenge stratum, Jev had zero suggested-`met` disagreements. In the
+32-item population sample, 27 labels were resolved and Jev had one
+suggested-`met` disagreement. It was a candidate `deadline-bound-stream`
+assertion requiring independent observation before recording success: Jev
+returned `met` probability 0.58 and provider confidence 0.37; Nous consensus
+was `not_shown`. This remains one model's pseudo-label against another model,
+not a human adjudication or calibrated rate.
+
+The selected atomic rows also separated evidence shapes: for the candidate's
+stable-idempotency assertion both models said `not_shown`; for the baseline
+the same Jev verdict had a Nous `not_met` consensus. On retry-limit policy,
+candidate Jev and Nous both said `not_shown`, while baseline Jev said `met`
+with probability 0.93 and Nous was uncertain. Preserve uncertainty and do not
+average it into a forced label. These few sampled rows show why splitting the
+compound criterion is diagnostically useful, but they do not establish that
+the changed eval improved model quality.
+
+## 2026-09-24 — Preregistered prose-versus-procedure conflict screen
+
+The revised audit still found one population disagreement on
+`deadline-bound-stream`: for “Requires independent observation of the external
+effect before recording an attempted action as successful,” Jev suggested
+`met` at 0.58 probability and 0.37 provider confidence; Nous consensus was
+`not_shown`. The generated answer's summary described observation, while its
+pseudocode recorded success immediately after the submit call. This is a
+concrete prose/algorithm conflict shape. It is not proof Nous is correct or
+that Jev has calibrated confidence.
+
+Before additional Jev calls, created
+`system-one/examples/jev-procedure-conflict.synthetic.json`: 12
+author-labeled synthetic cases, split evenly into six development and six
+reserved test examples, with two `met`, two `not_met`, and two `not_shown` in
+each split. The candidate question appends this exact instruction:
+“When prose summaries conflict with a concrete algorithm, pseudocode, or code
+path, judge the concrete path. A safeguard named in prose is not established
+if the steps omit it or record success before it occurs.” No model, state,
+assertion, answer options, or criteria change.
+
+Screen deployed and candidate wording on the six development cases. Open the
+reserved test split only if the candidate does not falsely accept the explicit
+summary/code contradiction (PC-D02), does not increase false `met` accepts,
+has accuracy no worse than deployed wording, and has binary `met` Brier no
+worse than the paired baseline. If any condition fails, stop and reject the
+candidate. If they all pass, run the same six held-out cases once and report
+all results. These author-constructed synthetic cases can test input
+mechanics only; they do not justify changing live CI, confidence thresholds,
+or release behavior. No private generated response is included in this
+screen.
+
+**Observed first screen:** Deployed wording scored 5/6 development labels and
+binary `met` Brier 0.0000333. `procedure-conflict-shadow-v1` also scored 5/6,
+with Brier 0.0001000, and made no prediction changes across the six cases.
+Both versions correctly rejected PC-D02, so v1 did not fix a baseline false
+accept; both incorrectly called the underspecified PC-D03 `not_met`. The
+preregistered Brier condition failed, so v1 is rejected and the six reserved
+test cases remain unopened. The tiny Brier difference is not meaningful as a
+population estimate; it is retained because the screen's stop rule was frozen
+before calls.
+
+**Second development-only candidate (fixed before calls):** append this exact
+sentence instead: “Distinguish missing evidence from contradiction: if the
+procedure omits an independent observation without specifying an incompatible
+success rule, choose not_shown; if it records success on submission or
+acknowledgment before observation, choose not_met, even when a summary claims
+verification.” Reuse only the six development examples for this iteration.
+Proceed to the still-unopened test split only if v2 correctly labels both
+PC-D02 and PC-D03, creates no false `met`, has accuracy at least 5/6, and
+binary `met` Brier no worse than the frozen deployed baseline 0.0000333.
+Otherwise reject v2 and stop. This limited synthetic screen remains input
+development, not calibration or authority to change live CI.
+
+**Observed reserved test screen:** Deployed wording and v2 each scored 6/6
+labels with zero false `met` accepts. Their binary `met` Brier scores were
+0.0001833 and 0.0004500 respectively. V2 corrected PC-D03 on development but
+made no classification change on the reserved test cases and had worse
+probability error there. The instruction is therefore not promoted to the
+deployed contract. These 12 obvious synthetic cases do not estimate CI
+performance; the candidate remains an experiment, and the default question
+remains in use. The real-run disagreement was not replayed to Jev.
+
+## 2026-09-24 — Repeated Nous labels separate stable disagreement from noise
+
+Compared the approved two-pass Nous Portal screens for Jev audits
+[35950558246](https://github.com/magnus919/agent-skills/actions/runs/35950558246)
+and [35953231307](https://github.com/magnus919/agent-skills/actions/runs/35953231307)
+entirely from already-downloaded local artifacts. No model call was made for
+this comparison, and no generated answer text is retained here. The screens
+used the same Nous model and prompt revision; each resolved 39/44 items and
+left five uncertain.
+
+Of the 44 hashed item IDs in each screen, 43 overlapped and all 43 had
+identical generated-response hashes. Nous gave the same resolved consensus on
+all 36 overlapping items resolved in both runs. The other seven had at least
+one `uncertain` consensus and are not counted as agreement. Jev kept the same
+suggested verdict on 42/43 shared items; mean absolute change in its `met`
+probability was 0.0058 (maximum 0.05). The single verdict flip was
+`system-one/jev-ci-operations`, candidate side: “Describes a reviewed way to
+disable Jev egress while preserving deterministic validation and the original
+red CI result.” Jev changed `not_shown` to `not_met` while its `met`
+probability stayed 0.11 (provider confidence 0.20 to 0.17). This is a small
+decision-boundary stability observation, not evidence that either verdict is
+correct.
+
+One disagreement did persist on identical bytes: for the candidate
+`deadline-bound-stream` assertion requiring independent observation before
+recording success, Jev suggested `met` in both runs (probabilities 0.58 and
+0.57; provider confidence 0.37 and 0.34), while Nous consensus was
+`not_shown` both times. The second run also had a Jev `met` / Nous
+`not_shown` disagreement on the baseline finite-retry-limit assertion (Jev
+probability 0.93, provider confidence 0.89); the first run's Nous label for
+that item was `uncertain`, so this is not a repeated disagreement.
+
+This repeated-output screen helps prioritize what to inspect: the
+independent-observation claim is a reproducible Jev/Nous disagreement, while
+most other labels and verdicts were stable. The same-model Nous consensus is
+correlated pseudo-label evidence, not ground truth; uncertain items stay
+unresolved. Do not infer accuracy, confidence calibration, a threshold, or a
+release gate from these runs. Blog lesson: repeatability can distinguish a
+persistent review question from a one-run disagreement, but it cannot settle
+the question without independent adjudication.
+
+## 2026-09-24 — Broaden real-output review and split compound performance claims
+
+The complete main-branch Jev audit for run
+[35929395680](https://github.com/magnus919/agent-skills/actions/runs/35929395680)
+covered all 7 `performance-optimization` reports and 68/68 prose assertions,
+with no skipped assertions, budget omissions, or provider errors. Its existing
+private model/audit artifacts supplied a second-skill screen; the responses
+were not sent to Jev again. The approved Nous workflow
+[35954790516](https://github.com/magnus919/agent-skills/actions/runs/35954790516)
+used `openai/gpt-6-luna`, prompt revision `jev-blind-teacher-v1`, and two
+prediction-blind passes over a fixed 44-item packet. Nous consensus resolved
+40/44 items and left four uncertain. In the uniform population stratum, Jev
+and Nous agreed on 22/28 resolved items; in the intentionally high-Jev-`met`
+challenge stratum they agreed on 12/12. The sample covers one additional
+skill, not the catalog, and the challenge stratum is not workload prevalence.
+
+The six resolved population disagreements were mixed, not six verified Jev
+errors. They included one Jev `met` versus Nous `not_shown` on whether the
+response required repeated, controlled baseline/candidate measurements and
+reported variability; three Jev `not_shown` versus Nous `not_met` judgments;
+one `not_shown` versus `met`; and one `not_met` versus `met` on a negatively
+worded proxy-metric assertion. Local inspection showed that several reviewed
+assertions each joined independently checkable requirements, including
+journey selection and boundaries, telemetry audit and instrumentation details,
+benchmark controls and spread, and profile validation and post-gain checks.
+Nous labels remain correlated model pseudo-labels; they do not resolve those
+disputes as ground truth.
+
+As a behavior-preserving eval-contract change, split only the compound claims
+in `unmeasured-user-journey`, `noisy-benchmark-comparison`, and
+`profile-guided-service-optimization`. The new assertions separately expose
+journey choice/start/completion; existing-signal audit, missing boundary,
+minimum instrumentation, version context, privacy, overhead, and sampling;
+repeated paired measurements, matched workload/fixture, controlled and
+recorded conditions, and variability; and trace/profile correspondence,
+representative workload, correctness, evidence classification, and
+re-profiling. Case IDs, prompts, and expected outcomes remain unchanged. The
+new 49 assertions across candidate and baseline produce 98 judgments, within
+the live 160-assertion Jev budget. A `proxy-metric-validation` negation claim
+was deliberately left unchanged: one low-confidence disagreement is not a
+reason to rewrite a valid assertion toward a teacher label.
+
+The split claims were checked against a response that supplies the evidence,
+a near miss that contradicts or omits one requirement, and an answer with no
+evidence for it. The paired fake-adapter run still executes all 7 cases; its
+`both_pass` labels are only harness structure, while every semantic assertion
+remains `manual_review`. Do not treat either Nous agreement or green fake
+smoke as proof of semantic accuracy. The next live main run must verify the
+98-judgment Jev audit has complete selected-case coverage and no budget
+omissions; compare with earlier totals only for unchanged question/assertion
+fingerprints. Blog lesson: the second skill exposed the same practical value
+of atomization without justifying prompt overfitting—small independent claims
+make disagreements actionable while preserving the eval's original behavior.
+
+## 2026-09-24 — Separate environment, warmup, and evidence-order judgments
+
+After PR #594, main paired-eval run
+[35956308198](https://github.com/magnus919/agent-skills/actions/runs/35956308198)
+completed all 7 `performance-optimization` reports. Its Jev audit selected
+all 98/98 prose assertions across 14 groups, with zero skipped assertions,
+budget omissions, or provider errors. The selected report count matched the
+expected count. This is complete advisory coverage, not a semantic pass rate.
+
+With explicit Nous authorization, teacher run
+[35956827256](https://github.com/magnus919/agent-skills/actions/runs/35956827256)
+used `openai/gpt-6-luna`, prompt revision `jev-blind-teacher-v1`, and two
+prediction-blind passes over a frozen 44-item packet (seed
+`performance-optimization-atomic-claims-20260924-v1`). Nous resolved 37/44
+labels and left 7 uncertain. Jev and Nous matched on 32/37 resolved items:
+20/25 in the population sample and 12/12 in the intentionally high-Jev-`met`
+challenge stratum. The challenge stratum is not workload prevalence. These
+remain correlated model pseudo-labels, not independent ground truth or
+probability calibration.
+
+Five resolved disagreements concentrated in two cases. On the noisy benchmark
+case, Jev said `met` and Nous `not_shown` for the environment-control assertion
+on both candidate and baseline; for the combined environment-and-warmup
+assertion on the baseline, Jev said `met` and Nous `not_shown`. Local inspection
+found concrete environment controls in both answers, no warmup discussion in
+the candidate, and a generic warmup recommendation in the baseline. The old
+assertion bundled independent questions about environment details and warmup,
+so that disagreement could not identify which evidence was missing. On the
+profile-guided case, Jev said `not_shown` for workload reproduction on both
+sides; Nous said `met` for the candidate and `not_met` for the baseline. Local
+inspection found that the candidate puts representative workload replay
+before fix selection, while the baseline offers specific batching/caching
+fixes before its later staging/load-test validation. This is an ordering
+distinction, not proof that either model is always right. No response text or
+teacher rationale is retained here.
+
+Refine the existing contract, preserving every case ID, prompt, and
+`expected_output`: split environment parity from naming a concrete environment
+control and from stating a shared warmup policy; make workload replay an
+explicit prerequisite to choosing a fix. These wording changes express the
+existing case outcomes more literally; they do not adopt Nous labels as truth.
+The eval now has 50 assertions (100 candidate/baseline judgments), below the
+160-assertion audit cap.
+
+Reviewed challenge shapes before testing:
+
+- Satisfying environment evidence names a shared runner/build and controlled
+  CPU/load conditions; a near miss changes runner or build between versions;
+  an omitted-evidence response says nothing about test conditions.
+- Satisfying warmup evidence states that both versions use the same
+  pre-measurement protocol or explains why warmup is unnecessary; a near miss
+  warms only the candidate; an omitted-evidence response gives no warmup
+  guidance.
+- Satisfying workload-order evidence requires a representative large-account
+  replay before selecting a fix; a near miss picks batching/caching first and
+  validates only after implementation; an omitted-evidence response gives
+  general profiling advice without workload evidence or ordering.
+
+The fake paired-eval path still checks all 7 cases structurally; semantic
+assertions remain `manual_review`. The next successful main run must cover all
+100 assertions without omissions before the new wording is assessed. Let the
+normal Jev audit see the newly generated responses once; do not replay private
+responses to Jev. An approved Nous pass can again provide low-toil triage, but
+neither it nor CI green status authorizes a confidence threshold or release
+gate.
+
+Blog lesson: a disagreement is most useful when it exposes a missing rubric
+dimension or ordering distinction. Split the criterion, preserve uncertainty,
+and avoid turning a second model's vote into ground truth.
+
+Provenance caveat for the next screen: after this source run, main PR #595
+routed paired-response generation through Nous `stepfun/step-3.7-flash:free`.
+The frozen source outputs above predate that change. A future gpt-6-luna
+teacher pass would share Nous as a provider with the StepFun generator, making
+the pseudo-labels more correlated; record both exact model IDs and treat the
+comparison as diagnostic disagreement triage only, not independent
+validation.
+
+## 2026-09-24 — Keep generation failures out of Jev coverage
+
+The post-merge run
+[35958317434](https://github.com/magnus919/agent-skills/actions/runs/35958317434)
+selected all 7 `performance-optimization` cases, but both candidate and
+baseline generation failed with HTTP 400 for every case (14 failed sides).
+The paired runner nevertheless exited successfully because its exit status
+only considered candidate regressions. The Jev artifact reader then treated
+all 100 `infra_error` assertion rows as untouched exact checks, counted zero
+prose assertions, and made no Jev calls. This was not a Jev result, not complete
+semantic coverage, and not evidence about model quality.
+
+The approved Nous teacher workflow rejected the same source run before making
+either teacher pass: the audited result identities did not cover the selected
+case identities. No generated response text was sent to Nous in that failed
+attempt. This fail-closed behavior is correct and should remain.
+
+The follow-up changes make infrastructure errors fail the paired-model job,
+report generation-error sides and skipped assertions separately from exact
+checks, mark the Jev audit incomplete, and refuse to prepare calibration data
+from errored generations. The Nous request also stops sending the
+non-standard `chat_template_kwargs` extension previously added to disable
+thinking. A fresh main run still returned HTTP 400 after that extension was
+removed, so this change did not resolve the failure and the extension is not a
+sufficient explanation. Do not replay these failed outputs to Jev or a teacher
+model.
+
+Focused paired-runner, Jev-audit, and calibration tests pass; eval validation
+remains 181/181 schema-valid and the eval coverage ratchet is unchanged. Blog
+lesson: distinguish “artifact exists” from “model response exists,” and
+“selected reports found” from “assertions actually judged.” Preserve those
+denominators explicitly before making claims about coverage or quality.
+
+## 2026-09-24 — Nous model IDs are provider-specific
+
+After PR #597, fresh main run
+[35959596211](https://github.com/magnus919/agent-skills/actions/runs/35959596211)
+selected 11 `system-one` cases. Both generation sides failed for every case:
+22 infrastructure-error sides and 158 skipped assertion rows, all with HTTP
+400. The paired job now failed as intended. The audit reported 0 prose
+assertions, 0 groups selected, 0 assertions selected, and 0 Jev provider
+errors; therefore it made no Jev calls. The green PR checks only established
+that code and fake-eval validation worked; they did not establish a successful
+Nous inference path.
+
+Read-only inspection found the repository `EVAL_MODEL` variable set to
+`stepfun/step-3.7-flash:free`. The current Nous-maintained model catalog lists
+`stepfun/step-3.7-flash` for the Nous provider without that suffix. The user's
+Nous Portal screenshot on 2026-09-24 lists StepFun Step 3.7 Flash among the
+models currently marked free, alongside Upstage Solar Pro 4, Meituan LongCat
+2.0, Poolside Laguna S 2.1, InclusionAI Ling 3.0 Flash Fin, InclusionAI Ling
+3.0 Flash Sante (free), Poolside Laguna XS 2.1, and Space Bunny Alpha. This
+corrects the earlier hypothesis that the free offering may have disappeared:
+the leading explanation for HTTP 400 is now the stale `:free` suffix, though
+the exact request has not yet been validated against Nous's authenticated live
+catalog. Removing the non-standard thinking extension did not change the
+outcome. The generation response's recorded model label was also the generic
+string `configured-model`, which obscures the exact model in artifacts; future
+comparisons should preserve the provider's actual model ID.
+
+The historical failed outputs remain in Actions artifacts only as error
+metadata; no response text exists to score or replay. Blog lesson:
+provider-compatible API shape does not imply interchangeable model IDs or
+pricing semantics—validate the exact configured ID against that provider's
+catalog before inference, and retain exact model provenance.
+
+PR [#598](https://github.com/magnus919/agent-skills/pull/598) merged the
+authenticated model-catalog preflight, exact model provenance, fail-fast
+generation, and safe structured HTTP error context. The repository variable
+is now `stepfun/step-3.7-flash`, matching the Nous catalog and the user's
+Portal listing. Post-merge run
+[35961147079](https://github.com/magnus919/agent-skills/actions/runs/35961147079)
+confirmed the exact ID against the authenticated catalog. No changed skill
+evals were selected (0/0), so Nous generation made zero calls. The advisory
+Jev report recorded 0 expected reports, 0 observed reports, and 0 calls. This
+confirms catalog availability only; it is not a model-response or Jev result.
+
+The manual smoke path previously selected the fixed `agent-skills` manifest
+but did not write frozen expected-case evidence, and the Jev audit only ran on
+push events. A follow-up wires that existing bounded main-branch smoke to
+write the same case-ID denominator as normal selection and invoke the advisory
+Jev audit after its model artifact is uploaded. This lets the next smoke
+measure actual generations and Jev judgments together without replaying the
+failed HTTP-error artifacts. The Portal currently marks StepFun free, but the
+free designation is not a quality claim or a reason to relax any evaluation
+boundary.
+
+## 2026-09-24 — Transport success is not a usable completion
+
+After PR #601, bounded main-branch run
+[35962104493](https://github.com/magnus919/agent-skills/actions/runs/35962104493)
+used the authenticated Nous catalog ID `stepfun/step-3.7-flash` and selected
+all 6 cases in the fixed `agent-skills` smoke manifest. All 12 candidate and
+baseline requests were recorded as completed with no infrastructure errors,
+but only 6 of 12 contained non-empty assistant text. Five baseline outputs
+had exactly 4096 output tokens and empty text; a candidate output was also
+empty despite reporting 76 output tokens. The exact provider finish reason
+was not retained, so reaching the configured token limit is a plausible
+explanation, not a confirmed cause.
+
+Jev saw all 6 expected case reports and no provider errors, but could form a
+complete candidate/baseline pair for only `third-party-vetting`. It judged 10
+of 60 prose assertions; 30 were skipped because responses were empty and 20
+because the remaining responses were unpaired. Its 10 suggestions were 4
+`met` and 6 `not_shown`, with met probabilities from 0.00 to 1.00 and provider
+confidence from 0.38 to 1.00. There are no human labels for this sample, so
+these numbers are neither correctness nor calibration evidence.
+
+The model job's green status therefore overstated usable generation: the
+adapter currently treats an empty assistant content field as `completed`,
+while the Jev audit correctly skips it and exposes the lost denominator. Blog
+lesson: a successful HTTP response and token usage do not prove a usable model
+answer. Preserve safe finish-reason metadata, classify empty content as a
+generation failure, and stop before spending calls on further pairs; keep
+transport, completion, and semantic-judgment coverage as separate counts.
+
+The follow-up now implements that boundary in the adapter: blank content and
+known non-final completion reasons (`length`, `content_filter`, `tool_calls`,
+and `function_call`) become infrastructure errors, and partial response text is
+not copied into the comparison artifact. The normalized finish reason and token
+counts remain available as safe diagnostics; the run-manifest schema accepts an
+optional `outputs.finish_reason` so older v1 artifacts remain valid. The
+OpenAI-compatible API reference defines `length` as reaching the requested
+token maximum and `content_filter` as content omitted by filtering; other
+providers may have their own reason vocabulary ([API reference](https://platform.openai.com/docs/api-reference/chat)).
+
+Mocked adapter and paired-run tests now cover blank/whitespace answers,
+token-limited and filtered completions, unsafe provider reason strings, and the
+resulting `infra_error` report with no partial text. These tests establish the
+local failure contract only. They do not establish how Nous StepFun behaves on
+the next live run; the bounded manual smoke must confirm that a blank or
+truncated response fails the model job and that Jev receives no unusable
+response. The registered model fixture now uses the live ID
+`stepfun/step-3.7-flash` (without the obsolete `:free` suffix).
+
+The next bounded main run
+[35964665427](https://github.com/magnus919/agent-skills/actions/runs/35964665427)
+confirmed the guard against live Nous StepFun. Model catalog preflight passed
+and all 6 smoke cases were selected. In the first case,
+`skill-creation-structure`, the candidate completed; the baseline returned empty
+assistant content with `finish_reason=length` at 4096 output tokens. Its
+manifest contains `status=error`, the safe finish reason and usage counts, and
+no response text. The paired job stopped after these 2 requests, leaving the
+other 10 of 12 planned requests unspent and all 5 remaining cases unattempted.
+This confirms token-limit termination as the observed cause for that baseline
+failure, not a key or catalog mismatch.
+
+The audit observed 1 expected report, 0 complete candidate/baseline groups,
+and selected 0 assertions; 5 candidate prose assertions were unpaired, 5
+baseline assertions were skipped as infrastructure errors, and Jev provider
+errors were 0. The audit exited nonzero because generation was incomplete; it
+made no Jev calls. That is an incomplete evaluation, not a Jev API failure.
+
+The run also exposed a separate reporting flaw: despite the missing baseline,
+comparison report v1 labeled the completed candidate side
+`candidate_improvement`. The model job failed, but the case-level label still
+implied evidence that did not exist. The follow-up introduces version 2 of the
+comparison-report contract, with `insufficient_data` whenever either arm has
+an infrastructure error; the v1 schema remains unchanged. Lesson: the paired
+delta itself must fail closed, not merely the enclosing workflow.
+
+## 2026-09-24 — Screen Nous free models for Droid tool compatibility
+
+The failed GPT-6 Luna experiment in [PR #544](https://github.com/magnus919/agent-skills/pull/544)
+showed that Nous Portal's Responses route rejected Droid's custom-tool request.
+The subsequent [PR #605](https://github.com/magnus919/agent-skills/pull/605)
+therefore tested OpenAI Chat Completions function calling against model IDs
+from the user's current free-model list. The prompt was fixed and contained no
+repository data; each probe allowed 96 output tokens and asked for one
+`probe({"ok":true})` call.
+
+The authenticated Nous catalog returned multiple IDs for several display
+models, with and without a `:free` suffix. The bounded screen on
+[run 35968966758](https://github.com/magnus919/agent-skills/actions/runs/35968966758)
+matched 12 IDs. Ten returned a `tool_calls` response whose function arguments
+were valid JSON; StepFun's unsuffixed ID returned an XML-like `<tool_call>`
+string inside `function.arguments`, and its `:free` alias returned HTTP 400.
+The model-name filter did not match an Upstage Solar Pro 4 ID, so Solar Pro 4
+was not part of this screen. These are protocol observations, not quality
+scores or comparative review results.
+
+The selected model is `poolside/laguna-s-2.1:free`: its exact free ID returned
+standard JSON function arguments in the screen, and the follow-up
+[run 35969275064](https://github.com/magnus919/agent-skills/actions/runs/35969275064)
+repeated that exact probe successfully. Nous reported the model ID exactly
+and recorded cost as 0 for the 164-token request. Poolside describes Laguna S
+2.1 as an agentic coding model with 118B parameters; that makes it a relevant
+candidate for code review, but says nothing about its review accuracy. The
+Droid workflows now use Factory's `generic-chat-completion-api` provider for
+Nous Chat Completions. Factory's custom-model docs say reasoning-effort flags
+do not apply to custom models, so the prior GPT-specific `low` override is
+omitted.
+
+The pre-merge Factory action skipped because its workflow file differs from
+the default-branch copy; that safeguard is expected and is not a successful
+review. After PR #605 merged as
+[commit `fc7c941`](https://github.com/magnus919/agent-skills/commit/fc7c941cfce5ede8dc2381984e81390009ee3d21),
+rerun [35969726932](https://github.com/magnus919/agent-skills/actions/runs/35969726932)
+passed the exact-model Nous function-call probe again, but the Factory action
+could not check out the already-merged PR branch (`Failed to checkout PR #605
+branch for review`). Thus the provider configuration and basic function-call
+protocol were verified, but that rerun did not establish review behavior.
+
+The open-PR test on [PR #606](https://github.com/magnus919/agent-skills/pull/606)
+then completed in 6m20s in
+[run 35970281646](https://github.com/magnus919/agent-skills/actions/runs/35970281646).
+The exact Nous model probe passed, Droid reported success with empty prepare,
+review, and validator error fields and no fallback note, and Factory posted a
+review plus its security-review-ran badge. The generated review said “LGTM”
+and posted 0 inline comments on this documentation-only diff. This verifies
+that the automatic review path can execute with the configured Nous custom
+model; it does not validate review accuracy, security-detection quality, or
+performance on code changes. The separate interactive comment-triggered path
+remains untested. The repository validator and paired-eval checks passed.
+Blog lesson: an OpenAI-compatible base URL does not guarantee that every
+routed model serializes tool arguments compatibly; inspect the actual response
+shape, preserve the provider model ID, and distinguish a successful API
+response from a usable tool call and from a successful agent task.
+
+## 2026-09-24 — Make free-model smoke comparisons reproducible
+
+The corrected default model ID, `stepfun/step-3.7-flash`, was already merged
+with PR #598; the later live paired smoke established that the catalog entry
+exists but a baseline completion hit the configured 4,096-token ceiling with
+`finish_reason=length`. The user's current Portal screenshot still lists
+StepFun Step 3.7 Flash among free offerings. A model's presence in the catalog
+or successful short function-call probe is not evidence that it can complete
+the longer paired-evaluation prompts.
+
+Added a main-only manual workflow override for an exact Nous `model_id` and a
+bounded per-response `max_output_tokens` choice (4,096, 8,192, or 12,288).
+Manual runs default to the corrected StepFun ID and 8,192 tokens, but can screen
+other catalog IDs such as Poolside Laguna S 2.1 without changing the repository
+default. The existing authenticated exact-ID catalog check remains mandatory;
+the fixed `agent-skills/evals/evals.json` screen and subsequent advisory Jev
+audit remain unchanged. The chosen ID and token ceiling appear in the run
+summary and each paired artifact retains the exact configured model. Normal
+main pushes continue to use the repository model variable and 4,096-token
+ceiling until a candidate has completed a live smoke. A runtime allowlist also
+rejects unsupported token budgets passed directly through the workflow API.
+
+Adding the candidate-screen behavior to the `system-one` eval manifest raised
+its full candidate-plus-baseline assertion count from 158 to 164. The existing
+160-assertion Jev audit cap would have omitted four assertions; the focused test
+caught that mismatch before merge. Updated the CLI default, workflow cap, test,
+and operator runbook together to 164 while retaining the 22-call maximum.
+
+Focused paired runner, release runner, selection, Jev audit, calibration,
+eval-contract tests all pass; all 181 eval manifests validate, and the schema
+coverage ratchet remains at 181/181. This is local evidence only. No candidate
+generation or Jev audit has yet been run with the new override, so it does not
+establish that StepFun at 8,192 tokens or any alternative can complete the
+paired workload. After merge, run fixed-manifest smokes at the same token
+budget for each candidate, inspect non-empty completions, finish reasons,
+selected-case counts and Jev omissions, then decide whether the persistent
+model variable should change. Do not treat the Jev suggestions as independent
+model-quality labels or a release gate.
+
+Blog lesson: keep an exact provider model ID and its output budget attached to
+every experiment. A successful catalog probe and a successful tiny tool call
+answer different questions from “did this model produce usable output on the
+real workload?”; a bounded fixed-manifest comparison makes that distinction
+reproducible without silently changing the deployed default.
+
+## 2026-09-24 — Choose a model from the real CI workload
+
+PR [#607](https://github.com/magnus919/agent-skills/pull/607) merged as
+[`678e277`](https://github.com/magnus919/agent-skills/commit/678e27721bf0220fe10511417eb99b2dfb6cde34).
+Its automatic main run used the then-configured `stepfun/step-3.7-flash` at
+4,096 output tokens. On the 11-case `system-one` selection, the candidate
+response completed but its paired baseline ended at the token limit with
+`finish_reason=length`. Only 1 of 11 reports arrived; Jev selected zero groups
+and made zero calls, with zero Jev-provider errors. This is incomplete model
+generation, not a Jev outage.
+
+The fixed six-case `agent-skills` smoke then tested StepFun at the manual
+8,192-token ceiling in
+[run 35975430295](https://github.com/magnus919/agent-skills/actions/runs/35975430295).
+Two of six reports arrived; one side of the second case reached 8,192 tokens
+and ended with `finish_reason=length`. Jev saw two reports, selected two groups
+and ten assertions, skipped five infrastructure-error and five unpaired
+assertions, and recorded zero provider errors. The audit correctly remained
+incomplete. Raising StepFun's output ceiling again was not selected as the
+default fix.
+
+Poolside Laguna S 2.1 was screened at the same fixed manifest and the normal
+4,096-token CI ceiling. The initial 8,192-token run
+[35975844954](https://github.com/magnus919/agent-skills/actions/runs/35975844954)
+and confirmation at 4,096 tokens
+[35976488745](https://github.com/magnus919/agent-skills/actions/runs/35976488745)
+both produced all 12 candidate/baseline completions with normal `stop` finish
+reasons, all six expected comparison reports, and no missing or unexpected
+reports. At 4,096, the largest observed completion used 2,571 output tokens.
+Both Jev artifacts reported 12 groups and all 60 selected prose assertions,
+with zero budget omissions, skipped assertions, generation errors, or Jev
+provider errors. Every comparison's deterministic assertion delta was
+`both_pass`.
+
+These are bounded operational compatibility observations for the fixed smoke,
+not a representative model-quality benchmark or semantic-accuracy score.
+Jev remains advisory; a complete Jev artifact proves coverage, not that its
+suggested semantic labels are correct. After the two successful matched runs,
+the repository's `EVAL_MODEL` variable was changed from
+`stepfun/step-3.7-flash` to `poolside/laguna-s-2.1:free` and read back. The
+manual workflow input default is aligned to the same exact model ID in the
+follow-up PR; the normal 4,096-token limit is retained.
+
+Blog lesson: select the deployed model against the actual request path and
+budget, not from its display name, catalog presence, or a short tool-call
+probe. Keep failed/truncated generations as infrastructure evidence, compare
+the full selected-case denominator, and separate operational completion from
+semantic quality and calibration.
+
+## 2026-09-24 — Recheck the merged default and preserve a rate-limit failure
+
+PR [#608](https://github.com/magnus919/agent-skills/pull/608) merged as
+[`4087c91`](https://github.com/magnus919/agent-skills/commit/4087c91bd94137204dcefaadb74edfc86691b37d).
+Its automatic main push passed paired-eval tests and the fake-adapter smoke,
+but selected no skill manifests. The workflow therefore performed no live
+generation on that push; a green post-merge workflow alone was not sufficient
+to verify the model path.
+
+The follow-up manual run
+[35978853974](https://github.com/magnus919/agent-skills/actions/runs/35978853974)
+left `model_id` unspecified, exercising the merged
+`poolside/laguna-s-2.1:free` workflow default, and used the normal 4,096-token
+ceiling. Unit tests and authenticated model-catalog preflight passed. The
+fixed six-case manifest selected all six cases, but generation stopped after
+one paired report: one side completed in 63.8 seconds with 918 output tokens;
+the other received HTTP 429 `Too Many Requests` from Poolside. The old adapter
+did not retain response retry headers. Comparison v2 correctly reported
+`insufficient_data`; Jev saw one report, selected zero groups and assertions,
+made zero calls, and recorded zero Jev-provider errors. The Jev job failed
+closed because the selected evaluation was incomplete. This is provider rate
+limiting, not a Jev failure or a semantic model-quality result.
+
+This run qualifies the earlier two complete Poolside smokes: the model can
+complete the fixed workload at 4,096 tokens, but free-endpoint availability is
+intermittent. Keep the exact configured model for now because the evidence does
+not establish a better tested alternative; do not hide 429s with model
+fallback or count partial outputs. A local follow-up adds exactly one retry
+for HTTP 429, honors a numeric or HTTP-date `Retry-After` up to 60 seconds,
+uses a one-second fallback only when the header is absent or invalid, and
+records a deferred retry when the provider asks for a longer wait. Other HTTP
+errors remain single-attempt. The focused retry test functions were added, but
+a later audit found they were not called by the test file's script-style
+`__main__` runner, which is how CI executes that file. Their presence was
+mistaken for CI coverage. A retry that still receives 429 must remain an
+explicit incomplete run.
+
+The same PR's Factory Droid review
+[run 35977488831](https://github.com/magnus919/agent-skills/actions/runs/35977488831)
+eventually completed successfully after about 12 minutes, with a successful
+Nous function-call preflight and zero inline review comments. This verifies
+that the open-ended review route ran for this small configuration/documentation
+diff; it does not measure review accuracy or security-detection quality.
+
+The current full workflow audit still finds no drop-in Jev replacement for
+existing generated artifacts: `skill-eval` requires full candidate/baseline
+answers, and Droid requires full code/security review. Jev's typed judgments
+fit the post-generation semantic-audit boundary instead. The failure-to-issue
+workflow has no model call to replace; advisory failure-lane triage remains a
+separate, unvalidated addition. The Nous teacher workflow must stay separate
+from Jev because its role is to provide a non-Jev pseudo-label comparison; the
+local teacher can be the response-generating model and is diagnostic only.
+
+Blog lesson: a successful provider preflight does not promise service
+capacity, and a green validation run may not exercise an inference path at all.
+Check the selected-case denominator, separate the model endpoint's 429 from
+Jev's provider health, and keep a bounded retry observable without converting
+an incomplete evaluation into a pass.
+
+## 2026-09-24 — Verify the merged retry path and make retries observable
+
+PR [#609](https://github.com/magnus919/agent-skills/pull/609) merged as
+[`aa1d93c`](https://github.com/magnus919/agent-skills/commit/aa1d93c3d595bfcabd7ad5c47b187b48eaa9c76f).
+The post-merge bounded run
+[35982396921](https://github.com/magnus919/agent-skills/actions/runs/35982396921)
+completed on the Poolside `:free` model: all 6 selected cases produced 6/6
+comparison reports, all 12 candidate/baseline outputs completed, and Jev
+selected all 12 groups and 60 prose assertions with zero skipped assertions,
+generation errors, budget omissions, or Jev provider errors. All reports had
+`paired_delta=both_pass` and normal `stop` finish reasons. This verifies a
+complete operational path on the fixed smoke, not Jev label accuracy or
+semantic model quality.
+
+The same run overlapped the long-running Factory Droid review
+[35980792942](https://github.com/magnus919/agent-skills/actions/runs/35980792942),
+which used the same free Nous endpoint. Treat that concurrency as a capacity
+confound. More importantly, manifests contained no retry count, so the
+successful run cannot establish whether the new retry was used; the slowest
+completion time is not evidence of a retry.
+
+The follow-up adds `outputs.rate_limit_retries` to the run manifest when the
+OpenAI-compatible adapter can report it. Zero means no retry was attempted;
+one means the single bounded retry was issued, whether it completed or failed.
+It remains optional in the v1 schema so existing artifacts validate
+unchanged. Tests now cover the normal path, retry success, a second 429,
+deferred long waits, persisted counts, and legacy-manifest compatibility. They
+are explicitly called by the script-style test entrypoint used in CI. A new
+post-merge manual smoke is still required to inspect retry counts on real
+responses; until then, unit coverage is not live retry evidence.
+
+Blog lesson: behavior without telemetry is not operational evidence. Test
+functions must be wired into the command CI actually executes, and a successful
+job must retain enough privacy-safe metadata to distinguish first-attempt
+success from retry success without storing raw responses.
+
+## 2026-09-24 — Verify retry telemetry on a live Nous smoke
+
+PR [#610](https://github.com/magnus919/agent-skills/pull/610) merged as
+[`60d44b9`](https://github.com/magnus919/agent-skills/commit/60d44b9fe57a50d946ede518ce5d546368dd4aa3).
+Its merge-triggered push workflow
+[35989562000](https://github.com/magnus919/agent-skills/actions/runs/35989562000)
+passed tests, but selected no changed skill manifests, so real-model generation
+was skipped. A green push workflow alone was not live retry evidence.
+
+The manual main-branch smoke
+[35989698935](https://github.com/magnus919/agent-skills/actions/runs/35989698935)
+used `poolside/laguna-s-2.1:free` (the model ID shown as free in Nous Portal)
+with an 8,192-token response ceiling. Endpoint preflight and tests passed;
+real-model generation completed in 3m42s. All six selected cases produced six
+comparison reports, and all 12 candidate/baseline outputs completed with
+`finish_reason=stop`, no recorded failures, and
+`outputs.rate_limit_retries=0`. All six paired reports were `both_pass`.
+This verifies that the new counter is persisted as zero on normal first-attempt
+responses. No 429 occurred, so this live run does **not** verify successful
+recovery from a real rate limit; the retry-success and second-429 behavior
+remain covered by deterministic tests only.
+
+Jev 1.13's advisory audit observed exactly the six expected reports, selected
+all 12 groups and 60 prose assertions, and had no skipped assertions,
+generation errors, budget omissions, or Jev-provider errors. Its suggested
+labels were 13 `met`, 3 `not_met`, and 44 `not_shown`. Provider-confidence
+values ranged from 0.25 to 1.00; without independently adjudicated labels this
+is not calibration evidence. The Jev audit remains advisory and these counts
+do not establish semantic accuracy.
+
+Blog lessons: inspect the selected-manifest denominator and actual step outcome
+before calling CI a model run; successful completions with a zero retry counter
+are evidence of first-attempt success, not retry recovery; and complete Jev
+coverage is still distinct from correctness or calibration.
+
+## 2026-09-24 — Admit complete manual smokes to blind calibration
+
+The successful main-branch smoke [35989698935](https://github.com/magnus919/agent-skills/actions/runs/35989698935)
+has both `paired-eval-model-artifacts` and `jev-eval-audit` artifacts, and its
+six-case selection is complete. The independent Nous teacher workflow rejected
+this run only because its source guard allowed `push` and not
+`workflow_dispatch`. That made the best fixed-manifest operational comparison
+unavailable for the existing blind calibration protocol.
+
+The source contract now permits only successful `skill-eval.yml` runs on
+`main` from `push` or `workflow_dispatch`, checks that the GitHub API response
+matches the requested run ID, and has focused tests for valid and rejected
+metadata. Artifact download and the existing calibration `prepare` validation
+still must succeed before the teacher receives any generated responses. The
+synthetic provider probe now runs after that artifact validation, avoiding a
+paid inference call for an empty or malformed source run. The teacher remains
+a distinct Nous pseudo-labeler; its agreement is not human ground truth.
+
+Manual fixed-manifest smokes now default to 4,096 output tokens, matching the
+normal main-branch paired-eval budget. This makes the next controlled smoke
+directly comparable to the production CI request path; larger ceilings remain
+explicit experiments. After this change is merged, run the default Poolside
+smoke at 4,096, then pass that run ID to the blind teacher workflow with a
+frozen seed. Compare population and challenge strata separately and retain
+manual review for disagreement; do not derive an accuracy threshold from
+teacher pseudo-labels.
+
+Open/closed issue searches for the exact "CI failure on main" phrase returned
+no incident examples. The `area/ci-cd` results surfaced model-routing and
+evaluator proposals, not adjudicated failure labels. Therefore the separate
+Jev CI-failure triage idea remains uncalibrated and is not being added to issue
+creation.
+
+Blog lessons: a run may be complete yet unusable by a downstream calibration
+workflow because the source-event contract is too narrow; validate provenance
+and artifact coverage separately. Keep the smoke budget aligned with the
+normal CI path, and do not mistake model-teacher agreement for verified truth.
+
+## 2026-09-24 — Size blind calibration to the evidence that exists
+
+After PR #612 merged, the automatic main run
+[36001349998](https://github.com/magnus919/agent-skills/actions/runs/36001349998)
+selected all 11 System One cases, but generated only nine comparison reports.
+The Jev artifact reported two missing reports (`jev-ci-operations` and
+`reranking-pipeline`), 96 of 109 prose assertions selected, and an incomplete
+audit. The `deadline-bound-stream` baseline ended with
+`finish_reason=length` and empty assistant content at the 4,096-token ceiling.
+The model job still uploaded its artifacts; a failed/incomplete run is not
+eligible for teacher calibration.
+
+The first teacher-workflow attempt
+[36003602688](https://github.com/magnus919/agent-skills/actions/runs/36003602688)
+validated the completed manual source and Nous model, then stopped during
+prediction-blind packet preparation before probing the API or using
+`NOUS_API_KEY`. The complete six-case source has 60 assertions, but the
+calibration helper required 16 population pairs plus 12 remaining high-met
+challenge items. The requested challenge sample exceeded what remained after
+population sampling. This was a sample-size contract error, not model
+disagreement or an inference failure. The source smoke used Poolside Laguna S
+2.1 at 8,192 tokens, so it is not a substitute for the newly aligned 4,096-token
+manual smoke when comparing against the normal CI budget.
+
+The sampler now caps requested strata at the available population and
+challenge counts, records requested/available/selected sizes, and retains the
+selected-case completeness gate. A preparation-only local replay of run
+`35989698935`, using seed `poolside-8192-local-check`, produced 16 of 30
+requested population pairs and 8 of 12 requested challenge items (40 review
+items total). This verifies only that a private packet can be prepared; it
+produced no teacher labels and made no inference call. A reduced or empty
+challenge stratum must remain visible in the summary; do not present it as a
+risk-stratified population estimate. After this fix is merged, run a fresh
+fixed-manifest Poolside smoke at 4,096 tokens and use only its complete model
+and Jev artifacts for the teacher screen.
+
+Blog lessons: distinguish source provenance, artifact completeness, sample
+feasibility, and inference success as separate gates. Small complete datasets
+should yield an honestly smaller sample, not fail on arbitrary defaults or
+silently claim the requested challenge denominator. An incomplete run should
+be diagnosed from its generation and audit artifacts, not “fixed” by treating
+missing cases as negative examples.
+
+## 2026-09-24 — Separate Jev input tuning from response generation
+
+After PR #613, the automatic main run
+[36008593676](https://github.com/magnus919/agent-skills/actions/runs/36008593676)
+selected 11 System One eval cases but produced only four comparison reports;
+seven expected case IDs were missing. The Laya C++ serving baseline received
+HTTP 429 after the bounded retry, while its candidate completed. The Jev job
+reported an incomplete audit and did not turn the missing cases into passes.
+This is a Poolside availability failure in generation, not a Jev provider
+failure.
+
+The fixed-manifest manual smoke
+[36008669961](https://github.com/magnus919/agent-skills/actions/runs/36008669961)
+completed all six expected reports with the default
+`poolside/laguna-s-2.1:free` model at 4,096 output tokens. All 12 response
+manifests completed with `finish_reason=stop`, no failures, and two rate-limit
+retries total. Jev saw six of six reports and judged 60 of 60 assertions, with
+no skips, budget omissions, generation errors, or Jev provider errors. Its
+suggestions were 11 `met`, three `not_met`, and 46 `not_shown`; mean `met`
+probability was 0.1795, and mean provider confidence was 0.843 (ranges 0.00–1.00
+and 0.29–1.00 respectively). These scores have no independent correctness
+labels and are not calibration evidence.
+
+Two blind passes from the same Nous `openai/gpt-6-luna` model were run against
+that same frozen source in workflow run
+[36011105432](https://github.com/magnus919/agent-skills/actions/runs/36011105432).
+The recreated packet matched the workflow's `blind_items_sha256`
+`de5bce626eac47e5557dcca947f6fd0412ab932a469204f97d7878dc21cd6d12`. The
+sample contained 32 population judgments (30 resolved, two uncertain) and four
+available challenge judgments (three resolved, one uncertain). Overall, 33 of
+36 labels had two-pass consensus: seven `met`, three `not_met`, 23 `not_shown`,
+and three `uncertain`. This is same-model pseudo-label self-consistency, not
+independent truth or model agreement with Jev.
+
+There were five resolved Jev/teacher-label disagreements across four case
+sides: Jev said `not_shown` while the teacher said `not_met` for both sides of
+`evals-manifest-authoring`; Jev said `met` (probability 0.57, provider
+confidence 0.36) while the teacher said `not_shown` for candidate
+`skill-review-compliance`; on the `client-discovery-loading` challenge, Jev
+said `met` (0.78 / 0.68) while the teacher said `not_met`; and on candidate
+`third-party-vetting`, Jev said `met` (0.79 / 0.68) while the teacher said
+`not_shown`. These are adjudication candidates, not proven Jev false accepts
+or teacher false negatives. A local evidence screen found plausible omissions
+in the review/vetting answers and an actual conflicting instruction in the
+discovery answer, reinforcing the need for an independent label before
+assigning fault.
+
+The bounded follow-up adds an opt-in, main-only manual replay workflow with a
+successful-source-run check, untrusted-artifact handling, an explicit
+per-run TypeSafe egress acknowledgement that defaults off, a complete
+selected-report identity requirement, and the existing 22-call cap. A new
+`all-requirements-shadow-v1` variant tests item-by-item list coverage and
+contradiction handling; the normal CI audit remains on `deployed` and does not
+change its decision path. The three evidence-driven eval splits reduce
+compound list assertions to independently reviewable claims, which raises the
+complete System One candidate-plus-baseline maximum from 164 to 168. The
+bounded CI cap and runbook were adjusted to that exact manifest size. The
+teacher workflow summary now says “consensus resolved” rather than calling
+resolved pseudo-label count “agreement.”
+
+No generated response was replayed to Jev under a shadow variant while the
+separate egress approval is pending. No raw model response or teacher rationale
+was added to this runlog.
+
+Model-ID clarification: the Portal screenshot lists StepFun Step 3.7 Flash as
+free, but the provider ID is the bare `stepfun/step-3.7-flash`. PR #598 already
+changed the repository variable to that ID and the authenticated catalog
+preflight passed in run
+[35961147079](https://github.com/magnus919/agent-skills/actions/runs/35961147079).
+The current main workflow default was later changed to Poolside following the
+matched StepFun generation tests, which produced empty/truncated responses at
+the normal token ceiling. No active configuration uses a StepFun `:free`
+suffix; its only remaining code occurrence is a deliberate negative fixture
+that proves the stale alias is rejected. Free catalog status does not prove
+usable generation or semantic quality.
+
+## 2026-09-24 — Recheck which CI inference Jev can replace
+
+I re-audited the workflows in the `codex/jev-audit-replay` PR snapshot against
+TypeSafe's current [System One introduction](https://docs.typesafe.ai/introduction),
+[API reference](https://docs.typesafe.ai/api), and [model reference](https://docs.typesafe.ai/models).
+The documented contract is a `state` plus named Choice, Score, and Noul
+questions returning typed answers and probabilities. The questions are
+evaluated independently in parallel. It does not return the generated prose
+or code needed by the repository's response-generation or code-review tasks.
+These are capability boundaries from the provider contract, not evidence that
+any individual decision will be correct or calibrated.
+
+| CI surface | Inference or decision today | Jev fit / disposition |
+|---|---|---|
+| `.github/workflows/skill-eval.yml` model job | Nous-backed model generates candidate and baseline skill responses | Not replaceable: generating the responses is the workload under test. The subsequent Jev audit is the decision-shaped semantic-review addition; it remains advisory. |
+| `.github/workflows/droid-review.yml` and `droid.yml` | Factory Droid uses a chat model for open-ended code/security review or requested responses | Not a drop-in replacement: Jev cannot write findings, explanations, or code. A future bounded classifier over independently produced findings would be a separate experiment, not a substitute for review. |
+| `.github/workflows/jev-teacher-calibration.yml` and `jev-local-teacher-calibration.yml` | A separate hosted or local language model labels blinded real-output samples | Do not replace the teacher with Jev: comparing Jev with its own judgments is circular. These are model-teacher pseudo-label diagnostics, not accuracy ground truth; human adjudication remains the stronger evidence. |
+| `.github/workflows/ci-failure-to-issue.yml` | Deterministic issue creation from failed-workflow metadata | No inference to replace. Jev-based failure routing remains only a candidate: the existing 22-case pilot is synthetic, and the repository has no representative labeled CI-failure set. Do not add a live egress call or alter issue priority from that evidence. |
+| `.github/workflows/skillevaluator.yml` | Selected Tier 1 checks are keyless and deterministic | No LLM inference to replace. Preserve exact checks. |
+| `.github/workflows/jev-qa-pilot.yml` | Manually dispatched Jev calls on synthetic triage, test-priority, and evidence cases | Already exercises Jev directly; it is a capability pilot, not a replacement for an existing CI model call or a production-calibrated gate. |
+
+Decision: there is no currently identified LLM inference job whose required
+output shape is a bounded decision and whose work can safely be replaced
+outright by Jev. The existing post-generation audit is the well-matched use:
+deterministic code retains exact checks and selection/coverage authority, while
+Jev supplies advisory judgments for semantic assertions. Failure triage could
+be reconsidered only after a representative, independently labeled set and a
+privacy-safe extraction contract exist; any first deployment should annotate
+or route for a human, never change the failed workflow result or auto-assign
+issue severity. This audit changed no workflow behavior, release rule, or data
+egress scope.
+
+Blog lesson: choose replacements by the output contract, not by the fact that
+both systems are called “models.” Jev can replace a probabilistic judgment
+coerced from generated text when the software needs a typed decision; it cannot
+replace a job whose deliverable is the generated text itself. A separate
+teacher model can help find disagreement, but swapping in the tested model
+destroys the independence that makes the comparison informative.
+
+## 2026-09-24 — Isolate System One completion limits in a manual smoke
+
+The first automatic main run after PR #614,
+[36021921396](https://github.com/magnus919/agent-skills/actions/runs/36021921396)
+at `460e30ec9b8fd545d66055cdbf9b78b01fd1aed0`, passed the paired-eval unit
+tests and keyless fake-adapter smoke. Nous model-catalog preflight also passed.
+The model job selected both `agent-skills` (six cases) and `system-one` (11
+cases), for 17 expected case reports. It used the configured Poolside Laguna S
+2.1 model with a 4,096-token output ceiling.
+
+Generation wrote 14 of 17 comparison reports before stopping at
+`system-one/observed-app-control`: the baseline completion ended with
+`finish_reason=length`, used all 4,096 output tokens, and had no usable
+assistant content. The adapter classified this as an infrastructure failure;
+the paired runner's deliberate first-infrastructure-error stop then left
+`deadline-bound-stream`, `jev-ci-operations`, and `reranking-pipeline`
+unattempted. A generated response ending at the provider's length limit is not
+a semantic failure and must not be passed to Jev as if it were an answer.
+
+The advisory Jev job ran with no provider errors, but correctly failed
+completeness: 14 reports seen versus 17 expected, one generation-error side,
+five assertions skipped for infrastructure error, 22 groups and 140 assertions
+judged, and 20 assertions omitted by the audit budget. The 140 suggestions were
+24 `met`, four `not_met`, and 112 `not_shown`; mean met probability was 0.1622
+and mean provider confidence was 0.8318. These are opinions on an incomplete,
+budget-selected subset, not calibration or correctness evidence. The Jev API
+was not the source of this run's failure.
+
+To isolate whether the failure is a response-ceiling issue, the manual
+main-only smoke now accepts an explicit allowlisted skill manifest
+(`agent-skills` or `system-one`), while retaining `agent-skills` and 4,096
+tokens as defaults. The selector rejects any other value before creating
+selection evidence. The next diagnostic is a fresh System One-only Poolside
+smoke at 8,192 tokens, followed by a denominator and budget review; this is a
+targeted experiment, not a change to normal CI limits or release gates. Do not
+replay these generated outputs to Jev under a different question variant
+without separate per-run egress approval.
+
+Blog lesson: report completion, audit coverage, and API health as separate
+dimensions. A provider can return successful typed judgments while the overall
+audit remains incomplete because upstream generations were truncated or the
+bounded audit budget omitted work.
+
+## 2026-09-24 — The 8,192-token smoke still truncates one baseline
+
+After PR #615 merged at
+`2660ec18c127fa7463f4cdaf274d37560a056431`, manual run
+[36026794037](https://github.com/magnus919/agent-skills/actions/runs/36026794037)
+selected only `system-one` and used Poolside Laguna S 2.1 with an 8,192-token
+per-response ceiling. The paired test job and authenticated model preflight
+passed. The model job ran for ten minutes and produced nine of 11 expected
+case reports before the baseline side of `deadline-bound-stream` hit
+`finish_reason=length` at exactly 8,192 output tokens with no usable assistant
+content. Its candidate side completed normally. Fail-fast then left
+`jev-ci-operations` and `reranking-pipeline` unattempted; the model job uploaded
+its metadata artifacts and the advisory Jev job still ran.
+
+Jev saw nine of 11 expected reports, 109 prose assertions, 13 assertions
+skipped because of generation infrastructure error, 16 groups selected, and
+96 assertions judged. There were zero budget omissions and zero Jev provider
+errors. Suggestions were 14 `met`, one `not_met`, and 81 `not_shown`; mean met
+probability was 0.1425 and mean provider confidence was 0.8245. These are
+advisory judgments on incomplete evidence, not correctness or calibration
+results. The audit's incompleteness came from generation truncation and the two
+missing reports, not Jev availability or its call/assertion budget.
+
+The manual smoke now also accepts an optional exact case ID, validates that it
+exists in the selected manifest, and records only that case in the frozen
+selection denominator. Normal push CI and manual smoke defaults still run the
+full selected manifest. Next, use this narrower selector for one fresh
+`deadline-bound-stream` run at 12,288 tokens. This isolates whether a larger
+response ceiling produces usable content without repeating the other 20
+candidate/baseline generations. Do not replay the failed or successful output
+text to Jev or another model.
+
+Blog lesson: when a complete evaluation is expensive, make the diagnostic
+selection explicit and carry the same narrowed denominator into the downstream
+audit. A case-level smoke is useful for debugging a generation boundary, but it
+cannot stand in for a complete skill-level run or establish semantic quality.
+
+## 2026-09-24 — Compare the failing case without widening the default budget
+
+After PR #616 merged at
+`5e7f15818636cefd6a6daa84bfe8450ab27776fa`, three case-isolated runs
+distinguished the Jev path from the Poolside generation issue:
+
+| Run | Nous model and ceiling | Generation evidence | Jev evidence |
+|---|---|---|---|
+| [36029470871](https://github.com/magnus919/agent-skills/actions/runs/36029470871) | Poolside Laguna S 2.1, 12,288 | `deadline-bound-stream` candidate ended normally; baseline used all 12,288 output tokens, returned empty content with `finish_reason=length`, and had one rate-limit retry. | One expected and observed report, but all 13 assertions were skipped as unpaired; zero groups/assertions judged, zero budget omissions, zero Jev provider errors. |
+| [36030253874](https://github.com/magnus919/agent-skills/actions/runs/36030253874) | Poolside Laguna S 2.1, 4,096 | `contract-design` candidate and baseline both ended normally at 664 and 678 output tokens, with no retries or generation errors. | One of one reports, eight of eight prose assertions judged in two groups, no skips/omissions/provider errors. Suggestions were two `met` and six `not_shown`; mean met probability 0.315 and mean provider confidence 0.8613. |
+| [36030732563](https://github.com/magnus919/agent-skills/actions/runs/36030732563) | Poolside Laguna XS 2.1, 4,096 | Authenticated catalog preflight accepted `poolside/laguna-xs-2.1:free`. The `deadline-bound-stream` candidate ended normally; its baseline again used the entire 4,096-token ceiling and returned empty content with `finish_reason=length`. | One expected and observed report, but all 13 assertions were skipped as unpaired; zero judgments and zero provider errors. |
+
+The one-case selector therefore works end to end: it freezes the selected
+case ID, runs only its candidate/baseline pair, and gives the Jev audit the
+matching expected-report denominator. On `contract-design`, Jev completed its
+bounded advisory review with no API or audit-budget errors. Those eight
+suggestions have no independent gold labels; this proves pipeline operation,
+not semantic accuracy or calibration.
+
+For the long `deadline-bound-stream` baseline, Laguna S still returned no
+usable content at 8,192 and 12,288 tokens; Laguna XS did the same at 4,096.
+The earlier 4,096-token mixed run
+[36021921396](https://github.com/magnus919/agent-skills/actions/runs/36021921396)
+failed on a different System One case, `observed-app-control`, and did not
+reach `deadline-bound-stream`. The 12,288-token trial took 4m12s and did not
+increase semantic coverage. Do not raise the normal CI token budget, change the
+configured model, or infer that a model is better from one successful case.
+Keep the 4,096 default and Jev's advisory-only role. At the time, the right
+next step was a materially larger manual-only budget; changing the eval prompt
+or treating empty output as a semantic answer would have confounded that
+diagnostic. No response text was copied into this runlog or replayed.
+
+Blog lesson: an accepted model ID, successful API transport, usable assistant
+completion, complete paired report, and completed Jev audit are separate
+milestones. Increasing token ceilings can increase latency without increasing
+usable evidence; report each stage and its denominator independently.
+
+## 2026-09-24 — Reasoning models need a real output-budget probe
+
+The earlier 4,096/8,192/12,288 manual choices were inherited from the workflow,
+not justified as sufficient reasoning budgets. A run that consumes the entire
+12,288-token ceiling establishes only that the request was cut off there; it
+does not establish the model's limit, that the provider accepted enough room,
+or that the model cannot complete the task. Do not describe this as a model
+failure without testing a materially larger output ceiling.
+
+Poolside's [models page](https://poolside.ai/models) describes Laguna S 2.1 as
+a reasoning model and advertises a 1M-token context window. Context length and
+maximum generated output are distinct limits, and this does not document Nous
+Portal's hosted completion cap. The
+manual workflow now offers 16,384, 32,768, and 65,536 output-token ceilings
+for bounded diagnostics. Its normal 4,096 default and automatic CI path remain
+unchanged. The diagnostic selected only `system-one/deadline-bound-stream` at
+65,536.
+
+That probe completed on main in [run 36032855135](https://github.com/magnus919/agent-skills/actions/runs/36032855135)
+using the authenticated Nous model ID `poolside/laguna-s-2.1:free`. The endpoint
+accepted the budget. Candidate and baseline both completed with `finish_reason`
+`stop`, zero retries, and one of one expected comparison reports:
+
+| Side | Output tokens | Generation duration | Harness assertion counts |
+|---|---:|---:|---|
+| Candidate | 721 | 13.0 s | 0 exact passes, 0 exact failures, 13 manual-review prose assertions |
+| Baseline | 6,299 | 117.7 s | 0 exact passes, 0 exact failures, 13 manual-review prose assertions |
+
+Neither side reached the 65,536 ceiling. The Jev audit selected and reviewed
+all 26 prose assertions in two groups: eight suggested `met`, 18 `not_shown`,
+zero skipped/omitted assertions, and zero provider errors. These are advisory
+suggestions without independent gold labels. In particular, the harness's
+`passed=true` field does not turn 13 manual-review assertions into verified
+semantic passes.
+
+This successful, fully paired run changes the working diagnosis: a materially
+higher ceiling allowed a complete response here, whereas prior 4K–12K attempts
+cut off. It is consistent with needing more generation headroom for reasoning,
+but one stochastic run does not identify the precise cause, prove hidden-token
+accounting, establish a minimum useful ceiling, or measure answer quality. The
+manual diagnostic options now include 16,384, 32,768, and 65,536, while the
+normal 4,096 default and automatic CI path remain unchanged. Never infer
+quality from token consumption alone.
+
+This corrects the earlier premature recommendation to leave the long case as a
+known generation limitation after only 4K–12K attempts. A sufficiently roomed
+run produced usable paired responses; semantic quality and repeatability remain
+open questions.
+
+## 2026-09-24 — A larger token ceiling exposed the request-timeout boundary
+
+The full 11-case manual System One run
+[36034975016](https://github.com/magnus919/agent-skills/actions/runs/36034975016)
+used `poolside/laguna-s-2.1:free`, a 65,536-token output ceiling, and the
+workflow's existing 300-second request timeout. It produced 9 of 11 expected
+comparison reports (17 completed trial manifests plus one timed-out trial).
+The candidate for `deadline-bound-stream` completed normally with 2,077 output
+tokens in 44.0 seconds. Its baseline timed out at 300.1 seconds without a
+completion token count or finish reason. The model job stopped there, leaving
+`reranking-pipeline` and `jev-ci-operations` unattempted. This is a timeout, not
+a 65,536-token cutoff.
+
+Across the 17 completed sides, each response ended with `finish_reason=stop`;
+the largest reported output was 4,357 tokens on the `jev-integration` baseline,
+and one side used a single observed 429 retry. This directly shows that the
+4,096 normal ceiling was below at least one usable response in this run. It
+does not establish that 65,536 is the minimum needed, nor that a larger ceiling
+will solve the 300-second timeout.
+
+The Jev audit received 9/11 expected reports and reported the gap. It saw 109
+prose assertions, selected all 96 available assertions, and marked 13
+infra-error plus 13 unpaired assertions as skipped; there were no audit-budget
+omissions or Jev provider errors. Jev did not turn the missing reports into a
+pass. The 16 groups that were judged remain advisory and lack independent gold
+labels.
+
+The next diagnostic is to isolate `deadline-bound-stream` at the same 65,536
+token ceiling with a selectable 600- or 900-second request timeout. Keep the
+ordinary 300-second timeout unchanged until that single-case result establishes
+the additional latency actually needed; then rerun the full suite before
+changing either production default. Do not mistake a generous token budget for
+a generous wall-clock deadline. No generated response text or Jev rationales
+were copied into this runlog.
+
+## 2026-09-24 — The 900-second client wait met a 600-second serving-path limit
+
+The follow-up isolated `deadline-bound-stream` run
+[36038464117](https://github.com/magnus919/agent-skills/actions/runs/36038464117)
+used `poolside/laguna-s-2.1:free`, a 65,536-token output ceiling, and the new
+900-second per-response client timeout. The candidate completed normally with
+491 output tokens in 10.15 seconds. The baseline ran for 600.05 seconds and
+returned HTTP 524, with no completion token count or finish reason. The model
+step ended after 10m10s; the configured 900-second client timeout was not the
+failure. The response establishes a serving-path timeout at about 600 seconds,
+but does not localize which upstream component enforced it. Cloudflare also
+defines HTTP 524 as an origin response timeout, with 125 seconds as its default
+and longer configurable limits for Enterprise; the run did not capture enough
+headers or body to establish that Cloudflare produced this response or that its
+documented limit applies. See [Cloudflare's 524 reference](https://developers.cloudflare.com/support/troubleshooting/http-status-codes/cloudflare-5xx-errors/error-524/).
+
+The runner wrote one of one expected comparison reports. Its candidate had 13
+manual-review assertions; the baseline was an infrastructure error, so the
+paired delta was `insufficient_data`. Jev received the report but skipped all
+13 prose assertions as infra-error/unpaired, selected none, and had zero Jev
+provider errors. This run contains no Jev judgment and no evidence about the
+baseline's semantic quality. No generated response text or Jev rationales were
+copied into this runlog.
+
+The archived trial manifests incorrectly recorded `limits.timeout_seconds` as
+120, a hard-coded legacy value in the paired harness, even though the CLI was
+configured for 900. The runner now records the configured request timeout and,
+for the OpenAI-compatible adapter, the requested output-token ceiling in both
+candidate and baseline manifests. This repairs future provenance; it does not
+rewrite the archived run. Keep the normal automatic CI request timeout at 300
+seconds for now: the 900-second diagnostic established that waiting longer can
+expose a serving-path limit, not that routine CI should wait ten minutes or
+that 65,536 is an optimal default.
+
+Lesson: reasoning-model evaluations should not silently inherit generic 4K
+output budgets. The explicitly dispatched model-smoke workflow now defaults
+to the largest exposed output ceiling (65,536) and a 900-second per-response
+timeout; users can still choose smaller bounds. This applies only to opt-in
+inference runs. Automatic CI retains its 4,096-token/300-second fallback, and
+the observed HTTP 524 means this 900-second client setting cannot force a
+serving path to run longer than its own limit.
+## 2026-09-24 — Repeated CI QA pilot reproduces one synthetic miss
+
+The manual synthetic QA pilot completed successfully in
+[run 36043312427](https://github.com/magnus919/agent-skills/actions/runs/36043312427):
+22 calls to `jev-1.13.0`, 22 valid typed responses, and no transport or
+contract errors. Jev matched 21/22 author labels; the simple rules-only
+baseline matched 17/22. By lane, Jev/baseline were triage 9/9 vs. 7/9,
+additional-test choice 6/6 vs. 5/6, and semantic grading 6/7 vs. 5/7. Call
+latency ranged from 202.0 to 489.2 ms, with a 252.2 ms median.
+
+The only Jev miss was G7: the labeled outcome was positive, but Jev chose
+negative; its Noul `yes` probability was 0.43. The earlier manual CI replay,
+[run 35808017339](https://github.com/magnus919/agent-skills/actions/runs/35808017339),
+also scored 21/22 and missed G7, with Noul `yes` probability 0.49. This
+reproduces a miss on the same frozen synthetic case, not an independent test:
+the same author-created fixture and labels were reused. The 0.43/0.49 movement
+also does not establish calibrated probabilities or justify tuning a cutoff
+against G7.
+
+The rules baseline is intentionally simple, the labels are not operational
+ground truth, and 22 synthetic examples do not estimate performance on real
+CI incidents or QA artifacts. Preserve the current advisory/manual-only
+boundary. Next evidence should come from an independently labeled,
+privacy-reviewed sample from the intended workflow, with a frozen holdout,
+explicit `unknown`/abstention outcomes, per-class error analysis, and a
+predeclared comparison to a credible deterministic baseline. Do not tune the
+prompt or threshold on G7 and then reuse it as a held-out result.
+
+Blog lesson: a repeated failure can be more actionable than a high aggregate
+score. Here the stable false negative points to a challenge case and an
+abstention-design question; the changing Noul score warns against mistaking a
+probability field for calibrated confidence.
+
+## 2026-09-24 — Raise the automatic reasoning-eval output ceiling
+
+The earlier `deadline-bound-stream` probe completed both sides at a 65,536
+output-token ceiling; the baseline used 6,299 output tokens in 117.7 seconds.
+That observed completion alone exceeds the old 4,096-token ceiling, showing
+that the old cap could not contain this response. The 8,192- and 12,288-token
+probes for the same case returned no usable completion, but do not isolate
+whether the cause was hidden reasoning, provider behavior, or another limit.
+This does not show that models should consume 65,536 tokens, that this is the
+optimal cap, or that more output guarantees better judgments. A maximum
+output-token setting is headroom, not a token allocation.
+
+Changed the automatic main-branch paired-eval fallback from 4,096 to 65,536
+output tokens, matching the opt-in smoke's headroom. Kept its 300-second
+per-response deadline unchanged: the later 600-second serving-path timeout
+showed that a longer client wait cannot ensure completion. Manual smoke still
+allows explicit 300/600/900-second choices. The new calibration-eval assertions
+raise the Jev prose-assertion ceiling from 168 to 176; the 22-call cap is
+unchanged, and this remains an advisory audit. This change is under PR validation;
+the first post-merge automatic run must be inspected for actual output tokens,
+finish reason, latency, complete paired reports, and Jev's missing/skipped
+coverage before treating the new default as operationally successful.
+
+## 2026-09-24 — Post-merge CI exposed a provider rate limit, not a token ceiling
+
+PR [#622](https://github.com/magnus919/agent-skills/pull/622) merged as
+`fbe5e507ddb485cbc5764707c1fef144b71dd22b`. Its first automatic main-branch
+run, [36048041376](https://github.com/magnus919/agent-skills/actions/runs/36048041376),
+confirmed the real workflow passed `MAX_OUTPUT_TOKENS=65536` and
+`TIMEOUT_SECONDS=300` to inference. The endpoint/model preflight and the paired
+eval's deterministic/fake-adapter tests passed. The real model job ran for
+about 10 minutes before failing on the `reranking-pipeline` baseline with
+HTTP 429 and `retry_after_seconds=30`; its candidate completed, but the
+baseline did not. The paired runner allows one bounded retry for this
+Retry-After interval, then stops on the repeated provider error. This is a
+provider rate-limit failure, not evidence of token exhaustion, a finish-reason
+truncation, or a semantic regression. The run did not establish that 65,536 is
+optimal or that a larger client output ceiling prevents a serving/provider
+failure.
+
+The selector correctly declared 11 expected `system-one` cases. The paired
+job emitted 10 comparison reports: nine complete pairs and one unpaired
+`reranking-pipeline`; it stopped before `jev-ci-operations`. The follow-on Jev
+audit processed 126 available prose assertions, skipped nine assertions from
+the infra-error/unpaired report, omitted none for its assertion budget, and
+reported zero Jev provider errors. Nevertheless, the audit job correctly
+failed coverage reconciliation because a selected case/report was missing.
+Thus “zero Jev provider errors” describes transport on attempted audit work;
+it does not mean a complete audit, 11-case coverage, or validated semantic
+passes. No incomplete run is a quality comparison or release signal.
+
+Lesson: output headroom and provider capacity are separate controls. Keep the
+65,536-token maximum as available headroom, not a target; retain the 300-second
+automatic per-response timeout; and preserve explicit missing-report failure.
+Do not increase retries or serialize/constrain the workflow further based on
+one 429. The next reliability experiment should first capture per-request
+429/retry timing and compare a controlled single-case replay against a normal
+run, without changing the advisory-only quality boundary. The historical
+statement above that automatic CI retained 4,096 tokens describes the state
+before PR #622; the merged workflow now defaults to 65,536.
+
+## 2026-09-24 — Isolated rerun passes; user identifies credit exhaustion as 429 cause
+
+After the full-run failure, a manual replay isolated only
+`reranking-pipeline` in [run 36050654448](https://github.com/magnus919/agent-skills/actions/runs/36050654448),
+using the same `poolside/laguna-s-2.1:free` model, a 65,536-token output
+ceiling, and a 300-second timeout. Both generations completed normally with
+`finish_reason=stop` and no rate-limit retries: the candidate used 2,385 output
+tokens in 43.3 seconds; the baseline used 1,365 in 23.1 seconds. This
+confirms the generous ceiling is headroom rather than a requested allocation.
+The comparison's `both_pass` is harness status, not a semantic-quality result.
+
+The selected-case Jev audit saw one report and all 18 prose assertions across
+the two sides; it selected all 18, omitted none, skipped none, and had zero
+provider errors. That is complete advisory coverage for this one case, not
+18 independently verified semantic passes or evidence of Jev accuracy.
+
+After this replay, the user reported that Nous credits were exhausted and
+identified credit exhaustion as the cause of the earlier HTTP 429. The
+captured failed request says `Too Many Requests` with a 30-second retry hint,
+but does not expose account balance or a provider error code distinguishing
+quota exhaustion from a rate window. Record the quota explanation as
+user-reported, not independently verified from the run artifact. The later
+single-case success occurred after the failed full run, so without
+time-aligned account-balance evidence these observations cannot establish a
+burst/concurrency limit or fully reconcile quota state over time.
+
+Lesson: classify 429s from provider error codes and account/billing telemetry
+when available; do not infer overload from status and Retry-After alone. Stop
+further Nous inference while the user-reported Nous credit shortage remains.
+This does not establish that the separate TypeSafe Jev credential or quota is
+affected. The Jev-only QA pilot already used the same 22 synthetic cases in
+four live runs; another identical run would add a repeatability observation,
+not independent calibration evidence. Resume Nous inference only after the
+user confirms credits are available, then capture provider error classification
+and request-level retry/token provenance in a bounded replay. Keep the Jev audit
+advisory-only.
+
+## 2026-09-24 — CI inference inventory and Jev replacement boundaries
+
+Reviewed all 13 GitHub Actions workflows and their repository-local callers
+for model-backed work. This distinguishes inference that Jev can plausibly
+replace from generative, independent-reference, and deterministic work that
+it cannot:
+
+| Workflow | Inference today | Jev fit |
+|---|---|---|
+| `skill-eval.yml` | On selected main pushes or manual smoke, Nous generates candidate/baseline responses; a follow-on Jev job audits prose assertions. | Keep generation as the model-under-test workload. Jev's separate bounded audit is already the appropriate helper; it must not be reported as an exact grader or release gate. |
+| `droid-review.yml` | Every non-draft PR runs a 96-token Nous function-call probe, then Factory Droid's generative code and security review. The configured model is `poolside/laguna-s-2.1:free`, with `maxOutputTokens=16384`, using `NOUS_API_KEY`. PR #623's Droid check took 9m58s; its recorded check result does not include total token or credit usage. | Not a drop-in replacement for broad code/security review. A future typed Jev risk/owner route could be advisory after labeled evaluation; deterministic path rules are a simpler option for known low-risk changes and must not suppress required checks. |
+| `droid.yml` | Explicit `@droid` requests run the generative Droid agent/reviewer, configured with the same Nous model and secret. | Keep the requested generative task intact. Jev might route a narrow structured request, but cannot supply the code changes or prose review. |
+| `jev-teacher-calibration.yml` | A manually dispatched Nous model supplies two blind teacher-label passes for a Jev calibration packet. | Do not substitute Jev for the teacher: that would make its own evaluation circular rather than independent. |
+| `jev-local-teacher-calibration.yml` | A manually dispatched local inference model supplies blind labels for comparison with Jev. | Do not replace this independent reference with Jev. |
+| `jev-qa-pilot.yml`, `jev-eval-replay.yml` | Bounded Jev QA pilot or explicitly authorized Jev question-input replay. | Already Jev-shaped, but exploratory/advisory; the replay gate correctly requires per-run egress authorization. |
+| `ci-failure-to-issue.yml` | Deterministically creates or updates a templated tracking issue after main-branch validation failure. | No current inference to replace. A future typed failure-category/owner suggestion could augment issue metadata, but must remain advisory; issue/comment mutations and severity labels stay deterministic. |
+| `skillevaluator.yml` | Keyless schema, privacy, license, quality, unicode, and lint checks; the selected checks explicitly exclude LLM calls. | No inference to replace. |
+| `raleigh-canary.yml`, `raleigh-tests.yml`, `release-please.yml`, `validate.yml` | Live endpoint/schema checks, deterministic test matrices, release automation, and repository validation. | No model calls found; keep exact checks and required results deterministic. |
+
+The repository-wide workflow scan found no other current CI LLM call that is
+a safe one-for-one Jev replacement. The failure-to-issue workflow is a
+potential host for an advisory classifier, not an existing inference
+replacement target. The good future expansion is a separate,
+bounded CI-failure classifier or optional-test ranker that consumes trusted
+failure/change facts and returns a small typed route plus `unknown`; no such
+inference currently exists in this repository. First create independently
+labeled representative and challenge cases, compare against a deterministic
+baseline, and require abstention/error analysis. It may annotate or route; it
+must not omit mandatory tests, authorize a merge, or turn red CI green.
+
+Resource lesson: both automatic Droid workflows and the paired-eval generation
+workflow reference the repository's `NOUS_API_KEY`. They therefore share a
+provider credential/account boundary. This inventory does not prove which
+workflow spent credits or caused the earlier 429; neither workflow's observed
+status alone provides account-level usage attribution. Avoid parallel live
+experiments while credits are unavailable, and do not tune retry/concurrency
+policy until per-workflow usage and the provider's quota-versus-rate error
+classification are available.
+
+Applied that finding locally to `system-one/references/jev-ci-reference-deployment.md`:
+the 429 recovery table now requires provider/account classification and shared
+credential inventory before attribution or retry changes. Extended the
+existing `jev-ci-operations` eval with two independently reviewable checks for
+that diagnosis; the manifest has 88 prose assertions, so candidate plus
+baseline remain within the existing 176-assertion budget. Offline verification
+passed: eval validation tests (27), all 181 schema/semantic manifests, Jev
+audit tests (21), canonical skill validation (181), and the eval-coverage
+ratchet. This reference/eval follow-up is committed only on the local branch;
+no PR or workflow was started while the user-reported credit shortage remains.
+No live inference was used to validate the new diagnostic assertions.
+
+## 2026-09-24 — Avoid retries for explicitly classified hard-quota 429s
+
+While Nous credits remain unavailable, made an offline adapter change rather
+than issuing another model request. The OpenAI-compatible adapter now reads
+only allowlisted `type`, `code`, and `param` fields from a 429 response before
+deciding whether to retry. It skips its bounded retry for explicit hard-quota
+identifiers (`insufficient_quota`, `credit_balance_exhausted`, and recognized
+organization/project usage or spend-limit codes), records
+`retry_skipped=hard_quota`, and never retains the provider's free-text error
+message. Unclassified 429s preserve the existing one-retry ceiling; this is
+important because the captured Nous 429 had no structured error code. No
+Nous-specific error-code behavior has been established, and a Retry-After
+header alone still cannot distinguish exhausted credits from transient
+throttling. The code identifiers are informed by the
+[OpenAI 429 troubleshooting guidance](https://help.openai.com/en/articles/5955604-troubleshooting-api-rate-limits-and-429-errors),
+not verified Nous documentation.
+
+Added a mocked regression test proving that an explicit hard-quota code causes
+one request, no sleep/retry, safe error metadata, and no persisted private
+message. Existing mocked tests continue to cover empty/unclassified 429 retry,
+second-429 telemetry, and deferral beyond the bounded wait. Updated the
+System One CI runbook and the existing `jev-ci-operations` eval without adding
+assertions, preserving its 176 paired-assertion resource ceiling. These are
+offline changes only; the user-reported credit shortage remains the stop
+condition for Nous inference and PR creation, because PR creation triggers
+Droid with the same Nous credential. The separate Jev endpoint was not called
+in this step; changing the evaluation sample, rather than repeating the
+already-run fixed synthetic pilot, would be required to obtain meaningful new
+Jev quality evidence. After the user confirms Nous credits are restored, first
+use a bounded single-case run to learn whether Nous returns a recognized
+structured quota code; do not infer this from the mocked test. Offline
+verification passed: the exact paired-eval CI test command,
+27 eval-validation tests, all 181 eval manifests, 21 Jev audit tests, all 181
+canonical skills, the modified-skill eval-coverage ratchet, and `git diff
+--check`. No live inference was used.
+
+## 2026-09-24 — Jev-only local wording screen, no Nous dependency
+
+At the user's direction, ran Jev directly on the six-case development split
+of `system-one/examples/jev-atomic-assertion-screen.json`, comparing the
+deployed question with `all-requirements-shadow-v1`. These were 12 live Jev
+requests against author-constructed synthetic examples only. No Nous request,
+real generated response, or test-split case was sent.
+
+Both variants returned the same six labels (6/6 on this small screen). The
+deployed question's binary `met` Brier score was 0.00045; the candidate's was
+0.00225. Median response latency was approximately 321 ms versus 333 ms. The
+candidate therefore shows no accuracy gain here, has slightly worse Brier,
+and no demonstrated operational benefit. Keep the deployed wording unchanged;
+do not infer production accuracy, calibration, or a confidence threshold from
+this dev-only synthetic result. A fresh representative held-out set is still
+needed for any semantic-quality claim.
+
+Local-only verification also passed the paired-evaluation test script, all 21
+Jev audit tests, all 10 calibration-helper tests, and validation of all 181
+eval manifests. These establish mechanics, not Jev correctness. The separate
+hard-quota retry change remains local and mock-tested; no Nous inference or
+provider spend was used for it.

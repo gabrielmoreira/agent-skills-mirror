@@ -8,9 +8,9 @@
 
 - **角色表** — 谁出场了，主角还是龙套，跨章节的不同称呼归并到同一个人
 - **人物画像** — 性别、年龄、身份、外貌、性情、动机、人物弧光、关系网，每条附**原文逐字引文**
-- **形象提示词** — 半写实厚涂路线，双语出图 prompt + negative prompt + 风格标签，直接喂 Midjourney / SD / GPT-Image
+- **形象提示词** — 双语出图 prompt + negative prompt + 标签，直接喂 Midjourney / SD / GPT-Image。画风不写进提示词，由调用方在出图时整批附加
 - **音色提示词** — 音色、音高、语速、口音、情绪，双语 voice-design prompt，直接喂 Qwen3-TTS / ElevenLabs Voice Design
-- **角色设定图** — **每个角色一张**：16:9 分三区，左侧约 34% 证件照式半身像（面部基准）、右上全身三视图、右下关键细节特写条。**画风可选**：默认半写实厚涂，也可以出吉卜力动画风。白底方便抠图，走 codex 内置出图（可选）
+- **角色设定图的版面指令** — **每个角色一条**：16:9 分三区，左侧约 34% 证件照式半身像（面部基准）、右上全身三视图、右下关键细节特写条，白底方便抠图。**本 skill 不出图**，交付的是这段指令
 - **关系图谱** — 报告里的一个全景视图：谁跟谁有关系、是什么关系，一眼看完。悬停一个人亮出他的全部关系，点一下跳到那个人的详情
 
 产出 `cast.json` + Markdown + 一个双击就能开的 `report.html`。
@@ -80,28 +80,6 @@ node scripts/novel-characters.mjs seed outline.json > seed.json
 
 两条不跟随语言：**出图和 TTS 提示词永远英文**（引擎吃英文最稳）；**原文引文永远保持原文语言**（翻译了就不是证据了）。
 
-### 出图风格
-
-默认 `realistic`（半写实厚涂）。想要动画质感：
-
-```
-/novel-characters ./book.txt --style ghibli
-```
-
-| id | 说明 |
-| --- | --- |
-| `realistic` | 半写实厚涂，皮肤有毛孔和肌理，布料有织纹磨损。默认 |
-| `ghibli` | 吉卜力式手绘赛璐璐，等宽墨线、单层柔和阴影、平涂色块 |
-
-两个可以组合：`--lang ja --style ghibli`。
-
-```bash
-node scripts/novel-characters.mjs styles          # 看所有预设
-node scripts/novel-characters.mjs styles ghibli   # 看某一个的完整内容
-```
-
-**换风格是整套换**，不是只换一句画风——每个预设自带渲染方式、表面处理、光照、反向提示词、标签五块。详见 [`references/style-presets.md`](references/style-presets.md)。
-
 ## 报告长什么样
 
 三栏工作台：顶栏搜索，左栏是故事摘要 + 按戏份排的角色列表，主区一次只看一个角色。
@@ -121,10 +99,10 @@ node scripts/novel-characters.mjs styles ghibli   # 看某一个的完整内容
 顶栏的「导出 JSON」下载的**就是 `cast.json` 本身的形状**，不是另一套导出格式：
 
 ```json
-{ "source": "…", "lang": "zh", "style": "realistic", "summary": "…", "characters": [ … ] }
+{ "source": "…", "lang": "zh", "summary": "…", "characters": [ … ] }
 ```
 
-所以外部工具改完可以**直接喂回 `render` 重新出报告**，也能过 `validate`。角色卡里的 `sheetImage`（`images/<slug>-sheet.png`）一并带出，拿得到哪张图对应哪个人。
+所以外部工具改完可以**直接喂回 `render` 重新出报告**，也能过 `validate`。角色卡里的 `sheetImage` 一并带出，拿得到哪张图对应哪个人——图由下游出，`render --images <目录>` 指到图所在的目录就会捡起来（不给就找 cast.json 同级的 `images/`）。
 
 数据以 `<script type="application/json">` 内嵌在报告里，点导出只是把它包成 Blob 下载，**不发任何网络请求**。
 
@@ -142,17 +120,16 @@ node scripts/novel-characters.mjs styles ghibli   # 看某一个的完整内容
 只对戏份最重的 N 位（**默认 30**），把归并后的全部描写喂进去，一次生成完整角色卡。同批角色互相知道对方的名字，避免长相和声线撞车。族裔、年代、地域从原文推断后写死进出图提示词——**不跟报告语言走**，报告出成日文不会把民国的老船夫画成日本人。
 
 **校验**（这步不能跳）
-四类硬规则，全部由脚本确定性检查，不靠模型自觉：
+三类硬规则，全部由脚本确定性检查，不靠模型自觉：
 
 | 规则 | 为什么 |
 | --- | --- |
 | `evidence` 必须是原文**逐字连续**片段 | 防编造。被「他说」断开的对白不许拼接 |
 | 出图 prompt **不许出现人名** | 图像模型对人名偏见极重，会画成它记忆里的角色 |
 | 字段**语言分工** | 人类字段跟随 `--lang`、出图和 TTS 提示词永远英文，模型会漂 |
-| **风格与反向提示词匹配** | `realistic` 不能禁 `photorealistic`、`ghibli` 必须禁，搞反整批图就废 |
 | 结构 + 枚举 | `importance` 只能是那四个值 |
 
-这四条不是拍脑袋定的——是模型输出真的违反过、被校验脚本当场抓住才立起来的。
+这三条不是拍脑袋定的——是模型输出真的违反过、被校验脚本当场抓住才立起来的。
 
 ## 命令行直接用
 
@@ -173,10 +150,8 @@ node scripts/novel-characters.mjs slug "胡二爷"                  # 安全文�
 
 - 单次上限 24 块（净覆盖约 93 万字符）。超了会明确报 `truncated`，**不静默截断**
 - 人类可读字段跟随 `--lang`；出图和 TTS 提示词**永远英文**，那些引擎吃英文最稳，跟报告语言无关
-- 默认取戏份最重的 30 位角色，**每位都出设定图**——一个角色一次调用，所以角色多的时候这步最花时间。想少出就直接给个数，或者说只要主要角色
-- **同一批角色的画风可能有差异**——各自独立出图。早期用「扁平矢量卡通」时漂得很厉害（同批出成动画感／半写实／水墨写实三种），换成明确的风格预设后好了很多，但不能保证完全一致。在意的话拿第一张当参考图压一压，见 `references/sheet.md`
-
-> ⚠️ **机器上装了多个 codex 要注意版本。** 旧版本会直接报 `requires a newer version of Codex` 而不是降级。skill 里带了自动挑最高版本的探测逻辑，整体太旧就 `npm i -g @openai/codex`。
+- 默认取戏份最重的 30 位角色，每位一份完整角色卡。想少要就直接给个数，或者说只要主要角色
+- **画风不进提示词**：它是出图那一刻由下游整批附加在提示词前面的一层。早期把画风写死进每条提示词能压住一部分漂移，代价是换风格要逐条改，而且跟当时选的那一档正面打架。同一批角色的一致性因此也归下游管，见 `references/sheet.md`
 
 ## 文件
 
@@ -184,14 +159,13 @@ node scripts/novel-characters.mjs slug "胡二爷"                  # 安全文�
 SKILL.md                 给 agent 读的工作流
 scripts/
   novel-characters.mjs   chunk / merge / assemble / validate / render / slug
-  selftest.mjs           355 项断言，不调模型
+  selftest.mjs           329 项断言，不调模型
 references/
   roster-pass.md         第一趟：扫描角色
   profile-pass.md        第二趟：生成角色卡（8 条硬规则）
   schema.md              角色卡结构 + 字段语言归属
-  sheet.md               角色设定图出图的 codex 调用契约
+  sheet.md               角色设定图的版面规格
   report-style.md        report.html 的设计约定
-  style-presets.md       出图风格预设（realistic / ghibli）
 examples/
   渡口.txt                自带短故事，4 个角色
   渡口-cast.json          产出，同时是校验自检夹具
@@ -206,6 +180,6 @@ examples/
 node scripts/selftest.mjs
 ```
 
-355 项断言，覆盖分块 / 别名归并 / 合成 / 多语言 / 校验 / 渲染。不调模型、不花额度、1 秒跑完。改完脚本先跑这个。
+329 项断言，覆盖分块 / 别名归并 / 合成 / 多语言 / 校验 / 渲染。不调模型、不花额度、1 秒跑完。改完脚本先跑这个。
 
 **只在 macOS + Node 24 上实测过。** 代码没有平台相关调用，Linux 和更低版本 Node 理论上没问题，但**没验过**。

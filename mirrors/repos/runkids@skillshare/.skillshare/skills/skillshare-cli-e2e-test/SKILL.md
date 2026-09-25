@@ -16,6 +16,8 @@ metadata:
 
 Run isolated E2E tests in devcontainer. $ARGUMENTS specifies runbook name or "new".
 
+Before acting, run `python3 scripts/ai-context.py testing`. The topic is the source of truth for isolation, runbook quality and reporting rules; this skill retains the execution flow and mdproof recipes.
+
 ## Flow
 
 ### Phase 0: Environment Check
@@ -150,7 +152,7 @@ Prompt user (via AskUserQuestion):
    - **Use `jq:` assertions in Expected blocks** for JSON commands — e.g. `- jq: .extras | length == 1`. This is a native mdproof assertion type, NOT a bash `jq` pipe
    - **Use `--json` + `jq -e` in bash** for inline verification within multi-command steps
    - **Config idempotency** — never bare `cat >> config.yaml`; always prepend `sed -i '/^section:/,$d'` to remove existing section first, or use CLI commands (`ss extras init`, `ss extras remove --force`) that handle duplicates
-   - **Check `ai_docs/tests/runbook.json`** for project-level config (build, setup, teardown, step_setup, timeout) that affects all runbooks
+   - **Check `ai_docs/tests/mdproof.json`** for project-level config (build, setup, teardown, step_setup, timeout) that affects all runbooks
    - **Check `.mdproof/lessons-learned.md`** for known assertion patterns and gotchas
 5. **Run the runbook quality checklist** (see below) before executing
 6. Then execute the new runbook (same flow as above)
@@ -216,10 +218,9 @@ Before executing a newly generated runbook, verify:
 - [ ] **Skill name ≠ repo name** — after `ss install <repo>`, the actual skill name may differ from the repo name (e.g. repo `cangjie-docs-mcp` → skill `cangjie-docs-navigator`). Always verify the installed skill name via `ss list` before writing uninstall/check steps
 - [ ] **`/tmp/` cleanup** — ssenv only isolates `$HOME`; `/tmp/` is shared across runs. Any step using `/tmp/<path>` must start with `rm -rf /tmp/<path>` to avoid stale state from previous runs
 - [ ] **`echo > symlink` writes through** — `echo "content" > path` where `path` is a symlink writes to the symlink's target, it does NOT replace the symlink with a real file. To create a local (non-managed) file at a symlinked path: either use a different filename, or `rm` the symlink first then `echo`
-- [ ] **`cat >>` is not idempotent** — appending to config files (`cat >> config.yaml`) will duplicate sections on re-run. Prefer `ss extras init` (which validates duplicates) or full file replacement over `cat >>` when possible
 - [ ] **Extras source path layout** — extras use `~/.config/skillshare/extras/<name>/` (not the legacy flat path `~/.config/skillshare/<name>/`). Symlink assertions must include `extras/` in the path regex (e.g. `regex: skillshare/extras/rules/tdd\.md`)
 - [ ] **Prefer `jq:` over `python3 -c`** — for JSON output validation, use mdproof's native `jq:` assertion type (e.g. `- jq: .extras | length == 1`) instead of piping to `python3 -c`. It's one line vs 10, and mdproof handles failure reporting automatically
-- [ ] **Config append idempotency** — when appending YAML sections with `cat >>`, always prepend `sed -i '/^section_key:/,$d'` to remove existing section. Or prefer CLI commands (`ss extras init`, `ss extras remove --force`) over manual config editing
+- [ ] **Config idempotency** — re-runs must not duplicate YAML sections: use CLI commands (`ss extras init`, `ss extras remove --force`), or prepend `sed -i '/^section_key:/,$d'` before any `cat >>`
 - [ ] **Check lessons-learned** — read `.mdproof/lessons-learned.md` before writing new runbooks for known gotchas and proven assertion patterns
 
 ## Runbook Assertion Types
@@ -258,17 +259,7 @@ mdproof supports 6 assertion types under `Expected:` blocks. Use the most specif
 
 ## Rules
 
-- **Always execute inside devcontainer** — use `docker exec`, never run CLI on host
-- **Always use `ssenv` for HOME isolation** — don't pollute container default HOME
-- **Always create fresh ssenv environments** — never reuse an environment from a previous run; stale config/state causes confusing cascade failures (e.g. duplicate YAML keys, "already exists" errors)
-- **ssenv only isolates `$HOME`** — `/tmp/`, `/var/`, and other system paths are shared across all environments. Runbook steps using `/tmp/` must include `rm -rf` cleanup at the start
-- **Verify every step** — never skip Expected checks
-- **Don't abort on failure** — record FAIL, continue to next step, summarize at end
-- **Ask before cleanup** — Phase 4 must prompt user before deleting ssenv environment
-- **`ss` = `skillshare`** — same binary in runbooks
-- **`~` = ssenv-isolated HOME** — `ssenv enter` auto-sets `HOME`
-- **Use `--init`** — simplify setup by using `ssenv create <name> --init`
-- **`--init` already runs init** — the env is pre-initialized; runbook steps calling `ss init` again will fail unless the step explicitly resets state first
+Apply the `testing` topic. Keep detailed assertion recipes in this workflow consistent with that topic and `.mdproof/lessons-learned.md`.
 
 ## ssenv Quick Reference
 
@@ -392,28 +383,6 @@ docker exec $CONTAINER ssenv enter "$ENV_NAME" -- bash -c '
 '
 ```
 
-## Relationship with `/mdproof` Skill
+## Runbook authoring
 
-This skill (`/cli-e2e-test`) and the `/mdproof` skill are **complementary**, not competing:
-
-| Concern | `/cli-e2e-test` | `/mdproof` |
-|---------|-----------------|------------|
-| **Scope** | Skillshare project-specific E2E | General-purpose runbook authoring |
-| **Infrastructure** | Devcontainer, ssenv, binary build | None — format and assertions only |
-| **Config** | `ai_docs/tests/runbook.json` (build, setup, teardown) | Assertion types, snapshot, coverage |
-| **Lessons** | Checklist items, CLI flag gotchas | `.mdproof/lessons-learned.md` |
-| **When** | Running or debugging a test | Writing or improving a runbook |
-
-### How they work together
-
-1. **Writing a new runbook** → invoke `/mdproof` first for format guidance (assertion types, `jq:` patterns, snapshot usage), then `/cli-e2e-test` to execute it in isolation
-2. **Improving existing runbooks** → invoke `/mdproof` for assertion quality review (python3 → jq:, idempotency), then `/cli-e2e-test` to verify changes pass
-3. **Debugging failures** → `/cli-e2e-test` Phase 3 step 4 handles manual docker exec; `/mdproof` lessons-learned captures recurring patterns
-4. **After a test run** → `/mdproof` Self-Learning section guides recording discoveries to `.mdproof/lessons-learned.md`
-
-### Rule of thumb
-
-- Need to **run** tests or **debug** in devcontainer? → `/cli-e2e-test`
-- Need to **write** assertions or **improve** runbook quality? → `/mdproof`
-- User says "run extras E2E" → `/cli-e2e-test`
-- User says "improve runbook assertions" → `/mdproof` then `/cli-e2e-test` to verify
+Runbooks use mdproof assertions (`jq:`, snapshots); read `.mdproof/lessons-learned.md` for proven patterns before writing one. This skill owns running them in the devcontainer.
