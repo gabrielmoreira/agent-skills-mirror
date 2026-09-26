@@ -1,7 +1,7 @@
 # `openhuman-embed`
 
 `openhuman-embed` is the host-facing library package for products that run the
-OpenHuman core in-process, including Medulla and OpenCompany. It re-exports the
+OpenHuman core in-process, including OpenCompany. It re-exports the
 runtime builder from `openhuman-core` and owns the typed embedding facade.
 
 Use the default contributor feature set:
@@ -176,8 +176,7 @@ println!("{}", second.reply);
 
 `Core` is the typed facade shown at the top: a host that already built a
 `CoreRuntime` wraps it with `Core::from_runtime` and reaches sub-facades —
-`config()`, `auth()`, `agent()` (a `CoreAgent` running the orchestrator),
-and, behind the `medulla` feature, `medulla()`.
+`config()`, `auth()`, and `agent()` (a `CoreAgent` running the orchestrator).
 
 ### One runtime per process
 
@@ -258,16 +257,12 @@ Every feature on this crate is a pass-through to the same-named feature on
 `openhuman-core` (package `openhuman`): `default`, `http-server`,
 `inference`, `documents`, `hosting`, `modules`, `voice`, `web3`,
 `runtime-node`, `contacts`, `media`, `flows`, `skills`, `mcp`,
-`crash-reporting`, `medulla`, `channels`, `sandbox-landlock`,
+`crash-reporting`, `channels`, `sandbox-landlock`,
 `sandbox-bubblewrap`, `browser-native`, `whatsapp-web`,
 `file-logging`, `scheduler-gate`.
 
-Three of them also gate items on this crate's own public surface:
+Two of them also gate items on this crate's own public surface:
 
-- `medulla` — `Core::medulla()`, `HarnessCore::medulla()`, and the Medulla
-  session types (`Medulla`, `MedullaStatus`, `SessionSummary`,
-  `SessionDetail`, `SessionCreated`, `Message`, `SendResult`, `AbortResult`,
-  `RosterWorker`, `WireEventEnvelope`).
 - `mcp` — `HttpHeader`, `McpAuthConfig`, `McpServer`, `AgentSpec::mcp` and
   `HarnessBuilder::mcp`.
 - `skills` — `AgentSpec::skills_dir` and `HarnessBuilder::skills_dir`.

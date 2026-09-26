@@ -1,6 +1,6 @@
 ---
 name: "omh-long-document-reading"
-description: "[omh] Long document reading workflow: read a very large PDF, contract, manual, or report through Hermes in page-anchored ranges with a coverage ledger. Use when the user says: long-document-reading, long document reading, summarize this pdf, read this pdf, process this pdf, go through this pdf, summarize this document, read this document."
+description: "[omh] Huge PDF or document to read in full: read a very large PDF, contract, manual, or report through Hermes in page-anchored ranges with a coverage ledger. Use when the user says: long-document-reading, long document reading, summarize this pdf, read this pdf, process this pdf, go through this pdf, summarize this document, read this document."
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, research]

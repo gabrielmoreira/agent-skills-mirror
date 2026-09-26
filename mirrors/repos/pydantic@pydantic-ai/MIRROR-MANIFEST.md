@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `pydantic/pydantic-ai` — 26 default patterns, 13 followed patterns, 90 file(s) materialized.
+Mirror of `pydantic/pydantic-ai` — 26 default patterns, 13 followed patterns, 91 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `pydantic/pydantic-ai` — 26 default patterns, 13 followed patterns, 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 13 |
-| Files         | 90 |
+| Files         | 91 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -147,20 +147,21 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 74 | ✓ | [`pydantic_ai_slim/pydantic_ai/ui/AGENTS.md`](pydantic_ai_slim/pydantic_ai/ui/AGENTS.md) |
 | 75 | ✓ | [`pydantic_ai_slim/pydantic_ai/ui/CLAUDE.md`](pydantic_ai_slim/pydantic_ai/ui/CLAUDE.md) |
 | 76 | ✓ | [`tests/AGENTS.md`](tests/AGENTS.md) |
-| 77 | ✓ | [`tests/CLAUDE.md`](tests/CLAUDE.md) |
-| 78 | → | [`.github/pull_request_template.md`](.github/pull_request_template.md) |
-| 79 | → | [`agent_docs/index.md`](agent_docs/index.md) |
-| 80 | → | [`docs/agent.md`](docs/agent.md) |
-| 81 | → | [`docs/cli.md`](docs/cli.md) |
-| 82 | → | [`docs/dependencies.md`](docs/dependencies.md) |
-| 83 | → | [`docs/evals.md`](docs/evals.md) |
-| 84 | → | [`docs/graph.md`](docs/graph.md) |
-| 85 | → | [`docs/logfire.md`](docs/logfire.md) |
-| 86 | → | [`docs/message-history.md`](docs/message-history.md) |
-| 87 | → | [`docs/output.md`](docs/output.md) |
-| 88 | → | [`docs/tools.md`](docs/tools.md) |
-| 89 | → | [`docs/version-policy.md`](docs/version-policy.md) |
-| 90 | → | [`docs/web.md`](docs/web.md) |
+| 77 | ✓ | [`tests/benchmarks/AGENTS.md`](tests/benchmarks/AGENTS.md) |
+| 78 | ✓ | [`tests/CLAUDE.md`](tests/CLAUDE.md) |
+| 79 | → | [`.github/pull_request_template.md`](.github/pull_request_template.md) |
+| 80 | → | [`agent_docs/index.md`](agent_docs/index.md) |
+| 81 | → | [`docs/agent.md`](docs/agent.md) |
+| 82 | → | [`docs/cli.md`](docs/cli.md) |
+| 83 | → | [`docs/dependencies.md`](docs/dependencies.md) |
+| 84 | → | [`docs/evals.md`](docs/evals.md) |
+| 85 | → | [`docs/graph.md`](docs/graph.md) |
+| 86 | → | [`docs/logfire.md`](docs/logfire.md) |
+| 87 | → | [`docs/message-history.md`](docs/message-history.md) |
+| 88 | → | [`docs/output.md`](docs/output.md) |
+| 89 | → | [`docs/tools.md`](docs/tools.md) |
+| 90 | → | [`docs/version-policy.md`](docs/version-policy.md) |
+| 91 | → | [`docs/web.md`](docs/web.md) |
 
 ---
 

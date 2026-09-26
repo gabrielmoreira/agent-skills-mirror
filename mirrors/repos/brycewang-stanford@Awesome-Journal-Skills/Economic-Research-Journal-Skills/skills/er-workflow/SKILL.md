@@ -84,7 +84,7 @@ description: Use when deciding which er-* sub-skill to invoke next, or when sequ
 
 ## 与《管理世界》Skills 的差异
 
-如果稿子偏管理学 / 案例 / 实务，使用 [management-world-skills](https://github.com/brycewang-stanford/management-world-skills) 更合适：
+如果稿子偏管理学 / 案例 / 实务，使用 [management-world-skills](https://github.com/brycewang-stanford/awesome-journal-skills/tree/main/Journal-of-Management-World-Skills) 更合适：
 
 - 《经济研究》：理论贡献优先，政策含义偏意义层
 - 《管理世界》：实践契合优先，政策建议偏可操作

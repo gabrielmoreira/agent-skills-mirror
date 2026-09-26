@@ -68,13 +68,14 @@ Each skill is a self-contained directory under `plugins/<group>/skills/`. The `S
 name: skill-name
 description: >
   Multi-line description that doubles as the trigger definition.
-  Include specific phrases, keywords, and scenarios that should activate this skill.
+  Name the categories of requests that should activate this skill and the
+  distinctive vocabulary users will use.
 ---
 
 # Skill Title
 
-Step-by-step instructions organized as ## Step N sections.
-Tables, code blocks, and formulas as needed.
+Numbered ## Step N sections where order matters; goals, criteria, and domain
+heuristics for judgment work. Tables, code blocks, and formulas as needed.
 
 ## Reference Files
 
@@ -83,7 +84,7 @@ Tables, code blocks, and formulas as needed.
 
 **Required frontmatter fields:** `name`, `description`
 
-The `description` field is critical — it controls when the skill activates. Write it as a comprehensive trigger list, not a summary.
+The `description` field controls when the skill activates and rides along in every session, so treat it as routing text: say what the skill does, name every category of request it serves with the distinctive vocabulary (methods, tools, data types, example tickers), and point to sibling skills for neighboring requests. Name categories rather than listing near-synonymous phrasings, and keep behavioral instructions in the body.
 
 ### Reference files
 
@@ -93,7 +94,7 @@ Markdown documents in `references/` containing detailed API references, code tem
 
 1. Choose the appropriate plugin group (`market-analysis`, `social-readers`, `data-providers`, or `startup-tools`)
 2. Create `plugins/<group>/skills/<skill-name>/` directory
-3. Write `SKILL.md` with YAML frontmatter (`name`, `description`) and step-by-step instructions
+3. Write `SKILL.md` with YAML frontmatter (`name`, `description`) and instructions that follow the style guidelines below
 4. Add reference files under `references/` for detailed API docs, code templates, or formulas that would bloat the main instructions
 5. Add a `README.md` for the skill's GitHub page (description, triggers, platform, setup, reference file list)
 6. Update the root `README.md` to list the new skill in the appropriate plugin group table
@@ -123,11 +124,17 @@ Guidelines:
 
 ### Instruction style guidelines
 
-- Organize as numbered steps (## Step 1, Step 2, etc.)
+Skills are read by current Claude models, which follow instructions closely and literally and plan multi-step work on their own. Write for that reader:
+
+- Use numbered steps (## Step 1, Step 2, etc.) where order matters — setup, data fetch, computation, gates. For judgment work (analysis, interpretation, writing), state the goal, the criteria, and the domain heuristics rather than scripting it.
+- Give exact commands and code for fragile operations (installs, auth, CLI flags, API calls, formulas), and put arithmetic in code rather than asking the model to estimate it.
 - Use tables to map user intents to actions/methods
 - Include defaults for missing parameters so the skill works with partial input
-- Put lengthy code templates and API references in `references/` files, not inline
-- End with a "Respond to the User" step describing how to present results
+- State each constraint once, in plain words, with its reason. Skip capitalized MUST/NEVER/CRITICAL, repeated warnings, and instructions the model follows by default ("be thorough", "think step by step", "double-check").
+- End with a "Respond to the User" step that states an output contract — what to lead with, what must be covered, required caveats, any verdict scale — rather than a fill-in template. Describe length qualitatively, and label examples as illustrative instead of filling them with invented figures for real companies.
+- Put lengthy code templates, API references, and dated datasets in `references/` files, not inline, and date-stamp anything that will go stale.
+- Keep maintainer notes and change history in the skill's `README.md`, not in `SKILL.md`.
+- When you touch a skill, verify its API names and response shapes against the current library version.
 
 ## Plugin system
 

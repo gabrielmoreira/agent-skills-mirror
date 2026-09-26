@@ -1,14 +1,15 @@
 ---
 name: options-payoff
 description: >
-  Generate an interactive options payoff curve chart with dynamic parameter controls.
-  Use this skill whenever the user shares an options position screenshot, describes an options strategy,
-  or asks to visualize how an options trade makes or loses money. Triggers include: any mention of
-  butterfly, spread (vertical/calendar/diagonal/ratio), straddle, strangle, condor, covered call,
-  protective put, iron condor, or any multi-leg options structure. Also triggers when a user pastes
-  strike prices, premiums, expiry dates, or says things like "show me the payoff", "draw the P&L curve",
-  "what does this trade look like", or uploads a screenshot from a broker (IBKR, TastyTrade, Robinhood, etc).
-  Always use this skill even if the user only provides partial info — extract what you can and use defaults for the rest.
+  Render an interactive options payoff chart — expiry P&L plus Black-Scholes theoretical
+  value — with sliders for strikes, premium, IV, DTE, and spot. Use this skill whenever
+  the user describes or shares an options position or strategy and wants to see how it
+  makes or loses money: vertical, calendar, diagonal, or ratio spreads, butterflies,
+  condors and iron condors, straddles, strangles, covered calls, protective or naked
+  puts, or any multi-leg structure. This includes pasted strikes, premiums, and
+  expiries, requests like "show me the payoff" or "draw the P&L curve", and broker
+  screenshots (IBKR, TastyTrade, Robinhood). Use it even when details are partial —
+  defaults fill the gaps.
 ---
 
 # Options Payoff Curve Skill
@@ -34,11 +35,11 @@ When the user provides a screenshot or text, extract:
 | Quantity | Position size | 1 |
 | Multiplier | 100 for equity options, 100 for SPX | 100 |
 | Expiry | Date in title | 30 DTE |
-| Spot price | Current underlying price (NOT strike) | middle strike |
+| Spot price | Current underlying price shown in the screenshot or text | live quote (see below); middle strike only if no quote is available |
 | IV | Shown in greeks panel, or estimate from vega | 20% |
 | Risk-free rate | — | 4.3% |
 
-**Critical for screenshots**: The spot price is the CURRENT price of the underlying index/stock, NOT the strikes. Never default spot to a strike price value.
+**Spot for screenshots**: spot is the underlying's current price, and broker screenshots often omit it or show it far from the strikes — don't read it off the strike labels. Use the price shown, else a live quote (the SPX probe below, or yfinance for other underlyings). Fall back to the middle strike only when no quote is available, and tell the user you did.
 
 **Current SPX reference price:**
 ```

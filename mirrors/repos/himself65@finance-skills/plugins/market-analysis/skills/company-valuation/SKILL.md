@@ -1,18 +1,15 @@
 ---
 name: company-valuation
 description: >
-  Estimate the intrinsic value of a public company using DCF, relative (peer multiple)
-  and sum-of-parts (SOTP) methods, then triangulate to an implied share price with
-  upside/downside versus the current market price. Use this skill whenever the user asks:
-  "what is AAPL worth", "valuation of NVDA", "fair value of TSLA", "intrinsic value",
-  "DCF for MSFT", "build a DCF", "discounted cash flow", "WACC", "terminal value",
-  "implied share price", "upside to fair value", "is X overvalued/undervalued",
-  "relative valuation", "peer comparison valuation", "EV/EBITDA target", "SOTP",
-  "sum of the parts", "how much is [company] worth", "price target from fundamentals",
-  "value this company", or any ticker in the context of computing intrinsic or
-  relative valuation. Default to running ALL three methods
-  (DCF + relative + SOTP-if-applicable) and presenting a blended implied price with a
-  sensitivity table. Do not answer valuation questions from memory — always run the workflow.
+  Estimate a public company's intrinsic value with DCF, relative (peer multiple), and
+  sum-of-the-parts (SOTP) methods, then blend them into an implied share price with
+  upside/downside vs the market price, a WACC and terminal-growth sensitivity grid,
+  and bull/base/bear scenarios. Use this skill whenever the user asks what a company
+  or ticker is worth: fair value, intrinsic value, implied share price, a price target
+  from fundamentals, whether it is overvalued or undervalued, building a DCF (WACC,
+  terminal value, discounted cash flow), EV/EBITDA or P/E based targets, peer
+  comparison valuation, or SOTP and conglomerate discounts. Run the model rather than
+  answering valuation questions from memory.
 ---
 
 # Company Valuation
@@ -71,7 +68,7 @@ If `RF_10Y=` printed, use that value as `rf` in Step 4d instead of the hardcoded
 
 ### Defaults table
 
-Every parameter below MUST have a value before moving to Step 3. Use these unless the user overrides.
+Settle every parameter before pulling data — these defaults apply unless the user overrides them.
 
 | Parameter | Default | Rationale |
 |---|---|---|
@@ -144,6 +141,7 @@ Full methodology + industry-specific tweaks in `references/dcf.md`. Quick skelet
 
 ```python
 # 4a. Revenue growth path — fade from Y1 (consensus or hist CAGR) to terminal g
+rev = income_a.loc["Total Revenue"].dropna().iloc[::-1].values  # yfinance columns are newest-first; reverse to oldest -> newest
 hist_cagr = (rev[-1] / rev[0]) ** (1 / (len(rev)-1)) - 1
 y1 = float(revenue_est.loc["+1y", "growth"]) if "+1y" in revenue_est.index else hist_cagr
 g_terminal = 0.025
@@ -154,7 +152,8 @@ ebit_margin = float((income_a.loc["Operating Income"] / income_a.loc["Total Reve
 da_pct      = float((cashflow_a.loc["Depreciation And Amortization"] / income_a.loc["Total Revenue"]).iloc[:3].median())
 capex_pct   = float((cashflow_a.loc["Capital Expenditure"].abs() / income_a.loc["Total Revenue"]).iloc[:3].median())
 nwc_pct     = float((cashflow_a.loc["Change In Working Capital"].abs() / income_a.loc["Total Revenue"]).iloc[:3].median())
-tax_rate    = max(0.15, min(0.30, 0.21))  # use effective if available
+eff_tax     = (income_a.loc["Tax Provision"] / income_a.loc["Pretax Income"]).iloc[:3].median()
+tax_rate    = float(min(0.30, max(0.15, eff_tax))) if pd.notna(eff_tax) else 0.21  # 3y median effective, floored 15%, capped 30%
 
 # 4c. FCFF per year
 rev_t = [float(income_a.loc["Total Revenue"].iloc[0])]
@@ -261,9 +260,9 @@ Also produce Bull / Base / Bear: shift revenue growth ±300bps, EBIT margin ±20
 
 ## Step 8: Respond to the User
 
-Output in this order:
+Present the valuation in this order:
 
-1. **Headline verdict** — one sentence: blended fair value, vs. current, % upside/downside, most bullish/bearish method. Example: "AAPL fair value ≈ $215 (blended), vs. current $198 → ~9% upside; DCF is most bullish at $228."
+1. **Headline verdict** — one sentence with the blended fair value, the current price, the % upside or downside, and which method is most bullish or bearish.
 2. **Snapshot** — sector, industry, market cap, current price, 3M / 12M price change, LTM revenue growth.
 3. **Three-method summary** — 3-column table: method | implied price | weight | brief rationale.
 4. **DCF build** — assumptions table (growth path, margins, WACC components, terminal method) + 5-yr FCFF projection table + EV-to-equity bridge.
@@ -271,7 +270,7 @@ Output in this order:
 6. **SOTP** (if applicable) — segment table + adjustments + equity value.
 7. **Sensitivity matrix** — WACC × g grid (5×5), base case highlighted.
 8. **Scenarios** — Bull / Base / Bear table with levers + implied price.
-9. **Key risks** — 3-5 bullets: which assumption moves the answer most; what could break the thesis.
+9. **Key risks** — which assumptions move the answer most, and what could break the thesis.
 
 ### Error handling
 

@@ -149,7 +149,9 @@ or instructions. A new explicit manual request may replace those options or clea
 its one-off instructions.
 
 The queue advertises `manual_publication.policy=record_comment_only` and an
-explicit enabled bit. Admission defaults off until
+explicit enabled bit through signed `POST /internal/exact-review/admission-capabilities`.
+The manual producer checks that contract before resolving items, independently
+of the aggregate public dashboard. Admission defaults off until
 `EXACT_REVIEW_MANUAL_PUBLICATION_ENABLED=1` is configured after the consumer
 rollout described in [repair operations](repair/operations.md#manual-publication-rollout).
 Manual decisions carry `sourceAction=manual_explicit_review` and immutable
@@ -700,15 +702,18 @@ worker allowance wins.
 Scheduled planning does not use the active-floor backfill. It selects only due
 items, records each candidate's previous-review age in `plan.json`, and writes a
 run-summary funnel for selected, attempted, enqueued, deduped, shed, and deferred
-items. The queue exposes the configured rate, burst, and currently available
-token balance under `scheduled_feed` in `GET /api/exact-review-queue`. It also
-exposes backpressure and scheduled-rate shed counts separately so an operator
-can distinguish a full review queue from intentional 60/hour pacing. The
+items. The public queue projection exposes the configured rate and replay
+contract under `scheduled_feed` in `GET /api/exact-review-queue`; private bucket
+balances are omitted. Queue telemetry distinguishes backpressure from
+scheduled-rate shedding so an operator can distinguish a full review queue
+from intentional 60/hour pacing. The
 six-item burst bounds a cold-start cohort to roughly 180 GitHub requests at the
 observed planning average of 30 requests per completed review.
-The producer probes that field before its first enqueue and fails closed while
-an older Worker is still deployed, preventing a workflow-first rollout from
-bypassing the rate limiter.
+Before its first enqueue, the producer reads the queue-owned contract through
+signed `POST /internal/exact-review/admission-capabilities`. Dashboard telemetry cannot
+block this capability check. Transport failures retain their HTTP or network
+diagnostic; unsupported pacing or replay contracts fail closed. Deploy the
+Worker before the updated producer; an older Worker returns HTTP 404.
 Scheduled review ingress requires
 `scheduled_feed.enqueue_replay: scheduled_disposition_v1` before retrying
 transient transport or HTTP 5xx failures with the same signed delivery bytes;
@@ -914,6 +919,11 @@ checkpoints every 40 fresh closes and dispatch a
 continuation with a fresh GitHub App token after any checkpoint that closes at
 least one item. A saturated scan that closes nothing stops without chaining so
 the same records cannot create an unbounded runner loop.
+
+Only automatic close-mode apply runs may queue missing hot or normal review
+backstops, including when no close candidates are available. Targeted apply and
+comments-only sync retain their requested scope, including when quota pressure
+ends the apply process successfully without publishing a comment.
 
 Untargeted cursor-based close apply starts with a 600-record scan window. If
 the previous cursor window was a full close-mode scan, closed nothing, skipped

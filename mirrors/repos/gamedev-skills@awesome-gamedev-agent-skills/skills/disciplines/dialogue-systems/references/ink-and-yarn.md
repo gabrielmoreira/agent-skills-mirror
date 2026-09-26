@@ -7,7 +7,7 @@ consult the official docs for the full language.
 
 ## Side-by-side
 
-| Concept | Ink (inkle) | Yarn Spinner 2.x |
+| Concept | Ink (inkle) | Yarn Spinner 3.x |
 |---|---|---|
 | Unit of content | **knot** `=== name ===` (sub-units = stitches `= name`) | **node** with `title:` header, body between `---` and `===` |
 | Plain line | bare text | bare text, optional `Speaker:` prefix |

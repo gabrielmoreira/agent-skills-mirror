@@ -1,6 +1,6 @@
 ---
 name: "omh-native-debugging"
-description: "[omh] Hermes native-debugging workflow: prepare hypothesis-driven debugging of native binaries and instruct the executor to drive a DAP debugger instead of printf. Use when the user says: native-debugging, native debugging, native binary, segfault, segmentation fault, core dump, stack corruption, memory corruption."
+description: "[omh] Native program crashes or corrupts memory: prepare hypothesis-driven debugging of native binaries and instruct the executor to drive a DAP debugger instead of printf. Use when the user says: native-debugging, native debugging, native binary, segfault, segmentation fault, core dump, stack corruption, memory corruption."
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, verification]

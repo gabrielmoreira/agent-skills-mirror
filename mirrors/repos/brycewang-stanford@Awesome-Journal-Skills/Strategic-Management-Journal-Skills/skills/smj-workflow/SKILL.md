@@ -90,7 +90,7 @@ ALL PASS → submit; then smj-review-process, and smj-rebuttal when the decision
 
 ## Differences vs. AMJ / ASQ / AMR stacks
 
-If the paper's center of gravity is general organizational behavior, HRM, or micro-OB, the [Academy of Management Journal](https://github.com/brycewang-stanford/amj-skills) stack fits better. If the contribution is purely conceptual with no data, use an [AMR](https://github.com/brycewang-stanford/amr-skills) theory-only stack. SMJ's distinctive bar: the dependent construct should connect to **firm performance or competitive advantage**, and the empirics must survive an **endogeneity** interrogation.
+If the paper's center of gravity is general organizational behavior, HRM, or micro-OB, the [Academy of Management Journal](https://github.com/brycewang-stanford/awesome-journal-skills/tree/main/Academy-of-Management-Journal-Skills) stack fits better. If the contribution is purely conceptual with no data, use an [AMR](https://github.com/brycewang-stanford/awesome-journal-skills/tree/main/Academy-of-Management-Review-Skills) theory-only stack. SMJ's distinctive bar: the dependent construct should connect to **firm performance or competitive advantage**, and the empirics must survive an **endogeneity** interrogation.
 
 ## Anti-patterns
 

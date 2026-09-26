@@ -1,6 +1,6 @@
 ---
 name: "omh-jev-action-check"
-description: "[omh] Jev action check before a risky command: secrets, outbound sends, blast radius; can only add a hold. Use when the user says: jev-action-check, jev action check, ask jev if this command is safe, jev risk check."
+description: "[omh] Risky command screened by Jev: Jev action check before a risky command: secrets, outbound sends, blast radius; can only add a hold. Use when the user says: jev-action-check, jev action check, ask jev if this command is safe, jev risk check."
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, review]

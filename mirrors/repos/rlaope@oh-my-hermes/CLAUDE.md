@@ -36,6 +36,7 @@ uv run python -m omh.cli docs roles --check                       # byte gate
 uv run python -m omh.cli docs claims --check --json               # selected claims
 uv run python -m omh.cli docs chain-table --check                 # byte gate
 uv run python -m omh.cli docs navigation --check                  # docs structure gate
+uv run python -m omh.cli docs skill-shortlist --check             # byte gate
 uv run python -m omh.cli docs skill-sources --check               # watch-closure gate
 uv run --group lint ruff check src tests                          # static-analysis gate
 git diff --check
@@ -71,6 +72,7 @@ Source of truth → generated file → regen command → drift gate:
 | Same catalog data | `docs/ROLES.md` | `uv run python -m omh.cli docs roles --output docs/ROLES.md` | `uv run python -m omh.cli docs roles --check` |
 | Demo case engine | `examples/use-cases/g1-g10-demo-cards.json` | `uv run python -m omh.cli cases demo --all --json` output | parse-equality in `tests/test_application_cases.py` |
 | `capability_family_projection()` in `src/capabilities/families.py` | `src/plugin_bundle/omh/tools/capability_families.json` | `uv run python -m omh.cli docs capability-families` | `uv run python -m omh.cli docs capability-families --check`; dict-parity in `tests/test_plugin_capabilities.py` |
+| `src/routing/lexical_shortlist.py` index via `standalone_skill_shortlist_json()` in `src/routing/skill_shortlist_sidecar.py` | `src/plugin_bundle/omh/tools/skill_shortlist.json` | `uv run python -m omh.cli docs skill-shortlist` | `uv run python -m omh.cli docs skill-shortlist --check`; ranking parity in `tests/test_skill_shortlist_sidecar.py` |
 | `ulw_inventory_payload()` in `src/skills/catalog.py` via `src/catalogs/ulw_surfaces.py` | marked ULW region of `README.md` | `uv run python -m omh.cli docs ulw-inventory` | `uv run python -m omh.cli docs ulw-inventory --check`; `tests/test_ulw_inventory.py` |
 | Same producer | marked ULW region of `site/index.html` | `uv run python -m omh.cli docs ulw-site` | `uv run python -m omh.cli docs ulw-site --check`; i18n parity in `tests/test_ulw_inventory.py` |
 | `SHIPPED_MODEL_RECOMMENDATIONS` in `src/coding/model_recommendations.py` via `src/catalogs/model_chain_table.py` | marked chain-table region of `docs/INSTALLATION.md` | `uv run python -m omh.cli docs chain-table` | `uv run python -m omh.cli docs chain-table --check`; round-trip equality in `tests/test_model_chain_table.py` |

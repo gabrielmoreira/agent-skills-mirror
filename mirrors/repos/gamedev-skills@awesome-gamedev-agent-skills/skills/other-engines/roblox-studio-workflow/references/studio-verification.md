@@ -21,6 +21,10 @@ For each run record Studio version/date, place/build source, mode, client count,
 controller, setup, action, expected result, observed result, relevant server/client Output, and
 pass/fail. Screenshots help visual review but do not replace interaction or Output evidence.
 
+When the Roblox Studio MCP server is connected, its `get_console_output` and `screen_capture`
+tools supply this Output and screenshot evidence directly, and `start_stop_play` plus the
+playtest input tools drive the run; the manual testing modes remain the default when it is not.
+
 Separate verification levels explicitly:
 
 - **Executed:** observed in a running Studio session with Output/result evidence.

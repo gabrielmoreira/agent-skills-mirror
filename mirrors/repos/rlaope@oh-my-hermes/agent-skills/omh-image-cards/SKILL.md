@@ -1,6 +1,6 @@
 ---
 name: "omh-image-cards"
-description: "[omh] Image prompt cards - turn meetings, reports, PRs, issues, research, and releases into domain-aware image prompt cards. Use when the user says: img-summary, img summary, visual prompt card, image card, image generation, image edit, edit this image, remove the background."
+description: "[omh] Image card or infographic of content: image prompt cards - turn meetings, reports, PRs, issues, research, and releases into domain-aware image prompt cards. Use when the user says: img-summary, img summary, visual prompt card, image card, image generation, image edit, edit this image, remove the background."
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, materials]

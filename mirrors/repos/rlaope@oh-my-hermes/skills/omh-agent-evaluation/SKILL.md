@@ -1,6 +1,6 @@
 ---
 name: "omh-agent-evaluation"
-description: "[omh] Hermes Agent Evaluation workflow: compare executor or agent choices on reproducible tasks using quality, cost, time, tool, and evidence metrics. Use when the user says: agent-evaluation, agent evaluation, agent eval, agent benchmark, executor evaluation, executor benchmark, compare agents, compare codex claude."
+description: "[omh] Choosing between coding agents on evidence: compare executor or agent choices on reproducible tasks using quality, cost, time, tool, and evidence metrics. Use when the user says: agent-evaluation, agent evaluation, agent eval, agent benchmark, executor evaluation, executor benchmark, compare agents, compare codex claude."
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, operations]

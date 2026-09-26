@@ -1,6 +1,6 @@
 ---
 name: "omh-websearch-setup"
-description: "[omh] Hermes Web Search Setup workflow: diagnose scraper and auxiliary extract-model configuration, guide account setup, and apply each change as its own diff approval. Use when the user says: websearch-setup, web search setup, make web search cheaper, set up web search, configure web search, reduce web search cost, connect scraper api key, set up auxiliary web-extract model."
+description: "[omh] Expensive or unconfigured web search: diagnose scraper and auxiliary extract-model configuration, guide account setup, and apply each change as its own diff approval. Use when the user says: websearch-setup, web search setup, make web search cheaper, set up web search, configure web search, reduce web search cost, connect scraper api key, set up auxiliary web-extract model."
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, hermes-setup]

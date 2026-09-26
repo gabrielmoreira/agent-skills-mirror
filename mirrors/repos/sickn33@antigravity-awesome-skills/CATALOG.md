@@ -1,8 +1,8 @@
 # Skill Catalog
 
-Generated at: 2026-09-24T11:19:09.000Z
+Generated at: 2026-09-25T04:54:31.000Z
 
-Total skills: 2457
+Total skills: 2465
 
 ## agent-behavior (5)
 
@@ -250,6 +250,14 @@ Total skills: 2457
 | Skill | Description | Risk | Source | Tags | Triggers |
 | --- | --- | --- | --- | --- | --- |
 | `bdistill-behavioral-xray` | X-ray any AI model's behavioral patterns — refusal boundaries, hallucination tendencies, reasoning style, formatting defaults. No API key needed. | safe | community | ai, testing, behavioral-analysis, model-evaluation, red-team, compliance, mcp | ai, testing, behavioral-analysis, model-evaluation, red-team, compliance, mcp, bdistill, behavioral, xray, ray, any |
+
+## analysis (3)
+
+| Skill | Description | Risk | Source | Tags | Triggers |
+| --- | --- | --- | --- | --- | --- |
+| `nexrad-mosaic-construction` | Construct a quality-aware NEXRAD multi-radar mosaic from aligned single-site products with explicit coverage, beam geometry, quality weighting, overlap resol... | safe | self | weather, nexrad, mosaic, multi-radar, quality-weighting, coverage, overlap-resolution | weather, nexrad, mosaic, multi-radar, quality-weighting, coverage, overlap-resolution, construction, construct, quality, aware, multi |
+| `nexrad-radar-visualization` | Plot NEXRAD Level II/III site scans and decoded radar mosaics with correct radar geometry, map grids, units, quality masks, timestamps, and provenance. | safe | self | weather, nexrad, radar-plotting, ppi, velocity, dual-pol, cross-section, visualization | weather, nexrad, radar-plotting, ppi, velocity, dual-pol, cross-section, visualization, radar, plot, level, ii |
+| `radar-satellite-analysis` | Interpret weather radar and satellite observations by validating product metadata and geometry, deriving storm and cloud structures, tracking evolution, and ... | safe | self | weather, radar, satellite, nexrad, goes, nowcasting, storm-analysis, remote-sensing, uncertainty | weather, radar, satellite, nexrad, goes, nowcasting, storm-analysis, remote-sensing, uncertainty, analysis, interpret, observations |
 
 ## andruia (3)
 
@@ -864,7 +872,7 @@ Total skills: 2457
 | `liuguang-banlan-ui` | Builds two parameterized UI modes—流光溢彩白 (iridescent white) and 五彩斑斓黑 (colorful black)—with OKLCH, WebGL/CSS fallback, vision gating, screenshot QA, and total... | critical | self | ui, frontend, oklch, webgl, accessibility | ui, frontend, oklch, webgl, accessibility, liuguang, banlan, two, parameterized, modes, iridescent, white |
 | `modellix` | Integrate the Modellix API/CLI for async AI image, video, and speech generation or transcription (model run --wait, task download). | critical | Modellix/modellix-plugin | image-generation, video-generation, audio-generation, text-to-speech, speech-to-text, speech-to-speech, modellix, cli, api | image-generation, video-generation, audio-generation, text-to-speech, speech-to-text, speech-to-speech, modellix, cli, api, integrate, async, ai |
 
-## data (32)
+## data (34)
 
 | Skill | Description | Risk | Source | Tags | Triggers |
 | --- | --- | --- | --- | --- | --- |
@@ -882,6 +890,8 @@ Total skills: 2457
 | `monte-carlo-prevent` | Surfaces Monte Carlo data observability context (table health, alerts, lineage, blast radius) before SQL/dbt edits. | safe | monte-carlo-data/mc-agent-toolkit | data-observability, dbt, schema, monte-carlo, lineage | data-observability, dbt, schema, monte-carlo, lineage, monte, carlo, prevent, surfaces, data, observability, context |
 | `monte-carlo-push-ingestion` | Expert guide for pushing metadata, lineage, and query logs to Monte Carlo from any data warehouse. | safe | monte-carlo-data/mc-agent-toolkit | data-observability, ingestion, monte-carlo, pycarlo, metadata | data-observability, ingestion, monte-carlo, pycarlo, metadata, monte, carlo, push, pushing, lineage, query, logs |
 | `monte-carlo-validation-notebook` | Generates SQL validation notebooks for dbt PR changes with before/after comparison queries. | safe | monte-carlo-data/mc-agent-toolkit | data-observability, validation, dbt, monte-carlo, sql-notebook | data-observability, validation, dbt, monte-carlo, sql-notebook, monte, carlo, notebook, generates, sql, notebooks, pr |
+| `nexrad-mosaic-access` | Access official NOAA/NCEP MRMS radar and multisensor composites for a region and time; validate product, grid, domain, quality, timestamp, and provenance. | safe | self | weather, nexrad, mrms, mosaic, qpe, vil, vii, mesh, composite-products | weather, nexrad, mrms, mosaic, qpe, vil, vii, mesh, composite-products, access, official, noaa |
+| `nexrad-product-access` | Discover and access NEXRAD data for a selected radar site, time, product, or Level II moment using completed archive volumes, real-time chunks, or supported ... | safe | self | weather, nexrad, level-ii, level-iii, radar-products, single-site, aws-s3 | weather, nexrad, level-ii, level-iii, radar-products, single-site, aws-s3, product, access, discover, data, selected |
 | `noaa-radar-satellite-fetching` | Retrieve NOAA NEXRAD and GOES products from public cloud archives using verified site, product, channel, sector, and scan-time selection. | safe | self | weather, noaa, nexrad, goes, radar, satellite, aws-s3 | weather, noaa, nexrad, goes, radar, satellite, aws-s3, fetching, retrieve, products, public, cloud |
 | `optim-agent` | Guide agent-driven parameter optimization for configurable systems with measurable objectives. Use for HPO, inference tuning, simulations, or RL/control expe... | safe | Optim-Agent/optim-agent | optimization, hyperparameter-optimization, experiments, tuning | optimization, hyperparameter-optimization, experiments, tuning, optim, agent, driven, parameter, configurable, measurable, objectives, hpo |
 | `postgres-readonly-queries` | Execute safe read-only SQL queries against PostgreSQL databases with multi-connection support and defense-in-depth write protection. | safe | sanjay3290/ai-skills | postgres, sql, database, read-only | postgres, sql, database, read-only, readonly, queries, execute, safe, read, against, postgresql, databases |
@@ -1752,12 +1762,13 @@ Total skills: 2457
 | `not-human-search-mcp` | Search AI-ready websites, inspect indexed site details, verify MCP endpoints, and discover tools and APIs using the Not Human Search MCP server | safe | https://nothumansearch.ai | mcp, search, ai-discovery, api-discovery, mcp-verification, agent-tools | mcp, search, ai-discovery, api-discovery, mcp-verification, agent-tools, human, ai, websites, inspect, indexed, site |
 | `parallel-search-mcp` | Search the public web and verify sources with Parallel's free Search MCP. Use when the user chooses Parallel or its connected tools for current information a... | safe | self | mcp, web-search, research, citations | mcp, web-search, research, citations, parallel, search, public, web, verify, sources, free, user |
 
-## media (12)
+## media (13)
 
 | Skill | Description | Risk | Source | Tags | Triggers |
 | --- | --- | --- | --- | --- | --- |
 | `atlas-cloud-media` | Generate Atlas Cloud images and videos through its asynchronous media API with schema-first model selection and credential-safe polling. | critical | self | atlas-cloud, image-generation, video-generation, media-api | atlas-cloud, image-generation, video-generation, media-api, atlas, cloud, media, generate, images, videos, through, asynchronous |
 | `beatra-ai-video-studio` | Install and use the official Beatra AI Video Studio package, pinned by digest, for paid text-to-video, image-to-video, and video edit or extend jobs on the h... | critical | beatra-ai/beatra-skills | video-generation, text-to-video, image-to-video, video-editing, mcp, paid-api, beatra | video-generation, text-to-video, image-to-video, video-editing, mcp, paid-api, beatra, ai, video, studio, install, official |
+| `film-crew` | Turn a one-line AI video idea into a shot list and per-shot, model-ready prompts via a film crew (director, DP, gaffer, editor, script supervisor). Also fixe... | safe | HEOJUNFO/ai-film-crew | video, text-to-video, shot-list, prompting, film | video, text-to-video, shot-list, prompting, film, crew, turn, one, line, ai, idea, shot |
 | `generate-nanobanana` | Generate and edit images/video with Google's Gemini media models (Nano Banana 2/Pro, Gemini Omni Flash), with cost-approval gates, reference-image support, a... | critical | AntonioCardenas/generate-nanobanana | nanobanana, gemini, google-ai-studio, image-generation, video-generation | nanobanana, gemini, google-ai-studio, image-generation, video-generation, generate, edit, images, video, google, media, models |
 | `image-generator` | Generate and edit images using Gemini's Nano Banana Pro model (gemini-3-pro-image-preview). Use this skill when the user asks you to generate images, create ... | safe | dair-ai/dair-academy-plugins | dair-academy, ai, workflow | dair-academy, ai, workflow, image, generator, generate, edit, images, gemini, nano, banana, pro |
 | `md2video-audio` | Convert Markdown documents into narrated MP4 videos with synchronized visuals and voice narration. | safe | 70v-Yoyo/md2video-audio-skill | markdown, video, audio, text-to-speech, marp, presentation | markdown, video, audio, text-to-speech, marp, presentation, md2video, convert, documents, narrated, mp4, videos |
@@ -2101,7 +2112,7 @@ Total skills: 2457
 | `statsmodels` | Statsmodels is Python's premier library for statistical modeling, providing tools for estimation, inference, and diagnostics across a wide range of statistic... | safe | community | statsmodels | statsmodels, python, premier, library, statistical, modeling, providing, estimation, inference, diagnostics, wide, range |
 | `sympy` | SymPy is a Python library for symbolic mathematics that enables exact computation using mathematical symbols rather than numerical approximations. | safe | https://github.com/sympy/sympy | sympy | sympy, python, library, symbolic, mathematics, enables, exact, computation, mathematical, symbols, rather, than |
 
-## security (222)
+## security (223)
 
 | Skill | Description | Risk | Source | Tags | Triggers |
 | --- | --- | --- | --- | --- | --- |
@@ -2240,6 +2251,7 @@ Total skills: 2457
 | `m365-entra-attack` | Microsoft 365 / Entra ID red-team attack chain | offensive | elementalsouls/Claude-BugHunter | m365, entra, attack | m365, entra, attack, microsoft, 365, id, red, team, chain |
 | `malware-analyst` | Expert malware analyst specializing in defensive malware research, threat intelligence, and incident response. Masters sandbox analysis, behavioral analysis,... | critical | community | malware, analyst | malware, analyst, specializing, defensive, research, threat, intelligence, incident, response, masters, sandbox, analysis |
 | `marketplace-rbac-audit` | Audit multi-role marketplace authorization across roles, resource ownership, tenant boundaries, and order-state transitions; use when access rules need evide... | safe | self | marketplace, rbac, authorization, access-control, security | marketplace, rbac, authorization, access-control, security, audit, multi, role, roles, resource, ownership, tenant |
+| `mcp-dependency-drift-audit` | Statically audit MCP configs for mutable npm/npx package references before approval or CI, without executing discovered MCP servers. | safe | tomelias10/mcp-drift-check | mcp, ai-security, supply-chain, devsecops, sarif | mcp, ai-security, supply-chain, devsecops, sarif, dependency, drift, audit, statically, configs, mutable, npm |
 | `mcp-server-security` | Secure Model Context Protocol (MCP) servers with transport encryption, tool authorization, input validation, and audit logging for safe AI agent integrations. | safe | BagelHole/DevOps-Security-Agent-Skills | mcp, server, security | mcp, server, security, secure, model, context, protocol, servers, transport, encryption, authorization, input |
 | `meme-coin-audit` | Meme coin and token security audit | offensive | elementalsouls/Claude-BugHunter | meme, coin, audit | meme, coin, audit, token, security |
 | `memory-forensics` | Comprehensive techniques for acquiring, analyzing, and extracting artifacts from memory dumps for incident response and malware analysis. | critical | community | memory, forensics | memory, forensics, techniques, acquiring, analyzing, extracting, artifacts, dumps, incident, response, malware, analysis |
@@ -2402,7 +2414,7 @@ Total skills: 2457
 | `test-automator` | Master AI-powered test automation with modern frameworks, self-healing tests, and comprehensive quality engineering. Build scalable testing strategies with a... | critical | community | automator | automator, test, ai, powered, automation, frameworks, self, healing, tests, quality, engineering, scalable |
 | `webapp-testing` | To test local web applications, write native Python Playwright scripts. | critical | community | webapp | webapp, testing, test, local, web, applications, write, native, python, playwright, scripts |
 
-## testing (31)
+## testing (32)
 
 | Skill | Description | Risk | Source | Tags | Triggers |
 | --- | --- | --- | --- | --- | --- |
@@ -2435,6 +2447,7 @@ Total skills: 2457
 | `test-driven-development` | Use a failing behavioral test to guide a feature or bug fix, then implement and refactor with relevant regression checks. | critical | community | driven | driven, test, development, failing, behavioral, feature, bug, fix, then, refactor, relevant, regression |
 | `test-framework-migration-skill` | Migrates and converts test automation scripts between Selenium, Playwright, Puppeteer, and Cypress. | critical | LambdaTest/agent-skills | framework, migration, skill | framework, migration, skill, test, migrates, converts, automation, scripts, between, selenium, playwright, puppeteer |
 | `test-guard` | Review generated or changed test code against universal testing rules before it ships or is presented for approval. | critical | amElnagdy/guard-skills | guard | guard, test, review, generated, changed, code, against, universal, testing, rules, before, ships |
+| `testdriver-e2e-testing` | Build E2E tests with TestDriver.ai, the AI code reviewer that runs every pull request in a real desktop sandbox, finds bugs, and builds regression tests | safe | testdriverai/testdriverai | testing, e2e, qa, automation, computer-use | testing, e2e, qa, automation, computer-use, testdriver, tests, ai, code, reviewer, runs, every |
 | `testing-patterns` | Jest testing patterns, factory functions, mocking strategies, and TDD workflow. Use when writing unit tests, creating test factories, or following TDD red-gr... | critical | community |  | testing, jest, factory, functions, mocking, tdd, writing, unit, tests, creating, test, factories |
 | `unit-testing-test-generate` | Generate comprehensive, maintainable unit tests across languages with strong coverage and edge case focus. | critical | community | unit, generate | unit, generate, testing, test, maintainable, tests, languages, strong, coverage, edge, case |
 

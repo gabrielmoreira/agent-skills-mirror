@@ -43,8 +43,8 @@ if [ "$TOTAL" -eq 0 ]; then
 fi
 
 if [ "$COMPLETE" -eq "$TOTAL" ] && [ "$TOTAL" -gt 0 ]; then
-    # All phases complete — provide re-entry guidance
-    echo "{\"followup_message\": \"[planning-with-files] ALL PHASES COMPLETE ($COMPLETE/$TOTAL). If the user has additional work, add new phases to task_plan.md before starting.\"}"
+    # All phases complete: stay silent. Cursor submits a followup_message as
+    # the next user message, so a finished plan must not produce one.
     exit 0
 else
     # Phases incomplete — auto-continue via followup_message

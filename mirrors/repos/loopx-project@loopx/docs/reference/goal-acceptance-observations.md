@@ -197,8 +197,9 @@ existing `resume_when` is not reconstructible from the latest Todo and remains
 and stale associations enter the existing agent-scoped recovery lane. Recovery
 preserves the original Turn/Todo identity and does not authorize execution of
 held work. Inspect a missing association and prepare it for owner confirmation;
-for a stale association, inspect the work delta and restore an unintended edit
-or propose the changed association. An already eligible successor remains a
+for a stale association, inspect the work delta and use the
+[exact text/wait restoration](#restore-an-unintended-textwait-edit-after-lease-release)
+when possible, or propose the changed association for owner review. An already eligible successor remains a
 separate execution identity. Do not create another unbound repair Todo and
 mistake its existence for a runnable successor.
 
@@ -396,3 +397,46 @@ Lark 呈现、远端合同编辑、语义意图保持证明与通用共享 amend
 不宣称任一 RFC 已完成。合同浏览器检查用 `npm run smoke:goal-acceptance-contract-browser`；
 前端集成打包后，`npm run smoke:goal-acceptance-contract-packaged` 对已发布资源跑同一项检查。
 Python renderer 测试和 API/export smoke 覆盖缺失、停用、过期、失败及通过的区别。
+
+
+## Restore an unintended text/wait edit after lease release
+
+A hard-lease Todo may become stale after its claimed Agent accidentally changes
+its text or clears an existing `resume_when`, then releases the execution lease.
+The same claimed Agent can use a reviewed update to restore the **exact original
+work declaration**, without first acquiring a lease over stale work:
+
+```sh
+loopx goal-acceptance inspect --goal-id example
+loopx todo update --goal-id example --todo-id todo_artifact --agent-id agent-a \
+  --resume-when 'resume_at:2026-01-01T00:00:00Z' \
+  --update-operation-id restore-original-wait \
+  --update-expected-provider-revision '<revision from inspect>'
+```
+
+Supply the actual original wait/text, not the example value. TS compares the
+entire candidate work digest with the existing owner-confirmed binding. It
+rejects a different scope, wrong revision, foreign/excluded actor, active lease,
+stale execution proof, or a bundled lifecycle/validator/ownership edit. The
+restoration writes neither an owner rebind nor an execution grant. Acquire a
+fresh lease through the usual command before executing work; an exact update
+retry reads the old operation receipt and cannot alter the new lease generation.
+It does not complete a Todo or settle/spend a Turn.
+
+This is not a general history rollback. If the previous declaration is unknown,
+other work fields changed, or compatible subsequent revisions prevent an exact
+match, prepare the current intent for owner review and explicit rebind. The CLI
+and managed replan guidance name that route instead of prescribing a lease /
+restore loop. Existing ready, unbound and acceptance-disabled work keeps its
+ordinary admission rules. Frontend and Lark consume the resulting canonical
+state; this introduces no separate editor or authority owner.
+
+硬租约 Todo 因误改文本或原有等待条件而 stale、且租约已释放时，同一 claimed Agent
+可带当前 provider revision 和稳定 operation id，通过原来的 `todo update` 精确还原。
+TS 校验整个候选工作声明的摘要必须等于 owner 当初确认的摘要；不会把任意修改当成
+无害变化，也不修改验收标准、owner 绑定或租约。恢复后仍须正常获取新租约才能执行。
+重复请求仅恢复旧回执，不会重复结算 Turn 或改变新一代租约。
+
+必须提供真实的原文本/等待条件。若不知道原声明、改动涉及其他字段，或后续兼容修订
+使完整摘要无法精确匹配，应请 owner 审核并显式重新绑定。不能猜测旧值、伪造完成，
+也不能先取得 stale 工作的租约来绕过这条边界。

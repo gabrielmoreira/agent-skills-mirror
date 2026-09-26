@@ -203,7 +203,9 @@ E5 pass into one follow-up issue per E6's follow-up-issue rule (never
 appended to an earlier published follow-up), each with an AC bullet,
 exactly one `Refs #<originating-issue>` line, and the
 `<!-- idd-skill-authoring-defer-source: review-fix-loop-cutoff -->`
-marker. See
+marker, then continue at once to the issue-authoring skill's Stage 2
+narrow auto-release exception instead of stopping at the Stage 1
+hold. See
 [rationale](../../docs/idd-design-rationale.md#e4e5-adopt-now-urgency-defer).
 
 ## E6 — Post disposition replies
@@ -312,14 +314,6 @@ reviewer feedback:
   cycle-exempt for a closed leaf, so a different keyword (e.g.
   `Closes`) or a PR target leaves the reference unresolved until
   the issue body is corrected.
-
-Use these prefixes so that disposition is always unambiguous:
-
-- PATH B acceptance marker (only for a _completed_ review of the current
-  HEAD): `**Accepted** — {what the advisory comment confirmed}`
-- Ordinary rejection: `**Rejected** — {reason}`
-- CODEOWNER / required reviewer, or inconclusive (E5), exception:
-  `**Awaiting maintainer decision** — {reasoning}`
 
 Two requirements let F2/F3's disposition-evidence gate recognize an
 `**Accepted**`/`**Rejected**` disposition: `isDispositionComment` reads

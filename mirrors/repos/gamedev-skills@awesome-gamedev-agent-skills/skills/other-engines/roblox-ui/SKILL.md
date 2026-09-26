@@ -148,6 +148,9 @@ Prefer `Activated` over separate mouse/touch handlers. Set `NextSelectionUp/Down
 when automatic navigation is ambiguous, especially around grids, sidebars, and modals. A modal
 must trap focus inside itself and restore a sensible selection when it closes.
 
+For cross-device action binding, the Input Action System (`InputContext`/`InputAction`/
+`InputBinding`) is the modern edit-time layer; see `references/input-navigation.md`.
+
 Inspect Roblox's default selection adornment in context. If it overwhelms the interface, assign a
 project-owned `SelectionImageObject` or selected-state treatment; keep it visible, valid, and
 restrained rather than disabling focus feedback.

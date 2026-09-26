@@ -1,17 +1,14 @@
 ---
 name: stock-liquidity
 description: >
-  Analyze stock liquidity using bid-ask spreads, volume profiles, order book depth,
-  market impact estimates, and turnover ratios via Yahoo Finance data.
-  Use this skill whenever the user asks about liquidity, trading costs, bid-ask spread,
-  market depth, volume analysis, slippage, market impact, turnover ratio, or how
-  easy/hard it is to trade a stock without moving the price.
-  Triggers: "how liquid is AAPL", "bid-ask spread", "volume analysis", "order book depth",
-  "market impact of a large order", "turnover ratio", "slippage estimate",
-  "can I trade 100k shares without moving the price", "liquidity comparison",
-  "spread analysis", "ADTV", "Amihud illiquidity", "dollar volume",
-  "execution cost estimate", "liquidity score", penny stocks, small caps,
-  or thinly traded securities.
+  Analyze how liquid a stock is using Yahoo Finance data (yfinance): bid-ask spreads,
+  volume and dollar volume (ADTV), top-of-book and options depth, square-root market
+  impact and slippage estimates, turnover ratio, and Amihud illiquidity, rolled into a
+  liquidity grade. Use this skill whenever the user asks about liquidity or trading
+  costs — how easily a position can be entered or exited, what a large order would do
+  to the price, spread or execution-cost estimates, order book depth, volume patterns,
+  or liquidity comparisons — especially for small caps, penny stocks, and thinly
+  traded names.
 ---
 
 # Stock Liquidity Analysis Skill
@@ -383,7 +380,7 @@ Show:
 - The estimated impact for the user's specific order size
 - An impact curve table showing how cost scales with order size
 - Context: "This uses the square-root market impact model, a standard institutional estimate. Actual impact depends on execution strategy (VWAP, TWAP, etc.), time of day, and current market conditions."
-- If impact > 50 bps, flag that the order is large relative to liquidity and suggest the user consider algorithmic execution or splitting the order across days
+- Above ~25 bps, note that the order is large for the stock's liquidity; above ~50 bps, flag it clearly and suggest the user consider algorithmic execution or splitting the order across days
 
 ---
 
@@ -481,12 +478,12 @@ After running the appropriate sub-skill:
 
 ### Practical guidance (mention when relevant)
 
-- **Position sizing**: If estimated impact exceeds 25 bps, the position may be too large for the stock's liquidity
+- **Position sizing**: If estimated impact exceeds ~25 bps, the position may be too large for the stock's liquidity (see the thresholds in Sub-Skill E)
 - **Small/micro-cap warning**: Stocks with < $1M daily dollar volume require careful execution
 - **Spread costs compound**: A 0.10% spread on a round-trip (buy + sell) costs 0.20% — this adds up for active strategies
 - **Illiquidity premium**: Less liquid stocks historically earn higher returns as compensation — but the transaction costs can eat this premium
 
-**Important**: Never recommend specific trades. Present liquidity data and let the user make their own decisions.
+Present liquidity data and let the user make their own decisions; don't recommend specific trades.
 
 ---
 

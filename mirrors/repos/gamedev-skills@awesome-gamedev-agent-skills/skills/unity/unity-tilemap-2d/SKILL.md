@@ -29,7 +29,8 @@ moves over the tiles → `platformer` / `unity-physics`.
 
 ## Core workflow
 
-1. **Create the grid:** GameObject → 2D Object → Tilemap → Rectangular. This makes a `Grid`
+1. **Create the grid:** GameObject → 2D Object → Tilemap → Rectangular (the `Grid`'s **Cell
+   Layout** also offers Hexagonal and Isometric for hex/iso levels). This makes a `Grid`
    with a child `Tilemap` (+ `TilemapRenderer`). Use one Tilemap per layer (background,
    ground, foreground) and set each renderer's sorting.
 2. **Open the Tile Palette** (Window → 2D → Tile Palette), drag in a sliced sprite sheet to
@@ -111,8 +112,9 @@ tilemap.RefreshTile(cell);     // re-evaluate just this cell's rule/animated nei
 - Primary docs: Unity Manual "Tilemaps"
   (`https://docs.unity3d.com/Manual/tilemaps/work-with-tilemaps/tilemap-reference.html`),
   `ScriptReference/Tilemaps.Tilemap`, and the 2D Tilemap Extras package manual
-  (`https://docs.unity3d.com/Packages/com.unity.2d.tilemap.extras@1.6/manual/index.html`) for
-  Rule Tiles.
+  (`https://docs.unity3d.com/Packages/com.unity.2d.tilemap.extras@6.0/manual/index.html`) for
+  Rule Tiles. (`@6.0` is the version that ships with Unity 6.3 LTS; the old `@1.6` docs are
+  for Unity 2021-era projects.)
 
 ## Related skills
 

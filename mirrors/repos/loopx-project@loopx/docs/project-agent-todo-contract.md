@@ -1196,6 +1196,30 @@ loopx todo list --goal-id <goal>
 Preview with `--dry-run` before the real attempt. A cleared resume condition also
 clears its generation fence; an omitted condition is retained. Empty successor
 arrays and explicit `no_followup=false` in API intent remain meaningful values.
+For a promoted hard-lease Agent Todo that the owner has paused, use a narrow
+nonterminal lifecycle edit after its execution lease has been released or has
+expired:
+
+```bash
+loopx todo update --goal-id <goal> --todo-id <todo> --agent-id <owner-or-granted-controller> \
+  --status blocked --clear-resume-when --reason '<public-safe pause reason>' \
+  --update-operation-id <stable-pause-id> --update-expected-provider-revision <readback-revision>
+loopx todo list --goal-id <goal> --todo-id <todo> --role agent
+```
+
+The same provider CAS blocks the Todo and retires only an inactive retained
+lease. An active lease must be released first. The edit grants no execution,
+does not complete validation or spend quota, and preserves claim and successor
+links. Reopening requires another explicit `--status open --clear-resume-when
+--reason ...` operation and a fresh execution lease. Do not combine this
+transition with text, ownership, work requirements or a lease proof.
+
+已晋升的 hard-lease Agent Todo 如被 owner 暂停，应先确认旧执行租约已释放或到期，
+再以稳定操作 ID、读回的 provider revision 和明确原因执行上述窄范围状态更新。
+同一次 CAS 会把 Todo 标为 `blocked` 并退休非活跃租约，同时清除旧等待条件及其派生观察；
+它不会完成验收、扣额或授予新的执行权。活跃租约须先释放；恢复执行要明确改回 `open`
+并重新领取租约，不能把阻塞记录当作交付完成。
+
 Dependency validation sees the complete canonical inventory, not a hot-path
 summary or a Markdown buffer. A satisfied Monitor wait is not silently re-armed
 by an evidence edit; changing its topology requires clearing that old condition.

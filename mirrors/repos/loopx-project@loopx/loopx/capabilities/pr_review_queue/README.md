@@ -991,7 +991,13 @@ A first implementation is acceptable when:
 `pull_request_review.wait_for_ci` defaults to `true`. Machine defaults use the
 existing capability editor. A Goal may override the complete review namespace;
 clearing that override restores live machine defaults. Local required validation
-and exact-head review/thread gates apply in both modes. Disabling CI waiting
+and exact-head review/thread gates apply in both modes. Attribute a red required
+check before selecting the review verdict: an unchanged failure reproduced on
+the immutable base and exact head, or an independently evidenced external
+outage, is not a reason to request code changes on an unrelated PR when its
+changed invariant has separate passing coverage. Record the red check and its
+owner; approval does not make a blocked merge ready. A new, worsened or
+unattributed failure remains a review blocker. Disabling CI waiting
 also removes CI requests and waiting instructions; legacy supplied summaries
 are diagnostic only. It grants no publication, merge, or admin-bypass authority.
 

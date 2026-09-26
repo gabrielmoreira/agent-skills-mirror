@@ -2,14 +2,30 @@
 
 ## 当前版本
 
-发布版本 `v0.7.11`。`agents_version` 从上一发布 tag v0.7.10 的 30 增加到 31；已部署项目需更新技能包、重新运行 `/story-setup` 并新开会话，以加载本次完整部署内容。
+发布版本 `v0.8.0`。`agents_version` 从上一发布 tag v0.7.11 的 31 增加到 32；已部署项目需更新技能包、重新运行 `/story-setup` 并新开会话，以加载本次完整部署内容。
 
-- `setup_skill_version: 1.2.11`
-- `agents_version: 31`
+- `setup_skill_version: 1.3.0`
+- `agents_version: 32`
 
-`.story-deployed` 缺失任一字段，或 `agents_version` 缺失 / 非整数 / 小于 `31`，都视为待更新部署。直接重新运行 `/story-setup`（Codex 用 `$story-setup`，Antigravity 用 `/skills` 或自然语言点名）；不在运行时逐级兼容历史模板。如项目 `agents_version` 大于 `31`，说明本地 story-setup 比项目旧：先更新 oh-story-claudecode，不得用 v31 降级覆盖。历史版本改动见仓库根目录 `CHANGELOG.md`。
+`.story-deployed` 缺失任一字段，或 `agents_version` 缺失 / 非整数 / 小于 `32`，都视为待更新部署。直接重新运行 `/story-setup`（Codex 用 `$story-setup`，Antigravity 用 `/skills` 或自然语言点名）；不在运行时逐级兼容历史模板。如项目 `agents_version` 大于 `32`，说明本地 story-setup 比项目旧：先更新 oh-story-claudecode，不得用 v32 降级覆盖。历史版本改动见仓库根目录 `CHANGELOG.md`。
 
-### v0.7.11 必须重跑 story-setup
+### v0.8.0 必须重跑 story-setup
+
+各端用户更新技能包后都要在写作项目根重跑 `/story-setup`（Codex 用 `$story-setup`），再新开会话：
+
+- `narrative-writer` 写正文不再预加载去 AI 味整套流程，也不自己跑检测脚本；`consistency-checker` 只读本次检查范围相关的设定与细纲。
+- 写正文守卫修正：`cd 书目录 && …` 这类命令不再被误报「缺少细纲」。
+- 长篇拆文的 `chapter-extractor` 改为可写：它按行号自己读原文，把整批结果写进 `{拆文目录}/_analysis_cache/输入-{批次ID}.md`，只回一行回执。Claude Code 上由 agent 内联 hook 限定只能写这类文件；Codex、OpenCode、Antigravity 没有这个挂载点，靠 agent 指令与提交校验约束。旧部署的 extractor 没有写权限，拿不到输入文件，所以必须重跑。
+- 长篇写作流程变短：每章收尾一次检查、追踪提交先生成草稿再填、作者记忆由脚本代查；一致性检查与去 AI 味审查改为按需。
+
+### 已在写的长篇不用迁移
+
+- 老卷纲里写在单元卡内的「供给自查」「建纲追加」照常可读；之后排纲，新批次的这两节写进 `大纲/排纲底稿_{单元ID}.md`，不再写进卷纲。
+- `outline_view.py` 默认输出就是写正文要的内容；老卷纲排纲时想一并看旧底稿，加 `--stage outline`。
+- 细纲里的「契约风险」三档名称不变；新细纲只在本章让单元卡风险等级变化时才写它。
+- 老细纲写全了阶段位置、结构公式、本章标价等字段照样通过检查，写手照样用；新细纲这些字段需要时再写，不写不拦。
+
+### v0.7.11 必须重跑 story-setup（历史）
 
 Claude Code、Codex、Antigravity、OpenCode、ZCode、OpenClaw、Reasonix 用户更新技能包后都要在写作项目根重跑 `/story-setup`（Codex 用 `$story-setup`），再新开会话：
 
@@ -132,7 +148,7 @@ OpenClaw / Reasonix / generic 三条路径的 skill 副本在项目 `skills/` �
 - story-long-analyze 新增可选「三层灵感库管道」：复用 Stage 3 的 EM 机制卡——IA 只是索引登记行（无文件），NM 只记合并增量，CBA 是唯一自包含写作消费卡；卡内禁路径引用，来源用 `书名/EM-xxx` 裸 ID，溯源经 `灵感索引.csv` 或 `resolve` 子命令。
 - story-long-write 在开书（适用阶段=设定）、卷纲、细纲三处可选召回 active CBA；逐章写前召回与写手 prompt 不接灵感库。无库或零命中只记 gap，不阻塞。
 
-## v31 当前契约
+## v32 当前契约
 
 - `chapter-extractor` 按原文块逐章输出紧凑字段与 10–20 个情节点（长章最多 30），由 `manage_analysis_run.py commit` 校验后生成章节摘要；不合格的整批拒收重跑。
 - `story-explorer` 读新版轻量章节摘要的「信息变化」「状态变化」「章尾钩子」「三维节奏」字段，旧摘要回退读「关键信息与扩写技法」表；对标主产物只以两份文件是否存在判定，不看 `schema_version`。
@@ -208,7 +224,7 @@ OpenClaw / Reasonix / generic 三条路径的 skill 副本在项目 `skills/` �
 
 重新部署后需**新开会话**，custom agent 与 hooks 才会重新注册。
 
-## v24 当前契约
+## v24 历史契约
 
 - `.claude/rules/story-narrative.md` 删掉「禁止 AI 腔」红线块。该块只在 `拆文库/` `对标/` `设定/` 三个 path 下加载，正文目录根本不命中，五条规则也已由 narrative-writer 的 7 Gate / 禁止事项与 `check-ai-patterns.js` 的 blocking 规则覆盖。
 - `.claude/rules/story-format.md` 的对话标签规则从「禁止「他说」「她道」」改为「避免对话标签机械化」：高频或公式化标签用动作/上下文替代，普通「说」低频使用可保留。此前该文件是全仓唯一把普通「说」判为违规的地方，与 `format-and-structure.md` 等 11 处口径冲突，且它正好在 `正文/` path 上加载。
@@ -218,13 +234,13 @@ OpenClaw / Reasonix / generic 三条路径的 skill 副本在项目 `skills/` �
 
 重新部署后需**新开会话**，custom agent 才会重新注册。
 
-## v23 当前契约
+## v23 历史契约
 
 - `story-import` 只把作者已有小说重建为写作工程：`拆文库/{导入书名}/` 迁移到正文/设定/大纲/追踪，不再自动登记成主/副对标，也不再复制到项目 `对标/`。只有用户明确选择、且来源为独立 `拆文库/{对标书名}/` 的外部作品才同步到 `对标/{对标书名}/`。
 - 无外部对标时只跳过对标模块、节奏和文风召回；项目题材卡仍从本书题材信息生成，不再被对标分支误伤。对标主产物缺失继续 fail-fast，只有单个可选模块卡未命中时才局部跳过。
 - 所有可能 spawn 项目 agent 的 Skill 都先读取 `.story-deployed.agents_version`：与 v23 不一致时**照常 spawn**，只在报告里提示版本不匹配、建议重跑 `/story-setup` 并新开会话。版本不匹配不阻断并行——bump 常常源于别的部署物变化而 agent 模板未动。真正降级 solo/direct 的信号是 agent 文件缺失或运行时不暴露 custom agent。
 - 写作与导入只接受当前拆文产物：`剧情/情绪模块.md` 与 `剧情/节奏.md` 缺失时 fail-fast，并给出重跑 Stage 3+ / 重新导入的修复动作。
-- 新建、补建、改纲的细纲只接受完整章节蓝图：缺少阶段位置、结构公式、禁止提前释放、内容概括、情节安排、人物关系、情节细化或结尾设定时，先补齐再写。旧版细纲缺这些字段不阻塞日更，回退消费旧字段（核心事件、情节点序列、目标情绪、章首/章尾钩子、字数目标）。
+- 当时新建、补建、改纲的细纲只接受完整章节蓝图：缺少阶段位置、结构公式、禁止提前释放、内容概括、情节安排、人物关系、情节细化或结尾设定时，先补齐再写（v32 起阶段位置、结构公式改为可选，必填项以 v0.8.0 的九个核心字段为准）。旧版细纲缺这些字段不阻塞日更，回退消费旧字段（核心事件、情节点序列、目标情绪、章首/章尾钩子、字数目标）。
 - 细纲字段是本章「要发生什么」的内容规格，不规定正文形状：各字段都要在正文里兑现，但正文可合并、穿插、重排情节点，不按条目顺序一条一段平推。细纲「结尾 / 结尾设定」写本章最后落在什么动作、画面或台词上，不写状态判词。
 - 每个 agent adapter 只读取本目标的 canonical reference 路径：Claude `.claude/skills/`、OpenCode `skills/`、Codex `.codex/skills/`。
 - `_progress.md` 恢复只接受 `schema_version: 2` 与章节边界表，不再执行隐式历史迁移。
@@ -236,7 +252,7 @@ OpenClaw / Reasonix / generic 三条路径的 skill 副本在项目 `skills/` �
 ## 升级步骤
 
 1. 在项目根目录重新运行 story-setup。
-2. 确认 `.story-deployed` 写入 `agents_version: 31` 与 `setup_skill_version: 1.2.11`。
+2. 确认 `.story-deployed` 写入 `agents_version: 32` 与 `setup_skill_version: 1.3.0`。
 3. 确认目标 CLI 的 agents、hooks/rules 和 reference bundle 都通过安装验证。
 4. 新开会话，使 custom agents 与 hooks 按当前文件重新注册。
 5. **长篇在写项目必做**：检查每本书的 `追踪/_tracking-state.json` 是否存在。不存在就是旧追踪结构，按下方「追踪模型迁移」重建，否则写下一章会被拦。

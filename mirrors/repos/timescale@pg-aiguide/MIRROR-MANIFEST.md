@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `timescale/pg-aiguide` — 26 default patterns, 0 followed patterns, 24 file(s) materialized.
+Mirror of `timescale/pg-aiguide` — 26 default patterns, 0 followed patterns, 38 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `timescale/pg-aiguide` — 26 default patterns, 0 followed patterns, 2
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 24 |
+| Files         | 38 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -79,10 +79,24 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 18 | ✓ | [`skills/postgres/references/pgvector-semantic-search.md`](skills/postgres/references/pgvector-semantic-search.md) |
 | 19 | ✓ | [`skills/postgres/references/postgres-database-migration.md`](skills/postgres/references/postgres-database-migration.md) |
 | 20 | ✓ | [`skills/postgres/references/postgres-hybrid-text-search.md`](skills/postgres/references/postgres-hybrid-text-search.md) |
-| 21 | ✓ | [`skills/postgres/references/setup-timescaledb-hypertables.md`](skills/postgres/references/setup-timescaledb-hypertables.md) |
-| 22 | ✓ | [`skills/postgres/references/validation-queries.md`](skills/postgres/references/validation-queries.md) |
-| 23 | ✓ | [`skills/postgres/SKILL.md`](skills/postgres/SKILL.md) |
-| 24 | ✓ | [`skills/setup-timescaledb-hypertables/SKILL.md`](skills/setup-timescaledb-hypertables/SKILL.md) |
+| 21 | ✓ | [`skills/postgres/references/schema-exploration/guide.md`](skills/postgres/references/schema-exploration/guide.md) |
+| 22 | ✓ | [`skills/postgres/references/setup-timescaledb-hypertables.md`](skills/postgres/references/setup-timescaledb-hypertables.md) |
+| 23 | ✓ | [`skills/postgres/references/validation-queries.md`](skills/postgres/references/validation-queries.md) |
+| 24 | ✓ | [`skills/postgres/SKILL.md`](skills/postgres/SKILL.md) |
+| 25 | ✓ | [`skills/schema-exploration/references/data-values.md`](skills/schema-exploration/references/data-values.md) |
+| 26 | ✓ | [`skills/schema-exploration/references/extensions.md`](skills/schema-exploration/references/extensions.md) |
+| 27 | ✓ | [`skills/schema-exploration/references/foreign-tables.md`](skills/schema-exploration/references/foreign-tables.md) |
+| 28 | ✓ | [`skills/schema-exploration/references/overview.md`](skills/schema-exploration/references/overview.md) |
+| 29 | ✓ | [`skills/schema-exploration/references/partitioning-and-inheritance.md`](skills/schema-exploration/references/partitioning-and-inheritance.md) |
+| 30 | ✓ | [`skills/schema-exploration/references/psql.md`](skills/schema-exploration/references/psql.md) |
+| 31 | ✓ | [`skills/schema-exploration/references/query-authoring.md`](skills/schema-exploration/references/query-authoring.md) |
+| 32 | ✓ | [`skills/schema-exploration/references/routines.md`](skills/schema-exploration/references/routines.md) |
+| 33 | ✓ | [`skills/schema-exploration/references/security.md`](skills/schema-exploration/references/security.md) |
+| 34 | ✓ | [`skills/schema-exploration/references/tables.md`](skills/schema-exploration/references/tables.md) |
+| 35 | ✓ | [`skills/schema-exploration/references/triggers.md`](skills/schema-exploration/references/triggers.md) |
+| 36 | ✓ | [`skills/schema-exploration/references/views.md`](skills/schema-exploration/references/views.md) |
+| 37 | ✓ | [`skills/schema-exploration/SKILL.md`](skills/schema-exploration/SKILL.md) |
+| 38 | ✓ | [`skills/setup-timescaledb-hypertables/SKILL.md`](skills/setup-timescaledb-hypertables/SKILL.md) |
 
 ---
 

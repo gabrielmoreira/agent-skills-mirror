@@ -14,7 +14,7 @@ import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 import { KTX2Loader } from 'three/addons/loaders/KTX2Loader.js';
 import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
 
-const VERSION = '0.184.0';
+const VERSION = '0.186.0';
 const base = `https://cdn.jsdelivr.net/npm/three@${VERSION}/examples/jsm/libs/`;
 
 const draco = new DRACOLoader().setDecoderPath(`${base}draco/`);
@@ -96,7 +96,9 @@ it draws them in one call.
   `to.crossFadeFrom(from, duration, warp)`.
 - Listen for completion: `mixer.addEventListener('finished', (e) => {...})`.
 
-Always advance with real time: `mixer.update(clock.getDelta())` inside the loop.
+Always advance with real time: call `timer.update(time)` then
+`mixer.update(timer.getDelta())` inside the loop (`THREE.Timer`; `Clock` is deprecated
+since r183).
 
 ## Exporter hygiene (Blender → glTF)
 

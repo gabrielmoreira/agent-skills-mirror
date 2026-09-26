@@ -156,6 +156,7 @@ TongFlow **桌面版**是一个轻量（约 10 MB）的壳应用，直接加载�
 #### 音频
 
 - ✅ **音乐生成**: 从文本生成音乐，可选参考音频引导。
+- ✅ **音频生成**：一段描述一次生成人声、音效和环境声，可选参考音色。
 - ✅ **音频理解**: 用文字描述一段音频（音乐 / 语音 / 环境音）。
 - ✅ **音乐重绘**: 重新生成歌曲中指定的时间段。
 - ✅ **音乐翻唱**: 按描述或参考曲目改编歌曲风格。
@@ -165,7 +166,7 @@ TongFlow **桌面版**是一个轻量（约 10 MB）的壳应用，直接加载�
 - ✅ **语音识别**: 转录音频或视频中的语音。
 - ✅ **降噪**: 对音频降噪处理。
 - ✅ **说话人分离**: 按说话人分离音频。
-- ⬜ **音色转换**: 使用参考样本替换或克隆音色。
+- ✅ **音色转换**: 把一段说话或歌声换成参考音频里的音色。
 - ✅ **多轨 / 人声伴奏分离**: 分离人声、鼓、贝斯、吉他等 12 种乐轨。
 - ✅ **开放词汇声音分离**: 用一句话描述任意声音（“狗叫”），把它和其余声音拆成两轨。
 
@@ -212,6 +213,7 @@ TongFlow **桌面版**是一个轻量（约 10 MB）的壳应用，直接加载�
 - [tongflow-api-xai](https://github.com/tong-io/tongflow-api-xai) — xAI Grok，按节点**模型选择**：`gen_text`（Grok 4.x）、图像理解、Grok Imagine 文生图
 - [tongflow-api-runway](https://github.com/tong-io/tongflow-api-runway) — Runway Dev 统一 API，按节点**模型选择**：视频（Gen-4.5、Gen-4 Turbo、Aleph 编辑、Act-Two、Seedance、Veo）、图像（GPT Image 2、Seedream 5、Gemini image 3）与 ElevenLabs TTS
 - [tongflow-api-metaso](https://github.com/tong-io/tongflow-api-metaso) — [秘塔科技](https://metaso.cn/minimax-h3/?s=TongFlow)托管的 MiniMax H3 视频生成：文/图生视频，768P 0.09 元/秒、2K 0.15 元/秒，走 OpenAI 兼容的 Videos 接口
+- [tongflow-api-qwen-audio](https://github.com/tong-io/tongflow-api-qwen-audio) — 阿里百炼上的千问 Qwen-Audio-3.1：TTS-Next 一次生成人声、音效和环境声（声音克隆、按描述定制音色、情感语音也走它），TTS-Flash 预设音色，ASR-Flash 语音识别（带时间戳和说话人标签）
 
 ### 中转 / 聚合插件
 
@@ -252,6 +254,7 @@ TongFlow **桌面版**是一个轻量（约 10 MB）的壳应用，直接加载�
 - [tongflow-modal-qwen3asr](https://github.com/tong-io/tongflow-modal-qwen3asr) — Qwen3 语音识别
 - [tongflow-modal-qwen3tts](https://github.com/tong-io/tongflow-modal-qwen3tts) — Qwen3 文字转语音
 - [tongflow-modal-indextts2](https://github.com/tong-io/tongflow-modal-indextts2) — IndexTTS-2.5 情感文字转语音：零样本声音克隆（备选）+ 参考音色的情感语音合成
+- [tongflow-modal-seed-vc](https://github.com/tong-io/tongflow-modal-seed-vc) — Seed-VC 零样本变声：用一小段参考音频，把说话或歌声换成那个人的音色（GPL-3.0）
 - [tongflow-modal-whisper](https://github.com/tong-io/tongflow-modal-whisper) — Whisper 语音识别（带时间戳，备选）
 - [tongflow-modal-moss-transcribe-diarize](https://github.com/tong-io/tongflow-modal-moss-transcribe-diarize) — MOSS-Transcribe-Diarize 0.9B：长音频多人转写，一次出时间戳与说话人标签，并按说话人切出独立音轨（50+ 语言，最长约 90 分钟）
 - [tongflow-modal-ace-step](https://github.com/tong-io/tongflow-modal-ace-step) — ACE-Step 1.5 音乐全家桶：文本生音乐（sft / base / turbo 可选）、重绘、翻唱、分轨提取、加轨、补全编曲、音乐企划与音乐理解

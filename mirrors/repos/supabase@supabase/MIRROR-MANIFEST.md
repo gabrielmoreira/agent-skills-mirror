@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `supabase/supabase` — 26 default patterns, 0 followed patterns, 89 file(s) materialized.
+Mirror of `supabase/supabase` — 26 default patterns, 0 followed patterns, 87 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `supabase/supabase` — 26 default patterns, 0 followed patterns, 89 f
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 89 |
+| Files         | 87 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -131,23 +131,21 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 70 | ✓ | [`.agents/skills/vitest/references/features-mocking.md`](.agents/skills/vitest/references/features-mocking.md) |
 | 71 | ✓ | [`.agents/skills/vitest/references/features-snapshots.md`](.agents/skills/vitest/references/features-snapshots.md) |
 | 72 | ✓ | [`.agents/skills/vitest/SKILL.md`](.agents/skills/vitest/SKILL.md) |
-| 73 | ✓ | [`.agents/skills/write-the-docs/reference/common-pitfalls.md`](.agents/skills/write-the-docs/reference/common-pitfalls.md) |
-| 74 | ✓ | [`.agents/skills/write-the-docs/reference/content-type-gate.md`](.agents/skills/write-the-docs/reference/content-type-gate.md) |
-| 75 | ✓ | [`.agents/skills/write-the-docs/reference/drafting-mechanics.md`](.agents/skills/write-the-docs/reference/drafting-mechanics.md) |
-| 76 | ✓ | [`.agents/skills/write-the-docs/reference/style-fallback.md`](.agents/skills/write-the-docs/reference/style-fallback.md) |
-| 77 | ✓ | [`.agents/skills/write-the-docs/SKILL.md`](.agents/skills/write-the-docs/SKILL.md) |
-| 78 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
-| 79 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 80 | ✓ | [`apps/docs/AGENTS.md`](apps/docs/AGENTS.md) |
-| 81 | ✓ | [`apps/docs/CLAUDE.md`](apps/docs/CLAUDE.md) |
-| 82 | ✓ | [`apps/kb/AGENTS.md`](apps/kb/AGENTS.md) |
-| 83 | ✓ | [`apps/kb/CLAUDE.md`](apps/kb/CLAUDE.md) |
-| 84 | ✓ | [`apps/learn/public/llms.txt`](apps/learn/public/llms.txt) |
-| 85 | ✓ | [`apps/studio/.claude/skills/explorer/SKILL.md`](apps/studio/.claude/skills/explorer/SKILL.md) |
-| 86 | ✓ | [`apps/studio/AGENTS.md`](apps/studio/AGENTS.md) |
-| 87 | ✓ | [`apps/studio/CLAUDE.md`](apps/studio/CLAUDE.md) |
-| 88 | ✓ | [`apps/www/app/llms.txt/route.ts`](apps/www/app/llms.txt/route.ts) |
-| 89 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 73 | ✓ | [`.agents/skills/write-the-docs/reference/content-type-gate.md`](.agents/skills/write-the-docs/reference/content-type-gate.md) |
+| 74 | ✓ | [`.agents/skills/write-the-docs/reference/drafting-mechanics.md`](.agents/skills/write-the-docs/reference/drafting-mechanics.md) |
+| 75 | ✓ | [`.agents/skills/write-the-docs/SKILL.md`](.agents/skills/write-the-docs/SKILL.md) |
+| 76 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
+| 77 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 78 | ✓ | [`apps/docs/AGENTS.md`](apps/docs/AGENTS.md) |
+| 79 | ✓ | [`apps/docs/CLAUDE.md`](apps/docs/CLAUDE.md) |
+| 80 | ✓ | [`apps/kb/AGENTS.md`](apps/kb/AGENTS.md) |
+| 81 | ✓ | [`apps/kb/CLAUDE.md`](apps/kb/CLAUDE.md) |
+| 82 | ✓ | [`apps/learn/public/llms.txt`](apps/learn/public/llms.txt) |
+| 83 | ✓ | [`apps/studio/.claude/skills/explorer/SKILL.md`](apps/studio/.claude/skills/explorer/SKILL.md) |
+| 84 | ✓ | [`apps/studio/AGENTS.md`](apps/studio/AGENTS.md) |
+| 85 | ✓ | [`apps/studio/CLAUDE.md`](apps/studio/CLAUDE.md) |
+| 86 | ✓ | [`apps/www/app/llms.txt/route.ts`](apps/www/app/llms.txt/route.ts) |
+| 87 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 
 ---
 

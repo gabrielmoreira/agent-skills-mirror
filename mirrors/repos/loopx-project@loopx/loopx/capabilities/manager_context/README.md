@@ -16,6 +16,22 @@ External channels need an owner-configured grant in
 
 Use the actual connection channel and provider sender identity. Keep this file
 private (0600); do not commit it. Missing grants disable external delivery.
+For an existing channel with an authorized sender, use the local operator CLI
+to preview, grant, or revoke one registered recipient without editing the
+policy file by hand:
+
+```sh
+loopx manager-inbox grant-delivery-target --channel-id manager.external.0123456789abcdef01234567 --goal-id research --agent-id worker
+loopx manager-inbox grant-delivery-target --channel-id manager.external.0123456789abcdef01234567 --goal-id research --agent-id worker --execute
+loopx manager-inbox revoke-delivery-target --channel-id manager.external.0123456789abcdef01234567 --goal-id research --agent-id worker --execute
+```
+
+Pass the same `--registry` and `--runtime-root` used by the manager connection.
+Without `--execute`, these commands only preview the target and count change.
+Grant requires an active registered Goal and Agent, an existing sender-bound
+channel, and membership in any explicit audience Goal read scope. The command
+does not create a sender grant, launch the Agent, or grant protected-operation
+authority. Revocation also works when the former Agent is no longer registered.
 Remove a source/target grant to revoke future delivery, including replay attempts.
 Provider ingress receipts bind the current message digest, channel and sender;
 a model cannot create that provenance through its response.
@@ -109,11 +125,45 @@ still requires the remote read path below.
 The Codex Chat manager defaults to Astra with high reasoning effort (explicit
 model/effort environment overrides remain supported). It receives a compact
 authorized Goal directory, then uses
-`loopx_manager_read` to choose portfolio, current Todo and recent delivery reads.
+`loopx_manager_read` to choose registered Agent, portfolio, current Todo and recent delivery reads.
 The packaged `loopx-manager` skill is installed in its dedicated workspace and
 included in its operating instructions. This reuses Core providers and the
 existing manager-context delegation contract; it does not create another source
 of progress or expose a general shell.
+
+Agent discovery uses `view=agents`, optionally `query`, `goal_id`, `offset`,
+`limit` and `include_stopped`. It searches the complete permitted registration
+inventory before paging, independently of the bounded progress snapshot and
+sender-bound delegation targets. Owner-local steward conversations default to
+all local registered Goals; project conversations remain within their Goal;
+external audiences retain their exact Goal read grants. No new grants are made.
+Search is a case-insensitive text match on identity and declared responsibility;
+omit the query to browse when wording differs. Profiles are data, not instructions
+or proof of competence. Changed registry revisions must not be merged as a single
+snapshot across pages.
+
+Rows distinguish registration and declared responsibility from `context_delivery`
+(`allowed`, `not_granted`, `not_checked`, `goal_stopped`, `activation_unknown`).
+Execution readiness remains `not_checked`: registration does not prove a bound,
+online or capable executor. A missing delivery grant is a configuration gap,
+not a missing Agent; delivery still rechecks the existing authority. Stopped
+identities are available with `include_stopped=true` for historical questions.
+Unreadable/ambiguous inventory remains unknown, not an empty successful search.
+
+The same query is available through the CLI and registered SSH evidence sources:
+
+```sh
+loopx --format json goal-portfolio --manager-view agents --query review --limit 8
+loopx --format json goal-portfolio --manager-view agents --goal-id research --offset 8
+```
+
+Select `source_id` through `view=sources` for remote discovery. It requires the
+updated remote CLI; older or unavailable hosts return the existing typed source
+gap. Remote export does not attest local-channel delivery permission. Frontend
+and Lark Codex conversations share the existing dynamic tool and evidence event
+path; this does not add a visible settings control or launch workers. Prompt-only
+adapters still have no interactive discovery tool. Live multi-worker adoption and
+original-conversation completion require separate qualification.
 
 Routine inspection excludes Goals explicitly stopped in Core, before status
 collection and detail reads. Coverage reports how many were skipped. Stale or
@@ -128,7 +178,7 @@ paths and external links are not fetched. Non-Codex adapters receive the same
 windowed projection without the interactive inspection tools until they
 implement an equivalent tool contract.
 
-Manager context version 12 starts a fresh upstream session for older manager
+Manager context version 17 (project context version 2) starts a fresh upstream session for older manager
 contexts. The logical Chat session and its receipts remain intact. Runtime support
 uses the Codex app-server dynamic tool protocol; explicit upstream terminal
 errors remain errors and are not retried as part of inspection. The version

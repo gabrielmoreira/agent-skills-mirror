@@ -25,6 +25,13 @@ it from an AIController. Targets **UE 5.8**.
 `game-ai`. Pure navigation/pathing math is engine navmesh (BT's `MoveTo` uses it). Simple
 one-off logic may be cheaper as a small state machine than a full tree.
 
+**Behavior Tree or StateTree?** UE 5.8 ships both, and Behavior Trees are not deprecated.
+StateTree is Epic's general-purpose hierarchical state machine: it combines BT-style
+selection with explicit States and Transitions. If the project already uses StateTree
+assets, or the AI is naturally a set of modes with clear transitions (patrol → alert →
+combat), check with the user before adding a Behavior Tree next to it. Keep using Behavior
+Trees where the project already has `BT_`/`BB_` assets.
+
 ## Core workflow
 
 1. **Create the pair:** a Blackboard (`BB_`) holds typed keys (the AI's memory: `TargetActor`,

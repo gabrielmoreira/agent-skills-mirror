@@ -75,17 +75,29 @@ many entries `AdvanceToNextPageAsync` fetches per request.
 
 ## Request limits & throttling
 
-- Requests are subject to per-minute budgets that scale with the number of players;
-  exceeding them queues requests and eventually drops them.
+- Requests draw on two tiers of per-minute budget, both refreshed continuously: an
+  EXPERIENCE-level (game-wide) budget that scales with total concurrent users across the
+  whole experience, and a per-SERVER budget that scales with the players in that one
+  server. Since 2026-07-29 the in-game (game server) and Open Cloud APIs SHARE the
+  experience-level budget, so heavy external Open Cloud traffic can throttle in-game
+  requests and vice versa. Experience limits start at a 300/min baseline plus a per-CCU
+  multiplier per request type (reads scale fastest, lists slowest); `UpdateAsync` spends
+  from BOTH the read and write budgets on every call. Exceeding a budget queues requests
+  (each queue holds ~30) and then drops them with a 301-306 error. Per-server defaults are
+  configurable via `DataStoreService:SetRateLimitForRequestType`; check current headroom
+  with `GetRequestBudgetForRequestType`.
+- Storage is a GAME-level limit, not per-key: total = 500 MB + 1 MB x lifetime user count
+  (any user who has ever joined), measured on the compressed latest version of each key.
+  Superseded versions and deleted keys do not count toward it.
 - `GetAsync` results are cached for a short window — an immediate re-read returns the
   cached value, not necessarily the freshest. Disable caching only if you truly need
   to (it costs extra requests).
 - Practical rules: save on leave / `BindToClose` and on a periodic timer (e.g. every
   60–120s), **not** on every value change. Coalesce many small changes into one
   write. Use `UpdateAsync` so concurrent writers don't clobber.
-- Treat every Async call as fallible: `pcall` + bounded retry with backoff. See the
-  official *Error codes and limits* page for the exact numeric limits, which change
-  over time.
+- Treat every Async call as fallible: `pcall` + bounded retry with backoff. See
+  `https://create.roblox.com/docs/cloud-services/data-stores/error-codes-and-limits`
+  for the exact current numeric limits, which change over time.
 
 ## Right to be forgotten (RTBF)
 

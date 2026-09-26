@@ -1,16 +1,17 @@
 ---
 name: sepa-strategy
 description: >
-  Analyze stocks using Mark Minervini's SEPA (Specific Entry Point Analysis) methodology.
-  Use this skill whenever the user mentions SEPA, Minervini, superperformance, trend template,
-  VCP (Volatility Contraction Pattern), Stage 2 uptrend, stage analysis, pivot point breakout,
-  or asks about growth stock screening criteria. Also triggers when the user wants to evaluate
-  whether a stock meets swing trading entry criteria, check moving average alignment (bullish
-  stacking: price above 50MA above 150MA above 200MA), assess breakout quality with volume confirmation,
-  calculate position sizing based on risk percentage, or identify consolidation patterns like
-  cup-with-handle, flat base, bull flag, or high tight flag. Use this skill even when the user
-  simply asks "should I buy this stock" or "is this a good setup" in the context of growth/momentum
-  trading, or when they share a stock chart and want pattern analysis.
+  Analyze stocks with Mark Minervini's SEPA (Specific Entry Point Analysis) methodology:
+  stage analysis, the 8-condition trend template, fundamentals, VCP and other base
+  patterns, pivot-point entries, market environment, and risk-based position sizing.
+  Use this skill whenever the user mentions SEPA, Minervini, superperformance, the
+  trend template, VCP (volatility contraction pattern), Stage 2, pivot or breakout
+  entries, moving-average stacking (price above the 50/150/200-day MAs), breakout
+  volume, position sizing from risk percentage, growth-stock screening or swing-trade
+  entry criteria, or bases such as cup-with-handle, flat base, bull flag, or high tight
+  flag. Also use it
+  when the user asks "should I buy this stock" or "is this a good setup" about a
+  growth or momentum name, or shares a chart for pattern analysis.
 ---
 
 # SEPA Strategy Analysis
@@ -41,6 +42,8 @@ Collect the following data for the stock. Use yfinance or any available market d
 | Institutional ownership changes (if available) | Smart money signal |
 | RS rating or 12-month relative performance vs S&P 500 | Relative strength |
 | Price history for pattern recognition | VCP / chart pattern analysis |
+
+Compute the moving averages, 200MA slope, 52-week range, volume ratio, and relative performance from daily price history in code rather than estimating them — two years of history covers the 200-day MA and its 5-month slope.
 
 If certain data is unavailable, note it and proceed with what you have. Missing RS rating is a significant gap — flag it.
 
@@ -167,7 +170,23 @@ Before entering, verify:
 
 ---
 
-## Step 7: Position Sizing & Stop Loss Plan
+## Step 7: Market Environment Check
+
+Read `references/market-environment.md` for detailed criteria.
+
+The market environment is the master switch for position sizing — it sets the risk per trade used in Step 8:
+
+| Environment | Criteria | Risk Per Trade | Max Positions |
+|---|---|---|---|
+| **Bull** | S&P 500/Nasdaq above 200MA, breadth expanding, new highs > new lows | 1-2% | 6-8 |
+| **Choppy** | Sideways indices, frequent failed breakouts | 0.5-1% | 2-3 |
+| **Bear** | Indices below 200MA, >50% of stocks below 200MA | 0% (no new positions) | 0 (all cash) |
+
+Even the best setups fail in bear markets. Holding cash during bear markets IS a winning strategy — preserving capital for the next bull run.
+
+---
+
+## Step 8: Position Sizing & Stop Loss Plan
 
 Read `references/position-sizing.md` for the full formula, examples, stop loss evolution, and pyramiding rules.
 
@@ -198,22 +217,6 @@ Only add to winning positions, with decreasing size: 50% initial → 30% at +8% 
 
 ---
 
-## Step 8: Market Environment Check
-
-Read `references/market-environment.md` for detailed criteria.
-
-The market environment is the master switch for position sizing:
-
-| Environment | Criteria | Risk Per Trade | Max Positions |
-|---|---|---|---|
-| **Bull** | S&P 500/Nasdaq above 200MA, breadth expanding, new highs > new lows | 1-2% | 6-8 |
-| **Choppy** | Sideways indices, frequent failed breakouts | 0.5-1% | 2-3 |
-| **Bear** | Indices below 200MA, >50% of stocks below 200MA | 0% (no new positions) | 0 (all cash) |
-
-Even the best setups fail in bear markets. Holding cash during bear markets IS a winning strategy — preserving capital for the next bull run.
-
----
-
 ## Step 9: Respond to the User
 
 Present a structured analysis report with these sections:
@@ -228,8 +231,8 @@ Present a structured analysis report with these sections:
    - If a valid pattern exists: pivot price, buy zone, breakout volume requirement
    - If not yet formed: what to watch for
    - If already extended: "This has moved beyond the buy zone — wait for the next consolidation"
-6. **Position Sizing**: Using the formula, show exact shares, stop price, first target, second target, and reward/risk ratio. Ask the user for their account size and risk tolerance if not provided.
-7. **Market Environment**: Current assessment and how it affects sizing
+6. **Market Environment**: Current assessment and the risk per trade it implies
+7. **Position Sizing**: Using the formula, show exact shares, stop price, first target, second target, and reward/risk ratio. Ask the user for their account size and risk tolerance if not provided.
 8. **Overall Verdict**: One of:
    - **Strong Buy Setup** — all criteria met, actionable now
    - **Watch List** — promising but pattern not yet complete or one condition marginal

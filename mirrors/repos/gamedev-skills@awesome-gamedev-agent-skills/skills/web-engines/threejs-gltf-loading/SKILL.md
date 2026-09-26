@@ -13,7 +13,7 @@ description: >
 
 Load `.gltf`/`.glb` models and play their animations in three.js, including
 compressed geometry (DRACO/Meshopt) and textures (KTX2). Patterns target
-**r184**; preserve an existing project's pinned release unless migration is requested.
+**r186**; preserve an existing project's pinned release unless migration is requested.
 
 ## When to use
 
@@ -73,7 +73,7 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
 let mixer;                                  // declare outside so the loop can see it
-const clock = new THREE.Clock();
+const timer = new THREE.Timer();            // THREE.Clock is deprecated since r183
 
 new GLTFLoader().load('assets/character.glb', (gltf) => {
   scene.add(gltf.scene);
@@ -83,8 +83,9 @@ new GLTFLoader().load('assets/character.glb', (gltf) => {
   mixer.clipAction(clip).play();
 });
 
-renderer.setAnimationLoop(() => {
-  const dt = clock.getDelta();
+renderer.setAnimationLoop((time) => {
+  timer.update(time);
+  const dt = timer.getDelta();
   if (mixer) mixer.update(dt);              // advance the animation by real seconds
   renderer.render(scene, camera);
 });
@@ -117,7 +118,7 @@ import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 
 const draco = new DRACOLoader();
 // Point at the decoder files you ship (or a pinned CDN copy of the same version).
-draco.setDecoderPath('https://cdn.jsdelivr.net/npm/three@0.184.0/examples/jsm/libs/draco/');
+draco.setDecoderPath('https://cdn.jsdelivr.net/npm/three@0.186.0/examples/jsm/libs/draco/');
 
 const loader = new GLTFLoader();
 loader.setDRACOLoader(draco);
@@ -133,8 +134,9 @@ new GLTFLoader().load('assets/car.glb', (gltf) => {
   gltf.scene.traverse((node) => {
     if (node.name.startsWith('Wheel')) wheels.push(node);
   });
-  renderer.setAnimationLoop(() => {
-    const dt = clock.getDelta();
+  renderer.setAnimationLoop((time) => {
+    timer.update(time);
+    const dt = timer.getDelta();
     for (const w of wheels) w.rotation.x += dt * 4;
     renderer.render(scene, camera);
   });
@@ -150,7 +152,8 @@ new GLTFLoader().load('assets/car.glb', (gltf) => {
 - **`load` is async** → `gltf` only exists inside the callback; declare `mixer`/refs
   outside and assign them in the callback, or use `await loader.loadAsync(url)`.
 - **Animation never moves** → you didn't call `mixer.update(delta)` each frame, or you
-  passed milliseconds instead of seconds (use `clock.getDelta()`), or you forgot
+  passed milliseconds instead of seconds (use `timer.getDelta()` after
+  `timer.update(time)`), or you forgot
   `action.play()`.
 - **DRACO/KTX2 model fails** → the decoder/transcoder path is wrong or version-
   mismatched. `setDecoderPath`/`setTranscoderPath` must point at files matching your

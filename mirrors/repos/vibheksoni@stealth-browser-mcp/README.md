@@ -25,7 +25,7 @@ Navigate Cloudflare challenges, anti-bot checks, and login walls with real Chrom
 <tr>
 <td align="center" width="50%">
 
-<a href="https://go.nodemaven.com/stealthbrowsermcpreadaugust"><img src="media/nodemaven-sponsor.png" alt="NodeMaven" width="100%"></a>
+<a href="https://go.nodemaven.com/stealthbrowsermcpreadmesept"><img src="media/nodemaven-sponsor.png" alt="NodeMaven" width="100%"></a>
 
 </td>
 <td align="center" width="50%">
@@ -37,7 +37,7 @@ Navigate Cloudflare challenges, anti-bot checks, and login walls with real Chrom
 <tr>
 <td valign="top">
 
-[NodeMaven](https://go.nodemaven.com/stealthbrowsermcpreadaugust) — The most efficient proxy provider for Web Scraping and Automation with the Highest Quality IP on the market.
+[NodeMaven](https://go.nodemaven.com/stealthbrowsermcpreadmesept) — The most efficient proxy provider for Web Scraping and Automation with the Highest Quality IP on the market.
 
 **Why NodeMaven?**
 
@@ -52,7 +52,7 @@ Navigate Cloudflare challenges, anti-bot checks, and login walls with real Chrom
 - `STEALTHMCP35` — 35% off to Mobile and Residential Proxies
 - `STEALTHMCP40` — 40% off to ISP (Static) Proxies
 
-[Get started with NodeMaven](https://go.nodemaven.com/stealthbrowsermcpreadaugust)
+[Get started with NodeMaven](https://go.nodemaven.com/stealthbrowsermcpreadmesept)
 
 </td>
 <td valign="top">

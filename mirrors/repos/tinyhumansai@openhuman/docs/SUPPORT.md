@@ -13,7 +13,7 @@ Pick the channel by what you have, and bring the evidence the form asks for.
 | Something you built and want people to use | [Show & tell](https://github.com/tinyhumansai/openhuman/discussions/categories/show-and-tell) |
 | Reproducible behavior that should change | [An issue](https://github.com/tinyhumansai/openhuman/issues/new/choose) |
 | A vulnerability | [The security policy](../SECURITY.md) — never a public thread |
-| A conversation | [Discord](https://discord.tinyhumans.ai/) |
+| A conversation | [Discord](https://guild.tinyhumans.ai/) |
 
 Discord is for talking; Discussions is for anything that should still be
 findable in six months. If a Discord thread solves something, post the answer in

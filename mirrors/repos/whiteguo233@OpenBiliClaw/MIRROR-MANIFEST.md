@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `whiteguo233/OpenBiliClaw` — 26 default patterns, 1 followed patterns, 13 file(s) materialized.
+Mirror of `whiteguo233/OpenBiliClaw` — 26 default patterns, 1 followed patterns, 17 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `whiteguo233/OpenBiliClaw` — 26 default patterns, 1 followed pattern
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 13 |
+| Files         | 17 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -71,7 +71,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 10 | ✓ | [`skills/comment_analysis/SKILL.md`](skills/comment_analysis/SKILL.md) |
 | 11 | ✓ | [`skills/openbiliclaw-adapter/SKILL.md`](skills/openbiliclaw-adapter/SKILL.md) |
 | 12 | ✓ | [`skills/search/SKILL.md`](skills/search/SKILL.md) |
-| 13 | → | [`docs/changelog.md`](docs/changelog.md) |
+| 13 | ✓ | [`src/openbiliclaw/agent/skills_builtin/bangumi-advisor/SKILL.md`](src/openbiliclaw/agent/skills_builtin/bangumi-advisor/SKILL.md) |
+| 14 | ✓ | [`src/openbiliclaw/agent/skills_builtin/system-steward/SKILL.md`](src/openbiliclaw/agent/skills_builtin/system-steward/SKILL.md) |
+| 15 | ✓ | [`src/openbiliclaw/agent/skills_builtin/taste-companion/SKILL.md`](src/openbiliclaw/agent/skills_builtin/taste-companion/SKILL.md) |
+| 16 | ✓ | [`src/openbiliclaw/agent/skills_builtin/taste-explorer/SKILL.md`](src/openbiliclaw/agent/skills_builtin/taste-explorer/SKILL.md) |
+| 17 | → | [`docs/changelog.md`](docs/changelog.md) |
 
 ---
 

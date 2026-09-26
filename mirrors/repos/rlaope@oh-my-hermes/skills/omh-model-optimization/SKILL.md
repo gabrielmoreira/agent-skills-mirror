@@ -1,6 +1,6 @@
 ---
 name: "omh-model-optimization"
-description: "[omh] OMH Model Optimization workflow: when a model family ships a new generation or changes its serving contract, walk the recognition, research, calibration, routing, and measurement process that keeps model handling honest and current. Use when the user says: model-optimization, model optimization, optimize for model, onboard new model, calibrate new model, new model calibration, model calibration."
+description: "[omh] Onboarding a newly released model generation: when a model family ships a new generation or changes its serving contract, walk the recognition, research, calibration, routing, and measurement process that keeps model handling honest and current. Use when the user says: model-optimization, model optimization, optimize for model, onboard new model, calibrate new model, new model calibration, model calibration."
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, optimization]

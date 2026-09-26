@@ -14,7 +14,7 @@ metadata: {"openclaw":{"source":"https://github.com/zenstory-ai/oh-story-claudec
 
 > Agent 兼容性：只检查当前运行时的 canonical 目录：Claude `.claude/agents/{agent}.md`、OpenCode `.opencode/agents/{agent}.md`、Codex `.codex/agents/{agent}.toml`、Antigravity `.agents/agents/agent-name/agent.md`（`agent-name` 为目标 agent 名），不得因其他端文件存在而误判。Codex 使用同名 `agent_type`；Antigravity 使用 `invoke_subagent` + `TypeName`。对应运行时未暴露 custom-agent registry / `invoke_subagent` 或返回未知 agent 时，必须降级 solo/direct。检测到 `.zcode/` 时同样直接 solo/direct，因为 ZCode 3.3.4 不执行项目 custom agents；报告 `Fallback: project custom agents unavailable -> solo`。Claude 用 `subagent_type`；OpenCode 用 `subagent` 工具的 `agent` 参数。
 >
-> Spawn 版本提示（不阻断 spawn）：先读取项目根 `.story-deployed` 的 `agents_version`。与本版 `agents_version: 31` 不一致时（标记缺失、字段缺失/非整数、小于或大于 31）**照常按文件存在性检查并 spawn**，同时报告 `Notice: agents bundle 版本不匹配（项目 {N}，本版 31）` 并提示重新运行 `/story-setup` 后新开会话；大于 31 时额外提示先更新 oh-story-claudecode，不要用本地旧版 setup 降级覆盖。只有 agent 文件缺失、或运行时不暴露 custom agent 时才降级 solo/direct，报告 `Fallback: ... -> solo`。
+> Spawn 版本提示（不阻断 spawn）：先读取项目根 `.story-deployed` 的 `agents_version`。与本版 `agents_version: 32` 不一致时（标记缺失、字段缺失/非整数、小于或大于 32）**照常按文件存在性检查并 spawn**，同时报告 `Notice: agents bundle 版本不匹配（项目 {N}，本版 32）` 并提示重新运行 `/story-setup` 后新开会话；大于 32 时额外提示先更新 oh-story-claudecode，不要用本地旧版 setup 降级覆盖。只有 agent 文件缺失、或运行时不暴露 custom agent 时才降级 solo/direct，报告 `Fallback: ... -> solo`。
 
 ## 核心原则
 
@@ -102,17 +102,17 @@ metadata: {"openclaw":{"source":"https://github.com/zenstory-ai/oh-story-claudec
 在进入 Phase 2 之前，先检测项目是否已部署 story-setup 基础设施：
 
 - 先读取 `.story-deployed` 并执行顶部 Spawn 版本门禁；旧版 `chapter-extractor` 文件即使仍在磁盘上也不可复用。
-- 只有 `agents_version: 31` 通过后，才在当前运行时的 canonical 目录检查 Phase 2 `chapter-extractor`：Claude/OpenCode/Antigravity 为同名 Markdown，Codex 为同名 TOML。
+- 只有 `agents_version: 32` 通过后，才在当前运行时的 canonical 目录检查 Phase 2 `chapter-extractor`：Claude/OpenCode/Antigravity 为同名 Markdown，Codex 为同名 TOML。
 - 如果 `.story-deployed` 的 `target_cli` 包含 `zcode`，项目 agents 缺失是 ZCode 3.3.4 的预期状态：不要提示重复部署，直接以串行 solo/direct 进入分析并报告 fallback。
 
 **部署标记缺失、版本无效/过期，或当前端的 agent 不可用，且不是已部署 ZCode 项目时**，这样问用户：
 
-> 「这个项目还没装好写作环境。装好后导入时能多章同时分析，快不少；不装也能导，只是慢一些，结果一样完整。你想：1. 先装环境（推荐）：运行 `/story-setup`，装完再说"导入" 2. 直接导入，慢一点也行」
+> 「这个项目还没装好写作环境。装好后由专门的分析助手逐段拆书，主对话不会被整本书塞满；不装也能导，只是全部在主对话里做，慢一些，结果一样完整。你想：1. 先装环境（推荐）：运行 `/story-setup`，装完再说"导入" 2. 直接导入，慢一点也行」
 
 1. **先去 setup**：暂停导入，运行 `/story-setup`，部署完成后重新触发 `/story-import`；
-2. **继续导入**：Phase 2 降级为串行处理（长篇逐章摘要不并行，速度较慢，但产物完整）。
+2. **继续导入**：Phase 2 降级为主线程串行处理（长篇逐章摘要由主线程自己写，速度较慢，但产物完整）。
 
-用户选择记入上下文，Phase 2 据此决定是否走并行模式。
+用户选择记入上下文，Phase 2 据此决定是否派 chapter-extractor。有子代理时，导入属自动续跑，按 story-long-analyze 的「有限并行」档派发（每轮 3 批）；用户明确要求时改用串行或不限批次顺序。
 
 ### Step 6：原文备份
 

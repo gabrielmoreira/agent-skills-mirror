@@ -1,17 +1,13 @@
 ---
 name: earnings-recap
 description: >
-  Generate a post-earnings analysis for any stock using Yahoo Finance data.
-  Use when the user wants to review what happened after earnings,
-  understand beat/miss results, see stock reaction, or get an earnings recap.
-  Triggers: "AAPL earnings recap", "how did TSLA earnings go", "MSFT earnings results",
-  "did NVDA beat earnings", "post-earnings analysis", "earnings surprise",
-  "what happened with GOOGL earnings", "earnings reaction",
-  "stock moved after earnings", "EPS beat or miss", "revenue beat or miss",
-  "quarterly results for", "how were earnings", "AMZN reported last night",
-  "earnings call recap", or any request about a company's recent earnings outcome.
-  Use this skill when the user references a past earnings event,
-  even if they just say "AAPL reported" or "how did they do".
+  Analyze a company's most recent (or a specified past) earnings report from Yahoo
+  Finance data (yfinance): actual vs estimated EPS, surprise size, revenue and margin
+  trends, and the stock's price reaction. Use this skill whenever the user asks how
+  earnings went — beat or miss, earnings surprise, quarterly results, the
+  post-earnings move, or an earnings call recap — including casual references to a
+  past report such as "AMZN reported last night" or "how did they do". For an
+  upcoming report, use earnings-preview.
 ---
 
 # Earnings Recap Skill
@@ -48,21 +44,17 @@ Extract the ticker from the user's request. Fetch all relevant post-earnings dat
 ```python
 import yfinance as yf
 import pandas as pd
-from datetime import datetime, timedelta
 
 ticker = yf.Ticker("AAPL")  # replace with actual ticker
 
-# --- Earnings result ---
-earnings_hist = ticker.earnings_history
+# --- Earnings results ---
+earnings_dates = ticker.get_earnings_dates(limit=12)  # report timestamps, newest first
+earnings_hist = ticker.earnings_history               # last 4 quarters, indexed by fiscal quarter-end, oldest first
 
-# --- Financial statements ---
+# --- Financial statements (about five quarters, newest first) ---
 quarterly_income = ticker.quarterly_income_stmt
 quarterly_cashflow = ticker.quarterly_cashflow
 quarterly_balance = ticker.quarterly_balance_sheet
-
-# --- Price reaction ---
-# Get ~30 days of history to capture the reaction window
-hist = ticker.history(period="1mo")
 
 # --- Context ---
 info = ticker.info
@@ -74,111 +66,65 @@ recommendations = ticker.recommendations
 
 | Data Source | Key Fields | Purpose |
 |---|---|---|
-| `earnings_history` | epsEstimate, epsActual, epsDifference, surprisePercent | Beat/miss result |
+| `get_earnings_dates()` | Earnings Date, EPS Estimate, Reported EPS, Surprise(%) | Which report, when, and the beat/miss |
+| `earnings_history` | epsEstimate, epsActual, epsDifference, surprisePercent | Last four quarters' results by fiscal quarter |
 | `quarterly_income_stmt` | TotalRevenue, GrossProfit, OperatingIncome, NetIncome, BasicEPS | Actual financials |
-| `history()` | Close prices around earnings date | Stock price reaction |
+| `history()` | Daily closes around each report | Stock price reaction |
 | `info` | currentPrice, marketCap, forwardPE | Current context |
 | `news` | Recent headlines | Earnings-related news |
 
 ---
 
-## Step 3: Determine the Most Recent Earnings
+## Step 3: Find the Report and Measure the Reaction
 
-The most recent earnings result is the first row (most recent date) in `earnings_history`. Use its date to:
-
-1. **Identify the earnings date** for the price reaction analysis
-2. **Match to the corresponding quarter** in the financial statements
-3. **Calculate stock price reaction** — compare the close before earnings to the next trading day's close (or open, depending on whether earnings were before/after market)
-
-### Price reaction calculation
+`earnings_history` is indexed by fiscal quarter-end, not by announcement date, so take report timing from `get_earnings_dates()`: the most recent report is the newest row with a `Reported EPS`. Its timestamp (US Eastern) sets the reaction window: at or after 16:00 means the company reported after the close; anything earlier means before the open or, occasionally, during the session. If the user asked about a specific quarter, use that row instead.
 
 ```python
-import numpy as np
+def earnings_reaction(ticker, report_ts):
+    """% move from the last close before the report to the first close after it."""
+    daily = ticker.history(start=(report_ts - pd.Timedelta(days=10)).date(),
+                           end=(report_ts + pd.Timedelta(days=10)).date())
+    closes = daily["Close"]
+    days = closes.index.date
+    d = report_ts.date()
+    if report_ts.hour >= 16:  # reported after the close: report-day close -> next close
+        pre, post = closes[days <= d], closes[days > d]
+    else:                     # before the open or intraday: prior close -> report-day close
+        pre, post = closes[days < d], closes[days >= d]
+    if pre.empty or post.empty:
+        return None           # the reaction session hasn't closed yet
+    return (post.iloc[0] / pre.iloc[-1] - 1) * 100
 
-# Find the earnings date from earnings_history index
-earnings_date = earnings_hist.index[0]  # most recent
+reported = earnings_dates[earnings_dates["Reported EPS"].notna()]
+latest_ts = reported.index[0]
+reaction_pct = earnings_reaction(ticker, latest_ts)
 
-# Get daily prices around the earnings date
-hist_extended = ticker.history(start=earnings_date - timedelta(days=5),
-                                end=earnings_date + timedelta(days=5))
-
-# The reaction is typically measured as:
-# - Close on the last trading day before earnings -> Close on the first trading day after
-# Be careful with before/after market reports
-if len(hist_extended) >= 2:
-    pre_price = hist_extended['Close'].iloc[0]
-    post_price = hist_extended['Close'].iloc[-1]
-    reaction_pct = ((post_price - pre_price) / pre_price) * 100
+# Typical earnings-day move over the prior four reports
+prior_moves = [earnings_reaction(ticker, ts) for ts in reported.index[1:5]]
+avg_abs_move = pd.Series([abs(m) for m in prior_moves if m is not None]).mean()
 ```
 
-**Note**: The exact reaction window depends on when the company reported (before market open vs after close). The price data will reflect this — look for the biggest gap between consecutive closes near the earnings date.
+If `reaction_pct` is `None`, the report came after the most recent close; say the regular-session reaction is still pending (an intraday `history(..., prepost=True)` call shows the after-hours move if the user wants it).
 
 ---
 
 ## Step 4: Build the Earnings Recap
 
-### Section 1: Headline Result
+Cover these areas, leading with the result:
 
-Lead with the key numbers:
-- **EPS**: Actual vs. Estimate, beat/miss by how much, surprise %
-- **Revenue**: Actual vs. prior year (from quarterly_income_stmt TotalRevenue)
-- **Stock reaction**: % move on earnings day
-
-Example: "AAPL beat Q3 EPS estimates by 3.7% ($1.40 actual vs $1.35 expected). Revenue grew 5.4% YoY to $94.3B. The stock rose +2.1% on the report."
-
-### Section 2: Earnings vs. Estimates Detail
-
-| Metric | Estimate | Actual | Surprise |
-|---|---|---|---|
-| EPS | $1.35 | $1.40 | +$0.05 (+3.7%) |
-
-If the user asked about a specific quarter (not the most recent), look further back in `earnings_history`.
-
-### Section 3: Quarterly Financial Trends
-
-Show the last 4 quarters of key metrics from `quarterly_income_stmt`:
-
-| Quarter | Revenue | YoY Growth | Gross Margin | Operating Margin | EPS |
-|---|---|---|---|---|---|
-| Q3 2024 | $94.3B | +5.4% | 46.2% | 30.1% | $1.40 |
-| Q2 2024 | $85.8B | +4.9% | 46.0% | 29.8% | $1.33 |
-| Q1 2024 | $119.6B | +2.1% | 45.9% | 33.5% | $2.18 |
-| Q4 2023 | $89.5B | -0.3% | 45.2% | 29.2% | $1.26 |
-
-Calculate margins from the raw financials:
-- Gross Margin = GrossProfit / TotalRevenue
-- Operating Margin = OperatingIncome / TotalRevenue
-
-### Section 4: Stock Price Reaction
-
-- The % move on the earnings day/next session
-- How it compares to the stock's average earnings-day move (calculate the average absolute move from the last 4 earnings dates in `earnings_history`)
-- Where the stock is now relative to the earnings-day move (has it held, given back gains, extended further?)
-
-### Section 5: Context & What Changed
-
-Based on the data, note:
-- Whether margins expanded or compressed vs prior quarter
-- Any notable changes in revenue growth trajectory
-- How the beat/miss compares to the stock's historical pattern (from the full `earnings_history`)
-- Current analyst sentiment from `recommendations` if available
+1. **Headline result** — EPS actual vs estimate with the surprise %, revenue with year-over-year growth, and the stock's reaction.
+2. **Estimates vs actuals** — EPS estimate, actual, and surprise ($ and %) for the quarter in question.
+3. **Quarterly trends** — revenue, gross margin, operating margin, and EPS for the recent quarters, with margins computed from the statements (gross profit / revenue, operating income / revenue). yfinance usually returns about five quarters, so year-over-year growth is available for the latest quarter only (column 0 vs column 4); show sequential change for the others rather than inventing a comparison.
+4. **Price reaction** — the move in the reaction session, how it compares with the stock's average absolute earnings move over the prior four reports, and whether the stock has since held, given back, or extended the move.
+5. **What changed** — margin direction vs the prior quarter, any shift in the revenue growth trajectory, how this surprise compares with the company's usual pattern, and current analyst sentiment if available.
 
 ---
 
 ## Step 5: Respond to the User
 
-Present the recap as a clean, structured summary:
+Open with the headline — which quarter, when it was reported, the beat or miss, revenue growth, and the reaction — then the supporting tables. Say what matters: whether this was a meaningful beat or a low bar cleared, and whether the trend is improving or deteriorating. Keep it factual and leave out investment recommendations.
 
-1. **Lead with the headline**: "AAPL reported Q3 2024 earnings on [date]: Beat EPS by 3.7%, revenue +5.4% YoY."
-2. **Show the tables** for detail
-3. **Highlight what matters**: Was this a meaningful beat or a low-bar situation? Is the trend improving or deteriorating?
-4. **Keep it factual** — present the data, avoid making investment recommendations
-
-### Caveats to include
-- Yahoo Finance data may not include all details from the earnings call (guidance, segment breakdowns)
-- Revenue estimates are harder to compare precisely — yfinance provides YoY comparison from financial statements
-- Price reaction may be influenced by broader market moves on the same day
-- This is not financial advice
+Include the caveats that apply: Yahoo Finance data doesn't capture everything from the call (guidance, segment detail), revenue is compared year over year from the statements rather than against a revenue consensus, the price reaction can reflect a broader market move that day, and this is not financial advice.
 
 ---
 

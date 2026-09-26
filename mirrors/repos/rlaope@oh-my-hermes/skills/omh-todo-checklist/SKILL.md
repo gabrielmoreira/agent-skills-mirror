@@ -1,6 +1,6 @@
 ---
 name: "omh-todo-checklist"
-description: "[omh] Continue or finish the accepted work from conversation context, preserve rejected ideas, and report evidence-bounded completion. Also declare and advance the metadata-only plan checklist without starting a delivery engine. Use when the user says: todo-checklist, plan checklist, todo checklist, phase checklist, declare a plan checklist, declare the plan todo, show the plan todo, clear the plan todo."
+description: "[omh] Resume or finish the work we agreed on: continue or finish the accepted work from conversation context, preserve rejected ideas, and report evidence-bounded completion. Also declare and advance the metadata-only plan checklist without starting a delivery engine. Use when the user says: todo-checklist, plan checklist, todo checklist, phase checklist, declare a plan checklist, declare the plan todo, show the plan todo, clear the plan todo."
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, operator]

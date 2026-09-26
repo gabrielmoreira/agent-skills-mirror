@@ -140,7 +140,7 @@ does not perform OAuth, and runtime credential resolution rereads the owned sour
 | `src/types.ts` | Shared config, parsed request, adapter, and event types. |
 | `src/reasoning-effort.ts` | Codex reasoning-level definitions (`low`/`medium`/`high`/`xhigh`), per-model effort mapping, and catalog effort sanitization. |
 | `src/codex/shim.ts` | Codex autostart shim: replaces the `codex` binary with a wrapper that auto-starts the proxy on demand. It skips startup for management subcommands even when value-taking global flags precede the subcommand, and transactionally restores complete, stable external launcher replacements without a watcher or PATH rediscovery. |
-| `src/service.ts` | OS service manager (macOS launchd, Linux systemd, Windows schtasks): always-on proxy with crash restart. Facade over the `src/service/` leaves — `src/service/launchd.ts`, `src/service/systemd.ts`, `src/service/windows-ops.ts`, `src/service/windows-scheduler.ts`, `src/service/windows-taskxml.ts`, `src/service/state.ts`, `src/service/guards.ts`, `src/service/health.ts`, `src/service/repair.ts`, `src/service/orchestration.ts`, `src/service/diagnostics.ts`, `src/service/cli.ts`. |
+| `src/service.ts` | OS service manager (macOS launchd, Linux systemd, Windows schtasks): always-on proxy with crash restart. Facade over the `src/service/` leaves — `src/service/launchd.ts`, `src/service/systemd.ts`, `src/service/windows-ops.ts`, `src/service/windows-scheduler.ts`, `src/service/windows-taskxml.ts`, `src/service/state.ts`, `src/service/guards.ts`, `src/service/health.ts`, `src/service/repair.ts`, `src/service/orchestration.ts`, `src/service/diagnostics.ts`, `src/service/cli.ts`. Elevated Task Scheduler repair stages bounded payloads; the unelevated launcher pins every namespace ancestor and payload with non-reparse handles that deny write/delete sharing on the payload and delete sharing on each ancestor until UAC processing exits. |
 
 `src/cli/provider.ts` accepts the Google-only `--google-tool-schema-policy` creation flag and rejects
 an unknown value or non-Google effective adapter before persistence. The persisted field and default
@@ -219,21 +219,21 @@ TTL or lock-file deletion participates in recovery.
 An explicit Codex integration OFF skips startup cache invalidation before the user-scoped catalog
 serialization lock is resolved. Explicit `sync` and `sync-cache` retain their catalog-only override.
 
-`startServer` composes up to three sockets in one synchronous startup transaction: the public data
-listener, the optional unauthenticated data-loopback listener, and the optional hub-management
-listener.
-
+`startServer` composes up to four sockets in one synchronous startup transaction: the public data listener, optional unauthenticated data-loopback and hub-management listeners, and the optional `hub-link` listener, which opens only for a recorded link and persists its concrete `127.0.0.1:<listenerPort>`.
 The data-loopback socket serves a fixed data-plane allowlist: Responses and its compact sibling,
 the native search relay, the standalone Images POSTs, keyed file/stream transcription, `GET /v1/models`, the realtime voice shapes,
 and the Anthropic and OpenAI chat wires the host's own local clients speak — `POST /v1/messages`,
 `POST /v1/messages/count_tokens`, and `POST /v1/chat/completions`. It never serves `/api/*`,
 `/healthz`, `/readyz`, or GUI routes, so local management discovery has to use an authenticated
 surface with a management credential.
-
 The hub-management socket is enabled only by `runtimeRole: "hub"` plus
 `hub.managementIngress.enabled`, always binds `127.0.0.1`, and default-denies everything except
 GUI, session bootstrap/exchange, and `/api/*`.
-
+The `hub-link` socket is HTTP-only and default-denies all but the fixed data routes, catalog, hub-state,
+usage, and `GET /readyz`; every `Upgrade` header, management, GUI, session, health, and unknown
+`/v1/*` route is rejected before dispatch. Its `opencodex-link.invalid` policy admits only configured
+key ids recorded by `links.json`, never the environment token. `ensureStarted()` is single-flight,
+final deletion closes the listener, and `src/server/index/optional-listeners.ts` runs supervisor teardown before closing this listener and the Claude intercept pair.
 ### Claude intercept pair
 
 At the end of the startup transaction, `startServer` also starts the optional Claude intercept pair
@@ -242,25 +242,25 @@ the ingress decision, `stop` joined into the listener shutdown) from `src/claude
 and a loopback TLS listener (`src/claude/intercept/listener.ts`) that presents a leaf for
 `api.anthropic.com` signed by a per-install authority (`src/claude/intercept/local-ca.ts`, persisted
 under `<OPENCODEX_HOME>/claude-intercept/` with a 0600 key; never installed into an OS trust store). CA reads and pair publication share a directory-bound SQLite lease; persisted certificates must match their private key and verify as a self-signed CA. Startup retries only lease contention with bounded asynchronous backoff before binding either listener.
-Claude Code reaches the pair through `HTTPS_PROXY` plus `NODE_EXTRA_CA_CERTS` in its settings env
+Claude Code reaches the pair through an authenticated `HTTPS_PROXY` URL plus `NODE_EXTRA_CA_CERTS` in its settings env
 (`src/claude/intercept/settings.ts`), so no `ANTHROPIC_BASE_URL` rewrite is involved and the client
 still believes it talks to Anthropic. The proxy splices `CONNECT api.anthropic.com:443` onto the TLS
-listener, relays every other CONNECT target blind, and refuses plain proxied HTTP and loopback targets.
-The TLS listener rewrites `POST /v1/messages` and `POST /v1/messages/count_tokens` onto a loopback
-origin and dispatches them to the same route table under the `claude-intercept` ingress, which takes
-the loopback request policy; every other path on the intercepted host is relayed verbatim to the
-configured Anthropic upstream. The pair is on by default on a hub (`claudeCode.intercept.enabled`),
-its proxy port defaults to the public port + 100 (`claudeCode.intercept.port`), and a bind failure
-degrades to a startup warning rather than a startup failure; stop joins both sockets. A server asked
-for an ephemeral public port (`startServer(0)`, the shape every in-process test fixture uses) has no
-stable port to derive from, so the pair stays off unless `claudeCode.intercept.port` is explicit. Requests on this ingress also honour first-party model bindings (`claudeCode.intercept.modelMap`); see [Claude Desktop](clients/claude-desktop.md#first-party-model-bindings). Picker mode adds a second, Desktop-only CONNECT proxy on the next port; see [Claude Desktop](clients/claude-desktop.md#picker-mode-the-desktop-egress-proxy).
+listener, relays every other CONNECT target blind, and refuses unauthenticated clients, plain proxied HTTP, and loopback targets. The per-install proxy token is stored owner-only under `<OPENCODEX_HOME>/claude-intercept/` (0600 plus a real per-user NTFS ACL on Windows, via `src/lib/windows-secret-acl.ts`, and re-pinned on every read-through `ensure`), and the settings file carrying it is written through the same hardened atomic writer. Every start runs `migrateClaudeInterceptSettings` (`src/claude/intercept/settings.ts`), which rewrites an owned env that no longer matches — e.g. a pre-auth URL left by an upgrade — while never creating an absent env or touching a foreign one, so a service restart cannot strand clients on 407s. Status/inspection reads the token without minting it; only apply and intercept startup create it.
+The TLS listener rewrites `POST /v1/messages` and `POST /v1/messages/count_tokens` to a loopback origin and dispatches them under the `claude-intercept` ingress; other paths relay to the configured upstream.
+The pair is on by default on a hub (`claudeCode.intercept.enabled`); its proxy port defaults to public port + 100 (`claudeCode.intercept.port`). Bind failure warns, and stop joins both sockets. With an ephemeral public port (`startServer(0)`), an explicit intercept port is required.
+This ingress honours first-party model bindings (`claudeCode.intercept.modelMap`); see [Claude Desktop](clients/claude-desktop.md#first-party-model-bindings). Picker mode adds a second Desktop CONNECT proxy on the next port; see [Claude Desktop](clients/claude-desktop.md#picker-mode-the-desktop-egress-proxy).
 
+`src/claude/intercept/client-class.ts` classifies each request by its Claude Code `User-Agent` entrypoint: `claude-desktop`, `claude-desktop-3p`, and `local-agent` are Desktop; other well-formed `claude-cli/<v> (external, <entrypoint>)` values are CLI; absent or malformed values are unknown.
+Only a client with its own first-party intent enabled (Desktop mode or `claudeCode.cliFirstParty`) enters the router for Messages paths; other paths use the configured upstream relay.
+Every path from an opted-out or unknown client, and every path while Claude routing is disabled, relays to real Anthropic through `relayToUpstream` with `CLAUDE_INTERCEPT_UPSTREAM`.
+The User-Agent split is a routing hint any local process can forge, not a trust boundary.
+Two independent intents can want that settings env: Desktop first-party mode and `claudeCode.cliFirstParty` for the standalone CLI. `src/claude/first-party-settings.ts` owns the union: `reconcileClaudeFirstPartySettings` writes the owned pair while either intent is on, keeps the file untouched while an intent is on but the intercept cannot run, and removes the owned pair only when neither intent remains. `firstPartyProxyStatus` classifies what the settings file currently points at against the bound listener (`none`, `live`, `stopped`, `disabled`, `broken`, `foreign`, `local`, `unknown`); it reads the proxy token and never mints it. `ocx claude` with Claude routing off launches natively; when the shared settings env carries opencodex's proxy it adds `NO_PROXY=*` and `no_proxy=*` so this launch bypasses it, unless an inherited foreign `HTTPS_PROXY` or `https_proxy` is present, in which case it warns instead.
 Auxiliary listener bind failures carry the listener key and effective address through `AuxiliaryListenerBindError` in `src/server/ports.ts`. `src/cli/index.ts` reports them without retrying the public port. Startup still rolls back every earlier socket synchronously.
 
-A failed optional bind initiates rollback of every earlier socket; normal stop joins all bound
-sockets before lifecycle release. The existing launchd/systemd installer remains the service owner
-and continues loading the data token from `service-api-token`; hub mode adds no service-manager
-fork and no token-bearing unit/plist field.
+A failed public, loopback, or management bind rolls back earlier sockets; a failed hub-link bind warns
+and exposes `failed{bind}` through optional-listener status while existing sockets remain available.
+Listener-port persistence failures expose `failed{persist}` and close the new socket. Normal stop joins
+sockets before release. The existing launchd/systemd installer remains the service owner and loads the data token from `service-api-token`; hub mode adds no service-manager fork or token-bearing unit/plist field.
 
 > Decision record: [ADR-0002](decisions/ADR-0002-lifecycle.md)
 
@@ -359,7 +359,7 @@ config snapshot and the bounded service-token observation needed for its `_remot
 it does not import the connect command, inspect catalog readiness, acquire lifecycle locks, or run
 config/secret ACL hardening.
 
-`src/remote/protocol.ts` owns pure interval/feature negotiation. `src/remote/hub-state.ts` owns the `GET|HEAD /v1/hub-state` contract, its caps, and the parser both sides share. `src/client/hub-client.ts` owns bounded, schema-validated remote catalog consumption, hub-state reads, and key-id probes; `src/client/hub-state.ts` owns the resolution and the owner-stamped 0600 cache, and a failed read reports "unavailable" rather than degrading to the client's own local provider and login state. `src/client/hub-relay.ts` is a fixed-authority management relay with URL, header, body, redirect, and stream bounds. The public data listener remains the direct client→hub path; the loopback management ingress never serves data-plane routes.
+`src/remote/protocol.ts` owns pure interval/feature negotiation. `src/remote/hub-state.ts` owns the `GET|HEAD /v1/hub-state` contract, its caps, and the parser both sides share. `src/client/hub-client.ts` owns bounded, schema-validated remote catalog consumption, hub-state reads, and key-id probes; `src/client/hub-state.ts` owns the resolution and the owner-stamped 0600 cache, and a failed read reports "unavailable" rather than degrading to the client's own local provider and login state. `src/client/hub-relay.ts` is a fixed-authority management relay with URL, header, body, redirect, and stream bounds. The public data listener remains the direct client→hub path; the loopback management ingress never serves data-plane routes. A client with `transport: "link"` reaches its hub through an SSH tunnel instead; see [Remote Link](remote-link.md). A client with a link sidecar owns its SSH tunnel; see [Remote Link](remote-link.md).
 
 ### Remote Hub status credential binding
 
@@ -394,7 +394,7 @@ Automatic Codex pool selection and account status share the [plan exclusion cont
 
 ### Empty forced search answers
 
-`src/web-search/loop.ts` makes at most one extra answer attempt after a clean forced-answer terminal with no visible output or tool call. The recovery has no tools and reuses gathered search results. Malformed calls fail before refusal/truncation passthrough, and well-formed recognized refusal/truncation terminals pass through unchanged, including empty or partial answers. The extra generation may incur provider usage.
+`src/web-search/loop.ts` makes at most one extra answer attempt after a clean forced-answer terminal with no visible output or tool call. The recovery has no tools and reuses gathered search results. Malformed calls fail before refusal/truncation passthrough, and well-formed recognized refusal/truncation terminals pass through unchanged, including empty or partial answers. The extra generation may incur provider usage. `src/web-search/run-turn-loop.ts` shares this recovery; below the search cap, `emptyCompletionRetry` permits one identical empty-answer retry per request with current tools and results. Errors and invalid terminals never authorize another search.
 
 OpenAI sidecar 429 replays run only when their backoff fits the remaining sidecar deadline; otherwise the original 429 remains the routing-health outcome rather than becoming a timeout. Reset recovery and 429 replays share one three-send budget per search, so the two layers cannot multiply physical sends.
 ## Scoped provider quota for Combo selection

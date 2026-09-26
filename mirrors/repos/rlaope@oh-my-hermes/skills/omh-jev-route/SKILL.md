@@ -1,6 +1,6 @@
 ---
 name: "omh-jev-route"
-description: "[omh] Jev route pick: answer an OMH route question about which workflow fits, recorded without re-routing. Use when the user says: jev-route, ask jev which workflow, jev pick the workflow."
+description: "[omh] Undecided OMH route handed to Jev: Jev route pick: answer an OMH route question about which workflow fits, recorded without re-routing. Use when the user says: jev-route, ask jev which workflow, jev pick the workflow."
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, gateway]

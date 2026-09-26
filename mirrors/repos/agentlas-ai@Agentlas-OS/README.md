@@ -52,6 +52,8 @@
 
 **Agentlas Hub is a free agent community.** Publishing and calling public agents requires no agent price, lease, or Agentlas credit purchase. The caller supplies their own model and API access; subscription plans cover Agentlas software and hosted features. Creator settlement for new Hub activity is closed. Existing account balances and historical claims remain subject to the applicable account terms.
 
+In the [Web Hub](https://agentlas.cloud/hub), each public agent has a space for browsing its release files when the author permits source access, discussing the agent, and exploring compatible Experience Chips.
+
 ### Install Agentlas Desktop
 
 **macOS · Linux**
@@ -295,8 +297,9 @@ and 93%** of the time. The default is 30.
 
 Desktop is the host itself, so it decides in code — **before** a run starts —
 whether the work needs one agent or a team. That decision is recorded as a
-reserved run, not a suggestion. It staffs only the agents you already installed,
-and bringing in paid outside help always asks first.
+reserved run, not a suggestion. It can staff installed agents and public Hub
+agents. Public Hub agent calls have no Agentlas fee; your chosen host or model/API
+provider may charge for execution.
 
 Every LLM you use, in one place: the coding CLIs you already subscribe to
 (Claude Code, Codex, Antigravity/Gemini, Cursor, Grok, Kimi), your own API keys
@@ -753,7 +756,7 @@ forcing your work into one model provider:
 
 Agents generated from vague, single-sentence prompts fail under real-world edge cases. Hephaestus v1.1.0 positions task specification as a first-class OS service through the **Briefing Interview Engine**:
 
-The current v1.2.50 release carries the resolved Work Brief through host-owned Network 2.0 selection, exact release pinning, and server-first tool discovery.
+The current v1.2.51 release carries the resolved Work Brief through host-owned Network 2.0 selection, exact release pinning, and server-first tool discovery.
 
 *   **Quantitative Ambiguity Gates:** The compilation scheduler evaluates prompt clarity across four key vectors (Goal, Constraints, Scope, Context). The build process is strictly gated until the ambiguity score passes a numeric threshold (ambiguity score $\le 0.2$, with per-dimension safety floors). Clear prompts bypass the interview loop entirely via a budget system that caps questions for trivial tasks.
 *   **Lens-Driven System Analysis:** Clarifying questions are dynamically sourced from a structured lens table (Scope, Intent, Challenge, System Architecture) focusing on critical routing indicators: *anti-scope bounds* (what the agent must NOT do), *verifiable acceptance criteria*, and *exit conditions*.
@@ -858,7 +861,7 @@ above; it also writes `~/.claude/commands/agentlas.md` and `hep-*.md`. Claude Co
 
 From your OS terminal:
 ```bash
-codex plugin marketplace add agentlas-ai/Agentlas-OS --ref v1.2.50
+codex plugin marketplace add agentlas-ai/Agentlas-OS --ref v1.2.51
 codex plugin add hephaestus@agentlas-core-engine
 ```
 *Note: Codex does not accept `/plugin marketplace add` inside the app — run the two commands above in your OS terminal. The OS-terminal CLI command is singular (`codex plugin`); inside the Codex app, the plugin browser slash command is plural (`/plugins`). Codex 0.117+ removed custom `/prompts:*` commands; after install, invoke the supported plugin skill as `$hephaestus-network <request>`.*

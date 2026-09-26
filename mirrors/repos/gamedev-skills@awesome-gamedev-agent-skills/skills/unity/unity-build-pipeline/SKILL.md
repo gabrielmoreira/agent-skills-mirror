@@ -32,7 +32,10 @@ platform-NDA territory. Storefront submission → `steam-publish` / `itch-publis
    (`BuildTarget` / `EditorUserBuildSettings`).
 3. **Choose the scripting backend** (Player Settings): **Mono** (fast iteration, desktop) vs
    **IL2CPP** (AOT C++; required for many platforms, better perf, harder to reverse). IL2CPP
-   needs the platform's C++ toolchain installed.
+   needs the platform's C++ toolchain installed. (Forward note: Unity is developing a
+   **CoreCLR** backend as a modern .NET runtime successor to Mono, but it is *experimental*,
+   desktop-only, and not production-ready as of Unity 6.7 — so for 6.3 LTS the choice stays
+   Mono vs IL2CPP.)
 4. **Tune size/perf:** set Managed Stripping Level (Disabled → Minimal → Low → Medium → High)
    and protect reflection-only code with a `link.xml`. Set Quality Settings per platform.
 5. **Script the build** with `BuildPipeline.BuildPlayer(BuildPlayerOptions)` and **inspect the
@@ -114,7 +117,9 @@ Unity -batchmode -quit -nographics \
   argument parsing, exit codes) and an Addressables content-build call, read
   `references/ci-build-script.md`.
 - Primary docs: `ScriptReference/BuildPipeline.BuildPlayer`, Unity Manual build sections
-  (player settings, managed code stripping).
+  (player settings, managed code stripping). For the forward-looking CoreCLR backend, see the
+  experimental note at
+  `https://docs.unity3d.com/6000.7/Documentation/Manual/scripting-backends-coreclr.html`.
 
 ## Related skills
 

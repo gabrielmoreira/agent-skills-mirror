@@ -31,7 +31,9 @@ and their own counsel.
 
 1. **Partner account + Steam Direct fee.** Each new app requires the Steam Direct recoupable
    fee (USD $100 per app at time of writing). You receive an **App ID** — find it on your
-   Steamworks homepage. Treat the App ID as the key to everything below.
+   Steamworks homepage. Treat the App ID as the key to everything below. For your first few
+   titles, Valve also enforces a **21-day wait** between paying the app fee and releasing
+   that game, so pay it well before the planned launch date.
 2. **A dedicated build account with least privilege.** Builds require a Steam account in your
    partner group with **Edit App Metadata** and **Publish App Changes To Steam**. Create a
    *separate* build account with only those permissions (not your admin login). Releasing the
@@ -56,8 +58,8 @@ and their own counsel.
      failures.
 2. **Build the store page (presence track).** Fill graphical assets, description, tags,
    trailers, system requirements. When complete, click **Mark as ready for review**. Store
-   review takes ~3-5 business days; submit at least **7 days** before you want it live. It
-   must be in **Coming Soon** for at least **2 weeks** before release.
+   review takes ~3-5 business days; submit at least **7 business days** before you want it
+   live. It must be in **Coming Soon** for at least **2 weeks** before release.
 3. **Create your build scripts.** Start with the simple app-build `.vdf` in Patterns below;
    for multi-depot/multi-platform apps use depot scripts (see the reference). The script maps
    local files into depots and names where build output/logs go.
@@ -170,7 +172,8 @@ BuildID. The build is NOT live yet; set it live per the workflow above.
   read `references/steampipe-build-scripts.md`.
 - Primary docs: Steamworks "Uploading to Steam" (`partner.steamgames.com/doc/sdk/uploading`),
   "Release Process" (`/doc/store/releasing`), "Branches (Betas)" (`/doc/store/application/branches`),
-  "Depots" (`/doc/store/application/depots`).
+  "Depots" (`/doc/store/application/depots`), "Onboarding" (`/doc/gettingstarted/onboarding`,
+  first-title waiting periods), "Review Process" (`/doc/store/review_process`).
 
 ## Related skills
 

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `rohitg00/ai-engineering-from-scratch` — 26 default patterns, 0 followed patterns, 26 file(s) materialized.
+Mirror of `rohitg00/ai-engineering-from-scratch` — 26 default patterns, 0 followed patterns, 29 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `rohitg00/ai-engineering-from-scratch` — 26 default patterns, 0 foll
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 26 |
+| Files         | 29 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -66,25 +66,28 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 5 | ✓ | [`.claude/skills/learn-agent-skills/SKILL.md`](.claude/skills/learn-agent-skills/SKILL.md) |
 | 6 | ✓ | [`.claude/skills/learn-mcp/SKILL.md`](.claude/skills/learn-mcp/SKILL.md) |
 | 7 | ✓ | [`.claude/skills/learn/SKILL.md`](.claude/skills/learn/SKILL.md) |
-| 8 | ✓ | [`.claude/skills/start-learning/SKILL.md`](.claude/skills/start-learning/SKILL.md) |
-| 9 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 10 | ✓ | [`certifications/claude/lessons/19-claude-code-memory-rules-skills-and-ci/outputs/migration-review-skill/SKILL.md`](certifications/claude/lessons/19-claude-code-memory-rules-skills-and-ci/outputs/migration-review-skill/SKILL.md) |
-| 11 | ✓ | [`phases/13-tools-and-protocols/22-skills-and-agent-sdks/outputs/skill-contract-reviewer/SKILL.md`](phases/13-tools-and-protocols/22-skills-and-agent-sdks/outputs/skill-contract-reviewer/SKILL.md) |
-| 12 | ✓ | [`phases/13-tools-and-protocols/24-skill-discovery-and-progressive-disclosure/outputs/skill-catalog-builder/SKILL.md`](phases/13-tools-and-protocols/24-skill-discovery-and-progressive-disclosure/outputs/skill-catalog-builder/SKILL.md) |
-| 13 | ✓ | [`phases/13-tools-and-protocols/25-skill-invocation-and-routing/outputs/skill-invocation-router/SKILL.md`](phases/13-tools-and-protocols/25-skill-invocation-and-routing/outputs/skill-invocation-router/SKILL.md) |
-| 14 | ✓ | [`phases/13-tools-and-protocols/26-skill-permissions-sandboxes-and-trust/outputs/skill-safety-reviewer/SKILL.md`](phases/13-tools-and-protocols/26-skill-permissions-sandboxes-and-trust/outputs/skill-safety-reviewer/SKILL.md) |
-| 15 | ✓ | [`phases/13-tools-and-protocols/27-skill-evals-packaging-and-portability/outputs/skill-release-gate/SKILL.md`](phases/13-tools-and-protocols/27-skill-evals-packaging-and-portability/outputs/skill-release-gate/SKILL.md) |
-| 16 | ✓ | [`phases/14-agent-engineering/42-agent-workbench-capstone/outputs/agent-workbench-pack/AGENTS.md`](phases/14-agent-engineering/42-agent-workbench-capstone/outputs/agent-workbench-pack/AGENTS.md) |
-| 17 | ✓ | [`skills/check-understanding/SKILL.md`](skills/check-understanding/SKILL.md) |
-| 18 | ✓ | [`skills/claude-certification/agents/openai.yaml`](skills/claude-certification/agents/openai.yaml) |
-| 19 | ✓ | [`skills/claude-certification/SKILL.md`](skills/claude-certification/SKILL.md) |
-| 20 | ✓ | [`skills/course-guide/SKILL.md`](skills/course-guide/SKILL.md) |
-| 21 | ✓ | [`skills/find-your-level/references/answer-key.md`](skills/find-your-level/references/answer-key.md) |
-| 22 | ✓ | [`skills/find-your-level/SKILL.md`](skills/find-your-level/SKILL.md) |
-| 23 | ✓ | [`skills/learn-agent-skills/SKILL.md`](skills/learn-agent-skills/SKILL.md) |
-| 24 | ✓ | [`skills/learn-mcp/SKILL.md`](skills/learn-mcp/SKILL.md) |
-| 25 | ✓ | [`skills/learn/SKILL.md`](skills/learn/SKILL.md) |
-| 26 | ✓ | [`skills/start-learning/SKILL.md`](skills/start-learning/SKILL.md) |
+| 8 | ✓ | [`.claude/skills/mcpa-certification/SKILL.md`](.claude/skills/mcpa-certification/SKILL.md) |
+| 9 | ✓ | [`.claude/skills/start-learning/SKILL.md`](.claude/skills/start-learning/SKILL.md) |
+| 10 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 11 | ✓ | [`certifications/claude/lessons/19-claude-code-memory-rules-skills-and-ci/outputs/migration-review-skill/SKILL.md`](certifications/claude/lessons/19-claude-code-memory-rules-skills-and-ci/outputs/migration-review-skill/SKILL.md) |
+| 12 | ✓ | [`phases/13-tools-and-protocols/22-skills-and-agent-sdks/outputs/skill-contract-reviewer/SKILL.md`](phases/13-tools-and-protocols/22-skills-and-agent-sdks/outputs/skill-contract-reviewer/SKILL.md) |
+| 13 | ✓ | [`phases/13-tools-and-protocols/24-skill-discovery-and-progressive-disclosure/outputs/skill-catalog-builder/SKILL.md`](phases/13-tools-and-protocols/24-skill-discovery-and-progressive-disclosure/outputs/skill-catalog-builder/SKILL.md) |
+| 14 | ✓ | [`phases/13-tools-and-protocols/25-skill-invocation-and-routing/outputs/skill-invocation-router/SKILL.md`](phases/13-tools-and-protocols/25-skill-invocation-and-routing/outputs/skill-invocation-router/SKILL.md) |
+| 15 | ✓ | [`phases/13-tools-and-protocols/26-skill-permissions-sandboxes-and-trust/outputs/skill-safety-reviewer/SKILL.md`](phases/13-tools-and-protocols/26-skill-permissions-sandboxes-and-trust/outputs/skill-safety-reviewer/SKILL.md) |
+| 16 | ✓ | [`phases/13-tools-and-protocols/27-skill-evals-packaging-and-portability/outputs/skill-release-gate/SKILL.md`](phases/13-tools-and-protocols/27-skill-evals-packaging-and-portability/outputs/skill-release-gate/SKILL.md) |
+| 17 | ✓ | [`phases/14-agent-engineering/42-agent-workbench-capstone/outputs/agent-workbench-pack/AGENTS.md`](phases/14-agent-engineering/42-agent-workbench-capstone/outputs/agent-workbench-pack/AGENTS.md) |
+| 18 | ✓ | [`skills/check-understanding/SKILL.md`](skills/check-understanding/SKILL.md) |
+| 19 | ✓ | [`skills/claude-certification/agents/openai.yaml`](skills/claude-certification/agents/openai.yaml) |
+| 20 | ✓ | [`skills/claude-certification/SKILL.md`](skills/claude-certification/SKILL.md) |
+| 21 | ✓ | [`skills/course-guide/SKILL.md`](skills/course-guide/SKILL.md) |
+| 22 | ✓ | [`skills/find-your-level/references/answer-key.md`](skills/find-your-level/references/answer-key.md) |
+| 23 | ✓ | [`skills/find-your-level/SKILL.md`](skills/find-your-level/SKILL.md) |
+| 24 | ✓ | [`skills/learn-agent-skills/SKILL.md`](skills/learn-agent-skills/SKILL.md) |
+| 25 | ✓ | [`skills/learn-mcp/SKILL.md`](skills/learn-mcp/SKILL.md) |
+| 26 | ✓ | [`skills/learn/SKILL.md`](skills/learn/SKILL.md) |
+| 27 | ✓ | [`skills/mcpa-certification/agents/openai.yaml`](skills/mcpa-certification/agents/openai.yaml) |
+| 28 | ✓ | [`skills/mcpa-certification/SKILL.md`](skills/mcpa-certification/SKILL.md) |
+| 29 | ✓ | [`skills/start-learning/SKILL.md`](skills/start-learning/SKILL.md) |
 
 ---
 

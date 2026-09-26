@@ -1,6 +1,6 @@
 ---
 name: "omh-deploy-and-monitor"
-description: "[omh] Hermes Deploy-and-Monitor workflow: release checklist, deploy decision, health signals, rollback gate, and post-deploy status. Use when the user says: deploy-and-monitor, deploy and monitor, deploy monitor, deployment monitoring, release monitor, post deploy, post-deploy, rollback."
+description: "[omh] Release rollout needing health signals: release checklist, deploy decision, health signals, rollback gate, and post-deploy status. Use when the user says: deploy-and-monitor, deploy and monitor, deploy monitor, deployment monitoring, release monitor, post deploy, post-deploy, rollback."
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, monitoring]

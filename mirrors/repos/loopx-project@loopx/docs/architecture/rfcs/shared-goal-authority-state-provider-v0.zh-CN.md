@@ -20,11 +20,20 @@
 - 语言说明：[英文版](./shared-goal-authority-state-provider-v0.md)与本中文版互为
   语义镜像；两者不一致属于缺陷
 
-## 当前交付边界（2026-09-24）
+## 当前交付边界（2026-09-25）
 
-剩余 PR 估算已按 `d64c4d377` 和开放 PR 重新核对，旧“5–8 / 6–8 / 7–9”数字撤回。
-已合入实现、六个相关在途 PR、四个拟新增批次（含当前完整来源传输）和 D1–D3
-验收分开记录；四批不是承诺总计只剩四个 PR。唯一当前清单见[实现核对与退出证据](ledger/shared-goal-authority-state-provider-v0/2026-09-24-default-cutover-reconciliation.zh-CN.md)。
+按 `37bbaec79` 与当前 PR 状态核对：完整来源传输、事务捕获、来源组装及此前五个
+在途 caller/event 修复都已合入，不再计入待开发。当前晋升准入修复之后，规划三个
+明确代码边界：外部动作执行区间保护、事件 writer 绑定与整 Goal 迁移/回退闭环、
+默认启用与最后一批有界 Python 退役。#4931 与 D2 的剩余资格证据单列；三个是
+可命名的开发批次，不是保证总 PR 数。[唯一当前清单与退出条件](ledger/shared-goal-authority-state-provider-v0/2026-09-24-default-cutover-reconciliation.zh-CN.md)。
+
+## 旧观测退役检查点（2026-09-24）
+
+[当前交付清单](ledger/shared-goal-authority-state-provider-v0/2026-09-24-observation-retirement.zh-CN.md)
+区分已合入、在途 PR 与资格证据。本次删除旧 Python observer 和 TS observation 提交链，
+没有将其冒充 executor 存活保护或 event writer 绑定。只保留一个可写 shadow lineage，
+仍然默认关闭，且必须显式 bootstrap。
 
 ## 管家规模化的持久化路线（2026-09-16）
 
@@ -34,10 +43,20 @@
 
 ## 当前实现检查点
 
+长历史 closeout 读取复用仅缓存可重新验证的解析前缀，不新增持久 authority 或放宽
+writer fence/D2。剩余三个实现边界不因该运行缺陷修复而机械减一。
+[证据与边界](ledger/shared-goal-authority-state-provider-v0/2026-09-24-default-cutover-reconciliation.zh-CN.md#长历史收尾检查本次修复与剩余边界)。
+
+晋升准入现将完整来源绑定到当前 registry witness，并在 TS 持锁范围内重新校验；
+保存计划执行保留已审核的 handoff 策略，失败结果如实报告持久 fence。
+已提交事务的恢复仍按原 fence/receipt，不要求失去权威的旧来源重新有效。
+这关闭 L7/L8 的已复现集成缺口，不重复计算已交付 capture，也不宣称全局默认已切换。
+[操作与边界](../../reference/reviewed-coordination-promotion.zh-CN.md)。
+
 终结 caller 现将审核与验证绑定 canonical 来源，历史回执恢复不再依赖私有 argv。
 Agent 完成和 Monitor 停止复用普通编辑的当前 head 显示确认。
 [调用与恢复合同](../../reference/canonical-terminal-review.zh-CN.md)。此批推进 L2/L5，
-未闭合 executor-held fence、D1–D3 或默认 onboarding；剩余工作使用当前核对表。
+未闭合 executor-held fence、D1–D3 或默认 onboarding；剩余工作使用当前核对表，下文历史批次估算不再作为当前剩余 PR 数量。
 
 本地 registry witness 现经同一 TS owner 覆盖 canonical create/claim/update、
 Monitor poll 与 terminal mutation；File、SQLite、service-injected PostgreSQL
@@ -1237,35 +1256,12 @@ legacy-compatible、unknown-key、malformed-list、malformed-nested 与 non-stri
 这些是 Stage 1 parity 证据，不代表 provider promotion，也不代表后续 provider profile
 已经完成资格化。
 
-#### Stage 2C 观察基础：本地提交后 capture
+#### Stage 2C 旧提交后观测：已退役
 
-Stage 2C 的前半段是一个显式开启、默认关闭的产品路径。先预览，再开启：
-
-```bash
-loopx configure-goal --goal-id GOAL --local-authority-shadow-file
-loopx configure-goal --goal-id GOAL --local-authority-shadow-file --execute
-```
-
-Todo、handoff-mode、follow-up 与 task-lease facade 会在本地主写返回成功后，采样
-完整当前本地投影，再让 `FileAuthorityStore` 保存该 snapshot。
-`observation_trigger` 只记录为何开始采样，不是主写 transaction identity；并发主写
-因此可能出现在该次 snapshot 中。`captured` 或 `replayed` 只证明候选侧 observation
-commit，不表示已经对比 source 与 candidate；结果明确携带
-`parity_verdict=not_evaluated`。
-
-候选数据位于 legacy 单 Goal runtime tree
-之外的 `authority-shadow/file/`，因此 state migration 不会复制 store identity 或
-revision；真正执行迁移时，会从迁移后的本地主状态为目标端建立一条新 lineage。
-候选失败只形成 observation result，不会推翻已经完成的本地写入。
-
-用
-`loopx configure-goal --goal-id GOAL --clear-local-authority-shadow --execute`
-即可关闭 observer。这里回退的只是观察路径：Markdown 与 task-lease 文件始终是
-canonical。本切片不会读取候选来决策，不会 fence legacy writer，不会资格化远端
-provider，也没有完成 Stage 2C 后半段的本地 canonical promotion。若进程恰好在本地
-提交后、observer 调用前崩溃，该次 observation 可能丢失；后续成功写入或 migration
-seed 会刷新完整当前投影，但这里不宣称已有 durable shadow outbox 或与主写 transaction
-关联的 receipt。这套 plumbing 不是 parity evidence，不能单独支持 Stage 2C promotion。
+旧 observer 写入已删除。旧配置可识别但不再启用，重新启用请求被拒绝；目录迁移不再
+重新创建观测历史。保留文件不删除。需要捕获时显式配置并 bootstrap 现有事务绑定
+runtime shadow；旧 observation 不会升级为晋升证据。
+[操作与兼容](../../reference/authority-observation-retirement.md)。
 
 #### 实施前置条件：先让本地文件模式经过同一协调合同
 
@@ -1705,6 +1701,10 @@ retention 决策，不能用一个会制造第二 writer 的诊断 CLI 代替。
 
 #### Stage ladder 端到端证据（2026-09-03）
 
+历史交付记录：下述旧 observation writer 验收行已于 2026-09-24 退役。
+[当前验收梯子](../../../examples/shared-goal-authority-e2e/README.md)改为事务捕获读回与
+显式升级验收；不要求退役 writer 继续写入。
+
 本分支上存在一条增量式端到端 "stage ladder"：它通过真实的
 `python -m loopx.cli` 逐行演练本 RFC 每个已完成阶段的声明，并按行给出可机器
 判定的结论：`loopx/control_plane/testing/authority_e2e_ladder.py`（行注册表、
@@ -1921,18 +1921,11 @@ decision authority，并且 caller-visible parity 与 rollback 能在同一有�
     CLI 之前保持 coverage-only，先把它们的场景电池移植为 TypeScript 测试，再在
     promotion PR 中删除；两种本地 aggregate 格式不能同时为准。file profile 的
     `qualification_holds` 翻为 `[]` 与 `stage` 字面量的改变只在该 PR 内发生。*
-14. `main` 上现在有两条针对同一批写者的默认关闭 shadow lineage：#3818 的观察捕获
-    （`coordination.authority_shadow`，`authority-shadow/file/<goal>`，投影 v0）与
-    runtime shadow（`coordination.runtime_shadow`，`authority-shadow/file-v0`，
-    投影 v0，带 `inspect`、`qualify`、`bootstrap`、`rollback`、`read-candidate`）。
-    两者都在主写提交之后重新采样源，因此都带着 #3818 评审点名的并发写者混入与
-    commit 到 dispatch 之间的丢失窗口。哪条是 Stage 2C 的 lineage，什么来关闭这两
-    个窗口？*拟议答案：runtime shadow 是 lineage，因为 parity 报告、bootstrap、隔离
-    式 rollback、读形状与 promotion kernel 已经绑定在它上面。parity 半段的事务绑
-    定 outbox（写者在自己已持有的锁内写 prepared entry，主写返回后写 committed
-    标记，有界 drain 以 `operation_id = entry id` 提交）成为喂给
-    `coordination.runtime_shadow.commit` 的持久捕获；该捕获接线后 #3818 的观察路径
-    退役。RFC 不得保留两种 shadow 记录格式。*
+14. 哪条 shadow lineage 保持可写？*本次退役收敛：唯一可写 lineage 为
+    `coordination.runtime_shadow`，复用已有的来源锁内 prepare 与稳定 entry identity
+    投递。删除旧 `coordination.authority_shadow` writer；历史记录仍可读，但不能证明
+    捕获或晋升资格。尚未绑定事务边界的事件 writer 继续拒绝，删除观察器不等于关闭
+    事件捕获缺口。*
 
 ---
 
@@ -2611,3 +2604,5 @@ onboarding 按当前核对表分别归为代码、在途 PR 和验收活动，�
 2026-09-24：[完整源捕获的 TS 组装与剩余交付包](ledger/shared-goal-authority-state-provider-v0/2026-09-24-source-capture.zh-CN.md)统一源构造、身份拒绝和当前图成员规则；不关闭 L7/D2/D3 或启用默认 provider。
 
 2026-09-24: [带租约接力与剩余本地默认交付包](ledger/shared-goal-authority-state-provider-v0/2026-09-24-leased-continuation.zh-CN.md).
+
+事件重放与剩余切换清单见 [2026-09-25](ledger/shared-goal-authority-state-provider-v0/2026-09-25-event-replay.zh-CN.md).

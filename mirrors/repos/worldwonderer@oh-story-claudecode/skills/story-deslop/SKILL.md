@@ -16,7 +16,7 @@ metadata: {"openclaw":{"source":"https://github.com/zenstory-ai/oh-story-claudec
 
 > Agent 兼容性：只检查当前运行时的 canonical 目录：Claude `.claude/agents/{agent}.md`、OpenCode `.opencode/agents/{agent}.md`、Codex `.codex/agents/{agent}.toml`、Antigravity `.agents/agents/agent-name/agent.md`（`agent-name` 为目标 agent 名），不得因其他端文件存在而误判。Codex 使用同名 `agent_type`；Antigravity 使用 `invoke_subagent` + `TypeName`。对应运行时未暴露 custom-agent registry / `invoke_subagent` 或返回未知 agent 时，必须降级 solo/direct。检测到 `.zcode/` 时同样直接 solo/direct，因为 ZCode 3.3.4 不执行项目 custom agents；报告 `Fallback: project custom agents unavailable -> solo`。Claude 用 `subagent_type`；OpenCode 用 `subagent` 工具的 `agent` 参数。
 >
-> Spawn 版本提示（不阻断 spawn）：先读取项目根 `.story-deployed` 的 `agents_version`。与本版 `agents_version: 31` 不一致时（标记缺失、字段缺失/非整数、小于或大于 31）**照常按文件存在性检查并 spawn**，同时报告 `Notice: agents bundle 版本不匹配（项目 {N}，本版 31）` 并提示重新运行 `/story-setup` 后新开会话；大于 31 时额外提示先更新 oh-story-claudecode，不要用本地旧版 setup 降级覆盖。只有 agent 文件缺失、或运行时不暴露 custom agent 时才降级 solo/direct，报告 `Fallback: ... -> solo`。
+> Spawn 版本提示（不阻断 spawn）：先读取项目根 `.story-deployed` 的 `agents_version`。与本版 `agents_version: 32` 不一致时（标记缺失、字段缺失/非整数、小于或大于 32）**照常按文件存在性检查并 spawn**，同时报告 `Notice: agents bundle 版本不匹配（项目 {N}，本版 32）` 并提示重新运行 `/story-setup` 后新开会话；大于 32 时额外提示先更新 oh-story-claudecode，不要用本地旧版 setup 降级覆盖。只有 agent 文件缺失、或运行时不暴露 custom agent 时才降级 solo/direct，报告 `Fallback: ... -> solo`。
 
 ## 核心哲学
 
@@ -85,6 +85,8 @@ AI味不按语法错误处理，也不需要"修正"。它属于风格问题：�
 
 ## 检测流程
 
+去 AI 味只有一条管线：确定性检测器 → 按分级选 Gate → 一次定点改写 → 复扫。长篇写作的章末检测与按需审查、story-review 的确定性预检用的是同一套检测器与 Gate，本 skill 是它的独立入口。
+
 ### Phase 1：AI味扫描
 
 对用户提交的文本做快速扫描，标记AI味浓重的位置。报告写给作者：问题用白话说并附原文，脚本名、检测器类别名、Gate 字母不进报告。
@@ -119,6 +121,7 @@ AI味不按语法错误处理，也不需要"修正"。它属于风格问题：�
 node scripts/check-ai-patterns.js --check --fail-on=blocking <正文文件...>
 ```
 
+- 检测器 blocking＝必须修，advisory＝建议看；轻/中/重分档另按「诊断与分级」定，用来选 Gate。
 - severity=blocking 的类别（`not-is-comparison` / `em-dash` / `voice-contrast` / `negation-parade` / `reverse-not-is` / `trailer-ending` / `trailer-summary`）并入 Gate B，属于写作/去 AI 味时优先处理的 blocking 类问题。
 - 其他 findings（碎句号、长段落、微动作、套式反应细节、动作清单、抽象总结、套词、比喻密度、解释链、公文腔、过度精炼、低连接密度、引号强调滥用、`formulaic-parallelism` 工整并列）只作读感提示；完整类别和修法见 `references/anti-ai-writing.md`。其中工整并列会扫描台词，必须读语境判断，不能因为 hook 对台词低误报豁免就跳过。
 - 处理方式：删掉否定铺垫，直接写后项；或改成角色动作、物件细节、身体反应来呈现。
@@ -157,11 +160,7 @@ node scripts/check-ai-patterns.js --check --fail-on=blocking <正文文件...>
 >
 > **综合判定规则**：取六项指标中的最高档位。任一指标达重度即按重度处理；无重度时，中度指标 ≥3 项按中度处理，否则按轻度处理。
 
-加载 [references/anti-ai-writing.md](references/anti-ai-writing.md) 的「系统性去AI三遍法」获取完整流程。三遍法与本 skill 的关系（覆盖关系，不是 1:1 映射）：
-- **Pass 1（去泛化）** 覆盖 Gate A 的禁用词、Gate C 的抽象情绪、Gate D 的工整对仗、Gate E 的同语气对话粗扫、Gate G 的解释腔/上帝视角剧透/软评判
-- **Pass 2（去书面化）** 覆盖 Gate A 中的书面腔词、Gate B 的句式套路深化
-- **Pass 3（回自然感）** 覆盖 Gate D 的长短节奏、Gate E 的对话差异化、Gate F 的结尾去升华、补具体感官细节
-- Gate 范围以用户指定为先，未指定时按上方处理策略表；三遍法仅安排所选 Gate 的执行顺序，不扩大改写范围。
+**改写顺序**（只排所选 Gate 的先后，不扩大范围）：先去泛化与套话（禁用词、抽象情绪、工整对仗、解释腔），再去书面腔，最后回自然节奏、对话差异与结尾落点；做法与范例见 [references/anti-ai-writing.md](references/anti-ai-writing.md)。
 
 ---
 
@@ -177,7 +176,7 @@ node scripts/check-ai-patterns.js --check --fail-on=blocking <正文文件...>
 
 #### Gate 规则入口
 
-实际执行者在逐项清除前读取 [references/deslop-gates.md](references/deslop-gates.md) 的删除保护与所选 Gate 细则；inline 与 agent 使用同源规则。三遍法仍按前文安排所选 Gate 的执行顺序，不另起一次全篇去味。
+实际执行者在逐项清除前读取 [references/deslop-gates.md](references/deslop-gates.md) 的删除保护与所选 Gate 细则；inline 与 agent 使用同源规则。按上文「改写顺序」排所选 Gate 的先后，不另起一次全篇去味。
 
 ### Phase 4：确定性收尾（文件模式）
 
@@ -249,7 +248,7 @@ node scripts/normalize-punctuation.js <正文文件...>
 |------|----------|
 | [references/banned-words.md](references/banned-words.md) | 检测和替换禁用词时 |
 | [references/deslop-gates.md](references/deslop-gates.md) | 逐项清除前：删除保护与所选 Gate 的细则、示例 |
-| [references/anti-ai-writing.md](references/anti-ai-writing.md) | **去AI味完整指南**：预防+三遍法+范例 |
+| [references/anti-ai-writing.md](references/anti-ai-writing.md) | **去AI味完整指南**：预防+改写顺序+范例 |
 | [scripts/normalize-punctuation.js](scripts/normalize-punctuation.js) | 文件模式落盘后做确定性标点收尾；默认保留引号风格 |
 | [scripts/check-ai-patterns.js](scripts/check-ai-patterns.js) | 文件模式「AI味扫描」预检与「确定性收尾」复扫（只看引号外叙述），只报告不改写 |
 | [scripts/check-degeneration.js](scripts/check-degeneration.js) | 文件模式「确定性收尾」复扫，只报告不改写 |

@@ -1,15 +1,14 @@
 ---
 name: hormuz-strait
 description: >
-  Check the current status of the Strait of Hormuz — shipping transit data, oil price impact,
-  stranded vessels, insurance risk levels, diplomatic developments, and global trade impact.
-  Use this skill whenever the user asks about the Strait of Hormuz, Hormuz chokepoint, Persian Gulf
-  shipping risk, oil transit disruption, war risk premium in the Gulf, Middle East shipping routes,
-  tanker traffic through Hormuz, oil supply chain risk, or geopolitical risk affecting energy markets.
-  Triggers include: "Hormuz status", "Strait of Hormuz", "is Hormuz open", "shipping through the Gulf",
-  "oil chokepoint", "Persian Gulf tanker traffic", "war risk premium", "Hormuz crisis",
-  "energy supply chain risk", "oil transit disruption", "Middle East shipping",
-  any mention of Hormuz or Persian Gulf in context of oil, shipping, or geopolitical risk.
+  Check the live status of the Strait of Hormuz from the Hormuz Strait Monitor
+  dashboard: open, restricted, or closed status, tanker transits vs normal, stranded
+  vessels, Brent price impact, war-risk insurance levels, cargo throughput, tanker
+  freight rates, diplomatic developments, and global trade impact. Use this skill
+  whenever the user asks about the Strait of Hormuz or the Persian Gulf in the context
+  of oil, shipping, or geopolitical risk — whether Hormuz is open, chokepoint or
+  transit disruption, Gulf tanker traffic, war-risk premiums, Middle East shipping
+  routes, or energy supply-chain risk.
 ---
 
 # Hormuz Strait Monitor Skill
@@ -60,7 +59,7 @@ Format the results clearly for financial research. Adapt the presentation based 
 
 ### General status briefing (default)
 
-When the user asks for a general update, present a concise briefing covering all key sections:
+When the user asks for a general update, cover these sections — a line each while shipping is operating normally, more depth wherever there is active disruption:
 
 1. **Strait Status** — lead with the current status (e.g., "OPEN", "RESTRICTED", "CLOSED"), how long it's been in that state, and the description
 2. **Ship Traffic** — current transits, last 24h count, and percent of normal
@@ -84,9 +83,7 @@ When the user asks for a general update, present a concise briefing covering all
 
 ### Risk assessment
 
-Based on the data, provide a brief risk assessment:
-
-Values are returned uppercase.
+Based on the data, provide a brief risk assessment. `insurance.level` values come back uppercase:
 
 | Insurance Level | Interpretation |
 |---|---|

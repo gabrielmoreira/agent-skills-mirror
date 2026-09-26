@@ -1,25 +1,20 @@
 ---
 name: skill-creator
 description: >
-  Create new skills, modify and improve existing skills, and measure skill performance.
-  Use when users want to create a skill from scratch, update or optimize an existing skill,
-  run evals to test a skill, benchmark skill performance with variance analysis, or iterate
-  on skill quality. Triggers: "create a skill", "make a new skill", "build a skill for",
-  "write a skill that", "skill for doing X", "I want a skill to", "new skill", "design a skill",
-  "scaffold a skill", "improve this skill", "optimize this skill", "this skill isn't working well",
-  "evaluate this skill", "score this skill", "how good is this skill", "run evals on",
-  "benchmark this skill", "test this skill's quality", "skill quality", "skill performance".
-  Also triggers when a user describes a repeatable workflow they want to automate, says
-  "I keep doing X manually", "can you remember how to do X", or "turn this into a skill".
+  Create, improve, and evaluate agent skills (SKILL.md plus reference files). Use this
+  skill whenever the user wants to build, scaffold, or design a new skill, improve or
+  fix an existing skill that isn't working well, score or benchmark a skill's quality
+  or run evals on it, or turn a repeated manual workflow into a skill ("I keep doing
+  X manually", "can you remember how to do X", "turn this into a skill").
 ---
 
 # Skill Creator
 
-Create, evaluate, and iterate on high-quality agent skills. This skill guides the entire lifecycle: planning what the skill should do, writing SKILL.md and reference files, scoring quality against a rubric, and iterating until the skill meets production standards.
+Create, evaluate, and iterate on high-quality agent skills. This skill covers the whole lifecycle: planning what the skill should do, writing SKILL.md and reference files, scoring quality against a rubric, and iterating until the skill meets production standards.
 
-**Philosophy:** A great skill is not a long skill. It is a *precise* skill: exhaustive triggers, explicit defaults, clear steps with exit gates, deferred complexity via reference files, and a structured output template.
+**Philosophy:** A great skill is precise, not long. Its description routes the right requests to it. Its body gives the model the context it can't get anywhere else — the environment, tool contracts, defaults, domain judgment, and the reasons behind each constraint — and leaves out what a capable model already does on its own. Current Claude models follow instructions closely and literally, so every line gets acted on: an over-scripted or shouting skill produces rigid, over-cautious output, while a clear goal and quality bar let the model plan the work itself. `references/writing-guide.md` covers this in detail.
 
-**Core rule — always dynamic, never static:** Skills MUST detect what tools, libraries, and auth are available at runtime and adapt their behavior accordingly. Never hardcode a single method. Always provide a detection flow with a decision tree and fallback paths. See `references/dynamic-calling.md` for the complete pattern catalog.
+**Runtime adaptation:** Skills that touch external tools should detect what is installed, authenticated, and reachable at runtime and adapt, rather than assuming a single method. Offer fallback paths where real alternatives exist. See `references/dynamic-calling.md` for the pattern catalog.
 
 ---
 
@@ -45,7 +40,7 @@ Before writing anything, answer these questions (ask the user if unclear):
 | Who is the target user? | Determines complexity and terminology level |
 | What tools/APIs/CLIs does it use? | Determines dependencies and platform restrictions |
 | What does the user provide as input? | Defines parameters and defaults |
-| What should the output look like? | Defines the response template |
+| What should the output look like? | Defines the output contract |
 | Does it need API keys or credentials? | Determines `required_environment_variables` |
 | Should it work on Claude.ai or only CLI? | Determines platform field and dynamic commands |
 
@@ -57,27 +52,27 @@ Before writing SKILL.md, plan the structure. Read `references/architecture-patte
 
 ### Choose a Structural Pattern
 
-| Pattern | When to use | Steps | Example |
+| Pattern | When to use | Shape | Example |
 |---|---|---|---|
-| **Linear** | Single workflow, no branching | 5-7 | earnings-preview, etf-premium |
-| **Router** | Multiple sub-tasks under one umbrella | 3 + sub-skills | stock-correlation (4 sub-skills) |
-| **Methodology** | Complex domain framework with sequential gates | 7-9 | sepa-strategy (9-step trading methodology) |
-| **Widget** | Generates interactive UI output | 4-5 | options-payoff (extract + compute + render) |
-| **API Wrapper** | Wraps an external API with many endpoints | 3-5 + heavy references | fintel-data (6 steps, 1 reference file) |
+| **Linear** | Single workflow, no branching | Setup → fetch → analyze → respond | earnings-preview |
+| **Router** | Multiple sub-tasks under one umbrella | Setup + routing table + sub-skills | stock-correlation (4 sub-skills), etf-premium |
+| **Methodology** | Formal domain framework with real gates | Ordered checks, each able to stop the analysis | sepa-strategy |
+| **Widget** | Generates interactive UI output | Extract → compute → render → explain | options-payoff |
+| **API Wrapper** | Wraps an external API with many endpoints | Auth + endpoint map + heavy references | fintel-data |
 
-### Plan the Step Outline
+### Plan the Outline
 
-Write out the step names before writing content. Every skill should have:
+Every skill has three parts:
 
-1. **Detection flow** (Step 1) -- dynamically detect available tools, auth state, and runtime environment; build a decision tree for which method to use
-2. **Core methodology** (Steps 2-N) -- the actual work, with pass/fail gates; each step that calls an external tool should have method alternatives based on what Step 1 detected
-3. **Respond to user** (Final step) -- structured output template
+1. **Setup / detection** — detect available tools, auth state, and runtime environment, and decide which method to use. Skills with no external dependencies can skip this.
+2. **The work** — numbered steps where the order genuinely matters (fetch before compute, a gate that can end the analysis), plus the judgment the model has to exercise, stated as goals, criteria, and domain heuristics rather than a script.
+3. **Respond to the user** — the output contract: what the answer leads with, what it must contain, which caveats apply, and any verdict scale.
 
-Target **5-9 steps** total. More than 9 means the skill should be split or use a router pattern.
+If a skill needs more than about nine steps, split it or use the Router pattern.
 
 ### Plan the Detection Flow
 
-Every skill that touches external tools MUST start with a runtime detection flow. Read `references/dynamic-calling.md` for all patterns. The detection flow answers:
+Skills that touch external tools should start with a runtime detection flow. Read `references/dynamic-calling.md` for all patterns. The detection flow answers:
 
 | Question | How to detect | Decision |
 |---|---|---|
@@ -87,7 +82,7 @@ Every skill that touches external tools MUST start with a runtime detection flow
 | Is a richer tool available? | `gh --version` vs `git --version` | Rich path vs minimal path |
 | Is live data reachable? | `curl -s endpoint` | Live data vs cached/default |
 
-The detection output feeds into a **decision tree** that the rest of the skill follows. Never assume — always check.
+The detection output feeds a **decision tree** that the rest of the skill follows — check rather than assume.
 
 ### Plan Reference Files
 
@@ -95,11 +90,11 @@ Decide what goes in SKILL.md vs references/:
 
 | In SKILL.md (under ~250 lines) | In references/ |
 |---|---|
-| Step-by-step workflow | Detailed API documentation |
+| Workflow and decision points | Detailed API documentation |
 | Routing/decision tables | Code templates (>20 lines) |
 | Parameter defaults table | Formulas and edge cases |
-| Output format template | Troubleshooting database |
-| Quick examples (1-3) | Comprehensive examples (4+) |
+| Output contract | Troubleshooting database |
+| Quick examples (1-3) | Comprehensive examples (4+) and dated datasets |
 
 ---
 
@@ -109,15 +104,19 @@ Read `references/writing-guide.md` for detailed instructions on writing each sec
 
 ### Key Rules
 
-1. **Frontmatter first**: `name` (lowercase-hyphenated, max 64 chars) and `description` (exhaustive trigger list, max 1024 chars) are required. Description needs 5+ triggers including sideways entry points.
+1. **Frontmatter first**: `name` (lowercase-hyphenated, max 64 chars) and `description` (max 1024 chars, no angle brackets) are required. The description is routing text that rides along in every request: say what the skill does, name the categories of requests it serves and the distinctive vocabulary users will use (methods, tools, data types, entities), and point to sibling skills for neighboring requests. Name intent categories instead of listing near-synonymous phrasings.
 
-2. **Step 1 = detection flow**: Use `!`command`` with fallbacks to detect available tools, auth state, and runtime. Build a decision tree with multiple method paths (e.g., CLI preferred, Python fallback, built-in tools last resort). Never hardcode a single tool — always detect and adapt. See `references/dynamic-calling.md`.
+2. **Detection flow for external dependencies**: use `!`command`` probes with fallback sentinels to detect tools, auth state, and runtime, then route to a method. Offer a second path where a real alternative exists (CLI vs Python library vs built-in tool). See `references/dynamic-calling.md`.
 
-3. **Core steps with method alternatives**: Each step that calls an external tool should offer at least 2 paths based on what Step 1 detected. Use pattern: "If `TOOL_A` detected → Method 1, otherwise → Method 2." Each step gets `## Step N: [Verb] [Object]`, a decision table if routing, a pass/fail gate if evaluative, and a reference pointer for deep content.
+3. **Match specificity to fragility**: give exact commands, flags, and code for fragile operations — installs, auth, CLI syntax, API contracts, calculations that must be right. For judgment work — analysis, interpretation, writing — state the goal, the criteria, and the domain heuristics, and let the model plan. Put a pass/fail gate wherever a failed check really ends the analysis.
 
-4. **Defaults table**: Every parameter MUST have an explicit default. No skill should ever stall waiting for input.
+4. **Defaults table**: give every parameter the user might omit an explicit default, so the skill never stalls waiting for input.
 
-5. **Final step = output template**: Number every output section. Specify exactly what data goes in each. Include a verdict/grade system if evaluative.
+5. **Output contract in the final step**: what to lead with, what the answer must contain, which caveats apply, and any verdict or grade scale. Pin a section-by-section template only where the format itself matters (scorecards, widgets, checklists). Describe length qualitatively rather than with word or sentence counts, and label examples as illustrative rather than filling them with made-up figures for real companies.
+
+6. **Plain register**: state each constraint once, with its reason. Leave out capitalized MUST/NEVER/CRITICAL, repeated warnings, and instructions current models follow by default ("be thorough", "think step by step", "double-check your answer") — they cause over-triggering and over-checking rather than better work. Keep real policy constraints (read-only, no trade execution, privacy) in plain words.
+
+7. **Keep volatile facts honest**: fetch live data where you can, date-stamp anything that will go stale, and keep dated datasets in `references/`. Verify API names and response shapes against the current library before shipping.
 
 See `references/skill-examples.md` for annotated examples of each pattern.
 
@@ -142,22 +141,23 @@ Run the skill through the quality rubric in `references/quality-rubric.md`. Scor
 
 ### Quick Checklist
 
-- [ ] Frontmatter has `name` and `description` (both required)
-- [ ] Description has 5+ distinct trigger phrases
-- [ ] Description includes sideways entry points
+- [ ] Frontmatter has `name` and `description`; the description is under 1024 characters with no angle brackets
+- [ ] Description names what the skill does, the categories of intent it serves, and its distinctive vocabulary — not a list of near-synonymous phrasings
+- [ ] Description points to sibling skills for neighboring requests, where they exist
 - [ ] SKILL.md is under 300 lines (ideally under 250)
 - [ ] Every parameter has an explicit default
-- [ ] Steps are numbered (## Step N: ...)
-- [ ] Each step has a clear exit condition or deliverable
-- [ ] Final step specifies exact output structure with numbered sections
+- [ ] Numbered steps where order matters; judgment work is stated as goals, criteria, and heuristics
+- [ ] Gates stop the analysis only where a failed check really ends it
+- [ ] Final step states an output contract: what to lead with, required content, caveats, verdict scale
+- [ ] No numeric length caps; examples are labeled illustrative
+- [ ] Constraints are stated once, in plain words, with their reasons — no capitalized MUST/NEVER, no "think step by step" or "double-check" boilerplate
 - [ ] Complex content is in reference files, not inline
 - [ ] Reference file pointers use backtick paths
-- [ ] Step 1 has a detection flow with `!`command`` checks and fallbacks (`|| echo "..."`)
-- [ ] Detection flow produces a decision tree with 2+ method paths
-- [ ] Core steps adapt behavior based on detection results (not hardcoded to one tool)
+- [ ] External dependencies are detected at runtime with `!`command`` checks and fallbacks (`|| echo "..."`)
 - [ ] Separate runtimes treated as separate environments (terminal vs execute_code)
 - [ ] Legal/ethical disclaimers included where appropriate
-- [ ] No hardcoded ticker lists, tool paths, or static data that will go stale
+- [ ] No hardcoded ticker lists, tool paths, or undated static data that will go stale
+- [ ] API names, fields, and code in the skill were checked against the current library
 
 If any item fails, fix it before delivering to the user.
 
@@ -169,32 +169,32 @@ When the user asks to improve a skill:
 
 ### 6a: Read the Current Skill
 
-Load the skill with `skill_view(name)` or read the SKILL.md directly. Also read all reference files.
+Read the SKILL.md and all reference files (on Hermes, `skill_view(name)` loads them).
 
 ### 6b: Score It Against the Rubric
 
-Use the quality rubric from `references/quality-rubric.md`. Present the score breakdown to the user:
+Use the quality rubric from `references/quality-rubric.md`. Present the score breakdown to the user (illustrative):
 
 | Dimension | Score | Issue |
 |---|---|---|
-| Trigger quality | 6/10 | Missing beginner phrasing |
+| Trigger quality | 6/10 | Twenty near-synonym phrasings; misses the ETF use case |
 | Defaults coverage | 3/10 | No defaults table |
-| Step structure | 8/10 | Good, but Step 3 lacks exit gate |
-| Output template | 4/10 | Vague "summarize results" |
+| Instruction design | 5/10 | Scripted steps for judgment work; capitalized warnings |
+| Output contract | 4/10 | Rigid 9-section template with made-up example figures |
 | Reference usage | 7/10 | Good split, but missing troubleshooting |
 
 ### 6c: Propose Specific Improvements
 
 List concrete changes ranked by impact:
 
-1. [Highest impact] Add defaults table with 8+ parameters
-2. [High impact] Rewrite description with 10+ trigger phrases
-3. [Medium impact] Add structured output template to final step
+1. [Highest impact] Add a defaults table covering every parameter
+2. [High impact] Rewrite the description around intent categories and distinctive vocabulary
+3. [Medium impact] Replace the fixed report template with an output contract
 4. ...
 
 ### 6d: Apply Changes
 
-After user approval, edit the skill. Use `skill_manage(action='patch', ...)` for targeted changes or `skill_manage(action='edit', ...)` for full rewrites.
+After user approval, edit the skill files (on Hermes, use `skill_manage(action='patch', ...)` for targeted changes or `skill_manage(action='edit', ...)` for full rewrites).
 
 ---
 
@@ -204,7 +204,7 @@ When the user asks to evaluate or score a skill:
 
 ### 7a: Load and Analyze
 
-Read the full SKILL.md and all reference files. Count lines, steps, triggers, defaults, reference files.
+Read the full SKILL.md and all reference files. Count lines, steps, defaults, and reference files, and note the description's length and the intent categories it covers.
 
 ### 7b: Score Against Rubric
 
@@ -217,15 +217,15 @@ Use the comprehensive rubric from `references/quality-rubric.md`. Score each of 
 
 | # | Dimension | Score | Notes |
 |---|---|---|---|
-| 1 | Trigger quality | 8/10 | 12 triggers, includes sideways entries |
+| 1 | Trigger quality | 8/10 | Covers all four intent categories; one sibling boundary missing |
 | 2 | Defaults coverage | 9/10 | All 11 parameters have defaults |
-| 3 | Step architecture | 8/10 | 5 clear steps with gates |
+| 3 | Instruction design | 8/10 | Ordered setup and compute; analysis stated as criteria |
 | 4 | Reference file strategy | 7/10 | 2 files, could use troubleshooting |
 | 5 | Dynamic content | 10/10 | Dep check + live data injection |
-| 6 | Output template | 9/10 | 5 numbered sections + verdict |
+| 6 | Output contract | 9/10 | Leads with verdict; required caveats; scale defined |
 | 7 | Error handling | 6/10 | Missing data handling unclear |
 | 8 | Code/formula quality | 8/10 | Working JS, copy-paste ready |
-| 9 | SKILL.md conciseness | 7/10 | 196 lines, well within target |
+| 9 | Conciseness & register | 7/10 | 196 lines; two capitalized warnings to restate |
 | 10 | Domain accuracy | 9/10 | BS formulas correct, edge cases covered |
 
 **Overall: 81/100** -- Production quality
@@ -236,15 +236,17 @@ Use the comprehensive rubric from `references/quality-rubric.md`. Score each of 
 3. ...
 ```
 
-### Benchmark Reference
+### Reference Skills
 
-For context, here are scores for known high-quality skills in this repo:
+Skills in this repo that show each pattern well:
 
-| Skill | Score | Why |
-|---|---|---|
-| sepa-strategy | ~90/100 | 9 steps, 7 refs, exhaustive triggers, structured verdict |
-| options-payoff | ~85/100 | Strong defaults, working code, live data, clean output |
-| stock-correlation | ~80/100 | Router pattern, 4 sub-skills, good defaults |
+| Skill | What it demonstrates |
+|---|---|
+| sepa-strategy | Methodology pattern: real gates, domain criteria in references, a verdict scale |
+| options-payoff | Widget pattern: a default for every field, live data injection, a precise render spec |
+| stock-correlation | Router pattern: intent routing table, self-contained sub-skills, metrics computed in code |
+| earnings-preview | Output contract: a content checklist with one judgment section, lead-with-the-headline guidance |
+| fintel-data | API wrapper: key resolution flow, endpoint map, error semantics |
 
 ---
 
@@ -270,7 +272,7 @@ Deliver:
 
 Deliver:
 1. The full quality scorecard
-2. Comparison to benchmark skills
+2. Comparison to the reference skills
 3. Prioritized improvement list
 
 ---
@@ -278,8 +280,8 @@ Deliver:
 ## Reference Files
 
 - `references/dynamic-calling.md` -- **Core reference**: Detection flows, decision trees, method fallbacks, runtime awareness, and multi-tool adaptation patterns with annotated examples from production skills
-- `references/writing-guide.md` -- Detailed instructions for writing SKILL.md sections, environment checks, defaults tables, output templates, and reference files
+- `references/writing-guide.md` -- How to write each SKILL.md section for current Claude models: descriptions, detection flows, instructions matched to fragility, defaults, output contracts, and reference files
 - `references/architecture-patterns.md` -- Linear, Router, Methodology, Widget, and API Wrapper patterns with examples and anti-patterns
 - `references/frontmatter-guide.md` -- Complete YAML frontmatter field reference (name, description, platform, env vars, config, credentials)
-- `references/quality-rubric.md` -- 10-dimension scoring rubric with 1-10 scales, benchmark scores, and score interpretation
+- `references/quality-rubric.md` -- 10-dimension scoring rubric with 1-10 scales, examples, and score interpretation
 - `references/skill-examples.md` -- Annotated excerpts from top skills showing why specific patterns work

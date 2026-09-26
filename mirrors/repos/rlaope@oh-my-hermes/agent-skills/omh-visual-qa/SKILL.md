@@ -1,6 +1,6 @@
 ---
 name: "omh-visual-qa"
-description: "[omh] Hermes visual-qa workflow: prepare observed-only rendered QA gates for web, frontend, image, document, and TUI surfaces. Use when the user says: visual-qa, visual qa, visual QA, visual quality assurance, visual check, web qa, web visual qa, screenshot qa."
+description: "[omh] Rendered UI needing a visual verdict: prepare observed-only rendered QA gates for web, frontend, image, document, and TUI surfaces. Use when the user says: visual-qa, visual qa, visual QA, visual quality assurance, visual check, web qa, web visual qa, screenshot qa."
 compatibility: "Requires the omh CLI on PATH (pip install oh-my-hermes)."
 metadata:
   hermes:

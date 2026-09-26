@@ -99,3 +99,7 @@ regression fails with the missing labels named, so it cannot pass silently.
 - It does not qualify Lark audiences or any cloud/remote worker.
 - It does not turn a passing smoke into product acceptance for a Goal whose
   plan was confirmed with real consequences.
+
+## Live intent-to-result evaluation
+
+The [golden-query pack](golden-queries.md) covers creation, existing-Agent connection, responsibility routing, receiver adoption, correction/recovery and attention. It defines proposed live acceptance beyond the synthetic journey above; no live pass is inferred from this browser fixture.

@@ -102,6 +102,16 @@ public void RebuildNav() => surface.BuildNavMesh();
 // navmesh so agents route around it; remove/disable it to reopen the path — no re-bake needed.
 ```
 
+### 5. Connect separate mesh pieces with a NavMeshLink (jumps, doors, gaps)
+
+```csharp
+// Two baked surfaces that don't touch (a ledge and the floor below, two platforms across a
+// gap) are separate islands — an agent can't path between them. Add Component > Navigation >
+// NavMesh Link to bridge them: assign Start/End Transforms, set Width (0 = point-to-point),
+// and toggle Bidirectional for one-way vs two-way. NavMeshLink lives in Unity.AI.Navigation.
+// It replaces the deprecated built-in OffMeshLink (see pitfalls).
+```
+
 ## Pitfalls
 
 - **Looking for the Navigation window** — it no longer exists in Unity 6. Use the AI Navigation
@@ -116,11 +126,23 @@ public void RebuildNav() => surface.BuildNavMesh();
   type, it gets stuck in gaps or floats; keep them consistent.
 - **Agents jitter against each other** — tune `avoidancePriority` and quality, or use an
   obstacle for truly static blockers rather than relying on agent avoidance.
+- **Reaching for `OffMeshLink`** — the built-in `OffMeshLink` component is **deprecated** in
+  AI Navigation 2.0 and can no longer be added from the Add Component menu. Use a
+  **`NavMeshLink`** (from the package, `Unity.AI.Navigation`) instead — it adds Transform-based
+  endpoints and a runtime `activated` property. Migrate any existing `OffMeshLink`s.
+- **`CalculatePath` returns `PathPartial`** — the destination sits on a *different* baked
+  island than the agent (a gap the mesh doesn't cross). Bridge the two with a `NavMeshLink`
+  (pattern 5) or extend the geometry so one surface covers both; a partial path only reaches
+  the near edge.
 
 ## References
 
 - Primary docs: AI Navigation package manual
-  (`https://docs.unity3d.com/Packages/com.unity.ai.navigation@2.0/manual/index.html`) and
+  (`https://docs.unity3d.com/Packages/com.unity.ai.navigation@2.0/manual/index.html`),
+  the `NavMeshLink` page
+  (`https://docs.unity3d.com/Packages/com.unity.ai.navigation@2.0/manual/NavMeshLink.html`)
+  and its "What's new" note on the `OffMeshLink` deprecation
+  (`https://docs.unity3d.com/Packages/com.unity.ai.navigation@2.0/manual/whats-new.html`), plus
   `ScriptReference/AI.NavMeshAgent`, `ScriptReference/AI.NavMesh`.
 
 ## Related skills

@@ -1,16 +1,14 @@
 ---
 name: generative-ui
 description: >
-  Design system and guidelines for Claude's built-in generative UI — the show_widget tool that renders
-  interactive HTML/SVG widgets inline in claude.ai conversations. This skill provides the complete
-  Anthropic "Imagine" design system so Claude produces high-quality widgets without needing to call
-  read_me first. Use this skill whenever the user asks to visualize data, create an interactive chart,
-  build a dashboard, render a diagram, draw a flowchart, show a mockup, create an interactive explainer,
-  or produce any visual content beyond plain text or markdown. Triggers include: "show me", "visualize",
-  "draw", "chart", "dashboard", "diagram", "flowchart", "widget", "interactive", "mockup", "illustrate",
-  "explain how X works" (with visual), or any request for visual/interactive output. Also triggers
-  when the user wants to display financial data visually, create comparison grids, or build tools
-  with sliders, toggles, or live-updating displays.
+  Design system and templates for Claude's built-in generative UI — the show_widget
+  tool that renders interactive HTML/SVG widgets inline in claude.ai conversations.
+  Use this skill whenever the user wants visual or interactive output rather than
+  plain text or markdown: charts and dashboards, diagrams, flowcharts and
+  architecture drawings, mockups, comparison grids, illustrations, interactive
+  explainers ("explain how X works" with a visual), or tools with sliders, toggles,
+  and live-updating displays — including financial data shown visually and requests
+  phrased as "show me", "visualize", "draw", or "chart this".
 ---
 
 # Generative UI Skill
@@ -53,7 +51,8 @@ Output streams token-by-token. Styles must exist before the elements they target
 - **Seamless**: Users shouldn't notice where the host UI ends and your widget begins
 - **Flat**: No gradients, mesh backgrounds, noise textures, or decorative effects. Clean flat surfaces
 - **Compact**: Show the essential inline. Explain the rest in text
-- **Text goes in your response, visuals go in the tool** — all explanatory text, descriptions, and summaries must be written as normal response text OUTSIDE the tool call. The tool output should contain ONLY the visual element
+- **No stock "AI design" defaults**: skip cream or off-white panels, italic accent words in headings, numbered "01 / 02 / 03" section labels, monospace labels outside code, and pill-shaped buttons — they read as generic and clash with the host UI
+- **Text goes in your response, visuals go in the tool** — write explanatory text, descriptions, and summaries as normal response text outside the tool call; the widget holds only the visual element
 
 ### Core Rules
 

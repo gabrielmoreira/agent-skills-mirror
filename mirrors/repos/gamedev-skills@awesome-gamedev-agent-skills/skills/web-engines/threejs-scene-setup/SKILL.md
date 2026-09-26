@@ -13,7 +13,7 @@ description: >
 
 Create the foundation of a three.js app: module loading, the
 scene/camera/renderer trio, the render loop, responsive resizing, and camera
-controls. Patterns target **r184**. Read the installed `three` version before
+controls. Patterns target **r186**. Read the installed `three` version before
 changing an existing project because examples and addons move across releases.
 
 ## When to use
@@ -39,7 +39,7 @@ changing an existing project because examples and addons move across releases.
    lit material you also need a light (see `threejs-materials-lighting`).
 4. **Drive a render loop with `renderer.setAnimationLoop(fn)`.** It's the modern,
    WebXR-/WebGPU-safe replacement for hand-rolled `requestAnimationFrame`. Use a
-   `Clock` for delta time.
+   `Timer` for delta time (`Clock` is deprecated since r183).
 5. **Handle resize** so the camera aspect and renderer match the canvas; update
    `camera.aspect`, call `updateProjectionMatrix()`, and `renderer.setSize(...)`.
 6. **Add `OrbitControls`** for orbit/pan/zoom while developing. Confirm something
@@ -54,8 +54,8 @@ changing an existing project because examples and addons move across releases.
 <script type="importmap">
 {
   "imports": {
-    "three": "https://cdn.jsdelivr.net/npm/three@0.184.0/build/three.module.js",
-    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.184.0/examples/jsm/"
+    "three": "https://cdn.jsdelivr.net/npm/three@0.186.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.186.0/examples/jsm/"
   }
 }
 </script>
@@ -95,13 +95,15 @@ const cube = new THREE.Mesh(
 scene.add(cube);
 ```
 
-### 3. The render loop (setAnimationLoop + Clock)
+### 3. The render loop (setAnimationLoop + Timer)
 
 ```js
-const clock = new THREE.Clock();
+const timer = new THREE.Timer();        // replaces the deprecated THREE.Clock (r183+)
+timer.connect(document);                // optional: no huge delta after a hidden tab
 
-renderer.setAnimationLoop(() => {
-  const dt = clock.getDelta();          // seconds since last frame
+renderer.setAnimationLoop((time) => {
+  timer.update(time);                   // call once per frame, before getDelta()
+  const dt = timer.getDelta();          // seconds since last frame
   cube.rotation.x += dt;                // frame-rate independent
   cube.rotation.y += dt * 0.7;
   renderer.render(scene, camera);

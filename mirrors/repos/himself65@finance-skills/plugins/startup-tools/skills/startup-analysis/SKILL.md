@@ -1,16 +1,13 @@
 ---
 name: startup-analysis
 description: >
-  Analyze a startup from three perspectives: VC investor, job applicant, and CEO/founder.
-  Use this skill whenever the user wants to evaluate a startup, assess whether to invest in
-  or join a startup, do due diligence, evaluate a job offer from a startup, understand
-  a startup's competitive position, or assess company health and trajectory.
-  Triggers: "analyze this startup", "should I join [company]", "is [company] a good investment",
-  "evaluate [company]", "due diligence on [company]", "what do you think of [startup]",
-  "should I take this startup job offer", "how healthy is [company]", "startup assessment",
-  "company analysis", "is [company] worth joining", "what's the outlook for [company]",
-  "research [company] for me", any mention of evaluating or assessing a startup or tech company
-  from investment, career, or strategic perspectives — provide all three perspectives by default.
+  Analyze a startup from three perspectives — VC investor, job applicant, and
+  CEO/founder — covering market, traction, unit economics, team, defensibility,
+  runway, equity value, culture, and competitive position, with a verdict for each.
+  Use this skill whenever the user wants to evaluate a startup or private tech
+  company: due diligence, whether to invest in it or join it, weighing a startup job
+  offer, company health, outlook, or competitive position, or open-ended asks such as
+  "what do you think of [company]" or "research [company] for me".
 ---
 
 # Startup Analysis
@@ -130,48 +127,13 @@ After the three analyses, add a synthesis section that highlights:
 
 ## Step 5: Present the Report
 
-Structure the output as a clean, scannable report:
+Write it as a scannable report titled `[Company Name] — Startup Analysis`:
 
-```
-# [Company Name] — Startup Analysis
+- **Summary** — a short overview that states the three verdicts up front.
+- **One section per perspective**, in the order that fits the user's situation from Step 2. Each covers the core areas from Step 3 with the evidence behind every judgment, and ends with its verdict on the scale defined there — Investment Verdict (Strong Pass / Lean Pass / Lean Invest / Strong Invest), Employment Verdict (Strong Pass / Lean Pass / Lean Join / Strong Join), or Health Grade (Critical / Struggling / Stable / Strong / Exceptional) — followed by the reasoning.
+- **Cross-perspective synthesis** — where the lenses agree, where they diverge, and the bottom line.
 
-## Summary
-[2-3 sentence overview with key verdict]
-
-## VC Investor Perspective
-### Market Opportunity
-### Product & Traction
-### Unit Economics (if available)
-### Team
-### Defensibility
-### Investment Verdict: [Strong Pass / Lean Pass / Lean Invest / Strong Invest]
-[Reasoning]
-
-## Job Applicant Perspective
-### Financial Stability
-### Equity Value Assessment
-### Career Growth Potential
-### Culture & Work-Life Signals
-### Risk Factors
-### Employment Verdict: [Strong Pass / Lean Pass / Lean Join / Strong Join]
-[Reasoning]
-
-## CEO/Founder Perspective
-### Product-Market Fit Assessment
-### Growth Efficiency
-### Competitive Position
-### Organizational Health
-### Strategic Risks
-### Health Grade: [Critical / Struggling / Stable / Strong / Exceptional]
-[Reasoning]
-
-## Cross-Perspective Synthesis
-### Points of Agreement
-### Points of Divergence
-### Bottom Line
-```
-
-Adapt section depth to available data — if financials are completely opaque, say so and focus on what's observable. Don't fabricate metrics, but do make informed inferences and state your confidence level.
+Scale each section to the evidence: where financials or other areas are opaque, say so in a line and spend the space on what's observable, rather than filling a heading for its own sake. Don't fabricate metrics; make informed inferences and state your confidence level.
 
 ---
 

@@ -93,8 +93,8 @@ against that stale artifact is what caught it.
 postinstall, so `require('electron')` now downloads the binary lazily on first use.
 Left alone that turns a missing download into a stall in the middle of whatever
 first touched it; `install-electron` puts the fetch back at install time where a
-failure is a failed install. It is also why `onlyBuiltDependencies` lists only
-`sharp` now: neither electron nor electron-builder has a build script to approve.
+failure is a failed install. It is also why `allowBuilds` in `pnpm-workspace.yaml`
+lists only `sharp`: neither electron nor electron-builder has a build script to approve.
 
 Minimum supported macOS is **12**, raised by Electron 38.
 

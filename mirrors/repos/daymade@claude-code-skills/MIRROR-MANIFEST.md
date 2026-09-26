@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `daymade/claude-code-skills` — 26 default patterns, 15 followed patterns, 132 file(s) materialized.
+Mirror of `daymade/claude-code-skills` — 26 default patterns, 16 followed patterns, 133 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `daymade/claude-code-skills` — 26 default patterns, 15 followed patt
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 15 |
-| Files         | 132 |
+| Followed pats | 16 |
+| Files         | 133 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -52,6 +52,7 @@ Mirror of `daymade/claude-code-skills` — 26 default patterns, 15 followed patt
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
 - `daymade-skill/skill-creator/references/source-snapshot-archives.md`
+- `daymade-macos/macos-permissions/references/automated-full-disk-access.md`
 - `daymade-audio/transcript-fixer/references/native_review_packets.md`
 - `feishu-doc-scraper/references/comments-and-feedback.md`
 - `feishu-doc-scraper/references/archive-storage-contract.md`
@@ -195,16 +196,17 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 120 | → | [`daymade-audio/transcript-fixer/references/native_review_packets.md`](daymade-audio/transcript-fixer/references/native_review_packets.md) |
 | 121 | → | [`daymade-claude-code/claude-switch-models-setup/references/context-window-config.md`](daymade-claude-code/claude-switch-models-setup/references/context-window-config.md) |
 | 122 | → | [`daymade-claude-code/claude-switch-models-setup/references/local-source-sync-architecture.md`](daymade-claude-code/claude-switch-models-setup/references/local-source-sync-architecture.md) |
-| 123 | → | [`daymade-skill/skill-creator/references/sanitization_checklist.md`](daymade-skill/skill-creator/references/sanitization_checklist.md) |
-| 124 | → | [`daymade-skill/skill-creator/references/source-snapshot-archives.md`](daymade-skill/skill-creator/references/source-snapshot-archives.md) |
-| 125 | → | [`feishu-doc-scraper/references/archive-storage-contract.md`](feishu-doc-scraper/references/archive-storage-contract.md) |
-| 126 | → | [`feishu-doc-scraper/references/comments-and-feedback.md`](feishu-doc-scraper/references/comments-and-feedback.md) |
-| 127 | → | [`references/new-skill-guide.md`](references/new-skill-guide.md) |
-| 128 | → | [`references/plugin-architecture.md`](references/plugin-architecture.md) |
-| 129 | → | [`references/plugin-troubleshooting.md`](references/plugin-troubleshooting.md) |
-| 130 | → | [`references/promotion-policy.md`](references/promotion-policy.md) |
-| 131 | → | [`tibo-reset-codex/references/account-usage.md`](tibo-reset-codex/references/account-usage.md) |
-| 132 | → | [`youtube-downloader/references/internal-sop.md`](youtube-downloader/references/internal-sop.md) |
+| 123 | → | [`daymade-macos/macos-permissions/references/automated-full-disk-access.md`](daymade-macos/macos-permissions/references/automated-full-disk-access.md) |
+| 124 | → | [`daymade-skill/skill-creator/references/sanitization_checklist.md`](daymade-skill/skill-creator/references/sanitization_checklist.md) |
+| 125 | → | [`daymade-skill/skill-creator/references/source-snapshot-archives.md`](daymade-skill/skill-creator/references/source-snapshot-archives.md) |
+| 126 | → | [`feishu-doc-scraper/references/archive-storage-contract.md`](feishu-doc-scraper/references/archive-storage-contract.md) |
+| 127 | → | [`feishu-doc-scraper/references/comments-and-feedback.md`](feishu-doc-scraper/references/comments-and-feedback.md) |
+| 128 | → | [`references/new-skill-guide.md`](references/new-skill-guide.md) |
+| 129 | → | [`references/plugin-architecture.md`](references/plugin-architecture.md) |
+| 130 | → | [`references/plugin-troubleshooting.md`](references/plugin-troubleshooting.md) |
+| 131 | → | [`references/promotion-policy.md`](references/promotion-policy.md) |
+| 132 | → | [`tibo-reset-codex/references/account-usage.md`](tibo-reset-codex/references/account-usage.md) |
+| 133 | → | [`youtube-downloader/references/internal-sop.md`](youtube-downloader/references/internal-sop.md) |
 
 ---
 

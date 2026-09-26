@@ -97,6 +97,38 @@ CollectionService:GetInstanceAddedSignal("Door"):Connect(setupDoor)
 
 The owning system must also clean behavior when a tagged Instance is removed/destroyed.
 
+## Studio MCP server (optional agent path)
+
+Roblox Studio has a built-in MCP server. When it is connected to your AI client, drive the
+same inspect -> edit -> run/verify -> playtest ladder through its tools instead of manual
+clicking. This is OPTIONAL: when it is not connected, the manual Studio + Rojo workflow
+above and below is the full default path, and nothing in this skill requires MCP, Assistant,
+or any other tool. Enable it in Studio under Assistant, then Manage MCP Servers, then
+"Enable Studio as MCP server" (it speaks MCP over stdio to the client).
+
+Map the workflow onto the documented tools. Every call also takes a `studio_id`; use
+`list_roblox_studios` to pick the target when several Studio windows are open.
+
+| Ladder step | MCP tools |
+|---|---|
+| inspect / inventory | `search_game_tree`, `inspect_instance`, `script_search`, `script_grep` |
+| edit | `script_read`, `multi_edit` (creates the script when the path is new) |
+| run / verify | `execute_luau` (needs a `datamodel_type`: Edit, Client, or Server), `get_studio_state`, `start_stop_play`, `get_console_output`, `screen_capture` |
+| playtest | `subagent` (types `explore`, `playtest`), `character_navigation`, `user_keyboard_input`, `user_mouse_input` |
+| Roblox's own docs/skills | `http_get` (allowed Roblox doc URLs), `skill` (Roblox-authored reference) |
+
+The discipline does not change with MCP: `multi_edit` still writes normal, inspectable Scripts
+(not a feature hidden in runtime construction), the server stays authoritative, you still edit
+source-of-truth files rather than generated output, and you still clean up experiments. Treat
+`get_console_output` and `screen_capture` as the agent-native evidence for the verification
+ladder, and still inspect BOTH server and client output. MCP is a transport for the same
+workflow, not a licence to skip it.
+
+Roblox also ships agent-readable docs independent of MCP: an index at
+`https://create.roblox.com/docs/llms.txt` and a `.md` twin of every docs page (append `.md`
+to its URL). A connected client can reach these through `http_get`/`skill`; an offline agent
+reads the `.md` pages directly.
+
 ## Verification ladder
 
 1. **Static:** project mapping/JSON/XML parses; links resolve; Luau diagnostics/lint if available.
@@ -141,3 +173,4 @@ higher-rung result.
 - `https://create.roblox.com/docs/studio/testing-modes`
 - `https://create.roblox.com/docs/projects/data-model`
 - `https://create.roblox.com/docs/scripting/services`
+- `https://create.roblox.com/docs/studio/mcp`

@@ -1,6 +1,6 @@
 ---
 name: "omh-apple-design"
-description: "[omh] Hermes Apple design workflow: prepare native Apple UI or Apple marketing product-visual direction, review, and improvement briefs with evidence-backed remediation handoffs. Use when the user says: apple-design, apple design, apple ui design, apple hig, human interface guidelines, ios design guidelines, macos app design, apple-inspired web."
+description: "[omh] Designing or reviewing an iOS, macOS, or Apple-style UI: prepare native Apple UI or Apple marketing product-visual direction, review, and improvement briefs with evidence-backed remediation handoffs. Use when the user says: apple-design, apple design, apple ui design, apple hig, human interface guidelines, ios design guidelines, macos app design, apple-inspired web."
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, materials]

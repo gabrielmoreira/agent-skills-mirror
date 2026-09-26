@@ -179,6 +179,12 @@ print(GameConfig.MaxHealth)
 - **Using a RemoteFunction where a RemoteEvent fits** → `RemoteFunction` blocks
   waiting for a return and a malicious/slow client can stall the server; prefer
   one-way `RemoteEvent`s unless you genuinely need a reply.
+- **Assuming the old type checker** -> Luau's New Type Solver reached general release
+  (out of Studio Beta) in Nov 2025. `nocheck`/non-strict places get it automatically;
+  strict-mode places opt in with the `UseNewLuauTypeSolver` workspace property, and
+  `LuauTypeCheckMode` sets a place's default checking mode. It runs only at edit time
+  (no runtime cost), so triage type warnings against the solver the place actually has
+  enabled, not older behavior.
 
 ## References
 

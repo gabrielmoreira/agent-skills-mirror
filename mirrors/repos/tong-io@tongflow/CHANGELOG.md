@@ -7,7 +7,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Voice / timbre replacement works** — new official plugin
+  `tongflow-modal-seed-vc` (Seed-VC, zero-shot) fills the last empty node in
+  the capability matrix. Connect a recording and a short reference clip; the
+  recording comes back in the reference's voice. A **Singing mode** under
+  Advanced keeps the melody (44.1 kHz) with optional pitch shift.
+- **Text → audio node (`text-gen-audio`)** — a new ABI slot for unified
+  audio generation: one prompt renders speech, sound effects and ambience in
+  a single pass, and every connected audio clip becomes a reference voice the
+  prompt addresses as `@voice1`, `@voice2`, …. Ships in SDK 0.3.4.
+- **Qwen Audio plugin** (`tongflow-api-qwen-audio`) — Alibaba Qwen-Audio-3.1
+  on Model Studio. TTS-Next serves the new text → audio node and also backs
+  voice clone, voice-from-description and emotive speech (reference clips go
+  inline, no enrollment); TTS-Flash serves preset voices; ASR-Flash serves
+  transcription, with speaker labels on the timestamped variant.
+
 ### Changed
+
+- **`convert_voice` ABI** — inputs are now `audio` + `ref_audio` (both
+  assets) instead of `sourceKey` + a preset-voice filename `targetKey`. The
+  node drops its placeholder voice list and unfinished upload / record
+  buttons; both inputs come in over edges. Python SDK 0.3.4 carries the new
+  model.
 
 - **DeepSeek plugin follows V4.1 Flash** — DeepSeek collapsed V4 Flash and its
   experimental vision variant into a single `deepseek-flash` id (1M context,

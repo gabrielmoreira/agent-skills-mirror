@@ -223,6 +223,8 @@ Keep source files and generated projections together in the same change:
   `examples/use-cases/g1-g10-demo-cards.json`.
 - `capability_family_projection()` in `src/capabilities/families.py` produces
   `src/plugin_bundle/omh/tools/capability_families.json`.
+- `skill_shortlist_projection()` in `src/routing/skill_shortlist_sidecar.py`
+  produces `src/plugin_bundle/omh/tools/skill_shortlist.json`.
 
 Never hand-edit those generated files. Change the source, regenerate every
 affected projection, and commit source plus generated output together. The
@@ -271,6 +273,7 @@ uv run python -m omh.cli docs roles --check
 uv run python -m omh.cli docs claims --check --json
 uv run python -m omh.cli docs navigation --check
 uv run python -m omh.cli docs capability-families --check
+uv run python -m omh.cli docs skill-shortlist --check
 uv run python -m omh.cli docs ulw-inventory --check
 uv run python -m omh.cli docs ulw-site --check
 uv run python -m omh.cli docs chain-table --check

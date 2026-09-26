@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `pulumi/pulumi` — 26 default patterns, 0 followed patterns, 7 file(s) materialized.
+Mirror of `pulumi/pulumi` — 26 default patterns, 0 followed patterns, 8 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `pulumi/pulumi` — 26 default patterns, 0 followed patterns, 7 file(s
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 7 |
+| Files         | 8 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,13 +59,14 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 3 | ✓ | [`pkg/AGENTS.md`](pkg/AGENTS.md) |
-| 4 | ✓ | [`pkg/cmd/pulumi/neo/AGENTS.md`](pkg/cmd/pulumi/neo/AGENTS.md) |
-| 5 | ✓ | [`sdk/go/AGENTS.md`](sdk/go/AGENTS.md) |
-| 6 | ✓ | [`sdk/nodejs/AGENTS.md`](sdk/nodejs/AGENTS.md) |
-| 7 | ✓ | [`sdk/python/AGENTS.md`](sdk/python/AGENTS.md) |
+| 1 | ✓ | [`.claude/skills/snapshot-integrity-failure/SKILL.md`](.claude/skills/snapshot-integrity-failure/SKILL.md) |
+| 2 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 3 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 4 | ✓ | [`pkg/AGENTS.md`](pkg/AGENTS.md) |
+| 5 | ✓ | [`pkg/cmd/pulumi/neo/AGENTS.md`](pkg/cmd/pulumi/neo/AGENTS.md) |
+| 6 | ✓ | [`sdk/go/AGENTS.md`](sdk/go/AGENTS.md) |
+| 7 | ✓ | [`sdk/nodejs/AGENTS.md`](sdk/nodejs/AGENTS.md) |
+| 8 | ✓ | [`sdk/python/AGENTS.md`](sdk/python/AGENTS.md) |
 
 ---
 

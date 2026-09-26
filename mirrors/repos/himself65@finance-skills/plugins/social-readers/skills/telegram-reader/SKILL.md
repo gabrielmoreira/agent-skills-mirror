@@ -1,15 +1,12 @@
 ---
 name: telegram-reader
 description: >
-  Read Telegram channels and groups for financial news and market research using tdl (read-only).
-  Use this skill whenever the user wants to read Telegram channels, export messages from financial
-  Telegram groups, list their Telegram chats, search for news in Telegram channels, or gather
-  market intelligence from Telegram.
-  Triggers include: "check my Telegram", "read Telegram channel", "Telegram news",
-  "what's new in my Telegram channels", "export messages from", "list my Telegram chats",
-  "financial news on Telegram", "crypto Telegram", "market news Telegram",
-  any mention of Telegram in context of reading financial news, crypto signals, or market research.
-  This skill is READ-ONLY — it does NOT support sending messages, joining channels, or any write operations.
+  Read Telegram channels and groups for financial news and market research with the
+  tdl CLI: list chats and channels, find a channel by name, and export recent messages
+  or a date or ID range. Use this skill whenever the user wants to check their
+  Telegram, see what's new in their channels, read or export messages from a news,
+  crypto, or trading channel or group, or gather market news and signals posted on
+  Telegram. Read-only: it cannot send messages or join or leave channels.
 ---
 
 # Telegram News Skill (Read-Only)
@@ -41,7 +38,7 @@ If `TDL_NOT_INSTALLED`, install tdl based on the user's platform:
 | Linux (Nix) | `nix-env -iA nixos.tdl` |
 | Go (any platform) | `go install github.com/iyear/tdl@latest` |
 
-Ask the user which installation method they prefer. Default to Homebrew on macOS, curl script on Linux.
+Default to Homebrew on macOS. On Linux the install script runs with `sudo`, so confirm with the user before using it, or offer their package manager instead.
 
 ---
 
@@ -171,7 +168,7 @@ tdl chat export -c @channel_name -T id -i 100,200 --all --with-content -o /tmp/t
 3. **Use `-o FILE`** to save exports to a file, then read the JSON — this is more reliable than parsing stdout
 4. **Start with small exports** — use `-T last -i 20` unless the user asks for more
 5. **Use filters on `chat ls`** to help users find the right channel before exporting
-6. **NEVER execute write operations** — this skill is read-only; do not send messages, join channels, or modify anything
+6. **Read-only** — don't send messages, join or leave channels, or modify anything
 7. **Convert timestamps** — when the user gives dates, convert to Unix timestamps for the `-T time` filter
 
 ### Working with exported JSON
@@ -192,14 +189,7 @@ The export JSON contains message objects with fields like `id`, `date`, `message
 
 ## Step 5: Present the Results
 
-After fetching data, present it clearly for financial research:
-
-1. **Summarize key messages** — highlight the most relevant news or market updates
-2. **Include timestamps** — show when each message was posted
-3. **Group by topic** — if multiple channels, organize by theme (macro, earnings, crypto, etc.)
-4. **Flag actionable information** — note breaking news, price targets, earnings surprises
-5. **Provide channel context** — mention which channel/group each message came from
-6. **For channel lists**, show channel name, member count, and type
+Lead with the most relevant news or market updates rather than a raw dump. Give each message its timestamp and source channel, group messages from several channels by theme (macro, earnings, crypto), and call out breaking news, price targets, and earnings surprises. For channel lists, show name, member count, and type.
 
 ---
 

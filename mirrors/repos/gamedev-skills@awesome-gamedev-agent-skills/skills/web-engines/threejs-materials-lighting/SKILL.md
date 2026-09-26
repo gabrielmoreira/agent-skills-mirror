@@ -13,8 +13,8 @@ description: >
 # three.js Materials & Lighting
 
 Make three.js surfaces look right: pick the correct material, light the scene,
-enable shadows, and add image-based lighting. Patterns target **r184**, verified
-against **r184** (lighting is physically based by default since r155).
+enable shadows, and add image-based lighting. Patterns target **r186**, verified
+against **r186** (lighting is physically based by default since r155).
 
 ## When to use
 
@@ -85,7 +85,7 @@ const logo = new THREE.MeshBasicMaterial({ map: tex, transparent: true });
 
 ```js
 renderer.shadowMap.enabled = true;
-renderer.shadowMap.type = THREE.PCFSoftShadowMap;     // softer edges
+renderer.shadowMap.type = THREE.PCFShadowMap;         // soft by default since r182
 
 const sun = new THREE.DirectionalLight(0xffffff, 3);
 sun.position.set(8, 12, 6);
@@ -121,9 +121,9 @@ const brick = new THREE.MeshStandardMaterial({
 ### 5. Image-based lighting from an HDR environment
 
 ```js
-import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
+import { HDRLoader } from 'three/addons/loaders/HDRLoader.js'; // RGBELoader before r180
 
-new RGBELoader().load('assets/studio.hdr', (hdr) => {
+new HDRLoader().load('assets/studio.hdr', (hdr) => {
   hdr.mapping = THREE.EquirectangularReflectionMapping;
   scene.environment = hdr;     // lights + reflects all PBR materials
   scene.background = hdr;       // optional: show it as the backdrop

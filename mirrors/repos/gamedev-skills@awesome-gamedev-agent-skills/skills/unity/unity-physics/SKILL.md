@@ -118,15 +118,35 @@ private void FixedUpdate() => _rb.MovePosition(_rb.position + Vector3.right * (2
 - **`Rigidbody.velocity` doesn't exist in Unity 6.3 LTS** — use `linearVelocity` (and
   `angularVelocity` is unchanged).
 - **Setting `transform.position` on a dynamic Rigidbody** — teleports it, skips collision.
-  Use `MovePosition` (kinematic/interpolated) or apply forces.
+  Use `MovePosition` (kinematic/interpolated) or apply forces. If you *do* write the transform,
+  physics queries (`Raycast`, `OverlapSphere`) see the old position until the next physics step
+  — call `Physics.SyncTransforms()` once before a same-frame query, never every frame.
+- **`OnCollisionEnter` never fires on a `CharacterController`** — `CharacterController.Move`
+  bypasses the Rigidbody system; it reports hits via `OnControllerColliderHit(ControllerColliderHit)`
+  instead. Don't add a Rigidbody to "fix" it — the two are mutually exclusive movement modes.
+- **`Physics.Raycast` ignores triggers by default** — a ray won't report a trigger collider
+  unless you pass `QueryTriggerInteraction.Collide` (or flip the global `Physics.queriesHitTriggers`
+  / Project Settings → Physics → Queries Hit Triggers). It also returns `false` when the ray
+  origin starts *inside* the target collider.
+- **A resting Rigidbody stays put after you move or disable what it rests on** — below the
+  Sleep Threshold a body goes to sleep. Collisions and `AddForce` wake it automatically, but
+  moving a *static* collider (no Rigidbody) via its Transform may not, so the crate hangs in
+  mid-air when the floor slides away. Call `Rigidbody.WakeUp()` on the affected bodies.
 - **Applying forces in `Update`** — frame-rate-dependent and jittery. Physics goes in
   `FixedUpdate`.
 - **Trigger callbacks never fire** — triggers need a `Rigidbody` on at least one of the two
   colliders, and both colliders enabled; two static triggers don't report overlaps.
-- **Fast objects pass through walls (tunnelling)** — set the Rigidbody's Collision Detection
-  to `Continuous` (or `Continuous Dynamic`) for bullets/fast movers.
+- **Fast objects pass through walls (tunnelling)** — raise the Rigidbody's Collision Detection
+  from `Discrete`. Note `Continuous` sweeps against **static colliders only** (it falls back to
+  Discrete against other dynamic bodies); `Continuous Dynamic` also sweeps against other
+  continuous dynamic bodies; `Continuous Speculative` works against everything and is cheaper.
+  For bullets, also consider a `SphereCast`/`Raycast` along the trajectory instead of a collider.
 - **Non-uniform-scaled `MeshCollider`s or scaled colliders** misbehave; prefer primitive
   colliders and keep scale uniform.
+- **A concave `MeshCollider` on a moving body** — Mesh colliders are concave by default, and
+  concave ones can only be static or kinematic; two concave colliders never collide at all.
+  For a dynamic Rigidbody enable **Convex** on the MeshCollider, or build a compound collider
+  from primitives.
 - **Everything collides with everything** — wasted cost; assign layers and prune the Layer
   Collision Matrix.
 
@@ -136,7 +156,11 @@ private void FixedUpdate() => _rb.MovePosition(_rb.position + Vector3.right * (2
   joints (`FixedJoint`, `HingeJoint`, `ConfigurableJoint`, breakable joints), read
   `references/raycasting-and-joints.md`.
 - Primary docs: Unity Manual "Physics" section and `ScriptReference/Rigidbody`,
-  `ScriptReference/Physics.Raycast`.
+  `ScriptReference/Physics.Raycast`. For the added gotchas: `ScriptReference/CollisionDetectionMode`,
+  `ScriptReference/Physics-queriesHitTriggers`, `ScriptReference/MonoBehaviour.OnControllerColliderHit`,
+  `ScriptReference/Physics.SyncTransforms`, `ScriptReference/Rigidbody.WakeUp`, and the Manual
+  pages "Introduction to rigid body physics" (sleeping) and "Introduction to Mesh colliders"
+  (concave vs convex).
 
 ## Related skills
 

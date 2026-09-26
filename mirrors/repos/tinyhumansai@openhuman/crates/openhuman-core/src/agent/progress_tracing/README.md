@@ -6,7 +6,7 @@ OpenTelemetry/Langfuse-style trace spans (`agent.turn` -> `agent.iteration` ->
 debugging long multi-agent runs (issue #3886). The module doc on
 `agent/progress_tracing.rs` has the full span-tree shape and the
 content-capture privacy gate (`observability.agent_tracing.capture_content`,
-default off; enforced once, in `SpanCollector`, so no exporter can leak
+default on; enforced once, in `SpanCollector`, so no exporter can leak
 content).
 
 ## Key files
@@ -33,7 +33,7 @@ content).
   stamps `x-sdk-name` via `crate::api::product::product_identity_header`
   (AGENTS.md "Backend API"); `push_observations` sends through the vendored
   `tinyagents_harness::LangfuseClient::proxy`, splitting the batch at 500
-  events. Pushes are allowlisted to `staging`/`development` hosts
+  events. Pushes are allowlisted to the canonical production API and `staging`/`development` hosts
   (`environment_for_base`, `LANGFUSE_PUSH_ENVIRONMENTS`) and skipped elsewhere
   with one `info` log per process. Failures are logged and swallowed so
   tracing never breaks a turn.

@@ -12,7 +12,7 @@ description: >
 
 Build the foundation of a pygame game in Python: the main loop, delta-time
 movement, drawing with `Surface`/`Rect`, input, and `Sprite`/`Group` management.
-Targets **pygame-ce 2.5.7** (the actively maintained community fork; same
+Targets **pygame-ce 2.5.8** (the actively maintained community fork; same
 `import pygame`).
 
 ## When to use

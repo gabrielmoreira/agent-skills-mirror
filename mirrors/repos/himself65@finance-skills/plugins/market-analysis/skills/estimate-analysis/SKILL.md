@@ -1,20 +1,13 @@
 ---
 name: estimate-analysis
 description: >
-  Deep-dive into analyst estimates and revision trends for any stock using Yahoo Finance data.
-  Use when the user wants to understand analyst estimate direction,
-  how EPS or revenue forecasts changed over time, compare estimate distributions,
-  or analyze growth projections across periods.
-  Triggers: "estimate analysis for AAPL", "analyst estimate trends for NVDA",
-  "EPS revisions for TSLA", "how have estimates changed for MSFT",
-  "estimate revisions", "EPS trend", "revenue estimates",
-  "consensus changes", "analyst estimates", "estimate distribution",
-  "growth estimates for", "estimate momentum", "revision trend",
-  "forward estimates", "next quarter estimates", "annual estimates",
-  "estimate spread", "bull vs bear estimates", "estimate range",
-  or any request about tracking or comparing analyst estimates/revisions.
-  Use this skill when the user asks about estimates beyond a simple lookup —
-  if they want context, trends, or analysis, this is the right skill.
+  Analyze sell-side analyst estimates and how they are changing, using Yahoo Finance
+  data (yfinance): EPS and revenue consensus by period, estimate ranges and dispersion,
+  revision trends over 7/30/60/90 days and up/down revision breadth, growth estimates
+  vs industry, sector, and the S&P 500, and historical estimate accuracy. Use this
+  skill when the user wants more than a single estimate lookup: estimate revisions or
+  momentum, EPS trend, consensus changes, forward or next-quarter and annual
+  estimates, the bull vs bear estimate spread, or growth projections across periods.
 ---
 
 # Estimate Analysis Skill
@@ -82,7 +75,7 @@ quarterly_income = ticker.quarterly_income_stmt  # Recent actuals
 
 ## Step 3: Route Based on User Intent
 
-The user might want different levels of analysis. Route accordingly:
+Match the depth of the analysis to the question:
 
 | User Request | Focus Area | Key Sections |
 |---|---|---|
@@ -93,7 +86,7 @@ The user might want different levels of analysis. Route accordingly:
 | "Bull vs bear case" | Estimate range | High/low spread analysis |
 | Compare estimates across periods | Multi-period | Period comparison table |
 
-When in doubt, provide the full analysis — more context is better.
+A general request gets the full analysis; a narrow question gets the matching sections.
 
 ---
 
@@ -101,113 +94,45 @@ When in doubt, provide the full analysis — more context is better.
 
 ### Section 1: Estimate Overview
 
-Present the current consensus for all available periods from `earnings_estimate` and `revenue_estimate`:
+Present the current consensus for every available period (0q, +1q, 0y, +1y) from `earnings_estimate` and `revenue_estimate`: consensus, low, high, range width (as a % of consensus), analyst count, and YoY growth. Flag:
 
-**EPS Estimates:**
-
-| Period | Consensus | Low | High | Range Width | # Analysts | YoY Growth |
-|---|---|---|---|---|---|---|
-| Current Qtr (0q) | $1.42 | $1.35 | $1.50 | $0.15 (10.6%) | 28 | +12.7% |
-| Next Qtr (+1q) | $1.58 | $1.48 | $1.68 | $0.20 (12.7%) | 25 | +8.3% |
-| Current Year (0y) | $6.70 | $6.50 | $6.95 | $0.45 (6.7%) | 30 | +10.2% |
-| Next Year (+1y) | $7.45 | $7.10 | $7.85 | $0.75 (10.1%) | 28 | +11.2% |
-
-**Revenue Estimates:**
-
-| Period | Consensus | Low | High | # Analysts | YoY Growth |
-|---|---|---|---|---|---|
-| Current Qtr | $94.3B | $92.1B | $96.8B | 25 | +5.4% |
-| Next Qtr | $102.1B | $99.5B | $105.0B | 22 | +6.1% |
-
-Calculate and flag:
-- **Range width** as % of consensus — wide ranges (>15%) signal high uncertainty
-- **Analyst coverage** — fewer than 5 analysts means thin coverage, note this
-- **Growth trajectory** — is growth accelerating or decelerating across periods?
+- **Range width** — ranges wider than 15% of consensus signal high uncertainty
+- **Analyst coverage** — fewer than 5 analysts means thin coverage
+- **Growth trajectory** — whether growth accelerates or decelerates across periods
 
 ### Section 2: Revision Trends (EPS Trend)
 
-This is often the most actionable section. From `eps_trend`, show how estimates have moved:
+Often the most actionable section. From `eps_trend`, show each period's current estimate against its value 7, 30, 60, and 90 days ago, and summarize the direction and whether the recent moves are accelerating.
 
-| Period | Current | 7 Days Ago | 30 Days Ago | 60 Days Ago | 90 Days Ago |
-|---|---|---|---|---|---|
-| Current Qtr | $1.42 | $1.41 | $1.40 | $1.38 | $1.35 |
-| Next Qtr | $1.58 | $1.57 | $1.56 | $1.55 | $1.54 |
-| Current Year | $6.70 | $6.68 | $6.65 | $6.58 | $6.50 |
-| Next Year | $7.45 | $7.43 | $7.40 | $7.35 | $7.28 |
-
-Summarize the trend: "Current quarter EPS estimates have risen 5.2% over the last 90 days, with most of the increase in the last 30 days — accelerating upward revision momentum."
-
-**Key interpretation:**
+How to read it:
 - Rising estimates ahead of earnings = positive setup (the bar is rising)
 - Falling estimates = analysts cutting numbers, often a negative signal
 - Flat estimates = no new information being priced in
-- Recent acceleration/deceleration matters more than the total move
+- Recent acceleration or deceleration matters more than the total move
 
 ### Section 3: Revision Breadth (EPS Revisions)
 
-From `eps_revisions`, show the up vs. down count:
-
-| Period | Up (last 7d) | Down (last 7d) | Up (last 30d) | Down (last 30d) |
-|---|---|---|---|---|
-| Current Qtr | 5 | 1 | 12 | 3 |
-| Next Qtr | 3 | 2 | 8 | 5 |
-
-Calculate a revision ratio: Up / (Up + Down). Ratios above 0.7 are strongly bullish; below 0.3 are bearish.
+From `eps_revisions`, show up vs down revision counts over the last 7 and 30 days for each period, and the revision ratio Up / (Up + Down). Ratios above 0.7 are strongly bullish; below 0.3 are bearish.
 
 ### Section 4: Growth Estimates
 
-From `growth_estimates`, compare the company's expected growth to benchmarks:
-
-| Entity | Current Qtr | Next Qtr | Current Year | Next Year | Past 5Y Annual |
-|---|---|---|---|---|---|
-| AAPL | +12.7% | +8.3% | +10.2% | +11.2% | +14.5% |
-| Industry | +9.1% | +7.0% | +8.5% | +9.0% | — |
-| Sector | +11.3% | +8.8% | +10.0% | +10.5% | — |
-| S&P 500 | +7.5% | +6.2% | +8.0% | +8.5% | — |
-
-Highlight whether the company is expected to grow faster or slower than its peers.
+From `growth_estimates`, compare the company's expected growth for each period (and its past 5-year annual growth) with its industry, sector, and the S&P 500, and say whether it is expected to grow faster or slower than its peers.
 
 ### Section 5: Historical Estimate Accuracy
 
-From `earnings_history`, assess how reliable estimates have been:
+From `earnings_history`, show estimate vs actual EPS and the surprise % for the last four quarters, then assess:
 
-| Quarter | Estimate | Actual | Surprise % | Direction |
-|---|---|---|---|---|
-| Q3 2024 | $1.35 | $1.40 | +3.7% | Beat |
-| Q2 2024 | $1.30 | $1.33 | +2.3% | Beat |
-| Q1 2024 | $1.52 | $1.53 | +0.7% | Beat |
-| Q4 2023 | $2.10 | $2.18 | +3.8% | Beat |
-
-Calculate:
-- **Beat rate**: X of 4 quarters
-- **Average surprise**: magnitude and direction
-- **Trend in surprise**: Are beats getting bigger or smaller? A shrinking surprise with rising estimates could mean the bar is catching up to reality.
+- **Beat rate** — how many of the four quarters beat
+- **Average surprise** — magnitude and direction
+- **Trend in surprise** — are beats getting bigger or smaller? A shrinking surprise with rising estimates can mean the bar is catching up to reality.
 
 ---
 
 ## Step 5: Synthesize and Respond
 
-Present the analysis with clear structure:
+Lead with the key insight — the direction and breadth of revisions across periods — then show the tables for the sections the user cares about. Interpret rather than just tabulate: does the revision trend confirm or contradict the stock's recent price action, how does the growth outlook compare with what the current P/E prices in, and what does the estimate-accuracy history say about today's consensus?
 
-1. **Lead with the key insight**: "AAPL estimates are trending higher across all periods, with positive revision breadth (80% of recent revisions are upward)."
-
-2. **Show the tables** for each section the user cares about
-
-3. **Provide interpretive context**:
-   - Is the revision trend confirming or contradicting the stock's recent price action?
-   - How does the growth outlook compare to what's priced into the current P/E?
-   - What's the relationship between estimate accuracy history and current estimate levels?
-
-4. **Flag risks and nuances**:
-   - Estimates cluster around consensus — the "real" distribution of outcomes is wider than low/high suggests
-   - Revision momentum can reverse quickly on a single data point (guidance change, macro event)
-   - Yahoo Finance estimates may lag behind real-time consensus providers by hours or days
-   - Growth estimates for out-years (+1y) are inherently less reliable
-
-### Caveats to always include
-- Analyst estimates reflect a consensus view, not certainty
-- Estimate revisions are a signal but not a guarantee of future performance
-- This is not financial advice
+Flag the nuances that apply: estimates cluster around consensus, so the real distribution of outcomes is wider than low/high suggests; revision momentum can reverse on a single guidance change or macro event; Yahoo Finance estimates can lag real-time consensus providers by hours or days; out-year (+1y) estimates are inherently less reliable. Close with the standing caveats: analyst estimates reflect a consensus view, not certainty; revisions are a signal, not a guarantee; this is not financial advice.
 
 ---
 

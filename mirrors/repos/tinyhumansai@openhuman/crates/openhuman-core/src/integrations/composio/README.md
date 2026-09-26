@@ -160,7 +160,7 @@ Published from `ops/` via `crate::core::bus::BUS.publish` (`crate::core::events:
 - **Direct-mode API key**: stored in the encrypted keychain (via `credentials`); never logged/returned. `direct_auth/mod.rs` additionally tracks a process-local (non-persisted) consecutive-401 counter for the same key.
 - **Identity facets**: written through the bound memory driver via `identity_store.rs` (`MemoryProfile::upsert_provider_facet`) and mirrored into `PROFILE.md` by `profile_md.rs`; **user scope prefs** persist through `ops::user_scopes` over the same bound driver (`crate::memory::binding`).
 - **Connection-scoped cleanup**: `ops::memory_cleanup` deletes through `MemorySourceSink::forget_matching` (the `Source` / `SourcePrefix` / `Owner` selectors) rather than through the engine's chunk store (#5560). A driver that does not serve `Sources` is refused per target, and the refusal is reported beside `memory_chunks_deleted` rather than read as a delete of nothing.
-- **Integrations cache**: in-process cache of active connections (`cached_active_integrations` / `invalidate_connected_integrations_cache`, `connected_integrations.rs`), reconciled on each `list_connections`.
+- **Integrations cache**: warmed in the background after app startup/sign-in, then kept for the process lifetime. Connection create/delete, config changes, and a divergent `list_connections` response invalidate it; the change paths eagerly re-warm it. Idle time does not trigger a backend fetch on a chat turn (`connected_integrations.rs`).
 
 ## Dependencies
 

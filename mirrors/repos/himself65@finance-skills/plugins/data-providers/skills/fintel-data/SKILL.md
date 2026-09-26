@@ -1,21 +1,15 @@
 ---
 name: fintel-data
 description: >
-  Query Fintel (fintel.io) institutional market intelligence
-  via the REST API at https://api.fintel.io/v1 with FINTEL_API_KEY
-  (X-API-KEY header), or the official MCP server at
-  https://mcp.fintel.io/mcp. Read-only data: short interest, borrow
-  rate/fee and shares available to borrow, daily short volume,
-  fails-to-deliver (FTD), institutional ownership from SEC 13F filings,
-  insider transactions from SEC Form 3/4/5, analyst price targets,
-  ratings and forecasts, dividends and earnings history, earnings and
-  dividend calendars, EOD price bars, last trade price, security master
-  lookup by ticker/CUSIP/ISIN/FIGI, leaderboards, watchlists and alerts.
-  Triggers: "fintel", "fintel.io", short interest, short squeeze data,
-  borrow rate, cost to borrow, shares available to borrow, FTD, fails to
-  deliver, short volume, 13F holders, institutional owners, who owns X,
-  insider buying, insider selling, Form 4 transactions, analyst price
-  target, days to cover, short interest ratio.
+  Query Fintel (fintel.io) institutional market data through its REST API or
+  official MCP server. Use this skill whenever the user mentions Fintel or asks about
+  short interest, short interest ratio or days to cover, short squeeze data, borrow
+  rate or cost to borrow, shares available to borrow, daily short volume,
+  fails-to-deliver (FTD), 13F institutional owners ("who owns X"), insider buying or
+  selling from SEC Form 3/4/5, analyst price targets, ratings and forecasts, dividend
+  or earnings history and calendars, EOD or last prices, security lookup by ticker,
+  CUSIP, ISIN, or FIGI, Fintel leaderboards, or their Fintel watchlists and alerts.
+  Read-only: GET endpoints only.
 ---
 
 # Fintel Data Skill
@@ -33,7 +27,7 @@ Fintel exposes two surfaces backed by the same data contract:
 | **REST** | `https://api.fintel.io/v1/*` | `X-API-KEY` header | Default — curl from any CLI agent |
 | **MCP** | `https://mcp.fintel.io/mcp` | `X-API-KEY` header | MCP-native clients, tool auto-discovery |
 
-Both require a Fintel API key. **This skill is READ-ONLY** — only call
+Both require a Fintel API key. **This skill is read-only** — only call
 GET endpoints. The API also exposes write endpoints (create/delete stock
 lists, alert subscriptions, teams); do not call them.
 

@@ -1,16 +1,12 @@
 ---
 name: linkedin-reader
 description: >
-  Read LinkedIn for financial research using opencli (read-only).
-  Use this skill whenever the user wants to read their LinkedIn feed, search for jobs
-  in the finance/trading industry, view professional posts about markets or earnings,
-  or gather professional sentiment from LinkedIn.
-  Triggers include: "check my LinkedIn feed", "search LinkedIn for", "LinkedIn posts about",
-  "what's on LinkedIn about AAPL", "finance jobs on LinkedIn", "LinkedIn market sentiment",
-  "who's posting about earnings on LinkedIn", "LinkedIn feed", "professional network buzz",
-  "what are analysts saying on LinkedIn", any mention of LinkedIn in context
-  of reading financial news, market research, job searches, or professional commentary.
-  This skill is READ-ONLY — it does NOT support posting, liking, commenting, connecting, or any write operations.
+  Read LinkedIn for financial research through opencli: the user's feed, and job
+  search with location, seniority, job type, remote, company, and date filters. Use
+  this skill whenever the user wants to check their LinkedIn feed, see what
+  professionals or analysts are posting about a company, market, or earnings, gauge
+  professional sentiment, or search finance and trading jobs on LinkedIn. Read-only:
+  it cannot post, like, comment, connect, message, or apply.
 ---
 
 # LinkedIn Skill (Read-Only)
@@ -104,7 +100,7 @@ opencli linkedin search "financial analyst" --details --limit 10 -f json
 3. **Use `-f csv`** when the user wants spreadsheet-compatible output
 4. **Use `--limit N`** to control result count — start with 10-20 unless the user asks for more
 5. **For job search, use filters** — `--location`, `--experience-level`, `--job-type`, `--remote`, `--date-posted` to narrow results
-6. **NEVER execute write operations** — this skill is read-only; do not post, like, comment, connect, message, or apply to jobs
+6. **Read-only** — don't post, like, comment, connect, message, or apply to jobs
 
 ### Output format flag (`-f`)
 
@@ -126,15 +122,7 @@ opencli linkedin search "financial analyst" --details --limit 10 -f json
 
 ## Step 4: Present the Results
 
-After fetching data, present it clearly for financial research:
-
-1. **Summarize key content** — highlight the most relevant posts or jobs for the user's research
-2. **Include attribution** — show author name, headline, post text, and engagement (reactions, comments)
-3. **Provide URLs** when the user might want to read the full post or job listing
-4. **For feed posts**, highlight market commentary, analyst takes, earnings reactions, and professional sentiment
-5. **For job search results**, present title, company, location, salary (when available), and posting date
-6. **Flag sentiment** — note bullish/bearish professional sentiment, consensus vs contrarian views
-7. **Treat sessions as private** — never expose browser session details
+Lead with what matters for the user's research question rather than a raw dump. For feed posts, attribute each one (author, headline, text, reactions and comments, URL), highlight market commentary, analyst takes, and earnings reactions, and note the bullish or bearish lean and where views are consensus or contrarian. For job results, give title, company, location, salary when available, posting date, and the listing URL. Keep browser session details private.
 
 ---
 

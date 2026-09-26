@@ -1,17 +1,15 @@
 ---
 name: etf-premium
 description: >
-  Calculate ETF premium/discount vs NAV via Yahoo Finance, and decompose single-day surges
-  into NAV-driven vs structural components (gamma squeeze, dealer hedging, blocked AP arbitrage).
-  Use whenever the user asks about an ETF's premium or discount, NAV comparison, why an ETF
-  diverged from its holdings, or how much of a move is dealer-hedging-driven.
-  Triggers: "ETF premium", "ETF discount", "NAV premium", "is SPY at a premium", "BITO premium",
-  "IBIT premium", "bond ETF discount", "trading above/below NAV", "ETF premium screener",
-  "biggest discount", "compare ETF NAV", "ETF arbitrage", "ETF gamma squeeze",
-  "ETF premium surge", "decompose ETF move", "dealer gamma exposure", "GEX for ETF",
-  "why did this ETF jump", "premium convergence", "AP arbitrage blocked", or any request
-  about the gap between an ETF's price and underlying value. Especially relevant for
-  leveraged, inverse, international, bond, commodity, and crypto ETFs.
+  Calculate an ETF's premium or discount to NAV from Yahoo Finance data (yfinance),
+  compare or screen ETFs by premium, explain why a gap exists, and decompose a sudden
+  ETF move into NAV-driven vs structural components (dealer gamma exposure, blocked AP
+  arbitrage, sentiment). Use this skill whenever the user asks whether an ETF trades
+  above or below NAV, compares ETF premiums or discounts, screens for the biggest
+  ones, asks about ETF arbitrage or premium convergence, or wants to know why an ETF
+  jumped or diverged from its holdings — including gamma squeezes, dealer gamma
+  exposure (GEX), and blocked creation/redemption. Especially relevant for leveraged,
+  inverse, international, bond, commodity, and crypto ETFs (IBIT, BITO, HYG, KWEB).
 ---
 
 # ETF Premium/Discount Analysis Skill
@@ -320,8 +318,8 @@ Return call GEX, put GEX, SqueezeMetrics-style net GEX, gross hedge pressure, ca
 Interpret the output:
 
 - **`net_gex_squeezemetrics_$` highly negative** → dealers are short gamma; rallies will be amplified by their hedging buys. Classic gamma-squeeze fuel.
-- **Concentration on a single near-dated strike** (e.g., the article's "June $45 calls") → squeeze is fragile and concentrated. When that strike expires or the spot moves past it, the gamma decays sharply.
-- **ATM IV well above the recent average** (article example: 78 vs typical ~30–40) → market is pricing in continued large moves; option premium decay alone will provide some convergence pressure over days.
+- **Concentration on a single near-dated strike** (e.g., heavy open interest in one strike of next month's calls) → squeeze is fragile and concentrated. When that strike expires or the spot moves past it, the gamma decays sharply.
+- **ATM IV well above the recent average** (e.g., 78% against a typical 30–40%) → market is pricing in continued large moves; option premium decay alone will provide some convergence pressure over days.
 - **Call/Put OI ratio > 2.5** → call-heavy positioning, consistent with a bullish gamma squeeze setup.
 
 ### E3: Compare structural buying pressure to actual volume
@@ -337,7 +335,7 @@ This is a rough estimate — it assumes every contract's full gamma was hedged i
 
 ### E4: Assess premium convergence timeline
 
-The article's three-tier convergence framework:
+Convergence plays out on three time scales (details in the Convergence Timeline section of `references/gamma_squeeze_reference.md`):
 
 | Time scale | Mechanism | What to check |
 |---|---|---|
@@ -383,12 +381,12 @@ Format the answer in this order:
 - Market price may have a **15-minute delay** depending on the exchange
 - Premium/discount can change rapidly during market hours — this is a snapshot, not a live feed
 - Small premiums/discounts (< bid-ask spread) are **market microstructure noise**, not real mispricing
-- **Never recommend buying or selling** based on premium/discount alone — present the data and let the user decide
+- Don't recommend buying or selling on premium/discount alone — present the data and let the user decide
 
 ### Formatting
 - Use markdown tables for multi-ETF comparisons
 - Show the formula: `Premium/Discount = (Market Price - NAV) / NAV x 100`
-- Use color indicators in text: "trading at a **0.45% discount**" or "at a **1.2% premium**"
+- Bold the headline figure in text: "trading at a **0.45% discount**" or "at a **1.2% premium**"
 - Round percentages to 2-4 decimal places depending on magnitude
 
 ---

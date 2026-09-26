@@ -2,12 +2,12 @@
 repo: esengine/DeepSeek-Reasonix
 repoUrl: https://github.com/esengine/DeepSeek-Reasonix.git
 refType: branch
-ref: main-v2
+ref: studio
 ---
 
 # Mirror Manifest
 
-Mirror of `esengine/DeepSeek-Reasonix` — 26 default patterns, 0 followed patterns, 4 file(s) materialized.
+Mirror of `esengine/DeepSeek-Reasonix` — 26 default patterns, 0 followed patterns, 3 file(s) materialized.
 
 ## Metadata
 
@@ -15,10 +15,10 @@ Mirror of `esengine/DeepSeek-Reasonix` — 26 default patterns, 0 followed patte
 |---------------|-------|
 | Repo          | `esengine/DeepSeek-Reasonix` |
 | Ref Type      | `branch` |
-| Ref           | `main-v2` |
+| Ref           | `studio` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 4 |
+| Files         | 3 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,10 +59,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 2 | ✓ | [`desktop/AGENTS.md`](desktop/AGENTS.md) |
-| 3 | ✓ | [`internal/skill/builtincontent/reasonix-guide/references/skills.md`](internal/skill/builtincontent/reasonix-guide/references/skills.md) |
-| 4 | ✓ | [`internal/skill/builtincontent/reasonix-guide/SKILL.md`](internal/skill/builtincontent/reasonix-guide/SKILL.md) |
+| 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 3 | ✓ | [`internal/ext/skill/builtincontent/reasonix-guide/SKILL.md`](internal/ext/skill/builtincontent/reasonix-guide/SKILL.md) |
 
 ---
 

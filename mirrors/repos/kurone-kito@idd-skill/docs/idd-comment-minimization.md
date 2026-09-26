@@ -40,19 +40,25 @@ state has been re-read.
 The ordinary digest helper (`live-status-digest.mjs`) enforces this
 author boundary mechanically: only a current-digest comment authored by
 a trusted marker actor is ever updated or counted toward the
-duplicate-digest check, and a digest is excluded from review activity
-and unreplied-comment counting (`buildActivitySnapshotSummary`,
-`summarizeRegularCommentsForGate`) only when its author is that same
-trusted marker actor; disposition-evidence counting
-(`summarizeDispositionEvidenceForGate`) additionally excludes a
-recognized IDD-agent author, so a second trusted session's own digest
-is never mistaken for unanswered feedback. A digest-marker comment
-from any other actor is left alone by the ordinary helper -- it
-neither rewrites nor deletes it -- and counts as ordinary PR/issue
+duplicate-digest check. Review-activity counting
+(`buildActivitySnapshotSummary`) excludes a digest-marker comment only
+when its author is that same trusted marker actor. Unreplied-comment
+and disposition-evidence counting (`summarizeRegularCommentsForGate`,
+`summarizeDispositionEvidenceForGate`) instead exclude a digest-marker
+comment when its author is a trusted marker actor OR a recognized
+IDD-agent author -- otherwise an agent's own digest posted outside the
+trusted set would count as a genuine reply and wrongly clear earlier,
+still-unanswered feedback as already addressed. A digest-marker comment
+whose author is in neither set is left alone by the ordinary helper --
+it neither rewrites nor deletes it -- and counts as ordinary PR/issue
 activity requiring the normal review disposition, exactly like any
-other stranger's comment. The maintainer-gated repair path below is the one
-exception: it deliberately sees and can retire every current-marker
-comment regardless of author, since its whole purpose is clearing a
+other stranger's comment. A recognized IDD-agent author who is not a
+trusted marker actor is also left alone by that helper, but those same
+unreplied-comment and disposition-evidence gates still exclude that
+digest, so it does not count as ordinary activity. The
+maintainer-gated repair path below is the one exception: it
+deliberately sees and can retire every current-marker comment
+regardless of author, since its whole purpose is clearing a
 duplicate-digest state a maintainer has already reviewed
 (kurone-kito/idd-skill#3337).
 
@@ -538,6 +544,16 @@ Current safe classes are:
 - CodeRabbit review-trigger acknowledgements after a later IDD
   disposition that names CodeRabbit confirms the requested review
   completed
+- A Codex usage-limit notice (from the Codex connector) that has a
+  later trusted IDD disposition explicitly bound to that exact notice
+  via its `(source: #issuecomment-{id})` reference and naming the
+  Codex connector, mirroring the CodeRabbit disposition-evidence
+  requirement above. The binding is exact, never order- or count-based
+  -- a disposition that does not carry this notice's own id never
+  resolves it, even when it names the right bot. This is an
+  F4-cleanup-only recognition path -- the F2/F3 merge-gate readiness
+  checks carry their own separate, multi-bot-safe disposition
+  carry-forward for the same notice and do not opt into it.
 
 Bot review parent bodies with no associated review threads are skipped
 by design, including Copilot error review bodies. They remain visible
@@ -585,6 +601,8 @@ this manual `OUTDATED` fallback (full reasoning in each entry's own
 - `<!-- idd-provider-outage-park:` -- needs claim-lineage-aware
   supersession the marker carries no reference for (roadmap #2751
   Background).
+- `<!-- idd-out-of-loop:` -- live authorization evidence for the
+  bootstrap PR, like the waiver marker above (kurone-kito/idd-skill#3328).
 
 Always skip candidates when any of these are true:
 

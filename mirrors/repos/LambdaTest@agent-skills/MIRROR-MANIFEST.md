@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `LambdaTest/agent-skills` — 26 default patterns, 0 followed patterns, 72 file(s) materialized.
+Mirror of `LambdaTest/agent-skills` — 26 default patterns, 0 followed patterns, 73 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `LambdaTest/agent-skills` — 26 default patterns, 0 followed patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 72 |
+| Files         | 73 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -101,36 +101,37 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 40 | ✓ | [`jasmine-skill/SKILL.md`](jasmine-skill/SKILL.md) |
 | 41 | ✓ | [`jest-skill/SKILL.md`](jest-skill/SKILL.md) |
 | 42 | ✓ | [`junit-5-skill/SKILL.md`](junit-5-skill/SKILL.md) |
-| 43 | ✓ | [`karma-skill/SKILL.md`](karma-skill/SKILL.md) |
-| 44 | ✓ | [`laravel-dusk-skill/SKILL.md`](laravel-dusk-skill/SKILL.md) |
-| 45 | ✓ | [`lettuce-skill/SKILL.md`](lettuce-skill/SKILL.md) |
-| 46 | ✓ | [`mocha-skill/SKILL.md`](mocha-skill/SKILL.md) |
-| 47 | ✓ | [`mstest-skill/SKILL.md`](mstest-skill/SKILL.md) |
-| 48 | ✓ | [`nemojs-skill/SKILL.md`](nemojs-skill/SKILL.md) |
-| 49 | ✓ | [`nightwatchjs-skill/SKILL.md`](nightwatchjs-skill/SKILL.md) |
-| 50 | ✓ | [`nunit-skill/SKILL.md`](nunit-skill/SKILL.md) |
-| 51 | ✓ | [`phpunit-skill/SKILL.md`](phpunit-skill/SKILL.md) |
-| 52 | ✓ | [`playwright-skill/SKILL.md`](playwright-skill/SKILL.md) |
-| 53 | ✓ | [`protractor-skill/SKILL.md`](protractor-skill/SKILL.md) |
-| 54 | ✓ | [`puppeteer-skill/SKILL.md`](puppeteer-skill/SKILL.md) |
-| 55 | ✓ | [`pytest-skill/SKILL.md`](pytest-skill/SKILL.md) |
-| 56 | ✓ | [`reqnroll-skill/SKILL.md`](reqnroll-skill/SKILL.md) |
-| 57 | ✓ | [`robot-framework-skill/SKILL.md`](robot-framework-skill/SKILL.md) |
-| 58 | ✓ | [`rspec-skill/SKILL.md`](rspec-skill/SKILL.md) |
-| 59 | ✓ | [`selenide-skill/SKILL.md`](selenide-skill/SKILL.md) |
-| 60 | ✓ | [`selenium-skill/SKILL.md`](selenium-skill/SKILL.md) |
-| 61 | ✓ | [`serenity-bdd-skill/SKILL.md`](serenity-bdd-skill/SKILL.md) |
-| 62 | ✓ | [`smartui-skill/SKILL.md`](smartui-skill/SKILL.md) |
-| 63 | ✓ | [`specflow-skill/SKILL.md`](specflow-skill/SKILL.md) |
-| 64 | ✓ | [`test-framework-migration-skill/SKILL.md`](test-framework-migration-skill/SKILL.md) |
-| 65 | ✓ | [`testcafe-skill/SKILL.md`](testcafe-skill/SKILL.md) |
-| 66 | ✓ | [`testng-skill/SKILL.md`](testng-skill/SKILL.md) |
-| 67 | ✓ | [`testunit-skill/SKILL.md`](testunit-skill/SKILL.md) |
-| 68 | ✓ | [`unittest-skill/SKILL.md`](unittest-skill/SKILL.md) |
-| 69 | ✓ | [`vitest-skill/SKILL.md`](vitest-skill/SKILL.md) |
-| 70 | ✓ | [`webdriverio-skill/SKILL.md`](webdriverio-skill/SKILL.md) |
-| 71 | ✓ | [`xcuitest-skill/SKILL.md`](xcuitest-skill/SKILL.md) |
-| 72 | ✓ | [`xunit-skill/SKILL.md`](xunit-skill/SKILL.md) |
+| 43 | ✓ | [`kanecli-skill/SKILL.md`](kanecli-skill/SKILL.md) |
+| 44 | ✓ | [`karma-skill/SKILL.md`](karma-skill/SKILL.md) |
+| 45 | ✓ | [`laravel-dusk-skill/SKILL.md`](laravel-dusk-skill/SKILL.md) |
+| 46 | ✓ | [`lettuce-skill/SKILL.md`](lettuce-skill/SKILL.md) |
+| 47 | ✓ | [`mocha-skill/SKILL.md`](mocha-skill/SKILL.md) |
+| 48 | ✓ | [`mstest-skill/SKILL.md`](mstest-skill/SKILL.md) |
+| 49 | ✓ | [`nemojs-skill/SKILL.md`](nemojs-skill/SKILL.md) |
+| 50 | ✓ | [`nightwatchjs-skill/SKILL.md`](nightwatchjs-skill/SKILL.md) |
+| 51 | ✓ | [`nunit-skill/SKILL.md`](nunit-skill/SKILL.md) |
+| 52 | ✓ | [`phpunit-skill/SKILL.md`](phpunit-skill/SKILL.md) |
+| 53 | ✓ | [`playwright-skill/SKILL.md`](playwright-skill/SKILL.md) |
+| 54 | ✓ | [`protractor-skill/SKILL.md`](protractor-skill/SKILL.md) |
+| 55 | ✓ | [`puppeteer-skill/SKILL.md`](puppeteer-skill/SKILL.md) |
+| 56 | ✓ | [`pytest-skill/SKILL.md`](pytest-skill/SKILL.md) |
+| 57 | ✓ | [`reqnroll-skill/SKILL.md`](reqnroll-skill/SKILL.md) |
+| 58 | ✓ | [`robot-framework-skill/SKILL.md`](robot-framework-skill/SKILL.md) |
+| 59 | ✓ | [`rspec-skill/SKILL.md`](rspec-skill/SKILL.md) |
+| 60 | ✓ | [`selenide-skill/SKILL.md`](selenide-skill/SKILL.md) |
+| 61 | ✓ | [`selenium-skill/SKILL.md`](selenium-skill/SKILL.md) |
+| 62 | ✓ | [`serenity-bdd-skill/SKILL.md`](serenity-bdd-skill/SKILL.md) |
+| 63 | ✓ | [`smartui-skill/SKILL.md`](smartui-skill/SKILL.md) |
+| 64 | ✓ | [`specflow-skill/SKILL.md`](specflow-skill/SKILL.md) |
+| 65 | ✓ | [`test-framework-migration-skill/SKILL.md`](test-framework-migration-skill/SKILL.md) |
+| 66 | ✓ | [`testcafe-skill/SKILL.md`](testcafe-skill/SKILL.md) |
+| 67 | ✓ | [`testng-skill/SKILL.md`](testng-skill/SKILL.md) |
+| 68 | ✓ | [`testunit-skill/SKILL.md`](testunit-skill/SKILL.md) |
+| 69 | ✓ | [`unittest-skill/SKILL.md`](unittest-skill/SKILL.md) |
+| 70 | ✓ | [`vitest-skill/SKILL.md`](vitest-skill/SKILL.md) |
+| 71 | ✓ | [`webdriverio-skill/SKILL.md`](webdriverio-skill/SKILL.md) |
+| 72 | ✓ | [`xcuitest-skill/SKILL.md`](xcuitest-skill/SKILL.md) |
+| 73 | ✓ | [`xunit-skill/SKILL.md`](xunit-skill/SKILL.md) |
 
 ---
 

@@ -30,7 +30,7 @@
 
 <p align="center">
  <a href="https://github.com/tinyhumansai/openhuman/discussions">Discussions</a> •
- <a href="https://discord.tinyhumans.ai/">Discord</a> •
+ <a href="https://guild.tinyhumans.ai/">Discord</a> •
  <a href="https://www.reddit.com/r/tinyhumansai/">Reddit</a> •
  <a href="https://x.com/intent/follow?screen_name=tinyhumansai">X/Twitter</a> •
  <a href="https://tinyhumans.gitbook.io/openhuman/">Docs</a> •
@@ -187,7 +187,7 @@ _Building toward AGI and artificial consciousness? Star the repo and help others
 
 # Contributors Hall of Fame
 
-Show some love and end up in the hall of fame. Contributors get free merch and special access to our [Discord](https://discord.tinyhumans.ai/).
+Show some love and end up in the hall of fame. Contributors get free merch and special access to our [Discord](https://guild.tinyhumans.ai/).
 
 <a href="https://github.com/tinyhumansai/openhuman/graphs/contributors">
  <img src="https://contrib.rocks/image?repo=tinyhumansai/openhuman" alt="OpenHuman contributors" />

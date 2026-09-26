@@ -1,14 +1,13 @@
 ---
 name: twitter-reader
 description: >
-  Read Twitter/X for financial research using opencli (read-only).
-  Use this skill whenever the user wants to read their Twitter feed, search for financial tweets,
-  view bookmarks, look up user profiles, or gather market sentiment from Twitter/X.
-  Triggers include: "check my feed", "search Twitter for", "show my bookmarks",
-  "who follows", "look up @user", "what's trending about", "market sentiment on Twitter",
-  "what are people saying about AAPL", "recent tweets from @elonmusk", "show me @user's posts",
-  "fintwit", any mention of Twitter/X in context of reading financial news or market research.
-  This skill is READ-ONLY — it does NOT support posting, liking, retweeting, or any write operations.
+  Read Twitter/X for financial research through opencli: the user's home timeline,
+  tweet search, trending topics, bookmarks, a user's recent tweets, threads,
+  articles, profiles, followers and following, and notifications. Use this skill
+  whenever the user wants to know what people are saying on Twitter/X or fintwit
+  about a stock, topic, or market event, check their feed or bookmarks, see what's
+  trending, or look up an @account and its posts. Read-only: it cannot post, like,
+  retweet, reply, or follow.
 ---
 
 # Twitter Skill (Read-Only)
@@ -114,7 +113,7 @@ opencli twitter trending --limit 20 -f json
 3. **Use `-f csv`** when the user wants spreadsheet-compatible output
 4. **Use `--limit N`** to control result count — start with 10-20 unless the user asks for more
 5. **For search, use `--filter`** — `top` (default) for relevance, `live` for latest tweets
-6. **NEVER execute write operations** — this skill is read-only; do not post, like, retweet, reply, quote, follow, or delete
+6. **Read-only** — don't post, like, retweet, reply, quote, follow, or delete, even though opencli exposes some of these commands
 
 ### Output format flag (`-f`)
 
@@ -146,15 +145,7 @@ Profile (`profile`) columns: `screen_name`, `name`, `bio`, `location`, `url`, `f
 
 ## Step 4: Present the Results
 
-After fetching data, present it clearly for financial research:
-
-1. **Summarize key content** — highlight the most relevant tweets for the user's financial research
-2. **Include attribution** — show @username, tweet text, and engagement metrics (likes, views)
-3. **Provide tweet URLs** when the user might want to read the full thread
-4. **For search results**, group by relevance and highlight key themes, sentiment, or market signals
-5. **For user profiles**, present follower count, bio, and notable recent activity
-6. **Flag sentiment** — note bullish/bearish sentiment, consensus vs contrarian views
-7. **Treat sessions as private** — never expose browser session details
+Lead with what matters for the user's research question rather than a raw dump. Attribute each tweet (@handle, text, engagement such as likes and views, and the URL when the user may want the full thread), group search results by theme, and note the bullish or bearish lean and where views are consensus or contrarian. For profiles, give follower count, bio, and notable recent activity. Keep browser session details private.
 
 ---
 

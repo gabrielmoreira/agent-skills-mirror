@@ -24,8 +24,7 @@ Persistent, Rust-native Socket.IO client to the OpenHuman backend. The `socket` 
 | `crates/openhuman-core/src/platform/socket/token_provider.rs` | `TokenProvider` type alias + `static_token_provider`, `token_provider_from_config`, and `is_invalid_token_error` (strict double-anchor matcher). |
 | `crates/openhuman-core/src/platform/socket/schemas.rs` | Controller schemas + RPC handlers for the `socket` namespace. |
 | `crates/openhuman-core/src/platform/socket/types.rs` | `WsStream` alias, `ConnectionOutcome` enum, observability event-name constants; re-exports `ConnectionStatus` / `SocketState` from `crate::api::models::socket`. |
-| `crates/openhuman-core/src/platform/socket/ops.rs` | RPC operations behind `schemas.rs` (`connect_with_session` and the live-socket reuse path that reinstalls the medulla workflow bridge). |
-| `crates/openhuman-core/src/platform/socket/medulla/` | The Medulla harness plane: `medulla:task_*`, capability probes, and workflow round trips bound to an agent session. See [`medulla/README.md`](medulla/README.md). |
+| `crates/openhuman-core/src/platform/socket/ops.rs` | RPC operations behind `schemas.rs` (`connect_with_session` and live-socket reuse). |
 | `crates/openhuman-core/src/platform/socket/*_tests.rs` | Sibling test suites, included via `#[path]`. |
 
 ## Public surface
@@ -63,7 +62,6 @@ All handlers go through `require_manager()` and error with `"SocketManager not i
 | `tunnel:evicted` | `DevicePeerOffline` | devices |
 | `*:message` (suffix match) | `ChannelInboundMessage { event_name, channel, message, sender, reply_target, thread_ts, raw_data }` | channels |
 
-`medulla:task_run` / `task_send` / `task_abort` / `capabilities_request` / `workflow_request` are not published to the bus; `handle_sio_event` hands them straight to `medulla/` (see its README), and on `ready` it advertises the agent roster and workflow set through `medulla::emit_register_agents` / `medulla::workflows::emit_register_workflows`.
 
 This module is a **publisher only** — it owns no `bus.rs` / `EventHandler` impls.
 

@@ -1,6 +1,6 @@
 ---
 name: "omh-llm-app-dev"
-description: "[omh] Hermes LLM App Development workflow: prepare a build handoff for an LLM-powered feature with a pinned provider boundary, schema-first outputs, versioned prompt files, grounded retrieval, and an eval suite as a shipped deliverable. Use when the user says: llm-app-dev, llm app development, llm application development, build an llm app, build an llm feature, llm feature development, build a rag pipeline, rag pipeline."
+description: "[omh] LLM-powered feature to build: LLM app development: prepare a build handoff for an LLM-powered feature with a pinned provider boundary, schema-first outputs, versioned prompt files, grounded retrieval, and an eval suite as a shipped deliverable. Use when the user says: llm-app-dev, llm app development, llm application development, build an llm app, build an llm feature, llm feature development, build a rag pipeline, rag pipeline."
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, delivery]

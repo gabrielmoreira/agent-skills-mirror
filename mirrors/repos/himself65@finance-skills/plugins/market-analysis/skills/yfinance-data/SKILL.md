@@ -1,15 +1,15 @@
 ---
 name: yfinance-data
 description: >
-  Fetch financial and market data using the yfinance Python library.
-  Use this skill whenever the user asks for stock prices, historical data, financial statements,
-  options chains, dividends, earnings, analyst recommendations, or any market data.
-  Triggers include: any mention of stock price, ticker symbol (AAPL, MSFT, TSLA, etc.),
-  "get me the financials", "show earnings", "what's the price of", "download stock data",
-  "options chain", "dividend history", "balance sheet", "income statement", "cash flow",
-  "analyst targets", "institutional holders", "compare stocks", "screen for stocks",
-  or any request involving Yahoo Finance data.
-  Always use this skill even if the user only provides a ticker — infer intent from context.
+  Fetch financial and market data with the yfinance Python library (Yahoo Finance).
+  Use this skill whenever the user wants stock data: current quotes and price history,
+  financial statements (income statement, balance sheet, cash flow), options chains,
+  dividends and splits, earnings and analyst estimates, price targets and ratings,
+  institutional and insider holdings, news, multi-ticker comparisons, stock screens,
+  or sector and industry data. Use it even when the user gives only a ticker symbol
+  (AAPL, MSFT, TSLA) and the intent has to be inferred. For earnings previews or
+  recaps, estimate revisions, valuation, correlation, liquidity, or ETF premium
+  analysis, prefer the dedicated skill.
 ---
 
 # yfinance Data Skill
@@ -61,7 +61,7 @@ Match the user's request to one or more data categories below, then use the corr
 | Insider transactions | Ownership | `ticker.insider_transactions` |
 | Company overview, sector | General info | `ticker.info` |
 | Compare multiple stocks | Bulk download | `yf.download()` |
-| Screen/filter stocks | Screener | `yf.Screener` + `yf.EquityQuery` |
+| Screen/filter stocks | Screener | `yf.screen()` + `yf.EquityQuery` |
 | Sector/industry data | Market data | `yf.Sector` / `yf.Industry` |
 | News | News | `ticker.news` |
 
@@ -72,9 +72,6 @@ Match the user's request to one or more data categories below, then use the corr
 ### General pattern
 
 ```python
-import subprocess, sys
-subprocess.check_call([sys.executable, "-m", "pip", "install", "-q", "yfinance"])
-
 import yfinance as yf
 
 ticker = yf.Ticker("AAPL")
@@ -101,14 +98,7 @@ ticker = yf.Ticker("AAPL")
 
 ## Step 4: Present the Data
 
-After fetching data, present it clearly:
-
-1. **Summarize key numbers** in a brief text response (current price, market cap, P/E, etc.)
-2. **Show tabular data** formatted for readability — use markdown tables or formatted DataFrames
-3. **Highlight notable items** — earnings beats/misses, unusual volume, dividend changes
-4. **Provide context** — compare to sector averages, historical ranges, or analyst consensus when relevant
-
-If the user seems to want a chart or visualization, combine with an appropriate visualization approach (e.g., generate an HTML chart or describe the trend).
+Answer with the numbers the user asked for first, then the supporting table (markdown, or a trimmed DataFrame with the key columns). Call out anything notable in the data — an earnings beat or miss, unusual volume, a dividend change — and add context such as sector averages, historical ranges, or analyst consensus where it changes how the numbers read. If the user wants a chart, pair the data with a visualization.
 
 ---
 

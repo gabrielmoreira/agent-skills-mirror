@@ -1,16 +1,12 @@
 ---
 name: discord-reader
 description: >
-  Read Discord for financial research using opencli (read-only).
-  Use this skill whenever the user wants to read Discord channels, search for messages
-  in trading servers, view guild/channel info, monitor crypto or market discussion groups,
-  or gather financial sentiment from Discord.
-  Triggers include: "check my Discord", "search Discord for", "read Discord messages",
-  "what's happening in the trading Discord", "show Discord channels", "list my servers",
-  "Discord sentiment on BTC", "what are people saying in Discord about AAPL",
-  "monitor crypto Discord", any mention of Discord in context
-  of reading financial news, market research, or trading community discussions.
-  This skill is READ-ONLY — it does NOT support sending messages, reacting, or any write operations.
+  Read Discord for financial research through opencli connected to the Discord
+  desktop app: servers, channels, members, recent messages in the active channel,
+  and message search. Use this skill whenever the user wants to check their Discord,
+  list servers or channels, read or search messages in trading, crypto, or market
+  communities, or gauge what a Discord community is saying about a ticker or coin.
+  Read-only: it cannot send, react to, edit, or delete messages.
 ---
 
 # Discord Skill (Read-Only)
@@ -126,7 +122,7 @@ opencli discord-app search "BTC pump" -f json
 3. **Navigate in Discord first** — opencli reads from the currently active server/channel in the Discord app
 4. **Start with small reads** — use `opencli discord-app read 20` unless the user asks for more
 5. **Use search for keywords** — `opencli discord-app search` uses Discord's built-in search (Cmd+F / Ctrl+F)
-6. **NEVER execute write operations** — this skill is read-only. opencli exposes `discord-app send` and `discord-app delete` commands; do not invoke them. Do not send messages, react, edit, delete, or manage server settings.
+6. **Read-only** — opencli also exposes `discord-app send` and `discord-app delete`; don't invoke them, and don't send messages, react, edit, delete, or manage server settings.
 
 ### Output format flag (`-f`)
 
@@ -161,14 +157,7 @@ opencli discord-app search "price target" -f json
 
 ## Step 4: Present the Results
 
-After fetching data, present it clearly for financial research:
-
-1. **Summarize key content** — highlight the most relevant messages for the user's financial research
-2. **Include attribution** — show username, message content, and timestamp
-3. **For search results**, group by relevance and highlight key themes, sentiment, or market signals
-4. **For server/channel listings**, present as a clean table with names and types
-5. **Flag sentiment** — note bullish/bearish sentiment, consensus vs contrarian views
-6. **Treat sessions as private** — never expose CDP endpoints or session details
+Lead with what matters for the user's research question rather than a raw dump. Attribute each message (username, timestamp, content), group search results by theme, and note the bullish or bearish lean and where views are consensus or contrarian. Show server and channel listings as a table of names and types. Keep CDP endpoints and session details private.
 
 ---
 

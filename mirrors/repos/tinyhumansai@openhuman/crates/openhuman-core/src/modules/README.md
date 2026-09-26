@@ -25,7 +25,7 @@ directory on `modules`.
 | Path | Purpose |
 | --- | --- |
 | `mod.rs` | Module rustdoc for the whole loading model; re-exports |
-| `registry.rs` (+ `registry/records_docs_wallet.rs`, `registry/records_extra.rs`, `registry/records_mcp_connectors.rs`, `registry/records_memory_juice.rs`, `registry/records_runtime.rs`, `registry/records_voice.rs`) | The compiled-in table: every `ModuleRecord`, its per-platform digests, and `find`/`ALL` |
+| `registry.rs` (+ `registry/records_browser.rs`, `registry/records_docs_wallet.rs`, `registry/records_extra.rs`, `registry/records_mcp_connectors.rs`, `registry/records_memory_juice.rs`, `registry/records_runtime.rs`, `registry/records_voice.rs`) | The compiled-in table: every `ModuleRecord`, its published per-platform digests, and `find`/`ALL` |
 | `platform.rs` | Which published artifact (`ubuntu-24.04-x86_64`, `macos-15-arm64`, ...) belongs to this host, newest-compatible first |
 | `types.rs` | `LoadPolicy`, `ModuleRecord`, `ModuleSource`, `ModuleState`, `ModuleStatus`, `PlatformAsset` |
 | `host.rs` | The module broker: a dedicated process-lifetime tokio runtime, its `ModuleHost`, and the host's own `Connection` for calling into loaded modules |
@@ -34,6 +34,8 @@ directory on `modules`.
 | `boot.rs` | What loads at startup: search-path artifacts, then every `LoadPolicy::Eager` record — deliberately not every registry entry |
 | `schemas.rs` | The `modules` RPC namespace (`list`, `status`, `load`) |
 | `documents.rs` | Host half of `tinydocs` (feature `documents`): the three document operations |
+| `browser.rs`, `browser_task.rs` | Typed TinyBrowser bus calls, shared website policy, and bounded Jev task routing; the browser engine remains in the loadable module |
+
 | `wallet.rs` | Host half of `tinywallet` (feature `web3`): confidential and split transaction-signing flows |
 | `voice.rs` | Host half of `tinyvoice` (feature `voice`): the voice primitives |
 | `memory/` (`provider.rs`, `core_provider.rs`, `capabilities.rs`, `documents_tree.rs`, `entities_graph_diff.rs`, `goals_tools_sources.rs`, `ingest_answer.rs`, `people_chunks_retrieval.rs`, `sync_sessions_episodic.rs`) | `ModuleMemoryProvider`, forwarding `MemoryProvider` calls to the loaded `tinymemory` module via `tinymemory-api` |
@@ -42,6 +44,12 @@ directory on `modules`.
 | `connectors.rs` | Reaching `tinyconnectors`; egress policy, route selection, and webhook delivery stay in this crate even though scope enforcement moved into the module |
 | `tokenjuice_host.rs` | Host-owned ML callback served to the `tinyjuice` module |
 | `*_tests.rs` | Focused tests beside each file above |
+
+The browser website list controls document navigation, including redirects and
+link clicks. It is not a network sandbox for page subresources or DNS rebinding;
+an allowed page can still load resources from other hosts. Hosts that require
+private-network isolation must also restrict the browser process at the network
+layer.
 
 ## Loading pipeline
 
@@ -60,6 +68,12 @@ directory on `modules`.
    it against the digest pinned in `registry.rs`, hashes the archive, extracts,
    and `dlopen`s — on the module runtime's blocking pool so a cold download
    never stalls another task.
+   On Windows desktop installs, the installer contains the registry-pinned
+   `windows-2022-x86_64` archives and their extracted DLLs under
+   `bundled-modules/`. The host registers that read-only directory before
+   starting the core. The same archive digest and TinyBus admission checks run
+   against these local files first, so normal use needs no runtime download.
+   Headless and development hosts continue to use the release cache.
 6. tinybus's ABI descriptor, manifest, and dependency gates decide whether the
    artifact is *admitted*; a faulted or refused module is recorded as
    `Resolution::Failed` in the resolution table (surfaced as

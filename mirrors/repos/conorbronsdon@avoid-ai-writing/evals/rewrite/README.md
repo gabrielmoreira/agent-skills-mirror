@@ -1,0 +1,387 @@
+# Rewrite preservation regressions
+
+## Current merge gate
+
+The [automated regression gate](automated-gate.md) governs the editing-contract
+and single-final-rewrite stack. It was adopted on 2026-09-16 with maintainer
+authorization. Human adjudication is optional follow-up work, not a merge
+requirement. The historical comparative experiment below retains its original
+frozen protocol and evidence rules; its results must not be relabeled as
+complete or human-reviewed to satisfy the new gate.
+
+The [2026-09-16 stack report](reports/automated-stack-295-296-2026-09-16/README.md)
+and its [follow-up](reports/automated-stack-295-296-2026-09-16/FOLLOWUP.md)
+record executed scenarios, retained failures, independent reviews, and remaining
+blockers. This evidence does not complete the historical pilot.
+
+`demo.json` records the quick demo's source, required facts, known forbidden
+additions, allowed edits, and contrasting outputs. Run `node scripts/rewrite-demo.test.js`.
+The check reads the published README pair, so fixture-only correctness cannot
+hide a regression in the example readers see.
+
+These explicit patterns catch the original investor/integration inventions and
+missing dashboards. They accept more than one rewrite, but can reject an
+unlisted paraphrase or accept a negated, contradictory, or newly invented claim.
+They do not prove semantic fidelity. Model-assisted scenario review supplies
+additional regression evidence, not human-validated writing-quality evidence.
+
+## Published example audit
+
+Reviewed at main `d57265d` for issue #200:
+
+- Quick demo: removed an unsupported investor and integration mechanism; restored
+  real-time dashboards.
+- Full README example: retained its supported investor list and product
+  capabilities; removed invented resolution times, Datadog attribution, paying
+  customer count, EMEA hiring and log-management plans. Preserved the supplied
+  go-to-market plan and adoption claim. Explicitly flagged the unnamed market
+  and study sources instead of silently replacing their figures.
+- README catalog rows 1, 2, 4, 5 and 7: replaced example-specific inventions with
+  editing guidance. Other rows describe transformations or use placeholders;
+  they are illustrative directions, not verified factual source/output pairs.
+- `examples/prose.json` and `examples/technical.json` are style configurations,
+  not rewrite pairs. The catalog's embedded rule examples remain outside this
+  published-demo audit; this review does not certify every rule in the skill.
+
+The examples are fictional. No real-world funding or product claim is verified
+by these fixtures. Wider editing evaluation is tracked in #201.
+
+## Historical comparative evaluation pilot (#201)
+
+This is offline evaluation infrastructure, not a model runner or a published
+benchmark result. It makes no network calls and needs no model credentials.
+The case/schema tests and synthetic plumbing outputs do not establish editing
+quality. The pilot contains 48 synthetic cases: 12 each for clean prose, clear
+edits, contextual judgments, and preservation conflicts. The corrected demo
+seeds `clear-edit-04`.
+
+Cases record atomic claims, exact protected spans, allowed edits, expected
+preserve/change decisions, provenance and review guidance. `required_phrases`
+and `forbidden_phrases` are lists of literal phrases, never regular expressions:
+they run against model output at report time, and no cheaply validated regex
+subset bounds matching work. A rule is `{"id": ..., "any": ["phrase", ...]}` and
+hits when any phrase occurs in the text, ignoring case and whitespace runs, at a
+word boundary wherever the phrase starts or ends with a word character ("led by"
+does not match "handled by"). List every acceptable wording under `any`. Their wording is
+original and MIT-licensed; there are no private drafts. Both splits cover all
+six skill profiles. There are 36 development cases and 12 held-out cases. Cases
+are grouped under twelve fictional authors and twenty-four fictional documents,
+several cases to each, and no author or document appears in both splits, so the
+leakage check tests something real. Held-out sources reuse no Tier 1 word,
+template phrase, or numeric figure from a development source. Short fixtures diagnose specific
+mistakes; they do not represent the distribution of real production writing.
+
+Every case is a rewrite-mode task, and `protocol.json` freezes that restriction
+in `modes`. Detect and edit modes are out of scope. Edit mode is excluded for a
+reason worth stating: `SKILL.md` defines it as editing a named prose file in
+place with the Edit tool and returning a short report rather than the text, and
+no condition here has a filesystem. Asking for the edited text back instead
+would contradict the mode under test, and the fixed simple prompt carries no
+edit contract at all, so the three conditions would return different kinds of
+artifact and `final_text` could not make them comparable. Adding edit mode later
+needs an identical file-editing tool environment in all three conditions and a
+rule for which post-edit artifact is scored; the harness rejects an edit-mode
+case until then. All conditions use the same portable, no-tools environment. The
+exact skill entry and reference contents are included in the system prompt. This
+does not evaluate resource-loading efficiency.
+
+Skill snapshots can differ in their surrounding report: historical baselines
+may use the former four-section format, while current candidates present one
+final rewrite after review and available verification. A common user
+instruction therefore requires every condition to place exactly one final
+artifact between the `<<<FINAL_REWRITE>>>` and `<<<END_FINAL_REWRITE>>>`
+boundary lines. For a historical output where a second pass supersedes an
+earlier section, only the corrected version goes between the boundaries. Result
+validation derives the complete payload from those markers; a reviewer cannot
+select a more favorable substring. This keeps the frozen comparison compatible
+with old and new presentation contracts without changing the scored artifact.
+
+Manual forward checks for the current output, pass-budget, residual, and
+tool-status contract live in [`output-contract-scenarios.md`](./output-contract-scenarios.md).
+They supplement this frozen comparison and are not part of its cases, protocol,
+or score.
+
+### Freeze a comparison
+
+Run local checks:
+
+```bash
+npm run eval:rewrite:validate
+node scripts/rewrite-eval.test.js
+```
+
+Both need a git checkout: the harness pins and later re-reads the skill files
+from the baseline and candidate commits with `git show`, so a ZIP download or a
+`git archive` export cannot prepare or verify a plan. The expected case count,
+group size and split sizes live in `protocol.json`, not in the code, so they are
+covered by the protocol hash.
+
+Create a configuration outside the tracked repository. For example:
+
+```json
+{
+  "baseline": "d57265d81b7a8d56827bf23f5deef557fc988462",
+  "candidate": "FULL_CANDIDATE_COMMIT_SHA",
+  "corpus": "FULL_CORPUS_COMMIT_SHA",
+  "split": "development",
+  "models": [{
+    "id": "editor-a",
+    "provider": "PROVIDER",
+    "version": "EXACT_VERSIONED_MODEL_ID",
+    "family": "MODEL_FAMILY",
+    "settings": {"temperature": 0, "max_output_tokens": 4096},
+    "tools": []
+  }]
+}
+```
+
+Replace the example commit and model placeholders with real identifiers. Resolve
+the desired baseline with `git rev-parse <ref>`; fetch it if absent from a shallow
+checkout. `corpus` names the commit whose `evals/rewrite/cases.json` and
+`protocol.json` the plan uses; it defaults to `HEAD` for development runs and must
+be a full SHA for a held-out run. The case set is read from that commit, not from
+the working tree, so commit case edits before preparing. Include every effective setting, including any reasoning budget and
+seed supported by the provider. If a provider only exposes a moving alias,
+record that limitation and do not present the run as version-reproducible.
+Use the same model and settings across baseline, candidate and simple conditions.
+
+```bash
+node scripts/rewrite-eval.js prepare /tmp/config.json /tmp/plan.json
+```
+
+The plan pins full skill commits, file contents/hashes, case and protocol hashes,
+exact prompts and final-text boundaries, provider/model settings, no-tool policy, task IDs and three
+repetitions per case/condition/model. Preparation resolves refs before freezing.
+An existing output file is never overwritten. Every later stage re-reads the
+cases and protocol from the pinned corpus commit, re-derives the prompts and task
+list from them, the models and the pinned skill sources, and re-reads every pinned
+file from git, so a plan edited and re-hashed by hand is rejected rather than
+trusted. If baseline and candidate resolve to the same
+commit, `prepare` warns that the plan compares the skill against itself. Commit the case set, protocol and
+candidate before comparisons; archive the plan hash with the experiment record.
+Changing any metric or prompt requires a new preregistration, not rewriting the
+old plan after seeing outputs.
+
+### Execute explicitly and retain evidence
+
+Model calls are a separate, explicit operator step. Inspect the plan, choose
+providers and approve their cost before running it with your preferred client.
+This repository supplies no implicit paid runner. For every task, send
+`plan.prompts[task.condition]` as the system prompt and `task.user` as the user
+prompt using that task's model settings. Start a fresh conversation for each
+request. Do not expose case expectations or judge instructions to the editor.
+
+Save a JSON array of result records outside the tracked repository:
+
+```json
+[{
+  "task_id": "CASE/MODEL/REPETITION/CONDITION",
+  "plan_hash": "FROM_PLAN",
+  "prompt_hash": "FROM_TASK",
+  "provider": "FROM_MODEL_CONFIG",
+  "model_version": "FROM_MODEL_CONFIG",
+  "raw_output": "<<<FINAL_REWRITE>>>\nRewritten prose.\n<<<END_FINAL_REWRITE>>>",
+  "final_text": "Rewritten prose.",
+  "final_text_offset": 20,
+  "recorded_at": "2026-09-12T12:00:00Z",
+  "duration_ms": 1000,
+  "usage": {"kind": "actual", "input_tokens": 100, "output_tokens": 50}
+}]
+```
+
+Keep the complete provider response/usage receipt alongside these records. Each
+task tells the model to use the protocol's exact boundary pair once. Record the
+complete unmodified response in `raw_output`, the entire text between the
+boundary lines in `final_text`, and its zero-based start in
+`final_text_offset`. Validation rejects a missing, repeated or malformed boundary
+and rejects any narrower selection from inside the marked artifact. Do not
+repair the rewrite. Preserve uncertainty/source-gap notes in the raw output for
+the audit record. If a condition refuses or cannot rewrite, its complete refusal belongs
+between the boundaries and is adjudicated as returned, not converted into an
+empty result.
+Label token estimates with `kind: "estimate"`; use `kind: "unavailable"` rather
+than fabricating counts. Record latency with a monotonic timer around the call. `recorded_at` must not
+predate the plan's `created_at`; a result dated before the freeze is rejected.
+A failed or missing call leaves the comparison incomplete; log the error and
+rerun that task explicitly. Do not silently choose the best of several outputs.
+
+#### Optional OpenCode Zen executor
+
+`scripts/rewrite-eval-opencode.js` is an explicit, free-model executor for
+OpenCode 1.18.30. It does not change the frozen cases, prompts, metrics or
+reporting gates. It starts a new OpenCode process and session for every selected
+task, resolves a custom agent with every tool disabled, and stores the full
+OpenCode event stream and session export beside each result.
+
+OpenCode normally adds a coding-agent and environment system prompt. The
+executor loads a local file plugin that uses OpenCode's
+`experimental.chat.system.transform` hook to replace that assembled prompt with
+the plan's exact condition prompt immediately before dispatch. A second hook
+sets the frozen temperature, sampling and output-token parameters. Per-call
+audit files must exactly match the plan before a result is accepted. The task's
+user prompt is supplied over stdin and checked against the persisted session;
+OpenCode 1.18.30 adds display quotes when a multiline prompt is passed as one
+positional argument. `--pure` cannot be used for execution because it disables
+the audit plugin. The executor still sets sharing off, automatic updates off and
+all permissions to deny. It uses a dedicated config directory, disables project
+config discovery, enables only the OpenCode provider, and rejects the resolved
+configuration unless the generated audit plugin is the only external plugin,
+there are no provider or MCP overrides, and the resolved agent has no extra
+settings. Model audits pin the observed Zen URL and SDK transport and require
+every advertised cost dimension to be zero.
+This prevents another configured plugin from changing a message after an audit.
+
+The adapter accepts only the observed free Zen IDs `mimo-v2.5-free`,
+`ling-3.0-flash-fin-free` and `nemotron-3-ultra-free`, and only model settings it
+can apply and verify:
+
+```json
+{
+  "temperature": 0,
+  "top_p": null,
+  "top_k": null,
+  "max_output_tokens": 4096,
+  "provider_options": {},
+  "transport": "opencode-1.18.30-system-transform-v1",
+  "opencode_version": "1.18.30",
+  "model_alias_reproducibility": "Moving Zen alias; no immutable provider revision is exposed."
+}
+```
+
+Create an external runner configuration. Omit `task_ids` only after approving a
+complete run; a selected subset remains diagnostic and cannot satisfy the
+release policy.
+
+```json
+{
+  "schema_version": 1,
+  "purpose": "diagnostic",
+  "opencode_path": "/absolute/path/to/opencode",
+  "opencode_version": "1.18.30",
+  "timeout_ms": 420000,
+  "task_ids": ["CASE/MODEL/REPETITION/CONDITION"]
+}
+```
+
+Run and import only validated results:
+
+```bash
+node scripts/rewrite-eval-opencode.js run /tmp/plan.json /tmp/runner.json /tmp/run
+node scripts/rewrite-eval-opencode.js import /tmp/plan.json /tmp/run /tmp/results.json
+```
+
+The run directory is resumable but never retries a recorded failure or replaces
+a recorded success. Resume and import re-derive every request and revalidate the
+plugin, resolved config, no-tools agent, event stream, system and parameter
+audits (including every invocation when OpenCode repeats a hook), call timing,
+session export, model identity, cost, usage and result. A
+missing or contradictory receipt fails closed. Spawn errors and timeouts retain
+a failure record and batch status. Immutable artifacts use flushed temporary
+files and atomic no-clobber publication. If resume finds a malformed result, it
+moves the exact bytes to `invalid-result.json`, records a hashed failure and
+continues unrelated tasks; it never treats that file as a completed result.
+Interrupted config/plugin setup validates every existing artifact before it
+creates only the missing files, and conflicting contents still fail closed.
+Each run or import performs the full Git-backed plan/provenance check once (six
+pinned-file reads for this protocol); per-task and final row checks reuse that
+already-verified in-memory plan without launching 3,888 redundant Git jobs for
+a 648-task import. `opencode_path` must be absolute. On Windows it must name the
+native `opencode.exe`; npm's `opencode.cmd` and other command shims cannot be
+launched by this runner. A global npm installation typically places the native
+binary under `%APPDATA%\npm\node_modules\opencode-ai\bin\opencode.exe`. Verify
+that the selected binary reports the pinned version before starting a run. Use
+a new directory for an explicit retry so
+the rejected attempt remains in the experiment record. A configuration with
+`task_ids` must use `purpose: "diagnostic"`. Zen's free model IDs are moving
+aliases; record that limitation and do not describe them as immutable model
+versions. A transport smoke test is diagnostic, not a benchmark result.
+
+### Blind human review
+
+```bash
+node scripts/rewrite-eval.js blind /tmp/plan.json /tmp/results.json /tmp/review.json /tmp/private-key.json
+```
+
+The packet randomizes output order and assigns opaque aliases. Give the packet
+to a human reviewer; keep the condition mapping private until adjudication. The
+key is checked at report time as a one-to-one map between aliases and results:
+an extra or duplicated alias is rejected, and adjudication is counted per task,
+so a task judged twice through two aliases cannot stand in for one never judged.
+Reviewers may see the source and expected constraints but not condition labels.
+The packet contains the validated `final_text`, not the differently formatted
+`raw_output`, so the skill's surrounding report cannot disclose its condition or
+prime the judgment. Keep raw responses with the experiment record for a separate
+audit after judgments are frozen. The prose itself may still make a condition
+inferable: this is label blinding, not a guarantee that reviewers cannot infer
+the prompt. The editor model must not judge its own outputs. An optional
+independent model judge may assist, but its unadjudicated verdicts do not count
+as human review.
+
+For each alias, record a human verdict and rationale:
+
+```json
+[{
+  "alias": "FROM_REVIEW_PACKET",
+  "reviewer_role": "human",
+  "reviewer": "Reviewer identifier",
+  "preservation_failure": false,
+  "unnecessary_edit": false,
+  "missed_justified_edit": true,
+  "blind_preference": "not_rated",
+  "rationale": "The source needed a stated edit, but the output is unchanged."
+}]
+```
+
+A preservation failure changes/drops a material proposition, certainty, negation,
+unit or protected content, or invents a claim. An unnecessary edit harms or changes
+already-good wording without a justified benefit, including loss of authentic
+voice. A missed justified edit leaves a case's stated problem unresolved. These
+flags are independent; one output may fail more than one dimension. Optional
+edits listed in a preserve case are not automatically errors. Inspect source and
+output meaning rather than counting changed words.
+
+For preference, compare the three alternatives with the same case, model and
+repetition. Mark the preferred output `preferred`, tied best outputs `tie`, the
+others `not_preferred`; leave all three `not_rated` if preference was not assessed.
+Preference concerns usefulness and readability; it cannot erase factual errors.
+A ballot is checked at any size: more than one `preferred`, `preferred` alongside
+`tie`, or `not_rated` mixed with rated votes is rejected before the ballot is full,
+and a full ballot must be one of the three shapes above.
+Disputed/subjective judgments require human adjudication with the reason recorded.
+Keep original reviewer notes alongside the final adjudicated record.
+
+```bash
+node scripts/rewrite-eval.js report /tmp/plan.json /tmp/results.json /tmp/private-key.json /tmp/judgments.json /tmp/report.json
+```
+
+The report separates all three failure counts and preference counts by editor
+family, model and profile. It also reports completeness and mechanical literal
+checks. Missing judgments are not passes: `complete` is true only when every
+task has a result and a human judgment. Unchanged text can incur missed-edit
+failures. Mechanical checks can flag missing protected text and the demo's known
+regressions, but do not establish semantic fidelity or quality. No detector score
+is used, and no automatic rollout approval is produced.
+
+### Historical experiment release comparison and limits
+
+The following policy applies only to completing or making claims from the
+historical comparative experiment. It is not the current merge gate; see
+[automated-gate.md](automated-gate.md). `protocol.json` freezes that experiment
+policy before comparative runs. Use at least two
+editor model families for a release comparison and report each separately. A
+single available family is diagnostic only. Require complete human review and
+three repetitions for every case/condition. The candidate must have no higher
+counts of preservation failures, unnecessary edits or missed edits than either
+baseline or simple within each family/profile. It must reduce missed edits in
+at least one profile in each family. Reader preference is reported separately.
+Ties, regressions and incomplete evidence do not justify default rollout.
+
+Freeze the candidate's full SHA before preparing the held-out split. Never tune
+against held-out outputs. Public synthetic fixtures are not secret; if these
+cases informed candidate changes, obtain a fresh independently authored holdout
+before release. This small pilot is diagnostic, not statistical proof of general
+improvement. Report counts, sample sizes, disagreements and limitations.
+
+No comparative model run or human adjudication has been performed by adding this
+harness. Issue #201 records the revised acceptance criteria and any optional future
+comparative work.

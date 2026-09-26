@@ -35,6 +35,13 @@ differential also grants that allowance once during the none-to-v1 migration;
 unrelated later growth still uses the ordinary gate. Keep the explanation
 readable, while visible Goal prompts and other surfaces retain their own limits.
 
+All generic heartbeat and native Goal bodies match the user's current language,
+fall back to English when no user language is available, and do not mix
+languages unless the user asks or a scoped capability requires bilingual
+output. This policy applies to full, compact, brief, thin, visible Codex and
+TraeX Goal, and Ark Managed Agent bodies. Capability-specific bilingual
+contracts remain authoritative for their own output surfaces.
+
 Do not paste the full lifecycle protocol into the visible goal text, and do not
 use a short goal text such as "advance TODO" as the recurring automation body.
 The short text names the goal; the generated task body enforces quota, gates,
@@ -54,7 +61,7 @@ static refresh/spend sequence: after validated work it follows the current
 `interaction_contract.cli_channel.settlement_plan.ordered_steps`, or current
 `next_cli_actions` when there is no plan. Generator command fields remain for
 compatibility, not as a stale fallback. Todo acceptance alone is not Turn
-settlement or terminal vision closure. The brief budget remains 3,500 characters.
+settlement or terminal vision closure. The brief budget is 4,300 characters.
 
 Brief 与 thin 共用完整执行义务路径；这次有意移除 brief 固定结算配方，而不是
 删除结算义务。真实 App preflight、registry scope、完整 guard 和静态安全规则
@@ -429,17 +436,17 @@ If the result says should_run=false:
   user_todo_summary, and agent_todo_summary from the payload. If the same
   unresolved gate has not already been asked in the recent visible thread,
   return heartbeat NOTIFY with
-  one concise Chinese question that lists the gate and the expected reply
-  format. Treat `interaction_contract.user_channel.notify` as the final
+  one concise question in the user's language that lists the gate and the
+  expected reply format. Treat `interaction_contract.user_channel.notify` as the final
   notification signal. When it is `NOTIFY`, name concrete projected
   `actions`, todos, or questions even when `action_required=false`,
   `user_todo_summary.open_count=0`, and `non_blocking=true`; non-blocking means
   the agent may continue independent work, not that the user action is silent.
   Never say only "owner gate". If required user-facing items are not projected,
-  say "具体 user todo 未投影，需修复 LoopX 状态投影"; never say "no new user
-  action" for this case. Only when `notify=DONT_NOTIFY`,
+  say "specific user Todo is not projected; repair LoopX state projection" in
+  the user's language; never say "no new user action" for this case. Only when `notify=DONT_NOTIFY`,
   `action_required=false`, and `open_count=0` may the heartbeat say
-  "无用户待办/无需通知" or stay quiet. Do not execute agent_command, adapter
+  "no user action required" in the user's language or stay quiet. Do not execute agent_command, adapter
   work, write-control, production actions, or the gated path while asking.
 - If the payload says notify_user_on_open_todo=true, treat the existing open
   user_todo_summary as a blocker-push opportunity, not as a silent skip. This
@@ -451,8 +458,8 @@ If the result says should_run=false:
   user_gate_notification_cooldown.notification_suppressed=true, preserve the
   pending gate but return quiet DONT_NOTIFY until its bounded reminder window
   or a material gate/host change. Otherwise, if the same blocker ask has not already been surfaced in
-  the recent visible thread, return heartbeat NOTIFY with one concise Chinese
-  ask listing at most three first_open_items, the open_todo_notify_reason, and
+  the recent visible thread, return heartbeat NOTIFY with one concise ask in
+  the user's language listing at most three first_open_items, the open_todo_notify_reason, and
   the expected reply format: done, defer/not now, or a new evidence
   link/date/conclusion. Do not do implementation work, adapter work, file
   edits, research, project exploration, or quota spend for that blocker-push

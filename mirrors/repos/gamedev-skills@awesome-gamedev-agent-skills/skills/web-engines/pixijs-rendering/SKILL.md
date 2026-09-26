@@ -9,11 +9,11 @@ description: >
   init() API.
 ---
 
-# PixiJS 8.19 Rendering
+# PixiJS 8.21 Rendering
 
-Set up and structure a PixiJS **8.19** application: the async `Application`, asset
+Set up and structure a PixiJS **8.21** application: the async `Application`, asset
 loading via `Assets`, the `Container`/`Sprite` scene graph, the ticker loop,
-pointer events, and render groups. Pins the 8.19 API (async `init`, unified
+pointer events, and render groups. Pins the 8.21 API (async `init`, unified
 `Assets`, `eventMode`).
 
 ## When to use
@@ -26,8 +26,9 @@ pointer events, and render groups. Pins the 8.19 API (async `init`, unified
 
 **When *not* to use:** Phaser's scene/loader model → `phaser-core`. 3D scenes →
 `threejs-scene-setup`. PixiJS v7-and-earlier code (synchronous `new
-Application({...})`, `Loader`, `interactive = true`) needs the v8 migration first;
-this skill targets v8 only.
+Application({...})`, `Loader`, `beginFill`/`endFill`) needs the v8 migration first;
+this skill targets v8 only. (`interactive = true` still works in v8 as an alias for
+`eventMode = 'static'`, but prefer the explicit `eventMode`.)
 
 ## Core workflow
 
@@ -61,7 +62,9 @@ import { Application, Assets, Sprite } from 'pixi.js';
     background: '#1099bb',
     resizeTo: window,        // track the window size
     antialias: true,
-    // preference: 'webgpu',  // opt into WebGPU; default 'webgl'
+    // preference: 'webgpu',  // hint only; default order tries 'webgl' first.
+    //                        // Pixi falls back if the backend is unavailable —
+    //                        // branch on app.renderer.name, don't assume it took.
   });
 
   document.body.appendChild(app.canvas); // v8 uses app.canvas, not app.view
@@ -109,13 +112,27 @@ app.ticker.add((ticker) => {
 
 ```js
 bunny.eventMode = 'static';   // 'static' = interactive, doesn't move on its own
-bunny.cursor = 'pointer';
+bunny.cursor = 'pointer';     // hover cursor; `buttonMode` was removed in v8
 bunny.on('pointerdown', (event) => {
   bunny.tint = 0xff0000;
   // event.global is the pointer position in stage space.
 });
 bunny.on('pointerover', () => bunny.scale.set(1.1));
 bunny.on('pointerout',  () => bunny.scale.set(1.0));
+```
+
+Dragging needs `globalpointermove`, not `pointermove`. In v8 `pointermove` fires
+**only while the pointer is over the object**, so a drag that follows the cursor
+past the object's edge stops updating. `globalpointermove` fires on every move:
+
+```js
+let dragging = false;
+bunny.on('pointerdown', () => { dragging = true; });
+bunny.on('pointerup', () => { dragging = false; });
+bunny.on('pointerupoutside', () => { dragging = false; }); // release off the object
+bunny.on('globalpointermove', (event) => {
+  if (dragging) bunny.position.copyFrom(event.global);
+});
 ```
 
 ### 5. Loading many assets by name (bundles)
@@ -153,19 +170,38 @@ app.stage.addChild(background);
 
 - **Blank canvas / "app.stage is undefined"** → you didn't `await app.init()`, or you
   configured the constructor. In v8 the constructor is empty; all options go to
-  `init()`.
+  `init()`. `app.renderer`/`app.canvas`/`app.screen` are `undefined` until the
+  `init()` promise resolves.
 - **`app.view` is undefined** → v8 renamed it to `app.canvas`.
-- **v7 code throwing** → `interactive = true` → `eventMode = 'static'`; `Loader`/
-  `loader.add` → `Assets.load`; synchronous `new Application({...})` → async `init`.
+- **Porting v7 code** → `Loader`/`loader.add` → `Assets.load` (the `Loader` class is
+  gone); synchronous `new Application({...})` → empty constructor + async `init()`
+  (options in the constructor are ignored with a deprecation warning, not an error);
+  `beginFill()`/`endFill()` → shape-first `.rect(...).fill(...)`. `interactive = true`
+  and `app.view` still work as deprecated aliases.
+- **Ticker callback arg is the Ticker, not a delta number** → `app.ticker.add((dt) =>
+  { obj.rotation += dt; })` compiles, but `dt` is the whole `Ticker` object, so the
+  math yields `NaN` and nothing animates. Read `ticker.deltaTime` off the argument.
 - **Top-level await build error (Vite ≤6.0.6)** → wrap boot in `(async () => { ... })()`.
-- **Speed varies with frame rate** → multiply movement by `ticker.deltaTime` (or use
-  `deltaMS`); never assume 60fps.
-- **Clicks do nothing** → the object's `eventMode` is still `'none'` (the default);
-  set it to `'static'` or `'dynamic'`.
+- **Speed varies with frame rate** → multiply movement by `ticker.deltaTime` (~1 at
+  60fps) or scale by `ticker.deltaMS`; never assume 60fps. `deltaTime` is a
+  dimensionless multiplier, not milliseconds.
+- **Clicks do nothing** → the object's `eventMode` is still `'passive'` (the v8
+  default: self not interactive, children still are); set it to `'static'` (or
+  `'dynamic'` for objects that move under a stationary cursor).
+- **Drag stops at the object's edge** → `pointermove` fires only while the pointer is
+  over the object in v8; use `globalpointermove` for drag/global tracking.
+- **`Texture.from(url)` returns a blank/undefined texture** → in v8 it only reads the
+  Assets cache; `await Assets.load(url)` first, then use the returned `Texture`.
+- **WebGPU features error out** → `preference` is a hint. If the backend is
+  unavailable Pixi falls back (WebGL, then Canvas); branch on `app.renderer.name`
+  before using backend-specific code.
 - **Textures look blurry on pixel art** → set
   `texture.source.scaleMode = 'nearest'` (or pass it when loading).
 - **Memory grows** → `removeChild` does not free GPU memory; call
   `sprite.destroy()` and `Assets.unload(url)` for assets you're done with.
+- **Flicker/corruption after tearing down and re-creating an app in the same tab** →
+  destroy with `app.destroy({ releaseGlobalResources: true })`; otherwise pooled
+  batches/textures from the old app leak into the new one.
 
 ## References
 

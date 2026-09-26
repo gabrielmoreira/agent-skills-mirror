@@ -143,6 +143,10 @@ same real type in both builds.
 - `crates/openhuman-core/src/mcp/mod.rs` — `start`/`start_boot_jobs` wire up
   `bus::init()`, `boot::spawn_installed_servers`, and the reconnect
   supervisor.
+- `tinymcp`'s live connection map is the process cache: startup connects
+  installed servers, and connect, disconnect, config updates, and reconnects
+  update the map. `connected_overview()` reads tool snapshots from that map;
+  it does not call an MCP server on each chat turn.
 - `crates/openhuman-core/src/core/jsonrpc.rs` — the `/oauth/mcp/callback`
   route calls `oauth::complete`.
 - `crates/openhuman-core/src/tools/registry/ops.rs` and

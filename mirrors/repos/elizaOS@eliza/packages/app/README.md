@@ -18,6 +18,11 @@ bun run build:client  # build
 bun run --cwd packages/app test   # tests
 ```
 
+For a system APK targeting Pixel/Cuttlefish ARM64 and x86_64, set
+`ELIZA_ANDROID_TARGET_ABIS=x86_64,arm64-v8a` when running
+`bun run --cwd packages/app build:android:system`. Omitting the variable retains
+all runtime targets, including the separately pinned RISC-V artifact requirement.
+
 Turbo builds the host `dist/` before the renderer `web-dist/`. For a renderer-only
 rebuild after dependencies are built, use `bun run --cwd packages/app build`.
 
@@ -65,11 +70,45 @@ unmetered, metered, offline, and restored bridge results. It restores the origin
 settings and exports each observed result. Device E2E runs this lane before the
 full plugin suite.
 
+The gateway service lifecycle lane requires Android 15+:
+`node packages/app/scripts/android-gateway-lifecycle.ts --serial emulator-5580`.
+It compiles the production service into a disposable minimal Activity host and
+uses Android's real foreground-service timeout to verify shutdown, exhausted-budget
+rejection, and foreground recovery in local, cloud, and cloud-hybrid modes. It
+restores the timeout setting and removes its package afterward. This tests the
+service lifecycle, not full MainActivity behavior or WebSocket delivery.
+
 The embedded-agent lifecycle lane needs a fresh x86_64 emulator with at least 4 GB
 RAM and no installed `ai.elizaos.app`. Run
 `node packages/app/scripts/android-native-agent.ts --serial emulator-5580` with
 `JAVA_HOME` and `ANDROID_HOME` set. It builds the real mobile Bun bundle and host
 service, selects the first-party Agent plugin in a minimal test WebView, verifies
 startup, authenticated requests and shutdown, then removes its APKs. Reports and
-complete runtime logs go to `test-results/android-native-agent/`. This lane does
-not claim model inference, the full renderer flow, or physical-device coverage.
+complete runtime logs go to `test-results/android-native-agent/`. It also runs the production filesystem service in two child Bun processes using
+the packaged runtime and private app storage, checking persistence, invalid paths,
+and symlink rejection. Proof includes the actual app UID and SELinux context.
+A third test exercises the Capacitor filesystem backend across recreated WebViews,
+with native Documents byte checks and fixture cleanup. It bundles the production
+service with real core leaves and the renderer bootstrap. This lane does not claim
+model inference, the full renderer flow, or physical-device coverage.
+
+Add `--embedding` to run the production framed inference host and JNI encoder
+against the BGE model packaged in the APK. This builds CPU libraries for ARM64
+and x86_64, requires the pinned llama.cpp submodule and Android NDK, and rejects
+`ELIZA_ANDROID_SKIP_FORK_LLAMA_LIB=1`. It checks complete Unicode input, typed
+oversize/artifact rejection, release/reload, and 30 warm requests; the report
+exports complete 384-dimensional vectors and timing evidence. It also exercises
+the registered Capacitor BGE bridge from a real WebView, including tokenization,
+embedding, admission rejection, and context release.
+
+Use `--speech-model-dir <directory>` instead of `--embedding` for CPU Kokoro
+transport and PCM diagnostics through the framed host. Supply `kokoro-82m-v1_0.gguf` and `af_sam.bin`
+from the pinned assets in `plugins/plugin-native-inference/src/aosp-voice-download.ts`.
+The test verifies their hashes inside the installed APK, checks speed, input
+rejection and release/reload, and exports full PCM plus a playable WAV. A passing
+diagnostic does not qualify speech intelligibility: the report explicitly marks
+it `unqualified`. Optimized and scalar output failed independent recognition of
+the expected phrase while the recognizer control passed; the model/forward-path
+defect remains unresolved (issue #30679). Diagnosis needs a matched canonical
+reference and the first divergent tensor. Microphone capture, phonemization and
+physical speaker playback are outside this IPA-input diagnostic.

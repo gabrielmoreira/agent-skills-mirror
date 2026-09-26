@@ -461,7 +461,9 @@ function commandSubstitutions(command) {
   return substitutions
 }
 
-function redirectTargets(command) {
+// keepAll：命令里有 cd 时，相对目标要先接上 cd 目录再判是不是正文（`cd 正文 && cat > 第3章.md`），
+// 所以先全部取出，由调用方接好目录后再过滤。
+function redirectTargets(command, keepAll = false) {
   const value = String(command)
   const targets = []
   let quote = ""
@@ -480,7 +482,7 @@ function redirectTargets(command) {
     if (value[cursor] === "|" || value[cursor] === "&") cursor++
     while (value[cursor] === " " || value[cursor] === "\t") cursor++
     const parsed = readShellWord(value, cursor)
-    if (parsed.word.includes("正文")) targets.push(parsed.word)
+    if (keepAll || parsed.word.includes("正文")) targets.push(parsed.word)
     index = Math.max(index, parsed.next - 1)
   }
   return targets
@@ -567,26 +569,40 @@ function extractProseTargets(command, depth = 0) {
       targets.push(...extractProseTargets(nested, depth + 1))
     }
   }
-  targets.push(...redirectTargets(scannable))
-  for (const raw of shellSegments(scannable)) {
-    const segment = beforeShellRedirection(raw)
+  // `cd 书目录 && cat > 正文/...`：相对写入目标要接在 cd 之后的目录上，否则守卫按会话目录去找细纲，
+  // 把有细纲的章误报成缺细纲。命令里没有 cd 时保持整条命令扫描重定向的原行为。
+  // `>|`、`>&file`、`&>` 是重定向，不是管道或后台符；先统一成 `>`，免得切段时把目标切丢。
+  const segments = shellSegments(scannable.replace(/&>/g, " >").replace(/>\|/g, ">").replace(/>&(?!\d)/g, ">"))
+  const parsed = segments.map((raw) => {
+    const words = shellWords(beforeShellRedirection(raw))
+    const commandIndex = commandWordIndex(words)
+    return { raw, name: commandBasename(words[commandIndex]), args: words.slice(commandIndex + 1) }
+  })
+  const hasCd = parsed.some((item) => item.name === "cd")
+  if (!hasCd) targets.push(...redirectTargets(scannable))
+  let cwd = ""
+  const isAbsolute = (value) => /^([\\/~]|[A-Za-z]:[\\/])/.test(value)
+  const underCwd = (value) => (cwd && !isAbsolute(value) ? joinPosix(cwd, value) : value)
+  for (const { raw, name: commandName, args: commandArgs } of parsed) {
     // 引号感知分词（同 shellWords）：/\s+/ 会把 cp draft.md "my book/正文/第1章.md" 的目标切碎，
     // 末位取到 book/正文/第1章.md —— 判到另一本书上（那本有细纲就直接放行）。
-    const words = shellWords(segment)
-    const commandIndex = commandWordIndex(words)
-    const commandName = commandBasename(words[commandIndex])
-    const commandArgs = words.slice(commandIndex + 1)
+    if (commandName === "cd") {
+      const directory = commandArgs.find((arg) => !arg.startsWith("-"))
+      if (directory) cwd = isAbsolute(directory) || !cwd ? directory : joinPosix(cwd, directory)
+      continue
+    }
+    if (hasCd) targets.push(...redirectTargets(raw, true).map(underCwd).filter((target) => target.includes("正文")))
     if (["sh", "bash", "dash", "ksh", "zsh"].includes(commandName)) {
       const nested = nestedShellCommand(commandArgs)
       if (nested) targets.push(...extractProseTargets(nested, depth + 1))
     }
     if (commandName === "tee" || commandName === "touch") {
-      for (const destination of writeOperands(commandName, commandArgs)) {
+      for (const destination of writeOperands(commandName, commandArgs).map(underCwd)) {
         if (destination.includes("正文")) targets.push(destination)
       }
     }
     if (commandName === "cp" || commandName === "mv" || commandName === "install") {
-      for (const destination of copyLikeTargets(commandName, commandArgs)) {
+      for (const destination of copyLikeTargets(commandName, commandArgs).map(underCwd)) {
         if (destination.includes("正文")) targets.push(destination)
       }
     }
@@ -749,7 +765,7 @@ function skippableLine(line) {
 // 问号占位（占位天然截断各规则的字符类，规则不会跨引号拼出假命中；见
 // maskQuotedSpans 为何用问号而不是句号），占位后仍残留引号字符（跨行对话/未闭合）
 // 的行整行跳过。js↔py 同构实现（codex
-// story_codex_hook.py）由 scripts/check-hook-regex-sync.sh（规范串逐字锁）与
+// story_codex_hook.py）由 scripts/check-hook-regex-sync.sh（常量表逐字锁）与
 // scripts/test-prose-net-parity.sh（fixture 逐字 diff）锁 parity，文案以本核为准。
 // 单引号须成对；词内撇号（don't、O’Connor）不作为开闭引号。
 const TOXIC_QUOTE_SPANS = [/「[^」]*」/g, /『[^』]*』/g, /【[^】]*】/g, /“[^”]*”/g, /(?<![A-Za-z0-9_])‘(?:[^’]|(?<=[A-Za-z0-9_])’(?=[A-Za-z0-9_]))*(?!(?<=[A-Za-z0-9_])’[A-Za-z0-9_])’/g, /"[^"]*"/g, /(?<![A-Za-z0-9_])'(?:[^']|(?<=[A-Za-z0-9_])'(?=[A-Za-z0-9_]))*(?!(?<=[A-Za-z0-9_])'[A-Za-z0-9_])'/g]

@@ -14,11 +14,20 @@
 ---
 
 
-## 当前交付边界（2026-09-24）
+## 当前交付边界（2026-09-25）
 
-剩余 PR 估算已按 `d64c4d377` 和开放 PR 重新核对，旧“5–8 / 6–8 / 7–9”数字撤回。
-已合入实现、六个相关在途 PR、四个拟新增批次（含当前完整来源传输）和 D1–D3
-验收分开记录；四批不是承诺总计只剩四个 PR。唯一当前清单见[实现核对与退出证据](ledger/shared-goal-authority-state-provider-v0/2026-09-24-default-cutover-reconciliation.zh-CN.md)。
+按 `37bbaec79` 与当前 PR 状态核对：完整来源传输、事务捕获、来源组装及此前五个
+在途 caller/event 修复都已合入，不再计入待开发。当前晋升准入修复之后，规划三个
+明确代码边界：外部动作执行区间保护、事件 writer 绑定与整 Goal 迁移/回退闭环、
+默认启用与最后一批有界 Python 退役。#4931 与 D2 的剩余资格证据单列；三个是
+可命名的开发批次，不是保证总 PR 数。[唯一当前清单与退出条件](ledger/shared-goal-authority-state-provider-v0/2026-09-24-default-cutover-reconciliation.zh-CN.md)。
+
+## 旧观测写入退役（2026-09-24）
+
+同时删除旧 Python 提交后 observer 与 TS observation 提交链，保留现有事务 outbox
+作为唯一捕获 owner；source adapter 不再二次采样生成另一份历史。旧配置可识别、
+不生效、可显式清理。这是删除已被替代的路径，不代表其余 Python 业务 writer 或
+reference executor 已退役。[交付清单与操作](ledger/shared-goal-authority-state-provider-v0/2026-09-24-observation-retirement.zh-CN.md)。
 
 ## canonical collection 分页检查点（2026-09-23）
 
@@ -35,6 +44,16 @@ shared-authority 的当前核对表区分已合入实现、在途 PR、新代码
 保留 T0 caller/parity 盘点、T1/T2 事务与 effect 收敛、T3 完整来源消费、T4 删除条件。#4472 已合入，执行前核验 `todos/public_update.ts` 和实际 caller，不能重建 Todo update。新增团队领域规则应在现有 typed work-items/collaboration 归属中收敛；Python 保留输入/IO adapter。R1 的独立反例与 real-path 验证是交付条件；不以更多 leaf RPC、enum 或文件数量记迁移收益。D1–D3 仍由 shared-authority RFC 拥有。
 
 ## 当前实现检查点
+
+长历史 closeout 现在复用经原始字节校验的 TS 日志前缀与统一 monitor 提交规则，
+Python 删除重复 run log 读取，只适配 Todo 事实。只读失败与提交不确定性分开报告。
+这是收尾边界内的有界退役，不是全量 Python 移除；[当前交付与限制](ledger/shared-goal-authority-state-provider-v0/2026-09-24-default-cutover-reconciliation.zh-CN.md#长历史收尾检查本次修复与剩余边界)。
+
+晋升准入现将完整来源绑定到当前 registry witness，并在 TS 持锁范围内重新校验；
+保存计划执行保留已审核的 handoff 策略，失败结果如实报告持久 fence。
+已提交事务的恢复仍按原 fence/receipt，不要求失去权威的旧来源重新有效。
+这关闭 L7/L8 的已复现集成缺口，不重复计算已交付 capture，也不宣称全局默认已切换。
+[操作与边界](../../reference/reviewed-coordination-promotion.zh-CN.md)。
 
 Canonical command 的 receipt/head 观察顺序统一归属 TS：团队规划、Todo 创建/
 修改/领取/终态/归档、Monitor、lease 维护和 Goal acceptance 在读 head 后复查原
@@ -1488,3 +1507,5 @@ TS 摘要批次；Python 保留旧格式解码、公开字段筛选及渲染。�
 2026-09-24：[完整源捕获的 TS 组装与剩余交付包](ledger/shared-goal-authority-state-provider-v0/2026-09-24-source-capture.zh-CN.md)统一源构造、身份拒绝和当前图成员规则；不关闭 L7/D2/D3 或启用默认 provider。
 
 2026-09-24: [带租约接力与剩余本地默认交付包](ledger/shared-goal-authority-state-provider-v0/2026-09-24-leased-continuation.zh-CN.md).
+
+事件重放与剩余切换清单见 [2026-09-25](ledger/shared-goal-authority-state-provider-v0/2026-09-25-event-replay.zh-CN.md).

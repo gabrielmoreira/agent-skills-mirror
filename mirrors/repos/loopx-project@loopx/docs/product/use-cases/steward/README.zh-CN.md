@@ -71,3 +71,7 @@ LOOPX_PERSONAL_WORKSPACE_SCENARIO=steward-journey \
 - 它不资格化真实管家对话：fixture 顶替了 agent turn，因此接入背后的模型/运行时在这里仍未测试；
 - 它不资格化飞书受众，也不资格化任何云端/远端 worker；
 - 它不把一条通过的 smoke 当成“某个真实确认过的 Goal 已被产品验收”。
+
+## 真实意图到结果验收
+
+[Golden-query 集](golden-queries.md)覆盖创建、接入已有 Agent、负责人路由、接收方采用、纠偏恢复与注意力。它定义以上合成旅程之外的真实验收目标，不能从浏览器 fixture 推断真实运行通过。

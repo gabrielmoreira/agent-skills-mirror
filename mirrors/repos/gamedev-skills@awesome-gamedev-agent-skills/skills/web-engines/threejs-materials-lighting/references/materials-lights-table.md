@@ -56,7 +56,9 @@ reduce `decay` if a lamp seems too dim.
 Tuning knobs: `light.shadow.mapSize` (default 512×512; raise to 1024/2048 for
 crisper edges at memory cost), `light.shadow.bias` (small negative to fix acne),
 `light.shadow.normalBias`, and `renderer.shadowMap.type` (`BasicShadowMap`,
-`PCFShadowMap`, `PCFSoftShadowMap`, `VSMShadowMap`). Visualise the frustum with
+`PCFShadowMap`, `VSMShadowMap`). `PCFShadowMap` has been soft since r182, and
+`PCFSoftShadowMap` now just falls back to it with a console warning. Visualise the
+frustum with
 `new THREE.CameraHelper(light.shadow.camera)`.
 
 ## Transparency & sorting

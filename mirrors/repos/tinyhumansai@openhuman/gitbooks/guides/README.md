@@ -42,7 +42,7 @@ Every guide in this section follows the same shape, so you always know where to 
 - **Recovery**: how to get unstuck without losing your data.
 
 {% hint style="info" %}
-**These guides describe the shipping desktop app.** OpenHuman is in active development; where a guide points at a Settings screen or diagnostic surface, that surface may keep improving. When a screen name and what you see disagree, trust the app and check the [release notes](https://github.com/tinyhumansai/openhuman/releases), then let us know on [Discord](https://discord.tinyhumans.ai).
+**These guides describe the shipping desktop app.** OpenHuman is in active development; where a guide points at a Settings screen or diagnostic surface, that surface may keep improving. When a screen name and what you see disagree, trust the app and check the [release notes](https://github.com/tinyhumansai/openhuman/releases), then let us know on [Discord](https://guild.tinyhumans.ai).
 {% endhint %}
 
 ## The one thing worth knowing first

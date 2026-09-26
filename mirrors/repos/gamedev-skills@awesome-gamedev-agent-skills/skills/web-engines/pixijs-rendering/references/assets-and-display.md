@@ -51,6 +51,10 @@ const sub = new Texture({ source: texture.source, frame: new Rectangle(0, 0, 16,
 `Texture` is a view into a `TextureSource` (the GPU resource). Many `Texture`s can
 share one source — that's how atlases avoid extra uploads.
 
+`Texture.from(id)` only reads the Assets cache in v8; it does not fetch a URL. Call
+`await Assets.load(url)` first (use its return value), or `Texture.from` a source
+that is already loaded.
+
 ## Display object types
 
 ### AnimatedSprite
@@ -103,8 +107,28 @@ app.ticker.add((t) => { bg.tilePosition.x -= 0.5 * t.deltaTime; });
 ### ParticleContainer (many simple sprites)
 
 For thousands of cheap, same-texture sprites (bullets, particles), a
-`ParticleContainer` trades per-child features for throughput. Keep dynamic
-properties (position/rotation/etc.) explicit and avoid features it doesn't support.
+`ParticleContainer` trades per-child features for throughput. In v8 it holds
+`Particle` instances added with `addParticle` (not `Sprite`s via `addChild`), and
+you declare which per-particle fields change at runtime via `dynamicProperties` so
+only those are re-uploaded each frame:
+
+```js
+import { ParticleContainer, Particle } from 'pixi.js';
+
+const container = new ParticleContainer({
+  // Static fields are uploaded once; mark only what actually changes as dynamic.
+  dynamicProperties: { position: true, rotation: true, color: false },
+});
+app.stage.addChild(container);
+
+const p = new Particle(bulletTexture);
+p.x = 100; p.y = 50;
+container.addParticle(p);   // NOT container.addChild(new Sprite(...))
+```
+
+Particles are lightweight records, not full display objects: no children, no
+per-particle events, no filters. Keep every particle on one shared texture (an
+atlas frame) so the batch never breaks.
 
 ## Filters
 
@@ -123,6 +147,13 @@ rate — apply sparingly and remove (`obj.filters = null`) when not needed.
 - `removeChild(child)` detaches but does **not** free GPU memory.
 - `child.destroy()` frees the display object; pass options to also destroy its
   texture: `sprite.destroy({ texture: true, textureSource: true })`.
+- Destroy a whole subtree with `container.destroy({ children: true })`. If a
+  container has `cacheAsTexture(true)` on it, turn it off with
+  `cacheAsTexture(false)` before destroying. (`cacheAsBitmap` from v7 is renamed to
+  the `cacheAsTexture()` method.)
 - `Assets.unload(urlOrAlias)` frees a loaded asset's GPU/CPU memory.
+- Tearing down the whole app to re-create it in the same tab: use
+  `app.destroy({ removeView: true, releaseGlobalResources: true })`. Without
+  `releaseGlobalResources`, pooled batches/textures survive and corrupt the next app.
 - On WebGL/WebGPU context loss, textures are restored from their sources; keep the
   source (or be ready to reload) for anything generated at runtime.

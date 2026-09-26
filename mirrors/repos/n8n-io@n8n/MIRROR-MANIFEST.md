@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `n8n-io/n8n` — 26 default patterns, 10 followed patterns, 122 file(s) materialized.
+Mirror of `n8n-io/n8n` — 26 default patterns, 11 followed patterns, 123 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `n8n-io/n8n` — 26 default patterns, 10 followed patterns, 122 file(s
 | Ref Type      | `branch` |
 | Ref           | `master` |
 | Default pats  | 26 |
-| Followed pats | 10 |
-| Files         | 122 |
+| Followed pats | 11 |
+| Files         | 123 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -53,6 +53,7 @@ Mirror of `n8n-io/n8n` — 26 default patterns, 10 followed patterns, 122 file(s
 
 - `.github/DEVELOPING_V3.md`
 - `.claude/plugins/n8n/README.md`
+- `packages/testing/code-health/README.md`
 - `packages/testing/playwright/README.md`
 - `.devcontainer/codespaces/README.md`
 - `CONTRIBUTING.md`
@@ -188,8 +189,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 118 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
 | 119 | → | [`CONTRIBUTOR_LICENSE_AGREEMENT.md`](CONTRIBUTOR_LICENSE_AGREEMENT.md) |
 | 120 | → | [`packages/cli/test/integration/eventbus/README-manual-test-syslog.md`](packages/cli/test/integration/eventbus/README-manual-test-syslog.md) |
-| 121 | → | [`packages/testing/containers/README.md`](packages/testing/containers/README.md) |
-| 122 | → | [`packages/testing/playwright/README.md`](packages/testing/playwright/README.md) |
+| 121 | → | [`packages/testing/code-health/README.md`](packages/testing/code-health/README.md) |
+| 122 | → | [`packages/testing/containers/README.md`](packages/testing/containers/README.md) |
+| 123 | → | [`packages/testing/playwright/README.md`](packages/testing/playwright/README.md) |
 
 ---
 

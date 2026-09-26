@@ -1,6 +1,6 @@
 ---
 name: "omh-jev-failure-triage"
-description: "[omh] Jev failure triage: retry, fix a dependency, ask for access, or change approach on a failing run. Use when the user says: jev-failure-triage, jev failure triage, ask jev if this failure is transient."
+description: "[omh] Failing run handed to Jev for a next move: Jev failure triage: retry, fix a dependency, ask for access, or change approach on a failing run. Use when the user says: jev-failure-triage, jev failure triage, ask jev if this failure is transient."
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, review]

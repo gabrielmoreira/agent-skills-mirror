@@ -94,7 +94,7 @@ When `review_action_kind` is null, the row stays in `pull_requests` inventory bu
 
 Each PR needs independent evidence and a standalone card; a queue table is only a preface.
 
-For managed review, pass `--goal-id GOAL` and follow the packet’s resolved `wait_for_ci`: false means never fetch, poll, or wait for CI; true retains CI validation. Required local failures/skips always block. Configure one Goal with `configure-goal --goal-id GOAL --no-pr-review-wait-for-ci --execute`; clear with `--clear-pr-review-configuration --execute`.
+For managed review, pass `--goal-id GOAL` and follow the packet’s resolved `wait_for_ci`: false means never fetch, poll, or wait for CI; true retains CI observation. Apply the packet's `validation_matrix.failure_attribution` before treating a red required check as a PR blocker. An independently verified unchanged baseline failure or external outage can hold merge readiness without forcing `REQUEST_CHANGES` on an unrelated PR; missing attribution or missing affected-invariant coverage still blocks approval. Configure one Goal with `configure-goal --goal-id GOAL --no-pr-review-wait-for-ci --execute`; clear with `--clear-pr-review-configuration --execute`.
 
 ## Publish And Read Back
 For an open PR, publish validated actionable findings by default unless the user

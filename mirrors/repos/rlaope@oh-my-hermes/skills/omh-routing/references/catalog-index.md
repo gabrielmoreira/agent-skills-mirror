@@ -6,133 +6,133 @@ Trigger phrases and the role registry live in `references/workflow-registry.md`;
 
 ## Skills
 
-- `omh-accessibility-audit`: [omh] Hermes Accessibility Audit workflow: prepare WCAG, keyboard, focus, screen-reader, target-size, and reflow evidence gates for UI surfaces.
-- `omh-achievements`: [omh] Hermes achievements observation workflow: summarize hermes-achievements badges, tiers, recent unlocks, and progress from local plugin artifacts.
-- `omh-adversarial-consensus`: [omh] Hermes Adversarial Consensus workflow: independent perspectives attack a proposal, then distill into a bundle a separate planner consumes.
-- `omh-agent-board`: [omh] Hermes agent board workflow: coordinate multiple Hermes profiles or agents with task, handoff, heartbeat, blocker, and completion states.
-- `omh-agent-debug`: [omh] Agent Debug workflow: capture a stuck, looping, drifting, or repeatedly failing agent run, diagnose the likely failure pattern, and prepare the smallest safe recovery action.
-- `omh-agent-evaluation`: [omh] Hermes Agent Evaluation workflow: compare executor or agent choices on reproducible tasks using quality, cost, time, tool, and evidence metrics.
-- `omh-agent-ops-review`: [omh] Hermes agent ops review workflow: help managers inspect AI-agent progress, blockers, quality gates, and throughput levers.
-- `omh-ai-slop-cleaner`: [omh] Hermes AI slop cleaner workflow: delete AI-generated slop, dead code, and duplication while observable behavior stays identical.
-- `omh-apple-design`: [omh] Hermes Apple design workflow: prepare native Apple UI or Apple marketing product-visual direction, review, and improvement briefs with evidence-backed remediation handoffs.
-- `omh-application-threat-model`: [omh] Application threat model workflow: turn a system's components and data flows into assets, trust boundaries, attack scenarios, controls, and the security test that proves each control holds.
-- `omh-ask`: [omh] Hermes adaptation for consulting an external advisor when configured.
-- `omh-automation-blueprint`: [omh] Hermes Scheduled Ops Blueprint workflow: design recurring Hermes operations with schedule, delivery, silence policy, context chain, and prepared-vs-observed status.
-- `omh-award-bar-score`: [omh] Hermes award-bar score workflow: score a web surface against published design-award judging axes and name the binding constraint.
-- `omh-backend`: [omh] Hermes backend workflow: prepare server, API, and data-layer contracts — auth boundary, error paths, response shape, and schema/migration discipline — before implementation.
-- `omh-browser`: [omh] Policy overlay for browser tasks - add auth, confirmation, and observed-trace gates after preferring the native browser for ordinary URL, click, login, and form actions.
-- `omh-build-failure-triage`: [omh] Hermes Build Failure Triage workflow: classify build, typecheck, lint, test, CI, and DCO failures into minimal safe fix handoffs.
-- `omh-buzz`: [omh] Connect and operate Hermes as a native Buzz community agent, deliver local media with verified relay receipts, or diagnose a self-hosted Buzz relay without inventing transport evidence.
-- `omh-cancel`: [omh] Hermes adaptation for ending active workflow state cleanly.
-- `omh-capability-toggle`: [omh] Hermes adaptation for turning one OMH capability family on or off so an install can be tailored instead of taken whole.
-- `omh-code-review`: [omh] Hermes Code Review workflow: bug-first review with evidence.
-- `omh-codebase-onboarding`: [omh] Hermes Codebase Onboarding workflow: create a repo map, reading path, glossary, risk map, and first-task runway for unfamiliar codebases.
-- `omh-codebase-uml`: [omh] OMH Codebase UML workflow: turn a repository into one readable, interface-level PlantUML architecture picture - packages or modules, the public symbols other units actually import, bounded import edges - and get it rendered to a single PNG a chat surface can show.
-- `omh-codegraph-refresh`: [omh] Hermes Codegraph Refresh workflow: refresh local code intelligence, summarize repo structure, and prepare task-scoped codegraph handoff context without overclaiming execution.
-- `omh-terminal`: [omh] Policy overlay for terminal commands - add cwd, environment, safety, and result-evidence gates after preferring native shell tools for ordinary CLI, package-manager, and test runs.
-- `omh-apps`: [omh] External app actions - email, Slack, Discord, Notion, Linear, Jira, CRM, and similar providers, scoped with auth, payload, confirmation, and result-evidence gates.
-- `omh-content-operator`: [omh] Hermes content operator workflow: scope publish-ready writing, rewriting, summarization, translation, release-note, newsletter, customer-copy, social-copy, README-copy, and email-draft work with audience, tone, style, source, review, and hallucination gates.
-- `ulw-context`: [omh] Project terminology alignment workflow: look up, capture, correct, and align the words a repository uses before planning or handoff.
-- `omh-context-budget-review`: [omh] Hermes Context Budget Review workflow: plan compact context, token/cost budgets, summarization checkpoints, and overflow recovery before long agent work.
-- `omh-cto-loop`: [omh] Hermes CTO Loop workflow: roadmap, PM, technical tradeoffs, risk, delivery, release, and follow-up operating cadence.
-- `omh-curriculum-design`: [omh] Turn a learning goal into a teachable curriculum, assessment plan, and learner-ready sequence.
-- `omh-data-analysis`: [omh] Hermes data analysis workflow: scope supplied data with provenance, causal-claim, and hallucination guards.
-- `omh-decision-prototype`: [omh] Bounded decision prototype workflow: resolve one uncertain interaction, API, performance, or integration choice with a disposable, isolated experiment whose observed result feeds planning.
-- `omh-decision-recall`: [omh] Recall scoped reviewed rejected decisions without elevating them to approved memory.
-- `ulw-interview`: [omh] Hermes Deep Interview workflow: one-question-at-a-time clarification.
-- `omh-deliverable-package`: [omh] Hermes deliverable package workflow: track PPT, PDF, XLSX, DOCX, HWP, Markdown, and attachments through prepared, generated, QA, approved, and attached states.
-- `omh-deploy-and-monitor`: [omh] Hermes Deploy-and-Monitor workflow: release checklist, deploy decision, health signals, rollback gate, and post-deploy status.
-- `omh-design-orchestration`: [omh] Hermes design orchestration workflow: prepare a bounded design direction, existing-lane composition, and executor-neutral handoff.
-- `omh-design-quality-gate`: [omh] Hermes Design Quality Gate workflow: enforce superior content, design, layout, publishing, and visual QA gates.
-- `omh-doctor`: [omh] Hermes adaptation for diagnosing oh-my-hermes installation health.
-- `omh-executor-runtime-readiness`: [omh] Executor runtime readiness - compare Codex, Claude Code, Hermes coding, and oh-my runtimes by tools and handoff mode; use external-connector-readiness for a named plugin or API, and toolbelt-readiness for the whole capability inventory.
-- `omh-external-connector-readiness`: [omh] External connector readiness - assess whether a named plugin, connector, API, data provider, or multimodal route is safe, affordable, fresh, and observable; use executor-runtime-readiness for coding-owner choice and toolbelt-readiness for missing capability inventory.
-- `omh-failure-signal-audit`: [omh] Failure Signal Audit workflow: find swallowed errors, unsafe fallbacks, hidden UI/runtime failures, and missing propagation before they become false green status.
-- `omh-feedback-triage`: [omh] Hermes Feedback Triage workflow: cluster customer signals and choose the next workflow.
-- `omh-finance-analysis`: [omh] Turn finance and accounting inputs into a decision-ready variance, cash, and close-risk brief.
-- `omh-frontend`: [omh] Hermes frontend workflow: prepare design-system-driven web and terminal (TUI) UI creation, redesign, polish, accessibility, performance, and visual QA handoffs.
-- `omh-frontend-refactor`: [omh] Hermes frontend refactor workflow: behavior-preserving refactor of UI code - preview the full change plan first, apply as a second explicit step, and work impact-ordered from state architecture down to naming polish.
-- `omh-gateway-intent-card`: [omh] Hermes gateway intent workflow: normalize Discord, Slack, Telegram, and other gateway sessions into origin, thread, delivery, silent, attachment, and status-update policy.
-- `omh-github-event-ops`: [omh] Hermes GitHub event operations workflow: route PR, issue, CI, and review webhook events into triage, review, or fix handoff cards.
-- `omh-github-issue-intake`: [omh] GitHub issue intake workflow: turn a public chat report into a confirmed, verified issue package.
-- `omh-harness-session-inventory`: [omh] Hermes harness session inventory workflow: normalize Codex, Claude Code, Hermes, OpenCode, Cursor, MCP host, worktree, and wrapper session metadata into one drift-aware inventory.
-- `omh-idea-to-deploy`: [omh] Hermes Idea-to-Deploy workflow: shape an app idea into decisions, delivery handoff, verification, release, and monitoring status.
-- `omh-image-cards`: [omh] Image prompt cards - turn meetings, reports, PRs, issues, research, and releases into domain-aware image prompt cards.
-- `omh-inference-serving`: [omh] OMH Inference Serving workflow: choose the serving engine and quantization from decision tables, prepare deployment as an idempotent runbook with observed-only verification, and measure the endpoint with the standard TTFT/TPOT/goodput protocol.
-- `omh-instinct-ledger`: [omh] Instinct Ledger workflow: turn repeated project or cross-project lessons into atomic, confidence-scored instinct candidates with scoped promotion and export boundaries.
-- `omh-jev-action-check`: [omh] Jev action check before a risky command: secrets, outbound sends, blast radius; can only add a hold.
-- `omh-jev-ask`: [omh] Jev ask: typed yes/no, pick-one, or scored questions to Jev with your own key; returns probabilities, never prose.
-- `omh-jev-done-check`: [omh] Jev done check: does the gathered evidence support the completion claim? It can only object.
-- `omh-jev-failure-triage`: [omh] Jev failure triage: retry, fix a dependency, ask for access, or change approach on a failing run.
-- `omh-jev-review-gate`: [omh] Jev review flags for a diff: auth, tests, migration risk, severity; flags only, never approves a merge.
-- `omh-jev-route`: [omh] Jev route pick: answer an OMH route question about which workflow fits, recorded without re-routing.
-- `omh-jit-learn`: [omh] Just-in-time learning workflow: select and confirm an immediate learning target, research credible sources, and prepare an application-first brief without popularity ranking.
-- `omh-legal-compliance-review`: [omh] Surface contract and compliance risks, questions, and escalation points before a legal decision or action.
-- `omh-lifecycle-growth`: [omh] Turn an observed onboarding, activation, retention, re-engagement, referral, or monetization problem into one consent-safe in-app journey or growth experiment plan with a bounded readout and an explicit decision.
-- `omh-live-incident-response`: [omh] Live incident response workflow: command an incident that is still open -- severity as declared live state, commander and roles, an append-only timeline, a recorded temporary mitigation, verified recovery, and the customer notice.
-- `omh-live-info`: [omh] Policy overlay for live lookups - add provider, freshness, units, and source-quality gates after preferring native live-data tools for ordinary weather, finance, sports, maps, and time-zone requests.
-- `omh-llm-app-dev`: [omh] Hermes LLM App Development workflow: prepare a build handoff for an LLM-powered feature with a pinned provider boundary, schema-first outputs, versioned prompt files, grounded retrieval, and an eval suite as a shipped deliverable.
-- `omh-localization-review`: [omh] Make a product or content release locale-ready with terminology, cultural-fit, and quality-review guidance.
-- `omh-long-document-reading`: [omh] Long document reading workflow: read a very large PDF, contract, manual, or report through Hermes in page-anchored ranges with a coverage ledger.
-- `ulw-loop`: [omh] Hermes Loop workflow: agentic interviewer -> planner -> researcher -> builder -> reviewer cycles until a real gate.
-- `ulw-maestro`: [omh] Maestro - prepares the handoff for the coding agent you already chose, composing its prompt from that agent's own installed skills; never selects the owner and never executes the work itself.
-- `omh-materials-package`: [omh] Hermes Materials Package workflow: decks, PDFs, spreadsheets, documents, HWP, Markdown, and binary export handoffs.
-- `omh-media-input`: [omh] User-sent media - audio, video, YouTube links, screenshots, receipts, OCR, meeting recordings, transcripts, timestamps, and clip summaries, gated for source, permission, and hallucination risk.
-- `omh-meeting-brief`: [omh] Hermes Meeting Brief workflow: agenda, prompts, decisions, and record template.
-- `omh-memory-new`: [omh] Capture one bounded durable project or product memory candidate through explicit remember, refuse, or defer review; for existing Hermes memory use omh-memory-sync, and for a past decision use decision-recall.
-- `omh-memory-sync`: [omh] English-canonical Hermes memory-review guidance: inspect USER.md and MEMORY.md claims and prepare a native write diff without invoking, applying, or observing a native write; for a new fact use memory-new, and for a past decision use decision-recall.
-- `omh-meta-router`: [omh] Meta-routing guidance for a leading /omh command: reason over the imperative task, consult the live workflow catalog, and select or chain the right workflow(s).
-- `omh-model-optimization`: [omh] OMH Model Optimization workflow: when a model family ships a new generation or changes its serving contract, walk the recognition, research, calibration, routing, and measurement process that keeps model handling honest and current.
-- `omh-model-setup`: [omh] Hermes Model Setup workflow: diagnose role-slot model configuration, guide provider connection, and apply changes only after diff approval.
-- `omh-morning-brief`: [omh] Morning brief SETUP (one-time) - connects mail and calendar MCP with read-and-draft-only scope and diff approval; produces the configuration, not the daily brief itself.
-- `omh-native-debugging`: [omh] Hermes native-debugging workflow: prepare hypothesis-driven debugging of native binaries and instruct the executor to drive a DAP debugger instead of printf.
-- `omh-routing`: [omh] Router guidance for using oh-my-hermes workflow skills inside Hermes Agent.
-- `omh-operating-rhythm`: [omh] Hermes Operating Rhythm workflow: meeting minutes, scrum/sprint records, retros, decisions, and follow-up history.
-- `omh-ops-observability-card`: [omh] Hermes ops observability workflow: prepare an operations command-board for wrapper-safe token, cost, latency, run history, queue, failure-mode, external metric-provider, and service-quality evidence boundaries.
-- `omh-ops-review`: [omh] Hermes Ops Review workflow: status, risks, blockers, priorities, and follow-ups.
-- `omh-paper-learning`: [omh] Hermes Paper Learning workflow: explain a supplied paper or paper/PDF at a selected level while preserving full section coverage and source evidence boundaries.
-- `omh-parallel-tools`: [omh] Hermes Parallel Tools workflow: check version currency and parallel-tool capability status, then apply an update only after diff approval.
-- `omh-people-ops`: [omh] Turn hiring and people context into a fair, structured recruiting or people-operations brief.
-- `omh-physical-device-readiness`: [omh] Physical device readiness - gate robots, 3D printers, IoT relays, sensors, and lab hardware before trials; use external-connector-readiness for provider or connector adoption and toolbelt-readiness for missing control tools.
-- `omh-plan`: [omh] Hermes Plan workflow: structured planning before execution.
-- `omh-product-brief`: [omh] Turn product evidence into a decision-ready PRD, prioritization frame, and roadmap brief.
-- `omh-product-discovery-validation`: [omh] Test whether a customer problem, segment, and business hypothesis deserve product investment, ending in kill, pivot, persevere, or inconclusive before any PRD.
-- `omh-docs`: [omh] Current-source-first documentation for OMH itself: product identity, public capability catalog, model routing, local state, and long-term memory.
-- `omh-production-audit`: [omh] Hermes Production Audit workflow: evaluate release, deploy, security, observability, rollback, docs, and support readiness without claiming production access.
-- `omh-prompt-import-readiness`: [omh] Prompt import readiness - review and normalize external CLI-agent prompt files before offering slash-command candidates; use external-connector-readiness for plugin or API adoption and toolbelt-readiness for missing runtime capabilities.
-- `omh-provider-profile-posture`: [omh] Prepare provider-profile metadata without reading secrets or calling providers.
-- `ulw-plan`: [omh] Hermes Ralplan workflow: consensus planning with review gates.
-- `omh-refactor-plan`: [omh] Hermes refactor planning workflow: turn a decided boundary-changing refactor into a phased plan - reconnaissance, contracts-first phase order, per-phase verification and rollback, a files table, and an explicit approval gate before any edit.
-- `omh-reliability-review`: [omh] Hermes Reliability Review workflow: postmortems, SLOs, error budgets, incident follow-ups, and service reliability evidence.
-- `omh-report-package`: [omh] Hermes Report Package workflow: weekly/monthly reports, executive briefs, PPT-ready outlines, and upload packages.
-- `ulw-research`: [omh] Deep research engine - grounding for specs and decisions: study open-source reference implementations with pinned refs, gather live web evidence with citation discipline, verify contested claims, and distill a decision-grounding dossier that planning consumes; for a decision brief use research-brief, for upstream guidance use web-research.
-- `omh-research-brief`: [omh] Business research brief - turns a market, competitor, pricing, or customer question into a structured evidence-vs-inference brief; for raw link gathering use ulw-research, and for ongoing multi-role research use research-department.
-- `omh-research-department`: [omh] Research operations department - coordinate Scout, Analyst, and Briefer work with source-inbox and status boundaries; for one decision brief use research-brief, and for typed candidates before research starts use source-finder.
-- `omh-rules-distill`: [omh] Hermes Rules Distill workflow: extract repeated principles from skills, prompts, traces, reviews, and failures into reviewed rule candidates without auto-mutating guidance.
-- `omh-run-efficiency`: [omh] Report supplied local run efficiency while provider and host data stay unobserved.
-- `omh-running-work-board`: [omh] Hermes adaptation for showing which coding units are running right now, on which runtime and model, with observed tokens and elapsed time.
-- `omh-rust`: [omh] Hermes Rust workflow: prepare Rust changes with ownership, error, and API discipline, and escalate any unsafe, FFI, or lock-free change to the UB checklist.
-- `omh-sales-development`: [omh] Turn an account or market opportunity into a focused discovery, qualification, and next-step brief.
-- `omh-sales-pipeline-review`: [omh] Turn a supplied CRM export or pipeline snapshot into an evidence-bound pipeline health, forecast, and follow-up review.
-- `omh-security-safety-review`: [omh] Hermes Security Safety Review workflow: review prompt, tool, secret, dependency, destructive-action, and explicit local plugin risks before agent or code execution.
-- `omh-skill`: [omh] Hermes adaptation for managing local skills.
-- `omh-skill-health`: [omh] Skill Health workflow: prepare a metadata-only OMH skill portfolio dashboard with stale surfaces, observed failure signals, pending amendments, and top actions.
-- `omh-skill-scout`: [omh] Skill Scout workflow: prepare a metadata-only search-before-creation report for local, marketplace, GitHub, and web skill candidates with risk review and adoption options.
-- `omh-source-finder`: [omh] Source candidate inventory - prepare typed source candidates and acquisition status before downstream work; use ulw-research to fetch and cite them, or research-brief to turn them into a decision-ready brief.
+- `omh-accessibility-audit`: [omh] Screen-reader or keyboard accessibility gaps: prepare WCAG, keyboard, focus, screen-reader, target-size, and reflow evidence gates for UI surfaces.
+- `omh-achievements`: [omh] Unlocked badges and achievement progress: achievements observation: summarize hermes-achievements badges, tiers, recent unlocks, and progress from local plugin artifacts.
+- `omh-adversarial-consensus`: [omh] Proposal facing adversarial scrutiny: independent perspectives attack a proposal, then distill into a bundle a separate planner consumes.
+- `omh-agent-board`: [omh] Coordinating several agents or profiles: coordinate multiple Hermes profiles or agents with task, handoff, heartbeat, blocker, and completion states.
+- `omh-agent-debug`: [omh] Agent is stuck, looping, or drifting: capture a stuck, looping, drifting, or repeatedly failing agent run, diagnose the likely failure pattern, and prepare the smallest safe recovery action.
+- `omh-agent-evaluation`: [omh] Choosing between coding agents on evidence: compare executor or agent choices on reproducible tasks using quality, cost, time, tool, and evidence metrics.
+- `omh-agent-ops-review`: [omh] AI agent progress for managers: help managers inspect AI-agent progress, blockers, quality gates, and throughput levers.
+- `omh-ai-slop-cleaner`: [omh] Messy or AI-generated code to clean up: delete AI-generated slop, dead code, and duplication while observable behavior stays identical.
+- `omh-apple-design`: [omh] Designing or reviewing an iOS, macOS, or Apple-style UI: prepare native Apple UI or Apple marketing product-visual direction, review, and improvement briefs with evidence-backed remediation handoffs.
+- `omh-application-threat-model`: [omh] Attack paths into an operated system: turn a system's components and data flows into assets, trust boundaries, attack scenarios, controls, and the security test that proves each control holds.
+- `omh-ask`: [omh] Outside AI critique wanted: consulting an external advisor when configured.
+- `omh-automation-blueprint`: [omh] Recurring scheduled job or reminder: design recurring Hermes operations with schedule, delivery, silence policy, context chain, and prepared-vs-observed status.
+- `omh-award-bar-score`: [omh] Aiming for design-award quality: score a web surface against published design-award judging axes and name the binding constraint.
+- `omh-backend`: [omh] Designing an API, server, or data-layer change: prepare server, API, and data-layer contracts — auth boundary, error paths, response shape, and schema/migration discipline — before implementation.
+- `omh-browser`: [omh] Browser login, click, or form task: policy overlay for browser tasks - add auth, confirmation, and observed-trace gates after preferring the native browser for ordinary URL, click, login, and form actions.
+- `omh-build-failure-triage`: [omh] Build or CI failure to triage: classify build, typecheck, lint, test, CI, and DCO failures into minimal safe fix handoffs.
+- `omh-buzz`: [omh] Buzz community agent setup or relay trouble: connect and operate Hermes as a native Buzz community agent, deliver local media with verified relay receipts, or diagnose a self-hosted Buzz relay without inventing transport evidence.
+- `omh-cancel`: [omh] Aborting an active workflow: ending active workflow state cleanly.
+- `omh-capability-toggle`: [omh] Tailoring enabled OMH families: turning one OMH capability family on or off so an install can be tailored instead of taken whole.
+- `omh-code-review`: [omh] Pull request or changes to vet: bug-first review with evidence.
+- `omh-codebase-onboarding`: [omh] Unfamiliar repository needing a guided tour: create a repo map, reading path, glossary, risk map, and first-task runway for unfamiliar codebases.
+- `omh-codebase-uml`: [omh] Architecture picture of a codebase: turn a repository into one readable, interface-level PlantUML architecture picture - packages or modules, the public symbols other units actually import, bounded import edges - and get it rendered to a single PNG a chat surface can show.
+- `omh-codegraph-refresh`: [omh] Outdated code index or codemap: refresh local code intelligence, summarize repo structure, and prepare task-scoped codegraph handoff context without overclaiming execution.
+- `omh-terminal`: [omh] Shell command or test-suite execution: policy overlay for terminal commands - add cwd, environment, safety, and result-evidence gates after preferring native shell tools for ordinary CLI, package-manager, and test runs.
+- `omh-apps`: [omh] Email, Slack, or Jira action to perform: external app actions - email, Slack, Discord, Notion, Linear, Jira, CRM, and similar providers, scoped with auth, payload, confirmation, and result-evidence gates.
+- `omh-content-operator`: [omh] Writing or rewriting text for an audience: scope publish-ready writing, rewriting, summarization, translation, release-note, newsletter, customer-copy, social-copy, README-copy, and email-draft work with audience, tone, style, source, review, and hallucination gates.
+- `ulw-context`: [omh] Repository vocabulary unclear or inconsistent: project terminology alignment workflow: look up, capture, correct, and align the words a repository uses before planning or handoff.
+- `omh-context-budget-review`: [omh] Context window or token budget at risk: plan compact context, token/cost budgets, summarization checkpoints, and overflow recovery before long agent work.
+- `omh-cto-loop`: [omh] Engineering leadership over roadmap and risk: roadmap, PM, technical tradeoffs, risk, delivery, release, and follow-up operating cadence.
+- `omh-curriculum-design`: [omh] Teaching goal that needs a course or syllabus: turn a learning goal into a teachable curriculum, assessment plan, and learner-ready sequence.
+- `omh-data-analysis`: [omh] Dataset or table to analyze: scope supplied data with provenance, causal-claim, and hallucination guards.
+- `omh-decision-prototype`: [omh] Uncertain technical choice for a spike: bounded decision prototype workflow: resolve one uncertain interaction, API, performance, or integration choice with a disposable, isolated experiment whose observed result feeds planning.
+- `omh-decision-recall`: [omh] Previously rejected options to revisit: recall scoped reviewed rejected decisions without elevating them to approved memory.
+- `ulw-interview`: [omh] Vague, underspecified request: one-question-at-a-time clarification.
+- `omh-deliverable-package`: [omh] Attachment and deliverable status tracking: track PPT, PDF, XLSX, DOCX, HWP, Markdown, and attachments through prepared, generated, QA, approved, and attached states.
+- `omh-deploy-and-monitor`: [omh] Release rollout needing health signals: release checklist, deploy decision, health signals, rollback gate, and post-deploy status.
+- `omh-design-orchestration`: [omh] Entire design problem to delegate: prepare a bounded design direction, existing-lane composition, and executor-neutral handoff.
+- `omh-design-quality-gate`: [omh] Deliverable demands premium polish: enforce superior content, design, layout, publishing, and visual QA gates.
+- `omh-doctor`: [omh] OMH install misbehaving: diagnosing oh-my-hermes installation health.
+- `omh-executor-runtime-readiness`: [omh] Unsure whether Codex or Claude Code is ready: executor runtime readiness - compare Codex, Claude Code, Hermes coding, and oh-my runtimes by tools and handoff mode; use external-connector-readiness for a named plugin or API, and toolbelt-readiness for the whole capability inventory.
+- `omh-external-connector-readiness`: [omh] Evaluating a plugin, connector, or API for adoption: external connector readiness - assess whether a named plugin, connector, API, data provider, or multimodal route is safe, affordable, fresh, and observable; use executor-runtime-readiness for coding-owner choice and toolbelt-readiness for missing capability inventory.
+- `omh-failure-signal-audit`: [omh] Hidden or swallowed errors suspected: find swallowed errors, unsafe fallbacks, hidden UI/runtime failures, and missing propagation before they become false green status.
+- `omh-feedback-triage`: [omh] Unsorted customer feedback and bug reports: cluster customer signals and choose the next workflow.
+- `omh-finance-analysis`: [omh] Budget overruns, cash risk, or close issues: turn finance and accounting inputs into a decision-ready variance, cash, and close-risk brief.
+- `omh-frontend`: [omh] Building or polishing a web or terminal UI: prepare design-system-driven web and terminal (TUI) UI creation, redesign, polish, accessibility, performance, and visual QA handoffs.
+- `omh-frontend-refactor`: [omh] Oversized or tangled UI component: behavior-preserving refactor of UI code - preview the full change plan first, apply as a second explicit step, and work impact-ordered from state architecture down to naming polish.
+- `omh-gateway-intent-card`: [omh] Bot replies via Discord, Slack, or Telegram: normalize Discord, Slack, Telegram, and other gateway sessions into origin, thread, delivery, silent, attachment, and status-update policy.
+- `omh-github-event-ops`: [omh] Incoming GitHub PR, issue, or CI event: GitHub event operations: route PR, issue, CI, and review webhook events into triage, review, or fix handoff cards.
+- `omh-github-issue-intake`: [omh] Chat report that should become a GitHub issue: turn a public chat report into a confirmed, verified issue package.
+- `omh-harness-session-inventory`: [omh] Lost track of agent sessions and worktrees: normalize Codex, Claude Code, Hermes, OpenCode, Cursor, MCP host, worktree, and wrapper session metadata into one drift-aware inventory.
+- `omh-idea-to-deploy`: [omh] App idea headed for launch: shape an app idea into decisions, delivery handoff, verification, release, and monitoring status.
+- `omh-image-cards`: [omh] Image card or infographic of content: image prompt cards - turn meetings, reports, PRs, issues, research, and releases into domain-aware image prompt cards.
+- `omh-inference-serving`: [omh] Self-hosted LLM serving on GPUs: choose the serving engine and quantization from decision tables, prepare deployment as an idempotent runbook with observed-only verification, and measure the endpoint with the standard TTFT/TPOT/goodput protocol.
+- `omh-instinct-ledger`: [omh] Recurring lessons worth promoting: turn repeated project or cross-project lessons into atomic, confidence-scored instinct candidates with scoped promotion and export boundaries.
+- `omh-jev-action-check`: [omh] Risky command screened by Jev: Jev action check before a risky command: secrets, outbound sends, blast radius; can only add a hold.
+- `omh-jev-ask`: [omh] Jev asked for yes/no or pick-one odds: Jev ask: typed yes/no, pick-one, or scored questions to Jev with your own key; returns probabilities, never prose.
+- `omh-jev-done-check`: [omh] Completion claim tested by Jev: Jev done check: does the gathered evidence support the completion claim? It can only object.
+- `omh-jev-failure-triage`: [omh] Failing run handed to Jev for a next move: Jev failure triage: retry, fix a dependency, ask for access, or change approach on a failing run.
+- `omh-jev-review-gate`: [omh] Wants Jev risk flags on a diff under review: Jev review flags for a diff: auth, tests, migration risk, severity; flags only, never approves a merge.
+- `omh-jev-route`: [omh] Undecided OMH route handed to Jev: Jev route pick: answer an OMH route question about which workflow fits, recorded without re-routing.
+- `omh-jit-learn`: [omh] Blocked and choosing a learning target: just-in-time learning workflow: select and confirm an immediate learning target, research credible sources, and prepare an application-first brief without popularity ranking.
+- `omh-legal-compliance-review`: [omh] Contract, NDA, or policy with legal exposure: surface contract and compliance risks, questions, and escalation points before a legal decision or action.
+- `omh-lifecycle-growth`: [omh] Churn or weak activation among users: turn an observed onboarding, activation, retention, re-engagement, referral, or monetization problem into one consent-safe in-app journey or growth experiment plan with a bounded readout and an explicit decision.
+- `omh-live-incident-response`: [omh] Production is down or an incident is open: command an incident that is still open -- severity as declared live state, commander and roles, an append-only timeline, a recorded temporary mitigation, verified recovery, and the customer notice.
+- `omh-live-info`: [omh] Weather, exchange-rate, or sports lookups: policy overlay for live lookups - add provider, freshness, units, and source-quality gates after preferring native live-data tools for ordinary weather, finance, sports, maps, and time-zone requests.
+- `omh-llm-app-dev`: [omh] LLM-powered feature to build: LLM app development: prepare a build handoff for an LLM-powered feature with a pinned provider boundary, schema-first outputs, versioned prompt files, grounded retrieval, and an eval suite as a shipped deliverable.
+- `omh-localization-review`: [omh] Translated product or content release: make a product or content release locale-ready with terminology, cultural-fit, and quality-review guidance.
+- `omh-long-document-reading`: [omh] Huge PDF or document to read in full: read a very large PDF, contract, manual, or report through Hermes in page-anchored ranges with a coverage ledger.
+- `ulw-loop`: [omh] Ambitious goal needing many iterative cycles: agentic interviewer -> planner -> researcher -> builder -> reviewer cycles until a real gate.
+- `ulw-maestro`: [omh] Coding owner already chosen, handoff pending: prepares the handoff for the coding agent you already chose, composing its prompt from that agent's own installed skills; never selects the owner and never executes the work itself.
+- `omh-materials-package`: [omh] PPT, PDF, Excel, or HWP output to produce: decks, PDFs, spreadsheets, documents, HWP, Markdown, and binary export handoffs.
+- `omh-media-input`: [omh] Audio, video, or screenshot to process: user-sent media - audio, video, YouTube links, screenshots, receipts, OCR, meeting recordings, transcripts, timestamps, and clip summaries, gated for source, permission, and hallucination risk.
+- `omh-meeting-brief`: [omh] Upcoming meeting that lacks an agenda: agenda, prompts, decisions, and record template.
+- `omh-memory-new`: [omh] Remember a fact for future sessions: capture one bounded durable project or product memory candidate through explicit remember, refuse, or defer review; for existing Hermes memory use omh-memory-sync, and for a past decision use decision-recall.
+- `omh-memory-sync`: [omh] Outdated or wrong Hermes memory entries: English-canonical Hermes memory-review guidance: inspect USER.md and MEMORY.md claims and prepare a native write diff without invoking, applying, or observing a native write; for a new fact use memory-new, and for a past decision use decision-recall.
+- `omh-meta-router`: [omh] Message opens with /omh and a task: meta-routing guidance for a leading /omh command: reason over the imperative task, consult the live workflow catalog, and select or chain the right workflow(s).
+- `omh-model-optimization`: [omh] Onboarding a newly released model generation: when a model family ships a new generation or changes its serving contract, walk the recognition, research, calibration, routing, and measurement process that keeps model handling honest and current.
+- `omh-model-setup`: [omh] Model and provider configuration changes: diagnose role-slot model configuration, guide provider connection, and apply changes only after diff approval.
+- `omh-morning-brief`: [omh] Mail and calendar brief configuration: morning brief SETUP (one-time) - connects mail and calendar MCP with read-and-draft-only scope and diff approval; produces the configuration, not the daily brief itself.
+- `omh-native-debugging`: [omh] Native program crashes or corrupts memory: prepare hypothesis-driven debugging of native binaries and instruct the executor to drive a DAP debugger instead of printf.
+- `omh-routing`: [omh] Choosing among OMH skills for a request: router guidance for using oh-my-hermes workflow skills inside Hermes Agent.
+- `omh-operating-rhythm`: [omh] Keeping minutes, retros, and decision history: meeting minutes, scrum/sprint records, retros, decisions, and follow-up history.
+- `omh-ops-observability-card`: [omh] Tracking cost, tokens, latency, or service health: prepare an operations command-board for wrapper-safe token, cost, latency, run history, queue, failure-mode, external metric-provider, and service-quality evidence boundaries.
+- `omh-ops-review`: [omh] Recurring operating status and blockers: status, risks, blockers, priorities, and follow-ups.
+- `omh-paper-learning`: [omh] Paper or paper PDF to understand: explain a supplied paper or paper/PDF at a selected level while preserving full section coverage and source evidence boundaries.
+- `omh-parallel-tools`: [omh] Parallel tool-call capability in doubt: check version currency and parallel-tool capability status, then apply an update only after diff approval.
+- `omh-people-ops`: [omh] Hiring or people-process decisions: turn hiring and people context into a fair, structured recruiting or people-operations brief.
+- `omh-physical-device-readiness`: [omh] Controlling a printer, robot, or IoT device: gate robots, 3D printers, IoT relays, sensors, and lab hardware before trials; use external-connector-readiness for provider or connector adoption and toolbelt-readiness for missing control tools.
+- `omh-plan`: [omh] Unplanned feature or bugfix: structured planning before execution.
+- `omh-product-brief`: [omh] PRD or roadmap priorities to decide: turn product evidence into a decision-ready PRD, prioritization frame, and roadmap brief.
+- `omh-product-discovery-validation`: [omh] Unvalidated early product idea: test whether a customer problem, segment, and business hypothesis deserve product investment, ending in kill, pivot, persevere, or inconclusive before any PRD.
+- `omh-docs`: [omh] Explaining OMH itself: current-source-first documentation for OMH itself: product identity, public capability catalog, model routing, local state, and long-term memory.
+- `omh-production-audit`: [omh] Imminent production launch or release: evaluate release, deploy, security, observability, rollback, docs, and support readiness without claiming production access.
+- `omh-prompt-import-readiness`: [omh] Importing prompt files for Hermes: prompt import readiness - review and normalize external CLI-agent prompt files before offering slash-command candidates; use external-connector-readiness for plugin or API adoption and toolbelt-readiness for missing runtime capabilities.
+- `omh-provider-profile-posture`: [omh] Provider credentials without exposure: prepare provider-profile metadata without reading secrets or calling providers.
+- `ulw-plan`: [omh] High-stakes proposal needing approval: consensus planning with review gates.
+- `omh-refactor-plan`: [omh] Decided cross-module refactor to phase: refactor planning - turn a decided boundary-changing refactor into a phased plan - reconnaissance, contracts-first phase order, per-phase verification and rollback, a files table, and an explicit approval gate before any edit.
+- `omh-reliability-review`: [omh] Postmortem for an outage or SLO miss: postmortems, SLOs, error budgets, incident follow-ups, and service reliability evidence.
+- `omh-report-package`: [omh] Periodic report for executives: weekly/monthly reports, executive briefs, PPT-ready outlines, and upload packages.
+- `ulw-research`: [omh] Deep dive before a decision: deep research engine - grounding for specs and decisions: study open-source reference implementations with pinned refs, gather live web evidence with citation discipline, verify contested claims, and distill a decision-grounding dossier that planning consumes; for a decision brief use research-brief, for upstream guidance use web-research.
+- `omh-research-brief`: [omh] Market, competitor, or pricing question: business research brief - turns a market, competitor, pricing, or customer question into a structured evidence-vs-inference brief; for raw link gathering use ulw-research, and for ongoing multi-role research use research-department.
+- `omh-research-department`: [omh] Recurring market or topic research: research operations department - coordinate Scout, Analyst, and Briefer work with source-inbox and status boundaries; for one decision brief use research-brief, and for typed candidates before research starts use source-finder.
+- `omh-rules-distill`: [omh] Turn repeated lessons into written rules: extract repeated principles from skills, prompts, traces, reviews, and failures into reviewed rule candidates without auto-mutating guidance.
+- `omh-run-efficiency`: [omh] Run efficiency and context usage report: report supplied local run efficiency while provider and host data stay unobserved.
+- `omh-running-work-board`: [omh] Live view of running coding units: showing which coding units are running right now, on which runtime and model, with observed tokens and elapsed time.
+- `omh-rust`: [omh] Rust ownership, lifetime, or unsafe trouble: prepare Rust changes with ownership, error, and API discipline, and escalate any unsafe, FFI, or lock-free change to the UB checklist.
+- `omh-sales-development`: [omh] Prospect or account worth pursuing: turn an account or market opportunity into a focused discovery, qualification, and next-step brief.
+- `omh-sales-pipeline-review`: [omh] CRM pipeline or sales forecast to review: turn a supplied CRM export or pipeline snapshot into an evidence-bound pipeline health, forecast, and follow-up review.
+- `omh-security-safety-review`: [omh] Agent or automation safety risks: review prompt, tool, secret, dependency, destructive-action, and explicit local plugin risks before agent or code execution.
+- `omh-skill`: [omh] Installing, removing, or editing skills: managing local skills.
+- `omh-skill-health`: [omh] OMH skill portfolio health overview: prepare a metadata-only OMH skill portfolio dashboard with stale surfaces, observed failure signals, pending amendments, and top actions.
+- `omh-skill-scout`: [omh] Existing skills to reuse before authoring: prepare a metadata-only search-before-creation report for local, marketplace, GitHub, and web skill candidates with risk review and adoption options.
+- `omh-source-finder`: [omh] Gathering candidate papers, datasets, or repos: source candidate inventory - prepare typed source candidates and acquisition status before downstream work; use ulw-research to fetch and cite them, or research-brief to turn them into a decision-ready brief.
 - `omh-decide`: [omh] Decide between options: tradeoffs, a recommendation, and a decision note you can act on.
-- `omh-support-operations`: [omh] Turn a support case into a clear customer reply, severity path, and owned next step.
-- `omh-tech-debt-audit`: [omh] Hermes Tech Debt Audit workflow: build the severity-by-effort debt ledger from observed repo evidence - orient, audit the named dimensions with file:line citations, rank fixes and quick wins - and reconcile RESOLVED/NEW/CARRIED against the previous ledger on rerun.
-- `omh-todo-checklist`: [omh] Continue or finish the accepted work from conversation context, preserve rejected ideas, and report evidence-bounded completion. Also declare and advance the metadata-only plan checklist without starting a delivery engine.
-- `omh-toolbelt-readiness`: [omh] Toolbelt readiness - inventory which MCP servers, CLIs, APIs, credentials, and connectors a workflow needs; use external-connector-readiness to assess one named integration and executor-runtime-readiness to choose the coding owner.
-- `ulw-perf`: [omh] Ultraperf - find where a system is actually slow, leaking, or expensive across runtime, memory, token cost, storage, rendering, inference, CI, and query domains, then fix one measured hot path at a time behind a regression budget.
-- `ulw-qa`: [omh] Hermes UltraQA workflow: adversarial QA and fix loops.
-- `ulw-work`: [omh] Ultrawork - split an accepted plan into disjoint parallel lanes with per-lane acceptance criteria, verification commands, and owners; prevents two lanes editing the same file.
-- `omh-verification-gate`: [omh] Hermes Verification Gate workflow: define and record build, lint, typecheck, test, security, docs, generated-output, and CI evidence before completion or merge.
-- `omh-visual-qa`: [omh] Hermes visual-qa workflow: prepare observed-only rendered QA gates for web, frontend, image, document, and TUI surfaces.
-- `omh-voice-input`: [omh] Terse voice and mobile-style requests - turn short spoken-style asks into clarify, plan, status, handoff, or confirmation actions.
-- `omh-web-research`: [omh] Web lookup lane - settle a current-facts question in one cited retrieval round with retrieval dates and source-quality notes; for pre-spec grounding across reference implementations use `research`.
-- `omh-websearch-setup`: [omh] Hermes Web Search Setup workflow: diagnose scraper and auxiliary extract-model configuration, guide account setup, and apply each change as its own diff approval.
-- `omh-wiki`: [omh] Hermes adaptation for wiki construction blueprints and retained knowledge capture with destination-aware external knowledge connection guidance.
-- `omh-workflow-learning`: [omh] Hermes workflow learning workflow: classify and review self-improvement store routes as an auxiliary review lane before durable writes, then record workflow attempts as metadata-only traces, evals, review queues, patch proposals, regression cases, audits, indexes, and exports.
-- `omh-workspace-audit`: [omh] Hermes Workspace Audit workflow: map repository, skill, prompt, plugin, MCP, hook, config, and runtime surfaces before strengthening or operating OMH.
-- `omh-files`: [omh] Policy overlay for local file tasks - add path scoping and destructive-action gates after preferring native file tools for ordinary list, search, organize, copy, move, and rename actions.
+- `omh-support-operations`: [omh] Customer support case needs a reply or escalation: turn a support case into a clear customer reply, severity path, and owned next step.
+- `omh-tech-debt-audit`: [omh] Accumulated tech debt to rank: build the severity-by-effort debt ledger from observed repo evidence - orient, audit the named dimensions with file:line citations, rank fixes and quick wins - and reconcile RESOLVED/NEW/CARRIED against the previous ledger on rerun.
+- `omh-todo-checklist`: [omh] Resume or finish the work we agreed on: continue or finish the accepted work from conversation context, preserve rejected ideas, and report evidence-bounded completion. Also declare and advance the metadata-only plan checklist without starting a delivery engine.
+- `omh-toolbelt-readiness`: [omh] Which tools and credentials a workflow needs: inventory which MCP servers, CLIs, APIs, credentials, and connectors a workflow needs; use external-connector-readiness to assess one named integration and executor-runtime-readiness to choose the coding owner.
+- `ulw-perf`: [omh] Unexplained slowness, leaks, or cost spikes: find where a system is actually slow, leaking, or expensive across runtime, memory, token cost, storage, rendering, inference, CI, and query domains, then fix one measured hot path at a time behind a regression budget.
+- `ulw-qa`: [omh] Hostile scenario testing: adversarial QA and fix loops.
+- `ulw-work`: [omh] Accepted plan awaiting implementation: split it into disjoint parallel lanes with per-lane acceptance criteria, verification commands, and owners; prevents two lanes editing the same file.
+- `omh-verification-gate`: [omh] Proof a change is done before merge: define and record build, lint, typecheck, test, security, docs, generated-output, and CI evidence before completion or merge.
+- `omh-visual-qa`: [omh] Rendered UI needing a visual verdict: prepare observed-only rendered QA gates for web, frontend, image, document, and TUI surfaces.
+- `omh-voice-input`: [omh] Short spoken or mobile-style request: terse voice and mobile-style requests - turn short spoken-style asks into clarify, plan, status, handoff, or confirmation actions.
+- `omh-web-research`: [omh] Current-facts lookup on the web: web lookup lane - settle a current-facts question in one cited retrieval round with retrieval dates and source-quality notes; for pre-spec grounding across reference implementations use `research`.
+- `omh-websearch-setup`: [omh] Expensive or unconfigured web search: diagnose scraper and auxiliary extract-model configuration, guide account setup, and apply each change as its own diff approval.
+- `omh-wiki`: [omh] Scattered knowledge needing a wiki: wiki construction blueprints and retained knowledge capture with destination-aware external knowledge connection guidance.
+- `omh-workflow-learning`: [omh] Missed route or run lessons to record: classify and review self-improvement store routes as an auxiliary review lane before durable writes, then record workflow attempts as metadata-only traces, evals, review queues, patch proposals, regression cases, audits, indexes, and exports.
+- `omh-workspace-audit`: [omh] Workspace setup inventory and gaps: map repository, skill, prompt, plugin, MCP, hook, config, and runtime surfaces before strengthening or operating OMH.
+- `omh-files`: [omh] Folder cleanup, renames, or deletions: policy overlay for local file tasks - add path scoping and destructive-action gates after preferring native file tools for ordinary list, search, organize, copy, move, and rename actions.

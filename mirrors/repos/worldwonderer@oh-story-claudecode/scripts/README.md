@@ -9,11 +9,13 @@
 
 `python scripts/test-long-analyze-runtime.py` 验证长篇拆文的单状态运行时：机械章节索引与逐章 hash、旧成果识别、只读计划、范围批次、兼容摘要投影、相邻拆分、原子提交和缓存恢复。实际运行只使用 `skills/story-long-analyze/scripts/` 下三个脚本：`build_chapter_index.py`、`inspect_existing_assets.py`、`manage_analysis_run.py`。测试还覆盖旧版（带「章节边界」表）拆文库遇到楔子时的章号核对与并入出路、Windows/GBK 控制台下的 UTF-8 输出，以及 `render_relation_chart.py` 在没有中文字体时只写 Markdown 关系图、不出拼音图。
 
+`scripts/bench/` 是 v0.8 起的真实会话基准：确定性部署某个版本的包、用真实 CLI 跑冻结的书、统计每章耗时/token/正文指标。它要真实模型和凭据，不在 CI 里跑；用法见 [bench/README.md](bench/README.md)。
+
 ## 静态守卫（check-*）
 
 | 脚本 | 检查什么 | 何时跑 |
 |---|---|---|
-| `static-check.sh` + `static-check.py` | 结构化验证 frontmatter、Markdown 路径/锚点、Agent 引用、references 可达性；除基础组件 `browser-cdp` 外禁止跨 Skill 文件引用；`author-report` 作者汇报模板不得含工程词 | CI |
+| `static-check.sh` + `static-check.py` | 结构化验证 frontmatter、Markdown 路径/锚点、Agent 引用、references 可达性；除基础组件 `browser-cdp` 外禁止跨 Skill 文件引用 | CI |
 | `skill-numbering.py check` | 工作流 Step/Phase/Stage 编号策略、引用绑定、SKILL.md 裸编号/子步骤小数守卫 | CI；改工作流结构后 |
 | `check-current-skill-contracts.sh` + `.py` + `current-contract.json` | 从结构化 manifest 校验当前版本、Phase、schema、主产物与细纲契约；保留 legacy/path 守卫并拦截缺主产物后的静默替代 | CI |
 | `check-shared-files.sh` | 调两个显式 manifest 验 runtime/reference 副本，拦截未声明 exact/near-copy，并检查 setup profile 契约与消费可达性 | CI |
@@ -22,12 +24,12 @@
 | `check-short-analysis-scope.py` | 保证 story-short-analyze 只路由短篇源文观察标尺，拦截旧混合手册、长篇结构口令和推荐百分比回流 | CI（由 check-shared-files 调用） |
 | `check-scan-runtime-policy.sh` | scraper 输出文件名依赖本地日期 helper；CDP 探测/Windows 监听解析的源码策略 | CI；这些依赖方向无法由隔离 helper 测试证明 |
 | `check-story-setup-deployment.sh` | story-setup 部署/运行时回归（慢，>2min） | CI |
-| `check-doc-budget.sh` + `doc-budget.json` | 热路径 SKILL/references/agent 模板的去空白字数预算与路径合计上限；超了要么删等量旧文本，要么显式调高 budget | CI；增删热路径正文后 |
+| `check-doc-budget.sh` + `doc-budget.json` | 热路径 SKILL/references/agent 模板的去空白字数预算与路径合计上限；带 `agent` 字段的路径按角色计每次调用的实际加载量并自动计入模板预加载的 skill；超了要么删等量旧文本，要么显式调高 budget | CI；增删热路径正文后 |
 | `check-hook-regex-sync.sh` | `detect-story-gaps.sh` 伏笔状态检测行为 | CI |
 | `check-hook-locale-safety.sh` | 部署 hook 在 Windows 中文 GBK 区域的字节安全 | CI |
 | `check-python-invocation.sh` | 技能文档禁止裸调 `python3`（须 python3→python→py 探测） | CI |
 | `check-agent-notes.py` + `test-agent-notes.py` | `.agents/notes/` 决策笔记的目录布局（状态/分类/日期文件名）、`Status` 与目录一致、必需小节（Problem / Decision 或 Proposal / Alternatives considered / Consequences）、禁止手工索引；test 用临时目录逐类违规回归 | CI；新增或移动笔记后 |
-| `check-author-reports.py` | `<!-- author-report -->` 标记的作者报告模板里不许出现工程黑话：内部字段/状态名、脚本名、flag、snake/kebab 标识符、S1–S4、Gate、裸编号；块尾一行「技术备注：」豁免；`--self-test` 自带正反例 | CI；改报告模板后 |
+| `check-author-reports.py` | `<!-- author-report -->` 标记的作者报告模板里不许出现工程黑话：内部字段/状态名、脚本名、flag、snake/kebab 标识符、S1–S4、Gate、裸编号；块尾一行「技术备注：」豁免；登记文件（含长篇规划/单章/日更/大修模板）的报告块不得少于登记数量；`--self-test` 自带正反例 | CI；改报告模板后 |
 | `check-plugin-packaging.py` | Claude/ZCode 两个 catalog 与两个原生 manifest 的单 bundle 身份、版本、默认组件发现和 13 个根 Skills | CI；改 plugin packaging 后 |
 | `check-claude-adapter.sh` | Claude marketplace、根 plugin manifest 与 13 个 skill 自动发现；可选真实 CLI 生命周期 | CI（静态）；`CLAUDE_REAL_CHECK=1`（真实 CLI） |
 | `check-opencode-adapter.sh` | OpenCode 2.x 适配层同步 + commands/agents 结构 + 生成权限的 2.x 裁决矩阵 + plugin 行为回归 | CI + sync CI（调 sync-opencode.py） |
@@ -48,10 +50,10 @@
 | `test-phase2-contract.js` | 短篇 Phase 2 verifier 行为回归：设计字段、12 列大纲、字数区间、具名失败与 repair_scope | Linux / Windows / macOS CI |
 | `test-doc-budget.py` | 临时文档工程中的路径求和、超限和缺失文件失败 | CI |
 | `test-delivery-contract.js` | 短篇最终字数、节数、标记与空行交付契约回归 | Linux / Windows / macOS CI |
-| `check-reference-gates.js` | 长短篇 Reference Gate 的首屏位置、完整读取语义与关键路由静态守卫（gate 是提示词，无运行时入口可断言） | Linux / Windows / macOS CI |
+| `check-reference-gates.js` | 长短篇 Reference Gate 的首屏位置、关键路由、长篇「记下本轮约束」锚点与短篇交付预检命令的静态守卫（gate 是提示词，无运行时入口可断言） | Linux / Windows / macOS CI |
 | `test-outline-contract.js` | 长篇细纲结构验收：字段、小节、五段式、四列情节点表与字数口径的正负例回归 | Linux / Windows / macOS CI |
 | `test-degeneration.sh` | 模型退化检测器 `check-degeneration.js` 回归 | CI |
-| `test-prose-net-parity.sh` | 正文兜底「轻量确定性网」Claude/OpenCode/Codex/ZCode parity | CI（调 check-hook-regex-sync） |
+| `test-prose-net-parity.sh` | 正文兜底「轻量确定性网」、写正文守卫与命令目标抽取的 JS 核 / Codex Python / Claude bash parity | CI |
 | `test-prose-backstop-hook.sh` | `check-prose-after-write.sh` 回归 | CI |
 | `test-story-continuity.sh` | `detect-story-gaps.sh` 跨批连续性兜底回归 | CI |
 | `test-tracking-commit.py` | 单权威追踪行为：原子 state、字数事件链、hash 失效、激活边界、幂等与并发提交 | CI |
@@ -59,7 +61,7 @@
 | `test-chapter-completion-lifecycle.py` | 公开 CLI 的 checkpoint、正常提交、欠长接受、超长单次压缩区间、blocking quality 阻断与下一章继续 | Linux / Windows / macOS CI |
 | `test-author-memory-commit.py` | 工作区作者记忆行为：单事件回执、≤2KB 相关查询、证据候选、冲突替代、撤回、失败零写入、旧修订、幂等重放与派生修复 | CI |
 | `test-codex-hooks.sh` | Codex hook 合成 stdin/stdout 契约 | CI |
-| `test-static-check.py` | 真 frontmatter block、精确路径/锚点、跨 Skill 引用、fence、死 reference、Agent 与章节链接 fixture；作者汇报模板工程词守卫及长篇模板在位 | CI |
+| `test-static-check.py` | 真 frontmatter block、精确路径/锚点、跨 Skill 引用、fence、死 reference、Agent 与章节链接 fixture | CI |
 | `test-current-skill-contracts.py` | current-contract manifest 类型/固定值与主产物 fail-fast 语义 fixture | CI |
 | `test-plugin-packaging.py` | 执行公开 packaging CLI，在临时仓库中变异 catalog/manifest/版本/组件过滤并断言结构化失败 | CI |
 | `test-claude-plugin-lifecycle.py` | 隔离 HOME 后用真实 Claude CLI 演练 13 个旧身份迁移为单 bundle、更新/卸载及无关插件保留 | `CLAUDE_REAL_CHECK=1`，由 `check-claude-adapter.sh` 调用 |

@@ -484,7 +484,7 @@ The desktop build requires the full Rust toolchain and vendored Tauri setup. For
 
 ## Still stuck?
 
-- Join the [Discord](https://discord.tinyhumans.ai/) and ask in the contributors channel
+- Join the [Discord](https://guild.tinyhumans.ai/) and ask in the contributors channel
 - Comment on the issue you're working on
 - Check [`gitbooks/developing/getting-set-up.md`](../gitbooks/developing/getting-set-up.md) for deeper setup docs
 

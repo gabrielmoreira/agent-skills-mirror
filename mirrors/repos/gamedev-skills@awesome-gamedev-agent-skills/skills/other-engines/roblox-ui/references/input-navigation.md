@@ -50,6 +50,13 @@ consumes the action; otherwise allow gameplay to receive it.
 Do not create a second input system inside a menu. Coordinate screen actions with `input-systems`
 and preserve the project's existing action names and bindings.
 
+For cross-device action binding defined at edit time, the Input Action System
+(`InputContext`/`InputAction`/`InputBinding`) is the modern layer: it maps one action to
+keyboard, gamepad, and touch at once, and an `InputContext` can be enabled/disabled (with
+`Priority`/`Sink`) so a menu's actions replace gameplay actions while it is open. Use it for
+screen-level action binding and cross-device parity; keep `GuiService.SelectedObject` and the
+neighbor graph for moving UI focus itself.
+
 ## Motion lifecycle
 
 - Read `GuiService.ReducedMotionEnabled`; replace spatial movement with an instant state or short
@@ -74,4 +81,5 @@ navigation, not TV legibility; use Device Emulator/console sizing for that.
 
 - `https://create.roblox.com/docs/reference/engine/classes/GuiService`
 - `https://create.roblox.com/docs/studio/testing-modes`
+- `https://create.roblox.com/docs/input/input-action-system`
 - `https://create.roblox.com/docs/production/publishing/console-guidelines`

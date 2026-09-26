@@ -1,13 +1,13 @@
-<!-- registry-sync: version=18.4.0; skills=2457; stars=46858; updated_at=2026-09-24T11:19:09+00:00 -->
+<!-- registry-sync: version=18.5.0; skills=2465; stars=46879; updated_at=2026-09-25T04:54:31+00:00 -->
 # AAS Core — Agentic Awesome Skills
 
 > **Find reusable instructions for your project, inspect their complete files, and keep an exact skill set you can review and reuse.**
 
-**Current release: V18.4.0.** This release includes AAS Core for complete local catalog search, agent-owned selection, manifest validation, planning, and diagnosis. Apply and recovery remain experimental and outside the supported preview path.
+**Current release: V18.5.0.** This release includes AAS Core for complete local catalog search, agent-owned selection, manifest validation, planning, and diagnosis. Apply and recovery remain experimental and outside the supported preview path.
 
 Codex or Claude inspects your project and chooses exact skills from the complete local AAS catalog. AAS Core does not rank or recommend them: its read-only `compose_stack` tool validates the agent-owned selection in memory, and a client or the `aas` CLI can persist it as `aas-stack.json` and produce an immutable plan before any target change.
 
-**[Read the AAS Core preview guide →](https://github.com/sickn33/agentic-awesome-skills/blob/v18.4.0/docs/users/aas-core.md)**
+**[Read the AAS Core preview guide →](https://github.com/sickn33/agentic-awesome-skills/blob/v18.5.0/docs/users/aas-core.md)**
 
 This README tracks `main`. Changes under [Unreleased](CHANGELOG.md#unreleased), including complete bundle inspection, Workbench evidence import and sparse installer retrieval, require a subsequent release; the linked versioned guide describes the published package.
 
@@ -42,6 +42,14 @@ This is an independent community project. It is not affiliated with, sponsored b
 [![OpenCode](https://img.shields.io/badge/OpenCode-CLI-gray?style=for-the-badge)](https://github.com/opencode-ai/opencode)
 [![Antigravity](https://img.shields.io/badge/Antigravity-AI%20IDE-red?style=for-the-badge)](https://github.com/sickn33/agentic-awesome-skills)
 
+## Watch the Introduction
+
+A 40-second introduction to Agentic Awesome Skills. Press play to watch it here on GitHub.
+
+https://github.com/user-attachments/assets/02aa20ca-c3bb-4984-807e-7b06ef77e785
+
+If GitHub's player stalls, [watch the video on the AAS website](https://aaskills.tech/).
+
 ## Support the Project
 
 **We’re looking for sponsors to support Agentic Awesome Skills.** If you or your company would like to support the project, become a sponsor.
@@ -55,7 +63,8 @@ You can also [support AAS on Buy Me a Coffee](https://buymeacoffee.com/sickn33).
 </a>
 
 *Security tooling support: [Snyk](https://snyk.io/).*  
-*AI compute & model credits: [Atlas Cloud](https://atlascloud.ai/) (supporting media generation workflows via [`atlas-cloud-media`](skills/atlas-cloud-media/SKILL.md)).*
+*AI compute & model credits: [Atlas Cloud](https://atlascloud.ai/) (supporting media generation workflows via [`atlas-cloud-media`](skills/atlas-cloud-media/SKILL.md)).*  
+*This project is tested with BrowserStack.*
 
 [![Powered by Atlas Cloud](https://www.atlascloud.ai/oss-program/powered-by-atlas-cloud.svg)](https://www.atlascloud.ai/)
 
@@ -86,7 +95,7 @@ AAS Core gives the repository one product model:
 | Apply and recovery | Experimental, explicit opt-in, outside the supported safety claim |
 | Semantic suitability certification | Not provided |
 
-Read the [AAS Core guide](https://github.com/sickn33/agentic-awesome-skills/blob/v18.4.0/docs/users/aas-core.md) for the exact trust boundaries, current preview status, Codex/Claude setup model, and CLI lifecycle.
+Read the [AAS Core guide](https://github.com/sickn33/agentic-awesome-skills/blob/v18.5.0/docs/users/aas-core.md) for the exact trust boundaries, current preview status, Codex/Claude setup model, and CLI lifecycle.
 
 ## Why This Repo
 
@@ -95,7 +104,7 @@ Read the [AAS Core guide](https://github.com/sickn33/agentic-awesome-skills/blob
 - **Approval before writes**: the durable artifacts are an approved stack and immutable plan, not an opaque one-shot install.
 - **Installable, not just inspirational**: use the compatible legacy installer or plugin distributions when direct delivery is the right path.
 - **Built for major agent workflows**: Claude Code, Cursor, Codex CLI, Autohand Code, Gemini CLI, Antigravity, Kiro, OpenCode, Copilot, and more.
-- **Broad coverage with real utility**: 2,457+ skills across development, testing, security, infrastructure, product, and marketing.
+- **Broad coverage with real utility**: 2,465+ skills across development, testing, security, infrastructure, product, and marketing.
 - **Inspect before installing**: the hosted [Skill Workbench](https://aaskills.tech/workbench) reviews agent-produced stack manifests and immutable plans without browser-side installation.
 - **Focused delivery remains available**: specialized plugins package curated sets for web, security, data, docs, DevOps, QA, OSS, or agent/MCP workflows.
 - **Useful whether you want breadth or curation**: install the full catalog, choose a specialized plugin, start with bundles, or compare alternatives before installing.
@@ -106,6 +115,7 @@ Direct file search can find candidate prose, but it leaves the result in the con
 
 ## Table of Contents
 
+- [Watch the Introduction](#watch-the-introduction)
 - [Support the Project](#support-the-project)
 - [AAS Core: Agent-First Preview](#aas-core-agent-first-preview)
 - [Why This Repo](#why-this-repo)
@@ -114,7 +124,7 @@ Direct file search can find candidate prose, but it leaves the result in the con
 - [Choose Your Tool](#choose-your-tool)
 - [Quick FAQ](#quick-faq)
 - [Bundles & Workflows](#bundles--workflows)
-- [Browse 2,457+ Skills](#browse-2457-skills)
+- [Browse 2,465+ Skills](#browse-2465-skills)
 - [Troubleshooting](#troubleshooting)
 - [Stable Skills Manifest v1](#stable-skills-manifest-v1)
 - [Contributing](#contributing)
@@ -126,7 +136,7 @@ Direct file search can find candidate prose, but it leaves the result in the con
 
 ## Installation
 
-For Codex and Claude, start with the [AAS Core guide](https://github.com/sickn33/agentic-awesome-skills/blob/v18.4.0/docs/users/aas-core.md): configure the local MCP, ask the agent to inspect the project and choose exact IDs from the full catalog, review the proposed `aas-stack.json`, then run CLI validation and planning. The MCP and validation are read-only. Planning writes only the requested plan artifact; it does not materialize skill payloads or AAS managed state in the target.
+For Codex and Claude, start with the [AAS Core guide](https://github.com/sickn33/agentic-awesome-skills/blob/v18.5.0/docs/users/aas-core.md): configure the local MCP, ask the agent to inspect the project and choose exact IDs from the full catalog, review the proposed `aas-stack.json`, then run CLI validation and planning. The MCP and validation are read-only. Planning writes only the requested plan artifact; it does not materialize skill payloads or AAS managed state in the target.
 
 Use direct installation when your host does not yet have a native AAS Core adapter, when you already know the exact skill IDs, or when you deliberately prefer manual selection:
 
@@ -299,7 +309,7 @@ The supported path covers complete local catalog search and inspection, agent-ow
 
 ### How do I install it?
 
-For AAS Core, follow the [preview guide](https://github.com/sickn33/agentic-awesome-skills/blob/v18.4.0/docs/users/aas-core.md) and use only a package release whose notes explicitly state that it includes Core. Release 14.6.0 predates Core; Core-capable releases begin with the 15.x line.
+For AAS Core, follow the [preview guide](https://github.com/sickn33/agentic-awesome-skills/blob/v18.5.0/docs/users/aas-core.md) and use only a package release whose notes explicitly state that it includes Core. Release 14.6.0 predates Core; Core-capable releases begin with the 15.x line.
 
 For direct skill distribution, use a tool-specific flag such as `--codex`,
 `--cursor`, `--gemini`, or `--claude` to place skills in the directory your
@@ -377,7 +387,7 @@ Remove `--dry-run` only after reviewing the install, update, and removal plan. U
 
 The hosted [Skill Workbench](https://aaskills.tech/workbench) imports and reviews AAS Core stack manifests and immutable plans in browser memory. It does not access the filesystem, generate an approved plan, or install skills.
 
-## Browse 2,457+ Skills
+## Browse 2,465+ Skills
 
 Use the root repo as a landing page, then jump into the deeper surface that matches your intent.
 
@@ -415,7 +425,7 @@ Use the root repo as a landing page, then jump into the deeper surface that matc
 Keep the root README short; use the dedicated docs for recovery and platform-specific guidance.
 
 - If you are confused after installation, start with the [Usage Guide](docs/users/usage.md).
-- For Core setup, trust boundaries, stack manifests, and preview status, use the [AAS Core guide](https://github.com/sickn33/agentic-awesome-skills/blob/v18.4.0/docs/users/aas-core.md).
+- For Core setup, trust boundaries, stack manifests, and preview status, use the [AAS Core guide](https://github.com/sickn33/agentic-awesome-skills/blob/v18.5.0/docs/users/aas-core.md).
 - On native Windows, `AAS_ADAPTER_WINDOWS_ACL_FAILED` refers to the configuration path checked with PowerShell `Get-Acl`, not the cache and not `icacls`; do not approve until preview returns an approval digest.
 - If you integrate agentic-awesome-skills into a host, read the discovery contract first: [Stable Skills Manifest v1](docs/users/discovery-manifest.md).
 - For Windows truncation or context crash loops, use [docs/users/windows-truncation-recovery.md](docs/users/windows-truncation-recovery.md).
@@ -426,7 +436,7 @@ Keep the root README short; use the dedicated docs for recovery and platform-spe
 
 ## Stable Skills Manifest v1
 
-This is the stable **direct-host discovery manifest** for integrations that load individual `SKILL.md` files. It is not `aas-stack.json`, the verified AAS Core catalog, or the Core composition contract. Core users should start with the [AAS Core guide](https://github.com/sickn33/agentic-awesome-skills/blob/v18.4.0/docs/users/aas-core.md); custom host integrations can continue using the manifest below.
+This is the stable **direct-host discovery manifest** for integrations that load individual `SKILL.md` files. It is not `aas-stack.json`, the verified AAS Core catalog, or the Core composition contract. Core users should start with the [AAS Core guide](https://github.com/sickn33/agentic-awesome-skills/blob/v18.5.0/docs/users/aas-core.md); custom host integrations can continue using the manifest below.
 
 Host integrations should use:
 
@@ -514,6 +524,8 @@ Key source families include:
 - **[cohesivity-org/cohesivity-skill](https://github.com/cohesivity-org/cohesivity-skill)**: Official Cohesivity skill - agent provisioned backend infrastructure covering Postgres, hosting, auth, realtime, storage, cron, email, and AI model APIs over one HTTP API (MIT).
 - **[ASI2030/Fact-Check-X](https://github.com/ASI2030/Fact-Check-X)**: Source for the `fact-check-x-complete` workflow - claim-level AI answer comparison, citation-fidelity review, and public primary-source verification without bundled browser automation (Apache-2.0).
 - **[happy520ai/unified-ai-system](https://github.com/happy520ai/unified-ai-system)**: Official source for the `unified-ai-gateway` skill - nine governed Codex MCP tools for provider-free prompt enhancement, credential-free gateway health, readiness, fake-provider chat, knowledge, workflow, and workforce evidence (Apache-2.0).
+- **[testdriverai/testdriverai](https://github.com/testdriverai/testdriverai)**: Official TestDriver source for the `testdriver-e2e-testing` skill - author, run, and debug end-to-end tests that drive browsers and native apps in a real desktop sandbox with AI vision and natural-language element descriptions (Apache-2.0).
+- **[HEOJUNFO/ai-film-crew](https://github.com/HEOJUNFO/ai-film-crew)**: Official source for the `film-crew` skill - run a video idea past seven film-crew roles and get a shot list with one model-ready prompt per shot, plus prompt fixes and reroll diagnosis for Wan, LTX, Kling, Veo, Seedance, Hailuo, and Runway (MIT).
 
 </details>
 
@@ -522,6 +534,7 @@ Key source families include:
 
 ### Community Contributors
 
+- **[tomelias10/mcp-drift-check](https://github.com/tomelias10/mcp-drift-check)**: MIT source for the `mcp-dependency-drift-audit` skill — zero-execution review of mutable npm/npx package references in MCP configuration, with a manual static fallback and CI/SARIF guidance.
 - **[wwewtech/chatexport-need-miner](https://github.com/wwewtech/chatexport-need-miner)**: Source for the `chatexport-need-miner` skill — community guidance and examples under MIT.
 - **[socai-io/jev-social](https://github.com/socai-io/jev-social)**: Source for the `jev-social` skill — read-only Jev/socai social research routing (MIT).
 - **[work0r-ai/agent-kit](https://github.com/work0r-ai/agent-kit)**: Source for the `workorai` skill — agent kit workflows (MIT).

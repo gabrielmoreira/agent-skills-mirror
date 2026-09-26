@@ -1,21 +1,16 @@
 ---
 name: tradingview-reader
 description: >
-  Read TradingView desktop app for market data, news, alerts, watchlists,
-  and screener results using opencli (read-only).
-  Use this skill whenever the user wants quotes, options chains, options
-  expiries, screener results across stocks/crypto/forex/futures/bonds,
-  gainers/losers/movers, news headlines or full story bodies, alerts
-  (active list, fire log, offline fires), watchlists including colored
-  flag lists, symbol search/autocomplete, chart state, or screenshots
-  from their local TradingView.app. Triggers include: "options chain for
-  X", "IV on Y", "show me SNDK puts", "TV screener for Y sector", "screen
-  oversold stocks", "TV gainers", "crypto by market cap", "TradingView
-  news on AAPL", "show my watchlists", "red flag list", "list my alerts",
-  "what alerts fired", "search TV for nvidia", "what symbol is on my
-  chart", "screenshot NVDA chart", "TradingView IV skew", "TV expiries
-  for X". This skill is READ-ONLY — it does NOT place trades, modify
-  watchlists, or change chart layouts.
+  Read the user's local TradingView desktop app through opencli: quotes, options
+  chains with greeks and per-strike IV, options expiries, screener results across
+  stocks, crypto, forex, futures, and bonds, gainers and losers, news headlines and
+  full stories, alerts (active, fired, offline fires), watchlists including colored
+  flag lists, symbol search, chart state, and chart screenshots. Use this skill
+  whenever the user asks for any of these from TradingView ("TV") — for example an
+  options chain, puts, or IV skew for a ticker, an oversold-stock screen, their red
+  flag list, which alerts fired, or a screenshot of their chart. For plain quotes, TA
+  readouts, scans, or futures without the desktop app, prefer tradingview-mcp.
+  Read-only: it never places trades or edits watchlists, alerts, or layouts.
 ---
 
 # TradingView Reader (Read-Only)
@@ -28,7 +23,7 @@ Reads TradingView's desktop macOS app for quotes, options chains, and chart stat
 
 **Important**: Unlike browser-based opencli readers (twitter, linkedin), this one talks directly to a running TradingView desktop app over Chrome DevTools Protocol. The user must (a) have `TradingView.app` installed, and (b) be logged in inside that app. The plugin handles relaunching with the debug port.
 
-**How it works**: data commands harvest session cookies via CDP `Storage.getCookies`, then fire HTTP requests from Node directly. Page-context fetch is blocked by browser CORS preflight even from TradingView's own pages — the desktop app uses Electron's main process (Node network stack) to bypass this, and we replicate that path. No Browser Bridge extension required, no `apps.yaml` registration needed.
+**How it works**: data commands read the app's session cookies over CDP and call TradingView's HTTP APIs from Node directly, so no Browser Bridge extension or `apps.yaml` registration is needed.
 
 ---
 
@@ -146,12 +141,12 @@ opencli tradingview quote --ticker SPY --exchange NYSEARCA -f json
 2. **Use `-f json`** for programmatic processing (LLM context, downstream skills).
 3. **Filter by expiry and `--strikes-around-spot`** — full chains can be 3,000+ rows; an unfiltered dump is rarely what the user wants.
 4. **Default `--exchange NASDAQ`** for US equities; require explicit `--exchange` for ETFs (e.g. SPY = NYSEARCA, QQQ = NASDAQ) or non-US listings.
-5. **For `screener`, `--columns` is critical** — it controls both the request and the output table. Include `name` and any field used in `--filter` or `--sort`. Append `|TF` for an indicator's timeframe, e.g. `RSI|60` for 1-hour RSI. The default columns are sensible for stocks but should be replaced for crypto / forex / futures (different field catalogs).
+5. **For `screener`, choose `--columns` deliberately** — it controls both the request and the output table. Include `name` and any field used in `--filter` or `--sort`. Append `|TF` for an indicator's timeframe, e.g. `RSI|60` for 1-hour RSI. The default columns are sensible for stocks but should be replaced for crypto / forex / futures (different field catalogs).
 6. **For `screener`, `--filter` is JSON** — array of `{left, operation, right}` clauses. Always single-quote the JSON in shell to avoid escaping issues. See `references/commands.md` for the operations cheat sheet.
 7. **For `news`, narrow the feed early** — the global feed is firehose-level. Use `--symbol`, `--category`, `--section`, or `--provider` before raising `--limit`.
 8. **For `search`, prefer it over guessing** — when the user gives an ambiguous ticker (e.g. "SPY" without exchange), run `search --query SPY` first to confirm the listing, then pass `--exchange` to subsequent commands.
 9. **For `watchlists` and `alerts`, default to summary** — a user asking "what's in my watchlists?" wants list names + counts, not every symbol.
-10. **NEVER call any write operation.** This skill is read-only — no trades, no watchlist edits, no alert creation/deletion, no chart writes. The plugin intentionally does not expose write endpoints (`/append`, `/replace`, `/create_alert`, etc.).
+10. **Read-only.** No trades, no watchlist edits, no alert creation/deletion, no chart writes — the plugin intentionally does not expose write endpoints (`/append`, `/replace`, `/create_alert`, etc.), so don't look for workarounds.
 
 ### Output format flag (`-f`)
 

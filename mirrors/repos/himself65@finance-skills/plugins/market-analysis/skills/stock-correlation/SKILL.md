@@ -1,19 +1,15 @@
 ---
 name: stock-correlation
 description: >
-  Analyze stock correlations to find related companies and trading pairs.
-  Use when the user asks about correlated stocks, related companies, sector peers,
-  trading pairs, or how two or more stocks move together.
-  Triggers: "what correlates with NVDA", "find stocks related to AMD",
-  "correlation between AAPL and MSFT", "what moves with", "sector peers",
-  "pair trading", "correlated stocks", "when NVDA drops what else drops",
-  "stocks that move together", "beta to", "relative performance",
-  "supply chain partners", "correlation matrix", "co-movement",
-  "related tickers", "sympathy plays", "semiconductor peers",
-  "hedging pair", "realized correlation", "rolling correlation",
-  or any request about stocks that move in tandem or inversely.
-  Also triggers for well-known pairs like AMD/NVDA, GOOGL/AVGO, LITE/COHR.
-  If only one ticker is provided, infer the user wants correlated peers.
+  Analyze how stocks move together using Yahoo Finance price history (yfinance): find
+  correlated peers for a ticker, measure correlation, beta, and spread between
+  specific tickers, cluster a group into a correlation matrix, and track rolling or
+  regime-dependent correlation. Use this skill whenever the user asks what moves with
+  a stock, what else drops when it drops, related tickers or sympathy plays, sector or
+  supply-chain peers, pair trading or hedging pairs, beta or relative performance,
+  correlation matrices, co-movement, or rolling/realized correlation — including
+  well-known pairs like AMD/NVDA, GOOGL/AVGO, or LITE/COHR. With a single ticker,
+  assume the user wants its correlated peers.
 ---
 
 # Stock Correlation Analysis Skill
@@ -113,7 +109,7 @@ def discover_comovement(target_ticker, peer_tickers, period="1y"):
 
 ### A3: Present results
 
-Show a ranked table with company names and sectors (fetch via `yf.Ticker(t).info.get("shortName")`):
+Show a ranked table with company names and sectors (fetch via `yf.Ticker(t).info.get("shortName")`). Values below are illustrative:
 
 | Rank | Ticker | Company | Correlation | Why linked |
 |---|---|---|---|---|
@@ -174,7 +170,7 @@ def return_correlation(ticker_a, ticker_b, period="1y"):
 
 ### B2: Present results
 
-Show a summary card:
+Show a summary card (illustrative values):
 
 | Metric | Value |
 |---|---|
@@ -307,7 +303,7 @@ def regime_correlation(returns, ticker_a, ticker_b, condition_ticker=None):
 
 ### D3: Present results
 
-1. **Rolling correlation summary table**:
+1. **Rolling correlation summary table** (illustrative values here and in the regime table):
 
 | Window | Current | Mean | Min | Max | Std |
 |---|---|---|---|---|---|
@@ -356,7 +352,7 @@ After running the appropriate sub-skill, present results clearly:
 - **Sector rotation**: Understanding which sectors move together
 - **Risk management**: Correlation spikes during stress — diversification may fail when needed most
 
-**Important**: Never recommend specific trades. Present data and let the user draw conclusions.
+Present the data and let the user draw conclusions; don't recommend specific trades.
 
 ---
 

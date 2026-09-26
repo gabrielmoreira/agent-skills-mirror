@@ -6,7 +6,7 @@ dispatcher for OpenHuman. The `openhuman-core` binary itself lives in
 `crates/openhuman-cli` (it needs the `openhuman-tinyhumans` backend transport
 this library does not carry). Hosted in-process by `crates/openhuman-app`
 (the Tauri shell), `crates/openhuman-embed` (the typed facade for third-party
-embedders such as Medulla and OpenCompany), `crates/openhuman-tui`, and
+embedders such as OpenCompany), `crates/openhuman-tui`, and
 `crates/openhuman-cli`.
 
 See `crates/openhuman-core/src/lib.rs` for the crate-level doc comment and
@@ -16,7 +16,7 @@ AGENTS.md ("Rust domain structure") for the preferred per-domain module shape.
 
 Business logic lives one directory per domain under `src/<domain>/`. `*` marks
 modules whose `pub mod` declaration in `lib.rs` is itself `#[cfg(feature)]`-
-gated (feature of the same name unless noted). `channels`, `mcp`, `medulla`,
+gated (feature of the same name unless noted). `channels`, `mcp`,
 `skills`, `voice` and `web3` are always declared but gate most of their
 contents inside `mod.rs` behind the feature of the same name. See the
 `[features]` block in `Cargo.toml` for what each gate pulls in.
@@ -39,7 +39,6 @@ contents inside `mod.rs` behind the feature of the same name. See the
 | `json_schema` | Vendor-neutral JSON Schema and JSON value walking | |
 | `mcp` | Host half of Model Context Protocol support | [README](src/mcp/README.md) |
 | `media`* | Media generation and image tool contracts | [README](src/media/README.md) |
-| `medulla` | Medulla cloud client, its wire vocabulary, and the shared harness contract types | [README](src/medulla/README.md) |
 | `memory` | Memory orchestration — the host layer over `tinymemory-core` | [README](src/memory/README.md) |
 | `modules`* | Loadable native modules — capabilities that live outside this binary | [README](src/modules/README.md) |
 | `platform` | Host-platform services: process lifecycle, self-update, diagnostics, local transport surfaces | |
@@ -85,7 +84,7 @@ asserts the two stay in sync. Slim or headless-embedding builds use
 Gate names (see `Cargo.toml` for the full rationale behind each): `http-server`,
 `inference`, `documents`, `hosting`, `modules`, `voice`, `web3`,
 `runtime-node`, `contacts`, `media`, `flows`, `skills`, `mcp`,
-`crash-reporting`, `medulla`, `channels`, `sandbox-landlock`,
+`crash-reporting`, `channels`, `sandbox-landlock`,
 `sandbox-bubblewrap`, `browser-native`, `fantoccini`,
 `landlock`, `whatsapp-web`, `e2e-test-support`, `rss-bench`,
 `rss-bench-dhat`, `file-logging`, `scheduler-gate`, `bin-tools`. Read the

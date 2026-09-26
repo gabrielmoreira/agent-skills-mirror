@@ -1,6 +1,6 @@
 ---
 name: "omh-backend"
-description: "[omh] Hermes backend workflow: prepare server, API, and data-layer contracts — auth boundary, error paths, response shape, and schema/migration discipline — before implementation. Use when the user says: backend, back-end, back end, backend skill, server side, server-side, api design, api contract."
+description: "[omh] Designing an API, server, or data-layer change: prepare server, API, and data-layer contracts — auth boundary, error paths, response shape, and schema/migration discipline — before implementation. Use when the user says: backend, back-end, back end, backend skill, server side, server-side, api design, api contract."
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, planning]

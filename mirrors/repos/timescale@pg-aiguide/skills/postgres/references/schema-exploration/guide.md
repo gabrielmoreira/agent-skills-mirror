@@ -1,0 +1,1 @@
+cache/repos/github.com/timescale@pg-aiguide/skills/postgres/references/schema-exploration/../../../schema-exploration/SKILL.md

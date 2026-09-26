@@ -84,13 +84,30 @@ quadruped and a legless blob into a contradiction (2026-09-09).
 
 An attack is a timed strike, not a repeat. `MOTION_TEXT["attack"]` asks for the same attack
 twice, each a windup (about 0.5 s), one strike in front (about 0.25 s), a held impact pose
-(about 0.3 s) and a recovery to the exact starting stance (about 0.5 s), with what the subject
-holds kept in the hand nearest the viewer and the body never turning. Its template
+(about 0.3 s) and a recovery to the exact starting stance (about 0.5 s), then `HOLD_TEXT["attack"]`:
+every grip stays the one the image shows — one hand stays one hand, both hands stay both hands,
+nothing let go or switched to the other hand — a hand the strike does not use stays where it is
+drawn with whatever it holds (a shield, a lantern), and the body never turns. Naming one hand
+for a weapon the still draws in both hands made the clip let go and grab again mid-attack.
+A caller's own motion paragraph (`build_prompt(motion=...)`) gets the same `HOLD_TEXT` sentence
+after it, once, then `REPEAT_TEXT`: a request interpreter writes its motion before the still
+exists and cannot know where the other hand's item is drawn, so it writes the choreography and
+the engine says what stays put. Its template
 (`ACTION_COMMON_TEXT`) drops the "evenly paced" line, keeps what the subject holds inside the
 frame, and asks for crisp frames without motion blur. `video-set` asks attack clips for 4 s
 (`STATE_DURATION_SECONDS`; every other state keeps 3 s, and `--duration` overrides every state)
 and pins the clip to end on the frame it starts from: `--last-frame` is the canvas itself
 (first-last mode, see [video.md](video.md)), so the strike has to come back to the still.
+
+An idle holds its feet and is pinned too. `MOTION_TEXT["idle"]` keeps both feet planted flat for
+the whole clip, limits the motion to breathing, a settle of the arms, hair and loose cloth and
+one blink, and names walking and marching in place as what not to do — a side-view full body
+asked for "a subtle weight sway" and an evenly paced loop tends to step in place. Its template
+(`PINNED_LOOP_TEXT`) replaces the "evenly paced motion so the animation loops" line with the
+return: the last frame comes back to the exact pose of the first. `video-set` pins idle clips
+to the canvas (`PIN_LAST_FRAME_STATES`) and, because such a clip starts and ends on the same
+frame, cuts it with `video-loop --cycle pinned` (`PINNED_LOOP_STATES`) instead of searching
+it for a repeat.
 
 `build_prompt(direction, state, character, facing, motion=...)` takes a caller's own motion
 paragraph — whole sentences about the subject, such as a request interpreter writes per
@@ -205,6 +222,30 @@ count even on an edge. The report names the metric, band and dark-only policy.
 Genuine key-coloured material above the 0.5% share still keeps the conservative
 mode. Tiny accents or dark, edge-only material can fall below that reference test; use `--spill small` when preserving those is essential.
 
+The reference is keyed on its subject window only. A canvas padded for motion room
+(`video-canvas`) is mostly key, and the matte's memory grows with every pixel it keys,
+so keying the whole canvas made the judgment cost grow with the padding: about 0.14 GiB
+per megapixel, past 4 GiB for a 30-megapixel canvas. The window is the box of pixels the
+hard cut cannot erase (farther than 96 from the declared key, and not the painted key's
+own colour), plus one keyed pixel all round. The painted key is read on the whole still,
+and with that ring the window gives exactly the counts the whole still gives, so the
+decision does not change. The still itself is only decoded and read a band of rows at
+a time. A window over 6 megapixels is keyed on every n-th pixel each way instead, so no
+reference costs more than that to judge. The report records `reference_size`,
+`reference_window` and `reference_stride` (1 = every pixel of the window).
+
+### Edges: `--decontam palette`
+
+`--spill` fixes key colour painted *into* the subject. The strands and outlines at its
+edge are a different problem. H.264 4:2:0 has already averaged the key into the chroma of
+anything one or two pixels wide, and despilling what is left turns thin red strands
+orange. `video-frames --decontam palette` (also `video-set --decontam palette`) re-explains
+each edge pixel as a blend of the local key background with one colour the subject owns,
+and writes that colour at the pixel's observed luma. It uses the video fit and one palette
+per clip, learned on the first frame, so edge colours cannot flicker between palettes. The
+default `off` keeps frames byte-identical. Method, guards and measurements:
+[chroma-alpha.md](chroma-alpha.md#decontam--give-the-edge-the-subjects-own-colour-back).
+
 ## 3b. Canvas shape for raised limbs and wide costumes
 
 `video-set` picks the canvas from the state row alone. Two things that are not a jump or
@@ -314,6 +355,15 @@ cycle is known (the 2026-09-09 reel jump: 2.3 hops in 145 frames). It is an expl
 instruction, not a failover: the report says `kind = "fixed"`, and the seam gate still
 applies.
 
+`--cycle pinned` is for a clip pinned to end on its first frame (`video --last-frame` set to
+the start image). The cycle is every frame but the last, which re-renders the first, so the
+wrap plays like the step into that last frame. The gate is the pin, not the seam ratio: the
+last frame has to land within `max(seam_max x the mean step, PIN_NOISE_MAX)` of the first, on
+the analysis thumbnail. A near-still clip moves so little per frame that the ratio reads the
+re-render noise of the pinned frame as a jump; a clip that ends in another pose still fails,
+with its own message (`the pinned clip does not end on its first frame`). The report says
+`kind = "pinned"` and records `pin_error` and `pin_tolerance`.
+
 Outputs:
 
 - `cycle/frame-NNN.png` — the cycle frames, RGB under alpha 0 scrubbed, detached specks
@@ -352,7 +402,7 @@ runs canvas → video → frames → loop for every (direction, state). The xAI 
 is **2 requests per second** (five parallel starts produced two HTTP 429s): starts are
 staggered (`--start-gap 2`) and a 429 gets a bounded, logged retry (15 s, 30 s). Clip length
 is each state's own default (3 s, attack 4 s) unless `--duration` sets one for all, and an
-attack clip is pinned to end on its canvas. States use differently shaped canvases (square, tall, wide),
+attack or idle clip is pinned to end on its canvas (an idle is then cut whole, `--cycle pinned`). States use differently shaped canvases (square, tall, wide),
 so the same character films at different pixel heights; `--body-height N` gives every state's loop the
 same standing-height target and keeps the character one size across the set. At a low
 `--resolution`, `--fit tight` frames every item without room so that target is reached by

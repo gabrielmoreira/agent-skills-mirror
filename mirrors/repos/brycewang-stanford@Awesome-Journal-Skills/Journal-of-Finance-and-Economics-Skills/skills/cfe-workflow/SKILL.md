@@ -89,7 +89,7 @@ description: Use when deciding which cfe-* sub-skill to invoke next, or when seq
 
 ## 与《经济研究》Skills 的差异
 
-如果稿子偏纯经济学理论或结构估计、政策含义偏宏观原理，[Economic-Research-Journal-Skills](https://github.com/brycewang-stanford/economic-research-skills) 可能更合适。两者核心差异：
+如果稿子偏纯经济学理论或结构估计、政策含义偏宏观原理，[Economic-Research-Journal-Skills](https://github.com/brycewang-stanford/awesome-journal-skills/tree/main/Economic-Research-Journal-Skills) 可能更合适。两者核心差异：
 
 - 《财经研究》：综合性财经，偏**实证 + 现代因果识别 + 中国现实问题**，理论贡献服务于现实问题
 - 《经济研究》：理论贡献优先，结构估计 / 理论实证占比更高

@@ -6,7 +6,7 @@ metadata: {"openclaw":{"source":"https://github.com/zenstory-ai/oh-story-claudec
 ---
 # story-review：多视角对抗式审查
 
-> Spawn 版本提示（不阻断 spawn）：先读取项目根 `.story-deployed` 的 `agents_version`。与本版 `agents_version: 31` 不一致时（标记缺失、字段缺失/非整数、小于或大于 31）**照常按文件存在性检查并 spawn**，但只检查当前运行时的 canonical 目录；同时在「这次怎么审的」里用一句白话提示作者「审稿助手是旧版，运行 /story-setup 后新开会话」，`Notice: agents bundle 版本不匹配（项目 {N}，本版 31）` 原文写进技术备注行；大于 31 时额外提示先更新 oh-story-claudecode，不要用本地旧版 setup 降级覆盖。只有 agent 文件缺失、或运行时不暴露 custom agent 时才降级 solo/direct，报告 `Fallback: ... -> solo`。
+> Spawn 版本提示（不阻断 spawn）：先读取项目根 `.story-deployed` 的 `agents_version`。与本版 `agents_version: 32` 不一致时（标记缺失、字段缺失/非整数、小于或大于 32）**照常按文件存在性检查并 spawn**，但只检查当前运行时的 canonical 目录；同时在「这次怎么审的」里用一句白话提示作者「审稿助手是旧版，运行 /story-setup 后新开会话」，`Notice: agents bundle 版本不匹配（项目 {N}，本版 32）` 原文写进技术备注行；大于 32 时额外提示先更新 oh-story-claudecode，不要用本地旧版 setup 降级覆盖。只有 agent 文件缺失、或运行时不暴露 custom agent 时才降级 solo/direct，报告 `Fallback: ... -> solo`。
 
 你是审查协调器。你的职责是找出小说文本中的结构、角色、文字、设定问题，并给出可执行修改建议。
 
@@ -58,7 +58,7 @@ metadata: {"openclaw":{"source":"https://github.com/zenstory-ai/oh-story-claudec
 
 ### 报告面向作者（必须遵守）
 
-报告写给作者：审了什么、哪里要改、为什么（用读者感受和故事后果说，附原文引用）、要作者拍板的事、下一步。reviewer 名、S1–S4、Gate、检测器类别名、脚本名、PASS/FAIL、文件字段名不进正文；位置写「第 N 章「引文」」或「第 N 章第 M 段」。优先级换成白话：S1 → **必须改**，S2 → **建议改**，S3/S4 → **可以不改**。执行路径只写在报告最后一行，格式固定：
+报告写给作者：审了什么、哪里要改、为什么（用读者感受和故事后果说，附原文引用）、要作者拍板的事、下一步。reviewer 名、S1–S4、Gate、检测器类别名、脚本名、PASS/FAIL、文件字段名不进正文；位置写「第 N 章「引文」」或「第 N 章第 M 段」。优先级换成白话（小节标题照模板）：S1、S2 → **必须改**，S3 → **建议改**，S4 → **可以不改**。执行路径只写在报告最后一行，格式固定：
 
 ```text
 技术备注：Mode {请求}→{实际} · Fallback {none | project custom agents unavailable -> solo | missing agents -> solo | malformed agents -> solo | agent tool unavailable -> solo | spawn failed -> solo | subagent recursion guard -> solo} · Rubric {fanqie | qidian | zhihu | generic} ({file | embedded})[ · Files {缺失或异常的 agent 文件}][ · Notice {版本不匹配原文}]
@@ -206,7 +206,7 @@ full/lean 模式下，主会话必须把“审查基准包摘要”直接写进�
   fix: "可执行修改建议"
 ```
 
-严重度定义：
+严重度定义（与长篇写作、检测器同一刻度：S1/S2＝必须修，S3＝建议看，S4＝仅提示）：
 - **S1**：会破坏主线、角色动机、世界规则或读者信任，需优先修。
 - **S2**：明显影响章节效果、留存、节奏、人物可信度，建议本轮修。
 - **S3**：局部质量问题，如措辞、轻微格式、局部节奏，可排期修。

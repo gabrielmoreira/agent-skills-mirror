@@ -1,16 +1,16 @@
 ---
 name: opencli-reader
 description: >
-  Generic read-only fallback for any source opencli covers but this repo has no dedicated
-  reader for — Yahoo Finance, Bloomberg, Reuters, Barchart, Eastmoney, Xueqiu, Sinafinance,
-  Reddit, HackerNews, Substack, Medium, Weibo, Bilibili, Xiaohongshu, Zhihu, arXiv,
-  Google Scholar, Apple Podcasts, Xiaoyuzhou, Spotify, YouTube, Weixin, Amazon, and more.
-  Triggers: "use opencli to read", "grab the frontpage from hackernews",
-  "read reddit r/wallstreetbets", "fetch Eastmoney hot stocks", "pull Xueqiu feed",
-  "get Bloomberg markets headlines", "search arXiv for", any request to read from a site
-  where a specialized skill does not exist but opencli does.
-  FALLBACK — prefer twitter-reader, linkedin-reader, discord-reader, telegram-reader, or
-  yc-reader when the source matches. READ-ONLY — never invoke write operations.
+  Generic read-only fallback for sources opencli supports but no dedicated skill
+  covers: finance sites (Yahoo Finance, Bloomberg, Reuters, Barchart, Eastmoney,
+  Xueqiu, Sinafinance), communities (Reddit, HackerNews, Weibo, Zhihu, Xiaohongshu,
+  Bilibili), newsletters and blogs (Substack, Medium), research (arXiv, Google
+  Scholar), podcasts and video (Apple Podcasts, Xiaoyuzhou, Spotify, YouTube), Weixin,
+  Amazon, and more. Use it when the user asks to read or fetch from such a site — for
+  example r/wallstreetbets, the HackerNews front page, Eastmoney hot stocks, the
+  Xueqiu feed, Bloomberg markets headlines, or an arXiv search — or says "use opencli
+  to read". Prefer twitter-reader, linkedin-reader, discord-reader, telegram-reader,
+  or yc-reader when the source matches. Read-only: never runs write commands.
 ---
 
 # opencli Reader (Generic Fallback, Read-Only)
@@ -114,20 +114,8 @@ The table below is a **shortlist**, not exhaustive — always confirm with `open
 | Xiaohongshu (小红书) | `xiaohongshu` | (see `--help`) |
 | Rednote (小红书 international) | `rednote` | (see `--help` — mirrors `xiaohongshu`) |
 | Zhihu | `zhihu` | (see `--help`) |
-| Tieba (百度贴吧) | `tieba` | (see `--help`) |
-| Hupu (虎扑) | `hupu` | (see `--help`) |
-| Xianyu (闲鱼) | `xianyu` | (see `--help`) |
-| 1688 | `1688` | (see `--help`) |
-| Gitee | `gitee` | (see `--help`) |
-| Quark | `quark` | (see `--help`) |
 | Baidu Scholar | `baidu-scholar` | (see `--help`) |
-| Nowcoder | `nowcoder` | (see `--help`) |
 | Wanfang | `wanfang` | (see `--help`) |
-| Doubao (豆包) | `doubao` | (see `--help`) |
-| Yuanbao (腾讯元宝) | `yuanbao` | (see `--help`) |
-| Google Gemini | `gemini` | (see `--help`) |
-| NotebookLM | `notebooklm` | (see `--help`) |
-| Claude | `claude` | (see `--help`) |
 | 36kr | `36kr` | (see `--help`) |
 | Jike | `jike` | (see `--help`) |
 | Bluesky | `bluesky` | (see `--help`) |
@@ -219,7 +207,7 @@ opencli web read "https://example.com/article" -f json
 2. **Use `-f json`** for programmatic processing.
 3. **Start with a small `--limit`** (10–20) to validate the shape before pulling more.
 4. **Check `strategy` before running a browser-backed adapter** — if the user isn't logged in, a `COOKIE` / `UI` adapter will fail.
-5. **NEVER execute write operations.** Common write command names to avoid across adapters: `post`, `reply`, `comment`, `like`, `unlike`, `upvote`, `save`, `subscribe`, `unsubscribe`, `follow`, `unfollow`, `block`, `unblock`, `delete`, `bookmark`, `unbookmark`, `send`, `create-draft`, `reply-dm`, `accept`. If you're unsure whether a command is read or write, check the `description` in `opencli list -f json`; if it suggests a mutation, skip it.
+5. **Read-only — skip write commands.** Common write command names across adapters: `post`, `reply`, `comment`, `like`, `unlike`, `upvote`, `save`, `subscribe`, `unsubscribe`, `follow`, `unfollow`, `block`, `unblock`, `delete`, `bookmark`, `unbookmark`, `send`, `create-draft`, `reply-dm`, `accept`. If you're unsure whether a command is read or write, check the `description` in `opencli list -f json`; if it suggests a mutation, skip it.
 
 ---
 

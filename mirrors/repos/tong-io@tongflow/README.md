@@ -156,6 +156,7 @@ Every node below is a capability from the ABI, grouped by the four operations. M
 #### Audio
 
 - ✅ **Music generation**: music from text, with optional reference-audio conditioning.
+- ✅ **Audio generation**: one prompt → speech, sound effects, and ambience in a single pass, with optional reference voices.
 - ✅ **Audio understanding**: describe a clip (music, speech, or ambient sound) in text.
 - ✅ **Music repaint**: regenerate a chosen time range of a song.
 - ✅ **Music cover**: restyle a song via a caption and/or a reference track.
@@ -165,7 +166,7 @@ Every node below is a capability from the ABI, grouped by the four operations. M
 - ✅ **Speech recognition**: transcribe speech from audio or video.
 - ✅ **Noise reduction**: denoise audio.
 - ✅ **Speaker diarization**: separate audio by speaker.
-- ⬜ **Voice / timbre replacement**: replace or clone a voice with a reference sample.
+- ✅ **Voice / timbre replacement**: re-voice speech or singing in the timbre of a reference clip.
 - ✅ **Multi-track / vocal-accompaniment separation**: isolate vocals, drums, bass, guitar, and 8 more stems.
 - ✅ **Open-vocabulary sound separation**: describe any sound in words ("dog barking") and split the audio into that sound and everything else.
 
@@ -212,6 +213,7 @@ First-party providers (a lab's own models):
 - [tongflow-api-xai](https://github.com/tong-io/tongflow-api-xai) — xAI Grok with a per-node **model picker**: `gen_text` (Grok 4.x), image understanding, and Grok Imagine text-to-image
 - [tongflow-api-runway](https://github.com/tong-io/tongflow-api-runway) — Runway Dev unified API with a per-node **model picker**: video (Gen-4.5, Gen-4 Turbo, Aleph edit, Act-Two, Seedance, Veo), image (GPT Image 2, Seedream 5, Gemini image 3) and ElevenLabs TTS
 - [tongflow-api-metaso](https://github.com/tong-io/tongflow-api-metaso) — MiniMax H3 video generation hosted by [Metaso](https://metaso.cn/minimax-h3/?s=TongFlow): text / image → video at ¥0.09/s (768P) or ¥0.15/s (2K), through an OpenAI-compatible Videos API
+- [tongflow-api-qwen-audio](https://github.com/tong-io/tongflow-api-qwen-audio) — Alibaba Qwen-Audio-3.1 on Model Studio: TTS-Next renders speech + sound effects + ambience in one pass (also powers voice clone, voice-from-description and emotive speech), TTS-Flash preset voices, and ASR-Flash transcription with timestamps and speaker labels
 
 ### Router plugins
 
@@ -252,6 +254,7 @@ Aggregators — one key, many third-party models across labs:
 - [tongflow-modal-qwen3asr](https://github.com/tong-io/tongflow-modal-qwen3asr) — Qwen3 speech recognition
 - [tongflow-modal-qwen3tts](https://github.com/tong-io/tongflow-modal-qwen3tts) — Qwen3 text-to-speech
 - [tongflow-modal-indextts2](https://github.com/tong-io/tongflow-modal-indextts2) — IndexTTS-2.5 emotive text-to-speech: zero-shot voice cloning (alternative) and emotion-controlled speech from a voice reference
+- [tongflow-modal-seed-vc](https://github.com/tong-io/tongflow-modal-seed-vc) — Seed-VC zero-shot voice conversion: re-voice speech or singing in the timbre of a short reference clip (GPL-3.0)
 - [tongflow-modal-whisper](https://github.com/tong-io/tongflow-modal-whisper) — Whisper speech recognition with timestamps (alternative)
 - [tongflow-modal-moss-transcribe-diarize](https://github.com/tong-io/tongflow-modal-moss-transcribe-diarize) — MOSS-Transcribe-Diarize 0.9B: long-form multi-speaker transcription with timestamps and speaker labels in one pass, plus per-speaker audio tracks (50+ languages, up to ~90 min)
 - [tongflow-modal-ace-step](https://github.com/tong-io/tongflow-modal-ace-step) — ACE-Step 1.5 music suite: text-to-music (sft / base / turbo selectable), repaint, cover, stem extraction, add-track, arrangement completion, music brief, and music understanding

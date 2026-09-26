@@ -66,7 +66,7 @@ Secret storage backend, selected once and frozen in a `OnceLock`:
 
 Workspace dir resolves from `init_workspace`, else `OPENHUMAN_WORKSPACE`, else `~/.openhuman` (or `~/.openhuman-staging` under `OPENHUMAN_APP_ENV=staging`). **In `cfg(test)` builds only**, that rule is bypassed — see the test-isolation note below.
 
-Both file backends keep every secret in one file, so a `set` of one key rewrites all of them. That read-modify-write cycle is guarded by `file_store::lock_for_write` — an in-process mutex is not sufficient, because a desktop core, a `medulla` TUI embedding the same core, and a `cargo test` run that inherited `OPENHUMAN_WORKSPACE` all address the same path.
+Both file backends keep every secret in one file, so a `set` of one key rewrites all of them. That read-modify-write cycle is guarded by `file_store::lock_for_write` — an in-process mutex is not sufficient, because a desktop core, another process embedding the same core, and a `cargo test` run that inherited `OPENHUMAN_WORKSPACE` all address the same path.
 
 ## Dependencies
 

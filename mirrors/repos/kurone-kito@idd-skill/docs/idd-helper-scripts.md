@@ -91,6 +91,262 @@ posting), which does not affect `status`; `resolve-review-thread.mjs`
 returns `mode` (`dry-run`/`apply`) alongside its own separate
 `status?` (`applied`/`failed`).
 
+## Error envelope (kurone-kito/idd-skill#3342)
+
+A migrated helper's failure output has no shared result contract by
+default: a bad flag, a `gh` transport outage, and a genuine gate
+verdict all surface as nothing more than "non-zero exit", which a
+polling caller cannot mechanically tell apart. Two field incidents
+motivate this: a polling loop re-hit the same uncaught
+missing-argument exception for roughly 90 minutes (issue #2707), and
+a transient `gh: HTTP 503` produced output shaped like a gate failure
+(issue #2806). The error envelope is an additive, opt-in fix for
+this, layered on top of every migrated helper's existing stdout,
+stderr text, and exit codes -- none of which change when the
+envelope is left off.
+
+### Opt-in variable
+
+Set `IDD_HELPER_ERROR_ENVELOPE=1` (an environment variable, not a
+flag, so an older or not-yet-migrated helper ignores it instead of
+crashing with `unknown argument: --envelope`). With the variable
+unset, a migrated helper's stdout, stderr, and exit code are
+byte-identical to before migration -- this variable changes nothing
+by default. With it set, a migrated helper appends exactly one line
+to stderr on a non-zero exit: a single-line JSON object, always the
+**last** stderr line, including when the failure is an uncaught
+exception. In that uncaught-exception case specifically, the crash
+text preceding the envelope line is close to, but not literally
+identical to, Node's own default rendering: it prints the error's
+stack (name, message, and every frame), but not Node's additional
+decoration around it (a source-line preview, caret, and version
+footer) -- appending genuinely after that decoration is not possible,
+so this is a deliberate, disclosed trade-off (see
+`RunHelperCliIo.takeOverUncaughtCrash`'s doc comment in
+`src/scripts/helper-cli-runner.mts` for why). A caller parsing the
+envelope line itself is unaffected either way.
+
+**Required call-site pattern.** A migrated helper's own
+`if (import.meta.main)` trigger must call `main`/`runCli` directly,
+never through `runHelperCli`, when the envelope is disabled --
+applying the returned outcome afterward via
+`applyHelperCliOutcomeWhenDisabled` instead of discarding it:
+
+```ts
+if (import.meta.main) {
+  if (isHelperErrorEnvelopeEnabled()) {
+    runHelperCli('helper-name', main);
+  } else {
+    applyHelperCliOutcomeWhenDisabled(main());
+  }
+}
+```
+
+This split exists because `runHelperCli` itself unavoidably adds its
+own frame to the V8-captured stack of any error constructed while
+`main` runs from inside it -- true regardless of `runHelperCli`'s own
+internal structure, since a `try`/`catch` does not add or remove a
+captured stack frame; only the identity of the function that actually
+invokes `main` does. Routing through `runHelperCli` unconditionally,
+even only for its classification bookkeeping, would add that frame to
+a helper's raw, unclassified (`internal`) uncaught-crash text with the
+envelope disabled -- the one failure shape `run-helper.mjs`'s
+shaped-parse-error handling does not intercept and replace outright,
+so this is the one path where the added frame would otherwise be
+directly visible. Discarding `main`'s return value entirely instead of
+calling `applyHelperCliOutcomeWhenDisabled` would be a different
+regression: none of the six first-batch helpers currently returns
+non-zero (each only ever `return`s `0` or throws), but the
+`HelperCliResult` contract itself anticipates one that does, and a
+future helper relying on that would silently exit `0` on its own
+`gate` verdict otherwise.
+
+**Known residual limitation (async helpers whose CLI body was inline
+top-level await).** `discover-readiness-check.mjs`,
+`discover-viability-gate.mjs`, and `discover-roadmap-graph.mjs` had
+their CLI body as literal top-level-await code directly inside
+`if (import.meta.main)` before migration, not a separate function;
+migrating them onto `runHelperCli` required extracting that body into
+a callable `async function main()` so `runHelperCli` (when the
+envelope is enabled) can invoke it and inspect its returned/thrown
+outcome. That extraction, independent of `runHelperCli`'s own added
+frame above, itself adds one `at main (...)` frame to these helpers'
+raw uncaught-crash text relative to their true pre-migration output
+-- unlike `runHelperCli`'s own frame, this one cannot be avoided by a
+call-site pattern change, since `main` must be an invokable function
+for the enabled path to work at all. `discover-roadmap-graph.mjs`
+joined this residual in the discover/claim batch (#3343); the first
+two were already in that shape from the first batch.
+
+The other migrated helpers carry no such residual frame.
+`ci-wait-state.mjs`, `resume-claim-routing.mjs`, and
+`authoring-owner-provenance.mjs` already had `main`/`runCli` as a
+separate, pre-existing function before the first batch, so extracting
+nothing new means adding nothing new. `pre-merge-readiness.mjs` is
+different: its `main()` is _also_ newly extracted by that migration
+(its CLI body was inline before that track too), but its own
+`try`/`catch` (see the function's own code comment) never lets any
+exception escape uncaught in the first place -- there is no raw crash
+text for an extraction-added frame to appear in at all, regardless of
+whether `main` is a separate function or inline code. This is a
+narrower, more fragile invariant than the other three helpers'
+genuine pre-existing-function history: it would stop holding if a
+future edit ever let some error class propagate out of that
+`try`/`catch` uncaught. The discover/claim batch is the same split:
+its sync helpers, plus `discover-orphan-filter.mjs` and
+`clone-lock.mjs`, already had `runCli`. `idd-roadmap-audit-execute.mjs`,
+`suitability-close-execute.mjs`, and `audit-authored-issue.mjs` catch
+every CLI failure before it becomes raw crash text, so an extracted
+`main` adds no visible frame.
+
+### Shape
+
+```json
+{"iddHelperError":{"version":1,"helper":"<name>","kind":"<kind>","exitCode":<n>,"message":"<text>","httpStatus":<n|null>}}
+```
+
+`kind` is one of:
+
+- `usage` -- invalid arguments, before any network call.
+- `not-found` -- a `gh` failure whose derived status is 404.
+- `transport` -- any other `gh` failure: 5xx, 429, 401, 403
+  (including a secondary rate limit), 422 and other 4xx, a timeout or
+  killed child, a failed spawn, or a failure with no derivable status
+  (`httpStatus: null`). A caller that must tell an auth/permission
+  failure from an outage reads `httpStatus`.
+- `gate` -- the helper completed and its verdict is the non-zero
+  exit.
+- `internal` -- an unexpected exception none of the above classifies,
+  so the envelope is always present when opted in.
+
+### Wrapper pass-through
+
+Every packaged command runs through `runHelper` (`src/bin/run-helper.mts`
+/ `bin/run-helper.mjs`), which buffers a failing child's stderr briefly
+and, for a shaped CLI parse error, replaces the captured stderr with
+just the clean one-line message plus a `--help` usage line. That
+replacement re-appends the envelope line afterward when the child wrote
+one, so it stays the last line rather than being dropped along with the
+rest of the raw stderr the shaping discards.
+
+### Shared runner
+
+`src/scripts/helper-cli-runner.mts` (`scripts/helper-cli-runner.mjs`)
+exports `runHelperCli(helperName, main)`. `main` returns an exit code
+(`0` for success, any other value classified `gate`) or a
+pre-classified outcome object, or throws. The runner classifies a
+thrown `CliUsageError` (or a plain `Error` tagged via
+`markCliUsageError`) as `usage`; a `gh-exec.mts`-tagged error, found by
+walking a bounded `.cause` chain (not only the thrown value itself --
+some helpers reach `gh-exec.mts` only through a wrapper like
+`provider-adapter-github.mts`'s `toProviderError`, which preserves the
+original tagged error solely as `.cause`) as `not-found` or `transport`
+(via `deriveGhHttpStatus`); and anything else as `internal`. It keeps
+each helper's existing exit code for every case. `classifyHelperError(error)`
+is also exported directly for a helper whose entrypoint already
+catches errors to render its own compatibility output (see
+`pre-merge-readiness.mjs` below) -- classifying the error itself and
+reporting the result as an outcome object keeps that existing
+rendering unchanged while still giving the runner a real `kind`
+instead of the generic `gate` a returned non-zero exit code would
+otherwise get. `isHelperErrorEnvelopeEnabled()` and
+`applyHelperCliOutcomeWhenDisabled(outcome)` support the required
+call-site pattern described above.
+
+### Migrated helpers (first batch)
+
+The helpers in the tables below are migrated onto `runHelperCli`;
+every other packaged command is unaffected by the variable (it still
+crashes with a raw, unshaped stack trace on failure, exactly as
+before these tracks). For the six first-batch helpers, `exitCode` is
+`0` on success (including `--help`, which exits `0` before
+`runHelperCli` ever sees an outcome) and `1` on any failure; none of
+the six currently returns a non-zero exit code as its own verdict, so
+none of them produces `kind: "gate"` today.
+
+| Helper                           | `usage`                                                              | `not-found` / `transport`                                                                                                                | `internal`              |
+| -------------------------------- | -------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- | ----------------------- |
+| `pre-merge-readiness.mjs`        | missing/invalid `--pr`, `--claim-issue`, or a flag-combination error | a `gh` failure while resolving the repo, PR, or checks (still prints the existing `{"error": ...}` stdout JSON, unchanged by this track) | an unexpected exception |
+| `resume-claim-routing.mjs`       | missing/invalid `--issue`, or an unknown flag                        | a `gh` failure resolving claim state                                                                                                     | an unexpected exception |
+| `authoring-owner-provenance.mjs` | missing/invalid `--issue`, or an unknown flag                        | a `gh` failure resolving comment/marker history                                                                                          | an unexpected exception |
+| `discover-readiness-check.mjs`   | missing `--issue`/`--issues`, or an unknown flag                     | a `gh` failure resolving issue state                                                                                                     | an unexpected exception |
+| `discover-viability-gate.mjs`    | missing `--issue`/`--issues`, or an unknown flag                     | a `gh` failure resolving issue state                                                                                                     | an unexpected exception |
+| `ci-wait-state.mjs`              | missing/invalid `--pr`, or an unknown flag                           | a `gh` failure resolving CI state                                                                                                        | an unexpected exception |
+
+### Migrated helpers (review and merge batch)
+
+Issue #3344 moves the 16 review and merge helpers onto the same
+runner. Documented domain exit codes stay as they were. `kind: "gate"`
+is a completed non-zero verdict (for example `advisory-convergence.mjs`
+under `--assert`, or `idd-merge-execute.mjs` refusing a merge). A
+`--help` exit stays `0` and writes no envelope. `ci-wait-policy.mjs`
+and `review-comment-origin.mjs` also exit `0` with no envelope when
+invoked with no arguments, because that invocation is a successful
+default run rather than a usage error.
+
+| Helper                               | `usage`                                                                                                                   | `not-found` / `transport`                          | `gate`                                         | `internal`              |
+| ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------- | ---------------------------------------------- | ----------------------- |
+| `advisory-comment-debounce.mjs`      | unknown flag exits `1`; missing `--pr` or `--triggered-at` exits `2`                                                      | a `gh` failure collecting comment events           | —                                              | an unexpected exception |
+| `advisory-convergence.mjs`           | missing `--pr`, or an unknown flag (exit `1`)                                                                             | a `gh` failure resolving review state              | `--assert` when the verdict is not ready       | an unexpected exception |
+| `advisory-wait-state.mjs`            | missing `--pr`, or an unknown flag (exit `1`)                                                                             | a `gh` failure resolving advisory wait state       | —                                              | an unexpected exception |
+| `ci-wait-policy.mjs`                 | an unknown flag (exit `1`); no arguments is a successful exit `0`                                                         | a `gh` failure resolving a `--run-id`              | —                                              | an unexpected exception |
+| `rerun-advisory-convergence.mjs`     | missing `--pr`, or an unknown flag (exit `1`)                                                                             | a `gh` failure resolving rerun state               | `--apply` reports a per-instance failure       | an unexpected exception |
+| `review-activity-snapshot.mjs`       | missing `--pr`, or an unknown flag (exit `1`)                                                                             | a `gh` failure resolving review activity           | —                                              | an unexpected exception |
+| `review-comment-origin.mjs`          | an unknown flag (exit `1`); no arguments is a successful exit `0`                                                         | —                                                  | —                                              | an unexpected exception |
+| `review-disposition-verify.mjs`      | missing or invalid `--items`, or an unknown flag (exit `1`)                                                               | —                                                  | —                                              | an unexpected exception |
+| `resolve-review-thread.mjs`          | missing `--pr` or `--comment-id`, or an unknown flag (exit `1`)                                                           | a `gh` failure resolving the review thread         | `--apply` cannot complete the mutation         | an unexpected exception |
+| `disposition-non-review-notices.mjs` | missing `--pr`, or an unknown flag (exit `1`)                                                                             | a `gh` failure resolving notices                   | `--apply` posts nothing or loses the claim     | an unexpected exception |
+| `branch-conflict-state.mjs`          | missing `--pr`, or an unknown flag (exit `1`)                                                                             | a `gh` failure resolving the pull request          | —                                              | an unexpected exception |
+| `idd-merge-execute.mjs`              | missing `--pr` or `--claim-id` (exit `1`); an unrecognized flag is ignored and that same missing-`--pr` check still fires | a `gh` failure during collection or merge          | a gate refuses the merge                       | an unexpected exception |
+| `audit-pr-cleanup.mjs`               | an unknown flag or a bad flag combination (exit `2`)                                                                      | a `gh` failure resolving the repository (exit `2`) | a batch report contains a failed PR (exit `1`) | an unexpected exception |
+| `merged-pr-feedback-sweep.mjs`       | an unknown flag (exit `1`)                                                                                                | a `gh` failure resolving the repository            | —                                              | an unexpected exception |
+| `external-check-waiver.mjs`          | missing `--pr`, or an unknown flag (exit `1`)                                                                             | a `gh` failure resolving waiver state              | the waiver verdict is not applicable           | an unexpected exception |
+| `local-validation-evidence.mjs`      | missing `--pr`, or an unknown flag (exit `1`)                                                                             | a `gh` failure resolving evidence                  | the evidence verdict is not applicable         | an unexpected exception |
+
+### Migrated helpers (discover and claim batch)
+
+Issue #3343 moves the 16 discover and claim helpers onto the same
+runner. Argument errors are `usage`. A `gh` failure is `not-found` or
+`transport` the same way as the first batch. A returned non-zero exit
+code is `gate`: `claim-lock.mjs` keeps exit `2` for an `--acquire`
+lock collision and for a `--backfill-tokens` result that is not
+`backfilled`; `clone-lock.mjs` keeps exit `3` for an `--exec` acquire
+timeout and passes a wrapped command's own non-zero status through as
+`gate` too; `suitability-close-execute.mjs` keeps exit `1` when the
+verdict is not ready (or, under `--apply`, not closed);
+`idd-roadmap-audit-execute.mjs` keeps the helper's own non-zero
+verdict exit code; `audit-authored-issue.mjs` keeps exit `1` for a
+completed audit that did not pass and exit `2` for argument errors
+(`usage`, still printed as `error: <message>` with no stack). The
+other eleven return `0` on success and throw on failure, so they do
+not produce `gate` today. `discover-orphan-filter.mjs` with no
+arguments reaches `gh repo view` and is `transport`, not `usage`.
+
+| Helper                             | `usage`                                                                     | `gate`                                                                         |
+| ---------------------------------- | --------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| `discover-orphan-filter.mjs`       | an unknown flag or an invalid `--pr`                                        | none today (no arguments is `transport`)                                       |
+| `discover-roadmap-graph.mjs`       | a missing `--issue`, combining it with `--all-roadmaps`, or an unknown flag | none today                                                                     |
+| `discover-shared-file-overlap.mjs` | missing candidates, an invalid flag value, or an unknown flag               | none today                                                                     |
+| `select-desynced-index.mjs`        | a missing `--token` or `--band-size`, or an unknown flag                    | none today                                                                     |
+| `claim-approval-gate.mjs`          | a missing `--issue`, or an unknown flag                                     | none today                                                                     |
+| `claim-lock.mjs`                   | a missing mode or required flag, or an unknown flag                         | exit `2` on an `--acquire` collision or a non-`backfilled` `--backfill-tokens` |
+| `clone-lock.mjs`                   | a missing mode, `--agent-id`, or command, or an unknown flag                | exit `3` on an acquire timeout; a wrapped command's own non-zero status        |
+| `phase-id-resolver.mjs`            | a missing `--phase-id`, or an unknown flag                                  | none today                                                                     |
+| `resume-route-selection.mjs`       | a missing `--issue`, or an unknown flag                                     | none today                                                                     |
+| `stalled-session-quiet-check.mjs`  | a missing `--pr`, or an unknown flag                                        | none today                                                                     |
+| `suitability-triage.mjs`           | a missing or conflicting input mode, or an unknown flag                     | none today                                                                     |
+| `suitability-close-execute.mjs`    | a missing `--issue` or `--apply` pair, or an unknown flag                   | exit `1` when the verdict is not ready, or not closed under `--apply`          |
+| `audit-authored-issue.mjs`         | a missing `--shape` or body source, or an unknown flag (exit `2`)           | exit `1` when the audit report did not pass                                    |
+| `idd-roadmap-audit-execute.mjs`    | a missing `--roadmap`, an invalid flag, or an unknown flag                  | the helper's own non-zero verdict exit code                                    |
+| `branch-name.mjs`                  | a missing `--number` or `--title`, or an unknown flag                       | none today                                                                     |
+| `emit-marker.mjs`                  | a missing `--type` or flag value, or an unknown flag                        | none today                                                                     |
+
+`tests/helper-cli-contract.test.mts` (source repo only) enumerates
+every `bin/idd-*.mjs` and checks this table mechanically against a
+committed fixture (`tests/fixtures/helper-cli-contract.json`), so it
+cannot silently drift out of sync with which helpers are actually
+migrated.
+
 ## Contents API permission-masking probe (kurone-kito/idd-skill#2716)
 
 `loadTrustedIddConfig` (`src/scripts/idd-config.mts`) fetches
@@ -435,7 +691,7 @@ in this preamble, since the fallback differs per helper.
   `collaboratorTrustEnabled`. Config-listed actors therefore widen
   trust explicitly while collaborator-permission trust stays opt-in
   (the `IDD_TRUST_COLLABORATOR_MARKERS` environment variable or the
-  `trustCollaboratorMarkers` config field)
+  `markerTrust.allowCollaboratorMarkers` config field)
 - `scripts/sweep-authoring-markers.mjs` (#2935) for the fetch-driven
   hide-on-supersede sweep the issue-authoring contract's Stage 2 release
   flow depends on: given one or more `--issue` targets, it fetches each
@@ -1083,22 +1339,31 @@ The adopted helper boundaries are intentionally narrow:
   unreplied comments, reviewer states, advisory state, CI, claim
   validation, and `waiverEvidence` (parsed external-check waiver comments
   classified as `valid`, `expired`, `wrongHead`, `wrongClaim`,
-  `unauthorized`, `malformed`, `notConfigured`, `modeDisabled`, or
-  `edited` — `notConfigured` for a valid waiver naming a check the
-  policy never declared waivable in `ciGate.externalChecks.waivable`,
-  `modeDisabled` (`#2046`) for an otherwise-valid, configured-waivable
-  waiver while `ciGate.externalCheckWaivers.mode` is not
-  `maintainer-authorized` (schema default: `disabled`) — mirroring
-  `advisory-convergence.mjs`'s own mode guard, so a `waivable` list left
-  over from a prior `maintainer-authorized` configuration can never make
-  this gate report a check covered on its own; `edited` (`#3246`) for a
-  marker-shaped waiver comment whose GraphQL `lastEditedAt` is a
-  parseable timestamp (`editState: 'edited'`) or could not be resolved
-  (`editState: 'unknown'`) — checked before every other classification,
-  so a body-edited waiver never reaches `valid` regardless of author,
-  HEAD, claim, or expiry; only a `valid` waiver for a configured-waivable
-  check is reported with `coveredByWaiver: true` and treated as passing
-  by the CI gate)
+  `unauthorized`, `insufficientAuthority`, `malformed`, `notConfigured`,
+  `modeDisabled`, or `edited` — `notConfigured` for a valid waiver naming
+  a check the policy never declared waivable in
+  `ciGate.externalChecks.waivable`, `modeDisabled` (`#2046`) for an
+  otherwise-valid, configured-waivable waiver while
+  `ciGate.externalCheckWaivers.mode` is not `maintainer-authorized`
+  (schema default: `disabled`) — mirroring `advisory-convergence.mjs`'s
+  own mode guard, so a `waivable` list left over from a prior
+  `maintainer-authorized` configuration can never make this gate report a
+  check covered on its own; `insufficientAuthority` (`#3250`) for a
+  waiver whose author IS a trusted marker actor but whose live
+  collaborator-permission outcome does not satisfy the configured
+  `ciGate.externalCheckWaivers.authorityPolicy` — for example a
+  Write-only collaborator admitted to the trusted set only via
+  `markerTrust.allowCollaboratorMarkers`, under the default
+  `owners-and-maintainers-only` policy; never populated for the `#2657`
+  self-referential-bootstrap-auto marker, whose trust comes from
+  run-id/event-type/HEAD verification, not a collaborator role; `edited`
+  (`#3246`) for a marker-shaped waiver comment whose GraphQL
+  `lastEditedAt` is a parseable timestamp (`editState: 'edited'`) or
+  could not be resolved (`editState: 'unknown'`) — checked before every
+  other classification, so a body-edited waiver never reaches `valid`
+  regardless of author, HEAD, claim, or expiry; only a `valid` waiver for
+  a configured-waivable check is reported with `coveredByWaiver: true`
+  and treated as passing by the CI gate)
 - (`#2021`) a `valid` waiver for the `idd-advisory-convergence` selector
   specifically only becomes `coveredByWaiver: true` once the SAME
   deadline/terminal precondition `advisory-convergence.mjs`'s own gate
@@ -1305,8 +1570,10 @@ The adopted helper boundaries are intentionally narrow:
   (dry-run); add `--body "<disposition>" --apply --claim-issue <n>
   --claim-id <id>` to post the reply and resolve the thread. Optional
   `--owner` / `--repo` / `--agent-id` / `--trusted-marker-logins`. For a
-  claimless PR (`closingIssuesReferences` empty), pass `--claimless`
-  instead of `--claim-issue`/`--claim-id` (#2616, mirrors
+  claimless PR (`closingIssuesReferences` empty), or one carrying a
+  valid out-of-loop marker (kurone-kito/idd-skill#3328 -- see the
+  [Out-of-loop marker contract](#out-of-loop-marker-contract)), pass
+  `--claimless` instead of `--claim-issue`/`--claim-id` (#2616, mirrors
   `pre-merge-readiness.mjs`'s `--claimless`, #2017).
 - Maps `--comment-id` (the review comment's REST id) to its owning review
   thread by matching it against the `databaseId` of the comments inside each
@@ -1334,7 +1601,8 @@ The adopted helper boundaries are intentionally narrow:
   resolve (scoped to trusted marker authors, aborting on a targeting
   `forced-handoff`), and binds the mutation to the claimed PR by requiring
   the active claim's branch to equal the PR's head branch. `--claimless`
-  itself fails closed against a non-empty `closingIssuesReferences`.
+  itself fails closed against a non-empty `closingIssuesReferences`
+  unless a valid out-of-loop marker applies (kurone-kito/idd-skill#3328).
   GraphQL `errors` fail fast rather than masquerading as a missing thread,
   and a partial apply (reply posted, resolve not confirmed) still reports
   the posted `replyId`.
@@ -1411,10 +1679,13 @@ default `instructions-only` profile keep using the written shell /
     of resolving one, while still applying the same HEAD, live-check,
     selector, expiry, and authority checks as normal mode -- the helper
     blocks with a clear reason if the PR turns out to have a resolvable
-    active claim after all, since a `none` waiver only ever satisfies
-    the consumer-side gate (`summarizeExternalCheckWaivers` in
-    `protocol-helpers.mts`) when no claim resolves there, so posting one
-    against a claimed PR would just be rejected `wrongClaim`.
+    active claim after all. kurone-kito/idd-skill#3330: a `none` binding
+    is also blocked unless the PR is out of loop
+    (`out-of-loop-claimless` or `out-of-loop-authorized`). A PR that
+    closes an issue and has no active claim is in-loop; the dry-run
+    planner names that verdict and tells the operator to bind
+    `--issue` / `--claim-id`. A missing verdict fails closed the same
+    way. A PR with no closing references stays `out-of-loop-claimless`.
   - for the `idd-advisory-convergence` selector specifically (#2328), the
     report carries `advisoryConvergenceWaiverPrecondition`, built by the
     same shared function `pre-merge-readiness` publishes it from, and a
@@ -1461,6 +1732,14 @@ default `instructions-only` profile keep using the written shell /
     failure reports `reconcileInconclusive` and still renders the applied
     result with its comment url. Only the pre-write read fails closed, where
     an unreadable list could actually cause the duplicate.
+  - linked-issue claim markers are trusted with the same set the gates
+    build (`pre-merge-readiness`, `advisory-convergence`): the viewer
+    login, then an explicit flag, then `IDD_TRUSTED_MARKER_ACTORS`, then
+    `trustedMarkerActors` from `.github/idd/config.json` at the PR's base
+    ref (the live default branch when that ref is empty), plus the
+    gates' collaborator-marker trust rule. The repository owner is not
+    trusted unless listed or is the viewer. That config is never read
+    from the local worktree.
 
 ### External-check waiver contract
 
@@ -1522,12 +1801,16 @@ Interpretation rules:
   (kurone-kito/idd-skill#3173).
 - `claim-id` accepts the case-insensitive literal sentinel `none`
   (#1905) alongside an arbitrary claim id, declaring a deliberately
-  claimless waiver. It satisfies the claim-binding check only when the
-  gate independently confirms no claim resolves for the PR (an empty
-  active claim id) -- on a PR with a resolvable active claim, `none` is
-  never accepted and still fails closed to the same wrong-claim
-  rejection as any other mismatched claim id; this never weakens the
-  #1077 fail-closed-on-empty-claim guarantee for a non-`none` claim id.
+  claimless waiver. It satisfies the claim-binding check only when no
+  real active claim resolves (an empty id, or the synthetic claimless
+  id `none`) AND the PR is out of loop
+  (`out-of-loop-claimless` or `out-of-loop-authorized`,
+  kurone-kito/idd-skill#3330). An omitted membership verdict is
+  in-loop, so a released claim cannot keep a `none` waiver: that marker
+  is `wrongClaim`. On a PR with a real active claim, `none` is never
+  accepted. This never weakens the #1077 fail-closed-on-empty-claim
+  guarantee for a non-`none` claim id. The one-hop predecessor
+  exception (#2080) stays on the real-claim branch only.
 - A valid waiver can apply only to checks listed in
   `ciGate.externalChecks.waivable` and only when
   `ciGate.externalCheckWaivers.mode` enables maintainer authorization.
@@ -1669,10 +1952,14 @@ idd-external-check-waiver --pr 123 \
   `--claimless`, so a fully claimless allowlisted PR under the default
   `advisoryWait.convergenceScope: "all-prs"` (no linked issue, e.g. a
   human-authored checker-file edit outside IDD) would otherwise be
-  permanently unable to post this waiver. Safe because the consumer's own
-  `none`-sentinel match (below) only ever succeeds when it independently
-  finds no active claim either, so this can never paper over a genuine
-  claim mismatch. Restricted to the zero-candidate case specifically, not
+  permanently unable to post this waiver. That fallback now also
+  requires the PR to be out of loop (kurone-kito/idd-skill#3330). A PR
+  with no closing references stays `out-of-loop-claimless` and keeps
+  today's post. A PR that closes an issue and has no active claim is
+  in-loop, so the auto-waiver is not posted: under the default
+  `all-prs` scope, a human-authored PR that closes an issue, has no
+  claim, and edits a self-referential trigger file loses this bypass.
+  Restricted to the zero-candidate case specifically, not
   an AMBIGUOUS one (more than one candidate resolves, Copilot review, PR
   #2895): some claim genuinely exists there, just not uniquely
   identified from this input, and this file's own claim resolution
@@ -1739,8 +2026,11 @@ needs a live per-marker run lookup no other consumer needs):
 4. that same response's `event` field is exactly `pull_request_target`,
    never `pull_request` -- closing the gap where a same-repository PR
    editing the workflow YAML can still trigger a `pull_request`-triggered
-   run of it during a `pull_request`/`pull_request_target` migration
-   window (kurone-kito/idd-skill#2764 Phase 1);
+   run of it: the workflow's own `on:` block declares only
+   `pull_request_target` (kurone-kito/idd-skill#2764 Phase 2), but a PR
+   can still reintroduce a `pull_request` trigger to its own copy of that
+   YAML, and this condition rejects a marker citing a run from that
+   reintroduced trigger the same way it always did;
 5. the PR's own changed files (fetched independently at consume time,
    never trusted from the posting job's own internal check) include at
    least one path from the trigger-file allowlist above
@@ -1861,6 +2151,126 @@ this repository already configures is the documented human off-ramp
 for precisely this situation, not a gap this mechanism itself needs to
 close.
 
+### Out-of-loop marker contract
+
+kurone-kito/idd-skill#3328 unifies the two definitions of "does this PR
+run outside the IDD claim loop" that `pre-merge-readiness.mjs`'s
+`--claimless` (#2017) and `resolve-review-thread.mjs`'s
+`isClaimlessEligible` (#2616) each used to answer independently: a PR
+with a closing issue reference, but no resolvable active claim on it,
+was refused outright by both, wrongly blocking the documented
+issue-mediated bootstrap PR
+(`idd-template/docs/onboarding/issue-mediated-bootstrap.md`), which
+closes its bootstrap issue but is never claimed. A Groom-hearing
+ruling recorded a maintainer decision: recognize the bootstrap PR as
+out-of-loop-authorized only with explicit, dedicated marker evidence,
+never merely an absent claim.
+
+`classifyPrLoopMembership()` (`protocol-helpers.mts`) is the single
+shared classifier both consumers now call. It returns one of three
+verdicts:
+
+- `in-loop` -- an ordinary claimed-loop PR (or a fail-closed default:
+  unreadable closing references, or an unresolvable/active claim on any
+  closing issue).
+- `out-of-loop-claimless` -- the PR has no closing issue references at
+  all (#2017, unchanged).
+- `out-of-loop-authorized` -- the PR has closing references, none of
+  them carries a resolvable active claim, and the PR's own comments
+  include a valid marker (below).
+
+The marker itself, posted as a PR conversation comment:
+
+```md
+<!-- idd-out-of-loop: {agent-id} pr:{pr-number} reason:bootstrap at:{iso8601} -->
+
+_{agent-id}: this PR runs outside the IDD claim loop -- IDD automation marker. Do not edit._
+```
+
+A marker is **valid** only when **all** of the following hold -- any
+other case leaves the PR `in-loop`:
+
+- Its first line matches the grammar exactly, **including
+  `reason:bootstrap`** -- the grammar accepts no other `reason:` token;
+  the ruling authorizes this marker only for the documented bootstrap
+  PR, not as a general-purpose claim-loop opt-out.
+- It is a comment on **that PR's own** conversation (`pr:` equals the
+  PR number the classifier is evaluating).
+- Its GitHub author login is in the caller's already-resolved trusted
+  marker login set -- never the embedded `{agent-id}` text, which is
+  untrusted marker-body content like any other field.
+- It passes `isTrustEvidenceComment` (`protocol-helpers.mts`,
+  kurone-kito/idd-skill#3246): trusted author **and** edit state
+  `unedited`. An edited comment, or one whose edit state is unknown
+  because the caller never resolved it (`lastEditedAt` absent), is
+  invalid -- fail closed, the same rule
+  `idd-external-check-waiver` evidence above already applies.
+
+Post it with the profile-selected `post-idd-marker` command -- see
+[Post operational markers](#post-operational-markers-write-side) above
+for the source-repo / package-manager / ephemeral-npx forms;
+source-repo example: `node scripts/post-idd-marker.mjs --type
+out-of-loop --target pr <n> --agent-id <id> --timestamp <iso8601>
+--apply`. `pr:` is derived from `--target pr <n>`'s own positional
+number, never a separately typed flag -- letting the operator type it
+twice would risk it silently disagreeing with the actual posting
+destination -- and `reason` is always the literal `bootstrap` the
+renderer hardcodes, never
+user-supplied.
+
+`MARKER_HIDE_POLICY` (`marker-helpers.mts`) classifies
+`<!-- idd-out-of-loop:` `excluded` -- it is live authorization
+evidence re-read on every `--claimless` call, like the
+`idd-external-check-waiver` marker above, so F4's generic
+hide-at-post-time sweep must never minimize it as `OUTDATED`. It is
+deliberately absent from `IDD_AGENT_DERIVED_MARKERS` for the same
+reason `idd-external-check-waiver` is: this is authorization evidence,
+not necessarily an IDD-agent-authored operational comment.
+
+**Widened `--claimless` eligibility.** Both consumers accept
+`out-of-loop-claimless` and `out-of-loop-authorized`; only `in-loop`
+still fails closed:
+
+- `pre-merge-readiness.mjs --claimless`, when the PR has closing
+  references, now reads each closing issue's comments to resolve its
+  claim state (`present`, `none`, or `unknown` on any read failure --
+  `unknown` fails closed the same way `present` does), resolves the
+  trusted marker login set the same way its claimed path does, and
+  reads the PR's own comments with edit state
+  (`listWorkItemComments(..., { includeEditState: true })`) before
+  classifying. An `out-of-loop-authorized` PR carries no claim-derived
+  deliberate closing set, so the `closingSet` gate's expected set
+  becomes the PR's own live `closingIssuesReferences` (same-repo
+  numbers only) instead of empty for that one path --
+  `extractSameRepoClosingIssueNumbers()` (`protocol-helpers.mts`)
+  shares the repository-matching rule `computeClosingSetEvidence`
+  (`supersession-detection.mts`) already implements, so neither
+  consumer re-derives it. `missing` is then structurally empty on that
+  path: the marker authorizes exactly the PR's own declared closes.
+- `resolve-review-thread.mjs`'s `isClaimlessEligible` keeps its
+  zero-closing-refs fast path exactly as `#2616` designed it -- no
+  viewer or trust resolution at all, preserving the guarantee for a
+  credential that cannot resolve a viewer identity. A non-empty
+  closing-reference set resolves trusted logins the same way its
+  claimed path does (falling back to this session's own viewer login)
+  before classifying; any failure on that branch -- an unresolvable
+  viewer identity, a closing-issue or PR-comment read failure -- fails
+  closed to "not eligible" rather than a partial read manufacturing a
+  false accept.
+- **The classifier's own `closingIssueNumbers` input is never the bare
+  same-repo extraction.** Both consumers derive it through
+  `resolveClosingIssueNumbersForClassifier()` (`protocol-helpers.mts`)
+  instead: a genuinely empty raw `closingIssuesReferences` still
+  reports `[]` (`out-of-loop-claimless`, unchanged), but a _non-empty_
+  raw array whose same-repo extraction comes back empty -- every entry
+  cross-repo or otherwise unparseable -- reports `null` (unreadable),
+  which the classifier fails closed to `in-loop` for. This reproduces
+  the pre-#3328 behavior exactly: both prior definitions refused ANY
+  non-empty raw `closingIssuesReferences` regardless of repository, so
+  a same-repo-only filter applied directly would otherwise silently
+  widen eligibility for a cross-repo-only (or all-malformed) closing
+  reference -- caught live during this issue's own C1 self-review pass.
+
 ### Provider health helper
 
 - Command: `node scripts/provider-health.mjs [--owner <owner>] [--repo <repo>]`
@@ -1936,7 +2346,11 @@ close.
     so a post-recovery sweep can re-request its advisory review.
     `--apply` refuses when no declaration is active for `--service`.
   - `--list-advanced`: lists every recorded advancement from trusted
-    markers on the declaration-target issue. Entries are **HEAD-pinned**
+    markers on the declaration-target issue. The trusted set matches
+    the gates: viewer login, then flag, then `IDD_TRUSTED_MARKER_ACTORS`,
+    then `trustedMarkerActors` from the live default branch, plus the
+    gates' collaborator-marker trust rule, with no implicit repository
+    owner. Entries are **HEAD-pinned**
     -- a later push to the same pull request produces a distinct entry
     rather than overwriting the earlier one, so the sweep re-requests
     review per recorded HEAD.
@@ -2064,7 +2478,12 @@ close.
     ([above](#provider-outage-declaration-helper)) exists for
     `--service` (default `ci-actions`). Recency is measured from the
     marker comment's own `created_at` against `localValidationEvidence.maxAge`
-    (default `PT4H`), never an embedded timestamp.
+    (default `PT4H`), never an embedded timestamp. Actor trust for those
+    markers matches the gates: viewer login, then `--trusted-marker-logins`,
+    then `IDD_TRUSTED_MARKER_ACTORS`, then `trustedMarkerActors` from the
+    PR's base ref, plus the gates' collaborator-marker trust rule, with
+    no implicit repository owner. That config is never read from the
+    local worktree.
   - `--record --covers <names> --outcome <pass|fail>`: renders and (with
     `--apply`) posts the evidence marker to the pull request.
 - **Hide-at-post-time (#2755).** After a successful `--record --apply`
@@ -3386,9 +3805,12 @@ reflexively as any other CLI option.
   compatible), and
   `--trusted-marker-logins "<trusted-login-1>,<trusted-login-2>"`.
   `--claimless` (#2017) is the no-issue alternative: it cannot combine
-  with `--claim-issue` or `--claim-id`, and it is honored only when the
-  PR's `closingIssuesReferences` is empty (otherwise fail closed and
-  pass `--claim-issue`). It skips claim fetch/revalidation and emits
+  with `--claim-issue` or `--claim-id`, and it is honored when the PR's
+  `closingIssuesReferences` is empty, or (kurone-kito/idd-skill#3328)
+  when the PR carries a valid, trusted, unedited out-of-loop marker --
+  see the [Out-of-loop marker contract](#out-of-loop-marker-contract)
+  above (otherwise fail closed and pass `--claim-issue`). It skips
+  claim fetch/revalidation and emits
   the not-applicable / unclaimed ownership shape (claim-id `none`); CI,
   review, advisory, thread, and branch-currency gates still run.
   `idd-merge-execute` also requires `--claim-id` (or the deprecated
@@ -3404,6 +3826,29 @@ reflexively as any other CLI option.
   `threads`, `unrepliedComments`, `reviewerStates`,
   `advisoryWait` (including the effective advisory policy fields), `ci`,
   `claim`, `branchCurrency`, and optional `dispositionEvidence`
+- **Secondary-bot settlement is fail-closed** (#3261). When
+  `advisoryWait.secondaryQuietWindow`/`secondaryBotLogin(s)` are
+  configured, `secondaryQuietWindow` only shortens to the short settled
+  buffer once a configured secondary bot's latest comment for the current
+  HEAD is a RECOGNIZED COMPLETED shape for that bot's identity:
+  `coderabbitai` settles on a clean summary walkthrough carrying none of
+  the in-progress, paused, or skip-review markers; `chatgpt-codex-connector`
+  settles only when its review-status table's row for the current HEAD
+  reads Completed. Every other NON-TERMINAL case reports pending, not
+  settled — a CodeRabbit reply that is not a summary walkthrough, a Codex
+  status still reading Running for this HEAD, and any other comment at all
+  from a secondary-bot identity this classifier has no completion
+  recognizer for — so the full configured window still applies. A
+  terminal rate-limit/skip-review/paused notice still reports `declined`
+  regardless of identity, exactly as before this change; only the
+  previously-permissive fallback for a non-terminal, non-notice comment
+  is now fail-closed. This is a
+  deliberate cost: an unrecognized identity or an in-progress review can
+  never shortcut the wait, even though it also means one slow or
+  unrecognized secondary bot delays the whole fold (every configured login
+  must independently settle or decline before
+  `foldSecondaryAdvisoryReviewSettlements` reports anything but the full
+  window).
 - `branchCurrency` (#1513) pairs the PR's live `mergeable` /
   `mergeStateStatus` with whether the base branch's protection or ruleset
   requires an up-to-date head before merge. `requiresUpToDateHead` is
@@ -3495,18 +3940,46 @@ reflexively as any other CLI option.
   omitted, when no such downgrade occurred) -- `computePreMergeReadinessBlockers`
   uses it (alongside `ci.preDowngradeStatus` below) to name the
   identity-unresolved cause in the `ci` blocker detail.
-- `ci.preDowngradeStatus` (kurone-kito/idd-skill#2919, round 5) is the
-  dedup+waiver-adjusted `ci.status` classification captured BEFORE either
-  the source-pinned or identity-unresolved downgrade above could narrow
-  it -- `"success"` here means every OTHER required check was already
-  fully resolved as passing, so any non-success final `ci.status` can only
-  be attributed to those two named downgrades. `computePreMergeReadinessBlockers`
+- `ci.nonTargetEventRequiredCheckNames` (kurone-kito/idd-skill#3256) is a
+  DISTINCT downgrade from `ci.identityUnresolvedRequiredCheckNames` above,
+  for the same `idd-advisory-convergence` check name: required check names
+  whose green state was downgraded to `ci.status: "unknown"` because this
+  collection pass resolved every live instance's producer identity AND
+  triggering event (`checkSuite.workflowRun.event`) cleanly, but found no
+  pass-equivalent instance triggered by `pull_request_target` among them.
+  This is what makes a same-repository PR's own reintroduced `pull_request`
+  trigger (see condition 4 of the self-referential-bootstrap-auto waiver
+  above) unable to satisfy the required check even when its own instance
+  passes -- it can still BLOCK the check (GitHub's own branch-protection
+  Ruleset requires every same-named live instance to pass), it just never
+  SATISFIES it. A `workflow_call` caller (the template's own
+  `idd-advisory-convergence.yml` supports being called this way) records
+  its OWN triggering event on the calling workflow run, not
+  `pull_request_target` itself, so it counts toward this check only when
+  the CALLER was itself triggered by `pull_request_target` (confirmed
+  against this source repository's own `pnpm-boundary-node22-floor.yml`
+  invoking `pnpm-boundary.yml` via `uses:`: the resulting check-run's own
+  `checkSuite.workflowRun` resolves to the CALLING run --
+  `{event: "pull_request", file: {path: ".github/workflows/pnpm-boundary-node22-floor.yml"}}`
+  -- never a separate `"workflow_call"` event or the called file's own
+  path). Evidence only
+  (empty array, never omitted, when no such downgrade occurred) --
+  `computePreMergeReadinessBlockers` uses it (alongside
+  `ci.preDowngradeStatus` below) to name this cause in the `ci` blocker
+  detail.
+- `ci.preDowngradeStatus` (kurone-kito/idd-skill#2919, round 5;
+  kurone-kito/idd-skill#3256 added the third downgrade) is the
+  dedup+waiver-adjusted `ci.status` classification captured BEFORE the
+  source-pinned, identity-unresolved, or non-target-event downgrade above
+  could narrow it -- `"success"` here means every OTHER required check was
+  already fully resolved as passing, so any non-success final `ci.status`
+  can only be attributed to those three named downgrades. `computePreMergeReadinessBlockers`
   reads this to decide whether a genuinely separate, concurrent CI failure
   (an unrelated required check that is actually failing/pending/missing)
   also needs naming in the `ci` blocker detail, rather than letting a
-  pinned/identity-unresolved cause's own detail text silently replace it.
-  `"unknown"` when no required checks are configured, mirroring
-  `ci.status`'s own initial default in that case.
+  pinned/identity-unresolved/non-target-event cause's own detail text
+  silently replace it. `"unknown"` when no required checks are configured,
+  mirroring `ci.status`'s own initial default in that case.
 - Authoritative phase role: the live `pre-merge-readiness` run on the
   current HEAD is the **authoritative source for the final-merge CI and
   activity fields** at F2/F3. The `review-activity-snapshot` helper builds
@@ -3836,6 +4309,36 @@ reflexively as any other CLI option.
   additionally carries `route` / `blockingCount` / full missing-item lists
   for the F2 merge gate) — this gate's `dispositionEvidence` never gates
   anything by itself.
+- **Verified-cosmetic-edit dating (`#3269`)**: `hasFreshDisposition`, and
+  every diagnostic sharing `effectiveThreadCommentActivityAt`, dates a
+  review-thread comment by content activity rather than always
+  preferring `updatedAt` — `updatedAt` also moves without any real
+  content change (e.g. IDD's own hide-on-supersede minimization,
+  kurone-kito/idd-skill#3173). A comment with an explicit GraphQL
+  `lastEditedAt: null` dates by `createdAt`. An edited comment dates by
+  the time of its own last revision that is NOT a verified cosmetic
+  edit, falling back to `createdAt` when every revision was cosmetic. A
+  revision is verified cosmetic only when its editor is the comment's
+  own advisory-bot author; after stripping HTML comments its visible
+  text equals the previous revision's, optionally followed by one
+  appended `✅ Addressed in commit(s) <sha>…` resolution line; and the
+  only HTML-comment difference (if any) is CodeRabbit's own
+  `auto-generated comment`→`auto-generated reply` marker rewrite.
+  Anything else — a substantive text change, a deleted or `null`
+  revision, an incomplete `userContentEdits` page (`totalCount` above
+  what was fetched), a non-bot editor, or a failed fetch — keeps
+  `updatedAt` dating. The bounded GraphQL `userContentEdits` fetch this
+  needs runs ONLY in the two merge-gate collectors —
+  `pre-merge-readiness.mjs`'s F2 evidence collector and this file's own
+  required-check collector — and only for advisory-bot thread comments
+  whose `lastEditedAt` postdates their thread's latest IDD disposition;
+  every other consumer (`review-activity-snapshot.mjs`, the merged-PR
+  feedback sweep, `audit-pr-cleanup.mjs`) never fetches it, so an edited
+  comment keeps `updatedAt` dating there, unchanged.
+  `missingThreads[].inPlaceEditOnly` / `soleCauseInPlaceEditOnly` stay a
+  separate, coarser, revision-content-blind heuristic
+  (`classifyThreadAckOnlyPostDisposition`), unaffected by this dating
+  fix.
 - Reuses the existing evidence modules — `isCopilotReviewerLogin` /
   `readAdvisoryPrimaryBotLogin`, `resolveAdvisoryBotLogins`,
   `resolveTrustedMarkerActors`, `summarizeDispositionEvidenceForGate`,

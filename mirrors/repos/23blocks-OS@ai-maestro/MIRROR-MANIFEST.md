@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `23blocks-OS/ai-maestro` — 26 default patterns, 38 followed patterns, 48 file(s) materialized.
+Mirror of `23blocks-OS/ai-maestro` — 26 default patterns, 41 followed patterns, 51 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `23blocks-OS/ai-maestro` — 26 default patterns, 38 followed patterns
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 38 |
-| Files         | 48 |
+| Followed pats | 41 |
+| Files         | 51 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -69,6 +69,9 @@ Mirror of `23blocks-OS/ai-maestro` — 26 default patterns, 38 followed patterns
 - `backlog/F010-cross-session-inbox-delivery.md`
 - `backlog/F011-agent-browser.md`
 - `backlog/F012-living-avatars.md`
+- `backlog/F013-stall-alarm.md`
+- `backlog/F014-ambiguity-aware-restore.md`
+- `backlog/F015-amp-topics.md`
 - `backlog/B001-multi-client-terminal-sizing.md`
 - `backlog/B002-wterm-and-ws-updates.md`
 - `backlog/B003-option-click-missing-enter.md`
@@ -125,25 +128,28 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 27 | → | [`backlog/F010-cross-session-inbox-delivery.md`](backlog/F010-cross-session-inbox-delivery.md) |
 | 28 | → | [`backlog/F011-agent-browser.md`](backlog/F011-agent-browser.md) |
 | 29 | → | [`backlog/F012-living-avatars.md`](backlog/F012-living-avatars.md) |
-| 30 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 31 | → | [`docs/AGENT-COMMUNICATION-ARCHITECTURE.md`](docs/AGENT-COMMUNICATION-ARCHITECTURE.md) |
-| 32 | → | [`docs/AGENT-INTELLIGENCE.md`](docs/AGENT-INTELLIGENCE.md) |
-| 33 | → | [`docs/AGENT-MESSAGING-GUIDE.md`](docs/AGENT-MESSAGING-GUIDE.md) |
-| 34 | → | [`docs/CEREBELLUM.md`](docs/CEREBELLUM.md) |
-| 35 | → | [`docs/CHAT-ARCHITECTURE.md`](docs/CHAT-ARCHITECTURE.md) |
-| 36 | → | [`docs/CONCEPTS.md`](docs/CONCEPTS.md) |
-| 37 | → | [`docs/ECOSYSTEM.md`](docs/ECOSYSTEM.md) |
-| 38 | → | [`docs/LONG-TERM-MEMORY.md`](docs/LONG-TERM-MEMORY.md) |
-| 39 | → | [`docs/NETWORK-ACCESS.md`](docs/NETWORK-ACCESS.md) |
-| 40 | → | [`docs/OPERATIONS-GUIDE.md`](docs/OPERATIONS-GUIDE.md) |
-| 41 | → | [`docs/QUICKSTART.md`](docs/QUICKSTART.md) |
-| 42 | → | [`docs/REQUIREMENTS.md`](docs/REQUIREMENTS.md) |
-| 43 | → | [`docs/SETUP-TUTORIAL.md`](docs/SETUP-TUTORIAL.md) |
-| 44 | → | [`docs/TROUBLESHOOTING.md`](docs/TROUBLESHOOTING.md) |
-| 45 | → | [`docs/USE-CASES.md`](docs/USE-CASES.md) |
-| 46 | → | [`docs/WINDOWS-INSTALLATION.md`](docs/WINDOWS-INSTALLATION.md) |
-| 47 | → | [`README.md`](README.md) |
-| 48 | → | [`SECURITY.md`](SECURITY.md) |
+| 30 | → | [`backlog/F013-stall-alarm.md`](backlog/F013-stall-alarm.md) |
+| 31 | → | [`backlog/F014-ambiguity-aware-restore.md`](backlog/F014-ambiguity-aware-restore.md) |
+| 32 | → | [`backlog/F015-amp-topics.md`](backlog/F015-amp-topics.md) |
+| 33 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 34 | → | [`docs/AGENT-COMMUNICATION-ARCHITECTURE.md`](docs/AGENT-COMMUNICATION-ARCHITECTURE.md) |
+| 35 | → | [`docs/AGENT-INTELLIGENCE.md`](docs/AGENT-INTELLIGENCE.md) |
+| 36 | → | [`docs/AGENT-MESSAGING-GUIDE.md`](docs/AGENT-MESSAGING-GUIDE.md) |
+| 37 | → | [`docs/CEREBELLUM.md`](docs/CEREBELLUM.md) |
+| 38 | → | [`docs/CHAT-ARCHITECTURE.md`](docs/CHAT-ARCHITECTURE.md) |
+| 39 | → | [`docs/CONCEPTS.md`](docs/CONCEPTS.md) |
+| 40 | → | [`docs/ECOSYSTEM.md`](docs/ECOSYSTEM.md) |
+| 41 | → | [`docs/LONG-TERM-MEMORY.md`](docs/LONG-TERM-MEMORY.md) |
+| 42 | → | [`docs/NETWORK-ACCESS.md`](docs/NETWORK-ACCESS.md) |
+| 43 | → | [`docs/OPERATIONS-GUIDE.md`](docs/OPERATIONS-GUIDE.md) |
+| 44 | → | [`docs/QUICKSTART.md`](docs/QUICKSTART.md) |
+| 45 | → | [`docs/REQUIREMENTS.md`](docs/REQUIREMENTS.md) |
+| 46 | → | [`docs/SETUP-TUTORIAL.md`](docs/SETUP-TUTORIAL.md) |
+| 47 | → | [`docs/TROUBLESHOOTING.md`](docs/TROUBLESHOOTING.md) |
+| 48 | → | [`docs/USE-CASES.md`](docs/USE-CASES.md) |
+| 49 | → | [`docs/WINDOWS-INSTALLATION.md`](docs/WINDOWS-INSTALLATION.md) |
+| 50 | → | [`README.md`](README.md) |
+| 51 | → | [`SECURITY.md`](SECURITY.md) |
 
 ---
 

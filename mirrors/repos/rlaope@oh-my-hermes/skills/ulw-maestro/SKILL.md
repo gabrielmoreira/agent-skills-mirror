@@ -1,6 +1,6 @@
 ---
 name: "ulw-maestro"
-description: "[omh] Maestro - prepares the handoff for the coding agent you already chose, composing its prompt from that agent's own installed skills; never selects the owner and never executes the work itself. Use when the user says: ulw-maestro, coding handoff, prepare the handoff, prepare a coding handoff, hand off the coding work, external executor handoff, handoff prompt, delegation prompt."
+description: "[omh] Coding owner already chosen, handoff pending: prepares the handoff for the coding agent you already chose, composing its prompt from that agent's own installed skills; never selects the owner and never executes the work itself. Use when the user says: ulw-maestro, coding handoff, prepare the handoff, prepare a coding handoff, hand off the coding work, external executor handoff, handoff prompt, delegation prompt."
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, execution]

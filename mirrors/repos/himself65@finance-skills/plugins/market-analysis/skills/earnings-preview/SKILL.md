@@ -1,21 +1,14 @@
 ---
 name: earnings-preview
 description: >
-  Generate a pre-earnings briefing for any stock using Yahoo Finance data.
-  Use this skill whenever the user wants to prepare for an upcoming earnings report,
-  understand what analysts expect, review a company's beat/miss track record,
-  or get a quick overview before an earnings call.
-  Triggers include: "earnings preview for AAPL", "what to expect from TSLA earnings",
-  "MSFT reports next week", "earnings preview", "pre-earnings analysis",
-  "what are analysts expecting for NVDA", "earnings estimates for",
-  "will GOOGL beat earnings", "earnings beat/miss history",
-  "upcoming earnings", "before earnings", "earnings setup",
-  "consensus estimates", "earnings whisper", "EPS expectations",
-  "what's the street expecting", "earnings season preview",
-  any mention of preparing for or previewing an earnings report,
-  or any request to understand expectations ahead of a company's earnings date.
-  Always use this skill when the user mentions a ticker in context of upcoming earnings,
-  even if they don't say "preview" explicitly.
+  Build a pre-earnings briefing for a stock from Yahoo Finance data (yfinance): the
+  upcoming report date and timing, consensus EPS and revenue estimates with their range,
+  the beat/miss track record, analyst ratings and price targets, and what to watch in
+  the print. Use this skill whenever the user is preparing for an upcoming earnings
+  report or asks what the street expects — consensus or whisper numbers, EPS
+  expectations, whether a company will beat, an earnings setup, or an earnings-season
+  preview — and whenever a ticker comes up in the context of upcoming earnings, even
+  without the word "preview". For results that are already out, use earnings-recap.
 ---
 
 # Earnings Preview Skill
@@ -51,14 +44,14 @@ Extract the ticker symbol from the user's request. If they mention a company nam
 
 ```python
 import yfinance as yf
-import pandas as pd
-from datetime import datetime
 
 ticker = yf.Ticker("AAPL")  # replace with actual ticker
 
 # --- Core data ---
 info = ticker.info
 calendar = ticker.calendar
+earnings_dates = ticker.get_earnings_dates(limit=8)  # report timestamps; the upcoming one has no Reported EPS yet
+hist = ticker.history(period="1mo")                  # recent price performance
 
 # --- Estimates ---
 earnings_est = ticker.earnings_estimate
@@ -81,9 +74,10 @@ quarterly_cashflow = ticker.quarterly_cashflow
 | Data Source | Key Fields | Purpose |
 |---|---|---|
 | `calendar` | Earnings Date, Ex-Dividend Date | When earnings are and key dates |
+| `get_earnings_dates()` | Earnings Date (tz-aware timestamp), EPS Estimate, Reported EPS | Report timing: the upcoming row has no Reported EPS; a time at or after 16:00 ET means after the close, earlier times mean before the open |
 | `earnings_estimate` | avg, low, high, numberOfAnalysts, yearAgoEps, growth (for 0q, +1q, 0y, +1y) | Consensus EPS expectations |
 | `revenue_estimate` | avg, low, high, numberOfAnalysts, yearAgoRevenue, growth | Revenue expectations |
-| `earnings_history` | epsEstimate, epsActual, epsDifference, surprisePercent | Beat/miss track record |
+| `earnings_history` | epsEstimate, epsActual, epsDifference, surprisePercent | Beat/miss track record (indexed by fiscal quarter-end, oldest first) |
 | `analyst_price_targets` | current, low, high, mean, median | Street price targets |
 | `recommendations` | Buy/Hold/Sell counts | Sentiment distribution |
 | `quarterly_income_stmt` | TotalRevenue, NetIncome, BasicEPS | Recent trajectory |
@@ -92,73 +86,21 @@ quarterly_cashflow = ticker.quarterly_cashflow
 
 ## Step 3: Build the Earnings Preview
 
-Assemble the data into a structured briefing. The goal is to give the user everything they need in one glance.
+The briefing should let the user see the setup at a glance. Cover these five areas; if the data for one is missing, say so in a line rather than dropping it.
 
-### Section 1: Earnings Date & Key Info
-
-Report the upcoming earnings date from `calendar`. Include:
-- Company name, ticker, sector, industry
-- Upcoming earnings date (and whether it's before/after market)
-- Current stock price and recent performance (1-week, 1-month)
-- Market cap
-
-### Section 2: Consensus Estimates
-
-Present the current quarter estimates from `earnings_estimate` and `revenue_estimate`:
-
-| Metric | Consensus | Low | High | # Analysts | Year Ago | Growth |
-|---|---|---|---|---|---|---|
-| EPS | $1.42 | $1.35 | $1.50 | 28 | $1.26 | +12.7% |
-| Revenue | $94.3B | $92.1B | $96.8B | 25 | $89.5B | +5.4% |
-
-If the estimate range is unusually wide (high/low spread > 20% of consensus), note that as a sign of high uncertainty.
-
-### Section 3: Historical Beat/Miss Track Record
-
-From `earnings_history`, show the last 4 quarters:
-
-| Quarter | EPS Est | EPS Actual | Surprise | Beat/Miss |
-|---|---|---|---|---|
-| Q3 2024 | $1.35 | $1.40 | +3.7% | Beat |
-| Q2 2024 | $1.30 | $1.33 | +2.3% | Beat |
-| Q1 2024 | $1.52 | $1.53 | +0.7% | Beat |
-| Q4 2023 | $2.10 | $2.18 | +3.8% | Beat |
-
-Summarize: "AAPL has beaten EPS estimates in 4 of the last 4 quarters by an average of 2.6%."
-
-### Section 4: Analyst Sentiment
-
-From `recommendations` and `analyst_price_targets`:
-
-- Current recommendation distribution (Strong Buy / Buy / Hold / Sell / Strong Sell)
-- Price target range: low, mean, median, high vs. current price
-- Implied upside/downside from mean target
-
-### Section 5: Key Metrics to Watch
-
-Based on the quarterly financials, highlight 3-5 things the market will focus on:
-- Revenue growth trend (accelerating or decelerating?)
-- Margin trajectory (expanding or compressing?)
-- Any notable line items that changed significantly quarter-over-quarter
-- Segment breakdowns if available in the data
-
-This section requires judgment — think about what matters for this specific company/sector.
+1. **Date and context** — company, ticker, sector and industry; the report date and whether it lands before the open or after the close; current price with 1-week and 1-month performance; market cap.
+2. **Consensus estimates** — a table of this quarter's EPS and revenue consensus with low, high, analyst count, year-ago value, and expected growth. A high/low spread wider than about 20% of consensus signals unusual uncertainty; say so when you see it.
+3. **Beat/miss track record** — the last four quarters of estimated vs actual EPS with surprise %, summarized as a beat count and average surprise.
+4. **Analyst sentiment** — the rating distribution (strong buy through strong sell) and the price-target range (low, mean, median, high), with the implied upside or downside from the mean target.
+5. **What to watch** — the few things the market will focus on in this print, chosen for this company and sector: revenue growth accelerating or decelerating, margins expanding or compressing, line items that moved sharply quarter over quarter, and segment trends where the data has them. This is the judgment part of the briefing.
 
 ---
 
 ## Step 4: Respond to the User
 
-Present the preview as a clean, structured briefing:
+Open with the headline — the report date and a one-line read of the setup — then the five areas above, using tables where they help. Close with a short read of the overall setup drawn from the estimates, track record, and sentiment, framed as what the street expects rather than a recommendation.
 
-1. **Lead with the headline**: "AAPL reports earnings on [date]. Here's what to expect."
-2. **Show all 5 sections** with clear headers and tables
-3. **End with a brief summary**: 2-3 sentences capturing the overall setup (bullish/bearish lean based on estimates, track record, and sentiment — frame as "the street expects" not personal recommendation)
-
-### Caveats to include
-- Estimates can change up until the report date
-- Historical beats don't guarantee future beats
-- Yahoo Finance data may lag real-time consensus by a few hours
-- This is not financial advice
+Include the caveats that apply: estimates can change until the report date, past beats don't guarantee future ones, Yahoo Finance consensus can lag real-time providers by a few hours, and this is not financial advice.
 
 ---
 

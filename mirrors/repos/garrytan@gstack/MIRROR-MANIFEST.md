@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `garrytan/gstack` — 26 default patterns, 7 followed patterns, 78 file(s) materialized.
+Mirror of `garrytan/gstack` — 26 default patterns, 7 followed patterns, 79 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `garrytan/gstack` — 26 default patterns, 7 followed patterns, 78 fil
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 7 |
-| Files         | 78 |
+| Files         | 79 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -89,60 +89,61 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 22 | ✓ | [`docs/howto-diagrams-and-formats.md`](docs/howto-diagrams-and-formats.md) |
 | 23 | ✓ | [`docs/OVERLAY_BENCHMARK_CONTRACT.md`](docs/OVERLAY_BENCHMARK_CONTRACT.md) |
 | 24 | ✓ | [`docs/skills.md`](docs/skills.md) |
-| 25 | ✓ | [`document-generate/SKILL.md`](document-generate/SKILL.md) |
-| 26 | ✓ | [`document-release/SKILL.md`](document-release/SKILL.md) |
-| 27 | ✓ | [`freeze/SKILL.md`](freeze/SKILL.md) |
-| 28 | ✓ | [`gstack-upgrade/SKILL.md`](gstack-upgrade/SKILL.md) |
-| 29 | ✓ | [`gstack/llms.txt`](gstack/llms.txt) |
-| 30 | ✓ | [`guard/SKILL.md`](guard/SKILL.md) |
-| 31 | ✓ | [`health/SKILL.md`](health/SKILL.md) |
-| 32 | ✓ | [`investigate/SKILL.md`](investigate/SKILL.md) |
-| 33 | ✓ | [`ios-clean/SKILL.md`](ios-clean/SKILL.md) |
-| 34 | ✓ | [`ios-design-review/SKILL.md`](ios-design-review/SKILL.md) |
-| 35 | ✓ | [`ios-fix/SKILL.md`](ios-fix/SKILL.md) |
-| 36 | ✓ | [`ios-qa/SKILL.md`](ios-qa/SKILL.md) |
-| 37 | ✓ | [`ios-sync/SKILL.md`](ios-sync/SKILL.md) |
-| 38 | ✓ | [`land-and-deploy/SKILL.md`](land-and-deploy/SKILL.md) |
-| 39 | ✓ | [`landing-report/SKILL.md`](landing-report/SKILL.md) |
-| 40 | ✓ | [`learn/SKILL.md`](learn/SKILL.md) |
-| 41 | ✓ | [`make-pdf/SKILL.md`](make-pdf/SKILL.md) |
-| 42 | ✓ | [`model-overlays/claude.md`](model-overlays/claude.md) |
-| 43 | ✓ | [`model-overlays/gemini.md`](model-overlays/gemini.md) |
-| 44 | ✓ | [`office-hours/SKILL.md`](office-hours/SKILL.md) |
-| 45 | ✓ | [`open-gstack-browser/SKILL.md`](open-gstack-browser/SKILL.md) |
-| 46 | ✓ | [`openclaw/skills/gstack-openclaw-ceo-review/SKILL.md`](openclaw/skills/gstack-openclaw-ceo-review/SKILL.md) |
-| 47 | ✓ | [`openclaw/skills/gstack-openclaw-investigate/SKILL.md`](openclaw/skills/gstack-openclaw-investigate/SKILL.md) |
-| 48 | ✓ | [`openclaw/skills/gstack-openclaw-office-hours/SKILL.md`](openclaw/skills/gstack-openclaw-office-hours/SKILL.md) |
-| 49 | ✓ | [`openclaw/skills/gstack-openclaw-retro/SKILL.md`](openclaw/skills/gstack-openclaw-retro/SKILL.md) |
-| 50 | ✓ | [`pair-agent/SKILL.md`](pair-agent/SKILL.md) |
-| 51 | ✓ | [`plan-ceo-review/SKILL.md`](plan-ceo-review/SKILL.md) |
-| 52 | ✓ | [`plan-design-review/SKILL.md`](plan-design-review/SKILL.md) |
-| 53 | ✓ | [`plan-devex-review/SKILL.md`](plan-devex-review/SKILL.md) |
-| 54 | ✓ | [`plan-eng-review/SKILL.md`](plan-eng-review/SKILL.md) |
-| 55 | ✓ | [`plan-tune/SKILL.md`](plan-tune/SKILL.md) |
-| 56 | ✓ | [`qa-only/SKILL.md`](qa-only/SKILL.md) |
-| 57 | ✓ | [`qa/SKILL.md`](qa/SKILL.md) |
-| 58 | ✓ | [`retro/SKILL.md`](retro/SKILL.md) |
-| 59 | ✓ | [`review/SKILL.md`](review/SKILL.md) |
-| 60 | ✓ | [`scrape/SKILL.md`](scrape/SKILL.md) |
-| 61 | ✓ | [`setup-browser-cookies/SKILL.md`](setup-browser-cookies/SKILL.md) |
-| 62 | ✓ | [`setup-deploy/SKILL.md`](setup-deploy/SKILL.md) |
-| 63 | ✓ | [`setup-gbrain/SKILL.md`](setup-gbrain/SKILL.md) |
-| 64 | ✓ | [`ship/SKILL.md`](ship/SKILL.md) |
-| 65 | ✓ | [`SKILL.md`](SKILL.md) |
-| 66 | ✓ | [`skillify/SKILL.md`](skillify/SKILL.md) |
-| 67 | ✓ | [`spec/SKILL.md`](spec/SKILL.md) |
-| 68 | ✓ | [`sync-gbrain/SKILL.md`](sync-gbrain/SKILL.md) |
-| 69 | ✓ | [`test/fixtures/context-bill/tree-a/alpha/SKILL.md`](test/fixtures/context-bill/tree-a/alpha/SKILL.md) |
-| 70 | ✓ | [`test/fixtures/context-bill/tree-a/beta/SKILL.md`](test/fixtures/context-bill/tree-a/beta/SKILL.md) |
-| 71 | ✓ | [`unfreeze/SKILL.md`](unfreeze/SKILL.md) |
-| 72 | → | [`docs/BROWSER_INTERNALS.md`](docs/BROWSER_INTERNALS.md) |
-| 73 | → | [`docs/CHANGELOG_STYLE.md`](docs/CHANGELOG_STYLE.md) |
-| 74 | → | [`docs/howto-ios-testing-with-gstack.md`](docs/howto-ios-testing-with-gstack.md) |
-| 75 | → | [`docs/OPENCLAW_PUBLISHING.md`](docs/OPENCLAW_PUBLISHING.md) |
-| 76 | → | [`docs/PROJECT_STRUCTURE.md`](docs/PROJECT_STRUCTURE.md) |
-| 77 | → | [`docs/SLOP_SCAN.md`](docs/SLOP_SCAN.md) |
-| 78 | → | [`docs/TESTING_INTERNALS.md`](docs/TESTING_INTERNALS.md) |
+| 25 | ✓ | [`docs/TEST_PORTFOLIO.md`](docs/TEST_PORTFOLIO.md) |
+| 26 | ✓ | [`document-generate/SKILL.md`](document-generate/SKILL.md) |
+| 27 | ✓ | [`document-release/SKILL.md`](document-release/SKILL.md) |
+| 28 | ✓ | [`freeze/SKILL.md`](freeze/SKILL.md) |
+| 29 | ✓ | [`gstack-upgrade/SKILL.md`](gstack-upgrade/SKILL.md) |
+| 30 | ✓ | [`gstack/llms.txt`](gstack/llms.txt) |
+| 31 | ✓ | [`guard/SKILL.md`](guard/SKILL.md) |
+| 32 | ✓ | [`health/SKILL.md`](health/SKILL.md) |
+| 33 | ✓ | [`investigate/SKILL.md`](investigate/SKILL.md) |
+| 34 | ✓ | [`ios-clean/SKILL.md`](ios-clean/SKILL.md) |
+| 35 | ✓ | [`ios-design-review/SKILL.md`](ios-design-review/SKILL.md) |
+| 36 | ✓ | [`ios-fix/SKILL.md`](ios-fix/SKILL.md) |
+| 37 | ✓ | [`ios-qa/SKILL.md`](ios-qa/SKILL.md) |
+| 38 | ✓ | [`ios-sync/SKILL.md`](ios-sync/SKILL.md) |
+| 39 | ✓ | [`land-and-deploy/SKILL.md`](land-and-deploy/SKILL.md) |
+| 40 | ✓ | [`landing-report/SKILL.md`](landing-report/SKILL.md) |
+| 41 | ✓ | [`learn/SKILL.md`](learn/SKILL.md) |
+| 42 | ✓ | [`make-pdf/SKILL.md`](make-pdf/SKILL.md) |
+| 43 | ✓ | [`model-overlays/claude.md`](model-overlays/claude.md) |
+| 44 | ✓ | [`model-overlays/gemini.md`](model-overlays/gemini.md) |
+| 45 | ✓ | [`office-hours/SKILL.md`](office-hours/SKILL.md) |
+| 46 | ✓ | [`open-gstack-browser/SKILL.md`](open-gstack-browser/SKILL.md) |
+| 47 | ✓ | [`openclaw/skills/gstack-openclaw-ceo-review/SKILL.md`](openclaw/skills/gstack-openclaw-ceo-review/SKILL.md) |
+| 48 | ✓ | [`openclaw/skills/gstack-openclaw-investigate/SKILL.md`](openclaw/skills/gstack-openclaw-investigate/SKILL.md) |
+| 49 | ✓ | [`openclaw/skills/gstack-openclaw-office-hours/SKILL.md`](openclaw/skills/gstack-openclaw-office-hours/SKILL.md) |
+| 50 | ✓ | [`openclaw/skills/gstack-openclaw-retro/SKILL.md`](openclaw/skills/gstack-openclaw-retro/SKILL.md) |
+| 51 | ✓ | [`pair-agent/SKILL.md`](pair-agent/SKILL.md) |
+| 52 | ✓ | [`plan-ceo-review/SKILL.md`](plan-ceo-review/SKILL.md) |
+| 53 | ✓ | [`plan-design-review/SKILL.md`](plan-design-review/SKILL.md) |
+| 54 | ✓ | [`plan-devex-review/SKILL.md`](plan-devex-review/SKILL.md) |
+| 55 | ✓ | [`plan-eng-review/SKILL.md`](plan-eng-review/SKILL.md) |
+| 56 | ✓ | [`plan-tune/SKILL.md`](plan-tune/SKILL.md) |
+| 57 | ✓ | [`qa-only/SKILL.md`](qa-only/SKILL.md) |
+| 58 | ✓ | [`qa/SKILL.md`](qa/SKILL.md) |
+| 59 | ✓ | [`retro/SKILL.md`](retro/SKILL.md) |
+| 60 | ✓ | [`review/SKILL.md`](review/SKILL.md) |
+| 61 | ✓ | [`scrape/SKILL.md`](scrape/SKILL.md) |
+| 62 | ✓ | [`setup-browser-cookies/SKILL.md`](setup-browser-cookies/SKILL.md) |
+| 63 | ✓ | [`setup-deploy/SKILL.md`](setup-deploy/SKILL.md) |
+| 64 | ✓ | [`setup-gbrain/SKILL.md`](setup-gbrain/SKILL.md) |
+| 65 | ✓ | [`ship/SKILL.md`](ship/SKILL.md) |
+| 66 | ✓ | [`SKILL.md`](SKILL.md) |
+| 67 | ✓ | [`skillify/SKILL.md`](skillify/SKILL.md) |
+| 68 | ✓ | [`spec/SKILL.md`](spec/SKILL.md) |
+| 69 | ✓ | [`sync-gbrain/SKILL.md`](sync-gbrain/SKILL.md) |
+| 70 | ✓ | [`test/fixtures/context-bill/tree-a/alpha/SKILL.md`](test/fixtures/context-bill/tree-a/alpha/SKILL.md) |
+| 71 | ✓ | [`test/fixtures/context-bill/tree-a/beta/SKILL.md`](test/fixtures/context-bill/tree-a/beta/SKILL.md) |
+| 72 | ✓ | [`unfreeze/SKILL.md`](unfreeze/SKILL.md) |
+| 73 | → | [`docs/BROWSER_INTERNALS.md`](docs/BROWSER_INTERNALS.md) |
+| 74 | → | [`docs/CHANGELOG_STYLE.md`](docs/CHANGELOG_STYLE.md) |
+| 75 | → | [`docs/howto-ios-testing-with-gstack.md`](docs/howto-ios-testing-with-gstack.md) |
+| 76 | → | [`docs/OPENCLAW_PUBLISHING.md`](docs/OPENCLAW_PUBLISHING.md) |
+| 77 | → | [`docs/PROJECT_STRUCTURE.md`](docs/PROJECT_STRUCTURE.md) |
+| 78 | → | [`docs/SLOP_SCAN.md`](docs/SLOP_SCAN.md) |
+| 79 | → | [`docs/TESTING_INTERNALS.md`](docs/TESTING_INTERNALS.md) |
 
 ---
 

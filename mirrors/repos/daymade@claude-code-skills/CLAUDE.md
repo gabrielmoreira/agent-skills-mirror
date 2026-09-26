@@ -95,11 +95,19 @@ Own the literal path, the way `SYSTEM_GIT` is owned. Explicit maintenance,
 retrieval, validation, and test commands may still use their declared `uv`
 project; the runtime boundary is the rule. The concrete prior-work wrapper and
 profile-converger registration live in their respective Skills rather than
-being copied here. For a LaunchAgent blocked by TCC, route to
-[`macos-permissions`](daymade-macos/macos-permissions/SKILL.md) to identify the
-permission subject and verify a protected read in the real background job.
-An owning installer may support an already authorized launcher; that does not
-make a package-manager dispatcher the default for Python hooks.
+being copied here. An owning installer may support an already authorized
+launcher; that does not make a package-manager dispatcher the default for
+Python hooks.
+
+### Background Full Disk Access repair
+
+When a LaunchAgent cannot read protected data, enter
+[`macos-permissions`](daymade-macos/macos-permissions/SKILL.md) and its
+[automated repair SOP](daymade-macos/macos-permissions/references/automated-full-disk-access.md).
+Identify the actual permission subject and reuse an existing usable grant when
+the owning installer supports it. After repair, restart the job and verify a
+protected read in its real background context; a GUI switch or foreground read
+alone is not completion.
 
 Treat `daymade-skill/skill-creator` as a locked uv project. Run its bundled Python tools from that directory with `uv run --frozen`; the project-local `.venv` is isolated from caller projects while uv's shared cache supplies the pinned packages. Do not reintroduce per-call `--with` overlays for dependencies already in its `pyproject.toml`.
 
@@ -441,6 +449,7 @@ If it fires, fix the issue — do NOT use `--no-verify` to bypass.
 - Move detailed documentation to `references/` files
 - Avoid duplication between SKILL.md and references
 - Keep `tunnel-doctor` environment-neutral: it may teach discovery and presence checks, but exact private node labels, billing identities, endpoints, credentials, and current chain state remain in the owning private configuration/Skill and must not be copied into this public repository.
+- Kimi desktop input and tunnel diagnostics follow the current host-specific procedures in `kimi-use/references/driving-kimi-app.md` and `tunnel-doctor/SKILL.md`; a proxy bypass recommendation requires compared path evidence.
 - Scripts must be executable with proper shebangs
 - All bundled resources must be referenced in SKILL.md
 

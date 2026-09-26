@@ -1,16 +1,12 @@
 ---
 name: yc-reader
 description: >
-  Look up Y Combinator companies, batches, and startup ecosystem data using the yc-oss API (read-only).
-  Use this skill whenever the user wants to research YC-backed startups, find companies in a specific
-  batch or industry, check which YC companies are hiring, explore top YC companies, or analyze
-  startup trends by sector or tag.
-  Triggers include: "YC companies in fintech", "who's in the latest YC batch", "YC startups hiring",
-  "top Y Combinator companies", "find YC companies tagged AI", "W25 batch", "S24 companies",
-  "YC stats", "Y Combinator portfolio", "startup research", "which YC companies do X",
-  "venture research on YC", any mention of Y Combinator, YC batch, or YC-backed companies
-  in the context of startup research, venture analysis, or market intelligence.
-  This is a read-only data source — the API is a static JSON dataset updated daily.
+  Look up Y Combinator companies and batches from the public yc-oss API, a static JSON
+  dataset refreshed daily: company profiles, batch rosters (e.g. W25, S24), companies
+  by industry or tag, top companies, who is hiring, founder-diversity lists, and
+  overall YC stats. Use this skill whenever the user asks about YC-backed startups, a
+  YC batch, YC companies in a sector or tag or that are hiring, the Y Combinator
+  portfolio, or startup and venture research that draws on YC data. Read-only.
 ---
 
 # Y Combinator Reader (Read-Only)
@@ -126,15 +122,7 @@ curl -s https://yc-oss.github.io/api/companies/all.json | jq '[.[] | select(.nam
 
 ## Step 4: Present the Results
 
-After fetching data, present it clearly for startup/venture research:
-
-1. **Summarize key data** — company name, one-liner, batch, team size, status, and website
-2. **Highlight hiring status** — note which companies are actively hiring (growth signal)
-3. **Include website URLs** when the user might want to visit the company
-4. **For batch listings**, summarize the batch size and notable companies
-5. **For industry/tag queries**, highlight trends (how many companies, which are top/hiring)
-6. **For research queries**, provide aggregate stats (count, common industries, team size distribution)
-7. **Note the data freshness** — the API updates daily, so data is near-real-time
+Summarize rather than dump JSON. For each company, give the name, one-liner, batch, team size, status, hiring status (a growth signal), and website. For a batch, lead with its size and notable companies; for an industry or tag, the count and which companies are top or hiring; for research questions, aggregate stats such as counts, common industries, and team-size distribution. Mention that the dataset refreshes daily.
 
 ---
 

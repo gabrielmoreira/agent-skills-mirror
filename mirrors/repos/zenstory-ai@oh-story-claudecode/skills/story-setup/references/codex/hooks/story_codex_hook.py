@@ -167,7 +167,7 @@ def hook_context(event: str, text: str) -> dict[str, Any]:
     return {"hookSpecificOutput": {"hookEventName": event, "additionalContext": text}}
 
 
-# ── 轻量确定性网（与 templates/hooks/check-prose-after-write.sh 内嵌 python 同实现，保持 parity）──
+# ── 轻量确定性网（与 JS 共享核 story_hook_core.js proseNetFindings 同实现，保持 parity）──
 # 只兜「硬信号」（漏跑最伤、退化模型自己发现不了的）：截断 / 生成拒绝语·AI 自指 /
 # 工程词漏进正文 / 紧邻整行复读。不依赖 check-degeneration.js，是独立的轻量网。
 # 收尾标点集与深扫 oracle check-degeneration.js 的 findTruncation 对齐（[。！？!?…”"』」）)】]）：
@@ -206,7 +206,7 @@ def _net_is_skippable(stripped: str) -> bool:
 # advisory 检测归 check-ai-patterns.js 深扫。全部正则线性扫描、量词有界。台词/弹幕/
 # 系统播报不算：逐行把成对引号段等长问号占位（见 _toxic_mask_quoted 为何用问号而不是句号），
 # 占位后仍残留引号字符（跨行对话/未闭合）的行整行跳过。
-# js↔py 由 scripts/check-hook-regex-sync.sh（规范串逐字锁）与
+# js↔py 由 scripts/check-hook-regex-sync.sh（常量表逐字锁）与
 # scripts/test-prose-net-parity.sh（fixture 逐字 diff）锁 parity。
 # 单引号须成对；词内撇号（don't、O’Connor）不作为开闭引号。
 _TOXIC_QUOTE_SPANS = [re.compile(r"「[^」]*」"), re.compile(r"『[^』]*』"), re.compile(r"【[^】]*】"), re.compile(r"“[^”]*”"), re.compile(r"(?<![A-Za-z0-9_])‘(?:[^’]|(?<=[A-Za-z0-9_])’(?=[A-Za-z0-9_]))*(?!(?<=[A-Za-z0-9_])’[A-Za-z0-9_])’"), re.compile(r'"[^"]*"'), re.compile(r"(?<![A-Za-z0-9_])'(?:[^']|(?<=[A-Za-z0-9_])'(?=[A-Za-z0-9_]))*(?!(?<=[A-Za-z0-9_])'[A-Za-z0-9_])'")]
@@ -985,7 +985,8 @@ def _command_substitutions(command: str) -> list[str]:
     return substitutions
 
 
-def _redirect_targets(command: str) -> list[str]:
+def _redirect_targets(command: str, keep_all: bool = False) -> list[str]:
+    # keep_all：与 JS 核 redirectTargets 同构，有 cd 时先取全部目标，接上 cd 目录后再判正文。
     targets: list[str] = []
     quote = ""
     escaped = False
@@ -1018,7 +1019,7 @@ def _redirect_targets(command: str) -> list[str]:
         while command[cursor:cursor + 1] in (" ", "\t"):
             cursor += 1
         target, cursor = _read_shell_word(command, cursor)
-        if "正文" in target:
+        if keep_all or "正文" in target:
             targets.append(target)
         index = max(index + 1, cursor)
     return targets
@@ -1117,17 +1118,40 @@ def extract_prose_targets_from_command(command: str, depth: int = 0) -> list[str
     if depth < 8:
         for nested in _command_substitutions(scannable):
             targets.extend(extract_prose_targets_from_command(nested, depth + 1))
-    targets.extend(_redirect_targets(scannable))
-    # cp/mv: the write destination is the last positional arg of the segment. Parse it (regex can't
-    # tell a 正文 source from a 正文 dest, and a trailing 2>/dev/null / >log / || breaks end-anchoring).
-    for raw_segment in _shell_segments(scannable):
-        seg = _before_shell_redirection(raw_segment)
+    # 与 JS 核同构：`cd 书目录 && cat > 正文/...` 的相对写入目标接在 cd 之后的目录上；
+    # 命令里没有 cd 时保持整条命令扫描重定向的原行为。
+    parsed = []
+    # `>|`、`>&file`、`&>` 是重定向，不是管道或后台符；先统一成 `>`，免得切段时把目标切丢。
+    segment_source = re.sub(r">&(?!\d)", ">", scannable.replace("&>", " >").replace(">|", ">"))
+    for raw_segment in _shell_segments(segment_source):
         # 引号感知分词（同 JS 核 shellWords）：str.split() 会按 U+3000 和引号内空格切碎目标，
         # 末位取到 book/正文/第1章.md —— 判到另一本书上（那本有细纲就直接放行）。
-        words = _shell_words(seg)
+        words = _shell_words(_before_shell_redirection(raw_segment))
         command_index = _command_word_index(words)
-        command_name = _command_basename(words[command_index]) if command_index < len(words) else ""
-        command_args = words[command_index + 1:]
+        name = _command_basename(words[command_index]) if command_index < len(words) else ""
+        parsed.append((raw_segment, name, words[command_index + 1:]))
+    has_cd = any(name == "cd" for _, name, _ in parsed)
+    if not has_cd:
+        targets.extend(_redirect_targets(scannable))
+    cwd = ""
+
+    def is_absolute(value: str) -> bool:
+        return bool(re.match(r"^([\\/~]|[A-Za-z]:[\\/])", value))
+
+    def under_cwd(value: str) -> str:
+        return f"{cwd.rstrip('/')}/{value}" if cwd and not is_absolute(value) else value
+
+    for raw_segment, command_name, command_args in parsed:
+        if command_name == "cd":
+            directory = next((arg for arg in command_args if not arg.startswith("-")), None)
+            if directory:
+                cwd = directory if is_absolute(directory) or not cwd else under_cwd(directory)
+            continue
+        if has_cd:
+            targets.extend(
+                resolved for resolved in (under_cwd(target) for target in _redirect_targets(raw_segment, True))
+                if "正文" in resolved
+            )
         if command_name in ("sh", "bash", "dash", "ksh", "zsh"):
             nested = _nested_shell_command(command_args)
             if nested:
@@ -1135,13 +1159,13 @@ def extract_prose_targets_from_command(command: str, depth: int = 0) -> list[str
         if command_name in ("tee", "touch"):
             targets.extend(
                 destination
-                for destination in _write_operands(command_name, command_args)
+                for destination in map(under_cwd, _write_operands(command_name, command_args))
                 if "正文" in destination
             )
         if command_name in ("cp", "mv", "install"):
             targets.extend(
                 destination
-                for destination in _copy_like_targets(command_name, command_args)
+                for destination in map(under_cwd, _copy_like_targets(command_name, command_args))
                 if "正文" in destination
             )
     return list(dict.fromkeys(target for target in targets if target))

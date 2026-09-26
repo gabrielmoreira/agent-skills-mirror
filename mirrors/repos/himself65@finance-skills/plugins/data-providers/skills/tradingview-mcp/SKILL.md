@@ -131,7 +131,3 @@ Prefer one focused call for a simple question. For a research brief, combine onl
 ## Step 5: Respond to the user
 
 Lead with the answer, then show a compact evidence table. Include an as-of timestamp and data source, name any missing or stale fields, and separate observed facts from interpretation. For trading-shaped requests, keep the response analytical and read-only: discuss risks and scenarios without placing or offering to place a trade.
-
-## Maintainer note
-
-The server is pinned to an immutable upstream commit in `.mcp.json`. To upgrade it, select a reviewed SHA, update the pin, perform a real MCP initialize + `tools/list` handshake, confirm all tools remain read-only, and reconcile this catalog with the registered tool names and schemas.

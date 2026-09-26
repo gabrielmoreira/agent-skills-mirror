@@ -88,7 +88,7 @@ Map P0/P1 catalog rows to canary archetypes before picking commands:
 | --- | --- | --- | --- | --- | --- |
 | Work Routing | IP-001, IP-002, IP-003, IP-007, IP-008, IP-021, IP-029 | Hot-path route canary; Planning governance canary when cadence or repair is involved | `quota should-run`, `interaction_contract`, `work_lane_contract`, scheduler hint, handoff todo state | one eligible delivery fixture, one blocked/fallback fixture, one quiet or monitor fixture | agent turn routing is unsafe: it may spend, wait, notify, or choose fallback incorrectly |
 | Human Decision | IP-004, IP-014, IP-017, IP-027, IP-030, IP-033 | Scoped decision canary; Product/readiness canary when first-screen human copy changes | user todos, decision scope, operator-gate/reward preview, deferred resume candidates | one concrete user ask, one scoped non-blocking gate, one preview-or-append dry run | humans may be asked the wrong question, or an agent may continue without the needed decision |
-| State And Boundary | IP-005, IP-006, IP-011, IP-016, IP-019, IP-020, IP-022, IP-023, IP-025, IP-026, IP-028, IP-031, IP-032, IP-035 | Projection and boundary canary; Hot-path route canary when the projection feeds quota/status | active state, todo metadata, task graph, authority source, claim lease, completed-work archive, install ownership, connector runtime policy, public/private scan | fixture state plus structured projection check; boundary scan for touched public files | compact state and executable truth diverge, so dashboards and agents may trust stale or unsafe authority |
+| State And Boundary | IP-005, IP-006, IP-011, IP-016, IP-019, IP-020, IP-022, IP-023, IP-025, IP-026, IP-028, IP-031, IP-032, IP-035, IP-036, IP-037, IP-038 | Projection and boundary canary; Hot-path route canary when the projection feeds quota/status | active state, todo metadata, task graph, authority source, claim lease, completed-work archive, install ownership, connector runtime policy, operation receipt, retired setting projection, public/private scan | fixture state plus structured projection check; boundary scan for touched public files | compact state and executable truth diverge, so dashboards and agents may trust stale or unsafe authority |
 | Evidence Lifecycle | IP-012, IP-015 | Evidence lifecycle canary; Product/readiness canary when evidence is rendered | external handle observation, benchmark lifecycle reducer, compact result projection | compact public-safe evidence fixture with raw-material exclusion assertions | progress evidence may be missing, double-counted, or represented with unsafe raw material |
 | Planning Governance | IP-010, IP-013, IP-018, IP-024, IP-034 | Planning governance canary; Hot-path route canary when cadence changes affect execution | stalled run history, autonomous replan obligation, repair delta, cadence hint, plan-to-todo writeback | two-turn stalled fixture plus repair/writeback delta assertion | the agent may keep planning in prose while the machine-visible frontier stays unchanged |
 
@@ -344,6 +344,9 @@ Projection, authority, write scope, and lease integrity.
 | P1 | IP-031 | Manager Context Is Not Turn Authority | Manager connection owner | no interruption; retention is silent | retain group context only and act only on a provider-native mention, verified reply, or existing typed authority |
 | P1 | IP-032 | Completed Work Archive With Durable Decision Retention | Archive selector plus controller | no interruption; preview-then-execute readback | treat archived done work as history, keep durable decisions authoritative, and never move another role's lane |
 | P1 | IP-035 | Install Ownership Is Not An Update Permission | Install lifecycle owner plus user | no silent mutation; report the owning installer and its command | classify the install before mutating it; when LoopX does not own it, hand back the owner-owned command instead of switching install channels |
+| P1 | IP-036 | A Lost Response Is Not An Absent Commit | Effect dispatcher plus caller | no interruption unless recovery needs a user decision; report the receipt read back | name the write with a stable operation id, recover by readback instead of blind retry, and never leave a committed record pointing at material nobody published |
+| P1 | IP-037 | A Retired Setting Is Not An Absent Setting | Configuration reader plus migration owner | no interruption; keep the retired entry visible and read-only where it was once configurable | reject the retired activation before any write, carry its retired status and replacement in the projection, and treat clearing it as neither enable nor bootstrap of the replacement |
+| P1 | IP-038 | A Generic Fallback Is Not A Typed Diagnosis | Diagnostic publisher plus its reader | no interruption; the failure names the value or check that was refused | ask the typed channel before any fallback, frame the reason channel by the separator the publisher writes, and report an unrecovered reason as missing evidence rather than as the cause |
 
 ### Evidence Lifecycle
 
@@ -2512,6 +2515,350 @@ pip path, so no test can tell an owned install from an unowned one.
   snapshot it classifies.
 - `examples/loopx-update-smoke.py` and `docs/guides/installing-loopx.md` own the
   operator-facing update, activation, and recovery path.
+- `examples/interaction-pattern-catalog-smoke.py` protects this entry.
+
+#### IP-036 A Lost Response Is Not An Absent Commit
+
+**Trigger**
+
+- a command that commits durable state returns an error, exceeds its response
+  budget, or loses its reply on the wire, so the caller cannot tell from the
+  response alone whether the write landed;
+- the caller is about to retry, or a downstream projection now rejects a record
+  whose backing material never arrived;
+- the signals that say this already happened are typed, not inferred from prose:
+  an `already_applied` replay carrying its `original_receipt`, a
+  `receipt_index` entry per operation id, `outcome=ambiguous_reconciled` in a
+  settlement receipt, or an `operation_id was reused` rejection on the retry.
+
+**Expected behavior**
+
+A response is a notification about a commit, not the commit itself. Four rules
+keep "we never heard back" from becoming "nothing happened".
+
+1. **Name the write before dispatching it.** A command whose durable effect is
+   not derivable from context takes a stable identity and says so in its own
+   help: `loopx/cli_commands/delegation.py:25` registers `--operation-id` as
+   "Stable request identity; reuse after a lost response", and
+   `loopx/cli_commands/handoff_mode.py:99` the same shape for a canonical set
+   intent. Reusing an id means "that same request again", never "that intent a
+   second time".
+2. **Recover by readback, not by blind retry.** A re-sent operation returns the
+   original receipt rather than a second effect:
+   `tests/control_plane/test_coordination_recoverable_execution.py:693` asserts
+   `result == "already_applied"` with an identical `original_receipt`, and
+   `:694` that the head's `receipt_index` holds exactly one entry per operation
+   id. `tests/control_plane/test_coordination_provider_parity.py:222` makes
+   `operation_identity_reuse` a dimension every coordination provider must
+   answer the same way (expectation recorded at `:308`).
+3. **Publish the material an authoritative record points at before, or under the
+   same identity as, that record.** A committed pointer with no backing content
+   is worse than no commit, because every later reader must guess. `#5007` is
+   the public counterexample: canonical Todo creation dispatched first, the
+   TypeScript effect lost its response, and the private completion-validation
+   declaration was only persisted after `effect_runtime_result(...)` returned
+   successfully (`loopx/control_plane/todos/provider_create.py:86` dispatch,
+   `:136` persist). The authoritative Todo then carried
+   `completion_validation_sha256` with no declaration behind it, so
+   `todo project-markdown` rejected the Goal while a plain `todo add` retry risked
+   a second Todo. `#5012` proposes the ordering this pattern requires: prepare
+   the private content durably before dispatch, and recover the create through
+   `--operation-id`.
+4. **One identity, one intent.** The same id carrying a different request is a
+   rejection, not a retry to be forced through:
+   `tests/cli_commands/test_source_session_lifetime.py:1175` pins
+   `operation_id was reused` across a session bind and a lifetime receipt.
+   Ambiguity settles to a reconciled receipt — `_SETTLED_OUTCOMES` is
+   `{delivered, replayed, ambiguous_reconciled}`
+   (`loopx/control_plane/coordination/local_authority_shadow_adapter.py:92`) —
+   and never to two settlements.
+
+IP-016 owns the idempotency key carried by a task lease and IP-020 owns a Todo's
+claim / supersede / successor lifecycle; both assume the caller learned the
+outcome. This is the transport-level case those two do not cover: the commit
+landed and nobody was told. IP-033 is its mirror — a recorded rejection is a
+decision that is present, while a lost response is a signal that is absent and
+must not be read as an absent commit. IP-006 owns a projected write scope that
+disagrees with its checkpoint; here nothing disagrees yet, which is exactly the
+danger.
+
+**Visual Model**
+
+```mermaid
+flowchart TD
+  A["durable effect dispatched"] --> B{"response arrived?"}
+  B -->|"yes"| C["continue from the receipt"]
+  B -->|"error / budget exceeded / lost"| D{"same operation id available?"}
+  D -->|"yes"| E["re-send: read back committed state, reuse the original receipt"]
+  D -->|"no, only a fresh id"| F["retry as a new request: duplicate commit, or a typed reuse rejection"]
+  E --> G{"does the record name material that must exist?"}
+  G -->|"yes, present"| C
+  G -->|"yes, missing"| H["fail closed and name the unpublished material"]
+  G -->|"no"| C
+  F --> H2["duplicate work, duplicate spend, or a rolled-back settled effect"]
+```
+
+**Bad smell**
+
+- "the command errored, so nothing happened", followed by a retry that creates a
+  second authoritative record or spends quota twice;
+- a Goal rejected in projection because a digest points at a sidecar nobody
+  published, while the record naming that digest is already committed;
+- recovery that depends on an operator remembering "did that one already go
+  through?", with no receipt to read back;
+- treating an unanswerable ambiguity as a reason to roll a settled effect back.
+
+**Validation**
+
+- `tests/control_plane/test_coordination_provider_parity.py` keeps
+  `operation_identity_reuse` honest across every provider arm, and
+  `tests/control_plane/test_coordination_recoverable_execution.py` pins the
+  replay-and-receipt path for leases and renewals.
+- `tests/cli_commands/test_source_session_lifetime.py` pins the negative twin:
+  one identity may not carry two different intents.
+- `loopx/control_plane/coordination/local_authority_shadow_adapter.py` and
+  `shadow_entry_delivery.ts` keep the settled-vocabulary contract
+  (`delivered` / `replayed` / `ambiguous_reconciled`) single-owner, so a new
+  recovery path reuses it instead of inventing a fourth answer.
+- `examples/interaction-pattern-catalog-smoke.py` protects this entry.
+
+#### IP-037 A Retired Setting Is Not An Absent Setting
+
+**Trigger**
+
+- a Goal, registry entry, or settings document still names a configuration
+  whose implementation has been retired, so a reader must decide whether that
+  setting is off, missing, or still writable;
+- the caller is about to re-enable it, clear it, or migrate state that mentions
+  it, and the cheapest wrong move is to treat "no longer supported" as "never
+  existed";
+- the signals that say this already happened are typed, not inferred from
+  prose: a summary carrying `configured: true` with
+  `status: "retired"` and `enabled: false`, a migration row with
+  `attempted: false` and `outcome: "retired"`, a
+  `request_rejected / local_authority_shadow_retired` reply, or a
+  `retired corpus requires lifecycle.retirement_reason` rejection.
+
+**Expected behavior**
+
+Retiring a capability removes what it may write, not what it says. Four rules
+keep "we stopped supporting this" from becoming "this was never configured".
+
+1. **Keep the retired setting in the projection.** The summary of a Goal that
+   still carries the old key stays present and self-describing rather than
+   dropping the field: `local_authority_shadow_summary` returns
+   `{"enabled": False, ..., "status": "retired" if valid else "invalid",
+   "configured": True, ...}`
+   (`loopx/control_plane/coordination/runtime_shadow.py:53-63`), so a malformed
+   setting reads as `invalid` and a retained one reads as `retired` — neither
+   collapses into "unconfigured". Historical records under the old path remain
+   readable and are labelled instead of being relabelled as promotion evidence:
+   `local_authority_shadow_adapter.py:784` computes `legacy_observation` and
+   `:805` stamps each candidate store as `legacy_observation` or
+   `runtime_shadow`.
+2. **Reject re-enabling before any write, and reject it by code.** The gate sits
+   ahead of the mutation, not inside it:
+   `validate_coordination_shadow_changes` is documented as "Reject retired
+   activation before any registry mutation"
+   (`loopx/control_plane/coordination/runtime_shadow.py:103-115`) and carries the
+   reason in its message (`:67-78`, text at `:72`). The old runtime RPC keeps
+   its address and answers `local_authority_shadow_retired`
+   (`loopx/control_plane/coordination/local_authority_shadow.ts:57`) rather than
+   disappearing into a transport error, because a rejection that looks like a
+   transient failure invites a retry loop.
+3. **Clearing is neither enable nor bootstrap.** One setting is retired; the
+   replacement capture path is configured on its own terms.
+   `apply_coordination_shadow_changes` is documented as "Clear retired settings
+   and configure the transaction-bound shadow independently"
+   (`loopx/control_plane/coordination/runtime_shadow.py:117-131`), and
+   `tests/control_plane/test_local_authority_shadow_config.py:58` pins that
+   clearing preserves the runtime configuration and peer registration instead of
+   silently starting the new capture.
+4. **Migration reports the retirement rather than seeding it.** `migrate-state`
+   keeps the response field callers already parse and answers it with a
+   non-action: `retired_authority_shadow_notices` emits
+   `{"attempted": False, "outcome": "retired", "reason_code":
+   "local_authority_shadow_retired"}`
+   (`loopx/state_migration.py:236-241`), is still the call site's source of that
+   column (`:395`), and renders `attempted=` in the operator table (`:460`). The
+   same rule holds where retirement is a lifecycle state instead of a deletion:
+   a corpus may not claim `state: "retired"` without a reason
+   (`loopx/capabilities/reward_memory/registry.py:156-157`).
+
+IP-030 owns applying a machine configuration under a revision guard, which
+presumes the setting still has an apply path; this is the case where the apply
+path is gone and the setting remains. IP-032 keeps durable decisions
+authoritative across an archive of completed work, and IP-033 reads a recorded
+rejection as a decision that is present — both are about what stays *writable
+or countable* after a state change, while this pattern is about what stays
+*legible* after a capability change. IP-036 is its transport-side twin: a lost
+response must not be read as an absent commit, and a retired path must not be
+read as an absent setting. IP-006 owns a projected write scope that disagrees
+with its checkpoint; here the projection is honest about being inert, and the
+danger is a reader inferring a write from silence.
+
+**Visual Model**
+
+```mermaid
+flowchart TD
+  A["reader finds a setting whose path is retired"] --> B{"is the setting well-formed?"}
+  B -->|"malformed"| C["status=invalid, configured=true; offer clear, never enable"]
+  B -->|"retained"| D["status=retired, enabled=false, configured=true"]
+  D --> E{"what does the caller want?"}
+  E -->|"enable the old path"| F["reject by code before any registry write"]
+  E -->|"clear it"| G["clear only this key; replacement stays as configured"]
+  E -->|"migrate state"| H["report attempted=false, outcome=retired; do not seed"]
+  E -->|"read history"| I["label legacy records as legacy; never as promotion proof"]
+  F --> J["operator doc names the replacement path"]
+  G --> J
+  H --> J
+```
+
+| Situation | What must be visible | What must not happen |
+| --- | --- | --- |
+| Retained old key | `configured=true`, `enabled=false`, `status=retired` | field dropped, or read as unconfigured |
+| Re-enable attempt | typed rejection naming the reason code | registry or store write, or a retryable transport error |
+| Clear request | this key removed, replacement untouched | implicit bootstrap of the new capture |
+| Migration row | `attempted=false`, `outcome=retired` | seeding a second observation store |
+| Historical read | records labelled `legacy_observation` | counted as promotion evidence |
+
+**Bad smell**
+
+- the setting vanishes from status or the settings surface, so an operator
+  reading an old Goal cannot tell whether they ever opted in, and the history
+  under it loses its explanation;
+- a retired enable flag that "does nothing" instead of rejecting, so a script or
+  a stale client believes it turned capture on;
+- clearing a retired key as a side door that boots the replacement capture, or
+  a migration that re-seeds the retired observer because the response field is
+  still expected;
+- retrying `local_authority_shadow_retired` as a transient storage failure;
+- promoting a historical `legacy_observation` record into evidence for the
+  transaction-bound lineage because both rows live in one directory;
+- a retirement that ships as a deletion with no reason recorded, so the next
+  reader reinstates it as a bug fix.
+
+**Validation**
+
+- `tests/control_plane/test_local_authority_shadow_cli_e2e.py` runs the real CLI
+  upgrade journey: `:10` proves a retained retired setting can neither enable
+  capture nor satisfy a bootstrap, `:20` asserts the rejection names
+  `local_authority_shadow_retired`, and `:25` asserts status still reads
+  `retired`.
+- `tests/control_plane/test_local_authority_shadow_config.py` pins both halves:
+  `:49` a retired enable rejects without rewriting the registry (dry-run and
+  execute), `:58` clearing preserves runtime configuration and peer
+  registration.
+- `tests/control_plane/test_state_migration_authority_shadow.py` keeps
+  `migrate-state` reporting retirement instead of seeding it, and
+  `tests/control_plane_ts/local_authority_shadow.test.ts` keeps the old RPC
+  answer typed.
+- `tests/control_plane/test_coordination_runtime_shadow_adapter.py:637` proves a
+  retired CLI observer cannot overwrite transaction evidence, which is what
+  makes the historical read safe rather than merely available.
+- `docs/reference/authority-observation-retirement.md` owns the operator
+  transition and rollback wording; `#5011` records this as the answer to the
+  shared-authority RFC's open question on keeping one capture boundary.
+- `examples/interaction-pattern-catalog-smoke.py` protects this entry.
+
+#### IP-038 A Generic Fallback Is Not A Typed Diagnosis
+
+**Trigger**
+
+- a component refuses a configuration, an identity, or a write and publishes a
+  typed reason, while the caller also holds a catch-all that explains the same
+  failure by its own observation — an exit status, an empty read, a deadline;
+- the caller can only reach the typed reason by parsing something the publisher
+  framed, so a defect in that parse is silent: nothing reports "the envelope was
+  there and I could not read it";
+- the operator is about to act on the reported cause: restart a host, respend a
+  Turn, clear a setting, or retry an operation whose real blocker is a single
+  malformed value.
+
+**Expected behavior**
+
+A fallback earns its place only after the typed channel has been exhausted, and
+it must never overwrite a reason that exists. Four rules keep "I could not
+recover the cause" from being published as "the cause".
+
+1. **Ask the typed channel first, and fall back only on an empty answer.**
+   `_start_runtime` reads the captured startup stderr before it reads the exit
+   status: a recovered envelope raises
+   `EffectRuntimeStartupError(message, diagnostic_code=code)`, and only a `None`
+   answer reaches `runtime_exited_before_ready (exit_code=...)`
+   (`loopx/control_plane/effect_runtime.py:776-791`). The fallback is a name for
+   missing evidence, not a diagnosis of the failure.
+2. **Frame the reason channel by the separator the publisher writes.** One
+   envelope is one record. `str.splitlines()` honours U+0085, U+2028 and
+   U+2029 as line breaks while `JSON.stringify` escapes only code points below
+   U+0020, so a rejected value quoted back inside its own message can tear the
+   record apart and every fragment that still starts with `{` fails to parse.
+   The response reader in the same module already frames on the byte newline
+   (`loopx/control_plane/effect_runtime.py:588`); a diagnostic channel is the
+   same obligation.
+3. **Reject by code before any mutation, and name the guard in the message.**
+   The projection writer refuses on identity before it appends, with three
+   distinct rejections rather than one generic one: `must include object marker`
+   and `is missing identity fields` before the write
+   (`loopx/control_plane/runtime/runtime_projection_writer.py:27-31`), and
+   `append did not pass index readback` for a write that went out and could not
+   be read back (`:88`). Each says which check fired, so no caller can mistake a
+   rejected identity for an unavailable backend.
+4. **Report a fallback as coverage, never as health.** `not_observed`,
+   `not_supplied` and `unknown` are the honest shapes for a channel nobody read:
+   `subagent_context.ts` defaults `live_availability` to `not_observed`
+   (`loopx/control_plane/subagent_context.ts:31`) and only upgrades
+   `receipt_observation` when a receipt was actually supplied (`:52`), rather
+   than inferring either from configured intent, and `agent-context` answers
+   `host_receipts_observed: false` instead of promoting a configured ceiling
+   into an execution promise (#5051). A fallback that reads as a clean result is
+   the same defect wearing a different face.
+
+This is the read-side twin of IP-036: there a lost response must not be read as
+an absent commit, and here a lost *reason* must not be reported as an absent
+cause. IP-037 keeps a retired setting legible after a capability change, while
+this pattern is about a reason that is fully present and still gets replaced.
+IP-005 is the inverse gap — humans see work the machine projection does not —
+and IP-033 reads a recorded rejection as authority that exists. None of them
+cover the moment a consumer chooses its own explanation over one that was
+published for it.
+
+**Visual Model**
+
+```mermaid
+flowchart TD
+  A["a component rejects something and publishes a typed reason"] --> B{"can the caller parse the reason channel?"}
+  B -->|"yes"| C["raise with the publisher's own code"]
+  B -->|"no, framing broke"| D["generic fallback masks the real cause"]
+  B -->|"none was published"| E["report not_observed or unknown, never health"]
+  D --> F["operator restarts a host or respends a Turn for the wrong reason"]
+  C --> G["operator fixes the named value or scope"]
+  E --> G
+```
+
+**Bad smell**
+
+One error string carries two different meanings: "the runtime refused my
+configuration" and "I could not tell what the runtime said". Retries, restarts
+and escalations then target the exit code, the guard keeps firing, and the
+actionable guidance that was already produced is nowhere in what the operator
+sees.
+
+**Validation**
+
+- `tests/control_plane/test_effect_runtime_integration.py::test_invalid_idle_timeout_configuration_fails_closed`
+  drives the real managed Python-to-TypeScript startup boundary and asserts the
+  publisher's own `invalid_idle_timeout` code plus the absence of a runtime-info
+  file, so a fallback cannot pass as correct behaviour there.
+- `tests/control_plane/test_runtime_projection_writer_guards.py` pins rule 3:
+  `:75`, `:86` and `:93` each reject before any write on a different identity
+  defect, `:134` injects the post-write readback failure, and `:124` is the same
+  fixture left unpatched — which is what proves that negative is not a
+  self-fulfilling injection.
+- `tests/control_plane_ts/agent_context.test.ts` keeps the defaults honest:
+  `:35` asserts `receipt_observation` stays `not_supplied` on the after-result
+  phase, and `:210` asserts `live_availability` stays `not_observed` rather than
+  being inferred from configured intent.
 - `examples/interaction-pattern-catalog-smoke.py` protects this entry.
 
 ### Evidence Lifecycle

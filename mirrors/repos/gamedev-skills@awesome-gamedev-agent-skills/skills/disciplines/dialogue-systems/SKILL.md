@@ -121,12 +121,13 @@ The guard blocks the gate.
 Ink tracks how often each knot was seen, so `{visited_knot}` is a built-in
 condition. Variables are global (`VAR`) or temporary (`~ temp`).
 
-### 4. Yarn Spinner — nodes, options, and commands (Yarn 2.x)
+### 4. Yarn Spinner — nodes, options, and commands (Yarn Spinner 3.x)
 
 ```yarn
 title: GuardIntro
 ---
 <<declare $gold = 60>>
+<<declare $gate_open = false>>
 Guard: You can't pass.
 -> Offer 50 gold <<if $gold >= 50>>
     <<set $gold = $gold - 50>>
@@ -139,7 +140,9 @@ Guard: You can't pass.
 
 Yarn lines may start with `Speaker:`; options use `->`; `<<set>>`/`<<declare>>`
 manage `$variables`; `<<if>>` gates an option; `<<jump NodeName>>` moves between
-nodes. Interpolate values in text with `{$gold}`.
+nodes. Interpolate values in text with `{$gold}`. Declare every variable before first
+use: an undeclared one still compiles (Yarn infers its type and a zero/false/empty
+start value), but that hides typos. These constructs are unchanged from Yarn Spinner 2.x.
 
 ## Pitfalls
 

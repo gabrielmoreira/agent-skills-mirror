@@ -1,18 +1,14 @@
 ---
 name: hyperliquid-reader
 description: >
-  Read Hyperliquid (app.hyperliquid.xyz) perp + spot market data via
-  opencli (read-only, public info API). Use whenever the user wants
-  Hyperliquid perpetual or spot markets, mark/oracle/mid prices, 24h
-  change, funding rates (hourly or annualized APR), open interest, volume,
-  the L2 order book, OHLCV candles, historical funding, or a cross-venue
-  funding comparison (Hyperliquid vs Binance vs Bybit) for funding
-  arbitrage. Triggers: "Hyperliquid funding for BTC", "HL perp markets",
-  "funding on BTC perp", "Hyperliquid order book", "HL open interest",
-  "funding arb Hyperliquid vs Binance", "Hyperliquid candles for SOL",
-  "Hyperliquid spot markets", "PURR price on Hyperliquid", "hyperliquid",
-  "hyperliquid.xyz", "HL DEX". READ-ONLY market data — no account, order,
-  or trade operations.
+  Read Hyperliquid (app.hyperliquid.xyz) perp and spot market data through opencli and
+  Hyperliquid's public info API: mark, oracle, and mid prices, 24h change, funding
+  rates (hourly and annualized APR), open interest, volume, the L2 order book, OHLCV
+  candles, funding history, and cross-venue funding comparisons (Hyperliquid vs
+  Binance vs Bybit) for funding arbitrage. Use this skill whenever the user mentions
+  Hyperliquid (HL, HL DEX, hyperliquid.xyz) or asks about its perps, spot pairs such
+  as PURR, funding, open interest, order book, or candles. Read-only market data: no
+  account, order, or transfer operations.
 ---
 
 # Hyperliquid Reader (Read-Only)
@@ -99,7 +95,7 @@ opencli hyperliquid book --coin ETH --depth 5 -f json
 5. **`book` defaults to 10 levels per side** — raise `--depth` (max 20) for more, or `--n-sig-figs 2..5` to aggregate price levels. Compute the spread/mid from the top bid and ask.
 6. **`candles` pulls the most recent `--limit` candles** of `--interval` (default `1h`, 100 candles). Valid intervals: `1m 3m 5m 15m 30m 1h 2h 4h 8h 12h 1d 3d 1w 1M`. Max 5000.
 7. **`-f json`** for programmatic processing / feeding other skills; `-f md` or `-f table` for human-readable output.
-8. **NEVER call any write operation.** This skill is read-only market data — no account reads, no order placement, modification, or cancellation, and no transfers. The plugin intentionally exposes no write endpoints.
+8. **Read-only market data.** No account reads, no order placement, modification, or cancellation, and no transfers — the plugin intentionally exposes no write endpoints, so don't look for workarounds.
 
 ### Output format flag (`-f`)
 

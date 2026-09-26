@@ -60,7 +60,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 2 | ✓ | [`skills/citra/SKILL.md`](skills/citra/SKILL.md) |
+| 2 | ✓ | [`skills/anymd/SKILL.md`](skills/anymd/SKILL.md) |
 
 ---
 

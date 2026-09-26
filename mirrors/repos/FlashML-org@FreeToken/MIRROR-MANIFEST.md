@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `FlashML-org/FreeToken` — 26 default patterns, 3 followed patterns, 6 file(s) materialized.
+Mirror of `FlashML-org/FreeToken` — 26 default patterns, 3 followed patterns, 7 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `FlashML-org/FreeToken` — 26 default patterns, 3 followed patterns, 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 3 |
-| Files         | 6 |
+| Files         | 7 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -63,10 +63,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 3 | ✓ | [`docs/quickstart.md`](docs/quickstart.md) |
-| 4 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 5 | → | [`docs/install.md`](docs/install.md) |
-| 6 | → | [`tests/README.md`](tests/README.md) |
+| 3 | ✓ | [`docs/install_amd.md`](docs/install_amd.md) |
+| 4 | ✓ | [`docs/quickstart.md`](docs/quickstart.md) |
+| 5 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 6 | → | [`docs/install.md`](docs/install.md) |
+| 7 | → | [`tests/README.md`](tests/README.md) |
 
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: "omh-tech-debt-audit"
-description: "[omh] Hermes Tech Debt Audit workflow: build the severity-by-effort debt ledger from observed repo evidence - orient, audit the named dimensions with file:line citations, rank fixes and quick wins - and reconcile RESOLVED/NEW/CARRIED against the previous ledger on rerun. Use when the user says: tech-debt-audit, tech debt, tech debt audit, technical debt, technical debt audit, tech debt ledger, debt ledger, audit our tech debt."
+description: "[omh] Accumulated tech debt to rank: build the severity-by-effort debt ledger from observed repo evidence - orient, audit the named dimensions with file:line citations, rank fixes and quick wins - and reconcile RESOLVED/NEW/CARRIED against the previous ledger on rerun. Use when the user says: tech-debt-audit, tech debt, tech debt audit, technical debt, technical debt audit, tech debt ledger, debt ledger, audit our tech debt."
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, maintenance]

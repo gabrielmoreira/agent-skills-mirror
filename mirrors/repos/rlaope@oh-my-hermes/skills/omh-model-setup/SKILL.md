@@ -1,6 +1,6 @@
 ---
 name: "omh-model-setup"
-description: "[omh] Hermes Model Setup workflow: diagnose role-slot model configuration, guide provider connection, and apply changes only after diff approval. Use when the user says: model-setup, hermes model setup, set up my models, set up my model, configure my models, configure model provider, connect my model provider, set up model role slots."
+description: "[omh] Model and provider configuration changes: diagnose role-slot model configuration, guide provider connection, and apply changes only after diff approval. Use when the user says: model-setup, hermes model setup, set up my models, set up my model, configure my models, configure model provider, connect my model provider, set up model role slots."
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, hermes-setup]

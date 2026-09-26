@@ -503,7 +503,6 @@ Every TinyHumans backend request must carry a sanitized `x-sdk-name`:
 
 - `BackendOAuthClient`
 - `IntegrationClient`, except redirected file downloads
-- `MedullaClient`, including its separate SSE handshake
 - the host session owner's `POST /auth/login-token/consume` and
   `GET /auth/me` (`openhuman_tinyhumans::session`, through `ClientHeaders`)
 - the agent Langfuse ingestion request

@@ -112,8 +112,8 @@ None of them verify the signature; the backend stays the authority.
 
 `ProductIdentity` / `set_product_identity` attach a sanitized `x-sdk-name`
 header (`PRODUCT_IDENTITY_HEADER`) to every backend-bound request, so the
-backend can attribute calls to OpenHuman, OpenCompany, or Medulla even though
-all three share one login and reach the backend through this crate.
+backend can attribute calls to OpenHuman or OpenCompany even though
+both share one login and reach the backend through this crate.
 `ProductIdentity::new` keeps ASCII alphanumerics plus `.`, `_`, `-`,
 lower-cases, truncates to 64 bytes, and returns `None` when nothing survives,
 so the wrapped value can never break `HeaderValue` construction. The
@@ -122,11 +122,10 @@ constructor parameter, because `BackendOAuthClient` is built at dozens of
 call sites across domains. **Call `set_product_identity` once at startup,
 before building any backend client** — `BackendOAuthClient` and
 `IntegrationClient` bake the identity into their default headers at
-construction and do not pick up a later change (`MedullaClient` reads it
-per-request, but do not rely on that difference). A build that never calls
+construction and do not pick up a later change. A build that never calls
 the setter sends `DEFAULT_PRODUCT_IDENTITY` (`"openhuman"`).
 
-Tests across `api::product`, `api::rest`, `medulla`, and `integrations` all
+Tests across `api::product`, `api::rest`, and `integrations` all
 touch this process-global state; `product_identity_test_lock` (test-only)
 serializes them to avoid cross-module races.
 
@@ -199,8 +198,7 @@ see [`models/mod.rs`](models/mod.rs) for the full list.
   `crates/openhuman-core/src/api/`.
 - Every TinyHumans backend request must carry a sanitized `x-sdk-name`:
   `BackendOAuthClient`, `IntegrationClient` (except redirected file
-  downloads), `MedullaClient` (including its separate SSE handshake), the
-  agent's Langfuse ingestion request, and — outside this crate — the host
+  downloads), the agent's Langfuse ingestion request, and — outside this crate — the host
   session owner's `POST /auth/login-token/consume` / `GET /auth/me`
   (`openhuman_tinyhumans::session`, via `ClientHeaders`).
 - Never add `x-sdk-name` to third-party endpoints, MCP servers, BYOK
@@ -213,7 +211,7 @@ see [`models/mod.rs`](models/mod.rs) for the full list.
 74 files outside `api/` reference `crate::api::`
 (`grep -rl 'crate::api::' crates/openhuman-core/src`). Heaviest consumers:
 `platform/socket/` (realtime client), `hosted/*` (billing, referral,
-announcements, team), `medulla/client/`, `integrations/` and
+announcements, team), `integrations/` and
 `integrations/composio/`, `channels/controllers/ops/` and
 `channels/bus/{delivery,progressive_ui}.rs` (which match on `BackendApiError` variants),
 `security/credentials/` (defines the `get_session_token` that `jwt.rs`

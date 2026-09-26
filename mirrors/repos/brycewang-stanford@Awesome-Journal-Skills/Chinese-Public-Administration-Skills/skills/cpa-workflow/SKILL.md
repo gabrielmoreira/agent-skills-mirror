@@ -83,7 +83,7 @@ Q10 投稿 checklist 全部通过？                     否 → cpa-submission
 
 ## 与经济学期刊 Skills 的差异
 
-如果稿子本质是经济学（强调因果识别、经济理论、政策意义层启示），用 [Economic-Research-Journal-Skills](https://github.com/brycewang-stanford/economic-research-skills) 更合适。两者核心差异：
+如果稿子本质是经济学（强调因果识别、经济理论、政策意义层启示），用 [Economic-Research-Journal-Skills](https://github.com/brycewang-stanford/awesome-journal-skills/tree/main/Economic-Research-Journal-Skills) 更合适。两者核心差异：
 
 - 《中国行政管理》：公共管理理论框架优先；方法定量定性并重；政策含义面向政府实践、更可操作但须有据
 - 《经济研究》：经济学理论 + 准实验识别优先；政策含义偏意义 / 制度层

@@ -5,14 +5,17 @@ description: >
   Area, and CharacterBody; collision layers vs masks; contact/overlap signals; and
   raycasts (RayCast nodes and direct space-state queries). Use when configuring
   collision layers/masks, detecting overlaps with Area2D/Area3D, applying forces to a
-  RigidBody, or casting rays in a Godot project (.tscn with physics bodies).
+  RigidBody, or casting rays in a Godot project (.tscn with physics bodies), including
+  3D projects running Jolt Physics, the default 3D engine for projects created in 4.6+.
 ---
 
 # Godot Physics (4.x, 2D + 3D)
 
 Pick the right physics body, wire up collision layers/masks, detect overlaps, and cast
 rays. Concepts apply to both 2D and 3D (swap the `2D`/`3D` suffix). Targets
-**Godot 4.7**.
+**Godot 4.7**. In 3D, projects created with Godot 4.6 or later run **Jolt Physics** by
+default; older projects keep **GodotPhysics3D** unless someone switched them. 2D always
+uses Godot's own 2D engine.
 
 ## When to use
 
@@ -26,20 +29,24 @@ rays. Concepts apply to both 2D and 3D (swap the `2D`/`3D` suffix). Targets
 
 ## Core workflow
 
-1. **Choose the body type:**
+1. **For 3D, check which engine runs** before debugging behavior: Project Settings >
+   Physics > 3D > Physics Engine (`[physics]` `3d/physics_engine="Jolt Physics"` in
+   `project.godot`). The API is the same, but joints, ray-cast face indices, kinematic
+   contacts, and collision margins behave differently (see Pitfalls).
+2. **Choose the body type:**
    - `StaticBody` — never moves (floors, walls). Collides, no simulation.
    - `RigidBody` — fully simulated (gravity, forces, bouncing). Don't set its
      `position` directly; apply forces/impulses or set `linear_velocity`.
    - `CharacterBody` — script-driven kinematic (see `godot-2d-movement`).
    - `Area` — detects overlaps and can apply gravity/damping; no solid collision.
    Every body needs a `CollisionShape` (or `CollisionPolygon`) child.
-2. **Configure layers and masks.** A body is *on* its **layers** and *scans for* its
+3. **Configure layers and masks.** A body is *on* its **layers** and *scans for* its
    **masks**. Two bodies interact only if one's layer is in the other's mask. Name layers
    in Project Settings > Layer Names for clarity.
-3. **Detect overlaps** with `Area` signals (`body_entered`, `area_entered`).
-4. **Drive RigidBodies with forces/impulses**, or override `_integrate_forces` for full
+4. **Detect overlaps** with `Area` signals (`body_entered`, `area_entered`).
+5. **Drive RigidBodies with forces/impulses**, or override `_integrate_forces` for full
    control.
-5. **Cast rays** with a `RayCast2D/3D` node (polled each frame) or a one-shot space-state
+6. **Cast rays** with a `RayCast2D/3D` node (polled each frame) or a one-shot space-state
    query from code.
 
 ## Patterns
@@ -124,11 +131,34 @@ func ground_under(global_from: Vector2) -> Dictionary:
 - **`intersect_ray` excludes its own body?** Pass `query.exclude = [self.get_rid()]` (an
   `Array[RID]`, not an array of nodes) to skip self-hits.
 
+### Jolt Physics (3D) differences
+
+- **`face_index` is always `-1`** in `intersect_ray()` / `RayCast3D` results under Jolt.
+  Turn on Project Settings > Physics > Jolt Physics 3D > Queries > Enable Ray Cast Face
+  Index if you need it (it costs roughly 25% more memory for `ConcavePolygonShape3D`).
+- **A joint with only one body gets inverted limits after switching engines.** Jolt treats
+  the lone body as `node_b` with `node_a` as the world; GodotPhysics3D always treats it as
+  `node_a`. Assign the body to the slot Jolt expects, or use Physics > Jolt Physics 3D >
+  Joints > World Node for compatibility with an older project.
+- **Joint soft-limit properties do nothing** under Jolt (e.g. `bias`/`softness`/
+  `relaxation` on Pin, Hinge and ConeTwist joints; limit softness/restitution/damping on
+  Slider and Generic6DOF joints). Godot warns when they are set to non-default values.
+- **A frozen kinematic `RigidBody3D` reports no contacts** with static or kinematic bodies,
+  even with `max_contacts_reported > 0`. Enable Physics > Jolt Physics 3D > Simulation >
+  Generate All Kinematic Contacts if gameplay depends on those contacts.
+- **Shape `margin` shrinks the shape instead of padding it** under Jolt, so sizes stay
+  true but shape queries can return odd normals on small shapes; the effective margin comes
+  from Physics > Jolt Physics 3D > Collisions > Collision Margin Fraction.
+- **`Area3D` now fires `body_entered` for `SoftBody3D`** under Jolt (GodotPhysics3D never
+  did). Filter soft bodies out with layers/masks if the old behavior is expected.
+
 ## References
 
 - For `_integrate_forces`, joints, one-way collision, `PhysicsServer` direct access,
   shape queries (`intersect_shape`), and 3D `move_and_collide`, read
   `references/bodies-and-queries.md`.
+- Jolt specifics: Godot docs "Using Jolt Physics"
+  (`https://docs.godotengine.org/en/stable/tutorials/physics/using_jolt_physics.html`).
 
 ## Related skills
 

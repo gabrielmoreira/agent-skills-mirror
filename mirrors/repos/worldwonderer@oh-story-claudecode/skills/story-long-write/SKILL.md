@@ -17,7 +17,7 @@ metadata: {"openclaw":{"source":"https://github.com/zenstory-ai/oh-story-claudec
 1. 规划/开书/补纲先完整读取 `references/workflow-setup.md`；写指定章读取 `references/workflow-chapter.md`；日更/大修先读取 `references/workflow-daily.md` 或 `references/workflow-revision.md`，进入正文前再完整读取 `workflow-chapter.md`。
 2. 主会话直接写正文时，首次落笔前完整读取 `references/long-format.md`、`references/writing-craft.md`、`references/long-chapter-quality.md`、`references/long-chapter-hooks.md`；交给 narrative-writer 时，由该 agent 按自己的 reference 表完成同等写前读取，主会话不得用未读 reference 的临时 prompt 替代。
 3. 悬疑、惊悚、异常线索章加读 `references/long-suspense.md`；身份/认知/立场反转章加读 `references/long-reversal.md`。
-4. 正文写前，references 读完后立即重读当前用户请求、本章细纲和卷纲，在上下文内建立 **Constraint Lock**：原样记录用户明确字数范围、必发生、禁止发生、精确时间锚与本章停笔点、章尾新债。references 只提供技法，不得覆盖这些项目事实；用户明确范围优先于自动 ± 比例带。交付前逐项复核：字数带外按 `workflow-chapter.md` 的收口流程交用户处置，不自动补字；其余项越界不算完成。
+4. 正文写前，references 读完后立即重读当前用户请求、本章细纲和卷纲，先在上下文里**记下本轮约束**：原样记录用户明确字数范围、必发生、禁止发生、精确时间锚与本章停笔点、章尾新债。references 只提供技法，不得覆盖这些项目事实；用户明确范围优先于自动 ± 比例带。交付前逐项复核：字数带外按 `workflow-chapter.md` 的收口流程交用户处置，不自动补字；其余项越界不算完成。
 
 任一必需路径不存在、不可读或未读完时立即停止，报告准确路径，**不得先写正文再补读**。门禁按当前任务、当前会话重新执行；旧会话的“读过”不能沿用。
 
@@ -25,7 +25,7 @@ metadata: {"openclaw":{"source":"https://github.com/zenstory-ai/oh-story-claudec
 
 > 内置适配 Claude Code / OpenCode / Codex / Antigravity / ZCode / OpenClaw。专业 agent 只查当前端 canonical 目录（`.claude/agents`、`.opencode/agents`、`.codex/agents` TOML、`.agents/agents`）；Antigravity 用 `invoke_subagent` + 同名 `TypeName`。文件或运行时能力缺失、返回 unknown agent，或当前为不执行 custom agents 的 ZCode 3.3.4 时，报告 fallback 并 solo/direct 执行。
 >
-> Spawn 版本提示（不阻断 spawn）：先读取项目根 `.story-deployed` 的 `agents_version`。与本版 `agents_version: 31` 不一致时（标记缺失、字段缺失/非整数、小于或大于 31）**照常按文件存在性检查并 spawn**，但只检查当前运行时的 canonical 目录；同时报告 `Notice: agents bundle 版本不匹配（项目 {N}，本版 31）` 并提示重新运行 `/story-setup` 后新开会话；大于 31 时额外提示先更新 oh-story-claudecode，不要用本地旧版 setup 降级覆盖。只有 agent 文件缺失、或运行时不暴露 custom agent 时才降级 solo/direct，报告 `Fallback: ... -> solo`。
+> Spawn 版本提示（不阻断 spawn）：先读取项目根 `.story-deployed` 的 `agents_version`。与本版 `agents_version: 32` 不一致时（标记缺失、字段缺失/非整数、小于或大于 32）**照常按文件存在性检查并 spawn**，但只检查当前运行时的 canonical 目录；同时报告 `Notice: agents bundle 版本不匹配（项目 {N}，本版 32）` 并提示重新运行 `/story-setup` 后新开会话；大于 32 时额外提示先更新 oh-story-claudecode，不要用本地旧版 setup 降级覆盖。只有 agent 文件缺失、或运行时不暴露 custom agent 时才降级 solo/direct，报告 `Fallback: ... -> solo`。
 
 **文风裁决**：正文写作、改写或审稿前先读 [references/style-resolution.md](references/style-resolution.md)，加载本书文风并形成 `style_resolution`；无作者记忆也执行。当前请求、本书文风和 active 偏好按维度覆盖通用 references；同一裁决交给后续执行者。
 
@@ -37,8 +37,8 @@ metadata: {"openclaw":{"source":"https://github.com/zenstory-ai/oh-story-claudec
 2. **从验证过的模式出发**。先问"什么被验证过有效，我如何重新交付"，少从"我想写什么"直接起步。扫榜找方向，拆文找模块，对标找节奏。
 3. **用模块组装，不要重新发明**。每个题材都有验证过的剧情模式——反转怎么铺、爽点怎么爆、感情怎么拉扯。找到对的模块，把对标书的具体角色看成功能位（对手/盟友/催化剂），再映射到你的角色。用你自己的素材填充这些功能位。
 4. **只加载必需信息**。写每章只读“不知道就会写错”的角色状态、待收伏笔、相关设定。其余留在文件系统里。
-5. **契约与推进决策走权威参考文件**。涉及读者契约、主角代理权、利益安全、期待债、终局储备（终局底牌/升级台阶）、机构/势力边界和 契约安全 / 需补强 / 契约破坏 风险判定时，先按 `references/reader-contract-and-progression.md` 校准，不在 SKILL.md 内复制长规则。
-6. **作者记忆**：按 [references/author-memory.md](references/author-memory.md) 带 `--book-root` 查询 ≤2KB active 项交执行者；当前请求、本书文风优先。长期声明用 `record` 写入、回传回执。
+5. **契约与推进决策走权威参考文件**。涉及读者契约、主角代理权、利益安全、终局底牌与升级台阶、机构/势力边界和契约风险判定时，先按 `references/reader-contract-and-progression.md`「契约四问」校准，不在 SKILL.md 内复制长规则。
+6. **作者记忆**：写正文时组装脚本已代查并注入；其他任务按 [references/author-memory.md](references/author-memory.md) 带 `--book-root` 查询 ≤2KB active 项交执行者；当前请求、本书文风优先。长期声明用 `record` 写入、回传回执。
 
 | 题材 | 核心情绪 | 重点参考 |
 |------|---------|---------|
@@ -92,7 +92,7 @@ metadata: {"openclaw":{"source":"https://github.com/zenstory-ai/oh-story-claudec
 
 ### 面向作者的汇报
 
-所有给作者看的汇报、提问和停下说明只讲三件事：写了/改了什么（章名、发生了什么）；要作者定的事（一句白话问题＋白话选项＋推荐默认）；下一步。不写脚本、字段、参数名、状态码和内部清单名（如 Constraint Lock、安全七检、供给自查、S1-S4、内带/用户带）；编号必带故事标签，如「伏笔 F057（那封信的去处）」。检查结果一句白话带过，如「自查过设定和前文，没发现冲突」。回执、Notice、Fallback 等机器行放末尾一行。汇报照各 workflow 的模板写，不带代码块围栏；子 agent 返回的术语由主会话翻译后再说。
+所有给作者看的汇报、提问和停下说明只讲三件事：写了/改了什么（章名、发生了什么）；要作者定的事（一句白话问题＋白话选项＋推荐默认）；下一步。不写脚本、字段、参数名、状态码和内部清单名（如 排纲自查、供给自查、S1-S4、字数带）；编号必带故事标签，如「伏笔 F057（那封信的去处）」。检查结果一句白话带过，如「自查过设定和前文，没发现冲突」。回执、Notice、Fallback 等机器行放末尾一行。汇报照各 workflow 的模板写，不带代码块围栏；子 agent 返回的术语由主会话翻译后再说。
 
 ### 路径与术语约定
 
@@ -103,10 +103,9 @@ metadata: {"openclaw":{"source":"https://github.com/zenstory-ai/oh-story-claudec
 > **卷纲不整读（取段器）**：任何场景要卷纲内容一律走
 > `{PYTHON} {skill 根}/scripts/outline_view.py --unit {单元ID} {卷纲路径}`（脚本统一输出 UTF-8），
 > 只要契约不要单元时用 `--contract`，先看一屏目录用 `--toc`。
-> **两档分明**：**写正文用 `--stage write`**（卷级常任＋单元级，批次底稿一概不给）；**排纲/补纲用默认 `--stage outline`**（另带该单元在用的批次底稿）。
-> 供给自查、建纲追加、批次级复检这类底稿是**排纲期的工作底稿，写作期不是输入**——它们里头凡有写作期约束力的条目，
-> 建纲时就必须下沉到单元级段或细纲（`--check` 的 W1 告警专盯这个）。
-> 取的是**闭包不是点名段**——输出恒等于「全部卷级常任段 ＋ 该单元的单元级段 ＋ 该单元在用的批次底稿」，逐章表（情绪弧线等）按该单元章区间裁行，
+> 排纲期的工作底稿（供给自查、建纲追加）不写进卷纲，放 `大纲/排纲底稿_{单元ID}.md`，只在排纲/补纲时读，写正文不读；底稿里对写作有约束力的条目，建纲时写进单元卡或细纲。
+> 老卷纲里还留着「作用域：批次底稿」段的，排纲时加 `--stage outline` 一并取出，写正文照常不加。
+> 取的是**闭包不是点名段**——输出恒等于「全部卷级常任段 ＋ 该单元的单元级段」，逐章表（情绪弧线等）按该单元章区间裁行，
 > 带退役标记的行默认不输出（要看历史加 `--history`）。
 > 找不到单元时脚本 exit 1 并报错，不静默降级——报错就去核对单元ID或先补卷纲，不要改用整读绕过。
 > 段头的 `> 作用域：` 声明是这套的地基，格式与 checker 见 `references/artifact-protocols.md` 卷纲模板；
@@ -132,7 +131,7 @@ metadata: {"openclaw":{"source":"https://github.com/zenstory-ai/oh-story-claudec
 
 ### Phase 3：大纲搭建
 
-产出全书体量与阶段总览、卷级大纲、逐章细纲；含大纲安全七检、大纲安全审查、分批建纲与「中途补纲/扩纲小流程」。
+产出全书体量与阶段总览、卷级大纲、逐章细纲；含排纲自查、分批建纲与「中途补纲/扩纲小流程」。
 
 **执行前先读 [references/workflow-setup.md](references/workflow-setup.md) 的「Phase 3：大纲搭建」节**。
 
@@ -146,11 +145,11 @@ metadata: {"openclaw":{"source":"https://github.com/zenstory-ai/oh-story-claudec
 
 #### 单章写作流程
 
-**执行前先读 [references/workflow-chapter.md](references/workflow-chapter.md)**，按其中的单章写作流程（步骤 1-13）、写作技巧提醒、字数测量权威与质量检查执行。日更批量另加载 `references/workflow-daily.md` 控制批次。
+**执行前先读 [references/workflow-chapter.md](references/workflow-chapter.md)**，按其中的单章写作流程（步骤 1-13）、字数测量权威与质量检查执行。日更批量另加载 `references/workflow-daily.md` 控制批次。
 
-#### 追踪文件体积
+#### 追踪
 
-`追踪/_tracking-state.json` 是唯一结构化权威；`上下文.md`、核心角色快照、`伏笔.md`、作者真相与读者已知时间线都由它确定性派生，程序不反向解析 Markdown。`上下文.md` 固定 7 栏且 ≤12KB。`逐章记录/第NNN章.md` 每章只记录会影响后续连续性的紧凑变化，目标 ≤1536 字节、硬上限 3072 字节，不承诺单独重放出全部当前状态。阶段/卷级回看按需查询逐章记录或正文，不维护另一套长期摘要。所有追踪写入都通过 `scripts/tracking_commit.py`，禁止手改派生文件。
+所有追踪写入都走 `scripts/tracking_commit.py`：`追踪/_tracking-state.json` 是唯一权威，`上下文.md`、角色快照、`伏笔.md`、时间线都由它派生，禁止手改。体积上限由脚本检查、超限一次报全；字段与上限见 [tracking-transaction.md](references/tracking-transaction.md)，出错时才读。
 
 ---
 

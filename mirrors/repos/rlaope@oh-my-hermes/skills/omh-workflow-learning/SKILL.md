@@ -1,6 +1,6 @@
 ---
 name: "omh-workflow-learning"
-description: "[omh] Hermes workflow learning workflow: classify and review self-improvement store routes as an auxiliary review lane before durable writes, then record workflow attempts as metadata-only traces, evals, review queues, patch proposals, regression cases, audits, indexes, and exports. Use when the user says: workflow-learning, workflow learning, route-signal, self-improvement store routing, store route review, memory skill wiki routing, learning trace, learning audit."
+description: "[omh] Missed route or run lessons to record: classify and review self-improvement store routes as an auxiliary review lane before durable writes, then record workflow attempts as metadata-only traces, evals, review queues, patch proposals, regression cases, audits, indexes, and exports. Use when the user says: workflow-learning, workflow learning, route-signal, self-improvement store routing, store route review, memory skill wiki routing, learning trace, learning audit."
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, optimization]

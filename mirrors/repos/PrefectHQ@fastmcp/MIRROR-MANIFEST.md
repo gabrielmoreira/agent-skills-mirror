@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `PrefectHQ/fastmcp` — 26 default patterns, 0 followed patterns, 19 file(s) materialized.
+Mirror of `PrefectHQ/fastmcp` — 26 default patterns, 0 followed patterns, 18 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `PrefectHQ/fastmcp` — 26 default patterns, 0 followed patterns, 19 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 19 |
+| Files         | 18 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -72,12 +72,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 11 | ✓ | [`.cursor/rules/core-mcp-objects.mdc`](.cursor/rules/core-mcp-objects.mdc) |
 | 12 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
 | 13 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 14 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 15 | ✓ | [`docs/.cursor/rules/mintlify.mdc`](docs/.cursor/rules/mintlify.mdc) |
-| 16 | ✓ | [`examples/skills/sample_skills/code-review/SKILL.md`](examples/skills/sample_skills/code-review/SKILL.md) |
-| 17 | ✓ | [`examples/skills/sample_skills/pdf-processing/reference.md`](examples/skills/sample_skills/pdf-processing/reference.md) |
-| 18 | ✓ | [`examples/skills/sample_skills/pdf-processing/SKILL.md`](examples/skills/sample_skills/pdf-processing/SKILL.md) |
-| 19 | ✓ | [`skills/fastmcp-client-cli/SKILL.md`](skills/fastmcp-client-cli/SKILL.md) |
+| 14 | ✓ | [`docs/.cursor/rules/mintlify.mdc`](docs/.cursor/rules/mintlify.mdc) |
+| 15 | ✓ | [`examples/skills/sample_skills/code-review/SKILL.md`](examples/skills/sample_skills/code-review/SKILL.md) |
+| 16 | ✓ | [`examples/skills/sample_skills/pdf-processing/reference.md`](examples/skills/sample_skills/pdf-processing/reference.md) |
+| 17 | ✓ | [`examples/skills/sample_skills/pdf-processing/SKILL.md`](examples/skills/sample_skills/pdf-processing/SKILL.md) |
+| 18 | ✓ | [`skills/fastmcp-client-cli/SKILL.md`](skills/fastmcp-client-cli/SKILL.md) |
 
 ---
 

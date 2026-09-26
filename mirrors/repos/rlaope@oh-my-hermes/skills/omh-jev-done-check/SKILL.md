@@ -1,6 +1,6 @@
 ---
 name: "omh-jev-done-check"
-description: "[omh] Jev done check: does the gathered evidence support the completion claim? It can only object. Use when the user says: jev-done-check, jev done check, ask jev if this is done, jev evidence check."
+description: "[omh] Completion claim tested by Jev: Jev done check: does the gathered evidence support the completion claim? It can only object. Use when the user says: jev-done-check, jev done check, ask jev if this is done, jev evidence check."
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, review]

@@ -45,6 +45,9 @@ into a LoopX-governed visible goal loop.
 ```bash
 loopx slash-commands --install --surface pi --pi-project .
 loopx slash-commands --uninstall --surface pi --pi-project .
+loopx slash-commands --install --surface pi --pi-scope user
+loopx slash-commands --inspect --surface pi --pi-project .
+loopx slash-commands --uninstall --surface pi --pi-scope user
 ```
 
 Installs two LoopX-managed files into the project (loaded after project
@@ -61,6 +64,15 @@ so no local `node_modules` are required. The `--pi-project` flag points the
 installer at the target project so the command is correct even when run from
 another directory; `agent-onboard --agent-type pi --project <path>` emits the
 resolved project automatically.
+
+The optional user scope installs the same adapter as
+`<agent-dir>/extensions/loopx/index.ts` with the runtime beside it. Pi
+discovers `index.ts` inside extension subdirectories. `<agent-dir>` defaults to
+`~/.pi/agent` and follows `PI_CODING_AGENT_DIR`. Inspect reports both scopes as
+absent, current, stale, partial, or user-owned, and warns when both entries
+would load in the same project. Run Pi `/reload` or restart after install,
+upgrade, or uninstall. Only the adapter is global: bindings remain under the
+active project's `.loopx/pi/`.
 
 ## State
 

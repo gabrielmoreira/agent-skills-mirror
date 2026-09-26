@@ -14,12 +14,25 @@
 
 ---
 
-## Current delivery frontier (2026-09-24)
+## Current delivery frontier (2026-09-25)
 
-The `d64c4d377`/open-PR audit withdraws earlier “5–8 / 6–8 / 7–9” estimates.
-Implemented code, six relevant open PRs, four proposed new batches (including
-complete-source transport) and D1–D3 evidence are separate units; four batches
-are not a guaranteed total PR count. Use the [reconciled inventory and exits](ledger/shared-goal-authority-state-provider-v0/2026-09-24-default-cutover-reconciliation.md) as the current plan.
+Audit `37bbaec79` and current PR states: complete-source transport, transaction
+capture, source assembly and the five previously open caller/event fixes are
+merged, not future implementation. After the current promotion-admission repair,
+three named code boundaries remain planned: external-effect execution fencing;
+event-writer binding plus whole-Goal migration/rollback; default onboarding plus
+bounded Python retirement. #4931 and outstanding D2 evidence are tracked
+separately. Three is a delivery plan, not a guaranteed total PR count.
+[Current inventory and exits](ledger/shared-goal-authority-state-provider-v0/2026-09-24-default-cutover-reconciliation.md).
+
+## Observation writer retirement (2026-09-24)
+
+The obsolete Python post-commit observer and TS observation commit path are
+removed together. Existing runtime-shadow outbox rules remain the sole capture
+owner; source adapters do not resample into a second authority. Old settings
+are recognizable, inactive and explicitly clearable. This is deletion of an
+obsolete path, not a claim that remaining Python business writers or the
+reference executor are retired. [Delivery inventory and transition](ledger/shared-goal-authority-state-provider-v0/2026-09-24-observation-retirement.md).
 
 ## Cross-RFC execution priority (2026-09-16)
 
@@ -28,6 +41,20 @@ are not a guaranteed total PR count. Use the [reconciled inventory and exits](le
 Retain T0 caller/parity inventory, T1/T2 transaction/effect convergence, T3 complete-source consumption and T4 deletion conditions. #4472 is merged; inspect `todos/public_update.ts` and actual callers before rebuilding Todo update. Converge new team domain rules in existing typed work-items/collaboration ownership; Python retains input/IO adaptation. R1 independent counterexamples and real-path verification gate delivery. More leaf RPCs, enums or files are not migration payoff. Shared-authority retains D1–D3.
 
 ## Current implementation checkpoint
+
+Long-history closeout now reuses byte-verified TS receipt prefixes and the
+single committed-monitor rule. Python retires its duplicate run-log scan and
+adapts Todo facts only; lost queries are distinguished from ambiguous writes.
+This is bounded retirement within closeout, not complete Python removal.
+[Delivery and limits](ledger/shared-goal-authority-state-provider-v0/2026-09-24-default-cutover-reconciliation.md#long-history-closeout-this-repair-and-its-remaining-boundary).
+
+Promotion admission now binds complete sources to a current registry witness
+and rechecks it inside the TS lock scope. Saved execution retains the reviewed
+handoff policy, and failures report durable fence presence. Recovery of a
+committed operation still follows its original fence/receipt instead of requiring
+the retired source to become valid again. This repairs demonstrated L7/L8
+integration defects; it neither recounts shipped capture nor flips global defaults.
+[Operation and boundaries](../../reference/reviewed-coordination-promotion.md).
 
 Canonical collection transport now uses snapshot-bound, byte-bounded TS pages.
 The same `canonicalTodoCollection` owner validates both the retained direct list
@@ -1929,3 +1956,5 @@ This advances T3/L5; it does not replace D2/D3 or flip a provider default.
 2026-09-24: [Typed complete-source assembly and remaining delivery packages](ledger/shared-goal-authority-state-provider-v0/2026-09-24-source-capture.md) unify source construction, identity rejection and current-graph membership; L7/D2/D3 and provider defaults remain open.
 
 2026-09-24: [Leased continuation and remaining local-default packages](ledger/shared-goal-authority-state-provider-v0/2026-09-24-leased-continuation.md).
+
+Event replay and the reconciled cutover inventory: [2026-09-25](ledger/shared-goal-authority-state-provider-v0/2026-09-25-event-replay.md).

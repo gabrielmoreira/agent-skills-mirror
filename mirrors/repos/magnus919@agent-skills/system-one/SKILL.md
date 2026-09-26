@@ -10,7 +10,7 @@ description: >-
 license: MIT
 compatibility: Current provider/model documentation needs network access; local Laya operation needs Python 3.10+, PyTorch, Transformers, and model-weight storage.
 metadata:
-  author: magnus919
+  author: system-one contributors
   version: "1.1"
 ---
 
@@ -35,7 +35,9 @@ does not imply a correct judgment; a high probability is not permission.
 2. Fill `templates/decision-contract.md`: trusted state, question IDs/types,
    allowed answers, unknown/review lane, side effects, owner, deadlines, and
    rollback. For tool control, also use `templates/action-control-contract.md`.
-   Use `references/concepts-and-patterns.md` for primitive semantics and composition.
+   New to this model class? Start with `references/worked-decision-pilot.md`
+   to choose one bounded decision, then use `references/concepts-and-patterns.md`
+   for primitive semantics and composition.
 3. Open **only the matching reference** below. Keep exact question text and
    criteria in trusted configuration, not user-supplied state.
 4. Validate response IDs, types, option sets, distributions, score rubric,
@@ -46,21 +48,40 @@ does not imply a correct judgment; a high probability is not permission.
    record provider/model, question/policy revision, outcome, and failure lane
    without raw secrets or unnecessary personal data.
 
+Before expanding a cross-model battery, complete
+`templates/decision-battery-design-review.md` and review a small varied pilot.
+Define whether a test counts a distinct scenario, a question, or a request;
+freeze the answer rubric, comparison contract, and timing conditions before
+generating more cases. If those definitions or reviewer labels disagree, stop
+expansion and revise the design. Keep benchmark outputs outside this skill's
+tracked corpus unless publication is explicitly requested.
+
 ## Route by task
 
 | Task | Read next |
 |---|---|
 | Hosted Jev API or SDK integration | `references/jev.md`; run `scripts/decision_demo.py` offline first |
 | Laya checkpoints, routing, language, CPU/GPU/MPS | `references/laya.md` |
+| Fine-tune the English Laya checkpoint on labeled typed decisions | `references/laya-fine-tuning.md` |
 | Native C++ Laya inference, CUDA/Vulkan, or Jev-compatible HTTP | `references/laya-cpp.md` |
 | Local or private/VPC Laya service | `references/laya-self-hosting.md`, then `references/hosting-and-troubleshooting.md` |
 | Browser/desktop/voice control, agent routing, ranking, guardrails, deadlines | `references/use-case-patterns.md` |
+| First System One pilot or worked evaluation of a decision, QA runner, or semantic CI gate | `references/worked-decision-pilot.md` |
+| Learn from the 1,305-build field survey; identify implementation patterns and anti-patterns | `references/field-patterns-and-antipatterns.md` |
+| Audit original browser, skill-router, supervisory, or moderation implementations | `references/implementation-audit.md` |
+| Production QA step routing, cached replay, selector repair, or model substitution | `references/qa-automation-pattern.md`, then `references/evaluation-and-calibration.md` |
 | Probability, threshold, calibration, model comparison | `references/evaluation-and-calibration.md` and `templates/benchmark-record.md` |
+| Compare singleton and batched request quality or calibration | `references/request-shape-evaluation.md` and `templates/benchmark-record.md` |
+| Measure router ablations and full fallback economics | `references/cascade-economics.md` and `templates/benchmark-record.md` |
+| Determine whether a decision model improves an agent harness | [agent-evals-and-observability](../agent-evals-and-observability/SKILL.md) for paired end-to-end tasks, trajectories, side effects, and cost/latency; keep this skill's model-level contract and calibration checks |
+| Design or run a portable v1 label battery or provisional v2 cross-domain Choice/Noul/Score battery | `references/decision-battery.md` and `templates/decision-battery-design-review.md`; run `scripts/decision_battery.py` only after the pilot review |
 | Synthetic QA pilot for Jev (failure triage, extra-test choice, semantic grading) | `references/qa-pilot.md`; run `scripts/jev_qa_pilot.py` offline first |
 | Paired-eval semantic assertion audit in CI | `references/qa-pilot.md`, then `scripts/jev_eval_audit.py`; treat its verdicts as advisory and preserve exact grader results |
 | Reproduce, operate, diagnose, or roll back this repository's Jev CI deployment | `references/jev-ci-reference-deployment.md`; inspect the current workflow before changing secrets or jobs |
 | Screen Jev's advisory eval judgments against real outputs | `references/qa-pilot.md` and `references/evaluation-and-calibration.md`; use `scripts/jev_eval_calibration.py` for a blind packet, then independent labels or `scripts/jev_teacher_label.py` for model-teacher pseudo-labels |
 | New open model or Jev-style replica | `references/ecosystem-radar.md` |
+| Fastino GLiNER2.5-Decide local classification | `references/gliner25-decide.md` |
+| Fine-tune GLiNER2 for Decide-style classification | `references/gliner25-decide-fine-tuning.md` |
 | Failure, latency, device fallback, upgrade, rollback | `references/hosting-and-troubleshooting.md` |
 
 Run `python3 scripts/systemone_probe.py --request examples/request.json` for an offline
@@ -74,10 +95,20 @@ reference adapter, not a public Internet service.
 - Jev is managed/API-only; do not invent a self-hosted Jev weight download.
 - Laya and Jev can share a typed application interface, but not assumed
   thresholds, calibration, latency, language behavior, or model quality.
-- Prefer `other`, `unknown`, or review when labels are not exhaustive.
-  Shortlisting changes the population over which Choice probabilities apply.
-- Independent questions may share one call. Dependent questions need another
-  call only when the first answer changes their state or candidate set.
+- Before enabling Laya caller traffic, keep ingress private and authenticated;
+  define finite, application-specific caps for request bytes, question count,
+  options per Choice, concurrency, queue wait, and total deadline. Readiness waits
+  for the pinned model, tokenizer, actual device, and any calibration artifact the
+  application uses. The bundled adapter's `/readyz` checks device residency only;
+  extend it to cover every required artifact before routing production traffic.
+- For large Laya Choice sets, check tokenized labels against the head-token
+  budget, verifying coverage and truncation; an option-count transport cap does
+  not prove quality. If shortlisting, measure recall and treat probabilities as
+  conditional on exactly the retained candidate set. Prefer `other`, `unknown`,
+  or review when labels are not exhaustive. See `references/laya.md`.
+- Independent questions may share one call, but test the exact batched request
+  shape on frozen cases. Dependent questions need another call when the first
+  answer changes their state or candidate set.
 - A model cannot replace exact arithmetic, provenance, eligibility, safety
   reflexes, or irreversible approval. A text-generating model may be a separate
   bounded stage after a typed route, not an implicit source of authority.
