@@ -14,7 +14,8 @@ It covers the **core workspace and its sibling crates**:
 - Library: `openhuman_core`
 
 The root `Cargo.toml` is a virtual workspace whose members are
-`crates/openhuman-core`, `crates/openhuman-embed`, `crates/openhuman-rpc`, and
+`crates/openhuman-core`, `crates/openhuman-embed`, `crates/openhuman-rpc`,
+`crates/openhuman-tinyhumans`, `crates/openhuman-cli`, and
 `crates/openhuman-tui`. `crates/openhuman-app` (the Tauri desktop shell) is
 excluded from that workspace and builds from its own manifest.
 
@@ -52,8 +53,12 @@ That is enough for the Rust workspace. Core sources, the package manifest, and
 the authoritative domain implementation live under `crates/openhuman-core/`.
 The stable host-facing library facade is the sibling
 `crates/openhuman-embed/` package, while the terminal frontend is
-`crates/openhuman-tui/`. Shared JSON-RPC contracts and the HTTP client used by
-the Tauri shell and the TUI live in `crates/openhuman-rpc/`.
+`crates/openhuman-tui/`. The `openhuman-core` binary itself, the developer and
+benchmark bins, and the root `tests/*.rs` / `examples/*.rs` targets live in
+`crates/openhuman-cli/`, which depends on `crates/openhuman-tinyhumans/` for
+the SDK-backed backend transport the core does not carry on its own. Shared
+JSON-RPC contracts and the HTTP client used by the Tauri shell and the TUI
+live in `crates/openhuman-rpc/`.
 
 The recursive submodules under repo-root `vendor/` are required for the core
 build too, not just the desktop shell: `crates/openhuman-core/Cargo.toml`
@@ -67,7 +72,7 @@ copy nested under `vendor/tinyagents/`.
 git submodule update --init --recursive vendor/
 ```
 
-Desktop/Tauri work has extra requirements on top of this — follow [Getting
+Desktop/Tauri work has extra requirements on top of this: follow [Getting
 Set Up](getting-set-up.md) for those.
 
 ## 3. Build commands
@@ -79,7 +84,7 @@ From the repository root:
 cargo check --manifest-path Cargo.toml
 
 # Debug build of the actual CLI / RPC binary
-cargo build --manifest-path Cargo.toml --bin openhuman-core
+cargo build --manifest-path Cargo.toml -p openhuman-cli --bin openhuman-core
 
 # Check the stable host-facing embedding facade
 cargo check --manifest-path Cargo.toml -p openhuman-embed
@@ -94,7 +99,7 @@ cargo build --manifest-path Cargo.toml -p openhuman-tui
 cargo check --manifest-path crates/openhuman-app/Cargo.toml
 
 # Release build
-cargo build --manifest-path Cargo.toml --release --bin openhuman-core
+cargo build --manifest-path Cargo.toml --release -p openhuman-cli --bin openhuman-core
 
 # Rust tests
 cargo test --manifest-path Cargo.toml
@@ -102,8 +107,7 @@ cargo test --manifest-path Cargo.toml
 
 Notes:
 
-- The **package** name is `openhuman`, but the runnable binary is **`openhuman-core`**.
-- If you prefer package-oriented cargo commands for packager scripts, use `-p openhuman`.
+- The core library's package name is `openhuman` (crate `openhuman_core`), but the runnable binary, `openhuman-core`, is built from the `openhuman-cli` package (`crates/openhuman-cli/src/main.rs`), which is why the commands above pass `-p openhuman-cli`.
 - The built binary lands at `target/debug/openhuman-core` or `target/release/openhuman-core`.
 
 ### Faster local linking (optional)
@@ -115,7 +119,7 @@ on Linux, lld on macOS) can cut a large slice off every incremental relink.
 opt-in, but the easiest path is:
 
 ```bash
-# installs mold/lld detection into $CARGO_HOME/config.toml — never the
+# installs mold/lld detection into $CARGO_HOME/config.toml, never the
 # repo's tracked .cargo/config.toml, so it's a per-machine opt-in
 scripts/dev-setup-linker.sh
 
@@ -123,12 +127,25 @@ scripts/dev-setup-linker.sh
 scripts/dev-setup-linker.sh --dry-run
 ```
 
-Install the linker first (`apt install mold` / `brew install llvm`) — the
+Install the linker first (`apt install mold` / `brew install llvm`). The
 script detects it and exits with instructions if it's missing. It's
 idempotent: re-running it after the linker is already configured is a no-op.
 CI enables the same flag directly via `RUSTFLAGS` in the Linux Rust jobs; this
 script exists so local `cargo` invocations get the same speedup without
 depending on a container.
+
+### Feature gates and binary size
+
+`crates/openhuman-core/Cargo.toml` builds most of its domains behind Cargo
+features. A bare `cargo check` compiles the contributor default set (`media`,
+`skills`, `flows`, `mcp`, `channels`, `http-server`, `scheduler-gate`,
+`file-logging`, `modules`), which is not the same as what the desktop app
+ships: `scripts/ci/product-features.txt` is the single source of truth for
+the shipped product's gate list, and `scripts/ci/check-feature-forwarding.mjs`
+asserts that `crates/openhuman-app/Cargo.toml` forwards exactly that set.
+Turning a gate off drops real code and, for some gates, whole native
+dependencies. For measured binary sizes and RSS across a few feature recipes,
+see [Performance](performance.md).
 
 ## 4. macOS prerequisites
 
@@ -216,7 +233,7 @@ Recommended commands after the Microsoft toolchain is installed:
 ```powershell
 rustup toolchain install 1.96.1 --component rustfmt --component clippy
 rustup target add x86_64-pc-windows-msvc
-cargo build --manifest-path Cargo.toml --bin openhuman-core
+cargo build --manifest-path Cargo.toml -p openhuman-cli --bin openhuman-core
 ```
 
 Use the MSVC toolchain, not MinGW, to match CI and release builds.
@@ -226,3 +243,6 @@ Use the MSVC toolchain, not MinGW, to match CI and release builds.
 - [Getting Set Up](getting-set-up.md): full desktop contributor setup with `pnpm`, Tauri, and submodules. The core runs in-process inside the desktop shell (see [Tauri Shell](architecture/tauri-shell.md)); there is no sidecar staging step.
 - [OpenHuman Architecture](architecture/README.md): where the core fits into the desktop app and RPC flow.
 - [Deep Architecture Reference](architecture.md): the full crate map and repository layout.
+- [Embedding](embedding.md): using `crates/openhuman-embed` to run the core as a library in another product.
+- [Engines](engines.md): the pluggable LLM, embedding, memory, and search backends the core can run against.
+- [Performance](performance.md): binary size, cold start, and memory numbers across feature recipes.

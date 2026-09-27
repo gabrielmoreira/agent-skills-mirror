@@ -1,6 +1,6 @@
 # startup
 
-Generic OpenHuman process-startup helpers. Currently a thin, stateless module whose sole job is to run one-shot workspace migrations during core boot. It centralizes "do this once when the process comes up" logic so the transport layer (`crates/openhuman-core/src/core/jsonrpc.rs`) can fire it without owning migration details. Failures are logged and never abort startup — individual migration helpers own their own idempotency markers.
+Generic OpenHuman process-startup helpers. Currently a thin, stateless module whose sole job is to run one-shot workspace migrations during core boot. It centralizes "do this once when the process comes up" logic so the transport layer (`crates/openhuman-core/src/core/jsonrpc.rs`) can fire it without owning migration details. Failures are logged and never abort startup: individual migration helpers own their own idempotency markers.
 
 ## Responsibilities
 
@@ -14,11 +14,11 @@ Generic OpenHuman process-startup helpers. Currently a thin, stateless module wh
 | File | Role |
 | --- | --- |
 | `crates/openhuman-core/src/platform/startup/mod.rs` | Export-only: module docstring + `pub mod ops;` + re-export of `run_workspace_migrations`. |
-| `crates/openhuman-core/src/platform/startup/ops.rs` | Implementation of `run_workspace_migrations` — orchestrates the two workspace migrations and logging. |
+| `crates/openhuman-core/src/platform/startup/ops.rs` | Implementation of `run_workspace_migrations`: orchestrates the two workspace migrations and logging. |
 
 ## Public surface
 
-- `run_workspace_migrations(workspace_dir: &Path)` (re-exported from `ops`) — the only public entry point. Returns nothing; all failure handling is internal/logged.
+- `run_workspace_migrations(workspace_dir: &Path)` (re-exported from `ops`): the only public entry point. Returns nothing; all failure handling is internal/logged.
 
 ## RPC / controllers
 
@@ -38,16 +38,16 @@ No own state/store. It triggers migrations that mutate on-disk workspace artifac
 
 ## Dependencies
 
-- `tinyagents_session::transcript` — owns the durable session layout and transcript transitions.
-- `crate::threads::migrate_welcome_agent_artifacts` — performs the welcome-agent → orchestrator artifact migration.
+- `tinyagents_session::transcript`: owns the durable session layout and transcript transitions.
+- `crate::threads::migrate_welcome_agent_artifacts`: performs the welcome-agent → orchestrator artifact migration.
 
 ## Used by
 
-- `crates/openhuman-core/src/core/jsonrpc.rs` (core boot path) — the only caller; invokes `run_workspace_migrations(&workspace_dir)` during core startup, after approval-gate wiring and before MCP registry boot-spawn.
+- `crates/openhuman-core/src/core/jsonrpc.rs` (core boot path): the only caller; invokes `run_workspace_migrations(&workspace_dir)` during core startup, after approval-gate wiring and before MCP registry boot-spawn.
 
 ## Notes / gotchas
 
-- **Non-fatal by design**: every migration branch logs and continues; a failed migration must never block startup.
-- **Idempotency is delegated**: this module does not track whether a migration already ran — it relies on each helper's own `already_done` markers. Re-running is safe.
-- **Grep-friendly log prefixes**: `[runtime]` for session-layout, `[migration::welcome-to-orchestrator]` for the thread/artifact migration.
-- Module is intentionally minimal — no `types.rs`/`store.rs`/`schemas.rs` because it holds no domain types, no persisted state, and no RPC surface.
+- Non-fatal by design: every migration branch logs and continues; a failed migration must never block startup.
+- Idempotency is delegated: this module does not track whether a migration already ran: it relies on each helper's own `already_done` markers. Re-running is safe.
+- Grep-friendly log prefixes: `[runtime]` for session-layout, `[migration::welcome-to-orchestrator]` for the thread/artifact migration.
+- Module is intentionally minimal: no `types.rs`/`store.rs`/`schemas.rs` because it holds no domain types, no persisted state, and no RPC surface.

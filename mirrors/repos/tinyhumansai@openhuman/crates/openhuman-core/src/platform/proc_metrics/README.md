@@ -9,7 +9,7 @@ figures.
 | File | Role |
 | --- | --- |
 | `crates/openhuman-core/src/platform/proc_metrics/mod.rs` | `ProcSample`, `sample_self`, `/proc` parsers, and roster/report aggregation. |
-| `crates/openhuman-core/src/platform/proc_metrics/tree.rs` | `sample_tree`, `ChildSample`, `TreeSample` — process-*tree* RSS including descendants. |
+| `crates/openhuman-core/src/platform/proc_metrics/tree.rs` | `sample_tree`, `ChildSample`, `TreeSample`: process-*tree* RSS including descendants. |
 
 ## `ProcSample`
 
@@ -39,8 +39,8 @@ budget and CI-gate ceiling for the embedded agent roster (#5046).
 
 ## Process trees
 
-`sample_tree` (in `tree.rs`) measures a process *and all of its descendants*
-— the interpreter children a skill run or shell tool spawns — returning a
+`sample_tree` (in `tree.rs`) measures a process and all of its descendants,
+the interpreter children a skill run or shell tool spawns, returning a
 `TreeSample` (`self_sample`, `children: Vec<ChildSample>`, `tree_rss_kib`).
 Descendant lookups that fail (a child that raced away, a permission error)
 are skipped with a stderr note rather than aborting the sample.
@@ -48,8 +48,8 @@ are skipped with a stderr note rather than aborting the sample.
 ## Used by
 
 - `crates/openhuman-cli/src/bin/rss_bench.rs` and `bin/library_profile/`
-  (feature `rss-bench`) — the RSS/memory benchmark binaries this module was
+  (feature `rss-bench`): the RSS/memory benchmark binaries this module was
   built for.
 - [`docs/library-benchmarking.md`](../../../../../docs/library-benchmarking.md)
-  — documents the benchmark methodology and points readers here for the
+ : documents the benchmark methodology and points readers here for the
   sampling implementation.

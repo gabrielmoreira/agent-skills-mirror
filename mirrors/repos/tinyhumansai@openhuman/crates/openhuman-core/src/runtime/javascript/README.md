@@ -5,7 +5,7 @@ re-export facade: it gives the rest of the codebase a stable
 `crate::runtime::javascript` import path that talks to a *language*
 (`javascript`) rather than to a concrete backend. Today the implementation
 backend is the managed Node.js client in [`crate::runtime::node`](../node/README.md),
-which is itself a client for the vendored `tinyruntime` module — the facade
+which is itself a client for the vendored `tinyruntime` module: the facade
 exists so the backend underneath can be swapped without churning callers. It
 owns no logic of its own: every symbol it exposes is a `pub use`.
 
@@ -17,7 +17,7 @@ owns no logic of its own: every symbol it exposes is a `pub use`.
 
 ## Gating (`runtime-node`)
 
-The facade itself is **always compiled** — `ShellTool` and the other exec
+The facade itself is **always compiled**: `ShellTool` and the other exec
 tools hold an `Option<Arc<NodeBootstrap>>`, so the bootstrap type surface must
 exist in every build:
 
@@ -32,7 +32,7 @@ exist in every build:
   `all_runtime_node_registered_controllers`). The controller pair only exists
   with the feature on; the dispatcher behind `execute_tool` / `list_tools`
   (`runtime::node::ops`) is itself always compiled because the ungated `flows`
-  `oh:` backend calls it directly — only this facade's alias is gated, since
+  `oh:` backend calls it directly: only this facade's alias is gated, since
   its sole consumer here is the gated `runtime::node::rpc` bridge.
 
 ## Public surface
@@ -51,7 +51,7 @@ through this facade's `all_javascript_*` aliases:
 
 | Method | Inputs | Outputs |
 | --- | --- | --- |
-| `javascript.list_tools` | — | `tools`: array of tool metadata (`name`, `description`, `category`, `permission_level`, `scope`, `supports_markdown`, `parameters`). |
+| `javascript.list_tools` | none | `tools`: array of tool metadata (`name`, `description`, `category`, `permission_level`, `scope`, `supports_markdown`, `parameters`). |
 | `javascript.execute_tool` | `tool_name` (required), `args` (optional Json, defaults to `{}`), `prefer_markdown` (optional bool) | `tool_name`, `elapsed_ms` (u64), `result` (MCP-style `ToolResult`: `{content, is_error, markdownFormatted?}`). |
 
 Handlers live in `runtime::node::rpc`, load config via
@@ -68,20 +68,20 @@ Handlers live in `runtime::node::rpc`, load config via
 
 ## Used by
 
-- `crates/openhuman-core/src/core/all.rs` — wires
+- `crates/openhuman-core/src/core/all.rs`: wires
   `all_javascript_registered_controllers` into the controller registry.
-- `crates/openhuman-core/src/tools/ops.rs` — constructs the shared
+- `crates/openhuman-core/src/tools/ops.rs`: constructs the shared
   `Arc<NodeBootstrap>` (only when `runtime-node` is on and `config.node.enabled`);
   `tools/impl/system/{shell,node_exec,npm_exec}.rs` hold it for Node binary
   resolution.
-- `crates/openhuman-core/src/runtime/node/rpc.rs` — calls back into
+- `crates/openhuman-core/src/runtime/node/rpc.rs`: calls back into
   `javascript::{list_tools, execute_tool}` through the facade alias.
 
 ## Notes / gotchas
 
 - This is a rename-only facade: no `types.rs` / `ops.rs` / `store.rs` here by
   design. Edit behavior in [`runtime/node`](../node/README.md), not here.
-- `javascript.execute_tool` rebuilds the entire tool set on every call — there
+- `javascript.execute_tool` rebuilds the entire tool set on every call: there
   is no persistent tool cache at this layer.
 - See [`runtime/node/README.md`](../node/README.md) for everything the facade
   forwards to, including what moved out to the `tinyruntime` module.

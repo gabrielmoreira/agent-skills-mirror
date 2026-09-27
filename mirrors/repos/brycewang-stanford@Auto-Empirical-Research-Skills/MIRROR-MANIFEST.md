@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `brycewang-stanford/Auto-Empirical-Research-Skills` — 26 default patterns, 41 followed patterns, 3753 file(s) materialized.
+Mirror of `brycewang-stanford/Auto-Empirical-Research-Skills` — 26 default patterns, 41 followed patterns, 3891 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `brycewang-stanford/Auto-Empirical-Research-Skills` — 26 default pat
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 41 |
-| Files         | 3753 |
+| Files         | 3891 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -75,12 +75,12 @@ Mirror of `brycewang-stanford/Auto-Empirical-Research-Skills` — 26 default pat
 - `tools/CATALOG.md`
 - `docs/archive/EMPIRICAL_TOOLS_2026-06.md`
 - `README-en.md`
-- `README-zh-CN.md`
 - `README-zh-TW.md`
 - `README-ja.md`
 - `README-ko.md`
 - `docs/TRUST.md`
 - `INSTALL.md`
+- `README-zh-CN.md`
 - `docs/INSTALL.md`
 - `docs/SKILL_AUDIT.md`
 - `docs/CHOOSING_A_SKILL.md`
@@ -3810,48 +3810,186 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 3709 | ✓ | [`skills/72-kaggle-research/kaggle-research/tests/test_skill_contract.py`](skills/72-kaggle-research/kaggle-research/tests/test_skill_contract.py) |
 | 3710 | ✓ | [`skills/72-kaggle-research/kaggle-research/tests/test_smoke.py`](skills/72-kaggle-research/kaggle-research/tests/test_smoke.py) |
 | 3711 | ✓ | [`skills/72-kaggle-research/README.md`](skills/72-kaggle-research/README.md) |
-| 3712 | ✓ | [`skills/README.md`](skills/README.md) |
-| 3713 | → | [`aers_score/README.md`](aers_score/README.md) |
-| 3714 | → | [`CHANGELOG.md`](CHANGELOG.md) |
-| 3715 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 3716 | → | [`docs/archive/EMPIRICAL_TOOLS_2026-06.md`](docs/archive/EMPIRICAL_TOOLS_2026-06.md) |
-| 3717 | → | [`docs/CHOOSING_A_SKILL.md`](docs/CHOOSING_A_SKILL.md) |
-| 3718 | → | [`docs/CONTENT_ZH.md`](docs/CONTENT_ZH.md) |
-| 3719 | → | [`docs/demos/de-aigc.md`](docs/demos/de-aigc.md) |
-| 3720 | → | [`docs/ECOSYSTEM.md`](docs/ECOSYSTEM.md) |
-| 3721 | → | [`docs/EVALS.md`](docs/EVALS.md) |
-| 3722 | → | [`docs/EXTERNAL_SCOREBOARD.md`](docs/EXTERNAL_SCOREBOARD.md) |
-| 3723 | → | [`docs/FAQ.md`](docs/FAQ.md) |
-| 3724 | → | [`docs/GETTING_STARTED.md`](docs/GETTING_STARTED.md) |
-| 3725 | → | [`docs/GOLDEN_WORKFLOWS.md`](docs/GOLDEN_WORKFLOWS.md) |
-| 3726 | → | [`docs/INSTALL.md`](docs/INSTALL.md) |
-| 3727 | → | [`docs/INTEROP.md`](docs/INTEROP.md) |
-| 3728 | → | [`docs/LICENSE_AUDIT.md`](docs/LICENSE_AUDIT.md) |
-| 3729 | → | [`docs/LONG_SKILL_STATUS.md`](docs/LONG_SKILL_STATUS.md) |
-| 3730 | → | [`docs/PLAN-2026-07.md`](docs/PLAN-2026-07.md) |
-| 3731 | → | [`docs/QUALITY_GATE.md`](docs/QUALITY_GATE.md) |
-| 3732 | → | [`docs/RELEASE_NOTES.md`](docs/RELEASE_NOTES.md) |
-| 3733 | → | [`docs/RELEASE.md`](docs/RELEASE.md) |
-| 3734 | → | [`docs/RIGOR_COVERAGE.md`](docs/RIGOR_COVERAGE.md) |
-| 3735 | → | [`docs/ROADMAP.md`](docs/ROADMAP.md) |
-| 3736 | → | [`docs/SCOREBOARD_RULES.md`](docs/SCOREBOARD_RULES.md) |
-| 3737 | → | [`docs/SKILL_AUDIT.md`](docs/SKILL_AUDIT.md) |
-| 3738 | → | [`docs/SKILL_CATALOG.md`](docs/SKILL_CATALOG.md) |
-| 3739 | → | [`docs/SKILL_HYGIENE.md`](docs/SKILL_HYGIENE.md) |
-| 3740 | → | [`docs/SKILL_SUBMISSION_GUIDE.md`](docs/SKILL_SUBMISSION_GUIDE.md) |
-| 3741 | → | [`docs/TAXONOMY.md`](docs/TAXONOMY.md) |
-| 3742 | → | [`docs/TRUST.md`](docs/TRUST.md) |
-| 3743 | → | [`docs/WORKFLOW_MAP.md`](docs/WORKFLOW_MAP.md) |
-| 3744 | → | [`INSTALL.md`](INSTALL.md) |
-| 3745 | → | [`README-en.md`](README-en.md) |
-| 3746 | → | [`README-ja.md`](README-ja.md) |
-| 3747 | → | [`README-ko.md`](README-ko.md) |
-| 3748 | → | [`README-zh-CN.md`](README-zh-CN.md) |
-| 3749 | → | [`README-zh-TW.md`](README-zh-TW.md) |
-| 3750 | → | [`README.md`](README.md) |
-| 3751 | → | [`SECURITY-SCAN-REPORT.md`](SECURITY-SCAN-REPORT.md) |
-| 3752 | → | [`tools/CATALOG.md`](tools/CATALOG.md) |
-| 3753 | → | [`tools/README.md`](tools/README.md) |
+| 3712 | ✓ | [`skills/73-brycewang-p-hacking-skills/.claude-plugin/marketplace.json`](skills/73-brycewang-p-hacking-skills/.claude-plugin/marketplace.json) |
+| 3713 | ✓ | [`skills/73-brycewang-p-hacking-skills/.claude-plugin/plugin.json`](skills/73-brycewang-p-hacking-skills/.claude-plugin/plugin.json) |
+| 3714 | ✓ | [`skills/73-brycewang-p-hacking-skills/.github/ISSUE_TEMPLATE/bug_report.md`](skills/73-brycewang-p-hacking-skills/.github/ISSUE_TEMPLATE/bug_report.md) |
+| 3715 | ✓ | [`skills/73-brycewang-p-hacking-skills/.github/ISSUE_TEMPLATE/new_axis.md`](skills/73-brycewang-p-hacking-skills/.github/ISSUE_TEMPLATE/new_axis.md) |
+| 3716 | ✓ | [`skills/73-brycewang-p-hacking-skills/.github/ISSUE_TEMPLATE/new_dataset.md`](skills/73-brycewang-p-hacking-skills/.github/ISSUE_TEMPLATE/new_dataset.md) |
+| 3717 | ✓ | [`skills/73-brycewang-p-hacking-skills/.github/ISSUE_TEMPLATE/parity_report.md`](skills/73-brycewang-p-hacking-skills/.github/ISSUE_TEMPLATE/parity_report.md) |
+| 3718 | ✓ | [`skills/73-brycewang-p-hacking-skills/.github/workflows/ci.yml`](skills/73-brycewang-p-hacking-skills/.github/workflows/ci.yml) |
+| 3719 | ✓ | [`skills/73-brycewang-p-hacking-skills/.gitignore`](skills/73-brycewang-p-hacking-skills/.gitignore) |
+| 3720 | ✓ | [`skills/73-brycewang-p-hacking-skills/catalog/skills.json`](skills/73-brycewang-p-hacking-skills/catalog/skills.json) |
+| 3721 | ✓ | [`skills/73-brycewang-p-hacking-skills/CHANGELOG.md`](skills/73-brycewang-p-hacking-skills/CHANGELOG.md) |
+| 3722 | ✓ | [`skills/73-brycewang-p-hacking-skills/CITATION.cff`](skills/73-brycewang-p-hacking-skills/CITATION.cff) |
+| 3723 | ✓ | [`skills/73-brycewang-p-hacking-skills/CODE_OF_CONDUCT.md`](skills/73-brycewang-p-hacking-skills/CODE_OF_CONDUCT.md) |
+| 3724 | ✓ | [`skills/73-brycewang-p-hacking-skills/CONTRIBUTING.md`](skills/73-brycewang-p-hacking-skills/CONTRIBUTING.md) |
+| 3725 | ✓ | [`skills/73-brycewang-p-hacking-skills/demo.sh`](skills/73-brycewang-p-hacking-skills/demo.sh) |
+| 3726 | ✓ | [`skills/73-brycewang-p-hacking-skills/Dockerfile`](skills/73-brycewang-p-hacking-skills/Dockerfile) |
+| 3727 | ✓ | [`skills/73-brycewang-p-hacking-skills/docs/api.md`](skills/73-brycewang-p-hacking-skills/docs/api.md) |
+| 3728 | ✓ | [`skills/73-brycewang-p-hacking-skills/docs/capability.md`](skills/73-brycewang-p-hacking-skills/docs/capability.md) |
+| 3729 | ✓ | [`skills/73-brycewang-p-hacking-skills/docs/capability.zh.md`](skills/73-brycewang-p-hacking-skills/docs/capability.zh.md) |
+| 3730 | ✓ | [`skills/73-brycewang-p-hacking-skills/docs/concepts.md`](skills/73-brycewang-p-hacking-skills/docs/concepts.md) |
+| 3731 | ✓ | [`skills/73-brycewang-p-hacking-skills/docs/contributing.md`](skills/73-brycewang-p-hacking-skills/docs/contributing.md) |
+| 3732 | ✓ | [`skills/73-brycewang-p-hacking-skills/docs/example_audit.json`](skills/73-brycewang-p-hacking-skills/docs/example_audit.json) |
+| 3733 | ✓ | [`skills/73-brycewang-p-hacking-skills/docs/example_report_null_panel.md`](skills/73-brycewang-p-hacking-skills/docs/example_report_null_panel.md) |
+| 3734 | ✓ | [`skills/73-brycewang-p-hacking-skills/docs/index.md`](skills/73-brycewang-p-hacking-skills/docs/index.md) |
+| 3735 | ✓ | [`skills/73-brycewang-p-hacking-skills/docs/language-map.md`](skills/73-brycewang-p-hacking-skills/docs/language-map.md) |
+| 3736 | ✓ | [`skills/73-brycewang-p-hacking-skills/docs/ledger-schema.md`](skills/73-brycewang-p-hacking-skills/docs/ledger-schema.md) |
+| 3737 | ✓ | [`skills/73-brycewang-p-hacking-skills/docs/skills-quickstart.md`](skills/73-brycewang-p-hacking-skills/docs/skills-quickstart.md) |
+| 3738 | ✓ | [`skills/73-brycewang-p-hacking-skills/docs/skills-quickstart.zh.md`](skills/73-brycewang-p-hacking-skills/docs/skills-quickstart.zh.md) |
+| 3739 | ✓ | [`skills/73-brycewang-p-hacking-skills/docs/spec_curve_null_panel.png`](skills/73-brycewang-p-hacking-skills/docs/spec_curve_null_panel.png) |
+| 3740 | ✓ | [`skills/73-brycewang-p-hacking-skills/docs/tutorial.md`](skills/73-brycewang-p-hacking-skills/docs/tutorial.md) |
+| 3741 | ✓ | [`skills/73-brycewang-p-hacking-skills/docs/verify.md`](skills/73-brycewang-p-hacking-skills/docs/verify.md) |
+| 3742 | ✓ | [`skills/73-brycewang-p-hacking-skills/eval/benchmark.json`](skills/73-brycewang-p-hacking-skills/eval/benchmark.json) |
+| 3743 | ✓ | [`skills/73-brycewang-p-hacking-skills/eval/data/CHECKSUMS.json`](skills/73-brycewang-p-hacking-skills/eval/data/CHECKSUMS.json) |
+| 3744 | ✓ | [`skills/73-brycewang-p-hacking-skills/eval/data/effect_iv_card.json`](skills/73-brycewang-p-hacking-skills/eval/data/effect_iv_card.json) |
+| 3745 | ✓ | [`skills/73-brycewang-p-hacking-skills/eval/data/effect_iv.csv`](skills/73-brycewang-p-hacking-skills/eval/data/effect_iv.csv) |
+| 3746 | ✓ | [`skills/73-brycewang-p-hacking-skills/eval/data/effect_panel_card.json`](skills/73-brycewang-p-hacking-skills/eval/data/effect_panel_card.json) |
+| 3747 | ✓ | [`skills/73-brycewang-p-hacking-skills/eval/data/effect_panel.csv`](skills/73-brycewang-p-hacking-skills/eval/data/effect_panel.csv) |
+| 3748 | ✓ | [`skills/73-brycewang-p-hacking-skills/eval/data/effect_rdd_card.json`](skills/73-brycewang-p-hacking-skills/eval/data/effect_rdd_card.json) |
+| 3749 | ✓ | [`skills/73-brycewang-p-hacking-skills/eval/data/effect_rdd.csv`](skills/73-brycewang-p-hacking-skills/eval/data/effect_rdd.csv) |
+| 3750 | ✓ | [`skills/73-brycewang-p-hacking-skills/eval/data/effect_staggered_card.json`](skills/73-brycewang-p-hacking-skills/eval/data/effect_staggered_card.json) |
+| 3751 | ✓ | [`skills/73-brycewang-p-hacking-skills/eval/data/effect_staggered.csv`](skills/73-brycewang-p-hacking-skills/eval/data/effect_staggered.csv) |
+| 3752 | ✓ | [`skills/73-brycewang-p-hacking-skills/eval/data/null_iv_card.json`](skills/73-brycewang-p-hacking-skills/eval/data/null_iv_card.json) |
+| 3753 | ✓ | [`skills/73-brycewang-p-hacking-skills/eval/data/null_iv.csv`](skills/73-brycewang-p-hacking-skills/eval/data/null_iv.csv) |
+| 3754 | ✓ | [`skills/73-brycewang-p-hacking-skills/eval/data/null_panel_card.json`](skills/73-brycewang-p-hacking-skills/eval/data/null_panel_card.json) |
+| 3755 | ✓ | [`skills/73-brycewang-p-hacking-skills/eval/data/null_panel.csv`](skills/73-brycewang-p-hacking-skills/eval/data/null_panel.csv) |
+| 3756 | ✓ | [`skills/73-brycewang-p-hacking-skills/eval/data/null_rdd_card.json`](skills/73-brycewang-p-hacking-skills/eval/data/null_rdd_card.json) |
+| 3757 | ✓ | [`skills/73-brycewang-p-hacking-skills/eval/data/null_rdd.csv`](skills/73-brycewang-p-hacking-skills/eval/data/null_rdd.csv) |
+| 3758 | ✓ | [`skills/73-brycewang-p-hacking-skills/eval/data/null_staggered_card.json`](skills/73-brycewang-p-hacking-skills/eval/data/null_staggered_card.json) |
+| 3759 | ✓ | [`skills/73-brycewang-p-hacking-skills/eval/data/null_staggered_event_card.json`](skills/73-brycewang-p-hacking-skills/eval/data/null_staggered_event_card.json) |
+| 3760 | ✓ | [`skills/73-brycewang-p-hacking-skills/eval/data/null_staggered.csv`](skills/73-brycewang-p-hacking-skills/eval/data/null_staggered.csv) |
+| 3761 | ✓ | [`skills/73-brycewang-p-hacking-skills/eval/data/README.md`](skills/73-brycewang-p-hacking-skills/eval/data/README.md) |
+| 3762 | ✓ | [`skills/73-brycewang-p-hacking-skills/eval/prompts/framing/directional.md`](skills/73-brycewang-p-hacking-skills/eval/prompts/framing/directional.md) |
+| 3763 | ✓ | [`skills/73-brycewang-p-hacking-skills/eval/prompts/framing/neutral.md`](skills/73-brycewang-p-hacking-skills/eval/prompts/framing/neutral.md) |
+| 3764 | ✓ | [`skills/73-brycewang-p-hacking-skills/eval/prompts/nudge/none.md`](skills/73-brycewang-p-hacking-skills/eval/prompts/nudge/none.md) |
+| 3765 | ✓ | [`skills/73-brycewang-p-hacking-skills/eval/prompts/nudge/reviewer.md`](skills/73-brycewang-p-hacking-skills/eval/prompts/nudge/reviewer.md) |
+| 3766 | ✓ | [`skills/73-brycewang-p-hacking-skills/eval/prompts/nudge/robustness.md`](skills/73-brycewang-p-hacking-skills/eval/prompts/nudge/robustness.md) |
+| 3767 | ✓ | [`skills/73-brycewang-p-hacking-skills/eval/prompts/nudge/significance.md`](skills/73-brycewang-p-hacking-skills/eval/prompts/nudge/significance.md) |
+| 3768 | ✓ | [`skills/73-brycewang-p-hacking-skills/eval/prompts/nudge/split_role.md`](skills/73-brycewang-p-hacking-skills/eval/prompts/nudge/split_role.md) |
+| 3769 | ✓ | [`skills/73-brycewang-p-hacking-skills/eval/prompts/nudge/uncertainty_bounds.md`](skills/73-brycewang-p-hacking-skills/eval/prompts/nudge/uncertainty_bounds.md) |
+| 3770 | ✓ | [`skills/73-brycewang-p-hacking-skills/eval/prompts/nudge/upstanding.md`](skills/73-brycewang-p-hacking-skills/eval/prompts/nudge/upstanding.md) |
+| 3771 | ✓ | [`skills/73-brycewang-p-hacking-skills/eval/prompts/output/standard.md`](skills/73-brycewang-p-hacking-skills/eval/prompts/output/standard.md) |
+| 3772 | ✓ | [`skills/73-brycewang-p-hacking-skills/eval/prompts/README.md`](skills/73-brycewang-p-hacking-skills/eval/prompts/README.md) |
+| 3773 | ✓ | [`skills/73-brycewang-p-hacking-skills/eval/prompts/task/did_panel.md`](skills/73-brycewang-p-hacking-skills/eval/prompts/task/did_panel.md) |
+| 3774 | ✓ | [`skills/73-brycewang-p-hacking-skills/eval/prompts/task/rct.md`](skills/73-brycewang-p-hacking-skills/eval/prompts/task/rct.md) |
+| 3775 | ✓ | [`skills/73-brycewang-p-hacking-skills/eval/prompts/task/rdd.md`](skills/73-brycewang-p-hacking-skills/eval/prompts/task/rdd.md) |
+| 3776 | ✓ | [`skills/73-brycewang-p-hacking-skills/eval/prompts/task/soo.md`](skills/73-brycewang-p-hacking-skills/eval/prompts/task/soo.md) |
+| 3777 | ✓ | [`skills/73-brycewang-p-hacking-skills/eval/protocol.md`](skills/73-brycewang-p-hacking-skills/eval/protocol.md) |
+| 3778 | ✓ | [`skills/73-brycewang-p-hacking-skills/eval/results-schema.json`](skills/73-brycewang-p-hacking-skills/eval/results-schema.json) |
+| 3779 | ✓ | [`skills/73-brycewang-p-hacking-skills/eval/rubric.md`](skills/73-brycewang-p-hacking-skills/eval/rubric.md) |
+| 3780 | ✓ | [`skills/73-brycewang-p-hacking-skills/eval/run_probe.py`](skills/73-brycewang-p-hacking-skills/eval/run_probe.py) |
+| 3781 | ✓ | [`skills/73-brycewang-p-hacking-skills/LICENSE`](skills/73-brycewang-p-hacking-skills/LICENSE) |
+| 3782 | ✓ | [`skills/73-brycewang-p-hacking-skills/mkdocs.yml`](skills/73-brycewang-p-hacking-skills/mkdocs.yml) |
+| 3783 | ✓ | [`skills/73-brycewang-p-hacking-skills/notebooks/quickstart.ipynb`](skills/73-brycewang-p-hacking-skills/notebooks/quickstart.ipynb) |
+| 3784 | ✓ | [`skills/73-brycewang-p-hacking-skills/pyproject.toml`](skills/73-brycewang-p-hacking-skills/pyproject.toml) |
+| 3785 | ✓ | [`skills/73-brycewang-p-hacking-skills/README.md`](skills/73-brycewang-p-hacking-skills/README.md) |
+| 3786 | ✓ | [`skills/73-brycewang-p-hacking-skills/README.zh.md`](skills/73-brycewang-p-hacking-skills/README.zh.md) |
+| 3787 | ✓ | [`skills/73-brycewang-p-hacking-skills/references/econ-dof-maps.md`](skills/73-brycewang-p-hacking-skills/references/econ-dof-maps.md) |
+| 3788 | ✓ | [`skills/73-brycewang-p-hacking-skills/references/language-map.md`](skills/73-brycewang-p-hacking-skills/references/language-map.md) |
+| 3789 | ✓ | [`skills/73-brycewang-p-hacking-skills/references/literature.md`](skills/73-brycewang-p-hacking-skills/references/literature.md) |
+| 3790 | ✓ | [`skills/73-brycewang-p-hacking-skills/references/parity_table.md`](skills/73-brycewang-p-hacking-skills/references/parity_table.md) |
+| 3791 | ✓ | [`skills/73-brycewang-p-hacking-skills/references/taxonomy.md`](skills/73-brycewang-p-hacking-skills/references/taxonomy.md) |
+| 3792 | ✓ | [`skills/73-brycewang-p-hacking-skills/requirements.txt`](skills/73-brycewang-p-hacking-skills/requirements.txt) |
+| 3793 | ✓ | [`skills/73-brycewang-p-hacking-skills/RESPONSIBLE_USE.md`](skills/73-brycewang-p-hacking-skills/RESPONSIBLE_USE.md) |
+| 3794 | ✓ | [`skills/73-brycewang-p-hacking-skills/schema/design-card.schema.json`](skills/73-brycewang-p-hacking-skills/schema/design-card.schema.json) |
+| 3795 | ✓ | [`skills/73-brycewang-p-hacking-skills/scripts/aggregate_results.py`](skills/73-brycewang-p-hacking-skills/scripts/aggregate_results.py) |
+| 3796 | ✓ | [`skills/73-brycewang-p-hacking-skills/scripts/calibrate_engine.py`](skills/73-brycewang-p-hacking-skills/scripts/calibrate_engine.py) |
+| 3797 | ✓ | [`skills/73-brycewang-p-hacking-skills/scripts/check_catalog.py`](skills/73-brycewang-p-hacking-skills/scripts/check_catalog.py) |
+| 3798 | ✓ | [`skills/73-brycewang-p-hacking-skills/scripts/make_null_data.py`](skills/73-brycewang-p-hacking-skills/scripts/make_null_data.py) |
+| 3799 | ✓ | [`skills/73-brycewang-p-hacking-skills/scripts/parity.py`](skills/73-brycewang-p-hacking-skills/scripts/parity.py) |
+| 3800 | ✓ | [`skills/73-brycewang-p-hacking-skills/scripts/phack_cli.py`](skills/73-brycewang-p-hacking-skills/scripts/phack_cli.py) |
+| 3801 | ✓ | [`skills/73-brycewang-p-hacking-skills/scripts/phack/__init__.py`](skills/73-brycewang-p-hacking-skills/scripts/phack/__init__.py) |
+| 3802 | ✓ | [`skills/73-brycewang-p-hacking-skills/scripts/phack/bench.py`](skills/73-brycewang-p-hacking-skills/scripts/phack/bench.py) |
+| 3803 | ✓ | [`skills/73-brycewang-p-hacking-skills/scripts/phack/cli.py`](skills/73-brycewang-p-hacking-skills/scripts/phack/cli.py) |
+| 3804 | ✓ | [`skills/73-brycewang-p-hacking-skills/scripts/phack/core.py`](skills/73-brycewang-p-hacking-skills/scripts/phack/core.py) |
+| 3805 | ✓ | [`skills/73-brycewang-p-hacking-skills/scripts/phack/detect.py`](skills/73-brycewang-p-hacking-skills/scripts/phack/detect.py) |
+| 3806 | ✓ | [`skills/73-brycewang-p-hacking-skills/scripts/phack/grid.py`](skills/73-brycewang-p-hacking-skills/scripts/phack/grid.py) |
+| 3807 | ✓ | [`skills/73-brycewang-p-hacking-skills/scripts/phack/inference.py`](skills/73-brycewang-p-hacking-skills/scripts/phack/inference.py) |
+| 3808 | ✓ | [`skills/73-brycewang-p-hacking-skills/scripts/phack/init_card.py`](skills/73-brycewang-p-hacking-skills/scripts/phack/init_card.py) |
+| 3809 | ✓ | [`skills/73-brycewang-p-hacking-skills/scripts/phack/io.py`](skills/73-brycewang-p-hacking-skills/scripts/phack/io.py) |
+| 3810 | ✓ | [`skills/73-brycewang-p-hacking-skills/scripts/phack/plot.py`](skills/73-brycewang-p-hacking-skills/scripts/phack/plot.py) |
+| 3811 | ✓ | [`skills/73-brycewang-p-hacking-skills/scripts/phack/polyglot.py`](skills/73-brycewang-p-hacking-skills/scripts/phack/polyglot.py) |
+| 3812 | ✓ | [`skills/73-brycewang-p-hacking-skills/scripts/phack/procedures.py`](skills/73-brycewang-p-hacking-skills/scripts/phack/procedures.py) |
+| 3813 | ✓ | [`skills/73-brycewang-p-hacking-skills/scripts/phack/race.py`](skills/73-brycewang-p-hacking-skills/scripts/phack/race.py) |
+| 3814 | ✓ | [`skills/73-brycewang-p-hacking-skills/scripts/phack/report.py`](skills/73-brycewang-p-hacking-skills/scripts/phack/report.py) |
+| 3815 | ✓ | [`skills/73-brycewang-p-hacking-skills/scripts/phack/rundir.py`](skills/73-brycewang-p-hacking-skills/scripts/phack/rundir.py) |
+| 3816 | ✓ | [`skills/73-brycewang-p-hacking-skills/scripts/phack/score.py`](skills/73-brycewang-p-hacking-skills/scripts/phack/score.py) |
+| 3817 | ✓ | [`skills/73-brycewang-p-hacking-skills/scripts/phack/search.py`](skills/73-brycewang-p-hacking-skills/scripts/phack/search.py) |
+| 3818 | ✓ | [`skills/73-brycewang-p-hacking-skills/scripts/phack/simulate.py`](skills/73-brycewang-p-hacking-skills/scripts/phack/simulate.py) |
+| 3819 | ✓ | [`skills/73-brycewang-p-hacking-skills/scripts/phack/theatre.py`](skills/73-brycewang-p-hacking-skills/scripts/phack/theatre.py) |
+| 3820 | ✓ | [`skills/73-brycewang-p-hacking-skills/scripts/phack/verify.py`](skills/73-brycewang-p-hacking-skills/scripts/phack/verify.py) |
+| 3821 | ✓ | [`skills/73-brycewang-p-hacking-skills/skills/00-phack-router/SKILL.md`](skills/73-brycewang-p-hacking-skills/skills/00-phack-router/SKILL.md) |
+| 3822 | ✓ | [`skills/73-brycewang-p-hacking-skills/skills/01-phack-taxonomy/SKILL.md`](skills/73-brycewang-p-hacking-skills/skills/01-phack-taxonomy/SKILL.md) |
+| 3823 | ✓ | [`skills/73-brycewang-p-hacking-skills/skills/02-forking-paths/SKILL.md`](skills/73-brycewang-p-hacking-skills/skills/02-forking-paths/SKILL.md) |
+| 3824 | ✓ | [`skills/73-brycewang-p-hacking-skills/skills/03-specification-search/SKILL.md`](skills/73-brycewang-p-hacking-skills/skills/03-specification-search/SKILL.md) |
+| 3825 | ✓ | [`skills/73-brycewang-p-hacking-skills/skills/04-framing-attacks/SKILL.md`](skills/73-brycewang-p-hacking-skills/skills/04-framing-attacks/SKILL.md) |
+| 3826 | ✓ | [`skills/73-brycewang-p-hacking-skills/skills/05-narrative-laundering/SKILL.md`](skills/73-brycewang-p-hacking-skills/skills/05-narrative-laundering/SKILL.md) |
+| 3827 | ✓ | [`skills/73-brycewang-p-hacking-skills/skills/06-phack-detection/SKILL.md`](skills/73-brycewang-p-hacking-skills/skills/06-phack-detection/SKILL.md) |
+| 3828 | ✓ | [`skills/73-brycewang-p-hacking-skills/skills/07-phack-immunization/SKILL.md`](skills/73-brycewang-p-hacking-skills/skills/07-phack-immunization/SKILL.md) |
+| 3829 | ✓ | [`skills/73-brycewang-p-hacking-skills/skills/08-eval-harness/SKILL.md`](skills/73-brycewang-p-hacking-skills/skills/08-eval-harness/SKILL.md) |
+| 3830 | ✓ | [`skills/73-brycewang-p-hacking-skills/skills/09-search-procedures/SKILL.md`](skills/73-brycewang-p-hacking-skills/skills/09-search-procedures/SKILL.md) |
+| 3831 | ✓ | [`skills/73-brycewang-p-hacking-skills/skills/10-phack-polyglot/SKILL.md`](skills/73-brycewang-p-hacking-skills/skills/10-phack-polyglot/SKILL.md) |
+| 3832 | ✓ | [`skills/73-brycewang-p-hacking-skills/skills/README.zh.md`](skills/73-brycewang-p-hacking-skills/skills/README.zh.md) |
+| 3833 | ✓ | [`skills/73-brycewang-p-hacking-skills/tests/conftest.py`](skills/73-brycewang-p-hacking-skills/tests/conftest.py) |
+| 3834 | ✓ | [`skills/73-brycewang-p-hacking-skills/tests/test_core.py`](skills/73-brycewang-p-hacking-skills/tests/test_core.py) |
+| 3835 | ✓ | [`skills/73-brycewang-p-hacking-skills/tests/test_designs.py`](skills/73-brycewang-p-hacking-skills/tests/test_designs.py) |
+| 3836 | ✓ | [`skills/73-brycewang-p-hacking-skills/tests/test_detect.py`](skills/73-brycewang-p-hacking-skills/tests/test_detect.py) |
+| 3837 | ✓ | [`skills/73-brycewang-p-hacking-skills/tests/test_event_study.py`](skills/73-brycewang-p-hacking-skills/tests/test_event_study.py) |
+| 3838 | ✓ | [`skills/73-brycewang-p-hacking-skills/tests/test_grid_v2.py`](skills/73-brycewang-p-hacking-skills/tests/test_grid_v2.py) |
+| 3839 | ✓ | [`skills/73-brycewang-p-hacking-skills/tests/test_polyglot.py`](skills/73-brycewang-p-hacking-skills/tests/test_polyglot.py) |
+| 3840 | ✓ | [`skills/73-brycewang-p-hacking-skills/tests/test_procedures.py`](skills/73-brycewang-p-hacking-skills/tests/test_procedures.py) |
+| 3841 | ✓ | [`skills/73-brycewang-p-hacking-skills/tests/test_race.py`](skills/73-brycewang-p-hacking-skills/tests/test_race.py) |
+| 3842 | ✓ | [`skills/73-brycewang-p-hacking-skills/tests/test_release.py`](skills/73-brycewang-p-hacking-skills/tests/test_release.py) |
+| 3843 | ✓ | [`skills/73-brycewang-p-hacking-skills/tests/test_rundir.py`](skills/73-brycewang-p-hacking-skills/tests/test_rundir.py) |
+| 3844 | ✓ | [`skills/73-brycewang-p-hacking-skills/tests/test_score_langs.py`](skills/73-brycewang-p-hacking-skills/tests/test_score_langs.py) |
+| 3845 | ✓ | [`skills/73-brycewang-p-hacking-skills/tests/test_score.py`](skills/73-brycewang-p-hacking-skills/tests/test_score.py) |
+| 3846 | ✓ | [`skills/73-brycewang-p-hacking-skills/tests/test_search_v2.py`](skills/73-brycewang-p-hacking-skills/tests/test_search_v2.py) |
+| 3847 | ✓ | [`skills/73-brycewang-p-hacking-skills/tests/test_search.py`](skills/73-brycewang-p-hacking-skills/tests/test_search.py) |
+| 3848 | ✓ | [`skills/73-brycewang-p-hacking-skills/tests/test_simulate.py`](skills/73-brycewang-p-hacking-skills/tests/test_simulate.py) |
+| 3849 | ✓ | [`skills/73-brycewang-p-hacking-skills/tests/test_theatre.py`](skills/73-brycewang-p-hacking-skills/tests/test_theatre.py) |
+| 3850 | ✓ | [`skills/README.md`](skills/README.md) |
+| 3851 | → | [`aers_score/README.md`](aers_score/README.md) |
+| 3852 | → | [`CHANGELOG.md`](CHANGELOG.md) |
+| 3853 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 3854 | → | [`docs/archive/EMPIRICAL_TOOLS_2026-06.md`](docs/archive/EMPIRICAL_TOOLS_2026-06.md) |
+| 3855 | → | [`docs/CHOOSING_A_SKILL.md`](docs/CHOOSING_A_SKILL.md) |
+| 3856 | → | [`docs/CONTENT_ZH.md`](docs/CONTENT_ZH.md) |
+| 3857 | → | [`docs/demos/de-aigc.md`](docs/demos/de-aigc.md) |
+| 3858 | → | [`docs/ECOSYSTEM.md`](docs/ECOSYSTEM.md) |
+| 3859 | → | [`docs/EVALS.md`](docs/EVALS.md) |
+| 3860 | → | [`docs/EXTERNAL_SCOREBOARD.md`](docs/EXTERNAL_SCOREBOARD.md) |
+| 3861 | → | [`docs/FAQ.md`](docs/FAQ.md) |
+| 3862 | → | [`docs/GETTING_STARTED.md`](docs/GETTING_STARTED.md) |
+| 3863 | → | [`docs/GOLDEN_WORKFLOWS.md`](docs/GOLDEN_WORKFLOWS.md) |
+| 3864 | → | [`docs/INSTALL.md`](docs/INSTALL.md) |
+| 3865 | → | [`docs/INTEROP.md`](docs/INTEROP.md) |
+| 3866 | → | [`docs/LICENSE_AUDIT.md`](docs/LICENSE_AUDIT.md) |
+| 3867 | → | [`docs/LONG_SKILL_STATUS.md`](docs/LONG_SKILL_STATUS.md) |
+| 3868 | → | [`docs/PLAN-2026-07.md`](docs/PLAN-2026-07.md) |
+| 3869 | → | [`docs/QUALITY_GATE.md`](docs/QUALITY_GATE.md) |
+| 3870 | → | [`docs/RELEASE_NOTES.md`](docs/RELEASE_NOTES.md) |
+| 3871 | → | [`docs/RELEASE.md`](docs/RELEASE.md) |
+| 3872 | → | [`docs/RIGOR_COVERAGE.md`](docs/RIGOR_COVERAGE.md) |
+| 3873 | → | [`docs/ROADMAP.md`](docs/ROADMAP.md) |
+| 3874 | → | [`docs/SCOREBOARD_RULES.md`](docs/SCOREBOARD_RULES.md) |
+| 3875 | → | [`docs/SKILL_AUDIT.md`](docs/SKILL_AUDIT.md) |
+| 3876 | → | [`docs/SKILL_CATALOG.md`](docs/SKILL_CATALOG.md) |
+| 3877 | → | [`docs/SKILL_HYGIENE.md`](docs/SKILL_HYGIENE.md) |
+| 3878 | → | [`docs/SKILL_SUBMISSION_GUIDE.md`](docs/SKILL_SUBMISSION_GUIDE.md) |
+| 3879 | → | [`docs/TAXONOMY.md`](docs/TAXONOMY.md) |
+| 3880 | → | [`docs/TRUST.md`](docs/TRUST.md) |
+| 3881 | → | [`docs/WORKFLOW_MAP.md`](docs/WORKFLOW_MAP.md) |
+| 3882 | → | [`INSTALL.md`](INSTALL.md) |
+| 3883 | → | [`README-en.md`](README-en.md) |
+| 3884 | → | [`README-ja.md`](README-ja.md) |
+| 3885 | → | [`README-ko.md`](README-ko.md) |
+| 3886 | → | [`README-zh-CN.md`](README-zh-CN.md) |
+| 3887 | → | [`README-zh-TW.md`](README-zh-TW.md) |
+| 3888 | → | [`README.md`](README.md) |
+| 3889 | → | [`SECURITY-SCAN-REPORT.md`](SECURITY-SCAN-REPORT.md) |
+| 3890 | → | [`tools/CATALOG.md`](tools/CATALOG.md) |
+| 3891 | → | [`tools/README.md`](tools/README.md) |
 
 ---
 

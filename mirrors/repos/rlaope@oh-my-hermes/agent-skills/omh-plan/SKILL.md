@@ -1,6 +1,6 @@
 ---
 name: "omh-plan"
-description: "[omh] Unplanned feature or bugfix: structured planning before execution. Use when the user says: plan, implementation plan, make a plan, write a plan, write the plan, task breakdown, safe feature, safely add a feature."
+description: "[omh] Software feature or bugfix not yet planned: structured planning before execution. Use when the user says: plan, implementation plan, make a plan, write a plan, write the plan, task breakdown, safe feature, safely add a feature."
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, planning]

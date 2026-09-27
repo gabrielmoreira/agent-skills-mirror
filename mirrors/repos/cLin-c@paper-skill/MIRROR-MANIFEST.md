@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `cLin-c/paper-skill` — 26 default patterns, 23 followed patterns, 26 file(s) materialized.
+Mirror of `cLin-c/paper-skill` — 26 default patterns, 24 followed patterns, 27 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `cLin-c/paper-skill` — 26 default patterns, 23 followed patterns, 26
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 23 |
-| Files         | 26 |
+| Followed pats | 24 |
+| Files         | 27 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -66,6 +66,7 @@ Mirror of `cLin-c/paper-skill` — 26 default patterns, 23 followed patterns, 26
 - `workflows/full-verification.md`
 - `references/venues/ieee-tro.md`
 - `references/prompt-bank.md`
+- `references/personal-writing-style.md`
 - `references/section-guides/paragraph-architecture.md`
 - `references/section-guides/abstract.md`
 - `references/section-guides/introduction.md`
@@ -91,22 +92,23 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 8 | → | [`references/figure-prompts.md`](references/figure-prompts.md) |
 | 9 | → | [`references/output-contracts.md`](references/output-contracts.md) |
 | 10 | → | [`references/paper-writing-prompts.md`](references/paper-writing-prompts.md) |
-| 11 | → | [`references/prompt-bank.md`](references/prompt-bank.md) |
-| 12 | → | [`references/reporting-guidelines.md`](references/reporting-guidelines.md) |
-| 13 | → | [`references/section-guides/abstract.md`](references/section-guides/abstract.md) |
-| 14 | → | [`references/section-guides/discussion-conclusion.md`](references/section-guides/discussion-conclusion.md) |
-| 15 | → | [`references/section-guides/experiments.md`](references/section-guides/experiments.md) |
-| 16 | → | [`references/section-guides/introduction.md`](references/section-guides/introduction.md) |
-| 17 | → | [`references/section-guides/method.md`](references/section-guides/method.md) |
-| 18 | → | [`references/section-guides/paragraph-architecture.md`](references/section-guides/paragraph-architecture.md) |
-| 19 | → | [`references/section-guides/related-work.md`](references/section-guides/related-work.md) |
-| 20 | → | [`references/venues/ieee-tro.md`](references/venues/ieee-tro.md) |
-| 21 | → | [`references/verification-policy.md`](references/verification-policy.md) |
-| 22 | → | [`workflows/figure-audit.md`](workflows/figure-audit.md) |
-| 23 | → | [`workflows/full-verification.md`](workflows/full-verification.md) |
-| 24 | → | [`workflows/literature-review.md`](workflows/literature-review.md) |
-| 25 | → | [`workflows/reference-tools.md`](workflows/reference-tools.md) |
-| 26 | → | [`workflows/submission-package.md`](workflows/submission-package.md) |
+| 11 | → | [`references/personal-writing-style.md`](references/personal-writing-style.md) |
+| 12 | → | [`references/prompt-bank.md`](references/prompt-bank.md) |
+| 13 | → | [`references/reporting-guidelines.md`](references/reporting-guidelines.md) |
+| 14 | → | [`references/section-guides/abstract.md`](references/section-guides/abstract.md) |
+| 15 | → | [`references/section-guides/discussion-conclusion.md`](references/section-guides/discussion-conclusion.md) |
+| 16 | → | [`references/section-guides/experiments.md`](references/section-guides/experiments.md) |
+| 17 | → | [`references/section-guides/introduction.md`](references/section-guides/introduction.md) |
+| 18 | → | [`references/section-guides/method.md`](references/section-guides/method.md) |
+| 19 | → | [`references/section-guides/paragraph-architecture.md`](references/section-guides/paragraph-architecture.md) |
+| 20 | → | [`references/section-guides/related-work.md`](references/section-guides/related-work.md) |
+| 21 | → | [`references/venues/ieee-tro.md`](references/venues/ieee-tro.md) |
+| 22 | → | [`references/verification-policy.md`](references/verification-policy.md) |
+| 23 | → | [`workflows/figure-audit.md`](workflows/figure-audit.md) |
+| 24 | → | [`workflows/full-verification.md`](workflows/full-verification.md) |
+| 25 | → | [`workflows/literature-review.md`](workflows/literature-review.md) |
+| 26 | → | [`workflows/reference-tools.md`](workflows/reference-tools.md) |
+| 27 | → | [`workflows/submission-package.md`](workflows/submission-package.md) |
 
 ---
 

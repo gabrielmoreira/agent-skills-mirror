@@ -206,7 +206,7 @@ accepted for source compatibility but are ignored when Android is selected.
 | `NOTEBOOKLM_AUTH_JSON` | Inline authentication JSON (for CI/CD) | - |
 | `NOTEBOOKLM_NOTEBOOK` | Default notebook ID for commands without `-n/--notebook` | - |
 | `NOTEBOOKLM_HL` | Default interface/output language code (e.g. `en`, `ja`, `zh_Hans`) | `en` |
-| `NOTEBOOKLM_BASE_URL` | Gemini Notebook base URL. Constrained to `https://notebook.google.com` (default) or `https://notebooklm.google.com` (pre-rebrand personal, still served) or `https://notebooklm.cloud.google.com` (enterprise) | `https://notebook.google.com` |
+| `NOTEBOOKLM_BASE_URL` | Gemini Notebook base URL. Constrained to `https://notebook.google.com` (default) or `https://notebooklm.google.com` (pre-rebrand personal, still served) or `https://notebook.cloud.google.com` (enterprise) or `https://notebooklm.cloud.google.com` (legacy enterprise) | `https://notebook.google.com` |
 | `NOTEBOOKLM_BL` | `bl` (build label) URL parameter for the chat streaming endpoint; override when chasing a regression tied to a specific frontend build snapshot | built-in default in `_env.DEFAULT_BL` (drift-monitored nightly) |
 | `NOTEBOOKLM_TRANSPORT` | HTTP transport backend: `httpx` (default) or `curl_cffi` (opt-in browser-TLS impersonation; requires the `curl_cffi` package). Use `curl_cffi` where the default transport is TLS-fingerprint-blocked. | `httpx` |
 | `NOTEBOOKLM_LOG_LEVEL` | Logging level: `DEBUG`, `INFO`, `WARNING`, `ERROR` | `WARNING` |
@@ -237,6 +237,10 @@ accepted for source compatibility but are ignored when Android is selected.
 | `NOTEBOOKLM_MCP_CHAT_CONCURRENCY` | Concurrent detached `chat_start` generations; later accepted jobs queue FIFO. Clamped to 1–16. | `3` |
 | `NOTEBOOKLM_MCP_CHAT_JOB_TIMEOUT` | Optional aggregate seconds from detached-chat acceptance through queue and generation. Unset keeps jobs unbounded. | - |
 | `NOTEBOOKLM_SERVER_TOKEN` | Bearer token required by every REST `/v1` request. The REST server refuses to start without it. | - |
+| `NOTEBOOKLM_MCP_PROFILES` | Comma-separated MCP profiles. More than one requires Android and explicit `profile` on every tool call. | - |
+| `NOTEBOOKLM_MCP_PROFILE_STARTUP_TIMEOUT` | Positive finite seconds for each Android profile startup/recovery attempt. | `30` |
+| `NOTEBOOKLM_SERVER_PROFILES` | Comma-separated REST profiles. More than one requires Android and explicit `X-NotebookLM-Profile` routing. | - |
+| `NOTEBOOKLM_SERVER_PROFILE_STARTUP_TIMEOUT` | Complete startup/recovery timeout per Android REST profile, in positive finite seconds. | `30` |
 | `NOTEBOOKLM_SERVER_HOST` | REST server bind host; non-loopback refused unless `NOTEBOOKLM_SERVER_ALLOW_EXTERNAL_BIND=1` | `127.0.0.1` |
 | `NOTEBOOKLM_SERVER_PORT` | REST server bind port | `8000` |
 | `NOTEBOOKLM_SERVER_ALLOW_EXTERNAL_BIND` | Allow REST server to bind a non-loopback host. Use only behind a trusted proxy. | `0` |
@@ -250,6 +254,12 @@ accepted for source compatibility but are ignored when Android is selected.
 | `NOTEBOOKLM_FUTURE_ERRORS` | **Retired (removed in v0.8.0; ignored).** It was the v0.7.0 forward-compat preview gate for the v0.8.0 error contract; now that every break it staged is the default, the flag is a no-op — setting it has no effect. See `docs/deprecations.md`. | (ignored) |
 | `NOTEBOOKLM_VCR_RECORD_ERRORS` | Synthetic-error injection mode for VCR test cassettes (`429`, `5xx`, `expired_csrf`) | - |
 
+### Enterprise host compatibility
+
+Google's [enterprise documentation](https://docs.cloud.google.com/gemini/enterprise/notebooklm-enterprise/docs/api-notebooks) names `notebook.cloud.google.com` for Google identities. Both that host and the legacy `notebooklm.cloud.google.com` are accepted by `NOTEBOOKLM_BASE_URL`; login recognizes redirects between the two enterprise hosts, and extracted cookies retain their original domain scope. Enterprise upload destinations remain pinned to the configured host.
+
+This is host-level compatibility, not verified end-to-end enterprise support. Google's browser URLs include a region path and `project` query parameter; `NOTEBOOKLM_BASE_URL` accepts only an origin, and this change does not add project/region routing. The separate `notebook.cloud.google` third-party identity flow is not supported by this cookie-authentication path and is not an accepted base URL.
+
 ### Public config API vs internal resolvers
 
 `src/notebooklm/_env.py` owns internal environment/default resolution for
@@ -262,6 +272,11 @@ re-exports only the supported endpoint/language helpers:
 `get_default_language`, and `PERSONAL_BASE_HOST`. Existing imports
 from `notebooklm.config` remain supported; internal-only `_env` names should
 not be imported by downstream code.
+
+`ENTERPRISE_BASE_HOST` now resolves to `notebook.cloud.google.com`. Callers
+that use this public constant to construct URLs will select the current
+enterprise origin; the legacy origin remains available through an explicit
+`NOTEBOOKLM_BASE_URL=https://notebooklm.cloud.google.com` setting.
 
 ### Bound Web request policy (additive preview)
 
@@ -352,7 +367,7 @@ be audited from one location.
 | `NOTEBOOKLM_QUIET_DEPRECATIONS` | Suppress the project's public-API `DeprecationWarning`s — the one-off warnings routed through `src/notebooklm/_deprecation.py::warn_deprecated` (e.g. awaiting `from_storage(...)`). Set to a truthy value (`1` / `true` / `yes` / `on`) to silence them. See `docs/deprecations.md`. | (warnings emitted) | `_deprecation._deprecations_quiet` / `deprecations_quiet` |
 | `NOTEBOOKLM_FUTURE_ERRORS` | **Retired (removed in v0.8.0; ignored).** It was the v0.7.0 forward-compat preview gate for the v0.8.0 error contract (ADR-0019 / umbrella [#1346](https://github.com/teng-lin/notebooklm-py/issues/1346)). Now that every break it staged — `get()` raising `*NotFoundError`, the attribute-only typed returns, the removed `interval=` alias, the bool→`None` returns, the refusal-raises, and the mutate-existing fail-loud — is the default, the flag is a **no-op**: setting it has no effect. See `docs/deprecations.md`. | (ignored) | — |
 | `NOTEBOOKLM_STRICT_DECODE` | **Retired (ignored since v0.7.0).** Strict decoding is the only mode — `safe_index` always raises `UnknownRPCMethodError` on schema drift. The former `0` warn-and-fallback opt-out was removed; setting the variable has no effect. | (ignored) | — |
-| `NOTEBOOKLM_BASE_URL` | Gemini Notebook base URL. Constrained to `https://notebook.google.com` (default) or `https://notebooklm.google.com` (pre-rebrand personal host, still served — the documented rollback lever; if auth fails after switching, re-run `notebooklm login --fresh`) or `https://notebooklm.cloud.google.com` (enterprise); other schemes/hosts/paths raise `ValueError`. | Process env on every base-URL lookup. | `_env.get_base_url` |
+| `NOTEBOOKLM_BASE_URL` | Gemini Notebook base URL. Constrained to `https://notebook.google.com` (default) or `https://notebooklm.google.com` (pre-rebrand personal host, still served — the documented rollback lever; if auth fails after switching, re-run `notebooklm login --fresh`) or `https://notebook.cloud.google.com` (enterprise) or `https://notebooklm.cloud.google.com` (legacy enterprise); other schemes/hosts/paths raise `ValueError`. | Process env on every base-URL lookup. | `_env.get_base_url` |
 | `NOTEBOOKLM_BL` | `bl` (build label) URL parameter sent on the chat streaming endpoint (`ChatAPI.ask`). Pins the frontend build the request is attributed to. The built-in `_env.DEFAULT_BL` is watched by the nightly canary's [build-label lane](rpc-development.md#build-label-lane-bl--_envdefault_bl), which compares it against the label Google actually serves; an override here does not change that verdict. | Process env on every chat stream call; whitespace-only falls back to `_env.DEFAULT_BL`. | `_env.get_default_bl` |
 | `NOTEBOOKLM_DEBUG` | When `1`, RPC error messages include the **full** untruncated response body instead of the default 80-char preview. Verbose; intended for deep debugging only. | Process env on each error formatting call. | `exceptions._truncate_response_preview` |
 | `NOTEBOOKLM_REFRESH_CMD` | Optional command invoked when auth refresh is required. Must exit `0` after writing a refreshed `storage_state.json`; the parent reloads cookies from disk. Stdout/stderr are not parsed (only surfaced in the non-zero-exit error message). Parsing honors `NOTEBOOKLM_REFRESH_CMD_USE_SHELL`. | Process env on each refresh subprocess spawn. | `auth` refresh-spawn helper (constant `NOTEBOOKLM_REFRESH_CMD_ENV` in `notebooklm.auth`) |
@@ -375,6 +390,10 @@ be audited from one location.
 | `NOTEBOOKLM_MCP_CHAT_JOB_TIMEOUT` | Optional detached-chat aggregate deadline, anchored at registry acceptance and including queue time. | Positive finite seconds; unset/blank/invalid preserves unbounded behavior. | `mcp._chattasks._resolve_job_timeout` |
 | `NOTEBOOKLM_MCP_ALLOWED_ROOTS` | Directories stdio `source_add(source_type="file", path=...)` may read. OS pathsep-separated. Unset/empty disables host-path file-add. `$HOME`, NotebookLM home, and the filesystem root are dropped. Credential filenames and Playwright profile dirs are refused even inside a listed root. Remote HTTP never opens a server-host `path`. | Process env on each stdio host-path file-add → empty (off). | `mcp.tools._fileupload._spool_stdio_upload` / `_app.source_add.validate_upload_path` |
 | `NOTEBOOKLM_SERVER_TOKEN` | Bearer token required by every REST `/v1` request. The server refuses to start when unset/empty. | `--token` flag → env var → startup failure | `server.__main__._check_token_configured` / `server._auth.require_auth` |
+| `NOTEBOOKLM_MCP_PROFILES` | Static MCP profiles; Android required for multiple entries. | `--profiles` → env; explicit `--profile` selects single mode. | `mcp.__main__.main` / `_app.profiles.configured_profiles` |
+| `NOTEBOOKLM_MCP_PROFILE_STARTUP_TIMEOUT` | Per-profile startup/recovery deadline. | Positive finite seconds; default `30`. | `_app.profiles.profile_startup_timeout` |
+| `NOTEBOOKLM_SERVER_PROFILES` | Static REST profiles; Android required for multiple entries. | `--profiles` → env; explicit `--profile` selects single mode. | `server.__main__.main` / `server._profiles.configured_profiles` |
+| `NOTEBOOKLM_SERVER_PROFILE_STARTUP_TIMEOUT` | Complete construction timeout for each multi-profile REST client, including credential inspection and readiness. Also applies to recovery attempts. | Env var → `30` seconds; blank uses default; invalid/nonpositive/nonfinite values fail configuration. Single-profile mode ignores it. | `server._profiles.profile_startup_timeout` |
 | `NOTEBOOKLM_SERVER_HOST` | REST server bind host. Non-loopback refused unless `NOTEBOOKLM_SERVER_ALLOW_EXTERNAL_BIND=1`. | `--host` flag → env var → `127.0.0.1` | `server.__main__._build_parser` / `_serving.check_bind_allowed` |
 | `NOTEBOOKLM_SERVER_PORT` | REST server bind port. | `--port` flag → env var → `8000` | `server.__main__._build_parser` / `_resolve_port` |
 | `NOTEBOOKLM_SERVER_ALLOW_EXTERNAL_BIND` | Allow REST server to bind a non-loopback host. Use only behind a trusted proxy. | Literal `1` enables; all other values disabled. | `server.__main__._check_bind_allowed` → `_serving.check_bind_allowed` |

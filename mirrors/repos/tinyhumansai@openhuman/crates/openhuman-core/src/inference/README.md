@@ -27,7 +27,7 @@ compatibility aliases in `crates/openhuman-core/src/core/legacy_aliases.rs`.
 | File / dir                                                                        | Role                                                                                                                                                                                                                                               |
 | --------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `mod.rs`                                                                          | Domain root; module decls + re-exports; wires `inference.*` controller schemas/controllers.                                                                                                                                                        |
-| `ops.rs`                                                                          | Canonical handler file — `inference_*` business logic returning `RpcOutcome<T>`; delegates to `local`, `provider`, `sentiment`, `device`, `presets`, `openai_oauth`. Includes Sentry-noise suppression for expected provider/user-config failures. |
+| `ops.rs`                                                                          | Canonical handler file, `inference_*` business logic returning `RpcOutcome<T>`; delegates to `local`, `provider`, `sentiment`, `device`, `presets`, `openai_oauth`. Includes Sentry-noise suppression for expected provider/user-config failures. |
 | `schemas.rs` + `schemas/` (`catalog.rs`, `prompt_handlers.rs`, `oauth_handlers.rs`, `claude_code_handlers.rs`, `settings_handlers.rs`) | `inference.*` controller schemas + `handle_*` fns + param DTOs.                                                                                                                                                                                    |
 | `tinyinference_llm::{classification,completion,sentiment}` | Reusable language-model parsing and classification called directly by the host. |
 | `tinyinference_local::device`; `tinyinference_core::sanitize` | Shared hardware detection and credential-safe diagnostic formatting. |
@@ -94,26 +94,26 @@ Also exposes a non-RPC HTTP router (`http::router()`) nested at `/v1` by `crates
 ## Persistence
 
 - `openai_oauth/store.rs` persists OAuth tokens via the credentials auth-profile store (`AuthProfilesStore`, `auth-profiles.json`, encrypted at rest) under profile key `provider:openai` / profile `oauth`.
-- `LocalAiService` holds in-process runtime state (status, owned `ollama serve` child) via the `local::global` `OnceCell` singleton — process-lifetime, not durably persisted.
+- `LocalAiService` holds in-process runtime state (status, owned `ollama serve` child) via the `local::global` `OnceCell` singleton, process-lifetime, not durably persisted.
 - Model artifacts live under `<root>/models/local-ai/` (`local/core.rs::model_artifact_path`); OpenHuman selects the Piper root and passes it to `tinyinference_local::piper::PiperInstall`.
 - Routing/provider/local settings persisted through `config` (no dedicated `store.rs`).
 
 ## Dependencies
 
-- `crate::config` — `Config`, `config::rpc` (load/save, `ModelSettingsPatch`, `LocalAiSettingsPatch`), cloud-provider schema (`AuthStyle`, slug reservation, id generation), abstract tier model constants. Heaviest dependency.
-- `crate::security::credentials` — `AuthService`, `AuthProfilesStore`/`AuthProfile`/`TokenSet`, state dir — for OAuth token storage and provider auth resolution.
-- `crate::tools` — tool schemas and product tool metadata projected into TinyAgents requests.
-- `crate::agent::tinyagents` — native model, route, message, usage, and thread-context seams used by the agent harness.
-- `crate::voice` — voice RPC/audio layer that imports these inference STT/TTS implementations (also a consumer).
-- `crate::security::prompt_injection` — prompt-injection handling on the inference path.
-- `crate::util` — small shared helpers.
-- `crate::core::all` — `ControllerFuture`, `RegisteredController` (controller registry).
-- `crate::core::types` — `ControllerSchema`, `FieldSchema`, `TypeSchema`.
-- `crate::core::bus` (`BUS.publish`) / `crate::core::events::DomainEvent` — `SessionExpired` / `ProviderApiKeyRejected` publishing on auth failure.
-- `crate::security::live_policy` + `crate::security::egress` — Privacy-Mode `LocalOnly` enforcement and egress descriptors at the chat-factory chokepoint (`enforce_local_only_inference`, `emit_inference_egress` in `provider/factory/access_gates.rs`).
-- `crate::core::observability` — `expected_error_kind` for Sentry-noise classification.
-- `crate::core::jsonrpc` — endpoint mounting reference for `/v1`.
-- `crate::core::auth` — bearer auth for the OpenAI-compatible endpoint.
+- `crate::config`: `Config`, `config::rpc` (load/save, `ModelSettingsPatch`, `LocalAiSettingsPatch`), cloud-provider schema (`AuthStyle`, slug reservation, id generation), abstract tier model constants. Heaviest dependency.
+- `crate::security::credentials`: `AuthService`, `AuthProfilesStore`/`AuthProfile`/`TokenSet`, state dir, for OAuth token storage and provider auth resolution.
+- `crate::tools`: tool schemas and product tool metadata projected into TinyAgents requests.
+- `crate::agent::tinyagents`: native model, route, message, usage, and thread-context seams used by the agent harness.
+- `crate::voice`: voice RPC/audio layer that imports these inference STT/TTS implementations (also a consumer).
+- `crate::security::prompt_injection`: prompt-injection handling on the inference path.
+- `crate::util`: small shared helpers.
+- `crate::core::all`: `ControllerFuture`, `RegisteredController` (controller registry).
+- `crate::core::types`: `ControllerSchema`, `FieldSchema`, `TypeSchema`.
+- `crate::core::bus` (`BUS.publish`) / `crate::core::events::DomainEvent`: `SessionExpired` / `ProviderApiKeyRejected` publishing on auth failure.
+- `crate::security::live_policy` + `crate::security::egress`: Privacy-Mode `LocalOnly` enforcement and egress descriptors at the chat-factory chokepoint (`enforce_local_only_inference`, `emit_inference_egress` in `provider/factory/access_gates.rs`).
+- `crate::core::observability`: `expected_error_kind` for Sentry-noise classification.
+- `crate::core::jsonrpc`: endpoint mounting reference for `/v1`.
+- `crate::core::auth`: bearer auth for the OpenAI-compatible endpoint.
 - External: `sysinfo` (device profile), `reqwest`.
 
 ## Used by

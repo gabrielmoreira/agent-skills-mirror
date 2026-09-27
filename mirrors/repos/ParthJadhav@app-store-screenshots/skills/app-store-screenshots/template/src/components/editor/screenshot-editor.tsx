@@ -1,16 +1,19 @@
 "use client";
 import * as React from "react";
 import JSZip from "jszip";
-import { toPng } from "html-to-image";
 import { Toaster, toast } from "sonner";
 import {
+  DEFAULT_SCREENSHOT_FONT_ID,
   getExportSizes,
   hasTheme,
+  IMPORTED_FONT_FAMILY,
+  SCREENSHOT_FONTS,
   supportsLandscape,
   themeById,
 } from "@/lib/constants";
 import { detectPlatform, nid } from "@/lib/defaults";
-import { isBuiltInElementId, isTextElementId, textElementKey } from "@/lib/elements";
+import { imageElementKey, isBuiltInElementId, isImageElementId, isTextElementId, textElementKey } from "@/lib/elements";
+import { renderSlide } from "@/lib/export-render";
 import { preloadImages } from "@/lib/image-cache";
 import { resolveScreenshot, writeLocalized } from "@/lib/locale";
 import { useProject } from "@/lib/storage";
@@ -19,6 +22,8 @@ import type {
   Device,
   ElementId,
   ElementTransform,
+  ImageElement,
+  ImportedFont,
   SelectedElement,
   Slide,
 } from "@/lib/types";
@@ -29,7 +34,7 @@ import { DeckCanvas, getCanvas } from "./slide-canvas";
 import { Toolbar } from "./toolbar";
 
 export function ScreenshotEditor() {
-  const { state, setState, hydrated, savedAt, saveError, reset, resetDevice, undo, redo } = useProject();
+  const { state, setState, hydrated, savedAt, saveError, reset, resetDevice, undo, redo, canUndo, canRedo } = useProject();
   const [activeSlideId, setActiveSlideId] = React.useState<string | null>(null);
   const [selectedElement, setSelectedElement] = React.useState<SelectedElement | null>(null);
   const [exporting, setExporting] = React.useState<string | null>(null);
@@ -42,6 +47,9 @@ export function ScreenshotEditor() {
   const activeSlide =
     currentSlides.find((s) => s.id === activeSlideId) || currentSlides[0] || null;
   const theme = themeById(state.themeId);
+  const fontId = state.fontId || DEFAULT_SCREENSHOT_FONT_ID;
+  const fontFamily = SCREENSHOT_FONTS[fontId].family;
+  useImportedFontFace(state.importedFont);
 
   React.useEffect(() => {
     if (selectedElement && selectedElement.slideId !== activeSlide?.id) {
@@ -58,7 +66,7 @@ export function ScreenshotEditor() {
 
   React.useEffect(() => {
     if (!supportsLandscape(state.device) && state.orientation !== "portrait") {
-      setState((p) => ({ ...p, orientation: "portrait" }));
+      setState((p) => ({ ...p, orientation: "portrait" }), { history: false });
     }
   }, [state.device, state.orientation, setState]);
 
@@ -85,6 +93,9 @@ export function ScreenshotEditor() {
         } else {
           paths.add(raw);
         }
+      }
+      for (const imageElement of s.imageElements || []) {
+        if (imageElement.src && !imageElement.src.startsWith("data:")) paths.add(imageElement.src);
       }
     }
     return Array.from(paths).sort();
@@ -119,6 +130,21 @@ export function ScreenshotEditor() {
           ...prev.slidesByDevice,
           [prev.device]: (prev.slidesByDevice[prev.device] || []).map((s) =>
             s.id === id ? { ...s, ...patch } : s,
+          ),
+        },
+      }));
+    },
+    [setState],
+  );
+
+  const updateSlide = React.useCallback(
+    (id: string, update: (slide: Slide) => Partial<Slide>) => {
+      setState((prev) => ({
+        ...prev,
+        slidesByDevice: {
+          ...prev.slidesByDevice,
+          [prev.device]: (prev.slidesByDevice[prev.device] || []).map((s) =>
+            s.id === id ? { ...s, ...update(s) } : s,
           ),
         },
       }));
@@ -216,6 +242,15 @@ export function ScreenshotEditor() {
                 ),
               };
             }
+            if (isImageElementId(elementId)) {
+              const imageId = imageElementKey(elementId);
+              return {
+                ...slide,
+                imageElements: (slide.imageElements || []).map((element) =>
+                  element.id === imageId ? { ...element, transform } : element,
+                ),
+              };
+            }
             if (!isBuiltInElementId(elementId)) return slide;
             return {
               ...slide,
@@ -280,6 +315,11 @@ export function ScreenshotEditor() {
             text: { ...element.text },
             transform: { ...element.transform },
           })),
+          imageElements: src.imageElements?.map((element): ImageElement => ({
+            ...element,
+            id: nid(),
+            transform: { ...element.transform },
+          })),
         };
         const next = [...slides.slice(0, idx + 1), copy, ...slides.slice(idx + 1)];
         return {
@@ -297,11 +337,9 @@ export function ScreenshotEditor() {
   React.useEffect(() => {
     function onKey(e: KeyboardEvent) {
       const target = e.target as HTMLElement | null;
-      const inEditable =
-        target &&
-        (target.tagName === "INPUT" ||
-          target.tagName === "TEXTAREA" ||
-          (target as HTMLElement).isContentEditable);
+      const inTextField = isTextEditable(target);
+      const inControl =
+        inTextField || (!!target && (target.tagName === "INPUT" || target.tagName === "SELECT"));
       if (exporting) return;
 
       if (e.key === "Escape") {
@@ -310,21 +348,19 @@ export function ScreenshotEditor() {
         return;
       }
 
-      // Let focused inputs and contenteditable text keep their native undo,
-      // redo, selection, and deletion behavior.
-      if (inEditable) return;
-
-      if ((e.metaKey || e.ctrlKey) && (e.key === "z" || e.key === "Z")) {
+      // Undo/redo belongs to the text field while one is focused.
+      const mod = e.metaKey || e.ctrlKey;
+      if (mod && !e.altKey && (e.key === "z" || e.key === "Z" || e.key === "y" || e.key === "Y")) {
+        if (inTextField) return;
         e.preventDefault();
-        if (e.shiftKey) redo();
+        if (e.key === "y" || e.key === "Y" || e.shiftKey) redo();
         else undo();
         return;
       }
-      if ((e.metaKey || e.ctrlKey) && (e.key === "y" || e.key === "Y")) {
-        e.preventDefault();
-        redo();
-        return;
-      }
+
+      // Arrow keys, deletion etc. keep their native meaning inside any input.
+      if (inControl) return;
+
       if (!currentSlides.length) return;
       const idx = activeSlide ? currentSlides.findIndex((s) => s.id === activeSlide.id) : -1;
       if (e.key === "ArrowDown" || (e.key === "j" && !e.metaKey && !e.ctrlKey)) {
@@ -407,6 +443,9 @@ export function ScreenshotEditor() {
     // matches what's on screen.
     if (typeof document !== "undefined" && document.fonts && document.fonts.ready) {
       try {
+        // fonts.ready only covers faces already requested; explicitly load an
+        // imported font so a not-yet-used face can't export as the fallback.
+        if (fontId === "self-hosted") await document.fonts.load(`64px ${fontFamily}`);
         await document.fonts.ready;
       } catch {
         /* ignore */
@@ -417,42 +456,50 @@ export function ScreenshotEditor() {
     const platform = detectPlatform(state.device);
     const zip = new JSZip();
     const totalUnits = sizes.length * locales.length * currentSlides.length;
-    let unit = 0;
+    const totalRenders = locales.length * currentSlides.length;
+    let render = 0;
     let okCount = 0;
     let failed = 0;
     const errors: string[] = [];
+    const incomplete: string[] = [];
 
+    // Render each slide once per locale at canvas resolution, then scale that
+    // one render to every export size. The sizes are all scalings of the same
+    // design, so re-rendering the DOM per size only added time.
     for (const locale of locales) {
       setExportLocaleOverride(locale);
       await waitForPaint();
 
-      for (const size of sizes) {
-        for (let i = 0; i < currentSlides.length; i++) {
-          const slide = currentSlides[i];
-          unit += 1;
-          setExporting(`${unit}/${totalUnits}`);
-          setExportSlideIndex(i);
-          await waitForPaint();
-          const el = exportRef.current;
-          if (!el) {
-            failed += 1;
-            errors.push(`${locale} ${size.w}×${size.h} screen ${i + 1}: render target missing`);
-            continue;
-          }
-          try {
-            const dataUrl = await captureSlide(el, cW, cH, size.w, size.h);
-            const base64 = dataUrl.split(",")[1] || "";
-            const filename = `${String(i + 1).padStart(2, "0")}-${slide.layout}.png`;
+      for (let i = 0; i < currentSlides.length; i++) {
+        const slide = currentSlides[i];
+        render += 1;
+        setExporting(`${render}/${totalRenders}`);
+        setExportSlideIndex(i);
+        await waitForPaint();
+        const el = exportRef.current;
+        if (!el) {
+          failed += sizes.length;
+          errors.push(`${locale} screen ${i + 1}: render target missing`);
+          continue;
+        }
+        const filename = `${String(i + 1).padStart(2, "0")}-${slide.layout}.png`;
+        let written = 0;
+        try {
+          const rendered = await captureSlide(el, cW, cH);
+          if (rendered.missingImages > 0) incomplete.push(`${locale} screen ${i + 1}`);
+          for (const size of sizes) {
+            const base64 = rendered.toPng(size.w, size.h).split(",")[1] || "";
             const path = `${platform}/${state.device}/${size.w}x${size.h}/${locale}/${filename}`;
             zip.file(path, base64, { base64: true });
-            okCount += 1;
-          } catch (e) {
-            failed += 1;
-            const msg = e instanceof Error ? e.message : String(e);
-            errors.push(`${locale} ${size.w}×${size.h} screen ${i + 1}: ${msg}`);
-            console.error("Export failed", { slideId: slide.id, locale, size }, e);
+            written += 1;
           }
+        } catch (e) {
+          const msg = e instanceof Error ? e.message : String(e);
+          errors.push(`${locale} screen ${i + 1}: ${msg}`);
+          console.error("Export failed", { slideId: slide.id, locale }, e);
         }
+        okCount += written;
+        failed += sizes.length - written;
       }
     }
 
@@ -475,6 +522,13 @@ export function ScreenshotEditor() {
       }
     }
 
+    if (incomplete.length > 0) {
+      toast.warning("Some screenshots may be missing from the export", {
+        description: `${incomplete.slice(0, 3).join(", ")}${incomplete.length > 3 ? "…" : ""}: a screenshot never finished rendering. Check those files, or export again.`,
+        duration: 12000,
+      });
+    }
+
     const summary = `${locales.length} locale${locales.length === 1 ? "" : "s"} × ${sizes.length} size${sizes.length === 1 ? "" : "s"}`;
     if (failed === 0) {
       toast.success(`Exported ${okCount} PNGs (${summary})`);
@@ -489,16 +543,10 @@ export function ScreenshotEditor() {
     }
   }
 
-  async function captureSlide(
-    el: HTMLElement,
-    sourceW: number,
-    sourceH: number,
-    exportW: number,
-    exportH: number,
-  ) {
-    // html-to-image needs the node at (0,0). Let the library scale the source
-    // canvas into the requested output dimensions; CSS transforms leave
-    // transparent gutters when export aspect ratios differ by a few pixels.
+  async function captureSlide(el: HTMLElement, sourceW: number, sourceH: number) {
+    // html-to-image needs the node at (0,0) and untransformed. Each export size
+    // is a scaled draw of this one render, so aspect ratios that differ by a few
+    // pixels are stretched rather than leaving transparent gutters.
     const prev = {
       left: el.style.left,
       top: el.style.top,
@@ -514,16 +562,7 @@ export function ScreenshotEditor() {
     el.style.transformOrigin = "top left";
     el.style.zIndex = "-1";
     try {
-      const dataUrl = await toPng(el, {
-        width: sourceW,
-        height: sourceH,
-        canvasWidth: exportW,
-        canvasHeight: exportH,
-        pixelRatio: 1,
-        cacheBust: false,
-        backgroundColor: "#ffffff",
-      });
-      return dataUrl;
+      return await renderSlide(el, sourceW, sourceH);
     } finally {
       el.style.left = prev.left || "-99999px";
       el.style.top = prev.top || "0px";
@@ -556,15 +595,21 @@ export function ScreenshotEditor() {
       <Toolbar
         appName={state.appName}
         setAppName={(v) => setState((p) => ({ ...p, appName: v }))}
+        themeId={state.themeId}
+        setThemeId={(v) => setState((p) => ({ ...p, themeId: v }))}
         connectedCanvas={state.connectedCanvas}
         setConnectedCanvas={(v) => setState((p) => ({ ...p, connectedCanvas: v }))}
+        fontId={fontId}
+        setFontId={(v) => setState((p) => ({ ...p, fontId: v }))}
+        importedFont={state.importedFont}
+        setImportedFont={(importedFont) => setState((p) => ({ ...p, fontId: "self-hosted", importedFont }))}
         locale={state.locale}
-        setLocale={(v) => setState((p) => ({ ...p, locale: v }))}
+        setLocale={(v) => setState((p) => ({ ...p, locale: v }), { history: false })}
         locales={state.locales}
         device={state.device}
-        setDevice={(v) => setState((p) => ({ ...p, device: v }))}
+        setDevice={(v) => setState((p) => ({ ...p, device: v }), { history: false })}
         orientation={state.orientation}
-        setOrientation={(v) => setState((p) => ({ ...p, orientation: v }))}
+        setOrientation={(v) => setState((p) => ({ ...p, orientation: v }), { history: false })}
         onExport={exportAll}
         onResetAll={() => {
           reset();
@@ -576,6 +621,10 @@ export function ScreenshotEditor() {
           setActiveSlideId(null);
           toast.success(`Reset ${state.device} to defaults`);
         }}
+        onUndo={undo}
+        onRedo={redo}
+        canUndo={canUndo}
+        canRedo={canRedo}
         exporting={exporting}
         savedAt={savedAt}
         saveError={saveError}
@@ -593,6 +642,7 @@ export function ScreenshotEditor() {
             locale={state.locale}
             appName={state.appName}
             appIcon={state.appIcon}
+            fontFamily={fontFamily}
             connectedCanvas={state.connectedCanvas}
             disabled={busy}
             onReorder={reorderSlides}
@@ -614,6 +664,7 @@ export function ScreenshotEditor() {
               locale={state.locale}
               appName={state.appName}
               appIcon={state.appIcon}
+              fontFamily={fontFamily}
               connectedCanvas={state.connectedCanvas}
               selectedElement={selectedElement}
               onActiveSlideChange={setActiveSlideId}
@@ -637,11 +688,13 @@ export function ScreenshotEditor() {
               slide={activeSlide}
               device={state.device}
               orientation={state.orientation}
+              theme={theme}
               locale={state.locale}
               selectedElementId={
                 selectedElement?.slideId === activeSlide.id ? selectedElement.elementId : null
               }
               onChange={(patch) => patchSlide(activeSlide.id, patch)}
+              onUpdate={(update) => updateSlide(activeSlide.id, update)}
               onSelectElement={(elementId) =>
                 setSelectedElement(
                   elementId ? { slideId: activeSlide.id, elementId } : null,
@@ -696,6 +749,7 @@ export function ScreenshotEditor() {
                 locale={exportLocaleOverride ?? state.locale}
                 appName={state.appName}
                 appIcon={state.appIcon}
+                fontFamily={fontFamily}
                 connectedCanvas={state.connectedCanvas}
                 hideEmpty
               />
@@ -705,6 +759,32 @@ export function ScreenshotEditor() {
       </div>
     </div>
   );
+}
+
+// Text fields and contenteditable text keep their native undo/redo, selection,
+// and deletion. Sliders, colour pickers, checkboxes and buttons have no text
+// history of their own, so the editor's shortcuts still apply while they're focused.
+const NON_TEXT_INPUT_TYPES = new Set(["range", "color", "checkbox", "radio", "button", "submit", "reset", "file"]);
+
+function isTextEditable(target: HTMLElement | null) {
+  if (!target) return false;
+  if (target.isContentEditable || target.tagName === "TEXTAREA" || target.tagName === "SELECT") return true;
+  if (target.tagName === "INPUT") return !NON_TEXT_INPUT_TYPES.has((target as HTMLInputElement).type);
+  return false;
+}
+
+// Registers the imported font in <head>, not inside the canvases: html-to-image
+// embeds @font-face rules it finds in document.styleSheets, while a <style>
+// cloned into the export SVG would point at a URL the SVG image can't load.
+function useImportedFontFace(font: ImportedFont | undefined) {
+  React.useEffect(() => {
+    if (!font) return;
+    const style = document.createElement("style");
+    style.dataset.importedScreenshotFont = "";
+    style.textContent = `@font-face { font-family: "${IMPORTED_FONT_FAMILY}"; src: url("${font.src}") format("${font.format}"); font-display: block; }`;
+    document.head.appendChild(style);
+    return () => style.remove();
+  }, [font?.src, font?.format]);
 }
 
 function slugify(s: string) {

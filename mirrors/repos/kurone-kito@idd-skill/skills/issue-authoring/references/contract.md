@@ -680,7 +680,21 @@ Validation expectations:
 
 - Roadmap identity via `<!-- <marker-prefix>-roadmap-id: ... -->`
 - Active child issues via roadmap task-list links
-- Issue-to-issue dependencies via `Blocked by #NNN`
+- Issue-to-issue dependencies via `Blocked by #NNN`, line-anchored
+  (after optional indentation, blockquote `>` markers, and at most one
+  list marker), with a bare `#NNN`, a qualified `owner/repo#NNN`, or a
+  full GitHub issue URL as the reference. A mid-line mention, a
+  near-miss spelling or shape (an emphasis-wrapped keyword,
+  `Blocked-by`/`BlockedBy`/`Depends-on`, a full-width colon, or a
+  Markdown-link reference) is rejected unconditionally by the
+  `dependency-line-grammar` mechanical check (see
+  [Mechanical pre-publish gate](#mechanical-pre-publish-gate)) — none
+  of these produce a dependency Discover can actually resolve. A
+  cross-repository token on an otherwise well-formed line is rejected
+  only when the linter is given `--current-repo` and it does not
+  match; without that context the token is treated as unverifiable,
+  not malformed, since Discover's own live run resolves a same-repo
+  reference correctly regardless.
 - Sequential roadmap dependencies via
   `<!-- <marker-prefix>-blocked-by: ... -->` only when a separate
   roadmap
@@ -920,6 +934,35 @@ authoring marker, the declared shape's required section headings, the
 roadmap-id/blocked-by dependency-marker rules, and visible/hidden line
 agreement for the suitability and effort footers — so a weak model does
 not have to hold every rule in its head at once while drafting.
+
+It also emits a **failing** finding, `dependency-line-grammar`: a
+`Blocked by`/`Depends on` mention that the shared line-anchored grammar
+(`dependency-grammar.mjs`, the same grammar every Discover helper uses
+to resolve a real dependency) would never resolve fails the audit
+outright, naming the offending line number. This covers a mid-line
+mention (the keyword appears after other prose, or hidden inside an
+HTML comment), a near-miss line at the otherwise-correct position (an
+emphasis-wrapped keyword, a hyphenated/camelCase spelling such as
+`Blocked-by` or `BlockedBy`, a full-width colon, or a Markdown-link
+reference instead of the three plain forms the grammar accepts), and a
+cross-repository token on an otherwise well-formed line — the last one
+only when the caller supplies `--current-repo` and it does not match,
+since without that context a qualified reference is treated as
+unverifiable rather than malformed (the same precedent this contract's
+own `roadmap-tracks-parse` check already follows for an unverifiable
+qualified reference). A real
+`<!-- <marker-prefix>-blocked-by: ... -->` roadmap marker (see
+[Required dependency encoding](#required-dependency-encoding)) is never
+mistaken for a near-miss, even when its own value happens to look like
+an issue reference (e.g. `<!-- idd-skill-blocked-by: #12 -->` — the
+extractor behind this marker accepts any non-whitespace value, with no
+format restriction): the check masks every well-formed marker of this
+shape out of its near-miss scan before running it, using the same
+pattern the marker's own extractor matches against, so the marker's
+value is never read as the required trailing reference in the first
+place. Unlike `prose-dependency` below, `dependency-line-grammar` is
+not advisory: it flips `passed` to `false` and the linter's exit code
+the same as any other structural check above.
 
 For the `orphan` and `child` shapes, the linter also runs the same A4
 viability and A4.5 suitability evaluators the IDD discover phase runs
@@ -1891,14 +1934,24 @@ only approval boundary.
   whether that removal is a non-anchor target's or the anchor's own --
   that the marked target is the sole member of its authoring set: it
   carries no `<marker-prefix>-roadmap-id` marker (never a roadmap
-  anchor), and a repository-wide paginated issue-comment scan for
-  trusted owner markers whose exact `set` matches finds no sibling
-  target -- the same repository-wide, fail-closed enumeration the
-  resume procedure above requires, since a sibling's marker lives on
-  the sibling's own issue and never appears in the marked target's own
-  comment log; block on incomplete or inconclusive enumeration the
-  same way. If either condition fails, or the scan cannot be
-  completed, the exception does not authorize removing any label for
+  anchor), and the read-only `authoring-set-members` helper reports
+  that this target is the only issue whose trusted `authoring-owner`
+  marker carries that exact `set`
+  (`node scripts/authoring-set-members.mjs --set <id>`). A zero exit
+  whose JSON has `soleMember: true` and `issues` equal to that one
+  target is the only passing result. The helper exits non-zero when
+  enumeration does not finish, including a search response with
+  `incomplete_results` or an index-lag window that does not finish.
+  The candidate search is the owner-marker token, so an edited marker
+  that dropped the set is still fetched and fails closed. An
+  unparseable trusted comment that still carries the token fails
+  closed too. A trusted marker whose target names a different
+  issue than the comment's host fails closed as well.
+  Any other result is inconclusive and blocks
+  this exception the same way. A sibling's marker lives on the
+  sibling's own issue and never appears in the marked target's own
+  comment log. If either condition fails, or the helper cannot
+  finish, the exception does not authorize removing any label for
   this release; fall back to the ordinary explicit human
   release-request precondition for the whole set instead. Then,
   immediately before each label removal, append and verify the set anchor's
@@ -1971,17 +2024,21 @@ only approval boundary.
   exception's own preconditions here, immediately before the label
   removal in step (4): first, verify that this sole target really is
   the sole member of its authoring set -- it carries no
-  `<marker-prefix>-roadmap-id` marker, and a repository-wide paginated
-  scan for trusted owner markers sharing its exact `set` finds no
-  sibling target; this scan is exactly the mechanical proof this fast
-  path's own `|set|==1` premise rests on, so skipping it here would be
-  a genuine weakening, not a condensation; second, run the exception's
+  `<marker-prefix>-roadmap-id` marker, and
+  `node scripts/authoring-set-members.mjs --set <id>` reports
+  `soleMember: true` with `issues` equal to this one target; that
+  helper is exactly the mechanical proof this fast path's own
+  `|set|==1` premise rests on, so skipping it here would be a genuine
+  weakening, not a condensation, and a non-zero exit (including
+  `incomplete_results`, an unfinished index-lag window, or an edited
+  marker the token search still fetched) is
+  inconclusive; second, run the exception's
   own provenance check -- the target's body must still carry the exact
   `review-fix-loop-cutoff` marker from Stage 1 publication, and a
   freshly recomputed body-sha256 must match that same target's
   `mode=acquire` owner marker's recorded `body-sha256` -- neither
   check is optional, and this fast path adds no shortcut through
-  either one; if either the sole-member scan or the provenance check
+  either one; if either the sole-member helper or the provenance check
   fails, or either cannot be completed, fall back to the ordinary
   human-release-request precondition instead; (4) immediately before
   the single label removal, reuse or append the anchor's

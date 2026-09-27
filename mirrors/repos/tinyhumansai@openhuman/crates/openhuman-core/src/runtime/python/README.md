@@ -13,7 +13,7 @@ through [`modules::runtime`](../../modules/runtime.rs).
 
 ## What stayed, and why
 
-`process.rs` launches stdio Python children — the runtime Python server, and the
+`process.rs` launches stdio Python children: the runtime Python server, and the
 stdio MCP servers. That is deliberately **not** the module's pooled execution:
 those children outlive a single job, speak their own protocols, and are owned by
 the subsystem that started them. The module resolves the interpreter; this core
@@ -44,24 +44,24 @@ This module reads `config.runtime_python` (`enabled`, `prefer_system`,
 
 ## Dependencies
 
-- `crate::modules::runtime` — the module client this delegates to.
-- `crate::config` — the settings each request carries.
-- `crate::inference::host_runtime::process_util` — the Windows no-console
+- `crate::modules::runtime`: the module client this delegates to.
+- `crate::config`: the settings each request carries.
+- `crate::inference::host_runtime::process_util`: the Windows no-console
   hook, shared with the other child-spawning paths.
 
 External crates: `tinyruntime-bus`, `tokio`, `anyhow`, `tracing`. No HTTP
-client, no archive crates, no `walkdir`, no `fs2` — those went with the pipeline.
+client, no archive crates, no `walkdir`, no `fs2`: those went with the pipeline.
 
 ## Used by
 
-- `crates/openhuman-core/src/runtime/python_server/` — resolves an interpreter, then spawns
+- `crates/openhuman-core/src/runtime/python_server/`: resolves an interpreter, then spawns
   and supervises the long-lived model server with `spawn_stdio`.
-- `crates/openhuman-core/src/tools/impl/system/{python_exec,shell}.rs` — hold an
+- `crates/openhuman-core/src/tools/impl/system/{python_exec,shell}.rs`: hold an
   `Arc<PythonBootstrap>`; `python_exec` calls `resolve()`, `shell` uses the
   non-blocking `try_cached()` for `PATH` injection.
-- `crates/openhuman-core/src/skills/runtime/ops.rs` — resolves an interpreter for
+- `crates/openhuman-core/src/skills/runtime/ops.rs`: resolves an interpreter for
   Python-backed skills.
-- `crates/openhuman-core/src/agent/harness_init/registry.rs` — the Python init step uses
+- `crates/openhuman-core/src/agent/harness_init/registry.rs`: the Python init step uses
   `probe_installed()` to decide whether provisioning is visible work.
 
 ## Notes / gotchas

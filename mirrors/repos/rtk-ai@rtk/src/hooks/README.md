@@ -83,6 +83,20 @@ Rules are loaded from all Claude Code `settings.json` files (project + global, i
 | Allow | `permissions.allow` rule matched | 0 | Rewrite + auto-allow |
 | Default | No rule matched | 3 | Rewrite + let host tool prompt user |
 
+A delegate that shells out to `rtk rewrite` and applies its own exec policy to
+the result can set `RTK_REWRITE_HOST=<agent>` on that subprocess. For an agent
+whose `AgentPath` records it as owning approval — OpenClaw is the only one —
+`Default` renders as exit 0 instead of 3, because a `Default` verdict means no
+rule matched and RTK asking as well would be a second gate sourced from Claude
+Code's settings the runtime never opted into (#3908). An explicit `Ask` rule is
+the user's own instruction, so it still renders as exit 3 and the host still
+prompts. The verdict source is unchanged, and `Deny` still renders as exit 2 for
+every delegate, so naming a host can never relax an explicit deny or discard an
+explicit ask. An unknown or unset value keeps the table above — and a caller
+that does *not* own approval should scrub the variable before invoking `rtk
+rewrite`, since it is inherited by every child process. See `decision.rs`'s
+`ApprovalOwner`.
+
 ### Per-tool support
 
 | Tool | ask support | Behavior on Default |
@@ -95,6 +109,7 @@ Rules are loaded from all Claude Code `settings.json` files (project + global, i
 | Codex (`rtk hook codex`) | Native approval runs after rewrite | Emit required protocol `allow` with `updatedInput`; Codex then evaluates the rewritten command normally |
 | Trae (`rtk hook trae`) | Host-owned approval | Return only `updatedInput`; omit `permissionDecision` |
 | Mistral Vibe (rtk hook vibe) | No native ask surface | passthrough — Vibe's own approval prompt fires on the rewritten command |
+| OpenClaw (`openclaw/index.ts` → `rtk rewrite`) | Host-owned approval (`RTK_REWRITE_HOST=openclaw`) | Rewrite with no RTK prompt when no rule matched; an explicit `Ask` still exits 3 and the plugin prompts. OpenClaw's `tools.exec.mode`/`security`/`ask` decide. A `Deny` still exits 2 and the plugin blocks the call |
 
 ### Implementation
 

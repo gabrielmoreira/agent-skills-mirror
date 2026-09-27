@@ -1,328 +1,151 @@
-# Agent Team Examples
+# 실전 팀 구성 예시
+
+각 예시는 작업에 맞는 실행 모드를 고르는 기준과 Harness v2 문법의 기본 형태를 보여 준다. 모드별 정의는 `execution-modes.md`, 워크플로 스크립트 작성법은 `workflow-recipes.md`에서 확인한다.
 
 ---
 
-## 예시 1: 리서치 팀 (에이전트 팀 모드)
+## 예시 1: 종합 조사 팀 — 워크플로 조율
 
-### 팀 아키텍처: 팬아웃/팬인
-### 실행 모드: 에이전트 팀
+**구성:** 분산·통합(팬아웃/팬인) + 적대적 검증
 
-```
-[리더/오케스트레이터]
-    ├── TeamCreate(research-team)
-    ├── TaskCreate(4개 조사 작업)
-    ├── 팀원들이 자체 조율 (SendMessage)
-    ├── 결과 수집 (Read)
-    └── 종합 보고서 생성
-```
-
-### 에이전트 구성
-
-| 팀원 | 에이전트 타입 | 역할 | 출력 |
-|------|-------------|------|------|
-| official-researcher | general-purpose | 공식 문서/블로그 | research_official.md |
-| media-researcher | general-purpose | 미디어/투자 | research_media.md |
-| community-researcher | general-purpose | 커뮤니티/SNS | research_community.md |
-| background-researcher | general-purpose | 배경/경쟁/학술 | research_background.md |
-| (리더 = 오케스트레이터) | — | 통합 보고서 | 종합보고서.md |
-
-> 리서치 에이전트는 `general-purpose` 빌트인 타입을 사용하되, 반드시 `.claude/agents/{name}.md` 파일로 정의한다. 파일에는 역할·조사 범위·팀 통신 프로토콜을 명시하여 재사용성과 협업 품질을 보장한다.
-
-### 오케스트레이터 워크플로우 (에이전트 팀)
+**선택 이유:** 조사할 관점을 미리 나열할 수 있고, 주장마다 검증하는 절차를 코드로 정할 수 있다.
 
 ```
-Phase 1: 준비
-  - 사용자 입력 분석 (주제, 조사 모드 파악)
-  - _workspace/ 생성
-
-Phase 2: 팀 구성
-  - TeamCreate(team_name: "research-team", members: [
-      { name: "official", prompt: "공식 채널 조사..." },
-      { name: "media", prompt: "미디어/투자 동향 조사..." },
-      { name: "community", prompt: "커뮤니티 반응 조사..." },
-      { name: "background", prompt: "배경/경쟁 환경 조사..." }
-    ])
-  - TaskCreate(tasks: [
-      { title: "공식 채널 조사", assignee: "official" },
-      { title: "미디어 동향 조사", assignee: "media" },
-      { title: "커뮤니티 반응 조사", assignee: "community" },
-      { title: "배경 환경 조사", assignee: "background" }
-    ])
-
-Phase 3: 조사 수행
-  - 4명의 팀원이 독립적으로 조사
-  - 흥미로운 발견이 있으면 팀원 간 SendMessage로 공유
-    (예: media가 발견한 투자 뉴스를 background에게 전달)
-  - 상충 정보 발견 시 팀원 간 직접 토론
-  - 각 팀원은 완료 시 파일 저장 + 리더에게 알림
-
-Phase 4: 통합
-  - 리더가 4개 산출물 Read
-  - 종합 보고서 생성
-  - 상충 정보는 출처 병기
-
-Phase 5: 정리
-  - 팀원들 종료 요청
-  - 팀 정리
-  - _workspace/ 보존 (사후 검증·감사 추적용)
+[메인] 사전 조사: 조사 관점 확정(공식 자료·언론·커뮤니티·배경)
+     → Workflow(script, args: {axes, topic, ws})
+         phase '조사': pipeline(axes, axis => agent(..., {schema: FINDINGS}))
+         phase '검증': 주장별 적대적 검증 에이전트 실행 → 과반이 confirmed로 판정한 주장만 통과
+         phase '종합': 누락 검토자 1명 실행 → 빠진 관점이 있으면 추가 조사
+     → 메인이 반환된 구조화 결과로 종합 보고서 작성
 ```
 
-### 팀 통신 패턴
+조사 원칙과 구조화 출력 형식은 `.claude/agents/researcher.md`에, 반박을 우선하는 검증 원칙은 `.claude/agents/fact-checker.md`에 정의한다. 워크플로에서는 `agentType`으로 두 에이전트를 지정한다.
+
+서로 충돌하는 정보는 한쪽을 임의로 버리지 않는다. 반환 스키마에 출처와 함께 담는다.
+
+## 예시 2: SF 소설 집필 팀 — 지속형 에이전트 중심의 혼합 모드
+
+**구성:** 파이프라인 + 생성·검증
+
+**선택 이유:** 세계관, 인물, 줄거리가 서로 어긋나지 않도록 실시간으로 조정해야 하므로 각 전문가가 이전 대화 맥락을 기억해야 한다. 반면 검토자는 서로 독립된 관점으로 결과만 전달하면 되므로 서브에이전트로 충분하다.
 
 ```
-official ──SendMessage──→ background  (관련 공식 발표 공유)
-media ────SendMessage──→ background  (투자/인수 정보 공유)
-community ─SendMessage──→ media      (커뮤니티 반응 중 미디어 관련 정보)
-모든 팀원 ──TaskUpdate──→ 공유 작업 목록  (진행률 업데이트)
-리더 ←───── 유휴 알림 ──── 완료된 팀원   (자동)
+1단계(지속형 에이전트): Agent(name: "worldbuilder") + Agent(name: "character-designer")
+               + Agent(name: "plot-architect") 병렬 실행
+               → TaskCreate(세계관·인물·줄거리, 서로의 의존 관계 명시)
+               → 리더가 중계: worldbuilder가 사회 구조 확정
+                 → SendMessage로 character-designer에 전달
+                 → 인물의 직업군이 세계관과 충돌하면 SendMessage로
+                   worldbuilder에 조정 요청
+                 이전 맥락이 남아 있으므로 "아까 정한 계급 구조에서
+                 상인 계층만 수정"처럼 일부만 고치라고 지시할 수 있다.
+2단계(서브에이전트): prose-stylist 한 번 호출 → _workspace/에 저장된 산출물 세 개를 읽고 집필
+3단계(서브에이전트 병렬): science-consultant + continuity-manager가 각각 검토
+4단계(지속형 에이전트): 한 번만 호출한 prose-stylist에는 SendMessage를 보낼 수 없다.
+                 2단계에서 name을 붙여 실행했다면 검토 결과를 반영하라고 지시할 수 있다.
+                 수정이 반복될 것으로 보이면 처음부터 name을 붙인다.
 ```
 
----
+수정 요청을 다시 보낼 가능성이 있는 에이전트에는 처음 실행할 때부터 `name`을 붙인다. 한 번만 호출한 에이전트는 이전 대화 맥락을 이어서 사용할 수 없다.
 
-## 예시 2: SF 소설 집필 팀 (에이전트 팀 모드)
+## 예시 3: 종합 코드 검토 — 워크플로 조율
 
-### 팀 아키텍처: 파이프라인 + 팬아웃
-### 실행 모드: 에이전트 팀
+**구성:** 분산·통합 + 적대적 검증
 
-```
-Phase 1 (병렬 — 에이전트 팀): worldbuilder + character-designer + plot-architect
-  → 서로 SendMessage로 일관성 조율
-Phase 2 (순차): prose-stylist (집필)
-Phase 3 (병렬 — 에이전트 팀): science-consultant + continuity-manager (리뷰)
-  → 서로 SendMessage로 발견 공유
-Phase 4 (순차): prose-stylist (리뷰 반영 수정)
-```
+**선택 이유:** 보안·성능·구조·테스트처럼 검토 관점을 미리 정할 수 있고, 찾은 항목을 각각 다시 검증하는 절차도 코드로 표현할 수 있다.
 
-### 에이전트 구성
-
-| 팀원 | 에이전트 타입 | 역할 | 스킬 |
-|------|-------------|------|------|
-| worldbuilder | 커스텀 | 세계관 구축 | world-setting |
-| character-designer | 커스텀 | 캐릭터 설계 | character-profile |
-| plot-architect | 커스텀 | 플롯 구조 | outline |
-| prose-stylist | 커스텀 | 문체 편집 + 집필 | write-scene, review-chapter |
-| science-consultant | 커스텀 | 과학 검증 | science-check |
-| continuity-manager | 커스텀 | 일관성 검증 | consistency-check |
-
-### 에이전트 파일 전문 예시: `worldbuilder.md`
-
-```markdown
----
-name: worldbuilder
-description: "SF 소설의 세계관을 구축하는 전문가. 물리 법칙, 사회 구조, 기술 수준, 역사를 설계한다."
----
-
-# Worldbuilder — SF 세계관 설계 전문가
-
-당신은 SF 소설의 세계관 설계 전문가입니다. 과학적 사실에 기반하되 상상력을 확장하여, 이야기가 펼쳐질 세계의 물리적·사회적·기술적 토대를 구축합니다.
-
-## 핵심 역할
-1. 세계의 물리 법칙과 기술 수준 정의
-2. 사회 구조, 정치 체계, 경제 시스템 설계
-3. 역사적 맥락과 현재 갈등 구조 수립
-4. 장소별 환경과 분위기 묘사
-
-## 작업 원칙
-- 내적 일관성 최우선 — 설정 간 모순이 없어야 한다
-- "만약 이 기술이 있다면?" 연쇄 질문으로 세계의 파급 효과를 추론
-- 이야기에 봉사하는 세계관 — 플롯을 방해하는 과도한 설정은 지양
-
-## 입력/출력 프로토콜
-- 입력: 사용자의 세계관 컨셉, 장르 요구사항
-- 출력: `_workspace/01_worldbuilder_setting.md`
-- 형식: 마크다운. 섹션별 (물리/사회/기술/역사/장소)
-
-## 팀 통신 프로토콜
-- character-designer에게: 사회 구조, 계급 시스템, 직업군 정보 SendMessage
-- plot-architect에게: 세계의 주요 갈등 구조, 위기 요소 SendMessage
-- science-consultant로부터: 과학적 오류 피드백 수신 → 설정 수정
-- 세계관 변경 시 관련 팀원 전체에 브로드캐스트
-
-## 에러 핸들링
-- 컨셉이 모호하면 3가지 방향을 제안하고 선택 요청
-- 과학적 오류 발견 시 대안을 함께 제시
-
-## 협업
-- character-designer에게 사회 구조 정보 제공
-- plot-architect에게 갈등 구조 정보 제공
-- science-consultant의 피드백을 반영하여 설정 수정
+```javascript
+// 관점별 검토 → 찾은 항목마다 적대적 검증
+// 전체 검토를 기다리지 않는다. 보안 검토가 끝나면 성능 검토가 진행 중이어도
+// 보안 영역에서 찾은 문제를 바로 검증한다.
+const FINDINGS = { type: 'object', required: ['findings'], properties: {
+  findings: { type: 'array', items: { type: 'object',
+    required: ['title', 'file', 'evidence'], properties: {
+      title: { type: 'string' }, file: { type: 'string' }, evidence: { type: 'string' } } } } } }
+const VERDICT = { type: 'object', required: ['status', 'reason'], properties: {
+  status: { type: 'string', enum: ['confirmed', 'refuted', 'uncertain'] },
+  reason: { type: 'string' } } }
+const results = await pipeline(
+  [
+    { key: 'security', prompt: '보안 관점에서 검토하라.' },
+    { key: 'perf', prompt: '성능 관점에서 검토하라.' },
+    { key: 'arch', prompt: '구조 관점에서 검토하라.' },
+    { key: 'test', prompt: '테스트 관점에서 검토하라.' },
+  ],
+  d => agent(d.prompt, { phase: '검토', schema: FINDINGS }),
+  r => parallel((r?.findings ?? []).map(f => () =>
+    agent(`다음 발견을 검증하라. 근거가 충분하면 confirmed, 명백히 반박되면 refuted, 판단하기 어려우면 uncertain으로 판정하라: ${JSON.stringify(f)}`,
+      { phase: '검증', schema: VERDICT })
+      .then(verdict => ({ ...f, verdict }))))
+)
+const confirmed = results.flat().filter(Boolean)
+  .filter(f => f.verdict?.status === 'confirmed')
 ```
 
-### 팀 워크플로우 상세
+v1에서는 검토자끼리 `SendMessage`로 발견을 공유하는 지속형 팀을 썼다. 위 예시처럼 발견한 항목 한 건만으로 검증할 수 있으면 해당 항목의 근거를 프롬프트에 충분히 담아 곧바로 검증한다. 다른 관점의 발견과 비교해야 한다면 전체 검토 결과를 모은 뒤 동기화 장벽을 두고 검증한다. 설계 방향을 두고 토론해야 하는 등 실시간 대화가 꼭 필요한 경우에만 지속형 에이전트를 쓴다.
+
+## 예시 4: 대규모 코드 마이그레이션 — 지속형 감독자 협업 또는 워크플로 조율
+
+**구성:** 미리 나눌 수 있으면 분산·통합, 진행 중 다시 나눠야 하면 감독자
+
+**선택 기준:** 작업 묶음을 미리 나눌 수 있는지에 따라 실행 모드를 고른다.
+
+작업 묶음을 미리 정할 수 있으면 워크플로를 쓴다.
+
+```javascript
+const MIGRATION_RESULT = { type: 'object', required: ['worktreePath', 'changedFiles'], properties: {
+  worktreePath: { type: 'string', minLength: 1 },
+  changedFiles: { type: 'array', minItems: 1, uniqueItems: true,
+    items: { type: 'string', minLength: 1 } } } }
+const MIGRATION_VERDICT = { type: 'object', required: ['status', 'reason'], properties: {
+  status: { type: 'string', enum: ['confirmed', 'refuted', 'uncertain'] },
+  reason: { type: 'string' } } }
+const migrated = await pipeline(args.batches,   // 사전 조사로 복잡도를 추정한 뒤 작업 묶음을 확정한다
+  b => agent(`다음 작업 묶음을 마이그레이션하고, 격리 작업 트리의 절대 경로와 실제 변경 파일 목록을 반환하라: ${b.files.join(', ')}`,
+    { agentType: 'migrator', isolation: 'worktree', schema: MIGRATION_RESULT }),
+  (r, b) => r && agent(
+    `격리 작업 트리 ${r.worktreePath}에서 마이그레이션 대상과 실제 변경 파일을 대조해 누락과 오류를 검증하라. 원래 대상: ${b.files.join(', ')}. 실제 변경: ${r.changedFiles.join(', ')}`,
+    { agentType: 'qa-inspector', schema: MIGRATION_VERDICT })
+    .then(verdict => ({ ...r, verdict })))
+const confirmed = migrated.filter(Boolean)
+  .filter(r => r.verdict?.status === 'confirmed')
+return { confirmed }
+```
+
+적대적 검증 에이전트에는 마이그레이션 결과가 있는 격리 작업 트리 경로를 반드시 전달한다. 워크플로가 끝나면 메인 에이전트가 `confirmed` 결과의 `worktreePath`를 하나씩 확인해 변경을 기준 브랜치에 병합하거나 필요한 커밋만 선별 적용한다. 충돌이 생기면 다음 작업 트리를 합치기 전에 해결하고, 통합 테스트를 통과한 뒤에만 다음 변경을 적용한다. `refuted`나 `uncertain` 결과는 병합하지 않고 누락 사유를 보고한다.
+
+진행 상황에 따라 작업을 다시 나눠야 하면 지속형 에이전트를 쓴다.
 
 ```
-Phase 1: TeamCreate(team_name: "novel-team", members: [worldbuilder, character-designer, plot-architect])
-         TaskCreate([세계관 구축, 캐릭터 설계, 플롯 구조])
-         → 팀원들이 자체 조율하며 병렬 작업
-         → worldbuilder가 사회 구조 완성 시 character-designer에게 SendMessage
-         → character-designer가 주인공 설정 시 plot-architect에게 SendMessage
+리더가 TaskCreate로 작업 묶음 등록(depends_on 포함)
+→ Agent(name: "migrator-1"), Agent(name: "migrator-2"), Agent(name: "migrator-3") 병렬 실행
+→ 완료 알림을 받을 때마다 결과 확인
+→ 실패한 작업은 SendMessage로 원인을 확인한 뒤 TaskUpdate로 다시 배정
+→ 모두 끝나면 통합 테스트
+```
 
-Phase 2: Phase 1 팀 정리 → prose-stylist를 서브 에이전트로 호출 (단독 집필이므로 팀 불필요)
-         prose-stylist가 _workspace/의 3개 산출물을 Read하여 집필
-         → 결과를 _workspace/02_prose_draft.md에 저장
+## 예시 5: 웹툰 제작 — 지속형 생성자와 단발 검토자
 
-Phase 3: 새 팀 생성 — TeamCreate(team_name: "review-team", members: [science-consultant, continuity-manager])
-         (세션당 한 팀만 활성이지만, Phase 1 팀을 정리했으므로 새 팀 생성 가능)
-         → 두 리뷰어가 draft를 검토, 서로 발견을 공유
-         → science-consultant가 물리 오류 발견 시 continuity-manager에게도 알림
-         → 리뷰 완료 후 팀 정리
+**구성:** 생성·검증
 
-Phase 4: prose-stylist를 서브 에이전트로 호출, 리뷰 결과 반영하여 최종 수정
+**선택 이유:** 생성자 한 명과 검토자 한 명만 필요하다. 검토 결과를 생성자에게 최대 두 번 돌려보내면 되므로 가벼운 혼합 모드로 충분하다.
+
+```
+1단계: Agent(name: "artist") → 패널 생성 → _workspace/panels/
+2단계: Agent(subagent_type: "webtoon-reviewer", prompt: "패널을 검토하라") 한 번 호출 → PASS/FIX/REDO 판정
+       → _workspace/review_report.md
+3단계: REDO 판정을 받은 패널만 SendMessage({to: "artist"})로 재생성 지시
+       최대 두 번 반복한다. artist가 이전 맥락을 기억하므로
+       "3번 패널의 구도만 수정"처럼 범위를 좁혀 지시할 수 있다.
+재시도 방침: 두 번 수정해도 통과하지 못하면 미해결 상태와 원인을 사용자에게 알린다.
+             전체 패널의 50% 이상이 REDO이면 사용자에게 프롬프트 수정을 제안한다.
 ```
 
 ---
 
-## 예시 3: 웹툰 제작 팀 (서브 에이전트 모드)
+## 산출물 저장 방식
 
-### 팀 아키텍처: 생성-검증
-### 실행 모드: 서브 에이전트
-
-> 생성-검증 패턴에서 에이전트가 2개뿐이고, 통신보다는 결과 전달이 핵심이므로 서브 에이전트가 적합.
-
-```
-Phase 1: Agent(webtoon-artist) → 패널 생성
-Phase 2: Agent(webtoon-reviewer) → 검수
-Phase 3: Agent(webtoon-artist) → 문제 패널 재생성 (최대 2회)
-```
-
-### 에이전트 구성
-
-| 에이전트 | subagent_type | 역할 | 스킬 |
-|---------|--------------|------|------|
-| webtoon-artist | 커스텀 | 패널 이미지 생성 | generate-webtoon |
-| webtoon-reviewer | 커스텀 | 품질 검수 | review-webtoon, fix-webtoon-panel |
-
-### 에이전트 파일 전문 예시: `webtoon-reviewer.md`
-
-```markdown
----
-name: webtoon-reviewer
-description: "웹툰 패널의 품질을 검수하는 전문가. 구도, 캐릭터 일관성, 텍스트 가독성, 연출을 평가한다."
----
-
-# Webtoon Reviewer — 웹툰 품질 검수 전문가
-
-당신은 웹툰 패널의 품질을 검수하는 전문가입니다. 시각적 완성도, 스토리 전달력, 캐릭터 일관성을 기준으로 패널을 평가합니다.
-
-## 핵심 역할
-1. 각 패널의 구도와 시각적 완성도 평가
-2. 캐릭터 외형의 패널 간 일관성 검증
-3. 말풍선 텍스트의 가독성과 배치 평가
-4. 전체 에피소드의 연출 흐름과 페이싱 검토
-
-## 작업 원칙
-- PASS/FIX/REDO 3단계로 명확히 판정
-- FIX는 부분 수정으로 해결 가능한 경우, REDO는 전면 재생성 필요
-- 주관적 취향이 아닌 객관적 기준(일관성, 가독성, 구도)으로 판단
-
-## 입력/출력 프로토콜
-- 입력: `_workspace/panels/` 디렉토리의 패널 이미지들
-- 출력: `_workspace/review_report.md`
-- 형식:
-  ```
-  ## Panel {N}
-  - 판정: PASS | FIX | REDO
-  - 사유: [구체적 이유]
-  - 수정 지시: [FIX/REDO인 경우 구체적 수정 방향]
-  ```
-
-## 에러 핸들링
-- 이미지 로드 실패 시 해당 패널을 REDO로 판정
-- 2회 재생성 후에도 REDO인 패널은 경고와 함께 PASS 처리
-
-## 협업
-- webtoon-artist에게 수정 지시서 전달 (결과 파일 기반)
-- 재생성된 패널을 다시 검수 (최대 2회 루프)
-```
-
-### 에러 핸들링
-
-```
-재시도 정책:
-- REDO 판정 패널 → artist에게 재생성 요청 (구체적 수정 지시 포함)
-- 최대 2회 루프 후 강제 PASS
-- 전체 패널의 50% 이상이 REDO면 사용자에게 프롬프트 수정 제안
-```
-
----
-
-## 예시 4: 코드 리뷰 팀 (에이전트 팀 모드)
-
-### 팀 아키텍처: 팬아웃/팬인 + 토론
-### 실행 모드: 에이전트 팀
-
-> 코드 리뷰는 에이전트 팀이 빛나는 대표적 사례. 서로 다른 관점의 리뷰어들이 발견을 공유하고 도전하면서 더 깊은 리뷰가 가능.
-
-```
-[리더] → TeamCreate(review-team)
-    ├── security-reviewer: 보안 취약점 점검
-    ├── performance-reviewer: 성능 영향 분석
-    └── test-reviewer: 테스트 커버리지 검증
-    → 리뷰어들이 서로 발견 공유 (SendMessage)
-    → 리더가 결과 종합
-```
-
-### 팀 통신 패턴
-
-```
-security ──SendMessage──→ performance  ("이 SQL 쿼리 주입 가능, 성능 측면에서도 확인 필요")
-performance ──SendMessage──→ test      ("N+1 쿼리 발견, 관련 테스트 있는지 확인 부탁")
-test ────SendMessage──→ security      ("인증 모듈 테스트 없음, 보안 관점에서 우선순위 의견?")
-```
-
-핵심: 리뷰어들이 **리더를 거치지 않고** 직접 소통하여 교차 영역 이슈를 빠르게 포착.
-
----
-
-## 예시 5: 감독자 패턴 — 코드 마이그레이션 팀 (에이전트 팀 모드)
-
-### 팀 아키텍처: 감독자
-### 실행 모드: 에이전트 팀
-
-```
-[supervisor/리더] → 파일 목록 분석 → 배치 할당
-    ├→ [migrator-1] (batch A)
-    ├→ [migrator-2] (batch B)
-    └→ [migrator-3] (batch C)
-    ← TaskUpdate 수신 → 추가 배치 할당 또는 재할당
-```
-
-### 에이전트 구성
-
-| 팀원 | 역할 |
-|------|------|
-| (리더 = migration-supervisor) | 파일 분석, 배치 분배, 진행 관리 |
-| migrator-1~3 | 할당된 파일 배치를 마이그레이션 |
-
-### 감독자의 동적 분배 로직 (에이전트 팀 활용)
-
-```
-1. 전체 대상 파일 목록 수집
-2. 복잡도 추정 (파일 크기, import 수, 의존성)
-3. TaskCreate로 파일 배치를 작업으로 등록 (의존성 포함)
-4. 팀원들이 자체적으로 작업 요청 (claim)
-5. 팀원이 TaskUpdate로 완료 보고 시:
-   - 성공 → 다음 작업 자동 요청
-   - 실패 → 리더가 SendMessage로 원인 확인 → 재할당 또는 다른 팀원에게 배정
-6. 모든 작업 완료 → 리더가 통합 테스트 실행
-```
-
-팬아웃과의 차이: 작업이 사전 고정이 아니라 **런타임에 동적으로 할당**된다. 공유 작업 목록의 자체 요청(claim) 기능이 감독자 패턴과 자연스럽게 매칭.
-
----
-
-## 산출물 패턴 요약
-
-### 에이전트 정의 파일
-위치: `프로젝트/.claude/agents/{agent-name}.md`
-필수 섹션: 핵심 역할, 작업 원칙, 입력/출력 프로토콜, 에러 핸들링, 협업
-팀 모드 추가 섹션: **팀 통신 프로토콜** (메시지 수신/발신, 작업 요청 범위)
-
-### 스킬 파일 구조
-위치: `프로젝트/.claude/skills/{skill-name}/SKILL.md` (프로젝트 레벨)
-또는: `~/.claude/skills/{skill-name}/SKILL.md` (글로벌 레벨)
-
-### 통합 스킬 (오케스트레이터)
-팀 전체를 조율하는 상위 스킬. 시나리오별 에이전트 구성과 워크플로우를 정의.
-템플릿: `references/orchestrator-template.md` 참조.
-**실행 모드를 반드시 명시** — 에이전트 팀(기본) 또는 서브 에이전트.
+- **에이전트 정의:** `프로젝트/.claude/agents/{name}.md`에 만든다. 핵심 역할, 작업 원칙, 입력·출력 규칙, 재호출 방법, 오류 처리, 협업 방법을 반드시 적는다. 지속형 에이전트에는 통신 규칙을, 워크플로에서 쓸 에이전트에는 구조화 출력 형식을 추가한다.
+- **스킬:** `프로젝트/.claude/skills/{name}/SKILL.md`에 만들고, 필요하면 `references/`와 `scripts/`를 둔다.
+- **오케스트레이터:** 실행 모드를 반드시 적는다. `orchestrator-template.md`의 템플릿을 사용한다.
+- **중간 산출물:** `_workspace/{phase}_{agent}_{artifact}.{ext}` 형식으로 저장하고 검증이 끝난 뒤에도 남긴다.

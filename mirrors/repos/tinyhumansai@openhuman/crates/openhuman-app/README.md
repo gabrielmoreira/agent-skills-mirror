@@ -1,9 +1,9 @@
 # `openhuman-app`
 
 Thin Tauri v2 desktop host for OpenHuman on Windows, macOS, and Linux (Wry
-webview; no CEF). It links `openhuman_core` in-process and runs the core's
+webview, no CEF). It links `openhuman_core` in-process and runs the core's
 HTTP/JSON-RPC server as a tokio task (`core_process.rs`) instead of spawning a
-sidecar binary — the core's lifetime is tied to the GUI process. Identities:
+sidecar binary, so the core's lifetime is tied to the GUI process. Identities:
 Cargo package `openhuman-app`, library `openhuman`, binary `OpenHuman`. Only
 the Cargo package was renamed for the `crates/` layout; the library and
 executable names are shipped identities and are unchanged.
@@ -15,7 +15,7 @@ this crate.
 
 ## Separate Cargo world
 
-The root `Cargo.toml` `exclude`s this directory: this crate has its own
+The root `Cargo.toml` excludes this directory: this crate has its own
 `Cargo.lock` and `target/`, so root-only Cargo commands never resolve
 GTK/WebKit/Tauri. Build and check it explicitly:
 
@@ -47,12 +47,12 @@ as distinct Rust types.
   `flows`, `skills`, `mcp`, `crash-reporting`, `http-server`,
   `scheduler-gate`, `file-logging`, `contacts`, `runtime-node`, `hosting`)
   must be forwarded explicitly in `Cargo.toml`. A gate missing from that list
-  vanishes from the shipped app silently — no build error, no test failure.
+  vanishes from the shipped app silently: no build error, no test failure.
   `scripts/ci/check-feature-forwarding.mjs` compares this list against
   `scripts/ci/product-features.txt` and fails CI on drift.
 - `lib.rs` carries two `const _: () = assert!(...)` guards
   (`VOICE_COMPILED_IN`, `HTTP_SERVER_COMPILED_IN`) that fail the build if
-  `voice` or `http-server` is ever dropped from the forwarded list — both
+  `voice` or `http-server` is ever dropped from the forwarded list. Both
   failure modes are otherwise silent and runtime-only.
 
 ## Feature flags
@@ -70,9 +70,9 @@ the `openhuman_core` product-feature forwarding above and do not belong in
 
 ## Entry points
 
-- `openhuman::run()` — starts the Tauri application (window, tray, plugins,
+- `openhuman::run()`: starts the Tauri application (window, tray, plugins,
   embedded core).
-- `openhuman::run_core_from_args(args)` — dispatches directly into
+- `openhuman::run_core_from_args(args)`: dispatches directly into
   `openhuman_core`'s CLI without shelling out to a separate binary.
 - `main.rs` routes `OpenHuman core <args>` and `OpenHuman mcp` /
   `OpenHuman mcp-server` to `run_core_from_args`; everything else starts the
@@ -104,7 +104,7 @@ cargo test --manifest-path crates/openhuman-app/Cargo.toml
 ## Rules
 
 - Keep this crate thin. New behavior belongs in Rust-side IPC hooks, not
-  JavaScript injected into child webviews — audit new Tauri plugins for
+  JavaScript injected into child webviews; audit new Tauri plugins for
   `js_init_script`.
 - The `generate_handler!` call in `lib.rs` is the authoritative IPC command
   list.

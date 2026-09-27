@@ -30,6 +30,7 @@ type Props = {
   locale: string;
   appName?: string;
   appIcon?: string;
+  fontFamily?: string;
   connectedCanvas: boolean;
   disabled?: boolean;
   onReorder: (next: Slide[]) => void;
@@ -48,6 +49,7 @@ export function Sidebar({
   locale,
   appName,
   appIcon,
+  fontFamily,
   connectedCanvas,
   disabled,
   onReorder,
@@ -96,6 +98,7 @@ export function Sidebar({
                   locale={locale}
                   appName={appName}
                   appIcon={appIcon}
+                  fontFamily={fontFamily}
                   connectedCanvas={connectedCanvas}
                   onSelect={() => onSelect(slide.id)}
                   onDelete={() => onDelete(slide.id)}
@@ -120,7 +123,17 @@ export function Sidebar({
           type="button"
           className="w-full"
           variant="default"
-          onClick={() => onAdd(newSlide(device === "feature-graphic" ? "feature-graphic" : "device-bottom"))}
+          onClick={() =>
+            onAdd(
+              newSlide(
+                device === "feature-graphic"
+                  ? "feature-graphic"
+                  : device === "mac"
+                    ? "split-landscape"
+                    : "device-bottom",
+              ),
+            )
+          }
           disabled={disabled}
         >
           <Plus className="h-4 w-4" /> Add screen

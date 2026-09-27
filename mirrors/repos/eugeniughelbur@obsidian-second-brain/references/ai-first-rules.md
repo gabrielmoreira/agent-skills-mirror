@@ -164,9 +164,36 @@ updated: YYYY-MM-DD
 type: person
 tags: [person, ...]
 role: ""
-company: "[[Companies/...]]"
+company: "[[Acme Corp]]"      # bare link: resolves wherever the company note sits
 relationship: weak | medium | strong
 last-interaction: YYYY-MM-DD
+related-projects: ["[[Projects/...]]", ...]
+ai-first: true
+```
+
+### `type: company`
+```yaml
+date: YYYY-MM-DD              # first captured
+updated: YYYY-MM-DD
+type: company
+tags: [company, ...]
+industry: ""
+website-url: ""
+related-people: ["[[Person Name]]", ...]
+related-projects: ["[[Projects/...]]", ...]
+ai-first: true
+```
+
+### `type: tool`
+```yaml
+date: YYYY-MM-DD              # first captured
+updated: YYYY-MM-DD
+type: tool
+tags: [tool, ...]
+category: ""                  # e.g. editor, database, CRM
+website-url: ""
+repo: ""                      # optional - source repository, for open-source tools
+status: active                # active | evaluating | retired
 related-projects: ["[[Projects/...]]", ...]
 ai-first: true
 ```
@@ -515,7 +542,7 @@ Don't do these. They produce notes that are useless to future agent.
 | Trusting the model to infer | Be explicit. State the type, the rule applied, the source. |
 | Multi-paragraph human-readable narratives | Bullets and structure beat prose for retrieval. |
 | Forgetting `ai-first: true` | The flag lets future agent know which notes meet the standard. |
-| Em-dash (`—`), curly quotes (`"`), Unicode math (`≥ ≤ ≠`) | Substitution Unicode slips in silently via LLM defaults. On Claude Code the write-time hook (`validate-ai-first.sh` check 5) catches it; on other platforms the ban applies through these instructions alone. Use ` - ` for dashes, straight `"` quotes, ASCII operators (`>=`, `!=`). Allowed: box-drawing (`─`), arrows (`→ ←`), currency (`€ £ ¥`), Nerd Font codepoints - all carry semantic meaning. **Language exception:** in Chinese, Japanese and Korean prose these same codepoints are the correct punctuation (`“ ”` are the standard Simplified Chinese quotation marks, `——` the standard dash, `……` the standard ellipsis), so the hook skips dashes, quotes and the ellipsis on a line containing CJK text and rewriting them to ASCII is a typography error, not a fix (#271). Unicode math and the non-breaking space stay banned in every language. |
+| Em-dash (`—`), curly quotes (`"`), Unicode math (`≥ ≤ ≠`) | Substitution Unicode slips in silently via LLM defaults. On Claude Code the write-time hook (`validate-ai-first.sh` check 5) catches it; on other platforms the ban applies through these instructions alone. Use ` - ` for dashes, straight `"` quotes, ASCII operators (`>=`, `!=`). Allowed: box-drawing (`─`), arrows (`→ ←`), currency (`€ £ ¥`), Nerd Font codepoints - all carry semantic meaning. **Language exception:** in Chinese, Japanese and Korean prose these same codepoints are the correct punctuation (`“ ”` are the standard Simplified Chinese quotation marks, `——` the standard dash, `……` the standard ellipsis), so the hook skips dashes, quotes, the ellipsis and the math signs on a line containing CJK text, and rewriting them to ASCII is a typography error, not a fix (#271, #296). The non-breaking space stays banned in every language. |
 
 ---
 

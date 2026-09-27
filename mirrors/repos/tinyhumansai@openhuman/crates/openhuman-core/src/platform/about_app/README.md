@@ -1,6 +1,6 @@
 # about_app
 
-The single source of truth for the OpenHuman desktop app's **user-facing capability catalog**. It enumerates every capability the app exposes to end users — what each one does, where it lives in the UI (`how_to`), its maturity (`stable` / `beta` / `coming_soon` / `deprecated`), and a per-capability privacy disclosure (what data, if any, leaves the device and where it goes). The catalog is a compile-time static table; the module exposes read-only list / lookup / search over it via JSON-RPC. It is stateless — no persistence, no event subscribers, no agent tools.
+The single source of truth for the OpenHuman desktop app's **user-facing capability catalog**. It enumerates every capability the app exposes to end users: what each one does, where it lives in the UI (`how_to`), its maturity (`stable` / `beta` / `coming_soon` / `deprecated`), and a per-capability privacy disclosure (what data, if any, leaves the device and where it goes). The catalog is a compile-time static table; the module exposes read-only list / lookup / search over it via JSON-RPC. It is stateless: no persistence, no event subscribers, no agent tools.
 
 ## Responsibilities
 
@@ -30,7 +30,7 @@ Re-exported from `mod.rs`:
 - **Catalog reads** (`catalog`): `all_capabilities()`, `capabilities_by_category(CapabilityCategory)`, `lookup(&str)`, `search(&str)`.
 - **Ops** (`ops`): `list_capabilities(Option<CapabilityCategory>) -> RpcOutcome<Vec<Capability>>`, `lookup_capability(&str) -> Result<RpcOutcome<Capability>, String>`, `search_capabilities(&str) -> RpcOutcome<Vec<Capability>>`.
 - **Schema registry** (`schemas`): `about_app_schemas(&str)`, `all_about_app_controller_schemas()`, `all_about_app_registered_controllers()`.
-- **Types**: `Capability`, `CapabilityCategory`, `CapabilityPrivacy`, `CapabilityStatus`, `PrivacyDataKind`.
+- Types: `Capability`, `CapabilityCategory`, `CapabilityPrivacy`, `CapabilityStatus`, `PrivacyDataKind`.
 
 ## RPC / controllers
 
@@ -58,22 +58,22 @@ None. No `store.rs`. The catalog is a compile-time `&'static [Capability]` const
 
 ## Dependencies
 
-- `crate::rpc::RpcOutcome` — return-type contract for ops/handlers.
-- `crate::core::all::{ControllerFuture, RegisteredController}` — controller registration types (schemas.rs).
-- `crate::core::{ControllerSchema, FieldSchema, TypeSchema}` — controller schema definitions (schemas.rs).
+- `crate::rpc::RpcOutcome`: return-type contract for ops/handlers.
+- `crate::core::all::{ControllerFuture, RegisteredController}`: controller registration types (schemas.rs).
+- `crate::core::{ControllerSchema, FieldSchema, TypeSchema}`: controller schema definitions (schemas.rs).
 
-No dependencies on other `openhuman` domains — capability metadata for other domains is hand-authored text in `catalog.rs`, not imports.
+No dependencies on other `openhuman` domains: capability metadata for other domains is hand-authored text in `catalog.rs`, not imports.
 
 ## Used by
 
-- `crates/openhuman-core/src/core/all.rs` — registers the controllers/schemas into the global RPC/CLI registry and supplies the `about_app` namespace description.
-- `crates/openhuman-core/src/memory/sources/rpc/coding_sessions.rs` — references `platform/about_app/catalog_data.rs` in a doc comment, noting `max_sessions` is an untrusted, advertised programmatic RPC input (no code dependency).
+- `crates/openhuman-core/src/core/all.rs`: registers the controllers/schemas into the global RPC/CLI registry and supplies the `about_app` namespace description.
+- `crates/openhuman-core/src/memory/sources/rpc/coding_sessions.rs`: references `platform/about_app/catalog_data.rs` in a doc comment, noting `max_sessions` is an untrusted, advertised programmatic RPC input (no code dependency).
 
 ## Notes / gotchas
 
 - **`privacy: None` means "unknown", not "safe"** (per `types.rs` doc). UI must not treat an unannotated capability as local-only.
-- **Adding/renaming/removing a user-facing feature requires editing `CAPABILITIES`** — this is the capability catalog that CLAUDE.md's "Capability catalog" rule points at. Keep ids stable; duplicate or empty ids panic at first catalog access via `ensure_validated`.
-- Privacy constants encode real third-party destinations (Hugging Face, GitHub Releases, Composio `backend.composio.dev`, SearXNG, configured embedding providers, ElevenLabs, etc.) — the inline comments document why several were corrected away from the generic `DERIVED_TO_BACKEND` / `LOCAL_CREDENTIALS` defaults; mirror that diligence when adding network-touching capabilities.
+- Adding/renaming/removing a user-facing feature requires editing `CAPABILITIES`: this is the capability catalog that CLAUDE.md's "Capability catalog" rule points at. Keep ids stable; duplicate or empty ids panic at first catalog access via `ensure_validated`.
+- Privacy constants encode real third-party destinations (Hugging Face, GitHub Releases, Composio `backend.composio.dev`, SearXNG, configured embedding providers, ElevenLabs, etc.): the inline comments document why several were corrected away from the generic `DERIVED_TO_BACKEND` / `LOCAL_CREDENTIALS` defaults; mirror that diligence when adding network-touching capabilities.
 - `Capability` fields are all `&'static str` / copy types, so `Capability` is `Copy` and the read APIs cheaply return owned `Vec`s by copying.
 - A capability's `domain` is a free-text label and does not always equal its `category` wire name (e.g. `embeddings`, `wallet`, `runtime_python`, `devices`, `desktop_companion`, `security`, `tools`, `memory`).
 - `CapabilityCategory::FromStr` is lenient (case-insensitive, accepts `local-ai`/`local ai`/`localai` aliases); `as_str` emits the canonical snake_case wire name used by serde.

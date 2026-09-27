@@ -1,9 +1,12 @@
 "use client";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { PROJECT_SCHEMA_VERSION, STORAGE_KEY } from "./constants";
+import { DEFAULT_SCREENSHOT_FONT_ID, PROJECT_SCHEMA_VERSION, SCREENSHOT_FONTS, STORAGE_KEY } from "./constants";
+import { cleanHexColor } from "./clean-hex-color";
+import { cleanImportedFont } from "./clean-imported-font";
 import { DEFAULT_PROJECT } from "./defaults";
 import { coerceLocalized } from "./locale";
-import type { Device, ElementTransform, ProjectState, Slide, TextElement } from "./types";
+import { cleanTypography } from "./typography";
+import type { Device, ElementTransform, ImageElement, ProjectState, ScreenshotFontId, Slide, TextElement } from "./types";
 
 const HISTORY_LIMIT = 50;
 // Coalesce rapid edits (typing, slider drags) into a single undo step.
@@ -53,9 +56,48 @@ function cleanTextElement(value: unknown): TextElement | undefined {
   };
 }
 
+function cleanImageElement(value: unknown): ImageElement | undefined {
+  if (!value || typeof value !== "object") return undefined;
+  const raw = value as Partial<ImageElement>;
+  if (typeof raw.id !== "string" || !raw.id.trim() || typeof raw.src !== "string") return undefined;
+  const transform = cleanTransform(raw.transform);
+  if (!transform) return undefined;
+  return {
+    id: raw.id,
+    src: raw.src,
+    transform,
+    ...(raw.fit === "cover" || raw.fit === "contain" ? { fit: raw.fit } : {}),
+    ...(raw.fade &&
+    typeof raw.fade === "object" &&
+    ["top", "bottom", "left", "right"].includes(raw.fade.edge as string) &&
+    typeof raw.fade.amount === "number" &&
+    Number.isFinite(raw.fade.amount)
+      ? {
+          fade: {
+            edge: raw.fade.edge,
+            amount: Math.max(0, Math.min(100, raw.fade.amount)),
+          },
+        }
+      : {}),
+  };
+}
+
+// Early builds had a "Classic Serif" that rendered exactly like Georgia.
+const LEGACY_FONT_IDS: Record<string, ScreenshotFontId> = { "classic-serif": "template-serif" };
+
+function cleanFontId(value: unknown, hasImportedFont: boolean): ScreenshotFontId {
+  if (typeof value !== "string") return DEFAULT_SCREENSHOT_FONT_ID;
+  const id = LEGACY_FONT_IDS[value] ?? value;
+  if (!Object.prototype.hasOwnProperty.call(SCREENSHOT_FONTS, id)) return DEFAULT_SCREENSHOT_FONT_ID;
+  // "Imported font" without a file behind it would render the fallback.
+  if (id === "self-hosted" && !hasImportedFont) return DEFAULT_SCREENSHOT_FONT_ID;
+  return id as ScreenshotFontId;
+}
+
 // Migrate older projects into the current schema while keeping legacy decks
 // visually stable until they explicitly opt into connected canvas.
 function migrateSlide(slide: Slide): Slide {
+  const backgroundColor = cleanHexColor(slide.backgroundColor);
   const transforms = slide.transforms
     ? Object.fromEntries(
         Object.entries(slide.transforms)
@@ -66,13 +108,19 @@ function migrateSlide(slide: Slide): Slide {
   const textElements = Array.isArray(slide.textElements)
     ? slide.textElements.map(cleanTextElement).filter((t): t is TextElement => !!t)
     : undefined;
+  const imageElements = Array.isArray(slide.imageElements)
+    ? slide.imageElements.map(cleanImageElement).filter((image): image is ImageElement => !!image)
+    : undefined;
 
   return {
     ...slide,
     label: coerceLocalized(slide.label as unknown),
     headline: coerceLocalized(slide.headline as unknown),
+    typography: cleanTypography(slide.typography),
+    ...(backgroundColor ? { backgroundColor } : { backgroundColor: undefined }),
     ...(transforms && Object.keys(transforms).length > 0 ? { transforms } : { transforms: undefined }),
     ...(textElements && textElements.length > 0 ? { textElements } : { textElements: undefined }),
+    ...(imageElements && imageElements.length > 0 ? { imageElements } : { imageElements: undefined }),
   };
 }
 
@@ -85,6 +133,8 @@ function mergeWithDefaults(parsed: Partial<ProjectState>): ProjectState {
     typeof parsed.themeId === "string" && parsed.themeId.trim()
       ? parsed.themeId
       : DEFAULT_PROJECT.themeId;
+  const importedFont = cleanImportedFont(parsed.importedFont);
+  const fontId = cleanFontId(parsed.fontId, !!importedFont);
   const slidesByDevice = parsed.slidesByDevice
     ? Object.fromEntries(
         Object.entries(parsed.slidesByDevice).map(([device, slides]) => [
@@ -98,6 +148,8 @@ function mergeWithDefaults(parsed: Partial<ProjectState>): ProjectState {
     ...parsed,
     schemaVersion: PROJECT_SCHEMA_VERSION,
     themeId,
+    fontId,
+    ...(importedFont ? { importedFont } : { importedFont: undefined }),
     connectedCanvas,
     slidesByDevice: {
       ...DEFAULT_PROJECT.slidesByDevice,
@@ -251,10 +303,15 @@ export function useProject() {
     };
   }, [state, hydrated, fileReady]);
 
-  const setState = useCallback((updater: Updater) => {
+  // `history: false` is for navigation (device, orientation, locale): it isn't
+  // an edit, so it neither takes an undo step nor clears redo. Undo still
+  // restores the snapshot's device, which takes you to the deck the undone
+  // edit was made on.
+  const setState = useCallback((updater: Updater, options?: { history?: boolean }) => {
     _setState((prev) => {
       const next = applyUpdater(updater, prev);
       if (next === prev) return prev;
+      if (options?.history === false) return next;
       const now = Date.now();
       if (now - lastPushAt.current > COALESCE_MS) {
         pastRef.current.push(prev);
@@ -311,5 +368,7 @@ export function useProject() {
     resetDevice,
     undo,
     redo,
+    canUndo: pastRef.current.length > 0,
+    canRedo: futureRef.current.length > 0,
   };
 }

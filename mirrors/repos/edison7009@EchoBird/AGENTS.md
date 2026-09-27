@@ -67,6 +67,29 @@ clippy/test, not optional.
   `services/mod.rs` already gates it with `#[cfg(...)]` — rustfmt flags it as
   a duplicated attribute.
 
+## Account login UI conventions
+
+- Use `src/pages/AppManager/AccountSectionPrimitives.tsx` for account login
+  buttons and rows. ChatGPT is the structural reference; do not copy a new
+  provider-specific button/row implementation.
+- Keep provider colors via `colorClassName` and provider quota content via
+  `secondary`. Claude, DeepSeek and WorkBuddy retain their designed colors;
+  Grok uses the same black/white treatment as ChatGPT.
+- Buttons are 48px tall, pill-shaped, with a 24px product icon and the existing
+  add-account / waiting-for-browser translations. Login timeout is 60 seconds.
+- Rows are 48px tall: 16px selection marker on the left, identity above quota
+  in the center, plan above refresh/delete actions on the right. Display the
+  plan once. Missing quota is unknown (`—`), never fabricated as zero.
+- Use Lucide refresh/delete icons. Only show refresh when a real refresh
+  action exists; disable it while pending. Clicks and keyboard actions on
+  nested controls must not change account selection. Rows support Enter/Space.
+- Selecting an account clears the API-model selection and vice versa. Adding
+  an account saves it in EchoBird; applying a selection switches the client.
+  Keep the existing delete confirmation. Cancel and clean up login on timeout
+  or leaving the tool, and ignore late responses from earlier attempts.
+- No extra explanatory copy, hover tips, or cursor changes. New integrations
+  must test selection/action isolation, pending state and their quota display.
+
 ## Commit policy
 
 Commit only when asked. Push only when asked. Keep history linear (rebase onto

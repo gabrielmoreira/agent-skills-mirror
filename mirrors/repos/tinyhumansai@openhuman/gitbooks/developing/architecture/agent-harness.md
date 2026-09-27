@@ -10,8 +10,8 @@ icon: layer-group
 ## Embedding OpenHuman as a library
 
 `openhuman_embed` exposes a two-step API. `Runtime::builder()` boots one
-in-process core per process — background services, registered domain
-families, backend URL and the TinyHumans API key — and `Runtime::agent(spec)`
+in-process core per process, background services, registered domain
+families, backend URL and the TinyHumans API key, and `Runtime::agent(spec)`
 instantiates any number of agents on it. Each `AgentSpec` fully describes
 one agent: provider endpoint and model, access tier, `action_dir`, MCP
 servers, its own in-process tools, skill bundles, system prompt, tool scope,
@@ -22,7 +22,7 @@ including inference-readiness checks for workflow agent nodes.
 ### An embedder's own tools
 
 `AgentSpec::tools` takes the host's own `Box<dyn Tool>` objects, which reach
-the model as real tools — their own schema on the wire, called by their own
+the model as real tools, their own schema on the wire, called by their own
 name. Before it existed the only road was `AgentSpec::mcp`, and the model paid
 for the indirection: a discovery call to learn what a server offers, and an
 `mcp_call_tool` envelope whose inner `arguments` object no provider can
@@ -31,7 +31,7 @@ validate or constrain decoding against.
 It takes a **factory**, not a belt. `Agent` is `Clone` and `Box<dyn Tool>` is
 not, and the session behind a spec is rebuilt from `Config` on every turn, so
 nothing holding a `dyn Tool` could survive in between. The closure therefore
-runs once per turn — which also means a host whose tools belong to something
+runs once per turn, which also means a host whose tools belong to something
 shorter-lived than the agent (one episode, one room, one assignment) can
 return a different belt each time instead of registering a second agent.
 
@@ -41,7 +41,7 @@ types, and a tool built against it cannot be handed to a session at all.
 
 One caveat on a varying belt. The prompt's tool catalogue is rendered from the
 same belt in the same build, so the two stay consistent on any turn that
-composes a prompt — but a **resumed** session reuses its persisted system
+composes a prompt, but a **resumed** session reuses its persisted system
 messages, so a belt that moves under a long-lived thread is described by the
 prompt that thread opened with. Vary a belt only on turns that run on a
 session of their own.
@@ -104,9 +104,9 @@ runtime-wide".
 > Multi-agent **orchestration** is expressed on tinyagents' **graph layer** via
 > `graph::parallel::map_reduce`, the `spawn_parallel_graph` scaffold, and the
 > shared `graph::orchestration` `TaskStore` lifecycle primitives re-exported from
-> [`tinyagents/orchestration.rs`](../../../crates/openhuman-core/src/agent/tinyagents/orchestration.rs):
+> [`orchestration/mod.rs`](../../../crates/openhuman-core/src/agent/orchestration/mod.rs):
 >
-> - [`tinyagents/delegation.rs`](../../../crates/openhuman-core/src/agent/tinyagents/delegation.rs)
+> - [`orchestration/delegation.rs`](../../../crates/openhuman-core/src/agent/orchestration/delegation.rs)
 >   is a `plan → execute ⇄ review → finalize` `CompiledGraph` (conditional routing,
 >   `RecursionPolicy`, durable `FileCheckpointer`, `CancellationToken`, `GraphTracingSink`);
 > - the **workflow phase engine** fans each phase's agents out on the graph
@@ -115,7 +115,7 @@ runtime-wide".
 > - `spawn_parallel_agents` runs its fan-out through `spawn_parallel_graph` +
 >   `graph::parallel::map_reduce`;
 > - the **agent-teams** member runtime is a conditional-routing graph
->   (`execute → complete | fail → done`, [`agent_teams/graph.rs`](../../../crates/openhuman-core/src/agent/orchestration/agent_teams/graph.rs));
+>   (`execute → complete | fail → done`, [`agent_teams/runtime.rs`](../../../crates/openhuman-core/src/agent/orchestration/agent_teams/runtime.rs));
 > - the **detached-sub-agent** registry is backed by a typed `TaskStore` lifecycle
 >   ledger (Pending → Running → Completed/Failed/Cancelled).
 >
@@ -125,7 +125,7 @@ runtime-wide".
 
 ## TinyAgents crate: features & compatibility
 
-OpenHuman depends on the split TinyAgents 2.1 crate family by path into the vendored git submodule `vendor/tinyagents` — `tinyagents-harness` (features `sqlite`, `multimodal`), `tinyagents-graph` (`sqlite`), `tinyagents-language`, `tinyagents-registry`, `tinyagents-session`, plus `tinyinference` from `vendor/tinyagents/vendor/tinyinference` — so SDK changes can be tested in-tree before being PR'd upstream (see [`crates/openhuman-core/Cargo.toml`](../../../crates/openhuman-core/Cargo.toml)). The rationale, so future upgrades don't silently regress it:
+OpenHuman depends on the split TinyAgents 2.1 crate family by path into the vendored git submodule `vendor/tinyagents`, `tinyagents-harness` (features `sqlite`, `multimodal`), `tinyagents-graph` (`sqlite`), `tinyagents-language`, `tinyagents-registry`, `tinyagents-session`, plus `tinyinference` from `vendor/tinyagents/vendor/tinyinference`, so SDK changes can be tested in-tree before being PR'd upstream (see [`crates/openhuman-core/Cargo.toml`](../../../crates/openhuman-core/Cargo.toml)). The rationale, so future upgrades don't silently regress it:
 
 - **Native TinyAgents model interface, OpenHuman-owned product policy.** Every live route is an `Arc<dyn ChatModel<()>>`: TinyAgents OpenAI-compatible clients cover wire-equivalent managed, local, and BYOK routes, while host `ChatModel` implementations cover Claude SDK/Code and Codex-specific transports. OpenHuman still owns credential resolution, OAuth, access gates, endpoint selection, egress disclosure, billing metadata, and error classification.
 - **`sqlite` feature enabled with one native sqlite chain.** OpenHuman's root and Tauri Cargo worlds pin `rusqlite = "=0.40.2"` (`bundled`); the pinned Rust 1.96 toolchain provides the `cfg_select!` macro its build script needs, so no local patch of `rusqlite` / `libsqlite3-sys` remains. Both worlds resolve to a single `libsqlite3-sys` chain. Durable graph checkpoints run through TinyAgents' own `SqliteCheckpointer`; the earlier OpenHuman-owned `SqlRunLedgerCheckpointer` adapter has been retired (see [`orchestration/delegation.rs`](../../../crates/openhuman-core/src/agent/orchestration/delegation.rs)).
@@ -203,33 +203,33 @@ The system prompt is **not** rebuilt on subsequent turns. Even cosmetic byte cha
 
 Freezing the prompt is only one third of the contract, and the other two are easier to break because nothing about them looks like caching:
 
-- **The tool block counts, and it comes _first_.** Every prefix cache in production renders the tool catalogue ahead of the conversation — a chat template has to put it somewhere the model reads before the first user turn. OpenAI's automatic cache, Anthropic's `cache_control` (tools → system → messages), DeepSeek's context cache and any vLLM/SGLang radix cache all work this way. So a `tools` array that changes between turns invalidates the frozen system prompt too, and the JSON key order of the request body (which puts `messages` before `tools`) says nothing about it. The mid-session Composio reconcile is still correct — a tool surface that lies about what the model can call is worse than a cold prefill — but it must fire only on a real capability change and be byte-stable otherwise. `connected_set_hash` sorts before hashing so a reordered backend response never reaches a rebuild, and `collect_orchestrator_tools` sorts the connected-toolkit enum for the same reason.
-- **History must be append-only.** Turn N's serialization has to survive verbatim as the opening of turn N+1. `pair_tool_cycles` drops half-finished tool cycles at serialization time, so its verdict for an entry must depend only on that entry and its immediate neighbour — never on anything appended later, or an earlier message's presence flips retroactively and the prefix moves under the cache. Context compaction is the one deliberate exception; it rewrites the middle and pays for a re-prefill.
+- **The tool block counts, and it comes _first_.** Every prefix cache in production renders the tool catalogue ahead of the conversation, a chat template has to put it somewhere the model reads before the first user turn. OpenAI's automatic cache, Anthropic's `cache_control` (tools → system → messages), DeepSeek's context cache and any vLLM/SGLang radix cache all work this way. So a `tools` array that changes between turns invalidates the frozen system prompt too, and the JSON key order of the request body (which puts `messages` before `tools`) says nothing about it. The mid-session Composio reconcile is still correct, a tool surface that lies about what the model can call is worse than a cold prefill, but it must fire only on a real capability change and be byte-stable otherwise. `connected_set_hash` sorts before hashing so a reordered backend response never reaches a rebuild, and `collect_orchestrator_tools` sorts the connected-toolkit enum for the same reason.
+- **History must be append-only.** Turn N's serialization has to survive verbatim as the opening of turn N+1. `pair_tool_cycles` drops half-finished tool cycles at serialization time, so its verdict for an entry must depend only on that entry and its immediate neighbour, never on anything appended later, or an earlier message's presence flips retroactively and the prefix moves under the cache. Context compaction is the one deliberate exception; it rewrites the middle and pays for a re-prefill.
 
-A resumed session's replayed prefix is folded into `Agent::history` rather than spliced into one request, so the request, the following turn and the persisted transcript all read the same sequence. Splicing it cost the conversation twice: the next turn went out without it, and the transcript written afterwards (serialized from `history`) held only the new turn — which the *next* resume then read back, truncating the thread a little further on every restart.
+A resumed session's replayed prefix is folded into `Agent::history` rather than spliced into one request, so the request, the following turn and the persisted transcript all read the same sequence. Splicing it cost the conversation twice: the next turn went out without it, and the transcript written afterwards (serialized from `history`) held only the new turn, which the *next* resume then read back, truncating the thread a little further on every restart.
 
 #### A stable prefix only pays out when the wire says so
 
 Keeping the bytes stable is necessary, not sufficient: the provider still has to be *told* to cache, and two providers need telling explicitly.
 
-- **Anthropic caches nothing without `cache_control` markers, and its OpenAI-compatible endpoint cannot carry them** — Anthropic documents prompt caching as unsupported on that path and reports `prompt_tokens_details` as always empty. A `cloud_providers` entry with `auth_style = "anthropic"` is therefore built as the crate's native Messages adapter (`inference::provider::crate_anthropic`), which places markers on the last tool, the last system block, and the final message so a growing tool loop reuses the previous iteration's cache rather than only the system prompt. The one exception is text mode (`native_tools = false`, prompt-guided tools), which only the Chat Completions adapter implements and which keeps the compat client — and so keeps paying full price.
+- **Anthropic caches nothing without `cache_control` markers, and its OpenAI-compatible endpoint cannot carry them**, Anthropic documents prompt caching as unsupported on that path and reports `prompt_tokens_details` as always empty. A `cloud_providers` entry with `auth_style = "anthropic"` is therefore built as the crate's native Messages adapter (`inference::provider::crate_anthropic`), which places markers on the last tool, the last system block, and the final message so a growing tool loop reuses the previous iteration's cache rather than only the system prompt. The one exception is text mode (`native_tools = false`, prompt-guided tools), which only the Chat Completions adapter implements and which keeps the compat client, and so keeps paying full price.
 - **OpenRouter forwards markers to Anthropic and Gemini** but adds none itself; hosted OpenAI rejects unknown content-part fields. The OpenRouter slug (and any endpoint on `openrouter.ai`) enables `OpenAiModel::with_explicit_cache_control`, which marks the last system and last user message; every other Chat Completions endpoint stays unmarked.
-- **The routing hint is separate from the markers.** The harness derives a `prompt_cache_key` from the declared stable prefix and puts it in `provider_options`, so every turn of a thread — and every sub-agent sharing its system prompt and tool set — routes to the same cache shard on providers that shard (OpenAI's `prompt_cache_key`). Adapters that have no such concept drop it. The managed backend receives it as a top-level body field alongside `thread_id`.
+- **The routing hint is separate from the markers.** The harness derives a `prompt_cache_key` from the declared stable prefix and puts it in `provider_options`, so every turn of a thread, and every sub-agent sharing its system prompt and tool set, routes to the same cache shard on providers that shard (OpenAI's `prompt_cache_key`). Adapters that have no such concept drop it. The managed backend receives it as a top-level body field alongside `thread_id`.
 
-All three hang off `RunPolicy::cache.protect_prompt_prefix`, which the host sets unconditionally, and off the `PromptCacheSegmentMiddleware`, which declares the system prompt and tool catalogue as the cacheable prefix on every request. Until tinyagents began stamping that effective policy onto the outgoing request, both readers consulted `request.cache_policy` alone — always `None` here — so the flag was diagnostic only and no marker or key ever reached the wire. The `[cache]` debug line on every model call now reports whether a key was injected and how many cacheable segments were declared; `cache_read_tokens` on the usage that comes back is the number that proves it worked.
+All three hang off `RunPolicy::cache.protect_prompt_prefix`, which the host sets unconditionally, and off the `PromptCacheSegmentMiddleware`, which declares the system prompt and tool catalogue as the cacheable prefix on every request. Until tinyagents began stamping that effective policy onto the outgoing request, both readers consulted `request.cache_policy` alone, always `None` here, so the flag was diagnostic only and no marker or key ever reached the wire. The `[cache]` debug line on every model call now reports whether a key was injected and how many cacheable segments were declared; `cache_read_tokens` on the usage that comes back is the number that proves it worked.
 
-Measure this rather than reasoning about it. `CAPTURE_ALL=1 node scripts/debug/capture-first-inference.mjs` records a whole session's requests, `scripts/debug/run-multi-turn-capture.mjs` drives a multi-turn thread through the production RPC, and `scripts/debug/audit-inference-prefix.mjs` reports the first divergence and attributes it. A single-turn capture cannot see any of these — the question is never what turn 1 costs, it is whether turn 2 can reuse it.
+Measure this rather than reasoning about it. `CAPTURE_ALL=1 node scripts/debug/capture-first-inference.mjs` records a whole session's requests, `scripts/debug/run-multi-turn-capture.mjs` drives a multi-turn thread through the production RPC, and `scripts/debug/audit-inference-prefix.mjs` reports the first divergence and attributes it. A single-turn capture cannot see any of these, the question is never what turn 1 costs, it is whether turn 2 can reuse it.
 
 ### AGENTS.md project instructions
 
-Alongside identity/soul/profile/memory, the system prompt pulls in **AGENTS.md** instruction files — OpenHuman's analog of Claude Code's `CLAUDE.md` / Codex's `AGENTS.md`. Two layers are loaded **once**, at system-prompt build time (never re-read per turn, so the frozen-prefix / KV-cache contract holds):
+Alongside identity/soul/profile/memory, the system prompt pulls in **AGENTS.md** instruction files, OpenHuman's analog of Claude Code's `CLAUDE.md` / Codex's `AGENTS.md`. Two layers are loaded **once**, at system-prompt build time (never re-read per turn, so the frozen-prefix / KV-cache contract holds):
 
-- **Global** — `<workspace_dir>/AGENTS.md`, the user's OpenHuman workspace (where `SOUL.md` / `USER.md` live). Applies to every run.
-- **Project** — `<action_dir>/AGENTS.md`, the folder the agent is operating in. For sub-agent runs with a git-worktree override (`SubagentRunOptions.worktree_action_dir`), that override dir is the project layer instead.
+- **Global**, `<workspace_dir>/AGENTS.md`, the user's OpenHuman workspace (where `SOUL.md` / `USER.md` live). Applies to every run.
+- **Project**, `<action_dir>/AGENTS.md`, the folder the agent is operating in. For sub-agent runs with a git-worktree override (`SubagentRunOptions.worktree_action_dir`), that override dir is the project layer instead.
 
 The global layer renders first, the project layer second (project instructions layered after, taking precedence on conflict), under a `## Project instructions (AGENTS.md)` heading. When the two dirs resolve to the same path the file is loaded **once** (deduped). Missing / unreadable / empty files are silently skipped, and each layer is capped at `BOOTSTRAP_MAX_CHARS` (~20 000 chars) with a `[... truncated]` marker so a large file can't crowd the prompt.
 
-The loader is `agent::prompts::agents_md` (pure functions returning pre-loaded strings, bounded at read time so a pathological multi-MB file can't exhaust memory before the render-time cap); the strings are threaded onto `PromptContext` (`agents_md_global` / `agents_md_local`) and rendered by `AgentsInstructionsSection`, which sits after the user-files section and before the tool catalogue in the default and sub-agent builders. The **primary / orchestrator** agent and the other built-in dynamic agents (`PromptSource::Dynamic`) assemble their own body via `render_*` helpers, so the same `AgentsInstructionsSection` is injected centrally by `SystemPromptBuilder::from_dynamic` — appended after the agent's own body, before the central grounding contract — rather than by each `agents/<id>/prompt.rs` builder. The feature is gated by `agent.agents_md_enabled` (default **on**); when off, no AGENTS.md content is loaded or injected.
+The loader is `agent::prompts::agents_md` (pure functions returning pre-loaded strings, bounded at read time so a pathological multi-MB file can't exhaust memory before the render-time cap); the strings are threaded onto `PromptContext` (`agents_md_global` / `agents_md_local`) and rendered by `AgentsInstructionsSection`, which sits after the user-files section and before the tool catalogue in the default and sub-agent builders. The **primary / orchestrator** agent and the other built-in dynamic agents (`PromptSource::Dynamic`) assemble their own body via `render_*` helpers, so the same `AgentsInstructionsSection` is injected centrally by `SystemPromptBuilder::from_dynamic`, appended after the agent's own body, before the central grounding contract, rather than by each `agents/<id>/prompt.rs` builder. The feature is gated by `agent.agents_md_enabled` (default **on**); when off, no AGENTS.md content is loaded or injected.
 
 ## The tool-call loop
 
@@ -264,14 +264,14 @@ compatibility export.
 
 ### Tool dispatch and tool-call dialects
 
-`agent.tool_dispatcher` (overridable for one launch with `OPENHUMAN_TOOL_DISPATCHER`) picks how tools are spoken to the model. `python` (the default) renders the catalogue as Python function signatures and reads code-style calls back. `auto` uses **native tool calling** — structured tool specs through the `ChatModel` adapter and structured calls back — whenever the provider profile supports it, and falls back to JSON-in-tag for prompt-guided providers such as local Ollama. The session composes its prompt for the chosen dialect and pins the same dialect on the turn harness, so a text dialect keeps its schemas off the wire and the harness recovers calls with the matching grammar.
+`agent.tool_dispatcher` (overridable for one launch with `OPENHUMAN_TOOL_DISPATCHER`) picks how tools are spoken to the model. `python` (the default) renders the catalogue as Python function signatures and reads code-style calls back. `auto` uses **native tool calling**, structured tool specs through the `ChatModel` adapter and structured calls back, whenever the provider profile supports it, and falls back to JSON-in-tag for prompt-guided providers such as local Ollama. The session composes its prompt for the chosen dialect and pins the same dialect on the turn harness, so a text dialect keeps its schemas off the wire and the harness recovers calls with the matching grammar.
 
 Canonical `tinytools_agent::dialect::ToolDialect` implementations provide transcript-compatible parsing and rendering directly; OpenHuman converts durable/provider records only at those I/O boundaries:
 
-- **Native** (`native`) — structured tool-call fields.
-- **XML** (`xml`) — `<tool_call>{...}</tool_call>` tags in assistant text, with full JSON schemas in the prompt.
-- **P-Format** (`pformat`) — compact positional `<tool_call>name[0|a|1|b]</tool_call>` with `name[0|<a>|1|<b>]` signatures in the prompt; opt-in.
-- **Code** (`python` / `typescript`) — the catalogue is a list of function signatures (`def read_file(path: str, limit: int = None) -> str` or `function read_file(path: string, limit?: number): string;`) and the model writes a function call inside the tag: `read_file(path="src/main.rs", limit=20)` or `read_file({path: "src/main.rs", limit: 20})`. Compact like P-Format but a syntax small code-trained models already write; `python` is the default.
+- **Native** (`native`), structured tool-call fields.
+- **XML** (`xml`), `<tool_call>{...}</tool_call>` tags in assistant text, with full JSON schemas in the prompt.
+- **P-Format** (`pformat`), compact positional `<tool_call>name[0|a|1|b]</tool_call>` with `name[0|<a>|1|<b>]` signatures in the prompt; opt-in.
+- **Code** (`python` / `typescript`), the catalogue is a list of function signatures (`def read_file(path: str, limit: int = None) -> str` or `function read_file(path: string, limit?: number): string;`) and the model writes a function call inside the tag: `read_file(path="src/main.rs", limit=20)` or `read_file({path: "src/main.rs", limit: 20})`. Compact like P-Format but a syntax small code-trained models already write; `python` is the default.
 
 Every text dialect shares one parser: a `<tool_call>` body is tried as P-Format, then as a code call, then as JSON, so a model that mixes forms is still understood. Persisted session histories can contain suffixes in any of these shapes, so the session shell keeps the dispatcher around to parse and replay them faithfully when a transcript is resumed.
 
@@ -305,7 +305,7 @@ Note `action_dir/workspace/` is a scratch folder inside the agent's action root.
 
 Two halves enforce the convention:
 
-- **Prompt.** A sub-agent that actually holds `file_write` gets a Long-horizon Artifact Offload contract in its system prompt: results past roughly 2 000 tokens go to a file under `outputs/`, and the reply is that relative path plus a short abstract. The gate is deliberate — a prompt may only name tools the agent can really call, or the model emits calls that fail. `researcher` (search + fetch only) and skill-filtered specialists get no contract text, and dedicated guards assert their prompts never mention a filesystem tool. They stay covered by the harness half below, which needs no cooperation from the model. The relevant archetype prompts (`researcher`, `planner`) spell out what the convention means for their own work; the planner is told to reference artifact paths across DAG nodes rather than pasting payloads forward.
+- **Prompt.** A sub-agent that actually holds `file_write` gets a Long-horizon Artifact Offload contract in its system prompt: results past roughly 2 000 tokens go to a file under `outputs/`, and the reply is that relative path plus a short abstract. The gate is deliberate, a prompt may only name tools the agent can really call, or the model emits calls that fail. `researcher` (search + fetch only) and skill-filtered specialists get no contract text, and dedicated guards assert their prompts never mention a filesystem tool. They stay covered by the harness half below, which needs no cooperation from the model. The relevant archetype prompts (`researcher`, `planner`) spell out what the convention means for their own work; the planner is told to reference artifact paths across DAG nodes rather than pasting payloads forward.
 - **Harness.** `offload_oversized_result` runs on every sub-agent outcome, so an oversized result is offloaded even when the worker inlined it anyway. It fires **before** the definition's `max_result_chars` cap, so the full body lands on disk instead of being cut.
 
 What the parent receives is a pointer, not a payload:
@@ -404,18 +404,18 @@ neutral TinyAgents lifecycle:
 
 `wait_subagent` and `steer_subagent` accept either the durable `subagent_session_id` or the transient `task_id`; durable ids are preferred across turns. `list_subagents` shows reusable children for the current parent thread, and `close_subagent` marks a worker non-reusable and cancels it if it is still running. Inline blocking is explicit via `blocking: true`; it is no longer the default.
 
-The synthesized archetype delegations (`delegate_*`, `build_workflow`, and the other `delegate_name` tools) follow the same contract: they route through the durable async path by default, returning an `[async_subagent_ref]` (with `subagent_session_id` + `task_id`) immediately, and the finished result is inserted into the parent chat as a new system turn via `background_completions`/`background_delivery`. The delivery turn persists its own closing message — `sender: "agent"`, id `agent:<run_id>`, `extraMetadata.requestId = run_id` — **before** it emits `chat_done` as `client_id: "system"`; the frontend reuses that id, so its usual `chat_done` append collapses onto the same row (the conversation store is idempotent for these deterministic `agent:`-prefixed ids; every other id is UUID-fresh and keeps the constant-time append path) instead of persisting the delivered result a second time (#5933). **Interactive turns follow the same contract since #6034**: `web_chat::presentation::deliver_response` stores the reply under `agent:<request_id>` before publishing `chat_done`, so an answer the core produced exists on disk whether or not a client is there to receive the announcement — a dropped socket or a reloaded webview costs a repaint, not the reply. The exception is a segmented delivery, where the client owns one row per segment and the core stores none; the frontend keeps generated ids there for exactly that reason. They fall back to inline blocking automatically when there is no parent agent turn or no chat thread to deliver into (cron/CLI), or when `blocking: true` is passed. Cross-turn continuity comes from three pieces: the per-turn `[active_subagents]` roster merges the live in-memory registry with the durable `subagent_sessions` store (so a cold-booted orchestrator still sees earlier workers); `continue_subagent` falls back from pause checkpoints to the durable store, resuming an idle worker with its persisted history; and a `workflow_proposal` payload found in a finished child's history is persisted as a parent-thread message (`extraMetadata.scope = "workflow_proposal"`) that the frontend rehydrates into the proposal card on thread load.
+The synthesized archetype delegations (`delegate_*`, `build_workflow`, and the other `delegate_name` tools) follow the same contract: they route through the durable async path by default, returning an `[async_subagent_ref]` (with `subagent_session_id` + `task_id`) immediately, and the finished result is inserted into the parent chat as a new system turn via `background_completions`/`background_delivery`. The delivery turn persists its own closing message, `sender: "agent"`, id `agent:<run_id>`, `extraMetadata.requestId = run_id`, **before** it emits `chat_done` as `client_id: "system"`; the frontend reuses that id, so its usual `chat_done` append collapses onto the same row (the conversation store is idempotent for these deterministic `agent:`-prefixed ids; every other id is UUID-fresh and keeps the constant-time append path) instead of persisting the delivered result a second time (#5933). **Interactive turns follow the same contract since #6034**: `web_chat::presentation::deliver_response` stores the reply under `agent:<request_id>` before publishing `chat_done`, so an answer the core produced exists on disk whether or not a client is there to receive the announcement, a dropped socket or a reloaded webview costs a repaint, not the reply. The exception is a segmented delivery, where the client owns one row per segment and the core stores none; the frontend keeps generated ids there for exactly that reason. They fall back to inline blocking automatically when there is no parent agent turn or no chat thread to deliver into (cron/CLI), or when `blocking: true` is passed. Cross-turn continuity comes from three pieces: the per-turn `[active_subagents]` roster merges the live in-memory registry with the durable `subagent_sessions` store (so a cold-booted orchestrator still sees earlier workers); `continue_subagent` falls back from pause checkpoints to the durable store, resuming an idle worker with its persisted history; and a `workflow_proposal` payload found in a finished child's history is persisted as a parent-thread message (`extraMetadata.scope = "workflow_proposal"`) that the frontend rehydrates into the proposal card on thread load.
 
 ### Spawn hierarchy and tiers
 
 Not every agent is allowed to spawn every other agent. The harness models a three-tier hierarchy that mirrors the cost / latency / depth-of-thought split between models:
 
 ```text
-Primary     (direct-capable — Master Agent on `coding` hint)
+Primary     (direct-capable, Master Agent on `coding` hint)
   │
   ├─► Worker      ◄─── fast path: one delegation, leaf does the work
   │
-  └─► Reasoning   (slow, deep-thinking — e.g. planner on `reasoning` hint)
+  └─► Reasoning   (slow, deep-thinking, e.g. planner on `reasoning` hint)
         │
         └─► Worker  ◄─── deep path: reasoning decomposes, workers execute
 ```
@@ -455,14 +455,14 @@ For Composio toolkits with hundreds of actions (GitHub alone has 500+), loading 
 > unrelated `tinyflows` JSON-query dependency). The section is retained as
 > design history.
 
-The fixed delegation primitives (`spawn_subagent`, `spawn_parallel_agents`, `run_workflow`) can't express _ad-hoc control flow_ — "spawn N readers, dedupe their findings, verify each survivor with 3 refuters, loop until dry". The **`rhai_workflows` tool** closed that gap: it exposed TinyAgents' Rhai-backed `.ragsh` REPL (the `repl` cargo feature) so the orchestrator could author and run its own workflow scripts.
+The fixed delegation primitives (`spawn_subagent`, `spawn_parallel_agents`, `run_workflow`) can't express _ad-hoc control flow_, "spawn N readers, dedupe their findings, verify each survivor with 3 refuters, loop until dry". The **`rhai_workflows` tool** closed that gap: it exposed TinyAgents' Rhai-backed `.ragsh` REPL (the `repl` cargo feature) so the orchestrator could author and run its own workflow scripts.
 
-**One tool call = one `eval_cell`.** The orchestrator's normal tool-call loop _was_ the CodeAct driver loop: the model wrote a Rhai cell, the cell ran against a persistent per-session namespace (top-level `let` bindings survived into the next cell via an optional `session_id`), and the structured result flowed back as the tool result. Scripts reached the host only through capability functions — `tool_call`, `agent_query`, `model_query`, their `*_batched` fan-out variants, `emit`, and `answer`.
+**One tool call = one `eval_cell`.** The orchestrator's normal tool-call loop _was_ the CodeAct driver loop: the model wrote a Rhai cell, the cell ran against a persistent per-session namespace (top-level `let` bindings survived into the next cell via an optional `session_id`), and the structured result flowed back as the tool result. Scripts reached the host only through capability functions, `tool_call`, `agent_query`, `model_query`, their `*_batched` fan-out variants, `emit`, and `answer`.
 
 The domain lived in `crates/openhuman-core/src/flows/rhai/`:
 
 - **`policy.rs`** mapped the autonomy tier + `tool_timeout` clamps onto a `tinyagents::ReplPolicy` (always bounded, never unbounded; `readonly` refused; `full` could raise call-count limits to a hard 2× ceiling).
-- **`bridge.rs`** built the `CapabilityRegistry`: the parent's visible tools (each re-wrapped so the **approval gate ran in the bridge** — it was _not_ on the repl path, which bypassed the harness `wrap_tool` middleware), the turn's provider model, and a sub-agent capability per `allowed_subagent_ids`. Recursion/duplication hazards (`rhai`, legacy `rlm`, `spawn_*`, workflow tools, `CliRpcOnly`-scoped tools) were excluded. Because `eval_cell` ran on `spawn_blocking` + `block_on`, the `agent_query` adapter re-installed the `PARENT_CONTEXT` task-local that `run_subagent` resolves.
+- **`bridge.rs`** built the `CapabilityRegistry`: the parent's visible tools (each re-wrapped so the **approval gate ran in the bridge**, it was _not_ on the repl path, which bypassed the harness `wrap_tool` middleware), the turn's provider model, and a sub-agent capability per `allowed_subagent_ids`. Recursion/duplication hazards (`rhai`, legacy `rlm`, `spawn_*`, workflow tools, `CliRpcOnly`-scoped tools) were excluded. Because `eval_cell` ran on `spawn_blocking` + `block_on`, the `agent_query` adapter re-installed the `PARENT_CONTEXT` task-local that `run_subagent` resolves.
 - **`sessions.rs`** was a bounded (LRU + idle-TTL) manager of persistent sessions, one cell at a time (a concurrent call on a busy session returned a typed "busy" error).
 - **`ops.rs`** ran the cell on `spawn_blocking` under a layered time bound (rhai `on_progress` deadline → `bridge_block_on` timer race → outer `tokio::timeout` backstop → harness `ToolTimeout`), wired the run-cancellation token to a fresh per-cell `ReplCancelFlag`, and mapped every failure mode to a model-consumable result.
 
@@ -624,14 +624,14 @@ The harness shell lives under `crates/openhuman-core/src/agent/`, with the tinya
 > the published **tinyagents** crate; see the status banner at the top of this
 > page and "Agent engine + orchestration on tinyagents (live)" below. Graphs are
 > built with `tinyagents::graph::GraphBuilder` (`orchestration/*/graph.rs`,
-> `tinyagents/delegation.rs`), durable
+> `orchestration/delegation.rs`), durable
 > checkpoints use TinyAgents' own `SqliteCheckpointer` (the earlier
 > `SqlRunLedgerCheckpointer` adapter is retired), and per-agent graph selection is
 > `AgentGraph` (`agent/harness/agent_graph.rs`) with each agent's
 > `registry/agents/<id>/graph.rs`. The text below is retained only as
 > pre-migration design history.
 
-Alongside the linear tool-call loop, the harness ships a **LangGraph-style state-machine engine** under `crates/openhuman-core/src/agent_graph/` (issue #4249, referenced here only as design history — the path no longer exists). Where the loop is an implicit "prompt → tool → result → next prompt" cycle, a graph models agent execution as an explicit directed graph of **nodes** (states) and **edges** (transitions), with typed working state that survives across transitions, parallel branches, and checkpoints.
+Alongside the linear tool-call loop, the harness ships a **LangGraph-style state-machine engine** under `crates/openhuman-core/src/agent_graph/` (issue #4249, referenced here only as design history, the path no longer exists). Where the loop is an implicit "prompt → tool → result → next prompt" cycle, a graph models agent execution as an explicit directed graph of **nodes** (states) and **edges** (transitions), with typed working state that survives across transitions, parallel branches, and checkpoints.
 
 ```
 StateGraph::new(name)
@@ -684,7 +684,7 @@ direct `tinyagents-orchestration::subagent` lifecycle. There is no
 **Orchestration on graphs** (`crates/openhuman-core/src/agent/orchestration/`):
 
 - **Workflow phase DAG** (`workflow_runs/engine.rs`) runs on a `dispatch ⇄ run_phase → done` conditional-routing graph; each phase fans its agents out via `graph::parallel::map_reduce`. The durable `workflow_runs` row stays the source of truth (controllers + resume read it).
-- **Team member runtime** (`agent_teams/graph.rs`) is a conditional-routing graph (`execute → complete|fail → done`).
+- **Team member runtime** (`agent_teams/runtime.rs`, `run_member_graph`) is a conditional-routing graph (`execute → complete|fail → done`).
 - **Multi-stage delegation** (`orchestration::delegation` + the `delegate` tool) runs `delegation.rs`, checkpointed to the session DB.
 - **Detached sub-agents** (`running_subagents.rs`) use TinyAgents `DetachedTaskRegistry` for ownership-aware snapshots, wait/timeout, steering lookup, cooperative cancellation, hard abort, and terminal cleanup. OpenHuman retains durable task-store projection, product/session metadata, RPC and delivery semantics, and the `RunQueue` compatibility fallback.
 
@@ -739,7 +739,7 @@ Goals and todos are crate-backed outright, with no shadow: thread goals live in 
 
 ## Workload routes and the burst tier
 
-`tinyagents/routes.rs` is the declarative TinyAgents `ModelRouter` for the OpenHuman workload roles `chat`, `reasoning`, `agentic`, `coding`, `burst`, `summarization`, and `vision`, keyed by their `hint:*` aliases. It owns fallback chains and capability gates; `inference::provider::factory` resolves each selected role to its configured native `ChatModel` — on the managed backend, the pinned default model (`openrouter/deepseek/deepseek-v4-flash` unless changed under Settings → Routing → Default model); there are no per-role tier endpoints any more. The **`burst`** role serves low-context, high-fanout workers.
+`tinyagents/routes.rs` is the declarative TinyAgents `ModelRouter` for the OpenHuman workload roles `chat`, `reasoning`, `agentic`, `coding`, `burst`, `summarization`, and `vision`, keyed by their `hint:*` aliases. It owns fallback chains and capability gates; `inference::provider::factory` resolves each selected role to its configured native `ChatModel`, on the managed backend, the pinned default model (`openrouter/deepseek/deepseek-v4-flash` unless changed under Settings → Routing → Default model); there are no per-role tier endpoints any more. The **`burst`** role serves low-context, high-fanout workers.
 
 ## See also
 

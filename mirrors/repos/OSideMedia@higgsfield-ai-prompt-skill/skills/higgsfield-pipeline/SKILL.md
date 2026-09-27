@@ -9,8 +9,8 @@ description: >
 user-invocable: true
 metadata:
   tags: [higgsfield, pipeline, workflow, chain, production, multi-shot, short-film, popcorn, recast]
-  version: 3.5.0
-  updated: 2026-08-22
+  version: 3.6.1
+  updated: 2026-09-26
   parent: higgsfield
 ---
 
@@ -19,26 +19,27 @@ metadata:
 ## QUICK FACTS
 *Generated-checked block (scripts/build_index.py verifies anchors). Read the linked sections for full context — these lines are routing aids, not the rules themselves.*
 - 8-stage Master Chain: Popcorn → Seedream/Soul → Animate → Recast → Lipsync → Vibe Motion → Upscale → Assemble; most good short-form uses 3–5 stages [→](#the-master-production-chain)
-- Lock 9 project fields before touching any tool; "what must stay consistent" is the load-bearing one [→](#step-01-start-with-the-project-not-the-prompt)
-- One job per scene — six scene purposes; a good scene prompt answers six questions [→](#step-06-give-every-scene-one-job)
-- 7 reusable prompt-module types: character identity, camera, lighting, style, motion, negative prompt, continuity [→](#step-07-use-prompt-modules)
-- 80% rule: keep what worked, fix only the mistake; every diagnosed failure becomes a new negative rule [→](#step-0809-fix-failures-protect-what-worked)
-- Build in 8 passes: Concept → Project script → Scene breakdown → Shot list → Image prompts → Video prompts → Review → Fix [→](#step-10-build-the-project-in-passes)
-- Use the EXACT same character description (copy-paste) in every Popcorn prompt — continuity without Soul ID [→](#stage-1-storyboard-with-popcorn)
-- Seedream edits the image, not the video — always edit the Hero Frame before animating, never after [→](#stage-2-image-editing-with-seedream)
-- Model by scene type: Sora 2 for stunts/epic ("one continuous shot, no cuts"), Kling 2.6 portraits, Seedance quiet interiors [→](#stage-3-animate-by-scene-type)
-- Recast swaps identity while preserving motion, camera, and lighting; the "prompt" is the reference image you upload [→](#stage-4-recast-character-swap)
-- Audio routing: existing video + speech → Lipsync Studio; new content with audio → Kling 3.0; talking head → Kling Avatars 2.0 [→](#stage-5-lipsync-audio)
-- Higgsfield has no native timeline editor — assemble in DaVinci Resolve / Premiere / CapCut [→](#stage-8-assembly)
-- Pipeline E hard rules: 15-second cap per scene, one generation per style, feed the previous scene's video as continuity reference [→](#stage-5-seedance-20-with-keyframe-previous-video)
-- Soul Cinema keyframes: deliberately short 5–15 word prompts with enhancer ON — long prompts starve the enhancer [→](#stage-1-soul-cinema-keyframe-style-first-enhancer-on)
+- Lock 9 project fields before touching any tool; "what must stay consistent" is the load-bearing one [→](#step-01--start-with-the-project-not-the-prompt)
+- One job per scene — six scene purposes; a good scene prompt answers six questions [→](#step-06--give-every-scene-one-job)
+- 7 reusable prompt-module types: character identity, camera, lighting, style, motion, negative prompt, continuity [→](#step-07--use-prompt-modules)
+- 80% rule: keep what worked, fix only the mistake; every diagnosed failure becomes a new negative rule [→](#step-0809--fix-failures--protect-what-worked)
+- Build in 8 passes: Concept → Project script → Scene breakdown → Shot list → Image prompts → Video prompts → Review → Fix [→](#step-10--build-the-project-in-passes)
+- Use the EXACT same character description (copy-paste) in every Popcorn prompt — continuity without Soul ID [→](#stage-1--storyboard-with-popcorn)
+- Seedream edits the image, not the video — always edit the Hero Frame before animating, never after [→](#stage-2--image-editing-with-seedream)
+- Model by scene type: Seedance 2.0 / Minimax Hailuo 2.3 for stunts/epic ("one continuous shot, no cuts"), Kling 2.6 portraits, Seedance quiet interiors [→](#stage-3--animate-by-scene-type)
+- Recast swaps identity while preserving motion, camera, and lighting; the "prompt" is the reference image you upload [→](#stage-4--recast-character-swap)
+- Audio routing: existing video + speech → Lipsync Studio; new content with audio → Kling 3.0; talking head → Kling Avatars 2.0 [→](#stage-5--lipsync--audio)
+- Higgsfield has no native timeline editor — assemble in DaVinci Resolve / Premiere / CapCut [→](#stage-8--assembly)
+- Pipeline E hard rules: 15-second cap per scene, one generation per style, feed the previous scene's video as continuity reference [→](#stage-5--seedance-20-with-keyframe--previous-video)
+- Soul Cinema keyframes: deliberately short 5–15 word prompts with enhancer ON — long prompts starve the enhancer [→](#stage-1--soul-cinema-keyframe-style-first-enhancer-on)
 - Never describe character age in Seedance prompts; >15s per scene degrades prompt adherence — split the scene [→](#pipeline-e-pitfalls)
 - No extend button: attach the accepted clip as a video reference + open with "The scene continues." — and match the source's resolution AND duration [→](#the-extend-a-clip-workflow)
-- Cap seamless extension chains at 2 (hard ceiling 3); re-anchor from ORIGINAL canonical refs, break chains with B-roll [→](#chain-management-depth-caps-and-re-anchoring)
+- Cap seamless extension chains at 2 (hard ceiling 3); re-anchor from ORIGINAL canonical refs, break chains with B-roll [→](#chain-management--depth-caps-and-re-anchoring)
 - An attached source clip carries the state — prompt only the delta; motion vectors, camera-move phase, audio phase stay in prose when handing off from a still frame [→](#source-carries-state-rule)
 - End extension prompts on a camera-angle change so the join reads as coverage; plan transitions ahead (last-channel-on-TV trick) [→](#clean-join-planning)
-- Draw a top-down schema when 2+ characters, a key prop placement, or complex camera geometry — prompt in absolute terms ("A 2m from B") [→](#spatial-blocking-top-down-schema-for-multi-character-scenes)
+- Draw a top-down schema when 2+ characters, a key prop placement, or complex camera geometry — prompt in absolute terms ("A 2m from B") [→](#spatial-blocking--top-down-schema-for-multi-character-scenes)
 - Never animate a "good enough" image; if the character looks wrong in the Hero Frame, Recast is the fix — not the animation prompt [→](#pipeline-pitfalls)
+- [FIELD] The edit is a loop with a declared exit: assembly → rough cut → **generation supervision** (re-generate broken shots here, and only here) → fine cut → picture lock, after which there are no new generations; colour's first job is unifying each generation's baked-in grade [→](#the-edit--five-stages-to-picture-lock)
 
 
 ## The Core Insight
@@ -413,7 +414,7 @@ branded content, and any multi-shot sequence that needs character continuity:
 ```
 [1] POPCORN          → Storyboard / key frame images (consistent character + framing)
 [2] SEEDREAM / SOUL  → Edit / style the image (transform appearance, fix details)
-[3] ANIMATE          → Bring the image to motion (Veo 3.1 / Seedance / Sora 2 / Kling)
+[3] ANIMATE          → Bring the image to motion (Veo 3.1 / Seedance / Kling)
 [4] RECAST           → Swap character if needed (maintain motion, change identity)
 [5] LIPSYNC          → Add audio performance (speech, sound, emotion)
 [6] VIBE MOTION      → Add motion graphic layers (titles, captions, CTAs)
@@ -452,20 +453,20 @@ This is how you get visual continuity across scenes without Soul ID.
 
 ```
 Scene 1 — Establishing:
-"A middle-aged woman, dark hair pulled back, wearing a grey wool coat,
+"A woman, dark hair pulled back, wearing a grey wool coat,
 sitting behind the wheel of a moving car. Camera through windshield —
 focused and tense expression. Sunlight flickering across her face.
 35mm film, shallow depth of field, muted color tones, Roger Deakins style."
 
 Scene 2 — Passenger reaction:
-"An elderly man in a thick knit sweater, seated in the passenger seat,
+"A grey-haired man in a thick knit sweater, seated in the passenger seat,
 gazing out the window with a calm but distant expression.
 Camera slightly off-center, interior car shot.
 Same 35mm film look, muted tones, soft natural light."
 
 Scene 3 — Object insert:
 "Close-up of a weathered wooden photo frame on a kitchen counter.
-Inside: a faded photograph of a young woman and elderly man smiling.
+Inside: a faded photograph of a dark-haired woman and a grey-haired man smiling.
 Warm afternoon light through lace curtains, dust motes in air.
 50mm lens, shallow focus, nostalgic atmosphere, yellow-green tones."
 ```
@@ -489,7 +490,7 @@ Seedream edit prompt structure:
 "[What to change, specifically]. [What to keep the same]."
 
 Example:
-"Make the elderly man look like a zombie — rotten flesh, white milky eyes,
+"Make the grey-haired man look like a zombie — rotten flesh, white milky eyes,
 grey skin tone. Keep all other elements of the image identical."
 ```
 
@@ -505,11 +506,15 @@ Choose the animation model based on what the scene requires:
 | Scene type | Best model | Key prompt note |
 |------------|-----------|----------------|
 | Character emotional reaction | Veo 3.1 / Kling 2.6 | Lead with camera mount position |
-| Car/vehicle action | Veo 3.1 / Sora 2 | Specify camera mount explicitly |
-| Physical stunt / crash | Sora 2 | "One continuous shot, no cuts" |
+| Car/vehicle action | Veo 3.1 | Specify camera mount explicitly |
+| Physical stunt / crash | Seedance 2.0 / Minimax Hailuo 2.3 | "One continuous shot, no cuts" |
 | Quiet interior moment | Seedance / Kling 2.6 | Minimal motion, camera Dolly In |
-| Epic reveal / scale | Sora 2 | Crane Up or Super Dolly Out |
+| Epic reveal / scale | Seedance 2.0 / Minimax Hailuo 2.3 | Crane Up or Super Dolly Out |
 | Portrait / reaction close-up | Kling 2.6 | Head Tracking or Dolly In |
+
+> Sora 2 held the stunt and epic rows (and shared the vehicle row) until OpenAI shut the Sora 2 API down on 2026-09-24;
+> whether Higgsfield's UI still offers it is unconfirmed. The replacements are the repo's
+> catalog-verified scale/physics fallbacks (`../../model-guide.md` § Model + Camera Control Compatibility).
 
 **I2V animation prompt structure:**
 ```
@@ -537,7 +542,7 @@ Expression twists from curiosity to fear. Eyes dart wildly.
 He begins trembling and jerking his head, as if losing control.
 Claustrophobic tension. Handheld realism, shallow DOF, eerie silence."
 
-Scene 3 animation (Sora 2):
+Scene 3 animation (written for Sora 2 — retired; rerun on Seedance 2.0 or Minimax Hailuo 2.3):
 "A speeding sedan on an empty highway — camera tracking rig, low to ground.
 Air shimmers with heat. Car veers — front tire catches rough asphalt.
 The car lurches, tilts, flips violently through the air.
@@ -613,7 +618,8 @@ Run finished clips through Higgsfield's Topaz-integrated upscale before delivery
 - Upscale from 720p to 1080p or 4K
 - Sharpens detail lost in generation
 - Reduces generation artifacts
-- Use Sora 2 Upscale specifically for Sora 2 outputs
+- Sora 2 Upscale is for Sora 2 outputs, and Sora 2 is retired (OpenAI shut the Sora 2 API down on 2026-09-24; Higgsfield UI
+  availability unconfirmed), so don't plan new clips around either
 
 ---
 
@@ -712,7 +718,7 @@ Style: Commercial quality, [clean/warm/dramatic]. [Ratio].
 **Credits required:** Low (Basic/Pro)
 
 ```
-[1] SEEDANCE PRO     → Generate 5 fast test clips (one prompt each)
+[1] SEEDANCE 2.0 FAST → Generate 5 fast test clips (one prompt each)
 [2] PICK BEST        → Select 1–2 that work
 [3] KLING 2.6        → Upgrade the winners to premium quality
 [4] VIBE MOTION      → Add captions/CTAs
@@ -947,7 +953,7 @@ The extension workflow:
 
 ### Chain management — depth caps and re-anchoring
 
-[FIELD — community, seedance-2.0 repo v6.6.0] Quality degrades over
+[EMPIRICAL — community seedance-2.0 repo v6.6.0, imported 2026-07-05] Quality degrades over
 chained extensions: each generation re-ingests the previous
 generation's artifacts, and drift is expected by the ~4th–5th
 generation in a chain. Manage the chain, don't ride it:

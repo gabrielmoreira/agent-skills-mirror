@@ -7,7 +7,7 @@ ref: dev
 
 # Mirror Manifest
 
-Mirror of `code-yeongyu/oh-my-openagent` — 26 default patterns, 23 followed patterns, 343 file(s) materialized.
+Mirror of `code-yeongyu/oh-my-openagent` — 26 default patterns, 18 followed patterns, 336 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `code-yeongyu/oh-my-openagent` — 26 default patterns, 23 followed pa
 | Ref Type      | `branch` |
 | Ref           | `dev` |
 | Default pats  | 26 |
-| Followed pats | 23 |
-| Files         | 343 |
+| Followed pats | 18 |
+| Files         | 336 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -65,14 +65,9 @@ Mirror of `code-yeongyu/oh-my-openagent` — 26 default patterns, 23 followed pa
 - `README.ko.md`
 - `README.ja.md`
 - `README.zh-cn.md`
-- `docs/guide/installation.md`
-- `docs/legal/privacy-policy.md`
-- `docs/legal/terms-of-service.md`
 - `docs/guide/migrating-from-opencode.md`
-- `docs/guide/overview.md`
-- `docs/reference/features.md`
-- `docs/guide/orchestration.md`
 - `docs/reference/configuration.md`
+- `docs/reference/features.md`
 - `docs/manifesto.md`
 
 ## File Index
@@ -338,92 +333,85 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 255 | ✓ | [`packages/shared-skills/skills/data-scientist/SKILL.md`](packages/shared-skills/skills/data-scientist/SKILL.md) |
 | 256 | ✓ | [`packages/shared-skills/skills/debugging/SKILL.md`](packages/shared-skills/skills/debugging/SKILL.md) |
 | 257 | ✓ | [`packages/shared-skills/skills/frontend/references/design/README.md`](packages/shared-skills/skills/frontend/references/design/README.md) |
-| 258 | ✓ | [`packages/shared-skills/skills/frontend/references/designpowers/orchestration.md`](packages/shared-skills/skills/frontend/references/designpowers/orchestration.md) |
-| 259 | ✓ | [`packages/shared-skills/skills/frontend/references/designpowers/README.md`](packages/shared-skills/skills/frontend/references/designpowers/README.md) |
-| 260 | ✓ | [`packages/shared-skills/skills/frontend/references/perfection/README.md`](packages/shared-skills/skills/frontend/references/perfection/README.md) |
-| 261 | ✓ | [`packages/shared-skills/skills/frontend/SKILL.md`](packages/shared-skills/skills/frontend/SKILL.md) |
-| 262 | ✓ | [`packages/shared-skills/skills/git-master/SKILL.md`](packages/shared-skills/skills/git-master/SKILL.md) |
-| 263 | ✓ | [`packages/shared-skills/skills/init-deep/SKILL.md`](packages/shared-skills/skills/init-deep/SKILL.md) |
-| 264 | ✓ | [`packages/shared-skills/skills/lsp-setup/references/bash/README.md`](packages/shared-skills/skills/lsp-setup/references/bash/README.md) |
-| 265 | ✓ | [`packages/shared-skills/skills/lsp-setup/references/c-cpp/README.md`](packages/shared-skills/skills/lsp-setup/references/c-cpp/README.md) |
-| 266 | ✓ | [`packages/shared-skills/skills/lsp-setup/references/csharp/README.md`](packages/shared-skills/skills/lsp-setup/references/csharp/README.md) |
-| 267 | ✓ | [`packages/shared-skills/skills/lsp-setup/references/dart/README.md`](packages/shared-skills/skills/lsp-setup/references/dart/README.md) |
-| 268 | ✓ | [`packages/shared-skills/skills/lsp-setup/references/elixir/README.md`](packages/shared-skills/skills/lsp-setup/references/elixir/README.md) |
-| 269 | ✓ | [`packages/shared-skills/skills/lsp-setup/references/go/README.md`](packages/shared-skills/skills/lsp-setup/references/go/README.md) |
-| 270 | ✓ | [`packages/shared-skills/skills/lsp-setup/references/haskell/README.md`](packages/shared-skills/skills/lsp-setup/references/haskell/README.md) |
-| 271 | ✓ | [`packages/shared-skills/skills/lsp-setup/references/java/README.md`](packages/shared-skills/skills/lsp-setup/references/java/README.md) |
-| 272 | ✓ | [`packages/shared-skills/skills/lsp-setup/references/julia/README.md`](packages/shared-skills/skills/lsp-setup/references/julia/README.md) |
-| 273 | ✓ | [`packages/shared-skills/skills/lsp-setup/references/kotlin/README.md`](packages/shared-skills/skills/lsp-setup/references/kotlin/README.md) |
-| 274 | ✓ | [`packages/shared-skills/skills/lsp-setup/references/lua/README.md`](packages/shared-skills/skills/lsp-setup/references/lua/README.md) |
-| 275 | ✓ | [`packages/shared-skills/skills/lsp-setup/references/php/README.md`](packages/shared-skills/skills/lsp-setup/references/php/README.md) |
-| 276 | ✓ | [`packages/shared-skills/skills/lsp-setup/references/python/README.md`](packages/shared-skills/skills/lsp-setup/references/python/README.md) |
-| 277 | ✓ | [`packages/shared-skills/skills/lsp-setup/references/ruby/README.md`](packages/shared-skills/skills/lsp-setup/references/ruby/README.md) |
-| 278 | ✓ | [`packages/shared-skills/skills/lsp-setup/references/rust/README.md`](packages/shared-skills/skills/lsp-setup/references/rust/README.md) |
-| 279 | ✓ | [`packages/shared-skills/skills/lsp-setup/references/swift/README.md`](packages/shared-skills/skills/lsp-setup/references/swift/README.md) |
-| 280 | ✓ | [`packages/shared-skills/skills/lsp-setup/references/terraform/README.md`](packages/shared-skills/skills/lsp-setup/references/terraform/README.md) |
-| 281 | ✓ | [`packages/shared-skills/skills/lsp-setup/references/typescript/README.md`](packages/shared-skills/skills/lsp-setup/references/typescript/README.md) |
-| 282 | ✓ | [`packages/shared-skills/skills/lsp-setup/references/yaml/README.md`](packages/shared-skills/skills/lsp-setup/references/yaml/README.md) |
-| 283 | ✓ | [`packages/shared-skills/skills/lsp-setup/references/zig/README.md`](packages/shared-skills/skills/lsp-setup/references/zig/README.md) |
-| 284 | ✓ | [`packages/shared-skills/skills/lsp-setup/SKILL.md`](packages/shared-skills/skills/lsp-setup/SKILL.md) |
-| 285 | ✓ | [`packages/shared-skills/skills/programming/references/go/README.md`](packages/shared-skills/skills/programming/references/go/README.md) |
-| 286 | ✓ | [`packages/shared-skills/skills/programming/references/python/README.md`](packages/shared-skills/skills/programming/references/python/README.md) |
-| 287 | ✓ | [`packages/shared-skills/skills/programming/references/rust-ub/README.md`](packages/shared-skills/skills/programming/references/rust-ub/README.md) |
-| 288 | ✓ | [`packages/shared-skills/skills/programming/references/rust/README.md`](packages/shared-skills/skills/programming/references/rust/README.md) |
-| 289 | ✓ | [`packages/shared-skills/skills/programming/references/typescript/README.md`](packages/shared-skills/skills/programming/references/typescript/README.md) |
-| 290 | ✓ | [`packages/shared-skills/skills/programming/SKILL.md`](packages/shared-skills/skills/programming/SKILL.md) |
-| 291 | ✓ | [`packages/shared-skills/skills/refactor/SKILL.md`](packages/shared-skills/skills/refactor/SKILL.md) |
-| 292 | ✓ | [`packages/shared-skills/skills/remove-ai-slops/SKILL.md`](packages/shared-skills/skills/remove-ai-slops/SKILL.md) |
-| 293 | ✓ | [`packages/shared-skills/skills/review-work/SKILL.md`](packages/shared-skills/skills/review-work/SKILL.md) |
-| 294 | ✓ | [`packages/shared-skills/skills/ultimate-browsing/engine/AGENTS.md`](packages/shared-skills/skills/ultimate-browsing/engine/AGENTS.md) |
-| 295 | ✓ | [`packages/shared-skills/skills/ultimate-browsing/references/agent-reach/README.md`](packages/shared-skills/skills/ultimate-browsing/references/agent-reach/README.md) |
-| 296 | ✓ | [`packages/shared-skills/skills/ultimate-browsing/references/insane-search/README.md`](packages/shared-skills/skills/ultimate-browsing/references/insane-search/README.md) |
-| 297 | ✓ | [`packages/shared-skills/skills/ultimate-browsing/SKILL.md`](packages/shared-skills/skills/ultimate-browsing/SKILL.md) |
-| 298 | ✓ | [`packages/shared-skills/skills/ulw-execute/SKILL.md`](packages/shared-skills/skills/ulw-execute/SKILL.md) |
-| 299 | ✓ | [`packages/shared-skills/skills/ulw-plan/SKILL.md`](packages/shared-skills/skills/ulw-plan/SKILL.md) |
-| 300 | ✓ | [`packages/shared-skills/skills/ulw-research/AGENTS.md`](packages/shared-skills/skills/ulw-research/AGENTS.md) |
-| 301 | ✓ | [`packages/shared-skills/skills/ulw-research/SKILL.md`](packages/shared-skills/skills/ulw-research/SKILL.md) |
-| 302 | ✓ | [`packages/shared-skills/skills/visual-qa/AGENTS.md`](packages/shared-skills/skills/visual-qa/AGENTS.md) |
-| 303 | ✓ | [`packages/shared-skills/skills/visual-qa/SKILL.md`](packages/shared-skills/skills/visual-qa/SKILL.md) |
-| 304 | ✓ | [`packages/skills-loader-core/AGENTS.md`](packages/skills-loader-core/AGENTS.md) |
-| 305 | ✓ | [`packages/skills-loader-core/src/features/builtin-skills/AGENTS.md`](packages/skills-loader-core/src/features/builtin-skills/AGENTS.md) |
-| 306 | ✓ | [`packages/skills-loader-core/src/features/builtin-skills/dev-browser/references/installation.md`](packages/skills-loader-core/src/features/builtin-skills/dev-browser/references/installation.md) |
-| 307 | ✓ | [`packages/skills-loader-core/src/features/builtin-skills/dev-browser/SKILL.md`](packages/skills-loader-core/src/features/builtin-skills/dev-browser/SKILL.md) |
-| 308 | ✓ | [`packages/skills-loader-core/src/features/builtin-skills/frontend/SKILL.md`](packages/skills-loader-core/src/features/builtin-skills/frontend/SKILL.md) |
-| 309 | ✓ | [`packages/skills-loader-core/src/features/builtin-skills/git-master/SKILL.md`](packages/skills-loader-core/src/features/builtin-skills/git-master/SKILL.md) |
-| 310 | ✓ | [`packages/skills-loader-core/src/features/builtin-skills/security-research/SKILL.md`](packages/skills-loader-core/src/features/builtin-skills/security-research/SKILL.md) |
-| 311 | ✓ | [`packages/skills-loader-core/src/features/opencode-skill-loader/AGENTS.md`](packages/skills-loader-core/src/features/opencode-skill-loader/AGENTS.md) |
-| 312 | ✓ | [`packages/team-core/AGENTS.md`](packages/team-core/AGENTS.md) |
-| 313 | ✓ | [`packages/telemetry-core/AGENTS.md`](packages/telemetry-core/AGENTS.md) |
-| 314 | ✓ | [`packages/tmux-core/AGENTS.md`](packages/tmux-core/AGENTS.md) |
-| 315 | ✓ | [`packages/utils/AGENTS.md`](packages/utils/AGENTS.md) |
-| 316 | ✓ | [`packages/web/AGENTS.md`](packages/web/AGENTS.md) |
-| 317 | ✓ | [`script/AGENTS.md`](script/AGENTS.md) |
-| 318 | ✓ | [`script/qa/dependency-audit/README.md`](script/qa/dependency-audit/README.md) |
-| 319 | ✓ | [`scripts/AGENTS.md`](scripts/AGENTS.md) |
-| 320 | ✓ | [`tests/AGENTS.md`](tests/AGENTS.md) |
-| 321 | → | [`.devcontainer/README.md`](.devcontainer/README.md) |
-| 322 | → | [`CHANGELOG.md`](CHANGELOG.md) |
-| 323 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 324 | → | [`docs/guide/installation.md`](docs/guide/installation.md) |
-| 325 | → | [`docs/guide/migrating-from-opencode.md`](docs/guide/migrating-from-opencode.md) |
-| 326 | → | [`docs/guide/orchestration.md`](docs/guide/orchestration.md) |
-| 327 | → | [`docs/guide/overview.md`](docs/guide/overview.md) |
-| 328 | → | [`docs/guide/team-mode.md`](docs/guide/team-mode.md) |
-| 329 | → | [`docs/legal/privacy-policy.md`](docs/legal/privacy-policy.md) |
-| 330 | → | [`docs/legal/terms-of-service.md`](docs/legal/terms-of-service.md) |
-| 331 | → | [`docs/manifesto.md`](docs/manifesto.md) |
-| 332 | → | [`docs/reference/configuration.md`](docs/reference/configuration.md) |
-| 333 | → | [`docs/reference/features.md`](docs/reference/features.md) |
-| 334 | → | [`docs/reference/lazycodex-npm-reservation.md`](docs/reference/lazycodex-npm-reservation.md) |
-| 335 | → | [`docs/reference/omo-json.md`](docs/reference/omo-json.md) |
-| 336 | → | [`docs/reference/prompt-async-gate-rfc.md`](docs/reference/prompt-async-gate-rfc.md) |
-| 337 | → | [`docs/reference/release-process.md`](docs/reference/release-process.md) |
-| 338 | → | [`README.ja.md`](README.ja.md) |
-| 339 | → | [`README.ko.md`](README.ko.md) |
-| 340 | → | [`README.md`](README.md) |
-| 341 | → | [`README.ru.md`](README.ru.md) |
-| 342 | → | [`README.zh-cn.md`](README.zh-cn.md) |
-| 343 | → | [`ROADMAP.md`](ROADMAP.md) |
+| 258 | ✓ | [`packages/shared-skills/skills/frontend/references/designpowers/README.md`](packages/shared-skills/skills/frontend/references/designpowers/README.md) |
+| 259 | ✓ | [`packages/shared-skills/skills/frontend/references/perfection/README.md`](packages/shared-skills/skills/frontend/references/perfection/README.md) |
+| 260 | ✓ | [`packages/shared-skills/skills/frontend/SKILL.md`](packages/shared-skills/skills/frontend/SKILL.md) |
+| 261 | ✓ | [`packages/shared-skills/skills/git-master/SKILL.md`](packages/shared-skills/skills/git-master/SKILL.md) |
+| 262 | ✓ | [`packages/shared-skills/skills/init-deep/SKILL.md`](packages/shared-skills/skills/init-deep/SKILL.md) |
+| 263 | ✓ | [`packages/shared-skills/skills/lsp-setup/references/bash/README.md`](packages/shared-skills/skills/lsp-setup/references/bash/README.md) |
+| 264 | ✓ | [`packages/shared-skills/skills/lsp-setup/references/c-cpp/README.md`](packages/shared-skills/skills/lsp-setup/references/c-cpp/README.md) |
+| 265 | ✓ | [`packages/shared-skills/skills/lsp-setup/references/csharp/README.md`](packages/shared-skills/skills/lsp-setup/references/csharp/README.md) |
+| 266 | ✓ | [`packages/shared-skills/skills/lsp-setup/references/dart/README.md`](packages/shared-skills/skills/lsp-setup/references/dart/README.md) |
+| 267 | ✓ | [`packages/shared-skills/skills/lsp-setup/references/elixir/README.md`](packages/shared-skills/skills/lsp-setup/references/elixir/README.md) |
+| 268 | ✓ | [`packages/shared-skills/skills/lsp-setup/references/go/README.md`](packages/shared-skills/skills/lsp-setup/references/go/README.md) |
+| 269 | ✓ | [`packages/shared-skills/skills/lsp-setup/references/haskell/README.md`](packages/shared-skills/skills/lsp-setup/references/haskell/README.md) |
+| 270 | ✓ | [`packages/shared-skills/skills/lsp-setup/references/java/README.md`](packages/shared-skills/skills/lsp-setup/references/java/README.md) |
+| 271 | ✓ | [`packages/shared-skills/skills/lsp-setup/references/julia/README.md`](packages/shared-skills/skills/lsp-setup/references/julia/README.md) |
+| 272 | ✓ | [`packages/shared-skills/skills/lsp-setup/references/kotlin/README.md`](packages/shared-skills/skills/lsp-setup/references/kotlin/README.md) |
+| 273 | ✓ | [`packages/shared-skills/skills/lsp-setup/references/lua/README.md`](packages/shared-skills/skills/lsp-setup/references/lua/README.md) |
+| 274 | ✓ | [`packages/shared-skills/skills/lsp-setup/references/php/README.md`](packages/shared-skills/skills/lsp-setup/references/php/README.md) |
+| 275 | ✓ | [`packages/shared-skills/skills/lsp-setup/references/python/README.md`](packages/shared-skills/skills/lsp-setup/references/python/README.md) |
+| 276 | ✓ | [`packages/shared-skills/skills/lsp-setup/references/ruby/README.md`](packages/shared-skills/skills/lsp-setup/references/ruby/README.md) |
+| 277 | ✓ | [`packages/shared-skills/skills/lsp-setup/references/rust/README.md`](packages/shared-skills/skills/lsp-setup/references/rust/README.md) |
+| 278 | ✓ | [`packages/shared-skills/skills/lsp-setup/references/swift/README.md`](packages/shared-skills/skills/lsp-setup/references/swift/README.md) |
+| 279 | ✓ | [`packages/shared-skills/skills/lsp-setup/references/terraform/README.md`](packages/shared-skills/skills/lsp-setup/references/terraform/README.md) |
+| 280 | ✓ | [`packages/shared-skills/skills/lsp-setup/references/typescript/README.md`](packages/shared-skills/skills/lsp-setup/references/typescript/README.md) |
+| 281 | ✓ | [`packages/shared-skills/skills/lsp-setup/references/yaml/README.md`](packages/shared-skills/skills/lsp-setup/references/yaml/README.md) |
+| 282 | ✓ | [`packages/shared-skills/skills/lsp-setup/references/zig/README.md`](packages/shared-skills/skills/lsp-setup/references/zig/README.md) |
+| 283 | ✓ | [`packages/shared-skills/skills/lsp-setup/SKILL.md`](packages/shared-skills/skills/lsp-setup/SKILL.md) |
+| 284 | ✓ | [`packages/shared-skills/skills/programming/references/go/README.md`](packages/shared-skills/skills/programming/references/go/README.md) |
+| 285 | ✓ | [`packages/shared-skills/skills/programming/references/python/README.md`](packages/shared-skills/skills/programming/references/python/README.md) |
+| 286 | ✓ | [`packages/shared-skills/skills/programming/references/rust-ub/README.md`](packages/shared-skills/skills/programming/references/rust-ub/README.md) |
+| 287 | ✓ | [`packages/shared-skills/skills/programming/references/rust/README.md`](packages/shared-skills/skills/programming/references/rust/README.md) |
+| 288 | ✓ | [`packages/shared-skills/skills/programming/references/typescript/README.md`](packages/shared-skills/skills/programming/references/typescript/README.md) |
+| 289 | ✓ | [`packages/shared-skills/skills/programming/SKILL.md`](packages/shared-skills/skills/programming/SKILL.md) |
+| 290 | ✓ | [`packages/shared-skills/skills/refactor/SKILL.md`](packages/shared-skills/skills/refactor/SKILL.md) |
+| 291 | ✓ | [`packages/shared-skills/skills/remove-ai-slops/SKILL.md`](packages/shared-skills/skills/remove-ai-slops/SKILL.md) |
+| 292 | ✓ | [`packages/shared-skills/skills/review-work/SKILL.md`](packages/shared-skills/skills/review-work/SKILL.md) |
+| 293 | ✓ | [`packages/shared-skills/skills/ultimate-browsing/engine/AGENTS.md`](packages/shared-skills/skills/ultimate-browsing/engine/AGENTS.md) |
+| 294 | ✓ | [`packages/shared-skills/skills/ultimate-browsing/references/agent-reach/README.md`](packages/shared-skills/skills/ultimate-browsing/references/agent-reach/README.md) |
+| 295 | ✓ | [`packages/shared-skills/skills/ultimate-browsing/references/insane-search/README.md`](packages/shared-skills/skills/ultimate-browsing/references/insane-search/README.md) |
+| 296 | ✓ | [`packages/shared-skills/skills/ultimate-browsing/SKILL.md`](packages/shared-skills/skills/ultimate-browsing/SKILL.md) |
+| 297 | ✓ | [`packages/shared-skills/skills/ulw-execute/SKILL.md`](packages/shared-skills/skills/ulw-execute/SKILL.md) |
+| 298 | ✓ | [`packages/shared-skills/skills/ulw-plan/SKILL.md`](packages/shared-skills/skills/ulw-plan/SKILL.md) |
+| 299 | ✓ | [`packages/shared-skills/skills/ulw-research/AGENTS.md`](packages/shared-skills/skills/ulw-research/AGENTS.md) |
+| 300 | ✓ | [`packages/shared-skills/skills/ulw-research/SKILL.md`](packages/shared-skills/skills/ulw-research/SKILL.md) |
+| 301 | ✓ | [`packages/shared-skills/skills/visual-qa/AGENTS.md`](packages/shared-skills/skills/visual-qa/AGENTS.md) |
+| 302 | ✓ | [`packages/shared-skills/skills/visual-qa/SKILL.md`](packages/shared-skills/skills/visual-qa/SKILL.md) |
+| 303 | ✓ | [`packages/skills-loader-core/AGENTS.md`](packages/skills-loader-core/AGENTS.md) |
+| 304 | ✓ | [`packages/skills-loader-core/src/features/builtin-skills/AGENTS.md`](packages/skills-loader-core/src/features/builtin-skills/AGENTS.md) |
+| 305 | ✓ | [`packages/skills-loader-core/src/features/builtin-skills/dev-browser/SKILL.md`](packages/skills-loader-core/src/features/builtin-skills/dev-browser/SKILL.md) |
+| 306 | ✓ | [`packages/skills-loader-core/src/features/builtin-skills/frontend/SKILL.md`](packages/skills-loader-core/src/features/builtin-skills/frontend/SKILL.md) |
+| 307 | ✓ | [`packages/skills-loader-core/src/features/builtin-skills/git-master/SKILL.md`](packages/skills-loader-core/src/features/builtin-skills/git-master/SKILL.md) |
+| 308 | ✓ | [`packages/skills-loader-core/src/features/builtin-skills/security-research/SKILL.md`](packages/skills-loader-core/src/features/builtin-skills/security-research/SKILL.md) |
+| 309 | ✓ | [`packages/skills-loader-core/src/features/opencode-skill-loader/AGENTS.md`](packages/skills-loader-core/src/features/opencode-skill-loader/AGENTS.md) |
+| 310 | ✓ | [`packages/team-core/AGENTS.md`](packages/team-core/AGENTS.md) |
+| 311 | ✓ | [`packages/telemetry-core/AGENTS.md`](packages/telemetry-core/AGENTS.md) |
+| 312 | ✓ | [`packages/tmux-core/AGENTS.md`](packages/tmux-core/AGENTS.md) |
+| 313 | ✓ | [`packages/utils/AGENTS.md`](packages/utils/AGENTS.md) |
+| 314 | ✓ | [`packages/web/AGENTS.md`](packages/web/AGENTS.md) |
+| 315 | ✓ | [`script/AGENTS.md`](script/AGENTS.md) |
+| 316 | ✓ | [`script/qa/dependency-audit/README.md`](script/qa/dependency-audit/README.md) |
+| 317 | ✓ | [`scripts/AGENTS.md`](scripts/AGENTS.md) |
+| 318 | ✓ | [`tests/AGENTS.md`](tests/AGENTS.md) |
+| 319 | → | [`.devcontainer/README.md`](.devcontainer/README.md) |
+| 320 | → | [`CHANGELOG.md`](CHANGELOG.md) |
+| 321 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 322 | → | [`docs/guide/migrating-from-opencode.md`](docs/guide/migrating-from-opencode.md) |
+| 323 | → | [`docs/guide/team-mode.md`](docs/guide/team-mode.md) |
+| 324 | → | [`docs/manifesto.md`](docs/manifesto.md) |
+| 325 | → | [`docs/reference/configuration.md`](docs/reference/configuration.md) |
+| 326 | → | [`docs/reference/features.md`](docs/reference/features.md) |
+| 327 | → | [`docs/reference/lazycodex-npm-reservation.md`](docs/reference/lazycodex-npm-reservation.md) |
+| 328 | → | [`docs/reference/omo-json.md`](docs/reference/omo-json.md) |
+| 329 | → | [`docs/reference/prompt-async-gate-rfc.md`](docs/reference/prompt-async-gate-rfc.md) |
+| 330 | → | [`docs/reference/release-process.md`](docs/reference/release-process.md) |
+| 331 | → | [`README.ja.md`](README.ja.md) |
+| 332 | → | [`README.ko.md`](README.ko.md) |
+| 333 | → | [`README.md`](README.md) |
+| 334 | → | [`README.ru.md`](README.ru.md) |
+| 335 | → | [`README.zh-cn.md`](README.zh-cn.md) |
+| 336 | → | [`ROADMAP.md`](ROADMAP.md) |
 
 ---
 

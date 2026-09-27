@@ -7,7 +7,7 @@ ref: canary
 
 # Mirror Manifest
 
-Mirror of `lobehub/lobehub` — 26 default patterns, 2 followed patterns, 342 file(s) materialized.
+Mirror of `lobehub/lobehub` — 26 default patterns, 2 followed patterns, 341 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `lobehub/lobehub` — 26 default patterns, 2 followed patterns, 342 fi
 | Ref           | `canary` |
 | Default pats  | 26 |
 | Followed pats | 2 |
-| Files         | 342 |
+| Files         | 341 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -394,14 +394,13 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 332 | ✓ | [`.agents/skills/zustand/SKILL.md`](.agents/skills/zustand/SKILL.md) |
 | 333 | ✓ | [`.cursor/docs/createStaticStyles_migration_guide.md`](.cursor/docs/createStaticStyles_migration_guide.md) |
 | 334 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 335 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 336 | ✓ | [`e2e/CLAUDE.md`](e2e/CLAUDE.md) |
-| 337 | ✓ | [`GEMINI.md`](GEMINI.md) |
-| 338 | ✓ | [`packages/agent-templates/src/templates/claw/AGENTS.md`](packages/agent-templates/src/templates/claw/AGENTS.md) |
-| 339 | ✓ | [`packages/builtin-skills/src/task/SKILL.md`](packages/builtin-skills/src/task/SKILL.md) |
-| 340 | ✓ | [`packages/model-runtime/CLAUDE.md`](packages/model-runtime/CLAUDE.md) |
-| 341 | → | [`DESIGN.dark.md`](DESIGN.dark.md) |
-| 342 | → | [`DESIGN.md`](DESIGN.md) |
+| 335 | ✓ | [`e2e/CLAUDE.md`](e2e/CLAUDE.md) |
+| 336 | ✓ | [`GEMINI.md`](GEMINI.md) |
+| 337 | ✓ | [`packages/agent-templates/src/templates/claw/AGENTS.md`](packages/agent-templates/src/templates/claw/AGENTS.md) |
+| 338 | ✓ | [`packages/builtin-skills/src/task/SKILL.md`](packages/builtin-skills/src/task/SKILL.md) |
+| 339 | ✓ | [`packages/model-runtime/CLAUDE.md`](packages/model-runtime/CLAUDE.md) |
+| 340 | → | [`DESIGN.dark.md`](DESIGN.dark.md) |
+| 341 | → | [`DESIGN.md`](DESIGN.md) |
 
 ---
 

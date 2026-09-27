@@ -25,8 +25,8 @@ suites that boot the core in-process do the same through
 | `openhuman-fleet` | `src/bin/fleet.rs` | `http-server`, `bin-tools` |
 | `rss-bench` | `src/bin/rss_bench.rs` | `rss-bench` |
 | `library-profile` | `src/bin/library_profile/main.rs` | `rss-bench` (+ `rss-bench-dhat`) |
-| `[[test]]` × 44 | `../../tests/<name>.rs` | some carry `required-features` (see the manifest) |
-| `[[example]]` × 4 | `../../examples/<name>.rs` | — |
+| `[[test]]` × 49 | `../../tests/<name>.rs` | some carry `required-features` (see the manifest) |
+| `[[example]]` × 4 | `../../examples/<name>.rs` | none |
 
 `tests/raw_coverage/*.rs` are globbed by the shared root `build.rs` into the
 single `raw_coverage_all` target and need no entry. `pnpm rust:layout` keeps
@@ -46,5 +46,11 @@ target).
 ```bash
 cargo build --manifest-path Cargo.toml -p openhuman-cli --bin openhuman-core
 cargo test  --manifest-path Cargo.toml -p openhuman-cli --test json_rpc_e2e --features "$(bash scripts/ci/product-features.sh)"
-pnpm test:rust     # scripts/test-rust-with-mock.sh — the canonical runner
+pnpm test:rust     # scripts/test-rust-with-mock.sh: the canonical runner
 ```
+
+See [`src/bin/README.md`](src/bin/README.md) for the benchmark and dev bins
+(`rss-bench`, `library-profile`, `tool-search-bench`, `openhuman-fleet`), and
+[`gitbooks/developing/performance.md`](../../gitbooks/developing/performance.md)
+and [`gitbooks/developing/jev.md`](../../gitbooks/developing/jev.md) for what
+those benchmarks measure.

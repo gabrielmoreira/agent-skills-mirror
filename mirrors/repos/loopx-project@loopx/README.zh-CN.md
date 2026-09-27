@@ -368,6 +368,11 @@ loopx quota spend-slot      # 为完成并验证的 slice 记账
 
 `loopx first-run-report` 会在本地打印同样的预填链接，不会发送任何数据。
 
+基础使用统计在首次显著告知后默认开启：每日随机 ID 心跳用于平台支持与持续使用分析，
+另行发送不带 ID 的 CLI 汇总，不采集内容。可在设置 → 能力中心，或通过
+`loopx usage-ping disable` / `LOOPX_USAGE_PING=0` 统一关闭；
+`loopx usage-ping status` 可预览数据。详见[基础使用统计](docs/reference/usage-ping.zh-CN.md)。
+
 成功连接后应该满足：
 
 - `loopx doctor` 通过；

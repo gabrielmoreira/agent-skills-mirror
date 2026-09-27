@@ -18,17 +18,17 @@ renders artifact content itself.
 | `store.rs` | All filesystem I/O over `tokio::fs`: `artifacts_root`, `create_artifact`, `finalize_artifact`, `fail_artifact`, `read_artifact_bytes` (`pub`); `save_artifact_meta`, `save_artifact_args`, `read_artifact_args`, `list_artifacts`, `get_artifact`, `delete_artifact` (`pub(crate)`); `validate_artifact_id` / `assert_within_root` sandboxing; the `REGENERATE_TARGET_ID` task-local; `sanitize_filename_stem`. |
 | `ops.rs` | RPC business logic returning `RpcOutcome<Value>`: `ai_list_artifacts`, `ai_get_artifact`, `ai_delete_artifact`, `ai_regenerate`. `DEFAULT_LIMIT = 50`, `MAX_LIMIT = 200`. The regenerate path that re-runs `PresentationTool` is `#[cfg(feature = "documents")]`; without the feature `ai_regenerate` returns an error. |
 | `schemas.rs` | `ControllerSchema`s and `handle_*` fns for the four `ai.*` controllers; param helpers `read_required`, `read_optional_u64`, `read_optional_string` (whitespace-only → absent), `type_name`. |
-| `tools.rs` | `ArtifactListTool`, `ArtifactGetTool`, `ArtifactDeleteTool` — shims over `ops` that unwrap the `RpcOutcome` and return `outcome.value` as the `ToolResult` string. |
+| `tools.rs` | `ArtifactListTool`, `ArtifactGetTool`, `ArtifactDeleteTool`: shims over `ops` that unwrap the `RpcOutcome` and return `outcome.value` as the `ToolResult` string. |
 | `*_tests.rs` | Sibling test files for each of the above (`#[path]`). |
 
 ## Public surface
 
 - `ArtifactKind`, `ArtifactMeta`, `ArtifactStatus`.
 - Producer API, `pub` and re-exported from `mod.rs`:
-  - `create_artifact(workspace_dir, kind, title, extension) -> (ArtifactMeta, PathBuf)` — mints a UUID (or reuses `REGENERATE_TARGET_ID`), creates `<root>/<id>/`, writes a `Pending` `meta.json`, publishes `ArtifactPending`, and returns the absolute path the producer should write to (`<id>/<sanitized-title>.<ext>`).
-  - `finalize_artifact(workspace_dir, id, size_bytes)` — `Pending → Ready`, publishes `ArtifactReady`; no-op if already `Ready` with the same size.
-  - `fail_artifact(workspace_dir, id, reason)` — `→ Failed`, stores `meta.error`, publishes `ArtifactFailed`. Logs only `reason.len()`, not the reason.
-  - `read_artifact_bytes(workspace_dir, id)` — the one sanctioned id → bytes path; refuses non-`Ready` records.
+  - `create_artifact(workspace_dir, kind, title, extension) -> (ArtifactMeta, PathBuf)`: mints a UUID (or reuses `REGENERATE_TARGET_ID`), creates `<root>/<id>/`, writes a `Pending` `meta.json`, publishes `ArtifactPending`, and returns the absolute path the producer should write to (`<id>/<sanitized-title>.<ext>`).
+  - `finalize_artifact(workspace_dir, id, size_bytes)`: `Pending → Ready`, publishes `ArtifactReady`; no-op if already `Ready` with the same size.
+  - `fail_artifact(workspace_dir, id, reason)`: `→ Failed`, stores `meta.error`, publishes `ArtifactFailed`. Logs only `reason.len()`, not the reason.
+  - `read_artifact_bytes(workspace_dir, id)`: the one sanctioned id → bytes path; refuses non-`Ready` records.
 - `store::save_artifact_args` is `pub(crate)` and called directly by the producers right after `create_artifact` (best-effort; failure only forfeits regeneration).
 - `all_artifacts_controller_schemas` / `all_artifacts_registered_controllers`.
 
@@ -42,7 +42,7 @@ and trim string params.
 
 | Method | Inputs | Output |
 | --- | --- | --- |
-| `ai.list_artifacts` | `offset?: u64` (default 0), `limit?: u64` (default 50, cap 200), `thread_id?: string` | `{ artifacts: ArtifactMeta[], total, offset, limit }` — `total` is the count after the `thread_id` filter |
+| `ai.list_artifacts` | `offset?: u64` (default 0), `limit?: u64` (default 50, cap 200), `thread_id?: string` | `{ artifacts: ArtifactMeta[], total, offset, limit }`: `total` is the count after the `thread_id` filter |
 | `ai.get_artifact` | `artifact_id: string` | flat `ArtifactMeta` fields + `absolute_path` (root joined with `meta.path`) |
 | `ai.delete_artifact` | `artifact_id: string` | `{ artifact_id, deleted: true }` |
 | `ai.regenerate` | `artifact_id`, `thread_id`, `client_id` (all required) | `{ artifact_id, regenerated: true, is_error }` |
@@ -62,7 +62,7 @@ Constructed in `tools/ops.rs` (unconditionally) and re-exported through
 
 | Tool | Permission | Behavior |
 | --- | --- | --- |
-| `artifact_list` | default | `ops::ai_list_artifacts(.., thread_id = None)` — always the whole workspace; the per-thread filter is RPC-only. `offset` / `limit` args. Concurrency-safe. |
+| `artifact_list` | default | `ops::ai_list_artifacts(.., thread_id = None)`: always the whole workspace; the per-thread filter is RPC-only. `offset` / `limit` args. Concurrency-safe. |
 | `artifact_get` | default | `ops::ai_get_artifact`; `artifact_id` required. Concurrency-safe. |
 | `artifact_delete` | `Dangerous` | `ops::ai_delete_artifact`. Default-OFF: listed as its own `ToolFamily` (`id: "artifact_delete"`, `default_enabled: false`) in `TOOL_FAMILIES` in `tools/user_filter.rs`; `artifact_list` / `artifact_get` are deliberately not in that map so they cannot be toggled off. |
 
@@ -73,9 +73,9 @@ There is no regenerate tool; regeneration is RPC-only.
 Published by `store.rs` on `crate::core::bus::BUS` (no `bus.rs`; this module
 subscribes to nothing):
 
-- `DomainEvent::ArtifactPending` — from `create_artifact`.
-- `DomainEvent::ArtifactReady` — from `finalize_artifact` on a real transition.
-- `DomainEvent::ArtifactFailed` — from `fail_artifact`.
+- `DomainEvent::ArtifactPending`: from `create_artifact`.
+- `DomainEvent::ArtifactReady`: from `finalize_artifact` on a real transition.
+- `DomainEvent::ArtifactFailed`: from `fail_artifact`.
 
 All three carry `thread_id` / `client_id` read from the
 `security::approval::APPROVAL_CHAT_CONTEXT` task-local; outside a chat turn
@@ -86,11 +86,11 @@ event.
 ## Persistence
 
 - Root `<workspace_dir>/artifacts/`, created on demand by `artifacts_root`.
-- `<root>/<id>/meta.json` — pretty-printed `ArtifactMeta`.
-- `<root>/<id>/args.json` — verbatim producer-tool args, written by the
+- `<root>/<id>/meta.json`: pretty-printed `ArtifactMeta`.
+- `<root>/<id>/args.json`: verbatim producer-tool args, written by the
   producer via `save_artifact_args`, read by `ai_regenerate`. Absent for
   artifacts created before it existed, which makes them non-regenerable.
-- `<root>/<id>/<stem>.<ext>` — the artifact bytes; `meta.path` is the
+- `<root>/<id>/<stem>.<ext>`: the artifact bytes; `meta.path` is the
   `<id>/<filename>` relative path.
 - `list_artifacts` scans root subdirectories, sorts by `created_at`
   descending, applies the `thread_id` filter before pagination, and skips
@@ -102,11 +102,11 @@ event.
 
 - `tools/impl/presentation/mod.rs` and `tools/impl/document/mod.rs`
   (`documents` feature; in `scripts/ci/product-features.txt`, not in Cargo
-  defaults) — the only producers. Presentation also uses
+  defaults): the only producers. Presentation also uses
   `read_artifact_bytes` for its image pipeline.
-- `web_chat/event_bus.rs` — bridges the three events to web-channel
+- `web_chat/event_bus.rs`: bridges the three events to web-channel
   `artifact_*` events.
-- `core/all.rs` — controller registry.
+- `core/all.rs`: controller registry.
 
 ## Notes / gotchas
 

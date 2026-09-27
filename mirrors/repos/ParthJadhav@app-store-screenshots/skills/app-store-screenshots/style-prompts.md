@@ -22,6 +22,45 @@ If a user gives a prompt that does not match a named style, fall back to the Gen
 | 04 | `dreamy-pastel-couples` | [04-dreamy-pastel-couples.md](./style-prompts/04-dreamy-pastel-couples.md) | Couples / long-distance / pet-companion apps. Cotton-candy sky gradient, 3D globe, kawaii pets, lilac italic serif emphasis. Inspired by Between. |
 | 05 | `hand-drawn-editorial-tasks` | [05-hand-drawn-editorial-tasks.md](./style-prompts/05-hand-drawn-editorial-tasks.md) | Productivity / tasks / notes with designer taste. Navy + cream + coral slides, script accent word, tilted phones, doodle squiggles. Inspired by Superlist. |
 | 06 | `glossy-3d-kbeauty-creator` | [06-glossy-3d-kbeauty-creator.md](./style-prompts/06-glossy-3d-kbeauty-creator.md) | K-beauty / creator-economy / influencer-brand collab. Deep purple gradient, glossy chrome 3D numerals, kawaii ghost mascot, yellow hashtag chips. Inspired by Nuri Lounge. |
+| 07 | `liquid-glass-aurora` | [07-liquid-glass-aurora.md](./style-prompts/07-liquid-glass-aurora.md) | Premium iOS-native utilities, AI and health apps. Pastel aurora blooms, frosted glass cards over upright phones, one aurora-gradient word. Inspired by Apple's Liquid Glass. |
+| 08 | `swiss-grid-bold` | [08-swiss-grid-bold.md](./style-prompts/08-swiss-grid-bold.md) | Finance, dev tools, analytics, B2B, hardware apps. Paper/ink slides, visible grid, giant flush-left grotesk, hard-cropped upright phones, one orange block. Inspired by Müller-Brockmann. |
+| 09 | `neon-athletic-night` | [09-neon-athletic-night.md](./style-prompts/09-neon-athletic-night.md) | Fitness, running, strength, sleep/recovery or sports apps that sell performance. Near-black stadium light, one volt accent, slanted condensed headlines, giant stats. Inspired by Nike Run Club. |
+| 10 | `magazine-cover-editorial` | [10-magazine-cover-editorial.md](./style-prompts/10-magazine-cover-editorial.md) | Food, coffee/tea/wine, reading, journaling, travel or lifestyle apps. Paper ground, oxblood italic serif cover lines, small-caps masthead, figure captions. Inspired by Kinfolk. |
+| 11 | `candy-pop-social` | [11-candy-pop-social.md](./style-prompts/11-candy-pop-social.md) | Social, events, messaging, gen-Z apps and games. Flat saturated slides, chunky type with a pill word, chat bubbles and stickers bursting from tilted phones. Inspired by Partiful. |
+| 12 | `soft-clay-wellness` | [12-soft-clay-wellness.md](./style-prompts/12-soft-clay-wellness.md) | Meditation, sleep, journaling, habit, cycle, nutrition or wellness apps that should feel slow, earthy and tactile. Clay props, arch-framed phones, soft serif. Inspired by Calm and Aesop. |
+| 13 | `midnight-glow-pro` | [13-midnight-glow-pro.md](./style-prompts/13-midnight-glow-pro.md) | AI/dev tools, pro productivity, power-user finance, crypto — anything selling speed and craft. Near-black, one indigo beam on a rim-lit phone, dark glass, keycaps. Inspired by Linear, Raycast, Vercel. |
+| 14 | `risograph-zine` | [14-risograph-zine.md](./style-prompts/14-risograph-zine.md) | Music, events, podcasts, indie tools, cafés/bookstores or community apps with gig-flyer energy. Two misregistered riso inks, halftones, knockout caps, stapled tickets. Inspired by Hato Press. |
+| 15 | `bento-keynote-grid` | [15-bento-keynote-grid.md](./style-prompts/15-bento-keynote-grid.md) | Feature-dense apps that need several features per slide: rounded tiles, huge stats, real widgets, a tile-cropped hero phone. Inspired by Apple keynote bento slides. |
+| 16 | `toybox-primary` | [16-toybox-primary.md](./style-prompts/16-toybox-primary.md) | Kids learning, family, beginner, casual game or pet apps. Cream and primaries, rounded toy-lip type, a studded block word, 3D ABC cubes and rainbows around tilted phones. Inspired by Toca Boca. |
+| 17 | `quiet-japandi` | [17-quiet-japandi.md](./style-prompts/17-quiet-japandi.md) | Notes, calendars, reading, tea/coffee, journaling, home or minimalist utilities that should feel calm and crafted. Washi paper, oak shelf, one ceramic cup, vertical Japanese word, one hanko seal. Inspired by MUJI and Kinto. |
+| 18 | `vintage-travel-poster` | [18-vintage-travel-poster.md](./style-prompts/18-vintage-travel-poster.md) | Travel, maps, hiking, weather, parks, road trips or astronomy. Cream-framed silkscreen landscapes, banded skies, hazy ridges, a monolith phone, script + giant caps. Inspired by WPA National Park posters. |
+
+Headline copy for any style: see [`copy-ideas.md`](./copy-ideas.md), then rewrite the chosen line in the style's `## Copy tone`.
+
+### Picking a style by app category
+
+| App category | First pick | Also try |
+|---|---|---|
+| Productivity, tasks, notes | Hand-Drawn Editorial Tasks | Liquid Glass Aurora, Quiet Japandi, Bento Keynote Grid |
+| Finance, analytics, B2B | Swiss Grid Bold | Bento Keynote Grid, Midnight Glow Pro |
+| AI tools, dev tools, pro/power-user apps | Midnight Glow Pro | Swiss Grid Bold, Liquid Glass Aurora |
+| Feature-dense utilities, health dashboards, smart home | Bento Keynote Grid | Liquid Glass Aurora |
+| Fitness, running, sports, recovery | Neon Athletic Night | Swiss Grid Bold |
+| Meditation, sleep, mental health, cycle | Soft Clay Wellness | Quiet Japandi, Dreamy Pastel Couples |
+| Food, recipes, coffee, tea, reading | Magazine Cover Editorial | Quiet Japandi, Moody Curated Dating |
+| Travel, maps, outdoors, weather | Vintage Travel Poster | Magazine Cover Editorial |
+| Music, events, podcasts, indie creative | Risograph Zine | Candy Pop Social |
+| Social, messaging, gen-Z | Candy Pop Social | Risograph Zine, Glossy 3D K-Beauty Creator |
+| Kids, family, beginner learning, casual games | Toybox Primary | Retro Rubberhose Mascot |
+| Dating, members clubs, premium lifestyle | Moody Curated Dating | Magazine Cover Editorial |
+| Couples, pets, journaling | Dreamy Pastel Couples | Soft Clay Wellness |
+| Habits and walking with a mascot | Retro Rubberhose Mascot | Toybox Primary |
+| Students, hobbies, crafts | Paper Sticker Skeuomorphic | Risograph Zine |
+| Creator economy, beauty, fandom | Glossy 3D K-Beauty Creator | Candy Pop Social |
+| Minimalist utilities, calendars, home & interior | Quiet Japandi | Swiss Grid Bold |
+| AI assistants, premium iOS utilities | Liquid Glass Aurora | Midnight Glow Pro |
+
+Every style has a matching palette preset in the editor's theme picker (`THEMES` in `src/lib/constants.ts`, same id as the slug). The preset only sets flat colors for the basic renderer; the deep spec still drives fonts, backgrounds, and decoration.
 
 ---
 

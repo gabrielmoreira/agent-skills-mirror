@@ -24,7 +24,7 @@ Mobile-device pairing domain. Brokers a secure, end-to-end-encrypted tunnel betw
 | `crates/openhuman-core/src/security/devices/store.rs` | SQLite persistence (`paired_devices` table) via the per-call `with_connection` pattern. |
 | `crates/openhuman-core/src/security/devices/crypto.rs` | `DeviceKeypair` (X25519 keygen, DH, byte round-trip), `TunnelCipher` (XChaCha20-Poly1305 seal/open with a `WINDOW_SIZE`=128 replay window), and base64url helpers. |
 | `crates/openhuman-core/src/security/devices/tunnel_client.rs` | Emits/parses `tunnel:*` events over the shared `SocketManager`; wire types; `tunnel:register` uses Socket.IO ACK via `SocketManager::emit_with_ack`. Frame cap 64 KB. |
-| `crates/openhuman-core/src/security/devices/bus.rs` | `DeviceTunnelSubscriber` event handler — drives handshake completion, persistence, and peer-status updates. |
+| `crates/openhuman-core/src/security/devices/bus.rs` | `DeviceTunnelSubscriber` event handler: drives handshake completion, persistence, and peer-status updates. |
 
 ## Public surface
 
@@ -42,7 +42,7 @@ Namespace `devices` (invoked as `openhuman.devices_<function>`):
 | Method | Inputs | Output | Behavior |
 | --- | --- | --- | --- |
 | `devices_create_pairing` | `label?: string` | `CreatePairingResponse` | Registers a channel via Socket.IO ACK, generates+persists keypair, emits tokenless core `tunnel:connect`, returns QR fields using the backend-provided pairing expiry. |
-| `devices_list` | — | `ListDevicesResponse` | Lists non-revoked devices, overlaying live `peer_online` from `PEER_STATUS`. |
+| `devices_list` | none | `ListDevicesResponse` | Lists non-revoked devices, overlaying live `peer_online` from `PEER_STATUS`. |
 | `devices_revoke` | `channel_id: string` | `RevokeDeviceResponse` | Soft-deletes the device, clears all in-memory state for the channel, publishes `DeviceRevoked`. |
 
 Wired into the controller registry in `crates/openhuman-core/src/core/all.rs` (schemas + registered controllers + the `"devices"` namespace branch).
@@ -79,25 +79,25 @@ SQLite DB at `{workspace_dir}/devices/devices.db`, table `paired_devices`:
 | `created_at` / `last_seen_at` | ISO 8601; `last_seen_at` set by `touch_device`. |
 | `revoked` | Soft-delete flag; `list_devices` filters `revoked = 0`. |
 
-DDL is created idempotently on every connection open (`with_connection`). `peer_online` is **not** persisted — it lives only in the in-memory `PEER_STATUS` map.
+DDL is created idempotently on every connection open (`with_connection`). `peer_online` is **not** persisted; it lives only in the in-memory `PEER_STATUS` map.
 
 Separately, encrypted X25519 private keys are persisted as `enc2:` strings (via `keyring::SecretStore`, ChaCha20-Poly1305) keyed by `channel_id` in the in-memory `PERSISTED_KEYPAIRS` map, allowing keypair reconstruction (`load_keypair_from_store`) for reconnect handshakes.
 
 ## Dependencies
 
-- `crate::config` (`Config`, `config::rpc::load_config_with_timeout`) — workspace paths and config loading for handlers.
-- `crate::security::keyring::SecretStore` — encrypt/decrypt the X25519 private key at rest.
-- `crate::platform::socket::global_socket_manager` — reuse the shared backend Socket.IO connection to emit `tunnel:*` events (no second WebSocket).
-- `crate::core::bus::BUS` (`.publish`, `.subscribe`) + `crate::core::events::DomainEvent` + `tinybus::EventHandler` — pub/sub for device tunnel events.
-- `crate::core::all` (`ControllerFuture`, `RegisteredController`) and `crate::core::{ControllerSchema, FieldSchema, TypeSchema}` — controller registry contract.
-- `crate::rpc::RpcOutcome` — RPC handler return type.
+- `crate::config` (`Config`, `config::rpc::load_config_with_timeout`): workspace paths and config loading for handlers.
+- `crate::security::keyring::SecretStore`: encrypt/decrypt the X25519 private key at rest.
+- `crate::platform::socket::global_socket_manager`: reuse the shared backend Socket.IO connection to emit `tunnel:*` events (no second WebSocket).
+- `crate::core::bus::BUS` (`.publish`, `.subscribe`) plus `crate::core::events::DomainEvent` and `tinybus::EventHandler`: pub/sub for device tunnel events.
+- `crate::core::all` (`ControllerFuture`, `RegisteredController`) and `crate::core::{ControllerSchema, FieldSchema, TypeSchema}`: controller registry contract.
+- `crate::rpc::RpcOutcome`: RPC handler return type.
 - External crates: `rusqlite`, `chacha20poly1305`, `x25519-dalek`, `base64`, `sha2`, `chrono`, `once_cell`, `tokio`, `async_trait`, `anyhow`.
 
 ## Used by
 
-- `crates/openhuman-core/src/core/all.rs` — registers the `devices` controllers/schemas and namespace branch.
-- `crates/openhuman-core/src/core/jsonrpc.rs` — calls `register_device_tunnel_subscriber()` at startup.
-- `crates/openhuman-core/src/platform/socket/event_handlers.rs` — parses raw `tunnel:*` Socket.IO events into `DomainEvent`s that this domain consumes, using this domain's `tunnel_client` wire types (`TunnelPeerStatus`, `TunnelFrame`).
+- `crates/openhuman-core/src/core/all.rs`: registers the `devices` controllers/schemas and namespace branch.
+- `crates/openhuman-core/src/core/jsonrpc.rs`: calls `register_device_tunnel_subscriber()` at startup.
+- `crates/openhuman-core/src/platform/socket/event_handlers.rs`: parses raw `tunnel:*` Socket.IO events into `DomainEvent`s that this domain consumes, using this domain's `tunnel_client` wire types (`TunnelPeerStatus`, `TunnelFrame`).
 
 ## Notes / gotchas
 

@@ -1,11 +1,11 @@
 ---
 name: higgsfield-workspaces
-description: "Use when the user is unsure which Higgsfield workspace fits their task, needs to decide between Cinema Studio / Lipsync Studio / Draw-to-Video / Sora 2 Trends / Click to Ad / Higgsfield Audio, or is asking 'what should I use for X'. This sub-skill routes by production problem BEFORE model selection."
+description: "Use when the user is unsure which Higgsfield workspace fits their task, needs to decide between Cinema Studio / Lipsync Studio / Draw-to-Video / Viral Hub presets / Click to Ad / Higgsfield Audio (Sora 2 Trends is built on the retired Sora 2), or is asking 'what should I use for X'. This sub-skill routes by production problem BEFORE model selection."
 user-invocable: true
 metadata:
-  tags: [higgsfield, workspaces, routing, decision, cinema-studio, lipsync, draw-to-video, sora-trends, click-to-ad, higgsfield-audio]
-  version: 1.2.0
-  updated: 2026-06-03
+  tags: [higgsfield, workspaces, routing, decision, cinema-studio, lipsync, draw-to-video, viral-hub, sora-trends, click-to-ad, higgsfield-audio]
+  version: 1.3.0
+  updated: 2026-09-26
   parent: higgsfield
 ---
 
@@ -29,7 +29,7 @@ model by the result you want.
 | Cinematic scene with deliberate camera direction | Cinema Studio |
 | Speaking character, dubbing, or avatar video | Lipsync Studio |
 | Rough idea, sketch, or storyboard test | Draw to Video / Sketch to Video |
-| Fast short-form or viral-style content | Sora 2 Trends |
+| Fast short-form or viral-style content | Viral Hub presets (Sora 2 Trends is built on the retired Sora 2 — see its section) |
 | Product ad or ecommerce variation | Click to Ad |
 | Narration, voice swap, or translation | Higgsfield Audio |
 
@@ -87,6 +87,17 @@ material qualities all live in the prompt. Think of the prompt as describing
 the realized scene the sketch was hinting at — the sketch told the engine
 *where* things sit and *how* they move; the prompt tells it *what* they are.
 
+**Scope — this workspace, not a Seedance reference slot.** Here the sketch *is*
+the input the workspace is built to realize, and a draft that inherits its
+layout is the point. Attached to a Seedance generation it is a different
+regime: a drawing in the first-frame role becomes frame one, drawing and all,
+and a position diagram goes in **last** as a position reference only — one
+incomplete-record house run found it does not reliably move blocking
+(`../higgsfield-seedance/FAILURE-MODES.md` § A fight generated as separate
+clips comes back choppy; `../../templates/seedance/staging-reference.md`;
+`../shared/house-rulings.md` P2-11). Do not carry "the sketch carries
+blocking" from here into a Seedance prompt.
+
 **Output expectations:** test-quality, short. The output is a tool for shot
 validation, not usually the final delivery. Treat the result as a draft, then
 either refine the prompt (if blocking is right but the realized scene is off)
@@ -109,7 +120,25 @@ you need higher fidelity earlier in the process — a pre-rendered hero frame
 that subsequent shots can reference — the Hero Frame workflow inside Cinema
 Studio is the alternative path. See `higgsfield-cinema` for that handoff.
 
+### Viral Hub presets
+
+`[OFFICIAL — Higgsfield MCP tool schema, get_presets, 2026-09-26]` Higgsfield's preset
+galleries are browsed with `get_presets`; `source: 'viral'` lists the **Viral Hub** chain
+presets (the gallery behind `/effects` requests). Browsing opens a preview and starts
+nothing — a preset runs through `execute_preset` only when the user explicitly asks to
+generate. This is where fast short-form / viral work starts now that Sora 2 Trends sits on
+a retired model. Presets are the viral-effects / social product, not film grammar (the
+scope caveat at the top of `../higgsfield-motion/SKILL.md`): a trend piece that needs
+deliberate camera direction belongs in Cinema Studio.
+
 ### Sora 2 Trends
+
+> **Built on Sora 2 — likely affected by its shutdown (unconfirmed in the UI).**
+> OpenAI shut the Sora 2 API down on 2026-09-24 `[OFFICIAL — OpenAI deprecations page, read
+> 2026-09-26]`. Whether this workspace still works in Higgsfield's web UI after that date
+> is unconfirmed — on 2026-09-26 higgsfield.ai/sora-2 was still up with no shutdown
+> notice. Don't route new work here; fast short-form / viral work starts from the Viral
+> Hub presets above. The description below is kept as reference.
 
 A templated workspace built on top of the Sora 2 model, tuned for trend-led
 short-form content. The distinction worth holding onto: this is *not* the same
@@ -305,7 +334,7 @@ Workspace-first is a routing layer that sits ABOVE the MCSLA prompt formula.
 Once you're inside the right workspace, MCSLA (Model · Camera · Subject · Look ·
 Action) still governs how the prompt itself is built. Workspaces don't replace
 MCSLA — they decide which environment you'll apply MCSLA inside. A Cinema Studio
-prompt, a Sora 2 Trends prompt, and a Click to Ad prompt all benefit from MCSLA
+prompt, a Draw to Video prompt, and a Click to Ad prompt all benefit from MCSLA
 discipline, but the UI controls, defaults, and model options around each prompt
 are different. Choose the workspace first; then apply MCSLA cleanly inside it.
 

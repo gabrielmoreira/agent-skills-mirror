@@ -131,12 +131,12 @@ provider (`library_profile/mock.rs`).
 Scenarios (`library-profile <scenario>`, one module each under
 `library_profile/scenarios/`):
 
-- `agent-turn` — a single cold agent turn (minimal library unit).
-- `long-agent` — N warmed sequential turns with a per-turn checkpoint series.
-- `workflow` — a real flows trigger -> transform -> agent graph, end to end.
-- `fleet` — N live agents: marginal RSS, idle CPU, fd/thread growth, turn latency.
-- `skill-run` — a skill step executing on a real `node` child: process-tree RSS.
-- `subagent-storm` — K parallel researcher subagents in one instance: marginal RSS per subagent.
+- `agent-turn`: a single cold agent turn (minimal library unit).
+- `long-agent`: N warmed sequential turns with a per-turn checkpoint series.
+- `workflow`: a real flows trigger -> transform -> agent graph, end to end.
+- `fleet`: N live agents: marginal RSS, idle CPU, fd/thread growth, turn latency.
+- `skill-run`: a skill step executing on a real `node` child: process-tree RSS.
+- `subagent-storm`: K parallel researcher subagents in one instance: marginal RSS per subagent.
 
 `memory-ingest` and `cold-phases` were removed with the in-process memory
 engine (openhuman#6161); re-adding them means measuring the memory module
@@ -164,8 +164,13 @@ cargo build --release -p openhuman --no-default-features --features rss-bench \
 
 ## See also
 
-- [`docs/library-benchmarking.md`](../../../../docs/library-benchmarking.md) —
+- [`docs/library-benchmarking.md`](../../../../docs/library-benchmarking.md):
   the benchmark environment, driver scripts under `scripts/profile/`, and
   results, covering `rss-bench` and `library-profile`.
-- [`scripts/profile/README.md`](../../../../scripts/profile/README.md) — the
+- [`scripts/profile/README.md`](../../../../scripts/profile/README.md): the
   driver scripts themselves.
+- [`gitbooks/developing/performance.md`](../../../../gitbooks/developing/performance.md):
+  the numbers these benchmarks feed (marginal memory per agent, cold-start
+  time, binary size).
+- [`gitbooks/developing/jev.md`](../../../../gitbooks/developing/jev.md): what
+  `tool-search-bench` is comparing when it ranks bm25 against jev.

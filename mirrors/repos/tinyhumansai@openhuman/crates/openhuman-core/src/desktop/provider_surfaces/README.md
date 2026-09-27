@@ -22,11 +22,11 @@ Local assistive surfaces for third-party provider apps. This domain owns a norma
 
 ## Public surface
 
-- `types::ProviderEvent` — inbound normalized provider event (`#[serde(deny_unknown_fields)]`).
-- `types::RespondQueueItem` — queue entry (adds `id` and `status`, default `"pending"`).
-- `types::RespondQueueListResponse` — `{ items, count }`.
-- `ops::ingest_event(ProviderEvent)` / `ops::list_queue(EmptyRequest)` — async handlers returning `RpcOutcome<ApiEnvelope<T>>`.
-- `store::{upsert_queue_item, list_queue_items}` — internal to `ops.rs`; no external caller reads the store directly today.
+- `types::ProviderEvent`: inbound normalized provider event (`#[serde(deny_unknown_fields)]`).
+- `types::RespondQueueItem`: queue entry (adds `id` and `status`, default `"pending"`).
+- `types::RespondQueueListResponse`: `{ items, count }`.
+- `ops::ingest_event(ProviderEvent)` / `ops::list_queue(EmptyRequest)`: async handlers returning `RpcOutcome<ApiEnvelope<T>>`.
+- `store::{upsert_queue_item, list_queue_items}`: internal to `ops.rs`; no external caller reads the store directly today.
 - Re-exported from `mod.rs`: `all_provider_surfaces_controller_schemas`, `all_provider_surfaces_registered_controllers`.
 
 ## RPC / controllers
@@ -42,27 +42,27 @@ Namespace `provider_surfaces` (two controllers, registered via `crates/openhuman
 
 ## Agent tools
 
-None — no `tools.rs`; this domain owns no agent tools.
+None, no `tools.rs`; this domain owns no agent tools.
 
 ## Events
 
-None — no `bus.rs`; no `DomainEvent`s published or subscribed.
+None, no `bus.rs`; no `DomainEvent`s published or subscribed.
 
 ## Persistence
 
-In-memory only. State lives in a process-global `RESPOND_QUEUE` (`static OnceLock<Mutex<Vec<RespondQueueItem>>>`) in `store.rs`, prepend-ordered (newest-first), soft-capped at `MAX_QUEUE_ITEMS = 500` (oldest dropped from the tail). Upsert dedupes by composite id `provider:account_id:event_kind:entity_id`. Module docstrings flag SQLite-backed persistence for normalized events, queue state, and local drafts as follow-up work — not yet present.
+In-memory only. State lives in a process-global `RESPOND_QUEUE` (`static OnceLock<Mutex<Vec<RespondQueueItem>>>`) in `store.rs`, prepend-ordered (newest-first), soft-capped at `MAX_QUEUE_ITEMS = 500` (oldest dropped from the tail). Upsert dedupes by composite id `provider:account_id:event_kind:entity_id`. Module docstrings flag SQLite-backed persistence for normalized events, queue state, and local drafts as follow-up work, not yet present.
 
 ## Dependencies
 
-- `crate::memory` — `ApiEnvelope`, `ApiMeta`, `EmptyRequest` (response envelope shape + empty-request type).
-- `crate::rpc::RpcOutcome` — RPC return contract.
-- `crate::core::all` — `RegisteredController`, `ControllerFuture` (controller registry wiring).
-- `crate::core::{ControllerSchema, FieldSchema, TypeSchema}` — controller schema types.
+- `crate::memory`: `ApiEnvelope`, `ApiMeta`, `EmptyRequest` (response envelope shape + empty-request type).
+- `crate::rpc::RpcOutcome`: RPC return contract.
+- `crate::core::all`: `RegisteredController`, `ControllerFuture` (controller registry wiring).
+- `crate::core::{ControllerSchema, FieldSchema, TypeSchema}`: controller schema types.
 - External crates: `serde` / `serde_json`, `uuid` (request ids), `tracing` (debug logging with `[provider-surfaces]` prefix).
 
 ## Used by
 
-- `crates/openhuman-core/src/core/all.rs` — pushes `all_provider_surfaces_registered_controllers()` into the registry under `DomainGroup::Desktop` (schemas are read off each registered controller, so `all_provider_surfaces_controller_schemas` has no external caller) and carries a `"provider_surfaces"` arm in the namespace-description match. No other in-tree caller.
+- `crates/openhuman-core/src/core/all.rs`: pushes `all_provider_surfaces_registered_controllers()` into the registry under `DomainGroup::Desktop` (schemas are read off each registered controller, so `all_provider_surfaces_controller_schemas` has no external caller) and carries a `"provider_surfaces"` arm in the namespace-description match. No other in-tree caller.
 
 ## Notes / gotchas
 

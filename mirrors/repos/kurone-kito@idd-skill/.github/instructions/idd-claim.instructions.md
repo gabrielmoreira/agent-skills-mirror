@@ -566,6 +566,16 @@ alongside every later pre-mutation check:
 `<profile-selected-claim-lock-command> --acquire --worktree <path>
 --agent-id {agent-id} --claim-id {claim-id}`.
 
+`--acquire` against the repository primary worktree is refused (exit
+`4`, mode `primary-worktree-refused`). That admin directory is never
+removed by `git worktree remove`, so a lock created there has no
+cleanup path (observed 2026-09-25, kurone-kito/idd-skill#3486). Call
+`--acquire` only on the linked B1 worktree. An already-present lock on
+the primary worktree keeps the existing reacquire, collision, and
+`--takeover` contract; the refusal only blocks creating a new one.
+`--check`, `--record-tokens`, `--read-tokens`, and
+`--backfill-tokens` still accept the primary worktree.
+
 A matching `{claim-id}` re-acquires as a read-only check; a different
 `{claim-id}` is always a collision, regardless of lock age. Run
 `resume-claim-routing.mjs --issue <n> --fresh-claim-gate`: `--takeover`
@@ -589,7 +599,9 @@ package-manager / ephemeral-npx forms and mechanical detail.
 `--acquire`; absent/malformed recovers only via step 5
 (`idd-overview-core.instructions.md`).
 
-Then continue to `idd-work.instructions.md`.
+Then continue to `idd-work.instructions.md` when pre-check (d) matched
+no inherited open PR. When it did, continue at
+`idd-resume.instructions.md` Step 2.
 
 ## Claim-state parsing
 

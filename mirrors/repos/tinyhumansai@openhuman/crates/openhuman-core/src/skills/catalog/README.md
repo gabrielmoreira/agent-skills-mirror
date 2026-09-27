@@ -1,6 +1,6 @@
 # skills/catalog
 
-Module path: `crate::skills::catalog`. RPC namespace: `skill_registry` — a
+Module path: `crate::skills::catalog`. RPC namespace: `skill_registry`, a
 stable wire contract left unchanged by the module rename (JSON-RPC methods are
 still `openhuman.skill_registry_<function>`, the CLI namespace is still
 `skill_registry`; see `tests/skill_registry_e2e.rs`).
@@ -9,7 +9,7 @@ Owns remote skill catalogs and installed-skill lifecycle:
 
 - Fetch and cache registry catalogs.
 - Refresh the remote catalog asynchronously on core load.
-- Browse/search registry entries.
+- Browse and search registry entries.
 - Derive `SKILL.md` download URLs: Hermes bundled/optional skills from
   `docsPath`, GitHub-hosted community skills from `sourceUrl` (blob/tree
   rewritten to `raw.githubusercontent.com`), ClawHub from its file API by
@@ -28,8 +28,8 @@ Owns remote skill catalogs and installed-skill lifecycle:
 | --- | --- |
 | `mod.rs` | Feature gate (`skills` Cargo feature) and module wiring; re-exports the controller aggregators |
 | `ops.rs` | Catalog fetch/cache, boot refresh, browse/search/sources/categories, entry ids, download-URL derivation, `find_catalog_entry`, `install_from_catalog` |
-| `download.rs` | `SKILL.md` locations for ClawHub (file API) and skills.sh (GitHub repo probe + tree lookup) |
-| `store.rs` | Catalog cache at `~/.openhuman/skill-registry/cache.json`, 1-hour TTL, kept past TTL for stale-while-revalidate; `OPENHUMAN_SKILL_REGISTRY_CACHE_DIR` relocates it (tests) |
+| `download.rs` | `SKILL.md` locations for ClawHub (file API) and skills.sh (GitHub repo probe plus tree lookup) |
+| `store.rs` | Catalog cache at `~/.openhuman/skill-registry/cache.json`, with a 1-hour TTL, kept past TTL for stale-while-revalidate; `OPENHUMAN_SKILL_REGISTRY_CACHE_DIR` relocates it (tests) |
 | `tools.rs` | LLM-callable tools `skill_registry_browse`, `skill_registry_search`, `skill_registry_sources`, `skill_registry_install`, `skill_registry_uninstall` |
 | `types.rs` | `CatalogEntry` |
 | `schemas/controller_schemas.rs` | `skill_registry_*` `ControllerSchema` definitions and the registered-controller table |
@@ -43,13 +43,13 @@ Owns remote skill catalogs and installed-skill lifecycle:
 Functions in `schemas/controller_schemas.rs::all_skill_registry_controller_schemas`,
 all under the `skill_registry` namespace:
 
-- `browse` — list cached (or force-refreshed) catalog entries.
-- `search` — filter entries by query, source, and category.
-- `sources` — distinct upstream sources present in the catalog.
-- `categories` — distinct categories present in the catalog.
-- `install` — install a catalog entry by `entry_id` into user scope.
-- `uninstall` — remove an installed user-scope skill by slug.
-- `schemas` — return the `skill_registry` controller schemas (CLI/RPC smoke-test generation).
+- `browse`: list cached (or force-refreshed) catalog entries.
+- `search`: filter entries by query, source, and category.
+- `sources`: distinct upstream sources present in the catalog.
+- `categories`: distinct categories present in the catalog.
+- `install`: install a catalog entry by `entry_id` into user scope.
+- `uninstall`: remove an installed user-scope skill by slug.
+- `schemas`: return the `skill_registry` controller schemas (CLI/RPC smoke-test generation).
 
 ## Agent tools and the `skill_setup` agent
 

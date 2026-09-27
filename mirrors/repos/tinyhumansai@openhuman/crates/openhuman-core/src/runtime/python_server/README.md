@@ -8,9 +8,9 @@ to pick the interpreter it launches.
 
 Two backends currently run inside the one worker process:
 
-- **spaCy** (`spacy.rs`) — NER extraction for the memory tree's query
+- **spaCy** (`spacy.rs`): NER extraction for the memory tree's query
   extractor, gated by `config.memory_tree.spacy_enabled`.
-- **Kompress** (`kompress.rs`) — TokenJuice's ModernBERT/torch plain-text
+- **Kompress** (`kompress.rs`): TokenJuice's ModernBERT/torch plain-text
   compressor, gated by `config.tokenjuice.ml_compression_enabled`.
 
 Both are gated behind `config.runtime_python.enabled`; `registry::enabled_backends`
@@ -37,7 +37,7 @@ computes the active set from all three flags together.
 
 - If the enabled backend set has changed since the cached server launched
   (e.g. Kompress toggled on after a spaCy-only start), the cache is discarded
-  and a new server is started — the running process was never provisioned for
+  and a new server is started: the running process was never provisioned for
   the new backend.
 - If the Kompress backend has been idle longer than
   `config.tokenjuice.ml_sidecar_idle_timeout_secs`, the server is torn down and
@@ -99,7 +99,7 @@ the same venv build.
 ## Status
 
 `RuntimePythonServerStatus { enabled, running, backends: Vec<BackendStatus>, message }`
-is returned by `status()` and reflects the cache directly — `Empty` reports
+is returned by `status()` and reflects the cache directly: `Empty` reports
 `disabled`, `Failed` reports the last error, `Ready` reports each backend's
 `ready` flag from the worker's handshake `backends` list. There is no public
 RPC method for this; `crates/openhuman-core/src/agent/harness_init/registry.rs`
@@ -121,7 +121,7 @@ No domain store. `spacy::python_server_cache_root` picks the root:
 ## Security
 
 The worker runs under whichever interpreter `runtime::python::PythonBootstrap`
-or the venv provisioning resolved — it does not choose or sandbox that
+or the venv provisioning resolved: it does not choose or sandbox that
 interpreter itself, and it is spawned through
 `runtime::python::process::spawn_stdio_process` with the core's own
 environment inherited (there is no `env_clear`). On top of that the module
@@ -136,11 +136,11 @@ sent, not here.
 
 ## Used by
 
-- `crates/openhuman-core/src/agent/harness_init/registry.rs` — the `runtime_python_server`,
+- `crates/openhuman-core/src/agent/harness_init/registry.rs`: the `runtime_python_server`,
   `spacy`, and `kompress` init steps.
-- `crates/openhuman-core/src/modules/memory_host.rs` — `extract_spacy` for the memory
+- `crates/openhuman-core/src/modules/memory_host.rs`: `extract_spacy` for the memory
   tree's query extractor.
-- `crates/openhuman-core/src/inference/tokenjuice/ml/mod.rs` — `request_kompress` for
+- `crates/openhuman-core/src/inference/tokenjuice/ml/mod.rs`: `request_kompress` for
   plain-text compression.
 
 ## Notes / gotchas

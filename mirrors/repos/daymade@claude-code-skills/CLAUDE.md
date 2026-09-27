@@ -63,6 +63,12 @@ Use [skill-creator](daymade-skill/skill-creator/SKILL.md) before creating or
 changing a skill. It owns change classification, evidence selection, regression
 review, validation, initialization, and packaging.
 
+For Deep Research or Kimi financial-research changes, enter the owning
+[`deep-research`](deep-research/SKILL.md) or [`kimi-use`](kimi-use/SKILL.md) Skill.
+Their linked references own the run, source-archive, mode, and billing procedures;
+the bundled CLIs own executable argument and validation behavior. Keep this file
+as the route rather than a second copy of those procedures.
+
 For customer-approved report forms, follow
 [skill-creator's report-template contract](daymade-skill/skill-creator/SKILL.md#show-the-result-not-just-the-work).
 
@@ -200,10 +206,24 @@ Skill links.
 For Codex reset announcements or account quota questions, enter
 [tibo-reset-codex](tibo-reset-codex/SKILL.md). Follow its
 [account usage SOP](tibo-reset-codex/references/account-usage.md) for authentication,
-per-account verification and browser restoration. Treat
+per-account verification, adjacent-reset attribution and browser restoration. Treat
 [query_usage.py](tibo-reset-codex/scripts/query_usage.py) as the executable authority
-for query parameters, supported response fields and exit behavior. Keep detailed
-commands and changing account state out of this file.
+for query parameters, supported response fields and exit behavior. For local
+snapshot reconstruction, [scan_rollouts.py](tibo-reset-codex/scripts/scan_rollouts.py)
+owns candidate output. An unfulfilled
+reset promise or a question about missing execution signals enters the Skill's
+[monitoring route](tibo-reset-codex/SKILL.md#监测轮从信息到可行动信号) and
+[output contract](tibo-reset-codex/SKILL.md#输出合同先给结论再交代边界).
+Before using a third-party date or Yes/No as a reset signal, check its source-post
+chronology, whether it observes account quota changes or only classifies posts,
+and whether the monitor completed a plausible-time check. The Skill owns the
+detailed procedure.
+[Next-reset forecast](tibo-reset-codex/references/next-reset-forecast.md) owns
+date judgments; [forecast feedback](tibo-reset-codex/references/forecast-feedback.md)
+owns recording, review and withdrawal, with
+[forecast_log.py](tibo-reset-codex/scripts/forecast_log.py) as the executable
+authority for CLI and local journal layout. Keep detailed commands and changing
+account or forecast state out of this file.
 
 ### WeCom Send Boundary
 

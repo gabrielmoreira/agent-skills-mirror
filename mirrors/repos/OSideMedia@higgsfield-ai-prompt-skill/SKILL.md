@@ -2,7 +2,7 @@
 name: higgsfield
 description: >
   Use this skill whenever the user asks anything about Higgsfield AI — writing or
-  refining video/image prompts, choosing a model (Kling, Sora 2, Veo, Wan, Seedance,
+  refining video/image prompts, choosing a model (Kling, Veo, Wan, Seedance,
   Minimax Hailuo, DoP, Soul, Nano Banana, Seedream, Flux, GPT Image, etc.), camera
   controls, named motion presets, Soul ID character consistency, Cinema Studio 2.5/3.0,
   Vibe Motion, troubleshooting failed generations, credit optimization, Photodump,
@@ -12,8 +12,8 @@ description: >
 user-invocable: true
 metadata:
   tags: [higgsfield, video, image, prompt, cinematic, AI, filmmaking, motion, camera]
-  version: 3.35.0
-  updated: 2026-08-22
+  version: 3.39.0
+  updated: 2026-09-26
   author: O-Side Media
   license: MIT
 ---
@@ -42,7 +42,7 @@ These rules apply to every Higgsfield response. They are written as a pre-delive
 
 6. **Preflight surfaced when applicable.** If execution intent is signaled (CLI / MCP / bundled-skills mentioned) AND a video-class or high-cost model is named OR a budget concern is named, surface the two-step preflight (`model get` / `models_explore` for schema, then cost estimate). See `skills/higgsfield-stack/SKILL.md` § Preflight discipline.
 
-7. **Aspect ratio is an enum, not a free-form value.** Check the model's allowed ratios against `specs/model-specs.yaml` before writing them into the header; if the snapshot is stale (>30 days), verify live via schema (`models_explore` / `model get`). Example of why this matters: Seedance 2.0 supports native 21:9, Kling 3.0 does not. Anamorphic / 2.35:1 / 2.39:1 are *style register* vocabulary for the Look line, not output ratios. See `vocab.md` § Aspect Ratio: output spec vs. style register.
+7. **Aspect ratio is an enum, not a free-form value.** Check the model's allowed ratios against `specs/model-specs.yaml` before writing them into the header; if the snapshot is stale (>30 days), verify live via schema (`models_explore` / `model get`). Example of why this matters: Seedance 2.0 supports native 21:9, Kling 3.0 does not. Anamorphic / 2.35:1 / 2.39:1 are *style register* vocabulary for the Look line, not output ratios. See `vocab.md` § Aspect Ratio: output spec vs. style register. In a multi-shot Seedance sequence whose location plates carry a baked lens, whether the optics words still belong in the video prompt (Style Prefix included) is OPEN — one studio drops them, Hell Grind keeps the look in both (`skills/higgsfield-seedance/SKILL.md` § Bake it into the asset; `skills/shared/house-rulings.md` P2-6).
 
 8. **Prompt under 200 words — short-form regime only.** Soft cap from MCSLA section. Going over is a signal you're padding rather than locking — tighten. **Regime exception:** block-scaffold production prompts (`skills/higgsfield-seedance/SKILL.md` § Official Prompt Architecture) replace the word cap with structural lint — harvested production Seedance briefs run 218–2,059-word medians depending on register `[FIELD — 13-project community harvest, 2026-07-18]`. The cap governs single-shot MCSLA prompts; a block-scaffold prompt over 200 words is not a rule-8 violation.
 
@@ -54,12 +54,12 @@ These rules apply to every Higgsfield response. They are written as a pre-delive
 
 Higgsfield is a cinematic AI video and image generation platform built for filmmakers and
 creators. Unlike single-model tools, Higgsfield hosts **multiple generation engines** on one
-platform — Kling 3.0/3.0 Omni/3.0 Motion Control, Sora 2 incl. Pro/Max/Pro Max tiers (UI-only — confirmed in the UI 2026-07-06, absent from the API/MCP catalog), Google Veo 3.1/3.1 Lite, Wan 2.7/2.6/2.5,
+platform — Kling 3.0/3.0 Omni/3.0 Motion Control, Google Veo 3.1/3.1 Lite, Wan 2.7/2.6/2.5,
 Seedance 2.5/2.0/Pro, FLUX 3 Video, Minimax Hailuo 2.3/02, Higgsfield DoP (Lite/Standard/Turbo) for video; Soul 2.0, Soul Cinema Preview,
-Soul Cast, Nano Banana Pro/2, Kling Image 3.0/Omni, Seedream 4.0, GPT Image 2.0,
+Soul Cast, Nano Banana Pro/2, Kling Image 3.0/Omni, Seedream 5.0 Pro/Lite/Flash + 4.5, GPT Image 2.0 / 2.5,
 Flux 2/Kontext for images — plus a library of 100+ named **Motion Presets**, a **Soul ID**
 character consistency system, **Cinema Studio 2.5**, **Cinema Studio 3.0** (Business/Team plan), and **Cinema Studio 3.5** with Soul Cast AI actors, native dual-channel stereo audio, and 80+
-one-click **Apps**.
+one-click **Apps**. **Sora 2 is retired from this skill's recommendations:** OpenAI shut the Sora 2 API down on 2026-09-24; Higgsfield only ever offered it in its web UI, and whether the UI still does is unconfirmed. For scale / physics shots use Seedance 2.0 or Minimax Hailuo 2.3 (`model-guide.md`).
 
 ---
 
@@ -137,8 +137,8 @@ budget constraints, client work), **confirm before generating:**
 | Develop a character / world / story / premise before prompting, build a character sheet / story bible, lock a visual style ("visual DNA"), keep a character consistent across many shots, or "I keep getting generic AI characters" | `higgsfield-character-design` |
 | Audit or strengthen a scene / sequence / beat outline before generating it, or "is this scene working", "what's weak here", "why doesn't this land" | `higgsfield-scene-engine` |
 | Cinematic still image prompt (shot framing, angles) | `higgsfield-image-shots` |
-| GPT Image 2.0 / gpt-image-2 prompt, UI mockup, infographic, character/reference sheet, layout-dense image, or static-ad recreation | `higgsfield-gpt-image-2` |
-| Choose the right model | `higgsfield-models` |
+| GPT Image 2.0 / 2.5 / gpt-image-2 / gpt_image_2_5 prompt, Flare / Sunburst, transparent-background image, UI mockup, infographic, character/reference sheet, layout-dense image, or static-ad recreation | `higgsfield-gpt-image-2` |
+| Choose the right model — incl. which lane edits existing footage, which model makes one clip longer than 15s, or motion transfer (Genjutsu vs Kling Motion Control) | `higgsfield-models` + `model-guide.md` (§ Edit-Lane Chooser, § Long-Take Chooser) |
 | Camera movement guidance (video) | `higgsfield-camera` |
 | Named motion preset (Explosion, Werewolf, etc.) | `higgsfield-motion` |
 | Visual style selection | `higgsfield-style` |
@@ -148,6 +148,7 @@ budget constraints, client work), **confirm before generating:**
 | One-click App workflow | `higgsfield-apps` |
 | Genre recipe (action, horror, ad, etc.) | `higgsfield-recipes` |
 | Fix a failing generation | `higgsfield-troubleshoot` |
+| A Seedance take came back wrong (not flagged) — reversal, babble, a third hand, gliding walk, choppy fight | `higgsfield-seedance` (`skills/higgsfield-seedance/FAILURE-MODES.md`) + `higgsfield-troubleshoot` (§ Stop-Rule Ladder) |
 | Moodboard, style direction, Soul Hex color | `higgsfield-moodboard` |
 | Visual consistency across a project | `higgsfield-moodboard` |
 | Mixed Media presets (Noir, Sketch, Particles, etc.) | `higgsfield-mixed-media` |
@@ -155,7 +156,8 @@ budget constraints, client work), **confirm before generating:**
 | Artistic style transformation, preset stacking | `higgsfield-mixed-media` |
 | Higgsfield Assist (GPT-5 copilot) | `higgsfield-assist` |
 | Credit optimization, plan selection, budget strategy | `higgsfield-assist` |
-| Cinema Studio 2.5 / Cinema Studio 3.0 / Cinema Studio 3.5 / multi-shot sequence workflow / Soul Cast | `higgsfield-cinema` |
+| Cinema Studio 2.5 / Cinema Studio 3.0 / Cinema Studio 3.5 / Cinema Studio 4.0 / multi-shot sequence workflow / Soul Cast | `higgsfield-cinema` |
+| Cinema Studio 4.0 — `cinematic_studio_video_4_0`, its four modes (t2v / omni_reference / video_edit / video_extension), camera / lens / aperture / era / genre / pacing ids, light and palette controls | `higgsfield-cinema` |
 | Optical physics, camera bodies, lenses, Hero Frame | `higgsfield-cinema` |
 | Elements system (@Characters/@Locations/@Props) | `higgsfield-cinema` |
 | Director Panel, Speed Ramp, shot modes, Popcorn | `higgsfield-cinema` |
@@ -164,6 +166,7 @@ budget constraints, client work), **confirm before generating:**
 | User mentions Marketing Studio, DTC Ads, `ms_image`, or `marketing_studio_video` model | `higgsfield-marketing-studio` |
 | User wants UGC / Tutorial / Unboxing / Hyper Motion / Product Review / TV Spot / Wild Card / UGC Virtual Try On / Pro Virtual Try On ad video | `higgsfield-marketing-studio` |
 | User mentions hook+setting picklists, preset / custom / text-generated avatars in MS context, or 4–15s ad video constraints | `higgsfield-marketing-studio` |
+| **Ad Multiplier** ("multiply my ad", many independently edited versions of one 4–30s ad) or a one-off **Genjutsu** edit of a finished ad (swap one object / product / garment using a reference image of the new one, transfer motion) | `higgsfield-marketing-studio` (§ 14) — a swap described in words only, with no reference image of the replacement, is Seedance 2.5 `video_edit` (`model-guide.md` § Edit-Lane Chooser) |
 | User wants to run a full campaign pipeline — research → plan → generate → publish → report, "create a campaign", "100 UGC videos", content plan, batch ads, cost-savings report | `higgsfield-content-factory` |
 | User mentions Higgsfield Canvas, a node-based / node-graph workspace, an infinite board, chaining prompts→images→videos into a pipeline, Shared Canvas, or a ComfyUI-style node workflow | `higgsfield-canvas` |
 | Multi-shot workflow, chaining tools, full production pipeline | `higgsfield-pipeline` |
@@ -176,12 +179,15 @@ budget constraints, client work), **confirm before generating:**
 | Takes-per-kept ratios, credit budgeting from logged data | `higgsfield-assist` |
 | Audio design, dialogue cues, SFX, ambient sound | `higgsfield-audio` |
 | **Standalone audio generation** — soundtrack, ambience bed, multi-speaker scene audio, Seed Audio 1.0 (`seed_audio`), TTS voiceover / narration as its own deliverable | `higgsfield-audio` |
-| **Extend / continue an existing clip** — "make it longer", "what happens next / before", prequel, last-frame handoff, extension chains | `higgsfield-seedance` (§ Extension Prompting) + `higgsfield-pipeline` (§ Continuation & Extension Handoff) |
+| Swap or revoice the speaker in a finished video (`voice_change`), or clone / create a reusable voice (`create_voice` → `voice_type: element`) | `higgsfield-audio` |
+| **A finished video in, something derived out** — Shorts Studio (restyle one video into shorts), Clipify (YouTube → subtitled clips), Virality Predictor ("will this go viral", score my ad), Video Analysis (scene-by-scene breakdown), and which of these cost credits | `higgsfield-repurpose` |
+| **3D** — image→3D / multi-view→3D / text→3D mesh (GLB), rigging or animating a mesh, remesh / retexture, 3D Body, 3D Jutsu / Scene Builder 3D projects, a 3D turnaround as a multi-angle reference, a 3D blockout as a staging reference (`generate_3d`, `scene_builder_3d_*`) | `higgsfield-3d` |
+| **Extend / continue an existing clip** — "make it longer", "what happens next / before", prequel, last-frame handoff, extension chains | a native forward/backward extension on 2.5 → `higgsfield-seedance-2-5` (`video_extension`); a 2.0 clip continued as a video reference → `higgsfield-seedance` (§ Extension Prompting); chaining across generations → `higgsfield-pipeline` (§ Continuation & Extension Handoff) |
 | **Prep assets / reference sheets before video** — character sheet, prop three-view, location plate, "build my elements", variety sheet for crowds | `templates/ad-asset-prep.md` + `higgsfield-gpt-image-2` (props) + `higgsfield-soul` (people & crowds) |
 | Audition / screen-test a designed character (how they move, speak, react) before scene generation | `higgsfield-character-design` (§ Screen Test / Audition) |
 | Seedance 2.0 / Pro prompt, flagged prompt, credit waste on Seedance | `higgsfield-seedance` |
 | **Seedance 2.5** — user names 2.5 / Dreamina / Jimeng, wants a single clip longer than 15s, wants to **edit** or **extend** a video that already exists, or supplies many image/video/audio references (up to 30/10/10) | `higgsfield-seedance-2-5` |
-| **2.0 vs 2.5** (both say "Seedance"): needs 4K/1080p, a platform start/end frame, or a `genre` hint → `higgsfield-seedance`; needs >15s in one generation, video editing, forward/backward extension, or heavy multi-reference → `higgsfield-seedance-2-5`. 2.5 caps at 720p | — |
+| **2.0 vs 2.5** (both say "Seedance"): needs 4K, `mode=fast`, or a `genre` hint → `higgsfield-seedance`; needs >15s in one generation, video editing, forward/backward extension, or heavy multi-reference → `higgsfield-seedance-2-5`. Both do 1080p and platform start/end frames (2.5 only in `omni_reference`); 2.5 caps at 1080p | — |
 | **Character performance** — acting, behavior, mannerisms, tics, a gait, subtext, "my characters look wooden / dead-eyed / AI", keeping a character themselves across many shots, an acting master profile | `higgsfield-acting` |
 | **Feature-film production pipeline on Seedance** — headless character sheets, location sheets, a scene geography block reused across shots, dialogue construction, iteration discipline, giants / crowds / threshold transitions | `higgsfield-seedance` (`HELL-GRIND.md`) |
 | **Transform footage the user already has** (video-to-video): "make a Seedance prompt for this video/clip", add a VFX element (set my head/hair on fire, transform my hand, make a limb invisible), swap the world/background around a preserved subject (desert, clouds, lava, neon city), put a giant creature behind me or on a landmark, relight/regrade to match, sync a crash-zoom/push-in to a line — a **real source clip** is the starting point | `higgsfield-seedance-vfx` |
@@ -190,6 +196,7 @@ budget constraints, client work), **confirm before generating:**
 | "Make a shotlist", break a script/brief/treatment into many connected Seedance prompts, director's shotlist, global style prefix + `@`-glossary + named per-scene prompts as one editable HTML | `higgsfield-shotlist-director` |
 | User has Higgsfield CLI / MCP / bundled skills installed and asks how this skill works alongside them | `higgsfield-stack` |
 | User mentions `higgsfield auth login`, `higgsfield generate create`, `mcp.higgsfield.ai/mcp`, `/higgsfield:generate`, or asks "do I need both" | `higgsfield-stack` |
+| Request is squarely one of Higgsfield's own connector workflows (character-sheet, thumbnail-generation, ugc-*, faceless-video, narrator, subtitles, product-photoshoot, brand-asset-creation, ad-multiplier, video-editing / Higgsedit) — what this library adds vs hands off | `higgsfield-stack` |
 | User asks where the prompt construction ends and the CLI/MCP execution begins (handoff questions) | `higgsfield-stack` |
 
 ---
@@ -205,6 +212,7 @@ The routing table says *where*; this says *how much*. Loads are cumulative — e
 | Multi-scene / sequence / script breakdown | + `higgsfield-shotlist-director` + `higgsfield-pipeline` |
 | Model choice unclear or contested | + `higgsfield-models` + `specs/` (the generated spec for the output type) |
 | User reports a generation result | + `higgsfield-recall` (ledger write) |
+| A Seedance render failed (not filtered) | + `skills/higgsfield-seedance/FAILURE-MODES.md` + `skills/higgsfield-troubleshoot/SKILL.md` |
 | Budget / credits / plan question | + `higgsfield-assist` |
 | Anything else | one routing-table row → that sub-skill; resist loading more than the row names |
 
@@ -243,6 +251,7 @@ prompts where the user request is technique-shaped rather than genre-shaped:
 | Anime / stylized-2D animation — layered formula + style block + character turnaround | `templates/seedance/anime-animation.md` |
 | Close-up facial acting via FACS Action Unit codes — beat-synced expression schedule | `templates/seedance/facs-expression-beats.md` |
 | Seedance **2.5** multi-reference brief — role map + staged beats with end states | `templates/seedance/omni-reference-2-5.md` |
+| Show the model WHERE figures stand — a front-on outline position reference attached LAST (one incomplete-record run: no bleed, NOT reliable at moving blocking) | `templates/seedance/staging-reference.md` |
 
 **Text-overlay templates** (`templates/text-overlays/`) — paste-ready text-rendering
 prompts for slogan / subtitle / speech-bubble overlays:
@@ -332,10 +341,12 @@ Result. Ratios and budgeting: `skills/higgsfield-assist/SKILL.md`.
 | Resource | What it contains | When to use |
 |----------|-----------------|-------------|
 | `skills/shared/negative-constraints.md` | All generation artifacts + prevention phrases, by category | Check before every prompt — append relevant constraints |
+| `skills/shared/provenance.md` | Repo-wide provenance legend — what [OFFICIAL]/[DEMO]/[FIELD]/[EMPIRICAL]/[HOUSE]/[MEASURED] mean and the evidence each requires | Before leaning on a tagged claim |
+| `skills/shared/house-rulings.md` | Every contested doctrine question — ruling or OPEN, scope, both sides | When two skill files seem to disagree |
 | `templates/` | 10 annotated genre templates with examples, models, annotations, variations | When user request matches a common genre — use as starting point |
 | `templates/ad-asset-prep.md` | Ad asset preparation: product sheets, hero-character sheets, location plates — generate-many → test-in-motion → lock-the-winner | When an ad/product request needs reference assets built before video |
 | `templates/character-design/` | 6 character-design worksheets (9-question sheet, story bible, visual DNA) | With `higgsfield-character-design` when developing characters before prompting |
-| `templates/seedance/` | 9 Seedance technique templates: top-down-map, multi-character-anchor, single-character-position, worked-example-two-character, anime-animation, facs-expression-beats, footage-vfx-transform, global-style-prefix, omni-reference-2-5 | When Seedance request is technique-shaped (spatial blocking, multi-character anchoring, anime/stylized-2D, FACS acting, footage VFX, style prefix, 2.5 multi-reference) |
+| `templates/seedance/` | 10 Seedance technique templates: top-down-map, multi-character-anchor, single-character-position, worked-example-two-character, anime-animation, facs-expression-beats, footage-vfx-transform, global-style-prefix, omni-reference-2-5, staging-reference | When Seedance request is technique-shaped (spatial blocking, position references, multi-character anchoring, anime/stylized-2D, FACS acting, footage VFX, style prefix, 2.5 multi-reference) |
 | `templates/text-overlays/` | 3 text-rendering templates: slogan, subtitle, speech-bubble | When user request includes on-screen text rendering |
 
 ---
@@ -347,8 +358,8 @@ Result. Ratios and budgeting: `skills/higgsfield-assist/SKILL.md`.
 | `higgsfield-workspaces` | User is choosing a workspace / asking "what should I use for X" / hasn't picked a tool yet |
 | `higgsfield-prompt` | Any prompt writing or refinement request |
 | `higgsfield-image-shots` | Cinematic image prompts — shot framing, angles, composition |
-| `higgsfield-gpt-image-2` | GPT Image 2.0 prompts — three-format taxonomy (JSON / prose / meta-prompt), UI mockups, infographics, reference sheets, static-ad recreation |
-| `higgsfield-models` | "Which model should I use?" / model comparison |
+| `higgsfield-gpt-image-2` | GPT Image 2.0 / 2.5 prompts — when to prefer 2.5 (transparent background, xhigh/max), three-format taxonomy (JSON / prose / meta-prompt), UI mockups, infographics, reference sheets, static-ad recreation |
+| `higgsfield-models` | "Which model should I use?" / model comparison / edit-lane, long-take (>15s) and motion-transfer choosers |
 | `higgsfield-camera` | Camera movement questions (video) |
 | `higgsfield-motion` | Named preset requests (Explosion, Werewolf, VFX, etc.) |
 | `higgsfield-style` | Visual style / aesthetic questions |
@@ -377,6 +388,8 @@ Result. Ratios and budgeting: `skills/higgsfield-assist/SKILL.md`.
 | `higgsfield-shotlist-director` | Brief/script → one connected Seedance shotlist (style prefix + `@`-glossary + named per-scene prompts) as editable HTML |
 | `higgsfield-facs` | FACS Action Unit codes for precise facial expressions in Seedance 2.0 — forced/uncanny/mixed expressions, close-up dialogue facial acting, emotion→AU recipes, FACS reference sheets |
 | `higgsfield-stack` | User mentions the Higgsfield CLI / MCP connector / bundled skills, or asks how this skill coexists with those execution surfaces |
+| `higgsfield-3d` | 3D meshes (image / multi-view / text → GLB), rigging + animation, remesh / retexture, 3D Body, 3D Jutsu scene projects, 3D turnarounds and 3D staging blockouts |
+| `higgsfield-repurpose` | Finished video in: Shorts Studio, Clipify, Virality Predictor, Video Analysis — with the paid / free split |
 
 > Full vocabulary in `vocab.md`
 > Full motion preset library in `skills/higgsfield-motion/SKILL.md`

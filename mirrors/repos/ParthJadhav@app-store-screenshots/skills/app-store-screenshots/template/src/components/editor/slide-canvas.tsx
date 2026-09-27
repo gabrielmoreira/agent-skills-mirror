@@ -7,6 +7,7 @@ import type {
   Device,
   ElementId,
   ElementTransform,
+  ImageElement,
   Orientation,
   SelectedElement,
   Slide,
@@ -15,24 +16,39 @@ import type {
 } from "@/lib/types";
 import {
   CANVAS,
+  CARPLAY_RATIO,
   IPAD_RATIO,
+  MAC_RATIO,
   MK_RATIO,
+  TV_RATIO,
+  WATCH_RATIO,
+  carPlayW,
   ipadW,
+  macW,
   phoneW,
   phoneWSmall,
   tabletLW,
   tabletPW,
+  tvW,
+  watchW,
 } from "@/lib/constants";
-import { toTextElementId } from "@/lib/elements";
+import { imageElementKey, isImageElementId, toImageElementId, toTextElementId } from "@/lib/elements";
 import { img } from "@/lib/image-cache";
 import { pickText, resolveScreenshot } from "@/lib/locale";
+import { slideColors } from "@/lib/contrast";
+import { defaultTextElementFontSize, slideFontScales } from "@/lib/typography";
 import {
   AndroidPhone,
+  AppleTV,
+  AppleWatch,
+  CarPlayScreen,
   AndroidTabletL,
   AndroidTabletP,
   IPad,
+  MacWindow,
   Phone,
 } from "./device-frames";
+import { ImageElementCanvas } from "./image-element-canvas";
 
 type FrameComp = React.ComponentType<{
   src: string;
@@ -55,6 +71,10 @@ function getFrameAspect(device: Device, orientation: Orientation) {
     case "iphone":      return MK_RATIO;
     case "android":     return 9 / 19.5;
     case "ipad":        return IPAD_RATIO;
+    case "tvos":        return TV_RATIO;
+    case "watchos":     return WATCH_RATIO;
+    case "carplay":     return CARPLAY_RATIO;
+    case "mac":         return MAC_RATIO;
     case "android-7":
     case "android-10":  return orientation === "landscape" ? 8 / 5 : 5 / 8;
     default:            return 1;
@@ -71,6 +91,14 @@ export function getFrameForDevice(device: Device, orientation: Orientation): {
       return { Comp: Phone, widthFn: phoneW, smallWidthFn: phoneWSmall };
     case "ipad":
       return { Comp: IPad, widthFn: ipadW, smallWidthFn: (cW, cH) => ipadW(cW, cH, 0.6) };
+    case "tvos":
+      return { Comp: AppleTV, widthFn: tvW, smallWidthFn: (cW, cH) => tvW(cW, cH, 0.56) };
+    case "watchos":
+      return { Comp: AppleWatch, widthFn: watchW, smallWidthFn: (cW, cH) => watchW(cW, cH, 0.42) };
+    case "carplay":
+      return { Comp: CarPlayScreen, widthFn: carPlayW, smallWidthFn: (cW, cH) => carPlayW(cW, cH, 0.7) };
+    case "mac":
+      return { Comp: MacWindow, widthFn: macW, smallWidthFn: (cW, cH) => macW(cW, cH, 0.46) };
     case "android":
       return { Comp: AndroidPhone, widthFn: phoneW, smallWidthFn: phoneWSmall };
     case "android-7":
@@ -100,6 +128,7 @@ type Props = {
   locale: string;
   appName?: string;
   appIcon?: string;
+  fontFamily?: string;
   editable?: boolean;
   edit?: EditHandlers;
   selectedElementId?: ElementId | null;
@@ -127,6 +156,7 @@ type DeckCanvasProps = {
   locale: string;
   appName?: string;
   appIcon?: string;
+  fontFamily?: string;
   connectedCanvas?: boolean;
   editable?: boolean;
   edit?: DeckEditHandlers;
@@ -231,8 +261,8 @@ function Caption({
   inverted?: boolean;
   onFocus?: () => void;
 }) {
-  const fg = inverted ? theme.fgAlt : theme.fg;
-  const accent = theme.accent;
+  const { fg, accent } = slideColors(theme, { inverted, backgroundColor: slide.backgroundColor });
+  const { labelScale, headlineScale } = slideFontScales(slide);
   // Scale typography off the *shorter* dimension so landscape layouts don't
   // produce headlines so tall they overlap the device frame.
   const unit = Math.min(cW, cH);
@@ -245,9 +275,11 @@ function Caption({
         onFocus={onFocus}
         placeholder="LABEL"
         style={{
-          fontSize: unit * 0.028,
+          // Floor keeps the label legible on the 422×514 Apple Watch canvas;
+          // the per-slide scale is applied on top of the floored base.
+          fontSize: Math.max(unit * 0.028, 16) * labelScale,
           fontWeight: 600,
-          letterSpacing: unit * 0.0015,
+          letterSpacing: Math.max(unit * 0.0015, 0.8) * labelScale,
           color: accent,
           textTransform: "uppercase",
           marginBottom: unit * 0.018,
@@ -262,10 +294,10 @@ function Caption({
         onFocus={onFocus}
         placeholder="Headline goes here"
         style={{
-          fontSize: unit * 0.092,
+          fontSize: unit * 0.092 * headlineScale,
           fontWeight: 700,
           lineHeight: 0.96,
-          letterSpacing: -unit * 0.001,
+          letterSpacing: -unit * 0.001 * headlineScale,
           color: fg,
         }}
       />
@@ -275,7 +307,10 @@ function Caption({
 
 // ---------- Background ----------
 
-function backgroundFor(theme: Theme, inverted?: boolean) {
+function backgroundFor(theme: Theme, inverted?: boolean, customColor?: string) {
+  if (customColor) {
+    return `linear-gradient(160deg, ${customColor} 0%, ${shade(customColor, -6)} 100%)`;
+  }
   if (inverted) {
     return `linear-gradient(160deg, ${theme.bgAlt} 0%, ${shade(theme.bgAlt, -8)} 100%)`;
   }
@@ -346,6 +381,10 @@ function getDefaultRects(
   frameAspect: number,
   fwFrac: number,
   fwSmallFrac: number,
+  // Phones and tablets are deliberately hung past the canvas edge so they bleed off
+  // it. When true (TV, watch, CarPlay, Mac), every device rect stays fully inside the
+  // canvas instead.
+  contain = false,
 ): LayoutRects {
   const deviceW = fwFrac * cW;
   const deviceH = deviceW / frameAspect;
@@ -360,7 +399,7 @@ function getDefaultRects(
         caption: { x: cW * 0.08, y: cH * 0.09, width: capW, height: capH, align: "center" },
         device: {
           x: (cW - deviceW) / 2,
-          y: cH - deviceH + deviceH * 0.15,
+          y: contain ? cH - deviceH - cH * 0.05 : cH - deviceH + deviceH * 0.15,
           width: deviceW,
           height: deviceH,
         },
@@ -380,7 +419,7 @@ function getDefaultRects(
         caption: { x: cW * 0.08, y: cH * 0.65, width: capW, height: capH, align: "center" },
         device: {
           x: (cW - deviceW) / 2,
-          y: -cH * 0.1,
+          y: contain ? cH * 0.05 : -cH * 0.1,
           width: deviceW,
           height: deviceH,
         },
@@ -389,14 +428,14 @@ function getDefaultRects(
       return {
         caption: { x: cW * 0.08, y: cH * 0.08, width: capW, height: capH, align: "center" },
         deviceSecondary: {
-          x: -cW * 0.06,
+          x: contain ? cW * 0.04 : -cW * 0.06,
           y: cH - smallH - cH * 0.05,
           width: smallW,
           height: smallH,
         },
         device: {
-          x: cW - deviceW * 0.9 + cW * 0.06,
-          y: cH - deviceH * 0.9 - cH * 0.02,
+          x: contain ? cW - deviceW * 0.9 - cW * 0.04 : cW - deviceW * 0.9 + cW * 0.06,
+          y: contain ? cH - (deviceW * 0.9) / frameAspect - cH * 0.05 : cH - deviceH * 0.9 - cH * 0.02,
           width: deviceW * 0.9,
           height: (deviceW * 0.9) / frameAspect,
         },
@@ -411,7 +450,11 @@ function getDefaultRects(
           align: "center",
         },
       };
-    case "split-landscape":
+    case "split-landscape": {
+      // Contained devices sit beside the caption instead of sliding under it.
+      // The caption is beside it, not above, so it can be taller than elsewhere.
+      const splitW = contain ? Math.min(cW * 0.5, cH * 0.84 * frameAspect) : deviceW;
+      const splitH = splitW / frameAspect;
       return {
         caption: {
           x: cW * 0.05,
@@ -421,12 +464,13 @@ function getDefaultRects(
           align: "left",
         },
         device: {
-          x: cW - deviceW + cW * 0.03,
-          y: (cH - deviceH) / 2,
-          width: deviceW,
-          height: deviceH,
+          x: contain ? cW - splitW - cW * 0.05 : cW - deviceW + cW * 0.03,
+          y: (cH - splitH) / 2,
+          width: splitW,
+          height: splitH,
         },
       };
+    }
     default:
       return {};
   }
@@ -450,13 +494,20 @@ function rectFor(
   };
 }
 
+// Devices whose frame must never be cropped by the canvas edge. A clipped TV,
+// head unit, watch face or Mac window reads as a mistake, not as a deliberate bleed.
+const CONTAINED_DEVICES: ReadonlySet<Device> = new Set<Device>(["tvos", "watchos", "carplay", "mac"]);
+
 function getSlideGeometry(slide: Slide, device: Device, orientation: Orientation) {
   const { cW, cH } = getCanvas(device, orientation);
   const { Comp: Frame, widthFn, smallWidthFn } = getFrameForDevice(device, orientation);
   const frameAspect = getFrameAspect(device, orientation);
   const fwFrac = widthFn(cW, cH);
   const fwSmallFrac = smallWidthFn(cW, cH);
-  const defaults = getDefaultRects(slide.layout, cW, cH, frameAspect, fwFrac, fwSmallFrac);
+  const defaults = getDefaultRects(
+    slide.layout, cW, cH, frameAspect, fwFrac, fwSmallFrac,
+    CONTAINED_DEVICES.has(device),
+  );
   return { cW, cH, Frame, frameAspect, defaults };
 }
 
@@ -470,6 +521,10 @@ export function getElementTransform(
     const textId = id.slice("text:".length);
     const textElement = slide.textElements?.find((element) => element.id === textId);
     return textElement?.transform;
+  }
+  if (isImageElementId(id)) {
+    const imageId = imageElementKey(id);
+    return slide.imageElements?.find((element) => element.id === imageId)?.transform;
   }
   const { defaults } = getSlideGeometry(slide, device, orientation);
   const rect = rectFor(id as BuiltInElementId, slide, defaults);
@@ -501,6 +556,7 @@ export function SlideCanvas({
   locale,
   appName,
   appIcon,
+  fontFamily,
   editable,
   edit,
   selectedElementId = null,
@@ -511,16 +567,18 @@ export function SlideCanvas({
 
   if (slide.layout === "feature-graphic" || device === "feature-graphic") {
     return (
-      <FeatureGraphicCanvas
-        slide={slide}
-        cW={cW}
-        theme={theme}
-        locale={locale}
-        appName={appName}
-        appIcon={appIcon}
-        editable={editable}
-        edit={edit}
-      />
+      <div style={{ width: "100%", height: "100%", fontFamily }}>
+        <FeatureGraphicCanvas
+          slide={slide}
+          cW={cW}
+          theme={theme}
+          locale={locale}
+          appName={appName}
+          appIcon={appIcon}
+          editable={editable}
+          edit={edit}
+        />
+      </div>
     );
   }
 
@@ -538,6 +596,7 @@ export function SlideCanvas({
         height: "100%",
         position: "relative",
         overflow: "hidden",
+        fontFamily,
       }}
     >
       <SlideBackground slide={slide} cW={cW} cH={cH} theme={theme} />
@@ -571,6 +630,7 @@ export function DeckCanvas({
   locale,
   appName,
   appIcon,
+  fontFamily,
   connectedCanvas = true,
   editable,
   edit,
@@ -590,6 +650,7 @@ export function DeckCanvas({
         height: cH,
         position: "relative",
         overflow: "hidden",
+        fontFamily,
       }}
     >
       {slides.map((slide, index) => {
@@ -727,8 +788,8 @@ function SlideBackground({
         position: "absolute",
         inset: 0,
         overflow: "hidden",
-        background: backgroundFor(theme, inverted),
-        color: inverted ? theme.fgAlt : theme.fg,
+        background: backgroundFor(theme, inverted, slide.backgroundColor),
+        color: slideColors(theme, slide).fg,
       }}
     >
       <Blob cW={cW} color={theme.accent} x={-15} y={-10} size={55} opacity={inverted ? 0.25 : 0.32} />
@@ -804,6 +865,7 @@ function FeatureGraphicCanvas({
   editable?: boolean;
   edit?: EditHandlers;
 }) {
+  const { headlineScale, appNameScale } = slideFontScales(slide);
   return (
     <div
       style={{
@@ -853,14 +915,14 @@ function FeatureGraphicCanvas({
           </div>
         )}
         <div>
-          <div style={{ fontSize: cW * 0.06, fontWeight: 800, lineHeight: 1.05 }}>{appName || "App"}</div>
+          <div style={{ fontSize: cW * 0.06 * appNameScale, fontWeight: 800, lineHeight: 1.05 }}>{appName || "App"}</div>
           <EditableText
             value={pickText(slide.headline, locale)}
             editable={editable}
             multiline
             onChange={edit?.onHeadlineChange}
             style={{
-              fontSize: cW * 0.028,
+              fontSize: cW * 0.028 * headlineScale,
               color: "rgba(255,255,255,0.85)",
               marginTop: cW * 0.012,
               lineHeight: 1.25,
@@ -907,6 +969,7 @@ function SlideElements({
   const screenshotSecondary = resolveScreenshot(slide.screenshotSecondary, locale);
   const { cW, cH, Frame, frameAspect, defaults } = getSlideGeometry(slide, device, orientation);
   const inverted = !!slide.inverted;
+  const colors = slideColors(theme, slide);
   const captionRect = rectFor("caption", slide, defaults);
   const deviceRect = rectFor("device", slide, defaults);
   const secondaryRect = rectFor("deviceSecondary", slide, defaults);
@@ -1010,7 +1073,7 @@ function SlideElements({
     const rect = textElement.transform;
     const rotation = rect.rotation ?? 0;
     const zIndex = rect.zIndex ?? 5 + index;
-    const textColor = textElement.color || (inverted ? theme.fgAlt : theme.fg);
+    const textColor = textElement.color || colors.fg;
     return (
       <Movable
         key={textElement.id}
@@ -1060,14 +1123,48 @@ function SlideElements({
             style={{
               width: "100%",
               color: textColor,
-              fontSize: textElement.fontSize ?? Math.min(cW, cH) * 0.06,
+              fontSize: textElement.fontSize ?? defaultTextElementFontSize(cW, cH),
               fontWeight: textElement.fontWeight ?? 700,
               lineHeight: 1.05,
               textAlign: textElement.align ?? "center",
-              textShadow: inverted ? "0 2px 18px rgba(0,0,0,0.22)" : "0 2px 18px rgba(255,255,255,0.2)",
+              textShadow: colors.dark ? "0 2px 18px rgba(0,0,0,0.22)" : "0 2px 18px rgba(255,255,255,0.2)",
             }}
           />
         </div>
+      </Movable>
+    );
+  }
+
+  function renderImageElement(imageElement: ImageElement, index: number) {
+    const elementId = toImageElementId(imageElement.id);
+    const rect = imageElement.transform;
+    const rotation = rect.rotation ?? 0;
+    const zIndex = rect.zIndex ?? 5 + index;
+    return (
+      <Movable
+        key={imageElement.id}
+        rect={toGlobal(rect)}
+        boundsW={boundsW}
+        boundsH={boundsH}
+        editable={editable}
+        previewScale={previewScale}
+        rotation={rotation}
+        onChange={(t) =>
+          edit?.onElementChange?.(
+            elementId,
+            toLocal({
+              ...t,
+              rotation: t.rotation ?? rotation,
+              zIndex: t.zIndex ?? zIndex,
+            }),
+          )
+        }
+        zIndex={zIndex}
+        selected={selectedElementId === elementId}
+        onSelect={() => edit?.onSelectElement?.(elementId)}
+        allowOverflow={allowCrossScreen}
+      >
+        <ImageElementCanvas element={imageElement} editable={editable} />
       </Movable>
     );
   }
@@ -1083,6 +1180,7 @@ function SlideElements({
         )}
       {deviceRect && renderDevice("device", deviceRect, screenshot)}
       {renderCaption()}
+      {(slide.imageElements || []).map(renderImageElement)}
       {(slide.textElements || []).map(renderTextElement)}
     </>
   );

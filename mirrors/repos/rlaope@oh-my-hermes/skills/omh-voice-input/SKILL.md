@@ -1,6 +1,6 @@
 ---
 name: "omh-voice-input"
-description: "[omh] Short spoken or mobile-style request: terse voice and mobile-style requests - turn short spoken-style asks into clarify, plan, status, handoff, or confirmation actions. Use when the user says: voice-operator, voice operator, voice-first, voice command, mobile command, short command, dictated command, dictated request."
+description: "[omh] Dictated voice note about project work or status: terse voice and mobile-style requests - turn short spoken-style asks into clarify, plan, status, handoff, or confirmation actions. Use when the user says: voice-operator, voice operator, voice-first, voice command, mobile command, short command, dictated command, dictated request."
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, accessibility]

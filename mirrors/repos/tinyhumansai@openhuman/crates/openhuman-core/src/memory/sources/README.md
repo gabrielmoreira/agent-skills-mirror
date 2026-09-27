@@ -5,7 +5,7 @@ GitHub repos, RSS, web pages, Twitter queries), the readers that pull items
 out of them, per-source sync status, and the `memory_sources_*` JSON-RPC
 surface over all three. See `mod.rs` for the #5560 rationale (why this used
 to glob `tinymemory_core::sources::*` and what came home versus stayed
-upstream) — this file is a map of the directory, not a repeat of that
+upstream): this file is a map of the directory, not a repeat of that
 history.
 
 The vocabulary is the engine-neutral `tinymemory-sources` crate: `pub mod
@@ -21,7 +21,7 @@ of `mod.rs`.
 | `rpc.rs` + `rpc/` (`registry_crud.rs`, `source_sync.rs`, `apply_all.rs`, `coding_sessions.rs`, `cost_reporting.rs`, `status_toolkits.rs`) | RPC handler implementations for memory sources. |
 | `schemas.rs` + `schemas/` (`registry_schemas.rs`, `sync_schemas.rs`, `apply_all_schemas.rs`, `coding_session_schemas.rs`, `cost_schemas.rs`, `status_schemas.rs`) | Controller-registry schemas for `openhuman.memory_sources_*`. |
 | `status.rs` | Per-source sync status: the chunk-key prefix (derived from the registry entry) and freshness label are host-side; in-flight/chunk counts go through `MemoryChunks::source_ingest_status`. |
-| `sync.rs` | `derive_scopes` — which tree scope and raw-archive id a configured source maps onto; the only production-reached piece of the old engine sync pipeline. |
+| `sync.rs` | `derive_scopes`: which tree scope and raw-archive id a configured source maps onto; the only production-reached piece of the old engine sync pipeline. |
 | `reconcile.rs` | Startup/list-time reconciliation of active Composio connections into the registry, built on `memory::sync::composio::scan_active_sync_targets`. |
 | `readers/mod.rs` | `SourceReader` trait (takes `&Config`, unlike the crate's `&Path` trait) plus one implementation per `SourceKind`: `composio`, `conversation`, `folder`, `github`, `rss`, `twitter`, `web_page`. This module's `reader_for` hands out all seven, network kinds included, because its callers are RPC handlers acting on an explicit user request; the crate's `reader_for` returns `None` for network kinds. Do not call it from a polling loop. |
 
@@ -40,13 +40,13 @@ re-exported from `schemas::all_registered_controllers`.
 
 ## Related modules
 
-- [`../sync/`](../sync/) — the bus-driven side: the Composio trigger and
+- [`../sync/`](../sync/): the bus-driven side: the Composio trigger and
   config-changed subscribers, `list_sync_targets` (which reads this registry
   first, then falls back to a live scan), the Slack RPC pair, and
   `sync_status/` for per-connection progress. The data movement itself is
   `integrations::composio::ops::providers_ops::run_sync_pass`. `sources/`
   owns *which* connectors are configured and *what* they map onto.
-- [`../read_rpc/`](../read_rpc/) — the Memory tab's read RPCs
+- [`../read_rpc/`](../read_rpc/): the Memory tab's read RPCs
   (list/inspect/search over the tree, under the `memory_tree` namespace).
   `memory_sources.status_list` is the one status read that lives here
   instead, because it is keyed on the registry.

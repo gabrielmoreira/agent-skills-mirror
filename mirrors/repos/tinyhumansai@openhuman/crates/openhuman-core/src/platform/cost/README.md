@@ -31,7 +31,7 @@ Local API-usage cost tracking for the agent. Records per-call token usage and co
 
 From `mod.rs` re-exports:
 
-- `CostTracker` — the tracker (`tracker`).
+- `CostTracker`: the tracker (`tracker`).
 - `init_global`, `try_global`, `record_provider_usage` (`global`).
 - `all_cost_controller_schemas`, `all_cost_registered_controllers` (`schemas`).
 - Types: `BudgetStatus`, `CostDashboard`, `CostRecord`, `CostSource`, `CostSummary`, `DailyCostEntry`, `ModelStats`, `TokenUsage`, `UsagePeriod`.
@@ -49,7 +49,7 @@ Namespace `cost` (methods `openhuman.cost_*` via the registry):
 | `cost_get_summary`       | none                                         | Live session / daily / monthly cost summary.                                                               |
 | `cost_get_usage_log`     | `days?`, `limit?`                            | Recent local records, newest first, bounded to 1,000 rows.                                                |
 
-Handlers load config via `config_rpc::load_config_with_timeout`, then delegate to `rpc.rs`. RPC DTOs (`CostDashboardDto`, `DailyCostEntryDto`, `ModelStatsDto`, `CostSummaryDto`, `UsageLogRecordDto`) add presentation fields not on the domain types — `provider` (derived from the `provider/model` prefix), `percent_of_total`, and dashboard threshold/`enabled` flags from `cost.dashboard`. Usage-log records preserve the persisted token provenance fields (`cached_input_tokens`, `cache_creation_tokens`, `reasoning_tokens`, `cost_source`) for migration audit callers for the dedicated usage-log tab.
+Handlers load config via `config_rpc::load_config_with_timeout`, then delegate to `rpc.rs`. RPC DTOs (`CostDashboardDto`, `DailyCostEntryDto`, `ModelStatsDto`, `CostSummaryDto`, `UsageLogRecordDto`) add presentation fields not on the domain types: `provider` (derived from the `provider/model` prefix), `percent_of_total`, and dashboard threshold/`enabled` flags from `cost.dashboard`. Usage-log records preserve the persisted token provenance fields (`cached_input_tokens`, `cache_creation_tokens`, `reasoning_tokens`, `cost_source`) for migration audit callers for the dedicated usage-log tab.
 
 ## Events
 
@@ -64,20 +64,20 @@ None. The module has no `bus.rs` and no `DomainEvent` publishers/subscribers.
 
 ## Dependencies
 
-- `crate::config` — `CostConfig` / `Config` (legacy display target, dashboard currency/enabled, `workspace_dir`); `config::rpc::load_config_with_timeout` in schemas.
-- `crate::inference::provider::types::UsageInfo` (re-exported as `crate::inference::provider::UsageInfo`) — provider usage payload translated into `TokenUsage` in `global.rs`.
-- `crate::core::all` — `ControllerFuture`, `RegisteredController` for controller registration.
-- `crate::core` — `ControllerSchema`, `FieldSchema`, `TypeSchema`.
-- `crate::rpc::RpcOutcome` — RPC return wrapper.
+- `crate::config`: `CostConfig` / `Config` (legacy display target, dashboard currency/enabled, `workspace_dir`); `config::rpc::load_config_with_timeout` in schemas.
+- `crate::inference::provider::types::UsageInfo` (re-exported as `crate::inference::provider::UsageInfo`): provider usage payload translated into `TokenUsage` in `global.rs`.
+- `crate::core::all`: `ControllerFuture`, `RegisteredController` for controller registration.
+- `crate::core`: `ControllerSchema`, `FieldSchema`, `TypeSchema`.
+- `crate::rpc::RpcOutcome`: RPC return wrapper.
 - External: `chrono`, `serde`/`serde_json`, `uuid`, `parking_lot`, `once_cell`, `anyhow`, `tempfile` (tests).
 
 ## Used by
 
-- `crates/openhuman-core/src/core/all.rs` — registers `all_cost_registered_controllers` / `all_cost_controller_schemas`.
-- `crates/openhuman-core/src/core/jsonrpc.rs` — calls `cost::init_global(cfg.cost.clone(), &workspace_dir)` at bootstrap.
-- `crates/openhuman-core/src/agent/tinyagents/observability/event_bridge.rs`, `agent/tinyagents/turn_outcome.rs`, `agent/tinyagents/host/budget_gate.rs`, and `agent/subagent_host/` — call `cost::record_provider_usage` after provider calls to log per-turn (and subagent) usage.
-- `crates/openhuman-core/src/tools/mod.rs` — re-exports `platform::cost::tools::*`.
-- `crates/openhuman-core/src/config/schema/identity_cost.rs` — `CostConfig` retains legacy budget-display fields for wire compatibility.
+- `crates/openhuman-core/src/core/all.rs`: registers `all_cost_registered_controllers` / `all_cost_controller_schemas`.
+- `crates/openhuman-core/src/core/jsonrpc.rs`: calls `cost::init_global(cfg.cost.clone(), &workspace_dir)` at bootstrap.
+- `crates/openhuman-core/src/agent/tinyagents/observability/event_bridge.rs`, `agent/tinyagents/turn_outcome.rs`, `agent/tinyagents/host/budget_gate.rs`, and `agent/subagent_host/`: call `cost::record_provider_usage` after provider calls to log per-turn (and subagent) usage.
+- `crates/openhuman-core/src/tools/mod.rs`: re-exports `platform::cost::tools::*`.
+- `crates/openhuman-core/src/config/schema/identity_cost.rs`: `CostConfig` retains legacy budget-display fields for wire compatibility.
 
 ## Notes / gotchas
 

@@ -7,8 +7,8 @@ description: >
 user-invocable: true
 metadata:
   tags: [higgsfield, camera, movement, dolly, crane, FPV, orbit, shot]
-  version: 3.5.0
-  updated: 2026-08-09
+  version: 3.5.1
+  updated: 2026-09-26
   parent: higgsfield
 ---
 
@@ -21,12 +21,12 @@ Higgsfield recognizes these names directly.
 *Routing aids — read the linked sections for the actual rules.*
 - Named preset tables by family: dolly / crane / orbit / zoom / follow / specialty / time-based / through-object / vehicle, plus angles and shot sizes — always cite the **exact preset name** [→](#dolly-movements)
 - Layer max two *compatible* moves; sequenced combos get explicit timing; static-pan beats glide for most coverage [→](#combining-camera-controls)
-- **The camera is the emotional double of the focal character** — 7 emotional registers map to camera prescriptions; arcs change the camera in named phases [→](#camera-emotion-sync-movement-per-focal-character-emotion)
-- [OFFICIAL] Lens + aperture chosen by shot *purpose* (85/100mm F1.4 tight emotional CU … 45mm macro F2.8), with standing focus-lock and distortion-forbid clauses [→](#lens-aperture-by-shot-purpose)
+- **The camera is the emotional double of the focal character** — 7 emotional registers map to camera prescriptions; arcs change the camera in named phases [→](#camera-emotion-sync--movement-per-focal-character-emotion)
+- [OFFICIAL] Lens + aperture chosen by shot *purpose* (85/100mm F1.4 tight emotional CU … 45mm macro F2.8), with standing focus-lock and distortion-forbid clauses [→](#lens--aperture-by-shot-purpose)
 - [OFFICIAL] Shot duration by type: flash establish 0.3–0.5s · dialogue line 3–7s · wordless reaction 5–10s · full-arc emotional CU 8–15s [→](#shot-duration-by-type)
 - Micro-moves need exact distances — state total travel + time ("10–15 cm over 7 seconds"); never write `zoom` for a physical move [→](#micro-moves-need-exact-distances)
 - Cinema Studio 3.0: One-Move Rule, genre presets, reliable phrasing library, camera transfer via `@Video` [→](#cinema-studio-30-camera-best-practices-businessteam-plan)
-- What a `@Video` reference reads reliably (world, materials, physics, camera character) vs cannot do (frame-accurate continuation, identity) [→](#video-reference-what-it-reads-and-what-it-cant)
+- What a `@Video` reference reads reliably (world, materials, physics, camera character) vs cannot do (frame-accurate continuation, identity) [→](#video-reference--what-it-reads-and-what-it-cant)
 
 ---
 
@@ -136,7 +136,7 @@ Higgsfield recognizes these names directly.
 | Control | What it does | Best for | Prompt phrase |
 |---------|-------------|----------|---------------|
 | **Low Angle** | Camera looks up at subject | Power, dominance, heroism | "Low angle looking up at the general on horseback" |
-| **High Angle** | Camera looks down at subject | Vulnerability, smallness, exposure | "High angle looking down at the child in the empty hall" |
+| **High Angle** | Camera looks down at subject | Vulnerability, smallness, exposure | "High angle looking down at the lone figure in the empty hall" |
 | **Eye Level** | Neutral height, conversational | Dialogue, documentary, grounded scenes | "Eye level, two characters facing each other" |
 | **Bird's-Eye View** | Directly overhead, looking straight down | Maps, choreography, god-like perspective | "Bird's-eye view of the marketplace from above" |
 | **Worm's-Eye View** | Extreme low, looking straight up | Towering scale, surreal, otherworldly | "Worm's-eye view looking up through the forest canopy" |

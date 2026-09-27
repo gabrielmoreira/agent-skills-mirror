@@ -8,11 +8,14 @@ description: >
   prompt would benefit from audio direction but they haven't mentioned it.
   Also use when the user wants standalone audio — a soundtrack, ambience bed,
   multi-speaker scene audio (Seed Audio 1.0), or text-to-speech voiceover.
+  Also use to swap or revoice the speaker in an existing video (voice_change),
+  or to clone / create a reusable voice (create_voice → a voice_type 'element'
+  voice usable in TTS and voice change).
 user-invocable: true
 metadata:
-  tags: [higgsfield, audio, dialogue, lip-sync, SFX, ambient, sound, BGM, music, voice, seed-audio, scene-audio, TTS]
-  version: 3.7.0
-  updated: 2026-08-22
+  tags: [higgsfield, audio, dialogue, lip-sync, SFX, ambient, sound, BGM, music, voice, seed-audio, scene-audio, TTS, voice-change, voice-clone]
+  version: 3.9.0
+  updated: 2026-09-26
   parent: higgsfield
 ---
 
@@ -22,13 +25,15 @@ metadata:
 *Routing aids — read the linked sections for the full rules.*
 - Native-joint audio models: Kling 3.0, Seedance 2.0 / 1.5 Pro, Veo 3/3.1, Grok — all others add audio in post [→](#which-models-support-audio)
 - Four layers to consider per prompt: Dialogue / SFX / Ambient / BGM [→](#the-four-audio-layers)
-- Lip-sync is the most failure-prone feature: 3–8s clips, MCU framing, one speaking face, locked camera, no head-motion tokens; per-language sync-word budgets are FIELD-reported [→](#lip-sync-rules)
-- **Seedance 2.0 `@Audio1` is a conditioning INPUT** — beat sync, the `[AUDIO: Xs]` script block, and the first-15s extraction trap [→](#audio-as-a-conditioning-input-seedance-20-audio1)
-- Scope an audio reference like an image one: name the property that rides, the property that must NOT, and where the excluded one comes from instead [→](#scope-an-audio-reference-say-which-property-rides)
-- Multi-clip assembly: one master track · cuts land on musical punctuation, never inside a sung vowel (ECU mouth-match is the one exception) · unified grain + LUT masks batch color drift [→](#cutting-to-music-assembling-separately-generated-clips-on-one-track)
+- Suppressing a score: name the diegetic sound first, then the suppression as plain text; `NO BGM` vs `No music.` is OPEN (house-rulings P2-7) [→](#suppressing-music--no-bgm-is-a-spec-no-music-is-a-preference)
+- Lip-sync is the most failure-prone feature: 3–8s clips, MCU framing, one speaking face, locked camera, no head-motion tokens; per-language sync-word budgets come from a third-party skill (EMPIRICAL, unmeasured here) [→](#lip-sync-rules)
+- **Seedance 2.0 `@Audio1` is a conditioning INPUT** — beat sync, the `[AUDIO: Xs]` script block, and the first-15s extraction trap [→](#audio-as-a-conditioning-input--seedance-20-audio1)
+- Scope an audio reference like an image one: name the property that rides, the property that must NOT, and where the excluded one comes from instead [→](#scope-an-audio-reference--say-which-property-rides)
+- Multi-clip assembly: one master track · cuts land on musical punctuation, never inside a sung vowel (ECU mouth-match is the one exception) · unified grain + LUT masks batch color drift [→](#cutting-to-music--assembling-separately-generated-clips-on-one-track)
 - Cinema Studio 3.0 native joint audio (SCELA): describe audio as a separate section; specific foley beats generic moods [→](#cinema-studio-30-audio-businessteam-plan)
-- **Seed Audio 1.0** (`seed_audio`, standalone) = whole-scene audio in ONE pass — multi-speaker dialogue + music + SFX + ambience mixed [→](#scene-audio-generation-seed-audio-10)
-- Standalone Audio catalog (2026-08-01 snapshot): `seed_audio`, `qwen_audio_tts` (NEW — Qwen 3.0 TTS Flash, expressive instructions + cloned voices), `text2speech_v2` (5 engines incl. cozy_voice), plus 3 game-pipeline-only tools — distinct from in-video joint audio [→](#standalone-audio-tab-tool-catalog-2026-08-01-snapshot)
+- **Seed Audio 1.0** (`seed_audio`, standalone) = whole-scene audio in ONE pass — multi-speaker dialogue + music + SFX + ambience mixed [→](#scene-audio-generation--seed-audio-10)
+- Standalone Audio catalog (2026-09-26 snapshot): `seed_audio`, `qwen_audio_tts` (Qwen 3.0 TTS Flash — gained `batch_size` 1–4 on 2026-09-26, the only audio change since 08-01), `text2speech_v2` (5 engines incl. cozy_voice), plus 3 game-pipeline-only tools — distinct from in-video joint audio [→](#standalone-audio-tab--tool-catalog-2026-09-26-snapshot)
+- **Voice change** (`voice_change`) swaps the speaker in a finished video, keeping timing and visuals — no prompt; priced by duration. **Voice cloning** (`create_voice`) makes a reusable `voice_type: 'element'` voice — usable only once `completed` + `is_audio_eligible` [→](#voice-change-and-voice-cloning)
 
 ## Which Models Support Audio?
 
@@ -117,10 +122,17 @@ BGM: lo-fi hip-hop beat, warm vinyl crackle, relaxed.
 
 ### Suppressing music — `NO BGM` is a spec, `no music` is a preference
 
-`[DEMO — Joey cinema-director-v3, 2026-08-16]` `[UNPROVEN HERE]` When a piece must
-carry no score, the phrase matters. **`no music` reads as a weak stylistic preference**
-and loses to the model's strong prior that generated video wants a bed under it.
-**`NO BGM` reads as a production term** — a hard spec — and is the form to write.
+`[EMPIRICAL — Joey cinema-director-v3 skill (2026-08-16), re-derived 2026-08-22]`
+**Contested — OPEN, unmeasured here** (`../shared/house-rulings.md` P2-7): `No music.` is the
+form 12 of 13 harvested projects shipped (`../../templates/seedance/global-style-prefix.md`
+[FIELD]); this section is one practitioner skill's argument. Both forms are legal; lead with
+the positive list either way, and never write the suppression inside Seedance 2.5's `()` music
+bracket.
+
+The source's argument: when a piece must carry no score, the phrase matters. **`no music` reads as a
+weak stylistic preference** and loses to the model's strong prior that generated video wants a
+bed under it; **`NO BGM` reads as a production term** — a hard spec — and is, in its view, the
+form to write. (Unmeasured here — see the OPEN note above.)
 Expand it once on first use so the abbreviation is unambiguous, then let it carry.
 
 **Lead positive, then negate.** Name what the audio *is* before naming what it is not —
@@ -130,14 +142,20 @@ it decides in favour of a pad.
 
 ```
 Audio: diegetic sound only — footsteps on wet stone, fabric shift, breath, room tone.
-NO BGM — no background music of any kind. No score, no soundtrack, no instrumental,
-no underscore, no ambient musical pad, no drone, no tone bed. Nothing musical at any point.
+NO BGM.
 ```
+
+The escalation, only once a short form has failed on this shot: "NO BGM — no background
+music of any kind. No score, no soundtrack, no instrumental, no underscore, no ambient musical
+pad, no drone, no tone bed." 
 
 **Promote it to the top on a scene that must land silent.** Audio instructions carry
 more weight early; by the time the model reaches a closing audio block it has already
-decided what the piece sounds like. State `NO BGM` in the header alongside shot count
-and cut policy, then restate it as the closing audio clause.
+decided what the piece sounds like. Promote the **whole** audio policy to the header,
+alongside shot count and cut policy — the positive diegetic list first, the suppression
+after it (`Audio: diegetic only — footsteps, room tone. NO BGM.`), never the suppression on
+its own — then restate it as the closing audio clause. The positive-first order is the
+settled part of `../shared/house-rulings.md` P2-7 and holds in the header too.
 
 > **Enumerate with care — this cuts against the house rule on negation.**
 > `../shared/negative-constraints.md` and the repo's staging-reference doctrine both
@@ -225,9 +243,9 @@ The production workaround:
 2. Composite in CapCut/Premiere using picture-in-picture + linear mask (15% feather)
 3. Static image for the listening character; generated video for the speaking character
 
-### Per-language dialogue-sync budgets [FIELD — community, seedance-2.0 repo v6.6.0]
+### Per-language dialogue-sync budgets [EMPIRICAL — community seedance-2.0 repo v6.6.0, imported 2026-07-05]
 
-Field-observed word budgets for **reliable lip-sync** in a ~15s in-video Seedance
+A third-party skill's word budgets for **reliable lip-sync** in a ~15s in-video Seedance
 dialogue clip — not official limits, and not the same as how many words the model
 can *voice*. The **acoustic budget ≠ reliable-sync budget**: the model will happily
 speak more words than it can keep synced to the mouth.
@@ -239,15 +257,24 @@ speak more words than it can keep synced to the mouth.
 | Russian | ~10–15 words | Weak — budget conservatively |
 | Japanese / Korean | Under-tested | No reliable field numbers yet |
 
+This is a ceiling for reliable sync across a clip; the floor for one short shot is
+`../higgsfield-seedance/FAILURE-MODES.md` § Filler-babble on a short dialogue line. **How to
+read this budget is OPEN** (`../shared/house-rulings.md` P3-6). As a **per-clip total with a
+per-line cap** (5–10 words a line), the floor and the ceiling meet at one 8–10-word line in a
+4 s shot. As a **rate** (~1.1–1.3 words/s), an 8-word line in a 4 s shot (2 w/s) is already
+over it. Nothing here measures lip-sync at that density — the filler-babble run graded
+transcripts only. Scripting the silence (FAILURE-MODES counter 2) or cutting the shot down to
+the line satisfies both readings.
+
 Cross-language sizing unit: **"one short sentence ≈ one breath."** Write dialogue
 in breath-sized sentences and count breaths, not seconds.
 
-### Voice-reference lip-sync path [FIELD — community, seedance-2.0 repo v6.6.0]
+### Voice-reference lip-sync path [EMPIRICAL — community seedance-2.0 repo v6.6.0, imported 2026-07-05]
 
 On surfaces that accept a spoken-voice reference, an attached **rights-cleared
 voice recording drives lip-sync directly** — the model syncs the mouth to your
-recording instead of synthesizing a voice first. This is the most reliable
-field-reported path for **non-English dialogue** (it sidesteps the weak-language
+recording instead of synthesizing a voice first. The source reports it as the most
+reliable path for **non-English dialogue** (it sidesteps the weak-language
 sync budgets above). **Rights-sensitive:** only use recordings you have clear
 rights to — cloned or scraped voices are out.
 
@@ -375,7 +402,7 @@ that can coexist. (Sibling of `../higgsfield-seedance/SKILL.md` § Reference Rol
 
 ### Cutting to music — assembling separately-generated clips on one track
 
-`[EMPIRICAL — MiniMax H3 skill corpus, re-derived; cross-model editing craft]`
+`[EMPIRICAL — MiniMax H3 skill corpus, re-derived 2026-08-09; cross-model editing craft]`
 Beat sync governs what happens *inside* a clip; these three laws govern the
 timeline the clips land on:
 
@@ -699,7 +726,7 @@ Compact worked example:
 ```
 [Scene: rain-soaked night market, closing time]
 Vendor (tired, warm): "Last skewers — half price, take them."
-Girl (excited): "Two! No — three!"
+Customer (excited): "Two! No — three!"
 [sound: rain drumming on tarp canopy, a scooter passing in the distance]
 Vendor (chuckling): "Three it is. Careful, they're hot."
 [sound: coins dropped on a metal tray, charcoal hiss]
@@ -708,20 +735,23 @@ Music: a lonely muted trumpet fades in under the rain, wistful but hopeful.
 
 ---
 
-## Standalone Audio tab — tool catalog (2026-08-01 snapshot)
+## Standalone Audio tab — tool catalog (2026-09-26 snapshot)
 
 The live standalone-audio catalog, reconciled against the models_explore
-snapshot of **2026-08-01** (`../../specs/models_explore_snapshot_audio_2026-08-01.json`;
+snapshot of **2026-09-26** (`../../specs/models_explore_snapshot_audio_2026-09-26.json`;
 generated table: `../../specs/AUDIO-MODEL-SPECS.md`, machine twin
 `../../specs/audio-model-specs.json` — regenerate with `python3 scripts/sync_specs.py --type audio`).
+The 2026-09-26 pull carries the same six models as 2026-08-01; the **only** change is
+`qwen_audio_tts` gaining `batch_size` (1–4, default 1 — "Number of independent
+variations to generate") `[OFFICIAL — platform, 2026-09-26]`.
 The Audio tab's UI tools — **Voiceover** (text → speech), **Change Voice** (swap a
-voice in any video), **Translation** (translate speech in any video) — sit on top
-of these models:
+voice in any video — the `voice_change` tool, § Voice change and voice cloning below),
+**Translation** (translate speech in any video) — sit on top of these models:
 
 | Model id | Name | What it does | Availability |
 |----------|------|--------------|--------------|
 | `seed_audio` | Seed Audio 1.0 (ByteDance) | One-pass whole-scene audio: dialogue + music + SFX + ambience (§ above) | General |
-| `qwen_audio_tts` | Qwen Audio 3.0 TTS Flash (Alibaba) | Expressive TTS: natural-language `instruction` for emotion/dialect/speed, preset or cloned reference-element voices, 13 language hints | General *(NEW 2026-08-01)* |
+| `qwen_audio_tts` | Qwen Audio 3.0 TTS Flash (Alibaba) | Expressive TTS: natural-language `instruction` for emotion/dialect/speed, preset or cloned reference-element voices, 13 language hints; `batch_size` 1–4 variations per call | General *(added 2026-08-01; `batch_size` added 2026-09-26)* |
 | `text2speech_v2` | Text to Speech V2 | Single-voice TTS; engine via `variant`: `elevenlabs`, `minimax`, `seed_speech`, `vibe_voice`, **`cozy_voice`** *(NEW)*; preset or reference-element voices (`voice_type` + `voice_id`) | General |
 | `sonilo_music` | Sonilo Music (FAL) | Text-to-music with controllable duration | **Game pipeline only** |
 | `mirelo_text_to_audio` | Mirelo Text to Audio (FAL) | Text-to-audio SFX with controllable duration | **Game pipeline only** |
@@ -732,7 +762,85 @@ multilingual voiceover/narration; **elevenlabs** (Eleven v3) when fine
 emotional/tone control matters; **vibe_voice** for long-form narration. These
 are standalone audio generators — distinct from the native joint audio baked
 into Kling 3.0 / Seedance 2.0 / Veo during video generation. (Catalog reflects
-the 2026-08-01 snapshot; verify live before quoting pricing or availability.)
+the 2026-09-26 snapshot; verify live before quoting pricing or availability.)
+
+> **Framing conflict to know about.** The 2026-09-26 MCP `generate_audio` tool
+> description calls itself speech-only — *"This tool only generates speech: it cannot
+> generate music or sound effects for general use, and there is no standalone music/SFX
+> model here — decline general music or sound-effect requests"* — and names `seed_audio`
+> as its default speech model `[OFFICIAL — Higgsfield MCP tool schema, 2026-09-26]`. The
+> § Scene-Audio Generation section above documents Seed Audio 1.0 as one-pass scene audio
+> *including* music and SFX (ByteDance's launch framing, script format EMPIRICAL). The two
+> have not been reconciled by a run. Through the MCP connector, follow the connector's
+> instruction; treat music-and-SFX-in-one-pass as the model's documented capability, not
+> as something the connector will agree to do.
+
+---
+
+## Voice change and voice cloning
+
+`[OFFICIAL — Higgsfield MCP tool schema, 2026-09-26]` + `[OFFICIAL — platform CLI 1.1.23,
+2026-09-26]`. Nothing in this section has been run from this repo.
+
+### `voice_change` — revoice a finished video
+
+> "Replace the spoken voice in a video with a different voice while keeping the original
+> timing and visuals, then re-merge the new audio onto the video."
+
+| Param | Values | Notes |
+|---|---|---|
+| `video_id` | uuid | A confirmed uploaded video `media_id` **or** a completed video generation `job_id` |
+| `voice_id` | string | A preset voice id, or a reference-element id |
+| `voice_type` | `preset` (default) · `element` | Must match what `voice_id` is |
+
+- **No prompt, no count** — output dimensions come from the source video. There is
+  nothing to write; the choice is the voice.
+- **CLI face:** the `voice_change` workflow (`higgsfield workflow get voice_change
+  --json`) takes `input_video` + `voice_id` + `voice_type`, and its only cost parameter is
+  **`duration`** — it is priced by length. Preflight by model id with the real inputs:
+  `higgsfield generate cost voice_change --input_video <clip> --voice_id <id> --voice_type preset`
+  (unverified with media attached). Checked 2026-09-26: the `generate cost workflow voice_change`
+  form is rejected ("Unknown workflow"), and `--duration` is not an accepted param — the length
+  comes from the clip.
+- **Finding voices:** MCP `list_voices` returns built-in presets plus the user's own
+  voices, each as a `voice_id` + `voice_type` pair with a `preview_url`; CLI
+  `higgsfield voices list` / `higgsfield voices get <voice_id>`.
+
+### `create_voice` — clone a reusable voice
+
+- **`create_voice`** opens Higgsfield's Create Voice widget (record or upload tab); the
+  widget collects the name and audio, confirms the upload, and **creates the voice
+  end-to-end** — and shows the plans / credits UI itself when the user is out of credits.
+  A file the user attached in chat still goes through the widget's Upload tab: remote tools
+  cannot read chat attachments.
+- **`create_voice_from_confirmed_audio`** is the backend path, only when a confirmed
+  `audio_media_id` (uploaded with `type='audio'`) and a name already exist. Source audio:
+  **clear speech, roughly 10 seconds to 3 minutes**. The **voice-clone credit cost is
+  charged on successful creation**.
+- **Cloning is asynchronous.** A fresh clone usually comes back `processing`. It becomes a
+  usable `voice_type: 'element'` voice only when `status='completed'` **and**
+  `is_audio_eligible=true` — re-check with `list_voices` before generating with it.
+  `voice_clone_failed` / `failed` means it did not work.
+- **Where an element voice works:** `generate_audio` with `seed_audio` or
+  `text2speech_v2` (`voice_type` + `voice_id` travel together — § Scene-Audio Generation),
+  and `voice_change`.
+- A second, one-off path exists: `seed_audio` "can clone a voice from an audio_references
+  media item" per the `generate_audio` description — that conditions one generation; it
+  does not create a reusable voice.
+- Clone only voices you have the speaker's consent to use.
+
+### Uses in this repo `[HYPOTHESIS — UNMEASURED]`
+
+- **One narrator across a series.** An element voice is the platform-side version of a
+  locked voice: the same `voice_id` in every `seed_audio` / `text2speech_v2` call, instead of
+  re-describing the voice in each prompt.
+- **Voice drift across generated clips.** If clips generated with native audio (§ Which
+  Models Support Audio?) render different voices for the same character, `voice_change`
+  every clip to the **same** element voice — the tool's contract is that it keeps the
+  original timing, so lip-sync timing should survive the swap. Whether it does is untested;
+  check the first clip before batching.
+- Post-production voice replacement belongs with the other finished-video surfaces —
+  `../higgsfield-repurpose/SKILL.md` § Where the neighbouring jobs live.
 
 ### Post-generation voice-over — Supercomputer workflow [DEMO]
 
@@ -751,3 +859,4 @@ already locked and only narration is missing.
 - `higgsfield-troubleshoot` — Audio failure diagnosis
 - `higgsfield-cinema` — Cinema Studio audio workflow with Kling 3.0
 - `higgsfield-vibe-motion` — Motion graphics with audio (different from AI-generated audio)
+- `higgsfield-repurpose` — other surfaces that take a finished video in (Shorts Studio, Clipify, Virality Predictor, Video Analysis)

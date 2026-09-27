@@ -11,23 +11,19 @@ when cron is disabled.
 
 ## Registration state
 
-`tools/ops.rs::all_tools` registers the six per-operation tools and **not**
-`CronTool`. The `CronTool` registration added in `61618e7e8b` ("expose
-collapsed scheduler tool") was dropped by `4a6f9b7082` ("align merge
-resolution with main APIs"), before the crate refactor. The six members still
-report `ToolExposure::Hidden` (`fn exposure`), which
-`tools/impl/meta/tool_search.rs` strips from the advertised catalogue, so at
-this commit the scheduler surface is dispatchable by name (replayed
-transcripts, saved skills, `user_filter.rs` family `cron`, toolpack
-`scheduling`) but no cron tool is advertised to the model. The `//!` docs in
-`tools.rs` and `collapsed.rs` describe the intended wiring, not the current
-one.
+`crate::tools::ops::all_tools` registers `CronTool` as the compact, advertised
+scheduler surface, plus the six per-operation tools as hidden aliases behind
+it. Each per-operation tool reports `ToolExposure::Hidden` (`fn exposure`),
+which `tools/impl/meta/tool_search.rs` strips from the advertised catalogue,
+so they stay dispatchable by name (replayed transcripts, saved skills,
+`user_filter.rs` family `cron`, toolpack `scheduling`) without cluttering the
+model's tool list with six near-duplicate schemas.
 
 ## Collapsed dispatch (`collapsed.rs`)
 
 `CronTool` (`CRON_TOOL_NAME = "cron"`) advertises one schema with an `action`
 field (`list` / `add` / `update` / `remove` / `run` / `runs`) instead of six
-near-duplicate schemas — four of the six take only `job_id`. Each action
+near-duplicate schemas: four of the six take only `job_id`. Each action
 forwards to the matching per-operation tool through
 `crate::tools::implementations::meta::collapse` (`merge_action_schemas`,
 `resolve`, `args_without_action`), so schedule parsing, the `SecurityPolicy`
@@ -68,7 +64,7 @@ or immediately execute a stored command or agent prompt on the host.
   true, .. }`. `validate_delivery` only inspects `mode: "announce"`: it
   requires `channel` and `to`, exempts `web`, rejects an unconfigured
   channel, accepts any `to` when the channel's `allowed_users` is empty, and
-  otherwise requires `to` to be in that list — this blocks scheduling a cron
+  otherwise requires `to` to be in that list: this blocks scheduling a cron
   whose output is delivered to an arbitrary chat id (#928).
 - `JobType::Flow` is unreachable through this tool (flow-schedule rows are
   created internally by `flows::ops::flows_set_enabled` via
@@ -77,13 +73,13 @@ or immediately execute a stored command or agent prompt on the host.
 
 ## Related
 
-- `cron` domain: [`../README.md`](../README.md) — job/run model, scheduler,
+- `cron` domain: [`../README.md`](../README.md): job/run model, scheduler,
   delivery modes, agent-job minimum interval.
-- `crates/openhuman-core/src/tools/impl/system/schedule.rs` — the separate
+- `crates/openhuman-core/src/tools/impl/system/schedule.rs`: the separate
   one-shot `schedule` tool built on `cron::add_once` / `cron::add_once_at`;
   not part of the collapse above.
 - `crates/openhuman-core/src/tools/impl/meta/collapse.rs` (module path
-  `crate::tools::implementations::meta::collapse`) — the generic
+  `crate::tools::implementations::meta::collapse`): the generic
   action-collapsing helper `collapsed.rs` builds on.
 
 ## Tests

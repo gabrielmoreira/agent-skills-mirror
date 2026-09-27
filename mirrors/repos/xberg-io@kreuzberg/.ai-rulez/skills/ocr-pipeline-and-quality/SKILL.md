@@ -27,8 +27,11 @@ outputs are not interchangeable measurements.
 
 - Public `types::formats::TesseractConfig` and internal `ocr::types::TesseractConfig` have independent defaults. Change
   both and keep their synchronization test passing.
-- The OCR cache key combines image hash, backend, config hash, and output format. The config hash includes
-  `TESSERACT_RESULT_SCHEMA_VERSION` and the ordered Tesseract variable set; it contains no build or code identity.
+- The OCR cache key combines a build-identity tag, image hash, backend, config hash, and output format. The config
+  hash includes `TESSERACT_RESULT_SCHEMA_VERSION` and the ordered Tesseract variable set and carries no build identity
+  of its own, but it is not the whole key: `OcrCache::generate_cache_key` prefixes `cache_version_tag()`, which hashes
+  `CARGO_PKG_VERSION`, `CACHE_SCHEMA_VERSION`, `env!("XBERG_BUILD_ID")` and the debug/release bit. Two builds from
+  different commits therefore never share entries.
 - Bump `TESSERACT_RESULT_SCHEMA_VERSION` when unchanged image/config inputs can produce different output, or disable
   the cache for an A/B or revert check.
 - Default preprocessing is 300 DPI, deskew, and Otsu binarization. Auto-rotation, denoise, contrast enhancement, and

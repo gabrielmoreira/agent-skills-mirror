@@ -1,6 +1,6 @@
 # migration
 
-Data-migration helpers that import memory from **other AI assistants' workspaces** (OpenClaw, Hermes Agent) into the current OpenHuman workspace's memory backend. It scans a source workspace for SQLite (`brain.db`) and Markdown memory artifacts, normalizes them into `Memory` entries, backs up the target's existing memory, and writes the imported entries — supporting a `dry_run` plan-only mode and idempotent re-runs (unchanged entries are skipped, conflicts are renamed). Exposes two RPC controllers under the `migrate` namespace.
+Data-migration helpers that import memory from other AI assistants' workspaces (OpenClaw, Hermes Agent) into the current OpenHuman workspace's memory backend. It scans a source workspace for SQLite (`brain.db`) and Markdown memory artifacts, normalizes them into `Memory` entries, backs up the target's existing memory, and writes the imported entries. It supports a `dry_run` plan-only mode and idempotent re-runs (unchanged entries are skipped, conflicts are renamed). It exposes two RPC controllers under the `migrate` namespace.
 
 > Not to be confused with `crate::config::migrations` (plural), which handles internal config **schema** version upgrades. This module migrates **user memory data** from foreign vendors.
 
@@ -8,8 +8,8 @@ Data-migration helpers that import memory from **other AI assistants' workspaces
 
 - Resolve a source workspace path (explicit override, else vendor default: `~/.openclaw/workspace`, or `~/.hermes` / `%LOCALAPPDATA%\hermes` on Windows).
 - Refuse self-migration when source resolves to the current OpenHuman workspace.
-- **OpenClaw**: read memory entries from `memory/brain.db` (SQLite `memories` table, schema-tolerant column detection) plus `MEMORY.md` and `memory/*.md`.
-- **Hermes**: read a fixed file mapping — `MEMORY.md` → core, `USER.md` → `Custom("user_profile")`, `SOUL.md` → `Custom("persona")`.
+- OpenClaw: read memory entries from `memory/brain.db` (SQLite `memories` table, schema-tolerant column detection) plus `MEMORY.md` and `memory/*.md`.
+- Hermes: read a fixed file mapping, `MEMORY.md` to core, `USER.md` to `Custom("user_profile")`, `SOUL.md` to `Custom("persona")`.
 - Normalize keys (non-alphanumeric → `_`), parse/map categories, de-dup exact duplicates for deterministic re-runs.
 - Back up the target workspace's existing memory (`MEMORY.md`, `brain.db`, `memory/*.md` → `memory_backup/`) before applying.
 - Import into the target memory backend: skip entries whose content is unchanged, rename key on content conflict (`key_1`, `key_2`, …).
@@ -60,20 +60,20 @@ No own store. It writes imported entries through the **target memory backend** o
 
 ## Dependencies
 
-- `crate::config::Config` — source of `workspace_dir` and `memory` config; `config::rpc::load_config_with_timeout` in handlers.
-- `crate::memory` (`Memory`, `MemoryCategory`) — target backend trait + category enum entries are mapped into.
-- `crate::memory::store` — `create_memory_for_migration` constructs the target memory backend.
-- `crate::core::all` (`ControllerFuture`, `RegisteredController`) and `crate::core::{ControllerSchema, FieldSchema, TypeSchema}` — controller registry/schema types.
-- `crate::rpc::RpcOutcome` — RPC response envelope.
+- `crate::config::Config`: source of `workspace_dir` and `memory` config; `config::rpc::load_config_with_timeout` in handlers.
+- `crate::memory` (`Memory`, `MemoryCategory`): target backend trait plus the category enum entries are mapped into.
+- `crate::memory::store`: `create_memory_for_migration` constructs the target memory backend.
+- `crate::core::all` (`ControllerFuture`, `RegisteredController`) and `crate::core::{ControllerSchema, FieldSchema, TypeSchema}`: controller registry/schema types.
+- `crate::rpc::RpcOutcome`: RPC response envelope.
 - External crates: `rusqlite` (read OpenClaw `brain.db`), `directories::UserDirs` (home dir), `anyhow`, `serde`/`serde_json`.
 
 ## Used by
 
-- `crates/openhuman-core/src/core/all.rs` — registers `all_migration_registered_controllers()` (line ~165) and `all_migration_controller_schemas()` (line ~319) into the global controller/schema registry, exposing both methods over CLI and JSON-RPC.
+- `crates/openhuman-core/src/core/all.rs` registers `all_migration_registered_controllers()` (line ~165) and `all_migration_controller_schemas()` (line ~319) into the global controller/schema registry, exposing both methods over CLI and JSON-RPC.
 
 ## Notes / gotchas
 
-- `dry_run` default is `true` at the RPC boundary — callers must explicitly pass `dry_run: false` to actually apply a migration.
+- `dry_run` default is `true` at the RPC boundary. Callers must explicitly pass `dry_run: false` to actually apply a migration.
 - OpenClaw SQLite reading is **schema-tolerant**: it inspects `PRAGMA table_info(memories)` and picks key/content/category columns from candidate name lists (`key`/`id`/`name`, `content`/`value`/`text`/`memory`, `category`/`kind`/`type`), bailing only if no content-like column exists. DB is opened read-only.
 - Idempotency: exact-duplicate source entries are de-duped; unchanged target entries are skipped (`skipped_unchanged`); content conflicts get a renamed key (`renamed_conflicts`).
 - `migrate_openclaw_apply_imports_markdown_entries` in `ops.rs` documents a regression (#1440): the apply path previously bailed in `create_memory_for_migration` under the unified-namespace memory core; that hard-disable was removed.

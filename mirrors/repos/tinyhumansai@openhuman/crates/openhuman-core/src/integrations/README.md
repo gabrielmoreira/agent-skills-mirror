@@ -66,7 +66,7 @@ and registered by `crates/openhuman-core/src/tools/ops.rs`, gated by
 
 The `file_storage/` tools (see [its README](file_storage/README.md)) are
 built separately via `build_file_storage_tools` (also called from
-`tools/ops.rs`, around line 905) because they need `action_dir` and a
+`tools/ops.rs`, around line 828) because they need `action_dir` and a
 `SecurityPolicy` rather than a provider config flag.
 
 Composio connector tools and task-source tools live in and are documented by

@@ -4,8 +4,8 @@ description: "Writes, improves, or rewrites Seedance 2.0 prompts that TRANSFORM 
 user-invocable: true
 metadata:
   tags: [higgsfield, seedance, seedance-2.0, video-to-video, v2v, vfx, footage-transformation, environment-swap, creature, relight, 4k]
-  version: 1.0.0
-  updated: 2026-06-30
+  version: 1.1.0
+  updated: 2026-09-26
   parent: higgsfield
 ---
 
@@ -19,8 +19,9 @@ and adds the transformation layer below. Do not contradict the parent skill; whe
 needs filter-safety, mode selection, or engine rules, defer to it.
 
 > **This file is the Seedance 2.0 v2v lane.** It stays the right choice when the job needs
-> **4K**, `mode=std`, a platform start/end frame, or a `genre` hint. If the plate job is
-> running on **Seedance 2.5** — 720p ceiling, up to 30 s, many references — the lane is
+> **4K**, `mode=std`, or a `genre` hint. If the plate job is running on **Seedance 2.5** —
+> up to 1080p, up to 30 s, many references, platform start/end frames in `omni_reference` —
+> the lane is
 > `omni_reference` with the clip attached as a video reference, and its production doctrine
 > (source ≥ 4 s, duration = source, the four-batch rule, the performance-inheritance clause)
 > lives in `../higgsfield-seedance-2-5/VFX-PIPELINE.md`.
@@ -40,10 +41,10 @@ needs filter-safety, mode selection, or engine rules, defer to it.
 - **Three levels** of difficulty: L1 swap the world · L2 change an element in-frame · L3 full handheld cinematic [→](#three-levels)
 - Two modes: **add an element** to the plate, or **replace the environment** around a preserved subject [→](#two-transformation-modes)
 - **Color matching alone looks pasted-in** — match key direction, bounce, optics/haze, edges/grounding [→](#lighting-integration-the-part-that-makes-or-breaks-it)
-- Photoreal creatures need **biological accuracy** (wrinkled, cracked, asymmetric, matte — never smooth/glossy/inflated) + a real contact shadow; a reference image beats a description [→](#photoreal-creature-element-integration)
+- Photoreal creatures need **biological accuracy** (wrinkled, cracked, asymmetric, matte — never smooth/glossy/inflated) + a real contact shadow; a reference image beats a description [→](#photoreal-creature--element-integration)
 - Timed zoom synced to a line: anchor it **twice** — semantic (`On the line "…"`) + numeric (`At about Ts`); see `references/dialogue-timing.md` [→](#timed-camera-moves-synced-to-dialogue)
 - Prepended-intro budget: `total − intro = surviving window` for the source performance; recompute on every change [→](#duration-discipline)
-- Generate the transformed **start frame** first to lock the look before spending video credits; see `references/first-frame.md` [→](#first-start-frame-workflow)
+- Generate the transformed **start frame** first to lock the look before spending video credits; see `references/first-frame.md` [→](#first--start-frame-workflow)
 - Output is **plain-text English**, no markdown inside the prompt, easy to copy [→](#output-format)
 
 ---

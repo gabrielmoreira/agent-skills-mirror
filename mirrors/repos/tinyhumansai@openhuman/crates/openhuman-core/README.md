@@ -27,7 +27,7 @@ contents inside `mod.rs` behind the feature of the same name. See the
 | `api` | HTTP and Socket.IO helpers for the TinyHumans / AlphaHuman hosted API | [README](src/api/README.md) |
 | `channels` | Channel implementations and runtime orchestration | [README](src/channels/README.md) |
 | `config` | Configuration management for the core | [README](src/config/README.md) |
-| `core` | Transport, dispatch, controller registry (`core::all`), auth, CLI, event bus, runtime composition (`core::runtime`) — not a domain | [README](src/core/README.md) |
+| `core` | Transport, dispatch, controller registry (`core::all`), auth, CLI, event bus, runtime composition (`core::runtime`); not a domain | [README](src/core/README.md) |
 | `cron` | Scheduled-job runtime: cron/human-delay parsing, job + run store, polling scheduler, output delivery | [README](src/cron/README.md) |
 | `desktop` | Desktop-shell-facing surfaces | |
 | `flows`* | Saved automation workflows (tinyflows graphs) | [README](src/flows/README.md) |
@@ -39,8 +39,8 @@ contents inside `mod.rs` behind the feature of the same name. See the
 | `json_schema` | Vendor-neutral JSON Schema and JSON value walking | |
 | `mcp` | Host half of Model Context Protocol support | [README](src/mcp/README.md) |
 | `media`* | Media generation and image tool contracts | [README](src/media/README.md) |
-| `memory` | Memory orchestration — the host layer over `tinymemory-core` | [README](src/memory/README.md) |
-| `modules`* | Loadable native modules — capabilities that live outside this binary | [README](src/modules/README.md) |
+| `memory` | Memory orchestration: the host layer over `tinymemory-core` | [README](src/memory/README.md) |
+| `modules`* | Loadable native modules: capabilities that live outside this binary | [README](src/modules/README.md) |
 | `platform` | Host-platform services: process lifecycle, self-update, diagnostics, local transport surfaces | |
 | `runtime` | Code-execution runtimes, client side (toolchain download/warm workers live in the `tinyruntime` module) | |
 | `sandbox` | Sandbox execution backends for agent tool isolation | [README](src/sandbox/README.md) |
@@ -56,8 +56,15 @@ contents inside `mod.rs` behind the feature of the same name. See the
 | `web_chat` | Web/desktop channel turn runner (`channel.web_*` RPC, `WebChannelEvent` bus) | [README](src/web_chat/README.md) |
 
 RPC contract types (`RpcOutcome`, `StructuredRpcError`, the HTTP client) live
-in `crates/openhuman-rpc` and are re-exported here as `openhuman_core::rpc` —
-they are not redefined in this crate.
+in `crates/openhuman-rpc` and are re-exported here as `openhuman_core::rpc`.
+They are not redefined in this crate.
+
+The `inference` domain is where the pluggable LLM and embedding providers
+live; see
+[`gitbooks/developing/engines.md`](../../gitbooks/developing/engines.md) for
+the full provider list. Tool selection under `agent` includes the Jev
+ranker's core-side integration point; see
+[`gitbooks/developing/jev.md`](../../gitbooks/developing/jev.md).
 
 ## Binaries
 
@@ -69,13 +76,14 @@ None. This package is the library only; `crates/openhuman-cli` declares the
 the pluggable-core work (see `src/core/runtime/`). `test-mcp-stub` is the
 stdio MCP server `tests/mcp_registry_e2e.rs` spawns. `rss-bench` and
 `library-profile` are dev-only profiling harnesses; see `scripts/profile/`.
-Details for each are in [`src/bin/README.md`](src/bin/README.md).
+Details for each are in
+[`../openhuman-cli/src/bin/README.md`](../openhuman-cli/src/bin/README.md).
 
 ## Feature flags
 
-`[features] default` in `Cargo.toml` is the **contributor set** — what a bare
-`cargo check`/`cargo test`/rust-analyzer compile — and is deliberately smaller
-than what the desktop app ships. The **product set** lives in
+`[features] default` in `Cargo.toml` is the **contributor set**: what a bare
+`cargo check`/`cargo test`/rust-analyzer compile builds, and deliberately
+smaller than what the desktop app ships. The **product set** lives in
 `scripts/ci/product-features.txt` and is forwarded by
 `crates/openhuman-app/Cargo.toml`; `scripts/ci/check-feature-forwarding.mjs`
 asserts the two stay in sync. Slim or headless-embedding builds use
@@ -109,17 +117,18 @@ globs those files into the single `raw_coverage_all` target instead of one
 target per file. Four product-gated targets (`json_rpc_e2e`,
 `observability_smoke`, `raw_coverage_all`, `x402_twit_sh_live`) declare
 `required-features` and are silently skipped, not failed, under the
-contributor default set — run them with the product feature set to exercise
+contributor default set. Run them with the product feature set to exercise
 what ships.
 
 ## Public entry points
 
-- [`run_core_from_args`](src/lib.rs) — the CLI entry point used by both
+- [`run_core_from_args`](src/lib.rs): the CLI entry point used by both
   `crates/openhuman-cli/src/main.rs` and the desktop shell binary's `core`
   and `mcp` subcommands.
   Order: load dotenv, apply the startup restart delay, initialize the keyring
   master key, then dispatch to `core::cli`.
-- [`CoreBuilder` → `CoreRuntime`](src/core/runtime/builder.rs) — the
-  embeddable composition API; `openhuman-embed` layers a typed facade over it.
-- `openhuman-core serve` (alias `run`) — the standalone JSON-RPC/Socket.IO
+- [`CoreBuilder` to `CoreRuntime`](src/core/runtime/builder.rs): the
+  embeddable composition API. `openhuman-embed` layers a typed facade over
+  it; see [`gitbooks/developing/embedding.md`](../../gitbooks/developing/embedding.md).
+- `openhuman-core serve` (alias `run`): the standalone JSON-RPC/Socket.IO
   server. Public endpoints: `GET /health`, `GET /schema`, `GET /events`.

@@ -8,7 +8,7 @@ and TTL enforcement.
 ## Responsibilities
 
 - Upload a file from the workspace, list stored files, generate presigned
-  download links, change visibility, and delete files — all proxied through
+  download links, change visibility, and delete files, all proxied through
   `/agent-integrations/file-storage/*`.
 - Enforce that uploads read from, and downloads write into, the agent's
   `action_dir` (the agent's canonical read/write root); reject paths that
@@ -53,7 +53,7 @@ alphanumeric/`-`/`_` charset before it is interpolated into the URL path
 - `resolve_upload_path` (`tools/helpers.rs`) resolves the `path` argument
   relative to `action_dir` if not absolute, canonicalizes both the workspace
   root and the candidate, and rejects the upload unless the canonicalized
-  path starts with the canonicalized `action_dir` — this also rejects a
+  path starts with the canonicalized `action_dir`: this also rejects a
   symlink that resolves outside the workspace, and rejects non-regular files.
 - Downloads always land under `<action_dir>/storage-downloads/`; the target
   filename is sanitized (`sanitize_filename`) to strip path separators and
@@ -91,13 +91,13 @@ outside `build_file_storage_tools`.
 
 ## Dependencies
 
-- `crate::integrations::IntegrationClient` (and `build_client`) — the shared
+- `crate::integrations::IntegrationClient` (and `build_client`), the shared
   backend-proxied HTTP client; see the [parent README](../README.md).
-- `crate::security::SecurityPolicy` — gates the mutating tools under
+- `crate::security::SecurityPolicy`: gates the mutating tools under
   read-only autonomy.
-- `tinytools` — `Tool`, `ToolResult`, `PermissionLevel`,
+- `tinytools`: `Tool`, `ToolResult`, `PermissionLevel`,
   `ToolCategory`.
-- `tinytools::ToolRunContext` — supplies the TinyAgents workspace root when
+- `tinytools::ToolRunContext`: supplies the TinyAgents workspace root when
   running inside an agent turn.
 
 ## Tests

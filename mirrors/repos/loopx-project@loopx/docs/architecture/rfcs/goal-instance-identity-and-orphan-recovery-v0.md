@@ -1,6 +1,7 @@
 # Goal Instance Identity and Orphan Recovery (v0)
 
-- **RFC status:** Draft
+- **RFC status:** Accepted
+- **Supersedes / closes:** none
 - **Delivery maturity:** Identity/recovery proposal; codec prerequisite shipped in #4917
 - **Authors / owners:** LoopX contributors
 - **Created:** 2026-09-23

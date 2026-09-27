@@ -5,14 +5,11 @@ description: High-cost orchestrator workflow for large, high-risk, multi-phase c
 
 # Deepwork
 
-Deepwork is an orchestrator workflow for heavy coding sessions. Use it only
-when the work is clearly large or high-risk: multiple dependent phases,
-cross-cutting architectural change, unsafe-to-partially-ship migration, or
-sustained coordination across several specialist lanes.
-
-Do not infer Deepwork merely because a task touches multiple files. Do not use
-it for trivial edits, quick docs changes, simple bug fixes, or routine bounded
-features.
+Deepwork is an orchestrator workflow for heavy coding sessions: multiple
+dependent phases, cross-cutting architectural change, unsafe-to-partially-ship
+migration, or sustained coordination across specialist lanes. Never infer it
+merely because a task touches multiple files; skip it for trivial edits, quick
+docs changes, simple bug fixes, or routine bounded features.
 
 ## Core Contract
 
@@ -21,33 +18,23 @@ not as the default implementation worker.
 
 ## Setup and Deepwork State
 
-- create and maintain a local markdown progress file under `.slim/deepwork/`;
+- create and maintain your session's progress file under `.slim/deepwork/`;
 - save code/doc deliverables to project paths (e.g. `src/`, `docs/`); reserve
   `.slim/deepwork/` strictly for progress files;
 
 ### Deepwork File
 
-Create a task-specific file such as:
-
-```text
-.slim/deepwork/<short-task-slug>.md
-```
+The activation prompt pins one progress file per session:
+`.slim/deepwork/<session-id>.md`, updated in place across turns; re-running
+`/deepwork` in the same session reuses it. Never create or modify another
+session's file. First line: `status: active`, flipped to `status: completed`
+when the work concludes. On resume or after compaction, re-read it before
+acting — it is the authoritative record of decisions, phases, and findings.
 
 Before creating this file—and before planning or delegation—inspect the existing
-`.gitignore` and `.ignore`. Add only missing entries and do not add duplicates:
-
-```gitignore
-# .gitignore
-.slim/deepwork/
-```
-
-```gitignore
-# .ignore
-!.slim/deepwork/
-!.slim/deepwork/**
-```
-
-These rules keep deepwork state git-local while allowing OpenCode to read it.
+`.gitignore` and `.ignore` and add only missing entries: `.gitignore` must
+contain `.slim/deepwork/`; `.ignore` must contain `!.slim/deepwork/` and
+`!.slim/deepwork/**`. This keeps deepwork state git-local yet OpenCode-readable.
 
 Do not follow a rigid template. Choose whatever markdown structure best fits the
 work. The file only needs to remain useful as persistent session state and should
@@ -67,15 +54,13 @@ reference local files by path rather than copying their contents.
 
 ## Planning
 
-- draft a plan before implementation;
-- create a phased implementation/delegation plan;
-- before dispatch, choose a small number of coherent implementation phases from
-  the work's dependencies and natural delivery boundaries; do not split work
-  merely to reduce an Oracle review's scope;
-- before execution, define coherent delivery phases and make an `@oracle` review
-  mandatory after each one; record the phase order, specialist ownership, gate
-  order, and one-line gate rationale in the deepwork file; share a compact
-  version with the user;
+- before dispatch, draft a phased implementation/delegation plan: a small number
+  of coherent phases from the work's dependencies and natural delivery
+  boundaries; do not split work merely to reduce an Oracle review's scope;
+- make an `@oracle` review mandatory after each phase; record the phase order,
+  specialist ownership, gate order, and one-line gate rationale in the deepwork
+  file; share a compact version with the user;
+
 ## Phase Execution
 
 - before each implementation phase, decide the execution path: what can run in
@@ -97,16 +82,15 @@ Use the scheduler model throughout:
 
 - after each planned phase, run relevant validation, update the deepwork file,
   then request its planned `@oracle` gate before continuing;
-- before its planned Oracle gate, record relevant accepted research and file
-  references so Oracle reviews established context rather than repeating
-  discovery;
-- record the phase goal, changed paths, validation evidence, and the specific
-  decision or risk to review in the deepwork file; provide this context to
-  Oracle with the accepted research and file references;
+- before its planned Oracle gate, record in the deepwork file the phase goal,
+  changed paths, validation evidence, the specific decision or risk to review,
+  and accepted research with file references, so Oracle reviews established
+  context rather than repeating discovery;
 - when the phase changes module boundaries, dependency direction, or file
   placement, run an `@explorer` structure scan in parallel with the Oracle gate;
 - reconcile review findings, perform one bounded remediation pass for material
-  issues, and validate that pass with focused evidence;
+  issues, including simplify/readability feedback, and validate that pass with
+  focused evidence;
 - create a focused commit when the phase is an independently valid delivery
   boundary before starting the next phase;
 

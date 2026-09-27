@@ -1,7 +1,7 @@
 # announcements
 
 Thin RPC adapter for the product-announcements feed. Like its `hosted`
-siblings it owns no business logic, state, or authorization — it forwards an
+siblings it owns no business logic, state, or authorization: it forwards an
 authenticated request to the TinyHumans backend and passes the response
 through verbatim.
 
@@ -13,7 +13,7 @@ through verbatim.
   closed with a clear error when none is stored.
 - Fold the backend's 404 (`BackendApiError::AnnouncementNotFound`, no
   qualifying announcement) into the same `null` "no announcement" success
-  outcome instead of surfacing it as an error — the feature is cosmetic and
+  outcome instead of surfacing it as an error: the feature is cosmetic and
   the 404 is a normal outcome, not a failure worth reporting.
 
 ## Key files
@@ -39,20 +39,20 @@ registered into the global registry via `crates/openhuman-core/src/core/all.rs`:
 None. The domain reads the stored session token but does not persist
 anything. Dismissal is tracked client-side by announcement id
 (`app/src/store/announcementSlice.ts`, `shownIds`, persisted through
-`userScopedStorage`) — this module has no notion of "dismissed".
+`userScopedStorage`): this module has no notion of "dismissed".
 
 ## Dependencies
 
-- `crate::security::credentials::session_support::require_live_session_token`
-  — rejects an expired token locally instead of firing a doomed backend 401
+- `crate::security::credentials::session_support::require_live_session_token`:
+  rejects an expired token locally instead of firing a doomed backend 401
   (same guard as `billing/ops.rs`).
-- `crate::api::config::effective_backend_api_url`, `crate::api::BackendOAuthClient`
-  — resolve the backend base URL and issue the authed JSON request, carrying
+- `crate::api::config::effective_backend_api_url`, `crate::api::BackendOAuthClient`:
+  resolve the backend base URL and issue the authed JSON request, carrying
   the sanitized `x-sdk-name` product identity (`crate::api::product`) on every
   call.
-- `crate::api::flatten_authed_error` — flattens any non-404 backend/session
+- `crate::api::flatten_authed_error`: flattens any non-404 backend/session
   error for the RPC caller.
-- `crate::rpc::RpcOutcome` (re-export of `openhuman_rpc`) — return wrapper
+- `crate::rpc::RpcOutcome` (re-export of `openhuman_rpc`): return wrapper
   carrying value + log line.
 
 ## Gating

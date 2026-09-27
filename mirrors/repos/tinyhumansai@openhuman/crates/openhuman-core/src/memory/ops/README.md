@@ -1,6 +1,6 @@
 # ops
 
-RPC handlers for the memory system — each returns `RpcOutcome<T>`
+RPC handlers for the memory system: each returns `RpcOutcome<T>`
 (`crate::rpc::RpcOutcome`, `openhuman_rpc::RpcOutcome` re-exported through
 `pub use openhuman_rpc as rpc;` in `crates/openhuman-core/src/lib.rs`).
 `memory::ops` is re-exported flat from `crate::memory::mod` (`pub use
@@ -13,16 +13,16 @@ rpc;`) kept for call sites that predate the tinymemory-core extraction.
 | ------ | ---------- |
 | `envelope.rs` | `ApiEnvelope`/`ApiError` wrapping shared by every envelope-style handler (init, list_documents, query_namespace, recall_*, ai_*_memory_file). |
 | `helpers.rs` | Formatting, default constants, path validators, and `current_workspace_dir`. It used to own `active_memory_client`, the unguarded engine lookup; that is gone (#5560) and the file carries a note where it stood. |
-| `guard.rs` | `active_memory_guard` — how a handler reaches the guarded driver (`CoreContext::memory()` under dispatch, a `binding::for_workspace` fallback for pre-context tests). Handlers that need the binding itself use `memory::binding::for_config`. |
+| `guard.rs` | `active_memory_guard`: how a handler reaches the guarded driver (`CoreContext::memory()` under dispatch, a `binding::for_workspace` fallback for pre-context tests). Handlers that need the binding itself use `memory::binding::for_config`. |
 | `documents.rs` | Document/namespace direct API and the envelope-style façade (`memory_init`, `memory_list_documents`, `memory_query_namespace`, `recall_*`). |
 | `kv_graph.rs` | Key-value and knowledge-graph handlers. |
 | `sync.rs` | `memory_sync_*` and `memory_ingestion_status`. |
 | `learn.rs` | `memory_learn_all`. |
-| `provider.rs` | `memory_provider_status` / `memory_subsystem_status` — reports what the memory driver slot is bound to; its health probe deliberately uses `unguarded_provider()` (a liveness probe is not product code; allowlisted in `../bypass_allowlist_tests.rs`). |
+| `provider.rs` | `memory_provider_status` / `memory_subsystem_status`: reports what the memory driver slot is bound to; its health probe deliberately uses `unguarded_provider()` (a liveness probe is not product code; allowlisted in `../bypass_allowlist_tests.rs`). |
 | `files.rs` | `ai_*_memory_file` handlers (`tokio::fs`). |
 | `maintenance.rs` | Scheduler-driven housekeeping against the `Maintenance` capability family. |
 | `tool_memory.rs` | Tool-scoped rule read/write handlers. |
-| `test_support/` | `shared_memory_test_workspace` — one shared, leaked workspace so concurrent family tests agree on a path instead of racing to bind different ones. |
+| `test_support/` | `shared_memory_test_workspace`: one shared, leaked workspace so concurrent family tests agree on a path instead of racing to bind different ones. |
 
 ## The ops ↔ schemas mirror
 
@@ -34,11 +34,11 @@ The seven handler families (`documents`, `kv_graph`, `sync`, `learn`,
 calls into. On the schema side `documents` is partitioned three ways
 (`core_recall` / `documents` / `ingest`), which is why nine
 `all_<family>_controller_schemas()` / `all_<family>_registered_controllers()`
-pairs come out of seven files — so `core::all` can register one capability
+pairs come out of seven files: so `core::all` can register one capability
 family at a time rather than the namespace as a whole.
 
 Do not confuse `memory/schemas/` (this mirror) with `memory/schema/`
-(singular) — that is the `memory_tree` namespace's controller schemas
+(singular): that is the `memory_tree` namespace's controller schemas
 (`definitions.rs` / `handlers.rs` / `registry.rs`: chunk store, entities,
 graph and maintenance methods), deliberately kept as one registry and
 re-exported through `memory::tree::all_memory_tree_*`, which `core/all.rs`
@@ -46,7 +46,7 @@ registers from the tree domain's own push site.
 
 ## Wiring
 
-`crates/openhuman-core/src/core/all.rs` (around lines 730–790) registers each
+`crates/openhuman-core/src/core/all.rs` (around lines 730 to 790) registers each
 family behind its own alias re-exported from `memory::mod`:
 `all_memory_core_recall_registered_controllers`,
 `all_memory_documents_registered_controllers`,

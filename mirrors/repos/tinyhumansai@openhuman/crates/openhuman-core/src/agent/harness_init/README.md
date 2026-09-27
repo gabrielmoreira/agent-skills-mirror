@@ -8,15 +8,15 @@ tracks per-step progress in an in-memory snapshot, and exposes it over
 `openhuman.harness_init_status` / `openhuman.harness_init_run` for the
 frontend's initialization screen (`app/src/services/harnessInitService.ts`).
 
-Steps delegate to existing idempotent provisioning code — `runtime::python`
+Steps delegate to existing idempotent provisioning code: `runtime::python`
 (`PythonBootstrap`), `runtime::node` (`NodeBootstrap`), and
-`runtime::python_server` (`ensure_spacy`, `ensure_kompress`, `ensure_started`)
-— this module only orchestrates and reports; it does not reimplement downloads.
+`runtime::python_server` (`ensure_spacy`, `ensure_kompress`, `ensure_started`).
+This module only orchestrates and reports; it does not reimplement downloads.
 
 ## Files
 
-- `mod.rs` — module doc and re-exports.
-- `registry.rs` — the ordered `HarnessInitStep` list from `all_steps()`:
+- `mod.rs`: module doc and re-exports.
+- `registry.rs`: the ordered `HarnessInitStep` list from `all_steps()`:
   `python_runtime`, `spacy`, `kompress`, `runtime_python_server`, and
   `node_runtime` (only when the `runtime-node` feature is compiled in). Each
   step is a durable, network-free `is_done` probe plus a `run` closure, and a
@@ -24,23 +24,23 @@ Steps delegate to existing idempotent provisioning code — `runtime::python`
   justify the blocking first-run overlay) or is routine startup that must run
   silently (relaunching an already-installed local server). All steps are
   `required: false`; a failure degrades to a fallback.
-- `ops.rs` — `run_harness_init` / `run_harness_init_with(config, force)`:
+- `ops.rs`: `run_harness_init` / `run_harness_init_with(config, force)`:
   walks the registry, marks steps `Done` instantly when already satisfied,
   otherwise runs them. `provisioning_required` decides up front whether any
   *provisioning* step still needs work, so an already-provisioned host never
   flashes the overlay on a warm restart (GH-5047). Also hosts the RPC handlers
   `handle_status` / `handle_run` (`force` re-runs satisfied steps).
-- `store.rs` — process-lifetime `HarnessInitSnapshot` behind a mutex.
+- `store.rs`: process-lifetime `HarnessInitSnapshot` behind a mutex.
   `set_overall` and `update_step` mutate it; `update_step` publishes
   `DomainEvent::HarnessInitProgress` and `publish_completed` publishes
   `DomainEvent::HarnessInitCompleted` (both in `core/events.rs`).
-- `types.rs` — `HarnessInitSnapshot`, `StepStatus`, `OverallState`,
+- `types.rs`: `HarnessInitSnapshot`, `StepStatus`, `OverallState`,
   `StepState` (serialized `snake_case`).
-- `bus.rs` — placeholder; progress is published directly from `store`, so
+- `bus.rs`: placeholder; progress is published directly from `store`, so
   there is no subscriber today.
-- `schemas.rs` — `harness_init` namespace controller schemas (`status`,
+- `schemas.rs`: `harness_init` namespace controller schemas (`status`,
   `run`).
-- `*_tests.rs` — focused behavior tests beside each file.
+- `*_tests.rs`: focused behavior tests beside each file.
 
 ## Wiring
 

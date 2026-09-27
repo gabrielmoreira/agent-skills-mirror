@@ -1,6 +1,7 @@
 # Goal 实例身份与孤儿状态恢复（v0）
 
-- **RFC 状态：** Draft
+- **RFC 状态：** 已接受
+- **替代 / 关闭：** 无
 - **交付成熟度：** Identity/recovery 提案；codec 前置已由 #4917 交付
 - **作者／Owner：** LoopX contributors
 - **创建日期：** 2026-09-23

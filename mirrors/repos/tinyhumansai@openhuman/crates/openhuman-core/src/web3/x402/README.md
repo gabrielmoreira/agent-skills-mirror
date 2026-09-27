@@ -14,7 +14,7 @@ dedicated `x402_request` agent tool or as a 402 fallback inside the generic
 
 ## Compile-time gate (`web3` feature)
 
-`pub mod x402;` (declared in `web3/mod.rs`) is ALWAYS compiled — it is a
+`pub mod x402;` (declared in `web3/mod.rs`) is always compiled: it is a
 facade. The real payment machinery (`ops`, `schemas`, `store`, `tools`,
 `types`) is gated behind the default-ON `web3` Cargo feature (shared with
 `web3` and `web3::wallet`). When the feature is off, `stub.rs` takes its
@@ -24,9 +24,9 @@ runtime-gated on `DomainGroup::Web3`), `all_x402_registered_controllers`, and
 `all_x402_controller_schemas` (both empty). `X402RequestTool`'s registration
 and the `http_request` 402-retry path are `#[cfg(feature = "web3")]` at their
 own call sites, so the rest of the payment surface (`PaymentRecord`, `store`,
-`SettlementResponse`, …) is never referenced when the feature is off and does
-not need a stub. Signatures must match the real ones exactly; `cargo check
---no-default-features` is the only thing that catches drift.
+`SettlementResponse`, and so on) is never referenced when the feature is off
+and does not need a stub. Signatures must match the real ones exactly;
+`cargo check --no-default-features` is the only thing that catches drift.
 
 ## Key files
 
@@ -39,8 +39,8 @@ not need a stub. Signatures must match the real ones exactly; `cargo check
 | `ops/evm_payment.rs` | EVM EIP-712 authorization/payload construction (`evm_payment_authorization`, `evm_payment_payload`), `evm_signer` (EVM signer resolution), `build_evm_payment` (signs via `modules::wallet::sign_message`), and a `cfg(test)`-only local `k256` signer used to check the construction against a fixed vector. |
 | `ops/solana_payment.rs` | The Solana instruction builders (ComputeBudget, `TransferChecked`, Memo) and `build_solana_payment`. |
 | `store.rs` | Append-only JSONL payment ledger (`PaymentLedger`) with per-request/daily/monthly budget enforcement and session/daily/monthly spend summaries; `PaymentRecord`, `PaymentStatus`, `SpendingSummary`, `SpendingBudget`, `BudgetCheck`, the process-global `GLOBAL_LEDGER`, `init_global` (re-exported as `init_ledger`), and `with_ledger`/`with_ledger_mut` accessors. |
-| `schemas.rs` | RPC controller schemas + handlers for the `x402` namespace: `get_summary`, `list_payments`, `update_budget`. |
-| `tools.rs` | `X402RequestTool` (`x402_request`) — purpose-built agent tool for x402 endpoints, as opposed to the generic `http_request` tool's opportunistic 402 fallback. |
+| `schemas.rs` | RPC controller schemas and handlers for the `x402` namespace: `get_summary`, `list_payments`, `update_budget`. |
+| `tools.rs` | `X402RequestTool` (`x402_request`), a purpose-built agent tool for x402 endpoints, as opposed to the generic `http_request` tool's opportunistic 402 fallback. |
 | `types.rs` | Wire types for the v2 protocol: header names, CAIP-2 network/asset constants (Solana mainnet/devnet, Base/Ethereum, USDC mints/contracts), `PaymentRequired`/`PaymentRequirements`/`PaymentPayload`/`PaymentProof` (Evm/Solana variants), `SettlementResponse`, `ResourceInfo`. |
 | `stub.rs` | Disabled facade compiled when `web3` is off. See Compile-time gate above. |
 | `x402_tests.rs`, `store_tests.rs`, `stub_tests.rs` | Behavior tests, `#[cfg(all(test, feature = "web3"))]` except `stub_tests.rs` which runs only in the disabled build. |
@@ -70,11 +70,11 @@ which handles a 402 only as a silent fallback for any endpoint.
 
 ## Persistence
 
-- **`{workspace_dir}/x402/payments.jsonl`** — one JSON `PaymentRecord` per
+- `{workspace_dir}/x402/payments.jsonl`: one JSON `PaymentRecord` per
   line, appended on every pending/settled/failed payment. Loaded into memory
   at `PaymentLedger::new` (via `init_ledger`) and held in the process-global
   `GLOBAL_LEDGER`, guarded by a `parking_lot::Mutex`.
-- **Budget enforcement** (`SpendingBudget`, defaults: 1 USDC per request, 10
+- Budget enforcement (`SpendingBudget`, defaults: 1 USDC per request, 10
   USDC per day, 100 USDC per month, in atomic units) is checked against the
   in-memory ledger before a payment is built. Daily and monthly totals sum
   the `Settled` records for the current UTC day / calendar month. The session
@@ -87,41 +87,41 @@ which handles a 402 only as a silent fallback for any endpoint.
 
 ## Dependencies
 
-- `crate::web3::wallet::secret_material` — fetches the encrypted mnemonic +
+- `crate::web3::wallet::secret_material`: fetches the encrypted mnemonic and
   derivation path for the chain being paid on (`WalletChain::Evm` /
   `WalletChain::Solana`).
-- `crate::security::encryption::rpc::decrypt_secret` — decrypts the mnemonic
+- `crate::security::encryption::rpc::decrypt_secret`: decrypts the mnemonic
   in this process just long enough to hand it to the signer.
-- `crate::modules::wallet::{derive_account, sign_message}` — the actual
+- `crate::modules::wallet::{derive_account, sign_message}`: the actual
   derivation and signing happen inside the loaded `tinywallet` native module
   over a confidential bus call; this binary never derives a private key or
-  holds one. Only the decrypted **mnemonic** passes through this process, in
+  holds one. Only the decrypted mnemonic passes through this process, in
   the `tinywallet_bus::wire::SecretMaterial` handed to those calls.
-- `tinywallet_bus::wire::SecretMaterial`, `tinywallet_bus::Chain` — the wire
+- `tinywallet_bus::wire::SecretMaterial`, `tinywallet_bus::Chain`: the wire
   types crossing that seam.
-- `crate::config::rpc::load_config_with_timeout` — config needed to reach the
+- `crate::config::rpc::load_config_with_timeout`: config needed to reach the
   wallet module and decrypt the mnemonic.
 
 ## Used by
 
-- `crates/openhuman-core/src/tools/impl/network/http_request.rs` (~lines
-  165-265) — `handle_x402_payment`, gated `#[cfg(feature = "web3")]`, is the
-  402 fallback path any HTTP tool call can hit; it calls
+- `crates/openhuman-core/src/tools/impl/network/http_request.rs` (around lines
+  165-265): `handle_x402_payment`, gated `#[cfg(feature = "web3")]`, is the
+  402 fallback path any HTTP tool call can hit. It calls
   `x402::handle_402_and_pay` and records to the same ledger via
   `x402::store::with_ledger_mut`.
-- `crates/openhuman-core/src/tools/ops.rs` — registers `X402RequestTool` as an
+- `crates/openhuman-core/src/tools/ops.rs`: registers `X402RequestTool` as an
   agent tool.
-- `crates/openhuman-core/src/core/all.rs` (~line 569) — wires
+- `crates/openhuman-core/src/core/all.rs` (around line 569): wires
   `all_x402_registered_controllers` into the controller registry under
   `DomainGroup::Web3`.
-- `crates/openhuman-core/src/core/jsonrpc.rs` (~line 2477) — calls
+- `crates/openhuman-core/src/core/jsonrpc.rs` (around line 2477): calls
   `init_ledger(&workspace_dir, &x402_session)` at boot, itself runtime-gated on
   `DomainGroup::Web3`.
 
 ## Notes / gotchas
 
 - The paying account never needs SOL (or ETH/native gas) for the payment
-  transaction itself — the facilitator is the fee payer / on-chain submitter.
+  transaction itself; the facilitator is the fee payer and on-chain submitter.
   The wallet does still need the payment asset (typically USDC) on the target
   chain.
 - Budget limits live in the process (defaults or env at boot, then

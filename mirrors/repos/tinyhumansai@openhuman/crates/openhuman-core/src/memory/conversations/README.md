@@ -1,26 +1,26 @@
 # conversations
 
-Workspace-backed conversation thread/message storage — transcript
+Workspace-backed conversation thread/message storage: transcript
 persistence, not semantic indexing. This is the JSONL store of raw
 thread/message records plus a trigram/CJK-bigram index for cross-thread
 substring search; the summary-tree archival of the same transcripts is a
 different index answering a different question and lives in
 [`memory/tree/`](../tree/). See `mod.rs` for the full accounting of how this
-code came back from `tinycortex::memory::conversations` in #5560 — it is not
+code came back from `tinycortex::memory::conversations` in #5560: it is not
 repeated here.
 
 ## Three parts
 
-- **`store/`** — the implementation: on-disk format, root lifecycle, sharded
+- `store/`: the implementation: on-disk format, root lifecycle, sharded
   metadata/message locks, the warm index cache, and CRUD/search. Everything
   it exposes is re-exported from `mod.rs`, so callers always name
   `crate::memory::conversations::{…}`, never the `store` subtree directly.
-- **`blocking.rs`** — `spawn_blocking` wrappers around every store entry
+- `blocking.rs`: `spawn_blocking` wrappers around every store entry
   point. The store is synchronous and takes `parking_lot` locks across
   fsync'd file I/O, so calling it from an `async fn` directly would park a
   tokio worker thread for the whole wait; request paths must go through
   `blocking` instead (#5156).
-- **`bus.rs`** — the `core::bus` subscriber
+- `bus.rs`: the `core::bus` subscriber
   (`register_conversation_persistence_subscriber`) that mirrors inbound and
   processed channel turns into the store, so channel transcripts (Slack,
   Telegram, …) persist alongside the UI's own threads.

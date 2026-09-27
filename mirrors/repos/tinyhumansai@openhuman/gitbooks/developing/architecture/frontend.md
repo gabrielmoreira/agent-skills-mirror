@@ -27,7 +27,7 @@ This is one consolidated reference. Use the table of contents above (or your rea
 
 | Metric                                  | Value                                                                     |
 | --------------------------------------- | ------------------------------------------------------------------------- |
-| TypeScript / TSX files under `app/src/` | \~1700 (`find app/src -name '*.ts' -o -name '*.tsx' \| wc -l` to refresh) |
+| TypeScript / TSX files under `app/src/` | \~1900 (`find app/src -name '*.ts' -o -name '*.tsx' \| wc -l` to refresh) |
 | Test runner                             | Vitest (`app/test/vitest.config.ts`)                                      |
 
 ## Directory layout
@@ -42,7 +42,7 @@ app/src/
 ├── services/               # apiClient, socketService, coreRpcClient, transport/, api/* (~50 modules)
 ├── lib/                    # AI prompt loaders, i18n, MCP helpers, platform, tunnel crypto
 ├── pages/                  # Route-level screens (incl. onboarding/, ios/, dev/)
-├── features/               # Feature verticals (human/, conversations/, meet/, voice/)
+├── features/               # Feature verticals (human/, conversations/, voice/, wallet/, skills/)
 ├── components/             # Shared UI (incl. settings/, layout/shell/, accounts/)
 ├── hooks/                  # App hooks
 ├── utils/                  # Config, Tauri command wrappers, routing utilities
@@ -53,7 +53,7 @@ app/src/
 
 ### System architecture
 
-OpenHuman’s desktop UI is a **React 19** app (`app/src/`) that:
+OpenHuman's desktop UI is a **React 19** app (`app/src/`) that:
 
 - Uses **Redux Toolkit** with persistence for session-related state
 - Connects to the backend with **REST** (`apiClient`) and to the local core with **Socket.io** (`socketService` → core socket endpoint)
@@ -150,40 +150,45 @@ The application uses Redux Toolkit with Redux-Persist. There is no single root p
 
 ### Storage backends
 
-- **`userScopedStorage`** (`store/userScopedStorage.ts`) — the default storage for persisted slices. Blobs are keyed `${userId}:persist:<key>` so state never leaks across users on logout/login (#900).
-- **Plain `localStorage`** — used only for pre-login, device-wide slices (`coreMode`, `locale`, `theme`) that must survive user switches.
+- `userScopedStorage` (`store/userScopedStorage.ts`) is the default storage for persisted slices. Blobs are keyed `${userId}:persist:<key>` so state never leaks across users on logout/login (#900).
+- Plain `localStorage` is used only for pre-login, device-wide slices (`coreMode`, `locale`, `theme`) that must survive user switches.
 
 ### Slices
 
 Authoritative list = the `reducer` map in `store/index.ts`. One-line purposes:
 
-| Slice                | Purpose                                                                 | Persisted?                                                     |
-| -------------------- | ----------------------------------------------------------------------- | -------------------------------------------------------------- |
-| `accounts`           | Connected web-app accounts + rail ordering                              | `accounts`, `order`, `lastActiveAccountId` (not the active id) |
-| `announcement`       | Harness-init announcement banner, seen ids                              | `shownIds`                                                     |
-| `backendMeet`        | Backend-driven Google Meet call state (join/leave, transcript, replies) | no                                                             |
-| `channelConnections` | Messaging channel connections (WhatsApp, Slack, …)                      | connections + migration/default-channel fields                 |
-| `chatRuntime`        | Streaming buffers, tool timelines, inference status, artifacts          | only `artifactsByThread` (ready snapshots)                     |
-| `companion`          | Companion overlay state                                                 | no                                                             |
-| `connectivity`       | navigator.onLine, core health, renderer↔core socket, core↔hosted link   | no                                                             |
-| `coreMode`           | Pre-login core mode selection (embedded / self-hosted / cloud)          | `mode` (plain localStorage)                                    |
-| `layout`             | Two-pane layout geometry (sidebar visibility, dragged widths)           | `panels`                                                       |
-| `locale`             | UI language                                                             | `current` (plain localStorage)                                 |
-| `mascot`             | Mascot appearance / voice selection                                     | `color`, `voiceId`, `customMascotGifUrl`, `selectedMascotId`   |
-| `notifications`      | Notification items + preferences                                        | `items`, `preferences`                                         |
-| `persona`            | Cosmetic persona display name + description (SOUL.md lives in the core) | `displayName`, `description`                                   |
-| `providerSurfaces`   | Provider webview surface state                                          | no                                                             |
-| `ptt`                | Push-to-talk hotkey + session prefs (`isHeld` deliberately excluded)    | `shortcut`, `speakReplies`, `showOverlay`                      |
-| `socket`             | Per-user socket connection status / socket ids                          | no (reconnects on boot)                                        |
-| `theme`              | Theme mode, font size, message view mode, custom themes                 | plain localStorage                                             |
-| `thread`             | Chat thread list + per-thread message caches                            | only `selectedThreadId`                                        |
-| `userErrors`         | User-actionable runtime errors (#3931)                                  | no (in-memory only)                                            |
+| Slice                 | Purpose                                                                          | Persisted?                                                      |
+| --------------------- | --------------------------------------------------------------------------------- | ---------------------------------------------------------------- |
+| `accounts`            | Connected web-app accounts + rail ordering                                        | `accounts`, `order`, `lastActiveAccountId` (not the active id)  |
+| `announcement`        | Harness-init announcement banner, seen ids                                        | `shownIds`                                                      |
+| `channelConnections`  | Messaging channel connections (WhatsApp, Slack, …)                                | connections + migration/default-channel fields                  |
+| `chatRuntime`         | Streaming buffers, tool timelines, inference status, artifacts                    | only `artifactsByThread` (ready snapshots)                       |
+| `connectivity`        | navigator.onLine, core health, renderer to core socket, core to hosted link       | no                                                               |
+| `coreMode`            | Pre-login core mode selection (embedded / self-hosted / cloud)                    | `mode` (plain localStorage)                                      |
+| `followupSuggestions` | Follow-up chips for each thread's latest settled turn                             | no (in-memory only)                                              |
+| `githubStar`          | Whether the user dismissed the in-app "Star us on GitHub" CTA                     | `dismissed`                                                      |
+| `layout`              | Two-pane layout geometry (sidebar visibility, dragged widths)                     | `panels`                                                         |
+| `locale`              | UI language                                                                        | `current` (plain localStorage)                                  |
+| `mascot`              | Mascot appearance / voice selection                                               | `color`, `voiceId`, `customMascotGifUrl`, `selectedMascotId`    |
+| `notifications`       | Notification items + preferences                                                  | `items`, `preferences`                                          |
+| `persona`             | Cosmetic persona display name + description (SOUL.md lives in the core)           | `displayName`, `description`                                    |
+| `providerSurfaces`    | Provider webview surface state                                                    | no                                                               |
+| `ptt`                 | Push-to-talk hotkey + session prefs (`isHeld` deliberately excluded)              | `shortcut`, `speakReplies`, `showOverlay`                        |
+| `queue`               | The core's per-thread run queue plus the composer's pending follow-up messages    | no (in-memory only)                                              |
+| `runMode`             | Per-thread plan/build run mode                                                    | no (in-memory only)                                              |
+| `socket`              | Per-user socket connection status / socket ids                                    | no (reconnects on boot)                                          |
+| `theme`               | Theme mode, font size, message view mode, custom themes                           | plain localStorage                                               |
+| `thread`              | Chat thread list + per-thread message caches                                      | only `selectedThreadId`                                          |
+| `threadGoal`          | Durable per-thread goal state                                                     | no (in-memory only)                                              |
+| `threadTodos`         | Live per-thread todo list                                                         | no (in-memory only)                                              |
+| `userErrors`          | User-actionable runtime errors (#3931)                                            | no (in-memory only)                                              |
+| `walletPreferences`   | Hidden-token preferences for the wallet view                                      | `hiddenTokenKeys`                                                |
 
-Ephemeral chat state (streaming buffers, tool timelines) must **not** survive a restart — the UI would try to resume a turn whose live driver is gone. The one exception, agent-generated artifacts, goes through the `artifactsReadyOnlyTransform` in `store/index.ts` (pure logic in `store/artifactsPersistFilter.ts`).
+Ephemeral chat state (streaming buffers, tool timelines) must **not** survive a restart: the UI would try to resume a turn whose live driver is gone. The one exception, agent-generated artifacts, goes through the `artifactsReadyOnlyTransform` in `store/index.ts` (pure logic in `store/artifactsPersistFilter.ts`).
 
 ### Typed hooks
 
-**File:** `store/hooks.ts`
+File: `store/hooks.ts`
 
 ```typescript
 // Use these instead of plain useDispatch/useSelector
@@ -193,11 +198,11 @@ export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
 
 ### Best practices
 
-1. **Always use typed hooks** — `useAppDispatch` and `useAppSelector`.
-2. **Use selectors for derived state** — see `store/socketSelectors.ts`, `store/connectivitySelectors.ts`, `store/userErrorsSelectors.ts`.
-3. **Whitelist persistence per slice** — never persist transient/loading state; add a per-slice `persistReducer` in `store/index.ts`.
-4. **Prefer Redux over ad-hoc `localStorage`** — plain localStorage is reserved for the pre-login slices noted above.
-5. In dev / E2E builds the store is exposed as `window.__OPENHUMAN_STORE__` so WDIO specs can assert backing state; production bundles do not expose it.
+1. Always use the typed hooks, `useAppDispatch` and `useAppSelector`.
+2. Use selectors for derived state: see `store/socketSelectors.ts`, `store/connectivitySelectors.ts`, `store/userErrorsSelectors.ts`.
+3. Whitelist persistence per slice. Never persist transient or loading state; add a per-slice `persistReducer` in `store/index.ts`.
+4. Prefer Redux over ad hoc `localStorage`. Plain localStorage is reserved for the pre-login slices noted above.
+5. In dev and E2E builds the store is exposed as `window.__OPENHUMAN_STORE__` so WDIO specs can assert backing state; production bundles do not expose it.
 
 ---
 
@@ -237,24 +242,24 @@ const result = await apiClient.post<LoginResponse>("/auth/login", {
 
 ### Domain API modules (`services/api/`)
 
-\~50 domain-scoped modules, one per feature surface, each wrapping either backend REST endpoints or core RPC methods. Representative examples:
+\~55 domain-scoped modules, one per feature surface, each wrapping either backend REST endpoints or core RPC methods. Representative examples:
 
-- `authApi` / `userApi` — auth + user profile
-- `threadApi`, `threadUsageApi` — chat threads
-- `agentTeamApi`, `agentWorkApi`, `subagentApi` — agents
-- `skillsApi`, `skillRegistryApi`, `flowsApi`, `workflowRunsApi` — skills & automation
-- `channelConnectionsApi`, `mcpClientsApi`, `mcpSetupApi`, `tunnelsApi` — connections
-- `memoryTimelineApi`, `memoryFreshnessApi`, `graphCentralityApi`, `namespaceOverviewApi` — memory/graph
-- `billingApi`, `creditsApi`, `referralApi`, `inviteApi` — commerce
-- `voiceSettingsApi`, `voiceInstallApi`, `aiSettingsApi`, `modelCouncilApi` — AI/voice config
+- `authApi` / `userApi`: auth + user profile
+- `threadApi`, `threadUsageApi`: chat threads
+- `agentTeamApi`, `agentWorkApi`, `subagentApi`: agents
+- `skillsApi`, `skillRegistryApi`, `flowsApi`, `workflowRunsApi`: skills & automation
+- `channelConnectionsApi`, `mcpClientsApi`, `mcpSetupApi`, `tunnelsApi`: connections
+- `memoryTimelineApi`, `memoryFreshnessApi`, `graphCentralityApi`, `namespaceOverviewApi`: memory/graph
+- `billingApi`, `creditsApi`, `referralApi`, `inviteApi`: commerce
+- `voiceSettingsApi`, `voiceInstallApi`, `aiSettingsApi`, `modelCouncilApi`: AI/voice config
 
 For the full list, `ls app/src/services/api/`. New feature surfaces get their own module here rather than growing `apiClient`.
 
 ### Socket Service (`services/socketService.ts`)
 
-Socket.io client singleton connected to the **local core's** socket endpoint (base URL derived from the resolved RPC URL via `coreSocket.ts`; authenticated with the core RPC token). It ingests realtime core events — chat/meet/channel/companion updates — and dispatches them into Redux (`socketSlice`, `backendMeetSlice`, `channelConnectionsSlice`, `companionSlice`, `connectivitySlice`). It also hosts the MCP-style transport (`SocketIOMCPTransportImpl` from `lib/mcp`).
+Socket.io client singleton connected to the **local core's** socket endpoint (base URL derived from the resolved RPC URL via `coreSocket.ts`; authenticated with the core RPC token). It ingests realtime core events (connection status, channel updates) and dispatches them into Redux (`socketSlice`, `connectivitySlice`, `channelConnectionsSlice`). It also hosts the MCP-style transport (`SocketIOMCPTransportImpl` from `lib/mcp`).
 
-Keep `socketService` and the core socket behavior aligned (the "dual socket sync" rule in AGENTS.md). Connection lifecycle is owned by `providers/SocketProvider.tsx`; on mobile the provider is not mounted at all — events arrive through the `TunnelTransport` relay instead.
+Keep `socketService` and the core socket behavior aligned (the "dual socket sync" rule in AGENTS.md). Connection lifecycle is owned by `providers/SocketProvider.tsx`; on mobile the provider is not mounted at all: events arrive through the `TunnelTransport` relay instead.
 
 ### Core RPC (`services/coreRpcClient.ts`)
 
@@ -275,25 +280,25 @@ const result = await callCoreRpc<MyType>({
 
 How a call flows:
 
-1. **URL + token resolution** — the RPC URL follows the precedence in [Runtime config precedence](frontend.md#runtime-config-precedence); the per-launch bearer token comes from the Tauri `core_rpc_token` command (or the stored token for self-hosted cores).
-2. **Direct fetch** — the webview `fetch()`es the JSON-RPC envelope straight to the core (loopback http or any https URL).
-3. **Shell relay fallback** — plain `http://` to a **non-loopback** host is active mixed content and Chromium blocks it (#3865). `rpcUrlNeedsShellRelay()` detects this and routes the call through `invoke('relay_http_rpc', { url, token, body })`, implemented in **`crates/openhuman-app/src/core_rpc.rs`** (a thin wrapper over `openhuman_rpc::post_json_rpc` from `crates/openhuman-rpc/`), which returns `{ status, body }` re-wrapped as a `Response`.
-4. **Transport override** — iOS/remote connection profiles install a `CoreTransport` (`setActiveCoreTransport`) so the same `callCoreRpc` surface rides LAN/tunnel/cloud transports.
+1. **URL + token resolution**: the RPC URL follows the precedence in [Runtime config precedence](frontend.md#runtime-config-precedence); the per-launch bearer token comes from the Tauri `core_rpc_token` command (or the stored token for self-hosted cores).
+2. **Direct fetch**: the webview `fetch()`es the JSON-RPC envelope straight to the core (loopback http or any https URL).
+3. **Shell relay fallback**: plain `http://` to a **non-loopback** host is active mixed content and Chromium blocks it (#3865). `rpcUrlNeedsShellRelay()` detects this and routes the call through `invoke('relay_http_rpc', { url, token, body })`, implemented in **`crates/openhuman-app/src/core_rpc.rs`** (a thin wrapper over `openhuman_rpc::post_json_rpc` from `crates/openhuman-rpc/`), which returns `{ status, body }` re-wrapped as a `Response`.
+4. **Transport override**: iOS/remote connection profiles install a `CoreTransport` (`setActiveCoreTransport`) so the same `callCoreRpc` surface rides LAN/tunnel/cloud transports.
 
-Errors are classified into a stable `CoreRpcError.kind` (`auth_expired`, `transport`, `timeout`, `rate_limited`, …) — callers branch on `kind`, never on message regexes. An `auth_expired` classification broadcasts `core-rpc-auth-expired`, which `CoreStateProvider` turns into a session clear.
+Errors are classified into a stable `CoreRpcError.kind` (`auth_expired`, `transport`, `timeout`, `rate_limited`, …): callers branch on `kind`, never on message regexes. An `auth_expired` classification broadcasts `core-rpc-auth-expired`, which `CoreStateProvider` turns into a session clear.
 
 ### Best Practices
 
-1. **Use singletons** — never create multiple service instances.
-2. **Keep Tauri IPC and RPC calls in services** — do not scatter `invoke()` or raw fetches through components.
-3. **Clean up on unmount** — disconnect in `useEffect` cleanup.
-4. **Handle errors via `CoreRpcError.kind`** — retry only transient failures.
+1. Use singletons. Never create multiple service instances.
+2. Keep Tauri IPC and RPC calls in services. Do not scatter `invoke()` or raw fetches through components.
+3. Clean up on unmount by disconnecting in the `useEffect` cleanup.
+4. Handle errors through `CoreRpcError.kind` and retry only transient failures.
 
 ---
 
 ## Providers
 
-React context providers (`app/src/providers/`) manage service lifecycle and expose core-owned state. The full nesting (including gates that live in `components/`) is the generated [provider chain](frontend.md#provider-chain) above. There is **no** `UserProvider`, `AIProvider`, or `SkillProvider` — auth/user state lives in `CoreStateProvider`, AI configuration lives in the Rust core, and skills execute in the core (the frontend QuickJS skills engine was removed).
+React context providers (`app/src/providers/`) manage service lifecycle and expose core-owned state. The full nesting (including gates that live in `components/`) is the generated [provider chain](frontend.md#provider-chain) above. There is **no** `UserProvider`, `AIProvider`, or `SkillProvider`: auth/user state lives in `CoreStateProvider`, AI configuration lives in the Rust core, and skills execute in the core (the frontend QuickJS skills engine was removed).
 
 ### ThemeProvider (`providers/ThemeProvider.tsx`)
 
@@ -301,21 +306,21 @@ Applies theme tokens and dark-mode handling from the persisted `theme` slice (mo
 
 ### CoreStateProvider (`providers/CoreStateProvider.tsx`)
 
-The authoritative auth/session/onboarding context. Fetches the core app snapshot (`fetchCoreAppSnapshot()` RPC), exposes it via `useCoreState()` (`{ snapshot, isBootstrapping, refresh }`), and clears the session on the global `core-rpc-auth-expired` event. It follows a **turn-boundary refetch contract**: after every agent reply completes (`chat_done` in `ChatRuntimeProvider`) it refetches the user state (debounced 750ms) and merges it into the snapshot via `patchSnapshot` — see `providers/README.md`.
+The authoritative auth/session/onboarding context. Fetches the core app snapshot (`fetchCoreAppSnapshot()` RPC), exposes it via `useCoreState()` (`{ snapshot, isBootstrapping, refresh }`), and clears the session on the global `core-rpc-auth-expired` event. It follows a **turn-boundary refetch contract**: after every agent reply completes (`chat_done` in `ChatRuntimeProvider`) it refetches the user state (debounced 750ms) and merges it into the snapshot via `patchSnapshot`: see `providers/README.md`.
 
 ### SocketProvider (`providers/SocketProvider.tsx`)
 
-Owns the socket.io connection to the local core: connects once core state is ready, updates the `socket` slice, and tears down on unmount. Desktop only — `App.tsx` skips it on mobile, where events arrive through the `TunnelTransport` relay.
+Owns the socket.io connection to the local core: connects once core state is ready, updates the `socket` slice, and tears down on unmount. Desktop only: `App.tsx` skips it on mobile, where events arrive through the `TunnelTransport` relay.
 
 ### ChatRuntimeProvider (`providers/ChatRuntimeProvider.tsx`)
 
-Subscribes to chat runtime socket events (message streaming, tool calls, subagent lifecycle, approval requests) and reduces them into the `chatRuntime` slice — per-thread tool timelines, streaming buffers, artifacts, and approval state consumed by the chat surface and the mascot.
+Subscribes to chat runtime socket events (message streaming, tool calls, subagent lifecycle, approval requests) and reduces them into the `chatRuntime` slice: per-thread tool timelines, streaming buffers, artifacts, and approval state consumed by the chat surface and the mascot.
 
 ### Gates and shell-level contexts (in `components/`)
 
-- **`BootCheckGate`** (`components/BootCheckGate/`) — blocks render until the core boot snapshot resolves.
-- **`CommandProvider`** (`components/commands/`) — command palette context.
-- **`ServiceBlockingGate`** (`components/daemon/`) — blocks the shell until required services are configured.
+- `BootCheckGate` (`components/BootCheckGate/`) blocks render until the core boot snapshot resolves.
+- `CommandProvider` (`components/commands/`) holds the command palette context.
+- `ServiceBlockingGate` (`components/daemon/`) blocks the shell until required services are configured.
 
 ### Context vs Redux
 
@@ -335,14 +340,14 @@ The mascot appears on **two** surfaces, deliberately. `/human`
 (`app/src/features/human/HumanPage.tsx`) is the dedicated full-bleed stage with a
 right-rail chat. `/chat` carries the same mascot docked on its composer, where it
 expands into a voice stage in place. Both read one set of mascot preferences from
-`mascotSlice` — colour, voice, speak-replies, dismissal — so the two can never
+`mascotSlice` (colour, voice, speak-replies, dismissal) so the two can never
 disagree about the same setting.
 
 `app/src/features/human/chatMascot/` owns the chat-side surface:
 
 | Module                  | Role                                                                                                      |
 | ----------------------- | --------------------------------------------------------------------------------------------------------- |
-| `ChatMascotContext.tsx` | Shared dock/stage refs and the send binding. Every value is stable — see the re-render note below.        |
+| `ChatMascotContext.tsx` | Shared dock/stage refs and the send binding. Every value is stable: see the re-render note below.        |
 | `ChatMascotDock.tsx`    | The small mascot standing on the composer's input box. An anchor + hit area; it draws nothing.            |
 | `ChatMascotStage.tsx`   | The scaled-up voice surface: `MicComposer`, input-device selector, speak-replies switch, collapse button. |
 | `ChatMascotOverlay.tsx` | The single Rive instance, moved between dock and stage with a `transform`.                                |
@@ -357,7 +362,7 @@ preference are persisted in `mascotSlice`.
 
 **Two invariants worth keeping.** The mascot re-renders at ~60fps during TTS
 lipsync, so (a) it is rendered as a leaf with nothing beneath it, and (b) the
-mascot context value is deliberately non-reactive — reactive state lives in
+mascot context value is deliberately non-reactive: reactive state lives in
 Redux or in the send-binding external store instead. A reactive context value
 would reconcile the whole chat tree every frame, which is the stall #5357 had to
 fix. And the overlay only mounts while the agent account is selected, so a fixed
@@ -432,7 +437,7 @@ The application uses HashRouter with protected and public route guards. Desktop 
 
 ### Route map
 
-Current desktop routes (read `AppRoutes.tsx` for the authoritative table — the file is heavily commented with the rationale for each redirect):
+Current desktop routes (read `AppRoutes.tsx` for the authoritative table: the file is heavily commented with the rationale for each redirect):
 
 ```
 /                      → Welcome (PublicRoute; redirects to /home if logged in)
@@ -462,15 +467,15 @@ Back-compat redirects (all `Navigate replace`, query params preserved):
 /workflows   → /settings/automations     /webhooks    → /settings/integrations#webhooks
 ```
 
-There is **no** `/login` route — authentication flows through the Welcome page, the `/auth` callback, and deep links. Desktop **Settings is not an inline route**: when the URL is `/settings/*`, `AppShellDesktop` keeps rendering the _background_ location and mounts `SettingsModal` on top (see [Settings](frontend.md#settings)). Note that `/agents` does not exist.
+There is **no** `/login` route: authentication flows through the Welcome page, the `/auth` callback, and deep links. Desktop **Settings is not an inline route**: when the URL is `/settings/*`, `AppShellDesktop` keeps rendering the _background_ location and mounts `SettingsModal` on top (see [Settings](frontend.md#settings)). Note that `/agents` does not exist.
 
 ### Route guards
 
 All three guards read `useCoreState()` (not Redux auth state) and render `RouteLoadingScreen` while bootstrapping:
 
-- **`ProtectedRoute`** (`components/ProtectedRoute.tsx`) — `({ children, requireAuth = true, redirectTo })`; without a session token, navigates to `redirectTo || '/'`. Onboarding gating is _not_ done here — an effect in `AppShellDesktop` (App.tsx) forces non-onboarding routes back to `/onboarding` while `onboarding_completed` is false, and bounces off it once complete.
-- **`PublicRoute`** (`components/PublicRoute.tsx`) — redirects signed-in users to `/home` (which forwards to `/chat`).
-- **`DefaultRedirect`** (`components/DefaultRedirect.tsx`) — signed out → `/`; signed in but onboarding incomplete → `/onboarding`; otherwise → `/chat`. Waits for `snapshot.currentUser` to avoid the post-login race.
+- **`ProtectedRoute`** (`components/ProtectedRoute.tsx`, `({ children, requireAuth = true, redirectTo })`): without a session token, navigates to `redirectTo || '/'`. Onboarding gating is _not_ done here; an effect in `AppShellDesktop` (App.tsx) forces non-onboarding routes back to `/onboarding` while `onboarding_completed` is false, and bounces off it once complete.
+- **`PublicRoute`** (`components/PublicRoute.tsx`): redirects signed-in users to `/home` (which forwards to `/chat`).
+- **`DefaultRedirect`** (`components/DefaultRedirect.tsx`): signed out → `/`; signed in but onboarding incomplete → `/onboarding`; otherwise → `/chat`. Waits for `snapshot.currentUser` to avoid the post-login race.
 
 ### Onboarding Flow (`pages/onboarding/`)
 
@@ -490,12 +495,12 @@ Each custom step offers **Default** (let OpenHuman manage it) vs **Configure** (
 
 Settings is a full `/settings/*` URL surface, presented on desktop as a **modal overlay** and on iOS as a full page. The old `SettingsPanelLayout` / `useSettingsAnimation` / `ProfilePanel` modal system is gone.
 
-- **`components/settings/settingsRouteRegistry.ts`** — single declarative source of truth for every settings destination (id/route slug, i18n keys, section, sidebar `navGroup`, `devOnly`, search keywords). Navigation menus, breadcrumbs, and settings search all derive from it.
-- **`components/settings/settingsRouteElements.tsx`** — maps registry entries to panel `<Route>` elements.
-- **`components/settings/modal/`** — `SettingsModal` (mounted by `AppShellDesktop` whenever the path is a settings path; `settingsOverlay.ts` computes `{ settingsOpen, baseLocation }` so the page behind stays rendered), `SettingsModalFrame` (backdrop / Esc / focus / close), `SettingsModalLayout` (routed two-column layout).
-- **`components/settings/layout/`** — two-pane chrome: `SettingsLayout`, `SettingsSidebar` (grouped by `SettingsNavGroup`: general, assistant, data, connections, knowledge & memory, agents & autonomy, models & inference, automation & integrations, diagnostics & logs), `SettingsSubNav`, `SettingsIndexRedirect`.
-- **`components/settings/panels/`** — \~50 leaf panels (`AccountPanel`, `AppearancePanel`, `AIPanel`, `AgentsPanel`, `AgentAccessPanel`, `AutonomyPanel`, `BillingPanel`, `CronJobsPanel`, `IntegrationsPanel`, `McpServerPanel`, `NotificationsTabbedPanel`, `PrivacyPanel`, `DeveloperOptionsPanel`, …). Adding a panel = add the component + a registry entry; nav, breadcrumbs, and search pick it up automatically.
-- **`components/settings/search/`** — settings search bar + registry-derived index.
+- `components/settings/settingsRouteRegistry.ts` is the single declarative source of truth for every settings destination (id/route slug, i18n keys, section, sidebar `navGroup`, `devOnly`, search keywords). Navigation menus, breadcrumbs, and settings search all derive from it.
+- `components/settings/settingsRouteElements.tsx` maps registry entries to panel `<Route>` elements.
+- `components/settings/modal/` holds `SettingsModal` (mounted by `AppShellDesktop` whenever the path is a settings path; `settingsOverlay.ts` computes `{ settingsOpen, baseLocation }` so the page behind stays rendered), `SettingsModalFrame` (backdrop, Esc, focus, close), and `SettingsModalLayout` (routed two-column layout).
+- `components/settings/layout/` is the two-pane chrome: `SettingsLayout`, `SettingsSidebar` (grouped by `SettingsNavGroup`: general, assistant, data, connections, knowledge and memory, agents and autonomy, models and inference, automation and integrations, diagnostics and logs), `SettingsSubNav`, `SettingsIndexRedirect`.
+- `components/settings/panels/` holds around 80 leaf panels (`AccountPanel`, `AppearancePanel`, `AIPanel`, `AgentsPanel`, `AgentAccessPanel`, `AutonomyPanel`, `BillingPanel`, `CronJobsPanel`, `IntegrationsPanel`, `McpServerPanel`, `NotificationsTabbedPanel`, `PrivacyPanel`, `DeveloperOptionsPanel`, and others). Adding a panel means adding the component plus a registry entry; nav, breadcrumbs, and search pick it up automatically.
+- `components/settings/search/` is the settings search bar and its registry-derived index.
 
 ### HashRouter vs BrowserRouter
 
@@ -550,10 +555,10 @@ components/
 
 Conventions:
 
-- **Modal via portal** — shell modals (Settings, link modal) render above routed content; the Settings modal uses the backgroundLocation pattern rather than unmounting the page underneath.
-- **Controlled modals** — parents own `isOpen` state and pass `onClose`.
-- **i18n everywhere** — all user-facing text goes through `useT()` (`lib/i18n/I18nContext`); CI enforces locale parity.
-- **No dynamic imports** in production `app/src` code — static `import` / `import type` only.
+- Modals render through a portal: shell modals (Settings, link modal) render above routed content, and the Settings modal uses the backgroundLocation pattern rather than unmounting the page underneath.
+- Modals are controlled: parents own `isOpen` state and pass `onClose`.
+- All user-facing text goes through `useT()` (`lib/i18n/I18nContext`); CI enforces locale parity.
+- Production `app/src` code uses only static `import` / `import type`, never dynamic imports.
 
 ---
 
@@ -561,14 +566,14 @@ Conventions:
 
 ### Custom Hooks (`hooks/`)
 
-\~40 app-level hooks. Representative examples:
+\~45 app-level hooks. Representative examples:
 
-- **`useUser`** — thin wrapper over `useCoreState()`; returns `{ user: snapshot.currentUser, isLoading, error, refetch }`. There is no standalone user store.
-- **`useBackendUrl`** — runtime backend URL resolution (see [Runtime config precedence](frontend.md#runtime-config-precedence)).
-- **`useThreadQueries`** — chat thread fetching.
-- **`useDaemonHealth` / `useDaemonLifecycle`** — core service health.
-- **`useDictationHotkey` / `usePttHotkey`** — global hotkey managers.
-- **`useDeveloperMode`**, **`useMediaQuery`**, **`useEscapeKey`** — UI utilities.
+- `useUser` is a thin wrapper over `useCoreState()`; it returns `{ user: snapshot.currentUser, isLoading, error, refetch }`. There is no standalone user store.
+- `useBackendUrl` resolves the backend URL at runtime (see [Runtime config precedence](frontend.md#runtime-config-precedence)).
+- `useThreadQueries` fetches chat threads.
+- `useDaemonHealth` / `useDaemonLifecycle` track core service health.
+- `useDictationHotkey` / `usePttHotkey` manage global hotkeys.
+- `useDeveloperMode`, `useMediaQuery`, `useEscapeKey` are general UI utilities.
 - Feature hooks: `useFlowRunProgress`, `useWorkflowBuilderChat`, `useConsciousItems`, `useIntelligenceStats`, `useCostDashboard`, ….
 
 Feature-local hooks live next to their feature under `features/*/`.
@@ -577,7 +582,7 @@ Feature-local hooks live next to their feature under `features/*/`.
 
 #### Configuration (`utils/config.ts`)
 
-Centralized build-time environment variable access — **never read `import.meta.env` directly elsewhere**. These constants only carry the value baked into the bundle; for the **runtime** URL the app actually talks to, see `services/backendUrl` and `hooks/useBackendUrl`.
+Centralized build-time environment variable access: **never read `import.meta.env` directly elsewhere**. These constants only carry the value baked into the bundle; for the **runtime** URL the app actually talks to, see `services/backendUrl` and `hooks/useBackendUrl`.
 
 ```typescript
 // Build-time fallback only (used outside Tauri).
@@ -606,15 +611,15 @@ Handles incoming `openhuman://` deep links via the Tauri deep-link plugin: parse
 
 #### URL Opener (`utils/openUrl.ts`)
 
-Cross-platform URL opening — tries the Tauri opener plugin, falls back to `window.open`. Always use this instead of raw `window.open` so links open in the system browser.
+Cross-platform URL opening: tries the Tauri opener plugin, falls back to `window.open`. Always use this instead of raw `window.open` so links open in the system browser.
 
 #### Tauri command wrappers (`utils/tauriCommands/`)
 
-Typed wrappers around `invoke(...)`, including the bridge-gap-aware `isTauri()` guard (checks `__TAURI_INTERNALS__.invoke` is actually wired, not merely that the app runs under Tauri). Use it — never check `window.__TAURI__` directly.
+Typed wrappers around `invoke(...)`, including the bridge-gap-aware `isTauri()` guard (checks `__TAURI_INTERNALS__.invoke` is actually wired, not merely that the app runs under Tauri). Use it; never check `window.__TAURI__` directly.
 
 ### Polyfills (`polyfills.ts`)
 
-Node.js globals (`Buffer`, `process`, `util`) polyfilled for the browser. Several browser-side modules use Node APIs — e.g. voice/PTT audio encoding (`features/voice/pttAudio.ts`, `wavEncoder.ts`), mascot Rive asset caching (`features/human/Mascot/`), the Meet mascot frame producer, and tool-timeline formatting.
+Node.js globals (`Buffer`, `process`, `util`) are polyfilled for the browser. Several browser-side modules use Node APIs, including voice/PTT audio encoding (`features/voice/pttAudio.ts`, `wavEncoder.ts`), mascot Rive asset caching (`features/human/Mascot/`), and tool-timeline formatting.
 
 Two layers provide them:
 

@@ -1,3 +1,10 @@
 {
-  "next_number": 0
+  "schema_version": 2,
+  "issued": [
+    "000",
+    "825"
+  ],
+  "retired": [
+    "000"
+  ]
 }

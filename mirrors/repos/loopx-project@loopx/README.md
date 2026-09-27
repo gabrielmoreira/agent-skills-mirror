@@ -411,6 +411,12 @@ include logs, paths, credentials, internal project names, or goal contents:
 `loopx first-run-report` prints the same prefilled link locally without
 sending anything.
 
+Basic usage statistics default on after first-use disclosure: a daily random-ID
+heartbeat for platform support and continued use, plus separate ID-free CLI
+counts. No content is collected. Disable both in Settings → Capability Center
+or with `loopx usage-ping disable` / `LOOPX_USAGE_PING=0`; inspect payloads with
+`loopx usage-ping status`. See [Basic usage statistics](docs/reference/usage-ping.md).
+
 A successful connection has:
 
 - `loopx doctor` passing;

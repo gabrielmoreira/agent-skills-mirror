@@ -1,13 +1,13 @@
 # health
 
-In-process health registry for the OpenHuman core. Tracks per-component liveness (status, last-ok / last-error timestamps, restart counts) plus process metadata (PID, uptime), exposes a snapshot over JSON-RPC/CLI, and keeps itself current by subscribing to `system`/`channel` domain events on the global event bus. State is purely in-memory (a process-global `OnceLock` registry) — nothing is persisted to disk. It also serves static system info (version/OS/arch/PID).
+In-process health registry for the OpenHuman core. Tracks per-component liveness (status, last-ok / last-error timestamps, restart counts) plus process metadata (PID, uptime), exposes a snapshot over JSON-RPC/CLI, and keeps itself current by subscribing to `system`/`channel` domain events on the global event bus. State is purely in-memory (a process-global `OnceLock` registry): nothing is persisted to disk. It also serves static system info (version/OS/arch/PID).
 
 ## Responsibilities
 
 - Maintain a process-global registry of named components, each with `status`, `updated_at`, `last_ok`, `last_error`, `restart_count`.
 - Provide mutators: `mark_component_ok`, `mark_component_error`, `bump_component_restart`.
 - Produce a point-in-time `HealthSnapshot` (PID, uptime seconds, components map) and its JSON form.
-- Classify a snapshot into a `HealthVerdict` (`verdict()`): a single degraded *non-critical* component no longer makes the container unhealthy — `/health` returns 503 only when a *critical* component (`CRITICAL_COMPONENTS` = `core`, `memory_tree_db`) is unhealthy; non-critical components (scheduler, channels, update_checker, …) return 200 + a `degraded` flag (#3312).
+- Classify a snapshot into a `HealthVerdict` (`verdict()`): a single degraded *non-critical* component no longer makes the container unhealthy: `/health` returns 503 only when a *critical* component (`CRITICAL_COMPONENTS` = `core`, `memory_tree_db`) is unhealthy; non-critical components (scheduler, channels, update_checker, …) return 200 + a `degraded` flag (#3312).
 - Drive component state automatically from `DomainEvent`s via an event-bus subscriber.
 - Expose `health.snapshot` and `health.system_info` RPC/CLI controllers.
 
@@ -28,7 +28,7 @@ From `core.rs` (re-exported via `pub use core::*`):
 - Types: `ComponentHealth`, `HealthSnapshot`, `HealthVerdict`.
 - Functions: `mark_component_ok(component)`, `mark_component_error(component, error)`, `bump_component_restart(component)`, `snapshot() -> HealthSnapshot`, `snapshot_json() -> serde_json::Value`, `verdict(&HealthSnapshot) -> HealthVerdict`, `is_critical_component(name) -> bool`.
 
-The HTTP `GET /health` handler (`core::jsonrpc::health_handler`) uses `verdict()` for its status code (200 unless a critical component is unhealthy) and adds `healthy` / `degraded` / `critical_unhealthy` / `degraded_components` fields alongside the `components` map in the body. The `components` map shape is unchanged — the new fields are additive.
+The HTTP `GET /health` handler (`core::jsonrpc::health_handler`) uses `verdict()` for its status code (200 unless a critical component is unhealthy) and adds `healthy` / `degraded` / `critical_unhealthy` / `degraded_components` fields alongside the `components` map in the body. The `components` map shape is unchanged: the new fields are additive.
 
 From `ops.rs` (re-exported via `pub use ops::*`, also aliased `pub use ops as rpc`):
 - `health_snapshot() -> RpcOutcome<serde_json::Value>`, `system_info() -> RpcOutcome<SystemInfo>`, and the `SystemInfo` struct.
@@ -68,17 +68,17 @@ None on disk. State lives in a process-global `OnceLock<HealthRegistry>` (lazy-i
 
 ## Dependencies
 
-- `crate::core::bus::BUS.subscribe` (`crate::core::events::DomainEvent`, `tinybus::SubscriptionHandle`) — to receive system/channel events.
-- `crate::core::all` (`ControllerFuture`, `RegisteredController`) and `crate::core::{ControllerSchema, FieldSchema, TypeSchema}` — controller registry wiring.
-- `crate::rpc::RpcOutcome` — RPC handler return contract.
+- `crate::core::bus::BUS.subscribe` (`crate::core::events::DomainEvent`, `tinybus::SubscriptionHandle`): to receive system/channel events.
+- `crate::core::all` (`ControllerFuture`, `RegisteredController`) and `crate::core::{ControllerSchema, FieldSchema, TypeSchema}`: controller registry wiring.
+- `crate::rpc::RpcOutcome`: RPC handler return contract.
 - External crates: `chrono` (RFC3339 timestamps), `parking_lot::Mutex`, `serde`/`serde_json`, `async_trait`.
 
 ## Used by
 
-- `crates/openhuman-core/src/core/all.rs` — registers `all_health_*` controllers into the registry.
-- `crates/openhuman-core/src/core/jsonrpc.rs` — references health (snapshot/system_info surface).
-- `crates/openhuman-core/src/channels/runtime/{startup,supervision}.rs` and `crates/openhuman-core/src/channels/tests/health.rs` — channel runtime updates component health.
-- `crates/openhuman-core/src/cron/scheduler.rs`, `crates/openhuman-core/src/platform/update/scheduler.rs` — emit/consume health signals.
+- `crates/openhuman-core/src/core/all.rs`: registers `all_health_*` controllers into the registry.
+- `crates/openhuman-core/src/core/jsonrpc.rs`: references health (snapshot/system_info surface).
+- `crates/openhuman-core/src/channels/runtime/{startup,supervision}.rs` and `crates/openhuman-core/src/channels/tests/health.rs`: channel runtime updates component health.
+- `crates/openhuman-core/src/cron/scheduler.rs`, `crates/openhuman-core/src/platform/update/scheduler.rs`: emit/consume health signals.
 
 ## Notes / gotchas
 
@@ -86,5 +86,5 @@ None on disk. State lives in a process-global `OnceLock<HealthRegistry>` (lazy-i
 - `upsert_component` creates entries lazily with initial status `"starting"` and always refreshes `updated_at` after the update closure.
 - `mark_component_ok` clears `last_error`; `mark_component_error` leaves `last_ok` intact (so the last-known-good time survives a failure).
 - `restart_count` uses `saturating_add` (won't overflow).
-- The `system_info` schema declares `pid` as `TypeSchema::U64`, matching `SystemInfo.pid: u32`, which serializes as a JSON number. It declared `TypeSchema::String` until #6074; the wire value has always been a number, so that fix moved only the declaration — and with it the generated frontend types and the model-facing tool `output_schema`.
+- The `system_info` schema declares `pid` as `TypeSchema::U64`, matching `SystemInfo.pid: u32`, which serializes as a JSON number. It declared `TypeSchema::String` until #6074; the wire value has always been a number, so that fix moved only the declaration: and with it the generated frontend types and the model-facing tool `output_schema`.
 - `bus.rs` short-circuits double registration via a `OnceLock` and warns (does not panic) if the bus isn't initialized.

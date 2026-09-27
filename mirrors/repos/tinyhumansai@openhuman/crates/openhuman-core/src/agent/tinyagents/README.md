@@ -1,16 +1,17 @@
 # tinyagents
 
-The **adapter seam** between OpenHuman and the vendored [`tinyagents`](../../../../../vendor/tinyagents/) crate family (issue #4249). Every agent turn runs on the crate's `AgentHarness` loop; this module bridges OpenHuman's `Provider`, `Tool`, and `ChatMessage` types onto the crate's `ChatModel`, `Tool`, and `Message` traits, assembles the per-turn harness, and enforces the OpenHuman-specific policy (approval, tool scope, budgets, credential scrubbing, compaction) as harness middleware on the way in and out. The chat, channel/CLI, and sub-agent routes all enter through one function, `run_turn_via_tinyagents_shared`, so they cannot drift from each other.
+The adapter seam between OpenHuman and the vendored [`tinyagents`](../../../../../vendor/tinyagents/) crate family (issue #4249). Every agent turn runs on the crate's `AgentHarness` loop; this module bridges OpenHuman's `Provider`, `Tool`, and `ChatMessage` types onto the crate's `ChatModel`, `Tool`, and `Message` traits, assembles the per-turn harness, and enforces OpenHuman-specific policy (approval, tool scope, budgets, credential scrubbing, compaction) as harness middleware on the way in and out. The chat, channel/CLI, and sub-agent routes all enter through one function, `run_turn_via_tinyagents_shared`, so they cannot drift from each other.
 
 ## Responsibilities
 
 - Assemble a per-turn harness (`assemble_turn_harness` in `harness_assembly.rs`): register the turn's `ChatModel`s, every shared tool, and the full middleware stack, then drive it via `AgentHarness::invoke_stream_in_context` (`turn_runner.rs`).
-- Convert between OpenHuman and crate types: tiered `ChatModel` bundles from `(role, config)` (`turn_models.rs`, `model.rs`), direct TinyTools/TinyInference tool declarations at their consumers, and `ChatMessage`/`ConversationMessage` ↔ crate `Message` via `crate::agent::message_convert`.
+- Convert between OpenHuman and crate types: tiered `ChatModel` bundles from `(role, config)` (`turn_models.rs`, `model.rs`), direct TinyTools/TinyInference tool declarations at their consumers, and `ChatMessage`/`ConversationMessage` to and from the crate's `Message` via `crate::agent::message_convert`.
 - Enforce cross-cutting policy as harness middleware: approval/security gating, tool policy and CLI/RPC-only denial, cost budgets, context compaction/summarization, credential scrubbing, malformed-argument recovery, and the repeated-tool-failure circuit breaker (`middleware*.rs`).
 - Route workloads to model tiers and record the resolved provider/model for audit (`routes.rs`, canonical TinyInference response metadata).
 - Let TinyAgents stop repetitive visible model streams in its agent loop; the OpenHuman session driver turns `GenerationStalled` into a bounded partial containing completed tool evidence.
 - Make turns durable and replayable: a JSONL event journal plus status store (`journal.rs`), a startup sweep for orphaned runs (`reaper.rs`), and a read-only RPC surface over both (`replay/`).
 - Provide graph-layer helpers for multi-stage sub-agent orchestration (`orchestration.rs`, `delegation.rs`) and expose graph structure for debugging (`topology.rs`).
+- Pick which tools a turn even considers: `discovery/` holds the process-wide tool-search ranker slot (see [Tool search](#tool-search) below).
 - Host adapters (`host/`) for the crate's ten host-capability traits. Not yet wired into the live turn path; see [Host adapters](#host-adapters) below.
 
 ## Key files
@@ -26,6 +27,7 @@ The **adapter seam** between OpenHuman and the vendored [`tinyagents`](../../../
 | `turn_outcome.rs` | `TinyagentsTurnOutcome`, `HaltSummarySlot`, `ToolOutcomeSink`, and `record_unobserved_turn_usage`, the cost-tracker fallback for turns with no `on_progress` observer. |
 | `turn_run_error.rs` | Maps a failed harness run onto the typed OpenHuman error `run_turn_via_tinyagents_shared` returns. |
 | `turn_run_finalize.rs` | Turns a completed harness run into a `TinyagentsTurnOutcome` on the success path (journal completion, compaction diagnostics, the terminal `TurnCompleted` event). |
+| `discovery/` | `install_tool_ranker` / `installed_tool_ranker`: the process-wide slot for the host's `ToolRanker` (a decision model such as Jev, installed by `openhuman-tinyhumans`; the core itself installs none), and `discovery_policy`, which turns the installed ranker plus `agent.tool_search` config into the `ToolDiscoveryPolicy` every turn harness runs with. A ranker that fails at search time falls back to BM25 in the harness. |
 | `host/` | OpenHuman's implementations of the crate's ten host-capability traits: `agent_memory`, `budget_gate`, `context_composer`, `definition_registry`, `experience_store`, `learning_sink`, `model_resolver`, `progress_sink`, `security_gate`, `tool_outcome_classifier`. Each file adapts one trait onto the OpenHuman domain that implements it. |
 | `replay/` | Read-only agent-run replay/status RPC (`mod.rs`, `ops.rs`, `schemas.rs`): three `agent`-namespace controllers over `journal.rs`. |
 | `journal.rs` | `TurnJournal` and `FileStatusStore`: a crate `StoreEventJournal` over a JSONL append store plus a `HarnessStatusStore` writer under `{workspace}/tinyagents_store`. Attached alongside the live `observability` bridge as an independent `EventSink` subscriber, wrapped in `RedactingSink`; best-effort and non-fatal. |
@@ -38,7 +40,7 @@ The **adapter seam** between OpenHuman and the vendored [`tinyagents`](../../../
 | `topology.rs` | `all_graph_topologies`: behaviour-free `GraphTopology` exports of every custom OpenHuman graph for debug/inspection. |
 | `observability.rs` + `observability/` | `event_bridge.rs`: `OpenhumanEventBridge`, translating crate `AgentEvent`s into `AgentProgress` and feeding per-call usage into `crate::platform::cost`. `event_projection.rs`: its `EventListener` impl. `cap_pauser.rs`: `CapPauser` and `SubagentScope`. `graph_tracing.rs`: `GraphTracingSink`. |
 | `host/steering.rs` | OpenHuman's steering allowlist and the shared `SteeringRegistry` for detached sub-agents. Task primitives are imported directly from `tinyagents_graph::orchestration`. |
-| `host/delegation.rs` | Explicit tracing-bound execution helpers over `tinyagents_graph::delegation`'s plan → execute ⇄ review → finalize graph. |
+| `host/delegation.rs` | Explicit tracing-bound execution helpers over `tinyagents_graph::delegation`'s plan, execute, review, finalize graph. |
 | `payload_summarizer.rs` | `PayloadSummarizer` trait, `SummarizeOutcome`/`UnavailableReason`, and the default `SubagentPayloadSummarizer` that compresses oversized tool results through the `summarizer` sub-agent instead of hard-truncating them. |
 | `policy_denial.rs` | `maybe_enrich_policy_block`: rewrites `[policy-blocked]` tool results into structured what/why/workaround messages that tell the model to relay the denial rather than fabricate output. Called from `ToolOutcomeCaptureMiddleware`. |
 | `abort_guard.rs` | `AbortOnDrop`: ties a detached streaming-producer task's lifetime to its consumer stream so a dropped turn aborts the in-flight provider call (issue #4460). |
@@ -48,10 +50,25 @@ The **adapter seam** between OpenHuman and the vendored [`tinyagents`](../../../
 | `summarize.rs` | `ModelSummarizer` / `FaultTolerantCachingSummarizer` plus a context-window-aware `SummarizationPolicy` driving the crate's `ContextCompressionMiddleware`. |
 | `embeddings.rs` | `ProviderEmbeddingModel`: adapts `crate::inference::embedding_host::EmbeddingProvider` onto the crate's `EmbeddingModel` trait. |
 | `retriever.rs` | `recall_through_facade` / `build_retriever`: wraps `Memory::recall`, projects onto the crate's `ScoredDoc`, applies the `path_scope` dedupe rule, emits `MemoryLoaded`. |
-| `host/run_context.rs` | Explicit run-owned `thread_id` inherited by children and supplied to managed backend construction. |
 | `todos.rs` | `todos_store` / `scratch_todos_store` (the crate `Store` behind per-thread agent todos, `tinyagents_graph::todos`). |
 | `config.rs` | Maps OpenHuman's `Config` (including model pins) onto `tinyagents_harness::config` structs. |
 | `*_tests.rs` | Sibling test suites for each file/part group above. |
+
+## Tool search
+
+`discovery/` is the host's side of the crate's `tool_search`/`tool_call`
+bridge: the intrinsic BM25 catalogue over every `ToolExposure::Deferred`
+registration, and a slot for a decision-model ranker on top of it. The core
+itself installs nothing there; `openhuman-tinyhumans` installs the Jev
+ranker when a decision-model credential is present. `discovery_policy` reads
+that installed ranker together with `agent.tool_search`
+(`ToolSearchConfig` in `crate::config::schema`) and builds the
+`ToolDiscoveryPolicy` the harness runs with for that turn. The slot is
+process-wide, like the backend transport, because the credential a
+decision-model ranker needs belongs to the process's signed-in user rather
+than to any one agent config. See
+[the Jev page](../../../../../gitbooks/developing/jev.md) for the ranking
+mechanism and its measured accuracy against plain BM25.
 
 ## Public surface
 
@@ -79,7 +96,7 @@ Responses project the crate's own `AgentObservation` and `HarnessRunStatus` serd
 ## Dependencies
 
 - The vendored crates under `vendor/tinyagents/`: `tinyagents-harness`, `tinyagents-graph`, `tinyagents-registry`, plus `tinyinference` and `tinytools` from `vendor/tinyagents/vendor/`, all declared as path dependencies in `crates/openhuman-core/Cargo.toml`. Per AGENTS.md, use this vendored copy; a second path to the same crates creates incompatible Rust types.
-- `crate::agent::message_convert` for `ChatMessage` ↔ crate `Message` conversion.
+- `crate::agent::message_convert` for `ChatMessage` to/from crate `Message` conversion.
 - `crate::agent::harness::{run_queue, tool_result_artifacts}` and `crate::agent::{messages, progress, stop_hooks, cost, hooks, subagent_host}`: the OpenHuman-side turn plumbing this seam plugs into.
 - `crate::tools`: the canonical `tinytools::Tool` trait resolved by `CanonicalSharedToolAdapter`, and `tools::registry::denials` for recording policy blocks.
 - `crate::platform::cost`: the global cost tracker fed by `observability/event_bridge.rs` and `turn_outcome.rs`.

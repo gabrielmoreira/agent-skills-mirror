@@ -2309,9 +2309,20 @@ concrete mind-map facades, and first-party strict orchestration.
 | `get(notebook_id, note_id)` | `str, str` | `Note` | Get note by ID; raises `NoteNotFoundError` on a miss. After `delete`, Android projects absence; Web can still return a cleared tombstone `Note`. See [Web vs Android inventory](web-android-public-behavior.md). |
 | `get_or_none(notebook_id, note_id)` | `str, str` | `Note \| None` | Optional lookup; returns `None` when absent |
 | `update(notebook_id, note_id, content, title)` | `str, str, str, str` | `None` | Update note content and title |
-| `delete(notebook_id, note_id)` | `str, str` | `None` | Delete note (idempotent; returns `None` whether or not it existed) |
+| `delete(notebook_id, note_id)` | `str, str \| list[str]` | `None` | Delete one or several notes with one delete request (idempotent). Duplicate IDs are removed; an empty list is a no-op. |
 | `list_mind_maps(notebook_id)` | `str` | `list[Any]` | List mind maps in the notebook. Android returns minimal `[id, content]` compatibility rows; Web returns full note rows. See [Web vs Android inventory](web-android-public-behavior.md). |
 | `delete_mind_map(notebook_id, mind_map_id)` | `str, str` | `None` | Delete a mind map (idempotent; returns `None` whether or not it existed) |
+
+Batch deletion returns no per-note receipt. After an error or cancellation, re-read
+`notes.list(notebook_id)` and compare the selected IDs to identify surviving notes
+before retrying. Web listings exclude deleted tombstones. Error operation metadata
+may be absent or contain no mutation entries or note IDs, so it cannot establish
+each note's final state.
+Web note reads and deletes propagate explicit server rejections, including permission
+denials. An already-missing single note remains a successful delete. A batch reporting
+not-found succeeds only if a fresh inventory confirms every selected note is absent.
+That verification requires the entire inventory to be parseable: an unrelated malformed
+row also raises `DecodingError`, because an incomplete read cannot prove absence.
 
 **Example:**
 ```python
@@ -2324,6 +2335,9 @@ await client.notes.update(nb_id, note.id, "Updated content", "New Title")
 
 # Delete a note
 await client.notes.delete(nb_id, note.id)
+
+# Delete an explicit batch in one write (Web and Android)
+await client.notes.delete(nb_id, [item.id for item in notes])
 
 # Save a chat answer as a citation-rich note (preserves [N] hover links).
 # Use ``client.chat.save_answer_as_note(...)`` — the chat-owned canonical
@@ -2433,6 +2447,13 @@ knowing before you build on this:
   whole request — including the users that are present — and reports no failure.
   A plural removal therefore needs a share-status preflight and post-verification,
   not a wider entry list, so it is deliberately not offered as a one-liner.
+
+The Web backend verifies every requested user permission against the sharing-status
+readback. A missing recipient, wrong permission, or incomplete permission row raises
+an `RPCError` with `unconfirmed=True` and `inspect_and_reconcile` recovery guidance.
+This also applies to `add_user()` and `update_user()`. Inspect `get_status()` before
+retrying: some grants or invitation emails may already have been applied. Matching
+preserves local-part case and ignores domain case; it does not infer email aliases.
 
 **Example:**
 ```python

@@ -1,8 +1,8 @@
 # core
 
 Transport, dispatch, the controller registry, the event bus, auth, the CLI,
-and runtime composition. `core/` is not a domain — it holds no business
-logic; every controller it exposes is implemented by a domain module under
+and runtime composition. `core/` is not a domain: it holds no business
+logic. Every controller it exposes is implemented by a domain module under
 `crates/openhuman-core/src/<domain>/` and wired in here.
 
 ## Responsibilities
@@ -27,33 +27,33 @@ logic; every controller it exposes is implemented by a domain module under
 
 | File | Role |
 | --- | --- |
-| `mod.rs` | `ControllerSchema`/`FieldSchema`/`TypeSchema` — the controller contract; module declarations. |
+| `mod.rs` | `ControllerSchema`/`FieldSchema`/`TypeSchema`: the controller contract; module declarations. |
 | `all.rs` | The controller registry: `RegisteredController`, `RegisteredCliAdapter`, `DomainGroup`, `all_registered_controllers()`, `all_controller_schemas()`, `rpc_method_name()`, `validate_params()`, `all_http_method_schemas()`. |
-| `dispatch.rs` | `dispatch()` — the 4-tier RPC router. |
+| `dispatch.rs` | `dispatch()`: the 4-tier RPC router. |
 | `bus.rs` | The `BUS: OnceBus<DomainEvent>` singleton, `EVENTS_ROOT`/`EVENTS_INTERFACE`/`EVENTS_VERSION`, `init`/`init_over_socket`. |
-| `events.rs` | `DomainEvent` — the full event catalog, `domain()` routing. |
+| `events.rs` | `DomainEvent`: the full event catalog, `domain()` routing. |
 | `jsonrpc.rs` | Axum router (`/rpc`, `/health`, `/schema`, `/events`, …), `invoke_method`, `run_server*` shims, `bootstrap_core_runtime`. |
 | `socketio.rs` | Socket.IO live-event bridge to the desktop shell. |
 | `auth.rs` | Per-process RPC bearer token: init paths, `get_rpc_token`, `rpc_auth_middleware`. |
 | `event_bind_tokens.rs` | Single-shot bind tokens for the `/events` SSE stream. |
 | `cli.rs`, `agent_cli.rs`, `memory_cli.rs`, `subsystems_cli.rs`, `cli_capability.rs` | CLI argument parsing and dispatch, routed through the same registry as RPC. |
 | `types.rs` | `AppState`, `HostKind`, `RpcRequest`/`RpcSuccess`/`RpcFailure`, `InvocationResult`, `approval_gate_boot_decision`. |
-| `legacy_aliases.rs` | `resolve_legacy` — rewrites retired method names before dispatch; mirrors `app/src/services/rpcMethods.ts`'s `LEGACY_METHOD_ALIASES`. |
+| `legacy_aliases.rs` | `resolve_legacy`: rewrites retired method names before dispatch; mirrors `app/src/services/rpcMethods.ts`'s `LEGACY_METHOD_ALIASES`. |
 | `observability.rs` | `report_error` + Sentry `before_send` filters that drop deterministic provider/updater noise. |
-| `log_redaction.rs` | `scrub_secrets` — regex secret scrubbing shared by the Sentry path and always-on log path. |
+| `log_redaction.rs` | `scrub_secrets`: regex secret scrubbing shared by the Sentry path and always-on log path. |
 | `rpc_log.rs` | `redact_params_for_log` (key-name redaction for the `[rpc:dispatch]` trace log in `dispatch.rs`) plus `format_request_id` / `summarize_rpc_result` / `redact_result_for_trace` helpers with no caller yet. |
-| `logging.rs` | `init_for_cli_run` / `init_for_embedded` — logger setup for each host kind. |
+| `logging.rs` | `init_for_cli_run` / `init_for_embedded`: logger setup for each host kind. |
 | `shutdown.rs` | Graceful shutdown signal plumbing. |
 | `sentry_transport.rs` | Sentry client setup, gated by the `crash-reporting` feature. |
-| `http_server_status.rs` | `HTTP_SERVER_COMPILED_IN` — ungated compile-time marker so a listener-less core fails the build instead of shipping silently. |
-| `bus_testing.rs` | `isolated_bus()` — a private bus for tests that must observe events without racing the process-global singleton. |
-| `runtime/` | `CoreBuilder` → `CoreRuntime` composition API — see [runtime/README.md](runtime/README.md). |
+| `http_server_status.rs` | `HTTP_SERVER_COMPILED_IN`: ungated compile-time marker so a listener-less core fails the build instead of shipping silently. |
+| `bus_testing.rs` | `isolated_bus()`: a private bus for tests that must observe events without racing the process-global singleton. |
+| `runtime/` | `CoreBuilder` → `CoreRuntime` composition API: see [runtime/README.md](runtime/README.md). |
 | `subsystem/` | The subsystem driver registry (`SubsystemRegistry`, `DriverClass`, `DriverHealth`) and the `subsystems` RPC namespace. |
 
 ## Controller registration and `DomainGroup`
 
 Every controller is registered exactly once, in `all.rs`, tagged with a
-`DomainGroup` — the coarse family (`Agent`, `Memory`, `Security`, `Flows`,
+`DomainGroup`: the coarse family (`Agent`, `Memory`, `Security`, `Flows`,
 `Inference`, `Platform`, …) it belongs to. `DomainGroup` variants track the
 `crates/openhuman-core/src/` family directories 1:1. The live surface
 (schema dump, dispatch, agent tools, stores, subscribers) is filtered by
@@ -61,7 +61,7 @@ whether the active `runtime::context::CoreContext`'s `DomainSet` allows that
 group; `DomainSet::full()` allows every group, so registration stays
 byte-identical to a build with no runtime narrowing. Adding a new family
 directory means adding the matching `DomainGroup` variant, a `DomainSet`
-field, an arm in `DomainSet::allows()`, and an entry in each preset — the
+field, an arm in `DomainSet::allows()`, and an entry in each preset: the
 compiler enforces all four.
 
 `rpc_method_name(schema)` turns a controller's dotted key (`memory.doc_put`)
@@ -72,7 +72,7 @@ declared `TypeSchema` before a handler ever runs. `all_http_method_schemas()`
 adds the two Tier-1 internal methods (`core.ping`, `core.version`) to the
 registered set for `/schema`.
 
-Wire controllers only through this registry — do not add namespace branches
+Wire controllers only through this registry: do not add namespace branches
 to `cli.rs` or `jsonrpc.rs`. RPC namespace strings are wire contracts and do
 not follow directory renames.
 
@@ -82,26 +82,26 @@ not follow directory renames.
 Socket.IO, the CLI, `CoreRuntime::invoke`) calls through. It resolves in four
 tiers:
 
-1. **Tier 0 — legacy alias rewrite.** `legacy_aliases::resolve_legacy`
+1. **Tier 0: legacy alias rewrite.** `legacy_aliases::resolve_legacy`
    rewrites a retired method name to its canonical form before any lookup,
    symmetric with the frontend's `normalizeRpcMethod`.
-2. **Tier 1 — internal core methods.** `core.ping`, `core.version`, and
+2. **Tier 1: internal core methods.** `core.ping`, `core.version`, and
    `core.events_subscribe_token` (mints a bind token for `/events`) are
    handled directly, with no controller registration.
-3. **Tier 2 — registered controllers.** Looked up by RPC method name in the
+3. **Tier 2: registered controllers.** Looked up by RPC method name in the
    `all.rs` registry, validated with `validate_params`, and invoked.
-4. **Tier 3 — unknown method.** Always a method-not-found error; only the
+4. **Tier 3: unknown method.** Always a method-not-found error; only the
    Sentry severity differs by whether the method is a known non-actionable
    probe (`is_known_probe_method`).
 
 ## Event bus
 
-`bus.rs` declares the process-wide `BUS: OnceBus<DomainEvent>` — the one
+`bus.rs` declares the process-wide `BUS: OnceBus<DomainEvent>`: the one
 thing a generic bus crate (`tinybus`) cannot own, since it is generic over
 the event type. `events.rs` is the vocabulary half: `DomainEvent`, a
 `#[non_exhaustive]` enum whose `domain()` method is the routing key appended
 to `EVENTS_ROOT` (`/ai/tinyhumans/openhuman/events`). `EVENTS_VERSION` is
-currently `1.2.0`; bump the minor for an added variant or field, the major
+currently `1.4.0`; bump the minor for an added variant or field, the major
 (and rename `EVENTS_INTERFACE`) for a breaking change.
 
 Two surfaces, pick by what the call needs to carry:
@@ -116,7 +116,7 @@ Two surfaces, pick by what the call needs to carry:
 Adding an event requires four steps: add the variant to `DomainEvent`,
 extend the `domain()` match, register its subscriber at startup, and bump
 `EVENTS_VERSION` in `bus.rs`. Native request/response types must be
-`Send + 'static` and never need serialization — they are the sanctioned
+`Send + 'static` and never need serialization: they are the sanctioned
 escape hatch for values (live channels, `Arc<dyn Tool>`) that cannot cross a
 serialized transport.
 
@@ -142,7 +142,7 @@ shell's webviews. The socketioxide/axum transport
 bodies are gated on `http-server`, but the payload types
 (`WebChannelEvent`, `TurnUsagePayload`, `SubagentUsagePayload`,
 `SubagentProgressDetail`) stay compiled in every build because roughly ten
-always-on domains construct them — a type carve-out, not a full gate. `pub
+always-on domains construct them: a type carve-out, not a full gate. `pub
 mod socketio;` in `mod.rs` is deliberately ungated for the same reason.
 `COMPANION_STATE_BUS` is a broadcast channel for shell-originated companion
 lifecycle events that still need to reach the native macOS notch WKWebView,
@@ -153,9 +153,10 @@ initiating client's room and the `thread:<id>` room, not broadcast),
 dictation hotkeys and transcription results (`voice::dictation_listener`),
 overlay attention bubbles (`desktop::overlay::subscribe_attention_events`,
 see `desktop/overlay/README.md`), core notifications
-(`desktop::notifications`), companion state, and — read off `BUS` as
-`DomainEvent`s — session expiry, MCP setup secret requests, memory sync and
-tree-build progress, channel listener health, and active-workspace changes.
+(`desktop::notifications`), and companion state. It also forwards a set of
+`DomainEvent`s read straight off `BUS`: session expiry, MCP setup secret
+requests, memory sync and tree-build progress, channel listener health, and
+active-workspace changes.
 Everything except web-chat is broadcast to every connected client, most under
 both a colon- and an underscore-separated event name.
 
@@ -190,7 +191,7 @@ answer "everything allowed".
 
 ## `runtime/` and `subsystem/`
 
-`runtime/` is the embeddable composition API — `CoreBuilder` builds a
+`runtime/` is the embeddable composition API: `CoreBuilder` builds a
 `CoreRuntime` in two phases (initialization, then serve); see
 [runtime/README.md](runtime/README.md) for the full builder reference.
 `AGENT_WORKER_STACK_BYTES` (16 MiB) and `MAX_BLOCKING_THREADS` (64) live in
@@ -227,7 +228,7 @@ layer pushes the compiler's `Send` auto-trait solver past the default depth.
 ## Notes / gotchas
 
 - `bus::init()` binds the in-process broker's tokio tasks to whatever
-  runtime calls it first — a trap under `cargo test`, where every
+  runtime calls it first: a trap under `cargo test`, where every
   `#[tokio::test]` builds its own runtime. Tests that need to observe events
   should use `bus_testing::isolated_bus()` instead of the shared singleton.
 - `HostKind::TauriShell` always installs the approval gate at boot and
@@ -236,7 +237,7 @@ layer pushes the compiler's `Send` auto-trait solver past the default depth.
 - `KNOWN_PROBE_METHODS` in `dispatch.rs` silences recurring but harmless
   unknown-method noise (generic RPC probes, retired calls) from Sentry.
   `openhuman.harness_init_status` is on that list for client/core surface
-  skew only — it is a live, registered method, and a dedicated test pins
+  skew only: it is a live, registered method, and a dedicated test pins
   that fact so a real regression cannot go silent behind the allow-list.
 - `http_server_status::HTTP_SERVER_COMPILED_IN` exists so a build without the
   `http-server` feature fails loudly at compile time if the desktop shell

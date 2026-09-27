@@ -8,13 +8,13 @@ thing the group tags is the `media_*` tool names (`tool_group()` in
 
 ## Members
 
-- [`generation`](generation/mod.rs) — the `media_generate_*` agent tools
+- [`generation`](generation/mod.rs), the `media_generate_*` agent tools
   (image/video via GMI, proxied through the TinyHumans backend). Wired: built
   by `build_media_tools()` and registered from
   `crates/openhuman-core/src/tools/ops.rs` under `#[cfg(feature = "media")]`.
   The builder returns no tools when `integrations::build_client()` yields no
   `IntegrationClient` for the config.
-- [`image`](image/README.md) — image tool contracts scaffold
+- [`image`](image/README.md), image tool contracts scaffold
   (`image_generation`, `view_image`). Currently unwired (#2997); nothing
   outside `media/image/` references its types.
 
@@ -44,9 +44,9 @@ per-modality wait budget elapses, download the resulting media into
 
 Exported tools (`tools.rs`):
 
-- `MediaGenerateImageTool` — `name() == "media_generate_image"`
-- `MediaGenerateVideoTool` — `name() == "media_generate_video"`
-- `MediaListModelsTool` — `name() == "media_list_models"`
+- `MediaGenerateImageTool`: `name() == "media_generate_image"`
+- `MediaGenerateVideoTool`: `name() == "media_generate_video"`
+- `MediaListModelsTool`: `name() == "media_list_models"`
 
 Tests: `generation/download_tests.rs` (file-extension derivation from
 content type, URL, then kind), `generation/tools_tests.rs` (tool schemas and

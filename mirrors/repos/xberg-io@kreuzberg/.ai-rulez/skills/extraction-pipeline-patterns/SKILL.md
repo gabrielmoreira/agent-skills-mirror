@@ -66,11 +66,16 @@ chain. A successful fallback records an `extractor-fallback` processing warning.
 ## Cache and concurrency
 
 - Extraction keys are `<cache_version_tag>-<content_hash>-<config_hash>`, never path-based.
-  The tag comes only from `CARGO_PKG_VERSION` and `CACHE_SCHEMA_VERSION` in
-  `cache/version.rs`; it is not a build fingerprint.
-- Separate binaries at the same crate and schema versions share cache entries. When behavior
-  can change without a crate version bump, bump `CACHE_SCHEMA_VERSION`. For A/B or revert
-  checks, bump the schema or disable the cache so the experiment cannot replay the control.
+  The tag hashes `CARGO_PKG_VERSION`, `CACHE_SCHEMA_VERSION`, `env!("XBERG_BUILD_ID")` and the
+  debug/release bit (`cache/version.rs`); `XBERG_BUILD_ID` is the commit SHA plus a hash of any
+  uncommitted diff (`build.rs`), so it IS a build fingerprint.
+- Two builds from different commits therefore get different entries with no schema bump needed.
+  The exception is a build that cannot reach git metadata and gets `XBERG_BUILD_ID = ""` -- a
+  crates.io/docs.rs tarball (safe: immutable source per version) or a Docker build (`.dockerignore`
+  excludes `**/.git/`, and nothing passes the `--build-arg` escape hatch). Bump
+  `CACHE_SCHEMA_VERSION` when behavior can change and those builds must not collide. For A/B or
+  revert checks, disable the cache or export distinct `XBERG_BUILD_ID` values per arm, so the
+  experiment cannot replay the control.
 - Configuration that affects output belongs in the config hash. Check the cache before
   extraction so a hit skips processing.
 - Default batch concurrency uses host CPU count capped by any detected Linux cgroup quota via

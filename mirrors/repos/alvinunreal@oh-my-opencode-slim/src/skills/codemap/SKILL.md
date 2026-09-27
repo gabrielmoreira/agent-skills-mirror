@@ -37,10 +37,10 @@ If neither file exists: Continue to Step 2 (Initialize).
      - Docs: `docs/**`, `*.md` (except root `README.md` if needed), `LICENSE`
      - Build/Deps: `node_modules/**`, `dist/**`, `build/**`, `*.min.js`
    - Respect `.gitignore` automatically
-3. **Run codemap.mjs init**:
+3. **Run codemap.mjs init** (`scripts/codemap.mjs` is relative to this skill's base directory — the host prints it as `Base directory for this skill`):
 
 ```bash
-node ~/.config/opencode/skills/codemap/scripts/codemap.mjs init \
+node scripts/codemap.mjs init \
   --root ./ \
   --include "src/**/*.ts" \
   --exclude "**/*.test.ts" --exclude "dist/**" --exclude "node_modules/**"
@@ -57,7 +57,7 @@ This creates:
 1. **Run codemap.mjs changes** to see what changed:
 
 ```bash
-node ~/.config/opencode/skills/codemap/scripts/codemap.mjs changes \
+node scripts/codemap.mjs changes \
   --root ./
 ```
 
@@ -71,7 +71,7 @@ node ~/.config/opencode/skills/codemap/scripts/codemap.mjs changes \
 4. **Run update** to save new state:
 
 ```bash
-node ~/.config/opencode/skills/codemap/scripts/codemap.mjs update \
+node scripts/codemap.mjs update \
   --root ./
 ```
 

@@ -1343,14 +1343,23 @@ preview unless called with `confirm=true`). `notebooklm mcp install <client>`
 wires it into Claude Desktop/Code, Cursor, or Windsurf, and `desktop-extension/`
 packages a one-click `.mcpb` bundle. Full guide:
 [`docs/mcp-guide.md`](./mcp-guide.md).
+Android multi-profile mode (`--backend android --profiles work,personal`) adds a
+required `profile` argument to every tool while preserving single-profile schemas.
+Each account has a lazily warmed client and its own detached-chat/research state.
+Request-local selection never changes the process's active profile. Shared
+`_app/profile_client.py` ownership bounds startup and recovery while isolating
+unfinished cancellation cleanup; `_app/profiles.py` validates unique names/paths.
+Signed file URLs carry the issuing profile. HTTP auth grants access to all configured
+profiles. See [multi-profile MCP setup](./installation.md#android-multi-profile-mcp).
+
 The [MCP subsystem diagram](https://teng-lin.github.io/notebooklm-py/diagrams/17-mcp-subsystem.html) shows the adapter,
 application-core, client, and remote-transfer boundaries together.
 
 ## REST server (`server/`)
 
-The single-tenant REST server is the third adapter (ADR-0021), opt-in behind the
+The local REST server is the third adapter (ADR-0021), opt-in behind the
 `server` extra and **experimental**. A FastAPI app maps `/v1` routes onto the
-`_app/` cores and the public client namespaces, with one `NotebookLMClient` opened
+`_app/` cores and the public client namespaces, with one `NotebookLMClient` per configured profile opened
 once at the ASGI lifespan inside the server loop (honoring the ADR-0004 loop-
 affinity contract). Every `/v1` request requires a static bearer token
 (constant-time compare) plus a loopback `Host` literal (a DNS-rebinding guard);
@@ -1411,9 +1420,12 @@ adapter surface unless its manifest or route inventory changes.
 
 ### Hosting and persistence limits
 
-Both servers operate one selected NotebookLM account per process. They are single-tenant adapters,
-not multi-user credential routers. Restarting the process replaces the lifespan-owned client and
-loses ephemeral state.
+MCP and REST default to one selected NotebookLM profile per process. Both support static
+Android profiles: MCP selects with a required tool argument and REST with an explicit request
+header. Each REST profile
+owns its client, recovery state, and pending registry; route-group capacity is shared across the
+process. The server token authorizes all configured profiles, so this is not per-user authorization.
+Restarting a process replaces its lifespan-owned clients and loses ephemeral state.
 
 MCP detached chat tasks are process-owned, bounded, and time-limited. `chat_start` keeps work alive
 past one transport request and `chat_status` reads the in-memory result, but a restart loses the
@@ -2121,6 +2133,9 @@ src/notebooklm/
 ├── _version_info.py             # version_string(): version + short git commit
 ├── _redact.py                   # Transport-neutral secret/home-path/file-link scrubber (redact(msg, max_length)); shared chokepoint under both mcp/_errors.py and server/_errors.py
 ├── _app/                        # Transport-neutral business-logic layer (CLI/MCP/HTTP adapters share it)
+│   ├── android_profiles.py      # Cookie-free Android client construction for isolated profile adapters
+│   ├── profiles.py              # Shared profile/path uniqueness validation and per-adapter startup deadlines
+│   ├── profile_client.py        # Loop-bound profile client owner: deadlines, isolated cancellation cleanup, exception forwarding
 │   ├── __init__.py              # Re-exports the neutral primitives
 │   ├── client_config.py         # Explicit bound request-policy configuration for first-party client factories
 │   ├── artifacts.py             # Click-free artifact core: get/rename/delete/export + poll/wait/retry; kind-aware mind-map dispatch (mind_maps.list for rename, notes.list_mind_maps for delete), get_artifact raises ArtifactNotFoundError, typed Rename/Export results + ArtifactStatusView/status_view neutral status DTO (CLI builds every --json envelope from the typed fields)
@@ -2517,6 +2532,7 @@ src/notebooklm/
 │   ├── _fileroutes.py           # register_file_routes(mcp, config): the /files/{dl,ul} custom routes mounted on the FastMCP http app (ADR-0024). GET /files/dl streams the artifact (download core → FileResponse, meaningful filename, inside-tempdir assert, BackgroundTask cleanup); GET /files/ul = minimal upload page (file picker + raw-body fetch POST); POST|PUT /files/ul streams request.stream() into a 0600 temp under a running byte cap (real DoS guard) + Content-Length early 413 → neutral source_add core; unconfirmed registration freezes the single-use jti until expiry to prevent duplicate retries. Signed token is the sole auth (custom routes bypass the bearer gate); HTML pages set no-referrer/no-store/DENY; local _safe_upload_name (no server/ import)
 │   ├── _uploadwidget.py         # register_upload_widget(mcp, config): OPT-IN in-app MCP-App upload widget (ADR-0027, NOTEBOOKLM_MCP_UPLOAD_WIDGET=1 → also auto-enables stateless HTTP). ONE ui:// resource (file-picker HTML, profile=mcp-app mime) + source_add_widget tool; both ui/resourceUri (claude.ai) and openai/outputTemplate (ChatGPT) point at it. Emits the render gates via FastMCP meta=/app=: _meta.ui.domain = sha256("<public-url>/mcp")[:32] + ".claudemcpcontent.com", flat ui/resourceUri, ui.csp; the widget POSTs bytes to /files/ul (reuses ADR-0024). Off the default surface unless enabled
 │   ├── _chattasks.py            # Detached chat asks for chat_start/chat_status (ADR-0024-shaped in-process state): ChatTaskRegistry (bounded + TTL-swept; idempotency-keyed via compute_chat_task_key; asyncio.create_task detachment so the remote transport's ~60s watchdog cancelling the start call cannot kill the generation; lifespan aclose) + ChatTaskEntry/ChatTaskCapacityError
+│   ├── _profiles.py             # Android multi-profile lifespan, bounded client recovery, and required per-tool profile routing
 │   ├── _clientprovider.py       # ClientProvider: lazy, single-flight ownership of the process-wide NotebookLMClient (#2330). The lifespan start()s the open in the BACKGROUND and yields at once, so MCP initialize is never gated on the auth round-trip (15s RotateCookies poke + 30s CSRF fetch + cold-recovery ladder > the client's 30s handshake deadline → CONNECT_TIMEOUT); get() joins the in-flight open under asyncio.shield (a cancelled waiter never aborts it), a failed open is retried by the next call (mid-session re-login recovers), aclose() cancels/closes
 │   ├── _context.py              # AppState dataclass (client_provider + optional file_transfer + cancelled_research + chat_tasks) + async get_client(ctx) (awaits the lazy open) / get_file_transfer(ctx) / get_cancelled_research(ctx) / get_chat_tasks(ctx) (lifespan-bound) + async get_client_from_app(request) (the guarded private-attr accessor for the bare-Request custom routes)
 │   ├── _errors.py               # Structured tool-error projection (CATEGORY_TABLE/ERROR_CODES/mcp_errors/to_tool_error/tool_error_payload) over _app.errors.classify
@@ -2531,6 +2547,7 @@ src/notebooklm/
 │       ├── _fileupload.py       # file-transfer slice of the source tools: _broker_upload (signed-URL upload_required) + _decode_upload_b64/_add_bytes (in-channel base64 byte upload for source_add(source_type="file", bytes_base64=…)) + the shared _add_one plan/execute seam (split from sources.py for the ADR-0008 size budget)
 │       ├── _passthrough.py      # Shared pass-through resolvers (passthrough_notebook_id/passthrough_child_id) for the CLI-shaped _app executors
 │       ├── _preview.py          # title_for_id() — shared id→title lookup for the delete tools' needs_confirmation previews
+│       ├── _studio_delete.py    # explicit-subset delete previews and validation; batches text notes in one write while routing artifacts and mind maps by kind
 │       ├── _studio_items.py     # cross-type Studio plumbing: studio_items (merge notes+artifacts into one items list) + resolve_studio_item (cross-type ref → StudioResolvedItem) for studio_list/studio_rename/studio_delete (split from studio.py for the ADR-0008 size budget)
 │       ├── _studio_download.py  # download plumbing shared by studio.py + _fileroutes.py: consumes _app.download_specs directly; registry-derived DownloadType/DownloadFormat schema aliases + _resolve_artifact_id / _broker_download / transport helpers (split from studio.py for the ADR-0008 size budget)
 │       ├── _studio_payloads.py  # wire-shape projection helpers for the Studio generate/rename tools: _generation_payload (GenerationExecutionResult → response dict; mind-map → bare node tree + mind_map_id via _mind_map_tree/_mind_map_id) + _artifact_rename_payload (split from studio.py for the ADR-0008 size budget)
@@ -2631,8 +2648,10 @@ src/notebooklm/
 └── server/                      # Single-tenant REST API adapter (the third _app adapter, after cli/ and mcp/; behind the optional `server` extra). EXPERIMENTAL: /v1 surface may change, excluded from the api-compat gate. Imports no click/rich/cli.
     ├── __init__.py              # Re-exports create_app + SERVER_NAME; importing it without the `server` extra fails on the fastapi import
     ├── __main__.py              # `notebooklm-server` entry: argparse + NOTEBOOKLM_SERVER_* env defaults + loopback-bind guard + fail-closed token check
-    ├── app.py                   # create_app(*, client_factory=None) -> FastAPI; ASGI lifespan binds one client; public /healthz; auth-gated /v1 mount (docs/redoc/openapi disabled)
-    ├── _context.py              # AppState (lifespan-bound client + pending registry) + get_client / get_pending FastAPI dependencies
+    ├── app.py                   # create_app(...) -> FastAPI; lifespan binds one client per configured profile; public /healthz; authenticated /v1 mount (docs/redoc/openapi disabled)
+    ├── _context.py              # Per-profile AppState and ProfileRegistry + selected get_client / get_pending dependencies
+    ├── _profiles.py             # Profile header, configuration validation, and canonical storage-path uniqueness
+    ├── _profile_client.py       # Compatibility import of shared _app/profile_client.py ownership
     ├── _limits.py               # Lifespan-owned REST route-group concurrency limiters for expensive source/chat/research/artifact work
     ├── _auth.py                 # Bearer-token (constant-time, 401) + loopback-Host (DNS-rebinding guard, 403) dependency for /v1
     ├── _errors.py               # ErrorCategory -> HTTP status table + _redact + the classify-once exception handler emitting {error:{category,message}}

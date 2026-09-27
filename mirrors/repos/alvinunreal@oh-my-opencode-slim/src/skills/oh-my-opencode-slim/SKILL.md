@@ -57,7 +57,7 @@ Concrete files agents should know:
 | `~/.config/opencode/oh-my-opencode-slim/{agent}_append.md` | Append-only prompt tuning for a built-in agent |
 | `~/.config/opencode/oh-my-opencode-slim/{preset}/{agent}.md` | Preset-specific full prompt replacement |
 | `~/.config/opencode/oh-my-opencode-slim/{preset}/{agent}_append.md` | Preset-specific append-only prompt tuning |
-| `~/.config/opencode/skills/<skill-name>/SKILL.md` | Installed skill prompt payload |
+| `~/.config/opencode/skills/<skill-name>/SKILL.md` | User override — a same-named directory here shadows the bundled in-process skill |
 
 Built-in agent prompt file names are exact agent names:
 

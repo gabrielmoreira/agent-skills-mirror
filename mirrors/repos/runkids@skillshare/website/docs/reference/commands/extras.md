@@ -123,7 +123,7 @@ Extras
   ✓ ~/.codex/agents  extension: codex-agents
 ```
 
-A synced row shows only its icon, path, and mode; non-synced rows append a status word (`drift`, `not synced`, `no source`). Targets with a transform extension are labeled `extension: <name>` in place of the sync mode (their underlying mode is always `copy`).
+A synced row shows only its icon, path, and mode; non-synced rows append a status word (`drift`, `modified`, `not synced`, `no source`). Targets with a transform extension are labeled `extension: <name>` in place of the sync mode (their underlying mode is always `copy`).
 
 ### `extras source`
 
@@ -165,12 +165,12 @@ skillshare extras <name> --remove-target <path> [--prune] [-p|-g]
 
 | Flag | Description |
 |------|-------------|
-| `--mode <mode>` | New sync mode: `merge`, `copy`, or `symlink` |
+| `--mode <mode>` | New sync mode: `merge`, `copy`, or `symlink`; `import` only for [single-file extras](#single-file-extras) |
 | `--flatten` | Enable flatten (sync subdirectory files into target root) |
 | `--no-flatten` | Disable flatten |
 | `--add-target <path>` | Add a new target to the extra |
 | `--remove-target <path>` | Remove a target from the extra (config-only by default) |
-| `--prune` | With `--remove-target`: also delete skillshare-managed files under that target |
+| `--prune` | With `--remove-target`: also delete skillshare-managed files under that target. For a single-file extra it restores the target file instead |
 | `--target <path>` | Target directory path (required for `--mode` with multi-target extras; `--flatten`/`--no-flatten` applies to all targets when omitted) |
 | `--project, -p` | Use project-mode extras (`.skillshare/`) |
 | `--global, -g` | Use global extras (`~/.config/skillshare/`) |
@@ -209,11 +209,11 @@ Remove an extra from configuration.
 skillshare extras remove <name> [--force] [-p|-g]
 ```
 
-Source files and synced targets are not deleted — only the config entry is removed.
+Source files and synced targets are not deleted — only the config entry is removed. For a [single-file extra](#single-file-extras), each target file goes back to how it was before skillshare replaced it.
 
 ### `extras collect`
 
-Collect local files from a target back into the extras source directory. Files are copied to source and replaced with symlinks. Copy-mode targets keep their files as regular copies.
+Collect local files from a target back into the extras source directory. Files are copied to source and replaced with symlinks. Copy-mode targets keep their files as regular copies. Collect is not supported for [single-file extras](#single-file-extras).
 
 Files that already exist in source are skipped. Use `--force` to overwrite them with the target version — for example, to pull back edits made directly in a copy-mode target. Files whose content already matches source are still skipped.
 
@@ -251,6 +251,7 @@ skillshare extras collect rules --force
 | `merge` (default) | Per-file symlinks from target to source |
 | `copy` | Per-file copies |
 | `symlink` | Entire directory symlink |
+| `import` | [Single-file extras](#single-file-extras) only: an `@<source file>` line in the target file |
 
 When switching modes (e.g., from `merge` to `copy`), the next `sync` automatically replaces existing symlinks with the new mode's format. No `--force` is needed — symlinks are always safe to replace. Regular files created locally require `--force` to overwrite.
 
@@ -359,6 +360,12 @@ Agent targets can also take `extension` directly, without an extra. See [Convert
 
 ## Recipe: shared instructions across agents
 
+:::tip Dashboard
+The web dashboard can set this up for you, with a preview, backups and a restore
+button: see [Share one AGENTS.md across your tools](../../how-to/daily-tasks/sharing-instructions.md).
+It uses [single-file extras](#single-file-extras) instead of a directory.
+:::
+
 Most coding agents now read an `AGENTS.md` for standing instructions, but each
 one keeps its user-level copy in a different directory. One extra with several
 targets distributes a single source file to all of them:
@@ -416,6 +423,62 @@ itself. Agents store their own learnings in private formats — a directory of
 Markdown for Claude Code, a database for Codex, non-file storage for Cursor — and
 those are not portable by copying files between targets.
 :::
+
+---
+
+## Single-file extras {#single-file-extras}
+
+An extra with `file` syncs one file from its source directory instead of the whole
+directory. Each target receives `<path>/<as>`, where `as` defaults to the `file`
+name. The dashboard's [shared AGENTS.md files](../../how-to/daily-tasks/sharing-instructions.md)
+are single-file extras.
+
+```yaml
+extras:
+  - name: personal
+    file: AGENTS.md                # ~/.config/skillshare/extras/personal/AGENTS.md
+    targets:
+      - path: ~/.codex             # ~/.codex/AGENTS.md becomes a link
+      - path: ~/.gemini
+        as: GEMINI.md              # ~/.gemini/GEMINI.md becomes a link
+      - path: ~/.claude
+        as: CLAUDE.md
+        mode: import               # ~/.claude/CLAUDE.md keeps its content and imports the file
+```
+
+| Mode | Target file |
+|------|-------------|
+| `merge` (default) or `symlink` | A symlink to the source file |
+| `copy` | A copy of the source file |
+| `import` | Your file, with an `@<source file>` line in a managed block at the top |
+
+`import` keeps the `@` line between `<!-- skillshare:instructions:begin -->` and
+`<!-- skillshare:instructions:end -->` and never changes the rest of the file. Use it
+only for tools that follow `@` imports, such as Claude Code.
+
+Rules:
+
+- `file` and `as` must be plain file names, without `/` or `\`.
+- `as` and `import` require `file`. `flatten` and `extension` can't be used with a
+  single-file extra.
+- When a target already has a different regular file or a symlink, sync saves it
+  and replaces it without `--force`. A directory in the way is skipped.
+- A target that was `modified` after it was linked is replaced as well; the edited
+  file is kept as a drift backup, not as the restore point.
+- `extras list` shows `modified` when a linked target was replaced by a regular file
+  with different content.
+- `extras remove` and `--remove-target --prune` restore each target file: the link,
+  copy or import line goes, and the file or symlink that was there before the first
+  sync comes back (or no file, if there was none). A `modified` target is kept as a
+  drift backup first. `--remove-target` without `--prune` leaves the file and forgets
+  that restore point, so a later sync backs up whatever is there then.
+- `extras collect` is not supported. To keep an edit made in a target, use
+  **Collect into** on the dashboard's **AGENTS.md** tab.
+
+Backups are kept in skillshare's state directory
+(`~/.local/state/skillshare/extras/backups/` on macOS and Linux), the last 10 per
+file. Drift backups go to `extras/backups/<id>/drift/` there, where `<id>` is derived
+from the target file's path; restore never uses them.
 
 ---
 

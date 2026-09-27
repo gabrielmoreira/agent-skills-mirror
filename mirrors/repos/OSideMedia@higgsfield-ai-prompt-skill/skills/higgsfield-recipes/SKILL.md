@@ -7,8 +7,8 @@ description: >
 user-invocable: true
 metadata:
   tags: [higgsfield, recipes, templates, genre, action, horror, romance, ad, sci-fi]
-  version: 3.0.0
-  updated: 2026-04-06
+  version: 3.1.1
+  updated: 2026-09-26
   parent: higgsfield
 ---
 
@@ -17,12 +17,21 @@ metadata:
 Each recipe is a ready-to-adapt template. Fill in the bracketed fields
 with your specific details. All examples are compliant — no real names or IPs.
 
+> **`Style: Anamorphic` in these recipes is a single-shot Look-line choice** —
+> a standalone generation with no location plate, where the words are the only
+> route to the look (root `SKILL.md` HARD RULE 7: a style register, never an
+> output ratio). For a multi-shot **Seedance** sequence that must hold the lens
+> across shots, the lens goes into the location plates instead and the optics
+> words leave the video prompt (`../higgsfield-seedance/SKILL.md` § Bake it into
+> the asset) — one studio's practice; Hell Grind keeps the look in the prompt
+> too, and which holds better is OPEN (`../shared/house-rulings.md` P2-6).
+
 ---
 
 ## Recipe 1: Action / Chase
 
 **Core pattern:** Establish → Pursuit → Obstacle → Climax
-**Best models:** Kling 2.6, Sora 2
+**Best models:** Kling 2.6
 **Camera:** Action Run, FPV Drone, Crash Zoom In, Bullet Time
 **Style:** Cinematic or Anamorphic
 
@@ -68,7 +77,7 @@ Style: [Cinematic / Super 8MM], [lighting — golden / overcast / practical only
 
 **Example:**
 ```
-A man in his 60s sits alone at a kitchen table. An old letter in his hands.
+A grey-haired man sits alone at a kitchen table. An old letter in his hands.
 He reads slowly, lips barely moving, eyes growing distant.
 Camera: slow Dolly In toward his face.
 He looks up at the empty chair across from him.
@@ -112,7 +121,7 @@ Sound: gentle liquid pour, soft ceramic texture.
 ## Recipe 4: Sci-Fi / Futuristic
 
 **Core pattern:** World establish → Reveal tech/threat → Action beat
-**Best models:** Sora 2, Wan 2.5, Kling 2.6
+**Best models:** Wan 2.5, Kling 2.6
 **Camera:** Crane Up, FPV Drone, Super Dolly Out, Dutch Angle
 **Style:** Cinematic or Anamorphic
 **Motion presets:** Cyborg, Plasma Explosion, Glitch, Wireframe, Portal

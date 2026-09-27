@@ -11,6 +11,12 @@ If you just want to use the app, head to [Getting Started](../overview/getting-s
 
 ---
 
+## Why the harness is light
+
+Most of what makes OpenHuman fast is a choice made early on: the core is a Rust library, not a set of services talking to each other over sockets. Agents run in-process, so a turn pays for a function call instead of a process boundary or an RPC hop. We've measured 500 agents alive at once in a single process at roughly 1.77 MiB of marginal memory each, cold agent turns land around 100 ms, and a stripped build with only the domains you need can come in at 51 MiB. [Performance](performance.md) has the numbers and how we got them.
+
+Everything above that floor is modular: cargo feature gates decide what compiles in, loadable native modules carry the heavier engines, and the engines themselves, model providers, embeddings, memory, search, are chosen by config rather than baked into the binary. That's what [Pluggable engines](engines.md) and [Jev](jev.md) cover.
+
 ## Where things live
 
 | Path        | What's there                                                                                                      |
@@ -28,11 +34,21 @@ If you just want to use the app, head to [Getting Started](../overview/getting-s
 
 If it's your first time pulling the repo:
 
-1. [**Getting Set Up**](getting-set-up.md). Toolchain, dependencies, the Tauri CLI - everything `pnpm dev` needs to actually start.
+1. [**Getting Set Up**](getting-set-up.md). Toolchain, dependencies, the Tauri CLI, everything `pnpm dev` needs to actually start.
 2. [**Building the Rust Core**](building-rust-core.md). Fresh-machine setup for the Rust workspace only: pinned toolchain, OS packages, and exact `cargo` commands.
 3. [**Architecture**](architecture.md). How the desktop app, the in-process Rust core, the JSON-RPC bridge, and the dual sockets fit together. Read this before you make non-trivial changes.
 4. [**Frontend**](architecture/frontend.md) and [**Tauri Shell**](architecture/tauri-shell.md). The React app and the desktop host that wraps it.
 5. [**MCP Server**](mcp-server.md). Opt-in stdio MCP mode for exposing read-only OpenHuman memory tools to local clients.
+
+---
+
+## The core, in depth
+
+- [**Performance**](performance.md). What "light and fast" means in numbers: memory per agent, cold-start timing, binary size, and how the benchmarks are run.
+- [**Pluggable engines**](engines.md). How the LLM, embeddings, memory, and web search layers are chosen by config, and what's available for each.
+- [**Jev**](jev.md). The fast probability model behind tool selection and routine browser decisions, and why it beats brute-force retrieval on both speed and accuracy.
+- [**Embedding OpenHuman**](embedding.md). Using `openhuman-embed` to run the core, and any number of agents on it, inside another Rust product.
+- [**One TinyHumans API key**](tinyhumans-api-key.md). What a single key unlocks: managed inference, embeddings, web search, media, integrations, voice, and Jev.
 
 ---
 
@@ -72,4 +88,4 @@ PRs must clear the **≥ 80% coverage on changed lines** gate. Add tests for new
 - Follow [`CONTRIBUTING.md`](../../CONTRIBUTING.md) and the issue/PR templates.
 - Keep changes focused. A bug fix doesn't need surrounding cleanup; a one-shot operation doesn't need a helper.
 
-Help building toward AGI doesn't have to mean shipping a kernel - bugfixes, docs, integrations, and tests all move the bar.
+Help building toward AGI doesn't have to mean shipping a kernel, bugfixes, docs, integrations, and tests all move the bar.

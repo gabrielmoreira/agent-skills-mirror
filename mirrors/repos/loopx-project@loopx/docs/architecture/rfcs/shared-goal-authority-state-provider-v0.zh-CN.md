@@ -1,6 +1,7 @@
 # RFC：LoopX 共享控制面权威与可插拔状态 Provider（v0）
 
-- 状态：Draft，正在接受 maintainer review
+- 状态：已接受
+- 替代 / 关闭：无
 - 最初提案方：NoKV Lab
 - 扩展修订方：LoopX maintainer
 - 日期：2026-08-05；修订于 2026-09-13
@@ -20,17 +21,22 @@
 - 语言说明：[英文版](./shared-goal-authority-state-provider-v0.md)与本中文版互为
   语义镜像；两者不一致属于缺陷
 
-## 当前交付边界（2026-09-25）
+## 当前交付边界（2026-09-27）
 
-按 `37bbaec79` 与当前 PR 状态核对：完整来源传输、事务捕获、来源组装及此前五个
-在途 caller/event 修复都已合入，不再计入待开发。当前晋升准入修复之后，规划三个
-明确代码边界：外部动作执行区间保护、事件 writer 绑定与整 Goal 迁移/回退闭环、
-默认启用与最后一批有界 Python 退役。#4931 与 D2 的剩余资格证据单列；三个是
-可命名的开发批次，不是保证总 PR 数。[唯一当前清单与退出条件](ledger/shared-goal-authority-state-provider-v0/2026-09-24-default-cutover-reconciliation.zh-CN.md)。
+按 `157ab7b11` 与当前 PR 核对，来源捕获、分页、File 格式升级及 Python 原型
+退役已交付。本次修复审核输入恢复并增加独立历史审计；从本次开始规划四个交付
+PR：本次恢复切片、外部执行区间保护、整 Goal 激活/回退集成、默认入口及最后
+一批有界 Python 退役。本次之后剩后三个规划范围；#5054/#4931 已有 PR，D2/D3
+缺失证据另列，不能保证最终缺陷修复数量。
+[当前清单、依据及退出条件](ledger/shared-goal-authority-state-provider-v0/2026-09-27-recovery-audit.zh-CN.md)。
 
-## 旧观测退役检查点（2026-09-24）
+File 历史存储在 #5063 的读取缓存和 RPC 预算之上，复用现有 TS checkpoint/delta
+编码；物理格式升级保留原版本、回执和每条完整历史投影。正常读写只接受 v1，
+安装入口调用显式升级流程，先自动备份、验证再迁移；旧解析器仅用于迁移。File／
+SQLite 跨 provider 恢复复用逻辑归档。这不晋升 provider／默认值，也不算删除 Python
+业务 owner。[自动备份迁移、冷读成本与验收边界](../../reference/file-authority-state-log.md)。
 
-[当前交付清单](ledger/shared-goal-authority-state-provider-v0/2026-09-24-observation-retirement.zh-CN.md)
+**旧观测退役（2026-09-24）。** [当前交付清单](ledger/shared-goal-authority-state-provider-v0/2026-09-24-observation-retirement.zh-CN.md)
 区分已合入、在途 PR 与资格证据。本次删除旧 Python observer 和 TS observation 提交链，
 没有将其冒充 executor 存活保护或 event writer 绑定。只保留一个可写 shadow lineage，
 仍然默认关闭，且必须显式 bootstrap。
@@ -41,11 +47,19 @@
 
 `e94759d88` 已增加 [PostgreSQL service admission](../../reference/postgresql-authority-service-v0.zh-CN.md)，包含认证/tenant 验证注入与 identity rotation；它是进程内服务边界，不是已部署网络服务。后续 P lane 复用它，补 transport、真实身份策略、pool/cancellation/failover 与运维资格，不能从零重造 admission。R7 百 Agent 资格需独立报告注册数、活跃执行器和实测容量；目录、presence、管家计划或一次 source read 不授予 shared authority。既有 source-failure fail-closed、receipt/replay 和 rollback 合同保持。
 
-## 当前实现检查点
+## 当前实现事实
 
 长历史 closeout 读取复用仅缓存可重新验证的解析前缀，不新增持久 authority 或放宽
 writer fence/D2。剩余三个实现边界不因该运行缺陷修复而机械减一。
 [证据与边界](ledger/shared-goal-authority-state-provider-v0/2026-09-24-default-cutover-reconciliation.zh-CN.md#长历史收尾检查本次修复与剩余边界)。
+
+对 journal 超过 128 MiB 完整文档缓存上限的既有 file-v0 Goal，Effect server
+现在复用按原始字节和 store identity 校验、容量有界的 head 与历史回执读取视图；
+提交及历史扫描仍校验完整 journal。canonical 写入 caller 的 RPC 预算覆盖既有
+30 秒 maintenance lock 等待、5 秒 provider lock 等待和有界读回，避免过早报告
+结果不明；只读的 lease inspect 有独立预算。这只是面向既有 Goal 的 L2/L5
+可靠性修复，不解决 file-v0 写入放大，不代表 SQLite D2 资格通过，也不授权迁移
+活跃 Goal。第 7.2 节的容量、恢复、soak 和 fenced migration 门槛仍然有效。
 
 晋升准入现将完整来源绑定到当前 registry witness，并在 TS 持锁范围内重新校验；
 保存计划执行保留已审核的 handoff 策略，失败结果如实报告持久 fence。
@@ -81,17 +95,7 @@ capture 与已持久化 head 不会被静默迁移。
 contract 覆盖的 section 才成为确定性的兼容投影，自由的人类叙事仍在 coordination
 head 之外。
 
-### 管家衔接检查点（2026-09-13）
-
-在 `7eb4b7bb1661bd5eff63a8725a33169792d5964b` 源码核验 `AuthorityStore`
-接缝及 #4280、#4283、#4287 的事务/展示/journal 收敛。这更新衔接基线，不改变
-上方历史 provider 基线或资格证据。SQLite/PostgreSQL 候选路径、各 provider 的
-保留条件和 D1–D3 计划仍在；不宣称默认来源切换或共享服务已交付。
-
-[强能力管家与语义交接 RFC](capable-manager-semantic-handoff-v0.zh-CN.md)
-消费此 authority；M1 主机工具与 M2 请求账本重构无需等待 provider 晋级。
-第 1.4 节明确边界；[TS 执行卡](typescript-control-plane-migration-v0.zh-CN.md)
-继续负责业务规则收敛及旧 caller 删除。
+- 检查点已移至执行账本：[管家衔接检查点（2026-09-13）](ledger/shared-goal-authority-state-provider-v0/2026-09-13-manager-integration.zh-CN.md)。
 
 ### Local provider opening 边界（2026-09-13）
 
@@ -1579,6 +1583,11 @@ provider-first，且不改变下述 typed outcome 合同。
 
 #### Stage 2 切片状态（2026-08-23）
 
+> 历史原型记录：Python head/executor/File provider 及其探针已退役。当前
+> Stage 0 验证正式 TS File/SQLite；下文历史通过记录不构成当前 provider 资格。
+> [覆盖映射与兼容边界](../../../examples/shared-goal-authority-e2e/README.md#native-qualification-and-prototype-retirement)。
+
+
 第一个 Stage 2 切片已通过 #3529 以增量方式合入 `main`：
 
 - `loopx.control_plane.coordination.head`：`loopx_coordination_head_v0`
@@ -1716,6 +1725,8 @@ CLI runner、observation-lock 窗口、候选回读）、只读 TypeScript 探�
 `examples/shared-goal-authority-e2e/ladder.py`。
 
 按阶段，本增量实现：
+
+下列 Stage 0 历史行已于 2026-09-26 退役；当前资格使用 native provider ladder。
 
 - Stage 0：`s0.file_matrix_twelve_rows` 运行保留的 live matrix 脚本，要求 file
   provider 上恰好十二个共享场景行全为 true；`s0.nokv_live_matrix` 要求 live
@@ -2189,77 +2200,8 @@ render/export/rollback 与 selection parity，再改变 binding 或 manifest。�
 的完整性要求覆盖 domain fact 与保留的 compatibility provenance，但不要求原生
 caller 伪造 Markdown 地址。
 
-### Provider-first terminal lifecycle 检查点（2026-09-07）
-
-Promotion 后的 `complete`、`supersede` 与按 role 执行的 `archive`，现在在 file、
-NoKV、PostgreSQL 上使用同一笔 TypeScript 原生事务。authority owner 决定
-actor/claim/lease admission，从 typed caller intent 推导 successor 的 priority、capability
-与 Agent binding、exclusion、continuation 和 predecessor relation，reduce completion
-policy，以 CAS 提交 Todo/lease/head/outbox write set，并持久化 replay receipt。Python
-只保留 registry fact、caller-approved validation effect、intent/result transport 与兼容投影
-drain 的 adapter 职责，不再针对不同 provider 选择另一种 terminal 或 successor outcome。
-Legacy Markdown 与 event writer 在物化 record 前复用同一个纯 TypeScript successor
-decision。
-
-Validation declaration 只以 required marker 与 SHA-256 digest 跨越 canonical 边界。
-raw argv 留在权限为 0600 的 host-local sidecar，恢复时必须先证明 digest 匹配才可执行。
-这使 provider head 保持可移植、public-safe，同时不会让 recovery 静默绕过 validation。
-导入 v0 的 `index` 继续作为归档顺序兼容事实；native record 回退到持久
-completion/update 时间与 Todo identity。Todo 已不在当前 canonical collection 中的
-legacy lease file 继续作为历史审计材料保留，但不进入 live projection。
-
-资格验证使用同一份只读、生产复杂度快照做三臂对照：不可变 legacy baseline clone、
-隔离 file store、隔离的真实 PostgreSQL tenant。两个 provider head 精确比较；legacy
-结果按显式 compatibility projection 比较。归档时仅从 legacy hot view 排除 provider
-保留的 archive 记录及其历史 lease，并且只有先证明每个 role 的相对顺序完全一致，才可
-忽略导入 `index` 的绝对值；domain 字段、归档选择、active lease 与非目标记录不得归一化，
-源快照必须不变。可执行演练为
-`examples/control_plane/authority-three-arm-rehearsal.py`。受检入的确定性 public-safe
-规模 fixture 在每个 provider conformance suite 中制造同样的分布、压力与 hard-lease
-fence。它不能替代只读三臂演练，因为所有 provider 共享新的 semantic owner，可能同时
-同意同一个回归。
-
-凡声称推进本 RFC 的 PR，都必须遵守
-[production-scale fixture 维护契约](../../development/testing-and-quality.md#production-scale-fixture-stewardship--生产规模-fixture-维护契约)：
-声明 fixture 影响、覆盖所有受影响的 provider arm，并把只读三臂演练保留为独立的
-promotion gate。
-
-Legacy lifecycle 的字段组装现在调用唯一 TS field planner，详见
-[TS 退役检查点](typescript-control-plane-migration-v0.zh-CN.md#legacy-字段规则退役检查点)。
-它删除 Python decision，但不改变逐 goal 的 authority 阶段：未 promotion 的 goal
-仍由持锁 Markdown writer 提交，promoted goal 仍使用既有 provider transaction 与
-unsupported-field fence。planner 不读取 provider，也不授予 lease、CAS receipt 或
-写权限。该检查点闭合的是一个规则 owner，不是剩余 mutation inventory 或本地
-store／promotion 资格化。
-
-### 跨 RFC 的语义与展示 conformance 检查点（2026-09-12）
-
-TypeScript 重构 RFC 与本 provider RFC 现在共享一个显式的 Todo 语义边界。
-Python 生产 caller 直接从 `todos/todo_semantics.py` 导入；`todos/projection.py`
-只作为外部集成所需的 import 兼容 facade 保留，不再是第二个 kernel。这是 owner
-收敛，不是新增一套规则。TypeScript 的 typed `projection_delivery` union 也明确区分
-mutation intent（`pending`/`not_required`）与 provider readback（`delivered`/`current`）；
-未知状态在 acknowledgement 之前 fail closed。
-
-优先级意图现接入 File、SQLite、PostgreSQL 既有的准入 create/update 事务。
-显式设置/清除、参数缺省及与旧文字前缀的冲突由 `todos/priority.ts` 处理，Python
-读取共享生成的语法。Markdown 保留兼容展示，native record 保存一致的 priority/title。
-CLI 与经过审阅的 Chat 编辑保留 CAS 和历史重试身份。真实后端回读及长期本地 Goal 的
-一次性隔离副本验证这条边界，见[调用合同](../../project-agent-todo-contract.md#priority-intent)。
-这不改变 provider 默认，也不关闭其余 promotion 门禁。
-
-展示语义属于 projection 层，而不是 domain record。`source_section` 与 `index` 是 v0
-wire shape 的展示坐标；native record 根据 role/archive state 推导相同的展示 section，
-并以时间戳和 Todo identity 做确定性回退，不制造假的持久 index。因此即使 wire shape
-不同，normalized presentation metadata 仍只有一份 contract。同一规则由
-production-scale fixture 以及 File、SQLite、NoKV conformance arm 共同覆盖。Provider
-自己的 revision token 仍由各自 provider 管理，只用于 provider-specific replay 规则，
-不被归一成 Todo 语义。
-
-本检查点只改变 read/ordering 与兼容 adapter 语义：不晋升 provider、不增加 writer，
-不改动 #4280 交付的 transaction decoder，也不把 Markdown 变成第二权威。共享 RFC
-继续负责 durable truth、恢复、cutover 与 projection delivery；TS RFC 负责业务规则
-owner 与 caller 删除。
+- 检查点已移至执行账本：[Provider-first terminal lifecycle 检查点（2026-09-07）](ledger/shared-goal-authority-state-provider-v0/2026-09-07-provider-first-terminal-lifecycle.zh-CN.md)。
+- 检查点已移至执行账本：[跨 RFC 的语义与展示 conformance 检查点（2026-09-12）](ledger/shared-goal-authority-state-provider-v0/2026-09-12-cross-rfc-semantic-and-presentation-conformance.zh-CN.md)。
 
 ### 下一步交付与并行 provider 工作
 

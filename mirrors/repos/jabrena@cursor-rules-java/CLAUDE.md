@@ -1,1 +1,0 @@
-cache/repos/github.com/jabrena@cursor-rules-java/AGENTS.md

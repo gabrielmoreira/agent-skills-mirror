@@ -6,9 +6,9 @@ Settings tabs, persistent thread resume, command/file pickers, approvals, plan
 review, task/goal/agent/skill/MCP/artifact views, Git review, and a multiline
 composer. Chat uses the same `web_chat` surface the desktop app drives
 (`openhuman.channel_web_chat` / `openhuman.channel_web_cancel` +
-`web_chat::subscribe_web_channel_events`). It boots the core in-process — no
-HTTP, no sockets — via
-`CoreBuilder::new(HostKind::Cli).domains(DomainSet::full()).services(ServiceSet::none())`
+`web_chat::subscribe_web_channel_events`). It boots the core in-process, with
+no HTTP and no sockets, via
+`CoreBuilder::new(HostKind::Cli).domains(DomainSet::full()).services(ServiceSet::none())`,
 and streams a live transcript in the terminal.
 
 ## Run / build
@@ -42,7 +42,7 @@ Any other `-`-prefixed argument is rejected before the core boots.
 
 ## Feature flags
 
-- `crash-reporting` (default on) — pulls in `sentry` and `dotenvy`, forwards
+- `crash-reporting` (default on): pulls in `sentry` and `dotenvy`, forwards
   `openhuman-core/crash-reporting`, and makes `init_crash_reporting` install a
   Sentry client and panic integration before the TUI takes over the terminal.
   Without it, `init_crash_reporting` compiles to a no-op at the same call
@@ -50,7 +50,7 @@ Any other `-`-prefixed argument is rejected before the core boots.
 
 ## Crate relationships
 
-- Depends on `openhuman-core` directly and runs it in-process — there is no
+- Depends on `openhuman-core` directly and runs it in-process: there is no
   need to spawn or connect to an `openhuman-core` binary.
 - Depends on `openhuman-rpc` only for `unwrap_rpc` (re-exported from
   `src/cockpit.rs`), which strips the optional `result`/`data` envelopes core
@@ -64,13 +64,13 @@ Any other `-`-prefixed argument is rejected before the core boots.
 
 | File | Purpose |
 | --- | --- |
-| `app.rs` | Terminal chat event loop — bridges keyboard input, the web-channel broadcast, and a spinner ticker over `tokio::select!`. |
+| `app.rs` | Terminal chat event loop: bridges keyboard input, the web-channel broadcast, and a spinner ticker over `tokio::select!`. |
 | `cockpit.rs` | OpenHuman-native overlays and structured control-plane state. |
 | `composer.rs` | Keyboard-first, terminal-independent chat composer. |
 | `controls.rs` | Config and account actions for the tabbed terminal UI. |
 | `crash_reporting.rs` | Crash-reporting client ownership for the standalone terminal binary. |
-| `render.rs` | Ratatui rendering — a pure view over `TranscriptState` + `UiState`. |
-| `runner.rs` | CLI entry point (`run_from_cli`) — flag parsing, logging setup, and core boot. |
+| `render.rs` | Ratatui rendering: a pure view over `TranscriptState` + `UiState`. |
+| `runner.rs` | CLI entry point (`run_from_cli`): flag parsing, logging setup, and core boot. |
 | `state.rs` | Pure, terminal-free transcript reducer for the Chat tab. |
 | `terminal.rs` | Terminal setup/teardown with panic-safe restoration. |
 | `ui_state.rs` | Pure navigation and form state for the four terminal pages. |

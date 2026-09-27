@@ -2,7 +2,9 @@
 
 `openhuman-embed` is the host-facing library package for products that run the
 OpenHuman core in-process, including OpenCompany. It re-exports the
-runtime builder from `openhuman-core` and owns the typed embedding facade.
+runtime builder from `openhuman-core` and owns the typed embedding facade. See
+[`gitbooks/developing/embedding.md`](../../gitbooks/developing/embedding.md)
+for the narrative walkthrough this README's reference material supports.
 
 Use the default contributor feature set:
 
@@ -53,8 +55,8 @@ embedding method in `openhuman-embed`.
 
 ## Two steps: a `Runtime`, then any number of `Agent`s
 
-The library API. Initialise one runtime — features, services, backend URL,
-the TinyHumans API key — then instantiate agents on it, each fully described
+The library API. Initialize one runtime (features, services, backend URL,
+the TinyHumans API key), then instantiate agents on it, each fully described
 and independent of the others:
 
 ```rust,no_run
@@ -109,7 +111,7 @@ resumes only its own thread.
 
 What the runtime owns: the workspace and credential store, the event bus,
 the keyring, the background `ServiceSet`, the registered `DomainSet` (agents
-can only narrow it — enable `mcp` / `skills` at runtime build time if any
+can only narrow it, so enable `mcp` / `skills` at runtime build time if any
 agent will use them; the default does), and the API key.
 
 Layout under a runtime-owned root:
@@ -127,9 +129,11 @@ The core knows the hosted TinyHumans backend only through
 none: agents, memory, skills, tools and RPC run without any TinyHumans
 connection, and every hosted-backend surface (billing, `/agent-integrations/*`
 tools, channel relay, cloud voice) answers with a typed
-`BACKEND_UNAVAILABLE:` error. Use `openhuman-tinyhumans` — its
+`BACKEND_UNAVAILABLE:` error. Use `openhuman-tinyhumans`, whose
 `RuntimeBuilder` mirrors this one and installs the SDK-backed transport on
-`build()` — or pass your own to `RuntimeBuilder::backend_transport`.
+`build()`, or pass your own to `RuntimeBuilder::backend_transport`. See
+[`gitbooks/developing/tinyhumans-api-key.md`](../../gitbooks/developing/tinyhumans-api-key.md)
+for what that one key then unlocks.
 
 ### Authentication
 
@@ -142,7 +146,7 @@ TinyHumans OpenAI-compatible endpoint, backend REST calls send it as
 its own `Provider` (BYOK) never touches the key. `HarnessBuilder::session`
 remains for hosts that drive backend features on behalf of a signed-in user;
 the core stores that session as handed over (`auth.set_credential`) and never
-validates it — obtaining and validating a JWT is the host's job (see
+validates it: obtaining and validating a JWT is the host's job (see
 `openhuman_tinyhumans::session`).
 
 ### `Harness`: the one-agent shorthand
@@ -175,8 +179,9 @@ println!("{}", second.reply);
 ```
 
 `Core` is the typed facade shown at the top: a host that already built a
-`CoreRuntime` wraps it with `Core::from_runtime` and reaches sub-facades —
-`config()`, `auth()`, and `agent()` (a `CoreAgent` running the orchestrator).
+`CoreRuntime` wraps it with `Core::from_runtime` and reaches sub-facades
+through it: `config()`, `auth()`, and `agent()` (a `CoreAgent` running the
+orchestrator).
 
 ### One runtime per process
 
@@ -186,13 +191,13 @@ The keyring master key, the RPC bearer, the global event bus and the
 sequence), so a second runtime would silently share them while believing it
 had a separate workspace. `RuntimeBuilder::build` returns
 `RuntimeError::AlreadyRunning` instead; agents are the unit of multiplicity.
-`Core::from_runtime` is not guarded — it only wraps a runtime the host
-already built — but the same constraint applies to the `CoreRuntime` beneath
+`Core::from_runtime` is not guarded (it only wraps a runtime the host
+already built), but the same constraint applies to the `CoreRuntime` beneath
 it.
 
-Build the tokio runtime yourself — a turn is a large async state machine that
-overflows tokio's default 2 MiB worker stack once a sub-agent nests inside it —
-using `AGENT_WORKER_STACK_BYTES` and `MAX_BLOCKING_THREADS` from
+Build the tokio runtime yourself. A turn is a large async state machine that
+overflows tokio's default 2 MiB worker stack once a sub-agent nests inside it,
+so use `AGENT_WORKER_STACK_BYTES` and `MAX_BLOCKING_THREADS` from
 [`openhuman_core::core::runtime`](../openhuman-core/src/core/runtime/README.md):
 
 ```rust,no_run
@@ -263,12 +268,14 @@ Every feature on this crate is a pass-through to the same-named feature on
 
 Two of them also gate items on this crate's own public surface:
 
-- `mcp` — `HttpHeader`, `McpAuthConfig`, `McpServer`, `AgentSpec::mcp` and
+- `mcp`: `HttpHeader`, `McpAuthConfig`, `McpServer`, `AgentSpec::mcp` and
   `HarnessBuilder::mcp`.
-- `skills` — `AgentSpec::skills_dir` and `HarnessBuilder::skills_dir`.
+- `skills`: `AgentSpec::skills_dir` and `HarnessBuilder::skills_dir`.
 
 See [`docs/library-minimal-recipe.md`](../../docs/library-minimal-recipe.md)
-for a measured minimal-footprint feature set.
+for a measured minimal-footprint feature set, and
+[`gitbooks/developing/performance.md`](../../gitbooks/developing/performance.md)
+for the resulting binary sizes and per-agent memory numbers.
 
 ## Examples and tests
 
@@ -286,8 +293,8 @@ OPENHUMAN_EXAMPLE_INHERIT=1 cargo run -p openhuman-embed --example run_turn -- "
 Optional: `OPENHUMAN_EXAMPLE_BACKEND_URL` points non-inference backend calls
 somewhere specific, and `OPENHUMAN_EXAMPLE_SKILLS_DIR` supplies skill bundles.
 
-Two agents on one runtime — BYOK with the same variables as above, or managed
-inference with `OPENHUMAN_EXAMPLE_TINYHUMANS_API_KEY`:
+Two agents on one runtime, either BYOK with the same variables as above, or
+managed inference with `OPENHUMAN_EXAMPLE_TINYHUMANS_API_KEY`:
 
 ```bash
 OPENHUMAN_EXAMPLE_BASE_URL=https://api.openai.com/v1 \
@@ -318,7 +325,7 @@ time. Run them with `cargo test -p openhuman-embed --features inference,mcp,skil
 ## Relationship to other crates
 
 Its only in-repo dependency is `openhuman-core` (package `openhuman`) with
-`default-features = false` — every capability comes from a feature forwarded
+`default-features = false`: every capability comes from a feature forwarded
 above. It does not depend on `openhuman-rpc` directly; the shared
 `RpcOutcome` and `StructuredRpcError` types reach it through
 `openhuman_core::rpc`. `openhuman-app` and `openhuman-tui` depend on

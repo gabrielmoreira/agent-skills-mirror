@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `dontbesilent2025/dbskill` — 26 default patterns, 0 followed patterns, 108 file(s) materialized.
+Mirror of `dontbesilent2025/dbskill` — 26 default patterns, 0 followed patterns, 109 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `dontbesilent2025/dbskill` — 26 default patterns, 0 followed pattern
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 108 |
+| Files         | 109 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -159,14 +159,15 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 98 | ✓ | [`skills/dbs-xhs-title/agents/openai.yaml`](skills/dbs-xhs-title/agents/openai.yaml) |
 | 99 | ✓ | [`skills/dbs-xhs-title/SKILL.md`](skills/dbs-xhs-title/SKILL.md) |
 | 100 | ✓ | [`skills/dbs/agents/openai.yaml`](skills/dbs/agents/openai.yaml) |
-| 101 | ✓ | [`skills/dbs/numbered-prompts/allocation.json`](skills/dbs/numbered-prompts/allocation.json) |
-| 102 | ✓ | [`skills/dbs/numbered-prompts/catalog.json`](skills/dbs/numbered-prompts/catalog.json) |
-| 103 | ✓ | [`skills/dbs/references/composition-contract.md`](skills/dbs/references/composition-contract.md) |
-| 104 | ✓ | [`skills/dbs/references/official-skill-names.txt`](skills/dbs/references/official-skill-names.txt) |
-| 105 | ✓ | [`skills/dbs/scripts/check-update.sh`](skills/dbs/scripts/check-update.sh) |
-| 106 | ✓ | [`skills/dbs/scripts/list-official-skills.py`](skills/dbs/scripts/list-official-skills.py) |
-| 107 | ✓ | [`skills/dbs/scripts/numbered-prompts.py`](skills/dbs/scripts/numbered-prompts.py) |
-| 108 | ✓ | [`skills/dbs/SKILL.md`](skills/dbs/SKILL.md) |
+| 101 | ✓ | [`skills/dbs/numbered-prompts/825/PROMPT.md`](skills/dbs/numbered-prompts/825/PROMPT.md) |
+| 102 | ✓ | [`skills/dbs/numbered-prompts/allocation.json`](skills/dbs/numbered-prompts/allocation.json) |
+| 103 | ✓ | [`skills/dbs/numbered-prompts/catalog.json`](skills/dbs/numbered-prompts/catalog.json) |
+| 104 | ✓ | [`skills/dbs/references/composition-contract.md`](skills/dbs/references/composition-contract.md) |
+| 105 | ✓ | [`skills/dbs/references/official-skill-names.txt`](skills/dbs/references/official-skill-names.txt) |
+| 106 | ✓ | [`skills/dbs/scripts/check-update.sh`](skills/dbs/scripts/check-update.sh) |
+| 107 | ✓ | [`skills/dbs/scripts/list-official-skills.py`](skills/dbs/scripts/list-official-skills.py) |
+| 108 | ✓ | [`skills/dbs/scripts/numbered-prompts.py`](skills/dbs/scripts/numbered-prompts.py) |
+| 109 | ✓ | [`skills/dbs/SKILL.md`](skills/dbs/SKILL.md) |
 
 ---
 

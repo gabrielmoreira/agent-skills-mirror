@@ -10,8 +10,8 @@ constructed and executable but unadvertised: the agent sees one small tool,
 ## How it works
 
 - `types::ToolPack` is the unit: an `id`, a one-line `summary` shown in the
-  always-on pack index, the `tools` it owns, and `owners` — agent ids the pack
-  is *not* applied to, because the specialist a family was delegated to
+  always-on pack index, the `tools` it owns, and `owners` (agent ids the pack
+  is *not* applied to), because the specialist a family was delegated to
   (`settings_agent` for `system`, `skill_executor` for `skills`, ...) should
   not pay a `use_skill` round trip on every call of its own belt.
 - `registry::PACKS` is the compiled-in table. Membership is a build-time
@@ -35,9 +35,9 @@ constructed and executable but unadvertised: the agent sees one small tool,
   produced by the tinyagents policy middleware, which is the only layer that
   holds the session (see below).
 - `tools::PackRegistryHandle` is the late-bound, non-owning (`Weak`) view the
-  proxy dispatches through. It holds two registries — the durable tool `Arc`
+  proxy dispatches through. It holds two registries: the durable tool `Arc`
   and the agent's `synthesized_tools` `Arc`, where every `delegate_*` tool
-  lives — and each must be rebound after its `Arc` is replaced, or packed
+  lives. Each must be rebound after its `Arc` is replaced, or packed
   tools degrade to "skill unavailable" / "no tool in skill". The handle rides
   on `Tool::host_extension` and is read back by
   `tools::host_extensions::pack_registry_handle`.
@@ -68,7 +68,7 @@ visibility with `ToolGroups`"). Per pack it holds a `groups::GroupMode`:
 | `Withheld` (default) | no, reached via `use_skill` | yes |
 | `Off` | no | no |
 
-`ToolGroups::default()` / `packed()` puts every pack in `Withheld` — exactly
+`ToolGroups::default()` / `packed()` puts every pack in `Withheld`, exactly
 the compiled-in behavior before this type existed, so a host that never calls
 `CoreBuilder::tool_groups` is unaffected. `advertised()`, `none()`, and
 `with(id, mode)` are the other constructors; an unknown id in `with` is
@@ -91,27 +91,26 @@ to that delegate, not a second skill runtime.
 
 ## Called by
 
-- `tools/ops.rs` — `all_tools_with_runtime` drops every tool whose group is
+- `tools/ops.rs`: `all_tools_with_runtime` drops every tool whose group is
   `Off`, then appends `use_skill` via `append_pack_tools`.
-- `tools/host_extensions.rs` — `pack_registry_handle` reads the handle back off a
+- `tools/host_extensions.rs`: `pack_registry_handle` reads the handle back off a
   tool's `host_extension`.
-- `core/runtime/builder.rs` and `core/runtime/context.rs` —
-  `CoreBuilder::tool_groups` and the ambient `ToolGroups` on `CoreContext`.
-- `agent/session_host/builder/` — `builder_build.rs` strips packed names
+- `core/runtime/builder.rs` and `core/runtime/context.rs`: `CoreBuilder::tool_groups` and the ambient `ToolGroups` on `CoreContext`.
+- `agent/session_host/builder/`: `builder_build.rs` strips packed names
   from the agent's visible set and binds both registries once the tool `Arc`s
   exist; `mod.rs` calls `scope_use_skill_spec` so the advertised `use_skill`
   spec lists only packs this session can call something in, and drops the
   spec entirely when that is none.
-- `agent/session_host/turn/tools.rs` — rebinds the synthesized registry
+- `agent/session_host/turn/tools.rs`: rebinds the synthesized registry
   after every delegation refresh and re-strips packed names;
   `agent/session_host/runtime/accessors.rs` re-strips after
   materializing the visible set.
-- `agent/tinyagents/middleware/tool_policy.rs` — after
+- `agent/tinyagents/middleware/tool_policy.rs`: after
   the permission gates, intercepts the disclosure half of a `use_skill` call
   (`named_tool` is `None`) and renders it with `render_pack_filtered` against
   the session's allowlist, with `route_sentence` naming the owner delegate
   when nothing in the pack is callable.
-- `agent/tinyagents/middleware/packed_tool_route.rs` — `before_tool`
+- `agent/tinyagents/middleware/packed_tool_route.rs`: `before_tool`
   rewrites a call that names a withheld packed tool by its bare name (the name
   the listing and sibling descriptions use) into the `use_skill` call that
   reaches it, ahead of admission, so the rewritten call passes every gate an
@@ -119,9 +118,9 @@ to that delegate, not a second skill runtime.
   tool-policy session lets that tool run (`blocks_execution()` is false), and
   never on a turn without a session (sub-agent, channel/CLI), where an
   unregistered name was excluded by the registration allowlist.
-- `agent/registry/agents/orchestrator/prompt.rs` — `pack_for_tool` to tell
+- `agent/registry/agents/orchestrator/prompt.rs`: `pack_for_tool` to tell
   the orchestrator which pack a withheld delegate lives in.
-- `crates/openhuman-embed/` — re-exports `GroupMode` and `ToolGroups` and
+- `crates/openhuman-embed/`: re-exports `GroupMode` and `ToolGroups` and
   exposes `Harness::builder().tool_groups(..)`.
 
 ## Tests

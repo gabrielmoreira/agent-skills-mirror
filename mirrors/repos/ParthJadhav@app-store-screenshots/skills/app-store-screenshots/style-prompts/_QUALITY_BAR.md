@@ -93,9 +93,9 @@ If the spec gives a specific size, that size wins. Otherwise, use these minimums
 ## 9. Decoration density discipline
 
 Per slide:
-- **Minimal styles** (Crisp Teal Bezelless Wallet, Editorial Minimal, Moody Curated Dating): **0** floating decorations.
-- **Editorial styles** (Hand-Drawn Editorial, Soft Sunset): **2–5** decorations, intentionally placed.
-- **Maximalist styles** (Glassy Iridescent Social, Paper Sticker Skeuomorphic, Glossy 3D K-Beauty): **8–14** decorations, scattered with at least one bleeding off-canvas.
+- **Minimal styles** (Crisp Teal Bezelless Wallet, Editorial Minimal, Moody Curated Dating, Swiss Grid Bold — grid lines, index labels, and its single accent block don't count; Bento Keynote Grid — the tiles are the layout, not decoration; Quiet Japandi — max 2: the hanko seal and one object): **0** floating decorations.
+- **Editorial styles** (Hand-Drawn Editorial, Soft Sunset, Liquid Glass Aurora, Neon Athletic Night, Magazine Cover Editorial, Soft Clay Wellness, Midnight Glow Pro, Vintage Travel Poster, Risograph Zine — up to 7 print artefacts): **2–5** decorations, intentionally placed.
+- **Maximalist styles** (Glassy Iridescent Social, Paper Sticker Skeuomorphic, Glossy 3D K-Beauty, Candy Pop Social, Toybox Primary): **8–14** decorations, scattered with at least one bleeding off-canvas.
 
 Decoration density wrong-side either way (sparse maximalist or dense minimalist) reads as a style misfire.
 

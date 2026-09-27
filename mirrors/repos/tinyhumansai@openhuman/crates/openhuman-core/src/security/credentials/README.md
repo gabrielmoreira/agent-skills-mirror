@@ -2,11 +2,11 @@
 
 Credential management for the backend credential the core authenticates with and for provider/OAuth auth profiles. Owns the on-disk **auth-profiles** store (encrypted JSON + OS keychain), the `app-session` / `api-key` credential slots and everything the core does when one is installed or removed, per-provider token storage (e.g. API keys, OAuth token sets), the backend OAuth connect/handoff flows, and the Composio direct-mode (BYO key) credential slot. Exposes everything under the `auth.*` JSON-RPC / CLI namespace and runs the canonical sign-out teardown when a `SessionExpired` event fires.
 
-**The core never obtains, validates, exchanges or refreshes a credential.** Login-token exchange, `GET /auth/me` validation and the current-user cache are the host's job — the Tauri shell and the TUI through `openhuman_tinyhumans::session`, an embedder through `openhuman_embed::Auth`, an operator through the CLI or the boot env vars. They hand the result over with `auth.set_credential`.
+**The core never obtains, validates, exchanges or refreshes a credential.** Login-token exchange, `GET /auth/me` validation and the current-user cache are the host's job: the Tauri shell and the TUI through `openhuman_tinyhumans::session`, an embedder through `openhuman_embed::Auth`, an operator through the CLI or the boot env vars. They hand the result over with `auth.set_credential`.
 
 ## Responsibilities
 
-- Install a backend credential (`set_credential`): a session JWT (with the user id / payload the host resolved — or the JWT's subject claim), a TinyHumans API key, or the offline local token. A JWT whose `exp` is already past is refused; a session with no resolvable user id is refused.
+- Install a backend credential (`set_credential`): a session JWT (with the user id / payload the host resolved, or the JWT's subject claim), a TinyHumans API key, or the offline local token. A JWT whose `exp` is already past is refused; a session with no resolvable user id is refused.
 - On install: activate the user-scoped openhuman directory, purge pre-login (anonymous) conversation threads on first activation, bind memory/conversation persistence, start the credential-gated services (local AI, voice server, dictation listener, always-on voice), open the scheduler gate, scope Sentry and the prompt-layer identity. A repeat install with the **same token and user** is a cheap refresh of the stored user payload (this is how a host replaces a `pendingBackendValidation` placeholder with its later `/auth/me` answer); a **different user** is signed out first.
 - On removal / session-expiry (`clear_credential`): remove the profile, clear the active-user marker, stop the gated services, rebind process globals to the signed-out workspace, and close the scheduler-gate override.
 - Boot seeding for headless hosts: `OPENHUMAN_BACKEND_API_KEY` / `OPENHUMAN_BACKEND_SESSION_TOKEN` install a credential on a fresh store (never overwrite one).
@@ -21,29 +21,29 @@ Credential management for the backend credential the core authenticates with and
 | File | Role |
 | --- | --- |
 | `mod.rs` | Export-focused. Re-exports `core::*`, `ops` (also as `rpc`), Composio-direct helpers, schema controllers (`all_credentials_controller_schemas` / `all_credentials_registered_controllers`), and backend OAuth REST types from `crate::api::rest`. |
-| `core.rs` | `AuthService` facade over `AuthProfilesStore` — store/get/remove/set-active profiles, resolve bearer token, profile-id selection logic (override → active → default → any-for-provider), provider normalization, state-dir derivation. |
-| `profiles.rs` | The persistence engine. `AuthProfile` / `TokenSet` / `AuthProfileKind` / `AuthProfilesData` types and `AuthProfilesStore` — atomic JSON read/write, keychain vs encrypted-JSON secret handling, legacy migration, corrupt-store quarantine, PID-aware stale-lock recovery. |
+| `core.rs` | `AuthService` facade over `AuthProfilesStore`: store/get/remove/set-active profiles, resolve bearer token, profile-id selection logic (override, then active, then default, then any-for-provider), provider normalization, state-dir derivation. |
+| `profiles.rs` | The persistence engine. `AuthProfile` / `TokenSet` / `AuthProfileKind` / `AuthProfilesData` types and `AuthProfilesStore`: atomic JSON read/write, keychain vs encrypted-JSON secret handling, legacy migration, corrupt-store quarantine, PID-aware stale-lock recovery. |
 | `api_key.rs` | The `api-key` profile: `store_api_key[_in]`, `get_api_key[_in]`, `has_api_key[_in]`, `clear_api_key`. |
 | `ops.rs` + `ops/` | Business logic + RPC entry points (returns `RpcOutcome<T>`). `ops/credential.rs` (`set_credential` / `clear_credential`, plus the historical `store_session` / `clear_session` names), `ops/user_scope.rs` (user-dir activation and process-global rebinding), `ops/gated_services.rs` (credential-gated services), `ops/boot_env.rs` (env seeding), `ops/session_query.rs` (`auth_get_state`, `auth_get_session_token_json`), `ops/login_tokens.rs` (channel link tokens), `ops/oauth.rs`, `ops/provider_credentials.rs`, `ops/composio.rs`, `ops/secrets.rs`. Re-exported as `rpc`. |
 | `schemas.rs` | `auth.*` controller schemas + `handle_*` dispatchers delegating to `ops`. Defines `all_controller_schemas` / `all_registered_controllers`. |
 | `session_support.rs` | `CredentialKind`, `BackendCredential`, `resolve_backend_credential`, `require_live_session_token`, `has_backend_credential`, `build_session_state`, `get_session_token`, `load_app_session_profile`, `user_id_from_jwt_claims`, local-session detection/slug, field parsing. Shared by RPC and the HTTP host. |
 | `identity.rs` | The signed-in user's identity slot (`peek_credential_user_identity`), seeded from the host-supplied payload for prompts and Sentry. |
 | `responses.rs` | Response DTOs: `AuthStateResponse`, `AuthProfileSummary`. |
-| `bus.rs` | `SessionExpiredSubscriber` — `EventHandler` for `DomainEvent::SessionExpired`. |
+| `bus.rs` | `SessionExpiredSubscriber`: `EventHandler` for `DomainEvent::SessionExpired`. |
 | `tools.rs` | Agent tools `credential_list`, `session_state`, `oauth_connect_url`, `oauth_list`. |
 | `*_tests.rs` | Sibling test suites (`#[path = ...]`). |
 
 ## Public surface
 
-- **`AuthService`** (`core.rs`) — `from_config`, `new`, `load_profiles`, `store_provider_token`, `set_active_profile`, `remove_profile`, `get_profile`, `get_provider_bearer_token`.
-- **Constants** — `APP_SESSION_PROVIDER` (`"app-session"`), `DEFAULT_AUTH_PROFILE_NAME` (`"default"`), `COMPOSIO_DIRECT_PROVIDER` (`"composio-direct"`), `api_key::API_KEY_PROVIDER` (`"api-key"`).
-- **Credential kinds** — `session_support::CredentialKind {Session, ApiKey, Local}` (wire values `"session"`, `"api-key"`, `"local"`). `session_support::resolve_backend_credential` returns `BackendCredential::ApiKey` when a key is stored (before any session classification) and `BackendCredential::Session` otherwise; `BackendOAuthClient::authed_json` sends an API key as `x-api-key` and a session as `Authorization: Bearer`, while `OpenHumanBackendModel::resolve_bearer` sends the key as the bearer for managed inference. `has_backend_credential` is the boot-time "signed in?" question the scheduler gate asks; `SessionExpired` is ignored for an API-key runtime and for a local session.
-- **Helpers** — `normalize_provider`, `default_profile_id`, `select_profile_id`, `state_dir_from_config`, `profile_id`.
-- **Types** (`profiles.rs`) — `AuthProfile`, `AuthProfileKind` (`OAuth`/`Token`), `TokenSet`, `AuthProfilesData`, `AuthProfilesStore`.
-- **Ops/RPC** (`ops`, re-exported as `rpc`) — `set_credential`, `clear_credential`, `store_session`, `clear_session`, `SetCredentialRequest`, `seed_api_key_from_env`, `seed_session_from_env`, `auth_get_state`, `auth_get_session_token_json`, `auth_create_channel_link_token`, `store_provider_credentials`, `remove_provider_credentials`, `list_provider_credentials`, `list_provider_credentials_by_prefix`, `oauth_connect`, `oauth_list_integrations`, `oauth_fetch_integration_tokens`, `oauth_fetch_client_key`, `oauth_revoke_integration`, `encrypt_secret`, `decrypt_secret`, `start_credential_gated_services`, `stop_credential_gated_services`.
-- **Composio-direct** — `store_composio_api_key`, `get_composio_api_key`, `clear_composio_api_key`, `rpc_store_composio_api_key`.
-- **Backend OAuth re-exports** (from `crate::api::rest`) — `BackendOAuthClient`, `ConnectResponse`, `IntegrationSummary`, `IntegrationTokensHandoff`, `decrypt_handoff_blob`, `user_id_from_profile_payload`.
-- **Schema controllers** — `all_credentials_controller_schemas`, `all_credentials_registered_controllers`.
+- **`AuthService`** (`core.rs`): `from_config`, `new`, `load_profiles`, `store_provider_token`, `set_active_profile`, `remove_profile`, `get_profile`, `get_provider_bearer_token`.
+- Constants: `APP_SESSION_PROVIDER` (`"app-session"`), `DEFAULT_AUTH_PROFILE_NAME` (`"default"`), `COMPOSIO_DIRECT_PROVIDER` (`"composio-direct"`), `api_key::API_KEY_PROVIDER` (`"api-key"`).
+- Credential kinds: `session_support::CredentialKind {Session, ApiKey, Local}` (wire values `"session"`, `"api-key"`, `"local"`). `session_support::resolve_backend_credential` returns `BackendCredential::ApiKey` when a key is stored (before any session classification) and `BackendCredential::Session` otherwise; `BackendOAuthClient::authed_json` sends an API key as `x-api-key` and a session as `Authorization: Bearer`, while `OpenHumanBackendModel::resolve_bearer` sends the key as the bearer for managed inference. `has_backend_credential` is the boot-time "signed in?" question the scheduler gate asks; `SessionExpired` is ignored for an API-key runtime and for a local session. This is the one TinyHumans API key that a library or headless host sets once (`.api_key("th_...")` or `OPENHUMAN_BACKEND_API_KEY`) and gets managed inference, web search, embeddings, media generation, integrations, voice and the Jev ranker through, all keyed off the same `api-key` profile; see [../../../../../gitbooks/developing/tinyhumans-api-key.md](../../../../../gitbooks/developing/tinyhumans-api-key.md).
+- Helpers: `normalize_provider`, `default_profile_id`, `select_profile_id`, `state_dir_from_config`, `profile_id`.
+- **Types** (`profiles.rs`): `AuthProfile`, `AuthProfileKind` (`OAuth`/`Token`), `TokenSet`, `AuthProfilesData`, `AuthProfilesStore`.
+- **Ops/RPC** (`ops`, re-exported as `rpc`): `set_credential`, `clear_credential`, `store_session`, `clear_session`, `SetCredentialRequest`, `seed_api_key_from_env`, `seed_session_from_env`, `auth_get_state`, `auth_get_session_token_json`, `auth_create_channel_link_token`, `store_provider_credentials`, `remove_provider_credentials`, `list_provider_credentials`, `list_provider_credentials_by_prefix`, `oauth_connect`, `oauth_list_integrations`, `oauth_fetch_integration_tokens`, `oauth_fetch_client_key`, `oauth_revoke_integration`, `encrypt_secret`, `decrypt_secret`, `start_credential_gated_services`, `stop_credential_gated_services`.
+- Composio-direct: `store_composio_api_key`, `get_composio_api_key`, `clear_composio_api_key`, `rpc_store_composio_api_key`.
+- **Backend OAuth re-exports** (from `crate::api::rest`): `BackendOAuthClient`, `ConnectResponse`, `IntegrationSummary`, `IntegrationTokensHandoff`, `decrypt_handoff_blob`, `user_id_from_profile_payload`.
+- Schema controllers: `all_credentials_controller_schemas`, `all_credentials_registered_controllers`.
 
 ## RPC / controllers
 
@@ -67,15 +67,15 @@ Namespace `auth` (JSON-RPC `openhuman.auth_*` / CLI `openhuman-core auth <functi
 
 `openhuman.auth_store_session` and `openhuman.auth_clear_session` survive as legacy aliases (`core/legacy_aliases.rs`) of the credential pair for bundles that predate it.
 
-Note: `list_provider_credentials_by_prefix` and the Composio-direct/secret helpers are public ops but not registered as `auth.*` controllers here — they are called directly by other domains.
+Note: `list_provider_credentials_by_prefix` and the Composio-direct/secret helpers are public ops but not registered as `auth.*` controllers here. They are called directly by other domains.
 
 ## Agent tools
 
-`tools.rs` — `credential_list`, `session_state` (the stored credential state and user, no token material), `oauth_connect_url`, `oauth_list`.
+`tools.rs`: `credential_list`, `session_state` (the stored credential state and user, no token material), `oauth_connect_url`, `oauth_list`.
 
 ## Events
 
-`bus.rs` — `SessionExpiredSubscriber` (`name() == "credentials::session_expired_handler"`, domain filter `["auth"]`) **subscribes** to `DomainEvent::SessionExpired`. On a non-local session it flips the scheduler gate to signed-out and drops the rejected credential (`clear_session`); for a local offline session or an API-key runtime it re-enables the gate and no-ops. This module does not publish events directly (publishers of `SessionExpired` are 401-detection sites elsewhere). The host learns of the sign-out through the Socket.IO `auth:session_expired` bridge and `auth.get_state`.
+`bus.rs`: `SessionExpiredSubscriber` (`name() == "credentials::session_expired_handler"`, domain filter `["auth"]`) **subscribes** to `DomainEvent::SessionExpired`. On a non-local session it flips the scheduler gate to signed-out and drops the rejected credential (`clear_session`); for a local offline session or an API-key runtime it re-enables the gate and no-ops. This module does not publish events directly (publishers of `SessionExpired` are 401-detection sites elsewhere). The host learns of the sign-out through the Socket.IO `auth:session_expired` bridge and `auth.get_state`.
 
 ## Persistence
 
@@ -88,14 +88,14 @@ Note: `list_provider_credentials_by_prefix` and the Composio-direct/secret helpe
 
 ## Dependencies
 
-- `crate::config` — `Config`, config load (`load_config_with_timeout`), user-dir activation (`default_root_openhuman_dir`, `user_openhuman_dir`, `read/write/clear_active_user`, `pre_login_user_dir`), onboarding state.
-- `crate::security::keyring` — `SecretStore` (encrypt/decrypt) and OS keychain `get`/`set`/`delete`/`is_available`.
-- `crate::cron::scheduler_gate` — signed-out override flipped on install/removal/expiry.
-- `crate::memory::conversations` — purge pre-login threads, bind conversation persistence after activation.
-- `crate::memory` — bind memory client to the active workspace after activation.
-- `crate::inference::host_runtime`, `crate::voice::{server,dictation_listener,always_on}` — credential-gated services started/stopped.
-- `crate::api::config`, `::jwt`, `::rest` — backend API URL, JWT `exp` decode, `BackendOAuthClient` + OAuth/handoff types.
-- `crate::core::all` (`ControllerFuture`, `RegisteredController`), `crate::core` (`ControllerSchema`/`FieldSchema`/`TypeSchema`), `crate::core::events::DomainEvent` + `tinybus::EventHandler`, `crate::rpc::RpcOutcome` — controller registry + RPC envelope + event bus.
+- `crate::config`: `Config`, config load (`load_config_with_timeout`), user-dir activation (`default_root_openhuman_dir`, `user_openhuman_dir`, `read/write/clear_active_user`, `pre_login_user_dir`), onboarding state.
+- `crate::security::keyring`: `SecretStore` (encrypt/decrypt) and OS keychain `get`/`set`/`delete`/`is_available`.
+- `crate::cron::scheduler_gate`: signed-out override flipped on install/removal/expiry.
+- `crate::memory::conversations`: purge pre-login threads, bind conversation persistence after activation.
+- `crate::memory`: bind memory client to the active workspace after activation.
+- `crate::inference::host_runtime`, `crate::voice::{server,dictation_listener,always_on}`: credential-gated services started/stopped.
+- `crate::api::config`, `::jwt`, `::rest`: backend API URL, JWT `exp` decode, `BackendOAuthClient` plus OAuth/handoff types.
+- `crate::core::all` (`ControllerFuture`, `RegisteredController`), `crate::core` (`ControllerSchema`/`FieldSchema`/`TypeSchema`), `crate::core::events::DomainEvent` plus `tinybus::EventHandler`, `crate::rpc::RpcOutcome`: controller registry, RPC envelope, and event bus.
 
 ## Used by
 
@@ -103,8 +103,8 @@ Many domains consume `AuthService` / session helpers / Composio-direct key, incl
 
 ## Notes / gotchas
 
-- `mod.rs` re-exports `ops` both as `ops::*` and as `pub use ops as rpc` — call sites use `credentials::rpc::*`; this is the documented `rpc.rs`-equivalent exception (no separate `rpc.rs` file exists).
-- `set_credential` does heavy orchestration beyond just storing a token (directory activation, thread purge, service startup). Treat it as the install funnel, not a thin setter — except on the same-token/same-user refresh path, which only rewrites the stored payload.
+- `mod.rs` re-exports `ops` both as `ops::*` and as `pub use ops as rpc`. Call sites use `credentials::rpc::*`; this is the documented `rpc.rs`-equivalent exception (no separate `rpc.rs` file exists).
+- `set_credential` does heavy orchestration beyond just storing a token (directory activation, thread purge, service startup). Treat it as the install funnel, not a thin setter, except on the same-token/same-user refresh path, which only rewrites the stored payload.
 - An embedder host (`CoreContext::current_embedder_config()` is set) keeps the credential under its own `config_path` scope and never touches the operator's global `active_user.toml`.
 - Local offline sessions are detected purely by the JWT signature segment being literally `local` (`is_local_session_token`); they are never sent anywhere and are never treated as expired.
-- Secrets are never logged — debug lines record only lengths/markers, honoring the CLAUDE.md redaction rule.
+- Secrets are never logged; debug lines record only lengths/markers, honoring the CLAUDE.md redaction rule.

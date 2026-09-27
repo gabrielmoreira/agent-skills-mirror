@@ -123,7 +123,7 @@ Extras
   ✓ ~/.codex/agents  extension: codex-agents
 ```
 
-sync 済みの行にはアイコン、パス、モードのみが表示されます。未 sync の行にはステータス語（`drift`、`not synced`、`no source`）が追記されます。変換拡張子（extension）を持つ Target は、sync モードの代わりに `extension: <name>` と表示されます（実際のモードは常に `copy` です）。
+sync 済みの行にはアイコン、パス、モードのみが表示されます。未 sync の行にはステータス語（`drift`、`modified`、`not synced`、`no source`）が追記されます。変換拡張子（extension）を持つ Target は、sync モードの代わりに `extension: <name>` と表示されます（実際のモードは常に `copy` です）。
 
 ### `extras source`
 
@@ -165,12 +165,12 @@ skillshare extras <name> --remove-target <path> [--prune] [-p|-g]
 
 | フラグ | 説明 |
 |------|-------------|
-| `--mode <mode>` | 新しい sync モード: `merge`、`copy`、または `symlink` |
+| `--mode <mode>` | 新しい sync モード: `merge`、`copy`、または `symlink`。`import` は[単一ファイルの Extras](#single-file-extras) でのみ使用可 |
 | `--flatten` | flatten を有効化（サブディレクトリのファイルを Target ルートに sync） |
 | `--no-flatten` | flatten を無効化 |
 | `--add-target <path>` | Extras に新しい Target を追加 |
 | `--remove-target <path>` | Extras から Target を削除（デフォルトでは設定のみ） |
-| `--prune` | `--remove-target` と併用: その Target 配下の skillshare 管理ファイルも削除 |
+| `--prune` | `--remove-target` と併用: その Target 配下の skillshare 管理ファイルも削除。単一ファイルの Extras では、代わりに Target のファイルを元に戻す |
 | `--target <path>` | Target ディレクトリのパス（複数 Target を持つ Extras で `--mode` を使う場合は必須。省略時、`--flatten`/`--no-flatten` はすべての Target に適用される） |
 | `--project, -p` | Project モードの Extras（`.skillshare/`）を使用 |
 | `--global, -g` | グローバルの Extras（`~/.config/skillshare/`）を使用 |
@@ -209,14 +209,16 @@ TUI（`M` キー）と Web UI（各 Target のモードのドロップダウン�
 skillshare extras remove <name> [--force] [-p|-g]
 ```
 
-Source ファイルと sync 済みの Target は削除されません — 設定エントリのみが削除されます。
+Source ファイルと sync 済みの Target は削除されません — 設定エントリのみが削除されます。[単一ファイルの Extras](#single-file-extras) では、各 Target のファイルが skillshare に置き換えられる前の状態に戻ります。
 
 ### `extras collect`
 
-Target 内のローカルファイルを Extras の Source ディレクトリに集約します。ファイルは Source にコピーされ、シンボリックリンクに置き換えられます。
+Target 内のローカルファイルを Extras の Source ディレクトリに集約します。ファイルは Source にコピーされ、シンボリックリンクに置き換えられます。copy モードの Target では、ファイルは通常のコピーのまま残ります。[単一ファイルの Extras](#single-file-extras) では collect はサポートされていません。
+
+Source にすでに存在するファイルはスキップされます。`--force` を使うと、それらを Target 側のバージョンで上書きします。たとえば、copy モードの Target で直接行った編集を取り込みたい場合に使います。内容がすでに Source と一致するファイルは、この場合もスキップされます。
 
 ```bash
-skillshare extras collect <name> [--from <path>] [--dry-run] [-p|-g]
+skillshare extras collect <name> [--from <path>] [--force] [--dry-run] [-p|-g]
 ```
 
 **オプション:**
@@ -224,6 +226,7 @@ skillshare extras collect <name> [--from <path>] [--dry-run] [-p|-g]
 | フラグ | 説明 |
 |------|-------------|
 | `--from <path>` | collect 元の Target ディレクトリ（複数 Target がある場合は必須） |
+| `--force`, `-f` | Source にすでに存在するファイルを上書き |
 | `--dry-run` | 変更を加えずに、collect される内容をプレビュー |
 
 **例:**
@@ -234,6 +237,9 @@ skillshare extras collect rules --from ~/.claude/rules
 
 # collect される内容をプレビュー
 skillshare extras collect rules --from ~/.claude/rules --dry-run
+
+# Target での編集を既存の Source ファイルに上書きして取り込む
+skillshare extras collect rules --force
 ```
 
 ---
@@ -245,6 +251,7 @@ skillshare extras collect rules --from ~/.claude/rules --dry-run
 | `merge`（デフォルト） | Target から Source へのファイルごとのシンボリックリンク |
 | `copy` | ファイルごとのコピー |
 | `symlink` | ディレクトリ全体のシンボリックリンク |
+| `import` | [単一ファイルの Extras](#single-file-extras) のみ: Target のファイル内の `@<source file>` 行 |
 
 モードを切り替える場合（例: `merge` から `copy` へ）、次の `sync` で既存のシンボリックリンクが自動的に新しいモードの形式に置き換えられます。`--force` は不要です — シンボリックリンクは常に安全に置き換えられます。ローカルで作成された通常のファイルを上書きするには `--force` が必要です。
 
@@ -353,6 +360,12 @@ Agent の Target には、extras を介さず `extension` を直接設定する�
 
 ## レシピ: 複数の Agent 間で共有する指示
 
+:::tip ダッシュボード
+Web ダッシュボードを使えば、プレビュー、バックアップ、復元ボタン付きでこれを設定できます。
+[1 つの AGENTS.md をツール間で共有する](../../how-to/daily-tasks/sharing-instructions.md)を参照してください。
+ディレクトリの代わりに[単一ファイルの Extras](#single-file-extras) を使います。
+:::
+
 現在、多くのコーディング Agent は標準の指示として `AGENTS.md` を読み込みますが、それぞれユーザーレベルのコピーを別々のディレクトリに保持しています。複数の Target を持つ 1 つの Extras で、単一の Source ファイルをそれらすべてに配布できます。
 
 ```bash
@@ -392,6 +405,61 @@ Target はディレクトリであるため、各 Target はそれぞれの Sour
 :::note
 このレシピは、あなたが書いた指示を共有するものであり、Agent 自身が書くメモリを共有するものではありません。Agent は自身の学習内容を、Claude Code ならディレクトリ内の Markdown、Codex ならデータベース、Cursor ならファイル以外のストレージといった独自の形式で保存しており、Target 間でファイルをコピーしても移植できるものではありません。
 :::
+
+---
+
+## 単一ファイルの Extras {#single-file-extras}
+
+`file` を持つ Extras は、ディレクトリ全体ではなく Source ディレクトリ内の 1 つのファイルだけを sync します。
+各 Target は `<path>/<as>` を受け取ります。`as` のデフォルトは `file` の名前です。ダッシュボードの
+[共有 AGENTS.md](../../how-to/daily-tasks/sharing-instructions.md) は単一ファイルの Extras です。
+
+```yaml
+extras:
+  - name: personal
+    file: AGENTS.md                # ~/.config/skillshare/extras/personal/AGENTS.md
+    targets:
+      - path: ~/.codex             # ~/.codex/AGENTS.md がリンクになる
+      - path: ~/.gemini
+        as: GEMINI.md              # ~/.gemini/GEMINI.md がリンクになる
+      - path: ~/.claude
+        as: CLAUDE.md
+        mode: import               # ~/.claude/CLAUDE.md は内容を保持したままファイルを import する
+```
+
+| モード | Target のファイル |
+|------|-------------|
+| `merge`（デフォルト）または `symlink` | Source ファイルへのシンボリックリンク |
+| `copy` | Source ファイルのコピー |
+| `import` | あなたのファイル。先頭の管理ブロック内に `@<source file>` 行が入る |
+
+`import` は `@` 行を `<!-- skillshare:instructions:begin -->` と
+`<!-- skillshare:instructions:end -->` の間に置き、ファイルの残りの部分は一切変更しません。
+Claude Code のように `@` import に従うツールでのみ使ってください。
+
+ルール:
+
+- `file` と `as` は `/` や `\` を含まない単純なファイル名でなければなりません。
+- `as` と `import` には `file` が必要です。`flatten` と `extension` は単一ファイルの Extras
+  では使えません。
+- Target にすでに別の通常ファイルやシンボリックリンクがある場合、sync はそれを保存してから
+  `--force` なしで置き換えます。ディレクトリがある場合はスキップされます。
+- リンク後に `modified` になった Target も置き換えられます。編集されたファイルは復元ポイントではなく、
+  drift バックアップとして保存されます。
+- リンクされた Target が内容の異なる通常ファイルに置き換えられている場合、`extras list` は
+  `modified` と表示します。
+- `extras remove` と `--remove-target --prune` は各 Target のファイルを元に戻します。リンク、
+  コピー、または import 行が取り除かれ、最初の sync の前にあったファイルやシンボリックリンクが戻ります
+  （元々なかった場合はファイルなし）。`modified` の Target は、先に drift バックアップとして保存されます。
+  `--prune` なしの `--remove-target` はファイルをそのまま残して復元ポイントを忘れるため、後の sync では
+  その時点にあるものがバックアップされます。
+- `extras collect` はサポートされていません。Target で行った編集を残すには、ダッシュボードの
+  **AGENTS.md** タブで共有ファイル**に取り込む**を使ってください。
+
+バックアップは skillshare の state ディレクトリ（macOS と Linux では
+`~/.local/state/skillshare/extras/backups/`）に、ファイルごとに最新 10 件まで保存されます。
+drift バックアップはその中の `extras/backups/<id>/drift/` に保存されます。`<id>` は Target の
+ファイルのパスから導出されます。復元でこれらが使われることはありません。
 
 ---
 

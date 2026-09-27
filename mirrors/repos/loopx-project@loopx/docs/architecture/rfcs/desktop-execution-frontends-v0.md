@@ -1,6 +1,7 @@
 # RFC: LoopX Desktop Execution Frontends v0
 
-- Status: Draft
+- Status: Accepted
+- Supersedes / closes: none
 - Decision boundary: support both attachment to an externally owned Agent
   session and an end-to-end LoopX-managed desktop runtime
 - Initial attached runtime: Codex App / app-server

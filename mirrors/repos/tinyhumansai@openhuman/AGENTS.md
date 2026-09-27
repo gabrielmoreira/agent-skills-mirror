@@ -417,6 +417,69 @@ builds after changing a gate. Use `scripts/assert-shed.sh` or
 
 ## Loadable modules and bus contracts
 
+### Submodule ownership
+
+OpenHuman is the host and orchestrator for these components. It composes them,
+loads modules, adapts their contracts to product RPC/tools, and applies
+OpenHuman-specific configuration, security policy, approvals, and lifecycle
+rules. It is not the implementation home for behavior that belongs to a
+vendored project.
+
+Before changing code, identify the owning repository below. Implement a
+module/library capability, bug fix, or contract change in that submodule,
+raise its PR against that repository's canonical upstream, and update the
+OpenHuman gitlink only after the upstream change is available. OpenHuman may
+contain the host adapter and integration tests that prove the composition, but
+do not copy the module implementation into OpenHuman or add a host-side
+workaround for a defect owned by a submodule. For a change that spans a module
+and its host adapter, make both changes in their respective repositories and
+raise the module PR first. Keep PRs and gitlinks independently reviewable.
+
+Direct rendered submodules under `vendor/`:
+
+| Submodule | Owns |
+| --- | --- |
+| `tinyagents` | Provider-neutral agent harness and durable typed state graph: model/tool loop, tool-call dialects and parsing, middleware, retries, caching, sessions/transcripts, and graph execution. |
+| `tinybox` | Isolated execution environments for code the host does not trust; box lifecycle and isolation backends. |
+| `tinybrowser` | Browser automation as a TinyBus module, including browser launch/control, navigation, accessibility snapshots, input, extraction, and screenshots. |
+| `tinybus` | TinyBus runtime and module contracts: discovery/loading, ABI and manifest admission, transport, proxies, lifecycle, and module bus behavior. |
+| `tinychannels` | Portable channel/message contracts, configuration/schema, routing metadata, and channel backend abstractions. OpenHuman owns its concrete product/backend adapters. |
+| `tinyconnectors` | OAuth connector module behavior: account linking, available actions, action execution, and connector webhooks. |
+| `tinydesktop` | Native desktop accessibility observation and interaction exposed through TinyBus. |
+| `tinydocs` | Document extraction and synthesis, including PDF reading and DOCX/PPTX generation. |
+| `tinyflows` | Host-agnostic workflow graph definition, validation, compilation, and execution engine. |
+| `tinyhosts` | Hosting provider APIs and deployment/database/domain/analytics operations, as library and TinyBus module. |
+| `tinyhumans-sdk` | Rust client types and transport operations for the public TinyHumans backend API. OpenHuman owns its transport integration and product auth/session policy. |
+| `tinyjuice` | Agent tool-output compression and recovery of omitted content. |
+| `tinymcp` | The TinyMCP module implementation and its bus contract. Put MCP module behavior and contract changes here; OpenHuman owns configuration, lifecycle, and host integration. |
+| `tinymemory` | Engine-neutral memory contracts, operations, and providers. Its nested TinyCortex submodule owns the TinyCortex memory engine. |
+| `tinyruntime` | Runtime discovery/installation and bounded pools of warm language interpreter processes, exposed as a TinyBus module. |
+| `tinysearch` | Web-search module, provider dispatch, tool declarations, and execution behind its TinyBus contract. |
+| `tinyskills` | Host-independent skill/workflow bundle parsing, discovery, scope resolution, resource inventory, and safe reads. OpenHuman owns trust and execution policy. |
+| `tinyvoice` | Host-agnostic voice primitives such as audio framing, VAD, wake-word gating, routing, and STT hallucination detection. |
+| `tinywallet` | Pure multi-chain wallet primitives such as address formats, validation, and encoding conversions; no key custody or transaction broadcast. |
+| `motosan-ai-oauth` | Provider-agnostic PKCE OAuth login and token-refresh primitives. |
+
+Some rendered submodules are shared dependencies nested inside those projects,
+not separate OpenHuman feature implementations. Make changes to them in their
+own canonical repositories as well:
+
+| Nested submodule | Owns |
+| --- | --- |
+| `tinyagents/vendor/tinytools` | Shared `Tool` trait and generic tool types. This is the single `tinytools` copy used by OpenHuman. |
+| `tinyagents/vendor/tinyinference` and `tinymemory/vendor/tinyinference` | Inference/provider, embedding, local model, and voice inference libraries. OpenHuman patches the TinyAgents copy in its Cargo workspace; do not create a competing copy. |
+| `tinymemory/vendor/tinycortex` | TinyCortex engine implementation for the TinyMemory contracts. |
+| `*/vendor/tinybus` | Shared TinyBus contract/runtime dependency; change the owning TinyBus project, not a vendored duplicate. |
+| `tinybrowser/vendor/agent-browser` | Browser-control library used by TinyBrowser. |
+| `tinydesktop/vendor/agent-desktop` | Cross-platform desktop accessibility and interaction library used by TinyDesktop. |
+| `*/vendor/tinyjevclient` | Shared TinyJEV client used by the browser and desktop modules. |
+| `tinyagents/wiki`, `tinychannels/wiki`, `tinyjuice/wiki` | Project documentation content, not runtime implementation. |
+
+When ownership is unclear, inspect the submodule's README, crate boundaries,
+and bus contract before editing. A behavior change belongs with the code that
+defines that behavior; OpenHuman changes should be limited to the host-side
+composition and policy described above.
+
 Each loadable module has a small `*-bus` contract crate for interface names,
 method constants, request and response types, and its contract version.
 

@@ -1,6 +1,6 @@
 ---
 name: "omh-finance-analysis"
-description: "[omh] Budget overruns, cash risk, or close issues: turn finance and accounting inputs into a decision-ready variance, cash, and close-risk brief. Use when the user says: finance analysis, budget variance, budget vs actual, month-end close, 재무 분석, 예산 대비 실적, 월마감."
+description: "[omh] Company budget overrun, cash risk, or close issue: turn finance and accounting inputs into a decision-ready variance, cash, and close-risk brief. Use when the user says: finance analysis, budget variance, budget vs actual, month-end close, 재무 분석, 예산 대비 실적, 월마감."
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, operations]

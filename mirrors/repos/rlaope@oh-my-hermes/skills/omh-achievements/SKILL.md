@@ -1,6 +1,6 @@
 ---
 name: "omh-achievements"
-description: "[omh] Unlocked badges and achievement progress: achievements observation: summarize hermes-achievements badges, tiers, recent unlocks, and progress from local plugin artifacts. Use when the user says: achievements, achievement, badges, badge, my badges, show achievements, achievement summary, unlocked badges."
+description: "[omh] Hermes badges unlocked and achievement progress: achievements observation: summarize hermes-achievements badges, tiers, recent unlocks, and progress from local plugin artifacts. Use when the user says: achievements, achievement, badges, badge, my badges, show achievements, achievement summary, unlocked badges."
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, observability]

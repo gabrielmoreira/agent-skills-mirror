@@ -1,8 +1,8 @@
 # webhooks
 
-Client-side webhook **tunnel routing** for OpenHuman. The backend provisions and hosts the actual tunnels (ngrok / cloudflare / etc.) and forwards incoming HTTP requests to the app over Socket.IO; this module maps each backend tunnel UUID to its owning target (a skill, the built-in echo responder, or the agent triage pipeline), dispatches incoming requests, builds responses, captures debug logs, and exposes both local routing RPCs and thin proxies to the backend's tunnel-management API.
+Client-side webhook tunnel routing for OpenHuman. The backend provisions and hosts the actual tunnels (ngrok / cloudflare / etc.) and forwards incoming HTTP requests to the app over Socket.IO; this module maps each backend tunnel UUID to its owning target (a skill, the built-in echo responder, or the agent triage pipeline), dispatches incoming requests, builds responses, captures debug logs, and exposes both local routing RPCs and thin proxies to the backend's tunnel-management API.
 
-`webhooks` is nested under `skills/` for historical reasons but is **not** gated by the `skills` Cargo feature — it has always-compiled callers in `crates/openhuman-core/src/core/` and stays outside the `skills` feature gate (see `crates/openhuman-core/src/skills/mod.rs`).
+`webhooks` is nested under `skills/` for historical reasons but is not gated by the `skills` Cargo feature. It has always-compiled callers in `crates/openhuman-core/src/core/` and stays outside the `skills` feature gate (see `crates/openhuman-core/src/skills/mod.rs`).
 
 ## Responsibilities
 
@@ -19,10 +19,10 @@ Client-side webhook **tunnel routing** for OpenHuman. The backend provisions and
 | --- | --- |
 | `crates/openhuman-core/src/skills/webhooks/mod.rs` | Export-only: module docstring, `pub mod` decls, re-exports of `WebhookRouter`, types, and the `all_webhooks_*` controller pair. |
 | `crates/openhuman-core/src/skills/webhooks/types.rs` | Serde domain types: `WebhookRequest`, `WebhookResponseData`, `TunnelRegistration`, `WebhookActivityEntry`, `WebhookDebugLogEntry`, debug result wrappers, `WebhookDebugEvent`. |
-| `crates/openhuman-core/src/skills/webhooks/router.rs` | `WebhookRouter` — route map + ownership rules, disk persistence (generation-counter, spawn_blocking offload), bounded debug log ring (`MAX_DEBUG_LOG_ENTRIES = 250`), debug-event broadcast channel. |
+| `crates/openhuman-core/src/skills/webhooks/router.rs` | `WebhookRouter`: route map + ownership rules, disk persistence (generation-counter, spawn_blocking offload), bounded debug log ring (`MAX_DEBUG_LOG_ENTRIES = 250`), debug-event broadcast channel. |
 | `crates/openhuman-core/src/skills/webhooks/ops.rs` | RPC handler logic returning `RpcOutcome<T>`: local routing ops (`list_registrations`, `list_logs`, `clear_logs`, `register_echo`, `unregister_echo`, `register_agent`, `trigger_agent`), `build_echo_response`, and backend-proxied tunnel CRUD (`list/create/get/update/delete_tunnel`, `get_bandwidth`). |
 | `crates/openhuman-core/src/skills/webhooks/schemas.rs` | Controller schemas + `handle_*` fns + `all_controller_schemas` / `all_registered_controllers`; deserializes params, delegates to `ops.rs`. |
-| `crates/openhuman-core/src/skills/webhooks/bus.rs` | `WebhookRequestSubscriber` (`EventHandler`) — the incoming-request routing flow; helpers `decode_webhook_body`, `run_agent_trigger`, `build_agent_response`. |
+| `crates/openhuman-core/src/skills/webhooks/bus.rs` | `WebhookRequestSubscriber` (`EventHandler`): the incoming-request routing flow; helpers `decode_webhook_body`, `run_agent_trigger`, `build_agent_response`. |
 | `crates/openhuman-core/src/skills/webhooks/{webhooks_tests,bus_tests,ops_tests,router_tests,schemas_tests,types_tests}.rs` | Test suites, each pulled into its sibling source file via `#[cfg(test)] #[path = "..."] mod tests;` (no inline test modules). |
 
 ## Public surface
@@ -63,10 +63,10 @@ None. This domain owns no `tools.rs` agent tools.
 
 ## Events
 
-Subscriber (in `bus.rs`): **`WebhookRequestSubscriber`** — `name() = "webhook::request_handler"`, `domains() = ["webhook"]`. Registered in `register_domain_subscribers()` (`crates/openhuman-core/src/core/jsonrpc.rs`, called from `bootstrap_core_runtime()`), gated on the `Skills` domain group being enabled (`plan.skills`) and installed at most once per process; `channels/runtime/startup/start_channels.rs` deliberately does not register it, to avoid double-registration when both startup paths run in the same process.
+Subscriber (in `bus.rs`): `WebhookRequestSubscriber`, with `name() = "webhook::request_handler"` and `domains() = ["webhook"]`. Registered in `register_domain_subscribers()` (`crates/openhuman-core/src/core/jsonrpc.rs`, called from `bootstrap_core_runtime()`), gated on the `Skills` domain group being enabled (`plan.skills`) and installed at most once per process; `channels/runtime/startup/start_channels.rs` deliberately does not register it, to avoid double-registration when both startup paths run in the same process.
 
-- **Subscribes**: `DomainEvent::WebhookIncomingRequest` (published by the socket transport in `socket/event_handlers.rs`).
-- **Publishes**: `DomainEvent::WebhookRegistered` / `WebhookUnregistered` (from the router on registration changes — `WebhookUnregistered`, the `registration_changed` debug event and the route re-persist all fire **only when a registration was actually removed**; unregistering an absent tunnel is a silent no-op that returns `Ok(false)`, see #6091), `DomainEvent::WebhookReceived` (when routed to a target), `DomainEvent::WebhookProcessed` (always, with status/elapsed/error).
+- Subscribes: `DomainEvent::WebhookIncomingRequest` (published by the socket transport in `socket/event_handlers.rs`).
+- Publishes: `DomainEvent::WebhookRegistered` / `WebhookUnregistered` (from the router on registration changes; `WebhookUnregistered`, the `registration_changed` debug event and the route re-persist all fire only when a registration was actually removed. Unregistering an absent tunnel is a silent no-op that returns `Ok(false)`, see #6091), `DomainEvent::WebhookReceived` (when routed to a target), `DomainEvent::WebhookProcessed` (always, with status/elapsed/error).
 
 Routing outcomes by `target_kind`: `echo` → `build_echo_response` (200); `agent` → decode body, spawn triage, return `202 Accepted` (spawned task emits the real response later, with 60s timeout → 504); `skill` / unknown → `501` (direct skill dispatch not available); no registration → `404`. Responses are emitted over the socket as `webhook:response`.
 
@@ -74,35 +74,35 @@ The router also runs a separate `tokio::sync::broadcast` channel of `WebhookDebu
 
 ## Persistence
 
-`WebhookRouter` serializes its registrations to a JSON file (`PersistedRoutes`) at the optional `persist_path` passed to `new()`, and reloads them from that file when constructed. Writes are best-effort and fire-and-forget: offloaded to `spawn_blocking` inside a tokio runtime (inline otherwise), guarded by a monotonic generation counter so stale writes under rapid churn are dropped. Debug logs are **not** persisted — they live only in an in-memory `VecDeque` capped at 250 entries.
+`WebhookRouter` serializes its registrations to a JSON file (`PersistedRoutes`) at the optional `persist_path` passed to `new()`, and reloads them from that file when constructed. Writes are best-effort and fire-and-forget: offloaded to `spawn_blocking` inside a tokio runtime (inline otherwise), guarded by a monotonic generation counter so stale writes under rapid churn are dropped. Debug logs are not persisted. They live only in an in-memory `VecDeque` capped at 250 entries.
 
 Note that nothing in the production startup path currently constructs a `WebhookRouter` or calls `SocketManager::set_webhook_router`; the only caller is `tests/raw_coverage/webhooks_ingress_e2e.rs`. Until a router is attached, the local RPCs return empty results (see above) and the subscriber answers every incoming request with `404`.
 
 ## Dependencies
 
-- `crate::core::bus::BUS` and `crate::core::events::DomainEvent` — publishing and subscribing; the `EventHandler` trait comes from `tinybus`.
-- `crate::core::all` — `ControllerFuture`, `RegisteredController` for controller registration.
-- `crate::core::{ControllerSchema, FieldSchema, TypeSchema}` — RPC schema types.
-- `crate::core::observability::report_error` — error reporting for body-decode / agent-trigger failures.
-- `crate::platform::socket::global_socket_manager` — obtain the `WebhookRouter` (stored on the socket manager) and `emit` responses over the socket.
-- `crate::agent::triage` — `TriggerEnvelope`, `run_triage`, `apply_decision`, `TriageOutcome` for agent-tunnel routing and `trigger_agent`.
-- `crate::config::{Config, rpc::load_config_with_timeout}` — config for backend-proxy RPCs.
-- `crate::api::{BackendOAuthClient, config::effective_backend_api_url, jwt::get_session_token}` — authenticated backend tunnel CRUD/bandwidth calls.
-- `crate::rpc::RpcOutcome` — handler return contract.
+- `crate::core::bus::BUS` and `crate::core::events::DomainEvent`: publishing and subscribing; the `EventHandler` trait comes from `tinybus`.
+- `crate::core::all`: `ControllerFuture`, `RegisteredController` for controller registration.
+- `crate::core::{ControllerSchema, FieldSchema, TypeSchema}`: RPC schema types.
+- `crate::core::observability::report_error`: error reporting for body-decode / agent-trigger failures.
+- `crate::platform::socket::global_socket_manager`: obtain the `WebhookRouter` (stored on the socket manager) and `emit` responses over the socket.
+- `crate::agent::triage`: `TriggerEnvelope`, `run_triage`, `apply_decision`, `TriageOutcome` for agent-tunnel routing and `trigger_agent`.
+- `crate::config::{Config, rpc::load_config_with_timeout}`: config for backend-proxy RPCs.
+- `crate::api::{BackendOAuthClient, config::effective_backend_api_url, jwt::get_session_token}`: authenticated backend tunnel CRUD/bandwidth calls.
+- `crate::rpc::RpcOutcome`: handler return contract.
 
 ## Used by
 
-- `crates/openhuman-core/src/core/all.rs` — registers the controllers/schemas into the RPC registry.
-- `crates/openhuman-core/src/platform/socket/manager.rs` — stores the `WebhookRouter` (`set_webhook_router` / `webhook_router`) on the socket manager; ops/bus retrieve it from there.
-- `crates/openhuman-core/src/platform/socket/event_handlers.rs` — publishes `WebhookIncomingRequest` from the socket and reads the shared router slot.
-- `crates/openhuman-core/src/core/jsonrpc.rs` — registers `WebhookRequestSubscriber` in `register_domain_subscribers()` and provides the RPC transport surface.
-- `crates/openhuman-core/src/core/events.rs` — defines the `Webhook*` `DomainEvent` variants this module uses.
+- `crates/openhuman-core/src/core/all.rs`: registers the controllers/schemas into the RPC registry.
+- `crates/openhuman-core/src/platform/socket/manager.rs`: stores the `WebhookRouter` (`set_webhook_router` / `webhook_router`) on the socket manager; ops/bus retrieve it from there.
+- `crates/openhuman-core/src/platform/socket/event_handlers.rs`: publishes `WebhookIncomingRequest` from the socket and reads the shared router slot.
+- `crates/openhuman-core/src/core/jsonrpc.rs`: registers `WebhookRequestSubscriber` in `register_domain_subscribers()` and provides the RPC transport surface.
+- `crates/openhuman-core/src/core/events.rs`: defines the `Webhook*` `DomainEvent` variants this module uses.
 
 ## Notes / gotchas
 
-- **Direct skill dispatch is not implemented**: a `skill`-kind tunnel returns `501`. Real handling exists only for `echo` and `agent` kinds (the QuickJS skill runtime was removed; see `gitbooks/developing/architecture.md`).
+- Direct skill dispatch is not implemented: a `skill`-kind tunnel returns `501`. Real handling exists only for `echo` and `agent` kinds (the QuickJS skill runtime was removed; see `gitbooks/developing/architecture.md`).
 - `route()` deliberately resolves only `target_kind == "skill"` registrations; echo/agent registrations are matched via `registration()` in the bus, not `route()`.
-- Agent tunnels respond `202` immediately and complete asynchronously — the spawned task emits the final `webhook:response` itself to avoid blocking the broadcast dispatch task during LLM calls.
+- Agent tunnels respond `202` immediately and complete asynchronously: the spawned task emits the final `webhook:response` itself to avoid blocking the broadcast dispatch task during LLM calls.
 - `register_agent` stores `agent_id` for observability and rebind validation only; per the docstring the triage evaluator selects the target agent dynamically regardless of the pinned value.
 - Persistence is fire-and-forget and may not flush before process exit; a lost write only replays the most recent registration change on next startup.
 - `decode_webhook_body` returns `{}` for empty bodies and wraps non-JSON-but-valid-UTF-8 bodies under a `"raw"` key; invalid base64 is a hard error (→ 400).

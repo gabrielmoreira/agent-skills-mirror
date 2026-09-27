@@ -560,6 +560,64 @@ agent what to do and how to request the omitted detail.
 完整诊断包保留为显式 drill-down。只有默认路径仍能告诉 agent 下一步做什么、以及
 如何请求被省略细节时，字段才能移出默认热路径。
 
+### Roadmap-Aligned Optimization
+
+For recurring command, recovery or retrieval costs, use the existing
+[overall roadmap](../architecture/rfcs/loopx-overall-roadmap-v0.md) and owning
+RFC acceptance to select the repair. Typed semantics and bridge costs belong
+to the [TS migration RFC](../architecture/rfcs/typescript-control-plane-migration-v0.md);
+backend capacity, retention and cutover qualification belong to the
+[shared-authority RFC](../architecture/rfcs/shared-goal-authority-state-provider-v0.md).
+Use the existing task/PR evidence and update its owning checkpoint when warranted;
+this adds no approval, receipt or requirement to complete unrelated milestones.
+
+- **Locate the cost before selecting an abstraction.** Separate caller repeats,
+  output/context expansion, process/bridge/serialization cost, shared semantic
+  work, and backend IO/verification/contention. A display filter does not reduce
+  upstream work; a short response or fast isolated query does not establish a
+  faster recovery loop. Name the real consumer and measure its useful outcome.
+- **Share contracts, qualify implementations.** Put common selection, bounded
+  reads and observation reuse at the existing consumer/typed owner boundary.
+  Preserve completeness, current authority, receipt replay and lease/CAS checks.
+  File, SQLite and PostgreSQL need not share cache invalidation, indexing or
+  history layout. Keep backend-specific algorithms in their providers; do not
+  duplicate authority in Python or invent a common cache to conceal those costs.
+  Run the applicable real-backend validation above for every affected backend.
+- **Treat migration as a hypothesis, not a cause.** Compare the same operation,
+  revision, data/history size, runtime configuration and concurrency where
+  possible. Separate cold/warm reads, alternating stores, writes and recovery
+  when those paths are affected. Without a controlled before/after comparison,
+  report measured costs and uncertainty. Successful ownership transfer does not
+  establish long-running latency, capacity or recovery equivalence.
+- **Qualify the intended outcome.** Retrieval relevance needs independently
+  labeled queries, ambiguous/no-match cases and disclosed language/corpus limits;
+  a small development set is not production accuracy or task-success evidence.
+  Runtime optimization needs the original failing workload plus semantic and
+  scale checks. Follow the budget decisions below rather than hiding regressions
+  with a larger timeout, smaller fixture or truncated decision evidence.
+- **Keep the delivered boundary honest.** State whether the change removes the
+  owning bottleneck or only mitigates its consumer impact. Reuse an existing
+  successor for an evidenced remaining gap and identify its acceptance. Do not
+  count a prompt reduction as backend qualification, or repeated repair PRs as
+  default-provider readiness; do not create follow-ups for hypothetical work.
+
+对反复出现的命令、恢复或检索开销，先对应总 roadmap 和所属 RFC 的验收，再选择修复：
+TS RFC 管语义 owner 与跨语言成本，shared-authority RFC 管后端容量、保留与切换验证。
+沿用现有任务、PR 证据和验收记录，不增加审批、回执或无关里程碑前置条件。
+
+- **先定位成本。** 区分重复调用、输出与上下文展开、进程与序列化、公共语义计算、
+  后端 IO／校验／竞争。输出过滤不减少上游计算；单次查询变快不等于恢复闭环变快。
+- **共用合同，分别验证实现。** 选择、有界读取和观测复用归现有调用方或 typed owner；
+  保留完整性、当前权限、回执重放及 lease/CAS。缓存失效、索引和历史布局可以因后端
+  而异，不能在 Python 复制权威，也不强造统一缓存。受影响后端遵循上文真实路径验证。
+- **迁移是待验证的原因。** 尽量控制操作、版本、数据与历史规模、配置、并发；按影响
+  区分冷／热读、多存储交替、写入与恢复。没有受控前后对照就披露不确定性；晋升成功
+  不证明长程延迟、容量和恢复等价。
+- **验证实际目标。** 检索用独立标注、歧义／无命中和语言边界验证；开发小样本不代表
+  生产精度或任务成功率。运行时优化保留原失败负载和语义／规模检查，预算按下节处理。
+- **区分缓解与闭环。** 写明消除了所属瓶颈，还是只减轻调用方影响；剩余真实缺口复用
+  已有后续任务并指明验收。提示词缩短不算后端验证，修复 PR 数量不算默认切换就绪。
+
 ### Budget Failure Decisions
 
 Classify the limit by its owning contract before deciding how to repair a

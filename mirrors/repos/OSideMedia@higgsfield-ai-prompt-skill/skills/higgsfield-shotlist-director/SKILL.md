@@ -4,8 +4,8 @@ description: "Turns a brief, script, scene breakdown, treatment, or story idea i
 user-invocable: true
 metadata:
   tags: [higgsfield, seedance, seedance-2.0, shotlist, director, style-prefix, ad, commercial, artifact, html]
-  version: 1.2.0
-  updated: 2026-08-09
+  version: 1.3.0
+  updated: 2026-09-26
   parent: higgsfield
 ---
 
@@ -29,7 +29,7 @@ prompts that all inherit both.
 - Output = **one self-contained HTML file** (inline CSS/JS, no deps), not loose prompts [→](#what-you-produce)
 - Three structural layers, top to bottom: **Global Style Prefix → `@`-asset glossary → named per-scene prompts** [→](#the-three-layers)
 - Per-scene prompt law: `Style → Characters → Scene → CUT 1..N`; each prompt targets **15s**; split long scenes as `3a/3b/3c` [→](#per-scene-prompt-law)
-- [OFFICIAL] Density heuristic: group rows when ALL of {same cast, same location, one emotional unit, ≤15s, inside length limits}; split on ANY of {location cut, cast change, setup change, performance arc, insert} — **don't fragment grief**; complexity budget + auto-enrichment defaults for thin briefs [→](#prompt-density-grouping-shot-rows-into-15s-envelopes)
+- [OFFICIAL] Density heuristic: group rows when ALL of {same cast, same location, one emotional unit, ≤15s, inside length limits}; split on ANY of {location cut, cast change, setup change, performance arc, insert} — **don't fragment grief**; complexity budget + auto-enrichment defaults for thin briefs [→](#prompt-density--grouping-shot-rows-into-15s-envelopes)
 - Whole-sequence checks before delivery: **tempo budget** (cut durations sum exactly to runtime; one 6–8s hero hold) + **monotony audit** (no 3 consecutive cuts sharing shot size AND camera move) [→](#sequence-tempo-and-variety)
 - Continuity carries exits too: an **Off-screen line** (exit side + last state) per just-departed character keeps re-entry direction legal [→](#per-scene-prompt-law)
 - **Edit-once-propagates**: change the prefix once → it changes in every prompt; per-scene **override** lets one scene break the global look [→](#edit-once-and-per-scene-override)
@@ -84,8 +84,20 @@ auto-attaches the right images:
 @kitchen · @stadium · @street — locations
 @s_hero — athletic-look hero     @s_hero_wet — sweaty post-run hero
 @music_track (audio_1.wav) — motion locks to this beat
-@street_schematic (image_1.png) — top-down position map
+@staging_ACME_street_v1 — front-on position reference, attached LAST
 ```
+
+A position map in the glossary is always the **front-on staging reference**
+(`../../templates/seedance/staging-reference.md`: outline figures, position only,
+attached after the photo references), named by that template's § Tag naming
+(`@staging_[PROJECT]_[scene]_[version]`; `ACME` above is a placeholder project). No
+slot filename goes beside it: slots are assigned by upload order, so a staging
+reference filed as `image_1` would sit in the character's slot. Elements
+auto-attach finds the right images, but nothing in this repo documents the order
+it attaches them in — when the staging reference must land last, check the
+attach order before firing, or attach it by hand after the photo references. A **top-down** floor plan is never
+registered or attached — it is an authoring aid whose output travels into the
+prompt as a written blocking note (`../../templates/seedance/top-down-map.md`).
 
 The slot→role discipline (`@Image1` = character, `@Image2` = costume, `@Audio1`
 = rhythm…) comes from `../higgsfield-seedance/SKILL.md` § Reference Roles →

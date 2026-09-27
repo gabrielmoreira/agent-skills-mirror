@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `gamedev-skills/awesome-gamedev-agent-skills` — 26 default patterns, 0 followed patterns, 173 file(s) materialized.
+Mirror of `gamedev-skills/awesome-gamedev-agent-skills` — 26 default patterns, 0 followed patterns, 174 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `gamedev-skills/awesome-gamedev-agent-skills` — 26 default patterns,
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 173 |
+| Files         | 174 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -137,101 +137,102 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 76 | ✓ | [`skills/godot/godot-csharp/SKILL.md`](skills/godot/godot-csharp/SKILL.md) |
 | 77 | ✓ | [`skills/godot/godot-export/references/presets-and-cli.md`](skills/godot/godot-export/references/presets-and-cli.md) |
 | 78 | ✓ | [`skills/godot/godot-export/SKILL.md`](skills/godot/godot-export/SKILL.md) |
-| 79 | ✓ | [`skills/godot/godot-gdscript/references/annotations-and-typing.md`](skills/godot/godot-gdscript/references/annotations-and-typing.md) |
-| 80 | ✓ | [`skills/godot/godot-gdscript/SKILL.md`](skills/godot/godot-gdscript/SKILL.md) |
-| 81 | ✓ | [`skills/godot/godot-multiplayer/references/replication-and-rpc.md`](skills/godot/godot-multiplayer/references/replication-and-rpc.md) |
-| 82 | ✓ | [`skills/godot/godot-multiplayer/SKILL.md`](skills/godot/godot-multiplayer/SKILL.md) |
-| 83 | ✓ | [`skills/godot/godot-nodes-scenes/references/tree-and-instancing.md`](skills/godot/godot-nodes-scenes/references/tree-and-instancing.md) |
-| 84 | ✓ | [`skills/godot/godot-nodes-scenes/SKILL.md`](skills/godot/godot-nodes-scenes/SKILL.md) |
-| 85 | ✓ | [`skills/godot/godot-physics/references/bodies-and-queries.md`](skills/godot/godot-physics/references/bodies-and-queries.md) |
-| 86 | ✓ | [`skills/godot/godot-physics/SKILL.md`](skills/godot/godot-physics/SKILL.md) |
-| 87 | ✓ | [`skills/godot/godot-resources/references/resource-patterns.md`](skills/godot/godot-resources/references/resource-patterns.md) |
-| 88 | ✓ | [`skills/godot/godot-resources/SKILL.md`](skills/godot/godot-resources/SKILL.md) |
-| 89 | ✓ | [`skills/godot/godot-shaders/references/shading-language.md`](skills/godot/godot-shaders/references/shading-language.md) |
-| 90 | ✓ | [`skills/godot/godot-shaders/SKILL.md`](skills/godot/godot-shaders/SKILL.md) |
-| 91 | ✓ | [`skills/godot/godot-signals-groups/references/signal-patterns.md`](skills/godot/godot-signals-groups/references/signal-patterns.md) |
-| 92 | ✓ | [`skills/godot/godot-signals-groups/SKILL.md`](skills/godot/godot-signals-groups/SKILL.md) |
-| 93 | ✓ | [`skills/godot/godot-tilemap/references/tileset-and-terrains.md`](skills/godot/godot-tilemap/references/tileset-and-terrains.md) |
-| 94 | ✓ | [`skills/godot/godot-tilemap/SKILL.md`](skills/godot/godot-tilemap/SKILL.md) |
-| 95 | ✓ | [`skills/godot/godot-ui-control/references/layout-and-theming.md`](skills/godot/godot-ui-control/references/layout-and-theming.md) |
-| 96 | ✓ | [`skills/godot/godot-ui-control/SKILL.md`](skills/godot/godot-ui-control/SKILL.md) |
-| 97 | ✓ | [`skills/godot/README.md`](skills/godot/README.md) |
-| 98 | ✓ | [`skills/other-engines/bevy-ecs/references/queries-and-scheduling.md`](skills/other-engines/bevy-ecs/references/queries-and-scheduling.md) |
-| 99 | ✓ | [`skills/other-engines/bevy-ecs/SKILL.md`](skills/other-engines/bevy-ecs/SKILL.md) |
-| 100 | ✓ | [`skills/other-engines/love2d-core/references/state-stack.md`](skills/other-engines/love2d-core/references/state-stack.md) |
-| 101 | ✓ | [`skills/other-engines/love2d-core/SKILL.md`](skills/other-engines/love2d-core/SKILL.md) |
-| 102 | ✓ | [`skills/other-engines/pygame-core/references/sprites-and-collision.md`](skills/other-engines/pygame-core/references/sprites-and-collision.md) |
-| 103 | ✓ | [`skills/other-engines/pygame-core/SKILL.md`](skills/other-engines/pygame-core/SKILL.md) |
-| 104 | ✓ | [`skills/other-engines/README.md`](skills/other-engines/README.md) |
-| 105 | ✓ | [`skills/other-engines/roblox-characters/agents/openai.yaml`](skills/other-engines/roblox-characters/agents/openai.yaml) |
-| 106 | ✓ | [`skills/other-engines/roblox-characters/references/lifecycle-and-animation.md`](skills/other-engines/roblox-characters/references/lifecycle-and-animation.md) |
-| 107 | ✓ | [`skills/other-engines/roblox-characters/SKILL.md`](skills/other-engines/roblox-characters/SKILL.md) |
-| 108 | ✓ | [`skills/other-engines/roblox-datastores/references/sessions-and-limits.md`](skills/other-engines/roblox-datastores/references/sessions-and-limits.md) |
-| 109 | ✓ | [`skills/other-engines/roblox-datastores/SKILL.md`](skills/other-engines/roblox-datastores/SKILL.md) |
-| 110 | ✓ | [`skills/other-engines/roblox-luau/references/client-server.md`](skills/other-engines/roblox-luau/references/client-server.md) |
-| 111 | ✓ | [`skills/other-engines/roblox-luau/SKILL.md`](skills/other-engines/roblox-luau/SKILL.md) |
-| 112 | ✓ | [`skills/other-engines/roblox-networking/agents/openai.yaml`](skills/other-engines/roblox-networking/agents/openai.yaml) |
-| 113 | ✓ | [`skills/other-engines/roblox-networking/references/validation-and-testing.md`](skills/other-engines/roblox-networking/references/validation-and-testing.md) |
-| 114 | ✓ | [`skills/other-engines/roblox-networking/SKILL.md`](skills/other-engines/roblox-networking/SKILL.md) |
-| 115 | ✓ | [`skills/other-engines/roblox-physics/agents/openai.yaml`](skills/other-engines/roblox-physics/agents/openai.yaml) |
-| 116 | ✓ | [`skills/other-engines/roblox-physics/references/queries-and-ownership.md`](skills/other-engines/roblox-physics/references/queries-and-ownership.md) |
-| 117 | ✓ | [`skills/other-engines/roblox-physics/SKILL.md`](skills/other-engines/roblox-physics/SKILL.md) |
-| 118 | ✓ | [`skills/other-engines/roblox-studio-workflow/agents/openai.yaml`](skills/other-engines/roblox-studio-workflow/agents/openai.yaml) |
-| 119 | ✓ | [`skills/other-engines/roblox-studio-workflow/references/studio-verification.md`](skills/other-engines/roblox-studio-workflow/references/studio-verification.md) |
-| 120 | ✓ | [`skills/other-engines/roblox-studio-workflow/SKILL.md`](skills/other-engines/roblox-studio-workflow/SKILL.md) |
-| 121 | ✓ | [`skills/other-engines/roblox-ui/agents/openai.yaml`](skills/other-engines/roblox-ui/agents/openai.yaml) |
-| 122 | ✓ | [`skills/other-engines/roblox-ui/assets/inventory-quality-test.model.json`](skills/other-engines/roblox-ui/assets/inventory-quality-test.model.json) |
-| 123 | ✓ | [`skills/other-engines/roblox-ui/assets/inventory-quality-test.project.json`](skills/other-engines/roblox-ui/assets/inventory-quality-test.project.json) |
-| 124 | ✓ | [`skills/other-engines/roblox-ui/references/input-navigation.md`](skills/other-engines/roblox-ui/references/input-navigation.md) |
-| 125 | ✓ | [`skills/other-engines/roblox-ui/references/responsive-layout.md`](skills/other-engines/roblox-ui/references/responsive-layout.md) |
-| 126 | ✓ | [`skills/other-engines/roblox-ui/SKILL.md`](skills/other-engines/roblox-ui/SKILL.md) |
-| 127 | ✓ | [`skills/README.md`](skills/README.md) |
-| 128 | ✓ | [`skills/unity/README.md`](skills/unity/README.md) |
-| 129 | ✓ | [`skills/unity/unity-animation/references/blend-trees-and-ik.md`](skills/unity/unity-animation/references/blend-trees-and-ik.md) |
-| 130 | ✓ | [`skills/unity/unity-animation/SKILL.md`](skills/unity/unity-animation/SKILL.md) |
-| 131 | ✓ | [`skills/unity/unity-build-pipeline/references/ci-build-script.md`](skills/unity/unity-build-pipeline/references/ci-build-script.md) |
-| 132 | ✓ | [`skills/unity/unity-build-pipeline/SKILL.md`](skills/unity/unity-build-pipeline/SKILL.md) |
-| 133 | ✓ | [`skills/unity/unity-csharp-scripting/references/lifecycle-and-coroutines.md`](skills/unity/unity-csharp-scripting/references/lifecycle-and-coroutines.md) |
-| 134 | ✓ | [`skills/unity/unity-csharp-scripting/SKILL.md`](skills/unity/unity-csharp-scripting/SKILL.md) |
-| 135 | ✓ | [`skills/unity/unity-input-system/references/rebinding.md`](skills/unity/unity-input-system/references/rebinding.md) |
-| 136 | ✓ | [`skills/unity/unity-input-system/SKILL.md`](skills/unity/unity-input-system/SKILL.md) |
-| 137 | ✓ | [`skills/unity/unity-navmesh/SKILL.md`](skills/unity/unity-navmesh/SKILL.md) |
-| 138 | ✓ | [`skills/unity/unity-physics/references/raycasting-and-joints.md`](skills/unity/unity-physics/references/raycasting-and-joints.md) |
-| 139 | ✓ | [`skills/unity/unity-physics/SKILL.md`](skills/unity/unity-physics/SKILL.md) |
-| 140 | ✓ | [`skills/unity/unity-scriptableobjects/references/event-channels.md`](skills/unity/unity-scriptableobjects/references/event-channels.md) |
-| 141 | ✓ | [`skills/unity/unity-scriptableobjects/SKILL.md`](skills/unity/unity-scriptableobjects/SKILL.md) |
-| 142 | ✓ | [`skills/unity/unity-tilemap-2d/SKILL.md`](skills/unity/unity-tilemap-2d/SKILL.md) |
-| 143 | ✓ | [`skills/unreal/README.md`](skills/unreal/README.md) |
-| 144 | ✓ | [`skills/unreal/unreal-behavior-trees/references/custom-bttask.md`](skills/unreal/unreal-behavior-trees/references/custom-bttask.md) |
-| 145 | ✓ | [`skills/unreal/unreal-behavior-trees/SKILL.md`](skills/unreal/unreal-behavior-trees/SKILL.md) |
-| 146 | ✓ | [`skills/unreal/unreal-blueprints/references/communication.md`](skills/unreal/unreal-blueprints/references/communication.md) |
-| 147 | ✓ | [`skills/unreal/unreal-blueprints/SKILL.md`](skills/unreal/unreal-blueprints/SKILL.md) |
-| 148 | ✓ | [`skills/unreal/unreal-cpp-gameplay/references/components-and-gc.md`](skills/unreal/unreal-cpp-gameplay/references/components-and-gc.md) |
-| 149 | ✓ | [`skills/unreal/unreal-cpp-gameplay/SKILL.md`](skills/unreal/unreal-cpp-gameplay/SKILL.md) |
-| 150 | ✓ | [`skills/unreal/unreal-enhanced-input/references/cpp-setup.md`](skills/unreal/unreal-enhanced-input/references/cpp-setup.md) |
-| 151 | ✓ | [`skills/unreal/unreal-enhanced-input/SKILL.md`](skills/unreal/unreal-enhanced-input/SKILL.md) |
-| 152 | ✓ | [`skills/unreal/unreal-niagara/SKILL.md`](skills/unreal/unreal-niagara/SKILL.md) |
-| 153 | ✓ | [`skills/unreal/unreal-packaging/SKILL.md`](skills/unreal/unreal-packaging/SKILL.md) |
-| 154 | ✓ | [`skills/web-engines/phaser-arcade-physics/references/bodies-and-collision.md`](skills/web-engines/phaser-arcade-physics/references/bodies-and-collision.md) |
-| 155 | ✓ | [`skills/web-engines/phaser-arcade-physics/SKILL.md`](skills/web-engines/phaser-arcade-physics/SKILL.md) |
-| 156 | ✓ | [`skills/web-engines/phaser-core/references/scene-flow.md`](skills/web-engines/phaser-core/references/scene-flow.md) |
-| 157 | ✓ | [`skills/web-engines/phaser-core/SKILL.md`](skills/web-engines/phaser-core/SKILL.md) |
-| 158 | ✓ | [`skills/web-engines/pixijs-rendering/references/assets-and-display.md`](skills/web-engines/pixijs-rendering/references/assets-and-display.md) |
-| 159 | ✓ | [`skills/web-engines/pixijs-rendering/SKILL.md`](skills/web-engines/pixijs-rendering/SKILL.md) |
-| 160 | ✓ | [`skills/web-engines/README.md`](skills/web-engines/README.md) |
-| 161 | ✓ | [`skills/web-engines/threejs-gltf-loading/references/loaders-and-animation.md`](skills/web-engines/threejs-gltf-loading/references/loaders-and-animation.md) |
-| 162 | ✓ | [`skills/web-engines/threejs-gltf-loading/SKILL.md`](skills/web-engines/threejs-gltf-loading/SKILL.md) |
-| 163 | ✓ | [`skills/web-engines/threejs-materials-lighting/references/materials-lights-table.md`](skills/web-engines/threejs-materials-lighting/references/materials-lights-table.md) |
-| 164 | ✓ | [`skills/web-engines/threejs-materials-lighting/SKILL.md`](skills/web-engines/threejs-materials-lighting/SKILL.md) |
-| 165 | ✓ | [`skills/web-engines/threejs-scene-setup/references/scene-graph.md`](skills/web-engines/threejs-scene-setup/references/scene-graph.md) |
-| 166 | ✓ | [`skills/web-engines/threejs-scene-setup/SKILL.md`](skills/web-engines/threejs-scene-setup/SKILL.md) |
-| 167 | ✓ | [`skills/workflows/game-jam/SKILL.md`](skills/workflows/game-jam/SKILL.md) |
-| 168 | ✓ | [`skills/workflows/itch-publish/references/butler-ci.md`](skills/workflows/itch-publish/references/butler-ci.md) |
-| 169 | ✓ | [`skills/workflows/itch-publish/SKILL.md`](skills/workflows/itch-publish/SKILL.md) |
-| 170 | ✓ | [`skills/workflows/prototype-fast/SKILL.md`](skills/workflows/prototype-fast/SKILL.md) |
-| 171 | ✓ | [`skills/workflows/README.md`](skills/workflows/README.md) |
-| 172 | ✓ | [`skills/workflows/steam-publish/references/steampipe-build-scripts.md`](skills/workflows/steam-publish/references/steampipe-build-scripts.md) |
-| 173 | ✓ | [`skills/workflows/steam-publish/SKILL.md`](skills/workflows/steam-publish/SKILL.md) |
+| 79 | ✓ | [`skills/godot/godot-gdscript-headless-testing/SKILL.md`](skills/godot/godot-gdscript-headless-testing/SKILL.md) |
+| 80 | ✓ | [`skills/godot/godot-gdscript/references/annotations-and-typing.md`](skills/godot/godot-gdscript/references/annotations-and-typing.md) |
+| 81 | ✓ | [`skills/godot/godot-gdscript/SKILL.md`](skills/godot/godot-gdscript/SKILL.md) |
+| 82 | ✓ | [`skills/godot/godot-multiplayer/references/replication-and-rpc.md`](skills/godot/godot-multiplayer/references/replication-and-rpc.md) |
+| 83 | ✓ | [`skills/godot/godot-multiplayer/SKILL.md`](skills/godot/godot-multiplayer/SKILL.md) |
+| 84 | ✓ | [`skills/godot/godot-nodes-scenes/references/tree-and-instancing.md`](skills/godot/godot-nodes-scenes/references/tree-and-instancing.md) |
+| 85 | ✓ | [`skills/godot/godot-nodes-scenes/SKILL.md`](skills/godot/godot-nodes-scenes/SKILL.md) |
+| 86 | ✓ | [`skills/godot/godot-physics/references/bodies-and-queries.md`](skills/godot/godot-physics/references/bodies-and-queries.md) |
+| 87 | ✓ | [`skills/godot/godot-physics/SKILL.md`](skills/godot/godot-physics/SKILL.md) |
+| 88 | ✓ | [`skills/godot/godot-resources/references/resource-patterns.md`](skills/godot/godot-resources/references/resource-patterns.md) |
+| 89 | ✓ | [`skills/godot/godot-resources/SKILL.md`](skills/godot/godot-resources/SKILL.md) |
+| 90 | ✓ | [`skills/godot/godot-shaders/references/shading-language.md`](skills/godot/godot-shaders/references/shading-language.md) |
+| 91 | ✓ | [`skills/godot/godot-shaders/SKILL.md`](skills/godot/godot-shaders/SKILL.md) |
+| 92 | ✓ | [`skills/godot/godot-signals-groups/references/signal-patterns.md`](skills/godot/godot-signals-groups/references/signal-patterns.md) |
+| 93 | ✓ | [`skills/godot/godot-signals-groups/SKILL.md`](skills/godot/godot-signals-groups/SKILL.md) |
+| 94 | ✓ | [`skills/godot/godot-tilemap/references/tileset-and-terrains.md`](skills/godot/godot-tilemap/references/tileset-and-terrains.md) |
+| 95 | ✓ | [`skills/godot/godot-tilemap/SKILL.md`](skills/godot/godot-tilemap/SKILL.md) |
+| 96 | ✓ | [`skills/godot/godot-ui-control/references/layout-and-theming.md`](skills/godot/godot-ui-control/references/layout-and-theming.md) |
+| 97 | ✓ | [`skills/godot/godot-ui-control/SKILL.md`](skills/godot/godot-ui-control/SKILL.md) |
+| 98 | ✓ | [`skills/godot/README.md`](skills/godot/README.md) |
+| 99 | ✓ | [`skills/other-engines/bevy-ecs/references/queries-and-scheduling.md`](skills/other-engines/bevy-ecs/references/queries-and-scheduling.md) |
+| 100 | ✓ | [`skills/other-engines/bevy-ecs/SKILL.md`](skills/other-engines/bevy-ecs/SKILL.md) |
+| 101 | ✓ | [`skills/other-engines/love2d-core/references/state-stack.md`](skills/other-engines/love2d-core/references/state-stack.md) |
+| 102 | ✓ | [`skills/other-engines/love2d-core/SKILL.md`](skills/other-engines/love2d-core/SKILL.md) |
+| 103 | ✓ | [`skills/other-engines/pygame-core/references/sprites-and-collision.md`](skills/other-engines/pygame-core/references/sprites-and-collision.md) |
+| 104 | ✓ | [`skills/other-engines/pygame-core/SKILL.md`](skills/other-engines/pygame-core/SKILL.md) |
+| 105 | ✓ | [`skills/other-engines/README.md`](skills/other-engines/README.md) |
+| 106 | ✓ | [`skills/other-engines/roblox-characters/agents/openai.yaml`](skills/other-engines/roblox-characters/agents/openai.yaml) |
+| 107 | ✓ | [`skills/other-engines/roblox-characters/references/lifecycle-and-animation.md`](skills/other-engines/roblox-characters/references/lifecycle-and-animation.md) |
+| 108 | ✓ | [`skills/other-engines/roblox-characters/SKILL.md`](skills/other-engines/roblox-characters/SKILL.md) |
+| 109 | ✓ | [`skills/other-engines/roblox-datastores/references/sessions-and-limits.md`](skills/other-engines/roblox-datastores/references/sessions-and-limits.md) |
+| 110 | ✓ | [`skills/other-engines/roblox-datastores/SKILL.md`](skills/other-engines/roblox-datastores/SKILL.md) |
+| 111 | ✓ | [`skills/other-engines/roblox-luau/references/client-server.md`](skills/other-engines/roblox-luau/references/client-server.md) |
+| 112 | ✓ | [`skills/other-engines/roblox-luau/SKILL.md`](skills/other-engines/roblox-luau/SKILL.md) |
+| 113 | ✓ | [`skills/other-engines/roblox-networking/agents/openai.yaml`](skills/other-engines/roblox-networking/agents/openai.yaml) |
+| 114 | ✓ | [`skills/other-engines/roblox-networking/references/validation-and-testing.md`](skills/other-engines/roblox-networking/references/validation-and-testing.md) |
+| 115 | ✓ | [`skills/other-engines/roblox-networking/SKILL.md`](skills/other-engines/roblox-networking/SKILL.md) |
+| 116 | ✓ | [`skills/other-engines/roblox-physics/agents/openai.yaml`](skills/other-engines/roblox-physics/agents/openai.yaml) |
+| 117 | ✓ | [`skills/other-engines/roblox-physics/references/queries-and-ownership.md`](skills/other-engines/roblox-physics/references/queries-and-ownership.md) |
+| 118 | ✓ | [`skills/other-engines/roblox-physics/SKILL.md`](skills/other-engines/roblox-physics/SKILL.md) |
+| 119 | ✓ | [`skills/other-engines/roblox-studio-workflow/agents/openai.yaml`](skills/other-engines/roblox-studio-workflow/agents/openai.yaml) |
+| 120 | ✓ | [`skills/other-engines/roblox-studio-workflow/references/studio-verification.md`](skills/other-engines/roblox-studio-workflow/references/studio-verification.md) |
+| 121 | ✓ | [`skills/other-engines/roblox-studio-workflow/SKILL.md`](skills/other-engines/roblox-studio-workflow/SKILL.md) |
+| 122 | ✓ | [`skills/other-engines/roblox-ui/agents/openai.yaml`](skills/other-engines/roblox-ui/agents/openai.yaml) |
+| 123 | ✓ | [`skills/other-engines/roblox-ui/assets/inventory-quality-test.model.json`](skills/other-engines/roblox-ui/assets/inventory-quality-test.model.json) |
+| 124 | ✓ | [`skills/other-engines/roblox-ui/assets/inventory-quality-test.project.json`](skills/other-engines/roblox-ui/assets/inventory-quality-test.project.json) |
+| 125 | ✓ | [`skills/other-engines/roblox-ui/references/input-navigation.md`](skills/other-engines/roblox-ui/references/input-navigation.md) |
+| 126 | ✓ | [`skills/other-engines/roblox-ui/references/responsive-layout.md`](skills/other-engines/roblox-ui/references/responsive-layout.md) |
+| 127 | ✓ | [`skills/other-engines/roblox-ui/SKILL.md`](skills/other-engines/roblox-ui/SKILL.md) |
+| 128 | ✓ | [`skills/README.md`](skills/README.md) |
+| 129 | ✓ | [`skills/unity/README.md`](skills/unity/README.md) |
+| 130 | ✓ | [`skills/unity/unity-animation/references/blend-trees-and-ik.md`](skills/unity/unity-animation/references/blend-trees-and-ik.md) |
+| 131 | ✓ | [`skills/unity/unity-animation/SKILL.md`](skills/unity/unity-animation/SKILL.md) |
+| 132 | ✓ | [`skills/unity/unity-build-pipeline/references/ci-build-script.md`](skills/unity/unity-build-pipeline/references/ci-build-script.md) |
+| 133 | ✓ | [`skills/unity/unity-build-pipeline/SKILL.md`](skills/unity/unity-build-pipeline/SKILL.md) |
+| 134 | ✓ | [`skills/unity/unity-csharp-scripting/references/lifecycle-and-coroutines.md`](skills/unity/unity-csharp-scripting/references/lifecycle-and-coroutines.md) |
+| 135 | ✓ | [`skills/unity/unity-csharp-scripting/SKILL.md`](skills/unity/unity-csharp-scripting/SKILL.md) |
+| 136 | ✓ | [`skills/unity/unity-input-system/references/rebinding.md`](skills/unity/unity-input-system/references/rebinding.md) |
+| 137 | ✓ | [`skills/unity/unity-input-system/SKILL.md`](skills/unity/unity-input-system/SKILL.md) |
+| 138 | ✓ | [`skills/unity/unity-navmesh/SKILL.md`](skills/unity/unity-navmesh/SKILL.md) |
+| 139 | ✓ | [`skills/unity/unity-physics/references/raycasting-and-joints.md`](skills/unity/unity-physics/references/raycasting-and-joints.md) |
+| 140 | ✓ | [`skills/unity/unity-physics/SKILL.md`](skills/unity/unity-physics/SKILL.md) |
+| 141 | ✓ | [`skills/unity/unity-scriptableobjects/references/event-channels.md`](skills/unity/unity-scriptableobjects/references/event-channels.md) |
+| 142 | ✓ | [`skills/unity/unity-scriptableobjects/SKILL.md`](skills/unity/unity-scriptableobjects/SKILL.md) |
+| 143 | ✓ | [`skills/unity/unity-tilemap-2d/SKILL.md`](skills/unity/unity-tilemap-2d/SKILL.md) |
+| 144 | ✓ | [`skills/unreal/README.md`](skills/unreal/README.md) |
+| 145 | ✓ | [`skills/unreal/unreal-behavior-trees/references/custom-bttask.md`](skills/unreal/unreal-behavior-trees/references/custom-bttask.md) |
+| 146 | ✓ | [`skills/unreal/unreal-behavior-trees/SKILL.md`](skills/unreal/unreal-behavior-trees/SKILL.md) |
+| 147 | ✓ | [`skills/unreal/unreal-blueprints/references/communication.md`](skills/unreal/unreal-blueprints/references/communication.md) |
+| 148 | ✓ | [`skills/unreal/unreal-blueprints/SKILL.md`](skills/unreal/unreal-blueprints/SKILL.md) |
+| 149 | ✓ | [`skills/unreal/unreal-cpp-gameplay/references/components-and-gc.md`](skills/unreal/unreal-cpp-gameplay/references/components-and-gc.md) |
+| 150 | ✓ | [`skills/unreal/unreal-cpp-gameplay/SKILL.md`](skills/unreal/unreal-cpp-gameplay/SKILL.md) |
+| 151 | ✓ | [`skills/unreal/unreal-enhanced-input/references/cpp-setup.md`](skills/unreal/unreal-enhanced-input/references/cpp-setup.md) |
+| 152 | ✓ | [`skills/unreal/unreal-enhanced-input/SKILL.md`](skills/unreal/unreal-enhanced-input/SKILL.md) |
+| 153 | ✓ | [`skills/unreal/unreal-niagara/SKILL.md`](skills/unreal/unreal-niagara/SKILL.md) |
+| 154 | ✓ | [`skills/unreal/unreal-packaging/SKILL.md`](skills/unreal/unreal-packaging/SKILL.md) |
+| 155 | ✓ | [`skills/web-engines/phaser-arcade-physics/references/bodies-and-collision.md`](skills/web-engines/phaser-arcade-physics/references/bodies-and-collision.md) |
+| 156 | ✓ | [`skills/web-engines/phaser-arcade-physics/SKILL.md`](skills/web-engines/phaser-arcade-physics/SKILL.md) |
+| 157 | ✓ | [`skills/web-engines/phaser-core/references/scene-flow.md`](skills/web-engines/phaser-core/references/scene-flow.md) |
+| 158 | ✓ | [`skills/web-engines/phaser-core/SKILL.md`](skills/web-engines/phaser-core/SKILL.md) |
+| 159 | ✓ | [`skills/web-engines/pixijs-rendering/references/assets-and-display.md`](skills/web-engines/pixijs-rendering/references/assets-and-display.md) |
+| 160 | ✓ | [`skills/web-engines/pixijs-rendering/SKILL.md`](skills/web-engines/pixijs-rendering/SKILL.md) |
+| 161 | ✓ | [`skills/web-engines/README.md`](skills/web-engines/README.md) |
+| 162 | ✓ | [`skills/web-engines/threejs-gltf-loading/references/loaders-and-animation.md`](skills/web-engines/threejs-gltf-loading/references/loaders-and-animation.md) |
+| 163 | ✓ | [`skills/web-engines/threejs-gltf-loading/SKILL.md`](skills/web-engines/threejs-gltf-loading/SKILL.md) |
+| 164 | ✓ | [`skills/web-engines/threejs-materials-lighting/references/materials-lights-table.md`](skills/web-engines/threejs-materials-lighting/references/materials-lights-table.md) |
+| 165 | ✓ | [`skills/web-engines/threejs-materials-lighting/SKILL.md`](skills/web-engines/threejs-materials-lighting/SKILL.md) |
+| 166 | ✓ | [`skills/web-engines/threejs-scene-setup/references/scene-graph.md`](skills/web-engines/threejs-scene-setup/references/scene-graph.md) |
+| 167 | ✓ | [`skills/web-engines/threejs-scene-setup/SKILL.md`](skills/web-engines/threejs-scene-setup/SKILL.md) |
+| 168 | ✓ | [`skills/workflows/game-jam/SKILL.md`](skills/workflows/game-jam/SKILL.md) |
+| 169 | ✓ | [`skills/workflows/itch-publish/references/butler-ci.md`](skills/workflows/itch-publish/references/butler-ci.md) |
+| 170 | ✓ | [`skills/workflows/itch-publish/SKILL.md`](skills/workflows/itch-publish/SKILL.md) |
+| 171 | ✓ | [`skills/workflows/prototype-fast/SKILL.md`](skills/workflows/prototype-fast/SKILL.md) |
+| 172 | ✓ | [`skills/workflows/README.md`](skills/workflows/README.md) |
+| 173 | ✓ | [`skills/workflows/steam-publish/references/steampipe-build-scripts.md`](skills/workflows/steam-publish/references/steampipe-build-scripts.md) |
+| 174 | ✓ | [`skills/workflows/steam-publish/SKILL.md`](skills/workflows/steam-publish/SKILL.md) |
 
 ---
 

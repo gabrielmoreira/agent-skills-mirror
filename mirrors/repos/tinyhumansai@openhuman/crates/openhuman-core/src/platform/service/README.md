@@ -37,8 +37,8 @@ Service-management domain for the OpenHuman core daemon. It installs/uninstalls 
 
 From `mod.rs` re-exports:
 
-- `core::*` — `ServiceState`, `ServiceStatus`, and the dispatchers `install` / `start` / `stop` / `status` / `uninstall`.
-- `ops::*` (also aliased `rpc`) — the async RPC handlers `service_install` … `service_uninstall`, `service_restart`, `service_shutdown`, `daemon_host_get`, `daemon_host_set`.
+- `core::*`: `ServiceState`, `ServiceStatus`, and the dispatchers `install` / `start` / `stop` / `status` / `uninstall`.
+- `ops::*` (also aliased `rpc`): the async RPC handlers `service_install` … `service_uninstall`, `service_restart`, `service_shutdown`, `daemon_host_get`, `daemon_host_set`.
 - `restart::{apply_startup_restart_delay_from_env, RestartStatus}` (and `restart::trigger_self_restart_now` via the `restart` module path).
 - `shutdown::ShutdownStatus`.
 - `schemas::all_service_controller_schemas` / `all_service_registered_controllers`.
@@ -50,14 +50,14 @@ Namespace `service` (called as `openhuman.service_<fn>` / `service.<fn>`). All n
 
 | Method | Inputs | Output |
 | --- | --- | --- |
-| `service.install` | — | `ServiceStatus` |
-| `service.start` | — | `ServiceStatus` |
-| `service.stop` | — | `ServiceStatus` |
-| `service.status` | — | `ServiceStatus` |
-| `service.uninstall` | — | `ServiceStatus` |
+| `service.install` |: | `ServiceStatus` |
+| `service.start` |: | `ServiceStatus` |
+| `service.stop` |: | `ServiceStatus` |
+| `service.status` |: | `ServiceStatus` |
+| `service.uninstall` |: | `ServiceStatus` |
 | `service.restart` | `source?`, `reason?` | restart ack JSON (`RestartStatus`) |
 | `service.shutdown` | `source?`, `reason?` | shutdown ack JSON (`ShutdownStatus`) |
-| `service.daemon_host_get` | — | `DaemonHostConfig` |
+| `service.daemon_host_get` |: | `DaemonHostConfig` |
 | `service.daemon_host_set` | `show_tray` (required) | `DaemonHostConfig` |
 
 Lifecycle handlers load config via `config::rpc::load_config_with_timeout`; `restart`/`shutdown` are intentionally config-free (they target the running process).
@@ -71,43 +71,43 @@ Publishes (in `restart.rs` / `shutdown.rs`) to the global event bus, domain `sys
 
 Subscribes (in `bus.rs`):
 
-- `RestartSubscriber` (`name = "service::restart"`) — on `SystemRestartRequested`, atomically claims a one-shot gate, calls `trigger_self_restart_now` to spawn a replacement process, then `process::exit(0)` after 150ms.
-- `ShutdownSubscriber` (`name = "service::shutdown"`) — on `SystemShutdownRequested`, claims its gate and `process::exit(0)` after 150ms (no respawn).
+- `RestartSubscriber` (`name = "service::restart"`): on `SystemRestartRequested`, atomically claims a one-shot gate, calls `trigger_self_restart_now` to spawn a replacement process, then `process::exit(0)` after 150ms.
+- `ShutdownSubscriber` (`name = "service::shutdown"`): on `SystemShutdownRequested`, claims its gate and `process::exit(0)` after 150ms (no respawn).
 
 Both subscribers are registered idempotently from `crates/openhuman-core/src/core/jsonrpc.rs` at startup via `register_restart_subscriber` / `register_shutdown_subscriber`; handles are held in process-lifetime `OnceLock`s so they are never dropped.
 
 ## Persistence
 
-- **Daemon-host prefs** — `daemon_host_config.json` next to the main config (`DaemonHostConfig { show_tray }`, default `true`); read/written async by `daemon_host.rs`.
-- **Daemon state path** — `daemon_state.json` next to config (`daemon::state_file_path`), consumed by doctor/health (not written here).
-- **Service unit files** — written by the per-OS impls (macOS plist in `~/Library/LaunchAgents`, Linux systemd user unit, Windows scheduled task).
-- **Mock state** — `service-mock-state.json` (overridable via `OPENHUMAN_SERVICE_MOCK_STATE_FILE`) tracking `installed`/`running`/`agent_running`/forced `failures`, only when the mock is enabled.
+- Daemon-host prefs: `daemon_host_config.json` next to the main config (`DaemonHostConfig { show_tray }`, default `true`); read/written async by `daemon_host.rs`.
+- Daemon state path: `daemon_state.json` next to config (`daemon::state_file_path`), consumed by doctor/health (not written here).
+- Service unit files: written by the per-OS impls (macOS plist in `~/Library/LaunchAgents`, Linux systemd user unit, Windows scheduled task).
+- Mock state: `service-mock-state.json` (overridable via `OPENHUMAN_SERVICE_MOCK_STATE_FILE`) tracking `installed`/`running`/`agent_running`/forced `failures`, only when the mock is enabled.
 
 ## Dependencies
 
-- `crate::config` — `Config` (paths, config dir) for every lifecycle/path operation; `config::rpc::load_config_with_timeout` in the schema handlers.
-- `crate::core::bus::BUS` (`tinybus::OnceBus<DomainEvent>`) — `publish` / `subscribe` for restart/shutdown orchestration; `crate::core::events::DomainEvent` for the event catalog.
-- `crate::core` (`ControllerSchema`, `FieldSchema`, `TypeSchema`) and `crate::core::all` (`ControllerFuture`, `RegisteredController`) — controller schema/registration contract.
-- `crate::rpc::RpcOutcome` — standard RPC result envelope.
+- `crate::config`: `Config` (paths, config dir) for every lifecycle/path operation; `config::rpc::load_config_with_timeout` in the schema handlers.
+- `crate::core::bus::BUS` (`tinybus::OnceBus<DomainEvent>`): `publish` / `subscribe` for restart/shutdown orchestration; `crate::core::events::DomainEvent` for the event catalog.
+- `crate::core` (`ControllerSchema`, `FieldSchema`, `TypeSchema`) and `crate::core::all` (`ControllerFuture`, `RegisteredController`): controller schema/registration contract.
+- `crate::rpc::RpcOutcome`: standard RPC result envelope.
 - External: `anyhow`, `serde`/`serde_json`, `tokio`, `async_trait`, plus OS CLIs (`launchctl`, `systemctl`, `schtasks`).
 
 ## Used by
 
-- `crates/openhuman-core/src/core/all.rs` — registers the service controllers (`all_service_registered_controllers`).
-- `crates/openhuman-core/src/core/jsonrpc.rs` — registers the restart/shutdown event-bus subscribers at startup.
-- `crates/openhuman-core/src/platform/doctor/core.rs` — reads `service::daemon::state_file_path`.
-- `crates/openhuman-core/src/platform/update/ops.rs` (`rpc::service_restart` after a self-replace), `crates/openhuman-core/src/config/ops/loader/runtime_flags.rs` (`mock::mock_agent_running`), `crates/openhuman-core/src/desktop/app_state/ops/{types,runtime_snapshot}.rs` (`ServiceState`/`ServiceStatus`, `status`) — call into `crate::platform::service`.
-- `crates/openhuman-core/src/tools/mod.rs` — re-exports `platform::service::tools::*`.
-- `lib.rs` — module wiring.
+- `crates/openhuman-core/src/core/all.rs`: registers the service controllers (`all_service_registered_controllers`).
+- `crates/openhuman-core/src/core/jsonrpc.rs`: registers the restart/shutdown event-bus subscribers at startup.
+- `crates/openhuman-core/src/platform/doctor/core.rs`: reads `service::daemon::state_file_path`.
+- `crates/openhuman-core/src/platform/update/ops.rs` (`rpc::service_restart` after a self-replace), `crates/openhuman-core/src/config/ops/loader/runtime_flags.rs` (`mock::mock_agent_running`), `crates/openhuman-core/src/desktop/app_state/ops/{types,runtime_snapshot}.rs` (`ServiceState`/`ServiceStatus`, `status`): call into `crate::platform::service`.
+- `crates/openhuman-core/src/tools/mod.rs`: re-exports `platform::service::tools::*`.
+- `lib.rs`: module wiring.
 
 ## Notes / gotchas
 
 - Restart/shutdown are **two-phase**: the RPC/CLI call only acknowledges and publishes an event; the actual respawn/exit happens in the subscriber, so RPC, CLI, and internal triggers share one path with consistent logging. The subscriber must be registered or requests are no-ops.
-- One-shot atomic gates exist in **both** `bus.rs` and `restart.rs` (`RESTART_IN_PROGRESS`) — duplicate restart events are ignored; a failed `trigger_self_restart_now` resets the gate to allow a retry.
+- One-shot atomic gates exist in **both** `bus.rs` and `restart.rs` (`RESTART_IN_PROGRESS`): duplicate restart events are ignored; a failed `trigger_self_restart_now` resets the gate to allow a retry.
 - `trigger_self_restart_now` respawns the current exe with the **original argv** (preserving launch mode) and sets `OPENHUMAN_RESTART_DELAY_MS` (default 350) on the child; the child honors it at startup via `apply_startup_restart_delay_from_env` to dodge HTTP-port bind races while the old process releases sockets.
 - Self-restart fails if launched with no args (`std::env::args().skip(1)` empty).
 - Platform support is compile-gated; on unsupported targets the dispatchers `bail!` with "supported on macOS, Linux, and Windows only".
-- `OPENHUMAN_SERVICE_MOCK` short-circuits **every** lifecycle dispatcher to the file-backed mock — used for deterministic E2E; it can also inject forced per-operation failures.
+- `OPENHUMAN_SERVICE_MOCK` short-circuits **every** lifecycle dispatcher to the file-backed mock: used for deterministic E2E; it can also inject forced per-operation failures.
 - Windows command spawns set `CREATE_NO_WINDOW` (`common::no_window`) so polled `schtasks /Query` calls don't flash a console.
 - Lifecycle RPCs are deliberately **not** unit-tested (they mutate real OS state or kill the process); RPC-adapter coverage lives in `tests/json_rpc_e2e.rs`. `daemon_host_get`/`set` and the restart/shutdown publish paths are unit-tested.
 - `daemon.rs::state_file_path` and `common.rs::state_file_path` (mock) both compute paths next to config but for different files (`daemon_state.json` vs the mock state file).

@@ -32,7 +32,10 @@ let runtime = RuntimeBuilder::new()
 ```
 
 `RuntimeBuilder` mirrors `openhuman_embed::RuntimeBuilder` method for method
-and, on `build()`, installs the SDK transport and binds it to the runtime.
+and, on `build()`, installs the SDK transport and binds it to the runtime. See
+[`gitbooks/developing/tinyhumans-api-key.md`](../../gitbooks/developing/tinyhumans-api-key.md)
+for what one TinyHumans API key unlocks across inference, search,
+embeddings, media, integrations, voice and Jev.
 
 Hosts that boot the core themselves (desktop shell, TUI, CLI, test fixtures)
 call `install` once before the first backend-touching dispatch (it also
@@ -47,11 +50,12 @@ openhuman_tinyhumans::install(openhuman_tinyhumans::InstallOptions::default())?;
 
 | Module | Owns |
 | --- | --- |
-| `transport` | `SdkBackendTransport`: one `reqwest::Client` per `TransportProfile`, built from the core's `api::headers` so TLS, timeouts and `x-core-version` / `x-tauri-version` / `x-sdk-name` are exactly what the core specifies; SDK route policy; `tinyhumans_sdk::Error` → `BackendTransportError` |
+| `transport` | `SdkBackendTransport`: one `reqwest::Client` per `TransportProfile`, built from the core's `api::headers` so TLS, timeouts and `x-core-version` / `x-tauri-version` / `x-sdk-name` are exactly what the core specifies; SDK route policy; `tinyhumans_sdk::Error` → `BackendTransportError`. See [`src/transport/README.md`](src/transport/README.md) |
 | `install` | process-global installation, idempotent |
 | `RuntimeBuilder` | embed builder + transport |
-| `hosted` | the hosted-backend RPC proxies (`billing`, `team`, `referral`, `announcements`), moved here from the core; `hosted::extension()` packages them as a `ControllerExtension` that `install()` registers with the core's registry under `DomainGroup::Hosted`. Wire names (`openhuman.billing_*`, …) are unchanged |
-| `session` | the host-side login/session owner (formerly the `openhuman-session` crate): `SessionClient` (login-token exchange, `GET /auth/me`), `CurrentUserCache`, `CoreLink` (credential handoff into whichever core the host owns), `SessionManager`, process-global `identity` for sync Sentry hooks. May use core utilities (`util::tls`, `api::product`) but never `openhuman_core::security::*` — the core only *takes* a credential |
+| `hosted` | the hosted-backend RPC proxies (`billing`, `team`, `referral`, `announcements`), moved here from the core; `hosted::extension()` packages them as a `ControllerExtension` that `install()` registers with the core's registry under `DomainGroup::Hosted`. Wire names (`openhuman.billing_*`, …) are unchanged. See [`src/hosted/README.md`](src/hosted/README.md) |
+| `session` | the host-side login/session owner (formerly the `openhuman-session` crate): `SessionClient` (login-token exchange, `GET /auth/me`), `CurrentUserCache`, `CoreLink` (credential handoff into whichever core the host owns), `SessionManager`, process-global `identity` for sync Sentry hooks. May use core utilities (`util::tls`, `api::product`) but never `openhuman_core::security::*`: the core only *takes* a credential. See [`src/session/README.md`](src/session/README.md) |
+| `jev` | `install_jev_ranker()`, installing the Jev-backed `tool_search` ranker for a TinyHumans-connected core; see [`src/jev/README.md`](src/jev/README.md) and [`gitbooks/developing/jev.md`](../../gitbooks/developing/jev.md) |
 | `jwt` | the SDK's JWT readers, for hosts that already depend on this crate |
 
 Routes and error classification stay in the core (`api/rest.rs`,

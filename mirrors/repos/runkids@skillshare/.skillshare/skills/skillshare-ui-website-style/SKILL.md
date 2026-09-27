@@ -100,9 +100,9 @@ State and variant are short modifier classes on the same element: `.on` (selecte
 | Page | `.ss-wrap` (1080px column, 28px gap), `.ss-pgh` + `.ss-ph` (header, via `PageHeader`), `.ss-crumb`, `.ss-sec` (section heading row; `h2` inside, `.more` link on the right), `.ss-h1` `.ss-h2`, `.ss-hand` (Kalam aside) |
 | Shell | `.ss-side` `.ss-wm` `.ss-nvg` `.ss-nv` `.ss-sidefoot` — `Layout.tsx` only |
 | Buttons | `.ss-btn` + `.pri` `.ghost` `.dng` + `.sm` `.lg`; `.ss-ib` (30px icon button); `.ss-more` (text link) |
-| Forms | `.ss-fld` (label + control + `.hp` help), `.ss-inp` (+ `.area` `.err`, `.k` key hint), `.ss-chk` (+ `.rad`), `.ss-sw` (switch), `.ss-tgl` (icon toggle), `.ss-seg` (+ `.ic` icon-only) |
+| Forms | `.ss-fld` (label + control + `.hp` help), `.ss-inp` (+ `.area` `.err`, `.k` key hint), `.ss-chk` (+ `.rad`), `.ss-sw` (switch; `.on`, `.mix` when only some are on), `.ss-tgl` (icon toggle), `.ss-seg` (+ `.ic` icon-only) |
 | Navigation | `.ss-tabs`, `.ss-tabbar` (tabs with controls on the right), `.ss-pager`, `.ss-menu` (+ `.hv` `.dng`, `hr`, `.k`) |
-| Lists | `.ss-list` (framed container), `.ss-lh` (column header), `.ss-gh` (group header), `.ss-r` (row; `.link` clickable, `.sel`, `.fold`; `.nm` name, `.nm.m` mono name), `.ss-plain` (rows without side padding), `.tr` with `--d` (tree indent) |
+| Lists | `.ss-list` (framed container), `.ss-lh` (column header), `.ss-gh` (group header), `.ss-r` (row; `.link` clickable, `.sel`, `.fold`; `.nm` name, `.nm.m` mono name), `.ss-plain` (rows without side padding), `.ss-split` (tree view box: `.lp` tree, `.dv` divider, `.rp` detail pane), `.ss-tn` (tree row; `.sel`, `.in` inside a selected folder, `.off`; indent with `--d`) |
 | Boxes | `.ss-box` (card, via `Card`), `.ss-tiles` + `.ss-tile` (grid; sticky notes in Playful), `.ss-kv` (`dl` key/value), `.ss-setrow` (settings row), `.ss-counts` (stat strip) |
 | Status | `.ss-st` (dot + text; `.ok` `.warn` `.bad` `.off`, `.wrap` for long messages), `.ss-tag` (mono label; `.ok` `.warn` `.bad` `.inf`), `.ss-sev` (audit severity; `.c` `.h` `.md` `.l` `.n`), `.ss-cnt` (count) |
 | Icons | `.ss-cat` (kind tile; `.skill` `.agent` `.extra` `.mcp` `.plugin` `.target`, tones, `.sm`), `.ss-at` (agent or tool logo; `.lg`), `.ss-stack` (overlapping logos) |

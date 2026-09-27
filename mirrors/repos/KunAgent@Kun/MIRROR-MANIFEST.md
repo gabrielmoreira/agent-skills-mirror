@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `KunAgent/Kun` — 26 default patterns, 0 followed patterns, 54 file(s) materialized.
+Mirror of `KunAgent/Kun` — 26 default patterns, 0 followed patterns, 57 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `KunAgent/Kun` — 26 default patterns, 0 followed patterns, 54 file(s
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 54 |
+| Files         | 57 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -92,27 +92,30 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 31 | ✓ | [`resources/bundled-skills/data-visualization/SKILL.md`](resources/bundled-skills/data-visualization/SKILL.md) |
 | 32 | ✓ | [`resources/bundled-skills/diagram-design/SKILL.md`](resources/bundled-skills/diagram-design/SKILL.md) |
 | 33 | ✓ | [`resources/bundled-skills/docx/SKILL.md`](resources/bundled-skills/docx/SKILL.md) |
-| 34 | ✓ | [`resources/bundled-skills/humanizer-zh/SKILL.md`](resources/bundled-skills/humanizer-zh/SKILL.md) |
-| 35 | ✓ | [`resources/bundled-skills/image-generation/SKILL.md`](resources/bundled-skills/image-generation/SKILL.md) |
-| 36 | ✓ | [`resources/bundled-skills/imf-data/SKILL.md`](resources/bundled-skills/imf-data/SKILL.md) |
-| 37 | ✓ | [`resources/bundled-skills/integration-binding/SKILL.md`](resources/bundled-skills/integration-binding/SKILL.md) |
-| 38 | ✓ | [`resources/bundled-skills/kun-tool-router/SKILL.md`](resources/bundled-skills/kun-tool-router/SKILL.md) |
-| 39 | ✓ | [`resources/bundled-skills/legal-risk-assessment/SKILL.md`](resources/bundled-skills/legal-risk-assessment/SKILL.md) |
-| 40 | ✓ | [`resources/bundled-skills/media-video/SKILL.md`](resources/bundled-skills/media-video/SKILL.md) |
-| 41 | ✓ | [`resources/bundled-skills/office-editor/SKILL.md`](resources/bundled-skills/office-editor/SKILL.md) |
-| 42 | ✓ | [`resources/bundled-skills/open-data/SKILL.md`](resources/bundled-skills/open-data/SKILL.md) |
-| 43 | ✓ | [`resources/bundled-skills/process-doc/SKILL.md`](resources/bundled-skills/process-doc/SKILL.md) |
-| 44 | ✓ | [`resources/bundled-skills/saas-metrics-coach/SKILL.md`](resources/bundled-skills/saas-metrics-coach/SKILL.md) |
-| 45 | ✓ | [`resources/bundled-skills/scholar-research/SKILL.md`](resources/bundled-skills/scholar-research/SKILL.md) |
-| 46 | ✓ | [`resources/bundled-skills/scientific-problem-selection/SKILL.md`](resources/bundled-skills/scientific-problem-selection/SKILL.md) |
-| 47 | ✓ | [`resources/bundled-skills/sec-edgar/SKILL.md`](resources/bundled-skills/sec-edgar/SKILL.md) |
-| 48 | ✓ | [`resources/bundled-skills/skill-creator/SKILL.md`](resources/bundled-skills/skill-creator/SKILL.md) |
-| 49 | ✓ | [`resources/bundled-skills/skill-pack-builder/SKILL.md`](resources/bundled-skills/skill-pack-builder/SKILL.md) |
-| 50 | ✓ | [`resources/bundled-skills/slides/SKILL.md`](resources/bundled-skills/slides/SKILL.md) |
-| 51 | ✓ | [`resources/bundled-skills/webapp-building/SKILL.md`](resources/bundled-skills/webapp-building/SKILL.md) |
-| 52 | ✓ | [`resources/bundled-skills/world-bank-data/SKILL.md`](resources/bundled-skills/world-bank-data/SKILL.md) |
-| 53 | ✓ | [`resources/bundled-skills/xlsx/SKILL.md`](resources/bundled-skills/xlsx/SKILL.md) |
-| 54 | ✓ | [`resources/bundled-skills/yahoo-finance/SKILL.md`](resources/bundled-skills/yahoo-finance/SKILL.md) |
+| 34 | ✓ | [`resources/bundled-skills/excalidraw-diagram/SKILL.md`](resources/bundled-skills/excalidraw-diagram/SKILL.md) |
+| 35 | ✓ | [`resources/bundled-skills/humanizer-zh/SKILL.md`](resources/bundled-skills/humanizer-zh/SKILL.md) |
+| 36 | ✓ | [`resources/bundled-skills/image-generation/SKILL.md`](resources/bundled-skills/image-generation/SKILL.md) |
+| 37 | ✓ | [`resources/bundled-skills/imf-data/SKILL.md`](resources/bundled-skills/imf-data/SKILL.md) |
+| 38 | ✓ | [`resources/bundled-skills/integration-binding/SKILL.md`](resources/bundled-skills/integration-binding/SKILL.md) |
+| 39 | ✓ | [`resources/bundled-skills/kun-tool-router/SKILL.md`](resources/bundled-skills/kun-tool-router/SKILL.md) |
+| 40 | ✓ | [`resources/bundled-skills/legal-risk-assessment/SKILL.md`](resources/bundled-skills/legal-risk-assessment/SKILL.md) |
+| 41 | ✓ | [`resources/bundled-skills/media-video/SKILL.md`](resources/bundled-skills/media-video/SKILL.md) |
+| 42 | ✓ | [`resources/bundled-skills/office-editor/SKILL.md`](resources/bundled-skills/office-editor/SKILL.md) |
+| 43 | ✓ | [`resources/bundled-skills/open-data/SKILL.md`](resources/bundled-skills/open-data/SKILL.md) |
+| 44 | ✓ | [`resources/bundled-skills/paper-library/SKILL.md`](resources/bundled-skills/paper-library/SKILL.md) |
+| 45 | ✓ | [`resources/bundled-skills/paper-reader/SKILL.md`](resources/bundled-skills/paper-reader/SKILL.md) |
+| 46 | ✓ | [`resources/bundled-skills/process-doc/SKILL.md`](resources/bundled-skills/process-doc/SKILL.md) |
+| 47 | ✓ | [`resources/bundled-skills/saas-metrics-coach/SKILL.md`](resources/bundled-skills/saas-metrics-coach/SKILL.md) |
+| 48 | ✓ | [`resources/bundled-skills/scholar-research/SKILL.md`](resources/bundled-skills/scholar-research/SKILL.md) |
+| 49 | ✓ | [`resources/bundled-skills/scientific-problem-selection/SKILL.md`](resources/bundled-skills/scientific-problem-selection/SKILL.md) |
+| 50 | ✓ | [`resources/bundled-skills/sec-edgar/SKILL.md`](resources/bundled-skills/sec-edgar/SKILL.md) |
+| 51 | ✓ | [`resources/bundled-skills/skill-creator/SKILL.md`](resources/bundled-skills/skill-creator/SKILL.md) |
+| 52 | ✓ | [`resources/bundled-skills/skill-pack-builder/SKILL.md`](resources/bundled-skills/skill-pack-builder/SKILL.md) |
+| 53 | ✓ | [`resources/bundled-skills/slides/SKILL.md`](resources/bundled-skills/slides/SKILL.md) |
+| 54 | ✓ | [`resources/bundled-skills/webapp-building/SKILL.md`](resources/bundled-skills/webapp-building/SKILL.md) |
+| 55 | ✓ | [`resources/bundled-skills/world-bank-data/SKILL.md`](resources/bundled-skills/world-bank-data/SKILL.md) |
+| 56 | ✓ | [`resources/bundled-skills/xlsx/SKILL.md`](resources/bundled-skills/xlsx/SKILL.md) |
+| 57 | ✓ | [`resources/bundled-skills/yahoo-finance/SKILL.md`](resources/bundled-skills/yahoo-finance/SKILL.md) |
 
 ---
 

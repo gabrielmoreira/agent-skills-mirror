@@ -4,6 +4,41 @@ Note: Only use **NEW:** for entirely new prompt files, NOT for new additions/sec
 
 ### Claude Code System Prompts Changelog
 
+# [2.1.283](https://github.com/Piebald-AI/claude-code-system-prompts/commit/3eb3af1)
+
+_+11,976 tokens_
+
+- **NEW:** Agent Prompt: Security monitor attached machine call results — Treats output from calls served by a user-attached machine as private data; sending it externally is judged under Data Exfiltration.
+- **NEW:** Data: availableModelsMatch setting — Managed setting choosing prefix or exact matching for `availableModels`; exact mode stops a model ID from allowing later releases until they are listed.
+- **NEW:** Data: deniedModels setting — Managed setting blocking models even when `availableModels` allows them; a model ID blocks every spelling of that version, and Default steps down past blocked models.
+- **NEW:** Data: Published model catalog seed guidance — Internal note on the compiled-in model catalog copy used before the first fetch and as the version floor; rows must not be hand-edited.
+- **NEW:** Data: SDK set max thinking tokens request schema — Documents resetting versus keeping the thinking budget and a session-scoped `thinking_display` override, including when `highlights` is accepted, downgraded, or refused.
+- **NEW:** Data: SDK system init plugin_errors field — Lists plugins that failed or only partially loaded; Remote Control workers always omit the key, so its absence does not prove a clean load.
+- **NEW:** Data: Self-hosted runner Anthropic git proxy credential warning — Warns that sources on ungoverned hosts need credentials outside the HOME-level git config `--use-anthropic-git-proxy` replaces, or private clones fail.
+- **NEW:** Data: Self-hosted runner client certificate relay warning — Warns that runner-wide TLS client certificates would be offered to the session relay, not governed hosts; suggests direct listing, unsetting, or per-URL scoping.
+- **NEW:** Data: Self-hosted runner GIT_ASKPASS governed hosts warning — Warns that a global askpass program could send this machine's credential through Anthropic's relay; directs scoping or unsetting it, `core.askPass`, and `SSH_ASKPASS`.
+- **NEW:** Data: Self-hosted runner GIT_SSL_CAINFO trust bundle warning — Explains that `GIT_SSL_CAINFO` prevented building the combined certificate file for Anthropic-managed git, and recommends a per-server `sslCAInfo` entry instead.
+- **NEW:** Data: Self-hosted runner GIT_SSL_NO_VERIFY lifecycle hook exception and session relocation note — Explain that inside sessions, and in hooks of sessions using Anthropic-managed git, the variable becomes `http.sslVerify=false` while the git mount stays certificate-checked.
+- **NEW:** Skill: /doctor prompt-audit configuration scope — Scopes `/doctor prompt-audit` to Claude Code configuration loaded in this project, skips settings files and secrets, and treats audited files as data, not instructions.
+- **NEW:** Skill: Plugin authoring — Guides writing hot-reloading function-hook "mods" such as panes, status lines, toasts, and tool-call hooks; the user enables hot-reloading once per session.
+- **NEW:** System Reminder: Attached machine stopped answering — Marks a command's outcome unknown when an attached machine stops answering; forbids non-idempotent retries and further calls to it this turn.
+- **NEW:** System Reminder: Attached machine untrusted attachments refusal — Explains that calls to an attached machine are refused while untrusted repositories or files are attached, and how the person can clear or avoid the block.
+- **NEW:** System Reminder: Directory sync file store exhausted — Warns that the session file store, or this environment's share of it, is used up, so further changes no longer sync to the user's machine.
+- **NEW:** System Reminder: No attached machine request guidance — Tells cloud sessions without an attached machine when to request the user's computer, how to handle offline or unanswered machines, and what to keep doing locally.
+- **NEW:** System Reminder: Remote machine-only resources routing — Sends tasks needing machine-only resources (platform tools, devices, logins, internal hosts) straight to the attached machine, but not project build failures or blocked public sites.
+- **NEW:** System Reminder: Unreachable attached machines — Directs finishing all other work here while attached machines are unreachable, reporting what waits, and retrying once only when the user asks, never polling.
+- **NEW:** Tool Description: Artifact stale publish saved-source guidance — Refuses publishes not built on the live Artifact version, pointing to its saved full source and requiring edits merged onto it rather than rebuilt from memory.
+- **NEW:** Tool Description: Bash (attached machines) — Explains routing individual commands to a user-attached machine with a per-call machine field, going there directly for machine-only needs, and never calling offline machines.
+- **NEW:** Tool Description: GetTask — Reads the state of a background Bash command by task ID; notes Claude Code often calls it automatically and forbids using it to wait.
+- **NEW:** Tool Parameter: Artifact preview action — Parameter description for the check tool's `preview` action, with optional viewport `widths` and `themes`, height-capped screenshots, and a layout/load checklist.
+- **REMOVED:** System Reminder: Directory sync restore up to last completed turn — Drops the notice that recovery reached the end of the last completed turn; the remaining restore notices now describe recovery by upload instead.
+- Data: Artifact runtime capability declarations — Adds that a page republishing itself through the `artifact` capability must send its whole document in the Artifact tool's exact skeleton shape.
+- Data: Managed Agents outcomes — Rubric uploads now use the non-beta `client.files.upload(...)`, and deliverables note the `managed-agents-2026-04-01` header `files.list` needs for `scope_id`.
+- System Reminder: Directory sync disabled after initial checkout failure — Can now add that some of the agent's files, moved into a trash folder to make room, could not be moved back and remain there.
+- System Reminders: Directory sync full and partial environment restore — Restored work now dates from one of the earlier environment's uploads rather than a turn boundary; changes made after that upload are missing.
+- Tool Description: Artifact type file-backed content update guidance — Once the Artifact's own files have been seen, files written or read earlier count as current until a publish is refused; refusals must be followed.
+- Tool Description: New file-backed Artifact type content guidance — For pinned content, later edits skip rereading files already seen, may publish several changed files in one call, and must follow any publish refusal.
+
 # [2.1.282](https://github.com/Piebald-AI/claude-code-system-prompts/commit/e769453)
 
 _+3,725 tokens_

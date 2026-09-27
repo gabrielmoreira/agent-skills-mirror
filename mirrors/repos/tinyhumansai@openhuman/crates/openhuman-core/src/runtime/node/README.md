@@ -26,15 +26,15 @@ That is all in the `tinyruntime` module now, where one implementation serves
 every language, and it is reached through
 [`modules::runtime`](../../modules/runtime.rs). The visible consequence for this
 repository is that `xz2` and its static liblzma C build left the manifest
-entirely — the first native toolchain build removed rather than merely gated.
+entirely, the first native toolchain build removed rather than merely gated.
 
 ## Responsibilities
 
 - Ask the module to resolve a Node toolchain, installing one when the host has
   none, and adapt the reply onto `ResolvedNode` (`node_bin`, `npm_bin`,
   `bin_dir`, `version`, `source`).
-- Memoise that answer locally so `try_cached()` can answer **without awaiting** —
-  the shell consults it on every command to decide whether to prepend a managed
+- Memoise that answer locally so `try_cached()` can answer **without awaiting**.
+  The shell consults it on every command to decide whether to prepend a managed
   `bin/` directory to `PATH`, and a blocking call there would make every
   unrelated command wait on a bus round trip.
 - Build the full agent tool registry on demand and expose two RPC controllers:
@@ -100,34 +100,34 @@ This module reads `config.node` (`enabled`, `prefer_system`, `version`,
 
 ## Dependencies
 
-- `crate::modules::runtime` — the module client this delegates to.
-- `crate::config` — the settings each request carries.
-- `crate::tools`, `security`, `agent::host_runtime`, `memory` — the
+- `crate::modules::runtime`: the module client this delegates to.
+- `crate::config`: the settings each request carries.
+- `crate::tools`, `security`, `agent::host_runtime`, `memory`: the
   registry the bridge enumerates and executes.
 - `crate::core::bus::BUS` / `crate::core::events::DomainEvent`,
-  `crate::core::all`, `crate::rpc` — events and RPC plumbing.
+  `crate::core::all`, `crate::rpc`: events and RPC plumbing.
 
 External crates: `tinyruntime-bus`, `tokio`, `anyhow`, `serde`/`serde_json`,
-`tracing`, `async-trait`. No HTTP client, no archive crates, no digest crate —
-those went with the machinery.
+`tracing`, `async-trait`. No HTTP client, no archive crates, and no digest
+crate: those went with the machinery.
 
 ## Used by
 
-- `crates/openhuman-core/src/runtime/javascript/mod.rs` — the public language slot.
-- `crates/openhuman-core/src/tools/impl/system/{node_exec,npm_exec,shell}.rs` — hold an
+- `crates/openhuman-core/src/runtime/javascript/mod.rs`: the public language slot.
+- `crates/openhuman-core/src/tools/impl/system/{node_exec,npm_exec,shell}.rs`: hold an
   `Arc<NodeBootstrap>`; the exec tools call `resolve()`, `shell` uses the
   non-blocking `try_cached()`.
-- `crates/openhuman-core/src/agent/harness_init/registry.rs` — the `node_runtime` init step
+- `crates/openhuman-core/src/agent/harness_init/registry.rs`: the `node_runtime` init step
   uses `probe_installed()` to decide whether provisioning is visible work.
-- `crates/openhuman-core/src/core/all.rs` — registers the `javascript.*` controllers.
+- `crates/openhuman-core/src/core/all.rs`: registers the `javascript.*` controllers.
 
 ## Notes / gotchas
 
-- **Naming asymmetry**: the directory is `node` but its RPC namespace and public
+- Naming asymmetry: the directory is `node` but its RPC namespace and public
   aliases are `javascript`. That indirection is what let the backend underneath
   be replaced by a bus module without churning a single caller.
-- **`build_runtime_tools` is not cheap**: each bridge call rebuilds the full tool
-  registry from `Config`. There is no caching at the bridge layer — the
+- `build_runtime_tools` is not cheap: each bridge call rebuilds the full tool
+  registry from `Config`. There is no caching at the bridge layer: the
   memoisation here is only for toolchain resolution.
 - **The local cache is not redundant with the module's.** The module memoises
   too, but only this one can answer without awaiting, which is the entire reason

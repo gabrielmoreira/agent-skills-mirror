@@ -6,8 +6,8 @@ Boots every enabled channel, keeps their listeners alive, and dispatches inbound
 
 | Path | Purpose |
 | --- | --- |
-| `startup.rs` (+ `startup/` — `start_channels.rs`, `credentials.rs`, `chat_workload.rs`, `prompt.rs`, `relay.rs`) | `start_channels` — builds the `channels::host` capability surface, hydrates secrets that live outside `config.toml` (`hydrate_channel_credentials`: email password, Yuanbao app secret, via `security::credentials::AuthService`), calls `tinychannels::build_channels`, registers the startup bus subscribers, spawns a supervised listener per channel and the optional relay runtime, then runs the dispatch loop |
-| `supervision.rs` | `spawn_supervised_listener` — re-runs `Channel::listen` in a loop with exponential backoff plus full jitter, publishing `DomainEvent::ChannelConnected` / `ChannelDisconnected` / `HealthRestarted`; re-exports `tinychannels::runtime::compute_max_in_flight_messages` |
+| `startup.rs` (+ `startup/`: `start_channels.rs`, `credentials.rs`, `chat_workload.rs`, `prompt.rs`, `relay.rs`) | `start_channels` builds the `channels::host` capability surface, hydrates secrets that live outside `config.toml` (`hydrate_channel_credentials`: email password, Yuanbao app secret, via `security::credentials::AuthService`), calls `tinychannels::build_channels`, registers the startup bus subscribers, spawns a supervised listener per channel and the optional relay runtime, then runs the dispatch loop |
+| `supervision.rs` | `spawn_supervised_listener` re-runs `Channel::listen` in a loop with exponential backoff plus full jitter, publishing `DomainEvent::ChannelConnected` / `ChannelDisconnected` / `HealthRestarted`; re-exports `tinychannels::runtime::compute_max_in_flight_messages` |
 | `dispatch/` | The inbound pipeline that turns a `RuntimeChannelMessage` into an agent turn and a reply |
 | `test_support.rs` | `#[cfg(any(test, debug_assertions))]` dispatch harness (`run_dispatch_harness`, `DispatchHarnessOptions`) used by `channels/tests/` and raw coverage |
 
@@ -26,8 +26,8 @@ Model authentication and account lifetime are separate. A local or CLI model can
 | Path | Purpose |
 | --- | --- |
 | `helpers.rs` | Stateless helpers: per-turn context block for non-web channels, deterministic ACK-emoji picker, worker join logging, scoped typing task |
-| `routing.rs` | `AgentScoping`, `resolve_target_agent`, `build_visible_tool_set`, `connected_with_fallback` — picks the active agent for the channel and its visible/delegation tool surface from `Config`, `AgentDefinitionRegistry`, and the connected-integrations snapshot |
-| `processor.rs` (+ `processor/` — `message.rs`, `approval.rs`, `turn.rs`, `dispatch_loop.rs`) | `RuntimeChannelMessage`, `channel_has_approval_surface`, `try_route_approval_reply`, `process_channel_message`, `process_channel_runtime_message`, `run_message_dispatch_loop` |
+| `routing.rs` | `AgentScoping`, `resolve_target_agent`, `build_visible_tool_set`, `connected_with_fallback`: picks the active agent for the channel and its visible/delegation tool surface from `Config`, `AgentDefinitionRegistry`, and the connected-integrations snapshot |
+| `processor.rs` (+ `processor/`: `message.rs`, `approval.rs`, `turn.rs`, `dispatch_loop.rs`) | `RuntimeChannelMessage`, `channel_has_approval_surface`, `try_route_approval_reply`, `process_channel_message`, `process_channel_runtime_message`, `run_message_dispatch_loop` |
 | `mod.rs` | Declares the three submodules and the `#[cfg(test)]` / `#[cfg(any(test, debug_assertions))]` re-exports the test modules reach through `super::*` |
 
 Two policy points here: `channel_has_approval_surface` is `true` only for `TELEGRAM_APPROVAL_CLIENT_ID`, so other channels still run in the legacy "no chat context, silently allow" state until they get a surface subscriber; and scoping is per channel (`resolve_target_agent(&msg.channel)`), falling back to `AgentScoping::unscoped()` (every registered tool visible) when the registry is not initialised or the target agent is unknown.

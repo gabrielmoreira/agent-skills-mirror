@@ -1,8 +1,8 @@
 # Skill Catalog
 
-Generated at: 2026-09-25T04:54:31.000Z
+Generated at: 2026-09-26T11:02:22.000Z
 
-Total skills: 2465
+Total skills: 2472
 
 ## agent-behavior (5)
 
@@ -229,7 +229,7 @@ Total skills: 2465
 | `train-sentence-transformers` | Train or fine-tune SentenceTransformer, CrossEncoder, and SparseEncoder models for retrieval, similarity, clustering, classification, reranking, and related ... | critical | huggingface/skills | train, sentence, transformers | train, sentence, transformers, fine, tune, sentencetransformer, crossencoder, sparseencoder, models, retrieval, similarity, clustering |
 | `trl-training` | Train and fine-tune transformer language models using TRL (Transformers Reinforcement Learning). Supports SFT, DPO, GRPO, KTO, RLOO and Reward Model training... | critical | huggingface/skills | trl, training | trl, training, train, fine, tune, transformer, language, models, transformers, reinforcement, learning, supports |
 | `ui-skills` | Opinionated, evolving constraints to guide agents when building interfaces | safe | https://github.com/ibelick/ui-skills | ui, skills | ui, skills, opinionated, evolving, constraints, agents, building, interfaces |
-| `unified-ai-gateway` | Operate and evaluate Unified AI System through nine governed MCP tools, including provider-free prompt enhancement, while preserving fake-provider, authoriza... | critical | happy520ai/unified-ai-system | ai-gateway, codex, mcp, self-hosted, governance | ai-gateway, codex, mcp, self-hosted, governance, unified, ai, gateway, operate, evaluate, through, nine |
+| `unified-ai-gateway` | Operate and evaluate Unified AI System through fifteen governed MCP tools, including provider-free prompt enhancement, while preserving fake-provider, author... | critical | happy520ai/unified-ai-system | ai-gateway, codex, mcp, self-hosted, governance | ai-gateway, codex, mcp, self-hosted, governance, unified, ai, gateway, operate, evaluate, through, fifteen |
 | `unslop-commit` | Rewrites commit messages so they sound like a careful human engineer wrote them. Strips AI/marketing slop ("comprehensive solution", "robust implementation",... | critical | MohamedAbdallah-14/unslop | unslop, commit | unslop, commit, rewrites, messages, so, sound, like, careful, human, engineer, wrote, them |
 | `unsloth-finetuning` | Fine-tune and post-train LLMs with Unsloth Core on a single consumer GPU: VRAM sizing, LoRA/QLoRA, GRPO/DPO, chat-template correctness, and GGUF export. | critical | unslothai/unsloth | unsloth, fine-tuning, lora, qlora, grpo, gguf, vram | unsloth, fine-tuning, lora, qlora, grpo, gguf, vram, finetuning, fine, tune, post, train |
 | `voice-agents` | Voice agents represent the frontier of AI interaction - humans speaking naturally with AI systems. | safe | vibeship-spawner-skills (Apache 2.0) | voice, agents | voice, agents, represent, frontier, ai, interaction, humans, speaking, naturally |
@@ -1482,12 +1482,18 @@ Total skills: 2465
 | `puzzle-activity-planner` | Plan puzzle-based activities for classrooms, parties, and events with pre-configured generator links | safe | fruitwyatt/puzzle-activity-planner | education, puzzle, classroom, activity-planning, event | education, puzzle, classroom, activity-planning, event, activity, planner, plan, activities, classrooms, parties, events |
 | `teach` | Teach the user a new skill or concept, within this workspace. | safe | mattpocock/skills | education, workflow, coding-agents | education, workflow, coding-agents, teach, user, new, skill, concept, within, workspace |
 
-## finance (2)
+## finance (8)
 
 | Skill | Description | Risk | Source | Tags | Triggers |
 | --- | --- | --- | --- | --- | --- |
 | `longbridge` | 125+ agent skills for Longbridge Securities — real-time quotes, charts, fundamentals, portfolio analysis, options, and more for HK/US/A-share/SG markets. Tri... | critical | longbridge/skills | finance, stocks, trading, portfolio, market-data | finance, stocks, trading, portfolio, market-data, longbridge, 125, agent, skills, securities, real, time |
 | `options-flow-analyzer` | Real vs lottery call separation for options P/C ratio analysis — prevents signal inversion from deep OTM noise | safe | community | options, sentiment-analysis, trading, polygon, market-analysis | options, sentiment-analysis, trading, polygon, market-analysis, flow, analyzer, real, vs, lottery, call, separation |
+| `traderspy-market-briefing` | Crypto market briefing from live TraderSpy data: majors, funding, open interest, top-trader lean, fresh AI signals and screener movers. Use for "what's happe... | safe | target1m/traderspy-mcp | traderspy, crypto, market-briefing, derivatives, mcp | traderspy, crypto, market-briefing, derivatives, mcp, market, briefing, live, data, majors, funding, open |
+| `traderspy-market-screener` | Scan the most-traded crypto futures pairs for up to 3 technical conditions in one TraderSpy call, compare coins, and backtest what followed a condition. Use ... | safe | target1m/traderspy-mcp | traderspy, crypto, screener, backtesting, mcp | traderspy, crypto, screener, backtesting, mcp, market, scan, most, traded, futures, pairs, up |
+| `traderspy-position-check` | Health-check crypto futures positions the user describes, with TraderSpy data: liquidation and stop distance, multi-timeframe read, funding and top-trader si... | safe | target1m/traderspy-mcp | traderspy, crypto, risk-management, futures, mcp | traderspy, crypto, risk-management, futures, mcp, position, check, health, positions, user, describes, data |
+| `traderspy-smart-money` | Track what top crypto futures traders hold on Binance, Hyperliquid, Bybit and OKX with TraderSpy: elite leaderboard, positions, trader profiles and history. ... | safe | target1m/traderspy-mcp | traderspy, crypto, smart-money, whale-tracking, mcp | traderspy, crypto, smart-money, whale-tracking, mcp, smart, money, track, what, top, futures, traders |
+| `traderspy-technical-analysis` | Read one crypto futures pair with TraderSpy: 19 indicators on up to 3 timeframes in one call, key levels, funding, open interest and positioning. Use for "an... | safe | target1m/traderspy-mcp | traderspy, crypto, technical-analysis, indicators, mcp | traderspy, crypto, technical-analysis, indicators, mcp, technical, analysis, read, one, futures, pair, 19 |
+| `traderspy-trading-signals` | Fetch and explain TraderSpy's AI crypto futures signals: entry, take-profit ladder, stop, triggers, status against the live price, and how recent signals res... | safe | target1m/traderspy-mcp | traderspy, crypto, trading-signals, futures, mcp | traderspy, crypto, trading-signals, futures, mcp, trading, signals, fetch, explain, ai, entry, take |
 
 ## framework (13)
 
@@ -2414,7 +2420,7 @@ Total skills: 2465
 | `test-automator` | Master AI-powered test automation with modern frameworks, self-healing tests, and comprehensive quality engineering. Build scalable testing strategies with a... | critical | community | automator | automator, test, ai, powered, automation, frameworks, self, healing, tests, quality, engineering, scalable |
 | `webapp-testing` | To test local web applications, write native Python Playwright scripts. | critical | community | webapp | webapp, testing, test, local, web, applications, write, native, python, playwright, scripts |
 
-## testing (32)
+## testing (33)
 
 | Skill | Description | Risk | Source | Tags | Triggers |
 | --- | --- | --- | --- | --- | --- |
@@ -2427,6 +2433,7 @@ Total skills: 2465
 | `brooks-test` | Review test-suite quality using established testing literature; identify brittleness, mock abuse, unclear fixtures, weak assertions, slow feedback, and maint... | safe | hyhmrright/brooks-lint | brooks | brooks, test, review, suite, quality, established, testing, literature, identify, brittleness, mock, abuse |
 | `browser-testing-with-devtools` | Test browser apps with Chrome DevTools MCP by inspecting live DOM, console logs, network traffic, screenshots, accessibility, and performance traces. | critical | addyosmani/agent-skills | browser-testing, chrome-devtools, mcp, frontend, performance | browser-testing, chrome-devtools, mcp, frontend, performance, browser, testing, devtools, test, apps, chrome, inspecting |
 | `cypress-skill` | Generates production-grade Cypress E2E and component tests in JavaScript or TypeScript. Supports local execution and TestMu AI cloud. Use when the user asks ... | critical | LambdaTest/agent-skills | cypress, skill | cypress, skill, generates, grade, e2e, component, tests, javascript, typescript, supports, local, execution |
+| `electron-drive-skill` | Launch the project's Electron app on a scratch profile and drive it: click, type, screenshot, run renderer or main-process code, read logs. Use to verify UI ... | critical | Search-3D/electron-drive-skill | electron, playwright, desktop, e2e, testing, automation | electron, playwright, desktop, e2e, testing, automation, drive, skill, launch, app, scratch, profile |
 | `k6-load-testing` | Comprehensive k6 load testing skill for API, browser, and scalability testing. Write realistic load scenarios, analyze results, and integrate with CI/CD. | safe | community | k6, load-testing, performance, api-testing, ci-cd | k6, load-testing, performance, api-testing, ci-cd, load, testing, skill, api, browser, scalability, write |
 | `lambdatest-agent-skills` | Production-grade test automation skills for 46 frameworks across E2E, unit, mobile, BDD, visual, and cloud testing in 15+ languages. | safe | LambdaTest/agent-skills | testing, test-automation, e2e, unit-testing, mobile-testing, bdd, selenium, playwright, cypress, jest, pytest, appium, lambdatest | testing, test-automation, e2e, unit-testing, mobile-testing, bdd, selenium, playwright, cypress, jest, pytest, appium |
 | `mock-hunter` | Audit a live web page in five phases (catalog, click, trace, classify, report) to identify mock data, hardcoded values, LLM-generated metrics, and broken end... | critical | CodeShuX/mockhunter | testing, qa, playwright, mock-detection, web-audit, ai-testing, vibe-coding, claude-code | testing, qa, playwright, mock-detection, web-audit, ai-testing, vibe-coding, claude-code, mock, hunter, audit, live |

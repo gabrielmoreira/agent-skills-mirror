@@ -3,8 +3,8 @@
 Configurable, file-based hooks: user-authored scripts (or model-evaluated
 prompts) that observe or gate the agent at specific moments, discovered from
 `hooks.json` files rather than compiled against the core. The contract is
-Cursor's `hooks.json` (<https://cursor.com/docs/hooks>) — same event names,
-stdin envelope, stdout decision object, and exit-code semantics — so a script
+Cursor's `hooks.json` (<https://cursor.com/docs/hooks>), same event names,
+stdin envelope, stdout decision object, and exit-code semantics, so a script
 written for either host runs on the other unchanged.
 
 This is a different "hook" from two other things in the codebase: the
@@ -34,7 +34,7 @@ second.
 
 **The strictest verdict wins.** Layers concatenate rather than override, and
 `types::HookOutput::merge` folds denial over ask over allow. Adding a hook can
-therefore never loosen a policy another one set — an operator-managed
+therefore never loosen a policy another one set: an operator-managed
 system-wide deny hook cannot be overridden by a repository shipping its own
 `hooks.json`.
 
@@ -47,7 +47,7 @@ the agent, and a gating hook must not be demoted to fire-and-forget.
 `exec.rs` reads a command hook's exit code: `0` parses stdout as a
 `HookOutput` (the last complete JSON object on stdout, so progress lines are
 fine), `2` denies regardless of stdout with stderr as the reason, and anything
-else — including a timeout, a missing interpreter, or unparseable stdout — is a
+else, including a timeout, a missing interpreter, or unparseable stdout, is a
 failure that fails open unless the definition sets `fail_closed`, in which case
 it denies. Do not change this default without reading the configuration and
 security section of `AGENTS.md`. A hook that answers `allow` only lets the call
@@ -74,8 +74,8 @@ trust last:
 | `Workspace` | `<workspace_dir>/hooks.json` |
 | `Project` | `<action_dir>/.openhuman/hooks.json` |
 
-This is the opposite of how `config.toml` merges (override, not concatenate)
-— deliberately, since concatenation combined with `HookOutput::merge`'s
+This is the opposite of how `config.toml` merges (override, not concatenate),
+deliberately, since concatenation combined with `HookOutput::merge`'s
 strictest-wins rule is the only composition that can't be used to loosen
 policy. `HookDefinition::layer` and `source_dir` are `skip_deserializing` and
 stamped from the file's own location, so a `hooks.json` cannot claim a more
@@ -87,13 +87,13 @@ unreadable or malformed one becomes a `HookConfig::warnings` entry surfaced by
 
 Most hooks are `command`: spawn a program, hand it the event JSON on stdin,
 read a decision from stdout. A `prompt` hook is a policy written in English
-instead — `prompt_eval.rs` asks the configured model to judge a condition,
+instead. `prompt_eval.rs` asks the configured model to judge a condition,
 via a one-shot `inference::ops::inference_prompt` call capped at 200 output
 tokens. A hook definition may override the model; the override is applied to
 the `Config` copy returned by `load_config_with_timeout` for that one call
 (`default_model`), so nothing persists and a concurrent turn on the real
-config is unaffected. Reserve `prompt` hooks for rare, high-stakes moments —
-they cost a model call per event.
+config is unaffected. Reserve `prompt` hooks for rare, high-stakes moments.
+They cost a model call per event.
 
 ## Bridge (`bridge.rs`)
 
@@ -103,14 +103,14 @@ engine registers itself through those seams once at bootstrap
 (`ConfiguredHookBridge::install`/`uninstall`, registered under
 `BRIDGE_HOOK_NAME` so a rebuilt core replaces rather than duplicates it).
 Cursor's `beforeShellExecution`, `beforeReadFile`, and `afterFileEdit` are not
-separate call sites here — `derived_event` maps tool names onto them
+separate call sites here: `derived_event` maps tool names onto them
 (`SHELL_TOOLS`: `shell`/`run_command`/`bash`/...; `READ_TOOLS`:
 `file_read`/`read_diff`; `WRITE_TOOLS`: `file_write`/`edit`/...; MCP tools
 get `beforeMCPExecution`/`afterMCPExecution`). On the pre side the bridge fires
 `preToolUse` and then the derived `before*` event with a Cursor-shaped
 payload, merging both verdicts; on the post side it fires `postToolUse` (or
 `postToolUseFailure`) and then `afterShellExecution`/`afterFileEdit`. A write
-therefore has no derived pre-event — denying it belongs to `preToolUse`. The
+therefore has no derived pre-event: denying it belongs to `preToolUse`. The
 `PostTurnHook` impl fires `afterAgentResponse` and `stop`.
 
 ## Wiring
@@ -121,7 +121,7 @@ therefore has no derived pre-event — denying it belongs to `preToolUse`. The
   or empty config uninstalls the bridge entirely so an unconfigured host pays
   no per-tool-call cost.
 - `[hooks]` in `config/schema/hooks.rs` carries only host-level switches
-  (`enabled`, `default_timeout_secs`) — the hooks themselves live in
+  (`enabled`, `default_timeout_secs`); the hooks themselves live in
   `hooks.json`, not in `config.toml`.
 - RPC namespace `hooks` (`schemas.rs`) is registered via
   `all_hooks_registered_controllers` in `core/all.rs`.
@@ -139,5 +139,5 @@ therefore has no derived pre-event — denying it belongs to `preToolUse`. The
 
 ## Related docs
 
-- [gitbooks/developing/hooks.md](../../../../gitbooks/developing/hooks.md) — user-facing `hooks.json` guide
-- [gitbooks/developing/architecture/security.md](../../../../gitbooks/developing/architecture/security.md) — approval gate and autonomy policy that still applies after a hook allows
+- [gitbooks/developing/hooks.md](../../../../gitbooks/developing/hooks.md): user-facing `hooks.json` guide
+- [gitbooks/developing/architecture/security.md](../../../../gitbooks/developing/architecture/security.md): approval gate and autonomy policy that still applies after a hook allows

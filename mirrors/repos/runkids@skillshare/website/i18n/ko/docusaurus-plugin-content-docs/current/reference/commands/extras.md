@@ -123,7 +123,7 @@ Extras
   ✓ ~/.codex/agents  extension: codex-agents
 ```
 
-동기화된 행은 아이콘, 경로, mode만 표시합니다. 동기화되지 않은 행은 상태 단어(`drift`, `not synced`, `no source`)를 추가로 표시합니다. transform extension이 있는 target은 동기화 mode 대신 `extension: <name>`으로 표시됩니다 (실제 mode는 항상 `copy`).
+동기화된 행은 아이콘, 경로, mode만 표시합니다. 동기화되지 않은 행은 상태 단어(`drift`, `modified`, `not synced`, `no source`)를 추가로 표시합니다. transform extension이 있는 target은 동기화 mode 대신 `extension: <name>`으로 표시됩니다 (실제 mode는 항상 `copy`).
 
 ### `extras source`
 
@@ -165,12 +165,12 @@ skillshare extras <name> --remove-target <path> [--prune] [-p|-g]
 
 | Flag | 설명 |
 |------|-------------|
-| `--mode <mode>` | 새 동기화 mode: `merge`, `copy`, 또는 `symlink` |
+| `--mode <mode>` | 새 동기화 mode: `merge`, `copy`, 또는 `symlink`. `import`는 [single-file extra](#single-file-extras) 전용 |
 | `--flatten` | flatten 활성화 (하위 디렉터리 파일을 target 루트에 동기화) |
 | `--no-flatten` | flatten 비활성화 |
 | `--add-target <path>` | extra에 새 target 추가 |
 | `--remove-target <path>` | extra에서 target 제거 (기본적으로 config 전용) |
-| `--prune` | `--remove-target`과 함께: 해당 target 아래의 skillshare 관리 파일도 삭제 |
+| `--prune` | `--remove-target`과 함께: 해당 target 아래의 skillshare 관리 파일도 삭제. single-file extra에서는 대신 target 파일을 복원 |
 | `--target <path>` | target 디렉터리 경로 (multi-target extra에서 `--mode`에 필요; 생략 시 `--flatten`/`--no-flatten`은 모든 target에 적용) |
 | `--project, -p` | 프로젝트 모드 extras 사용 (`.skillshare/`) |
 | `--global, -g` | 전역 extras 사용 (`~/.config/skillshare/`) |
@@ -209,14 +209,16 @@ config에서 extra를 제거합니다.
 skillshare extras remove <name> [--force] [-p|-g]
 ```
 
-source 파일과 동기화된 target은 삭제되지 않습니다 — config 항목만 제거됩니다.
+source 파일과 동기화된 target은 삭제되지 않습니다 — config 항목만 제거됩니다. [single-file extra](#single-file-extras)의 경우 각 target 파일은 skillshare가 교체하기 전 상태로 돌아갑니다.
 
 ### `extras collect`
 
-target의 로컬 파일을 extras source 디렉터리로 다시 수집합니다. 파일은 source로 복사되고 symlink로 대체됩니다.
+target의 로컬 파일을 extras source 디렉터리로 다시 수집합니다. 파일은 source로 복사되고 symlink로 대체됩니다. copy mode target은 파일을 일반 복사본으로 유지합니다. [single-file extra](#single-file-extras)에서는 collect를 지원하지 않습니다.
+
+source에 이미 존재하는 파일은 건너뜁니다. `--force`를 사용하면 target 버전으로 덮어씁니다. 예를 들어 copy mode target에서 직접 수정한 내용을 다시 가져올 때 사용합니다. 내용이 이미 source와 같은 파일은 여전히 건너뜁니다.
 
 ```bash
-skillshare extras collect <name> [--from <path>] [--dry-run] [-p|-g]
+skillshare extras collect <name> [--from <path>] [--force] [--dry-run] [-p|-g]
 ```
 
 **Options:**
@@ -224,6 +226,7 @@ skillshare extras collect <name> [--from <path>] [--dry-run] [-p|-g]
 | Flag | 설명 |
 |------|-------------|
 | `--from <path>` | 수집할 target 디렉터리 (여러 target이 있으면 필수) |
+| `--force`, `-f` | source에 이미 존재하는 파일 덮어쓰기 |
 | `--dry-run` | 변경 없이 수집될 항목 미리보기 |
 
 **Example:**
@@ -234,6 +237,9 @@ skillshare extras collect rules --from ~/.claude/rules
 
 # Preview what would be collected
 skillshare extras collect rules --from ~/.claude/rules --dry-run
+
+# Pull target edits back over existing source files
+skillshare extras collect rules --force
 ```
 
 ---
@@ -245,6 +251,7 @@ skillshare extras collect rules --from ~/.claude/rules --dry-run
 | `merge` (기본값) | target에서 source로의 파일별 symlink |
 | `copy` | 파일별 복사 |
 | `symlink` | 디렉터리 전체 symlink |
+| `import` | [single-file extra](#single-file-extras) 전용: target 파일 안의 `@<source file>` 한 줄 |
 
 mode를 전환할 때 (예: `merge`에서 `copy`로), 다음 `sync`는 기존 symlink를 새 mode 형식으로 자동으로 대체합니다. `--force`는 필요하지 않습니다 — symlink는 항상 안전하게 대체됩니다. 로컬에서 생성된 일반 파일을 덮어쓰려면 `--force`가 필요합니다.
 
@@ -353,6 +360,12 @@ Agent target은 extra 없이도 `extension`을 직접 사용할 수 있습니다
 
 ## Recipe: shared instructions across agents
 
+:::tip Dashboard
+웹 대시보드에서 미리보기, 백업, 복원 버튼과 함께 이 설정을 대신 해 줍니다.
+[여러 도구에서 하나의 AGENTS.md 공유하기](../../how-to/daily-tasks/sharing-instructions.md)를
+참고하세요. 디렉터리 대신 [single-file extra](#single-file-extras)를 사용합니다.
+:::
+
 현재 대부분의 코딩 agent는 표준 지침을 위해 `AGENTS.md`를 읽지만, 각 agent는
 사용자 레벨 사본을 서로 다른 디렉터리에 보관합니다. 여러 target을 가진 extra 하나로
 단일 source 파일을 모두에게 배포할 수 있습니다:
@@ -411,6 +424,61 @@ source 디렉터리는 모든 곳에 배포하고 싶은 파일로만 유지하�
 파일이 아닌 저장소를 사용하며, 이러한 것들은 target 간 파일 복사로 이식할 수
 없습니다.
 :::
+
+---
+
+## Single-file extras {#single-file-extras}
+
+`file`이 있는 extra는 source 디렉터리 전체가 아니라 그 안의 파일 하나만 동기화합니다.
+각 target은 `<path>/<as>`를 받으며, `as`의 기본값은 `file` 이름입니다. 대시보드의
+[공유 AGENTS.md](../../how-to/daily-tasks/sharing-instructions.md)는 single-file extra입니다.
+
+```yaml
+extras:
+  - name: personal
+    file: AGENTS.md                # ~/.config/skillshare/extras/personal/AGENTS.md
+    targets:
+      - path: ~/.codex             # ~/.codex/AGENTS.md becomes a link
+      - path: ~/.gemini
+        as: GEMINI.md              # ~/.gemini/GEMINI.md becomes a link
+      - path: ~/.claude
+        as: CLAUDE.md
+        mode: import               # ~/.claude/CLAUDE.md keeps its content and imports the file
+```
+
+| Mode | Target 파일 |
+|------|-------------|
+| `merge` (기본값) 또는 `symlink` | source 파일에 대한 symlink |
+| `copy` | source 파일의 복사본 |
+| `import` | 사용자의 파일 그대로, 맨 위 관리 블록에 `@<source file>` 한 줄 추가 |
+
+`import`는 `@` 줄을 `<!-- skillshare:instructions:begin -->`과
+`<!-- skillshare:instructions:end -->` 사이에 두며, 파일의 나머지 부분은 절대 바꾸지
+않습니다. Claude Code처럼 `@` import를 따르는 도구에만 사용하세요.
+
+규칙:
+
+- `file`과 `as`는 `/`나 `\` 없는 단순한 파일 이름이어야 합니다.
+- `as`와 `import`에는 `file`이 필요합니다. `flatten`과 `extension`은 single-file
+  extra와 함께 쓸 수 없습니다.
+- target에 이미 다른 일반 파일이나 symlink가 있으면, sync는 `--force` 없이도 그것을
+  백업한 뒤 교체합니다. 그 자리에 디렉터리가 있으면 건너뜁니다.
+- 링크된 뒤 `modified`가 된 target도 교체됩니다. 편집된 파일은 복원 지점이 아니라
+  drift 백업으로 보관됩니다.
+- 링크된 target이 내용이 다른 일반 파일로 바뀌면 `extras list`에 `modified`로
+  표시됩니다.
+- `extras remove`와 `--remove-target --prune`은 각 target 파일을 복원합니다. 링크,
+  복사본 또는 import 줄이 사라지고, 첫 sync 전에 있던 파일이나 symlink가 돌아옵니다
+  (원래 없었다면 파일도 없습니다). `modified` target은 먼저 drift 백업으로 보관됩니다.
+  `--prune` 없는 `--remove-target`은 파일을 그대로 두고 그 복원 지점을 잊으므로,
+  이후 sync는 그때 있는 파일을 백업합니다.
+- `extras collect`는 지원하지 않습니다. target에서 한 편집을 유지하려면 대시보드
+  **AGENTS.md** 탭의 **공유 파일에 반영**을 사용하세요.
+
+백업은 skillshare의 state 디렉터리(macOS와 Linux에서는
+`~/.local/state/skillshare/extras/backups/`)에 파일당 최근 10개까지 보관됩니다.
+drift 백업은 그 안의 `extras/backups/<id>/drift/`에 저장되며, `<id>`는 target 파일
+경로에서 만들어집니다. 복원에는 절대 사용되지 않습니다.
 
 ---
 

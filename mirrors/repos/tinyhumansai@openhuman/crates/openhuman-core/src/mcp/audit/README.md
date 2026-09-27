@@ -1,7 +1,7 @@
-# mcp/audit — write-audit RPC surface
+# mcp/audit: write-audit RPC surface
 
-RPC surface over the MCP write-audit log. The log itself — its store and
-schema — moved to [`tinymcp`](https://github.com/tinyhumansai/tinymcp). What
+RPC surface over the MCP write-audit log. The log itself (its store and
+schema) moved to [`tinymcp`](https://github.com/tinyhumansai/tinymcp). What
 is here is the `mcp_audit` controller family and the payload types it
 speaks, re-exported from the wire contract.
 
@@ -36,7 +36,7 @@ schema's field comments repeat them for `/schema` readers only.
 
 ## Compile-time gate (`mcp` feature)
 
-`pub mod audit;` is always compiled — it is a facade. The RPC surface
+`pub mod audit;` is always compiled. It is a facade. The RPC surface
 (`schemas`) is gated; with the `mcp` feature off, `stub` mirrors the
 consumed surface (`record_write`, `list_writes`,
 `all_mcp_audit_internal_controllers`) so the audited subsystem simply
@@ -44,23 +44,23 @@ appears never to have happened, rather than erroring.
 
 ## Dependencies
 
-- `tinymcp` (`AuditStore`) — the write-audit store, opened per workspace by
+- `tinymcp` (`AuditStore`): the write-audit store, opened per workspace by
   `crate::mcp::host`.
-- `tinymcp_bus` — `McpWriteListQuery`, `McpWriteRecord`, `NewMcpWriteRecord`.
-- `crate::mcp::host` — resolves the per-workspace `AuditStore` via
+- `tinymcp_bus`: `McpWriteListQuery`, `McpWriteRecord`, `NewMcpWriteRecord`.
+- `crate::mcp::host`: resolves the per-workspace `AuditStore` via
   `for_config`.
 - `crate::core::all` (`RegisteredController`, `ControllerFuture`) and
-  `crate::core` (`ControllerSchema`, `FieldSchema`, `TypeSchema`) — the
+  `crate::core` (`ControllerSchema`, `FieldSchema`, `TypeSchema`): the
   controller registration types. Unlike the other RPC domains the handler
   returns a raw `{ "records": [...] }` object, not an `RpcOutcome`.
 
 ## Used by
 
-- `crates/openhuman-core/src/mcp/server/write_dispatch.rs` — `audit_write`
+- `crates/openhuman-core/src/mcp/server/write_dispatch.rs`: `audit_write`
   / `audit_write_rejection[_without_config]` call `audit::record_write` off
   the hot path (`spawn_blocking`, or a thread when no runtime is current)
   for every MCP write-tool attempt, success and rejection; `record_write`
   resolves the per-workspace `mcp::host` service and writes through its
   `AuditStore`.
-- `crates/openhuman-core/src/core/all.rs` — registers
+- `crates/openhuman-core/src/core/all.rs`: registers
   `all_mcp_audit_internal_controllers()`.

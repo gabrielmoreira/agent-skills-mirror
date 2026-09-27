@@ -5,9 +5,9 @@ icon: code-branch
 
 # OpenHuman Architecture
 
-**AI-powered super assistant for crypto communities, built on Rust.**
+**A personal AI assistant built on Rust, with a persistent local memory and an agent harness that can act across your connected services.**
 
-OpenHuman is a cross-platform communication and automation platform purpose-built for the cryptocurrency ecosystem. A single React + Rust (Tauri) codebase can target multiple platforms; **what we document and ship for users today is desktop only** - **Windows, macOS, and Linux**. Android, iOS, and web are **not** supported in current docs or releases. The stack includes a managed Node.js runtime for tool-capable skills, persistent Rust-native WebSocket infrastructure, and an AI tool protocol that lets language models invoke any connected service in real time.
+OpenHuman is a cross-platform communication and automation platform: a Rust core that runs agent turns, keeps a local-first memory tree, and executes tools against memory, channels, integrations, and (for users who opt in) a wallet, all wrapped in a single React + Rust (Tauri) codebase that can target multiple platforms. **What we document and ship for users today is desktop only: Windows, macOS, and Linux.** Android, iOS, and web are **not** supported in current docs or releases. The stack includes a managed Node.js runtime for tool-capable skills, persistent Rust-native WebSocket infrastructure to the backend, and a native Rust tool-dispatch path plus a standards-based Model Context Protocol (MCP) server for external clients.
 
 ---
 
@@ -17,17 +17,17 @@ OpenHuman is a cross-platform communication and automation platform purpose-buil
 | --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | **`app/`**                  | pnpm workspace **`openhuman-app`**: Vite/React UI (`app/src/`), Vitest and WDIO tests. The Tauri shell itself is the Rust crate `crates/openhuman-app/` (below). |
 | **`crates/openhuman-app/`** | Thin Tauri v2 desktop host (Cargo package `openhuman-app`). Built from its own manifest and lockfile, excluded from the root workspace; hosts the core as an in-process tokio task (`src/core_process.rs`). |
-| **`crates/openhuman-core/`** | Cargo package **`openhuman`**: library **`openhuman_core`**, with no `tinyhumans-sdk` dependency — the hosted backend is reached only through the `api::transport::BackendTransport` port. Flat domain modules directly under `src/` (`agent`, `api`, `channels`, `config`, `cron`, `desktop`, `flows`, `hooks`, `hosting`, `http_host`, `inference`, `integrations`, `json_schema`, `mcp`, `media`, `memory`, `modules`, `platform`, `runtime`, `sandbox`, `search`, `security`, `skills`, `threads`, `tools`, `util`, `voice`, `web3`, `web_chat`, …). `src/core/` holds the JSON-RPC server (`jsonrpc.rs`), CLI (`cli.rs`), dispatch, controller registry (`all.rs`), event bus (`bus.rs`), `runtime/` (`CoreBuilder`/`CoreRuntime`) and `subsystem/`. There is no `src/rpc/` or `src/embed/` inside this crate any more. |
+| **`crates/openhuman-core/`** | Cargo package **`openhuman`**: library **`openhuman_core`**, with no `tinyhumans-sdk` dependency (the hosted backend is reached only through the `api::transport::BackendTransport` port). Flat domain modules directly under `src/` (`agent`, `api`, `channels`, `config`, `cron`, `desktop`, `flows`, `hooks`, `hosting`, `http_host`, `inference`, `integrations`, `json_schema`, `mcp`, `media`, `memory`, `modules`, `platform`, `runtime`, `sandbox`, `search`, `security`, `skills`, `threads`, `tools`, `util`, `voice`, `web3`, `web_chat`, …). `src/core/` holds the JSON-RPC server (`jsonrpc.rs`), CLI (`cli.rs`), dispatch, controller registry (`all.rs`), event bus (`bus.rs`), `runtime/` (`CoreBuilder`/`CoreRuntime`) and `subsystem/`. There is no `src/rpc/` or `src/embed/` inside this crate any more. |
 | **`crates/openhuman-rpc/`** | Shared JSON-RPC contracts: `RpcOutcome`, `unwrap_rpc`, `apply_log_envelope`, `StructuredRpcError`. The `http-client` feature (default on; off for root-workspace consumers) adds `post_json_rpc`, `bearer_header`, `redact_url_for_log`, `HttpRpcResponse`. Used by the Tauri shell (`core_rpc.rs` → `relay_http_rpc`) and the TUI (envelope decoding); re-exported by the core as `openhuman_core::rpc`. |
-| **`crates/openhuman-embed/`** | Typed library facade (`openhuman_embed::{Harness, Core, CoreBuilder, DomainSet, ServiceSet, HostKind}`) for embedding the core in another product; forwards the core's feature gates. Installs no backend transport itself. |
-| **`crates/openhuman-tinyhumans/`** | The TinyHumans layer above embed: `SdkBackendTransport` (the only crate that depends on the vendored `tinyhumans-sdk`), `install()` for hosts that boot the core themselves, a `RuntimeBuilder` that boots an embed runtime connected, the hosted RPC proxies (`hosted/`: billing, team, referral, announcements — registered into the core's controller registry as an extension), and the host-side login/session owner (`session/`). |
+| **`crates/openhuman-embed/`** | Typed library facade with two ways in: `openhuman_embed::Runtime` -> `Agent` (the public library API: one runtime per process, any number of independently configured agents on it, with `Harness` as a one-agent shorthand) and `Core` (a typed facade over a `CoreRuntime` the host built itself with `CoreBuilder`). Forwards the core's feature gates. Installs no backend transport itself. |
+| **`crates/openhuman-tinyhumans/`** | The TinyHumans layer above embed: `SdkBackendTransport` (the only crate that depends on the vendored `tinyhumans-sdk`), `install()` for hosts that boot the core themselves, a `RuntimeBuilder` that boots an embed runtime connected, the hosted RPC proxies (`hosted/`: billing, team, referral, announcements, registered into the core's controller registry as an extension), and the host-side login/session owner (`session/`). |
 | **`crates/openhuman-cli/`** | The `openhuman-core` binary (installs the tinyhumans transport, then `run_core_from_args`), the developer/benchmark bins, and every root `tests/*.rs` / `examples/*.rs` target. |
 | **`crates/openhuman-tui/`** | Standalone ratatui terminal frontend. Boots the core in-process via `CoreBuilder` (`DomainSet::full()`, `ServiceSet::none()`), no HTTP. |
 | **`Cargo.toml`** (root)     | Virtual workspace for `openhuman-core`, `openhuman-embed`, `openhuman-rpc`, `openhuman-tinyhumans`, `openhuman-cli`, and `openhuman-tui` (`cargo build -p openhuman-cli --bin openhuman-core` builds the standalone CLI/server); `vendor/`, `worktrees/`, `crates/openhuman-app`, `app/src-tauri-mobile`, and `packages/tauri-plugin-ptt` are excluded. Holds the `[patch]` tables for vendored crates. There is no sidecar: the desktop bundle links the core in-process (`app/package.json` `core:stage` is a documented no-op). |
 | **`crates/openhuman-core/src/skills/`** | Skill metadata and run orchestration (`ops_create`, `ops_discover`, `ops_install`, `ops_parse`, `catalog/`, `registry`, `runtime/`, `schemas/`, `types`, `bundled/`, `webhooks/`). The legacy QuickJS / `rquickjs` skill execution runtime was removed; skills contribute metadata + tool descriptors that get injected into agent prompts, while tool execution flows through native Rust handlers and Node-backed helpers via `runtime::node` (Cargo feature `runtime-node`). |
 | **`gitbooks/`**             | This book (public product and contributor documentation). |
 | **`docs/`**                 | Internal maintainer documentation (test-coverage matrix, release smoke checklist, library benchmarking notes). |
-| **`vendor/`**               | Recursive git submodules for the `tiny*` crate family (`tinyagents`, `tinyflows`, `tinychannels`, `tinyjuice`, `tinymemory`, `tinymcp`, `tinybus`, `tinybox`, `tinyruntime`, `tinydocs`, `tinyvoice`, `tinywallet`, `tinyhosts`, `tinyconnectors`, `tinyhumans-sdk`) plus `motosan-ai-oauth`. |
+| **`vendor/`**               | Recursive git submodules for the `tiny*` crate family (`tinyagents`, `tinyflows`, `tinychannels`, `tinyjuice`, `tinymemory`, `tinymcp`, `tinybus`, `tinybox`, `tinybrowser`, `tinydesktop`, `tinyruntime`, `tinydocs`, `tinysearch`, `tinyskills`, `tinyvoice`, `tinywallet`, `tinyhosts`, `tinyconnectors`, `tinyhumans-sdk`) plus `motosan-ai-oauth`. |
 
 The desktop app **WebView** loads the UI from `app/`; RPC, agents and skills run in the **`openhuman_core`** core, hosted in-process as a tokio task by the Tauri shell (`crates/openhuman-app/src/core_process.rs`, `run_server_embedded_with_ready`) and reachable over loopback HTTP. The renderer's `coreRpcClient` `fetch()`es `http://127.0.0.1:<port>/rpc` directly; the `relay_http_rpc` Tauri command (backed by `openhuman_rpc::post_json_rpc`) is only the fallback for non-loopback plain-`http://` runtimes that the webview would block as mixed content. The standalone `openhuman-core serve` binary is the CLI/debug path.
 
@@ -53,46 +53,48 @@ Tauri v2 compiles the Rust core into native binaries per platform, embedding the
 
 ---
 
-## High-Level Architecture
+## High-level architecture
 
 ```
 +------------------------------------------------------------------+
 |                        React Frontend                            |
-|  Redux Toolkit  |  Socket.io Client  |  MCP Transport  |  UI    |
+|  Redux Toolkit  |  coreRpcClient (fetch)  |  Socket.IO client  |  UI |
 +------------------------------------------------------------------+
-                          |  Tauri IPC Bridge  |
+      |  HTTP JSON-RPC (loopback)   |  Socket.IO (loopback)
+      |  Tauri IPC (windows, hotkeys, relay_http_rpc fallback)
 +------------------------------------------------------------------+
-|                        Rust Core Engine                           |
+|                        Rust Core (openhuman_core)                  |
 |                                                                  |
 |  +------------------+  +------------------+  +-----------------+ |
-|  |   Tool Runtime   |  |  Socket Manager  |  |  AI Encryption  | |
-|  |  (native + Node) |  |  (Persistent WS) |  |  & Memory Store | |
-|  +------------------+  +------------------+  +-----------------+ |
-|                                                                  |
-|  +------------------+  +------------------+  +-----------------+ |
-|  |  Skill Metadata  |  |  Cron Scheduler  |  |  Session & Auth | |
-|  |  & Tool Registry |  |  (5s tick loop)  |  |  Management     | |
+|  |  Agent harness    |  |  Socket Manager  |  |  Memory tree    | |
+|  |  (tinyagents)      |  |  (client to      |  |  + encryption   | |
+|  |  + tool dispatch   |  |   backend, WS)   |  |  at rest        | |
 |  +------------------+  +------------------+  +-----------------+ |
 |                                                                  |
 |  +------------------+  +------------------+  +-----------------+ |
-|  |   Telegram       |  |  SQLite Storage  |  |  OS Keychain    | |
-|  |   Integration    |  |  (rusqlite)      |  |  Integration    | |
+|  |  Skill metadata  |  |  Cron Scheduler  |  |  Session & Auth | |
+|  |  & tool registry |  |  (`cron` domain) |  |  Management     | |
+|  +------------------+  +------------------+  +-----------------+ |
+|                                                                  |
+|  +------------------+  +------------------+  +-----------------+ |
+|  |  Channel          |  |  SQLite Storage  |  |  OS Keychain    | |
+|  |  integrations     |  |  (rusqlite)      |  |  Integration    | |
 |  +------------------+  +------------------+  +-----------------+ |
 +------------------------------------------------------------------+
                           |
               +-----------+-----------+
               |                       |
-     Backend Services          External APIs
-     (Socket.io Server)        (Telegram, etc.)
+     TinyHumans backend        External APIs
+     (Socket.IO + REST)        (Telegram, etc.)
 ```
 
-The frontend communicates with the **openhuman** Rust core in two ways: **Tauri IPC** for shell commands (windows, hotkeys, and the **`relay_http_rpc`** HTTP relay used only for non-loopback plain-`http://` runtimes) and **HTTP JSON-RPC** over loopback to the in-process core for business logic and tools. The core owns persistent connections where applicable, cryptographic work for memory/features, and tool execution: native Rust handlers plus Node-backed helpers via `runtime::node`, gated by the `security/` sandbox policy. Skills no longer execute in-process; the `crates/openhuman-core/src/skills/` domain contributes metadata + tool descriptors that get injected into agent prompts.
+The frontend communicates with the **openhuman** Rust core in two ways: **Tauri IPC** for shell commands (windows, hotkeys, and the **`relay_http_rpc`** HTTP relay used only for non-loopback plain-`http://` runtimes) and **HTTP JSON-RPC over loopback** for business logic and tools, plus a **Socket.IO bridge served by the core itself** for live events (chat streaming, notifications). The core owns the outbound persistent connection to the TinyHumans backend, cryptographic work for memory, and tool execution: agent turns run through the `tinyagents` harness, and tools dispatch as native Rust handlers, plus Node-backed helpers via `runtime::node`, gated by the `security/` sandbox policy. Skills no longer execute in-process; the `crates/openhuman-core/src/skills/` domain contributes metadata and tool descriptors that get injected into agent prompts. External MCP clients (Claude Desktop, Cursor, Zed) reach the same tool surface over a separate stdio MCP server; see [MCP Server](mcp-server.md).
 
 ---
 
-## Rust-Powered Performance
+## Rust-powered performance
 
-OpenHuman chose Tauri + Rust over Electron for fundamental performance and security reasons:
+OpenHuman chose Tauri + Rust over Electron for performance and security reasons. See [Performance](performance.md) for measured numbers (agents-per-process density, cold start, binary size); the table below is qualitative:
 
 | Metric                    | OpenHuman (Tauri + Rust)                                                   | Typical Electron App                     |
 | ------------------------- | -------------------------------------------------------------------------- | ---------------------------------------- |
@@ -103,13 +105,13 @@ OpenHuman chose Tauri + Rust over Electron for fundamental performance and secur
 | Memory safety             | Compile-time guaranteed                                                    | Runtime exceptions                       |
 | TLS implementation        | rustls (no OpenSSL dependency)                                             | Chromium's BoringSSL                     |
 
-**Why this matters for a crypto platform**: Traders and analysts run OpenHuman alongside resource-intensive tools, charting software, multiple browser tabs, trading terminals. A native binary with sub-500ms startup means the app feels native and stays out of the way. Zero GC pauses means real-time price feeds and alerts are never delayed by memory management.
+Why this matters in practice: people run OpenHuman alongside other resource-heavy apps, browser tabs, IDEs, chat clients, dashboards. A native binary with sub-500ms startup means the app feels native and stays out of the way instead of competing for the same CPU and memory budget. No GC pauses means background work such as memory writes and socket events does not stall while a collector runs.
 
 The **Tokio async runtime** drives all I/O. WebSocket connections, HTTP requests, file operations, and inter-skill communication, as non-blocking tasks on a thread pool. Thousands of concurrent operations (skill executions, cron jobs, socket events) share a small fixed set of OS threads.
 
 ---
 
-## Real-Time Socket Infrastructure
+## Real-time socket infrastructure
 
 OpenHuman implements a **dual-socket architecture**: a Rust-native WebSocket client on desktop and a JavaScript Socket.io client on web. The Rust implementation survives app backgrounding, operates independently of the WebView, and handles TLS via rustls.
 
@@ -131,22 +133,15 @@ Desktop Mode:                          Web Mode:
 +-------------+                        +-------------+
 ```
 
-**Rust Socket Manager** implements Engine.IO v4 + Socket.IO v4 framing over raw WebSocket:
+The Rust socket manager implements Engine.IO v4 and Socket.IO v4 framing over a raw WebSocket. On handshake it connects, waits for the Engine.IO OPEN frame (which carries `sid`, `pingInterval`, `pingTimeout`), then sends the Socket.IO CONNECT with JWT auth and waits for the ACK. For keep-alive it answers each Engine.IO PING with a PONG; the connection is considered dead after `pingInterval + pingTimeout + 5s` (50 seconds with the defaults). Reconnection backs off exponentially from 1 second up to a 30-second cap, resetting to 1s once a connection that had been established is lost, but continuing to grow if a connection was never established in the first place. Because it is plain Rust `reqwest` rather than a browser fetch, it also sidesteps CORS: outbound API calls go out directly, with no browser restrictions to work around.
 
-- **Handshake**: WebSocket connect, Engine.IO OPEN (extracts `sid`, `pingInterval`, `pingTimeout`), Socket.IO CONNECT with JWT auth, CONNECT ACK
-- **Keep-alive**: Responds to Engine.IO PING with PONG; timeout threshold = `pingInterval + pingTimeout + 5s` (default: 50 seconds)
-- **Reconnection**: Exponential backoff from 1 second to 30 seconds max. Resets to 1s after a successful connection is lost; keeps growing if connection was never established
-- **CORS bypass**: The Rust `reqwest` HTTP client makes external API calls directly, no browser CORS restrictions apply
-
-The socket connection is **shared across all skills**. When events arrive, the socket manager routes them to the appropriate skill via async message channels. This eliminates per-skill connection overhead entirely.
-
-**`tool:sync` protocol**: On every socket connect and skill lifecycle change, the client emits a `tool:sync` event containing the full list of available tools with their connection status. This keeps the backend AI system aware of all capabilities in real time.
+The socket connection is shared across the process rather than opened per skill or per tool, so events are routed to the right handler over async message channels instead of paying a new connection each time.
 
 ---
 
 ## Skills
 
-Skills are `SKILL.md` packages (metadata, instructions, optional bundled scripts/resources) that extend the agent with reusable workflows. The legacy model — one sandboxed QuickJS VM per skill with per-skill bridge APIs and an embedded 5-second cron tick — is gone.
+Skills are `SKILL.md` packages (metadata, instructions, optional bundled scripts/resources) that extend the agent with reusable workflows. The legacy model, one sandboxed QuickJS VM per skill with per-skill bridge APIs and an embedded 5-second cron tick, is gone.
 
 Responsibilities are split across three domains:
 
@@ -166,64 +161,27 @@ Responsibilities are split across three domains:
 | `allowed-tools`   | Tool allowlist guidance        |
 | bundled resources | scripts, references, assets    |
 
-**Language runtimes**: script-backed skills run through shared runtime domains rather than embedded VMs — `runtime::node` (Cargo feature `runtime-node`) resolves a compatible system `node` or installs a managed distribution (SHA-256-verified) into the OpenHuman cache, and `runtime::python` does the same for Python. Execution is gated by the `security/` sandbox policy like any other tool.
+**Language runtimes**: script-backed skills run through shared runtime domains rather than embedded VMs. `runtime::node` (Cargo feature `runtime-node`) resolves a compatible system `node` or installs a managed distribution (SHA-256-verified) into the OpenHuman cache, and `runtime::python` does the same for Python. Execution is gated by the `security/` sandbox policy like any other tool.
 
 **Scheduling**: recurring work is owned by the `cron` domain (with `scheduler_gate`), not by skills; there is no per-skill `onCronTrigger()` handler.
 
 ---
 
-## AI & Tool Protocol (MCP)
+## AI and tool protocol (MCP)
 
-OpenHuman implements the **Model Context Protocol**, a JSON-RPC 2.0 layer over Socket.io that lets AI models discover and invoke tools exposed by skills.
+OpenHuman implements the **Model Context Protocol** on both sides of the connection. As a client, the core browses Smithery and the official MCP registry, connects servers a user declares in `mcp.json`, and surfaces their tools to agents through the same tool registry native tools use; see [MCP registry](architecture/mcp-registry.md). As a server, `openhuman-core mcp` exposes OpenHuman's own tools over stdio or HTTP so external MCP hosts such as Claude Desktop, Cursor, and Zed can call them; see [MCP server](mcp-server.md).
 
-```
-User Prompt
-    |
-    v
-AI Model (Backend)
-    |
-    |  1. mcp:listTools  -->  Frontend/Rust aggregates all skill tools
-    |  <-- tool catalog
-    |
-    |  2. Decides which tool to call
-    |
-    |  3. mcp:toolCall { tool_name, arguments }
-    |         |
-    |         v
-    |     Socket Manager routes to the unified Tool Registry
-    |         |
-    |         v
-    |     Native Rust handler (or Node helper via `runtime::node`) executes
-    |         |
-    |         v
-    |     External call (HTTP via reqwest, SQLite, etc.) — gated by SecurityPolicy
-    |         |
-    |  <-- mcp:toolCallResponse { result }
-    |
-    v
-AI Response to User
-```
+Every remote tool definition, whether coming in through a connected server or served out to a host, passes a prompt-injection scan before it reaches a model. Tool execution itself runs through the same Tool Registry as native tools: native Rust handlers or Node helpers via `runtime::node`, gated by `SecurityPolicy` and the active sandbox backend.
 
-**Transport**: 30-second timeout per request, `mcp:` event prefix, request IDs tracked in a pending response map. Tool names are namespaced as `skillId__toolName` for unambiguous routing.
+## Memory
 
-**Tool sync**: The `tool:sync` event broadcasts the complete tool inventory, skill ID, name, connection status, and tool list, on every socket connect and skill state change. The backend AI system always has an up-to-date view of available capabilities.
+Agent memory runs on TinyCortex, the memory engine vendored under `tinymemory` (`vendor/tinymemory/vendor/tinycortex`). OpenHuman's own code keeps RPC, tools, scheduling, credentials, and the host namespace-document store; the tree mechanics (chunking, scoring, retrieval, embedding) are crate-owned. See [Pluggable engines](engines.md) for which memory and embedding backends actually run, and [Memory tree](architecture/memory-tree.md) for the host layer over the engine.
 
-**AI Memory System**:
-
-| Feature            | Implementation                                                                      |
-| ------------------ | ----------------------------------------------------------------------------------- |
-| Encryption at rest | AES-256-GCM with Argon2id key derivation                                            |
-| Chunking           | 512 tokens per chunk, 64-token overlap                                              |
-| Search             | Hybrid: 70% vector similarity + 30% FTS5 full-text                                  |
-| Embeddings         | OpenAI `text-embedding-3-small`                                                     |
-| Knowledge graph    | SQLite-backed code/entity graph (`codegraph`, `memory_tree`) — no external graph DB |
-| Sessions           | JSONL transcripts with compaction and tool compression                              |
-
-Memory encryption keys derive from user credentials via Argon2id, ensuring memory files are unreadable without authentication. The hybrid search combines semantic understanding (vector similarity) with keyword precision (SQLite FTS5) for reliable recall.
+Conversation state is separate from memory: each thread's transcript is a JSONL file keyed by thread and agent id, and compaction seals a generation rather than deleting it, so the full history stays recoverable even though a resumed session only reads the latest generation.
 
 ---
 
-## Security Architecture
+## Security architecture
 
 ```
 +-------------------------------------------------------------------+
@@ -243,17 +201,11 @@ Memory encryption keys derive from user credentials via Argon2id, ensuring memor
 +-------------------------------------------------------------------+
 ```
 
-- **Credential storage**: OS keychain integration via the `keyring` crate (macOS Keychain, Windows Credential Manager, Linux Secret Service), desktop only
-- **Memory encryption**: AES-256-GCM with Argon2id key derivation. All AI memory is encrypted at rest
-- **Tool sandboxing**: Executable tools run through `SecurityPolicy` (`crates/openhuman-core/src/security/policy/`: `types.rs`, `path_checks.rs`, `command_checks.rs`, `enforcement.rs`) and a host-appropriate sandbox backend selected at runtime: Docker, Bubblewrap, Firejail, Landlock, or Noop (`crates/openhuman-core/src/security/{docker,bubblewrap,firejail,landlock}.rs`, `detect.rs`). The legacy per-skill QuickJS memory/stack limit model is gone
-- **Auth handoff**: Web-to-desktop authentication uses single-use login tokens with 5-minute TTL, exchanged via Rust HTTP client (bypasses CORS)
-- **Network TLS**: All WebSocket and HTTP connections use rustls, no dependency on platform OpenSSL
-- **State management**: Sensitive data lives in Redux (memory) and OS keychain (persistent). No localStorage for credentials or tokens
-- **Prompt injection guard**: User prompts are normalized/scored and enforced server-side (`allow | review | block`) before model/tool execution. See `crates/openhuman-core/src/security/prompt_injection/`
+Credentials go through the OS keychain via the `keyring` crate (macOS Keychain, Windows Credential Manager, Linux Secret Service), on desktop only. Memory is encrypted at rest with AES-256-GCM, keyed by Argon2id. Executable tools run through `SecurityPolicy` (`crates/openhuman-core/src/security/policy/`: `types.rs`, `path_checks.rs`, `command_checks.rs`, `enforcement.rs`) and a host-appropriate sandbox backend selected at runtime, Docker, Bubblewrap, Firejail, Landlock, or a no-op fallback (`crates/openhuman-core/src/security/{docker,bubblewrap,firejail,landlock}.rs`, `detect.rs`); the legacy per-skill QuickJS memory and stack limit model is gone. Web-to-desktop auth handoff uses single-use login tokens with a 5-minute TTL, exchanged via the Rust HTTP client so it bypasses browser CORS. All WebSocket and HTTP connections use rustls, with no dependency on the platform's OpenSSL. Sensitive state lives in Redux (in memory) and the OS keychain (persistent); nothing sensitive goes into localStorage. User prompts are normalized, scored, and enforced server-side (`allow | review | block`) before model or tool execution; see `crates/openhuman-core/src/security/prompt_injection/`.
 
 ---
 
-## End-to-End Data Flow
+## End-to-end data flow
 
 A complete flow from user action to external service and back:
 
@@ -261,40 +213,37 @@ A complete flow from user action to external service and back:
 User types a command in the chat UI
           |
           v
-React Frontend dispatches to AI provider
+Frontend sends the turn to the core over HTTP JSON-RPC
           |
           v
-AI model receives prompt + tool catalog (via tool:sync)
+Agent harness (tinyagents) runs the turn, sees the tool catalog
           |
           v
-AI decides to invoke a skill tool (e.g., send Telegram message)
+Model decides to call a tool (e.g., send a Telegram message)
           |
           v
-mcp:toolCall event sent over Socket.io (or local invocation)
+Tool Registry routes to the registered handler
           |
           v
-Socket Manager (Rust) receives event, parses the tool name
+Handler executes: native Rust, or a Node helper via `runtime::node`
           |
           v
-Tool Registry routes to the registered handler (native Rust or Node helper via `runtime::node`)
+Handler runs through `SecurityPolicy` and the active sandbox backend
           |
           v
-Handler executes through `SecurityPolicy` + the active sandbox backend
-          |
-          v
-External call: reqwest HTTP request via rustls (no browser CORS), SQLite, OS keychain, etc.
+External call: reqwest over rustls, a channel driver, SQLite, OS keychain, etc.
           |
           v
 External service responds
           |
           v
-Result flows back: Handler -> Registry -> Socket -> MCP -> AI -> UI
+Result flows back through the harness to the frontend over Socket.IO or the RPC response
           |
           v
 User sees the result in the chat interface
 ```
 
-Every layer is async and non-blocking. The Rust core processes thousands of concurrent skill executions, cron triggers, and socket events on a fixed Tokio thread pool.
+Every layer is async and non-blocking. The Rust core runs concurrent tool executions, cron triggers, and socket events on a fixed Tokio thread pool.
 
 ---
 
@@ -302,12 +251,12 @@ Every layer is async and non-blocking. The Rust core processes thousands of conc
 
 Core subsystems run on published `tiny*` crates, vendored as git submodules under `vendor/` (`tinyagents`, `tinyflows`, `tinychannels`, `tinyjuice`, `tinymemory`, …) so crate changes can be tested in-tree before publishing. `tinycortex` is not a top-level submodule: the memory engine is reached through the copy `tinymemory` vendors (`vendor/tinymemory/vendor/tinycortex`), which is the commit the prebuilt `tinymemory` module is built from. The major ownership boundaries are:
 
-- **Agent engine on tinyagents** — every agent turn runs through the `tinyagents` crate harness via the seam in `crates/openhuman-core/src/agent/tinyagents/`; see [Agent Harness](architecture/agent-harness.md).
-- **Memory on tinycortex** — the generic store/tree/queue/retrieval/sync engine is crate-owned. OpenHuman keeps RPC, tools, scheduling, credentials, security/event policy, worker orchestration, and the host namespace-document store; `crates/openhuman-core/src/memory/` (`host.rs`, `api.rs`, `binding.rs`, `tree/`, `ops/`, `schemas/`) implements those seams over the vendored `tinymemory` engine (`tinymemory-core`, `tinymemory-api`). Concrete embedding transports are shared through `tinyagents::harness::embeddings`.
-- **Inference on the crate ModelRouter** — host workload-tier model routing and cloud provider slugs now use the crate-native `ModelRouter`/`OpenAiModel` (#4782, #4783).
+- **Agent engine on tinyagents.** Every agent turn runs through the `tinyagents` crate harness via the seam in `crates/openhuman-core/src/agent/tinyagents/`; see [Agent harness](architecture/agent-harness.md).
+- **Memory on tinycortex.** The generic store/tree/queue/retrieval/sync engine is crate-owned. TinyCortex is the only memory engine that actually runs today; the remote drivers listed in config exist but are not wired in (see [Engines](engines.md)). OpenHuman keeps RPC, tools, scheduling, credentials, security/event policy, worker orchestration, and the host namespace-document store. `crates/openhuman-core/src/memory/` (`host.rs`, `api.rs`, `binding.rs`, `tree/`, `ops/`, `schemas/`) implements those seams over the vendored `tinymemory` engine (`tinymemory-core`, `tinymemory-api`). Concrete embedding transports are shared through `tinyagents::harness::embeddings`.
+- **Inference on the crate ModelRouter.** Host workload-tier model routing and cloud provider slugs now use the crate-native `ModelRouter`/`OpenAiModel` (#4782, #4783).
 ---
 
-## Technology Stack
+## Technology stack
 
 | Layer          | Technology                         | Why                                                       |
 | -------------- | ---------------------------------- | --------------------------------------------------------- |
@@ -332,7 +281,7 @@ Core subsystems run on published `tiny*` crates, vendored as git submodules unde
 
 ---
 
-## iOS Client (experimental)
+## iOS client (experimental)
 
 The iOS client is a Tauri v2 app that shares the React/TypeScript UI codebase but ships **no Rust core binary on-device**. All AI, RPC, and domain logic remain on the desktop core; the iOS app is a thin transport client.
 
@@ -371,7 +320,7 @@ Transport is selected by `ConnectionProfile` stored in secure storage. On pairin
 
 ### Security
 
-- Tunnel backend is a blind forwarder -- never sees plaintext payloads.
+- Tunnel backend is a blind forwarder; it never sees plaintext payloads.
 - `pairingToken` is single-use, TTL'd, hashed at rest on backend.
 - `sessionToken` is per-client peer and revocable from the desktop Devices panel; the desktop core does not receive a session token during register.
 - Speech recognition runs on-device (Apple Speech framework); audio never leaves the device.

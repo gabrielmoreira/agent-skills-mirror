@@ -2009,7 +2009,7 @@ params = [
 params = [
     notebook_id,  # 0
     None,  # 1
-    [note_id],  # 2: Single-nested note ID
+    [note_id_1, note_id_2],  # 2: One or more note IDs (batch-capable)
 ]
 
 # BEFORE delete:
@@ -2019,7 +2019,15 @@ params = [
 # ['note_id', None, 2]  # Status 2 = deleted/cleared
 ```
 
-**Note:** Same behavior applies to mind maps via `delete_mind_map()`. The Python API filters out items with status=2 in `list()` and `list_mind_maps()` to match UI behavior.
+`notes.delete(notebook_id, str | list[str])` sends this request once; missing IDs
+silently no-op. MCP resolves an explicit subset before deletion to distinguish
+`deleted` from `not_found`. The existing idempotent delete policy covers batches;
+there is no separate client-token slot.
+
+**Note:** Same behavior applies to note-backed mind maps via `delete_mind_map()`.
+Interactive maps use `DELETE_ARTIFACT` and never enter the bulk text-note request.
+The Python API filters out items with status=2 in `list()` and `list_mind_maps()`
+to match UI behavior.
 
 ### RPC: GET_NOTES_AND_MIND_MAPS (cFji9)
 

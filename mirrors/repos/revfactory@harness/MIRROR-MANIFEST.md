@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `revfactory/harness` — 26 default patterns, 0 followed patterns, 7 file(s) materialized.
+Mirror of `revfactory/harness` — 26 default patterns, 0 followed patterns, 11 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `revfactory/harness` — 26 default patterns, 0 followed patterns, 7 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 7 |
+| Files         | 11 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,13 +59,17 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`skills/harness/references/agent-design-patterns.md`](skills/harness/references/agent-design-patterns.md) |
-| 2 | ✓ | [`skills/harness/references/orchestrator-template.md`](skills/harness/references/orchestrator-template.md) |
-| 3 | ✓ | [`skills/harness/references/qa-agent-guide.md`](skills/harness/references/qa-agent-guide.md) |
-| 4 | ✓ | [`skills/harness/references/skill-testing-guide.md`](skills/harness/references/skill-testing-guide.md) |
-| 5 | ✓ | [`skills/harness/references/skill-writing-guide.md`](skills/harness/references/skill-writing-guide.md) |
-| 6 | ✓ | [`skills/harness/references/team-examples.md`](skills/harness/references/team-examples.md) |
-| 7 | ✓ | [`skills/harness/SKILL.md`](skills/harness/SKILL.md) |
+| 1 | ✓ | [`skills/evolve/SKILL.md`](skills/evolve/SKILL.md) |
+| 2 | ✓ | [`skills/harness/references/execution-modes.md`](skills/harness/references/execution-modes.md) |
+| 3 | ✓ | [`skills/harness/references/model-selection-guide.md`](skills/harness/references/model-selection-guide.md) |
+| 4 | ✓ | [`skills/harness/references/orchestrator-template.md`](skills/harness/references/orchestrator-template.md) |
+| 5 | ✓ | [`skills/harness/references/qa-agent-guide.md`](skills/harness/references/qa-agent-guide.md) |
+| 6 | ✓ | [`skills/harness/references/skill-testing-guide.md`](skills/harness/references/skill-testing-guide.md) |
+| 7 | ✓ | [`skills/harness/references/skill-writing-guide.md`](skills/harness/references/skill-writing-guide.md) |
+| 8 | ✓ | [`skills/harness/references/team-examples.md`](skills/harness/references/team-examples.md) |
+| 9 | ✓ | [`skills/harness/references/team-patterns.md`](skills/harness/references/team-patterns.md) |
+| 10 | ✓ | [`skills/harness/references/workflow-recipes.md`](skills/harness/references/workflow-recipes.md) |
+| 11 | ✓ | [`skills/harness/SKILL.md`](skills/harness/SKILL.md) |
 
 ---
 

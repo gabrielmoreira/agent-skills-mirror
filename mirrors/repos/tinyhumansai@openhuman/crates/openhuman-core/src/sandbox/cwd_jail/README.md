@@ -1,87 +1,152 @@
 # cwd_jail
 
-Cross-platform directory-jail facade. Given a declarative description of a workspace (`Jail`), it picks the strongest available OS sandbox backend and spawns a child process caged into a single read/write root (plus optional read-only paths), with toggles for outbound network and subprocess creation. It is the user-facing complement to `crates/openhuman-core/src/security/` — the autonomy gate decides *whether* a command may run; `cwd_jail` decides *what filesystem* the approved child process sees. It jails the *child* it spawns, never the core process itself.
+Cross-platform directory-jail facade. Given a declarative description of a
+workspace (`Jail`), it picks the strongest available OS sandbox backend and
+spawns a child process caged into a single read/write root (plus optional
+read-only paths), with toggles for outbound network and subprocess creation.
+It is the user-facing complement to `crates/openhuman-core/src/security/`:
+the autonomy gate decides whether a command may run, and `cwd_jail` decides
+what filesystem the approved child process sees. It jails the child it
+spawns, never the core process itself.
 
 ## Responsibilities
 
-- Describe a jail declaratively via a builder (`Jail::new(root, label)` + `.add_read_only(...)`, `.deny_net()`, `.deny_subprocess()`).
-- Auto-detect and cache the strongest backend for the current OS (Landlock / Seatbelt / AppContainer / noop).
-- Spawn a `std::process::Command` inside the jail, canonicalizing `root` (and read-only paths) first so backends never see `..` or symlink trickery.
-- Provide a persistent registry to manage many jailed workspaces side-by-side, each with a stable id, label, directory, and metadata, indexed in a JSON file.
-- Fall back gracefully (`noop`) when no OS-level sandbox is available, while still letting callers rely on application-layer path checks.
+- Describe a jail declaratively via a builder (`Jail::new(root, label)` plus
+  `.add_read_only(...)`, `.deny_net()`, `.deny_subprocess()`).
+- Auto-detect and cache the strongest backend for the current OS (Landlock,
+  Seatbelt, AppContainer, or noop).
+- Spawn a `std::process::Command` inside the jail, canonicalizing `root`
+  (and read-only paths) first so backends never see `..` or symlink
+  trickery.
+- Provide a persistent registry to manage many jailed workspaces side by
+  side, each with a stable id, label, directory, and metadata, indexed in a
+  JSON file.
+- Fall back to `noop` when no OS-level sandbox is available, while still
+  letting callers rely on application-layer path checks.
 
 ## Key files
 
 | File | Role |
 | --- | --- |
-| `crates/openhuman-core/src/sandbox/cwd_jail/mod.rs` | Module docstring + the thin facade: `spawn` / `spawn_with` / `default_backend` (cached via `OnceLock`). Re-exports the public surface. |
-| `crates/openhuman-core/src/sandbox/cwd_jail/jail.rs` | Core types: the `Jail` description struct (builder + `canonicalize`/`canonicalize_or_log`) and the `JailBackend` trait (`name`/`is_available`/`spawn`). |
-| `crates/openhuman-core/src/sandbox/cwd_jail/detect.rs` | `pick_backend()` — cfg-gated platform selection; returns the first available backend or `NoopBackend`. |
-| `crates/openhuman-core/src/sandbox/cwd_jail/noop.rs` | `NoopBackend` — no enforcement, plain `Command::spawn`. Always available. |
-| `crates/openhuman-core/src/sandbox/cwd_jail/linux.rs` | `LandlockBackend` — kernel 5.13+ Landlock LSM applied in `pre_exec` (child-side, after fork, before exec). Gated on the `sandbox-landlock` cargo feature. |
-| `crates/openhuman-core/src/sandbox/cwd_jail/macos.rs` | `SeatbeltBackend` — wraps the command in `/usr/bin/sandbox-exec -p '<profile>'`. Renders an allow-default-reads / deny-default-writes Seatbelt profile. |
-| `crates/openhuman-core/src/sandbox/cwd_jail/windows.rs` | `AppContainerBackend` — `CreateAppContainerProfile` + DACL grant + `STARTUPINFOEX`/`CreateProcessW` via `windows-sys`. |
-| `crates/openhuman-core/src/sandbox/cwd_jail/registry.rs` | `JailRegistry` + `JailRecord` — multi-jail manager persisted to `index.json`, with atomic-rename writes and containment checks. |
+| `crates/openhuman-core/src/sandbox/cwd_jail/mod.rs` | Module docstring plus the thin facade: `spawn` / `spawn_with` / `default_backend` (cached via `OnceLock`). Re-exports the public surface. |
+| `crates/openhuman-core/src/sandbox/cwd_jail/jail.rs` | Core types: the `Jail` description struct (builder plus `canonicalize`/`canonicalize_or_log`) and the `JailBackend` trait (`name`/`is_available`/`spawn`). |
+| `crates/openhuman-core/src/sandbox/cwd_jail/detect.rs` | `pick_backend()`: cfg-gated platform selection; returns the first available backend or `NoopBackend`. |
+| `crates/openhuman-core/src/sandbox/cwd_jail/noop.rs` | `NoopBackend`: no enforcement, plain `Command::spawn`. Always available. |
+| `crates/openhuman-core/src/sandbox/cwd_jail/linux.rs` | `LandlockBackend`: kernel 5.13+ Landlock LSM applied in `pre_exec` (child-side, after fork, before exec). Gated on the `sandbox-landlock` cargo feature. |
+| `crates/openhuman-core/src/sandbox/cwd_jail/macos.rs` | `SeatbeltBackend`: wraps the command in `/usr/bin/sandbox-exec -p '<profile>'`. Renders an allow-default-reads / deny-default-writes Seatbelt profile. |
+| `crates/openhuman-core/src/sandbox/cwd_jail/windows.rs` | `AppContainerBackend`: `CreateAppContainerProfile` plus a DACL grant and `STARTUPINFOEX`/`CreateProcessW` via `windows-sys`. |
+| `crates/openhuman-core/src/sandbox/cwd_jail/registry.rs` | `JailRegistry` and `JailRecord`: multi-jail manager persisted to `index.json`, with atomic-rename writes and containment checks. |
 | `crates/openhuman-core/src/sandbox/cwd_jail/{mod,jail,noop,macos,windows,registry}_tests.rs` | Sibling test suites, each `#[path]`-included from its source file. |
 
 ## Public surface
 
 Re-exported from `mod.rs`:
 
-- `Jail`, `JailBackend` — the declarative jail description and the OS-enforcement trait.
-- `NoopBackend`, `NOOP_BACKEND_NAME` — the unenforced fallback backend and its `name()` string (`sandbox/ops.rs` compares against it to report `Inactive`).
-- `JailRecord`, `JailRegistry` — persisted multi-jail manager.
+- `Jail`, `JailBackend`: the declarative jail description and the
+  OS-enforcement trait.
+- `NoopBackend`, `NOOP_BACKEND_NAME`: the unenforced fallback backend and its
+  `name()` string (`sandbox/ops.rs` compares against it to report
+  `Inactive`).
+- `JailRecord`, `JailRegistry`: persisted multi-jail manager.
 
 Free functions in `mod.rs`:
 
-- `default_backend() -> Arc<dyn JailBackend>` — process-wide cached, lazily auto-detected backend.
-- `spawn(jail: &Jail, cmd: Command) -> io::Result<Child>` — canonicalize + spawn under the default backend.
-- `spawn_with(backend: &dyn JailBackend, jail: &Jail, cmd: Command) -> io::Result<Child>` — same, with an explicit backend (tests / forced weaker backend).
+- `default_backend() -> Arc<dyn JailBackend>`: process-wide cached, lazily
+  auto-detected backend.
+- `spawn(jail: &Jail, cmd: Command) -> io::Result<Child>`: canonicalize and
+  spawn under the default backend.
+- `spawn_with(backend: &dyn JailBackend, jail: &Jail, cmd: Command) -> io::Result<Child>`:
+  same, with an explicit backend (tests or a forced weaker backend).
 
-`JailRegistry` methods: `open`, `base`, `create`, `get`, `list`, `find_by_label`, `rename`, `set_notes`, `delete`, `clear`, `spawn_in`, `spawn_in_with`.
+`JailRegistry` methods: `open`, `base`, `create`, `get`, `list`,
+`find_by_label`, `rename`, `set_notes`, `delete`, `clear`, `spawn_in`,
+`spawn_in_with`.
 
 ## Persistence
 
-`JailRegistry` is rooted at a base directory (e.g. `~/.openhuman/jails/` or `<workspace>/jails/`). Each jail is a `<base>/<id>/` directory; metadata for all jails lives in `<base>/index.json`.
+`JailRegistry` is rooted at a base directory (for example `~/.openhuman/jails/`
+or `<workspace>/jails/`). Each jail is a `<base>/<id>/` directory; metadata
+for all jails lives in `<base>/index.json`.
 
-- `JailRecord` fields: `id`, `label`, `dir`, `backend_at_create`, `created_at_unix`, `updated_at_unix`, optional `notes`.
-- The on-disk index is the source of truth; in-memory state (`Index`, a `BTreeMap` for deterministic ordering) is rebuilt on every `open()`.
-- Writes are atomic (write-temp + rename, with a direct-overwrite fallback if rename-over fails). Mutating ops roll back the in-memory change if persistence fails.
-- Ids are generated as `j<ts_hex><counter_hex>` (not cryptographically random — used as directory names), with a collision-retry loop on `create`.
-- Concurrency is guarded by a `std::sync::Mutex`; multi-*process* access is an explicit non-goal (no OS file locking).
+- `JailRecord` fields: `id`, `label`, `dir`, `backend_at_create`,
+  `created_at_unix`, `updated_at_unix`, optional `notes`.
+- The on-disk index is the source of truth; in-memory state (`Index`, a
+  `BTreeMap` for deterministic ordering) is rebuilt on every `open()`.
+- Writes are atomic (write-temp then rename, with a direct-overwrite
+  fallback if rename-over fails). Mutating ops roll back the in-memory
+  change if persistence fails.
+- Ids are generated as `j<ts_hex><counter_hex>` (not cryptographically
+  random, used only as directory names), with a collision-retry loop on
+  `create`.
+- Concurrency is guarded by a `std::sync::Mutex`; multi-process access is an
+  explicit non-goal (no OS file locking).
 
 ## Dependencies
 
-This module is notably self-contained: its own files contain **no** `use crate::` or `use crate::core::` imports. Dependencies are external/std only:
+This module is notably self-contained: its own files contain no
+`use crate::` or `use crate::core::` imports. Dependencies are external or
+std only:
 
-- `std::process` (`Command`/`Child`), `std::fs`, `std::sync` (`Mutex`/`OnceLock`/`Arc`), `std::time`.
-- `serde` / `serde_json` — `JailRecord` and the index serialization (registry).
-- `landlock` crate — Linux backend, gated on the `sandbox-landlock` cargo feature.
-- `windows-sys` — Windows AppContainer FFI (Security/Isolation, Threading, Memory APIs).
+- `std::process` (`Command`/`Child`), `std::fs`, `std::sync`
+  (`Mutex`/`OnceLock`/`Arc`), `std::time`.
+- `serde` / `serde_json`: `JailRecord` and the index serialization
+  (registry).
+- `landlock` crate: Linux backend, gated on the `sandbox-landlock` cargo
+  feature.
+- `windows-sys`: Windows AppContainer FFI (Security/Isolation, Threading,
+  Memory APIs).
 - macOS backend shells out to the system binary `/usr/bin/sandbox-exec`.
 
-The Linux backend's docstring references `crate::security::landlock` as conceptual prior art, but the implementation here is self-contained (it does not import that module).
+The Linux backend's docstring references `crate::security::landlock` as
+conceptual prior art, but the implementation here is self-contained; it does
+not import that module.
 
 ## Used by
 
 - Declared in `crates/openhuman-core/src/sandbox/mod.rs` (`pub mod cwd_jail;`).
-- `crates/openhuman-core/src/sandbox/ops.rs` — `execute_local_jail` builds a
+- `crates/openhuman-core/src/sandbox/ops.rs`: `execute_local_jail` builds a
   `Jail` from the resolved `SandboxPolicy` and spawns through
-  `cwd_jail::default_backend()`, falling back to `cwd_jail::NoopBackend`
-  when no OS jail is available.
-- `crates/openhuman-core/src/agent/platform_shell.rs` — doc references to
+  `cwd_jail::default_backend()`, falling back to `cwd_jail::NoopBackend` when
+  no OS jail is available.
+- `crates/openhuman-core/src/agent/platform_shell.rs`: doc references to
   `cwd_jail::spawn` when explaining why shell-spawning is routed through a
   shared, Windows-aware command builder.
 - `crates/openhuman-core/src/tools/impl/system/{node_exec,npm_exec}.rs`
   mention `cwd_jail` in comments/docs when describing the `Local` sandbox
   backend.
 
-## Notes / gotchas
+## Notes and gotchas
 
-- **Not RPC-facing, no agent tools, no event bus.** There is no `schemas.rs`, `tools.rs`, or `bus.rs`; the module exposes no `openhuman.*` RPC methods, owns no agent tools, and publishes/subscribes to no `DomainEvent`s.
-- **Backends differ in what `allow_net` / `read_only` mean.** Landlock does not gate network at all; macOS Seatbelt grants `allow default` (full network) and treats `read_only` as informational since reads are already allowed; Windows AppContainer is the only backend that honors `read_only` as a real read grant and maps `allow_net` to the strictly outbound-only `internetClient` capability (LAN/inbound capabilities deliberately excluded).
-- **Windows `spawn` currently returns an error after a successful launch.** `spawn_in_container` creates the process successfully but cannot bridge the raw `HANDLE` into a `std::process::Child` (the needed `FromRawHandle for Child` is unstable), so it closes the handle and returns `io::ErrorKind::Unsupported`. See the TODO in `windows.rs`. The Windows path is compile-checked but flagged as needing real-hardware testing.
-- **macOS stdio is inherited** — the Seatbelt wrapper cannot re-apply the original command's `Stdio` config; it uses `sandbox-exec` defaults (inherit). The profile re-allows writes under canonicalized `root` and `/private/tmp`, plus the exact `/dev/null` device for shell redirection; it does not grant `/dev` generally. Callers must canonicalize the root first (the `spawn` facade does this automatically) or writes inside it may be denied (e.g. `/tmp` → `/private/tmp`).
-- **Linux Landlock runs in `pre_exec`** (child-side after fork) so the parent keeps its privileges; read-only paths also get `Execute` so the child can run binaries found there (e.g. `/usr/bin/sh`).
-- **Registry containment guard:** both `delete` and `jail_for` (used by `spawn_in`/`spawn_in_with`) refuse to operate on a record whose canonicalized `dir` is not under the canonicalized `base`, defending against a corrupted index pointing at `/`.
-- **Free-form input is length-logged, not value-logged** (labels/notes) to avoid leaking arbitrary text into logs.
+- Not RPC-facing, no agent tools, no event bus. There is no `schemas.rs`,
+  `tools.rs`, or `bus.rs`; the module exposes no `openhuman.*` RPC methods,
+  owns no agent tools, and publishes or subscribes to no `DomainEvent`s.
+- Backends differ in what `allow_net` and `read_only` mean. Landlock does
+  not gate network at all; macOS Seatbelt grants `allow default` (full
+  network) and treats `read_only` as informational since reads are already
+  allowed; Windows AppContainer is the only backend that honors `read_only`
+  as a real read grant and maps `allow_net` to the strictly outbound-only
+  `internetClient` capability (LAN and inbound capabilities are deliberately
+  excluded).
+- Windows `spawn` currently returns an error after a successful launch.
+  `spawn_in_container` creates the process successfully but cannot bridge
+  the raw `HANDLE` into a `std::process::Child` (the needed
+  `FromRawHandle for Child` is unstable), so it closes the handle and
+  returns `io::ErrorKind::Unsupported`. See the TODO in `windows.rs`. The
+  Windows path is compile-checked but flagged as needing real-hardware
+  testing.
+- macOS stdio is inherited: the Seatbelt wrapper cannot re-apply the
+  original command's `Stdio` config, so it uses `sandbox-exec` defaults
+  (inherit). The profile re-allows writes under the canonicalized `root` and
+  `/private/tmp`, plus the exact `/dev/null` device for shell redirection;
+  it does not grant `/dev` generally. Callers must canonicalize the root
+  first (the `spawn` facade does this automatically) or writes inside it may
+  be denied (for example `/tmp` resolving to `/private/tmp`).
+- Linux Landlock runs in `pre_exec` (child-side, after fork), so the parent
+  keeps its privileges; read-only paths also get `Execute` so the child can
+  run binaries found there (for example `/usr/bin/sh`).
+- Registry containment guard: both `delete` and `jail_for` (used by
+  `spawn_in`/`spawn_in_with`) refuse to operate on a record whose
+  canonicalized `dir` is not under the canonicalized `base`, defending
+  against a corrupted index pointing at `/`.
+- Free-form input is length-logged, not value-logged (labels and notes), to
+  avoid leaking arbitrary text into logs.

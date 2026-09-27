@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `daymade/claude-code-skills` — 26 default patterns, 16 followed patterns, 133 file(s) materialized.
+Mirror of `daymade/claude-code-skills` — 26 default patterns, 18 followed patterns, 135 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `daymade/claude-code-skills` — 26 default patterns, 16 followed patt
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 16 |
-| Files         | 133 |
+| Followed pats | 18 |
+| Files         | 135 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -57,6 +57,8 @@ Mirror of `daymade/claude-code-skills` — 26 default patterns, 16 followed patt
 - `feishu-doc-scraper/references/comments-and-feedback.md`
 - `feishu-doc-scraper/references/archive-storage-contract.md`
 - `tibo-reset-codex/references/account-usage.md`
+- `tibo-reset-codex/references/next-reset-forecast.md`
+- `tibo-reset-codex/references/forecast-feedback.md`
 - `daymade-claude-code/claude-switch-models-setup/references/local-source-sync-architecture.md`
 - `daymade-claude-code/claude-switch-models-setup/references/context-window-config.md`
 - `daymade-skill/skill-creator/references/sanitization_checklist.md`
@@ -206,7 +208,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 130 | → | [`references/plugin-troubleshooting.md`](references/plugin-troubleshooting.md) |
 | 131 | → | [`references/promotion-policy.md`](references/promotion-policy.md) |
 | 132 | → | [`tibo-reset-codex/references/account-usage.md`](tibo-reset-codex/references/account-usage.md) |
-| 133 | → | [`youtube-downloader/references/internal-sop.md`](youtube-downloader/references/internal-sop.md) |
+| 133 | → | [`tibo-reset-codex/references/forecast-feedback.md`](tibo-reset-codex/references/forecast-feedback.md) |
+| 134 | → | [`tibo-reset-codex/references/next-reset-forecast.md`](tibo-reset-codex/references/next-reset-forecast.md) |
+| 135 | → | [`youtube-downloader/references/internal-sop.md`](youtube-downloader/references/internal-sop.md) |
 
 ---
 

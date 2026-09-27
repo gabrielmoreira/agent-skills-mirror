@@ -23,6 +23,7 @@ type Props = {
   locale: string;
   appName?: string;
   appIcon?: string;
+  fontFamily: string;
   connectedCanvas: boolean;
   selectedElement: SelectedElement | null;
   onActiveSlideChange: (id: string) => void;
@@ -44,6 +45,7 @@ export function PreviewStage({
   locale,
   appName,
   appIcon,
+  fontFamily,
   connectedCanvas,
   selectedElement,
   onActiveSlideChange,
@@ -138,6 +140,7 @@ export function PreviewStage({
               locale={locale}
               appName={appName}
               appIcon={appIcon}
+              fontFamily={fontFamily}
               connectedCanvas={connectedCanvas}
               editable
               previewScale={scale}

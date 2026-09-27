@@ -9,6 +9,16 @@ and relevant domain acceptance; do not make every fix wait for every RFC or
 invent a roadmap id. Check latest `main`, related PRs and canonical Todos so an
 older task description cannot override corrected direction or duplicate work.
 
+For recurring operational or performance problems, connect the demonstrated
+failure to the owning roadmap/RFC acceptance before choosing a repair. Separate
+caller overhead, shared typed semantics/transport and provider-specific costs;
+prefer the existing common contract where behavior is shared. Follow the
+[optimization evidence guide](docs/development/testing-and-quality.md#roadmap-aligned-optimization).
+Distinguish an interim mitigation from closing the owning acceptance: faster
+lookup, a larger timeout or successful promotion alone does not qualify sustained
+operation. Reconcile the existing checkpoint when the evidence changes it;
+do not add a parallel roadmap or require unrelated RFC work for a bounded fix.
+
 Carry one compact delivery brief from task to PR: goal/source, current gap,
 observable result, owning boundary and decisive acceptance evidence. Reuse the
 existing task/PR fields; keep private Goal state out of public artifacts.
@@ -286,6 +296,20 @@ parity across every shared changed surface. Reject protocol names that imply a
 broader actor lifecycle or authority model than the implementation provides.
 
 ## Engineering Quality And Right-Sized Scope
+
+### TypeScript-First Implementation
+
+Prefer TypeScript for new or refactored domain-neutral LoopX capabilities,
+control-plane and orchestration logic, capability composition, context/memory
+composition, and shared projections. Follow the accepted
+[TypeScript migration RFC](docs/architecture/rfcs/typescript-control-plane-migration-v0.md)
+and reuse the existing typed owner. Do not introduce a parallel Python decision
+owner. Stable domain providers, specialized computation and transport adapters
+may remain Python with an explicit placement rationale; this preference does
+not require unrelated language-only rewrites or make a full migration a
+prerequisite for a bounded user outcome.
+
+尽量用 TypeScript 实现新增或重构的 LoopX 通用能力、控制面、编排、能力组合、上下文/记忆组合及共享投影，遵循 TS 重构 RFC 并复用既有类型化 owner，不新增平行的 Python 决策源。稳定领域 provider、专门计算与传输适配器可保留 Python，但须说明归属理由；不因语言偏好扩大无关重写，也不把全量迁移设为有界用户结果的前置条件。
 
 ### Source-Checkout Python Entry Points
 

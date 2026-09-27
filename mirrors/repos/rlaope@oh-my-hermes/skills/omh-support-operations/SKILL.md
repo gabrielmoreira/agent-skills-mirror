@@ -1,6 +1,6 @@
 ---
 name: "omh-support-operations"
-description: "[omh] Customer support case needs a reply or escalation: turn a support case into a clear customer reply, severity path, and owned next step. Use when the user says: support escalation, customer support reply, ticket triage, 고객 지원 에스컬레이션, 고객 답변 초안, 지원 티켓 분류."
+description: "[omh] Support ticket your team must answer or escalate: turn a support case into a clear customer reply, severity path, and owned next step. Use when the user says: support escalation, customer support reply, ticket triage, 고객 지원 에스컬레이션, 고객 답변 초안, 지원 티켓 분류."
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, triage]

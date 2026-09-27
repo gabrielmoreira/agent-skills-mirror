@@ -21,6 +21,7 @@ type Props = {
   locale: string;
   appName?: string;
   appIcon?: string;
+  fontFamily?: string;
   connectedCanvas: boolean;
   onSelect: () => void;
   onDelete: () => void;
@@ -41,6 +42,7 @@ export function SlideThumb({
   locale,
   appName,
   appIcon,
+  fontFamily,
   connectedCanvas,
   onSelect,
   onDelete,
@@ -116,6 +118,7 @@ export function SlideThumb({
                 locale={locale}
                 appName={appName}
                 appIcon={appIcon}
+                fontFamily={fontFamily}
                 connectedCanvas
                 editable={false}
               />
@@ -128,6 +131,7 @@ export function SlideThumb({
                 locale={locale}
                 appName={appName}
                 appIcon={appIcon}
+                fontFamily={fontFamily}
                 editable={false}
               />
             )}

@@ -1,6 +1,6 @@
 # http_host
 
-Static directory hosting over ad-hoc, in-process HTTP listeners owned by the core. Lets trusted callers (RPC/CLI) start, inspect, list, and stop lightweight file servers that expose a chosen directory on a chosen TCP port. Each server runs as an in-process `axum` task sharing the core's lifetime, and defaults to HTTP Basic authentication using the active user's identity plus a randomly generated password. There is no on-disk persistence — the registry of running servers lives in process memory and is torn down on shutdown.
+Static directory hosting over ad-hoc, in-process HTTP listeners owned by the core. Lets trusted callers (RPC/CLI) start, inspect, list, and stop lightweight file servers that expose a chosen directory on a chosen TCP port. Each server runs as an in-process `axum` task sharing the core's lifetime, and defaults to HTTP Basic authentication using the active user's identity plus a randomly generated password. There is no on-disk persistence. The registry of running servers lives in process memory and is torn down on shutdown.
 
 ## Responsibilities
 
@@ -29,9 +29,9 @@ Static directory hosting over ad-hoc, in-process HTTP listeners owned by the cor
 
 ## Public surface
 
-- `all_http_host_controller_schemas()` / `all_http_host_registered_controllers()` — re-exported from `schemas`; wired into the core controller registry.
-- `pub mod ops` — `start_hosted_dir_server`, `list_hosted_dir_servers`, `get_hosted_dir_server`, `stop_hosted_dir_server`, `stop_all_hosted_dir_servers`.
-- `pub mod rpc` — async `start`/`stop`/`get`/`list` returning `RpcOutcome<...>`.
+- `all_http_host_controller_schemas()` / `all_http_host_registered_controllers()`: re-exported from `schemas`; wired into the core controller registry.
+- `pub mod ops`: `start_hosted_dir_server`, `list_hosted_dir_servers`, `get_hosted_dir_server`, `stop_hosted_dir_server`, `stop_all_hosted_dir_servers`.
+- `pub mod rpc`: async `start`/`stop`/`get`/`list` returning `RpcOutcome<...>`.
 
 (`auth`, `handlers`, `path_utils`, `types` are private to the module.)
 
@@ -52,18 +52,18 @@ None on disk. Running servers are held in a process-global `HostedDirRegistry` (
 
 ## Dependencies
 
-- `crate::config` — `load_config_with_timeout` to resolve the active config when deriving the default Basic-auth username (`auth.rs`).
-- `crate::security::credentials::session_support` — `build_session_state` to read the active user identity for the default auth username (`auth.rs`).
-- `crate::core::shutdown` — `register` a one-time hook so all hosted servers stop when the core shuts down (`ops.rs`).
-- `crate::core::all` — `ControllerFuture`, `RegisteredController` for controller registration (`schemas.rs`).
-- `crate::core::{ControllerSchema, FieldSchema, TypeSchema}` — controller schema types (`schemas.rs`).
-- `crate::rpc::RpcOutcome` — RPC response envelope (`rpc.rs`); `crate::rpc` is the `openhuman-rpc` crate re-exported from `crates/openhuman-core/src/lib.rs`.
+- `crate::config`: `load_config_with_timeout` to resolve the active config when deriving the default Basic-auth username (`auth.rs`).
+- `crate::security::credentials::session_support`: `build_session_state` to read the active user identity for the default auth username (`auth.rs`).
+- `crate::core::shutdown`: `register` a one-time hook so all hosted servers stop when the core shuts down (`ops.rs`).
+- `crate::core::all`: `ControllerFuture`, `RegisteredController` for controller registration (`schemas.rs`).
+- `crate::core::{ControllerSchema, FieldSchema, TypeSchema}`: controller schema types (`schemas.rs`).
+- `crate::rpc::RpcOutcome`: RPC response envelope (`rpc.rs`); `crate::rpc` is the `openhuman-rpc` crate re-exported from `crates/openhuman-core/src/lib.rs`.
 - External crates: `axum` (HTTP server/router), `tokio` (`TcpListener`, tasks), `tokio_util` (`CancellationToken`, `ReaderStream`), `uuid`, `base64`, `rand`, `urlencoding`, `serde`/`serde_json`.
 
 ## Used by
 
-- `crates/openhuman-core/src/core/all.rs` — registers `all_http_host_registered_controllers()` into the core controller registry, exposing the RPC/CLI surface.
-- `crates/openhuman-core/src/lib.rs` — declares `pub mod http_host;`, gated by `#[cfg(feature = "http-server")]`; a slim build without that feature has no `http_host.*` controllers (see the `default` feature list and `http-server` feature notes in `crates/openhuman-core/Cargo.toml`).
+- `crates/openhuman-core/src/core/all.rs`: registers `all_http_host_registered_controllers()` into the core controller registry, exposing the RPC/CLI surface.
+- `crates/openhuman-core/src/lib.rs`: declares `pub mod http_host;`, gated by `#[cfg(feature = "http-server")]`; a slim build without that feature has no `http_host.*` controllers (see the `default` feature list and `http-server` feature notes in `crates/openhuman-core/Cargo.toml`).
 - `crates/openhuman-core/src/core/observability.rs` references `http_host::path_utils` paths in error-classification docs/tests (`http_host` directory-not-found maps to a filesystem user-path-invalid class).
 
 ## Notes / gotchas
@@ -73,6 +73,6 @@ None on disk. Running servers are held in a process-global `HostedDirRegistry` (
 - **Path safety**: `resolve_request_path` rejects URL-encoded traversal and verifies the canonicalized target stays under the hosted root; `canonicalize_hosted_directory` resolves and verifies the root is a real directory before binding.
 - **Port `0`**: binding with port `0` lets the OS pick a free port; the actual assigned port (from `local_addr`) is what gets stored and reported.
 - **No duplicate binds**: `start` rejects another server already registered on the same `bind_host:port`.
-- **Logging redaction**: directory paths are logged via `redact_path_for_log` (only the leaf name, prefixed `<redacted>/`) — full host paths are not emitted.
+- **Logging redaction**: directory paths are logged via `redact_path_for_log` (only the leaf name, prefixed `<redacted>/`), full host paths are not emitted.
 - **Lifetime**: servers do not persist across core restarts; the shutdown hook (`register_shutdown_hook_once`) is installed lazily on the first `start`.
 - **IPv6**: `bind_host` containing `:` (and not already bracketed) is wrapped in `[...]` for both the bind target and the URL rendering.

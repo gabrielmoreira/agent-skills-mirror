@@ -3,23 +3,23 @@
 User-facing agent registry. Owns the `agent_registry` RPC namespace: the
 merged list of shipped default agents and user-authored custom agents, their
 enable/disable state, and their tool visibility policy. This is a config
-layer over the harness — the tool-calling loop and prompt/runtime
+layer over the harness: the tool-calling loop and prompt/runtime
 implementation live in [`agent/harness`](../harness/), and the definitions
 the harness runs come from [`agents/`](agents/) below.
 
 ## Files
 
-- [`types.rs`](types.rs) — wire types: `AgentRegistryConfig` (the persisted
+- [`types.rs`](types.rs): wire types. `AgentRegistryConfig` (the persisted
   `entries: Vec<AgentRegistryEntry>`, stored at `Config.agent_registry`),
-  `AgentRegistryEntry` (id, name, description, `source: AgentRegistrySource`
-  — `Default` vs `Custom` — enabled, model, optional system prompt,
+  `AgentRegistryEntry` (id, name, description, `source: AgentRegistrySource`,
+  `Default` vs `Custom`, enabled, model, optional system prompt,
   `tool_allowlist`/`tool_denylist`, `subagents: AgentSubagentPolicy`
   allowlist, tags, free-form metadata), `AgentRegistryPatch` (partial
   update), `AgentToolInfo` (tool-picker row). `AgentSubagentPolicy` also
   deserializes from a legacy bare list of ids. `AgentRegistryEntry::validate`
   enforces non-blank id/name/description and an ASCII `[A-Za-z0-9_-]` id
   charset for both the entry and its subagent allowlist.
-- [`defaults.rs`](defaults.rs) — `default_agents()` loads the built-ins from
+- [`defaults.rs`](defaults.rs): `default_agents()` loads the built-ins from
   [`agents::load_builtins`](agents/loader.rs) and maps each `AgentDefinition`
   to a `Default`-sourced registry entry (tier becomes the single tag,
   `ToolScope::Wildcard` renders as `["*"]`). `definition_from_registry_entry`
@@ -31,40 +31,40 @@ the harness runs come from [`agents/`](agents/) below.
   harness's own safe worker default; see the function's doc comment for the
   exact mapping and why an empty `tool_allowlist` must stay `Named(vec![])`
   rather than collapsing to `Wildcard`.
-- [`ops.rs`](ops.rs) — config-backed CRUD: `list_agents`, `get_agent`,
+- [`ops.rs`](ops.rs): config-backed CRUD. `list_agents`, `get_agent`,
   `upsert_custom_agent` (rejects ids that collide with a default),
   `update_agent` (copies the default into config on first edit; refuses to
   disable `orchestrator`), `set_agent_enabled`, `remove_agent`,
   `merge_entries` (defaults overlaid with persisted config entries,
   default-first), `available_tools`, `find_custom_in_config` (synchronous,
-  matches only *enabled* `Custom` entries — used by the agent factory on a
-  harness-registry miss). Reads/writes through
+  matches only *enabled* `Custom` entries, used by the agent factory on a
+  harness-registry miss). It reads and writes through
   `config::rpc::load_config_with_timeout` and `Config::save`. Tool listing
   (`available_tools`) builds the `tools_agent` built-in and reads its
-  `tool_specs()` — its tool scope is the full catalog, unlike the
+  `tool_specs()`; its tool scope is the full catalog, unlike the
   orchestrator's curated subset.
-- [`schemas.rs`](schemas.rs) — `ControllerSchema`/`RegisteredController`
+- [`schemas.rs`](schemas.rs): `ControllerSchema`/`RegisteredController`
   definitions for namespace `agent_registry`: `list`, `get`,
   `available_tools`, `create_custom`, `upsert_custom`, `update`,
   `set_enabled`, `remove`. Registered through
   `all_agent_registry_registered_controllers` in `core/all.rs`.
-- [`rpc.rs`](rpc.rs) — request/response payload types and the `*_rpc` handler
-  functions schemas.rs wires up, delegating into `ops.rs`.
-- [`tools.rs`](tools.rs) — backwards-compatible re-export of
+- [`rpc.rs`](rpc.rs): request/response payload types and the `*_rpc` handler
+  functions that `schemas.rs` wires up, delegating into `ops.rs`.
+- [`tools.rs`](tools.rs): backwards-compatible re-export of
   `agent::orchestration::tools::*`; nothing in the tree imports it any more.
-- [`agents/`](agents/) — the built-in agent archetypes and their loader.
+- [`agents/`](agents/): the built-in agent archetypes and their loader.
 
 ## `agents/`
 
 Each built-in agent owns a subfolder with an `agent.toml` (id, `when_to_use`,
-model, tool scope, sandbox mode, iteration cap, tier, `omit_*` flags —
-parsed directly into `AgentDefinition`), a `prompt.md` holding the static
-archetype body, and a `prompt.rs` that `include_str!`s that body and exposes
+model, tool scope, sandbox mode, iteration cap, tier, `omit_*` flags, parsed
+directly into `AgentDefinition`), a `prompt.md` holding the static archetype
+body, and a `prompt.rs` that `include_str!`s that body and exposes
 `pub fn build(&PromptContext) -> anyhow::Result<String>`, appending
-runtime-dependent sections (rendered tool list, user files, workspace) to it. `researcher` additionally
-owns a `graph.rs` for a bespoke `AgentGraph`; every other archetype uses
-`AgentGraph::Default`. The per-archetype contract is documented on
-[`agents/mod.rs`](agents/mod.rs).
+runtime-dependent sections (rendered tool list, user files, workspace) to it.
+`researcher` additionally owns a `graph.rs` for a bespoke `AgentGraph`; every
+other archetype uses `AgentGraph::Default`. The per-archetype contract is
+documented on [`agents/mod.rs`](agents/mod.rs).
 
 [`agents/loader.rs`](agents/loader.rs) owns the `BUILTINS` slice and
 `load_builtins`, which parses each `agent.toml`, installs
@@ -97,7 +97,7 @@ The 29 archetypes in this directory:
 | `goals_agent` | Background: keeps `MEMORY_GOALS.md` fresh from session context |
 | `help` | Answers "how does OpenHuman work" questions from the bundled GitBook docs |
 | `image_agent` | Image generation/edit specialist |
-| `integrations_agent` | Drives a single Composio toolkit (gmail, notion, github, …) per spawn; no chat agent delegates to it — the orchestrator searches for and calls connected actions itself |
+| `integrations_agent` | Drives a single Composio toolkit (gmail, notion, github, and so on) per spawn; no chat agent delegates to it, the orchestrator searches for and calls connected actions itself |
 | `mcp_agent` (feature `mcp`) | Calls tools on an already-connected MCP server |
 | `morning_briefing` | Proactive scheduled daily summary (tasks, calendar, email, skills) |
 | `orchestrator` | Default user-facing `chat`-tier agent; direct-first, delegates only when it materially helps |
@@ -105,7 +105,7 @@ The 29 archetypes in this directory:
 | `presentation_agent` (feature `documents`) | Builds decks from evidence; owns grounding/citations/image verification |
 | `profile_memory_agent` | Profile, persona, preferences, people-graph specialist |
 | `researcher` | Web/docs crawler that compresses findings to dense markdown; has a custom `graph.rs` |
-| `scheduler_agent` | Reminders, recurring jobs, cron — time/cron tools only, no live calendar reads |
+| `scheduler_agent` | Reminders, recurring jobs, cron: time/cron tools only, no live calendar reads |
 | `settings_agent` | App/core config, health/model diagnostics, service lifecycle, security policy |
 | `skill_creator` | Creates/updates SKILL.md packages and Node-backed JS helpers |
 | `summarizer` | Runtime-dispatched only: compresses oversized tool results for the orchestrator |
@@ -126,22 +126,28 @@ still names `mcp_agent` unconditionally (TOML can't be `cfg`'d); both the
 orchestrator tool synthesis in `tools/orchestrator_tools.rs` and
 `validate_tier_hierarchy` skip that dangling id rather than failing boot.
 
+The orchestrator picks tools at request time through the shared tool-search
+ranker (Jev when a decision-model credential is installed, BM25 otherwise);
+see [`tinyagents/README.md`](../tinyagents/README.md) and
+[the Jev page](../../../../../gitbooks/developing/jev.md) for how that
+ranking works.
+
 ## Called by
 
-- `core/all.rs` — registers the `agent_registry` controllers under
+- `core/all.rs`: registers the `agent_registry` controllers under
   `DomainGroup::Agent`.
-- `config/schema/` — `Config.agent_registry: AgentRegistryConfig` is the
+- `config/schema/`: `Config.agent_registry: AgentRegistryConfig` is the
   persisted store every `ops.rs` function reads and writes.
-- `agent/harness/builtin_definitions.rs` — `load_builtins()` seeds the
+- `agent/harness/builtin_definitions.rs`: `load_builtins()` seeds the
   process-global `AgentDefinitionRegistry`; `agent/harness/definition/registry.rs`
   calls `validate_tier_hierarchy` again after workspace overrides merge.
-- `agent/session_host/builder/factory.rs` —
+- `agent/session_host/builder/factory.rs`:
   `Agent::from_config_for_agent` falls back to `find_custom_in_config` +
   `definition_from_registry_entry` when an id is not in the harness registry.
-- `agent/schemas.rs` — `agent.graph_topologies` and `agent.registry_snapshot`
+- `agent/schemas.rs`: `agent.graph_topologies` and `agent.registry_snapshot`
   enumerate `load_builtins()`.
 - `flows/` (`ops/inference_readiness.rs`, `ops/builder_gates.rs`,
-  `builder_tools/kind_reads.rs`, `tinyflows/caps/agent.rs`) — resolve a flow
+  `builder_tools/kind_reads.rs`, `tinyflows/caps/agent.rs`): resolve a flow
   `agent` node's `agent_ref` through `list_agents`/`get_agent`/`find_custom_in_config`.
 
 ## Tests

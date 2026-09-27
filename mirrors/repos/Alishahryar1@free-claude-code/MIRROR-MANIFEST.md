@@ -59,7 +59,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`tests/installers/AGENTS.md`](tests/installers/AGENTS.md) |
+| 1 | ✓ | [`smoke/installers/AGENTS.md`](smoke/installers/AGENTS.md) |
 
 ---
 

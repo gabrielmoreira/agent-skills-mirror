@@ -4,14 +4,14 @@ Diagnostic / self-check domain for OpenHuman. Runs a synchronous battery of prob
 
 ## Responsibilities
 
-- Validate config semantics: config file presence, `api_url` (with fallback resolution), app session JWT / sign-in state, `default_model`, temperature range (0.0–2.0), legacy `reliability.fallback_providers`, model & embedding route entries (empty hints/models, invalid embedding providers, `dimensions=0`), `memory.embedding_model` `hint:` cross-reference, at least one channel configured, and delegate-agent models.
+- Validate config semantics: config file presence, `api_url` (with fallback resolution), app session JWT / sign-in state, `default_model`, temperature range (0.0 to 2.0), legacy `reliability.fallback_providers`, model & embedding route entries (empty hints/models, invalid embedding providers, `dimensions=0`), `memory.embedding_model` `hint:` cross-reference, at least one channel configured, and delegate-agent models.
 - Check workspace integrity: directory existence, write probe (create/write/delete a temp probe file), `memory/` dir, `SYSTEM.md` prompt, and best-effort free disk space (warns under 512 MB; uses `df -m` on Unix, PowerShell `Get-PSDrive` on Windows).
 - Inspect daemon state file: presence, JSON validity, heartbeat freshness (stale > 30s = error), scheduler component health (stale > 120s), and per-channel component freshness (stale > 300s).
 - Probe environment commands: `git --version`, `curl --version`, `$SHELL`, and `$HOME`/`$USERPROFILE`.
 - Probe memory-tree DB: warn on stale `-shm`/`-wal` SQLite side-files or not-yet-created DB; otherwise report the chunk count the bound memory driver answered with (`MemoryMaintenance::store_stats`), taken by `ops::memory_chunk_count` before the blocking hop.
 - Probe embedding-model health: if provider is `ollama`, do a 3s blocking HTTP GET to `<base_url>/api/tags` and verify the configured model is installed; non-ollama providers report OK without a local probe.
 - Probe the Claude Agent SDK: if enabled, run `<binary> --version`.
-- Probe provider model availability via `run_models` (currently a stub — see Notes).
+- Probe provider model availability via `run_models` (currently a stub: see Notes).
 
 ## Key files
 
@@ -28,8 +28,8 @@ Diagnostic / self-check domain for OpenHuman. Runs a synchronous battery of prob
 From `mod.rs` re-exports (`core::*`):
 
 - Types: `Severity` (`Ok`/`Warn`/`Error`), `DiagnosticItem`, `DoctorSummary`, `DoctorReport`, `ModelProbeOutcome`, `ModelProbeEntry`, `ModelProbeSummary`, `ModelProbeReport`.
-- Functions: `run(&Config, MemoryChunkCount) -> Result<DoctorReport>` (blocking-only — keep no `.await` inside; async probes are resolved by the caller and passed in), `run_models(&Config, use_cache) -> Result<ModelProbeReport>`.
-- Type alias: `MemoryChunkCount = Result<u64, String>` — the hoisted chunk-count probe.
+- Functions: `run(&Config, MemoryChunkCount) -> Result<DoctorReport>` (blocking-only: keep no `.await` inside; async probes are resolved by the caller and passed in), `run_models(&Config, use_cache) -> Result<ModelProbeReport>`.
+- Type alias: `MemoryChunkCount = Result<u64, String>`: the hoisted chunk-count probe.
 
 From `ops` (also re-exported as `doctor::rpc`):
 
@@ -63,25 +63,25 @@ None of its own (no `store.rs`). It only **reads** existing state owned by other
 
 ## Dependencies
 
-- `crate::config::{Config, rpc}` — reads the live config for all probes; `config_rpc::load_config_with_timeout` in the handlers.
-- `crate::platform::service::daemon` — `state_file_path` for the daemon heartbeat/component snapshot.
-- `crate::memory::binding` — resolves the workspace's bound memory driver so `ops::memory_chunk_count` can ask `MemoryMaintenance::store_stats` for the chunk count. The engine crate is no longer named here (#5560).
-- `crate::inference::embedding_host::effective_embedding_settings` — resolves the intended embedding provider/model.
-- `crate::inference::{provider, local}` — `provider::list_providers` (model targets) and `local::ollama_base_url` (embedding probe).
-- `crate::api::{config, jwt}` — `effective_api_url` fallback resolution and `get_session_token` for sign-in state.
-- `crate::core::all::{ControllerFuture, RegisteredController}`, `crate::core::{ControllerSchema, FieldSchema, TypeSchema}` — controller/schema plumbing.
-- `crate::rpc::RpcOutcome` — handler return contract.
+- `crate::config::{Config, rpc}`: reads the live config for all probes; `config_rpc::load_config_with_timeout` in the handlers.
+- `crate::platform::service::daemon`: `state_file_path` for the daemon heartbeat/component snapshot.
+- `crate::memory::binding`: resolves the workspace's bound memory driver so `ops::memory_chunk_count` can ask `MemoryMaintenance::store_stats` for the chunk count. The engine crate is no longer named here (#5560).
+- `crate::inference::embedding_host::effective_embedding_settings`: resolves the intended embedding provider/model.
+- `crate::inference::{provider, local}`: `provider::list_providers` (model targets) and `local::ollama_base_url` (embedding probe).
+- `crate::api::{config, jwt}`: `effective_api_url` fallback resolution and `get_session_token` for sign-in state.
+- `crate::core::all::{ControllerFuture, RegisteredController}`, `crate::core::{ControllerSchema, FieldSchema, TypeSchema}`: controller/schema plumbing.
+- `crate::rpc::RpcOutcome`: handler return contract.
 - External: `reqwest` (blocking client + URL parse), `serde`/`serde_json`, `chrono`, `anyhow`.
 
 ## Used by
 
-- `crates/openhuman-core/src/core/all.rs` — registers the doctor controllers/schemas into the global RPC + CLI registry (the only in-tree consumer).
+- `crates/openhuman-core/src/core/all.rs`: registers the doctor controllers/schemas into the global RPC + CLI registry (the only in-tree consumer).
 
 ## Notes / gotchas
 
 - `run()` is **strictly blocking** by contract (file system, sqlite, blocking HTTP). `reqwest::blocking::Client` panics inside a tokio runtime, so `ops::doctor_report` runs the whole thing in `tokio::task::spawn_blocking`. Do not add `.await` inside `core::run`.
-- An async probe therefore arrives as an **argument**, resolved in `ops` before the blocking hop — `MemoryChunkCount` is the first of them. Do not reach for `Handle::block_on` inside `core`: it panics on a current-thread runtime and deadlocks the multi-thread one whose worker it is already occupying.
-- The chunk count comes from the bound driver, and a driver that does not serve `Maintenance` is reported as a **failed probe** rather than as zero. That is the opposite of what the `memory_tree` status RPCs do with a missing family, and deliberately so: a status panel is better off showing an empty store than an error, while the doctor exists to name what is wrong — and "0 chunks" from a driver that cannot count is indistinguishable from a store the user has just watched themselves fill.
+- An async probe therefore arrives as an **argument**, resolved in `ops` before the blocking hop: `MemoryChunkCount` is the first of them. Do not reach for `Handle::block_on` inside `core`: it panics on a current-thread runtime and deadlocks the multi-thread one whose worker it is already occupying.
+- The chunk count comes from the bound driver, and a driver that does not serve `Maintenance` is reported as a **failed probe** rather than as zero. That is the opposite of what the `memory_tree` status RPCs do with a missing family, and deliberately so: a status panel is better off showing an empty store than an error, while the doctor exists to name what is wrong: and "0 chunks" from a driver that cannot count is indistinguishable from a store the user has just watched themselves fill.
 - `run_models` / `doctor.models` is effectively a **stub**: it enumerates providers from `inference::provider::list_providers` but marks every entry `Skipped` with message "model catalog refresh removed" (catalog refresh was removed). It never actually probes auth/availability despite the schema description.
 - The embedding probe is capped at a 3s timeout to avoid stalling on a slow Ollama daemon; non-ollama providers short-circuit to OK.
 - `model_matches` treats `name` vs `name:tag` as a match only when at most one side is tagged; two differently-tagged names are not considered equal.

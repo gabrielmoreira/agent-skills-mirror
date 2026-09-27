@@ -1,6 +1,6 @@
 # schema
 
-Defines the `Config` struct — the single source of truth for `config.toml` —
+Defines the `Config` struct, the single source of truth for `config.toml`,
 and everything needed to load, save, and migrate it. AGENTS.md points
 contributors here: "Rust configuration is defined under
 `crates/openhuman-core/src/config/schema/` and loaded through its config
@@ -13,13 +13,13 @@ helper types) purely to keep any one file under the repo's ~500-line
 guideline; treat them as one unit. `load_user_state.rs` sits at this level but
 is mounted as a submodule of `load/dirs.rs` via `#[path]`.
 
-## Layout — `[section]` → file → struct
+## Layout: `[section]` to file to struct
 
 | `config.toml` section | File | Struct |
 | --- | --- | --- |
 | `[agent]`, `[orchestrator]`, `[teams.*]`, `[agents.*]` | `agent.rs` | `AgentConfig`, `OrchestratorModelConfig`, `TeamModelConfig`, `DelegateAgentConfig` |
 | `agent_activity_level` (scalar key) | `activity_level.rs` | `AgentActivityLevel` |
-| `[autonomy]` | `autonomy.rs` | `AutonomyConfig` — feeds `security::SecurityPolicy` |
+| `[autonomy]` | `autonomy.rs` | `AutonomyConfig`, feeds `security::SecurityPolicy` |
 | `[[capability_providers]]` | `capability_providers.rs` | `CapabilityProviderConfig` |
 | `[channels_config]`, `[sandbox]` | `channels.rs` | `ChannelsConfig` and per-provider configs re-exported from `tinychannels_bus`; `SandboxConfig`, `ResourceLimitsConfig`, `AuditConfig`, and `SecurityConfig` (only `DaemonConfig` embeds the last one) |
 | `[claude_agent_sdk]` | `claude_agent_sdk.rs` | `ClaudeAgentSdkConfig` |
@@ -34,7 +34,7 @@ is mounted as a submodule of `load/dirs.rs` via `#[path]`.
 | `[hosting]` | `hosting.rs` | `HostingConfig` |
 | `[learning]` | `learning.rs` | `LearningConfig`, `ReflectionSource` |
 | `[local_ai]` | `local_ai.rs` | `LocalAiConfig`, `LocalAiUsage` |
-| `[modules]` | `modules.rs` | `ModulesConfig`, `ModuleOverride` — controls only whether compiled-in modules load; the loadable *set* is fixed by `crate::modules::registry` |
+| `[modules]` | `modules.rs` | `ModulesConfig`, `ModuleOverride`: controls only whether compiled-in modules load. The loadable *set* is fixed by `crate::modules::registry` |
 | `[node]` | `node.rs` | `NodeConfig` (managed Node.js toolchain for skills) |
 | `[observability]` | `observability.rs` | `ObservabilityConfig`, `AgentTracingConfig` |
 | `[privacy]` | `privacy.rs` | `PrivacyConfig`, `PrivacyMode` |
@@ -49,7 +49,7 @@ is mounted as a submodule of `load/dirs.rs` via `#[path]`.
 | `[subsystems]` | `subsystems.rs` | `SubsystemsConfig`, `MemorySubsystemConfig` |
 | `[task_sources]` | `task_sources.rs` | `TaskSourcesConfig` |
 | `[tokenjuice]` | `tokenjuice.rs` | `TokenjuiceConfig` |
-| tool-related sections (see below) | `tools/` | — |
+| tool-related sections (see below) | `tools/` | (multiple structs) |
 | `[update]` | `update.rs` | `UpdateConfig`, `UpdateRestartStrategy` |
 | `[voice_server]` | `voice_server.rs` | `VoiceServerConfig`, `SttEngine`, `VoiceActivationMode` |
 | `[[voice_providers]]`, `stt_provider` / `tts_provider` | `voice_providers.rs` | `VoiceProviderCreds`, `BuiltinVoiceProvider`, `BUILTIN_VOICE_PROVIDERS` |
@@ -62,10 +62,44 @@ is mounted as a submodule of `load/dirs.rs` via `#[path]`.
 `mcp.rs` (`McpServerConfig`, `McpClientConfig`, `GitbooksConfig`),
 `multimodal.rs` (`MultimodalConfig`, `MultimodalFileConfig`), `search.rs`
 (`SearchConfig`, `WebSearchConfig`, `SearxngConfig`, `SeltzConfig`).
+`SearchConfig.enabled_providers` is an explicit provider set. When omitted,
+legacy settings enable providers with saved keys, the managed backend when a
+credential is available, and the separate TinyFish/Seltz/SearXNG toggles.
+`engine = "disabled"` still disables search. TinySearch uses one route per
+provider: explicit direct Parallel wins over managed backend Parallel when
+both are selected.
 
 Most sections have a matching `*_tests.rs` (some further split into several
 `*_tests.rs` siblings, e.g. `types_model_pin_tests.rs`); this is the repo's
 file-size-splitting convention, not separate modules.
+
+### Engine selection keys
+
+This is where a config file names which engine handles a given concern. The
+keys that select an implementation, rather than tune one:
+
+- `search.engine` (`SearchConfig.engine`, `tools/search.rs`): one of the
+  string constants re-exported from `mod.rs` (`SEARCH_ENGINE_MANAGED`,
+  `SEARCH_ENGINE_PARALLEL`, `SEARCH_ENGINE_BRAVE`, `SEARCH_ENGINE_QUERIT`,
+  `SEARCH_ENGINE_EXA`, `SEARCH_ENGINE_TAVILY`, `SEARCH_ENGINE_DISABLED`), plus
+  SearXNG through the separate toggle described above.
+- `[subsystems.memory]` (`subsystems.rs`): re-exports
+  `MemorySubsystemConfig` / `MemoryDriverConfig` / `SubsystemsConfig` from
+  `tinymemory_api::host::subsystems`, since the driver-binding shape now lives
+  with `tinymemory-core`. `OPENHUMAN_MEMORY_DRIVER` overrides it at the
+  environment layer.
+- `agent.tool_search.ranker` (`ToolSearchConfig`, `agent.rs`): `"jev"` by
+  default, with `"auto"`, `"bm25"`, and `"compare"` as the other values. It
+  picks which ranker answers a tool search over tools exposed as
+  `ToolExposure::Deferred`; `top_k` (default 3) caps how many matches come
+  back.
+- `[storage]` / `[memory]` (`storage_memory.rs`): re-exports
+  `MemoryConfig`, `StorageConfig`, `StorageProviderConfig`, and `LlmBackend`
+  from `tinymemory_api::host::storage_memory`, the storage-provider and
+  embedding-model selection for the built-in memory engine.
+
+`autonomy.rs` is not an engine selector; it is the config-side half of the
+sandbox policy contract described under Workspace/identity helpers below.
 
 ## Loading
 
@@ -84,7 +118,7 @@ file-size-splitting convention, not separate modules.
 3. Fill `config_path` / `workspace_dir` / `action_dir` (`resolve_action_dir`),
    then apply the two pre-schema-version legacy rewrites in `load/migrate.rs`
    (`migrate_legacy_inference_url`, `migrate_cloud_provider_slugs`).
-4. Apply environment-variable overrides — `Config::apply_env_overrides_from`
+4. Apply environment-variable overrides through `Config::apply_env_overrides_from`
    in `load/env_overlay.rs`, split into submodules under `load/env_overlay/`
    (`dictation_context.rs`, `learning_memory.rs`, `observability.rs`,
    `proxy.rs`, `runtime.rs`, `search.rs`, `subsystems_update.rs`);
@@ -106,7 +140,7 @@ writes and fsyncs a 0600 temp file, then hands off to
 `load/atomic_commit.rs::commit_replacement`, which preserves the previous
 config as `.bak` and renames the temp file into place. The split exists so
 callers can tell "nothing written" (an `Err` before the rename) from "already
-committed" (after it) and roll back in-memory state accordingly — the
+committed" (after it) and roll back in-memory state accordingly; the
 migrations runner depends on this.
 
 `load/mod.rs` also exports `CONFIG_OWNER_MISMATCH_MARKER`: the loader appends
@@ -119,22 +153,22 @@ state.
 
 Re-exported through `config::mod` and `config::schema::mod`:
 
-- `default_root_openhuman_dir`, `user_openhuman_dir` — the per-user
+- `default_root_openhuman_dir`, `user_openhuman_dir`: the per-user
   `~/.openhuman/users/<user-id>/` root.
 - `resolve_action_dir`, `default_action_dir`, `action_dir_env_override`
-  (`OPENHUMAN_ACTION_DIR`) — the agent's sandboxed read/write root.
-- `active_workspace_dir` / `active_workspace_dir_cached` — resolve (and
+  (`OPENHUMAN_ACTION_DIR`): the agent's sandboxed read/write root.
+- `active_workspace_dir` / `active_workspace_dir_cached`: resolve (and
   synchronously cache, via `load/active_workspace.rs`) the workspace the
   loader last resolved, for callers (like the developer Event Log's SSE
   stream) that cannot afford a disk read per lookup.
 - `PRE_LOGIN_USER_ID` (`"local"`), `pre_login_user_dir`,
-  `read_active_user_id` / `write_active_user_id` / `clear_active_user` — the
+  `read_active_user_id` / `write_active_user_id` / `clear_active_user`: the
   pre-authentication identity scope and the `active_user.toml` marker
   (implemented in `../load_user_state.rs`).
 
-`config` only *describes* these roots. Per AGENTS.md: `action_dir` is the
+`config` only *describes* these roots. Per AGENTS.md, `action_dir` is the
 agent's permitted read/write root, and `workspace_dir` stores internal state
-and is never an acting-tool target — enforcement of that boundary lives in
+and is never an acting-tool target. Enforcement of that boundary lives in
 `security::SecurityPolicy` (`security/policy/`), not here. `autonomy.rs`
 (`AutonomyConfig`) is the config-side half of the same contract: it is read
 into `SecurityPolicy` at startup and on every settings change
@@ -145,9 +179,9 @@ into `SecurityPolicy` at startup and on every settings change
 
 Process-local inference overrides supplied by the standalone CLI
 (`set_cli_inference_overrides`, `apply_cli_inference_overrides`,
-`restore_persisted_inference_fields` — all `pub(crate)` — and the
+`restore_persisted_inference_fields`, all `pub(crate)`, and the
 `#[doc(hidden)]` `AppliedInferenceOverride` snapshot stored on
-`Config::cli_inference_snapshot`) — lets a CLI invocation temporarily swap
+`Config::cli_inference_snapshot`). This lets a CLI invocation temporarily swap
 model/provider without the override ever reaching the persisted config.
 
 ## Tests
@@ -159,10 +193,10 @@ Per-section `*_tests.rs` files, plus `load_tests.rs` (split into
 
 ## Related docs
 
-- [../README.md](../README.md) — the `config` module overview.
-- [../ops/README.md](../ops/README.md) — the mutation/RPC surface built on
+- [../README.md](../README.md): the `config` module overview.
+- [../ops/README.md](../ops/README.md): the mutation/RPC surface built on
   top of this schema.
-- [../migrations/README.md](../migrations/README.md) — automatic
+- [../migrations/README.md](../migrations/README.md): automatic
   schema-version upgrades run during load.
-- [../../security/README.md](../../security/README.md) — enforces the
+- [../../security/README.md](../../security/README.md): enforces the
   `action_dir` / `workspace_dir` boundary this module only describes.

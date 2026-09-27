@@ -123,7 +123,7 @@ Extras
   ✓ ~/.codex/agents  extension: codex-agents
 ```
 
-已同步的列只會顯示圖示、路徑與模式；未同步的列則會附加狀態文字（`drift`、`not synced`、`no source`）。有 transform extension 的 target 會以 `extension: <name>` 取代 sync 模式標示（其底層模式一律是 `copy`）。
+已同步的列只會顯示圖示、路徑與模式；未同步的列則會附加狀態文字（`drift`、`modified`、`not synced`、`no source`）。有 transform extension 的 target 會以 `extension: <name>` 取代 sync 模式標示（其底層模式一律是 `copy`）。
 
 ### `extras source`
 
@@ -165,12 +165,12 @@ skillshare extras <name> --remove-target <path> [--prune] [-p|-g]
 
 | Flag | Description |
 |------|-------------|
-| `--mode <mode>` | 新的 sync 模式：`merge`、`copy`，或 `symlink` |
+| `--mode <mode>` | 新的 sync 模式：`merge`、`copy`，或 `symlink`；`import` 僅限[單一檔案 extra](#single-file-extras) |
 | `--flatten` | 啟用 flatten（將子目錄檔案同步到 target 根目錄） |
 | `--no-flatten` | 停用 flatten |
 | `--add-target <path>` | 為此 extra 新增一個 target |
 | `--remove-target <path>` | 從此 extra 移除一個 target（預設僅變更設定） |
-| `--prune` | 搭配 `--remove-target` 使用：同時刪除該 target 底下由 skillshare 管理的檔案 |
+| `--prune` | 搭配 `--remove-target` 使用：同時刪除該 target 底下由 skillshare 管理的檔案。若是單一檔案 extra，則會改為還原 target 檔案 |
 | `--target <path>` | Target 目錄路徑（多 target 的 extra 使用 `--mode` 時為必填；省略時 `--flatten`/`--no-flatten` 會套用到所有 target） |
 | `--project, -p` | 使用 project mode 的 extras（`.skillshare/`） |
 | `--global, -g` | 使用 global 的 extras（`~/.config/skillshare/`） |
@@ -209,14 +209,16 @@ skillshare extras rules --remove-target ~/.cursor/rules --prune
 skillshare extras remove <name> [--force] [-p|-g]
 ```
 
-source 檔案與已同步的 target 都不會被刪除——只會移除設定項目。
+source 檔案與已同步的 target 都不會被刪除——只會移除設定項目。若是[單一檔案 extra](#single-file-extras)，每個 target 檔案都會回到 skillshare 取代它之前的樣子。
 
 ### `extras collect`
 
-把 target 中的本機檔案收集回 extras source 目錄。檔案會被複製到 source，並以 symlink 取代。
+把 target 中的本機檔案收集回 extras source 目錄。檔案會被複製到 source，並以 symlink 取代。copy 模式的 target 則會保留一般複本形式的檔案。[單一檔案 extra](#single-file-extras) 不支援 collect。
+
+source 中已存在的檔案會被略過。使用 `--force` 可改以 target 版本覆寫它們——例如把直接在 copy 模式 target 中做的修改拉回來。內容已與 source 相同的檔案仍會被略過。
 
 ```bash
-skillshare extras collect <name> [--from <path>] [--dry-run] [-p|-g]
+skillshare extras collect <name> [--from <path>] [--force] [--dry-run] [-p|-g]
 ```
 
 **Options:**
@@ -224,6 +226,7 @@ skillshare extras collect <name> [--from <path>] [--dry-run] [-p|-g]
 | Flag | Description |
 |------|-------------|
 | `--from <path>` | 要從中收集的 target 目錄（若有多個 target 則為必填） |
+| `--force`, `-f` | 覆寫 source 中已存在的檔案 |
 | `--dry-run` | 顯示會收集哪些內容，但不做任何變更 |
 
 **Example:**
@@ -234,6 +237,9 @@ skillshare extras collect rules --from ~/.claude/rules
 
 # 預覽會收集哪些內容
 skillshare extras collect rules --from ~/.claude/rules --dry-run
+
+# 把 target 的修改拉回來，覆寫既有的 source 檔案
+skillshare extras collect rules --force
 ```
 
 ---
@@ -245,6 +251,7 @@ skillshare extras collect rules --from ~/.claude/rules --dry-run
 | `merge` (default) | 從 target 到 source 的逐檔 symlink |
 | `copy` | 逐檔複製 |
 | `symlink` | 整個目錄的 symlink |
+| `import` | 僅限[單一檔案 extra](#single-file-extras)：在 target 檔案中加入一行 `@<source file>` |
 
 切換模式時（例如從 `merge` 切換到 `copy`），下一次 `sync` 會自動用新模式的格式取代既有的 symlink。不需要 `--force`——symlink 一律可以安全地取代。本機建立的一般檔案則需要 `--force` 才能覆寫。
 
@@ -353,6 +360,12 @@ Agent targets 也可以直接使用 `extension`，不需要透過 extra。詳見
 
 ## Recipe: shared instructions across agents
 
+:::tip Dashboard
+網頁 dashboard 可以幫你完成這些設定，並提供預覽、備份與還原按鈕：請參閱
+[讓多個工具共用一份 AGENTS.md](../../how-to/daily-tasks/sharing-instructions.md)。
+它使用的是[單一檔案 extra](#single-file-extras)，而不是目錄。
+:::
+
 現在大多數 coding agent 都會讀取 `AGENTS.md` 作為常設指示，但每一個都把自己使用者層級的
 複本放在不同的目錄。一個帶有多個 target 的 extra，就能把單一的 source 檔案分發給所有工具：
 
@@ -394,6 +407,55 @@ Claude Code 讀取的是 `CLAUDE.md` 而不是 `AGENTS.md`，而匯入正是它�
 :::note
 這份 recipe 分享的是你自己寫的指示，不是 agent 自己寫下的 memory。Agent 會以私有格式儲存自己的學習結果——Claude Code 用一個 Markdown 目錄，Codex 用資料庫，Cursor 則是非檔案式的儲存——這些內容無法透過在 target 之間複製檔案來搬移。
 :::
+
+---
+
+## 單一檔案 extra {#single-file-extras}
+
+設定了 `file` 的 extra 只會同步 source 目錄中的一個檔案，而不是整個目錄。每個 target 會收到
+`<path>/<as>`，其中 `as` 預設為 `file` 的名稱。Dashboard 的[共用 AGENTS.md](../../how-to/daily-tasks/sharing-instructions.md)
+就是單一檔案 extra。
+
+```yaml
+extras:
+  - name: personal
+    file: AGENTS.md                # ~/.config/skillshare/extras/personal/AGENTS.md
+    targets:
+      - path: ~/.codex             # ~/.codex/AGENTS.md 會變成連結
+      - path: ~/.gemini
+        as: GEMINI.md              # ~/.gemini/GEMINI.md 會變成連結
+      - path: ~/.claude
+        as: CLAUDE.md
+        mode: import               # ~/.claude/CLAUDE.md 保留原本內容，並匯入該檔案
+```
+
+| Mode | Target 檔案 |
+|------|-------------|
+| `merge`（預設）或 `symlink` | 指向 source 檔案的 symlink |
+| `copy` | source 檔案的複本 |
+| `import` | 你自己的檔案，頂端的受管理區塊中有一行 `@<source file>` |
+
+`import` 會把 `@` 那一行放在 `<!-- skillshare:instructions:begin -->` 與
+`<!-- skillshare:instructions:end -->` 之間，且絕不更動檔案的其他部分。請只在會展開 `@` 匯入的工具上使用，
+例如 Claude Code。
+
+規則：
+
+- `file` 與 `as` 必須是單純的檔名，不能含有 `/` 或 `\`。
+- `as` 與 `import` 都需要搭配 `file`。單一檔案 extra 不能使用 `flatten` 與 `extension`。
+- 當 target 已經有另一個不同的一般檔案或 symlink 時，sync 會先保存它再取代，不需要 `--force`。
+  若擋在路上的是目錄，則會略過。
+- 連結之後被改成 `modified` 的 target 也會被取代；修改過的檔案會保存為 drift backup，而不是還原點。
+- 當已連結的 target 被換成內容不同的一般檔案時，`extras list` 會顯示 `modified`。
+- `extras remove` 與 `--remove-target --prune` 會還原每個 target 檔案：移除連結、複本或 import 那一行，
+  並放回第一次 sync 前原本的檔案或 symlink（若原本沒有，就不留檔案）。`modified` 的 target
+  會先保存為 drift backup。不加 `--prune` 的 `--remove-target` 會保留檔案並忘掉那個還原點，
+  因此之後的 sync 會備份當時存在的內容。
+- 不支援 `extras collect`。若要保留在 target 中做的修改，請在 dashboard 的 **AGENTS.md** 分頁使用 **收進**。
+
+備份保存在 skillshare 的 state 目錄中（macOS 與 Linux 上為 `~/.local/state/skillshare/extras/backups/`），
+每個檔案保留最近 10 份。Drift backup 放在其中的 `extras/backups/<id>/drift/`，`<id>` 由 target 檔案的
+路徑推導而來；還原時絕不會使用它們。
 
 ---
 

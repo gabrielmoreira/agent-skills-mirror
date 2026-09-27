@@ -27,34 +27,34 @@ so the app never silently drops to local storage without the user agreeing.
 
 ## Public surface
 
-- `StorageMode` — where secrets actually live: `OsKeyring` (no consent
+- `StorageMode`: where secrets actually live. `OsKeyring` (no consent
   needed); the consent outcomes `LocalEncrypted` / `ConsentPending` /
   `Declined` (only reachable when the `os` backend was intended and could not
   be used); and the operator-configured backends `LocalEncryptedFile`
   (`encrypted_file`) / `LocalPlaintextFile` (`file`/`mock`), for which no
   consent was ever asked. The last two groups are kept distinct from
-  `LocalEncrypted` because they are not the same storage — see the type's
+  `LocalEncrypted` because they are not the same storage; see the type's
   doc comment.
-- `KeyringStatus` — `available`, `failure_reason: Option<KeyringFailureReason>`,
+- `KeyringStatus`: `available`, `failure_reason: Option<KeyringFailureReason>`,
   `active_mode: StorageMode`, `backend_name: String`. `active_mode` is derived
-  from `backend_name` first and availability second (`policy::active_mode_for`)
-  — deriving it from `available` alone previously made every non-`os` backend
+  from `backend_name` first and availability second (`policy::active_mode_for`).
+  Deriving it from `available` alone previously made every non-`os` backend
   report `OsKeyring` (#6076).
-- `ConsentPreference { storage_mode, consented_at_ms }` — the persisted
+- `ConsentPreference { storage_mode, consented_at_ms }`: the persisted
   decision.
-- `PolicyDecision::{Proceed, ConsentRequired, Declined}` — returned by
+- `PolicyDecision::{Proceed, ConsentRequired, Declined}`: returned by
   `check_secret_access()`.
-- `policy::check_secret_access() -> PolicyDecision` — the gate every secret
+- `policy::check_secret_access() -> PolicyDecision`: the gate every secret
   read/write path should call. Returns `Proceed` immediately if
   `keyring::is_available()`; otherwise consults the cached consent
   (`local_encrypted` → `Proceed`, `declined` → `Declined`, none → publishes
   `KeyringConsentRequired` once and returns `ConsentRequired`).
-- `policy::current_status() -> KeyringStatus` — snapshot for RPC/UI.
+- `policy::current_status() -> KeyringStatus`: snapshot for RPC/UI.
 - `policy::record_consent(mode)` / `build_consent_preference` +
-  `apply_consent` — record a decision; the RPC handler persists to disk
+  `apply_consent`: record a decision; the RPC handler persists to disk
   *before* updating the in-memory cache so cache and disk never diverge on a
   failed persist.
-- `policy::retry_probe()` — resets the keyring availability cache and
+- `policy::retry_probe()`: resets the keyring availability cache and
   re-evaluates status; only the `os` backend can change here, since file
   backends always probe available.
 
@@ -62,11 +62,11 @@ so the app never silently drops to local storage without the user agreeing.
 
 Namespace `keyring_consent`, three functions (`schemas.rs`):
 
-- `keyring_consent.status` — current `KeyringStatus`.
-- `keyring_consent.decide` — record `mode` (`"local_encrypted"` or
+- `keyring_consent.status`: current `KeyringStatus`.
+- `keyring_consent.decide`: record `mode` (`"local_encrypted"` or
   `"declined"`); persists via `desktop::app_state::update_local_state` then
   updates the cache.
-- `keyring_consent.retry_probe` — reset and re-run the OS keyring probe.
+- `keyring_consent.retry_probe`: reset and re-run the OS keyring probe.
 
 ## Persistence
 
@@ -83,19 +83,19 @@ unchanged value are a silent no-op.
 [`../keyring/README.md`](../keyring/README.md) owns backend selection
 (`os` / `encrypted_file` / `file` / `mock`) and the actual secret storage
 (`get`/`set`/`delete`, `SecretStore`, `encrypted_file_backend.rs`). This
-domain never stores a secret itself — it only gates and reports on *which*
+domain never stores a secret itself. It only gates and reports on *which*
 backend is active and whether the user consented to it. `active_mode_for`
 matches on `keyring::backend_name()`'s identifiers (`"os"`,
 `"encrypted_file"`, `"file"`, `"mock"`) to answer that question.
 
 ## Used by
 
-- `credentials/profiles/keychain.rs` and `credentials/credential_ref.rs`
-  — consent preflight before profile secrets and credential refs touch the
+- `credentials/profiles/keychain.rs` and `credentials/credential_ref.rs`:
+  consent preflight before profile secrets and credential refs touch the
   keyring.
-- `web3/wallet/ops/state.rs` — mnemonic goes to the keychain only on
+- `web3/wallet/ops/state.rs`: mnemonic goes to the keychain only on
   `Proceed`.
-- `desktop/app_state/` — carries `keyring_consent` in the stored app state and
+- `desktop/app_state/`: carries `keyring_consent` in the stored app state and
   `keyring_status` in the snapshot; `policy::initialize` is fed from there.
 
 ## Tests

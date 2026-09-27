@@ -2,8 +2,8 @@
 
 Agent-facing memory tools: `Tool` implementations the model can call directly
 (as opposed to [`memory/ops/`](../ops/), the RPC handlers used by the app and
-CLI). The module file for this directory is [`memory/tools.rs`](../tools.rs)
-— there is no `tools/mod.rs` — so start there when tracing what is declared
+CLI). The module file for this directory is [`memory/tools.rs`](../tools.rs).
+There is no `tools/mod.rs`, so start there when tracing what is declared
 where.
 
 ## Layout
@@ -12,7 +12,7 @@ where.
 directory (`collapsed`, `doctor`, `forget`, `recall`, `store`) plus one
 `pub(crate)` module (`flavour`, kept crate-visible because
 `crate::flows::tinyflows::memory_adapter` calls `flavour::lookup_flavour`
-directly — see that module's doc comment). Four more are `pub mod` and came
+directly: see that module's doc comment). Four more are `pub mod` and came
 back from `tinymemory-core` when the memory subsystem was extracted; their
 directory names track their origin in that crate: `raw_store` was
 `store/tools/`, `search` was `search/tools/`, `tool_memory` was
@@ -41,7 +41,7 @@ per-mode structs are also reachable through this module.
 
 `tool_memory/` here (agent tools for reading/writing tool-scoped rules) is
 distinct from [`memory/tool_memory/`](../tool_memory/) (the rule store and
-prompt rendering it calls into) — same name, different layer, do not confuse
+prompt rendering it calls into): same name, different layer, do not confuse
 the two when grepping.
 
 ## Wiring
@@ -49,7 +49,7 @@ the two when grepping.
 [`tools/mod.rs`](../../tools/mod.rs) re-exports this module twice: `pub use
 crate::memory::agent::tools::*;` (the `call_memory_agent` tool, a sibling
 domain) and `pub use crate::memory::tools::goals::*; pub use
-crate::memory::tools::*;` — the latter glob brings every struct above, plus
+crate::memory::tools::*;`: the latter glob brings every struct above, plus
 the re-exported `query/` tools, into `crate::tools::*`.
 
 Registration happens in `tools/ops.rs`, which constructs the concrete tool
@@ -64,7 +64,7 @@ driver does not advertise a family). Three exported structs have no
 registration call site anywhere in the crate as of this writing:
 `MemoryTool` (the collapsed `memory` action-dispatcher over the eleven
 `memory_*` tools, which `ops.rs` still registers individually),
-`MemoryToolsListTool`, and `MemoryToolsPutTool` — flagged here rather than
+`MemoryToolsListTool`, and `MemoryToolsPutTool`: flagged here rather than
 assumed wired.
 
 `store.rs`'s `MemoryStoreTool` and `forget.rs`'s `MemoryForgetTool` take an
@@ -72,7 +72,7 @@ assumed wired.
 `enforce_tool_operation(ToolOperation::Act, "<tool name>")` before writing:
 that is the autonomy read-only tier check plus the hourly action budget,
 nothing content-specific. Neither overrides `permission_level`, so both
-still declare the `ReadOnly` default to the approval gate — `collapsed.rs`'s
+still declare the `ReadOnly` default to the approval gate: `collapsed.rs`'s
 module doc records that as pre-existing and deliberately left alone. The
 read tools in this directory take no policy handle.
 

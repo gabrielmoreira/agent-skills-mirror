@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `pydantic/pydantic-ai` — 26 default patterns, 13 followed patterns, 91 file(s) materialized.
+Mirror of `pydantic/pydantic-ai` — 26 default patterns, 13 followed patterns, 101 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `pydantic/pydantic-ai` — 26 default patterns, 13 followed patterns, 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 13 |
-| Files         | 91 |
+| Files         | 101 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -106,62 +106,72 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 33 | ✓ | [`docs/embeddings.md`](docs/embeddings.md) |
 | 34 | ✓ | [`docs/evals/how-to/concurrency.md`](docs/evals/how-to/concurrency.md) |
 | 35 | ✓ | [`docs/evals/how-to/lifecycle.md`](docs/evals/how-to/lifecycle.md) |
-| 36 | ✓ | [`docs/hooks.md`](docs/hooks.md) |
-| 37 | ✓ | [`docs/multi-agent-applications.md`](docs/multi-agent-applications.md) |
-| 38 | ✓ | [`docs/native-tools.md`](docs/native-tools.md) |
-| 39 | ✓ | [`docs/persistence.md`](docs/persistence.md) |
-| 40 | ✓ | [`docs/realtime/AGENTS.md`](docs/realtime/AGENTS.md) |
-| 41 | ✓ | [`docs/realtime/audio.md`](docs/realtime/audio.md) |
-| 42 | ✓ | [`docs/realtime/CLAUDE.md`](docs/realtime/CLAUDE.md) |
-| 43 | ✓ | [`docs/realtime/gemini.md`](docs/realtime/gemini.md) |
-| 44 | ✓ | [`docs/realtime/lifecycle.md`](docs/realtime/lifecycle.md) |
-| 45 | ✓ | [`docs/realtime/tools.md`](docs/realtime/tools.md) |
-| 46 | ✓ | [`docs/realtime/turns.md`](docs/realtime/turns.md) |
-| 47 | ✓ | [`docs/retries.md`](docs/retries.md) |
-| 48 | ✓ | [`docs/third-party-tools.md`](docs/third-party-tools.md) |
-| 49 | ✓ | [`docs/timeouts.md`](docs/timeouts.md) |
-| 50 | ✓ | [`docs/tools-advanced.md`](docs/tools-advanced.md) |
-| 51 | ✓ | [`docs/toolsets.md`](docs/toolsets.md) |
-| 52 | ✓ | [`pydantic_ai_slim/pydantic_ai/.agents/skills/building-pydantic-ai-agents/SKILL.md`](pydantic_ai_slim/pydantic_ai/.agents/skills/building-pydantic-ai-agents/SKILL.md) |
-| 53 | ✓ | [`pydantic_ai_slim/pydantic_ai/.agents/skills/migrating-agno-to-pydantic-ai/SKILL.md`](pydantic_ai_slim/pydantic_ai/.agents/skills/migrating-agno-to-pydantic-ai/SKILL.md) |
-| 54 | ✓ | [`pydantic_ai_slim/pydantic_ai/.agents/skills/migrating-claude-agent-sdk-to-pydantic-ai/SKILL.md`](pydantic_ai_slim/pydantic_ai/.agents/skills/migrating-claude-agent-sdk-to-pydantic-ai/SKILL.md) |
-| 55 | ✓ | [`pydantic_ai_slim/pydantic_ai/.agents/skills/migrating-google-adk-to-pydantic-ai/SKILL.md`](pydantic_ai_slim/pydantic_ai/.agents/skills/migrating-google-adk-to-pydantic-ai/SKILL.md) |
-| 56 | ✓ | [`pydantic_ai_slim/pydantic_ai/.agents/skills/migrating-langchain-to-pydantic-ai/SKILL.md`](pydantic_ai_slim/pydantic_ai/.agents/skills/migrating-langchain-to-pydantic-ai/SKILL.md) |
-| 57 | ✓ | [`pydantic_ai_slim/pydantic_ai/.agents/skills/migrating-mastra-to-pydantic-ai/SKILL.md`](pydantic_ai_slim/pydantic_ai/.agents/skills/migrating-mastra-to-pydantic-ai/SKILL.md) |
-| 58 | ✓ | [`pydantic_ai_slim/pydantic_ai/.agents/skills/migrating-openai-agents-sdk-to-pydantic-ai/SKILL.md`](pydantic_ai_slim/pydantic_ai/.agents/skills/migrating-openai-agents-sdk-to-pydantic-ai/SKILL.md) |
-| 59 | ✓ | [`pydantic_ai_slim/pydantic_ai/.agents/skills/migrating-pi-to-pydantic-ai/SKILL.md`](pydantic_ai_slim/pydantic_ai/.agents/skills/migrating-pi-to-pydantic-ai/SKILL.md) |
-| 60 | ✓ | [`pydantic_ai_slim/pydantic_ai/.agents/skills/migrating-vercel-ai-sdk-and-eve-to-pydantic-ai/SKILL.md`](pydantic_ai_slim/pydantic_ai/.agents/skills/migrating-vercel-ai-sdk-and-eve-to-pydantic-ai/SKILL.md) |
-| 61 | ✓ | [`pydantic_ai_slim/pydantic_ai/AGENTS.md`](pydantic_ai_slim/pydantic_ai/AGENTS.md) |
-| 62 | ✓ | [`pydantic_ai_slim/pydantic_ai/capabilities/AGENTS.md`](pydantic_ai_slim/pydantic_ai/capabilities/AGENTS.md) |
-| 63 | ✓ | [`pydantic_ai_slim/pydantic_ai/CLAUDE.md`](pydantic_ai_slim/pydantic_ai/CLAUDE.md) |
-| 64 | ✓ | [`pydantic_ai_slim/pydantic_ai/durable_exec/AGENTS.md`](pydantic_ai_slim/pydantic_ai/durable_exec/AGENTS.md) |
-| 65 | ✓ | [`pydantic_ai_slim/pydantic_ai/models/AGENTS.md`](pydantic_ai_slim/pydantic_ai/models/AGENTS.md) |
-| 66 | ✓ | [`pydantic_ai_slim/pydantic_ai/models/CLAUDE.md`](pydantic_ai_slim/pydantic_ai/models/CLAUDE.md) |
-| 67 | ✓ | [`pydantic_ai_slim/pydantic_ai/native_tools/AGENTS.md`](pydantic_ai_slim/pydantic_ai/native_tools/AGENTS.md) |
-| 68 | ✓ | [`pydantic_ai_slim/pydantic_ai/native_tools/CLAUDE.md`](pydantic_ai_slim/pydantic_ai/native_tools/CLAUDE.md) |
-| 69 | ✓ | [`pydantic_ai_slim/pydantic_ai/profiles/AGENTS.md`](pydantic_ai_slim/pydantic_ai/profiles/AGENTS.md) |
-| 70 | ✓ | [`pydantic_ai_slim/pydantic_ai/providers/AGENTS.md`](pydantic_ai_slim/pydantic_ai/providers/AGENTS.md) |
-| 71 | ✓ | [`pydantic_ai_slim/pydantic_ai/realtime/AGENTS.md`](pydantic_ai_slim/pydantic_ai/realtime/AGENTS.md) |
-| 72 | ✓ | [`pydantic_ai_slim/pydantic_ai/realtime/CLAUDE.md`](pydantic_ai_slim/pydantic_ai/realtime/CLAUDE.md) |
-| 73 | ✓ | [`pydantic_ai_slim/pydantic_ai/toolsets/AGENTS.md`](pydantic_ai_slim/pydantic_ai/toolsets/AGENTS.md) |
-| 74 | ✓ | [`pydantic_ai_slim/pydantic_ai/ui/AGENTS.md`](pydantic_ai_slim/pydantic_ai/ui/AGENTS.md) |
-| 75 | ✓ | [`pydantic_ai_slim/pydantic_ai/ui/CLAUDE.md`](pydantic_ai_slim/pydantic_ai/ui/CLAUDE.md) |
-| 76 | ✓ | [`tests/AGENTS.md`](tests/AGENTS.md) |
-| 77 | ✓ | [`tests/benchmarks/AGENTS.md`](tests/benchmarks/AGENTS.md) |
-| 78 | ✓ | [`tests/CLAUDE.md`](tests/CLAUDE.md) |
-| 79 | → | [`.github/pull_request_template.md`](.github/pull_request_template.md) |
-| 80 | → | [`agent_docs/index.md`](agent_docs/index.md) |
-| 81 | → | [`docs/agent.md`](docs/agent.md) |
-| 82 | → | [`docs/cli.md`](docs/cli.md) |
-| 83 | → | [`docs/dependencies.md`](docs/dependencies.md) |
-| 84 | → | [`docs/evals.md`](docs/evals.md) |
-| 85 | → | [`docs/graph.md`](docs/graph.md) |
-| 86 | → | [`docs/logfire.md`](docs/logfire.md) |
-| 87 | → | [`docs/message-history.md`](docs/message-history.md) |
-| 88 | → | [`docs/output.md`](docs/output.md) |
-| 89 | → | [`docs/tools.md`](docs/tools.md) |
-| 90 | → | [`docs/version-policy.md`](docs/version-policy.md) |
-| 91 | → | [`docs/web.md`](docs/web.md) |
+| 36 | ✓ | [`docs/harness/skills.md`](docs/harness/skills.md) |
+| 37 | ✓ | [`docs/hooks.md`](docs/hooks.md) |
+| 38 | ✓ | [`docs/multi-agent-applications.md`](docs/multi-agent-applications.md) |
+| 39 | ✓ | [`docs/native-tools.md`](docs/native-tools.md) |
+| 40 | ✓ | [`docs/persistence.md`](docs/persistence.md) |
+| 41 | ✓ | [`docs/realtime/AGENTS.md`](docs/realtime/AGENTS.md) |
+| 42 | ✓ | [`docs/realtime/audio.md`](docs/realtime/audio.md) |
+| 43 | ✓ | [`docs/realtime/CLAUDE.md`](docs/realtime/CLAUDE.md) |
+| 44 | ✓ | [`docs/realtime/gemini.md`](docs/realtime/gemini.md) |
+| 45 | ✓ | [`docs/realtime/lifecycle.md`](docs/realtime/lifecycle.md) |
+| 46 | ✓ | [`docs/realtime/tools.md`](docs/realtime/tools.md) |
+| 47 | ✓ | [`docs/realtime/turns.md`](docs/realtime/turns.md) |
+| 48 | ✓ | [`docs/retries.md`](docs/retries.md) |
+| 49 | ✓ | [`docs/third-party-tools.md`](docs/third-party-tools.md) |
+| 50 | ✓ | [`docs/timeouts.md`](docs/timeouts.md) |
+| 51 | ✓ | [`docs/tools-advanced.md`](docs/tools-advanced.md) |
+| 52 | ✓ | [`docs/toolsets.md`](docs/toolsets.md) |
+| 53 | ✓ | [`pydantic_ai_slim/pydantic_ai/.agents/skills/building-pydantic-ai-agents/SKILL.md`](pydantic_ai_slim/pydantic_ai/.agents/skills/building-pydantic-ai-agents/SKILL.md) |
+| 54 | ✓ | [`pydantic_ai_slim/pydantic_ai/.agents/skills/migrating-agno-to-pydantic-ai/SKILL.md`](pydantic_ai_slim/pydantic_ai/.agents/skills/migrating-agno-to-pydantic-ai/SKILL.md) |
+| 55 | ✓ | [`pydantic_ai_slim/pydantic_ai/.agents/skills/migrating-claude-agent-sdk-to-pydantic-ai/SKILL.md`](pydantic_ai_slim/pydantic_ai/.agents/skills/migrating-claude-agent-sdk-to-pydantic-ai/SKILL.md) |
+| 56 | ✓ | [`pydantic_ai_slim/pydantic_ai/.agents/skills/migrating-google-adk-to-pydantic-ai/SKILL.md`](pydantic_ai_slim/pydantic_ai/.agents/skills/migrating-google-adk-to-pydantic-ai/SKILL.md) |
+| 57 | ✓ | [`pydantic_ai_slim/pydantic_ai/.agents/skills/migrating-langchain-to-pydantic-ai/SKILL.md`](pydantic_ai_slim/pydantic_ai/.agents/skills/migrating-langchain-to-pydantic-ai/SKILL.md) |
+| 58 | ✓ | [`pydantic_ai_slim/pydantic_ai/.agents/skills/migrating-mastra-to-pydantic-ai/SKILL.md`](pydantic_ai_slim/pydantic_ai/.agents/skills/migrating-mastra-to-pydantic-ai/SKILL.md) |
+| 59 | ✓ | [`pydantic_ai_slim/pydantic_ai/.agents/skills/migrating-openai-agents-sdk-to-pydantic-ai/SKILL.md`](pydantic_ai_slim/pydantic_ai/.agents/skills/migrating-openai-agents-sdk-to-pydantic-ai/SKILL.md) |
+| 60 | ✓ | [`pydantic_ai_slim/pydantic_ai/.agents/skills/migrating-pi-to-pydantic-ai/SKILL.md`](pydantic_ai_slim/pydantic_ai/.agents/skills/migrating-pi-to-pydantic-ai/SKILL.md) |
+| 61 | ✓ | [`pydantic_ai_slim/pydantic_ai/.agents/skills/migrating-vercel-ai-sdk-and-eve-to-pydantic-ai/SKILL.md`](pydantic_ai_slim/pydantic_ai/.agents/skills/migrating-vercel-ai-sdk-and-eve-to-pydantic-ai/SKILL.md) |
+| 62 | ✓ | [`pydantic_ai_slim/pydantic_ai/AGENTS.md`](pydantic_ai_slim/pydantic_ai/AGENTS.md) |
+| 63 | ✓ | [`pydantic_ai_slim/pydantic_ai/capabilities/AGENTS.md`](pydantic_ai_slim/pydantic_ai/capabilities/AGENTS.md) |
+| 64 | ✓ | [`pydantic_ai_slim/pydantic_ai/CLAUDE.md`](pydantic_ai_slim/pydantic_ai/CLAUDE.md) |
+| 65 | ✓ | [`pydantic_ai_slim/pydantic_ai/durable_exec/AGENTS.md`](pydantic_ai_slim/pydantic_ai/durable_exec/AGENTS.md) |
+| 66 | ✓ | [`pydantic_ai_slim/pydantic_ai/models/AGENTS.md`](pydantic_ai_slim/pydantic_ai/models/AGENTS.md) |
+| 67 | ✓ | [`pydantic_ai_slim/pydantic_ai/models/CLAUDE.md`](pydantic_ai_slim/pydantic_ai/models/CLAUDE.md) |
+| 68 | ✓ | [`pydantic_ai_slim/pydantic_ai/native_tools/AGENTS.md`](pydantic_ai_slim/pydantic_ai/native_tools/AGENTS.md) |
+| 69 | ✓ | [`pydantic_ai_slim/pydantic_ai/native_tools/CLAUDE.md`](pydantic_ai_slim/pydantic_ai/native_tools/CLAUDE.md) |
+| 70 | ✓ | [`pydantic_ai_slim/pydantic_ai/profiles/AGENTS.md`](pydantic_ai_slim/pydantic_ai/profiles/AGENTS.md) |
+| 71 | ✓ | [`pydantic_ai_slim/pydantic_ai/providers/AGENTS.md`](pydantic_ai_slim/pydantic_ai/providers/AGENTS.md) |
+| 72 | ✓ | [`pydantic_ai_slim/pydantic_ai/realtime/AGENTS.md`](pydantic_ai_slim/pydantic_ai/realtime/AGENTS.md) |
+| 73 | ✓ | [`pydantic_ai_slim/pydantic_ai/realtime/CLAUDE.md`](pydantic_ai_slim/pydantic_ai/realtime/CLAUDE.md) |
+| 74 | ✓ | [`pydantic_ai_slim/pydantic_ai/toolsets/AGENTS.md`](pydantic_ai_slim/pydantic_ai/toolsets/AGENTS.md) |
+| 75 | ✓ | [`pydantic_ai_slim/pydantic_ai/ui/AGENTS.md`](pydantic_ai_slim/pydantic_ai/ui/AGENTS.md) |
+| 76 | ✓ | [`pydantic_ai_slim/pydantic_ai/ui/CLAUDE.md`](pydantic_ai_slim/pydantic_ai/ui/CLAUDE.md) |
+| 77 | ✓ | [`src/pydantic_ai_harness/.agents/skills/adopt-pr/SKILL.md`](src/pydantic_ai_harness/.agents/skills/adopt-pr/SKILL.md) |
+| 78 | ✓ | [`src/pydantic_ai_harness/.agents/skills/branch-context/SKILL.md`](src/pydantic_ai_harness/.agents/skills/branch-context/SKILL.md) |
+| 79 | ✓ | [`src/pydantic_ai_harness/.agents/skills/pushing-commits-to-the-repo/SKILL.md`](src/pydantic_ai_harness/.agents/skills/pushing-commits-to-the-repo/SKILL.md) |
+| 80 | ✓ | [`src/pydantic_ai_harness/agent_docs/concurrency.md`](src/pydantic_ai_harness/agent_docs/concurrency.md) |
+| 81 | ✓ | [`src/pydantic_ai_harness/AGENTS.md`](src/pydantic_ai_harness/AGENTS.md) |
+| 82 | ✓ | [`src/pydantic_ai_harness/CLAUDE.md`](src/pydantic_ai_harness/CLAUDE.md) |
+| 83 | ✓ | [`src/pydantic_ai_harness/pydantic_ai_harness/.agents/skills/migrating-deep-agents-to-pydantic-ai-harness/SKILL.md`](src/pydantic_ai_harness/pydantic_ai_harness/.agents/skills/migrating-deep-agents-to-pydantic-ai-harness/SKILL.md) |
+| 84 | ✓ | [`src/pydantic_ai_harness/pydantic_ai_harness/.agents/skills/pydantic-ai-harness/SKILL.md`](src/pydantic_ai_harness/pydantic_ai_harness/.agents/skills/pydantic-ai-harness/SKILL.md) |
+| 85 | ✓ | [`src/pydantic_clai2/AGENTS.md`](src/pydantic_clai2/AGENTS.md) |
+| 86 | ✓ | [`tests/AGENTS.md`](tests/AGENTS.md) |
+| 87 | ✓ | [`tests/benchmarks/AGENTS.md`](tests/benchmarks/AGENTS.md) |
+| 88 | ✓ | [`tests/CLAUDE.md`](tests/CLAUDE.md) |
+| 89 | → | [`.github/pull_request_template.md`](.github/pull_request_template.md) |
+| 90 | → | [`agent_docs/index.md`](agent_docs/index.md) |
+| 91 | → | [`docs/agent.md`](docs/agent.md) |
+| 92 | → | [`docs/cli.md`](docs/cli.md) |
+| 93 | → | [`docs/dependencies.md`](docs/dependencies.md) |
+| 94 | → | [`docs/evals.md`](docs/evals.md) |
+| 95 | → | [`docs/graph.md`](docs/graph.md) |
+| 96 | → | [`docs/logfire.md`](docs/logfire.md) |
+| 97 | → | [`docs/message-history.md`](docs/message-history.md) |
+| 98 | → | [`docs/output.md`](docs/output.md) |
+| 99 | → | [`docs/tools.md`](docs/tools.md) |
+| 100 | → | [`docs/version-policy.md`](docs/version-policy.md) |
+| 101 | → | [`docs/web.md`](docs/web.md) |
 
 ---
 

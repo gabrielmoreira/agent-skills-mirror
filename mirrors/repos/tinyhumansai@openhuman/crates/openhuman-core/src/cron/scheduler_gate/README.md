@@ -1,6 +1,6 @@
 # scheduler_gate
 
-Gates background AI work (memory-tree digests, embeddings, summarisation, triage, reflection, local inference) on live host conditions so the process doesn't make the machine visibly lag — especially on battery. It exposes a single process-wide decision point: background workers consult `current_policy()` for a cheap read, or `await wait_for_capacity()` to cooperatively block until the host is ready and hold a slot in a one-permit LLM semaphore. A background sampler refreshes host signals every 30s and recomputes the policy. A separate "signed out" override trumps everything to halt LLM work the moment the app session goes away.
+Gates background AI work (memory-tree digests, embeddings, summarisation, triage, reflection, local inference) on live host conditions so the process doesn't make the machine visibly lag: especially on battery. It exposes a single process-wide decision point: background workers consult `current_policy()` for a cheap read, or `await wait_for_capacity()` to cooperatively block until the host is ready and hold a slot in a one-permit LLM semaphore. A background sampler refreshes host signals every 30s and recomputes the policy. A separate "signed out" override trumps everything to halt LLM work the moment the app session goes away.
 
 ## Responsibilities
 
@@ -24,14 +24,14 @@ Gates background AI work (memory-tree digests, embeddings, summarisation, triage
 
 From `mod.rs`:
 
-- **Functions** (`gate`): `init_global(&Config)`, `current_policy() -> Policy`, `current_signals() -> Signals`, `wait_for_capacity() -> Option<LlmPermit>`, `is_signed_out() -> bool`, `set_signed_out(bool)`.
-- **Types**: `LlmPermit` (RAII semaphore guard, `#[must_use]`), `Policy` (`Aggressive` / `Normal` / `Throttled` / `Paused { reason }`), `PauseReason` (`UserDisabled` / `OnBattery` / `CpuPressure` / `SignedOut` / `Unknown`), `Signals`.
+- Functions (`gate`): `init_global(&Config)`, `current_policy() -> Policy`, `current_signals() -> Signals`, `wait_for_capacity() -> Option<LlmPermit>`, `is_signed_out() -> bool`, `set_signed_out(bool)`.
+- Types: `LlmPermit` (RAII semaphore guard, `#[must_use]`), `Policy` (`Aggressive` / `Normal` / `Throttled` / `Paused { reason }`), `PauseReason` (`UserDisabled` / `OnBattery` / `CpuPressure` / `SignedOut` / `Unknown`), `Signals`.
 - Not re-exported but `pub` on `gate`: `update_config(SchedulerGateConfig)`.
 - Test-only: `SignedOutTestGuard` (RAII flag snapshot/restore), `try_acquire_llm_permit`, `available_llm_permits`.
 
 ## RPC / controllers
 
-None. This module exposes no JSON-RPC controllers, schemas, or `handle_*` functions — it is consulted in-process via direct function calls.
+None. This module exposes no JSON-RPC controllers, schemas, or `handle_*` functions: it is consulted in-process via direct function calls.
 
 ## Agent tools
 
@@ -47,7 +47,7 @@ None. State is process-memory only (`OnceLock<Arc<RwLock<State>>>` + a process-w
 
 ## Dependencies
 
-- `crate::config` — reads `Config`, `SchedulerGateConfig` (the `[scheduler_gate]` block: `mode`, `battery_floor`, `cpu_busy_threshold_pct`, `cpu_severe_pct`, `throttled_backoff_ms`, `paused_poll_ms`, `require_ac_power`) and `SchedulerGateMode` (`Auto` / `AlwaysOn` / `Off`).
+- `crate::config`: reads `Config`, `SchedulerGateConfig` (the `[scheduler_gate]` block: `mode`, `battery_floor`, `cpu_busy_threshold_pct`, `cpu_severe_pct`, `throttled_backoff_ms`, `paused_poll_ms`, `require_ac_power`) and `SchedulerGateMode` (`Auto` / `AlwaysOn` / `Off`).
 - External crates: `parking_lot` (RwLock/Mutex), `tokio::sync::Semaphore`, `sysinfo` (CPU), `starship_battery` (power probe), `once_cell` (lazy CPU `System`).
 
 No dependency on any other `openhuman` domain or on `crate::core::*`.
@@ -56,18 +56,18 @@ No dependency on any other `openhuman` domain or on `crate::core::*`.
 
 Consumed in-process across the codebase (discoverable via `grep scheduler_gate`):
 
-- **Background workers / pipelines**: `memory/schema.rs`, `memory_queue/worker.rs`, `memory_tree/tree/rpc.rs`, `memory_sync/composio/periodic.rs`, `subconscious/engine.rs`, `learning/reflection.rs`, `autocomplete/core/engine.rs`, `task_sources/route.rs`, `agent/triage/evaluator.rs`.
-- **Inference layer**: `inference/provider/openhuman_backend.rs`, `inference/provider/factory.rs`, `inference/local/service/{vision_embed.rs,public_infer.rs}`, `inference/voice/postprocess.rs`.
-- **Credentials lifecycle** (signed-out kill switch): `credentials/ops.rs`, `credentials/bus.rs`.
-- **Bootstrap / transport**: `core/jsonrpc.rs` (calls `init_global` during server bootstrap), `core/observability.rs`, plus the domain wiring in `openhuman/mod.rs` and config schema in `config/schema/scheduler_gate.rs`.
+- Background workers / pipelines: `memory/schema.rs`, `memory_queue/worker.rs`, `memory_tree/tree/rpc.rs`, `memory_sync/composio/periodic.rs`, `subconscious/engine.rs`, `learning/reflection.rs`, `autocomplete/core/engine.rs`, `task_sources/route.rs`, `agent/triage/evaluator.rs`.
+- Inference layer: `inference/provider/openhuman_backend.rs`, `inference/provider/factory.rs`, `inference/local/service/{vision_embed.rs,public_infer.rs}`, `inference/voice/postprocess.rs`.
+- Credentials lifecycle (signed-out kill switch): `credentials/ops.rs`, `credentials/bus.rs`.
+- Bootstrap / transport: `core/jsonrpc.rs` (calls `init_global` during server bootstrap), `core/observability.rs`, plus the domain wiring in `openhuman/mod.rs` and config schema in `config/schema/scheduler_gate.rs`.
 
 ## Notes / gotchas
 
 - **Single LLM slot is deliberate** (`LLM_SLOTS = 1`): concurrent local Ollama / bge-m3 calls (~1.3 GB resident each) have crashed the user's laptop. Cloud-backend calls bypass this semaphore at the worker layer because they're bandwidth-bound, not RAM-bound.
-- **Backoff happens before semaphore acquisition** so a `Paused`/`Throttled` mode doesn't pile tasks into the semaphore wait queue — they sit in the policy poll loop instead.
+- **Backoff happens before semaphore acquisition** so a `Paused`/`Throttled` mode doesn't pile tasks into the semaphore wait queue: they sit in the policy poll loop instead.
 - **`current_policy()` defaults to `Normal` and `wait_for_capacity()` acquires directly when `STATE` is uninitialised** (unit tests / pre-`init_global` bootstrap) so callers never deadlock on a sampler that will never start.
-- **Signed-out override is gated on `STATE.get().is_some()`** on both the reader (`current_policy`/`wait_for_capacity`) and writer (`set_signed_out`) sides. Without this, a stale per-test `signed_out=true` flag (from `clear_session` / 401 / `SessionExpiredSubscriber` tests) would make every later `wait_for_capacity` caller poll forever — the source of the post-#1516 triage-evaluator hangs.
-- **Test isolation**: in `cfg(test)` the semaphore and signed-out flag are keyed per tokio runtime ID (`test_state`) so parallel cargo workers and libtest thread reuse don't leak state across `#[tokio::test]`s. `SignedOutTestGuard` snapshots/restores the flag and bypasses the writer-side `STATE` gate.
+- **Signed-out override is gated on `STATE.get().is_some()`** on both the reader (`current_policy`/`wait_for_capacity`) and writer (`set_signed_out`) sides. Without this, a stale per-test `signed_out=true` flag (from `clear_session` / 401 / `SessionExpiredSubscriber` tests) would make every later `wait_for_capacity` caller poll forever: the source of the post-#1516 triage-evaluator hangs.
+- Test isolation: in `cfg(test)` the semaphore and signed-out flag are keyed per tokio runtime ID (`test_state`) so parallel cargo workers and libtest thread reuse don't leak state across `#[tokio::test]`s. `SignedOutTestGuard` snapshots/restores the flag and bypasses the writer-side `STATE` gate.
 - **`init_global` is idempotent** (`std::sync::Once`); live config changes go through `update_config`, which recomputes the policy immediately.
 - **Server-mode detection** never infers server from "no battery" alone (desktops have none); it requires Linux + no battery + no `DISPLAY`/`WAYLAND_DISPLAY`, or explicit env / k8s / docker signals.
 - `PauseReason::OnBattery` and `CpuPressure` are the active power-aware (#1073) reasons; `Unknown` is a placeholder fallback.

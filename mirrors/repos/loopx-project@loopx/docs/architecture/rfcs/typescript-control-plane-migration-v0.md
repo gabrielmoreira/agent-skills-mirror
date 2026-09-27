@@ -1,9 +1,10 @@
 # RFC: TypeScript Control-Plane Migration Direction v0
 
 - Status: Accepted, transaction-payoff phase in progress
+- Supersedes / closes: none
 - Proposed by: LoopX maintainers
 - Date: 2026-08-15
-- Last revised: 2026-09-13
+- Last revised: 2026-09-26
 - Scope: an incremental, replacement-first migration of the LoopX control-plane
   core from Python to TypeScript without maintaining two semantic
   implementations
@@ -14,16 +15,41 @@
 
 ---
 
-## Current delivery frontier (2026-09-25)
+### Product conversations and asynchronous inbox
 
-Audit `37bbaec79` and current PR states: complete-source transport, transaction
-capture, source assembly and the five previously open caller/event fixes are
-merged, not future implementation. After the current promotion-admission repair,
-three named code boundaries remain planned: external-effect execution fencing;
-event-writer binding plus whole-Goal migration/rollback; default onboarding plus
-bounded Python retirement. #4931 and outstanding D2 evidence are tracked
-separately. Three is a delivery plan, not a guaranteed total PR count.
-[Current inventory and exits](ledger/shared-goal-authority-state-provider-v0/2026-09-24-default-cutover-reconciliation.md).
+R1–R3 also consume the typed kernel through the App, not only CLI settlement.
+The [App/inbox integration plan](app-conversation-and-async-inbox-v0.md#ts-and-generic-async-inbox-migrate-with-the-user-path)
+orders caller fixes, characterization, one complete async lifecycle cutover,
+real-adapter recovery and deletion. Reuse Chat ingress, Agent-neutral collaboration
+and operator-inbox owners; extract Lark-independent pending/replay/disposition
+rules while retaining provider IO, authentication and delivery formatting.
+Managed and attached paths preserve one execution driver and existing request
+identity. No second inbox store, per-field bridge expansion or full rewrite is
+required for the first App outcome. These are planned product consumers of
+T0–T4, not additional provider promotion or completed migration claims.
+
+
+## Current delivery frontier (2026-09-27)
+
+Audit `157ab7b11` and current PR states: source capture, pagination, File format
+upgrade and Python prototype retirement are delivered. This delivery repairs
+reviewed-input recovery and adds independent retained-history audit. Plan four
+scoped PRs starting here: this recovery slice, external execution interval
+protection, whole-Goal activation/rollback integration, and default entrypoints
+with final bounded Python retirement. Three planned scopes follow this PR;
+existing #5054/#4931 and D2/D3 evidence remain separate. This is not a guaranteed
+count of future defect repairs.
+[Current inventory, rationale and exits](ledger/shared-goal-authority-state-provider-v0/2026-09-27-recovery-audit.md).
+
+## Native authority qualification and prototype retirement (2026-09-26)
+
+The coverage-only Python coordination executor, head codec, File provider and
+bootstrap bridge are retired with their last example/test callers. Stage 0 now
+runs complete native File/SQLite conformance rather than the obsolete Python
+provider. The existing TS domain owners and shared fixtures are reused; Python
+`authority_core.py` remains a live adapter and is not removed. This is an early
+bounded T4 deletion slice, not default cutover or all Python retirement.
+[Coverage, behavior differences and format boundary](../../../examples/shared-goal-authority-e2e/README.md#native-qualification-and-prototype-retirement).
 
 ## Observation writer retirement (2026-09-24)
 
@@ -40,7 +66,7 @@ reference executor are retired. [Delivery inventory and transition](ledger/share
 
 Retain T0 caller/parity inventory, T1/T2 transaction/effect convergence, T3 complete-source consumption and T4 deletion conditions. #4472 is merged; inspect `todos/public_update.ts` and actual callers before rebuilding Todo update. Converge new team domain rules in existing typed work-items/collaboration ownership; Python retains input/IO adaptation. R1 independent counterexamples and real-path verification gate delivery. More leaf RPCs, enums or files are not migration payoff. Shared-authority retains D1–D3.
 
-## Current implementation checkpoint
+## Current implementation facts
 
 Long-history closeout now reuses byte-verified TS receipt prefixes and the
 single committed-monitor rule. Python retires its duplicate run-log scan and
@@ -353,55 +379,8 @@ this RFC follows the
 It declares fixture impact, exercises every affected provider arm, and keeps
 the read-only three-arm rehearsal as a separate promotion gate.
 
-### Provider-neutral projection conformance checkpoint (2026-09-12)
-
-The conformance boundary now has one projection-fixture builder for both the
-legacy v0 and native Todo record shapes. It owns deterministic Unicode ordering,
-read-model digest/field construction, and the compatibility-only conversion;
-provider tests no longer hand-rebuild those fields. The scale envelope declares
-status ordering explicitly and validates its counts, so changing JSON key order
-cannot silently change which Todo receives a lease, successor, or archive role.
-
-The File, SQLite, and NoKV suites now execute the same production-scale terminal
-cases in both record shapes. A separate parity harness replays one seed,
-observation, and lease sequence through all three isolated providers and compares
-the logical head plus committed event/projection/receipt trace while ignoring
-provider-specific revision tokens. This is conformance evidence, not a new
-authority writer, provider default, or promotion claim; PostgreSQL remains under
-its existing real-service qualification gate.
-
-The old v0 consumer manifest remains readable and retains all existing fields.
-Default Markdown capture still emits v0; this PR neither rewrites stored heads
-nor auto-promotes a goal. The schema split is not permission to drop v0
-provenance or change legacy ordering during a later migration.
-
-### Canonical Todo presentation checkpoint (2026-09-12)
-
-The authority boundary now treats presentation as a first-class projection
-contract rather than naming it `legacy_projection`. A shared TS presentation
-normalizer maps the v0 wire shape's `source_section`/`index` to
-`display_section`/`display_order`, while native records derive their display
-section from domain role/archive state and never receive a fake persisted
-index. The normalized presentation contract is shared; the wire coordinate is
-not a second Todo state machine.
-
-Todo creation, terminal successor materialization, projection validation,
-standing-decision ordering, and archive ordering all use the same presentation
-owner. The canonical domain validator is shared by both wire shapes, and the
-v0 record is produced by an adapter from a validated domain record. This
-unifies the semantic owner without rewriting v0 heads or receipts.
-
-Python read callers now import the semantic owner directly; the compatibility
-facade is no longer an internal dependency. Python presentation sorting keeps
-source `index` order when it is present and uses completion/update time plus
-Todo identity for native records, so the compatibility shape cannot leak into
-business eligibility or lifecycle decisions.
-
-The next migration may persist an optional canonical `presentation` object, but
-only after proving whether an imported section is provenance or current display
-intent and after qualifying a stable display-order policy. Until then, native
-display positions remain derived at the renderer boundary and must not affect
-authority lifecycle decisions.
+- Checkpoint moved to the execution ledger: [Provider-neutral projection conformance checkpoint (2026-09-12)](ledger/typescript-control-plane-migration-v0/2026-09-12-provider-neutral-projection-conformance.md).
+- Checkpoint moved to the execution ledger: [Canonical Todo presentation checkpoint (2026-09-12)](ledger/typescript-control-plane-migration-v0/2026-09-12-canonical-todo-presentation.md).
 
 ### Long-goal persistence is part of the migration payoff
 
@@ -517,31 +496,7 @@ remain outside this slice. Do not claim all writers migrated or all prose rules
 retired. This read-policy closure does not displace the provider-first Todo
 sequence below or wait for a provider cutover.
 
-### Legacy field-rule retirement checkpoint
-
-`todos/field_update.ts` now owns the complete metadata intent assembly used by
-the legacy `update`, `claim`, `complete`, and `supersede` line writer: status and
-completion timestamps, omission versus explicit clears, binding precedence,
-removed-policy repair, resume-generation pairing, and completion metadata.
-It composes the existing TS completion rule directly. The replaced Python
-decision branches and the last-caller `todo.completion_state.metadata_updates`
-RPC/facade are removed, not kept as a fallback.
-
-This is a pure plan, not admission or a provider commit. Python still owns
-Markdown lookup/encoding, byte-level no-op detection, locking and external
-effects. Public role/binding admission and the event writer are not declared
-migrated by that slice. Native planning now composes this owner as described in
-T1; unsupported fields gain no authority, no goal is promoted, and no third storage path appears.
-Rejected plans now leave even the caller's in-memory line buffer unchanged;
-public rejected transactions were already non-committing.
-
-There is one field-plan crossing per legacy line write. It replaces the former
-metadata RPC on ordinary edits; already-finalized completions with an override
-gain one planning crossing. Cached codec normalization calls remain. This is
-semantic deletion, not a claim of fewer crossings on every command. Retire the
-adapter with its final legacy lifecycle caller after full-goal cutover, or fold
-it into that caller's coarse transaction when migrating the caller; do not grow
-a series of field-level RPCs. Retain Markdown rendering permanently.
+- Checkpoint moved to the execution ledger: [Legacy field-rule retirement checkpoint](ledger/typescript-control-plane-migration-v0/2026-09-09-legacy-field-rule-retirement.md).
 
 ### Next delivery sequence
 
@@ -1190,6 +1145,29 @@ qualify distributed execution. Cursor/checkpoint reduction remains a measured
 follow-up with complete-source parity, not a second Python policy. See the
 [history decision evidence](ledger/typescript-control-plane-migration-v0/2026-09-22-replan-history-policy.md).
 
+**Checkpoint read-context transport.** A long-lived Goal can exceed the Effect
+runtime's 2 MiB socket limit even when the original Turn receipt is small:
+complete shared Goal prose and archived Todo facts are part of the read basis,
+and the basis may also exceed the response limit. Checkpoint source, evaluation,
+replay inspection and commit explicitly opt into same-UID private request and
+response files with byte counts and SHA-256 digests. The 2 MiB socket boundary
+and default behavior of other effects remain intact. File/SQLite and legacy
+Markdown still use the same TypeScript checkpoint reducer and exact receipt;
+the transport neither truncates history nor creates a Python decision or new
+authority. Missing, changed, non-private or over-64-MiB files fail closed.
+After a handler may have committed, an unverifiable response stays ambiguous
+and requires exact receipt readback, never automatic mutation retry.
+
+This removes the immediate transport ceiling, not the cost of projecting a
+complete multi-megabyte basis. The next measured T3 cut should combine the
+canonical source read and checkpoint reduction inside one TypeScript call, then
+offer a versioned manifest with bounded pages for human/Agent inspection.
+Every page must bind to the same source head and disclose omitted components;
+the receipt must still hash the complete relevant Todo/dependency, User Todo,
+Goal prose, acceptance and vision basis. A display limit must never become a
+settlement limit. Retain the current complete read until that parity and stale-
+head recovery are qualified on legacy, File and SQLite backends.
+
 **Recovery boundary (2026-09-22).** The
 [authority archive command](../../reference/authority-archive.md) places retained
 history validation, delta reconstruction and resumable restore in the existing
@@ -1247,25 +1225,7 @@ Stacked schema-identifier cleanup is independent maintenance, not a prerequisite
 for this sequence. Absorb a downstream change only when the selected complete
 transaction actually needs it; rebase the remaining work after its base merges.
 
-### Manager collaboration integration checkpoint (2026-09-13)
-
-At `7eb4b7bb1661bd5eff63a8725a33169792d5964b`, #4152 is the merged
-lease-fenced text/note update slice; #4121's SQLite candidate is also merged,
-without provider promotion. These actual heads supersede the earlier execution
-card's pending-code implication, not its qualification holds.
-
-The [manager/handoff RFC](capable-manager-semantic-handoff-v0.md) follows this
-RFC's transaction-payoff rule. Its proposed collaboration owner replaces one
-complete request transaction and old semantic callers; it does not introduce
-a leaf RPC per field, a new TS daemon, or another Todo/Vision/lease authority.
-Existing `coordination/todo_continuation.ts` is a promoted-local, same-machine,
-registered-agent, lease-free Todo path, not a general pre-Todo/cross-Goal
-handoff. Retain its actual compatibility semantics while integrating it.
-M2 reports the migration economics receipt and cross-commit recovery evidence;
-M1 normal host tools need not wait for full TS or provider migration.
-Shared Goal amendments retain their own proposal/commit boundary, and
-shared-authority D1–D3/T4 conditions remain applicable to any affected storage
-or full-writer retirement. No new runtime behavior is delivered by this note.
+- Checkpoint moved to the execution ledger: [Manager collaboration integration checkpoint (2026-09-13)](ledger/typescript-control-plane-migration-v0/2026-09-13-manager-collaboration-integration.md).
 
 ## 0. Decision in one example
 
@@ -1397,6 +1357,52 @@ while public, persisted, RPC, or extension input still reaches its semantic
 core through an unvalidated assertion. TypeScript complements runtime
 validation; it does not replace it.
 
+### 2.6 Projection envelope is a kernel read contract
+
+The kernel already binds writes to receipts, fences and CAS. Reads need a
+matching contract. A read model such as status, a global summary or a context
+packet combines several sources read at different times, and it is often
+consumed later from a cache, a saved file or a pasted packet. Without a
+machine-checkable statement of what it observed, consumers, agents above all,
+treat an old or partial projection as the current whole state. `ok: true`, a
+passing check or a healthy host says nothing about that.
+
+Every operator- or agent-facing projection therefore carries one
+`projection_envelope` (`loopx_projection_envelope_v0`):
+
+- `observed_at` and `served_at`: when the sources were read and when this copy
+  was emitted. A cache hit or replay keeps the first and restamps the second.
+- One row per source with `last_read_at`, `read_status`, window, staleness and
+  alert reasons. A derived projection inherits its upstream rows, so it cannot
+  look fresher than the oldest read it depends on.
+- `coverage` of the requested scope: expected and included counts, and named
+  omissions. Display truncation is disclosed separately and is not an
+  incompleteness alert.
+
+Ownership follows this RFC instead of creating new migration debt.
+`projection_envelope.ts` alone decodes the facts and decides staleness, alerts
+and completeness, through runtime method `projection.envelope.seal`.
+Python-owned projections only pass compact read facts. That is one request per
+projection, on paths that already pin a runtime revision and make dozens of TS
+calls. It is not a leaf migration: it keeps a new cross-cutting rule from
+being born in Python and migrated later. The Python facts adapter exits with
+its projection: when status projection moves into the kernel (already a
+facade-exit condition in §4), TS gathers the facts directly and the adapter is
+deleted.
+
+Rollout. `status` (including `--goal-id` and projection-cache hits),
+`global-summary` and `global-gates` now carry the envelope. Every other
+`collect_status` caller receives the status envelope in its payload but does
+not yet emit its own. Next, in order: `global-todos` and `global-risks` (the
+same composition, one call each), `quota should-run`, `review-packet`, and
+Decision Context packets. A read model added to or migrated into TypeScript
+emits the envelope in the same PR; §6 makes this a promotion gate.
+
+Consumers treat a missing envelope as unknown freshness, and disclose an
+alerting one before stating any conclusion that depends on it. Field
+semantics and the consumer rule are in the
+[projection envelope contract](../../reference/contracts/projection-envelope-contract.md).
+
 ## 3. Current baseline and phase transition
 
 Effect Program moved first because it joins ordered steps, identity,
@@ -1416,6 +1422,7 @@ choice is now implemented rather than hypothetical.
 | Quota monitor-poll commit transaction | TypeScript owns monitor admission revalidation, target/event/result construction, effect replay/index CAS, provider intent, and repairable JSON/Markdown/index persistence | Python projects compact `should-run` facts, invokes the real Todo provider between at most two reductions, reloads legacy status, and holds the cross-writer index lock |
 | Runtime decoders ([#3443](https://github.com/huangruiteng/loopx/pull/3443)) | Stable primitive decoding has one small shared module; domain decoders remain local | No larger schema framework is justified |
 | Transaction payoff ([#3464](https://github.com/huangruiteng/loopx/pull/3464), [#3481](https://github.com/huangruiteng/loopx/pull/3481), and Todo completion) | Turn settlement, quota delivery routing, and Todo completion each cross one coarse TS boundary; the Todo transaction owns identity, replay fencing, validation planning/result reduction, continuation/recovery, and completion metadata | Python still executes explicitly external providers and materializes legacy Markdown/event results; other domains still need their own bounded cutovers |
+| Projection envelope | TypeScript owns decoding of `loopx_projection_envelope_v0` and every freshness, alert, completeness and replay decision | Python gathers read facts for `status`, `global-summary` and `global-gates` until those projections migrate |
 | Promoted-authority Todo claim | TypeScript owns the provider-head read, lifecycle validation, complete-record update, hard-lease check, CAS, receipt, and readback-safe result for claims after authority promotion | Default local Markdown mode remains on the legacy writer; other Todo mutations and Markdown regeneration remain bounded follow-ups |
 
 The scheduler facade exit now includes its first bounded Stage 3 route. A
@@ -1784,6 +1791,9 @@ not authorize a generic schema framework.
   concurrent same-key mutations are serialized or use a tested CAS contract,
   and retry identity distinguishes successive checkpoints within one Turn.
 - Process crash and retry cannot duplicate a committed internal effect.
+- An operator- or agent-facing read model that is added or migrated emits
+  `projection_envelope` through `projection.envelope.seal`. Its tests cover a
+  stale source, an unreadable source, an incomplete scope and a replayed copy.
 - Wheel and sdist are installed into fresh environments and execute deep
   semantic probes from packaged files.
 
@@ -1898,19 +1908,7 @@ Measured delivery records live in the [per-entry ledger](ledger/typescript-contr
 Each entry names its delivered boundary and remaining acceptance gaps; the T1–T4
 checkpoints above remain the current migration plan.
 
-### T2 Agent-addressed read checkpoint
-
-Todo list selection now composes with the existing typed summary-lanes batch.
-The Python role/status/id/Agent predicates and independent User scope rule are
-removed; legacy and promoted consumers share `todos/agent_scope.ts` with quota
-and decision scope. Explicit gate scope retains precedence over execution claim,
-while retained User claims now correctly restrict scoped list visibility.
-Full-source resume/succession stays evaluated before selection; original array
-ordinals survive filters and display limits. No extra selection runtime crossing,
-new capability/provider, or Python storage migration is introduced. Python keeps
-input normalization and rendering until their actual host consumers migrate.
-See [the read contract](../../reference/todo-work-counts.md); broader L5/D1 and
-local-default qualifications remain open.
+- Checkpoint moved to the execution ledger: [T2 Agent-addressed read checkpoint](ledger/typescript-control-plane-migration-v0/2026-09-21-t2-agent-addressed-read.md).
 
 ### T2 canonical read and display confirmation boundary
 

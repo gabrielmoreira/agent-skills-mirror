@@ -26,9 +26,9 @@ Text-to-speech "podcast" toolkit. Synthesizes text into a workspace audio file v
 
 From `mod.rs`:
 
-- **ops**: `generate_podcast`, `email_podcast`, `generate_and_email_podcast`, `resolve_email_capture_dir` — all take `&Config` and return `Result<RpcOutcome<T>, String>` (except `resolve_email_capture_dir → Option<PathBuf>`).
-- **schemas**: `all_audio_toolkit_controller_schemas`, `all_audio_toolkit_registered_controllers`.
-- **types**: `AudioFormat` (`Mp3`/`Wav`, with `extension()` / `mime()`), `AudioGenerateRequest`, `EmailPodcastRequest`, `AudioGeneratedArtifact`, `AudioEmailDeliveryResult`, `AudioToolkitGenerateAndEmailResult`.
+- ops: `generate_podcast`, `email_podcast`, `generate_and_email_podcast`, `resolve_email_capture_dir`. All take `&Config` and return `Result<RpcOutcome<T>, String>` (except `resolve_email_capture_dir`, which returns `Option<PathBuf>`).
+- schemas: `all_audio_toolkit_controller_schemas`, `all_audio_toolkit_registered_controllers`.
+- types: `AudioFormat` (`Mp3`/`Wav`, with `extension()` / `mime()`), `AudioGenerateRequest`, `EmailPodcastRequest`, `AudioGeneratedArtifact`, `AudioEmailDeliveryResult`, `AudioToolkitGenerateAndEmailResult`.
 - **tools** (`pub mod tools`): `AudioGeneratePodcastTool`, `AudioEmailPodcastTool`, `AudioGenerateAndEmailPodcastTool`.
 
 ## RPC / controllers
@@ -45,7 +45,7 @@ Registered into the global controller registry via `crates/openhuman-core/src/co
 
 ## Agent tools
 
-From `tools/podcast.rs` — all `PermissionLevel::Execute`, each calls `SecurityPolicy::enforce_tool_operation(ToolOperation::Act, ...)` before running:
+From `tools/podcast.rs`. All are `PermissionLevel::Execute`, and each calls `SecurityPolicy::enforce_tool_operation(ToolOperation::Act, ...)` before running:
 
 | Tool name | Backing op |
 | --- | --- |
@@ -64,23 +64,23 @@ No durable domain store. Side effects are filesystem writes within the workspace
 
 ## Dependencies
 
-- `crate::voice` — `create_tts_provider`, `DEFAULT_PIPER_VOICE`; actual speech synthesis.
-- `crate::channels::email_channel::EmailChannel` — SMTP delivery of the built message.
-- `crate::config::Config` / `config::rpc` — workspace dir, `local_ai.tts_provider`, `channels_config.email`; `load_config_with_timeout` in RPC handlers.
-- `crate::security` — `SecurityPolicy` / `ToolOperation` to gate the agent tools.
-- `tinytools` — `Tool`, `ToolResult`, `PermissionLevel`.
-- `crate::core::all` / `crate::core` — `RegisteredController`, `ControllerFuture`, `ControllerSchema`, `FieldSchema`, `TypeSchema` for RPC registration.
-- `crate::rpc::RpcOutcome` — controller/op return contract.
+- `crate::voice`: `create_tts_provider`, `DEFAULT_PIPER_VOICE`; actual speech synthesis.
+- `crate::channels::email_channel::EmailChannel`: SMTP delivery of the built message.
+- `crate::config::Config` / `config::rpc`: workspace dir, `local_ai.tts_provider`, `channels_config.email`; `load_config_with_timeout` in RPC handlers.
+- `crate::security`: `SecurityPolicy` / `ToolOperation` to gate the agent tools.
+- `tinytools`: `Tool`, `ToolResult`, `PermissionLevel`.
+- `crate::core::all` / `crate::core`: `RegisteredController`, `ControllerFuture`, `ControllerSchema`, `FieldSchema`, `TypeSchema` for RPC registration.
+- `crate::rpc::RpcOutcome`: controller/op return contract.
 - External crates: `lettre` (email message + attachment), `base64`, `chrono`, `uuid`.
 
 ## Used by
 
-- `crates/openhuman-core/src/core/all.rs` — registers the controllers/schemas into the JSON-RPC + CLI surface.
-- `crates/openhuman-core/src/tools/ops.rs` — instantiates the three tools into the agent tool registry; `crates/openhuman-core/src/tools/mod.rs` re-exports them.
+- `crates/openhuman-core/src/core/all.rs`: registers the controllers/schemas into the JSON-RPC and CLI surface.
+- `crates/openhuman-core/src/tools/ops.rs`: instantiates the three tools into the agent tool registry; `crates/openhuman-core/src/tools/mod.rs` re-exports them.
 
 ## Notes / gotchas
 
-- `provider`/`format` are coupled: `piper` only emits `wav`, `cloud` only emits `mp3` — mismatches are hard errors (`resolve_format`). After synthesis the returned MIME is re-checked against the requested format (`enforce_audio_format`).
+- `provider`/`format` are coupled: `piper` only emits `wav`, `cloud` only emits `mp3`; mismatches are hard errors (`resolve_format`). After synthesis the returned MIME is re-checked against the requested format (`enforce_audio_format`).
 - Default voice is only injected for `piper` (`DEFAULT_PIPER_VOICE`); `cloud` defaults to no explicit voice.
 - `email_podcast` re-validates `audio_path` (workspace-relative, no `..`) independently of `generate_podcast`; the combined flow overwrites the email request's `audio_path` with the freshly generated file's path.
 - Email capture mode is feature/env-gated: enabled under `feature = "e2e-test-support"` or when `OPENHUMAN_EMAIL_CAPTURE_DIR` is non-empty; otherwise SMTP send requires `channels_config.email` to be configured (`from_address` falls back to `openhuman@localhost.test`).

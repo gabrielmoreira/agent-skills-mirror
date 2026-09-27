@@ -8,7 +8,7 @@ This directory lives under `memory/query` rather than in
 structure, policy, summarisation, and read/write mechanics; `query/` is the
 LLM-facing surface on top of it. It exists as OpenHuman code (not in the
 extracted `tinymemory-core` engine crate) because, per [`memory/README.md`](../README.md),
-the engine crate cannot name the `Tool` trait — a tool that dispatches by
+the engine crate cannot name the `Tool` trait: a tool that dispatches by
 `mode` has to live on the host side of that split.
 
 ## The tool
@@ -31,8 +31,8 @@ the engine crate cannot name the `Tool` trait — a tool that dispatches by
 and `smart_walk` both go to `fast_walk::run_fast_walk`. All six per-mode
 structs are re-exported from this module (and re-exported again, flat,
 through [`memory/tools.rs`](../tools.rs) via `pub use crate::memory::query::*`)
-so callers that want a single mode directly — rather than going through the
-`mode`-dispatching wrapper — can still register or call them individually.
+so callers that want a single mode directly: rather than going through the
+`mode`-dispatching wrapper: can still register or call them individually.
 Each per-mode struct has its own `name()` (`memory_tree_search_entities`,
 `memory_tree_ingest_document`, …), which is why the capability match in
 `tools/ops.rs` has a `starts_with("memory_tree_")` fallback arm.
@@ -42,7 +42,7 @@ and `fetch_leaves` call into (`query_source_scope`, `query_source_kind`,
 `drill_down`, `fetch_leaves`). It resolves the bound driver through
 `crate::memory::ops::guard::active_memory_guard()` and calls the
 `MemoryRetrieval` family on the returned `MemoryGuard`, rather than reaching
-into `tinymemory_core::tree::retrieval` directly — see the module doc in
+into `tinymemory_core::tree::retrieval` directly: see the module doc in
 `backend.rs` (the spec it cites is not checked in). Every
 `scope` argument passed to the guard is `None`; the guard intersects that with
 the ambient per-turn allowlist, so this can only narrow what a turn may see,

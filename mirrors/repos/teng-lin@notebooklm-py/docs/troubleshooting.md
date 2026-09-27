@@ -238,13 +238,15 @@ Or re-run `notebooklm login` if session cookies are also expired. If the failure
 
 #### "NotebookLM redirected this request to its region / anti-abuse access gate"
 
-**Cause:** The request to the personal app host — `notebook.google.com` by default since #2067, or whichever host `NOTEBOOKLM_BASE_URL` selects — was redirected to **`notebooklm.google/?location=unsupported`** — Google's region / anti-abuse risk-control gate (the marketing/landing page, which has no CSRF token). This is **not** a library bug, expired login, or page-structure change, and **re-running `notebooklm login` will not fix it** (the cookies are fine). It is driven by the *access environment*, not just the account's country, and fires even for accounts in supported regions when Google sees:
+**Cause:** The request to the personal app host — `notebook.google.com` by default since #2067, or whichever host `NOTEBOOKLM_BASE_URL` selects — was redirected to **`notebooklm.google/?location=unsupported`** — Google's region / anti-abuse risk-control gate (the marketing/landing page, which has no CSRF token). The response is a landing page rather than the authenticated app, so it cannot supply app tokens. The redirect alone does not establish cookie validity or the underlying cause. The gate can depend on the *access environment*, not just the account's country, and can affect accounts in supported regions when Google sees:
 
 - a **VPN / proxy / datacenter / shared IP** (especially previously-abused ones),
 - an **IP ↔ timezone ↔ browser-language mismatch**, or
 - a **non-browser / automated access pattern** (a raw HTTP client without a real browser fingerprint).
 
-**Confirm:** open the same host the client is using (`https://notebook.google.com` unless you set `NOTEBOOKLM_BASE_URL`) in a normal browser, signed in to the same account, on the same network. If it also redirects to `notebooklm.google/?location=unsupported`, the gate is environmental. Test the host that actually failed — the two personal hosts are gated by the same risk-control system, but diagnosing against the host you are not using is how a working setup gets misread as broken.
+The rebranded landing page is **`https://notebook.google/`** (without `.com`); `notebooklm.google` now redirects there. It is a marketing site, not a new authenticated app endpoint. A redirect there alone does not establish that cookies expired or identify why Google declined app access. Do not set `NOTEBOOKLM_BASE_URL` to that landing host or copy cookies to it. Issue [#2441](https://github.com/teng-lin/notebooklm-py/issues/2441) exposed a missing landing-host alias in the redirect diagnostic; recognizing it improves the error but does not bypass Google's access gate or establish the cause of an RPC `PERMISSION_DENIED` response.
+
+**Confirm:** open the same host the client is using (`https://notebook.google.com` unless you set `NOTEBOOKLM_BASE_URL`) in a normal browser, signed in to the same account, on the same network. If it also redirects to `notebooklm.google/?location=unsupported` or `notebook.google/`, compare the result on another network to investigate the access environment. Test the host that actually failed — the two personal hosts are gated by the same risk-control system, but diagnosing against the host you are not using is how a working setup gets misread as broken.
 
 **Solution:** access from a **residential connection in a supported region**, keep your system **timezone/language consistent** with the IP's country, and avoid shared/datacenter VPN exit IPs. When the trigger is the **non-browser fingerprint** (a raw HTTP client) rather than the IP, the opt-in browser-TLS-impersonation transport can help: set `NOTEBOOKLM_TRANSPORT=curl_cffi` (requires the `curl_cffi` package) so requests carry a real browser's TLS fingerprint. (See issue [#1630](https://github.com/teng-lin/notebooklm-py/issues/1630).)
 
@@ -272,9 +274,9 @@ notebooklm login --browser chrome --storage <path>
 
 ### Configuration Errors
 
-#### `ValueError: NOTEBOOKLM_BASE_URL must use https and one of: ...` lists a host that is not documented
+#### `ValueError: NOTEBOOKLM_BASE_URL must use https and one of: ...`
 
-**Cause:** The error message enumerates every host the base-URL validator currently accepts. That list is not the same as the list of *supported* values in [configuration.md](configuration.md) — it now also names the Gemini Notebook rebrand host, `notebook.google.com`.
+**Cause:** `NOTEBOOKLM_BASE_URL` does not match an accepted HTTPS app origin. The error lists the supported hosts documented in [configuration.md](configuration.md): `notebook.google.com` (default), `notebooklm.google.com` (legacy personal), `notebook.cloud.google.com` (enterprise), and `notebooklm.cloud.google.com` (legacy enterprise). Non-root paths, query strings, credentials, and explicit ports are rejected. The marketing hosts `notebook.google` and `notebooklm.google` are not authenticated app endpoints.
 
 **Status:** `notebook.google.com` is **the default** since #2067. A live probe on 2026-08-04 reached `batchexecute` on **both** personal hosts, so the endpoint is dual-served, not rebrand-host-only or legacy-only. The cassettes in `tests/cassettes/` now record requests against the rebrand host. The pre-rebrand host `notebooklm.google.com` remains a valid, still-served value and is the documented rollback lever; switching back is normally just the variable, with the caveats described below. See [ADR-0028](adr/0028-gemini-notebook-rename.md).
 
@@ -287,7 +289,10 @@ export NOTEBOOKLM_BASE_URL=https://notebook.google.com
 # Personal, pre-rebrand host (still served; rollback lever)
 export NOTEBOOKLM_BASE_URL=https://notebooklm.google.com
 
-# Enterprise
+# Enterprise (origin only; project/region routing is not configured here)
+export NOTEBOOKLM_BASE_URL=https://notebook.cloud.google.com
+
+# Legacy enterprise
 export NOTEBOOKLM_BASE_URL=https://notebooklm.cloud.google.com
 ```
 
@@ -355,9 +360,9 @@ from notebooklm import NotebookLMClient
 - The override is applied at BOTH the URL `rpcids=` query parameter AND the
   request body `f.req` payload, so the wire format stays consistent.
 - The override is gated on the configured base host being a known Google
-  NotebookLM endpoint (`notebook.google.com`, `notebooklm.google.com`, or
-  `notebooklm.cloud.google.com`). Overrides do NOT apply to non-Google
-  hosts, so this env var cannot be weaponised to leak custom RPC IDs to a
+  NotebookLM endpoint (`notebook.google.com`, `notebooklm.google.com`,
+  `notebook.cloud.google.com`, or `notebooklm.cloud.google.com`). Overrides do NOT
+  apply to non-Google hosts, so this env var cannot be weaponised to leak custom RPC IDs to a
   hostile endpoint.
 - Method names not listed in the override map continue to use the canonical
   IDs from `notebooklm.rpc.types.RPCMethod`.

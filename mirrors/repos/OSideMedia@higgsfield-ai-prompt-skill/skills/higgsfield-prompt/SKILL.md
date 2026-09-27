@@ -4,8 +4,8 @@ description: "Use when building, writing, refining, or structuring a Higgsfield 
 user-invocable: true
 metadata:
   tags: [higgsfield, prompt, MCSLA, formula, text-to-video, image-to-video]
-  version: 3.7.0
-  updated: 2026-08-09
+  version: 3.7.1
+  updated: 2026-09-26
   parent: higgsfield
 ---
 
@@ -17,19 +17,19 @@ metadata:
 - I2V: describe ONLY what moves or changes, never what's already in the image [→](#image-to-video-i2v)
 - Keep prompts under 200 words — **short-form MCSLA regime only**; block-scaffold production prompts replace the cap with structural lint (HARD RULE 8 carve-out); Cinema Studio has a hard 512-character cap [→](#high-performing-prompt-patterns)
 - 1 primary action per clip, 1–2 secondary max; Fast Motion Trick: render in Slow Mo, speed up in post [→](#one-action-per-scene)
-- Never leave a generic emotion ("sad"/"angry") in a prompt — decompose into muscle movements, breath, eyes, skin [→](#generic-emotion-decomposition-which-kind-of-x)
+- Never leave a generic emotion ("sad"/"angry") in a prompt — decompose into muscle movements, breath, eyes, skin [→](#generic-emotion-decomposition--which-kind-of-x)
 - Soul ID / recurring characters: split every prompt into Identity Block + Motion Block — never mix them [→](#identity-vs-motion-separation-rule)
 - Conflict order when sub-skills disagree: explicit user direction > scene archetype > emotion-sync [→](#conflict-resolution-between-sub-skills)
 - Aspect ratio is a per-model enum set in the UI/header, never in the prompt body — verify via `../../specs/model-specs.yaml` [→](#common-prompt-mistakes)
 - Never combine Dolly In + Dolly Out in one shot; @ Elements for static scenes, plain text for action [→](#common-prompt-mistakes)
-- Iterate by changing exactly ONE variable per regeneration [→](#the-iteration-rule-change-one-variable-at-a-time)
-- 6-Pass Diagnostic order: Subject → Action → Camera → Style → Audio → Output; most failures land on Pass 1–2 [→](#when-you-dont-know-whats-wrong-yet-the-6-pass-diagnostic-sequence)
-- Seedance short-form: 30–100 words win; Subject + Action in the first 20–30 words. Block-scaffold production briefs run 218–2,059-word medians by register — see `../higgsfield-seedance/SKILL.md` § Official Prompt Architecture [→](#the-directors-formula-mcsla-mapping)
-- Genre length targets: Product 30–50w, Lifestyle 40–60w, Drama 60–100w, Music Video 50–80w, Anime 50–90w [→](#genre-router-prompt-length-lead-with-targets)
+- Iterate by changing exactly ONE variable per regeneration [→](#the-iteration-rule--change-one-variable-at-a-time)
+- 6-Pass Diagnostic order: Subject → Action → Camera → Style → Audio → Output; most failures land on Pass 1–2 [→](#when-you-dont-know-whats-wrong-yet--the-6-pass-diagnostic-sequence)
+- Seedance short-form: 30–100 words win; Subject + Action in the first 20–30 words. Block-scaffold production briefs run 218–2,059-word medians by register — see `../higgsfield-seedance/SKILL.md` § Official Prompt Architecture [→](#the-directors-formula--mcsla-mapping)
+- Genre length targets: Product 30–50w, Lifestyle 40–60w, Drama 60–100w, Music Video 50–80w, Anime 50–90w [→](#genre-router--prompt-length--lead-with-targets)
 - Kill slop words (beautiful, stunning, epic, amazing) — replace with concrete visuals/physics [→](#anti-slop-vocabulary)
 - Seedance/CS 3.0 has NO negative-prompt syntax — phrase as positive constraints [→](#no-negative-prompts)
 - Dialogue cap: ~25–30 spoken words fit in 15 seconds — keep the power-shift line, convert the rest to behavior [→](#dialogue-archetypes)
-- Engine limits: ≤3 characters tracked across cuts; exit-frame = gone; off-screen = nonexistent; avoid reflections [→](#character-spatial-rules)
+- Engine limits: ≤3 characters tracked across cuts; exit-frame = gone; off-screen = nonexistent; avoid reflections [→](#character--spatial-rules)
 - Every cut must change BOTH shot size AND camera character [→](#double-contrast-cut-rule-mandatory)
 - Age-blind rule: never boy/girl/child/kid/young/teen/little — describe by role, clothing, action [→](#age-blind-character-rule)
 - Scenes start already in progress unless the user says "starts with…" or "ends with…" [→](#default-in-medias-res)
@@ -97,8 +97,11 @@ Style: Cinematic, warm afternoon light, shallow depth of field.
 
 **Key rule for I2V:** Do NOT re-describe what is already in the image. Only describe
 what should *change* or *animate*. Over-describing the static elements confuses the model.
-This applies equally to @ Image references in Seedance/Cinema Studio 3.0 — describe
-ONLY motion and camera movement, never what's already visible.
+This applies equally to an @Image used **as the starting frame** in Seedance/Cinema Studio
+3.0 — describe ONLY motion and camera movement, never what's already visible. An @Image
+attached as an identity **reference** (not frame one) is a different regime: never write text
+that contradicts it; how much matching identity text may ride beside it is OPEN
+(`../shared/house-rulings.md` P1-1).
 
 ---
 
@@ -375,7 +378,10 @@ prompt:
 - **Are they failing in varied ways, with the occasional near-hit?**
   (performance flat on one roll, camera off on another, physics odd on a third)
   → **stochastic.** The prompt is right; the roll wasn't. **Stop touching the
-  prompt. Lock it, fire a batch, and cull.**
+  prompt. Lock it, fire a batch, and cull.** (When only two takes exist and both
+  failed, the troubleshoot Retry Ladder reads a second failure as over-packing
+  instead — OPEN, no default: `../higgsfield-troubleshoot/SKILL.md` § Stop-Rule
+  Ladder, `../shared/house-rulings.md` P1-2.)
 
 You don't have to eyeball this. The ledger already classifies every reject as
 structural or stochastic, and `ratio <project>` prints a **verdict** per shot

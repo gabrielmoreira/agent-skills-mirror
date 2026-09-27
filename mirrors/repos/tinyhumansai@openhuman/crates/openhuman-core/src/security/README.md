@@ -8,22 +8,22 @@ credentials, and the keychain. None of these submodules is feature-gated.
 
 | Path | Purpose |
 | --- | --- |
-| `policy/` | `SecurityPolicy`, autonomy tiers, path/command gating — see [policy/README.md](policy/README.md) |
-| `approval/` | Human-in-the-loop approval gate for prompted tool calls — see [approval/README.md](approval/README.md) |
-| `credentials/` | Per-channel credential storage and profile-scoped secrets — see [credentials/README.md](credentials/README.md) |
-| `devices/` | Device pairing and cross-device tunnel security — see [devices/README.md](devices/README.md) |
-| `egress/` | Data-egress descriptors and `LocalOnly` enforcement chokepoint — see [egress/README.md](egress/README.md) |
-| `encryption/` | Cross-domain `EncryptionEngine` — see [encryption/README.md](encryption/README.md) |
-| `keyring/` | OS keyring backend and encrypted-file fallback secret store — see [keyring/README.md](keyring/README.md) |
-| `keyring_consent/` | Consent gate for falling back from OS keyring to local encrypted storage — see [keyring_consent/README.md](keyring_consent/README.md) |
-| `pii/` | Fully local PII scanner — see [pii/README.md](pii/README.md) |
-| `prompt_injection/` | Prompt-injection heuristics — see [prompt_injection/README.md](prompt_injection/README.md) |
+| `policy/` | `SecurityPolicy`, autonomy tiers, path/command gating; see [policy/README.md](policy/README.md) |
+| `approval/` | Human-in-the-loop approval gate for prompted tool calls; see [approval/README.md](approval/README.md) |
+| `credentials/` | Per-channel credential storage and profile-scoped secrets; see [credentials/README.md](credentials/README.md) |
+| `devices/` | Device pairing and cross-device tunnel security; see [devices/README.md](devices/README.md) |
+| `egress/` | Data-egress descriptors and `LocalOnly` enforcement chokepoint; see [egress/README.md](egress/README.md) |
+| `encryption/` | Cross-domain `EncryptionEngine`; see [encryption/README.md](encryption/README.md) |
+| `keyring/` | OS keyring backend and encrypted-file fallback secret store; see [keyring/README.md](keyring/README.md) |
+| `keyring_consent/` | Consent gate for falling back from OS keyring to local encrypted storage; see [keyring_consent/README.md](keyring_consent/README.md) |
+| `pii/` | Fully local PII scanner; see [pii/README.md](pii/README.md) |
+| `prompt_injection/` | Prompt-injection heuristics; see [prompt_injection/README.md](prompt_injection/README.md) |
 | `live_policy.rs` | Process-global, hot-swappable current `SecurityPolicy` (see its own `//!`) |
 | `secrets.rs` | One-line re-export of `keyring::encrypted_store` for legacy import paths |
 | `tools.rs` | `SecurityPolicyInfoTool`, the only LLM-callable surface of this domain (read-only, default-ON); command/path gating itself is enforced in-engine, never as an agent-callable tool |
 | `schemas.rs` | `security.policy_info` RPC controller, registered through `core/all.rs` |
 | `ops.rs` | `security_policy_info_for_config` / `load_and_get_security_policy_info` behind that controller |
-| `detect.rs` | `create_sandbox` — picks a `Sandbox` backend for the host |
+| `detect.rs` | `create_sandbox`, which picks a `Sandbox` backend for the host |
 | `traits.rs` | `Sandbox` trait and `NoopSandbox` |
 | `docker.rs`, `bubblewrap.rs`, `firejail.rs`, `landlock.rs` | Legacy `Command`-wrapping sandbox backends implementing `Sandbox` (see below) |
 | `audit.rs` | Append-only audit log of agent actions |
@@ -33,43 +33,44 @@ credentials, and the keychain. None of these submodules is feature-gated.
 Sandbox note: `docker.rs` / `bubblewrap.rs` / `firejail.rs` / `landlock.rs`
 here wrap a `std::process::Command` per the `Sandbox` trait and are chosen by
 `detect::create_sandbox`. `crates/openhuman-core/src/sandbox/` is a separate,
-newer domain — see `sandbox/cwd_jail/mod.rs`'s rustdoc for why `cwd_jail`
+newer domain; see `sandbox/cwd_jail/mod.rs`'s rustdoc for why `cwd_jail`
 superseded these backends on macOS (no `bwrap`) and added a Windows
-AppContainer backend; the two domains are not interchangeable.
+AppContainer backend. The two domains are not interchangeable.
 
 ## Public surface
 
 - `pub struct SecurityPolicy`, `pub enum AutonomyLevel`, `pub enum CommandClass`,
   `pub enum GateDecision`, `pub struct TrustedRoot` /
-  `pub enum TrustedAccess`, `POLICY_BLOCKED_MARKER` / `POLICY_DENIED_MARKER` —
-  `policy/types.rs`, re-exported here — see [policy/README.md](policy/README.md).
+  `pub enum TrustedAccess`, `POLICY_BLOCKED_MARKER` / `POLICY_DENIED_MARKER`,
+  all defined in `policy/types.rs` and re-exported here; see
+  [policy/README.md](policy/README.md).
 - `pub fn validate_path_within_root`, `pub fn openhuman_scratch_dir`,
-  `pub fn ensure_openhuman_scratch_dir` — `policy/enforcement.rs`.
-- `pub trait Sandbox` / `pub struct NoopSandbox` — `traits.rs` — pluggable
-  sandbox abstraction.
-- `pub fn create_sandbox(config: &SecurityConfig) -> Arc<dyn Sandbox>` —
-  `detect.rs` — honors `config.sandbox.backend` or auto-detects Landlock /
-  Firejail / Bubblewrap / Docker, falling back to `NoopSandbox`. Landlock and
-  Bubblewrap are behind the `sandbox-landlock` / `sandbox-bubblewrap` cargo
-  features.
-- `pub use self::keyring::SecretStore` — encrypted-on-disk secret codec whose
-  master key lives in keychain-backed storage.
-- `pub use egress::{emit_external_transfer, enforce_egress, local_only_blocks, local_only_tool_block, DataKind, EgressDescriptor, EgressReason, IdentificationRisk}` —
+  `pub fn ensure_openhuman_scratch_dir`, defined in `policy/enforcement.rs`.
+- `pub trait Sandbox` / `pub struct NoopSandbox`, defined in `traits.rs`: a
+  pluggable sandbox abstraction.
+- `pub fn create_sandbox(config: &SecurityConfig) -> Arc<dyn Sandbox>`,
+  defined in `detect.rs`. It honors `config.sandbox.backend` or auto-detects
+  Landlock, Firejail, Bubblewrap, or Docker, falling back to `NoopSandbox`.
+  Landlock and Bubblewrap sit behind the `sandbox-landlock` /
+  `sandbox-bubblewrap` cargo features.
+- `pub use self::keyring::SecretStore`: an encrypted-on-disk secret codec
+  whose master key lives in keychain-backed storage.
+- `pub use egress::{emit_external_transfer, enforce_egress, local_only_blocks, local_only_tool_block, DataKind, EgressDescriptor, EgressReason, IdentificationRisk}`;
   see [egress/README.md](egress/README.md).
-- `pub use pii::{scan as scan_pii, CategoryHit, PiiCategory, PiiScanResult, RiskLevel}` —
+- `pub use pii::{scan as scan_pii, CategoryHit, PiiCategory, PiiScanResult, RiskLevel}`;
   see [pii/README.md](pii/README.md).
 - `pub struct AuditLogger` / `pub enum AuditEventType` / `pub struct AuditEvent`
   / `pub struct Actor` / `pub struct Action` / `pub struct ExecutionResult` /
-  `pub struct SecurityContext` / `pub struct CommandExecutionLog` — `audit.rs`
-  — append-only audit trail.
+  `pub struct SecurityContext` / `pub struct CommandExecutionLog`, defined in
+  `audit.rs`: the append-only audit trail.
 - `pub fn is_public_bind` / `pub fn ensure_core_rpc_token_for_bind` /
-  `CORE_TOKEN_ENV_VAR` / `CoreBindTokenError` — `pairing.rs` — refuse a
-  non-loopback RPC bind without a core token. `PairingGuard`,
+  `CORE_TOKEN_ENV_VAR` / `CoreBindTokenError`, defined in `pairing.rs`, refuse
+  a non-loopback RPC bind without a core token. `PairingGuard`,
   `constant_time_eq`, and the token helpers are re-exported from
   `tinychannels_bus::security`.
-- `pub fn redact(value: &str) -> String` — `core.rs` — uniform 4-char-prefix
-  redaction for logs.
-- `pub use ops as rpc` — `ops.rs`'s `security_policy_info_for_config(&Config)`
+- `pub fn redact(value: &str) -> String`, defined in `core.rs`: uniform
+  4-char-prefix redaction for logs.
+- `pub use ops as rpc`: `ops.rs`'s `security_policy_info_for_config(&Config)`
   and `load_and_get_security_policy_info()` return
   `RpcOutcome<serde_json::Value>` and back the `security.policy_info` RPC
   function; `tools.rs` exposes the same read to the agent.
@@ -90,11 +91,11 @@ Every enforcement entry point short-circuits on the flag: `gate_decision`,
 **Two things survive a disabled policy**, and they are the ones a future edit is
 most likely to take with it:
 
-- `is_always_forbidden` — credential stores and system roots (see below).
+- `is_always_forbidden`: credential stores and system roots (see below).
 - The `..`-traversal and null-byte rejections in `is_path_string_allowed`, which
   are correctness rather than policy.
 
-`SecurityPolicy::default()` is the opposite — `enabled: true` — because that is
+`SecurityPolicy::default()` is the opposite: `enabled: true`, because that is
 the fallback for a policy built with no config at all, where fail-closed is
 right. Only `from_config` carries the shipped default.
 
@@ -111,13 +112,13 @@ a feature work:
 - **`action_dir` is the agent's permitted read and write root.** Tools resolve
   relative paths and default their cwd here (`SecurityPolicy::action_dir`,
   `policy/types.rs`), and `from_config` grants it as a `ReadWrite` trusted root
-  so a non-default working folder is actually writable — it is only the *join*
-  base otherwise. Skipped when the action dir sits at or above `workspace_dir`,
-  where the grant would buy a `forbidden_paths` bypass over the whole
-  workspace.
+  so a non-default working folder is actually writable; without that grant it
+  is only the *join* base. The grant is skipped when the action dir sits at or
+  above `workspace_dir`, where it would buy a `forbidden_paths` bypass over the
+  whole workspace.
 - **`workspace_dir` stores internal state and is never an acting-tool target.**
   Enforced by `SecurityPolicy::is_workspace_internal_path`
-  (`policy/path_checks.rs`) — memory DBs, sessions, tokens, and other core
+  (`policy/path_checks.rs`): memory DBs, sessions, tokens, and other core
   persistence under `workspace_dir` (`WORKSPACE_INTERNAL_DIRS` /
   `WORKSPACE_INTERNAL_FILES` and the `memory-`/`memory_tree-`/`session_raw-`
   prefixes) are unwritable by agent tools even under a `trusted_root` grant.
@@ -144,32 +145,32 @@ a feature work:
   `DEFAULT_APPROVAL_TTL` is 10 minutes and a timed-out park returns `Deny`;
   `approval_gate_boot_decision` (`core/types.rs`, applied in
   `core/jsonrpc.rs`) always installs the gate for `HostKind::TauriShell` and
-  ignores `OPENHUMAN_APPROVAL_GATE=0` there — only CLI, Docker, and library
+  ignores `OPENHUMAN_APPROVAL_GATE=0` there. Only CLI, Docker, and library
   hosts may opt out.
 
 ## Called by
 
-- `crates/openhuman-core/src/agent/tinyagents/host/security_gate.rs` — bridges
+- `crates/openhuman-core/src/agent/tinyagents/host/security_gate.rs`: bridges
   `SecurityPolicy` into the tinyagents tool-call gate.
-- `crates/openhuman-core/src/agent/turn_workspace.rs` — per-turn workspace grants.
+- `crates/openhuman-core/src/agent/turn_workspace.rs`: per-turn workspace grants.
 - `crates/openhuman-core/src/tools/ops.rs` and nearly every
-  `tools/impl/{filesystem,network,system,browser,document,presentation}/*.rs`
-  — every executable tool consults `SecurityPolicy` before acting.
-- `crates/openhuman-core/src/tools/impl/network/{curl,http_request,web_fetch}.rs`
-  — risk-classify outbound calls and call into `egress`.
-- `crates/openhuman-core/src/agent/tools/delegate.rs` — sub-agent dispatch
+  `tools/impl/{filesystem,network,system,browser,document,presentation}/*.rs`:
+  every executable tool consults `SecurityPolicy` before acting.
+- `crates/openhuman-core/src/tools/impl/network/{curl,http_request,web_fetch}.rs`:
+  risk-classify outbound calls and call into `egress`.
+- `crates/openhuman-core/src/agent/tools/delegate.rs`: sub-agent dispatch
   goes through the autonomy gate.
-- `crates/openhuman-core/src/cron/scheduler.rs` — wraps scheduled shell jobs in
+- `crates/openhuman-core/src/cron/scheduler.rs`: wraps scheduled shell jobs in
   `SecurityPolicy`.
-- `crates/openhuman-core/src/security/credentials/` — stores profile secrets
+- `crates/openhuman-core/src/security/credentials/`: stores profile secrets
   through `keyring::SecretStore`.
-- `crates/openhuman-core/src/memory/guard/policy.rs` — `enforce_write_tier`
+- `crates/openhuman-core/src/memory/guard/policy.rs`: `enforce_write_tier`
   under `MemoryCore::store`, `live_policy`, and `egress` for outbound memory.
 
 ## Tests
 
 - `policy/policy_tests*.rs`, `policy/proptest_tests.rs`,
-  `policy/enforcement_scratch_dir_tests_tests.rs` — see
+  `policy/enforcement_scratch_dir_tests_tests.rs`; see
   [policy/README.md](policy/README.md).
 - Every other file has an adjacent `*_tests.rs` (`audit_tests.rs`,
   `core_tests.rs`, `detect_tests.rs`, `live_policy_tests.rs`, `ops_tests.rs`,
