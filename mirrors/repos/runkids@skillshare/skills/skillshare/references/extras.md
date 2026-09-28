@@ -159,7 +159,7 @@ The first sync records the target's attach-time state as its restore point
 (a file, a symlink, or no file), then replaces it. `extras remove` and
 `extras <name> --remove-target <path> --prune` put that state back; in `import`
 mode they only drop the managed line when the file has other content. Later edits
-that sync, reapply, or restore replace are kept as drift backups in
+that sync, overwrite, or restore replace are kept as drift backups in
 `~/.local/state/skillshare/extras/backups/<id>/drift/` and are never restored.
 `--remove-target` without `--prune` leaves the file and forgets the restore point.
 `flatten` and `extension` are rejected on a single-file extra; `extras collect`

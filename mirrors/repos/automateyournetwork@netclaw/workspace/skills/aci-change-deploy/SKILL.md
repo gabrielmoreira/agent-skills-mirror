@@ -31,7 +31,7 @@ python3 $MCP_CALL "python3 -u $SERVICENOW_MCP_SCRIPT" TOOL_NAME '{"param":"value
 
 ### Phase 1: ServiceNow Change Request Creation
 
-Before touching the APIC, create a CR that documents the tenant, VRF, BD, and EPG scope of the change.
+Before touching the APIC, check for open P1/P2 incidents on the affected CIs and prepare a CR that documents the tenant, VRF, BD, and EPG scope. Obtain authorization to create the external ticket under the session communication rules. Discover the installed ServiceNow/APIC tool schemas before using these examples; external server versions can differ.
 
 #### 1A: Create the Change Request
 
@@ -67,7 +67,7 @@ python3 $MCP_CALL "python3 -u $SERVICENOW_MCP_SCRIPT" submit_change_for_approval
 python3 $MCP_CALL "python3 -u $SERVICENOW_MCP_SCRIPT" get_change_request_details '{"change_id":"CHG0030001"}'
 ```
 
-**STOP if the CR state is not "implement" or "approved".** Do not proceed with any APIC changes until the CR is approved. If rejected, review the rejection reason:
+**Proceed only when the exact intended CR has approved authorization AND its lifecycle state is Implement.** An approved CR still in another lifecycle state is insufficient, as is an Implement record without approval. Verify the returned CR identifier and scope match this change. Missing, malformed, unavailable or mismatched records stop the change. If rejected, review the rejection reason:
 
 ```bash
 python3 $MCP_CALL "python3 -u $SERVICENOW_MCP_SCRIPT" list_change_requests '{"query":"number=CHG0030001","limit":1}'
@@ -265,7 +265,7 @@ python3 $MCP_CALL "python3 -u $SERVICENOW_MCP_SCRIPT" update_change_request '{"c
 Record the complete change session in GAIT for compliance:
 
 ```bash
-python3 $MCP_CALL "python3 -u $GAIT_MCP_SCRIPT" gait_record_turn '{"input":{"role":"assistant","content":"ACI change deployment completed.\n\nCR: CHG0030001 - Create tenant prod-web\nAPIC: sandboxapicdc.cisco.com\nResult: SUCCESS\n\nObjects created: tenant prod-web, VRF prod-web-vrf, BD web-bd, AP web-app, EPG web-frontend\nPre-change faults: 21 (0 critical)\nPost-change faults: 21 (0 critical) - delta: 0\nHealth score: 97/100 (unchanged)\nRollback required: No\nCR Status: Closed","artifacts":[]}}'
+python3 $MCP_CALL "python3 -u $GAIT_MCP_SCRIPT" gait_record_turn '{"user_text":"Example only: replace with the actual authorized request.","assistant_text":"ACI change deployment completed.\n\nCR: CHG0030001 - Create tenant prod-web\nAPIC: sandboxapicdc.cisco.com\nResult: SUCCESS\n\nObjects created: tenant prod-web, VRF prod-web-vrf, BD web-bd, AP web-app, EPG web-frontend\nPre-change faults: 21 (0 critical)\nPost-change faults: 21 (0 critical) - delta: 0\nHealth score: 97/100 (unchanged)\nRollback required: No\nCR Status: Closed","artifacts":[]}'
 ```
 
 ## Complete End-to-End Example
@@ -308,7 +308,7 @@ APIC_URL=$APIC_URL USERNAME=$ACI_USERNAME PASSWORD=$ACI_PASSWORD python3 $MCP_CA
 python3 $MCP_CALL "python3 -u $SERVICENOW_MCP_SCRIPT" update_change_request '{"change_id":"<sys_id_from_step_1>","state":"closed","work_notes":"Change completed. Fault delta: 0. Health unchanged. All objects verified."}'
 
 # Step 8: GAIT audit trail
-python3 $MCP_CALL "python3 -u $GAIT_MCP_SCRIPT" gait_record_turn '{"input":{"role":"assistant","content":"ACI change CHG0030001 completed successfully. Tenant prod-web created with VRF/BD/AP/EPG. Zero fault delta. CR closed.","artifacts":[]}}'
+python3 $MCP_CALL "python3 -u $GAIT_MCP_SCRIPT" gait_record_turn '{"user_text":"Example only: replace with the actual authorized request.","assistant_text":"ACI change CHG0030001 completed successfully. Tenant prod-web created with VRF/BD/AP/EPG. Zero fault delta. CR closed.","artifacts":[]}'
 ```
 
 ## Change Report Format
@@ -355,3 +355,8 @@ CR Status:    Closed
 - Use **aci-fabric-audit** to run a full fabric audit before and after the change window
 - Use **markmap-viz** to visualize the updated tenant hierarchy after the change
 - Use **drawio-diagram** to generate an updated fabric topology including the new policy objects
+
+Audit examples are illustrative. Replace request, outcomes, identifiers and counts
+with observed session evidence; do not record these example results as facts.
+Inspect MCP `isError`, returned `ok`, and the recorded turn with `gait_show` when
+validating a new client/schema. Follow gait-session-tracking for branch checkout.

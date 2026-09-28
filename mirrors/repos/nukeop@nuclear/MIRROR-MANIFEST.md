@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `nukeop/nuclear` — 26 default patterns, 1 followed patterns, 13 file(s) materialized.
+Mirror of `nukeop/nuclear` — 26 default patterns, 1 followed patterns, 27 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `nukeop/nuclear` — 26 default patterns, 1 followed patterns, 13 file
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 13 |
+| Files         | 27 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -61,17 +61,31 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`.agents/skills/creating-components/SKILL.md`](.agents/skills/creating-components/SKILL.md) |
 | 2 | ✓ | [`.agents/skills/host-pattern/SKILL.md`](.agents/skills/host-pattern/SKILL.md) |
-| 3 | ✓ | [`.agents/skills/writing-docs/SKILL.md`](.agents/skills/writing-docs/SKILL.md) |
-| 4 | ✓ | [`.agents/skills/writing-plugins/SKILL.md`](.agents/skills/writing-plugins/SKILL.md) |
-| 5 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
-| 6 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 7 | ✓ | [`packages/docs/plugins/getting-started.md`](packages/docs/plugins/getting-started.md) |
-| 8 | ✓ | [`packages/docs/README.md`](packages/docs/README.md) |
-| 9 | ✓ | [`packages/docs/user-manual/getting-started.md`](packages/docs/user-manual/getting-started.md) |
-| 10 | ✓ | [`packages/plugin-sdk/README.md`](packages/plugin-sdk/README.md) |
-| 11 | ✓ | [`packages/themes/README.md`](packages/themes/README.md) |
-| 12 | ✓ | [`packages/website/public/llms.txt`](packages/website/public/llms.txt) |
-| 13 | → | [`README.md`](README.md) |
+| 3 | ✓ | [`.agents/skills/making-demo-videos/references/images.md`](.agents/skills/making-demo-videos/references/images.md) |
+| 4 | ✓ | [`.agents/skills/making-demo-videos/references/music.md`](.agents/skills/making-demo-videos/references/music.md) |
+| 5 | ✓ | [`.agents/skills/making-demo-videos/references/openscreen.md`](.agents/skills/making-demo-videos/references/openscreen.md) |
+| 6 | ✓ | [`.agents/skills/making-demo-videos/references/recording.md`](.agents/skills/making-demo-videos/references/recording.md) |
+| 7 | ✓ | [`.agents/skills/making-demo-videos/references/remotion.md`](.agents/skills/making-demo-videos/references/remotion.md) |
+| 8 | ✓ | [`.agents/skills/making-demo-videos/references/voice.md`](.agents/skills/making-demo-videos/references/voice.md) |
+| 9 | ✓ | [`.agents/skills/making-demo-videos/scripts/gemini-tts.ts`](.agents/skills/making-demo-videos/scripts/gemini-tts.ts) |
+| 10 | ✓ | [`.agents/skills/making-demo-videos/scripts/input.ts`](.agents/skills/making-demo-videos/scripts/input.ts) |
+| 11 | ✓ | [`.agents/skills/making-demo-videos/scripts/openscreen.ts`](.agents/skills/making-demo-videos/scripts/openscreen.ts) |
+| 12 | ✓ | [`.agents/skills/making-demo-videos/scripts/replicate.ts`](.agents/skills/making-demo-videos/scripts/replicate.ts) |
+| 13 | ✓ | [`.agents/skills/making-demo-videos/scripts/screen-control.ts`](.agents/skills/making-demo-videos/scripts/screen-control.ts) |
+| 14 | ✓ | [`.agents/skills/making-demo-videos/scripts/webdriver-plugin.ts`](.agents/skills/making-demo-videos/scripts/webdriver-plugin.ts) |
+| 15 | ✓ | [`.agents/skills/making-demo-videos/scripts/webdriver.ts`](.agents/skills/making-demo-videos/scripts/webdriver.ts) |
+| 16 | ✓ | [`.agents/skills/making-demo-videos/SKILL.md`](.agents/skills/making-demo-videos/SKILL.md) |
+| 17 | ✓ | [`.agents/skills/writing-docs/SKILL.md`](.agents/skills/writing-docs/SKILL.md) |
+| 18 | ✓ | [`.agents/skills/writing-plugins/SKILL.md`](.agents/skills/writing-plugins/SKILL.md) |
+| 19 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
+| 20 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 21 | ✓ | [`packages/docs/plugins/getting-started.md`](packages/docs/plugins/getting-started.md) |
+| 22 | ✓ | [`packages/docs/README.md`](packages/docs/README.md) |
+| 23 | ✓ | [`packages/docs/user-manual/getting-started.md`](packages/docs/user-manual/getting-started.md) |
+| 24 | ✓ | [`packages/plugin-sdk/README.md`](packages/plugin-sdk/README.md) |
+| 25 | ✓ | [`packages/themes/README.md`](packages/themes/README.md) |
+| 26 | ✓ | [`packages/website/public/llms.txt`](packages/website/public/llms.txt) |
+| 27 | → | [`README.md`](README.md) |
 
 ---
 

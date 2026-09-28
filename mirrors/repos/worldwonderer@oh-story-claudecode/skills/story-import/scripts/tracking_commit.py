@@ -58,8 +58,31 @@ CONTEXT_HEADINGS = (
 FORESHADOW_STATUSES = ("已埋", "已回收", "已过期", "放弃")
 FORESHADOW_IMPORTANCE = ("高", "中", "低")
 REVEAL_STATUSES = ("未揭示", "部分揭示", "已揭示")
+# 伏笔与时间线条目里模型常用的同义写法：含义明确的直接改成正式名，不让一次提交为措辞失败。
+ACTION_ALIASES = {
+    "add": "upsert", "new": "upsert", "create": "upsert", "update": "upsert", "plant": "upsert",
+    "advance": "upsert", "resolve": "upsert", "insert": "upsert",
+    "新增": "upsert", "埋设": "upsert", "更新": "upsert", "推进": "upsert", "回收": "upsert",
+    "remove": "delete", "删除": "delete",
+}
+# 带状态含义的伏笔动作词：它们也映射成 upsert，但动作词本身说了伏笔走到哪一步。
+# status 缺省时按动作词补上（意图只有这一个来源，不会猜错）；status 与动作词矛盾时退回，
+# 因为无法判断是动作词用错还是状态写错——静默改任何一边都可能把没回收的伏笔记成已回收。
+FORESHADOW_ACTION_STATUS = {
+    "resolve": "已回收", "回收": "已回收",
+    "advance": "已埋", "推进": "已埋",
+}
+FORESHADOW_KEY_ALIASES = {
+    "planned_chapter": "planned_resolution_chapter", "planned_payoff_chapter": "planned_resolution_chapter",
+    "payoff_chapter": "planned_resolution_chapter", "resolution_chapter": "planned_resolution_chapter",
+    "resolve_chapter": "planned_resolution_chapter", "plant_chapter": "planted_chapter",
+    "planted": "planted_chapter", "description": "summary", "content": "summary",
+}
+TIMELINE_KEY_ALIASES = {"time": "story_time", "fact": "objective_fact", "reveal": "reveal_status"}
 INVALID_FILE_CHARS = re.compile(r"[<>:\"/\\|?*\x00-\x1f]")
 FORESHADOW_ID = re.compile(r"^F\d{3,}$")
+SNAPSHOT_TEXT_FIELDS = ("identity", "location", "goal", "state")
+SNAPSHOT_LIST_FIELDS = ("abilities_resources", "relationships", "knowledge", "open_threads")
 EVENT_ID = re.compile(r"^E\d{3,}$")
 WINDOWS_RESERVED_NAMES = {
     "CON",
@@ -112,9 +135,34 @@ def as_int(value: object, label: str, *, minimum: int = 0) -> int:
     return value
 
 
+def as_chapter(value: object, label: str, *, minimum: int = 1) -> int:
+    """章号：模型常写成 "22"。纯数字字符串按整数收，语义不变；其余照旧报错。"""
+    if isinstance(value, str) and value.strip().isdecimal():
+        value = int(value.strip())
+    return as_int(value, label, minimum=minimum)
+
+
+def with_aliases(row: dict[str, Any], aliases: dict[str, str]) -> dict[str, Any]:
+    """把含义明确的同义字段名改成正式字段名；正式字段已在时不动，留给未知字段报错。"""
+    row = dict(row)
+    for alias, canonical in aliases.items():
+        if alias in row and canonical not in row:
+            row[canonical] = row.pop(alias)
+    return row
+
+
+def normalize_action(value: object, label: str, *, allow_delete: bool) -> str:
+    action = clean_text(value, label, max_bytes=24)
+    action = ACTION_ALIASES.get(action.lower(), action.lower())
+    allowed = ("upsert", "delete") if allow_delete else ("upsert",)
+    require(action in allowed, f"{label} is invalid: use {' or '.join(allowed)}")
+    return action
+
+
 def require_known_keys(mapping: dict[str, Any], allowed: set[str], label: str) -> None:
     unknown = set(mapping) - allowed
-    require(not unknown, f"{label} contains unsupported fields: {', '.join(sorted(unknown))}")
+    require(not unknown, f"{label} contains unsupported fields: {', '.join(sorted(unknown))}"
+                         f"（只收 {', '.join(sorted(allowed))}）")
 
 
 # 事务校验期间收集全部超长字段，一次报完；None 表示逐条立即报错（初始化、状态读取等路径）。
@@ -311,8 +359,22 @@ def validate_position(value: object, label: str = "context.position") -> dict[st
     }
 
 
+def joined_text(value: object) -> object:
+    """单句字段写成了字符串列表时按「；」连成一句，内容不丢。"""
+    if isinstance(value, list) and value and all(isinstance(item, str) for item in value):
+        return "；".join(value)
+    return value
+
+
+def as_text_list(value: object) -> object:
+    """列表字段只写了一句时当作一项。"""
+    return [value] if isinstance(value, str) and value.strip() else value
+
+
 def normalize_snapshot(value: object, label: str) -> dict[str, Any]:
     snapshot = as_mapping(value, label)
+    snapshot = {key: joined_text(item) if key in SNAPSHOT_TEXT_FIELDS else as_text_list(item)
+                if key in SNAPSHOT_LIST_FIELDS else item for key, item in snapshot.items()}
     require_known_keys(
         snapshot,
         {"identity", "location", "goal", "state", "abilities_resources", "relationships", "knowledge", "open_threads"},
@@ -379,23 +441,33 @@ def normalize_foreshadow_change(
     allow_delete: bool,
     through_chapter: int,
 ) -> dict[str, Any]:
-    row = as_mapping(value, label)
+    row = with_aliases(as_mapping(value, label), FORESHADOW_KEY_ALIASES)
     require_known_keys(
         row,
         {"action", "id", "summary", "planted_chapter", "planned_resolution_chapter", "status", "importance"},
         label,
     )
-    action = clean_text(row.get("action", "upsert"), f"{label}.action", max_bytes=24)
-    require(action in ({"upsert", "delete"} if allow_delete else {"upsert"}), f"{label}.action is invalid")
+    raw_action = row.get("action", "upsert")
+    action = normalize_action(raw_action, f"{label}.action", allow_delete=allow_delete)
     identifier = clean_text(row.get("id"), f"{label}.id", max_bytes=24)
     require(FORESHADOW_ID.fullmatch(identifier) is not None, f"{label}.id must look like F001")
     if action == "delete":
         return {"action": action, "id": identifier}
-    planted_chapter = as_int(row.get("planted_chapter"), f"{label}.planted_chapter", minimum=1)
+    implied = FORESHADOW_ACTION_STATUS.get(" ".join(str(raw_action).split()).lower())
+    if implied is not None:
+        if row.get("status") in (None, ""):
+            row["status"] = implied
+        right = "回收了就写 status=已回收" if implied == "已回收" else "只是推进、还没回收就写 status=已埋"
+        require(
+            row["status"] == implied,
+            f"{label}.action={raw_action} 与 status={row['status']} 矛盾：{right}；"
+            "不是这个意思就把 action 改成 upsert 并写实际状态",
+        )
+    planted_chapter = as_chapter(row.get("planted_chapter"), f"{label}.planted_chapter")
     require(planted_chapter <= through_chapter, f"{label}.planted_chapter cannot be in the future")
     planned_raw = row.get("planned_resolution_chapter")
     planned_chapter = (
-        None if planned_raw is None else as_int(planned_raw, f"{label}.planned_resolution_chapter", minimum=1)
+        None if planned_raw in (None, "") else as_chapter(planned_raw, f"{label}.planned_resolution_chapter")
     )
     require(
         planned_chapter is None or planned_chapter >= planted_chapter,
@@ -471,14 +543,13 @@ def normalize_timeline_change(
     allow_delete: bool,
     through_chapter: int,
 ) -> dict[str, Any]:
-    event = as_mapping(value, label)
+    event = with_aliases(as_mapping(value, label), TIMELINE_KEY_ALIASES)
     require_known_keys(
         event,
         {"action", "id", "story_time", "objective_fact", "reader_knowledge", "reveal_status", "reveal_chapter", "characters"},
         label,
     )
-    action = clean_text(event.get("action", "upsert"), f"{label}.action", max_bytes=24)
-    require(action in ({"upsert", "delete"} if allow_delete else {"upsert"}), f"{label}.action is invalid")
+    action = normalize_action(event.get("action", "upsert"), f"{label}.action", allow_delete=allow_delete)
     identifier = clean_text(event.get("id"), f"{label}.id", max_bytes=24)
     require(EVENT_ID.fullmatch(identifier) is not None, f"{label}.id must look like E001")
     if action == "delete":
@@ -486,7 +557,7 @@ def normalize_timeline_change(
     reveal_status = clean_text(event.get("reveal_status"), f"{label}.reveal_status", max_bytes=24)
     require(reveal_status in REVEAL_STATUSES, f"{label}.reveal_status must be one of {REVEAL_STATUSES}")
     reveal_raw = event.get("reveal_chapter")
-    reveal_chapter = None if reveal_raw is None else as_int(reveal_raw, f"{label}.reveal_chapter", minimum=1)
+    reveal_chapter = None if reveal_raw in (None, "") else as_chapter(reveal_raw, f"{label}.reveal_chapter")
     if reveal_status == "未揭示":
         require(reveal_chapter is None, f"{label} must not put a future reveal chapter in established timeline facts")
     else:
@@ -708,7 +779,8 @@ def normalize_delta(
         # 本章退役的角色记录最后一次变化即可，不必再交一份马上要删的快照。
         require(
             not is_core or name in snapshots or portable_name_key(name) in retiring,
-            f"core character {name} changed but has no current snapshot",
+            f"core character {name} changed but has no current snapshot: 把 draft 输出 current_snapshots 里"
+            f"「{name}」的快照整份改成本章结束时的状态，放进 character_snapshots",
         )
         character_changes.append(
             {"name": name, "change": clean_text(change.get("change"), f"delta.character_changes[{index}].change", max_bytes=360)}
@@ -1364,6 +1436,30 @@ def record_prefill(state: dict[str, Any], record: dict[str, Any]) -> tuple[dict[
     return delta, snapshots, notes
 
 
+def entry_shapes(chapter: int) -> dict[str, Any]:
+    """draft 当场给出每类条目的形状：模型填 delta 时手里只有空数组，字段名、整数、枚举都靠猜，
+    首次提交几乎都因此被退回。取值从校验用的同一组常量生成，不另立一套。"""
+    return {
+        "delta.character_changes[]": {"name": "角色名", "change": "一句话：本章起了什么变化"},
+        "delta.foreshadow_changes[]": {
+            "action": "upsert（撤掉整条写 delete，只带 id）", "id": "F007", "summary": "伏笔一句话",
+            "planted_chapter": chapter, "planned_resolution_chapter": "计划回收章的整数，未定写 null",
+            "status": "|".join(FORESHADOW_STATUSES), "importance": "|".join(FORESHADOW_IMPORTANCE),
+        },
+        "delta.timeline_events[]": {
+            "action": "upsert（撤掉整条写 delete，只带 id）", "id": "E012", "story_time": "故事内时间",
+            "objective_fact": "客观发生了什么", "reader_knowledge": "读者此刻知道/以为什么",
+            "reveal_status": "|".join(REVEAL_STATUSES),
+            "reveal_chapter": f"已揭示或部分揭示时写揭示章的整数（不晚于 {chapter}），未揭示写 null",
+            "characters": ["角色名"],
+        },
+        "character_snapshots.{角色名}": {
+            **{key: "一句话" for key in SNAPSHOT_TEXT_FIELDS},
+            **{key: ["一条一句"] for key in SNAPSHOT_LIST_FIELDS},
+        },
+    }
+
+
 def draft_transaction(project: Path, chapter: int) -> tuple[dict[str, Any], dict[str, Any], dict[str, Any]]:
     """按当前 state 预填一份逐章事务：修订号、模式、章名和整份提交的上下文当前值都填好。
     新章（append）调用方只写本章变化；另返回在场核心角色的当前快照，供有变化时整份改写后放进事务。
@@ -1552,7 +1648,7 @@ def main() -> int:
             else:
                 fill = ("只填 delta 里本章的变化；context 其余字段已是当前值，要撤下的长期约束或连贯性风险从 context 删掉并把原文放进 "
                         "delta.retired_context_items（仅 append）；本章有变化的核心角色把下面的当前快照整份改好放进 character_snapshots，"
-                        "并在 character_changes 写一句变化。不要从脚本源码或 state 文件里另找格式。")
+                        "并在 character_changes 写一句变化。每类条目照 shapes 的形状写，不要从脚本源码或 state 文件里另找格式。")
             blank = not (document["context"]["position"].get("story_time") or document["context"]["position"].get("scene"))
             if previous_position and blank:
                 fill = ("context.position 的 story_time 与 scene 留空，填本章结束时的故事时间与场景（上一章结束时见 "
@@ -1563,6 +1659,7 @@ def main() -> int:
                 "expected_state_revision": document["expected_state_revision"],
                 "fill": (f"{refreshed}；要从头生成加 --force。" if refreshed else "") + fill,
                 "limits_chars": DRAFT_LIMITS,
+                "shapes": entry_shapes(args.chapter),
                 "current_snapshots": snapshots,
             }
             if previous_position:

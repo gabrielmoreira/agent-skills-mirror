@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `zhouxiaoka/autoclip` — 26 default patterns, 0 followed patterns, 3 file(s) materialized.
+Mirror of `zhouxiaoka/autoclip` — 26 default patterns, 0 followed patterns, 5 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `zhouxiaoka/autoclip` — 26 default patterns, 0 followed patterns, 3 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 3 |
+| Files         | 5 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,9 +59,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 2 | ✓ | [`skills/autoclip/SKILL.md`](skills/autoclip/SKILL.md) |
-| 3 | ✓ | [`skills/product-board/SKILL.md`](skills/product-board/SKILL.md) |
+| 1 | ✓ | [`artifacts/game-ads/run-20260921/runner-variants/AGENTS.md`](artifacts/game-ads/run-20260921/runner-variants/AGENTS.md) |
+| 2 | ✓ | [`artifacts/game-ads/run-20260921/runner-variants/CLAUDE.md`](artifacts/game-ads/run-20260921/runner-variants/CLAUDE.md) |
+| 3 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 4 | ✓ | [`skills/autoclip/SKILL.md`](skills/autoclip/SKILL.md) |
+| 5 | ✓ | [`skills/product-board/SKILL.md`](skills/product-board/SKILL.md) |
 
 ---
 

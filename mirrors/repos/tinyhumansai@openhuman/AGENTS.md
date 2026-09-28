@@ -359,6 +359,16 @@ sandboxing, timeouts, and progress events.
 - Library mode has no user login: the runtime's API key rides managed
   inference as `Authorization: Bearer` and backend REST as `x-api-key`
   (`security::credentials::api_key`, `session_support::BackendCredential`).
+  Every backend caller resolves its credential through
+  `resolve_backend_credential` (or `backend_bearer_secret` for bearer-only
+  seams), never `get_session_token`, so the key covers integrations, voice,
+  embeddings, memory-host and socket calls too; only `/auth/*` session flows
+  need a signed-in user.
+  Every backend caller resolves its credential through
+  `resolve_backend_credential` (or `backend_bearer_secret` for bearer-only
+  seams), never `get_session_token`, so the key covers integrations, voice,
+  embeddings, memory-host and socket calls too; only `/auth/*` session flows
+  need a signed-in user.
 - The core never obtains, validates, exchanges or refreshes a credential.
   It takes one — a session JWT, an API key, or the offline local token —
   through `auth.set_credential` (`security::credentials::ops::credential`)
@@ -411,7 +421,10 @@ Cargo default features define the contributor build;
 `scripts/ci/product-features.txt` defines the shipped product. The Tauri shell
 disables default features, so product gates must be forwarded explicitly in
 `crates/openhuman-app/Cargo.toml` and checked by
-`scripts/ci/check-feature-forwarding.mjs`. Test both enabled and disabled
+`scripts/ci/check-feature-forwarding.mjs`. The same gate checks the library
+chain: a core gate must be forwarded by `openhuman-embed`, then
+`openhuman-tinyhumans`, then `openhuman-cli`, or be listed in
+`CHAIN_GATES_NOT_FORWARDED` / `CHAIN_LOCAL_GATES` with a reason. Test both enabled and disabled
 builds after changing a gate. Use `scripts/assert-shed.sh` or
 `scripts/dep-sim.py` before claiming a dependency reduction.
 
@@ -527,7 +540,7 @@ module release before migrating a host call to it.
 ## Backend API
 
 The core does not depend on `tinyhumans-sdk`. It reaches the hosted backend
-only through the port `crates/openhuman-core/src/api/transport/`
+only through the port `crates/openhuman-core/src/backend/transport/`
 (`BackendTransport`, `BackendRequest`, `BackendTransportError`); the SDK-backed
 implementation is `crates/openhuman-tinyhumans` (`SdkBackendTransport`), which
 sits above `openhuman-embed` and is installed once per process
@@ -541,34 +554,48 @@ openhuman -i tinyhumans-sdk` must stay empty). Every host that boots a core
 (`crates/openhuman-app/src/main.rs` and `lib.rs::run`,
 `crates/openhuman-tui/src/runner.rs`, `crates/openhuman-cli/src/main.rs`)
 calls `openhuman_tinyhumans::install` first; it also registers the hosted RPC
-proxies (`billing`, `team`, `referral`, `announcements` —
-`crates/openhuman-tinyhumans/src/hosted/`) into the core's controller
-registry through `core::all::register_controller_extension`
+proxies (`billing`, `team`, `referral`, `announcements`, `webhooks`,
+`channel_link`, `oauth` — `crates/openhuman-tinyhumans/src/hosted/`) into the
+core's controller registry through `core::all::register_controller_extension`
 (`DomainGroup::Hosted`). New backend-only proxy domains belong there, not in
 the core.
 
 Add missing backend routes to the vendored SDK (its unexposed-route registry
 is the route policy the transport enforces) and name them from the core;
-do not recreate route implementations in `crates/openhuman-core/src/api/`.
+do not recreate route implementations in `crates/openhuman-core/src/backend/`.
 
-`crates/openhuman-core/src/api/` owns OpenHuman session-token lookup, base URL
-selection, attribution headers and client profiles (`headers.rs`), and error
-classification. Authenticated `BackendOAuthClient` requests go through
-`authed_json`, whose private `finish_authed_json`
-(`crates/openhuman-core/src/api/rest.rs`) classifies transient transport
-failures and maps 401/404 responses to typed `BackendApiError` variants;
-`IntegrationClient::map_transport_error`
+The core holds no hosted URL, default, environment variable, header policy or
+product identity of its own any more — it only *asks* the installed
+transport, through `crates/openhuman-core/src/backend/mod.rs`'s
+`backend::base_url`, `backend::inference_base_url`, `backend::product_identity`
+and `backend::attribution_headers`. That state now lives with the transport
+implementation, in `crates/openhuman-tinyhumans/src/backend/`: `url.rs`
+(defaults, `BACKEND_URL`/`VITE_BACKEND_URL` overrides, the local-AI/inference
+guard), `headers.rs` (attribution headers and per-profile `reqwest` clients)
+and `product.rs` (`ProductIdentity`, re-exported at
+`openhuman_tinyhumans::{product_identity, set_product_identity,
+ProductIdentity}`).
+
+`crates/openhuman-core/src/backend/client.rs` owns the authenticated JSON
+client (`BackendClient`, renamed from `BackendOAuthClient`) and error
+classification. Authenticated `BackendClient` requests go through
+`authed_json`, whose private `finish_authed_json` classifies transient
+transport failures and maps 401/404 responses to typed `BackendApiError`
+variants; `IntegrationClient::map_transport_error`
 (`crates/openhuman-core/src/integrations/client/errors.rs`) plays the same
 role for integrations. Route new backend calls through those helpers instead
 of matching `BackendTransportError` by hand.
 
-Every TinyHumans backend request must carry a sanitized `x-sdk-name`:
+Every TinyHumans backend request must carry a sanitized `x-sdk-name`, now
+stamped by the installed transport's `attribution_headers` (called through
+`backend::attribution_headers`):
 
-- `BackendOAuthClient`
+- `BackendClient`
 - `IntegrationClient`, except redirected file downloads
 - the host session owner's `POST /auth/login-token/consume` and
   `GET /auth/me` (`openhuman_tinyhumans::session`, through `ClientHeaders`)
-- the agent Langfuse ingestion request
+- the agent's Langfuse and OTLP ingestion push
+- the managed model catalog listing
 
 Set `ProductIdentity` once during startup before building clients. Do not add
 this header to third-party endpoints, MCP servers, BYOK inference endpoints, or
@@ -615,6 +642,12 @@ serialization.
   `tinyhumansai/openhuman`.
 - Use the issue and PR templates.
 - Fix hook failures caused by your changes.
+- `.husky/pre-push` runs `rust:clippy` only when the push carries Rust
+  (`*.rs`, a manifest, `.cargo/`, `.gitmodules`, `crates/`, `vendor/`,
+  `rust-toolchain.toml`); it runs
+  anyway when the range cannot be resolved, or with
+  `PRE_PUSH_FORCE_CLIPPY=1`. `scripts/__tests__/pre-push-hook.test.mjs`
+  covers the hook.
 - macOS deep links require a built app bundle.
 - Windows registers `openhuman://` through `tauri-plugin-deep-link`.
 - Standalone debugging uses `./target/debug/openhuman-core serve`. Public

@@ -10,7 +10,7 @@
 
 - **frontmatter 单行键值**：`description` 不用 `|`/`>` 块，`metadata` 是单行 JSON，OpenClaw 依赖这一点。
 - **不跨 skill 引用文件**：除基础组件 `browser-cdp` 外，一个 skill 的 SKILL.md / references 不得引用另一个 skill 的文件；共享内容走 `scripts/shared-references.json` / `scripts/shared-assets.json` 登记。
-- **热路径有字数预算**：SKILL.md、references 和 agent 模板受 `scripts/doc-budget.json` 约束，加正文要么删等量旧文本，要么显式调高预算并说明。
+- **热路径有字数预算**：SKILL.md、references 和 agent 模板受 `scripts/doc-budget.json` 约束，加正文要么删等量旧文本，要么显式调高预算并说明。每个角色每次调用（含条件分支与会同时发生的叠加组合）的加载硬上限 35K（去空白字符，`path_ceiling`），豁免只能列进 `path_ceiling.exempt` 并写明原因；条件读取默认互斥，会叠加的要登记进 `stacking`，腾字数优先把少见时刻的规则搬进按时刻读的 reference。
 - **工作流编号是契约**：Step / Phase / Stage 编号与引用绑定由 `skill-numbering.py` 守卫，重排要跑它的级联而不是手改。
 - **改 agent 模板或 CLAUDE.md.tmpl 后必须重新生成适配层**（OpenCode、Codex、Antigravity 等）并提交生成结果，否则适配层 CI 红。
 - **skill 文档禁止裸调 `python3`**，须走 python3 → python → py 探测。

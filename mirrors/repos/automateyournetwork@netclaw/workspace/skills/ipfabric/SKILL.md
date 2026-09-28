@@ -1,3 +1,8 @@
+---
+name: ipfabric
+description: "Query IP Fabric network assurance, intent checks, inventory, paths, and diagrams. Use when IP Fabric is the requested source of network evidence."
+---
+
 # IP Fabric Network Assurance Skill
 
 **Skill**: `/ipfabric`

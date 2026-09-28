@@ -286,7 +286,7 @@ export function Toolbar(props: Props) {
         </Button>
         <Button
           onClick={props.onExport}
-          disabled={!!props.exporting}
+          disabled={!!props.exporting || importingFont}
           size="sm"
           className="h-8"
           title="Export every size × locale for this device as a zip"

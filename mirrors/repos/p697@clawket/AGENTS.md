@@ -86,7 +86,7 @@ During the OpenClaw + Hermes coexistence period, treat backend identity and tran
 
 ## Relay Hibernation Rule
 
-Active client routing must survive Durable Object hibernation through WebSocket attachments. Rehydrate only authenticated full-client sockets; never promote restricted pairing sockets or guess between ambiguous clients. Preserve routing markers when updating heartbeat or handshake attachments. Cover both backend policies with memory-discard recovery tests.
+Active client routing must survive Durable Object hibernation through WebSocket attachments. Rehydrate only authenticated full-client sockets; never promote restricted pairing sockets or guess between ambiguous clients. Preserve routing markers when updating heartbeat or handshake attachments. Cover both backend policies with memory-discard recovery tests. Origin-routed RPCs also persist bounded request IDs/expiry on the current full-client socket before forwarding. Unknown, expired, ambiguous or replaced response origins must not fall back to the active device; capacity or attachment failures reject before dispatch. Keep OpenClaw legacy routing unchanged.
 
 ## Relay Resource Safety Rule
 

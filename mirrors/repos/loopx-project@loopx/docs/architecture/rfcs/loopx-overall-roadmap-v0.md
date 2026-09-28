@@ -6,6 +6,8 @@
 - Ownership: overall product outcomes, cross-domain dependencies, priorities and portfolio acceptance here; concrete rules in domain RFCs/stable protocols; execution state in canonical Todos.
 - Language: [中文版](loopx-overall-roadmap-v0.zh-CN.md) is the semantic mirror.
 
+**Local authority retirement checkpoint (2026-09-28).** R5/T4 now use the [reconciled deletion and qualification cadence](ledger/shared-goal-authority-state-provider-v0/2026-09-28-retirement-cadence.md). Reviewed local cutover and native drain are merged; whole-Goal execution/consumer closure, profile qualification and default-entry adoption still have separate exits. Delete a replaced writer with its last caller; retain necessary migration/receipt readers. Existing GoalRef/Turn PRs own their affected consumers. R6 PostgreSQL service qualification is separate, and the historical PR-count estimates are not current forecasts.
+
 ## 1. Overall Objective and Product Routes
 
 LoopX aims to let people express, revise and accept complex goals through a local frontend or Lark, while a persistent steward coordinates long-running LoopX Agents with independent work commitments across local managed and cloud runtimes. Single-Agent long-horizon reliability is the foundation. Multi-Agent collaboration, handoff, recovery and convergence on shared goals are core capabilities. Hundred-Agent scale is a separate system qualification.
@@ -36,7 +38,13 @@ embedding a transcript or sending an inbox ACK does not complete that transition
 [App conversations and asynchronous inbox](app-conversation-and-async-inbox-v0.md)
 refines R1–R3 without adding a milestone: repair ordinary input and durable
 entry; qualify connect/continue, truthful activity, stop/recovery and readable
-results; then complete G1's two real collaboration cycles. Prioritize these
+results, including late returns after the active session changes. The nearest
+observable exit is one natural App request through an
+existing qualified owner to a reviewable draft, with adopted correction and
+recovery, without manual owner lookup, reminders or result relay. A delivered
+deferral stays deferred. Then complete G1's two real collaboration cycles.
+Use the [concrete pilot and exits](app-conversation-and-async-inbox-v0.md#nearest-user-visible-exit-one-request-controllable-work-returned-result).
+Prioritize these
 before cross-channel visual parity or scale. Lark's reusable inbox lifecycle
 should converge into the existing typed coordination owner, while provider
 authentication/addressing/reactions remain in its extension. Product-facing TS
@@ -494,6 +502,14 @@ coordinators and ordinary members use the same grant contract. Disabled stdio
 servers retain their original five non-executing tools. Configuration files
 compact provider launch arguments without changing default executor selection.
 
+Independent work outside owner-selected acceptance now uses the canonical
+Todo's explicit completion validator through the same TS validation plan.
+Covered work still requires its current owner association and every applicable
+check. Member completion keeps the Goal active, then resumes only the original
+Turn's settlement; it does not assert terminal no-follow-up. File/SQLite CLI
+and local host regressions qualify this boundary, not real-model research,
+requester synthesis or Lark parity. No binding grant or provider is activated.
+
 The [synthetic research example](../../../examples/managed-research-team/README.md)
 uses a local lead, two DSH members and two Ark members. One cloud reviewer adopts
 local analysis; another Ark member delegates to DSH before returning to local
@@ -606,6 +622,13 @@ that same conversation. Include a registered-only decoy and a duplicate
 callback; neither may appear as work completed or a second user-visible reply.
 This uses the R3 collaboration owner and current managed Turn wake instead of
 a separate steward scheduler.
+
+R3 entry qualification also covers ordinary human messages in an explicitly
+configured steward group without a mention. The shared TS admission rule owns
+trigger semantics; Lark supplies provider identity and the existing inbox owns
+deduplication and return. App settings select and read back the trigger per
+connection. External host-tool permission and sender-bound delegation remain
+separate gaps; receiving a request does not establish execution authority.
 
 ### R4: Shared Goal Alignment and Evolution
 

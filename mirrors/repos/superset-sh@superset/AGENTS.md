@@ -207,3 +207,37 @@ in the commit message and the PR.
   you find a new one.
 - `docs/cloud-sandbox-considerations.md`: what cloud sandboxes still owe before they leave the
   team — billing, credential blast radius, untested behaviour.
+
+## Contributor responsibility
+
+Contributors are responsible for every change they submit, including agent-generated code.
+They must understand the changes, review the diff, and verify the behavior before requesting
+review.
+
+- Ask for clarification when a request lacks enough context to make a correct change.
+- Explain changes and validation so the contributor can review and understand the result.
+- Agents may write commit messages and PR descriptions, commit changes, push branches, create
+  PRs, and address review feedback when authorized by the user.
+- Only post replies to reviewers when the user explicitly authorizes it.
+- Never claim that checks passed or behavior was verified unless it actually was.
+
+## Code standards
+
+- Keep code comments concise (usually 1-2 lines)
+- Avoid redundant or excessive inline commentary
+- Use ASD-STE100 Simplified Technical English, simple wordings
+
+### Examples
+
+```c++
+  // Good (no comment)
+
+  std::string module_name =
+    fmt::format("{}_{:x}", name_, std::hash<std::string>{}(source_));
+
+  // Bad (excessive comment for explicit code)
+
+  // The module cache is keyed on this name, so it has to include the source:
+  // two kernels sharing a name but not a body would otherwise both run
+  // whichever was compiled first. Same fix as 3833 on the Metal side.
+```

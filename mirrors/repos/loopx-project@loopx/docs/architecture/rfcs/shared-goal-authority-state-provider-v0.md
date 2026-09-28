@@ -24,17 +24,20 @@
   [Chinese version](./shared-goal-authority-state-provider-v0.zh-CN.md) and this
   English version are semantic mirrors. A difference between them is a defect.
 
-## Current delivery frontier (2026-09-27)
+## Current delivery frontier (2026-09-28)
 
-Audit `157ab7b11` and current PR states: source capture, pagination, File format
-upgrade and Python prototype retirement are delivered. This delivery repairs
-reviewed-input recovery and adds independent retained-history audit. Plan four
-scoped PRs starting here: this recovery slice, external execution interval
-protection, whole-Goal activation/rollback integration, and default entrypoints
-with final bounded Python retirement. Three planned scopes follow this PR;
-existing #5054/#4931 and D2/D3 evidence remain separate. This is not a guaranteed
-count of future defect repairs.
-[Current inventory, rationale and exits](ledger/shared-goal-authority-state-provider-v0/2026-09-27-recovery-audit.md).
+Audit `ce3862e33`: #5054, #5140, #5144, #5156, #5173, #5175 and #5169
+are merged. Do not count event retirement, archive recovery, managed process
+supervision, reviewed local cutover or native drain as new pending PRs.
+#4931 remains an open SQLite optimization, not a completed D2 qualification.
+
+Next: qualify whole-Goal execution/consumer integration and matched local
+profiles in parallel; then unify new-Goal/install/settings and supported upgrade
+entrypoints, deleting each replaced writer with its last caller. Retain necessary
+Host IO, original receipts and migration readers. No additional dead Python
+module is certified by this audit, and no fixed remaining-PR total is promised.
+[Deletion inventory, engineering windows, local evidence and remaining work](ledger/shared-goal-authority-state-provider-v0/2026-09-28-retirement-cadence.md)
+supersedes older current-count estimates; their execution evidence stays historical.
 
 File retained-state storage now reuses the existing TS checkpoint/delta codec,
 stacked on #5063's verified read cache and RPC budgets. Original revisions,
@@ -45,6 +48,20 @@ SQLite reuse logical archives for cross-provider isolated recovery.
 This adds no provider/default promotion and retires no Python business owner.
 [Automatic backup/migration, cold costs and qualification limits](../../reference/file-authority-state-log.md).
 
+## Todo event retirement (2026-09-25)
+
+PR #5054 replaces its original event-writer capture proposal with removal of
+that experimental Todo source. `events.jsonl` is no longer projected, overlaid,
+backfilled or used for completion. Nonempty default/aliased sources are refused
+without changing their bytes; empty/absent sources permit the Markdown path.
+Promoted Goals continue reading their selected provider even if stale legacy
+files remain. The supervisor uses its own local-private experimental log.
+
+This closes the *retired source* branch by deletion, not by claiming event-writer
+capture was qualified. Whole-Goal migration/rollback and default onboarding
+still require their existing acceptance; this change does not make all Python
+writers or PostgreSQL deployment ready. Do not add a replacement event capture
+PR to the remaining work. [Decision and exits](ledger/shared-goal-authority-state-provider-v0/2026-09-25-todo-event-retirement.md).
 
 ## Persistence route for steward scale (2026-09-16)
 
@@ -84,8 +101,7 @@ integration defects; it neither recounts shipped capture nor flips global defaul
 [Operation and boundaries](../../reference/reviewed-coordination-promotion.md).
 
 Handoff-mode changes now share one TS ownership-fact classifier before and
-after promotion. Legacy event-only claims reject rather than disappear at a
-Markdown boundary; event append locks protect the observation through writeback.
+after promotion. Legacy nonempty event sources are refused before any Markdown substitution.
 Canonical changes reuse durable command receipt recovery. This is an L2/L3
 compatibility correction with Python decision deletion, not cohort migration,
 SQLite D2 completion or a default flip. Remaining work depends on executor/consumer closure, qualification,
@@ -1185,15 +1201,22 @@ Keep live-state size fixed when isolating history growth, then grow live state
 separately. No goal-wide unbounded list of completed Todos or receipts may be
 hidden inside the supposedly fixed live projection.
 
-For the current `FileAuthorityStore`, a fixed projection of P bytes retained in
-each of N transactions costs approximately P*N final history bytes and
-P*N*(N+1)/2 cumulative document-publication bytes, before head, event, receipt,
-and envelope overhead. Normal reads also decode and validate the full chain.
-With P=15 KiB, the renewal-only case gives about **534 GiB** of cumulative
-publication at day 10 and **4.69 TiB** at day 30. The former 380 MiB estimate was
-only N*P at day 30, not the cumulative rewrite of retained projections. These
-are analytical payload estimates, not physical SSD writes or measured latency;
-growing receipt indexes inside every projection can make the model worse.
+The original full-projection File journal retained approximately P*N payload
+bytes and republished approximately P*N*(N+1)/2 bytes across N commits. That
+historical model must not be applied to the current checkpoint/delta format:
+#5102 retired that layout from ordinary reads and writes.
+
+The current File provider retains a checkpoint every 64 commits plus deltas,
+events and original receipts in one envelope. Its approximate retained bytes
+are `H(N) = ceil(N/64)*P + sum(delta/event/receipt/metadata bytes)`, before the
+live head and envelope overhead. Each commit still durably replaces the whole
+envelope, so cumulative application publication is `sum(H(n))`. Warm reads
+read/hash the envelope and may reuse its verified view; cold reads reconstruct
+and verify the history. SQLite instead updates transactional indexed rows and
+bounded checkpoint windows. These mechanisms motivate a matched experiment;
+neither a formula nor a cache hit establishes a short-term default choice.
+Report application publication separately from physical disk writes, and
+compare current code on equal state, history, durability and cold/warm workload.
 
 #### Preferred local direction and compatibility boundary
 
@@ -1201,7 +1224,7 @@ Qualify an **embedded transactional store, with SQLite as the first candidate**,
 behind the existing TypeScript `AuthorityStore` owner. A local goal must not
 require a PostgreSQL service. The file-v0 provider remains a conformance/import
 baseline; no general-purpose ten-day promotion may rely on its full-history
-rewrite. [PR #4121](https://github.com/huangruiteng/loopx/pull/4121) supplies an
+rewrite. [PR #4121](https://github.com/loopx-project/loopx/pull/4121) supplies an
 opt-in SQLite conformance candidate behind that owner; it does not by itself
 qualify long-goal durability or change the default. Dependency/package,
 Windows/macOS/Linux and supported Node-profile evidence remain explicit gates.
@@ -3181,7 +3204,16 @@ Qualify **one** long-lived local default profile. SQLite is the current D2
 candidate; File remains the real reference/explicit profile and migration
 rehearsal backend. Do not publish two ambiguous defaults, declare the current
 File history layout long-horizon-qualified, or silently fall back from a
-selected SQLite store. The final profile decision must cite its D2 evidence.
+selected SQLite store. Release activation must cite its D2 evidence. The September 27 matched
+short-history experiments also select SQLite as the **short-term default
+implementation target**: mutation/restart costs beat current checkpoint/delta
+File, while warm read tradeoffs depend on the projection. PR #4931 now shares
+privately owned TS replay between SQLite proofs and provider-neutral archive
+recovery, retaining exact byte proofs and isolating returned rows. Matched
+Linux evidence reduces many-field receipt/scan p95 by 88%/68%, but large-state
+budgets and sustained-memory qualification remain open. This is not permission
+to enable the default now.
+[Measurements, reproduction and D2/D3/L9 dependencies](../../reference/sqlite-authority-store.md#short-term-default-decision-and-matched-experiment).
 PostgreSQL shares the TS semantic contracts but has independent service,
 tenant, restore and capacity qualification; its deployment must not delay the
 local profile's work.

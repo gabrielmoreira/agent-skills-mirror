@@ -34,6 +34,8 @@ DEFAULT_RISK = {
     "risk_per_trade": 0.01,
     "max_positions": 5,
     "max_sector_exposure": 0.30,
+    # trade-strategy-pipeline rejects a sector cap below 1.0 without a grouping key.
+    "sector_group_by": "sector",
 }
 
 DEFAULT_COST_MODEL = {

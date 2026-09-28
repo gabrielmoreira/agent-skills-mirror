@@ -12,8 +12,10 @@ Trigger phrases and the role registry live in `references/workflow-registry.md`;
 - `omh-agent-board`: [omh] Coordinating several agents or profiles: coordinate multiple Hermes profiles or agents with task, handoff, heartbeat, blocker, and completion states.
 - `omh-agent-debug`: [omh] Agent is stuck, looping, or drifting: capture a stuck, looping, drifting, or repeatedly failing agent run, diagnose the likely failure pattern, and prepare the smallest safe recovery action.
 - `omh-agent-evaluation`: [omh] Choosing between coding agents on evidence: compare executor or agent choices on reproducible tasks using quality, cost, time, tool, and evidence metrics.
+- `omh-agent-instructions`: [omh] Agent instruction file for a repo -- AGENTS.md, CLAUDE.md, a Cursor rule: write or update what an agent cannot derive from the code, inside a marked region, with every command verified or marked unverified and no counts that drift.
 - `omh-agent-ops-review`: [omh] AI agent progress for managers: help managers inspect AI-agent progress, blockers, quality gates, and throughput levers.
 - `omh-ai-slop-cleaner`: [omh] Messy or AI-generated code to clean up: delete AI-generated slop, dead code, and duplication while observable behavior stays identical.
+- `omh-app-debugging`: [omh] Application code misbehaves -- a wrong value, a flaky test, a lost update: reproduce it first, form competing hypotheses, discriminate them with the cheapest observation, and only then fix the demonstrated root cause.
 - `omh-apple-design`: [omh] Designing or reviewing an iOS, macOS, or Apple-style UI: prepare native Apple UI or Apple marketing product-visual direction, review, and improvement briefs with evidence-backed remediation handoffs.
 - `omh-application-threat-model`: [omh] Attack paths into an operated system: turn a system's components and data flows into assets, trust boundaries, attack scenarios, controls, and the security test that proves each control holds.
 - `omh-ask`: [omh] Outside AI critique wanted: consulting an external advisor when configured.
@@ -30,6 +32,7 @@ Trigger phrases and the role registry live in `references/workflow-registry.md`;
 - `omh-codebase-uml`: [omh] Architecture picture of a codebase: turn a repository into one readable, interface-level PlantUML architecture picture - packages or modules, the public symbols other units actually import, bounded import edges - and get it rendered to a single PNG a chat surface can show.
 - `omh-codegraph-refresh`: [omh] Outdated code index or codemap: refresh local code intelligence, summarize repo structure, and prepare task-scoped codegraph handoff context without overclaiming execution.
 - `omh-terminal`: [omh] Shell command or test-suite execution: policy overlay for terminal commands - add cwd, environment, safety, and result-evidence gates after preferring native shell tools for ordinary CLI, package-manager, and test runs.
+- `omh-commit-pr-authoring`: [omh] Commit message or pull-request body to write for a change: draft it in the repository's own convention, with `Tested:` listing only commands observed to run and everything prepared but not run under `Not-tested:`.
 - `omh-apps`: [omh] Email, Slack, or Jira action to perform: external app actions - email, Slack, Discord, Notion, Linear, Jira, CRM, and similar providers, scoped with auth, payload, confirmation, and result-evidence gates.
 - `omh-content-operator`: [omh] Product or company copy to publish or rewrite: scope publish-ready writing, rewriting, summarization, translation, release-note, newsletter, customer-copy, social-copy, README-copy, and email-draft work with audience, tone, style, source, review, and hallucination gates.
 - `ulw-context`: [omh] Repository vocabulary unclear or inconsistent: project terminology alignment workflow: look up, capture, correct, and align the words a repository uses before planning or handoff.
@@ -37,6 +40,7 @@ Trigger phrases and the role registry live in `references/workflow-registry.md`;
 - `omh-cto-loop`: [omh] Engineering leadership over roadmap and risk: roadmap, PM, technical tradeoffs, risk, delivery, release, and follow-up operating cadence.
 - `omh-curriculum-design`: [omh] Team training or course that needs a syllabus: turn a learning goal into a teachable curriculum, assessment plan, and learner-ready sequence.
 - `omh-data-analysis`: [omh] Dataset or table to analyze: scope supplied data with provenance, causal-claim, and hallucination guards.
+- `omh-data-pipelines`: [omh] Data pipeline work -- an ETL or streaming job, a backfill or replay, duplicate events, a schema change downstream, a lineage question, a data-quality regression: make every rerun idempotent, bound every replay, and gate each load on observed checks.
 - `omh-decision-prototype`: [omh] Uncertain technical choice for a spike: bounded decision prototype workflow: resolve one uncertain interaction, API, performance, or integration choice with a disposable, isolated experiment whose observed result feeds planning.
 - `omh-decision-recall`: [omh] Previously rejected options to revisit: recall scoped reviewed rejected decisions without elevating them to approved memory.
 - `ulw-interview`: [omh] Vague, underspecified request: one-question-at-a-time clarification.
@@ -53,9 +57,11 @@ Trigger phrases and the role registry live in `references/workflow-registry.md`;
 - `omh-frontend`: [omh] Building or polishing a web or terminal UI: prepare design-system-driven web and terminal (TUI) UI creation, redesign, polish, accessibility, performance, and visual QA handoffs.
 - `omh-frontend-refactor`: [omh] Oversized or tangled UI component: behavior-preserving refactor of UI code - preview the full change plan first, apply as a second explicit step, and work impact-ordered from state architecture down to naming polish.
 - `omh-gateway-intent-card`: [omh] Bot replies via Discord, Slack, or Telegram: normalize Discord, Slack, Telegram, and other gateway sessions into origin, thread, delivery, silent, attachment, and status-update policy.
+- `omh-git-workflow`: [omh] Git branch in trouble -- a merge conflict, a commit that broke something, history to repair: plan the resolution, the bisect, or the rewrite, name what is already pushed first, and force-push only with `--force-with-lease`.
 - `omh-github-event-ops`: [omh] Incoming GitHub PR, issue, or CI event: GitHub event operations: route PR, issue, CI, and review webhook events into triage, review, or fix handoff cards.
 - `omh-github-issue-intake`: [omh] Chat report that should become a GitHub issue: turn a public chat report into a confirmed, verified issue package.
 - `omh-harness-session-inventory`: [omh] Lost track of agent sessions and worktrees: normalize Codex, Claude Code, Hermes, OpenCode, Cursor, MCP host, worktree, and wrapper session metadata into one drift-aware inventory.
+- `omh-iac-change`: [omh] Infrastructure-as-code change -- Terraform, OpenTofu, Pulumi, a Kubernetes manifest, a Helm chart: read the drift, the blast radius and the cost delta from the saved plan, then stage the apply behind a health gate with a rollback per stage.
 - `omh-idea-to-deploy`: [omh] App idea headed for launch: shape an app idea into decisions, delivery handoff, verification, release, and monitoring status.
 - `omh-image-cards`: [omh] Infographic card for meeting notes, a report, or PR: image prompt cards - turn meetings, reports, PRs, issues, research, and releases into domain-aware image prompt cards.
 - `omh-inference-serving`: [omh] Self-hosted LLM serving on GPUs: choose the serving engine and quantization from decision tables, prepare deployment as an idempotent runbook with observed-only verification, and measure the endpoint with the standard TTFT/TPOT/goodput protocol.
@@ -103,6 +109,8 @@ Trigger phrases and the role registry live in `references/workflow-registry.md`;
 - `omh-provider-profile-posture`: [omh] Provider credentials without exposure: prepare provider-profile metadata without reading secrets or calling providers.
 - `ulw-plan`: [omh] High-stakes technical proposal needing approval: consensus planning with review gates.
 - `omh-refactor-plan`: [omh] Decided cross-module refactor to phase: refactor planning - turn a decided boundary-changing refactor into a phased plan - reconnaissance, contracts-first phase order, per-phase verification and rollback, a files table, and an explicit approval gate before any edit.
+- `omh-relational-db`: [omh] Database work on a relational store -- a slow query, an index to size, a migration on a big table, a lock taken during deploy, N+1 queries: plan it with the checks that prove it safe, and never call a migration ready without its lock behaviour and rollback.
+- `omh-release-cut`: [omh] Shipping a versioned release -- tag it, stage it behind a canary, or roll back the last deploy: decide what goes in, the version, the rollout stages, and a rollback with its trigger and exact command before it is needed.
 - `omh-reliability-review`: [omh] Postmortem for an outage or SLO miss: postmortems, SLOs, error budgets, incident follow-ups, and service reliability evidence.
 - `omh-report-package`: [omh] Periodic report for executives: weekly/monthly reports, executive briefs, PPT-ready outlines, and upload packages.
 - `ulw-research`: [omh] Deep dive before a decision: deep research engine - grounding for specs and decisions: study open-source reference implementations with pinned refs, gather live web evidence with citation discipline, verify contested claims, and distill a decision-grounding dossier that planning consumes; for a decision brief use research-brief, for upstream guidance use web-research.
@@ -114,6 +122,7 @@ Trigger phrases and the role registry live in `references/workflow-registry.md`;
 - `omh-rust`: [omh] Rust ownership, lifetime, or unsafe trouble: prepare Rust changes with ownership, error, and API discipline, and escalate any unsafe, FFI, or lock-free change to the UB checklist.
 - `omh-sales-development`: [omh] Prospect or account worth pursuing: turn an account or market opportunity into a focused discovery, qualification, and next-step brief.
 - `omh-sales-pipeline-review`: [omh] CRM pipeline or sales forecast to review: turn a supplied CRM export or pipeline snapshot into an evidence-bound pipeline health, forecast, and follow-up review.
+- `omh-security-event-response`: [omh] Security event on the code already shipped -- a CVE in a dependency, a secret committed to the repo, a license question, an advisory: triage reachability and severity, contain in order, and never close a leaked secret before its rotation is observed.
 - `omh-security-safety-review`: [omh] Agent or automation safety risks: review prompt, tool, secret, dependency, destructive-action, and explicit local plugin risks before agent or code execution.
 - `omh-skill`: [omh] Installing, removing, or editing skills: managing local skills.
 - `omh-skill-health`: [omh] OMH skill portfolio health overview: prepare a metadata-only OMH skill portfolio dashboard with stale surfaces, observed failure signals, pending amendments, and top actions.

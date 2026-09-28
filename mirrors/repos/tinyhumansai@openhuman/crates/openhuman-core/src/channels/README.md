@@ -32,17 +32,17 @@ Flat files: `bus.rs` (`ChannelInboundSubscriber`, handles `DomainEvent::ChannelI
 
 ## Calls into
 
-- `crates/openhuman-core/src/agent/`: the agent turn is dispatched over `BUS.native()` to the `agent.run_turn` handler registered by `agent::bus::register_agent_handlers`, so `runtime/dispatch/` never imports the harness directly.
-- `crates/openhuman-core/src/agent/context/channels_prompt.rs`: channel system prompt rendering, re-exported as `build_system_prompt`.
-- `crates/openhuman-core/src/security/credentials/`: `AuthService` lookups for connect/disconnect and for secret hydration at startup (email password, Yuanbao app secret).
-- `crates/openhuman-core/src/security/approval/`: `ApprovalGate` for the approval-reply intercept and `ApprovalChatContext` scoping of Telegram turns.
-- `crates/openhuman-core/src/config/`: `Config` / `ChannelsConfig` (schema types come from `tinychannels_bus::config` via `config/schema/channels.rs`).
-- `crates/openhuman-core/src/memory/conversations/` and `memory/guard`: conversation history persistence and the active memory guard.
-- `crates/openhuman-core/src/api/rest.rs`: `BackendOAuthClient` for controller messaging ops and Telegram/Discord link flows.
-- `crates/openhuman-core/src/web_chat/`: web-channel event publishing, session invalidation (`/new`), and the web surface subscribers registered at startup.
-- `crates/openhuman-core/src/voice/`: STT/TTS behind the `host/` adapters.
-- `crates/openhuman-core/src/core/bus.rs` and `core/events.rs`: the process-wide `BUS` and the `DomainEvent::Channel*` variants published from `runtime/dispatch/` and `runtime/supervision.rs`.
-- `vendor/tinychannels/`: provider transports, `tinychannels::build_channels` (provider construction), `ChannelManager`/`ChannelBackend`, and the `tinychannels::host` capability boundary. `vendor/tinychannels/crates/tinychannels-bus` holds the transport-free trait/type contract.
+- `crates/openhuman-core/src/agent/` — the agent turn is dispatched over `BUS.native()` to the `agent.run_turn` handler registered by `agent::bus::register_agent_handlers`, so `runtime/dispatch/` never imports the harness directly.
+- `crates/openhuman-core/src/agent/context/channels_prompt.rs` — channel system prompt rendering, re-exported as `build_system_prompt`.
+- `crates/openhuman-core/src/security/credentials/` — `AuthService` lookups for connect/disconnect and for secret hydration at startup (email password, Yuanbao app secret).
+- `crates/openhuman-core/src/security/approval/` — `ApprovalGate` for the approval-reply intercept and `ApprovalChatContext` scoping of Telegram turns.
+- `crates/openhuman-core/src/config/` — `Config` / `ChannelsConfig` (schema types come from `tinychannels_bus::config` via `config/schema/channels.rs`).
+- `crates/openhuman-core/src/memory/conversations/` and `memory/guard` — conversation history persistence and the active memory guard.
+- `crates/openhuman-core/src/backend/client.rs` — `BackendClient` for controller messaging ops and Telegram/Discord link flows.
+- `crates/openhuman-core/src/web_chat/` — web-channel event publishing, session invalidation (`/new`), and the web surface subscribers registered at startup.
+- `crates/openhuman-core/src/voice/` — STT/TTS behind the `host/` adapters.
+- `crates/openhuman-core/src/core/bus.rs` and `core/events.rs` — the process-wide `BUS` and the `DomainEvent::Channel*` variants published from `runtime/dispatch/` and `runtime/supervision.rs`.
+- `vendor/tinychannels/` — provider transports, `tinychannels::build_channels` (provider construction), `ChannelManager`/`ChannelBackend`, and the `tinychannels::host` capability boundary; `vendor/tinychannels/crates/tinychannels-bus` — the transport-free trait/type contract.
 
 ## Called by
 

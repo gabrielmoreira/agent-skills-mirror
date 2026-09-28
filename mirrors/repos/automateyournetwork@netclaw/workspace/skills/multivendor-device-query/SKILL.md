@@ -1,3 +1,8 @@
+---
+name: multivendor-device-query
+description: "Query normalized device facts across mixed vendors or platforms without a dedicated NetClaw server. Use pyATS or Junos skills for their platform-specific workflows."
+---
+
 # Multivendor Device Query
 
 Query network devices on platforms NetClaw's Cisco- and Juniper-specific servers cannot reach —
@@ -94,3 +99,11 @@ reach to them today. That is **not** equivalent to their dedicated API integrati
 
 Roadmap items **R3** (Fortinet) and **R4** (Palo Alto) are still needed. Do not treat CLI reach as
 completing them.
+
+## SSH trust and write boundary
+
+SSH host keys are verified by default. If an unknown or changed key is refused,
+verify the identity through a trusted console/administrator and follow
+`docs/MULTIVENDOR-SSH-MIGRATION.md`; never disable checking as an automatic retry.
+Raw commands remain read-only even when write tools are enabled. Configuration
+must use the gated `apply_config` path with the required approvals and baseline.

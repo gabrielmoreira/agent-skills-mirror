@@ -66,9 +66,9 @@ credential problem, not a dead box, and the tool says so explicitly.
   no firmware. Several vendors return nothing here.
 - **A missing Thermal or Power subresource is a coverage gap, not a pass.** Vendors implement
   different Redfish subsets; the tool marks it `unavailable` rather than reporting no problem.
-- **TLS verification is off by default** because BMCs ship self-signed certificates. Every
-  response discloses it. On an untrusted network the readings could be forged — say so if it
-  matters to the conclusion.
+- **TLS verification is on by default.** Trust private/self-signed BMC certificates through
+  `REDFISH_CA_BUNDLE`. An explicit lab-only `REDFISH_VERIFY_TLS=false` override is disclosed
+  in every result; those readings lack transport authentication.
 - **Thermal and power are hardware facts** and establish nothing about the OS.
 
 ## Important Rules
@@ -96,5 +96,6 @@ credential problem, not a dead box, and the tool says so explicitly.
 
 - `REDFISH_URL` — BMC base URL (e.g. `https://10.0.0.5`). Never guessed.
 - `REDFISH_USERNAME` / `REDFISH_PASSWORD` — BMC credentials
-- `REDFISH_VERIFY_TLS` — `true` to require a valid certificate (default `false`)
+- `REDFISH_VERIFY_TLS` — `true` to require a trusted certificate (default `true`); `false` only for an explicitly accepted lab exception
+- `REDFISH_CA_BUNDLE` — trusted private CA bundle (PEM)
 - `REDFISH_TIMEOUT` — per-request seconds (default 15)

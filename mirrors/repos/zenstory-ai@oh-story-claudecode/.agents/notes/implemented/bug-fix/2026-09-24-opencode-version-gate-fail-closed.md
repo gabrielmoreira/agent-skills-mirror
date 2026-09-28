@@ -15,7 +15,7 @@ Related: [2026-09-23-opencode-v2-only](../architecture/2026-09-23-opencode-v2-on
 
 ## Decision
 
-- `skills/story-setup/SKILL.md`「OpenCode 部署前置」：主版本 < 2 或版本无法确定，都停止 OpenCode 部署。版本无法确定时请用户在自己的终端运行 `opencode --version`，用户在对话里确认是 2.x 才继续。
+- `skills/story-setup/references/deploy-opencode.md`「部署前置」（2026-09-26 起从 SKILL.md 拆出，见 [按宿主拆分部署](../architecture/2026-09-26-setup-by-host.md)）：主版本 < 2 或版本无法确定，都停止 OpenCode 部署。版本无法确定时请用户在自己的终端运行 `opencode --version`，用户在对话里确认是 2.x 才继续。
 - 停止 OpenCode 部署时：target 只有 opencode，就不写、不更新 `.story-deployed`（已有的原样保留，不抬 `agents_version`），也不写任何 OpenCode 文件；多 target 时其它端照常部署，写入的 `target_cli` 不含 opencode，报告首行说明 OpenCode 未部署及原因，并告诉作者升级后重跑、选择把 OpenCode 加回来。
 - 已部署项目重跑时，`target_cli` 不含 opencode 但项目里有 `.opencode/plugins/story-hooks.ts` 或 `.opencode/agents/`，用 AskUserQuestion 问是否加回 OpenCode；选加回先过版本门，通过后写回 `target_cli`。否则 sentinel 已是当前 `agents_version`、又以 `target_cli` 为准跳过探测，升级后的 OpenCode 永远不会重新部署，旧插件在 2.x 上静默失效。
 - 升级命令先 `npm rm -g opencode-ai` 再装 `@opencode/cli`：两个包都提供 `opencode` 命令，不卸旧包时 PATH 上可能仍是 1.x。

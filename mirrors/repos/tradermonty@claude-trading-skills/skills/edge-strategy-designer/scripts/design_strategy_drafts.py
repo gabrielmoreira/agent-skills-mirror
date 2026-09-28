@@ -329,6 +329,7 @@ def build_draft(
             "risk_per_trade": risk_per_trade,
             "max_positions": max_positions,
             "max_sector_exposure": 0.3,
+            "sector_group_by": "sector",
         },
         "validation_plan": {
             "period": "2016-01-01 to latest",

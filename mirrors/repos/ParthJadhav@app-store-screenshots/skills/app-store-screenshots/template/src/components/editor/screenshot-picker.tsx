@@ -39,6 +39,8 @@ async function uploadDataUrl(dataUrl: string): Promise<string | null> {
 }
 
 export function ScreenshotPicker({ label, value, locale, onChange }: Props) {
+  const requestId = React.useRef(0);
+  React.useEffect(() => () => { requestId.current += 1; }, []);
   const inputRef = React.useRef<HTMLInputElement>(null);
   const [dragging, setDragging] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
@@ -49,6 +51,8 @@ export function ScreenshotPicker({ label, value, locale, onChange }: Props) {
   }, [value, locale]);
 
   async function handleFile(file: File) {
+    const request = ++requestId.current;
+    setUploading(false);
     setError(null);
     if (!ACCEPTED.includes(file.type)) {
       setError("Use PNG or JPG (App Store rejects other formats)");
@@ -62,14 +66,16 @@ export function ScreenshotPicker({ label, value, locale, onChange }: Props) {
     try {
       dataUrl = await fileToDataUrl(file);
     } catch {
-      setError("Failed to read file");
+      if (request === requestId.current) setError("Failed to read file");
       return;
     }
+    if (request !== requestId.current) return;
     // Try to persist to disk so the screenshot survives a git clone.
     // If the upload endpoint is unreachable (e.g. static export), fall back
     // to the inline data URI — still works in the current session.
     setUploading(true);
     const uploadedPath = await uploadDataUrl(dataUrl);
+    if (request !== requestId.current) return;
     setUploading(false);
     if (uploadedPath) {
       setImage(uploadedPath, dataUrl);
@@ -163,6 +169,8 @@ export function ScreenshotPicker({ label, value, locale, onChange }: Props) {
             size="icon"
             className="h-8 w-8"
             onClick={() => {
+              requestId.current += 1;
+              setUploading(false);
               onChange("");
               setError(null);
             }}

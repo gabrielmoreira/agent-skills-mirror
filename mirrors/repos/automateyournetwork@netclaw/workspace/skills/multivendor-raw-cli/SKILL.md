@@ -1,3 +1,8 @@
+---
+name: multivendor-raw-cli
+description: "Check reachability and run operational CLI on platforms owned by multivendor-cli-mcp. Use after confirming device ownership; Cisco and Juniper use their dedicated servers."
+---
+
 # Multivendor Raw CLI
 
 Run a command on a device whose platform has no dedicated NetClaw server, and get its real output.
@@ -52,3 +57,11 @@ reach to them today. That is **not** equivalent to their dedicated API integrati
 
 Roadmap items **R3** (Fortinet) and **R4** (Palo Alto) are still needed. Do not treat CLI reach as
 completing them.
+
+## SSH trust and write boundary
+
+SSH host keys are verified by default. If an unknown or changed key is refused,
+verify the identity through a trusted console/administrator and follow
+`docs/MULTIVENDOR-SSH-MIGRATION.md`; never disable checking as an automatic retry.
+Raw commands remain read-only even when write tools are enabled. Configuration
+must use the gated `apply_config` path with the required approvals and baseline.

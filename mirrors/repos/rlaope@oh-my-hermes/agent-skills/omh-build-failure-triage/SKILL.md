@@ -24,6 +24,7 @@ This is an OMH `build-failure-triage` workflow skill, projected for Agent Skills
 - The user needs a code review of changed behavior rather than failing command triage; use `code-review`.
 - The user needs broad production readiness; use `production-audit`.
 - The user asks for incident or SLO review after deployment; use `reliability-review`.
+- A test passes on some runs and not others, or the code returns a wrong value whose cause is unknown; use `app-debugging`.
 
 ## Examples
 

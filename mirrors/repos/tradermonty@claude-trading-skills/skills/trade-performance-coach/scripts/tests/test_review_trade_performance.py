@@ -4,6 +4,8 @@ import json
 import sys
 from pathlib import Path
 
+import pytest
+
 SCRIPT_DIR = Path(__file__).resolve().parents[1]
 FIXTURES = Path(__file__).resolve().parent / "fixtures"
 sys.path.insert(0, str(SCRIPT_DIR))
@@ -171,3 +173,103 @@ def test_cli_writes_json_and_markdown(tmp_path):
     data = json.loads(report_json.read_text(encoding="utf-8"))
     assert data["overall_verdict"] == "COOL_DOWN"
     assert "Human Decision Gate" in report_md.read_text(encoding="utf-8")
+
+
+NUMERIC_FIELDS = [
+    ("planned", "risk_r"),
+    ("actual", "risk_r"),
+    ("risk_plan", "max_risk_per_trade_r"),
+    ("actual", "portfolio_heat_r"),
+    ("risk_plan", "max_portfolio_heat_r"),
+    ("monthly", "consecutive_losses"),
+]
+
+
+@pytest.mark.parametrize("section,key", NUMERIC_FIELDS)
+@pytest.mark.parametrize(
+    "value",
+    [float("nan"), float("inf"), -float("inf"), -1, True, "bad", "1e999", "-1e-999", 10**400],
+)
+def test_invalid_numeric_evidence_rejected(section, key, value):
+    record = load("single_trade_clean_loss.json")
+    record.setdefault(section, {})[key] = value
+    with pytest.raises(ValueError, match=rf"{section}\.{key}"):
+        rpc.build_review(record, ["fixture"])
+
+
+@pytest.mark.parametrize("value", [0.5, "2.5", "2.0000000000000001"])
+def test_fractional_loss_count_rejected(value):
+    record = load("single_trade_clean_loss.json")
+    record["monthly"] = {"consecutive_losses": value}
+    with pytest.raises(ValueError, match="monthly.consecutive_losses"):
+        rpc.build_review(record, ["fixture"])
+
+
+@pytest.mark.parametrize("value", [0, "0", "1.0"])
+def test_valid_nonnegative_numeric_evidence(value):
+    record = load("single_trade_clean_loss.json")
+    for section, key in NUMERIC_FIELDS:
+        record.setdefault(section, {})[key] = value
+    report = rpc.build_review(record, ["fixture"])
+    assert report["overall_verdict"] in {"OK", "REVIEW_REQUIRED"}
+    assert report["risk_manager_notes"][0]["severity"] == "info"
+
+
+def test_null_optional_maximum_keeps_planned_risk_fallback():
+    record = load("single_trade_clean_loss.json")
+    record["risk_plan"]["max_risk_per_trade_r"] = None
+    assert rpc.build_review(record, ["fixture"])["overall_verdict"] == "OK"
+
+
+def test_extreme_finite_risk_comparison_remains_warning():
+    record = load("single_trade_clean_loss.json")
+    record["actual"]["risk_r"] = 1.7e308
+    record["risk_plan"]["max_risk_per_trade_r"] = 1.5e308
+    report = rpc.build_review(record, ["fixture"])
+    assert report["overall_verdict"] == "REVIEW_REQUIRED"
+    assert report["risk_manager_notes"][0]["severity"] == "warning"
+
+
+@pytest.mark.parametrize("suffix", ["json", "yaml"])
+@pytest.mark.parametrize("multiple", [False, True])
+@pytest.mark.parametrize("existing", [False, True])
+def test_invalid_cli_input_leaves_outputs_untouched(tmp_path, capsys, suffix, multiple, existing):
+    record = load("single_trade_clean_loss.json")
+    record["risk_plan"]["max_risk_per_trade_r"] = "NaN"
+    source = tmp_path / f"invalid.{suffix}"
+    if suffix == "yaml":
+        import yaml
+
+        source.write_text(yaml.safe_dump(record), encoding="utf-8")
+    else:
+        source.write_text(json.dumps(record), encoding="utf-8")
+    out = tmp_path / "output"
+    if existing:
+        out.mkdir()
+        (out / "report.json").write_text("existing report", encoding="utf-8")
+    args = [
+        "--input",
+        str(source),
+        "--output-dir",
+        str(out),
+        "--json-name",
+        "report.json",
+        "--markdown",
+    ]
+    if multiple:
+        args[0:0] = ["--input", str(FIXTURES / "single_trade_clean_loss.json")]
+    assert rpc.main(args) == 2
+    assert "risk_plan.max_risk_per_trade_r" in capsys.readouterr().err
+    if existing:
+        assert list(out.iterdir()) == [out / "report.json"]
+        assert (out / "report.json").read_text() == "existing report"
+    else:
+        assert not out.exists()
+
+
+def test_exact_125_percent_risk_is_warning_not_critical():
+    record = load("single_trade_clean_loss.json")
+    record["actual"]["risk_r"] = 0.75
+    record["risk_plan"]["max_risk_per_trade_r"] = 0.6
+    report = rpc.build_review(record, ["fixture"])
+    assert report["risk_manager_notes"][0]["severity"] == "warning"

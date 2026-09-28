@@ -198,11 +198,16 @@ Run CDP/LLDP/ARP/routing peer collection across ALL devices simultaneously using
 Record the topology discovery in GAIT:
 
 ```bash
-python3 $MCP_CALL "python3 -u $GAIT_MCP_SCRIPT" gait_record_turn '{"input":{"role":"assistant","content":"Topology discovery completed: 5 devices, 12 links. NetBox reconciliation: 10 documented, 1 undocumented, 1 missing.","artifacts":[]}}'
+python3 $MCP_CALL "python3 -u $GAIT_MCP_SCRIPT" gait_record_turn '{"user_text":"Example only: replace with the actual authorized request.","assistant_text":"Topology discovery completed: 5 devices, 12 links. NetBox reconciliation: 10 documented, 1 undocumented, 1 missing.","artifacts":[]}'
 ```
 
 ## Failure Behavior
 
 - If a tool call fails with an authentication or connection error, check that `GAIT_MCP_SCRIPT`, `NETBOX_MCP_SCRIPT`, `PYATS_MCP_SCRIPT`, `PYATS_TESTBED_PATH` are set and valid before assuming a data or device problem.
 - On a tool error (timeout, unreachable host, malformed response), report the failure and its error message directly to the user rather than fabricating or guessing at results.
-- All tools here are read-only, so a failed call has no side effects — it's safe to retry once after confirming connectivity, but don't loop indefinitely on repeated failures.
+- For a confirmed read-only call, check connectivity and retry once if appropriate. For any call that changes state or sends a message, a timeout does not prove the action failed: inspect current state or delivery status before retrying, preserve the required approval/change gates, and do not repeat an action whose outcome is unknown.
+
+Audit examples are illustrative. Replace request, outcomes, identifiers and counts
+with observed session evidence; do not record these example results as facts.
+Inspect MCP `isError`, returned `ok`, and the recorded turn with `gait_show` when
+validating a new client/schema. Follow gait-session-tracking for branch checkout.

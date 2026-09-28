@@ -533,6 +533,14 @@ remain unchanged are memoized; polls waiting on invalidated work recompute.
 This only bounds observation freshness: the public projection's fields and
 meaning, admission, publication fences, and Bay behavior are unchanged.
 
+The composed status response retains the dedicated closed queue projection
+through every cache and store read. Its parked-reason counts, including
+`source_incompatible` and the aggregate `unknown` bucket, must survive together
+with the parked total. Dropping a reason during a second generic sanitation pass
+makes a valid queue appear malformed on the next read and hides Bay's live cards
+and timing. The dedicated projector remains the privacy boundary; no private
+queue fields or mutation controls are exposed.
+
 The object's lifecycle Bay response has a 30-second TTL-only memo
 (`EXACT_REVIEW_LIFECYCLE_BAY_CACHE_MS`; set `0` to disable). Production explicitly
 sets `EXACT_REVIEW_LIFECYCLE_BAY_CACHE_MS = "30000"`. Ordinary lifecycle, queue,
@@ -935,6 +943,12 @@ records show operator attention instead of an increasing queued-worker clock;
 the sampled header separates live references from queue/attention records.
 This remains an observer-only surface with the existing public repository
 allowlist and sampling/freshness limits.
+
+Terminal scanner holds retain a `scanner_refused` queue reason count, but do
+not contribute an active or waiting Bay review card. The failed review remains
+in the existing terminal lifecycle projection. A fresh explicit retry or an
+intentional scanner-policy epoch change is required; ordinary source changes
+do not revive it. Bay exposes no release control.
 
 The queue's globally bounded parked-terminal check also observes exhausted
 command producers. An eligible still-open exhausted review may receive a

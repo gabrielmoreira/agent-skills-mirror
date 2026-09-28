@@ -125,6 +125,95 @@ def test_cli_scan_offline_does_not_require_fmp_key(tmp_path, monkeypatch):
     assert json.loads(state_path.read_text(encoding="utf-8").splitlines()[0])["symbol"] == "UPCO"
 
 
+def test_cli_update_outcomes_persists_matured_and_pending_results(tmp_path):
+    prices_path = tmp_path / "prices.json"
+    state_path = tmp_path / "state.jsonl"
+    reports = tmp_path / "reports"
+    state_path.write_text(
+        json.dumps(
+            {
+                "record_id": "UPCO:2026-01-02:UP",
+                "symbol": "UPCO",
+                "event_date": "2026-01-02",
+                "direction": "UP",
+                "outcomes": {},
+            }
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    prices_path.write_text(
+        json.dumps(
+            {
+                "prices": {
+                    "UPCO": [
+                        {
+                            "date": "2026-01-01",
+                            "open": 100,
+                            "high": 101,
+                            "low": 99,
+                            "close": 100,
+                            "volume": 1000,
+                        },
+                        {
+                            "date": "2026-01-02",
+                            "open": 120,
+                            "high": 123,
+                            "low": 118,
+                            "close": 120,
+                            "volume": 1000,
+                        },
+                        {
+                            "date": "2026-01-03",
+                            "open": 121,
+                            "high": 130,
+                            "low": 119,
+                            "close": 128,
+                            "volume": 1000,
+                        },
+                    ]
+                }
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    rc = mod.main(
+        [
+            "update-outcomes",
+            "--prices-json",
+            str(prices_path),
+            "--horizons",
+            "1,3",
+            "--state-file",
+            str(state_path),
+            "--output-dir",
+            str(reports),
+        ]
+    )
+
+    assert rc == 0
+    updated = json.loads(state_path.read_text(encoding="utf-8").splitlines()[0])
+    assert updated["matured"] is True
+    assert updated["outcomes"]["1d"]["status"] == "MATURED"
+    assert updated["outcomes"]["1d"]["close_return_pct"] == 6.6667
+    assert updated["outcomes"]["3d"] == {
+        "status": "PENDING",
+        "horizon_days": 3,
+        "reason": "insufficient_future_bars",
+        "future_bars_available": 1,
+    }
+
+    result_path = next(reports.glob("stockbee_20pct_outcome_update_*.json"))
+    result = json.loads(result_path.read_text(encoding="utf-8"))
+    assert result["metadata"]["counts"] == {"matured": 1, "pending": 1}
+    assert result["metadata"]["data_source"]["source"] == "prices_json"
+    report_path = next(reports.glob("stockbee_20pct_outcome_update_*.md"))
+    report = report_path.read_text(encoding="utf-8")
+    assert "UPCO" in report
+    assert "No matured outcomes yet" not in report
+
+
 def write_backfill_prices(path):
     path.write_text(
         json.dumps(

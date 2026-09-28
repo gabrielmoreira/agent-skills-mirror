@@ -99,4 +99,4 @@ true on the wire this second", confirm on the device after.
 
 - If a tool call fails with an authentication or connection error, check that `TOPOLOGRAPH_API_TOKEN` is set and valid before assuming a data or device problem.
 - On a tool error (timeout, unreachable host, malformed response), report the failure and its error message directly to the user rather than fabricating or guessing at results.
-- All tools here are read-only, so a failed call has no side effects — it's safe to retry once after confirming connectivity, but don't loop indefinitely on repeated failures.
+- For a confirmed read-only call, check connectivity and retry once if appropriate. For any call that changes state or sends a message, a timeout does not prove the action failed: inspect current state or delivery status before retrying, preserve the required approval/change gates, and do not repeat an action whose outcome is unknown.

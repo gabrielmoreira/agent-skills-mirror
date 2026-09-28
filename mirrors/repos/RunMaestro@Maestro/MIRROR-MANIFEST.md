@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `RunMaestro/Maestro` — 26 default patterns, 24 followed patterns, 27 file(s) materialized.
+Mirror of `RunMaestro/Maestro` — 26 default patterns, 25 followed patterns, 28 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `RunMaestro/Maestro` — 26 default patterns, 24 followed patterns, 27
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 24 |
-| Files         | 27 |
+| Followed pats | 25 |
+| Files         | 28 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -72,6 +72,7 @@ Mirror of `RunMaestro/Maestro` — 26 default patterns, 24 followed patterns, 27
 - `docs/agent-guides/MAIN-LIFECYCLE.md`
 - `docs/agent-guides/WIDGET-LIBRARY.md`
 - `docs/agent-guides/PLUGIN-DEVELOPMENT.md`
+- `docs/agent-guides/RELEASE-RUNBOOK.md`
 - `docs/agent-guides/CANONICAL-UTILITIES.md`
 - `docs/agent-guides/DEDUP-TRACKER.md`
 - `docs/media-player.md`
@@ -99,16 +100,17 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 15 | → | [`docs/agent-guides/PLUGIN-DEVELOPMENT.md`](docs/agent-guides/PLUGIN-DEVELOPMENT.md) |
 | 16 | → | [`docs/agent-guides/PROCESS-SYSTEM.md`](docs/agent-guides/PROCESS-SYSTEM.md) |
 | 17 | → | [`docs/agent-guides/PROMPTS-SPECS.md`](docs/agent-guides/PROMPTS-SPECS.md) |
-| 18 | → | [`docs/agent-guides/RENDERER-SERVICES.md`](docs/agent-guides/RENDERER-SERVICES.md) |
-| 19 | → | [`docs/agent-guides/SHARED-UTILS.md`](docs/agent-guides/SHARED-UTILS.md) |
-| 20 | → | [`docs/agent-guides/STATE-PATTERNS.md`](docs/agent-guides/STATE-PATTERNS.md) |
-| 21 | → | [`docs/agent-guides/STATS-ANALYTICS.md`](docs/agent-guides/STATS-ANALYTICS.md) |
-| 22 | → | [`docs/agent-guides/TEST-PATTERNS.md`](docs/agent-guides/TEST-PATTERNS.md) |
-| 23 | → | [`docs/agent-guides/UI-PATTERNS.md`](docs/agent-guides/UI-PATTERNS.md) |
-| 24 | → | [`docs/agent-guides/WEB-MOBILE.md`](docs/agent-guides/WEB-MOBILE.md) |
-| 25 | → | [`docs/agent-guides/WIDGET-LIBRARY.md`](docs/agent-guides/WIDGET-LIBRARY.md) |
-| 26 | → | [`docs/media-player.md`](docs/media-player.md) |
-| 27 | → | [`PROVIDER-SUPPORT.md`](PROVIDER-SUPPORT.md) |
+| 18 | → | [`docs/agent-guides/RELEASE-RUNBOOK.md`](docs/agent-guides/RELEASE-RUNBOOK.md) |
+| 19 | → | [`docs/agent-guides/RENDERER-SERVICES.md`](docs/agent-guides/RENDERER-SERVICES.md) |
+| 20 | → | [`docs/agent-guides/SHARED-UTILS.md`](docs/agent-guides/SHARED-UTILS.md) |
+| 21 | → | [`docs/agent-guides/STATE-PATTERNS.md`](docs/agent-guides/STATE-PATTERNS.md) |
+| 22 | → | [`docs/agent-guides/STATS-ANALYTICS.md`](docs/agent-guides/STATS-ANALYTICS.md) |
+| 23 | → | [`docs/agent-guides/TEST-PATTERNS.md`](docs/agent-guides/TEST-PATTERNS.md) |
+| 24 | → | [`docs/agent-guides/UI-PATTERNS.md`](docs/agent-guides/UI-PATTERNS.md) |
+| 25 | → | [`docs/agent-guides/WEB-MOBILE.md`](docs/agent-guides/WEB-MOBILE.md) |
+| 26 | → | [`docs/agent-guides/WIDGET-LIBRARY.md`](docs/agent-guides/WIDGET-LIBRARY.md) |
+| 27 | → | [`docs/media-player.md`](docs/media-player.md) |
+| 28 | → | [`PROVIDER-SUPPORT.md`](PROVIDER-SUPPORT.md) |
 
 ---
 

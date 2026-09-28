@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `crafter-station/petdex` — 26 default patterns, 0 followed patterns, 67 file(s) materialized.
+Mirror of `crafter-station/petdex` — 26 default patterns, 0 followed patterns, 68 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `crafter-station/petdex` — 26 default patterns, 0 followed patterns,
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 67 |
+| Files         | 68 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -122,10 +122,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 61 | ✓ | [`.agents/skills/coss/references/rules/migration.md`](.agents/skills/coss/references/rules/migration.md) |
 | 62 | ✓ | [`.agents/skills/coss/references/rules/styling.md`](.agents/skills/coss/references/rules/styling.md) |
 | 63 | ✓ | [`.agents/skills/coss/SKILL.md`](.agents/skills/coss/SKILL.md) |
-| 64 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 65 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 66 | ✓ | [`packages/petdex-cli/AGENTS.md`](packages/petdex-cli/AGENTS.md) |
-| 67 | ✓ | [`packages/petdex-cli/CLAUDE.md`](packages/petdex-cli/CLAUDE.md) |
+| 64 | ✓ | [`.claude/skills/petdex/SKILL.md`](.claude/skills/petdex/SKILL.md) |
+| 65 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 66 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 67 | ✓ | [`packages/petdex-cli/AGENTS.md`](packages/petdex-cli/AGENTS.md) |
+| 68 | ✓ | [`packages/petdex-cli/CLAUDE.md`](packages/petdex-cli/CLAUDE.md) |
 
 ---
 

@@ -1,0 +1,54 @@
+schema_version: "1.0"
+items:
+  - id: look_ahead
+    title: Look-ahead bias
+    required: true
+    coverage_hint: point[- ]in[- ]time|look[- ]ahead|as.of|future data|no.future
+  - id: survivorship
+    title: Survivorship bias
+    required: true
+    coverage_hint: survivorship|delisted|non[- ]surviving|removed from the universe
+  - id: universe_selection
+    title: Universe selection
+    required: true
+    coverage_hint: universe|selection criteria|constituents|membership|screened .* pool|index membership
+  - id: delisted_securities
+    title: Delisted securities
+    required: true
+    coverage_hint: delist|trading suspended|halted|expired|formerly listed|removed from listing
+  - id: earnings_announcement_timing
+    title: Earnings announcement timing
+    required: true
+    coverage_hint: earnings.{0,20}(announce|report|timestamp|date|timing)|announcement timing|earnings date
+  - id: split_dividend_adjustment
+    title: Split and dividend adjustment
+    required: true
+    coverage_hint: split|dividend|adjusted|corporate action|restated|restatement|back[- ]adjusted
+  - id: transaction_costs_slippage
+    title: Transaction costs and slippage
+    required: true
+    coverage_hint: transaction cost|commission|slippage|fee[s]?|spread|after costs|net of costs
+  - id: short_borrow_availability
+    title: Short borrow availability
+    required: true
+    coverage_hint: short borrow|borrow fee|locate|hard.to borrow|HTB|short availability|rebate|shortable
+  - id: liquidity_capacity
+    title: Liquidity and capacity
+    required: true
+    coverage_hint: liquidity|capacity|ADV|average daily volume|volume cap|position cap|market impact
+  - id: parameter_multiplicity
+    title: Parameter multiplicity
+    required: true
+    coverage_hint: parameter.{0,15}(count|grid|combination|multiplicity|sweep)|multiple (parameters|configs)|overfit
+  - id: walk_forward_out_of_sample
+    title: Walk-forward and out-of-sample validation
+    required: true
+    coverage_hint: walk[- ]forward|out[- ]of[- ]sample|\bOOS\b|hold[- ]out|train[^ ]*test|deferred
+  - id: benchmark_attribution
+    title: Benchmark attribution
+    required: true
+    coverage_hint: benchmark|attribution|relative to (the )?(index|benchmark)|vs (index|benchmark)|beta[- ]adjusted
+  - id: regime_dependence
+    title: Regime dependence
+    required: true
+    coverage_hint: regime|sub[ ]?period|across (regime|market)|bull|bear|risk[- ]on|risk[- ]off|stress

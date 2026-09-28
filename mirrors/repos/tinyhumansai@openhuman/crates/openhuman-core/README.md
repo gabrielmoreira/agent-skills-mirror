@@ -24,7 +24,7 @@ contents inside `mod.rs` behind the feature of the same name. See the
 | Domain | Purpose | README |
 | --- | --- | --- |
 | `agent` | Multi-agent orchestration, tool execution, session management | [README](src/agent/README.md) |
-| `api` | HTTP and Socket.IO helpers for the TinyHumans / AlphaHuman hosted API | [README](src/api/README.md) |
+| `backend` | The backend port: `BackendTransport`, `BackendClient`, error classification and budget-exhaustion detection. Holds no hosted URL, header policy or product identity of its own | [README](src/backend/README.md) |
 | `channels` | Channel implementations and runtime orchestration | [README](src/channels/README.md) |
 | `config` | Configuration management for the core | [README](src/config/README.md) |
 | `core` | Transport, dispatch, controller registry (`core::all`), auth, CLI, event bus, runtime composition (`core::runtime`); not a domain | [README](src/core/README.md) |

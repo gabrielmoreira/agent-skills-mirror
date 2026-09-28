@@ -494,6 +494,146 @@ def is_export_eligible(
     )
 
 
+BUNDLED_CHECKLIST = Path(__file__).resolve().parent.parent / "assets" / "bias_checklist.yaml"
+
+BIAS_SCHEMA_VERSION = "1.0"
+
+
+def load_bias_checklist(path: Path) -> list[dict]:
+    """Load and validate bias checklist items from a YAML file.
+
+    The checklist schema is ``{"schema_version": str, "items": [{id, title,
+    required, coverage_hint}]}``. Items missing ``id`` or ``coverage_hint`` are
+    rejected so the reviewer never silently skips a required rule.
+    """
+    try:
+        data = yaml.safe_load(path.read_text(encoding="utf-8"))
+    except (OSError, yaml.YAMLError) as exc:
+        raise ReviewError(f"Could not read bias checklist {path}: {exc}") from exc
+    if not isinstance(data, dict) or not isinstance(data.get("items"), list):
+        raise ReviewError(f"Bias checklist {path} must contain an 'items' list")
+    declared = data.get("schema_version")
+    if declared is not None and str(declared) != BIAS_SCHEMA_VERSION:
+        raise ReviewError(
+            f"Bias checklist {path} schema_version {declared!r} "
+            f"does not match expected {BIAS_SCHEMA_VERSION!r}"
+        )
+    items: list[dict] = []
+    for raw in data["items"]:
+        if not isinstance(raw, dict) or not raw.get("id") or not raw.get("coverage_hint"):
+            raise ReviewError(f"Invalid bias checklist item in {path}: {raw!r}")
+        items.append(
+            {
+                "id": str(raw["id"]),
+                "title": str(raw.get("title", raw["id"])),
+                "required": bool(raw.get("required", True)),
+                "coverage_hint": str(raw["coverage_hint"]),
+            }
+        )
+    return items
+
+
+def _draft_text(draft: dict) -> str:
+    """Flatten all scalar text in a draft (excluding its bias block) for hint matching."""
+
+    parts: list[str] = []
+
+    def walk(obj: Any) -> None:
+        if isinstance(obj, dict):
+            for key, value in obj.items():
+                if key == "bias_checklist":
+                    continue
+                walk(value)
+        elif isinstance(obj, list):
+            for value in obj:
+                walk(value)
+        elif isinstance(obj, (str, int, float, bool)):
+            parts.append(str(obj))
+
+    walk(draft)
+    return " ".join(parts)
+
+
+def evaluate_bias_checklist(draft: dict, items: list[dict]) -> list[dict]:
+    """Score one draft against the bias checklist.
+
+    An item is ``addressed`` iff the draft declares it in its ``bias_checklist``
+    block with a truthy value (a dict with ``addressed`` truthy and defaulting to
+    true when absent; a plain truthy scalar is also addressed). ``noted_in_draft``
+    is an informational heuristic that reports whether the item's concept text
+    appears anywhere in the draft, so an author can see that a rule is discussed
+    but not yet declared. Escalation in :func:`apply_bias_gate` is driven solely
+    by ``addressed``.
+    """
+    declared = draft.get("bias_checklist")
+    declared_map = declared if isinstance(declared, dict) else {}
+    text = _draft_text(draft)
+    results: list[dict] = []
+    for item in items:
+        value = declared_map.get(item["id"])
+        if isinstance(value, dict):
+            addressed = bool(value.get("addressed", True))
+            note = str(value.get("note", ""))
+        else:
+            addressed = bool(value)
+            note = str(value) if value else ""
+        try:
+            notion = re.search(item["coverage_hint"], text, re.IGNORECASE)
+        except re.error:
+            notion = None
+        results.append(
+            {
+                "item_id": item["id"],
+                "title": item["title"],
+                "required": item["required"],
+                "addressed": addressed,
+                "noted_in_draft": bool(notion),
+                "note": note,
+            }
+        )
+    return results
+
+
+def apply_bias_gate(review: DraftReview, bias_results: list[dict]) -> bool:
+    """Downgrade PASS -> REVISE when a required bias item is unaddressed.
+
+    Returns True when the verdict was downgraded. This is non-scoring: it never
+    changes the confidence score, C1-C8 weights, or a REJECT verdict. On
+    downgrade, export eligibility is cleared to match the ``strict_export``
+    behavior, so a REVISE draft is never export-eligible.
+    """
+    unaddressed = [r for r in bias_results if r["required"] and not r["addressed"]]
+    if not unaddressed:
+        return False
+    if review.verdict == "PASS":
+        review.verdict = "REVISE"
+        review.export_eligible = False
+        names = ", ".join(r["item_id"] for r in unaddressed)
+        review.revision_instructions.append(
+            f"Declare how {names} {('is' if len(unaddressed) == 1 else 'are')} "
+            "addressed in the draft's bias_checklist block"
+        )
+        return True
+    return False
+
+
+def _review_bias_for_all(
+    drafts: list[dict], reviews: list[DraftReview], bias_items: list[dict]
+) -> dict[str, list[dict]]:
+    """Evaluate the bias checklist for every draft and apply the verdict gate.
+
+    Drafts and reviews are joined positionally (``review_draft`` preserves the
+    ``load_drafts_from_dir`` ordering), so the ``bias_by_id`` map is keyed by
+    each review's ``draft_id``.
+    """
+    bias_by_id: dict[str, list[dict]] = {}
+    for draft, review in zip(drafts, reviews):
+        results = evaluate_bias_checklist(draft, bias_items)
+        apply_bias_gate(review, results)
+        bias_by_id[review.draft_id] = results
+    return bias_by_id
+
+
 def review_draft(
     draft: dict, *, strict_export: bool = False, exportable_families: set[str] | None = None
 ) -> DraftReview:
@@ -571,13 +711,27 @@ def build_output(
     drafts_source: str,
     draft_count: int,
     reviews: list[DraftReview],
+    bias_by_id: dict[str, list[dict]] | None = None,
 ) -> dict[str, Any]:
-    """Build the output payload."""
+    """Build the output payload.
+
+    When ``bias_by_id`` is supplied, each review that has a matching key gets a
+    ``bias_review`` block merged into its serialized dict. When it is not
+    supplied (checklist flag off) the key is omitted entirely so the output is
+    byte-identical to before the bias feature.
+    """
     summary = {"total": draft_count, "PASS": 0, "REVISE": 0, "REJECT": 0, "export_eligible": 0}  # nosec B105
     for r in reviews:
         summary[r.verdict] = summary.get(r.verdict, 0) + 1
         if r.export_eligible:
             summary["export_eligible"] += 1
+
+    reviews_payload: list[dict[str, Any]] = []
+    for r in reviews:
+        payload = asdict(r)
+        if bias_by_id and r.draft_id in bias_by_id:
+            payload["bias_review"] = bias_by_id[r.draft_id]
+        reviews_payload.append(payload)
 
     return {
         "generated_at_utc": datetime.now(timezone.utc).replace(microsecond=0).isoformat(),
@@ -586,7 +740,7 @@ def build_output(
             "draft_count": draft_count,
         },
         "summary": summary,
-        "reviews": [asdict(r) for r in reviews],
+        "reviews": reviews_payload,
     }
 
 
@@ -624,6 +778,24 @@ def build_markdown_summary(output: dict) -> str:
         lines.append("|-----------|-------|----------|--------|")
         for f in r.get("findings", []):
             lines.append(f"| {f['criterion']} | {f['score']} | {f['severity']} | {f['reason']} |")
+        if r.get("bias_review"):
+            unaddressed = [b for b in r["bias_review"] if b["required"] and not b["addressed"]]
+            lines.append("")
+            lines.append("**Bias Checklist:**")
+            lines.append("")
+            lines.append("| Item | Required | Addressed | Note |")
+            lines.append("|------|----------|-----------|------|")
+            for b in r["bias_review"]:
+                lines.append(
+                    f"| {b['item_id']} | {b['required']} | {b['addressed']} | {b.get('note', '')} |"
+                )
+            if unaddressed:
+                lines.append("")
+                lines.append(
+                    "_Unaddressed required items: "
+                    + ", ".join(b["item_id"] for b in unaddressed)
+                    + "_"
+                )
         if r.get("revision_instructions"):
             lines.append("")
             lines.append("**Revision Instructions:**")
@@ -673,6 +845,17 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         default=None,
         help="Comma-separated list of exportable entry families (overrides module default)",
     )
+    parser.add_argument(
+        "--bias-checklist",
+        nargs="?",
+        const=BUNDLED_CHECKLIST,
+        default=None,
+        help=(
+            "Enable the strategy-research bias checklist review against the bundled "
+            "checklist (default) or a custom YAML path. Without this flag, the bias "
+            "review is not applied and output matches prior behavior."
+        ),
+    )
     return parser.parse_args(argv)
 
 
@@ -706,7 +889,18 @@ def main(argv: list[str] | None = None) -> int:
             review_draft(d, strict_export=args.strict_export, exportable_families=ef_override)
             for d in drafts
         ]
-        output = build_output(source, len(drafts), reviews)
+        # When --bias-checklist is supplied without a path, the bundled checklist
+        # under assets/ is used. Without the flag, bias is not applied and the
+        # output matches prior behavior.
+        bias_by_id: dict[str, list[dict]] | None = None
+        if args.bias_checklist is not None:
+            checklist_path = Path(args.bias_checklist).resolve()
+            if not checklist_path.is_file():
+                raise ReviewError(f"Bias checklist not found: {checklist_path}")
+            bias_items = load_bias_checklist(checklist_path)
+            bias_by_id = _review_bias_for_all(drafts, reviews, bias_items)
+
+        output = build_output(source, len(drafts), reviews, bias_by_id)
 
         output_dir.mkdir(parents=True, exist_ok=True)
         ext = args.output_format

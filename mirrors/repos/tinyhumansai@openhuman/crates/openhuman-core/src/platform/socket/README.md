@@ -23,7 +23,7 @@ Persistent, Rust-native Socket.IO client to the OpenHuman backend. The `socket` 
 | `crates/openhuman-core/src/platform/socket/event_handlers.rs` | Inbound SIO event dispatch (`handle_sio_event`), SIO frame parsing (`parse_sio_event`), outbound frame helper (`emit_via_channel`). Maps event names → `DomainEvent` publishes. Redacts payload content from logs. |
 | `crates/openhuman-core/src/platform/socket/token_provider.rs` | `TokenProvider` type alias + `static_token_provider`, `token_provider_from_config`, and `is_invalid_token_error` (strict double-anchor matcher). |
 | `crates/openhuman-core/src/platform/socket/schemas.rs` | Controller schemas + RPC handlers for the `socket` namespace. |
-| `crates/openhuman-core/src/platform/socket/types.rs` | `WsStream` alias, `ConnectionOutcome` enum, observability event-name constants; re-exports `ConnectionStatus` / `SocketState` from `crate::api::models::socket`. |
+| `crates/openhuman-core/src/platform/socket/types.rs` | `WsStream` alias, `ConnectionOutcome` enum, observability event-name constants; re-exports `ConnectionStatus` / `SocketState` from `crate::platform::socket::models`. |
 | `crates/openhuman-core/src/platform/socket/ops.rs` | RPC operations behind `schemas.rs` (`connect_with_session` and live-socket reuse). |
 | `crates/openhuman-core/src/platform/socket/*_tests.rs` | Sibling test suites, included via `#[path]`. |
 
@@ -67,21 +67,21 @@ This module is a **publisher only**: it owns no `bus.rs` / `EventHandler` impls.
 
 ## Persistence
 
-None of its own. State (`status`, `socket_id`, `error`, attached `WebhookRouter`, pending ACK waiters) lives in-memory in `SharedState`. The session token is read on demand from the profile store via `crate::api::jwt::get_session_token` (live-refresh path); there is no `store.rs`.
+None of its own. State (`status`, `socket_id`, `error`, attached `WebhookRouter`, pending ACK waiters) lives in-memory in `SharedState`. The session token is read on demand from the profile store via `crate::security::credentials::session_support::get_session_token` (live-refresh path); there is no `store.rs`.
 
 ## Dependencies
 
-- `crate::api::models::socket`: `ConnectionStatus`, `SocketState` DTOs.
-- `crate::api::socket::websocket_url`, `crate::api::config::effective_backend_api_url`, `crate::api::jwt::get_session_token`: URL derivation and session-token lookup.
-- `crate::core::all`: `ControllerFuture`, `RegisteredController` for the controller registry.
-- `crate::core::{ControllerSchema, FieldSchema, TypeSchema}`: RPC schema types.
-- `crate::core::bus::BUS.publish` / `crate::core::events::DomainEvent`: for routing inbound events.
-- `crate::core::observability::report_error_or_expected`: one-shot sustained-outage classification at the failure threshold.
-- `crate::skills::webhooks`: `WebhookRouter` (attached for parse-error logging / response emission) and `WebhookRequest`.
-- `crate::integrations::composio`: `ComposioTriggerEvent` DTO for `composio:trigger` deserialization.
-- `crate::security::devices::tunnel_client`: `TunnelPeerStatus`, `TunnelFrame` DTOs for tunnel events.
-- `crate::config`: `Config` + `rpc::load_config_with_timeout` for `connect_with_session`.
-- `crate::util::utf8_safe_prefix_at_byte_boundary`: UTF-8-safe log truncation of raw packets.
+- `crate::platform::socket::models` — `ConnectionStatus`, `SocketState` DTOs.
+- `crate::platform::socket::url::websocket_url`, `crate::backend::require_base_url` (asks the installed transport, which resolves `effective_backend_api_url`), `crate::security::credentials::session_support::get_session_token` — URL derivation and session-token lookup.
+- `crate::core::all` — `ControllerFuture`, `RegisteredController` for the controller registry.
+- `crate::core::{ControllerSchema, FieldSchema, TypeSchema}` — RPC schema types.
+- `crate::core::bus::BUS.publish` / `crate::core::events::DomainEvent` — for routing inbound events.
+- `crate::core::observability::report_error_or_expected` — one-shot sustained-outage classification at the failure threshold.
+- `crate::skills::webhooks` — `WebhookRouter` (attached for parse-error logging / response emission) and `WebhookRequest`.
+- `crate::integrations::composio` — `ComposioTriggerEvent` DTO for `composio:trigger` deserialization.
+- `crate::security::devices::tunnel_client` — `TunnelPeerStatus`, `TunnelFrame` DTOs for tunnel events.
+- `crate::config` — `Config` + `rpc::load_config_with_timeout` for `connect_with_session`.
+- `crate::util::utf8_safe_prefix_at_byte_boundary` — UTF-8-safe log truncation of raw packets.
 
 ## Used by
 

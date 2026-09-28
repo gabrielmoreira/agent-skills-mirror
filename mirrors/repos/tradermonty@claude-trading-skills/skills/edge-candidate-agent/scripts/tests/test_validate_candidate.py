@@ -34,6 +34,7 @@ def build_valid_strategy(strategy_id: str) -> dict:
             "risk_per_trade": 0.01,
             "max_positions": 5,
             "max_sector_exposure": 0.30,
+            "sector_group_by": "sector",
         },
         "cost_model": {
             "commission_per_share": 0.0,

@@ -844,8 +844,14 @@ Do not collapse every concrete code fix into broad companion notes. When the
 finding maps to a current upstream diff line, emit an `inline`/`in_diff: true`
 item with the exact range. Include an apply-ready `suggestion` block when one
 is justified, but do not downgrade a valid line comment to `companion` merely
-because prose is clearer than a patch. For every truly out-of-diff supported
-finding, emit a non-inline proposed comment that explains the concern, its
+because prose is clearer than a patch. Follow the PR-review skill's
+per-inline suggestion triage: check for small literal replacements, validate
+on the exact upstream tree, and record the concrete reason for any prose-only
+inline finding in the private grounding dossier. Do not interpret a larger
+cross-file fix as proof that none of its localized edits can be suggested. If
+candidate validation is unfinished, checkpoint the review rather than
+publishing prose as a shortcut. For every truly out-of-diff supported finding,
+emit a non-inline proposed comment that explains the concern, its
 impact, and the required follow-up, and record a concrete
 `out_of_diff_reason`. Every general comment must be a self-contained
 implementation prompt with these author-facing sections: `Affected code`

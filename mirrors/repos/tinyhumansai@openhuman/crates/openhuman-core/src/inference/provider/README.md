@@ -58,7 +58,7 @@ previously `providers/` (pre-consolidation single-crate layout); see
   LM Studio base-url resolution for local provider strings.
 - `crate::inference::auth_error_registry`: surfaces OpenHuman per-provider auth errors
   back to the UI.
-- `crate::core::bus` (`BUS.publish`) / `crate::core::events::DomainEvent`: 
+- `crate::core::bus` (`BUS.publish`) / `crate::core::events::DomainEvent`:
   `ops/http_error/auth_failure.rs::publish_backend_session_expired` and
   `openhuman_backend_model.rs` publish `DomainEvent::SessionExpired` when the
   managed backend reports an auth failure, so the credentials layer can

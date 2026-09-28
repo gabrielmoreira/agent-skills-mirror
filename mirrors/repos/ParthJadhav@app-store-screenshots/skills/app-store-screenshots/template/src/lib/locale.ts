@@ -32,7 +32,9 @@ export function resolveScreenshot(path: string | undefined, locale: string): str
 // to call on already-migrated data.
 export function coerceLocalized(value: unknown): LocalizedText {
   if (typeof value === "string") return { [DEFAULT_LOCALE]: value };
-  if (value && typeof value === "object") return value as LocalizedText;
+  if (value && typeof value === "object" && !Array.isArray(value)) {
+    return Object.fromEntries(Object.entries(value).filter(([, text]) => typeof text === "string"));
+  }
   return {};
 }
 

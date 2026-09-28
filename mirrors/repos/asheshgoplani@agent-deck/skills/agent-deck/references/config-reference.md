@@ -12,6 +12,7 @@ All options for `$XDG_CONFIG_HOME/agent-deck/config.toml` (default `~/.config/ag
 - [[gemini] Section](#gemini-section)
 - [[opencode] Section](#opencode-section)
 - [[codex] Section](#codex-section)
+- [[models] Section](#models-section)
 - [[copilot] Section](#copilot-section)
 - [[cursor] Section](#cursor-section)
 - [[hermes] Section](#hermes-section)
@@ -301,6 +302,21 @@ command = "codex"
 | `env_file` | string | `""` | A .env file sourced for Codex sessions only. See [Path Resolution](#path-resolution). |
 | `command` | string | `"codex"` | Override the binary/invocation. |
 
+## [models] Section
+
+Where the model and reasoning-effort suggestions come from (TUI and web new-session dialogs, `launch -capabilities --json`, `--effort` validation).
+
+```toml
+[models]
+probe = true   # Ask installed CLIs for their model lists (default)
+```
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| `probe` | bool | `true` | Ask an installed CLI that can list its own models for its model and effort lists, merged in front of the built-in catalog. Today that is Codex (`codex debug models`, no prompt, about 1s timeout); Claude Code and Gemini have no local listing and use the built-in catalog. Results are cached per CLI binary for up to a day in `<cache dir>/model-probe/`. A missing CLI, timeout or unrecognized output falls back to the built-in catalog, and a failed probe is retried after about a minute. `false` uses only the built-in catalog. |
+
+The lists are suggestions, not an allowlist: a `[claude] default_model` the catalog does not know is still prefilled in the new-session dialog (with a warning in the log), and `--model` passes any ID through.
+
 ## [copilot] Section
 
 GitHub Copilot CLI integration settings.
@@ -447,6 +463,7 @@ path_template = "~/.agent-deck/worktrees/{repo-name}/{branch}"  # Custom path (o
 branch_prefix = "feature/"                           # Prefix for branch names ("" to disable)
 auto_cleanup = true                                  # Remove worktree when session is deleted
 setup_timeout_seconds = 60                           # Timeout for .agent-deck/worktree-setup.sh
+run_repo_scripts = "prompt"                          # Worktree hooks: "prompt", "never" or "always" (risky)
 sparse_checkout = "off"                              # "inherit" to copy the source worktree's sparse checkout
 checkout_git_config = ["core.hooksPath=/dev/null"]   # git -c entries for the worktree checkout (global only)
 ```
@@ -459,6 +476,7 @@ checkout_git_config = ["core.hooksPath=/dev/null"]   # git -c entries for the wo
 | `branch_prefix` | string | `"feature/"` | Prefix prepended to branch names. Supports environment variable expansion (e.g., `"$USER/"`). Set to `""` to disable. Won't double-prepend if the branch already starts with the prefix. |
 | `auto_cleanup` | bool | `false` | Remove worktree directory when the session is deleted. |
 | `setup_timeout_seconds` | int | `60` | Max seconds for `.agent-deck/worktree-setup.sh` to run. Set to `0` for unlimited. |
+| `run_repo_scripts` | string | `"prompt"` | Whether the repository's `.agent-deck/worktree-setup.sh` / `worktree-destruction.sh` may run. `"prompt"`: a hook runs only once approved; the approval is bound to the script's sha256, resolved path and interpreter, and any change asks again (TUI dialog, terminal prompt, or `agent-deck worktree trust-hooks`; without a terminal the hook is skipped with a notice). `"never"`: hooks never run. `"always"`: every hook runs without asking, including in repositories you just cloned; use only if you own every repository you open. Unknown values mean `"prompt"`. Global config only. |
 | `sparse_checkout` | string | `"off"` | Sparse-checkout inheritance (#1708). `"inherit"` captures the mode (cone / non-cone, sparse index) and patterns of the worktree you create the session from, creates the new worktree with `git worktree add --no-checkout`, and materializes it with those patterns, so a sparse monorepo never checks out the full tree first. `"off"` / unset / any other value keeps git's normal checkout. A non-sparse source is also left unchanged. `.worktreeinclude` and the setup script still run afterwards. Requires git 2.32+ (`sparse-checkout set --[no-]sparse-index`). |
 | `checkout_git_config` | string array | `[]` | `key=value` git config entries passed as `git -c` to the commands that create and check out a new worktree (`worktree add`, and the sparse checkout when `sparse_checkout = "inherit"`) (#2366). `"core.hooksPath=/dev/null"` skips `post-checkout` hooks (for example the Git LFS hook); `"checkout.workers=8"` tunes checkout. Applied to that creation only; nothing is written to the worktree's config. Entries that are not `key=value` fail worktree creation. Global config only. |
 
@@ -849,6 +867,7 @@ fields = ["version", "sessions_by_status", "load", "memory", "disk"]
 ```toml
 [web]
 mutations_enabled = true                      # Accept POST/PATCH/DELETE from the web UI
+allowed_hosts = ["machine.tailnet.ts.net"]    # Extra exact HTTP Host names for proxies
 trusted_domains = [                           # Links to these hosts open without a confirm
   "gitlab.mycorp.example",
   "gerrit.mycorp.example",
@@ -860,6 +879,7 @@ confirm_link_open = true                      # Confirm before opening any OTHER
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | `mutations_enabled` | bool | `true` | When `false`, mutating endpoints (POST/PATCH/DELETE) return HTTP 403 and the web UI hides its write affordances. `--read-only` forces this off regardless of the config value. |
+| `allowed_hosts` | []string | `[]` | Extra exact HTTP Host names for reverse proxies or Tailscale Serve. Optional `:port` limits an entry to that port. Case-insensitive; no URLs, wildcards, or suffix matching. Repeat `--allowed-host` for temporary additions. Unknown Hosts receive HTTP 421, including WebSocket upgrades. |
 | `trusted_domains` | []string | `[]` | Hosts whose links open straight from the web terminal, skipping the "this link could potentially be dangerous" confirm. Everything not listed still confirms. Matching is on **host** only: case-insensitive, port- and path-independent. An entry may be a bare host (`gitlab.corp.example`), a pasted URL (reduced to its host), or `*.base.example` to match **subdomains** of `base.example` (not the bare base itself). Only `http`/`https` links are ever auto-opened. Unusable entries (`*`, `*.example`, blanks) are dropped. |
 | `confirm_link_open` | bool | `true` | Confirm before opening a web-terminal link whose host is **not** in `trusted_domains`. Set `false` to accept the risk and open every link directly — prefer `trusted_domains`, which keeps the safety net for arbitrary links. |
 

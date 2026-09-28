@@ -71,8 +71,11 @@ Authentication in library mode is the TinyHumans API key
 runtime's `config.toml`. Managed inference sends it as a bearer to the
 OpenAI-compatible endpoint; backend REST calls send `x-api-key`; there is no
 session JWT and nothing to expire. Agents that name their own `Provider`
-(BYOK) never touch it. Backend features that need a signed-in user still
-take `HarnessBuilder::session`.
+(BYOK) never touch it. The key covers every hosted feature, subject to its
+backend scopes: inference, embeddings, voice, search, media, Composio and the
+other integrations, channels and the socket. Only the session-bound `/auth/*`
+flows (OAuth connect, channel link tokens) still take
+`HarnessBuilder::session`.
 
 `Workspace::Inherit` together with `Provider::inherit()` and no API key is
 deliberately not library-routed inference. It borrows the installed

@@ -152,6 +152,35 @@ def test_export_force_overwrites_existing_artifacts(tmp_path: Path) -> None:
     assert loaded_spec["description"] == "updated description"
 
 
+def test_export_draft_risk_gets_sector_group_by(tmp_path: Path) -> None:
+    ticket_path = tmp_path / "ticket.yaml"
+    write_ticket(
+        ticket_path,
+        {
+            "id": "edge_vcp_sector_cap_v1",
+            "hypothesis_type": "breakout",
+            "entry_family": "pivot_breakout",
+            # Risk block as emitted by older edge-strategy-designer drafts.
+            "risk": {
+                "position_sizing": "fixed_risk",
+                "risk_per_trade": 0.01,
+                "max_positions": 5,
+                "max_sector_exposure": 0.3,
+            },
+        },
+    )
+
+    spec, _, candidate_dir = export_candidate(
+        ticket_path=ticket_path,
+        strategies_dir=tmp_path / "strategies",
+    )
+
+    assert spec["risk"]["max_sector_exposure"] == 0.3
+    assert spec["risk"]["sector_group_by"] == "sector"
+    loaded_spec = read_yaml(candidate_dir / "strategy.yaml")
+    assert loaded_spec["risk"]["sector_group_by"] == "sector"
+
+
 def test_deep_merge_handles_nested_and_scalar_overrides() -> None:
     base = {
         "a": {"x": 1, "y": 2},

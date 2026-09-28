@@ -117,6 +117,21 @@ monthly:
 
 The script tolerates partial records. Missing evidence is marked as `unclear`.
 
+For the numeric fields actually evaluated (`planned.risk_r`, `actual.risk_r`,
+`risk_plan.max_risk_per_trade_r`, `actual.portfolio_heat_r`,
+`risk_plan.max_portfolio_heat_r`, and `monthly.consecutive_losses`), supplied
+non-null values must be finite and nonnegative. Numeric strings and zero are
+accepted; consecutive losses must be a whole number. Booleans, negative values,
+NaN, infinity, malformed strings, and conversion overflow are rejected. An
+explicitly invalid maximum never falls back to planned risk. Missing/null fields
+retain the partial-record behavior. The CLI validates every source record,
+including multiple inputs, and returns exit code 2 with a field-specific error
+before creating or modifying reports when a numeric value is invalid.
+
+This skill remains beta. Numeric validation does not establish production
+readiness; report-ID path safety and the documented shallow multi-input wrapper
+still require separate assessment.
+
 ## Workflow
 
 ### Step 1 — Collect source records

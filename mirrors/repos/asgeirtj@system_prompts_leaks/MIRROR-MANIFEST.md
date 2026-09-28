@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `asgeirtj/system_prompts_leaks` — 26 default patterns, 0 followed patterns, 62 file(s) materialized.
+Mirror of `asgeirtj/system_prompts_leaks` — 26 default patterns, 0 followed patterns, 66 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `asgeirtj/system_prompts_leaks` — 26 default patterns, 0 followed pa
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 62 |
+| Files         | 66 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,67 +60,71 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`Anthropic/claude-code/agents/claude.md`](Anthropic/claude-code/agents/claude.md) |
-| 2 | ✓ | [`Anthropic/claude-code/skills/artifact-capabilities/SKILL.md`](Anthropic/claude-code/skills/artifact-capabilities/SKILL.md) |
-| 3 | ✓ | [`Anthropic/claude-code/skills/artifact-design/SKILL.md`](Anthropic/claude-code/skills/artifact-design/SKILL.md) |
-| 4 | ✓ | [`Anthropic/claude-code/skills/artifact-diagramming/SKILL.md`](Anthropic/claude-code/skills/artifact-diagramming/SKILL.md) |
-| 5 | ✓ | [`Anthropic/claude-code/skills/batch/SKILL.md`](Anthropic/claude-code/skills/batch/SKILL.md) |
-| 6 | ✓ | [`Anthropic/claude-code/skills/claude-api/SKILL.md`](Anthropic/claude-code/skills/claude-api/SKILL.md) |
-| 7 | ✓ | [`Anthropic/claude-code/skills/claude-in-chrome/SKILL.md`](Anthropic/claude-code/skills/claude-in-chrome/SKILL.md) |
-| 8 | ✓ | [`Anthropic/claude-code/skills/code-review/SKILL.md`](Anthropic/claude-code/skills/code-review/SKILL.md) |
-| 9 | ✓ | [`Anthropic/claude-code/skills/dataviz/SKILL.md`](Anthropic/claude-code/skills/dataviz/SKILL.md) |
-| 10 | ✓ | [`Anthropic/claude-code/skills/debug/SKILL.md`](Anthropic/claude-code/skills/debug/SKILL.md) |
-| 11 | ✓ | [`Anthropic/claude-code/skills/deep-research/SKILL.md`](Anthropic/claude-code/skills/deep-research/SKILL.md) |
-| 12 | ✓ | [`Anthropic/claude-code/skills/design-sync/non-storybook/SKILL.md`](Anthropic/claude-code/skills/design-sync/non-storybook/SKILL.md) |
-| 13 | ✓ | [`Anthropic/claude-code/skills/design-sync/SKILL.md`](Anthropic/claude-code/skills/design-sync/SKILL.md) |
-| 14 | ✓ | [`Anthropic/claude-code/skills/design-sync/storybook/SKILL.md`](Anthropic/claude-code/skills/design-sync/storybook/SKILL.md) |
-| 15 | ✓ | [`Anthropic/claude-code/skills/design/SKILL.md`](Anthropic/claude-code/skills/design/SKILL.md) |
-| 16 | ✓ | [`Anthropic/claude-code/skills/docs/SKILL.md`](Anthropic/claude-code/skills/docs/SKILL.md) |
-| 17 | ✓ | [`Anthropic/claude-code/skills/doctor/SKILL.md`](Anthropic/claude-code/skills/doctor/SKILL.md) |
-| 18 | ✓ | [`Anthropic/claude-code/skills/docx/SKILL.md`](Anthropic/claude-code/skills/docx/SKILL.md) |
-| 19 | ✓ | [`Anthropic/claude-code/skills/fewer-permission-prompts/SKILL.md`](Anthropic/claude-code/skills/fewer-permission-prompts/SKILL.md) |
-| 20 | ✓ | [`Anthropic/claude-code/skills/import-memory/SKILL.md`](Anthropic/claude-code/skills/import-memory/SKILL.md) |
-| 21 | ✓ | [`Anthropic/claude-code/skills/init-new/SKILL.md`](Anthropic/claude-code/skills/init-new/SKILL.md) |
-| 22 | ✓ | [`Anthropic/claude-code/skills/init/SKILL.md`](Anthropic/claude-code/skills/init/SKILL.md) |
-| 23 | ✓ | [`Anthropic/claude-code/skills/keybindings-help/SKILL.md`](Anthropic/claude-code/skills/keybindings-help/SKILL.md) |
-| 24 | ✓ | [`Anthropic/claude-code/skills/loop/SKILL.md`](Anthropic/claude-code/skills/loop/SKILL.md) |
-| 25 | ✓ | [`Anthropic/claude-code/skills/morning/SKILL.md`](Anthropic/claude-code/skills/morning/SKILL.md) |
-| 26 | ✓ | [`Anthropic/claude-code/skills/pdf/SKILL.md`](Anthropic/claude-code/skills/pdf/SKILL.md) |
-| 27 | ✓ | [`Anthropic/claude-code/skills/plugin-authoring/SKILL.md`](Anthropic/claude-code/skills/plugin-authoring/SKILL.md) |
-| 28 | ✓ | [`Anthropic/claude-code/skills/pptx/SKILL.md`](Anthropic/claude-code/skills/pptx/SKILL.md) |
-| 29 | ✓ | [`Anthropic/claude-code/skills/run-skill-generator/SKILL.md`](Anthropic/claude-code/skills/run-skill-generator/SKILL.md) |
-| 30 | ✓ | [`Anthropic/claude-code/skills/run-skill-generator/template.md`](Anthropic/claude-code/skills/run-skill-generator/template.md) |
-| 31 | ✓ | [`Anthropic/claude-code/skills/run/SKILL.md`](Anthropic/claude-code/skills/run/SKILL.md) |
-| 32 | ✓ | [`Anthropic/claude-code/skills/schedule/SKILL.md`](Anthropic/claude-code/skills/schedule/SKILL.md) |
-| 33 | ✓ | [`Anthropic/claude-code/skills/security-review/SKILL.md`](Anthropic/claude-code/skills/security-review/SKILL.md) |
-| 34 | ✓ | [`Anthropic/claude-code/skills/simplify/SKILL.md`](Anthropic/claude-code/skills/simplify/SKILL.md) |
-| 35 | ✓ | [`Anthropic/claude-code/skills/skill-creator/SKILL.md`](Anthropic/claude-code/skills/skill-creator/SKILL.md) |
-| 36 | ✓ | [`Anthropic/claude-code/skills/update-config/SKILL.md`](Anthropic/claude-code/skills/update-config/SKILL.md) |
-| 37 | ✓ | [`Anthropic/claude-code/skills/verify/SKILL.md`](Anthropic/claude-code/skills/verify/SKILL.md) |
-| 38 | ✓ | [`Anthropic/claude-code/skills/workflow-authoring/SKILL.md`](Anthropic/claude-code/skills/workflow-authoring/SKILL.md) |
-| 39 | ✓ | [`Anthropic/claude-code/skills/xlsx/SKILL.md`](Anthropic/claude-code/skills/xlsx/SKILL.md) |
-| 40 | ✓ | [`Anthropic/claude-cowork/setup-cowork/SKILL.md`](Anthropic/claude-cowork/setup-cowork/SKILL.md) |
-| 41 | ✓ | [`Anthropic/claude-cowork/setup-writing-style/SKILL.md`](Anthropic/claude-cowork/setup-writing-style/SKILL.md) |
-| 42 | ✓ | [`Anthropic/claude-design/skills/3d-object/SKILL.md`](Anthropic/claude-design/skills/3d-object/SKILL.md) |
-| 43 | ✓ | [`Anthropic/claude-design/skills/animated-video/SKILL.md`](Anthropic/claude-design/skills/animated-video/SKILL.md) |
-| 44 | ✓ | [`Anthropic/claude-design/skills/claude-api-in-prototypes/SKILL.md`](Anthropic/claude-design/skills/claude-api-in-prototypes/SKILL.md) |
-| 45 | ✓ | [`Anthropic/claude-design/skills/create-design-system/SKILL.md`](Anthropic/claude-design/skills/create-design-system/SKILL.md) |
-| 46 | ✓ | [`Anthropic/claude-design/skills/export-as-pptx-editable/SKILL.md`](Anthropic/claude-design/skills/export-as-pptx-editable/SKILL.md) |
-| 47 | ✓ | [`Anthropic/claude-design/skills/export-as-pptx-screenshots/SKILL.md`](Anthropic/claude-design/skills/export-as-pptx-screenshots/SKILL.md) |
-| 48 | ✓ | [`Anthropic/claude-design/skills/flier/SKILL.md`](Anthropic/claude-design/skills/flier/SKILL.md) |
-| 49 | ✓ | [`Anthropic/claude-design/skills/frontend-design/SKILL.md`](Anthropic/claude-design/skills/frontend-design/SKILL.md) |
-| 50 | ✓ | [`Anthropic/claude-design/skills/handoff-to-claude-code/SKILL.md`](Anthropic/claude-design/skills/handoff-to-claude-code/SKILL.md) |
-| 51 | ✓ | [`Anthropic/claude-design/skills/hi-fi-design/SKILL.md`](Anthropic/claude-design/skills/hi-fi-design/SKILL.md) |
-| 52 | ✓ | [`Anthropic/claude-design/skills/html-email/SKILL.md`](Anthropic/claude-design/skills/html-email/SKILL.md) |
-| 53 | ✓ | [`Anthropic/claude-design/skills/interactive-prototype/SKILL.md`](Anthropic/claude-design/skills/interactive-prototype/SKILL.md) |
-| 54 | ✓ | [`Anthropic/claude-design/skills/make-a-deck/SKILL.md`](Anthropic/claude-design/skills/make-a-deck/SKILL.md) |
-| 55 | ✓ | [`Anthropic/claude-design/skills/make-a-doc/SKILL.md`](Anthropic/claude-design/skills/make-a-doc/SKILL.md) |
-| 56 | ✓ | [`Anthropic/claude-design/skills/make-tweakable/SKILL.md`](Anthropic/claude-design/skills/make-tweakable/SKILL.md) |
-| 57 | ✓ | [`Anthropic/claude-design/skills/maps-geography/SKILL.md`](Anthropic/claude-design/skills/maps-geography/SKILL.md) |
-| 58 | ✓ | [`Anthropic/claude-design/skills/options/SKILL.md`](Anthropic/claude-design/skills/options/SKILL.md) |
-| 59 | ✓ | [`Anthropic/claude-design/skills/save-as-pdf/SKILL.md`](Anthropic/claude-design/skills/save-as-pdf/SKILL.md) |
-| 60 | ✓ | [`Anthropic/claude-design/skills/save-as-standalone-html/SKILL.md`](Anthropic/claude-design/skills/save-as-standalone-html/SKILL.md) |
-| 61 | ✓ | [`Anthropic/claude-design/skills/web-research/SKILL.md`](Anthropic/claude-design/skills/web-research/SKILL.md) |
-| 62 | ✓ | [`Anthropic/claude-design/skills/wireframe/SKILL.md`](Anthropic/claude-design/skills/wireframe/SKILL.md) |
+| 2 | ✓ | [`Anthropic/claude-code/skills/anthropic-skills/schedule/SKILL.md`](Anthropic/claude-code/skills/anthropic-skills/schedule/SKILL.md) |
+| 3 | ✓ | [`Anthropic/claude-code/skills/artifact-capabilities/SKILL.md`](Anthropic/claude-code/skills/artifact-capabilities/SKILL.md) |
+| 4 | ✓ | [`Anthropic/claude-code/skills/artifact-design/SKILL.md`](Anthropic/claude-code/skills/artifact-design/SKILL.md) |
+| 5 | ✓ | [`Anthropic/claude-code/skills/artifact-diagramming/SKILL.md`](Anthropic/claude-code/skills/artifact-diagramming/SKILL.md) |
+| 6 | ✓ | [`Anthropic/claude-code/skills/batch/SKILL.md`](Anthropic/claude-code/skills/batch/SKILL.md) |
+| 7 | ✓ | [`Anthropic/claude-code/skills/claude-api/SKILL.md`](Anthropic/claude-code/skills/claude-api/SKILL.md) |
+| 8 | ✓ | [`Anthropic/claude-code/skills/claude-in-chrome/SKILL.md`](Anthropic/claude-code/skills/claude-in-chrome/SKILL.md) |
+| 9 | ✓ | [`Anthropic/claude-code/skills/code-review/SKILL.md`](Anthropic/claude-code/skills/code-review/SKILL.md) |
+| 10 | ✓ | [`Anthropic/claude-code/skills/consolidate-memory/SKILL.md`](Anthropic/claude-code/skills/consolidate-memory/SKILL.md) |
+| 11 | ✓ | [`Anthropic/claude-code/skills/dataviz/SKILL.md`](Anthropic/claude-code/skills/dataviz/SKILL.md) |
+| 12 | ✓ | [`Anthropic/claude-code/skills/debug/SKILL.md`](Anthropic/claude-code/skills/debug/SKILL.md) |
+| 13 | ✓ | [`Anthropic/claude-code/skills/deep-research/SKILL.md`](Anthropic/claude-code/skills/deep-research/SKILL.md) |
+| 14 | ✓ | [`Anthropic/claude-code/skills/design-sync/non-storybook/SKILL.md`](Anthropic/claude-code/skills/design-sync/non-storybook/SKILL.md) |
+| 15 | ✓ | [`Anthropic/claude-code/skills/design-sync/SKILL.md`](Anthropic/claude-code/skills/design-sync/SKILL.md) |
+| 16 | ✓ | [`Anthropic/claude-code/skills/design-sync/storybook/SKILL.md`](Anthropic/claude-code/skills/design-sync/storybook/SKILL.md) |
+| 17 | ✓ | [`Anthropic/claude-code/skills/design/SKILL.md`](Anthropic/claude-code/skills/design/SKILL.md) |
+| 18 | ✓ | [`Anthropic/claude-code/skills/docs/SKILL.md`](Anthropic/claude-code/skills/docs/SKILL.md) |
+| 19 | ✓ | [`Anthropic/claude-code/skills/doctor/SKILL.md`](Anthropic/claude-code/skills/doctor/SKILL.md) |
+| 20 | ✓ | [`Anthropic/claude-code/skills/docx/SKILL.md`](Anthropic/claude-code/skills/docx/SKILL.md) |
+| 21 | ✓ | [`Anthropic/claude-code/skills/explain-usage/SKILL.md`](Anthropic/claude-code/skills/explain-usage/SKILL.md) |
+| 22 | ✓ | [`Anthropic/claude-code/skills/fewer-permission-prompts/SKILL.md`](Anthropic/claude-code/skills/fewer-permission-prompts/SKILL.md) |
+| 23 | ✓ | [`Anthropic/claude-code/skills/google-workspace/SKILL.md`](Anthropic/claude-code/skills/google-workspace/SKILL.md) |
+| 24 | ✓ | [`Anthropic/claude-code/skills/import-memory/SKILL.md`](Anthropic/claude-code/skills/import-memory/SKILL.md) |
+| 25 | ✓ | [`Anthropic/claude-code/skills/init-new/SKILL.md`](Anthropic/claude-code/skills/init-new/SKILL.md) |
+| 26 | ✓ | [`Anthropic/claude-code/skills/init/SKILL.md`](Anthropic/claude-code/skills/init/SKILL.md) |
+| 27 | ✓ | [`Anthropic/claude-code/skills/keybindings-help/SKILL.md`](Anthropic/claude-code/skills/keybindings-help/SKILL.md) |
+| 28 | ✓ | [`Anthropic/claude-code/skills/loop/SKILL.md`](Anthropic/claude-code/skills/loop/SKILL.md) |
+| 29 | ✓ | [`Anthropic/claude-code/skills/morning/SKILL.md`](Anthropic/claude-code/skills/morning/SKILL.md) |
+| 30 | ✓ | [`Anthropic/claude-code/skills/pdf/SKILL.md`](Anthropic/claude-code/skills/pdf/SKILL.md) |
+| 31 | ✓ | [`Anthropic/claude-code/skills/pptx/SKILL.md`](Anthropic/claude-code/skills/pptx/SKILL.md) |
+| 32 | ✓ | [`Anthropic/claude-code/skills/run-skill-generator/SKILL.md`](Anthropic/claude-code/skills/run-skill-generator/SKILL.md) |
+| 33 | ✓ | [`Anthropic/claude-code/skills/run-skill-generator/template.md`](Anthropic/claude-code/skills/run-skill-generator/template.md) |
+| 34 | ✓ | [`Anthropic/claude-code/skills/run/SKILL.md`](Anthropic/claude-code/skills/run/SKILL.md) |
+| 35 | ✓ | [`Anthropic/claude-code/skills/schedule/SKILL.md`](Anthropic/claude-code/skills/schedule/SKILL.md) |
+| 36 | ✓ | [`Anthropic/claude-code/skills/security-review/SKILL.md`](Anthropic/claude-code/skills/security-review/SKILL.md) |
+| 37 | ✓ | [`Anthropic/claude-code/skills/setup-claude/SKILL.md`](Anthropic/claude-code/skills/setup-claude/SKILL.md) |
+| 38 | ✓ | [`Anthropic/claude-code/skills/simplify/SKILL.md`](Anthropic/claude-code/skills/simplify/SKILL.md) |
+| 39 | ✓ | [`Anthropic/claude-code/skills/skill-creator/SKILL.md`](Anthropic/claude-code/skills/skill-creator/SKILL.md) |
+| 40 | ✓ | [`Anthropic/claude-code/skills/update-config/SKILL.md`](Anthropic/claude-code/skills/update-config/SKILL.md) |
+| 41 | ✓ | [`Anthropic/claude-code/skills/verify/SKILL.md`](Anthropic/claude-code/skills/verify/SKILL.md) |
+| 42 | ✓ | [`Anthropic/claude-code/skills/workflow-authoring/SKILL.md`](Anthropic/claude-code/skills/workflow-authoring/SKILL.md) |
+| 43 | ✓ | [`Anthropic/claude-code/skills/xlsx/SKILL.md`](Anthropic/claude-code/skills/xlsx/SKILL.md) |
+| 44 | ✓ | [`Anthropic/claude-cowork/setup-cowork/SKILL.md`](Anthropic/claude-cowork/setup-cowork/SKILL.md) |
+| 45 | ✓ | [`Anthropic/claude-cowork/setup-writing-style/SKILL.md`](Anthropic/claude-cowork/setup-writing-style/SKILL.md) |
+| 46 | ✓ | [`Anthropic/claude-design/skills/3d-object/SKILL.md`](Anthropic/claude-design/skills/3d-object/SKILL.md) |
+| 47 | ✓ | [`Anthropic/claude-design/skills/animated-video/SKILL.md`](Anthropic/claude-design/skills/animated-video/SKILL.md) |
+| 48 | ✓ | [`Anthropic/claude-design/skills/claude-api-in-prototypes/SKILL.md`](Anthropic/claude-design/skills/claude-api-in-prototypes/SKILL.md) |
+| 49 | ✓ | [`Anthropic/claude-design/skills/create-design-system/SKILL.md`](Anthropic/claude-design/skills/create-design-system/SKILL.md) |
+| 50 | ✓ | [`Anthropic/claude-design/skills/export-as-pptx-editable/SKILL.md`](Anthropic/claude-design/skills/export-as-pptx-editable/SKILL.md) |
+| 51 | ✓ | [`Anthropic/claude-design/skills/export-as-pptx-screenshots/SKILL.md`](Anthropic/claude-design/skills/export-as-pptx-screenshots/SKILL.md) |
+| 52 | ✓ | [`Anthropic/claude-design/skills/flier/SKILL.md`](Anthropic/claude-design/skills/flier/SKILL.md) |
+| 53 | ✓ | [`Anthropic/claude-design/skills/frontend-design/SKILL.md`](Anthropic/claude-design/skills/frontend-design/SKILL.md) |
+| 54 | ✓ | [`Anthropic/claude-design/skills/handoff-to-claude-code/SKILL.md`](Anthropic/claude-design/skills/handoff-to-claude-code/SKILL.md) |
+| 55 | ✓ | [`Anthropic/claude-design/skills/hi-fi-design/SKILL.md`](Anthropic/claude-design/skills/hi-fi-design/SKILL.md) |
+| 56 | ✓ | [`Anthropic/claude-design/skills/html-email/SKILL.md`](Anthropic/claude-design/skills/html-email/SKILL.md) |
+| 57 | ✓ | [`Anthropic/claude-design/skills/interactive-prototype/SKILL.md`](Anthropic/claude-design/skills/interactive-prototype/SKILL.md) |
+| 58 | ✓ | [`Anthropic/claude-design/skills/make-a-deck/SKILL.md`](Anthropic/claude-design/skills/make-a-deck/SKILL.md) |
+| 59 | ✓ | [`Anthropic/claude-design/skills/make-a-doc/SKILL.md`](Anthropic/claude-design/skills/make-a-doc/SKILL.md) |
+| 60 | ✓ | [`Anthropic/claude-design/skills/make-tweakable/SKILL.md`](Anthropic/claude-design/skills/make-tweakable/SKILL.md) |
+| 61 | ✓ | [`Anthropic/claude-design/skills/maps-geography/SKILL.md`](Anthropic/claude-design/skills/maps-geography/SKILL.md) |
+| 62 | ✓ | [`Anthropic/claude-design/skills/options/SKILL.md`](Anthropic/claude-design/skills/options/SKILL.md) |
+| 63 | ✓ | [`Anthropic/claude-design/skills/save-as-pdf/SKILL.md`](Anthropic/claude-design/skills/save-as-pdf/SKILL.md) |
+| 64 | ✓ | [`Anthropic/claude-design/skills/save-as-standalone-html/SKILL.md`](Anthropic/claude-design/skills/save-as-standalone-html/SKILL.md) |
+| 65 | ✓ | [`Anthropic/claude-design/skills/web-research/SKILL.md`](Anthropic/claude-design/skills/web-research/SKILL.md) |
+| 66 | ✓ | [`Anthropic/claude-design/skills/wireframe/SKILL.md`](Anthropic/claude-design/skills/wireframe/SKILL.md) |
 
 ---
 

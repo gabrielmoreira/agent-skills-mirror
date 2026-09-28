@@ -24,6 +24,7 @@ This is a Hermes-native `security-safety-review` workflow skill.
 - The user asks for merge verification commands; use `verification-gate`.
 - The user asks for a normal code review focused on bugs; use `code-review`.
 - The subject is an application or service rather than the agent's own runtime -- its assets, trust boundaries, attack scenarios, and the controls that defend them; use `application-threat-model`.
+- Something already happened to shipped code -- a CVE published against a dependency, a credential pushed to a repository, a license question about a package; use `security-event-response`, which orders containment and closes only on an observed rotation or fix.
 
 ## Examples
 
@@ -52,7 +53,7 @@ Bad example:
 
 ## Workflow Lane
 
-- Current lane: **Coding handoff** (`idea-to-deploy`, `llm-app-dev`, `cto-loop`, `deploy-and-monitor`, `code-review`, `build-failure-triage`, `verification-gate`, `security-safety-review`, `+18 more`) - coding owners, handoffs, review, CI, and merge evidence.
+- Current lane: **Coding handoff** (`idea-to-deploy`, `llm-app-dev`, `cto-loop`, `deploy-and-monitor`, `code-review`, `build-failure-triage`, `verification-gate`, `security-safety-review`, `+27 more`) - coding owners, handoffs, review, CI, and merge evidence.
 - If intent belongs to another lane, hand back to `oh-my-hermes` or name the adjacent workflow.
 - Shared product, routing, compatibility, and evidence rules: `omh-routing/references/skill-common-rail.md`.
 

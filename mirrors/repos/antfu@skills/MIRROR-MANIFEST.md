@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `antfu/skills` — 26 default patterns, 0 followed patterns, 161 file(s) materialized.
+Mirror of `antfu/skills` — 26 default patterns, 0 followed patterns, 165 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `antfu/skills` — 26 default patterns, 0 followed patterns, 161 file(
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 161 |
+| Files         | 165 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -140,86 +140,90 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 79 | ✓ | [`skills/pnpm/references/features-config-dependencies.md`](skills/pnpm/references/features-config-dependencies.md) |
 | 80 | ✓ | [`skills/pnpm/references/features-global-virtual-store.md`](skills/pnpm/references/features-global-virtual-store.md) |
 | 81 | ✓ | [`skills/pnpm/references/features-hooks.md`](skills/pnpm/references/features-hooks.md) |
-| 82 | ✓ | [`skills/pnpm/references/features-overrides.md`](skills/pnpm/references/features-overrides.md) |
-| 83 | ✓ | [`skills/pnpm/references/features-patches.md`](skills/pnpm/references/features-patches.md) |
-| 84 | ✓ | [`skills/pnpm/references/features-peer-deps.md`](skills/pnpm/references/features-peer-deps.md) |
-| 85 | ✓ | [`skills/pnpm/references/features-supply-chain-security.md`](skills/pnpm/references/features-supply-chain-security.md) |
-| 86 | ✓ | [`skills/pnpm/SKILL.md`](skills/pnpm/SKILL.md) |
-| 87 | ✓ | [`skills/unocss/GENERATION.md`](skills/unocss/GENERATION.md) |
-| 88 | ✓ | [`skills/unocss/references/core-config.md`](skills/unocss/references/core-config.md) |
-| 89 | ✓ | [`skills/unocss/references/core-extracting.md`](skills/unocss/references/core-extracting.md) |
-| 90 | ✓ | [`skills/unocss/references/core-layers.md`](skills/unocss/references/core-layers.md) |
-| 91 | ✓ | [`skills/unocss/references/core-rules.md`](skills/unocss/references/core-rules.md) |
-| 92 | ✓ | [`skills/unocss/references/core-safelist.md`](skills/unocss/references/core-safelist.md) |
-| 93 | ✓ | [`skills/unocss/references/core-shortcuts.md`](skills/unocss/references/core-shortcuts.md) |
-| 94 | ✓ | [`skills/unocss/references/core-theme.md`](skills/unocss/references/core-theme.md) |
-| 95 | ✓ | [`skills/unocss/references/core-variants.md`](skills/unocss/references/core-variants.md) |
-| 96 | ✓ | [`skills/unocss/references/integrations-nuxt.md`](skills/unocss/references/integrations-nuxt.md) |
-| 97 | ✓ | [`skills/unocss/references/integrations-vite.md`](skills/unocss/references/integrations-vite.md) |
-| 98 | ✓ | [`skills/unocss/references/preset-attributify.md`](skills/unocss/references/preset-attributify.md) |
-| 99 | ✓ | [`skills/unocss/references/preset-icons.md`](skills/unocss/references/preset-icons.md) |
-| 100 | ✓ | [`skills/unocss/references/preset-mini.md`](skills/unocss/references/preset-mini.md) |
-| 101 | ✓ | [`skills/unocss/references/preset-rem-to-px.md`](skills/unocss/references/preset-rem-to-px.md) |
-| 102 | ✓ | [`skills/unocss/references/preset-tagify.md`](skills/unocss/references/preset-tagify.md) |
-| 103 | ✓ | [`skills/unocss/references/preset-typography.md`](skills/unocss/references/preset-typography.md) |
-| 104 | ✓ | [`skills/unocss/references/preset-web-fonts.md`](skills/unocss/references/preset-web-fonts.md) |
-| 105 | ✓ | [`skills/unocss/references/preset-wind3.md`](skills/unocss/references/preset-wind3.md) |
-| 106 | ✓ | [`skills/unocss/references/preset-wind4.md`](skills/unocss/references/preset-wind4.md) |
-| 107 | ✓ | [`skills/unocss/references/transformer-attributify-jsx.md`](skills/unocss/references/transformer-attributify-jsx.md) |
-| 108 | ✓ | [`skills/unocss/references/transformer-compile-class.md`](skills/unocss/references/transformer-compile-class.md) |
-| 109 | ✓ | [`skills/unocss/references/transformer-directives.md`](skills/unocss/references/transformer-directives.md) |
-| 110 | ✓ | [`skills/unocss/references/transformer-variant-group.md`](skills/unocss/references/transformer-variant-group.md) |
-| 111 | ✓ | [`skills/unocss/SKILL.md`](skills/unocss/SKILL.md) |
-| 112 | ✓ | [`skills/vite/GENERATION.md`](skills/vite/GENERATION.md) |
-| 113 | ✓ | [`skills/vite/references/build-and-ssr.md`](skills/vite/references/build-and-ssr.md) |
-| 114 | ✓ | [`skills/vite/references/core-config.md`](skills/vite/references/core-config.md) |
-| 115 | ✓ | [`skills/vite/references/core-features.md`](skills/vite/references/core-features.md) |
-| 116 | ✓ | [`skills/vite/references/core-plugin-api.md`](skills/vite/references/core-plugin-api.md) |
-| 117 | ✓ | [`skills/vite/references/environment-api.md`](skills/vite/references/environment-api.md) |
-| 118 | ✓ | [`skills/vite/references/rolldown-migration.md`](skills/vite/references/rolldown-migration.md) |
-| 119 | ✓ | [`skills/vite/SKILL.md`](skills/vite/SKILL.md) |
-| 120 | ✓ | [`skills/vitepress/GENERATION.md`](skills/vitepress/GENERATION.md) |
-| 121 | ✓ | [`skills/vitepress/references/advanced-i18n.md`](skills/vitepress/references/advanced-i18n.md) |
-| 122 | ✓ | [`skills/vitepress/references/advanced-ssr.md`](skills/vitepress/references/advanced-ssr.md) |
-| 123 | ✓ | [`skills/vitepress/references/core-cli.md`](skills/vitepress/references/core-cli.md) |
-| 124 | ✓ | [`skills/vitepress/references/core-config.md`](skills/vitepress/references/core-config.md) |
-| 125 | ✓ | [`skills/vitepress/references/core-markdown.md`](skills/vitepress/references/core-markdown.md) |
-| 126 | ✓ | [`skills/vitepress/references/core-routing.md`](skills/vitepress/references/core-routing.md) |
-| 127 | ✓ | [`skills/vitepress/references/features-code-blocks.md`](skills/vitepress/references/features-code-blocks.md) |
-| 128 | ✓ | [`skills/vitepress/references/features-data-loading.md`](skills/vitepress/references/features-data-loading.md) |
-| 129 | ✓ | [`skills/vitepress/references/features-dynamic-routes.md`](skills/vitepress/references/features-dynamic-routes.md) |
-| 130 | ✓ | [`skills/vitepress/references/features-vue.md`](skills/vitepress/references/features-vue.md) |
-| 131 | ✓ | [`skills/vitepress/references/recipes-deploy.md`](skills/vitepress/references/recipes-deploy.md) |
-| 132 | ✓ | [`skills/vitepress/references/theme-config.md`](skills/vitepress/references/theme-config.md) |
-| 133 | ✓ | [`skills/vitepress/references/theme-custom.md`](skills/vitepress/references/theme-custom.md) |
-| 134 | ✓ | [`skills/vitepress/references/theme-customization.md`](skills/vitepress/references/theme-customization.md) |
-| 135 | ✓ | [`skills/vitepress/SKILL.md`](skills/vitepress/SKILL.md) |
-| 136 | ✓ | [`skills/vitest/GENERATION.md`](skills/vitest/GENERATION.md) |
-| 137 | ✓ | [`skills/vitest/references/advanced-environments.md`](skills/vitest/references/advanced-environments.md) |
-| 138 | ✓ | [`skills/vitest/references/advanced-projects.md`](skills/vitest/references/advanced-projects.md) |
-| 139 | ✓ | [`skills/vitest/references/advanced-type-testing.md`](skills/vitest/references/advanced-type-testing.md) |
-| 140 | ✓ | [`skills/vitest/references/advanced-vi.md`](skills/vitest/references/advanced-vi.md) |
-| 141 | ✓ | [`skills/vitest/references/core-cli.md`](skills/vitest/references/core-cli.md) |
-| 142 | ✓ | [`skills/vitest/references/core-config.md`](skills/vitest/references/core-config.md) |
-| 143 | ✓ | [`skills/vitest/references/core-describe.md`](skills/vitest/references/core-describe.md) |
-| 144 | ✓ | [`skills/vitest/references/core-expect.md`](skills/vitest/references/core-expect.md) |
-| 145 | ✓ | [`skills/vitest/references/core-hooks.md`](skills/vitest/references/core-hooks.md) |
-| 146 | ✓ | [`skills/vitest/references/core-test-api.md`](skills/vitest/references/core-test-api.md) |
-| 147 | ✓ | [`skills/vitest/references/features-benchmarking.md`](skills/vitest/references/features-benchmarking.md) |
-| 148 | ✓ | [`skills/vitest/references/features-concurrency.md`](skills/vitest/references/features-concurrency.md) |
-| 149 | ✓ | [`skills/vitest/references/features-context.md`](skills/vitest/references/features-context.md) |
-| 150 | ✓ | [`skills/vitest/references/features-coverage.md`](skills/vitest/references/features-coverage.md) |
-| 151 | ✓ | [`skills/vitest/references/features-filtering.md`](skills/vitest/references/features-filtering.md) |
-| 152 | ✓ | [`skills/vitest/references/features-mocking.md`](skills/vitest/references/features-mocking.md) |
-| 153 | ✓ | [`skills/vitest/references/features-reporters.md`](skills/vitest/references/features-reporters.md) |
-| 154 | ✓ | [`skills/vitest/references/features-snapshots.md`](skills/vitest/references/features-snapshots.md) |
-| 155 | ✓ | [`skills/vitest/references/features-test-tags.md`](skills/vitest/references/features-test-tags.md) |
-| 156 | ✓ | [`skills/vitest/SKILL.md`](skills/vitest/SKILL.md) |
-| 157 | ✓ | [`skills/vue/GENERATION.md`](skills/vue/GENERATION.md) |
-| 158 | ✓ | [`skills/vue/references/advanced-patterns.md`](skills/vue/references/advanced-patterns.md) |
-| 159 | ✓ | [`skills/vue/references/core-new-apis.md`](skills/vue/references/core-new-apis.md) |
-| 160 | ✓ | [`skills/vue/references/script-setup-macros.md`](skills/vue/references/script-setup-macros.md) |
-| 161 | ✓ | [`skills/vue/SKILL.md`](skills/vue/SKILL.md) |
+| 82 | ✓ | [`skills/pnpm/references/features-multi-ecosystem.md`](skills/pnpm/references/features-multi-ecosystem.md) |
+| 83 | ✓ | [`skills/pnpm/references/features-overrides.md`](skills/pnpm/references/features-overrides.md) |
+| 84 | ✓ | [`skills/pnpm/references/features-patches.md`](skills/pnpm/references/features-patches.md) |
+| 85 | ✓ | [`skills/pnpm/references/features-peer-deps.md`](skills/pnpm/references/features-peer-deps.md) |
+| 86 | ✓ | [`skills/pnpm/references/features-supply-chain-security.md`](skills/pnpm/references/features-supply-chain-security.md) |
+| 87 | ✓ | [`skills/pnpm/references/features-task-orchestration.md`](skills/pnpm/references/features-task-orchestration.md) |
+| 88 | ✓ | [`skills/pnpm/references/features-versioning.md`](skills/pnpm/references/features-versioning.md) |
+| 89 | ✓ | [`skills/pnpm/SKILL.md`](skills/pnpm/SKILL.md) |
+| 90 | ✓ | [`skills/unocss/GENERATION.md`](skills/unocss/GENERATION.md) |
+| 91 | ✓ | [`skills/unocss/references/core-config.md`](skills/unocss/references/core-config.md) |
+| 92 | ✓ | [`skills/unocss/references/core-extracting.md`](skills/unocss/references/core-extracting.md) |
+| 93 | ✓ | [`skills/unocss/references/core-layers.md`](skills/unocss/references/core-layers.md) |
+| 94 | ✓ | [`skills/unocss/references/core-processors.md`](skills/unocss/references/core-processors.md) |
+| 95 | ✓ | [`skills/unocss/references/core-rules.md`](skills/unocss/references/core-rules.md) |
+| 96 | ✓ | [`skills/unocss/references/core-safelist.md`](skills/unocss/references/core-safelist.md) |
+| 97 | ✓ | [`skills/unocss/references/core-shortcuts.md`](skills/unocss/references/core-shortcuts.md) |
+| 98 | ✓ | [`skills/unocss/references/core-theme.md`](skills/unocss/references/core-theme.md) |
+| 99 | ✓ | [`skills/unocss/references/core-variants.md`](skills/unocss/references/core-variants.md) |
+| 100 | ✓ | [`skills/unocss/references/integrations-nuxt.md`](skills/unocss/references/integrations-nuxt.md) |
+| 101 | ✓ | [`skills/unocss/references/integrations-vite.md`](skills/unocss/references/integrations-vite.md) |
+| 102 | ✓ | [`skills/unocss/references/preset-attributify.md`](skills/unocss/references/preset-attributify.md) |
+| 103 | ✓ | [`skills/unocss/references/preset-icons.md`](skills/unocss/references/preset-icons.md) |
+| 104 | ✓ | [`skills/unocss/references/preset-mini.md`](skills/unocss/references/preset-mini.md) |
+| 105 | ✓ | [`skills/unocss/references/preset-rem-to-px.md`](skills/unocss/references/preset-rem-to-px.md) |
+| 106 | ✓ | [`skills/unocss/references/preset-tagify.md`](skills/unocss/references/preset-tagify.md) |
+| 107 | ✓ | [`skills/unocss/references/preset-typography.md`](skills/unocss/references/preset-typography.md) |
+| 108 | ✓ | [`skills/unocss/references/preset-web-fonts.md`](skills/unocss/references/preset-web-fonts.md) |
+| 109 | ✓ | [`skills/unocss/references/preset-wind3.md`](skills/unocss/references/preset-wind3.md) |
+| 110 | ✓ | [`skills/unocss/references/preset-wind4.md`](skills/unocss/references/preset-wind4.md) |
+| 111 | ✓ | [`skills/unocss/references/transformer-attributify-jsx.md`](skills/unocss/references/transformer-attributify-jsx.md) |
+| 112 | ✓ | [`skills/unocss/references/transformer-compile-class.md`](skills/unocss/references/transformer-compile-class.md) |
+| 113 | ✓ | [`skills/unocss/references/transformer-directives.md`](skills/unocss/references/transformer-directives.md) |
+| 114 | ✓ | [`skills/unocss/references/transformer-variant-group.md`](skills/unocss/references/transformer-variant-group.md) |
+| 115 | ✓ | [`skills/unocss/SKILL.md`](skills/unocss/SKILL.md) |
+| 116 | ✓ | [`skills/vite/GENERATION.md`](skills/vite/GENERATION.md) |
+| 117 | ✓ | [`skills/vite/references/build-and-ssr.md`](skills/vite/references/build-and-ssr.md) |
+| 118 | ✓ | [`skills/vite/references/core-config.md`](skills/vite/references/core-config.md) |
+| 119 | ✓ | [`skills/vite/references/core-features.md`](skills/vite/references/core-features.md) |
+| 120 | ✓ | [`skills/vite/references/core-plugin-api.md`](skills/vite/references/core-plugin-api.md) |
+| 121 | ✓ | [`skills/vite/references/environment-api.md`](skills/vite/references/environment-api.md) |
+| 122 | ✓ | [`skills/vite/references/rolldown-migration.md`](skills/vite/references/rolldown-migration.md) |
+| 123 | ✓ | [`skills/vite/SKILL.md`](skills/vite/SKILL.md) |
+| 124 | ✓ | [`skills/vitepress/GENERATION.md`](skills/vitepress/GENERATION.md) |
+| 125 | ✓ | [`skills/vitepress/references/advanced-i18n.md`](skills/vitepress/references/advanced-i18n.md) |
+| 126 | ✓ | [`skills/vitepress/references/advanced-ssr.md`](skills/vitepress/references/advanced-ssr.md) |
+| 127 | ✓ | [`skills/vitepress/references/core-cli.md`](skills/vitepress/references/core-cli.md) |
+| 128 | ✓ | [`skills/vitepress/references/core-config.md`](skills/vitepress/references/core-config.md) |
+| 129 | ✓ | [`skills/vitepress/references/core-markdown.md`](skills/vitepress/references/core-markdown.md) |
+| 130 | ✓ | [`skills/vitepress/references/core-routing.md`](skills/vitepress/references/core-routing.md) |
+| 131 | ✓ | [`skills/vitepress/references/features-code-blocks.md`](skills/vitepress/references/features-code-blocks.md) |
+| 132 | ✓ | [`skills/vitepress/references/features-data-loading.md`](skills/vitepress/references/features-data-loading.md) |
+| 133 | ✓ | [`skills/vitepress/references/features-dynamic-routes.md`](skills/vitepress/references/features-dynamic-routes.md) |
+| 134 | ✓ | [`skills/vitepress/references/features-vue.md`](skills/vitepress/references/features-vue.md) |
+| 135 | ✓ | [`skills/vitepress/references/recipes-deploy.md`](skills/vitepress/references/recipes-deploy.md) |
+| 136 | ✓ | [`skills/vitepress/references/theme-config.md`](skills/vitepress/references/theme-config.md) |
+| 137 | ✓ | [`skills/vitepress/references/theme-custom.md`](skills/vitepress/references/theme-custom.md) |
+| 138 | ✓ | [`skills/vitepress/references/theme-customization.md`](skills/vitepress/references/theme-customization.md) |
+| 139 | ✓ | [`skills/vitepress/SKILL.md`](skills/vitepress/SKILL.md) |
+| 140 | ✓ | [`skills/vitest/GENERATION.md`](skills/vitest/GENERATION.md) |
+| 141 | ✓ | [`skills/vitest/references/advanced-environments.md`](skills/vitest/references/advanced-environments.md) |
+| 142 | ✓ | [`skills/vitest/references/advanced-projects.md`](skills/vitest/references/advanced-projects.md) |
+| 143 | ✓ | [`skills/vitest/references/advanced-type-testing.md`](skills/vitest/references/advanced-type-testing.md) |
+| 144 | ✓ | [`skills/vitest/references/advanced-vi.md`](skills/vitest/references/advanced-vi.md) |
+| 145 | ✓ | [`skills/vitest/references/core-cli.md`](skills/vitest/references/core-cli.md) |
+| 146 | ✓ | [`skills/vitest/references/core-config.md`](skills/vitest/references/core-config.md) |
+| 147 | ✓ | [`skills/vitest/references/core-describe.md`](skills/vitest/references/core-describe.md) |
+| 148 | ✓ | [`skills/vitest/references/core-expect.md`](skills/vitest/references/core-expect.md) |
+| 149 | ✓ | [`skills/vitest/references/core-hooks.md`](skills/vitest/references/core-hooks.md) |
+| 150 | ✓ | [`skills/vitest/references/core-test-api.md`](skills/vitest/references/core-test-api.md) |
+| 151 | ✓ | [`skills/vitest/references/features-benchmarking.md`](skills/vitest/references/features-benchmarking.md) |
+| 152 | ✓ | [`skills/vitest/references/features-concurrency.md`](skills/vitest/references/features-concurrency.md) |
+| 153 | ✓ | [`skills/vitest/references/features-context.md`](skills/vitest/references/features-context.md) |
+| 154 | ✓ | [`skills/vitest/references/features-coverage.md`](skills/vitest/references/features-coverage.md) |
+| 155 | ✓ | [`skills/vitest/references/features-filtering.md`](skills/vitest/references/features-filtering.md) |
+| 156 | ✓ | [`skills/vitest/references/features-mocking.md`](skills/vitest/references/features-mocking.md) |
+| 157 | ✓ | [`skills/vitest/references/features-reporters.md`](skills/vitest/references/features-reporters.md) |
+| 158 | ✓ | [`skills/vitest/references/features-snapshots.md`](skills/vitest/references/features-snapshots.md) |
+| 159 | ✓ | [`skills/vitest/references/features-test-tags.md`](skills/vitest/references/features-test-tags.md) |
+| 160 | ✓ | [`skills/vitest/SKILL.md`](skills/vitest/SKILL.md) |
+| 161 | ✓ | [`skills/vue/GENERATION.md`](skills/vue/GENERATION.md) |
+| 162 | ✓ | [`skills/vue/references/advanced-patterns.md`](skills/vue/references/advanced-patterns.md) |
+| 163 | ✓ | [`skills/vue/references/core-new-apis.md`](skills/vue/references/core-new-apis.md) |
+| 164 | ✓ | [`skills/vue/references/script-setup-macros.md`](skills/vue/references/script-setup-macros.md) |
+| 165 | ✓ | [`skills/vue/SKILL.md`](skills/vue/SKILL.md) |
 
 ---
 

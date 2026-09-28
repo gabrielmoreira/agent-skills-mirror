@@ -38,6 +38,8 @@ controller registry plus the core security policy read gate:
 
 | MCP tool            | Backing RPC                          | Purpose                                                                 |
 | ------------------- | ------------------------------------ | ----------------------------------------------------------------------- |
+| `web_search`\*      | `openhuman.tools_web_search`         | Ranked web search through the configured providers, with fallback.      |
+| `web_answer`\*      | `openhuman.tools_web_answer`         | Grounded answer with citations (Gemini with Google Search by default).  |
 | `searxng_search`\*  | `openhuman.tools_searxng_search`     | Search a configured self-hosted SearXNG instance.                       |
 | `memory.search`     | `openhuman.memory_tree_search`       | Keyword search over memory-tree chunks.                                 |
 | `memory.recall`     | `openhuman.memory_tree_recall`       | Semantic recall over memory-tree summaries/chunks.                      |
@@ -46,20 +48,28 @@ controller registry plus the core security policy read gate:
 | `tree.top_entities` | `openhuman.memory_tree_top_entities` | Most-referenced canonical entities, optionally filtered by kind.        |
 | `tree.list_sources` | `openhuman.memory_tree_list_sources` | Distinct ingest sources with chunk counts and last-activity timestamps. |
 
-- `searxng_search` is present only when SearXNG is enabled.
+- Tools marked \* are listed only when a provider can serve them: `web_search`
+  and `web_answer` when their search role has a usable provider (a signed-in
+  session, or a provider with your own key), `searxng_search` when SearXNG is
+  enabled in search settings.
 
-`searxng_search` is added to the MCP catalog when SearXNG is enabled. It accepts
-`query`, optional `categories` (`web`, `news`, `images`), optional `language`,
-and optional `max_results` (1-50).
+`web_search` accepts `query`, optional `max_results` (1-20) and optional
+`provider` (pins one provider and disables fallback). `web_answer` accepts
+`query` and optional `depth` (`quick` or `deep`). `searxng_search` accepts
+`query` and optional `max_results` (1-20).
 `memory.search` and `memory.recall` accept `query` plus optional `k` (default
 10, capped at 50). `tree.read_chunk` accepts `chunk_id`. `tree.browse` accepts
 optional `source_kinds`, `source_ids`, `entity_ids`, `since_ms`, `until_ms`,
 `query`, `k`, and `offset`. `tree.top_entities` accepts optional `kind` and
 `k`. `tree.list_sources` accepts an optional `user_email_hint`.
 
-Enable SearXNG in `config.toml` or via environment:
+Enable SearXNG under Connections → Search, in `config.toml`, or via environment:
 
 ```toml
+[search.providers.searxng]
+enabled = true
+route = "direct"
+
 [searxng]
 enabled = true
 base_url = "http://localhost:8080"

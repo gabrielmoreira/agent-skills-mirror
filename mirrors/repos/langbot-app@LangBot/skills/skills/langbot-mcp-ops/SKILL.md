@@ -76,6 +76,11 @@ The tools wrap the LangBot service layer. Current tools (v1):
 | `list_knowledge_bases` / `get_knowledge_base` / `retrieve_knowledge_base` | RAG knowledge bases (incl. semantic search) |
 | `list_mcp_servers` | External MCP servers LangBot connects to (as a client) |
 | `list_skills` / `get_skill` | Installed skills |
+| `list_knowledge_engines` / `get_knowledge_engine_schema` / `list_knowledge_parsers` | Discover RAG configuration |
+| `get_pipeline_extensions` / `update_pipeline_extensions` | Read or completely replace extension bindings; all lists and switches required |
+| `run_pipeline` | One fresh-session turn; requires `runtime.operate`, executes configured models/tools, never auto-retry an unknown outcome |
+| `get_monitoring_records` / `get_monitoring_details` | Bounded Workspace records and existing message/session details |
+| `get_sandbox_diagnostics` | Read status (`resource.view`), sessions/errors (`audit.view`); managed sandbox admission still applies |
 
 Mutating tools (`create_*`, `update_*`) take a JSON object matching the same
 shape as the corresponding HTTP API request body. Discover resources with the

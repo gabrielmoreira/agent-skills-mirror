@@ -38,10 +38,8 @@ retry without the terminal reason or its dependent status receipt, preserving
 `review_failure` diagnostic detail and emitting a workflow warning. An older
 Worker can then complete the lease under its existing retry policy; compatible
 Workers receive the terminal reason on the first request. Other errors retain
-the existing failure and retry handling. A terminal
-reason removes the unchanged queue revision while allowing an already queued
-newer revision to proceed; it does not turn the failed workflow green. An
-automatic PR review with a recorded head SHA and `source_incompatible` instead
+the existing failure and retry handling. Terminal completion does not turn the
+failed workflow green. An automatic PR review with a recorded head SHA and `source_incompatible`
 retains a parked queue item: the exact source pin cannot improve on that head,
 so scheduled intake must not repeat its preparation. Scheduled PR intake binds
 the live head, base, draft state, and body identity before dispatch takes its
@@ -49,18 +47,50 @@ lease snapshot. This state has no timed retry. Existing parked-item
 reconciliation recovers changed head, base, or body
 identity and removes closed targets; an explicit maintainer re-review can retry
 unchanged source. The failure remains visible in lifecycle and Bay status.
-Issue reviews follow moving main, and scanner failures can recover after
-external changes, so neither uses this pinned-PR stop. Native
+Terminal input-scanner refusals instead retain the existing queue item as
+`scanner_refused`, for both issues and PRs. Automatic events, source changes,
+close/reopen, and failed-shard recovery cannot release this hold. It has no
+timed retry, expiry, closed-target cleanup, or operator source-drift recovery.
+A fresh verified re-review command or a newly dispatched explicit item request
+replaces the failed request's authority. Verified command timestamps must be strictly
+later than the refusal and failed command timestamps. GitHub timestamps have
+second precision, so all same-second requests stay held regardless of origin or
+comment ID; a new command or edit in a later second can retry.
+Replaying an old command or workflow
+run does not. The manual API also accepts named request IDs; use a new unique ID
+for each explicit retry. The failed ID remains fenced on the held decision even
+after delivery receipts expire. An intentional `EXACT_REVIEW_RETRY_POLICY_EPOCH` change permits
+the next automatic admission without inheriting failed command context;
+ordinary deployments, model changes, and prompt changes do not.
+
+Untargeted workflow-dispatch sweeps, including automatic continuations, feed
+the same queue as scheduled intake. Their branch, prompt, and timeout options
+remain supported, but a broad sweep is not an explicit retry of every hold.
+The hold applies to newly observed terminal refusals; previously deleted rows
+are not reconstructed. Deploy Worker enforcement before relying on updated
+producer routing. Already-running direct shards from older workflow revisions
+remain a rollout limitation. Bay uses the terminal failure lifecycle rather
+than displaying the retained hold as active review work; queue reason counts
+remain visible and the public surface remains observer-only.
+
+Native
 blob-fetch transport failures, including the hydration deadline killing a Git
 fetch, remain `source_preparation` / `review_blobs_unavailable` with
 `retryable: true`. They enter the existing bounded retry schedule without a
 terminal scanner reason. Every retry must still prepare complete input and
 pass the canonical input scan; scanner refusals and staging limits remain
-terminal for the unchanged revision.
+terminal until the explicit release described above.
 
 Scheduled and manual explicit queue admissions use the same exact-event review
 step. Aggregate shard recovery uses its per-item terminal ledger instead of
 producing a queue-level `failure_reason` from the shard's process exit.
+When a completed review has handed off to pending or active publication, a late
+failed-shard recovery remains queued until publication settles or parks. Its
+request is preserved because it may refer to a newer source. Explicit re-reviews, source
+changes, and publication source-drift or artifact-retention recovery retain their
+normal admission paths.
+Bay continues to show the publication as the item's current work until that
+handoff releases the deferred recovery.
 
 ClawSweeper has three issue/PR scheduler paths:
 
@@ -405,12 +435,13 @@ Generic `openclaw/*` and `steipete/*` repositories:
   implemented there
 - generic `steipete/*` repositories are review/comment-only for issues and PRs
 
-Manual `workflow_dispatch` can override `target_repo`, `item_number`,
-`item_numbers`, `batch_size`, `shard_count`, `hot_intake`, and apply inputs.
-For batch input, `batch_size` controls items assigned per worker and
-`shard_count` controls requested parallelism within the configured hard cap.
-Exact item dispatches use a dedicated concurrency group and exact planner
-matrix rather than the broad normal-review queue.
+Manual `workflow_dispatch` supports `target_repo`, `target_branch`, `item_number`,
+`item_numbers`, `codex_timeout_ms`, `additional_prompt`, and `hot_intake`. Explicit
+item selections use manual queue admission; broad runs offer due candidates to
+shared queue limits. Per-run `batch_size`, `shard_count`, `apply_after_review`,
+and its reason/age sub-options are retired. Existing callers must stop sending
+those inputs; there is no silent compatibility alias. Apply remains available
+through the separate `apply_existing` lane and its existing apply controls.
 
 Target fanout dispatches review batches through `repository_dispatch` so each
 selected repository can carry its inventory default branch without consuming
@@ -604,17 +635,13 @@ leaving the PR open with only a status comment.
 
 ## Capacity
 
-Capacity is shard-level. A review shard processes its selected item numbers
-sequentially, so maximum concurrent Codex sessions equals the number of nonempty
-review shard jobs, not `batch_size * shard_count`.
+The exact-review queue owns hosted review concurrency and retry authority. Each
+admitted item runs one Codex session. Planners select candidates; they neither
+reserve a matrix of workers nor publish review results.
 
-Capacity also has priority. Exact-item review, repair, automerge repair, and
-issue implementation are priority work because they unblock a specific PR,
-issue, or maintainer command. Normal review and hot intake are
-background work because they keep the backlog fresh but can safely slow down
-when priority work is busy. The workflow asks the central worker scheduler for a
-lane limit before dispatching background work; see
-[`docs/limits.md`](limits.md) for the config, formulas, and examples.
+Repair and explicit item work retain their existing priority. Broad manual and
+scheduled intake share the queue's background capacity and pacing; see
+[`docs/limits.md`](limits.md) for the configured budgets.
 
 Current defaults:
 
@@ -637,69 +664,17 @@ Current defaults:
 - fleet fanout: 20 hot targets every 20 minutes as temporary self-feedback
   containment, and 12 normal targets hourly;
   each target cycle can offer up to 50 due items to the shared admission budget
-- manual broad hot intake: configured ceiling of 44 shards when quiet
-- manual normal backfill: defaults to 89 requested shards when quiet, batch size 3, and scans up to
-  250 GitHub pages unless overridden
+- broad manual runs use the same queue capacity as scheduled feeds; normal
+  planning scans at most 250 GitHub pages and hot intake at most 10
 
-The hard planner cap is 128 shards. The workflow clamps invalid or larger
-`shard_count` inputs to 128.
+The shared hard cap bounds each candidate offer. A target-fanout allocation may
+reduce that offer, but it is not a per-run worker count. Each planner uses one
+logical partition with no active-floor backfill, then ends after admission.
+Periodic schedules and the existing apply-lane backstop provide later intake;
+there is no matrix runtime archive, aggregate publisher, or recursive review
+continuation.
 
-Broad background review clamps manual `shard_count` input to the current
-lane allowance from `worker-limit`. Pending or planning background sweeps reserve
-their quiet lane size until their matrix shards exist, so overlapping manual or
-operator dispatches cannot temporarily exceed the shared worker budget while
-GitHub is still expanding jobs. Scheduled feeds use one planner shard because
-the Durable Object, not the matrix, owns review concurrency.
-
-Planning is also the runtime build point for manual matrix review. The plan job installs
-with Node 24 and the repository-pinned pnpm version, builds `dist/` once, and uploads that
-runtime artifact. Review shards download the built `dist/` and run
-`node dist/clawsweeper.js review` directly instead of running a per-shard pnpm
-install and build. Scheduled queue feeds skip this artifact because each exact
-review workflow builds from its immutable queue decision.
-
-Each review shard also wraps the review command in a shell timeout derived from
-the per-item Codex timeout and the shard batch size, with a 70-minute ceiling so
-the job still has time to upload metrics and failed-shard artifacts. A hung
-review command therefore records a failed shard for the recovery lane instead
-of blocking the publish job until the 75-minute GitHub job timeout.
-
-Read-only review shards use shallow ClawSweeper checkouts and skip generated
-state checkout entirely. The planner passes exact item numbers to each shard, so
-shards can fetch current GitHub item state and write review artifacts without
-hydrating historical records. Publish and apply jobs keep full state history
-because they may rebase and push generated records.
-
-Normal backfill runs hourly for `openclaw/openclaw`. Its planner
-serializes per target repository, selects globally before sharding, and offers
-never-reviewed candidates before the oldest due tracked candidates to the
-durable queue. Queue admission is fleet-wide,
-so overlapping core and fanout cycles fill only the residual of the configured
-60/hour admission target after organic review demand.
-
-The manual quiet-system ceiling is not a promise that every operator run dispatches
-that many shards. The `mode` step checks active repair workers, exact-item sweep
-runs and live normal/hot review shard jobs, then asks
-`worker-limit normal_review` or `worker-limit hot_intake` for the current
-allowance. Planning, queued, and not-yet-expanded background runs reserve their
-whole quiet-system lane. A run with completed shard jobs and no active shard
-jobs is publishing and counts as zero Codex workers, allowing the next planner
-to refill the lane. If
-repair/automerge is busy, background sweep dispatches fewer shards and leaves
-capacity for the specific work that is closest to a merge or maintainer request.
-Background lanes also subtract an 8-worker expansion reserve so independently
-planned exact-item runs have room to start without pushing the
-live Codex count past the global budget.
-
-The manual active floor is not a separate lane and does not change close/apply safety.
-It only changes normal planning when due backlog is below the desired floor:
-after selecting all due candidates, the planner fills up to 38 nonempty shards
-with eligible items whose latest complete review is at least 6 hours old.
-Capacity status reports this as `floor: due backlog below active floor`. If the
-central worker scheduler returns fewer than 38 allowed shards, the smaller
-worker allowance wins.
-
-Scheduled planning does not use the active-floor backfill. It selects only due
+Broad planning does not use the active-floor backfill. It selects only due
 items, records each candidate's previous-review age in `plan.json`, and writes a
 run-summary funnel for selected, attempted, enqueued, deduped, shed, and deferred
 items. The public queue projection exposes the configured rate and replay
@@ -809,17 +784,17 @@ pnpm run --silent plan -- \
   --target-repo "$TARGET_REPO" \
   --batch-size "$BATCH_SIZE" \
   --max-pages "$MAX_PAGES" \
-  --shard-count "$SHARD_COUNT" \
+  --shard-count 1 \
   --codex-model internal \
   --codex-sandbox danger-full-access \
-  --min-active-shards "$MIN_ACTIVE_SHARDS" \
+  --min-active-shards 0 \
   --min-backfill-review-age-minutes "$MIN_BACKFILL_REVIEW_AGE_MINUTES"
 ```
 
 `pnpm run plan` returns:
 
 - `candidates`: selected open items
-- `shards`: selected item numbers distributed across shard jobs
+- `shards`: planner partitions (hosted queue feeds use one partition)
 - `capacity`: `batch_size * clamped_shard_count`
 - `dueBacklog`: due candidates found during the complete bounded scan
 - `activeCodexTarget`: nonempty shard count
@@ -827,7 +802,7 @@ pnpm run --silent plan -- \
 - `capacityReason`: why the selected count did or did not fill capacity
 - `floorBackfill`: selected stale current-review candidates used to fill the
   active floor
-- `matrix`: GitHub Actions matrix entries
+- `matrix`: legacy CLI output, unused by hosted queue execution
 
 `pnpm run workflow -- plan-output` maps that JSON to GitHub Actions outputs:
 
@@ -864,30 +839,15 @@ dashboard reads that JSON and shows:
 - oldest unreviewed scanned
 - capacity reason
 
-`active Codex target` is the planned number of nonempty Codex shard jobs for the
-current run. It is not a live process count from GitHub Actions. For live worker
-count, inspect active review shard jobs on the current workflow run.
+Historical matrix summaries retain their original shard fields. Current planner
+runs report the queue-admission funnel in their Actions summary. Use live queue
+and workflow telemetry for active worker counts; a selected candidate is not an
+active review.
 
-The live scheduler estimate happens before planning and is intentionally coarse:
-it counts active repair-cluster workflow runs as priority work, active exact-item
-sweep runs as priority work, and other active normal/hot
-sweep runs by their live active `Review shard` jobs. Runs that are planning,
-queued, or waiting for matrix expansion reserve their quiet lane. Runs whose
-shards have completed and are only publishing count as zero Codex workers.
-GitHub Actions can start or finish jobs after that estimate,
-so the scheduler is a throttle, not a distributed lock.
-
-Planning status intentionally does not run `pnpm run reconcile`. Reconciliation
-can scan many live GitHub pages and has delayed review shard startup. The
-critical path records the planned counts and publishes only
-`results/sweep-status/`; publish, apply, and audit still reconcile canonical
-records where folder placement matters.
-
-Read-only plan jobs hydrate canonical records plus the Git-backed operational
-paths they consume. Review shard jobs skip state hydration because the plan
-matrix already contains exact item numbers. Publish, apply, and audit jobs
-hydrate only the operational Git paths they still read or write; record
-publication goes directly to the Worker.
+Plan jobs hydrate canonical records for selection. Each admitted exact-review
+worker and publisher follows the existing immutable queue ownership and
+publication paths. Apply and audit retain their own state hydration and
+reconciliation.
 
 ## Apply
 
@@ -987,46 +947,29 @@ log identifies the default cursor run that covered the continuation.
 
 ## Continuation and Recovery
 
-When a normal or hot review run fills its planned capacity, the publish job
-dispatches another `sweep.yml` run with the same lane inputs. The 5-minute
-normal schedule is still the safety net if continuation dispatch fails or GitHub
-delays it.
+Broad review runs end after queue admission. Periodic schedules and the
+apply-lane review backstop offer later candidates under the same shared limits.
+The retired matrix publisher and failed-shard recovery jobs do not dispatch
+continuations or replay review work. The planner still offers existing canonical
+vision-fit OpenClaw reports (under their separate opt-in) and viable reports for
+other eligible targets to the bounded implementation-intake dispatcher. The
+dedicated strict-bug backfill and exact-publication hooks remain unchanged.
 
-If review shards fail, failed-shard artifacts or failed job names identify the
-shards to inspect, not the items to retry. Recovery reads each complete
-producer artifact through the canonical ledger importer, binding the exact
-repository, source SHA, workflow, job, run, attempt, and matrix shard. Only a
-recognized owner-recorded retryable **item terminal** with no unresolved
-mutation is admitted once through the existing signed exact-review queue.
-Batch failures and mutation receipts are not retry authority. The whole item
-chain is inspected, including cleanup after an earlier terminal.
+The existing failed-review retry selector remains bounded by its per-source
+attempts and cooldown. Both issues and PRs dispatch automatic exact queue work,
+never an explicit manual request, so a scanner hold still blocks them. PR retries
+retain their head pin. Issue retries carry their expected source revision through
+admission and the existing post-hydration guard; changed source ends the retry
+without model work or publication and is left to normal source-event/backfill
+intake. Repository dispatch uses the workflow repository's default branch;
+non-default `--workflow-ref` requests are rejected rather than silently ignored.
+Repair follow-ups also use repository dispatch only. A failed dispatch surfaces
+to the existing retry handling; it cannot fall back to a manual workflow and
+acquire explicit retry authority.
 
-Completed/cached and nonretryable items are never requeued. Missing, corrupt,
-incomplete, ambiguous, uncertain, unselected, and unstarted evidence stays held.
-Automatic unstarted-tail recovery is a named follow-up: the current ledger
-does not record that membership, so the original matrix cannot authorize it.
-Each item has a visible disposition; queue acknowledgements distinguish queued,
-deduplicated, shed, disabled, and failed admission. None means review or
-publication succeeded.
-
-Validated recovery entries retain the item kind and any owner-recorded source
-revision. PR retries use PR routing rather than issue routing. The source
-revision remains opaque diagnostic provenance: it may include discussion and
-must not be reused as a PR head SHA or the queue's narrower content hash.
-This does not establish a cross-producer terminal-refusal fence; matching that
-fence requires the same complete scanned-input identity at both boundaries.
-
-Before uploading a failed shard, the same projection stages only completed
-reports whose native terminal digest, repository/item/source identity, complete
-review status, and verified checkout provenance match. The existing publisher
-consumes those reports through its normal guards and required receipts.
-Recovery does not depend on the optional ledger-upload job.
-
-The original failed review-step outcome and failed-shard metrics remain visible;
-the existing job-level `continue-on-error` policy is unchanged and must not be
-read as all items recovered. Metrics retain item numbers, target repository,
-timestamps, and review-step outcome. Publish includes artifact and metric
-counts so setup noise, missing artifacts, and actual failures remain distinct.
+Historical shard artifacts and ledger events remain readable evidence, but are
+not active retry authority. The queue owns current review retries, scanner
+holds, publication recovery, and stale-lease handling.
 
 Each item report also records durable review cost proxies in front matter and a
 `Review Telemetry` section: prompt characters, static prompt characters, GitHub
@@ -1081,7 +1024,7 @@ gh api 'repos/openclaw/clawsweeper/actions/runs?per_page=100' \
   --jq '.workflow_runs[] | select(.name == "ClawSweeper") | {id,name,display_title,event,status,conclusion,created_at,head_sha,html_url}'
 
 gh run view <run-id> --repo openclaw/clawsweeper --json jobs \
-  --jq '[.jobs[] | select(.name | startswith("Review shard")) | select(.status=="in_progress")] | length'
+  --jq '[.jobs[] | select(.name == "Review exact event item") | select(.status=="in_progress")] | length'
 
 gh api repos/openclaw/clawsweeper/readme --jq '.content' | base64 --decode
 ```

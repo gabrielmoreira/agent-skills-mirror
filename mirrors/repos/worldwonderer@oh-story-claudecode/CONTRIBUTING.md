@@ -84,6 +84,7 @@ PR 自动运行 `.github/workflows/cross-platform.yml`。static-check job 跑以
 - `scripts/check-shared-files.sh` — 共享 runtime 资产清单 + 跨 skill reference 副本一致性
 - `scripts/check-scan-runtime-policy.sh` — scraper 本地日期依赖与 CDP 源码策略守卫
 - `python3 scripts/test-scan-runtime-policy.py` — 验证无关/死代码关键词不能骗过 scan/browser 策略守卫
+- `python3 scripts/test-scan-aggregate.py` — 扫榜聚合脚本的解析、去重、分布与抽样行为回归
 - `scripts/check-story-setup-deployment.sh` — story-setup 部署完整性
 - `python3 scripts/test-plugin-packaging.py` — 通过公开 CLI 对 catalog/manifest 做黑盒变异回归
 - `scripts/check-claude-adapter.sh` — Claude marketplace、根 plugin manifest 与 13 个 skill 自动发现检查；可选真实 CLI 生命周期
@@ -124,6 +125,7 @@ python3 scripts/test-style-precedence.py
 node scripts/test-scan-runtime.js
 bash scripts/check-scan-runtime-policy.sh
 python3 scripts/test-scan-runtime-policy.py
+python3 scripts/test-scan-aggregate.py
 bash scripts/test-ai-patterns.sh
 node scripts/test-phase2-contract.js
 node scripts/test-delivery-contract.js
@@ -201,7 +203,7 @@ python3 scripts/skill-numbering.py check
 - **自包含**：运行时 Skill 禁止跨 Skill 路径引用。确需共享的 reference 以 canonical source + manifest 管理的本地部署副本发布，保证每个 Skill 可独立安装
 - **中文**：所有内容用中文
 - **补丁置换**：修事故往热路径（`scripts/doc-budget.json` 登记的文件）加规则时，同一提交删除或合并等量旧规则；删不动才调高预算，并在对应 `why` 里写明事故来源与为什么这条值得每个用户每章都付。这类补丁规则每个大版本发布前复审一次，已被脚本或 hook 确定性覆盖的删掉
-- **按角色计加载量**：agent 实际每次调用要读的文件登记为带 `agent` 字段的预算路径；模板 frontmatter 的 `skills:` 预加载由守卫自动计入，带预加载却没登记路径的模板直接红
+- **按角色计加载量**：agent 实际每次调用要读的文件登记为带 `agent` 字段的预算路径；模板 frontmatter 的 `skills:` 预加载由守卫自动计入，带预加载却没登记路径的模板直接红。每次调用（含每条分支与每组叠加）不超过 `path_ceiling.limit`（35K 去空白字符），豁免只列进 `path_ceiling.exempt` 并写明原因。登记语义：`files` 里写 `文件#小节标题` 只计那一节；`generated` 由拼包脚本运行后计量；`branches` 默认互斥，会在同一次调用里同时发生的写进 `stacking.slots`（每槽至多一条，槽间叠加，守卫枚举取最坏）
 - **报告写给作者**：给作者看的报告/消息模板写在普通 ```` ```md ```` 围栏里，上一行加 `<!-- author-report -->` 标记（围栏信息串写成 `author-report` 时模型会把围栏原样回给作者，守卫拒收），只讲做了什么、发现了什么（附原文）、要作者决定什么、下一步；脚本名、字段名、flag、严重度代号和裸编号不进模板，确需保留的执行细节放块尾一行「技术备注：」。由 `check-author-reports.py` 守卫
 
 ## 提交流程

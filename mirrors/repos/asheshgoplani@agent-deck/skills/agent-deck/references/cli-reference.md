@@ -96,7 +96,9 @@ agent-deck launch -g book-keeper -c claude   # no path: lands on the group's def
 Notes:
 - `[path]` omitted: resolves the target group's `default_path`, then the global `default_path` config key, then cwd — the same chain as `add` (#1303). An explicit `.` always means the current directory.
 - `--account <name>` selects a named slot from `[profiles.<name>.claude].config_dir` for this session, matching `add --account`.
-- `--model <id>` and `--effort <level>` are the per-session overrides behind the TUI's Model ID and Reasoning effort rows (also on `add`). Effort levels: claude `low|medium|high|xhigh|max`, codex `minimal|low|medium|high|xhigh`; other tools refuse the flag. Both are echoed in `--json` output (`model`, `effort`) and by `session show --json`.
+- `--model <id>` and `--effort <level>` are the per-session overrides behind the TUI's Model ID and Reasoning effort rows (also on `add`). Effort levels: claude `low|medium|high|xhigh|max`, codex `minimal|low|medium|high|xhigh|max|ultra` plus any level the installed Codex advertises; other tools refuse the flag. When the installed Codex describes the chosen `--model`, only that model's levels are accepted. Both are echoed in `--json` output (`model`, `effort`) and by `session show --json`.
+- `--model` accepts any ID: the model lists are suggestions, not an allowlist, and an ID the list lacks is passed to the tool as is.
+- `launch -capabilities --json` (and `add -capabilities --json`) prints what this host can create: per tool `models`, `default_model`, `reasoning_efforts` and, when the installed CLI was probed, `model_efforts` (model ID to accepted efforts). For Codex the lists come from `codex debug models` (models with `visibility: list`, by priority) merged in front of the built-in catalog; Claude Code, Gemini and the rest use the built-in catalog. The probe never sends a prompt, times out after about 1s, and its result is cached per CLI binary (path, mtime, size) in the cache dir (`model-probe/<tool>.json`) for up to a day. A missing CLI, a timeout, a non-zero exit or unrecognized output falls back to the built-in catalog; a failed probe is not cached on disk and is retried after about a minute. Remote hosts report their own lists through their own `-capabilities`. Turn the probe off with `[models] probe = false`.
 - `--account` requires an explicit name. If the next token is another launch flag, launch stops with an error before resolving a fallback account or creating a session; use `--account=<name>` when a name intentionally begins with a dash.
 - `--hint/--tag/--ticket/--why` (also on `add`): durable recall hints written to state.db at creation (`docs/recall.md`). `launch` additionally derives `purpose` from the first line of `-m` and both commands derive `parent` for a child; an explicit `--hint purpose=` wins. Echoed in `--json` as `hints` and `tags`.
 - `--no-identity` (also on `add`): skip the harness identity injection for this session only. By default every spawn tells the model it runs inside agent-deck, its session metadata and how to use the CLI (`[launch] inject_identity` in config-reference.md, `documentation/HARNESS_IDENTITY.md`). Persisted, so restarts honour it.
@@ -216,6 +218,7 @@ agent-deck web [options]
 | `--listen` | Listen address (default: `127.0.0.1:8420`) |
 | `--read-only` | Disable terminal input, stream output only |
 | `--token` | Require bearer token for API and WS access |
+| `--push` | Enable browser push notifications (turn them on in the web UI's Tweaks panel → Notifications) |
 | `--open` | Reserved placeholder (currently no-op) |
 
 ```bash
@@ -745,6 +748,18 @@ agent-deck worktree cleanup [--force]
 ```
 
 Finds orphaned worktrees/sessions. Dry-run by default; `--force` performs the cleanup.
+
+### worktree trust-hooks
+
+```bash
+agent-deck worktree trust-hooks <repo> [--hook setup|destruction] [--yes] [--revoke]
+```
+
+Reviews and approves the repository's `.agent-deck/worktree-setup.sh` / `worktree-destruction.sh`. Each hook is printed first (path, symlink target, command, sha256, first 20 lines). On a terminal it asks y/N; without one it refuses unless `--yes` is given. `--hook` limits it to one hook; `--revoke` forgets the approvals. `trust-scripts` is the older name and still works.
+
+An approval is bound to the script's bytes, resolved path and interpreter (executable via `#!` vs `sh -e`); any change asks again. Unapproved hooks are skipped by `launch -w`, `add -w`, `worktree finish` and the other worktree commands when there is no terminal to ask on, with a one-line notice naming this command.
+
+Global flags for one invocation: `--run-hooks` (older name `--allow-repo-scripts`, env `AGENT_DECK_ALLOW_REPO_SCRIPTS=1`) runs unapproved hooks after printing their sha256 and records nothing; add `--trust` to record the version that ran.
 
 ## MCP Commands
 

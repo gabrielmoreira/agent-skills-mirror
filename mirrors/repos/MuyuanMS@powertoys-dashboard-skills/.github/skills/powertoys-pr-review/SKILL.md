@@ -149,6 +149,16 @@ If a prerequisite is missing, guide the user through setup ([references/prerequi
     review, build, confidence score or unchanged head cannot establish that a
     finding is necessary. Run `Test-ReviewData.ps1 -RequireFindingGrounding
     -CheckGitHub`; the live publisher enforces this gate too.
+27. **Account for every prose-only inline finding.** Before defaulting to
+    prose, try to extract a minimal safe replacement from the converged fix
+    at the pinned upstream RIGHT-side line, validate literal patches and
+    line endings, and split or atomically group localized multi-site edits.
+    A larger cross-file fix does not by itself make each localized edit unsafe.
+    When an inline comment legitimately cannot contain an apply-ready block,
+    record the concrete reason and attempt in its private
+    `findingGrounding.findings[].suggestion_assessment`. If validation is
+    unfinished, leave the review in progress; never claim an untested patch
+    failed merely to get prose published.
 
 ## Phase 0: Context & Process Review
 

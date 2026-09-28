@@ -462,8 +462,8 @@ Back-compat redirects (all `Navigate replace`, query params preserved):
 
 ```
 /home        → /chat                     /skills      → /connections
-/activity    → /settings/notifications   /channels    → /connections?tab=messaging
-/intelligence→ /settings/notifications   /routines    → /settings/automations
+/activity    → /settings/account         /channels    → /connections?tab=messaging
+/intelligence→ /settings/account         /routines    → /settings/automations
 /workflows   → /settings/automations     /webhooks    → /settings/integrations#webhooks
 ```
 
@@ -495,12 +495,12 @@ Each custom step offers **Default** (let OpenHuman manage it) vs **Configure** (
 
 Settings is a full `/settings/*` URL surface, presented on desktop as a **modal overlay** and on iOS as a full page. The old `SettingsPanelLayout` / `useSettingsAnimation` / `ProfilePanel` modal system is gone.
 
-- `components/settings/settingsRouteRegistry.ts` is the single declarative source of truth for every settings destination (id/route slug, i18n keys, section, sidebar `navGroup`, `devOnly`, search keywords). Navigation menus, breadcrumbs, and settings search all derive from it.
-- `components/settings/settingsRouteElements.tsx` maps registry entries to panel `<Route>` elements.
-- `components/settings/modal/` holds `SettingsModal` (mounted by `AppShellDesktop` whenever the path is a settings path; `settingsOverlay.ts` computes `{ settingsOpen, baseLocation }` so the page behind stays rendered), `SettingsModalFrame` (backdrop, Esc, focus, close), and `SettingsModalLayout` (routed two-column layout).
-- `components/settings/layout/` is the two-pane chrome: `SettingsLayout`, `SettingsSidebar` (grouped by `SettingsNavGroup`: general, assistant, data, connections, knowledge and memory, agents and autonomy, models and inference, automation and integrations, diagnostics and logs), `SettingsSubNav`, `SettingsIndexRedirect`.
-- `components/settings/panels/` holds around 80 leaf panels (`AccountPanel`, `AppearancePanel`, `AIPanel`, `AgentsPanel`, `AgentAccessPanel`, `AutonomyPanel`, `BillingPanel`, `CronJobsPanel`, `IntegrationsPanel`, `McpServerPanel`, `NotificationsTabbedPanel`, `PrivacyPanel`, `DeveloperOptionsPanel`, and others). Adding a panel means adding the component plus a registry entry; nav, breadcrumbs, and search pick it up automatically.
-- `components/settings/search/` is the settings search bar and its registry-derived index.
+- **`components/settings/settingsRouteRegistry.ts`** — single declarative source of truth for every settings destination (id/route slug, i18n keys, section, sidebar `navGroup`, `devOnly`, search keywords). Navigation menus, breadcrumbs, and settings search all derive from it.
+- **`components/settings/settingsRouteElements.tsx`** — maps registry entries to panel `<Route>` elements.
+- **`components/settings/modal/`** — `SettingsModal` (mounted by `AppShellDesktop` whenever the path is a settings path; `settingsOverlay.ts` computes `{ settingsOpen, baseLocation }` so the page behind stays rendered), `SettingsModalFrame` (backdrop / Esc / focus / close), `SettingsModalLayout` (routed two-column layout).
+- **`components/settings/layout/`** — two-pane chrome: `SettingsLayout`, `SettingsSidebar` (grouped by `SettingsNavGroup`: general, assistant, data, connections, knowledge & memory, agents & autonomy, models & inference, automation & integrations, diagnostics & logs), `SettingsSubNav`, `SettingsIndexRedirect`.
+- **`components/settings/panels/`** — leaf panels such as `AccountPanel`, `AppearancePanel`, `ThemeStudioPanel`, `AgentAccessPanel`, `AutonomyPanel`, `McpServerPanel`, `PrivacyPanel`, and `DeveloperOptionsPanel`. Adding a panel means adding the component and a registry entry; navigation, breadcrumbs, and search pick it up automatically.
+- **`components/settings/search/`** — settings search bar + registry-derived index.
 
 ### HashRouter vs BrowserRouter
 

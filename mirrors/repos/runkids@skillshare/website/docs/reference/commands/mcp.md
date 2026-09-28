@@ -324,7 +324,7 @@ server approval and authentication remain the receiving Agent's responsibility.
 
 ### Another account of an Agent {#accounts}
 
-A target declared as [another account of an Agent](/docs/reference/targets/configuration#agent-config-dir) is an MCP target too, for `claude` (`CLAUDE_CONFIG_DIR`), `codex` (`CODEX_HOME`) and `pi` (`PI_CODING_AGENT_DIR`). Its servers are written in that Agent's format, into the account's own file: `<config_dir>/.claude.json` for Claude, `<config_dir>/config.toml` for Codex, `<config_dir>/mcp.json` for Pi.
+A target declared as [another account of an Agent](/docs/reference/targets/configuration#agent-config-dir) is an MCP target too, for `claude` (`CLAUDE_CONFIG_DIR`), `codex` (`CODEX_HOME`) and `pi` (`PI_CODING_AGENT_DIR`). Its servers are written in that Agent's format, into the account's own file: `<config_dir>/.claude.json` for Claude, `<config_dir>/config.toml` for Codex, `<config_dir>/mcp-adapter.json` for Pi.
 
 ```yaml
 targets:
@@ -362,7 +362,7 @@ This works with four clients only:
 | Claude Code | Yes | `~/.claude.json`: the name, in this project's `disabledMcpServers` list |
 | OpenCode | Yes | `opencode.json`: `"NAME": {"enabled": false}` |
 | Kilo Code | Yes | `kilo.jsonc`: `"NAME": {"enabled": false}` |
-| Pi with `pi-mcp-adapter` | Yes | `.pi/mcp.json`: `"NAME": {"disabled": true}` |
+| Pi with `pi-mcp-adapter` | Yes | `.pi/mcp-adapter.json`: `"NAME": {"disabled": true}` |
 | Pi with `pi-mcp-extension` | No | It has no disable field |
 | Codex | No | See below |
 | Every other client | No | Selecting one is an error; nothing is written |
@@ -698,19 +698,29 @@ mcp:
 
 For the other package, use `pi-mcp-extension` in both the install command and the
 selection. Every server targeting Pi within a Skillshare source must choose the
-same package, because both packages read the same destination file.
+same package.
 
 | Package | Native output | What to do after sync |
 |---|---|---|
-| `pi-mcp-adapter` | `command`/`args` or `url`; `${VARIABLE}` references | Restart/reload Pi; use `/mcp` to inspect connections. Tools connect on demand. |
+| `pi-mcp-adapter` | `command`/`args` or `url`; `${VARIABLE}` references | Restart/reload Pi; use `/mcp-adapter` to inspect connections. Tools connect on demand. |
 | `pi-mcp-extension` | Explicit `transport: stdio` or `streamable-http` | Restart Pi; new servers default to manual start with `/mcp:start <server>`. Existing `lifecycle` settings are preserved. |
 
-Both use `~/.pi/agent/mcp.json` globally and `.pi/mcp.json` in project mode.
+| Package | Global file | Project file |
+|---|---|---|
+| `pi-mcp-adapter` | `~/.pi/agent/mcp-adapter.json` | `.pi/mcp-adapter.json` |
+| `pi-mcp-extension` | `~/.pi/agent/mcp.json` | `.pi/mcp.json` |
+
 Skillshare uses these Pi-specific files, not the adapter's shared `.mcp.json` or
 `~/.config/mcp/mcp.json` inputs. Project entries override global entries with the
 same name. For the adapter, a global `PI_CODING_AGENT_DIR` override is honored.
 The extension does not honor that override; global sync refuses it rather than
 writing a file the extension would ignore.
+
+`pi-mcp-adapter` 3.0 stopped reading `mcp.json` and reads `mcp-adapter.json`
+instead. On the next `skillshare sync mcp`, Skillshare writes its adapter servers
+to `mcp-adapter.json` and removes the entries it had written to `mcp.json`. Entries
+you added to `mcp.json` yourself stay there. If you already renamed the file as
+Pi's warning suggests, Skillshare keeps managing the entries you moved.
 
 The adapter supports `fromEnv` in environment variables and HTTP headers.
 The extension does **not** interpolate environment references: matching stdio

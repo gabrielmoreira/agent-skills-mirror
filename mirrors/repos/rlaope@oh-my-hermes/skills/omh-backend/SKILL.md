@@ -20,10 +20,12 @@ This is a Hermes-native `backend` workflow skill.
 
 ## Do Not Use When
 
+- The work is the database itself -- a slow query and the index that fixes it, DDL that locks a live table, N+1 queries, or when to partition or shard; use `relational-db`, which owns the lock behaviour and rollback of each statement.
 - The request is about web UI, layout, or a design system; use `frontend`.
 - The request is a security posture or threat review rather than a service design; use `security-safety-review`.
 - The request is to run or judge the verification of an already-built service; use `verification-gate`.
 - The request is a Rust-language change whose risk is compiler, ownership, or `unsafe` discipline; use `rust`.
+- The work is a batch or streaming job's rerun, backfill, duplicate rows, or a warehouse table's downstream readers; use `data-pipelines`.
 
 ## Examples
 
@@ -57,7 +59,7 @@ Bad example:
 
 ## Workflow Lane
 
-- Current lane: **Coding handoff** (`idea-to-deploy`, `llm-app-dev`, `cto-loop`, `deploy-and-monitor`, `code-review`, `build-failure-triage`, `verification-gate`, `security-safety-review`, `+18 more`) - coding owners, handoffs, review, CI, and merge evidence.
+- Current lane: **Coding handoff** (`idea-to-deploy`, `llm-app-dev`, `cto-loop`, `deploy-and-monitor`, `code-review`, `build-failure-triage`, `verification-gate`, `security-safety-review`, `+27 more`) - coding owners, handoffs, review, CI, and merge evidence.
 - If intent belongs to another lane, hand back to `oh-my-hermes` or name the adjacent workflow.
 - Shared product, routing, compatibility, and evidence rules: `omh-routing/references/skill-common-rail.md`.
 

@@ -2,14 +2,28 @@
 
 ## 当前版本
 
-发布版本 `v0.8.1`。`agents_version` 从上一发布 tag v0.8.0 的 32 增加到 33；已部署项目需更新技能包、重新运行 `/story-setup` 并新开会话，以加载本次完整部署内容。
+发布版本 `v0.8.3`。`agents_version` 仍是 34（与 v0.8.2 相同）：从 v0.8.2 升级只需更新技能包并新开会话，不用重跑 `/story-setup`；从 v0.8.1 或更早升级，按下方「v0.8.2 必须重跑 story-setup」重跑一次。
 
-- `setup_skill_version: 1.3.1`
-- `agents_version: 33`
+- `setup_skill_version: 1.3.2`
+- `agents_version: 34`
 
-`.story-deployed` 缺失任一字段，或 `agents_version` 缺失 / 非整数 / 小于 `33`，都视为待更新部署。直接重新运行 `/story-setup`（Codex 用 `$story-setup`，Antigravity 用 `/skills` 或自然语言点名）；不在运行时逐级兼容历史模板。如项目 `agents_version` 大于 `33`，说明本地 story-setup 比项目旧：先更新 oh-story-claudecode，不得用 v33 降级覆盖。历史版本改动见仓库根目录 `CHANGELOG.md`。
+`.story-deployed` 缺失任一字段，或 `agents_version` 缺失 / 非整数 / 小于 `34`，都视为待更新部署。直接重新运行 `/story-setup`（Codex 用 `$story-setup`，Antigravity 用 `/skills` 或自然语言点名）；不在运行时逐级兼容历史模板。如项目 `agents_version` 大于 `34`，说明本地 story-setup 比项目旧：先更新 oh-story-claudecode，不得用 v34 降级覆盖。历史版本改动见仓库根目录 `CHANGELOG.md`。
 
-### v0.8.1 必须重跑 story-setup
+### v0.8.2 必须重跑 story-setup
+
+各端用户更新技能包后都要在写作项目根重跑 `/story-setup`（Codex 用 `$story-setup`），再新开会话：
+
+- 写手、架构师、查资料、角色设计、资料研究几个助手模板都改了：写手按主会话填的「本章技法」类别自己读对应技法；架构师按主会话生成的任务包出设定、卷纲、细纲；查资料助手只在写章前召回对标文风时才读那套流程。不重跑的话，主会话按新流程只填类别，旧写手不认，本章技法会悄悄丢掉。
+- 四个助手去掉了跨任务的持久记忆，同一工作区写多本书时不再把上一本的记忆带进来，资料研究助手也不再隐性获得改文件权限。项目里旧的 `.claude/agent-memory/` 不再使用，可以删掉。
+- 换了编程工具（比如从 Claude Code 换到 Codex）后重跑，story-setup 会问要不要把当前工具一起装上。
+
+### 已在写的项目不用迁移
+
+- 开书、导入、拆文改成按作者确认点分段做，每段落盘后可以新开对话接着做；已有的设定、卷纲、细纲、追踪照常可用。
+- 扫榜每次写到 `扫榜/{日期}/` 新目录；旧的扫榜目录不用动，下次扫榜会拿它当上一次对比。
+- 作者记忆拆成常用和维护两份协议文件，数据文件格式不变。
+
+### v0.8.1 必须重跑 story-setup（历史）
 
 各端用户更新技能包后都要在写作项目根重跑 `/story-setup`（Codex 用 `$story-setup`），再新开会话：
 
@@ -18,7 +32,7 @@
 - 长篇拆文的 `chapter-extractor` 在 OpenCode 上也只许写批次输入文件；Codex、Antigravity 仍靠 agent 指令与提交校验约束。
 - 长篇写后检查需要 Node.js 18+：缺 Node 时 `chapter check` 报 `tool_unavailable`，本章不能提交，装好 Node 后重跑。
 
-### 已在写的项目不用迁移
+### 已在写的项目不用迁移（v0.8.1）
 
 - 细纲可以新增一行「字数范围：2000-2600」写作者给定的范围；没写就按默认 ±15%。
 - 细纲里旧写法「风险等级」检查照旧认作「契约风险」；卷纲单元卡没有检查脚本读这一栏，建议顺手改名，不改也不影响检查。
@@ -267,7 +281,7 @@ OpenClaw / Reasonix / generic 三条路径的 skill 副本在项目 `skills/` �
 ## 升级步骤
 
 1. 在项目根目录重新运行 story-setup。
-2. 确认 `.story-deployed` 写入 `agents_version: 33` 与 `setup_skill_version: 1.3.1`。
+2. 确认 `.story-deployed` 写入 `agents_version: 34` 与 `setup_skill_version: 1.3.2`。
 3. 确认目标 CLI 的 agents、hooks/rules 和 reference bundle 都通过安装验证。
 4. 新开会话，使 custom agents 与 hooks 按当前文件重新注册。
 5. **长篇在写项目必做**：检查每本书的 `追踪/_tracking-state.json` 是否存在。不存在就是旧追踪结构，按下方「追踪模型迁移」重建，否则写下一章会被拦。

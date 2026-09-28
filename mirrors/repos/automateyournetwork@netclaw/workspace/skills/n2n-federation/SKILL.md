@@ -71,6 +71,17 @@ Both operators must consent before ANY capability information flows.
 
 ## Long remote operations — ALWAYS delegate, never chat (feature 053)
 
+For internal RISK tasks, route by operation rather than the platform mentioned:
+CML owns lab/node/link lifecycle through its API; pyATS owns device CLI baselines,
+VLAN/trunk, OSPF/BGP/STP configuration, rollback and verification, including devices
+hosted in CML. Inspect `n2n_member_list`, choose the advertised capability (for
+example `pyats-config-mgmt` for device changes), and split mixed workflows across
+members with evidence passed between phases. Use the eligible visualization
+member for diagrams. A policy refusal remains binding when correcting a tooling
+route: do not select another member to evade it. A stored memory records an
+operator decision; it does not itself authorize a change. A prior reset exception
+does not authorize a subsequent deployment.
+
 **Decision rule: if the request will take more than a few seconds on the peer
 (any build, multi-tool run, "recreate my CML lab", "configure the testbed",
 "push these configs"), you MUST use `n2n_delegate` — NOT `n2n_chat` and NOT

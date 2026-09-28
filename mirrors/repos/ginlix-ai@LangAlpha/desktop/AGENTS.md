@@ -167,8 +167,8 @@ edition's output directory and refuses a parent holding several.
 | `src/policy.js` | what the shell decides: entry URL, where a navigation belongs. **Pure** — it may not write the store or open anything |
 | `src/origins.js` | what counts as ours: **by origin, never by path** |
 | `src/oauth.js` | system-browser OAuth, intercepted (below) |
-| `src/deeplink.js` | `langalpha://` scheme, for magic links clicked with the app closed |
-| `src/preload.js` | the renderer bridge: version, platform, `setTheme`, `openExternal`, `savePdf` |
+| `src/deeplink.js` | `langalpha://` scheme, for magic links clicked with the app closed and integration logins the browser hands back |
+| `src/preload.js` | the renderer bridge: version, platform, `capabilities`, `setTheme`, `openExternal`, `savePdf` |
 | `src/pdf.js` | renders the calling window to a PDF the user picks a home for; allowlists the options the page may set |
 | `src/downloads.js` | gives a download a visible ending, since a frameless window has no download shelf |
 | `src/notify.js` | the dock bounce that says a file landed |
@@ -275,6 +275,30 @@ Three things are load-bearing:
 `begin()` refuses any flow whose `redirect_to` is not one of our origins. Without that
 the shell would drive its own window wherever a crafted authorize URL pointed, carrying
 a code the user had just authorized.
+
+## Links through the scheme
+
+The registered scheme carries two kinds of link, told apart before any window is picked:
+
+- **Everything else** lands on `/callback` on whichever of our origins the main window
+  shows, with the whole query: a magic link or email confirmation, often clicked with
+  the app closed. The route is fixed and nothing is read off the link but its query.
+- **`<scheme>://integrations/login/<name>/callback`** is an integration login the console
+  started in the app and the system browser finished. It becomes that path on the
+  configured console origin, carrying only `code`, `state`, `error` and
+  `error_description`, and is refused whole if a parameter repeats or the name is not
+  `^[a-z][a-z0-9-]{0,31}$`. It lands back on the page that started it: the window whose
+  page sent the user to the browser through `openExternal`, if it still shows the
+  console, restored if minimized. Never focus or blur, which every switch between the
+  app and the browser moves. With none, it goes where a navigation to the console
+  goes, decided before the load, because `navigate` never passes through
+  `will-navigate`. An edition with no console ignores it rather than handing a
+  provider's code to `/callback`. Pages detect it as `integration-login` in the
+  bridge's `capabilities`.
+
+A launch that a link started opens only that link's window. `attach` delivers the queued
+link before the entry opens, and opening the entry as well would cover it, or load
+sign-in over it when both are the console window.
 
 ## When the network does not answer
 
@@ -438,7 +462,8 @@ like.
   `--background` moves, move `src/theme.js` with it.
 - **The bridge is feature-detected, never version-detected.** The shell updates on a
   slow cadence while the web app deploys continuously, so a new web build must never
-  require a new shell.
+  require a new shell. Behaviour with no method to look for is a word in
+  `capabilities`.
 - **Nothing auth-related is exposed to the page.** The shell drives sign-in itself, so
   neither SPA needs, or gets, a way to.
 - **A sandboxed preload cannot require arbitrary files.** Its resolver is limited to a

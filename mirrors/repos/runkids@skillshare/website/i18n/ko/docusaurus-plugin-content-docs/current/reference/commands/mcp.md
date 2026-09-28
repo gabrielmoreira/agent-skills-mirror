@@ -316,7 +316,7 @@ Project 대상은 선택한 프로젝트 루트를 기준으로 합니다. 프�
 
 ### Another account of an Agent {#accounts}
 
-[Agent의 다른 계정](/docs/reference/targets/configuration#agent-config-dir)으로 선언된 target은 `claude`(`CLAUDE_CONFIG_DIR`), `codex`(`CODEX_HOME`), `pi`(`PI_CODING_AGENT_DIR`)에 대해 MCP target이기도 합니다. 그 서버는 해당 Agent의 형식으로, 계정 자체의 파일에 작성됩니다. Claude는 `<config_dir>/.claude.json`, Codex는 `<config_dir>/config.toml`, Pi는 `<config_dir>/mcp.json`입니다.
+[Agent의 다른 계정](/docs/reference/targets/configuration#agent-config-dir)으로 선언된 target은 `claude`(`CLAUDE_CONFIG_DIR`), `codex`(`CODEX_HOME`), `pi`(`PI_CODING_AGENT_DIR`)에 대해 MCP target이기도 합니다. 그 서버는 해당 Agent의 형식으로, 계정 자체의 파일에 작성됩니다. Claude는 `<config_dir>/.claude.json`, Codex는 `<config_dir>/config.toml`, Pi는 `<config_dir>/mcp-adapter.json`입니다.
 
 ```yaml
 targets:
@@ -354,7 +354,7 @@ Agent는 자체 global MCP 파일과 프로젝트 파일을 함께 읽습니다.
 | Claude Code | 예 | `~/.claude.json`: 이름을 이 프로젝트의 `disabledMcpServers` 목록에 추가 |
 | OpenCode | 예 | `opencode.json`: `"NAME": {"enabled": false}` |
 | Kilo Code | 예 | `kilo.jsonc`: `"NAME": {"enabled": false}` |
-| Pi with `pi-mcp-adapter` | 예 | `.pi/mcp.json`: `"NAME": {"disabled": true}` |
+| Pi with `pi-mcp-adapter` | 예 | `.pi/mcp-adapter.json`: `"NAME": {"disabled": true}` |
 | Pi with `pi-mcp-extension` | 아니요 | disable 필드가 없음 |
 | Codex | 아니요 | 아래 참고 |
 | Every other client | 아니요 | 하나를 선택하면 오류가 발생하며 아무것도 작성되지 않음 |
@@ -684,21 +684,31 @@ mcp:
 ```
 
 다른 패키지를 사용하려면 install 명령과 선택지 모두에서 `pi-mcp-extension`을
-사용하세요. 두 패키지 모두 동일한 대상 파일을 읽으므로, Skillshare source 안에서
-Pi를 대상으로 하는 모든 서버는 동일한 패키지를 선택해야 합니다.
+사용하세요. Skillshare source 안에서 Pi를 대상으로 하는 모든 서버는 동일한 패키지를
+선택해야 합니다.
 
 | Package | Native output | What to do after sync |
 |---|---|---|
-| `pi-mcp-adapter` | `command`/`args` 또는 `url`; `${VARIABLE}` 참조 | Pi 재시작/재로드; `/mcp`로 연결 확인. 도구는 필요 시 연결됨 |
+| `pi-mcp-adapter` | `command`/`args` 또는 `url`; `${VARIABLE}` 참조 | Pi 재시작/재로드; `/mcp-adapter`로 연결 확인. 도구는 필요 시 연결됨 |
 | `pi-mcp-extension` | 명시적인 `transport: stdio` 또는 `streamable-http` | Pi 재시작; 새 서버는 기본적으로 `/mcp:start <server>`로 수동 시작. 기존 `lifecycle` 설정은 유지됨 |
 
-둘 다 global에서는 `~/.pi/agent/mcp.json`을, project mode에서는 `.pi/mcp.json`을
-사용합니다. Skillshare는 이러한 Pi 전용 파일을 사용하며, adapter가 공유하는
+| Package | Global file | Project file |
+|---|---|---|
+| `pi-mcp-adapter` | `~/.pi/agent/mcp-adapter.json` | `.pi/mcp-adapter.json` |
+| `pi-mcp-extension` | `~/.pi/agent/mcp.json` | `.pi/mcp.json` |
+
+Skillshare는 이러한 Pi 전용 파일을 사용하며, adapter가 공유하는
 `.mcp.json`이나 `~/.config/mcp/mcp.json` 입력은 사용하지 않습니다. 프로젝트 항목은
 동일한 이름의 global 항목을 재정의합니다. adapter의 경우, global
 `PI_CODING_AGENT_DIR` 오버라이드가 존중됩니다. extension은 이 오버라이드를
 존중하지 않으므로, global sync는 extension이 무시할 파일을 작성하는 대신 이를
 거부합니다.
+
+`pi-mcp-adapter` 3.0부터는 `mcp.json`을 더 이상 읽지 않고 `mcp-adapter.json`을
+읽습니다. 다음 `skillshare sync mcp`에서 Skillshare는 adapter 서버를
+`mcp-adapter.json`에 작성하고, 이전에 `mcp.json`에 작성했던 항목을 제거합니다.
+`mcp.json`에 직접 추가한 항목은 그대로 남습니다. Pi의 경고에 따라 이미 파일 이름을
+바꿨다면, Skillshare는 옮겨진 항목을 계속 관리합니다.
 
 adapter는 환경 변수와 HTTP 헤더에서 `fromEnv`를 지원합니다. extension은 환경
 참조를 보간하지 **않습니다**: 일치하는 stdio 변수(예: `TOKEN: {fromEnv: TOKEN}`)는

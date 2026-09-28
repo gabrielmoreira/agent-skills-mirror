@@ -20,7 +20,7 @@ npx @deepseek-ai/dsh@next plugin --profile web add dsh-tongflow      # from npm
 npx @deepseek-ai/dsh@next web
 ```
 
-Requirements: dsh ≥ 0.1.2-rc.1 — the 0.1.2-rc, 0.1.3-alpha and 0.1.5 lines are supported; 0.1.1-rc and older are not (the client `Runtime` package they build on was removed upstream, so upgrade dsh rather than pinning an old plugin). Because npm only matches a prerelease when a range clause carries its exact `major.minor.patch`, each new dsh prerelease line needs its own clause in `peerDependencies` — a host on a newer line reports a compatibility warning until then. Also Node ≥ 22.19, **Python ≥ 3.10** on `PATH` (or `pythonPath` in the plugin config), `git`, and `ffmpeg` for video contact sheets. On first use the plugin creates `~/.dsh/tongflow/venv` with the `tongflow` SDK and shallow-clones every official TongFlow plugin into `~/.dsh/tongflow/plugins` (the live list from `config/official-plugins.json`; set `autoInstallOfficial: false` to install by hand), so the canvas offers the same node/plugin catalog as the hosted app. Keys and Modal deploys are only needed when something runs.
+Requirements: dsh ≥ 0.1.2-rc.1 — the 0.1.2-rc, 0.1.3-alpha, 0.1.5 and 0.1.7 lines are supported (`engines.dsh`; verified releases are listed in `dsh.compatibility.dshReleases`); 0.1.1-rc and older are not (the client `Runtime` package they build on was removed upstream, so upgrade dsh rather than pinning an old plugin). Because npm only matches a prerelease when a range clause carries its exact `major.minor.patch`, each new dsh prerelease line needs its own clause in `peerDependencies` — a host on a newer line reports a compatibility warning until then. Also Node ≥ 22.19, **Python ≥ 3.10** on `PATH` (or `pythonPath` in the plugin config), `git`, and `ffmpeg` for video contact sheets. On first use the plugin creates `~/.dsh/tongflow/venv` with the `tongflow` SDK and shallow-clones every official TongFlow plugin into `~/.dsh/tongflow/plugins` (the live list from `config/official-plugins.json`; set `autoInstallOfficial: false` to install by hand), so the canvas offers the same node/plugin catalog as the hosted app. Keys and Modal deploys are only needed when something runs.
 
 Start a session whose **first message begins with `@tongflow`** — that session becomes a studio session: the conversation view turns into the Studio (chat column · the project's folder tree · preview / editor / canvas · a runs drawer, all in the UI language of your browser), and the agent gets the `tongflow_*` tools and skill. Any other session is untouched dsh. In the Studio: create a project (a title and a brief — what you want to make), install TongFlow plugins and paste API keys under **Plugins & keys**, then talk to the agent — or click any file to preview / edit it, click a workflow to open it on the canvas.
 
@@ -92,6 +92,17 @@ Skill shipped: `tongflow-studio` (the working method: research → propose a str
 | `iteration.md` | running the same asset again — one variable at a time, and when to stop rewriting the prompt |
 
 Genre knowledge is not packaged; the agent researches or the user installs a skill of their own.
+
+## Permissions and external services
+
+The plugin runs with the dsh process's permissions and needs all of these to work:
+
+- **Files:** reads and writes project folders and `studioRoot` (`<DSH_HOME>/tongflow`: projects, venv, cloned plugins, run data). API keys pasted under **Plugins & keys** are stored in plain text in `studioRoot/env.json` (mode 0600) and handed to plugin processes as environment variables.
+- **Commands:** `python` (creates the venv, `pip install`s the `tongflow` SDK and plugin requirements, runs plugin processes), `git` (shallow-clones plugins), `ffmpeg` (video contact sheets). A plugin process runs that plugin's own code.
+- **Network:** GitHub (`raw.githubusercontent.com` for the official plugin list, `github.com/tong-io/*` clones), PyPI, and whatever service a plugin calls when a workflow runs — model APIs, or your own Modal account for GPU plugins. Paid runs ask the user first (see *Billing checkpoint*).
+- **Runtime dependencies:** `tongflow` (the workflow core, same repo) and `@deepseek-ai/schemastery`.
+
+It is published to npm with the built `lib/`; the GitHub source tree does not contain build output (run `pnpm --filter dsh-tongflow build`).
 
 ## HTTP (same origin as dsh)
 

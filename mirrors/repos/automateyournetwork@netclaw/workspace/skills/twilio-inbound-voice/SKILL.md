@@ -1,3 +1,8 @@
+---
+name: twilio-inbound-voice
+description: "Handle inbound Twilio voice conversations for network status and operational requests. Use for the inbound voice channel and its caller checks."
+---
+
 # Twilio Inbound Voice Skill
 
 **Feature**: 042-twilio-voice-mcp

@@ -486,7 +486,7 @@ python3 $MCP_CALL "python3 -u $SERVICENOW_MCP_SCRIPT" update_change_request '{"c
 Record every phase of the change in GAIT:
 
 ```bash
-python3 $MCP_CALL "python3 -u $GAIT_MCP_SCRIPT" gait_record_turn '{"prompt":"F5 config change: Create pool_webapp and vs_webapp_https","response":"Phase 1 baseline captured (4 virtuals, 3 pools, no errors). Phase 2 plan approved. Phase 3 applied: created pool_webapp (3 members, HTTP monitor, round-robin) and vs_webapp_https (10.100.1.50:443, SSL offload, automap). Phase 4 verification PASSED: all members available, VIP accepting connections, no log errors. ServiceNow CR CHG0012345 closed successful.","artifacts":["f5-change-report.txt"]}'
+python3 $MCP_CALL "python3 -u $GAIT_MCP_SCRIPT" gait_record_turn '{"artifacts":["f5-change-report.txt"],"user_text":"F5 config change: Create pool_webapp and vs_webapp_https","assistant_text":"Phase 1 baseline captured (4 virtuals, 3 pools, no errors). Phase 2 plan approved. Phase 3 applied: created pool_webapp (3 members, HTTP monitor, round-robin) and vs_webapp_https (10.100.1.50:443, SSL offload, automap). Phase 4 verification PASSED: all members available, VIP accepting connections, no log errors. ServiceNow CR CHG0012345 closed successful."}'
 ```
 
 The 5-phase workflow with GAIT creates an immutable record:
@@ -495,3 +495,6 @@ The 5-phase workflow with GAIT creates an immutable record:
 3. **Apply** -- GAIT commit with exact API calls made
 4. **Verify** -- GAIT commit with post-change state and diff
 5. **Document** -- GAIT commit with final summary and CR closure
+
+Audit examples are illustrative. Replace their request and outcomes with observed
+session evidence; inspect MCP `isError`, returned `ok` and recorded GAIT text.

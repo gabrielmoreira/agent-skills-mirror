@@ -34,7 +34,7 @@ Detect high-risk AI-flavor prose patterns that need human rewrite:
 
 Book-local .deslop-whitelist literal spans are excluded from style scanning (no regex or ancestor inheritance).
 Each finding carries severity: blocking by default for generation/deslop cleanup (not-is-comparison / em-dash / voice-contrast / negation-parade / reverse-not-is / trailer-ending / trailer-summary). This is a local style/readability gate, not an AIGC detector score; functional human text can be marked for review instead of hard-edited for a detector.
-或 advisory (period-stutter / long-paragraph / micro-action-tic / stock-reaction-tic / action-list-tic / abstract-summary-tic / cliche-density-tic / metaphor-density-tic / reasoning-chain-tic / system-notice-formality-tic / overcompressed-prose-tic / low-connective-density-tic / quote-emphasis-tic / formulaic-parallelism，是提示，justified 的长推理/氛围段可保留)。
+或 advisory (period-stutter / long-paragraph / micro-action-tic / negation-pair-tic / stock-reaction-tic / action-list-tic / abstract-summary-tic / cliche-density-tic / metaphor-density-tic / reasoning-chain-tic / system-notice-formality-tic / overcompressed-prose-tic / low-connective-density-tic / quote-emphasis-tic / formulaic-parallelism，是提示，justified 的长推理/氛围段可保留)。
 --fail-on=blocking 只在出现 blocking finding 时退出 1；默认 --fail-on=all 有任何 finding 即退出 1。
 Each finding also carries review: mechanical（表面形态确定、就地改写即可）或 semantic（可能承担叙事功能，需读上下文判断是否保留）；blocking 一律 mechanical。--list-review-classes 输出完整分类表（JSON）。
 HTML comments (<!-- ... -->, e.g. the 去味:跳过 exemption marker) are metadata, not prose, and are never scanned.
@@ -61,6 +61,10 @@ const LONG_PARAGRAPH_CHARS = 200;
 // 单次出现是正常中文。
 const MICRO_TIC_PATTERN = /了(?:[一两三几半])?[下阵圈道声眼口气会]/g;
 const MICRO_TIC_MIN_HITS = 5;
+// 「没A，也没B」「不A，也不B」否定对偶：七猫人类长篇约 0.07 处/千字，模型稿 0.4-1.5 处/千字；
+// 写人物没做什么是英文式节奏，一章 3 处以上报一条提示。
+const NEGATION_PAIR_PATTERN = /(?:没有|没|不)[^，。！？；,!?\n]{1,10}[，,；]\s*[^，。！？；,!?\n]{0,6}?也(?:没有|没|不)/g;
+const NEGATION_PAIR_MIN_HITS = 3;
 const MICRO_TIC_PER_KILO = 6;
 
 // 套式反应细节：不是禁写身体，而是提示成片出现的“部位 + 轻微动作/状态”、
@@ -284,6 +288,7 @@ const QUOTE_EMPHASIS_SPEECH_VERB_PATTERN = /[说道问喊答念叫回吼骂写�
 //   long-paragraph               mechanical  段长阈值，断段即可
 //   period-stutter               mechanical  连续短句计数，合句即可
 //   micro-action-tic             mechanical  固定补语「了下/了一下」密度
+//   negation-pair-tic            semantic    「没A，也没B」否定对偶，留真正要强调的
 //   cliche-density-tic           mechanical  固定禁用词表密度
 //   stock-reaction-tic           semantic    身体反应可能承担物理后果或情绪，要逐处做删除测试
 //   action-list-tic              semantic    打斗/追逐等功能性动作编排可保留
@@ -306,6 +311,7 @@ const REVIEW_CLASSES = Object.freeze({
   'long-paragraph': 'mechanical',
   'period-stutter': 'mechanical',
   'micro-action-tic': 'mechanical',
+  'negation-pair-tic': 'semantic',
   'cliche-density-tic': 'mechanical',
   'stock-reaction-tic': 'semantic',
   'action-list-tic': 'semantic',
@@ -512,6 +518,7 @@ function scanProsePatterns(proseLines) {
   findings.push(...findQuoteEmphasisTic(proseLines));
   findings.push(...findPeriodStutter(proseLines));
   findings.push(...findMicroActionTic(proseLines));
+  findings.push(...findNegationPairTic(proseLines));
   findings.push(...findStockReactionTic(proseLines));
   findings.push(...findActionListTic(proseLines));
   findings.push(...findAbstractSummaryTic(proseLines));
@@ -768,6 +775,34 @@ function findQuoteEmphasisTic(proseLines) {
     severity: 'advisory',
     message: `引号强调滥用：叙述里 1-4 字短词加引号强调 ${hits} 处；只留真正反讽/转述必要的一两处，其余去掉引号直接写，或换成具体动作让读者自己品。`,
     excerpt: compact(samples.join(' ')),
+  }];
+}
+
+// 否定对偶：统计引号外叙述里「没A，也没B」式句子，全文只报一条。
+function findNegationPairTic(proseLines) {
+  let hits = 0;
+  let firstLine = null;
+  const samples = [];
+  for (const { text, lineNo } of proseLines) {
+    const trimmed = text.trim();
+    if (!trimmed || isDivider(trimmed) || isStructural(trimmed)) continue;
+    const narrative = stripQuoted(trimmed);
+    NEGATION_PAIR_PATTERN.lastIndex = 0;
+    let match;
+    while ((match = NEGATION_PAIR_PATTERN.exec(narrative)) !== null) {
+      hits += 1;
+      if (firstLine === null) firstLine = lineNo;
+      if (samples.length < 4) samples.push(match[0]);
+    }
+  }
+  if (hits < NEGATION_PAIR_MIN_HITS) return [];
+  return [{
+    line: firstLine,
+    column: 1,
+    type: 'negation-pair-tic',
+    severity: 'advisory',
+    message: `否定对偶偏多：「没A，也没B」式叙述 ${hits} 处；写人物没做什么是英文式节奏，改成他做了什么（留一两处真正要强调的）。`,
+    excerpt: compact(samples.join(' | ')),
   }];
 }
 

@@ -1,3 +1,8 @@
+---
+name: twitter-share
+description: "Draft and publish user-requested Twitter content through content checks and approval. Use when the operator explicitly requests a tweet or thread."
+---
+
 # Skill: Twitter Share
 
 **Purpose**: Manual tweet posting with content guardrails and human approval flow.

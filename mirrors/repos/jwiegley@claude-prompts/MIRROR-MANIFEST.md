@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `jwiegley/claude-prompts` — 26 default patterns, 0 followed patterns, 83 file(s) materialized.
+Mirror of `jwiegley/claude-prompts` — 26 default patterns, 0 followed patterns, 84 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `jwiegley/claude-prompts` — 26 default patterns, 0 followed patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 83 |
+| Files         | 84 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -97,51 +97,52 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 36 | ✓ | [`skills/node-red/references/api_reference.md`](skills/node-red/references/api_reference.md) |
 | 37 | ✓ | [`skills/node-red/references/function_snippets.md`](skills/node-red/references/function_snippets.md) |
 | 38 | ✓ | [`skills/node-red/references/node_schemas.md`](skills/node-red/references/node_schemas.md) |
-| 39 | ✓ | [`skills/node-red/scripts/create_flow_template.py`](skills/node-red/scripts/create_flow_template.py) |
-| 40 | ✓ | [`skills/node-red/scripts/generate_uuid.py`](skills/node-red/scripts/generate_uuid.py) |
-| 41 | ✓ | [`skills/node-red/scripts/validate_flow.py`](skills/node-red/scripts/validate_flow.py) |
-| 42 | ✓ | [`skills/node-red/scripts/wire_nodes.py`](skills/node-red/scripts/wire_nodes.py) |
-| 43 | ✓ | [`skills/node-red/SKILL.md`](skills/node-red/SKILL.md) |
-| 44 | ✓ | [`skills/persian/PersianTerms.txt`](skills/persian/PersianTerms.txt) |
-| 45 | ✓ | [`skills/persian/SKILL.md`](skills/persian/SKILL.md) |
-| 46 | ✓ | [`skills/persian/TERMS.csv`](skills/persian/TERMS.csv) |
-| 47 | ✓ | [`skills/persian/Translations/2022 Ridvan Message (English).txt`](skills/persian/Translations/2022%20Ridvan%20Message%20(English).txt) |
-| 48 | ✓ | [`skills/persian/Translations/2022 Ridvan Message (Persian).txt`](skills/persian/Translations/2022%20Ridvan%20Message%20(Persian).txt) |
-| 49 | ✓ | [`skills/persian/Translations/2023 Ridvan Message (English).txt`](skills/persian/Translations/2023%20Ridvan%20Message%20(English).txt) |
-| 50 | ✓ | [`skills/README.md`](skills/README.md) |
-| 51 | ✓ | [`skills/skill-creator/LICENSE.txt`](skills/skill-creator/LICENSE.txt) |
-| 52 | ✓ | [`skills/skill-creator/scripts/init_skill.py`](skills/skill-creator/scripts/init_skill.py) |
-| 53 | ✓ | [`skills/skill-creator/scripts/package_skill.py`](skills/skill-creator/scripts/package_skill.py) |
-| 54 | ✓ | [`skills/skill-creator/scripts/quick_validate.py`](skills/skill-creator/scripts/quick_validate.py) |
-| 55 | ✓ | [`skills/skill-creator/SKILL.md`](skills/skill-creator/SKILL.md) |
-| 56 | ✓ | [`skills/swiftui-expert-skill/LICENSE`](skills/swiftui-expert-skill/LICENSE) |
-| 57 | ✓ | [`skills/swiftui-expert-skill/README.md`](skills/swiftui-expert-skill/README.md) |
-| 58 | ✓ | [`skills/swiftui-expert-skill/references/image-optimization.md`](skills/swiftui-expert-skill/references/image-optimization.md) |
-| 59 | ✓ | [`skills/swiftui-expert-skill/references/layout-best-practices.md`](skills/swiftui-expert-skill/references/layout-best-practices.md) |
-| 60 | ✓ | [`skills/swiftui-expert-skill/references/liquid-glass.md`](skills/swiftui-expert-skill/references/liquid-glass.md) |
-| 61 | ✓ | [`skills/swiftui-expert-skill/references/list-patterns.md`](skills/swiftui-expert-skill/references/list-patterns.md) |
-| 62 | ✓ | [`skills/swiftui-expert-skill/references/modern-apis.md`](skills/swiftui-expert-skill/references/modern-apis.md) |
-| 63 | ✓ | [`skills/swiftui-expert-skill/references/performance-patterns.md`](skills/swiftui-expert-skill/references/performance-patterns.md) |
-| 64 | ✓ | [`skills/swiftui-expert-skill/references/scroll-patterns.md`](skills/swiftui-expert-skill/references/scroll-patterns.md) |
-| 65 | ✓ | [`skills/swiftui-expert-skill/references/sheet-navigation-patterns.md`](skills/swiftui-expert-skill/references/sheet-navigation-patterns.md) |
-| 66 | ✓ | [`skills/swiftui-expert-skill/references/state-management.md`](skills/swiftui-expert-skill/references/state-management.md) |
-| 67 | ✓ | [`skills/swiftui-expert-skill/references/text-formatting.md`](skills/swiftui-expert-skill/references/text-formatting.md) |
-| 68 | ✓ | [`skills/swiftui-expert-skill/references/view-structure.md`](skills/swiftui-expert-skill/references/view-structure.md) |
-| 69 | ✓ | [`skills/swiftui-expert-skill/SKILL.md`](skills/swiftui-expert-skill/SKILL.md) |
-| 70 | ✓ | [`skills/swiftui/LICENSE`](skills/swiftui/LICENSE) |
-| 71 | ✓ | [`skills/swiftui/README.md`](skills/swiftui/README.md) |
-| 72 | ✓ | [`skills/swiftui/references/image-optimization.md`](skills/swiftui/references/image-optimization.md) |
-| 73 | ✓ | [`skills/swiftui/references/layout-best-practices.md`](skills/swiftui/references/layout-best-practices.md) |
-| 74 | ✓ | [`skills/swiftui/references/liquid-glass.md`](skills/swiftui/references/liquid-glass.md) |
-| 75 | ✓ | [`skills/swiftui/references/list-patterns.md`](skills/swiftui/references/list-patterns.md) |
-| 76 | ✓ | [`skills/swiftui/references/modern-apis.md`](skills/swiftui/references/modern-apis.md) |
-| 77 | ✓ | [`skills/swiftui/references/performance-patterns.md`](skills/swiftui/references/performance-patterns.md) |
-| 78 | ✓ | [`skills/swiftui/references/scroll-patterns.md`](skills/swiftui/references/scroll-patterns.md) |
-| 79 | ✓ | [`skills/swiftui/references/sheet-navigation-patterns.md`](skills/swiftui/references/sheet-navigation-patterns.md) |
-| 80 | ✓ | [`skills/swiftui/references/state-management.md`](skills/swiftui/references/state-management.md) |
-| 81 | ✓ | [`skills/swiftui/references/text-formatting.md`](skills/swiftui/references/text-formatting.md) |
-| 82 | ✓ | [`skills/swiftui/references/view-structure.md`](skills/swiftui/references/view-structure.md) |
-| 83 | ✓ | [`skills/swiftui/SKILL.md`](skills/swiftui/SKILL.md) |
+| 39 | ✓ | [`skills/node-red/references/plugins.md`](skills/node-red/references/plugins.md) |
+| 40 | ✓ | [`skills/node-red/scripts/create_flow_template.py`](skills/node-red/scripts/create_flow_template.py) |
+| 41 | ✓ | [`skills/node-red/scripts/generate_uuid.py`](skills/node-red/scripts/generate_uuid.py) |
+| 42 | ✓ | [`skills/node-red/scripts/validate_flow.py`](skills/node-red/scripts/validate_flow.py) |
+| 43 | ✓ | [`skills/node-red/scripts/wire_nodes.py`](skills/node-red/scripts/wire_nodes.py) |
+| 44 | ✓ | [`skills/node-red/SKILL.md`](skills/node-red/SKILL.md) |
+| 45 | ✓ | [`skills/persian/PersianTerms.txt`](skills/persian/PersianTerms.txt) |
+| 46 | ✓ | [`skills/persian/SKILL.md`](skills/persian/SKILL.md) |
+| 47 | ✓ | [`skills/persian/TERMS.csv`](skills/persian/TERMS.csv) |
+| 48 | ✓ | [`skills/persian/Translations/2022 Ridvan Message (English).txt`](skills/persian/Translations/2022%20Ridvan%20Message%20(English).txt) |
+| 49 | ✓ | [`skills/persian/Translations/2022 Ridvan Message (Persian).txt`](skills/persian/Translations/2022%20Ridvan%20Message%20(Persian).txt) |
+| 50 | ✓ | [`skills/persian/Translations/2023 Ridvan Message (English).txt`](skills/persian/Translations/2023%20Ridvan%20Message%20(English).txt) |
+| 51 | ✓ | [`skills/README.md`](skills/README.md) |
+| 52 | ✓ | [`skills/skill-creator/LICENSE.txt`](skills/skill-creator/LICENSE.txt) |
+| 53 | ✓ | [`skills/skill-creator/scripts/init_skill.py`](skills/skill-creator/scripts/init_skill.py) |
+| 54 | ✓ | [`skills/skill-creator/scripts/package_skill.py`](skills/skill-creator/scripts/package_skill.py) |
+| 55 | ✓ | [`skills/skill-creator/scripts/quick_validate.py`](skills/skill-creator/scripts/quick_validate.py) |
+| 56 | ✓ | [`skills/skill-creator/SKILL.md`](skills/skill-creator/SKILL.md) |
+| 57 | ✓ | [`skills/swiftui-expert-skill/LICENSE`](skills/swiftui-expert-skill/LICENSE) |
+| 58 | ✓ | [`skills/swiftui-expert-skill/README.md`](skills/swiftui-expert-skill/README.md) |
+| 59 | ✓ | [`skills/swiftui-expert-skill/references/image-optimization.md`](skills/swiftui-expert-skill/references/image-optimization.md) |
+| 60 | ✓ | [`skills/swiftui-expert-skill/references/layout-best-practices.md`](skills/swiftui-expert-skill/references/layout-best-practices.md) |
+| 61 | ✓ | [`skills/swiftui-expert-skill/references/liquid-glass.md`](skills/swiftui-expert-skill/references/liquid-glass.md) |
+| 62 | ✓ | [`skills/swiftui-expert-skill/references/list-patterns.md`](skills/swiftui-expert-skill/references/list-patterns.md) |
+| 63 | ✓ | [`skills/swiftui-expert-skill/references/modern-apis.md`](skills/swiftui-expert-skill/references/modern-apis.md) |
+| 64 | ✓ | [`skills/swiftui-expert-skill/references/performance-patterns.md`](skills/swiftui-expert-skill/references/performance-patterns.md) |
+| 65 | ✓ | [`skills/swiftui-expert-skill/references/scroll-patterns.md`](skills/swiftui-expert-skill/references/scroll-patterns.md) |
+| 66 | ✓ | [`skills/swiftui-expert-skill/references/sheet-navigation-patterns.md`](skills/swiftui-expert-skill/references/sheet-navigation-patterns.md) |
+| 67 | ✓ | [`skills/swiftui-expert-skill/references/state-management.md`](skills/swiftui-expert-skill/references/state-management.md) |
+| 68 | ✓ | [`skills/swiftui-expert-skill/references/text-formatting.md`](skills/swiftui-expert-skill/references/text-formatting.md) |
+| 69 | ✓ | [`skills/swiftui-expert-skill/references/view-structure.md`](skills/swiftui-expert-skill/references/view-structure.md) |
+| 70 | ✓ | [`skills/swiftui-expert-skill/SKILL.md`](skills/swiftui-expert-skill/SKILL.md) |
+| 71 | ✓ | [`skills/swiftui/LICENSE`](skills/swiftui/LICENSE) |
+| 72 | ✓ | [`skills/swiftui/README.md`](skills/swiftui/README.md) |
+| 73 | ✓ | [`skills/swiftui/references/image-optimization.md`](skills/swiftui/references/image-optimization.md) |
+| 74 | ✓ | [`skills/swiftui/references/layout-best-practices.md`](skills/swiftui/references/layout-best-practices.md) |
+| 75 | ✓ | [`skills/swiftui/references/liquid-glass.md`](skills/swiftui/references/liquid-glass.md) |
+| 76 | ✓ | [`skills/swiftui/references/list-patterns.md`](skills/swiftui/references/list-patterns.md) |
+| 77 | ✓ | [`skills/swiftui/references/modern-apis.md`](skills/swiftui/references/modern-apis.md) |
+| 78 | ✓ | [`skills/swiftui/references/performance-patterns.md`](skills/swiftui/references/performance-patterns.md) |
+| 79 | ✓ | [`skills/swiftui/references/scroll-patterns.md`](skills/swiftui/references/scroll-patterns.md) |
+| 80 | ✓ | [`skills/swiftui/references/sheet-navigation-patterns.md`](skills/swiftui/references/sheet-navigation-patterns.md) |
+| 81 | ✓ | [`skills/swiftui/references/state-management.md`](skills/swiftui/references/state-management.md) |
+| 82 | ✓ | [`skills/swiftui/references/text-formatting.md`](skills/swiftui/references/text-formatting.md) |
+| 83 | ✓ | [`skills/swiftui/references/view-structure.md`](skills/swiftui/references/view-structure.md) |
+| 84 | ✓ | [`skills/swiftui/SKILL.md`](skills/swiftui/SKILL.md) |
 
 ---
 

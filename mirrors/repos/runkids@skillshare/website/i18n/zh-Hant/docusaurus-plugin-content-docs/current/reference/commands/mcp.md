@@ -288,7 +288,7 @@ server 核准與驗證仍屬於接收端 Agent 的責任。
 
 ### 某個 Agent 的另一個帳號 {#accounts}
 
-宣告為[某個 Agent 的另一個帳號](/docs/reference/targets/configuration#agent-config-dir)的 target 同時也是 MCP target，適用於 `claude`（`CLAUDE_CONFIG_DIR`）、`codex`（`CODEX_HOME`）與 `pi`（`PI_CODING_AGENT_DIR`）。它的 servers 會以該 Agent 的格式寫入該帳號自己的檔案：Claude 是 `<config_dir>/.claude.json`，Codex 是 `<config_dir>/config.toml`，Pi 是 `<config_dir>/mcp.json`。
+宣告為[某個 Agent 的另一個帳號](/docs/reference/targets/configuration#agent-config-dir)的 target 同時也是 MCP target，適用於 `claude`（`CLAUDE_CONFIG_DIR`）、`codex`（`CODEX_HOME`）與 `pi`（`PI_CODING_AGENT_DIR`）。它的 servers 會以該 Agent 的格式寫入該帳號自己的檔案：Claude 是 `<config_dir>/.claude.json`，Codex 是 `<config_dir>/config.toml`，Pi 是 `<config_dir>/mcp-adapter.json`。
 
 ```yaml
 targets:
@@ -326,7 +326,7 @@ project 中不要載入，請新增一個**使用該 Agent 的 global 檔案中�
 | Claude Code | 是 | `~/.claude.json`：名稱會加入這個 project 的 `disabledMcpServers` 清單 |
 | OpenCode | 是 | `opencode.json`：`"NAME": {"enabled": false}` |
 | Kilo Code | 是 | `kilo.jsonc`：`"NAME": {"enabled": false}` |
-| Pi with `pi-mcp-adapter` | 是 | `.pi/mcp.json`：`"NAME": {"disabled": true}` |
+| Pi with `pi-mcp-adapter` | 是 | `.pi/mcp-adapter.json`：`"NAME": {"disabled": true}` |
 | Pi with `pi-mcp-extension` | 否 | 它沒有停用欄位 |
 | Codex | 否 | 見下方說明 |
 | 其他所有 client | 否 | 選擇它會是錯誤；不會寫入任何內容 |
@@ -650,19 +650,29 @@ mcp:
 
 若使用另一個套件，安裝指令與選擇項目都請改用 `pi-mcp-extension`。
 在單一 Skillshare source 中，所有指向 Pi 的 server 都必須選擇
-相同的套件，因為兩個套件都讀取同一份目的地檔案。
+相同的套件。
 
 | Package | 原生輸出 | 同步後該做什麼 |
 |---|---|---|
-| `pi-mcp-adapter` | `command`/`args` 或 `url`；`${VARIABLE}` 參照 | 重新啟動/重新載入 Pi；使用 `/mcp` 檢視連線。工具會依需求連線。 |
+| `pi-mcp-adapter` | `command`/`args` 或 `url`；`${VARIABLE}` 參照 | 重新啟動/重新載入 Pi；使用 `/mcp-adapter` 檢視連線。工具會依需求連線。 |
 | `pi-mcp-extension` | 明確的 `transport: stdio` 或 `streamable-http` | 重新啟動 Pi；新 servers 預設為手動啟動，需用 `/mcp:start <server>`。既有的 `lifecycle` 設定會被保留。 |
 
-兩者在 global 都使用 `~/.pi/agent/mcp.json`，project mode 則使用 `.pi/mcp.json`。
+| Package | Global 檔案 | Project 檔案 |
+|---|---|---|
+| `pi-mcp-adapter` | `~/.pi/agent/mcp-adapter.json` | `.pi/mcp-adapter.json` |
+| `pi-mcp-extension` | `~/.pi/agent/mcp.json` | `.pi/mcp.json` |
+
 Skillshare 使用這些 Pi 專屬檔案，而不是 adapter 共用的 `.mcp.json` 或
 `~/.config/mcp/mcp.json` 輸入來源。Project 項目會覆蓋同名的 global 項目。
 對於 adapter，會遵循 global 的 `PI_CODING_AGENT_DIR` 覆寫設定。
 Extension 不遵循該覆寫設定；global 同步會拒絕它，而不是寫入
 一個該 extension 會忽略的檔案。
+
+`pi-mcp-adapter` 3.0 不再讀取 `mcp.json`，改為讀取 `mcp-adapter.json`。
+下一次執行 `skillshare sync mcp` 時，Skillshare 會把 adapter 的 servers 寫入
+`mcp-adapter.json`，並移除它先前寫進 `mcp.json` 的項目。你自己加進
+`mcp.json` 的項目會保留原位。若你已依照 Pi 的警告重新命名該檔案，
+Skillshare 會繼續管理你搬過去的項目。
 
 Adapter 支援在環境變數與 HTTP headers 中使用 `fromEnv`。
 Extension **不會**插值環境參照：相符的 stdio

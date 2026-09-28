@@ -6,6 +6,7 @@ dbs-standard-answer
 dbs-theory-grounding
 dbs-action
 dbs-content
+dbs-content-value
 dbs-content-risk-check
 dbs-content-system
 dbs-video-extract

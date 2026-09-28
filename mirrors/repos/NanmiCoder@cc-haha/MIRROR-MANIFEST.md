@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `NanmiCoder/cc-haha` — 26 default patterns, 3 followed patterns, 19 file(s) materialized.
+Mirror of `NanmiCoder/cc-haha` — 26 default patterns, 3 followed patterns, 26 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `NanmiCoder/cc-haha` — 26 default patterns, 3 followed patterns, 19 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 3 |
-| Files         | 19 |
+| Files         | 26 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -61,25 +61,32 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`.github/AGENTS.md`](.github/AGENTS.md) |
-| 2 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
-| 3 | ✓ | [`adapters/AGENTS.md`](adapters/AGENTS.md) |
-| 4 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 5 | ✓ | [`desktop/AGENTS.md`](desktop/AGENTS.md) |
-| 6 | ✓ | [`desktop/src/components/AGENTS.md`](desktop/src/components/AGENTS.md) |
-| 7 | ✓ | [`docs/AGENTS.md`](docs/AGENTS.md) |
-| 8 | ✓ | [`docs/desktop/skills.md`](docs/desktop/skills.md) |
-| 9 | ✓ | [`docs/en/desktop/skills.md`](docs/en/desktop/skills.md) |
-| 10 | ✓ | [`docs/en/internals/skills.md`](docs/en/internals/skills.md) |
-| 11 | ✓ | [`docs/internals/skills.md`](docs/internals/skills.md) |
-| 12 | ✓ | [`site/AGENTS.md`](site/AGENTS.md) |
-| 13 | ✓ | [`src/AGENTS.md`](src/AGENTS.md) |
-| 14 | ✓ | [`src/skills/bundled/claude-api/SKILL.md`](src/skills/bundled/claude-api/SKILL.md) |
-| 15 | ✓ | [`src/skills/bundled/imagegen/SKILL.md`](src/skills/bundled/imagegen/SKILL.md) |
-| 16 | ✓ | [`src/skills/bundled/verify/SKILL.md`](src/skills/bundled/verify/SKILL.md) |
-| 17 | → | [`.github/pull_request_template.md`](.github/pull_request_template.md) |
-| 18 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 19 | → | [`docs/internals/contributing.md`](docs/internals/contributing.md) |
+| 1 | ✓ | [`.agents/skills/release-announcement/agents/openai.yaml`](.agents/skills/release-announcement/agents/openai.yaml) |
+| 2 | ✓ | [`.agents/skills/release-announcement/references/editorial-brief.md`](.agents/skills/release-announcement/references/editorial-brief.md) |
+| 3 | ✓ | [`.agents/skills/release-announcement/references/poster-spec.md`](.agents/skills/release-announcement/references/poster-spec.md) |
+| 4 | ✓ | [`.agents/skills/release-announcement/scripts/.gitignore`](.agents/skills/release-announcement/scripts/.gitignore) |
+| 5 | ✓ | [`.agents/skills/release-announcement/scripts/release_poster.py`](.agents/skills/release-announcement/scripts/release_poster.py) |
+| 6 | ✓ | [`.agents/skills/release-announcement/scripts/test_release_poster.py`](.agents/skills/release-announcement/scripts/test_release_poster.py) |
+| 7 | ✓ | [`.agents/skills/release-announcement/SKILL.md`](.agents/skills/release-announcement/SKILL.md) |
+| 8 | ✓ | [`.github/AGENTS.md`](.github/AGENTS.md) |
+| 9 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
+| 10 | ✓ | [`adapters/AGENTS.md`](adapters/AGENTS.md) |
+| 11 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 12 | ✓ | [`desktop/AGENTS.md`](desktop/AGENTS.md) |
+| 13 | ✓ | [`desktop/src/components/AGENTS.md`](desktop/src/components/AGENTS.md) |
+| 14 | ✓ | [`docs/AGENTS.md`](docs/AGENTS.md) |
+| 15 | ✓ | [`docs/desktop/skills.md`](docs/desktop/skills.md) |
+| 16 | ✓ | [`docs/en/desktop/skills.md`](docs/en/desktop/skills.md) |
+| 17 | ✓ | [`docs/en/internals/skills.md`](docs/en/internals/skills.md) |
+| 18 | ✓ | [`docs/internals/skills.md`](docs/internals/skills.md) |
+| 19 | ✓ | [`site/AGENTS.md`](site/AGENTS.md) |
+| 20 | ✓ | [`src/AGENTS.md`](src/AGENTS.md) |
+| 21 | ✓ | [`src/skills/bundled/claude-api/SKILL.md`](src/skills/bundled/claude-api/SKILL.md) |
+| 22 | ✓ | [`src/skills/bundled/imagegen/SKILL.md`](src/skills/bundled/imagegen/SKILL.md) |
+| 23 | ✓ | [`src/skills/bundled/verify/SKILL.md`](src/skills/bundled/verify/SKILL.md) |
+| 24 | → | [`.github/pull_request_template.md`](.github/pull_request_template.md) |
+| 25 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 26 | → | [`docs/internals/contributing.md`](docs/internals/contributing.md) |
 
 ---
 

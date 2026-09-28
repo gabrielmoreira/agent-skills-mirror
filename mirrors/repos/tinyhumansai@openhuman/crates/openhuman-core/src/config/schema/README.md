@@ -18,8 +18,7 @@ is mounted as a submodule of `load/dirs.rs` via `#[path]`.
 | `config.toml` section | File | Struct |
 | --- | --- | --- |
 | `[agent]`, `[orchestrator]`, `[teams.*]`, `[agents.*]` | `agent.rs` | `AgentConfig`, `OrchestratorModelConfig`, `TeamModelConfig`, `DelegateAgentConfig` |
-| `agent_activity_level` (scalar key) | `activity_level.rs` | `AgentActivityLevel` |
-| `[autonomy]` | `autonomy.rs` | `AutonomyConfig`, feeds `security::SecurityPolicy` |
+| `[autonomy]` | `autonomy.rs` | `AutonomyConfig` — feeds `security::SecurityPolicy` |
 | `[[capability_providers]]` | `capability_providers.rs` | `CapabilityProviderConfig` |
 | `[channels_config]`, `[sandbox]` | `channels.rs` | `ChannelsConfig` and per-provider configs re-exported from `tinychannels_bus`; `SandboxConfig`, `ResourceLimitsConfig`, `AuditConfig`, and `SecurityConfig` (only `DaemonConfig` embeds the last one) |
 | `[claude_agent_sdk]` | `claude_agent_sdk.rs` | `ClaudeAgentSdkConfig` |
@@ -62,12 +61,14 @@ is mounted as a submodule of `load/dirs.rs` via `#[path]`.
 `mcp.rs` (`McpServerConfig`, `McpClientConfig`, `GitbooksConfig`),
 `multimodal.rs` (`MultimodalConfig`, `MultimodalFileConfig`), `search.rs`
 (`SearchConfig`, `WebSearchConfig`, `SearxngConfig`, `SeltzConfig`).
-`SearchConfig.enabled_providers` is an explicit provider set. When omitted,
-legacy settings enable providers with saved keys, the managed backend when a
-credential is available, and the separate TinyFish/Seltz/SearXNG toggles.
-`engine = "disabled"` still disables search. TinySearch uses one route per
-provider: explicit direct Parallel wins over managed backend Parallel when
-both are selected.
+`SearchConfig` (schema version 2) holds `providers` (enabled + `managed` /
+`direct` route per provider), `roles` (ordered providers per capability role),
+`presentation`, limits, and direct keys; fresh installs default to managed Exa
+and managed Gemini. Files without `schema_version` carry the single-engine
+format and are migrated on load (`tools/search_migrate.rs`,
+`load/migrate.rs::migrate_search_settings`); Parallel keeps its key as a
+direct-only provider, and a keyless managed-Parallel selection is dropped. Seltz and SearXNG keep their options in their own sections, but only
+the `providers` map decides whether they are on.
 
 Most sections have a matching `*_tests.rs` (some further split into several
 `*_tests.rs` siblings, e.g. `types_model_pin_tests.rs`); this is the repo's

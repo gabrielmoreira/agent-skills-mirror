@@ -5,6 +5,7 @@ import { cleanHexColor } from "./clean-hex-color";
 import { cleanImportedFont } from "./clean-imported-font";
 import { DEFAULT_PROJECT } from "./defaults";
 import { coerceLocalized } from "./locale";
+import { projectValidationError } from "./project-validation";
 import { cleanTypography } from "./typography";
 import type { Device, ElementTransform, ImageElement, ProjectState, ScreenshotFontId, Slide, TextElement } from "./types";
 
@@ -125,6 +126,8 @@ function migrateSlide(slide: Slide): Slide {
 }
 
 function mergeWithDefaults(parsed: Partial<ProjectState>): ProjectState {
+  const validationError = projectValidationError(parsed);
+  if (validationError) throw new Error(validationError);
   const connectedCanvas =
     typeof parsed.connectedCanvas === "boolean"
       ? parsed.connectedCanvas
@@ -189,8 +192,8 @@ async function loadFromFile(): Promise<
     if (!json.ok) return { ok: false, error: "Project response was not ok" };
     if (!json.state) return { ok: true, state: null };
     return { ok: true, state: mergeWithDefaults(json.state) };
-  } catch {
-    return { ok: false, error: "Project file could not be loaded" };
+  } catch (error) {
+    return { ok: false, error: error instanceof Error ? error.message : "Project file could not be loaded" };
   }
 }
 
@@ -237,6 +240,16 @@ export function useProject() {
   const [savedAt, setSavedAt] = useState<number | null>(null);
   const [saveError, setSaveError] = useState<string | null>(null);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const stateRef = useRef(state);
+  const saveQueue = useRef(Promise.resolve());
+  const saveRevision = useRef(0);
+
+  // Run updates once, outside React render/updater replay. Async callbacks also
+  // see the latest state before React has committed the next render.
+  const commit = useCallback((next: ProjectState) => {
+    stateRef.current = next;
+    _setState(next);
+  }, []);
 
   // History stacks live in refs — they don't drive any rendered UI, so
   // mutating them never needs to re-render.
@@ -249,16 +262,16 @@ export function useProject() {
   useEffect(() => {
     let cancelled = false;
     const cached = loadFromLocalStorage();
-    if (cached) _setState(cached);
+    if (cached) commit(cached);
 
     void (async () => {
       const fromFile = await loadFromFile();
       if (cancelled) return;
       if (fromFile.ok) {
         if (fromFile.state) {
-          _setState(fromFile.state);
+          commit(fromFile.state);
         } else {
-          _setState(DEFAULT_PROJECT);
+          commit(DEFAULT_PROJECT);
         }
         setFileReady(true);
       } else {
@@ -274,23 +287,22 @@ export function useProject() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [commit]);
 
   // Debounced autosave to BOTH localStorage (fast, offline) and file (git-trackable).
   useEffect(() => {
     if (!hydrated || !fileReady) return;
     if (timer.current) clearTimeout(timer.current);
+    const revision = ++saveRevision.current;
+    setSavedAt(null);
     timer.current = setTimeout(() => {
       const localResult = saveToLocalStorage(state);
-      void saveToFile(state).then((fileResult) => {
-        if (fileResult.ok && localResult.ok) {
-          setSavedAt(Date.now());
-          setSaveError(null);
-        } else if (!fileResult.ok && !localResult.ok) {
-          setSaveError(fileResult.error);
-        } else if (!fileResult.ok) {
-          // Local cache succeeded but file save failed — work isn't git-portable yet.
-          setSavedAt(Date.now());
+      // Serialize requests so a slow older write cannot overwrite a newer edit.
+      saveQueue.current = saveQueue.current.then(async () => {
+        if (revision !== saveRevision.current) return;
+        const fileResult = await saveToFile(state);
+        if (revision !== saveRevision.current) return;
+        if (!fileResult.ok) {
           setSaveError(`File save failed: ${fileResult.error}`);
         } else {
           setSavedAt(Date.now());
@@ -308,41 +320,39 @@ export function useProject() {
   // restores the snapshot's device, which takes you to the deck the undone
   // edit was made on.
   const setState = useCallback((updater: Updater, options?: { history?: boolean }) => {
-    _setState((prev) => {
-      const next = applyUpdater(updater, prev);
-      if (next === prev) return prev;
-      if (options?.history === false) return next;
+    const prev = stateRef.current;
+    const next = applyUpdater(updater, prev);
+    if (next === prev) return;
+    if (options?.history === false) {
+      // Navigation is a boundary: edits to another deck must not coalesce.
+      lastPushAt.current = 0;
+    } else {
       const now = Date.now();
       if (now - lastPushAt.current > COALESCE_MS) {
         pastRef.current.push(prev);
         if (pastRef.current.length > HISTORY_LIMIT) pastRef.current.shift();
-        futureRef.current.length = 0;
       }
+      futureRef.current.length = 0;
       lastPushAt.current = now;
-      return next;
-    });
-  }, []);
+    }
+    commit(next);
+  }, [commit]);
 
   const undo = useCallback(() => {
-    _setState((cur) => {
-      const prev = pastRef.current.pop();
-      if (prev === undefined) return cur;
-      futureRef.current.push(cur);
-      // Reset coalescing so the next edit after an undo creates a fresh history entry.
-      lastPushAt.current = 0;
-      return prev;
-    });
-  }, []);
+    const prev = pastRef.current.pop();
+    if (prev === undefined) return;
+    futureRef.current.push(stateRef.current);
+    lastPushAt.current = 0;
+    commit(prev);
+  }, [commit]);
 
   const redo = useCallback(() => {
-    _setState((cur) => {
-      const next = futureRef.current.pop();
-      if (next === undefined) return cur;
-      pastRef.current.push(cur);
-      lastPushAt.current = 0;
-      return next;
-    });
-  }, []);
+    const next = futureRef.current.pop();
+    if (next === undefined) return;
+    pastRef.current.push(stateRef.current);
+    lastPushAt.current = 0;
+    commit(next);
+  }, [commit]);
 
   const reset = useCallback(() => {
     setState(DEFAULT_PROJECT);

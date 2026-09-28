@@ -616,5 +616,8 @@ Client reports application down
 After completing a troubleshooting session, record findings and resolution in GAIT:
 
 ```bash
-python3 $MCP_CALL "python3 -u $GAIT_MCP_SCRIPT" gait_record_turn '{"prompt":"F5 troubleshoot: vs_webapp_https not responding to clients","response":"Investigation: VIP status offline due to pool_webapp all members down. Root cause: HTTP health monitor expecting 200 but app returning 301 redirect after deployment. Fix: updated monitor receive string to accept 301. Verification: all 3 pool members now available, VIP status available, client connections incrementing. Logs clear of 01010028 errors.","artifacts":["f5-troubleshoot-report.txt"]}'
+python3 $MCP_CALL "python3 -u $GAIT_MCP_SCRIPT" gait_record_turn '{"artifacts":["f5-troubleshoot-report.txt"],"user_text":"F5 troubleshoot: vs_webapp_https not responding to clients","assistant_text":"Investigation: VIP status offline due to pool_webapp all members down. Root cause: HTTP health monitor expecting 200 but app returning 301 redirect after deployment. Fix: updated monitor receive string to accept 301. Verification: all 3 pool members now available, VIP status available, client connections incrementing. Logs clear of 01010028 errors."}'
 ```
+
+Audit examples are illustrative. Replace their request and outcomes with observed
+session evidence; inspect MCP `isError`, returned `ok` and recorded GAIT text.

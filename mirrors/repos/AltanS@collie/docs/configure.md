@@ -207,6 +207,12 @@ A Switch button sits at the belt's right end and opens the pane switcher. It dra
 alone, behind a hairline, and carries no word. A drag up, anywhere on the belt, opens the same
 switcher. A sideways drag scrolls the belt instead.
 
+While the text box holds text or an attachment, an X sits at the belt's right end too, left of the
+Switch button. One tap empties the box and its saved draft, and sends nothing to the pane. The X then
+becomes Undo, which puts the text and the attachments back. Undo stays until your next act: a
+keystroke, an attachment, a send, a tap on another belt button, or leaving the pane. Scrolling the
+belt keeps it.
+
 To verify, open a pane running Claude Code, Codex, pi or omp; the tinted segment sits at the right
 of the row above the keyboard. Turn that segment off per device in **Settings → Harness shortcuts**;
 Collie's own controls stay.
@@ -293,8 +299,8 @@ Either way the bridge types the `command` into the fresh shell and sends Enter. 
 its own lifetime: one that closes itself takes the Space or tab with it, and `htop` stays until you
 quit it.
 
-`cwd` is where that new Space or tab opens. Pin one (as `htop` does above) and it wins wherever you
-tap the row.
+`cwd` is where that new Space or tab opens. Give a row a fixed folder (as `htop` does above) and it
+wins wherever you tap the row.
 
 Leave it out and it means "here": the dashboard opens it in your home dir, a pane opens it in
 *that pane's own* cwd — one cwd-less row follows you around your checkouts instead of always
@@ -305,8 +311,8 @@ exactly, so a phone can start nothing that is not in the file. Changes apply imm
 restart, but an already-open tab re-reads the rows only on its next load.
 
 Your rows appear in two places: a **Launch** section on the dashboard, which folds like Spaces,
-and a **Launch** section in the switcher sheet (swipe up from a pane). A pinned row shows
-its folder, shortened under home; a cwd-less row says "here" in the switcher (the dashboard already
+and a **Launch** section in the switcher sheet (swipe up from a pane). A row with a fixed folder
+shows it, shortened under home; a cwd-less row says "here" in the switcher (the dashboard already
 implies home, so it says nothing there). Declare no rows and neither section appears.
 
 On a crew (several machines, one phone-facing lead), each machine reads its own copy of this file —
@@ -495,6 +501,28 @@ In a [crew](crew.md), both settings are per machine, and the machine that stores
 that enforces them. The lead refuses an oversize body before forwarding it, to save your uplink, but
 it refuses it against its own number. Set the same values on every member, or a peer will refuse
 what its lead let through.
+
+## Favourite and recent folders
+
+The new-space sheet lists the folders you opened spaces in before, so you tap one instead of typing
+a path.
+
+Under the Directory field sit two lists for the machine the space goes to. **Recent** holds the last
+8 folders a space was created in, newest first. It counts only creates that worked and named a
+folder, and it never lists your home dir, because a blank field already means home.
+
+A tap on a row fills the Directory field and creates nothing, so you can still add a label. The star
+beside a row moves it to **Favourites**, up to 12, in the order you starred them. A second tap on the
+star moves it back to the top of Recent.
+
+The list belongs to the machine, not to the phone. Each machine keeps its own in `folders.json` in
+its state directory, `~/.local/state/collie/folders.json` unless `COLLIE_STATE_DIR` moves it. Every
+device you use sees the same list, and the file appears only after the first space created in a
+folder or the first star.
+
+In a [crew](crew.md), each machine keeps the folders that exist on it, and the sheet shows the list
+of the machine you picked. A machine that runs an older Collie has no list, and the sheet then shows
+none for it.
 
 ## Multi-session
 

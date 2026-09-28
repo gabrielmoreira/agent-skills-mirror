@@ -1,3 +1,8 @@
+---
+name: twitter-heartbeat
+description: "Manage configured Twitter heartbeat posts and mention monitoring. Use for an enabled, authorized social schedule or heartbeat management request."
+---
+
 # Skill: Twitter Heartbeat
 
 **Purpose**: Autonomous periodic tweeting AND mention monitoring to maintain NetClaw's Twitter presence with CCIE-level network engineering content.

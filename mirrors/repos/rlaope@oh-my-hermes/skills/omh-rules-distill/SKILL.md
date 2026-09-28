@@ -23,6 +23,7 @@ This is a Hermes-native `rules-distill` workflow skill.
 - The user wants a single workflow route regression; use `workflow-learning`.
 - The user wants durable factual project memory; use `wiki` or memory curation.
 - The user already approved a concrete code/doc change; use the implementation workflow.
+- The ask is writing or keeping current the file an agent reads at startup -- AGENTS.md, CLAUDE.md, a Cursor rule; use `agent-instructions`, which updates only its marked region.
 
 ## Examples
 

@@ -24,6 +24,7 @@ This is a Hermes-native `build-failure-triage` workflow skill.
 - The user needs a code review of changed behavior rather than failing command triage; use `code-review`.
 - The user needs broad production readiness; use `production-audit`.
 - The user asks for incident or SLO review after deployment; use `reliability-review`.
+- A test passes on some runs and not others, or the code returns a wrong value whose cause is unknown; use `app-debugging`.
 
 ## Examples
 
@@ -55,7 +56,7 @@ Bad example:
 
 ## Workflow Lane
 
-- Current lane: **Coding handoff** (`idea-to-deploy`, `llm-app-dev`, `cto-loop`, `deploy-and-monitor`, `code-review`, `build-failure-triage`, `verification-gate`, `security-safety-review`, `+18 more`) - coding owners, handoffs, review, CI, and merge evidence.
+- Current lane: **Coding handoff** (`idea-to-deploy`, `llm-app-dev`, `cto-loop`, `deploy-and-monitor`, `code-review`, `build-failure-triage`, `verification-gate`, `security-safety-review`, `+27 more`) - coding owners, handoffs, review, CI, and merge evidence.
 - If intent belongs to another lane, hand back to `oh-my-hermes` or name the adjacent workflow.
 - Shared product, routing, compatibility, and evidence rules: `omh-routing/references/skill-common-rail.md`.
 

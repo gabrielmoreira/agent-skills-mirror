@@ -22,6 +22,7 @@ This is a Hermes-native `native-debugging` workflow skill.
 
 - The failure is a build or CI failure rather than a runtime fault in a binary; use `build-failure-triage`.
 - The subject is an agent or workflow misbehaving rather than a native binary; use `agent-debug`.
+- The wrong result, flaky test, or lost update is in application code such as a Python or TypeScript service and needs its root cause reproduced; use `app-debugging`.
 - The change is Rust source work whose risk is `unsafe` or UB discipline; use `rust`.
 - The request is to judge whether a fix is verified rather than to find the fault; use `verification-gate`.
 
@@ -54,7 +55,7 @@ Bad example:
 
 ## Workflow Lane
 
-- Current lane: **Coding handoff** (`idea-to-deploy`, `llm-app-dev`, `cto-loop`, `deploy-and-monitor`, `code-review`, `build-failure-triage`, `verification-gate`, `security-safety-review`, `+18 more`) - coding owners, handoffs, review, CI, and merge evidence.
+- Current lane: **Coding handoff** (`idea-to-deploy`, `llm-app-dev`, `cto-loop`, `deploy-and-monitor`, `code-review`, `build-failure-triage`, `verification-gate`, `security-safety-review`, `+27 more`) - coding owners, handoffs, review, CI, and merge evidence.
 - If intent belongs to another lane, hand back to `oh-my-hermes` or name the adjacent workflow.
 - Shared product, routing, compatibility, and evidence rules: `omh-routing/references/skill-common-rail.md`.
 

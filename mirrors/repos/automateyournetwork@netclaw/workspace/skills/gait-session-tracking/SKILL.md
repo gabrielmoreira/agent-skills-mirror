@@ -13,7 +13,7 @@ metadata:
 
 ## How to Call the Tools
 
-The GAIT MCP server provides 9 tools. Call them via mcp-call:
+The GAIT MCP server provides the lifecycle tools below (discover `tools/list` for the complete installed inventory). Call them via mcp-call:
 
 ### Check Repository Status
 
@@ -26,18 +26,18 @@ Returns current branch, uncommitted changes, and repository state.
 ### Initialize a New GAIT Repository
 
 ```bash
-python3 $MCP_CALL "python3 -u $GAIT_MCP_SCRIPT" gait_init '{}'
+python3 $MCP_CALL "python3 -u $GAIT_MCP_SCRIPT" gait_init '{"path":"/absolute/path/to/project"}'
 ```
 
-Creates a new GAIT repository if one does not already exist. Run this once during initial NetClaw setup.
+Creates a new GAIT repository if one does not already exist. Supply the actual absolute project path; do not run against the filesystem root. Run once during initial setup, then verify `gait_status` names the intended root.
 
 ### Create a New Branch (SESSION START)
 
 ```bash
-python3 $MCP_CALL "python3 -u $GAIT_MCP_SCRIPT" gait_branch '{"branch_name":"health-check-r1-2026-02-21"}'
+python3 $MCP_CALL "python3 -u $GAIT_MCP_SCRIPT" gait_branch '{"name":"health-check-r1-2026-02-21"}'
 ```
 
-**Every session begins here.** Use a descriptive branch name that includes the action type, target device(s), and date. Examples:
+**Creating a branch does not switch to it.** Call `gait_checkout` with the same `name` and verify `gait_status` before recording turns. **Every session begins here.** Use a descriptive branch name that includes the action type, target device(s), and date. Examples:
 - `health-check-r1-2026-02-21`
 - `ospf-troubleshoot-core-2026-02-21`
 - `config-deploy-acl-update-2026-02-21`
@@ -47,7 +47,7 @@ python3 $MCP_CALL "python3 -u $GAIT_MCP_SCRIPT" gait_branch '{"branch_name":"hea
 ### Switch to an Existing Branch
 
 ```bash
-python3 $MCP_CALL "python3 -u $GAIT_MCP_SCRIPT" gait_checkout '{"branch_name":"health-check-r1-2026-02-21"}'
+python3 $MCP_CALL "python3 -u $GAIT_MCP_SCRIPT" gait_checkout '{"name":"health-check-r1-2026-02-21"}'
 ```
 
 Use this to resume a previous session or switch context between parallel investigations.
@@ -55,13 +55,13 @@ Use this to resume a previous session or switch context between parallel investi
 ### Record an AI Turn (PRIMARY RECORDING TOOL)
 
 ```bash
-python3 $MCP_CALL "python3 -u $GAIT_MCP_SCRIPT" gait_record_turn '{"prompt":"User asked to check CPU on R1","response":"Ran show processes cpu sorted. CPU 5-min avg: 12%. Status: HEALTHY.","artifacts":["show_proc_cpu_r1.txt"]}'
+python3 $MCP_CALL "python3 -u $GAIT_MCP_SCRIPT" gait_record_turn '{"user_text":"User asked to check CPU on R1","assistant_text":"Ran show processes cpu sorted. CPU 5-min avg: 12%. Status: HEALTHY.","artifacts":[{"path":"show_proc_cpu_r1.txt","content":"Sanitized evidence reference; raw evidence retained locally."}]}'
 ```
 
 **Record a turn after every significant action.** Each turn captures:
-- **prompt**: What was asked or what triggered the action
-- **response**: What data was collected and what the result was
-- **artifacts**: List of files produced (optional)
+- **user_text**: What was asked or what triggered the action
+- **assistant_text**: What data was collected and what the result was
+- **artifacts**: List of {"path": "...", "content": "..."} objects (optional; use sanitized content only)
 
 ### View Commit History (SESSION END)
 
@@ -74,7 +74,7 @@ python3 $MCP_CALL "python3 -u $GAIT_MCP_SCRIPT" gait_log '{}'
 ### Show Commit Details
 
 ```bash
-python3 $MCP_CALL "python3 -u $GAIT_MCP_SCRIPT" gait_show '{"commit_ref":"HEAD"}'
+python3 $MCP_CALL "python3 -u $GAIT_MCP_SCRIPT" gait_show '{"commit":"HEAD"}'
 ```
 
 Inspect a specific commit to see its full content. Use `HEAD`, `HEAD~1`, or a commit hash.
@@ -82,7 +82,7 @@ Inspect a specific commit to see its full content. Use `HEAD`, `HEAD~1`, or a co
 ### Pin Important Commits
 
 ```bash
-python3 $MCP_CALL "python3 -u $GAIT_MCP_SCRIPT" gait_pin '{"commit_ref":"HEAD","label":"pre-change-baseline"}'
+python3 $MCP_CALL "python3 -u $GAIT_MCP_SCRIPT" gait_pin '{"commit":"HEAD","last":false,"note":"pre-change-baseline"}'
 ```
 
 Mark critical moments in a session so they can be easily found later. Common pin labels:
@@ -94,10 +94,10 @@ Mark critical moments in a session so they can be easily found later. Common pin
 ### Summarize and Squash Turns
 
 ```bash
-python3 $MCP_CALL "python3 -u $GAIT_MCP_SCRIPT" gait_summarize_and_squash '{}'
+python3 $MCP_CALL "python3 -u $GAIT_MCP_SCRIPT" gait_record_turn '{"user_text":"Session summary","assistant_text":"Summarize findings, changes, verification and remaining gaps.","note":"session-summary"}'
 ```
 
-Consolidate multiple granular turns into a single summary commit. Use at the end of a long session to create a clean audit record.
+Do not squash immutable operational audit history. Record an additive summary using `gait_record_turn` instead. The server exposes squashing for other use cases; its availability is not authorization to rewrite this project's audit trail.
 
 ## Mandatory Session Lifecycle
 
@@ -106,7 +106,9 @@ Every NetClaw session follows this exact lifecycle:
 ### 1. Session Start -- Create Branch
 
 ```bash
-python3 $MCP_CALL "python3 -u $GAIT_MCP_SCRIPT" gait_branch '{"branch_name":"ACTION-TYPE-TARGET-DATE"}'
+python3 $MCP_CALL "python3 -u $GAIT_MCP_SCRIPT" gait_branch '{"name":"ACTION-TYPE-TARGET-DATE"}'
+python3 $MCP_CALL "python3 -u $GAIT_MCP_SCRIPT" gait_checkout '{"name":"ACTION-TYPE-TARGET-DATE"}'
+python3 $MCP_CALL "python3 -u $GAIT_MCP_SCRIPT" gait_status '{}'
 ```
 
 ### 2. During Session -- Record Every Turn
@@ -114,12 +116,12 @@ python3 $MCP_CALL "python3 -u $GAIT_MCP_SCRIPT" gait_branch '{"branch_name":"ACT
 After each meaningful action (show command, config change, API call, verification), record a turn:
 
 ```bash
-python3 $MCP_CALL "python3 -u $GAIT_MCP_SCRIPT" gait_record_turn '{"prompt":"WHAT_WAS_ASKED","response":"WHAT_DATA_COLLECTED_AND_WHAT_CHANGED_AND_VERIFICATION_RESULT","artifacts":[]}'
+python3 $MCP_CALL "python3 -u $GAIT_MCP_SCRIPT" gait_record_turn '{"user_text":"WHAT_WAS_ASKED","assistant_text":"WHAT_DATA_COLLECTED_AND_WHAT_CHANGED_AND_VERIFICATION_RESULT","artifacts":[]}'
 ```
 
 **Record format guidelines:**
-- **prompt**: State clearly what the user asked or what triggered the action
-- **response**: Include three parts:
+- **user_text**: State clearly what the user asked or what triggered the action
+- **assistant_text**: Include three parts:
   1. What data was collected (commands run, API responses)
   2. What changed (config applied, ticket created, NetBox updated)
   3. Verification result (HEALTHY/WARNING/CRITICAL, pass/fail, before/after diff)
@@ -138,25 +140,25 @@ Always show the session log to the user so they have a complete record.
 ### Health Check Turn
 
 ```bash
-python3 $MCP_CALL "python3 -u $GAIT_MCP_SCRIPT" gait_record_turn '{"prompt":"Run full health check on R1","response":"Collected: show version, show processes cpu sorted, show processes memory sorted, show ip interface brief, show interfaces, show ntp associations, show logging. Results: CPU 12% HEALTHY, Memory 45% HEALTHY, Interfaces 4/5 up WARNING (Gi2 down), NTP synced HEALTHY, no critical log patterns. Overall: WARNING.","artifacts":["health-report-r1.txt"]}'
+python3 $MCP_CALL "python3 -u $GAIT_MCP_SCRIPT" gait_record_turn '{"user_text":"Run full health check on R1","assistant_text":"Collected: show version, show processes cpu sorted, show processes memory sorted, show ip interface brief, show interfaces, show ntp associations, show logging. Results: CPU 12% HEALTHY, Memory 45% HEALTHY, Interfaces 4/5 up WARNING (Gi2 down), NTP synced HEALTHY, no critical log patterns. Overall: WARNING.","artifacts":[{"path":"health-report-r1.txt","content":"Sanitized evidence reference; raw evidence retained locally."}]}'
 ```
 
 ### Configuration Change Turn
 
 ```bash
-python3 $MCP_CALL "python3 -u $GAIT_MCP_SCRIPT" gait_record_turn '{"prompt":"Apply ACL update to block 192.168.50.0/24 on R1 Gi1","response":"Pre-change: captured running-config. Applied: ip access-list extended BLOCK-LIST, permit/deny entries. Post-change: verified ACL in show access-lists, tested with ping from blocked subnet -- dropped as expected. Change verified successfully.","artifacts":["pre-change-config-r1.txt","post-change-config-r1.txt","acl-diff.txt"]}'
+python3 $MCP_CALL "python3 -u $GAIT_MCP_SCRIPT" gait_record_turn '{"user_text":"Apply ACL update to block 192.168.50.0/24 on R1 Gi1","assistant_text":"Pre-change: captured running-config. Applied: ip access-list extended BLOCK-LIST, permit/deny entries. Post-change: verified ACL in show access-lists, tested with ping from blocked subnet -- dropped as expected. Change verified successfully.","artifacts":[{"path":"pre-change-config-r1.txt","content":"Sanitized evidence reference; raw evidence retained locally."},{"path":"post-change-config-r1.txt","content":"Sanitized evidence reference; raw evidence retained locally."},{"path":"acl-diff.txt","content":"Sanitized evidence reference; raw evidence retained locally."}]}'
 ```
 
 ### Troubleshooting Turn
 
 ```bash
-python3 $MCP_CALL "python3 -u $GAIT_MCP_SCRIPT" gait_record_turn '{"prompt":"Investigate OSPF adjacency failure between R1 and R3","response":"Checked show ip ospf neighbor on R1 -- R3 missing. Checked show ip ospf interface on both -- area mismatch: R1 area 0, R3 area 1 on shared link. Root cause identified: area misconfiguration on R3 Gi0/1.","artifacts":["ospf-neighbor-r1.txt","ospf-interface-r1.txt","ospf-interface-r3.txt"]}'
+python3 $MCP_CALL "python3 -u $GAIT_MCP_SCRIPT" gait_record_turn '{"user_text":"Investigate OSPF adjacency failure between R1 and R3","assistant_text":"Checked show ip ospf neighbor on R1 -- R3 missing. Checked show ip ospf interface on both -- area mismatch: R1 area 0, R3 area 1 on shared link. Root cause identified: area misconfiguration on R3 Gi0/1.","artifacts":[{"path":"ospf-neighbor-r1.txt","content":"Sanitized evidence reference; raw evidence retained locally."},{"path":"ospf-interface-r1.txt","content":"Sanitized evidence reference; raw evidence retained locally."},{"path":"ospf-interface-r3.txt","content":"Sanitized evidence reference; raw evidence retained locally."}]}'
 ```
 
 ### NetBox Reconciliation Turn
 
 ```bash
-python3 $MCP_CALL "python3 -u $GAIT_MCP_SCRIPT" gait_record_turn '{"prompt":"Reconcile R1 interfaces against NetBox","response":"Live state: 5 interfaces discovered via show ip interface brief. NetBox state: 4 interfaces documented. Drift detected: Gi5 exists on device but missing from NetBox. Gi2 documented in NetBox but admin-down on device. Reconciliation report generated.","artifacts":["reconcile-report-r1.json"]}'
+python3 $MCP_CALL "python3 -u $GAIT_MCP_SCRIPT" gait_record_turn '{"user_text":"Reconcile R1 interfaces against NetBox","assistant_text":"Live state: 5 interfaces discovered via show ip interface brief. NetBox state: 4 interfaces documented. Drift detected: Gi5 exists on device but missing from NetBox. Gi2 documented in NetBox but admin-down on device. Reconciliation report generated.","artifacts":[{"path":"reconcile-report-r1.json","content":"Sanitized evidence reference; raw evidence retained locally."}]}'
 ```
 
 ## Integration with ALL Other Skills
@@ -185,4 +187,6 @@ Always. Every NetClaw session. No exceptions. This is the audit backbone of the 
 
 - If a tool call fails with an authentication or connection error, check that `GAIT_MCP_SCRIPT` is set and valid before assuming a data or device problem.
 - On a tool error (timeout, unreachable host, malformed response), report the failure and its error message directly to the user rather than fabricating or guessing at results.
-- All tools here are read-only, so a failed call has no side effects — it's safe to retry once after confirming connectivity, but don't loop indefinitely on repeated failures.
+- Branch, checkout, initialization and turn recording mutate audit state. On timeout, use `gait_status`/`gait_log` to establish whether the mutation succeeded before retrying; a blind retry can duplicate a record. Read-only lookups may be retried once after confirming connectivity.
+- A transport-level response is not proof of success: inspect MCP `isError` and the returned `ok` value. Report failure without inventing a successful audit record.
+- Tool schemas vary by installed server revision. Discover `tools/list` and compare with these examples; do not guess alternate argument names. These examples match the inspected `gait_mcp` lifecycle signatures (spec 124).

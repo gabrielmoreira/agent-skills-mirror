@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `magnitudedev/magnitude` — 26 default patterns, 0 followed patterns, 9 file(s) materialized.
+Mirror of `magnitudedev/magnitude` — 26 default patterns, 0 followed patterns, 15 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `magnitudedev/magnitude` — 26 default patterns, 0 followed patterns,
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 9 |
+| Files         | 15 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -65,9 +65,15 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 4 | ✓ | [`cli/AGENTS.md`](cli/AGENTS.md) |
 | 5 | ✓ | [`design/AGENTS.md`](design/AGENTS.md) |
 | 6 | ✓ | [`desktop/src/AGENTS.md`](desktop/src/AGENTS.md) |
-| 7 | ✓ | [`inference/AGENTS.md`](inference/AGENTS.md) |
-| 8 | ✓ | [`packages/client-common/AGENTS.md`](packages/client-common/AGENTS.md) |
-| 9 | ✓ | [`packages/providers/AGENTS.md`](packages/providers/AGENTS.md) |
+| 7 | ✓ | [`inference-v2/AGENTS.md`](inference-v2/AGENTS.md) |
+| 8 | ✓ | [`inference-v2/design/AGENTS.md`](inference-v2/design/AGENTS.md) |
+| 9 | ✓ | [`inference-v3/AGENTS.md`](inference-v3/AGENTS.md) |
+| 10 | ✓ | [`inference-v3/design/AGENTS.md`](inference-v3/design/AGENTS.md) |
+| 11 | ✓ | [`inference-v4/validation/AGENTS.md`](inference-v4/validation/AGENTS.md) |
+| 12 | ✓ | [`inference/validation/AGENTS.md`](inference/validation/AGENTS.md) |
+| 13 | ✓ | [`old-inference/AGENTS.md`](old-inference/AGENTS.md) |
+| 14 | ✓ | [`packages/client-common/AGENTS.md`](packages/client-common/AGENTS.md) |
+| 15 | ✓ | [`packages/providers/AGENTS.md`](packages/providers/AGENTS.md) |
 
 ---
 

@@ -31,6 +31,7 @@ def build_valid_spec() -> dict:
             "risk_per_trade": 0.01,
             "max_positions": 5,
             "max_sector_exposure": 0.30,
+            "sector_group_by": "sector",
         },
         "cost_model": {
             "commission_per_share": 0.0,
@@ -82,6 +83,28 @@ def test_risk_bounds_violation_is_rejected() -> None:
     spec["risk"]["risk_per_trade"] = 0.15
     errors = validate_interface_contract(spec, candidate_id=spec["id"], stage="phase1")
     assert any("risk.risk_per_trade" in error for error in errors)
+
+
+def test_constraining_sector_cap_requires_sector_group_by() -> None:
+    spec = build_valid_spec()
+    del spec["risk"]["sector_group_by"]
+    errors = validate_interface_contract(spec, candidate_id=spec["id"], stage="phase1")
+    assert any("risk.sector_group_by" in error for error in errors)
+
+
+def test_sector_group_by_optional_when_sector_cap_is_off() -> None:
+    spec = build_valid_spec()
+    del spec["risk"]["sector_group_by"]
+    spec["risk"]["max_sector_exposure"] = 1.0
+    errors = validate_interface_contract(spec, candidate_id=spec["id"], stage="phase1")
+    assert errors == []
+
+
+def test_unknown_sector_group_by_is_rejected() -> None:
+    spec = build_valid_spec()
+    spec["risk"]["sector_group_by"] = "gics"
+    errors = validate_interface_contract(spec, candidate_id=spec["id"], stage="phase1")
+    assert any("risk.sector_group_by" in error for error in errors)
 
 
 def test_validate_ticket_payload_accepts_valid_minimum() -> None:

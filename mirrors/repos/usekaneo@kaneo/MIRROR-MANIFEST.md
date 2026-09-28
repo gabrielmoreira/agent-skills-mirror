@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `usekaneo/kaneo` — 26 default patterns, 0 followed patterns, 85 file(s) materialized.
+Mirror of `usekaneo/kaneo` — 26 default patterns, 0 followed patterns, 77 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `usekaneo/kaneo` — 26 default patterns, 0 followed patterns, 85 file
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 85 |
+| Files         | 77 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -133,17 +133,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 72 | ✓ | [`.agents/skills/prototype/SKILL.md`](.agents/skills/prototype/SKILL.md) |
 | 73 | ✓ | [`.agents/skills/review-animations/SKILL.md`](.agents/skills/review-animations/SKILL.md) |
 | 74 | ✓ | [`.agents/skills/review-animations/STANDARDS.md`](.agents/skills/review-animations/STANDARDS.md) |
-| 75 | ✓ | [`.claude/skills/verify/SKILL.md`](.claude/skills/verify/SKILL.md) |
-| 76 | ✓ | [`.cursor/rules/backend-api.mdc`](.cursor/rules/backend-api.mdc) |
-| 77 | ✓ | [`.cursor/rules/cursor-rules.mdc`](.cursor/rules/cursor-rules.mdc) |
-| 78 | ✓ | [`.cursor/rules/database-schema.mdc`](.cursor/rules/database-schema.mdc) |
-| 79 | ✓ | [`.cursor/rules/deployment-devops.mdc`](.cursor/rules/deployment-devops.mdc) |
-| 80 | ✓ | [`.cursor/rules/development-conventions.mdc`](.cursor/rules/development-conventions.mdc) |
-| 81 | ✓ | [`.cursor/rules/frontend-web.mdc`](.cursor/rules/frontend-web.mdc) |
-| 82 | ✓ | [`.cursor/rules/project-overview.mdc`](.cursor/rules/project-overview.mdc) |
-| 83 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 84 | ✓ | [`apps/site/app/llms.txt/route.ts`](apps/site/app/llms.txt/route.ts) |
-| 85 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 75 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 76 | ✓ | [`apps/site/app/llms.txt/route.ts`](apps/site/app/llms.txt/route.ts) |
+| 77 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 
 ---
 

@@ -28,12 +28,14 @@ afterwards. A copy-paste gives you six places to remember instead.
 
 | Primitive | What it is FOR |
 | --- | --- |
+| `ui/add-button.tsx` | The dashed "+" at the end of a row that makes one more of what the row holds: a space, a tab. Two faces, 28px and 32px, a circle each; the busy spinner swaps in place. The caller passes the tap reach, because only the call site can measure what sits around it. |
 | `ui/button.tsx` | Every clickable control with a label. Six variants, one box. Exports `buttonVariants` so a real `<a>` can wear the clothes. |
 | `ui/badge.tsx` | A small static label pill. Not a status chip — it carries no dot and no tap floor. |
 | `ui/card.tsx` | A filled panel on `--card` with its own edge. The Settings surface. |
-| `ui/chip.tsx` | The pill in a strip: label, optional leading status dot, 44px hit box. Space and tab strips. |
+| `ui/chip.tsx` | The pill in a strip: label, optional leading glyph and status dot, 44px hit box, and an optional name that says its act (the status words then become its description). Space and tab strips. |
 | `ui/collapse.tsx` | The only sanctioned way an in-flow surface appears or disappears: an eased 240ms height+opacity slide that holds its last child through the exit. Styles nothing. |
 | `ui/collapse.tsx` → `CollapseSwap` | Two surfaces taking turns in ONE band, as one motion: a single-cell grid, one height animation (the tall one's), and the short stand-in pinned in the cell fading over it. The fix for two sibling collapses on opposite gates, where the leaving surface is pushed the height of the band by the arriving one. The stand-in must be the shorter of the two. |
+| `ui/image-card.tsx` | One journal picture, framed, as an anchor to its bytes, with a caption saying where it came from. The mirror's placeholder clusters, and the newest turn's picture right after the mirror. Every element is a `<span>`, so it may sit inside the mirror's `<pre>`. `surface` picks the frame: dark-space inside the mirror, the app's tokens on the page. |
 | `ui/list-group.tsx` | A run of flat rows drawn as ONE bordered region. Gives a `divide-y` list a first and last edge. |
 | `ui/labelled-strip.tsx` | The structure of a named, horizontally scrolling pill row: non-scrolling label, `aria-labelledby`, edge-to-edge scroller. Also exports `STRIP_TAP_TARGET`. |
 | `ui/one-of.tsx` | One box, several alternatives, exactly one shown — all of them stacked in a single grid cell, so the box is sized by the widest and a swap is paint, not layout. The §2 technique for a run of text whose WORD changes with the state. |
@@ -113,6 +115,16 @@ surface between the 1px state border and the focus mark, so the two read as two 
 rather than one 4px smear. Outline is the right tool here for the same reasons it is the
 wrong tool for state: it never reflows, it paints above everything, and it is transient.
 Outside `ring-*` for state is retired.
+
+### A hold shows itself in paint, from one place
+
+A press held toward the 450ms long-press mark carries `data-holding`, set by
+`hooks/use-long-press.ts` 150ms after the finger lands, so a plain tap never flashes. While it is
+set, `index.css` ("THE HOLD, SHOWN") eases the element to a 97% scale and a 12% tint of its own ink,
+over exactly the time left to the mark, and drops both the moment the hold fires or is cancelled.
+Scale is a `transform` and the tint an inset shadow, so nothing around it moves; under reduced
+motion the tint alone. Every surface that spreads the hook's props gets it. Do not give a hold
+surface a look of its own.
 
 ### A run of text whose WORD changes needs a reserved slot, not a reserved number
 
@@ -220,10 +232,10 @@ its neighbour by picking a bigger step.
 round came back softer than the direction that was chosen.
 
 **Full-round is RESERVED** for shapes whose width equals their height, where it draws a
-circle: status dots, the avatar, the switch thumb, a bead, the square 32px "+" buttons in
-the strips. Anything wider than it is tall becomes a *stadium*, and there is no stadium in
-the mark. The chip, the pane pill and the switch track all take 2px, each with a comment at
-the line saying why, so nobody "fixes" one back.
+circle: status dots, the avatar, the switch thumb, a bead, the dashed "+" of
+`ui/add-button.tsx` at both its sizes. Anything wider than it is tall becomes a *stadium*,
+and there is no stadium in the mark. The chip, the pane pill and the switch track all take
+2px, each with a comment at the line saying why, so nobody "fixes" one back.
 
 ---
 
@@ -603,7 +615,7 @@ the failure three call sites were shipping.
 
 | Channel | Question it answers | Owner |
 | --- | --- | --- |
-| **Haptic buzz** | "Did the glass register my tap?" | `hooks/use-action-echo.ts` and `hooks/use-hold-repeat.ts` only. On the press, never on the outcome. |
+| **Haptic buzz** | "Did the glass register my tap?" | `hooks/use-action-echo.ts`, `hooks/use-hold-repeat.ts` and `hooks/use-long-press.ts` (the tick when a hold counts) only. On the press, never on the outcome. |
 | **Per-control echo** (✓ / spinner / busy tone) | "Did the bridge accept MY action?" | every fire-and-forget user mutation, at the control it was tapped on |
 | **Floating status** (`lib/status.ts` → Event) | "What happened, and why not?" | failures ALWAYS; success only when the outcome is not visible at the point of action |
 | **Collie orbit round** | "Something happened — look up" | every status the app publishes, one round per burst |

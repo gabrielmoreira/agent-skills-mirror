@@ -14,7 +14,8 @@ import {
 import { detectPlatform, nid } from "@/lib/defaults";
 import { imageElementKey, isBuiltInElementId, isImageElementId, isTextElementId, textElementKey } from "@/lib/elements";
 import { renderSlide } from "@/lib/export-render";
-import { preloadImages } from "@/lib/image-cache";
+import { exportAssetPaths } from "@/lib/export-assets";
+import { didFail, preloadImages } from "@/lib/image-cache";
 import { resolveScreenshot, writeLocalized } from "@/lib/locale";
 import { useProject } from "@/lib/storage";
 import type {
@@ -25,6 +26,7 @@ import type {
   ImageElement,
   ImportedFont,
   SelectedElement,
+  ProjectState,
   Slide,
 } from "@/lib/types";
 import { Inspector } from "./inspector";
@@ -41,6 +43,8 @@ export function ScreenshotEditor() {
   const [ready, setReady] = React.useState(false);
   const [exportLocaleOverride, setExportLocaleOverride] = React.useState<string | null>(null);
   const [exportSlideIndex, setExportSlideIndex] = React.useState(0);
+  const exportInProgress = React.useRef(false);
+  const [exportProject, setExportProject] = React.useState<ProjectState | null>(null);
   const exportRef = React.useRef<HTMLDivElement | null>(null);
 
   const currentSlides = state.slidesByDevice[state.device] || [];
@@ -128,13 +132,13 @@ export function ScreenshotEditor() {
         ...prev,
         slidesByDevice: {
           ...prev.slidesByDevice,
-          [prev.device]: (prev.slidesByDevice[prev.device] || []).map((s) =>
+          [state.device]: (prev.slidesByDevice[state.device] || []).map((s) =>
             s.id === id ? { ...s, ...patch } : s,
           ),
         },
       }));
     },
-    [setState],
+    [setState, state.device],
   );
 
   const updateSlide = React.useCallback(
@@ -143,13 +147,13 @@ export function ScreenshotEditor() {
         ...prev,
         slidesByDevice: {
           ...prev.slidesByDevice,
-          [prev.device]: (prev.slidesByDevice[prev.device] || []).map((s) =>
+          [state.device]: (prev.slidesByDevice[state.device] || []).map((s) =>
             s.id === id ? { ...s, ...update(s) } : s,
           ),
         },
       }));
     },
-    [setState],
+    [setState, state.device],
   );
 
   const reorderSlides = React.useCallback(
@@ -340,7 +344,9 @@ export function ScreenshotEditor() {
       const inTextField = isTextEditable(target);
       const inControl =
         inTextField || (!!target && (target.tagName === "INPUT" || target.tagName === "SELECT"));
-      if (exporting) return;
+      if (exportInProgress.current || e.defaultPrevented) return;
+      // Radix menus/dialogs and dnd-kit own keyboard navigation while active.
+      if (target?.closest('[role="dialog"], [role="alertdialog"], [role="menu"], [role="listbox"], [role="combobox"], [role="tablist"], [aria-roledescription="sortable"]')) return;
 
       if (e.key === "Escape") {
         setSelectedElement(null);
@@ -398,6 +404,25 @@ export function ScreenshotEditor() {
     });
 
   async function exportAll() {
+    if (exportInProgress.current) return;
+    exportInProgress.current = true;
+    setExporting("Preparing…");
+    setExportProject(state);
+    try {
+      await generateBundle();
+    } catch (error) {
+      toast.error("Export failed", {
+        description: error instanceof Error ? error.message : String(error),
+      });
+    } finally {
+      setExportLocaleOverride(null);
+      setExportProject(null);
+      setExporting(null);
+      exportInProgress.current = false;
+    }
+  }
+
+  async function generateBundle() {
     if (!currentSlides.length) {
       toast.error("No screens to export");
       return;
@@ -409,7 +434,12 @@ export function ScreenshotEditor() {
       return;
     }
     const locales = state.locales;
-    await preloadImages(assetPaths, { retryFailed: true });
+    const exportPaths = exportAssetPaths(state);
+    await preloadImages(exportPaths, { retryFailed: true });
+    const missingPaths = exportPaths.filter(didFail);
+    if (missingPaths.length) {
+      throw new Error(`Images could not be loaded: ${missingPaths.slice(0, 3).join(", ")}`);
+    }
     await waitForPaint();
 
     const missingScreens = currentSlides
@@ -448,7 +478,7 @@ export function ScreenshotEditor() {
         if (fontId === "self-hosted") await document.fonts.load(`64px ${fontFamily}`);
         await document.fonts.ready;
       } catch {
-        /* ignore */
+        throw new Error("The screenshot font could not be loaded. Check the imported font file.");
       }
     }
 
@@ -503,8 +533,7 @@ export function ScreenshotEditor() {
       }
     }
 
-    setExportLocaleOverride(null);
-    setExporting(null);
+    setExporting("Bundling…");
 
     if (okCount > 0) {
       try {
@@ -546,7 +575,7 @@ export function ScreenshotEditor() {
   async function captureSlide(el: HTMLElement, sourceW: number, sourceH: number) {
     // html-to-image needs the node at (0,0) and untransformed. Each export size
     // is a scaled draw of this one render, so aspect ratios that differ by a few
-    // pixels are stretched rather than leaving transparent gutters.
+    // pixels are cover-scaled rather than leaving transparent gutters.
     const prev = {
       left: el.style.left,
       top: el.style.top,
@@ -586,8 +615,10 @@ export function ScreenshotEditor() {
     );
   }
 
-  const { cW, cH } = getCanvas(state.device, state.orientation);
   const busy = !!exporting;
+  const exportState = exportProject ?? state;
+  const exportSlides = exportState.slidesByDevice[exportState.device] || [];
+  const exportCanvas = getCanvas(exportState.device, exportState.orientation);
 
   return (
     <div className="flex h-screen flex-col overflow-hidden bg-background">
@@ -631,7 +662,7 @@ export function ScreenshotEditor() {
         busy={busy}
       />
 
-      <div className="flex flex-1 overflow-hidden md:flex-row flex-col">
+      <div inert={busy} aria-busy={busy} className="flex flex-1 overflow-hidden md:flex-row flex-col">
         <aside className="md:w-72 w-full shrink-0 border-r bg-card md:max-h-none max-h-64 overflow-hidden">
           <Sidebar
             slides={currentSlides}
@@ -685,6 +716,7 @@ export function ScreenshotEditor() {
         <aside className="md:w-80 w-full shrink-0 border-l bg-card md:max-h-none max-h-96 overflow-hidden">
           {activeSlide ? (
             <Inspector
+              key={`${state.device}:${activeSlide.id}`}
               slide={activeSlide}
               device={state.device}
               orientation={state.orientation}
@@ -720,12 +752,12 @@ export function ScreenshotEditor() {
           pointerEvents: "none",
         }}
       >
-        {currentSlides.length > 0 && (
+        {exportSlides.length > 0 && (
           <div
             ref={exportRef}
             style={{
-              width: cW,
-              height: cH,
+              width: exportCanvas.cW,
+              height: exportCanvas.cH,
               overflow: "hidden",
               position: "absolute",
               left: -99999,
@@ -735,22 +767,22 @@ export function ScreenshotEditor() {
             <div
               style={{
                 position: "absolute",
-                left: -exportSlideIndex * cW,
+                left: -exportSlideIndex * exportCanvas.cW,
                 top: 0,
-                width: cW * currentSlides.length,
-                height: cH,
+                width: exportCanvas.cW * exportSlides.length,
+                height: exportCanvas.cH,
               }}
             >
               <DeckCanvas
-                slides={currentSlides}
-                device={state.device}
-                orientation={state.orientation}
-                theme={theme}
-                locale={exportLocaleOverride ?? state.locale}
-                appName={state.appName}
-                appIcon={state.appIcon}
-                fontFamily={fontFamily}
-                connectedCanvas={state.connectedCanvas}
+                slides={exportSlides}
+                device={exportState.device}
+                orientation={exportState.orientation}
+                theme={themeById(exportState.themeId)}
+                locale={exportLocaleOverride ?? exportState.locale}
+                appName={exportState.appName}
+                appIcon={exportState.appIcon}
+                fontFamily={SCREENSHOT_FONTS[exportState.fontId || DEFAULT_SCREENSHOT_FONT_ID].family}
+                connectedCanvas={exportState.connectedCanvas}
                 hideEmpty
               />
             </div>

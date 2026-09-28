@@ -47,6 +47,7 @@ DEFAULT_RISK = {
     "risk_per_trade": 0.01,
     "max_positions": 5,
     "max_sector_exposure": 0.30,
+    "sector_group_by": "sector",
 }
 
 DEFAULT_COST_MODEL = {

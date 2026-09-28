@@ -472,5 +472,10 @@ Site Distribution
 After completing any client operations session, record the findings in GAIT:
 
 ```bash
-python3 $MCP_CALL "python3 -u $GAIT_MCP_SCRIPT" gait_record_turn '{"input":{"role":"assistant","content":"Catalyst Center client operations on $CCC_HOST: 2,655 total clients (750 wired, 1,905 wireless). Band distribution healthy: 15% on 2.4GHz, 79% on 5GHz, 6% on 6GHz. Top SSID: Corporate-WiFi (1,245 clients). OS mix: Windows 42%, macOS 20%, iOS 17%. No anomalies detected in the last 1-hour window.","artifacts":[]}}'
+python3 $MCP_CALL "python3 -u $GAIT_MCP_SCRIPT" gait_record_turn '{"user_text":"Example only: replace with the actual authorized request.","assistant_text":"Catalyst Center client operations on $CCC_HOST: 2,655 total clients (750 wired, 1,905 wireless). Band distribution healthy: 15% on 2.4GHz, 79% on 5GHz, 6% on 6GHz. Top SSID: Corporate-WiFi (1,245 clients). OS mix: Windows 42%, macOS 20%, iOS 17%. No anomalies detected in the last 1-hour window.","artifacts":[]}'
 ```
+
+Audit examples are illustrative. Replace request, outcomes, identifiers and counts
+with observed session evidence; do not record these example results as facts.
+Inspect MCP `isError`, returned `ok`, and the recorded turn with `gait_show` when
+validating a new client/schema. Follow gait-session-tracking for branch checkout.

@@ -219,3 +219,7 @@ Per-session caps protect against single-session runaways. A process-level daily
 aggregate cap (`dailyBudgetUsd`) is the next logical layer for protecting against
 many concurrent sessions or rapid session cycling. Not in scope for this version
 but the SessionLedger architecture supports it (add a shared process-level counter).
+
+## Source fidelity (spec 124)
+
+Graph profiles are summaries, not replacements for source evidence. Every graph/session/delta result also includes the complete authoritative source snapshot. Generic encoding is accepted only if decoding preserves JSON values and types; otherwise the original JSON is returned. Do not infer health from a topology delta or cite the old projection-only savings percentages as lossless compression results. Token figures from the local estimator are estimates, not billed usage.

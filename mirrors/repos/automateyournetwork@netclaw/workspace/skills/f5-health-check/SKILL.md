@@ -288,7 +288,7 @@ Sort devices by severity (CRITICAL first) for triage prioritization.
 After completing a health check, record the session in GAIT:
 
 ```bash
-python3 $MCP_CALL "python3 -u $GAIT_MCP_SCRIPT" gait_record_turn '{"prompt":"F5 BIG-IP health check on $F5_IP_ADDRESS","response":"Health check completed. Virtual servers: 5/5 HEALTHY. Pools: WARNING (pool_web 3/4 members). SSL: WARNING (cert expires 21 days). Logs: HIGH (47x monitor-down events). Overall: WARNING. Action items: investigate pool_web node3, renew SSL cert, investigate log spike.","artifacts":["f5-health-report.txt"]}'
+python3 $MCP_CALL "python3 -u $GAIT_MCP_SCRIPT" gait_record_turn '{"artifacts":["f5-health-report.txt"],"user_text":"F5 BIG-IP health check on $F5_IP_ADDRESS","assistant_text":"Health check completed. Virtual servers: 5/5 HEALTHY. Pools: WARNING (pool_web 3/4 members). SSL: WARNING (cert expires 21 days). Logs: HIGH (47x monitor-down events). Overall: WARNING. Action items: investigate pool_web node3, renew SSL cert, investigate log spike."}'
 ```
 
 ## Failure Behavior
@@ -296,3 +296,6 @@ python3 $MCP_CALL "python3 -u $GAIT_MCP_SCRIPT" gait_record_turn '{"prompt":"F5 
 - If a tool call fails with an authentication or connection error, check that `F5_MCP_SCRIPT`, `GAIT_MCP_SCRIPT`, `MCP_CALL` are set and valid before assuming a data or device problem.
 - On a tool error (timeout, unreachable host, malformed response), report the failure and its error message directly to the user rather than fabricating or guessing at results.
 - Do not automatically retry a write/mutating operation after a failure — surface the error and get explicit confirmation before retrying, since a blind retry on a partially-applied change can leave state inconsistent.
+
+Audit examples are illustrative. Replace their request and outcomes with observed
+session evidence; inspect MCP `isError`, returned `ok` and recorded GAIT text.

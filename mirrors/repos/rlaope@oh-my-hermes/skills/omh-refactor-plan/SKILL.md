@@ -23,6 +23,7 @@ This is a Hermes-native `refactor-plan` workflow skill.
 - The refactor's direction is still contested or the goal itself needs consensus planning; use `ralplan`.
 - The work is deletion-first cleanup with no boundary changes; use `ai-slop-cleaner`.
 - The plan is done and the claim is that work is complete; use `verification-gate` for the evidence close.
+- The version bump carries a security advisory, a CVE, or a leaked secret; use `security-event-response`, which owns containment and closure.
 
 ## Examples
 
@@ -43,6 +44,7 @@ Bad example:
 - Reconnaissance names affected files, boundaries, coupling, and blast radius from observed evidence.
 - Every phase carries its verification command and its rollback point, and ends at a shippable commit.
 - The files table covers every touched file with action, phase, and dependencies.
+- For an upgrade, every breaking change row names its call sites or an observed empty search, and every stage names its rollback.
 - The plan stopped at the approval gate; no implementation began without the user's go.
 
 ## Recovery Notes
@@ -95,6 +97,7 @@ Expected outputs:
 - reconnaissance: affected files, ownership boundaries, hidden coupling, blast radius — and for an upgrade, the advisory, licence, migration-guide, and lockfile intake
 - phase plan in the fixed order - types/interfaces, implementations, callers, tests, cleanup - each with verification and rollback
 - files table: path, action, phase, blocks/blocked-by
+- for an upgrade, the call-site readiness gate: every breaking change between the two versions against this repository's call sites or an observed empty search, and every stage's rollback
 - the approval gate: the plan stops and waits for the user's go
 
 Artifact expectations:
@@ -104,6 +107,7 @@ Artifact expectations:
 Safety rules:
 
 - The plan comes from observed repo evidence, never from memory of the tree.
+- An upgrade plan is not ready while any breaking change lacks its call sites or an observed empty search, or any stage lacks its rollback; name the open rows instead of calling the bump safe to merge.
 - Every phase ends at a commit that could ship; a phase that cannot end green is split further.
 - Nothing is deleted before the cleanup phase, and cleanup starts from a tagged rollback point.
 - Do not begin implementing any phase without the user's explicit approval of the plan.

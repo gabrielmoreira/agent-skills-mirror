@@ -43,3 +43,9 @@ Structured question fields may opt into `multiSelect: true`. Omission remains si
 Codex is an independent backend with an optional runtime-negotiated `projects` capability. `ProjectDescriptor` provides an opaque ID and display path; `SessionDescriptor.canContinue` explicitly opts native sessions into original-thread continuation. Absence retains read-only behavior. Structured `form` questions group native IDs, options/descriptions and optional custom answers in one response, separate from approvals. `ModelInfo.reasoningLevels` optionally carries the native model-specific levels; missing metadata preserves existing adapters. Execution approvals may describe command/file/network/permission categories and a reason, with the same exact-request decision contract; category is display metadata, never authorization.
 
 Optional `AgentDescriptor.entryMode: sessions` declares that an Agent has no privileged main chat. Its empty `mainSessionKey` is a navigation entry only, never a backend conversation ID. Consumers must choose/restore a real session before chat operations; Agents without this refinement keep their existing main-session behavior.
+
+`SessionDescriptor.continuationBlockedReason` optionally explains `in_use`, `ownership_unknown`, or `project_unavailable` when original-session input is blocked. Cache it with `canContinue`; it never authorizes takeover, branching or filesystem creation. Missing metadata retains legacy behavior.
+
+`SessionDescriptor.attention: input` distinguishes an unanswered Agent question from execution consent. It is display state only; answering remains governed by the exact native request and existing question/approval capabilities.
+
+`SkillsOperations.status` accepts optional session context for project-specific discovery. Existing Agent/global skill backends may ignore it; it never authorizes arbitrary directory input.

@@ -23,6 +23,8 @@ This is an OMH `github-event-ops` workflow skill, projected for Agent Skills hos
 - The request is already handled by a narrower explicit skill with stronger evidence.
 - The user asks OMH to secretly run external platforms, connectors, schedulers, file exports, or runtime agents.
 - The only safe answer is to ask for missing authority, credentials, target, or observed evidence first.
+- The event is a security advisory, a CVE in a dependency, or a leaked credential; use `security-event-response`, which orders containment and closes only on an observed rotation or fix.
+- The PR is a dependabot or renovate version bump with no advisory; use `refactor-plan`, which decides whether it is safe to merge from the breaking changes against this repository's call sites.
 
 ## Examples
 

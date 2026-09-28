@@ -76,6 +76,15 @@ python3 skills/edge-strategy-reviewer/scripts/review_strategy_drafts.py \
   --drafts-dir reports/edge_strategy_drafts/ \
   --output-dir reports/ \
   --strict-export
+
+# Bias checklist (issue #297): mandatory strategy-research bias gate.
+# Uses the bundled checklist unless a custom YAML path is supplied.
+# A draft leaving any required item unaddressed is downgraded PASS → REVISE
+# and loses export eligibility.
+python3 skills/edge-strategy-reviewer/scripts/review_strategy_drafts.py \
+  --drafts-dir reports/edge_strategy_drafts/ \
+  --output-dir reports/ \
+  --bias-checklist
 ```
 
 ## Output Format

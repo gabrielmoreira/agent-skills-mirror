@@ -1564,7 +1564,7 @@ Archive and restore preserve the chat's activity time and pinned state. Archivin
 
 ### Session Goals
 
-Use `/goal <completion condition>` to attach one active completion condition to the current thread. The goal is thread-scoped state, not a skill activation, so it stays active across turns until DeerFlow determines it has been satisfied or you clear it.
+Use `/goal <completion condition>` to attach one active completion condition to the current thread. The goal is thread-scoped state, not a skill activation, so it stays active across turns until DeerFlow determines it has been satisfied or you clear it. The agent sees the active goal on every model call, so it keeps working toward it after context compaction removes the message that stated it.
 
 Supported commands:
 
@@ -1632,6 +1632,10 @@ cannot satisfy child execution checks. Parent and child histories evolve
 independently afterward; shared sandbox/filesystem behavior is unchanged.
 Snapshot mode does not restore already-compacted messages or promise prompt
 cache reuse. Durable `batch_task` items still require self-contained prompts.
+
+Native document blocks are retained in snapshots. Their textual content, titles,
+and context use the same reserved-tag and input-boundary neutralization as other
+historical text; encoded media and URL sources are preserved without decoding.
 
 For a manual, synthetic comparison of complete handoffs and snapshots, see the
 [context snapshot evaluation](backend/scripts/benchmark/context_snapshot/README.md).

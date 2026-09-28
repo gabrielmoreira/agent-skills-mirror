@@ -66,9 +66,9 @@
 | 文件 | 粒度 | 创建阶段 | 读取时机 |
 |------|------|---------|---------|
 | 设定/关系.md | 全书 | Phase 2 | 按需：story-explorer relationship 查询、story-review 查设定（不在每章写作回路里逐章读） |
-| 设定/题材定位.md（含 `主对标书` 字段，多对标时必填） | 全书 | Phase 2 | Phase 3 大纲、每卷开始前、Phase 4 写前召回 |
-| 设定/题材正文提示卡.md | 全书/题材 | Phase 2（缺失则 Phase 4 写前即时生成） | Phase 4 每章写作前：按 `genre-prose-cards.md` 索引匹配后读取 `genre-prose-cards/` 目录对应单题材卡优先、`style-genre-modules.md` 通用模块兜底，与通用正文要求、情绪/节奏召回和文风一起组装 prompt |
-| 设定/角色/{角色名}.md、设定/势力/{名}.md | 角色/势力 | Phase 3 细纲后增量补全（首批含主角/主要角色） | Phase 4 状态筛选/写作 |
+| 设定/题材定位.md（含 `主对标书` 字段，多对标时必填） | 全书 | Phase 1 建，Phase 2 补全 | Phase 3 大纲、每卷开始前、Phase 4 写前召回 |
+| 设定/题材正文提示卡.md | 全书/题材 | 写第 1 章前由写前召回生成（导入项目可能已有） | Phase 4 每章写作前：按 `genre-prose-cards.md` 索引匹配后读取 `genre-prose-cards/` 目录对应单题材卡优先、`style-genre-modules.md` 通用模块兜底，与通用正文要求、情绪/节奏召回和文风一起组装 prompt |
+| 设定/角色/{角色名}.md、设定/势力/{名}.md | 角色/势力 | Phase 2 建主角与关键角色；Phase 3 细纲后增量补全 | Phase 4 状态筛选/写作 |
 | 设定/文风.md（自定义文风·优先级最高） | 本书 | 用户自写（Claude Code 可代写）；导入/拆解不覆盖 | Phase 4 每章写作前：含实质内容则取代对标文风作权威风格基 |
 | 对标/{书名}/文风.md | 对标书 | analyze Stage 6 输出 → story-import 显式绑定或本 skill 首次引用时同步 | Phase 4 每章写作前（文风召回；有自定义文风时降为参考/句长兜底） |
 | 大纲/卷纲_第X卷.md | 卷 | Phase 3 | **一律走取段器 `outline_view.py --unit/--contract/--toc`，不整读**（见「路径与术语约定」）；段位契约与 checker 见 artifact-protocols.md |
@@ -110,3 +110,5 @@
 - **细纲一章一个文件**：`细纲_第XXX章.md`，含钩子设计，与正文一一对应
 - **正文按章拆分**：每章一个文件，`第XXX章_章名.md`
 - 每章写完直接写入 `正文/` 目录，不要先输出到对话
+
+对标/ 下的文件由 `/story-long-analyze` 与 `/story-import` 产出；手写的对标摘要不能代替 `剧情/情绪模块.md`、`剧情/节奏.md` 两份主产物（缺了写前召回会停下）。

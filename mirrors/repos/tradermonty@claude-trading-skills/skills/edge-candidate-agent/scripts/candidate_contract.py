@@ -17,6 +17,8 @@ SUPPORTED_ENTRY_FAMILIES = {
     "news_reaction",
 }
 
+SUPPORTED_SECTOR_GROUP_BY = {"sector", "industry"}
+
 REQUIRED_TOP_LEVEL_KEYS = {
     "id",
     "name",
@@ -141,6 +143,20 @@ def validate_interface_contract(
     max_sector_exposure = risk.get("max_sector_exposure")
     if not _is_number(max_sector_exposure) or not (0 < float(max_sector_exposure) <= 1.0):
         errors.append("risk.max_sector_exposure must satisfy 0 < value <= 1.0")
+
+    # Mirrors trade-strategy-pipeline RiskConfig: a constraining sector cap
+    # needs a grouping key, otherwise downstream rejects the spec.
+    sector_group_by = risk.get("sector_group_by")
+    if sector_group_by is not None and sector_group_by not in SUPPORTED_SECTOR_GROUP_BY:
+        errors.append(
+            f"risk.sector_group_by must be one of {sorted(SUPPORTED_SECTOR_GROUP_BY)} or null"
+        )
+    elif (
+        sector_group_by is None
+        and _is_number(max_sector_exposure)
+        and float(max_sector_exposure) < 1.0
+    ):
+        errors.append("risk.sector_group_by is required when risk.max_sector_exposure < 1.0")
 
     validation = spec.get("validation")
     if not isinstance(validation, dict):

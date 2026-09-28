@@ -1,5 +1,7 @@
 # Model Catalog
 
+Activation-owned metadata discovery no longer refreshes known deadlines merely because quota snapshots age. See the [quota activation contract](providers/openai-tiers.md#public-provider-contract).
+
 Native result continuations and function-result injection follow [the mode-specific result and control contract](transports/streaming-health.md#experimental-native-function-result-injection); this surface does not infer upstream support or alter its defaults.
 Explicit Codex CLI installation observation supplies no selected-runtime proof to catalog discovery or publication. See the [read-only observation contract](runtime.md#explicit-codex-cli-installation-observation).
 
@@ -155,15 +157,15 @@ the id unregisters it and the next canonical write drops the row. Configured nat
 like `gpt-5.5` there), and a combo `nativeAlias` cannot target one because schema validation runs
 before registration. Covered by `tests/codex-integration/configured-native-models.test.ts`.
 
-Retirement is a catalog/evidence policy, not a universal request denylist. Manually supplied
-model ids still follow generic routing. User-selected config and historical usage remain stored.
+Retirement is a catalog/evidence policy, not a universal request denylist. Manually supplied model ids still follow generic routing. User-selected config and historical usage remain stored.
 
-Account-gated native ids are a stricter subset. Their authenticated ChatGPT `/models` roster is
-cached per credential generation with a bounded timeout. A bare gated row is emitted only when at
-least one confirmed eligible account reports it; a selector-qualified row is emitted only when the
-mapped account reports it. A failed or malformed discovery is not positive evidence and therefore
-hides the gated row until a later refresh. The same snapshot gates Pool selection, so the catalog
-and runtime cannot disagree by advertising through one account and dispatching through another.
+Account-gated native ids use authenticated ChatGPT `/models` rosters cached per credential generation with a bounded timeout.
+A bare gated row requires a confirmed eligible account; a selector-qualified row requires its mapped account. Failed discovery
+grants neither. The same snapshot gates Pool selection, so catalog and runtime use consistent account evidence.
+The roster's per-model `available_access_programs` is projected separately: bare native rows use only confirmed main-account
+metadata, and selector-qualified rows use only their mapped account. An object requires a valid `cyber` string array; malformed values under other program keys are omitted without losing that grant. Explicit `null` stays null; omission stays omitted.
+Failed discovery or credential replacement removes stale access-program metadata. It changes presentation, not routing grants.
+The roster's `availability_nux.message` is trimmed, capped at 2,000 UTF-16 units without leaving a lone surrogate, and projected only onto bare native rows from a confirmed main-account roster that lists the slug. Missing or unconfirmed main metadata writes `null` to clear stale prompts; account-qualified, combo, and native alias rows carry no availability prompt. Pool-account prompts never reach the bare row.
 
 `client_version` arrives on the inbound request and is part of that cache identity, so
 `src/codex/model-entitlements.ts` bounds the work as well as the state: stored versions per account, concurrent
@@ -212,7 +214,7 @@ destination is invalid, registered Devin discovery and routing use the registry'
 instead of a stale configured override. For Devin, the irreversible roster fingerprint covers
 both credential and validated destination, so switching either observes neither fresh nor stale
 data recorded under the previous pair.
-Entitlement-specific rosters (Qoder, Devin, Cursor) additionally bind their cache entry to an
+Entitlement-specific rosters (Qoder, Devin, Cursor, CodeBuddy) additionally bind their cache entry to an
 irreversible credential fingerprint: a credential switch observes neither the fresh nor the stale
 roster recorded under the previous credential, and a failed discovery's cooldown neither supplies
 the previous credential's stale roster nor suppresses the next credential's first discovery.
@@ -226,9 +228,9 @@ A Devin live row spreads its measured `inputModalities` before
 `modelInputModalities` record and the vision-sidecar rewrite keep precedence and the live
 value survives only when none of them applies.
 
-For `liveModels: false`, a static provider publishes the ordered union of `models` and
-`retainModels`. When `models` is absent or empty, its configured `defaultModel` seeds that
+For `liveModels: false`, a static provider publishes the ordered union of `models` and `retainModels`. When `models` is absent or empty, its configured `defaultModel` seeds that
 union before retained ids; a nonempty explicit list does not import a different default.
+Kiro keeps this static union as its floor and merges cached account model IDs and input limits; gathering neither refreshes tokens nor calls management, and runtime `/models` discovery remains disabled.
 Without any default or configured/retained ids, the static result stays empty. The existing
 forward-auth native path remains separate. Static gathering does not refresh OAuth or call
 the provider's model endpoint, and normal selection and visibility filters still apply.
@@ -593,8 +595,6 @@ Subagent account previews and live routing share the [priority failback](provide
 
 Startup and explicit catalog synchronization in `src/codex/sync.ts` refresh the optional
 `src/providers/reasoning-metadata.ts` effort snapshot for supported destinations before catalog
-gathering. Each sync waits at most two seconds for a fresh or shared fetch, then continues with
-the existing snapshot; the fetch retains its own abort deadline. Routed effort reads in
+gathering. Each sync waits at most two seconds for a fresh or shared fetch, then continues with the existing snapshot; the fetch retains its own abort deadline. Routed effort reads in
 `src/reasoning-effort.ts` use a snapshot immediately and request a best-effort background refresh
-only when an existing snapshot answers with an expired ladder. Missing or corrupt snapshots do
-not fetch on the request path; catalog sync owns their bootstrap.
+only when an existing snapshot answers with an expired ladder. Missing or corrupt snapshots do not fetch on the request path; catalog sync owns their bootstrap.

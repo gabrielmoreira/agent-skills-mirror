@@ -47,6 +47,7 @@ This guide has been split into focused sub-documents for progressive disclosure:
 | App lifecycle, updater, or power mgmt              | [MAIN-LIFECYCLE.md](docs/agent-guides/MAIN-LIFECYCLE.md)         |
 | Stat card, chart, sparkline, or input control      | [WIDGET-LIBRARY.md](docs/agent-guides/WIDGET-LIBRARY.md)         |
 | Plugin, sandbox capability, or contribution        | [PLUGIN-DEVELOPMENT.md](docs/agent-guides/PLUGIN-DEVELOPMENT.md) |
+| Release step, tag, bump, or announcement           | [RELEASE-RUNBOOK.md](docs/agent-guides/RELEASE-RUNBOOK.md)       |
 
 ### Commonly-reimplemented functions (do NOT add new copies)
 
@@ -109,6 +110,7 @@ Grep-verified 2026-09-04 (`npm run docs:verify` re-checks every path). This is t
 - **Per-agent git actions:** `useGitAgentActions(session)`, `buildGitWorktreeCommands` in `src/renderer/hooks/git/useGitAgentActions.ts`
 - **Whether a PR is being opened right now:** `usePRCreationActive(worktreePath)`, `startPRCreation()` in `src/renderer/stores/prCreationStore.ts`
 - **Taking the user to an agent:** `jumpToAgent(sessionId, { tabId? })`, `revealAgentInSidebar(session)`, `openAgentSettings(session)` in `src/renderer/services/agentNavigation.ts`
+- **Which agents own an Opt+Cmd+# slot:** `buildSessionJumpSlotMap(visibleSessions)`, `sessionJumpShortcut(digit)` in `src/renderer/utils/sessionJumpSlots.ts`
 - **Focus an AI tab:** `aiTabFocusFields(tabId?)`, `activeFileTabId` in `src/renderer/utils/tabHelpers.ts`
 - **Focus a file tab:** `fileTabFocusFields(tabId)` in `src/renderer/utils/tabHelpers.ts`
 - **Closing a tab while the unread filter is on:** `closeTab()` third arg is an OVERRIDE; omit it and `src/renderer/utils/tabHelpers.ts` reads `uiStore.showUnreadOnly`
@@ -171,6 +173,8 @@ Grep-verified 2026-09-04 (`npm run docs:verify` re-checks every path). This is t
 - **Fixed-pitch font for shell text:** `resolveFixedPitchFontFamily()`, `resolveTerminalFontFamily()`, `isFixedPitchStack()` in `src/renderer/utils/fixedPitchFont.ts` (composes with `withMonoFallback`, do not reintroduce `ensureMonospaceFallback`)
 - **Saving the user's own font setup:** `captureTypographySnapshot()`, `typographySnapshotPatch()`, `typographySnapshotMatches()` in `src/shared/typographySnapshot.ts`; keys from `TYPOGRAPHY_SURFACE_LIST` in `src/shared/typography.ts`
 - **Rendering raw terminal output (ANSI):** `useAnsiConverter(theme)`, `getCachedAnsiHtml(text, theme.id, converter)` in `src/renderer/hooks/ui/useAnsiConverter.ts`
+- **A path the user typed on the CLI:** `resolveCliPath(input)` in `src/cli/utils/parse.ts`
+- **Filing GitHub feedback (check gh, search, +1, submit):** `submitFeedbackConversation()`, `searchFeedbackIssues()` in `src/main/feedback/index.ts`
 - **Any CLI verb that can move the Maestro view:** `resolveBackgroundFlag()`, `readBackgroundField()` in `src/shared/focusPlacement.ts`
 - **Making a tab the visible one:** `aiTabFocusFields`, `fileTabFocusFields` in `src/renderer/utils/tabFocusFields.ts`
 - **Record view for one table row:** `RecordDetailModal` in `src/renderer/components/ui/RecordDetailModal.tsx`
@@ -211,6 +215,18 @@ Grep-verified 2026-09-04 (`npm run docs:verify` re-checks every path). This is t
 If your use case does NOT match an existing utility, prefer extending the canonical file over creating a new one. If you genuinely need something new, add the full entry to [CANONICAL-UTILITIES.md](docs/agent-guides/CANONICAL-UTILITIES.md) and a one-line index entry above so the next person can find it.
 
 The tracker at [DEDUP-TRACKER.md](docs/agent-guides/DEDUP-TRACKER.md) lists all known duplication findings.
+
+---
+
+## Constitution: If the User Can Do It, `maestro-cli` Can Do It
+
+**Non-negotiable.** Every action a person can take in Maestro's UI (a button, a checkbox, a palette command, a context-menu item, a shortcut, a modal flow) MUST have a `maestro-cli` path that does the same thing, reaches the same code, and reports the result back to the caller. Agents drive Maestro through the CLI. An action they cannot reach there is an action they cannot take for the user.
+
+- **Ship both together.** A new UI action without its CLI verb is incomplete, the same way a feature without its tests is incomplete. Do not defer it to "later".
+- **One implementation.** The UI and the CLI call the same main-process function. Pull the logic out of the IPC handler into a service module the WS bridge also calls (see `src/main/feedback/` and `generateDebugPackage`). Never write a second copy for the CLI.
+- **No dialogs on the CLI path.** Where the UI raises a save or open dialog, the CLI takes the path as a flag (`--output`, `--attach`) and resolves it with `resolveCliPath()`.
+- **Every write has a read.** A verb whose result an agent cannot verify is a verb it has to guess about.
+- **Record the parity.** Add the row to the Covered table in [CLI-UI-PARITY.md](docs/agent-guides/CLI-UI-PARITY.md). A gap you cannot close in the same change goes in its Open gaps list, with the reason.
 
 ---
 

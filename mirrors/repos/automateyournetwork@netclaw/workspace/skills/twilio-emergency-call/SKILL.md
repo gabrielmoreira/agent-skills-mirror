@@ -1,3 +1,8 @@
+---
+name: twilio-emergency-call
+description: "Deliver critical network incident alerts through Twilio under the configured escalation policy. Use for an authorized emergency-call workflow."
+---
+
 # Twilio Emergency Call Skill
 
 **Feature**: 042-twilio-voice-mcp

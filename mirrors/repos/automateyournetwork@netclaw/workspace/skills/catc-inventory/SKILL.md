@@ -404,5 +404,10 @@ Software Version Compliance
 After completing any inventory operation, record the session in GAIT:
 
 ```bash
-python3 $MCP_CALL "python3 -u $GAIT_MCP_SCRIPT" gait_record_turn '{"input":{"role":"assistant","content":"Catalyst Center inventory audit on $CCC_HOST: 156 devices total, 152 reachable (97.4%), 4 unreachable (ACC-SW-15, AP-CHI-F2-03, AP-CHI-F2-04, RTR-WAN-02). Collection failures: 6 devices. Software compliance: 96% on approved versions. 2 sites with unreachable devices flagged for investigation.","artifacts":[]}}'
+python3 $MCP_CALL "python3 -u $GAIT_MCP_SCRIPT" gait_record_turn '{"user_text":"Example only: replace with the actual authorized request.","assistant_text":"Catalyst Center inventory audit on $CCC_HOST: 156 devices total, 152 reachable (97.4%), 4 unreachable (ACC-SW-15, AP-CHI-F2-03, AP-CHI-F2-04, RTR-WAN-02). Collection failures: 6 devices. Software compliance: 96% on approved versions. 2 sites with unreachable devices flagged for investigation.","artifacts":[]}'
 ```
+
+Audit examples are illustrative. Replace request, outcomes, identifiers and counts
+with observed session evidence; do not record these example results as facts.
+Inspect MCP `isError`, returned `ok`, and the recorded turn with `gait_show` when
+validating a new client/schema. Follow gait-session-tracking for branch checkout.

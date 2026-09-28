@@ -17,14 +17,14 @@
 |---|---|---|
 | `static-check.sh` + `static-check.py` | 结构化验证 frontmatter、Markdown 路径/锚点、Agent 引用、references 可达性；除基础组件 `browser-cdp` 外禁止跨 Skill 文件引用 | CI |
 | `skill-numbering.py check` | 工作流 Step/Phase/Stage 编号策略、引用绑定、SKILL.md 裸编号/子步骤小数守卫 | CI；改工作流结构后 |
-| `check-current-skill-contracts.sh` + `.py` + `current-contract.json` | 从结构化 manifest 校验当前版本、Phase、schema、主产物与细纲契约；保留 legacy/path 守卫并拦截缺主产物后的静默替代 | CI |
+| `check-current-skill-contracts.sh` + `.py` + `current-contract.json` | 从结构化 manifest 校验当前版本、Phase、schema、主产物与细纲契约；保留 legacy/path 守卫并拦截缺主产物后的静默替代；短篇写作与去 AI 味的降级/版本提示原文只进技术备注行 | CI |
 | `check-shared-files.sh` | 调两个显式 manifest 验 runtime/reference 副本，拦截未声明 exact/near-copy，并检查 setup profile 契约与消费可达性 | CI |
 | `check-reference-similarity.py` | 对跨 Skill Markdown 做行级 Jaccard/containment 近似扫描；高相似派生关系必须在 `shared-references.json` 的 `derived_groups` 说明来源与分化原因 | CI（由 check-shared-files 调用） |
 | `check-agent-reference-consumers.py` | 检查 Agent 模板的已部署资料引用全前缀并报告文件/行号，遍历引用可达性，验证唯一 profile 清单、long/short 所有权与 story-architect 不维护第二份 inventory；不证明实际读取行为 | CI（由 check-shared-files 调用） |
 | `check-short-analysis-scope.py` | 保证 story-short-analyze 只路由短篇源文观察标尺，拦截旧混合手册、长篇结构口令和推荐百分比回流 | CI（由 check-shared-files 调用） |
 | `check-scan-runtime-policy.sh` | scraper 输出文件名依赖本地日期 helper；CDP 探测/Windows 监听解析的源码策略 | CI；这些依赖方向无法由隔离 helper 测试证明 |
 | `check-story-setup-deployment.sh` | story-setup 部署/运行时回归（慢，>2min） | CI |
-| `check-doc-budget.sh` + `doc-budget.json` | 热路径 SKILL/references/agent 模板的去空白字数预算与路径合计上限；带 `agent` 字段的路径按角色计每次调用的实际加载量并自动计入模板预加载的 skill；超了要么删等量旧文本，要么显式调高 budget | CI；增删热路径正文后 |
+| `check-doc-budget.sh` + `doc-budget.json` | 热路径 SKILL/references/agent 模板的去空白字数预算与路径合计上限；每次调用硬上限 35K（`path_ceiling`，豁免列 `exempt` 并写原因）；带 `agent` 字段的路径按角色计每次调用的实际加载量并自动计入模板预加载的 skill；`文件#小节` 只计一节，`generated` 运行拼包脚本计量，`branches` 默认互斥、会同时发生的登记进 `stacking` 取最坏组合；超了要么删等量旧文本或调整流程，要么显式调高 budget | CI；增删热路径正文后 |
 | `check-hook-regex-sync.sh` | `detect-story-gaps.sh` 伏笔状态检测行为；毒句式/兜底网正则与常量表 js↔py 解析后逐项全等（含 flags、单端新增常量），内置变异测试证明单端追加分支/改 flag 会变红 | CI |
 | `check-hook-locale-safety.sh` | 部署 hook 在 Windows 中文 GBK 区域的字节安全 | CI |
 | `check-python-invocation.sh` | 技能文档禁止裸调 `python3`（须 python3→python→py 探测） | CI |
@@ -48,9 +48,9 @@
 |---|---|---|
 | `test-ai-patterns.sh` | 确定性 AI 句式检测器 `check-ai-patterns.js` 回归 | CI |
 | `test-phase2-contract.js` | 短篇 Phase 2 verifier 行为回归：设计字段、12 列大纲、字数区间、具名失败与 repair_scope | Linux / Windows / macOS CI |
-| `test-doc-budget.py` | 临时文档工程中的路径求和、超限和缺失文件失败 | CI |
+| `test-doc-budget.py` | 临时文档工程中的路径求和、超限、缺失文件、按节计量、拼包计量、叠加最坏组合（含变异对照）与硬上限配置失败 | CI |
 | `test-delivery-contract.js` | 短篇最终字数、节数、标记与空行交付契约回归 | Linux / Windows / macOS CI |
-| `check-reference-gates.js` | 长短篇「写前必读」的首屏位置、关键路由、长篇「记下本轮约束」锚点与短篇交付预检命令的静态守卫（gate 是提示词，无运行时入口可断言） | Linux / Windows / macOS CI |
+| `check-reference-gates.js` | 长短篇「写前必读」的首屏位置、关键路由、长篇「记下本轮约束」锚点、短篇交付预检命令与写正文只靠设计文件交接（不回查构思方法论、「像」不设硬上限）的静态守卫（gate 是提示词，无运行时入口可断言） | Linux / Windows / macOS CI |
 | `test-outline-contract.js` | 长篇细纲结构验收：字段、小节、五段式、四列情节点表、字数口径与「契约风险」取值的正负例回归 | Linux / Windows / macOS CI |
 | `test-degeneration.sh` | 模型退化检测器 `check-degeneration.js` 回归 | CI |
 | `test-prose-net-parity.sh` | 正文兜底「轻量确定性网」、写正文守卫与命令目标抽取的 JS 核 / Codex Python / Claude bash parity | CI |
@@ -69,6 +69,7 @@
 | `test-shared-references.py` | reference manifest 的别名、目录组、drift/sync、未登记副本与 Agent 消费链回归 | CI |
 | `test-normalize-punctuation.js` | 标点归一化的只读检查、frontmatter/fence、CRLF、引号模式与幂等性 | CI |
 | `test-scan-runtime.js` | CDP argv 边界/报错/JSON 契约与 7 个 scraper 无副作用 import | CI |
+| `test-scan-aggregate.py` | 扫榜聚合 `aggregate-rank.js`：七个平台采集格式与手动榜单的题材/热度口径/字数分桶/标签解析、同书跨榜去重、采集问题上浮、样本不足标注、抽样取回原文、跳过非榜单文件、700 条级输入压到五分之一以下 | Linux / Windows / macOS CI |
 | `test-scan-runtime-policy.py` | 变异验证 scan/browser 静态策略不会被无关或死代码关键词骗过 | CI；改 `check-scan-runtime-policy.sh` 后 |
 | `test-opencode-plugin.mjs` | 以 2.x `setup(ctx)` 直接执行 OpenCode TypeScript plugin，验大纲守卫、Shell 绕过、写后检查、compaction 注入与 `ctx.location` 定位 | 被 `check-opencode-adapter.sh` 调用 |
 | `test-codex-cli-e2e.sh` | 隔离 HOME 后用真实 Codex CLI 检查 repo 13 个 skill 的发现结果 | CLI compatibility CI；需已安装 `codex` |

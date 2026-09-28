@@ -24,6 +24,7 @@ This is an OMH `security-safety-review` workflow skill, projected for Agent Skil
 - The user asks for merge verification commands; use `verification-gate`.
 - The user asks for a normal code review focused on bugs; use `code-review`.
 - The subject is an application or service rather than the agent's own runtime -- its assets, trust boundaries, attack scenarios, and the controls that defend them; use `application-threat-model`.
+- Something already happened to shipped code -- a CVE published against a dependency, a credential pushed to a repository, a license question about a package; use `security-event-response`, which orders containment and closes only on an observed rotation or fix.
 
 ## Examples
 

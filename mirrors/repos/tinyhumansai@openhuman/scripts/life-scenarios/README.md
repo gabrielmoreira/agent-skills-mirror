@@ -127,7 +127,7 @@ empty one, because it spends fetches on it.
 Three things were easy to get wrong, and all three cost a run:
 
 1. **It has to take over the whole backend base.** `api_url` is the single base
-   every backend caller resolves through (`api::config::effective_backend_api_url`).
+   every backend caller resolves through (`openhuman_tinyhumans::backend::url::effective_backend_api_url`).
    Loopback on an ephemeral port is what makes that work:
    `looks_like_local_ai_endpoint` treats loopback as an inference signal only
    when paired with an LLM-ish port or path, so a bare `http://127.0.0.1:<random>`

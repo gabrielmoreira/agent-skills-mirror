@@ -155,11 +155,16 @@ Produce a fleet vulnerability matrix:
 Record vulnerability scans in GAIT:
 
 ```bash
-python3 $MCP_CALL "python3 -u $GAIT_MCP_SCRIPT" gait_record_turn '{"input":{"role":"assistant","content":"NVD vulnerability scan on R1 (IOS-XE 17.9.4a): 2 CRITICAL (CVE-2023-20198, CVE-2023-20273), 3 HIGH, 5 MEDIUM. Both CRITICAL CVEs confirmed exposed via running config analysis.","artifacts":[]}}'
+python3 $MCP_CALL "python3 -u $GAIT_MCP_SCRIPT" gait_record_turn '{"user_text":"Example only: replace with the actual authorized request.","assistant_text":"NVD vulnerability scan on R1 (IOS-XE 17.9.4a): 2 CRITICAL (CVE-2023-20198, CVE-2023-20273), 3 HIGH, 5 MEDIUM. Both CRITICAL CVEs confirmed exposed via running config analysis.","artifacts":[]}'
 ```
 
 ## Failure Behavior
 
 - If a tool call fails with an authentication or connection error, check that `GAIT_MCP_SCRIPT`, `MCP_CALL`, `NVD_API_KEY`, `NVD_MCP_SCRIPT`, `PYATS_MCP_SCRIPT` are set and valid before assuming a data or device problem.
 - On a tool error (timeout, unreachable host, malformed response), report the failure and its error message directly to the user rather than fabricating or guessing at results.
-- All tools here are read-only, so a failed call has no side effects — it's safe to retry once after confirming connectivity, but don't loop indefinitely on repeated failures.
+- For a confirmed read-only call, check connectivity and retry once if appropriate. For any call that changes state or sends a message, a timeout does not prove the action failed: inspect current state or delivery status before retrying, preserve the required approval/change gates, and do not repeat an action whose outcome is unknown.
+
+Audit examples are illustrative. Replace request, outcomes, identifiers and counts
+with observed session evidence; do not record these example results as facts.
+Inspect MCP `isError`, returned `ok`, and the recorded turn with `gait_show` when
+validating a new client/schema. Follow gait-session-tracking for branch checkout.

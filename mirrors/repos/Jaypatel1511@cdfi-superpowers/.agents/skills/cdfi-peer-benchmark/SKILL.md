@@ -43,10 +43,11 @@ below.
 ### Which `cdfibenchmark` functions this skill uses, by name
 
 The refusals above are about *packages*. This section is about *functions*, so a
-request maps to a call rather than to a guess. `cdfibenchmark.__all__` has **19**
-names in 0.3.1 (counted this session); the ones that decide what a user is shown
-are named here. This is not a design pass over all 19 — a name absent below is
-unruled, not endorsed.
+request maps to a call rather than to a guess. `cdfibenchmark.__all__` has **21**
+names in 0.3.3 (counted this session; 19 in 0.3.1 — 0.3.2 added
+`UNKNOWN_VERSION` and 0.3.3 added `CBLRScheduleError`); the ones that decide what
+a user is shown are named here. This is not a design pass over all 21 — a name
+absent below is unruled, not endorsed.
 
 **Endorsed — reach for these:**
 
@@ -68,7 +69,7 @@ unruled, not endorsed.
 | `compute_peer_metrics` | returns raw per-peer metrics with **no basis awareness**. Taking a median or a percentile off it yourself reproduces the mixed-basis defect the package records as unfixed, without the caveat the report carries. Use `benchmark_institution` / `generate_report`. |
 | `get_peer_financials` | the raw peer fetch. It applies **no** dedupe, no period pinning and no nearest-by-assets selection — `build_peer_group` is what turns it into a peer group. Calling it directly rebuilds the 0.2.x defect by hand. |
 | `get_institution` | returns a **raw FDIC dict**, not an `InstitutionProfile`, and carries none of the parse-layer discipline (no NaN-vs-zero rule, no plausibility bound, no `implausible_fields`). Fine for identity lookup; never a source of metrics. |
-| `BENCHMARKS`, `ASSET_BUCKETS` / `HOUSE_ASSET_BUCKETS` | read them to **quote** a threshold or a band boundary with its `source`. Never restate a number from them without its HOUSE attribution, and never mutate them. |
+| `BENCHMARKS`, `ASSET_BUCKETS` / `HOUSE_ASSET_BUCKETS` | read them to **quote** a threshold or a band boundary with its `source`. Never restate a number from them without its HOUSE attribution, and never mutate them. **Not for `tier1_ratio`:** in 0.3.3 `BENCHMARKS["tier1_ratio"]` is a default (the 8% level as in force on 2026-09-22) that its own `source` says no graded report uses. The Tier 1 threshold is resolved per report date; quote the report's **Benchmark:** line or the row's `threshold_source` instead. |
 | `InstitutionProfile(...)` built by hand | legitimate for a demo, but a hand-built profile has no `reported_*` values, so every earnings metric falls to the computed proxy — see the basis rule. Do not present one as a real institution. |
 
 **Never fabricate the inputs.** If FDIC is unreachable or a CERT does not resolve,
@@ -78,46 +79,38 @@ estimated financials and present the resulting grades as a benchmark.
 ## Install
 
 ```
-pip install "cdfi-benchmark>=0.3.0"
+pip install "cdfi-benchmark>=0.3.3"
 ```
 
-**The floor is `>=0.3.0`, and it is load-bearing.** Below it the package grades
-`loans_to_deposits` **backwards**. Executed against 0.2.1 installed from PyPI,
-python3.10, this session:
+**The floor is `>=0.3.3`, and it is load-bearing.** Below it the package
+asserts Tier 1 leverage grades that its own CHANGELOG (`[0.3.3]`, defects A–G,
+with a disclosure table per version) says rest on a CBLR (community bank
+leverage ratio) level that was not in force, or on the wrong operator.
+0.2.1–0.3.1 graded `>= 8%` at every report date — 0.3.1's Benchmark line read
+*"Strong >= 8% | Adequate >= 5% — 12 CFR 324.12 (CBLR qualifying, lowered 9%->8%
+eff. 2026-07-01); 12 CFR 324.403(b)(1) (PCA well-capitalized leverage minimum)"*
+— and 0.3.2 graded against 9% before 2026-07-01. Those
+versions graded dates before the CBLR framework existed (before 2020-01-01),
+dates in the 2020-06-30 → 2021-12-31 relief window whose level was set by a
+section they do not encode, a value exactly at the level as passing where the
+rule says "greater than", and missing or malformed report dates. 0.3.3 refuses
+in every one of those cases — `status` N/A, the value still shown, the reason
+stated — instead of asserting a grade (see *`tier1_ratio`* below). No other
+metric's value or grade changes between 0.3.1 and 0.3.3. (0.1.0 and 0.2.0 were
+not examined for this; the floor excludes them either way.)
+
+**If an older version is installed, upgrade before grading anything:**
 
 ```
-  L/D   20%  status=WEAK
-  L/D   55%  status=WEAK        <- a bank lending 55% of its deposits
-  L/D   80%  status=STRONG
-  L/D  200%  status=STRONG      <- a bank lending 200% of its deposits
+python -c "import cdfibenchmark; print(cdfibenchmark.__version__)"
+pip install -U "cdfi-benchmark>=0.3.3"
 ```
 
-`rank_institution` reads the same absent direction flag, so the percentile
-inverted with the grade. Against a fixed 20-peer group spanning 50%-126%:
-
-```
-  0.2.1   L/D   55%  status=WEAK      rank=19  percentile=9.5
-  0.2.1   L/D  200%  status=STRONG    rank=1   percentile=95.2
-```
-
-0.3.0 grades the metric as a **band** (`floor` 50 / `good` 80 / `warning` 95, all
-HOUSE) and refuses to rank it at all. The same run at 0.3.1: 55% -> `STRONG`,
-200% -> `WEAK`, `rank=None, percentile=None` with a `reason`. 0.3.0 is also where
-every other surface this skill now relies on lands — `BenchmarkResult.basis` and
-`GRADEABLE_BASES`, threshold provenance, `PeerGroup` and its `caveats`, and the
-report disclosures.
-
-**Deliberately not `>=0.3.1`.** 0.3.1 changed no library code, so a `>=0.3.1`
-floor would refuse an install that behaves identically — a floor with no runtime
-justification. Verified two ways this session: `git diff v0.3.0 v0.3.1 --
-cdfibenchmark/` is empty, and the package tree at `v0.3.1` is byte-identical to
-the package inside the published 0.3.0 wheel downloaded from PyPI — 11 `.py`
-files on each side, recomputed here by the method the package's own CHANGELOG
-publishes:
-
-```
-sha256 3f90077f200206a1d09929b868df2af43a6da325eb3e695da35f6f4ebbde9083
-```
+Do not present a Tier 1 grade produced by a version below 0.3.3. (Below 0.3.0
+the package also grades `loans_to_deposits` backwards: a bank lending 55% of its
+deposits grades WEAK and one lending 200% grades STRONG, with
+`rank_institution`'s percentile inverted to match. That was the previous floor's
+reason, and `>=0.3.3` still covers it.)
 
 **This skill deliberately does not name the newest release.** A note of the form
 *"newest on PyPI, as of «date»: «version»"* is a claim that decays into a
@@ -128,7 +121,10 @@ statement true — it only records when it stopped being checked.
 
 For today's answer run `pip index versions cdfi-benchmark`, or read
 `references/package-index.md`, whose version cells CI re-derives from live PyPI
-on every run. The `>=0.3.0` floor above is unaffected by either release.
+on every run. The floor above is a minimum, not a claim about the newest release.
+
+**Every executed output block below was recorded against cdfi-benchmark 0.3.3**
+installed from PyPI (python3.11), and says so at its location.
 
 **Import name is `cdfibenchmark`** (no underscore, no hyphen). There is no
 `cdfi_benchmark` alias — `import cdfi_benchmark` will fail.
@@ -146,7 +142,7 @@ is deliberately out of scope for this portfolio.
 
 ## The N/A contract — TWO meanings, opposite remedies (non-negotiable)
 
-`status == "N/A"` means one of two different things in 0.3.0, and the correct
+`status == "N/A"` means one of two different things (since 0.3.0), and the correct
 behaviour is **opposite** in each. Read `basis` before rendering any N/A.
 
 **(1) The value is ABSENT.** `institution_value` is `NaN` or `None` — the package
@@ -162,7 +158,14 @@ measured and is returned in full; the package declined to *grade* it because its
 measurement. **Report the value and quote the basis.** Saying "not available"
 here suppresses a real measurement the package deliberately kept.
 
-Executed this session (0.3.1, python3.10) — both meanings in one table:
+**0.3.3 adds a second cause of meaning (2), for `tier1_ratio` only:** the basis
+is gradeable, but `BenchmarkResult.not_graded_reason` (and the `summary_table`
+column of the same name) is set, because the report date is one the CBLR
+schedule refuses or the value displays as the level itself. Report the value and
+quote that reason — see *`tier1_ratio`* below.
+
+Executed this session (0.3.3, python3.11) — three rows excerpted from the output
+of *Worked example — the N/A contract in action*, below:
 
 ```
                                      metric  institution   status                                                           basis
@@ -181,7 +184,8 @@ import pandas as pd
 from cdfibenchmark.data.schema import GRADEABLE_BASES
 
 present_but_ungraded = (not pd.isna(r.institution_value)
-                        and r.basis not in GRADEABLE_BASES)
+                        and (r.basis not in GRADEABLE_BASES
+                             or r.not_graded_reason is not None))  # 0.3.3+
 ```
 
 There is a **third** state, which is neither: `basis` ==
@@ -199,16 +203,16 @@ below).
 ## The basis rule (non-negotiable) — condition on `basis`, never on `report_date`
 
 **This rule replaces a `report_date` rule that made the AI discredit a correct
-number.** 0.3.0 PREFERS FDIC's own published series — `NIMY`, `ROA`, `ROE`,
-`EEFFR` — which arrive **already annualized and over average balances**.
-`get_financials` and `get_peer_financials` request those four fields at every
-report date (`cdfibenchmark/data/fdic.py:156` and `:238`). On that path a 3/31
+number.** Since 0.3.0 the package PREFERS FDIC's own published series —
+`NIMY`, `ROA`, `ROE`, `EEFFR` — which arrive **already annualized and over
+average balances**. `get_financials` and `get_peer_financials` request those four fields at every
+report date (`cdfibenchmark/data/fdic.py:158` and `:240`). On that path a 3/31
 NIM of 3.08% is a correct annualized figure; calling it "roughly 4x low" would
 push the user toward **12.3%**, a number no source produced.
 
 **The judgment is the package's, not yours.** `InstitutionProfile.metric_basis()`
-rules how each metric was obtained (`cdfibenchmark/data/schema.py:475`) and
-`GRADEABLE_BASES` (`schema.py:233`) rules whether that basis may be graded at
+rules how each metric was obtained (`cdfibenchmark/data/schema.py:809`) and
+`GRADEABLE_BASES` (`schema.py:557`) rules whether that basis may be graded at
 all. Report that ruling. Do not form your own from the report date.
 
 **Read `BenchmarkResult.basis` — or the `basis` column of `summary_table` — and
@@ -221,7 +225,9 @@ defines **11** `BASIS_*` constants, **5** of them in `GRADEABLE_BASES`, over
 **8** shipped metrics. The other bases are fixed per metric rather than decided
 per filing: `loans_to_deposits`, `npl_ratio` and `reserve_coverage` are always
 `computed from period-end balances (period-neutral)` and always gradeable, and
-`tier1_ratio` has its own three states in its own section below. `BASIS_UNRULED`
+`tier1_ratio` has its own states in its own section below — and its grade does
+depend on `report_date` in 0.3.3, but that is the package's ruling, surfaced as
+`not_graded_reason`, not one you make. `BASIS_UNRULED`
 is unreachable for all eight shipped metrics — every one is claimed by a branch
 of `metric_basis()`. **So: two branches, not an exhaustive taxonomy of the
 eleven.** If you meet a basis string that is not below, quote it and say the
@@ -237,7 +243,7 @@ multiply it by anything. It is gradeable and the package grades it.
 can earn is a threshold comparison, nothing more.** `reported_is_trustworthy`
 decides only whether FDIC's published ratio is a *measurement* rather than a
 fill. It does not ask whether the measurement is meaningful, and the package
-says so on its face. Executed this session (0.3.1, python3.10), on a **hand-built**
+says so on its face. Executed this session (0.3.3, python3.11), on a **hand-built**
 profile whose `reported_*` fields carry the values FDIC's published series would
 occupy — the same stand-in this skill uses above, since FDIC was not reachable
 here. The `-700` is not invented for the demo: it is a value the package records
@@ -249,7 +255,7 @@ roae               999.0   basis FDIC published — annualized, average balances
 ```
 
 The package states this hole itself rather than leaving it to be discovered.
-Quote its words — `cdfibenchmark/data/schema.py:427`, `reported_is_trustworthy`,
+Quote its words — `cdfibenchmark/data/schema.py:761`, `reported_is_trustworthy`,
 under the heading **"WHAT THIS RULE GETS WRONG, stated rather than discovered
 later"**:
 
@@ -302,8 +308,15 @@ and must **not** be annualized. Numerator and denominator are YTD flows over the
 same period, so the period cancels exactly; annualizing it would introduce an
 error where there is none.
 
-Executed this session (0.3.1, python3.10) — one profile at `report_date =
-"20260331"` (Q1), with and without FDIC's published ratios:
+Executed this session (0.3.3, python3.11) — one profile at `report_date =
+"20260331"` (Q1), with and without FDIC's published ratios. All dollar inputs in
+thousands: total assets 78,100; interest income 2,000 and interest expense 200;
+non-interest income 150; non-interest expense 1,250; net income 240; equity
+9,000; plus total deposits 65,000, net loans 50,000, gross loans 51,000,
+non-current loans 400, loan-loss allowance 600 and `tier1_ratio=11.5`. Those
+last six do not affect the printed lines: re-run with all six changed, the
+output was identical. The published-path profile adds `reported_nim=3.08`,
+`reported_roaa=1.24`, `reported_roae=10.6`, `reported_efficiency_ratio=61.2`:
 
 ```
 report_date: 20260331  fiscal_quarter: 1
@@ -330,9 +343,9 @@ roae   status=N/A
 stand in for what `get_financials` returns on the live path. FDIC's endpoints
 were **not reachable from the session that wrote this section**, so the claim
 that the live path serves `NIMY`/`ROA`/`ROE`/`EEFFR` at interim dates rests on
-the package's source (`data/fdic.py:156`, which requests them unconditionally at
+the package's source (`data/fdic.py:158`, which requests them unconditionally at
 any `report_date`) and on the package's own recorded measurements
-(`data/schema.py:191-193`: computing those three from YTD flows read
+(`data/schema.py:515-517`: computing those three from YTD flows read
 **4.30x / 4.12x / 4.01x low at a Q1 REPDTE** against FDIC's published series) —
 **not on a live probe made here.** The branch behaviour above WAS executed.
 
@@ -340,7 +353,10 @@ any `report_date`) and on the package's own recorded measurements
 
 Do not infer a shared basis from a shared date. Each peer's basis is decided per
 institution by `reported_is_trustworthy`, so two banks at the same REPDTE can sit
-on different bases. Executed this session:
+on different bases. Executed this session (0.3.3, python3.11) — two peers built
+from the Q1 profile above, peer 1 with `reported_nim=3.5` (and the other three
+published ratios), peer 2 with none; the median is
+`compute_peer_metrics([p1, p2])["nim"].median()`:
 
 ```
   both peers report_date = 20260331 == 20260331
@@ -350,7 +366,8 @@ on different bases. Executed this session:
   median of the two: 2.9023687580025608 <- a median across TWO BASES
 ```
 
-The package records this as a known limitation of 0.3.0 that it did **not** fix.
+The package records this as a known limitation in its 0.3.0 CHANGELOG entry, and
+no later entry through 0.3.3 records a fix.
 Quote it rather than softening it — `CHANGELOG.md`, "Known limitations":
 
 > The peer median is computed across a MIXED basis: peers whose published ratios
@@ -379,16 +396,17 @@ real analysis use `build_peer_group(institution, ...)` (live FDIC peers).
 **UNITS: every dollar field on `InstitutionProfile` is in THOUSANDS**, because
 FDIC's `ASSET`, `DEP`, `LNLSNET`, `NETINC` and the rest are reported in thousands
 and `get_financials` carries them through unchanged
-(`cdfibenchmark/data/fdic.py:442-450`). `total_assets=250_000` is **$250MM**, not
+(`cdfibenchmark/data/fdic.py:457-465`). `total_assets=250_000` is **$250MM**, not
 $250 billion. `total_assets_mm` divides by 1,000 and `asset_bucket` and the
 report face both read the raw field, so a profile hand-built in dollars renders
 a bank a thousand times its real size.
 
 **`report_date` must be FDIC's 8-digit form, `"YYYYMMDD"`.** `fiscal_quarter`
-parses exactly that (`schema.py:399-402`) and the live path always produces it. A
+parses exactly that (`schema.py:733-736`) and the live path always produces it. A
 hyphenated `"2024-12-31"` yields `fiscal_quarter is None`, which sends `roaa` and
 `roae` to `computed from YTD flows, period unknown — NOT annualized` and grades
-them **N/A even at a Q4 date**.
+them **N/A even at a Q4 date**. In 0.3.3 it also refuses the Tier 1 grade: the
+Tier 1 row's `not_graded_reason` says the date is not in YYYYMMDD form.
 
 ```python
 import pandas as pd
@@ -410,13 +428,14 @@ st = c.summary_table(inst, peers)
 print(inst.total_assets_mm, inst.asset_bucket, inst.fiscal_quarter)
 print(st[["metric","institution","peer_median","vs_median","status","peer_count"]].to_string(index=False))
 print(st[["metric","basis","threshold_source"]].to_string(index=False))
+print(st[["metric","not_graded_reason"]].to_string(index=False))
 ```
 
-Actual output this session (cdfi-benchmark 0.3.1, python3.10):
+Actual output this session (cdfi-benchmark 0.3.3, python3.11), the first print
+and the second:
 
 ```
 250.0 medium 4
-
                                      metric  institution  peer_median  vs_median   status  peer_count
 Net Interest Margin over total assets (NIM)     3.080000     3.010296   0.069704      N/A          20
                            Efficiency Ratio    71.910112    70.624617   1.285495 ADEQUATE          20
@@ -428,22 +447,39 @@ Net Interest Margin over total assets (NIM)     3.080000     3.010296   0.069704
                  Loan Loss Reserve Coverage   133.333333    80.408055  52.925278   STRONG          20
 ```
 
-`summary_table` carries two further columns, `basis` and `threshold_source`, which
-are how a row's grade and its warrant are read. Same run:
+`summary_table` carries further columns — `basis` and `threshold_source`, and
+since 0.3.3 `not_graded_reason` (eleven columns in all) — which are how a row's
+grade and its warrant are read. Same run, the third print:
 
 ```
-                                     metric                                                                                                   basis                                                                                                              threshold_source
-Net Interest Margin over total assets (NIM)                                         computed over TOTAL assets — not FDIC NIMY (avg earning assets)                                                                                                                         HOUSE
-                           Efficiency Ratio                                                    computed from same-period YTD flows (period-neutral)                                                                                                                         HOUSE
-        Return on Assets, period-end (ROAA)                                              computed from full-year YTD flows over period-end balances                                                                                                                         HOUSE
-        Return on Equity, period-end (ROAE)                                              computed from full-year YTD flows over period-end balances                                                                                                                         HOUSE
-                      Tier 1 Leverage Ratio FDIC published (RBC1AAJ) — Tier 1 capital over adjusted average assets; a capital ratio, not annualized 12 CFR 324.12 (CBLR qualifying, lowered 9%->8% eff. 2026-07-01); 12 CFR 324.403(b)(1) (PCA well-capitalized leverage minimum)
-                          Loans-to-Deposits                                                      computed from period-end balances (period-neutral)                                                                                                                         HOUSE
-                  Non-Performing Loan Ratio                                                      computed from period-end balances (period-neutral)                                                                                                                         HOUSE
-                 Loan Loss Reserve Coverage                                                      computed from period-end balances (period-neutral)                                                                                                                         HOUSE
+                                     metric                                                                                                   basis                                                                                                                                                                                                                                     threshold_source
+Net Interest Margin over total assets (NIM)                                         computed over TOTAL assets — not FDIC NIMY (avg earning assets)                                                                                                                                                                                                                                                HOUSE
+                           Efficiency Ratio                                                    computed from same-period YTD flows (period-neutral)                                                                                                                                                                                                                                                HOUSE
+        Return on Assets, period-end (ROAA)                                              computed from full-year YTD flows over period-end balances                                                                                                                                                                                                                                                HOUSE
+        Return on Equity, period-end (ROAE)                                              computed from full-year YTD flows over period-end balances                                                                                                                                                                                                                                                HOUSE
+                      Tier 1 Leverage Ratio FDIC published (RBC1AAJ) — Tier 1 capital over adjusted average assets; a capital ratio, not annualized 12 CFR 324.12(a)(1) (CBLR qualifying level for institutions that have elected the CBLR framework: greater than 9% at this report date — 84 FR 61776, 61802, Nov. 13, 2019); 12 CFR 324.403(b)(1)(i)(D) (PCA well-capitalized leverage minimum, 5.0%)
+                          Loans-to-Deposits                                                      computed from period-end balances (period-neutral)                                                                                                                                                                                                                                                HOUSE
+                  Non-Performing Loan Ratio                                                      computed from period-end balances (period-neutral)                                                                                                                                                                                                                                                HOUSE
+                 Loan Loss Reserve Coverage                                                      computed from period-end balances (period-neutral)                                                                                                                                                                                                                                                HOUSE
 ```
 
-**Three things to read off this example, none of them obvious:**
+And the fourth. `None` on every row: 20241231 is a quarter-end inside the
+schedule 0.3.3 attests, and 11.50% does not display as the 9% level, so Tier 1
+is graded:
+
+```
+                                     metric not_graded_reason
+Net Interest Margin over total assets (NIM)              None
+                           Efficiency Ratio              None
+        Return on Assets, period-end (ROAA)              None
+        Return on Equity, period-end (ROAE)              None
+                      Tier 1 Leverage Ratio              None
+                          Loans-to-Deposits              None
+                  Non-Performing Loan Ratio              None
+                 Loan Loss Reserve Coverage              None
+```
+
+**Four things to read off this example, none of them obvious:**
 
 1. **NIM is `N/A` at a 12/31 date.** This profile is hand-built, so FDIC's `NIMY`
    is absent and the computed proxy is used — and the computed NIM proxy is
@@ -457,6 +493,20 @@ Net Interest Margin over total assets (NIM)                                     
    `N/A`.
 3. **Seven of the eight `threshold_source` values are `HOUSE`.** Only
    `tier1_ratio` is cited. Never present a HOUSE threshold as a regulatory one.
+4. **Tier 1's STRONG is a comparison with the CBLR level for institutions that
+   have elected the CBLR framework** — "greater than 9%" at this report date,
+   because 20241231 is after the framework took effect and after the 2020–2021
+   relief window. The package's schedule constant `CBLR_LEVELS`
+   (`cdfibenchmark.data.schema`) also holds a later, lower level, but no
+   quarter-end report date resolves to it under 0.3.3 (checked this session:
+   `benchmark_for("tier1_ratio", d)` over every quarter-end 2015–2030 gives 19
+   dates at 9%, 20200331–20260630, 45 refused, none at the lower level). So no
+   0.3.3 report grades against it; it appears only in the `BENCHMARKS` default
+   `source` (see the refused-functions table above). It is not a
+   finding that this bank elected CBLR or qualifies for it; cdfi-benchmark 0.3.3
+   does not model election. Say so. Had the same profile carried a report date
+   in a refused class, this row would read N/A with a reason — see
+   *`tier1_ratio`* below.
 
 This example is built on **synthetic** peers. Label any output derived from
 `build_sample_peer_group` as illustrative, never as a real peer comparison.
@@ -480,7 +530,7 @@ st2 = c.summary_table(inst2, peers)
 print(st2[["metric", "institution", "status", "basis"]].to_string(index=False))
 ```
 
-Actual output this session (cdfi-benchmark 0.3.1, python3.10):
+Actual output this session (cdfi-benchmark 0.3.3, python3.11):
 
 ```
                                      metric  institution   status                                                           basis
@@ -502,8 +552,8 @@ filling any of the three would fabricate one.
 
 ## Live FDIC path
 
-Signatures below were read from the installed 0.3.1 wheel with
-`inspect.signature` this session.
+Signatures below were read from the installed 0.3.3 wheel with
+`inspect.signature` this session (identical to 0.3.1's).
 
 - `c.search_institutions(name=None, state=None, min_assets=None, max_assets=None,
   limit=20)` → DataFrame of FDIC banks.
@@ -524,8 +574,8 @@ Signatures below were read from the installed 0.3.1 wheel with
   `InstitutionProfile`); a nonexistent cert returns **`None`**, not an error.
 
 **`PeerGroup` is not exported.** `from cdfibenchmark import PeerGroup` raises
-`ImportError` (verified this session; `__all__` has 19 names and `PeerGroup` is
-not among them). It is reachable only as
+`ImportError` (verified this session on 0.3.3; `__all__` has 21 names and
+`PeerGroup` is not among them). It is reachable only as
 `cdfibenchmark.peers.selector.PeerGroup`. You rarely need the class — the
 instance returned by `build_peer_group` carries `.caveats`, `.selection_basis`,
 `.report_dates`, `.is_single_period`, `.below_min_peers` and `.asset_percentile`
@@ -557,13 +607,17 @@ The package raises **typed** exceptions; surface them, don't swallow them:
 |---|---|---|
 | `FDICAPIError` | `CDFIBenchmarkError` | FDIC API transport/HTTP failure |
 | `FDICResponseError` | `CDFIBenchmarkError` | a malformed or wrong-shape FDIC response — **and one non-API case, below** |
+| `CBLRScheduleError` | `CDFIBenchmarkError`, `RuntimeError` | new in 0.3.3: raised **at import** only if the shipped CBLR schedule constants break a data invariant. Not an `ImportError`, and no check reads your clock. |
 | `CDFIBenchmarkError` | `Exception` | package base error |
 
-Hierarchy verified this session against the installed 0.3.1 wheel:
+Hierarchy verified this session against the installed 0.3.3 wheel:
 `FDICAPIError.__mro__` and `FDICResponseError.__mro__` are both five elements,
-`(<self>, CDFIBenchmarkError, Exception, BaseException, object)`. Catching
-`CDFIBenchmarkError` catches both. When one is raised, report the error type and
-message; do not fall back to fabricated numbers or a cached guess.
+`(<self>, CDFIBenchmarkError, Exception, BaseException, object)`;
+`CBLRScheduleError.__mro__` is six, `(<self>, CDFIBenchmarkError, RuntimeError,
+Exception, BaseException, object)`. Catching `CDFIBenchmarkError` catches all
+three. When one is raised, report the error type and message; do not fall back
+to fabricated numbers or a cached guess. A refused Tier 1 grade is **not** an
+exception — it arrives as `status == "N/A"` with a `not_graded_reason`.
 
 **`FDICResponseError` does not always mean FDIC misbehaved.**
 `build_peer_group` raises it when the *institution's* `total_assets` is unknown,
@@ -586,7 +640,7 @@ except (FDICAPIError, FDICResponseError) as e:
     ...
 ```
 
-## What 0.3.0 discloses that you must carry
+## What the report discloses that you must carry (since 0.3.0)
 
 0.3.0 spent a release making the report state its own warrant. Each item below
 renders on `generate_report`'s face. **Do not paraphrase these — the package's
@@ -599,17 +653,25 @@ taken from real output generated this session.
 Derived this session from `cdfibenchmark.BENCHMARKS`: **7 of 8** entries carry
 `source == "HOUSE"` (`nim`, `efficiency_ratio`, `roaa`, `roae`,
 `loans_to_deposits`, `npl_ratio`, `reserve_coverage`). **`tier1_ratio` is the
-only cited one.** The report renders the distinction on every metric:
+only cited one.** The report renders the distinction on every metric. From
+`generate_report` on the first worked example's institution and peers (report
+date 20241231), cdfi-benchmark 0.3.3, python3.11 — the NIM line and the Tier 1
+line:
 
 ```
 **Benchmark:** Strong >= 3.5% | Adequate >= 2.5% — **this tool's own threshold (HOUSE)**, not a regulatory or supervisory standard
-**Benchmark:** Strong >= 8% | Adequate >= 5% — 12 CFR 324.12 (CBLR qualifying, lowered 9%->8% eff. 2026-07-01); 12 CFR 324.403(b)(1) (PCA well-capitalized leverage minimum)
+**Benchmark:** Strong > 9% (a value that rounds to 9.00% is not graded) | Adequate >= 5% — 12 CFR 324.12(a)(1) (CBLR qualifying level for institutions that have elected the CBLR framework: greater than 9% at this report date — 84 FR 61776, 61802, Nov. 13, 2019); 12 CFR 324.403(b)(1)(i)(D) (PCA well-capitalized leverage minimum, 5.0%)
 ```
+
+The Tier 1 line is resolved **for the report date**: it names the level in
+force at that date for institutions that have elected the CBLR framework, and
+at a refused date it names no level at all (see *`tier1_ratio`* below). Never
+carry one report's Tier 1 line over to another report date.
 
 Silence here is the failure 0.3.0 spent a release closing: an unattributed house
 rule of thumb sitting in the same column as a CFR citation reads as a standard.
 The package's own note on why the seven are uncited, and why inventing a citation
-would be the defect (`data/schema.py:95-100`): bank capital has published
+would be the defect (`data/schema.py:99-104`): bank capital has published
 regulatory levels; earnings, efficiency, funding and reserve-coverage ratios do
 not.
 
@@ -639,14 +701,14 @@ awk '/def caveats/,/^def _dedupe_by_cert/' cdfibenchmark/peers/selector.py \
    {date} but the institution is at {target}."* (`selector.py:223-228`). **This
    is the case the deleted `report_date` rule used to cover**: a subject at 3/31
    measured against peers at 12/31 is a YTD-flow mismatch across four quarters,
-   and 0.3.0 raises it here as a caveat on the group rather than leaving you to
-   infer it from two dates. Nothing else in this skill covers it, so render it;
+   and since 0.3.0 the package raises it here as a caveat on the group rather
+   than leaving you to infer it from two dates. Nothing else in this skill covers it, so render it;
 6. a subject at the 10th percentile or below / 90th or above of its own peer
    group by assets;
 7. a peer whose FDIC value the tool refused;
 8. a truncated asset window.
 
-Real output, this session:
+Real output, this session (0.3.3, python3.11):
 
 ```
 > - Peer group has 1 institutions, below the requested minimum of 10. Percentiles over so few peers are not a reliable benchmark.
@@ -655,21 +717,21 @@ Real output, this session:
 ```
 
 That is the enumeration read from `PeerGroup.caveats`
-(`peers/selector.py:183-269`), complete at eight branches for 0.3.1 by the count
+(`peers/selector.py:183-269`), complete at eight branches for 0.3.3 by the count
 derived above — not a claim that a later version cannot add a ninth.
 
 #### When the caveats silently vanish
 
 `generate_report(institution, peers, title=None)` accepts **any** list. Three of
 its disclosures are read off the `PeerGroup` object with `getattr` and are simply
-skipped when the attribute is not there — `caveats` (`report/generator.py:182`),
-`asset_percentile` (`:308`) and `selection_basis` (`:324`). Those are the only
+skipped when the attribute is not there — `caveats` (`report/generator.py:466`),
+`asset_percentile` (`:588`) and `selection_basis` (`:604`). Those are the only
 three of the four `getattr(peers, …)` sites that lack a fallback; the fourth,
-`report_dates` (`:146`), recomputes from the peers themselves and survives.
+`report_dates` (`:356`), recomputes from the peers themselves and survives.
 
 `PeerGroup` subclasses `list`, so **any** operation that returns a plain list
-strips all three. Executed this session, all four forms: `list(pg)`, `pg[:20]`,
-`[p for p in pg]` and `sorted(pg, key=…)` each render `> **Peer group caveats**`,
+strips all three. Executed this session (0.3.3), all four forms: `list(pg)`,
+`pg[:20]`, `[p for p in pg]` and `sorted(pg, key=…)` each render `> **Peer group caveats**`,
 `**Peer Selection Basis:**` and `**Institution's Position in the Peer Asset
 Range:**` as **absent**. There is no error and no warning — the report is just
 shorter, and reads as complete.
@@ -697,6 +759,12 @@ A = PeerGroup — 3 caveats, one ungraded metric (the group printed above)
 B = list(pg)  — same institution, same peer, same data
 C = PeerGroup from build_sample_peer_group — 0 caveats, every metric graded
 ```
+
+Re-derived on 0.3.3 (python3.11) with three cases rebuilt to the descriptions
+above: all 48 cells matched the table. 0.3.3 also prints **CBLR schedule
+verified through:** in all three cases (A, B and C), in the provenance block at
+the foot of the report. That line is new in 0.3.3 and is not one of the twelve
+strings above.
 
 **Column B is the trap.** The group in column A is the one whose three caveats
 are printed above — 1 peer, subject at the 0th percentile, one peer's `RBC1AAJ`
@@ -736,7 +804,7 @@ next to peer columns:
 
 It is graded two-sided: WEAK below the HOUSE floor of 50 (under-deployed) as well
 as above 95 (funding strain). All three boundaries are house numbers; there is no
-regulatory loans-to-deposits level. Executed at 0.3.1 this session: `20 -> WEAK`,
+regulatory loans-to-deposits level. Executed at 0.3.3 this session: `20 -> WEAK`,
 `55 -> STRONG`, `80 -> STRONG`, `95 -> ADEQUATE`, `130 -> WEAK`, `200 -> WEAK`.
 
 Because a band has no monotone better-direction, **`rank_institution` refuses to
@@ -750,17 +818,77 @@ rank it**:
 Report the `reason`. Do not invent a percentile for this metric, and do not treat
 `rank=None` as an error.
 
-### `tier1_ratio` has THREE states, not two
+### `tier1_ratio`: graded, unreported, refused by plausibility, or not graded for its date
 
-Published, unreported, and **refused**. The package made refusal a distinct basis
-precisely so it could not be conflated with absent. A refused value renders its
-own line — real output, this session:
+**Four states, not two.** (1) Published and graded. (2) Unreported — basis `no
+value was reported for this field`, value NaN: meaning (1) of the N/A contract.
+(3) **Refused by plausibility** — FDIC published a value this tool's bound
+rejected. The package made that a distinct basis precisely so it could not be
+conflated with absent, and it renders its own line — real output, this session
+(0.3.3):
 
 ```
 **Not shown:** FDIC published a value for this metric that falls outside this tool's plausibility bound for a percentage, so it was refused as a wrong-field-class signal rather than graded. The bound is this tool's own heuristic, not FDIC's — the published value was a real filing. See `cdfibenchmark.data.fdic` for the bound and how it was derived.
 ```
 
-Never report a refusal as "FDIC published nothing."
+Never report that as "FDIC published nothing."
+
+(4) **Present, gradeable basis, but not graded — new in 0.3.3.** The value is
+shown, `status` is N/A, and `BenchmarkResult.not_graded_reason` (the
+`summary_table` column of the same name, and a **Not graded:** line on the
+report) says why. 0.3.3 refuses rather than asserts a Tier 1 grade when:
+
+- the report date is **before 2020-01-01** (no CBLR framework yet);
+- the report date is **2020-06-30 through 2021-12-31** (the level was set by the
+  temporary 12 CFR 324.303, which 0.3.3 does not encode);
+- the report date is **after 2026-09-22**, the date 0.3.3's CBLR schedule was
+  verified through (`LEVELS_VERIFIED_THROUGH`, shown on every report as **CBLR
+  schedule verified through:**). This includes **20260930 and every later
+  quarter** until a later release extends it;
+- the report date is **missing, malformed or not a quarter-end**;
+- the value **rounds to the level itself** at the report's 2 decimal places
+  (e.g. 9.00% against "greater than 9%").
+
+Rendered by 0.3.3 (python3.11) for the first worked example's institution with
+only the report date changed to 20260930:
+
+```
+**Benchmark:** none applied at this report date — no CBLR qualifying level (12 CFR 324.12) or PCA leverage level (12 CFR 324.403) is applied; the reason is stated under **Not graded** below
+**Status:** N/A
+**Not graded:** This version's CBLR schedule was verified against the CFR as in force on 2026-09-22. This report date, 2026-09-30, is later, so no CBLR qualifying level is applied and this value is not graded. A later release of cdfi-benchmark may cover it.
+```
+
+and with the report date kept at 20241231 and `tier1_ratio=9.004`:
+
+```
+**Benchmark:** Strong > 9% (a value that rounds to 9.00% is not graded) | Adequate >= 5% — 12 CFR 324.12(a)(1) (CBLR qualifying level for institutions that have elected the CBLR framework: greater than 9% at this report date — 84 FR 61776, 61802, Nov. 13, 2019); 12 CFR 324.403(b)(1)(i)(D) (PCA well-capitalized leverage minimum, 5.0%)
+**Status:** N/A
+**Not graded:** This value rounds to 9.00% at the 2 decimal places this tool's report displays, which is the CBLR qualifying level for this report date itself (9%). At that precision this tool cannot state on the face of its report whether the value exceeds the level, so it does not grade it.
+```
+
+**What to do with a state-(4) row:** report the value, say it was not graded,
+and quote the package's reason verbatim. **Do not supply a grade yourself** —
+not by applying 8% or 9%, not from the PCA 5% leg (0.3.3 withholds that too at a
+refused date), and not from memory of what an older version said. Where the
+date is the cause, say that a later cdfi-benchmark release may cover it; where
+the value displays as the level, say the tool cannot show which side of the level
+it is on.
+
+**Do not silently switch to an older `report_date` to obtain a grade.**
+`get_financials(cert)` with no `report_date` returns the institution's most
+recent filing: the 0.3.3 source sorts `REPDTE` descending and takes the first
+row (`data/fdic.py:172-173` and `:188`; read from source, not probed live). Once
+20260930 filings are on FDIC, that call returns a Tier 1 value 0.3.3 refuses.
+You may *offer* to benchmark an earlier quarter, but only if you say explicitly
+that it is a different, older period than the one the user asked about, and
+you keep the refusal for the latest period on the page.
+
+**On a graded row,** the comparison is with the level for institutions that
+**have elected** the CBLR framework. 0.3.3 does not model election (its CHANGELOG
+plans it for 0.4.0). Never turn a Tier 1 STRONG into "this bank qualifies for /
+has elected CBLR", and cite only what the Benchmark line cites (FDIC's 12 CFR
+Part 324; the package makes no claim about the OCC's or Federal Reserve's
+parallel rules).
 
 ### Peer selection: nearest by asset distance, and the window usually does not bind
 
@@ -777,9 +905,12 @@ this paragraph.
 
 **Reach for `c.generate_report(institution, peers)` on any request for "the
 benchmark report".** It is the only surface that renders the package's own
-disclosures: `summary_table` returns ten columns and carries **none** of them, in
-every configuration tested — that half is unconditional and is the `summary_table`
-column of the matrix under *When the caveats silently vanish*.
+disclosures: `summary_table` returns eleven columns in 0.3.3 and carries **none**
+of the report's disclosure lines, in every configuration tested — that half is
+unconditional and is the `summary_table` column of the matrix under *When the
+caveats silently vanish*. (Its `not_graded_reason` column, new in 0.3.3, carries
+the Tier 1 date or display reason as text. It does not carry the basis
+`Not graded` sentence or any other disclosure.)
 
 **The `generate_report` half is NOT unconditional, and the matrix is where to
 read it.** Of the twelve disclosure strings checked there, five are conditional:
@@ -806,8 +937,11 @@ rule below.
 `BenchmarkResult.vs_median` subtracts the unrounded values, deliberately, so
 programmatic consumers get an exact figure. `generate_report` prints the
 difference of the **rendered** operands instead, because the report shows both to
-2dp. Round `vs_median` yourself and the arithmetic on the page stops adding up.
-Executed this session:
+2dp — in percentage points (`pp`), followed by the gap relative to the rendered
+peer median (both since 0.3.2). Round `vs_median` yourself and the arithmetic on
+the page stops adding up. Executed this session (0.3.3, python3.11; the report
+line comes from `generate_report` on an institution with an FDIC-published NIM of
+4.3649 against a single peer at 2.2473745332357096):
 
 ```
   institution (raw) = 4.3649
@@ -815,12 +949,13 @@ Executed this session:
   vs_median   (raw) = 2.11752546676429
   an AI rounding summary_table to 2dp prints: 4.36 , 2.25 , 2.12
   ... and 4.36 - 2.25 = 2.11, NOT 2.12
-  generate_report prints instead: **vs Peer Median:** 2.11% above median
+  generate_report prints instead: **vs Peer Median:** 2.11 pp above median (93.8% above)
 ```
 
 The package fixed this on its report face and left `vs_median` exact on purpose.
 If you print a rounded difference, **compute it from the rounded operands** —
-`round(inst, 2) - round(median, 2)` — or take the line from `generate_report`.
+`round(inst, 2) - round(median, 2)` — and label it percentage points, not `%`;
+or take the line from `generate_report`.
 
 ### Output-presentation rules
 
@@ -831,6 +966,8 @@ If you print a rounded difference, **compute it from the rounded operands** —
   a peer median, a zero, or a plausible number.
 - **Never render a present-but-ungraded value as "not available."** Report the
   number, quote its `basis`, and quote the report's own `Not graded:` line.
+- **A Tier 1 N/A with a value present and a `not_graded_reason` is a refusal,
+  not a gap.** Quote the reason. Never grade it yourself against 8%, 9% or 5%.
 - **Say where a threshold comes from.** Seven of the eight are `HOUSE`. Never let
   a house rule of thumb read as a regulatory standard.
 - State the peer group basis (sample vs. live FDIC) and `peer_count`, and render
@@ -849,6 +986,13 @@ If you print a rounded difference, **compute it from the rounded operands** —
 - **Missing call-report field** → NaN + `N/A` status; render as N/A, never fill.
 - **Present value, ungraded basis** → `N/A` status with the value in hand;
   report the value and its `basis`. Do NOT say "not available".
+- **Tier 1 refused for its report date or display** (0.3.3+) → `N/A` with
+  `not_graded_reason`; quote it and do not invent a grade. Expected for every
+  report date after 2026-09-22 (e.g. 20260930) under 0.3.3. Never swap in an
+  older `report_date` silently to get a grade; offer it only as an explicitly
+  different, older period.
+- **cdfi-benchmark below 0.3.3 installed** → upgrade (`pip install -U
+  "cdfi-benchmark>=0.3.3"`) before presenting any Tier 1 grade.
 - **Name search** (`search_institutions(name=...)`) matches active institutions on
   substring; a zero-hit search on a valid name form is a legitimate empty result,
   not an error.
@@ -857,9 +1001,9 @@ If you print a rounded difference, **compute it from the rounded operands** —
 
 - Metrics are computed from **FDIC call-report data**; they reflect the reported
   `report_date` and FDIC's data quality, not an independent audit.
-- Peer groups are **heuristic**: 0.3.0 keeps the `max_peers` banks NEAREST the
-  subject by asset distance out of a ±50% candidate window, pinned to one report
-  date. A "peer" is a comparable-size FDIC bank, not a certified CDFI-only cohort
+- Peer groups are **heuristic**: since 0.3.0 the package keeps the `max_peers`
+  banks NEAREST the subject by asset distance out of a ±50% candidate window,
+  pinned to one report date. A "peer" is a comparable-size FDIC bank, not a certified CDFI-only cohort
   and not a supervisory (UBPR) peer group. Quote `PeerGroup.selection_basis`
   rather than describing the rule from memory.
 - `build_sample_peer_group` returns **synthetic** peers for demonstration; label
@@ -870,15 +1014,19 @@ If you print a rounded difference, **compute it from the rounded operands** —
   annualized by you. `nim`'s computed fallback is ungradeable at every period,
   including 12/31.
 - **The peer median can mix bases**, even when every peer shares a `report_date`
-  — the package records this as an unfixed limitation of 0.3.0 and calls such a
-  median a fabricated statistic. Say so when you present one.
+  — the package records this as a limitation (0.3.0, still unfixed in 0.3.3)
+  and calls such a median a fabricated statistic. Say so when you present one.
 - Seven of the eight thresholds are **HOUSE** rules of thumb, not standards; only
-  `tier1_ratio` carries a citation.
+  `tier1_ratio` carries a citation. That citation is resolved per report date, is
+  a comparison with the CBLR level for institutions that have **elected** the
+  framework (election is not modelled), and is refused — not asserted — for
+  dates before 2020-01-01, 2020-06-30 through 2021-12-31, after 2026-09-22,
+  missing/malformed/non-quarter-end dates, and values that display as the level.
 - **An FDIC-published basis is not a plausibility check.** A published ratio that
   is absurd on its face — a negative efficiency ratio, a three-digit ROAE, an
   earnings ratio on negative equity — is gradeable and grades `STRONG`. The
   package records this as a known limitation it did not fix
-  (`data/schema.py:427`). Report the value; do not let the grade speak for it.
+  (`data/schema.py:761`). Report the value; do not let the grade speak for it.
 - **`generate_report`'s disclosures are conditional, not guaranteed.** Three of
   them require `peers` to be the `PeerGroup` object; two more require the data to
   trigger them. A plain `list` of the same peers renders a shorter report that

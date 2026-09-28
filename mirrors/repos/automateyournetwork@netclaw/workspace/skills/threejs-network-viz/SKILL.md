@@ -1,3 +1,8 @@
+---
+name: threejs-network-viz
+description: "Generate browser-based interactive 3D network topology visualizations from inventory or a topology description. Use when a portable HTML scene is wanted without a desktop 3D engine."
+---
+
 # Three.js Network Topology Visualization Skill
 
 **Version**: 1.0.0

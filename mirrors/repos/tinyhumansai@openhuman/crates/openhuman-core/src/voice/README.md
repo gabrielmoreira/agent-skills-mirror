@@ -139,11 +139,11 @@ transcription count, rolling recent-transcript buffer for context) behind a
 
 ## Dependencies
 
-- `tinyinference-voice`: hosted STT transport, Piper execution, transcription cleanup, and streaming PCM mechanics; `crate::inference` supplies the local runtime and provider policy.
-- `crate::config`: `Config`, `config::rpc::load_config_with_timeout`, voice-server / dictation config sections, and `config::schema::voice_providers` (`VoiceProviderCreds`, capability/auth/API-style enums).
-- `crate::desktop::accessibility` (macOS only): focused-text inspection (`focused_text_context_verbose`) and the Swift globe-key listener (`globe_listener_start` / `globe_listener_poll`) used in place of rdev for the Fn key.
-- `crate::api`: `BackendOAuthClient`, `effective_backend_api_url`, `get_session_token` for backend-proxied reply-speech and the realtime signed-URL bootstrap.
-- `crate::modules::voice` (`tinyvoice`): see Contract crates above.
+- `tinyinference-voice` — hosted STT transport, Piper execution, transcription cleanup, and streaming PCM mechanics; `crate::inference` supplies the local runtime and provider policy.
+- `crate::config` — `Config`, `config::rpc::load_config_with_timeout`, voice-server / dictation config sections, and `config::schema::voice_providers` (`VoiceProviderCreds`, capability/auth/API-style enums).
+- `crate::desktop::accessibility` (macOS only) — focused-text inspection (`focused_text_context_verbose`) and the Swift globe-key listener (`globe_listener_start` / `globe_listener_poll`) used in place of rdev for the Fn key.
+- `crate::backend` — `BackendClient`, `backend::base_url` (asks the installed transport); `security::credentials::session_support::get_session_token` for backend-proxied reply-speech and the realtime signed-URL bootstrap.
+- `crate::modules::voice` (`tinyvoice`) — see Contract crates above.
 - `crate::core::all` (`ControllerFuture`, `RegisteredController`), `crate::core::{ControllerSchema, FieldSchema, TypeSchema}`, `crate::core::bus::BUS` + `crate::core::events` (event publishing), `crate::core::logging` (CLI run init), and `crate::rpc::RpcOutcome`.
 - External crates: `cpal` (capture), `rdev` (hotkeys), `enigo` + `arboard` (paste insertion), `reqwest` (external provider HTTP + realtime bootstrap), `tokio`/`tokio-util`, `once_cell`.
 

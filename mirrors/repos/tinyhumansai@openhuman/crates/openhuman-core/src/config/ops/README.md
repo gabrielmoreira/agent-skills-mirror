@@ -13,12 +13,13 @@ fn, which returns `RpcOutcome<T>`.
 
 | File | Responsibility |
 | --- | --- |
-| `agent.rs` | Autonomy, agent, agent-paths, activity-level, and memory-sync settings. |
+| `agent.rs` | Autonomy, agent, agent-paths, and memory-sync settings. |
 | `loader.rs` | Config loading/snapshotting and runtime flags; split into submodules `loader/load.rs`, `loader/paths.rs`, `loader/reset_local_data.rs`, `loader/runtime_flags.rs`, `loader/snapshot.rs`. |
 | `model.rs` | AI-provider, memory, runtime, local-AI, and Composio-trigger settings. |
 | `privacy.rs` | Privacy Mode (`[privacy]`) get/set. |
 | `sandbox.rs` | Sandbox / Docker runtime (`[sandbox]`, `[runtime.docker]`) settings. |
-| `ui.rs` | Browser, analytics, search, dictation, voice-server, and onboarding-flag settings. |
+| `ui.rs` | Browser, analytics, dictation, voice-server, and onboarding-flag settings. |
+| `search.rs` | Search settings: providers, routes, role order, keys, limits, and the web-access allowlist. |
 
 Each submodule follows the same shape: a `*SettingsPatch` struct with
 `Option<T>` fields (`None` = unchanged); an `apply_*(&mut Config, patch)` fn
@@ -33,8 +34,7 @@ dictation and voice-server mutators exist only in `load_and_apply_*` form.
 - `agent.rs`: `apply_autonomy_settings` / `get_autonomy_settings`,
   `add_auto_approve_tool`, `apply_agent_settings` / `get_agent_settings`,
   `apply_agent_paths_settings` / `get_agent_paths`, `ensure_usable_cwd`,
-  `expand_tilde`, `redact_home`, `apply_activity_level_settings`,
-  `apply_memory_sync_settings`.
+  `expand_tilde`, `redact_home`, `apply_memory_sync_settings`.
 - `loader.rs`: `load_config_with_timeout`,
   `load_config_for_workspace_with_timeout`, `get_config_snapshot`,
   `client_config_json`, `reload_config_from_paths`, `reset_local_data`,
@@ -48,8 +48,9 @@ dictation and voice-server mutators exist only in `load_and_apply_*` form.
   `apply_composio_trigger_settings`, `load_and_resolve_api_url`.
 - `privacy.rs`: `apply_privacy_settings`, `get_privacy_mode`.
 - `sandbox.rs`: `apply_sandbox_settings`, `get_sandbox_settings`.
+- `search.rs`: `apply_search_settings` / `get_search_settings`,
+  `search_settings_json`.
 - `ui.rs`: `apply_browser_settings`, `apply_analytics_settings`,
-  `apply_search_settings` / `get_search_settings`,
   `load_and_apply_voice_server_settings` / `get_voice_server_settings`,
   `load_and_apply_dictation_settings` / `get_dictation_settings`,
   `set_onboarding_completed` / `get_onboarding_completed`,
@@ -58,15 +59,17 @@ dictation and voice-server mutators exist only in `load_and_apply_*` form.
 
 ## Search settings
 
-`apply_search_settings` accepts a global `enabled` switch, an explicit
-`enabled_providers` set, a presentation mode (`all_tools`, `router`, or
-`one_provider`), and direct/backend routes for Parallel and Gemini. Omitting
-`enabled_providers` migrates from saved keys, a current backend credential,
-and the separate TinyFish, Seltz, and SearXNG toggles. An explicit empty list
-selects no providers. The old `engine = "disabled"` setting still disables
-search. Both `get_search_settings` and the update response report only key
-presence booleans, never raw credentials. After saving, an already loaded
-TinySearch module is refreshed with a private configuration payload.
+`apply_search_settings` validates the whole patch before saving: a global
+`enabled` switch; per-provider `{enabled, route, api_key, base_url}` (routes a
+provider does not support are rejected, an empty key clears it); per-role
+provider order (`search`, `answer`, `contents`; a provider that cannot serve a
+role is rejected, an empty list restores the default); presentation; limits;
+and the web-access allowlist. The legacy `engine` field from older clients is
+still accepted (`SearchConfig::apply_legacy_engine`). The response and
+`get_search_settings` return the same view: each provider's resolved route,
+key presence, `usable` and status, the configured role order, and
+`effective_roles` (what serves each role right now). Keys are never returned.
+After saving, a loaded TinySearch module is refreshed privately.
 
 ## Security-relevant behavior
 

@@ -6,6 +6,8 @@
 - 责任：总纲拥有产品目标、跨领域依赖、优先级和组合验收；领域 RFC/稳定协议拥有具体规则；运行 Todo 拥有执行状态。
 - 语言：[English](loopx-overall-roadmap-v0.md) 与本文互为语义镜像。
 
+**本地权威退役 checkpoint（2026-09-28）。** R5/T4 采用[重新核对的删除和验证节奏](ledger/shared-goal-authority-state-provider-v0/2026-09-28-retirement-cadence.zh-CN.md)。Reviewed 本地切换和 native drain 已合入；整 Goal 执行／消费者闭环、profile 验证、默认入口接入仍分别验收。切走最后调用方时同步删旧 writer，保留必要迁移／回执 reader。已有 GoalRef／Turn PR 负责各自消费者；R6 PostgreSQL 服务验证另列，历史 PR 数量估算不再作为当前预测。
+
 ## 1. 总目标与产品路线
 
 LoopX 的目标是让人用本地前端或 Lark 提出、修订和验收复杂目标，由持久管家协调多个拥有独立工作承诺的长程 LoopX Agent，在本地 managed 与云端 runtime 上持续完成可验证的工作。单 Agent 的长程可靠性是基础，多个 Agent 的协作、handoff、恢复和共享目标收敛是核心能力，百 Agent 规模是需要独立证明的系统资格。
@@ -39,7 +41,11 @@ managed 与 attached 的工作对话都应能持续在 LoopX 中进行：沿用�
 
 [App 对话与通用异步 inbox 设计](app-conversation-and-async-inbox-v0.md)
 细化既有 R1–R3：先修普通输入与持久受理，再验证连接／继续、可信状态、
-停止／恢复和可读结果，随后完成 G1 两轮真实协作。它们优先于各渠道外观一致或
+停止／恢复和可读结果。最近的可感知交付是一句 App 请求，经合格的已有负责人，
+带着实际采用的纠偏与恢复能力，把可审阅草稿返回原对话；用户不用找人、催办或搬结果。
+延期回复送达仍是延期。随后完成 G1 两轮真实协作，按
+[具体试点与退出条件](app-conversation-and-async-inbox-v0.zh-CN.md) 验收。
+它们优先于各渠道外观一致或
 扩大规模。Lark 中可复用的 inbox 生命周期逐步收敛到现有 TS coordination owner，
 认证、寻址、反应和消息限制保留在扩展。产品 TS 重构按完整用户路径推进，
 不能变成逐字段 RPC 增长或全量重写前置条件。
@@ -391,6 +397,12 @@ P0 首批是负责人路由和真实 2–3-worker 协调：两轮并行汇合、
 委派逻辑。主协调员与普通成员使用同一授权合同；未启用执行配置的 stdio 服务保持
 原有五个非执行工具。文件形式的 provider 配置缩短启动参数，不改变默认执行器。
 
+owner 所选验收范围外的独立工作，现可通过同一 TS 校验计划使用规范 Todo 显式声明的
+完成校验。范围内仍须具备当前 owner 关联，且所有适用校验都须通过。成员完成保留
+Goal active，再仅恢复原 Turn 的结算，不声明 terminal no-follow-up。File/SQLite CLI
+及本地 host 回归只验收该边界，不代表真实模型投研、请求方综合或 Lark 等价；不激活
+任何 binding grant 或 provider。
+
 [合成投研示例](../../../examples/managed-research-team/README.md)由本地主 Agent
 组织两个 DSH 和两个 Ark 成员：云端核验员采用本地分析，另一 Ark 成员继续委派
 DSH 后向本地主 Agent 返回。五个稳定预授权任务一次绑定精确验收；Turn 验证与普通
@@ -457,6 +469,11 @@ R3 还需验证 handoff RFC 的分层 A6/A8/A13 扩展：普通 managed worker �
 综合另一 peer 的产物后再返回主 Agent；各层复用相同 request/work owner。入口
 fixture 在未决工具、取消、迟到结果下区分 inbox 收件、后续 queue 工作和已采用
 steer；传输成功不关闭请求。复用现有 R2/R3 后继，不另开平行团队编排项目。
+
+R3 入口验收也覆盖显式配置的管家群内无需 @ 的普通用户消息。触发语义由共享
+TS 对话准入规则负责；Lark 提供消息身份，现有收件箱负责去重和回传。App 设置
+按连接选择并回读触发方式。外部渠道的工具权限、发信人绑定的委派授权仍需单独
+验收；收到请求不代表已经具备执行授权。
 
 ### R4：共享目标对齐与演化
 

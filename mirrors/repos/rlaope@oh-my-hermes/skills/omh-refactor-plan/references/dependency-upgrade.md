@@ -65,14 +65,36 @@ The lockfile is the artifact the upgrade actually produces.
 - A monorepo with several lockfiles upgrades them together or states which are
   deliberately pinned behind and why.
 
+## 5. Call-site readiness gate
+
+"Safe to merge" for a bump - including one a bot opened - is a verdict over
+this table, not a reading of the changelog. One row per breaking change
+between the two versions:
+
+| Breaking change | Call sites in this repo | Stage | Rollback |
+| --- | --- | --- | --- |
+| upstream item, quoted | `path:line` per site, or the search run and its observed empty result | which stage handles it | how that stage is undone |
+
+The plan is not ready, and the bump is not safe to merge, while any row has
+an empty call-site cell or an empty rollback cell. A search that was prepared
+but not run is an empty cell. An empty call-site list is a finding only when
+the search that produced it is named, because an unrun search and a clean one
+look the same in a summary.
+
 ## Phase order for an upgrade
 
-The contracts-first order still holds, read for this shape: the version bump
-and lockfile are the first phase and must end green on their own; adapters for
-renamed or moved APIs come next; call sites follow in reviewable groups; test
-and fixture updates follow those; removal of the compatibility shims is the
-cleanup phase. Rolling back the first phase is reverting two files, which is
-why it is first.
+The contracts-first order still holds, read for this shape. Each stage states
+its own rollback:
+
+| Stage | What it does | Rollback |
+| --- | --- | --- |
+| Prepare | compatibility shims and adapters that work on both versions | revert the shim commits; the old version still runs |
+| Bump | manifest and lockfile together, ending green on their own | revert two files |
+| Adapt | call sites move off the removed APIs, in reviewable groups | revert the group; the shims still cover it |
+| Remove shims | cleanup, from a tagged rollback point | return to the tag |
+
+Shims that run on both versions go first, so the bump stays a two-file revert
+and every call site is covered while the adapt stage lands.
 
 ## Boundary
 

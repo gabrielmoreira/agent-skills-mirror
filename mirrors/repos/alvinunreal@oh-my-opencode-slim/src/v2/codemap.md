@@ -15,7 +15,7 @@ v2 registrations. v1 behavior is unchanged.
 | Path | Role |
 |---|---|
 | `index.ts` | Barrel: re-exports `createV2Setup` and the v2 context types. Imported by `src/index.ts` for the dual `default` export. |
-| `setup.ts` | `createV2Setup()` → the `setup(ctx)` orchestrator v2 calls. Capability-guards reduced/TUI-side hosts (no `agent.transform`). Registers agents, tools, MCPs, commands, the merged context hook, the native `session.prompt` bridge, the chat.headers `session.model.request` bridge, the `session.compaction` bridge, tool-execute bridges, and the event pump. Session hooks register **unconditionally** on full v2 contexts: a registration failure fails setup loudly. The configured MCP inventory must be exposed through `ctx.mcp.transform` for finalized-registry namespace policy; missing MCP transform is unsupported and fails setup. Other domain transforms (agent/tool/command) remain independently try/catch-guarded with a zero-registration health check. Child-session permission rules are applied via `ctx.session.update({sessionID, permissions})` (`createPermissionRulesBridge`); missing `session.update` remains an optional degraded child bridge. Exports the pure command-marker helpers (`wrapCommandMarker`, `parseCommandMarker`, `stripCommandMarker`). |
+| `setup.ts` | `createV2Setup()` → the `setup(ctx)` orchestrator v2 calls. Capability-guards reduced/TUI-side hosts (no `agent.transform`). Registers agents, tools, MCPs, commands, the merged context hook, the native `session.prompt` bridge, the chat.headers `session.model.request` bridge, the `session.compaction` bridge, tool-execute bridges, and the event pump. Session hooks register **unconditionally** on full v2 contexts: a registration failure fails setup loudly. MCP transform is registered before agent transform; setup never materializes `ctx.agent.list()`. The MCP callback captures host namespaces, then the agent callback finalizes the registry and opens prompt readiness. Deferred callbacks do not fail setup, but an agent callback before the MCP snapshot fails rather than finalizing incomplete policy. Managed prompts fail closed until agent finalization. Missing MCP transform is unsupported and fails setup. Other domain transforms remain independently try/catch-guarded with a zero-registration health check. Child-session permission rules are applied via `ctx.session.update({sessionID, permissions})` (`createPermissionRulesBridge`); missing `session.update` remains an optional degraded child bridge. Exports the pure command-marker helpers (`wrapCommandMarker`, `parseCommandMarker`, `stripCommandMarker`). |
 | `types.ts` | v2 plugin context surface (`V2Context` + draft/event types), mirrored locally (v2 plugin package is not a build-time dependency). Runtime-probed session methods (`get`/`interrupt`/`switchModel`/`context`/`prompt`/`synthetic`/`update`/`switchAgent`) and the optional `mcp` domain are declared optional with probe notes. |
 | `session-submit.ts` | Shared `createSessionSubmit` (prompt-only user-prompt submit via `ctx.session.prompt`) + `textFromContent`; used by both the generic command bridge and the interview bridge to avoid a setup↔bridge import cycle. |
 | `client-shim.ts` | `buildPluginInput`: constructs a v1-shaped `PluginInput` with a **real-delegation** client — v1 SDK call shapes translate to v2 flat session calls (`get`, `interrupt` — abort sends `resume: false`, `context`, `prompt` with `delivery:"steer"`, `update` for renames — `{sessionID, title}`), with honest degradation (log or omit) where the host lacks the method. `resolveV2Directory` prefers `ctx.location.directory` (#45403+) with a `process.cwd()` fallback. `promptAsync` encapsulates the v2 model-switch semantics (`switchModel` before the prompt) and accepts an optional `delivery` argument (default `"steer"` for the foreground-fallback replay; the orchestrator-wake scheduler passes `"queue"` to match v1's queued prompt_async); chat-header metadata is derived internally from the body's internal-initiator parts, not passed by callers. |
@@ -86,10 +86,14 @@ orchestrator-wake scheduler runs on v2 in children-driven degraded mode
 (list+promptAsync gate, `session.list({parentID})` enumeration with the
 event-tracked fallback, outcome-based condition with a 3×-interval staleness
 bound, `queue` delivery — see `src/hooks/orchestrator-wake/codemap.md`).
-Finalized-registry setup requires `ctx.mcp.transform` to expose the configured
-MCP namespace inventory; hosts without it are unsupported and setup fails
-with an actionable error. `session.update` remains optional: hosts without it
-degrade only the PR7 child permission bridge. Model switching needs
+Finalized-registry setup captures configured MCP namespace inventory through
+`ctx.mcp.transform` before the deferred agent transform callback runs. Setup
+does not force host materialization with `ctx.agent.list()`. Until agent
+finalization, prompt admission fails closed; a premature agent callback cannot
+freeze policies without the host MCP inventory. Hosts without the MCP
+transform itself are unsupported and setup fails with an actionable error.
+`session.update` remains optional: hosts without it degrade only the PR7 child
+permission bridge. Model switching needs
 `session.switchModel` ≥ #43718; directory needs `ctx.location` ≥ #45403
 (hosts without it fall back to cwd). Companion is
 unverified on v2. Prompt-cache safety rules are unchanged

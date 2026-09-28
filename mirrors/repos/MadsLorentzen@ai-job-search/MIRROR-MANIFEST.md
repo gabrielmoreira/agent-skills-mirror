@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `MadsLorentzen/ai-job-search` — 26 default patterns, 0 followed patterns, 115 file(s) materialized.
+Mirror of `MadsLorentzen/ai-job-search` — 26 default patterns, 0 followed patterns, 116 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `MadsLorentzen/ai-job-search` — 26 default patterns, 0 followed patt
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 115 |
+| Files         | 116 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -161,19 +161,20 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 100 | ✓ | [`.agents/skills/linkedin-search/cli/src/commands/search.ts`](.agents/skills/linkedin-search/cli/src/commands/search.ts) |
 | 101 | ✓ | [`.agents/skills/linkedin-search/cli/src/helpers.ts`](.agents/skills/linkedin-search/cli/src/helpers.ts) |
 | 102 | ✓ | [`.agents/skills/linkedin-search/cli/tests/cli-flag-validation.test.ts`](.agents/skills/linkedin-search/cli/tests/cli-flag-validation.test.ts) |
-| 103 | ✓ | [`.agents/skills/linkedin-search/cli/tests/helpers.ts`](.agents/skills/linkedin-search/cli/tests/helpers.ts) |
-| 104 | ✓ | [`.agents/skills/linkedin-search/cli/tests/parsing.test.ts`](.agents/skills/linkedin-search/cli/tests/parsing.test.ts) |
-| 105 | ✓ | [`.agents/skills/linkedin-search/cli/tests/request-timeout.test.ts`](.agents/skills/linkedin-search/cli/tests/request-timeout.test.ts) |
-| 106 | ✓ | [`.agents/skills/linkedin-search/cli/tests/retry-backoff.test.ts`](.agents/skills/linkedin-search/cli/tests/retry-backoff.test.ts) |
-| 107 | ✓ | [`.agents/skills/linkedin-search/cli/tests/search.test.ts`](.agents/skills/linkedin-search/cli/tests/search.test.ts) |
-| 108 | ✓ | [`.agents/skills/linkedin-search/cli/tsconfig.json`](.agents/skills/linkedin-search/cli/tsconfig.json) |
-| 109 | ✓ | [`.agents/skills/linkedin-search/SKILL.md`](.agents/skills/linkedin-search/SKILL.md) |
-| 110 | ✓ | [`.agents/skills/linkedin-search/url-reference.md`](.agents/skills/linkedin-search/url-reference.md) |
-| 111 | ✓ | [`.claude/skills/job-application-assistant/SKILL.md`](.claude/skills/job-application-assistant/SKILL.md) |
-| 112 | ✓ | [`.claude/skills/job-scraper/SKILL.md`](.claude/skills/job-scraper/SKILL.md) |
-| 113 | ✓ | [`.claude/skills/upskill/SKILL.md`](.claude/skills/upskill/SKILL.md) |
-| 114 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 115 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 103 | ✓ | [`.agents/skills/linkedin-search/cli/tests/detail-input.test.ts`](.agents/skills/linkedin-search/cli/tests/detail-input.test.ts) |
+| 104 | ✓ | [`.agents/skills/linkedin-search/cli/tests/helpers.ts`](.agents/skills/linkedin-search/cli/tests/helpers.ts) |
+| 105 | ✓ | [`.agents/skills/linkedin-search/cli/tests/parsing.test.ts`](.agents/skills/linkedin-search/cli/tests/parsing.test.ts) |
+| 106 | ✓ | [`.agents/skills/linkedin-search/cli/tests/request-timeout.test.ts`](.agents/skills/linkedin-search/cli/tests/request-timeout.test.ts) |
+| 107 | ✓ | [`.agents/skills/linkedin-search/cli/tests/retry-backoff.test.ts`](.agents/skills/linkedin-search/cli/tests/retry-backoff.test.ts) |
+| 108 | ✓ | [`.agents/skills/linkedin-search/cli/tests/search.test.ts`](.agents/skills/linkedin-search/cli/tests/search.test.ts) |
+| 109 | ✓ | [`.agents/skills/linkedin-search/cli/tsconfig.json`](.agents/skills/linkedin-search/cli/tsconfig.json) |
+| 110 | ✓ | [`.agents/skills/linkedin-search/SKILL.md`](.agents/skills/linkedin-search/SKILL.md) |
+| 111 | ✓ | [`.agents/skills/linkedin-search/url-reference.md`](.agents/skills/linkedin-search/url-reference.md) |
+| 112 | ✓ | [`.claude/skills/job-application-assistant/SKILL.md`](.claude/skills/job-application-assistant/SKILL.md) |
+| 113 | ✓ | [`.claude/skills/job-scraper/SKILL.md`](.claude/skills/job-scraper/SKILL.md) |
+| 114 | ✓ | [`.claude/skills/upskill/SKILL.md`](.claude/skills/upskill/SKILL.md) |
+| 115 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 116 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 
 ---
 

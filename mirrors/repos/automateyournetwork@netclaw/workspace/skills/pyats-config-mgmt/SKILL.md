@@ -307,7 +307,7 @@ For emergency changes (network outage, security incident):
 Record every phase of the change in GAIT:
 
 ```bash
-python3 $MCP_CALL "python3 -u $GAIT_MCP_SCRIPT" gait_record_turn '{"input":{"role":"assistant","content":"Config change on R1: Phase 1 baseline captured. Phase 2 plan approved. Phase 3 config applied. Phase 4 verification PASSED. ServiceNow CR CHG0012345 closed successful.","artifacts":[]}}'
+python3 $MCP_CALL "python3 -u $GAIT_MCP_SCRIPT" gait_record_turn '{"user_text":"Example only: replace with the actual authorized request.","assistant_text":"Config change on R1: Phase 1 baseline captured. Phase 2 plan approved. Phase 3 config applied. Phase 4 verification PASSED. ServiceNow CR CHG0012345 closed successful.","artifacts":[]}'
 ```
 
 The 5-phase workflow with GAIT creates an immutable record:
@@ -316,3 +316,8 @@ The 5-phase workflow with GAIT creates an immutable record:
 3. **Apply** → GAIT commit with exact commands pushed
 4. **Verify** → GAIT commit with post-change state and diff
 5. **Document** → GAIT commit with final summary and CR closure
+
+Audit examples are illustrative. Replace request, outcomes, identifiers and counts
+with observed session evidence; do not record these example results as facts.
+Inspect MCP `isError`, returned `ok`, and the recorded turn with `gait_show` when
+validating a new client/schema. Follow gait-session-tracking for branch checkout.

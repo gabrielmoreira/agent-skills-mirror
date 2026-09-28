@@ -684,6 +684,7 @@ export function DeckCanvas({
                 editable={editable}
                 edit={{
                   onHeadlineChange: (v) => edit?.onHeadlineChange?.(slide.id, v),
+                  onSelectElement: () => edit?.onSelectScreen?.(slide.id),
                 }}
               />
               {showGuides && <ScreenGuide cW={cW} cH={cH} index={index} active={active} />}
@@ -866,6 +867,9 @@ function FeatureGraphicCanvas({
   edit?: EditHandlers;
 }) {
   const { headlineScale, appNameScale } = slideFontScales(slide);
+  const inverted = slide.inverted ?? true;
+  const bg = inverted ? theme.bgAlt : theme.bg;
+  const colors = slideColors(theme, { ...slide, inverted });
   return (
     <div
       style={{
@@ -873,11 +877,11 @@ function FeatureGraphicCanvas({
         height: "100%",
         position: "relative",
         overflow: "hidden",
-        background: `linear-gradient(135deg, ${theme.bgAlt} 0%, ${shade(theme.bgAlt, -10)} 50%, ${theme.accent} 200%)`,
+        background: slide.backgroundColor || `linear-gradient(135deg, ${bg} 0%, ${shade(bg, -10)} 50%, ${theme.accent} 200%)`,
         display: "flex",
         alignItems: "center",
         padding: `0 ${cW * 0.06}px`,
-        color: theme.fgAlt,
+        color: colors.fg,
       }}
     >
       <Blob cW={cW} color={theme.accent} x={70} y={20} size={50} opacity={0.45} />
@@ -905,7 +909,7 @@ function FeatureGraphicCanvas({
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              color: theme.fgAlt,
+              color: colors.fg,
               fontWeight: 800,
               fontSize: cW * 0.07,
               boxShadow: "0 4px 16px rgba(0,0,0,0.3)",
@@ -921,9 +925,11 @@ function FeatureGraphicCanvas({
             editable={editable}
             multiline
             onChange={edit?.onHeadlineChange}
+            onFocus={() => edit?.onSelectElement?.("caption")}
             style={{
               fontSize: cW * 0.028 * headlineScale,
-              color: "rgba(255,255,255,0.85)",
+              color: colors.fg,
+              opacity: 0.85,
               marginTop: cW * 0.012,
               lineHeight: 1.25,
             }}

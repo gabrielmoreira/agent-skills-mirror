@@ -5,8 +5,11 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+import pytest
 import review_strategy_drafts as rsd
 import yaml
+
+CHECKLIST_PATH = Path(__file__).resolve().parents[2] / "assets" / "bias_checklist.yaml"
 
 # ---------------------------------------------------------------------------
 # C1: Edge Plausibility
@@ -545,6 +548,325 @@ def test_c1_c2_c3_score_ranges_no_longer_uniform(
     # At least one of the scores should NOT be in {10, 40, 80}
     scores = {c1.score, c2.score, c3.score}
     assert not scores.issubset(old_values), f"All scores {scores} still in old set {old_values}"
+
+
+# ---------------------------------------------------------------------------
+# Bias Checklist (issue #297 slice 1)
+# ---------------------------------------------------------------------------
+
+
+@pytest.fixture()
+def bias_items() -> list[dict]:
+    """Load the bundled bias checklist items."""
+    return rsd.load_bias_checklist(CHECKLIST_PATH)
+
+
+def test_load_bias_checklist_parses() -> None:
+    """The bundled bias checklist YAML must expose versioned required items."""
+    items = rsd.load_bias_checklist(CHECKLIST_PATH)
+    assert len(items) >= 12
+    assert all({"id", "title", "required", "coverage_hint"} <= set(i) for i in items)
+    ids = {i["id"] for i in items}
+    assert {
+        "look_ahead",
+        "survivorship",
+        "universe_selection",
+        "delisted_securities",
+        "earnings_announcement_timing",
+        "split_dividend_adjustment",
+        "transaction_costs_slippage",
+        "short_borrow_availability",
+        "liquidity_capacity",
+        "parameter_multiplicity",
+        "walk_forward_out_of_sample",
+        "benchmark_attribution",
+        "regime_dependence",
+    } <= ids
+    # The issue's checklist is mandatory -> every item is required.
+    assert all(i["required"] for i in items)
+
+
+def test_evaluate_bias_checklist_explicit_block(
+    well_formed_breakout_draft: dict, bias_items: list[dict]
+) -> None:
+    """A declared truthy entry marks an item addressed; undeclared items are not."""
+    d = dict(well_formed_breakout_draft)
+    d["bias_checklist"] = {
+        "look_ahead": "point-in-time snapshot; no future data used",
+        "survivorship": "universe includes delisted names",
+    }
+    results = rsd.evaluate_bias_checklist(d, bias_items)
+    by_id = {r["item_id"]: r for r in results}
+    assert by_id["look_ahead"]["addressed"] is True
+    assert by_id["survivorship"]["addressed"] is True
+    assert by_id["universe_selection"]["addressed"] is False
+    assert by_id["regime_dependence"]["addressed"] is False
+
+
+def test_bias_noted_in_draft_heuristic(
+    well_formed_breakout_draft: dict, bias_items: list[dict]
+) -> None:
+    """The informational 'noted_in_draft' flag matches concept text in the draft."""
+    d = dict(well_formed_breakout_draft)
+    results = rsd.evaluate_bias_checklist(d, bias_items)
+    by_id = {r["item_id"]: r for r in results}
+    assert by_id["regime_dependence"]["noted_in_draft"] is True
+    # Not declared in an explicit block, so not 'addressed' even if noted.
+    assert by_id["regime_dependence"]["addressed"] is False
+
+
+def test_apply_bias_gate_downgrades_pass_to_revise(bias_items: list[dict]) -> None:
+    """Unaddressed required item downgrades PASS -> REVISE and clears export."""
+    review = rsd.DraftReview(
+        draft_id="x",
+        verdict="PASS",
+        confidence_score=80,
+        export_eligible=True,
+        findings=[],
+        revision_instructions=[],
+    )
+    d = {"id": "x", "bias_checklist": {"look_ahead": "point-in-time"}}
+    results = rsd.evaluate_bias_checklist(d, bias_items)
+    assert rsd.apply_bias_gate(review, results) is True
+    assert review.verdict == "REVISE"
+    assert review.export_eligible is False
+
+
+def test_apply_bias_gate_no_downgrade_when_all_required_addressed() -> None:
+    """When every required item is addressed, the gate leaves the verdict alone."""
+    items = [
+        {"id": "a", "title": "A", "required": True, "coverage_hint": "x"},
+        {"id": "b", "title": "B", "required": True, "coverage_hint": "y"},
+    ]
+    d = {"id": "x", "bias_checklist": {"a": "done", "b": "done"}}
+    review = rsd.DraftReview("x", "PASS", 80, True, [], [])
+    results = rsd.evaluate_bias_checklist(d, items)
+    assert rsd.apply_bias_gate(review, results) is False
+    assert review.verdict == "PASS"
+    assert review.export_eligible is True
+
+
+def test_apply_bias_gate_never_upgrades_reject(bias_items: list[dict]) -> None:
+    """A REJECT verdict must never be raised by the bias gate."""
+    review = rsd.DraftReview("x", "REJECT", 20, False, [], [])
+    d = {"id": "x"}
+    results = rsd.evaluate_bias_checklist(d, bias_items)
+    assert rsd.apply_bias_gate(review, results) is False
+    assert review.verdict == "REJECT"
+
+
+def test_build_output_includes_bias_block_only_when_present(
+    well_formed_breakout_draft: dict,
+) -> None:
+    """bias_review is serialized only when the checklist source is supplied."""
+    review = rsd.review_draft(well_formed_breakout_draft)
+    bias_block = [
+        {
+            "item_id": "look_ahead",
+            "title": "Look-ahead bias",
+            "required": True,
+            "addressed": True,
+            "noted_in_draft": True,
+            "note": "point-in-time",
+        }
+    ]
+    with_bias = rsd.build_output("src", 1, [review], bias_by_id={review.draft_id: bias_block})
+    assert with_bias["reviews"][0]["bias_review"] == bias_block
+    without_bias = rsd.build_output("src", 1, [review])
+    assert "bias_review" not in without_bias["reviews"][0]
+
+
+def test_bias_checklist_doc_matches_asset(bias_items: list[dict]) -> None:
+    """Drift guard: the research-bias doc must describe every checklist item."""
+    doc = (
+        Path(__file__).resolve().parents[4] / "docs/dev/strategy-research-bias-checklist.md"
+    ).read_text(encoding="utf-8")
+    for item in bias_items:
+        assert f"`{item['id']}`" in doc, f"bias doc missing checklist item {item['id']}"
+
+
+def test_cli_bias_checklist_defaults_bundled(
+    tmp_path: Path, well_formed_breakout_draft: dict
+) -> None:
+    """--bias-checklist without a path uses the bundled asset and downgrades on gaps."""
+    draft_file = tmp_path / "draft.yaml"
+    draft_file.write_text(
+        yaml.safe_dump(well_formed_breakout_draft, sort_keys=False), encoding="utf-8"
+    )
+    output_dir = tmp_path / "output"
+    output_dir.mkdir()
+
+    rc = rsd.main(
+        [
+            "--draft",
+            str(draft_file),
+            "--output-dir",
+            str(output_dir),
+            "--format",
+            "json",
+            "--bias-checklist",
+        ]
+    )
+    assert rc == 0
+    payload = json.loads((output_dir / "review.json").read_text(encoding="utf-8"))
+    review = payload["reviews"][0]
+    assert review["verdict"] == "REVISE"
+    assert review["export_eligible"] is False
+    assert "bias_review" in review
+    assert review["bias_review"]
+    assert any(not b["addressed"] for b in review["bias_review"])
+
+
+def test_cli_bias_checklist_custom_path(tmp_path: Path, well_formed_breakout_draft: dict) -> None:
+    """--bias-checklist with an explicit path loads that checklist."""
+    draft_file = tmp_path / "draft.yaml"
+    draft_file.write_text(
+        yaml.safe_dump(well_formed_breakout_draft, sort_keys=False), encoding="utf-8"
+    )
+    checklist_file = tmp_path / "custom.yaml"
+    checklist_file.write_text(
+        "schema_version: '1.0'\nitems:\n  - id: look_ahead\n    title: Look ahead\n"
+        "    required: true\n    coverage_hint: point[- ]in[- ]time\n",
+        encoding="utf-8",
+    )
+    output_dir = tmp_path / "output"
+    output_dir.mkdir()
+
+    rc = rsd.main(
+        [
+            "--draft",
+            str(draft_file),
+            "--output-dir",
+            str(output_dir),
+            "--format",
+            "json",
+            "--bias-checklist",
+            str(checklist_file),
+        ]
+    )
+    assert rc == 0
+    review = json.loads((output_dir / "review.json").read_text(encoding="utf-8"))["reviews"][0]
+    assert review["verdict"] == "REVISE"
+    assert len(review["bias_review"]) == 1
+
+
+def test_cli_bias_checklist_missing_file(tmp_path: Path, well_formed_breakout_draft: dict) -> None:
+    """A missing custom checklist path surfaces a ReviewError (rc=1)."""
+    draft_file = tmp_path / "draft.yaml"
+    draft_file.write_text(
+        yaml.safe_dump(well_formed_breakout_draft, sort_keys=False), encoding="utf-8"
+    )
+    output_dir = tmp_path / "output"
+    output_dir.mkdir()
+
+    rc = rsd.main(
+        [
+            "--draft",
+            str(draft_file),
+            "--output-dir",
+            str(output_dir),
+            "--bias-checklist",
+            str(tmp_path / "nope.yaml"),
+        ]
+    )
+    assert rc == 1
+
+
+def test_cli_bias_checklist_malformed_yaml(
+    tmp_path: Path, well_formed_breakout_draft: dict
+) -> None:
+    """A custom checklist with invalid YAML surfaces a ReviewError (rc=1), not a traceback."""
+    draft_file = tmp_path / "draft.yaml"
+    draft_file.write_text(
+        yaml.safe_dump(well_formed_breakout_draft, sort_keys=False), encoding="utf-8"
+    )
+    checklist_file = tmp_path / "bad.yaml"
+    checklist_file.write_text("items: [unclosed\n", encoding="utf-8")
+    output_dir = tmp_path / "output"
+    output_dir.mkdir()
+
+    rc = rsd.main(
+        [
+            "--draft",
+            str(draft_file),
+            "--output-dir",
+            str(output_dir),
+            "--bias-checklist",
+            str(checklist_file),
+        ]
+    )
+    assert rc == 1
+
+
+def test_cli_bias_checklist_schema_version_mismatch(
+    tmp_path: Path, well_formed_breakout_draft: dict
+) -> None:
+    """A custom checklist with a mismatched schema_version is rejected."""
+    draft_file = tmp_path / "draft.yaml"
+    draft_file.write_text(
+        yaml.safe_dump(well_formed_breakout_draft, sort_keys=False), encoding="utf-8"
+    )
+    checklist_file = tmp_path / "checklist.yaml"
+    checklist_file.write_text(
+        yaml.safe_dump(
+            {"schema_version": "2.0", "items": [{"id": "x", "coverage_hint": "x"}]},
+            sort_keys=False,
+        ),
+        encoding="utf-8",
+    )
+    output_dir = tmp_path / "output"
+    output_dir.mkdir()
+
+    rc = rsd.main(
+        [
+            "--draft",
+            str(draft_file),
+            "--output-dir",
+            str(output_dir),
+            "--bias-checklist",
+            str(checklist_file),
+        ]
+    )
+    assert rc == 1
+
+
+def test_cli_bias_checklist_drafts_dir_joins_by_index(
+    tmp_path: Path, well_formed_breakout_draft: dict
+) -> None:
+    """--drafts-dir mode: a PASS draft is downgraded, a REJECT draft untouched."""
+    drafts_dir = tmp_path / "drafts"
+    drafts_dir.mkdir()
+    (drafts_dir / "a.yaml").write_text(
+        yaml.safe_dump(well_formed_breakout_draft, sort_keys=False), encoding="utf-8"
+    )
+    rejecting = dict(well_formed_breakout_draft)
+    rejecting["id"] = "draft_rejected_bad_idea"
+    rejecting["thesis"] = ""
+    (drafts_dir / "b.yaml").write_text(yaml.safe_dump(rejecting, sort_keys=False), encoding="utf-8")
+    output_dir = tmp_path / "output"
+    output_dir.mkdir()
+
+    rc = rsd.main(
+        [
+            "--drafts-dir",
+            str(drafts_dir),
+            "--output-dir",
+            str(output_dir),
+            "--format",
+            "json",
+            "--bias-checklist",
+        ]
+    )
+    assert rc == 0
+    reviews = json.loads((output_dir / "review.json").read_text(encoding="utf-8"))["reviews"]
+    assert len(reviews) == 2
+    pass_review = next(r for r in reviews if r["draft_id"] == well_formed_breakout_draft["id"])
+    reject_review = next(r for r in reviews if r["draft_id"] == "draft_rejected_bad_idea")
+    assert pass_review["verdict"] == "REVISE"
+    assert "bias_review" in pass_review and pass_review["bias_review"]
+    assert any("Declare how" in i for i in pass_review["revision_instructions"])
+    assert reject_review["verdict"] == "REJECT"
+    assert "bias_review" in reject_review
 
 
 # ---------------------------------------------------------------------------

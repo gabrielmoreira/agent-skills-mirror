@@ -1,3 +1,8 @@
+---
+name: checkpoint
+description: "Inspect Check Point security policies, threat intelligence, gateways, and SASE through its MCP integrations. Use for Check Point platform questions or workflows."
+---
+
 # Check Point Security Platform
 
 A comprehensive skill for interacting with Check Point enterprise security infrastructure through 15 MCP servers.

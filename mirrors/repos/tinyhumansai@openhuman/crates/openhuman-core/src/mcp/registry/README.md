@@ -151,7 +151,7 @@ same real type in both builds.
 - `crates/openhuman-core/src/core/jsonrpc.rs`: the `/oauth/mcp/callback`
   route calls `oauth::complete`.
 - `crates/openhuman-core/src/tools/registry/ops.rs` and
-  `crates/openhuman-core/src/agent/registry/agents/orchestrator/prompt.rs`: 
+  `crates/openhuman-core/src/agent/registry/agents/orchestrator/prompt.rs`:
   read `mcp::registry::connections` to list connected servers/tools for the
   tool catalog and the orchestrator prompt.
 - `crates/openhuman-core/src/agent/session_host/turn/core_turn.rs`: reads

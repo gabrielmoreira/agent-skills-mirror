@@ -54,7 +54,7 @@ When expanding `start`, `install`, `restart`, `stop`, or `uninstall`:
 
 ## Secure Pairing Invitation Rule
 
-1. `pair` and `refresh-code` should create a best-effort encrypted pairing invitation and may open its page for interactive users.
+1. `pair` and `refresh-code` should create a best-effort encrypted pairing invitation. Print its code and QR without opening a browser; only an explicit `--open` may open its page.
 2. Invitation failure or an older Registry must fall back silently to the existing QR output; never make the QR path depend on the invitation endpoint.
 3. Keep decryption keys and human codes out of Registry plaintext and persistent Bridge config. Do not log decoded connection payloads.
 4. A six-digit code must use `pairing.secure-short-code.v2`; never derive the payload encryption key directly from six digits.
@@ -89,8 +89,14 @@ A Hermes Relay command that deliberately yields to another owner stays alive wit
 
 Codex default state and listen ports are isolated by project and service environment. Refresh pairing through the existing Registry access-code endpoint so previously paired clients retain their identity; refuse refresh while a task is active.
 
+Codex first-time detached pairing must carry the resolved device scope into the child when adding a not-yet-created `--config` path. Repeated default pairing reuses that state; explicit project scope remains restricted.
+
 ## Claude Code projects
 
 `clawket claude-code pair` / `pair --backend claude-code` uses the installed, unmodified Claude executable and device discovery by default. `--project` authorizes only that project. State, logs and Preview credentials live under the independent `~/.clawket/claude-code` tree; lifecycle commands stop only authenticated Clawket-owned runtimes. The official `@anthropic-ai/claude-agent-sdk` is an explicit package external, retained as a production dependency; do not bundle its assets or silently substitute its packaged CLI for the user's selected executable. Native authentication remains on the computer. See `../../docs/3.1/claude-code.md`.
 
 Claude first-time detached pairing must carry the resolved device scope into the child even when adding a not-yet-created `--config` path. Existing scoped configurations are never silently widened.
+
+## 3.1 release
+
+The authorized Bridge patch release is `3.1.1`. Keep the publish guard and bundled workspace versions aligned. Preserve the existing OpenClaw/Hermes pair behavior for old clients. `pair choose` is interactive and read-only until selection; explicit `--backend` is required for agent/script prompts. Client distribution is a separate release stage.

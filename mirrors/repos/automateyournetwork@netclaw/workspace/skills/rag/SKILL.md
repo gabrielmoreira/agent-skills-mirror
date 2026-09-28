@@ -1,3 +1,8 @@
+---
+name: rag
+description: "Ingest user-selected documents and retrieve cited procedures, standards, and design evidence from the local RAG knowledge base. Use for document questions, corpus management, or explicitly requested snapshots."
+---
+
 # Skill: RAG Knowledge Base
 
 **Purpose**: Give NetClaw a fully offline, user-curated document knowledge base — vendor guides, standards (RFC/IEEE/vendor), customer design documents, install guides — with agentic retrieval, mandatory citations, and opt-in point-in-time snapshots.

@@ -172,7 +172,7 @@ export function Inspector({
           </Select>
         </div>
 
-        {!isFeatureGraphic && <BackgroundControls slide={slide} theme={theme} onChange={onChange} />}
+        <BackgroundControls slide={isFeatureGraphic ? { ...slide, inverted: slide.inverted ?? true } : slide} theme={theme} onChange={onChange} />
 
         {!isFeatureGraphic && (
           <div className="space-y-1.5">

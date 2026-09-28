@@ -18,7 +18,7 @@ Run these inside the devcontainer (`docker exec <container> bash -lc 'cd /worksp
 
 ## Stack
 
-Docusaurus 3.9.2 with React 19, TypeScript, MDX. Themes: `@docusaurus/theme-mermaid` (diagrams), `@easyops-cn/docusaurus-search-local` (search). Icons from `lucide-react`. Prism languages: bash, powershell, yaml.
+Docusaurus 3.9.2 with React 19, TypeScript, MDX. Builds with Rspack and SWC (`future.experimental_faster`, `@docusaurus/faster`); CSS order can differ from a webpack build, so compare screenshots after changing global styles. Themes: `@docusaurus/theme-mermaid` (diagrams), `@easyops-cn/docusaurus-search-local` (search). Icons from `lucide-react`. Prism languages: bash, powershell, yaml.
 
 ## Structure
 
@@ -82,4 +82,4 @@ static/img/                  Screenshots, logo, social card
 
 ## Deployment
 
-Static site at `https://skillshare.runkids.cc`, built and deployed to GitHub Pages by `.github/workflows/website-pages.yml` on pushes to `main` that touch `website/`.
+Static site at `https://skillshare.runkids.cc`, built and deployed to Cloudflare Pages by `.github/workflows/website-pages.yml` on pushes to `main` that touch `website/`.

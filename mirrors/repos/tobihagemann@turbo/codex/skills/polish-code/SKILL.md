@@ -52,7 +52,7 @@ Append any fix whose remedy you deliberately narrowed to the ledger as you make 
 
 When a fix ships with a regression test, confirm the test fails with the fix reverted, then restore the fix.
 
-Stage the fix immediately before mutating it (`git add <file>`), so `git checkout -- <file>` restores it exactly from the index. A file staged in an earlier step has an index copy older than the current edits, and restoring reverts them. Stage only the files about to be mutated, and reach for `git add -p <file>` when one also carries unrelated changes: a broader restore point sweeps in working-tree changes the project may require stay uncommitted. Each mutation edits the shared working tree in place, so hold anything that reads or builds that tree until the mutation is restored.
+Stage the fix immediately before mutating it (`git add <file>`), so `git checkout -- <file>` restores it exactly from the index. A file staged in an earlier step has an index copy older than the current edits, and restoring reverts them. Stage only the files about to be mutated: a broader restore point sweeps in working-tree changes the project may require stay uncommitted. When one also carries unrelated changes, write `git diff <file>` to a patch file, back the unrelated changes out of it (delete their `+` lines and turn their `-` lines into context lines), and stage it with `git apply --cached --recount <patch>`. Its index copy then lacks those changes, so copy that file aside before mutating it and restore it from the copy instead of the index. Each mutation edits the shared working tree in place, so hold anything that reads or builds that tree until the mutation is restored.
 
 Before running the tests against a mutation, confirm it landed: `git diff -- <file>` shows the intended change against the index for each mutated file. An edit whose match pattern missed leaves the file untouched. Count a mutation as caught only when the test run reports a failing test, not when the mutation command or a step chained before the tests exited nonzero.
 
@@ -87,7 +87,7 @@ Run the `$smoke-test` skill to produce the smoke test plan.
 
 Capture `git status --short`, `git diff HEAD | git hash-object --stdin`, and `git symbolic-ref --short -q HEAD` before spawning, and record all three outputs in the ledger as `Pending smoke-test baseline`, replacing any entry already there.
 
-Delegate test execution to a Codex sub-agent with inherited model defaults. Pass the plan and the diff command (`git diff --cached`) into the sub-agent's context.
+Spawn a Codex sub-agent with inherited model defaults to execute the test plan. Pass the plan and the diff command (`git diff --cached`) into the sub-agent's context, and instruct it to read and follow `$test-run-rules` from the installed skill directory before executing the plan. State in its context that the writes the plan's Setup contract authorizes are already approved, and that any write outside that enumeration leaves its scenario blocked.
 
 **Verify the tree:** re-run all three commands when the sub-agent returns, including when it terminates early or reports incomplete results. Compare against `Pending smoke-test baseline`. Delete what the sub-agent created, revert what it modified or staged, and return HEAD to the captured branch, leaving everything that baseline already showed untouched. Clear the entry once the tree matches.
 

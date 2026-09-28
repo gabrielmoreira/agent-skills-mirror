@@ -11,10 +11,12 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import re
 import sys
 from dataclasses import dataclass
 from datetime import datetime, timezone
+from decimal import Decimal, InvalidOperation
 from pathlib import Path
 from typing import Any
 
@@ -124,9 +126,40 @@ def number(value: Any) -> float | None:
     if isinstance(value, bool):
         return None
     try:
-        return float(value)
-    except (TypeError, ValueError):
+        exact = Decimal(str(value))
+        if not exact.is_finite() or exact < 0:
+            return None
+        result = float(value)
+    except (TypeError, ValueError, OverflowError, InvalidOperation):
         return None
+    return result if math.isfinite(result) and result >= 0 else None
+
+
+NUMERIC_FIELDS = (
+    ("planned", "risk_r"),
+    ("actual", "risk_r"),
+    ("risk_plan", "max_risk_per_trade_r"),
+    ("actual", "portfolio_heat_r"),
+    ("risk_plan", "max_portfolio_heat_r"),
+    ("monthly", "consecutive_losses"),
+)
+
+
+def validate_numeric_inputs(record: dict[str, Any]) -> None:
+    """Reject invalid supplied evidence before it can look like missing data."""
+    for section, key in NUMERIC_FIELDS:
+        value = deep_get(record, section, key)
+        if value is None:
+            continue
+        parsed = number(value)
+        if parsed is None or (
+            key == "consecutive_losses"
+            and Decimal(str(value)) != Decimal(str(value)).to_integral_value()
+        ):
+            requirement = "a finite nonnegative number"
+            if key == "consecutive_losses":
+                requirement = "a finite nonnegative whole number"
+            raise ValueError(f"{section}.{key} must be {requirement}; booleans are invalid")
 
 
 def boolish(value: Any) -> bool:
@@ -591,6 +624,7 @@ def next_session_rules(
 
 
 def build_review(record: dict[str, Any], source_records: list[str]) -> dict[str, Any]:
+    validate_numeric_inputs(record)
     process = evaluate_process_adherence(record)
     risk_notes = evaluate_risk_discipline(record)
     execution = evaluate_execution_quality(record)
@@ -755,8 +789,15 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     input_paths = [Path(p) for p in args.input]
+    try:
+        records = [load_record(path) for path in input_paths]
+        for source_record in records:
+            validate_numeric_inputs(source_record)
+    except ValueError as exc:
+        print(f"error: {exc}", file=sys.stderr)
+        return 2
     if len(input_paths) == 1:
-        record = load_record(input_paths[0])
+        record = records[0]
     else:
         # Medium 1 (2026-05-24 PR-F review): multi-input mode currently wraps records
         # without aggregating process/risk/text per trade — the analysis is therefore
@@ -774,7 +815,7 @@ def main(argv: list[str] | None = None) -> int:
             "review_type": "monthly_aggregate",
             "trade_id": "monthly_aggregate",
             "outcome": "mixed",
-            "monthly": {"trades": [load_record(p) for p in input_paths]},
+            "monthly": {"trades": records},
             "journal": {"reflection": "Multiple records supplied for aggregate review."},
         }
     report = build_review(record, [p.as_posix() for p in input_paths])
