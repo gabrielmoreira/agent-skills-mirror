@@ -24,6 +24,7 @@
 | Native `computer` tool contract | [docs/reference/computer.md](reference/computer.md) |
 | Feature-by-feature reference | [docs/reference/features.md](reference/features.md) |
 | CLI command reference | [docs/reference/cli.md](reference/cli.md) |
+| Engine hosts per session, `omo daemon`, migration and rollback | [docs/reference/omo-daemon.md](reference/omo-daemon.md) |
 | Known issues & workarounds | [docs/reference/known-issues.md](reference/known-issues.md) |
 | `prompt_async_gate` deep-dive | [docs/reference/prompt-async-gate-rfc.md](reference/prompt-async-gate-rfc.md) |
 | Shared core multi-PR extraction QA | [docs/reference/shared-core-multi-pr.md](reference/shared-core-multi-pr.md) |

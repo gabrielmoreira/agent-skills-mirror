@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `tt-a1i/archify` — 26 default patterns, 0 followed patterns, 2 file(s) materialized.
+Mirror of `tt-a1i/archify` — 26 default patterns, 7 followed patterns, 12 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `tt-a1i/archify` — 26 default patterns, 0 followed patterns, 2 file(
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 0 |
-| Files         | 2 |
+| Followed pats | 7 |
+| Files         | 12 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,7 +51,13 @@ Mirror of `tt-a1i/archify` — 26 default patterns, 0 followed patterns, 2 file(
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-_None._
+- `CONTRIBUTING.md`
+- `REVIEWING.md`
+- `SECURITY.md`
+- `.github/PULL_REQUEST_TEMPLATE.md`
+- `archify/references/authoring-contract.md`
+- `archify/references/delivery-contract.md`
+- `viewer/README.md`
 
 ## File Index
 
@@ -60,7 +66,17 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`.agents/skills/archify-review/SKILL.md`](.agents/skills/archify-review/SKILL.md) |
-| 2 | ✓ | [`archify/SKILL.md`](archify/SKILL.md) |
+| 2 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 3 | ✓ | [`archify/references/architecture-layout-repair.md`](archify/references/architecture-layout-repair.md) |
+| 4 | ✓ | [`archify/SKILL.md`](archify/SKILL.md) |
+| 5 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 6 | → | [`.github/PULL_REQUEST_TEMPLATE.md`](.github/PULL_REQUEST_TEMPLATE.md) |
+| 7 | → | [`archify/references/authoring-contract.md`](archify/references/authoring-contract.md) |
+| 8 | → | [`archify/references/delivery-contract.md`](archify/references/delivery-contract.md) |
+| 9 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 10 | → | [`REVIEWING.md`](REVIEWING.md) |
+| 11 | → | [`SECURITY.md`](SECURITY.md) |
+| 12 | → | [`viewer/README.md`](viewer/README.md) |
 
 ---
 

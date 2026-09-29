@@ -30,11 +30,16 @@ argument-hint: "주제, 청중, 목적, 슬라이드 수를 알려주세요 — 
 | `OUTPUT` | 사용자 지정 파일명·경로·형식 준수 |
 
 결과를 크게 바꾸는 blocking 정보만 질문한다. 안전한 기본값이 있으면 가정을 표시하고 진행한다.
+가이드는 해당 단계에 필요한 문서만 읽고, 선택적 디자인 참고를 모두 선제적으로 로드하지 않는다.
 
 ## 필수 워크플로
 
-### 0. 기존 덱 개선
+### 0. 실행 준비
 
+- 신규 제작/기존 덱 개선, 외부 조사 필요/제공 자료만을 구분하고 출력·원본 보존 조건을 확정한다.
+- `scripts/toolcheck.py --strict`로 도구·폰트를 먼저 확인한다. 한국어 덱은 `--require-korean-font`를 추가한다.
+- 누락이 확인된 의존성만 준비한다. 도구·권한으로 검증이 막히면 초안과 미검증 범위를 밝히고 완료로 처리하지 않는다.
+- 템플릿이 있으면 `scripts/inspect_template.py`로 profile을 추출하고 canvas·theme·사용할 폰트를 확정한다.
 - 기존 PPT 개선은 [`reference/refinement.md`](./reference/refinement.md)를 먼저 따른다. 내용 원본과
   디자인 참고 덱을 구분하고, 장수·발표 시간·사례·수치·조건·출처를 목록화한 뒤 새 버전을 만든다.
 - 여러 덱은 각각 완성·검증한다. 파일별 위임을 요청받았을 때만
@@ -55,6 +60,7 @@ argument-hint: "주제, 청중, 목적, 슬라이드 수를 알려주세요 — 
 
 - 코드 전에 [`reference/deck-spec.md`](./reference/deck-spec.md)의 `deck-spec.json`과 `storyline.md`에
   장별 결론형 제목·한 문장 메시지·다음 행동·근거·시각 형태·앞뒤 연결·발표 cue를 확정한다.
+- `python3 -B .github/skills/adaptive-presentation/scripts/deck_spec.py <work>/deck-spec.json`을 통과한 뒤 생성 코드를 작성한다.
 - 제목만 읽어도 논리가 이어져야 한다. 반복 설명은 통합하되 원본의 의미·조건을 누락하지 않는다.
   장수가 고정이면 장식 대신 근거·사례·비교·실행 기준으로 채운다.
 - 새 근거나 시각적 blocker가 있을 때만 storyline과 deck spec을 함께 갱신한다.
@@ -63,19 +69,18 @@ argument-hint: "주제, 청중, 목적, 슬라이드 수를 알려주세요 — 
 ### 3. 제작·가독성
 
 - [`reference/pptx-production.md`](./reference/pptx-production.md)를 따라 `python-pptx`로 직접 만든다.
-- 템플릿이 있으면 `scripts/inspect_template.py`로 profile을 만들고 template-aware initializer로
-  master·layout·theme·canvas를 보존한다. 없으면 고정 템플릿을 강제하지 않는다.
+- 추가 디자인 참고가 필요할 때만 [`slide-blueprints`](./reference/slide-blueprints.md)·[`editorial-business-style`](./reference/editorial-business-style.md)을 읽는다.
+- 템플릿이 있으면 준비한 profile과 template-aware initializer로 master·layout·theme·canvas를 보존한다.
+  없으면 고정 템플릿을 강제하지 않는다.
 - 첫 본문에서 결론·가치·다음 행동을 보여준다. 한 장은 질문 하나·결론 하나·핵심 근거 2~4개를 맡는다.
 - 제목+불릿 대신 전후 비교·흐름·책임 경계·표·차트·타임라인으로 관계를 보여준다.
   핵심 도형·차트·텍스트는 편집 가능한 native visual로 만들고 같은 카드 구조를 기계적으로 반복하지 않는다.
 - [타이포그래피](./reference/pptx-production.md#typography)·[대비](./reference/pptx-production.md#contrast)의
   상세 기준은 제작 가이드 한 곳에서 관리한다. 작은 글씨로 과밀을 숨기지 않고 의미별 색을 일관되게 쓴다.
-- `scripts/toolcheck.py`로 폰트를 확인하고 [글꼴 계약](./reference/pptx-production.md#fonts)을
-  `fontPolicy`에 기록한다. 임의의 slide별 스타일 변경이나 전달 PPTX의 fallback 혼용은 허용하지 않는다.
-- 한국어 설명을 우선하고 공식 서비스·기능·API·SDK·component 이름은 영문으로 유지한다.
-  새 핵심 technical term은 장당 3~5개로 제한하고 `쉬운 결론 → 공식명 → 한글 역할 → 고객 의미`로 읽히게 한다.
-- `languagePolicy`의 `targetLatinRatio=0.40`, `maxLatinRatio=0.55`, `maxSlideLatinRatio=0.75`를 유지한다.
-  `protectedTerms`는 실제 공식명·정착된 기술 용어만 중립 처리하며, 비율을 맞추려고 설명 문장을 등록하지 않는다.
+- 확정한 폰트를 [글꼴 계약](./reference/pptx-production.md#fonts)에 따라 `fontPolicy`에 기록한다.
+  임의의 slide별 스타일 변경이나 전달 PPTX의 fallback 혼용은 허용하지 않는다.
+- 한국어 설명·공식 영문명·장당 새 용어·영문 비율은 제작 가이드와 `languagePolicy`를 따른다.
+- `protectedTerms`에는 실제 공식명·정착된 기술 용어만 넣고, 비율을 맞추려고 설명 문장을 등록하지 않는다.
 - 한국어 전 장의 notes는 새 덱에서 재생성하고 [발표 노트 계약](./reference/pptx-production.md#speaker-notes)을
   따른다. 기본 `core-only`와 명시적으로 요청된 `guided-flow`를 구분하고 쉬운 구어체로 관계와 고객 의미를 설명한다.
 - footer는 발행자·문서명과 원문 링크로 표시하고 내부 Fact ID는 노출하지 않는다.
@@ -108,10 +113,3 @@ python3 -B .github/skills/adaptive-presentation/scripts/verify_deck.py <deck>.pp
 - 자동 검증 결함이 없고, 미지원 객체·대비·조건·notes의 구어체는 별도로 검토했다.
 - 최종 revision의 시각 검토·ZIP·전달 파일 해시와 원본 보존(명시적 덮어쓰기 대상 제외)을 확인했다.
 - 저장소와 최종 출력 폴더에는 요청한 파일만 남기고 작업 소유 임시 PDF·QA 이미지·`.pyc`를 정리했다.
-
-## 참고
-
-- 제작·서사·시각: [`pptx-production`](./reference/pptx-production.md) ·
-  [`narrative-patterns`](./reference/narrative-patterns.md) · [`slide-blueprints`](./reference/slide-blueprints.md) ·
-  [`editorial-business-style`](./reference/editorial-business-style.md)
-- 기존 덱 개선·최적화: [`refinement`](./reference/refinement.md) · [`full-optimized`](./reference/full-optimized.md)

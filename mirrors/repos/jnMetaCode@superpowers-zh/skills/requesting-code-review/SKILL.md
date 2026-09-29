@@ -30,7 +30,7 @@ metadata:
 
 **1. 获取 git SHA：**
 ```bash
-BASE_SHA=$(git rev-parse HEAD~1)  # 或 origin/main
+BASE_SHA=$(git rev-parse HEAD~1)  # 或：git merge-base origin/main HEAD
 HEAD_SHA=$(git rev-parse HEAD)
 ```
 

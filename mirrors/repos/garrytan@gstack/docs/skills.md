@@ -28,7 +28,7 @@ Detailed guides for every gstack skill — philosophy, workflow, and examples.
 | [`/document-generate`](#document-generate) | **Technical Writer** | Generate Diataxis docs (tutorial / how-to / reference / explanation) for a feature from code. |
 | [`/retro`](#retro) | **Eng Manager** | Team-aware weekly retro. Per-person breakdowns, shipping streaks, test health trends, growth opportunities. |
 | [`/browse`](#browse) | **QA Engineer** | Give the agent eyes. Drives your Aside browser first — real sessions, real clicks, real screenshots — through deterministic `aside repl` scripts, and falls back to gstack's own Chromium (~100ms per command) when Aside isn't there. |
-| [`/setup-browser-cookies`](#setup-browser-cookies) | **Session Manager** | Copy selected cookies from Chrome, Chromium, Brave, Edge, or macOS-only Comet, Arc, and Dia into the fallback browser. Choose your profile and domains; check sign-in separately. Unnecessary on Aside, which already has your sessions. |
+| [`/setup-browser-cookies`](#setup-browser-cookies) | **Session Manager** | Copy selected cookies from Chrome, Chromium, Brave, Edge, Windows-only Opera and Opera GX, or macOS-only Comet, Arc, and Dia into the fallback browser. Choose your profile and domains; check sign-in separately. Unnecessary on Aside, which already has your sessions. |
 | [`/autoplan`](#autoplan) | **Review Pipeline** | One command, fully reviewed plan. Runs CEO → design → DX → eng review automatically (eng always last, so the shipping gate reviews the final amended plan) with encoded decision principles. Surfaces only taste decisions for your approval. |
 | [`/plan-devex-review`](#plan-devex-review) | **DX Reviewer** | Plan-stage DX review. TTHW (time-to-hello-world), magical moments, friction points, persona traces. Three modes: Expansion, Polish, Triage. |
 | [`/devex-review`](#devex-review) | **DX Reviewer (live)** | Live developer experience audit. Walks the actual onboarding flow, measures TTHW, catches the docs lies. |
@@ -951,7 +951,7 @@ This is my **session manager mode** — for the fallback browser. With Aside ope
 
 For authenticated testing on gstack's own browser, `/setup-browser-cookies` copies selected cookies from your daily browser. Sites may also need storage or a fresh login, so copying cookies is not proof that the session works.
 
-The picker detects Chrome, Chromium, Brave, Edge, and macOS-only Comet, Arc, and Dia. Choose the browser, account/profile, and domains. Profile labels use the current `Local State` name with a directory discriminator, so renamed profiles and duplicate names are distinguishable. No cookie values are displayed; source/profile labels are still sensitive.
+The picker detects Chrome, Chromium, Brave, Edge, Windows-only Opera and Opera GX, and macOS-only Comet, Arc, and Dia. Choose the browser, account/profile, and domains. Profile labels use the current `Local State` name with a directory discriminator, so renamed profiles and duplicate names are distinguishable. No cookie values are displayed; source/profile labels are still sensitive.
 
 ```
 You:   /setup-browser-cookies

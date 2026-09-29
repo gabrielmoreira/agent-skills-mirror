@@ -13,13 +13,16 @@ skillshare backup agents       # 备份所有 agent target
 skillshare backup --all        # 备份 skills + agents
 skillshare backup --list       # 列出所有 Backup
 skillshare backup --cleanup    # 移除旧的 Backup
+skillshare backup --delete 2026-01-19_10-00-00  # 删除一个 Backup
+skillshare backup files        # skillshare 改写过的单个文件的各个版本
 ```
 
 ## 何时使用
 
 - 在有风险的变更之前创建手动 Backup
 - 列出现有 Backup 以检查恢复选项
-- 清理旧的 Backup 以释放磁盘空间
+- 清理旧的 Backup，或删除某个不再需要的 Backup
+- 找回 `AGENTS.md` 或 `CLAUDE.md` 等文件的早期版本
 
 ## 自动 Backup
 
@@ -71,6 +74,74 @@ skillshare backup --cleanup --dry-run # 预览清理效果
 
 这个策略在每次 `sync` 之后都会自动运行，因此 `--cleanup` 只在你想按需清理时才需要用到。
 
+### 删除 Backup
+
+```bash
+skillshare backup --delete 2026-01-19_10-00-00            # 删除一个快照
+skillshare backup --delete 2026-01-19_10-00-00 --dry-run  # 显示将被删除的内容
+skillshare backup --delete 2026-01-19_10-00-00 -p         # 从 project 的 .skillshare/backups/ 中删除
+```
+
+timestamp 就是 `--list` 显示的文件夹名称。整个快照都会被删除，包括其中的每个 target。
+
+### 文件历史 {#file-history}
+
+skillshare 在改写或替换单个文件之前——例如 `AGENTS.md`、`CLAUDE.md` 这类指令文件，或[共享文件](/docs/how-to/daily-tasks/sharing-instructions#backups)的某个位置——会先保存旧内容。`backup files` 用于列出并还原这些版本。
+
+```bash
+skillshare backup files                                   # 有已保存版本的文件
+skillshare backup files show ~/.claude/CLAUDE.md          # 某个文件的各个版本，最新的在前
+skillshare backup files restore ~/.claude/CLAUDE.md origin
+skillshare backup files restore ./CLAUDE.md 1769000000000000000.shim --dry-run
+```
+
+```
+Versions of /Users/me/.claude/CLAUDE.md
+  1769000000000000000.edit          2026-01-21 12:53:20  history/edit          2.1 KB  # Team rules
+  drift:1768900000000000000.mode    2026-01-20 09:06:40  drift/mode            1.9 KB  # Team rules
+  origin                            2026-01-10 08:00:00  origin                1.2 KB  # My notes
+```
+
+每个版本都有一个 ID：
+
+| ID | 类型 | 含义 |
+|----|------|---------|
+| `<time>[.<reason>]` | `history` | skillshare 写入该文件之前保存 |
+| `drift:<time>[.<reason>]` | `drift` | 你自己的修改，被 skillshare 替换掉了 |
+| `origin` | `origin` | 共享文件第一次接上时该文件原本的内容；移除该位置时会自动还原它。如果当时没有文件，还原它会删除当前文件 |
+
+reason 说明 skillshare 当时要做什么：
+
+| 类型 | Reason | 保存时机 |
+|------|--------|--------------|
+| `history` | `convert` | 把文件转换为 `AGENTS.md`，或重命名为 `AGENTS.md` 之前 |
+| `history` | `shim` | 在项目文件中加入 `@AGENTS.md` 之前 |
+| `history` | `edit` | 在 dashboard 中编辑之前 |
+| `history` | `collect` | 把某个 target 的修改收进共享文件之前 |
+| `history` | `attach` | 共享文件第一次接上并替换它之前 |
+| `history` | `restore` | 还原某个较早版本之前 |
+| `drift` | `overwrite` | 你直接编辑了该文件，然后选择了 **覆盖** |
+| `drift` | `mode` | 切换该位置的模式之前 |
+| `drift` | `restore` | 还原该位置之前 |
+
+旧版本保存的版本没有 reason。每个文件的每种类型保留最近 10 个版本。
+
+`restore` 会先把当前内容保存为一个 reason 为 `restore` 的新版本，然后写入所选版本。如果路径是 symlink，除非加上 `--unlink`（把链接替换为常规文件），否则会拒绝执行。
+
+`backup files` 跟随当前模式：在项目内（或使用 `-p`）时只列出该项目中的文件，`show` / `restore` 会拒绝项目之外的路径；`-g` 涵盖所有文件。由于 `files` 是一个子命令，要备份名称恰好为 `files` 的 target，请使用 `skillshare backup -t files`。
+
+## Dashboard {#dashboard}
+
+[`skillshare ui`](/docs/reference/commands/ui) 中的 **设置 › 备份** 有三个标签页：
+
+- **目标文件夹**——上文的快照，按日期分组。可以按 target 或 **只看 agents** 过滤。展开某个快照可以看到每个文件夹的文件数和大小，并可 **恢复** 其中任意一个（skill 和 agent 条目都可以）、**复制路径** 或 **删除这份备份**。**立即备份** 和 **清理旧备份** 分别对应 `backup` 和 `--cleanup`。
+- **文件**——上文的文件历史。选择一个文件即可查看它的各个版本及其 reason，然后 **预览并还原** 会显示与当前文件的差异，或完整的版本内容。链接形式的位置只有在你确认 **还原并断开链接** 之后，才会被替换为常规文件。
+- **MCP**——每次写入 MCP 配置之前做的备份，按 Agent 配置分组，并列出每份备份新增、修改或移除的 server。**预览并还原** 会打开与 **MCP** 页面相同的还原对话框（命令行中则使用 [`mcp restore`](/docs/reference/commands/mcp)）。
+
+![设置 › 备份 › 文件：恢复前预览较早的 CLAUDE.md 版本](/img/backup-files-preview.png)
+
+在 project mode 下，此页面只涵盖该项目：`.skillshare/backups/` 中的 agent 快照、项目内的文件，以及其 MCP 配置的备份。已删除的 skills 和 agents 不在这里；它们会进入 **Skill** 和 **Agent** 页面的 **回收站** 标签页。
+
 ## Options
 
 | Flag | 说明 |
@@ -78,10 +149,13 @@ skillshare backup --cleanup --dry-run # 预览清理效果
 | `--all` | 同时备份 skills 和 agents |
 | `--project, -p` | 使用 project mode（`.skillshare/backups/`）；**仅限 agents** |
 | `--global, -g` | 使用 global mode（skills 的默认值） |
-| `--list, -l` | 列出所有 Backup |
-| `--cleanup, -c` | 移除旧的 Backup |
+| `--list, -l` | 列出所有 Backup；加 `-p` 时列出项目的 |
+| `--cleanup, -c` | 移除旧的 Backup；加 `-p` 时处理项目的 |
+| `--delete <timestamp>` | 删除一个 Backup；搭配 `-p` 时从 `.skillshare/backups/` 中删除 |
 | `--target, -t <name>` | 针对指定 target 备份（作为位置参数的替代方式） |
 | `--dry-run, -n` | 预览而不做任何变更 |
+
+`backup files` 有自己的选项：`--project, -p`、`--global, -g`，以及 `restore` 专用的 `--unlink` 和 `--dry-run, -n`。参见[文件历史](#file-history)。
 
 `backup` 还接受一个位置形式的 kind 参数：`skillshare backup agents` 会把备份范围限定为仅 agent target。
 
@@ -158,7 +232,7 @@ Agents 有自己的 Backup 流程，与 skill Backup 并行运行，有两点值
 backup is not supported in project mode (except for agents)
 ```
 
-因此在 project mode 下，你必须使用 `skillshare backup -p agents` 或 `skillshare backup -p --all`。
+因此在 project mode 下，你必须使用 `skillshare backup -p agents` 或 `skillshare backup -p --all`。`--list -p` 和 `--cleanup -p` 不需要指定，会直接处理 `.skillshare/backups/`。
 
 ```bash
 skillshare backup agents                  # 所有 agent target（global）

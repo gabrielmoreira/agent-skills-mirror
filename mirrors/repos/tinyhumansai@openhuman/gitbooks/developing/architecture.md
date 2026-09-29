@@ -27,7 +27,7 @@ OpenHuman is a cross-platform communication and automation platform: a Rust core
 | **`crates/openhuman-core/src/skills/`** | Skill metadata and run orchestration (`ops_create`, `ops_discover`, `ops_install`, `ops_parse`, `catalog/`, `registry`, `runtime/`, `schemas/`, `types`, `bundled/`, `webhooks/`). The legacy QuickJS / `rquickjs` skill execution runtime was removed; skills contribute metadata + tool descriptors that get injected into agent prompts, while tool execution flows through native Rust handlers and Node-backed helpers via `runtime::node` (Cargo feature `runtime-node`). |
 | **`gitbooks/`**             | This book (public product and contributor documentation). |
 | **`docs/`**                 | Internal maintainer documentation (test-coverage matrix, release smoke checklist, library benchmarking notes). |
-| **`vendor/`**               | Recursive git submodules for the `tiny*` crate family (`tinyagents`, `tinyflows`, `tinychannels`, `tinyjuice`, `tinymemory`, `tinymcp`, `tinybus`, `tinybox`, `tinybrowser`, `tinydesktop`, `tinyruntime`, `tinydocs`, `tinysearch`, `tinyskills`, `tinyvoice`, `tinywallet`, `tinyhosts`, `tinyconnectors`, `tinyhumans-sdk`) plus `motosan-ai-oauth`. |
+| **`vendor/`**               | Recursive git submodules for the `tiny*` crate family (`tinyagents`, `tinyflows`, `tinychannels`, `tinyjuice`, `tinymemory`, `tinymcp`, `tinybus`, `tinybox`, `tinycomputer`, `tinyruntime`, `tinydocs`, `tinysearch`, `tinyskills`, `tinyvoice`, `tinywallet`, `tinyhosts`, `tinyconnectors`, `tinyhumans-sdk`) plus `motosan-ai-oauth`. |
 
 The desktop app **WebView** loads the UI from `app/`; RPC, agents and skills run in the **`openhuman_core`** core, hosted in-process as a tokio task by the Tauri shell (`crates/openhuman-app/src/core_process.rs`, `run_server_embedded_with_ready`) and reachable over loopback HTTP. The renderer's `coreRpcClient` `fetch()`es `http://127.0.0.1:<port>/rpc` directly; the `relay_http_rpc` Tauri command (backed by `openhuman_rpc::post_json_rpc`) is only the fallback for non-loopback plain-`http://` runtimes that the webview would block as mixed content. The standalone `openhuman-core serve` binary is the CLI/debug path.
 
@@ -149,7 +149,7 @@ Responsibilities are split across three domains:
 | ------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `crates/openhuman-core/src/skills/`         | Skill metadata: create/discover/install/parse `SKILL.md` and inject descriptors into agent prompts (`ops_create`, `ops_discover`, `ops_install`, `ops_parse`, `registry`, `tools`). |
 | `crates/openhuman-core/src/skills/catalog/` | Registry of installed skills.                                                                                                                                         |
-| `crates/openhuman-core/src/skills/runtime/` | Execution of installed `SKILL.md` workflows: starts/cancels runs, reads run metadata/logs, resolves language runtimes, hosts the built-in `skill_executor` agent.     |
+| `crates/openhuman-core/src/skills/runtime/` | Execution of installed `SKILL.md` workflows: starts/cancels runs, reads run metadata/logs, resolves language runtimes. The orchestrator runs an installed skill itself through `run_workflow`. |
 
 **Skill discovery** uses `SKILL.md` plus optional bundled resources:
 

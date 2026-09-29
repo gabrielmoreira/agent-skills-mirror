@@ -534,6 +534,8 @@ Global mode에서는 대시보드에 **프로젝트** 페이지가 있습니다.
 [`projects`](/docs/reference/targets/configuration#projects)와 `mcp.projects` 아래의 모든 폴더를 나열하며, 각
 프로젝트에는 **MCP** 탭이 있습니다.
 
+![프로젝트 MCP 탭: 프로젝트별로 켜고 끄는 전역 server와 프로젝트 전용 server](/img/projects-mcp-tab.png)
+
 - **프로젝트 추가**는 폴더와 그 target을 받습니다. **MCP**를 체크하면 해당 폴더가
   `mcp.projects` 아래에도 나열됩니다.
 - **MCP** 탭은 모든 global 서버를 스위치와 함께 나열합니다. 하나를 끄면

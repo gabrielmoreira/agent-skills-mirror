@@ -17,6 +17,8 @@ Cost collection can refresh the public [models.dev pricing catalog](model-pricin
 
 Default session roots include `~/.pi/agent/sessions` and the supported OMP agent/profile stores. Discovery honors `PI_CODING_AGENT_DIR`, `PI_CODING_AGENT_SESSION_DIR`, OMP configuration/XDG roots, and `OMP_PROFILE` (or `PI_PROFILE` when absent). A named profile limits discovery to that profile. Invalid or unresolved explicit selectors produce incomplete history.
 
+Root canonicalization preserves an explicit directory marker even when the session directory does not exist yet.
+
 Running Pi/OMP processes also contribute their environment, profile, `--session-dir`, and project settings. Relative paths resolve against that process's working directory. A missing working directory cannot turn an unresolved relative selector into a successful empty scan. Retained roots from explicit command-line or settings selectors survive process exit; settings are revalidated before reuse. Removing a setting from an accessible project drops its former root, while an inaccessible project or broken settings symlink preserves the previous scoped report and its original age.
 
 Assistant turns are bucketed by their own timestamp in the selected cost time zone. Matching entry IDs within the same session count once across overlapping roots. Distinct turns remain separate. The scanner retains per-message prices and token classes rather than repricing a daily aggregate.

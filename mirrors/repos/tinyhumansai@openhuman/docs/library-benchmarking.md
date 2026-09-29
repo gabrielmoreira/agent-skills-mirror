@@ -124,7 +124,7 @@ behavior, not linked code size.
 | `OPENHUMAN_PROFILE_FORCE_UTC=1` | Skip `iana_time_zone`/CoreFoundation timezone resolution. |
 | `OPENHUMAN_PROFILE_HOLD_SECS` / `HOLD_BEFORE_SECS` | Pause the process at settled/baseline state for external inspection (`vmmap`, `heap`, `malloc_history`, Instruments). |
 | `OPENHUMAN_PROFILE_DHAT_OUT` | Output path for dhat JSON (set by `library-heap.sh`). |
-| `OPENHUMAN_PROFILE_SKILL_RUN_CONCURRENCY` | `skill-run`: number of parallel `code_executor` turns (K), each spawning a `node_exec` job (default 1). |
+| `OPENHUMAN_PROFILE_SKILL_RUN_CONCURRENCY` | `skill-run`: number of parallel orchestrator turns (K), each emitting a scripted `node_exec` call (default 1). |
 | `OPENHUMAN_PROFILE_SKILL_RUN_POOL` | `skill-run`: `off` disables the shared runtime pool (legacy per-call spawn; tree then shows ~K resident `node` children). Default on. |
 | `OPENHUMAN_PROFILE_SKILL_RUN_POOL_WORKERS` | `skill-run`: pool size W when pooling is on (default 1). The scenario asserts `child_count <= W` for K > 1 — the #5106 regression gate. |
 

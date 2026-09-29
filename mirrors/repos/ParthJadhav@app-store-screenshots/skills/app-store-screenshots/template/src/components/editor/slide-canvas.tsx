@@ -198,18 +198,32 @@ function EditableText({
 
   const handleInput = (e: React.FormEvent<HTMLDivElement>) => {
     if (!onChange) return;
-    const text = (e.currentTarget.innerText || "").replace(/\u00a0/g, " ");
+    // A cleared contenteditable keeps a placeholder <br>, which innerText
+    // reports as "\n"; that would save a blank line instead of clearing.
+    const raw = e.currentTarget.textContent ? e.currentTarget.innerText : "";
+    const text = (raw || "").replace(/\u00a0/g, " ");
     onChange(multiline ? text : text.replace(/\n/g, ""));
   };
 
   return (
     <div
       ref={ref}
-      contentEditable={editable}
+      // Per-text base direction: RTL copy (ar, he, fa, ur) keeps its
+      // punctuation on the correct side without flipping LTR locales.
+      dir="auto"
+      // Plain text only: pasted or dropped rich text would otherwise keep its
+      // colours and fonts on the canvas while the export uses the plain copy.
+      contentEditable={editable ? "plaintext-only" : false}
       suppressContentEditableWarning
       data-placeholder={placeholder}
       onInput={handleInput}
       onFocus={() => onFocus?.()}
+      onBlur={(e) => {
+        // Edits skip syncing while focused; catch up so the canvas shows what
+        // will export (e.g. clearing a translation falls back to English).
+        const incoming = value || "";
+        if (e.currentTarget.textContent !== incoming) e.currentTarget.textContent = incoming;
+      }}
       onKeyDown={(e) => {
         if (!multiline && e.key === "Enter") {
           e.preventDefault();
@@ -267,7 +281,8 @@ function Caption({
   // produce headlines so tall they overlap the device frame.
   const unit = Math.min(cW, cH);
   return (
-    <div style={{ textAlign: align, position: "relative", width: "100%" }}>
+    // "start" rather than "left" so a left-set caption hugs the right edge in RTL.
+    <div style={{ textAlign: align === "left" ? "start" : align, position: "relative", width: "100%" }}>
       <EditableText
         value={pickText(slide.label, locale)}
         editable={editable}
@@ -1314,16 +1329,21 @@ function Movable({
     </div>
   );
 
+  // The editor shows the clamped rect, so export and thumbnails must place the
+  // element there too — an out-of-bounds saved rect would otherwise export
+  // somewhere the user never saw it.
+  const display = clampRect(rect, boundsW, boundsH, allowOverflow);
+
   // Non-editable (export/thumb) path: plain absolute-positioned div, no Rnd.
   if (!editable) {
     return (
       <div
         style={{
           position: "absolute",
-          left: rect.x,
-          top: rect.y,
-          width: rect.width,
-          height: rect.height,
+          left: display.x,
+          top: display.y,
+          width: display.width,
+          height: display.height,
           zIndex,
         }}
       >
@@ -1332,7 +1352,6 @@ function Movable({
     );
   }
 
-  const display = clampRect(rect, boundsW, boundsH, allowOverflow);
   const controlScale = Math.max(0.05, previewScale);
 
   return (

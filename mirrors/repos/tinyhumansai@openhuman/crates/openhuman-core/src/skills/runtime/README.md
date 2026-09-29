@@ -10,7 +10,6 @@ Responsibilities:
 - Start a skill run in the background and cancel an in-flight one.
 - List recent runs and read run-log slices.
 - Resolve the reusable Node/Python runtimes before script-backed skills run.
-- Define the built-in `skill_executor` delegate agent.
 
 A run is an `orchestrator` `Agent` built per run
 (`Agent::from_config_for_agent(&config, "orchestrator")`),
@@ -44,7 +43,6 @@ It reuses, rather than duplicates:
 | `schemas.rs` | `skill_runtime` controllers: `run`, `cancel`, `recent_runs`, `read_run_log`, `resolve_runtimes`, `schemas` |
 | `tools.rs` | `SkillRuntimeResolveRuntimesTool` (`skill_runtime_resolve_runtimes`), re-exported through `tools/mod.rs` under the `skills` gate |
 | `stub.rs` | Disabled-feature facade: only the two controller aggregators, both returning empty vectors |
-| `agent/skill_executor/` | `agent.toml`, `prompt.md`, and `prompt.rs` for the `skill_executor` agent (delegate name `run_skill`); registered in `agent/registry/agents/loader.rs` and listed as an orchestrator delegate |
 
 ## Compile-time gate (`skills` feature)
 

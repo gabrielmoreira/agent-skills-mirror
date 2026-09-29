@@ -85,6 +85,10 @@ A Hermes Relay command that deliberately yields to another owner stays alive wit
 
 ## Codex projects
 
+Explicit Codex stop/restart/reset uses authenticated lifecycle control independent of native health. Older Bridges may confirm their authenticated `agents.list` identity after a native-health error; wrong identity, authentication rejection and uncertain timeouts never authorize a replacement. Only connection refusal means no local listener; never kill an occupant by PID or port.
+
+Pair chooser and pairing use the shared Codex executable resolver, including macOS desktop fallback when the default PATH CLI is absent. Missing authentication guidance must also work for desktop-only users; preserve explicit command selection and existing configuration scope.
+
 `clawket codex pair` / `clawket pair --backend codex` creates a device connection by default, with a persistent `~/Documents/Clawket/Chats` fallback. Explicit `--project` retains project-only authorization. Existing `--config` files never widen silently. Device lifecycle/state lives under `~/.clawket/codex/device/<environment>`; legacy project configuration stays in its hashed directory. Reuse the installed Codex credentials; never migrate them or change another client process. Local and Relay pairing must report readiness only after native initialization. `--preview` must use the isolated Codex Preview Registry.
 
 Codex default state and listen ports are isolated by project and service environment. Refresh pairing through the existing Registry access-code endpoint so previously paired clients retain their identity; refuse refresh while a task is active.
@@ -99,4 +103,4 @@ Claude first-time detached pairing must carry the resolved device scope into the
 
 ## 3.1 release
 
-The authorized Bridge patch release is `3.1.1`. Keep the publish guard and bundled workspace versions aligned. Preserve the existing OpenClaw/Hermes pair behavior for old clients. `pair choose` is interactive and read-only until selection; explicit `--backend` is required for agent/script prompts. Client distribution is a separate release stage.
+The authorized Bridge patch release is `3.1.3`. Keep the publish guard and bundled workspace versions aligned. Preserve the existing OpenClaw/Hermes pair behavior for old clients. `pair choose` is interactive and read-only until selection; explicit `--backend` is required for agent/script prompts. Client distribution is a separate release stage.

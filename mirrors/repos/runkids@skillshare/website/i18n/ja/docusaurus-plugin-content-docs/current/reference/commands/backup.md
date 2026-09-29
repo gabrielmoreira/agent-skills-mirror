@@ -13,13 +13,16 @@ skillshare backup agents       # すべての agent ターゲットをバック�
 skillshare backup --all        # Skill と agent をバックアップ
 skillshare backup --list       # すべてのバックアップを一覧表示
 skillshare backup --cleanup    # 古いバックアップを削除
+skillshare backup --delete 2026-01-19_10-00-00  # 1 つのバックアップを削除
+skillshare backup files        # skillshare が書き換えた単一ファイルのバージョン
 ```
 
 ## こんなときに使う
 
 - 危険な変更を行う前に手動でバックアップを作成する
 - 既存のバックアップを一覧表示して復元の選択肢を確認する
-- 古いバックアップをクリーンアップしてディスク容量を確保する
+- 古いバックアップをクリーンアップする、または不要になったバックアップを 1 つ削除する
+- `AGENTS.md` や `CLAUDE.md` などのファイルの以前のバージョンを取り戻す
 
 ## 自動バックアップ
 
@@ -71,6 +74,74 @@ skillshare backup --cleanup --dry-run # クリーンアップをプレビュー
 
 このポリシーはすべての `sync` の後に自動的に実行されるため、`--cleanup` はオンデマンドで整理したいときにのみ必要です。
 
+### バックアップの削除
+
+```bash
+skillshare backup --delete 2026-01-19_10-00-00            # 1 つのスナップショットを削除
+skillshare backup --delete 2026-01-19_10-00-00 --dry-run  # 削除される内容を表示
+skillshare backup --delete 2026-01-19_10-00-00 -p         # プロジェクトの .skillshare/backups/ から削除
+```
+
+タイムスタンプは `--list` が表示するフォルダ名です。スナップショット全体が、含まれるすべてのターゲットとともに削除されます。
+
+### ファイル履歴 {#file-history}
+
+skillshare は、単一ファイル（`AGENTS.md` や `CLAUDE.md` などの指示ファイル、または[共有ファイル](/docs/how-to/daily-tasks/sharing-instructions#backups)の配置先）を書き換えたり置き換えたりする前に、古い内容を保存します。`backup files` はそれらのバージョンを一覧表示し、復元します。
+
+```bash
+skillshare backup files                                   # 保存済みバージョンがあるファイル
+skillshare backup files show ~/.claude/CLAUDE.md          # 1 つのファイルのバージョン（新しい順）
+skillshare backup files restore ~/.claude/CLAUDE.md origin
+skillshare backup files restore ./CLAUDE.md 1769000000000000000.shim --dry-run
+```
+
+```
+Versions of /Users/me/.claude/CLAUDE.md
+  1769000000000000000.edit          2026-01-21 12:53:20  history/edit          2.1 KB  # Team rules
+  drift:1768900000000000000.mode    2026-01-20 09:06:40  drift/mode            1.9 KB  # Team rules
+  origin                            2026-01-10 08:00:00  origin                1.2 KB  # My notes
+```
+
+各バージョンには ID があります。
+
+| ID | 種類 | 意味 |
+|----|------|---------|
+| `<time>[.<reason>]` | `history` | skillshare がファイルに書き込む前に保存したもの |
+| `drift:<time>[.<reason>]` | `drift` | skillshare が置き換えた、あなた自身の編集 |
+| `origin` | `origin` | 共有ファイルを最初につないだ時点のファイル。その配置先を削除すると自動的に復元されます。ファイルがなかった場合、復元すると現在のファイルが削除されます |
+
+理由（reason）は、skillshare が何をしようとしていたかを示します。
+
+| 種類 | 理由 | 保存されるタイミング |
+|------|--------|--------------|
+| `history` | `convert` | ファイルを `AGENTS.md` に変換する、または `AGENTS.md` に名前変更する前 |
+| `history` | `shim` | プロジェクトのファイルに `@AGENTS.md` を追加する前 |
+| `history` | `edit` | ダッシュボードでの編集の前 |
+| `history` | `collect` | ターゲットの変更を共有ファイルに取り込む前 |
+| `history` | `attach` | 最初につないだときに共有ファイルで置き換える前 |
+| `history` | `restore` | 古いバージョンを復元する前 |
+| `drift` | `overwrite` | ファイルを直接編集し、**上書き** を選んだとき |
+| `drift` | `mode` | 配置先のモードを切り替える前 |
+| `drift` | `restore` | 配置先を復元する前 |
+
+以前のリリースで保存されたバージョンには理由がありません。各ファイルについて、種類ごとに最新 10 件が保持されます。
+
+`restore` は、まず現在の内容を理由 `restore` の新しいバージョンとして保存してから、選んだバージョンを書き込みます。パスがシンボリックリンクの場合は、`--unlink` を付けない限り拒否されます。`--unlink` はリンクを通常のファイルに置き換えます。
+
+`backup files` はモードに従います。プロジェクト内（または `-p` 指定時）では、そのプロジェクト内のファイルのみを一覧表示し、`show` / `restore` はプロジェクト外のパスを拒否します。`-g` はすべてのファイルが対象です。`files` はサブコマンドなので、文字どおり `files` という名前のターゲットをバックアップするには `skillshare backup -t files` を使います。
+
+## ダッシュボード {#dashboard}
+
+[`skillshare ui`](/docs/reference/commands/ui) の **設定 › バックアップ** には 3 つのタブがあります。
+
+- **ターゲットフォルダー** — 上記のスナップショットを日付ごとに表示します。ターゲットまたは **agents のみ** でフィルタできます。スナップショットを開くと各フォルダーのファイル数とサイズが表示され、どれか 1 つを **復元**（Skill と agent のエントリのどちらも）したり、**パスをコピー** や **このバックアップを削除** ができます。**今すぐバックアップ** と **古いバックアップを整理** は、`backup` と `--cleanup` に相当します。
+- **ファイル** — 上記のファイル履歴。ファイルを選ぶと理由付きでバージョンが表示され、**プレビューして復元** で現在のファイルとの差分、またはバージョン全体を確認できます。リンクされた配置先は、**復元してリンクを切る** を確認した後にのみ通常のファイルに置き換えられます。
+- **MCP** — MCP 設定の書き込み前に毎回取られるバックアップ。Agent の設定ごとにグループ化され、それぞれで追加・変更・削除されたサーバーが表示されます。**プレビューして復元** は **MCP** ページと同じ復元ダイアログを開きます（コマンドラインでは [`mcp restore`](/docs/reference/commands/mcp)）。
+
+![設定 › バックアップ › ファイル: 復元前に以前の CLAUDE.md を確認する](/img/backup-files-preview.png)
+
+プロジェクトモードでは、このページはプロジェクトのみを対象とします。`.skillshare/backups/` にある agent のスナップショット、プロジェクト内のファイル、プロジェクトの MCP 設定のバックアップです。削除した Skill と agent はここにはありません。**スキル** と **エージェント** の **ゴミ箱** タブに移動します。
+
 ## オプション
 
 | フラグ | 説明 |
@@ -78,10 +149,13 @@ skillshare backup --cleanup --dry-run # クリーンアップをプレビュー
 | `--all` | Skill と agent の両方をバックアップ |
 | `--project, -p` | プロジェクトモードを使用（`.skillshare/backups/`）。**agent のみ** |
 | `--global, -g` | グローバルモードを使用（Skill のデフォルト） |
-| `--list, -l` | すべてのバックアップを一覧表示 |
-| `--cleanup, -c` | 古いバックアップを削除 |
+| `--list, -l` | すべてのバックアップを一覧表示（`-p` ではプロジェクトのもの） |
+| `--cleanup, -c` | 古いバックアップを削除（`-p` ではプロジェクトのもの） |
+| `--delete <timestamp>` | 1 つのバックアップを削除。`-p` 指定時は `.skillshare/backups/` から削除 |
 | `--target, -t <name>` | 特定のバックアップを対象にする（位置引数の代替） |
 | `--dry-run, -n` | 変更を加えずにプレビュー |
+
+`backup files` には独自のオプションがあります: `--project, -p`、`--global, -g`、`restore` 用の `--unlink` と `--dry-run, -n`。[ファイル履歴](#file-history) を参照してください。
 
 `backup` は位置引数として種類も受け付けます。`skillshare backup agents` は、バックアップを agent ターゲットのみに限定します。
 
@@ -158,7 +232,7 @@ Agent には、Skill のバックアップと並行して動作する独自の�
 backup is not supported in project mode (except for agents)
 ```
 
-そのため、プロジェクトモードでは `skillshare backup -p agents` または `skillshare backup -p --all` のいずれかを指定する必要があります。
+そのため、プロジェクトモードでは `skillshare backup -p agents` または `skillshare backup -p --all` のいずれかを指定する必要があります。`--list -p` と `--cleanup -p` は指定不要で、`.skillshare/backups/` を対象にします。
 
 ```bash
 skillshare backup agents                  # すべての agent ターゲット（グローバル）

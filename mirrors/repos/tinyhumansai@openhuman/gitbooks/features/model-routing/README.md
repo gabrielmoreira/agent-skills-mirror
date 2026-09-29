@@ -67,9 +67,9 @@ Inline calls win for one delegation:
 
 ```json
 {
-  "agent_id": "researcher",
+  "agent_id": "presentation_agent",
   "model": "anthropic/claude-sonnet-4",
-  "prompt": "Collect source notes for the launch memo."
+  "prompt": "Build a five-slide deck from the Q3 report."
 }
 ```
 
@@ -79,18 +79,18 @@ Persistent defaults live in `config.toml`:
 [orchestrator]
 model = "anthropic/claude-sonnet-4"
 
-[teams.research]
+[teams.planner]
 lead_model = "openai/gpt-5.1"
 agent_model = "groq/llama-3.1-8b-instant"
 
-[teams.code]
-agent_model = "qwen/qwen3-coder"
+[teams.image]
+agent_model = "openai/gpt-5.1"
 ```
 
 Resolution order:
 
 1. Inline `model` on `spawn_subagent` or an archetype delegation call.
-2. `[orchestrator].model` or `[teams.<team>]` / built-in aliases such as `[teams.research]` and `[teams.code]`.
+2. `[orchestrator].model`, or `[teams.<agent_id>]`, or the `_agent`-stripped alias (`[teams.image]` for `image_agent`).
 3. The archetype's own model hint and the normal route table.
 
 For `[teams.*]`, `lead_model` applies to agents that can delegate and `agent_model` applies to leaf workers. If only one is set, the harness falls back to it for both roles.

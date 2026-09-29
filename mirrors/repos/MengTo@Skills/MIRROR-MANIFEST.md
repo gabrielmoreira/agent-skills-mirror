@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `MengTo/Skills` — 26 default patterns, 0 followed patterns, 184 file(s) materialized.
+Mirror of `MengTo/Skills` — 26 default patterns, 0 followed patterns, 188 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `MengTo/Skills` — 26 default patterns, 0 followed patterns, 184 file
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 184 |
+| Files         | 188 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -242,7 +242,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 181 | ✓ | [`agent-skills/web-design/webgl-landing-steering/REFERENCES.md`](agent-skills/web-design/webgl-landing-steering/REFERENCES.md) |
 | 182 | ✓ | [`agent-skills/web-design/webgl-landing-steering/SKILL.md`](agent-skills/web-design/webgl-landing-steering/SKILL.md) |
 | 183 | ✓ | [`agent-skills/web-design/webgl-laser/SKILL.md`](agent-skills/web-design/webgl-laser/SKILL.md) |
-| 184 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 184 | ✓ | [`agent-skills/workflow/workflow-progress-screenshots/SKILL.md`](agent-skills/workflow/workflow-progress-screenshots/SKILL.md) |
+| 185 | ✓ | [`agent-skills/workflow/workflow-score-to-target/SKILL.md`](agent-skills/workflow/workflow-score-to-target/SKILL.md) |
+| 186 | ✓ | [`agent-skills/workflow/workflow-ship-change/SKILL.md`](agent-skills/workflow/workflow-ship-change/SKILL.md) |
+| 187 | ✓ | [`agent-skills/workflow/workflow-threads-manager/SKILL.md`](agent-skills/workflow/workflow-threads-manager/SKILL.md) |
+| 188 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 
 ---
 

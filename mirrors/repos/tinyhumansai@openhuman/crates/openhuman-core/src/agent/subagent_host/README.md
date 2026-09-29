@@ -22,24 +22,13 @@ terminal persistence; this crate does not duplicate that state machine.
 | `types.rs` | `SubagentRunOptions`, `SubagentRunOutcome`, `SubagentRunError`, `SubagentMode`, `SubagentCheckpointData`, `SubagentUsage` |
 | `ops/` | `run_subagent`, the typed and fork execution modes, and the TinyAgents graph route |
 | `lifecycle.rs` | `run_subagent`, `run_subagent_with_parent`, `continue_subagent`, checkpoint load/save, `OpenHumanSubagentHost` |
-| `handoff.rs` | Oversized tool-result cache and hygiene, shared with `extract_tool.rs` |
-| `extract_tool.rs` | The `extract_from_result` tool for direct provider extraction over a cached handoff |
-| `tool_prep.rs` | Tool filtering, prompt loading, and the text-mode protocol block |
+| `tool_prep.rs` | Tool filtering, prompt loading, and the prompt protocol block |
 | `autonomous.rs` | Iteration-cap policy for autonomous (non-interactive) sub-agent runs |
 
 `SubagentRunOptions::run_context` carries the child's `OpenHumanRunContext`
 explicitly; recursive execution passes this value rather than snapshotting
 task-local scopes after a `tokio::spawn`, since task-local state does not
 survive that boundary on its own.
-
-## Handoff
-
-A sub-agent's tool result can be large enough that returning it verbatim
-would blow the parent's context. `HandoffMiddleware` (in TinyAgents)
-intercepts an oversized result through `apply_handoff` and stores it in a
-per-spawn `ResultHandoffCache`; the parent gets a small reference back, and
-`extract_from_result` lets a later turn pull a specific piece of the cached
-result out on demand instead of resending the whole thing.
 
 ## Where next
 

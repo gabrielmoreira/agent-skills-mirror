@@ -10,6 +10,7 @@
 
 面向全球 AI 开发者与 Agent 工作流构建者的高价值 Skills 仓库，覆盖开发工程、DevOps、产品设计、运营、办公自动化、金融投资、AI 平台与安全治理等高频任务场景。当前共 **16 个分类 / 286 个技能**。
 
+
 ## 为什么值得收藏
 
 - 一次收齐高频可复用 Skills，减少到处找 prompt、脚本和工作流的时间。
@@ -401,7 +402,7 @@ openclaw-skills/                        # 为 OpenClaw 生成的扁平兼容导�
 - `codebase-onboarding`：生成代码库架构、环境搭建和常见开发任务的入门指南。
 - `database-designer`：设计和优化数据库结构、查询及迁移方案。
 - `database-schema-designer`：设计数据表、约束、索引、迁移和行级权限策略。
-- `dependency-auditor`：检查依赖版本、漏洞、许可证和升级风险。
+- `dependency-auditor`：梳理依赖清单，核实漏洞与许可证证据，规划可验证的升级。
 - `docker-expert`：用于 Docker 容器化最佳实践、多阶段构建优化与 Docker Compose 编排。
 - `frontend-design`：用于创建高质量、非模板化的前端页面、组件、仪表盘、海报和 Web UI。
 - `gateway`：接口设计、规范生成、版本策略和破坏性变更检查。

@@ -246,7 +246,7 @@ are documented rather than hidden; each is a candidate follow-up in the core.
   `summarizer`, …) for your agents.
 - Sub-agents an agent spawns, the tinyagents journal and the experience store
   re-read the runtime's on-disk config rather than the agent's overlay.
-- Agents sharing a workspace share the dynamic (`use_mcp_server`) MCP
+- Agents sharing a workspace share the dynamic (`mcp_registry_*`) MCP
   registry; `[[mcp_client.servers]]` declared through `AgentSpec::mcp` are
   per agent. The host-seeded documentation server is visible to every agent.
 - `install_skill` / `create_skill` still write to `~/.openhuman`. With

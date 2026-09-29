@@ -14,6 +14,7 @@ Start indexing a codebase in the background. Returns immediately.
 **Key behaviours:**
 - Runs asynchronously — does NOT block. Returns immediately.
 - Auto-starts file watcher upon completion (if not cancelled and `SOCRATICODE_WATCHER=auto`)
+- In `git` mode, a successful explicit index starts Git monitoring without a native file watcher
 - Ensures Docker/Qdrant/Ollama infrastructure is running first
 - Concurrency guard: if already indexing, returns current progress instead of starting again
 - Auto-indexes context artifacts defined in `.socraticodecontextartifacts.json`
@@ -38,6 +39,7 @@ Incrementally update an existing index. Only re-indexes changed files.
 - Only processes files changed since last index (via content hash comparison)
 - Auto-starts file watcher if not already active and `SOCRATICODE_WATCHER=auto`
 - Usually not needed if the file watcher is running
+- In `git` mode, explicitly refreshes working-tree edits without waiting for a ref/HEAD change
 
 ---
 
@@ -103,6 +105,7 @@ Gracefully stop an in-progress indexing operation.
 - Handles both same-process and cross-process (orphan) indexing
 - Sends SIGTERM to orphan processes holding the lock
 - Non-destructive — progress is never lost
+- In `git` mode, cancellation leaves an automatic refresh pending for retry; it does not disable the configured Git refresh policy
 
 ---
 
@@ -123,7 +126,8 @@ Start/stop/status of live file watching.
 - `status`: Lists all watched projects including cross-process watchers
 - Detects if another process already watches the same project
 - Auto-started after successful `codebase_index` or `codebase_update` in `auto` mode
-- `manual` suppresses automatic starts but permits `start`; `off` rejects `start` before catch-up or infrastructure work
+- `manual` suppresses automatic starts but permits `start`; `off` and `git` reject `start` before catch-up or infrastructure work
+- In `git` mode, `status` reports Git refresh state and `stop` only concerns native file watching; Git checks remain enabled
 - Debounced with 2s delay to batch rapid file changes
 
 ---
@@ -256,6 +260,7 @@ List all projects that have been indexed.
 
 ### Cross-process coordination
 - File-based locking (`proper-lockfile`) prevents conflicts between multiple MCP instances
+- Cooperating instances on the same host must use the same OS temporary directory for those locks; these are not cross-host locks
 - Detects watchers/indexing running in other processes
 - Can terminate orphan processes via SIGTERM
 - Stale locks from crashed processes are auto-reclaimed
@@ -267,6 +272,7 @@ List all projects that have been indexed.
 - Code graph auto-built after indexing
 - Session resume: watcher restarts on first tool use for previously indexed projects in `auto`
 - Snapshot mode: `SOCRATICODE_WATCHER=off` plus `SOCRATICODE_AUTO_RESUME=off` leaves existing code indexes and graphs readable but performs no implicit code-index update, embedding, or graph creation
+- Git mode: `SOCRATICODE_WATCHER=git` checks active indexed checkouts every 10 seconds and on search, graph, or status use. Ref/HEAD changes trigger incremental working-tree indexing and graph reconciliation. File saves alone do not trigger a refresh. `SOCRATICODE_AUTO_RESUME=off` still suppresses startup catch-up. No first index is created merely by selecting this mode.
 
 ### Supported file extensions
 **Built-in:** `.js`, `.jsx`, `.ts`, `.tsx`, `.mjs`, `.cjs`, `.py`, `.pyw`, `.pyi`, `.java`, `.kt`, `.kts`, `.scala`, `.c`, `.h`, `.cpp`, `.hpp`, `.cc`, `.hh`, `.cxx`, `.cs`, `.go`, `.rs`, `.rb`, `.php`, `.swift`, `.sh`, `.bash`, `.zsh`, `.html`, `.htm`, `.css`, `.scss`, `.sass`, `.less`, `.styl`, `.vue`, `.svelte`, `.json`, `.yaml`, `.yml`, `.toml`, `.xml`, `.ini`, `.cfg`, `.md`, `.mdx`, `.rst`, `.txt`, `.sql`, `.dart`, `.lua`, `.r`, `.R`, `.dockerfile`

@@ -535,6 +535,8 @@ mcp:
 [`projects`](/docs/reference/targets/configuration#projects) 和 `mcp.projects` 下的每个文件夹，
 每个项目都有一个 **MCP** 标签页。
 
+![项目的 MCP 标签页：按项目开关的全局 server，以及项目专用的 server](/img/projects-mcp-tab.png)
+
 - **添加项目** 需要填写文件夹和它的 targets。勾选 **MCP** 可以让该文件夹同时列在
   `mcp.projects` 下。
 - **MCP** 标签页列出每个 global server，并各带一个开关。关闭其中一个，会保存一条

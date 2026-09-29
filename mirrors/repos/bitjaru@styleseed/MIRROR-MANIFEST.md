@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `bitjaru/styleseed` — 26 default patterns, 0 followed patterns, 90 file(s) materialized.
+Mirror of `bitjaru/styleseed` — 26 default patterns, 0 followed patterns, 95 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `bitjaru/styleseed` — 26 default patterns, 0 followed patterns, 90 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 90 |
+| Files         | 95 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -109,46 +109,51 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 48 | ✓ | [`skills/ss-resolve/references/manifest.schema.json`](skills/ss-resolve/references/manifest.schema.json) |
 | 49 | ✓ | [`skills/ss-resolve/references/migration.md`](skills/ss-resolve/references/migration.md) |
 | 50 | ✓ | [`skills/ss-resolve/references/project.schema.json`](skills/ss-resolve/references/project.schema.json) |
-| 51 | ✓ | [`skills/ss-resolve/scripts/compiler.mjs`](skills/ss-resolve/scripts/compiler.mjs) |
-| 52 | ✓ | [`skills/ss-resolve/scripts/distribution-integrity.mjs`](skills/ss-resolve/scripts/distribution-integrity.mjs) |
-| 53 | ✓ | [`skills/ss-resolve/scripts/legacy-lock-analysis.mjs`](skills/ss-resolve/scripts/legacy-lock-analysis.mjs) |
-| 54 | ✓ | [`skills/ss-resolve/scripts/migrate-project.mjs`](skills/ss-resolve/scripts/migrate-project.mjs) |
-| 55 | ✓ | [`skills/ss-resolve/scripts/palette-generator.mjs`](skills/ss-resolve/scripts/palette-generator.mjs) |
-| 56 | ✓ | [`skills/ss-resolve/scripts/project-registry.mjs`](skills/ss-resolve/scripts/project-registry.mjs) |
-| 57 | ✓ | [`skills/ss-resolve/scripts/resolve-context.mjs`](skills/ss-resolve/scripts/resolve-context.mjs) |
-| 58 | ✓ | [`skills/ss-resolve/scripts/runtime-contract.mjs`](skills/ss-resolve/scripts/runtime-contract.mjs) |
-| 59 | ✓ | [`skills/ss-resolve/scripts/styleseed-doctor.mjs`](skills/ss-resolve/scripts/styleseed-doctor.mjs) |
-| 60 | ✓ | [`skills/ss-resolve/SKILL.md`](skills/ss-resolve/SKILL.md) |
-| 61 | ✓ | [`skills/ss-restyle/SKILL.md`](skills/ss-restyle/SKILL.md) |
-| 62 | ✓ | [`skills/ss-review/SKILL.md`](skills/ss-review/SKILL.md) |
-| 63 | ✓ | [`skills/ss-score/references/acceptance-report.schema.json`](skills/ss-score/references/acceptance-report.schema.json) |
-| 64 | ✓ | [`skills/ss-score/references/code-report.schema.json`](skills/ss-score/references/code-report.schema.json) |
-| 65 | ✓ | [`skills/ss-score/references/deterministic-report.schema.json`](skills/ss-score/references/deterministic-report.schema.json) |
-| 66 | ✓ | [`skills/ss-score/references/functional-checks.md`](skills/ss-score/references/functional-checks.md) |
-| 67 | ✓ | [`skills/ss-score/references/gate-run.schema.json`](skills/ss-score/references/gate-run.schema.json) |
-| 68 | ✓ | [`skills/ss-score/references/temporal-report.schema.json`](skills/ss-score/references/temporal-report.schema.json) |
-| 69 | ✓ | [`skills/ss-score/references/visual-report.schema.json`](skills/ss-score/references/visual-report.schema.json) |
-| 70 | ✓ | [`skills/ss-score/scripts/evidence-contract.mjs`](skills/ss-score/scripts/evidence-contract.mjs) |
-| 71 | ✓ | [`skills/ss-score/scripts/evidence-gate.mjs`](skills/ss-score/scripts/evidence-gate.mjs) |
-| 72 | ✓ | [`skills/ss-score/scripts/functional-reporter.mjs`](skills/ss-score/scripts/functional-reporter.mjs) |
-| 73 | ✓ | [`skills/ss-score/scripts/functional-results.mjs`](skills/ss-score/scripts/functional-results.mjs) |
-| 74 | ✓ | [`skills/ss-score/scripts/run-functional-tests.mjs`](skills/ss-score/scripts/run-functional-tests.mjs) |
-| 75 | ✓ | [`skills/ss-score/scripts/styleseed-check.mjs`](skills/ss-score/scripts/styleseed-check.mjs) |
-| 76 | ✓ | [`skills/ss-score/SKILL.md`](skills/ss-score/SKILL.md) |
-| 77 | ✓ | [`skills/ss-setup/SKILL.md`](skills/ss-setup/SKILL.md) |
-| 78 | ✓ | [`skills/ss-studio/agents/openai.yaml`](skills/ss-studio/agents/openai.yaml) |
-| 79 | ✓ | [`skills/ss-studio/references/artifact-contract.md`](skills/ss-studio/references/artifact-contract.md) |
-| 80 | ✓ | [`skills/ss-studio/references/provider-adapters.md`](skills/ss-studio/references/provider-adapters.md) |
-| 81 | ✓ | [`skills/ss-studio/scripts/studio-run.mjs`](skills/ss-studio/scripts/studio-run.mjs) |
-| 82 | ✓ | [`skills/ss-studio/SKILL.md`](skills/ss-studio/SKILL.md) |
-| 83 | ✓ | [`skills/ss-tokens/scripts/generate-palette.mjs`](skills/ss-tokens/scripts/generate-palette.mjs) |
-| 84 | ✓ | [`skills/ss-tokens/scripts/generator.mjs`](skills/ss-tokens/scripts/generator.mjs) |
-| 85 | ✓ | [`skills/ss-tokens/SKILL.md`](skills/ss-tokens/SKILL.md) |
-| 86 | ✓ | [`skills/ss-update/scripts/artifact-impact.mjs`](skills/ss-update/scripts/artifact-impact.mjs) |
-| 87 | ✓ | [`skills/ss-update/scripts/check-update.mjs`](skills/ss-update/scripts/check-update.mjs) |
-| 88 | ✓ | [`skills/ss-update/SKILL.md`](skills/ss-update/SKILL.md) |
-| 89 | ✓ | [`skills/ss-verify/SKILL.md`](skills/ss-verify/SKILL.md) |
-| 90 | ✓ | [`skills/styleseed/SKILL.md`](skills/styleseed/SKILL.md) |
+| 51 | ✓ | [`skills/ss-resolve/references/spacing.md`](skills/ss-resolve/references/spacing.md) |
+| 52 | ✓ | [`skills/ss-resolve/scripts/compiler.mjs`](skills/ss-resolve/scripts/compiler.mjs) |
+| 53 | ✓ | [`skills/ss-resolve/scripts/distribution-integrity.mjs`](skills/ss-resolve/scripts/distribution-integrity.mjs) |
+| 54 | ✓ | [`skills/ss-resolve/scripts/legacy-lock-analysis.mjs`](skills/ss-resolve/scripts/legacy-lock-analysis.mjs) |
+| 55 | ✓ | [`skills/ss-resolve/scripts/migrate-project.mjs`](skills/ss-resolve/scripts/migrate-project.mjs) |
+| 56 | ✓ | [`skills/ss-resolve/scripts/palette-generator.mjs`](skills/ss-resolve/scripts/palette-generator.mjs) |
+| 57 | ✓ | [`skills/ss-resolve/scripts/project-registry.mjs`](skills/ss-resolve/scripts/project-registry.mjs) |
+| 58 | ✓ | [`skills/ss-resolve/scripts/recommend-spacing.mjs`](skills/ss-resolve/scripts/recommend-spacing.mjs) |
+| 59 | ✓ | [`skills/ss-resolve/scripts/resolve-context.mjs`](skills/ss-resolve/scripts/resolve-context.mjs) |
+| 60 | ✓ | [`skills/ss-resolve/scripts/runtime-contract.mjs`](skills/ss-resolve/scripts/runtime-contract.mjs) |
+| 61 | ✓ | [`skills/ss-resolve/scripts/spacing-contract.mjs`](skills/ss-resolve/scripts/spacing-contract.mjs) |
+| 62 | ✓ | [`skills/ss-resolve/scripts/spacing-measurement.mjs`](skills/ss-resolve/scripts/spacing-measurement.mjs) |
+| 63 | ✓ | [`skills/ss-resolve/scripts/styleseed-doctor.mjs`](skills/ss-resolve/scripts/styleseed-doctor.mjs) |
+| 64 | ✓ | [`skills/ss-resolve/SKILL.md`](skills/ss-resolve/SKILL.md) |
+| 65 | ✓ | [`skills/ss-restyle/SKILL.md`](skills/ss-restyle/SKILL.md) |
+| 66 | ✓ | [`skills/ss-review/SKILL.md`](skills/ss-review/SKILL.md) |
+| 67 | ✓ | [`skills/ss-score/references/acceptance-report.schema.json`](skills/ss-score/references/acceptance-report.schema.json) |
+| 68 | ✓ | [`skills/ss-score/references/code-report.schema.json`](skills/ss-score/references/code-report.schema.json) |
+| 69 | ✓ | [`skills/ss-score/references/deterministic-report.schema.json`](skills/ss-score/references/deterministic-report.schema.json) |
+| 70 | ✓ | [`skills/ss-score/references/functional-checks.md`](skills/ss-score/references/functional-checks.md) |
+| 71 | ✓ | [`skills/ss-score/references/gate-run.schema.json`](skills/ss-score/references/gate-run.schema.json) |
+| 72 | ✓ | [`skills/ss-score/references/temporal-report.schema.json`](skills/ss-score/references/temporal-report.schema.json) |
+| 73 | ✓ | [`skills/ss-score/references/visual-report.schema.json`](skills/ss-score/references/visual-report.schema.json) |
+| 74 | ✓ | [`skills/ss-score/scripts/evidence-contract.mjs`](skills/ss-score/scripts/evidence-contract.mjs) |
+| 75 | ✓ | [`skills/ss-score/scripts/evidence-gate.mjs`](skills/ss-score/scripts/evidence-gate.mjs) |
+| 76 | ✓ | [`skills/ss-score/scripts/functional-reporter.mjs`](skills/ss-score/scripts/functional-reporter.mjs) |
+| 77 | ✓ | [`skills/ss-score/scripts/functional-results.mjs`](skills/ss-score/scripts/functional-results.mjs) |
+| 78 | ✓ | [`skills/ss-score/scripts/run-functional-tests.mjs`](skills/ss-score/scripts/run-functional-tests.mjs) |
+| 79 | ✓ | [`skills/ss-score/scripts/styleseed-check.mjs`](skills/ss-score/scripts/styleseed-check.mjs) |
+| 80 | ✓ | [`skills/ss-score/SKILL.md`](skills/ss-score/SKILL.md) |
+| 81 | ✓ | [`skills/ss-setup/SKILL.md`](skills/ss-setup/SKILL.md) |
+| 82 | ✓ | [`skills/ss-studio/agents/openai.yaml`](skills/ss-studio/agents/openai.yaml) |
+| 83 | ✓ | [`skills/ss-studio/references/artifact-contract.md`](skills/ss-studio/references/artifact-contract.md) |
+| 84 | ✓ | [`skills/ss-studio/references/provider-adapters.md`](skills/ss-studio/references/provider-adapters.md) |
+| 85 | ✓ | [`skills/ss-studio/scripts/studio-run.mjs`](skills/ss-studio/scripts/studio-run.mjs) |
+| 86 | ✓ | [`skills/ss-studio/SKILL.md`](skills/ss-studio/SKILL.md) |
+| 87 | ✓ | [`skills/ss-tokens/scripts/generate-palette.mjs`](skills/ss-tokens/scripts/generate-palette.mjs) |
+| 88 | ✓ | [`skills/ss-tokens/scripts/generator.mjs`](skills/ss-tokens/scripts/generator.mjs) |
+| 89 | ✓ | [`skills/ss-tokens/SKILL.md`](skills/ss-tokens/SKILL.md) |
+| 90 | ✓ | [`skills/ss-update/scripts/artifact-impact.mjs`](skills/ss-update/scripts/artifact-impact.mjs) |
+| 91 | ✓ | [`skills/ss-update/scripts/check-update.mjs`](skills/ss-update/scripts/check-update.mjs) |
+| 92 | ✓ | [`skills/ss-update/SKILL.md`](skills/ss-update/SKILL.md) |
+| 93 | ✓ | [`skills/ss-verify/scripts/inspect-spacing.mjs`](skills/ss-verify/scripts/inspect-spacing.mjs) |
+| 94 | ✓ | [`skills/ss-verify/SKILL.md`](skills/ss-verify/SKILL.md) |
+| 95 | ✓ | [`skills/styleseed/SKILL.md`](skills/styleseed/SKILL.md) |
 
 ---
 

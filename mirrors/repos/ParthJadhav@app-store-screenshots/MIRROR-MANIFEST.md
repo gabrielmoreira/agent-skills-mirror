@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `ParthJadhav/app-store-screenshots` — 26 default patterns, 0 followed patterns, 84 file(s) materialized.
+Mirror of `ParthJadhav/app-store-screenshots` — 26 default patterns, 0 followed patterns, 87 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `ParthJadhav/app-store-screenshots` — 26 default patterns, 0 followe
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 84 |
+| Files         | 87 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -135,14 +135,17 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 74 | ✓ | [`skills/app-store-screenshots/template/src/lib/export-render.ts`](skills/app-store-screenshots/template/src/lib/export-render.ts) |
 | 75 | ✓ | [`skills/app-store-screenshots/template/src/lib/image-cache.ts`](skills/app-store-screenshots/template/src/lib/image-cache.ts) |
 | 76 | ✓ | [`skills/app-store-screenshots/template/src/lib/locale.ts`](skills/app-store-screenshots/template/src/lib/locale.ts) |
-| 77 | ✓ | [`skills/app-store-screenshots/template/src/lib/project-validation.ts`](skills/app-store-screenshots/template/src/lib/project-validation.ts) |
-| 78 | ✓ | [`skills/app-store-screenshots/template/src/lib/request-guard.ts`](skills/app-store-screenshots/template/src/lib/request-guard.ts) |
-| 79 | ✓ | [`skills/app-store-screenshots/template/src/lib/storage.ts`](skills/app-store-screenshots/template/src/lib/storage.ts) |
-| 80 | ✓ | [`skills/app-store-screenshots/template/src/lib/types.ts`](skills/app-store-screenshots/template/src/lib/types.ts) |
-| 81 | ✓ | [`skills/app-store-screenshots/template/src/lib/typography.ts`](skills/app-store-screenshots/template/src/lib/typography.ts) |
-| 82 | ✓ | [`skills/app-store-screenshots/template/src/lib/utils.ts`](skills/app-store-screenshots/template/src/lib/utils.ts) |
-| 83 | ✓ | [`skills/app-store-screenshots/template/tailwind.config.ts`](skills/app-store-screenshots/template/tailwind.config.ts) |
-| 84 | ✓ | [`skills/app-store-screenshots/template/tsconfig.json`](skills/app-store-screenshots/template/tsconfig.json) |
+| 77 | ✓ | [`skills/app-store-screenshots/template/src/lib/png-encode.ts`](skills/app-store-screenshots/template/src/lib/png-encode.ts) |
+| 78 | ✓ | [`skills/app-store-screenshots/template/src/lib/png-rgb.ts`](skills/app-store-screenshots/template/src/lib/png-rgb.ts) |
+| 79 | ✓ | [`skills/app-store-screenshots/template/src/lib/png-worker.ts`](skills/app-store-screenshots/template/src/lib/png-worker.ts) |
+| 80 | ✓ | [`skills/app-store-screenshots/template/src/lib/project-validation.ts`](skills/app-store-screenshots/template/src/lib/project-validation.ts) |
+| 81 | ✓ | [`skills/app-store-screenshots/template/src/lib/request-guard.ts`](skills/app-store-screenshots/template/src/lib/request-guard.ts) |
+| 82 | ✓ | [`skills/app-store-screenshots/template/src/lib/storage.ts`](skills/app-store-screenshots/template/src/lib/storage.ts) |
+| 83 | ✓ | [`skills/app-store-screenshots/template/src/lib/types.ts`](skills/app-store-screenshots/template/src/lib/types.ts) |
+| 84 | ✓ | [`skills/app-store-screenshots/template/src/lib/typography.ts`](skills/app-store-screenshots/template/src/lib/typography.ts) |
+| 85 | ✓ | [`skills/app-store-screenshots/template/src/lib/utils.ts`](skills/app-store-screenshots/template/src/lib/utils.ts) |
+| 86 | ✓ | [`skills/app-store-screenshots/template/tailwind.config.ts`](skills/app-store-screenshots/template/tailwind.config.ts) |
+| 87 | ✓ | [`skills/app-store-screenshots/template/tsconfig.json`](skills/app-store-screenshots/template/tsconfig.json) |
 
 ---
 

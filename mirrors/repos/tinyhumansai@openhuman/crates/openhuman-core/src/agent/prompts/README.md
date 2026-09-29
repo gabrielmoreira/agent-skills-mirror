@@ -93,7 +93,7 @@ Other domains contribute prompt content without living in this directory:
   `## Tool Policy Boundary` block after the builder output so the
   session-scoped bytes land at the tail of the prompt.
 
-Built-in archetype system prompts (orchestrator, welcome, integrations_agent,
+Built-in archetype system prompts (orchestrator, planner, image_agent,
 and so on) live in `agent/registry/agents/<name>/prompt.rs` and
 `flows/agents/{flow_discovery,workflow_builder}/prompt.rs`, not here. Each is a
 `PromptSource::Dynamic` function that hand-assembles its body via the

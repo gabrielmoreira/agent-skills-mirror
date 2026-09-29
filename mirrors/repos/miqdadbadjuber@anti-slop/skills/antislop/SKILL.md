@@ -66,7 +66,7 @@ Notes:
 antislop never updates itself, and nothing announces a new release. Answer from the route the user installed with, and say which route you are assuming when you cannot tell. `npx antislop-ai --update` is the shortest path for the first two routes: it replaces every antislop folder it finds, at project and global scope, prints the release it replaced, and asks nothing.
 
 - **The installer** (`npx antislop-ai`): run it again, answer as before, and pick **Overwrite them**. It prints the version already on disk next to the version it carries, so nothing has to be compared by hand. *Keep what is there* installs nothing.
-- **The skills directory** (`npx skills add miqdadbadjuber/anti-slop`): run the same command again. An installer folder and a skills-directory folder hold the same files, so `--update` covers this route as well.
+- **The skills directory** (`npx skills add miqdadbadjuber/anti-slop`): run `npx skills update`, which asks which scope to update unless you pass `-p` or `-g`. An installer folder and a skills-directory folder hold the same files, so `--update` covers this route as well.
 - **A plugin door**: each agent keeps its own copy, and `--update` cannot reach those. The installer names the command for any door it finds installed; without it, these are the seven:
   - **Claude Code**: `claude plugin update antislop@anti-slop`
   - **Antigravity**: `agy plugin install https://github.com/miqdadbadjuber/anti-slop`
@@ -575,7 +575,7 @@ A filter can remove slop, but it cannot add energy. Removing slop leaves a void,
 
 ### Three Dials (required)
 
-Every design must set three dials explicitly, derived from DESIGN.md or the Design Read, and hold them from the first section to the last:
+Every design must set three dials explicitly, derived from `DESIGN.md` or the Design Read, and hold them from the first section to the last:
 
 | Dial | 1 (Calm) | 2 (Balanced) | 3 (Bold) | What it answers |
 |---|---|---|---|---|
@@ -607,7 +607,7 @@ Before generating, declare one line:
 
 Example: *"Reading this as: B2B SaaS landing for technical buyers, with a Linear-style minimalist language, dial ENERGY 1 / RHYTHM 2 / MOTION 1."*
 
-1. **Direction exists** (DESIGN.md or a brief that expresses energy and mood): infer the dials from it and proceed. DESIGN.md may optionally include a line like `Dial: ENERGY 2 / RHYTHM 3 / MOTION 1`; if present, use it directly.
+1. **Direction exists** (`DESIGN.md` or a brief that expresses energy and mood): infer the dials from it and proceed. `DESIGN.md` may optionally include a line like `Dial: ENERGY 2 / RHYTHM 3 / MOTION 1`; if present, use it directly.
 2. **Direction is ambiguous**: ask exactly ONE decisive question, never a question dump. Example: *"Should this feel closer to Linear-clean or Awwwards-experimental?"* Use the answer to set the dials.
 3. **No direction and the user cannot be asked**: label the output *"draft without direction"*, set the honest default dials **ENERGY 1 / RHYTHM 1 / MOTION 1** (see R-37), and do not present it as a deliverable.
 

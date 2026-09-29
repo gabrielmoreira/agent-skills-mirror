@@ -413,7 +413,7 @@ When loop ends (positive assessment or max rounds):
 
 - **Large file handling**: If the Write tool fails due to file size, immediately retry using Bash (`cat << 'EOF' > file`) to write in chunks. Do NOT ask the user for permission — just do it silently.
 
-- ALWAYS use `reasoning_effort: xhigh` for maximum reasoning depth
+- ALWAYS pin `model: gpt-6-astra` + `reasoning_effort: xhigh` on the first spawn of every reviewer. `xhigh` is this loop's **regular tier** per [`reviewer-routing.md`](../shared-references/reviewer-routing.md), not the maximum — `ultra` belongs to the one-shot deep-audit skills and is slower and costlier per round. Do not raise this loop's tier; follow-ups through `send_input` inherit the pair. Follow the capability-fallback chain only for explicit capability errors.
 - Save agent id from first call, use `send_input` for subsequent rounds
 - Be honest — include negative results and failed experiments
 - Do NOT hide weaknesses to game a positive score

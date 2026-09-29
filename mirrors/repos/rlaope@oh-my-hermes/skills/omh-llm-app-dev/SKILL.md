@@ -25,6 +25,7 @@ This is a Hermes-native `llm-app-dev` workflow skill.
 - The subject is the harness's own context window, prompt caching, or token budget rather than the application being built; use `context-budget-review`.
 - The request is a prompt-injection, secret-handling, or dependency risk gate on work that already exists; use `security-safety-review`.
 - The feature makes no model call - the LLM is only mentioned as the subject being discussed - so this is a direct answer, not a build handoff.
+- The ask is training the weights themselves on your own data -- SFT, DPO, RLVR, or a LoRA adapter; use `model-finetuning`.
 
 ## Examples
 
@@ -63,7 +64,7 @@ Bad example:
 
 ## Workflow Lane
 
-- Current lane: **Coding handoff** (`idea-to-deploy`, `llm-app-dev`, `cto-loop`, `deploy-and-monitor`, `code-review`, `build-failure-triage`, `verification-gate`, `security-safety-review`, `+27 more`) - coding owners, handoffs, review, CI, and merge evidence.
+- Current lane: **Coding handoff** (`idea-to-deploy`, `llm-app-dev`, `cto-loop`, `deploy-and-monitor`, `code-review`, `build-failure-triage`, `verification-gate`, `security-safety-review`, `+28 more`) - coding owners, handoffs, review, CI, and merge evidence.
 - If intent belongs to another lane, hand back to `oh-my-hermes` or name the adjacent workflow.
 - Shared product, routing, compatibility, and evidence rules: `omh-routing/references/skill-common-rail.md`.
 

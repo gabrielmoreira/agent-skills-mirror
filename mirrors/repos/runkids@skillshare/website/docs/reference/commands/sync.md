@@ -193,9 +193,28 @@ flowchart TD
 
 ### Example Output
 
-<p>
-  <img src="/img/sync-demo.png" alt="sync demo" width="720" />
-</p>
+```text
+$ skillshare sync
+✓ Discovered 43 skills
+
+Backing up
+─────────────────────────────────────────
+✓ claude -> ~/.local/share/skillshare/backups/2026-09-28_12-52-50/claude
+✓ cursor -> ~/.local/share/skillshare/backups/2026-09-28_12-52-50/cursor
+✓ gemini -> ~/.local/share/skillshare/backups/2026-09-28_12-52-50/gemini
+  …
+
+Syncing skills
+─────────────────────────────────────────
+✓ claude: merged (43 linked, 0 local, 0 updated, 1 pruned)
+✓ claude-work: merged (43 linked, 0 local, 0 updated, 1 pruned)
+✓ cursor: merged (43 linked, 1 local, 0 updated, 1 pruned)
+✓ gemini: merged (43 linked, 0 local, 0 updated, 1 pruned)
+✓ opencode: merged (43 linked, 0 local, 0 updated, 1 pruned)
+✓ universal: merged (43 linked, 0 local, 0 updated, 1 pruned)
+
+Sync complete: 6 targets, 258 linked, 1 local, 0 updated, 6 pruned (0.0s)
+```
 
 ---
 
@@ -525,7 +544,7 @@ skillshare sync agents       # Sync agents only
 skillshare sync --all        # Sync skills + agents + extras + MCP
 ```
 
-Agent sync supports all three modes (merge, copy, symlink), matching the target's configured mode. Only targets with an `agents` path definition receive agent syncs — currently Claude, Cursor, OpenCode, and Augment. See [Agents — Supported Targets](/docs/understand/agents#supported-targets) for the full list.
+Agent sync supports all three modes (merge, copy, symlink), matching the target's configured mode. On Windows without Developer Mode, merge mode copies agent files instead of linking them and prints `! <target>: agents file links need Windows Developer Mode; copying instead`; see [Windows troubleshooting](/docs/troubleshooting/windows#file-links-need-windows-developer-mode-copying-instead). Only targets with an `agents` path definition receive agent syncs — currently Claude, Cursor, OpenCode, and Augment. See [Agents — Supported Targets](/docs/understand/agents#supported-targets) for the full list.
 
 Orphan cleanup, `.agentignore` filtering, and per-target include/exclude filters all work the same way as for skills.
 
@@ -564,6 +583,9 @@ skillshare sync --all             # Sync skills + agents + extras + MCP
 |------|-------|-------------|
 | `--dry-run` | `-n` | Preview changes without writing |
 | `--force` | `-f` | Overwrite conflicting files at target |
+
+`--json` returns a non-zero exit status when extras sync has errors. For single-file extras,
+`--dry-run` also reports edits that would be backed up before replacement.
 
 :::info Both modes supported
 `sync extras` works in both global and project mode. Use `sync --all` to sync skills, agents, extras, and MCP together, or `sync extras` to sync extras only. In project mode, extras source is `.skillshare/extras/<name>/`.
@@ -612,6 +634,10 @@ Source files live under the `extras/` subdirectory:
 | `symlink` | Entire source directory symlinked to target path |
 
 In merge mode, only symlinks are pruned — user-created local files at the target are preserved.
+
+On Windows without Developer Mode, merge mode (and a [single-file extra](./extras.md#single-file-extras) in symlink mode) copies files instead, reports the target as `(copy)`, and prints `file links need Windows Developer Mode; copying instead` under it. These copies are updated and pruned like links, and replaced with links once file links work.
+
+Identical local files are reported as `local preserved`; `sync extras` does not suggest `--force` for them. They remain local files, not managed links.
 
 ### What happens
 

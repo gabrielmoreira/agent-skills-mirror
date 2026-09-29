@@ -23,7 +23,7 @@ description: dontbesilent 商业工具箱主入口，提供新手教程、单任
 每次进入本 Skill，在判断模式和编排之前，必须先定位本 `SKILL.md` 所在目录，并执行该目录中的版本检查脚本：
 
 ```bash
-DBS_LOCAL_VERSION="2.18.44"; bash "<本 SKILL.md 所在目录>/scripts/check-update.sh" "$DBS_LOCAL_VERSION"
+DBS_LOCAL_VERSION="2.18.45"; bash "<本 SKILL.md 所在目录>/scripts/check-update.sh" "$DBS_LOCAL_VERSION"
 ```
 
 执行规则：
@@ -156,6 +156,15 @@ python3 "<本 Skill 目录>/scripts/list-official-skills.py"
 | 可执行性 | 当前权限、文件、证据和工具是否足够开始？ |
 
 优先选择处理对象、输入、阶段和交付物都更具体的 Skill。名称关键词只能用于发现候选，不能单独决定入选。
+
+遇到内容传播类近邻候选时，按用户要求的最终交付区分：
+
+- 判断整条内容可能吸引谁、带来什么流量或商业价值：选择整体内容表现评估。
+- 定位已写稿件的共鸣断点并修改具体原句：选择稿件共鸣诊断。
+- 解释已有内容为何引发共鸣、情绪或分享：选择传播机制解读。
+- 只改短视频前几秒的表达：选择短视频开头优化。
+
+这些判断用于当前任务的候选筛选，不建立固定调用顺序；用户目标同时包含多个独立交付时，再按组合规则判断是否需要多个 Skill。
 
 ### 4．判断单 Skill 或组合
 

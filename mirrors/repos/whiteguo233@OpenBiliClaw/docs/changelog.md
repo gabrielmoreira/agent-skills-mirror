@@ -2,6 +2,12 @@
 
 > 按里程碑记录各阶段交付内容。每次分支合回 main 时追加条目。
 
+## 新增 API Route 内置 Provider（2026-09-28，feat/api-route-provider）
+
+- `provider_type="api_route"` 通过 OpenAI 兼容接口接入 API Route，默认 `https://global.api-route.com/v1`、`gpt-5.5`。支持独立实例、调用链、模型发现和请求探测；多模型路由不发送 `reasoning_effort`，embedding 仍需独立配置。
+- 接入后端配置与 API、CLI 和安装向导、桌面与扩展设置、首次设置向导；补充配置样例、文档和回归测试。只有用户显式配置时才会调用。
+- 用量估价按 API Route 当前公开费率计算默认 `gpt-5.5`，其他路由使用网关中档估算值。
+
 ## 修复：Windows pythonw 下子进程标准流缺失导致推荐页 502（2026-09-26，fix/pythonw-child-stdio）
 
 - **子进程 stdout/stderr 显式落盘（严重）**：Windows 桌面包用 `pythonw.exe`（无控制台）跑 `cli start`，`_run_api_server` 此前用 `subprocess.Popen([sys.executable, "-m", ...])` 拉起 4 个后台子进程但不传 stdout/stderr；Windows 上 Python 默认 `close_fds=True`，子 `pythonw` 的 `sys.stdout`/`sys.stderr` 为 `None`，`recommendation_server` 与 `image_service` 一写标准流就抛异常静默退出（stderr 同为 None，连堆栈都留不下），推荐页因此 502 空白。现统一走新辅助函数 `cli._spawn_background_child(name, module, env)`，把每个子进程的 stdout/stderr 重定向到 `logs/child-<name>.log`（append，utf-8）；这些文件落在 `logging_setup` 既有 unmanaged 清理策略内（超 200MB 截断、超 30 天删除、总预算 500MB）。回归：`tests/test_cli_child_stdio.py` 3 条（重定向参数与日志路径、命名、Popen 失败时句柄不泄漏）。
@@ -12,6 +18,11 @@
 
 - **SIGTERM 下 finally 不执行（严重）**：`openbiliclaw start` / `serve-api` 的 `_run_api_server` 在 finally 里 terminate 四个后台子进程（worker / discovery_worker / recommendation_server / image_service），但实测 SIGTERM（`docker stop` / `pkill` / launchd / systemd）下 finally 从未执行，子进程变成 PPID=1 的孤儿继续占用端口。根因是 uvicorn `Server.capture_signals`：退出时恢复"原始"信号处理器并 `raise_signal` 重发捕获信号——SIGINT 重发后变成 KeyboardInterrupt 能穿过 finally，SIGTERM 重发后落到 SIG_DFL 进程立即死亡。现 `_run_api_server` 在 uvicorn 启动前安装 `_install_sigterm_cleanup_hook()`（SIGTERM 处理器抛 `SystemExit(143)`），uvicorn 保存/恢复的"原始处理器"即该钩子，重发时异常穿过 finally 完成子进程清理并以约定退出码 143 退出；外层 finally 先恢复原处理器再做清理（清理期间再次 SIGTERM 走默认处置立即退出），两条 uvicorn 启动路径（`uvicorn.run` / `server.run`）均覆盖；仅主线程安装，非主线程为 no-op。SIGINT 行为不变。回归：`tests/test_cli_sigterm.py` 4 条（钩子退出码、安装/恢复、非主线程 no-op、subprocess 模拟 uvicorn restore+raise_signal 全链路断言退出码 143 且清理标记写出）。
 - **文档同步**：`docs/modules/cli.md`（start 进程段落补 SIGTERM 清理说明）。
+
+## 设计文档：推荐导演规格收口（2026-09-26）
+
+- **Jev 三模式架构增补（仅文档）**：新增 [逐对编排 / Agent+Jev 局部修正 / 纯 Agent 预编排方案](plans/2026-09-26-director-jev-modes.md) 与 [官方能力核实](plans/2026-09-26-jev-provider-research.md)，明确每次选两张卡、独立过滤 provider、应用层递归状态、未来草稿中间换卡后的后缀重验、整屏提交和分别计量的预算/归因。原单模式规格标明被替代条款；未接入服务、未调用付费 API，运行时代码与配置不变。
+- **补全可实施合同（仅文档）**：为推荐导演规格补齐确定性 Feedback Gate 阈值与版本、规划和请求并发活性、Batch 执行类型与回退归因、状态变更事件账本、slot 失败释放、DELIVERED 重规划、Phase 0A 反馈身份桥及不隐藏失败样本的工程验收门；当前推荐行为和配置未变化。
 
 ## 修复：移动端聊一聊 SSE 僵尸流假死（2026-09-25，fix/mobile-stream-watchdog）
 

@@ -14,9 +14,9 @@ Cell badges show **NL** (natural language) and **Cd** (code). Code cells use the
 
 ## Writing cells
 
-Every cell is either a natural-language prompt (**NL**) or ordinary code (**Cd**), and the badge at the top of the cell shows which. The badge is a button: click it to switch that cell. `Ctrl J` switches the active cell and `Ctrl Shift J` switches every cell in the notebook. Both are literal `Ctrl`, including on macOS, where most JupyterLab bindings use `Cmd`. The notebook toolbar carries the same switch-all action and an export button.
+Every cell is either a natural-language prompt (**NL**) or ordinary code (**Cd**), and the badge at the top of the cell shows which. The badge is a button: click it to switch that cell. `Ctrl J` switches the active cell and `Ctrl Shift J` switches every cell in the notebook. Both are literal `Ctrl`, including on macOS, where most JupyterLab bindings use `Cmd`. The notebook toolbar carries the same switch-all action and an export button, and ordinary notebooks get a button to convert them to a Chatbook.
 
-Chatbook adds six commands, all reachable from the command palette:
+Chatbook adds seven commands, all reachable from the command palette:
 
 | Command                         | What it does                                                       |
 | ------------------------------- | ------------------------------------------------------------------ |
@@ -26,6 +26,7 @@ Chatbook adds six commands, all reachable from the command palette:
 | Show generated code             | Opens the code a prompt cell generated, which is otherwise hidden. |
 | Refresh English representation  | Regenerates the English description of a code cell.                |
 | Export as code notebook         | Writes a plain notebook for the backend language.                  |
+| Convert notebook to Chatbook    | Writes a Chatbook copy of an ordinary notebook.                    |
 
 **Running a code cell also sends it to the model.** The first time a **Cd** cell runs successfully, Chatbook asks the model for a one-line English description of that source and stores it in the cell's metadata, so the cell can be read as prose and switched back to **NL** later. It does not ask again on later runs, and it does not refresh the description when you edit the code: use **Refresh English representation** for that. This is worth knowing in a deployment where code is more sensitive than prompts, because it means hand-written code in a Chatbook reaches the model even under **Always confirm**.
 
@@ -33,13 +34,25 @@ Chatbook adds six commands, all reachable from the command palette:
 
 Typing `@` in a prompt cell opens a menu of context to attach. The built-in **Files & folders** provider browses the Jupyter root, skipping dotfiles, `__pycache__`, and `node_modules`; a selected file is read and truncated at 16,000 characters. Extensions can register providers of their own, which appear in the same menu under their own root (see [`chatbook-extensions.md`](chatbook-extensions.md)).
 
+A mention ends at the first whitespace or `@`, so a path that contains either is written in double quotes, `@file:"data/my notes.md"`; the menu inserts that form for you. A quoted path is taken exactly as written and cannot contain a double quote or a line break, so a name with a double quote can only be mentioned when it needs no quoting, and a name that itself begins and ends with a double quote cannot be mentioned at all.
+
+Sentence punctuation typed right after an unquoted file or folder mention (`.` `,` `;` `:` `!` `?` and `…`, closing brackets and quotes, and their full-width forms) is not part of the path, so `Summarize @file:data/README.md, then chart it` refers to `data/README.md`. The name as written is tried first, then with up to five of those characters removed one at a time, and the first name that exists is used even if it cannot be read. So a file whose real name ends in punctuation still resolves, and a shorter name is never reached past one that exists. Other characters, such as `+` or `-`, are always part of the path.
+
 Mentions work only in prompt cells. A prompt that carries one is regenerated every run rather than reusing the previously approved code, because the mentioned content may have changed since.
+
+## Convert a notebook to a Chatbook
+
+**Convert notebook to Chatbook** is the reverse of [export](#export-as-a-code-notebook). It appears as a toolbar button on ordinary notebooks and in the command palette, and writes a Chatbook copy next to the original, named after it with `-chatbook` appended (`analysis.ipynb` becomes `analysis-chatbook.ipynb`, and a number is added if that name is taken). The copy opens straight away, and the original is left untouched. It converts what is in the editor, so unsaved changes are included.
+
+Every code cell becomes a **Cd** cell and runs exactly as written. The exception is a Chatbook whose kernel was switched to another one: its natural-language cells that have run, and not been edited since, still hold their prompts and stay natural language. Any other natural-language cell in it would become a code cell holding English, so switch such a Chatbook back to the Chatbook kernel rather than converting it. Everything else is kept: markdown and raw cells, outputs, execution counts, attachments, and other notebook metadata; only the kernelspec and language info become Chatbook's. Conversion itself sends nothing to the model. As with any **Cd** cell, the first time a converted cell without an English description runs successfully, its code is sent to the model for a one-line description. A description a cell already carries is kept only when it is known to describe that exact code, as for a Chatbook that was exported and is converted back.
+
+Chatbook runs code in the one backend kernel chosen in Settings → **Chatbook**, so conversion compares the notebook's language with it first. A notebook in the same language converts, with a note when its kernel differs from the backend, and so does a notebook that records no language. A notebook in another language (an R notebook while the backend is Python) is not converted, because every code cell would fail; the dialog explains why and, when a kernel for that language is installed, offers to open the Chatbook settings. Conversion never changes that setting itself, since it applies to every Chatbook. When the notebook names its kernel, that name is recorded in the copy's metadata under `nbi.chatbook.sourceKernel`.
 
 ## Export as a code notebook
 
 **Export as code notebook** writes a plain notebook for the backend language next to the original, named after it with the language appended (`analysis.ipynb` becomes `analysis-python.ipynb`, and a number is added if that name is taken). The Chatbook itself is left untouched.
 
-Prompt cells become their generated code. A prompt cell whose code never ran, or whose prompt changed since it last ran, is written as line comments instead, so an export never passes off code as having been executed when it was not. The exported notebook's `kernelspec` and `language_info` are rewritten to the backend kernel. Export fails if the backend language has no line-comment syntax Chatbook knows, since there would be no way to write those cells safely.
+Prompt cells become their generated code. A prompt cell whose code never ran, or whose prompt changed since it last ran, is written as line comments instead, so an export never passes off code as having been executed when it was not. A code cell switched to natural language exports its own code, as any code cell does, while its English side is empty or is still the description of that code. Once either side changes, it is written as comments too; after editing the code, **Refresh English representation** brings the description back in step. The exported notebook's `kernelspec` and `language_info` are rewritten to the backend kernel. Export fails if the backend language has no line-comment syntax Chatbook knows, since there would be no way to write those cells safely.
 
 ## What the notebook file holds
 

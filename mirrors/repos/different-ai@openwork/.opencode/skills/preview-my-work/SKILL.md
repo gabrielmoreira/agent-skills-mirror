@@ -1,6 +1,6 @@
 ---
 name: preview-my-work
-description: Boot, reopen, update, or reset OpenWork PR previews. Discover script worlds, use configurable app-web locally or through a private Daytona browser URL, or choose isolated Den/Electron presets for hands-on testing.
+description: Boot, reopen, update, or reset OpenWork PR previews. Discover script worlds; choose preview-desktop (app only), preview-den (Den only), preview-full (Den plus desktop), or preview-app-web locally, on a private Daytona URL, or on Freestyle for hands-on testing.
 ---
 
 # Preview my work
@@ -17,19 +17,33 @@ world or an existing test sandbox. Run from the requested worktree.
   For another composition, inspect `packages/world/src/index.ts` and
   `evals/packages/env/src/index.ts` before declaring it unsupported; reuse the
   existing provisioning, runtime launch and hold primitives, not another framework.
-- `app-web`: configurable source app plus the existing isolated headless server,
-  locally or on an owned private Daytona sandbox. This is not Den's web UI and
-  not the Cloud-off `seed.appWeb` test fixture. No Den or activation is seeded.
-- `preview-den`: signup, team administration, onboarding, connectors, policies.
-- `preview-desktop`: real Electron plus its own Den; workspaces, chat and native
-  app interactions. On `--place daytona` this is Linux Electron in a noVNC
-  viewer, not a macOS/Windows parity check. `--place local` runs this checkout:
-  Den on the local MySQL/Redis and the desktop as a native window on this
-  machine (source previews only; `--release` requires Daytona). Freestyle
-  supports `app-web`, `acme-web`, and `preview-desktop` for the signed-out
-  `fresh` desktop only (no Den); `preview-den` does not run on Freestyle.
+- `preview-desktop`: **the desktop app alone**: no Den, organization, workspace
+  or sign-in, exactly like a fresh install. From source (a pushed SHA on
+  Daytona/Freestyle, this checkout locally) or exact published release bytes
+  (`blank`, Daytona Linux or Windows). One sandbox, so it is the cheapest desktop
+  preview. On `--place daytona` this is Linux Electron in a noVNC viewer, not a
+  macOS/Windows parity check. `--place local` opens a native window here.
+- `preview-den`: **Den alone** (no desktop): signup, team administration,
+  onboarding, connectors, policies.
+- `preview-full`: **Den plus a desktop wired to it**: workspaces, chat, native
+  app interactions against a seeded org. Two sandboxes on Daytona. Local runs
+  Den on the local MySQL/Redis and the desktop as a native window.
+- `preview-app-web`: configurable source web app plus the isolated server it
+  needs, locally or on an owned private Daytona sandbox. This is not Den's web
+  UI and not the Cloud-off `seed.appWeb` test fixture. No Den or activation is seeded.
+- Freestyle supports `preview-app-web`, `acme-web`, and `preview-desktop`
+  (signed-out `fresh` only); `preview-den` and `preview-full` do not run there.
 
-For the isolated `preview-den`/`preview-desktop` presets, choose `--scenario fresh`
+To turn on an app setting such as the v2 engine, export it and select it with
+`--env` **before** `--`; desktop previews on local and Daytona pass selected keys
+to the app and list them in the `appEnv` output. Freestyle refuses `--env` for
+desktops because its snapshot starts the app at build time.
+
+```sh
+OPENWORK_ENGINE_V2_PREVIEW=1 pnpm world up preview-desktop --place daytona --stage pr-1234-v2 --detach --env OPENWORK_ENGINE_V2_PREVIEW
+```
+
+For the isolated `preview-den`/`preview-full` presets, choose `--scenario fresh`
 for signup/first use, `team` for an owner with Notion
 and Linear available (individual accounts remain unconnected), `restricted`
 for that team with the API's canonical restricted policy values, or `workspace`
@@ -40,7 +54,7 @@ behaves like a bootstrapped install and skips the public-download "OpenWork
 Chat" starter workspace, so the sidebar shows no workspaces. No model credentials are seeded.
 Do not describe these fixtures as capable of live model/provider requests.
 
-Use `--scenario blank --release <x.y.z> --distribution <name>` to preview exact
+For `preview-desktop`, use `--scenario blank --release <x.y.z> --distribution <name>` to preview exact
 published Linux x64 tarball bytes with a completely isolated, unseeded profile.
 Add `--os windows` before `--` to preview the published Windows x64 installer
 in a private Windows Daytona VM. Windows launches as the logged-in Administrator
@@ -82,7 +96,7 @@ To inspect a new web world rather than a captured step, use the merged world
 source vocabulary; all components use that one pushed commit:
 
 ```sh
-pnpm world up evidence-web --place freestyle --stage pr-1234 --source app-web=sha:<full-pushed-sha>
+pnpm world up ./packages/freestyle/worlds/evidence-web.ts --place freestyle --stage pr-1234 --source app-web=sha:<full-pushed-sha>
 pnpm world outputs evidence-web --stage pr-1234 --reveal
 pnpm world down evidence-web --stage pr-1234
 ```
@@ -95,13 +109,13 @@ from its own head, without updating the shared reviewer or requiring a merge.
 
 ## Start and open
 
-For the configurable app-web script, use a reviewed full pushed SHA on Daytona:
+For the configurable web app, use a reviewed full pushed SHA on Daytona:
 
 ```sh
-pnpm world up app-web --place local --stage pr-1234
-pnpm world up app-web --place daytona --stage pr-1234 --detach --timeout 600000 -- --ref <full-pushed-sha>
-pnpm world outputs app-web --stage pr-1234 --reveal
-pnpm world down app-web --stage pr-1234
+pnpm world up preview-app-web --place local --stage pr-1234
+pnpm world up preview-app-web --place daytona --stage pr-1234 --detach --timeout 600000 -- --ref <full-pushed-sha>
+pnpm world outputs preview-app-web --stage pr-1234 --reveal
+pnpm world down preview-app-web --stage pr-1234
 ```
 
 An existing Den proxy is an explicit, nonsecret environment selection, not a
@@ -111,7 +125,7 @@ generic `--env KEY` **before** the script-argument separator:
 ```sh
 OPENWORK_DEV_HEADLESS_WEB_DEN_PROXY=1 \
 OPENWORK_DEV_DEN_PROXY_TARGET=https://app.openworklabs.com \
-pnpm world up app-web --place daytona --stage pr-1234 --detach --timeout 600000 \
+pnpm world up preview-app-web --place daytona --stage pr-1234 --detach --timeout 600000 \
   --env OPENWORK_DEV_HEADLESS_WEB_DEN_PROXY --env OPENWORK_DEV_DEN_PROXY_TARGET \
   -- --ref <full-pushed-sha>
 ```
@@ -188,7 +202,7 @@ mutable branch names. To preview a specific commit:
 OPENWORK_EVAL_REF=<pushed-sha> infisical run --silent --env dev -- pnpm world up preview-den --stage pr-1234 --place daytona --detach --timeout 600000 -- --scenario fresh --lifetime 120
 ```
 
-Substitute `preview-desktop` and the desired scenario as needed. The existing
+Substitute `preview-full` or `preview-desktop` and the desired scenario as needed. The existing
 Daytona snapshots handle dependencies. A cold build takes minutes; reopening a
 ready world is quick. Never promise seconds for an unmeasured cold boot.
 
@@ -201,23 +215,25 @@ pnpm world up preview-desktop --stage pr-1234-win --place daytona --os windows -
 pnpm world outputs preview-desktop --stage pr-1234-win --reveal
 ```
 
-`OPENWORK_EVAL_REF` pins only the independently provisioned Den source; omit
-it to use the current remote `dev` commit, independently of the desktop version.
+For a published release, `OPENWORK_EVAL_REF` pins only the preview tooling that
+installs and launches the release; omit it to use the current remote `dev`
+commit, independently of the desktop version. No Den is created.
 The world driver and release installer run from the local checkout's HEAD, and
 the desktop sandbox uses the snapshot's inherited display/browser helpers.
 `--release` selects desktop bytes; none of these identities falls back to
 another. For preview recipes only, the equivalent composable inputs before `--`
-are `--source desktop=release:0.18.52/enterprise --source den=sha:<full-pushed-sha> --seed blank`.
-Do not combine `--source desktop=...` with `-- --release`. `--source den=ref:dev`
-resolves origin/dev to a full SHA before adoption; otherwise the CLI pins the
-remote dev SHA for Daytona previews. For Windows, add `--os windows` before
+are `--source desktop=release:0.18.52/enterprise --seed blank`, or
+`--source desktop=sha:<full-pushed-sha>` for a source build.
+Do not combine `--source desktop=...` with `-- --release`. A `ref:` source
+(for example `--source den=ref:dev` on `preview-full`) resolves to a full SHA
+before adoption; otherwise the CLI pins the remote dev SHA for Daytona previews. For Windows, add `--os windows` before
 `--`, or use the composable source/seed syntax above; only exact blank published
 Windows x64 releases are supported. Freestyle does not support Windows. On
 Freestyle, `preview-desktop` supports only the signed-out `fresh` desktop from a
 pushed commit (`pnpm world up preview-desktop --place freestyle --source desktop=ref:dev`);
-it has no Den, so team/restricted/workspace/blank and `preview-den` are refused. Release sandboxes do not mount shared secrets and do not run a
+it has no Den, so `blank`, `preview-den` and `preview-full` are refused. Release sandboxes do not mount shared secrets and do not run a
 source checkout, `pnpm install`, Electron source launch, or Vite. Their viewer,
-startup observation, release digest, Den URLs and log/profile paths are outputs.
+startup observation, release digest and log/profile paths are outputs.
 Linux additionally reports relaunch/browser shortcuts and a protocol handler. A
 crashed or unresponsive app is retained for inspection and is not reported as
 healthy; CDP is output only when it actually responded.
@@ -239,7 +255,7 @@ passing test. Do not print secret outputs or put them in a PR. Test account
 passwords are masked; read the owner-only receipt privately when signing in.
 For seeded Den scenarios, use the available browser controls to sign in with
 that test account before handing the preview to the user. Leave fresh Den at
-signup. The desktop team/workspace scenarios already sign in automatically.
+signup. The `preview-full` team/workspace scenarios already sign in automatically.
 Mail stays in this world's development outbox; never send real invitations.
 
 ## Update without losing progress
@@ -250,7 +266,8 @@ For frontend-only changes, push the new commit and run:
 pnpm exec python3 .opencode/skills/preview-my-work/scripts/update-preview.py preview-den --stage pr-1234 --ref <pushed-sha>
 ```
 
-For `preview-desktop`, the helper updates both Den web and the desktop renderer.
+For `preview-full`, the helper updates both Den web and the desktop renderer;
+for `preview-desktop` it updates the desktop renderer only.
 It preserves the Den database, accounts, Electron process and profile. Desktop
 renderer updates use the existing Vite hot reload; reload the viewer/app if
 needed. Verify the changed screen before claiming the update is visible.

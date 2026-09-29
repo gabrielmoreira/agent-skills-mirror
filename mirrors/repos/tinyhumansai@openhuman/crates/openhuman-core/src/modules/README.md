@@ -34,7 +34,8 @@ directory on `modules`.
 | `boot.rs` | What loads at startup: search-path artifacts, then every `LoadPolicy::Eager` record: deliberately not every registry entry |
 | `schemas.rs` | The `modules` RPC namespace (`list`, `status`, `load`) |
 | `documents.rs` | Host half of `tinydocs` (feature `documents`): the three document operations |
-| `browser.rs`, `browser_task.rs` | Typed TinyBrowser bus calls, shared website policy, and bounded Jev task routing; the browser engine remains in the loadable module |
+| `browser.rs`, `browser_task.rs` | Typed TinyComputer `Browser*` calls, shared website policy, and browser tasks over `StartTask`/`AwaitTask`/`ContinueTask`; the browser engine remains in the loadable module |
+| `computer_config.rs` | The private TinyComputer configuration: decision model (`jev`), planner and rescue route (`planner`), and browser executable, rebuilt from `[computer]` and the stored credentials on every call |
 
 | `wallet.rs` | Host half of `tinywallet` (feature `web3`): confidential and split transaction-signing flows |
 | `voice.rs` | Host half of `tinyvoice` (feature `voice`): the voice primitives |

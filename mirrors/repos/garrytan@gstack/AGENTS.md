@@ -236,6 +236,7 @@ When fixing failures or preparing `/ship`, follow this order:
 bun install              # install dependencies
 bun run test:quick       # fast measured free subset for edit feedback (not acceptance)
 bun run test             # complete free suite via the strict shard runner (no API spend)
+bun run test:ubicloud    # same suite on an ephemeral 16-vCPU Ubicloud VM (needs UBICLOUD_API_KEY)
 bun run eval:bg:pr       # changed fast live probes + selected judges, with explicit deferrals
 bun run eval:bg:release  # fresh complete gate + periodic live coverage
 bun run test:windows     # curated Windows-safe subset (runs on windows-latest)

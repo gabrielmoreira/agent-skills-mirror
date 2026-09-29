@@ -454,11 +454,10 @@ Direct rendered submodules under `vendor/`:
 | --- | --- |
 | `tinyagents` | Provider-neutral agent harness and durable typed state graph: model/tool loop, tool-call dialects and parsing, middleware, retries, caching, sessions/transcripts, and graph execution. |
 | `tinybox` | Isolated execution environments for code the host does not trust; box lifecycle and isolation backends. |
-| `tinybrowser` | Browser automation as a TinyBus module, including browser launch/control, navigation, accessibility snapshots, input, extraction, and screenshots. |
 | `tinybus` | TinyBus runtime and module contracts: discovery/loading, ABI and manifest admission, transport, proxies, lifecycle, and module bus behavior. |
 | `tinychannels` | Portable channel/message contracts, configuration/schema, routing metadata, and channel backend abstractions. OpenHuman owns its concrete product/backend adapters. |
 | `tinyconnectors` | OAuth connector module behavior: account linking, available actions, action execution, and connector webhooks. |
-| `tinydesktop` | Native desktop accessibility observation and interaction exposed through TinyBus. |
+| `tinycomputer` | Computer use as one TinyBus module: native desktop accessibility observation and interaction, browser sessions and control (the `Browser*` members), and tasks (`StartTask`/`AwaitTask`/`ContinueTask`) driven by a selectable decision model (Jev, OpenJev, Sage) with planner and rescue models. |
 | `tinydocs` | Document extraction and synthesis, including PDF reading and DOCX/PPTX generation. |
 | `tinyflows` | Host-agnostic workflow graph definition, validation, compilation, and execution engine. |
 | `tinyhosts` | Hosting provider APIs and deployment/database/domain/analytics operations, as library and TinyBus module. |
@@ -483,8 +482,8 @@ own canonical repositories as well:
 | `tinyagents/vendor/tinyinference` and `tinymemory/vendor/tinyinference` | Inference/provider, embedding, local model, and voice inference libraries. OpenHuman patches the TinyAgents copy in its Cargo workspace; do not create a competing copy. |
 | `tinymemory/vendor/tinycortex` | TinyCortex engine implementation for the TinyMemory contracts. |
 | `*/vendor/tinybus` | Shared TinyBus contract/runtime dependency; change the owning TinyBus project, not a vendored duplicate. |
-| `tinybrowser/vendor/agent-browser` | Browser-control library used by TinyBrowser. |
-| `tinydesktop/vendor/agent-desktop` | Cross-platform desktop accessibility and interaction library used by TinyDesktop. |
+| `tinycomputer/vendor/agent-browser` | Browser-control library used by TinyComputer. |
+| `tinycomputer/vendor/agent-desktop` | Cross-platform desktop accessibility and interaction library used by TinyComputer. |
 | `*/vendor/tinyjevclient` | Shared TinyJEV client used by the browser and desktop modules. |
 | `tinyagents/wiki`, `tinychannels/wiki`, `tinyjuice/wiki` | Project documentation content, not runtime implementation. |
 

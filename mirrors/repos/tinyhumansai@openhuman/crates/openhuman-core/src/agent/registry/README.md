@@ -40,9 +40,11 @@ the harness runs come from [`agents/`](agents/) below.
   matches only *enabled* `Custom` entries, used by the agent factory on a
   harness-registry miss). It reads and writes through
   `config::rpc::load_config_with_timeout` and `Config::save`. Tool listing
-  (`available_tools`) builds the `tools_agent` built-in and reads its
-  `tool_specs()`; its tool scope is the full catalog, unlike the
-  orchestrator's curated subset.
+  (`available_tools`) builds an `orchestrator` session and reads its durable
+  tool registry (`durable_tool_specs_arc()`), so it lists every registered
+  tool, including `Deferred` ones the orchestrator reaches through
+  `tool_search` and packed ones behind `use_skill`, not only the schemas it
+  advertises per turn.
 - [`schemas.rs`](schemas.rs): `ControllerSchema`/`RegisteredController`
   definitions for namespace `agent_registry`: `list`, `get`,
   `available_tools`, `create_custom`, `upsert_custom`, `update`,
@@ -62,8 +64,8 @@ directly into `AgentDefinition`), a `prompt.md` holding the static archetype
 body, and a `prompt.rs` that `include_str!`s that body and exposes
 `pub fn build(&PromptContext) -> anyhow::Result<String>`, appending
 runtime-dependent sections (rendered tool list, user files, workspace) to it.
-`researcher` additionally owns a `graph.rs` for a bespoke `AgentGraph`; every
-other archetype uses `AgentGraph::Default`. The per-archetype contract is
+Every archetype currently uses `AgentGraph::Default`; an archetype that needs a
+bespoke `AgentGraph` adds a `graph.rs` and sets `BuiltinAgent::graph_fn`. The per-archetype contract is
 documented on [`agents/mod.rs`](agents/mod.rs).
 
 [`agents/loader.rs`](agents/loader.rs) owns the `BUILTINS` slice and
@@ -75,8 +77,8 @@ subagent, and `chat -> chat` / `reasoning -> reasoning` delegation is
 rejected (the pair rule is `validate_tier_transition` in the harness; unknown
 subagent ids are tolerated here as a separate integrity concern).
 `BUILTINS` is also the registration point for archetypes that live with
-other domains: `agent_memory` (`memory/agent/agent/`), `skill_setup` and
-`skill_executor` (`skills/{catalog,runtime}/agent/`, feature `skills`), and
+other domains: `agent_memory` (`memory/agent/agent/`), `skill_setup`
+(`skills/catalog/agent/`, feature `skills`), and
 `workflow_builder` and `flow_discovery` (`flows/agents/`, feature `flows`).
 Workspace-level overrides (`<workspace_dir>/agents/*.toml`, with a
 `~/.openhuman/agents/` fallback) are loaded separately by
@@ -84,47 +86,50 @@ Workspace-level overrides (`<workspace_dir>/agents/*.toml`, with a
 `AgentDefinitionRegistry::load` re-runs `validate_tier_hierarchy` after that
 merge.
 
-The 29 archetypes in this directory:
+The 16 archetypes in this directory:
 
 | Archetype | Role |
 | --- | --- |
 | `archivist` | Background: extracts lessons from a completed session into `MEMORY.md` and FTS5 |
-| `code_executor` | Repo-scoped worker: locate/read/edit/build/test/git for any repo work |
-| `context_scout` | Read-only pre-flight context bundle (memory, goals, integrations, web) |
-| `critic` | Adversarial, read-only reviewer of diffs/code against project rules |
-| `crypto_agent` | Wallet/market specialist: balances, swaps, contract calls, x402 paid requests |
-| `flow_memory_agent` (feature `flows`) | Read-only context/memory retrieval for automation-flow `agent` nodes |
+| `critic` | Workflow-run worker: adversarial, read-only cross-check of claims, diffs and code. Not a chat delegate |
+| `flow_memory_agent` (feature `flows`) | Read-only context/memory retrieval for automation-flow `agent` nodes (`agent_ref`) |
 | `goals_agent` | Background: keeps `MEMORY_GOALS.md` fresh from session context |
-| `help` | Answers "how does OpenHuman work" questions from the bundled GitBook docs |
 | `image_agent` | Image generation/edit specialist |
-| `integrations_agent` | Drives a single Composio toolkit (gmail, notion, github, and so on) per spawn; no chat agent delegates to it, the orchestrator searches for and calls connected actions itself |
-| `mcp_agent` (feature `mcp`) | Calls tools on an already-connected MCP server |
-| `morning_briefing` | Proactive scheduled daily summary (tasks, calendar, email, skills) |
+| `morning_briefing` | Proactive scheduled daily summary (tasks, calendar, email, skills) on a named, read-only tool belt |
 | `orchestrator` | Default user-facing `chat`-tier agent; direct-first, delegates only when it materially helps |
-| `planner` | Read-only `reasoning`-tier architect: breaks a task into a DAG of subtasks with acceptance criteria |
+| `planner` | Workflow-run worker (`reasoning` tier): decomposes a question into research angles, or researches one angle. Read-only; not a chat delegate |
 | `presentation_agent` (feature `documents`) | Builds decks from evidence; owns grounding/citations/image verification |
 | `profile_memory_agent` | Profile, persona, preferences, people-graph specialist |
-| `researcher` | Web/docs crawler that compresses findings to dense markdown; has a custom `graph.rs` |
-| `scheduler_agent` | Reminders, recurring jobs, cron: time/cron tools only, no live calendar reads |
-| `settings_agent` | App/core config, health/model diagnostics, service lifecycle, security policy |
-| `skill_creator` | Creates/updates SKILL.md packages and Node-backed JS helpers |
-| `summarizer` | Runtime-dispatched only: compresses oversized tool results for the orchestrator |
+| `summarizer` | Runtime-dispatched only: compresses oversized tool results for the orchestrator, and synthesizes workflow-run reports |
 | `task_manager_agent` | Task-source/workflow/artifact specialist: proactive feeds, workflow bundles, artifacts |
-| `tool_maker` | Narrow self-healer: writes a polyfill when a host command is missing |
-| `tools_agent` | Generalist heavy execution (shell/HTTP/web/files) that never touches a repo or git; wildcard tool scope |
 | `trigger_reactor` | One or two tool calls in direct reaction to an external trigger, no planning |
 | `trigger_triage` | Classifies an external trigger into drop/acknowledge/react/escalate; never acts |
 | `video_agent` | Video generation/animation specialist |
 | `vision_agent` | Read-only image understanding: describe, OCR, locate UI elements |
 
-`flow_memory_agent` and `mcp_agent` are `#[cfg]`-gated out of both the
-module list and `BUILTINS` when `flows`/`mcp` is disabled;
-`presentation_agent` stays compiled but `builtin_enabled` drops it from
-`load_builtins` without `documents`, in lockstep with its
-`generate_presentation` tool. The orchestrator's `agent.toml` subagent list
-still names `mcp_agent` unconditionally (TOML can't be `cfg`'d); both the
-orchestrator tool synthesis in `tools/orchestrator_tools.rs` and
-`validate_tier_hierarchy` skip that dangling id rather than failing boot.
+The orchestrator's chat delegates (its `[subagents]` allowlist) are
+`task_manager_agent`, `profile_memory_agent`, `agent_memory`, `vision_agent`,
+`image_agent`, `video_agent`, `presentation_agent`, `skill_setup`,
+`workflow_builder` and `flow_discovery`. `planner` and `critic` stay
+registered only for the `parallel_research_cross_check` workflow-run template
+(`agent/orchestration/workflow_runs/ops.rs`: decompose = `planner`, research
+= `planner` x2, cross_check = `critic`, synthesize = `summarizer`); the
+orchestrator does not list them. Everything else is runtime-only.
+
+The single-belt specialists that used to sit here (`code_executor`,
+`crypto_agent`, `settings_agent`, `scheduler_agent`, `mcp_agent`,
+`tools_agent`, `help`, `tool_maker`, `skill_creator`, `context_scout`,
+`integrations_agent`, `skill_executor`, `researcher`) were removed. Their
+playbooks are now inline skill guides on tool packs (`coding`, `web3`,
+`system`, `scheduling`, `docs`, `mcp`) that the orchestrator loads with
+`use_skill`, and their tools are `Deferred`, so `tool_search` finds them
+too; see [`tools/toolpacks/README.md`](../../tools/toolpacks/README.md#inline-skill-guides).
+Running an installed skill is the orchestrator's own `run_workflow`.
+
+`flow_memory_agent` is `#[cfg]`-gated out of both the module list and
+`BUILTINS` when `flows` is disabled; `presentation_agent` stays compiled but
+`builtin_enabled` drops it from `load_builtins` without `documents`, in
+lockstep with its `generate_presentation` tool.
 
 The orchestrator picks tools at request time through the shared tool-search
 ranker (Jev when a decision-model credential is installed, BM25 otherwise);

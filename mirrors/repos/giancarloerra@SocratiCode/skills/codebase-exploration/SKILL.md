@@ -62,6 +62,7 @@ Run `codebase_context` early to see what's available. Use `codebase_context_sear
 - If search returns no results, the project may not be indexed yet
 - If the watcher is inactive, results may be stale — run `codebase_update`; start the watcher only when status does not say it is disabled
 - In snapshot mode (`SOCRATICODE_WATCHER=off` plus `SOCRATICODE_AUTO_RESUME=off`), stale results are expected until an explicit update. Do not enable or start the watcher.
+- In Git mode (`SOCRATICODE_WATCHER=git`), search, graph, and status requests report refresh state. Do not treat pending, failed, or unverified results as current. Git transitions trigger refreshes; use `codebase_update` for an immediate refresh of working-tree edits. Do not start the file watcher.
 
 ### 6. Get an overview of all tools
 

@@ -82,13 +82,15 @@ would only add a network round trip for no gain.
 
 ### Browser control
 
-`crates/openhuman-core/src/modules/browser_task.rs` runs bounded browser
-tasks through `tinybrowser_control::JevController`, billed on whichever
-route the agentic provider resolves to (the user's own OpenRouter credential
-directly, or the hosted System One proxy). A consequential step, one that
-would submit a form or send something, returns `NeedsConfirmation` with the
-exact pending decision instead of acting on it; the caller has to get host
-confirmation before the controller proceeds.
+`crates/openhuman-core/src/modules/browser_task.rs` hands browser tasks to
+TinyComputer's task members (`StartTask`, then `AwaitTask` until the task
+pauses or finishes), confined to the browser surface and the allowed websites.
+The decision model is chosen in `[computer] decision_model` — Jev (through
+the hosted proxy when signed in, or the user's OpenRouter key), OpenJev, or
+Sage — and a failed step goes to the rescue model (`[computer] rescue_model`,
+up to `max_rescues` times) before the task fails. An irreversible step pauses
+as `needs_approval`; the browser tool holds it behind a one-use token and only
+`confirm_pending`, through the host approval gate, answers `ContinueTask`.
 
 ## Measured results
 

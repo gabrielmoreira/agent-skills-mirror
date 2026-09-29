@@ -25,7 +25,7 @@ lastUpdated: 2026-06-28
 | `auto/offline` | offline | Favors providers with highest quota availability                         |
 | `auto/smart`   | smart   | Quality-first + higher exploration rate (10%) for better model discovery |
 | `auto/lkgp`    | lkgp    | Explicit LKGP (same as default `auto`)                                   |
-| `auto/chaos`   | chaos   | Fault-injection weights for resilience testing (chaos engineering)       |
+| `auto/chaos`   | chaos   | Parallel fan-out, one model per provider (not fault injection)           |
 
 ### Category × Tier Composition (`auto/<category>:<tier>`)
 
@@ -243,7 +243,7 @@ Notes:
   - **quality-first** → taskFit 0.3524 + stability 0.1429 + quality 0.03, the highest of any pack (best model for the task, consistent)
   - **offline-friendly** → quota 0.3324 + health 0.2667 (max headroom regardless of speed/cost)
   - **reliability-first** → health 0.3524 + stability 0.1905 + reliability 0.04, the highest of any pack (fewest surprises)
-  - **chaos-mode** → health 0.4000 + taskFit 0.1905 (fault-injection profile)
+  - **chaos-mode** → health 0.4000 + taskFit 0.1905 (the weight pack `auto/chaos` assigns to its panel members; the parallel fan-out does not read these weights, and this is not a fault-injection profile, see [CHAOS-MODE.md](../guides/CHAOS-MODE.md#autochaos-parallel-fan-out))
 
 ### Per-Request Controls (headers) — #6023 / #6024 / #6025 / #3470
 
@@ -781,7 +781,7 @@ To strongly favor Tier 1 (subscription), increase `tierPriority` weight:
 }
 ```
 
-See `docs/marketing/TIERS.md` for tier definitions and provider classification.
+See [`docs/guides/TIERS.md`](../guides/TIERS.md) for tier definitions and provider classification.
 
 ## Testing & Coverage
 

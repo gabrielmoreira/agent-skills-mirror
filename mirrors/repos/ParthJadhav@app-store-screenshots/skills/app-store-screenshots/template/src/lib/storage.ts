@@ -142,7 +142,16 @@ function mergeWithDefaults(parsed: Partial<ProjectState>): ProjectState {
     ? Object.fromEntries(
         Object.entries(parsed.slidesByDevice).map(([device, slides]) => [
           device,
-          Array.isArray(slides) ? slides.map((slide) => migrateSlide(slide as Slide)) : [],
+          Array.isArray(slides)
+            ? slides.map((slide) => {
+                const migrated = migrateSlide(slide as Slide);
+                // The Play Store banner deck only has one layout. Normalising
+                // here (not while editing) keeps it out of undo history.
+                return device === "feature-graphic" && migrated.layout !== "feature-graphic"
+                  ? { ...migrated, layout: "feature-graphic" as const, transforms: undefined, screenshotSecondary: undefined }
+                  : migrated;
+              })
+            : [],
         ]),
       )
     : {};
@@ -354,8 +363,10 @@ export function useProject() {
     commit(next);
   }, [commit]);
 
+  // "Reset all devices" resets the decks only. App name, theme, font, icon and
+  // especially `locales` (which has no editor UI) are project settings.
   const reset = useCallback(() => {
-    setState(DEFAULT_PROJECT);
+    setState((prev) => ({ ...prev, slidesByDevice: DEFAULT_PROJECT.slidesByDevice }));
   }, [setState]);
 
   const resetDevice = useCallback((device: Device) => {

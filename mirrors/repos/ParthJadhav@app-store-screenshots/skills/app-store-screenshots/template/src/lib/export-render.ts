@@ -24,6 +24,7 @@
 //    If an image never shows up within the timeout, report it instead of
 //    silently shipping a blank device.
 import { toSvg } from "html-to-image";
+import { encodeCanvasPng } from "./png-encode";
 
 const SETTLE_POLL_MS = 50;
 const SETTLE_TIMEOUT_MS = 8000;
@@ -34,8 +35,8 @@ const SVG_PREFIX = "data:image/svg+xml;charset=utf-8,";
 type Box = { x: number; y: number; w: number; h: number };
 
 export type RenderedSlide = {
-  /** Draw the settled slide at the given export size and return a PNG data URL. */
-  toPng: (w: number, h: number) => string;
+  /** Draw the settled slide at the given export size as opaque 24-bit PNG bytes. */
+  toPng: (w: number, h: number) => Promise<Uint8Array>;
   /** Visible images that never appeared in the render. 0 when all is well. */
   missingImages: number;
 };
@@ -200,7 +201,7 @@ export async function renderSlide(
   return {
     missingImages,
     toPng: (w, h) => {
-      if (w === width && h === height) return canvas.toDataURL("image/png");
+      if (w === width && h === height) return encodeCanvasPng(canvas);
       const { canvas: out, ctx: octx } = createContext(w, h);
       octx.imageSmoothingEnabled = true;
       octx.imageSmoothingQuality = "high";
@@ -211,7 +212,7 @@ export async function renderSlide(
       const dw = width * scale;
       const dh = height * scale;
       octx.drawImage(canvas, (w - dw) / 2, (h - dh) / 2, dw, dh);
-      return out.toDataURL("image/png");
+      return encodeCanvasPng(out);
     },
   };
 }

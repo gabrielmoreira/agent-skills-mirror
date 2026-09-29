@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `openchamber/openchamber` — 26 default patterns, 0 followed patterns, 33 file(s) materialized.
+Mirror of `openchamber/openchamber` — 26 default patterns, 0 followed patterns, 34 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `openchamber/openchamber` — 26 default patterns, 0 followed patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 33 |
+| Files         | 34 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -64,34 +64,35 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 3 | ✓ | [`.agents/skills/communication-style/SKILL.md`](.agents/skills/communication-style/SKILL.md) |
 | 4 | ✓ | [`.agents/skills/desktop-shell/SKILL.md`](.agents/skills/desktop-shell/SKILL.md) |
 | 5 | ✓ | [`.agents/skills/drag-to-reorder/SKILL.md`](.agents/skills/drag-to-reorder/SKILL.md) |
-| 6 | ✓ | [`.agents/skills/isolated-space-boundary/SKILL.md`](.agents/skills/isolated-space-boundary/SKILL.md) |
-| 7 | ✓ | [`.agents/skills/locale-ui-patterns/SKILL.md`](.agents/skills/locale-ui-patterns/SKILL.md) |
-| 8 | ✓ | [`.agents/skills/openchamber-change-discipline/references/updater-testing.md`](.agents/skills/openchamber-change-discipline/references/updater-testing.md) |
-| 9 | ✓ | [`.agents/skills/openchamber-change-discipline/SKILL.md`](.agents/skills/openchamber-change-discipline/SKILL.md) |
-| 10 | ✓ | [`.agents/skills/opencode-v2/SKILL.md`](.agents/skills/opencode-v2/SKILL.md) |
-| 11 | ✓ | [`.agents/skills/performance-engineering/SKILL.md`](.agents/skills/performance-engineering/SKILL.md) |
-| 12 | ✓ | [`.agents/skills/pr-review/SKILL.md`](.agents/skills/pr-review/SKILL.md) |
-| 13 | ✓ | [`.agents/skills/relay-transport/SKILL.md`](.agents/skills/relay-transport/SKILL.md) |
-| 14 | ✓ | [`.agents/skills/serve-sim/SKILL.md`](.agents/skills/serve-sim/SKILL.md) |
-| 15 | ✓ | [`.agents/skills/settings-ui-patterns/references/controls.md`](.agents/skills/settings-ui-patterns/references/controls.md) |
-| 16 | ✓ | [`.agents/skills/settings-ui-patterns/references/layout.md`](.agents/skills/settings-ui-patterns/references/layout.md) |
-| 17 | ✓ | [`.agents/skills/settings-ui-patterns/references/search.md`](.agents/skills/settings-ui-patterns/references/search.md) |
-| 18 | ✓ | [`.agents/skills/settings-ui-patterns/SKILL.md`](.agents/skills/settings-ui-patterns/SKILL.md) |
-| 19 | ✓ | [`.agents/skills/sync-state-invariants/SKILL.md`](.agents/skills/sync-state-invariants/SKILL.md) |
-| 20 | ✓ | [`.agents/skills/theme-system/references/adding-themes.md`](.agents/skills/theme-system/references/adding-themes.md) |
-| 21 | ✓ | [`.agents/skills/theme-system/references/icons.md`](.agents/skills/theme-system/references/icons.md) |
-| 22 | ✓ | [`.agents/skills/theme-system/references/tokens-and-examples.md`](.agents/skills/theme-system/references/tokens-and-examples.md) |
-| 23 | ✓ | [`.agents/skills/theme-system/SKILL.md`](.agents/skills/theme-system/SKILL.md) |
-| 24 | ✓ | [`.agents/skills/triage-issues/SKILL.md`](.agents/skills/triage-issues/SKILL.md) |
-| 25 | ✓ | [`.agents/skills/triage-prs/SKILL.md`](.agents/skills/triage-prs/SKILL.md) |
-| 26 | ✓ | [`.agents/skills/ui-api-decoupling/references/browser-assets-and-auth.md`](.agents/skills/ui-api-decoupling/references/browser-assets-and-auth.md) |
-| 27 | ✓ | [`.agents/skills/ui-api-decoupling/references/implementation-map.md`](.agents/skills/ui-api-decoupling/references/implementation-map.md) |
-| 28 | ✓ | [`.agents/skills/ui-api-decoupling/references/runtime-parity.md`](.agents/skills/ui-api-decoupling/references/runtime-parity.md) |
-| 29 | ✓ | [`.agents/skills/ui-api-decoupling/SKILL.md`](.agents/skills/ui-api-decoupling/SKILL.md) |
-| 30 | ✓ | [`.agents/skills/update-changelog/SKILL.md`](.agents/skills/update-changelog/SKILL.md) |
-| 31 | ✓ | [`.agents/skills/writing-for-agents/SKILL.md`](.agents/skills/writing-for-agents/SKILL.md) |
-| 32 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 33 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 6 | ✓ | [`.agents/skills/enterprise-boundary/SKILL.md`](.agents/skills/enterprise-boundary/SKILL.md) |
+| 7 | ✓ | [`.agents/skills/isolated-space-boundary/SKILL.md`](.agents/skills/isolated-space-boundary/SKILL.md) |
+| 8 | ✓ | [`.agents/skills/locale-ui-patterns/SKILL.md`](.agents/skills/locale-ui-patterns/SKILL.md) |
+| 9 | ✓ | [`.agents/skills/openchamber-change-discipline/references/updater-testing.md`](.agents/skills/openchamber-change-discipline/references/updater-testing.md) |
+| 10 | ✓ | [`.agents/skills/openchamber-change-discipline/SKILL.md`](.agents/skills/openchamber-change-discipline/SKILL.md) |
+| 11 | ✓ | [`.agents/skills/opencode-v2/SKILL.md`](.agents/skills/opencode-v2/SKILL.md) |
+| 12 | ✓ | [`.agents/skills/performance-engineering/SKILL.md`](.agents/skills/performance-engineering/SKILL.md) |
+| 13 | ✓ | [`.agents/skills/pr-review/SKILL.md`](.agents/skills/pr-review/SKILL.md) |
+| 14 | ✓ | [`.agents/skills/relay-transport/SKILL.md`](.agents/skills/relay-transport/SKILL.md) |
+| 15 | ✓ | [`.agents/skills/serve-sim/SKILL.md`](.agents/skills/serve-sim/SKILL.md) |
+| 16 | ✓ | [`.agents/skills/settings-ui-patterns/references/controls.md`](.agents/skills/settings-ui-patterns/references/controls.md) |
+| 17 | ✓ | [`.agents/skills/settings-ui-patterns/references/layout.md`](.agents/skills/settings-ui-patterns/references/layout.md) |
+| 18 | ✓ | [`.agents/skills/settings-ui-patterns/references/search.md`](.agents/skills/settings-ui-patterns/references/search.md) |
+| 19 | ✓ | [`.agents/skills/settings-ui-patterns/SKILL.md`](.agents/skills/settings-ui-patterns/SKILL.md) |
+| 20 | ✓ | [`.agents/skills/sync-state-invariants/SKILL.md`](.agents/skills/sync-state-invariants/SKILL.md) |
+| 21 | ✓ | [`.agents/skills/theme-system/references/adding-themes.md`](.agents/skills/theme-system/references/adding-themes.md) |
+| 22 | ✓ | [`.agents/skills/theme-system/references/icons.md`](.agents/skills/theme-system/references/icons.md) |
+| 23 | ✓ | [`.agents/skills/theme-system/references/tokens-and-examples.md`](.agents/skills/theme-system/references/tokens-and-examples.md) |
+| 24 | ✓ | [`.agents/skills/theme-system/SKILL.md`](.agents/skills/theme-system/SKILL.md) |
+| 25 | ✓ | [`.agents/skills/triage-issues/SKILL.md`](.agents/skills/triage-issues/SKILL.md) |
+| 26 | ✓ | [`.agents/skills/triage-prs/SKILL.md`](.agents/skills/triage-prs/SKILL.md) |
+| 27 | ✓ | [`.agents/skills/ui-api-decoupling/references/browser-assets-and-auth.md`](.agents/skills/ui-api-decoupling/references/browser-assets-and-auth.md) |
+| 28 | ✓ | [`.agents/skills/ui-api-decoupling/references/implementation-map.md`](.agents/skills/ui-api-decoupling/references/implementation-map.md) |
+| 29 | ✓ | [`.agents/skills/ui-api-decoupling/references/runtime-parity.md`](.agents/skills/ui-api-decoupling/references/runtime-parity.md) |
+| 30 | ✓ | [`.agents/skills/ui-api-decoupling/SKILL.md`](.agents/skills/ui-api-decoupling/SKILL.md) |
+| 31 | ✓ | [`.agents/skills/update-changelog/SKILL.md`](.agents/skills/update-changelog/SKILL.md) |
+| 32 | ✓ | [`.agents/skills/writing-for-agents/SKILL.md`](.agents/skills/writing-for-agents/SKILL.md) |
+| 33 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 34 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 
 ---
 

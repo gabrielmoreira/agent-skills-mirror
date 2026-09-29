@@ -17,7 +17,8 @@ Use `TaskCreate` to create a task for each step:
 4. Escalate product decisions
 5. Deep-dive discussion
 6. Draft and write the plan file
-7. Present summary and finalize
+7. Present summary
+8. Act on the user's reply
 
 ## Step 1: Capture the Task and Pick a Slug
 
@@ -182,19 +183,23 @@ Files to read in full before starting implementation:
 - **Context**: State the deployment's bounds explicitly. Downstream review judges whether the plan's machinery is proportionate against these bounds, so a plan that omits them leaves that judgment ungrounded.
 - **Acceptance Criteria**: State observable outcomes, not implementation steps. Use the behavioral form or the user-story form per criterion; both can appear in one plan. Every criterion with observable behavior must be exercised by the Verification section. Omit this section only when the change has no observable behavior, which the Verification section already records.
 - **Implementation Steps**: Use concrete `file_path` references and named functions or symbols. Confirm each symbol a step names resolves to a real declaration — same spelling and casing, in a file you opened, carrying the signature, fields, or event name the step relies on — searching the codebase, or the dependency's shipped interface when the symbol belongs to one. Verify that shape rather than recording it. When the change introduces the symbol instead, mark it new and name where it is defined and what uses it. When a step deletes, renames, or changes the signature of a symbol, list every file that references it, including references on code paths the change otherwise leaves alone or that never execute in practice. When the change introduces per-entity state with an asynchronous lifecycle, state which path creates it, which single path commits its terminal outcome, and which path removes it once that outcome is committed. Confirm every state short of that outcome has a path that reaches it, then check every step that touches that state against those owners. Reference existing functions and utilities from the Pattern Survey instead of reinventing them. Each step describes a discrete unit of work that can be tracked independently during execution.
-- **Verification**: Describe how to know the change actually works. Prefer specific test commands, named test files, or named smoke checks over vague phrases like "run the tests." If the change has no observable behavior, say so explicitly. When citing an existing test as proof that a behavior is already pinned, first confirm the test asserts the real value or behavior at issue rather than a fixture or the pass-through of a fabricated argument. When a test still to be written asserts an observable that some other mechanism in the system also produces, name that mechanism and shape both the fixture and the assertion so only the behavior under test can produce the observable. When a test still to be written asserts an outcome, place it in a suite that runs the real code producing that outcome: a suite that replaces that producer with a test double observes only the call into the double and what the double was scripted to return.
+- **Verification**: Describe how to know the change actually works. Prefer specific test commands, named test files, or named smoke checks over vague phrases like "run the tests." If the change has no observable behavior, say so explicitly. When citing an existing test as proof that a behavior is already pinned, first confirm that the test asserts the real value or behavior at issue rather than a fixture or the pass-through of a fabricated argument, and that its own inputs or match patterns reach each item it is cited for. When a test still to be written asserts an observable that some other mechanism in the system also produces, name that mechanism and shape both the fixture and the assertion so only the behavior under test can produce the observable. When a test still to be written asserts an outcome, place it in a suite that runs the real code producing that outcome: a suite that replaces that producer with a test double observes only the call into the double and what the double was scripted to return.
 - **Context Files**: Curate the minimum set needed to become productive. Do not dump every file touched — only the ones that anchor understanding.
 - **Scope**: Plan content describes what to build. Do not embed task tracking, skill loading, `/finalize` invocation, test commands, or commit instructions in the plan content — those are execution-wrapper concerns. One plan file covers one implementation run. When later work must wait on an external gate the implementation cannot pass itself, such as a verified deploy of the earlier work, write that later work as a separate plan file with the same structure, rather than marking a stopping point inside one plan. Derive its slug from the later work with Step 1's rules and state its path before writing it. State the gate in the later plan's Context section, and name the later plan's path in the earlier plan's Context section. Plan size never justifies a second file.
 
-## Step 7: Present Summary and Finalize
+## Step 7: Present Summary
 
 Present a brief summary of the drafted plan: the essence of what it builds and the key decisions behind it, short enough to read at a glance so the user does not have to read the full plan file. When the plan delivers value to a user, developer, or operator, also present a short list of stories capturing what that person gains, in the form "As a <persona>, I want <capability> so that <outcome>". Skip the stories only when no beneficiary or outcome can be named, such as a purely mechanical refactor. Fit both to the plan rather than a fixed template. When Step 6 also wrote a gated plan, summarize each file, and name which one to implement first and the gate the later one waits on.
 
-Then use `AskUserQuestion` to offer these paths:
+Close with how to reply: approve the plan as final, or describe what to change. When an unknown that only a built artifact settles is still open, also offer prototyping it first, and recommend that over approving, since a surface or interaction pattern that is still unproven cannot be judged from the plan text.
 
-- **Approve** (Recommended) — the plan is final.
-- **Revise** — the user describes what to change. Apply the edits to the affected plan file, then re-summarize and re-present.
-- **Prototype first** — offer this path when an unknown that only a built artifact settles is still open. Run the `/prototype` skill, apply what it settled to the plan file, then re-summarize and re-present. Mark it "(Recommended)" in place of Approve while such an unknown is open, since a surface or interaction pattern that is still unproven cannot be judged from the plan text.
+Then end the turn.
+
+## Step 8: Act on the User's Reply
+
+- **Revise** — apply the edits the user describes to the affected plan file. Then re-present Step 7's summary, close with its reply guidance, and end the turn again.
+- **Prototype first** — run the `/prototype` skill, then apply what it settled to the plan file. Then re-present Step 7's summary, close with its reply guidance, and end the turn again.
+- **Approve** — the plan is final.
 
 Then use the TaskList tool and proceed to any remaining task.
 
@@ -202,5 +207,5 @@ Then use the TaskList tool and proceed to any remaining task.
 
 - Never skip the pattern survey.
 - Never skip decision escalation for questions left unanswered. When entering from a Background Document as Input, questions the document already resolves are considered answered and may be skipped.
-- The plan file, any gated plan the Scope rule calls for, and any prototype the discussion or the finalize gate called for, are the only outputs. Do not write code, scaffolding, or other project files.
+- The plan file, any gated plan the Scope rule calls for, and any prototype the discussion or the user's reply to the summary called for, are the only outputs. Do not write code, scaffolding, or other project files.
 - Do not run `/review-plan` or any review skills here.

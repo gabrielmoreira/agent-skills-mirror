@@ -246,6 +246,14 @@ Rollback Required: No
 
 ## ServiceNow Change Request Integration (MISSION02 Enhancement)
 
+Policy selection comes from AGENTS.md: an API-created Terminal Intent Local/Lab
+record for explicitly authorized lab endpoints uses local approval/audit instead
+of ServiceNow/mandatory GAIT. This exception is not inferred from an environment
+variable or missing credentials. Read-only preparation, real baseline and rollback
+artifacts, an API APPLY PHASE and verification remain required. Never evade an
+actual tool-level denial with another transport. All other requests follow the
+production change policy below.
+
 When ServiceNow is available ($SERVICENOW_MCP_SCRIPT is set), every configuration change MUST be gated by an approved Change Request.
 
 ### Pre-Change: Create CR

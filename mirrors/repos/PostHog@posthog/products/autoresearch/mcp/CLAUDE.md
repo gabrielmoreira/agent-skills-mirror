@@ -1,0 +1,1 @@
+cache/repos/github.com/PostHog@posthog/products/autoresearch/mcp/AGENTS.md

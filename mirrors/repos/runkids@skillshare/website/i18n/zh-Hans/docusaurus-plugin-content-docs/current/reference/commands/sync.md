@@ -198,9 +198,28 @@ flowchart TD
 
 ### 示例输出
 
-<p>
-  <img src="/img/sync-demo.png" alt="sync demo" width="720" />
-</p>
+```text
+$ skillshare sync
+✓ Discovered 43 skills
+
+Backing up
+─────────────────────────────────────────
+✓ claude -> ~/.local/share/skillshare/backups/2026-09-28_12-52-50/claude
+✓ cursor -> ~/.local/share/skillshare/backups/2026-09-28_12-52-50/cursor
+✓ gemini -> ~/.local/share/skillshare/backups/2026-09-28_12-52-50/gemini
+  …
+
+Syncing skills
+─────────────────────────────────────────
+✓ claude: merged (43 linked, 0 local, 0 updated, 1 pruned)
+✓ claude-work: merged (43 linked, 0 local, 0 updated, 1 pruned)
+✓ cursor: merged (43 linked, 1 local, 0 updated, 1 pruned)
+✓ gemini: merged (43 linked, 0 local, 0 updated, 1 pruned)
+✓ opencode: merged (43 linked, 0 local, 0 updated, 1 pruned)
+✓ universal: merged (43 linked, 0 local, 0 updated, 1 pruned)
+
+Sync complete: 6 targets, 258 linked, 1 local, 0 updated, 6 pruned (0.0s)
+```
 
 ---
 
@@ -548,6 +567,9 @@ skillshare sync --all        # 同步 skills + agents + extras + MCP
 ```
 
 Agent sync 支持全部三种模式（merge、copy、symlink），与 target 的配置模式一致。
+在未开启 Developer Mode 的 Windows 上，merge 模式会复制 agent 文件而不是链接它们，并打印
+`! <target>: agents file links need Windows Developer Mode; copying instead`；参见
+[Windows 疑难解答](/docs/troubleshooting/windows#file-links-need-windows-developer-mode-copying-instead)。
 只有定义了 `agents` path 的 target 才会收到 agent 同步——目前是 Claude、Cursor、
 OpenCode 和 Augment。完整列表参见
 [Agents — Supported Targets](/docs/understand/agents#supported-targets)。
@@ -589,6 +611,8 @@ skillshare sync --all             # 同步 skills + agents + extras + MCP
 |------|-------|-------------|
 | `--dry-run` | `-n` | 预览变更但不写入 |
 | `--force` | `-f` | 覆盖 target 上冲突的文件 |
+
+extras sync 发生错误时，`--json` 会以非零状态退出。对单文件 extra，`--dry-run` 也会指出哪些修改将在替换前备份。
 
 :::info 两种模式都支持
 `sync extras` 在 global mode 和 project mode 下都能运行。使用 `sync --all`
@@ -640,6 +664,10 @@ Source 文件存放在 `extras/` 子目录下：
 | `symlink` | 整个 source 目录 symlink 到 target path |
 
 在 merge 模式下，只有 symlink 会被清理——用户在 target 上自行创建的本地文件会被保留。
+
+在未开启 Developer Mode 的 Windows 上，merge 模式（以及 symlink 模式下的[单文件 extra](./extras.md#single-file-extras)）会改为复制文件，把该 target 报告为 `(copy)`，并在其下打印 `file links need Windows Developer Mode; copying instead`。这些副本会像链接一样被更新和清理，并在文件链接可用后替换为链接。
+
+内容相同的本地文件会显示为 `local preserved`；`sync extras` 不会为它们建议使用 `--force`。它们仍是本地文件，不是受管理的链接。
 
 ### 执行流程
 

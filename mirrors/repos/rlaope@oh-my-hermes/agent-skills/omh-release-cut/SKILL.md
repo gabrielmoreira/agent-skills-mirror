@@ -29,6 +29,7 @@ This is an OMH `release-cut` workflow skill, projected for Agent Skills hosts (C
 - Production is down or degraded and the work is commanding the incident; use `live-incident-response`.
 - The ask is a readiness audit across observability, security, and operations before launch; use `production-audit`.
 - The ask is drafting the commit message or the pull request description for a change; use `commit-pr-authoring`.
+- The app ships through the App Store or Google Play -- signing, a TestFlight or Play testing-track beta, a phased release, a store hotfix; use `mobile-release`.
 
 ## Examples
 

@@ -10,10 +10,11 @@ constructed and executable but unadvertised: the agent sees one small tool,
 ## How it works
 
 - `types::ToolPack` is the unit: an `id`, a one-line `summary` shown in the
-  always-on pack index, the `tools` it owns, and `owners` (agent ids the pack
-  is *not* applied to), because the specialist a family was delegated to
-  (`settings_agent` for `system`, `skill_executor` for `skills`, ...) should
-  not pay a `use_skill` round trip on every call of its own belt.
+  always-on pack index, the `tools` it owns, `owners` (agent ids the pack is
+  *not* applied to), because the specialist a family was delegated to
+  (`skill_setup` for `skills`, `workflow_builder` for `workflows`, ...)
+  should not pay a `use_skill` round trip on every call of its own belt, and
+  an optional `guide` (see [Inline skill guides](#inline-skill-guides)).
 - `registry::PACKS` is the compiled-in table. Membership is a build-time
   decision on purpose: a pack that config or RPC could edit would let a caller
   move a dangerous tool out of the reviewed, advertised surface.
@@ -79,15 +80,47 @@ here. `groups::current()` reads the ambient `ToolGroups` off `CoreContext`,
 falling back to `Withheld`-everywhere when there is no context (unit tests,
 pre-boot CLI paths).
 
-## Name collision
+## Inline skill guides
 
-`use_skill` is the tool-pack disclosure proxy in this module. `run_skill` is
-a different thing: the synthesized delegate into the `skill_executor` agent
-(`delegate_name = "run_skill"` in
-`skills/runtime/agent/skill_executor/agent.toml`), which is itself one of the
-tools packed under the `skills` pack. A `run_skill` call that arrives through
-`use_skill { skill: "skills", tool: "run_skill" }` is this proxy dispatching
-to that delegate, not a second skill runtime.
+A pack can carry a `guide`: a short playbook in `guides/<id>.md`,
+`include_str!`'d into `registry::PACKS`, that `use_skill` prints between the
+pack summary and the tool schemas when the pack is loaded. Packs with a guide
+today: `coding` (search, edit, run scripts, test, lint, review a diff, git),
+`web3` (wallet, swaps, bridges, contract calls, x402), `system` (config,
+health, diagnostics, costs, service lifecycle, credentials, app updates),
+`scheduling` (`cron`), `docs` (`gitbooks_search` / `gitbooks_get_page`) and
+`mcp` (MCP registry search, connect, status, tool calls). The other packs are
+plain schema bundles with an empty guide.
+
+Why: these guides replaced the single-belt specialists (`code_executor`,
+`crypto_agent`, `settings_agent`, `scheduler_agent`, `help`, `mcp_agent`,
+`tool_maker`, `critic` as a chat reviewer, and similar). A sub-agent whose
+whole value was a system prompt over a handful of tools cost a separate
+context, a model call and a hand-off envelope on every use. As a guide it is
+roughly 500 tokens, paid once when the skill is loaded, and the orchestrator
+calls the tools itself. Those tools are `ToolExposure::Deferred` rather than
+on any belt, so `tool_search` finds a single one of them without loading the
+whole skill.
+
+What does not go in a guide: a rule that has to bind before the model thinks
+to load the skill. The two such rules (an explicit yes before moving funds or
+executing a swap, bridge or contract call, and an explicit yes before
+stopping, shutting down, uninstalling or updating OpenHuman's service) live
+in the orchestrator prompt's `## Skills` section
+(`agent/registry/agents/orchestrator/prompt.md`). Lookup detail and the step
+by step loop belong in the guide.
+
+`toolpacks_tests.rs` keeps guides honest: every guided pack must carry a
+non-empty guide, every guide stays under `GUIDE_BUDGET_BYTES` (2,400 bytes,
+about 550 tokens), no guide may name a removed specialist's hand-off tool
+(`run_code`, `do_crypto`, `manage_settings`, ...), every tool in a guided
+pack must be named in its guide, and a loaded skill renders its guide before
+its schemas.
+
+Running an installed skill is not a pack concern: the orchestrator uses its
+own `run_workflow`. The install hand-off `setup_skills` (into `skill_setup`)
+stays unpacked on the orchestrator's belt
+(`DELIBERATELY_UNPACKED_HANDOFFS`).
 
 ## Called by
 

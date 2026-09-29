@@ -69,11 +69,38 @@ This is the primary distribution path — upload `pdca-framework.skill` directly
 
 ### For Claude Code (Command Line)
 
-Claude Code uses a **directory-based** skill format, not the `.skill` package file.
+#### Recommended: Install via Plugin Marketplace
+
+Claude Code plugins are distributed through marketplaces, and this repo hosts its own —
+no third-party catalog required (see [`.claude-plugin/marketplace.json`](../.claude-plugin/marketplace.json)):
+
+```bash
+claude plugin marketplace add kenjudy/pdca-agentic-coding-framework
+claude plugin install pdca
+```
+
+This installs the `pdca-framework` skill and the five per-phase slash commands
+(`/pdca:cycle`, `/pdca:plan`, `/pdca:do`, `/pdca:check`, `/pdca:act`) in one
+step. Updates land the same way once a new version is tagged:
+`claude plugin update pdca`.
+
+**Already have the skill installed manually (below)?** Remove the old copies first so you
+don't end up with two copies of the skill and commands active at once:
+```bash
+rm -rf ~/.claude/skills/pdca-framework ~/.claude/commands/pdca*.md    # personal scope
+rm -rf .claude/skills/pdca-framework .claude/commands/pdca*.md        # project scope
+```
+
+#### Alternative: Manual Install (Directory-Based)
+
+Claude Code also supports installing the skill as a plain directory, not through the
+plugin system — useful for building from source, customizing prompts before a release
+exists, or on a Claude Code version that predates plugin support. This is the same
+`.skill` package file used elsewhere on this page, unzipped by hand.
 
 [Download `pdca-framework.skill` from Releases](https://github.com/kenjudy/pdca-agentic-coding-framework/releases/latest) first.
 
-#### Install - Personal Skills (Available Across All Projects)
+##### Install - Personal Skills (Available Across All Projects)
 
 Just the downloaded `.skill` file — no repo clone needed:
 
@@ -116,7 +143,7 @@ Add-Type -AssemblyName System.IO.Compression.FileSystem
 # Result: same pdca-framework/ layout as above, under %USERPROFILE%\.claude\skills\
 ```
 
-#### Install - Project Skill (Shared with Team via Git)
+##### Install - Project Skill (Shared with Team via Git)
 
 Use this instead of the personal install above when the skill should travel with a specific repo rather than depend on each teammate remembering to install it themselves. Claude Code auto-discovers skills committed under `.claude/skills/` in a project (no config needed), so anyone who clones the repo and runs `claude` there gets the PDCA workflow automatically — useful when a team wants to standardize how a particular codebase is worked on, not just how one person works everywhere. The tradeoff: it's scoped to this one repo (personal installs at `~/.claude/skills/` apply everywhere), and first-time cloners will see a one-time workspace-trust prompt for the committed `.claude/` config.
 
@@ -147,7 +174,7 @@ git add .claude/skills/
 git commit -m "Add PDCA framework skill"
 ```
 
-#### Alternative: Install via Script (Repo Clone Only)
+##### Alternative: Install via Script (Repo Clone Only)
 
 If you've cloned the repo (e.g. to build from source), `install-skill.sh` / `install-skill.ps1` wraps the same unzip steps and prompts for scope:
 
@@ -166,7 +193,7 @@ This also installs the five per-phase slash commands (`/pdca`, `/pdca-plan`, `/p
 `/pdca-check`, `/pdca-act`) into the scope's commands directory — `~/.claude/commands/`
 for `personal`, the current project's `.claude/commands/` for `project`, or
 `~/.codex/prompts/` for `codex`. See
-[plugins/pdca-framework/README.md](../plugins/pdca-framework/README.md) for details.
+[plugins/pdca/README.md](../plugins/pdca/README.md) for details.
 
 **Windows (PowerShell):**
 ```powershell
@@ -181,7 +208,7 @@ for `personal`, the current project's `.claude/commands/` for `project`, or
 
 See [BUILD.md](BUILD.md) for full details, including troubleshooting and CI/CD automation.
 
-#### Verify Installation
+##### Verify Installation
 
 **macOS/Linux (Bash):**
 ```bash
@@ -263,7 +290,15 @@ I need to add a new payment validation feature to our checkout flow.
 Let's use the PDCA framework.
 ```
 
-Or explicitly reference the skill:
+**On Claude Code**, run the full cycle explicitly with a slash command instead —
+`/pdca:cycle` (marketplace install) or `/pdca` (manual install):
+
+```
+/pdca:cycle I need to fix a bug in the user authentication system.
+```
+
+**On claude.ai or Codex**, where slash commands aren't available, explicitly
+reference the skill by name instead:
 
 ```
 @pdca-framework I need to fix a bug in the user authentication system.
@@ -300,22 +335,40 @@ Claude will facilitate:
 
 ## Using Specific Phases
 
+On Claude Code, each phase has its own slash command — `/pdca:plan`/`/pdca-plan`,
+`/pdca:do`/`/pdca-do`, `/pdca:check`/`/pdca-check`, `/pdca:act`/`/pdca-act` (marketplace
+install / manual install respectively; see [Installation](#for-claude-code-command-line)
+above for which applies to you). On claude.ai or Codex, where slash commands aren't
+available, reference the skill by name instead.
+
 ### Get Analysis Prompt
+```
+/pdca:plan Show me the analysis phase prompt
+```
 ```
 @pdca-framework Show me the analysis phase prompt
 ```
 
 ### Get Planning Prompt
 ```
+/pdca:plan I need the detailed planning template
+```
+```
 @pdca-framework I need the detailed planning template
 ```
 
 ### Get TDD Implementation Checklist
 ```
+/pdca:do Show me the DO phase checklist
+```
+```
 @pdca-framework Show me the DO phase checklist
 ```
 
 ### Run a Retrospective
+```
+/pdca:act Let's retrospect on this session
+```
 ```
 @pdca-framework Let's retrospect on this session
 ```
@@ -384,7 +437,9 @@ an updated version of this skill?
 **Symptoms:** Claude doesn't use the framework when discussing code
 
 **Solutions:**
-1. Explicitly reference it: `@pdca-framework`
+1. On Claude Code, invoke it directly with a slash command instead of relying on
+   auto-trigger: `/pdca:cycle` (marketplace install) or `/pdca` (manual install). On
+   claude.ai or Codex, explicitly reference it: `@pdca-framework`
 2. Use trigger words: "code generation", "TDD", "PDCA cycle"
 3. Check skill is enabled in settings
 
@@ -394,12 +449,21 @@ an updated version of this skill?
 **Solution:** This is expected behavior when context window fills. Follow the skill's recovery process:
 1. Stop the thread immediately
 2. Tell Claude what you observe
-3. Say: `@pdca-framework I'm seeing context drift. Let's refocus on step [X] using the DO phase checklist`
+3. On Claude Code, refocus with the DO command directly:
+   `/pdca:do I'm seeing context drift. Let's refocus on step [X] using the DO phase checklist`
+   (or `/pdca-do` on a manual install). On claude.ai or Codex:
+   `@pdca-framework I'm seeing context drift. Let's refocus on step [X] using the DO phase checklist`
 
 ### Too Much Boilerplate
 **Symptoms:** Prompts feel repetitive or verbose
 
-**Solution:** The skill is designed for 1-3 hour coding sessions. For very small changes:
+**Solution:** The skill is designed for 1-3 hour coding sessions. For very small changes,
+jump straight to DO on Claude Code:
+```
+/pdca:do Quick mode - I just need to [simple change].
+Skip to DO phase with minimal planning.
+```
+or on claude.ai/Codex:
 ```
 @pdca-framework Quick mode - I just need to [simple change]. 
 Skip to DO phase with minimal planning.
@@ -423,7 +487,11 @@ Stop. Our working agreement is to use TDD. Show me the failing test first.
 - **Too large:** > 3 hours (context drift likely)
 
 ### 2. Run Daily Retrospectives
-After each session:
+After each session, on Claude Code:
+```
+/pdca:act Let's retrospect on today's work
+```
+or on claude.ai/Codex:
 ```
 @pdca-framework Let's retrospect on today's work
 ```
@@ -508,7 +576,7 @@ Help improve the framework:
 
 ## Version Information
 
-**Current Version:** v1.3.0
+**Current Version:** v1.4.0
 **License:** CC BY 4.0 (documentation & prompts) / MIT (source code)
 **Attribution:** Ken Judy with Claude Anthropic 4
 **Last Updated:** 2026-05-28
@@ -831,4 +899,6 @@ There's no PDCA-side install step. `references/ponytail-setup.md` covers:
 
 ---
 
-**Ready to start?** Try: `@pdca-framework I need to [your coding task]`
+**Ready to start?** On Claude Code, try: `/pdca:cycle I need to [your coding task]`
+(or `/pdca` on a manual install). On claude.ai or Codex, try:
+`@pdca-framework I need to [your coding task]`

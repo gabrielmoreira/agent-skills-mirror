@@ -46,12 +46,14 @@ src/
   components/                AsciinemaPlayer
   css/custom.css             Design system (tokens, typography, dark/light)
 static/img/                  Screenshots, logo, social card
+plugins/llms-txt.ts          Local plugin: writes build/llms.txt and llms-full.txt
 ```
 
 ## Key Config
 
 - `docusaurus.config.ts` — Site config, navbar (Learn, How-To, Reference, Feature map, Blog, Changelog), footer, redirects from old `/docs/commands/*` paths
 - `sidebars.ts` — Learn / How-To / Understand / Reference / Troubleshooting, with nested command subcategories
+- `plugins/llms-txt.ts` — On the English build, writes `/llms.txt` (sidebar-ordered link index with first-sentence descriptions) and `/llms-full.txt` (all sidebar docs concatenated). Docs missing from `sidebars.ts` are left out of both
 - `onBrokenLinks: 'throw'` — a bad link fails the build
 - Color mode: default **light**, `respectPrefersColorScheme: false`
 - Mermaid config lives in `themeConfig.mermaid`; no per-diagram `%%{init}%%`

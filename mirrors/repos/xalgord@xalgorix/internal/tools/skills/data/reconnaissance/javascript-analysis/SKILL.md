@@ -1,75 +1,91 @@
 ---
 name: javascript-analysis
-description: JavaScript file analysis for API endpoint extraction, hardcoded secrets, DOM source-sink mapping, and source map exploitation
+description: JavaScript and source map analysis for route extraction, secret detection, framework discovery, and attack-surface mapping
 ---
 
 # JavaScript Analysis
 
+## When to Use
+When the target serves JavaScript (SPAs, React/Vue/Angular apps, any page with script tags). Skip when the target has no meaningful JS surface.
+
 ## Methodology
 
-### Endpoint and Secret Extraction
-
+### Collect JavaScript Bundles
 ```bash
-# Download all JS files
-cat urls.txt | grep -E "\.js$" | sort -u > js_files.txt
+# Use scan-local tmp/ (never host /tmp)
+mkdir -p tmp/js
+# Extract JS URLs from the main page
+curl -sk https://TARGET/ -o tmp/main_page.html
+grep -oP 'src="[^"]*\.js[^"]*"' tmp/main_page.html | sed 's/src="//;s/"//' | sort -u > tmp/js_urls.txt
 
-# Extract API endpoints
-cat js_files.txt | while read url; do
-  curl -sk "$url" | grep -oP '["'\''](/api/[^"'\''\\s]+)' | sort -u
-done
+# Download each bundle
+while read url; do
+  fname=$(echo "$url" | grep -oP '[^/]+$')
+  curl -sk "$url" --max-time 15 -o "tmp/js/$fname"
+done < tmp/js_urls.txt
+```
 
-# Extract secrets and tokens
-cat js_files.txt | while read url; do
-  curl -sk "$url" | grep -oiP '(api[_-]?key|secret|token|password|auth|bearer|aws|firebase)["\s:=]+["\s]*[a-zA-Z0-9_\-\.]{10,}' | head -20
-done
+### Route Extraction (comprehensive)
+```bash
+# API paths (beyond just /api/)
+cat tmp/js/*.js | grep -oP '["\x27](/[a-zA-Z0-9_/.-]+)["\x27]' | sort -u > tmp/js_routes.txt
 
-# Extract full URLs
-cat js_files.txt | while read url; do
-  curl -sk "$url" | grep -oP 'https?://[^"'\''\\s<>]+' | sort -u
-done
+# Relative routes (framework-specific)
+cat tmp/js/*.js | grep -oP '["\x27]([a-z][a-z0-9_-]+(?:/[a-z][a-z0-9_-]*)+)["\x27]' | sort -u >> tmp/js_routes.txt
+
+# Framework route tables
+# React/Next.js: look for _next/data patterns, getStaticProps, getServerSideProps
+cat tmp/js/*.js | grep -oP '["\x27]/_next/[^"\x27]+' | sort -u
+# Vue: router definitions
+cat tmp/js/*.js | grep -oP '(?:path|component):\s*["\x27][^"\x27]+' | sort -u
+# Angular: route configs
+cat tmp/js/*.js | grep -oP 'path:\s*["\x27][^"\x27]+' | sort -u
+
+# GraphQL endpoints
+cat tmp/js/*.js | grep -oiP 'graphql[^"\x27\s]*' | sort -u
+
+# WebSocket endpoints
+cat tmp/js/*.js | grep -oP 'wss?://[^"\x27\s]+|["\x27]/ws[^"\x27]*' | sort -u
+
+# Dynamically loaded chunks (split chunks, lazy imports)
+cat tmp/js/*.js | grep -oP '"[^"]*chunk[^"]*\.js"|"[0-9a-f]+\.[0-9a-f]+\.js"' | tr -d '"' | sort -u > tmp/js_chunks.txt
 ```
 
 ### Source Map Analysis
-
 ```bash
-# Find source maps
-cat js_files.txt | while read url; do
-  curl -sk "$url" | grep -oP '//# sourceMappingURL=\K.*' | while read map; do
-    echo "[SOURCEMAP] $url -> $map"
-    curl -sk "${url%/*}/$map" -o /tmp/sourcemap.json 2>/dev/null
-    # Extract original source code
-    python3 -c "import json;d=json.load(open('/tmp/sourcemap.json'));[print(s) for s in d.get('sources',[])]" 2>/dev/null
-  done
+# Check for source maps
+while read f; do
+  curl -sk "${f}.map" --max-time 10 -o "tmp/js/$(basename $f).map" 2>/dev/null
+done < tmp/js_urls.txt
+
+# If source maps exist, they reveal original source code paths
+for map in tmp/js/*.map; do
+  [ -f "$map" ] && jq -r '.sources[]' "$map" 2>/dev/null | head -50
 done
 ```
 
-### DOM Source/Sink Mapping
-
+### Secret Detection (with validation)
 ```bash
-# Search for dangerous sinks in JS files
-for sink in "innerHTML" "outerHTML" "document.write" "eval(" "setTimeout(" "setInterval(" "Function(" ".html(" ".append(" "v-html" "dangerouslySetInnerHTML" "bypassSecurity"; do
-  grep -rn "$sink" ./js_files/ 2>/dev/null | head -5
-done
+# Candidate secrets (broad patterns)
+cat tmp/js/*.js | grep -oiP '(?:api[_-]?key|secret|token|password|auth|bearer|aws[_-]?(?:access|secret)|firebase)["\s:=]+["\s]*[a-zA-Z0-9_\-]{20,}' > tmp/js_secret_candidates.txt
 
-# Search for sources
-for source in "location.hash" "location.search" "document.referrer" "window.name" "postMessage" "localStorage" "sessionStorage"; do
-  grep -rn "$source" ./js_files/ 2>/dev/null | head -5
-done
+# CRITICAL: These are CANDIDATES, not confirmed secrets
+# Validate each: is it a real credential or just a placeholder/config key?
+# Common false positives: public config, constant strings, CSS class names
 ```
 
-## Coverage Gaps & Validation
+## Stopping Criteria
+- All JS bundles from the main page downloaded and analyzed
+- Routes, API endpoints, and WebSocket URLs extracted
+- Source maps checked (if present)
+- Secret candidates identified (with note that they need validation)
 
-- A single `grep` pass misses most assets: enumerate every script source first — inline `<script>`, dynamically loaded chunks, `import()` splits, service workers, and Webpack `*.chunk.js`/`runtime.js` referenced only inside other bundles. Use `getJS`, `subjs`, or `katana -jc` to walk them recursively.
-- Run layered regex, not one pattern: endpoints (`(?:"|')(/[a-zA-Z0-9_?&=/.-]+)(?:"|')`), absolute URLs (`https?://`), and secrets per provider — AWS `AKIA[0-9A-Z]{16}`, Google `AIza[0-9A-Za-z_\-]{35}`, Slack `xox[baprs]-`, JWTs `eyJ[A-Za-z0-9_-]+\.`, Stripe `sk_live_`, plus generic `api[_-]?key|secret|token`.
-- Most-missed sources: `.js.map` source maps (reconstruct full app source with `sourcemapper`), `process.env`/`window.__CONFIG__`/`__NEXT_DATA__` config blobs, and framework route tables (React Router, Vue Router, Angular `routes`) that expose unlinked admin paths.
-- Beautify before grepping — minified one-liners hide string concatenation (`"/api/"+"v2/"+"users"`); run `js-beautify` and also reconstruct split URLs manually.
-- Validate before reporting: confirm extracted endpoints actually resolve (`httpx` the candidates), and verify secrets are LIVE and in-scope — test a key against its own provider's read-only API, never against third-party prod, and confirm the secret belongs to the target org, not a bundled SDK default.
-- Diff bundles across deploys; new hashes in CI builds frequently leak fresh staging/internal endpoints before they are firewalled.
+## Common Misses
+- Dynamically loaded chunks (webpack/code splitting)
+- Inline JavaScript in HTML (not just .js files)
+- Service workers and web manifest
+- Environment-specific configs (staging/dev URLs in production bundles)
+- Polyfill-loaded libraries that might have different behavior
 
-## Pro Tips
-
-1. Source maps (`.js.map`) expose original unminified source code — always check
-2. Search for `process.env`, `config`, `settings` objects — they reference secrets
-3. Webpack chunk files (`1.chunk.js`, `vendor.js`) contain dependency code with known CVEs
-4. React/Vue/Angular build artifacts contain route definitions revealing all endpoints
-5. Look for commented-out debug code, TODO notes, and test credentials
+## Output
+Save findings to the Discovery Manifest or Endpoint Inventory note.

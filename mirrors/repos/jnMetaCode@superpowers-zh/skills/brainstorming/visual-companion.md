@@ -22,59 +22,62 @@
 - **技术决策** — API 设计、数据建模、架构方案选择
 - **澄清问题** — 任何回答是文字而非视觉偏好的问题
 
-关于 UI 主题的问题不一定是视觉问题。"你想要什么样的向导？"是概念性的——使用终端。"这些向导布局中哪个感觉对？"是视觉性的——使用浏览器。
+*关于* UI 主题的问题不一定是视觉问题。"你想要什么样的向导？"是概念性的——使用终端。"这些向导布局中哪个感觉对？"是视觉性的——使用浏览器。
 
 ## 工作原理
 
-服务器监视一个目录中的 HTML 文件，将最新的文件提供给浏览器。你写入 HTML 内容，用户在浏览器中看到它，并可以点击选择选项。选择结果被记录到一个 `.events` 文件中，你在下一轮会话中读取它。
+服务器监视一个目录中的 HTML 文件，将最新的文件提供给浏览器。你把 HTML 内容写入 `screen_dir`，用户在浏览器中看到它，并可以点击选择选项。选择结果被记录到 `state_dir/events`，你在下一轮读取它。
 
-**内容片段 vs 完整文档：** 如果你的 HTML 文件以 `<!DOCTYPE` 或 `<html` 开头，服务器会原样提供（仅注入辅助脚本）。否则，服务器会自动将你的内容包裹在框架模板中——添加头部、CSS 主题、选择指示器和所有交互基础设施。**默认写内容片段即可。** 只有当你需要完全控制页面时才写完整文档。
+**内容片段 vs 完整文档：** 如果你的 HTML 文件以 `<!DOCTYPE` 或 `<html` 开头，服务器会原样提供（仅注入辅助脚本）。否则，服务器会自动将你的内容包裹在框架模板中——添加头部、CSS 主题、连接状态和所有交互基础设施。**默认写内容片段即可。** 只有当你需要完全控制页面时才写完整文档。
 
 ## 启动会话
 
 ```bash
-# 启动服务器并持久化（原型保存到项目中）
-scripts/start-server.sh --project-dir /path/to/project
+# 在用户同意使用视觉伴侣之后再启动。--open 会在推送第一个屏幕时自动打开浏览器；
+# --project-dir 让原型持久化，并支持用同一端口重启。
+bash scripts/start-server.sh --project-dir /path/to/project --open
 
-# 返回：{"type":"server-started","port":52341,"url":"http://localhost:52341",
-#           "screen_dir":"/path/to/project/.superpowers/brainstorm/12345-1706000000"}
+# 返回：{"type":"server-started","port":52341,
+#           "url":"http://localhost:52341/?key=ab12…",
+#           "screen_dir":"/path/to/project/.superpowers/brainstorm/12345-1706000000/content",
+#           "state_dir":"/path/to/project/.superpowers/brainstorm/12345-1706000000/state"}
 ```
 
-保存响应中的 `screen_dir`。告诉用户打开该 URL。
+保存响应中的 `screen_dir` 和 `state_dir`。使用 `--open` 时，你推送第一个屏幕时浏览器会自己打开——不需要请用户去打开，但仍要把 URL 发给他们作为兜底（无头/远程环境不会自动打开）。
 
-**查找连接信息：** 服务器将其启动 JSON 写入 `$SCREEN_DIR/.server-info`。如果你在后台启动了服务器且没有捕获 stdout，读取该文件以获取 URL 和端口。使用 `--project-dir` 时，检查 `<project>/.superpowers/brainstorm/` 获取会话目录。
+**URL 里带有会话密钥（`?key=…`）。** 服务器会拒绝任何不带它的请求，
+所以永远要把 `url` 字段里的**完整** URL 交给用户——
+绝不去掉查询字符串，也绝不给出一个光秃秃的 `http://host:port`。这个
+密钥守着 HTTP 和 WebSocket 访问，让误开的浏览器标签页或网络上的其他机器
+无法读取屏幕内容或注入事件。首次加载后浏览器会通过 cookie 记住密钥，
+所以刷新页面和 `/files/*` 资源都无需再带上它。
+
+**查找连接信息：** 服务器将其启动 JSON 写入 `$STATE_DIR/server-info`。如果你在后台启动了服务器且没有捕获 stdout，读取该文件以获取 URL 和端口。使用 `--project-dir` 时，检查 `<project>/.superpowers/brainstorm/` 获取会话目录。
 
 **注意：** 传入项目根目录作为 `--project-dir`，这样原型会持久化在 `.superpowers/brainstorm/` 中，不会因服务器重启而丢失。不传的话，文件会保存到 `/tmp` 并在清理时被删除。提醒用户将 `.superpowers/` 添加到 `.gitignore`（如果尚未添加）。
 
 **按平台启动服务器：**
 
-**Claude Code (macOS / Linux)：**
+**Claude Code：**
 ```bash
-# 默认模式即可——脚本会自动将服务器放到后台
-scripts/start-server.sh --project-dir /path/to/project
+# 默认模式即可——脚本会自己把服务器放到后台。
+bash scripts/start-server.sh --project-dir /path/to/project --open
 ```
 
-**Claude Code (Windows)：**
-```bash
-# Windows 会自动检测并使用前台模式，这会阻塞工具调用。
-# 在 Bash 工具调用上设置 run_in_background: true，
-# 让服务器在会话轮次之间存活。
-scripts/start-server.sh --project-dir /path/to/project
-```
-通过 Bash 工具调用时，设置 `run_in_background: true`。然后在下一轮读取 `$SCREEN_DIR/.server-info` 获取 URL 和端口。
+在 Windows 上，脚本会自动检测并切换到前台模式（这会阻塞工具调用）。在 Bash 工具调用上设置 `run_in_background: true`，让服务器在会话轮次之间存活，然后在下一轮读取 `$STATE_DIR/server-info` 获取 URL 和端口。
 
 **Codex：**
 ```bash
 # Codex 会回收后台进程。脚本会自动检测 CODEX_CI 并
 # 切换到前台模式。正常运行即可——不需要额外标志。
-scripts/start-server.sh --project-dir /path/to/project
+bash scripts/start-server.sh --project-dir /path/to/project --open
 ```
 
 **Gemini CLI：**
 ```bash
 # 使用 --foreground 并在 shell 工具调用上设置 is_background: true，
 # 让进程在轮次之间存活
-scripts/start-server.sh --project-dir /path/to/project --foreground
+bash scripts/start-server.sh --project-dir /path/to/project --open --foreground
 ```
 
 **Copilot CLI：**
@@ -91,7 +94,7 @@ bash scripts/start-server.sh --project-dir /path/to/project --open --foreground
 如果浏览器无法访问该 URL（在远程/容器化环境中常见），绑定一个非回环主机：
 
 ```bash
-scripts/start-server.sh \
+bash scripts/start-server.sh \
   --project-dir /path/to/project \
   --host 0.0.0.0 \
   --url-host localhost
@@ -102,10 +105,10 @@ scripts/start-server.sh \
 ## 工作循环
 
 1. **检查服务器存活**，然后**将 HTML 写入** `screen_dir` 中的新文件：
-   - 每次写入前，检查 `$SCREEN_DIR/.server-info` 是否存在。如果不存在（或 `.server-stopped` 存在），服务器已关闭——在继续之前用 `start-server.sh` 重启。服务器在 30 分钟无活动后会自动退出。
+   - **必须：在提及 URL 或推送屏幕之前，先确认服务器还活着。** 检查 `$STATE_DIR/server-info` 存在且 `$STATE_DIR/server-stopped` 不存在。如果服务器已关闭，用 `start-server.sh` 以**相同的 `--project-dir`** 重启——它会复用同一端口，用户开着的标签页会自己重新连上（服务器停机期间页面会显示"已暂停"遮罩），你不需要发新的 URL。服务器空闲 4 小时后会自动退出（可用 `--idle-timeout-minutes` 配置）。
    - 使用语义化文件名：`platform.html`、`visual-style.html`、`layout.html`
    - **绝不复用文件名** — 每个屏幕用一个新文件
-   - 使用 Write 工具 — **绝不使用 cat/heredoc**（会在终端产生噪音）
+   - 使用你的文件创建工具 — **绝不使用 cat/heredoc**（会在终端产生噪音）
    - 服务器自动提供最新的文件
 
 2. **告诉用户预期内容并结束你的回合：**
@@ -114,9 +117,9 @@ scripts/start-server.sh \
    - 请他们在终端中回复："看一下，告诉我你的想法。如果你愿意，可以点击选择一个选项。"
 
 3. **在你的下一轮** — 用户在终端回复后：
-   - 如果存在 `$SCREEN_DIR/.events`，读取它——其中包含用户的浏览器交互（点击、选择），格式为 JSON 行
+   - 如果存在 `$STATE_DIR/events`，读取它——其中包含用户的浏览器交互（点击、选择），格式为 JSON 行
    - 将终端文字和事件合并以获得完整信息
-   - 终端消息是主要反馈；`.events` 提供结构化的交互数据
+   - 终端消息是主要反馈；`state_dir/events` 提供结构化的交互数据
 
 4. **迭代或推进** — 如果反馈要求修改当前屏幕，写入新文件（例如 `layout-v2.html`）。只有当前步骤验证通过后才进入下一个问题。
 
@@ -135,7 +138,7 @@ scripts/start-server.sh \
 
 ## 编写内容片段
 
-只写放在页面内部的内容。服务器会自动用框架模板包裹它（头部、主题 CSS、选择指示器和所有交互基础设施）。
+只写放在页面内部的内容。服务器会自动用框架模板包裹它（头部、主题 CSS、连接状态和所有交互基础设施）。
 
 **最简示例：**
 
@@ -181,7 +184,7 @@ scripts/start-server.sh \
 </div>
 ```
 
-**多选：** 在容器上添加 `data-multiselect` 让用户选择多个选项。每次点击切换选中状态。指示栏显示数量。
+**多选：** 在容器上添加 `data-multiselect` 让用户选择多个选项。每次点击切换该项的选中样式。
 
 ```html
 <div class="options" data-multiselect>
@@ -253,7 +256,7 @@ scripts/start-server.sh \
 
 ## 浏览器事件格式
 
-当用户在浏览器中点击选项时，交互记录会保存到 `$SCREEN_DIR/.events`（每行一个 JSON 对象）。推送新屏幕时文件会自动清空。
+当用户在浏览器中点击选项时，交互记录会保存到 `$STATE_DIR/events`（每行一个 JSON 对象）。推送新屏幕时文件会自动清空。
 
 ```jsonl
 {"type":"click","choice":"a","text":"选项 A - 简单布局","timestamp":1706000101}
@@ -263,7 +266,7 @@ scripts/start-server.sh \
 
 完整的事件流展示了用户的探索路径——他们可能在确定之前点击了多个选项。最后一个 `choice` 事件通常是最终选择，但点击模式可以揭示犹豫或值得询问的偏好。
 
-如果 `.events` 不存在，说明用户没有与浏览器交互——仅使用他们的终端文字。
+如果 `$STATE_DIR/events` 不存在，说明用户没有与浏览器交互——仅使用他们的终端文字。
 
 ## 设计技巧
 
@@ -284,7 +287,7 @@ scripts/start-server.sh \
 ## 清理
 
 ```bash
-scripts/stop-server.sh $SCREEN_DIR
+bash scripts/stop-server.sh $SESSION_DIR
 ```
 
 如果会话使用了 `--project-dir`，原型文件会持久化在 `.superpowers/brainstorm/` 中以供日后参考。只有 `/tmp` 会话会在停止时被删除。

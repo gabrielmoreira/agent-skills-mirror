@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `kenjudy/pdca-framework` — 26 default patterns, 3 followed patterns, 98 file(s) materialized.
+Mirror of `kenjudy/pdca-framework` — 26 default patterns, 3 followed patterns, 99 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `kenjudy/pdca-framework` — 26 default patterns, 3 followed patterns,
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 3 |
-| Files         | 98 |
+| Files         | 99 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -53,7 +53,7 @@ Mirror of `kenjudy/pdca-framework` — 26 default patterns, 3 followed patterns,
 
 - `README.md`
 - `CHEATSHEET.md`
-- `plugins/pdca-framework/README.md`
+- `plugins/pdca/README.md`
 
 ## File Index
 
@@ -65,100 +65,101 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 2 | ✓ | [`4. Act/README.md`](4.%20Act/README.md) |
 | 3 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 4 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 5 | ✓ | [`skill/.env.example`](skill/.env.example) |
-| 6 | ✓ | [`skill/build-skill.ps1`](skill/build-skill.ps1) |
-| 7 | ✓ | [`skill/build-skill.sh`](skill/build-skill.sh) |
-| 8 | ✓ | [`skill/BUILD.md`](skill/BUILD.md) |
-| 9 | ✓ | [`skill/build.py`](skill/build.py) |
-| 10 | ✓ | [`skill/check_changelog.py`](skill/check_changelog.py) |
-| 11 | ✓ | [`skill/check_eval_ran.py`](skill/check_eval_ran.py) |
-| 12 | ✓ | [`skill/check_release_version.py`](skill/check_release_version.py) |
-| 13 | ✓ | [`skill/eval/__init__.py`](skill/eval/__init__.py) |
-| 14 | ✓ | [`skill/eval/abstats.py`](skill/eval/abstats.py) |
-| 15 | ✓ | [`skill/eval/aggregate.py`](skill/eval/aggregate.py) |
-| 16 | ✓ | [`skill/eval/baselines/judge-variance-190/judge_variance_190_case2_20260923_154200.md`](skill/eval/baselines/judge-variance-190/judge_variance_190_case2_20260923_154200.md) |
-| 17 | ✓ | [`skill/eval/baselines/judge-variance-190/judge_variance_190_negctrl_20260923_185712.md`](skill/eval/baselines/judge-variance-190/judge_variance_190_negctrl_20260923_185712.md) |
-| 18 | ✓ | [`skill/eval/baselines/README.md`](skill/eval/baselines/README.md) |
-| 19 | ✓ | [`skill/eval/baselines/report_20260909_174245.md`](skill/eval/baselines/report_20260909_174245.md) |
-| 20 | ✓ | [`skill/eval/baselines/report_20260916_232025.md`](skill/eval/baselines/report_20260916_232025.md) |
-| 21 | ✓ | [`skill/eval/baselines/report_20260917_001011.md`](skill/eval/baselines/report_20260917_001011.md) |
-| 22 | ✓ | [`skill/eval/executor.py`](skill/eval/executor.py) |
-| 23 | ✓ | [`skill/eval/judge_variance.py`](skill/eval/judge_variance.py) |
-| 24 | ✓ | [`skill/eval/judges.py`](skill/eval/judges.py) |
-| 25 | ✓ | [`skill/eval/mechanical.py`](skill/eval/mechanical.py) |
-| 26 | ✓ | [`skill/eval/README.md`](skill/eval/README.md) |
-| 27 | ✓ | [`skill/eval/reporter.py`](skill/eval/reporter.py) |
-| 28 | ✓ | [`skill/eval/rubrics/__init__.py`](skill/eval/rubrics/__init__.py) |
-| 29 | ✓ | [`skill/eval/rubrics/assemble.py`](skill/eval/rubrics/assemble.py) |
-| 30 | ✓ | [`skill/eval/rubrics/generic_tail.py`](skill/eval/rubrics/generic_tail.py) |
-| 31 | ✓ | [`skill/eval/rubrics/rubric_1a.py`](skill/eval/rubrics/rubric_1a.py) |
-| 32 | ✓ | [`skill/eval/rubrics/rubric_1b.py`](skill/eval/rubrics/rubric_1b.py) |
-| 33 | ✓ | [`skill/eval/rubrics/rubric_2.py`](skill/eval/rubrics/rubric_2.py) |
-| 34 | ✓ | [`skill/eval/rubrics/rubric_3.py`](skill/eval/rubrics/rubric_3.py) |
-| 35 | ✓ | [`skill/eval/rubrics/rubric_4.py`](skill/eval/rubrics/rubric_4.py) |
-| 36 | ✓ | [`skill/eval/scenarios/1a_scenarios.json`](skill/eval/scenarios/1a_scenarios.json) |
-| 37 | ✓ | [`skill/eval/scenarios/1b_scenarios.json`](skill/eval/scenarios/1b_scenarios.json) |
-| 38 | ✓ | [`skill/eval/scenarios/2_scenarios.json`](skill/eval/scenarios/2_scenarios.json) |
-| 39 | ✓ | [`skill/eval/scenarios/3_scenarios.json`](skill/eval/scenarios/3_scenarios.json) |
-| 40 | ✓ | [`skill/eval/scenarios/4_scenarios.json`](skill/eval/scenarios/4_scenarios.json) |
-| 41 | ✓ | [`skill/eval/schema.py`](skill/eval/schema.py) |
-| 42 | ✓ | [`skill/eval/trigger-eval.json`](skill/eval/trigger-eval.json) |
-| 43 | ✓ | [`skill/eval/trigger-optimization-report.json`](skill/eval/trigger-optimization-report.json) |
-| 44 | ✓ | [`skill/install-skill.ps1`](skill/install-skill.ps1) |
-| 45 | ✓ | [`skill/install-skill.sh`](skill/install-skill.sh) |
-| 46 | ✓ | [`skill/pdca-framework/autonomous-critic-addon/sources/autonomous-critic-setup.md`](skill/pdca-framework/autonomous-critic-addon/sources/autonomous-critic-setup.md) |
-| 47 | ✓ | [`skill/pdca-framework/autonomous-critic-addon/sources/check-autonomous-critic-addon.md`](skill/pdca-framework/autonomous-critic-addon/sources/check-autonomous-critic-addon.md) |
-| 48 | ✓ | [`skill/pdca-framework/beads-addon/scripts/export-requirements.sh`](skill/pdca-framework/beads-addon/scripts/export-requirements.sh) |
-| 49 | ✓ | [`skill/pdca-framework/beads-addon/sources/act-beads-addon.md`](skill/pdca-framework/beads-addon/sources/act-beads-addon.md) |
-| 50 | ✓ | [`skill/pdca-framework/beads-addon/sources/beads-setup.md`](skill/pdca-framework/beads-addon/sources/beads-setup.md) |
-| 51 | ✓ | [`skill/pdca-framework/beads-addon/sources/beads-workflow.md`](skill/pdca-framework/beads-addon/sources/beads-workflow.md) |
-| 52 | ✓ | [`skill/pdca-framework/beads-addon/sources/check-beads-addon.md`](skill/pdca-framework/beads-addon/sources/check-beads-addon.md) |
-| 53 | ✓ | [`skill/pdca-framework/beads-addon/sources/do-beads-addon.md`](skill/pdca-framework/beads-addon/sources/do-beads-addon.md) |
-| 54 | ✓ | [`skill/pdca-framework/beads-addon/sources/plan-beads-addon.md`](skill/pdca-framework/beads-addon/sources/plan-beads-addon.md) |
-| 55 | ✓ | [`skill/pdca-framework/claude-addon/injections/act-retro-probes.md`](skill/pdca-framework/claude-addon/injections/act-retro-probes.md) |
-| 56 | ✓ | [`skill/pdca-framework/claude-addon/injections/check-review-probe.md`](skill/pdca-framework/claude-addon/injections/check-review-probe.md) |
-| 57 | ✓ | [`skill/pdca-framework/claude-addon/injections/do-think-probe.md`](skill/pdca-framework/claude-addon/injections/do-think-probe.md) |
-| 58 | ✓ | [`skill/pdca-framework/claude-addon/injections/goal-probe.md`](skill/pdca-framework/claude-addon/injections/goal-probe.md) |
-| 59 | ✓ | [`skill/pdca-framework/claude-addon/injections/plan-critic-probe.md`](skill/pdca-framework/claude-addon/injections/plan-critic-probe.md) |
-| 60 | ✓ | [`skill/pdca-framework/claude-addon/injections/plan-mode-probe.md`](skill/pdca-framework/claude-addon/injections/plan-mode-probe.md) |
-| 61 | ✓ | [`skill/pdca-framework/claude-addon/injections/think-probe.md`](skill/pdca-framework/claude-addon/injections/think-probe.md) |
-| 62 | ✓ | [`skill/pdca-framework/ponytail-addon/sources/ponytail-setup.md`](skill/pdca-framework/ponytail-addon/sources/ponytail-setup.md) |
-| 63 | ✓ | [`skill/pdca-framework/ponytail-addon/sources/ponytail-workflow.md`](skill/pdca-framework/ponytail-addon/sources/ponytail-workflow.md) |
-| 64 | ✓ | [`skill/pdca-framework/SKILL.md`](skill/pdca-framework/SKILL.md) |
-| 65 | ✓ | [`skill/pdca-framework/superpowers-addon/sources/superpowers-setup.md`](skill/pdca-framework/superpowers-addon/sources/superpowers-setup.md) |
-| 66 | ✓ | [`skill/pdca-framework/superpowers-addon/sources/superpowers-workflow.md`](skill/pdca-framework/superpowers-addon/sources/superpowers-workflow.md) |
-| 67 | ✓ | [`skill/promote_baseline.py`](skill/promote_baseline.py) |
-| 68 | ✓ | [`skill/pyproject.toml`](skill/pyproject.toml) |
-| 69 | ✓ | [`skill/README.md`](skill/README.md) |
-| 70 | ✓ | [`skill/run-ab-eval.sh`](skill/run-ab-eval.sh) |
-| 71 | ✓ | [`skill/run-evals.sh`](skill/run-evals.sh) |
-| 72 | ✓ | [`skill/run-tests.sh`](skill/run-tests.sh) |
-| 73 | ✓ | [`skill/SUPERVISION-PROTOCOL.md`](skill/SUPERVISION-PROTOCOL.md) |
-| 74 | ✓ | [`skill/tests/fixtures/rubric_criteria_snapshot.json`](skill/tests/fixtures/rubric_criteria_snapshot.json) |
-| 75 | ✓ | [`skill/tests/test_abstats.py`](skill/tests/test_abstats.py) |
-| 76 | ✓ | [`skill/tests/test_aggregate.py`](skill/tests/test_aggregate.py) |
-| 77 | ✓ | [`skill/tests/test_build.py`](skill/tests/test_build.py) |
-| 78 | ✓ | [`skill/tests/test_builder.py`](skill/tests/test_builder.py) |
-| 79 | ✓ | [`skill/tests/test_changelog_guard.py`](skill/tests/test_changelog_guard.py) |
-| 80 | ✓ | [`skill/tests/test_commands.py`](skill/tests/test_commands.py) |
-| 81 | ✓ | [`skill/tests/test_eval_imports.py`](skill/tests/test_eval_imports.py) |
-| 82 | ✓ | [`skill/tests/test_eval_ran.py`](skill/tests/test_eval_ran.py) |
-| 83 | ✓ | [`skill/tests/test_evals_reporter.py`](skill/tests/test_evals_reporter.py) |
-| 84 | ✓ | [`skill/tests/test_evals.py`](skill/tests/test_evals.py) |
-| 85 | ✓ | [`skill/tests/test_executor.py`](skill/tests/test_executor.py) |
-| 86 | ✓ | [`skill/tests/test_judge_variance_190.py`](skill/tests/test_judge_variance_190.py) |
-| 87 | ✓ | [`skill/tests/test_judge_variance_logic.py`](skill/tests/test_judge_variance_logic.py) |
-| 88 | ✓ | [`skill/tests/test_judges.py`](skill/tests/test_judges.py) |
-| 89 | ✓ | [`skill/tests/test_mechanical.py`](skill/tests/test_mechanical.py) |
-| 90 | ✓ | [`skill/tests/test_promote_baseline.py`](skill/tests/test_promote_baseline.py) |
-| 91 | ✓ | [`skill/tests/test_release_version.py`](skill/tests/test_release_version.py) |
-| 92 | ✓ | [`skill/tests/test_rubrics.py`](skill/tests/test_rubrics.py) |
-| 93 | ✓ | [`skill/tests/test_schema.py`](skill/tests/test_schema.py) |
-| 94 | ✓ | [`skill/typecheck.sh`](skill/typecheck.sh) |
-| 95 | ✓ | [`skill/uv.lock`](skill/uv.lock) |
-| 96 | → | [`CHEATSHEET.md`](CHEATSHEET.md) |
-| 97 | → | [`plugins/pdca-framework/README.md`](plugins/pdca-framework/README.md) |
-| 98 | → | [`README.md`](README.md) |
+| 5 | ✓ | [`plugins/pdca/skills/pdca-framework/SKILL.md`](plugins/pdca/skills/pdca-framework/SKILL.md) |
+| 6 | ✓ | [`skill/.env.example`](skill/.env.example) |
+| 7 | ✓ | [`skill/build-skill.ps1`](skill/build-skill.ps1) |
+| 8 | ✓ | [`skill/build-skill.sh`](skill/build-skill.sh) |
+| 9 | ✓ | [`skill/BUILD.md`](skill/BUILD.md) |
+| 10 | ✓ | [`skill/build.py`](skill/build.py) |
+| 11 | ✓ | [`skill/check_changelog.py`](skill/check_changelog.py) |
+| 12 | ✓ | [`skill/check_eval_ran.py`](skill/check_eval_ran.py) |
+| 13 | ✓ | [`skill/check_release_version.py`](skill/check_release_version.py) |
+| 14 | ✓ | [`skill/eval/__init__.py`](skill/eval/__init__.py) |
+| 15 | ✓ | [`skill/eval/abstats.py`](skill/eval/abstats.py) |
+| 16 | ✓ | [`skill/eval/aggregate.py`](skill/eval/aggregate.py) |
+| 17 | ✓ | [`skill/eval/baselines/judge-variance-190/judge_variance_190_case2_20260923_154200.md`](skill/eval/baselines/judge-variance-190/judge_variance_190_case2_20260923_154200.md) |
+| 18 | ✓ | [`skill/eval/baselines/judge-variance-190/judge_variance_190_negctrl_20260923_185712.md`](skill/eval/baselines/judge-variance-190/judge_variance_190_negctrl_20260923_185712.md) |
+| 19 | ✓ | [`skill/eval/baselines/README.md`](skill/eval/baselines/README.md) |
+| 20 | ✓ | [`skill/eval/baselines/report_20260909_174245.md`](skill/eval/baselines/report_20260909_174245.md) |
+| 21 | ✓ | [`skill/eval/baselines/report_20260916_232025.md`](skill/eval/baselines/report_20260916_232025.md) |
+| 22 | ✓ | [`skill/eval/baselines/report_20260917_001011.md`](skill/eval/baselines/report_20260917_001011.md) |
+| 23 | ✓ | [`skill/eval/executor.py`](skill/eval/executor.py) |
+| 24 | ✓ | [`skill/eval/judge_variance.py`](skill/eval/judge_variance.py) |
+| 25 | ✓ | [`skill/eval/judges.py`](skill/eval/judges.py) |
+| 26 | ✓ | [`skill/eval/mechanical.py`](skill/eval/mechanical.py) |
+| 27 | ✓ | [`skill/eval/README.md`](skill/eval/README.md) |
+| 28 | ✓ | [`skill/eval/reporter.py`](skill/eval/reporter.py) |
+| 29 | ✓ | [`skill/eval/rubrics/__init__.py`](skill/eval/rubrics/__init__.py) |
+| 30 | ✓ | [`skill/eval/rubrics/assemble.py`](skill/eval/rubrics/assemble.py) |
+| 31 | ✓ | [`skill/eval/rubrics/generic_tail.py`](skill/eval/rubrics/generic_tail.py) |
+| 32 | ✓ | [`skill/eval/rubrics/rubric_1a.py`](skill/eval/rubrics/rubric_1a.py) |
+| 33 | ✓ | [`skill/eval/rubrics/rubric_1b.py`](skill/eval/rubrics/rubric_1b.py) |
+| 34 | ✓ | [`skill/eval/rubrics/rubric_2.py`](skill/eval/rubrics/rubric_2.py) |
+| 35 | ✓ | [`skill/eval/rubrics/rubric_3.py`](skill/eval/rubrics/rubric_3.py) |
+| 36 | ✓ | [`skill/eval/rubrics/rubric_4.py`](skill/eval/rubrics/rubric_4.py) |
+| 37 | ✓ | [`skill/eval/scenarios/1a_scenarios.json`](skill/eval/scenarios/1a_scenarios.json) |
+| 38 | ✓ | [`skill/eval/scenarios/1b_scenarios.json`](skill/eval/scenarios/1b_scenarios.json) |
+| 39 | ✓ | [`skill/eval/scenarios/2_scenarios.json`](skill/eval/scenarios/2_scenarios.json) |
+| 40 | ✓ | [`skill/eval/scenarios/3_scenarios.json`](skill/eval/scenarios/3_scenarios.json) |
+| 41 | ✓ | [`skill/eval/scenarios/4_scenarios.json`](skill/eval/scenarios/4_scenarios.json) |
+| 42 | ✓ | [`skill/eval/schema.py`](skill/eval/schema.py) |
+| 43 | ✓ | [`skill/eval/trigger-eval.json`](skill/eval/trigger-eval.json) |
+| 44 | ✓ | [`skill/eval/trigger-optimization-report.json`](skill/eval/trigger-optimization-report.json) |
+| 45 | ✓ | [`skill/install-skill.ps1`](skill/install-skill.ps1) |
+| 46 | ✓ | [`skill/install-skill.sh`](skill/install-skill.sh) |
+| 47 | ✓ | [`skill/pdca-framework/autonomous-critic-addon/sources/autonomous-critic-setup.md`](skill/pdca-framework/autonomous-critic-addon/sources/autonomous-critic-setup.md) |
+| 48 | ✓ | [`skill/pdca-framework/autonomous-critic-addon/sources/check-autonomous-critic-addon.md`](skill/pdca-framework/autonomous-critic-addon/sources/check-autonomous-critic-addon.md) |
+| 49 | ✓ | [`skill/pdca-framework/beads-addon/scripts/export-requirements.sh`](skill/pdca-framework/beads-addon/scripts/export-requirements.sh) |
+| 50 | ✓ | [`skill/pdca-framework/beads-addon/sources/act-beads-addon.md`](skill/pdca-framework/beads-addon/sources/act-beads-addon.md) |
+| 51 | ✓ | [`skill/pdca-framework/beads-addon/sources/beads-setup.md`](skill/pdca-framework/beads-addon/sources/beads-setup.md) |
+| 52 | ✓ | [`skill/pdca-framework/beads-addon/sources/beads-workflow.md`](skill/pdca-framework/beads-addon/sources/beads-workflow.md) |
+| 53 | ✓ | [`skill/pdca-framework/beads-addon/sources/check-beads-addon.md`](skill/pdca-framework/beads-addon/sources/check-beads-addon.md) |
+| 54 | ✓ | [`skill/pdca-framework/beads-addon/sources/do-beads-addon.md`](skill/pdca-framework/beads-addon/sources/do-beads-addon.md) |
+| 55 | ✓ | [`skill/pdca-framework/beads-addon/sources/plan-beads-addon.md`](skill/pdca-framework/beads-addon/sources/plan-beads-addon.md) |
+| 56 | ✓ | [`skill/pdca-framework/claude-addon/injections/act-retro-probes.md`](skill/pdca-framework/claude-addon/injections/act-retro-probes.md) |
+| 57 | ✓ | [`skill/pdca-framework/claude-addon/injections/check-review-probe.md`](skill/pdca-framework/claude-addon/injections/check-review-probe.md) |
+| 58 | ✓ | [`skill/pdca-framework/claude-addon/injections/do-think-probe.md`](skill/pdca-framework/claude-addon/injections/do-think-probe.md) |
+| 59 | ✓ | [`skill/pdca-framework/claude-addon/injections/goal-probe.md`](skill/pdca-framework/claude-addon/injections/goal-probe.md) |
+| 60 | ✓ | [`skill/pdca-framework/claude-addon/injections/plan-critic-probe.md`](skill/pdca-framework/claude-addon/injections/plan-critic-probe.md) |
+| 61 | ✓ | [`skill/pdca-framework/claude-addon/injections/plan-mode-probe.md`](skill/pdca-framework/claude-addon/injections/plan-mode-probe.md) |
+| 62 | ✓ | [`skill/pdca-framework/claude-addon/injections/think-probe.md`](skill/pdca-framework/claude-addon/injections/think-probe.md) |
+| 63 | ✓ | [`skill/pdca-framework/ponytail-addon/sources/ponytail-setup.md`](skill/pdca-framework/ponytail-addon/sources/ponytail-setup.md) |
+| 64 | ✓ | [`skill/pdca-framework/ponytail-addon/sources/ponytail-workflow.md`](skill/pdca-framework/ponytail-addon/sources/ponytail-workflow.md) |
+| 65 | ✓ | [`skill/pdca-framework/SKILL.md`](skill/pdca-framework/SKILL.md) |
+| 66 | ✓ | [`skill/pdca-framework/superpowers-addon/sources/superpowers-setup.md`](skill/pdca-framework/superpowers-addon/sources/superpowers-setup.md) |
+| 67 | ✓ | [`skill/pdca-framework/superpowers-addon/sources/superpowers-workflow.md`](skill/pdca-framework/superpowers-addon/sources/superpowers-workflow.md) |
+| 68 | ✓ | [`skill/promote_baseline.py`](skill/promote_baseline.py) |
+| 69 | ✓ | [`skill/pyproject.toml`](skill/pyproject.toml) |
+| 70 | ✓ | [`skill/README.md`](skill/README.md) |
+| 71 | ✓ | [`skill/run-ab-eval.sh`](skill/run-ab-eval.sh) |
+| 72 | ✓ | [`skill/run-evals.sh`](skill/run-evals.sh) |
+| 73 | ✓ | [`skill/run-tests.sh`](skill/run-tests.sh) |
+| 74 | ✓ | [`skill/SUPERVISION-PROTOCOL.md`](skill/SUPERVISION-PROTOCOL.md) |
+| 75 | ✓ | [`skill/tests/fixtures/rubric_criteria_snapshot.json`](skill/tests/fixtures/rubric_criteria_snapshot.json) |
+| 76 | ✓ | [`skill/tests/test_abstats.py`](skill/tests/test_abstats.py) |
+| 77 | ✓ | [`skill/tests/test_aggregate.py`](skill/tests/test_aggregate.py) |
+| 78 | ✓ | [`skill/tests/test_build.py`](skill/tests/test_build.py) |
+| 79 | ✓ | [`skill/tests/test_builder.py`](skill/tests/test_builder.py) |
+| 80 | ✓ | [`skill/tests/test_changelog_guard.py`](skill/tests/test_changelog_guard.py) |
+| 81 | ✓ | [`skill/tests/test_commands.py`](skill/tests/test_commands.py) |
+| 82 | ✓ | [`skill/tests/test_eval_imports.py`](skill/tests/test_eval_imports.py) |
+| 83 | ✓ | [`skill/tests/test_eval_ran.py`](skill/tests/test_eval_ran.py) |
+| 84 | ✓ | [`skill/tests/test_evals_reporter.py`](skill/tests/test_evals_reporter.py) |
+| 85 | ✓ | [`skill/tests/test_evals.py`](skill/tests/test_evals.py) |
+| 86 | ✓ | [`skill/tests/test_executor.py`](skill/tests/test_executor.py) |
+| 87 | ✓ | [`skill/tests/test_judge_variance_190.py`](skill/tests/test_judge_variance_190.py) |
+| 88 | ✓ | [`skill/tests/test_judge_variance_logic.py`](skill/tests/test_judge_variance_logic.py) |
+| 89 | ✓ | [`skill/tests/test_judges.py`](skill/tests/test_judges.py) |
+| 90 | ✓ | [`skill/tests/test_mechanical.py`](skill/tests/test_mechanical.py) |
+| 91 | ✓ | [`skill/tests/test_promote_baseline.py`](skill/tests/test_promote_baseline.py) |
+| 92 | ✓ | [`skill/tests/test_release_version.py`](skill/tests/test_release_version.py) |
+| 93 | ✓ | [`skill/tests/test_rubrics.py`](skill/tests/test_rubrics.py) |
+| 94 | ✓ | [`skill/tests/test_schema.py`](skill/tests/test_schema.py) |
+| 95 | ✓ | [`skill/typecheck.sh`](skill/typecheck.sh) |
+| 96 | ✓ | [`skill/uv.lock`](skill/uv.lock) |
+| 97 | → | [`CHEATSHEET.md`](CHEATSHEET.md) |
+| 98 | → | [`plugins/pdca/README.md`](plugins/pdca/README.md) |
+| 99 | → | [`README.md`](README.md) |
 
 ---
 

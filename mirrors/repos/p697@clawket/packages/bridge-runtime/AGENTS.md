@@ -4,6 +4,8 @@ OpenClaw, Hermes, and local-model runtime implementations for the Clawket Bridge
 
 ## Module Map
 
+Codex native roster previews request summary turns, never full tool transcripts; full history remains an explicit history operation. Local lifecycle authentication must remain usable after native failure, while ordinary client handshakes still require native health. See `../../docs/3.0/connection-incident-2026-09-28.md`.
+
 | Path | Responsibility |
 |---|---|
 | `src/protocol.ts` | Bridge control frames and connect metadata parsing |
@@ -195,6 +197,8 @@ Native thread provenance does not imply a remote owner after an authorized local
 Never resume a Codex thread that has never submitted a turn after App Server restart: empty native rollouts are not durable. Recreate only that empty case, preserving chosen model; accepted or uncertain inputs retain their original native identity. Native reasoning selection changes session configuration without generating a slash-command prompt.
 
 Codex preserves the selected native reasoning level across owned-process restart. Never rename/archive an unmaterialized native thread solely because its ephemeral ID was indexed; retain the local title until a real thread is available.
+
+Codex executable discovery keeps explicit commands and PATH CLI precedence. Only a missing default `codex` may fall back to known executable locations in macOS `~/Applications` or `/Applications` Codex/ChatGPT bundles. Discovery and RPC startup share the resolver; app presence alone is not readiness. Never fall back after a selected executable fails version/protocol checks, copy credentials, or attach to the desktop's stdio process.
 
 Codex model selectors query the configured executable's native `model/list` on every request, consume bounded pagination and retain native picker visibility. Do not inject model names or use another installation's cache as a catalog. Supported desktop-bundled executables may have SemVer prerelease/build suffixes; version recognition is not a substitute for protocol readiness or integration tests. Never silently replace the user's selected executable to obtain more models.
 

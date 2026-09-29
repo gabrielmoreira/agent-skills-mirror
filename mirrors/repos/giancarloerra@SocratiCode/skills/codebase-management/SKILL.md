@@ -33,6 +33,8 @@ The file watcher keeps the index automatically updated in the default `SOCRATICO
 
 For a deliberate code-index snapshot, configure every MCP process that uses the checkout with `SOCRATICODE_WATCHER=off` and `SOCRATICODE_AUTO_RESUME=off`. Search and graph tools keep reading the existing index and graph; run `codebase_update` and `codebase_graph_build` only when a refresh is wanted. Use watcher mode `manual` instead when explicit `codebase_watch { action: "start" }` should remain available. Never try to restart a watcher whose status says disabled.
 
+With `SOCRATICODE_WATCHER=git`, active indexed checkouts refresh on checked-out ref/HEAD changes, checked every 10 seconds and on search/status/graph requests. No native file watcher starts. Pending or failed refreshes are not current results. Git triggers the update, but the working tree is indexed, including uncommitted edits. Use `codebase_update` for file saves that do not change ref/HEAD. Selecting Git mode does not create a first index. `SOCRATICODE_AUTO_RESUME=off` suppresses startup catch-up, not later Git-triggered updates. A Git diagnostic must not be bypassed by starting a watcher.
+
 ## Managing Indexes
 
 - **`codebase_stop`** — gracefully pause in-progress indexing. Current batch finishes and checkpoints. All progress preserved. Resume with `codebase_index`.
@@ -97,7 +99,7 @@ Supported types: SQL schemas, OpenAPI/Protobuf API specs, Terraform/CloudFormati
 | `SEARCH_MIN_SCORE` | `0.10` | Default minimum RRF score threshold (0-1) |
 | `MAX_FILE_SIZE_MB` | `5` | Maximum file size for indexing in MB; must be a complete finite number |
 | `EXTRA_EXTENSIONS` | — | Additional file extensions to index (e.g. `.tpl,.blade,.hbs`) |
-| `SOCRATICODE_WATCHER` | `auto` | `auto`, `manual` (explicit start only), or `off` (no watcher) |
+| `SOCRATICODE_WATCHER` | `auto` | `auto`, `manual` (explicit start only), `off` (no watcher), or `git` (ref/HEAD-triggered refresh, no native watcher) |
 | `SOCRATICODE_AUTO_RESUME` | — | `all` resumes all stored projects; `off` disables startup catch-up and interrupted-index recovery |
 
 For full parameter details on every tool, see [references/tool-reference.md](references/tool-reference.md).

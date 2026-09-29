@@ -1,64 +1,80 @@
 ---
 name: subdomain-enumeration
-description: Advanced multi-source subdomain enumeration combining passive, active, brute-force, and certificate transparency techniques
+description: Multi-source subdomain discovery combining passive (CT, aggregators) and active (DNS brute-force) techniques with takeover assessment
 ---
 
 # Subdomain Enumeration
 
+## When to Use
+When the target is a domain (not a raw IP) and the scan methodology includes subdomain discovery. Skip when explicitly targeting a single host or when the scan mode says subdomain enumeration is not required.
+
 ## Methodology
 
-### Passive Enumeration (No Target Contact)
-
+### Passive Discovery (No Target Contact)
 ```bash
 # Certificate Transparency
-curl -s "https://crt.sh/?q=%.TARGET&output=json" | jq -r '.[].name_value' | sort -u
+curl -s "https://crt.sh/?q=%25.TARGET&output=json" | jq -r '.[].name_value' | sort -u > tmp/ct_subs.txt
 
-# DNS aggregators
-subfinder -d TARGET -all -recursive -o subs_subfinder.txt
-findomain -t TARGET -q -u subs_findomain.txt
-assetfinder --subs-only TARGET > subs_assetfinder.txt
-
-# Archives
-curl -s "https://web.archive.org/cdx/search/cdx?url=*.TARGET/*&output=json&fl=original" | jq -r '.[].original' | cut -d/ -f3 | sort -u
-
-# SecurityTrails, VirusTotal, Shodan (API keys required)
+# DNS aggregators (passive, no rate impact on target)
+subfinder -d TARGET -all -recursive -o tmp/subs_subfinder.txt 2>/dev/null
+assetfinder --subs-only TARGET > tmp/subs_assetfinder.txt 2>/dev/null
 ```
 
-### Active Enumeration
-
+### Active Verification
 ```bash
-# DNS brute-force
-shuffledns -d TARGET -w /usr/share/wordlists/subdomains-top1m.txt -r resolvers.txt -o subs_brute.txt
-
-# DNS resolution and probing
-cat all_subs.txt | dnsx -silent -a -resp -o resolved.txt
-cat all_subs.txt | httpx -silent -status-code -title -tech-detect -follow-redirects -o live.txt
+# Verify each subdomain is live (resolve + HTTP probe)
+while read sub; do
+  ip=$(dig +short "$sub" | head -1)
+  if [ -n "$ip" ]; then
+    code=$(curl -sk -o /dev/null -w "%{http_code}" --max-time 5 "https://$sub/" 2>/dev/null)
+    echo "[LIVE] $sub ($ip) HTTP $code" >> tmp/verified_subs.txt
+  else
+    echo "[DEAD] $sub" >> tmp/dead_subs.txt
+  fi
+done < tmp/all_subs.txt
 ```
 
-### Subdomain Takeover Detection
-
+### Takeover Assessment
+For each CNAME record, check if the destination is unclaimed:
 ```bash
-# CNAME pointing to deprovisioned services
-cat all_subs.txt | while read sub; do
-  cname=$(dig CNAME "$sub" +short)
-  [ -n "$cname" ] && host "$cname" >/dev/null 2>&1 || echo "[TAKEOVER?] $sub -> $cname"
-done
-subjack -w all_subs.txt -t 100 -timeout 30 -ssl -o takeovers.txt
+while read sub; do
+  cname=$(dig +short CNAME "$sub" | head -1)
+  if [ -n "$cname" ]; then
+    # Explicit branching (never chain && || — false positives)
+    # Check if the CNAME destination resolves
+    dest_ip=$(dig +short "$cname" | head -1)
+    if [ -z "$dest_ip" ]; then
+      # Destination doesn't resolve — potential takeover
+      # Verify: does the provider return NXDOMAIN or a provisioning error?
+      ns_status=$(dig +short "$cname" | wc -l)
+      if [ "$ns_status" -eq 0 ]; then
+        echo "[TAKEOVER?] $sub -> $cname (destination unclaimed)"
+      fi
+    else
+      echo "[OK] $sub -> $cname ($dest_ip)"
+    fi
+  fi
+done < tmp/verified_subs.txt
 ```
 
-## Coverage Gaps & Validation
+**IMPORTANT**: Takeover assessment requires ALL of:
+1. A CNAME record exists
+2. The destination does not resolve
+3. The provider fingerprint matches a known takeover pattern
 
-- No single source is complete — union four classes before resolving: passive APIs (crt.sh, subfinder/amass with all keys, SecurityTrails, VirusTotal, Shodan/Censys), historical (Wayback CDX, `gau`, GitHub code search), active (`shuffledns` brute-force + `dnsx` resolution), and permutation (`altdns`, `dnsgen`, `gotator` on discovered names to find `dev-`, `staging-`, `api-internal-` siblings).
-- Most-missed assets: certificate SANs (parse every cert for extra hostnames), wildcard-hidden hosts that need brute-forcing, internal-naming permutations, ASN-based discovery (`amass intel -asn`) for sibling IP ranges, and reverse-DNS/PTR sweeps that reveal hosts with no public DNS record.
-- Defeat wildcard DNS first: resolve a random `$(openssl rand -hex 8).TARGET`; if it answers, capture the wildcard IP/response and filter it out so brute-force results aren't all false positives.
-- Validate live and in-scope: resolve with multiple trusted resolvers from different networks (avoid stale/poisoned answers), then `httpx` to confirm a real service responds — a DNS record alone is not a live asset.
-- Confirm scope ownership before reporting: map each resolved IP to its ASN/org and cross-check against the engagement's authorized ranges; shared CDN/SaaS IPs (Cloudflare, AWS, GitHub Pages) are often out of scope even when the hostname matches.
-- Re-check CNAMEs for takeover, but verify the dangling claim by actually inspecting the provider's "no such bucket/app" fingerprint, not just an `NXDOMAIN` on the target.
+Never treat generic NXDOMAIN alone as proof of takeover.
 
-## Pro Tips
+## Scope Note
 
-1. Merge ALL sources before resolving — passive + active + brute-force
-2. Use multiple resolvers from different networks to avoid DNS filtering
-3. Test wildcard DNS (`*.TARGET`) — some domains resolve all subdomains to one IP
-4. Check for subdomain takeover on EVERY CNAME — dangling CNAMEs are free bounties
-5. Use `httpx -tech-detect` to identify technology stack per subdomain
+For hostname-scoped engagements, CDN/SaaS-backed infrastructure (AWS, Cloudflare, Fastly, Azure, GitHub Pages) is common and does NOT make a hostname out of scope. The hostname scope is authoritative. IP ownership informs classification only.
+
+## Stopping Criteria
+- Primary passive sources queried (CT + at least one aggregator)
+- Each discovered subdomain verified live or dead
+- Takeover candidates assessed with CNAME + non-resolution + provider fingerprint
+
+## Common Misses
+- Wildcard DNS: check with a random subdomain first (`random123.TARGET`)
+- Subdomains that resolve but don't serve HTTP (try other protocols)
+- Sub-subdomains (api.staging.TARGET)
+- Subdomains only in internal DNS

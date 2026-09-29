@@ -53,10 +53,10 @@ triggers) from a real transport failure.
 | `crates/openhuman-core/src/integrations/composio/module_client.rs` | The `tinyconnectors` module bridge: the one `modules`-feature `#[cfg]` switch, `methods` re-exported from `tinyconnectors_bus`, and member-failure classification (`is_unsupported_by_route`, error-prefix peeling). |
 | `crates/openhuman-core/src/integrations/composio/tools.rs` + `tools/` (`authorize.rs`, `connect.rs`, `list_connections.rs`, `list_toolkits.rs`, `list_tools.rs`, `execute.rs`, `registry.rs`, `visibility.rs`) | Agent tools (`ComposioListToolkitsTool`, `ComposioListConnectionsTool`, `ComposioAuthorizeTool`, `ComposioConnectTool`, `ComposioListToolsTool`, `ComposioExecuteTool`) + `all_composio_agent_tools`; scope/visibility gating (`resolve_action_scope`, `evaluate_tool_visibility`). |
 | `crates/openhuman-core/src/integrations/composio/tools/direct.rs` + `tools/direct/` (`types.rs`, `connections.rs`, `discovery.rs`, `construction.rs`, `execution.rs`, `http_errors.rs`, `tool_impl.rs`) | Direct-mode Composio tool provider hitting Composio v2/v3 APIs with the user's key (`ComposioTool`, `ComposioAction`, `ComposioConnectedAccount`). |
-| `crates/openhuman-core/src/integrations/composio/action_tool.rs` | `ComposioActionTool`: a `Tool` wrapping exactly one Composio action, constructed dynamically when `integrations_agent` is spawned with a toolkit. |
+| `crates/openhuman-core/src/integrations/composio/action_tool.rs` | `ComposioActionTool`: a `Tool` wrapping exactly one Composio action, constructed as a `ToolExposure::Deferred` tool per action of every connected toolkit (`tools/orchestrator_tools.rs`, and `agent/session_host/recorded_tools.rs` when a resumed thread rebuilds its recorded actions), reached by the orchestrator through `tool_search`. |
 | `crates/openhuman-core/src/integrations/composio/contract_gate.rs` | Late-bound action contract gate (#4853): on an action's first call this turn, surfaces the full live contract (via `catalog::fetch_live_toolkit_catalog`) as a recoverable tool error before executing, so the retry has the real schema in context. |
 | `crates/openhuman-core/src/integrations/composio/catalog.rs` + `catalog/` (`contract.rs`, `lookups.rs`, `probe.rs`) | Live Composio tool contracts (`fetch_live_toolkit_catalog`, `ToolContract`, in `catalog/contract.rs`): the unfiltered mode-aware `list_tools` schema (backend `ComposioClient::list_tools` or direct v3 `direct_list_tools`) plus a bounded read-only response probe (`probe_tool_output_sample`, `catalog/probe.rs`) when a schema publishes no `output_parameters`. |
-| `crates/openhuman-core/src/integrations/composio/connected_integrations.rs` + `connected_integrations/` (`cache.rs`, `fetch.rs`, `fetch_uncached.rs`) | Cached active-connections lookups (`cached_active_integrations`, `fetch_connected_integrations*`, `fetch_toolkit_actions`) reconciled against `list_connections`. |
+| `crates/openhuman-core/src/integrations/composio/connected_integrations.rs` + `connected_integrations/` (`cache.rs`, `fetch.rs`, `fetch_uncached.rs`) | Cached active-connections lookups (`cached_active_integrations`, `fetch_connected_integrations*`) reconciled against `list_connections`. |
 | `crates/openhuman-core/src/integrations/composio/execute_dispatch.rs` | Execute path for the `composio_execute` agent tool: prepare args → retry policy (auth/rate-limit) → error mapping over `ComposioClient` / `direct_execute`. The `composio.execute` RPC op and `ComposioActionTool` call the module's `EXECUTE` member through `module_client` instead. |
 | `crates/openhuman-core/src/integrations/composio/execute_prepare.rs` | Local pre-flight argument validation/preparation for action calls. |
 | `crates/openhuman-core/src/integrations/composio/auth_retry.rs` | Single-shot retry for the post-OAuth token-propagation gap ("Connection error, try to authenticate"). |
@@ -101,7 +101,7 @@ RPC).
 From `mod.rs` re-exports:
 
 - **Client**: `ComposioClient`, `ComposioActionTool`.
-- **Ops**: `cached_active_integrations`, `cached_active_integrations_including_expired`, `connected_set_hash`, `fetch_connected_integrations`, `fetch_connected_integrations_status`, `FetchConnectedIntegrationsStatus`, `fetch_toolkit_actions`, `invalidate_connected_integrations_cache`.
+- **Ops**: `cached_active_integrations`, `cached_active_integrations_including_expired`, `connected_set_hash`, `fetch_connected_integrations`, `fetch_connected_integrations_status`, `FetchConnectedIntegrationsStatus`, `invalidate_connected_integrations_cache`.
 - **Prompt type**: `ConnectedIntegration` (re-exported from `crate::agent::prompts::types`).
 - **Schemas**: `all_composio_controller_schemas`, `all_composio_registered_controllers`.
 - **Agent tools**: `all_composio_agent_tools`.
@@ -142,7 +142,7 @@ Handlers delegate to `ops/`; scope handlers delegate to `ops::user_scopes`. Expo
 
 ## Agent tools
 
-From `tools.rs` (`all_composio_agent_tools`, registered only when `agent::subagent_host::user_is_signed_in_to_composio` is true): `composio_list_toolkits`, `composio_list_connections`, `composio_authorize`, `composio_connect` (inline OAuth approval card, #3993), `composio_list_tools`, `composio_execute`. Plus `ComposioActionTool` (one tool per action, spawned for `integrations_agent`, gated by `contract_gate.rs` on first call) and the direct-mode `ComposioTool` provider (`tools/direct.rs`). Scope elevation is deliberately NOT an agent tool; the user toggles it in the UI. Visibility/execution is gated by curated catalogs (`providers::` contract re-exports) + per-toolkit user-scope prefs and sandbox mode; unparseable slugs default to `Write` (fail-closed).
+From `tools.rs` (`all_composio_agent_tools`, registered only when `agent::subagent_host::user_is_signed_in_to_composio` is true): `composio_list_toolkits`, `composio_list_connections`, `composio_authorize`, `composio_connect` (inline OAuth approval card, #3993), `composio_list_tools`, `composio_execute`. Plus `ComposioActionTool` (one `Deferred` tool per action, found through `tool_search`, gated by `contract_gate.rs` on first call) and the direct-mode `ComposioTool` provider (`tools/direct.rs`). Scope elevation is deliberately NOT an agent tool; the user toggles it in the UI. Visibility/execution is gated by curated catalogs (`providers::` contract re-exports) + per-toolkit user-scope prefs and sandbox mode; unparseable slugs default to `Write` (fail-closed).
 
 ## Events
 
@@ -187,7 +187,7 @@ Published from `ops/` via `crate::core::bus::BUS.publish` (`crate::core::events:
 - `crates/openhuman-core/src/tools/{mod,ops}.rs`, `tools/schemas/composio.rs`: wires agent tools into the tool registry.
 - `crates/openhuman-core/src/core/jsonrpc.rs`: at startup initializes trigger history and registers the three bus subscribers.
 - `crates/openhuman-core/src/channels/runtime/startup/start_channels.rs` (`start_channels`), the one caller of `start_periodic_sync()`. `core/runtime/services.rs`'s `composio_integration_sync` job only runs `memory::sources::reconcile::ensure_composio_sources`; its comment explains why the periodic loop is not started there.
-- `crates/openhuman-core/src/agent/**`: session-host/subagent spawning (`integrations_agent`), triage escalation and debug (e.g. `agent/subagent_host/`, `agent/orchestration/tools/`, `agent/debug/mod.rs`).
+- `crates/openhuman-core/src/agent/**`: session-host tool assembly (deferred per-action tools, recorded-tool rebuild), triage escalation and debug (e.g. `agent/subagent_host/`, `agent/orchestration/tools/`, `agent/debug/mod.rs`).
 - `crates/openhuman-core/src/platform/socket/event_handlers.rs`: parses `composio:trigger` and publishes `ComposioTriggerReceived`.
 - `crates/openhuman-core/src/agent/learning/linkedin_enrichment*.rs`, `agent/learning/profile_md_renderer.rs`: connected-identity enrichment consumers.
 - `crates/openhuman-core/src/agent/prompts/connected_identities.rs`: renders connected identities into the agent prompt.
@@ -209,5 +209,5 @@ Published from `ops/` via `crate::core::bus::BUS.publish` (`crate::core::events:
 - **Sentry funnel**: `report_composio_op_error` re-tags op-layer failures under `domain="composio"` with `failure="non_2xx"|"transport"` (+ extracted backend status) so transient 5xx leaks are dropped by `before_send` while genuine bugs surface.
 - **Type drift tolerance**: trigger types use `de_string_or_object` / `de_opt_string_or_object` to accept upstream fields that flip between string and object shapes.
 - **Direct-mode 401 short-circuit** (`direct_auth/mod.rs`): after `DIRECT_INVALID_API_KEY_THRESHOLD` (3) consecutive `401 Invalid API key` responses for the same fingerprinted key, further polls short-circuit with a stable user-facing message instead of re-hitting Composio.
-- **Contract gate is per-action, per-turn** (`contract_gate.rs`, #4853): only gates `ComposioActionTool` (the per-action surface used by `integrations_agent`), not the generic `composio_execute` dispatcher, MCP bridges, or Workflow dispatchers; those are tracked as follow-up.
+- **Contract gate is per-action, per-turn** (`contract_gate.rs`, #4853): only gates `ComposioActionTool` (the per-action surface the orchestrator reaches through `tool_search`), not the generic `composio_execute` dispatcher, MCP bridges, or Workflow dispatchers; those are tracked as follow-up.
 </content>

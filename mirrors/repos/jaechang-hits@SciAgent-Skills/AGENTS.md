@@ -185,10 +185,11 @@ For tools with a linear input→processing→output flow (e.g., scanpy, AutoDock
 
 1. **Frontmatter** (YAML between `---`): `name`, `description`, `license` (all required)
    - **`license`**: Use the underlying tool's license if known. Default to `CC-BY-4.0` for original content
-2. **Sections** (in order): Overview, When to Use (5+ items, user's task perspective), Prerequisites, Quick Start (optional), Workflow (numbered steps, each with code block, 5-8 steps), Key Parameters (table), Key Concepts (optional), Common Recipes (2-4 snippets), Expected Outputs, Troubleshooting (table, 5+ rows), Bundled Resources (optional), References
+2. **Sections** (in order): Overview, When to Use (5+ items, user's task perspective), Prerequisites, **Pre-flight Interview** (analysis pipelines — see below), Quick Start (optional), Workflow (numbered steps, each with code block, 5-8 steps), Key Parameters (table), Key Concepts (optional), Common Recipes (2-4 snippets), Expected Outputs, Troubleshooting (table, 5+ rows), Bundled Resources (optional), References
 3. **Code blocks**: **10+ total** (Prerequisites + Workflow + Recipes). Troubleshooting code excluded from count
 4. **Description**: max 1024 characters, focused on "when should I use this?"
 5. **Code quality**: all code blocks must be runnable as-is with sample data or clear placeholders. Include `print()` statements showing expected output shape/size
+6. **Pre-flight Interview**: required for entries that run an analysis whose parameters change the scientific answer — see `## Pre-flight Interview` below for when it applies and the block schema
 
 > **Bundled resources, Pipeline-with-variants details**: see `references/format-rules-detail.md`
 
@@ -282,6 +283,98 @@ For quick registry-only validation:
 ```bash
 pixi run validate
 ```
+
+---
+
+## Pre-flight Interview
+
+An agent running one of these entries writes the analysis code itself, so any
+value it is not asked about it picks silently — and a wrong pick does not raise,
+it answers a different question than the user asked (flip the reference level and
+every fold change changes sign). This section declares what must be settled with
+the user before any code is written.
+
+`## Key Parameters` is not a substitute: the decisions that matter most are often
+not function arguments at all ("which sample-sheet column separates the groups?"),
+and it cannot mark which arguments to ask about. The consumer here is the
+supervisor's plan gate (`workflow-delegation` in `hits-private-skills`), not a
+human reader — hence YAML rather than this repo's usual table, and it is the
+single authority: do not restate it as a prose table beside it.
+
+**Required** for any entry that runs an analysis carrying at least one
+parameter that changes the scientific conclusion, not just runtime or
+formatting. This keys on what the entry *does*, not on its `sub_type`: a
+toolkit whose modules carry real thresholds — a mapping-quality filter, a
+required overlap fraction, a coverage normalization method — needs one as much
+as a pipeline does, and a guide that describes a step which actually runs is
+not exempt either.
+
+For a toolkit, scope the block to the decisions that recur across its modules
+and to those of the operations a pipeline actually calls — not one entry per
+function. For a guide that frames choices without executing them, point at the
+executing entry's block instead of duplicating it.
+
+Not required for `database` entries, which return what the source holds, or for
+entries whose every parameter is presentation. Say so in one line under the
+heading rather than writing an empty block.
+
+### Block schema
+
+```yaml
+decisions:
+  - id: D2                 # unique within the entry
+    param: contrast        # code symbol it binds; may repeat across decisions
+    kind: required         # required | optional | optional_conditional | derived | never_ask
+    source: user           # data | user | upstream | literature
+    depends_on: [D1]       # optional - ids whose answers change THIS one's options
+    ask: "Which group is the baseline the others are compared against?"
+    default: "first level alphabetically"
+    # skip_if: "..."       # optional - when the decision does not apply
+    # reason: "..."        # required for never_ask
+```
+
+`ask` is phrased in biology terms, not parameter terms, and is required except
+for `never_ask`. Use `default: null` when there is no safe default.
+
+| `kind` | Behavior |
+|---|---|
+| `required` | Always ask — including confirm-questions where the agent inspected the data and proposes a value |
+| `optional` | Silent default; ask on a user signal ("더 엄격하게", "clusters look too coarse") |
+| `optional_conditional` | Silent default; ask when a stated trigger fires (unusual library prep, runtime blowup) |
+| `derived` | Fixed by an upstream stage; apply it, confirm only on likely mismatch |
+| `never_ask` | Cannot change the conclusion — threads, seeds, validated internals. Needs `reason` |
+
+Thresholds, cutoffs, model formulas and normalization choices are never
+`never_ask`, however standard their default.
+
+| `source` | The agent gets the options by |
+|---|---|
+| `data` | Inspecting the input and offering what it found — sample-sheet columns, the levels in a column, an observed distribution |
+| `user` | Asking outright; reflects study design, not recoverable from the files |
+| `upstream` | Carrying it from the previous stage's output or settings |
+| `literature` | A focused read-only lookup (genome build, established marker panel) |
+
+`source: data` means inspect first — offering a guessed column name defeats it.
+
+### `skip_if` vs. finding no candidates
+
+`skip_if` is a condition on the **input** (`"single-end input"`) for decisions
+that are meaningless there, such as paired-end adapter detection on single-end
+reads. Drop the question and proceed.
+
+A `source: data` inspection that finds **nothing** is the opposite and must not
+be skipped: if no column groups the samples, the analysis cannot be specified at
+all. Ask the user in plain text, or stop and report what is missing — never fall
+back to a default or to whichever column comes first.
+
+### `depends_on`
+
+Tag an id only when its answer makes this decision's options *wrong*, not merely
+unnecessary: choosing the grouping column is what makes the reference-level
+options enumerable. Over-tagging splits the interview into one question per
+round. The supervisor asks independent decisions together and defers dependent
+ones to a later round. Refer only to ids in the same block; a value fixed by a
+previous stage is `derived`, not a dependency.
 
 ---
 

@@ -283,6 +283,21 @@ Deprecated keys accepted for back-compat and rewritten by migration:
 
 These are the only deprecated keys the strict agent schema accepts. `textVerbosity`, `fallback_models`, `thinking`, and `maxTokens` are category / model-entry keys, not agent keys (see [Model references and model strings](#model-references-and-model-strings)).
 
+#### Codex managed agent roles
+
+In the Codex edition, `[codex].agents.<role>` (and `profiles.<P>.[codex].agents.<role>`) sets the model of a LazyCodex-managed agent role such as `explorer`, `librarian`, `plan`, `metis`, `momus`, or `lazycodex-worker-medium`. Every install and marketplace bootstrap writes `model` and `reasoning` into `$CODEX_HOME/agents/<role>.toml` (`reasoning` becomes `model_reasoning_effort`; `off` becomes `none`, `auto` keeps the bundled effort; a `gpt-6-luna:low` suffix is split the same way). Only the `[codex]` block counts: shared base `agents` hold OpenCode model ids and never reach Codex. Removing an entry returns the role to the bundled default on the next sync, and a role name LazyCodex does not manage produces a warning.
+
+```jsonc
+{
+  "[codex]": {
+    "agents": {
+      "explorer": { "model": "gpt-6-luna", "reasoning": "low" },
+      "librarian": { "model": "gpt-6-luna" }
+    }
+  }
+}
+```
+
 #### Builtin agents
 
 The Senpi task engine ships four builtin curated agents: `explore` and `librarian` are always spawnable through the task tool with zero configuration, for example `task(subagent_type: "explore", ...)`, while `plan-consultant` and `plan-reviewer` are plan-gated: spawnable only after the user requests the `ulw-plan` workflow, a `.omo/plans/*.md` artifact was touched, and `ulw-execute` was never invoked. They are read-only research and review specialists; implementation and orchestration agents stay category-routed (architecture consults go through `task(category: "architect")`).
@@ -332,7 +347,7 @@ Team members always spawn in `process` mode, which cannot carry the curated pers
 
 Task engine settings. The whole object is optional, but `provider_concurrency`, `model_concurrency`, `state_dir`, `host_idle_exit_ms`, and `reattach_on_reconcile` are optional and remain unset when omitted (`schema/task.ts`).
 
-`default_execution_mode: "auto"` (the default) defers the in-process/process choice to the shared engine daemon: children run as daemon sessions when the platform is not Windows, `process_runner` is `host`, and the ensured daemon advertises `session_context` + `generation_handoff`; otherwise they run in-process. The decision is made ONCE per parent session, so a child's mode never changes because the daemon died later, and an explicit `in-process`/`process` always wins over it. Curated read-only agents (`explore`, `librarian`, `plan-consultant`, `plan-reviewer`) stay in-process regardless. `process_runner: "child-process"` keeps every process child in its own OS process (the only behaviour on Windows), `host_engine_policy` decides whether a daemon running a different engine build is handed over (`upgrade`) or left alone while children run as their own processes (`fallback`), and `host_idle_exit_ms` overrides the idle lifetime of a daemon this client starts. There is no socket key: one daemon, one public socket under the agent dir.
+`default_execution_mode: "auto"` (the default) defers the in-process/process choice to the session's own engine host: children run as sessions of that host when the platform is not Windows, `process_runner` is `host`, and the ensured host advertises `session_context` + `generation_handoff`; otherwise they run in-process. The decision is made ONCE per parent session, so a child's mode never changes because the host died later, and an explicit `in-process`/`process` always wins over it. Curated read-only agents (`explore`, `librarian`, `plan-consultant`, `plan-reviewer`) stay in-process regardless. `process_runner: "child-process"` keeps every process child in its own OS process (the only behaviour on Windows), `host_engine_policy` decides whether a daemon running a different engine build is handed over (`upgrade`) or left alone while children run as their own processes (`fallback`), and `host_idle_exit_ms` overrides the idle lifetime of a daemon this client starts. There is no socket key: each session's host socket is derived from the session (`<agentDir>/rpc/shards/p-<key>.sock`, or under `OMO_RPC_SHARD_ROOT`), and `rpc.sock` stays the operator endpoint; see [omo daemon](./omo-daemon.md).
 
 | Field | Type | Default |
 |-------|------|---------|

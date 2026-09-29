@@ -6,6 +6,7 @@
 bun install          # install dependencies
 bun run test:quick   # measured fast deterministic subset for edit feedback
 bun run test         # complete free suite via the strict parallel runner
+bun run test:ubicloud  # complete free suite on an ephemeral 16-vCPU Ubicloud VM (needs UBICLOUD_API_KEY)
 bun run test:pr      # changed fast live probes + selected judges (CI PR default)
 bun run test:evals   # run paid evals: LLM judge + E2E (diff-based, ~$4.35/run max)
 bun run test:evals:all  # run ALL paid evals regardless of diff

@@ -1,7 +1,7 @@
 {
   "schemaVersion": 5,
   "engineVersion": "4.2.0",
-  "engineRevision": "sha256:543ea25e32866f19afc4305e414fbb1ddbd9720065820e3c5bc5e2f51cc42339",
+  "engineRevision": "sha256:4bed0a4ee7f2b559fbf7f02e22844b9340035ddc3d23de031781991360a66653",
   "distributionSource": {
     "schemaVersion": 1,
     "channel": "edge",
@@ -10,7 +10,7 @@
   },
   "distributions": {
     "core": {
-      "revision": "sha256:543ea25e32866f19afc4305e414fbb1ddbd9720065820e3c5bc5e2f51cc42339",
+      "revision": "sha256:4bed0a4ee7f2b559fbf7f02e22844b9340035ddc3d23de031781991360a66653",
       "files": [
         {
           "path": "LICENSE",
@@ -34,8 +34,8 @@
         },
         {
           "path": "engine/.claude/skills/ss-build/SKILL.md",
-          "sha256": "59e75f3ee825e3b72ab0433f60adf248af87f5668d20a3693cd4e22807d890e0",
-          "bytes": 6099
+          "sha256": "9252b690e0f5755b354c36cda4893b8cbaab7df01a02af3fc61a35fd8d522bb2",
+          "bytes": 6527
         },
         {
           "path": "engine/.claude/skills/ss-component/SKILL.md",
@@ -49,8 +49,8 @@
         },
         {
           "path": "engine/.claude/skills/ss-dial/SKILL.md",
-          "sha256": "90fb39f82be555e5fed954bfe176fb14447896a5e6866cd5a774b6003ffddd96",
-          "bytes": 9675
+          "sha256": "b9ee4a64861c03a46284fc6cb4bfd7c40dbae7724b85b3cf0e2003dcf9f51ae8",
+          "bytes": 10815
         },
         {
           "path": "engine/.claude/skills/ss-feedback/SKILL.md",
@@ -89,8 +89,8 @@
         },
         {
           "path": "engine/.claude/skills/ss-resolve/SKILL.md",
-          "sha256": "2d58d741885de762f7ba6718d29666ec5f759c6f233b94b1c3d12a26aceaf8e1",
-          "bytes": 4660
+          "sha256": "1e3c97f0a72a7b2b57365c259f6643c7fdf8f08cec9e28e8f026edc135799229",
+          "bytes": 5243
         },
         {
           "path": "engine/.claude/skills/ss-resolve/references/artifact-index.schema.json",
@@ -99,8 +99,8 @@
         },
         {
           "path": "engine/.claude/skills/ss-resolve/references/artifact.schema.json",
-          "sha256": "d3d6650a81c060e7148f4bbf138ef5d1fb2ac9e2d4e004a17b30b326481aabf2",
-          "bytes": 4760
+          "sha256": "d8ccb2e35c14ea2f6dd9846a3680cbe3b7920de75f63b6e9b1268f76680ae9b4",
+          "bytes": 5723
         },
         {
           "path": "engine/.claude/skills/ss-resolve/references/manifest.schema.json",
@@ -114,13 +114,18 @@
         },
         {
           "path": "engine/.claude/skills/ss-resolve/references/project.schema.json",
-          "sha256": "ec1fc187d0ebe2c627d68e322a8dd07c74a1696504a82054d1725bd9ad341b23",
-          "bytes": 3279
+          "sha256": "f25d06166f66918ea2c3c75aeb89524f8761f0824c9b35fc51ce1e802f7a95a9",
+          "bytes": 4242
+        },
+        {
+          "path": "engine/.claude/skills/ss-resolve/references/spacing.md",
+          "sha256": "c06b8f8be9744c2b5628e86ebccee39f526e914714c7f0bfd6f90e104ea29233",
+          "bytes": 11853
         },
         {
           "path": "engine/.claude/skills/ss-resolve/scripts/compiler.mjs",
-          "sha256": "1936b6572ef2a37f5cce6550cda642b27969d8c788d145d0b06e067a9c5fc5cf",
-          "bytes": 19246
+          "sha256": "f881a8cf84814f836bba6026f2c6a3fe10079a10756bd0e4c3f670ecfd36c84c",
+          "bytes": 19506
         },
         {
           "path": "engine/.claude/skills/ss-resolve/scripts/distribution-integrity.mjs",
@@ -148,14 +153,29 @@
           "bytes": 3449
         },
         {
+          "path": "engine/.claude/skills/ss-resolve/scripts/recommend-spacing.mjs",
+          "sha256": "58d386423baab3eebf1093b59635662345a33f49259580394682507ea15e388a",
+          "bytes": 2127
+        },
+        {
           "path": "engine/.claude/skills/ss-resolve/scripts/resolve-context.mjs",
           "sha256": "834b9acc27137a86b1fbd210703a00d8a32e62df9d74760a1a7d3550b790e92a",
           "bytes": 16677
         },
         {
           "path": "engine/.claude/skills/ss-resolve/scripts/runtime-contract.mjs",
-          "sha256": "80d7f307a00de895f1897ddfeaea951ae7b7c93584a82dd9fa75c2c1ad2732ad",
-          "bytes": 17720
+          "sha256": "99168be4e2511b378e41e81f8fa33c57f5b4abe19645c492654f1e0c669ab097",
+          "bytes": 18191
+        },
+        {
+          "path": "engine/.claude/skills/ss-resolve/scripts/spacing-contract.mjs",
+          "sha256": "275cc123618266e730082569d3d612220a98621eea2745c861d04252dbeeeb24",
+          "bytes": 8229
+        },
+        {
+          "path": "engine/.claude/skills/ss-resolve/scripts/spacing-measurement.mjs",
+          "sha256": "b486ff21c778f4b4b1402df92ff0e09f961ca74670e0e32b188ce3d7361aadcf",
+          "bytes": 6424
         },
         {
           "path": "engine/.claude/skills/ss-resolve/scripts/styleseed-doctor.mjs",
@@ -244,8 +264,8 @@
         },
         {
           "path": "engine/.claude/skills/ss-setup/SKILL.md",
-          "sha256": "fd25cbebb6d32e2c9f7c30f089d0b8f11019954e7c2c9c3896a0f49960b3e9ed",
-          "bytes": 6493
+          "sha256": "17b2347a0cae2001f58883151c715aacebce39881e61bab58ae4854871ad3df8",
+          "bytes": 7028
         },
         {
           "path": "engine/.claude/skills/ss-studio/SKILL.md",
@@ -304,8 +324,13 @@
         },
         {
           "path": "engine/.claude/skills/ss-verify/SKILL.md",
-          "sha256": "6d4e5595a3baf9a617f17155e6be3d100ed2b17cd5dba44547435f988d25eab3",
-          "bytes": 10338
+          "sha256": "800f115491763f22d9833450f3978b339e2526cbd25cc2bcfad47f967466c41a",
+          "bytes": 11023
+        },
+        {
+          "path": "engine/.claude/skills/ss-verify/scripts/inspect-spacing.mjs",
+          "sha256": "88499bb31060728a4d13548fc76f291d975b33f9a80a9513e2aa0beeb3becc9c",
+          "bytes": 6722
         },
         {
           "path": "engine/.claude/skills/styleseed/SKILL.md",
@@ -334,8 +359,8 @@
         },
         {
           "path": "engine/ARCHITECTURE.md",
-          "sha256": "a6fb3ab10f187c4ecb9aafe10141a6b825e1a082764442607be194262f6f3c9e",
-          "bytes": 9670
+          "sha256": "ef21d948625fb962892800cf49920baab107162c79279cd8a14f084f55ac5e86",
+          "bytes": 10242
         },
         {
           "path": "engine/BRAND-RECIPES.md",
@@ -450,7 +475,7 @@
       ]
     },
     "skills": {
-      "revision": "sha256:0760747c16b99f38ca4e3ea8273b6c2c9518550286fe7778f980c95a1b9b9b88",
+      "revision": "sha256:fee6f7d33e245e52b72bdca006b0e70fe94a52cd7a5d9b92f66410b6c5143154",
       "files": [
         {
           "path": "engine/.claude/skills/ss-a11y/SKILL.md",
@@ -464,8 +489,8 @@
         },
         {
           "path": "engine/.claude/skills/ss-build/SKILL.md",
-          "sha256": "59e75f3ee825e3b72ab0433f60adf248af87f5668d20a3693cd4e22807d890e0",
-          "bytes": 6099
+          "sha256": "9252b690e0f5755b354c36cda4893b8cbaab7df01a02af3fc61a35fd8d522bb2",
+          "bytes": 6527
         },
         {
           "path": "engine/.claude/skills/ss-component/SKILL.md",
@@ -479,8 +504,8 @@
         },
         {
           "path": "engine/.claude/skills/ss-dial/SKILL.md",
-          "sha256": "90fb39f82be555e5fed954bfe176fb14447896a5e6866cd5a774b6003ffddd96",
-          "bytes": 9675
+          "sha256": "b9ee4a64861c03a46284fc6cb4bfd7c40dbae7724b85b3cf0e2003dcf9f51ae8",
+          "bytes": 10815
         },
         {
           "path": "engine/.claude/skills/ss-feedback/SKILL.md",
@@ -519,8 +544,8 @@
         },
         {
           "path": "engine/.claude/skills/ss-resolve/SKILL.md",
-          "sha256": "2d58d741885de762f7ba6718d29666ec5f759c6f233b94b1c3d12a26aceaf8e1",
-          "bytes": 4660
+          "sha256": "1e3c97f0a72a7b2b57365c259f6643c7fdf8f08cec9e28e8f026edc135799229",
+          "bytes": 5243
         },
         {
           "path": "engine/.claude/skills/ss-resolve/references/artifact-index.schema.json",
@@ -529,8 +554,8 @@
         },
         {
           "path": "engine/.claude/skills/ss-resolve/references/artifact.schema.json",
-          "sha256": "d3d6650a81c060e7148f4bbf138ef5d1fb2ac9e2d4e004a17b30b326481aabf2",
-          "bytes": 4760
+          "sha256": "d8ccb2e35c14ea2f6dd9846a3680cbe3b7920de75f63b6e9b1268f76680ae9b4",
+          "bytes": 5723
         },
         {
           "path": "engine/.claude/skills/ss-resolve/references/manifest.schema.json",
@@ -544,13 +569,18 @@
         },
         {
           "path": "engine/.claude/skills/ss-resolve/references/project.schema.json",
-          "sha256": "ec1fc187d0ebe2c627d68e322a8dd07c74a1696504a82054d1725bd9ad341b23",
-          "bytes": 3279
+          "sha256": "f25d06166f66918ea2c3c75aeb89524f8761f0824c9b35fc51ce1e802f7a95a9",
+          "bytes": 4242
+        },
+        {
+          "path": "engine/.claude/skills/ss-resolve/references/spacing.md",
+          "sha256": "c06b8f8be9744c2b5628e86ebccee39f526e914714c7f0bfd6f90e104ea29233",
+          "bytes": 11853
         },
         {
           "path": "engine/.claude/skills/ss-resolve/scripts/compiler.mjs",
-          "sha256": "1936b6572ef2a37f5cce6550cda642b27969d8c788d145d0b06e067a9c5fc5cf",
-          "bytes": 19246
+          "sha256": "f881a8cf84814f836bba6026f2c6a3fe10079a10756bd0e4c3f670ecfd36c84c",
+          "bytes": 19506
         },
         {
           "path": "engine/.claude/skills/ss-resolve/scripts/distribution-integrity.mjs",
@@ -578,14 +608,29 @@
           "bytes": 3449
         },
         {
+          "path": "engine/.claude/skills/ss-resolve/scripts/recommend-spacing.mjs",
+          "sha256": "58d386423baab3eebf1093b59635662345a33f49259580394682507ea15e388a",
+          "bytes": 2127
+        },
+        {
           "path": "engine/.claude/skills/ss-resolve/scripts/resolve-context.mjs",
           "sha256": "834b9acc27137a86b1fbd210703a00d8a32e62df9d74760a1a7d3550b790e92a",
           "bytes": 16677
         },
         {
           "path": "engine/.claude/skills/ss-resolve/scripts/runtime-contract.mjs",
-          "sha256": "80d7f307a00de895f1897ddfeaea951ae7b7c93584a82dd9fa75c2c1ad2732ad",
-          "bytes": 17720
+          "sha256": "99168be4e2511b378e41e81f8fa33c57f5b4abe19645c492654f1e0c669ab097",
+          "bytes": 18191
+        },
+        {
+          "path": "engine/.claude/skills/ss-resolve/scripts/spacing-contract.mjs",
+          "sha256": "275cc123618266e730082569d3d612220a98621eea2745c861d04252dbeeeb24",
+          "bytes": 8229
+        },
+        {
+          "path": "engine/.claude/skills/ss-resolve/scripts/spacing-measurement.mjs",
+          "sha256": "b486ff21c778f4b4b1402df92ff0e09f961ca74670e0e32b188ce3d7361aadcf",
+          "bytes": 6424
         },
         {
           "path": "engine/.claude/skills/ss-resolve/scripts/styleseed-doctor.mjs",
@@ -674,8 +719,8 @@
         },
         {
           "path": "engine/.claude/skills/ss-setup/SKILL.md",
-          "sha256": "fd25cbebb6d32e2c9f7c30f089d0b8f11019954e7c2c9c3896a0f49960b3e9ed",
-          "bytes": 6493
+          "sha256": "17b2347a0cae2001f58883151c715aacebce39881e61bab58ae4854871ad3df8",
+          "bytes": 7028
         },
         {
           "path": "engine/.claude/skills/ss-studio/SKILL.md",
@@ -734,8 +779,13 @@
         },
         {
           "path": "engine/.claude/skills/ss-verify/SKILL.md",
-          "sha256": "6d4e5595a3baf9a617f17155e6be3d100ed2b17cd5dba44547435f988d25eab3",
-          "bytes": 10338
+          "sha256": "800f115491763f22d9833450f3978b339e2526cbd25cc2bcfad47f967466c41a",
+          "bytes": 11023
+        },
+        {
+          "path": "engine/.claude/skills/ss-verify/scripts/inspect-spacing.mjs",
+          "sha256": "88499bb31060728a4d13548fc76f291d975b33f9a80a9513e2aa0beeb3becc9c",
+          "bytes": 6722
         },
         {
           "path": "engine/.claude/skills/styleseed/SKILL.md",
@@ -768,8 +818,8 @@
     },
     {
       "path": ".claude/skills/ss-build/SKILL.md",
-      "sha256": "59e75f3ee825e3b72ab0433f60adf248af87f5668d20a3693cd4e22807d890e0",
-      "bytes": 6099
+      "sha256": "9252b690e0f5755b354c36cda4893b8cbaab7df01a02af3fc61a35fd8d522bb2",
+      "bytes": 6527
     },
     {
       "path": ".claude/skills/ss-component/SKILL.md",
@@ -783,8 +833,8 @@
     },
     {
       "path": ".claude/skills/ss-dial/SKILL.md",
-      "sha256": "90fb39f82be555e5fed954bfe176fb14447896a5e6866cd5a774b6003ffddd96",
-      "bytes": 9675
+      "sha256": "b9ee4a64861c03a46284fc6cb4bfd7c40dbae7724b85b3cf0e2003dcf9f51ae8",
+      "bytes": 10815
     },
     {
       "path": ".claude/skills/ss-feedback/SKILL.md",
@@ -823,8 +873,8 @@
     },
     {
       "path": ".claude/skills/ss-resolve/SKILL.md",
-      "sha256": "2d58d741885de762f7ba6718d29666ec5f759c6f233b94b1c3d12a26aceaf8e1",
-      "bytes": 4660
+      "sha256": "1e3c97f0a72a7b2b57365c259f6643c7fdf8f08cec9e28e8f026edc135799229",
+      "bytes": 5243
     },
     {
       "path": ".claude/skills/ss-resolve/references/artifact-index.schema.json",
@@ -833,8 +883,8 @@
     },
     {
       "path": ".claude/skills/ss-resolve/references/artifact.schema.json",
-      "sha256": "d3d6650a81c060e7148f4bbf138ef5d1fb2ac9e2d4e004a17b30b326481aabf2",
-      "bytes": 4760
+      "sha256": "d8ccb2e35c14ea2f6dd9846a3680cbe3b7920de75f63b6e9b1268f76680ae9b4",
+      "bytes": 5723
     },
     {
       "path": ".claude/skills/ss-resolve/references/manifest.schema.json",
@@ -848,13 +898,18 @@
     },
     {
       "path": ".claude/skills/ss-resolve/references/project.schema.json",
-      "sha256": "ec1fc187d0ebe2c627d68e322a8dd07c74a1696504a82054d1725bd9ad341b23",
-      "bytes": 3279
+      "sha256": "f25d06166f66918ea2c3c75aeb89524f8761f0824c9b35fc51ce1e802f7a95a9",
+      "bytes": 4242
+    },
+    {
+      "path": ".claude/skills/ss-resolve/references/spacing.md",
+      "sha256": "c06b8f8be9744c2b5628e86ebccee39f526e914714c7f0bfd6f90e104ea29233",
+      "bytes": 11853
     },
     {
       "path": ".claude/skills/ss-resolve/scripts/compiler.mjs",
-      "sha256": "1936b6572ef2a37f5cce6550cda642b27969d8c788d145d0b06e067a9c5fc5cf",
-      "bytes": 19246
+      "sha256": "f881a8cf84814f836bba6026f2c6a3fe10079a10756bd0e4c3f670ecfd36c84c",
+      "bytes": 19506
     },
     {
       "path": ".claude/skills/ss-resolve/scripts/distribution-integrity.mjs",
@@ -882,14 +937,29 @@
       "bytes": 3449
     },
     {
+      "path": ".claude/skills/ss-resolve/scripts/recommend-spacing.mjs",
+      "sha256": "58d386423baab3eebf1093b59635662345a33f49259580394682507ea15e388a",
+      "bytes": 2127
+    },
+    {
       "path": ".claude/skills/ss-resolve/scripts/resolve-context.mjs",
       "sha256": "834b9acc27137a86b1fbd210703a00d8a32e62df9d74760a1a7d3550b790e92a",
       "bytes": 16677
     },
     {
       "path": ".claude/skills/ss-resolve/scripts/runtime-contract.mjs",
-      "sha256": "80d7f307a00de895f1897ddfeaea951ae7b7c93584a82dd9fa75c2c1ad2732ad",
-      "bytes": 17720
+      "sha256": "99168be4e2511b378e41e81f8fa33c57f5b4abe19645c492654f1e0c669ab097",
+      "bytes": 18191
+    },
+    {
+      "path": ".claude/skills/ss-resolve/scripts/spacing-contract.mjs",
+      "sha256": "275cc123618266e730082569d3d612220a98621eea2745c861d04252dbeeeb24",
+      "bytes": 8229
+    },
+    {
+      "path": ".claude/skills/ss-resolve/scripts/spacing-measurement.mjs",
+      "sha256": "b486ff21c778f4b4b1402df92ff0e09f961ca74670e0e32b188ce3d7361aadcf",
+      "bytes": 6424
     },
     {
       "path": ".claude/skills/ss-resolve/scripts/styleseed-doctor.mjs",
@@ -978,8 +1048,8 @@
     },
     {
       "path": ".claude/skills/ss-setup/SKILL.md",
-      "sha256": "fd25cbebb6d32e2c9f7c30f089d0b8f11019954e7c2c9c3896a0f49960b3e9ed",
-      "bytes": 6493
+      "sha256": "17b2347a0cae2001f58883151c715aacebce39881e61bab58ae4854871ad3df8",
+      "bytes": 7028
     },
     {
       "path": ".claude/skills/ss-studio/SKILL.md",
@@ -1038,8 +1108,13 @@
     },
     {
       "path": ".claude/skills/ss-verify/SKILL.md",
-      "sha256": "6d4e5595a3baf9a617f17155e6be3d100ed2b17cd5dba44547435f988d25eab3",
-      "bytes": 10338
+      "sha256": "800f115491763f22d9833450f3978b339e2526cbd25cc2bcfad47f967466c41a",
+      "bytes": 11023
+    },
+    {
+      "path": ".claude/skills/ss-verify/scripts/inspect-spacing.mjs",
+      "sha256": "88499bb31060728a4d13548fc76f291d975b33f9a80a9513e2aa0beeb3becc9c",
+      "bytes": 6722
     },
     {
       "path": ".claude/skills/styleseed/SKILL.md",
@@ -1068,8 +1143,8 @@
     },
     {
       "path": "ARCHITECTURE.md",
-      "sha256": "a6fb3ab10f187c4ecb9aafe10141a6b825e1a082764442607be194262f6f3c9e",
-      "bytes": 9670
+      "sha256": "ef21d948625fb962892800cf49920baab107162c79279cd8a14f084f55ac5e86",
+      "bytes": 10242
     },
     {
       "path": "BRAND-RECIPES.md",

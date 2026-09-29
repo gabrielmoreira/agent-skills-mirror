@@ -29,7 +29,75 @@ Before publishing:
 - Confirm the GitHub release title is exactly the tag (`v2.15.0`), not `Agent Teams v2.15.0`.
 - Keep the body in this document identical to the GitHub release body.
 
-## Draft: v2.17.0 (2026-09-27)
+## v2.17.1 (2026-09-28)
+
+Target branch: `main`.
+
+Runtime gate:
+
+- Agent Teams runtime: `v0.0.103`.
+- Terminal Platform runtime: `v0.3.3`.
+
+Release body source for GitHub release:
+
+<!-- RELEASE_BODY_START v2.17.1 -->
+OpenCode users can keep choosing models when optional Cursor tools are unavailable.
+
+### Improvements
+
+- Find Cursor sixth among dashboard provider options, after GitHub Copilot, SuperGrok, Z.AI, Kimi, and Kiro.
+- See new task times relative in the sidebar, with exact dates on hover.
+
+### Bug Fixes
+
+- Open Provider Settings and select non-Cursor models without installing Cursor CLI.
+
+### Downloads
+
+<table>
+<tr>
+<td align="center">
+  <a href="https://github.com/777genius/agent-teams-ai/releases/download/v2.17.1/Agent.Teams.AI-2.17.1-arm64.dmg">
+    <img src="https://img.shields.io/badge/macOS_Apple_Silicon-.dmg-000000?style=for-the-badge&logo=apple&logoColor=white" alt="macOS Apple Silicon" />
+  </a>
+  <br />
+  <a href="https://github.com/777genius/agent-teams-ai/releases/download/v2.17.1/Agent.Teams.AI-2.17.1-x64.dmg">
+    <img src="https://img.shields.io/badge/macOS_Intel-.dmg-434343?style=for-the-badge&logo=apple&logoColor=white" alt="macOS Intel" />
+  </a>
+</td>
+<td align="center">
+  <a href="https://github.com/777genius/agent-teams-ai/releases/download/v2.17.1/Agent.Teams.AI.Setup.2.17.1.exe">
+    <img src="https://img.shields.io/badge/Windows_x64-Download_.exe-0078D4?style=for-the-badge&logo=windows&logoColor=white" alt="Windows x64" />
+  </a>
+  <br />
+  <a href="https://github.com/777genius/agent-teams-ai/releases/download/v2.17.1/Agent.Teams.AI.Setup.2.17.1-arm64.exe">
+    <img src="https://img.shields.io/badge/Windows_ARM64-Download_.exe-0078D4?style=for-the-badge&logo=windows&logoColor=white" alt="Windows ARM64" />
+  </a>
+  <br />
+  <sub>May trigger SmartScreen - click "More info" then "Run anyway"</sub>
+  <br />
+  <sub>Run normally. Administrator mode may be needed only if the app reports a specific OpenCode symlink or permission error.</sub>
+</td>
+<td align="center">
+  <a href="https://github.com/777genius/agent-teams-ai/releases/download/v2.17.1/Agent.Teams.AI-2.17.1.AppImage">
+    <img src="https://img.shields.io/badge/Linux-Download_.AppImage-FCC624?style=for-the-badge&logo=linux&logoColor=black" alt="Linux AppImage" />
+  </a>
+  <br />
+  <a href="https://github.com/777genius/agent-teams-ai/releases/download/v2.17.1/agent-teams-ai_2.17.1_amd64.deb">
+    <img src="https://img.shields.io/badge/.deb-E95420?style=flat-square&logo=ubuntu" alt=".deb" />
+  </a>&nbsp;
+  <a href="https://github.com/777genius/agent-teams-ai/releases/download/v2.17.1/agent-teams-ai-2.17.1.x86_64.rpm">
+    <img src="https://img.shields.io/badge/.rpm-294172?style=flat-square&logo=redhat" alt=".rpm" />
+  </a>&nbsp;
+  <a href="https://github.com/777genius/agent-teams-ai/releases/download/v2.17.1/agent-teams-ai-2.17.1.pacman">
+    <img src="https://img.shields.io/badge/.pacman-1793D1?style=flat-square&logo=archlinux" alt=".pacman" />
+  </a>
+</td>
+</tr>
+</table>
+<!-- RELEASE_BODY_END v2.17.1 -->
+
+## Published: v2.17.0 (2026-09-28)
 
 Target branch: `main`.
 
@@ -41,24 +109,24 @@ Runtime gate:
 Release body source for GitHub release:
 
 <!-- RELEASE_BODY_START v2.17.0 -->
-Update OpenCode from the dashboard when built-in free models require a newer version, with installed and available versions shown up front. Messages keeps teammate avatars visible while you scroll.
+OpenCode setup errors now explain what to do next. Messages keeps drafts when switching chats and sender avatars visible while scrolling.
 
 ### What's New
 
-- See which OpenCode Default model will launch before you create a team.
-- Keep an unavailable OpenCode model selected instead of silently switching to Default.
-- See direct-chat recipients and open full-screen teammate chats in Messages.
-- Create a missing custom project folder when you create a team.
-- Update OpenCode from the dashboard with installed and available versions shown together.
+- See which model OpenCode will use when Default is selected.
+- Keep unavailable OpenCode models selected and see why they cannot launch.
+- See who receives your messages and open teammate chats full screen.
+- Create missing project folders from the Create Team dialog.
+- Update OpenCode from the dashboard, with installed and available versions shown together.
 
 ### Fixes
 
-- Explain OpenCode authentication, billing, and version requirements before launch.
-- Load OpenCode models when local provider checks are slow or interrupted.
-- Keep OpenCode teammates on their shared host after relaunch and unblock stalled lanes.
-- Preserve Messages drafts, pending sends, and composer layout across chat switches and sends.
-- Keep one teammate avatar visible while scrolling consecutive messages.
-- Hide passwords and API keys from launch diagnostics.
+- Show when an OpenCode model needs sign-in, a paid plan, or a newer OpenCode version.
+- Load OpenCode models even when local model checks are slow or interrupted.
+- Keep OpenCode teammates connected after relaunch and recover stalled work.
+- Preserve chat drafts and pending sends; sending no longer shifts the message input.
+- Keep one sender avatar visible while scrolling consecutive messages.
+- Keep passwords and API keys out of launch diagnostics.
 
 ### Downloads
 

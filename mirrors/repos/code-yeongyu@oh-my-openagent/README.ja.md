@@ -35,7 +35,7 @@
 **Your tool for real work. But it's an agent.**
 
 [![GitHub Release](https://img.shields.io/github/v/release/code-yeongyu/oh-my-openagent?color=369eff&labelColor=black&logo=github&style=flat-square)](https://github.com/code-yeongyu/oh-my-openagent/releases)
-[![npm downloads](https://img.shields.io/endpoint?url=https%3A%2F%2Fomo.dev%2Fapi%2Fnpm-downloads&style=flat-square)](https://www.npmjs.com/package/omo-ai)
+[![downloads](https://img.shields.io/endpoint?url=https%3A%2F%2Fomo.dev%2Fapi%2Fdownloads&style=flat-square)](https://omo.dev)
 [![GitHub Contributors](https://img.shields.io/github/contributors/code-yeongyu/oh-my-openagent?color=c4f042&labelColor=black&style=flat-square)](https://github.com/code-yeongyu/oh-my-openagent/graphs/contributors)
 [![GitHub Stars](https://img.shields.io/github/stars/code-yeongyu/oh-my-openagent?color=ffcb47&labelColor=black&style=flat-square)](https://github.com/code-yeongyu/oh-my-openagent/stargazers)
 [![License](https://img.shields.io/badge/license-SUL--1.0-white?labelColor=black&style=flat-square)](https://github.com/code-yeongyu/oh-my-openagent/blob/dev/LICENSE.md)
@@ -88,7 +88,7 @@ OpenCode 版や LazyCodex から移行する場合は、`omo setup` を一度実
 - [OpenCode からの移行](docs/guide/migrating-from-opencode.md)
 - [設定リファレンス](docs/reference/configuration.md)
 - [機能一覧](docs/reference/features.md)
-- [コンピューター操作](docs/guide/computer-use.md)
+- [コンピューター操作](docs/guide/computer-use.md)（実験的機能）
 - [Ultrawork マニフェスト](docs/manifesto.md)
 
 ## レビュー

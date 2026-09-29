@@ -2,6 +2,8 @@
 
 The OmO Native computer-use component registers a search-exposed `computer` tool and, after activation, a `computer` global in JavaScript and Python eval kernels. For setup, stop paths, platform limits and permissions, see [Computer use](../guide/computer-use.md).
 
+> **Experimental.** Computer use is experimental support. The tool contract below may change between releases.
+
 ## Source of the contract
 
 - Component registration, session lifecycle and resource discovery: `packages/omo-senpi/src/components/computer-use/index.ts`
@@ -32,6 +34,8 @@ The `computer` eval global offers the same operations as a fluent facade. A `run
 ## Coordinates and delivery
 
 Pointer coordinates refer to the latest screenshot of the same target, while accessibility coordinates are global desktop coordinates. Each accessibility snapshot changes the reference generation; old refs fail with `StaleRef`.
+
+Scroll amounts (`dx`/`dy` of `scroll`, and `scroll_x`/`scroll_y` of `computer_actions`) are pixels, the same unit on every OS. macOS posts them as pixel scroll events; Windows and X11 send one wheel notch per 40 px (rounded, at least one), and Wayland sends 120ths of a notch at the same rate. So `dy: 120` scrolls about three notches everywhere. A positive `dy` moves the view toward the end of the content and a positive `dx` toward its right edge, whatever the natural-scrolling setting.
 
 Input defaults to background delivery when supported. On macOS it leaves the frontmost app, its focused window, the cursor and the destination of the user's next keystroke unchanged, but a clicked target window may rise directly under the user's front window. Foreground delivery uses a focus guard to restore the previous window and cursor; restoration failures are reported instead of hidden. A stop chord, screen lock, lost stop path or missing OS permission refuses input before a backend action.
 

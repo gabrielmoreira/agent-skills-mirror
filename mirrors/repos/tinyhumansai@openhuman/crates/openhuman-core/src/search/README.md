@@ -21,6 +21,12 @@ OpenHuman decides about them.
   `one_provider`). Files from the single-engine era are migrated on load
   (`search_migrate.rs`); Parallel is kept as a direct-only (own key)
   provider, and a keyless managed-Parallel selection is dropped.
+- Keep `roles` as the presentation agents run on. Agent tool scopes
+  allowlist the routed `web_search_tool` / `web_answer_tool` /
+  `web_contents_tool`, and TinySearch advertises (and executes) only the
+  current mode's tools, so under `all_tools` those agents have no web search
+  at all. Schema v3 moves files the v2 migration had put on `all_tools` back
+  to `roles` once; a later explicit choice is kept.
 
 ## Files
 

@@ -50,10 +50,11 @@ The hook follows the OpenCode plugin hook pattern, exposing a factory function `
    - Clears existing output parts (`output.parts.length = 0`)
    - Generates activation prompt via `activationPrompt(task, sessionID)`
    - Injects activation prompt into output parts
-   - Prompt instructs agents to use deepwork skill with specific requirements
+   - Prompt = bundled SKILL.md body (single contract source, build-time text
+     import) + pinned progress-file path + task
 
 ### Deepwork Session Execution
-1. Agent receives activation prompt with task description and pinned session progress-file path
+1. Agent receives the full workflow instructions (SKILL.md body) with the pinned session progress-file path and task
 2. Agent creates its `.slim/deepwork/<session-id>.md` progress file
 3. Agent drafts plan and requests `@oracle` review
 4. Agent creates and reviews phased implementation/delegation plan

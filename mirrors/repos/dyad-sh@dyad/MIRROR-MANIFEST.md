@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `dyad-sh/dyad` — 26 default patterns, 32 followed patterns, 62 file(s) materialized.
+Mirror of `dyad-sh/dyad` — 26 default patterns, 33 followed patterns, 63 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `dyad-sh/dyad` — 26 default patterns, 32 followed patterns, 62 file(
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 32 |
-| Files         | 62 |
+| Followed pats | 33 |
+| Files         | 63 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -83,6 +83,7 @@ Mirror of `dyad-sh/dyad` — 26 default patterns, 32 followed patterns, 62 file(
 - `rules/i18n.md`
 - `rules/model-effort-and-catalog.md`
 - `rules/claude-code-backend.md`
+- `rules/user-app-test-isolation.md`
 
 ## File Index
 
@@ -151,7 +152,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 59 | → | [`rules/supabase-functions.md`](rules/supabase-functions.md) |
 | 60 | → | [`rules/typescript-strict-mode.md`](rules/typescript-strict-mode.md) |
 | 61 | → | [`rules/ui-styling.md`](rules/ui-styling.md) |
-| 62 | → | [`rules/windows-spawn.md`](rules/windows-spawn.md) |
+| 62 | → | [`rules/user-app-test-isolation.md`](rules/user-app-test-isolation.md) |
+| 63 | → | [`rules/windows-spawn.md`](rules/windows-spawn.md) |
 
 ---
 

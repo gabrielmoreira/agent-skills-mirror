@@ -1,8 +1,8 @@
 # Skill Catalog
 
-Generated at: 2026-09-27T09:49:22.000Z
+Generated at: 2026-09-28T06:59:25.000Z
 
-Total skills: 2474
+Total skills: 2478
 
 ## agent-behavior (5)
 
@@ -1210,7 +1210,7 @@ Total skills: 2474
 | `skill-porter` | Preview conservative tool-name translations and copy complete local skill bundles for manual adaptation to Google Antigravity. | critical | Pranav-Nexus/antigravity-skill-porter | antigravity, claude, skills, migration, agent | antigravity, claude, skills, migration, agent, skill, porter, preview, conservative, name, translations, copy |
 | `tokenwise` | Measurement-driven model router for Claude Code. Routes Haiku/Sonnet/Opus per task class, logs every routed task with real $ numbers, and A/B tests cheaper t... | critical | CodeShuX/tokenwise | model-routing, token-optimization, cost-reduction, anthropic, haiku, sonnet, opus, claude-code, ab-testing, measurement | model-routing, token-optimization, cost-reduction, anthropic, haiku, sonnet, opus, claude-code, ab-testing, measurement, tokenwise, driven |
 
-## development (213)
+## development (214)
 
 | Skill | Description | Risk | Source | Tags | Triggers |
 | --- | --- | --- | --- | --- | --- |
@@ -1406,6 +1406,7 @@ Total skills: 2474
 | `senior-architect` | Complete toolkit for senior architect with modern tools and best practices. | critical | community | senior | senior, architect, complete, toolkit |
 | `senior-fullstack` | Complete toolkit for senior fullstack with modern tools and best practices. | critical | community | senior, fullstack | senior, fullstack, complete, toolkit |
 | `setup-matt-pocock-skills` | Configure this repo for the engineering skills — set up its issue tracker, triage label vocabulary, and domain doc layout. Run once before first use of the o... | safe | mattpocock/skills | engineering, workflow, coding-agents | engineering, workflow, coding-agents, setup, matt, pocock, skills, configure, repo, set, up, issue |
+| `since-cutoff` | Find which APIs of a project's pinned Python dependencies changed after the model's training cutoff, where the code uses them, and write short AGENTS.md or C... | safe | MohammadHijjawi97/since-cutoff | python, dependencies, api-changes, knowledge-cutoff, agents-md, static-analysis | python, dependencies, api-changes, knowledge-cutoff, agents-md, static-analysis, since, cutoff, find, which, apis, pinned |
 | `skill-check` | Validate Claude Code skills against the agentskills specification. Catches structural, semantic, and naming issues before users do. | safe | https://github.com/olgasafonova/SkillCheck-Free | validation, linter, agentskills, skill-authoring, code-quality | validation, linter, agentskills, skill-authoring, code-quality, skill, check, validate, claude, code, skills, against |
 | `source-driven-development` | Grounds every implementation decision in official documentation. Use when you want authoritative, source-cited code free from outdated patterns. Use when bui... | critical | addyosmani/agent-skills | source, driven | source, driven, development, grounds, every, decision, official, documentation, want, authoritative, cited, code |
 | `spec-driven-loop` | Freeze PRD, technical design, and acceptance criteria before medium-to-large Codex work; coordinate agents with explicit ownership, then judge delivery from ... | safe | Linji-x/spec-driven-loop | codex, spec-driven-development, multi-agent, agent-orchestration, acceptance-testing | codex, spec-driven-development, multi-agent, agent-orchestration, acceptance-testing, spec, driven, loop, freeze, prd, technical, acceptance |
@@ -1876,7 +1877,7 @@ Total skills: 2474
 | `leiloeiro-mercado` | Analise de mercado imobiliario para leiloes. Liquidez, desagio tipico, ROI, estrategias de saida (flip/reforma/renda), Selic 2025 e benchmark CDI/FII. | safe | community | market-analysis, real-estate, roi, brazilian | market-analysis, real-estate, roi, brazilian, leiloeiro, mercado, analise, de, imobiliario, para, leiloes, liquidez |
 | `leiloeiro-risco` | Analise de risco em leiloes de imoveis. Score 36 pontos, riscos juridicos/financeiros/operacionais, stress test 4 cenarios e ROI ponderado por risco. | safe | community | risk-analysis, scoring, stress-test, brazilian | risk-analysis, scoring, stress-test, brazilian, leiloeiro, risco, analise, de, em, leiloes, imoveis, score |
 
-## marketing (103)
+## marketing (104)
 
 | Skill | Description | Risk | Source | Tags | Triggers |
 | --- | --- | --- | --- | --- | --- |
@@ -1945,6 +1946,7 @@ Total skills: 2474
 | `marketing-psychology` | Apply behavioral science and mental models to marketing decisions, prioritized using a psychological leverage and feasibility scoring system. | none | community | marketing, psychology | marketing, psychology, apply, behavioral, science, mental, models, decisions, prioritized, psychological, leverage, feasibility |
 | `objection-preemptor` | One sentence - what this skill does and when to invoke it | safe | community | objection, preemptor | objection, preemptor, one, sentence, what, skill, does, invoke |
 | `offers` | When the user wants to design, construct, or improve an offer — the thing they actually sell — including value framing, bonus stacking, guarantee design, sca... | safe | coreyhaines31/marketingskills | offers | offers, user, wants, construct, improve, offer, thing, actually, sell, including, value, framing |
+| `omentir-linkedin-outreach` | Run LinkedIn prospecting and outreach through the Omentir MCP server: find people, score fit, draft messages, and check campaigns. Never signs into LinkedIn. | critical | vanshyadav1408/Omentir | linkedin, sales, outreach, lead-generation, prospecting, mcp | linkedin, sales, outreach, lead-generation, prospecting, mcp, omentir, run, through, server, find, people |
 | `onboarding` | When the user wants to optimize post-signup onboarding, user activation, first-run experience, or time-to-value. | safe | coreyhaines31/marketingskills | onboarding | onboarding, user, wants, optimize, post, signup, activation, first, run, experience, time, value |
 | `onboarding-cro` | You are an expert in user onboarding and activation. Your goal is to help users reach their "aha moment" as quickly as possible and establish habits that lea... | critical | community | onboarding, cro | onboarding, cro, user, activation, goal, users, reach, aha, moment, quickly, possible, establish |
 | `onboarding-psychologist` | One sentence - what this skill does and when to invoke it | safe | community | onboarding, psychologist | onboarding, psychologist, one, sentence, what, skill, does, invoke |
@@ -1984,7 +1986,7 @@ Total skills: 2474
 | `xiaohongshu-content-strategist` | Create viral Xiaohongshu (小红书) content with platform-native strategy, save-rate optimization, trending formats, and search SEO for China's #1 lifestyle platf... | safe | demo112/yunqu-ai-skills | xiaohongshu, chinese-market, content-strategy, social-media, marketing, 红书, 小红书 | xiaohongshu, chinese-market, content-strategy, social-media, marketing, 红书, 小红书, content, strategist, viral, platform, native |
 | `youtube-automation` | Automate YouTube tasks via Rube MCP (Composio): upload videos, manage playlists, search content, get analytics, and handle comments. Always search tools firs... | critical | community | youtube | youtube, automation, automate, tasks, via, rube, mcp, composio, upload, videos, playlists, search |
 
-## mcp (6)
+## mcp (7)
 
 | Skill | Description | Risk | Source | Tags | Triggers |
 | --- | --- | --- | --- | --- | --- |
@@ -1994,8 +1996,9 @@ Total skills: 2474
 | `not-human-search-mcp` | Search AI-ready websites, inspect indexed site details, verify MCP endpoints, and discover tools and APIs using the Not Human Search MCP server | safe | https://nothumansearch.ai | mcp, search, ai-discovery, api-discovery, mcp-verification, agent-tools | mcp, search, ai-discovery, api-discovery, mcp-verification, agent-tools, human, ai, websites, inspect, indexed, site |
 | `parallel-search-mcp` | Search the public web and verify sources with Parallel's free Search MCP. Use when the user chooses Parallel or its connected tools for current information a... | safe | self | mcp, web-search, research, citations | mcp, web-search, research, citations, parallel, search, public, web, verify, sources, free, user |
 | `protect-mcp-governance` | Agent governance skill for MCP tool calls — Cedar policy authoring, shadow-to-enforce rollout, and Ed25519 receipt verification. | safe | scopeblind/scopeblind-gateway | protect, mcp, governance | protect, mcp, governance, agent, skill, calls, cedar, policy, authoring, shadow, enforce, rollout |
+| `serply-search-mcp` | Search Google, Bing, Google News and Google Scholar, and read public pages, with the Serply MCP server. Use when the user chooses Serply or its connected too... | safe | self | mcp, web-search, news, scholar, research, citations | mcp, web-search, news, scholar, research, citations, serply, search, google, bing, read, public |
 
-## media (26)
+## media (27)
 
 | Skill | Description | Risk | Source | Tags | Triggers |
 | --- | --- | --- | --- | --- | --- |
@@ -2010,6 +2013,7 @@ Total skills: 2474
 | `magic-animator` | AI-powered animation tool for creating motion in logos, UI, icons, and social media assets. | safe | community | magic, animator | magic, animator, ai, powered, animation, creating, motion, logos, ui, icons, social, media |
 | `md2video-audio` | Convert Markdown documents into narrated MP4 videos with synchronized visuals and voice narration. | safe | 70v-Yoyo/md2video-audio-skill | markdown, video, audio, text-to-speech, marp, presentation | markdown, video, audio, text-to-speech, marp, presentation, md2video, convert, documents, narrated, mp4, videos |
 | `muapi-media` | Generate images and videos with MuAPI's schema-driven asynchronous media API while protecting keys, polling, and output downloads. | critical | self | muapi, image-generation, video-generation, media-api | muapi, image-generation, video-generation, media-api, media, generate, images, videos, schema, driven, asynchronous, api |
+| `nsfw-ai-spicyapi` | Generate adult (18+) images, image-to-video clips and image edits through the SpicyAPI API, with a cost quote before every paid run and adults-only / consent... | critical | Spicy-API/nsfw-ai-skill | image-generation, video-generation, image-to-video, adult-content, api | image-generation, video-generation, image-to-video, adult-content, api, nsfw, ai, spicyapi, generate, adult, 18, images |
 | `podcast-generation` | Generate real audio narratives from text content using Azure OpenAI's Realtime API. | critical | community | podcast, generation | podcast, generation, generate, real, audio, narratives, text, content, azure, openai, realtime, api |
 | `remotion` | Generate walkthrough videos from Stitch projects using Remotion with smooth transitions, zooming, and text overlays | critical | community | remotion | remotion, generate, walkthrough, videos, stitch, smooth, transitions, zooming, text, overlays |
 | `remotion-best-practices` | Best practices for Remotion - Video creation in React | safe | community | remotion, video, react, animation, composition | remotion, video, react, animation, composition, creation |

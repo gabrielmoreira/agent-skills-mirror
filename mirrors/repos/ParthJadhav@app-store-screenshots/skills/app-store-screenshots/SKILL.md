@@ -203,8 +203,16 @@ function firstString(...values) {
   return values.find((value) => typeof value === "string") || "";
 }
 
-function migrateSlide(slide) {
-  if (!slide || typeof slide !== "object") return null;
+// The editor refuses to load a deck with empty or repeated screen ids.
+function uniqueId(value, used) {
+  let id = typeof value === "string" && value.trim() ? value : "";
+  while (!id || used.has(id)) id = `migrated-${Math.random().toString(36).slice(2, 10)}`;
+  used.add(id);
+  return id;
+}
+
+function migrateSlide(slide, used) {
+  if (!slide || typeof slide !== "object" || Array.isArray(slide)) return null;
   const transforms = {};
   const rawTransforms = slide.transforms && typeof slide.transforms === "object" ? slide.transforms : {};
   for (const [id, transform] of Object.entries(rawTransforms)) {
@@ -227,11 +235,12 @@ function migrateSlide(slide) {
 
   return {
     ...slide,
-    id: typeof slide.id === "string" ? slide.id : `migrated-${Math.random().toString(36).slice(2, 10)}`,
+    id: uniqueId(slide.id, used),
     layout: LAYOUTS.includes(slide.layout) ? slide.layout : "device-bottom",
     label: localized(slide.label),
     headline: localized(slide.headline || slide.title || slide.caption || slide.copy),
     screenshot: firstString(slide.screenshot, slide.image, slide.src, slide.path),
+    screenshotSecondary: typeof slide.screenshotSecondary === "string" ? slide.screenshotSecondary : undefined,
     ...(Object.keys(transforms).length ? { transforms } : { transforms: undefined }),
     ...(textElements && textElements.length ? { textElements } : { textElements: undefined }),
   };
@@ -239,14 +248,30 @@ function migrateSlide(slide) {
 
 state.schemaVersion = 2;
 state.connectedCanvas = hasExplicitConnectedCanvas ? existingState.connectedCanvas : false;
-state.locales = Array.isArray(state.locales) && state.locales.length ? state.locales : [DEFAULT_LOCALE];
+// Unique codes like "en", "pt-BR", "zh_Hans"; anything else makes the editor refuse the file.
+const LOCALE_CODE = /^[a-zA-Z0-9]+(?:[-_][a-zA-Z0-9]+)*$/;
+state.locales = Array.isArray(state.locales)
+  ? [...new Set(state.locales.filter((locale) => typeof locale === "string" && LOCALE_CODE.test(locale)))]
+  : [];
+if (!state.locales.length) state.locales = [DEFAULT_LOCALE];
 state.locale = state.locales.includes(state.locale) ? state.locale : state.locales[0];
 state.device = DEVICE_KEYS.includes(state.device) ? state.device : "iphone";
+if (state.orientation !== "portrait" && state.orientation !== "landscape") delete state.orientation;
+for (const key of ["appName", "themeId", "appIcon"]) {
+  if (state[key] !== undefined && typeof state[key] !== "string") delete state[key];
+}
+// The feature graphic only shows an icon that `appIcon` points at.
+if (!state.appIcon && fs.existsSync(path.join("public", "app-icon.png"))) state.appIcon = "/app-icon.png";
 
 if (state.slidesByDevice && typeof state.slidesByDevice === "object") {
   for (const [device, slides] of Object.entries(state.slidesByDevice)) {
-    if (!DEVICE_KEYS.includes(device)) continue;
-    state.slidesByDevice[device] = Array.isArray(slides) ? slides.map(migrateSlide).filter(Boolean) : [];
+    // The editor only accepts known device decks; the backup keeps the original.
+    if (!DEVICE_KEYS.includes(device)) {
+      delete state.slidesByDevice[device];
+      continue;
+    }
+    const used = new Set();
+    state.slidesByDevice[device] = Array.isArray(slides) ? slides.map((slide) => migrateSlide(slide, used)).filter(Boolean) : [];
   }
 }
 
@@ -405,6 +430,7 @@ The starter project state lives in `app-store-screenshots.json`, not `src/lib/de
 If the user provided headlines, edit `app-store-screenshots.json` to set:
 - `appName`
 - `themeId` (one of `"clean-light" | "dark-bold" | "warm-editorial" | "ocean-fresh" | "bloom-roast"`, a named style slug such as `"swiss-grid-bold"` when the user picked that style, or add a matching entry to `THEMES` in `src/lib/constants.ts`). Themes may set `accentAlt` for the label color on inverted slides.
+- `appIcon` — public path of the app icon (e.g. `"/app-icon.png"` after copying it to `public/app-icon.png`). The Play Store feature graphic shows it; blank uses the app's initial. The icon can also be picked in the feature-graphic inspector.
 - `connectedCanvas` (`true` for new connected decks; migrated legacy decks should stay `false` until the user opts in)
 - Starter slides per device with the user's `label` + `headline` + screenshot paths
 - Optional per-slide `typography: { labelScale, headlineScale, appNameScale }` (0.5–2, default 1) when one headline is much longer or shorter than the rest of the deck. `appNameScale` only applies to the feature graphic, where `headlineScale` sizes the tagline.
@@ -586,7 +612,7 @@ The editor stores headlines and labels per-locale on each slide — switch to a 
 
 - Don't literally translate — rewrite for the target market.
 - Re-check line breaks per locale; German/French/Portuguese often need shorter claims.
-- For RTL (`ar`, `he`, `fa`, `ur`), the template handles direction inversion through CSS — let the user verify each slide looks intentional, not just flipped.
+- For RTL (`ar`, `he`, `fa`, `ur`), canvas text picks its direction from its own content (`dir="auto"`), so punctuation lands on the correct side and left-set captions align to the right edge. Layouts, devices and overlays are not mirrored — let the user verify each slide looks intentional.
 
 ## Step 5: Export Time
 

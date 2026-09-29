@@ -32,6 +32,25 @@ targets:
       import: true               # the tool follows @path lines
 ```
 
+## Skills Off
+
+For a tool that already reads another target's folder (Pi also reads `~/.agents/skills`
+of `universal`), stop syncing skills to it so each skill does not load twice. Agents, MCP
+servers and instructions stay managed.
+
+```bash
+skillshare target pi --skills=false --dry-run   # Preview what is removed
+skillshare target pi --skills=false             # Save skills.enabled: false, remove links into the source
+skillshare target pi --skills=true              # Back on; next `skillshare sync` syncs again
+skillshare target add gemini ~/.gemini/skills --no-skills   # Add with skills off
+```
+
+Merge mode removes the links; symlink mode removes the folder link; copy mode keeps the
+copies and lists them apart (the tool still loads them; delete them to avoid duplicates);
+a folder an enabled target also writes to is left alone. `sync`/`diff`/`status`/`doctor`
+skip the target's skills. `--skills` cannot be combined with include/exclude flags in one
+command. Works with `-p`.
+
 ## Project Targets (`-p`)
 
 ```bash

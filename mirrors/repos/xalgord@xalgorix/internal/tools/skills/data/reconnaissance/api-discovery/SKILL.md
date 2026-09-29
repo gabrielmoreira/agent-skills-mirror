@@ -1,76 +1,87 @@
 ---
 name: api-discovery
-description: API endpoint discovery including OpenAPI/Swagger detection, hidden versioning, REST/GraphQL enumeration, and content negotiation
+description: API endpoint discovery including OpenAPI/Swagger detection, GraphQL, versioned routes, and API surface mapping from multiple sources
 ---
 
 # API Discovery
 
+## When to Use
+When the target shows API signals: JSON responses, `/api/` paths, JavaScript with API calls, or an OpenAPI/Swagger spec.
+
+## Important
+OpenAPI/Swagger files are ONE high-confidence discovery source — NOT the complete API surface. Specs can be stale, incomplete, filtered, version-specific, or a public subset only. Always merge spec data with runtime evidence (JavaScript, browser traffic, error messages).
+
 ## Methodology
 
 ### OpenAPI/Swagger Detection
-
 ```bash
-# Common Swagger/OpenAPI paths
-for path in swagger.json swagger/v1/swagger.json openapi.json api-docs api/docs swagger-ui.html \
-  swagger-ui/ api/swagger api/swagger.json v1/api-docs v2/api-docs v3/api-docs .well-known/openapi \
-  docs api/documentation redoc; do
+for path in swagger.json swagger/v1/swagger.json openapi.json api-docs api/docs \
+  swagger-ui.html api/swagger api/swagger.json v1/api-docs v2/api-docs v3/api-docs \
+  .well-known/openapi docs api/documentation redoc; do
   code=$(curl -sk -o /dev/null -w "%{http_code}" "https://TARGET/$path")
-  [ "$code" != "404" ] && echo "[$code] /$path"
+  [ "$code" != "404" ] && [ "$code" != "000" ] && echo "[$code] /$path"
 done
+```
+
+### Spec Parsing (when found)
+```bash
+# Extract all paths and methods
+cat tmp/openapi.json | jq -r '.paths | keys[]' > tmp/api_paths.txt
+
+# Extract parameters per path
+cat tmp/openapi.json | jq -r '.paths | to_entries[] | "\(.key): \(.value | keys | join(", "))"'
+
+# Extract request body schemas
+cat tmp/openapi.json | jq -r '.paths | to_entries[] | .value | to_entries[] | .value.requestBody.content["application/json"].schema.properties | keys' 2>/dev/null
+
+# Resolve $ref chains
+cat tmp/openapi.json | jq -r '.. | .["$ref"]? // empty' | sort -u
+```
+
+### GraphQL Discovery
+```bash
+# Common GraphQL endpoints
+for path in graphql graphql/v1 api/graphql query; do
+  code=$(curl -sk -o /dev/null -w "%{http_code}" -X POST "https://TARGET/$path" \
+    -H "Content-Type: application/json" -d '{"query":"{__typename}"}')
+  [ "$code" = "200" ] && echo "[GRAPHQL] /$path"
+done
+
+# Introspection query (if endpoint found)
+curl -sk -X POST https://TARGET/graphql -H "Content-Type: application/json" \
+  -d '{"query":"{__schema{types{name fields{name}}}}"}' | jq -r '.data.__schema.types[] | select(.name | test("^[a-z]")) | .name as $t | .fields[] | "\($t).\(.name)"'
 ```
 
 ### API Versioning Enumeration
-
 ```bash
-# Test version prefixes
 for v in v1 v2 v3 v4 api/v1 api/v2 api/v3; do
-  curl -sk "https://TARGET/$v/" -H "Accept: application/json" -o /dev/null -w "[$v] %{http_code} %{size_download}\n"
+  curl -sk "https://TARGET/$v/" -H "Accept: application/json" -o /dev/null -w "[\($v)] %{http_code} %{size_download}\n"
 done
-
-# Test version headers
-curl -sk "https://TARGET/api/users" -H "Accept-Version: 1.0"
-curl -sk "https://TARGET/api/users" -H "X-API-Version: 2"
-curl -sk "https://TARGET/api/users" -H "Api-Version: 2023-01-01"
 ```
 
-### REST Endpoint Enumeration
-
+### Alternate API Hosts
 ```bash
-# Common API patterns
-for endpoint in users user/1 me profile accounts auth/login auth/register \
-  config settings health status debug info version metrics admin; do
-  code=$(curl -sk -o /dev/null -w "%{http_code}" "https://TARGET/api/$endpoint" -H "Accept: application/json")
-  [ "$code" != "404" ] && echo "[$code] /api/$endpoint"
-done
-
-# Test all HTTP methods on discovered endpoints
-for method in GET POST PUT PATCH DELETE OPTIONS HEAD; do
-  curl -sk -X $method "https://TARGET/api/ENDPOINT" -o /dev/null -w "[$method] %{http_code}\n"
-done
+# Check JavaScript and configs for API hostnames that differ from the main target
+cat tmp/js/*.js | grep -oP 'https?://[a-zA-Z0-9.-]+\.[a-z]+/api' | sort -u
 ```
 
-### GraphQL Endpoint Detection
-
+### Error-Message API Discovery
 ```bash
-for ep in graphql graphiql gql query api/graphql api/gql; do
-  curl -sk "https://TARGET/$ep" -X POST -H "Content-Type: application/json" \
-    -d '{"query":"{__typename}"}' | grep -q "data" && echo "[GRAPHQL] /$ep"
-done
+# Send malformed requests — error messages often reveal route structure
+curl -sk "https://TARGET/api/nonexistent" -H "Accept: application/json" | head -20
+curl -sk -X POST "https://TARGET/api/users" -H "Content-Type: application/json" -d '{}' | head -20
 ```
 
-## Coverage Gaps & Validation
+## Stopping Criteria
+- OpenAPI/Swagger checked at common paths
+- GraphQL checked (if any API signals exist)
+- API versioning probed
+- JS-derived API references merged with spec data
+- Error-message-derived routes recorded
 
-- Combine passive spec sources before active probing: crawl HTML/JS for `fetch`/`axios`/`XMLHttpRequest` URLs, pull historical paths from Wayback (`waybackurls`, `gau`), and search public Postman/SwaggerHub/GitHub for leaked collections — a single `swagger.json` hit is not full coverage.
-- Most-missed surfaces: GraphQL introspection (`{__schema{types{name}}}`), gRPC-Web and `/*.proto` reflection, WebSocket (`wss://`) endpoints, batch/RPC routes (`/api/batch`, `_bulk`), and mobile-only hosts (`api.`, `mobile.`, `gateway.`) absent from the web app.
-- Don't trust the prefix: enumerate version skew (`v1` vs `v2-internal`, date-pinned `2023-01-01`) and content negotiation (`Accept: application/json` vs `xml` vs `+protobuf`) — deprecated versions often skip authz.
-- Decode `OPTIONS` responses and `Allow`/CORS headers; an endpoint returning 401/403 still confirms existence, so map auth-required routes, not just 200s.
-- Validate every candidate is live AND in scope: re-request 2-3x to rule out flapping/WAF rate-limits, diff response size/timing against a known-404 baseline, and resolve the host to confirm it sits inside authorized IP ranges before logging it.
-- Treat soft-404s as noise: many APIs return 200 with `{"error":"not found"}` — gate findings on body content and schema, not status code alone.
-
-## Pro Tips
-
-1. Swagger/OpenAPI files reveal ALL API endpoints, parameters, and data models — always check
-2. API version enumeration reveals deprecated versions with weaker security
-3. Test `Accept: application/json` and `Accept: application/xml` — different content negotiation may expose different responses
-4. Use Postman/Insomnia collections found in repos or docs for comprehensive endpoint lists
-5. Check robots.txt and sitemap.xml for hidden API paths
+## Common Misses
+- API endpoints on alternate ports or subdomains
+- Internal/admin APIs not in the public spec
+- WebSocket and gRPC-Web endpoints
+- JSON-RPC endpoints
+- SOAP endpoints (check for ?wsdl on /api paths)

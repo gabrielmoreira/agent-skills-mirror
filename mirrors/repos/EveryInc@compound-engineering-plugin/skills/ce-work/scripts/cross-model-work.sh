@@ -803,6 +803,10 @@ set +e
 (cd "$WORKSPACE" && exec "${MIN_ENV[@]}" "${ARGS[@]}" < "$PROMPT_FILE" > "$RAW_STDOUT" 2> "$RAW_STDERR") &
 ACTIVE_ROUTE_PID=$!
 (
+  # A foreground sleep would outlive this subshell's TERM and hold the script's
+  # output open, so callers (bun 1.4 spawnSync) would wait out the poll interval.
+  # Kill every background job, so a TERM between `sleep &` and `$!` still reaps it.
+  trap 'kill $(jobs -p) 2>/dev/null; exit 0' TERM
   previous=0
   while kill -0 "$ACTIVE_ROUTE_PID" 2>/dev/null; do
     current="$(raw_byte_count)"
@@ -816,7 +820,8 @@ ACTIVE_ROUTE_PID=$!
       log "activity route=$ROUTE output-updated"
       previous="$current"
     fi
-    sleep "$ACTIVITY_POLL_SECS"
+    sleep "$ACTIVITY_POLL_SECS" &
+    wait $!
   done
 ) &
 ACTIVITY_PID=$!

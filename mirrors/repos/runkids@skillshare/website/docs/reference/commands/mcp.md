@@ -543,6 +543,8 @@ In global mode the dashboard has a **Projects** page. It lists every folder unde
 [`projects`](/docs/reference/targets/configuration#projects) and `mcp.projects`, and each
 project has an **MCP** tab.
 
+![Project MCP tab: global servers switched per project, plus project-only servers](/img/projects-mcp-tab.png)
+
 - **Add project** takes the folder and its targets. Tick **MCP** to list the folder under
   `mcp.projects` as well.
 - The **MCP** tab lists every global server with a switch. Turning one off saves a

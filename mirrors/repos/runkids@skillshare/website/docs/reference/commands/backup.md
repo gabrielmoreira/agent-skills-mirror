@@ -13,13 +13,16 @@ skillshare backup agents       # Backup all agent targets
 skillshare backup --all        # Backup skills + agents
 skillshare backup --list       # List all backups
 skillshare backup --cleanup    # Remove old backups
+skillshare backup --delete 2026-01-19_10-00-00  # Delete one backup
+skillshare backup files        # Versions of single files skillshare rewrote
 ```
 
 ## When to Use
 
 - Create a manual backup before risky changes
 - List existing backups to check recovery options
-- Clean up old backups to free disk space
+- Clean up old backups, or delete one you no longer need
+- Get back an earlier version of a file such as `AGENTS.md` or `CLAUDE.md`
 
 ## Automatic Backups
 
@@ -71,6 +74,74 @@ The newest snapshot is always kept, even when it alone exceeds the size cap — 
 
 This same policy runs automatically after every `sync`, so `--cleanup` is only needed to prune on demand.
 
+### Delete a Backup
+
+```bash
+skillshare backup --delete 2026-01-19_10-00-00            # Delete one snapshot
+skillshare backup --delete 2026-01-19_10-00-00 --dry-run  # Show what would be deleted
+skillshare backup --delete 2026-01-19_10-00-00 -p         # From the project's .skillshare/backups/
+```
+
+The timestamp is the folder name shown by `--list`. The whole snapshot is deleted, including every target in it.
+
+### File History {#file-history}
+
+Before skillshare rewrites or replaces a single file — an instruction file such as `AGENTS.md` or `CLAUDE.md`, or a location of a [shared file](/docs/how-to/daily-tasks/sharing-instructions#backups) — it saves the old content. `backup files` lists and restores those versions.
+
+```bash
+skillshare backup files                                   # Files with saved versions
+skillshare backup files show ~/.claude/CLAUDE.md          # Versions of one file, newest first
+skillshare backup files restore ~/.claude/CLAUDE.md origin
+skillshare backup files restore ./CLAUDE.md 1769000000000000000.shim --dry-run
+```
+
+```
+Versions of /Users/me/.claude/CLAUDE.md
+  1769000000000000000.edit          2026-01-21 12:53:20  history/edit          2.1 KB  # Team rules
+  drift:1768900000000000000.mode    2026-01-20 09:06:40  drift/mode            1.9 KB  # Team rules
+  origin                            2026-01-10 08:00:00  origin                1.2 KB  # My notes
+```
+
+Each version has an ID:
+
+| ID | Kind | Meaning |
+|----|------|---------|
+| `<time>[.<reason>]` | `history` | Saved before skillshare wrote the file |
+| `drift:<time>[.<reason>]` | `drift` | An edit of yours that skillshare replaced |
+| `origin` | `origin` | The file as it was when a shared file was first attached; removing that location restores it automatically. If there was no file, restoring it deletes the current one |
+
+The reason says what skillshare was about to do:
+
+| Kind | Reason | Saved before |
+|------|--------|--------------|
+| `history` | `convert` | Converting the file to, or renaming it as, `AGENTS.md` |
+| `history` | `shim` | Adding `@AGENTS.md` to a project file |
+| `history` | `edit` | An edit in the dashboard |
+| `history` | `collect` | Collecting a target's changes into the shared file |
+| `history` | `attach` | The shared file replaced it when first attached |
+| `history` | `restore` | Restoring an older version |
+| `drift` | `overwrite` | You edited the file directly and chose **Overwrite** |
+| `drift` | `mode` | Switching the location's mode |
+| `drift` | `restore` | Restoring the location |
+
+Versions saved by older releases have no reason. The last 10 of each kind are kept per file.
+
+`restore` saves the current content first as a new version with reason `restore`, then writes the chosen one. If the path is a symlink, it refuses unless you add `--unlink`, which replaces the link with a regular file.
+
+`backup files` follows the mode: inside a project (or with `-p`) it lists only files in that project, and `show` / `restore` refuse paths outside it; `-g` covers every file. Because `files` is a subcommand, back up a target that is literally named `files` with `skillshare backup -t files`.
+
+## Dashboard {#dashboard}
+
+**Settings › Backup** in [`skillshare ui`](/docs/reference/commands/ui) has three tabs:
+
+- **Target folders** — the snapshots above, grouped by day. Filter by target or **Agents only**. Open a snapshot to see each folder's file count and size, **Restore** any one of them (skill and agent entries alike), **Copy path**, or **Delete this backup**. **Back up now** and **Clean up old backups** match `backup` and `--cleanup`.
+- **Files** — the file history above. Pick a file to see its versions with their reason, then **Preview and restore** shows the diff with the current file or the full version. A linked location is replaced by a regular file only after you confirm **Restore and cut the link**.
+- **MCP** — the backups taken before each MCP config write, grouped by Agent config, with the servers each one added, changed or removed. **Preview and restore** opens the same restore dialog as the **MCP** page (or [`mcp restore`](/docs/reference/commands/mcp) on the command line).
+
+![Settings › Backup › Files: preview an earlier CLAUDE.md version before restoring](/img/backup-files-preview.png)
+
+In project mode the page covers only the project: its agent snapshots in `.skillshare/backups/`, files inside the project, and the backups of its MCP configs. Deleted skills and agents are not here; they go to the **Trash** tab of **Skills** and **Agents**.
+
 ## Options
 
 | Flag | Description |
@@ -78,10 +149,13 @@ This same policy runs automatically after every `sync`, so `--cleanup` is only n
 | `--all` | Backup both skills and agents |
 | `--project, -p` | Use project mode (`.skillshare/backups/`); **agents only** |
 | `--global, -g` | Use global mode (default for skills) |
-| `--list, -l` | List all backups |
-| `--cleanup, -c` | Remove old backups |
+| `--list, -l` | List all backups; with `-p`, the project's |
+| `--cleanup, -c` | Remove old backups; with `-p`, the project's |
+| `--delete <timestamp>` | Delete one backup; with `-p`, from `.skillshare/backups/` |
 | `--target, -t <name>` | Target specific backup (alternative to positional arg) |
 | `--dry-run, -n` | Preview without making changes |
+
+`backup files` has its own options: `--project, -p`, `--global, -g`, and for `restore`, `--unlink` and `--dry-run, -n`. See [File History](#file-history).
 
 `backup` also accepts a positional kind argument: `skillshare backup agents` scopes the backup to agent targets only.
 
@@ -158,7 +232,7 @@ Agents have their own backup flow that runs alongside skill backups, with two di
 backup is not supported in project mode (except for agents)
 ```
 
-So in project mode you must say either `skillshare backup -p agents` or `skillshare backup -p --all`.
+So in project mode you must say either `skillshare backup -p agents` or `skillshare backup -p --all`. `--list -p` and `--cleanup -p` need no filter; they work on `.skillshare/backups/`.
 
 ```bash
 skillshare backup agents                  # All agent targets (global)

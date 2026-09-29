@@ -105,7 +105,7 @@ See **[Clonedeps](clonedeps.md)** for the full workflow and file layout.
 
 **Heavy/complex coding sessions and large modifications workflow.**
 
-`deepwork` is an orchestrator-only workflow skill for managing deep architectural work, multi-phase implementations, and complex refactoring. It provides a structured approach with risk-based review gates while maintaining flexibility in planning.
+`deepwork` is an orchestrator workflow for deep architectural work, multi-phase implementations, and complex refactoring, with risk-based review gates and flexible planning. It is surfaced two ways: as a resident bundled skill (so the model can auto-activate it when a task clearly warrants it) and via the self-contained `/deepwork <task>` command, which injects the full bundled `SKILL.md` instructions directly. The command does not depend on skill registration — users who prefer minimal resident context can list `deepwork` in `disabled_skills` without losing `/deepwork`.
 
 Start it directly with:
 

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `ClickHouse/agent-skills` — 26 default patterns, 0 followed patterns, 309 file(s) materialized.
+Mirror of `ClickHouse/agent-skills` — 26 default patterns, 0 followed patterns, 310 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `ClickHouse/agent-skills` — 26 default patterns, 0 followed patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 309 |
+| Files         | 310 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -367,7 +367,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 306 | ✓ | [`skills/infra-postgres/README.md`](skills/infra-postgres/README.md) |
 | 307 | ✓ | [`skills/infra-postgres/ref/cloud.md`](skills/infra-postgres/ref/cloud.md) |
 | 308 | ✓ | [`skills/infra-postgres/ref/local.md`](skills/infra-postgres/ref/local.md) |
-| 309 | ✓ | [`skills/infra-postgres/SKILL.md`](skills/infra-postgres/SKILL.md) |
+| 309 | ✓ | [`skills/infra-postgres/ref/migrate.md`](skills/infra-postgres/ref/migrate.md) |
+| 310 | ✓ | [`skills/infra-postgres/SKILL.md`](skills/infra-postgres/SKILL.md) |
 
 ---
 

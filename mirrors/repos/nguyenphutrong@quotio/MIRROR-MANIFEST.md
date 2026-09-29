@@ -2,7 +2,7 @@
 repo: nguyenphutrong/quotio
 repoUrl: https://github.com/nguyenphutrong/quotio.git
 refType: branch
-ref: master
+ref: v0.x
 ---
 
 # Mirror Manifest
@@ -15,7 +15,7 @@ Mirror of `nguyenphutrong/quotio` — 26 default patterns, 0 followed patterns, 
 |---------------|-------|
 | Repo          | `nguyenphutrong/quotio` |
 | Ref Type      | `branch` |
-| Ref           | `master` |
+| Ref           | `v0.x` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 2 |

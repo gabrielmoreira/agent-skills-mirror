@@ -57,6 +57,14 @@ gate calls for an honest report, not an invented pass or an unrelated installati
   if you didn't actually see a screenshot.**
 - A quick pre-commit pass → `/ss-lint`. `/ss-verify` is heavier (it boots a renderer).
 
+For a compiled spatial contract, follow the [spatial roles guide](../ss-resolve/references/spacing.md).
+For a configured spatial contract, run the installed `scripts/inspect-spacing.mjs` browser function
+with explicit bindings for every declared role, following the guide. Treat failures and unsupported
+measurements as unresolved, not a visual pass; inspect content observations too. At required
+narrow/wide viewports, check actual gaps, insets, token resolution, grouping, repeated
+alignment, overflow, and loading/error layout. Inspect screenshots as well as geometry. Numeric
+compliance cannot establish good rhythm or human acceptance. Preserve unrelated spacing when repairing.
+
 ## Step 1 — Render it through the active adapter
 
 For `social-carousel`, `slide-deck`, `document-report`, or `single-frame`, use the companion

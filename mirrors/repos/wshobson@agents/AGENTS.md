@@ -1,6 +1,6 @@
 # claude-agents — multi-harness agentic plugin marketplace
 
-Production-ready agentic-workflow building blocks: **94 plugins** (92 local + 2 external), **202 agents**, **183 skills**, **105 commands**. Native source-of-truth for Claude Code; also consumed by OpenAI Codex CLI, Cursor, OpenCode, the Google Antigravity CLI (`agy`), and Pi from a single Markdown source.
+Production-ready agentic-workflow building blocks: **94 plugins** (92 local + 2 external), **202 agents**, **184 skills**, **105 commands**. Native source-of-truth for Claude Code; also consumed by OpenAI Codex CLI, Cursor, OpenCode, the Google Antigravity CLI (`agy`), and Pi from a single Markdown source.
 
 This file is the canonical context file. Codex / Cursor / OpenCode / Antigravity CLI / Pi read it directly. Claude Code reads it via `CLAUDE.md`, a symlink to this file.
 
@@ -54,7 +54,7 @@ The small per-harness registries are **committed** so each harness installs nati
 
 ## Skills (cross-harness)
 
-183 skills under `plugins/*/skills/<n>/SKILL.md` — discoverable by every harness:
+184 skills under `plugins/*/skills/<n>/SKILL.md` — discoverable by every harness:
 
 - **Claude Code**: auto-discovery via Anthropic's SKILL.md spec
 - **Codex CLI**: mirrored to `.codex/skills/<plugin>__<skill>/` (8 KB body cap; detail in `references/details.md`)
@@ -70,7 +70,7 @@ The small per-harness registries are **committed** so each harness installs nati
 
 - **Codex**: `.codex/agents/<plugin>__<agent>.toml` (drop `tools:`, map model alias to the GPT-5.x family, infer `sandbox_mode`)
 - **OpenCode**: `.opencode/agents/<plugin>__<agent>.md` with `mode: subagent` + `permission:` block (locked agents — those with source `tools: []` — get deny-everything except base `skill`/`task`)
-- **Antigravity CLI**: `.antigravity/plugins/<p>/agents/<agent>.md` (Markdown + YAML frontmatter, `model:` is a tier alias — `inherit`/`flash`/`pro`); TOML commands at `commands/<p>/<cmd>.toml` (agy reports these as "converted to skills"); global install via `make install-antigravity` symlinks each plugin into `~/.gemini/antigravity-cli/plugins/`
+- **Antigravity CLI**: `.antigravity/plugins/<p>/agents/<agent>.md` (Markdown + YAML frontmatter, `model:` is a tier alias — `inherit`/`flash`/`pro`); TOML commands at `commands/<p>/<cmd>.toml` (agy reports these as "converted to skills"); global install via `make install-antigravity` symlinks each plugin into `~/.gemini/config/plugins/`
 - **Pi**: `.pi/agents/<plugin>__<agent>.md` in the reference `subagent` extension's format (name, description, tools, model); commands become prompt templates at `.pi/prompts/<plugin>__<cmd>.md`
 - **Cursor**: reads `.claude/agents/` directly
 

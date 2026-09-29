@@ -42,7 +42,10 @@ code) is configured in Settings → Chatbook; see [`chatbook.md`](chatbook.md).
 
 Subclass `ChatbookMentionProvider` to add a browsable root. List item values are
 provider-local opaque strings; NBI namespaces them as
-`@ext:<provider-id>:<value>`.
+`@ext:<provider-id>:<value>`, or `@ext:"<provider-id>:<value>"` when the value
+contains whitespace or `@`. `resolve_mention` receives the value exactly as written:
+unlike file and folder mentions, trailing punctuation is not trimmed, because
+only the provider knows whether it is part of the value.
 
 ```python
 from notebook_intelligence import (

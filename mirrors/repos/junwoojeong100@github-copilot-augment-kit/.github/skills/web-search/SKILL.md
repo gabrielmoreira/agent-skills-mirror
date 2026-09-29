@@ -1,6 +1,6 @@
 ---
 name: web-search
-description: "최신 정보·기초자료·공식 근거가 필요한 질문을 검색하고 canonical 원문으로 검증해 결론부터 요약합니다. 단순 사실은 바로 답하고, 복합 조사는 Research Brief와 Fact Ledger로 구조화합니다. 공개 검색 결과 페이지를 scraping하지 않습니다. WHEN: 최신 정보 검색, 실시간 검색, Google 검색, web search, 기초자료 조사, 자료 검색/수집, 고객/기업 조사, 시장 규모, 산업 리서치, 최신 뉴스, 릴리스 노트, changelog, 최신 버전, 현재 가격, 현재 상태, 공식 발표, 최신 문서, 규제·컴플라이언스 조사. NOT WHEN: 사용자가 제공한 정적 문서만 요약하거나 최신성·외부 근거가 필요 없는 창작·코딩 작업."
+description: "최신 정보·기초자료·공식 근거가 필요한 질문을 검색하고 canonical 원문으로 검증해 결론부터 요약합니다. 단순 사실 확인은 파일 없이 답하고, 복합 조사는 Research Brief와 Fact Ledger로 구조화합니다. 공개 검색 결과 페이지를 scraping하지 않습니다. WHEN: 최신 정보 검색, 실시간 검색, Google 검색, web search, 기초자료 조사, 자료 검색/수집, 고객/기업 조사, 시장 규모, 산업 리서치, 최신 뉴스, 릴리스 노트, changelog, 최신 버전, 현재 가격, 현재 상태, 공식 발표, 최신 문서, 규제·컴플라이언스 조사. NOT WHEN: 사용자가 제공한 정적 문서만 요약하거나 최신성·외부 근거가 필요 없는 창작·코딩 작업."
 argument-hint: "검색할 주제, 지역·기간, 필요한 산출물을 입력하세요"
 ---
 
@@ -11,12 +11,14 @@ GitHub Copilot CLI와 VS Code Copilot Chat/Agent의 검색 capability를 사용�
 
 ## 실행 계약
 
-- 단순 사실은 바로 검색한다. 복합 조사는 목적·대상·지역·기간·필수 축·산출물을 짧은
+- 단순 사실 확인은 파일 없이 `주장 → canonical 원문 → 답변`으로 끝낸다.
+- 비교·다중 주장·고위험 판단·후속 산출물은 복합 조사다. 목적·대상·지역·기간·필수 축·산출물을 짧은
   **Research Brief**로 확정하되 blocking 입력이 아니면 가정을 표시하고 진행한다.
 - 첫 1~3문장에 결론을 제시하고 검색 과정·쿼리 목록은 기본 출력하지 않는다.
 - 최신성·버전·지역·GA/Preview 상태가 결론을 바꾸면 확인한다.
 - 기본 source budget은 주장당 canonical 원문 1개다. 상충·고위험 의사결정·벤더 비교·ROI·고객 성과만
   독립 근거를 추가한다. 축별 두 가지 retrieval 전략 후에도 미확보면 한계를 기록하고 중단한다.
+  필요한 근거가 모이면 두 전략을 모두 실행하지 않고 종료한다.
 - Google·DuckDuckGo·Bing의 공개 검색 결과 페이지(SERP)를 `curl`, page fetch, browser로 직접 조회하지 않는다.
 
 ## 도구 선택
@@ -26,7 +28,7 @@ GitHub Copilot CLI와 VS Code Copilot Chat/Agent의 검색 capability를 사용�
 1. 알려진 canonical URL·공식 index·release notes·RSS/Atom은 직접 원문 조회
 2. Microsoft Learn/Docs MCP, GitHub search/API 같은 도메인 공식 검색
 3. Copilot이 제공하는 general web search tool(예: `web_search`)
-4. 여러 독립 조사 축을 병렬 수집할 때만 `/research` 또는 web source를 지원하는 Research agent
+4. 위임이 요청·지시된 경우, 여러 독립 조사 축을 병렬 수집할 때만 `/research` 또는 web source를 지원하는 Research agent
 5. 접근 가능한 경로가 없으면 실시간 검증 불가로 명시
 
 검색 결과·snippet·AI 요약은 URL 발견용이며 근거가 아니다. `web_fetch` 같은 조회 도구로 canonical
@@ -34,6 +36,8 @@ GitHub Copilot CLI와 VS Code Copilot Chat/Agent의 검색 capability를 사용�
 공식 URL도 capability도 없으면 사용자에게 출발 URL이 필요함을 알리고 최신 사실을 만들지 않는다.
 HTTP 성공이나 URL 존재만으로 원문 확인을 판정하지 않는다. 빈 본문·사이트 footer만 반환되면
 공식 원문의 일반 브라우저 렌더를 확인할 수 있지만, 접근 제한 우회에는 사용하지 않는다.
+같은 요청에서 확인한 원문은 범위·버전·시점이 같은 주장과 후속 스킬에 공유한다.
+새 주장이나 조건 변경은 해당 구간을 다시 확인한다.
 
 ## 안전
 
@@ -47,7 +51,7 @@ HTTP 성공이나 URL 존재만으로 원문 확인을 판정하지 않는다. �
 1. **범위 확정**: 결론을 바꾸는 입력만 확인하고 필수 조사 축과 acceptance criteria를 정한다.
 2. **주장 분해**: 질문을 독립 검증 가능한 주장으로 나누고 출처의 구체 용어를 사용한다.
 3. **출처 선택**: 법령·표준·원 연구·공식 데이터·제품 문서 등 원 발행자를 우선한다.
-4. **원문 확인**: 작성 주체, 날짜, 지역, 버전, 상태, 표본·단위·방법론과 locator를 확인한다.
+4. **원문 확인**: 작성 주체, 날짜, 지역, 버전, 상태, 표본·단위·방법론과 locator를 확인한다. 원문이 주장을 직접 지지하는지 대조한다.
 5. **구조화**: 복합 조사와 downstream 작업은 공통 Fact Ledger로 병합하고 validator를 통과시킨다.
 6. **답변**: 결론 → 근거·조건·예외 → `### 출처` 순서로 작성한다.
 
@@ -78,6 +82,7 @@ HTTP 성공이나 URL 존재만으로 원문 확인을 판정하지 않는다. �
 - `fact-ledger.json`을 정본으로 작성하고 [`공통 schema`](./schema/fact-ledger.schema.json)로 검증한다.
   `fact-ledger.md`는 검증된 JSON에서 생성하는 읽기용 뷰이며 두 파일을 독립적으로 수정하지 않는다.
   [`검증기`](./scripts/validate_fact_ledger.py)는 출처·판단 이유·가정·제외 자료를 보존해 출력한다.
+- schema·validator 통과는 형식·참조 무결성의 확인이지 사실성의 증명이 아니다. 원문 대조를 대체하지 않는다.
 
 ```bash
 python3 -B .github/skills/web-search/scripts/validate_fact_ledger.py <work>/fact-ledger.json \
@@ -89,5 +94,6 @@ python3 -B .github/skills/web-search/scripts/validate_fact_ledger.py <work>/fact
 - 필수 조사 축마다 근거 또는 미확보 이유가 있고 결론 영향 사실은 canonical 원문과 연결된다.
 - Fact·Inference·Assumption, 날짜·지역·버전·상태, 상충·채택 근거를 구분했다.
 - source budget을 충족하고 미해결 충돌의 영향을 기록했으면 검색을 종료한다.
+- 핵심 근거가 미확보이면 결론 범위를 줄이거나 판단을 보류한다. 검색 실패를 부재의 증거로 단정하지 않는다.
 - 확실·조건부·미확인 내용을 구분하고 출처를 주장 바로 뒤 또는 `### 출처`에 연결한다.
 - 단순 질문에는 Research Brief나 Fact Ledger를 노출하지 않는다.

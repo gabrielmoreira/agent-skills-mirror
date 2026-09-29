@@ -20,6 +20,33 @@ runtime. Prettier governs the frontend JSON/TS; rustfmt governs `src-tauri/`.
   `cursor: pointer` or any other cursor-changing style for buttons, links,
   draggable areas, disabled controls, or other interactive elements.
 
+## Existing behavior first
+
+- Before adding a feature similar to one already in the app, identify the
+  reference files and trace the full interaction through handlers, effects,
+  and backend calls. Compare loading, selection, refresh, errors, and saved
+  state; matching the appearance alone is insufficient.
+- Reuse existing components and behavior. Keep provider-specific differences
+  limited to necessary authentication, storage, and API details. Do not add
+  automatic actions, new interaction flows, or new frameworks unless the
+  task requires them. State any necessary behavioral difference and its reason
+  before implementing it.
+- Evaluate Windows, macOS, and Linux for every new integration. Separate
+  vendor availability from EchoBird implementation gaps; do not silently
+  restrict an existing cross-platform client to Windows. Verify native paths,
+  credential storage, process handling, and installation on supported systems,
+  and state any platform limitation before release.
+- If existing implementations disagree, follow the user's confirmed behavior
+  and these conventions. Do not silently choose one and call it consistent.
+  Ask a focused question only when a product decision remains unresolved.
+- For behavior changes, establish regression expectations from the agreed
+  workflow before coding. Cover entry, exit, tool/tab switching, missing local
+  state, pending requests, and failures where relevant. Assert which network
+  calls, writes, and dialogs must not happen during passive navigation.
+- Review against the reference behavior as well as code correctness. Passing
+  tests alone does not establish consistency. Report what was reused and any
+  necessary differences; keep unrelated implementations outside the change.
+
 ## CI gates (must pass locally before pushing)
 
 CI runs two jobs in parallel, each with this order — **format runs first and
@@ -89,6 +116,13 @@ clippy/test, not optional.
   or leaving the tool, and ignore late responses from earlier attempts.
 - No extra explanatory copy, hover tips, or cursor changes. New integrations
   must test selection/action isolation, pending state and their quota display.
+- For new or changed integrations, entering a tool or switching tabs/pages may
+  load saved accounts for an installed client, but must not query quota, start
+  login, or apply account/model changes. Quota refresh is an explicit user
+  action. Uninstalled clients must not load native account configuration.
+- Passive account-loading failures must preserve cached rows and must not open
+  a blocking dialog. Explicit login, refresh, apply, and delete failures remain
+  visible. Include these expectations in navigation regression tests.
 
 ## Commit policy
 

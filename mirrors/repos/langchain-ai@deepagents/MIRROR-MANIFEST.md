@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `langchain-ai/deepagents` — 26 default patterns, 6 followed patterns, 50 file(s) materialized.
+Mirror of `langchain-ai/deepagents` — 26 default patterns, 6 followed patterns, 51 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `langchain-ai/deepagents` — 26 default patterns, 6 followed patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 6 |
-| Files         | 50 |
+| Files         | 51 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -108,12 +108,13 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 42 | ✓ | [`libs/talon/deepagents_talon/defaults/agents/external-research/AGENTS.md`](libs/talon/deepagents_talon/defaults/agents/external-research/AGENTS.md) |
 | 43 | ✓ | [`libs/talon/deepagents_talon/defaults/agents/internal-research/AGENTS.md`](libs/talon/deepagents_talon/defaults/agents/internal-research/AGENTS.md) |
 | 44 | ✓ | [`libs/talon/deepagents_talon/defaults/skills/configuration-hardening/SKILL.md`](libs/talon/deepagents_talon/defaults/skills/configuration-hardening/SKILL.md) |
-| 45 | → | [`.github/LAYOUT.md`](.github/LAYOUT.md) |
-| 46 | → | [`.github/PULL_REQUEST_TEMPLATE.md`](.github/PULL_REQUEST_TEMPLATE.md) |
-| 47 | → | [`.github/RELEASING.md`](.github/RELEASING.md) |
-| 48 | → | [`libs/ARCHITECTURE.md`](libs/ARCHITECTURE.md) |
-| 49 | → | [`libs/code/DEVELOPMENT.md`](libs/code/DEVELOPMENT.md) |
-| 50 | → | [`libs/DEVELOPMENT.md`](libs/DEVELOPMENT.md) |
+| 45 | ✓ | [`libs/talon/deepagents_talon/defaults/skills/safety/SKILL.md`](libs/talon/deepagents_talon/defaults/skills/safety/SKILL.md) |
+| 46 | → | [`.github/LAYOUT.md`](.github/LAYOUT.md) |
+| 47 | → | [`.github/PULL_REQUEST_TEMPLATE.md`](.github/PULL_REQUEST_TEMPLATE.md) |
+| 48 | → | [`.github/RELEASING.md`](.github/RELEASING.md) |
+| 49 | → | [`libs/ARCHITECTURE.md`](libs/ARCHITECTURE.md) |
+| 50 | → | [`libs/code/DEVELOPMENT.md`](libs/code/DEVELOPMENT.md) |
+| 51 | → | [`libs/DEVELOPMENT.md`](libs/DEVELOPMENT.md) |
 
 ---
 

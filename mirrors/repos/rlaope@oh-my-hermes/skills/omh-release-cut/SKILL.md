@@ -29,6 +29,7 @@ This is a Hermes-native `release-cut` workflow skill.
 - Production is down or degraded and the work is commanding the incident; use `live-incident-response`.
 - The ask is a readiness audit across observability, security, and operations before launch; use `production-audit`.
 - The ask is drafting the commit message or the pull request description for a change; use `commit-pr-authoring`.
+- The app ships through the App Store or Google Play -- signing, a TestFlight or Play testing-track beta, a phased release, a store hotfix; use `mobile-release`.
 
 ## Examples
 
@@ -59,7 +60,7 @@ Bad example:
 
 ## Workflow Lane
 
-- Current lane: **Coding handoff** (`idea-to-deploy`, `llm-app-dev`, `cto-loop`, `deploy-and-monitor`, `code-review`, `build-failure-triage`, `verification-gate`, `security-safety-review`, `+27 more`) - coding owners, handoffs, review, CI, and merge evidence.
+- Current lane: **Coding handoff** (`idea-to-deploy`, `llm-app-dev`, `cto-loop`, `deploy-and-monitor`, `code-review`, `build-failure-triage`, `verification-gate`, `security-safety-review`, `+28 more`) - coding owners, handoffs, review, CI, and merge evidence.
 - If intent belongs to another lane, hand back to `oh-my-hermes` or name the adjacent workflow.
 - Shared product, routing, compatibility, and evidence rules: `omh-routing/references/skill-common-rail.md`.
 

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `pytorch/pytorch` — 26 default patterns, 0 followed patterns, 27 file(s) materialized.
+Mirror of `pytorch/pytorch` — 26 default patterns, 0 followed patterns, 28 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `pytorch/pytorch` — 26 default patterns, 0 followed patterns, 27 fil
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 27 |
+| Files         | 28 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -85,7 +85,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 24 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 25 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 | 26 | ✓ | [`docs/source/elastic/examples.md`](docs/source/elastic/examples.md) |
-| 27 | ✓ | [`torch/_dynamo/CLAUDE.md`](torch/_dynamo/CLAUDE.md) |
+| 27 | ✓ | [`third_party/kineto/.claude/skills/kineto-release/SKILL.md`](third_party/kineto/.claude/skills/kineto-release/SKILL.md) |
+| 28 | ✓ | [`torch/_dynamo/CLAUDE.md`](torch/_dynamo/CLAUDE.md) |
 
 ---
 

@@ -25,6 +25,7 @@ This is an OMH `llm-app-dev` workflow skill, projected for Agent Skills hosts (C
 - The subject is the harness's own context window, prompt caching, or token budget rather than the application being built; use `context-budget-review`.
 - The request is a prompt-injection, secret-handling, or dependency risk gate on work that already exists; use `security-safety-review`.
 - The feature makes no model call - the LLM is only mentioned as the subject being discussed - so this is a direct answer, not a build handoff.
+- The ask is training the weights themselves on your own data -- SFT, DPO, RLVR, or a LoRA adapter; use `model-finetuning`.
 
 ## Examples
 

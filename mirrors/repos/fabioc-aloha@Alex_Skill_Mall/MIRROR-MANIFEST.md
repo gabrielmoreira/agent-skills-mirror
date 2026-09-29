@@ -62,10 +62,10 @@ Mirror of `fabioc-aloha/Alex_Skill_Mall` — 26 default patterns, 15 followed pa
 - `catalog/stores/awesome-copilot.md`
 - `catalog/stores/buildwithclaude.md`
 - `catalog/stores/claude-code-plugins-plus-skills.md`
-- `catalog/stores/context-engineering-kit.md`
 - `catalog/stores/daymade-claude-code-skills.md`
 - `catalog/stores/designer-skills.md`
 - `catalog/stores/dotnet-skills.md`
+- `catalog/stores/expo-skills.md`
 
 ## File Index
 
@@ -807,10 +807,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 732 | → | [`catalog/stores/awesome-copilot.md`](catalog/stores/awesome-copilot.md) |
 | 733 | → | [`catalog/stores/buildwithclaude.md`](catalog/stores/buildwithclaude.md) |
 | 734 | → | [`catalog/stores/claude-code-plugins-plus-skills.md`](catalog/stores/claude-code-plugins-plus-skills.md) |
-| 735 | → | [`catalog/stores/context-engineering-kit.md`](catalog/stores/context-engineering-kit.md) |
-| 736 | → | [`catalog/stores/daymade-claude-code-skills.md`](catalog/stores/daymade-claude-code-skills.md) |
-| 737 | → | [`catalog/stores/designer-skills.md`](catalog/stores/designer-skills.md) |
-| 738 | → | [`catalog/stores/dotnet-skills.md`](catalog/stores/dotnet-skills.md) |
+| 735 | → | [`catalog/stores/daymade-claude-code-skills.md`](catalog/stores/daymade-claude-code-skills.md) |
+| 736 | → | [`catalog/stores/designer-skills.md`](catalog/stores/designer-skills.md) |
+| 737 | → | [`catalog/stores/dotnet-skills.md`](catalog/stores/dotnet-skills.md) |
+| 738 | → | [`catalog/stores/expo-skills.md`](catalog/stores/expo-skills.md) |
 | 739 | → | [`catalog/stores/plugin-mall.md`](catalog/stores/plugin-mall.md) |
 | 740 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
 | 741 | → | [`README.md`](README.md) |

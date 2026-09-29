@@ -308,14 +308,14 @@ Note `action_dir/workspace/` is a scratch folder inside the agent's action root.
 
 Two halves enforce the convention:
 
-- **Prompt.** A sub-agent that actually holds `file_write` gets a Long-horizon Artifact Offload contract in its system prompt: results past roughly 2 000 tokens go to a file under `outputs/`, and the reply is that relative path plus a short abstract. The gate is deliberate, a prompt may only name tools the agent can really call, or the model emits calls that fail. `researcher` (search + fetch only) and skill-filtered specialists get no contract text, and dedicated guards assert their prompts never mention a filesystem tool. They stay covered by the harness half below, which needs no cooperation from the model. The relevant archetype prompts (`researcher`, `planner`) spell out what the convention means for their own work; the planner is told to reference artifact paths across DAG nodes rather than pasting payloads forward.
+- **Prompt.** A sub-agent that actually holds `file_write` gets a Long-horizon Artifact Offload contract in its system prompt: results past roughly 2 000 tokens go to a file under `outputs/`, and the reply is that relative path plus a short abstract. The gate is deliberate, a prompt may only name tools the agent can really call, or the model emits calls that fail. Skill-filtered specialists get no contract text, and a dedicated guard asserts their prompts never mention a filesystem tool. They stay covered by the harness half below, which needs no cooperation from the model. The `planner` prompt spells out what the convention means for its own work; the planner is told to reference artifact paths across DAG nodes rather than pasting payloads forward.
 - **Harness.** `offload_oversized_result` runs on every sub-agent outcome, so an oversized result is offloaded even when the worker inlined it anyway. It fires **before** the definition's `max_result_chars` cap, so the full body lands on disk instead of being cut.
 
 What the parent receives is a pointer, not a payload:
 
 ```text
-[artifact] kind=output path=outputs/researcher/sub-1234-result.md bytes=52318
-read_with: file_read {"path":"outputs/researcher/sub-1234-result.md"}
+[artifact] kind=output path=outputs/presentation_agent/sub-1234-result.md bytes=52318
+read_with: file_read {"path":"outputs/presentation_agent/sub-1234-result.md"}
 note: The full result was written to the action workspace instead of being inlined. …
 
 [abstract]
@@ -344,9 +344,9 @@ Before a fresh tool result enters history (and ahead of the byte-budget backstop
 
 Every lossy compression offloads the original to the **CCR (Compress-Cache-Retrieve)** store behind a `⟦tj:<hash>⟧` marker, so compaction is effectively lossless: the agent calls `tokenjuice_retrieve` (token + optional byte/line range) to fetch the full original on demand. The same engine is exposed as a universal `compress_content(content, hint, opts)` for any large payload (file reads, web fetches), and as read-only `tokenjuice.*` debug RPCs. Configured via the `[tokenjuice]` block / `OPENHUMAN_TOKENJUICE_*` env. Agent definitions can override tool-result compression with `tokenjuice_compression = "auto" | "full" | "light" | "off"`; `auto` resolves coding-model agents (`[model] hint = "coding"`) to `light`, which disables CCR-backed lossy compression so coding agents keep raw build/test/diff/search text unless a reduction is truly lossless. Other agents default to `full`. The ML (Kompress) path runs as a `kompress` backend of the shared [`runtime_python_server`](../../../crates/openhuman-core/src/runtime/python_server/) (torch + ModernBERT pip-installed at runtime), gated by the `ml_compression_enabled` flag and degrading gracefully to a native compressor when the Python runtime is unavailable.
 
-### The `tool_maker` archetype
+### Missing capabilities
 
-The `tool_maker` archetype exists for writing polyfill scripts and small helper tools when a capability is missing. It is spawned explicitly (by the orchestrator or another agent) like any other sub-agent. The old automatic "command not found → spawn ToolMaker → retry" interceptor was removed with the in-house loop; there is no implicit self-healing retry on shell failures today.
+There is no self-healing archetype. The old automatic "command not found → spawn ToolMaker → retry" interceptor was removed with the in-house loop, and the `tool_maker` archetype that could be spawned explicitly was removed with the other single-belt specialists. A missing host command is reported back to the user rather than polyfilled.
 
 ## Sub-agents - the orchestrator pattern
 
@@ -357,30 +357,41 @@ OpenHuman is **multi-agent**. The agent the user is chatting with is the **Maste
 A single agent that knows everything also has a system prompt the size of a small book. Splitting work across specialists means:
 
 - Each sub-agent gets a **narrow system prompt** with only the sections it needs (identity / memory / safety preamble can be stripped).
-- Each sub-agent gets a **filtered tool registry** - the integrations agent doesn't need filesystem tools, the coder doesn't need the Composio catalog.
+- Each sub-agent gets a **filtered tool registry** - the image agent doesn't need filesystem tools, the task manager doesn't need the Composio catalog.
 - Sub-agent histories never leak back to the parent - the parent sees one compact tool result, not the inner conversation.
 - Cheaper models can do the leaf work. The orchestrator is on a strong reasoning model; a research sub-agent might be on a faster, cheaper one.
 
 ### The built-in archetypes
 
-Each archetype lives under `agents/<name>/` with an `agent.toml` (metadata, tool scope, model hint) and a prompt:
+Each archetype lives under `agents/<name>/` with an `agent.toml` (metadata, tool scope, model hint) and a prompt. The orchestrator's chat delegates are the ones in its `[subagents]` allowlist:
 
-| Archetype            | When the orchestrator picks it                                                           |
-| -------------------- | ---------------------------------------------------------------------------------------- |
-| `orchestrator`       | The Master Agent: top-level, direct-capable default. Never spawned by another orchestrator. |
-| `planner`            | Multi-step decomposition - break a complex request into ordered sub-tasks.               |
-| `researcher`         | Web/doc lookups, citation hunting.                                                       |
-| `code_executor`      | Writing, running, and debugging code in the workspace.                                   |
-| `critic`             | Code review, quality checks on another agent's output.                                   |
-| `summarizer`         | Compressing oversized tool results (called by the harness, not usually the model).       |
-| `archivist`          | Memory distillation - what to persist, what to forget.                                   |
-| `tool_maker`         | Self-healing - writes polyfills for missing shell commands.                              |
-| `tools_agent`        | Generic specialist for arbitrary tool-bound tasks.                                       |
-| `integrations_agent` | Bound to a specific Composio toolkit (Gmail, GitHub, Slack…) for that toolkit's actions. Not reachable from chat: the orchestrator finds a connected action through `tool_search` and calls it directly. |
-| `trigger_triage`     | Classifies incoming external events into drop / notify / spawn-reactor / spawn-agent.    |
-| `trigger_reactor`    | Lightweight reaction to a triaged trigger that doesn't need a full orchestrator turn.    |
-| `morning_briefing`   | Curated daily digest run by cron.                                                        |
-| `welcome` / `help`   | Onboarding flows.                                                                        |
+| Archetype              | When the orchestrator picks it                                                                 |
+| ---------------------- | ---------------------------------------------------------------------------------------------- |
+| `orchestrator`         | The Master Agent: top-level, direct-capable default. Never spawned by another orchestrator.   |
+| `task_manager_agent`   | Adding, previewing, fetching, updating or removing task sources, workflow bundles, artifacts. |
+| `profile_memory_agent` | "Remember"/"forget", profile and persona edits, preferences, people aliases.                  |
+| `agent_memory`         | On-demand memory retrieval (`delegate_retrieve_memory`).                                      |
+| `vision_agent`         | Anything that depends on the content of an image (describe, OCR, UI elements).                |
+| `image_agent`          | Generating or editing an image.                                                               |
+| `video_agent`          | Generating a video or animating an image.                                                     |
+| `presentation_agent`   | Building a slide deck with grounding and citations (feature `documents`).                     |
+| `skill_setup`          | Finding, installing and managing skills from registries (`setup_skills`).                     |
+| `workflow_builder`     | Authoring or editing a saved workflow (`build_workflow`); returns a proposal, never saves.   |
+| `flow_discovery`       | Suggesting workflows worth setting up (`discover_workflows`).                                 |
+
+Other built-ins are never chat delegates:
+
+| Archetype                              | Who runs it                                                                                                  |
+| -------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| `planner`, `critic`                    | Only the `parallel_research_cross_check` workflow-run template (decompose and research = `planner`, cross_check = `critic`). |
+| `summarizer`                           | The harness, to compress oversized tool results; also the synthesize phase of that workflow-run template.  |
+| `archivist`                            | Post-commit extraction of lessons from a completed session.                                                 |
+| `goals_agent`                          | Background upkeep of `MEMORY_GOALS.md`.                                                                     |
+| `trigger_triage` / `trigger_reactor`   | Classifying an incoming external event, and the lightweight reaction to one.                               |
+| `morning_briefing`                     | Cron: the daily digest, on a named read-only tool belt.                                                     |
+| `flow_memory_agent`                    | Automation-flow `agent` nodes that name it in `agent_ref`.                                                  |
+
+Work that used to go to single-belt specialists (coding, crypto, settings, scheduling, product docs, MCP servers) is now done by the orchestrator itself through **inline skills**: `use_skill` loads a tool pack's guide and schemas (`coding`, `web3`, `system`, `scheduling`, `docs`, `mcp`), and the same tools are `Deferred` so `tool_search` finds any single one. Running an installed skill is the orchestrator's own `run_workflow`. See [`tools/toolpacks/README.md`](../../../crates/openhuman-core/src/tools/toolpacks/README.md).
 
 Custom archetypes ship as TOML files under `$OPENHUMAN_WORKSPACE/agents/*.toml` (or `~/.openhuman/agents/*.toml` for user-global specialists). Custom definitions override built-ins on id collision.
 
@@ -429,7 +440,7 @@ Each `AgentDefinition` carries an `agent_tier` field (`chat` / `reasoning` / `wo
 | ----------- | --------------------- | ------------------------------- | ------------------------------------------------------------------------------- |
 | `chat`      | `reasoning`, `worker` | another `chat`                  | `orchestrator`                                                                  |
 | `reasoning` | `worker`              | another `reasoning`, any `chat` | `planner` (today the canonical one)                                             |
-| `worker`    | nothing[^1]           | anything                        | researcher, code_executor, critic, archivist, tool_maker, integrations_agent, … |
+| `worker`    | nothing[^1]           | anything                        | critic, archivist, image_agent, task_manager_agent, …               |
 
 [^1]: Skill-wildcard entries (`{ skills = "*" }`) are exempt because they name no agent: they expand to the connected Composio actions as `Deferred` tools the agent reaches through `tool_search`, not to a spawn.
 
@@ -654,7 +665,7 @@ StateGraph::new(name)
 | `observability/` | `EventBusSink` (a `ProgressSink`) emits `tracing` spans + publishes the `GraphRun*`/`GraphNode*` `DomainEvent` family (new `agent_graph` event domain).                                                                                                                                                                                                                                                                                                                                                       |
 | `summarization/` | Node-boundary wrapper over `context::summarize_chat_history`.                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | `memory/`        | Pre-node wrapper over `DefaultMemoryLoader::load_context`.                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
-| `definitions/`   | Built-in graphs over a shared `ProductState`: `canonical_turn` (the agent turn as a `dispatch → parse → stop_check → tools → compact → loop / finalize` graph) and `plan_execute_review` (composes the `planner` + `code_executor` archetypes around a HITL review gate), plus a deterministic `demo_review` twin for tests. A registry (`list_definitions`/`build_definition`) + `runner` (`run_graph`/`resume_graph`) persist runs to the checkpointer and emit bus events.                                 |
+| `definitions/`   | Built-in graphs over a shared `ProductState`: `canonical_turn` (the agent turn as a `dispatch → parse → stop_check → tools → compact → loop / finalize` graph) and `plan_execute_review` (composes the `planner` with a worker archetype around a HITL review gate), plus a deterministic `demo_review` twin for tests. A registry (`list_definitions`/`build_definition`) + `runner` (`run_graph`/`resume_graph`) persist runs to the checkpointer and emit bus events.                                 |
 | `blueprint/`     | The per-agent chain type. Every built-in agent declares its LangGraph-compatible chain in a `graph.rs` next to `prompt.rs` (`pub fn graph() -> GraphBlueprint`), wired into `BuiltinAgent.graph_fn`. `GraphBlueprint` is serializable (typed `NodeKind`/`EdgeSpec`), structurally validated, and `compile()`s to a real `CompiledGraph`. Reusable shapes: `canonical_turn` (most agents), `single_shot`, `orchestrator`, `plan_execute_review`. Inspect via `openhuman.agent_graph_{agent_list,agent_graph}`. |
 
 ### Per-agent graphs (`graph.rs`)

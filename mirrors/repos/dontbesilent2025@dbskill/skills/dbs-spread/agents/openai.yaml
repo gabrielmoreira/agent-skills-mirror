@@ -1,4 +1,4 @@
 interface:
   display_name: "dbs-spread"
-  short_description: "用 5 个传播学理论解码内容为何引发共鸣，并提炼受众情绪与有效立场"
-  default_prompt: "使用 $dbs-spread，解码当前内容的传播机制、受众情绪与有效立场。"
+  short_description: "解释已有内容引发共鸣或分享的机制、情绪和受众行动动机"
+  default_prompt: "使用 $dbs-spread，解释这段已有内容为什么引发共鸣、情绪或分享，识别传播机制、有效立场和受众动机，并提炼讨论方向。不要改成整篇逐句改稿或整体流量商业价值评估。"

@@ -495,7 +495,10 @@ export function ScreenshotEditor() {
 
     // Render each slide once per locale at canvas resolution, then scale that
     // one render to every export size. The sizes are all scalings of the same
-    // design, so re-rendering the DOM per size only added time.
+    // design, so re-rendering the DOM per size only added time. PNG encoding
+    // runs in workers, so a screen encodes while the next one renders; waiting
+    // for the previous screen first keeps at most one screen's pixels queued.
+    let encoding: Promise<void> = Promise.resolve();
     for (const locale of locales) {
       setExportLocaleOverride(locale);
       await waitForPaint();
@@ -508,30 +511,45 @@ export function ScreenshotEditor() {
         await waitForPaint();
         const el = exportRef.current;
         if (!el) {
+          await encoding;
           failed += sizes.length;
           errors.push(`${locale} screen ${i + 1}: render target missing`);
           continue;
         }
         const filename = `${String(i + 1).padStart(2, "0")}-${slide.layout}.png`;
-        let written = 0;
+        const label = `${locale} screen ${i + 1}`;
+        const fail = (e: unknown) => {
+          const msg = e instanceof Error ? e.message : String(e);
+          errors.push(`${label}: ${msg}`);
+          console.error("Export failed", { slideId: slide.id, locale }, e);
+        };
+        let pngs: Promise<Uint8Array[]>;
         try {
           const rendered = await captureSlide(el, cW, cH);
-          if (rendered.missingImages > 0) incomplete.push(`${locale} screen ${i + 1}`);
-          for (const size of sizes) {
-            const base64 = rendered.toPng(size.w, size.h).split(",")[1] || "";
-            const path = `${platform}/${state.device}/${size.w}x${size.h}/${locale}/${filename}`;
-            zip.file(path, base64, { base64: true });
-            written += 1;
-          }
+          if (rendered.missingImages > 0) incomplete.push(label);
+          pngs = Promise.all(sizes.map((size) => rendered.toPng(size.w, size.h)));
         } catch (e) {
-          const msg = e instanceof Error ? e.message : String(e);
-          errors.push(`${locale} screen ${i + 1}: ${msg}`);
-          console.error("Export failed", { slideId: slide.id, locale }, e);
+          fail(e);
+          await encoding;
+          failed += sizes.length;
+          continue;
         }
-        okCount += written;
-        failed += sizes.length - written;
+        await encoding;
+        encoding = pngs.then(
+          (files) => {
+            sizes.forEach((size, index) => {
+              zip.file(`${platform}/${state.device}/${size.w}x${size.h}/${locale}/${filename}`, files[index]);
+            });
+            okCount += sizes.length;
+          },
+          (e) => {
+            fail(e);
+            failed += sizes.length;
+          },
+        );
       }
     }
+    await encoding;
 
     setExporting("Bundling…");
 
@@ -722,6 +740,8 @@ export function ScreenshotEditor() {
               orientation={state.orientation}
               theme={theme}
               locale={state.locale}
+              appIcon={state.appIcon}
+              onAppIconChange={(appIcon) => setState((p) => ({ ...p, appIcon }))}
               selectedElementId={
                 selectedElement?.slideId === activeSlide.id ? selectedElement.elementId : null
               }

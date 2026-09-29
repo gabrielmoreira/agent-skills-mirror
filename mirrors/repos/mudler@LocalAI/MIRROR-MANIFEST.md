@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `mudler/LocalAI` — 26 default patterns, 2 followed patterns, 20 file(s) materialized.
+Mirror of `mudler/LocalAI` — 26 default patterns, 2 followed patterns, 21 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `mudler/LocalAI` — 26 default patterns, 2 followed patterns, 20 file
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 2 |
-| Files         | 20 |
+| Files         | 21 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -69,17 +69,18 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 7 | ✓ | [`.agents/ci-caching.md`](.agents/ci-caching.md) |
 | 8 | ✓ | [`.agents/coding-style.md`](.agents/coding-style.md) |
 | 9 | ✓ | [`.agents/debugging-backends.md`](.agents/debugging-backends.md) |
-| 10 | ✓ | [`.agents/ds4-backend.md`](.agents/ds4-backend.md) |
-| 11 | ✓ | [`.agents/llama-cpp-backend.md`](.agents/llama-cpp-backend.md) |
-| 12 | ✓ | [`.agents/localai-assistant-mcp.md`](.agents/localai-assistant-mcp.md) |
-| 13 | ✓ | [`.agents/preparing-a-release.md`](.agents/preparing-a-release.md) |
-| 14 | ✓ | [`.agents/sglang-backend.md`](.agents/sglang-backend.md) |
-| 15 | ✓ | [`.agents/testing-mcp-apps.md`](.agents/testing-mcp-apps.md) |
-| 16 | ✓ | [`.agents/vllm-backend.md`](.agents/vllm-backend.md) |
-| 17 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 18 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 19 | → | [`.impeccable.md`](.impeccable.md) |
-| 20 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 10 | ✓ | [`.agents/distributed-state.md`](.agents/distributed-state.md) |
+| 11 | ✓ | [`.agents/ds4-backend.md`](.agents/ds4-backend.md) |
+| 12 | ✓ | [`.agents/llama-cpp-backend.md`](.agents/llama-cpp-backend.md) |
+| 13 | ✓ | [`.agents/localai-assistant-mcp.md`](.agents/localai-assistant-mcp.md) |
+| 14 | ✓ | [`.agents/preparing-a-release.md`](.agents/preparing-a-release.md) |
+| 15 | ✓ | [`.agents/sglang-backend.md`](.agents/sglang-backend.md) |
+| 16 | ✓ | [`.agents/testing-mcp-apps.md`](.agents/testing-mcp-apps.md) |
+| 17 | ✓ | [`.agents/vllm-backend.md`](.agents/vllm-backend.md) |
+| 18 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 19 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 20 | → | [`.impeccable.md`](.impeccable.md) |
+| 21 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
 
 ---
 

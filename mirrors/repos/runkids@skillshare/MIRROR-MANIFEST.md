@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `runkids/skillshare` — 26 default patterns, 0 followed patterns, 52 file(s) materialized.
+Mirror of `runkids/skillshare` — 26 default patterns, 0 followed patterns, 53 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `runkids/skillshare` — 26 default patterns, 0 followed patterns, 52 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 52 |
+| Files         | 53 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -67,50 +67,51 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 6 | ✓ | [`.skillshare/skills/skillshare-release/SKILL.md`](.skillshare/skills/skillshare-release/SKILL.md) |
 | 7 | ✓ | [`.skillshare/skills/skillshare-ui-website-style/SKILL.md`](.skillshare/skills/skillshare-ui-website-style/SKILL.md) |
 | 8 | ✓ | [`.skillshare/skills/skillshare-update-docs/SKILL.md`](.skillshare/skills/skillshare-update-docs/SKILL.md) |
-| 9 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 10 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 11 | ✓ | [`skills/skillshare/references/audit.md`](skills/skillshare/references/audit.md) |
-| 12 | ✓ | [`skills/skillshare/references/backup.md`](skills/skillshare/references/backup.md) |
-| 13 | ✓ | [`skills/skillshare/references/extras.md`](skills/skillshare/references/extras.md) |
-| 14 | ✓ | [`skills/skillshare/references/init.md`](skills/skillshare/references/init.md) |
-| 15 | ✓ | [`skills/skillshare/references/install.md`](skills/skillshare/references/install.md) |
-| 16 | ✓ | [`skills/skillshare/references/log.md`](skills/skillshare/references/log.md) |
-| 17 | ✓ | [`skills/skillshare/references/mcp.md`](skills/skillshare/references/mcp.md) |
-| 18 | ✓ | [`skills/skillshare/references/native-agents.md`](skills/skillshare/references/native-agents.md) |
-| 19 | ✓ | [`skills/skillshare/references/plugins.md`](skills/skillshare/references/plugins.md) |
-| 20 | ✓ | [`skills/skillshare/references/status.md`](skills/skillshare/references/status.md) |
-| 21 | ✓ | [`skills/skillshare/references/sync.md`](skills/skillshare/references/sync.md) |
-| 22 | ✓ | [`skills/skillshare/references/targets.md`](skills/skillshare/references/targets.md) |
-| 23 | ✓ | [`skills/skillshare/references/trash.md`](skills/skillshare/references/trash.md) |
-| 24 | ✓ | [`skills/skillshare/references/TROUBLESHOOTING.md`](skills/skillshare/references/TROUBLESHOOTING.md) |
-| 25 | ✓ | [`skills/skillshare/scripts/run.sh`](skills/skillshare/scripts/run.sh) |
-| 26 | ✓ | [`skills/skillshare/SKILL.md`](skills/skillshare/SKILL.md) |
-| 27 | ✓ | [`website/AGENTS.md`](website/AGENTS.md) |
-| 28 | ✓ | [`website/docs/reference/commands/backup.md`](website/docs/reference/commands/backup.md) |
-| 29 | ✓ | [`website/docs/reference/commands/extras.md`](website/docs/reference/commands/extras.md) |
-| 30 | ✓ | [`website/docs/reference/commands/mcp.md`](website/docs/reference/commands/mcp.md) |
-| 31 | ✓ | [`website/docs/reference/commands/sync.md`](website/docs/reference/commands/sync.md) |
-| 32 | ✓ | [`website/docs/reference/commands/trash.md`](website/docs/reference/commands/trash.md) |
-| 33 | ✓ | [`website/i18n/ja/docusaurus-plugin-content-docs/current/reference/commands/backup.md`](website/i18n/ja/docusaurus-plugin-content-docs/current/reference/commands/backup.md) |
-| 34 | ✓ | [`website/i18n/ja/docusaurus-plugin-content-docs/current/reference/commands/extras.md`](website/i18n/ja/docusaurus-plugin-content-docs/current/reference/commands/extras.md) |
-| 35 | ✓ | [`website/i18n/ja/docusaurus-plugin-content-docs/current/reference/commands/mcp.md`](website/i18n/ja/docusaurus-plugin-content-docs/current/reference/commands/mcp.md) |
-| 36 | ✓ | [`website/i18n/ja/docusaurus-plugin-content-docs/current/reference/commands/sync.md`](website/i18n/ja/docusaurus-plugin-content-docs/current/reference/commands/sync.md) |
-| 37 | ✓ | [`website/i18n/ja/docusaurus-plugin-content-docs/current/reference/commands/trash.md`](website/i18n/ja/docusaurus-plugin-content-docs/current/reference/commands/trash.md) |
-| 38 | ✓ | [`website/i18n/ko/docusaurus-plugin-content-docs/current/reference/commands/backup.md`](website/i18n/ko/docusaurus-plugin-content-docs/current/reference/commands/backup.md) |
-| 39 | ✓ | [`website/i18n/ko/docusaurus-plugin-content-docs/current/reference/commands/extras.md`](website/i18n/ko/docusaurus-plugin-content-docs/current/reference/commands/extras.md) |
-| 40 | ✓ | [`website/i18n/ko/docusaurus-plugin-content-docs/current/reference/commands/mcp.md`](website/i18n/ko/docusaurus-plugin-content-docs/current/reference/commands/mcp.md) |
-| 41 | ✓ | [`website/i18n/ko/docusaurus-plugin-content-docs/current/reference/commands/sync.md`](website/i18n/ko/docusaurus-plugin-content-docs/current/reference/commands/sync.md) |
-| 42 | ✓ | [`website/i18n/ko/docusaurus-plugin-content-docs/current/reference/commands/trash.md`](website/i18n/ko/docusaurus-plugin-content-docs/current/reference/commands/trash.md) |
-| 43 | ✓ | [`website/i18n/zh-Hans/docusaurus-plugin-content-docs/current/reference/commands/backup.md`](website/i18n/zh-Hans/docusaurus-plugin-content-docs/current/reference/commands/backup.md) |
-| 44 | ✓ | [`website/i18n/zh-Hans/docusaurus-plugin-content-docs/current/reference/commands/extras.md`](website/i18n/zh-Hans/docusaurus-plugin-content-docs/current/reference/commands/extras.md) |
-| 45 | ✓ | [`website/i18n/zh-Hans/docusaurus-plugin-content-docs/current/reference/commands/mcp.md`](website/i18n/zh-Hans/docusaurus-plugin-content-docs/current/reference/commands/mcp.md) |
-| 46 | ✓ | [`website/i18n/zh-Hans/docusaurus-plugin-content-docs/current/reference/commands/sync.md`](website/i18n/zh-Hans/docusaurus-plugin-content-docs/current/reference/commands/sync.md) |
-| 47 | ✓ | [`website/i18n/zh-Hans/docusaurus-plugin-content-docs/current/reference/commands/trash.md`](website/i18n/zh-Hans/docusaurus-plugin-content-docs/current/reference/commands/trash.md) |
-| 48 | ✓ | [`website/i18n/zh-Hant/docusaurus-plugin-content-docs/current/reference/commands/backup.md`](website/i18n/zh-Hant/docusaurus-plugin-content-docs/current/reference/commands/backup.md) |
-| 49 | ✓ | [`website/i18n/zh-Hant/docusaurus-plugin-content-docs/current/reference/commands/extras.md`](website/i18n/zh-Hant/docusaurus-plugin-content-docs/current/reference/commands/extras.md) |
-| 50 | ✓ | [`website/i18n/zh-Hant/docusaurus-plugin-content-docs/current/reference/commands/mcp.md`](website/i18n/zh-Hant/docusaurus-plugin-content-docs/current/reference/commands/mcp.md) |
-| 51 | ✓ | [`website/i18n/zh-Hant/docusaurus-plugin-content-docs/current/reference/commands/sync.md`](website/i18n/zh-Hant/docusaurus-plugin-content-docs/current/reference/commands/sync.md) |
-| 52 | ✓ | [`website/i18n/zh-Hant/docusaurus-plugin-content-docs/current/reference/commands/trash.md`](website/i18n/zh-Hant/docusaurus-plugin-content-docs/current/reference/commands/trash.md) |
+| 9 | ✓ | [`.skillshare/skills/skillshare-windows-utm/SKILL.md`](.skillshare/skills/skillshare-windows-utm/SKILL.md) |
+| 10 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 11 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 12 | ✓ | [`skills/skillshare/references/audit.md`](skills/skillshare/references/audit.md) |
+| 13 | ✓ | [`skills/skillshare/references/backup.md`](skills/skillshare/references/backup.md) |
+| 14 | ✓ | [`skills/skillshare/references/extras.md`](skills/skillshare/references/extras.md) |
+| 15 | ✓ | [`skills/skillshare/references/init.md`](skills/skillshare/references/init.md) |
+| 16 | ✓ | [`skills/skillshare/references/install.md`](skills/skillshare/references/install.md) |
+| 17 | ✓ | [`skills/skillshare/references/log.md`](skills/skillshare/references/log.md) |
+| 18 | ✓ | [`skills/skillshare/references/mcp.md`](skills/skillshare/references/mcp.md) |
+| 19 | ✓ | [`skills/skillshare/references/native-agents.md`](skills/skillshare/references/native-agents.md) |
+| 20 | ✓ | [`skills/skillshare/references/plugins.md`](skills/skillshare/references/plugins.md) |
+| 21 | ✓ | [`skills/skillshare/references/status.md`](skills/skillshare/references/status.md) |
+| 22 | ✓ | [`skills/skillshare/references/sync.md`](skills/skillshare/references/sync.md) |
+| 23 | ✓ | [`skills/skillshare/references/targets.md`](skills/skillshare/references/targets.md) |
+| 24 | ✓ | [`skills/skillshare/references/trash.md`](skills/skillshare/references/trash.md) |
+| 25 | ✓ | [`skills/skillshare/references/TROUBLESHOOTING.md`](skills/skillshare/references/TROUBLESHOOTING.md) |
+| 26 | ✓ | [`skills/skillshare/scripts/run.sh`](skills/skillshare/scripts/run.sh) |
+| 27 | ✓ | [`skills/skillshare/SKILL.md`](skills/skillshare/SKILL.md) |
+| 28 | ✓ | [`website/AGENTS.md`](website/AGENTS.md) |
+| 29 | ✓ | [`website/docs/reference/commands/backup.md`](website/docs/reference/commands/backup.md) |
+| 30 | ✓ | [`website/docs/reference/commands/extras.md`](website/docs/reference/commands/extras.md) |
+| 31 | ✓ | [`website/docs/reference/commands/mcp.md`](website/docs/reference/commands/mcp.md) |
+| 32 | ✓ | [`website/docs/reference/commands/sync.md`](website/docs/reference/commands/sync.md) |
+| 33 | ✓ | [`website/docs/reference/commands/trash.md`](website/docs/reference/commands/trash.md) |
+| 34 | ✓ | [`website/i18n/ja/docusaurus-plugin-content-docs/current/reference/commands/backup.md`](website/i18n/ja/docusaurus-plugin-content-docs/current/reference/commands/backup.md) |
+| 35 | ✓ | [`website/i18n/ja/docusaurus-plugin-content-docs/current/reference/commands/extras.md`](website/i18n/ja/docusaurus-plugin-content-docs/current/reference/commands/extras.md) |
+| 36 | ✓ | [`website/i18n/ja/docusaurus-plugin-content-docs/current/reference/commands/mcp.md`](website/i18n/ja/docusaurus-plugin-content-docs/current/reference/commands/mcp.md) |
+| 37 | ✓ | [`website/i18n/ja/docusaurus-plugin-content-docs/current/reference/commands/sync.md`](website/i18n/ja/docusaurus-plugin-content-docs/current/reference/commands/sync.md) |
+| 38 | ✓ | [`website/i18n/ja/docusaurus-plugin-content-docs/current/reference/commands/trash.md`](website/i18n/ja/docusaurus-plugin-content-docs/current/reference/commands/trash.md) |
+| 39 | ✓ | [`website/i18n/ko/docusaurus-plugin-content-docs/current/reference/commands/backup.md`](website/i18n/ko/docusaurus-plugin-content-docs/current/reference/commands/backup.md) |
+| 40 | ✓ | [`website/i18n/ko/docusaurus-plugin-content-docs/current/reference/commands/extras.md`](website/i18n/ko/docusaurus-plugin-content-docs/current/reference/commands/extras.md) |
+| 41 | ✓ | [`website/i18n/ko/docusaurus-plugin-content-docs/current/reference/commands/mcp.md`](website/i18n/ko/docusaurus-plugin-content-docs/current/reference/commands/mcp.md) |
+| 42 | ✓ | [`website/i18n/ko/docusaurus-plugin-content-docs/current/reference/commands/sync.md`](website/i18n/ko/docusaurus-plugin-content-docs/current/reference/commands/sync.md) |
+| 43 | ✓ | [`website/i18n/ko/docusaurus-plugin-content-docs/current/reference/commands/trash.md`](website/i18n/ko/docusaurus-plugin-content-docs/current/reference/commands/trash.md) |
+| 44 | ✓ | [`website/i18n/zh-Hans/docusaurus-plugin-content-docs/current/reference/commands/backup.md`](website/i18n/zh-Hans/docusaurus-plugin-content-docs/current/reference/commands/backup.md) |
+| 45 | ✓ | [`website/i18n/zh-Hans/docusaurus-plugin-content-docs/current/reference/commands/extras.md`](website/i18n/zh-Hans/docusaurus-plugin-content-docs/current/reference/commands/extras.md) |
+| 46 | ✓ | [`website/i18n/zh-Hans/docusaurus-plugin-content-docs/current/reference/commands/mcp.md`](website/i18n/zh-Hans/docusaurus-plugin-content-docs/current/reference/commands/mcp.md) |
+| 47 | ✓ | [`website/i18n/zh-Hans/docusaurus-plugin-content-docs/current/reference/commands/sync.md`](website/i18n/zh-Hans/docusaurus-plugin-content-docs/current/reference/commands/sync.md) |
+| 48 | ✓ | [`website/i18n/zh-Hans/docusaurus-plugin-content-docs/current/reference/commands/trash.md`](website/i18n/zh-Hans/docusaurus-plugin-content-docs/current/reference/commands/trash.md) |
+| 49 | ✓ | [`website/i18n/zh-Hant/docusaurus-plugin-content-docs/current/reference/commands/backup.md`](website/i18n/zh-Hant/docusaurus-plugin-content-docs/current/reference/commands/backup.md) |
+| 50 | ✓ | [`website/i18n/zh-Hant/docusaurus-plugin-content-docs/current/reference/commands/extras.md`](website/i18n/zh-Hant/docusaurus-plugin-content-docs/current/reference/commands/extras.md) |
+| 51 | ✓ | [`website/i18n/zh-Hant/docusaurus-plugin-content-docs/current/reference/commands/mcp.md`](website/i18n/zh-Hant/docusaurus-plugin-content-docs/current/reference/commands/mcp.md) |
+| 52 | ✓ | [`website/i18n/zh-Hant/docusaurus-plugin-content-docs/current/reference/commands/sync.md`](website/i18n/zh-Hant/docusaurus-plugin-content-docs/current/reference/commands/sync.md) |
+| 53 | ✓ | [`website/i18n/zh-Hant/docusaurus-plugin-content-docs/current/reference/commands/trash.md`](website/i18n/zh-Hant/docusaurus-plugin-content-docs/current/reference/commands/trash.md) |
 
 ---
 

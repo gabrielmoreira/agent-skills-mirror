@@ -63,7 +63,7 @@ This module exposes **no** registered core RPC methods (no `schemas.rs`, no cont
 It does **not** own any agent tools in the `tools.rs`/`crates/openhuman-core/src/tools` sense. The "tools" here are **MCP-protocol tools** advertised to external clients:
 
 - Read-only (`ToolOperation::Read`): `core.list_tools`, `core.tool_instructions`, `agent.list_subagents`, `memory.search`, `memory.recall`, `tree.read_chunk`, `tree.browse`, `tree.top_entities`, `tree.list_sources`, `web_search`, `web_answer`, `searxng_search` (listed only when a search provider can serve them; `crate::search::providers`).
-- Act-policy (`ToolOperation::Act`): `agent.run_subagent` (annotated destructive/open-world; rejects `integrations_agent`), and the write tools `memory.store`, `memory.note`, `tree.tag` (annotated destructive/idempotent, local-only).
+- Act-policy (`ToolOperation::Act`): `agent.run_subagent` (annotated destructive/open-world), and the write tools `memory.store`, `memory.note`, `tree.tag` (annotated destructive/idempotent, local-only).
 
 Argument bounds enforced in-layer: `k`/limits capped at `MAX_LIMIT` (50), default 10; `tree.tag` capped at 50 tags / 128 bytes per tag; `web_search` and `web_answer` `max_results` capped at `SEARCH_MAX_RESULTS` (20). Write tools derive deterministic upsert keys (`mcp-store-<slug>`, `mcp-note-<chunk_id>`, `mcp-tag-<chunk_id>`).
 
@@ -105,5 +105,5 @@ No `store.rs`. The only durable side effect is the **MCP write-audit log**, writ
 - **Protocol negotiation:** supports `2024-11-05`, `2025-03-26`, `2025-06-18`, and `2025-11-25` (`LATEST_PROTOCOL_VERSION`); unknown requested versions fall back to latest. HTTP enforces an exact session protocol-version match on subsequent requests.
 - **HTTP security:** bearer auth is optional (`--auth-token`); session ids are SHA-256-redacted in logs; default bind is `127.0.0.1:9300`.
 - **Resource catalog parity is CI-enforced:** `resources.rs` content is `include_str!`-embedded at compile time and the `catalog_mirrors_builtins` test fails if a built-in subagent lacks a matching `openhuman://prompts/agents/<id>` entry.
-- **`agent.run_subagent` limits:** rejects `integrations_agent` (toolkit binding not yet supported over first-level MCP) and runs a fresh single-turn agent session tagged with an `mcp:<agent_id>:<uuid>` event context.
+- **`agent.run_subagent` limits:** runs a fresh single-turn agent session tagged with an `mcp:<agent_id>:<uuid>` event context.
 - **stdio logging defaults to `warn`** on stderr (so failures surface in client UIs); `--verbose` → `debug`; a user-set `RUST_LOG` always wins. Stdout is reserved for protocol messages only.

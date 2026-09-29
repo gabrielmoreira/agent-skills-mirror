@@ -49,6 +49,7 @@ import {
   toTextElementId,
 } from "@/lib/elements";
 import { pickText, writeLocalized } from "@/lib/locale";
+import { slideColors } from "@/lib/contrast";
 import { cn } from "@/lib/utils";
 import {
   cleanTypography,
@@ -82,6 +83,8 @@ type Props = {
   orientation: Orientation;
   theme: Theme;
   locale: string;
+  appIcon?: string;
+  onAppIconChange: (src: string) => void;
   selectedElementId: ElementId | null;
   onChange: (patch: Partial<Slide>) => void;
   /** Patch computed from the slide's latest state (safe after async work). */
@@ -101,6 +104,8 @@ export function Inspector({
   orientation,
   theme,
   locale,
+  appIcon,
+  onAppIconChange,
   selectedElementId,
   onChange,
   onUpdate,
@@ -125,12 +130,6 @@ export function Inspector({
   function setLocaleField(key: "label" | "headline", value: string) {
     onChange({ [key]: writeLocalized(slide[key], locale, value) } as Partial<Slide>);
   }
-
-  React.useEffect(() => {
-    if (device === "feature-graphic" && slide.layout !== "feature-graphic") {
-      onChange({ layout: "feature-graphic", transforms: undefined, screenshotSecondary: undefined });
-    }
-  }, [device, onChange, slide.layout]);
 
   return (
     <div className="flex h-full flex-col">
@@ -232,6 +231,7 @@ export function Inspector({
         {!isFeatureGraphic && (
           <ElementTransformControls
             slide={slide}
+            defaultTextColor={slideColors(theme, slide).fg}
             device={device}
             orientation={orientation}
             locale={locale}
@@ -243,9 +243,13 @@ export function Inspector({
         )}
 
         {isFeatureGraphic && (
-          <p className="rounded-md border bg-muted/40 p-3 text-[11px] leading-relaxed text-muted-foreground">
-            Shows app icon + name + tagline. Drop an icon at <span className="rounded bg-background px-1 py-0.5 font-mono text-[10px] text-foreground">/public/app-icon.png</span> (or leave blank — the app initial will be used). Name is set in the toolbar.
-          </p>
+          <div className="space-y-1.5">
+            <Label className="text-xs">App icon</Label>
+            <ScreenshotPicker label="Icon (shared by every banner)" value={appIcon || ""} onChange={onAppIconChange} />
+            <p className="text-[11px] leading-relaxed text-muted-foreground">
+              Shows app icon + name + tagline. Leave the icon blank to use the app&apos;s initial. Name is set in the toolbar.
+            </p>
+          </div>
         )}
       </div>
     </div>
@@ -293,6 +297,7 @@ function CopyIdeasMenu({ onPick }: { onPick: (formula: string) => void }) {
 
 function ElementTransformControls({
   slide,
+  defaultTextColor,
   device,
   orientation,
   locale,
@@ -302,6 +307,7 @@ function ElementTransformControls({
   onSelectElement,
 }: {
   slide: Slide;
+  defaultTextColor: string;
   device: Device;
   orientation: Orientation;
   locale: string;
@@ -554,6 +560,7 @@ function ElementTransformControls({
           imageElement={activeImageElement || undefined}
           locale={locale}
           canvas={{ cW, cH }}
+          defaultTextColor={defaultTextColor}
           onRotate={(rotation) => patchElement(activeId, { rotation })}
           onReorder={(dir) => reorder(activeId, dir)}
           onTextChange={(value) => {
@@ -591,6 +598,7 @@ function ActiveElementPanel({
   imageElement,
   locale,
   canvas,
+  defaultTextColor,
   onRotate,
   onReorder,
   onTextChange,
@@ -606,6 +614,7 @@ function ActiveElementPanel({
   imageElement?: ImageElement;
   locale: string;
   canvas: { cW: number; cH: number };
+  defaultTextColor: string;
   onRotate: (rotation: number) => void;
   onReorder: (dir: "front" | "back" | "up" | "down") => void;
   onTextChange: (value: string) => void;
@@ -649,6 +658,7 @@ function ActiveElementPanel({
           element={textElement}
           locale={locale}
           canvas={canvas}
+          defaultColor={defaultTextColor}
           onTextChange={onTextChange}
           onTextPatch={onTextPatch}
         />
@@ -773,16 +783,21 @@ function TextElementPanel({
   element,
   locale,
   canvas,
+  defaultColor,
   onTextChange,
   onTextPatch,
 }: {
   element: TextElement;
   locale: string;
   canvas: { cW: number; cH: number };
+  defaultColor: string;
   onTextChange: (value: string) => void;
   onTextPatch: (patch: Partial<TextElement>) => void;
 }) {
-  const text = element.text?.[locale] ?? pickText(element.text, locale);
+  // Like the headline field: the locale's own text, with the fallback shown as
+  // a placeholder, so clearing a translation doesn't snap back to English.
+  const text = element.text?.[locale] ?? "";
+  const textPlaceholder = pickText(element.text, locale) || "Overlay text";
   const align = element.align ?? "center";
   const defaultSize = defaultTextElementFontSize(canvas.cW, canvas.cH);
   const range = textElementFontSizeRange(canvas.cW, canvas.cH);
@@ -814,7 +829,8 @@ function TextElementPanel({
           value={text}
           rows={2}
           onChange={(event) => onTextChange(event.target.value)}
-          placeholder="Overlay text"
+          placeholder={textPlaceholder}
+          aria-label="Overlay text"
         />
       </div>
       <div className="space-y-1">
@@ -867,7 +883,7 @@ function TextElementPanel({
           <Label className="text-[11px] text-muted-foreground">Color</Label>
           <Input
             type="color"
-            value={element.color || "#171717"}
+            value={element.color || defaultColor}
             className="h-7 cursor-pointer p-0.5"
             onChange={(event) => onTextPatch({ color: event.target.value })}
             aria-label="Text color"

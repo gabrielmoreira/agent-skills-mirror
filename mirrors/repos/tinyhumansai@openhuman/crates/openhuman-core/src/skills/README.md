@@ -33,7 +33,7 @@ Stub signatures must match the real ones exactly; `cargo check --no-default-feat
 | `schemas/` | Controller schemas and thin handlers, split into `controller_schemas.rs`, `handlers.rs`, `helpers.rs`, `wire_types.rs`. Handlers resolve the workspace through `helpers.rs` (`resolve_workspace_dir`/`resolve_config`: `Config::load_or_init()` under a 30 second timeout, falling back to the default workspace). |
 | `stub.rs` | Disabled-feature facade; see above. |
 | `catalog/` | `skill_registry`: remote catalog fetch/cache/search, install/uninstall by entry id, the `skill_setup` agent. See [catalog/README.md](catalog/README.md). |
-| `runtime/` | `skill_runtime`: start/cancel runs, runtime resolution (Node/Python), the `skill_executor` agent. See [runtime/README.md](runtime/README.md). |
+| `runtime/` | `skill_runtime`: start/cancel runs, runtime resolution (Node/Python), Running a skill from chat is the orchestrator's own `run_workflow`. See [runtime/README.md](runtime/README.md). |
 | `webhooks/` | Tunnel routing for skill/agent/echo webhook targets; ungated, unrelated to the `skills` feature. See [webhooks/README.md](webhooks/README.md). |
 
 ## RPC surface

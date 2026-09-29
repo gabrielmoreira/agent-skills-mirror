@@ -187,9 +187,28 @@ flowchart TD
 
 ### 출력 예시
 
-<p>
-  <img src="/img/sync-demo.png" alt="sync demo" width="720" />
-</p>
+```text
+$ skillshare sync
+✓ Discovered 43 skills
+
+Backing up
+─────────────────────────────────────────
+✓ claude -> ~/.local/share/skillshare/backups/2026-09-28_12-52-50/claude
+✓ cursor -> ~/.local/share/skillshare/backups/2026-09-28_12-52-50/cursor
+✓ gemini -> ~/.local/share/skillshare/backups/2026-09-28_12-52-50/gemini
+  …
+
+Syncing skills
+─────────────────────────────────────────
+✓ claude: merged (43 linked, 0 local, 0 updated, 1 pruned)
+✓ claude-work: merged (43 linked, 0 local, 0 updated, 1 pruned)
+✓ cursor: merged (43 linked, 1 local, 0 updated, 1 pruned)
+✓ gemini: merged (43 linked, 0 local, 0 updated, 1 pruned)
+✓ opencode: merged (43 linked, 0 local, 0 updated, 1 pruned)
+✓ universal: merged (43 linked, 0 local, 0 updated, 1 pruned)
+
+Sync complete: 6 targets, 258 linked, 1 local, 0 updated, 6 pruned (0.0s)
+```
 
 ---
 
@@ -519,7 +538,7 @@ skillshare sync agents       # agent만 sync
 skillshare sync --all        # skill + agent + extras + MCP를 sync
 ```
 
-agent sync는 세 가지 mode(merge, copy, symlink) 모두를 지원하며, target에 설정된 mode와 일치합니다. `agents` path 정의가 있는 target만 agent sync를 받습니다 — 현재는 Claude, Cursor, OpenCode, Augment입니다. 전체 목록은 [Agents — Supported Targets](/docs/understand/agents#supported-targets)를 참고하세요.
+agent sync는 세 가지 mode(merge, copy, symlink) 모두를 지원하며, target에 설정된 mode와 일치합니다. Developer Mode가 없는 Windows에서는 merge mode가 agent 파일을 링크하는 대신 복사하고 `! <target>: agents file links need Windows Developer Mode; copying instead`를 출력합니다. [Windows 문제 해결](/docs/troubleshooting/windows#file-links-need-windows-developer-mode-copying-instead)을 참고하세요. `agents` path 정의가 있는 target만 agent sync를 받습니다 — 현재는 Claude, Cursor, OpenCode, Augment입니다. 전체 목록은 [Agents — Supported Targets](/docs/understand/agents#supported-targets)를 참고하세요.
 
 Orphan cleanup, `.agentignore` 필터링, target별 include/exclude filter는 모두 skill과 동일하게 동작합니다.
 
@@ -559,6 +578,8 @@ skillshare sync --all             # skill + agent + extras + MCP를 sync
 |------|-------|-------------|
 | `--dry-run` | `-n` | 실제로 쓰지 않고 변경 사항 미리보기 |
 | `--force` | `-f` | target에서 충돌하는 파일을 덮어쓰기 |
+
+extras sync에 오류가 있으면 `--json`은 0이 아닌 종료 코드를 반환합니다. single-file extra에서는 `--dry-run`이 교체 전에 백업할 편집 내용도 알려 줍니다.
 
 :::info 두 mode 모두 지원
 `sync extras`는 global mode와 project mode 양쪽에서 작동합니다. skill·agent·extras·MCP를 함께 sync하려면 `sync --all`을, extras만 sync하려면 `sync extras`를 사용하세요. project mode에서 extras source는 `.skillshare/extras/<name>/`입니다.
@@ -607,6 +628,10 @@ Source 파일은 `extras/` 하위 디렉터리에 있습니다.
 | `symlink` | 전체 source 디렉터리를 target 경로로 symlink |
 
 merge mode에서는 symlink만 pruning되며 — target에 사용자가 만든 local 파일은 보존됩니다.
+
+Developer Mode가 없는 Windows에서는 merge mode(그리고 symlink mode의 [single-file extra](./extras.md#single-file-extras))가 대신 파일을 복사하고, target을 `(copy)`로 표시하며, 그 아래에 `file links need Windows Developer Mode; copying instead`를 출력합니다. 이 복사본은 링크처럼 업데이트되고 pruning되며, 파일 링크를 쓸 수 있게 되면 링크로 교체됩니다.
+
+내용이 같은 로컬 파일은 `local preserved`로 표시되며, `sync extras`는 해당 파일에 `--force`를 권하지 않습니다. 관리되는 링크가 아닌 로컬 파일로 유지됩니다.
 
 ### 동작 방식
 

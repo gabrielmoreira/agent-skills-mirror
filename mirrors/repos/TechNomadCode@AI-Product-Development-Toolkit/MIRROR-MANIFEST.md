@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `TechNomadCode/AI-Product-Development-Toolkit` — 26 default patterns, 0 followed patterns, 11 file(s) materialized.
+Mirror of `TechNomadCode/AI-Product-Development-Toolkit` — 26 default patterns, 0 followed patterns, 12 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `TechNomadCode/AI-Product-Development-Toolkit` — 26 default patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 11 |
+| Files         | 12 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -61,15 +61,16 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`agent-configs/claude-code-desktop/claude-opus-5-5/CLAUDE.md`](agent-configs/claude-code-desktop/claude-opus-5-5/CLAUDE.md) |
 | 2 | ✓ | [`agent-configs/claude-code-desktop/claude-opus-5/CLAUDE.md`](agent-configs/claude-code-desktop/claude-opus-5/CLAUDE.md) |
-| 3 | ✓ | [`agent-skills/mvp-plan/SKILL.md`](agent-skills/mvp-plan/SKILL.md) |
-| 4 | ✓ | [`agent-skills/mvp/SKILL.md`](agent-skills/mvp/SKILL.md) |
-| 5 | ✓ | [`agent-skills/nextjs-supabase-vercel/SKILL.md`](agent-skills/nextjs-supabase-vercel/SKILL.md) |
-| 6 | ✓ | [`agent-skills/prd/SKILL.md`](agent-skills/prd/SKILL.md) |
-| 7 | ✓ | [`agent-skills/test-plan/SKILL.md`](agent-skills/test-plan/SKILL.md) |
-| 8 | ✓ | [`agent-skills/user-research/SKILL.md`](agent-skills/user-research/SKILL.md) |
-| 9 | ✓ | [`agent-skills/ux/SKILL.md`](agent-skills/ux/SKILL.md) |
-| 10 | ✓ | [`starters/nextjs-supabase-vercel/project/AGENTS.md`](starters/nextjs-supabase-vercel/project/AGENTS.md) |
-| 11 | ✓ | [`starters/nextjs-supabase-vercel/project/CLAUDE.md`](starters/nextjs-supabase-vercel/project/CLAUDE.md) |
+| 3 | ✓ | [`agent-configs/claude-code-desktop/claude-sonnet-5-5/CLAUDE.md`](agent-configs/claude-code-desktop/claude-sonnet-5-5/CLAUDE.md) |
+| 4 | ✓ | [`agent-skills/mvp-plan/SKILL.md`](agent-skills/mvp-plan/SKILL.md) |
+| 5 | ✓ | [`agent-skills/mvp/SKILL.md`](agent-skills/mvp/SKILL.md) |
+| 6 | ✓ | [`agent-skills/nextjs-supabase-vercel/SKILL.md`](agent-skills/nextjs-supabase-vercel/SKILL.md) |
+| 7 | ✓ | [`agent-skills/prd/SKILL.md`](agent-skills/prd/SKILL.md) |
+| 8 | ✓ | [`agent-skills/test-plan/SKILL.md`](agent-skills/test-plan/SKILL.md) |
+| 9 | ✓ | [`agent-skills/user-research/SKILL.md`](agent-skills/user-research/SKILL.md) |
+| 10 | ✓ | [`agent-skills/ux/SKILL.md`](agent-skills/ux/SKILL.md) |
+| 11 | ✓ | [`starters/nextjs-supabase-vercel/project/AGENTS.md`](starters/nextjs-supabase-vercel/project/AGENTS.md) |
+| 12 | ✓ | [`starters/nextjs-supabase-vercel/project/CLAUDE.md`](starters/nextjs-supabase-vercel/project/CLAUDE.md) |
 
 ---
 

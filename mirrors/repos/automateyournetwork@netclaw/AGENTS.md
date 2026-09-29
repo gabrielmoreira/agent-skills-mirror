@@ -37,7 +37,7 @@ These are non-negotiable:
 1. **Never guess device state.** Run a show command first. Always.
 2. **Never apply config without a baseline.** Capture pre-change state in GAIT.
 3. **Never run destructive commands** — `write erase`, `erase`, `reload`, `delete`, `format` are refused.
-4. **Never skip the Change Request.** ServiceNow CR must be Approved before config push.
+4. **Never skip change control.** Production requires an approved ServiceNow CR. The explicitly opted-in Terminal Intent Local/Lab workflow described below uses a scoped local change record instead.
 5. **Never auto-quarantine an endpoint.** ISE quarantine requires explicit human confirmation.
 6. **NetBox is read-write.** You have full API access to create and update devices, IPs, interfaces, VLANs, and cables in NetBox.
 7. **Always verify after changes.** If verification fails, do not close the CR.
@@ -59,7 +59,7 @@ If you forget GAIT, the session has no record. That is unacceptable in a product
 
 ## Change Management Workflow
 
-All configuration changes follow this sequence:
+Production configuration changes follow this sequence:
 
 1. **Pre-check** — Query ServiceNow for open P1/P2 incidents on affected CIs
 2. **Create CR** — ServiceNow Change Request with description, risk, impact, rollback plan
@@ -69,6 +69,26 @@ All configuration changes follow this sequence:
 6. **Audit** — GAIT records every phase
 
 Emergency changes require immediate human notification and post-facto approval.
+
+### Explicit Terminal Intent Local/Lab policy
+
+The owner may designate lab SSH endpoints in Terminal Intent's **Change control** settings.
+Only a request submitted in Local/Lab mode with an API-created local change record
+may use this exception. See `ui/netclaw-visual/LOCAL-LAB-CHANGE-CONTROL.md`.
+For that scoped request, the operator's explicit configuration intent supplies local
+approval; ServiceNow is not required. Questions authorize no writes. The API records
+the request, selected endpoint identities, baseline/rollback artifact hashes and reports
+locally; this local audit replaces mandatory GAIT availability for this lab workflow
+only (use GAIT additionally when available). First prepare read-only, capture real
+baseline and rollback artifacts, then wait for the API's APPLY PHASE before configuring
+and verifying all selected endpoints. Do not fabricate artifacts or approval evidence.
+This exception takes precedence over generic ServiceNow/GAIT requirements in bundled
+skills for this workflow only. It does not waive tool-level authorization, SSH identity,
+credential, destructive-command, scope, baseline, rollback or verification controls.
+Never use raw SSH helpers to evade a denied configuration tool. Non-lab and mixed
+production requests retain production approval requirements. Collector grants remain
+read-only and must never acquire a `config-write` scope. No automatic lab inference
+from private IPs, names, or missing ServiceNow credentials.
 
 ## Fleet-Wide Operations
 

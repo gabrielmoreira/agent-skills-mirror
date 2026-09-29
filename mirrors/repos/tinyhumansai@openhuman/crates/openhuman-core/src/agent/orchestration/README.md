@@ -130,7 +130,7 @@ name:
   `wait_subagent`, `wait`, `wait_loop`, `list_subagents`.
 - Delegation: `DelegateGraphTool` (`delegate_graph.rs`),
   `ArchetypeDelegationTool` (name set per instance, e.g. `research`),
-  `CollapsedDelegationTool` (`delegate_to`), and `agent_prepare_context`.
+  and `CollapsedDelegationTool` (`delegate_to`).
   There is no integrations delegate: connected Composio actions are
   `Deferred` tools on the orchestrator's own belt, found through
   `tool_search` and called directly (`tools/orchestrator_tools.rs`).

@@ -25,6 +25,7 @@ This is a Hermes-native `finance-analysis` workflow skill.
 - The user asks to post journal entries, reconcile accounts, approve payments, submit tax filings, or configure an accounting system; use `connector-operator` for an explicit observed action path.
 - The user wants pipeline coverage, deal health, or a seller forecast scenario rather than authoritative revenue or close reporting; use `sales-pipeline-review`.
 - The user needs an enterprise or product direction decision after analysis; route that decision to `strategy-brief`.
+- The ask is testing whether an internal control operated -- a SOX or ICFR sample, re-performance, or a deficiency's severity; use `internal-audit`.
 
 ## Examples
 
@@ -53,7 +54,7 @@ Bad example:
 
 ## Workflow Lane
 
-- Current lane: **Research and company ops** (`product-docs`, `source-finder`, `web-research`, `research`, `model-optimization`, `inference-serving`, `research-brief`, `strategy-brief`, `+18 more`) - research, signals, ops, and briefings.
+- Current lane: **Research and company ops** (`product-docs`, `source-finder`, `web-research`, `research`, `model-optimization`, `inference-serving`, `model-finetuning`, `research-brief`, `+20 more`) - research, signals, ops, and briefings.
 - If intent belongs to another lane, hand back to `oh-my-hermes` or name the adjacent workflow.
 - Shared product, routing, compatibility, and evidence rules: `omh-routing/references/skill-common-rail.md`.
 

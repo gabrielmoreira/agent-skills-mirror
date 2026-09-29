@@ -8,7 +8,7 @@ Centralized tool factory and registry for the OpenCode plugin system. This direc
 - **Code intelligence tools**: AST-grep pattern matching and transformation across languages
 - **Web capabilities**: Smart web fetching with caching and secondary model processing
 - **ACP integration**: External agent protocol execution
-- **Preset switching**: On-disk preset persistence helpers used by the TUI `/preset` manager
+- **Preset switching**: On-disk preset persistence helpers used by the TUI `/preset` managers (v1 and v2); the pure editor domain lives in `src/preset-editor-domain.ts`
 
 These tools enable agents to perform file operations, manage background tasks, and interact with external systems while maintaining security boundaries through the OpenCode tool schema. Multi-LLM council orchestration is agent-level (dynamic `councillor-<name>` subagents in `src/agents/`), not a tool.
 
@@ -43,7 +43,7 @@ Each tool is implemented as a factory function that returns a `ToolDefinition` r
 
 ### State Management
 
-- **Runtime Presets**: Preset switching (`preset-switch.ts`) persists the preset name to the user config file; the sidebar is NOT refreshed mid-session (the agent registry is unchanged until reload) — hot-swapping the agent tree during an active conversation risks context truncation, drifted prior turns, and stale subagent references
+- **Runtime Presets**: Preset switching (`preset-switch.ts`) persists the preset name (or edits) to the user config file. The agent registry is never hot-swapped mid-session; on v2 hosts the shared `src/preset-editor-domain.ts` helpers back both the v1 JSX editor and the v2 promise-dialog editor, and only the inference fields (`model`, `variant`, `temperature`, `options`) hot-apply to NEW child sessions (frozen before the child's first request via the awaited `session.prompt` hook — the `session.created` event consumer is only a prewarm) plus the sidebar (via `src/v2/config-watch.ts` + `src/v2/runtime-profiles.ts`); a malformed refresh (`invalid-json`/`invalid-schema`/`read-error`) is rejected before any swap so the last-known-good profiles/sidebar stay — hot-swapping the full agent tree during an active conversation risks context truncation, drifted prior turns, and stale subagent references
 - **Background Jobs**: Task communication, cancellation, status, results, and revival use a centralized job board for tracking and lifecycle coordination; `task_status` reports live-confirmed host status with explicit uncertainty when the live read is unavailable
 
 ## Flow
@@ -258,7 +258,9 @@ Preset switching is not a tool: `preset-switch.ts` exposes on-disk helpers
 #### Presets (preset-switch.ts)
 - Defined in plugin config under `presets` field
 - Each preset maps agent names to `AgentOverrideConfig`
-- `switchPresetOnDisk` persists the preset name to the user config file; changes take effect on the next reload
+- `switchPresetOnDisk` persists the preset name to the user config file. v1
+  applies it on reload; v2 requests a live inference-profile/sidebar refresh
+  for new child sessions while existing sessions stay frozen.
 
 #### AST-grep (ast-grep/)
 - Auto-downloads CLI binary on first use

@@ -440,6 +440,8 @@ mcp:
 global mode では、ダッシュボードに **プロジェクト** ページがあります。[`projects`](/docs/reference/targets/configuration#projects) と
 `mcp.projects` の下にあるすべてのフォルダーが一覧され、各 project には **MCP** タブがあります。
 
+![プロジェクトの MCP タブ: プロジェクトごとに切り替えるグローバル server と、プロジェクト専用の server](/img/projects-mcp-tab.png)
+
 - **プロジェクトを追加** では、フォルダーとその target を指定します。**MCP** にチェックを入れると、そのフォルダーは
   `mcp.projects` にも一覧されます。
 - **MCP** タブには、すべての global サーバーがスイッチ付きで一覧表示されます。オフにすると、`targets` を

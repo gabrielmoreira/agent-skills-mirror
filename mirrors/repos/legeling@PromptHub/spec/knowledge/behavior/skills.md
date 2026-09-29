@@ -48,6 +48,10 @@
 
 ### 2. Sync Contract
 
+Agent 分发的当前契约以 [FR-AGENT-138](../../changes/active/agent-management-workbench/specs/agent-management/spec.md#fr-agent-138-one-current-contract-per-agent-capability) 为准（2026-09-28 确认，收敛待实施）。
+当前源码仍含旧配置读取、自动复制降级和断链状态误报，不能以历史通过记录声称已清理。
+设计与分批计划见 [Agent 当前契约设计](../../changes/active/agent-management-workbench/current-contract-design.md)。
+
 - PromptHub 必须支持 DB 与本地 Skill 仓库之间的双向同步。
 - UI 编辑元数据后，需要同步 frontmatter；文件系统变更后，需要同步回 DB。
 - My Skills 的本地 package source 有两种合法形态：
@@ -66,6 +70,29 @@
   完全一致，则启动必须在 canonical workspace 物化后原子重绑。不得按名称猜测、
   接管外部断链或覆盖非链接内容；其它解析故障保留有界诊断，单个坏链接不得让
   整个扫描失败或把有效清单变为空。
+
+### Antigravity Historical Link Upgrade
+
+Antigravity 历史默认目录的受托管软链接通过启动迁移
+`antigravity-skill-links-v1` 转换至当前平台定义的目录；迁移在 workspace
+物化之后、业务入口开放之前执行。SQLite 的 `schema_migrations` 记录完成，
+文件系统保存链接及 activation。仅处理 activation 的 id/name 与现存 Skill
+一致、指向历史托管 repo 或当前 workspace 的链接；复制目录、非托管文件和
+不同的自定义目标不在这项断链修复范围内，必须保留。
+
+迁移先在 profile 的 `recovery/antigravity-skill-links-v1/` 保存原始链接和
+身份记录，独占创建新链接并验证可读，再原子写入新 activation，最后撤去旧链接
+和旧 activation。目标冲突或缺失源包必须报错且不记录完成；中断后仅凭匹配的
+恢复记录接续发布，不覆盖不相关目标。回滚需先退出应用，按恢复记录重建旧链接
+与旧 activation，确认后仅撤去仍指向记录 workspace 的新链接及匹配的新 activation，
+并删除该迁移的完成记录；历史 repo 已不存在时，恢复其历史包或前向重跑迁移，
+不能仅恢复旧链接就声称可用。正常分发不读取历史目录。
+
+迁移扫描为 O(S + A)，S 为 Skill 数、A 为旧目录 activation 数；不复制包正文。
+回归入口为 `tests/integration/antigravity-skill-migration.test.ts`，使用真实
+SQLite、临时旧目录、完整 package、公开状态及卸载 API 验证升级/重开/失败重试。
+`prepareRecord` 保留连续的身份、来源与恢复记录核验；迁移编排保留批次发布及
+清理顺序，两函数允许超过 50 行，避免拆散必须一起审查的状态转换。
 
 ### 2.1 Source Update Reconciliation Contract
 
@@ -146,6 +173,13 @@
 - 当用户选择符号链接方式分发 Skill 到平台目录时，PromptHub 必须明确区分“真实 symlink 成功”和“因权限/文件系统限制而回退为 copy 安装”。
 - 如果主进程回退为 copy 安装，渲染层必须收到结构化结果，并向用户显示包含受影响平台与原因的警告提示。
 - 回退 copy 安装仍属于成功分发，但不得伪装成普通 symlink 成功。
+
+快捷平台管理弹窗以勾选表示期望安装状态：初始勾选已安装平台，取消勾选生成
+卸载变更；点击应用时只执行变更项，并明确显示安装/卸载数量。全部平台已安装
+时仍可管理。卸载只撤回平台安装，保留 My Skills 与来源包。状态读取失败时
+禁止基于未知状态提交；部分失败显示具体平台错误，刷新真实状态后允许重试。
+My Skills 批量入口必须明确包含安装与卸载；商店批量导入入口必须显示文字。
+安装、撤回复用现有业务入口，不新增兼容路径或持久化状态。
 
 ### 3.2 Project-Local Distribution Contract
 

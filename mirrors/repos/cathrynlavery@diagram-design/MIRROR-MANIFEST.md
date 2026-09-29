@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `cathrynlavery/diagram-design` — 26 default patterns, 0 followed patterns, 242 file(s) materialized.
+Mirror of `cathrynlavery/diagram-design` — 26 default patterns, 0 followed patterns, 245 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `cathrynlavery/diagram-design` — 26 default patterns, 0 followed pat
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 242 |
+| Files         | 245 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -246,61 +246,64 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 185 | ✓ | [`skills/diagram-design/references/import-drawio.md`](skills/diagram-design/references/import-drawio.md) |
 | 186 | ✓ | [`skills/diagram-design/references/import-excalidraw.md`](skills/diagram-design/references/import-excalidraw.md) |
 | 187 | ✓ | [`skills/diagram-design/references/import-mermaid.md`](skills/diagram-design/references/import-mermaid.md) |
-| 188 | ✓ | [`skills/diagram-design/references/onboarding.md`](skills/diagram-design/references/onboarding.md) |
-| 189 | ✓ | [`skills/diagram-design/references/output-spec.md`](skills/diagram-design/references/output-spec.md) |
-| 190 | ✓ | [`skills/diagram-design/references/primitive-annotation.md`](skills/diagram-design/references/primitive-annotation.md) |
-| 191 | ✓ | [`skills/diagram-design/references/primitive-icons.md`](skills/diagram-design/references/primitive-icons.md) |
-| 192 | ✓ | [`skills/diagram-design/references/primitive-sketchy.md`](skills/diagram-design/references/primitive-sketchy.md) |
-| 193 | ✓ | [`skills/diagram-design/references/primitive-terminal.md`](skills/diagram-design/references/primitive-terminal.md) |
-| 194 | ✓ | [`skills/diagram-design/references/profiles.md`](skills/diagram-design/references/profiles.md) |
-| 195 | ✓ | [`skills/diagram-design/references/semantic-patterns.md`](skills/diagram-design/references/semantic-patterns.md) |
-| 196 | ✓ | [`skills/diagram-design/references/style-guide.md`](skills/diagram-design/references/style-guide.md) |
-| 197 | ✓ | [`skills/diagram-design/references/type-architecture.md`](skills/diagram-design/references/type-architecture.md) |
-| 198 | ✓ | [`skills/diagram-design/references/type-bar.md`](skills/diagram-design/references/type-bar.md) |
-| 199 | ✓ | [`skills/diagram-design/references/type-data-flow.md`](skills/diagram-design/references/type-data-flow.md) |
-| 200 | ✓ | [`skills/diagram-design/references/type-db-schema.md`](skills/diagram-design/references/type-db-schema.md) |
-| 201 | ✓ | [`skills/diagram-design/references/type-dependency.md`](skills/diagram-design/references/type-dependency.md) |
-| 202 | ✓ | [`skills/diagram-design/references/type-deployment.md`](skills/diagram-design/references/type-deployment.md) |
-| 203 | ✓ | [`skills/diagram-design/references/type-dp-integration.md`](skills/diagram-design/references/type-dp-integration.md) |
-| 204 | ✓ | [`skills/diagram-design/references/type-dp-security-matrix.md`](skills/diagram-design/references/type-dp-security-matrix.md) |
-| 205 | ✓ | [`skills/diagram-design/references/type-er.md`](skills/diagram-design/references/type-er.md) |
-| 206 | ✓ | [`skills/diagram-design/references/type-fishbone.md`](skills/diagram-design/references/type-fishbone.md) |
-| 207 | ✓ | [`skills/diagram-design/references/type-flowchart.md`](skills/diagram-design/references/type-flowchart.md) |
-| 208 | ✓ | [`skills/diagram-design/references/type-gantt.md`](skills/diagram-design/references/type-gantt.md) |
-| 209 | ✓ | [`skills/diagram-design/references/type-heatmap.md`](skills/diagram-design/references/type-heatmap.md) |
-| 210 | ✓ | [`skills/diagram-design/references/type-high-level.md`](skills/diagram-design/references/type-high-level.md) |
-| 211 | ✓ | [`skills/diagram-design/references/type-it-state.md`](skills/diagram-design/references/type-it-state.md) |
-| 212 | ✓ | [`skills/diagram-design/references/type-journey.md`](skills/diagram-design/references/type-journey.md) |
-| 213 | ✓ | [`skills/diagram-design/references/type-kanban.md`](skills/diagram-design/references/type-kanban.md) |
-| 214 | ✓ | [`skills/diagram-design/references/type-layers.md`](skills/diagram-design/references/type-layers.md) |
-| 215 | ✓ | [`skills/diagram-design/references/type-line.md`](skills/diagram-design/references/type-line.md) |
-| 216 | ✓ | [`skills/diagram-design/references/type-loop.md`](skills/diagram-design/references/type-loop.md) |
-| 217 | ✓ | [`skills/diagram-design/references/type-medallion.md`](skills/diagram-design/references/type-medallion.md) |
-| 218 | ✓ | [`skills/diagram-design/references/type-nested.md`](skills/diagram-design/references/type-nested.md) |
-| 219 | ✓ | [`skills/diagram-design/references/type-org-chart.md`](skills/diagram-design/references/type-org-chart.md) |
-| 220 | ✓ | [`skills/diagram-design/references/type-polar.md`](skills/diagram-design/references/type-polar.md) |
-| 221 | ✓ | [`skills/diagram-design/references/type-process.md`](skills/diagram-design/references/type-process.md) |
-| 222 | ✓ | [`skills/diagram-design/references/type-pyramid.md`](skills/diagram-design/references/type-pyramid.md) |
-| 223 | ✓ | [`skills/diagram-design/references/type-quadrant.md`](skills/diagram-design/references/type-quadrant.md) |
-| 224 | ✓ | [`skills/diagram-design/references/type-radar.md`](skills/diagram-design/references/type-radar.md) |
-| 225 | ✓ | [`skills/diagram-design/references/type-sankey.md`](skills/diagram-design/references/type-sankey.md) |
-| 226 | ✓ | [`skills/diagram-design/references/type-scatter.md`](skills/diagram-design/references/type-scatter.md) |
-| 227 | ✓ | [`skills/diagram-design/references/type-sequence.md`](skills/diagram-design/references/type-sequence.md) |
-| 228 | ✓ | [`skills/diagram-design/references/type-state.md`](skills/diagram-design/references/type-state.md) |
-| 229 | ✓ | [`skills/diagram-design/references/type-story-map.md`](skills/diagram-design/references/type-story-map.md) |
-| 230 | ✓ | [`skills/diagram-design/references/type-swimlane.md`](skills/diagram-design/references/type-swimlane.md) |
-| 231 | ✓ | [`skills/diagram-design/references/type-timeline.md`](skills/diagram-design/references/type-timeline.md) |
-| 232 | ✓ | [`skills/diagram-design/references/type-tree.md`](skills/diagram-design/references/type-tree.md) |
-| 233 | ✓ | [`skills/diagram-design/references/type-treemap.md`](skills/diagram-design/references/type-treemap.md) |
-| 234 | ✓ | [`skills/diagram-design/references/type-uml-class.md`](skills/diagram-design/references/type-uml-class.md) |
-| 235 | ✓ | [`skills/diagram-design/references/type-venn.md`](skills/diagram-design/references/type-venn.md) |
-| 236 | ✓ | [`skills/diagram-design/references/type-wardley.md`](skills/diagram-design/references/type-wardley.md) |
-| 237 | ✓ | [`skills/diagram-design/references/type-waterfall.md`](skills/diagram-design/references/type-waterfall.md) |
-| 238 | ✓ | [`skills/diagram-design/scripts/drawio_extract.py`](skills/diagram-design/scripts/drawio_extract.py) |
-| 239 | ✓ | [`skills/diagram-design/scripts/excalidraw_extract.py`](skills/diagram-design/scripts/excalidraw_extract.py) |
-| 240 | ✓ | [`skills/diagram-design/scripts/mermaid_extract.py`](skills/diagram-design/scripts/mermaid_extract.py) |
-| 241 | ✓ | [`skills/diagram-design/scripts/self_check.py`](skills/diagram-design/scripts/self_check.py) |
-| 242 | ✓ | [`skills/diagram-design/SKILL.md`](skills/diagram-design/SKILL.md) |
+| 188 | ✓ | [`skills/diagram-design/references/layout-budget.md`](skills/diagram-design/references/layout-budget.md) |
+| 189 | ✓ | [`skills/diagram-design/references/onboarding.md`](skills/diagram-design/references/onboarding.md) |
+| 190 | ✓ | [`skills/diagram-design/references/output-spec.md`](skills/diagram-design/references/output-spec.md) |
+| 191 | ✓ | [`skills/diagram-design/references/primitive-annotation.md`](skills/diagram-design/references/primitive-annotation.md) |
+| 192 | ✓ | [`skills/diagram-design/references/primitive-icons.md`](skills/diagram-design/references/primitive-icons.md) |
+| 193 | ✓ | [`skills/diagram-design/references/primitive-sketchy.md`](skills/diagram-design/references/primitive-sketchy.md) |
+| 194 | ✓ | [`skills/diagram-design/references/primitive-terminal.md`](skills/diagram-design/references/primitive-terminal.md) |
+| 195 | ✓ | [`skills/diagram-design/references/primitives-core.md`](skills/diagram-design/references/primitives-core.md) |
+| 196 | ✓ | [`skills/diagram-design/references/profiles.md`](skills/diagram-design/references/profiles.md) |
+| 197 | ✓ | [`skills/diagram-design/references/semantic-patterns.md`](skills/diagram-design/references/semantic-patterns.md) |
+| 198 | ✓ | [`skills/diagram-design/references/style-guide.md`](skills/diagram-design/references/style-guide.md) |
+| 199 | ✓ | [`skills/diagram-design/references/type-architecture.md`](skills/diagram-design/references/type-architecture.md) |
+| 200 | ✓ | [`skills/diagram-design/references/type-bar.md`](skills/diagram-design/references/type-bar.md) |
+| 201 | ✓ | [`skills/diagram-design/references/type-data-flow.md`](skills/diagram-design/references/type-data-flow.md) |
+| 202 | ✓ | [`skills/diagram-design/references/type-db-schema.md`](skills/diagram-design/references/type-db-schema.md) |
+| 203 | ✓ | [`skills/diagram-design/references/type-dependency.md`](skills/diagram-design/references/type-dependency.md) |
+| 204 | ✓ | [`skills/diagram-design/references/type-deployment.md`](skills/diagram-design/references/type-deployment.md) |
+| 205 | ✓ | [`skills/diagram-design/references/type-dp-integration.md`](skills/diagram-design/references/type-dp-integration.md) |
+| 206 | ✓ | [`skills/diagram-design/references/type-dp-security-matrix.md`](skills/diagram-design/references/type-dp-security-matrix.md) |
+| 207 | ✓ | [`skills/diagram-design/references/type-er.md`](skills/diagram-design/references/type-er.md) |
+| 208 | ✓ | [`skills/diagram-design/references/type-fishbone.md`](skills/diagram-design/references/type-fishbone.md) |
+| 209 | ✓ | [`skills/diagram-design/references/type-flowchart.md`](skills/diagram-design/references/type-flowchart.md) |
+| 210 | ✓ | [`skills/diagram-design/references/type-gantt.md`](skills/diagram-design/references/type-gantt.md) |
+| 211 | ✓ | [`skills/diagram-design/references/type-heatmap.md`](skills/diagram-design/references/type-heatmap.md) |
+| 212 | ✓ | [`skills/diagram-design/references/type-high-level.md`](skills/diagram-design/references/type-high-level.md) |
+| 213 | ✓ | [`skills/diagram-design/references/type-it-state.md`](skills/diagram-design/references/type-it-state.md) |
+| 214 | ✓ | [`skills/diagram-design/references/type-journey.md`](skills/diagram-design/references/type-journey.md) |
+| 215 | ✓ | [`skills/diagram-design/references/type-kanban.md`](skills/diagram-design/references/type-kanban.md) |
+| 216 | ✓ | [`skills/diagram-design/references/type-layers.md`](skills/diagram-design/references/type-layers.md) |
+| 217 | ✓ | [`skills/diagram-design/references/type-line.md`](skills/diagram-design/references/type-line.md) |
+| 218 | ✓ | [`skills/diagram-design/references/type-loop.md`](skills/diagram-design/references/type-loop.md) |
+| 219 | ✓ | [`skills/diagram-design/references/type-medallion.md`](skills/diagram-design/references/type-medallion.md) |
+| 220 | ✓ | [`skills/diagram-design/references/type-nested.md`](skills/diagram-design/references/type-nested.md) |
+| 221 | ✓ | [`skills/diagram-design/references/type-org-chart.md`](skills/diagram-design/references/type-org-chart.md) |
+| 222 | ✓ | [`skills/diagram-design/references/type-polar.md`](skills/diagram-design/references/type-polar.md) |
+| 223 | ✓ | [`skills/diagram-design/references/type-process.md`](skills/diagram-design/references/type-process.md) |
+| 224 | ✓ | [`skills/diagram-design/references/type-pyramid.md`](skills/diagram-design/references/type-pyramid.md) |
+| 225 | ✓ | [`skills/diagram-design/references/type-quadrant.md`](skills/diagram-design/references/type-quadrant.md) |
+| 226 | ✓ | [`skills/diagram-design/references/type-radar.md`](skills/diagram-design/references/type-radar.md) |
+| 227 | ✓ | [`skills/diagram-design/references/type-sankey.md`](skills/diagram-design/references/type-sankey.md) |
+| 228 | ✓ | [`skills/diagram-design/references/type-scatter.md`](skills/diagram-design/references/type-scatter.md) |
+| 229 | ✓ | [`skills/diagram-design/references/type-sequence.md`](skills/diagram-design/references/type-sequence.md) |
+| 230 | ✓ | [`skills/diagram-design/references/type-state.md`](skills/diagram-design/references/type-state.md) |
+| 231 | ✓ | [`skills/diagram-design/references/type-story-map.md`](skills/diagram-design/references/type-story-map.md) |
+| 232 | ✓ | [`skills/diagram-design/references/type-swimlane.md`](skills/diagram-design/references/type-swimlane.md) |
+| 233 | ✓ | [`skills/diagram-design/references/type-timeline.md`](skills/diagram-design/references/type-timeline.md) |
+| 234 | ✓ | [`skills/diagram-design/references/type-tree.md`](skills/diagram-design/references/type-tree.md) |
+| 235 | ✓ | [`skills/diagram-design/references/type-treemap.md`](skills/diagram-design/references/type-treemap.md) |
+| 236 | ✓ | [`skills/diagram-design/references/type-uml-class.md`](skills/diagram-design/references/type-uml-class.md) |
+| 237 | ✓ | [`skills/diagram-design/references/type-venn.md`](skills/diagram-design/references/type-venn.md) |
+| 238 | ✓ | [`skills/diagram-design/references/type-wardley.md`](skills/diagram-design/references/type-wardley.md) |
+| 239 | ✓ | [`skills/diagram-design/references/type-waterfall.md`](skills/diagram-design/references/type-waterfall.md) |
+| 240 | ✓ | [`skills/diagram-design/scripts/drawio_extract.py`](skills/diagram-design/scripts/drawio_extract.py) |
+| 241 | ✓ | [`skills/diagram-design/scripts/excalidraw_extract.py`](skills/diagram-design/scripts/excalidraw_extract.py) |
+| 242 | ✓ | [`skills/diagram-design/scripts/export_svg.py`](skills/diagram-design/scripts/export_svg.py) |
+| 243 | ✓ | [`skills/diagram-design/scripts/mermaid_extract.py`](skills/diagram-design/scripts/mermaid_extract.py) |
+| 244 | ✓ | [`skills/diagram-design/scripts/self_check.py`](skills/diagram-design/scripts/self_check.py) |
+| 245 | ✓ | [`skills/diagram-design/SKILL.md`](skills/diagram-design/SKILL.md) |
 
 ---
 

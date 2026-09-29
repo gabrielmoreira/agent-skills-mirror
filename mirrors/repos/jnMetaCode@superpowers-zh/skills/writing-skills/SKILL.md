@@ -14,7 +14,7 @@ metadata:
 
 **编写技能就是将测试驱动开发应用于流程文档。**
 
-**个人技能存放在智能体特定的目录中（Claude Code 用 `~/.claude/skills`，Codex 用 `~/.agents/skills/`）**
+**个人技能存放在你所用运行环境的技能目录中**（Claude Code 上是 `~/.claude/skills/`）——其他运行环境的路径见 [codex-tools.md](../using-superpowers/references/codex-tools.md) 或 [gemini-tools.md](../using-superpowers/references/gemini-tools.md)。Codex、Copilot CLI 和 Gemini CLI 也都认 `~/.agents/skills/`，作为跨运行环境的别名。
 
 你编写测试用例（带子智能体的压力场景），观察它们失败（基线行为），编写技能（文档），观察测试通过（智能体遵守规则），然后重构（堵住漏洞）。
 
@@ -321,8 +321,8 @@ digraph when_flowchart {
 
 **为你的搭档可视化：** 使用此目录中的 `render-graphs.js` 将技能的流程图渲染为 SVG：
 ```bash
-./render-graphs.js ../some-skill           # 每个图表分别渲染
-./render-graphs.js ../some-skill --combine # 所有图表合并为一个 SVG
+node ./render-graphs.js ../some-skill           # 每个图表分别渲染
+node ./render-graphs.js ../some-skill --combine # 所有图表合并为一个 SVG
 ```
 
 ## 代码示例
@@ -374,6 +374,8 @@ pptx/
   scripts/       # 可执行工具
 ```
 适用场景：参考资料太多无法内联
+
+在正文里调用技能自带的脚本时，要通过解释器来调用（`bash scripts/tool.sh`、`node scripts/tool.js`），绝不用裸路径：有些运行环境的插件打包器会去掉可执行位，在那里裸写 `scripts/tool.sh` 会以 `Permission denied` 失败。
 
 ## 铁律（与 TDD 相同）
 

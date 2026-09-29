@@ -4,6 +4,53 @@ Note: Only use **NEW:** for entirely new prompt files, NOT for new additions/sec
 
 ### Claude Code System Prompts Changelog
 
+# [2.1.284](https://github.com/Piebald-AI/claude-code-system-prompts/commit/3c25991)
+
+_-2,208 tokens_
+
+- **NEW:** System Prompt: PR Steward handoff guidance — Requires checking a PR's PR Steward labels before pushing or babysitting it, and offering leave-it, one-change, or take-over choices instead of acting.
+- **NEW:** Agent Prompt: PR follow-up cron (PR Steward label check) — Tells the follow-up cron not to fix or push a PR carrying PR Steward labels, but to notify the user once.
+- Agent Prompt: PR follow-up cron and Skill: /loop slash command (dynamic mode) — Add PR Steward handling: when enabled, the cron also fetches PR labels and inserts the label-check clause, and the loop skill gains a PR Steward check block.
+- **NEW:** Agent Prompt: Security monitor candidate account and standing-rule changes rule — Adds a block rule for changing account security or creating standing rules like mail forwarding unless the user names the setting, and extends shared-configuration blocking to widening document visibility.
+- **NEW:** Agent Prompt: Security monitor candidate evaluation rules — Adds evaluation rules for unverifiable gestures, side-door page JavaScript, tool effect over self-described arguments, secret-shaped labels, restricted destinations, and copies inheriting sharing.
+- **NEW:** Agent Prompt: Security monitor candidate unrequested connected-app commit rule — Adds a block rule for committing decisions, spending money, publishing, or sending from a connected account when the user asked only to read, review, or draft.
+- **NEW:** Agent Prompt: Security monitor candidate user boundary rule — Makes explicit user boundaries block in-scope actions, including connected-account commits, and binds boundaries on sending or uploading at their plain meaning.
+- Agent Prompt: Security monitor for autonomous agent actions and Security monitor Claude Tag connector writes — The main prompt's Bound, bypass, unseen-result, and persistent-configuration wording now comes from a selectable variant, and the connector exception's rule list is variable-supplied.
+- **NEW:** Data: allowManagedPermissionRulesOnly setting (with allowed-tools frontmatter scope and deny-rules-still-apply notes) — Documents that only managed settings can add allow rules; allowed-tools frontmatter is ignored except on admin-backed channels, while deny and ask rules still apply.
+- **NEW:** Data: Sandbox deniedResolvedAddresses setting — Documents the list of IP addresses or CIDR ranges an allowed hostname must not resolve to, and its exemption for proxied routes.
+- **NEW:** Data: Sandbox root without CAP_SETFCAP error — Explains that running as uid 0 without CAP_SETFCAP makes every sandboxed command fail on newer Linux kernels, and says to grant the capability or run as non-root.
+- **NEW:** Data: Submit feedback control request — Documents the internal request that submits a /feedback report with transcript and sanitized error log, returns an unavailable reason when disabled, and supports saving a redacted bundle locally.
+- Data: Claude Code gateway protocol — Adds a `GET /api/oauth/usage` endpoint gateways can serve so clients show dollar spend alongside percent, with field formats and an example response.
+- Agent Prompt: Status line setup — Documents optional `used_usd`, `limit_usd`, and `period` fields on `rate_limits.spend_limit`, and updates the spend example to show dollars when available.
+- Data: Claude API reference (PHP, Ruby) — Makes the current Opus model's thinking always on (disabled returns 400, default effort medium), gives the previous Opus its own note, and hard-codes the refusal-fallback model as `claude-opus-4-8`.
+- **REMOVED:** Data: Claude API reference — Go — Removes the Go SDK reference.
+- **REMOVED:** Data: Published model catalog seed guidance — Removes the note on the compiled-in model catalog copy and its refresh.
+- **NEW:** Skill: Dynamic pacing loop execution (re-arm decision) and Skill: /loop self-pacing mode (re-arm decision) — Split out the step for choosing whether to re-arm with ScheduleWakeup, setting delay, reason, prompt, and noop, or stop the loop.
+- Skill: Dynamic pacing loop execution and Skill: /loop self-pacing mode — Confirm and re-arm steps are now built from shared blocks, adding slots for a re-arm status update and a stopped-loop outcome note.
+- System Prompt: Monitor fallback heartbeat guidance — Adds re-arm status-update instructions, and the stop instruction now calls ScheduleWakeup with `stop: true` and stops the monitor with the task-stop tool.
+- System Prompt: Autonomous loop tick (dynamic pacing) and /loop tick (loop.md absent; loop.md tasks) — Reword re-arm instructions from "at the end of this turn" to "this turn".
+- **NEW:** System Reminder: Attached machine reply not received — Says a connected machine's reply never arrived so the outcome is unknown, forbids re-running non-idempotent commands to see output, and suggests narrower commands.
+- **NEW:** Tool Description: Enable Claude app browser, Enable Claude in Chrome, and Enable computer use — Enable each tool once, before its matching tools, when the user needs their own browser, sign-in, or applications, and not if those tools are already present.
+- **NEW:** Tool Description: ListAgents (no SendMessage tool) — Describes ListAgents for sessions lacking SendMessage, and says replies must go through the host application's messaging tool or be relayed to the user.
+- Agent Prompt: Agent Hook — Distinguishes a remote hook call from a local one lacking a transcript, telling the agent to ignore `transcript_path` when no transcript file exists.
+- System Reminder: Directory sync full environment restore and partial environment restore — Environment reset, upload timing, and lost-state descriptions now come from variables instead of fixed "container was recreated" wording.
+- System Reminder: Directory sync branch name collision — Escapes the blocking branch name as untrusted text, falling back to "a branch of this checkout" when unnamed.
+- Tool Description: Poll — Moves the idle-signal and pending-events paragraph into a variable instead of fixed prompt text.
+- **NEW:** Tool Parameter: Artifact database access level — Documents the `as_level` parameter for testing an artifact's access rules as a view, interact, or admin user; it only narrows access.
+- Tool Description: Artifact database guidance — Adds a "view" level for `as_level`, and rewords the interact and admin levels in terms of who can use or edit the artifact.
+- Tool Description: Artifact database version pinning guidance, Tool Parameter: Artifact database version precondition, and Artifact database batch writes — `if_version` is now required for writes to existing documents and omitted only when creating.
+- Tool Parameter: Artifact database batch writes — Adds a 1 MiB limit on the batch body, and unpinned existing-document entries now fail the batch.
+- Tool Parameter: Artifact URL guidance — Defines valid claude.ai artifact links and requires reading an artifact before publishing to it, merging into the live version after a refusal.
+- **NEW:** Tool Parameter: Artifact URL guidance (app wording) — Adds a third-person variant of the artifact URL guidance with the same link format and read-before-publish requirement.
+- Tool Description: Artifact design fallback requirements — Widens allowed external script sources to cdnjs (preferred), jsDelivr, unpkg, Tailwind CDN, and jQuery.
+- Tool Description: Artifact design skill loading guidance (app wording) — The workshop-skill exception is now included only when workshop documents are supported.
+- Tool Description: Artifact responsive page contract — Adds `min-width: 0` guidance for flex and grid children holding text, code, or tables, and moves the no-horizontal-scroll rule up front.
+- Tool Description: Artifact theme-aware styling — Adds a concrete CSS token skeleton for light, dark, and toggle styling, and spells out the mirrored structure for dark-first designs.
+- Tool Description: Artifact title and description guidance — Tells Claude to reuse the user's own name for a title, tightens naming rules, and says `description` fills in only for HTML lacking a `<title>`.
+- **REMOVED:** Skill: Artifact dashboard — Removes the dashboard artifact skill for KPI tiles, chart specs, and breakdown tables.
+- **REMOVED:** Skill: Design description — Removes the Design skill trigger description for editable multi-artboard canvas artifacts.
+- **REMOVED:** Skill: Plugin authoring — Removes the guide to writing Claude Code mods as hot-reloading function-hook plugins.
+
 # [2.1.283](https://github.com/Piebald-AI/claude-code-system-prompts/commit/3eb3af1)
 
 _+11,976 tokens_

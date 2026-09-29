@@ -504,6 +504,8 @@ mcp:
 [`projects`](/docs/reference/targets/configuration#projects) 與 `mcp.projects`
 底下的每個資料夾，每個 project 都有一個 **MCP** 分頁。
 
+![專案的 MCP 分頁：依專案開關的全域 server，以及專案專用的 server](/img/projects-mcp-tab.png)
+
 - **新增專案** 會要求填入資料夾與它的 targets。勾選 **MCP** 可以讓該資料夾
   同時列在 `mcp.projects` 底下。
 - **MCP** 分頁會列出每個 global server，並各附一個開關。關閉其中一個會儲存一筆

@@ -18,8 +18,7 @@ surface with a download step attached.
 Each `records_*.rs` file defines one or more `pub(crate) const ModuleRecord`
 values for a family of related modules:
 
-- `records_browser.rs`: `TINYBROWSER`.
-- `records_desktop.rs`: `TINYDESKTOP`.
+- `records_computer.rs`: `TINYCOMPUTER` (desktop and browser control).
 - `records_docs_wallet.rs`: `TINYDOCS`, `TINYWALLET`.
 - `records_extra.rs`: `TINYBOX`, `TINYCHANNELS`, `TINYHOSTS`.
 - `records_mcp_connectors.rs`: `TINYCONNECTORS`, `TINYMCP`.

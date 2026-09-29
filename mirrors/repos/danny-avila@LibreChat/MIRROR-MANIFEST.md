@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `danny-avila/LibreChat` — 26 default patterns, 1 followed patterns, 10 file(s) materialized.
+Mirror of `danny-avila/LibreChat` — 26 default patterns, 1 followed patterns, 9 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `danny-avila/LibreChat` — 26 default patterns, 1 followed patterns, 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 10 |
+| Files         | 9 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -65,10 +65,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 4 | ✓ | [`.claude/skills/improve-codebase-architecture/HTML-REPORT.md`](.claude/skills/improve-codebase-architecture/HTML-REPORT.md) |
 | 5 | ✓ | [`.claude/skills/improve-codebase-architecture/SKILL.md`](.claude/skills/improve-codebase-architecture/SKILL.md) |
 | 6 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 7 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 8 | ✓ | [`e2e/fixtures/deployment-skills/e2e-deployment-skill/SKILL.md`](e2e/fixtures/deployment-skills/e2e-deployment-skill/SKILL.md) |
-| 9 | ✓ | [`skill/README.md`](skill/README.md) |
-| 10 | → | [`e2e/lighthouse/README.md`](e2e/lighthouse/README.md) |
+| 7 | ✓ | [`e2e/fixtures/deployment-skills/e2e-deployment-skill/SKILL.md`](e2e/fixtures/deployment-skills/e2e-deployment-skill/SKILL.md) |
+| 8 | ✓ | [`skill/README.md`](skill/README.md) |
+| 9 | → | [`e2e/lighthouse/README.md`](e2e/lighthouse/README.md) |
 
 ---
 
