@@ -68,7 +68,7 @@ packaged skill; only the defaults below are seeded enabled.
 
 ### Enabled by default
 
-All three can be removed from Settings → Skills. A removed default is not
+All four can be removed from Settings → Skills. A removed default is not
 silently restored, including by preactivation.
 
 #### FreeSkillz.xyz
@@ -127,6 +127,31 @@ It rewrites only prose being composed for a human reader. Quoted material,
 addresses, codes, prices, form-field values, and wording you supplied verbatim
 are left alone.
 
+#### WordPress REST API
+
+Loads through the catalog for relevant Act/Dev content tasks on Mid and Full;
+it is not preactivated for every WordPress page. It adds no tool or authentication
+bridge. Compact keeps skills disabled and receives short WordPress adapter
+guidance through the existing site-adapter path.
+
+For posts, pages, REST-enabled custom types, and their taxonomy, the recipe
+prefers the API when all requested fields and the signed-in session are supported
+and API mutations are authorized. If the API is viable but permission is missing,
+it asks once for `/allow-api`; existing grants are reused. Ask mode cannot write.
+It reuses existing record IDs, creates new content as a draft, verifies content
+and term IDs, then publishes that same record only when requested. Uncertain
+writes must be reconciled before retrying or creating through the editor.
+
+The recipe uses ordinary `fetch_url` with session cookies and a REST nonce in
+`X-WP-Nonce`. That nonce can enter the configured LLM conversation and recorded
+traces. **Strict secret handling uses the UI instead**, without requesting that
+the setting be disabled. Unsupported fields, missing sessions, denied access,
+or a declined API grant lead to existing Code/Text/Classic editor surfaces before
+considering a plugin. Installing plugins or changing site-wide editor settings
+still requires explicit authorization. See the
+[packaged recipe](../src/chrome/skills/wordpress-rest-api.md) and
+[WordPress authentication documentation](https://developer.wordpress.org/rest-api/using-the-rest-api/authentication/).
+
 ### Opt-in packaged skills
 
 These ship in the extension and appear under Settings → Skills as available to
@@ -178,6 +203,22 @@ scheduled instructions, or links. The skill can inspect transcript, result, and
 clip metadata; WebBrain's generic download tool cannot attach a bearer header,
 so actual audio retrieval uses the local Phonr dashboard or the authenticated
 curl example in the skill. It does not claim to play audio from metadata alone.
+
+## Service-specific API recipes
+
+Keep service details in separate skills so the always-present prompt only needs
+the routing and permission rules. WordPress's recipe covers content operations;
+Mail.tm documents disposable-mail signup and its API fallback; Phonr documents
+phone-call authorization, status, and interrupted-start reconciliation. These
+services have different authentication, capabilities, and retry behavior, so a
+generic instruction to use any available API is insufficient.
+
+A new recipe should describe discovery, supported operations/fields, permission
+requirements, credential exposure, verification, ambiguous-write recovery, and
+the UI fallback. Prefer existing tools; loading a skill never grants API mutation
+permission or broadens the user's requested outcome. Service-specific API-first
+exceptions must also agree with the shared prompts. Existing Mail.tm and Phonr
+workflows retain their own rules; the WordPress exception does not change them.
 
 ## See also
 

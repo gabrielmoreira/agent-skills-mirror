@@ -49,3 +49,15 @@ Optional `AgentDescriptor.entryMode: sessions` declares that an Agent has no pri
 `SessionDescriptor.attention: input` distinguishes an unanswered Agent question from execution consent. It is display state only; answering remains governed by the exact native request and existing question/approval capabilities.
 
 `SkillsOperations.status` accepts optional session context for project-specific discovery. Existing Agent/global skill backends may ignore it; it never authorizes arbitrary directory input.
+
+Optional `fastMode`, `sessionPermissions` and `sessionArchive` are runtime-negotiated Codex refinements. Settings resolve with authoritative native state; `permissions.mode: custom | null` never authorizes a default override. `unencryptedTransport` is local transport evidence for the permission UI, not a server security claim. Archive is reversible through `archiveSession(key, false)` and `listArchivedSessions`; it must retain native IDs/history and remain absent on older peers.
+
+Optional `permissions.requiresConfirmation` retains an unresolved native permission restore across reconnects. A current readable mode is not confirmation; clients keep Send blocked until an explicit permission selection returns verified state with the flag cleared.
+
+Optional `promptStatus` and `getPromptStatus` negotiate read-only receipt lookup. `recorded` identifies a durable Bridge receipt and run ID, not native dispatch, running or completion. `unknown` is not a rejection; neither result authorizes resending. Only exact native message identity reconciles an uncertain bubble. Missing capability preserves older peers.
+
+Optional `run_finished.terminalMessage` carries a fixed, safe system notice for a failed native turn. Its ID and timestamp match its history projection so recovery preserves one notice. It is not an assistant reply, raw provider diagnostic, or evidence to retry a prompt; older peers may ignore the additive field and read the same system row in history.
+
+`health.sessionCatalogSync === 1` optionally negotiates `sessions.sync` for Codex, Claude Code and Pi without changing `sessions.list` or the adapter's array return type. Full snapshots use immutable epoch/revision pages of at most 64 KiB; small deltas carry exact base revision, upserts, removed keys and complete order. Clients apply only complete, validated results atomically and may restart an expired page sequence once. Incomplete native discovery is not deletion evidence. Keep these wire types runtime-free.
+
+`ChatMessage.attachments[].artifactId` and `FinalMessage.attachments` preserve stable, backend-authored attachment references. Optional `AgentAdapter.artifacts` resolves a session-bound artifact into an opaque expiring file handle with bounded reads. This capability is independent of transport and workspace configuration files; absence never authorizes a URL/path fallback. Keep the package runtime-neutral.

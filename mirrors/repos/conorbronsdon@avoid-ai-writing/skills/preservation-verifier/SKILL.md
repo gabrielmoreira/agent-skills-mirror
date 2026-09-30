@@ -54,16 +54,17 @@ The verifier does not rewrite content itself.
 The bundled `scripts/validate.js` is an exact copy of the source repository's preservation validator. When Node execution is available, run:
 
 ```bash
-node scripts/validate.js before.md after.md
+node scripts/validate.js --residual-policy warn before.md after.md
 ```
 
 For programmatic use:
 
 ```js
 const { validate } = require("./scripts/validate.js");
+const result = validate(original, rewritten, { residualPolicy: "warn" });
 ```
 
-The validator checks protected structures and reports blocking errors separately from warnings. It does not decide whether a semantic change was grounded in an explicit user correction or whether the user specifically authorized editing a normally protected span. Never claim it ran unless the current host executed it.
+Use the explicit `warn` residual policy for editorial verification. The validator exposes mechanical `preservation` results separately from `quality` diagnostics while retaining top-level errors, warnings, and stats. Residual growth stays visible as a warning; it is not proof of content damage and does not by itself authorize a repair. A skipped, unavailable, or unscored quality check is not a clean residual audit. It does not decide whether a semantic change was grounded in an explicit user correction or whether the user specifically authorized editing a normally protected span. Never claim it ran unless the current host executed it.
 
 If execution is unavailable, compare the original and rewrite manually using the same preservation contract and label the result as `model_only`.
 
@@ -79,11 +80,11 @@ Do not claim the deterministic validator checked semantic representation details
 
 ### PASS
 
-No blocking preservation error was found. Continue only if another requested stage remains.
+No blocking mechanical preservation error was found and no warning or semantic concern remains unresolved. If the user requested a residual audit, PASS also requires `quality.status: checked`; `skipped`, `unavailable`, or `unscored` requires REVIEW even when a number-spelling warning has been resolved. This does not prove semantic fidelity. Continue only if another requested stage remains.
 
 ### REVIEW
 
-Warnings or semantic changes need judgment but are not automatically blocking. This includes a literal validator difference that corresponds to a specifically requested edit of normally protected content: review it against that scope and its remaining data and attribution constraints instead of automatically repairing it back to the original. Explain the exact uncertainty.
+Warnings or semantic changes need judgment but are not automatically blocking. Review `number-added`, `number-missing`, and `residual-grew` against the source and context; number spelling changes can be legitimate. Report unavailable or unscored residual analysis as incomplete when that audit was required. This includes a literal validator difference that corresponds to a specifically requested edit of normally protected content: review it against that scope and its remaining data and attribution constraints instead of automatically repairing it back to the original. Explain the exact uncertainty.
 
 ### FAIL
 

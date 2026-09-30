@@ -1,6 +1,6 @@
 # overlay
 
-Signals pushed from the core to the desktop **overlay surfaces**, separate WebViews (`app/src/overlay/OverlayApp.tsx` and the macOS notch pill `app/src/notch/NotchApp.tsx`, hosted by `crates/openhuman-app/src/notch_window.rs`) that render short, non-focus-stealing messages over the desktop. The standalone `overlay` window is currently disabled in `crates/openhuman-app/tauri.conf.json`; the notch is the live consumer. Because these surfaces run in their own JS runtime they cannot share Redux state with the main window; each subscribes to its own Socket.IO connection and reacts to events the core broadcasts. This module owns a single fire-and-forget broadcast bus for **attention** events; the Socket.IO transport bridge (`crates/openhuman-core/src/core/socketio.rs`) subscribes and forwards them. It is deliberately light: export-focused, one broadcast channel, no persistence and no RPC.
+Signals pushed from the core to the desktop **overlay surfaces**, separate WebViews (`app/src/overlay/OverlayApp.tsx` and the macOS notch pill `app/src/notch/NotchApp.tsx`, hosted by `crates/openhuman-app/src/notch_window.rs`) that render short, non-focus-stealing messages over the desktop. The standalone `overlay` window is currently disabled in `crates/openhuman-app/tauri.conf.json`; the notch is the live consumer. Because these surfaces run in their own JS runtime they cannot share Redux state with the main window; each subscribes to its own Socket.IO connection and reacts to events the core broadcasts. This module owns a single fire-and-forget broadcast bus for **attention** events; the Socket.IO transport bridge (`crates/openhuman-rpc/src/server/socketio.rs`) subscribes and forwards them. It is deliberately light: export-focused, one broadcast channel, no persistence and no RPC.
 
 ## Responsibilities
 
@@ -26,7 +26,7 @@ Signals pushed from the core to the desktop **overlay surfaces**, separate WebVi
 
 ## Events
 
-Not a `DomainEvent` / bus (`crates/openhuman-core/src/core/bus.rs`, `crates/openhuman-core/src/core/events.rs`) participant. It runs its own standalone `tokio::sync::broadcast` channel. The Socket.IO bridge in `crates/openhuman-core/src/core/socketio.rs` (`spawn_web_channel_bridge`, task #3) subscribes via `subscribe_attention_events()` and emits each event to the overlay socket as both `overlay:attention` and `overlay_attention`; it logs and continues on `Lagged` and breaks on `Closed`.
+Not a `DomainEvent` / bus (`crates/openhuman-core/src/core/bus.rs`, `crates/openhuman-core/src/core/events.rs`) participant. It runs its own standalone `tokio::sync::broadcast` channel. The Socket.IO bridge in `crates/openhuman-rpc/src/server/socketio.rs` (`spawn_web_channel_bridge`, task #3) subscribes via `subscribe_attention_events()` and emits each event to the overlay socket as both `overlay:attention` and `overlay_attention`; it logs and continues on `Lagged` and breaks on `Closed`.
 
 ## Persistence
 
@@ -38,7 +38,7 @@ None. State is purely an in-memory broadcast channel; events not consumed when p
 
 ## Used by
 
-- `crates/openhuman-core/src/core/socketio.rs`: subscribes to the bus and forwards events to the overlay WebView over Socket.IO.
+- `crates/openhuman-rpc/src/server/socketio.rs`: subscribes to the bus and forwards events to the overlay WebView over Socket.IO.
 - `crates/openhuman-core/src/voice/always_on/processor.rs`: `notch_status` publishes "Listening" / "Processing" status messages (`source: "voice"`, with a TTL) that the notch maps to icons. The only in-tree publisher today.
 - `crates/openhuman-core/src/desktop/notifications/bus.rs`: references this module's bus only as a documented pattern to mirror (no code dependency).
 

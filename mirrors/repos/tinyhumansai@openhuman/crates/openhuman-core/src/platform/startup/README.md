@@ -1,6 +1,6 @@
 # startup
 
-Generic OpenHuman process-startup helpers. Currently a thin, stateless module whose sole job is to run one-shot workspace migrations during core boot. It centralizes "do this once when the process comes up" logic so the transport layer (`crates/openhuman-core/src/core/jsonrpc.rs`) can fire it without owning migration details. Failures are logged and never abort startup: individual migration helpers own their own idempotency markers.
+Generic OpenHuman process-startup helpers. Currently a thin, stateless module whose sole job is to run one-shot workspace migrations during core boot. It centralizes "do this once when the process comes up" logic so the transport layer (`crates/openhuman-core/src/core/runtime/bootstrap.rs`) can fire it without owning migration details. Failures are logged and never abort startup: individual migration helpers own their own idempotency markers.
 
 ## Responsibilities
 
@@ -43,7 +43,7 @@ No own state/store. It triggers migrations that mutate on-disk workspace artifac
 
 ## Used by
 
-- `crates/openhuman-core/src/core/jsonrpc.rs` (core boot path): the only caller; invokes `run_workspace_migrations(&workspace_dir)` during core startup, after approval-gate wiring and before MCP registry boot-spawn.
+- `crates/openhuman-core/src/core/runtime/bootstrap.rs` (core boot path): the only caller; invokes `run_workspace_migrations(&workspace_dir)` during core startup, after approval-gate wiring and before MCP registry boot-spawn.
 
 ## Notes / gotchas
 

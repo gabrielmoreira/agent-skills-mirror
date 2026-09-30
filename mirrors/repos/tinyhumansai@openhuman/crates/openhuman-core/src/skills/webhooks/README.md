@@ -57,7 +57,7 @@ None. This domain owns no `tools.rs` agent tools.
 
 ## Events
 
-Subscriber (in `bus.rs`): `WebhookRequestSubscriber`, with `name() = "webhook::request_handler"` and `domains() = ["webhook"]`. Registered in `register_domain_subscribers()` (`crates/openhuman-core/src/core/jsonrpc.rs`, called from `bootstrap_core_runtime()`), gated on the `Skills` domain group being enabled (`plan.skills`) and installed at most once per process; `channels/runtime/startup/start_channels.rs` deliberately does not register it, to avoid double-registration when both startup paths run in the same process.
+Subscriber (in `bus.rs`): `WebhookRequestSubscriber`, with `name() = "webhook::request_handler"` and `domains() = ["webhook"]`. Registered in `register_domain_subscribers()` (`crates/openhuman-core/src/core/runtime/subscribers.rs`, called from `bootstrap_core_runtime()`), gated on the `Skills` domain group being enabled (`plan.skills`) and installed at most once per process; `channels/runtime/startup/start_channels.rs` deliberately does not register it, to avoid double-registration when both startup paths run in the same process.
 
 - Subscribes: `DomainEvent::WebhookIncomingRequest` (published by the socket transport in `socket/event_handlers.rs`).
 - Publishes: `DomainEvent::WebhookRegistered` / `WebhookUnregistered` (from the router on registration changes; `WebhookUnregistered`, the `registration_changed` debug event and the route re-persist all fire only when a registration was actually removed. Unregistering an absent tunnel is a silent no-op that returns `Ok(false)`, see #6091), `DomainEvent::WebhookReceived` (when routed to a target), `DomainEvent::WebhookProcessed` (always, with status/elapsed/error).
@@ -88,7 +88,7 @@ Note that nothing in the production startup path currently constructs a `Webhook
 - `crates/openhuman-core/src/core/all.rs`: registers the controllers/schemas into the RPC registry.
 - `crates/openhuman-core/src/platform/socket/manager.rs`: stores the `WebhookRouter` (`set_webhook_router` / `webhook_router`) on the socket manager; ops/bus retrieve it from there.
 - `crates/openhuman-core/src/platform/socket/event_handlers.rs`: publishes `WebhookIncomingRequest` from the socket and reads the shared router slot.
-- `crates/openhuman-core/src/core/jsonrpc.rs`: registers `WebhookRequestSubscriber` in `register_domain_subscribers()` and provides the RPC transport surface.
+- `crates/openhuman-core/src/core/runtime/subscribers.rs`: registers `WebhookRequestSubscriber`.
 - `crates/openhuman-core/src/core/events.rs`: defines the `Webhook*` `DomainEvent` variants this module uses.
 
 ## Notes / gotchas

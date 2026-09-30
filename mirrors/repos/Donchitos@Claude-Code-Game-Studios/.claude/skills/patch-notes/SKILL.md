@@ -20,7 +20,9 @@ every file write follows `.claude/docs/automation-modes.md`
 **Confirm the history you are about to read belongs to THIS game.** Run this
 before Phase 2 and stop if it fails.
 
-1. Sample the recent log: `git log --oneline -20`.
+1. Sample the recent log: `git log --oneline -20`. **If it is empty or git is
+   unavailable, skip this check** — there is nothing to classify, and Phase 2's
+   no-changelog-data branch is the right stop.
 2. **Classify every commit in the range, one at a time**, into exactly one of:
    - **Game** — changes the game the player plays: mechanics, content, balance,
      art, audio, UI, a bug in any of those.
@@ -32,7 +34,7 @@ before Phase 2 and stop if it fails.
 3. Then decide from the counts:
    - **At least one Game commit** → proceed, using **only** those. Say how many
      of how many you used, so the reader can see the filter ran.
-   - **Zero Game commits** → stop, using the message below.
+   - **Zero Game commits** → stop, using the message below, and give the count (0 of how many) so the reader can see the filter ran.
 
 > **Filter per commit; do not stop on a repo that merely contains maintenance
 > work.** Every project built on this framework accumulates commits touching
@@ -45,14 +47,18 @@ before Phase 2 and stop if it fails.
 > a repo-level stop does not.
 
 Corroborate before you proceed, cheaply: the Game commits should name systems
-that appear in `design/` and `src/`. If they name a product those directories
+that appear in `design/` and the code root (`src/`, `Assets/` or `Source/`). If
+they name a product those directories
 never mention, that is the real wrong-history signal — stop.
 
 If **no** commit in the range is this game's, say so and stop:
 
-> "The git history in this repo does not appear to belong to [game]. The recent
+> "The git history in this repo does not appear to belong to [game]: 0 of the [N]
+> recent commits are Game commits. The recent
 > commits describe [what they actually describe]. I cannot generate release notes
 > from it — point me at the right history, or supply the change list directly."
+
+Verdict: **BLOCKED** — stop here without generating notes.
 
 **Why this is a hard stop, not a warning.** This exact failure is real, not
 hypothetical: a batch of framework-internal commits produced player-facing copy
@@ -110,7 +116,12 @@ Verdict: **BLOCKED** — stop here without generating notes.
 1. Glob for `docs/patch-notes-template.md` and `.claude/docs/templates/patch-notes-template.md`.
 2. If found at either location, read it and use it as the output structure for Phase 4
    instead of the built-in style templates (Brief / Detailed / Full). Fill in the
-   template's sections with the categorized data.
+   template's sections with the categorized data, mapping each category to the
+   template section that means the same (New Content → its new-features section,
+   Bug Fixes → its fixes section); a category with no matching section goes under
+   the closest one, never dropped. Keep the template's header and footer text
+   as written. Say in the output which template was used — and, when `--style`
+   was passed, that the template replaced it.
 3. If not found, use the built-in style templates as defined in Phase 4.
 
 ---
@@ -225,17 +236,18 @@ Check the generated notes for:
 
 Present the completed patch notes to the user along with: a count of changes by category, and any internal changes that were excluded (for review).
 
-Ask: "May I write these patch notes to `docs/patch-notes/[version].md`?"
+Ask: "May I write these patch notes to `docs/patch-notes/[version].md`, and an
+archive copy to `production/releases/[version]/patch-notes.md`?"
 
-If yes, write the file to `docs/patch-notes/[version].md`, creating the directory
-if needed. Also write to `production/releases/[version]/patch-notes.md` as the
-internal archive copy.
+If yes, write both files, creating the directories if needed.
+If no, write nothing.
 
 ---
 
 ## Phase 7: Next Steps
 
-Verdict: **COMPLETE** — patch notes generated and saved.
+Verdict: **COMPLETE** — patch notes generated and saved. (If the write was
+declined: Verdict: **COMPLETE** — patch notes generated and shown, not saved.)
 
 - Run `/release-checklist` to verify all other release gates are met before publishing.
 - Share the patch notes draft with the community-manager for tone review before posting publicly.

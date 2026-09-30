@@ -31,11 +31,15 @@ description: 通过 Toonflow MCP 操作工作区、实时画布、节点、文�
 
 ## 操作画布和节点
 
-- 先调用 `getCanvas`，读取 `availableNodeTypes`、节点、端口、连线和 `nodeTools`。`addNode` 的类型必须来自当前列表；新增后使用返回的实际节点 ID 和函数 schema。
+- `getCanvas` 默认只返回画布概览，添加节点前用 `include: ["nodeTypes"]` 查询 `availableNodeTypes`。用 `findCanvasNodes` 定位目标；已知 ID 时直接用 `getCanvasNodes` 读取所需字段，以 `getCanvasEdges` 查询局部连接，以 `getNodeTools` 查询函数及完整 schema。`addNode` 的类型必须来自当前列表；新增后使用返回的实际节点 ID 查询函数。
+- 五个画布读取工具受条数和 64 KiB 体积限制，保持原参数用 `nextCursor` 续读；节点/连线每页最多扫描 2000 项，空结果但 `hasMore: true` 仍需继续，游标失效则重新查询。`totalNodes/totalEdges` 是画布总量而非命中数，`selectedOnly` 按当前选择现场筛选。全图任务分批处理，保留摘要和游标，不把每页详情累积进上下文；完成后只核对受影响节点。
+- `getCanvasNodes` 的业务 `args` 默认只读 `label/type/position`；端口、正文和输出须显式选择 `fields: ["ports", "data", "outputs"]`，选择 `data` 时可用 `dataKeys` 缩小范围。详情和函数查询的 `nodeIds` 每批最多 20 个且不允许重复。`getCanvas/findCanvasNodes` 的 `limit` 最多 100，`getCanvasEdges` 最多 200，`getNodeTools` 最多 50。
+- 顶层 `nextCursor` 仅用于保持原参数继续节点分页。处理节点任一 `truncated` 时，仅查询所属节点，使用该项路径及偏移，不携带原 `cursor`：`text` 用该项 `path` 和 `nextOffset` 作为 `textOffset` 续读，`entries` 改用 `valueOffset`；没有 `nextOffset` 表示该路径已到末尾。`depth/budget` 沿该项 `path` 缩小范围重新查询，不携带旧 `cursor`。对象/数组的 `valueLimit` 最多 100，文本的 `textLimit` 最多 4000；正偏移必须提供 `path`。路径最多 64 层和 2048 JSON UTF-8 字节，每段最多 256 字符；`pathDepthLimit/pathBytesLimit/circular` 不可靠重复请求补齐，`keyTooLong` 可按返回的 `nextOffset` 作为 `valueOffset` 跳过该键继续，但被跳过的值仍未取得。不得把截断或省略字段当作完整内容。
 - 使用 `addCanvas`、`switchCanvas`、`addNode`、`connectNodes` 等实时工具。不要直接写入带 `toonflowCanvas` 标记的 JSON；否则会绕开节点校验、历史记录、素材清理和界面状态。
 - 提示词、模型和生成参数通过 `nodeTools` 调用节点注册的函数。先发现函数名和参数，再调用；不要猜测 `node:setPrompt` 或配置结构存在于所有节点。
-- 连接前确认真实的 `sourceHandle`、`targetHandle` 和兼容的数据类型。图片或视频引用由连线提供；提示词中的引用标记应与节点实际引用顺序一致。
+- 连接前用 `getCanvasNodes` 的 `fields: ["ports"]` 确认真实的 `sourceHandle`、`targetHandle` 和兼容的数据类型。图片或视频引用由连线提供；提示词中的引用标记应与节点实际引用顺序一致，需要核对时用 `getCanvasEdges` 查询目标入边、`getCanvasNodes` 读取目标 `data.referenceOrder` 和源节点输出。
 - 批量操作优先使用支持数组的工具。只在用户需要整理整体布局时使用 `arrangeCanvas`，局部调整使用 `moveNodes`，查看内容使用 `fitCanvas`。
+- 整理、视口适配和删除的 ID 回执最多 100 项，另提供 `arrangedCount`、`nodeCount` 或 `removedEdgeCount`；`truncated` 不代表操作只完成了部分，不为获取完整回执而重执行。`nodeTools` 返回具体业务结果，不适用五个读取工具的 64 KiB 上限。
 - 断开、切换项目、切换画布或节点卸载后，重新发现状态，更新目标 ID，不向旧目标重试修改操作。
 
 ## 生成媒体

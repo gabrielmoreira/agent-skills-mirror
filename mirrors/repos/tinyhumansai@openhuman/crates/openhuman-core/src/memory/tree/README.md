@@ -2,7 +2,7 @@
 
 Host layer over the memory tree engine, which now lives in the TinyMemory
 module (see [`memory/README.md`](../README.md) for the extraction). Every
-handler and schema here names OpenHuman's `RpcOutcome` and `ControllerSchema`,
+handler and schema here names OpenHuman's `Outcome` and `ControllerSchema`,
 which the engine crate cannot see, so this directory is what stayed behind:
 RPC surface, not tree mechanics.
 

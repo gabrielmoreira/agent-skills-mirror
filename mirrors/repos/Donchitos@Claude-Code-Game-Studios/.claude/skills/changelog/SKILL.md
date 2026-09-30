@@ -31,7 +31,9 @@ Recent tags (newest first):
 auto-resolved *before* the body runs, so the read has already happened — what this
 check governs is whether that output is usable, not whether it is fetched.
 
-1. Read the injected commit subjects above.
+1. Read the injected commit subjects above. **If there are none — the log is
+   empty or git is unavailable — skip this check**: there is nothing to
+   classify, and Phase 1's no-history branch is the right stop.
 2. **Classify each one** as **Game** (mechanics, content, balance, art, audio,
    UI, or a bug in those), **Framework / maintenance** (subjects naming skills,
    hooks, agents, the test plan, CI, or the framework's own docs), or **Unclear**
@@ -53,13 +55,17 @@ check governs is whether that output is usable, not whether it is fetched.
 > history it is. Change both together.
 
 The genuine wrong-history signal is different: Game commits naming a product that
-`design/` and `src/` never mention. If you see that, stop.
+`design/` and the code root (`src/`, `Assets/` or `Source/`) never mention. If you
+see that, stop.
 
 If **no** commit in the range is this game's, say so and stop:
 
-> "The git history in this repo does not appear to belong to [game]. The recent
+> "The git history in this repo does not appear to belong to [game]: 0 of the [N]
+> recent commits are Game commits. The recent
 > commits describe [what they actually describe]. I cannot generate a changelog
 > from it — point me at the right history, or supply the change list directly."
+
+Verdict: **BLOCKED** — stop here without generating a changelog.
 
 **Why this is a hard stop, not a warning.** This exact failure is real, not
 hypothetical: a batch of framework-internal commits produced player-facing copy
@@ -84,6 +90,13 @@ for Phase 2 rather than re-running the same commands.
 Read the argument for the target version or sprint number. If a version is given, use the corresponding git tag. If a sprint number is given, use the sprint date range.
 
 Verify the repository is initialized: run `git rev-parse --is-inside-work-tree` to confirm git is available. If not a git repo, inform the user and abort gracefully.
+
+**If there is no history to read** — not a git repository, or no commits yet:
+
+> "No git history found. A changelog is built from commits — commit the work
+> first, or supply the change list directly."
+
+Verdict: **BLOCKED** — stop here without generating a changelog.
 
 ---
 
@@ -115,6 +128,7 @@ Categorize every change into one of these categories:
 - **Improvements**: Enhancements to existing features, UX improvements, performance gains
 - **Bug Fixes**: Corrections to broken behavior
 - **Balance Changes**: Tuning of gameplay values, difficulty, economy
+- **Technical Debt / Refactoring**: Refactors and cleanup of the game's code that change nothing the player sees — a commit that says it refactors, cleans up or tidies, and names no fix, feature or tuning. Internal changelog only; never in the player-facing one
 - **Known Issues**: Issues the team is aware of but have not yet resolved
 - **Miscellaneous**: Changes that do not fit the above categories, or commits whose messages are too vague to classify confidently
 

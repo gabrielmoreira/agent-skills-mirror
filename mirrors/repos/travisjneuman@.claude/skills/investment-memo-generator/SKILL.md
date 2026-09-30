@@ -324,6 +324,6 @@ APPENDIX ITEMS:
 ## See Also
 
 - [Finance](../finance/SKILL.md)
-- [Document Skills: DOCX](../document-skills/docx/SKILL.md)
-- [Document Skills: XLSX](../document-skills/xlsx/SKILL.md)
-- [Fortune 50 Business Strategy](../fortune50-business-strategy/SKILL.md)
+- `anthropic-skills:docx` (Anthropic document skill)
+- `anthropic-skills:xlsx` (Anthropic document skill)
+- [Business Strategy](../business-strategy/SKILL.md)

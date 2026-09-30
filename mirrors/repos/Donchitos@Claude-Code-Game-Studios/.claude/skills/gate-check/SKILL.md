@@ -33,16 +33,16 @@ The project progresses through these stages:
 6. **Polish** — Performance, playtesting, bug fixing
 7. **Release** — Launch prep, certification
 
-**When a gate passes**, update the stage in both `project.yaml` (set `project.stage: <new-stage>`) AND write the new stage name to `production/stage.txt` (single line, e.g. `Production`). Dual-write keeps backward compatibility with hooks that haven't migrated yet. This updates the status line immediately.
+**When a gate passes** (or the user explicitly accepts a CONCERNS verdict's risks — Section 6), update the stage in both `project.yaml` (set `project.stage: <new-stage>`) AND write the new stage name to `production/stage.txt` (single line, e.g. `Production`). Dual-write keeps backward compatibility with hooks that haven't migrated yet. This updates the status line immediately.
 
 ---
 
 ## 1. Parse Arguments
 
-**Target phase:** `$ARGUMENTS[0]` (blank = auto-detect current stage, then validate next transition)
+**Target phase:** `$ARGUMENTS` with any `--review <mode>` pair removed (blank = auto-detect current stage, then validate next transition). `/gate-check --review full` names no phase.
 
 
-Note: in `solo` mode, director spawns (CD-PHASE-GATE, TD-PHASE-GATE, PR-PHASE-GATE, AD-PHASE-GATE) are skipped — gate-check becomes artifact-existence checks only. In `lean` mode, all four directors still run (phase gates are the purpose of lean mode).
+Note: in `solo` mode, director spawns (CD-PHASE-GATE, TD-PHASE-GATE, PR-PHASE-GATE, AD-PHASE-GATE) are skipped — gate-check becomes artifact-existence checks only. In `lean` mode, the phase-gate directors still run (phase gates are the purpose of lean mode); how many of them run is set by `workflow` below.
 
 **`workflow`** (per `.claude/docs/workflow-modes.md`):
 
@@ -54,16 +54,23 @@ before the gate passes, regardless of the project-level workflow (see Section 2b
 "Per-system overrides").
 
 > **gate-check honors `workflow` but is exempt from `automation`.** The artifact
-> checklist changes per tier; the collaborative prompting protocol (Section 8)
-> always applies — a phase gate is a deliberate human checkpoint, never auto-run.
+> checklist changes per tier; the collaborative prompting protocol (the
+> Collaborative Protocol section) always applies — a phase gate is a deliberate
+> human checkpoint, never auto-run.
 
 **`qa.level`**: controls test enforcement at phase gates, where `workflow`
 controls which artifacts are required. `modes.rigor` sets both together; set
 `qa.level` explicitly to vary enforcement alone. At `minimal`, no test gates apply — the
-test-evidence / unit-test / smoke artifact items become non-required and the
-Section 3 `testing.strict` check is a no-op. At `standard`, Logic + Integration
-tests must pass. At `full`, a full coverage check + regression suite are required
-(coverage minimum from `qa.coverage_minimum` if set).
+test-evidence and unit-test artifact items become non-required and the
+Section 3 `testing.strict` check is a no-op; the smoke check is not relaxed (Section 2b) —
+but at this level `/smoke-check` runs without game tests (its automated row reads
+WAIVED), so the build check (`commands.smoke`, else `commands.build`, when set) and
+the launch and critical-path checks are the floor — a build nobody launched is
+NOT ASSESSED — and a project with no tests can still pass. At `standard`,
+Logic + Integration tests must pass. At `full`, a full coverage check + regression suite are required
+(coverage minimum from `qa.coverage_minimum` if set). The retained screenshots
+UI and Visual/Feel stories need are not test items: no `qa.level` relaxes them
+(Section 2b).
 
 **`team.size`**: does not change how many directors spawn at a phase gate — panel
 width is `workflow`'s axis (Section 4b). This value affects only the
@@ -123,6 +130,12 @@ across all of them:
 > non-required at every workflow tier (so even `workflow: full` does not require
 > them); the Section 3 `testing.strict` check is then a no-op.
 >
+> **It relaxes tests, not the look.** A UI story's retained screenshots, and a
+> Visual/Feel story's screenshots plus lead sign-off, are required at every
+> `qa.level` wherever the gate file asks for story evidence
+> (`.claude/docs/coding-standards.md`: tests are waived at `minimal`, the look
+> is not).
+>
 > **The smoke check is excluded from that relaxation, and is the floor.**
 > `qa.level` relaxes *per-story test evidence*; a smoke check is **build health**,
 > not story evidence, and the two are already held apart on exactly this basis in
@@ -133,8 +146,7 @@ across all of them:
 > Without that exclusion the Production → Polish gate had **zero required
 > artifacts at `rigor: minimal`** and could not fail on artifacts by
 > construction: `minimal` reduced the gate to the smoke check alone, `qa.level`
-> then dropped the smoke check too, and one `modes.rigor` setting fires both. Two
-> agents found it independently on the same fixture.
+> then dropped the smoke check too, and one `modes.rigor` setting fires both.
 
 > **A gate with no required artifacts left must say so, and may not return
 > PASS.** After applying the tier reduction and the `qa.level` relaxation, count
@@ -147,6 +159,13 @@ across all of them:
 > requires the emptiness to be visible in the output rather than inferable from
 > a silent green.
 >
+> **The one exception: a gate its tier reference file marks "not applicable" at
+> this tier** (Systems Design → Technical Setup at `workflow: minimal`). That is
+> not a gate with nothing left to check but a transition the tier does not have:
+> it PASSes with that file's note, printed in the report. The director panel
+> does not run for it — note "Director Panel skipped — gate not applicable at
+> `workflow: [tier]`" — and the Section 6 stage write still asks first.
+>
 > **`performance.enforce` is likewise independent of the tier, and a tier
 > reduction never suppresses it.** The performance check in Section 3 runs at
 > every workflow tier, and `block` makes a breach a Blocker at every workflow
@@ -155,12 +174,9 @@ across all of them:
 > deliberate choice the user makes on the same key.
 >
 > Without this, `performance.enforce: block` is **inert on every `rigor: minimal`
-> project** — `minimal` used to reduce the Polish gate to the smoke check alone, and
-> "Performance is within budget" sits in the dropped remainder. Two independent
-> agents run against a project breaching three of four budgets both spotted the
-> contradiction, both overrode the literal reading to reach FAIL, and both
-> flagged it as the call most likely to be wrong. A setting that only works
-> because agents disregard a rule is not wired.
+> project** — the Polish gate's `minimal` reduction drops everything outside its
+> floor, and "Performance is within budget" sits in the dropped remainder. A
+> setting that works only when a rule is disregarded is not wired.
 
 ### Per-system overrides (`workflow_overrides.system_overrides`)
 
@@ -241,6 +257,11 @@ Pass the phase being advanced *from* (its steps are the work that must be
 complete): `systems-design` for the Systems Design → Technical Setup gate,
 `pre-production` for Pre-Production → Production, and so on.
 
+At `workflow: minimal`, also run
+`bash .claude/scripts/artifact-check.sh --path minimal`: the brief and stories
+live on that path, not on any phase, and its `game-brief` and `create-stories`
+rows are this tier's floor.
+
 It reads `workflow-catalog.yaml` — which already encodes each step's `glob`,
 `pattern`, `min_count` and `any_of` — and reports per step:
 
@@ -275,10 +296,12 @@ does not turn on.
 > and nothing verifies. Check its claims against the repo, and raise any that the
 > tree contradicts:
 >
-> - It reports a passing automated suite → `tests/` must actually contain test
->   files and the project must have a runner. "24 passed, 0 failed" in a repo
->   with no `tests/unit/`, no `tests/integration/` and no runner is a finding,
->   not evidence.
+> - It reports a passing automated suite → the engine's test root must actually
+>   contain test files and the project must have a runner. "24 passed, 0 failed"
+>   in a repo with no test files under that root — `tests/unit/` and
+>   `tests/integration/` on Godot, `Assets/Tests/` on Unity,
+>   `Source/<Module>/Private/Tests/` on Unreal — and no runner is a finding, not
+>   evidence.
 > - It marks a critical path PASS → the code for that path must exist in the code
 >   root. A PASS on "banking ends the run" with no banking code is a finding.
 > - It carries no date, or predates the newest commit touching the code root →
@@ -286,8 +309,7 @@ does not turn on.
 >
 > Report a contradiction at the same level the artifact was required at: a
 > Blocker where the smoke check is required, CONCERNS where it is recommended.
-> This was found by handing a gate a one-page fabricated smoke report on a
-> two-file repo; it cleared on existence plus a verdict-line grep.
+> Existence plus a verdict-line grep would clear a fabricated report.
 
 For code checks, verify directory structure and file counts.
 
@@ -299,7 +321,9 @@ If no file matches: at `full` mark the "cross-GDD review report exists" artifact
 `standard` the report is recommended, so mark it **CONCERNS**, not a blocker; at
 `minimal` this gate is not applicable (see the gate file). If a file is found, read it and
 check the verdict line: a FAIL verdict means the cross-GDD consistency check failed
-and must be resolved before advancing.
+and must be resolved before advancing. A NOT ASSESSED verdict means that review
+could not compare the GDDs, so it satisfies nothing here: mark the item NOT
+ASSESSED for this gate, never passed.
 
 ### Quality Checks
 - For test checks: Run the test suite via `Bash` if a test runner is configured.
@@ -310,8 +334,12 @@ and must be resolved before advancing.
   **resolved in Phase 1** (`resolve_config` merges `project.local.yaml` over
   `project.yaml`; reading the file directly would drop a local override), per
   test type:
-  - **Logic** — failures in `tests/unit/`, gated by `testing.strict.logic`.
-  - **Integration** — failures in `tests/integration/`, gated by `testing.strict.integration`.
+  - **Logic** — unit-level failures (`tests/unit/` on Godot, Edit Mode on
+    Unity), gated by `testing.strict.logic`.
+  - **Integration** — failures in `tests/integration/` on Godot, Play Mode on
+    Unity, gated by `testing.strict.integration`. On Unreal, where one root
+    (`Source/<Module>/Private/Tests/`) holds both, classify a failure by its
+    story's Type, or apply the stricter of the two levels when that is unknown.
   - For each type: take `testing.strict.<type>` from that block; use it only
     if its value is `true` or `false` (case-insensitive). If the key is absent,
     empty, or holds any other value, read `testing.strict` as a plain boolean
@@ -369,6 +397,17 @@ For items that can't be automatically verified, **ask the user**:
 - "Performance profiling data isn't available. Would you like to run `/perf-profile`?"
 
 **Never assume PASS for unverifiable items.** Mark them as MANUAL CHECK NEEDED.
+An answer resolves the item: "no" or "not yet" is a checked, failed item
+(CONCERNS or FAIL, naming the skill that closes it — `/design-review [doc]` for
+an unreviewed concept or GDD) — except a play question at the Production gate
+(a human has played the Vertical Slice; at `minimal`, the core loop is fun on
+the current build), where "not yet" means nobody has played it: NOT ASSESSED
+(`gate-production.md`). Only an unanswered item or "I don't know" stays
+MANUAL CHECK NEEDED, which Section 5 turns into NOT ASSESSED.
+
+This applies to questions about the project's state. Declining an offer to
+produce missing data (e.g. `/perf-profile`) leaves the item NOT ASSESSED; at
+`performance.enforce: off` it stays out of the verdict.
 
 ---
 
@@ -413,37 +452,71 @@ Before generating the final verdict, spawn the directors for the resolved tier a
 3. **`producer`** — gate **PR-PHASE-GATE** (`.claude/docs/director-gates/pr-phase-gate.md`)
 4. **`art-director`** — gate **AD-PHASE-GATE** (`.claude/docs/director-gates/ad-phase-gate.md`)
 
-Pass to each: target phase name, list of artifacts present, and the context fields listed in that gate's definition.
+Pass to each the target phase name, the resolved `workflow` tier, the target
+gate's required and recommended artifacts at the resolved tier (the loaded gate
+file's checklist after its tier reduction and the `qa.level` relaxation — what
+this gate asks for, not what a later one will), the list of artifacts present,
+and its gate's own context — named here, so this session never has to read the
+gate files:
+- **CD-PHASE-GATE**: the game pillars and core fantasy (from
+  `design/gdd/game-concept.md`, else `design/game-brief.md`).
+- **TD-PHASE-GATE**: the architecture document path, the engine reference path
+  (`docs/engine-reference/<engine>/VERSION.md`), and the ADR list.
+- **PR-PHASE-GATE**: the sprint and milestone artifacts present, `team.size` as
+  resolved above (with the current sprint plan's capacity, if a plan exists), and
+  the number of stories under `production/epics/` whose status is `Blocked`. At
+  `workflow: minimal`, pass the Build order in `design/game-brief.md` as the plan — that
+  tier has no sprint plan.
+- **AD-PHASE-GATE**: the art and visual artifacts present, the Visual Identity
+  Anchor (from `design/gdd/game-concept.md`, else the "Art & audio direction"
+  line of `design/game-brief.md`), and the art bible path.
+
+Pass each context item as one of three things, so no director has to guess:
+- **Present** — its path or value (`0` blocked stories is a value).
+- **"none"** — the target gate (or an earlier one) requires or recommends it at
+  this tier and it does not exist (no architecture document at
+  `/gate-check pre-production`). For the director that is a fact about the
+  project to judge, not a missing input.
+- **"not expected before [phase]"** — the target gate does not ask for it yet;
+  name the phase whose gate first does (the architecture document and ADRs
+  before Pre-Production, the sprint plan before Production). One this tier never
+  requires is "not required at `workflow: [tier]`" (any sprint plan at
+  `minimal`). Neither is ever passed as "none", and neither is a finding — a
+  director judges readiness for the phase being entered, not a later one.
 
 **Name the omissions in the output.** Below the Director Panel summary, when the
 panel ran narrower than four, state which perspectives did not run and how to get
 them — e.g. "Panel: 2 of 4 (`workflow: standard`). Creative and Art perspectives
-not consulted. Run `/gate-check --review full` or set `modes.workflow: full` for
-the complete panel." A silently narrow panel reads as a clean bill of health from
-reviewers who never looked.
+not consulted. Raise `modes.rigor` to `full` (or set `modes.workflow: full`) for
+the complete panel." Name the setting the config block shows as `workflow`'s
+source: when `modes.workflow` is set on its own, raising `modes.rigor` does not
+change it. Never point to `--review full` for this — `--review` decides whether
+the panel runs, not how wide it is. A silently narrow panel reads as a clean bill
+of health from reviewers who never looked.
 
-**Collect all four responses, then present the Director Panel summary:**
+**Collect every response from the directors that ran, then present the Director Panel summary** (one row per director that ran; name the ones `workflow` left out):
 
 ```
 ## Director Panel Assessment
 
-Creative Director:  [READY / CONCERNS / NOT READY]
+Creative Director:  [READY / CONCERNS / NOT READY / NOT ASSESSED]
   [feedback]
 
-Technical Director: [READY / CONCERNS / NOT READY]
+Technical Director: [READY / CONCERNS / NOT READY / NOT ASSESSED]
   [feedback]
 
-Producer:           [READY / CONCERNS / NOT READY]
+Producer:           [READY / CONCERNS / NOT READY / NOT ASSESSED]
   [feedback]
 
-Art Director:       [READY / CONCERNS / NOT READY]
+Art Director:       [READY / CONCERNS / NOT READY / NOT ASSESSED]
   [feedback]
 ```
 
 **Apply to the verdict:**
-- Any director returns NOT READY → verdict is minimum FAIL (user may override with explicit acknowledgement)
+- Any director returns NOT READY → verdict is minimum FAIL (no override turns a FAIL into a stage change — Section 6)
 - Any director returns CONCERNS → verdict is minimum CONCERNS
-- All four READY → eligible for PASS (still subject to artifact and quality checks from Section 3)
+- Any director returns NOT ASSESSED (and none returned NOT READY or CONCERNS) → verdict at best NOT ASSESSED; name the input that director said was missing — it never counts as READY
+- Every director that ran returns READY → eligible for PASS (still subject to artifact and quality checks from Section 3)
 
 ---
 
@@ -456,7 +529,7 @@ Art Director:       [READY / CONCERNS / NOT READY]
 **Checked by**: gate-check skill
 
 ### Required Artifacts: [X/Y present]
-- [x] design/gdd/game-concept.md — exists, 2.4KB
+- [x] design/gdd/game-concept.md (design/game-brief.md at `minimal`) — exists, 2.4KB
 - [ ] docs/architecture/ — MISSING (no ADRs found)
 - [x] production/sprints/ — exists, 1 sprint plan
 
@@ -476,10 +549,14 @@ Art Director:       [READY / CONCERNS / NOT READY]
 
 ### Verdict: [PASS / NOT ASSESSED / CONCERNS / FAIL]
 - **PASS**: All required artifacts present, all quality checks passing
-- **CONCERNS**: Minor gaps exist but can be addressed during the next phase
+- **CONCERNS**: Minor gaps exist but can be addressed during the next phase —
+  the stage advances only if the user explicitly accepts them (Section 6)
 - **FAIL**: Critical blockers must be resolved before advancing
 - **NOT ASSESSED**: One or more required checks could not be run at all — name
   which, and why, in the Blockers section
+
+### Accepted Risks (only when the user advanced on CONCERNS)
+- [each concern, as listed above] — accepted by the user, [date]
 ```
 
 **`NOT ASSESSED` — when the gate could not look.** Rank: it **outranks PASS**
@@ -606,6 +683,16 @@ Do NOT reference the draft verdict text — re-check specific files or ask the u
 When the verdict is **PASS** and the user confirms they want to advance, write the
 new stage to BOTH `project.yaml` and the legacy `production/stage.txt`.
 
+**On CONCERNS, the user may override — explicitly.** Do not offer the stage
+write by default. If the user asks to advance anyway, list every concern and
+ask: "The gate returned CONCERNS. Accept these risks — [list] — and may I update
+`project.stage` in `project.yaml` to '[stage]' (and the legacy
+`production/stage.txt`)?" Only on an explicit yes, add the `### Accepted Risks`
+section to the gate report (each concern, accepted by the user, with the date)
+and write the stage as below. **A FAIL is never overridden into a stage change, and
+neither is NOT ASSESSED** — the blockers must be fixed, or the missing input
+produced, and the gate re-run.
+
 ### 6.1 Primary write — `project.yaml`
 
 Set `project.stage` to the new stage name in `project.yaml` at the repo root.
@@ -630,7 +717,7 @@ Set `project.stage` to the new stage name in `project.yaml` at the repo root.
   schema_version: 1
 
   framework:
-    version: 1.1.1
+    version: 1.1.2
     last_upgraded: <YYYY-MM-DD>
 
   project:
@@ -638,7 +725,7 @@ Set `project.stage` to the new stage name in `project.yaml` at the repo root.
   ```
   Do not seed `modes.review_mode` here. It is a rigor-fronted knob — `modes.rigor`
   supplies its value, so an explicit value would shadow the rigor expansion and pin
-  the review mode regardless of the project's rigor. Test Y.6 locks this in.
+  the review mode regardless of the project's rigor.
 
 ### 6.2 Legacy fallback write — `production/stage.txt`
 
@@ -654,7 +741,7 @@ After both writes, Read `project.yaml` and `production/stage.txt` and confirm bo
 show the new stage. If they diverge, report the discrepancy to the user and stop —
 a split stage indicator corrupts future auto-detection.
 
-**Always ask before writing**: "Gate passed. May I update `project.stage` in `project.yaml` to 'Production' (and the legacy `production/stage.txt`)?"
+**Always ask before writing**: "Gate passed. May I update `project.stage` in `project.yaml` to 'Production' (and the legacy `production/stage.txt`)?" — on an accepted CONCERNS override, the explicit yes above is that ask.
 
 ### 6.4 Rigor-fit check (advisory — never affects the verdict)
 
@@ -675,9 +762,28 @@ setting yourself.
 
 After the verdict is presented and any stage update is complete (project.yaml + stage.txt), close with a structured next-step prompt using `AskUserQuestion`.
 
-**Tailor the options to the gate that just ran:**
+**Tailor the options to the gate that just ran.** The argument names the phase
+being entered, so `/gate-check systems-design` is the Concept → Systems Design gate.
 
-For **systems-design PASS**:
+**At `workflow: minimal`, skip the menus below.** They walk the phase ladder, and
+the minimal route is not the ladder: offer the first incomplete step of
+`paths.minimal` instead (the `--path minimal` rows from Section 3):
+`/setup-engine`, then `/brainstorm`, then `/create-stories`, then `/dev-story`
+on the next story — the route `/help` gives.
+
+For **Concept → Systems Design** (`/gate-check systems-design`) PASS — option [A] is
+`/map-systems` when `design/gdd/systems-index.md` does not exist yet (many
+projects write it during Concept, as the workflow catalog orders it), otherwise
+`/design-system [first system in the index's design order]`:
+```
+Gate passed. What would you like to do next?
+[A] Run /map-systems — decompose the concept into systems and a design order (recommended next step)
+    — or, when the systems index already exists: Run /design-system [first system] — author its GDD
+[B] Revisit the concept first — return here when it is settled
+[C] Stop here for this session
+```
+
+For **Systems Design → Technical Setup** (`/gate-check technical-setup`) PASS:
 ```
 Gate passed. What would you like to do next?
 [A] Run /create-architecture — produce your master architecture blueprint and ADR work plan (recommended next step)
@@ -685,23 +791,23 @@ Gate passed. What would you like to do next?
 [C] Stop here for this session
 ```
 
-> **Note for systems-design PASS**: `/create-architecture` is the required next step before writing any ADRs. It produces the master architecture document and a prioritized list of ADRs to write. Running `/architecture-decision` without this step means writing ADRs without a blueprint — skip it at your own risk.
+> **Note for the Systems Design → Technical Setup PASS**: `/create-architecture` is the required next step before writing any ADRs. It produces the master architecture document and a prioritized list of ADRs to write. Running `/architecture-decision` without this step means writing ADRs without a blueprint — skip it at your own risk.
 
-For **technical-setup PASS**:
+For **Technical Setup → Pre-Production** (`/gate-check pre-production`) PASS:
 ```
 Gate passed. What would you like to do next?
-[A] Run /create-control-manifest — generate the layer rules manifest from your Accepted ADRs (do this first)
+[A] Run /create-control-manifest — generate the layer rules manifest from your Accepted ADRs (first, if docs/architecture/control-manifest.md does not exist yet)
 [B] Run /vertical-slice — build the Vertical Slice (do this before writing epics — validate fun first)
 [C] Write more ADRs first — run /architecture-decision [next-system]
 [D] Stop here for this session
 ```
 
-> **Note for technical-setup PASS**: The Pre-Production sequence is deliberately ordered
+> **Note for the Technical Setup → Pre-Production PASS**: The Pre-Production sequence is deliberately ordered
 > to validate fun before committing to detailed planning:
 >
-> 1. `/create-control-manifest` — extract technical rules from Accepted ADRs (required before epics)
+> 1. `/create-control-manifest` — extract technical rules from Accepted ADRs, if not done yet (`/create-epics` requires it at `full`)
 > 2. `/vertical-slice` — build the Vertical Slice **FIRST**, before writing epics or stories
-> 3. Playtest → `/playtest-report` — at least 1 session required to pass the Pre-Production gate; 3+ recommended before committing the full team
+> 3. Playtest → `/playtest-report` — at least 1 documented session, 3+ better before committing the full team. `/gate-check production` treats the slice as recommended: skipped → CONCERNS, unplayed → NOT ASSESSED
 > 4. `/ux-design [screen]` — UX specs for main menu, core HUD, pause menu (if not done)
 > 5. `/create-epics layer:foundation` then `/create-epics layer:core` — plan after fun is validated
 > 6. `/create-stories [epic-slug]` for each epic
@@ -724,11 +830,12 @@ Based on the verdict, suggest specific next steps:
 - **No game concept?** → `/brainstorm` to create one
 - **No systems index?** → `/map-systems` to decompose the concept into systems
 - **Missing design docs?** → `/reverse-document` or delegate to `game-designer`
-- **Small design change needed?** → `/quick-design` for changes under ~4 hours (bypasses full GDD pipeline)
+- **Small design change needed?** → `/quick-design` for changes under about one week of implementation (bypasses full GDD pipeline)
 - **No UX specs?** → `/ux-design [screen name]` to author specs, or `/team-ui [feature]` for full pipeline
 - **UX specs not reviewed?** → `/ux-review [file]` or `/ux-review all` to validate
 - **No accessibility requirements doc?** → run `/ux-design` which creates both `design/accessibility-requirements.md` and `design/ux/interaction-patterns.md` in one step
 - **No interaction pattern library?** → `/ux-design patterns` to initialize it
+- **Concept or a GDD not reviewed?** → `/design-review [doc]`
 - **GDDs not cross-reviewed?** → `/review-all-gdds` (run after all MVP GDDs are individually approved)
 - **Cross-GDD consistency issues?** → fix flagged GDDs, then re-run `/review-all-gdds`
 - **No test framework?** → `/test-setup` to scaffold the framework for your engine
@@ -757,6 +864,7 @@ Based on the verdict, suggest specific next steps:
 - **Need a quick sprint check?** → `/sprint-status` for current sprint progress snapshot
 - **Performance unknown?** → `/perf-profile`
 - **Not localized?** → `/localize`
+- **No security audit, or open CRITICAL/HIGH findings?** → `/security-audit` (after fixes, `/security-audit quick` to confirm)
 - **Ready for release?** → `/launch-checklist`
 
 ---
@@ -768,12 +876,16 @@ This skill follows the collaborative design principle:
 1. **Scan first**: Check all artifacts and quality gates
 2. **Ask about unknowns**: Don't assume PASS for things you can't verify
 3. **Present findings**: Show the full checklist with status
-4. **User decides**: The verdict is a recommendation — the user makes the final call
+4. **User decides**: The verdict is a recommendation — the user makes the final call on
+   what to do next; only the stage write is bound to it (Section 6)
 5. **Get approval**: "May I write this gate check report to production/gate-checks/?"
 6. **Never auto-fix**: If required artifacts are missing, report the FAIL verdict and
    name the skill to run (e.g. "run `/test-setup`"). Do NOT create missing files or
    re-run the gate automatically. Creating files to manufacture a PASS defeats the
    gate's purpose.
 
-**Never** block a user from advancing — the verdict is advisory. Document the risks
-and let the user decide whether to proceed despite concerns.
+**Never** block a user from working — the verdict decides only whether this skill
+writes the new stage. On CONCERNS the user may advance by explicitly accepting the
+listed risks, which the report records (Section 6); on FAIL or NOT ASSESSED the
+stage stays where it is until a re-run passes, and nothing stops the user working
+on the blockers meanwhile.

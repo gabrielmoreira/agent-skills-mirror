@@ -42,7 +42,7 @@ Embedding products should set their product identity once during startup,
 before constructing backend clients:
 
 ```rust
-use openhuman_embed::{set_product_identity, ProductIdentity};
+use openhuman_tinyhumans::{set_product_identity, ProductIdentity};
 
 if let Some(identity) = ProductIdentity::new("opencompany") {
     set_product_identity(identity);
@@ -345,8 +345,7 @@ time. Run them with `cargo test -p openhuman-embed --features inference,mcp,skil
 
 Its only in-repo dependency is `openhuman-core` (package `openhuman`) with
 `default-features = false`: every capability comes from a feature forwarded
-above. It does not depend on `openhuman-rpc` directly; the shared
-`RpcOutcome` and `StructuredRpcError` types reach it through
-`openhuman_core::rpc`. `openhuman-app` and `openhuman-tui` depend on
-`openhuman-rpc` for its HTTP client and on `openhuman-core`; neither uses
-`openhuman-embed`.
+above. It does not depend on `openhuman-rpc`; `Outcome` and `StructuredRpcError`
+are core types (`openhuman_core::core`). `openhuman-app` and `openhuman-tui`
+depend on `openhuman-rpc` for its client (and the app on its server) and on
+`openhuman-core`; neither uses `openhuman-embed`.

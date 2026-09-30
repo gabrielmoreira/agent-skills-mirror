@@ -521,7 +521,8 @@ extras:
 
 在 dashboard 中，`file` 為 `AGENTS.md` 的單一檔案 extra 會出現在 **AGENTS.md** 分頁；其他單一檔案 extra
 則出現在 **資料夾與檔案**。在那裡，**新增 Extra** 可選擇 **資料夾** 或 **單一檔案**，每個 target 都有 **檔名**，
-單一檔案可以使用 `merge`、`copy` 或 `import`。Dashboard 不會編輯檔案內容，請直接編輯 source 檔案。
+單一檔案可以使用 `merge`、`copy` 或 `import`。單一檔案的 **名稱** 會跟著檔名去掉副檔名自動填入
+（`APPEND_SYSTEM.md` 會填成 `APPEND_SYSTEM`），直到你自己輸入名稱為止。Dashboard 不會編輯檔案內容，請直接編輯 source 檔案。
 
 ### 一個資料夾、多個檔案
 

@@ -6,21 +6,25 @@
 RPC server, no Tauri shell, just the core linked in-process and driven
 directly. That changes what "resource usage" means. There is no single steady
 process to profile; there are per-use-case workloads (a long-running agent
-loop, a delegated multi-agent turn, a saved workflow run, a background
-subconscious pass, a memory ingest, a bare embed) that each have their own
+loop, a delegated multi-agent turn, a saved workflow run, a memory ingest,
+a bare embed) that each have their own
 startup cost, steady-state footprint, and growth curve.
 
 This document describes the benchmark environment built to measure that: a
-pinned `library-profile` binary with eight scenarios, the driver scripts
+pinned `library-profile` binary with seven scenarios, the driver scripts
 under `scripts/profile/`, and the comparison point the team cares about
 (ZeroClaw). It builds on an earlier manual investigation into deep memory/CPU
 attribution (removed from the tree; see git history at `0017c58d86~1` for the
 original write-up). This document is about running repeatable benchmarks, not
 re-deriving those findings.
 
-## The eight scenarios
+## The seven scenarios
 
-All scenarios run in `target/release/library-profile <scenario>`, replace
+The default `library-bench.sh` sweep runs the six scenarios currently linked
+into the binary. `memory-ingest` and `cold-phases` remain documented workload
+designs, but are excluded because the binary no longer links the in-process
+memory engine they measured. All runnable scenarios run in
+`target/release/library-profile <scenario>`, replace
 network inference with a deterministic provider (`rss-bench` feature), and
 print one pretty-printed JSON result object to stdout (diagnostics go to
 stderr). Each models a distinct embedding use case:
@@ -32,7 +36,6 @@ stderr). Each models a distinct embedding use case:
 | `agent-turn` | The minimal embed case: one agent, one turn, no delegation, no workflow. The smallest useful "hello world" for a host that just wants a single reply. |
 | `long-agent` | A long-running agent loop (`OPENHUMAN_PROFILE_TURNS`, default 25) in one process, to see whether RSS plateaus or grows per turn. |
 | `workflow` | A saved automation run (`flows_create` + `flows_run`), representing the flows/automation embedding path rather than ad hoc chat. |
-| `subconscious` | A background subconscious turn (the always-on reflective pass), distinct from an interactive chat turn. |
 | `cold-phases` | Bootstrap attribution: per-phase checkpoints (config load, registry init, agent build, memory construction, first turn) so cold-start cost can be attributed to a phase instead of one lump sum. |
 | `fleet` | N concurrent live agents with latency-realistic mock inference — the "100-1000 agents in a 2 GB / 2 vCPU server" question. See [below](#the-2-gb--2-vcpu-server-budget). |
 
@@ -119,7 +122,7 @@ behavior, not linked code size.
 | Variable | Effect |
 | --- | --- |
 | `OPENHUMAN_PROFILE_TURNS` | Turn count for `long-agent` (default 25). |
-| `OPENHUMAN_PROFILE_PREWARM_SUBAGENTS=1` | Run one warm-up turn before measuring (`subagents`/`subconscious`), isolating first-use cost from steady state. |
+| `OPENHUMAN_PROFILE_PREWARM_SUBAGENTS=1` | Run one warm-up turn before measuring (`subagents`), isolating first-use cost from steady state. |
 | `OPENHUMAN_PROFILE_DISABLE_MEMORY_WRITES=1` | Disable `memory.auto_save` and episodic capture, isolating orchestration from persistence. |
 | `OPENHUMAN_PROFILE_FORCE_UTC=1` | Skip `iana_time_zone`/CoreFoundation timezone resolution. |
 | `OPENHUMAN_PROFILE_HOLD_SECS` / `HOLD_BEFORE_SECS` | Pause the process at settled/baseline state for external inspection (`vmmap`, `heap`, `malloc_history`, Instruments). |
@@ -299,7 +302,6 @@ fresh-process repeats, 2026-07-21, Apple Silicon macOS):
 | Scenario | Build | Median settled RSS | Median retained Δ | Median duration |
 | --- | --- | ---: | ---: | ---: |
 | `agent-turn` (cold, 1 turn) | default | 47.6 MiB | 29.5 MiB | 102 ms |
-| `subconscious` (cold, no delegation) | default | 47.9 MiB | 29.8 MiB | 138 ms |
 | `subagents` (cold, 2 children) | default | 48.0 MiB | 29.9 MiB | 142 ms |
 | `workflow` (`flows_create` + `flows_run`) | default | 50.9 MiB | 29.9 MiB | 110 ms |
 | `long-agent` (25 warmed turns) | default | 65.8 MiB | 18.5 MiB | 1,361 ms |
@@ -312,7 +314,7 @@ Notable structure behind these medians:
   and the 25-turn total (~16.8 MiB first-to-last) is dominated by two async
   persistence/compaction bursts of 6-8 MiB each, matching the prior session's
   warmed-repeat outlier observation. Steady-state growth is not linear.
-- Cold `agent-turn`, `subconscious`, `subagents`, and `workflow` all retain
+- Cold `agent-turn`, `subagents`, and `workflow` all retain
   approximately the same ~29-30 MiB, confirming the cost is shared bootstrap
   (code paging, registries, detectors, allocator high water), not the
   specific workload on top of it.

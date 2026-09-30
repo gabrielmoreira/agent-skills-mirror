@@ -34,35 +34,23 @@ Every `AskUserQuestion` call follows `.claude/docs/automation-modes.md`
 `automation_always_ask` categories always prompt).
 
 **`story_granularity`** — it sets how
-many stories to allocate per sprint, scaled by velocity: **2–4** at `coarse`,
-**6–10** at `balanced` (default), **15–25** at `fine`.
+many stories to allocate per sprint, scaled by velocity: **2–4** at `coarse` (the default, via `rigor: minimal`),
+**6–10** at `balanced` (`rigor: standard`), **15–25** at `fine`. A Ready backlog
+smaller than the range is planned whole — never padded with invented stories.
 
 **Review mode check** (before gates run):
-- The review mode was already resolved in steps 1–4 above — do not re-resolve it.
-- **Special case:** if steps 1–3 all found nothing configured (no `--review`
-  flag, no `modes.review_mode` in `project.yaml`, no `production/review-mode.txt`)
-  **and** this is a `new` sprint, do not silently take the step-4 `lean` default
-  — instead use `AskUserQuestion`:
-  - Prompt: "No review mode is set. Which review depth would you like for this sprint?"
-  - Options:
-    - `[A] full — spawn all director and lead gates`
-    - `[B] lean — skip non-phase-gate director reviews (recommended for most sprints)`
-    - `[C] solo — skip all gate spawning`
-  - After selection: dual-write the chosen mode — set `modes.review_mode` in `project.yaml` (primary; add the `modes:` block if absent) AND write `production/review-mode.txt` (legacy fallback). Say: "Review mode set to [mode] and saved to project.yaml (and production/review-mode.txt)."
-- In every other case the value resolved in steps 1–4 stands (for a non-`new`
-  sprint with nothing configured, that is the `lean` default).
-
-> **Do not write until Phase 1 confirms the sprint can be planned.** This write
-> lands in Phase 0, before the Phase 1 backlog check that aborts the run —
-> observed live: the run correctly BLOCKED on "No stories found under
-> `production/epics/`" and `project.yaml` had *already* gained
-> `review_mode: lean`. A skill that decides it cannot run must not have edited
-> config on the way to deciding. Hold the selection in memory, complete Phase 1,
-> and write only if planning proceeds.
-> **Confirm the destination before writing.** The question above asks for review
-> depth "for this sprint"; the write is permanent project config on a
-> rigor-fronted knob. Ask explicitly: "Set `modes.review_mode: [mode]` in
-> `project.yaml` (persists beyond this sprint), or use it for this sprint only?"
+- Use the review mode from the resolved block above (`--review` overrides it
+  for this run) — do not re-resolve it, and do not ask for it. With nothing
+  configured it follows `modes.rigor`: `solo` at `minimal`, `lean` at `standard`.
+- **Never write a review mode** — not to `project.yaml`, not to
+  `production/review-mode.txt`. `modes.review_mode` is one of the knobs
+  `modes.rigor` fronts: pinning it in `project.yaml` shadows the rigor
+  expansion, and the legacy file sits *above* that expansion, so either write
+  would freeze director-review depth for good. `--review` covers a one-off. If
+  the user wants a different depth to persist, point them to changing
+  `modes.rigor` (`/settings modes.rigor=<minimal|standard|full>`), or to pinning
+  it on purpose with `/settings --local modes.review_mode=<full|lean|solo>` (a
+  personal override in `project.local.yaml`).
 
 ---
 
@@ -76,7 +64,14 @@ many stories to allocate per sprint, scaled by velocity: **2–4** at `coarse`,
    sprint planning on it, and never infer a milestone from the sprint files.
 
 2. **Read the previous sprint** (if any) from `production/sprints/` to
-   understand velocity and carryover.
+   understand velocity and carryover. In `new` mode:
+   - The new sprint's number `[N]` is the highest `sprint-NNN.md` in the
+     Existing Sprints listing plus one (`001` when there is none). It is the
+     `[N]` in the plan's title, its QA plan path and the write ask.
+   - Every story of the previous sprint that is not `Complete` — by its status
+     in `production/sprint-status.yaml`, else its story file's Status line —
+     goes in the Carryover table with a Reason and a New Estimate. It appears
+     only there, never again as new Must Have / Should Have / Nice to Have work.
 
 3. **Find the stories to plan** — this is the actual backlog, and it is the one
    input this phase cannot do without:
@@ -92,7 +87,7 @@ many stories to allocate per sprint, scaled by velocity: **2–4** at `coarse`,
    If the glob returns nothing: "No stories found under `production/epics/`. Run
    `/create-stories` first (at `standard`/`full`, `/create-epics` before it)."
    Do not proceed to invent work items — a sprint plan that references stories
-   which do not exist cannot be implemented.
+   which do not exist cannot be implemented. Verdict: **BLOCKED** — no stories to plan.
 
 4. **Scan design documents** in `design/gdd/` for additional context on the
    features those stories implement. At `workflow: minimal` there are no
@@ -153,7 +148,7 @@ For `new`:
 ## Definition of Done for this Sprint
 - [ ] All Must Have tasks completed
 - [ ] All tasks pass acceptance criteria
-- [ ] QA plan exists (`production/qa/qa-plan-sprint-[N].md`)
+- [ ] QA plan exists (`production/qa/qa-plan-[sprint-slug]-[date].md`, from `/qa-plan sprint`)
 - [ ] All Logic/Integration stories have passing unit/integration tests
 - [ ] Smoke check passed (`/smoke-check sprint`)
 - [ ] QA sign-off report: APPROVED or APPROVED WITH CONDITIONS (`/team-qa sprint`)
@@ -255,6 +250,7 @@ Initialize each story from the sprint plan's task tables:
 - Must Have tasks → `priority: must-have`, `status: ready-for-dev`
 - Should Have tasks → `priority: should-have`, `status: backlog`
 - Nice to Have tasks → `priority: nice-to-have`, `status: backlog`
+- Carryover rows → the story's previous `priority`, and the `status` it has now
 
 For `update`: read the existing `sprint-status.yaml`, carry over statuses for
 stories that haven't changed, add new stories, remove dropped ones.
@@ -274,7 +270,9 @@ Pass: proposed story list (titles, estimates, dependencies), total team capacity
 
 Present the producer's assessment.
 
-If UNREALISTIC: revise the story selection (defer stories to Should Have or Nice to Have) and re-present the updated plan before asking for write approval.
+If UNREALISTIC: revise the story selection (defer stories to Should Have or Nice to Have) and re-present the updated plan, then continue to Phase 5.
+
+If NOT ASSESSED: name the missing input — it is not REALISTIC. Supply it and re-run PR-SPRINT, or record `NOT ASSESSED — [missing input]` for PR-SPRINT in the plan's header (`.claude/docs/director-gates.md`) and continue to Phase 5, repeating it at the write ask.
 
 If CONCERNS, use `AskUserQuestion`:
 - Prompt: "Producer flagged concerns with this sprint plan. How do you want to proceed?"
@@ -283,15 +281,12 @@ If CONCERNS, use `AskUserQuestion`:
   - `[B] Adjust scope — defer some Should Have stories`
   - `[C] Extend the sprint timeline`
 
-If [A]: proceed to write approval.
-If [B]: revise the story list, re-present the updated plan, then proceed to write approval.
-If [C]: adjust sprint dates and capacity, re-present the updated plan, then proceed to write approval.
+If [A]: continue to Phase 5.
+If [B]: revise the story list, re-present the updated plan, then continue to Phase 5.
+If [C]: adjust sprint dates and capacity, re-present the updated plan, then continue to Phase 5.
 
-After handling the producer's verdict, ask: "May I write the sprint plan to `production/sprints/sprint-[N].md` and `production/sprint-status.yaml`?" If yes, write both files (creating directories as needed). Verdict: **COMPLETE** — sprint plan and status file created. If no: Verdict: **BLOCKED** — user declined write.
-
-After writing, add:
-
-> **Scope check:** If this sprint includes stories added beyond the original epic scope, run `/scope-check [epic]` to detect scope creep before implementation begins.
+After handling the producer's verdict, continue to Phase 5. The write comes at
+its end, so the file you approve already holds everything Phase 5 adds.
 
 ---
 
@@ -299,7 +294,7 @@ After writing, add:
 
 Before closing the sprint plan, check whether a QA plan exists for this sprint.
 
-Use `Glob` to look for `production/qa/qa-plan-sprint-[N].md` or any file in `production/qa/` referencing this sprint number.
+Use `Glob` for `production/qa/qa-plan-*.md` — `/qa-plan` writes `qa-plan-[sprint-slug]-[date].md` — and keep a file whose name or content references this sprint number.
 
 **If a QA plan is found**: note it in the sprint plan output — "QA Plan: `[path]`" — and proceed.
 
@@ -315,7 +310,9 @@ Use `AskUserQuestion`:
   - `[A] Run /qa-plan sprint now — I'll do that before starting implementation (Recommended)`
   - `[B] Skip for now — I understand QA sign-off will be blocked at the Production → Polish gate`
 
-If [A]: close with "Sprint plan written. Run `/qa-plan sprint` next — then begin implementation."
+Wait for this answer before the write ask below — the two are separate questions.
+
+If [A]: note in the plan "QA plan: run `/qa-plan sprint` before implementation begins."
 If [B]: add a warning block to the sprint plan document:
 
 ```markdown
@@ -323,6 +320,19 @@ If [B]: add a warning block to the sprint plan document:
 > before the last story is implemented. The Production → Polish gate requires a QA
 > sign-off report, which requires a QA plan.
 ```
+
+### Write the plan
+
+Ask: "May I write the sprint plan to `production/sprints/sprint-NNN.md` (`[N]` zero-padded to three digits) and
+`production/sprint-status.yaml`?" If yes, write both files (creating directories as
+needed). Verdict: **COMPLETE** — sprint plan and status file created. If no:
+Verdict: **BLOCKED** — user declined write.
+
+After writing, add:
+
+> **Scope check:** If this sprint includes stories added beyond the original epic scope, run `/scope-check [epic]` to detect scope creep before implementation begins.
+
+If the user chose `Run /qa-plan sprint now` in Phase 5, close with "Sprint plan written. Run `/qa-plan sprint` next — then begin implementation."
 
 ---
 
@@ -336,8 +346,8 @@ After the sprint plan is written and QA plan status is resolved:
 - `/sprint-status` — check progress mid-sprint
 - `/scope-check [epic]` — verify no scope creep before implementation begins
 
-**Review mode configuration:** All director gates (producer feasibility, QA review, code review) respect the project review mode, resolved by the Phase 0 chain (`--review` flag → `modes.review_mode` in `project.yaml` → `production/review-mode.txt` → the `modes.rigor` expansion, which yields `lean` at standard rigor and `solo` at minimal). For a `new` sprint with nothing configured, Phase 0 prompts for it and dual-writes the choice. The mode is one of:
-- `lean` — skip non-phase-gate director gates (default — fastest for solo dev)
+**Review mode configuration:** All director gates (producer feasibility, QA review, code review) respect the project review mode, resolved in the block at the top of this skill (`--review` flag → `project.local.yaml` → `modes.review_mode` in `project.yaml` → `production/review-mode.txt` → the `modes.rigor` expansion, which yields `lean` at standard rigor and `solo` at minimal). This skill never asks for it or writes it; Phase 0 says where to point a user who wants a different depth. The mode is one of:
+- `lean` — skip non-phase-gate director gates (the `rigor: standard` value)
 - `full` — run all director gates as spawned sub-agents
 - `solo` — skip all gate spawning unconditionally (single developer, no review)
 

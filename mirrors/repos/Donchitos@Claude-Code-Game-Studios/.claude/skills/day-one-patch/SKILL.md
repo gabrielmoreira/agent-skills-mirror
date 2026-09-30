@@ -116,18 +116,28 @@ Do not proceed to Phase 4 until the rollback plan is written.
 
 ## Phase 4: Implement Fixes
 
-For each bug in the approved scope, spawn a focused implementation loop:
+For each code fix in the approved scope, spawn a focused implementation loop:
 
 1. Spawn `lead-programmer` via `Agent` with:
    - The bug report (exact reproduction steps and root cause if known)
    - The constraint: minimum viable fix only, no cleanup
    - The affected files (from bug report Technical Context section)
 
-2. The lead-programmer implements and runs targeted tests.
+   It returns, for each bug, the minimal fix and the files it would change —
+   writing nothing.
 
-3. Spawn `qa-tester` via `Agent` to verify: does the bug reproduce after the fix?
+2. Ask once, for the whole set: "May I apply these fixes? [BUG-ID → files, one
+   line each]". No code changes before this approval.
 
-For config/data-only fixes: make the change directly (no programmer agent needed). Confirm the value changed and re-run any relevant smoke test.
+3. On yes, hand each approved fix back to `lead-programmer` (a new `Agent` call
+   carrying its plan) to implement it and run targeted tests with `commands.test`
+   from `project.yaml`, narrowed to the affected suite where the runner allows —
+   never a runner line written from memory. If `commands.test` is unset, say so
+   and record `Tests: NOT RUN — commands.test unset` for that bug.
+
+4. Spawn `qa-tester` via `Agent` to verify: does the bug reproduce after the fix?
+
+For config/data-only fixes: make the change directly (no programmer agent needed). First ask, naming the file and the change: "May I edit `[config file]` — `[key]`: [old value] → [new value]?" Confirm the value changed and re-run any relevant smoke test.
 
 ---
 
@@ -143,8 +153,8 @@ Spawn `qa-lead` via `Agent` with:
 Ask qa-lead to determine: **Is a targeted smoke check sufficient, or do any fixes touch systems that require a broader regression?**
 
 Run the required QA scope:
-- **Targeted smoke check** — run `/smoke-check [affected-systems]`
-- **Broader regression** — run targeted tests in `tests/unit/` and `tests/integration/` for affected systems
+- **Targeted smoke check** — run `/smoke-check` (it takes no system argument)
+- **Broader regression** — run the affected systems' tests in the engine's test root (`tests/unit/` and `tests/integration/` Godot, `Assets/Tests/` Unity, `Source/<Module>/Private/Tests/` Unreal — `.claude/docs/directory-structure.md`) with `commands.test` from `project.yaml`, narrowed to the affected suites where the runner allows — never a runner line written from memory. If `commands.test` is unset, the broader regression is NOT ASSESSED; say so.
 
 QA verdict must be PASS or PASS WITH WARNINGS before proceeding. If FAIL: scope the failing fix out of the day-one patch and defer to 1.1.
 
@@ -175,12 +185,12 @@ one, which is the worst possible audience for an unverified change.
 ### Bugs Fixed
 | BUG-ID | Severity | Description | Fix summary |
 |--------|----------|-------------|-------------|
-| BUG-NNN | S[1-4] | [description] | [one-line fix] |
+| BUG-NNNN | S[1-4] | [description] | [one-line fix] |
 
 ### Deferred to 1.1
 | BUG-ID | Severity | Description | Reason deferred |
 |--------|----------|-------------|-----------------|
-| BUG-NNN | S[1-4] | [description] | [reason] |
+| BUG-NNNN | S[1-4] | [description] | [reason] |
 
 ---
 
@@ -231,7 +241,7 @@ After the patch record is written:
 1. Run `/patch-notes` to generate the player-facing version of the patch notes
 2. Run `/bug-report verify [BUG-ID]` for each fixed bug after the patch is live
 3. Run `/bug-report close [BUG-ID]` for each verified fix
-4. Schedule a post-launch review 48–72 hours after launch using `/retrospective launch`
+4. Schedule a post-launch review 48–72 hours after launch using `/retrospective [milestone-name]` for the launch milestone in `production/milestones/`
 
 **If any S1 bugs remain open after the patch:**
 > "⚠️ S1 bugs remain open and were not patched. These are accepted risks. Document them in the rollback plan trigger conditions — if they occur at scale, rollback may be preferable to a follow-up patch."
@@ -249,5 +259,6 @@ Use `AskUserQuestion`:
 
 - **Scope discipline is everything** — resist scope creep; every addition increases risk
 - **Rollback plan first, always** — a patch without a rollback plan is irresponsible
-- **Deferred is not forgotten** — every deferred bug gets a 1.1 ticket automatically
+- **Deferred is not forgotten** — every deferred bug is listed in the record's
+  "Deferred to 1.1" table; run `/bug-triage` afterwards to schedule them into the 1.1 sprint
 - **Player communication is part of the patch** — `/patch-notes` is a required output, not optional

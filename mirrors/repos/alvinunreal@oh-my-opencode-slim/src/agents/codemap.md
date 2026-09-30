@@ -124,7 +124,7 @@ return {
 ### Key Integration Points
 
 1. **Agent selection**: OpenCode selects the orchestrator as the primary agent
-2. **Task delegation**: Orchestrator uses `task()` with `subagent_type` to delegate to specialists
+2. **Task delegation**: Orchestrator delegates to specialists via the host delegation tool (`task`/`subagent_type` on v1; `subagent`/`agent` on v2)
 3. **Session tracking**: `sessionAgentMap` tracks which agent owns each session for TUI prompts
 4. **Model resolution**: ForegroundFallbackManager handles runtime model switching for rate limits
 5. **Permission system**: MCP permissions are injected based on agent's `mcps` list

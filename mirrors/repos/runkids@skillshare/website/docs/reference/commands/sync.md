@@ -191,6 +191,12 @@ flowchart TD
     S2 --> SYMLINK --> S3
 ```
 
+### When a target fails {#when-a-target-fails}
+
+Sync runs every target; one failed target does not stop the others. A target fails when syncing it hits an error, or when its own settings in the config are invalid, for example its skills path is a file instead of a folder or its `mode` is unknown. A target with invalid settings is skipped for skills and agents in that run. Each failed target is reported (`✗ <target>: invalid config: …` in text output, `error` in its `--json` `details` entry), and the command exits non-zero after the other targets have synced.
+
+Problems with the config as a whole still stop sync before any target runs: a missing or invalid source folder, an invalid global `mode` or `target_naming`, an invalid `git_root`, or invalid extras.
+
 ### Example Output
 
 ```text
@@ -351,6 +357,7 @@ targets:
 - In symlink mode, filters are ignored
 - In copy mode, filters work the same way as merge mode
 - `sync` removes existing source-linked or managed entries that are now excluded
+- Targets that share one folder need the same filters; otherwise each sync undoes the other and `sync` warns (see [`sync` keeps showing the same changes](/docs/troubleshooting/common-errors#sync-keeps-showing-the-same-changes))
 
 See [Configuration](/docs/reference/targets/configuration#include--exclude-target-filters) for full details.
 
@@ -584,7 +591,9 @@ skillshare sync --all             # Sync skills + agents + extras + MCP
 | `--dry-run` | `-n` | Preview changes without writing |
 | `--force` | `-f` | Overwrite conflicting files at target |
 
-`--json` returns a non-zero exit status when extras sync has errors. For single-file extras,
+`--json` returns a non-zero exit status when extras sync has errors. `sync --all` also exits
+non-zero when an extras target fails, with or without `--json`. An extra whose source
+directory does not exist is skipped with a hint, not created. For single-file extras,
 `--dry-run` also reports edits that would be backed up before replacement.
 
 :::info Both modes supported

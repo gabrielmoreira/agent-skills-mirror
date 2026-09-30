@@ -20,7 +20,7 @@ Proactive ingestion of work items from external tools. A **task source** is a us
 | `crates/openhuman-core/src/integrations/task_sources/mod.rs` | Export-only: module docstring, `mod`/`pub mod` decls, `pub use` re-exports, and the `all_task_sources_*` controller registry pair. |
 | `crates/openhuman-core/src/integrations/task_sources/types.rs` | Serde domain types: `ProviderSlug`, `FilterSpec` (provider-tagged enum), `SourceTarget`, `FetchReason`, `TaskSource`, `TaskSourcePatch`, `EnrichedTask`, `FetchOutcome`. |
 | `crates/openhuman-core/src/integrations/task_sources/store.rs` | SQLite persistence (`<workspace>/task_sources/sources.db`): `task_sources` + `ingested_tasks` tables, dedup `content_hash`, migrate-on-open. |
-| `crates/openhuman-core/src/integrations/task_sources/ops.rs` | RPC-facing business logic returning `RpcOutcome<T>`: `list`/`get`/`add`/`update`/`remove`/`fetch`/`sync`/`list_tasks`/`preview_filter`/`list_databases`/`status`. |
+| `crates/openhuman-core/src/integrations/task_sources/ops.rs` | RPC-facing business logic returning `Outcome<T>`: `list`/`get`/`add`/`update`/`remove`/`fetch`/`sync`/`list_tasks`/`preview_filter`/`list_databases`/`status`. |
 | `crates/openhuman-core/src/integrations/task_sources/schemas.rs` | `task_sources` controller schemas + `all_controller_schemas` / `all_registered_controllers` + thin `handle_*` param parsers delegating to `ops.rs`. |
 | `crates/openhuman-core/src/integrations/task_sources/pipeline.rs` | `run_source_once`: the infallible fetch → dedup → enrich → route pass shared by poll, manual RPC, and connection hook; publishes domain events. Holds the `fetch_tasks_unavailable` stub and its rationale doc comment. |
 | `crates/openhuman-core/src/integrations/task_sources/filter.rs` | `to_fetch_filter`: flattens a `FilterSpec` variant into the shared `TaskFetchFilter`. |
@@ -65,7 +65,7 @@ Handlers parse params and delegate to `ops.rs`; schemas reference `FilterSpec`, 
 ## Agent tools
 
 `tools.rs` wraps `ops.rs` as thin LLM-callable shims, each parses args,
-calls the matching `ops` function, and emits its `RpcOutcome::value` as JSON.
+calls the matching `ops` function, and emits its `Outcome::value` as JSON.
 Read/observe tools are default-enabled; the persistent-config mutators are
 default-OFF and must be explicitly allowlisted via `tools/user_filter.rs`
 (the `task_source_manage` filter group covers `add`/`update`/`remove`).
@@ -106,14 +106,13 @@ Subscribes:
 Startup wiring is split across three sites; both entry points are idempotent
 (`OnceLock`), so the overlap is harmless:
 
-- `crates/openhuman-core/src/core/jsonrpc.rs` (~2159) calls
+- `crates/openhuman-core/src/core/runtime/subscribers.rs` calls
   `crate::integrations::task_sources::bus::register_task_sources_subscriber()`.
-- `crates/openhuman-core/src/core/runtime/services.rs` (~349) calls
+- `crates/openhuman-core/src/core/runtime/services.rs` calls
   `crate::integrations::task_sources::start_periodic_poll()` when the
-  `ServiceSet`'s task-source polling bootstrap job is enabled (documented at
-  ~212).
+  `ServiceSet`'s task-source polling bootstrap job is enabled.
 - `crates/openhuman-core/src/channels/runtime/startup/start_channels.rs`
-  (`start_channels`, ~182) calls both `register_task_sources_subscriber()`
+  (`start_channels_inner`) calls both `register_task_sources_subscriber()`
   and `start_periodic_poll()` again for the channels runtime path.
 
 ## Persistence
@@ -137,7 +136,7 @@ The additive idempotent `ingested_tasks.card_id` migration preserves older datab
 ## Used by
 
 - `crates/openhuman-core/src/core/all.rs`: registers controllers + schemas into the global RPC registry.
-- `crates/openhuman-core/src/core/jsonrpc.rs`: at startup registers the connection subscriber (bus.rs).
+- `crates/openhuman-core/src/core/runtime/subscribers.rs`: at startup registers the connection subscriber (bus.rs).
 - `crates/openhuman-core/src/core/runtime/services.rs`: at startup starts the periodic poll as part of the task-source polling bootstrap job.
 - `crates/openhuman-core/src/channels/runtime/startup/start_channels.rs`: `start_channels` registers the subscriber and starts the poll for the channels runtime.
 - `crates/openhuman-core/src/core/events.rs`: defines/classifies the three `TaskSource*` event variants under domain `"task_sources"`.

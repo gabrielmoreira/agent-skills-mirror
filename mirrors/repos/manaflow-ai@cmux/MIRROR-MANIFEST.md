@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `manaflow-ai/cmux` — 26 default patterns, 9 followed patterns, 131 file(s) materialized.
+Mirror of `manaflow-ai/cmux` — 26 default patterns, 12 followed patterns, 134 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `manaflow-ai/cmux` — 26 default patterns, 9 followed patterns, 131 f
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 9 |
-| Files         | 131 |
+| Followed pats | 12 |
+| Files         | 134 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -54,7 +54,10 @@ Mirror of `manaflow-ai/cmux` — 26 default patterns, 9 followed patterns, 131 f
 - `CONTRIBUTING.md`
 - `STYLE.md`
 - `docs/ci/merge-main.md`
+- `docs/start-here.md`
+- `CODE_OF_CONDUCT.md`
 - `docs/contributor-verification.md`
+- `docs/triage.md`
 - `docs/verification-receipts.md`
 - `docs/team-dev-setup.md`
 - `docs/ghostty-fork.md`
@@ -191,13 +194,16 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 122 | ✓ | [`web/CLAUDE.md`](web/CLAUDE.md) |
 | 123 | → | [`CHANGELOG.md`](CHANGELOG.md) |
 | 124 | → | [`CLA.md`](CLA.md) |
-| 125 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 126 | → | [`docs/ci/merge-main.md`](docs/ci/merge-main.md) |
-| 127 | → | [`docs/contributor-verification.md`](docs/contributor-verification.md) |
-| 128 | → | [`docs/ghostty-fork.md`](docs/ghostty-fork.md) |
-| 129 | → | [`docs/team-dev-setup.md`](docs/team-dev-setup.md) |
-| 130 | → | [`docs/verification-receipts.md`](docs/verification-receipts.md) |
-| 131 | → | [`STYLE.md`](STYLE.md) |
+| 125 | → | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
+| 126 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 127 | → | [`docs/ci/merge-main.md`](docs/ci/merge-main.md) |
+| 128 | → | [`docs/contributor-verification.md`](docs/contributor-verification.md) |
+| 129 | → | [`docs/ghostty-fork.md`](docs/ghostty-fork.md) |
+| 130 | → | [`docs/start-here.md`](docs/start-here.md) |
+| 131 | → | [`docs/team-dev-setup.md`](docs/team-dev-setup.md) |
+| 132 | → | [`docs/triage.md`](docs/triage.md) |
+| 133 | → | [`docs/verification-receipts.md`](docs/verification-receipts.md) |
+| 134 | → | [`STYLE.md`](STYLE.md) |
 
 ---
 

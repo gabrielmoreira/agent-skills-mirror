@@ -4,6 +4,33 @@ Note: Only use **NEW:** for entirely new prompt files, NOT for new additions/sec
 
 ### Claude Code System Prompts Changelog
 
+# [2.1.285](https://github.com/Piebald-AI/claude-code-system-prompts/commit/f960644)
+
+_-4,252 tokens_
+
+- **NEW:** Tool Description: SubagentHandback — Subagents deliver their full final report to their caller through one call that ends the run; plain-text endings are not delivered.
+- **NEW:** Data: Artifact publish merged-over newer version file changes notice — Tool-result notice listing files changed, added, or removed in a newer live artifact version, warning that stale copies must be re-read before editing.
+- **NEW:** Data: Cloud session unverified remote branch push notice — Warns that no readable remote meant the branch or detached HEAD could not be checked, and tells users to push their work and start a new session.
+- **NEW:** Data: Working tree upload refusal for misplaced .git entry — Refuses to upload a working tree whose `.git` is a pointer file, symlink, hard-linked pointer, or otherwise unfollowable, directing users to an ordinary main checkout.
+- **REMOVED:** System Prompt: Auto memory durable lesson instructions — Drops the memory prompt that limited saves to durable, applicable, legible user-taught lessons, with a per-reply save check and pinned-memory frontmatter.
+- **REMOVED:** System Reminder: Directory sync notices (12 prompts: agent commits off branch, attached machine guidance, branch name collision, branch switch parked work, disabled after initial checkout failure, file store exhausted, full and partial environment restore, live checkout guidance, restored files mismatch, snapshot commit reset, stopped for session) — Removes all guidance for cloud sessions kept in sync with a user's machine, including sync failure, restore, and branch-handling notices.
+- **REMOVED:** System Reminder: Remote machine file sync timing and Remote machine file sync timing for subagents — Removes guidance on when edits sync to and from a remote machine and to read fresh or git-ignored files there.
+- **REMOVED:** Data: Cloud session folder sync consent dialog — Removes the consent copy for two-way sync between a local checkout and a cloud session, including conflict handling and remembered answers.
+- Agent Prompt: Dream memory consolidation — Removes the variant where the memory index is assembled from file frontmatter; dreams always read and update the index, and "type conventions" wording is always included.
+- Agent Prompt: Project thread status card classifier — Allows quick replies for more work in the thread's own files; requires empty replies when the owner must act first or a yes would post, push, merge, deploy, or pay.
+- Agent Prompt: Security monitor candidate unrequested connected-app commit rule — Treats comments and title or description edits on PRs or issues the user asked the agent to work on as External System Writes; other PR commits stay blocked.
+- Agent Prompt: Web reading specialist — Permits up to about five linked same-site pages and forbids guessing URLs; failed fetches get one retry on transient errors only, and rate limits end fetching.
+- Data: Interrupt receipt still queued field — Rewords the send-gate explanation: a held send waits until the session is ready to take it, rather than for the initial upload.
+- Data: SDK set max thinking tokens request schema — A rejected `highlights` display request now returns an error reply naming the cause, leaving the display unchanged while `max_thinking_tokens` still applies.
+- System Reminder: Queued notifications delivery and Tool Description: ReadNotifications — Notification authority no longer relies on the sender named in a body; scheduled triggers are assigned tasks, while GitHub, Slack, and other-session bodies are information, not user instructions, and unrequested outward actions are reported instead of performed.
+- System Reminder: Session context — Replaces the "may not be relevant, don't respond unless highly relevant" closing with a note that the context was attached automatically and needn't be reported back.
+- Tool Description: Artifact type staged first-publish sequence — Removes the instruction to write files directly with the file-writing tool, with no shell step and no generating script.
+- Tool Description: Bash (timeout) and PowerShell — Labels the maximum timeout as applying to a foreground command.
+- Tool Parameter: Bash run_in_background guidance and note — When background deadlines are enabled, adds that `timeout` then limits background runtime, with a default and maximum, and the command is stopped and reported.
+- Tool Description: claude.ai Project — `project_write` mentions `local_path` only when local uploads are available, and project memory methods are described only when served; otherwise they are marked uncallable.
+- Tool Description: Edit, Edit single replacement, Write, and Write (read existing file first) — The read-before-edit/write requirement is now stated for every file, dropping the variant limiting it to files outside the working directory.
+- Tool Description: Edit single replacement — The Read line-prefix hint now says "line number + a single tab or `:`" when the tab-aware Read separator is enabled.
+
 # [2.1.284](https://github.com/Piebald-AI/claude-code-system-prompts/commit/3c25991)
 
 _-2,208 tokens_

@@ -88,7 +88,7 @@ React (fetch)
 
 The renderer talks to the local core **directly over HTTP**: `app/src/services/coreRpcClient.ts` invokes `core_rpc_url` / `core_rpc_token` once, then issues plain `fetch()` calls. The `relay_http_rpc` Tauri command is a host-side fallback used only when the RPC URL is **not** a trustworthy origin for the secure `tauri://localhost` webview (e.g. a self-hosted runtime on a LAN IP, blocked as mixed content, #3865). In that case the Rust host delegates to `openhuman_rpc::post_json_rpc` from the shared `crates/openhuman-rpc` crate (feature `http-client`): 30 s timeout, redirects disabled when a bearer is present, status + body mirrored back verbatim as `HttpRpcResponse`. The shell adds only the gateway transport guard (`validate_remote_transport`, feature `gateways`) before delegating.
 
-`CoreProcessHandle` in `core_process.rs` owns the embedded server task (started via `openhuman_core::core::jsonrpc::run_server_embedded_with_ready` with a per-launch random bearer token) and handles stale-listener/port-conflict recovery.
+`CoreProcessHandle` in `core_process.rs` owns the embedded server task (started via `openhuman_rpc::server::run_server_embedded_with_ready` with a per-launch random bearer token) and handles stale-listener/port-conflict recovery.
 
 ### Window and tray behavior
 
@@ -307,7 +307,7 @@ The Tauri crate **does not** embed a duplicate Socket.io server or Telegram clie
 
 ### `CoreProcessHandle` (`core_process.rs`)
 
-- Runs the core's HTTP/JSON-RPC server as a **tokio task inside the Tauri host** via `openhuman_core::core::jsonrpc::run_server_embedded_with_ready`: no sidecar binary.
+- Runs the core's HTTP/JSON-RPC server as a **tokio task inside the Tauri host** via `openhuman_rpc::server::run_server_embedded_with_ready`: no sidecar binary.
 - Generates a per-launch 256-bit hex bearer token (`generate_rpc_token`) and hands it to the embedded server; the renderer reads it via the `core_rpc_token` command.
 - Stale-listener policy (#1130): if the core port is already occupied, probes whether the listener is an old OpenHuman core (terminate + respawn) or something foreign (surface the conflict). `OPENHUMAN_CORE_REUSE_EXISTING=1` opts back into attach-to-existing for debugging.
 - Managed as Tauri state in `lib.rs` (`app.manage(core_handle)`).

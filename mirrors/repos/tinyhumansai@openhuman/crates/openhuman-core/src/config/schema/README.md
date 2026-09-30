@@ -28,7 +28,7 @@ is mounted as a submodule of `load/dirs.rs` via `#[path]`.
 | `[dashboard]` | `dashboard.rs` | `DashboardConfig`, `DiagramViewerConfig`, `EventStreamConfig`, `ModelHealthConfig` |
 | `[dictation]` | `dictation.rs` | `DictationConfig`, `DictationActivationMode` |
 | `[ephemeral_route]` | `ephemeral_route.rs` | `EphemeralRoute` |
-| `[heartbeat]`, `[cron]` | `heartbeat_cron.rs` | `HeartbeatConfig`, `CronConfig`, `SubconsciousMode` |
+| `[cron]` | `cron.rs` | `CronConfig` |
 | `[hooks]` | `hooks.rs` | `HooksConfig` |
 | `[hosting]` | `hosting.rs` | `HostingConfig` |
 | `[learning]` | `learning.rs` | `LearningConfig`, `ReflectionSource` |
@@ -44,7 +44,6 @@ is mounted as a submodule of `load/dirs.rs` via `#[path]`.
 | `[runtime_python]` | `runtime_python.rs` | `RuntimePythonConfig` |
 | `[scheduler_gate]` | `scheduler_gate.rs` | `SchedulerGateConfig`, `SchedulerGateMode` |
 | `[memory]`, `[memory_tree]`, `[storage]` | `storage_memory.rs` | `MemoryConfig`, `MemoryTreeConfig`, `StorageConfig`, `StorageProviderConfig`, `LlmBackend` |
-| `[subconscious]` | `subconscious.rs` | `SubconsciousConfig`, `SubconsciousEngine` (`local`) |
 | `[subsystems]` | `subsystems.rs` | `SubsystemsConfig`, `MemorySubsystemConfig` |
 | `[task_sources]` | `task_sources.rs` | `TaskSourcesConfig` |
 | `[tokenjuice]` | `tokenjuice.rs` | `TokenjuiceConfig` |

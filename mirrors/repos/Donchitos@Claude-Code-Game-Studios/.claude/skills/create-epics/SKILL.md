@@ -3,7 +3,7 @@ name: create-epics
 description: "Turn GDDs plus architecture into epics — one per architectural module, with untraced requirements. Then /create-stories [epic-slug]."
 argument-hint: "[system-name | layer: foundation|core|feature|presentation | all] [--review full|lean|solo]"
 user-invocable: true
-allowed-tools: Read, Glob, Grep, Write, Agent, AskUserQuestion, Bash(bash "*/.claude/skills/create-epics/../../hooks/yaml-helper.sh" resolve_config *)
+allowed-tools: Read, Glob, Grep, Write, Edit, Agent, AskUserQuestion, Bash(bash "*/.claude/skills/create-epics/../../hooks/yaml-helper.sh" resolve_config *)
 model: sonnet
 ---
 
@@ -28,7 +28,8 @@ will have changed.
 **Next step after each epic:** `/create-stories [epic-slug]`
 
 **When to run:** After `/create-control-manifest` and `/architecture-review` pass
-(at `full`). At `standard`, critical ADRs + a control manifest suffice. At
+(at `full`). At `standard`, critical ADRs suffice, and a control manifest is
+read if present. At
 `minimal`, this skill is **optional and not part of the path** — `/create-stories`
 synthesizes the epic from `design/game-brief.md` itself (Option A). If run anyway,
 it decomposes directly from the brief with no GDD/ADR/manifest prerequisite.
@@ -63,14 +64,14 @@ prerequisite expectations and consults
 in-scope GDD. See "Workflow tier adjustment" in Step 2.
 
 **`story_granularity`** — it sizes the
-epic's story breakdown: expect **3–5** child stories per epic at `coarse`, **5–10**
-at `balanced` (default), **10–20** at `fine`.
+epic's story breakdown: expect **3–5** child stories per epic at `coarse` (the default, via `rigor: minimal`), **5–10**
+at `balanced` (`rigor: standard`), **10–20** at `fine`.
 
 **`docs.density`** — it controls the *depth* of each epic's written scope and
 rationale, not the story count (that is `story_granularity`). `modes.rigor` sets
 it alongside `workflow`; set `docs.density` explicitly to vary epic prose alone:
-`terse` = scope as bullets, one-line rationale; `balanced` = a scope paragraph
-with light rationale (default); `thorough` = full scope prose with governing-ADR
+`terse` (the default, via `rigor: minimal`) = scope as bullets, one-line rationale; `balanced` = a scope paragraph
+with light rationale (`rigor: standard`); `thorough` = full scope prose with governing-ADR
 rationale and risk discussion. The EPIC.md tables (GDD requirements, governing
 ADRs) are structural and stay whole at every density.
 
@@ -89,10 +90,17 @@ ADRs) are structural and stay whole at every density.
 
 ### Step 2a — Summary scan (fast, fail-open)
 
-**Establish the denominator first.** Glob `design/gdd/*.md`, excluding the
-non-system docs (`game-concept.md`, `systems-index.md`, `game-pillars.md`,
-`gameplay-tags.md`, `entity-registry.md`, `fixture-swap-ledger.md`, and any
-`gdd-cross-review-*.md` — the same set `gdd-structure-check.sh` skips). Call the
+**At `minimal`, skip Steps 2a and 2b** — that tier decomposes from
+`design/game-brief.md` and has no GDDs by design (see the tier note below). Read
+the brief instead; if it is missing, report "No `design/game-brief.md` — run
+`/start` or `/brainstorm` first" and stop.
+
+**At `standard` and `full`, establish the denominator first.** Glob `design/gdd/*.md`, excluding the
+non-system docs — `game-concept.md`, `systems-index.md`, `game-pillars.md`,
+`gameplay-tags.md`, `entity-registry.md`, `fixture-swap-ledger.md`, any
+`gdd-cross-review-*.md`, `sound-bible.md` — the set `gdd-structure-check.sh`
+skips (the sound bible belongs in `design/audio/`; it is listed for projects
+that still keep it at the earlier location). Call the
 count **N**. If N is 0, there are no system GDDs — report "No system GDDs found
 in `design/gdd/` — run `/design-system` first" and stop.
 
@@ -134,8 +142,7 @@ Read for in-scope systems:
   ```
   then `Read(offset, limit)` bounded to each match through the next `## `
   heading (or to end of file for the last match). This matters most on a
-  large ADR — measured at 47k tokens this way vs. 103k for an unbounded
-  read of the same size file.
+  large ADR.
 - `docs/architecture/control-manifest.md` — manifest version date from header
 - `docs/architecture/tr-registry.yaml` — for tracing requirements to ADR coverage
 - `docs/engine-reference/[engine]/VERSION.md` — engine name, version, risk levels
@@ -185,7 +192,7 @@ Check ADR coverage against the TR registry **per the resolved tier** (Step 1):
 - **`full`** — trace every TR-ID; warn on each untraced requirement (below).
 - **`standard`** — only **critical (Foundation-layer) ADRs** are expected; trace
   those. Treat untraced non-critical requirements as informational (list them, do
-  not block or emit the Blocked-story warning).
+  not block or emit the untraced-requirements warning).
 - **`minimal`** — skip this check entirely (no TR registry / ADR expected).
 
 - **Traced requirements**: TR-IDs that have an Accepted ADR covering them
@@ -207,8 +214,10 @@ Present to user before writing anything:
 
 If there are untraced requirements:
 > "⚠️ [N] requirements in [system] have no ADR. The epic can be created, but
-> stories for these requirements will be marked Blocked until ADRs exist.
-> Run `/architecture-decision` first, or proceed with placeholders."
+> `/create-stories` will write their stories with no governing ADR (`ADR: N/A`)
+> and `Status: Ready` — nothing downstream blocks them, so they would be
+> implemented without architectural guidance. Run `/architecture-decision` first
+> if they need a decision, or proceed and accept the gap."
 
 Use `AskUserQuestion`:
 - Prompt: "Shall I create Epic: [name]?"
@@ -232,7 +241,7 @@ Pass: the full epic structure summary (all epics, their scope summaries, governi
 
 Present the producer's assessment.
 
-If UNREALISTIC: offer to revise epic boundaries (split overscoped or merge underscoped epics). Revise and re-run the gate before writing.
+If UNREALISTIC: offer to revise epic boundaries (split overscoped or merge underscoped epics). Revise, present the revised epics again, and re-run the gate before writing.
 
 If CONCERNS, use `AskUserQuestion`:
 - Prompt: "Producer raised concerns about the epic structure. How do you want to proceed?"
@@ -242,8 +251,14 @@ If CONCERNS, use `AskUserQuestion`:
   - `[C] Stop — I want to reconsider the scope`
 
 If [A]: proceed to Step 5.
-If [B]: revise epic definitions from Step 4 and re-run the producer gate.
+If [B]: revise epic definitions from Step 4, present the revised epics to the user again, then re-run the producer gate.
 If [C]: stop. Verdict: **BLOCKED** — user wants to reconsider epic scope.
+
+If NOT ASSESSED [missing input] — e.g. no milestone timeline or team capacity — it
+is not a REALISTIC (`.claude/docs/director-gates.md`): name what was missing, then
+supply it and re-run the gate, or, if the user chooses to go on without it,
+proceed to Step 5 and state `PR-EPIC: NOT ASSESSED — [input]` in the output and
+the final Verdict line.
 
 Do not write epic files until the producer gate resolves.
 
@@ -251,7 +266,16 @@ Do not write epic files until the producer gate resolves.
 
 ## 5. Write Epic Files
 
-After approval, ask: "May I write the epic file to `production/epics/[epic-slug]/EPIC.md`?"
+**If `production/epics/[epic-slug]/EPIC.md` already exists, never overwrite it.**
+Ask instead: "An EPIC.md already exists for [name]. Update it in place, or skip
+it?" — `[A] Update in place — keep its Stories table, and update its index.md row` / `[B] Skip this epic`. An
+update rewrites only what this skill owns — the header fields other than
+`Stories`, `## Overview`, `## Governing ADRs`, `## GDD Requirements` and
+`## Definition of Done` — and leaves the `**Stories**` header line and any
+`## Stories` table exactly as they are: `/create-stories` wrote them, and
+resetting them to "Not yet created" orphans every story already in the directory.
+
+For a new epic, after approval, ask: "May I write `production/epics/[epic-slug]/EPIC.md` and add its row to `production/epics/index.md` (creating it if absent)?"
 
 After user confirms, write:
 
@@ -289,8 +313,8 @@ and the architecture module's stated responsibilities]
 This epic is complete when:
 - All stories are implemented, reviewed, and closed via `/story-done`
 - All acceptance criteria from `design/gdd/[filename].md` are verified
-- All Logic and Integration stories have passing test files in `tests/`
-- All Visual/Feel and UI stories have evidence docs with sign-off in `production/qa/evidence/`
+- All Logic and Integration stories have passing test files in [the test root — `tests/` on Godot, `Assets/Tests/` on Unity, `Source/<Module>/Private/Tests/` on Unreal]
+- All Visual/Feel and UI stories have retained screenshots in `production/qa/evidence/` — each screen touched for UI, plus a lead sign-off for Visual/Feel
 
 ## Next Step
 
@@ -299,7 +323,9 @@ Run `/create-stories [epic-slug]` to break this epic into implementable stories.
 
 ### Update `production/epics/index.md`
 
-Create or update the master index:
+Create or update the master index. An epic that already has a row keeps it:
+update that row in place and keep its `Stories` value — never append a second
+row, and never reset `Stories` to `Not yet created`:
 
 ```markdown
 # Epics Index

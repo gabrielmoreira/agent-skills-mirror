@@ -70,7 +70,7 @@ Namespace `tools` (wired into `crates/openhuman-core/src/core/all.rs` via `all_t
 | `openhuman.tools_searxng_search` | The `search` role pinned to your self-hosted SearXNG (requires SearXNG enabled in search settings). |
 | `openhuman.tools_apify_linkedin_scrape` | Apify LinkedIn profile scrape → raw JSON + rendered markdown. |
 
-Handlers load config via `config::rpc::load_config_with_timeout`, build the backend integration client where needed, and return `RpcOutcome`.
+Handlers load config via `config::rpc::load_config_with_timeout`, build the backend integration client where needed, and return `Outcome`.
 
 ## Agent tools
 

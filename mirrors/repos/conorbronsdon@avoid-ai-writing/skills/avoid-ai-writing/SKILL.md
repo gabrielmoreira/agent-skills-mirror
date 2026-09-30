@@ -265,10 +265,10 @@ Confirm you re-read the file and state whether any further justified in-scope ed
 **Mechanical check (optional, recommended for edit mode).** If the repo ships the detector engine, run the preservation validator against the before and after text:
 
 ```bash
-node detector/validate.js <original> <rewritten>
+node detector/validate.js --residual-policy warn <original> <rewritten>
 ```
 
-It exits non-zero when a rewrite altered a fenced code block, YAML frontmatter, a blockquote, a table cell, inline code, a URL, a file path, or the heading structure, and when the rewrite introduced more flagged patterns than it removed. Those are the promises made above; this is what checks them. Rewording a heading to fix Title Case and stripping an AI tracking parameter from a URL are carved out, because this skill instructs both.
+This editorial policy keeps mechanical preservation errors blocking and reports residual pattern growth as a quality warning. Review each residual finding for applicability; a higher count alone does not establish content damage or authorize another edit. When the mechanical checks pass, report that no mechanical preservation errors were found, not that meaning was verified. Check facts, added or removed claims, quantities, uncertainty, and user-authorized changes separately. Rewording headings and stripping AI tracking parameters from URLs remain documented carve-outs.
 
 The validator does not know which protected changes the user specifically requested. Retain its actual result and review such differences against the user's scope in a separate model-only assessment. Report an authorized difference as requiring that scope review instead of automatically restoring the original or calling the deterministic check a pass. Other protected content must still be preserved; a general style or voice request does not authorize changing it.
 

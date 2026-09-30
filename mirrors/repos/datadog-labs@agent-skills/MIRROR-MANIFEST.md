@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `datadog-labs/agent-skills` — 26 default patterns, 0 followed patterns, 49 file(s) materialized.
+Mirror of `datadog-labs/agent-skills` — 26 default patterns, 0 followed patterns, 50 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `datadog-labs/agent-skills` — 26 default patterns, 0 followed patter
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 49 |
+| Files         | 50 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -91,23 +91,24 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 30 | ✓ | [`dd-audit/SKILL.md`](dd-audit/SKILL.md) |
 | 31 | ✓ | [`dd-aws-integration/SKILL.md`](dd-aws-integration/SKILL.md) |
 | 32 | ✓ | [`dd-azure-integration/SKILL.md`](dd-azure-integration/SKILL.md) |
-| 33 | ✓ | [`dd-browser-sdk/SKILL.md`](dd-browser-sdk/SKILL.md) |
-| 34 | ✓ | [`dd-browser-sdk/upgrade-v5/SKILL.md`](dd-browser-sdk/upgrade-v5/SKILL.md) |
-| 35 | ✓ | [`dd-browser-sdk/upgrade-v6/SKILL.md`](dd-browser-sdk/upgrade-v6/SKILL.md) |
-| 36 | ✓ | [`dd-browser-sdk/upgrade-v7/SKILL.md`](dd-browser-sdk/upgrade-v7/SKILL.md) |
-| 37 | ✓ | [`dd-docs/SKILL.md`](dd-docs/SKILL.md) |
-| 38 | ✓ | [`dd-gcp-integration/SKILL.md`](dd-gcp-integration/SKILL.md) |
-| 39 | ✓ | [`dd-instrument-rum/SKILL.md`](dd-instrument-rum/SKILL.md) |
-| 40 | ✓ | [`dd-logs/SKILL.md`](dd-logs/SKILL.md) |
-| 41 | ✓ | [`dd-monitors/SKILL.md`](dd-monitors/SKILL.md) |
-| 42 | ✓ | [`dd-oci-integration/SKILL.md`](dd-oci-integration/SKILL.md) |
-| 43 | ✓ | [`dd-orchestrator/SKILL.md`](dd-orchestrator/SKILL.md) |
-| 44 | ✓ | [`dd-product-recommender/SKILL.md`](dd-product-recommender/SKILL.md) |
-| 45 | ✓ | [`dd-pup/SKILL.md`](dd-pup/SKILL.md) |
-| 46 | ✓ | [`dd-security/csm/ownership-agent/SKILL.md`](dd-security/csm/ownership-agent/SKILL.md) |
-| 47 | ✓ | [`dd-software-delivery/triage-flaky-test/SKILL.md`](dd-software-delivery/triage-flaky-test/SKILL.md) |
-| 48 | ✓ | [`dd-software-delivery/unblock-pr/SKILL.md`](dd-software-delivery/unblock-pr/SKILL.md) |
-| 49 | ✓ | [`SKILL.md`](SKILL.md) |
+| 33 | ✓ | [`dd-browser-sdk/setup-sourcemaps/SKILL.md`](dd-browser-sdk/setup-sourcemaps/SKILL.md) |
+| 34 | ✓ | [`dd-browser-sdk/SKILL.md`](dd-browser-sdk/SKILL.md) |
+| 35 | ✓ | [`dd-browser-sdk/upgrade-v5/SKILL.md`](dd-browser-sdk/upgrade-v5/SKILL.md) |
+| 36 | ✓ | [`dd-browser-sdk/upgrade-v6/SKILL.md`](dd-browser-sdk/upgrade-v6/SKILL.md) |
+| 37 | ✓ | [`dd-browser-sdk/upgrade-v7/SKILL.md`](dd-browser-sdk/upgrade-v7/SKILL.md) |
+| 38 | ✓ | [`dd-docs/SKILL.md`](dd-docs/SKILL.md) |
+| 39 | ✓ | [`dd-gcp-integration/SKILL.md`](dd-gcp-integration/SKILL.md) |
+| 40 | ✓ | [`dd-instrument-rum/SKILL.md`](dd-instrument-rum/SKILL.md) |
+| 41 | ✓ | [`dd-logs/SKILL.md`](dd-logs/SKILL.md) |
+| 42 | ✓ | [`dd-monitors/SKILL.md`](dd-monitors/SKILL.md) |
+| 43 | ✓ | [`dd-oci-integration/SKILL.md`](dd-oci-integration/SKILL.md) |
+| 44 | ✓ | [`dd-orchestrator/SKILL.md`](dd-orchestrator/SKILL.md) |
+| 45 | ✓ | [`dd-product-recommender/SKILL.md`](dd-product-recommender/SKILL.md) |
+| 46 | ✓ | [`dd-pup/SKILL.md`](dd-pup/SKILL.md) |
+| 47 | ✓ | [`dd-security/csm/ownership-agent/SKILL.md`](dd-security/csm/ownership-agent/SKILL.md) |
+| 48 | ✓ | [`dd-software-delivery/triage-flaky-test/SKILL.md`](dd-software-delivery/triage-flaky-test/SKILL.md) |
+| 49 | ✓ | [`dd-software-delivery/unblock-pr/SKILL.md`](dd-software-delivery/unblock-pr/SKILL.md) |
+| 50 | ✓ | [`SKILL.md`](SKILL.md) |
 
 ---
 

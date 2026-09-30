@@ -79,7 +79,7 @@ initialisées comme activées.
 
 ### Activées par défaut
 
-Les trois peuvent être retirées dans Paramètres → Compétences. Une valeur par
+Les quatre peuvent être retirées dans Paramètres → Compétences. Une valeur par
 défaut retirée n'est pas restaurée silencieusement, pas même par la
 préactivation.
 
@@ -143,6 +143,26 @@ Elle ne réécrit que la prose destinée à un lecteur humain. Le contenu cité,
 adresses, les codes, les prix, les valeurs de champs de formulaire et la
 formulation que vous fournissez mot pour mot restent intacts.
 
+#### WordPress REST API
+
+Cette compétence se charge uniquement pour les tâches de contenu pertinentes
+en Act/Dev, sur Mid et Full. Elle n'ajoute ni outil ni mécanisme
+d'authentification. Compact conserve seulement les indications de l'adaptateur.
+Pour les articles, pages, types personnalisés compatibles REST et taxonomies,
+l'API passe en premier si les champs, la session et l'autorisation le permettent.
+Si seule l'autorisation manque, WebBrain demande `/allow-api` une seule fois.
+Une autorisation existante suffit ; Ask reste en lecture seule.
+
+La recette conserve l'identifiant existant, crée les nouveaux contenus en
+brouillon, vérifie contenu et taxonomies, puis publie le même enregistrement
+uniquement sur demande. Une écriture incertaine doit être vérifiée avant toute
+nouvelle tentative. Le nonce transmis par `fetch_url` dans `X-WP-Nonce` peut
+apparaître dans la conversation du modèle et les traces. Le traitement strict
+des secrets impose donc l'interface, sans demander de désactiver ce réglage.
+Les surfaces Code/Texte/Classic existantes servent de repli avant tout plugin ;
+installer un plugin nécessite toujours une autorisation explicite.
+Voir la [recette](../../src/chrome/skills/wordpress-rest-api.md).
+
 ### Compétences packagées à activer
 
 Ces compétences sont livrées avec l'extension et apparaissent dans Paramètres →
@@ -159,6 +179,16 @@ Compétences comme disponibles. Elles ne sont pas activées par défaut.
 
 N'activez une compétence que si vous voulez ses outils et instructions
 disponibles pour `load_skill` sur les exécutions éligibles.
+
+## Recettes API par service
+
+Gardez les détails dans une compétence dédiée au service, comme WordPress,
+Mail.tm (courriel temporaire et repli API) ou Phonr (appels et suivi des démarrages
+interrompus). Documentez découverte, champs, authentification, permissions,
+exposition des secrets, vérification, écritures incertaines et repli interface.
+Le chargement ne donne aucune autorisation API. L'exception WordPress ne change
+pas les règles propres à Mail.tm ou Phonr et ne gonfle pas systématiquement les
+prompts avec leurs recettes complètes.
 
 ## Voir aussi
 

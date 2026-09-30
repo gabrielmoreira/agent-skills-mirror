@@ -51,15 +51,21 @@ Read CLAUDE.md for project overview and standards.
 
 Read the relevant agent definition from `.claude/agents/` if a specific role is specified.
 
+`CLAUDE.md` and `.claude/agents/` ship with the framework — no skill creates them. If either is missing, report it as missing from the install.
+
 ---
 
 ## Phase 2: Scan Relevant Area
 
-- For programmers: scan the code root (resolve per `.claude/docs/code-root-resolution.md`) for architecture, patterns, key files
+- For programmers: scan the code root (resolve per `.claude/docs/code-root-resolution.md`) for architecture, patterns, key files. An unresolved root means the scan did not run: the sections it feeds read `NOT ASSESSED — code root unresolved`, never a guess at `src/`
 - For designers: scan `design/` for existing design documents
 - For narrative: scan `design/narrative/` for world-building and story docs
-- For QA: scan `tests/` for existing test coverage
+- For QA: scan `tests/` for existing test coverage (`/test-setup` creates it)
 - For production: scan `production/` for current sprint and milestone
+- **No role or area given**: a general orientation — list the top level of `design/`,
+  `docs/architecture/`, `production/` and the code root, read
+  `production/session-state/active.md` if it exists, and say that a role would
+  focus the next pass (e.g. `/onboard programmer`)
 
 Read recent changes (git log if available) to understand current momentum.
 
@@ -91,7 +97,9 @@ Read recent changes (git log if available) to understand current momentum.
 [Summary of conventions relevant to this role from CLAUDE.md and agent definition]
 
 ## Current State of Your Area
-[What has been built, what is in progress, what is planned next]
+[What has been built, what is in progress, what is planned next. Name what
+Phase 2 found by path — for a designer, each existing GDD and design doc — or
+say it found none]
 
 ## Current Sprint Context
 [What the team is working on now and what is expected of this role]

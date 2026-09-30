@@ -36,11 +36,12 @@ import { DeckCanvas, getCanvas } from "./slide-canvas";
 import { Toolbar } from "./toolbar";
 
 export function ScreenshotEditor() {
-  const { state, setState, hydrated, savedAt, saveError, reset, resetDevice, undo, redo, canUndo, canRedo } = useProject();
+  const { state, setState, hydrated, savedAt, saveError, retrySave, reset, resetDevice, undo, redo, canUndo, canRedo } = useProject();
   const [activeSlideId, setActiveSlideId] = React.useState<string | null>(null);
   const [selectedElement, setSelectedElement] = React.useState<SelectedElement | null>(null);
   const [exporting, setExporting] = React.useState<string | null>(null);
   const [ready, setReady] = React.useState(false);
+  const [, refreshAssets] = React.useReducer((version: number) => version + 1, 0);
   const [exportLocaleOverride, setExportLocaleOverride] = React.useState<string | null>(null);
   const [exportSlideIndex, setExportSlideIndex] = React.useState(0);
   const exportInProgress = React.useRef(false);
@@ -108,7 +109,11 @@ export function ScreenshotEditor() {
 
   React.useEffect(() => {
     if (!hydrated) return;
-    preloadImages(assetPaths).finally(() => setReady(true));
+    let cancelled = false;
+    preloadImages(assetPaths).finally(() => {
+      if (!cancelled) { setReady(true); refreshAssets(); }
+    });
+    return () => { cancelled = true; };
     // assetPaths is derived from assetSig; depending on the string keeps the
     // effect from re-firing when slidesByDevice churns without path changes.
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -472,13 +477,23 @@ export function ScreenshotEditor() {
     // Make sure custom fonts are loaded before snapshot so typography in PNG
     // matches what's on screen.
     if (typeof document !== "undefined" && document.fonts && document.fonts.ready) {
+      let timeout: ReturnType<typeof setTimeout> | undefined;
       try {
-        // fonts.ready only covers faces already requested; explicitly load an
-        // imported font so a not-yet-used face can't export as the fallback.
-        if (fontId === "self-hosted") await document.fonts.load(`64px ${fontFamily}`);
-        await document.fonts.ready;
+        await Promise.race([
+          (async () => {
+            // fonts.ready only covers faces already requested; explicitly load an
+            // imported font so a not-yet-used face can't export as the fallback.
+            if (fontId === "self-hosted") await document.fonts.load(`64px ${fontFamily}`);
+            await document.fonts.ready;
+          })(),
+          new Promise<never>((_, reject) => {
+            timeout = setTimeout(() => reject(new Error("Font loading timed out")), 15000);
+          }),
+        ]);
       } catch {
-        throw new Error("The screenshot font could not be loaded. Check the imported font file.");
+        throw new Error("The screenshot font could not be loaded. Check the imported font file and connection, then retry.");
+      } finally {
+        clearTimeout(timeout);
       }
     }
 
@@ -534,8 +549,9 @@ export function ScreenshotEditor() {
           failed += sizes.length;
           continue;
         }
-        await encoding;
-        encoding = pngs.then(
+        // Attach rejection handling now: this screen can fail while the
+        // previous screen is still encoding.
+        const nextEncoding = pngs.then(
           (files) => {
             sizes.forEach((size, index) => {
               zip.file(`${platform}/${state.device}/${size.w}x${size.h}/${locale}/${filename}`, files[index]);
@@ -547,6 +563,8 @@ export function ScreenshotEditor() {
             failed += sizes.length;
           },
         );
+        await encoding;
+        encoding = nextEncoding;
       }
     }
     await encoding;
@@ -639,8 +657,8 @@ export function ScreenshotEditor() {
   const exportCanvas = getCanvas(exportState.device, exportState.orientation);
 
   return (
-    <div className="flex h-screen flex-col overflow-hidden bg-background">
-      <Toaster position="top-right" richColors closeButton />
+    <div className="flex h-dvh flex-col overflow-hidden bg-background">
+      <Toaster position="bottom-center" richColors closeButton />
       <Toolbar
         appName={state.appName}
         setAppName={(v) => setState((p) => ({ ...p, appName: v }))}
@@ -677,11 +695,12 @@ export function ScreenshotEditor() {
         exporting={exporting}
         savedAt={savedAt}
         saveError={saveError}
+        onRetrySave={retrySave}
         busy={busy}
       />
 
-      <div inert={busy} aria-busy={busy} className="flex flex-1 overflow-hidden md:flex-row flex-col">
-        <aside className="md:w-72 w-full shrink-0 border-r bg-card md:max-h-none max-h-64 overflow-hidden">
+      <div inert={busy} aria-busy={busy} className="flex min-h-0 flex-1 flex-col overflow-y-auto lg:flex-row lg:overflow-hidden">
+        <aside className="lg:w-72 w-full shrink-0 border-r bg-card lg:max-h-none max-h-64 overflow-hidden">
           <Sidebar
             slides={currentSlides}
             activeId={activeSlide?.id || null}
@@ -702,7 +721,7 @@ export function ScreenshotEditor() {
           />
         </aside>
 
-        <main className="flex flex-1 items-stretch overflow-hidden min-h-0">
+        <main className="flex h-[26rem] shrink-0 items-stretch overflow-hidden lg:h-auto lg:min-h-0 lg:flex-1">
           {activeSlide && currentSlides.length > 0 ? (
             <PreviewStage
               slides={currentSlides}
@@ -731,7 +750,7 @@ export function ScreenshotEditor() {
           )}
         </main>
 
-        <aside className="md:w-80 w-full shrink-0 border-l bg-card md:max-h-none max-h-96 overflow-hidden">
+        <aside className="lg:w-80 w-full shrink-0 border-l bg-card lg:max-h-none max-h-96 overflow-hidden">
           {activeSlide ? (
             <Inspector
               key={`${state.device}:${activeSlide.id}`}

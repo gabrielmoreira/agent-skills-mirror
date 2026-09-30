@@ -25,7 +25,7 @@ Thin RPC adapter domain over the hosted backend's payment API. It exposes plan l
 
 From `mod.rs`:
 
-- `ops::*`: async handlers: `get_summary`, `get_current_plan`, `get_balance`, `get_transactions`, `get_auto_recharge`, `update_auto_recharge`, `get_cards`, `create_setup_intent`, `update_card`, `delete_card`, `purchase_plan`, `create_portal_session`, `top_up_credits`, `create_coinbase_charge`, `redeem_coupon`, `get_user_coupons`. Each takes `&Config` (plus typed params) and returns `Result<RpcOutcome<Value>, String>`.
+- `ops::*`: async handlers: `get_summary`, `get_current_plan`, `get_balance`, `get_transactions`, `get_auto_recharge`, `update_auto_recharge`, `get_cards`, `create_setup_intent`, `update_card`, `delete_card`, `purchase_plan`, `create_portal_session`, `top_up_credits`, `create_coinbase_charge`, `redeem_coupon`, `get_user_coupons`. Each takes `&Config` (plus typed params) and returns `Result<Outcome<Value>, String>`.
 - `all_billing_controller_schemas()`, `all_billing_registered_controllers()`, `billing_schemas(function: &str)`: registry wiring.
 
 ## RPC / controllers
@@ -51,7 +51,7 @@ Namespace `billing` (16 methods, exposed as `openhuman.billing_*`):
 | `billing_redeem_coupon` | `POST /coupons/redeem` |
 | `billing_get_coupons` | `GET /coupons/me` |
 
-Handlers load `Config` via `config::rpc::load_config_with_timeout()`, deserialize camelCase params, call the matching `ops` fn, and emit CLI-compatible JSON via `RpcOutcome::into_cli_compatible_json()`.
+Handlers load `Config` via `config::rpc::load_config_with_timeout()`, deserialize camelCase params, call the matching `ops` fn, and emit CLI-compatible JSON via `Outcome::into_cli_compatible_json()`.
 
 ## Agent tools
 

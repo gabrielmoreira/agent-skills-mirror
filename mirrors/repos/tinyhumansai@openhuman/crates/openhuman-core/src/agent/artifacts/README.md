@@ -16,9 +16,9 @@ renders artifact content itself.
 | `mod.rs` | `mod` decls and re-exports: `ArtifactKind` / `ArtifactMeta` / `ArtifactStatus`, the producer API (`create_artifact`, `finalize_artifact`, `fail_artifact`, `read_artifact_bytes`), and `all_artifacts_controller_schemas` / `all_artifacts_registered_controllers`. |
 | `types.rs` | `ArtifactKind` (presentation/document/image/other), `ArtifactStatus` (pending/ready/failed), `ArtifactMeta`. Enums serialize lowercase; `parse` is case-insensitive and never errors (unknown kind → `Other`, unknown status → `Pending`). `ArtifactMeta.error` and `.thread_id` are optional, `skip_serializing_if` none. |
 | `store.rs` | All filesystem I/O over `tokio::fs`: `artifacts_root`, `create_artifact`, `finalize_artifact`, `fail_artifact`, `read_artifact_bytes` (`pub`); `save_artifact_meta`, `save_artifact_args`, `read_artifact_args`, `list_artifacts`, `get_artifact`, `delete_artifact` (`pub(crate)`); `validate_artifact_id` / `assert_within_root` sandboxing; the `REGENERATE_TARGET_ID` task-local; `sanitize_filename_stem`. |
-| `ops.rs` | RPC business logic returning `RpcOutcome<Value>`: `ai_list_artifacts`, `ai_get_artifact`, `ai_delete_artifact`, `ai_regenerate`. `DEFAULT_LIMIT = 50`, `MAX_LIMIT = 200`. The regenerate path that re-runs `PresentationTool` is `#[cfg(feature = "documents")]`; without the feature `ai_regenerate` returns an error. |
+| `ops.rs` | RPC business logic returning `Outcome<Value>`: `ai_list_artifacts`, `ai_get_artifact`, `ai_delete_artifact`, `ai_regenerate`. `DEFAULT_LIMIT = 50`, `MAX_LIMIT = 200`. The regenerate path that re-runs `PresentationTool` is `#[cfg(feature = "documents")]`; without the feature `ai_regenerate` returns an error. |
 | `schemas.rs` | `ControllerSchema`s and `handle_*` fns for the four `ai.*` controllers; param helpers `read_required`, `read_optional_u64`, `read_optional_string` (whitespace-only → absent), `type_name`. |
-| `tools.rs` | `ArtifactListTool`, `ArtifactGetTool`, `ArtifactDeleteTool`: shims over `ops` that unwrap the `RpcOutcome` and return `outcome.value` as the `ToolResult` string. |
+| `tools.rs` | `ArtifactListTool`, `ArtifactGetTool`, `ArtifactDeleteTool`: shims over `ops` that unwrap the `Outcome` and return `outcome.value` as the `ToolResult` string. |
 | `*_tests.rs` | Sibling test files for each of the above (`#[path]`). |
 
 ## Public surface

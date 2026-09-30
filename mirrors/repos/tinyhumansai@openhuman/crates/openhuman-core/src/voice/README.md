@@ -37,7 +37,7 @@ Keeping the two surfaces in lockstep is enforced by the disabled-build check
 | --- | --- |
 | `mod.rs` | Module docstring, feature gate, and exports; re-exports inference-side voice submodules (`cloud_transcribe`, `local_speech`, `postprocess`, `streaming`); defines `cloud_transcribe_default_model()` (`"whisper-v1"`). |
 | `types.rs` | RPC DTOs: `VoiceSpeechResult`, `VoiceTtsResult`, `VoiceStatus` + `From<LocalAi*>` conversions. |
-| `ops.rs` | Business logic returning `RpcOutcome<T>`: `voice_status`, `voice_transcribe`, `voice_transcribe_bytes`, `voice_tts`, `normalize_extension`. |
+| `ops.rs` | Business logic returning `Outcome<T>`: `voice_status`, `voice_transcribe`, `voice_transcribe_bytes`, `voice_tts`, `normalize_extension`. |
 | `factory/` | `SttProvider` / `TtsProvider` traits; cloud/piper/external implementations; `create_stt_provider` / `create_tts_provider`; `effective_*_provider`; slug:model parsing; `DEFAULT_STT_MODEL`, `DEFAULT_PIPER_VOICE`. Split into `entry.rs` (public entry points + constants), `traits.rs`, `stt_providers.rs` (`CloudSttProvider`, `ExternalSttProvider`), `tts_providers.rs` (`CloudTtsProvider`, `PiperTtsProvider`, `ExternalTtsProvider`), `helpers.rs` (`split_slug_model`, `effective_*_provider`, slug-keyed lookup in `config.voice_providers`). |
 | `schemas/` | Controller schemas, registry exports, and all `handle_voice_*` / `handle_overlay_stt_notify` RPC handlers. Split into `registry.rs`, `params.rs`, `helpers.rs`, `handlers.rs` (+ `handlers/provider_server.rs`, `handlers/transcribe_tts.rs`). |
 | `server.rs` (+ `server/runtime.rs`, `server/pipeline.rs`, `server/hotkey_listener.rs`, `server/singleton.rs`, `server/types.rs`) | The `VoiceServer` dictation runtime: hotkey event loop, recording lifecycle, duration/silence/hallucination gates, background processing, global singleton (`global_server` / `try_global_server` / `start_if_enabled` / `run_standalone`, all in `server/singleton.rs`). |
@@ -108,7 +108,7 @@ channels that predate the typed event bus:
 - `DictationEvent` (`pressed`/`released`): `publish_dictation_event` / `subscribe_dictation_events`.
 - transcription text: `publish_transcription` / `subscribe_transcription_results`.
 
-`crates/openhuman-core/src/core/socketio.rs` subscribes to both broadcast
+`crates/openhuman-rpc/src/server/socketio.rs` subscribes to both broadcast
 channels and forwards them to Socket.IO clients (so dictation hotkeys and
 results reach the frontend without Tauri-side shortcut registration).
 
@@ -150,8 +150,8 @@ transcription count, rolling recent-transcript buffer for context) behind a
 ## Used by
 
 - `crates/openhuman-core/src/core/all.rs`: registers the `voice` and `audio_toolkit` controllers (gated) and the `openhuman voice` CLI adapter (ungated, so the stub answers with a "voice disabled" error).
-- `crates/openhuman-core/src/core/socketio.rs`: subscribes to the dictation/transcription broadcast buses and forwards them to Socket.IO clients.
-- `crates/openhuman-core/src/core/jsonrpc.rs`: WebSocket upgrade for streaming dictation (`streaming::handle_dictation_ws`).
+- `crates/openhuman-rpc/src/server/socketio.rs`: subscribes to the dictation/transcription broadcast buses and forwards them to Socket.IO clients.
+- `crates/openhuman-rpc/src/server/http/dictation.rs`: WebSocket upgrade for streaming dictation (`streaming::handle_dictation_ws`).
 - `crates/openhuman-core/src/platform/socket/event_handlers.rs`: spawns `realtime_harness::handle_voice_harness_turn` for each `voice:harness` socket event.
 - `crates/openhuman-core/src/web_chat/run_task.rs`: synthesizes agent reply speech and publishes PTT transcript-committed events.
 - `crates/openhuman-core/src/channels/host/adapters.rs`: channel-side STT provider dispatch and reply synthesis.

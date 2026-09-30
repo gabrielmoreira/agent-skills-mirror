@@ -10,7 +10,7 @@ runner behind both surfaces.
 
 ## Request lifecycle
 
-1. `core/socketio.rs` receives a `chat:start` socket event and calls
+1. `openhuman-rpc/src/server/socketio.rs` receives a `chat:start` socket event and calls
    [`start_chat`] (`ops/start_chat.rs`) with the raw message, thread/client ids,
    and any model/profile/locale/queue-mode overrides.
 2. `start_chat` preprocesses `[FILE:...]`/`[IMAGE:...]` attachment markers
@@ -129,14 +129,14 @@ Namespace `channel`, registered via
 
 ## Events
 
-- Broadcasts `WebChannelEvent` (defined in `core/socketio.rs`) over an
-  in-process `tokio::sync::broadcast` channel. `core/socketio.rs` forwards it
-  to the connected Socket.IO client; `core/jsonrpc.rs` forwards the same
-  stream to the JSON-RPC `/events` SSE endpoint; `channels/bus/subscriber.rs`
+- Broadcasts `WebChannelEvent` (defined in `openhuman-rpc/src/server/socketio.rs`) over an
+  in-process `tokio::sync::broadcast` channel. `openhuman-rpc/src/server/socketio.rs` forwards it
+  to the connected Socket.IO client; `core/jsonrpc/http/events.rs` subscribes to that stream and
+  serves the JSON-RPC `/events` SSE endpoint; `channels/bus/subscriber.rs`
   subscribes to collect the reply for an inbound provider message.
 - Subscribes to `DomainEvent` on `crate::core::bus::BUS` via three
   process-lifetime, `OnceLock`-guarded subscribers registered at startup from
-  `core/jsonrpc.rs` and `channels/runtime/startup/start_channels.rs`:
+  `core/runtime/bootstrap.rs` and `channels/runtime/startup/start_channels.rs`:
   `register_approval_surface_subscriber`
   (maps `ApprovalRequested`/`PlanReviewRequested` to `approval_request` /
   `plan_review_request`), `register_artifact_surface_subscriber`
@@ -165,11 +165,10 @@ Namespace `channel`, registered via
 
 ## Called by
 
-- `core/socketio.rs`: the `chat:start` and `chat:cancel` handlers call
+- `openhuman-rpc/src/server/socketio.rs`: the `chat:start` and `chat:cancel` handlers call
   `start_chat` / `cancel_chat_scoped`, and forward `WebChannelEvent`s to the
   client.
-- `core/jsonrpc.rs`: subscribes the event stream for `/events` SSE and
-  registers the three `DomainEvent` surface subscribers at startup.
+- `core/jsonrpc/http/events.rs`: subscribes to the `/events` SSE stream and forwards web-channel events; `core/runtime/bootstrap.rs` registers the `DomainEvent` surface subscribers.
 - `core/all.rs`: registers `all_web_channel_registered_controllers()` under
   `DomainGroup::Channels`, deliberately not behind the `channels` feature
   (the in-app chat is core product surface, #5002).

@@ -52,7 +52,7 @@ NanoClaw's approval service uses a private Unix socket on Linux. On macOS it use
 
 `NANOCLAW_IRON_PROXY_PORT` in `.env` sets the internal proxy port (default `8080`). Setup uses the same value for the front listener and the agent proxy URL. This does not publish a host port. Re-run setup and restart this NanoClaw copy after changing it.
 
-`NANOCLAW_IRON_CONTROL_PORT` sets the console port (default `10257`). Only `127.0.0.1` is published. Set it before setup if another install uses that port; use the URL printed by setup. The official image currently targets `linux/amd64`; Docker on Apple Silicon runs it with emulation.
+`NANOCLAW_IRON_CONTROL_PORT` sets the console port (default `10257`). Only `127.0.0.1` is published. Set it before setup if another install uses that port; use the URL printed by setup. The official image currently targets `linux/amd64`; Docker on Apple Silicon runs it with emulation. On another architecture, setup checks the engine before it pulls anything and stops, printing the command that enables amd64 emulation, when the engine cannot run that image.
 
 ```nc:run effect:step
 pnpm exec tsx .claude/skills/add-iron-proxy/scripts/setup.ts --with-control
@@ -66,6 +66,14 @@ pnpm exec tsx .claude/skills/add-iron-proxy/scripts/setup.ts --with-control
 - **A command times out:** use the last printed stage to identify whether source
   download, image build, or console startup failed. Check connectivity and Docker
   health before retrying. The installer terminates the timed-out process group.
+- **"Iron Control cannot run on this aarch64 Docker engine", or `exec format error`
+  at the Iron Control step:** the pinned console image is amd64 only. Run the printed
+  `tonistiigi/binfmt` command against the Docker engine, or choose the OneCLI gateway;
+  then re-run setup. The registration lives in the kernel and is gone after a reboot:
+  re-run the command, or register it at boot (a systemd unit or your Docker host's
+  boot script), or Iron Control restart-loops with `exec format error`. Setup only checks an engine running on this machine's own kernel;
+  a VM or remote engine (Docker Desktop, Colima, a `DOCKER_HOST` elsewhere) is not
+  inspected and needs emulation enabled inside the engine.
 - **The database exists but keys are missing:** restore its matching `control.env`.
   Keep the database volume and encryption keys together; do not generate replacement
   keys for an existing database. `nanoclaw uninstall` removes both together: the
@@ -84,7 +92,7 @@ pnpm run build
 ```
 
 ```nc:run effect:test
-pnpm exec vitest run src/gateway-providers/iron-proxy.test.ts src/gateway-providers/iron-proxy-approval.test.ts src/gateway-providers/gateway-provider-registry.test.ts src/gateway-approval-coordinator.test.ts .claude/skills/add-iron-proxy/scripts/control.test.ts .claude/skills/add-iron-proxy/scripts/provider-credentials.test.ts .claude/skills/add-iron-proxy/scripts/credential-isolation.test.ts .claude/skills/add-iron-proxy/scripts/install-command.test.ts
+pnpm exec vitest run src/gateway-providers/iron-proxy.test.ts src/gateway-providers/iron-proxy-approval.test.ts src/gateway-providers/gateway-provider-registry.test.ts src/gateway-approval-coordinator.test.ts .claude/skills/add-iron-proxy/scripts/control.test.ts .claude/skills/add-iron-proxy/scripts/setup.test.ts .claude/skills/add-iron-proxy/scripts/provider-credentials.test.ts .claude/skills/add-iron-proxy/scripts/credential-isolation.test.ts .claude/skills/add-iron-proxy/scripts/install-command.test.ts
 ```
 
 The setup consumer writes `NANOCLAW_GATEWAY_PROVIDER=iron-proxy` only after every directive succeeds. Restart only this copy's NanoClaw service after an upgrade so its session contribution and approval bridge match the new installation. Check the proxy has synced its assigned principal before reporting the gateway ready.
@@ -140,14 +148,21 @@ pnpm exec tsx setup/index.ts --step provider-auth opencode
 
 The OpenCode setup flow supports ChatGPT sign-in and API keys through Iron
 Control. It installs no OneCLI service and needs no OneCLI management settings.
-ChatGPT arrives as the seam's `chatgpt` OAuth profile: Iron creates a native
-broker from OpenCode's public OAuth client and refresh token, and a separate
-granted secret carries the `ChatGPT-Account-Id` header; any other OAuth profile
-is rejected. The agent sees only placeholders. Initial sign-in and reauthentication wait for the
+ChatGPT arrives as the seam's `chatgpt` OAuth profile: Iron creates three
+records, a native broker from OpenCode's public OAuth client and refresh token,
+a broker-backed bearer secret, and a separate granted secret that carries the
+`ChatGPT-Account-Id` header; any other OAuth profile is rejected. The agent sees only placeholders. Initial sign-in and reauthentication wait for the
 native broker to refresh successfully (up to two minutes) before setup continues. API keys use each backend's declared header
 scheme. Setup grants the secrets to this install's principal and permits the
-model hostname. Rotation and reauthentication keep IDs and grants. Moving a key
-to another host requires confirmation and re-entering its value.
+model hostname. Rotation and reauthentication keep IDs and grants; reauthentication
+also resets a dead broker with the new refresh token. Moving a key to another
+host requires confirmation and re-entering its value: Iron's update API replaces
+a secret's source whenever its rules change, so a blank answer keeps a key only
+on its existing host. Records use install-scoped foreign IDs, so an interrupted
+save is retried on the same IDs, and missing grants are reconciled without
+reading values. Before keeping or overwriting a record, setup rechecks its
+ownership and rules and stops if they no longer match. Broker refresh may continue during login; a change to the broker's
+client binding or the secrets' rules stops setup.
 
 Native backends and custom/keyless HTTPS endpoints on port 443 are supported.
 Use a DNS name and TLS for local models; plaintext HTTP endpoints fail during

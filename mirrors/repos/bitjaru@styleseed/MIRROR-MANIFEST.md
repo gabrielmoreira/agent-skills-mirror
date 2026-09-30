@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `bitjaru/styleseed` — 26 default patterns, 0 followed patterns, 95 file(s) materialized.
+Mirror of `bitjaru/styleseed` — 26 default patterns, 0 followed patterns, 96 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `bitjaru/styleseed` — 26 default patterns, 0 followed patterns, 95 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 95 |
+| Files         | 96 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -148,12 +148,13 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 87 | ✓ | [`skills/ss-tokens/scripts/generate-palette.mjs`](skills/ss-tokens/scripts/generate-palette.mjs) |
 | 88 | ✓ | [`skills/ss-tokens/scripts/generator.mjs`](skills/ss-tokens/scripts/generator.mjs) |
 | 89 | ✓ | [`skills/ss-tokens/SKILL.md`](skills/ss-tokens/SKILL.md) |
-| 90 | ✓ | [`skills/ss-update/scripts/artifact-impact.mjs`](skills/ss-update/scripts/artifact-impact.mjs) |
-| 91 | ✓ | [`skills/ss-update/scripts/check-update.mjs`](skills/ss-update/scripts/check-update.mjs) |
-| 92 | ✓ | [`skills/ss-update/SKILL.md`](skills/ss-update/SKILL.md) |
-| 93 | ✓ | [`skills/ss-verify/scripts/inspect-spacing.mjs`](skills/ss-verify/scripts/inspect-spacing.mjs) |
-| 94 | ✓ | [`skills/ss-verify/SKILL.md`](skills/ss-verify/SKILL.md) |
-| 95 | ✓ | [`skills/styleseed/SKILL.md`](skills/styleseed/SKILL.md) |
+| 90 | ✓ | [`skills/ss-update/references/update-preflight.md`](skills/ss-update/references/update-preflight.md) |
+| 91 | ✓ | [`skills/ss-update/scripts/artifact-impact.mjs`](skills/ss-update/scripts/artifact-impact.mjs) |
+| 92 | ✓ | [`skills/ss-update/scripts/check-update.mjs`](skills/ss-update/scripts/check-update.mjs) |
+| 93 | ✓ | [`skills/ss-update/SKILL.md`](skills/ss-update/SKILL.md) |
+| 94 | ✓ | [`skills/ss-verify/scripts/inspect-spacing.mjs`](skills/ss-verify/scripts/inspect-spacing.mjs) |
+| 95 | ✓ | [`skills/ss-verify/SKILL.md`](skills/ss-verify/SKILL.md) |
+| 96 | ✓ | [`skills/styleseed/SKILL.md`](skills/styleseed/SKILL.md) |
 
 ---
 

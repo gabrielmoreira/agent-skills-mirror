@@ -154,8 +154,8 @@ export function SlideThumb({
         </div>
       </button>
 
-      {/* Always visible on touch (no hover); fades in on hover on desktop. */}
-      <div className="flex flex-col items-center justify-center gap-0.5 opacity-60 transition-opacity focus-within:opacity-100 group-hover:opacity-100 md:opacity-0">
+      {/* Keep actions discoverable on touch tablets as well as phones. */}
+      <div className="flex flex-col items-center justify-center gap-0.5 opacity-60 transition-opacity focus-within:opacity-100 group-hover:opacity-100">
         <Button
           type="button"
           size="icon"

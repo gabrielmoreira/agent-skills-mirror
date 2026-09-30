@@ -25,7 +25,7 @@ Interactive approval workflow for supervised mode (issue #1339). `ApprovalGate` 
 | `crates/openhuman-core/src/security/approval/store.rs` | SQLite persistence (`pending_approvals` table). `insert_pending`, `decide`, `get_decision`, `record_execution`, `list_pending`, `list_recent_decisions`, `purge_session`, `expire_stale`, plus idempotent column migration for the v1 schema. |
 | `crates/openhuman-core/src/security/approval/types.rs` | Serde domain types: `PendingApproval`, `ApprovalAuditEntry`, `ApprovalDecision`, `GateOutcome`, `ExecutionOutcome`. |
 | `crates/openhuman-core/src/security/approval/redact.rs` | `redact_args` (PII/chat-content key scrubbing + home-path stripping) and `summarize_action` (safe-field summary). |
-| `crates/openhuman-core/src/security/approval/rpc.rs` | Domain RPC entry points returning `RpcOutcome<T>`: `approval_get_gate_state`, `approval_list_pending`, `approval_list_recent_decisions`, `approval_decide`, `approval_preauthorize_flow`. |
+| `crates/openhuman-core/src/security/approval/rpc.rs` | Domain RPC entry points returning `Outcome<T>`: `approval_get_gate_state`, `approval_list_pending`, `approval_list_recent_decisions`, `approval_decide`, `approval_preauthorize_flow`. |
 | `crates/openhuman-core/src/security/approval/schemas.rs` | Controller schemas + `handle_*` fns wiring the RPC into the registry. |
 
 ## Public surface
@@ -63,7 +63,7 @@ Published via `crate::core::bus::BUS.publish` with variants from `crate::core::e
 
 - `DomainEvent::ApprovalRequested { request_id, tool_name, action_summary, args_redacted, session_id, thread_id, client_id }`: emitted (`gate_intercept.rs`) when a call is parked. Bridged to the `approval_request` web-channel socket event by `ApprovalSurfaceSubscriber` (defined in `crates/openhuman-core/src/web_chat/`).
 - `DomainEvent::ApprovalDecided { request_id, tool_name, decision }`: emitted (`gate_state.rs`) when a decision is applied.
-- `DomainEvent::FlowApprovalRequested { request_id, flow_id, run_id, tool_name, summary }`: emitted (`gate_intercept.rs`) alongside `ApprovalRequested` when the parked call has a `Workflow` origin. It carries no thread/client id, so `ApprovalSurfaceSubscriber` drops it; `core::socketio` broadcasts it as `flow_approval_request` for the Workflows UI.
+- `DomainEvent::FlowApprovalRequested { request_id, flow_id, run_id, tool_name, summary }`: emitted (`gate_intercept.rs`) alongside `ApprovalRequested` when the parked call has a `Workflow` origin. It carries no thread/client id, so `ApprovalSurfaceSubscriber` drops it; `openhuman_rpc::server::socketio` broadcasts it as `flow_approval_request` for the Workflows UI.
 
 No `bus.rs` in this module. It only publishes; the subscriber (`ApprovalSurfaceSubscriber`) lives in `crates/openhuman-core/src/web_chat/event_bus.rs`.
 
@@ -76,14 +76,14 @@ SQLite DB at `{workspace_dir}/approval/approval.db`, table `pending_approvals` (
 - `crate::core::bus::BUS` + `crate::core::events::DomainEvent` to surface approval prompts/decisions.
 - `crate::core::all`: `ControllerFuture` / `RegisteredController` for the controller registry.
 - `crate::core` (`ControllerSchema`, `FieldSchema`, `TypeSchema`): schema definitions.
-- `crate::rpc::RpcOutcome`: RPC return contract.
+- `crate::core::Outcome`: RPC return contract.
 - `crate::config::Config`: workspace dir (DB path) plus the boot-time `autonomy.auto_approve` snapshot; `config::ops::add_auto_approve_tool` persists "Always allow".
 - `crate::security`: `live_policy::current()` for the live "Always allow" list and `POLICY_DENIED_MARKER` for deny reasons.
 - `tinymemory_core::store::safety::sanitize_text`: scrub secrets out of stored execution-error strings.
 
 ## Used by
 
-- `crates/openhuman-core/src/core/jsonrpc.rs`: installs the global gate (`ApprovalGate::init_global`) at startup and wires the approval RPCs.
+- `crates/openhuman-core/src/core/runtime/bootstrap.rs`: installs the global gate (`ApprovalGate::init_global`) at startup; `core/all.rs` registers the approval RPC controllers.
 - `crates/openhuman-core/src/core/all.rs`: registers the controller schemas.
 - `crates/openhuman-core/src/agent/tinyagents/middleware.rs` (`ApprovalSecurityMiddleware`, a `wrap_tool` middleware on every turn path): routes external-effect tool calls through the gate before `execute()` and records the terminal audit row.
 - `crates/openhuman-core/src/web_chat/`: sets `APPROVAL_CHAT_CONTEXT`, hosts `ApprovalSurfaceSubscriber`, and routes typed yes/no replies to `approval_decide`.
@@ -101,7 +101,7 @@ SQLite DB at `{workspace_dir}/approval/approval.db`, table `pending_approvals` (
 - **Waiter registered before persist** so a fast `approval_decide` can't mark a request approved while no waiter exists (PR #2149).
 - **Orphan rows are intentionally preserved** across launches (issue #1339); deciding one is a DB-only audit update, and no side effect can fire across processes, so the security invariant holds.
 - **`approve_always_for_tool` persistence is the RPC handler's job**, not the gate's: `gate.decide` only resolves the parked future and emits the audit event; `rpc::approval_decide` appends to `autonomy.auto_approve` and reloads the live policy (best-effort; failure degrades to prompting again).
-- `OPENHUMAN_APPROVAL_GATE=0`/`false` skips installing the gate for CLI, Docker, and library hosts only (`approval_gate_boot_decision` in `crates/openhuman-core/src/core/types.rs`, applied in `core/jsonrpc.rs`); the Tauri shell always installs it and ignores the override. Where honored, `Prompt`-class calls run unprompted.
+- `OPENHUMAN_APPROVAL_GATE=0`/`false` skips installing the gate for CLI, Docker, and library hosts only (`approval_gate_boot_decision` in `crates/openhuman-core/src/core/types.rs`, applied in `core/runtime/bootstrap.rs`); the Tauri shell always installs it and ignores the override. Where honored, `Prompt`-class calls run unprompted.
 - **A disabled autonomy policy parks nothing.** With `[autonomy] enabled = false` (the shipped default, see `security/README.md`) `SecurityPolicy::gate_decision` answers `Allow` for every class, so the acting tools' `external_effect_with_args` (which asks for `GateDecision::Prompt`) is `false` and the gate is never reached. The gate is still installed and still works the moment the policy is turned on; nothing here is special-cased on the flag.
 - A prior list-based `ApprovalManager` was removed; the gate is now the sole control reading the `autonomy.auto_approve` allowlist.
 

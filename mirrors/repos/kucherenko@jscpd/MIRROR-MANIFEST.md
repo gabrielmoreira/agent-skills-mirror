@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `kucherenko/jscpd` — 26 default patterns, 0 followed patterns, 3 file(s) materialized.
+Mirror of `kucherenko/jscpd` — 26 default patterns, 0 followed patterns, 5 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `kucherenko/jscpd` — 26 default patterns, 0 followed patterns, 3 fil
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 3 |
+| Files         | 5 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,9 +59,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`skills/codebase-refactoring/SKILL.md`](skills/codebase-refactoring/SKILL.md) |
-| 2 | ✓ | [`skills/dry-refactoring/SKILL.md`](skills/dry-refactoring/SKILL.md) |
-| 3 | ✓ | [`skills/jscpd/SKILL.md`](skills/jscpd/SKILL.md) |
+| 1 | ✓ | [`skills/code-migration/SKILL.md`](skills/code-migration/SKILL.md) |
+| 2 | ✓ | [`skills/codebase-refactoring/SKILL.md`](skills/codebase-refactoring/SKILL.md) |
+| 3 | ✓ | [`skills/compare-codebases/SKILL.md`](skills/compare-codebases/SKILL.md) |
+| 4 | ✓ | [`skills/dry-refactoring/SKILL.md`](skills/dry-refactoring/SKILL.md) |
+| 5 | ✓ | [`skills/jscpd/SKILL.md`](skills/jscpd/SKILL.md) |
 
 ---
 

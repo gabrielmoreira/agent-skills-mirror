@@ -148,7 +148,7 @@ not the same finding:
 |---|---|---|
 | N_adr matches | Normal. | Proceed on the scanned sections. |
 | Some ADRs match, some do not | Those ADRs are missing sections. | Record each as a **structural gap** in the Phase 7 report — a missing `## GDD Requirements Addressed` is itself a traceability finding. |
-| **0 matches, N_adr > 0** | **Malformed ADRs**, not "no architecture". | "[N_adr] ADRs found, none carries a scannable section — run `/architecture-decision [file] retrofit` on each." Do **not** report zero coverage; that would read as a design failure when it is a format failure. |
+| **0 matches, N_adr > 0** | **Malformed ADRs**, not "no architecture". | "[N_adr] ADRs found, none carries a scannable section — run `/architecture-decision retrofit [file]` on each." Do **not** report zero coverage; that would read as a design failure when it is a format failure. |
 
 Escalate to a full read of one ADR only when judging a conflict needs its
 reasoning (Phase 4) — that is a per-ADR decision, not a blanket load.
@@ -312,8 +312,11 @@ Full-read a story only when its Test Evidence section is missing or ambiguous.
 
 ### Step 3b-2 — Load test files
 
-Glob `tests/unit/**/*_test.*` and `tests/integration/**/*_test.*`.
-Build an index: system → [test file paths].
+Glob the engine's test root (`.claude/docs/directory-structure.md`): Godot
+`tests/unit/**/*_test.*` and `tests/integration/**/*_test.*`; Unity
+`Assets/Tests/**/*Tests.cs`; Unreal `Source/*/Private/Tests/**/*.cpp`. With no
+engine configured, say the test index could not be built rather than reading an
+empty glob as "no tests". Build an index: system → [test file paths].
 
 For each test file path from Step 3b-1, confirm via Glob whether the file
 actually exists. Note MISSING if the stated path does not exist.
@@ -472,7 +475,7 @@ Post-Cutoff API Conflicts:
 
 After completing the engine audit above, spawn the **primary engine specialist** via `Agent` for a domain-expert second opinion:
 - Resolve the primary specialist: `<engine>-specialist` derived from `engine.name` in `project.yaml` (Godot→`godot-specialist`, Unity→`unity-specialist`, Unreal→`unreal-specialist`); if `engine.name` is absent or empty, read the Primary line of the `## Engine Specialists` section in `.claude/docs/technical-preferences.md`
-- If no engine is configured (neither source yields an engine), skip this consultation **Record `Engine validation: NOT ASSESSED — no engine configured (`engine.name` unset in `project.yaml`)` in this run's output.** A skipped check that says nothing is indistinguishable from a check that passed; the reader cannot tell engine guidance was never sought.
+- If no engine is configured (neither source yields an engine), skip this consultation **Record ``Engine validation: NOT ASSESSED — no engine configured (`engine.name` unset in `project.yaml`)`` in this run's output.** A skipped check that says nothing is indistinguishable from a check that passed; the reader cannot tell engine guidance was never sought.
 - Spawn `subagent_type: [primary specialist]` with: all ADRs that contain engine-specific decisions or `Post-Cutoff APIs Used` fields, the engine reference docs, and the Phase 5 audit findings. Ask them to:
   1. Confirm or challenge each audit finding — specialists may know of engine nuances not captured in the reference docs
   2. Identify engine-specific anti-patterns in the ADRs that the audit may have missed (e.g., using the wrong Godot node type, Unity component coupling, Unreal subsystem misuse)
@@ -617,11 +620,16 @@ FAIL: Critical gaps (Foundation/Core layer requirements uncovered),
   coverage; it can only report that it had nothing to compare.
 - **An ADR is unreadable or has no `## Status`**, so its rows are `❓` and their
   coverage is unknown rather than absent.
-- **Phase 6 could not run** — no `docs/architecture/architecture.md`. This does
-  not by itself force NOT ASSESSED for the whole review (ADR traceability is the
-  primary scope and can still be complete), but it must appear as a named
-  `NOT ASSESSED` **line item** in the report rather than as absent findings. Emit
-  the overall NOT ASSESSED verdict only if Phase 6 was the review's stated scope.
+- **Phase 6 could not run** — no `docs/architecture/architecture.md`. It must
+  appear as a named `NOT ASSESSED` **line item** in the report rather than as
+  absent findings. ADR traceability can still be complete, so a CONCERNS or FAIL
+  finding elsewhere still stands; but in `full` mode, whose scope includes
+  Phase 6, the verdict cannot be PASS — a review that could not look at part of
+  its scope has not shown that part is sound, so it is NOT ASSESSED.
+- **No engine is configured** (`full` and `engine` modes) — Phase 5 has no pinned
+  engine reference to audit the ADRs against, and the specialist consultation was
+  skipped. Record the `Engine validation: NOT ASSESSED` line item; like Phase 6
+  above, it keeps the verdict from PASS.
 
 Do not resolve any of these to PASS on the grounds that no gap was *found*. No
 gap was looked for.
@@ -639,9 +647,14 @@ gap was looked for.
 
 Use `AskUserQuestion` for the write approval:
 - "Review complete. What would you like to write?"
-  - [A] Write all three files (review report + traceability index + TR registry)
+  - [A] Write all three files — review report (`docs/architecture/architecture-review-[date].md`), traceability index (`docs/architecture/requirements-traceability.md`), TR registry (`docs/architecture/tr-registry.yaml`)
   - [B] Write review report only — `docs/architecture/architecture-review-[date].md`
   - [C] Don't write anything yet — I need to review the findings first
+
+When Phase 4 found a 🔴 conflict and `docs/consistency-failures.md` exists, name
+that file in option [A] as well — "…and append [N] conflict entr(y/ies) to
+`docs/consistency-failures.md`". Only [A] appends there (see Reflexion Log
+Update); [B] writes the report and nothing else.
 
 ### RTM Output (rtm mode only)
 
@@ -725,8 +738,9 @@ across every subsequent architecture review.
 
 ### Reflexion Log Update
 
-After writing the review report, append any 🔴 CONFLICT entries found in Phase 4
-to `docs/consistency-failures.md` (if the file exists):
+When the user chose Phase 8's [A] — the option that named this file — append
+any 🔴 CONFLICT entries found in Phase 4 to `docs/consistency-failures.md` (if
+the file exists), after writing the review report:
 
 ```markdown
 ### [YYYY-MM-DD] — /architecture-review — 🔴 CONFLICT
@@ -747,7 +761,7 @@ After writing all approved files, silently append to
 `production/session-state/active.md`:
 
     ## Session Extract — /architecture-review [date]
-    - Verdict: [PASS / CONCERNS / FAIL]
+    - Verdict: [PASS / NOT ASSESSED / CONCERNS / FAIL]
     - Requirements: [N] total — [X] covered, [Y] partial, [Z] gaps
     - New TR-IDs registered: [N, or "None"]
     - GDD revision flags: [comma-separated GDD names, or "None"]
@@ -757,7 +771,9 @@ After writing all approved files, silently append to
 If `active.md` does not exist, create it with this block as the initial content.
 Confirm in conversation: "Session state updated."
 
-The traceability index format:
+The traceability index — written to `docs/architecture/requirements-traceability.md`,
+the path `/propagate-design-change` and the Pre-Production gate read; `rtm` mode
+later extends the same file with story and test columns — uses this format:
 
 ```markdown
 # Architecture Traceability Index
@@ -789,7 +805,7 @@ After completing the review and writing approved files, present:
 1. **Immediate actions**: List the top 3 ADRs to create (highest-impact gaps first,
    Foundation layer before Feature layer)
 2. **Pre-gate checklist**: Check whether these exist via Glob and mark each ✅ or ❌:
-   - `tests/unit/` and `tests/integration/` directories — if ❌: run `/test-setup`
+   - the engine's test root — `tests/unit/` and `tests/integration/` (Godot), `Assets/Tests/EditMode/` and `Assets/Tests/PlayMode/` (Unity), `Source/<Module>/Private/Tests/` (Unreal) — if ❌: run `/test-setup`
    - `.github/workflows/tests.yml` — if ❌: run `/test-setup`
    - `design/accessibility-requirements.md` — if ❌: run `/ux-design`
    - `design/ux/interaction-patterns.md` — if ❌: run `/ux-design`
@@ -837,8 +853,8 @@ partial report** (retry scope here = fewer GDDs / single-system). Full procedure
 describe what collaborative mode requires, not universal behavior.
 
 1. **Read silently** — do not narrate every file read
-2. **Show the matrix** — present the full traceability matrix before asking for
-   anything; let the user see the state
+2. **Show the matrix** — present the full traceability matrix before any write
+   approval; let the user see the state
 3. **Don't guess** — if a requirement is ambiguous, ask: "Is [X] a technical
    requirement or a design preference?"
 4. **Draft before approval** — always show the content that will be written (the

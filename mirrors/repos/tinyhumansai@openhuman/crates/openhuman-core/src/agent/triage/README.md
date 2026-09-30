@@ -45,7 +45,7 @@ notification ingest); those build a `TriggerEnvelope` and call in.
    field list lives in one place.
 
 `routing.rs` resolves the arms. `resolve_provider` resolves the
-`subconscious` workload role and forces the managed backend whenever that
+`chat` workload role and forces the managed backend whenever that
 role points at a local runtime, a local CLI delegate, or an incomplete BYOK
 route, so the initial attempt never depends on a local model being up.
 `build_local_provider_with_config` returns the local arm only when

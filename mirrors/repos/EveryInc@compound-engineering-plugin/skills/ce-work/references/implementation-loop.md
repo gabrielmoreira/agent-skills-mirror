@@ -20,12 +20,21 @@ while (tasks remain):
   - Implement following existing conventions
   - Add, update, or remove any remaining tests needed to match implementation changes (see Test Discovery below)
   - Run System-Wide Test Check (see below)
-  - Run tests after changes
+  - Run tests after changes. If two fixes for the same failing check have not worked, stop patching: name the assumption both fixes relied on and check it, so the next change targets the root cause. When that assumption came from the plan and correcting it stays within the agreed scope, correct it and note what changed; report a blocker only when correcting it would change a settled decision, need authority the run lacks, or need input only the user can give
   - Assess testing coverage: did this task change behavior? If yes, were existing tests inspected and were tests written, updated, strengthened, or deliberately left unchanged with a reason? If no tests were added or changed, is the justification deliberate (e.g., pure config, no behavioral change, manual-only surface) and paired with replacement verification?
   - Record verification evidence for the task: behavior-change signal, existing tests inspected, tests added/changed/used unchanged, red failure or characterization observed when applicable, verification run, and any exception reason
   - Mark task as completed
   - Evaluate for incremental commit (see below)
 ```
+
+**Build what was asked.** The plan's units and scope, or the request itself when there is no plan, define what gets built. Add a mechanism neither asked for, such as a guard, retry, fallback, validation layer, option, mode, abstraction, or support on another interface, only when an existing contract requires it or one of these holds:
+
+- Leaving it out lets harm land before anyone catches it. Trace that the failure can actually happen here; something that notices the failure counts, while an instruction asking a person to avoid it, or to clean up by hand afterward, does not.
+- Adding it later would be expensive, because it concerns stored data or its format, a public or shared interface, money, or security.
+
+Give a mechanism that passes its smallest form. One that fails is not built: report it with the task's outcome as considered and not built, with one line on why. When you cannot tell, build it. An item the plan already lists as a non-goal stays unbuilt unless implementation turns up evidence the plan did not have; then build it and say what that evidence was. Never narrow requested behavior to fit a safeguard by delaying, gating, capping, or skipping part of what was asked. When a needed safeguard truly conflicts with requested behavior, check whether the plan or request already specified the design that carries the risk. If it did, that trade-off is decided: build it as specified and report the risk. Only a conflict the plan and request leave open is the requester's decision; stop before building either side and ask, or return it as a blocker.
+
+When the work replaces a function, type, or module whose callers are all in this repository, update those callers and remove the old version in the same change instead of keeping it as a wrapper or alias. An interface used outside this repository, or one the plan says to keep, is an existing contract and keeps working.
 
 Batch independent reads within a task: the plan's referenced files, pattern searches, and test discovery don't depend on one another — request them all in one response rather than one per turn. Only the write-and-verify steps are inherently sequential.
 
@@ -54,28 +63,9 @@ Guardrails for execution evidence:
 | No existing test covers the behavior | Add the smallest focused failing test or characterization test that proves the behavior slice |
 | Testing is inappropriate for the task | Record the no-test exception and replacement verification before marking the task complete |
 
-**Test Scenario Completeness** — Before writing tests for a feature-bearing unit, check whether the plan's `Test scenarios` cover all categories that apply to this unit. If a category is missing or scenarios are vague (e.g., "validates correctly" without naming inputs and expected outcomes), supplement from the unit's own context before writing tests:
+**Test Scenario Completeness** — Tests prove the behavior the unit builds. Before writing tests for a feature-bearing unit, make any vague plan scenario concrete (e.g., "validates correctly" becomes named inputs and expected outcomes) from the unit's Goal and Approach. A scenario category the plan left out is not a gap to fill: do not add scenarios for failure handling, validation, or edge cases the unit does not build, and do not build handling so that such a scenario can exist. Draw from these categories where the unit has them: happy path; edge cases in inputs the unit really receives; error paths for failure handling the unit builds; integration across a layer the unit changes, exercised without mocks.
 
-| Category | When it applies | How to derive if missing |
-|----------|----------------|------------------------|
-| **Happy path** | Always for feature-bearing units | Read the unit's Goal and Approach for core input/output pairs |
-| **Edge cases** | When the unit has meaningful boundaries (inputs, state, concurrency) | Identify boundary values, empty/nil inputs, and concurrent access patterns |
-| **Error/failure paths** | When the unit has failure modes (validation, external calls, permissions) | Enumerate invalid inputs the unit should reject, permission/auth denials it should enforce, and downstream failures it should handle |
-| **Integration** | When the unit crosses layers (callbacks, middleware, multi-service) | Identify the cross-layer chain and write a scenario that exercises it without mocks |
-
-**System-Wide Test Check** — Before marking a task done, pause and ask:
-
-| Question | What to do |
-|----------|------------|
-| **What fires when this runs?** Callbacks, middleware, observers, event handlers — trace two levels out from your change. | Read the actual code (not docs) for callbacks on models you touch, middleware in the request chain, `after_*` hooks. |
-| **Do my tests exercise the real chain?** If every dependency is mocked, the test proves your logic works *in isolation* — it says nothing about the interaction. | Write at least one integration test that uses real objects through the full callback/middleware chain. No mocks for the layers that interact. |
-| **Can failure leave orphaned state?** If your code persists state (DB row, cache, file) before calling an external service, what happens when the service fails? Does retry create duplicates? | Trace the failure path with real objects. If state is created before the risky call, test that failure cleans up or that retry is idempotent. |
-| **What other interfaces expose this?** Mixins, DSLs, alternative entry points (Agent vs Chat vs ChatMethods). | Grep for the method/behavior in related classes. If parity is needed, add it now — not as a follow-up. |
-| **Do error strategies align across layers?** Retry middleware + application fallback + framework error handling — do they conflict or create double execution? | List the specific error classes at each layer. Verify your rescue list matches what the lower layer actually raises. |
-
-**When to skip:** Leaf-node changes with no callbacks, no state persistence, no parallel interfaces. If the change is purely additive (new helper method, new view partial), the check takes 10 seconds and the answer is "nothing fires, skip."
-
-**When this matters most:** Any change that touches models with callbacks, error handling with fallback/retry, or functionality exposed through multiple interfaces.
+**System-Wide Test Check** — Before marking a task done, trace what the change touches beyond its own files: callbacks, middleware, observers, and hooks up to two levels out, and any other interface that already exposes the behavior you changed. Read the actual code, not docs. What already worked through those paths must still work, so run or update the tests that cover them. A leaf change that touches none of them passes at once.
 
 2. **Incremental Commits**
 
@@ -110,23 +100,7 @@ git commit -m "feat(scope): description of this unit" -- <files related to this 
 
 **Parallel subagent mode:** commit ownership follows the isolation mode chosen at dispatch — see `references/execution-strategy.md`.
 
-3. **Follow Existing Patterns**
-
-- The plan should reference similar code - read those files first
-- Match naming conventions exactly
-- Reuse existing components where possible
-- Follow the project's coding standards already in your context
-- When in doubt, grep for similar implementations
-
-4. **Test Continuously**
-
-- Run relevant tests after each significant change
-- Don't wait until the end to test
-- Fix failures immediately
-- Add new tests for new behavior, update tests for changed behavior, remove tests for deleted behavior
-- **Unit tests with mocks prove logic in isolation. Integration tests with real objects prove the layers work together.** If your change touches callbacks, middleware, or error handling — you need both.
-
-5. **Simplify as You Go**
+3. **Simplify as You Go**
 
 After completing a cluster of related implementation units (or every 2-3 units), review recently changed files for simplification opportunities — consolidate duplicated patterns, extract shared helpers, and improve code reuse and efficiency. This is especially valuable when using subagents, since each agent works with isolated context and can't see patterns emerging across units.
 
@@ -136,7 +110,7 @@ If **`ce-simplify-code`** is available, invoke it at phase boundaries (especiall
 
 When the plan carries `session-settled:`-labeled KTDs or Key Decisions, pass the plan path as context for which structures must stay as they are, not as the simplification scope, with the one-line constraint that labeled entries are settled decisions the simplification must preserve (e.g., deliberate duplication stays duplicated).
 
-6. **Figma Design Sync** (if applicable)
+4. **Figma Design Sync** (if applicable)
 
 For UI work with Figma designs:
 
@@ -145,7 +119,7 @@ For UI work with Figma designs:
 - Fix visual differences identified
 - Repeat until implementation matches design
 
-7. **Frontend Design Guidance** (if applicable)
+5. **Frontend Design Guidance** (if applicable)
 
 For UI tasks without a Figma design -- where the implementation touches view, template, component, layout, or page files, creates user-visible routes, or the plan contains explicit UI/frontend/design language:
 
@@ -153,11 +127,8 @@ For UI tasks without a Figma design -- where the implementation touches view, te
 - When browser tooling is available, inspect the changed UI at desktop and mobile widths before final validation. If no browser access is available, do a code-level responsive/layout review and record that browser verification was unavailable.
 - Phase 4's screenshot capture still applies when the change is user-visible.
 
-8. **Track Progress**
-- Keep the task list updated as you complete tasks
-- Note any blockers or unexpected discoveries
-- Create new tasks if scope expands
-- Keep user informed of major milestones
+6. **Track Progress**
+- Add a task when requested work turns out larger than expected; a mechanism nobody asked for goes through **Build what was asked** first
 - When the plan defines U-IDs for Implementation Units, or the plan or origin document carries stable R-IDs (and optionally A/F/AE IDs), reference them in blockers, deferred-work notes, task summaries, and final verification — not routine status updates. U-IDs anchor units across plan edits; R/A/F/AE anchor product intent across the brainstorm-plan handoff. Use the IDs the plan supplies and do not invent ones it does not. This preserves traceability without burying signal under noise.
 
 ## Settled decisions during implementation

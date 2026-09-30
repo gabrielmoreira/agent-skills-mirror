@@ -3,9 +3,14 @@ name: ux-review
 description: "Validate a UX spec, HUD design or pattern library — accessibility, GDD alignment, readiness. APPROVED / NOT ASSESSED / NEEDS REVISION / MAJOR REVISION NEEDED."
 argument-hint: "[file-path or 'all' or 'hud' or 'patterns']"
 user-invocable: true
-allowed-tools: Read, Glob, Grep
+allowed-tools: Read, Glob, Grep, Bash(bash "*/.claude/skills/ux-review/../../hooks/yaml-helper.sh" resolve_config *)
 model: sonnet
 ---
+
+!`bash "${CLAUDE_SKILL_DIR}/../../hooks/yaml-helper.sh" resolve_config --keys workflow`
+
+Resolved above — use as-is. No block → defaults in
+`.claude/docs/config-resolution.md`.
 
 ## Overview
 
@@ -48,6 +53,12 @@ when the accessibility tier is uncommitted (below).
 
 For `all`, output a summary table first (file | verdict | primary issue) then
 full detail for each.
+
+**Which checklist a file gets** (a file path, or each file under `all`): its
+`> **Template**:` header line, which `/ux-design` writes — `UX Spec` → Phase 3A,
+`HUD Design` → 3B, `Interaction Pattern Library` → 3C. A file without that line
+is classified by name — `hud.md` → 3B, `interaction-patterns.md` → 3C, anything
+else → 3A — and the report says which checklist it assumed, and why.
 
 ---
 
@@ -98,6 +109,8 @@ Run all checks against a `ux-spec.md`-based document.
 - [ ] Events Fired — every player action has a corresponding event or null
   explanation
 - [ ] Transitions & Animations — at least enter/exit transitions specified
+- [ ] Input Method Completeness Checklist — a block for each input method in
+  the Platform Target line; any unticked item is listed under Open Questions
 - [ ] Accessibility Requirements — screen-level requirements present
 - [ ] Localization Considerations — max character counts for text elements
 - [ ] Acceptance Criteria — at least 5 specific testable criteria
@@ -177,9 +190,12 @@ Run all checks against a `hud-design.md`-based document.
   source, priority)
 - [ ] HUD States by Gameplay Context covers at minimum: exploration, combat,
   dialogue/cutscene, paused
+- [ ] Information Hierarchy gives every HUD element a priority tier (MUST KEEP /
+  SHOULD KEEP / CAN HIDE / ALWAYS HIDE)
 - [ ] Visual Budget defined (max simultaneous elements, max screen %)
 - [ ] Platform Adaptation covers all target platforms
 - [ ] Tuning Knobs present for player-adjustable elements
+- [ ] Acceptance Criteria — at least 5 specific testable criteria
 
 ### Quality Checks
 
@@ -222,6 +238,7 @@ Run all checks against a `hud-design.md`-based document.
 **Date**: [date]
 **Reviewer**: ux-review skill
 **Document**: [file path]
+**Checklist**: [3A / 3B / 3C — from its Template line, or assumed from the file name]
 **Platform Target**: [from header]
 **Accessibility Tier**: [from header or accessibility-requirements.md]
 
@@ -253,8 +270,21 @@ Run all checks against a `hud-design.md`-based document.
 > it was assumed rather than committed. Recommend `/ux-design accessibility` to
 > establish the tier.
 
-### Pattern Library: [CONSISTENT / INCONSISTENCIES FOUND]
+### Pattern Library: [CONSISTENT / INCONSISTENCIES FOUND / N/A]
 - [findings]
+
+> **For a HUD design there is no Pattern Library checklist to run it against (Phase 3B has none), so Pattern Library is N/A, excluded from the dimension count.**
+> Report `Pattern Library: N/A — no pattern library checklist for this document
+> type`.
+>
+> For a UX spec, this dimension does have a checklist — it is checked against
+> `design/ux/interaction-patterns.md`. If that file is absent: N/A only where
+> the workflow tier does not require the library (`minimal`) — report
+> `Pattern Library: N/A — interaction pattern library not required at this
+> tier`. At any tier that requires or recommends it (`standard`, `full`), report
+> `Pattern Library: NOT ASSESSED — design/ux/interaction-patterns.md not found`
+> instead: the library is missing, not out of scope, and NOT ASSESSED counts it
+> against the verdict as the unresolved item it is.
 
 ### Verdict: APPROVED / NOT ASSESSED / NEEDS REVISION / MAJOR REVISION NEEDED
 **Blocking issues**: [N] — must be resolved before implementation

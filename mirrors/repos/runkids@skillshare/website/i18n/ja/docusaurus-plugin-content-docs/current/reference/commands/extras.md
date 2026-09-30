@@ -526,7 +526,8 @@ Claude Code のように `@` import に従うツールでのみ使ってくだ�
 ダッシュボードでは、`file` が `AGENTS.md` の単一ファイルの Extras は **AGENTS.md** タブに表示され、
 それ以外の単一ファイルの Extras は **Folders & files** に表示されます。そこでは **Add extra** で
 **Folder** または **Single file** を選べ、各 Target には **File name** があり、単一ファイルでは
-`merge`、`copy`、`import` を使えます。ダッシュボードはファイルの内容を編集しません。Source ファイルを直接編集してください。
+`merge`、`copy`、`import` を使えます。単一ファイルの **Name** は、自分で入力するまで
+拡張子を除いたファイル名に合わせて入力されます（`APPEND_SYSTEM.md` なら `APPEND_SYSTEM`）。ダッシュボードはファイルの内容を編集しません。Source ファイルを直接編集してください。
 
 ### 1 つのフォルダーに複数のファイル
 

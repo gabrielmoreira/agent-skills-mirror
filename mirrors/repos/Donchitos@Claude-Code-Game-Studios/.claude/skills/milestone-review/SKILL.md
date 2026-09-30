@@ -7,7 +7,10 @@ allowed-tools: Read, Glob, Grep, Write, Agent, AskUserQuestion, Bash(bash "*/.cl
 model: sonnet
 ---
 
-!`bash "${CLAUDE_SKILL_DIR}/../../hooks/yaml-helper.sh" resolve_config --keys review_mode,automation`
+!`bash "${CLAUDE_SKILL_DIR}/../../hooks/yaml-helper.sh" resolve_config --keys review_mode,automation,workflow`
+
+Resolved above — use as-is; `--review` overrides `review_mode` for this run. No
+block → defaults in `.claude/docs/config-resolution.md`.
 
 
 
@@ -91,11 +94,26 @@ template and must be read, never silently dropped from the milestone's history.
 Report any sprint that contributed nothing: a milestone summary that quietly
 omits a sprint understates the work and the slippage both.
 
+**Blocked stories** — the Blocked table and the blocked story count passed to
+PR-MILESTONE — are not in the sprint reports' scanned sections. Read them where
+they are recorded: the `status: blocked` stories in `production/sprint-status.yaml`
+(with their `blocker` field) and, for stories outside that sprint, one grep:
+
+```
+Grep pattern="^> \*\*Status\*\*: Blocked|BLOCKED:" glob="production/epics/**/story-*.md" output_mode="content"
+```
+
+Each blocked story goes in the Blocked table under the feature its epic folder
+implements, with its blocker (the yaml `blocker` field or the story's `BLOCKED:`
+note). With no story files and no `sprint-status.yaml`, the Blocked table and the
+blocked story count are `NOT ASSESSED — NO DATA`, not zero.
+
 ---
 
 ## Phase 2: Scan Codebase Health
 
 - Scan for `TODO`, `FIXME`, `HACK` markers that indicate incomplete work
+- Count open bugs by severity for Quality Metrics from `production/qa/bugs/` (one grep of the `**Severity**` and `**Status**` lines, as `/bug-triage` does); with no bug files, the bug lines are `NOT ASSESSED — NO DATA`, not zero
 - Check the risk register at `production/risk-register/` if it exists (hand-authored from `.claude/docs/templates/risk-register-entry.md`; no skill writes it, so absence is normal — note it rather than skipping risk assessment silently)
 
 ---
@@ -114,12 +132,22 @@ omits a sprint understates the work and the slippage both.
 ## Feature Completeness
 
 ### Fully Complete
+Only a feature whose Status is `Complete` goes here or counts toward the completion percentage; a Deferred feature stays in its denominator, named with the milestone it moved to.
+
 | Feature | Acceptance Criteria | Test Status |
 |---------|-------------------|-------------|
 
 ### Partially Complete
 | Feature | % Done | Remaining Work | Risk to Milestone |
 |---------|--------|---------------|------------------|
+
+### Blocked
+A started feature whose stories are Blocked goes here, not under Partially
+Complete — name the blocker, so the review says why it stalled, not only that
+the count moved.
+
+| Feature | Blocked Stories | Blocker | Next Action / Owner |
+|---------|----------------|---------|---------------------|
 
 ### Not Started
 | Feature | Priority | Can Cut? | Impact of Cutting |
@@ -201,7 +229,9 @@ If AT RISK, use `AskUserQuestion`:
   - `[B] NO-GO — conditions cannot be met in time`
   - `[C] GO — I accept the risk and want to proceed`
 
-Do not issue a GO against an OFF TRACK verdict unless the user explicitly selects [B] above.
+If NOT ASSESSED: name the missing input — it is not ON TRACK, and never recommend GO on it. Supply the input and re-run PR-MILESTONE, or recommend NOT ASSESSED — or CONDITIONAL GO / NO-GO where the review's own findings call for one (the rank in `.claude/docs/director-gates.md`).
+
+Do not issue a GO against an OFF TRACK verdict; issue CONDITIONAL GO only if the user explicitly selects [B] above.
 
 ---
 
@@ -220,4 +250,4 @@ If no, stop here. Verdict: **BLOCKED** — user declined write.
 ## Phase 5: Next Steps
 
 - Run `/gate-check` for a formal phase gate verdict if this milestone marks a development phase boundary.
-- Run `/sprint-plan` to adjust the next sprint based on the scope recommendations above.
+- Run `/sprint-plan` to adjust the next sprint based on the scope recommendations above (at `workflow: minimal`, which has no sprints, adjust the brief's build order instead).

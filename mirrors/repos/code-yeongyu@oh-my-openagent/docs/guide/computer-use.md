@@ -22,6 +22,8 @@ You control it with these commands:
 
 `/computer on` and `/computer off` last for the current session only. To keep computer use off everywhere, set `computer.enabled` to `false` (see [Configure it](#configure-it)); the tool is then not registered at all and `/computer` reports that computer use is unavailable in this session.
 
+The tool comes with a `computer-use` skill, the full helper reference. If you already have a skill named `computer-use` (in your user or project skills, or from a package), yours loads and the built-in one steps aside without a `Skill conflicts` warning; `/computer status` then adds `skill: your own computer-use skill is active in place of the built-in guide`. The safety rules still reach the model through the `computer` tool's own description. To drop the built-in skill and keep the tool, add `computer-use` to `disabled_skills`.
+
 ### Where the engine comes from
 
 - **Compiled OmO binary:** the engine is staged inside the extracted runtime on macOS (arm64, x64), Linux x64 (glibc) and Windows x64.

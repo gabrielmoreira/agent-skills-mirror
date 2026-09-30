@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `opensquilla/opensquilla` — 26 default patterns, 0 followed patterns, 12 file(s) materialized.
+Mirror of `opensquilla/opensquilla` — 26 default patterns, 0 followed patterns, 13 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `opensquilla/opensquilla` — 26 default patterns, 0 followed patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 12 |
+| Files         | 13 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -61,16 +61,17 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`docs/features/skills.md`](docs/features/skills.md) |
 | 2 | ✓ | [`src/opensquilla/identity/templates/bootstrap/AGENTS.md`](src/opensquilla/identity/templates/bootstrap/AGENTS.md) |
-| 3 | ✓ | [`src/opensquilla/skills/bundled/deep-research/SKILL.md`](src/opensquilla/skills/bundled/deep-research/SKILL.md) |
-| 4 | ✓ | [`src/opensquilla/skills/bundled/docx/SKILL.md`](src/opensquilla/skills/bundled/docx/SKILL.md) |
-| 5 | ✓ | [`src/opensquilla/skills/bundled/github/SKILL.md`](src/opensquilla/skills/bundled/github/SKILL.md) |
-| 6 | ✓ | [`src/opensquilla/skills/bundled/html-coder/SKILL.md`](src/opensquilla/skills/bundled/html-coder/SKILL.md) |
-| 7 | ✓ | [`src/opensquilla/skills/bundled/pdf-toolkit/SKILL.md`](src/opensquilla/skills/bundled/pdf-toolkit/SKILL.md) |
-| 8 | ✓ | [`src/opensquilla/skills/bundled/pptx/SKILL.md`](src/opensquilla/skills/bundled/pptx/SKILL.md) |
-| 9 | ✓ | [`src/opensquilla/skills/bundled/skill-creator/SKILL.md`](src/opensquilla/skills/bundled/skill-creator/SKILL.md) |
-| 10 | ✓ | [`src/opensquilla/skills/bundled/sub-agent/SKILL.md`](src/opensquilla/skills/bundled/sub-agent/SKILL.md) |
-| 11 | ✓ | [`src/opensquilla/skills/bundled/xlsx/SKILL.md`](src/opensquilla/skills/bundled/xlsx/SKILL.md) |
-| 12 | ✓ | [`tests/fixtures/live_skill_hub/opensquilla-live-skill-hub-canary/SKILL.md`](tests/fixtures/live_skill_hub/opensquilla-live-skill-hub-canary/SKILL.md) |
+| 3 | ✓ | [`src/opensquilla/skills/bundled/browser-use/SKILL.md`](src/opensquilla/skills/bundled/browser-use/SKILL.md) |
+| 4 | ✓ | [`src/opensquilla/skills/bundled/deep-research/SKILL.md`](src/opensquilla/skills/bundled/deep-research/SKILL.md) |
+| 5 | ✓ | [`src/opensquilla/skills/bundled/docx/SKILL.md`](src/opensquilla/skills/bundled/docx/SKILL.md) |
+| 6 | ✓ | [`src/opensquilla/skills/bundled/github/SKILL.md`](src/opensquilla/skills/bundled/github/SKILL.md) |
+| 7 | ✓ | [`src/opensquilla/skills/bundled/html-coder/SKILL.md`](src/opensquilla/skills/bundled/html-coder/SKILL.md) |
+| 8 | ✓ | [`src/opensquilla/skills/bundled/pdf-toolkit/SKILL.md`](src/opensquilla/skills/bundled/pdf-toolkit/SKILL.md) |
+| 9 | ✓ | [`src/opensquilla/skills/bundled/pptx/SKILL.md`](src/opensquilla/skills/bundled/pptx/SKILL.md) |
+| 10 | ✓ | [`src/opensquilla/skills/bundled/skill-creator/SKILL.md`](src/opensquilla/skills/bundled/skill-creator/SKILL.md) |
+| 11 | ✓ | [`src/opensquilla/skills/bundled/sub-agent/SKILL.md`](src/opensquilla/skills/bundled/sub-agent/SKILL.md) |
+| 12 | ✓ | [`src/opensquilla/skills/bundled/xlsx/SKILL.md`](src/opensquilla/skills/bundled/xlsx/SKILL.md) |
+| 13 | ✓ | [`tests/fixtures/live_skill_hub/opensquilla-live-skill-hub-canary/SKILL.md`](tests/fixtures/live_skill_hub/opensquilla-live-skill-hub-canary/SKILL.md) |
 
 ---
 

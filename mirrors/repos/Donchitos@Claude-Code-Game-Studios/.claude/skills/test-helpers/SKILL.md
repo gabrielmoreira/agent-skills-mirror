@@ -1,6 +1,6 @@
 ---
 name: test-helpers
-description: "Generate engine-specific test helper libraries — assertion utilities, factory functions, mocks in tests/helpers/. Reduces boilerplate."
+description: "Generate engine-specific test helper libraries — assertion utilities, factory functions, mocks in the engine's test folder. Reduces boilerplate."
 argument-hint: "[system-name | all | scaffold]"
 user-invocable: true
 allowed-tools: Read, Glob, Grep, Write, Bash(bash "*/.claude/skills/test-helpers/../../hooks/yaml-helper.sh" resolve_config *)
@@ -22,7 +22,16 @@ and assertion patterns are abstracted into helpers. This skill generates a
 `tests/helpers/` library tailored to the project's actual engine, language,
 and systems — so every developer writes less boilerplate and more assertions.
 
-**Output:** `tests/helpers/` directory with engine-specific helper files
+**Output:** engine-specific helper files in the engine's **helper root** —
+the only place its test runner compiles them (`.claude/docs/directory-structure.md`):
+
+| Engine | Helper root |
+|---|---|
+| Godot | `tests/helpers/` |
+| Unity | `Assets/Tests/EditMode/Helpers/` — inside the `EditModeTests` assembly `/test-setup` creates. If PlayMode tests need the same helpers, ask before creating `Assets/Tests/Helpers/TestHelpers.asmdef` and referencing it from both test assemblies. |
+| Unreal | `Source/<Module>/Private/Tests/Helpers/` |
+
+`tests/helpers/` below means the helper root for the project's engine.
 
 **When to run:**
 - After `/test-setup` scaffolds the framework (first time)
@@ -86,10 +95,13 @@ If the engine is not configured in either source: "Engine not configured. Run `/
 
 ## 3. Load Existing Test Patterns
 
-Scan the test directory for patterns already in use:
+Scan the engine's test root for patterns already in use (Godot `tests/`, Unity
+`Assets/Tests/`, Unreal `Source/<Module>/Private/Tests/`):
 
 ```
-Glob pattern="tests/**/*_test.*" (all test files)
+Glob pattern="tests/**/*_test.*"                  (Godot)
+Glob pattern="Assets/Tests/**/*Tests.cs"          (Unity)
+Glob pattern="Source/*/Private/Tests/**/*.cpp"    (Unreal)
 ```
 
 For a representative sample (up to 5 files), read the test files and extract:
@@ -163,11 +175,14 @@ static func assert_signal_emitted(
     signal_name: String,
     action: Callable
 ) -> void:
-    var emitted := false
-    obj.connect(signal_name, func(_args): emitted = true)
+    # A lambda captures a local by value: `emitted = true` inside it would set
+    # the lambda's own copy. Mutate a Dictionary it shares instead. `...args`
+    # (4.5+) accepts a signal with any number of arguments.
+    var state := {"emitted": false}
+    obj.connect(signal_name, func(...args): state.emitted = true)
     action.call()
     # FRAMEWORK ASSERT — resolve per the rule above; do not emit `assert()`.
-    FAIL_IF(not emitted, "Expected signal '%s' to be emitted, but it was not." % signal_name)
+    FAIL_IF(not state.emitted, "Expected signal '%s' to be emitted, but it was not." % signal_name)
 
 ## Assert that a callable does NOT emit a signal.
 static func assert_signal_not_emitted(
@@ -175,11 +190,11 @@ static func assert_signal_not_emitted(
     signal_name: String,
     action: Callable
 ) -> void:
-    var emitted := false
-    obj.connect(signal_name, func(_args): emitted = true)
+    var state := {"emitted": false}  # a Dictionary, as above
+    obj.connect(signal_name, func(...args): state.emitted = true)
     action.call()
     # FRAMEWORK ASSERT — resolve per the rule above; do not emit `assert()`.
-    FAIL_IF(emitted, "Expected signal '%s' NOT to be emitted, but it was." % signal_name)
+    FAIL_IF(state.emitted, "Expected signal '%s' NOT to be emitted, but it was." % signal_name)
 
 ## Assert a node exists at path within a parent.
 static func assert_node_exists(parent: Node, path: NodePath) -> void:
@@ -213,17 +228,19 @@ static func make_player(health: int = 100) -> Node:
 **Scene helper** (`tests/helpers/scene_runner_helper.gd`):
 
 ```gdscript
-## Utilities for scene-based integration tests.
-## Wraps GdUnitSceneRunner for common patterns.
+## Utilities for scene-based integration tests. For input simulation and frame
+## stepping, use gdUnit4's own `scene_runner()` from inside the suite.
 
 class_name SceneRunnerHelper
-extends GdUnitTestSuite
+extends RefCounted
 
-## Load a scene and wait one frame for _ready() to complete.
-func load_scene_and_wait(scene_path: String) -> Node:
-    var scene = load(scene_path).instantiate()
-    add_child(scene)
-    await get_tree().process_frame
+## Load a scene under `host` — the calling test suite, which passes `self` —
+## and wait one frame for _ready() to complete. A plain class, so the runner
+## never discovers this file as a suite with zero tests.
+static func load_scene_and_wait(host: Node, scene_path: String) -> Node:
+    var scene: Node = load(scene_path).instantiate()
+    host.add_child(scene)
+    await host.get_tree().process_frame
     return scene
 ```
 
@@ -231,7 +248,7 @@ func load_scene_and_wait(scene_path: String) -> Node:
 
 ### Unity (NUnit / C#)
 
-**Base helper** (`tests/helpers/GameAssertions.cs`):
+**Base helper** (`Assets/Tests/EditMode/Helpers/GameAssertions.cs`):
 
 ```csharp
 using NUnit.Framework;
@@ -271,7 +288,7 @@ public static class GameAssertions
 }
 ```
 
-**Factory helper** (`tests/helpers/GameFactory.cs`):
+**Factory helper** (`Assets/Tests/EditMode/Helpers/GameFactory.cs`):
 
 ```csharp
 using UnityEngine;
@@ -303,7 +320,7 @@ public static class GameFactory
 
 ### Unreal Engine (C++)
 
-**Base helper** (`tests/helpers/GameTestHelpers.h`):
+**Base helper** (`Source/<Module>/Private/Tests/Helpers/GameTestHelpers.h`):
 
 ```cpp
 #pragma once
@@ -362,7 +379,7 @@ namespace GameTestHelpers
 
 For `[system-name]` or `all` modes, generate a helper per system:
 
-Read only the GDD sections this needs — `Grep pattern="^## (Formulas|Edge Cases|Detailed Rules|Detailed Design)" path="design/gdd/[system].md" output_mode="content" -A 30` — rather than a full read (every peer skill section-greps GDDs; in `all` mode a full read multiplies across each system's 400+-line GDD). Extract:
+Read only the GDD sections this needs — `Grep pattern="^## ([0-9]+\. )?(Formulas|Edge Cases|Detailed Rules|Detailed Design)" path="design/gdd/[system].md" output_mode="content" -A 30` (the optional number matches a reverse-documented GDD's `## 4. Formulas`) — rather than a full read (every peer skill section-greps GDDs; in `all` mode a full read multiplies across each system's 400+-line GDD). Extract:
 - Data types (entity types, component names)
 - Formula variables and their bounds
 - Common test scenarios mentioned in Edge Cases
@@ -412,16 +429,16 @@ Present a summary of what will be created:
 ```
 ## Test Helpers to Create
 
-Base helpers (engine: [engine]):
-- tests/helpers/game_assertions.[ext]
-- tests/helpers/game_factory.[ext]
+Base helpers (engine: [engine], helper root: [helper root]):
+- [helper root]/game_assertions.[ext]
+- [helper root]/game_factory.[ext]
 [engine-specific extras]
 
 System helpers ([mode]):
-- tests/helpers/[system]_factory.[ext]  ← from [system] GDD
+- [helper root]/[system]_factory.[ext]  ← from [system] GDD
 ```
 
-Ask: "May I write these helper files to `tests/helpers/`?"
+Ask: "May I write these helper files to `[helper root]`?"
 
 **Never overwrite existing files.** If a file already exists, report:
 "Skipping `[path]` — already exists. Remove the file manually if you want it
@@ -432,7 +449,7 @@ After writing: Verdict: **COMPLETE** — helper files created.
 "Helper files created. To use them in a test:
 - Godot: `class_name` is auto-imported — no explicit import needed
 - Unity: Add `using` directive or reference the test assembly
-- Unreal: `#include \"tests/helpers/GameTestHelpers.h\"`"
+- Unreal: `#include \"Tests/Helpers/GameTestHelpers.h\"` (from inside the module)"
 
 ---
 

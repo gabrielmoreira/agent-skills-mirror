@@ -1,6 +1,6 @@
 # Scientific Skills
 
-All **166 skills** in this checkout, grouped by domain. Summaries mirror each skill's
+All **167 skills** in this checkout, grouped by domain. Summaries mirror each skill's
 current `description`; open its linked `SKILL.md` for setup, tested versions, workflows,
 and limitations. See [workflow examples](examples.md) for ways to combine them.
 
@@ -156,6 +156,7 @@ and limitations. See [workflow examples](examples.md) for ways to combine them.
 
 ### Engineering & Simulation
 - **[Lab Hardware CAD](../skills/lab-hardware-cad/SKILL.md)** - Design custom laboratory hardware as parametric build123d models and export fabrication-ready STEP, STL, and DXF files - microfluidic chips and molds, optomechanical mounts and breadboard adapters, cuvette and microplate holders, tube racks, animal-behavior rigs, and 3D-printed instrument fixtures. Use when a research task needs a physical part that must mate with standardized labware, an optical table, a cage system, or a printer, CNC, or laser process.
+- **[Fictiv](../skills/fictiv/SKILL.md)** - Operate Fictiv (app.fictiv.com), the on-demand manufacturing platform, end to end in the user's browser. Covers uploading CAD parts, configuring process, material, finish, threads, tolerances and inspections, getting instant or manual quotes, reading and fixing DFM feedback, choosing lead time and region, checking out and paying (card or PO), tracking orders, reordering, and troubleshooting. Use this skill whenever the user mentions Fictiv, wants a part CNC machined, 3D printed, sheet-metal fabricated, urethane cast, injection or compression molded, or die cast through an online service, asks to "get a quote" or "order parts" for a STEP/SLDPRT/STL file, wants to check a Fictiv quote or order status, or has a problem with a Fictiv upload, DFM warning, price or checkout. Use it even if Fictiv isn't named but the user wants custom parts manufactured and has a Fictiv account.
 - **[MATLAB/Octave](../skills/matlab/SKILL.md)** - Build, review, migrate, and safely plan MATLAB or GNU Octave numerical workflows, including arrays, tabular/time data, tests, projects, graphics, MAT files, and explicit Python interoperability.
 - **[FluidSim](../skills/fluidsim/SKILL.md)** - Plan, configure, inspect, restart, and analyze bounded FluidSim computational-fluid-dynamics simulations with explicit numerical-validity and HPC safety checks. Use for FluidSim solver selection, parameter review, FFT/MPI setup, output diagnostics, or restart compatibility.
 - **[OpenPIV](../skills/openpiv/SKILL.md)** - Particle Image Velocimetry (PIV) analysis with OpenPIV. Use when extracting velocity fields from PIV image pairs, analyzing fluid dynamics or flow visualization experiments, cross-correlating interrogation windows, validating and replacing spurious PIV vectors, or computing vorticity, strain rate, and turbulence statistics from measured velocity fields.

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `AgriciDaniel/claude-seo` — 26 default patterns, 2 followed patterns, 193 file(s) materialized.
+Mirror of `AgriciDaniel/claude-seo` — 26 default patterns, 2 followed patterns, 200 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `AgriciDaniel/claude-seo` — 26 default patterns, 2 followed patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 2 |
-| Files         | 193 |
+| Files         | 200 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -180,79 +180,86 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 118 | ✓ | [`skills/seo-google/assets/templates/indexation-status-report.md`](skills/seo-google/assets/templates/indexation-status-report.md) |
 | 119 | ✓ | [`skills/seo-google/LICENSE.txt`](skills/seo-google/LICENSE.txt) |
 | 120 | ✓ | [`skills/seo-google/references/auth-setup.md`](skills/seo-google/references/auth-setup.md) |
-| 121 | ✓ | [`skills/seo-google/references/dma-consent-mode-v2.md`](skills/seo-google/references/dma-consent-mode-v2.md) |
-| 122 | ✓ | [`skills/seo-google/references/ga4-data-api.md`](skills/seo-google/references/ga4-data-api.md) |
-| 123 | ✓ | [`skills/seo-google/references/indexing-api.md`](skills/seo-google/references/indexing-api.md) |
-| 124 | ✓ | [`skills/seo-google/references/keyword-planner-api.md`](skills/seo-google/references/keyword-planner-api.md) |
-| 125 | ✓ | [`skills/seo-google/references/nlp-api.md`](skills/seo-google/references/nlp-api.md) |
-| 126 | ✓ | [`skills/seo-google/references/pagespeed-crux-api.md`](skills/seo-google/references/pagespeed-crux-api.md) |
-| 127 | ✓ | [`skills/seo-google/references/rate-limits-quotas.md`](skills/seo-google/references/rate-limits-quotas.md) |
-| 128 | ✓ | [`skills/seo-google/references/search-console-api.md`](skills/seo-google/references/search-console-api.md) |
-| 129 | ✓ | [`skills/seo-google/references/supplementary-apis.md`](skills/seo-google/references/supplementary-apis.md) |
-| 130 | ✓ | [`skills/seo-google/references/youtube-api.md`](skills/seo-google/references/youtube-api.md) |
-| 131 | ✓ | [`skills/seo-google/SKILL.md`](skills/seo-google/SKILL.md) |
-| 132 | ✓ | [`skills/seo-hreflang/LICENSE.txt`](skills/seo-hreflang/LICENSE.txt) |
-| 133 | ✓ | [`skills/seo-hreflang/references/content-parity.md`](skills/seo-hreflang/references/content-parity.md) |
-| 134 | ✓ | [`skills/seo-hreflang/references/cultural-profiles.md`](skills/seo-hreflang/references/cultural-profiles.md) |
-| 135 | ✓ | [`skills/seo-hreflang/references/locale-formats.md`](skills/seo-hreflang/references/locale-formats.md) |
-| 136 | ✓ | [`skills/seo-hreflang/references/machine-translation-qa.md`](skills/seo-hreflang/references/machine-translation-qa.md) |
-| 137 | ✓ | [`skills/seo-hreflang/SKILL.md`](skills/seo-hreflang/SKILL.md) |
-| 138 | ✓ | [`skills/seo-image-gen/LICENSE.txt`](skills/seo-image-gen/LICENSE.txt) |
-| 139 | ✓ | [`skills/seo-image-gen/references/cost-tracking.md`](skills/seo-image-gen/references/cost-tracking.md) |
-| 140 | ✓ | [`skills/seo-image-gen/references/gemini-models.md`](skills/seo-image-gen/references/gemini-models.md) |
-| 141 | ✓ | [`skills/seo-image-gen/references/mcp-tools.md`](skills/seo-image-gen/references/mcp-tools.md) |
-| 142 | ✓ | [`skills/seo-image-gen/references/post-processing.md`](skills/seo-image-gen/references/post-processing.md) |
-| 143 | ✓ | [`skills/seo-image-gen/references/presets.md`](skills/seo-image-gen/references/presets.md) |
-| 144 | ✓ | [`skills/seo-image-gen/references/prompt-engineering.md`](skills/seo-image-gen/references/prompt-engineering.md) |
-| 145 | ✓ | [`skills/seo-image-gen/references/seo-image-presets.md`](skills/seo-image-gen/references/seo-image-presets.md) |
-| 146 | ✓ | [`skills/seo-image-gen/SKILL.md`](skills/seo-image-gen/SKILL.md) |
-| 147 | ✓ | [`skills/seo-images/LICENSE.txt`](skills/seo-images/LICENSE.txt) |
-| 148 | ✓ | [`skills/seo-images/SKILL.md`](skills/seo-images/SKILL.md) |
-| 149 | ✓ | [`skills/seo-local/LICENSE.txt`](skills/seo-local/LICENSE.txt) |
-| 150 | ✓ | [`skills/seo-local/SKILL.md`](skills/seo-local/SKILL.md) |
-| 151 | ✓ | [`skills/seo-maps/LICENSE.txt`](skills/seo-maps/LICENSE.txt) |
-| 152 | ✓ | [`skills/seo-maps/SKILL.md`](skills/seo-maps/SKILL.md) |
-| 153 | ✓ | [`skills/seo-page/LICENSE.txt`](skills/seo-page/LICENSE.txt) |
-| 154 | ✓ | [`skills/seo-page/SKILL.md`](skills/seo-page/SKILL.md) |
-| 155 | ✓ | [`skills/seo-plan/assets/agency.md`](skills/seo-plan/assets/agency.md) |
-| 156 | ✓ | [`skills/seo-plan/assets/ecommerce.md`](skills/seo-plan/assets/ecommerce.md) |
-| 157 | ✓ | [`skills/seo-plan/assets/generic.md`](skills/seo-plan/assets/generic.md) |
-| 158 | ✓ | [`skills/seo-plan/assets/local-service.md`](skills/seo-plan/assets/local-service.md) |
-| 159 | ✓ | [`skills/seo-plan/assets/publisher.md`](skills/seo-plan/assets/publisher.md) |
-| 160 | ✓ | [`skills/seo-plan/assets/saas.md`](skills/seo-plan/assets/saas.md) |
-| 161 | ✓ | [`skills/seo-plan/LICENSE.txt`](skills/seo-plan/LICENSE.txt) |
-| 162 | ✓ | [`skills/seo-plan/SKILL.md`](skills/seo-plan/SKILL.md) |
-| 163 | ✓ | [`skills/seo-programmatic/LICENSE.txt`](skills/seo-programmatic/LICENSE.txt) |
-| 164 | ✓ | [`skills/seo-programmatic/SKILL.md`](skills/seo-programmatic/SKILL.md) |
-| 165 | ✓ | [`skills/seo-schema/LICENSE.txt`](skills/seo-schema/LICENSE.txt) |
-| 166 | ✓ | [`skills/seo-schema/references/deprecated-types-2024-2026.md`](skills/seo-schema/references/deprecated-types-2024-2026.md) |
-| 167 | ✓ | [`skills/seo-schema/SKILL.md`](skills/seo-schema/SKILL.md) |
-| 168 | ✓ | [`skills/seo-sitemap/LICENSE.txt`](skills/seo-sitemap/LICENSE.txt) |
-| 169 | ✓ | [`skills/seo-sitemap/SKILL.md`](skills/seo-sitemap/SKILL.md) |
-| 170 | ✓ | [`skills/seo-sxo/references/page-type-taxonomy.md`](skills/seo-sxo/references/page-type-taxonomy.md) |
-| 171 | ✓ | [`skills/seo-sxo/references/persona-scoring.md`](skills/seo-sxo/references/persona-scoring.md) |
-| 172 | ✓ | [`skills/seo-sxo/references/user-story-framework.md`](skills/seo-sxo/references/user-story-framework.md) |
-| 173 | ✓ | [`skills/seo-sxo/references/wireframe-templates.md`](skills/seo-sxo/references/wireframe-templates.md) |
-| 174 | ✓ | [`skills/seo-sxo/SKILL.md`](skills/seo-sxo/SKILL.md) |
-| 175 | ✓ | [`skills/seo-technical/LICENSE.txt`](skills/seo-technical/LICENSE.txt) |
-| 176 | ✓ | [`skills/seo-technical/SKILL.md`](skills/seo-technical/SKILL.md) |
-| 177 | ✓ | [`skills/seo/LICENSE.txt`](skills/seo/LICENSE.txt) |
-| 178 | ✓ | [`skills/seo/references/backlink-quality.md`](skills/seo/references/backlink-quality.md) |
-| 179 | ✓ | [`skills/seo/references/cwv-thresholds.md`](skills/seo/references/cwv-thresholds.md) |
-| 180 | ✓ | [`skills/seo/references/eeat-framework.md`](skills/seo/references/eeat-framework.md) |
-| 181 | ✓ | [`skills/seo/references/free-backlink-sources.md`](skills/seo/references/free-backlink-sources.md) |
-| 182 | ✓ | [`skills/seo/references/local-schema-types.md`](skills/seo/references/local-schema-types.md) |
-| 183 | ✓ | [`skills/seo/references/local-seo-signals.md`](skills/seo/references/local-seo-signals.md) |
-| 184 | ✓ | [`skills/seo/references/maps-api-endpoints.md`](skills/seo/references/maps-api-endpoints.md) |
-| 185 | ✓ | [`skills/seo/references/maps-free-apis.md`](skills/seo/references/maps-free-apis.md) |
-| 186 | ✓ | [`skills/seo/references/maps-gbp-checklist.md`](skills/seo/references/maps-gbp-checklist.md) |
-| 187 | ✓ | [`skills/seo/references/maps-geo-grid.md`](skills/seo/references/maps-geo-grid.md) |
-| 188 | ✓ | [`skills/seo/references/quality-gates.md`](skills/seo/references/quality-gates.md) |
-| 189 | ✓ | [`skills/seo/references/schema-types.md`](skills/seo/references/schema-types.md) |
-| 190 | ✓ | [`skills/seo/references/thinking-framework.md`](skills/seo/references/thinking-framework.md) |
-| 191 | ✓ | [`skills/seo/SKILL.md`](skills/seo/SKILL.md) |
-| 192 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 193 | → | [`CONTRIBUTORS.md`](CONTRIBUTORS.md) |
+| 121 | ✓ | [`skills/seo-google/references/crux-history-api.md`](skills/seo-google/references/crux-history-api.md) |
+| 122 | ✓ | [`skills/seo-google/references/dma-consent-mode-v2.md`](skills/seo-google/references/dma-consent-mode-v2.md) |
+| 123 | ✓ | [`skills/seo-google/references/ga4-data-api.md`](skills/seo-google/references/ga4-data-api.md) |
+| 124 | ✓ | [`skills/seo-google/references/indexing-api.md`](skills/seo-google/references/indexing-api.md) |
+| 125 | ✓ | [`skills/seo-google/references/keyword-planner-api.md`](skills/seo-google/references/keyword-planner-api.md) |
+| 126 | ✓ | [`skills/seo-google/references/nlp-api.md`](skills/seo-google/references/nlp-api.md) |
+| 127 | ✓ | [`skills/seo-google/references/pagespeed-crux-api.md`](skills/seo-google/references/pagespeed-crux-api.md) |
+| 128 | ✓ | [`skills/seo-google/references/rate-limits-quotas.md`](skills/seo-google/references/rate-limits-quotas.md) |
+| 129 | ✓ | [`skills/seo-google/references/search-console-api.md`](skills/seo-google/references/search-console-api.md) |
+| 130 | ✓ | [`skills/seo-google/references/supplementary-apis.md`](skills/seo-google/references/supplementary-apis.md) |
+| 131 | ✓ | [`skills/seo-google/references/youtube-api.md`](skills/seo-google/references/youtube-api.md) |
+| 132 | ✓ | [`skills/seo-google/SKILL.md`](skills/seo-google/SKILL.md) |
+| 133 | ✓ | [`skills/seo-hreflang/LICENSE.txt`](skills/seo-hreflang/LICENSE.txt) |
+| 134 | ✓ | [`skills/seo-hreflang/references/content-parity.md`](skills/seo-hreflang/references/content-parity.md) |
+| 135 | ✓ | [`skills/seo-hreflang/references/cultural-profiles.md`](skills/seo-hreflang/references/cultural-profiles.md) |
+| 136 | ✓ | [`skills/seo-hreflang/references/locale-formats.md`](skills/seo-hreflang/references/locale-formats.md) |
+| 137 | ✓ | [`skills/seo-hreflang/references/machine-translation-qa.md`](skills/seo-hreflang/references/machine-translation-qa.md) |
+| 138 | ✓ | [`skills/seo-hreflang/SKILL.md`](skills/seo-hreflang/SKILL.md) |
+| 139 | ✓ | [`skills/seo-image-gen/LICENSE.txt`](skills/seo-image-gen/LICENSE.txt) |
+| 140 | ✓ | [`skills/seo-image-gen/references/cost-tracking.md`](skills/seo-image-gen/references/cost-tracking.md) |
+| 141 | ✓ | [`skills/seo-image-gen/references/gemini-models.md`](skills/seo-image-gen/references/gemini-models.md) |
+| 142 | ✓ | [`skills/seo-image-gen/references/mcp-tools.md`](skills/seo-image-gen/references/mcp-tools.md) |
+| 143 | ✓ | [`skills/seo-image-gen/references/post-processing.md`](skills/seo-image-gen/references/post-processing.md) |
+| 144 | ✓ | [`skills/seo-image-gen/references/presets.md`](skills/seo-image-gen/references/presets.md) |
+| 145 | ✓ | [`skills/seo-image-gen/references/prompt-adaptation-safety.md`](skills/seo-image-gen/references/prompt-adaptation-safety.md) |
+| 146 | ✓ | [`skills/seo-image-gen/references/prompt-engineering.md`](skills/seo-image-gen/references/prompt-engineering.md) |
+| 147 | ✓ | [`skills/seo-image-gen/references/prompt-templates.md`](skills/seo-image-gen/references/prompt-templates.md) |
+| 148 | ✓ | [`skills/seo-image-gen/references/seo-image-presets.md`](skills/seo-image-gen/references/seo-image-presets.md) |
+| 149 | ✓ | [`skills/seo-image-gen/SKILL.md`](skills/seo-image-gen/SKILL.md) |
+| 150 | ✓ | [`skills/seo-images/LICENSE.txt`](skills/seo-images/LICENSE.txt) |
+| 151 | ✓ | [`skills/seo-images/SKILL.md`](skills/seo-images/SKILL.md) |
+| 152 | ✓ | [`skills/seo-local/LICENSE.txt`](skills/seo-local/LICENSE.txt) |
+| 153 | ✓ | [`skills/seo-local/SKILL.md`](skills/seo-local/SKILL.md) |
+| 154 | ✓ | [`skills/seo-maps/LICENSE.txt`](skills/seo-maps/LICENSE.txt) |
+| 155 | ✓ | [`skills/seo-maps/SKILL.md`](skills/seo-maps/SKILL.md) |
+| 156 | ✓ | [`skills/seo-page/LICENSE.txt`](skills/seo-page/LICENSE.txt) |
+| 157 | ✓ | [`skills/seo-page/SKILL.md`](skills/seo-page/SKILL.md) |
+| 158 | ✓ | [`skills/seo-plan/assets/agency.md`](skills/seo-plan/assets/agency.md) |
+| 159 | ✓ | [`skills/seo-plan/assets/ecommerce.md`](skills/seo-plan/assets/ecommerce.md) |
+| 160 | ✓ | [`skills/seo-plan/assets/generic.md`](skills/seo-plan/assets/generic.md) |
+| 161 | ✓ | [`skills/seo-plan/assets/local-service.md`](skills/seo-plan/assets/local-service.md) |
+| 162 | ✓ | [`skills/seo-plan/assets/publisher.md`](skills/seo-plan/assets/publisher.md) |
+| 163 | ✓ | [`skills/seo-plan/assets/saas.md`](skills/seo-plan/assets/saas.md) |
+| 164 | ✓ | [`skills/seo-plan/LICENSE.txt`](skills/seo-plan/LICENSE.txt) |
+| 165 | ✓ | [`skills/seo-plan/SKILL.md`](skills/seo-plan/SKILL.md) |
+| 166 | ✓ | [`skills/seo-programmatic/LICENSE.txt`](skills/seo-programmatic/LICENSE.txt) |
+| 167 | ✓ | [`skills/seo-programmatic/SKILL.md`](skills/seo-programmatic/SKILL.md) |
+| 168 | ✓ | [`skills/seo-schema/LICENSE.txt`](skills/seo-schema/LICENSE.txt) |
+| 169 | ✓ | [`skills/seo-schema/references/deprecated-types-2024-2026.md`](skills/seo-schema/references/deprecated-types-2024-2026.md) |
+| 170 | ✓ | [`skills/seo-schema/SKILL.md`](skills/seo-schema/SKILL.md) |
+| 171 | ✓ | [`skills/seo-sitemap/LICENSE.txt`](skills/seo-sitemap/LICENSE.txt) |
+| 172 | ✓ | [`skills/seo-sitemap/SKILL.md`](skills/seo-sitemap/SKILL.md) |
+| 173 | ✓ | [`skills/seo-sxo/references/page-type-taxonomy.md`](skills/seo-sxo/references/page-type-taxonomy.md) |
+| 174 | ✓ | [`skills/seo-sxo/references/persona-scoring.md`](skills/seo-sxo/references/persona-scoring.md) |
+| 175 | ✓ | [`skills/seo-sxo/references/user-story-framework.md`](skills/seo-sxo/references/user-story-framework.md) |
+| 176 | ✓ | [`skills/seo-sxo/references/wireframe-templates.md`](skills/seo-sxo/references/wireframe-templates.md) |
+| 177 | ✓ | [`skills/seo-sxo/SKILL.md`](skills/seo-sxo/SKILL.md) |
+| 178 | ✓ | [`skills/seo-technical/LICENSE.txt`](skills/seo-technical/LICENSE.txt) |
+| 179 | ✓ | [`skills/seo-technical/SKILL.md`](skills/seo-technical/SKILL.md) |
+| 180 | ✓ | [`skills/seo/LICENSE.txt`](skills/seo/LICENSE.txt) |
+| 181 | ✓ | [`skills/seo/references/backlink-quality.md`](skills/seo/references/backlink-quality.md) |
+| 182 | ✓ | [`skills/seo/references/cwv-thresholds.md`](skills/seo/references/cwv-thresholds.md) |
+| 183 | ✓ | [`skills/seo/references/eeat-framework.md`](skills/seo/references/eeat-framework.md) |
+| 184 | ✓ | [`skills/seo/references/eeat-scoring-guide.md`](skills/seo/references/eeat-scoring-guide.md) |
+| 185 | ✓ | [`skills/seo/references/free-backlink-sources.md`](skills/seo/references/free-backlink-sources.md) |
+| 186 | ✓ | [`skills/seo/references/local-schema-multilocation.md`](skills/seo/references/local-schema-multilocation.md) |
+| 187 | ✓ | [`skills/seo/references/local-schema-types.md`](skills/seo/references/local-schema-types.md) |
+| 188 | ✓ | [`skills/seo/references/local-search-behavior.md`](skills/seo/references/local-search-behavior.md) |
+| 189 | ✓ | [`skills/seo/references/local-seo-signals.md`](skills/seo/references/local-seo-signals.md) |
+| 190 | ✓ | [`skills/seo/references/maps-api-endpoints.md`](skills/seo/references/maps-api-endpoints.md) |
+| 191 | ✓ | [`skills/seo/references/maps-free-apis.md`](skills/seo/references/maps-free-apis.md) |
+| 192 | ✓ | [`skills/seo/references/maps-gbp-checklist.md`](skills/seo/references/maps-gbp-checklist.md) |
+| 193 | ✓ | [`skills/seo/references/maps-geo-grid.md`](skills/seo/references/maps-geo-grid.md) |
+| 194 | ✓ | [`skills/seo/references/quality-gates.md`](skills/seo/references/quality-gates.md) |
+| 195 | ✓ | [`skills/seo/references/schema-types.md`](skills/seo/references/schema-types.md) |
+| 196 | ✓ | [`skills/seo/references/thinking-framework-validate-act.md`](skills/seo/references/thinking-framework-validate-act.md) |
+| 197 | ✓ | [`skills/seo/references/thinking-framework.md`](skills/seo/references/thinking-framework.md) |
+| 198 | ✓ | [`skills/seo/SKILL.md`](skills/seo/SKILL.md) |
+| 199 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 200 | → | [`CONTRIBUTORS.md`](CONTRIBUTORS.md) |
 
 ---
 

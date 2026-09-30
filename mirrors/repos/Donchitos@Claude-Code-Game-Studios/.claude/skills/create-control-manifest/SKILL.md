@@ -1,15 +1,16 @@
 ---
 name: create-control-manifest
 description: "Flat must-do/never-do rules sheet per system and layer, extracted from Accepted ADRs. ADRs explain why; this is actionable."
-argument-hint: "[update — regenerate from current ADRs]"
+argument-hint: "[update — regenerate from current ADRs] [--review full|lean|solo]"
 user-invocable: true
 allowed-tools: Read, Glob, Grep, Write, Agent, AskUserQuestion, Bash(bash "*/.claude/skills/create-control-manifest/../../hooks/yaml-helper.sh" resolve_config *)
 model: sonnet
 ---
 
-!`bash "${CLAUDE_SKILL_DIR}/../../hooks/yaml-helper.sh" resolve_config --keys automation`
+!`bash "${CLAUDE_SKILL_DIR}/../../hooks/yaml-helper.sh" resolve_config --keys review_mode,automation`
 
-
+Resolved above — use as-is; `--review` overrides `review_mode` for this run. No
+block → defaults in `.claude/docs/config-resolution.md`.
 
 # Create Control Manifest
 
@@ -45,9 +46,9 @@ Interpret against N:
 
 | Result | Meaning | Action |
 |---|---|---|
-| **N matches, some read `Accepted`** | Normal. | The Accepted set is **A**; proceed with A. |
+| **N matches, some read `Accepted`** | Normal. | The Accepted set is **A**; proceed with A. Name every ADR left out, with its status, in the Phase 4 preview — the user approves a manifest knowing what it does not cover. |
 | **N matches, none `Accepted`** | Genuinely no Accepted ADRs. | "[N] ADRs found, none Accepted. A manifest built from Proposed ADRs would encode decisions that may still change." Ask whether to proceed with Proposed or stop. **Do not silently emit an empty manifest.** |
-| **0 matches, N > 0** | **Malformed ADRs — not an empty Accepted set.** `## Status` is BLOCKING-if-missing. | "[N] ADRs found, none has a `## Status` section — acceptance cannot be determined. Run `/architecture-decision [file] retrofit` on each." **Stop.** Do not treat all ADRs as Accepted; do not emit a manifest. |
+| **0 matches, N > 0** | **Malformed ADRs — not an empty Accepted set.** `## Status` is BLOCKING-if-missing. | "[N] ADRs found, none has a `## Status` section — acceptance cannot be determined. Run `/architecture-decision retrofit [file]` on each." **Stop.** Do not treat all ADRs as Accepted; do not emit a manifest. |
 
 - Note the ADR number and title for every rule sourced.
 
@@ -62,6 +63,12 @@ Interpret against N:
 - Read `docs/engine-reference/[engine]/deprecated-apis.md` — these become
   forbidden API entries
 - Read `docs/engine-reference/[engine]/current-best-practices.md` if it exists
+
+### Existing Artifacts
+- Glob `docs/architecture/control-manifest.md` (present → this run is a
+  regeneration; Read it before the Phase 5 write, which overwrites it) and
+  `production/epics/*/EPIC.md` (present → epics exist). Phase 6 picks its next
+  step from both.
 
 Report: "Loaded [N] Accepted ADRs, engine: [name + version]."
 
@@ -120,7 +127,7 @@ If an ADR spans multiple layers, duplicate the rule into each relevant layer.
 
 ## 3. Add Global Rules
 
-Combine rules that apply to all layers:
+Combine rules that apply to all layers. Each carries its source into the manifest, as a layer rule does — the `project.yaml` key, `technical-preferences.md`, or the engine-reference file:
 
 ### From project config (`project.yaml`, else `technical-preferences.md`):
 - Naming conventions — `naming.*`: classes, variables, signals/events, files, constants
@@ -154,6 +161,7 @@ Before writing the manifest, present a summary to the user:
 ## Control Manifest Preview
 Engine: [name + version]
 ADRs covered: [list ADR numbers]
+ADRs excluded: [ADR-NNNN ([status]), … — every ADR not in the Accepted set, or "None"]
 Total rules extracted:
   - Foundation layer: [N] required, [M] forbidden, [P] guardrails
   - Core layer: [N] required, [M] forbidden, [P] guardrails
@@ -193,6 +201,7 @@ Apply the verdict:
 - **APPROVE** → proceed to Phase 5
 - **CONCERNS** → surface via `AskUserQuestion` with options: `Revise flagged rules` / `Accept and proceed` / `Discuss further`
 - **REJECT** → do not write the manifest; fix the flagged rules and re-present the summary
+- **NOT ASSESSED** [missing input] → not an approval (`.claude/docs/director-gates.md`): name what was missing, then supply it and re-run the gate — or, if the user chooses to go on without it, continue to Phase 5 and state `TD-MANIFEST: NOT ASSESSED — [input]` in the output and the final Verdict line
 
 ---
 
@@ -285,24 +294,24 @@ rule, see the referenced ADR.
 ## Global Rules (All Layers)
 
 ### Naming Conventions
-| Element | Convention | Example |
-|---------|-----------|---------|
-| Classes | [from naming.* in project.yaml, else technical-preferences.md] | [example] |
-| Variables | [from naming.* in project.yaml, else technical-preferences.md] | [example] |
-| Signals/Events | [from naming.* in project.yaml, else technical-preferences.md] | [example] |
-| Files | [from naming.* in project.yaml, else technical-preferences.md] | [example] |
-| Constants | [from naming.* in project.yaml, else technical-preferences.md] | [example] |
+| Element | Convention | Example | Source |
+|---------|-----------|---------|--------|
+| Classes | [from naming.* in project.yaml, else technical-preferences.md] | [example] | [`naming.classes` in project.yaml, or technical-preferences.md] |
+| Variables | [from naming.* in project.yaml, else technical-preferences.md] | [example] | [`naming.variables` in project.yaml, or technical-preferences.md] |
+| Signals/Events | [from naming.* in project.yaml, else technical-preferences.md] | [example] | [`naming.signals` in project.yaml, or technical-preferences.md] |
+| Files | [from naming.* in project.yaml, else technical-preferences.md] | [example] | [`naming.files` in project.yaml, or technical-preferences.md] |
+| Constants | [from naming.* in project.yaml, else technical-preferences.md] | [example] | [`naming.constants` in project.yaml, or technical-preferences.md] |
 
 ### Performance Budgets
-| Target | Value |
-|--------|-------|
-| Framerate | [from performance.* in project.yaml, else technical-preferences.md] |
-| Frame budget | [from performance.* in project.yaml, else technical-preferences.md] |
-| Draw calls | [from performance.* in project.yaml, else technical-preferences.md] |
-| Memory ceiling | [from performance.* in project.yaml, else technical-preferences.md] |
+| Target | Value | Source |
+|--------|-------|--------|
+| Framerate | [from performance.* in project.yaml, else technical-preferences.md] | [`performance.target_framerate` in project.yaml, or technical-preferences.md] |
+| Frame budget | [from performance.* in project.yaml, else technical-preferences.md] | [`performance.frame_budget_ms` in project.yaml, or technical-preferences.md] |
+| Draw calls | [from performance.* in project.yaml, else technical-preferences.md] | [`performance.draw_call_limit` in project.yaml, or technical-preferences.md] |
+| Memory ceiling | [from performance.* in project.yaml, else technical-preferences.md] | [`performance.memory_ceiling_mb` in project.yaml, or technical-preferences.md] |
 
 ### Approved Libraries / Addons
-- [library] — approved for [purpose]
+- [library] — approved for [purpose] — source: technical-preferences.md
 
 ### Forbidden APIs ([engine version])
 These APIs are deprecated or unverified for [engine + version]:
@@ -310,7 +319,7 @@ These APIs are deprecated or unverified for [engine + version]:
 - Source: `docs/engine-reference/[engine]/deprecated-apis.md`
 
 ### Cross-Cutting Constraints
-- [constraint that applies everywhere, regardless of layer]
+- [constraint that applies everywhere, regardless of layer] — source: [ADR-NNNN, preference key or engine-reference file]
 ```
 
 ---

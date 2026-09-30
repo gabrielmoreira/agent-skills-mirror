@@ -191,16 +191,16 @@ function loadFromLocalStorage(): ProjectState | null {
 }
 
 async function loadFromFile(): Promise<
-  { ok: true; state: ProjectState | null } | { ok: false; error: string }
+  { ok: true; state: ProjectState | null; revision: string | null } | { ok: false; error: string }
 > {
   if (typeof window === "undefined") return { ok: false, error: "Window is not available" };
   try {
-    const resp = await fetch("/api/project", { cache: "no-store" });
-    if (!resp.ok) return { ok: false, error: `HTTP ${resp.status}` };
-    const json = (await resp.json()) as { ok: boolean; state: Partial<ProjectState> | null };
-    if (!json.ok) return { ok: false, error: "Project response was not ok" };
-    if (!json.state) return { ok: true, state: null };
-    return { ok: true, state: mergeWithDefaults(json.state) };
+    const resp = await fetch("/api/project", { cache: "no-store", signal: AbortSignal.timeout(15000) });
+    const json = (await resp.json()) as { ok: boolean; state: Partial<ProjectState> | null; error?: string };
+    if (!resp.ok || !json.ok) return { ok: false, error: json.error || `HTTP ${resp.status}` };
+    const revision = resp.headers.get("etag");
+    if (!json.state) return { ok: true, state: null, revision };
+    return { ok: true, state: mergeWithDefaults(json.state), revision };
   } catch (error) {
     return { ok: false, error: error instanceof Error ? error.message : "Project file could not be loaded" };
   }
@@ -217,20 +217,17 @@ function saveToLocalStorage(state: ProjectState): { ok: true } | { ok: false; er
   }
 }
 
-async function saveToFile(state: ProjectState): Promise<{ ok: true } | { ok: false; error: string }> {
-  if (typeof window === "undefined") return { ok: true };
+async function saveToFile(state: ProjectState, revision: string | null): Promise<{ ok: true; revision: string | null } | { ok: false; error: string }> {
   try {
     const resp = await fetch("/api/project", {
       method: "POST",
-      headers: { "content-type": "application/json" },
+      headers: { "content-type": "application/json", ...(revision ? { "if-match": revision } : {}) },
       body: JSON.stringify(state),
+      signal: AbortSignal.timeout(15000),
     });
-    if (!resp.ok) {
-      return { ok: false, error: `HTTP ${resp.status}` };
-    }
     const json = (await resp.json()) as { ok: boolean; error?: string };
-    if (!json.ok) return { ok: false, error: json.error || "Unknown error" };
-    return { ok: true };
+    if (!resp.ok || !json.ok) return { ok: false, error: json.error || `HTTP ${resp.status}` };
+    return { ok: true, revision: resp.headers.get("etag") };
   } catch (e) {
     return { ok: false, error: e instanceof Error ? e.message : String(e) };
   }
@@ -252,6 +249,9 @@ export function useProject() {
   const stateRef = useRef(state);
   const saveQueue = useRef(Promise.resolve());
   const saveRevision = useRef(0);
+  const fileRevision = useRef<string | null>(null);
+  const unsaved = useRef(false);
+  const [retry, setRetry] = useState(0);
 
   // Run updates once, outside React render/updater replay. Async callbacks also
   // see the latest state before React has committed the next render.
@@ -277,6 +277,7 @@ export function useProject() {
       const fromFile = await loadFromFile();
       if (cancelled) return;
       if (fromFile.ok) {
+        fileRevision.current = fromFile.revision;
         if (fromFile.state) {
           commit(fromFile.state);
         } else {
@@ -298,6 +299,17 @@ export function useProject() {
     };
   }, [commit]);
 
+  // A refresh inside the debounce window must not silently discard edits.
+  useEffect(() => {
+    const warn = (event: BeforeUnloadEvent) => {
+      if (!unsaved.current) return;
+      event.preventDefault();
+      event.returnValue = "";
+    };
+    window.addEventListener("beforeunload", warn);
+    return () => window.removeEventListener("beforeunload", warn);
+  }, []);
+
   // Debounced autosave to BOTH localStorage (fast, offline) and file (git-trackable).
   useEffect(() => {
     if (!hydrated || !fileReady) return;
@@ -309,11 +321,14 @@ export function useProject() {
       // Serialize requests so a slow older write cannot overwrite a newer edit.
       saveQueue.current = saveQueue.current.then(async () => {
         if (revision !== saveRevision.current) return;
-        const fileResult = await saveToFile(state);
+        const fileResult = await saveToFile(state, fileRevision.current);
+        // Advance even if another edit arrived while this request was in flight.
+        if (fileResult.ok) fileRevision.current = fileResult.revision;
         if (revision !== saveRevision.current) return;
         if (!fileResult.ok) {
           setSaveError(`File save failed: ${fileResult.error}`);
         } else {
+          unsaved.current = false;
           setSavedAt(Date.now());
           setSaveError(localResult.ok ? null : localResult.error);
         }
@@ -322,7 +337,7 @@ export function useProject() {
     return () => {
       if (timer.current) clearTimeout(timer.current);
     };
-  }, [state, hydrated, fileReady]);
+  }, [state, hydrated, fileReady, retry]);
 
   // `history: false` is for navigation (device, orientation, locale): it isn't
   // an edit, so it neither takes an undo step nor clears redo. Undo still
@@ -332,6 +347,7 @@ export function useProject() {
     const prev = stateRef.current;
     const next = applyUpdater(updater, prev);
     if (next === prev) return;
+    unsaved.current = true;
     if (options?.history === false) {
       // Navigation is a boundary: edits to another deck must not coalesce.
       lastPushAt.current = 0;
@@ -351,6 +367,7 @@ export function useProject() {
     const prev = pastRef.current.pop();
     if (prev === undefined) return;
     futureRef.current.push(stateRef.current);
+    unsaved.current = true;
     lastPushAt.current = 0;
     commit(prev);
   }, [commit]);
@@ -359,6 +376,7 @@ export function useProject() {
     const next = futureRef.current.pop();
     if (next === undefined) return;
     pastRef.current.push(stateRef.current);
+    unsaved.current = true;
     lastPushAt.current = 0;
     commit(next);
   }, [commit]);
@@ -385,6 +403,7 @@ export function useProject() {
     hydrated,
     savedAt,
     saveError,
+    retrySave: fileReady ? () => setRetry((value) => value + 1) : undefined,
     reset,
     resetDevice,
     undo,

@@ -11,7 +11,7 @@ Read-only access to X content via five MCP tools. Use for sentiment on tickers, 
 
 ## Auth
 
-Every tool requires a `bearer_token`. Read it once per code block from the workspace vault:
+Every tool requires a `bearer_token`. Read it once per code block from the vault:
 
 ```python
 from vault import get

@@ -15,7 +15,7 @@ Local assistive surfaces for third-party provider apps. This domain owns a norma
 | --- | --- |
 | `crates/openhuman-core/src/desktop/provider_surfaces/mod.rs` | Export-only: declares submodules; re-exports `all_provider_surfaces_controller_schemas` / `all_provider_surfaces_registered_controllers`. |
 | `crates/openhuman-core/src/desktop/provider_surfaces/types.rs` | Serde domain types: `ProviderEvent`, `RespondQueueItem`, `RespondQueueListResponse`. Snake_case contract shared by request and response. |
-| `crates/openhuman-core/src/desktop/provider_surfaces/ops.rs` | Business logic / entry points: `ingest_event`, `list_queue`. Wrap results in `ApiEnvelope` + `RpcOutcome`. Tests in sibling `ops_tests.rs`. |
+| `crates/openhuman-core/src/desktop/provider_surfaces/ops.rs` | Business logic / entry points: `ingest_event`, `list_queue`. Wrap results in `ApiEnvelope` + `Outcome`. Tests in sibling `ops_tests.rs`. |
 | `crates/openhuman-core/src/desktop/provider_surfaces/store.rs` | In-memory persistence: process-global `RESPOND_QUEUE` (`OnceLock<Mutex<Vec<…>>>`), `upsert_queue_item`, `list_queue_items`, `clear_queue` (test-only). |
 | `crates/openhuman-core/src/desktop/provider_surfaces/schemas.rs` | Controller registry: `ControllerSchema`s + `handle_*` fns delegating to `ops.rs`. Tests in sibling `schemas_tests.rs`. |
 | `crates/openhuman-core/src/desktop/provider_surfaces/rpc.rs` | Docstring-only placeholder; no code. The handler delegation lives in `schemas.rs`, not here. |
@@ -25,7 +25,7 @@ Local assistive surfaces for third-party provider apps. This domain owns a norma
 - `types::ProviderEvent`: inbound normalized provider event (`#[serde(deny_unknown_fields)]`).
 - `types::RespondQueueItem`: queue entry (adds `id` and `status`, default `"pending"`).
 - `types::RespondQueueListResponse`: `{ items, count }`.
-- `ops::ingest_event(ProviderEvent)` / `ops::list_queue(EmptyRequest)`: async handlers returning `RpcOutcome<ApiEnvelope<T>>`.
+- `ops::ingest_event(ProviderEvent)` / `ops::list_queue(EmptyRequest)`: async handlers returning `Outcome<ApiEnvelope<T>>`.
 - `store::{upsert_queue_item, list_queue_items}`: internal to `ops.rs`; no external caller reads the store directly today.
 - Re-exported from `mod.rs`: `all_provider_surfaces_controller_schemas`, `all_provider_surfaces_registered_controllers`.
 
@@ -55,7 +55,7 @@ In-memory only. State lives in a process-global `RESPOND_QUEUE` (`static OnceLoc
 ## Dependencies
 
 - `crate::memory`: `ApiEnvelope`, `ApiMeta`, `EmptyRequest` (response envelope shape + empty-request type).
-- `crate::rpc::RpcOutcome`: RPC return contract.
+- `crate::core::Outcome`: RPC return contract.
 - `crate::core::all`: `RegisteredController`, `ControllerFuture` (controller registry wiring).
 - `crate::core::{ControllerSchema, FieldSchema, TypeSchema}`: controller schema types.
 - External crates: `serde` / `serde_json`, `uuid` (request ids), `tracing` (debug logging with `[provider-surfaces]` prefix).

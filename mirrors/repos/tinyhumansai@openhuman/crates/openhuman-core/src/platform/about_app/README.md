@@ -18,7 +18,7 @@ The single source of truth for the OpenHuman desktop app's **user-facing capabil
 | `crates/openhuman-core/src/platform/about_app/mod.rs` | Export-only module root + docstring. Re-exports catalog reads, ops entry points, schema registry hooks, and types. |
 | `crates/openhuman-core/src/platform/about_app/types.rs` | Serde domain types: `Capability`, `CapabilityCategory` (with `as_str` / `FromStr` incl. aliases), `CapabilityStatus`, `CapabilityPrivacy`, `PrivacyDataKind`. Inline serde/roundtrip tests. |
 | `crates/openhuman-core/src/platform/about_app/catalog.rs` | Read API over the `CAPABILITIES` data it includes from `catalog_data.rs`. Implements `all_capabilities`, `capabilities_by_category`, `lookup`, `search`, and the `ensure_validated` integrity check. |
-| `crates/openhuman-core/src/platform/about_app/ops.rs` | RPC-facing logic returning `RpcOutcome<T>`: `list_capabilities`, `lookup_capability`, `search_capabilities`. Thin wrappers over `catalog.rs` with summary logs. |
+| `crates/openhuman-core/src/platform/about_app/ops.rs` | RPC-facing logic returning `Outcome<T>`: `list_capabilities`, `lookup_capability`, `search_capabilities`. Thin wrappers over `catalog.rs` with summary logs. |
 | `crates/openhuman-core/src/platform/about_app/schemas.rs` | Controller schemas + `handle_*` async handlers for the three RPC methods; param structs; the `all_about_app_controller_schemas` / `all_about_app_registered_controllers` registry pair. |
 | `crates/openhuman-core/src/platform/about_app/catalog_data.rs` | The `CAPABILITIES` data itself (`LazyLock<Vec<Capability>>`) plus the shared `CapabilityPrivacy` constants, concatenated from the `catalog_conversation_intelligence.rs`, `catalog_workflows_automation.rs`, `catalog_auth_channels_team.rs`, and `catalog_localai_settings_mobile.rs` submodules. |
 | `crates/openhuman-core/src/platform/about_app/catalog_tests.rs` | Sibling test module (`#[path]`-included by `catalog.rs`) covering catalog behavior. |
@@ -28,7 +28,7 @@ The single source of truth for the OpenHuman desktop app's **user-facing capabil
 Re-exported from `mod.rs`:
 
 - **Catalog reads** (`catalog`): `all_capabilities()`, `capabilities_by_category(CapabilityCategory)`, `lookup(&str)`, `search(&str)`.
-- **Ops** (`ops`): `list_capabilities(Option<CapabilityCategory>) -> RpcOutcome<Vec<Capability>>`, `lookup_capability(&str) -> Result<RpcOutcome<Capability>, String>`, `search_capabilities(&str) -> RpcOutcome<Vec<Capability>>`.
+- **Ops** (`ops`): `list_capabilities(Option<CapabilityCategory>) -> Outcome<Vec<Capability>>`, `lookup_capability(&str) -> Result<Outcome<Capability>, String>`, `search_capabilities(&str) -> Outcome<Vec<Capability>>`.
 - **Schema registry** (`schemas`): `about_app_schemas(&str)`, `all_about_app_controller_schemas()`, `all_about_app_registered_controllers()`.
 - Types: `Capability`, `CapabilityCategory`, `CapabilityPrivacy`, `CapabilityStatus`, `PrivacyDataKind`.
 
@@ -42,7 +42,7 @@ Namespace `about_app`, registered into the global controller registry via `crate
 | `about_app.lookup` | `id` (string, required) | `capability: Capability` | Look up one capability by stable id (e.g. `local_ai.download_model`); errors on unknown id. |
 | `about_app.search` | `query` (string, required) | `capabilities: Capability[]` | Keyword search; empty query returns all. |
 
-Handlers deserialize params, log at `debug`, and emit `RpcOutcome` via `into_cli_compatible_json()`. The `category` input is schema-typed as an `Option<Enum>` of all `CapabilityCategory` wire names.
+Handlers deserialize params, log at `debug`, and emit `Outcome` via `into_cli_compatible_json()`. The `category` input is schema-typed as an `Option<Enum>` of all `CapabilityCategory` wire names.
 
 ## Agent tools
 
@@ -58,7 +58,7 @@ None. No `store.rs`. The catalog is a compile-time `&'static [Capability]` const
 
 ## Dependencies
 
-- `crate::rpc::RpcOutcome`: return-type contract for ops/handlers.
+- `crate::core::Outcome`: return-type contract for ops/handlers.
 - `crate::core::all::{ControllerFuture, RegisteredController}`: controller registration types (schemas.rs).
 - `crate::core::{ControllerSchema, FieldSchema, TypeSchema}`: controller schema definitions (schemas.rs).
 

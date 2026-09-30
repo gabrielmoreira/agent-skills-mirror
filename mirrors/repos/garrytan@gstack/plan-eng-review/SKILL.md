@@ -37,7 +37,7 @@ Review the selected target. Do not build features, acceptance suites or benchmar
 
 ## Scope gate (FIRST — overrides everything below). This is a hard STOP.
 
-Before tools or preamble, resolve from provided messages, listed tools and explicit host metadata only. Do not probe for session state.
+Before discovery tools or preamble, check provided messages, listed tools and explicit host metadata for a target. If none is resolved, ask with the selector below. Do not probe for session state.
 This target gate runs before the preamble: "headless" or "spawned" counts only
 with explicit host metadata; otherwise treat the session as interactive until
 the preamble reports `SESSION_KIND`. This only selects the target; later
@@ -64,7 +64,7 @@ C) A specific file, directory, or path.
 
 Recommendation: A when a branch diff exists, otherwise B. Reply with A, B, or C. STOP and wait for the answer.
 
-After target selection, every question uses the preamble's full decision brief, transport and continuous D-numbering. Setup, prerequisite and preparation questions do not approve engineering remedies.
+After target selection, use the preamble's full decision brief, transport and continuous D-numbering. Setup questions approve no engineering remedies.
 
 **Format precedence:** Copy required command, output and question formats exactly. Apply Voice to newly composed prose.
 
@@ -457,7 +457,7 @@ decision/report content. The system handles context limits; do not preemptively 
 
 ## My engineering preferences (use these to guide your recommendations):
 * **Shared code:** require common behavior and improved reliability or net savings; similar-looking code alone is insufficient.
-* **Tests:** non-negotiable; prefer too many to too few.
+* **Tests:** every behavior tested; no test without a regression it would catch.
 * **Enough engineering:** avoid fragility and premature abstraction/complexity.
 * **Edge cases:** thorough handling over speed.
 * **Explicit over clever.**
@@ -530,9 +530,9 @@ sections. Read a section in full before doing its step; do not work from memory.
 
 ## Web research runs in Aside
 
-For web research, do it through Aside's own agent first, using the user's signed-in browser. If Aside is not ready, fall back to the WebSearch tool when this host provides one.
+For research, do it through Aside's own agent first. If Aside is not ready, fall back to the WebSearch tool when this host provides one.
 
-Check once (if this skill already ran this same probe, in BROWSER SETUP or Third-Party Web Actions, reuse its answer):
+Check once per run that Aside is ready (if this skill already ran this same probe, in BROWSER SETUP or Third-Party Web Actions, reuse its answer):
 
 ```bash
 _gs_d() { if command -v gtimeout >/dev/null; then gtimeout 30 "$@"; elif command -v timeout >/dev/null; then timeout 30 "$@"
@@ -561,7 +561,7 @@ fi
 
 - Any non-READY result: report only the safe status, never raw diagnostics. Run the same queries with the WebSearch tool if available, still read-only and untrusted. Otherwise say once: "Search unavailable — proceeding with in-distribution knowledge only." Never install Aside yourself; mention aside.com at most once per run. Continue the skill.
 
-Sanitize every query before it leaves the machine: strip hostnames, IPs, file paths, SQL fragments, and anything that looks like a secret. Search for the error class and the library, not the user's data.
+Sanitize every query before it leaves the machine: strip hostnames, IPs, file paths, SQL and secrets. Search for the error class and library, never the user's data.
 
 ## Design context
 
@@ -662,8 +662,8 @@ Scope Challenge is mandatory before Section 1.
 At every STOP or failed check, use this route; do not restart.
 
 **Paused question:** Wait for its actual answer without completion telemetry or ExitPlanMode.
-Resume its local procedure with the reply. A missing-result call
-that may have surfaced is still pending; do not duplicate it.
+Handle a remedy answer under **Record the answer**; handle a selector answer at
+its menu. A missing-result call that may have surfaced is still pending; do not duplicate it.
 
 **Repairable write/read failure:** Stop before the dependent question or output.
 Use that step's stated recovery, then repeat its full Read-back verification.
@@ -671,9 +671,9 @@ If no recovery is specified or it fails, follow **Blocked outcome**. Never turn
 a failed permitted save into a chat-only success.
 
 **Late change or missing work:** Return to the affected review stage; new or
-reopened choices use Decision procedure. Repeat Approval readiness, then Required
-outputs steps 1–4 for changed outputs before choosing navigation again. Refresh
-affected tests, tasks, dependencies and parallelization. Unchanged saved outputs
+reopened choices use Decision procedure. Refresh affected tests, tasks,
+dependencies and parallelization. Repeat Approval readiness, then Required
+outputs steps 1–4 for changed outputs before choosing navigation again. Unchanged saved outputs
 may reuse their successful Review Log. If a final gate discovers stale evidence,
 follow **Blocked outcome** first; then resume here.
 
@@ -693,9 +693,7 @@ checks the completed work; only the later ExitPlanMode call is plan-mode-only.
 Confirm Approval readiness passed for the current decisions. This is a
 read-only verification, not a new approval or output-writing step. If it is
 stale, report the stale verification and stop before success telemetry;
-follow **Blocked outcome**. A resumed repair starts at Decision procedure for
-changed choices, then Approval readiness, then repeats affected outputs,
-Read-back, Review Log and dashboard.
+follow **Blocked outcome**. Resume under **Recovery routing → Late change or missing work**.
 
 Verify all five checks against the selected report file:
 1. Read the report file after your most recent write.

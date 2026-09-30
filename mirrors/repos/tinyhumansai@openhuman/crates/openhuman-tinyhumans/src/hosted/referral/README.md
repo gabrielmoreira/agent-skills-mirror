@@ -8,7 +8,7 @@ Thin RPC adapter domain for the referral program. It does **not** own any busine
 - Claim a referral code for the current user via `POST /referral/claim`, with an optional device fingerprint for abuse signals.
 - Resolve and require a backend session token before any call; fail closed with a clear error when no token is stored.
 - Trim the referral `code`; trim and drop whitespace-only `deviceFingerprint` before forwarding.
-- Wrap backend responses in `RpcOutcome<Value>` with grep-friendly log lines.
+- Wrap backend responses in `Outcome<Value>` with grep-friendly log lines.
 
 ## Key files
 
@@ -22,8 +22,8 @@ Thin RPC adapter domain for the referral program. It does **not** own any busine
 
 From `mod.rs` re-exports:
 
-- `get_stats(config: &Config) -> Result<RpcOutcome<Value>, String>` (via `ops::*`).
-- `claim_referral(config: &Config, code: &str, device_fingerprint: Option<&str>) -> Result<RpcOutcome<Value>, String>` (via `ops::*`).
+- `get_stats(config: &Config) -> Result<Outcome<Value>, String>` (via `ops::*`).
+- `claim_referral(config: &Config, code: &str, device_fingerprint: Option<&str>) -> Result<Outcome<Value>, String>` (via `ops::*`).
 - `all_referral_controller_schemas() -> Vec<ControllerSchema>`.
 - `all_referral_registered_controllers() -> Vec<RegisteredController>`.
 - `referral_schemas(function: &str) -> ControllerSchema`.
@@ -38,7 +38,7 @@ Two controllers in the `referral` namespace, registered into the global registry
 | `referral_get_stats` (`referral.get_stats`) | none | `stats` (JSON) | `GET /referral/stats` |
 | `referral_claim` (`referral.claim`) | `code` (string, required), `deviceFingerprint` (string, optional) | `result` (JSON) | `POST /referral/claim` |
 
-An unrecognized `function` name returns an `unknown` placeholder schema with an `error` output. Handlers load `Config` via `config_rpc::load_config_with_timeout()` and return CLI-compatible JSON through `RpcOutcome::into_cli_compatible_json()`.
+An unrecognized `function` name returns an `unknown` placeholder schema with an `error` output. Handlers load `Config` via `config_rpc::load_config_with_timeout()` and return CLI-compatible JSON through `Outcome::into_cli_compatible_json()`.
 
 ## Persistence
 

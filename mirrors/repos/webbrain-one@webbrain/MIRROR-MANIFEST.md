@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `webbrain-one/webbrain` — 26 default patterns, 0 followed patterns, 17 file(s) materialized.
+Mirror of `webbrain-one/webbrain` — 26 default patterns, 0 followed patterns, 16 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `webbrain-one/webbrain` — 26 default patterns, 0 followed patterns, 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 17 |
+| Files         | 16 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -69,13 +69,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 8 | ✓ | [`docs/fr/architecture.md`](docs/fr/architecture.md) |
 | 9 | ✓ | [`docs/fr/privacy-and-data-flow.md`](docs/fr/privacy-and-data-flow.md) |
 | 10 | ✓ | [`docs/fr/skills.md`](docs/fr/skills.md) |
-| 11 | ✓ | [`docs/memcode-memory-proposal.md`](docs/memcode-memory-proposal.md) |
-| 12 | ✓ | [`docs/privacy-and-data-flow.md`](docs/privacy-and-data-flow.md) |
-| 13 | ✓ | [`docs/skills.md`](docs/skills.md) |
-| 14 | ✓ | [`docs/zh-CN/agent-tools.md`](docs/zh-CN/agent-tools.md) |
-| 15 | ✓ | [`docs/zh-CN/architecture.md`](docs/zh-CN/architecture.md) |
-| 16 | ✓ | [`docs/zh-CN/privacy-and-data-flow.md`](docs/zh-CN/privacy-and-data-flow.md) |
-| 17 | ✓ | [`docs/zh-CN/skills.md`](docs/zh-CN/skills.md) |
+| 11 | ✓ | [`docs/privacy-and-data-flow.md`](docs/privacy-and-data-flow.md) |
+| 12 | ✓ | [`docs/skills.md`](docs/skills.md) |
+| 13 | ✓ | [`docs/zh-CN/agent-tools.md`](docs/zh-CN/agent-tools.md) |
+| 14 | ✓ | [`docs/zh-CN/architecture.md`](docs/zh-CN/architecture.md) |
+| 15 | ✓ | [`docs/zh-CN/privacy-and-data-flow.md`](docs/zh-CN/privacy-and-data-flow.md) |
+| 16 | ✓ | [`docs/zh-CN/skills.md`](docs/zh-CN/skills.md) |
 
 ---
 

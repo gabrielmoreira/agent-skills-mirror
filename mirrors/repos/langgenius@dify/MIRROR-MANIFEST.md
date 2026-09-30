@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `langgenius/dify` — 26 default patterns, 0 followed patterns, 36 file(s) materialized.
+Mirror of `langgenius/dify` — 26 default patterns, 0 followed patterns, 38 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `langgenius/dify` — 26 default patterns, 0 followed patterns, 36 fil
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 36 |
+| Files         | 38 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -93,8 +93,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 32 | ✓ | [`e2e/features/agent-v2/AGENTS.md`](e2e/features/agent-v2/AGENTS.md) |
 | 33 | ✓ | [`e2e/fixtures/test-materials/e2e-summary-skill/SKILL.md`](e2e/fixtures/test-materials/e2e-summary-skill/SKILL.md) |
 | 34 | ✓ | [`packages/dify-ui/AGENTS.md`](packages/dify-ui/AGENTS.md) |
-| 35 | ✓ | [`web/AGENTS.md`](web/AGENTS.md) |
-| 36 | ✓ | [`web/features/agent-v2/AGENTS.md`](web/features/agent-v2/AGENTS.md) |
+| 35 | ✓ | [`skills/difyctl/SKILL.md`](skills/difyctl/SKILL.md) |
+| 36 | ✓ | [`skills/README.md`](skills/README.md) |
+| 37 | ✓ | [`web/AGENTS.md`](web/AGENTS.md) |
+| 38 | ✓ | [`web/features/agent-v2/AGENTS.md`](web/features/agent-v2/AGENTS.md) |
 
 ---
 

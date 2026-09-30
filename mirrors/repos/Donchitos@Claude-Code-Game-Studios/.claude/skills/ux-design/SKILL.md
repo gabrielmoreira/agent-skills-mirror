@@ -40,9 +40,9 @@ pointers in the templates name the exact section to read.
 
 **`docs.density`** — it controls per-section *depth*, where `workflow`
 controls which screens are specced. `modes.rigor` sets both together; set
-`docs.density` explicitly to vary depth alone: `terse` = wireframe descriptions +
+`docs.density` explicitly to vary depth alone: `terse` (the default, via `rigor: minimal`) = wireframe descriptions +
 interaction bullets; `balanced` = wireframes + paragraph descriptions of flows
-(default); `thorough` = full prose including user-research summaries and
+(`rigor: standard`); `thorough` = full prose including user-research summaries and
 alternative flow considerations. Apply it to every section you author.
 
 ## 1. Parse Arguments & Determine Mode
@@ -81,7 +81,8 @@ comes from arriving informed.
 
 ### 2a: Required Reads
 
-- **Game concept**: Read `design/gdd/game-concept.md` — if missing, warn:
+- **Game concept**: Read `design/gdd/game-concept.md` — or `design/game-brief.md`,
+  the one-page brief that replaces it at `rigor: minimal` — if neither exists, warn:
   > "No game concept found. Run `/brainstorm` first to establish the game's
   > foundation before designing UX."
   > Continue anyway if the user asks.
@@ -123,7 +124,11 @@ Grep pattern="^#+ .*UI Requirements" glob="design/gdd/*.md" output_mode="content
 ```
 
 Establish the denominator first (glob `design/gdd/*.md`, count **N**) and check
-the match count against it. **A GDD with no UI Requirements section is not a GDD
+the match count against it. Count system GDDs only: `game-concept.md`,
+`systems-index.md`, `game-pillars.md`, `gameplay-tags.md`, `entity-registry.md`,
+`fixture-swap-ledger.md`, `sound-bible.md` and any `gdd-cross-review-*.md` live
+there too, but they are not systems and have no UI to aggregate.
+**A GDD with no UI Requirements section is not a GDD
 with no UI needs** — it may predate the section. List the unmatched ones and
 confirm with the user that they are genuinely headless before excluding them
 from the HUD's requirement set; a HUD that silently omits a system's readout is
@@ -200,7 +205,8 @@ Then ask: "Anything else I should read before we start, or shall we proceed?"
 
 Before creating a skeleton, check if the target output file already exists.
 
-Glob `design/ux/[filename].md` (where `[filename]` is the resolved output path from Phase 1).
+Glob the resolved output path from Phase 1 — `design/ux/[filename].md`, or
+`design/accessibility-requirements.md` in `accessibility` mode.
 
 **If the file exists — retrofit mode:**
 - Read the file in full
@@ -211,14 +217,24 @@ Glob `design/ux/[filename].md` (where `[filename]` is the resolved output path f
 >
 > | Section | Status |
 > |---------|--------|
-> | Overview & Context | [Complete / Empty / Placeholder] |
-> | Player Journey Integration | ... |
-> | Screen Layout & Information Architecture | ... |
-> | Interaction Model | ... |
-> | Feedback & State Communication | ... |
+> | Purpose & Player Need | [Complete / Empty / Placeholder] |
+> | Player Context on Arrival | ... |
+> | Navigation Position | ... |
+> | Entry & Exit Points | ... |
+> | Layout Specification | ... |
+> | States & Variants | ... |
+> | Interaction Map | ... |
+> | Data Requirements | ... |
+> | Events Fired | ... |
+> | Transitions & Animations | ... |
+> | Input Method Completeness Checklist | ... |
 > | Accessibility | ... |
-> | Edge Cases & Error States | ... |
+> | Localization Considerations | ... |
+> | Acceptance Criteria | ... |
 > | Open Questions | ... |
+>
+> (Rows are the skeleton's own `##` headings for the active mode — the list above is
+> UX spec mode; HUD and accessibility modes list their skeleton's headings.)
 >
 > I'll work on the [N] incomplete sections only — existing content will not be overwritten."
 
@@ -251,6 +267,7 @@ Ask: "May I create the skeleton file at `design/ux/[filename].md`?" — except i
 > **Author**: [user + ux-designer]
 > **Last Updated**: [today's date]
 > **Journey Phase(s)**: [from context]
+> **Platform Target**: [target platforms and input methods from 2h]
 > **Template**: UX Spec
 
 ---
@@ -281,7 +298,7 @@ Ask: "May I create the skeleton file at `design/ux/[filename].md`?" — except i
 
 ## Layout Specification
 
-### Information Hierarchy
+### ASCII Wireframe
 
 [To be designed]
 
@@ -293,7 +310,7 @@ Ask: "May I create the skeleton file at `design/ux/[filename].md`?" — except i
 
 [To be designed]
 
-### ASCII Wireframe
+### Information Hierarchy
 
 [To be designed]
 
@@ -311,6 +328,12 @@ Ask: "May I create the skeleton file at `design/ux/[filename].md`?" — except i
 
 ---
 
+## Data Requirements
+
+[To be designed]
+
+---
+
 ## Events Fired
 
 [To be designed]
@@ -323,7 +346,7 @@ Ask: "May I create the skeleton file at `design/ux/[filename].md`?" — except i
 
 ---
 
-## Data Requirements
+## Input Method Completeness Checklist
 
 [To be designed]
 
@@ -362,6 +385,7 @@ Ask: "May I create the skeleton file at `design/ux/[filename].md`?" — except i
 > **Status**: In Design
 > **Author**: [user + ux-designer]
 > **Last Updated**: [today's date]
+> **Platform Targets**: [target platforms and input methods from 2h]
 > **Template**: HUD Design
 
 ---
@@ -390,25 +414,55 @@ Ask: "May I create the skeleton file at `design/ux/[filename].md`?" — except i
 
 ---
 
-## HUD Elements
+## HUD Element Specifications
 
 [To be designed]
 
 ---
 
-## Dynamic Behaviors
+## HUD States by Gameplay Context
 
 [To be designed]
 
 ---
 
-## Platform & Input Variants
+## Information Hierarchy
+
+[To be designed]
+
+---
+
+## Visual Budget
+
+[To be designed]
+
+---
+
+## Feedback & Notification Systems
+
+[To be designed]
+
+---
+
+## Platform Adaptation
 
 [To be designed]
 
 ---
 
 ## Accessibility
+
+[To be designed]
+
+---
+
+## Tuning Knobs
+
+[To be designed]
+
+---
+
+## Acceptance Criteria
 
 [To be designed]
 
@@ -667,8 +721,9 @@ Update `production/session-state/active.md` with:
 Before presenting options, state clearly:
 
 > "This spec should be validated with `/ux-review` before it enters the
-> implementation pipeline. The Pre-Production gate requires all key screen specs
-> to have a review verdict."
+> implementation pipeline. The Production gate (`/gate-check production`)
+> requires all key screen specs to have passed `/ux-review` at `workflow: full`
+> (recommended at `standard`)."
 
 Then use `AskUserQuestion`:
 - "Run `/ux-review [filename]` now, or do something else first?"
@@ -679,7 +734,7 @@ Then use `AskUserQuestion`:
     - "Stop here for this session"
 
 If the user picks "Design another screen first", add a note: "Reminder: run
-`/ux-review` on all completed specs before running `/gate-check pre-production`."
+`/ux-review` on all completed specs before running `/gate-check production`."
 
 ### 6c: Cross-Link Related Specs
 
@@ -714,7 +769,7 @@ specific sub-topics, additional context or coordination may be needed:
 | Implementation feasibility (engine constraints) | `ui-programmer` — before finalizing component inventory |
 | Gameplay data requirements | `game-designer` — when data ownership is unclear |
 | Narrative/lore visible in the UI | `narrative-director` — for flavor text, item names, lore panels |
-| Accessibility tier decisions | Handled by this session — owned by ux-designer |
+| Accessibility tier decisions | Recorded by this session (`/ux-design accessibility`; the user picks the tier) against the criteria `accessibility-specialist` defines and audits — consult it when a requirement's criterion is unclear |
 
 When delegating to another agent via the `Agent` tool:
 - Provide: screen name, game concept summary, the specific question needing expert input
@@ -764,4 +819,4 @@ Verdict: **COMPLETE** — UX spec written and approved section by section.
 
 - Run `/ux-review [filename]` to validate this spec before it enters the implementation pipeline
 - Run `/ux-design [next-screen]` to continue designing remaining screens or flows
-- Run `/gate-check pre-production` once all key screens have approved UX specs
+- Run `/gate-check production` once all key screens have approved UX specs

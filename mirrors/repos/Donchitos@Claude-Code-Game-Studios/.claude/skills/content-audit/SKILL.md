@@ -37,7 +37,8 @@ Parse the argument:
 
 **`workflow`** (see `.claude/docs/workflow-modes.md`):
 - `full` — full content-count audit against all GDD specs.
-- `standard` — audit only specs in the required sections.
+- `standard` — audit only specs in the required sections; list any count found
+  outside them as not audited at this tier.
 - `minimal` — cannot run (no systems index exists).
 
 ## Insufficient input — check this before producing any report
@@ -54,7 +55,7 @@ not a filled-in report.** Check first, and stop if the check fails.
    reads the template next.
 4. If **every** required input is ABSENT, stop and report
    **`NOT ASSESSED — NO DATA`** as the whole verdict, naming what was missing and
-   which skill produces it.
+   which skill produces it (`/map-systems` for `design/gdd/systems-index.md`, `/design-system` for the GDDs).
 
 **A verdict of `NOT ASSESSED` is a success.** It is the correct, useful answer to
 "what does the data say?" when there is no data. The failure mode this prevents is
@@ -102,13 +103,10 @@ the two happened — a reader cannot tell from a green result.
    Grep pattern="[0-9]+[[:space:]]+(enemies|enemy types|levels|areas|maps|stages|items|weapons|equipment|abilities|skills|spells|cutscenes|conversations|dialogue scenes|bosses|quests)|(enemy|item|weapon|ability|level) types:" glob="design/gdd/*.md" output_mode="files_with_matches"
    ```
 
-   > **These were one grep, and it narrowed nothing.** The old pattern was
-   > `(## Summary|N enemies|N levels|N items|N abilities|enemy types|item types)`.
-   > `N enemies` and friends are un-substituted placeholders copied from the
-   > template — no real GDD contains the literal letter `N` as a count — while
-   > `## Summary` matches every compliant GDD. So the union returned *all* GDDs
-   > and step 3's whole purpose (read-avoidance) saved zero tokens. Pattern (b)
-   > matches digits followed by the content nouns step 5 actually extracts.
+   > **Keep the two scans separate.** `## Summary` matches every compliant GDD,
+   > so a union with it narrows nothing, and a literal placeholder such as
+   > `N enemies` matches no real GDD. Pattern (b) matches digits followed by the
+   > content nouns step 5 actually extracts.
 
    **Fail open on a missing Summary.** Establish the denominator: glob
    `design/gdd/*.md` and count **N**. **Scan (a)** matching fewer than N means
@@ -117,15 +115,18 @@ the two happened — a reader cannot tell from a green result.
    auditable content". Full-read the unmatched in-scope GDDs.
 
    For a single-system audit: skip this step and go straight to full-read.
-   For a full audit: full-read only the GDDs that **scan (b)** matched
-   **and are not already fully covered by the registry entries from step 2**.
-   GDDs with no content-count language (pure mechanics GDDs) are noted as
-   "No auditable content counts" without a full read.
+   For a full audit: full-read the GDDs that **scan (b)** matched
+   **and are not already fully covered by the registry entries from step 2**,
+   plus every GDD scan (a) missed — **the fail-open rule wins over this
+   narrowing**: a GDD with no `## Summary` is full-read even when scan (b) did
+   not match it. Only a GDD that has a Summary and no content-count language (a
+   pure mechanics GDD) is noted as "No auditable content counts" without a full
+   read.
 
 4. **Full-read in-scope GDD files** (or the single system GDD if a system
    name was given).
 
-5. **For each GDD, extract explicit content counts or lists.** Look for patterns
+5. **For each GDD, extract explicit content counts or lists**, noting the `##` section each sits under — at `standard`, a count outside the required sections (`.claude/docs/workflow-modes.md`) goes on the "Not audited at this tier" list, never into the inventory. Look for patterns
    like:
    - "N enemies" / "enemy types:" / list of named enemies
    - "N levels" / "N areas" / "N maps" / "N stages"
@@ -150,9 +151,23 @@ the two happened — a reader cannot tell from a green result.
 For each content type found in Phase 1, scan the relevant directories to count
 what has been implemented. Use Glob and Grep to locate files.
 
+**On Unreal, content lives in `Content/`** — maps and data assets both — and the
+code root (`Source/<Module>/`) holds only C++. So on Unreal, every `assets/…` glob
+below also runs under `Content/` (`*.uasset` in place of the data extensions),
+and levels are `Content/**/*.umap`. Skipping this finds zero levels on every
+Unreal project and reports them NOT STARTED.
+
+**On Unity, content lives under `Assets/`** (compare the case exactly —
+`.claude/docs/code-root-resolution.md`), and rarely in a `data/` folder. So on
+Unity every `assets/…` glob below also runs under `Assets/`, without requiring
+a `data/` segment — for items, `Assets/**/items/**`, `Assets/**/Items/**` and
+`Assets/**/*Item*.asset` — and data files include `.asset` (ScriptableObjects)
+and `.prefab`. Skipping this finds zero items, abilities, quests and dialogue
+on a Unity project and reports them NOT STARTED.
+
 **Levels / Areas / Maps:**
 - Glob `assets/**/*.tscn`, `assets/**/*.unity`, `assets/**/*.umap`
-- Glob the **code root** for scene files: `*.tscn` (Godot), `*.unity` (Unity), `*.umap` (Unreal). Resolve the root per `.claude/docs/code-root-resolution.md`. **If the code root is unresolved, report `NOT ASSESSED — code root unresolved` rather than zero hits.**
+- Glob the **code root** for scene files: `*.tscn` (Godot), `*.unity` (Unity); on Unreal, `Content/**/*.umap` instead (above). Resolve the root per `.claude/docs/code-root-resolution.md`. **If the code root is unresolved, report `NOT ASSESSED — code root unresolved` rather than zero hits.**
 - Look for scene files in subdirectories named `levels/`, `areas/`, `maps/`,
   `worlds/`, `stages/`
 - Count unique files that appear to be level/scene definitions (not UI scenes)
@@ -215,6 +230,9 @@ Flag a system as `HIGH PRIORITY` in the report if:
 - Total content items found (sum of all Found column values)
 - Overall gap percentage: `(Specified - Found) / Specified * 100`
 
+A row whose Found is `NOT ASSESSED` (code root unresolved) has no Gap or
+Status, is never `NOT STARTED`, and stays out of both totals; the summary names it.
+
 ---
 
 ## Phase 4 — Output
@@ -232,7 +250,8 @@ If yes, write the file:
 - **Total specified**: [N] content items across [M] systems
 - **Total found**: [N]
 - **Gap**: [N] items ([X%] unimplemented)
-- **Scope**: [Full audit | System: name]
+- **Scope**: [Full audit | System: name] — [all GDD sections | required sections only (workflow: standard)]
+- **Not audited at this tier**: [counts found only outside the required sections — or "none"; omit at `full`]
 
 > Note: Counts are approximations based on file scanning.
 > The audit cannot distinguish shipped content from editor/test assets.
@@ -289,7 +308,13 @@ After the audit, recommend the highest-value follow-up actions:
 - If any system is `NOT STARTED` and MVP-tagged → "Run `/design-system [name]` to
   add missing content counts to the GDD before implementation begins."
 - If total gap is >50% → "Run `/sprint-plan` to allocate content work across upcoming sprints."
-- If backlog stories are needed → "Run `/create-stories [epic-slug]` for each HIGH PRIORITY gap."
+- If any system is flagged HIGH PRIORITY → "Run `/create-stories [epic-slug]` for each HIGH PRIORITY gap."
 - If `--summary` was used → "Run `/content-audit` (no flag) to write the full report to `docs/`."
 
-Verdict: **COMPLETE** — content audit finished.
+Close with the verdict that matches the run:
+- Verdict: **COMPLETE** — content audit finished.
+- Verdict: **NOT ASSESSED — NO DATA** — a required input was absent (see the note at
+  the top), nothing in scope gives a count (no registry entry, and every GDD is
+  "Unspecified" or "No auditable content counts"), or a Found count could not be taken
+  (`NOT ASSESSED — code root unresolved`); name which, and for missing counts
+  name `/design-system`. Never print COMPLETE for a run that could not compute a gap.

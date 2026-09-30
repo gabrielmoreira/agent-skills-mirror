@@ -37,7 +37,7 @@ export function BackgroundControls({ slide, theme, onChange }: Props) {
           if (nextMode === "custom") onChange({ inverted: false, backgroundColor: customColor });
         }}
       >
-        <SelectTrigger><SelectValue /></SelectTrigger>
+        <SelectTrigger aria-label="Background"><SelectValue /></SelectTrigger>
         <SelectContent>
           <SelectItem value="theme">Theme background</SelectItem>
           <SelectItem value="alternate">Theme alternate</SelectItem>

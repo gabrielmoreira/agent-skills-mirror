@@ -1,6 +1,6 @@
 ---
 name: book-to-skill
-description: "Converts books and documents (PDF, EPUB, DOCX, HTML, Markdown, plain text, RTF, MOBI/AZW with Calibre) into structured agent skills, extracting frameworks, mental models, principles, techniques, and anti-patterns. Use when the user wants to study a document through GitHub Copilot CLI, Amp, Claude Code, Hermes Agent, or OpenClaw, apply an author's frameworks while working, or build a reusable knowledge base from a file."
+description: "Converts books and documents (PDF, EPUB, DOCX, HTML, Markdown, plain text, RTF, MOBI/AZW with Calibre) into structured agent skills, extracting frameworks, mental models, principles, techniques, and anti-patterns. Use when the user wants to study a document through GitHub Copilot CLI, Amp, Claude Code, Hermes Agent, OpenCode, or OpenClaw, apply an author's frameworks while working, or build a reusable knowledge base from a file."
 ---
 
 <!--
@@ -11,6 +11,8 @@ Cross-agent notes (informational; ignored by host agents):
     Hermes Agent ($HERMES_HOME/skills, .hermes/skills, .agents/skills),
     OpenClaw (${OPENCLAW_STATE_DIR:-~/.openclaw}/skills, .agents/skills, skills/;
     ~/.agents/skills only with the default state).
+    OpenCode (~/.config/opencode/skills, ~/.claude/skills, .opencode/skills,
+    ~/.agents/skills, .agents/skills).
   - `allowed-tools` is intentionally omitted to stay agent-neutral: Copilot CLI uses
     `shell`/MCP-server names, Claude uses `Bash`/`Read`/`Write`/`Glob`/`Grep`, Amp
     adds `shell_command`. The skill needs shell (to run extract.py) and file
@@ -24,8 +26,7 @@ Transform written knowledge into actionable agent skills by extracting structure
 
 ## Philosophy
 
-Books contain crystallized expertise: frameworks, principles, and techniques that took years to develop. This skill extracts that knowledge into a format GitHub Copilot CLI, Amp, Claude Code, Hermes Agent, OpenClaw, or another compatible agent can leverage repeatedly.
-
+Books contain crystallized expertise: frameworks, principles, and techniques that took years to develop. This skill extracts that knowledge into a format GitHub Copilot CLI, Amp, Claude Code, Hermes Agent, OpenCode, OpenClaw, or another compatible agent can leverage repeatedly.
 **Extract structure, not summaries.** A skill isn't a book report. It's a toolkit of:
 - Named frameworks (mental models with clear application)
 - Actionable principles (rules that guide decisions)
@@ -81,6 +82,8 @@ This converter can run from multiple skill systems. When looking for this conver
 10. Hermes Agent project skills: `.hermes/skills/` or `.agents/skills/`
 11. OpenClaw personal skills: `${OPENCLAW_STATE_DIR:-~/.openclaw}/skills/` (active state; `~/.agents/skills/` is shared only with the default state)
 12. OpenClaw project skills: `.agents/skills/` or `skills/`
+11. OpenCode personal skills: `~/.config/opencode/skills/` or `~/.agents/skills/`
+12. OpenCode project skills: `.opencode/skills/` or `.agents/skills/`
 
 For **generated** book skills, prefer the user-level cross-agent root `~/.agents/skills/` — one physical copy serves the cross-agent hosts and OpenClaw when it uses its default state. Copilot CLI and Amp discover it natively; Claude Code needs a symlink from `~/.claude/skills/<skill_name>` (created in Step 10, see Step 5 for the rules). Pick a host-private or project-local root only when the user explicitly asks for one. `BOOK_TO_SKILL_SCOPE=project` or `personal` can make that choice explicit for automation; do not ask a mandatory scope question merely because both scopes are available.
 
@@ -92,10 +95,12 @@ If no arguments are provided, stop and respond:
 > "book-to-skill requires a supported document path, folder, or glob pattern. Usage: `book-to-skill <path-to-document-folder-or-glob>... [skill-name-slug]`"
 
 Throughout the workflow:
+- **Resolve the destination root first.** Before any existing-skill lookup, determine where this run would write: the personal or project-local root for the user's host, per the Step 5 table and selection rules — a project-local request uses its project-local root, never the personal root. Below, "the resolved root" means that destination.
 - Identify the input paths and the optional skill slug.
 - If the last argument is not a file, folder, or glob that exists or matches any files, and it looks like a skill slug (e.g. lowercase hyphens, alphanumeric), treat it as `SKILL_NAME`.
 - Treat all other arguments as the list of `INPUT_PATHS`.
-- If any input path is an existing skill directory (contains `SKILL.md` and a `chapters/` sub-folder), or if `SKILL_NAME` matches an existing skill slug in `SKILLS_HOME`, flag this run as an **Update/Fold-in** operation (Mode 4).
+- If any input path is an existing skill directory (contains `SKILL.md` and a `chapters/` sub-folder), or if `SKILL_NAME` matches an existing skill slug in the resolved root, flag this run as an **Update/Fold-in** operation (Mode 4).
+- **Re-run guard.** Before starting extraction for a Full Conversion, derive the prospective skill slug under Step 5's naming options — the author-concept form, the by-title form, and any `SKILL_NAME` given — and check the resolved root for an existing match. On a match, STOP and ask the user: "`<skill-name>` already exists. Choose: (1) Update/Fold-in (Mode 4), (2) verify the existing skill is complete and stop, or (3) force full regeneration." Do not re-extract until the user chooses. On context recovery after an interrupted run (network cut-off, replayed or continued conversation), reuse the extraction work directory that run reported (`Workdir ->` in its output, or the path you set in `BOOK_SKILL_WORKDIR`) **only if it is still intact and still matches the current inputs and options** — the directory exists, its `metadata.json` is readable, the `sources` it lists match the files being converted now one-to-one on filename **and content fingerprint** (the extractor records a per-source `sha256` in `metadata.json`; recompute the fingerprint from each file as it exists now and require an exact match — `reuse_is_safe()` in `book_to_skill/utils.py` is the executable form of this check), and its recorded `extraction_mode` is the mode this run is using (Step 2's "confirm the extraction is the document you asked for" rule). If it is missing (temp cleanup), its `metadata.json` is gone, the sources no longer match (a different filename, or a changed content fingerprint), the recorded metadata has no `sha256` for a source (recorded before fingerprints existed, so freshness cannot be established), or the mode differs, say so and start a fresh extraction instead of resuming. When in doubt, ask the user before discarding or resuming.
 
 ---
 
@@ -160,10 +165,24 @@ CANDIDATES=(
   "${OPENCLAW_STATE_DIR_RESOLVED}/skills"/*/*/*/*/book-to-skill/scripts/extract.py
   "${OPENCLAW_STATE_DIR_RESOLVED}/skills"/*/*/*/*/*/book-to-skill/scripts/extract.py
   "${OPENCLAW_STATE_DIR_RESOLVED}/skills"/*/*/*/*/*/*/book-to-skill/scripts/extract.py
+  "$HOME/.config/opencode/skills/book-to-skill/scripts/extract.py"
   "$HERMES_HOME_RESOLVED/skills/book-to-skill/scripts/extract.py"
   "$HERMES_HOME_RESOLVED"/skills/*/book-to-skill/scripts/extract.py
 )
 if [ "${HERMES_AGENT:-}" != true ]; then
+  # Project-local roots are resolved against the git worktree, not the current
+  # directory: an agent can be invoked from anywhere inside the project (e.g.
+  # `src/nested`) and these roots still have to be found — that is how OpenCode
+  # and the other hosts discover project skills. The CWD-relative forms are kept
+  # so the probe also works outside a git repository.
+  if [ -n "$PROJECT_ROOT" ]; then
+    CANDIDATES+=(
+      "$PROJECT_ROOT/.github/skills/book-to-skill/scripts/extract.py"
+      "$PROJECT_ROOT/.claude/skills/book-to-skill/scripts/extract.py"
+      "$PROJECT_ROOT/.agents/skills/book-to-skill/scripts/extract.py"
+      "$PROJECT_ROOT/.opencode/skills/book-to-skill/scripts/extract.py"
+    )
+  fi
   CANDIDATES+=(
     ".github/skills/book-to-skill/scripts/extract.py"
     ".claude/skills/book-to-skill/scripts/extract.py"
@@ -175,6 +194,7 @@ if [ "${HERMES_AGENT:-}" != true ]; then
     "skills"/*/*/*/*/book-to-skill/scripts/extract.py
     "skills"/*/*/*/*/*/book-to-skill/scripts/extract.py
     "skills"/*/*/*/*/*/*/book-to-skill/scripts/extract.py
+    ".opencode/skills/book-to-skill/scripts/extract.py"
   )
   if [ -n "$PROJECT_ROOT" ]; then
     CANDIDATES+=(
@@ -382,6 +402,11 @@ Choose the destination skill root (`SKILLS_HOME`). First resolve **scope** from 
 Hermes Agent is the one host that keeps its own personal root: it partitions personal skills by category and does not scan the cross-agent root. Use the active profile's `HERMES_HOME` and choose a category that matches the generated skill's subject. Do not construct profile paths manually. If the user selects a project-local Hermes root, run `hermes skills trust <project-root>` after generation and verify discovery with `hermes skills list`; project skills remain unavailable until the project is trusted.
 
 For OpenClaw, use the active state directory's `skills/` root: `${OPENCLAW_STATE_DIR:-~/.openclaw}/skills/`. The shared `~/.agents/skills` compatibility root is discoverable only when `OPENCLAW_STATE_DIR` is unset or the default `~/.openclaw`; with a non-default state, do not claim that OpenClaw will see a shared-root install. Verify discovery with `openclaw skills list` after generation.
+| **OpenCode** | `~/.agents/skills` (discovered natively; `~/.config/opencode/skills` and `~/.claude/skills` are read too) | `.opencode/skills` → `.agents/skills` → `.claude/skills` |
+
+Hermes Agent is the one host that keeps its own personal root: it partitions personal skills by category and does not scan the cross-agent root. Use the active profile's `HERMES_HOME` and choose a category that matches the generated skill's subject. Do not construct profile paths manually. If the user selects a project-local Hermes root, run `hermes skills trust <project-root>` after generation and verify discovery with `hermes skills list`; project skills remain unavailable until the project is trusted.
+
+OpenCode scans the cross-agent `~/.agents/skills` root natively, so the generated-skill default above already serves it — no symlink and no trust step. It also reads its own managed `~/.config/opencode/skills` root and the Claude compatibility root `~/.claude/skills`; use the OpenCode-managed root only when the user asks for it. Project skills are discovered by walking up from the working directory to the git worktree, so start a new session after generation if the skill does not appear. (`~/.cache/opencode/skills` is the remote-skill download cache from `skills.urls`, not an authoring root — never write a generated skill there.)
 
 Selection rules:
 1. Personal install: set `SKILLS_HOME` to `~/.agents/skills` (create the directory if missing). One exception, so the default does not invent a convention in someone else's house: if `~/.agents/skills` does not exist **and** the host's private root already contains skills, use the private root instead and say why in the report.
@@ -389,7 +414,7 @@ Selection rules:
 3. **Hermes Agent personal installs use the Hermes row above**, not the cross-agent root, and take no symlink.
 4. If the user explicitly asks for a host-private root (`~/.copilot/skills`, `~/.claude/skills`, `~/.config/agents/skills`, `~/.config/amp/skills`), honor it and skip the symlink.
 5. If the user explicitly asked for project-local output, use the project-local row for their host.
-6. If the choice requires knowing the host (project-local output, the Hermes personal root, the OpenClaw state root, or the Claude Code symlink) and you cannot identify it, ask: "Which agent are you running in — OpenClaw, Hermes Agent, GitHub Copilot CLI, Amp, Codex, or Claude Code?"
+6. If the choice requires knowing the host (project-local output, the Hermes personal root, the OpenClaw state root, or the Claude Code symlink) and you cannot identify it, ask: "Which agent are you running in — OpenCode, OpenClaw, Hermes Agent, GitHub Copilot CLI, Amp, Codex, or Claude Code?"
 7. For OpenClaw personal output, use `${OPENCLAW_STATE_DIR:-$HOME/.openclaw}/skills`. The shared `~/.agents/skills` root is a valid OpenClaw destination only when `OPENCLAW_STATE_DIR` is unset or equals the default `$HOME/.openclaw`; otherwise use the active state root or a project/extra directory.
 8. If the user explicitly asks for an OpenClaw-managed personal root, use the active state root and verify discovery with `openclaw skills list`.
 
@@ -718,6 +743,7 @@ Reload (if your agent doesn't auto-detect new skills):
   Amp:                 restart the session
   Hermes Agent:         start a new session
   OpenClaw:             openclaw skills list (new session if watcher disabled)
+  OpenCode:             start a new session
 
 Share this skill (optional):
   GitHub repo, installable on any host (Step 11):  say "publish"

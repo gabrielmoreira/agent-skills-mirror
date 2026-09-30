@@ -21,7 +21,7 @@ Data-migration helpers that import memory from other AI assistants' workspaces (
 | --- | --- |
 | `crates/openhuman-core/src/config/migration_helpers/mod.rs` | Export-only: declares `core`/`ops`/`schemas`, re-exports `core::*` and `ops::*`, aliases `ops as rpc`, and exports the `all_migration_controller_schemas` / `all_migration_registered_controllers` pair. |
 | `crates/openhuman-core/src/config/migration_helpers/core.rs` | Core logic. `MigrationStats`, `MigrationReport`, `SourceEntry`; `migrate_openclaw_memory` / `migrate_hermes_memory`; source readers (SQLite + Markdown), workspace resolution, key/category normalization, backup, conflict-rename helpers. Inline `#[cfg(test)]` unit tests. |
-| `crates/openhuman-core/src/config/migration_helpers/ops.rs` | JSON-RPC/CLI adapter (the canonical handler file, re-exported as `rpc`). `migrate_openclaw` / `migrate_hermes` wrap the core fns, map `anyhow::Error` → `String`, and return `RpcOutcome<MigrationReport>` with a `"migration completed"` log. Tests cover dry-run, apply, missing-source, and self-migration. |
+| `crates/openhuman-core/src/config/migration_helpers/ops.rs` | JSON-RPC/CLI adapter (the canonical handler file, re-exported as `rpc`). `migrate_openclaw` / `migrate_hermes` wrap the core fns, map `anyhow::Error` → `String`, and return `Outcome<MigrationReport>` with a `"migration completed"` log. Tests cover dry-run, apply, missing-source, and self-migration. |
 | `crates/openhuman-core/src/config/migration_helpers/schemas.rs` | Controller schemas + handlers. Defines `MigrateOpenClawParams` / `MigrateHermesParams`, `all_controller_schemas`, `all_registered_controllers`, `schemas(function)`, and `handle_migrate_openclaw` / `handle_migrate_hermes` which load config and delegate to `migration_helpers::rpc::*`. |
 
 ## Public surface
@@ -30,7 +30,7 @@ From `mod.rs` re-exports (`core::*` + `ops::*`):
 
 - Types: `MigrationReport`, `MigrationStats`.
 - Core fns: `migrate_openclaw_memory(config, source_workspace, dry_run) -> Result<MigrationReport>`, `migrate_hermes_memory(...)`.
-- RPC fns (via `ops` / alias `rpc`): `migrate_openclaw(...) -> Result<RpcOutcome<MigrationReport>, String>`, `migrate_hermes(...)`.
+- RPC fns (via `ops` / alias `rpc`): `migrate_openclaw(...) -> Result<Outcome<MigrationReport>, String>`, `migrate_hermes(...)`.
 - Controller registry exports: `all_migration_controller_schemas`, `all_migration_registered_controllers`.
 
 (`SourceEntry` and the internal helpers in `core.rs` are private.)
@@ -64,7 +64,7 @@ No own store. It writes imported entries through the **target memory backend** o
 - `crate::memory` (`Memory`, `MemoryCategory`): target backend trait plus the category enum entries are mapped into.
 - `crate::memory::store`: `create_memory_for_migration` constructs the target memory backend.
 - `crate::core::all` (`ControllerFuture`, `RegisteredController`) and `crate::core::{ControllerSchema, FieldSchema, TypeSchema}`: controller registry/schema types.
-- `crate::rpc::RpcOutcome`: RPC response envelope.
+- `crate::core::Outcome`: RPC response envelope.
 - External crates: `rusqlite` (read OpenClaw `brain.db`), `directories::UserDirs` (home dir), `anyhow`, `serde`/`serde_json`.
 
 ## Used by

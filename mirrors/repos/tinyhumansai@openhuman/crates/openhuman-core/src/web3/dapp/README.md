@@ -9,21 +9,20 @@ confirm-then-execute flow.
 
 ## What it does
 
-`prepare_dapp_call` (in the shared `super::ops`) validates the contract
+`Web3Service::prepare_dapp_call` (in the vendored `tinywallet-web3` crate) validates the contract
 address and calldata (must be `0x`-prefixed, even-length hex), confirms the
 wallet has an EVM account on the requested network, and stores an
 `UnsignedTx::Evm` quote. This module owns the RPC controllers (`schemas.rs`)
-and agent tools (`tools.rs`) for the `web3_dapp` namespace; the validation and
-storage logic lives in `super::ops` and `super::store`, shared with `swap` and
-`bridge`.
+for the `web3_dapp` namespace; the validation and storage logic lives in the
+crate's `crypto::service`, shared with `swap` and `bridge`, and the agent tools
+in `tinywallet_web3::tools::web3`.
 
 ## Key files
 
 | File | Role |
 | --- | --- |
-| `mod.rs` | Re-exports `Web3DappCallTool`, `Web3DappExecuteTool` from `tools.rs`. |
-| `schemas.rs` | `web3_dapp` RPC controller schemas and handlers: `call`, `execute`. Handlers deserialize params and delegate to `super::super::ops::prepare_dapp_call` / `super::super::store::execute_quote`. |
-| `tools.rs` | The two agent tools: `Web3DappCallTool` (`web3_dapp_call`), `Web3DappExecuteTool` (`web3_dapp_execute`). Delegate to the same `ops`/`store` functions as the RPC handlers. |
+| `mod.rs` | Module docs. |
+| `schemas.rs` | `web3_dapp` RPC controller schemas and handlers: `call`, `execute`. Handlers deserialize params and delegate to the process-wide `Web3Service` (`prepare_dapp_call` / `execute_quote`), wrapping the result in `Outcome`. |
 
 ## RPC / controllers
 

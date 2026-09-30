@@ -157,7 +157,7 @@ const templateState =
 const existingState = readJson(PROJECT_FILE) || {};
 const hasExplicitConnectedCanvas = typeof existingState.connectedCanvas === "boolean";
 const existingDecks =
-  existingState.slidesByDevice && typeof existingState.slidesByDevice === "object"
+  existingState.slidesByDevice && typeof existingState.slidesByDevice === "object" && !Array.isArray(existingState.slidesByDevice)
     ? existingState.slidesByDevice
     : {};
 const hasExistingDecks = Object.keys(existingDecks).length > 0;
@@ -181,7 +181,9 @@ if (legacySlides && !hasExistingDecks) {
 
 function localized(value) {
   if (typeof value === "string") return { [DEFAULT_LOCALE]: value };
-  if (value && typeof value === "object") return value;
+  if (value && typeof value === "object" && !Array.isArray(value)) {
+    return Object.fromEntries(Object.entries(value).filter(([, text]) => typeof text === "string"));
+  }
   return {};
 }
 
@@ -217,20 +219,34 @@ function migrateSlide(slide, used) {
   const rawTransforms = slide.transforms && typeof slide.transforms === "object" ? slide.transforms : {};
   for (const [id, transform] of Object.entries(rawTransforms)) {
     const cleaned = cleanTransform(transform);
-    if (cleaned) transforms[id] = cleaned;
+    if (["caption", "device", "deviceSecondary"].includes(id) && cleaned) transforms[id] = cleaned;
   }
+  const textIds = new Set();
   const textElements = Array.isArray(slide.textElements)
     ? slide.textElements
         .map((element) => {
+          if (!element || typeof element !== "object" || Array.isArray(element)) return null;
           const transform = cleanTransform(element.transform);
-          if (!element || typeof element.id !== "string" || !transform) return null;
+          if (!transform) return null;
           return {
             ...element,
+            id: uniqueId(element.id, textIds),
             text: localized(element.text),
             transform,
+            fontSize: Number.isFinite(element.fontSize) && element.fontSize > 0 ? element.fontSize : undefined,
+            fontWeight: Number.isFinite(element.fontWeight) && element.fontWeight > 0 ? element.fontWeight : undefined,
           };
         })
         .filter(Boolean)
+    : undefined;
+
+  const imageIds = new Set();
+  const imageElements = Array.isArray(slide.imageElements)
+    ? slide.imageElements.map((element) => {
+        if (!element || typeof element !== "object" || Array.isArray(element) || typeof element.src !== "string") return null;
+        const transform = cleanTransform(element.transform);
+        return transform ? { ...element, id: uniqueId(element.id, imageIds), transform } : null;
+      }).filter(Boolean)
     : undefined;
 
   return {
@@ -241,8 +257,10 @@ function migrateSlide(slide, used) {
     headline: localized(slide.headline || slide.title || slide.caption || slide.copy),
     screenshot: firstString(slide.screenshot, slide.image, slide.src, slide.path),
     screenshotSecondary: typeof slide.screenshotSecondary === "string" ? slide.screenshotSecondary : undefined,
+    inverted: typeof slide.inverted === "boolean" ? slide.inverted : undefined,
     ...(Object.keys(transforms).length ? { transforms } : { transforms: undefined }),
     ...(textElements && textElements.length ? { textElements } : { textElements: undefined }),
+    ...(imageElements && imageElements.length ? { imageElements } : { imageElements: undefined }),
   };
 }
 
@@ -709,6 +727,7 @@ The current template writes `schemaVersion: 2`. Existing projects made by earlie
 4. Keeps pre-v2 decks in isolated-screen mode by setting `connectedCanvas: false`, so already-clipped phones or captions do not suddenly appear in neighboring exports.
 5. Lets the user opt into connected crops with the toolbar's Connected/Isolated control when they are ready to use cross-screen placement.
 6. Saves the upgraded state back to `app-store-screenshots.json` and `localStorage` only after the file endpoint has loaded successfully, so stale browser cache cannot overwrite the canonical project file during dev-server restarts.
+7. Detects newer disk revisions before autosaving. If another tab or an agent edits the project, keep unsaved work open and export or copy it before reloading; do not force a stale save over the newer file.
 
 There are two migration modes:
 

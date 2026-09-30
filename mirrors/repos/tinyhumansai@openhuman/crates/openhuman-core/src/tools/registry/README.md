@@ -41,7 +41,7 @@ Namespace `tool_registry`, registered via `all_tool_registry_registered_controll
 | `tool_registry.get` (`openhuman.tool_registry_get`) | `tool_id` (required string) | `tool`: one registry entry |
 | `tool_registry.diagnostics` (`openhuman.tool_registry_diagnostics`) | none | `diagnostics`: redacted counts/posture/allowlists/denials/providers |
 
-All handlers return `RpcOutcome<T>` serialized via `into_cli_compatible_json()`.
+All handlers return `Outcome<T>` serialized via `into_cli_compatible_json()`.
 
 ## Persistence
 
@@ -55,7 +55,7 @@ No owned persistence. `diagnostics()` reads the MCP write-audit log through `cra
 - `crate::mcp::server` (`McpToolSpec`, `tool_specs()`): MCP stdio tool source for registry entries.
 - `crate::mcp::registry::connections` (`all_connected_tools()` / `all_connected_tools_for_config()`, defined inside `mcp/registry/mod.rs`; empty-returning stubs in `mcp/registry/stub.rs` when the `mcp` feature is disabled): live MCP client server tools, fetched via `block_in_place` only on the multi-thread runtime.
 - `crate::mcp::audit` (`list_writes`, `McpWriteListQuery`; stubbed under `mcp/audit/stub.rs` without the `mcp` feature): write-audit health.
-- `crate::rpc::RpcOutcome`: RPC result envelope.
+- `crate::core::Outcome`: RPC result envelope.
 
 ## Used by
 

@@ -128,7 +128,7 @@ method constants, request/response types, and its contract version:
 | `tinyvoice-bus` | `voice` |
 | `tinyjuice-bus` | inference kernel |
 | `tinyruntime-bus` | runtime clients |
-| `tinywallet-bus` | `web3` |
+| `tinywallet-bus` | `web3` (contract; the chain primitives are in `tinywallet-crypto`) |
 | `tinymcp-bus` | `mcp` |
 | `tinysearch-bus` | search provider declarations and bus payloads |
 | `tinychannels-bus` | channel vocabulary |

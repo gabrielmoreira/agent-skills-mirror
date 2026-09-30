@@ -7,7 +7,7 @@ its own name and as `rpc` (`pub use ops as rpc`), so most callers write
 functions here: they deserialize RPC params into `../schemas/helpers.rs`
 `*SettingsUpdate` structs, map those field-by-field onto the `*SettingsPatch`
 structs defined here, and call the corresponding `load_and_apply_*` / `get_*`
-fn, which returns `RpcOutcome<T>`.
+fn, which returns `Outcome<T>`.
 
 ## Layout
 
@@ -26,7 +26,7 @@ Each submodule follows the same shape: a `*SettingsPatch` struct with
 that mutates the given config, calls `Config::save()`, and returns the
 settings or snapshot; a `load_and_apply_*(patch)` wrapper that calls
 `load_config_with_timeout` first; and a `get_*` fn that reads the relevant
-section back out, usually as `RpcOutcome<serde_json::Value>`. `ui.rs`'s
+section back out, usually as `Outcome<serde_json::Value>`. `ui.rs`'s
 dictation and voice-server mutators exist only in `load_and_apply_*` form.
 
 ## Key entry points

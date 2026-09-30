@@ -21,9 +21,10 @@ Do not guess at post-cutoff API signatures — look them up first.
 ## File Routing
 
 Match the engine-specialist agent to the file type being written.
-See `CLAUDE.md` → Technical Preferences → Engine Specialists → File Extension Routing.
+`/setup-engine` records which specialist handles code, shaders and UI in the
+`specialists` block of `project.yaml`.
 
-When in doubt, use the primary engine specialist configured in `CLAUDE.md`.
+When in doubt, use `specialists.code` from `project.yaml`.
 
 ## Tests
 

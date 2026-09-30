@@ -82,7 +82,7 @@ more. That all lives in `tinymcp` now. Read
 host service; it never fails (MCP being unavailable must not stop the core
 coming up). `mcp::start_boot_jobs(config)` additionally spawns the
 installed-server boot pass and the reconnect supervisor. Both are called from
-`core/jsonrpc.rs` (`start` on the RPC-enable path) and
+`core/runtime/subscribers.rs` (`start` on the RPC-enable path) and
 `core/runtime/services.rs` (`start_boot_jobs` on the boot path); each is
 idempotent so the two callers can't double-register or double-spawn.
 

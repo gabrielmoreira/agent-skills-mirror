@@ -66,7 +66,9 @@ Read:
   key absent or empty (including when `project.yaml` has no `performance` or
   `engine` block), fall back to `.claude/docs/technical-preferences.md`
 - `design/gdd/game-concept.md` — intended session length (for comparison against
-  soak duration), core loop description
+  soak duration), core loop description (or `design/game-brief.md`, the one-page
+  brief that replaces it at `rigor: minimal` — core loop, and session length only
+  if its "Who it's for" line states one)
 - Most recent file in `production/qa/playtests/` — prior playtest findings
   (to avoid re-documenting known issues)
 - Most recent file in `production/qa/qa-plan-*.md` — current sprint test coverage
@@ -112,6 +114,13 @@ Engine-specific monitoring guidance.
 > detector is off by 1024× in the one measurement the protocol exists to take,
 > and it would read as a plausible instruction throughout. Deltas need no such
 > claim, so the safest fix was to stop needing it.
+
+> **NOT SOURCEABLE — the tool, panel and counter names below are not covered by
+> `docs/engine-reference/`**: Godot's Debugger → Monitors and its memory
+> counters, Unity's Memory Profiler and its fields, Unreal's `stat memory`. Mark
+> them so in the protocol: they are pointers for the tester to confirm in their
+> own editor at T+0, not verified paths. If no memory tool can be found, nothing
+> was measured, and the Verdict section's NOT ASSESSED applies.
 
 **Godot 4:**
 - Open Debugger → Monitors tab; track `Memory → Static Memory` and
@@ -181,6 +190,8 @@ Before starting the soak:
   - **Godot**: Debugger → Monitors tab → Memory section visible
   - **Unity**: Memory Profiler window open
   - **Unreal**: `stat memory` ready in console
+  - Tool actually used, as named in this editor: [record it — the names above
+    are NOT SOURCEABLE from `docs/engine-reference/`; none found → NOT ASSESSED]
 - [ ] Soak target confirmed: [session design intent from game concept]
 - [ ] Prior known issues to watch for: [from most recent playtest / qa-plan]
 

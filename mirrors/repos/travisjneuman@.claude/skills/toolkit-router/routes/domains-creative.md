@@ -1,0 +1,48 @@
+# Creative Domain Reference
+
+Load this file when creative/design keywords detected.
+
+## Domain Detection Keywords
+
+| Domain           | Keywords                                                                   |
+| ---------------- | -------------------------------------------------------------------------- |
+| `graphic-design` | design, visual, color, typography, layout, logo, illustration, graphic     |
+| `video`          | video, edit, premiere, final cut, youtube, recording, footage, film        |
+| `audio`          | audio, podcast, music, sound, mixing, mastering, recording, voice          |
+| `brand`          | brand, identity, positioning, guidelines, brand voice, visual identity     |
+| `motion`         | animation, motion, micro-interaction, easing, transition, lottie, keyframe |
+| `ui`             | ui, user interface, component, layout, design system, wireframe            |
+| `writing`        | writing, copywriting, content, blog, article, copy, technical writing, prose, slop, natural writing, human-like |
+| `documents`      | document, pdf, spreadsheet, presentation, pptx, xlsx, docx                 |
+
+## Resource Mapping
+
+| Domain           | Skill                                             | Agent              |
+| ---------------- | ------------------------------------------------- | ------------------ |
+| `graphic-design` | `Skill(graphic-design)`                           | `graphic-designer` |
+| `video`          | `Skill(video-production)`                         | `video-producer`   |
+| `audio`          | `Skill(audio-production)`                         | `audio-engineer`   |
+| `brand`          | `Skill(brand-identity)`                           | `brand-strategist` |
+| `motion`         | `Skill(ui-animation)`                             | `motion-designer`  |
+| `ui`             | `Skill(ui-research)` + `Skill(frontend-enhancer)` | -                  |
+| `writing`        | `Skill(doc-coauthoring)`                          | -                  |
+| `documents`      | `Skill(pdf)` / `Skill(docx)` / `Skill(xlsx)`      | -                  |
+
+## UI Work Prerequisites
+
+**IMPORTANT**: For any UI work, ALWAYS invoke `Skill(ui-research)` FIRST before `frontend-enhancer`.
+
+## Marketplace Resources for Creative Work
+
+| Domain           | Marketplace Repos                      | Notes                                    |
+| ---------------- | -------------------------------------- | ---------------------------------------- |
+| Writing quality  | hardikpandya-stop-slop (1)             | AI prose cleanup, banned phrases (1.4K stars) |
+| Design language  | pbakaus-impeccable                     | AI design language (10K+ stars)          |
+| General creative | davila7-templates, athola-night-market | Templates and patterns                   |
+
+## Creative Process Notes
+
+- Research inspiration before designing
+- Reference existing brand guidelines if available
+- Consider accessibility in all visual work
+- Check worldbuilding-skills for narrative/creative writing tasks

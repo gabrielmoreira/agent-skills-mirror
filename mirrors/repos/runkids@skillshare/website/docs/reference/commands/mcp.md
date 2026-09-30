@@ -640,8 +640,10 @@ and writes no files until you choose for that entry:
   files, ownership records and backups use private permissions.
 - An entry that already matches the source is reported as unchanged without a
   write, for example after pulling a teammate's change. If this configuration
-  did not manage it before, such as after moving a project, it stays unmanaged:
-  removing the server leaves it in place until you import it. A different
+  did not manage it before, such as when you tick an Agent after importing from
+  it, the plan shows `adopt`: sync records the entry as managed without changing
+  the file, and from then on removing the server or unticking that Agent removes
+  it. A server you turned off in the Agent itself stays yours. A different
   unmanaged entry requires import or an explicit per-entry replacement; another
   Skillshare configuration's ownership cannot be overridden while that
   configuration file still exists. If that file is gone it can never release the

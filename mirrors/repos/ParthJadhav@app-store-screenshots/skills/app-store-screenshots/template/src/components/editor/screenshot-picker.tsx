@@ -13,6 +13,7 @@ type Props = {
 };
 
 const ACCEPTED = ["image/png", "image/jpeg"];
+class UploadRejectedError extends Error {}
 
 async function fileToDataUrl(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -29,11 +30,17 @@ async function uploadDataUrl(dataUrl: string): Promise<string | null> {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({ dataUrl }),
+      signal: AbortSignal.timeout(15000),
     });
+    if (resp.status >= 400 && resp.status < 500 && resp.status !== 404) {
+      const error = await resp.json().catch(() => ({}));
+      throw new UploadRejectedError(error.error || "Image upload was rejected");
+    }
     if (!resp.ok) return null;
     const json = (await resp.json()) as { ok: boolean; path?: string };
     return json.ok && json.path ? json.path : null;
-  } catch {
+  } catch (error) {
+    if (error instanceof UploadRejectedError) throw error;
     return null;
   }
 }
@@ -70,11 +77,29 @@ export function ScreenshotPicker({ label, value, locale, onChange }: Props) {
       return;
     }
     if (request !== requestId.current) return;
+    try {
+      const image = new Image();
+      image.src = dataUrl;
+      await image.decode();
+      if (image.naturalWidth * image.naturalHeight > 64 * 1024 * 1024) throw new Error("too large");
+    } catch {
+      if (request === requestId.current) setError("Image is corrupt or exceeds 64 megapixels");
+      return;
+    }
+    if (request !== requestId.current) return;
     // Try to persist to disk so the screenshot survives a git clone.
     // If the upload endpoint is unreachable (e.g. static export), fall back
     // to the inline data URI — still works in the current session.
     setUploading(true);
-    const uploadedPath = await uploadDataUrl(dataUrl);
+    let uploadedPath: string | null;
+    try { uploadedPath = await uploadDataUrl(dataUrl); }
+    catch (error) {
+      if (request === requestId.current) {
+        setUploading(false);
+        setError(error instanceof Error ? error.message : "Image upload failed");
+      }
+      return;
+    }
     if (request !== requestId.current) return;
     setUploading(false);
     if (uploadedPath) {

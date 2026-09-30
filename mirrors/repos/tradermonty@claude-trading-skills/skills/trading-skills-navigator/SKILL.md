@@ -18,7 +18,7 @@ concrete recommendation: which **workflow** to run, which **skillset**
 (skills-index category) it belongs to, the **API requirement**, and the
 **setup path** for Claude Web App or Claude Code.
 
-A new user faces 74 skills + 11 workflows with no router. This skill is that
+A new user faces 74 skills + 12 workflows with no router. This skill is that
 router. It is **deterministic** — a Python recommender (`scripts/recommend.py`)
 consumes the repo metadata; this SKILL.md narrates the result conversationally.
 
@@ -79,9 +79,9 @@ Parse the JSON and explain, in the user's language:
 - **Skillset** — the `skillset.id` (skills-index category).
   `manifest_status: active` means a curated `skillsets/<id>.yaml` bundle ships
   for this category (market-regime, core-portfolio, swing-opportunity,
-  trade-memory) — mention it as the install bundle for the recommended
-  workflow. `manifest_status: deferred` means no manifest yet (e.g. honest-gap
-  categories); the recommendation is workflow-based only.
+  trade-memory, strategy-research) — mention it as the install bundle for the
+  recommended workflow. `manifest_status: deferred` means no manifest yet
+  (e.g. honest-gap categories); the recommendation is workflow-based only.
 - **No-API vs API** — read `no_api_path`: `true` → the entire recommended path
   works without paid API keys (state this plainly); `false` → tell the user
   which paid key(s) the path needs; `null` → honest gap, no path. (`no_api` is
@@ -92,6 +92,10 @@ Parse the JSON and explain, in the user's language:
 - **Honest gap** — if `honest_gap` is true there is **no shipped workflow** for
   this intent. Say so directly, then present `suggested_skills` from the
   relevant category and relay the `note`. Never invent a workflow.
+- **Backtest execution request** — relay the `note` when the research workflow
+  is recommended for a request containing backtest terms. It can evaluate
+  separately measured metrics but does not execute the backtest. Its
+  `no_api_path` does not describe the separate backtest tool or data.
 - **Operational roles** — narrate the `operational_roles` entry for every
   skill in the setup bundle or honest-gap suggestion. Explain standalone
   rationale when present; keep enum values unchanged.

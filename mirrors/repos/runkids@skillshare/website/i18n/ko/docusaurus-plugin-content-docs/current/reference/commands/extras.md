@@ -545,7 +545,8 @@ extras:
 대시보드에서 `file`이 `AGENTS.md`인 single-file extra는 **AGENTS.md** 탭에 표시되고, 그 밖의
 single-file extra는 **Folders & files**에 표시됩니다. 그곳의 **Add extra**에서 **Folder** 또는
 **Single file**을 고를 수 있고, 각 target에는 **File name**이 있으며, 단일 파일은 `merge`, `copy`,
-`import`를 사용할 수 있습니다. 대시보드는 파일 내용을 편집하지 않으므로 source 파일을 직접 편집하세요.
+`import`를 사용할 수 있습니다. 단일 파일의 **Name**은 직접 입력하기 전까지 확장자를 뺀 파일 이름으로
+채워집니다(`APPEND_SYSTEM.md`는 `APPEND_SYSTEM`). 대시보드는 파일 내용을 편집하지 않으므로 source 파일을 직접 편집하세요.
 
 ### 폴더 하나, 여러 파일
 

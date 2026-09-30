@@ -1,81 +1,98 @@
 # `openhuman-rpc`
 
-Shared JSON-RPC / CLI wire contracts for OpenHuman: response envelopes,
-structured error encoding, and the authenticated HTTP client used to reach a
-core's `/rpc` endpoint. It is its own crate so the side that produces
-envelopes (`openhuman-core`, via `crate::rpc`) and the sides that decode them
-(the Tauri shell's HTTP relay in `crates/openhuman-app`, the TUI in
-`crates/openhuman-tui`) compile the same definition, and so that definition
-depends on nothing in the core: only `serde`/`serde_json`, plus the optional
-HTTP client.
+JSON-RPC 2.0 for OpenHuman, on both sides of the wire. The core
+(`openhuman-core`) owns what a controller *is*: its schema, the
+`core::Outcome` it returns, the structured error envelope, the params rules
+and in-process dispatch (`core::invoke::invoke_method`). This crate sits
+above the core and owns how that is exposed: the JSON-RPC envelopes, the HTTP
+client, and the core's HTTP / Socket.IO server.
 
 ## Public surface
 
-- `pub struct RpcOutcome<T>` / `fn new` / `fn single_log` / `fn into_cli_compatible_json`, in `lib.rs`: a handler result plus its log lines, the type domain `ops.rs` operations return (see `AGENTS.md`'s module-shape table).
-- `pub fn apply_log_envelope(value, logs) -> Value`, in `lib.rs`: the single definition of the bare-vs-wrapped response-shape rule; see its doc comment before touching it.
-- `pub fn unwrap_rpc(value: &Value) -> &Value`, in `lib.rs`: client-side unwrapping of nested `result`/`data` envelopes.
-- `pub struct StructuredRpcError` / `pub const STRUCTURED_RPC_ERROR_SENTINEL`, in `structured_error.rs`: a typed error envelope, sentinel-encoded into the controller `Result<_, String>` channel and decoded by `crates/openhuman-core/src/core/jsonrpc.rs`.
-- `pub struct HttpRpcResponse`, in `client.rs` (feature `http-client`): verbatim status and body from an OpenHuman RPC endpoint.
-- `pub fn post_json_rpc(url, token, body) -> Result<HttpRpcResponse, String>`, in `client.rs` (feature `http-client`): POSTs a JSON-RPC body with a 30s timeout and disables redirects when a bearer token is set.
-- `pub fn bearer_header(token: Option<&str>) -> Option<String>`, in `client.rs` (feature `http-client`): normalizes a token into an `Authorization` header value.
-- `pub fn redact_url_for_log(url: &str) -> String`, in `client.rs` (feature `http-client`): strips credentials, path, query and fragment before logging a URL.
+- `RpcRequest`, `RpcSuccess`, `RpcFailure`, `RpcError`, `JSONRPC_VERSION`,
+  `SERVER_ERROR_CODE` (`envelope.rs`): the envelopes the server reads and
+  writes. `request_body` / `decode_response` are the client half.
+- `unwrap_rpc`: re-exported from `openhuman_core::core`; reaches a handler's
+  value through its `result` / `data` envelopes.
+- `is_origin_allowed_with_extra`, `ALLOWED_ORIGINS_ENV` (`origin.rs`): the
+  browser-origin allowlist for the HTTP API. Pure; the caller reads the env.
+- `http-client` feature (`client.rs`): `post_json_rpc`, `bearer_header`,
+  `redact_url_for_log`, `HttpRpcResponse`.
+- `server` feature (`server/`): the core's JSON-RPC server.
+  - `serve(&CoreRuntime, ready_tx, shutdown)` / `EmbeddedReadySignal`
+    (`serve.rs`): bind the listener, start the runtime's services, serve
+    until shutdown, then run the runtime's exit cleanup.
+  - `run_server`, `run_server_headless`, `run_server_embedded`,
+    `run_server_embedded_with_ready` (`shims.rs`): build a `CoreRuntime` and
+    serve it. The desktop shell uses `run_server_embedded_with_ready`.
+  - `build_core_http_router`, `rpc_handler` (`http/`): the axum router, one
+    module per route family (`rpc_handler`, `health`, `events`, `dictation`,
+    `oauth_mcp`, `cors`, `pages`).
+  - `install_cli_server` (`cli.rs`): installs the launcher the core CLI's
+    `run` / `serve` subcommands start (`core::server_launcher`).
+  - `auth.rs` (bearer route policy), `classify.rs` (how a failed call is
+    reported to Sentry), `socketio.rs`, `dev_connect.rs`.
 
 ## Feature flags
 
-- `http-client` (default-on in this crate) pulls in `log`, `reqwest`
-  (`rustls-tls`, no default features) and `url`, and adds `client.rs`'s
-  surface. Without it the crate is `serde`/`serde_json` only.
-- The root workspace declares `openhuman-rpc = { path = ..., default-features
-  = false }`, so a consumer gets `http-client` only by asking for it.
-  `crates/openhuman-app/Cargo.toml` (outside the workspace) enables it
-  explicitly: `openhuman-rpc = { path = "../openhuman-rpc", features =
-  ["http-client"] }`. `crates/openhuman-core/Cargo.toml` and
-  `crates/openhuman-tui/Cargo.toml` use `openhuman-rpc.workspace = true` and
-  therefore build the crate with **no** features: they only need the
-  envelope and error types. `cargo tree -p openhuman -e normal -f "{p} [{f}]"
-  --depth 1` shows `openhuman-rpc [...] []` for both; the app's tree shows
-  `[default,http-client]`.
+- `http-client`: pulls in `reqwest` (`rustls-tls`) for `client.rs`.
+- `server`: pulls in `axum`, `socketioxide` and the tokio stack, and turns on
+  the core's `http-server` gate for the domain-owned routes the router mounts
+  (`inference::http`'s `/v1`, the dictation WebSocket).
+- `crash-reporting`: forwarded to the core so the Sentry-routing tests run.
+- Both `http-client` and `server` are default-on here. The root workspace
+  declares the dependency with `default-features = false`, so each consumer
+  asks for what it needs: `openhuman-cli` enables `server`, the TUI takes
+  neither, and `crates/openhuman-app/Cargo.toml` (outside the workspace)
+  enables `["http-client", "server"]`.
 
 ## Consumers
 
-- `crates/openhuman-core/src/lib.rs`: `pub use openhuman_rpc as rpc;`, so
-  domain `ops.rs` files return `RpcOutcome<T>` through this crate rather than
-  a locally defined type.
-- `crates/openhuman-app/src/core_rpc.rs`: imports (`pub(crate) use`, renamed
-  to `relay_bearer_header` / `RelayHttpResponse`) `bearer_header`,
-  `HttpRpcResponse` and `redact_url_for_log`, and wraps `post_json_rpc` in
-  its own `post_json_rpc` / `relay_http_rpc` to reach both the embedded core
-  and self-hosted runtimes from the Rust host (see the mixed-content note in
-  that file, #3865).
-- `crates/openhuman-tui/src/cockpit.rs`: `pub use openhuman_rpc::unwrap_rpc;`
-  is the TUI's decode point; `controls.rs`, `app.rs` and `state.rs` read RPC
-  responses through it.
+- `crates/openhuman-app`: `core_process.rs` runs the embedded server
+  (`run_server_embedded_with_ready`); `core_rpc.rs` wraps the client to reach
+  the embedded core and self-hosted runtimes (#3865); `session/link.rs` and
+  `local_data_reset.rs` build requests with `request_body`; `lib.rs` calls
+  `install_cli_server` before `run_core_from_args`.
+- `crates/openhuman-cli`: `main.rs` calls `install_cli_server`; the root
+  `tests/*.rs` suites build the router with `build_core_http_router`.
+- `crates/openhuman-tui`: `unwrap_rpc` is its decode point.
+
+## Socket.IO
+
+`server/socketio.rs` bridges live domain events onto Socket.IO for the desktop
+shell's webviews.
+`COMPANION_STATE_BUS` is a broadcast channel for shell-originated companion
+lifecycle events that still need to reach the native macOS notch WKWebView,
+which has no Tauri IPC bridge and connects to the core's Socket.IO endpoint
+directly. `spawn_web_channel_bridge` spawns one forwarding task per source:
+web-chat events (`web_chat::subscribe_web_channel_events`, delivered to the
+initiating client's room and the `thread:<id>` room, not broadcast),
+dictation hotkeys and transcription results (`voice::dictation_listener`),
+overlay attention bubbles (`desktop::overlay::subscribe_attention_events`,
+see `desktop/overlay/README.md`), core notifications
+(`desktop::notifications`), and companion state. It also forwards a set of
+`DomainEvent`s read straight off `BUS`: session expiry, MCP setup secret
+requests, memory sync and tree-build progress, channel listener health, and
+active-workspace changes.
+Everything except web-chat is broadcast to every connected client, most under
+both a colon- and an underscore-separated event name.
 
 ## Rules
 
-- Contract-only: no domain types, no dependency on `openhuman-core`, no
-  `tokio` of its own (`post_json_rpc` is `async` over `reqwest` but never
-  owns or spawns a runtime), and no I/O outside `client.rs`.
-- `apply_log_envelope`'s bare-vs-wrapped rule is a wire contract with a known
-  defect (#6080), preserved deliberately:
-
-  ```text
-  logs.is_empty()  ->  value                            (bare)
-  otherwise        ->  { "result": value, "logs": … }   (wrapped)
-  ```
-
-  A controller's wire shape is decided by its log vector, not its schema, so
-  a handler that later gains a log line silently changes its own response
-  shape. Do not "fix" this here: it needs a maintainer ruling because
-  normalizing it is a wire change across every controller. See the doc
-  comment on `apply_log_envelope` for the full rationale.
+- No business logic. Controller semantics (results, errors, params,
+  dispatch, session expiry) belong to the core; this crate only frames them
+  as JSON-RPC and decides transport policy (auth routes, CORS, how loudly a
+  failure is reported).
+- The core does not depend on this crate. Anything a domain needs belongs in
+  the core.
 
 ## Tests
 
-`#[cfg(test)] mod tests` blocks in `src/lib.rs` and
-`src/structured_error.rs` cover the envelope rule and the sentinel
-encode/decode round trip. Run with:
+Sibling `*_tests.rs` files cover the envelopes (including the exact
+server-failure wire bytes), the origin allowlist, failure classification,
+the `/rpc` handler's Sentry routing (with `crash-reporting`), CORS, auth
+route policy, Socket.IO and `/dev/connect`.
 
 ```bash
-cargo test -p openhuman-rpc
+cargo test -p openhuman-rpc --features crash-reporting
 ```

@@ -908,6 +908,7 @@ npm run test:e2e
 
 ## Additional Resources
 
+- [DevScratchpad AI Skill Studio](https://www.devscratchpad.tech/ai-skill-studio/claude-skills) - Third-party editor for drafting Claude Code `SKILL.md` files.
 - [CONTRIBUTING.md](../CONTRIBUTING.md) - General contribution guidelines
 - [project-guidelines-template](./examples/project-guidelines-template.md) - Project-specific skill template
 - [coding-standards](../skills/coding-standards/SKILL.md) - Example of standards skill

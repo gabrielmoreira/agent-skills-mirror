@@ -1,0 +1,69 @@
+# Meta/Admin Domain Reference
+
+Load this file for Claude Code resource creation and admin tasks.
+
+## Immediate Routes (Highest Priority)
+
+These bypass normal routing - execute immediately.
+
+| User Intent              | Keywords                                                   | Route                                       |
+| ------------------------ | ---------------------------------------------------------- | ------------------------------------------- |
+| Create skill             | "create skill", "new skill", "make skill"                  | `/taches-cc-resources:create-agent-skill`   |
+| Create hook              | "create hook", "new hook", "make hook"                     | `/taches-cc-resources:create-hook`          |
+| Create command           | "create command", "slash command"                          | `/taches-cc-resources:create-slash-command` |
+| Create agent             | "create agent", "new agent"                                | `/taches-cc-resources:create-subagent`      |
+| Generate skill from docs | "generate skill from", "skill from docs", "skill from URL" | Use skill-seekers marketplace               |
+| Commit work              | "commit", "save work", "save changes"                      | `/commit-commands:commit`                   |
+| Create PR                | "pull request", "create pr", "push pr"                     | `/commit-commands:commit-push-pr`           |
+| Check status             | "status", "where was I", "what's left"                     | `/gsd-core:progress`                             |
+| Check todos              | "remaining", "outstanding", "pending"                      | `/taches-cc-resources:check-todos`          |
+| Create prompt            | "create prompt", "write prompt", "prompt for"              | `/taches-cc-resources:create-prompt`        |
+| Create meta-prompt       | "meta prompt", "prompt chain", "multi-stage"               | `/taches-cc-resources:create-meta-prompt`   |
+| Debug issue              | "debug this", "troubleshoot", "diagnose"                   | `/taches-cc-resources:debug`                |
+| What's next              | "what next", "suggest", "what should I"                    | `/taches-cc-resources:whats-next`           |
+| Run plan                 | "run plan", "execute plan"                                 | `/taches-cc-resources:run-plan`             |
+| Run prompt               | "run prompt", "execute prompt"                             | `/taches-cc-resources:run-prompt`           |
+| Add todo                 | "add todo", "new todo", "remember to"                      | `/taches-cc-resources:add-to-todos`         |
+| Review code              | "review my code", "code review"                            | `/review-code`                              |
+| Health check             | "health check", "diagnostics"                              | `/health-check`                             |
+
+## Skill Generation (skill-seekers)
+
+For creating skills from external documentation:
+
+1. Provide URL or documentation path
+2. skill-seekers analyzes and generates SKILL.md
+3. Review and refine generated skill
+
+## Quality/Process Tasks
+
+| Domain          | Keywords                                  | Skill                          | Agent                               |
+| --------------- | ----------------------------------------- | ------------------------------ | ----------------------------------- |
+| `code-review`   | review, pr, pull request, code quality    | `Skill(generic-code-reviewer)` | `pr-review-toolkit:code-reviewer`   |
+| `refactoring`   | refactor, clean up, simplify, restructure | -                              | `pr-review-toolkit:code-simplifier` |
+| `documentation` | document, docs, readme, jsdoc, comment    | `Skill(codebase-documenter)`   | `documentation-writer`              |
+| `architecture`  | architecture, pattern, structure          | -                              | `feature-dev:code-architect`        |
+| `tech-debt`     | tech debt, legacy, cleanup, deprecate     | `Skill(tech-debt-analyzer)`    | -                                   |
+| `accessibility` | accessibility, a11y, wcag, screen reader  | -                              | `accessibility-expert`              |
+
+## Marketplace Resources for Meta/Admin
+
+| Domain              | Marketplace Repos                                                    | Notes                          |
+| ------------------- | -------------------------------------------------------------------- | ------------------------------ |
+| Official Anthropic  | anthropic-agent-skills, claude-code-plugins, claude-plugins-official  | Core patterns and plugins      |
+| Skill creation      | skill-seekers, francyjg-agent-skill-creator, skillcreatorai-agent-skills (47) | Auto-generate skills from docs |
+| Autonomous coding   | auto-claude                                                           | Multi-agent dev with QA        |
+| Project management  | gsd-core, taches-cc-resources                                    | GSD system, meta-prompting     |
+| Hooks/Reference     | disler-hooks-mastery, agentskills-agentskills (11.4K stars), shanraisshan-best-practice (6K stars) | Hook types, standards, reference |
+| Memory/Context      | claude-mem                                                            | Persistent memory, semantic search |
+| Research            | mvanhorn-last30days-skill                                             | Last 30 days topic research    |
+| Expo (official)     | expo-skills (3 plugins)                                               | Official Expo team (815 stars) |
+| Vercel (official)   | vercel-agent-skills                                                   | Official Vercel Labs           |
+
+## Exploration Tasks
+
+| Intent              | Keywords                             | Action                                  |
+| ------------------- | ------------------------------------ | --------------------------------------- |
+| Understand codebase | "explore codebase", "understand how" | `Task` with `feature-dev:code-explorer` |
+| Find location       | "find where", "locate", "which file" | `Task` with `Explore` subagent_type     |
+| Learn concept       | "learn about", "explain", "teach me" | WebSearch + relevant Skill              |

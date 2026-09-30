@@ -19,7 +19,7 @@ Test-support domain: wipe-and-reset plus read-only introspection RPCs that let E
 | `crates/openhuman-core/src/test_support/rpc_tests.rs` | Tests for the `OPENHUMAN_E2E_MODE` guard (`reset` rejects when unset; `1`/`true`/`yes` accepted) and for `wipe_memory_tree` removing content dirs. |
 | `crates/openhuman-core/src/test_support/introspect.rs` | Read-only introspection RPCs: `workspace_root`, `list_workspace_files`, `read_workspace_file`, `in_flight_chats`, `wallet_prepared_quotes`, plus the `resolve_workspace_relative` path guard and the iterative `walk_dir`. |
 | `crates/openhuman-core/src/test_support/introspect_tests.rs` | Tests for `resolve_workspace_relative` only: `..` traversal (missing and existing targets), leading `/` and `./` handling, and (unix) a symlink pointing out of the workspace. The RPC functions themselves have no unit tests here; E2E specs exercise them. |
-| `crates/openhuman-core/src/test_support/schemas.rs` | `ControllerSchema` definitions, the registered-controller list, and `handle_*` dispatchers that delegate to `rpc`/`introspect` and serialize via `RpcOutcome::into_cli_compatible_json`. |
+| `crates/openhuman-core/src/test_support/schemas.rs` | `ControllerSchema` definitions, the registered-controller list, and `handle_*` dispatchers that delegate to `rpc`/`introspect` and serialize via `Outcome::into_cli_compatible_json`. |
 
 ## Public surface
 
@@ -28,7 +28,7 @@ From `mod.rs`:
 - `all_test_support_registered_controllers()`: `Vec<RegisteredController>` (schema + handler pairs).
 
 From `rpc` / `introspect` (used by handlers, also `pub`):
-- `rpc::reset() -> RpcOutcome<ResetSummary>`, `rpc::reset_json()` (raw JSON envelope convenience; currently `#[allow(dead_code)]`, no caller).
+- `rpc::reset() -> Outcome<ResetSummary>`, `rpc::reset_json()` (raw JSON envelope convenience; currently `#[allow(dead_code)]`, no caller).
 - `introspect::workspace_root()`, `list_workspace_files(rel_root, max_depth)`, `read_workspace_file(rel_path, max_bytes)`, `in_flight_chats()`, `wallet_prepared_quotes()`.
 - Result types: `ResetSummary`, `WorkspaceRoot`, `ListEntry`/`ListResult`, `ReadFileResult`, `InFlightEntryView`/`InFlightResult`, `PreparedQuotesResult`.
 
@@ -62,7 +62,7 @@ This module owns no state of its own. It mutates and reads state owned by other 
 - `crate::web3::wallet`: `prepared_quotes_for_test` and `PreparedTransaction` to snapshot prepared quotes.
 - `crate::core::all`: `ControllerFuture`, `RegisteredController` for handler wiring.
 - `crate::core::{ControllerSchema, FieldSchema, TypeSchema}`: controller schema types.
-- `crate::rpc::RpcOutcome`: standard RPC result envelope; `crate::rpc` is the `openhuman-rpc` crate re-exported by `pub use openhuman_rpc as rpc;` in `crates/openhuman-core/src/lib.rs`.
+- `crate::core::Outcome`: the controller result type.
 
 ## Used by
 

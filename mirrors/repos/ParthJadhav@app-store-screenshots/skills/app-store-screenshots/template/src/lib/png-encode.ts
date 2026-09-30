@@ -12,6 +12,7 @@ type Job = {
   height: number;
   resolve: (png: Uint8Array) => void;
   reject: (error: unknown) => void;
+  timeout: ReturnType<typeof setTimeout>;
 };
 type Result = { id: number; png?: Uint8Array; error?: string };
 
@@ -21,7 +22,18 @@ let nextId = 0;
 const jobs = new Map<number, Job>();
 
 function encodeInline(job: Job) {
+  clearTimeout(job.timeout);
   encodeRgbPixels(job.pixels, job.width, job.height).then(job.resolve, job.reject);
+}
+
+function retireWorker(worker: Worker) {
+  worker.terminate();
+  pool = (pool || []).filter((w) => w !== worker);
+  for (const [id, job] of jobs) {
+    if (job.worker !== worker) continue;
+    jobs.delete(id);
+    encodeInline(job);
+  }
 }
 
 function workers(): Worker[] {
@@ -35,6 +47,7 @@ function workers(): Worker[] {
         const job = jobs.get(data.id);
         if (!job) return;
         jobs.delete(data.id);
+        clearTimeout(job.timeout);
         if (data.png) job.resolve(data.png);
         else encodeInline(job);
       };
@@ -42,14 +55,9 @@ function workers(): Worker[] {
       // finish inline instead of leaving the export waiting forever.
       worker.onerror = (event) => {
         event.preventDefault();
-        worker.terminate();
-        pool = (pool || []).filter((w) => w !== worker);
-        for (const [id, job] of jobs) {
-          if (job.worker !== worker) continue;
-          jobs.delete(id);
-          encodeInline(job);
-        }
+        retireWorker(worker);
       };
+      worker.onmessageerror = () => retireWorker(worker);
       pool.push(worker);
     }
   } catch {
@@ -68,8 +76,10 @@ export function encodeCanvasPng(canvas: HTMLCanvasElement): Promise<Uint8Array> 
   const id = nextId++;
   const worker = available[nextWorker++ % available.length];
   return new Promise((resolve, reject) => {
-    jobs.set(id, { worker, pixels, width, height, resolve, reject });
+    const timeout = setTimeout(() => retireWorker(worker), 15000);
+    jobs.set(id, { worker, pixels, width, height, resolve, reject, timeout });
     // Copied, not transferred: the pixels stay here for the inline fallback.
-    worker.postMessage({ id, pixels, width, height });
+    try { worker.postMessage({ id, pixels, width, height }); }
+    catch { retireWorker(worker); }
   });
 }

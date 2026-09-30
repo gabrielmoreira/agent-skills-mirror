@@ -3,7 +3,7 @@ name: perf-profile
 description: "Performance profiling — find bottlenecks, measure against budgets, produce ranked optimization recommendations."
 argument-hint: "[system-name or 'full']"
 user-invocable: true
-allowed-tools: Read, Glob, Grep, Bash, Bash(bash "*/.claude/skills/perf-profile/../../hooks/yaml-helper.sh" resolve_config *)
+allowed-tools: Read, Glob, Grep, Write, Bash, Bash(bash "*/.claude/skills/perf-profile/../../hooks/yaml-helper.sh" resolve_config *)
 model: sonnet
 ---
 
@@ -171,10 +171,10 @@ Generated: [Date]
 ### Performance Budgets
 | Metric | Budget | Estimated Current | Status |
 |--------|--------|-------------------|--------|
-| Frame time | [16.67ms] | [estimate] | [OK/WARNING/OVER] |
-| Memory | [target] | [estimate] | [OK/WARNING/OVER] |
-| Load time | [target] | [estimate] | [OK/WARNING/OVER] |
-| Draw calls | [target] | [estimate] | [OK/WARNING/OVER] |
+| Frame time | [16.67ms] | [estimate] | [OK/WARNING/OVER/NOT ASSESSED] |
+| Memory | [target] | [estimate] | [OK/WARNING/OVER/NOT ASSESSED] |
+| Load time | [target] | [estimate] | [OK/WARNING/OVER/NOT ASSESSED] |
+| Draw calls | [target] | [estimate] | [OK/WARNING/OVER/NOT ASSESSED] |
 
 ### Hotspots Identified
 | # | Location | Issue | Estimated Impact | Fix Effort |
@@ -194,7 +194,9 @@ Generated: [Date]
 - [Area that needs actual runtime profiling to confirm impact]
 ```
 
-Output the report with a summary: top 3 hotspots, estimated headroom vs budget, and recommended next action.
+Output the report with a summary: top 3 hotspots, estimated headroom against
+each budget that is set — for a metric with none, `no budget set — headroom not
+assessed` — and recommended next action.
 
 ---
 
@@ -211,7 +213,14 @@ Present significant-effort items and ask the user to choose for each:
 
 If multiple items are deferred to Polish (choice C), record them under `### Deferred to Polish`.
 
-This skill is read-only — no files are written. Verdict: **COMPLETE** — performance profile generated.
+---
+
+## Verdict
+
+Close every run that produced a report — whether or not Phase 5 ran — with:
+Verdict: **COMPLETE** — performance profile generated (saved to
+`production/polish/[scope]-report-[date].md` if the write was approved). The only
+other outcome is the `NOT ASSESSED — NO DATA` path above.
 
 ---
 

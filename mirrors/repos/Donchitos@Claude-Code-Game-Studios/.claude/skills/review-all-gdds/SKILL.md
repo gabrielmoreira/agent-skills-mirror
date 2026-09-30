@@ -37,7 +37,7 @@ Every `AskUserQuestion` call follows `.claude/docs/automation-modes.md`
 
 **Argument modes:**
 
-**Focus:** `$ARGUMENTS[0]` (blank = `full`)
+**Focus:** `$ARGUMENTS` (blank = `full`)
 
 - **No argument / `full`**: Both consistency and design theory passes
 - **`consistency`**: Cross-GDD consistency checks only (faster)
@@ -119,7 +119,9 @@ Run `/consistency-check` after this review to populate the registry."
 
 Read whole (small, and every part is used):
 
-1. `design/gdd/game-concept.md` — game vision, core loop, MVP definition
+1. `design/gdd/game-concept.md` — game vision, core loop, MVP definition (or
+   `design/game-brief.md`, the one-page brief that replaces it at `rigor: minimal` —
+   pitch, core loop, MVP list)
 2. `design/gdd/game-pillars.md` if it exists — design pillars and anti-pillars
 3. `design/gdd/systems-index.md` — authoritative system list, layers, dependencies, status
 
@@ -150,7 +152,7 @@ never shrinks the *review set*.
 
 Report: "Loaded [N] system GDDs covering [M] systems. Pillars: [list]. Anti-pillars: [list]."
 
-If fewer than 2 system GDDs exist, stop:
+If fewer than 2 system GDDs exist (count the files present; an empty one is handled under NOT ASSESSED in Phase 5, not here), stop:
 > "Cross-GDD review requires at least 2 system GDDs. Write more GDDs first,
 > then re-run `/review-all-gdds`."
 
@@ -249,15 +251,24 @@ with the same name and behaviour:
 - If GDD-A references "the progression curve defined in [system].md", check that
   [system].md actually has that curve, not a different progression model
 - If GDD-A was written before GDD-B and assumed a mechanic that GDD-B later
-  designed differently, flag GDD-A as containing a stale reference
+  designed differently, flag GDD-A as containing a stale reference. Severity: a
+  reference to a mechanic or formula that **does not exist** is **Blocking** — the
+  architecture would inherit a rule nobody defined; one that exists but was
+  designed differently is a **Warning**, unless the difference changes a rule the
+  referencing GDD depends on (then Blocking)
+- If the **target GDD is not written yet** (no file in `design/gdd/`): when
+  `systems-index.md` lists that system (e.g. `Status: Not Started`), it is a
+  **Warning** — a dependency on planned work, to re-check when that GDD is
+  written; when neither a GDD nor a systems-index entry exists for it, it is
+  **Blocking** — nothing will ever define it
 
 ```
-⚠️  Stale Reference
+🔴 Stale Reference
 inventory.md (written first): "Item weight uses the encumbrance formula
   from movement.md"
 movement.md (written later): Defines no encumbrance formula — uses a flat
   carry limit instead
-→ inventory.md references a formula that doesn't exist
+→ inventory.md references a formula that doesn't exist — Blocking
 ```
 
 ### 2d: Data and Tuning Knob Ownership Conflicts
@@ -562,7 +573,8 @@ step where the issue occurs, and the nature of the failure mode.
 ```
 ## Cross-GDD Review Report
 Date: [date]
-GDDs Reviewed: [N]
+GDDs Reviewed: [N] of [M] present
+Not read: [each GDD that could not be read or is present but empty, by file name — or "none"]
 Systems Covered: [list]
 
 ---
@@ -615,6 +627,7 @@ Scenarios walked: [N]
 | GDD | Reason | Type | Priority |
 |-----|--------|------|----------|
 | [system-a].md | Rule contradiction with [system-b].md | Consistency | Blocking |
+| [system-b].md | Rule contradiction with [system-a].md | Consistency | Blocking |
 | [system-c].md | Stale reference to nonexistent mechanic | Consistency | Blocking |
 | [system-d].md | No pillar alignment | Design Theory | Warning |
 
@@ -622,13 +635,13 @@ Scenarios walked: [N]
 
 ### Verdict: [PASS / NOT ASSESSED / CONCERNS / FAIL]
 
-PASS: No blocking issues. Warnings present but don't prevent architecture.
+PASS: No blocking issues and no warnings.
 NOT ASSESSED: One or more review phases could not run — named below.
-CONCERNS: Warnings present that should be resolved but are not blocking.
+CONCERNS: Warnings present that should be resolved, but nothing blocking.
 FAIL: One or more blocking issues must be resolved before architecture begins.
 
 ### If NOT ASSESSED — what could not be reviewed, and why:
-[Name each phase that did not run and the input it needed]
+[Name each phase that did not run and the input it needed, and each GDD that could not be read or is present but empty, by file name]
 
 ### If FAIL — required actions before re-running:
 [Specific list of what must change in which GDD]
@@ -649,10 +662,16 @@ thorough while covering a fraction of the surface. Emit it when any of:
   write nothing, and consume a phase.
 - **The design pillars are undefined**, so pillar-drift has no reference to drift
   from — the same shape as an accessibility gate with no committed tier.
-- **A GDD is present but empty** (headings only, or all placeholders). Present is
-  not the same as reviewable, and a stub contradicts nothing.
+- **A GDD is present but empty** (headings only, or all placeholders), **or
+  could not be read**. Present is not the same as reviewable, and a stub
+  contradicts nothing.
 
-Report the covered set explicitly either way: `GDDs reviewed: [N] of [M] present`.
+Report the covered set explicitly either way: `GDDs reviewed: [N] of [M] present`
+(`[M]` counts the system GDDs present — the Phase 1c set, not `game-concept.md`,
+`game-pillars.md`, `systems-index.md` or an earlier `gdd-cross-review-*.md`),
+and the `Not read:` line naming every GDD that could not be read or is present but empty, whatever the
+verdict — a FAIL found in the GDDs that were read does not make the unread ones
+reviewed.
 A cross-review that silently skipped half the systems is indistinguishable from
 one that found them consistent.
 
@@ -719,7 +738,7 @@ Build the option list dynamically — only include options that apply:
 - `[_] Apply quick fix: [W-XX description] in [gdd-name].md — [effort estimate]` (one option per simple-edit warning; only for Warning-level, not Blocking)
 - `[_] Run /design-review [flagged-gdd-path] — address flagged warnings` (one per flagged GDD, if any)
 - `[_] Run /design-system [next-system] — next in design order` (always include, name the actual system)
-- `[_] Run /create-architecture — begin architecture (verdict is PASS/CONCERNS)` (include if verdict is not FAIL)
+- `[_] Run /create-architecture — begin architecture (verdict is PASS/CONCERNS)` (include only if the verdict is PASS or CONCERNS — never on FAIL or NOT ASSESSED)
 - `[_] Run /gate-check — validate Systems Design phase gate` (include if verdict is PASS)
 - `[_] Stop here`
 

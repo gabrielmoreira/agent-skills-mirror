@@ -22,8 +22,8 @@ Every `AskUserQuestion` call follows `.claude/docs/automation-modes.md`
 
 **`docs.density`** — it controls per-section *depth*, where `workflow`
 controls which sections exist. `modes.rigor` sets both together; set
-`docs.density` explicitly to vary depth alone: `terse` = pillar bullets + concept bullets;
-`balanced` = pillars + concept with brief rationale (default); `thorough` =
+`docs.density` explicitly to vary depth alone: `terse` (the default, via `rigor: minimal`) = pillar bullets + concept bullets;
+`balanced` = pillars + concept with brief rationale (`rigor: standard`); `thorough` =
 pillars + concept + extensive rationale + alternatives. Apply it to every section
 you author.
 
@@ -44,7 +44,7 @@ The `workflow` tier resolved above governs this skill's output:
 
 A jam / small-scope session: capture the load-bearing thinking in one page, then get
 to code. Keep prompting light — a few exchanges, not fifteen. Author from the
-one-page template `.claude/docs/templates/game-brief.md` (6 required fields + 2
+one-page template `.claude/docs/templates/game-brief.md` (6 required fields + 3
 one-liners). If `design/game-brief.md` already exists, read it and resume/refine
 rather than restart.
 
@@ -54,12 +54,15 @@ rather than restart.
 2. **Fill the brief fields** conversationally (not one prompt each):
    - **One-sentence pitch** — the excited one-liner.
    - **Core loop** — the 2–4 step cycle the player repeats.
+   - **Player goal & fail state** — what the player is trying to do, and how they
+     lose or fail. `/create-stories` turns it into each story's acceptance criteria.
    - **MVP** — the ruthlessly short feature list that makes it *the game* (each becomes
      a story downstream). If it runs past ~7, push back on scope.
    - **Out of scope** — what they're deliberately NOT building.
    - **Build order** — sequence to build the MVP, risky / core-fun thing first.
-   - **Who it's for / what they feel** and **Art & audio direction** — one line each
-     (offer, don't force).
+   - **Who it's for / what they feel**, **Art & audio direction** and **Reference
+     game** (the shipped game it is closest to, and the ~10% of it the MVP keeps) —
+     one line each (offer, don't force).
    Present the filled brief back in full for a single confirmation.
 3. **Write approval** — `AskUserQuestion`: "Brief is ready. May I write it to
    `design/game-brief.md`?" → `[A] Yes — write it` / `[B] Revise a field first`. On
@@ -301,13 +304,13 @@ revision and lock them in without a second confirmation round.
 - **`art-director`** — gate **AD-CONCEPT-VISUAL** (`.claude/docs/director-gates/ad-concept-visual.md`)
   Pass: game concept elevator pitch, full pillar set with design tests, target platform (if known), any reference games or visual touchstones the user mentioned.
 
-Collect both verdicts, then present them together using a two-tab `AskUserQuestion`:
+Collect both verdicts. When CD-PILLARS returns APPROVE, present them together using a two-tab `AskUserQuestion`:
 - Tab **"Pillars"**: present creative-director feedback. Options mirror the standard CD-PILLARS handling — `Lock in as-is` / `Revise [specific pillar]` / `Discuss further`.
-- Tab **"Visual anchor"**: present the art-director's 2-3 named visual direction options. Options: each named direction (one per option) + `Combine elements across directions` + `Describe my own direction`.
+- Tab **"Visual anchor"**: present the art-director's 2-3 named visual direction options. Options: each named direction (one per option) + `Combine elements across directions` + `Describe my own direction`. On **STRONG**, mark the dominant direction `(Recommended)`. On **CONCERNS** (the pillars do not yet differentiate a visual identity), show the art-director's reason instead of directions and offer `Revise pillars` / `Describe my own direction`.
 
 The user's selected visual anchor (the named direction or their custom description) is stored as the **Visual Identity Anchor** — it will be written into the game-concept document and becomes the foundation of the art bible.
 
-If the creative-director returns CONCERNS or REJECT on pillars, resolve pillar issues before asking for the visual anchor selection — visual direction should flow from confirmed pillars.
+If the creative-director returns CONCERNS or REJECT on pillars, resolve pillar issues before asking for the visual anchor selection — visual direction should flow from confirmed pillars. Ask the Pillars question on its own first (same options, no Visual anchor tab); once the pillars are resolved, ask the Visual anchor question on its own. **NOT ASSESSED** from either gate (it lacked an input — `.claude/docs/director-gates.md`) is not an approval: name what was missing, and supply it and re-run that gate; failing that, treat a CD-PILLARS NOT ASSESSED like CONCERNS, and with no art-director directions offer only `Describe my own direction`.
 
 ---
 
@@ -361,7 +364,7 @@ Ground the concept in reality:
 
 Pass: core loop description, platform target, engine choice (or "undecided"), list of identified technical risks.
 
-Present the assessment to the user. If HIGH RISK, offer to revisit scope before finalising. If CONCERNS, note them and continue.
+Present the assessment to the user. If HIGH RISK, offer to revisit scope before finalising. If CONCERNS, note them and continue. If NOT ASSESSED, name the missing input and record feasibility as not assessed in the concept's risks — never as VIABLE.
 
 **Review mode check** — apply before spawning PR-SCOPE:
 - `solo` → skip. Note: "PR-SCOPE skipped — Solo mode." Proceed to document generation.
@@ -370,9 +373,15 @@ Present the assessment to the user. If HIGH RISK, offer to revisit scope before 
 
 **After scope tiers are defined, spawn `producer` via `Agent` using gate PR-SCOPE (`.claude/docs/director-gates/pr-scope.md`).**
 
-Pass: full vision scope, MVP definition, timeline estimate, team size.
+Pass: full vision scope, MVP definition, the scope tiers (what ships if time runs out), timeline estimate, team size.
 
-Present the assessment to the user. If UNREALISTIC, offer to adjust the MVP definition or scope tiers before writing the document.
+Present the assessment to the user. PR-SCOPE answers REALISTIC / OPTIMISTIC /
+UNREALISTIC. If UNREALISTIC, ask via `AskUserQuestion` whether to adjust the MVP
+definition or scope tiers before writing the document or keep them — the user
+decides; the concept is never rejected for it. If OPTIMISTIC, show the
+producer's suggested adjustments and ask whether to apply them before writing. If NOT ASSESSED, name
+the missing input (a timeline or team size, say) and ask for it and re-run the
+gate, or record scope as not assessed — never as REALISTIC.
 
 ---
 
@@ -459,4 +468,4 @@ After the game concept is written, follow the pre-production pipeline in order:
 4. `/design-system [first-system]` — author per-system GDDs in dependency order
 5. `/create-architecture` — produce the master architecture blueprint
 6. `/architecture-review` — bootstrap TR registry and Requirements Traceability Matrix
-7. `/gate-check pre-production` — validate readiness before committing to production
+7. `/gate-check pre-production` — validate readiness for Pre-Production (the `systems-design` and `technical-setup` gates come first, at their own phase boundaries)

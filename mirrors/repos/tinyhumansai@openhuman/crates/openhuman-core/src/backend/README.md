@@ -59,7 +59,13 @@ host attributes traffic to; both are empty/default without a transport.
 JSON body, the `BackendCredential` (session JWT → `Authorization: Bearer`,
 API key → `x-api-key`) and whether the `{success,data}` envelope is unwrapped.
 `BackendTransportError` mirrors the variants the classifiers match on
-(`Http`, `Status`, `Envelope`, `RouteNotExposed`, …) plus `Unavailable`.
+(`Http`, `Status`, `Envelope`, `RouteNotExposed`, …) plus `Unavailable`, and
+the two backend-specific 404 meanings the transport classifies for the core:
+`ChannelMessageNotFound` (a handler says the message is gone) and
+`ChannelMessageRouteMissing` (no route matched — today every `PATCH` edit,
+#5230). The core never inspects a response body to tell them apart; that
+wire knowledge lives in `tinyhumans_sdk::classify` and is applied by
+`openhuman-tinyhumans`'s `map_sdk_error`.
 
 Resolution (`resolve_backend_transport`), first hit wins: the transport bound
 to the ambient `CoreContext` (`CoreBuilder::backend_transport`, inherited by
@@ -79,11 +85,11 @@ surface:
 
 - `authed_json` — send an authenticated request and route the result through
   `finish_authed_json`.
-- Typed route helpers (`fetch_client_key`, `send_channel_*`,
-  `*_channel_thread`) all go through `authed_json` and are bearer-only: the
-  core never obtains, exchanges or validates a session. The account-bound
-  routes (link tokens, `/auth/me` link checks, OAuth connect / integrations,
-  billing, team, webhook tunnels, announcements) are called by
+- Typed route helpers (`send_channel_*`, `*_channel_thread`) all go through
+  `authed_json` and are bearer-only: the core never obtains, exchanges or
+  validates a session. The account-bound routes (link tokens, `/auth/me`
+  link checks, OAuth connect / integrations / client-key handoff, billing,
+  team, webhook tunnels, announcements) are called by
   `openhuman-tinyhumans` (`hosted/`) on the TinyHumans SDK's typed clients.
 - `url_for`, `raw_client` — URL helpers for callers that need to drive a
   non-JSON request (e.g. multipart uploads) without re-implementing TLS/proxy
@@ -108,8 +114,10 @@ The private `BackendClient::finish_authed_json` is the error classification
 chokepoint for every `authed_json` call: it walks the
 `reqwest`/`hyper`/`rustls` error source chain (not just the top-level
 message) to distinguish a transient transport failure from one worth
-reporting, and turns specific status/path combinations into the typed
-`BackendApiError` variants above. `IntegrationClient::map_transport_error`
+reporting, maps a `401` onto `Unauthorized` / `ApiKeyRejected` by the
+credential kind, and maps the transport's typed channel-message 404s onto
+`MessageNotFound` / `ChannelEditUnsupported`. The recovery each variant
+implies is the core's; what a backend response *means* is the transport's. `IntegrationClient::map_transport_error`
 (`integrations/client/errors.rs`) plays the same role for integrations.
 Route new backend calls through those helpers instead of matching
 `BackendTransportError` by hand.
@@ -147,9 +155,13 @@ and telemetry.
 ## Tests
 
 `client_tests.rs` covers `BackendClient::new` base stripping, `authed_json`
-401/404 classification into `BackendApiError` (including the route-absence
-vs message-gone split for channel edits), `flatten_authed_error`, and
-`backend_api_body_shape`. Transient-transport classification is not unit
+401 classification into `BackendApiError`, `flatten_authed_error`, and
+`backend_api_body_shape`. `client_channel_tests.rs` covers the channel route
+shapes and, with a stub transport, the mapping of the typed channel-message
+404s onto `MessageNotFound` / `ChannelEditUnsupported`. The 404 wire
+classification itself is tested where it lives:
+`vendor/tinyhumans-sdk/tests/classify.rs` and
+`crates/openhuman-tinyhumans/src/transport/channel_404_tests.rs`. Transient-transport classification is not unit
 tested here; it relies on
 `core::observability::contains_transient_transport_phrase`. `transport/`
 carries its own tests (`transport_tests.rs`, `mod_tests.rs`); `classify.rs`

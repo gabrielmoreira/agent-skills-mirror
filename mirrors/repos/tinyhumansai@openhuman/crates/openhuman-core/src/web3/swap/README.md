@@ -11,17 +11,17 @@ A swap quote asks deBridge for a route to exchange one token for another on
 the same chain. Cross-chain requests are rejected here with a pointer to
 `web3_bridge`, since deBridge's `/swap` endpoint is single-chain only. The
 actual quote logic (address defaulting, the backend call, unsigned-tx
-extraction) lives in the shared `super::ops::quote_swap`; this module only
-owns the RPC controllers (`schemas.rs`) and the agent tools (`tools.rs`) for
-the `web3_swap` namespace.
+extraction) lives in `Web3Service::quote_swap` in the vendored `tinywallet-web3`
+crate; this module only owns the RPC controllers (`schemas.rs`) for the
+`web3_swap` namespace. The agent tools are in
+`tinywallet_web3::tools::web3`.
 
 ## Key files
 
 | File | Role |
 | --- | --- |
-| `mod.rs` | Re-exports `Web3SwapExecuteTool`, `Web3SwapQuoteTool`, `Web3SwapRoutesTool` from `tools.rs`. |
-| `schemas.rs` | `web3_swap` RPC controller schemas and handlers: `quote`, `execute`, `routes`. Handlers deserialize params and delegate to `super::super::ops::quote_swap` / `super::super::store::execute_quote` / `super::super::ops::routes`. |
-| `tools.rs` | The three agent tools: `Web3SwapQuoteTool` (`web3_swap_quote`), `Web3SwapExecuteTool` (`web3_swap_execute`), `Web3SwapRoutesTool` (`web3_swap_routes`). All delegate to the same `ops`/`store` functions as the RPC handlers, so behavior is identical between the two entry points. |
+| `mod.rs` | Module docs. |
+| `schemas.rs` | `web3_swap` RPC controller schemas and handlers: `quote`, `execute`, `routes`. Handlers deserialize params and delegate to the process-wide `Web3Service` (`web3::seams::service()`): `quote_swap` / `execute_quote` / `routes`, wrapping the result in `Outcome`. |
 
 ## RPC / controllers
 

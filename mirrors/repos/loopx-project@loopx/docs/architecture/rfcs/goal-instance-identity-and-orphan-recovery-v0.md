@@ -798,6 +798,48 @@ promotion retain their own acceptance. No new paid cohort or soak is authorized.
   owners are not qualified. `execution_authority: false` and the M3 activation
   hold remain unchanged.
 
+### 2026-09-29: M3 handoff inbox/outbox candidate
+
+- **Baseline:** `738115bde87eef3fd153abe456d53da5e2b249f8`.
+- **Proposed:** Bind each new shadow-management lineage to the exact source
+  GoalRef. Existing outbox entries, commit markers, and cursors remain
+  byte-compatible; their entry identity already includes the immutable lineage.
+  Exact bootstrap, management, and outbox-manifest records use new schema
+  versions. An exact caller cannot infer ownership from a legacy binding.
+- **Evidence:** A real source-session A-to-B recreation leaves Goal A's pending
+  files and candidate head unchanged when B drains. B cannot capture against
+  A's active lineage. A capture started by A is revalidated under the Goal
+  lifetime guard and rejected before its primary write if B has replaced A.
+  Explicit rollback archives A with its GoalRef, and a fresh B bootstrap
+  accepts and replays only B work. A legacy drain request cannot enter an exact
+  lineage.
+- **Remaining hold:** This qualifies only the `handoff_inbox_outbox` inventory
+  row. Todo/lease mutation admission, quota, automation, Goal Channel, and the
+  overall M3 activation hold remain separate.
+
+### 2026-09-30: M3 Turn-journal exact commit candidate
+
+- **Baseline:** `350f0f326`.
+- **Proposed:** Keep `loopx_turn_journal_v0` and its existing path. Source-profile
+  plans carry matching exact GoalRef copies in the plan and transaction. Every
+  executor journal mutation uses one persistence callback that hands the
+  alias-scoped lifecycle guard from Python to TypeScript. TypeScript claims and
+  verifies that witness, reuses `decideFirstPartyHostRuntime(require_current)`,
+  then takes the existing journal mutation lock and commits before releasing
+  the source guard.
+- **Evidence:** TypeScript owner tests reject missing, malformed, mismatched,
+  expired and stale source admission before journal mutation. A real
+  Python-to-TypeScript integration commits and replays Goal A, publishes
+  same-alias Goal B, proves a later A checkpoint leaves both files unchanged,
+  and commits B independently.
+- **Compatibility:** Read-only inspection and recovery still read legacy
+  journals. Non-source writes retain the old RPC shape and persisted bytes.
+  Source admission facts and lock tokens are transport-only and never persist.
+- **Remaining hold:** This qualifies only the `turn_journal` inventory row. It
+  does not complete `first_party_host_runtime`, downstream external-effect
+  drain, unsupported/warm binary coverage, or any other M3 row.
+  `execution_authority: false` and the overall activation hold remain.
+
 ## Appendix B: Decision log
 
 | Date | Decision | Owner / approval | Alternatives | Normative sections changed |

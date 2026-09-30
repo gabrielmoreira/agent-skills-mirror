@@ -46,7 +46,7 @@ This module only orchestrates and reports; it does not reimplement downloads.
 
 - `core::runtime::services::start_boot_once_jobs` spawns `run_harness_init`
   (fire-and-forget) when `ServiceSet.harness_init` is true. It is called from
-  `start_core_runtime_services` in `core/jsonrpc.rs`, deliberately outside
+  `start_core_runtime_services` in `core/runtime/bootstrap.rs`, deliberately outside
   `bootstrap_core_runtime`, so a build-only embedder never starts it.
 - `ServiceSet` (`core/runtime/builder.rs`) turns it on in the `desktop()` and
   `embedded()` presets and off in `headless_api()` and `none()`.

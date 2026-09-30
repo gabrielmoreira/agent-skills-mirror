@@ -22,7 +22,7 @@ Static directory hosting over ad-hoc, in-process HTTP listeners owned by the cor
 | `crates/openhuman-core/src/http_host/handlers.rs` | `axum` router + request handlers (`HostedDirState`, `build_router`, root/path/file/directory serving, streamed file responses, generated directory listing HTML). |
 | `crates/openhuman-core/src/http_host/auth.rs` | Basic-auth verification (`ensure_authorized`), default username resolution from session/env, username sanitization, random password generation. |
 | `crates/openhuman-core/src/http_host/path_utils.rs` | Path safety + URL/HTML helpers: directory canonicalization, request-path traversal resolution, bind-host/label sanitization, href builders, `escape_html`, `content_type_for_path`, `redact_path_for_log`. |
-| `crates/openhuman-core/src/http_host/rpc.rs` | RPC adapters wrapping ops into `RpcOutcome<T>` (`start`/`stop`/`get`/`list`). |
+| `crates/openhuman-core/src/http_host/rpc.rs` | RPC adapters wrapping ops into `Outcome<T>` (`start`/`stop`/`get`/`list`). |
 | `crates/openhuman-core/src/http_host/schemas.rs` | `ControllerSchema`s + `handle_*` controller handlers; `all_controller_schemas` / `all_registered_controllers`. |
 | `crates/openhuman-core/src/http_host/http_host_tests.rs` | Module-level tests (start/list/stop round-trip with Basic auth, path traversal rejection, username sanitization/resolution); mounted from `mod.rs` via `#[path = "http_host_tests.rs"] mod tests`. |
 | `crates/openhuman-core/src/http_host/schemas_tests.rs` | Controller-schema tests (schema/handler inventory parity, required inputs, unknown-function fallback); mounted from `schemas.rs` the same way. |
@@ -31,7 +31,7 @@ Static directory hosting over ad-hoc, in-process HTTP listeners owned by the cor
 
 - `all_http_host_controller_schemas()` / `all_http_host_registered_controllers()`: re-exported from `schemas`; wired into the core controller registry.
 - `pub mod ops`: `start_hosted_dir_server`, `list_hosted_dir_servers`, `get_hosted_dir_server`, `stop_hosted_dir_server`, `stop_all_hosted_dir_servers`.
-- `pub mod rpc`: async `start`/`stop`/`get`/`list` returning `RpcOutcome<...>`.
+- `pub mod rpc`: async `start`/`stop`/`get`/`list` returning `Outcome<...>`.
 
 (`auth`, `handlers`, `path_utils`, `types` are private to the module.)
 
@@ -57,7 +57,7 @@ None on disk. Running servers are held in a process-global `HostedDirRegistry` (
 - `crate::core::shutdown`: `register` a one-time hook so all hosted servers stop when the core shuts down (`ops.rs`).
 - `crate::core::all`: `ControllerFuture`, `RegisteredController` for controller registration (`schemas.rs`).
 - `crate::core::{ControllerSchema, FieldSchema, TypeSchema}`: controller schema types (`schemas.rs`).
-- `crate::rpc::RpcOutcome`: RPC response envelope (`rpc.rs`); `crate::rpc` is the `openhuman-rpc` crate re-exported from `crates/openhuman-core/src/lib.rs`.
+- `crate::core::Outcome`: controller result type (`rpc.rs`).
 - External crates: `axum` (HTTP server/router), `tokio` (`TcpListener`, tasks), `tokio_util` (`CancellationToken`, `ReaderStream`), `uuid`, `base64`, `rand`, `urlencoding`, `serde`/`serde_json`.
 
 ## Used by

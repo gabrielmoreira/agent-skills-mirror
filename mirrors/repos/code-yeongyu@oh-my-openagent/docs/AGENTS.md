@@ -11,6 +11,7 @@
 | Audience / Task | Location |
 |------|----------|
 | New users — what is this? | [docs/guide/overview.md](guide/overview.md) |
+| Installing OmO with the one-line installer (omo.dev/docs/install) | [docs/guide/install.md](guide/install.md) |
 | Installing the plugin | [docs/guide/installation.md](guide/installation.md) |
 | Installing the compiled binary | [docs/guide/binary-install.md](guide/binary-install.md) |
 | How agents collaborate | [docs/guide/orchestration.md](guide/orchestration.md) |

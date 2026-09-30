@@ -56,7 +56,7 @@ If no bug files found:
 > different location, adjust the glob pattern. If no bugs exist yet, there is
 > nothing to triage."
 
-Stop and report. Do not proceed if no bugs exist.
+Stop and report. Do not proceed if no bugs exist. Verdict: **COMPLETE** — no bug files in `production/qa/bugs/`; nothing to triage.
 
 **In `trend` mode, do not read full bug bodies.** Trend metrics (volume, severity
 mix, by-system, by-date) are computable from the header fields alone:
@@ -185,7 +185,7 @@ After classifying all bugs, generate trend metrics:
 
 | ID | System | Severity | Summary | Assigned to | Story |
 |----|--------|----------|---------|-------------|-------|
-| BUG-NNN | [system] | S[1-4] | [one-line description] | [sprint] | [story path] |
+| BUG-NNNN | [system] | S[1-4] | [one-line description] | [sprint] | [story path] |
 
 ---
 
@@ -193,7 +193,7 @@ After classifying all bugs, generate trend metrics:
 
 | ID | System | Severity | Summary | Target Sprint |
 |----|--------|----------|---------|---------------|
-| BUG-NNN | [system] | S[1-4] | [one-line description] | Sprint [N+1] |
+| BUG-NNNN | [system] | S[1-4] | [one-line description] | Sprint [N+1] |
 
 ---
 
@@ -201,7 +201,7 @@ After classifying all bugs, generate trend metrics:
 
 | ID | System | Severity | Summary | Disposition |
 |----|--------|----------|---------|-------------|
-| BUG-NNN | [system] | S4 | [one-line description] | Backlog |
+| BUG-NNNN | [system] | S4 | [one-line description] | Backlog |
 
 ---
 
@@ -235,7 +235,9 @@ After classifying all bugs, generate trend metrics:
 
 ## 6. Write and Gate
 
-Present the report in conversation, then ask:
+Present the report in conversation. If any bug is a P4 candidate, first ask
+"Are these acceptable as Won't Fix?" and keep its disposition `P4 candidate`
+until the user answers. Then ask:
 
 "May I write this triage report to `production/qa/bug-triage-[date].md`?"
 
@@ -246,7 +248,9 @@ After writing:
   can be considered healthy. Run `/sprint-status` to see current capacity."
 - If regression bugs exist: "Regressions found — consider re-opening the
   affected stories in sprint tracking and running `/smoke-check` to re-gate."
-- If no P1 bugs exist: "No P1 bugs — build is in good shape for QA hand-off." Verdict: **COMPLETE** — triage report written.
+- If no P1 bugs exist: "No P1 bugs — build is in good shape for QA hand-off."
+
+Then, whether or not P1 bugs exist: Verdict: **COMPLETE** — triage report written.
 
 If user declined write: Verdict: **BLOCKED** — user declined write.
 

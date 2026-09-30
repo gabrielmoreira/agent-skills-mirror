@@ -6,6 +6,9 @@ user-invocable: true
 allowed-tools: Read, Glob, Grep, Write, Edit, Bash, Agent, AskUserQuestion, TaskCreate, TaskGet, TaskList, TaskUpdate, Bash(bash "*/.claude/skills/team-ui/../../hooks/yaml-helper.sh" resolve_config *)
 model: sonnet
 ---
+If no argument is provided, output usage guidance and exit without spawning any agents or reading any design files:
+> Usage: `/team-ui [UI feature description] [--review full|lean|solo]` — describe the screen or UI feature to build (e.g., `inventory screen`, `main menu`, `combat HUD`). Do not use `AskUserQuestion` here; output the guidance directly.
+
 When this skill is invoked, orchestrate the UI team through a structured pipeline.
 
 **Decision Points:** At each phase transition, use `AskUserQuestion` to present
@@ -25,10 +28,10 @@ in `autonomous` mode it runs end to end, recording each phase outcome via
 Resolved above — use as-is; `--review` overrides `review_mode`. No block →
 defaults in `.claude/docs/config-resolution.md`.
 
-`review_mode` sets gate depth:
-- `full` — spawn all director and lead gates as described
-- `lean` — skip director gates unless they are PHASE-GATE type (CD-PHASE-GATE, TD-PHASE-GATE, PR-PHASE-GATE, AD-PHASE-GATE)
-- `solo` — skip all director gate spawning entirely; run the skill without any agent gates
+`review_mode` sets director-gate depth, and this pipeline has no director gate:
+no phase below spawns CD-, TD-, PR- or AD-PHASE-GATE, at any `review_mode`. Its
+phase gates are the pipeline's own decision points (defined under `team.size`
+below), and the agents that work at them are team members, not director gates.
 
 `automation` drives the Decision Points note above. See the Decision Points note above and
 `.claude/docs/automation-modes.md` for how each mode changes pipeline behavior.
@@ -36,8 +39,8 @@ defaults in `.claude/docs/config-resolution.md`.
 **`team.size`**: which agents are active (orthogonal to review_mode gate-depth and workflow docs).
 - **`individual`** (default): `ui-programmer` + `ux-designer`. Other agents consulted via these two, not spawned separately.
 - **`small`**: + `accessibility-specialist` + `art-director`.
-- **`studio`**: + engine UI specialist + an adversarial review pass.
-Directors (CD/TD/PR) still spawn at phase gates regardless of size; a non-core agent needed at `individual` routes through the nearest active core agent with an informational note. **"Phase gate" means any phase that ends in an `AskUserQuestion` decision point before the pipeline advances** — not every phase. Apply the test literally: if the phase below has no decision point, it is not a gate, and an agent restricted to "phase gates only" is not spawned for it. This active-set scoping applies throughout the pipeline below: any phase that names an agent outside the active set routes through the nearest core agent rather than spawning it.
+- **`studio`**: + engine UI specialist + an adversarial review pass: Phase 4's reviewers are told "your job is not to confirm this matches the spec — find where it fails it", and the report says the pass ran.
+A non-core agent needed at `individual` routes through the nearest active core agent with an informational note. **"Phase gate" means any phase that ends in an `AskUserQuestion` decision point this pipeline itself lists** — a transition under Decision Points above, or a **Gate** step written into the pipeline below — **whatever the `automation` mode.** `guided` and `autonomous` change how a gate is passed (it auto-advances, or is recorded with `log_decision`), not whether it is one, so bounded-exception condition (3) below holds at it in every mode. An agent restricted to "phase gates only" is spawned at those points and no others. This active-set scoping applies throughout the pipeline below: any phase that names an agent outside the active set routes through the nearest core agent rather than spawning it.
 
 **Announce the active set before Step 1 — never let the collapse be silent.**
 Before spawning anything, state in one line which agents this run will actually
@@ -52,10 +55,10 @@ Fill it from the `team.size` list directly above and the agents this file's own
 pipeline names — not from an example. Both sets differ per orchestrator.
 
 The pipeline below reads as a multi-agent fan-out and at the shipped default it
-is one or two agents — `team-release` names eight and runs one, `team-narrative`
+is one or two agents — `team-release` names ten and runs one, `team-narrative`
 names six across five phases and runs `writer` alone. **The collapse is correct**:
-`team.size` is rigor-fronted and the narrow default is the token lever, measured
-at roughly 10x. What was wrong is that nothing said so, so a reader could not
+`team.size` is rigor-fronted and the narrow default is the token lever.
+Without saying so, a reader cannot
 distinguish a correctly-collapsed run from a broken pipeline, and the per-agent
 "routes through the nearest core agent with an informational note" rule above
 fires at routing time and never states the shape of the run as a whole.
@@ -95,7 +98,21 @@ Use the `Agent` tool to spawn each team member as a subagent:
 
 **Brief each agent — do not dump context.** Read the shared inputs **once** and pass a distilled brief inline: the lines each agent actually needs, never a file path for a document you have already read (an agent handed a path re-reads the whole file). Pass a path only for a document you have not read and only that agent needs.
 
-**End every agent prompt with a return contract:** "Write your full output to `[path]` — that named path is your write authorisation under the bounded exception below, so write it without a separate approval prompt. Return **only** (1) the path written, (2) a ≤5-bullet summary of decisions, (3) any BLOCKED/CONCERNS items, one line each. Do not restate the documents you read." Without it, an agent returns everything it read back into this session.
+**End every agent prompt with a return contract:** "Write your full output to `[path]` — that named path is your write authorisation under the bounded exception below, so write it without a separate approval prompt. Return **only** (1) the path written, (2) a ≤5-bullet summary of decisions, (3) any BLOCKED/CONCERNS items, one line each. Do not restate the documents you read." Without it, an agent returns everything it read back into this session. **Implementation files are the exception:** an agent writing code or assets first returns the files it will create or change, and its return contract names them only after you have asked once for the set and the user said yes (File Write Protocol) — that answer, not the bounded exception, authorises those writes.
+
+**Substitute a real path for `[path]`.** Working artifacts go under
+`production/ui/[feature-name]/`, the slug Phase 1b's `design/ux/[feature-name].md`
+uses. One file per agent, so the parallel Phase 4 reviews never share one:
+
+| Phase / agent | Writes to |
+|---|---|
+| 2 art-director | `production/ui/[feature-name]/visual-design.md` |
+| 3 engine UI specialist | `production/ui/[feature-name]/engine-notes.md` |
+| 3 ui-programmer | the code root — the files the one implementation ask lists (File Write Protocol), outside the bounded exception |
+| 4 ux-designer, art-director, accessibility-specialist | `production/ui/[feature-name]/review-[agent].md`, one each |
+
+The UX spec itself (Phase 1b) and any pattern-library update are under `design/`,
+outside the bounded exception: `/ux-design` or the agent asks before writing them.
 
 > **Why this does not violate the Collaboration Protocol.** `CLAUDE.md` requires an agent to ask "May I write this to [filepath]?" before Write/Edit. A subagent spawned here writes **without** asking, and that is a deliberate, bounded exception rather than an oversight — the same call already made for `consistency-check` appending to `active.md`. The exception holds only when all three are true: (1) the path is one **you** named in the prompt, so the user approved the destination when they approved the phase; (2) it is a new artifact under `production/`, `docs/` or `tests/`, never an edit to existing source or config; (3) the phase that produced it is itself gated by an `AskUserQuestion` before the pipeline advances. Outside those three, the agent must ask. **Do not "fix" this by asking per subagent** — a prompt per agent per phase makes an orchestrator unusable, which is why the exception exists.
 
@@ -106,11 +123,13 @@ Launch independent agents in parallel where the pipeline allows it (e.g., Phase 
 ### Phase 1a: Context Gathering
 
 Before designing anything, read and synthesize:
-- `design/gdd/game-concept.md` — platform targets and intended audience
+- `design/gdd/game-concept.md` — platform targets and intended audience (or
+  `design/game-brief.md`, the one-page brief that replaces it at `rigor: minimal` —
+  its "Who it's for" line gives the audience; it names no platform)
 - `design/player-journey.md` — player's state and context when they reach this screen
 - All GDD UI Requirements sections relevant to this feature
 - `design/ux/interaction-patterns.md` — existing patterns to reuse (not reinvent)
-- `design/accessibility-requirements.md` — committed accessibility tier (e.g., Basic, Enhanced, Full)
+- `design/accessibility-requirements.md` — committed accessibility tier (Basic, Standard, Comprehensive or Exemplary)
 
 **Report the status of every document above before designing anything.** Phase 1a
 reads five inputs; for a long time only the pattern library was guarded, and the
@@ -131,8 +150,9 @@ is absent:
   assumption, so a later reader can see it was assumed rather than committed.
 - Recommend `/ux-design accessibility` to establish the tier.
 
-Absence of `design/gdd/game-concept.md`, `design/player-journey.md` or
-`design/ux/hud.md` is not blocking, but name each missing one in the brief you
+Absence of a concept doc (neither `design/gdd/game-concept.md` nor
+`design/game-brief.md`), `design/player-journey.md` or `design/ux/hud.md` is not
+blocking, but name each missing one in the brief you
 pass to the ux-designer so they design knowing what context they lack, rather
 than inferring it.
 
@@ -163,7 +183,11 @@ Output: `design/ux/[feature-name].md` with all required spec sections filled.
 
 After the spec is complete, invoke `/ux-review design/ux/[feature-name].md`.
 
-**Gate**: Do not proceed to Phase 2 until the verdict is APPROVED. If the verdict is NEEDS REVISION, the ux-designer must address the flagged issues and re-run the review. The user may explicitly accept a NEEDS REVISION risk and proceed, but this must be a conscious decision — present the specific concerns via `AskUserQuestion` before asking whether to proceed.
+**Gate**: Do not proceed to Phase 2 until the verdict is APPROVED. If the verdict is NEEDS REVISION, the ux-designer must address the flagged issues in the same spec — it is kept and revised, never discarded — and re-run the review. The user may explicitly accept a NEEDS REVISION risk and proceed, but this must be a conscious decision — present the specific concerns via `AskUserQuestion` before asking whether to proceed.
+
+A **NOT ASSESSED** verdict blocks the same way, and the user may override it the same way. Its fix is an input, not a revision: present the dimensions `/ux-review` could not assess and the missing input for each (e.g. `/ux-design accessibility` for an uncommitted tier). Re-running the review without that input returns the same verdict, so offer to produce the input first.
+
+When the user proceeds past NEEDS REVISION or NOT ASSESSED, the final report records the override: the verdict, the concerns or unassessed dimensions left open, and that the user chose to proceed.
 
 ### Phase 2: Visual Design
 
@@ -183,7 +207,7 @@ Before implementation begins, spawn the **engine UI specialist** (`specialists.u
 - Recommended widget/node structure for the engine?
 - Output: engine UI implementation notes to hand off to ui-programmer before they begin
 
-If no engine is configured, skip this step. **Record `Engine validation: NOT ASSESSED — no engine configured (`engine.name` unset in `project.yaml`)` in this run's output.** A skipped check that says nothing is indistinguishable from a check that passed; the reader cannot tell engine guidance was never sought.
+If no engine is configured, skip this step. **Record ``Engine validation: NOT ASSESSED — no engine configured (`engine.name` unset in `project.yaml`)`` in this run's output.** A skipped check that says nothing is indistinguishable from a check that passed; the reader cannot tell engine guidance was never sought.
 
 Delegate to **ui-programmer**:
 - Implement the UI following the UX spec and visual design spec
@@ -233,11 +257,11 @@ usually still there.
 
 If any spawned agent returns BLOCKED, errors, or cannot complete: **surface it
 immediately, don't proceed past a dependency it blocks, and always produce a
-partial report.** Full procedure: `.claude/docs/error-recovery-protocol.md`.
+partial report.** A skipped agent's section stays a named gap — never fill it with content of your own. Full procedure: `.claude/docs/error-recovery-protocol.md`.
 
 Common blockers:
 - Input file missing (story not found, GDD absent) → redirect to the skill that creates it
-- ADR status is Proposed → do not implement; run `/architecture-decision` first
+- ADR status is Proposed → do not implement; once it is decided, accept it with `/architecture-decision accept ADR-NNNN`
 - Scope too large → split into two stories via `/create-stories`
 - Conflicting instructions between ADR and story → surface the conflict, do not guess
 
@@ -251,6 +275,9 @@ delegated to sub-agents and sub-skills. The two follow **different** rules:
   Protocol" — the path is one you named, the artifact is new under `production/`,
   `docs/` or `tests/`, and the phase is gated by an `AskUserQuestion`. A sub-agent
   does **not** prompt per write inside those bounds; outside them it must ask.
+  **Implementation files** (ui-programmer's code under the code root) are outside
+  those bounds: ui-programmer returns the files it will create or change, you ask
+  once for the set, and it writes after a yes.
 - **Sub-skills** (`/ux-design`) are not sub-agents and the exception does not reach
   them. They follow the normal Collaboration Protocol and ask before writing.
 
@@ -261,6 +288,12 @@ This orchestrator does not write files directly.
 A summary report covering: UX spec status, UX review verdict, visual design status, implementation status, accessibility compliance, input method support, interaction pattern library update status, and any outstanding issues.
 
 Verdict: **COMPLETE** — UI feature delivered through full pipeline (UX spec → visual → implementation → review → polish).
+
+If the accessibility gate (no committed tier) or the engine validation (no engine
+configured) was NOT ASSESSED, the verdict names each one — never a plain COMPLETE:
+
+Verdict: **COMPLETE — [accessibility | engine validation] NOT ASSESSED ([reason])** — UI feature delivered; the named check could not run.
+
 Verdict: **BLOCKED** — pipeline halted; surface the blocker and its phase before stopping.
 
 ## Next Steps

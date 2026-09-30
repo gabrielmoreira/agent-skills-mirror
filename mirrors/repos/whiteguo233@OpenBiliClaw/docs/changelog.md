@@ -2,6 +2,11 @@
 
 > 按里程碑记录各阶段交付内容。每次分支合回 main 时追加条目。
 
+## 修复：Firefox event page 卸载导致抖音任务无结果、标签页残留（2026-09-29，fix/issue140-dy-firefox-task-state）
+
+- **抖音任务状态持久化 + alarm 超时兜底（issue #140，严重）**：Firefox MV3 的 background scripts 是 event page，空闲约 30 秒即被浏览器卸载；`dy-task-dispatcher.ts` 此前把任务执行状态（`taskTabId` / `searchProgress` 等）全部放在模块级内存，超时兜底用模块级 `setTimeout`——event page 卸载后超时回调不再触发、任务标签页残留，迟到的 `DY_SEARCH_RESULT` 也被 `if (!searchProgress) return` 丢弃。现把进行中任务的快照（任务体、任务 tab id、deadline、各类型进度）在每次状态迁移时串行写穿到 `chrome.storage.session`（key `openbiliclaw_dy_active_task`），超时改用一次性 `chrome.alarms`（`openbiliclaw-dy-task-timeout`）作为权威兜底，`setTimeout` 仅作同进程精确快速路径。新 worker 经 `ensureDyTaskRecovery()` 单例 barrier（service worker 启动、poll/超时 alarm、`DY_*_RESULT` 消息入口共用）恢复快照：迟到结果继续回传 partial/final 并收尾，过期记录补报 `failed + task_timeout` 并关闭任务 tab，tab 已消失时以 `task_tab_closed` 立即结算；无记录时按 `openbiliclaw_dy_task=1` URL 标记清扫孤儿任务标签页（不动用户标签）。Chrome service worker 回收场景同样受益。回归：新增 `extension/tests/dy-task-recovery.test.ts` 8 条。
+- **文档同步**：`docs/modules/extension.md`（新增「抖音任务状态跨 event page 持久化」行）。
+
 ## 新增 API Route 内置 Provider（2026-09-28，feat/api-route-provider）
 
 - `provider_type="api_route"` 通过 OpenAI 兼容接口接入 API Route，默认 `https://global.api-route.com/v1`、`gpt-5.5`。支持独立实例、调用链、模型发现和请求探测；多模型路由不发送 `reasoning_effort`，embedding 仍需独立配置。

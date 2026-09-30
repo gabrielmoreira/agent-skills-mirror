@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `kevintsengtw/dotnet-testing-agent-skills` — 26 default patterns, 0 followed patterns, 219 file(s) materialized.
+Mirror of `kevintsengtw/dotnet-testing-agent-skills` — 26 default patterns, 0 followed patterns, 187 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `kevintsengtw/dotnet-testing-agent-skills` — 26 default patterns, 0 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 219 |
+| Files         | 187 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -227,7 +227,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 166 | ✓ | [`skills/dotnet-testing-test-data-builder-pattern/templates/advanced-builder-scenarios.cs`](skills/dotnet-testing-test-data-builder-pattern/templates/advanced-builder-scenarios.cs) |
 | 167 | ✓ | [`skills/dotnet-testing-test-data-builder-pattern/templates/builder-with-theory.cs`](skills/dotnet-testing-test-data-builder-pattern/templates/builder-with-theory.cs) |
 | 168 | ✓ | [`skills/dotnet-testing-test-data-builder-pattern/templates/user-builder-example.cs`](skills/dotnet-testing-test-data-builder-pattern/templates/user-builder-example.cs) |
-| 169 | ✓ | [`skills/dotnet-testing-test-naming-conventions/examples/naming-examples.md`](skills/dotnet-testing-test-naming-conventions/examples/naming-examples.md) |
+| 169 | ✓ | [`skills/dotnet-testing-test-naming-conventions/references/naming-examples.md`](skills/dotnet-testing-test-naming-conventions/references/naming-examples.md) |
 | 170 | ✓ | [`skills/dotnet-testing-test-naming-conventions/SKILL.md`](skills/dotnet-testing-test-naming-conventions/SKILL.md) |
 | 171 | ✓ | [`skills/dotnet-testing-test-naming-conventions/templates/naming-convention-examples.cs`](skills/dotnet-testing-test-naming-conventions/templates/naming-convention-examples.cs) |
 | 172 | ✓ | [`skills/dotnet-testing-test-output-logging/SKILL.md`](skills/dotnet-testing-test-output-logging/SKILL.md) |
@@ -246,38 +246,6 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 185 | ✓ | [`skills/dotnet-testing/references/task-mapping-table.md`](skills/dotnet-testing/references/task-mapping-table.md) |
 | 186 | ✓ | [`skills/dotnet-testing/SKILL.md`](skills/dotnet-testing/SKILL.md) |
 | 187 | ✓ | [`skills/README.md`](skills/README.md) |
-| 188 | ✓ | [`skills/skill-creator-advanced/assets/evals/evals.json`](skills/skill-creator-advanced/assets/evals/evals.json) |
-| 189 | ✓ | [`skills/skill-creator-advanced/assets/evals/regression_gates.json`](skills/skill-creator-advanced/assets/evals/regression_gates.json) |
-| 190 | ✓ | [`skills/skill-creator-advanced/LICENSE.txt`](skills/skill-creator-advanced/LICENSE.txt) |
-| 191 | ✓ | [`skills/skill-creator-advanced/references/description-optimization.md`](skills/skill-creator-advanced/references/description-optimization.md) |
-| 192 | ✓ | [`skills/skill-creator-advanced/references/distribution-playbook.md`](skills/skill-creator-advanced/references/distribution-playbook.md) |
-| 193 | ✓ | [`skills/skill-creator-advanced/references/eval-schemas.md`](skills/skill-creator-advanced/references/eval-schemas.md) |
-| 194 | ✓ | [`skills/skill-creator-advanced/references/eval-workflow.md`](skills/skill-creator-advanced/references/eval-workflow.md) |
-| 195 | ✓ | [`skills/skill-creator-advanced/references/lifecycle.md`](skills/skill-creator-advanced/references/lifecycle.md) |
-| 196 | ✓ | [`skills/skill-creator-advanced/references/multilingual-trigger-strategy.md`](skills/skill-creator-advanced/references/multilingual-trigger-strategy.md) |
-| 197 | ✓ | [`skills/skill-creator-advanced/references/output-patterns.md`](skills/skill-creator-advanced/references/output-patterns.md) |
-| 198 | ✓ | [`skills/skill-creator-advanced/references/patterns-troubleshooting.md`](skills/skill-creator-advanced/references/patterns-troubleshooting.md) |
-| 199 | ✓ | [`skills/skill-creator-advanced/references/regression-gates.md`](skills/skill-creator-advanced/references/regression-gates.md) |
-| 200 | ✓ | [`skills/skill-creator-advanced/references/skill-boundary-management.md`](skills/skill-creator-advanced/references/skill-boundary-management.md) |
-| 201 | ✓ | [`skills/skill-creator-advanced/references/skill-roi-model.md`](skills/skill-creator-advanced/references/skill-roi-model.md) |
-| 202 | ✓ | [`skills/skill-creator-advanced/references/testing-playbook.md`](skills/skill-creator-advanced/references/testing-playbook.md) |
-| 203 | ✓ | [`skills/skill-creator-advanced/references/workflows.md`](skills/skill-creator-advanced/references/workflows.md) |
-| 204 | ✓ | [`skills/skill-creator-advanced/scripts/aggregate_benchmark.py`](skills/skill-creator-advanced/scripts/aggregate_benchmark.py) |
-| 205 | ✓ | [`skills/skill-creator-advanced/scripts/check_regression_gates.py`](skills/skill-creator-advanced/scripts/check_regression_gates.py) |
-| 206 | ✓ | [`skills/skill-creator-advanced/scripts/format_check.py`](skills/skill-creator-advanced/scripts/format_check.py) |
-| 207 | ✓ | [`skills/skill-creator-advanced/scripts/generate_report.py`](skills/skill-creator-advanced/scripts/generate_report.py) |
-| 208 | ✓ | [`skills/skill-creator-advanced/scripts/generate_review.py`](skills/skill-creator-advanced/scripts/generate_review.py) |
-| 209 | ✓ | [`skills/skill-creator-advanced/scripts/generate_test_plan.py`](skills/skill-creator-advanced/scripts/generate_test_plan.py) |
-| 210 | ✓ | [`skills/skill-creator-advanced/scripts/improve_description.py`](skills/skill-creator-advanced/scripts/improve_description.py) |
-| 211 | ✓ | [`skills/skill-creator-advanced/scripts/init_skill_advanced.py`](skills/skill-creator-advanced/scripts/init_skill_advanced.py) |
-| 212 | ✓ | [`skills/skill-creator-advanced/scripts/init_skill.py`](skills/skill-creator-advanced/scripts/init_skill.py) |
-| 213 | ✓ | [`skills/skill-creator-advanced/scripts/package_skill.py`](skills/skill-creator-advanced/scripts/package_skill.py) |
-| 214 | ✓ | [`skills/skill-creator-advanced/scripts/prepare_eval_workspace.py`](skills/skill-creator-advanced/scripts/prepare_eval_workspace.py) |
-| 215 | ✓ | [`skills/skill-creator-advanced/scripts/quick_validate.py`](skills/skill-creator-advanced/scripts/quick_validate.py) |
-| 216 | ✓ | [`skills/skill-creator-advanced/scripts/run_eval.py`](skills/skill-creator-advanced/scripts/run_eval.py) |
-| 217 | ✓ | [`skills/skill-creator-advanced/scripts/run_loop.py`](skills/skill-creator-advanced/scripts/run_loop.py) |
-| 218 | ✓ | [`skills/skill-creator-advanced/scripts/utils.py`](skills/skill-creator-advanced/scripts/utils.py) |
-| 219 | ✓ | [`skills/skill-creator-advanced/SKILL.md`](skills/skill-creator-advanced/SKILL.md) |
 
 ---
 

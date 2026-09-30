@@ -47,7 +47,7 @@ the two happened — a reader cannot tell from a green result.
 
 ## Phase 1: Identify Balance Domain
 
-Determine the balance domain from `$ARGUMENTS[0]`:
+Determine the balance domain from `$ARGUMENTS` — the whole string, since a data-file path may contain spaces:
 
 - **Combat** → weapon/ability DPS, time-to-kill, damage type interactions
 - **Economy** → resource faucets/sinks, acquisition rates, item pricing
@@ -85,11 +85,24 @@ Then read the GDD for the system from `design/gdd/` to understand intended desig
 targets, tuning knobs, and expected value ranges — for anything the registry did
 not already supply. This is the baseline for "correct" behaviour.
 
+If the data files are FOUND but neither source gives targets for this domain,
+the sections that judge against targets (Outliers Detected, and Progression
+Analysis where the domain has a curve) are `NOT ASSESSED — NO DATA`. Each one names what was missing — the
+GDD it looked for in `design/gdd/`, and whether the registry was absent or empty
+— and names `/design-system`, which writes both.
+
 ---
 
 ## Phase 4: Perform Analysis
 
-Run domain-specific checks:
+**Every domain: compare each value with its target.** For each named value in the
+data files, take its target from Phase 3 — a registry constant's `value`, a
+registry formula's `output_range`, or the range the GDD states — and compare. A
+value outside its target is a row in Outliers Detected (`player_damage_base` 140
+against 90–110). A value with no target anywhere is neither in range nor an
+outlier: list it under Values That Need Attention as `no stated range — not judged`.
+
+Then run domain-specific checks:
 
 **Combat balance:**
 - Calculate DPS for all weapons/abilities at each power tier
@@ -147,6 +160,19 @@ Run domain-specific checks:
 ### Values That Need Attention
 [Specific values with suggested adjustments and rationale]
 ```
+
+Choose the Health Summary by the worst finding, first match wins:
+- **CRITICAL ISSUES** — a degenerate strategy (one choice dominates every
+  alternative), a progression that stalls or cannot be completed, or an economy
+  loop with no sink
+- **CONCERNS** — outliers or curve problems a tuning pass can fix, with no
+  finding of the critical kind
+- **NOT ASSESSED** — nothing to analyze (the no-data path above), a section that
+  needs targets is `NOT ASSESSED — NO DATA`, or a value had no stated range to
+  judge it against; name which. It ranks below the two finding verdicts, because
+  a measured problem is more actionable than a gap, and above HEALTHY
+- **HEALTHY** — every value judged against a stated target, no outliers, no
+  degenerate strategies, progression within the stated targets
 
 ---
 

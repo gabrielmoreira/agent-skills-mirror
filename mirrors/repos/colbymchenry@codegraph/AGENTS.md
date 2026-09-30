@@ -89,6 +89,7 @@ The public API surface is `src/index.ts` — the `CodeGraph` class wires all the
 - `src/bin/codegraph.ts` — CLI (commander). Subcommands: `install`, `init`, `uninit`, `index`, `sync`, `status`, `query`, `files`, `context`, `affected`, `serve --mcp`.
 - `src/ui/` — terminal UI (shimmer progress, worker).
 - `src/ui-server/` -- read-only JSON API for the `codegraph ui` browser viewer (`api/`: `node`, `flow`, `map`, `screens`, `steps`, `deadcode`, `trails`, `program`, ...) plus static server; Svelte viewer lives in `ui/` (see `docs/design/codegraph-ui-design-spec.md`). `screens`/`steps`/`program` share one fold (`via`/`when` via `graph/branch-guards.ts`); `api/effects.ts` curates calls that leave the index; `api/route-roots.ts` names where a route's code starts. Derivations rendered by more than one surface belong in `src/graph/`, not `ToolHandler`.
+  **Not released yet:** `codegraph ui` / `web` are refused (and hidden from `--help`) unless `CODEGRAPH_UI=1` is set — `src/bin/viewer-gate.ts`. Viewer changelog entries wait in `docs/viewer-launch-changelog.md`, not under `[Unreleased]`. At launch: delete the gate, move those entries back, drop the "not released yet" notes from `site/`.
 
 ### NodeKind / EdgeKind
 
@@ -255,7 +256,10 @@ mismatch between `package.json` and `package-lock.json`, runs
 version fields (top-level + `packages.""`), and auto-commits + pushes the
 result back to `main` with `[skip ci]`. So a GitHub-web-UI single-file edit to
 `package.json` is enough to kick off a clean release. (If they edit both files
-locally, that's fine too — the sync step no-ops.)
+locally, that's fine too — the sync step no-ops.) Bump `ui/package.json` to the
+same version in that change: the component library is versioned with the
+engine, `ui-package.test.ts` pins it, and the workflow does not sync it — the
+1.6.1 bump left `main` red on exactly that.
 
 Once `package.json` is at the target version on `main`, trigger
 **Actions → Release → Run workflow** (on `main`). The workflow:

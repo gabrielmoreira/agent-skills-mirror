@@ -8,7 +8,7 @@ Read this when:
 
 ## First-time setup — get a Bearer Token and store it
 
-The X MCP tools are read-only and use a Bearer Token (app-only auth). The user supplies one per workspace via the vault. You (the agent) never see the raw token — you just call `get("X_BEARER_TOKEN")` inside sandbox code.
+The X MCP tools are read-only and use a Bearer Token (app-only auth). The user stores one in the vault, once for all of their workspaces. You (the agent) never see the raw token; you just call `get("X_BEARER_TOKEN")` inside sandbox code.
 
 Walk the user through these exact steps when the vault is empty:
 
@@ -26,16 +26,14 @@ Walk the user through these exact steps when the vault is empty:
 
 > If the user regenerates, any previously-stored value in the vault becomes invalid and will start returning `auth_failed`. They'll need to paste the new one.
 
-### Step 3 — Store it in the workspace vault
+### Step 3 — Store it in the vault
 
-1. In the LangAlpha UI, open the **Workspace Files** panel on the right side of the chat.
-2. Click the **settings icon** in the top of the Workspace Files panel header — this opens **Workspace Settings**.
-3. Switch to the **Vault** tab (second tab, between **Overview** and **Storage**).
-4. Click **Add Secret** (or the equivalent "+" / new-entry button on that tab).
-5. Set **Name** to exactly `X_BEARER_TOKEN` (case-sensitive, no whitespace, no `Bearer ` prefix — just the token itself).
-6. Paste the token into **Value** and save.
+1. In the LangAlpha UI, open **Plugins** and switch to the **Secrets** tab.
+2. Click **Add Secret**.
+3. Set **Name** to exactly `X_BEARER_TOKEN` (case-sensitive, no whitespace, no `Bearer ` prefix; just the token itself).
+4. Paste the token into **Value** and save.
 
-The value is encrypted at rest and scoped to that one workspace — other workspaces do not see it.
+The value is encrypted at rest and available in every one of the user's workspaces.
 
 ### Step 4 — Verify from sandbox code
 
@@ -47,7 +45,7 @@ token = get("X_BEARER_TOKEN")
 print("present:", bool(token), "length:", len(token) if token else 0)
 ```
 
-Expect `present: True` and a non-trivial length. If `present: False`, the secret wasn't saved under the exact name `X_BEARER_TOKEN` — ask the user to re-open **Workspace Settings → Vault** and double-check the secret name.
+Expect `present: True` and a non-trivial length. If `present: False`, the secret wasn't saved under the exact name `X_BEARER_TOKEN`; ask the user to re-open **Plugins → Secrets** and double-check the secret name.
 
 **Never `print(token)` in full, paste it into a chat reply, or write it to a file.**
 
@@ -58,7 +56,7 @@ Each tool returns `{"error": "...", ...}` on failure — never raises. Match the
 ### `missing_token`
 
 ```json
-{"error": "missing_token", "detail": "X bearer token required. Pass bearer_token from the workspace vault ..."}
+{"error": "missing_token", "detail": "X bearer token required. Pass bearer_token from the vault ..."}
 ```
 
 **Meaning:** `bearer_token` argument was empty/None AND the `X_BEARER_TOKEN` env var is unset inside the MCP subprocess.
@@ -67,7 +65,7 @@ Each tool returns `{"error": "...", ...}` on failure — never raises. Match the
 
 1. If you forgot to pass `bearer_token=token` to the tool — fix your call.
 2. Otherwise, the vault doesn't have `X_BEARER_TOKEN`. Stop trying. Tell the user:
-   > "I don't have an X API token in this workspace's vault. To add one: open the **Workspace Files** panel on the right → click the settings icon at the top → switch to the **Vault** tab in **Workspace Settings** → add a secret named `X_BEARER_TOKEN`. Get the token from https://console.x.com (App → Keys and tokens → Bearer Token)."
+   > "I don't have an X API token in your vault. To add one: open **Plugins** → switch to the **Secrets** tab → add a secret named `X_BEARER_TOKEN`. Get the token from https://console.x.com (App → Keys and tokens → Bearer Token)."
 3. Do not attempt a workaround (scraping, googling the data) unless the user says the token setup is blocked.
 
 ### `auth_failed` (status 401 or 403)

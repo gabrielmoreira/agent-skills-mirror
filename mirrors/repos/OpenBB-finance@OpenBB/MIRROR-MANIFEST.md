@@ -7,7 +7,7 @@ ref: develop
 
 # Mirror Manifest
 
-Mirror of `OpenBB-finance/OpenBB` — 26 default patterns, 0 followed patterns, 4 file(s) materialized.
+Mirror of `OpenBB-finance/OpenBB` — 26 default patterns, 0 followed patterns, 5 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `OpenBB-finance/OpenBB` — 26 default patterns, 0 followed patterns, 
 | Ref           | `develop` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 4 |
+| Files         | 5 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -62,7 +62,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 1 | ✓ | [`openbb_platform/extensions/mcp_server/openbb_mcp_server/skills/build_workspace_app/SKILL.md`](openbb_platform/extensions/mcp_server/openbb_mcp_server/skills/build_workspace_app/SKILL.md) |
 | 2 | ✓ | [`openbb_platform/extensions/mcp_server/openbb_mcp_server/skills/configure_mcp_server/SKILL.md`](openbb_platform/extensions/mcp_server/openbb_mcp_server/skills/configure_mcp_server/SKILL.md) |
 | 3 | ✓ | [`openbb_platform/extensions/mcp_server/openbb_mcp_server/skills/develop_extension/SKILL.md`](openbb_platform/extensions/mcp_server/openbb_mcp_server/skills/develop_extension/SKILL.md) |
-| 4 | ✓ | [`openbb_platform/extensions/mcp_server/openbb_mcp_server/skills/work_with_server/SKILL.md`](openbb_platform/extensions/mcp_server/openbb_mcp_server/skills/work_with_server/SKILL.md) |
+| 4 | ✓ | [`openbb_platform/extensions/mcp_server/openbb_mcp_server/skills/use_openbb_cli/SKILL.md`](openbb_platform/extensions/mcp_server/openbb_mcp_server/skills/use_openbb_cli/SKILL.md) |
+| 5 | ✓ | [`openbb_platform/extensions/mcp_server/openbb_mcp_server/skills/work_with_server/SKILL.md`](openbb_platform/extensions/mcp_server/openbb_mcp_server/skills/work_with_server/SKILL.md) |
 
 ---
 

@@ -248,9 +248,11 @@ refuses such a session; `tests/run_all.py` forks per skill.
 uv run --with pytest python -m pytest tests/_meta -q
 ```
 
-`tests/_meta` is the fastest useful signal in the repo: pure standard library, no scientific
-packages, a couple of seconds. It runs the shared structural contract against **every** skill and
-fails if a skill ships `scripts/` without a suite under `tests/<name>/` or an entry in
+`tests/_meta` is the fastest useful signal in the repo: no scientific packages, a couple of
+seconds. It uses `jsonschema` from the dev dependencies to validate `plugin.json` against the
+bundled official Agent Plugins schema, without network access. It also checks package-path
+containment and version synchronization. It runs the shared structural contract against **every**
+skill and fails if a skill ships `scripts/` without a suite under `tests/<name>/` or an entry in
 `tests/skill-requirements.toml`. `.github/workflows/skill-tests.yml` runs it on every pull request,
 so a skill with untested scripts cannot land. A full run of `tests/run_all.py` starts with it.
 

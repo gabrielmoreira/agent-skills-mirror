@@ -47,21 +47,25 @@ behind the default-ON `web3` Cargo feature. When the feature is off,
 `tools/ops.rs` need no per-call `#[cfg]`. `cargo check --no-default-features`
 is the only thing that catches drift between the real and stub signatures.
 
+## Where the logic lives
+
+The swap/bridge/dapp logic is in the vendored `tinywallet-web3` crate
+(`vendor/tinywallet/crates/tinywallet-web3`, `crypto::service`), not here: quote
+preparation, the confirm-then-execute quote store and the agent tools. This
+module is the host adapter. The crate reaches OpenHuman only through seams,
+implemented in `seams.rs`.
+
 ## Key files
 
 | File | Role |
 | --- | --- |
-| `mod.rs` | Export-focused root: aggregates `all_web3_controller_schemas` / `all_web3_registered_controllers` / `all_web3_agent_tools`, plus shared schema/tool helpers. |
-| `types.rs` | deBridge chain-id to local signer mapping (`chain_family`, `DEBRIDGE_SOLANA_CHAIN_ID`), request params, `UnsignedTx`, `Web3QuoteKind`. |
-| `client.rs` | `CryptoClient`, a thin wrapper over the shared `IntegrationClient` for `/agent-integrations/crypto/*` (Bearer JWT auth, envelope unwrap). |
-| `store.rs` | In-memory prepared-quote store (TTL'd, capped, chat-thread owner-bound like the wallet) plus the shared confirm-then-execute path. |
-| `ops.rs` | Shared op logic: `routes`, `quote_swap`, `quote_bridge`, `prepare_dapp_call` (address defaulting, backend call, unsigned-tx extraction). |
+| `mod.rs` | Export-focused root: aggregates `all_web3_controller_schemas` / `all_web3_registered_controllers` / `all_web3_agent_tools` (which builds the crate's tools over the process-wide service), plus shared schema helpers. Re-exports the crate's request/quote types as `web3::types`. |
+| `seams.rs` | The host implementations of the crate's seams (`HostSigner`, `HostAccounts`, `TaskLocalScope`, `HostBackend`) and the `OnceLock` holding the process-wide `WalletEngine` and `Web3Service` (`engine()`, `service()`). |
+| `client.rs` | `CryptoClient`, a thin wrapper over the shared `IntegrationClient` for `/agent-integrations/crypto/*` (Bearer JWT auth, envelope unwrap). Reached through `HostBackend`. |
 | `stub.rs` | Disabled facade compiled when `web3` is off; empty `all_web3_registered_controllers` / `all_web3_controller_schemas` / `all_web3_agent_tools`. See Compile-time gate above. |
-| `web3_tests.rs` | `#[cfg(all(test, feature = "web3"))]` tests for `chain_family` mapping and the quote store's confirm/execute gate. |
-| `ops_tests.rs` | Tests for the shared op logic in `ops.rs` (unsigned-tx extraction, dapp/swap/bridge param rejection). |
+| `seams_tests.rs` | Composition tests over the real wallet state, and the regression test that `TaskLocalScope` reads `APPROVAL_CHAT_CONTEXT`. |
 | `stub_tests.rs` | Runs only in the disabled build; pins that the three stub entry points return empty collections. |
-| `{swap,bridge,dapp}/schemas.rs` | Per-namespace RPC controllers and handlers. |
-| `{swap,bridge,dapp}/tools.rs` | Per-namespace agent tools. |
+| `{swap,bridge,dapp}/schemas.rs` | Per-namespace RPC controllers and handlers (namespace strings are wire contracts). |
 
 ## RPC / controllers
 
@@ -79,8 +83,10 @@ quote with a refreshed TTL.
 
 `web3_swap_quote`, `web3_swap_execute`, `web3_swap_routes`,
 `web3_bridge_quote`, `web3_bridge_execute`, `web3_dapp_call`,
-`web3_dapp_execute` (registered in `crates/openhuman-core/src/tools/ops.rs`). They call the
-backend per-invocation and error gracefully when the user is not signed in.
+`web3_dapp_execute` are defined in `tinywallet_web3::tools::web3` and built over
+the process-wide service by `all_web3_agent_tools()` (registered in
+`crates/openhuman-core/src/tools/ops.rs`). They call the backend
+per-invocation and error gracefully when the user is not signed in.
 
 ## Chain-id mapping
 
@@ -97,11 +103,12 @@ are rejected at quote time.
 
 ## Dependencies
 
-- [`crate::web3::wallet`]: `sign_and_broadcast_evm` / `sign_and_broadcast_solana` (crate-internal), `status` for address resolution, `EvmNetwork` / `WalletChain`.
-- [`crate::integrations`] (`IntegrationClient`, `build_client`): backend auth and transport.
-- `crate::security::approval::APPROVAL_CHAT_CONTEXT`: quote-owner binding.
+- `tinywallet-web3` (`vendor/tinywallet/crates/tinywallet-web3`, optional, feature `tools`, enabled by the `web3` feature): the swap/bridge/dapp service, quote store and tools. Its seams are implemented in `seams.rs`.
+- [`crate::web3::wallet`]: `status` (through `HostAccounts`) and `secret_material` (through `HostSigner`).
+- [`crate::integrations`] (`IntegrationClient`, `build_client`): backend auth and transport, through `HostBackend`.
+- `crate::security::approval::APPROVAL_CHAT_CONTEXT`: quote-owner binding, read by `TaskLocalScope`.
 - `crate::core::all` / `crate::core`: RPC controller registry wiring.
-- `tinywallet-bus` (`crates/openhuman-core/Cargo.toml` around line 864, optional, gated by the `web3` feature; features `btc`, `evm`, `solana`, `tron`, `keccak`, `net`, `wire`, `eip712`, `abi`, `tx-codec`): not imported by `web3/*.rs` itself, but the contract crate its `wallet/` and `x402/` members build on. It supplies address validation, the `SecretMaterial`/`TransactionSpec` wire types handed to the wallet module, the `Transport` seam, the EIP-712/ERC-20 encoders used by x402, and the Tron verifier.
+- `tinywallet-bus` (optional, gated by the `web3` feature): the contract crate. It supplies the `SecretMaterial`/`TransactionSpec` wire types the signer hands to the wallet module and the `Transport` seam types.
 
 ## Notes / gotchas
 

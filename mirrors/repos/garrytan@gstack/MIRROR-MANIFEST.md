@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `garrytan/gstack` — 26 default patterns, 7 followed patterns, 79 file(s) materialized.
+Mirror of `garrytan/gstack` — 26 default patterns, 8 followed patterns, 81 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `garrytan/gstack` — 26 default patterns, 7 followed patterns, 79 fil
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 7 |
-| Files         | 79 |
+| Followed pats | 8 |
+| Files         | 81 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -53,6 +53,7 @@ Mirror of `garrytan/gstack` — 26 default patterns, 7 followed patterns, 79 fil
 
 - `docs/howto-ios-testing-with-gstack.md`
 - `docs/TESTING_INTERNALS.md`
+- `docs/test-value-bar.md`
 - `docs/PROJECT_STRUCTURE.md`
 - `docs/BROWSER_INTERNALS.md`
 - `docs/SLOP_SCAN.md`
@@ -134,16 +135,18 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 67 | ✓ | [`skillify/SKILL.md`](skillify/SKILL.md) |
 | 68 | ✓ | [`spec/SKILL.md`](spec/SKILL.md) |
 | 69 | ✓ | [`sync-gbrain/SKILL.md`](sync-gbrain/SKILL.md) |
-| 70 | ✓ | [`test/fixtures/context-bill/tree-a/alpha/SKILL.md`](test/fixtures/context-bill/tree-a/alpha/SKILL.md) |
-| 71 | ✓ | [`test/fixtures/context-bill/tree-a/beta/SKILL.md`](test/fixtures/context-bill/tree-a/beta/SKILL.md) |
-| 72 | ✓ | [`unfreeze/SKILL.md`](unfreeze/SKILL.md) |
-| 73 | → | [`docs/BROWSER_INTERNALS.md`](docs/BROWSER_INTERNALS.md) |
-| 74 | → | [`docs/CHANGELOG_STYLE.md`](docs/CHANGELOG_STYLE.md) |
-| 75 | → | [`docs/howto-ios-testing-with-gstack.md`](docs/howto-ios-testing-with-gstack.md) |
-| 76 | → | [`docs/OPENCLAW_PUBLISHING.md`](docs/OPENCLAW_PUBLISHING.md) |
-| 77 | → | [`docs/PROJECT_STRUCTURE.md`](docs/PROJECT_STRUCTURE.md) |
-| 78 | → | [`docs/SLOP_SCAN.md`](docs/SLOP_SCAN.md) |
-| 79 | → | [`docs/TESTING_INTERNALS.md`](docs/TESTING_INTERNALS.md) |
+| 70 | ✓ | [`test-audit/SKILL.md`](test-audit/SKILL.md) |
+| 71 | ✓ | [`test/fixtures/context-bill/tree-a/alpha/SKILL.md`](test/fixtures/context-bill/tree-a/alpha/SKILL.md) |
+| 72 | ✓ | [`test/fixtures/context-bill/tree-a/beta/SKILL.md`](test/fixtures/context-bill/tree-a/beta/SKILL.md) |
+| 73 | ✓ | [`unfreeze/SKILL.md`](unfreeze/SKILL.md) |
+| 74 | → | [`docs/BROWSER_INTERNALS.md`](docs/BROWSER_INTERNALS.md) |
+| 75 | → | [`docs/CHANGELOG_STYLE.md`](docs/CHANGELOG_STYLE.md) |
+| 76 | → | [`docs/howto-ios-testing-with-gstack.md`](docs/howto-ios-testing-with-gstack.md) |
+| 77 | → | [`docs/OPENCLAW_PUBLISHING.md`](docs/OPENCLAW_PUBLISHING.md) |
+| 78 | → | [`docs/PROJECT_STRUCTURE.md`](docs/PROJECT_STRUCTURE.md) |
+| 79 | → | [`docs/SLOP_SCAN.md`](docs/SLOP_SCAN.md) |
+| 80 | → | [`docs/test-value-bar.md`](docs/test-value-bar.md) |
+| 81 | → | [`docs/TESTING_INTERNALS.md`](docs/TESTING_INTERNALS.md) |
 
 ---
 

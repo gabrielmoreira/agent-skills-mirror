@@ -4,6 +4,8 @@ import path from "node:path";
 import { NextResponse } from "next/server";
 import { rejectCrossSiteWrite } from "@/lib/request-guard";
 import type { ImportedFont } from "@/lib/types";
+import { decodeBase64, readJsonBody } from "@/lib/request-body";
+import { writeAsset } from "@/lib/write-asset";
 
 export const dynamic = "force-dynamic";
 
@@ -32,18 +34,42 @@ function sniffFontFormat(bytes: Buffer): ImportedFont["format"] | null {
   return null;
 }
 
+// Check container lengths and table bounds before persisting. Glyph validity
+// is checked by the browser's FontFace decoder before the UI imports the file.
+function hasFontStructure(bytes: Buffer, format: ImportedFont["format"]): boolean {
+  const web = format === "woff" || format === "woff2";
+  const header = web ? (format === "woff2" ? 48 : 44) : 12;
+  if (bytes.length < header) return false;
+  const count = bytes.readUInt16BE(web ? 12 : 4);
+  if (!count) return false;
+  if (web && (bytes.readUInt32BE(8) !== bytes.length || bytes.readUInt16BE(14) !== 0 ||
+    bytes.readUInt32BE(16) > 64 * 1024 * 1024)) return false;
+  if (format === "woff2") {
+    const compressed = bytes.readUInt32BE(20);
+    return compressed > 0 && header + count * 2 + compressed <= bytes.length;
+  }
+  const stride = web ? 20 : 16;
+  const directoryEnd = header + count * stride;
+  if (directoryEnd > bytes.length) return false;
+  for (let i = 0; i < count; i++) {
+    const entry = header + i * stride;
+    const offset = bytes.readUInt32BE(entry + (web ? 4 : 8));
+    const length = bytes.readUInt32BE(entry + (web ? 8 : 12));
+    if (offset < directoryEnd || offset + length > bytes.length) return false;
+    if (web && length > bytes.readUInt32BE(entry + 12)) return false;
+  }
+  return true;
+}
+
 export async function POST(req: Request) {
   // This route WRITES A FILE to disk. See lib/request-guard.ts.
   const blocked = rejectCrossSiteWrite(req);
   if (blocked) {
     return NextResponse.json({ ok: false, error: blocked.error }, { status: blocked.status });
   }
-  let body: { data?: unknown };
-  try {
-    body = (await req.json()) as { data?: unknown };
-  } catch {
-    return NextResponse.json({ ok: false, error: "Invalid JSON" }, { status: 400 });
-  }
+  const input = await readJsonBody(req, 23 * 1024 * 1024);
+  if (input.response) return input.response;
+  const body = input.value as { data?: unknown } | null;
   if (typeof body?.data !== "string" || !body.data) {
     return NextResponse.json({ ok: false, error: "Choose a font file first." }, { status: 400 });
   }
@@ -51,12 +77,13 @@ export async function POST(req: Request) {
   if (body.data.length > Math.ceil(MAX_FONT_BYTES / 3) * 4) {
     return NextResponse.json({ ok: false, error: "Font file is too large (16MB maximum)." }, { status: 413 });
   }
-  const bytes = Buffer.from(body.data, "base64");
+  const bytes = decodeBase64(body.data);
+  if (!bytes) return NextResponse.json({ ok: false, error: "Invalid base64 font data" }, { status: 400 });
   if (bytes.byteLength > MAX_FONT_BYTES) {
     return NextResponse.json({ ok: false, error: "Font file is too large (16MB maximum)." }, { status: 413 });
   }
   const format = sniffFontFormat(bytes);
-  if (!format) {
+  if (!format || !hasFontStructure(bytes, format)) {
     return NextResponse.json({ ok: false, error: "Use a WOFF2, WOFF, TTF, or OTF font file." }, { status: 400 });
   }
 
@@ -67,11 +94,7 @@ export async function POST(req: Request) {
 
   try {
     await fs.mkdir(absDir, { recursive: true });
-    try {
-      await fs.access(absFile);
-    } catch {
-      await fs.writeFile(absFile, bytes);
-    }
+    await writeAsset(absFile, bytes);
     const font: ImportedFont = { src: `${PUBLIC_PREFIX}/${filename}`, format };
     return NextResponse.json({ ok: true, font });
   } catch (e) {

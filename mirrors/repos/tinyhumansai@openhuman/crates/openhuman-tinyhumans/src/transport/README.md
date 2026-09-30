@@ -16,13 +16,19 @@ header shapes the backend expects.
   (`BackendCredential::Session` as a bearer token, `BackendCredential::ApiKey`
   as `x-api-key`), and forward to the SDK's `raw()` client. `name()` returns
   `"tinyhumans-sdk"`.
-- `error.rs`: `map_sdk_error`, translating `tinyhumans_sdk::Error` into the
-  core's `BackendTransportError` variants.
+- `error.rs`: `map_sdk_error`, translating `tinyhumans_sdk::Error` for a
+  given method and path into the core's `BackendTransportError` variants. A
+  `404` on `…/channels/<p>/messages/<id>` becomes `ChannelMessageRouteMissing`
+  (a `PATCH` with no matching route: the backend has no edit route, #5230) or
+  `ChannelMessageNotFound` (the message is gone), using
+  `tinyhumans_sdk::classify`. The core maps them onto its typed
+  `BackendApiError` recovery states and never reads the body itself.
+  `channel_404_tests.rs` pins this against a mock backend.
 
 ## Installing it
 
 `SdkBackendTransport::shared()` returns an `Arc<dyn BackendTransport>` ready
-for `openhuman_core::api::transport::install_backend_transport`.
+for `openhuman_core::backend::install_backend_transport`.
 `openhuman_tinyhumans::install()` does this for every host that boots a core
 connected to TinyHumans (the Tauri shell, the TUI, the CLI); a core with no
 transport installed still runs agents, memory, tools and RPC, and answers

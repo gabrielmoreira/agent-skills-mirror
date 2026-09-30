@@ -1,6 +1,6 @@
 > [!NOTE]
 > **OmO 5.0: OmO ❤️ Pi**
-> Install it with `bun add -g omo-ai`. Memory system, CodeMode, Anthropic subscriptions, all covered.
+> Install it with `curl -fsSL https://get.omo.dev/install.sh | bash`. Memory system, CodeMode, Anthropic subscriptions, all covered.
 > [![OmO Herdr DAG - live OmO workflow DAGs in a Herdr side pane](./.github/assets/omo-herdr-dag.png)](https://github.com/jc01rho/omo-herdr-dag)
 > *Just type "mass ulw" with your prompt - now you are the master of graph engineering. Multi-model ultracode, together with a better memory system. (The right panel is [omo-herdr-dag](https://github.com/jc01rho/omo-herdr-dag).)*
 
@@ -51,17 +51,19 @@ OmO is one `omo` command that turns your tokens into finished work: research acr
 ## Install
 
 ```bash
-bun add -g omo-ai
+curl -fsSL https://get.omo.dev/install.sh | bash
 omo
 ```
 
-No bun? `npm i -g omo-ai` works too. The package is `omo-ai`; the unrelated `omo` package on npm is someone else's.
+On Windows, in PowerShell: `irm https://get.omo.dev/install.ps1 | iex`. The script installs the native `omo` binary for your OS and CPU into `~/.local/bin`, checks it against the release checksums, and falls back to GitHub Releases when the mirror is unreachable. Add `-s -- beta` (or a version such as `-s -- 5.1.1`) after `bash` to pick another channel. Windows CMD, fixing your `PATH`, updating and uninstalling are covered at [omo.dev/docs/install](https://omo.dev/docs/install).
+
+Prefer a package manager? `bun add -g omo-ai` (or `npm i -g omo-ai`) installs the same OmO. The package is `omo-ai`; the unrelated `omo` package on npm is someone else's.
 
 Open your project, run `omo`, describe the job. That's the whole setup.
 
 Coming from the OpenCode edition or LazyCodex? Run `omo setup` once. It carries your provider keys, custom providers, MCP servers, skills and model picks across. `omo doctor` then shows which task categories your providers can run and what the old install left behind. The full walkthrough is [Migrating from OpenCode](docs/guide/migrating-from-opencode.md).
 
-`omo update` updates in place. `bun remove -g omo-ai` (or `npm uninstall -g omo-ai`) removes it.
+To update, run the install line again (a package-manager install updates with `omo update`). `rm ~/.local/bin/omo` removes the binary install; `bun remove -g omo-ai` (or `npm uninstall -g omo-ai`) removes the package install.
 
 ## Why OmO
 

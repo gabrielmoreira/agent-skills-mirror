@@ -24,13 +24,12 @@ keep working. The Rust module path is `crate::mcp::registry`.
 | --- | --- |
 | `mod.rs` | Module declarations, the `connections`/`store`/`boot`/`supervisor`/`oauth` re-export facades, and `tools_safe_for_agent` (the prompt-injection scan). |
 | `ops.rs` / `ops_tests.rs` | `mcp_clients_*` RPC handler bodies, each delegates to the service `mcp::host` holds. |
-| `config_doc.rs` / `config_doc_tests.rs` | The `mcp.json` contract: how the store renders as a document (credential names only), what a written one may say, and the reconciliation helpers. |
-| `config_ops.rs` | `mcp_clients_config_get` / `config_set`: replace the store with what the document declares. |
+| `config_ops.rs` | `mcp_clients_config_get` / `config_set`: the `RpcOutcome` envelope, domain events and background connects over `tinymcp`'s `McpRegistry::render_config_doc` / `apply_config_doc` (the `mcp.json` contract and reconciliation live in `tinymcp::registry::config_doc`). |
 | `schemas/` (`mod.rs`, `registry.rs`, `handlers.rs`, `params.rs`), `schemas_tests.rs` | Controller schema registry and dispatch. |
 | `supervisor_events.rs` / `supervisor_events_tests.rs` | Maps a supervisor tick's `TickReport` into `DomainEvent`s. |
 | `bus.rs` / `bus_tests.rs` | `McpClientEventSubscriber`: logs lifecycle events for observability. |
-| `tools.rs` / `tools_tests.rs` | Agent-facing `mcp_registry_*` tools, thin shims over `ops.rs`. |
-| `action_tool.rs` / `action_tool_tests.rs` | One deferred agent tool per action on a connected server. Stable names and sanitized schemas enter `tool_search`; execution checks the current connection and routes through `ops.rs`. |
+| `tools.rs` / `tools_tests.rs` | Agent-facing `mcp_registry_*` tools: adapters over `tinymcp_bus::agent_tools::RegistryTool` specs (name, description, schema are the contract's), mapping effect to permission/exposure and executing through `ops.rs`. |
+| `action_tool.rs` / `action_tool_tests.rs` | One deferred agent tool per action on a connected server, built from `tinymcp_bus::agent_tools::action_tool_specs` with `tools_safe_for_agent` as the admission filter; execution re-checks the current connection and routes through `ops.rs`. |
 | `helpers.rs` | Shared identifier validation, workspace-service resolution, and env-key injection used by the handlers. |
 | `stub.rs` | The `mcp`-less mirror of the always-on surface: `all_mcp_registry_registered_controllers` (empty), `boot`, `bus`, `supervisor`, `oauth`, and the three `connections` lookups always-on callers name. |
 
@@ -148,7 +147,7 @@ same real type in both builds.
   installed servers, and connect, disconnect, config updates, and reconnects
   update the map. `connected_overview()` reads tool snapshots from that map;
   it does not call an MCP server on each chat turn.
-- `crates/openhuman-core/src/core/jsonrpc.rs`: the `/oauth/mcp/callback`
+- `crates/openhuman-rpc/src/server/http/oauth_mcp.rs`: the `/oauth/mcp/callback`
   route calls `oauth::complete`.
 - `crates/openhuman-core/src/tools/registry/ops.rs` and
   `crates/openhuman-core/src/agent/registry/agents/orchestrator/prompt.rs`:

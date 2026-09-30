@@ -62,6 +62,8 @@ Spaces is **not**: a Slack clone (the feed is coordination, not the team's memor
 
 The unit of collaboration here is not a message or a document — it is an **attributed change with reasoning**, produced equally by a human hand or a member's agent. Products built human-first bolt agents on as "bots" with special accounts and special permissions. In Spaces, agents are not members; *people* are members, and every agent action is an act of its person. That single choice dissolves the permission, billing, and identity questions that sink "team AI" products.
 
+*Amended 2026-09-29:* this still holds for a member's own agent, which acts as its person. An agent can now also be a member in its own right, marked as an agent and acting as itself (§4 Agent members): an agent that belongs to no one person, such as a team's shared coding agent.
+
 ---
 
 ## 2. Principles
@@ -87,7 +89,7 @@ Principles 1+2 make Harbor commodity infrastructure — easy to self-host, easy 
 |---|---|
 | **Org** | The tenant: a logical origin — a URL that speaks OAuth + the spaces protocol, owns its own identity and membership, and holds many spaces. An org is served by a deployment of Harbor (the open-source spaces server); one deployment may serve one org or many (§4), and clients cannot tell the difference. In everyday UI the org appears mostly as a badge and an address. |
 | **Space** | The shared container: a directory of assets + one feed + members. The unit of sharing and the privacy boundary. A **direct message** is a space of kind `direct` — the same container with a fixed two-member roster, named by the other person (§5, added 2026-09-07). |
-| **Member** | A person, identified by the org's IdP. Members act directly or through their agents; both are the member acting. |
+| **Member** | A person, identified by the org's IdP, or an agent that is a member in its own right (kind `agent`, §4 Agent members, 2026-09-29). Members act directly or through their own agents; both are the member acting. |
 | **Asset** | A file in the space: mergeable text rendered wiki-style (§5), or an uploaded binary (images render inline). One canonical live copy, held by the org — no per-user replicas. Its **path** is its product identity; storage keys on an internal id so moves never rewrite history (§6, the inode model). |
 | **Change-set** | The atom of writing: an attributed, optionally-reasoned group of edits to an asset, applied against a known base version. Produced identically by human draft→apply, agent tool call, or scheduled automation. UI word: a **change**; the log renders as **history**. |
 | **Feed** | The space's single conversation surface: ONE stream of root messages, flat threads behind reply chips, plus a rendered activity strand. |
@@ -198,6 +200,24 @@ One org-level role: a member is an **admin** or not. The first admin is named at
 - **Org removal keeps the member row** with state `removed`: every membership goes, with a `removed` event on each space's log and the `space_removed` frame; the identity binding is severed so their token maps to no member. Re-inviting the same identity **reactivates the same row**, so attribution stays continuous. Everything they wrote stays, attributed, exactly as Slack keeps a deactivated account's history. The roster (§5) lists `active` members only.
 - **Agents perform admin acts their member may.** Parity (§9): the role check is on the member, not the acting mode; every admin act is attributed with the mode, so the record shows it was the agent. Confirmation of a high-blast-radius act (org removal, delete) is the app's tool-approval step, not a Harbor carve-out that would make the agent face second-class.
 - **Org facts have no log in v1.** A role change or an invite-policy change is a state change visible through the roster and org settings; its space-level consequences land on the space logs as events, which is what Slack shows in-channel. An org-level audit log is Deferred (§12; trigger: a compliance ask).
+
+### Agent members — **Decided** *(added 2026-09-29)*
+
+An agent can be a member in its own right: a team's shared coding agent, or a Hermes or OpenClaw bot someone runs. It is not a member's own agent (§8), which acts *as* its person ("Ramnique (via Rowboat)"). An agent member acts as itself, and its acts are attributed to its own id.
+
+- **Kind is a member field, fixed at creation**: `human` or `agent`. A person never becomes an agent, or back. Every surface that shows a member shows which it is.
+- **Otherwise it is a member like any other**: an id minted by the org, a display name (display-only, not unique), and spaces joined through ordinary membership, which leaves the same `joined` event a person's join does.
+- **It has no identity in the org's IdP**, so no invite binds to it and no sign-in resolves to it.
+- **Never an admin.** Admin powers are membership and policy, so an admin agent could add itself to spaces past the people who invoke it. The database refuses the combination.
+- **The first agent member** is the Replicas coding agent (PR #1130). The integration that owns it creates it, with no owner: admins manage it.
+
+*Amended 2026-09-29 — owners and keys:*
+- **Any person may add an agent, and becomes its owner.** An agent may not add one: an agent minting agents escapes every owner.
+- **An agent authenticates with its own key**: a bearer secret shown once at creation and stored only as a hash. Presented on any face (REST, live, MCP), it is the agent acting as itself, always direct, never "via" anything. An agent may hold several keys, so rotation needs no downtime.
+- **The owner alone creates keys; the owner or an admin revokes them.** A key is the agent's identity, so an admin who could mint one could post as the agent. Admins get the off switch and never the pen. An org-owned agent takes no keys.
+- **Keys are managed in the app only**, never through an agent tool: a secret returned to a tool lands in a model transcript. This is the one exception to parity (§9).
+- **An agent goes where it is invited**, like anyone: added to a space, sent an invite, or joining an open space. No rule ties an agent's spaces to its owner's.
+- **Still open:** how an agent is invoked, and the bridges that connect a Hermes or OpenClaw gateway. Renaming and removing an agent come with profiles and org removal (§5 answers 5 and 6), and so does revoking its keys when its owner leaves the org.
 
 ### Deployment and tenancy — **Decided**
 
@@ -449,6 +469,8 @@ Wire and storage: [CONTRACT.md](./CONTRACT.md), the Activity bullet.
 
 ## 8. Agents in spaces
 
+*Added 2026-09-29:* this section governs a member's own agent. An agent that is a member in its own right follows §4 Agent members.
+
 ### The grammar — **Decided**
 
 - **`@rowboat` always means the speaker's own agent** — one name, per-person resolution, everywhere in the product. The rule "only you command your compute" is thereby enforced by grammar: the sentence addressing someone else's agent cannot be formed.
@@ -482,7 +504,7 @@ Harbor is **one core service layer with two protocol faces**, exposed per org. T
 - **Render face** — REST + a live event stream, for human clients and renderers.
 - **Agent face** — an **MCP server**, the canonical interface for every agent.
 
-An agent holds no credentials of its own; both faces authenticate with the member's OAuth token, and attribution (member + acting mode: direct / via agent / scheduled) is a parameter of the core operations. **The change-set log neither knows nor cares which face an operation entered through.**
+A member's own agent holds no credentials of its own; both faces authenticate with the member's OAuth token, and attribution (member + acting mode: direct / via agent / scheduled) is a parameter of the core operations. *Amended 2026-09-29:* an agent member authenticates with its own key and always acts direct (§4 Agent members). **The change-set log neither knows nor cares which face an operation entered through.**
 
 ### Core operations every org must expose — **Decided** (capabilities) / **Latitude** (shapes, names)
 

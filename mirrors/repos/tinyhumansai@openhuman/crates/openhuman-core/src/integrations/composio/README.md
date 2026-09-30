@@ -47,7 +47,7 @@ triggers) from a real transport failure.
 | --- | --- |
 | `crates/openhuman-core/src/integrations/composio/mod.rs` | Module doc + declarations; re-exports types, ops, schemas, agent tools, trigger-history, and provider/bus types. |
 | `crates/openhuman-core/src/integrations/composio/types.rs` | Serde domain types mirroring backend response envelopes (toolkits, connections, tools, execute, triggers, trigger events/history). Includes drift-tolerant `de_string_or_object` deserializers. |
-| `crates/openhuman-core/src/integrations/composio/ops/` | RPC-facing `composio_*` operations returning `RpcOutcome<T>`, split by concern (see [Ops layout](#ops-layout)). |
+| `crates/openhuman-core/src/integrations/composio/ops/` | RPC-facing `composio_*` operations returning `Outcome<T>`, split by concern (see [Ops layout](#ops-layout)). |
 | `crates/openhuman-core/src/integrations/composio/schemas.rs` + `schemas/` (`registry.rs`, `definitions.rs`, `handlers_identity.rs`, `handlers_tools.rs`, `handlers_connections.rs`, `handlers_triggers.rs`, `params.rs`, `util.rs`) | Controller schemas + `handle_*` handlers; `all_controller_schemas` / `all_registered_controllers` (`schemas/registry.rs`). |
 | `crates/openhuman-core/src/integrations/composio/client.rs` + `client/` (`connections.rs`, `factory.rs`, `direct.rs`, `execute.rs`, `triggers.rs`) | `ComposioClient` (thin HTTP wrapper over `IntegrationClient` for backend routes, `client/connections.rs`) + `ComposioClientKind` (Backend/Direct), `create_composio_client` (`client/factory.rs`), and direct-mode v3 helpers (`direct_list_connections`, `direct_list_tools`, `direct_execute`, `direct_authorize`, all in `client/direct.rs`). |
 | `crates/openhuman-core/src/integrations/composio/module_client.rs` | The `tinyconnectors` module bridge: the one `modules`-feature `#[cfg]` switch, `methods` re-exported from `tinyconnectors_bus`, and member-failure classification (`is_unsupported_by_route`, error-prefix peeling). |
@@ -146,7 +146,7 @@ From `tools.rs` (`all_composio_agent_tools`, registered only when `agent::subage
 
 ## Events
 
-Subscribers/handlers for trigger and config-change events still live in `crate::memory::sync::composio::bus` (re-exported here via `bus.rs`). All three are registered by one call, `register_composio_trigger_subscriber()`, from `crates/openhuman-core/src/core/jsonrpc.rs` (~2158, right after `init_composio_trigger_history`):
+Subscribers/handlers for trigger and config-change events still live in `crate::memory::sync::composio::bus` (re-exported here via `bus.rs`). All three are registered by one call, `register_composio_trigger_subscriber()`, from `crates/openhuman-core/src/core/runtime/subscribers.rs` after trigger history initialization:
 
 - **`ComposioTriggerSubscriber`**, reacts to `DomainEvent::ComposioTriggerReceived` (published by `platform::socket::event_handlers` when the backend emits `composio:trigger`); archives the event to `trigger_history` and routes it through `agent::triage::run_triage` unless `OPENHUMAN_TRIGGER_TRIAGE_DISABLED`, `composio.triage_disabled`, or `composio.triage_disabled_toolkits` opts out.
 - **`ComposioConnectionCreatedSubscriber`**, reacts to `DomainEvent::ComposioConnectionCreated` (published by `composio_authorize`); waits for the connection to go active, invalidates and eagerly warms the integrations cache, then runs the initial profile fetch + sync.
@@ -179,13 +179,13 @@ Published from `ops/` via `crate::core::bus::BUS.publish` (`crate::core::events:
 - `crate::core::all`: `ControllerFuture` / `RegisteredController` registry types.
 - `crate::core::bus` (`BUS`) / `crate::core::events::DomainEvent`: event publish/subscribe.
 - `crate::core::observability`: Sentry error classification/reporting.
-- `crate::rpc`: `RpcOutcome<T>`.
+- `crate::core`: `Outcome<T>`.
 
 ## Used by
 
 - `crates/openhuman-core/src/core/all.rs`: registers the controllers.
 - `crates/openhuman-core/src/tools/{mod,ops}.rs`, `tools/schemas/composio.rs`: wires agent tools into the tool registry.
-- `crates/openhuman-core/src/core/jsonrpc.rs`: at startup initializes trigger history and registers the three bus subscribers.
+- `crates/openhuman-core/src/core/runtime/subscribers.rs`: at startup initializes trigger history and registers the three bus subscribers.
 - `crates/openhuman-core/src/channels/runtime/startup/start_channels.rs` (`start_channels`), the one caller of `start_periodic_sync()`. `core/runtime/services.rs`'s `composio_integration_sync` job only runs `memory::sources::reconcile::ensure_composio_sources`; its comment explains why the periodic loop is not started there.
 - `crates/openhuman-core/src/agent/**`: session-host tool assembly (deferred per-action tools, recorded-tool rebuild), triage escalation and debug (e.g. `agent/subagent_host/`, `agent/orchestration/tools/`, `agent/debug/mod.rs`).
 - `crates/openhuman-core/src/platform/socket/event_handlers.rs`: parses `composio:trigger` and publishes `ComposioTriggerReceived`.

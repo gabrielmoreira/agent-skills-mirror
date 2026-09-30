@@ -107,13 +107,13 @@ These are subscriber registrations rather than a single `bus.rs`; subscriptions 
 - `crate::integrations::composio`: `composio::client` (Gmail fetch for enrichment) and `composio::profile_md` (`replace_managed_block` for `PROFILE.md`).
 - `crate::integrations`: `build_client` / `IntegrationClient` for the Apify scrape call.
 - `crate::core::bus` / `crate::core::events` / `tinybus`: `BUS.publish` / `BUS.subscribe`, `DomainEvent::CacheRebuilt`, and `tinybus::{EventHandler, SubscriptionHandle}`.
-- `crate::core::all` / `crate::rpc`: controller registry types (`RegisteredController`, `ControllerFuture`) and `RpcOutcome` (the latter re-exported from the `openhuman-rpc` crate via `pub use openhuman_rpc as rpc` in `lib.rs`).
+- `crate::core::all` / `crate::core`: controller registry types (`RegisteredController`, `ControllerFuture`) and `Outcome`.
 
 ## Used by
 
 - `crates/openhuman-core/src/core/all.rs`: registers the `learning.*` controllers + schemas.
 - `crates/openhuman-core/src/agent/session_host/builder/factory.rs` (registers `LearnedContextSection` / `UserProfileSection` and the `ReflectionHook` when `config.learning.enabled`), `builder/helpers.rs` (`MemoryAccessSection` / `MemoryWriteSection` gated by `any_tool_offered`), `turn/context.rs` (reads the `learning_observations` / `learning_patterns` / reflections namespaces into `PromptContext.learned`), `turn/session_io/background_tasks.rs` (`transcript_ingest::ingest_transcript_path`), and `agent/tinyagents/host/learning_sink.rs` (`ToolTrackerHook` + `UserProfileHook` post-turn fan-out).
-- `learning::startup::register_learning_subscribers` is the entry point that wires the Phase 2/3/4 subscribers; it is invoked from `crates/openhuman-core/src/core/jsonrpc.rs` (`register_domain_subscribers`, inside the `plan.agent` block, meaning whenever the `DomainSet` allows `DomainGroup::Agent`, guarded by `learning_first_time()`), not from the skippable `channels::runtime::startup` path. See the "why" note in `startup.rs` (#5003).
+- `learning::startup::register_learning_subscribers` is the entry point that wires the Phase 2/3/4 subscribers; it is invoked from `crates/openhuman-core/src/core/runtime/subscribers.rs` (`register_domain_subscribers`, inside the `plan.agent` block, meaning whenever the `DomainSet` allows `DomainGroup::Agent`, guarded by `learning_first_time()`), not from the skippable `channels::runtime::startup` path. See the "why" note in `startup.rs` (#5003).
 - `crates/openhuman-core/src/modules/memory/people_chunks_retrieval.rs` (`impl MemoryProfile for ModuleMemoryProvider`, the driver `FacetCache` reaches through the guard), `integrations/composio/profile_md.rs` (`replace_managed_block`, used by `profile_md_renderer.rs`), `tools/impl/system/tool_stats.rs`, `tools/schemas.rs`: consume facet/learning types.
 
 ## Notes / gotchas

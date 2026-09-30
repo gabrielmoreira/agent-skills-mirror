@@ -209,14 +209,53 @@ if (!result.ok) console.error(formatResult(result));
 node detector/validate.js before.md after.md   # exits 1 on a preservation error
 ```
 
-**Errors** (the rewrite altered content it had no business touching): fenced
-code modified or dropped, YAML frontmatter changed, blockquote reworded, table
-cell changed, inline code removed, URL or file path lost, heading count or
-nesting changed, and `residual-grew` when the rewrite introduces more flagged
-patterns than it removes.
+**Mechanical preservation errors:** fenced code modified or dropped, YAML
+frontmatter changed, blockquote reworded, table cell changed, inline code
+removed, URL or file path lost, or heading count/nesting changed.
 
-**Warnings** (usually legitimate, occasionally a mistake): heading reworded,
-a figure from the original missing, more than 40% of the words dropped.
+The default `residualPolicy: "error"` also blocks `residual-grew`, preserving
+existing API and CLI gates. This is a quality-policy failure, not evidence of
+content damage. Editorial callers can opt into advisory residuals:
+
+```js
+const result = validate(originalText, rewrittenText, { residualPolicy: "warn" });
+```
+
+```bash
+node detector/validate.js --residual-policy warn before.md after.md
+```
+
+The option precedes the two paths. Use `--` before paths that could be read as
+options. Exit codes are 0 for no blocking findings, 1 for a failed gate or an
+uncaught I/O error (such as a missing input file), and 2 for invalid arguments.
+Check stderr for execution failures; exit 1 alone does not prove content damage.
+Invalid API policy values throw `TypeError`.
+
+The human-readable validator banner and residual message now distinguish mechanical
+preservation from quality diagnostics under both policies. Parse the documented
+API fields and issue codes for automation; normal gate exits remain 0/1. Use
+`--residual-policy` only with a validator version that supports it; update the
+validator and skill together. An execution or argument error is an incomplete
+check, not evidence of damaged content.
+
+| Result field | Contract |
+|---|---|
+| `ok`, `errors`, `warnings` | Existing aggregate gate; under `warn`, only residual growth moves from errors to warnings. |
+| `stats.residual` | Existing counts and scores, or `null` if analysis was skipped/unavailable. |
+| `preservation` | Additive `{ok, errors, warnings}` for mechanical checks only; excludes residual growth. |
+| `quality` | Additive `{status, policy, findings, residual}` for pattern diagnostics; `residual` mirrors `stats.residual`. |
+
+`quality.status` is `checked`, `skipped` (`skipResidual: true`), `unavailable`
+(no detector), or `unscored` (either input was declined by the detector).
+An unscored comparison retains the raw counts for compatibility; they do not
+establish improvement. Browser callers can inject `options.detector`; Node
+loads `./patterns.js` by default. `skipResidual` never bypasses mechanical checks.
+
+**Mechanical warnings:** heading wording changed, numeric literals added or
+missing, or more than 40% of the words dropped. Number comparisons are literal:
+`2` to `two` may warn without being wrong. Added or removed prose claims can
+escape every mechanical check. Separately review meaning, facts, units,
+negation, causality, and uncertainty. A mechanical pass is not semantic proof.
 
 Two edits this skill documents as correct are carved out so the validator never
 fires on its own instructions: stripping AI tracking parameters from URLs

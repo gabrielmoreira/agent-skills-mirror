@@ -17,14 +17,26 @@ broadcasts. The binary never assembles a private key outside `cfg(test)`.
 
 Higher-level DeFi affordances (swaps, bridges, generic dapp/contract calls)
 live in the separate [`web3`](../README.md) module, which builds on the
-wallet's crate-internal `sign_and_broadcast_evm` / `sign_and_broadcast_solana`
-primitives. They are not part of the wallet's agent or RPC surface.
+engine's `sign_and_broadcast_evm` / `sign_and_broadcast_solana` primitives.
+They are not part of the wallet's agent or RPC surface.
+
+## Where the logic lives
+
+The wallet engine (balances, the prepare/confirm/execute flow, the per-chain
+signing choreography, static reference data, the agent tools) lives in the
+vendored `tinywallet-web3` crate (`vendor/tinywallet/crates/tinywallet-web3`,
+`crypto::{wallet, execution, chains, defaults, abi}` and `tools::wallet`). What
+stays here is the host: onboarding state and secrets (`ops`), the `Outcome`
+adapters (`execution.rs`), endpoint resolution from the environment
+(`endpoints.rs`), the host `Transport` (`transport.rs`, `rpc.rs`) and the RPC
+controllers (`schemas.rs`). The crate reaches this module only through seams,
+implemented in [`web3/seams.rs`](../seams.rs).
 
 ## Compile-time gate (`web3` feature)
 
 `pub mod wallet;` in `web3/mod.rs` is always compiled: it is a facade. The
-real implementation (`ops`, `execution`, `defaults`, `abi`, `chains`,
-`schemas`, `tools`, `transport`) is gated behind the default-ON `web3` Cargo
+real implementation (`ops`, `execution`, `endpoints`, `schemas`, `tools`,
+`transport`) is gated behind the default-ON `web3` Cargo
 feature (shared with `web3` and `web3::x402`). When the feature is off,
 `stub` takes its place and mirrors the subset of the public surface that
 always-on or other-gated callers depend on: `WALLET_NOT_CONFIGURED_MESSAGE`,
@@ -45,41 +57,31 @@ Signatures must match the real ones exactly; `cargo check
 - Sign and broadcast confirmed quotes per chain; restore (and TTL-refresh) the quote on failure so it stays retryable.
 - Bind each quote to the chat thread that prepared it so a leaked `quote_id` in a shared channel can't be hijacked from another agent session.
 - Expose six agent tools (`wallet_status`, `wallet_chain_status`, `wallet_prepare_transfer`, `wallet_tx_status`, `wallet_tx_receipt`, `wallet_lookup_tx`) and thirteen `wallet.*` RPC controllers.
-- Provide crate-internal `sign_and_broadcast_evm` / `sign_and_broadcast_solana` primitives for the `web3` layer (sign and broadcast an externally-built unsigned transaction). Not exposed to the agent or RPC surface.
+- The engine provides `sign_and_broadcast_evm` / `sign_and_broadcast_solana` primitives for the `web3` layer (sign and broadcast an externally-built unsigned transaction). Not exposed to the agent or RPC surface.
 
 ## Key files
 
 | File | Role |
 | --- | --- |
 | `crates/openhuman-core/src/web3/wallet/mod.rs` | Export-focused module root; module docstring, `mod`/`pub use` re-exports. |
-| `crates/openhuman-core/src/web3/wallet/ops.rs` | Onboarding metadata and secret persistence: `WalletChain`/`WalletAccount`/`WalletStatus` types, `setup`/`status`/`reveal_recovery_phrase`, atomic `wallet-state.json` writes (temp-file + fsync), corrupt-state quarantine, keychain load/save/migrate, `validate_setup`, and `secret_material` (crate-internal) used by chain signers. |
-| `crates/openhuman-core/src/web3/wallet/execution.rs` | Execution surface: balances/network_defaults/supported_assets/chain_status reads, `prepare_transfer`/`execute_prepared` (native and token transfers only), `tx_status`/`tx_receipt`/`lookup_tx` readers, the crate-internal `sign_and_broadcast_evm`/`sign_and_broadcast_solana` wrappers over `chains::`, the in-memory quote store (TTL'd, capped at 64), `QuoteOwner` chat-thread binding, amount/address/calldata validation, fee estimation, hex/u256 helpers. |
-| `crates/openhuman-core/src/web3/wallet/defaults.rs` | `EvmNetwork` enum (chain id, default RPC, explorer base, env var), default RPC/REST URLs for BTC/Solana/Tron, env-override resolution, and per-chain/per-network asset catalogs. |
-| `crates/openhuman-core/src/web3/wallet/abi.rs` | `encode_erc20_transfer`, which delegates the `transfer(address,uint256)` calldata encoding to `tinywallet_bus::abi`, mapping its typed errors (`InvalidRecipient`/`InvalidAmount`) to the plain-`String` shape the RPC/tool surface uses. |
+| `crates/openhuman-core/src/web3/wallet/ops.rs` | Onboarding metadata and secret persistence: `setup`/`status`/`reveal_recovery_phrase`, atomic `wallet-state.json` writes (temp-file + fsync), corrupt-state quarantine, keychain load/save/migrate, `validate_setup`, and `secret_material` (crate-internal) used by the host signer. `ops/types.rs` re-exports `WalletChain`/`WalletAccount`/`WalletStatus`/`WALLET_NOT_CONFIGURED_MESSAGE` from `tinywallet-web3` and keeps the persisted shape and the setup params. |
+| `crates/openhuman-core/src/web3/wallet/execution.rs` | `Outcome` adapters over the process-wide engine: `balances`/`network_defaults`/`supported_assets`/`chain_status`, `prepare_transfer`/`execute_prepared`, `tx_status`/`tx_receipt`/`lookup_tx`, `prepared_quotes_for_test`. Re-exports the engine's wire types. |
+| `crates/openhuman-core/src/web3/wallet/endpoints.rs` | The `OPENHUMAN_WALLET_RPC_*` / `OPENHUMAN_SOLANA_CLUSTER` environment resolution, and `HostEndpoints`, the `RpcEndpoints` seam. The static defaults are in the crate. |
 | `crates/openhuman-core/src/web3/wallet/schemas.rs` | RPC controller schemas and `handle_*` dispatchers delegating to `ops`/`execution`; `all_wallet_controller_schemas` / `all_wallet_registered_controllers`. |
-| `crates/openhuman-core/src/web3/wallet/rpc.rs` | Network transport, not RPC controllers: shared `reqwest::Client`, JSON-RPC POST (`rpc_call`, `evm_rpc_call`, `rpc_call_to`), REST GET/POST helpers, URL redaction for logs. |
+| `crates/openhuman-core/src/web3/wallet/rpc.rs` | Network transport, not RPC controllers: shared `reqwest::Client`, JSON-RPC POST (`rpc_call`, `rpc_call_to`), REST GET/POST helpers, URL redaction for logs. |
 | `crates/openhuman-core/src/web3/wallet/transport.rs` | OpenHuman's implementation of the `tinywallet_bus::rpc::Transport` seam: resolves a `tinywallet_bus::rpc::NetworkId` to an endpoint (including `OPENHUMAN_WALLET_RPC_<CHAIN>` overrides), redacts URLs for logs, and reuses `rpc.rs`'s shared `reqwest` client. Classifies errors conservatively: anything it cannot prove is a transport failure is reported as `TransportError::Rpc` (authoritative) rather than `Unreachable` (retryable), so an unclassifiable error stops a failover loop instead of risking a double broadcast. |
-| `crates/openhuman-core/src/web3/wallet/tools.rs` | Re-exports the six agent tool structs from `tools/`. |
-| `crates/openhuman-core/src/web3/wallet/tools/status.rs` | `WalletStatusTool` (`wallet_status`). |
-| `crates/openhuman-core/src/web3/wallet/tools/chain_status.rs` | `WalletChainStatusTool` (`wallet_chain_status`). |
-| `crates/openhuman-core/src/web3/wallet/tools/prepare_transfer.rs` | `WalletPrepareTransferTool` (`wallet_prepare_transfer`). |
-| `crates/openhuman-core/src/web3/wallet/tools/tx_query.rs` | `WalletTxStatusTool` (`wallet_tx_status`), `WalletTxReceiptTool` (`wallet_tx_receipt`), `WalletLookupTxTool` (`wallet_lookup_tx`); these share a `{chain, hash, evmNetwork?}` input and delegate to the matching `wallet::*` dispatcher. |
-| `crates/openhuman-core/src/web3/wallet/chains/mod.rs` | Per-chain executor namespace; docstring of the small per-chain surface (`execute_*_quote`, `native_balance`, `validate_*_address`). |
-| `crates/openhuman-core/src/web3/wallet/chains/evm.rs` | EVM path: validates addresses with `tinywallet_bus::address::evm::validate`, gathers `eth_chainId`/nonce/`eth_gasPrice`/`eth_estimateGas` over JSON-RPC, builds a legacy gas-price `tinywallet_bus::wire::TransactionSpec::Evm`, signs it in the module via `modules::wallet::sign_transaction_in_module`, and broadcasts with `eth_sendRawTransaction`. One derivation path shared across all EVM networks. Also hosts the crate-internal `sign_and_broadcast_evm`. |
-| `crates/openhuman-core/src/web3/wallet/chains/btc.rs` | Bitcoin P2WPKH (BIP84) path: Esplora REST UTXO discovery, largest-first coin selection and fee policy stay here; the `TransactionSpec::Btc` (selected UTXOs, amount, fee) is encoded and signed in the module via `sign_transaction_in_module`, then broadcast over Esplora. Address checks via `tinywallet_bus::address::btc::{validate, validate_sender}`. |
-| `crates/openhuman-core/src/web3/wallet/chains/solana.rs` | Solana native and SPL transfers: hand-rolled message/transaction wire format (`sha2`, `bs58`, `curve25519_dalek` for the off-curve ATA check) so `solana-sdk` is not pulled in; the message is signed in the module via `modules::wallet::sign_message` (`Scheme::Ed25519`), broadcast over JSON-RPC. The `ed25519_dalek` local signer is `cfg(test)` only. Also hosts `sign_and_broadcast_versioned` behind the crate-internal `sign_and_broadcast_solana`. |
-| `crates/openhuman-core/src/web3/wallet/chains/tron.rs` | Tron native and TRC20 transfers over TronGrid REST: the node builds the raw transaction, `tinywallet_bus::tx::tron::{recompute_txid, verify_contract}` checks it matches what was requested, then it is signed in the module as `TransactionSpec::Tron`. Address checks via `tinywallet_bus::address::tron`. |
+| `crates/openhuman-core/src/web3/wallet/tools.rs` | Re-exports the six agent tool structs from `tinywallet_web3::tools::wallet`. |
 | `crates/openhuman-core/src/web3/wallet/stub.rs` | Disabled-wallet facade compiled when `web3` is off; mirrors the subset of the real surface that always-on or other-gated callers need, with no-op or disabled-error bodies. See the Compile-time gate section. |
-| `crates/openhuman-core/src/web3/wallet/test_support.rs` | `#[cfg(test)]` shared plumbing: `TEST_LOCK`, `setup_wallet_in` (deterministic "abandon ... about" mnemonic), per-chain sample addresses. |
+| `crates/openhuman-core/src/web3/wallet/test_support.rs` | `#[cfg(test)]` shared plumbing for the keyring/setup tests: `TEST_LOCK`, `setup_wallet_in` (deterministic "abandon ... about" mnemonic), per-chain sample addresses. The chain, execution and quote tests moved to `tinywallet-web3` with fakes. |
 
 ## Public surface
 
 From `mod.rs` re-exports:
 
 - Onboarding (`ops`): `setup`, `status`, `reveal_recovery_phrase`, `RevealRecoveryPhraseResult`, `WalletAccount`, `WalletChain`, `WalletSetupParams`, `WalletSetupSource`, `WalletStatus`, `WALLET_NOT_CONFIGURED_MESSAGE`; `pub(crate) secret_material`.
-- Execution (`execution`): `balances`, `chain_status`, `execute_prepared`, `wallet_network_defaults`, `prepare_transfer`, `tx_status`, `tx_receipt`, `lookup_tx`, `supported_assets`, `prepared_quotes_for_test`; types `BalanceInfo`, `ChainStatus`, `ExecutePreparedParams`, `ExecutionResult`, `PrepareTransferParams`, `PreparedKind` (NativeTransfer / TokenTransfer), `PreparedStatus`, `PreparedTransaction`, `ProviderStatus`, `SupportedAsset`, `TxState`, `TxStatusInfo`, `TxReceiptInfo`, `TxLookupInfo`. Crate-internal: `sign_and_broadcast_evm`, `sign_and_broadcast_solana`, `RawBroadcastResult`.
-- Defaults (`defaults`): `asset_catalog`, `default_rpc_url`, `env_var_for_chain`, `evm_asset_catalog`, `explorer_tx_url`, `find_asset`, `find_asset_for_network`, `network_defaults`, `rpc_source_for_chain`, `rpc_url_for_chain`, `rpc_url_for_evm_network`, `solana_cluster`, `EvmNetwork`, `RpcSource`, `SolanaCluster`, `WalletAssetDefinition`, `WalletNetworkDefaults`.
-- ABI: `encode_erc20_transfer`.
+- Execution (`execution`): `balances`, `chain_status`, `execute_prepared`, `wallet_network_defaults`, `prepare_transfer`, `tx_status`, `tx_receipt`, `lookup_tx`, `supported_assets`, `prepared_quotes_for_test`; types `BalanceInfo`, `ChainStatus`, `ExecutePreparedParams`, `ExecutionResult`, `PrepareTransferParams`, `PreparedKind`, `PreparedStatus`, `PreparedTransaction`, `ProviderStatus`, `SupportedAsset`, `TxState`, `TxStatusInfo`, `TxReceiptInfo`, `TxLookupInfo` (all from `tinywallet-web3`).
+- Defaults: `solana_cluster` (host, env-driven) and, from `tinywallet-web3`, `evm_asset_catalog`, `explorer_tx_url`, `EvmNetwork`, `RpcSource`, `SolanaCluster`, `WalletAssetDefinition`, `WalletNetworkDefaults`.
+- ABI: `encode_erc20_transfer` (from `tinywallet-web3`).
 - Schemas: `all_controller_schemas`, `all_registered_controllers`, `all_wallet_controller_schemas`, `all_wallet_registered_controllers`, `schemas`, `wallet_schemas`.
 
 ## RPC / controllers
@@ -106,7 +108,7 @@ Wired into the registry in `crates/openhuman-core/src/core/all.rs` (controllers 
 
 ## Agent tools
 
-Owned in `tools/`, re-exported via `tools.rs`:
+Defined in `tinywallet_web3::tools::wallet`, re-exported via `tools.rs`, built over the process-wide engine in `tools/ops.rs`:
 
 - `WalletStatusTool`, tool name `wallet_status`
 - `WalletChainStatusTool`, tool name `wallet_chain_status`
@@ -125,20 +127,20 @@ None. The module publishes or subscribes no `DomainEvent`s and has no `bus.rs`. 
 
 - `{workspace_dir}/state/wallet-state.json`: `StoredWalletState`, consent flag, source, mnemonic word count, accounts, `updated_at_ms`, and (only as fallback) the encrypted mnemonic. Written atomically (temp file + `sync_all` + dir fsync + `persist`), guarded by a process-wide `WALLET_STATE_FILE_LOCK`. Corrupt/unreadable/invalid files are quarantined to `...json.corrupted.<ts>`.
 - OS keychain: preferred home for the encrypted mnemonic under key `wallet.mnemonic`, scoped by a workspace-derived user id (`crate::security::keyring`), used only when `keyring_consent::policy::check_secret_access()` returns `Proceed` and the keyring is available. When available, the secret is stripped from JSON; load promotes any JSON-resident secret into the keychain.
-- In-memory quote store (`execution.rs`): `PreparedTransaction`s, 5-minute TTL, cap 64, pruned on access. Not persisted across restarts.
+- In-memory quote store (instance-owned by the `WalletEngine`, `tinywallet_web3::quote::QuoteStore`): `PreparedTransaction`s, 5-minute TTL, cap 64, pruned on insert. Not persisted across restarts.
 
 ## Dependencies
 
 - `crate::config` (`Config`, `config::rpc::load_config_with_timeout`): resolves workspace dir and config for state paths, keychain user id, and decryption.
 - `crate::security::keyring` (`is_available`/`get`/`set`): OS keychain storage for the encrypted mnemonic.
-- `crate::security::encryption::rpc` (`encrypt_secret`/`decrypt_secret`): chain executors decrypt the recovery phrase before handing it to the wallet module.
+- `crate::security::encryption::rpc` (`encrypt_secret`/`decrypt_secret`): `HostSigner` decrypts the recovery phrase before handing it to the wallet module.
 - `crate::modules::wallet` (`derive_account`, `sign_transaction_in_module`, `sign_message`): the loaded `tinywallet` native module does every derivation and signature; the phrase is only sent after the module passes the attestation check (`modules::wallet::attested_proxy`).
-- `crate::security::approval::APPROVAL_CHAT_CONTEXT`: task-local chat owner (`thread_id`/`client_id`) used to bind quotes to their originating thread.
-- `tinytools`: `Tool`/`ToolResult`/`ToolCallOptions` for the agent tools.
+- `crate::security::approval::APPROVAL_CHAT_CONTEXT`: task-local chat owner (`thread_id`/`client_id`), read by `TaskLocalScope`, used to bind quotes to their originating thread.
+- `tinywallet-web3` (optional, feature `tools`, enabled by `web3`): the engine, chains, quote store and agent tools; the host implements its seams in `web3/seams.rs`.
 - `crate::core::all` (`ControllerFuture`, `RegisteredController`) and `crate::core` (`ControllerSchema`, `FieldSchema`, `TypeSchema`): RPC controller registry wiring.
-- `crate::rpc::RpcOutcome`: standard RPC return shape.
+- `crate::core::Outcome`: standard RPC return shape.
 - `tinywallet-bus` (`vendor/tinywallet/crates/tinywallet-bus`, optional, gated by the `web3` feature; features `btc`, `evm`, `solana`, `tron`, `keccak`, `net`, `wire`, `eip712`, `abi`, `tx-codec`): the contract crate. It owns address formats (parsing/validation/conversion) and the wire types crossing the `Transport` seam (`SecretMaterial`, `TransactionSpec`, `NetworkId`), the ERC-20/EIP-712 encoders, and the Tron verifier. Per Cargo.toml's own rationale, this is taken as the contract crate and not the root `tinywallet` crate: key derivation, transaction building, signing and the chain clients (including the `bitcoin` crate and its native secp256k1 build) live inside that loaded module now, so this binary links none of it. The root `tinywallet` crate is still a dev-dependency, used only so test fixtures can derive a known account from a BIP-39 vector phrase.
-- Other external crates: `curve25519-dalek` (optional, pulled in by the `web3` feature; Solana off-curve ATA check), `bs58` (Solana base58 program ids/addresses), `sha2` (Solana ATA/PDA derivation), `hex`, `reqwest`, `serde`/`serde_json`, `tempfile`, `parking_lot`, `once_cell`. `k256`, `coins-bip39`, `ed25519-dalek` and the root `tinywallet` crate are test-only here (the `web3` feature does not enable `k256`/`coins-bip39`): they back the `cfg(test)` local signers in `chains/solana.rs`, `execution.rs` and the test fixtures, so unit tests can run without a loaded module.
+- Other external crates: `reqwest`, `serde`/`serde_json`, `tempfile`, `parking_lot`, `once_cell`. `curve25519-dalek`, `bs58`, `sha2` and the Solana wire code moved to `tinywallet-web3`; `k256`, `coins-bip39` and the root `tinywallet` crate remain test-only dev-dependencies for the keyring/setup fixtures.
 
 ## Used by
 
@@ -149,8 +151,8 @@ None. The module publishes or subscribes no `DomainEvent`s and has no `bus.rs`. 
 ## Notes / gotchas
 
 - `rpc.rs` here is network transport, not RPC controllers. RPC controllers live in `schemas.rs`. This is an exception to the canonical "`rpc.rs` = domain API" convention.
-- Quote-owner binding (`execution.rs`): `execute_prepared` only runs when the caller's `current_owner()` equals the prepare-time owner. On mismatch it returns the byte-identical `quote '...' not found` error as a true miss, not an enumeration oracle. Non-chat callers (CLI, direct RPC, background/cron) have `owner == None` and can only execute quotes they also prepared with no chat context. `current_owner()` relies on the inline `.await` chain in `web_chat::run_chat_task`; detaching the tool loop onto a fresh `tokio::spawn` without re-scoping `APPROVAL_CHAT_CONTEXT` would silently disable the gate.
-- Quotes are consumed atomically: `take_quote_for` removes the quote before broadcast so concurrent confirmations can't double-submit; on failure the quote is restored with a refreshed TTL.
+- Quote-owner binding (`tinywallet_web3::quote::QuoteStore`): `execute_prepared` only runs when the caller's `QuoteScope::current_owner()` equals the prepare-time owner. On mismatch it returns the byte-identical `quote '...' not found` error as a true miss, not an enumeration oracle. Non-chat callers (CLI, direct RPC, background/cron) have `owner == None` and can only execute quotes they also prepared with no chat context. The host's `TaskLocalScope` (`web3/seams.rs`) reads `APPROVAL_CHAT_CONTEXT` synchronously on the tool's own task and relies on the inline `.await` chain in `web_chat::run_chat_task`; detaching the tool loop onto a fresh `tokio::spawn` without re-scoping `APPROVAL_CHAT_CONTEXT` would silently disable the gate.
+- Quotes are consumed atomically: `QuoteStore::take_for` removes the quote before broadcast so concurrent confirmations can't double-submit; on failure the quote is restored with a refreshed TTL.
 - Setup requires exactly one account per chain (EVM, BTC, Solana, Tron) and a non-empty encrypted mnemonic; valid mnemonic word counts are 12/15/18/21/24.
 - EVM is one `WalletChain::Evm` variant across 6 networks (Ethereum, Base, Arbitrum, Optimism, Polygon, BNB Chain) selected by `EvmNetwork` (defaults to `ethereum_mainnet`); other chains ignore `evmNetwork`. BTC rejects token transfers. Swaps, bridges and contract calls are not in the wallet; they live in the [`web3`](../README.md) module.
 - RPC endpoints are overridable per chain/network via `OPENHUMAN_WALLET_RPC_*` env vars (used by tests pointing at an axum mock). Log lines redact URLs to scheme and host.

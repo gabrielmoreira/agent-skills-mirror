@@ -12,7 +12,7 @@ argument-hint: "[command] [url|property]"
 license: MIT
 metadata:
   author: AgriciDaniel
-  version: "2.4.0"
+  version: "2.4.1"
   category: seo
 ---
 
@@ -90,7 +90,8 @@ Always communicate the detected tier before running commands.
 Combined Lighthouse lab data + CrUX field data.
 
 **Script:** `"${CLAUDE_PLUGIN_ROOT}/scripts/claude-seo" run pagespeed_check.py <url> --json`
-**Reference:** `references/pagespeed-crux-api.md`
+**Reference:** `references/pagespeed-crux-api.md` (Core Web Vitals thresholds: `references/crux-history-api.md`)
+**Report the Lighthouse build** from the output's `lighthouse_version` field instead of assuming the latest release.
 **Default:** Both mobile + desktop strategies, all Lighthouse categories.
 
 Output merges lab scores (point-in-time Lighthouse) with field data (28-day
@@ -107,7 +108,7 @@ CrUX field data only (no Lighthouse run). Faster.
 25-week CrUX History trends. Shows whether CWV metrics are improving, stable, or degrading.
 
 **Script:** `"${CLAUDE_PLUGIN_ROOT}/scripts/claude-seo" run crux_history.py <url> --json`
-**Reference:** `references/pagespeed-crux-api.md`
+**Reference:** `references/crux-history-api.md`
 
 Output includes per-metric trend direction, percentage change, and weekly p75 values.
 
@@ -134,6 +135,7 @@ dimension rows, not the size of every pagination request.
 
 > **AI surfaces in GSC (2026):**
 > - **Generative AI performance report** (launched 2026-06-03), a dedicated view of **AI Overviews + AI Mode** visibility. **Impressions only** (no clicks/CTR/position/query); dimensions Pages/Countries/Devices/Dates (Pacific Time); 1,000-row limit; newest data preliminary; a separate Discover gen-AI report also exists. Available to all websites worldwide since 2026-08-31 (launched to a subset 2026-06-03); dates support hourly, daily, weekly and monthly granularity.
+> - **Multimodal search type** (rolling out globally since 2026-09-24): a filter in the Search results and Generative AI performance reports for visits from Lens, Circle to Search, image uploads and Chrome "Search this image", exportable from the UI. No Search Analytics API `type` value has been verified for it, so do not invent one.
 > - **AI Mode already rolls into standard Performance totals** (Web search type), clicks (external-link clicks in AI Mode) and impressions are counted in the normal report, so you **cannot** cleanly split "classic" vs "AI" traffic from totals. Use the Generative AI report for impressions-only AI visibility.
 > - **Data-reliability caveat:** a GSC logging error made **impressions, CTR, and average position unreliable from 2025-05-13 to 2026-04-27** (clicks unaffected; fixed forward-only, **no backfill**). Treat impression/CTR/position trends spanning that window with caution; expect an apparent impressions drop after the fix.
 
@@ -151,7 +153,8 @@ URL Inspection: real indexation status from Google.
 **Script:** `"${CLAUDE_PLUGIN_ROOT}/scripts/claude-seo" run gsc_inspect.py <url> --json`
 
 Returns: verdict (PASS/FAIL), coverage state, robots.txt status, indexing state,
-page fetch state, canonical selection, mobile usability, rich results.
+page fetch state, canonical selection, rich results. (`mobileUsabilityResult` is deprecated
+in the API; do not report it as a mobile-usability check.)
 
 ### `/seo google inspect-batch <file>`
 
@@ -335,7 +338,7 @@ Generate a professional PDF report with charts and analytics.
 - **seo-performance**: CrUX field data supplements Lighthouse lab data
 - **seo-sitemap**: GSC sitemap status shows submitted counts, errors, and warnings; use URL Inspection for indexation truth
 - **seo-content**: GSC query data informs keyword targeting
-- **seo-geo**: Use GSC Generative AI performance reports and AI Overviews/AI Mode/Discover gen-AI include/exclude controls where available
+- **seo-geo**: Use GSC Generative AI performance reports and AI Overviews/AI Mode/Discover gen-AI include/exclude controls (the Search generative AI property setting, available to all sites since 2026-08-31)
 
 ## Output Format
 

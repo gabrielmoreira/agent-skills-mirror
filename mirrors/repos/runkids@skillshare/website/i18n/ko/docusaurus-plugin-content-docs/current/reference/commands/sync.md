@@ -185,6 +185,12 @@ flowchart TD
     S2 --> SYMLINK --> S3
 ```
 
+### target이 실패하는 경우 {#when-a-target-fails}
+
+sync는 모든 target을 실행하며, target 하나가 실패해도 나머지 target은 멈추지 않습니다. target은 sync 중 오류가 발생하거나, 해당 target 자체의 설정이 잘못된 경우(예: skills path가 폴더가 아닌 파일이거나 `mode`를 알 수 없는 경우) 실패합니다. 설정이 잘못된 target은 해당 실행에서 skills와 agents 모두 건너뜁니다. 실패한 target은 각각 보고되며(텍스트 출력에서는 `✗ <target>: invalid config: …`, `--json`에서는 해당 `details` 항목의 `error`), 나머지 target의 sync가 끝난 뒤 명령은 0이 아닌 코드로 종료됩니다.
+
+config 전체에 관한 문제는 여전히 어떤 target도 실행하기 전에 sync를 중단합니다: source 폴더가 없거나 잘못됨, 전역 `mode` 또는 `target_naming`이 잘못됨, `git_root`가 잘못됨, extras가 잘못됨.
+
 ### 출력 예시
 
 ```text
@@ -345,6 +351,7 @@ targets:
 - symlink mode에서는 filter가 무시됩니다
 - copy mode에서 filter는 merge mode와 동일하게 동작합니다
 - `sync`는 이제 제외된 기존 source-linked 또는 managed entry를 제거합니다
+- 하나의 폴더를 공유하는 target들은 같은 filter를 사용해야 합니다. 그렇지 않으면 매번 sync가 서로의 결과를 되돌리며, `sync`가 경고를 표시합니다([`sync` keeps showing the same changes](/docs/troubleshooting/common-errors#sync-keeps-showing-the-same-changes) 참고)
 
 자세한 내용은 [Configuration](/docs/reference/targets/configuration#include--exclude-target-filters)을 참고하세요.
 
@@ -579,7 +586,7 @@ skillshare sync --all             # skill + agent + extras + MCP를 sync
 | `--dry-run` | `-n` | 실제로 쓰지 않고 변경 사항 미리보기 |
 | `--force` | `-f` | target에서 충돌하는 파일을 덮어쓰기 |
 
-extras sync에 오류가 있으면 `--json`은 0이 아닌 종료 코드를 반환합니다. single-file extra에서는 `--dry-run`이 교체 전에 백업할 편집 내용도 알려 줍니다.
+extras sync에 오류가 있으면 `--json`은 0이 아닌 종료 코드를 반환합니다. `sync --all`도 `--json` 여부와 관계없이 extras target이 실패하면 0이 아닌 코드로 종료합니다. source 디렉터리가 없는 extra는 생성되지 않고 힌트와 함께 건너뜁니다. single-file extra에서는 `--dry-run`이 교체 전에 백업할 편집 내용도 알려 줍니다.
 
 :::info 두 mode 모두 지원
 `sync extras`는 global mode와 project mode 양쪽에서 작동합니다. skill·agent·extras·MCP를 함께 sync하려면 `sync --all`을, extras만 sync하려면 `sync extras`를 사용하세요. project mode에서 extras source는 `.skillshare/extras/<name>/`입니다.

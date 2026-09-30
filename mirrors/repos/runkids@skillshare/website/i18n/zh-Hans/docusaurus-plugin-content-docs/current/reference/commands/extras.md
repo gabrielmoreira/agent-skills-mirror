@@ -524,7 +524,8 @@ extras:
 
 在控制台中，`file` 为 `AGENTS.md` 的单文件 extras 会显示在 **AGENTS.md** 标签页；其他单文件
 extras 则显示在 **Folders & files**。在那里，**添加 Extra** 提供 **Folder** 或 **Single file** 两种选择，
-每个 target 都有 **文件名**，单个文件可以使用 `merge`、`copy` 或 `import`。控制台不会编辑
+每个 target 都有 **文件名**，单个文件可以使用 `merge`、`copy` 或 `import`。单个文件的 **名称** 会跟随
+文件名去掉扩展名自动填入（`APPEND_SYSTEM.md` 会填成 `APPEND_SYSTEM`），直到你自己输入名称为止。控制台不会编辑
 文件内容；请直接编辑 source 文件。
 
 ### 一个文件夹，多个文件

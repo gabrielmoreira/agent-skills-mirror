@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "benchmark_version": "2026-08-29.v1",
+  "benchmark_version": "2026-09-28.v2",
   "description": "Manually labeled EN/JA gold corpus for deterministic first-match Navigator routing.",
   "baseline": {
     "candidate_precision": 1,
@@ -568,16 +568,16 @@
     {
       "id": "research-p01",
       "language": "en",
-      "label": "honest_gap",
+      "label": "positive",
       "query": "I want to backtest a new strategy",
       "target_persona": "strategy-researcher",
       "expected_candidate_personas": [
         "strategy-researcher"
       ],
       "expected_selected_persona": "strategy-researcher",
-      "expected_primary_workflow": null,
-      "expected_honest_gap": true,
-      "expected_no_api_path": null,
+      "expected_primary_workflow": "strategy-research-pipeline",
+      "expected_honest_gap": false,
+      "expected_no_api_path": true,
       "neighbor_of": null,
       "base_id": null,
       "transformation": null,
@@ -589,16 +589,16 @@
     {
       "id": "research-p02",
       "language": "en",
-      "label": "honest_gap",
+      "label": "positive",
       "query": "Help me validate a strategy hypothesis",
       "target_persona": "strategy-researcher",
       "expected_candidate_personas": [
         "strategy-researcher"
       ],
       "expected_selected_persona": "strategy-researcher",
-      "expected_primary_workflow": null,
-      "expected_honest_gap": true,
-      "expected_no_api_path": null,
+      "expected_primary_workflow": "strategy-research-pipeline",
+      "expected_honest_gap": false,
+      "expected_no_api_path": true,
       "neighbor_of": null,
       "base_id": null,
       "transformation": null,
@@ -610,16 +610,16 @@
     {
       "id": "research-p03",
       "language": "en",
-      "label": "honest_gap",
+      "label": "positive",
       "query": "Research and backtest my strategy idea",
       "target_persona": "strategy-researcher",
       "expected_candidate_personas": [
         "strategy-researcher"
       ],
       "expected_selected_persona": "strategy-researcher",
-      "expected_primary_workflow": null,
-      "expected_honest_gap": true,
-      "expected_no_api_path": null,
+      "expected_primary_workflow": "strategy-research-pipeline",
+      "expected_honest_gap": false,
+      "expected_no_api_path": true,
       "neighbor_of": null,
       "base_id": null,
       "transformation": null,
@@ -631,16 +631,16 @@
     {
       "id": "research-p04",
       "language": "en",
-      "label": "honest_gap",
+      "label": "positive",
       "query": "Build a strategy research workflow",
       "target_persona": "strategy-researcher",
       "expected_candidate_personas": [
         "strategy-researcher"
       ],
       "expected_selected_persona": "strategy-researcher",
-      "expected_primary_workflow": null,
-      "expected_honest_gap": true,
-      "expected_no_api_path": null,
+      "expected_primary_workflow": "strategy-research-pipeline",
+      "expected_honest_gap": false,
+      "expected_no_api_path": true,
       "neighbor_of": null,
       "base_id": null,
       "transformation": null,
@@ -652,16 +652,16 @@
     {
       "id": "research-p05",
       "language": "ja",
-      "label": "honest_gap",
+      "label": "positive",
       "query": "新しい戦略をバックテストしたい",
       "target_persona": "strategy-researcher",
       "expected_candidate_personas": [
         "strategy-researcher"
       ],
       "expected_selected_persona": "strategy-researcher",
-      "expected_primary_workflow": null,
-      "expected_honest_gap": true,
-      "expected_no_api_path": null,
+      "expected_primary_workflow": "strategy-research-pipeline",
+      "expected_honest_gap": false,
+      "expected_no_api_path": true,
       "neighbor_of": null,
       "base_id": null,
       "transformation": null,
@@ -673,16 +673,16 @@
     {
       "id": "research-p06",
       "language": "ja",
-      "label": "honest_gap",
+      "label": "positive",
       "query": "戦略アイデアを検証したい",
       "target_persona": "strategy-researcher",
       "expected_candidate_personas": [
         "strategy-researcher"
       ],
       "expected_selected_persona": "strategy-researcher",
-      "expected_primary_workflow": null,
-      "expected_honest_gap": true,
-      "expected_no_api_path": null,
+      "expected_primary_workflow": "strategy-research-pipeline",
+      "expected_honest_gap": false,
+      "expected_no_api_path": true,
       "neighbor_of": null,
       "base_id": null,
       "transformation": null,
@@ -694,16 +694,16 @@
     {
       "id": "research-p07",
       "language": "ja",
-      "label": "honest_gap",
+      "label": "positive",
       "query": "仮説検証の流れを作りたい",
       "target_persona": "strategy-researcher",
       "expected_candidate_personas": [
         "strategy-researcher"
       ],
       "expected_selected_persona": "strategy-researcher",
-      "expected_primary_workflow": null,
-      "expected_honest_gap": true,
-      "expected_no_api_path": null,
+      "expected_primary_workflow": "strategy-research-pipeline",
+      "expected_honest_gap": false,
+      "expected_no_api_path": true,
       "neighbor_of": null,
       "base_id": null,
       "transformation": null,
@@ -715,16 +715,16 @@
     {
       "id": "research-p08",
       "language": "ja",
-      "label": "honest_gap",
+      "label": "positive",
       "query": "戦略研究を始めたい",
       "target_persona": "strategy-researcher",
       "expected_candidate_personas": [
         "strategy-researcher"
       ],
       "expected_selected_persona": "strategy-researcher",
-      "expected_primary_workflow": null,
-      "expected_honest_gap": true,
-      "expected_no_api_path": null,
+      "expected_primary_workflow": "strategy-research-pipeline",
+      "expected_honest_gap": false,
+      "expected_no_api_path": true,
       "neighbor_of": null,
       "base_id": null,
       "transformation": null,
@@ -736,16 +736,16 @@
     {
       "id": "research-m01",
       "language": "en",
-      "label": "honest_gap",
+      "label": "positive",
       "query": "I want to back test a new strategy",
       "target_persona": "strategy-researcher",
       "expected_candidate_personas": [
         "strategy-researcher"
       ],
       "expected_selected_persona": "strategy-researcher",
-      "expected_primary_workflow": null,
-      "expected_honest_gap": true,
-      "expected_no_api_path": null,
+      "expected_primary_workflow": "strategy-research-pipeline",
+      "expected_honest_gap": false,
+      "expected_no_api_path": true,
       "neighbor_of": null,
       "base_id": "research-p01",
       "transformation": "orthographic",
@@ -757,16 +757,16 @@
     {
       "id": "research-m02",
       "language": "ja",
-      "label": "honest_gap",
+      "label": "positive",
       "query": "検証したい、新しい戦略を",
       "target_persona": "strategy-researcher",
       "expected_candidate_personas": [
         "strategy-researcher"
       ],
       "expected_selected_persona": "strategy-researcher",
-      "expected_primary_workflow": null,
-      "expected_honest_gap": true,
-      "expected_no_api_path": null,
+      "expected_primary_workflow": "strategy-research-pipeline",
+      "expected_honest_gap": false,
+      "expected_no_api_path": true,
       "neighbor_of": null,
       "base_id": "research-p05",
       "transformation": "word_order",

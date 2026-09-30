@@ -96,7 +96,7 @@ Agent tools are re-exported into the crate-wide tool surface by
 
 Each (bar `conversations/`, which is a host-owned store) is the RPC surface
 for a family the *driver* serves: the handler and schema modules that name
-`RpcOutcome` and `ControllerSchema`, resolving through the bound provider
+`Outcome` and `ControllerSchema`, resolving through the bound provider
 rather than through a linked engine. Before the engine left, each was a thin
 wrapper over `pub use tinymemory_core::<domain>::*;` as well.
 

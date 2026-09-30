@@ -184,6 +184,12 @@ flowchart TD
     S2 --> SYMLINK --> S3
 ```
 
+### target 失敗時 {#when-a-target-fails}
+
+sync 會執行每個 target，一個 target 失敗不會中斷其他 target。target 在同步出錯時失敗，或在自身設定無效時失敗，例如 skills path 是檔案而不是資料夾，或 `mode` 無法辨識。設定無效的 target 在該次執行中會略過 skills 與 agents。每個失敗的 target 都會被回報（文字輸出為 `✗ <target>: invalid config: …`，`--json` 中為對應 `details` 項目的 `error`），並在其他 target 同步完成後以非零狀態結束。
+
+影響整份設定的問題仍會在任何 target 執行前中止 sync：source 資料夾不存在或無效、全域 `mode` 或 `target_naming` 無效、`git_root` 無效，或 extras 無效。
+
 ### 輸出範例
 
 ```text
@@ -344,6 +350,7 @@ targets:
 - 在 symlink mode 中，filters 會被忽略
 - 在 copy mode 中，filters 的運作方式與 merge mode 相同
 - `sync` 會移除現在已被排除、但先前是 source-linked 或受管理的條目
+- 共用同一個資料夾的 targets 需要相同的 filters；否則每次同步都會抵銷另一個 target 的結果，`sync` 會發出警告（見 [`sync` 一直顯示相同的變更](/docs/troubleshooting/common-errors#sync-keeps-showing-the-same-changes)）
 
 完整細節見 [Configuration](/docs/reference/targets/configuration#include--exclude-target-filters)。
 
@@ -576,7 +583,7 @@ skillshare sync --all             # 同步 skills + agents + extras + MCP
 | `--dry-run` | `-n` | 預覽變更而不實際寫入 |
 | `--force` | `-f` | 覆蓋 target 上衝突的檔案 |
 
-extras sync 發生錯誤時，`--json` 會以非零狀態結束。對單一檔案 extra，`--dry-run` 也會指出哪些修改將在取代前備份。
+extras sync 發生錯誤時，`--json` 會以非零狀態結束。無論是否使用 `--json`，只要有 extras target 失敗，`sync --all` 也會以非零狀態結束。source 目錄不存在的 extra 會被略過並顯示提示，而不會被建立。對單一檔案 extra，`--dry-run` 也會指出哪些修改將在取代前備份。
 
 :::info 兩種 mode 都支援
 `sync extras` 在 global 與 project mode 中都能運作。用 `sync --all` 一起同步 skills、agents、extras 與 MCP，或用 `sync extras` 只同步 extras。在 project mode 中，extras source 為 `.skillshare/extras/<name>/`。

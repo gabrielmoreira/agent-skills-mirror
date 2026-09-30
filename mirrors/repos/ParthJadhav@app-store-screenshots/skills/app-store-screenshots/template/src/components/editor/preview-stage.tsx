@@ -86,19 +86,22 @@ export function PreviewStage({
     setZoom(1);
   }, [device, orientation]);
 
+  const panToActiveScreen = React.useCallback((nextScale: number) => {
+    const scroller = scrollerRef.current;
+    if (!scroller || !activeId) return;
+    const screenLeft = activeIndex * cW * nextScale;
+    const screenWidth = cW * nextScale;
+    const targetLeft = Math.max(0, screenLeft - (scroller.clientWidth - screenWidth) / 2);
+    scroller.scrollTo({ left: targetLeft, behavior: "smooth" });
+  }, [activeIndex, activeId, cW]);
+
   React.useEffect(() => {
     if (suppressNextActiveScreenPanRef.current) {
       suppressNextActiveScreenPanRef.current = false;
       return;
     }
-
-    const scroller = scrollerRef.current;
-    if (!scroller || !activeId) return;
-    const screenLeft = activeIndex * cW * scale;
-    const screenWidth = cW * scale;
-    const targetLeft = Math.max(0, screenLeft - (scroller.clientWidth - screenWidth) / 2);
-    scroller.scrollTo({ left: targetLeft, behavior: "smooth" });
-  }, [activeIndex, activeId, cW, scale]);
+    panToActiveScreen(scale);
+  }, [panToActiveScreen, scale]);
 
   const handleCanvasActiveSlideChange = React.useCallback(
     (id: string) => {
@@ -224,7 +227,10 @@ export function PreviewStage({
           variant="ghost"
           size="icon"
           className="h-6 w-6"
-          onClick={() => setZoom(1)}
+          onClick={() => {
+            setZoom(1);
+            panToActiveScreen(fitScale);
+          }}
           title="Fit active screen"
           aria-label="Fit active screen"
         >

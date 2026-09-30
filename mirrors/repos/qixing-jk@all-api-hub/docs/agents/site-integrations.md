@@ -19,6 +19,8 @@ When working on a site type:
 
 - **One API (`one-api`)** is the original upstream family. One API/New API-family account types share capability construction under `src/services/apiAdapters/newApi/` and protocol transports under `src/services/apiService/newApiFamily/`.
 - **New API (`new-api`)** is a One API downstream family with both account-site and managed-site support.
+- **APIyi (`apiyi`)** is an account-only New API-family compatibility type for the canonical `api.apiyi.com` deployment. Its console routes differ from the default New API routes and it has no registered check-in path; verify deployment behavior before extending that compatibility assumption.
+- **ModelFlare (`ModelFlare`)** is an account-only New API-family compatibility type for `modelflare.dev`. The canonical deployment defaults to cookie authentication and requires `X-ModelFlare-User` on compatible account requests; do not assume ordinary New API access-token authentication works there.
 - **Veloera (`Veloera`)** is downstream of New API and uses the New API family plus Veloera-specific account and managed-site overrides.
 - **OneHub (`one-hub`)** is downstream of One API with a substantially different surface.
 - **DoneHub (`done-hub`)** is downstream of OneHub and uses New API-family account capabilities plus a dedicated managed-site adapter.
@@ -28,6 +30,7 @@ When working on a site type:
 - **Rix API (`Rix-Api`)** is a closed-source New API fork (upstream repository: `https://github.com/RixAPI/Rix-API`; licence console and update log: `https://rixapi.com`). Its 6.x generation diverges from the New API account contract in ways verified against the vendor's own deployments on 2026-09-26: `/api/user/self` drops the numeric `id` and reports a USD `balance` string instead of an integer `quota`, `enable_checkin` carries the check-in switch, token inventory rows return string quotas and keep only the prefixless body of a key (`POST /api/token/{id}/key` reveals the licence-prefixed form), token groups moved to `/api/token/group` after `/api/user/self/groups` was removed, `/api/pricing` serves `data.model_info` rows with direct USD or CNY prices instead of ratio rows, and the console uses `/sign-in`, `/logs`, `/token` and `/billing` where older generations used `/login`, `/log`, `/panel` and `/topup`. `Rix-Api-User` is validated as the account id on token-authenticated requests, so it must not carry a username. Deployments are usually white-labelled: the licence fields in `/api/status` identify them while the visible title carries the operator's own brand, and `/api/status` without `user_info` yields no authoritative group access. Earlier generations keep the New API shapes and routes.
 - **Legacy VoAPI (`VoAPI`)** remains a New API-family account compatibility bucket for older deployments. **Current VoAPI (`voapi-v2`)** is account-only and has dedicated adapters under `src/services/apiAdapters/voapiV2/` plus transports under `src/services/apiService/voapiV2/`; do not apply one generation's API assumptions to the other.
 - **Octopus (`octopus`)** is managed-only and has dedicated managed-site capabilities plus protocol transports under `src/services/apiService/octopus/`.
+- **CLIProxyAPI (`cli-proxy-api`)** is managed-only. Its provider-management capabilities and transports live under `src/services/apiAdapters/managedSites/`, `src/services/apiAdapters/managedResources/`, and `src/services/apiService/cliProxyApi/`; it is not an account site despite serving compatible inference APIs.
 - **AxonHub (`axonhub`)** is managed-only and not One-API/New-API compatible; it uses dedicated GraphQL admin integration and native managed-resource adapters.
 - **Claude Code Hub (`claude-code-hub`)** is managed-only and not One-API/New-API compatible; it uses dedicated admin/provider and managed-site adapters.
 - **Sub2API (`sub2api`)** is both an account site and a managed site. It has dedicated authentication-session, account, model-catalog, key-resource, and managed-resource integrations; it is not a New API-family alias. AI-ROUTER (`ai-router.dev`) is a registered deployment of this family whose dashboard and `/api/v1` are served from different origins; requests for it resolve the deployment's API origin while the stored account URL stays the browser origin, because session reading and temporary-window fallback need the dashboard. Its check-in is a deployment-specific `ai-router:daily-checkin` method.
@@ -42,6 +45,8 @@ When the user names a backend without a deployment URL or fork, treat these as t
 
 - One API: `https://github.com/songquanpeng/one-api`
 - New API: `https://github.com/QuantumNous/new-api`
+- APIyi canonical deployment: `https://api.apiyi.com/`
+- ModelFlare canonical deployment: `https://modelflare.dev/`
 - Veloera: `https://github.com/Veloera/Veloera`
 - V-API: `https://github.com/popjane/v-api`
 - Current VoAPI / `voapi-v2`: `https://github.com/VoAPI/VoAPI`; verify legacy `VoAPI` compatibility against the target deployment
@@ -51,6 +56,7 @@ When the user names a backend without a deployment URL or fork, treat these as t
 - OneHub: `https://github.com/MartialBE/one-hub`
 - DoneHub: `https://github.com/deanxv/done-hub`
 - Octopus: `https://github.com/bestruirui/octopus`
+- CLIProxyAPI: `https://github.com/router-for-me/CLIProxyAPI`; docs: `https://help.router-for.me/`
 - AxonHub: `https://github.com/looplj/axonhub`
 - Claude Code Hub: `https://github.com/ding113/claude-code-hub`
 - Sub2API: `https://github.com/Wei-Shaw/sub2api`

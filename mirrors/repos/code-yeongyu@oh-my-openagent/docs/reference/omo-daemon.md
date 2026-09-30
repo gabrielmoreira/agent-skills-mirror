@@ -8,7 +8,7 @@ The machine-wide socket `rpc.sock` stays as the operator endpoint: `omo daemon r
 and `attach` ensure it, and the thread tools create their sessions there.
 `omo daemon` is the operator's view of every one of these hosts in one agent directory.
 Everything that decides *who serves a socket* lives in the engine (`senpi host`);
-this command supplies omo's launch spec, reads the policy out of `omo.json`, and
+this command supplies omo's launch spec, reads the policy out of the omo config, and
 turns the engine's answer into an exit code a script can branch on.
 
 ```bash
@@ -243,7 +243,15 @@ Trust rules match the engine's own: a group- or world-writable spec, or one whos
 path contains `..`, is refused before anything is started. Edit the spec by
 rebuilding the plugin, not by hand.
 
-## Policy and configuration (`omo.json`)
+## Policy and configuration (`~/.omo/omo.jsonc`)
+
+`task.host_engine_policy` and `task.host_idle_exit_ms` are read through the omo config
+loader, like every other `task.*` key: `~/.omo/omo.jsonc` (or `~/.omo/omo.json`, comments
+allowed) plus the project `.omo` layers, nearest project last. The agent-dir file
+(`~/.omo/agent/omo.json`) is deprecated: it still supplies either key when no config layer
+sets it, and `omo doctor` then prints one `WARN task.<key>: read from deprecated <path>`
+line per key with the move to make. A legacy `"never"` policy is told to use
+`--no-upgrade` instead, because the config key accepts only `upgrade` or `fallback`.
 
 | Key | Values | Meaning |
 | --- | --- | --- |
@@ -314,9 +322,9 @@ may keep working for minutes. Follow these steps in order:
    finds every task store from the agent-dir store index, the sidecars, and each
    `--store <dir>`, refuses if any recorded endpoint is still live, and rewrites every
    retained child's record from its `p-*`/`i-*` socket to `rpc.sock` through the locked
-   task-store path (one `host_session_migrated` event each). Task records live in each
-   project's `.omo/senpi-task` directory (or a custom `task.state_dir`), not in the
-   agent dir, so every such store must be covered. Its last line must say
+   task-store path (one `host_session_migrated` event each). Task records live in one store per
+   project: `<agent dir>/projects/<folder>-<path hash>/senpi-task`, a project's older
+   `.omo/senpi-task` directory, or a custom `task.state_dir`, so every such store must be covered. Its last line must say
    `endpoints without a store map: none`. It refuses with exit 3 when the store index
    is missing or unreadable while shard state exists: then pass `--store <dir>` for
    every project that ran task children (a complete list), or `--allow-missing-index`

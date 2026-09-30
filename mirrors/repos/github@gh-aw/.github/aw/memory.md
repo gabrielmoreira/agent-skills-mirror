@@ -20,6 +20,7 @@ For workflows that **persist state across runs** — deduplication, incremental 
 | Track a numeric metric and compare current vs. baseline (runs at least every 7 days) | `cache-memory` ✅ first choice |
 | Long-lived knowledge base visible in PRs and code reviews | `repo-memory` |
 | Baselines that must survive cache expiry (e.g. security findings, dedup lists) | `repo-memory` |
+| Bounded append-only structured event history with record-level queries | `repo-memory` with the experimental ledger |
 | Human-readable wiki pages for knowledge accumulation | `repo-memory` with `wiki: true` |
 | Persist notes/state inline on the triggering issue or PR | `comment-memory` |
 | Private-preview GitHub Drives backend (enrolled repos only) | `drive-memory` — see [drive-memory.md](drive-memory.md) |
@@ -205,6 +206,64 @@ tools:
 
 Compiler creates a separate `push_repo_memory` job with `contents: write`; main agent job stays read-only.
 
+### Structured event history: repo-memory ledger (experimental)
+
+Use the ledger for immutable, structured events when each run should add records
+and later runs need to query them. For example, a low-volume audit can append
+one result per scan and query prior results by a stable application-level key.
+The ledger exposes `ledger_append`, `ledger_get`, `ledger_query`, and
+`ledger_status`; its SQLite query projection is disposable and rebuilt from the
+persisted JSONL shards.
+
+```yaml
+tools:
+  repo-memory:
+    branch-name: memory/audit-history
+    ledger:
+      compaction:
+        min-segments: 32
+        max-segments: 32
+```
+
+Optionally set `ledger.schema` to a repository-relative JSON Schema file to
+validate payloads. The supported schema vocabulary is intentionally limited;
+see the [repo-memory reference](https://github.com/github/gh-aw/blob/main/docs/src/content/docs/reference/repo-memory.md#structured-ledger).
+
+Ledger records are append-only and concurrent histories converge when their
+repo-memory branches merge, but this is not a transactional database. Include
+stable event keys and timestamps in payloads, deduplicate and resolve
+conflicting application events deterministically, and use `ledger_status` to
+check for malformed or incomplete records. Do not edit ledger shard files
+directly.
+
+The ledger is experimental and bounded: it inspects at most 1024 shard files
+(configurable with `ledger.max-shards`), each record is limited to 32 KiB, each
+shard defaults to 100 KiB, each run defaults to a 10 KiB append budget, and each
+query returns at most 500 records. Configure limits with
+`max-segment-kb`, `max-record-kb`, and `max-patch-kb`; defaults align with
+repo-memory's 100 KiB per-file and 10 KiB per-push defaults. Compilation warns
+when ledger limits exceed the corresponding repo-memory persistence limits.
+Each writing workflow invocation creates a shard, so a frequently running
+workflow can exhaust the shard limit. Use ordinary repo-memory files for
+replaceable snapshots, pruned baselines, or histories that need more than 1024
+writer shards. Use bounded declarative `ledger.compaction` options to compact
+stable segments; custom JavaScript compactor scripts are disabled because Node's
+in-process VM is not a security boundary. Ledger workflows require AWF's
+Cloud Hypervisor runtime, which keeps ledger storage outside the agent's
+`filesystem.allowWrite` paths; only the MCP ledger server can append records.
+The persistence job ignores agent-supplied coverage files and overwrites of
+trusted shards, then verifies replacement coverage before retirement.
+
+The ledger is eventually convergent, not transactional or exactly-once. Record
+SHA-256 values are unkeyed checksums, not authentication; rely on the AWF write
+boundary, use stable application keys, and deterministically resolve duplicates
+and concurrent conflicts. Compaction, normalization, and save details appear in
+the persistence step summary. Every successful append also emits a redacted
+`ledger_mutation` audit entry to a dedicated ledger transaction log; a trusted
+post-agent step revalidates and merges those entries into the safe outputs for
+threat detection, and their safe-output handler only logs that metadata and
+performs no side effects.
+
 ### Tradeoffs
 
 | ✅ Pros | ❌ Cons |
@@ -214,6 +273,7 @@ Compiler creates a separate `push_repo_memory` job with `contents: write`; main 
 | Survives cache invalidation | Not available for Copilot engine (requires GitHub tools) |
 | Human-readable via GitHub branch UI | More complex setup |
 | Can target a different repository | |
+| Ledger mode provides immutable structured records and queries | Experimental, append-only, and limited to 1024 shard files by default |
 
 ---
 
@@ -304,6 +364,11 @@ Multiple memory IDs in one comment are supported; each maps to a separate `*.md`
 ## Stateful Scanning Pattern (repo-memory)
 
 Persist a baseline JSON file between runs to alert only on *new* findings — vulnerability scans, dependency audits, licence checks. Unlike `cache-memory`, the baseline survives cache expiry, so a missed cycle won't flood the repo with duplicate issues. Store only stable identifiers (advisory IDs), cap output with `max:`, treat missing baseline as `[]`. Requires Claude or custom engine — not Copilot.
+
+Keep this as a replaceable repo-memory snapshot by default. Use the experimental
+ledger only when the audit needs an append-only record of each scan or finding
+and its expected writer count fits the default 1024-shard limit; it does not replace,
+prune, or compact an existing baseline.
 
 > **Worked example** (nightly npm vulnerability scan, with key design decisions): [memory-stateful-patterns.md](memory-stateful-patterns.md#stateful-scanning-repo-memory).
 

@@ -32,7 +32,7 @@ content/
 ├── chat/              # Conversation chunks (by source)
 │   └── conversations-agent/
 │       └── {hash}.md
-├── episodic/          # Session/subconscious episode chunks
+├── episodic/          # Session episode chunks
 │   └── {session_id}/
 │       └── {hash}.md
 ├── raw/               # Raw ingested documents (GitHub, Gmail, etc.)

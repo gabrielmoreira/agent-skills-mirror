@@ -2,6 +2,7 @@
   "name": "app-store-screenshots",
   "version": "0.1.0",
   "private": true,
+  "engines": { "node": ">=20.9.0" },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -28,6 +29,7 @@
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
     "react-rnd": "^10.5.3",
+    "sharp": "0.35.4",
     "sonner": "^1.7.0",
     "tailwind-merge": "^2.5.4",
     "tailwindcss-animate": "^1.0.7"

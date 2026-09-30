@@ -18,7 +18,7 @@ Service-management domain for the OpenHuman core daemon. It installs/uninstalls 
 | --- | --- |
 | `crates/openhuman-core/src/platform/service/mod.rs` | Export-focused module root; declares submodules and re-exports the public surface + controller-schema pair. |
 | `crates/openhuman-core/src/platform/service/core.rs` | `ServiceState` / `ServiceStatus` types and the cross-platform `install`/`start`/`stop`/`status`/`uninstall` dispatchers that route to the mock or the per-OS impl via `cfg`. |
-| `crates/openhuman-core/src/platform/service/ops.rs` | RPC handler layer (`service_install`, `service_start`, `service_stop`, `service_status`, `service_restart`, `service_shutdown`, `service_uninstall`, `daemon_host_get`/`set`) returning `RpcOutcome<T>`. Re-exported as `rpc`. |
+| `crates/openhuman-core/src/platform/service/ops.rs` | RPC handler layer (`service_install`, `service_start`, `service_stop`, `service_status`, `service_restart`, `service_shutdown`, `service_uninstall`, `daemon_host_get`/`set`) returning `Outcome<T>`. Re-exported as `rpc`. |
 | `crates/openhuman-core/src/platform/service/schemas.rs` | Controller schemas + `handle_*` adapters for the `service` namespace; `all_controller_schemas` / `all_registered_controllers`. |
 | `crates/openhuman-core/src/platform/service/restart.rs` | Self-restart orchestration: `service_restart` (publishes event), `trigger_self_restart_now` (respawns current exe with original args), `apply_startup_restart_delay_from_env`, `RestartStatus`. |
 | `crates/openhuman-core/src/platform/service/shutdown.rs` | Graceful-shutdown orchestration: `service_shutdown` (publishes event), `ShutdownStatus`. |
@@ -46,7 +46,7 @@ From `mod.rs` re-exports:
 
 ## RPC / controllers
 
-Namespace `service` (called as `openhuman.service_<fn>` / `service.<fn>`). All nine handlers go through `RpcOutcome` and are wired into the registry by `crate::core::all` via `all_service_registered_controllers`.
+Namespace `service` (called as `openhuman.service_<fn>` / `service.<fn>`). All nine handlers go through `Outcome` and are wired into the registry by `crate::core::all` via `all_service_registered_controllers`.
 
 | Method | Inputs | Output |
 | --- | --- | --- |
@@ -74,7 +74,7 @@ Subscribes (in `bus.rs`):
 - `RestartSubscriber` (`name = "service::restart"`): on `SystemRestartRequested`, atomically claims a one-shot gate, calls `trigger_self_restart_now` to spawn a replacement process, then `process::exit(0)` after 150ms.
 - `ShutdownSubscriber` (`name = "service::shutdown"`): on `SystemShutdownRequested`, claims its gate and `process::exit(0)` after 150ms (no respawn).
 
-Both subscribers are registered idempotently from `crates/openhuman-core/src/core/jsonrpc.rs` at startup via `register_restart_subscriber` / `register_shutdown_subscriber`; handles are held in process-lifetime `OnceLock`s so they are never dropped.
+Both subscribers are registered idempotently from `crates/openhuman-core/src/core/runtime/subscribers.rs` at startup via `register_restart_subscriber` / `register_shutdown_subscriber`; handles are held in process-lifetime `OnceLock`s so they are never dropped.
 
 ## Persistence
 
@@ -88,13 +88,13 @@ Both subscribers are registered idempotently from `crates/openhuman-core/src/cor
 - `crate::config`: `Config` (paths, config dir) for every lifecycle/path operation; `config::rpc::load_config_with_timeout` in the schema handlers.
 - `crate::core::bus::BUS` (`tinybus::OnceBus<DomainEvent>`): `publish` / `subscribe` for restart/shutdown orchestration; `crate::core::events::DomainEvent` for the event catalog.
 - `crate::core` (`ControllerSchema`, `FieldSchema`, `TypeSchema`) and `crate::core::all` (`ControllerFuture`, `RegisteredController`): controller schema/registration contract.
-- `crate::rpc::RpcOutcome`: standard RPC result envelope.
+- `crate::core::Outcome`: standard RPC result envelope.
 - External: `anyhow`, `serde`/`serde_json`, `tokio`, `async_trait`, plus OS CLIs (`launchctl`, `systemctl`, `schtasks`).
 
 ## Used by
 
 - `crates/openhuman-core/src/core/all.rs`: registers the service controllers (`all_service_registered_controllers`).
-- `crates/openhuman-core/src/core/jsonrpc.rs`: registers the restart/shutdown event-bus subscribers at startup.
+- `crates/openhuman-core/src/core/runtime/subscribers.rs`: registers the restart/shutdown event-bus subscribers at startup.
 - `crates/openhuman-core/src/platform/doctor/core.rs`: reads `service::daemon::state_file_path`.
 - `crates/openhuman-core/src/platform/update/ops.rs` (`rpc::service_restart` after a self-replace), `crates/openhuman-core/src/config/ops/loader/runtime_flags.rs` (`mock::mock_agent_running`), `crates/openhuman-core/src/desktop/app_state/ops/{types,runtime_snapshot}.rs` (`ServiceState`/`ServiceStatus`, `status`): call into `crate::platform::service`.
 - `crates/openhuman-core/src/tools/mod.rs`: re-exports `platform::service::tools::*`.

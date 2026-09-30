@@ -55,17 +55,20 @@ Display inline: `![generated image](http://localhost:8402/images/abc123.png)`
 
 ### Model Selection
 
-| Alias              | Full ID                      | Price        | Sizes                           | Best for                                                                                                           |
-| ------------------ | ---------------------------- | ------------ | ------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
-| `nano-banana`      | `google/nano-banana`         | $0.05        | 1024×1024                       | Default — fast, cheap, good quality                                                                                |
-| `banana-2`         | `google/nano-banana-2`       | $0.09        | 1024×1024                       | Gemini 3.1 Flash imagegen — sharper than nano-banana at 1K                                                         |
-| `banana-pro`       | `google/nano-banana-pro`     | $0.10–$0.15  | 1024×1024, 2048×2048, 4096×4096 | High-res, large format                                                                                             |
-| `gpt-image`        | `openai/gpt-image-1`         | $0.02–$0.04  | 1024×1024, 1536×1024, 1024×1536 | Budget option; supports editing                                                                                    |
-| `gpt-image-2`      | `openai/gpt-image-2`         | $0.06–$0.12  | 1024×1024, 1536×1024, 1024×1536 | Photorealistic, reasoning-driven, text rendering (slow — proxy polls up to 5min); legacy `dalle` alias routes here |
-| `seedream`         | `bytedance/seedream-5-pro`   | $0.045–$0.09 | up to 2848×1600 / 2304×1728     | Flagship quality, reference-image support                                                                          |
-| `grok-imagine`     | `xai/grok-imagine-image`     | $0.02        | 1024×1024                       | xAI Grok image style                                                                                               |
-| `grok-imagine-pro` | `xai/grok-imagine-image-pro` | $0.07        | 1024×1024                       | Grok high-quality                                                                                                  |
-| `cogview`          | `zai/cogview-4`              | $0.015–$0.02 | 512×512 to 1440×1440            | Cheapest — Zhipu CogView                                                                                           |
+| Alias              | Full ID                         | Price        | Sizes                           | Best for                                                                                                           |
+| ------------------ | ------------------------------- | ------------ | ------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| `nano-banana`      | `google/nano-banana`            | $0.05        | 1024×1024                       | Default — fast, cheap, good quality                                                                                |
+| `banana-2`         | `google/nano-banana-2`          | $0.09        | 1024×1024                       | Gemini 3.1 Flash imagegen — sharper than nano-banana at 1K                                                         |
+| `banana-pro`       | `google/nano-banana-pro`        | $0.10–$0.15  | 1024×1024, 2048×2048, 4096×4096 | High-res, large format                                                                                             |
+| `gpt-image`        | `openai/gpt-image-1`            | $0.02–$0.04  | 1024×1024, 1536×1024, 1024×1536 | Budget option; supports editing                                                                                    |
+| `gpt-image-2`      | `openai/gpt-image-2`            | $0.06–$0.12  | 1024×1024, 1536×1024, 1024×1536 | Photorealistic, reasoning-driven, text rendering (slow — proxy polls up to 5min); legacy `dalle` alias routes here |
+| `flare`            | `openai/gpt-image-2.5-flare`    | $0.28–$0.56  | 1024×1024, 1536×1024, 1024×1536 | GPT Image 2.5, fast — top OpenAI quality, caller can pick `quality` at a flat price                                |
+| `sunburst`         | `openai/gpt-image-2.5-sunburst` | $0.28–$0.56  | 1024×1024, 1536×1024, 1024×1536 | GPT Image 2.5, precision — best for high-fidelity edits                                                            |
+| `seedream`         | `bytedance/seedream-5-pro`      | $0.045–$0.09 | up to 2848×1600 / 2304×1728     | Flagship quality, reference-image support                                                                          |
+| `grok-imagine`     | `xai/grok-imagine-image`        | $0.02        | 1024×1024                       | xAI Grok image style                                                                                               |
+| `grok-imagine-2`   | `xai/grok-imagine-image-2.0`    | $0.04        | 1024×1024                       | Grok Imagine 2.0 — between grok-imagine and pro                                                                    |
+| `grok-imagine-pro` | `xai/grok-imagine-image-pro`    | $0.07        | 1024×1024                       | Grok high-quality                                                                                                  |
+| `cogview`          | `zai/cogview-4`                 | $0.015–$0.02 | 512×512 to 1440×1440            | Cheapest — Zhipu CogView                                                                                           |
 
 **Choosing a model:**
 
@@ -74,15 +77,16 @@ Display inline: `![generated image](http://localhost:8402/images/abc123.png)`
 - "photorealistic" / complex scenes → `gpt-image-2`
 - "flagship quality" / reference image → `seedream`
 - "budget" / "cheap" → `cogview`
-- "editable" / "inpainting" → `gpt-image` (only edit-capable model)
+- "top quality" / "best OpenAI" → `flare` (fast) or `sunburst` (precision)
+- "editable" / "inpainting" → `gpt-image` (cheapest), `gpt-image-2`, or `sunburst` (most precise)
 - "artistic" / flexible content → `grok-imagine`
 - "grok style" → `grok-imagine` or `grok-imagine-pro`
 
 **Choosing a size:**
 
 - Default: `1024x1024` (the only size every model accepts)
-- Portrait: `1024x1536` (gpt-image / gpt-image-2) or `1728x2304` (seedream)
-- Landscape: `1536x1024` (gpt-image / gpt-image-2), `1344x768` (cogview), or `2048x1024` / `1280x720` (seedream)
+- Portrait: `1024x1536` (gpt-image / gpt-image-2 / flare / sunburst) or `1728x2304` (seedream)
+- Landscape: `1536x1024` (gpt-image / gpt-image-2 / flare / sunburst), `1344x768` (cogview), or `2048x1024` / `1280x720` (seedream)
 - High-res: `2048x2048` / `4096x4096` with `banana-pro`; `2848x1600` with `seedream`
 - The gateway validates size per model BEFORE payment and rejects unknown ones — do not invent sizes outside each model's list above
 
@@ -115,7 +119,7 @@ Response is identical to generation:
 }
 ```
 
-**Supported models for editing:** `openai/gpt-image-1` only ($0.02)
+**Supported models for editing:** `openai/gpt-image-1` (default, $0.02), `openai/gpt-image-2` ($0.06), `openai/gpt-image-2.5-sunburst` ($0.28), `google/nano-banana` ($0.05), `google/nano-banana-2` ($0.09), `google/nano-banana-pro` ($0.10). `mask` works with the OpenAI models only. `openai/gpt-image-2.5-flare` cannot edit.
 
 ---
 
@@ -141,4 +145,4 @@ Response is identical to generation:
 - If the call fails with a payment error, check `GET http://localhost:8402/health` and read `authMode` before telling the user how to fix it: `wallet` → fund the wallet at [blockrun.ai](https://blockrun.ai); `api-key` → top up account credit at [user.blockrun.ai/dashboard/credits](https://user.blockrun.ai/dashboard/credits). Naming the wrong one sends the user to a page that cannot fix their error.
 - Google models may return base64 internally — ClawRouter uploads automatically and returns a hosted URL
 - OpenAI image models enforce OpenAI content policy; use `nano-banana` or `grok-imagine` for more flexibility
-- Image editing is only available with `gpt-image-1`; generation supports all listed models
+- Image editing works with gpt-image-1/2, sunburst and the nano-banana models (not flare, seedream, grok or cogview); generation supports all listed models

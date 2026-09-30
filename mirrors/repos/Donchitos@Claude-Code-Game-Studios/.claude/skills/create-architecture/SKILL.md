@@ -3,7 +3,7 @@ name: create-architecture
 description: "Author the architecture blueprint before code is written. Validates decisions against the pinned engine, flags knowledge gaps."
 argument-hint: "[focus-area: full | layers | data-flow | api-boundaries | adr-audit] [--review full|lean|solo]"
 user-invocable: true
-allowed-tools: Read, Glob, Grep, Write, Bash, AskUserQuestion, Agent, Bash(bash "*/.claude/skills/create-architecture/../../hooks/yaml-helper.sh" resolve_config *)
+allowed-tools: Read, Glob, Grep, Write, Edit, Bash, AskUserQuestion, Agent, Bash(bash "*/.claude/skills/create-architecture/../../hooks/yaml-helper.sh" resolve_config *)
 model: sonnet
 ---
 
@@ -32,9 +32,9 @@ Every `AskUserQuestion` call follows `.claude/docs/automation-modes.md`
 
 **`docs.density`** — it controls per-section *depth*, where `workflow`
 controls which sections exist. `modes.rigor` sets both together; set
-`docs.density` explicitly to vary depth alone: `terse` = layer diagrams + decision bullets,
+`docs.density` explicitly to vary depth alone: `terse` (the default, via `rigor: minimal`) = layer diagrams + decision bullets,
 no essays; `balanced` = diagrams + paragraph explanations of layer choices
-(default); `thorough` = full prose with rationale, trade-offs, and alternatives
+(`rigor: standard`); `thorough` = full prose with rationale, trade-offs, and alternatives
 considered per layer. Apply it to every section you author.
 
 **`workflow`** (see `.claude/docs/workflow-modes.md`):
@@ -207,6 +207,25 @@ Use `AskUserQuestion`:
   - `[B] Let me check the engine reference first — pause here`
   - `[C] Show me which domains are HIGH RISK and why`
 
+### 0e. Existing Architecture Document
+
+Glob `docs/architecture/architecture.md`. If it exists, this run updates it —
+it never replaces it unasked. Read its `## Document Status` block and its `##`
+headings, then use `AskUserQuestion`:
+- Prompt: "An architecture document already exists (v[N], [last updated]). What should this run do?"
+- Options: `[A] Update chosen sections in place` / `[B] Rewrite the whole document — replaces the existing file` / `[C] Stop`
+
+On `[A]`, ask which sections. Phases 1–6 author only those and say which they
+skipped; Phase 7 replaces just those sections and raises `Version` to N+1,
+leaving every other section as it is. `[B]` runs the full walkthrough, and
+Phase 7's ask says it replaces the existing file.
+
+A focus-area argument (`layers`, `data-flow`, `api-boundaries`, `adr-audit`)
+is `[A]` with that one section chosen: it runs only its phase (1, 3, 4 or 5),
+and Phase 7 writes that section. Phase 7b still runs on the updated document —
+an update is reviewed like a first draft, at the review modes that review one. With no existing document there is nothing to
+update — say so, and offer the full walkthrough instead.
+
 ---
 
 ## Phase 1: System Layer Mapping
@@ -235,7 +254,8 @@ For each GDD system, ask:
 - What does it own exclusively? (data, state, behaviour)
 
 Present the proposed layer assignment and ask for approval before proceeding to
-the next section. Write the approved layer map immediately to the skeleton file.
+the next section. Record the approved layer map in
+`production/session-state/active.md`; it goes into the document at Phase 7.
 
 **Engine awareness check**: For each system assigned to the Core and Foundation
 layers, flag if it touches a HIGH or MEDIUM risk engine domain. Show the relevant
@@ -264,7 +284,8 @@ relevant module reference doc. If an API is post-cutoff, flag it:
     Behaviour confirmed: [yes / NEEDS VERIFICATION]
 ```
 
-Get user approval on the ownership map before writing.
+Get user approval on the ownership map, then record it in
+`production/session-state/active.md`; it is written at Phase 7.
 
 ---
 
@@ -283,7 +304,8 @@ Use ASCII sequence diagrams where helpful. For each data flow:
 - State whether this is synchronous call, signal/event, or shared state
 - Flag any data flows that cross thread boundaries
 
-Get user approval per scenario before writing.
+Get user approval on each scenario, then record it in
+`production/session-state/active.md`; it is written at Phase 7.
 
 ---
 
@@ -302,6 +324,9 @@ These become the contracts programmers implement against.
 **Engine awareness check**: If any interface uses engine-specific types (e.g.
 `Node`, `Resource`, `Signal` in Godot), flag the version and verify the type
 exists and has not changed signature in the target engine version.
+
+Get user approval on the API boundaries, then record them in
+`production/session-state/active.md`; they are written at Phase 7.
 
 ---
 
@@ -373,6 +398,10 @@ but don't yet. Group by priority:
 Once all sections are approved, write the complete document to
 `docs/architecture/architecture.md`.
 
+In an update (Phase 0e `[A]`, or a focus-area argument), write only the chosen
+sections instead, replacing each in place with `Edit`, and raise `Version`; the
+ask below then names those sections and the version change.
+
 Display a one-paragraph summary of what the document will contain (layers, modules, data flows, ADR gaps). Then use `AskUserQuestion`:
 - "All sections approved. May I write the master architecture document?"
   - [A] Yes — write to `docs/architecture/architecture.md` now
@@ -426,14 +455,14 @@ derived from the game concept, GDDs, and technical preferences]
 
 After writing the master architecture document, perform an explicit sign-off before handoff.
 
-**Step 1 — Technical Director self-review** (this skill runs as technical-director):
+**Review mode check** — apply before spawning either gate:
+- `solo` → skip both. Note: "TD-ARCHITECTURE and LP-FEASIBILITY skipped — Solo mode." Go to Step 4 and record both as skipped, then Phase 8.
+- `lean` → skip both (neither is a PHASE-GATE). Note: "TD-ARCHITECTURE and LP-FEASIBILITY skipped — Lean mode." Go to Step 4 and record both as skipped, then Phase 8.
+- `full` → spawn both, in parallel.
 
-Apply gate **TD-ARCHITECTURE** (`.claude/docs/director-gates/td-architecture.md`) as a self-review. Check all four criteria from that gate definition against the completed document.
+**Step 1 — Spawn `technical-director` via `Agent` using gate TD-ARCHITECTURE (`.claude/docs/director-gates/td-architecture.md`):**
 
-**Review mode check** — apply before spawning LP-FEASIBILITY:
-- `solo` → skip. Note: "LP-FEASIBILITY skipped — Solo mode." Proceed to Phase 8 handoff.
-- `lean` → skip (not a PHASE-GATE). Note: "LP-FEASIBILITY skipped — Lean mode." Proceed to Phase 8 handoff.
-- `full` → spawn as normal.
+Pass: the architecture document path (`docs/architecture/architecture.md`), the Technical Requirements Baseline (TR-IDs and count), the ADR list with statuses, and the Engine Knowledge Gap Inventory from Phase 0d. Issue this call and Step 2's before waiting for either result.
 
 **Step 2 — Spawn `lead-programmer` via `Agent` using gate LP-FEASIBILITY (`.claude/docs/director-gates/lp-feasibility.md`):**
 
@@ -441,17 +470,20 @@ Pass: architecture document path, technical requirements baseline summary, ADR l
 
 **Step 3 — Present both assessments to the user:**
 
-Show the Technical Director assessment and Lead Programmer verdict side by side.
+Show the TD-ARCHITECTURE verdict (APPROVE / CONCERNS / REJECT) and the LP-FEASIBILITY verdict (FEASIBLE / CONCERNS / INFEASIBLE) side by side.
 
 Use `AskUserQuestion` — "Technical Director and Lead Programmer have reviewed the architecture. How would you like to proceed?"
-Options: `Accept — proceed to handoff` / `Revise flagged items first` / `Discuss specific concerns`
+Options: `Accept — proceed to handoff` / `Revise flagged items first` / `Discuss specific concerns`.
+If either verdict is REJECT or INFEASIBLE, do not offer `Accept` — the blockers are revised (or discussed) first.
+`Revise flagged items first` re-drafts each flagged section and shows it for approval as in Phases 1–4; the revised document is then written once, through Phase 7's ask, and Step 4 records `REVISED after [verdict]`.
+A `NOT ASSESSED` answer is never recorded as `APPROVE` or `FEASIBLE`: Step 4 records it with the input that was missing (`director-gates.md`).
 
 **Step 4 — Record sign-off in the architecture document:**
 
 Update the Document Status section:
 ```
-- Technical Director Sign-Off: [date] — APPROVED / APPROVED WITH CONDITIONS
-- Lead Programmer Feasibility: FEASIBLE / CONCERNS ACCEPTED / REVISED
+- TD-ARCHITECTURE: [date] — APPROVE / CONCERNS (accepted) / REVISED after CONCERNS / REVISED after REJECT / NOT ASSESSED — [missing input] / skipped — [mode] mode
+- LP-FEASIBILITY: [date] — FEASIBLE / CONCERNS (accepted) / REVISED after CONCERNS / REVISED after INFEASIBLE / NOT ASSESSED — [missing input] / skipped — [mode] mode
 ```
 
 Show the proposed Document Status block inline, then use `AskUserQuestion`:
@@ -471,7 +503,7 @@ Show the proposed Document Status block inline, then use `AskUserQuestion`:
 
 ## Architecture Complete
 
-`docs/architecture/architecture.md` v1.0 — [TD verdict: APPROVED / APPROVED WITH CONCERNS / CONCERNS]. [One sentence on what the architecture covers.]
+`docs/architecture/architecture.md` v[N] — [TD-ARCHITECTURE: APPROVE / CONCERNS (accepted) / REVISED after CONCERNS / REVISED after REJECT / NOT ASSESSED / skipped — [mode] mode]. [One sentence on what the architecture covers.]
 
 ---
 
@@ -486,22 +518,25 @@ Show the proposed Document Status block inline, then use `AskUserQuestion`:
 **3. `/architecture-decision "[Title]"` → ADR-[XXXX]**
 [One sentence.]
 
+**Then:** `/architecture-review`, and `/create-control-manifest` once it passes and those ADRs are Accepted — it turns them into the layer rules manifest.
+
 List top 3 from Phase 6 in priority order. If fewer than 3 remain, list only what's outstanding.
 
 ---
 
 ## Gate-Check Readiness
 
-> **Required before `/gate-check [stage]`:**
+> **Required before `/gate-check pre-production`:**
 > - [ ] Accept ADRs: [list Proposed ADR IDs that must be Accepted]
 > - [ ] Write ADRs: [list ADR IDs that must still be written]
+> - [ ] Run `/architecture-review` — writes the review report and the traceability index (`docs/architecture/requirements-traceability.md`) the gate reads
 > - [ ] Run `/test-setup` — scaffolds `tests/unit/`, `tests/integration/`, CI workflow, and an example test file
 > - [ ] Run `/ux-design` — creates `design/ux/interaction-patterns.md` and `design/accessibility-requirements.md`
 >
-> Run `/gate-check [stage]` when all boxes are checked.
+> Run `/gate-check pre-production` when all boxes are checked.
 
 If nothing is blocking, write instead:
-> No blockers — run `/gate-check [stage]` now.
+> No blockers — run `/gate-check pre-production` now.
 
 ---
 
@@ -536,8 +571,13 @@ This skill follows the collaborative design principle at every phase:
    sufficient. Use the structured tool with labeled options [A]/[B]/[C] (write now /
    show full draft first / not yet). For multi-file changesets, list every file
    and what changes, then ask once grouped — not separate plain-text asks per file.
-6. **Incremental writing** — write each approved section immediately; do not
-   accumulate everything and write at the end. This survives session crashes.
+6. **One write, after every section is approved** — the document is written once,
+   at Phase 7; Phase 7b's Step 4 only updates its Document Status, after its own
+   ask. Record each approved section's decisions in
+   `production/session-state/active.md` as you go, so a crash loses no decision.
+   A revision that Phase 7b forces is written the same way — once, after its
+   re-drafted sections are approved — and an update (Phase 0e) writes only the
+   sections it chose.
 
 Never make a binding architectural decision without user input. If the user is
 unsure, present 2-4 options with pros/cons before asking them to decide.

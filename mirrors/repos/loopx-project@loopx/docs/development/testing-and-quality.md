@@ -73,6 +73,24 @@ golden 来让测试通过。
 
 ## Pull-Request Baseline / PR 基线
 
+### Synthetic Runs Must Not Report Adoption / 合成运行不计入使用遥测
+
+CI, pytest and canary smoke subprocesses disable usage collection with
+`LOOPX_USAGE_PING=0`. A synthetic installer, benchmark profile or release
+qualification that reconstructs its environment must set that opt-out itself,
+including in Agent tool shells; filtering out `CI` must never restore collection.
+Do not infer test provenance from OS, install channel or random installation IDs.
+Telemetry transport tests may explicitly opt in only with isolated state and a
+disposable local collector. Validate the actual child CLI and typed sender, and
+assert zero HTTP requests for disabled profiles rather than only inspecting a
+parent environment dictionary.
+
+CI、pytest 和 canary smoke 子进程通过 `LOOPX_USAGE_PING=0` 关闭遥测。合成安装、
+评测 profile 或发布资格验证重建环境时，必须自行设置关闭开关，并覆盖 Agent 工具
+shell；不能因为过滤了 `CI` 就恢复采集。不能按系统、安装渠道或随机 ID 推断测试
+来源。遥测传输专项测试只允许使用隔离状态和可丢弃的本地收集器显式开启。验证实际
+子进程 CLI 和类型化发送端，并断言关闭状态下 HTTP 请求为零，而非只检查父环境。
+
 ### Required Merge Check / 必需合并检查
 
 `python-tests.yml` publishes `merge-gate` for every pull request. Code,
@@ -95,11 +113,24 @@ is authoritative for activation. The lead maintainer alone retains the
 existing bypass exception; record the exact head, reason, validation and known
 failures whenever using it. A bypass does not turn failed tests into a pass.
 
+Both required workflows also run on `merge_group`, so a GitHub merge queue can
+qualify the exact candidate that would land on `main`. Queue candidates never
+receive a job exemption: the classifier plans them as full, exactly like
+`main`. `Sign-off` checks the same contribution range and exempts only
+verified GitHub-generated two-parent merges, so configure the queue with the
+merge method `merge`. The trigger is inert until the live ruleset enables a
+merge queue. Enabling the queue, and then relaxing the up-to-date-branch
+requirement, is a ruleset decision for the lead maintainer.
+
 每个 PR 都会收到 `merge-gate` 结果。代码、工作流、治理规则和未知路径必须通过
 原有核心测试；失败、取消、缺失或意外跳过均不能通过。仅白名单根目录 Markdown
 或 `docs/**/*.md` 的修改可显式跳过昂贵测试；运行时 prompt、可执行文档、代码删除
 及代码移入文档均不享受豁免。实际启用状态以在线规则为准，使用 owner bypass
 必须留下版本、原因、验证和已知失败的记录。
+两个必需工作流同样响应 `merge_group`，合并队列可在合入 `main` 前验证确切候选；
+队列候选一律全量验证、不享受豁免。队列合并方式应设为 `merge`，因为 `Sign-off`
+只豁免已验证的 GitHub 双父合并提交。在线规则启用合并队列前该触发不生效；启用
+队列并放宽“分支必须最新”要求由首席维护者决定。
 
 To validate or change the classifier locally:
 
@@ -401,6 +432,18 @@ The semantic inventory is computed from the full tracked tree, not committed.
 Use `--output .local/semantic-inventory.json` only when an exported report is useful;
 `--output <path> --check` checks that explicit report without repairing it.
 词表、owner 与预算继续入库并受检查；结构清单按需计算，无须为普通 PR 补生成文件。
+
+The same premerge semantic smoke validates the tracked project-registry I/O
+census, including call-site coordinates and direct-I/O classifications, using
+its existing tracked-product source policy. After moving a registered call, run
+`uv run python scripts/generate_project_registry_io_manifest.py` and review the
+diff; new direct I/O still requires classification. This is a source-checkout
+check requiring Git and Node development dependencies, not an installed-App
+health check. No model calls are involved.
+
+同一 premerge 语义检查也会校验项目注册表 I/O 清单，复用已有产品源码扫描规则，检查调用
+位置与直接 I/O 分类。移动调用后重新生成并审阅清单；新增直接 I/O 仍需分类。
+这属于需要 Git 和 Node 开发依赖的源码检查，不是安装版 App 健康检查，也不调用模型。
 
 Confirm the interpreter and imported checkout when diagnosing a mismatch:
 

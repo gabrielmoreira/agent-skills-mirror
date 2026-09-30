@@ -35,12 +35,12 @@ Directories come first, in alphabetical order, then the individual files worth t
 
 ### `external/`
 
-- **Purpose**: Every git submodule webpack checks out for testing — today the four spec corpora below and terser's own tests. Nothing here is webpack's to edit: each directory belongs to its upstream project, and this repository only pins a commit.
+- **Purpose**: Every git submodule webpack checks out for testing — today the four spec corpora below and terser's and swc's own tests. Nothing here is webpack's to edit: each directory belongs to its upstream project, and this repository only pins a commit.
 
 #### `test262-cases/`
 
 - **Purpose**: ECMAScript test262 conformance test cases.
-- **Usage**: Git submodule — initialize with `git submodule update --init test/external/test262-cases`. Test runners: `test/specCases/test262.spectest.js`, and `test/specCases/js-minify.spectest.js`, which minifies each test with webpack's printer and with terser.
+- **Usage**: Git submodule — initialize with `git submodule update --init test/external/test262-cases`. Test runners: `test/specCases/test262.spectest.js`, which builds and runs each test in development and in production once per JavaScript minimizer — terser, and webpack's printer, as `experiments.futureDefaults` switches it — skipping the `fn-name` cases a renamed binding changes; what each minimizer still fails is listed by reason in its `MINIFIED_FAILURES` table, and a listed case that passes fails the suite until removed. And `test/specCases/minify-corpora.spectest.js`, which minifies each test with webpack's printer and with terser.
 
 #### `html5lib-tests/`
 
@@ -57,10 +57,15 @@ Directories come first, in alphabetical order, then the individual files worth t
 - **Purpose**: CSS Syntax Level 3 conformance corpus for `lib/css/syntax`.
 - **Usage**: Git submodule — initialize with `git submodule update --init test/external/css-parsing-tests`. Test runner: `test/specCases/cssParsing-webpack.spectest.js` (`yarn test:css-parsing`) compiles every input as a webpack CSS entry to confirm the full pipeline handles it without crashing.
 
+#### `swc/`
+
+- **Purpose**: swc's repository, read only under `crates/swc_ecma_minifier/tests`: its fixtures with their configs, the tests `exec.rs` and `mangle.rs` write inline, and the libraries it measures itself on. Each is held to terser's bytes like the terser corpora; a test with an `expected.stdout`, and every `exec.rs` test, also has its outputs run, and each fixture's recorded `output.js` is what `JS_MINIFY_REPORT=<file>` compares sizes against.
+- **Usage**: Git submodule — initialize with `git submodule update --init --depth 1 test/external/swc`. Test runner: `test/specCases/minify-corpora.spectest.js` (`yarn test:minify-corpora`).
+
 #### `terser/`
 
-- **Purpose**: terser's own repository, pinned to the version webpack depends on. Its `test/compress` cases and `test/input` files are two of the corpora `lib/javascript/syntax-printer.js` is held to (test262 is the third): each source is minified by terser as published and by webpack's printer under several option sets, and the outputs, or the errors, must be byte-for-byte the same.
-- **Usage**: Git submodule — initialize with `git submodule update --init --depth 1 test/external/terser`. Test runner: `test/specCases/js-minify.spectest.js` (`yarn test:js-minify`), which also fails when the pin and the installed `terser` disagree, so bumping the dependency means moving the pin with it. A new corpus is one entry in its `CORPORA` list.
+- **Purpose**: terser's own repository, pinned to the version webpack depends on. Its `test/compress` cases and `test/input` files are two of the six corpora `lib/javascript/syntax-printer.js` is held to (test262 and swc's fixtures, `exec.rs` and `mangle.rs` tests are the other four): each source is minified by terser as published and by webpack's printer under several option sets, and the outputs, or the errors, must be byte-for-byte the same, but for what webpack's `correct` phase fixes. A case stating its `expect_stdout` also has each output run in terser's sandbox, which must print it — or, for `expect_stdout: true`, do whatever its input does, a throw or silence included.
+- **Usage**: Git submodule — initialize with `git submodule update --init --depth 1 test/external/terser`. Test runner: `test/specCases/minify-corpora.spectest.js` (`yarn test:minify-corpora`), which also fails when the pin and the installed `terser` disagree, so bumping the dependency means moving the pin with it. A new corpus is one entry in its `CORPORA` list.
 
 ### `fixtures/`
 
@@ -102,7 +107,7 @@ Directories come first, in alphabetical order, then the individual files worth t
   - `html5lib.spectest.js` — `yarn test:html5lib`
   - `syntaxEquivalence.spectest.js` — `yarn test:syntax-equivalence`
   - `cssParsing-webpack.spectest.js` — `yarn test:css-parsing`
-  - `js-minify.spectest.js` — `yarn test:js-minify`
+  - `minify-corpora.spectest.js` — `yarn test:minify-corpora`
 
 ### `statsCases/`
 
@@ -242,7 +247,60 @@ the neutral platform);
 each flag off on its own against an otherwise current target, which a version
 sweep cannot do; and `esm-environment` repeats both over ESM output.
 
+### External test corpora
+
+Upstream test suites webpack runs against but doesn't maintain — upstream's to change, ours only to pin.
+
+Git submodules, all under `test/external/`, checked out on demand: `yarn setup` doesn't fetch them, and each CI job fetches only its own, one commit deep.
+
+- `test/external/test262-cases` — [tc39/test262](https://github.com/tc39/test262); fetched by `test262`, `parser (js)`, `parser (minify-corpora)`
+- `test/external/html5lib-tests` — [html5lib/html5lib-tests](https://github.com/html5lib/html5lib-tests); fetched by `parser (html)`
+- `test/external/wpt` — [web-platform-tests/wpt](https://github.com/web-platform-tests/wpt); fetched by `parser (html)`, `syntax-equivalence` (browsers)
+- `test/external/css-parsing-tests` — [CourtBouillon/css-parsing-tests](https://github.com/CourtBouillon/css-parsing-tests); fetched by `parser (css)`
+- `test/external/terser` — [terser/terser](https://github.com/terser/terser), pinned to the installed `terser`'s version; fetched by `parser (minify-corpora)`
+- `test/external/swc` — [swc-project/swc](https://github.com/swc-project/swc), read only under `crates/swc_ecma_minifier/tests`; fetched by `parser (minify-corpora)`
+
+```sh
+git submodule update --init --recursive --depth 1   # check out the commits the repo pins
+git submodule update --init --recursive --remote --depth 1 # move every pin to its upstream tip
+```
+
+Keep `--depth 1` (`wpt` alone is ~161k files). `--remote` changes the recorded commits, so `git status` shows the paths modified — commit that only once CI is green on them, or `git submodule update` back to the pins.
+
+One upstream corpus is vendored rather than pinned as a submodule:
+
+- `test/fixtures/acorn-corpus.json` — acorn's test suite — the one upstream corpus vendored rather than pinned, because acorn's npm tarball ships no tests. `unitCases/WebpackParser.unittest.js` holds both webpack parser entry points to it and owns recording it (no generator script or `package.json` entry): it replays acorn's `test/tests*.js` against a recording driver, keeping sources and options but never expected trees, which come from acorn itself. Bumping the `acorn` devDependency moves the corpus; to refresh, clone acorn at the new version into `node_modules/.cache/acorn-<version>` and re-run with `WEBPACK_UPDATE_ACORN_CORPUS=1`. With that checkout present the run checks the vendored corpus against it; without it (CI, most machines) the corpus stands on the version it names, which the run pins to the installed acorn.
+
+### Running one integration case
+
+**Run one integration case** by name (`<category> <case-name>`, e.g. `css basic`):
+
+```sh
+yarn test:basic --testPathPatterns="ConfigTestCases" --testNamePattern="<category> <case>"
+```
+
+Swap in `StatsTestCases`, `HotTestCases`, `WatchTestCases`, … (full matrix in [below](#how-to-run-tests)). The `test262`, `html5lib`, `syntax-equivalence` and `css-parsing` suites need submodules — run `git submodule update --init --depth 1 test/external/test262-cases test/external/html5lib-tests test/external/wpt test/external/css-parsing-tests` first, or they fail confusingly.
+
+**A `configCases/` case** is a mini project: `index.js` (assertions; a throw fails) plus `webpack.config.js`; the emitted bundle is executed, so it must run. Optional: `errors.js` / `warnings.js` export matcher arrays for expected diagnostics (otherwise any error/warning fails the case); `test.filter.js` returns `false` to skip (e.g. by Node version when the fixture itself needs newer syntax — see [Target the Node baseline](AGENTS.md#target-the-node-baseline)); `test.config.js` customizes the run (e.g. `findBundle`).
+
 ## How to Run Tests
+
+### More scripts
+
+Every command is a `package.json` script; `AGENTS.md` lists the few whose use isn't obvious. The rest:
+
+- `yarn setup` — Install dependencies and link the checkout as `webpack`; non-interactive off a TTY.
+- `yarn tsc` — Type check the `lib/` JSDoc.
+- `yarn validate:changeset` — Validate pending `.changeset/` files.
+- `yarn test:unit` — All `*.unittest.js`.
+- `yarn test:integration` — Integration suites (`basictest`/`longtest`/`test`).
+- `yarn test:test262` / `test:html5lib` / `test:css-parsing` — Spec-conformance suites.
+- `yarn test:minify-corpora` — webpack's JS minifier vs the published one it replaces, byte for byte, over every JS corpus ([details](docs/syntax.md#javascript)).
+- `yarn test:syntax-equivalence` — HTML/CSS printers vs a real browser's reading of their output (`configCases`, `wpt`).
+- `yarn test:size` — Generated-code size over all `configCases/` (per asset, plus runtime modules per runtime).
+- `yarn cover:unit` — Unit-test coverage.
+- `yarn types:cover` — Share of `lib/` that is precisely typed.
+- `yarn build:examples` — Build `examples/` (verify after changing options).
 
 To execute all tests:
 

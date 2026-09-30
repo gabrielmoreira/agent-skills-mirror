@@ -1,9 +1,9 @@
 ---
 name: reverse-document
 description: "Generate missing design or architecture docs from existing implementation — works backwards from code and prototypes."
-argument-hint: "<type> <path> (e.g., 'design src/gameplay/combat' or 'architecture src/core')"
+argument-hint: "<type> <path> (e.g., 'design src/gameplay/combat' or 'architecture Assets/Scripts/Core')"
 user-invocable: true
-allowed-tools: Read, Glob, Grep, Write, Edit, Bash, Bash(bash "*/.claude/skills/reverse-document/../../hooks/yaml-helper.sh" resolve_config *)
+allowed-tools: Read, Glob, Grep, Write, Edit, Bash(bash "*/.claude/skills/reverse-document/../../hooks/yaml-helper.sh" resolve_config *)
 model: sonnet
 # Read-only diagnostic skill — no specialist agent delegation needed
 ---
@@ -30,9 +30,11 @@ appropriate design or architecture documentation. Use this when:
 - `architecture` → Generate an Architecture Decision Record (ADR)
 - `concept` → Generate a concept document from prototype
 
-**Path**: Directory or file to analyze
-- `src/gameplay/combat/` → All combat-related code
-- `src/core/event-system.cpp` → Specific file
+**Path**: Directory or file to analyze, under the code root — `src/` Godot,
+`Assets/` Unity, `Source/<Module>/` Unreal (`.claude/docs/code-root-resolution.md`)
+- `src/gameplay/combat/` → All combat-related code (Godot)
+- `Assets/Scripts/Core/EventSystem.cs` → Specific file (Unity)
+- `Source/MyGame/Private/AI/` → A module folder (Unreal)
 - `prototypes/stealth-mech/` → Prototype directory
 
 !`bash "${CLAUDE_SKILL_DIR}/../../hooks/yaml-helper.sh" resolve_config --keys workflow,system_overrides,automation`
@@ -62,7 +64,7 @@ generated — see Phase 5. Semantics of each tier are in
 **Examples**:
 ```bash
 /reverse-document design src/gameplay/magic-system
-/reverse-document architecture src/core/entity-component
+/reverse-document architecture Source/MyGame/Private/EntityComponent
 /reverse-document concept prototypes/vehicle-combat
 ```
 
@@ -335,12 +337,12 @@ Would you like me to tackle any of these now?
 ## Example Session: Reverse-Document a System
 
 ```
-User: /reverse-document design src/gameplay/[system]
+User: /reverse-document design <code root>/gameplay/[system]
 
 Agent: I'll analyze your [system] implementation to create a design doc.
        [Reads code, discovers mechanics, formulas]
 
-Agent: I've analyzed src/gameplay/[system]/. Here's what I found:
+Agent: I've analyzed <code root>/gameplay/[system]/. Here's what I found:
        [Shows mechanics, formulas, unclear areas]
 
        Before drafting, could you clarify:

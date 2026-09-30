@@ -62,7 +62,7 @@ Records are stored through the `Memory` trait (no dedicated DB), served by `Driv
 - `crate::memory`: `Memory` trait, `MemoryCategory`, `memory::binding::{for_config, for_subtree}` (driver binding behind `DriverMemory`), `memory::api::{provider, recall, types, health}` (the provider contract `DriverMemory` adapts), `memory::safety::sanitize_text` (store-time scrub), `memory::source_scope::as_bus_scope` (explicit recall scope), `memory::preferences::recall_by_vector_over`.
 - `crate::config`: `Config::load_or_init` for `workspace_dir` and `subsystems.memory` when the RPC handlers bind a store.
 - `crate::core::all`: `ControllerFuture`, `RegisteredController` for RPC registration.
-- `crate::core`: `ControllerSchema`, `FieldSchema`, `TypeSchema` (schema types); `crate::rpc::RpcOutcome`.
+- `crate::core`: `ControllerSchema`, `FieldSchema`, `TypeSchema` (schema types); `crate::core::Outcome`.
 - `crate::memory::tool_memory::test_helpers::MockMemory` and `crate::memory::guard::test_support::RecordingProvider`: tests only.
 
 ## Used by

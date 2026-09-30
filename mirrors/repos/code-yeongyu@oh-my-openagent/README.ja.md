@@ -1,6 +1,6 @@
 > [!NOTE]
 > **OmO ベータ: OmO ❤️ Pi**
-> `bun add -g omo-ai` でインストールしてください。メモリシステム、CodeMode、Anthropic サブスクリプションにすべて対応しています。
+> `curl -fsSL https://get.omo.dev/install.sh | bash` でインストールしてください。メモリシステム、CodeMode、Anthropic サブスクリプションにすべて対応しています。
 > [![OmO Herdr DAG - live OmO workflow DAGs in a Herdr side pane](./.github/assets/omo-herdr-dag.png)](https://github.com/jc01rho/omo-herdr-dag)
 > *プロンプトに "mass ulw" と入れるだけ。あなたはもうグラフエンジニアリングのマスター。マルチモデルの ultracode を、より良いメモリシステムとともに。(右側のパネルは [omo-herdr-dag](https://github.com/jc01rho/omo-herdr-dag) です)*
 
@@ -52,11 +52,11 @@ OmO は、あなたのトークンを完成した成果に変える `omo` コマ
 ## インストール
 
 ```bash
-bun add -g omo-ai
+curl -fsSL https://get.omo.dev/install.sh | bash
 omo
 ```
 
-bun がない場合は `npm i -g omo-ai` でも動きます。パッケージ名は `omo-ai` です。npm にある `omo` パッケージは無関係の別物です。
+Windows では PowerShell で `irm https://get.omo.dev/install.ps1 | iex` を実行してください。OS と CPU に合ったネイティブの `omo` を `~/.local/bin` に入れ、リリースのチェックサムで検証します。パッケージマネージャーを使いたい場合は `bun add -g omo-ai`(または `npm i -g omo-ai`)で同じ OmO が入ります。パッケージ名は `omo-ai` です。npm にある `omo` パッケージは無関係の別物です。Windows CMD、`PATH` の直し方、更新とアンインストールは [omo.dev/docs/install](https://omo.dev/docs/install) で説明しています。
 
 プロジェクトを開いて `omo` を実行し、やることを伝えてください。セットアップはそれだけです。
 

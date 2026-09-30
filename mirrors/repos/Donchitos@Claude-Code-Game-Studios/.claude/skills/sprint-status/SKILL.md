@@ -3,11 +3,11 @@ name: sprint-status
 description: "Fast, concise sprint snapshot — burndown and emerging risks for situational awareness. 'How is the sprint going?'"
 argument-hint: "[sprint-number or blank for current]"
 user-invocable: true
-allowed-tools: Read, Glob, Grep, Bash(bash "*/.claude/skills/sprint-status/../../hooks/yaml-helper.sh" resolve_config *)
+allowed-tools: Read, Glob, Grep, Bash(bash "*/.claude/skills/sprint-status/../../hooks/yaml-helper.sh" resolve_config *), Bash(bash "*/.claude/skills/sprint-status/../../scripts/story-status.sh"), Bash(bash .claude/scripts/story-status.sh*)
 model: haiku
 ---
 
-!`bash "${CLAUDE_SKILL_DIR}/../../hooks/yaml-helper.sh" resolve_config --keys story_granularity`
+!`bash "${CLAUDE_SKILL_DIR}/../../hooks/yaml-helper.sh" resolve_config --keys story_granularity,workflow`
 
 
 
@@ -22,22 +22,58 @@ concise snapshot in under 30 lines. For detailed sprint management, use
 files, and makes at most one concrete recommendation.
 
 **`story_granularity`** — it sets the
-grain of the burn-down read: **feature-sized** chunks at `coarse`, **task-sized**
-at `balanced` (default), **AC-sized** at `fine`.
+grain of the burn-down read: **feature-sized** chunks at `coarse` (the default, via `rigor: minimal`), **task-sized**
+at `balanced` (`rigor: standard`), **AC-sized** at `fine`.
 
 ---
 
 ## 1. Find the Sprint
 
-**Argument:** `$ARGUMENTS[0]` (blank = use current sprint)
+**Argument:** `$ARGUMENTS` (blank = use current sprint)
 
 - If an argument is given (e.g., `/sprint-status 3`), search
-  `production/sprints/` for a file matching `sprint-03.md`, `sprint-3.md`,
-  or similar. Report which file was found.
+  `production/sprints/` for a file matching `sprint-003.md`, `sprint-03.md`, `sprint-3.md`,
+  or similar (`/sprint-plan` writes three digits). Report which file was found.
 - If no argument is given, find the most recently modified file in
   `production/sprints/` and treat it as the current sprint.
-- If `production/sprints/` does not exist or is empty, report: "No sprint
-  files found. Start a sprint with `/sprint-plan new`." Then stop.
+- If `production/sprints/` does not exist or is empty:
+  - **At `workflow: minimal` there are no sprints by design** — the brief's
+    build order is the plan and the story files carry it. Report progress
+    through it instead, then stop:
+    1. The list below was printed by `.claude/scripts/story-status.sh`
+       before you read this skill: one line per unfinished story, already in
+       the route's order (`IN_REVIEW`, `IN_PROGRESS`, then `TODO` — a `Ready`
+       or `Not Started` story — in build order), then `BLOCKED`, `OTHER`,
+       `NO_STATUS` and the `COMPLETE` count:
+
+!`bash "${CLAUDE_SKILL_DIR}/../../scripts/story-status.sh"`
+
+    2. Print, in under 15 lines: `Build order: [N] of [M] stories complete`
+       from the `COMPLETE` line (count only `Complete` and `Done` stories —
+       `In Review` is not complete), then **Next**: the story on the first
+       `IN_REVIEW`, `IN_PROGRESS` or `TODO` line. The list is already
+       current; do not run the script again, and do not re-rank the story files — an `In Review` story is closed before an
+       `In Progress` one continues: its work is written. Recommend
+       `/story-done [path]` for `IN_REVIEW`, `/dev-story [path]` for
+       `IN_PROGRESS` or `TODO`. Name any `BLOCKED` story with its blocker; it is
+       never Next.
+    3. Every story `Complete` (or `Done`) → "Build order done: [M] of [M]
+       stories complete." Offer three ways on: play the build; add the next
+       stories from the brief with `/create-stories`; or `/settings` to raise
+       `modes.rigor` if the game has outgrown a one-page brief.
+    4. `STORIES none` — no story files at all → "No stories yet. Run
+       `/create-stories` to turn the brief's build order into stories."
+    5. No `IN_REVIEW`, `IN_PROGRESS` or `TODO` line, yet the `COMPLETE` line
+       is short of the total — every unfinished story is `BLOCKED`, `OTHER`
+       (such as `Draft`) or `NO_STATUS`. There is **no Next**, and the build
+       order is **not** done: never say it is. Print the `Build order` line,
+       then name each `BLOCKED` story with its blocker — read from its story
+       file, usually a `BLOCKED:` note — and each other story with its status
+       as written. Recommend one step: what the first blocker needs, or else
+       finishing the first `Draft` or unstatused story and setting its Status
+       to `Ready`.
+  - **At `standard` or `full`**, report: "No sprint files found. Start a sprint
+    with `/sprint-plan new`." Then stop.
 
 Read the sprint file in full. Extract:
 - Sprint number and goal
@@ -65,7 +101,7 @@ found — burndown assessment skipped."
 **First: check for `production/sprint-status.yaml`.**
 
 If it exists, read it directly — it is the authoritative source of truth.
-Extract status for each story from the `status` field. No markdown scanning needed.
+Extract each story's `status`, and its `priority`, `owner` and `blocker` when set — they fill the status table's columns. No markdown scanning needed.
 Use its `sprint`, `goal`, `start`, `end` fields instead of re-parsing the sprint plan.
 
 **If `sprint-status.yaml` does not exist** (legacy sprint or first-time setup),
@@ -116,8 +152,9 @@ section (see Phase 5 output format).
 
 **Stale story escalation**: If any IN PROGRESS story is flagged STALE (no progress in 4+ days), the burndown verdict
 is upgraded to at least **At Risk** — even if the completion percentage is within the normal
-On Track window. Record this escalation reason: "At Risk — [N] story(ies) with no progress in
-[N] days."
+On Track window. Record this escalation reason: "At Risk — [S] stale story(ies): [title]
+([D] days)[, …]" — [S] is how many stories are STALE, and each is named with its own [D],
+the days since its own Last Updated date (not the oldest age, not an average).
 
 ---
 

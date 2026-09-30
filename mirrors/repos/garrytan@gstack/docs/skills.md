@@ -15,16 +15,16 @@ Detailed guides for every gstack skill — philosophy, workflow, and examples.
 | [`/design-review`](#design-review) | **Designer Who Codes** | Live-site visual audit + fix loop. 80-item audit, then fixes what it finds. Atomic commits, before/after screenshots. |
 | [`/design-shotgun`](#design-shotgun) | **Design Explorer** | Generate multiple AI design variants, open a comparison board in your browser, and iterate until you approve a direction. Taste memory biases toward your preferences. |
 | [`/design-html`](#design-html) | **Design Engineer** | Generates production-quality Pretext-native HTML. Works with approved mockups, CEO plans, design reviews, or from scratch. Text reflows on resize, heights adjust to content. Smart API routing per design type. Framework detection for React/Svelte/Vue. Previews render through your Aside browser. |
-| [`/qa`](#qa) | **QA Lead** | Test your app, find bugs, fix them with atomic commits, re-verify. Auto-generates regression tests for every fix. |
-| [`/qa-only`](#qa) | **QA Reporter** | Same methodology as /qa but report only. Use when you want a pure bug report without code changes. |
+| [`/qa`](#qa) | **QA Lead** | Explore browser and functional behavior (APIs, CLIs, jobs, workers, webhooks), reproduce defects, prove regressions fail before repair, then fix and re-verify. |
+| [`/qa-only`](#qa) | **QA Reporter** | Explore the same surfaces and propose regression cases with evidence, without changing product code or tests. |
 | [`/scrape`](#browse) | **Browser Data Extractor** | Pull structured data off a web page — tables, lists, prices — in your Aside browser with the page's real logged-in state. Same driver contract as `/browse`. On the fallback browser, a codified browser-skill answers a repeat intent in ~200ms. |
 | [`/skillify`](#browse) | **Skill Codifier** | Fallback-browser skill: walks back through your conversation, finds the last `/scrape` prototype, synthesizes script + test + fixture, runs the test, asks before committing. On Aside, durable per-site automation belongs to Aside's own skills. |
-| [`/ship`](#ship) | **Release Engineer** | Sync main, run tests, audit coverage, push, open PR. Bootstraps test frameworks if you don't have one. One command. |
+| [`/ship`](#ship) | **Release Engineer** | Sync main, run tests, explore changed behavior within a bound, audit coverage and docs before final verification, then push and open or update a PR. Bootstraps test frameworks when appropriate. |
 | [`/land-and-deploy`](#land-and-deploy) | **Release Engineer** | Merge the PR, wait for CI and deploy, verify production health. One command from "approved" to "verified in production." |
 | [`/canary`](#canary) | **SRE** | Post-deploy monitoring loop. Watches for console errors, performance regressions, and page failures in your Aside browser. |
 | [`/benchmark`](#benchmark) | **Performance Engineer** | Baseline page load times, Core Web Vitals, and resource sizes. Compare before/after on every PR. Track trends over time. |
 | [`/cso`](#cso) | **Chief Security Officer** | Supported security findings with explicit coverage. Static assessment remains available without catalog profiles; contained runtime/scanner execution requires matching qualified profiles. Runtime-tested bundles authenticate separate external assertions. Project-test completion remains `self_reported` because target code controls the test process; `tested` is reserved for a future target-independent completion witness. |
-| [`/document-release`](#document-release) | **Technical Writer** | Update all project docs to match what you just shipped. Catches stale READMEs automatically. |
+| [`/document-release`](#document-release) | **Technical Writer** | Audit relevant docs on every ship before final verification; standalone runs can also update docs after a PR exists. Catches stale READMEs and reports unresolved gaps. |
 | [`/document-generate`](#document-generate) | **Technical Writer** | Generate Diataxis docs (tutorial / how-to / reference / explanation) for a feature from code. |
 | [`/retro`](#retro) | **Eng Manager** | Team-aware weekly retro. Per-person breakdowns, shipping streaks, test health trends, growth opportunities. |
 | [`/browse`](#browse) | **QA Engineer** | Give the agent eyes. Drives your Aside browser first — real sessions, real clicks, real screenshots — through deterministic `aside repl` scripts, and falls back to gstack's own Chromium (~100ms per command) when Aside isn't there. |
@@ -39,6 +39,7 @@ Detailed guides for every gstack skill — philosophy, workflow, and examples.
 | [`/context-restore`](#context-restore) | **Restore State** | Resume from a saved context, even across Conductor workspace handoffs. |
 | [`/health`](#health) | **Code Quality Dashboard** | Wraps type checker, linter, tests, dead code detection. Computes a weighted 0-10 score; tracks trends over time. |
 | [`/deslop-shared-libs`](#deslop-shared-libs) | **Shared Code Reviewer** | Find worthwhile shared-code extractions in recent work. Recommendations only. |
+| [`/test-audit`](#test-audit) | **Test Auditor** | Sweep existing tests for low-value, implementation-coupled or duplicate tests. Report-only unless you approve a batch. |
 | [`/landing-report`](#landing-report) | **Ship Queue Dashboard** | Read-only snapshot of the workspace-aware ship queue. Which version slots are claimed, which sibling workspaces have WIP. |
 | [`/benchmark-models`](#benchmark-models) | **Model Benchmark** | Side-by-side cross-model benchmark for skills (Claude vs GPT vs Gemini). Latency, tokens, cost, optional LLM-judged quality. |
 | | | |
@@ -621,18 +622,30 @@ This is my **QA lead mode**.
 
 `/browse` gives the agent eyes. `/qa` gives it a testing methodology.
 
-The most common use case: you're on a feature branch, you just finished coding, and you want to verify everything works. Just say `/qa` — it reads your git diff, identifies which pages and routes your changes affect, opens them in tabs of your Aside browser, and tests each one. No URL required. No manual test plan.
+The most common use case: you're on a feature branch, you just finished coding, and you want to verify everything works. Just say `/qa` — it uses your request, repository contracts, test plan and diff to select browser, functional (API, CLI, job, worker or webhook), or mixed surfaces. No URL or manual test plan is required. Browser targets still open affected pages in Aside tabs (or gstack's fallback browser); functional-only targets use documented native commands and isolated local fixtures without starting a browser.
 
-Four modes:
+Choose Full, Quick or Regression depth; diff-aware selects what to test:
 
-- **Diff-aware** (automatic on feature branches) — reads `git diff main`, identifies affected pages, tests them specifically
-- **Full** — systematic exploration of the entire app. 5-15 minutes. Documents 5-10 well-evidenced issues.
-- **Quick** (`--quick`) — 30-second smoke test. Homepage + top 5 nav targets.
-- **Regression** (`--regression baseline.json`) — run full mode, then diff against a previous baseline.
+- **Diff-aware** (automatic on feature branches) — selects changed and adjacent behavior. Standalone `/qa` first resolves a dirty working tree through its commit/stash/abort question; it tests the resulting checkout. For browser targets it identifies affected pages and tests them specifically.
+- **Full** — browser QA systematically explores the entire app (typically 5-15 minutes, documenting 5-10 well-evidenced issues); functional QA covers applicable documented contracts and reports blocked or untested ones separately.
+- **Quick** (`--quick`) — browser QA keeps its 30-second homepage + top-five-navigation smoke; functional QA checks a successful operation and the highest-risk changed edge, marking other contracts not run.
+- **Regression** (`--regression <previous-report-or-baseline>`) — browser QA runs full mode and diffs against a previous `baseline.json`; functional QA requires a readable prior functional report and replay evidence, repeats its failed probes against the intended contract, then checks changed adjacent behavior. A browser-only baseline is not a functional baseline.
+
+Exploration retains a written trail: before each next discovery probe, QA saves an
+`exploration-NNN.json` checkpoint in its owned report directory with the previous
+command and result, the hypothesis and the next exact command. The final report
+links those files. `/qa-only` and the bounded review/ship pass use the same evidence
+contract without gaining permission to edit product code or tests.
+
+Time limits include checkpoint and evidence work; unfinished probes remain untested.
+New runs preserve prior reports and baselines, using a fresh owned run directory when
+the selected output directory already contains artifacts. Mixed runs put browser and
+functional results in separate sections of one report; browser scores never apply to
+functional coverage. Conflicting Quick/Regression requests are resolved before probing.
 
 ### Automatic regression tests
 
-When `/qa` fixes a bug and verifies it, it automatically generates a regression test that catches the exact scenario that broke. Tests include full attribution tracing back to the QA report.
+For a reproduced defect, `/qa` writes a native regression test when infrastructure is available and proves it fails for that defect before the repair; CSS-only defects may use browser evidence instead. After the root-cause repair, it requires the original probe, adjacent happy path and native regression when available to pass before calling the fix verified. Tests trace back to the QA report. `/qa-only` can propose the case and retain replayable evidence but never changes product code or tests; missing native test infrastructure remains an explicit coverage limit, not permission to install a new framework for functional QA.
 
 ### Example
 
@@ -673,9 +686,11 @@ If your project doesn't have a test framework, `/ship` sets one up — detects y
 
 Every `/ship` run builds a code path map from your diff, searches for corresponding tests, and produces an ASCII coverage diagram with quality stars. Gaps get tests auto-generated. Your PR body shows the coverage: `Tests: 42 → 47 (+5 new)`.
 
+`/review` and `/ship` also run a bounded exploratory pass on changed behavior and nearby risks, even for a small diff without a plan or web server. Their existing approval and test rules govern any fixes or permanent tests; a blocked probe remains a coverage gap, not a passing QA result.
+
 ### Review gate
 
-`/ship` checks the [Review Readiness Dashboard](#review-readiness-dashboard) before creating the PR. If the Eng Review is missing, it asks — but won't block you. Decisions are saved per-branch so you're never re-asked.
+`/ship` displays historical review readiness in the [Review Readiness Dashboard](#review-readiness-dashboard) during preflight. A missing Eng Review is reported without an extra question; it does not replace or waive the current pre-landing review. Step 9 still runs the checklist, applicable specialists and bounded exploratory QA, with its existing approval and completion gates.
 
 A lot of branches die when the interesting work is done and only the boring release work is left. Humans procrastinate that part. AI should not.
 
@@ -768,6 +783,28 @@ checks do not run the history audit. Optional extractions are advisory and requi
 approval; they do not block a clean review or reduce its score. Actual defects
 keep their normal fix handling.
 
+## `/test-audit`
+
+Find existing tests that cost more than they protect. `/review`, `/ship`, `/qa` and
+`/plan-eng-review` apply the same [test value bar](test-value-bar.md) to tests in a
+diff; `/test-audit` sweeps the tests that already exist.
+
+```text
+You: /test-audit
+You: /test-audit test/ --max-candidates 5
+You: /test-audit --since origin/main
+```
+
+A mechanical pre-filter shortlists assertion-free probes, source greps, export-list
+copies and near-duplicate files before any model reading. Each candidate gets a
+retirement card (what it detects, non-test callers with the search command, the
+stronger remaining proof, history, what retiring it unlocks, and the validation
+command). Contract tests such as SKILL.md goldens and prompt-byte checks are
+retained. The report and a JSON sidecar land in `~/.gstack/projects/<slug>/`.
+Nothing is edited unless you approve a batch; spawned sessions stay report-only.
+Tests marked `gstack:test-value keep reason="..."` are skipped and listed in the
+report's appendix.
+
 ## `/benchmark`
 
 This is my **performance engineer mode**.
@@ -815,7 +852,7 @@ Claude: complete — assessed application routes, tenant authorization, secrets,
 
 This is my **technical writer mode**.
 
-After `/ship` creates the PR but before it merges, `/document-release` reads every documentation file in the project and cross-references it against the diff. It updates file paths, command lists, project structure trees, and anything else that drifted. Risky or subjective changes get surfaced as questions — everything else is handled automatically.
+On every `/ship` run, including reruns and existing-PR updates, a ship-owned `/document-release` audit checks relevant authored docs against committed and selected uncommitted changes before the final commit, verification and publication. Clear factual corrections join the checked change; the ship parent owns versioning, Git and PR publication. A blocked or incomplete audit requires recovery or explicit acceptance of the named documentation risk before shipping, and never silently becomes current. You can still invoke `/document-release` standalone after a PR exists; that workflow retains its own approval, commit and PR-body steps.
 
 ```
 You:   /document-release

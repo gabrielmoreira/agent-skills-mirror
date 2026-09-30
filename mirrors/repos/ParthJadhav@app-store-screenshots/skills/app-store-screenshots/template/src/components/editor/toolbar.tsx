@@ -62,6 +62,7 @@ type Props = {
   exporting: string | null;
   savedAt: number | null;
   saveError: string | null;
+  onRetrySave?: () => void;
   busy: boolean;
 };
 
@@ -248,6 +249,9 @@ export function Toolbar(props: Props) {
 
       <div className="ml-auto flex shrink-0 items-center gap-2">
         <SaveStatus savedAt={props.savedAt} saveError={props.saveError} />
+        {props.saveError && props.onRetrySave && (
+          <Button variant="ghost" size="sm" disabled={props.busy} onClick={props.onRetrySave}>Retry save</Button>
+        )}
         <span aria-hidden className="h-5 w-px bg-border" />
         <Button
           type="button"

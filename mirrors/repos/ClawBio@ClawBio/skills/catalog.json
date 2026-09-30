@@ -2240,7 +2240,7 @@
     {
       "name": "gwas-lookup",
       "cli_alias": "gwas",
-      "description": "Federated variant lookup across 9 genomic databases — GWAS Catalog, Open Targets, PheWeb (UKB, FinnGen, BBJ), GTEx, eQTL Catalogue, and more.",
+      "description": "Federated variant lookup across 8 genomic databases — GWAS Catalog, Open Targets, PheWeb (UKB, FinnGen, BBJ), GTEx, and more.",
       "version": "0.1.0",
       "status": "mvp",
       "maturity_tier": "ci-validated",

@@ -602,15 +602,20 @@ agent can apply the full editorial rules and preservation guardrails. See the
 [MCP repository](https://github.com/conorbronsdon/avoid-ai-writing-mcp) for
 configuration examples for other MCP hosts.
 
-The engine also ships a preservation validator. `detector/validate.js` compares
-a rewrite against its original and fails when the edit touched something it
-shouldn't have: a code block, YAML frontmatter, a blockquote, a table cell,
-inline code, a URL, a file path, the heading structure, or when the rewrite ends
-with more flagged patterns than it started with.
+The engine also ships a preservation validator. `detector/validate.js` checks
+protected content and structure, including code, frontmatter, blockquotes,
+tables, inline code, URLs, paths, and headings. The default gate also blocks
+residual pattern growth for compatibility; that quality signal does not prove
+content damage. Editorial workflows use the advisory policy:
 
 ```bash
-node detector/validate.js before.md after.md   # exits 1 on a preservation error
+node detector/validate.js --residual-policy warn before.md after.md
 ```
+
+Mechanical errors still fail. Warnings and residual findings remain visible
+for review. A pass does not verify meaning; check facts and claims separately.
+See the [validator API](detector/README.md#validateoriginal-rewritten-options--result)
+for result fields, availability states, and the unchanged default gate.
 
 **Does it pass its own pass?** [`PROOF.md`](./PROOF.md) scores this repo's
 documentation with this repo's detector and publishes the result, including two

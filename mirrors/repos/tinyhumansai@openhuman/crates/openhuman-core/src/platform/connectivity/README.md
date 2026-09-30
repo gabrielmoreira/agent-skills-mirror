@@ -25,7 +25,7 @@ Diagnostics for the local core's reachability and the live backend Socket.IO sta
 - `connectivity::all_connectivity_controller_schemas()` / `all_connectivity_registered_controllers()`: registry entry points (re-exported from `schemas.rs`).
 - `connectivity::ops::is_port_in_use(port: u16) -> bool`.
 - `connectivity::rpc::ConnectivityDiagResponse`: serialized diag payload (`socket_state`, `last_ws_error`, `socket_loop_active`, `socket_loop_stopped_on_failure`, `sidecar_pid`, `listen_port`, `listen_port_in_use`). The two booleans are the core's own statement of whether its backend reconnect loop is running and, if not, whether it stopped on a terminal failure (no usable session token); the frontend's connectivity chip keys "no link wanted" vs "down, retrying" vs "stopped, sign in again" off them rather than inferring liveness from `socket_state` (#6256, #6270).
-- `connectivity::rpc::snapshot() -> ConnectivityDiagResponse` and `connectivity::rpc::diag() -> Result<RpcOutcome<Value>, String>`.
+- `connectivity::rpc::snapshot() -> ConnectivityDiagResponse` and `connectivity::rpc::diag() -> Result<Outcome<Value>, String>`.
 - `connectivity::rpc::pick_listen_port(preferred)` / `pick_listen_port_for_host(host, preferred)` → `Result<PickListenPortResult, PickListenPortError>`.
 - `connectivity::rpc::PickListenPortResult` (`listener`, `port`, `fallback_from`) and `PickListenPortError` (`WouldTakeOver` / `NoAvailablePort` / `BindFailed`).
 
@@ -44,7 +44,7 @@ None: the module holds no state. The diag snapshot reads only the environment, t
 - `crate::platform::socket::manager::global_socket_manager`: read the live backend Socket.IO `ConnectionStatus` and last error for the diag snapshot.
 - `crate::core::all::{ControllerFuture, RegisteredController}`: controller registration types.
 - `crate::core::{ControllerSchema, FieldSchema, TypeSchema}`: controller schema shape.
-- `crate::rpc::RpcOutcome`: RPC return envelope (`RpcOutcome::single_log`).
+- `crate::core::Outcome`: RPC return envelope (`Outcome::single_log`).
 - External crates: `reqwest` (HTTP fingerprint probe of a listener's `GET /` root), `tokio` (async `TcpListener`, retry backoff), `serde`/`serde_json`, `url`, `tracing`/`log`.
 
 ## Used by

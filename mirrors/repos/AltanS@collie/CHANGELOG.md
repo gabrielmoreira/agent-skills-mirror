@@ -30,6 +30,67 @@ PATH. Details and rollback: [`docs/upgrading.md`](./docs/upgrading.md) → *Upgr
 
 ## [Unreleased]
 
+### Added
+
+- **The boot splash shows the Collie mark, not the old galloping dog.** The sprite was retired when
+  the new mark landed and every screen moved to it, but the first-paint splash in `index.html` kept
+  its own hand-written copy, so a cold open still flashed a galloping dog and then swapped it for a
+  different animal. It is the brand's own header-weight mark now, in a light and a dark file, so the
+  hand-off to React changes nothing but the mark's own motion.
+
+- **A pane that becomes an agent pane says so.** You are watching a bare shell on your phone, you
+  type `opencode` at your desk, and the Collie mark flies out of the header, blooms over the mirror
+  and hands the pane to the agent's own mark. It marks a fact the poll has already found, so it
+  never reads as progress, it holds no space and moves nothing, a tap ends it, and under reduced
+  motion it is a still picture instead. Opening a pane that was already running an agent announces
+  nothing: it is the change that is drawn, never the state.
+
+- **Tool calls are off in a session view, and that is the new default.** A working session is
+  mostly tool calls: one turn can be forty reads and a grep, which buried the paragraph you opened
+  the page for. The History page now draws what the agent SAID, with one muted line per turn saying
+  how many steps it took and a tap to bring them back. A find always overrides it, so a search that
+  matches inside a command's output still shows what it matched. Turn them back on for good under
+  Settings → Appearance → Tool calls.
+
+- **Settings is four sections instead of one long column.** The page was seventeen cards deep on a
+  phone with no headings to skim by, so finding one switch meant reading every card above it. It is
+  an index now: Appearance, Device, Alerts and System, each short enough to take in at once. No
+  setting is removed and none changes what it does. Back from a section returns to the index. The
+  QR `collie pair` prints still opens the pairing form, which now lives under System.
+
+- **The journal now says what a tool call did, not only what it was asked to do.** Every tool part
+  carries a structured `call` beside its one-line summary: an edit knows its path, its diff hunks
+  and how many lines moved, a command knows its exit code, a read knows its range. A refused call is
+  marked `denied` rather than lumped in with a real failure, because "you said no" and "it crashed"
+  are not the same thing to read. The shape is additive, so every existing view keeps working, and
+  the name table is shared, so `Bash`, `bash`, `shell` and `exec_command` are one kind of thing.
+  Claude Code fills it first; the other five adapters follow.
+
+### Changed
+
+- **The theme card is called Theme.** It was called Appearance, which is now the name of the
+  section it sits in, and a page that says Appearance twice tells you nothing the second time.
+
+- **Claude Code 2.1.284 is verified.** The canary ran all five scenarios against it, idle, drafts,
+  sends, narrow and start-exit, and every one passed. The reader ledger now names 2.1.284 instead
+  of 2.1.283.
+
+### Docs
+
+- **Every Settings path in the docs names its section.** The settings page became an index of four
+  sections, so fifteen instructions across seven pages pointed at a card that had moved. Paired
+  devices and Updates are under System, the harness shortcuts, the typeface and the language are
+  under Appearance, and zen and Changes are under Device. Two were wrong twice over: one told you
+  to open Appearance and pick a theme, which is now the Theme card inside that section, and two
+  named a "notifications" section that never existed and is called Alerts.
+
+- **The docs have a Guides section, and it opens with an install in five minutes.** Install was
+  the only way in, and it answers every system and every front door at once, so a first-time reader
+  had to find their own path through it. The new guide walks one path: Tailscale, Herdr and the
+  install script on the computer, then the home screen and `collie pair` on the phone. The README's
+  documentation table splits into Guides and Reference, and `collie docs five-minute-install` prints
+  the guide from the binary.
+
 ## [1.14.2] - 2026-09-28
 
 ### Docs

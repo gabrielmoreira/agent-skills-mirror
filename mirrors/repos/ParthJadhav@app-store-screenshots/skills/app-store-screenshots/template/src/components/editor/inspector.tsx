@@ -154,11 +154,11 @@ export function Inspector({
                 layout: next,
                 transforms: undefined,
                 screenshotSecondary:
-                  next === "two-devices" ? slide.screenshotSecondary || slide.screenshot : undefined,
+                  next === "two-devices" ? slide.screenshotSecondary || slide.screenshot : slide.screenshotSecondary,
               });
             }}
           >
-            <SelectTrigger>
+            <SelectTrigger aria-label="Layout">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -177,6 +177,7 @@ export function Inspector({
           <div className="space-y-1.5">
             <Label className="text-xs">Label</Label>
             <Input
+              aria-label="Label"
               value={localeLabel}
               onChange={(e) => setLocaleField("label", e.target.value)}
               placeholder={labelPlaceholder}
@@ -193,6 +194,7 @@ export function Inspector({
             </div>
           </div>
           <Textarea
+            aria-label={isFeatureGraphic ? "Tagline" : "Headline"}
             value={localeHeadline}
             onChange={(e) => setLocaleField("headline", e.target.value)}
             rows={3}
@@ -407,8 +409,13 @@ function ElementTransformControls({
   // The first image picked for an overlay reshapes its frame to the image's
   // aspect ratio (centred on the old frame), so "Fill frame" doesn't crop a
   // wide logo into a square. Replacing an image keeps the frame as placed.
+  const imageRequests = React.useRef(new Map<string, number>());
+  React.useEffect(() => () => imageRequests.current.clear(), []);
   async function setImageSource(id: string, src: string) {
+    const request = (imageRequests.current.get(id) || 0) + 1;
+    imageRequests.current.set(id, request);
     const size = src ? await naturalSize(img(src)) : null;
+    if (imageRequests.current.get(id) !== request) return;
     onUpdate((latest) => ({
       imageElements: (latest.imageElements || []).map((element) => {
         if (element.id !== id) return element;
@@ -554,6 +561,7 @@ function ElementTransformControls({
 
       {activeId ? (
         <ActiveElementPanel
+          key={activeId}
           activeId={activeId}
           transform={activeTransform}
           textElement={activeTextElement || undefined}
@@ -727,7 +735,7 @@ function ImageElementPanel({
         <div className="space-y-1">
           <Label className="text-[11px] text-muted-foreground">Fit</Label>
           <Select value={element.fit || "cover"} onValueChange={(fit) => onPatch({ fit: fit as ImageElement["fit"] })}>
-            <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
+            <SelectTrigger className="h-8 text-xs" aria-label="Image fit"><SelectValue /></SelectTrigger>
             <SelectContent>
               <SelectItem value="cover">Fill frame</SelectItem>
               <SelectItem value="contain">Whole image</SelectItem>
@@ -743,7 +751,7 @@ function ImageElementPanel({
                 fade:
                   edge === "none"
                     ? undefined
-                    : { edge: edge as NonNullable<ImageElement["fade"]>["edge"], amount: element.fade?.amount || 35 },
+                    : { edge: edge as NonNullable<ImageElement["fade"]>["edge"], amount: element.fade?.amount ?? 35 },
               })
             }
           >
@@ -811,8 +819,10 @@ function TextElementPanel({
   // Typing is buffered so intermediate values ("1" on the way to "120") don't
   // get clamped mid-keystroke; the value is committed on blur / Enter.
   const [draft, setDraft] = React.useState<string | null>(null);
+  const cancelDraft = React.useRef(false);
 
   function commitDraft() {
+    if (cancelDraft.current) { cancelDraft.current = false; return; }
     if (draft === null) return;
     const n = Number(draft);
     if (draft.trim() !== "" && Number.isFinite(n)) {
@@ -865,6 +875,9 @@ function TextElementPanel({
               onKeyDown={(event) => {
                 if (event.key === "Enter") event.currentTarget.blur();
                 if (event.key === "Escape") {
+                  event.preventDefault();
+                  event.stopPropagation();
+                  cancelDraft.current = true;
                   setDraft(null);
                   event.currentTarget.blur();
                 }
@@ -1093,9 +1106,14 @@ function naturalSize(src: string): Promise<{ w: number; h: number } | null> {
   if (!src) return Promise.resolve(null);
   return new Promise((resolve) => {
     const image = new Image();
-    image.onload = () =>
-      resolve(image.naturalWidth > 0 && image.naturalHeight > 0 ? { w: image.naturalWidth, h: image.naturalHeight } : null);
-    image.onerror = () => resolve(null);
+    const finish = (size: { w: number; h: number } | null) => {
+      clearTimeout(timeout);
+      image.onload = image.onerror = null;
+      resolve(size);
+    };
+    const timeout = setTimeout(() => finish(null), 10000);
+    image.onload = () => finish(image.naturalWidth > 0 && image.naturalHeight > 0 ? { w: image.naturalWidth, h: image.naturalHeight } : null);
+    image.onerror = () => finish(null);
     image.src = src;
   });
 }

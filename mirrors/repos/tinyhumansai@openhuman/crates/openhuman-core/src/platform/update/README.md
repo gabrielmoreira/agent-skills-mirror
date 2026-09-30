@@ -25,7 +25,7 @@ Self-update domain for the `openhuman-core` binary. Checks GitHub Releases (`tin
 ## Public surface
 - Types (`types.rs`): `UpdateInfo`, `VersionInfo`, `UpdateRunResult`, `UpdateApplyResult`, `GitHubRelease`, `GitHubAsset`.
 - Core fns (`core.rs`, re-exported via `core::*`): `current_version() -> &'static str`, `platform_triple() -> &'static str`, `check_available() -> Result<UpdateInfo, String>`, `download_and_stage(...)`, `download_and_stage_with_version(...)`.
-- `update::rpc` (alias of `ops`): `update_version`, `update_check`, `update_apply`, `update_run`: all returning `RpcOutcome<Value>`.
+- `update::rpc` (alias of `ops`): `update_version`, `update_check`, `update_apply`, `update_run`: all returning `Outcome<Value>`.
 - `update::scheduler::run(UpdateConfig)`: background loop entry point.
 - `all_update_controller_schemas()` / `all_update_registered_controllers()`.
 
@@ -61,7 +61,7 @@ None. No `store.rs`: staged binaries are written to the filesystem (current-exe 
 - `crate::core::bus`: `BUS.publish`, `crate::core::events::DomainEvent`, and `bus::init()` to bring up the in-process broker.
 - `crate::core::observability`: Sentry reporting + transient-failure classifiers (`report_error`, `is_updater_transient_message`, `is_updater_transient_http_status`).
 - `crate::core::all`: `ControllerFuture`, `RegisteredController` (schemas wiring); `crate::core::{ControllerSchema, FieldSchema, TypeSchema}`.
-- `crate::rpc::RpcOutcome`: RPC return contract.
+- `crate::core::Outcome`: RPC return contract.
 - External crates: `reqwest` (HTTP), `url` (URL validation), `serde`/`serde_json`, `tokio`.
 
 ## Used by

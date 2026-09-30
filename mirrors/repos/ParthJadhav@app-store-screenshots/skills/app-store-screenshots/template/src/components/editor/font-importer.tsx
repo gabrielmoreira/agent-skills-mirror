@@ -31,32 +31,40 @@ export const FontImporter = React.forwardRef<FontImporterHandle, Props>(function
   ref,
 ) {
   const inputRef = React.useRef<HTMLInputElement>(null);
+  const requestId = React.useRef(0);
+  React.useEffect(() => () => { requestId.current += 1; }, []);
   React.useImperativeHandle(ref, () => ({ open: () => inputRef.current?.click() }), []);
 
   async function importFont(file: File) {
+    const request = ++requestId.current;
     onUploadingChange?.(true);
     try {
       if (file.size > MAX_FONT_BYTES) throw new Error("Font file is too large (16MB maximum).");
+      await new FontFace("Import validation", await file.arrayBuffer()).load();
+      if (request !== requestId.current) return;
       const response = await fetch("/api/upload-font", {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ data: await fileToBase64(file) }),
+        signal: AbortSignal.timeout(15000),
       });
       const data = (await response.json().catch(() => ({ ok: false }))) as {
         ok: boolean;
         error?: string;
         font?: ImportedFont;
       };
-      if (!data.ok || !data.font) throw new Error(data.error || "Could not import that font.");
+      if (request !== requestId.current) return;
+      if (!response.ok || !data.ok || !data.font) throw new Error(data.error || "Could not import that font.");
       const name = cleanFontName(file.name.replace(/\.[^.]+$/, ""));
       onImported({ ...data.font, ...(name ? { name } : {}) });
       toast.success(`Imported ${name ?? "font"}`);
     } catch (caught) {
+      if (request !== requestId.current) return;
       toast.error("Font import failed", {
         description: caught instanceof Error ? caught.message : "Could not import that font.",
       });
     } finally {
-      onUploadingChange?.(false);
+      if (request === requestId.current) onUploadingChange?.(false);
     }
   }
 

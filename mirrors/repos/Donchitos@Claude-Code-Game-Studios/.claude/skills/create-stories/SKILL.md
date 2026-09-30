@@ -3,11 +3,11 @@ name: create-stories
 description: "Break one epic into implementable stories embedding TR-ID, ADR guidance, acceptance criteria. Reads the control manifest. After /create-epics."
 argument-hint: "[epic-slug | epic-path] [--review full|lean|solo]"
 user-invocable: true
-allowed-tools: Read, Glob, Grep, Write, Agent, AskUserQuestion, Bash(bash "*/.claude/skills/create-stories/../../hooks/yaml-helper.sh" resolve_config *)
+allowed-tools: Read, Glob, Grep, Write, Edit, Agent, AskUserQuestion, Bash(bash "*/.claude/skills/create-stories/../../hooks/yaml-helper.sh" resolve_config *)
 model: sonnet
 ---
 
-!`bash "${CLAUDE_SKILL_DIR}/../../hooks/yaml-helper.sh" resolve_config --keys review_mode,automation,workflow,docs.density,story_granularity,system_overrides`
+!`bash "${CLAUDE_SKILL_DIR}/../../hooks/yaml-helper.sh" resolve_config --keys review_mode,automation,workflow,docs.density,story_granularity,qa.level,system_overrides`
 
 Resolved above — use as-is; `--review` overrides `review_mode`. No block →
 defaults in `.claude/docs/config-resolution.md`.
@@ -26,7 +26,8 @@ then Core, and so on — matching the dependency order.
 **Output:** `production/epics/[epic-slug]/story-NNN-[slug].md` files
 
 **Previous step:** `/create-epics [system]`
-**Next step after stories exist:** `/story-readiness [story-path]` then `/dev-story [story-path]`
+**Next step after stories exist:** `/story-readiness [story-path]` then `/dev-story [story-path]` —
+at `workflow: minimal`, `/dev-story [story-path]` directly (`/story-readiness` is not on the minimal path)
 
 ---
 
@@ -45,21 +46,27 @@ use the `system_overrides` row for `<system>` if the block lists one, else the
 project value. `<system>` is the epic slug / its GDD system. The tier sets which prerequisites block — see the note in Step 2.
 
 **`story_granularity`** — it sets each
-story's AC load: **5–10 ACs covering a whole feature** at `coarse`, **2–4 ACs
-covering one task** at `balanced` (default), **1 AC** at `fine` (the story name is
+story's AC load: **5–10 ACs covering a whole feature** at `coarse` (the default, via `rigor: minimal`), **2–4 ACs
+covering one task** at `balanced` (`rigor: standard`), **1 AC** at `fine` (the story name is
 the AC restatement). Group or split ACs into stories to hit the target.
 
 **`docs.density`** — it controls the *depth* of each story's prose (context,
 implementation notes, ADR summary), not the AC count (that is
 `story_granularity`) and never the AC text itself. `modes.rigor` sets it
 alongside `workflow`; set `docs.density` explicitly to vary story prose alone:
-`terse` = notes as bullets, no preamble; `balanced` = short context paragraph +
-notes (default); `thorough` = full context, implementation guidance, and ADR
+`terse` (the default, via `rigor: minimal`) = notes as bullets, no preamble; `balanced` = short context paragraph +
+notes (`rigor: standard`); `thorough` = full context, implementation guidance, and ADR
 rationale. The embedded TR-ID reference, ADR Version stamp, and acceptance
 criteria are structural and are never trimmed by density.
 
 - `/create-stories [epic-slug]` — e.g. `/create-stories combat`
 - `/create-stories production/epics/combat/EPIC.md` — full path also accepted
+- **A named epic that does not exist** — if `production/epics/[slug]/EPIC.md`
+  (or the given path) is missing, stop at `standard`/`full`: "No epic at
+  `production/epics/[slug]/EPIC.md`. Run `/create-epics` to create it, or check
+  the slug with `ls production/epics/`." Do not decompose from a guess. At
+  `minimal` there are no `/create-epics` epics to name and that skill is not on
+  the path — say so, take Step 2's `minimal` branch, and name the slug it uses.
 - No argument — at `minimal` there are no epics yet (Option A): skip to Step 2's
   `minimal` branch and synthesize the epic from `design/game-brief.md`. At
   `standard`/`full`, ask "Which epic would you like to break into stories?" and
@@ -89,13 +96,29 @@ criteria are structural and are never trimmed by density.
 ## 2. Load Everything for This Epic
 
 > **`minimal` tier — synthesize the epic from the brief** (Option A). At
-> `minimal` there is no `/create-epics` step and no `EPIC.md`. Instead:
+> `minimal` there is no `/create-epics` step and usually no `EPIC.md`. Instead:
+> 0. **No `design/game-brief.md`?** Stop: "There is no brief to build stories
+>    from yet — run `/brainstorm` first; it writes the one-page brief."
+>    **An `EPIC.md` already at `production/epics/<slug>/`** — the named epic, or
+>    the brief-title slug (`/create-epics` run anyway, or an earlier run of this
+>    skill) — is the epic: use its scope, still traced to the brief, and never
+>    rewrite it; Step 6 only appends its Stories table, and the Step 5 ask says
+>    *update* `EPIC.md`.
+>    **Stories already in `production/epics/<slug>/`?** This is a return visit —
+>    `/help` sends a finished build order back here. Never rewrite an existing
+>    `story-*.md` or the `EPIC.md`: read them, add stories only for brief items
+>    they do not yet cover (or the new ones the user names), and number on from
+>    the highest existing `story-NNN`. The one change `EPIC.md` gets is Step 6's:
+>    a row per new story appended to its Stories table — existing rows and the
+>    rest of the file stay as they are.
 > 1. Read `design/game-brief.md` in full (it is one page).
-> 2. Synthesize an implicit epic: write a lightweight
+> 2. Synthesize an implicit epic (first run only — a return visit keeps the
+>    existing one): draft a lightweight
 >    `production/epics/<slug>/EPIC.md`, where `<slug>` is the brief's slugified
 >    working title (`mvp` if untitled) — goal = the brief's one-sentence pitch,
 >    scope = its MVP feature list, ordering = its **Build order**. Keep it terse;
->    this is the container `/dev-story` and `/sprint-status` expect.
+>    this is the container `/dev-story` and `/sprint-status` expect. It is written
+>    in Step 6, with the stories, after the Step 5 ask names it — never before.
 > 3. Generate **one coarse story per MVP feature** (Step 3+), in Build-order
 >    sequence, each traced to the brief (not a GDD/TR-ID). Leave stories unblocked
 >    on ADR grounds — none exist at this tier.
@@ -112,8 +135,7 @@ For `standard`/`full` (a `/create-epics` epic exists), read in full (these are s
 **Load each governing ADR by section — never with an unbounded full read.** A
 substantial ADR exceeds the 25k-token `Read` cap, and a capped read's only
 recovery is paging through the remainder — the most expensive possible way to
-read a file (measured at 103k tokens on a 34k-token ADR vs ~54k for targeted
-reads of the same file). Per ADR:
+read a file. Per ADR:
 
 1. **Map the headings** (cheap — line numbers only):
    ```
@@ -128,12 +150,13 @@ reads of the same file). Per ADR:
    - `## Engine Compatibility` — feeds the story's Engine, Risk, and Engine
      Notes fields. (Engine Notes is a *story* field derived from this
      section — it is not an ADR section name; do not search for one.)
-3. **Capture the `## Last Verified` date**:
+3. **Capture the `## Status` and the `## Last Verified` date** in one call:
    ```
-   Grep pattern="^## (Last Verified|Date)" path="docs/architecture/[adr-file].md" output_mode="content" -A 1
+   Grep pattern="^## (Status|Last Verified|Date)" path="docs/architecture/[adr-file].md" output_mode="content" -A 2
    ```
-   Use `Last Verified`, falling back to `Date`, then to `unversioned` if both
-   are absent. This becomes the story's `ADR Version` stamp — `/dev-story`
+   The Status (Accepted / Proposed / …) is what Step 4 decides `Ready` vs
+   `Blocked` on — never assume it. For the version, use `Last Verified`,
+   falling back to `Date`, then to `unversioned` if both are absent. This becomes the story's `ADR Version` stamp — `/dev-story`
    uses it to decide whether it can trust this story's distilled summary
    instead of re-opening the ADR.
 
@@ -143,8 +166,8 @@ their entries — then take only the referenced entry with one more bounded
 read. If the heading map comes back empty (a nonstandard ADR predating the
 template), fall back to one full `Read` — and if that read truncates at the
 cap, do **not** page through the remainder; grep for the story-relevant
-content directly and flag the ADR for `/architecture-decision [file]
-retrofit`.
+content directly and flag the ADR for
+`/architecture-decision retrofit [file]`.
 
 **ADR existence validation** (tier-gated — resolved in Step 1): After reading the governing ADRs list from the epic, confirm each referenced ADR file exists on disk.
 
@@ -191,7 +214,7 @@ For each GDD acceptance criterion:
 
 **Story sizing rule:** size each story to the resolved `modes.story_granularity`
 target (above). The "~2-4 hours / one focused session" heuristic is the
-`balanced` default — at `coarse` a story spans a whole feature (5–10 ACs,
+`balanced` target (`rigor: standard`) — at `coarse`, the default, a story spans a whole feature (5–10 ACs,
 multi-day), at `fine` a story is a single AC. Split or group criteria to hit the
 resolved target, not a fixed session length.
 
@@ -200,7 +223,8 @@ For each story, determine:
 - **TR-ID**: look up in `tr-registry.yaml`. Use the stable ID. If no match, use `TR-[system]-???` and warn.
 - **Governing ADR**: which ADR governs how to implement this?
   - `Status: Accepted` → embed normally
-  - `Status: Proposed` → set story `Status: Blocked` with note: "BLOCKED: ADR-NNNN is Proposed — run `/architecture-decision` to advance it"
+  - `Status: Proposed` → set story `Status: Blocked` with note: "BLOCKED: ADR-NNNN is Proposed — accept it with `/architecture-decision accept ADR-NNNN` once decided"
+  - `Deprecated` or `Superseded by ADR-XXXX` → set story `Status: Blocked` with note: "BLOCKED: ADR-NNNN is [status] — point the story at [successor] (edit its ADR field — `/create-stories` never rewrites an existing story) before implementing"
   - **Multiple ADRs apply**: List all governing ADRs in the story's `Governing ADRs:` field. Designate the one most directly controlling the implementation pattern as primary (first in the list). Others are listed as secondary references.
   - **No ADR applies at all**: Write `ADR: N/A — [brief reason, e.g. "pure data configuration, no architectural pattern required"]` in the story's ADR field. Do NOT leave the field blank — a blank ADR field means "not checked", not "not applicable".
 - **Story Type**: from Step 3 classification
@@ -217,11 +241,18 @@ For each story, determine:
 
 After decomposing all stories (Step 4 complete) but before presenting them for write approval, spawn `qa-lead` **once** via `Agent` using gate **QL-STORY-READY** (`.claude/docs/director-gates/ql-story-ready.md`). A single call returns **both** the readiness verdict and the test-case specs — do not spawn `qa-lead` a second time to generate specs.
 
-Pass: the full story list with acceptance criteria, story types, and TR-IDs; the epic's GDD acceptance criteria for reference. Require in the return:
-1. The QL-STORY-READY verdict per story (ADEQUATE / GAPS / INADEQUATE).
+Pass: the full story list inline — no story file exists yet, so the stories themselves stand in for the gate's story paths — with each story's acceptance criteria, story type, and TR-IDs with their requirement text from `tr-registry.yaml`; the epic's GDD acceptance criteria for reference. Require in the return:
+1. The QL-STORY-READY verdict per story (ADEQUATE / GAPS / INADEQUATE, or NOT ASSESSED naming a missing input).
 2. For every story it marks **ADEQUATE**, its test-case spec block (formats below) — one Given/When/Then per acceptance criterion for Logic and Integration stories, or manual verification steps for Visual/Feel and UI stories.
 
-Present the assessment. For each story flagged GAPS or INADEQUATE, revise the acceptance criteria before proceeding — untestable criteria cannot be implemented correctly; those stories carry no specs until they reach ADEQUATE (re-request specs for just those in a follow-up call only if a revision was needed). Once all stories are ADEQUATE, proceed with the returned specs.
+Present the assessment, then act on each story's verdict — the gate's own words, handled per `.claude/docs/director-gates.md`:
+
+- **ADEQUATE** — keep the returned specs.
+- **GAPS** — use `AskUserQuestion`: `Revise flagged criteria` / `Accept and proceed` / `Discuss further`. Do not revise before the user chooses. On *Revise*, draft the revised criteria, show them, and re-request specs for just those stories in one follow-up call. On *Accept*, the criteria stay as written and the story carries no qa-lead specs — its `## QA Test Cases` reads `*Test cases not yet defined — run /qa-plan to generate them.*`
+- **INADEQUATE** — blocking: the story is not written as it stands. Revise its criteria with the user (draft, show, confirm), then re-request its specs; if the user will not revise it, drop it from this run and name it as dropped in the Step 5 list.
+- **NOT ASSESSED** [missing input] — not an ADEQUATE: name what was missing, then supply it and re-request that story's verdict, or write the story without qa-lead specs (the `/qa-plan` line above in its `## QA Test Cases`) and mark it `QL-STORY-READY: NOT ASSESSED — [input]` in the Step 5 list.
+
+Untestable criteria cannot be implemented correctly, so a story carries qa-lead specs only once it is ADEQUATE.
 
 **Prefer an existing QA plan when one already covers a story** — this substitutes for the qa-lead's specs, it does not add a spawn. Glob `production/qa/qa-plan-*.md` for the most recent file; if it holds test specs for stories in this epic (match titles/slugs in its Automated Tests Required section) that differ from the qa-lead's, use `AskUserQuestion` (Use QA-plan specs / Use qa-lead specs / Skip and leave `*Test cases not yet defined — run /qa-plan to generate them.*`). Either way no additional `qa-lead` spawn occurs.
 
@@ -264,13 +295,13 @@ Story 002: [title] — Integration — ADR-MMMM
 
 Story 003: [title] — Visual/Feel — ADR-NNNN
   Covers: TR-[system]-004
-  Evidence required: production/qa/evidence/[slug]-evidence.md
+  Evidence required: retained screenshot in production/qa/evidence/ + sign-off in production/qa/evidence/[slug]-evidence.md
 
 [N stories total: N Logic, N Integration, N Visual/Feel, N UI, N Config/Data]
 ```
 
 Use `AskUserQuestion`:
-- Prompt: "May I write these [N] stories to `production/epics/[epic-slug]/`?"
+- Prompt: "May I write these [N] stories to `production/epics/[epic-slug]/`, and update `production/epics/[epic-slug]/EPIC.md` and `production/epics/index.md`?" — name every file Step 6 touches: at `minimal` say *create* `EPIC.md` only when none exists yet (the Step 2 draft, shown with the stories), and leave `index.md` out when it does not exist.
 - Options: `[A] Yes — write all [N] stories` / `[B] Not yet — I want to review or adjust first`
 
 ---
@@ -298,14 +329,13 @@ For each story, write `production/epics/[epic-slug]/story-[NNN]-[slug].md`:
 >   > "when engine risk is HIGH (from the ADR or VERSION.md)". At `minimal` there
 >   > is no ADR, so `VERSION.md` is the *only* source — and nothing here told this
 >   > skill to read it. A story written with an invented `Risk: MEDIUM` against a
->   > `VERSION.md` rating of HIGH silently disables the specialist review. In the
->   > run that found this, that review was what caught two wrong engine defaults.
+>   > `VERSION.md` rating of HIGH silently disables the specialist review.
 >   > Treat `NOT ASSESSED` as HIGH for the spawn decision: an unknown risk is not
 >   > a low one.
 > - **Engine Notes** → `none (no ADR engine-compatibility analysis at minimal)`
 > - The Acceptance-Criteria source line → "From `design/game-brief.md` (the **Player goal & fail state** field + the MVP feature this story implements), scoped to this story" — derive concrete, testable ACs from what the user wrote there rather than inventing them from a bare MVP bullet
 > - The **`## QA Test Cases`** section → at any tier where the QL-STORY-READY / qa-lead gate is skipped (`minimal`, or `lean`/`solo` review mode) no qa-lead specs are authored; write "*N/A — no qa-lead specs at this tier; implement against the Acceptance Criteria above*" rather than improvising test cases.
-> - Any **Test Evidence / DoD** line is governed by `qa.level`, not this template — at `qa.level: minimal` it is **waived** (advisory, never "must exist and pass").
+> - Any **Test Evidence / DoD** line is governed by `qa.level`, not this template — at `qa.level: minimal` tests are **waived** (advisory, never "must exist and pass"), but a Visual/Feel or UI story's retained screenshot is not.
 
 ```markdown
 # Story [NNN]: [title]
@@ -388,14 +418,14 @@ change meaning. This is what the programmer reads instead of the ADR.]
 
 ## Test Evidence
 
-*Governed by `qa.level`: at `qa.level: minimal` the evidence below is **waived** (advisory, never "must exist and pass").*
+*Governed by `qa.level`: at `qa.level: minimal` tests are **waived** (advisory, never "must exist and pass"), but a Visual/Feel or UI story's retained screenshot is not.*
 
 **Story Type**: [type]
 **Required evidence**:
 - Logic: `tests/unit/[system]/[story-slug]_test.[ext]` — must exist and pass (`/story-done` checks that it EXISTS; pass/fail is established by `/gate-check` and `/smoke-check`, both later)
 - Integration: `tests/integration/[system]/[story-slug]_test.[ext]` OR playtest doc
-- Visual/Feel: `production/qa/evidence/[story-slug]-evidence.md` + sign-off
-- UI: `production/qa/evidence/[story-slug]-evidence.md` or interaction test
+- Visual/Feel: a retained screenshot in `production/qa/evidence/` + sign-off in `production/qa/evidence/[story-slug]-evidence.md`
+- UI: a retained screenshot of each screen touched, in `production/qa/evidence/`
 - Config/Data: smoke check pass (`production/qa/smoke-*.md`)
 
 **Status**: [ ] Not yet created
@@ -410,7 +440,10 @@ change meaning. This is what the programmer reads instead of the ADR.]
 
 ### Also update `production/epics/[epic-slug]/EPIC.md`
 
-Replace the "Stories: Not yet created" line with a populated table:
+At `minimal` with no `EPIC.md` yet, this is where the Step 2 draft is written, with the
+table below. Otherwise replace the "Stories: Not yet created" line with a
+populated table; if the table already exists (a return visit), append a row per
+new story and leave the existing rows as they are:
 
 ```markdown
 ## Stories
@@ -423,7 +456,7 @@ Replace the "Stories: Not yet created" line with a populated table:
 
 ### Also update `production/epics/index.md`
 
-Find the row in the index table matching this epic (by epic name or slug). Update its `Stories` column from `Not yet created` to `[N] stories` (where N is the count just written). If the index file does not exist, say so in one line — `Systems index not updated: design/gdd/systems-index.md absent` — and continue. Do not skip silently: the index is what a reader consults to learn which epics have stories, so an un-updated one keeps reporting `Not yet created` for work that now exists, and nothing else would ever reveal the gap.
+Find the row in the index table matching this epic (by epic name or slug). Set its `Stories` column to `[N] stories`, where N is the epic's total story count after this run — the existing rows plus the ones just written, not only the new ones. If the index file does not exist, say so in one line — `Epics index not updated: production/epics/index.md absent` — and continue. Do not skip silently: the index is what a reader consults to learn which epics have stories, so an un-updated one keeps reporting `Not yet created` for work that now exists, and nothing else would ever reveal the gap.
 
 ---
 
@@ -433,14 +466,14 @@ Use `AskUserQuestion` to close with context-aware next steps:
 
 Check:
 - Are there other epics in `production/epics/` without stories yet? List them.
-- Is this the last epic? If so, include `/sprint-plan` as an option.
+- Is this the last epic? If so, include `/sprint-plan` as an option — except at `workflow: minimal`, which has no sprints: the brief's build order is the plan.
 
 Widget:
 - Prompt: "[N] stories written to `production/epics/[epic-slug]/`. What next?"
 - Options (include all that apply):
-  - `[A] Start implementing — run /story-readiness [first-story-path]` (Recommended)
+  - `[A] Start implementing — run /dev-story [first-story-path]` at `minimal`, `/story-readiness [first-story-path]` otherwise (Recommended)
   - `[B] Create stories for [next-epic-slug] — run /create-stories [slug]` (only if other epics have no stories yet)
-  - `[C] Plan the sprint — run /sprint-plan new` (only if all epics have stories)
+  - `[C] Plan the sprint — run /sprint-plan new` (only if all epics have stories, and never at `minimal`)
   - `[D] Stop here for this session`
 
 Note in output: "Work through stories in order — each story's `Depends on:` field tells you what must be DONE before you can start it."
@@ -462,5 +495,5 @@ describe what collaborative mode requires, not universal behavior.
 
 After writing (or declining):
 
-- **Verdict: COMPLETE** — [N] stories written to `production/epics/[epic-slug]/`. Run `/story-readiness` → `/dev-story` to begin implementation.
+- **Verdict: COMPLETE** — [N] stories written to `production/epics/[epic-slug]/`. Run `/dev-story` (at `minimal`) or `/story-readiness` → `/dev-story` to begin implementation.
 - **Verdict: BLOCKED** — user declined. No story files written.

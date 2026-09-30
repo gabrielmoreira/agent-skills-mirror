@@ -53,7 +53,7 @@ None. This domain has no `tools.rs` and owns no agent tools.
 
 ## Events
 
-Subscriber registered at startup from `crates/openhuman-core/src/core/jsonrpc.rs` via `register_device_tunnel_subscriber`. `DeviceTunnelSubscriber` (`name() = "device::tunnel"`, `domains() = ["device"]`) **handles**:
+Subscriber registered at startup from `crates/openhuman-core/src/core/runtime/subscribers.rs` via `register_device_tunnel_subscriber`. `DeviceTunnelSubscriber` (`name() = "device::tunnel"`, `domains() = ["device"]`) **handles**:
 
 - `DevicePeerOnline` / `DevicePeerOffline` → update `PEER_STATUS`.
 - `DeviceTunnelFrame` → complete handshake + persist `PairedDevice`.
@@ -90,13 +90,13 @@ Separately, encrypted X25519 private keys are persisted as `enc2:` strings (via 
 - `crate::platform::socket::global_socket_manager`: reuse the shared backend Socket.IO connection to emit `tunnel:*` events (no second WebSocket).
 - `crate::core::bus::BUS` (`.publish`, `.subscribe`) plus `crate::core::events::DomainEvent` and `tinybus::EventHandler`: pub/sub for device tunnel events.
 - `crate::core::all` (`ControllerFuture`, `RegisteredController`) and `crate::core::{ControllerSchema, FieldSchema, TypeSchema}`: controller registry contract.
-- `crate::rpc::RpcOutcome`: RPC handler return type.
+- `crate::core::Outcome`: RPC handler return type.
 - External crates: `rusqlite`, `chacha20poly1305`, `x25519-dalek`, `base64`, `sha2`, `chrono`, `once_cell`, `tokio`, `async_trait`, `anyhow`.
 
 ## Used by
 
 - `crates/openhuman-core/src/core/all.rs`: registers the `devices` controllers/schemas and namespace branch.
-- `crates/openhuman-core/src/core/jsonrpc.rs`: calls `register_device_tunnel_subscriber()` at startup.
+- `crates/openhuman-core/src/core/runtime/subscribers.rs`: calls `register_device_tunnel_subscriber()` at startup.
 - `crates/openhuman-core/src/platform/socket/event_handlers.rs`: parses raw `tunnel:*` Socket.IO events into `DomainEvent`s that this domain consumes, using this domain's `tunnel_client` wire types (`TunnelPeerStatus`, `TunnelFrame`).
 
 ## Notes / gotchas

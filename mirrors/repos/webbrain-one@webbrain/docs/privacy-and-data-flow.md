@@ -338,7 +338,7 @@ the v1 bridge for moving memory between browser profiles.
 `/export --config` creates a local plaintext `webbrain-config/1` JSON file, and
 `/import <json>` or `/import --file` reads that snapshot locally before writing
 the validated Settings values to extension storage. The snapshot intentionally
-includes provider, vision, transcription, and CapSolver API keys as well as
+includes provider, vision, transcription, and CAPTCHA provider API keys as well as
 profile text, user memory, custom skills, and saved permission choices. Users
 should treat the file like a credential backup and store it securely.
 
@@ -409,7 +409,7 @@ security, abuse prevention, and debugging.
 The only outbound HTTP requests are:
 1. **WebBrain Compass model calls** to `https://api.webbrain.one/v1` (when WebBrain Compass is selected; the Help Improve WebBrain preference is sent with each request)
 2. **Other LLM provider API calls** (directly to URLs the user configured)
-3. **CapSolver API calls** (if the user enables CAPTCHA solving)
+3. **CAPTCHA provider API calls** (only for enabled services, or an explicit balance test)
 4. **Content fetches** via `fetch_url` / `research_url` tools (to URLs the agent is asked to fetch)
 5. **Skill tool calls** (to the HTTPS endpoint(s) declared by network-capable enabled skills — see "Bundled Skills" below; the default email verification-code helper declares no endpoint)
 6. **User memory extraction calls** (only if auto-learn is enabled; sent to the configured LLM provider after a completed turn)
@@ -632,7 +632,7 @@ CDP capture → JPEG/PNG data URL
 | Browser ↔ LLM provider | Chat messages, page content, screenshot | HTTPS; user chose the provider |
 | Browser ↔ LLM provider | Enabled user memory prompt block and optional extractor input | HTTPS; user chose the provider |
 | Browser ↔ ChatGPT | Exact, user-approved research prompt; returned answer and links | Off-by-default setting; visible fixed-origin tab; per-prompt explicit consent; one-use authorization; result treated as untrusted |
-| Browser ↔ CapSolver | CAPTCHA token requests | HTTPS; user opted in |
+| Browser ↔ enabled CAPTCHA providers | Supplied page/challenge metadata, image/audio and optional proxy/cookie inputs | HTTPS; per-provider opt-in; fallback may contact several services |
 | Extension ↔ Offscreen document | Fetch proxy, recording, and optional local model requests | Same extension, same origin |
 | Service worker ↔ IndexedDB | Trace data | Browser sandbox; never transmitted |
 | Service worker ↔ `chrome.storage.local` | API keys, settings | Browser sandbox (plaintext) |
@@ -656,7 +656,7 @@ CDP capture → JPEG/PNG data URL
 | Site adapters toggle | Controls whether site-specific guidance is prepended |
 | Research escalation | Off by default; when enabled, permits per-prompt consent requests for the visible ChatGPT helper flow |
 | Always allow API mutations / `/allow-api` | The persistent setting (on by default) or a per-conversation override waives permission prompts for write-method network egress |
-| CapSolver toggle | Controls whether CAPTCHA data is sent to a third-party solver |
+| CAPTCHA provider enabled checkboxes | Each controls whether that service participates in solving; a retained key alone does not enable it |
 
 ---
 
@@ -691,3 +691,7 @@ omitted rather than sending a one-option placeholder Choice. A malformed model,
 usage or answer response stops further Jev requests for that run; exported traces
 show only its bounded reason code along with Jev decisions and usage, never the
 response or bounded request evidence.
+
+### CAPTCHA provider integration details
+
+The seven-provider catalog, enabled-state controls, data sent during fallback, explicit host-only cookie application, and managed Cloud broker isolation are documented in [CAPTCHA provider coverage](captcha-provider-coverage.md#security-and-data-flow). Model-visible discovery does not expose saved provider keys. Native task inputs may include explicitly supplied proxies/cookies; the browser cookie jar is not automatically exported. Provider-returned scripts are never executed.

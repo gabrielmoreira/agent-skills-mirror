@@ -397,7 +397,7 @@ Custom archetypes ship as TOML files under `$OPENHUMAN_WORKSPACE/agents/*.toml` 
 
 ### Running a reusable sub-agent
 
-When the orchestrator calls `spawn_subagent`, the default contract is durable and asynchronous. The tool builds a deterministic compatibility selector from the parent session/thread, agent id, toolkit scope, model override, sandbox mode, action root, and normalized task key/title. It then checks `orchestration::subagent_sessions` before spawning:
+When the orchestrator calls `spawn_subagent`, the default contract is durable and asynchronous. The tool builds a deterministic compatibility selector from the parent session/thread, agent id, model override, sandbox mode, action root, and normalized task key/title. It then checks `orchestration::subagent_sessions` before spawning:
 
 - If a compatible worker is already running, the instruction is injected through its `RunQueue` and the parent gets a quick `subagent_session_id` / `task_id` reference.
 - If a compatible worker is idle or paused with reusable history, the harness starts a new transient run for the same durable `subagent_session_id` and passes the saved child history through `SubagentRunOptions.initial_history`, with the new instruction appended as a user-visible follow-up.
@@ -548,7 +548,7 @@ When the backend doesn't surface a charged amount (older builds, providers that 
 
 The assistant-ui-elements integration added a batch of additive `WebChannelEvent`s and RPCs so the frontend can render tool args/timing, plan/goal/queue state, and turn lifecycle without polling. `EVENTS_VERSION` (`core/bus.rs`) is `1.4.0`; every new field is optional/defaulted so an older subscriber keeps parsing what a newer publisher emits.
 
-**New/extended socket events** (bridged from `DomainEvent` onto `WebChannelEvent` by `web_chat::event_bus` and `core::socketio`):
+**New/extended socket events** (bridged from `DomainEvent` onto `WebChannelEvent` by `web_chat::event_bus` and `openhuman_rpc::server::socketio`):
 
 - `ts` (epoch ms) is now stamped on every event by `publish_web_channel_event` when the producer left it unset, so the frontend can order/measure latency without guessing at receive time.
 - `chat_done.timing` - `{ first_token_ms, first_tool_ms, total_ms, tokens_per_second }`, threaded from the progress bridge's per-turn `TurnTiming` through `ProgressBridgeHandle::timing_snapshot()`. `tokens_per_second` is derived from `output_tokens / (total_ms / 1000)` when both are known and `total_ms > 0`.

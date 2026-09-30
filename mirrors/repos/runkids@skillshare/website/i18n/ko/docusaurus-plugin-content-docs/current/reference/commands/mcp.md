@@ -627,9 +627,11 @@ plan은 `existing entry is not managed` 충돌을 보고하고, 그 항목에 �
   symlink된 Skillshare `config.yaml`은 그 대상으로 전달되어 작성됩니다. 파일
   권한은 보존되며, 새 네이티브 파일, 소유권 기록, 백업은 private 권한을 사용합니다.
 - source와 이미 일치하는 항목은, 예를 들어 팀원의 변경 사항을 pull한 후처럼, 쓰기
-  없이 unchanged로 보고됩니다. 프로젝트를 이동한 후처럼 이 구성이 이전에 이를
-  관리하지 않았다면 unmanaged 상태로 남습니다: 서버를 제거해도 import하기 전까지는
-  그대로 남습니다. 다른 unmanaged 항목은 import나 명시적인 항목별 replace가
+  없이 unchanged로 보고됩니다. 어떤 Agent에서 import한 뒤 그 Agent를 선택한 경우처럼
+  이 구성이 이전에 이를 관리하지 않았다면 plan에 `adopt`가 표시됩니다: sync는 파일을
+  바꾸지 않고 항목을 관리 대상으로 기록하며, 이후 서버를 제거하거나 그 Agent 선택을
+  해제하면 항목도 제거됩니다. Agent에서 직접 끈 서버는 계속 사용자의 것입니다.
+  다른 unmanaged 항목은 import나 명시적인 항목별 replace가
   필요합니다. 소유하는 구성 파일이 여전히 존재하는 동안에는 다른 Skillshare
   구성의 소유권을 재정의할 수 없습니다. 그 파일이 사라진 경우에는 그 항목을 영원히
   해제할 수 없으므로, 충돌은 해당 항목이 남겨진 항목임을 알리고 그 파일의 이름을

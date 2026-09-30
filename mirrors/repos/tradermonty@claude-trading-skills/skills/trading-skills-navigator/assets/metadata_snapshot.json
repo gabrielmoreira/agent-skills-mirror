@@ -1640,6 +1640,29 @@
       "timeframe": "daily"
     },
     {
+      "api_profile": "no-api-basic",
+      "category": "strategy-research",
+      "difficulty": "advanced",
+      "display_name": "Strategy Research",
+      "id": "strategy-research",
+      "optional_skills": [
+        "strategy-pivot-designer"
+      ],
+      "recommended_skills": [],
+      "related_workflows": [
+        "strategy-research-pipeline"
+      ],
+      "required_skills": [
+        "edge-candidate-agent",
+        "edge-hint-extractor",
+        "backtest-expert"
+      ],
+      "target_users": [
+        "strategy-researcher"
+      ],
+      "timeframe": "research"
+    },
+    {
       "api_profile": "fmp-required",
       "category": "swing-opportunity",
       "difficulty": "intermediate",
@@ -1918,6 +1941,24 @@
       "target_users": [
         "part-time-swing-trader",
         "growth-investor"
+      ]
+    },
+    {
+      "api_profile": "no-api-basic",
+      "cadence": "ad-hoc",
+      "difficulty": "advanced",
+      "display_name": "Strategy Research Pipeline",
+      "estimated_minutes": 60,
+      "id": "strategy-research-pipeline",
+      "optional_skills": [],
+      "prerequisite_workflows": [],
+      "required_skills": [
+        "edge-candidate-agent",
+        "edge-hint-extractor",
+        "backtest-expert"
+      ],
+      "target_users": [
+        "strategy-researcher"
       ]
     },
     {

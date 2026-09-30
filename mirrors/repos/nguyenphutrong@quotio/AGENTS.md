@@ -5,6 +5,7 @@
 Quotio is a monorepo with independent product entry points:
 
 - `apps/macos/`: native macOS app. Follow `apps/macos/AGENTS.md`.
+- `apps/ios/`: native iPhone companion and widgets. Follow `apps/ios/AGENTS.md`.
 - `apps/cli/`: Rust CLI. Follow its README and existing Cargo conventions.
 - `Packages/QuotioCore/`: Swift package shared by the Apple app.
 - `.github/workflows/`: repository-level CI and release automation.

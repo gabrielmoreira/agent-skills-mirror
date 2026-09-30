@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `ParthJadhav/app-store-screenshots` — 26 default patterns, 0 followed patterns, 87 file(s) materialized.
+Mirror of `ParthJadhav/app-store-screenshots` — 26 default patterns, 0 followed patterns, 92 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `ParthJadhav/app-store-screenshots` — 26 default patterns, 0 followe
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 87 |
+| Files         | 92 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -98,54 +98,59 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 37 | ✓ | [`skills/app-store-screenshots/template/src/app/api/project/route.ts`](skills/app-store-screenshots/template/src/app/api/project/route.ts) |
 | 38 | ✓ | [`skills/app-store-screenshots/template/src/app/api/upload-font/route.ts`](skills/app-store-screenshots/template/src/app/api/upload-font/route.ts) |
 | 39 | ✓ | [`skills/app-store-screenshots/template/src/app/api/upload/route.ts`](skills/app-store-screenshots/template/src/app/api/upload/route.ts) |
-| 40 | ✓ | [`skills/app-store-screenshots/template/src/app/globals.css`](skills/app-store-screenshots/template/src/app/globals.css) |
-| 41 | ✓ | [`skills/app-store-screenshots/template/src/app/layout.tsx`](skills/app-store-screenshots/template/src/app/layout.tsx) |
-| 42 | ✓ | [`skills/app-store-screenshots/template/src/app/page.tsx`](skills/app-store-screenshots/template/src/app/page.tsx) |
-| 43 | ✓ | [`skills/app-store-screenshots/template/src/components/editor/background-controls.tsx`](skills/app-store-screenshots/template/src/components/editor/background-controls.tsx) |
-| 44 | ✓ | [`skills/app-store-screenshots/template/src/components/editor/create-image-mask.ts`](skills/app-store-screenshots/template/src/components/editor/create-image-mask.ts) |
-| 45 | ✓ | [`skills/app-store-screenshots/template/src/components/editor/device-frames.tsx`](skills/app-store-screenshots/template/src/components/editor/device-frames.tsx) |
-| 46 | ✓ | [`skills/app-store-screenshots/template/src/components/editor/font-importer.tsx`](skills/app-store-screenshots/template/src/components/editor/font-importer.tsx) |
-| 47 | ✓ | [`skills/app-store-screenshots/template/src/components/editor/image-element-canvas.tsx`](skills/app-store-screenshots/template/src/components/editor/image-element-canvas.tsx) |
-| 48 | ✓ | [`skills/app-store-screenshots/template/src/components/editor/inspector.tsx`](skills/app-store-screenshots/template/src/components/editor/inspector.tsx) |
-| 49 | ✓ | [`skills/app-store-screenshots/template/src/components/editor/preview-stage.tsx`](skills/app-store-screenshots/template/src/components/editor/preview-stage.tsx) |
-| 50 | ✓ | [`skills/app-store-screenshots/template/src/components/editor/screenshot-editor.tsx`](skills/app-store-screenshots/template/src/components/editor/screenshot-editor.tsx) |
-| 51 | ✓ | [`skills/app-store-screenshots/template/src/components/editor/screenshot-picker.tsx`](skills/app-store-screenshots/template/src/components/editor/screenshot-picker.tsx) |
-| 52 | ✓ | [`skills/app-store-screenshots/template/src/components/editor/sidebar.tsx`](skills/app-store-screenshots/template/src/components/editor/sidebar.tsx) |
-| 53 | ✓ | [`skills/app-store-screenshots/template/src/components/editor/slide-canvas.tsx`](skills/app-store-screenshots/template/src/components/editor/slide-canvas.tsx) |
-| 54 | ✓ | [`skills/app-store-screenshots/template/src/components/editor/slide-thumb.tsx`](skills/app-store-screenshots/template/src/components/editor/slide-thumb.tsx) |
-| 55 | ✓ | [`skills/app-store-screenshots/template/src/components/editor/toolbar.tsx`](skills/app-store-screenshots/template/src/components/editor/toolbar.tsx) |
-| 56 | ✓ | [`skills/app-store-screenshots/template/src/components/ui/button.tsx`](skills/app-store-screenshots/template/src/components/ui/button.tsx) |
-| 57 | ✓ | [`skills/app-store-screenshots/template/src/components/ui/card.tsx`](skills/app-store-screenshots/template/src/components/ui/card.tsx) |
-| 58 | ✓ | [`skills/app-store-screenshots/template/src/components/ui/dialog.tsx`](skills/app-store-screenshots/template/src/components/ui/dialog.tsx) |
-| 59 | ✓ | [`skills/app-store-screenshots/template/src/components/ui/dropdown-menu.tsx`](skills/app-store-screenshots/template/src/components/ui/dropdown-menu.tsx) |
-| 60 | ✓ | [`skills/app-store-screenshots/template/src/components/ui/input.tsx`](skills/app-store-screenshots/template/src/components/ui/input.tsx) |
-| 61 | ✓ | [`skills/app-store-screenshots/template/src/components/ui/label.tsx`](skills/app-store-screenshots/template/src/components/ui/label.tsx) |
-| 62 | ✓ | [`skills/app-store-screenshots/template/src/components/ui/select.tsx`](skills/app-store-screenshots/template/src/components/ui/select.tsx) |
-| 63 | ✓ | [`skills/app-store-screenshots/template/src/components/ui/tabs.tsx`](skills/app-store-screenshots/template/src/components/ui/tabs.tsx) |
-| 64 | ✓ | [`skills/app-store-screenshots/template/src/components/ui/textarea.tsx`](skills/app-store-screenshots/template/src/components/ui/textarea.tsx) |
-| 65 | ✓ | [`skills/app-store-screenshots/template/src/components/ui/tooltip.tsx`](skills/app-store-screenshots/template/src/components/ui/tooltip.tsx) |
-| 66 | ✓ | [`skills/app-store-screenshots/template/src/lib/clean-hex-color.ts`](skills/app-store-screenshots/template/src/lib/clean-hex-color.ts) |
-| 67 | ✓ | [`skills/app-store-screenshots/template/src/lib/clean-imported-font.ts`](skills/app-store-screenshots/template/src/lib/clean-imported-font.ts) |
-| 68 | ✓ | [`skills/app-store-screenshots/template/src/lib/constants.ts`](skills/app-store-screenshots/template/src/lib/constants.ts) |
-| 69 | ✓ | [`skills/app-store-screenshots/template/src/lib/contrast.ts`](skills/app-store-screenshots/template/src/lib/contrast.ts) |
-| 70 | ✓ | [`skills/app-store-screenshots/template/src/lib/copy-ideas.ts`](skills/app-store-screenshots/template/src/lib/copy-ideas.ts) |
-| 71 | ✓ | [`skills/app-store-screenshots/template/src/lib/defaults.ts`](skills/app-store-screenshots/template/src/lib/defaults.ts) |
-| 72 | ✓ | [`skills/app-store-screenshots/template/src/lib/elements.ts`](skills/app-store-screenshots/template/src/lib/elements.ts) |
-| 73 | ✓ | [`skills/app-store-screenshots/template/src/lib/export-assets.ts`](skills/app-store-screenshots/template/src/lib/export-assets.ts) |
-| 74 | ✓ | [`skills/app-store-screenshots/template/src/lib/export-render.ts`](skills/app-store-screenshots/template/src/lib/export-render.ts) |
-| 75 | ✓ | [`skills/app-store-screenshots/template/src/lib/image-cache.ts`](skills/app-store-screenshots/template/src/lib/image-cache.ts) |
-| 76 | ✓ | [`skills/app-store-screenshots/template/src/lib/locale.ts`](skills/app-store-screenshots/template/src/lib/locale.ts) |
-| 77 | ✓ | [`skills/app-store-screenshots/template/src/lib/png-encode.ts`](skills/app-store-screenshots/template/src/lib/png-encode.ts) |
-| 78 | ✓ | [`skills/app-store-screenshots/template/src/lib/png-rgb.ts`](skills/app-store-screenshots/template/src/lib/png-rgb.ts) |
-| 79 | ✓ | [`skills/app-store-screenshots/template/src/lib/png-worker.ts`](skills/app-store-screenshots/template/src/lib/png-worker.ts) |
-| 80 | ✓ | [`skills/app-store-screenshots/template/src/lib/project-validation.ts`](skills/app-store-screenshots/template/src/lib/project-validation.ts) |
-| 81 | ✓ | [`skills/app-store-screenshots/template/src/lib/request-guard.ts`](skills/app-store-screenshots/template/src/lib/request-guard.ts) |
-| 82 | ✓ | [`skills/app-store-screenshots/template/src/lib/storage.ts`](skills/app-store-screenshots/template/src/lib/storage.ts) |
-| 83 | ✓ | [`skills/app-store-screenshots/template/src/lib/types.ts`](skills/app-store-screenshots/template/src/lib/types.ts) |
-| 84 | ✓ | [`skills/app-store-screenshots/template/src/lib/typography.ts`](skills/app-store-screenshots/template/src/lib/typography.ts) |
-| 85 | ✓ | [`skills/app-store-screenshots/template/src/lib/utils.ts`](skills/app-store-screenshots/template/src/lib/utils.ts) |
-| 86 | ✓ | [`skills/app-store-screenshots/template/tailwind.config.ts`](skills/app-store-screenshots/template/tailwind.config.ts) |
-| 87 | ✓ | [`skills/app-store-screenshots/template/tsconfig.json`](skills/app-store-screenshots/template/tsconfig.json) |
+| 40 | ✓ | [`skills/app-store-screenshots/template/src/app/fonts/imported/[filename]/route.ts`](skills/app-store-screenshots/template/src/app/fonts/imported/[filename]/route.ts) |
+| 41 | ✓ | [`skills/app-store-screenshots/template/src/app/globals.css`](skills/app-store-screenshots/template/src/app/globals.css) |
+| 42 | ✓ | [`skills/app-store-screenshots/template/src/app/layout.tsx`](skills/app-store-screenshots/template/src/app/layout.tsx) |
+| 43 | ✓ | [`skills/app-store-screenshots/template/src/app/page.tsx`](skills/app-store-screenshots/template/src/app/page.tsx) |
+| 44 | ✓ | [`skills/app-store-screenshots/template/src/app/screenshots/uploaded/[filename]/route.ts`](skills/app-store-screenshots/template/src/app/screenshots/uploaded/[filename]/route.ts) |
+| 45 | ✓ | [`skills/app-store-screenshots/template/src/components/editor/background-controls.tsx`](skills/app-store-screenshots/template/src/components/editor/background-controls.tsx) |
+| 46 | ✓ | [`skills/app-store-screenshots/template/src/components/editor/create-image-mask.ts`](skills/app-store-screenshots/template/src/components/editor/create-image-mask.ts) |
+| 47 | ✓ | [`skills/app-store-screenshots/template/src/components/editor/device-frames.tsx`](skills/app-store-screenshots/template/src/components/editor/device-frames.tsx) |
+| 48 | ✓ | [`skills/app-store-screenshots/template/src/components/editor/font-importer.tsx`](skills/app-store-screenshots/template/src/components/editor/font-importer.tsx) |
+| 49 | ✓ | [`skills/app-store-screenshots/template/src/components/editor/image-element-canvas.tsx`](skills/app-store-screenshots/template/src/components/editor/image-element-canvas.tsx) |
+| 50 | ✓ | [`skills/app-store-screenshots/template/src/components/editor/inspector.tsx`](skills/app-store-screenshots/template/src/components/editor/inspector.tsx) |
+| 51 | ✓ | [`skills/app-store-screenshots/template/src/components/editor/preview-stage.tsx`](skills/app-store-screenshots/template/src/components/editor/preview-stage.tsx) |
+| 52 | ✓ | [`skills/app-store-screenshots/template/src/components/editor/screenshot-editor.tsx`](skills/app-store-screenshots/template/src/components/editor/screenshot-editor.tsx) |
+| 53 | ✓ | [`skills/app-store-screenshots/template/src/components/editor/screenshot-picker.tsx`](skills/app-store-screenshots/template/src/components/editor/screenshot-picker.tsx) |
+| 54 | ✓ | [`skills/app-store-screenshots/template/src/components/editor/sidebar.tsx`](skills/app-store-screenshots/template/src/components/editor/sidebar.tsx) |
+| 55 | ✓ | [`skills/app-store-screenshots/template/src/components/editor/slide-canvas.tsx`](skills/app-store-screenshots/template/src/components/editor/slide-canvas.tsx) |
+| 56 | ✓ | [`skills/app-store-screenshots/template/src/components/editor/slide-thumb.tsx`](skills/app-store-screenshots/template/src/components/editor/slide-thumb.tsx) |
+| 57 | ✓ | [`skills/app-store-screenshots/template/src/components/editor/toolbar.tsx`](skills/app-store-screenshots/template/src/components/editor/toolbar.tsx) |
+| 58 | ✓ | [`skills/app-store-screenshots/template/src/components/ui/button.tsx`](skills/app-store-screenshots/template/src/components/ui/button.tsx) |
+| 59 | ✓ | [`skills/app-store-screenshots/template/src/components/ui/card.tsx`](skills/app-store-screenshots/template/src/components/ui/card.tsx) |
+| 60 | ✓ | [`skills/app-store-screenshots/template/src/components/ui/dialog.tsx`](skills/app-store-screenshots/template/src/components/ui/dialog.tsx) |
+| 61 | ✓ | [`skills/app-store-screenshots/template/src/components/ui/dropdown-menu.tsx`](skills/app-store-screenshots/template/src/components/ui/dropdown-menu.tsx) |
+| 62 | ✓ | [`skills/app-store-screenshots/template/src/components/ui/input.tsx`](skills/app-store-screenshots/template/src/components/ui/input.tsx) |
+| 63 | ✓ | [`skills/app-store-screenshots/template/src/components/ui/label.tsx`](skills/app-store-screenshots/template/src/components/ui/label.tsx) |
+| 64 | ✓ | [`skills/app-store-screenshots/template/src/components/ui/select.tsx`](skills/app-store-screenshots/template/src/components/ui/select.tsx) |
+| 65 | ✓ | [`skills/app-store-screenshots/template/src/components/ui/tabs.tsx`](skills/app-store-screenshots/template/src/components/ui/tabs.tsx) |
+| 66 | ✓ | [`skills/app-store-screenshots/template/src/components/ui/textarea.tsx`](skills/app-store-screenshots/template/src/components/ui/textarea.tsx) |
+| 67 | ✓ | [`skills/app-store-screenshots/template/src/components/ui/tooltip.tsx`](skills/app-store-screenshots/template/src/components/ui/tooltip.tsx) |
+| 68 | ✓ | [`skills/app-store-screenshots/template/src/lib/clean-hex-color.ts`](skills/app-store-screenshots/template/src/lib/clean-hex-color.ts) |
+| 69 | ✓ | [`skills/app-store-screenshots/template/src/lib/clean-imported-font.ts`](skills/app-store-screenshots/template/src/lib/clean-imported-font.ts) |
+| 70 | ✓ | [`skills/app-store-screenshots/template/src/lib/constants.ts`](skills/app-store-screenshots/template/src/lib/constants.ts) |
+| 71 | ✓ | [`skills/app-store-screenshots/template/src/lib/contrast.ts`](skills/app-store-screenshots/template/src/lib/contrast.ts) |
+| 72 | ✓ | [`skills/app-store-screenshots/template/src/lib/copy-ideas.ts`](skills/app-store-screenshots/template/src/lib/copy-ideas.ts) |
+| 73 | ✓ | [`skills/app-store-screenshots/template/src/lib/defaults.ts`](skills/app-store-screenshots/template/src/lib/defaults.ts) |
+| 74 | ✓ | [`skills/app-store-screenshots/template/src/lib/elements.ts`](skills/app-store-screenshots/template/src/lib/elements.ts) |
+| 75 | ✓ | [`skills/app-store-screenshots/template/src/lib/export-assets.ts`](skills/app-store-screenshots/template/src/lib/export-assets.ts) |
+| 76 | ✓ | [`skills/app-store-screenshots/template/src/lib/export-render.ts`](skills/app-store-screenshots/template/src/lib/export-render.ts) |
+| 77 | ✓ | [`skills/app-store-screenshots/template/src/lib/image-cache.ts`](skills/app-store-screenshots/template/src/lib/image-cache.ts) |
+| 78 | ✓ | [`skills/app-store-screenshots/template/src/lib/locale.ts`](skills/app-store-screenshots/template/src/lib/locale.ts) |
+| 79 | ✓ | [`skills/app-store-screenshots/template/src/lib/png-encode.ts`](skills/app-store-screenshots/template/src/lib/png-encode.ts) |
+| 80 | ✓ | [`skills/app-store-screenshots/template/src/lib/png-rgb.ts`](skills/app-store-screenshots/template/src/lib/png-rgb.ts) |
+| 81 | ✓ | [`skills/app-store-screenshots/template/src/lib/png-worker.ts`](skills/app-store-screenshots/template/src/lib/png-worker.ts) |
+| 82 | ✓ | [`skills/app-store-screenshots/template/src/lib/project-validation.ts`](skills/app-store-screenshots/template/src/lib/project-validation.ts) |
+| 83 | ✓ | [`skills/app-store-screenshots/template/src/lib/request-body.ts`](skills/app-store-screenshots/template/src/lib/request-body.ts) |
+| 84 | ✓ | [`skills/app-store-screenshots/template/src/lib/request-guard.ts`](skills/app-store-screenshots/template/src/lib/request-guard.ts) |
+| 85 | ✓ | [`skills/app-store-screenshots/template/src/lib/serve-asset.ts`](skills/app-store-screenshots/template/src/lib/serve-asset.ts) |
+| 86 | ✓ | [`skills/app-store-screenshots/template/src/lib/storage.ts`](skills/app-store-screenshots/template/src/lib/storage.ts) |
+| 87 | ✓ | [`skills/app-store-screenshots/template/src/lib/types.ts`](skills/app-store-screenshots/template/src/lib/types.ts) |
+| 88 | ✓ | [`skills/app-store-screenshots/template/src/lib/typography.ts`](skills/app-store-screenshots/template/src/lib/typography.ts) |
+| 89 | ✓ | [`skills/app-store-screenshots/template/src/lib/utils.ts`](skills/app-store-screenshots/template/src/lib/utils.ts) |
+| 90 | ✓ | [`skills/app-store-screenshots/template/src/lib/write-asset.ts`](skills/app-store-screenshots/template/src/lib/write-asset.ts) |
+| 91 | ✓ | [`skills/app-store-screenshots/template/tailwind.config.ts`](skills/app-store-screenshots/template/tailwind.config.ts) |
+| 92 | ✓ | [`skills/app-store-screenshots/template/tsconfig.json`](skills/app-store-screenshots/template/tsconfig.json) |
 
 ---
 

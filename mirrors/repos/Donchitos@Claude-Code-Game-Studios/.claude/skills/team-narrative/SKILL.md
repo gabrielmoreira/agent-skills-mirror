@@ -7,7 +7,7 @@ allowed-tools: Read, Glob, Grep, Write, Edit, Agent, AskUserQuestion, TaskCreate
 model: sonnet
 ---
 If no argument is provided, output usage guidance and exit without spawning any agents:
-> Usage: `/team-narrative [narrative content description]` — describe the story content, scene, or narrative area to work on (e.g., `boss encounter cutscene`, `faction intro dialogue`, `tutorial narrative`). Do not use `AskUserQuestion` here; output the guidance directly.
+> Usage: `/team-narrative [narrative content description] [--review full|lean|solo]` — describe the story content, scene, or narrative area to work on (e.g., `boss encounter cutscene`, `faction intro dialogue`, `tutorial narrative`). Do not use `AskUserQuestion` here; output the guidance directly.
 
 When this skill is invoked with an argument, orchestrate the narrative team through a structured pipeline.
 
@@ -28,19 +28,23 @@ in `autonomous` mode it runs end to end, recording each phase outcome via
 Resolved above — use as-is; `--review` overrides `review_mode`. No block →
 defaults in `.claude/docs/config-resolution.md`.
 
-`review_mode` sets gate depth:
-- `full` — spawn all director and lead gates as described
-- `lean` — skip director gates unless they are PHASE-GATE type (CD-PHASE-GATE, TD-PHASE-GATE, PR-PHASE-GATE, AD-PHASE-GATE)
-- `solo` — skip all director gate spawning entirely; run the skill without any agent gates
+`review_mode` sets director-gate depth, and this pipeline has no director gate:
+no phase below spawns CD-, TD-, PR- or AD-PHASE-GATE, at any `review_mode`. Its
+phase gates are the pipeline's own decision points (defined under `team.size`
+below), and the agents that work at them are team members, not director gates.
+
+Phase 4's ND-CONSISTENCY is the exception in every mode: it is this pipeline's own
+review, not an optional director gate, so `review_mode` never skips it (`team.size`
+still decides who runs it — see Phase 4).
 
 `automation` drives the Decision Points note above. See the Decision Points note above and
 `.claude/docs/automation-modes.md` for how each mode changes pipeline behavior.
 
 **`team.size`**: which agents are active (orthogonal to review_mode gate-depth and workflow docs).
 - **`individual`** (default): `writer` only; `narrative-director` invoked only on an explicit pillar conflict. Other agents consulted via the writer, not spawned separately.
-- **`small`**: `narrative-director` + `writer` + (per review_mode) `localization-lead`, `world-builder`.
-- **`studio`**: all narrative agents active + per-system writer reviews.
-Directors (CD/TD/PR) still spawn at phase gates regardless of size; a non-core agent needed at `individual` routes through the nearest active core agent with an informational note. **"Phase gate" means any phase that ends in an `AskUserQuestion` decision point before the pipeline advances** — not every phase. Apply the test literally: if the phase below has no decision point, it is not a gate, and an agent restricted to "phase gates only" is not spawned for it. This active-set scoping applies throughout the pipeline below: any phase that names an agent outside the active set routes through the nearest core agent rather than spawning it.
+- **`small`**: `narrative-director` + `writer`, plus `localization-lead` and `world-builder` when `review_mode` is `full` (at `lean` and `solo` they are consulted through the writer).
+- **`studio`**: all six Team Composition agents, whatever the `review_mode` (the full pipeline as documented).
+A non-core agent needed at `individual` routes through the nearest active core agent with an informational note. **"Phase gate" means any phase that ends in an `AskUserQuestion` decision point this pipeline itself lists** — a transition under Decision Points above, or a **Gate** step written into the pipeline below — **whatever the `automation` mode.** `guided` and `autonomous` change how a gate is passed (it auto-advances, or is recorded with `log_decision`), not whether it is one, so bounded-exception condition (3) below holds at it in every mode. An agent restricted to "phase gates only" is spawned at those points and no others. This active-set scoping applies throughout the pipeline below: any phase that names an agent outside the active set routes through the nearest core agent rather than spawning it.
 
 **Announce the active set before Phase 1 — never let the collapse be silent.**
 Before spawning anything, state in one line which agents this run will actually
@@ -55,10 +59,10 @@ Fill it from the `team.size` list directly above and the agents this file's own
 pipeline names — not from an example. Both sets differ per orchestrator.
 
 The pipeline below reads as a multi-agent fan-out and at the shipped default it
-is one or two agents — `team-release` names eight and runs one, `team-narrative`
+is one or two agents — `team-release` names ten and runs one, `team-narrative`
 names six across five phases and runs `writer` alone. **The collapse is correct**:
-`team.size` is rigor-fronted and the narrow default is the token lever, measured
-at roughly 10x. What was wrong is that nothing said so, so a reader could not
+`team.size` is rigor-fronted and the narrow default is the token lever.
+Without saying so, a reader cannot
 distinguish a correctly-collapsed run from a broken pipeline, and the per-agent
 "routes through the nearest core agent with an informational note" rule above
 fires at routing time and never states the shape of the run as a whole.
@@ -85,21 +89,27 @@ Use the `Agent` tool to spawn each team member as a subagent:
 - `subagent_type: level-designer` — Level layouts that serve the narrative, pacing
 - `subagent_type: localization-lead` — Localization readiness — flags non-localizable strings, cultural assumptions, and i18n gaps
 
+**Read the canon first.** Before Phase 1, read the shared inputs that exist — the narrative bible or tone guide, the character and faction files under `design/narrative/`, and the world rules. Never tell an agent to invent canon: if none exists, say so and ask the user before any drafting.
+
 **Brief each agent — do not dump context.** Read the shared inputs **once** and pass a distilled brief inline: the lines each agent actually needs, never a file path for a document you have already read (an agent handed a path re-reads the whole file). Pass a path only for a document you have not read and only that agent needs.
 
 **End every agent prompt with a return contract:** "Write your full output to `[path]` — that named path is your write authorisation under the bounded exception below, so write it without a separate approval prompt. Return **only** (1) the path written, (2) a ≤5-bullet summary of decisions, (3) any BLOCKED/CONCERNS items, one line each. Do not restate the documents you read." Without it, an agent returns everything it read back into this session.
 
-**Substitute a real path for `[path]` — this skill's destination is
-`design/narrative/`.** Name it per agent, one file each:
+**Substitute a real path for `[path]`.** Agents write drafts under
+`production/narrative/[content-slug]/` — inside the bounded exception below. The
+finished documents belong in `design/narrative/`, which the exception does **not**
+cover, so **you** write those after one approval (see "Write the finals"):
 
-| Agent | Writes to |
-|---|---|
-| narrative-director | `design/narrative/[content-slug]-brief.md` |
-| world-builder | `design/narrative/lore/[topic].md` |
-| writer | `design/narrative/dialogue/[scene-slug].md` |
-| art-director | `design/narrative/[content-slug]-visual-direction.md` |
+| Agent | Drafts to (`[path]`) | Final document (you write it) |
+|---|---|---|
+| narrative-director | `production/narrative/[content-slug]/brief.md` | `design/narrative/[content-slug]-brief.md` |
+| world-builder | `production/narrative/[content-slug]/lore-[topic].md` | `design/narrative/lore/[topic].md` |
+| writer | `production/narrative/[content-slug]/dialogue-[scene-slug].md` | `design/narrative/dialogue/[scene-slug].md` |
+| art-director | `production/narrative/[content-slug]/visual-direction.md` | `design/narrative/[content-slug]-visual-direction.md` |
+| level-designer | `production/narrative/[content-slug]/level-integration.md` | `design/narrative/[content-slug]-level-integration.md` |
+| localization-lead | `production/narrative/[content-slug]/i18n-review.md` | stays in `production/` — a review, not a design document |
 
-> **The destination is not a free choice.** `design/narrative/` is read by
+> **The final destination is not a free choice.** `design/narrative/` is read by
 > `/asset-spec`, `/design-review`, `/localize`, `/onboard`,
 > `/project-stage-detect`, `/team-level` and the `cd-narrative` director gate.
 > An artifact written anywhere else is invisible to all seven.
@@ -143,17 +153,40 @@ Delegate to **level-designer**:
 - Ensure pacing serves both gameplay and story
 
 ### Phase 4: Review and Consistency
-Delegate to **narrative-director**:
-- Review all dialogue against character voice profiles
-- Verify lore consistency across new and existing entries
+Spawn `narrative-director` via `Agent` using gate **ND-CONSISTENCY**
+(`.claude/docs/director-gates/nd-consistency.md`). This phase runs in every review
+mode — it is this pipeline's own review, not an optional director gate. Pass the
+context that gate lists (the Phase 2–3 draft paths, the narrative bible or tone
+guide, the world rules, the affected character and faction profiles) — named
+here, so do not read the gate file in this session — and add:
 - Confirm narrative pacing aligns with level design
 - Check that all mysteries have documented "true answers"
 
+Act on the verdict: **APPROVE** → Phase 5. **CONCERNS** → show the listed
+inconsistencies and ask via `AskUserQuestion` whether to revise them (re-spawn the
+agent that owns each) or accept them. **REJECT** → do not start Phase 5; the
+contradictions are fixed first. **NOT ASSESSED [missing input]** → name the
+missing input, then supply it and re-run the gate, or carry
+`ND-CONSISTENCY: NOT ASSESSED — [input]` into the report's consistency review
+results; it is never read as APPROVE (`.claude/docs/director-gates.md`).
+
+**At `team.size: individual`** narrative-director is not in the active set, so the
+gate is not spawned. The writer checks the drafts against the same criteria, and
+the output says so by name: "ND-CONSISTENCY not run — narrative-director is not
+active at `team.size: individual`; consistency self-checked by writer." A
+self-check is not the gate's verdict, and the report must not present it as one.
+
 ### Phase 5: Polish (parallel)
-Delegate in parallel:
+Delegate in parallel — issue every `Agent` call before waiting for any result:
 - **writer**: Final self-review — verify no line exceeds dialogue box constraints, all text uses string keys (not raw strings), placeholder variable names are consistent
 - **localization-lead**: Validate i18n compliance — check string key naming conventions, flag any strings with hardcoded formatting that won't survive translation, verify character limit headroom for languages that expand (German/Finnish typically +30%), confirm no cultural assumptions in text that would need locale-specific variants
 - **world-builder**: Finalize canon levels for all new lore entries
+
+### Write the finals
+You hold every draft. List the final documents from the table above, then ask once
+via `AskUserQuestion` — "May I write these [N] narrative documents to
+`design/narrative/`?" — and write them on approval. The drafts under
+`production/narrative/[content-slug]/` stay as the working record.
 
 ## Error Recovery Protocol
 
@@ -167,29 +200,35 @@ usually still there.
 
 If any spawned agent returns BLOCKED, errors, or cannot complete: **surface it
 immediately, don't proceed past a dependency it blocks, and always produce a
-partial report.** Full procedure: `.claude/docs/error-recovery-protocol.md`.
+partial report.** A skipped agent's section stays a named gap — never fill it with content of your own. Full procedure: `.claude/docs/error-recovery-protocol.md`.
 
 Common blockers:
 - Input file missing (story not found, GDD absent) → redirect to the skill that creates it
-- ADR status is Proposed → do not implement; run `/architecture-decision` first
+- ADR status is Proposed → do not implement; once it is decided, accept it with `/architecture-decision accept ADR-NNNN`
 - Scope too large → split into two stories via `/create-stories`
 - Conflicting instructions between ADR and story → surface the conflict, do not guess
 
 ## File Write Protocol
 
-All file writes (narrative docs, dialogue files, lore entries) are delegated to
-sub-agents spawned via `Agent`. Those writes follow the **bounded exception**
-documented above under "Why this does not violate the Collaboration Protocol" —
-the path is one you named, the artifact is new under `production/`, `docs/` or
-`tests/`, and the phase is gated by an `AskUserQuestion`. A sub-agent does **not**
-prompt per write inside those bounds; outside them it must ask. This orchestrator
-does not write files directly.
+Sub-agents write their drafts to the `production/narrative/[content-slug]/` paths
+you name, under the **bounded exception** documented above under "Why this does
+not violate the Collaboration Protocol" — the path is one you named, the artifact
+is new under `production/`, `docs/` or `tests/`, and the phase is gated by an
+`AskUserQuestion`. A sub-agent does **not** prompt per write inside those bounds;
+outside them it must ask. The **one exception is the final documents under
+`design/narrative/`**: you hold every draft, so you write those yourself after
+the single "May I write …?" in "Write the finals".
 
 ## Output
 
-A summary report covering: narrative brief status, lore entries created/updated, dialogue lines written, level narrative integration points, consistency review results, and any unresolved contradictions.
+A summary report covering: narrative brief status, lore entries created/updated, dialogue lines written, level narrative integration points, consistency review results, and any unresolved contradictions — including any localization issue the user chose to leave unfixed, by string key.
 
 Verdict: **COMPLETE** — narrative content delivered.
+
+If ND-CONSISTENCY answered NOT ASSESSED and that was carried into the report
+(Phase 4), the verdict says so — never a plain COMPLETE:
+
+Verdict: **COMPLETE — consistency NOT ASSESSED ([input])** — narrative content delivered; the consistency review could not run for want of [input].
 
 If the pipeline stops because a dependency is unresolved (e.g., lore contradiction or missing prerequisite not resolved by the user):
 

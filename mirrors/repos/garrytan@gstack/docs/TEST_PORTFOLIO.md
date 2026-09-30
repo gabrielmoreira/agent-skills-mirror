@@ -20,12 +20,74 @@ different things even when they mention the same skill.
 | Stochastic consistency and verbose/carved comparison | Independent captures, with separate stability and A/B oracles | One successful sample reused as three trials, or one prompt version standing in for the other |
 | Decisions, findings and report completion | Per-skill native workflow fixtures | The first question alone, screen text without native evidence, or a generic question count |
 | Offline deployment and canary report construction | The explicitly simulated workflow fixtures | A real GitHub merge, deployment, rollback or production health check |
-| Multi-phase ordering and hand-offs | One uninterrupted Autoplan chain | Four independent successful skill sessions |
+| Multi-phase ordering and hand-offs | The production phase-publication hook, pinned by the free `test/autoplan-publication-guard.test.ts`; no paid chain eval since the 2026-09 audit (TODOS: "No paid eval runs the full /autoplan chain") | A live model completing CEO → Design → DX → Eng |
 | External reviewers, other model providers, browser engines and platform behavior | Their respective live integration fixtures | Prompt parity or a mock transport |
 
 Overlay efficacy experiments retain their full fixture/model/arm/trial matrix.
 Security cases retain their source, path, socket, process and lease identities.
 These are distinct scenario dimensions, not repeated work to delete.
+
+## Detector owner tests
+
+A captured paid failure becomes one row (a `describe` block or table entry) in its detector's owner test,
+never a new per-incident file; `test/test-of-test-ratchet.test.ts` enforces this. Owners after the
+2026-09 audit ([evidence](test-audit-2026-09.md)):
+
+| Detector | Owner test |
+| --- | --- |
+| `hasStaleFillRaceFinding` | `test/ceo-section-loading-fixture.test.ts` |
+| `generateModelOverlay` / `resolveModel` (overlay phrases) | `test/model-overlays.test.ts` |
+| `coverageAuditVerdict` / `coverageAuditReadEvidence` | `test/coverage-audit-evidence.test.ts` |
+| Autoplan phase completion (`autoplanPhaseCompletions`) | `test/autoplan-phase-observer.test.ts` |
+| `findNativeAutoDecision` and auto-decision state | `test/native-auto-decide.test.ts` |
+| `claudeOutsideExecutions` | `test/outside-voice-evidence.test.ts` |
+| `engStep0Boundary` / `engSetupAUQ` / `engFirstReviewAUQ` | `test/eng-first-review.test.ts` |
+| `hasNativePlanTerminal` (completion and hand-off) | `test/plan-count-completion.test.ts` |
+| `createPlanCountPermissionGuard` | `test/plan-count-file-permission.test.ts` |
+| CEO mode option parsing (`ceo-mode-option`) | `test/ceo-mode-option.test.ts` |
+| Plan scope selection (`plan-scope-selection`) | `test/plan-scope-selection.test.ts` |
+| `planCountPrerequisitePick` | `test/plan-count-prerequisite.test.ts` |
+
+## Functional QA contract map
+
+The deterministic owners below protect the failure boundary; their live partners
+prove that an agent follows it. A shared fixture or captured event does not replace
+an independent live trial. All free owners run in `bun run test`; quick eligibility
+depends on measured duration or an explicit `QUICK_CORE` entry, not this table.
+
+| Contract | Deterministic owner | Necessary live boundary | Host and lane |
+| --- | --- | --- | --- |
+| CLI/API/webhook QA without browser setup | `qa-functional-fixture`, `qa-functional-evidence`, `qa-lazy-sections` | `skill-e2e-qa-functional`: CLI and webhook report sessions | Linux/macOS free; selected PR gate; Windows only where curated |
+| Report-only preserves local and remote authority | `qa-only-capability`, `qa-functional-observer`, `qa-functional-observer-atomic`, `qa-caller-authority` | Independent report-only sessions with synthetic owned endpoints/auth | Linux kernel observation; free callback controls plus selected PR gate |
+| Repair reproduces the defect, adds a failing regression and rechecks adjacent behavior | `qa-fix-loop-fixture`, `qa-functional-evidence` | `skill-e2e-qa-functional-fix`: CLI and webhook repair sessions | Free controls plus selected PR gate |
+| Review and Ship actually explore | `qa-exploratory-callers`, `qa-caller-report-observer`, `qa-checkpoint-evidence` | `skill-e2e-qa-callers`: actual Review/Ship callers | Free captures plus selected PR gate |
+| Smoke expiry preserves required plan checks | `qa-deadline`, `qa-deadline-selection`, `qa-browser-deadline-evidence` | `ship-exploratory-plan-checks` | Free deadline/dispatch controls plus selected PR gate |
+| Late changes invalidate affected results | `qa-caller-freshness-order`, `qa-deadline-publication-observer`, `shared-libs-revalidation-prompt` | `ship-exploratory-late-input` and the existing late-input documentation handoff | Free stale-input controls plus selected PR gate |
+| Documentation completes before publication and respects protected files | `docsync-authority`, `docsync-atomic-writes`, `docsync-report-interface`, `docsync-lifecycle-interface` | `skill-e2e-ship-docsync`, `skill-e2e-docsync-spawned` | Free state/permission controls; registered gate/periodic scenarios retain their tiers |
+| Cancellation drains owned work before another attempt | `shared-libs-cancellation`, `session-runner-stream-lifecycle`, `agent-sdk-runner`, `paid-shard-settlement` | Existing actual shared-library/SDK caller scenarios | Free real-callback/process controls; registered live gate/periodic trials remain independent |
+| Missing tools or incomplete results never become verified coverage | `qa-probe-gates`, `qa-supervision-selection`, `test-free-shards`, `test-free-shards-capture`, `paid-shards` | `ship-exploratory-unavailable` and existing reporting-boundary sessions | Free negative controls plus selected PR gate; unsupported hosts remain unexecuted |
+
+Names without a suffix refer to `test/<name>.test.ts`. Keep missing, stale,
+duplicate, selected-but-unstarted, malformed/truncated and observer-overflow
+controls distinct from legitimate empty selections. File restoration cannot
+replace write observation, and a clean local tree cannot prove that an external
+request made no mutation. Fixture endpoints and credentials must be synthetic
+and owned; specifically authorized functional requests remain permitted.
+
+Functional fixtures register their existing closed command policy as a native
+PreToolUse hook, so an unsupported request is refused before execution. The
+callback regression invokes the registered command with native hook input,
+observes an isolated mutation target and permits the owned webhook positive
+control. This is a command boundary, not a sandbox for arbitrary target code.
+Its private CLI configuration is outside the observed product tree, and the
+fixture's existing cleanup owns both directories.
+
+Review/Ship observations now use the same strict native event decoder as QA
+checkpoints and documentation. Caller-specific handoff/freshness interpretation
+stays separate. Original missing, orphaned and duplicate-call controls were run
+before replacing three incidental error-wording assertions with rejection checks;
+the existing positive attribution case still runs, and a completed-ID reuse
+negative control prevents incomplete evidence from becoming green.
 
 ## Complete inventory, not just the fast subset
 
@@ -104,6 +166,41 @@ case/sample inventory and report skips and unavailable platforms separately.
 Do not subtract failures from elapsed time or use a smaller selection as proof
 that the complete suite got faster.
 
+### Functional-QA cleanup measurement — September 28, 2026
+
+On the same four-CPU Linux machine, using Bun 1.4.0, Node 22.20.0 and Claude
+Code 2.1.251, the existing duration recorder measured all 1,113 free files.
+The refreshed seed selects 931 files for quick feedback: 90 newly included and
+20 newly excluded by measured cost, a net increase of 70. No files remain
+unclassified. All 182 slow files remain in the complete suite. The functional
+command observer, checkpoint decoder and log-capture controls are explicit
+quick-core cases; each measured under two seconds.
+
+| Existing command / attempt | Executed scope | Result | Wall time |
+| --- | --- | --- | ---: |
+| `bun run test:free --record-durations` | 1,113 files | 29,175 pass, 5 fail, 131 skip | 680.64s |
+| `bun run test:quick`, first measured attempt | 931 files | 22,160 pass, 2 fail, 100 skip | 125.39s |
+| `bun run test:quick`, repaired attempt | The same 931 files | 22,162 pass, 0 fail, 100 skip | 52.43s |
+
+The profile's five failures came from the machine's Git identity wrapper
+overwriting synthetic fixture authors. Running the two affected files with native
+Git in the isolated test environment passed all 59 tests in 75.32s; normal checkout
+commits retained the configured identity. Both quick attempts used that corrected
+environment. Their two telemetry timeouts used Bun's synchronous piped-input
+path; the repair reuses the existing file-backed command capture helper without
+changing commands, assertions or deadlines. The seed retains observed costs,
+including failed attempts; it is a scheduling hint, not a passing receipt.
+
+Cold dependency installation took 0.477s and the integrated build took 3.84s,
+separate from warm test execution; CLI installation was not independently timed.
+An earlier 63.37s profile was cancelled for a decoder repair, with an additional
+scoped browser cleanup, and earns no completion credit. Failed, cancelled and
+repair runs are costs, not time removed from the workflow. The quick target of
+one minute was met on this machine, but these measurements establish neither a
+cross-environment speedup nor full release, live-model or Windows acceptance.
+
+### Earlier component comparisons
+
 Measured component comparisons:
 
 | Workload | Before | After | Coverage retained |
@@ -120,11 +217,13 @@ test/plan-count-design-ui-recovery.test.ts
 test/plan-count-native-input.test.ts
 test/plan-count-empty-review.test.ts
 test/plan-count-owned-permission.test.ts
-test/plan-count-quoted-frame-ak.test.ts
+test/plan-count-file-permission.test.ts
 test/plan-count-truncated-question.test.ts
 test/plan-count-preview-footer.test.ts
 test/eng-test-plan-edit-approval.test.ts
 ```
+
+The quoted-frame selector was folded into `test/plan-count-file-permission.test.ts` in the 2026-09 audit.
 
 The publication/watchdog pair is `test/autoplan-publication-guard.test.ts` and
 `test/cso-watchdog.test.ts`. The live pair is
@@ -167,6 +266,13 @@ not a fresh full-census runtime improvement.
 
 ## Evidence validity
 
+After integrating main's September 28 Ubicloud improvements, the scheduling seed
+uses upstream's CI-environment timings for shared files and preserves the 52
+previously measured branch-only entries. These are scheduling hints from two
+machines, not a matched performance comparison or acceptance result. Refresh
+the whole seed with `bun run test:ubicloud --record-durations` when measuring a
+new common baseline; do not infer a speedup by adding these measurements.
+
 Check the executable actually used by each SDK, print-mode and terminal launcher.
 A CLI version cached during preflight does not prove the version used by later
 sessions if PATH contents change. Use native session-init versions, terminal
@@ -190,6 +296,6 @@ The longest indivisible live workflow limits the benefit of extra workers.
 Historical paid-duration replay suggests better scheduling alone cannot halve
 the full lane. A follow-up should unify executable case ownership/counts before
 sharing captures between judges or splitting long files: keep each oracle,
-scenario, retry and independent-trial requirement explicit. The ordered
-Autoplan chain, host integrations and security boundary cases must not be
-replaced with cheaper look-alikes.
+scenario, retry and independent-trial requirement explicit. Host integrations
+and security boundary cases must not be replaced with cheaper look-alikes; the
+retired Autoplan chain eval needs a replacement that fits the ordinary tiers.

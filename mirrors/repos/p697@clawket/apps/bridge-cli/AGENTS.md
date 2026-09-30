@@ -83,6 +83,8 @@ A Hermes Relay command that deliberately yields to another owner stays alive wit
 
 `pi pair` / `pair --backend pi` authorizes the current or explicitly selected project. Pairing starts an isolated background child only after readiness; `--foreground` keeps the terminal-owned path. Pi state/logs live under a project-specific Clawket directory. Temporary pairing output goes over parent IPC, never persistent logs. `pi start/restart/stop/status/doctor/logs/reset` (also `--backend pi`) operate on that configuration only; authenticate local control before stopping anything, never kill a process merely by PID/port. Reset removes pairing and retains session files. Preserve explicit agent/session directories and never copy model credentials. Pi requires its own supported Node version; a Bridge installation alone is not proof Pi can run.
 
+Repeated Pi pairing against an authenticated running owner must reuse its exact target and identity. Refresh the saved Registry access code and print a QR without stopping, registering, spawning, or rewriting its in-memory invitation/config; explicitly explain that six-digit refresh is unavailable on this path. Recover legacy Registry provenance only from a matching Pi invitation, never infer it from a Relay URL or send an existing secret to a different Registry. Changed explicit scope/options, uncertain owner authentication, or a locked owner without a listener must fail without replacement. Local repeats only reprint the existing local identity. Offline pairing retains its existing registration behavior; this exception does not add an invitation hot-update RPC.
+
 ## Codex projects
 
 Explicit Codex stop/restart/reset uses authenticated lifecycle control independent of native health. Older Bridges may confirm their authenticated `agents.list` identity after a native-health error; wrong identity, authentication rejection and uncertain timeouts never authorize a replacement. Only connection refusal means no local listener; never kill an occupant by PID or port.
@@ -103,4 +105,8 @@ Claude first-time detached pairing must carry the resolved device scope into the
 
 ## 3.1 release
 
-The authorized Bridge patch release is `3.1.3`. Keep the publish guard and bundled workspace versions aligned. Preserve the existing OpenClaw/Hermes pair behavior for old clients. `pair choose` is interactive and read-only until selection; explicit `--backend` is required for agent/script prompts. Client distribution is a separate release stage.
+The authorized Bridge patch release is `3.1.5`. Keep the publish guard and bundled workspace versions aligned. Preserve the existing OpenClaw/Hermes pair behavior for old clients. `pair choose` is interactive and read-only until selection; explicit `--backend` is required for agent/script prompts. Client distribution is a separate release stage.
+
+Codex and Claude Code Registry registrations and QR invitations default to `Codex` / `Claude Code`; project/device scope remains in configuration and must not be inferred from the display name.
+
+Codex foreground/background native RPC diagnostics use the runtime's bounded metadata contract in the existing local log. Never forward raw native frames, stderr or exception text, and do not upload local logs automatically. See `../../docs/3.0/20-connection-diagnostics.md`.

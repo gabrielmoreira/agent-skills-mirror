@@ -42,11 +42,18 @@ needs `gpsoauth` (provided by `headless` and `android` extras) and, unless an
 > Use a dedicated account where possible, restrict the file to its owner, and
 > never put it in an image, repository, or command line.
 
-Treat Web session re-minting from a master token as **single-consumer per account**.
-Overlapping automatic L4 recoveries for the same storage path and rung policy coalesce in-process;
-direct or manual re-mint calls do not. Separate processes can also mint competing sessions and
-invalidate each other's `SID`. Serialize every direct/manual re-mint and run one automatic
-recovery worker per account, or give independent workers separate dedicated accounts.
+Each Web re-mint from a master token creates a new, independent session. In live testing for
+[#1901](https://github.com/teng-lin/notebooklm-py/issues/1901), separate processes minting from
+copies of one master token did not invalidate each other's sessions. Do **not** let two consumers
+actively use the same cookie session at once: concurrent users of copies of one `storage_state.json`
+can sign each other out. Give each concurrent worker its own profile and let it mint or log in its
+own session. Moving `storage_state.json` to another machine (see
+[Headless server or CI](installation.md#d-headless-server-or-ci)) is fine once the original copy is
+no longer in use.
+
+A re-mint replaces its profile's stored session. Overlapping automatic L4 recoveries for the same
+storage path and rung policy coalesce in-process; direct or manual re-mint calls do not, so
+serialize those per profile. Workers on one account still share that account's usage limits.
 
 ## Cookie requirements for the Web backend
 

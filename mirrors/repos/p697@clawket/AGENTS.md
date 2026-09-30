@@ -81,8 +81,12 @@ During the OpenClaw + Hermes coexistence period, treat backend identity and tran
 
 1. Client liveness must be capability-negotiated. Only clients advertising `relay.client-pong.v1` may be expired for missing Relay pong acknowledgements.
 2. Client pong expiry must allow at least three configured heartbeat intervals, including before the first tick; shorter overrides must be clamped to that floor. Legacy clients must not be disconnected solely because they have not sent application traffic; socket failure and handshake-specific timeouts remain valid cleanup signals.
-3. A Bridge or local Gateway reconnect must force any stale client transport to reconnect when its existing backend session can no longer be resumed safely.
+3. A Bridge or local Gateway reconnect must force any stale client transport to reconnect when its existing backend session can no longer be resumed safely. Owner replacement retires the captured full-client generation synchronously before accepting or advertising the replacement: persist a payload-free attachment tombstone, clear bounded response origins, then close with `4011`. Failed retirement blocks replacement; hibernation cannot revive retired routes, and late old-owner cleanup cannot touch newly accepted clients.
 4. Successful health evidence must reset reconnect backoff. A raw WebSocket `open` event is not sufficient proof of a completed backend handshake.
+5. `client_count`, `client_connected`, `client_disconnected` and `client.sockets` are Relay-authored presence controls. Reject peer-supplied versions after existing admission and before every generic or secondary-channel route; pairing peers cannot forge full-client presence. Keep ordinary client control commands and Relay-generated legacy presence frames unchanged.
+5. Negotiated owner/channel and full-client nonce echoes allow a four-frame arrival burst with one echo per second sustained refill. Persist consumed integer credits in the current socket attachment before replying, preserve conservative legacy timestamp migration and clock-rollback bounds, and never replenish on hibernation. This tolerates delivery jitter without changing authentication, routing or legacy pong expiry.
+5. Negotiated `relay.client-ping.v1` lets a current authenticated full client prove same-socket Relay reachability with a bounded nonce echo; it is not backend health. Keep it separate from legacy `client_pong` acknowledgements and their three-interval expiry floor. Persist only the echo rate budget through hibernation, preserve routing markers, and never answer or forward these controls from owners, channels, restricted pairing or retired clients.
+5. `relay.owner-pong.v1` is an opt-in same-socket Bridge roundtrip fallback after a missing WebSocket pong. Advertise it only in authenticated `relay.ready` for owners/channels that requested it; preserve legacy ready frames and owner leases. Reserve `relay.ready` / `relay.owner-ping` / `relay.owner-pong` before forwarding, after client admission. Echo only valid 32-lowercase-hex nonces from the current authenticated owner/channel, with a hibernation-safe per-socket rate limit; never relay these controls to another peer or log/persist nonces.
 
 ## Relay Hibernation Rule
 
@@ -90,11 +94,14 @@ Active client routing must survive Durable Object hibernation through WebSocket 
 
 ## Relay Resource Safety Rule
 
+Authenticated room admission applies to every backend: at most 128 full-client sockets, 16 restricted pairing sockets, and eight sockets per authenticated token fingerprint. Replacing a current client ID remains possible at capacity only with its matching fingerprint; another valid room credential cannot replace a bound socket. Keep the private fingerprint only in socket attachments; never log it or reuse it as a diagnostic ID. Legacy attachments without fingerprints retain existing replacement semantics until their first reconnect and the room-wide limit; hibernation must preserve new per-device accounting and binding.
+
 1. Relay `/ws` requests must prove the backend-specific pairing record exists before resolving a room Durable Object. Keep the bounded 60-second existence cache free of credentials and request-scoped state.
 2. Relay, Bridge, and App use the same 8 MiB application-frame limit. Relay closes strictly larger frames with `1009` / `frame_too_large`; Bridge normalizes the `ws` hard-limit error to the same stable code, and App rejects it before send. The nominal 5 MiB image flow must remain below the wire limit.
 3. Registry registration is limited to 10 attempts per hashed source IP per fixed hour using a strongly consistent counter. Never store or log the raw source IP for this limit.
 4. Unclaimed registration records expire after 24 hours; successful claim restores the existing 365-day lifetime.
 5. Relay health and the post-authentication `relay.ready` control frame advertise `relay.frame-limit.v2`; older peers must remain able to ignore the additive control frame.
+6. Independently negotiated `relay.transfer-hint.v1` protects actual 128 KiB–8 MiB UTF-8 frames from short liveness deadlines. Relay alone emits a size-only hint immediately before the same unchanged frame on a current full-client or authenticated owner/channel socket; peer hints cannot be forwarded. Keep receiver transfer budgets absolute and non-renewable (90 seconds), clear only with a round trip initiated after the latest transfer generation, and preserve legacy traffic and the 8 MiB limit. Complete inbound-frame delivery ends only that direction's head-of-line allowance, never the budget lock, health state or concurrent outbound protection.
 
 ## Preview Service Environment Rule
 
@@ -188,15 +195,21 @@ Relay socket diagnostics use a server-generated per-socket UUID persisted in Web
 
 Production observability records sanitized application logs only: keep invocation logs and traces disabled and query-string redaction enabled. Mirror approved cloud settings in the ignored deployment configs; each Registry service binding must target its own backend/environment Relay. Configuration-only version changes still require refreshing the recorded production deployment anchors and verifying source hashes.
 
+Observe Relay cold initialization only when its serial authenticated rehydration fails or exceeds one second. Record fixed stage categories and bounded I/O wall durations; preserve the constructor input gate and awaited heartbeat setup. Workers clocks exclude pre-constructor wakeup/queue time and do not measure synchronous CPU time.
+
+Connection observability is metadata-only and fail-closed: allowlist fields and string categories; never record messages, prompts, tool output, request/response bodies, native stderr/errors, credentials, raw URLs/paths, IP/SSID or device labels. Keep only existing server-generated per-socket diagnostic UUIDs, never add stable identities for triage. Unknown failures and timeouts do not prove phone network failure. Registry unknown routes use a fixed placeholder; transport exceptions use fixed reasons. See the evidence rules in `docs/3.0/20-connection-diagnostics.md`.
+
+Owner-heartbeat fallback diagnostics describe only the current authenticated socket's bounded local Relay action. A successful send is not peer receipt or backend health; keep nonce/payload and exception text out of logs, and preserve diagnostic throttling through hibernation.
+
 ## Independent OpenClaw Client Channels
 
 Negotiated `bridge.client-sockets.v1` uses authenticated owner secondary sockets bound to server-generated full-client socket diagnostic IDs. Keep each local Gateway handshake isolated, preserve raw 8 MiB frames, and reconstruct routes from attachments after hibernation. Restricted pairing sockets cannot become channel targets. Hermes and legacy owners retain their existing policies.
 
-Before handling any frame, verify that its WebSocket is still the current owner, client, pairing client or secondary channel. Buffered frames and late close/error events from replaced sockets must not alter the replacement's routing, rate limits or heartbeat watchdog. Replacement logs link only validated server-generated diagnostic UUIDs; distinguish owner/channel/client sockets and include close codes without logging peer-supplied close text.
+Before handling any frame, verify that its WebSocket is still the current owner, client, pairing client or secondary channel. Recheck the captured owner socket after awaited lease persistence before routing; do not rely on instance IDs or storage input gates as the only generation fence. Buffered frames and late close/error events from replaced sockets must not alter the replacement's routing, rate limits or heartbeat watchdog. Replacement logs link only validated server-generated diagnostic UUIDs; distinguish owner/channel/client sockets and include close codes without logging peer-supplied close text.
 
 ## Worker Toolchain Audit
 
-Keep Wrangler on a security-patched v4 release (current minimum 4.131.0) with its matching Miniflare/workerd dependencies. Do not force a transitive native override to hide an audit finding; validate the resolved lockfile with both dependency audits and v1 replay after toolchain changes.
+Keep Wrangler on a security-patched v4 release (current minimum 4.144.0) with its matching Miniflare/workerd dependencies. Do not force a transitive native override to hide an audit finding; validate the resolved lockfile with both dependency audits and v1 replay after toolchain changes.
 
 ## First Registry migration recovery
 
@@ -212,7 +225,7 @@ Owner-authorized Pi implementation is specified in `docs/3.1/pi.md`. Pi is an in
 
 ## Codex 3.1 extension
 
-Owner-authorized Codex work is specified in `docs/3.1/codex.md`. New device pairing discovers saved projects and native thread directories; existing explicit project pairings remain scoped. Use Clawket-owned App Server processes and opaque native thread mappings. Preserve OpenClaw, Hermes and Pi. Native continuation routes through the desktop owner; only an explicit no-owner response with no active native turn permits local resume. Unknown dispatch must never create a second writer. Codex Preview uses isolated resources and may be deployed for this authorized testing; production and publication still require authorization.
+Owner-authorized Codex work is specified in `docs/3.1/codex.md`. New device pairing discovers saved projects and native thread directories; existing explicit project pairings remain scoped. Use Clawket-owned App Server processes and opaque native thread mappings. Preserve OpenClaw, Hermes and Pi. Native continuation routes through the desktop owner; imported threads require an explicit no-owner response with no active native turn before local resume. Bridge-created threads may recover without a Desktop broker only on explicitly verified native versions with atomic exclusive writer locks, matching idle history and a proven pre-dispatch broker failure. Unknown dispatch must never create a second writer. Codex Preview uses isolated resources and may be deployed for this authorized testing; production and publication still require authorization.
 
 ## Claude Code 3.1 extension
 

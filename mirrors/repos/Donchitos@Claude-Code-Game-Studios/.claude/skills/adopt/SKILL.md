@@ -7,7 +7,7 @@ allowed-tools: Read, Glob, Grep, Bash, Write, AskUserQuestion, Bash(bash "*/.cla
 model: sonnet
 ---
 
-!`bash "${CLAUDE_SKILL_DIR}/../../hooks/yaml-helper.sh" resolve_config --keys automation,automation_always_ask,workflow`
+!`bash "${CLAUDE_SKILL_DIR}/../../hooks/yaml-helper.sh" resolve_config --keys review_mode,automation,automation_always_ask,workflow`
 
 Resolved above — use as-is. `/adopt` also inspects `project.yaml` and the legacy
 config files directly when reporting and writing migration state; that raw
@@ -31,7 +31,7 @@ wrong internal format.
 
 **Argument modes:**
 
-**Audit mode:** `$ARGUMENTS[0]` (blank = `full`)
+**Audit mode:** `$ARGUMENTS` (blank = `full`)
 
 - **No argument / `full`**: Complete audit — all artifact types
 - **`gdds`**: GDD format compliance only
@@ -98,6 +98,8 @@ For each artifact type in scope (based on argument mode **and the resolved
 workflow tier**), check not just that the file exists but that it contains the
 internal structure the template requires. At `minimal`, scope the audit to
 `design/game-brief.md` — do not audit for GDDs, ADRs, or UX specs (they are not expected).
+Steps 2e (the Engine reference row only), 2f (project config) and 2g (v1.0
+migration check) run at every tier.
 
 ### 2a: GDD Format Audit
 
@@ -129,8 +131,10 @@ informational):
   Dependencies, Acceptance Criteria) + Formulas for any system that defines
   numeric rules (rates, curves, thresholds, costs — the system's `Category` is a
   hint, not the test); Player Fantasy and Tuning Knobs are advisory.
-- **`minimal`** — GDDs are not expected; audit `design/game-brief.md` instead. Any GDD
-  that does exist is checked at the `standard` bar, advisorily.
+- **`minimal`** — GDDs are not expected; audit `design/game-brief.md` instead,
+  against `.claude/docs/templates/game-brief.md`: each of the six required fields
+  present and not a placeholder; the three one-liners advisory. Any GDD that
+  does exist is checked at the `standard` bar, advisorily.
 
 The script's 8 canonical labels are: Overview, Player Fantasy, Detailed Rules,
 Formulas, Edge Cases, Dependencies, Tuning Knobs, Acceptance Criteria.
@@ -203,6 +207,10 @@ For each story file found:
 | Engine reference | `docs/engine-reference/[engine]/VERSION.md` | HIGH — ADR engine checks blind |
 | Architecture traceability | `docs/architecture/requirements-traceability.md` | MEDIUM — no persistent matrix |
 
+At `workflow: minimal` only the Engine reference row applies. The TR registry,
+control manifest and its version stamp, sprint status, stage file and
+traceability matrix are not on the minimal path, so their absence is not a gap.
+
 ### 2f: Project Config Audit
 
 Read `project.yaml` (the primary config store) and `.claude/docs/technical-preferences.md` (legacy mirror). A setting counts as configured if EITHER source has a real value (in technical-preferences.md, `[TO BE CONFIGURED]` means unconfigured):
@@ -231,7 +239,12 @@ the framework's own test suite:
 bash .claude/scripts/migrate-v1-config.sh --dry-run
 ```
 
-Report what it lists. If the user approves, run it without `--dry-run`. It
+The dry run writes nothing; record what it lists for the report. Do not run the
+converter during the audit — Phase 2 reads silently. The migration is
+classified BLOCKING in Phase 3, heads the plan, and **Phase 7 offers it as the
+first action**: report what the dry run listed, then ask "May I run the
+converter? It writes `project.yaml` and `production/migration-report.md`." If
+the user approves, run it without `--dry-run`. It
 writes `project.yaml` plus `production/migration-report.md` and **deletes
 nothing** — the whole operation stays reversible with `git checkout`.
 
@@ -323,7 +336,13 @@ For each affected GDD, list which sections are missing and the fix:
 2. Run `/architecture-review` → bootstraps `tr-registry.yaml`
 3. Run `/create-control-manifest` → creates manifest with version stamp
 4. Run `/sprint-plan update` → creates `sprint-status.yaml`
-5. Run `/gate-check [phase]` → writes `project.stage` in `project.yaml` (and legacy `stage.txt`) authoritatively
+5. Run `/gate-check [phase]` (the gate into the phase the project is in; at Concept there is none — Concept is the default stage, nothing to run) → writes `project.stage` in `project.yaml` (and legacy `stage.txt`) authoritatively
+
+**At `workflow: minimal` the plan prescribes none of this sequence.** None of it
+is on the minimal path: ADRs are not expected, the brief's build order is the
+plan (no `/sprint-plan`), and nothing there runs `/gate-check`. The plan's
+Step 3 says so in one line and names the path's next step instead —
+`/create-stories` when no stories exist, else `/dev-story`.
 
 **Existing stories** — note explicitly:
 > "Existing stories continue to work with all template skills — all new format
@@ -408,6 +427,10 @@ Re-run `/adopt` anytime to check remaining gaps.
 
 ## Step 3: Bootstrap Infrastructure
 
+[At `workflow: minimal`, replace 3a–3d with one line: "Not on the minimal path —
+the brief's build order is the plan. Next: `/create-stories` (or `/dev-story`
+once stories exist)."]
+
 ### 3a. Register existing requirements (creates tr-registry.yaml)
 Run `/architecture-review` — even if ADRs already exist, this run bootstraps
 the TR registry from your existing GDDs and ADRs.
@@ -425,7 +448,8 @@ Run `/sprint-plan update`
 - [ ] production/sprint-status.yaml created
 
 ### 3d. Set authoritative project stage
-Run `/gate-check [current-phase]`
+Run `/gate-check [current-phase]` (the gate into the phase the project is in;
+at Concept there is none — Concept is the default stage, nothing to run)
 **Time**: 5 min
 - [ ] `project.stage` in `project.yaml` written (legacy `production/stage.txt` also updated)
 
@@ -460,33 +484,19 @@ are resolved. The new run will reflect the current state of the project.
 
 ---
 
-## Phase 6b: Set Review Mode
+## Phase 6b: Report Review Mode
 
-After writing the adoption plan (or if the user cancels writing), check whether a
-review mode is already set — read `modes.review_mode` from `project.yaml` first,
-then legacy `production/review-mode.txt`.
+**Do not write a review mode.** `modes.review_mode` is one of the six knobs
+`modes.rigor` fronts: pinning it in `project.yaml` shadows the rigor expansion, and
+the legacy `production/review-mode.txt` sits *above* that expansion in resolution,
+so either write would freeze director-review depth for good — the rule `/start`
+and `project.yaml`'s header comment both state.
 
-**If a mode is already set**: Note the current mode — "Review mode is already set to `[current]`." — skip the prompt.
-
-**If no mode is set**: Use `AskUserQuestion`:
-
-- **Prompt**: "One more setup step: how much design review would you like as you work through the workflow?"
-- **Options**:
-  - `Full` — Director specialists review at each key workflow step. Best for teams, learning the workflow, or when you want thorough feedback on every decision.
-  - `Lean (recommended)` — Directors only at phase gate transitions (/gate-check). Skips per-skill reviews. Balanced for solo devs and small teams.
-  - `Solo` — No director reviews at all. Maximum speed. Best for game jams, prototypes, or if reviews feel like overhead.
-
-Write the choice immediately after selection — no separate "May I write?" needed.
-Dual-write:
-1. Set `modes.review_mode` in `project.yaml` (primary; add the `modes:` block if absent).
-2. Also write the single word to `production/review-mode.txt` (legacy fallback).
-
-Value mapping:
-- `Full` → `full`
-- `Lean (recommended)` → `lean`
-- `Solo` → `solo`
-
-Create the `production/` directory if it does not exist.
+Report the value the bootstrap above resolved instead: "Review mode resolves to
+`[value]` — from `modes.rigor`, unless something pins it." If the user wants a
+different depth, point them to changing `modes.rigor`, or to pinning it on purpose
+with `/settings --local modes.review_mode=<full|lean|solo>` (a personal override in
+`project.local.yaml`).
 
 ---
 
@@ -495,6 +505,11 @@ Create the `production/` directory if it does not exist.
 After writing the plan, don't stop there. Pick the single highest-priority gap
 and offer to handle it immediately using `AskUserQuestion`. Choose the first
 branch that applies:
+
+**If Phase 2g found a v1.0 project needing migration:** offer the converter run
+described there — report what the dry run listed and ask "May I run the
+converter? It writes `project.yaml` and `production/migration-report.md`."
+Every other fix reads config through it, so it comes first.
 
 **If there are parenthetical status values in systems-index.md:**
 Use `AskUserQuestion`:
@@ -522,6 +537,15 @@ Use `AskUserQuestion`:
   - "Yes — add Acceptance Criteria to [GDD filename] now"
   - "Do all [N] GDDs one by one"
   - "I'll handle GDDs myself"
+
+**Otherwise, if any BLOCKING or HIGH gap remains** (one no branch above names —
+e.g. a missing TR registry):
+Use `AskUserQuestion`:
+- "The most urgent remaining gap is [first BLOCKING or HIGH item in the plan] —
+  [one line on what it breaks]. Start on it now?"
+  - "Yes — start on [item]"
+  - "Show me that plan item first"
+  - "Done — leave me with the plan"
 
 **If no BLOCKING or HIGH gaps exist:**
 Use `AskUserQuestion`:

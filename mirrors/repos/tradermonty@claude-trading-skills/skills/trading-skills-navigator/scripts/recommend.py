@@ -286,7 +286,7 @@ PERSONAS: tuple[Persona, ...] = (
             "Satellite; no dedicated workflow shipped yet"
         ),
     ),
-    # Q10 — honest gap: strategy research / backtesting.
+    # Q10 — offline strategy research and evaluation of separately measured results.
     Persona(
         name="strategy-researcher",
         any_terms=(
@@ -318,10 +318,10 @@ PERSONAS: tuple[Persona, ...] = (
             "戦略を開発",
             "リサーチして",
         ),
-        gap_category="strategy-research",
+        primary="strategy-research-pipeline",
         rationale=(
-            "strategy researcher/developer — research & backtesting is the "
-            "Strategy Research area; no dedicated workflow shipped yet"
+            "strategy researcher/developer — offline candidate and hint research "
+            "followed by evaluation of separately measured backtest metrics"
         ),
     ),
     # Shapiro COT contrarian pipeline (Issue #244) — crowded futures
@@ -1114,6 +1114,15 @@ def recommend(
         rationale.append(f"matched persona: {matched.name} — {matched.rationale}")
         if matched.no_api:
             no_api = True
+        if matched.name == "strategy-researcher" and any(
+            term in norm for term in ("backtest", "back-test", "back test", "バックテスト")
+        ):
+            note = (
+                "This workflow does not execute a backtest. It evaluates metrics "
+                "computed by a separate backtest tool using historical data. "
+                "No-API path describes this workflow only; it does not verify "
+                "the separate tool's dependencies or data."
+            )
         if matched.gap_category is not None:
             honest_gap = True
             gap_category = matched.gap_category

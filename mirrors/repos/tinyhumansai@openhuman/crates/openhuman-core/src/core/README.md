@@ -1,21 +1,25 @@
 # core
 
-Transport, dispatch, the controller registry, the event bus, auth, the CLI,
-and runtime composition. `core/` is not a domain: it holds no business
+The controller contract, in-process dispatch, the controller registry, the
+event bus, auth, the CLI, and runtime composition. `core/` is not a domain: it holds no business
 logic. Every controller it exposes is implemented by a domain module under
 `crates/openhuman-core/src/<domain>/` and wired in here.
 
 ## Responsibilities
 
-- Define the transport-agnostic controller contract (`ControllerSchema`,
-  `FieldSchema`, `TypeSchema` in `mod.rs`) that both RPC and CLI invoke
-  against.
+- Define the transport-agnostic controller contract that both RPC and CLI
+  invoke against: `ControllerSchema`, `FieldSchema`, `TypeSchema` (`mod.rs`),
+  the [`Outcome`](outcome.rs) every operation returns, the structured error
+  envelope (`structured_error.rs`) and the params rules (`params.rs`).
 - Own the single registry of every controller (`all.rs`) and the coarse
   `DomainGroup` tagging that lets a runtime narrow its live surface.
-- Dispatch every RPC call through one tiered function (`dispatch.rs`).
+- Dispatch every call in-process through `invoke::invoke_method`, which
+  validates params, runs the tiered router (`dispatch.rs`) and publishes
+  `SessionExpired` on a confirmed expiry (`session_expiry.rs`).
 - Own the process-wide typed event bus (`bus.rs`, `events.rs`).
-- Serve JSON-RPC and Socket.IO over HTTP (`jsonrpc.rs`, `socketio.rs`) and
-  the equivalent CLI surface (`cli.rs` and friends).
+- Provide the CLI surface (`cli.rs` and friends). Serving JSON-RPC and
+  Socket.IO over HTTP is `openhuman-rpc`'s job; the CLI's `run` / `serve`
+  start it through the launcher a host installs (`server_launcher.rs`).
 - Seed and check the per-process RPC bearer token (`auth.rs`,
   `event_bind_tokens.rs`).
 - Compose an embeddable `CoreRuntime` from domain modules (`runtime/`) and
@@ -32,12 +36,16 @@ logic. Every controller it exposes is implemented by a domain module under
 | `dispatch.rs` | `dispatch()`: the 4-tier RPC router. |
 | `bus.rs` | The `BUS: OnceBus<DomainEvent>` singleton, `EVENTS_ROOT`/`EVENTS_INTERFACE`/`EVENTS_VERSION`, `init`/`init_over_socket`. |
 | `events.rs` | `DomainEvent`: the full event catalog, `domain()` routing. |
-| `jsonrpc.rs` | Axum router (`/rpc`, `/health`, `/schema`, `/events`, …), `invoke_method`, `run_server*` shims, `bootstrap_core_runtime`. |
-| `socketio.rs` | Socket.IO live-event bridge to the desktop shell. |
-| `auth.rs` | Per-process RPC bearer token: init paths, `get_rpc_token`, `rpc_auth_middleware`. |
+| `outcome.rs` | `Outcome<T>`, `apply_log_envelope`, `unwrap_rpc`: the controller result and its wire shape. |
+| `structured_error.rs` | `StructuredRpcError`: typed error envelope sentinel-encoded into a controller's `Err(String)`. |
+| `params.rs` | Params shape (`params_to_object`) and the validation messages `all::validate_params` emits, with their matcher. |
+| `invoke.rs` | `invoke_method` / `default_state`: in-process dispatch every transport and the CLI use. |
+| `session_expiry.rs` | `is_session_expired_error`: which failures mean the OpenHuman session expired. |
+| `server_launcher.rs` | `ServerLauncher` port the CLI `run` / `serve` subcommands start a server through. |
+| `auth.rs` | Per-process RPC bearer token: init paths, `get_rpc_token`, `verify_bearer_token`, `bearer_matches`. The HTTP route policy is `openhuman_rpc::server::auth`. |
 | `event_bind_tokens.rs` | Single-shot bind tokens for the `/events` SSE stream. |
 | `cli.rs`, `agent_cli.rs`, `memory_cli.rs`, `subsystems_cli.rs`, `cli_capability.rs` | CLI argument parsing and dispatch, routed through the same registry as RPC. |
-| `types.rs` | `AppState`, `HostKind`, `RpcRequest`/`RpcSuccess`/`RpcFailure`, `InvocationResult`, `approval_gate_boot_decision`. |
+| `types.rs` | `AppState`, `HostKind`, `InvocationResult`, `approval_gate_boot_decision`. |
 | `legacy_aliases.rs` | `resolve_legacy`: rewrites retired method names before dispatch; mirrors `app/src/services/rpcMethods.ts`'s `LEGACY_METHOD_ALIASES`. |
 | `observability.rs` | `report_error` + Sentry `before_send` filters that drop deterministic provider/updater noise. |
 | `log_redaction.rs` | `scrub_secrets`: regex secret scrubbing shared by the Sentry path and always-on log path. |
@@ -73,7 +81,7 @@ adds the two Tier-1 internal methods (`core.ping`, `core.version`) to the
 registered set for `/schema`.
 
 Wire controllers only through this registry: do not add namespace branches
-to `cli.rs` or `jsonrpc.rs`. RPC namespace strings are wire contracts and do
+to `cli.rs` or the JSON-RPC server. RPC namespace strings are wire contracts and do
 not follow directory renames.
 
 ## Dispatch
@@ -125,40 +133,23 @@ Each subscribing domain owns a `bus.rs`; subscriber names use
 
 ## RPC and HTTP transport
 
-`jsonrpc.rs` builds the Axum router (`build_core_http_router`) behind the
-`http-server` feature: `POST /rpc`, `GET /health`, `GET /schema`,
-`GET /events` (SSE), `GET /events/webhooks`, `GET /events/domain`,
-`GET /ws/dictation`, the `/auth`, `/auth/telegram`, and
-`/oauth/mcp/callback` callback routes, and a nested `/v1` OpenAI-compatible
-inference router (`inference::http`). The
-dispatch surface itself (`invoke_method`, `parse_json_params`,
-`default_state`, the `run_server*` `CoreBuilder` shims,
-`register_domain_subscribers`, `bootstrap_core_runtime`) stays compiled in a
-slim build with no listener bound, so the CLI and `CoreRuntime::invoke` keep
-working without the HTTP feature.
+Every transport resolves a method through `invoke::invoke_method`, which checks
+the registry schema, validates params
+(`all::validate_params`, messages from `params.rs`), dispatches, and on a
+confirmed session expiry publishes `DomainEvent::SessionExpired`.
+`CoreRuntime::invoke` wraps it for embedders; the CLI's `call` subcommand
+uses it directly.
 
-`socketio.rs` bridges live domain events onto Socket.IO for the desktop
-shell's webviews. The socketioxide/axum transport
-bodies are gated on `http-server`, but the payload types
-(`WebChannelEvent`, `TurnUsagePayload`, `SubagentUsagePayload`,
-`SubagentProgressDetail`) stay compiled in every build because roughly ten
-always-on domains construct them: a type carve-out, not a full gate. `pub
-mod socketio;` in `mod.rs` is deliberately ungated for the same reason.
-`COMPANION_STATE_BUS` is a broadcast channel for shell-originated companion
-lifecycle events that still need to reach the native macOS notch WKWebView,
-which has no Tauri IPC bridge and connects to the core's Socket.IO endpoint
-directly. `spawn_web_channel_bridge` spawns one forwarding task per source:
-web-chat events (`web_chat::subscribe_web_channel_events`, delivered to the
-initiating client's room and the `thread:<id>` room, not broadcast),
-dictation hotkeys and transcription results (`voice::dictation_listener`),
-overlay attention bubbles (`desktop::overlay::subscribe_attention_events`,
-see `desktop/overlay/README.md`), core notifications
-(`desktop::notifications`), and companion state. It also forwards a set of
-`DomainEvent`s read straight off `BUS`: session expiry, MCP setup secret
-requests, memory sync and tree-build progress, channel listener health, and
-active-workspace changes.
-Everything except web-chat is broadcast to every connected client, most under
-both a colon- and an underscore-separated event name.
+The HTTP and Socket.IO server that exposes these methods lives in
+`crates/openhuman-rpc` (`openhuman_rpc::server`): the axum router, `/rpc`,
+`/health`, `/schema`, `/events`, `/oauth/mcp/callback`, the SSE streams, auth
+middleware, CORS, Socket.IO and the listener bind. Host-owned `/auth` and
+`/auth/telegram` callbacks are not served by this router. It mounts the
+domain-owned HTTP handlers that stay here behind the `http-server` feature
+(`inference::http`'s `/v1` router, the
+dictation WebSocket in `voice::streaming`). `CoreRuntime` exposes the hooks
+the server needs around a listener (`start_services`, `listener_bound`,
+`serving_started`, `exit_cleanup`).
 
 ## Auth
 
@@ -168,8 +159,8 @@ order of preference: an in-memory handoff from the Tauri shell
 `OPENHUMAN_CORE_TOKEN` env var (operator-supplied for Docker/cloud), or a
 freshly generated token written to `{workspace_dir}/core.token`
 (owner-read-only) for standalone CLI clients. Once set, the `OnceLock` is
-the single source of truth for every transport: `rpc_auth_middleware`,
-Socket.IO, the SSE query-token fallback, and the approval-gate session id.
+the single source of truth for every transport: the HTTP auth middleware
+in `openhuman-rpc`, Socket.IO, the SSE query-token fallback, and the approval-gate session id.
 `event_bind_tokens.rs` mints the separate short-lived, single-shot tokens
 `/events` needs because browser `EventSource` cannot send an `Authorization`
 header.
@@ -188,6 +179,11 @@ which bound memory driver does not advertise which family) so a human does
 not mistake silence for a typo. It resolves the binding itself because plain
 CLI invocations never build a `CoreContext`, so the ambient gate would
 answer "everything allowed".
+
+`run` / `serve` start the JSON-RPC server through the launcher a host
+installs in `server_launcher.rs` (`openhuman_rpc::server::install_cli_server`
+in the `openhuman-core` binary and the desktop app); without one they fail
+and say so.
 
 ## `runtime/` and `subsystem/`
 
@@ -210,12 +206,15 @@ projection backs the `subsystems` RPC namespace and the `openhuman
 subsystems` CLI table. Later subsystems (inference, channels, sandbox) are
 expected to reuse the same registry rather than invent their own.
 
-## `crate::rpc`
+## The controller contract
 
-`crate::rpc` is `pub use openhuman_rpc as rpc;` (see `lib.rs`), so
-`crate::rpc::RpcOutcome`, `StructuredRpcError`, and `apply_log_envelope` are
-the same types `crates/openhuman-rpc` exposes to `openhuman-app` and
-`openhuman-tui`. There is no separate RPC contract layer under `core/`.
+`Outcome<T>` (`outcome.rs`) is what every domain operation returns: a value
+plus log lines, turned into JSON by `Outcome::into_cli_compatible_json`,
+whose shape `apply_log_envelope` decides. `StructuredRpcError`
+(`structured_error.rs`) is the typed error a controller can return through
+its `Err(String)` channel, and `params.rs` defines the params shape and the
+validation messages. They live in core so every domain and host shares one
+definition; `crates/openhuman-rpc` depends on core for them.
 
 ## A note on `#![recursion_limit = "256"]`
 

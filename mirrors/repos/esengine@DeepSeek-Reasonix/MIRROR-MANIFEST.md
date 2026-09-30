@@ -7,7 +7,7 @@ ref: studio
 
 # Mirror Manifest
 
-Mirror of `esengine/DeepSeek-Reasonix` — 26 default patterns, 0 followed patterns, 3 file(s) materialized.
+Mirror of `esengine/DeepSeek-Reasonix` — 26 default patterns, 0 followed patterns, 4 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `esengine/DeepSeek-Reasonix` — 26 default patterns, 0 followed patte
 | Ref           | `studio` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 3 |
+| Files         | 4 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -61,7 +61,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 3 | ✓ | [`internal/ext/skill/builtincontent/reasonix-guide/SKILL.md`](internal/ext/skill/builtincontent/reasonix-guide/SKILL.md) |
+| 3 | ✓ | [`examples/release-note-kit/skills/release-note/SKILL.md`](examples/release-note-kit/skills/release-note/SKILL.md) |
+| 4 | ✓ | [`internal/ext/skill/builtincontent/reasonix-guide/SKILL.md`](internal/ext/skill/builtincontent/reasonix-guide/SKILL.md) |
 
 ---
 

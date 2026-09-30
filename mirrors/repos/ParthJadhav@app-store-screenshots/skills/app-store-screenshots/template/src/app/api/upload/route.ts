@@ -3,6 +3,9 @@ import { promises as fs } from "node:fs";
 import path from "node:path";
 import { NextResponse } from "next/server";
 import { rejectCrossSiteWrite, sniffImageType } from "@/lib/request-guard";
+import sharp from "sharp";
+import { decodeBase64, readJsonBody } from "@/lib/request-body";
+import { writeAsset } from "@/lib/write-asset";
 
 export const dynamic = "force-dynamic";
 
@@ -19,8 +22,8 @@ function parseDataUrl(dataUrl: string): { mime: string; bytes: Buffer } | null {
   const m = /^data:([^;]+);base64,(.+)$/.exec(dataUrl);
   if (!m) return null;
   const mime = m[1].toLowerCase();
-  const bytes = Buffer.from(m[2], "base64");
-  return { mime, bytes };
+  const bytes = decodeBase64(m[2]);
+  return bytes ? { mime, bytes } : null;
 }
 
 export async function POST(req: Request) {
@@ -29,12 +32,9 @@ export async function POST(req: Request) {
   if (blocked) {
     return NextResponse.json({ ok: false, error: blocked.error }, { status: blocked.status });
   }
-  let body: { dataUrl?: string };
-  try {
-    body = (await req.json()) as { dataUrl?: string };
-  } catch {
-    return NextResponse.json({ ok: false, error: "Invalid JSON" }, { status: 400 });
-  }
+  const input = await readJsonBody(req, 12 * 1024 * 1024);
+  if (input.response) return input.response;
+  const body = input.value as { dataUrl?: string } | null;
   if (!body?.dataUrl || typeof body.dataUrl !== "string") {
     return NextResponse.json({ ok: false, error: "Missing dataUrl" }, { status: 400 });
   }
@@ -62,6 +62,13 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: false, error: "Image too large (>8MB)" }, { status: 413 });
   }
 
+  try {
+    // Decode pixels too: valid headers alone still accept truncated images.
+    await sharp(parsed.bytes, { limitInputPixels: 64 * 1024 * 1024, failOn: "warning" }).stats();
+  } catch {
+    return NextResponse.json({ ok: false, error: "Image is corrupt or exceeds 64 megapixels" }, { status: 400 });
+  }
+
   const hash = createHash("sha1").update(parsed.bytes).digest("hex").slice(0, 16);
   const filename = `${hash}.${ext}`;
   const absDir = path.join(process.cwd(), UPLOAD_DIR_REL);
@@ -69,11 +76,7 @@ export async function POST(req: Request) {
 
   try {
     await fs.mkdir(absDir, { recursive: true });
-    try {
-      await fs.access(absFile);
-    } catch {
-      await fs.writeFile(absFile, parsed.bytes);
-    }
+    await writeAsset(absFile, parsed.bytes);
     return NextResponse.json({ ok: true, path: `${PUBLIC_PREFIX}/${filename}` });
   } catch (e) {
     return NextResponse.json(

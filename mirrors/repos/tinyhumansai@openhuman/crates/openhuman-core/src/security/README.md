@@ -72,7 +72,7 @@ AppContainer backend. The two domains are not interchangeable.
   4-char-prefix redaction for logs.
 - `pub use ops as rpc`: `ops.rs`'s `security_policy_info_for_config(&Config)`
   and `load_and_get_security_policy_info()` return
-  `RpcOutcome<serde_json::Value>` and back the `security.policy_info` RPC
+  `Outcome<serde_json::Value>` and back the `security.policy_info` RPC
   function; `tools.rs` exposes the same read to the agent.
 
 ## The policy is off by default
@@ -144,7 +144,7 @@ a feature work:
   `security/approval/gate.rs`'s
   `DEFAULT_APPROVAL_TTL` is 10 minutes and a timed-out park returns `Deny`;
   `approval_gate_boot_decision` (`core/types.rs`, applied in
-  `core/jsonrpc.rs`) always installs the gate for `HostKind::TauriShell` and
+  `core/runtime/bootstrap.rs`) always installs the gate for `HostKind::TauriShell` and
   ignores `OPENHUMAN_APPROVAL_GATE=0` there. Only CLI, Docker, and library
   hosts may opt out.
 

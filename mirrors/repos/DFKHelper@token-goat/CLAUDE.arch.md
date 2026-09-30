@@ -36,9 +36,7 @@ token-goat is a TypeScript CLI bundled to `dist/token-goat.mjs` via esbuild. The
 | [`src/parser_types.ts`](src/parser_types.ts) | Shared types: `SymbolEntry`, `RefEntry`, `FileIndexEntry`, `Language` union (27 values plus `unknown`), `EXTENSION_LANGUAGE`, `FILENAME_LANGUAGE`, `detectLanguage()` |
 | [`src/parser.ts`](src/parser.ts) | Tree-sitter orchestration and all symbol/ref/section extraction. Inline tree-sitter extractors for TypeScript/JavaScript, Python, Go, Rust, Ruby, Java, and C/C++; regex/pattern extractors (inline) for Markdown, JSON, YAML, TOML, CSS, and Dockerfile; regex adapters (from `src/languages/registry.ts`, reached through the dynamic `loadRegexExtractors()` so hooks never compile them) for C#, PHP, HTML, Liquid, Kotlin, GraphQL, SQL, INI, Makefile, Proto, and `.env`. Main entry points: `indexFileSync()` (sync, called by worker drain), `parseFile()` (async, calls `parseContent()` then `writeParseResult()`) |
 | [`src/reconcile.ts`](src/reconcile.ts) | Catch-up reconciliation: detect index drift caused by edits token-goat never saw. |
-| [`src/worker.ts`](src/worker.ts) | Dirty-queue consumer — `runWorkerLoop()` polls every 2000 ms by default (`resolvePollIntervalMs()` in `worker_lifecycle.ts`); `drainOnce()` calls `processDirtyBatch()`, which SHA-checks each dirty file then calls `makeIndexer(dbPath)` (production default: `globalDbPath()`); can run as a Node.js Worker Thread or as a detached child process. Also runs periodic housekeeping in the same loop: snapshot cleanup and a daily `sweepKnownRoots()` pass (see `index_prune.ts`) that prunes dead file rows for known project roots |
-| [`src/worker_lifecycle.ts`](src/worker_lifecycle.ts) | The daemon's controls, kept out of `worker.ts` so the hook bundle loads them without the drain: `startDetachedWorker()`, `stopWorker()`, `isWorkerRunning()`, `ensureWorkerAlive()`, the pid and stamp files, the drain heartbeat, the error log, and the poll interval (`DEFAULT_POLL_INTERVAL_MS`, 2000 ms) |
-| [`src/dirty_queue.ts`](src/dirty_queue.ts) | `queue/dirty.txt` itself: `dirtyQueuePathFor()`, the line codec, `parseDirtyQueueLines()` and `getDirtyPathsFor()` for readers, and `appendDirtyQueuePaths()`, the one append every producer goes through |
+| [`src/worker.ts`](src/worker.ts) | Dirty-queue consumer — `runWorkerLoop()` sleeps up to 2000 ms between drains by default (`resolvePollIntervalMs()` in `worker_lifecycle.ts`), and `queue_waker.ts` ends that sleep as soon as a producer appends to the queue; `drainOnce()` calls `processDirtyBatch()`, which SHA-checks each dirty file then calls `makeIndexer(dbPath)` (production default: `globalDbPath()`); can run as a Node.js Worker Thread or as a detached child process. Also runs periodic housekeeping in the same loop: snapshot cleanup and a daily `sweepKnownRoots()` pass (see `index_prune.ts`) that prunes dead file rows for known project roots |
 
 **Storage and Database**
 
@@ -48,8 +46,8 @@ token-goat is a TypeScript CLI bundled to `dist/token-goat.mjs` via esbuild. The
 | [`src/db.ts`](src/db.ts) | SQLite connection cache (`getDb()`/`closeDb()`/`closeAllDbs()`); `initConnection()` applies WAL, `SCHEMA_SQL` (files/symbols/refs/chunks), `FTS_SQL` (symbols_fts FTS5 virtual table plus sync triggers), and optional sqlite-vec `chunk_vectors` table |
 | [`src/index_reader.ts`](src/index_reader.ts) | Query layer over the index DB: `querySymbols()`, `queryRefs()`, `getFileEntry()`, `searchSymbolsFts()` |
 | [`src/section_reader.ts`](src/section_reader.ts) | Section/heading extraction (`readSection()`, `listAllSections()`) for `token-goat section` |
-| [`src/stats.ts`](src/stats.ts) | The `stats` table in `global.db`: `recordStat()` writes a row, `summarize()` aggregates them; the report itself is rendered by `stats_report.ts` |
 | [`src/stats_report.ts`](src/stats_report.ts) | Renders `token-goat stats` from a `summarize()` result: `renderStats()` / `renderShortStats()` print plain text to a pipe and the rich ANSI panel (`render/stats_renderer.ts`) to a terminal. Kept apart from `stats.ts` so the hooks, which record a stat on nearly every call, never load the renderer |
+| [`src/stats.ts`](src/stats.ts) | The `stats` table in `global.db`: `recordStat()` writes a row, `summarize()` aggregates them; the report itself is rendered by `stats_report.ts` |
 
 **Embeddings and Semantic Search**
 
@@ -58,9 +56,12 @@ token-goat is a TypeScript CLI bundled to `dist/token-goat.mjs` via esbuild. The
 | [`src/embed_backfill.ts`](src/embed_backfill.ts) | One-time-per-release sweep that deletes chunk rows an already-indexed file would no longer be allowed to contribute. |
 | [`src/embed_fingerprint.ts`](src/embed_fingerprint.ts) | Exports: `EMBED_FINGERPRINT` |
 | [`src/embed_model.ts`](src/embed_model.ts) | The embedding backend: fetch the pinned model, verify it, run it, pool it. |
+| [`src/embed_preflight.ts`](src/embed_preflight.ts) | Whether semantic search can run now, and when it cannot because the embedding model has not downloaded, why and what fixes it. |
+| [`src/embed_runtime_web.ts`](src/embed_runtime_web.ts) | Getting the WebAssembly build of ONNX Runtime running. |
+| [`src/embed_runtime.ts`](src/embed_runtime.ts) | Which ONNX Runtime build runs the embedding model, and getting it running. |
 | [`src/embed_stamp.ts`](src/embed_stamp.ts) | Resolves which extraction kind a file's embedding stamp belongs to, and which digest from `embed_fingerprint.ts` that kind carries. |
 | [`src/embed_tokenizer.ts`](src/embed_tokenizer.ts) | A BERT WordPiece tokenizer for exactly the spec `bge-small-en-v1.5`'s `tokenizer.json` declares: BertNormalizer(clean_text, handle_chinese_chars, strip_accents=null, lowercase=true |
-| [`src/embeddings.ts`](src/embeddings.ts) | [`src/embed_model.ts`](src/embed_model.ts) (pinned `Xenova/bge-small-en-v1.5`, 384 dimensions, over `onnxruntime-node`) and [`src/embed_tokenizer.ts`](src/embed_tokenizer.ts); `chunkFile()` splits source into overlapping windows; `upsertChunks()` writes to `chunks` and `chunk_vectors`; `searchSemantic()` queries `chunk_vectors` via vec0 KNN |
+| [`src/embeddings.ts`](src/embeddings.ts) | [`src/embed_model.ts`](src/embed_model.ts) (pinned `Xenova/bge-small-en-v1.5`, 384 dimensions; hashed into EMBED_FINGERPRINT) over [`src/embed_runtime.ts`](src/embed_runtime.ts) (unhashed: native `onnxruntime-node` when it loads, else the bundled `onnxruntime-web` WASM build whose `.wasm` is fetched once, SHA-pinned, by [`src/embed_runtime_web.ts`](src/embed_runtime_web.ts) behind a dynamic import; the runtime's name and major.minor go in the provenance stamp instead), downloads through [`src/pinned_file.ts`](src/pinned_file.ts) (its fetch in [`src/pinned_fetch.ts`](src/pinned_fetch.ts), also lazy), and [`src/embed_tokenizer.ts`](src/embed_tokenizer.ts); `chunkFile()` splits source into overlapping windows; `upsertChunks()` writes to `chunks` and `chunk_vectors`; `searchSemantic()` queries `chunk_vectors` via vec0 KNN |
 
 **Paths, Filesystem, and Project Detection**
 
@@ -111,10 +112,11 @@ token-goat is a TypeScript CLI bundled to `dist/token-goat.mjs` via esbuild. The
 
 | Module | Role |
 |--------|------|
+| [`src/compact_dropped.ts`](src/compact_dropped.ts) | The paths a compaction summary left out, kept beside the session so the resume packet can name them. |
 | [`src/compact.ts`](src/compact.ts) | `buildManifest()` / `buildManifestAdaptive()` — load the session JSON cache and produce a structured PreCompact manifest; `computeAdaptiveBudget()` scales the token budget by session age and edit density |
 | [`src/resume.ts`](src/resume.ts) | Post-compact recovery resume logic |
-| [`src/session_audit.ts`](src/session_audit.ts) | Corpus-wide session audit: streams every Claude Code transcript (JSONL) under a corpus root (default `~/.claude/projects`) and reports where the tokens actually went. |
 | [`src/session_audit_report.ts`](src/session_audit_report.ts) | Plain-text rendering of the summary `session_audit.ts` builds, for `token-goat session-audit`. The `--json` form prints that same summary without passing through here. |
+| [`src/session_audit.ts`](src/session_audit.ts) | Corpus-wide session audit: streams every Claude Code transcript (JSONL) under a corpus root (default `~/.claude/projects`) and reports where the tokens actually went. |
 | [`src/session_read.ts`](src/session_read.ts) | Surgical reads over Claude Code's own session JSONL transcripts (files like `~/.claude/projects/<project-slug>/<session-id>.jsonl`). |
 | [`src/session_store_schema.ts`](src/session_store_schema.ts) | Session store and database schema catalog, discovery, and runtime error diagnostics. |
 | [`src/session_store.ts`](src/session_store.ts) | Persists session state across the per-tool-call hook processes: `loadSessionState()` / `saveSessionState()` (one JSON per session under `sessions/`), wired into [`src/relay.ts`](src/relay.ts). Fail-soft + merge-on-save |
@@ -135,6 +137,7 @@ token-goat is a TypeScript CLI bundled to `dist/token-goat.mjs` via esbuild. The
 | [`src/read_refs.ts`](src/read_refs.ts) | The `refs` command: every call site of a symbol, found by name in the index, narrowed by the TypeScript checker when the definition is a single TypeScript symbol, and printed per line, grouped by caller, or ranked by file with `--top`. |
 | [`src/read_section.ts`](src/read_section.ts) | Surgical read implementation for section |
 | [`src/read_semantic.ts`](src/read_semantic.ts) | The `semantic` command: a dense embedding search fused with a BM25 keyword pass by reciprocal rank, each hit tagged with the symbol that encloses it. |
+| [`src/read_shape.ts`](src/read_shape.ts) | What the session's last Read of each file actually delivered, when that was less than the whole file, kept beside the session so a later Edit of the file can be booked against it. |
 | [`src/read_spec.ts`](src/read_spec.ts) | Surgical read implementation for spec |
 | [`src/read_structured_data.ts`](src/read_structured_data.ts) | Surgical read implementation for structured_data |
 | [`src/read_suggest.ts`](src/read_suggest.ts) | Surgical read implementation for suggest |
@@ -149,11 +152,15 @@ token-goat is a TypeScript CLI bundled to `dist/token-goat.mjs` via esbuild. The
 
 | Module | Role |
 |--------|------|
+| [`src/bridges/antigravity_hooks.ts`](src/bridges/antigravity_hooks.ts) | Wire-format shaping for the Antigravity CLI (agy 1.2.11). |
+| [`src/bridges/antigravity_install.ts`](src/bridges/antigravity_install.ts) | Antigravity CLI (`agy`) hook integration. |
 | [`src/bridges/claudecode.ts`](src/bridges/claudecode.ts) | Claude Code hook script template and install config |
 | [`src/bridges/codex_install.ts`](src/bridges/codex_install.ts) | Codex CLI install / uninstall writer. |
 | [`src/bridges/codex.ts`](src/bridges/codex.ts) | Codex hook script template; `hookSpecificOutput: true` (Codex schemas use `additionalProperties: false`) |
 | [`src/bridges/copilot_cli_install.ts`](src/bridges/copilot_cli_install.ts) | Copilot CLI install/uninstall wiring. |
 | [`src/bridges/copilot_cli.ts`](src/bridges/copilot_cli.ts) | Copilot CLI hook shim. |
+| [`src/bridges/copilot_hooks_owners.ts`](src/bridges/copilot_hooks_owners.ts) | The owner record for a Copilot hooks directory, split out of copilot_cli_install.ts so the hook path (vscode_duplicate.ts) can read it without loading the installer and everything |
+| [`src/bridges/copilot_mcp_install.ts`](src/bridges/copilot_mcp_install.ts) | Copilot CLI MCP-server registration: the `mcpServers.token-goat` entry in `<COPILOT_HOME>/mcp-config.json` (else `~/.copilot/mcp-config.json`), which `token-goat install --copilot` |
 | [`src/bridges/created_configs.ts`](src/bridges/created_configs.ts) | A record of the config files token-goat itself created, so uninstall can delete one it created and never one that was already the user's. |
 | [`src/bridges/cursor_install.ts`](src/bridges/cursor_install.ts) | Cursor MCP-server installer. |
 | [`src/bridges/detect_ecosystems.ts`](src/bridges/detect_ecosystems.ts) | Harness bridge integration and hook configuration for detect_ecosystems |
@@ -408,8 +415,10 @@ token-goat is a TypeScript CLI bundled to `dist/token-goat.mjs` via esbuild. The
 | [`src/confirm_apply.ts`](src/confirm_apply.ts) | Small, reusable diff-preview + confirm-before-write helper. |
 | [`src/conflict_query.ts`](src/conflict_query.ts) | Unresolved git merge-conflict marker extraction (`token-goat conflicts`). |
 | [`src/content_store.ts`](src/content_store.ts) | Local, bounded storage for generic compressed text and named handoffs. |
+| [`src/copilot_home.ts`](src/copilot_home.ts) | Exports: `copilotCliUserRoot` |
 | [`src/copilot_mcp_names.ts`](src/copilot_mcp_names.ts) | Canonicalise Copilot CLI's MCP tool names into the `mcp__<server>__<tool>` shape every MCP-aware hook in token-goat gates on. |
 | [`src/copilot_mcp_tools.ts`](src/copilot_mcp_tools.ts) | Reads Copilot CLI's on-disk MCP tool-definition cache. |
+| [`src/copilot_skill_path.ts`](src/copilot_skill_path.ts) | Exports: `copilotSkillPath` |
 | [`src/copilot_tool_names.ts`](src/copilot_tool_names.ts) | Copilot CLI's built-in tool names, mapped to the canonical token-goat names every hook gates on. |
 | [`src/copilot_waste.ts`](src/copilot_waste.ts) | Waste analysis for Copilot CLI sessions. |
 | [`src/coverage_query.ts`](src/coverage_query.ts) | Narrow "gaps only" extraction for `token-goat coverage-report-gaps`, so a code-coverage report (which can run to tens of thousands of lines for a real project) never needs a full ` |
@@ -417,9 +426,11 @@ token-goat is a TypeScript CLI bundled to `dist/token-goat.mjs` via esbuild. The
 | [`src/delivering_deny.ts`](src/delivering_deny.ts) | The wording that marks a token-goat deny as the delivery of content rather than a refusal. |
 | [`src/delivery_cap.ts`](src/delivery_cap.ts) | Exports: `CLAUDE_CODE_BASH_OUTPUT_CAP_BYTES`, `bashOutputCapBytes`, `clipToDeliveryCap`, `deliveredOutputBytes` |
 | [`src/dep_docs.ts`](src/dep_docs.ts) | `token-goat dep-docs <package>` — surgical read for an installed npm dependency. |
+| [`src/dirty_queue.ts`](src/dirty_queue.ts) | `queue/dirty.txt` itself: `dirtyQueuePathFor()`, the line codec, `parseDirtyQueueLines()` and `getDirtyPathsFor()` for readers, and `appendDirtyQueuePaths()`, the one append every producer goes through |
 | [`src/doc_comment.ts`](src/doc_comment.ts) | Shared doc-comment recovery, used by both the tree-sitter parser (`parser.ts`) and the regex-based language adapters (`languages/common.ts`). |
 | [`src/doc_compact.ts`](src/doc_compact.ts) | Stable-doc compact serving for large reference docs. |
 | [`src/doc_embed_extract.ts`](src/doc_embed_extract.ts) | Extracted-text bridge from the binary-document readers (pdf, docx, pptx, xlsx) into the embeddings/chunking pipeline, so `token-goat semantic` can answer questions from spec PDFs, |
+| [`src/doctor_probe.ts`](src/doctor_probe.ts) | `token-goat doctor --probe <harness>`: start the harness headless on one real prompt with a probe nonce set, then read back which of token-goat's context hooks fired and whether wh |
 | [`src/doctor_result.ts`](src/doctor_result.ts) | The shape every doctor check returns. |
 | [`src/document_refusal.ts`](src/document_refusal.ts) | How long any one document's extraction may run, whatever format it is. |
 | [`src/docx_extract.ts`](src/docx_extract.ts) | Word (.docx) narrow-slice reader. |
@@ -427,6 +438,7 @@ token-goat is a TypeScript CLI bundled to `dist/token-goat.mjs` via esbuild. The
 | [`src/embedding_boundaries.ts`](src/embedding_boundaries.ts) | Exports: `buildEmbeddingBoundaries` |
 | [`src/emit.ts`](src/emit.ts) | The two writers every command surface uses to put its result on stdout and its diagnostics on stderr. |
 | [`src/encoding.ts`](src/encoding.ts) | Source file character encoding and BOM detection / transcoding. |
+| [`src/env_proxy.ts`](src/env_proxy.ts) | Completes the proxy settings the background worker starts with, so its downloads go through a proxy the machine already names. |
 | [`src/evidence_cache.ts`](src/evidence_cache.ts) | Exports: `EvidenceRepresentation`, `EvidenceEntry`, `recordEvidence`, `findVerifiedFileEvidence` |
 | [`src/failures_state.ts`](src/failures_state.ts) | Cross-invocation state for `token-goat failures --delta` -- persists the failure-signature set (test names / summary lines, see `failures.ts::failureSignatures`) from the last `fai |
 | [`src/failures.ts`](src/failures.ts) | Extract failing test blocks from test runner output. |
@@ -457,10 +469,12 @@ token-goat is a TypeScript CLI bundled to `dist/token-goat.mjs` via esbuild. The
 | [`src/index_reclaim.ts`](src/index_reclaim.ts) | Index-space reclamation (`token-goat reclaim-index`). |
 | [`src/indexed_source.ts`](src/indexed_source.ts) | Resolves the document a stored symbol line range actually addresses. |
 | [`src/injection_scan.ts`](src/injection_scan.ts) | Lexical scan for prompt-injection attack patterns in untrusted fetched content. |
+| [`src/install_index.ts`](src/install_index.ts) | First index of the project `install` runs in. |
 | [`src/known_roots.ts`](src/known_roots.ts) | Exports: `isTooShallowToPrune`, `recordKnownRoot`, `sweepExpiredKnownRootMarkers`, `recordKnownRootThrottled` |
 | [`src/language_specs.ts`](src/language_specs.ts) | The one table of languages token-goat indexes. |
 | [`src/lazy_module.ts`](src/lazy_module.ts) | Shared factory for the "lazily load an optional npm dependency" pattern used by every optional-dependency reader (pdf_extract.ts, xlsx_extract.ts, ooxml_extract.ts, screenshot.ts, |
 | [`src/line_regions.ts`](src/line_regions.ts) | Maps a requested line span onto the file regions that cover it. |
+| [`src/listing_size.ts`](src/listing_size.ts) | `token-goat listing-size`: price the skill and agent listings Claude Code puts in context. |
 | [`src/manifest.ts`](src/manifest.ts) | The compaction manifest: what this session touched, rendered for whoever reads it next. |
 | [`src/markdown_lines.ts`](src/markdown_lines.ts) | Iterate markdown lines, skipping fenced-code-block content (``` or ~~~ blocks) and the fence delimiter lines themselves, so a `#` comment inside a code fence is never mistaken for |
 | [`src/mcp_compress_packs.ts`](src/mcp_compress_packs.ts) | Schema-aware compression packs for two specific MCP servers, layered on top of {@link mcp_compress.ts}'s generic structural pass. |
@@ -469,8 +483,10 @@ token-goat is a TypeScript CLI bundled to `dist/token-goat.mjs` via esbuild. The
 | [`src/mcp_stdio.ts`](src/mcp_stdio.ts) | The stdio transport for token-goat's MCP server -- newline-delimited JSON over the process's own stdin and stdout, which is the only transport `token-goat mcp-serve` has ever offer |
 | [`src/mcp_tool_pattern.ts`](src/mcp_tool_pattern.ts) | The `toolPattern` every MCP tool name matches, shared by hooks_mcp.ts's registerHook calls and cli_doctor.ts's unmapped-tools cleanup so the two can never drift into two different |
 | [`src/memory_prune.ts`](src/memory_prune.ts) | Automatic pruning and analysis of Claude Code's native auto-memory store. |
+| [`src/model_download_gate.ts`](src/model_download_gate.ts) | Remembers a download that could not reach its host, so the next caller waits it out instead of repeating it. |
 | [`src/modules.ts`](src/modules.ts) | Module detection over the project's internal import graph. |
 | [`src/native_hook.ts`](src/native_hook.ts) | The native hook client (native/tg-hook) as installers and `doctor` see it: where this install's binary is, whether an install should wire it, the command lines that put it in front |
+| [`src/nested_worktrees.ts`](src/nested_worktrees.ts) | Git linked worktrees that sit inside a project's own directory, and the SQL that keeps their rows out of that project's queries. |
 | [`src/notebook_compact.ts`](src/notebook_compact.ts) | Strip cell outputs from Jupyter notebooks to reduce token burn. |
 | [`src/notes.ts`](src/notes.ts) | Architecture-notes storage layer. |
 | [`src/ocr_hashes.ts`](src/ocr_hashes.ts) | Exports: `OcrLangSpec`, `ocrLangPath`, `OCR_LANG_HASHES`, `SUPPORTED_OCR_LANGS` |
@@ -481,12 +497,16 @@ token-goat is a TypeScript CLI bundled to `dist/token-goat.mjs` via esbuild. The
 | [`src/own_lookup.ts`](src/own_lookup.ts) | Own-property lookup for plain-object maps whose keys arrive from outside this process. |
 | [`src/path_containment.ts`](src/path_containment.ts) | Path canonicalization and the symlink-resolving containment test. |
 | [`src/pending_context.ts`](src/pending_context.ts) | Deferred hint delivery, for harnesses that run a prompt-submit hook but discard its response. |
+| [`src/pinned_fetch.ts`](src/pinned_fetch.ts) | Hashing, copying and downloading files pinned by digest and length. |
+| [`src/pinned_file.ts`](src/pinned_file.ts) | Files held to a SHA-256 and byte length recorded in this repository. |
 | [`src/pptx_extract.ts`](src/pptx_extract.ts) | PowerPoint (.pptx) narrow-slice reader. |
 | [`src/pr_slice.ts`](src/pr_slice.ts) | Surgical GitHub PR reads via the `gh` CLI. |
+| [`src/probe_marker.ts`](src/probe_marker.ts) | The hook half of `token-goat doctor --probe`. |
 | [`src/process_priority.ts`](src/process_priority.ts) | Scheduling priority for the processes that index. |
 | [`src/process_util.ts`](src/process_util.ts) | Process and OS execution utilities. |
 | [`src/purge.ts`](src/purge.ts) | `uninstall --purge`: delete everything token-goat has written to disk. |
 | [`src/query_limits.ts`](src/query_limits.ts) | The sentinel that means "no cap" in a `LIMIT ?` bound parameter. |
+| [`src/queue_waker.ts`](src/queue_waker.ts) | Ends the worker's between-drain sleep when another process appends to `queue/dirty.txt` (fs.watch on the queue directory, timer fallback); the worker's own requeues keep their pacing. |
 | [`src/recall_index.ts`](src/recall_index.ts) | Cross-cache full-text search index for `token-goat recall`. |
 | [`src/ref_blindness.ts`](src/ref_blindness.ts) | Honest answers for questions the reference index cannot answer. |
 | [`src/regex_guard.ts`](src/regex_guard.ts) | Refusing a regular expression that can stall the process that runs it. |
@@ -502,6 +522,7 @@ token-goat is a TypeScript CLI bundled to `dist/token-goat.mjs` via esbuild. The
 | [`src/sharepoint_resolve.ts`](src/sharepoint_resolve.ts) | Best-effort resolution of a SharePoint/OneDrive sharing URL to a local synced file path, so `token-goat` can read a document an agent was only given a share link for instead of fai |
 | [`src/shell.ts`](src/shell.ts) | Exports: `locateBashOnPath`, `resolveWindowsBash`, `wrappedShell`, `canRunWrappedShell` |
 | [`src/skill_version_drift.ts`](src/skill_version_drift.ts) | Session-scoped nudge for token-goat's own version drift. |
+| [`src/spec_path.ts`](src/spec_path.ts) | `expandSpecPath()` and `resolveSpecPath()`: `~` and Windows shell mount paths in a typed file spec, shared by every file-spec command and its MCP tool. |
 | [`src/sql_path.ts`](src/sql_path.ts) | Exports: `pathEqClause`, `pathSuffixClause`, `projectScopeClause` |
 | [`src/stdin_json.ts`](src/stdin_json.ts) | Reading a JSON payload off stdin, with a timeout and a byte cap. |
 | [`src/symbol_body_probe.ts`](src/symbol_body_probe.ts) | Doctor's oversized-stored-body check, hosted outside cli_doctor.ts. |
@@ -522,6 +543,7 @@ token-goat is a TypeScript CLI bundled to `dist/token-goat.mjs` via esbuild. The
 | [`src/walk_mode.ts`](src/walk_mode.ts) | Git-vs-non-git detection for the indexer's walk mode. |
 | [`src/waste.ts`](src/waste.ts) | Session spend-ledger: parses a Claude Code session transcript (JSONL) and attributes token cost per tool call, per tool name, and per file, then flags a few concrete waste signals. |
 | [`src/web_extract.ts`](src/web_extract.ts) | HTML -> clean text extraction for fetched web content, so a `WebFetch` body never lands in context as raw markup. |
+| [`src/worker_lifecycle.ts`](src/worker_lifecycle.ts) | The daemon's controls, kept out of `worker.ts` so the hook bundle loads them without the drain: `startDetachedWorker()`, `stopWorker()`, `isWorkerRunning()`, `ensureWorkerAlive()`, the pid and stamp files, the drain heartbeat, the error log, and the poll interval (`DEFAULT_POLL_INTERVAL_MS`, 2000 ms) |
 | [`src/xlsx_extract.ts`](src/xlsx_extract.ts) | Excel (.xlsx) narrow-slice reader. |
 | [`src/xlsx_reader.ts`](src/xlsx_reader.ts) | Minimal in-house SpreadsheetML (.xlsx) reader. |
 | [`src/zip_bounds.ts`](src/zip_bounds.ts) | Shared decompression bounds for zip-format archives (.zip/.jar/.whl/.vsix/.nupkg, and the .docx/.pptx/.xlsx OOXML formats, which are all ZIP containers under the hood). |
@@ -557,7 +579,7 @@ All index data and stats live in a single `global.db`. [`src/db.ts`](src/db.ts) 
 | `sessions/{session_id}.json` | Per-session state persisted across hook processes by [`src/session_store.ts`](src/session_store.ts) (loaded/saved in [`src/relay.ts`](src/relay.ts)): file reads, edits, web-fetch index, bash-output index, curl downloads, shown hints |
 | `projects/{hash}/sessions/` | Session manifest JSON files written by [`src/compact.ts`](src/compact.ts) for the PreCompact hook |
 | `projects/{hash}_memory.toml` | Project-scoped key-value memory written by [`src/project_memory.ts`](src/project_memory.ts) |
-| `queue/dirty.txt` | Append-only list of edited file paths; drained by `worker.ts` every 2 s |
+| `queue/dirty.txt` | Append-only list of edited file paths; drained by `worker.ts` as soon as a producer appends (an fs.watch on `queue/`), with the 2 s poll as the fallback |
 | `queue/pending.txt` | Dirty-queue snapshot written by [`src/hooks_index.ts::preCompactIndexHandler`](src/hooks_index.ts) before compact |
 | `images/` | Shrunk image cache (LRU-evicted, written by [`src/image_shrink.ts`](src/image_shrink.ts)) |
 | `skills/` | Skill body/compact cache keyed by `(session, name, content_sha)` ([`src/skill_cache.ts`](src/skill_cache.ts)) |
@@ -604,7 +626,7 @@ Commands such as `symbol`, `read`, `section`, `skeleton`, `outline`, `refs`, and
 
 ## Key Design Decisions
 
-**Absolute-normalized index key (`resolveIndexPath`)** — Every symbol and file row is keyed by `normalizePath(path.resolve(base, file))` at write time. Every reader (`skeleton`, `outline`, `read`, `refs`, `imports`, `changed`) routes the user-supplied path through the same `resolveIndexPath()` helper in [`src/paths.ts`](src/paths.ts) before querying. Without this, a relative path (`src/worker.ts`), a backslash path (`src\worker.ts`), or a WSL mount path all produce a key that never matches an absolute forward-slashed lowercase-drive key and the query silently returns nothing. Routing every query site through this one helper guarantees the lookup key matches the write key byte-for-byte across platforms.
+**Absolute-normalized index key (`resolveIndexPath`)** — Every symbol and file row is keyed by `normalizePath(path.resolve(base, file))` at write time. Every reader (`skeleton`, `outline`, `read`, `refs`, `imports`, `changed`) routes the user-supplied path through the same `resolveIndexPath()` helper in [`src/paths.ts`](src/paths.ts) before querying. Without this, a relative path (`src/worker.ts`), a backslash path (`src\worker.ts`), or a WSL mount path all produce a key that never matches an absolute forward-slashed lowercase-drive key and the query silently returns nothing. Routing every query site through this one helper guarantees the lookup key matches the write key byte-for-byte across platforms. A typed file spec reaches it through `resolveSpecPath()` in [`src/spec_path.ts`](src/spec_path.ts), which first expands `~` and, on Windows, a Git Bash `/c/` path; the disk side (`resolveAgainstProjectRoot`) and the MCP confinement gate apply the same `expandSpecPath()`. Hooks call `resolveIndexPath()` directly, since only the hook knows whether a `~` was quoted.
 
 **Real-default-path wiring in the worker** — `processDirtyBatch` in [`src/worker.ts`](src/worker.ts) defaults the indexer to `makeIndexer(globalDbPath())`, which calls the real `indexFileSync` from `parser.ts`. A previous release shipped with the worker calling a stub callback, which meant nothing was ever written to the `symbols` table and the parser was tree-shaken out of the built bundle — yet the test suite was green because every worker test injected its own callback. See [AGENTS.md](AGENTS.md) for the full injected-seam trap analysis. Any change touching the worker or indexer must include an end-to-end test on the real default path (drain → index → `symbols` populated → a known symbol resolves) plus a smoke test against the built bundle.
 
@@ -736,7 +758,7 @@ That alternative was built and then withdrawn, which is the part worth keeping. 
 
 **Where the fence is available, and where it is not.** [`tests/guards/substituted_output_reaches_fence.test.ts`](tests/guards/substituted_output_reaches_fence.test.ts) walks every function reaching `emitRewrite`, and the eight it found split cleanly in two. Where token-goat's text sits at one end of the body -- the `BashOutput` and `TaskOutput` poll deltas, and the compound-Bash rewrite before them -- the notice goes above the opening tag and the fence covers the rest, which is the shape to copy. Where our markers are spliced *between* the bytes they replaced, there is no such cut: fencing the whole body would run the marker neutraliser over token-goat's own markers and hand the model `&#91;token-goat: 40 lines elided]`. The Bash elisions are no longer in that position. [`fenceUntrustedSpans`](src/untrusted_fence.ts) takes the body already split into spans, each marked with whether token-goat wrote it, and runs the neutraliser on the others and on nothing else. Authorship is positional, declared by the producer that emitted the span, rather than recognised from the text: a rule that spotted our markers by their spelling would exempt a forged one just as readily. Both `hooks_bash_post.ts` elision sites fence through it, and the fence is priced before the net-benefit gate rather than after, so the gate cannot decline a rewrite for the cost of its own protection. Three remain open: the agent-report compaction, the already-served Read elision, and the browser block join. What keeps them open is the round-trip risk rather than the missing mechanism, since an untrusted span containing the literal `[token-goat` comes back escaped and those three feed the surfaces most likely to be copied into a file. Reopen them when there is a way to escape a span that a model cannot round-trip into an edit, or when a marker-shaped line is measured arriving on one of the three rather than assumed.
 
-**Egress has one choke point and one switch.** Every HTTP request token-goat makes itself goes through `performHttpFetch` in [`src/webfetch.ts`](src/webfetch.ts), redirects included, so the offline check lives there rather than at each command. Three paths bypass it because a third-party library does the download: the embedding model ([`src/embed_model.ts`](src/embed_model.ts), huggingface.co), the OCR language data (`tesseract.js`, cdn.jsdelivr.net), and `screenshot`'s browser navigation. Each has its own guard, and each preserves a warm cache rather than refusing outright. A new dependency that downloads something at runtime is a fourth, and needs the same treatment plus a line in the README's outbound list.
+**Egress has one choke point and one switch.** Every HTTP request token-goat makes itself goes through `performHttpFetch` in [`src/webfetch.ts`](src/webfetch.ts), redirects included, so the offline check lives there rather than at each command. Four paths bypass it: the embedding model ([`src/embed_model.ts`](src/embed_model.ts), huggingface.co) and the WebAssembly inference runtime ([`src/embed_runtime_web.ts`](src/embed_runtime_web.ts), registry.npmjs.org), both through `downloadPinned` in [`src/pinned_fetch.ts`](src/pinned_fetch.ts), which checks `network.offline` itself, holds every byte to a recorded SHA-256 and length, and after a failed download holds further automatic tries for that host (10 minutes, doubling to an hour; [`src/model_download_gate.ts`](src/model_download_gate.ts)) unless the caller asked for the download explicitly; the OCR language data (`tesseract.js`, cdn.jsdelivr.net), and `screenshot`'s browser navigation. Each has its own guard, and each preserves a warm cache rather than refusing outright. A new dependency that downloads something at runtime is a fifth, and needs the same treatment plus a line in the README's outbound list.
 
 **A per-project config file is untrusted input.** `.token-goat.toml` arrives with the repository, so it is written by whoever wrote the repository. `PROJECT_LOCKED_SECTIONS` and `PROJECT_LOCKED_KEYS` in [`src/config.ts`](src/config.ts) name what it may not set: the `injection`, `webfetch`, `gdrive`, `mcp` and `network` sections, plus `indexing.cross_project_symbols`. A new setting that turns a protection off, narrows an allowlist, or widens a confinement belongs in that list. The environment is deliberately not locked: a repository cannot set it, and a developer exporting a variable is configuring their own machine.
 

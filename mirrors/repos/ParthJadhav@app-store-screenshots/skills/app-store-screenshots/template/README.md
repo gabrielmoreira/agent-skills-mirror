@@ -4,6 +4,8 @@ A pre-built Next.js + ShadCN editor for generating App Store and Google Play scr
 
 ## Quick start
 
+Requires Node.js 20.9 or newer.
+
 ```bash
 bun install   # or pnpm / yarn / npm
 bun dev       # http://localhost:3000
@@ -57,7 +59,7 @@ The toolbar **Theme** menu recolours the whole deck (backgrounds, text, accents)
 
 The toolbar font menu sets the typeface of the screenshot canvas and exports (not the editor UI). **Inter (default)** is the template font and what projects without a `fontId` use. **System Sans** and **Georgia** are available everywhere; **Avenir Next**, **Helvetica Neue**, **Futura**, **Baskerville**, **Palatino**, **Optima** and **American Typewriter** are macOS system fonts that fall back to similar faces elsewhere, so export on the machine you designed on.
 
-**Import font…** at the bottom of the menu takes a licensed WOFF2, WOFF, TTF or OTF file (16 MB max). `/api/upload-font` checks the file's magic bytes and stores it as `public/fonts/imported/<hash>.<ext>`; the project saves it as `importedFont` with `fontId: "self-hosted"`. That font folder is gitignored (font licences often forbid redistribution); keep the file alongside the project JSON if you move the project, or screenshot text falls back to a generic sans-serif. Once imported, the font is listed in the menu under its file name, and it is loaded and embedded before every export.
+**Import font…** at the bottom of the menu takes a licensed WOFF2, WOFF, TTF or OTF file (16 MB max). The browser decodes the font before uploading; `/api/upload-font` checks the container signature, lengths and table bounds before storing it as `public/fonts/imported/<hash>.<ext>`. The project saves it as `importedFont` with `fontId: "self-hosted"`. That font folder is gitignored (font licences often forbid redistribution); keep the file alongside the project JSON if you move the project, or screenshot text falls back to a generic sans-serif. Once imported, the font is listed in the menu under its file name, and it is loaded and embedded before every export.
 
 ### Image overlays
 
@@ -83,6 +85,19 @@ The toolbar arrows, `⌘Z` / `Ctrl+Z` and `⇧⌘Z` / `Ctrl+Shift+Z` (or `Ctrl+Y
 - `mockup.png` is the iPhone bezel overlay; replacing it requires re-measuring the `PHONE_SCREEN` constants.
 - Image preloading converts every static path to a base64 data URI before exports run, and export retries paths that were previously missing. `export-render.ts` then waits for those images to paint in the render (see Exporting).
 - Reset via the toolbar's circular arrow icon clears in-memory state and reloads the default screens. To wipe disk state too, delete `app-store-screenshots.json`.
-- **Persistence model** — the canonical state lives in `app-store-screenshots.json` (git-tracked). On load, the editor reads localStorage first for instant paint, then overwrites with the file contents if present; if the file endpoint is unavailable, autosave is blocked so stale cache cannot overwrite disk. On save, both are written. File saves are serialized, and the server replaces the JSON atomically so overlapping edits cannot leave a partial file. Invalid project shapes are rejected without overwriting the project. If you ever see a conflict, the file always wins.
+- **Persistence model** — the canonical state lives in `app-store-screenshots.json` (git-tracked). On load, the editor reads localStorage first, then reconciles with the file; if the file endpoint is unavailable, autosave is blocked so stale cache cannot overwrite disk. File saves are serialized and atomic. Each editor sends the revision it loaded, so a newer save from another tab or an on-disk edit produces a conflict instead of an overwrite. Your unsaved work stays open: export or copy it before reloading. **Retry save** retries transient failures; it does not override conflicts. Leaving with unsaved edits triggers the browser's warning.
 - **Migration model** — schema v1 projects do not need a manual conversion. On first load, the editor upgrades localized text and transform records, writes `schemaVersion: 2`, preserves all existing screens, and keeps `connectedCanvas: false` so old offscreen/clipped elements export exactly as isolated screens. Turn on **Connected** in the toolbar when you want elements to cross screen edges. Explicit skill migrations preserve an existing `connectedCanvas` choice, otherwise they keep legacy decks isolated too.
 - **Custom themes** — if a project file references a theme id that is not present in `src/lib/constants.ts`, the editor falls back to `clean-light` and shows a warning. Merge custom `THEMES` entries during in-place upgrades.
+
+## Local API contract
+
+These routes are for a local editor running in one server process. They have no authentication for remote hosting. Browser writes must come from the same origin and use `Content-Type: application/json`; headerless scripts still work.
+
+- `GET /api/project` returns `{ ok, state }` and an `ETag` revision, including when the project file is missing.
+- `POST /api/project` accepts project JSON (64 MiB request limit). Send the last `ETag` as `If-Match` to reject stale writes with HTTP 412; success returns a new `ETag`. Scripts that omit `If-Match` intentionally keep unconditional replacement behavior. Unknown schema versions, unknown device decks, duplicate IDs, and malformed element data are rejected with HTTP 400.
+- `POST /api/upload` accepts `{ dataUrl }` for PNG/JPEG (8 MiB decoded file, 12 MiB request, 64 megapixels). It decodes the image before storing the original bytes. Rejected files keep the previous selection; unavailable endpoints can still fall back to inline images.
+- `POST /api/upload-font` accepts `{ data }` containing base64 font bytes (16 MiB decoded file, 23 MiB request). Server validation checks the font container; the editor's browser additionally validates font decoding.
+
+Uploads are written atomically. Project and upload requests time out after 15 seconds in the editor; image preloads after 10 seconds. Export also stops with a retryable error if font loading takes longer than 15 seconds. Failed preloads can be retried on export, and failed or stalled PNG workers finish through the inline encoder.
+
+The `/screenshots/uploaded/[filename]` and `/fonts/imported/[filename]` routes serve uploads created after server startup, including with `next start`. They accept only the generated hash filenames and supported extensions, preserving the same asset URLs and on-disk locations as the dev server.

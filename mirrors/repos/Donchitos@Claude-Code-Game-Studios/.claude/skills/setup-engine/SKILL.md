@@ -20,7 +20,7 @@ artifact this skill expects and the finish path it recommends in §12:
 - **`standard` / `full`** — the design artifact is `design/gdd/game-concept.md`
   and the finish path is the full pipeline.
 
-If the block did not render (shell preprocessing disabled), assume `standard`.
+If the block did not render (shell preprocessing disabled), assume `minimal` (the default).
 
 ## 1. Parse Arguments
 
@@ -155,9 +155,13 @@ Probe for the binary (Bash), and treat failure as unknown, never as absent:
 
 | Engine | Probe |
 |--------|-------|
-| Godot | `godot --version`, else look for `godot`/`Godot_v*` on PATH or in the platform's usual install location |
-| Unity | `Unity -version`, else the Hub's editor directory |
-| Unreal | `UnrealEditor-Cmd -version`, else the launcher's install directory |
+| Godot | `godot --version`, else look for `godot`/`Godot_v*` on PATH or in the platform's usual install location (macOS: the binary inside the bundle, `Godot.app/Contents/MacOS/Godot`) |
+| Unity | The Hub's editor directory, then that editor's `-version` — `C:/Program Files/Unity/Hub/Editor/<version>/Editor/Unity.exe` on Windows, `/Applications/Unity/Hub/Editor/<version>/Unity.app/Contents/MacOS/Unity` on macOS, `/home/<user>/Unity/Hub/Editor/<version>/Editor/Unity` on Linux. Not bare `Unity`: on `PATH` it may be Unity's separate CLI, which rejects `-version` |
+| Unreal | The launcher's install directory (`UE_<version>` folders under `C:/Program Files/Epic Games/` on Windows); elsewhere, ask where the engine was built or installed. The editor is not on `PATH` by default |
+
+Keep the executable the probe found (for Godot, whether bare `godot --version`
+ran — that is, `godot` is on `PATH`): Section 5.5.1 writes it into `commands.*`
+and `engine.path`.
 
 Then:
 - **Match** — say so in one line and continue.
@@ -190,6 +194,13 @@ If Godot was chosen, ask the user which language to use **before** showing the p
 
 Record the choice. It determines the CLAUDE.md template, naming conventions, specialist routing, and which agent is spawned for code files throughout the project.
 
+### Primary Language (Unreal)
+
+If Unreal was chosen, ask via `AskUserQuestion`: "Will most gameplay logic live in
+C++ or in Blueprints?" — `[A] C++ (Blueprints for tuning and prototyping)` /
+`[B] Blueprint-primary (C++ only where needed)`. Default to C++ if the user has no
+preference. The answer sets `engine.language` (`"C++"` or `"Blueprint"`).
+
 ---
 
 Read `CLAUDE.md` and show the user the proposed Technology Stack changes.
@@ -212,10 +223,12 @@ Update the Technology Stack section, replacing the `[CHOOSE]` placeholders with 
 **For Unreal:**
 ```markdown
 - **Engine**: Unreal Engine [version]
-- **Language**: C++ (primary), Blueprint (gameplay prototyping)
+- **Language**: [C++ (primary), Blueprint (gameplay prototyping) | Blueprint (primary), C++ where needed]
 - **Build System**: Unreal Build Tool (UBT)
 - **Asset Pipeline**: Unreal Content Pipeline
 ```
+The Language line follows the primary-language answer above: the first form for
+`[A]` (`engine.language: "C++"`), the second for `[B]` (`"Blueprint"`).
 
 ### Engine reference import
 
@@ -317,8 +330,8 @@ Example filled section:
   - If [A]: populate with the suggested defaults. If [B]: leave as placeholder.
 - **Testing**: Suggest the engine-appropriate framework — **gdUnit4** for Godot,
   NUnit for Unity, Automation Spec for Unreal — and ask before adding.
-  > **Must match `commands.test` in Section 5.5.1, which writes
-  > `godot --headless --script tests/gdunit4_runner.gd`, and
+  > **Must match `commands.test` in Section 5.5.1, which writes gdUnit4's own
+  > runner (`res://addons/gdUnit4/bin/GdUnitCmdTool.gd`), and
   > `.claude/docs/coding-standards.md`, which names the same runner.** Naming GUT
   > here would have the skill recommend one framework and configure another in the
   > same run.
@@ -380,7 +393,7 @@ Also populate the `## Engine Specialists` section in `technical-preferences.md` 
 
 ### Collaborative Step
 Present the filled-in preferences to the user. For Godot, include the chosen language and note where the full naming conventions and routing tables live:
-> "Here are the default technical preferences for [engine] ([language if Godot]). The naming conventions and specialist routing are in this skill's references directory — I'll apply the [GDScript/C#/Both] variant. Want to customize any of these, or shall I save the defaults?"
+> "Here are the default technical preferences for [engine] ([language if Godot]). The naming conventions and specialist routing are in this skill's references directory — I'll apply the [GDScript/C#/Both] variant. Want to customize any of these, or may I save them to `.claude/docs/technical-preferences.md`?"
 
 For all other engines, present the defaults directly without referencing the appendix.
 
@@ -552,6 +565,14 @@ the language:
 > than an explicit question: it produces a `commands.build` that runs, succeeds,
 > and builds the wrong artifact.
 >
+> **`-buildTarget` alone builds nothing.** It switches the active platform and
+> exits 0 (verified on 6000.3.23f1). The row also needs a player-build flag,
+> `-build<PLATFORM>Player <output path>` — for Windows 64-bit,
+> `-buildWindows64Player Builds/Win64/<Game>.exe` (verified: exit 0 and an
+> `.exe`; exit 1 on a compile error or when no scene is in the build settings).
+> Ask which platform, and confirm any other platform's flag against Unity's
+> command-line documentation rather than recalling one.
+>
 > **The Godot `build` row must not hardcode `'Linux/X11'` either — same defect,
 > same remedy.** A Godot export preset name is **project-defined**: it is whatever
 > string the operator typed into `export_presets.cfg`, and the shipped defaults are
@@ -605,15 +626,44 @@ naming:
 
 | Engine | `build` | `test` | `run` | `smoke` |
 |--------|---------|--------|-------|---------|
-| Godot | `godot --headless --export-debug '<PRESET>'` **(ASK — do not default)** | `godot --headless --script tests/gdunit4_runner.gd` | `godot --path . --windowed --resolution 1280x720` | `godot --headless --quit-after 5` |
-| Unity | `Unity -batchmode -quit -projectPath . -buildTarget <TARGET>` **(ASK — do not default)** | `Unity -runTests -projectPath . -testPlatform PlayMode` | `Builds/<Target>/<Game>.exe -screen-width 1280 -screen-height 720 -screen-fullscreen 0` | `Unity -batchmode -quit -projectPath . -executeMethod SmokeCheck.Run` |
+| Godot | `godot --headless --export-debug '<PRESET>'` **(ASK — do not default)** | `godot --headless -s -d --remote-debug tcp://127.0.0.1:0 res://addons/gdUnit4/bin/GdUnitCmdTool.gd -a res://tests --ignoreHeadlessMode` | `godot --path . --windowed --resolution 1280x720` | `godot --headless --quit-after 5` |
+| Unity | `"<Unity editor>" -batchmode -quit -projectPath . -buildTarget <TARGET> -build<PLATFORM>Player Builds/<Target>/<Game>.exe` **(ASK — do not default)** | `"<Unity editor>" -batchmode -runTests -projectPath . -testPlatform EditMode -testResults test-results/editmode.xml` | `Builds/<Target>/<Game>.exe -screen-width 1280 -screen-height 720 -screen-fullscreen 0` | `"<Unity editor>" -batchmode -quit -projectPath . -logFile -` |
+
+> **What each exit code proves — every row verified on the pinned engines.**
+> Godot `test` exits 0 when all pass, 100 on a failure, 101 when all pass but
+> nodes leaked (a warning, not a failure), 105 when a test script does not
+> parse, and 103 / 104 when gdUnit4 cannot run at all (headless refused, Godot
+> older than 4.3). Keep `--remote-debug tcp://127.0.0.1:0`: without it a script
+> error opens Godot's interactive debugger and the run waits at a `debug>`
+> prompt forever instead of exiting. Run `godot --headless --path . --import`
+> before it on a fresh clone: with no `.godot/` class cache,
+> `GdUnitCmdTool.gd` did not load and the run exits 1 having run nothing. Unity `test`
+> exits 0 / 2, and a results file with `testcasecount="0"` means no test was
+> compiled — not a pass. It runs Edit Mode only: Play Mode tests under
+> `Assets/Tests/PlayMode/` need a second run into their own results file
+> (`-testPlatform PlayMode -testResults test-results/playmode.xml`), which
+> `/smoke-check` makes whenever that folder holds tests and CI runs as its own
+> step. Unity `smoke` exits 1 on a compile error, 0 when clean.
+> **Godot `smoke` exits 0 even on a parse error** — it is a boot check: read its
+> output for `SCRIPT ERROR`. It also needs `run/main_scene` set: without one it
+> prints `Can't run project: no main scene defined` and never exits, so run it
+> under a timeout. Unity `smoke` compiles only the editor-side assemblies; an
+> error that exists only in a player build (an `Editor/` script without its own
+> assembly) shows up in `build`, not here. The real Godot parse check is
+> `godot --headless --path . --import`, then
+> `godot --headless --path . -s res://.claude/scripts/godot-parse-check.gd -- res://<file>.gd …`
+> (exit 1 when a script does not load). `--check-only` is not one: it fails
+> valid code that names an autoload. `<Unity editor>` is the **editor**
+> executable's full path, quoted. Never write bare `Unity`: on `PATH` that name
+> may be Unity's separate CLI, which rejects `-batchmode` with exit 2 — the same
+> code as a failed test.
 
 > **`commands.run` is the one the run-and-observe step depends on.** It must
 > launch the **game**, windowed, at a fixed resolution — never the editor, and
 > never with a headless / batch / null-RHI flag, which exist to skip rendering.
 > `/dev-story` Phase 6 step 4 appends the per-engine capture flags to it
-> (`.claude/docs/run-and-observe.md`). `test` and `smoke` feed the parse check
-> and `/smoke-check`; `build` is the one row you must ask for.
+> (`.claude/docs/run-and-observe.md`). `smoke` is Unity's parse check, `test`
+> feeds `/smoke-check`; `build` is the one row you must ask for.
 
 > **YAML quoting rule — applies to EVERY command value.** `yaml-helper.sh` — the
 > parser every config read in this framework goes through — decodes **no**
@@ -621,8 +671,9 @@ naming:
 > single-quoted scalar. It takes the first matching quote character as the end of
 > the value and discards the rest, so `"he said \"hi\" now"` parses as
 > `he said \`. Verified against the parser, not inferred. The rule is
-> preventative here — it applies the moment anything does read `commands.*`, and
-> to every other quoted value in `project.yaml` today.
+> load-bearing: `/smoke-check` and `/dev-story` run these values, `/settings`
+> reads and writes them through this parser, and the same holds for every other
+> quoted value in `project.yaml`.
 > Pick the quote style that needs **no escaping**:
 > - value contains a single quote `'` (e.g. the Godot `build` above) → wrap it in
 >   a **double-quoted** YAML scalar: `"... 'Linux/X11' ..."`
@@ -634,22 +685,64 @@ naming:
 > be represented for this parser; rewrite the command to drop one.
 
 **Godot / Unity** — write the table values directly, substituting the operator's
-answer for `<PRESET>` / `<TARGET>`. Godot's `build` contains a single quote, so it
+answer for `<PRESET>` / `<TARGET>` / `<PLATFORM>`, and the editor's full path for
+`<Unity editor>`. Godot's `build` contains a single quote, so it
 takes a double-quoted scalar (`Windows Desktop` below is the *example* answer, not
 a default — write what the operator said):
 
 ```yaml
 commands:
   build: "godot --headless --export-debug 'Windows Desktop'"
-  test: "godot --headless --script tests/gdunit4_runner.gd"
+  test: "godot --headless -s -d --remote-debug tcp://127.0.0.1:0 res://addons/gdUnit4/bin/GdUnitCmdTool.gd -a res://tests --ignoreHeadlessMode"
   run: "godot --path . --windowed --resolution 1280x720"
   smoke: "godot --headless --quit-after 5"
 ```
 
-> **Also write `engine.path` if the editor is not on `PATH`.** These commands name
-> the executable bare, which assumes it resolves — and on Windows none of the three
-> engines installs onto `PATH` by default. Ask for or probe the install location and
-> record it:
+**Write bare `godot` only when Section 3's `godot --version` ran** — that is,
+`godot` is on `PATH`. Otherwise (the usual case on Windows and macOS)
+substitute the executable the probe found or the user gave — a Windows
+`Godot_v<version>-stable_win64.exe`, macOS `/Applications/Godot.app/Contents/MacOS/Godot`
+— as its full path, in double quotes, for the leading `godot` in all four
+values, exactly as `<Unity editor>` is. The value then holds double quotes, so it
+takes a single-quoted scalar, and `build` quotes its preset with double quotes
+too, so no value holds both quote types. Godot not on PATH, installed under
+`C:/Program Files/Godot/`:
+
+```yaml
+commands:
+  build: '"C:/Program Files/Godot/Godot_v4.6.1-stable_win64.exe" --headless --export-debug "Windows Desktop"'
+  test: '"C:/Program Files/Godot/Godot_v4.6.1-stable_win64.exe" --headless -s -d --remote-debug tcp://127.0.0.1:0 res://addons/gdUnit4/bin/GdUnitCmdTool.gd -a res://tests --ignoreHeadlessMode'
+  run: '"C:/Program Files/Godot/Godot_v4.6.1-stable_win64.exe" --path . --windowed --resolution 1280x720'
+  smoke: '"C:/Program Files/Godot/Godot_v4.6.1-stable_win64.exe" --headless --quit-after 5'
+```
+
+If the probe found no executable and the user does not know where it is, keep
+bare `godot`, put `# TODO: godot is not on PATH here — set the editor's full
+path via /settings` above the block, and say so: those commands will not run
+until one of the two is fixed.
+
+For Unity, probe the Hub install (`C:/Program Files/Unity/Hub/Editor/<version>/Editor/Unity.exe`
+on Windows, `/Applications/Unity/Hub/Editor/<version>/Unity.app/Contents/MacOS/Unity`
+on macOS, `/home/<user>/Unity/Hub/Editor/<version>/Editor/Unity` on Linux) or ask.
+Write the expanded absolute path — a `~` inside quotes is not expanded, and the
+command then exits 127. The
+quoted path puts double quotes in the command, so the value takes a
+single-quoted scalar:
+
+```yaml
+commands:
+  test: '"C:/Program Files/Unity/Hub/Editor/6000.3.23f1/Editor/Unity.exe" -batchmode -runTests -projectPath . -testPlatform EditMode -testResults test-results/editmode.xml'
+  smoke: '"C:/Program Files/Unity/Hub/Editor/6000.3.23f1/Editor/Unity.exe" -batchmode -quit -projectPath . -logFile -'
+```
+
+> **Also write `engine.path` if the editor is not on `PATH`.** Agents and
+> `/smoke-check` read it to find the editor, but a command is run as written —
+> `engine.path` is never spliced into `commands.*` at run time, which is why the
+> full path goes into the commands above — and on Windows and macOS none of
+> the three engines installs onto `PATH` by default (on macOS the editor is inside an app
+> bundle, e.g. `/Applications/Godot.app/Contents/MacOS/Godot`). Ask for or probe the
+> install location and record it — the editor executable for Godot and Unity,
+> the engine folder (`<UE root>`) for Unreal:
 >
 > ```yaml
 > engine:
@@ -663,25 +756,79 @@ commands:
 
 For **Unreal**, UE build/test commands vary by version and project setup. Write
 best-effort values and add a `# TODO` comment so the user knows to confirm them.
-The `test`/`smoke` commands embed double quotes, so they take single-quoted
-scalars:
+Substitute the engine's install folder for `<UE root>` (the value you record as
+`engine.path`) — none of the editor binaries is on `PATH`. The commands embed
+double quotes, so they take single-quoted scalars. Write the block for the
+machine the project is developed on (`uname -s`: `Linux`, `Darwin` = macOS,
+anything else = Windows). The Windows block was run on UE 5.7; the Linux and
+macOS lines come from Epic's documentation, recorded with their sources in
+`docs/engine-reference/unreal/current-best-practices.md` ("Command Line").
+
+Windows:
 
 ```yaml
 commands:
   # TODO: confirm these for your UE version and project — adjust via /settings
-  build: 'RunUAT.bat BuildCookRun -project=<project>.uproject -platform=Win64 -build -cook'
-  test: 'UnrealEditor-Cmd.exe <project>.uproject -ExecCmds="Automation RunTests <project>; Quit" -unattended -nullrhi'
-  run: 'UnrealEditor.exe <project>.uproject -game -windowed -ResX=1280 -ResY=720'
-  smoke: 'UnrealEditor-Cmd.exe <project>.uproject -game -nullrhi -unattended -ExecCmds="Quit"'
+  build: '"<UE root>/Engine/Binaries/DotNET/AutomationTool/AutomationTool.exe" BuildCookRun -project="$(pwd -W 2>/dev/null || pwd)/<project>.uproject" -platform=Win64 -build -cook'
+  test: '"<UE root>/Engine/Binaries/Win64/UnrealEditor-Cmd.exe" "$(pwd -W 2>/dev/null || pwd)/<project>.uproject" -ExecCmds="Automation RunTests <project>.; Quit" -unattended -nullrhi -stdout -FullStdOutLogOutput'
+  run: '"<UE root>/Engine/Binaries/Win64/UnrealEditor.exe" "$(pwd -W 2>/dev/null || pwd)/<project>.uproject" -game -windowed -ResX=1280 -ResY=720'
+  smoke: '"<UE root>/Engine/Binaries/Win64/UnrealEditor-Cmd.exe" "$(pwd -W 2>/dev/null || pwd)/<project>.uproject" -game -nullrhi -unattended -stdout -ExecCmds="Quit"'
 ```
 
-**Two details are load-bearing.** `smoke` needs `-game`: without it
+Linux — the editor binary is `Engine/Binaries/Linux/UnrealEditor`, the build
+scripts are shell scripts:
+
+```yaml
+commands:
+  # TODO: confirm these for your UE version and project — adjust via /settings
+  build: '"<UE root>/Engine/Build/BatchFiles/RunUAT.sh" BuildCookRun -project="$(pwd -W 2>/dev/null || pwd)/<project>.uproject" -platform=Linux -build -cook'
+  test: '"<UE root>/Engine/Binaries/Linux/UnrealEditor" "$(pwd -W 2>/dev/null || pwd)/<project>.uproject" -ExecCmds="Automation RunTests <project>.; Quit" -unattended -nullrhi -stdout -FullStdOutLogOutput'
+  run: '"<UE root>/Engine/Binaries/Linux/UnrealEditor" "$(pwd -W 2>/dev/null || pwd)/<project>.uproject" -game -windowed -ResX=1280 -ResY=720'
+  smoke: '"<UE root>/Engine/Binaries/Linux/UnrealEditor" "$(pwd -W 2>/dev/null || pwd)/<project>.uproject" -game -nullrhi -unattended -stdout -ExecCmds="Quit"'
+```
+
+macOS — only the build is sourced. Epic documents the `UnrealEditor.app`
+bundle but no command-line editor inside it, so write `build` and leave the
+other three as TODO lines rather than a guessed path; `/smoke-check` reports
+NOT ASSESSED for tests until the user sets `commands.test`:
+
+```yaml
+commands:
+  # TODO: confirm this for your UE version and project — adjust via /settings
+  build: '"<UE root>/Engine/Build/BatchFiles/RunUAT.sh" BuildCookRun -project="$(pwd -W 2>/dev/null || pwd)/<project>.uproject" -platform=Mac -build -cook'
+  # TODO: test, run and smoke — no documented command-line editor on macOS.
+  # Set them via /settings to the editor command you run for this project.
+```
+
+On Windows, `build` calls AutomationTool directly: from Git Bash, `RunUAT.bat` fails
+(`'C:\Program' is not recognized`) whenever the project path has a space.
+AutomationTool.exe runs on the machine's .NET 8 runtime; `RunUAT.bat` brings
+its own SDK, so with no space in the path and no .NET 8 installed, use it.
+`-build` builds the editor target too (verified on 5.7).
+
+**Three details are load-bearing.** The project path is absolute: UE 5.7
+does not find a relative `<project>.uproject` and exits 1 (`Project file not
+found`) before anything runs. `$(pwd -W 2>/dev/null || pwd)` gives the `C:/…`
+form in Git Bash and the plain path elsewhere, run from the project root;
+`$PWD` alone fails when `MSYS_NO_PATHCONV` is set. `smoke` needs `-game`: without it
 `UnrealEditor-Cmd` boots the *editor*, where a bare `Quit` console command only
 ends a play-in-editor session — the process stays resident and the command
 never returns; with `-game` the same line boots headless and exits in seconds.
 `test` needs the `; Quit` inside the `Automation` string: the automation
 runner handles that trailing `Quit` itself and exits the editor once the tests
-finish, and without it the run also never returns.
+finish, and without it the run also never returns. Its filter runs every test
+whose full name *contains* `<project>.` — a substring match, not a prefix — so
+name tests `<project>.[System].[Scenario]` as `qa-tester` does. If the
+project's name is also an engine area — `Audio`, `Core`, `Input`, `Test`,
+`System`, `Engine`, `Editor`, `AI`, `Math` — `<project>.` also runs hundreds
+to thousands of the engine's own tests; give the tests a distinct root (say
+`<project>Game.`) and put the same root in the filter. This form exits 255 on
+a failing test AND on a filter that matches nothing (`No automation tests
+matched`, verified on 5.7), so `/smoke-check` reads the output, not the exit
+code. `smoke` carries `-stdout` for the same reason: without it a failed boot
+prints nothing. Do not swap in
+`-TestExit="Automation Test Queue Empty"`: that form exits **0** on a failing
+test unless its report JSON is parsed.
 
 ### 5.5.2 Write the blocks to `project.yaml`
 
@@ -703,7 +850,7 @@ Wait for confirmation, then apply based on the file's current state:
   schema_version: 1
 
   framework:
-    version: 1.1.1
+    version: 1.1.2
     last_upgraded: <today's date>
 
   engine:
@@ -736,7 +883,7 @@ Wait for confirmation, then apply based on the file's current state:
 
   Do not seed `modes.review_mode` here. It is a rigor-fronted knob — `modes.rigor`
   supplies its value, so an explicit value would shadow the rigor expansion and pin
-  the review mode regardless of the project's rigor. Test Y.6 locks this in.
+  the review mode regardless of the project's rigor.
 
 - **`project.yaml` exists** — Read it first (the Edit tool requires the file to
   have been read this session), then, processing the blocks in the order
@@ -746,6 +893,11 @@ Wait for confirmation, then apply based on the file's current state:
   - **Block already present** (a re-run of `/setup-engine`) — Edit the existing
     keys in place, and add any keys the block is missing (a partial block must
     end up with its full key set). Do NOT add a second copy of the block.
+
+**Unreal on macOS is the exception in both cases:** `commands.test`, `run` and
+`smoke` are written as the TODO comment lines from the macOS block — never as
+`<...>` placeholders or a guessed path — and a re-run leaves them unset until the
+user sets them.
 
 Preserve all other content in `project.yaml` (`schema_version`, `framework`,
 `modes`, `project`, etc.) — only the four blocks are touched.
@@ -763,11 +915,12 @@ user and stop — a split config corrupts skill and hook reads.
 
 Check whether the engine version is likely beyond the LLM's training data.
 
-**Known approximate coverage** — *last re-checked 2026-08-28*:
-- LLM knowledge cutoff: **May 2026**
-- Godot: training data likely covers up to ~4.6
-- Unity: training data likely covers up to ~6000.x
-- Unreal: training data likely covers up to ~5.5
+**Known approximate coverage** — the same figures the shipped
+`docs/engine-reference/*/VERSION.md` files record:
+- LLM knowledge cutoff: **May 2025**
+- Godot: training data likely covers up to ~4.3
+- Unity: training data likely covers up to ~2022 LTS (2022.3)
+- Unreal: training data likely covers up to ~5.3
 
 > **This table goes stale silently, and a stale table fails in the dangerous
 > direction only if it is too *new*.** A cutoff left unchanged for a year after
@@ -777,9 +930,10 @@ Check whether the engine version is likely beyond the LLM's training data.
 > actual one marks post-cutoff versions LOW RISK and suppresses the reference
 > docs that exist to stop invented APIs.
 >
-> **If the date above is more than six months old, do not trust it.** Say so, and
-> treat the engine version as `HIGH RISK` regardless of the comparison — an
-> unverifiable cutoff is not a cutoff that was met.
+> **If the model running this skill states an earlier training cutoff than the
+> one above, do not trust the table.** Say so, and treat the engine version as
+> `HIGH RISK` regardless of the comparison — a cutoff the model does not have is
+> not a cutoff that was met.
 
 Compare the user's chosen version against these baselines:
 
@@ -806,11 +960,15 @@ Read `docs/engine-reference/<engine>/VERSION.md` and compare its
 **Engine Version** to the version chosen in Section 3:
 
 - **No directory, or no `VERSION.md`** → create, using the risk branch below.
-- **Same version** → nothing to do. Refresh `Last Docs Verified` only if you
+- **Same version** → nothing to regenerate. Refresh `Last Docs Verified` only if you
   actually re-verified against the docs this run. Do not restamp a date you did
-  not check.
+  not check. The one row still written is `Installed at pin time`, from
+  Section 3 — its probe result is recorded whatever the outcome, after asking
+  "May I record `Installed at pin time: [result]` in
+  `docs/engine-reference/<engine>/VERSION.md`?" (it is a tracked file).
 - **Directory pins an OLDER version than the one chosen** → **update, do not
-  replace.** This is the common case.
+  replace.** This is the common case. Show the changes below, then ask "May I
+  update the `docs/engine-reference/<engine>/` files for [version]?" before editing.
   1. Edit `VERSION.md` in place: new **Engine Version**, new **Project Pinned**
      and **Last Docs Verified**, the `Installed at pin time` row from Section 3,
      and a new row in the post-cutoff timeline for each version added.
@@ -842,7 +1000,8 @@ produces work that looks verified and is not.
 
 ### If WITHIN training data (LOW RISK):
 
-Create a minimal `docs/engine-reference/<engine>/VERSION.md`:
+Ask: "May I create `docs/engine-reference/<engine>/VERSION.md`?" Wait for
+confirmation, then create this minimal file:
 
 ```markdown
 # [Engine] — Version Reference
@@ -851,7 +1010,8 @@ Create a minimal `docs/engine-reference/<engine>/VERSION.md`:
 |-------|-------|
 | **Engine Version** | [version] |
 | **Project Pinned** | [today's date] |
-| **LLM Knowledge Cutoff** | May 2025 |
+| **Installed at pin time** | [Section 3 result — the installed version, or NOT DETERMINED] |
+| **LLM Knowledge Cutoff** | [the cutoff from the Section 6 coverage table] |
 | **Risk Level** | LOW — version is within LLM training data |
 
 ## Note
@@ -948,7 +1108,9 @@ an empty project with no main scene opens fine in the editor.
 
 **Then verify, and report what the verification actually was.** If the engine
 binary was found in Section 3, run its headless import
-(`godot --headless --path . --import`) and report the result. If the binary was
+(`godot --headless --path . --import`) and report the result — read the output
+for `ERROR`, because the import exits 0 even when something in the project
+fails to load. If the binary was
 not found, or its version differs from the pinned one, write
 **`project.godot NOT VERIFIED — <reason>`**. The `config_version` and feature
 strings are stable across Godot 4.x, but "stable in the versions I know" is not
@@ -1189,7 +1351,7 @@ After setup is complete, output:
 Engine Setup Complete
 =====================
 Engine:          [name] [version]
-Language:        [GDScript | C# | GDScript + C# | C# | C++ + Blueprint]
+Language:        [GDScript | C# | GDScript + C# | C# | C++ + Blueprint | Blueprint + C++]
 Knowledge Risk:  [LOW/MEDIUM/HIGH]
 Reference Docs:  [created/skipped]
 CLAUDE.md:       [updated]

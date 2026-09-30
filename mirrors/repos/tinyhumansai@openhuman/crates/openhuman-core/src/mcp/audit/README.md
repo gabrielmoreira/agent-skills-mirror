@@ -52,7 +52,7 @@ appears never to have happened, rather than erroring.
 - `crate::core::all` (`RegisteredController`, `ControllerFuture`) and
   `crate::core` (`ControllerSchema`, `FieldSchema`, `TypeSchema`): the
   controller registration types. Unlike the other RPC domains the handler
-  returns a raw `{ "records": [...] }` object, not an `RpcOutcome`.
+  returns a raw `{ "records": [...] }` object, not an `Outcome`.
 
 ## Used by
 

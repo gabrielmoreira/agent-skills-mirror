@@ -2,12 +2,12 @@
 repo: diegosouzapw/OmniRoute
 repoUrl: https://github.com/diegosouzapw/OmniRoute.git
 refType: branch
-ref: release/v3.8.51
+ref: release/v3.8.52
 ---
 
 # Mirror Manifest
 
-Mirror of `diegosouzapw/OmniRoute` — 26 default patterns, 12 followed patterns, 999 file(s) materialized.
+Mirror of `diegosouzapw/OmniRoute` — 26 default patterns, 12 followed patterns, 1004 file(s) materialized.
 
 ## Metadata
 
@@ -15,10 +15,10 @@ Mirror of `diegosouzapw/OmniRoute` — 26 default patterns, 12 followed patterns
 |---------------|-------|
 | Repo          | `diegosouzapw/OmniRoute` |
 | Ref Type      | `branch` |
-| Ref           | `release/v3.8.51` |
+| Ref           | `release/v3.8.52` |
 | Default pats  | 26 |
 | Followed pats | 12 |
-| Files         | 999 |
+| Files         | 1004 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -1034,41 +1034,46 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 962 | ✓ | [`skills/omni-auth/SKILL.md`](skills/omni-auth/SKILL.md) |
 | 963 | ✓ | [`skills/omni-budget/SKILL.md`](skills/omni-budget/SKILL.md) |
 | 964 | ✓ | [`skills/omni-cache/SKILL.md`](skills/omni-cache/SKILL.md) |
-| 965 | ✓ | [`skills/omni-cli-tools/SKILL.md`](skills/omni-cli-tools/SKILL.md) |
-| 966 | ✓ | [`skills/omni-combos-routing/SKILL.md`](skills/omni-combos-routing/SKILL.md) |
-| 967 | ✓ | [`skills/omni-compression/SKILL.md`](skills/omni-compression/SKILL.md) |
-| 968 | ✓ | [`skills/omni-context-rtk/SKILL.md`](skills/omni-context-rtk/SKILL.md) |
-| 969 | ✓ | [`skills/omni-db-backups/SKILL.md`](skills/omni-db-backups/SKILL.md) |
-| 970 | ✓ | [`skills/omni-github-skills/SKILL.md`](skills/omni-github-skills/SKILL.md) |
-| 971 | ✓ | [`skills/omni-inference/SKILL.md`](skills/omni-inference/SKILL.md) |
-| 972 | ✓ | [`skills/omni-mcp/SKILL.md`](skills/omni-mcp/SKILL.md) |
-| 973 | ✓ | [`skills/omni-models/SKILL.md`](skills/omni-models/SKILL.md) |
-| 974 | ✓ | [`skills/omni-providers/SKILL.md`](skills/omni-providers/SKILL.md) |
-| 975 | ✓ | [`skills/omni-proxies/SKILL.md`](skills/omni-proxies/SKILL.md) |
-| 976 | ✓ | [`skills/omni-resilience/SKILL.md`](skills/omni-resilience/SKILL.md) |
-| 977 | ✓ | [`skills/omni-settings/SKILL.md`](skills/omni-settings/SKILL.md) |
-| 978 | ✓ | [`skills/omni-sync-cloud/SKILL.md`](skills/omni-sync-cloud/SKILL.md) |
-| 979 | ✓ | [`skills/omni-tunnels/SKILL.md`](skills/omni-tunnels/SKILL.md) |
-| 980 | ✓ | [`skills/omni-usage-logs/SKILL.md`](skills/omni-usage-logs/SKILL.md) |
-| 981 | ✓ | [`skills/omni-version-manager/SKILL.md`](skills/omni-version-manager/SKILL.md) |
-| 982 | ✓ | [`skills/omni-webhooks/SKILL.md`](skills/omni-webhooks/SKILL.md) |
-| 983 | ✓ | [`skills/ponytail/SKILL.md`](skills/ponytail/SKILL.md) |
-| 984 | ✓ | [`skills/README.md`](skills/README.md) |
-| 985 | ✓ | [`src/lib/db/AGENTS.md`](src/lib/db/AGENTS.md) |
-| 986 | ✓ | [`tests/fixtures/devin-bridge/e2e-workspace/.claude/skills/bridge-proof/SKILL.md`](tests/fixtures/devin-bridge/e2e-workspace/.claude/skills/bridge-proof/SKILL.md) |
-| 987 | ✓ | [`tests/fixtures/devin-bridge/e2e-workspace/CLAUDE.md`](tests/fixtures/devin-bridge/e2e-workspace/CLAUDE.md) |
-| 988 | → | [`docs/architecture/ARCHITECTURE.md`](docs/architecture/ARCHITECTURE.md) |
-| 989 | → | [`docs/architecture/AUTHZ_GUIDE.md`](docs/architecture/AUTHZ_GUIDE.md) |
-| 990 | → | [`docs/architecture/CODEBASE_DOCUMENTATION.md`](docs/architecture/CODEBASE_DOCUMENTATION.md) |
-| 991 | → | [`docs/architecture/QUALITY_GATES.md`](docs/architecture/QUALITY_GATES.md) |
-| 992 | → | [`docs/frameworks/A2A-SERVER.md`](docs/frameworks/A2A-SERVER.md) |
-| 993 | → | [`docs/frameworks/AGENT_PROTOCOLS_GUIDE.md`](docs/frameworks/AGENT_PROTOCOLS_GUIDE.md) |
-| 994 | → | [`docs/frameworks/MCP-SERVER.md`](docs/frameworks/MCP-SERVER.md) |
-| 995 | → | [`docs/frameworks/SKILLS.md`](docs/frameworks/SKILLS.md) |
-| 996 | → | [`docs/guides/ELECTRON_GUIDE.md`](docs/guides/ELECTRON_GUIDE.md) |
-| 997 | → | [`docs/ops/TUNNELS_GUIDE.md`](docs/ops/TUNNELS_GUIDE.md) |
-| 998 | → | [`docs/routing/AUTO-COMBO.md`](docs/routing/AUTO-COMBO.md) |
-| 999 | → | [`docs/security/GUARDRAILS.md`](docs/security/GUARDRAILS.md) |
+| 965 | ✓ | [`skills/omni-cli-tools/references/endpoints.md`](skills/omni-cli-tools/references/endpoints.md) |
+| 966 | ✓ | [`skills/omni-cli-tools/SKILL.md`](skills/omni-cli-tools/SKILL.md) |
+| 967 | ✓ | [`skills/omni-combos-routing/SKILL.md`](skills/omni-combos-routing/SKILL.md) |
+| 968 | ✓ | [`skills/omni-compression/SKILL.md`](skills/omni-compression/SKILL.md) |
+| 969 | ✓ | [`skills/omni-context-rtk/SKILL.md`](skills/omni-context-rtk/SKILL.md) |
+| 970 | ✓ | [`skills/omni-db-backups/SKILL.md`](skills/omni-db-backups/SKILL.md) |
+| 971 | ✓ | [`skills/omni-github-skills/SKILL.md`](skills/omni-github-skills/SKILL.md) |
+| 972 | ✓ | [`skills/omni-inference/references/endpoints.md`](skills/omni-inference/references/endpoints.md) |
+| 973 | ✓ | [`skills/omni-inference/SKILL.md`](skills/omni-inference/SKILL.md) |
+| 974 | ✓ | [`skills/omni-mcp/SKILL.md`](skills/omni-mcp/SKILL.md) |
+| 975 | ✓ | [`skills/omni-models/SKILL.md`](skills/omni-models/SKILL.md) |
+| 976 | ✓ | [`skills/omni-providers/references/endpoints.md`](skills/omni-providers/references/endpoints.md) |
+| 977 | ✓ | [`skills/omni-providers/SKILL.md`](skills/omni-providers/SKILL.md) |
+| 978 | ✓ | [`skills/omni-proxies/SKILL.md`](skills/omni-proxies/SKILL.md) |
+| 979 | ✓ | [`skills/omni-resilience/SKILL.md`](skills/omni-resilience/SKILL.md) |
+| 980 | ✓ | [`skills/omni-settings/references/endpoints.md`](skills/omni-settings/references/endpoints.md) |
+| 981 | ✓ | [`skills/omni-settings/SKILL.md`](skills/omni-settings/SKILL.md) |
+| 982 | ✓ | [`skills/omni-sync-cloud/SKILL.md`](skills/omni-sync-cloud/SKILL.md) |
+| 983 | ✓ | [`skills/omni-tunnels/SKILL.md`](skills/omni-tunnels/SKILL.md) |
+| 984 | ✓ | [`skills/omni-usage-logs/SKILL.md`](skills/omni-usage-logs/SKILL.md) |
+| 985 | ✓ | [`skills/omni-version-manager/references/endpoints.md`](skills/omni-version-manager/references/endpoints.md) |
+| 986 | ✓ | [`skills/omni-version-manager/SKILL.md`](skills/omni-version-manager/SKILL.md) |
+| 987 | ✓ | [`skills/omni-webhooks/SKILL.md`](skills/omni-webhooks/SKILL.md) |
+| 988 | ✓ | [`skills/ponytail/SKILL.md`](skills/ponytail/SKILL.md) |
+| 989 | ✓ | [`skills/README.md`](skills/README.md) |
+| 990 | ✓ | [`src/lib/db/AGENTS.md`](src/lib/db/AGENTS.md) |
+| 991 | ✓ | [`tests/fixtures/devin-bridge/e2e-workspace/.claude/skills/bridge-proof/SKILL.md`](tests/fixtures/devin-bridge/e2e-workspace/.claude/skills/bridge-proof/SKILL.md) |
+| 992 | ✓ | [`tests/fixtures/devin-bridge/e2e-workspace/CLAUDE.md`](tests/fixtures/devin-bridge/e2e-workspace/CLAUDE.md) |
+| 993 | → | [`docs/architecture/ARCHITECTURE.md`](docs/architecture/ARCHITECTURE.md) |
+| 994 | → | [`docs/architecture/AUTHZ_GUIDE.md`](docs/architecture/AUTHZ_GUIDE.md) |
+| 995 | → | [`docs/architecture/CODEBASE_DOCUMENTATION.md`](docs/architecture/CODEBASE_DOCUMENTATION.md) |
+| 996 | → | [`docs/architecture/QUALITY_GATES.md`](docs/architecture/QUALITY_GATES.md) |
+| 997 | → | [`docs/frameworks/A2A-SERVER.md`](docs/frameworks/A2A-SERVER.md) |
+| 998 | → | [`docs/frameworks/AGENT_PROTOCOLS_GUIDE.md`](docs/frameworks/AGENT_PROTOCOLS_GUIDE.md) |
+| 999 | → | [`docs/frameworks/MCP-SERVER.md`](docs/frameworks/MCP-SERVER.md) |
+| 1000 | → | [`docs/frameworks/SKILLS.md`](docs/frameworks/SKILLS.md) |
+| 1001 | → | [`docs/guides/ELECTRON_GUIDE.md`](docs/guides/ELECTRON_GUIDE.md) |
+| 1002 | → | [`docs/ops/TUNNELS_GUIDE.md`](docs/ops/TUNNELS_GUIDE.md) |
+| 1003 | → | [`docs/routing/AUTO-COMBO.md`](docs/routing/AUTO-COMBO.md) |
+| 1004 | → | [`docs/security/GUARDRAILS.md`](docs/security/GUARDRAILS.md) |
 
 ---
 

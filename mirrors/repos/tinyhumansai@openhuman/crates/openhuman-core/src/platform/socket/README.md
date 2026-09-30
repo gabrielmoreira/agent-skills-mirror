@@ -86,7 +86,7 @@ None of its own. State (`status`, `socket_id`, `error`, attached `WebhookRouter`
 ## Used by
 
 - `crates/openhuman-core/src/core/all.rs`: registers the socket controllers.
-- `crates/openhuman-core/src/core/jsonrpc.rs` (`set_global_socket_manager` at bootstrap), `crates/openhuman-core/src/core/runtime/services.rs` (backend auto-connect with `token_provider_from_config`), `crates/openhuman-core/src/core/observability.rs`: reference the socket namespace/state.
+- `crates/openhuman-core/src/core/runtime/bootstrap.rs` (`set_global_socket_manager` at bootstrap), `crates/openhuman-core/src/core/runtime/services.rs` (backend auto-connect with `token_provider_from_config`), `crates/openhuman-core/src/core/observability.rs`: reference the socket namespace/state.
 - `crates/openhuman-core/src/platform/connectivity/rpc.rs`: connectivity/status surfacing.
 - `crates/openhuman-core/src/skills/webhooks/{ops.rs,bus.rs}`: emit webhook responses back through the global manager.
 - `crates/openhuman-core/src/security/devices/tunnel_client.rs`: emits tunnel frames/registration over the socket.

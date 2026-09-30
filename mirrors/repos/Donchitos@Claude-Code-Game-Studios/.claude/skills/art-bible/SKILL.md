@@ -25,9 +25,9 @@ Every `AskUserQuestion` call follows `.claude/docs/automation-modes.md`
 
 **`docs.density`** — it controls per-section *depth*, where `workflow`
 controls which sections exist. `modes.rigor` sets both together; set
-`docs.density` explicitly to vary depth alone: `terse` = each section a bulleted list of
+`docs.density` explicitly to vary depth alone: `terse` (the default, via `rigor: minimal`) = each section a bulleted list of
 constraints + references; `balanced` = paragraphs explaining each visual choice
-(default); `thorough` = full prose including style explorations, references, and
+(`rigor: standard`); `thorough` = full prose including style explorations, references, and
 rationale per choice. Apply it to every section you author.
 
 **`workflow`** (see `.claude/docs/workflow-modes.md`):
@@ -37,10 +37,13 @@ rationale per choice. Apply it to every section you author.
   true` forces all 9 sections regardless of tier.
 - `minimal` — not required. Can still be run voluntarily.
 
-Read `design/gdd/game-concept.md`. If it does not exist, fail with:
+Read `design/gdd/game-concept.md` — or `design/game-brief.md`, the one-page brief
+that replaces it at `rigor: minimal`. If neither exists, fail with:
 > "No game concept found. Run `/brainstorm` first — the art bible is authored after the game concept is approved."
 
-Extract from game-concept.md:
+Extract from game-concept.md (from the brief: working title, pitch, "Who it's for /
+what they feel" line and "Art & audio direction" line — it has no pillars, Visual
+Identity Anchor or platform):
 - Game title (working title)
 - Core fantasy and elevator pitch
 - Game pillars (all of them)
@@ -71,21 +74,32 @@ Grep pattern="\[To be designed\]|\[TBD\]|\[To be written\]|^_?TODO" path="design
 Section | Status
 --------|--------
 1. Visual Identity Statement | [Complete / Empty / Placeholder]
-2. Color Palette | ...
-3. Lighting & Atmosphere | ...
-4. Character Art Direction | ...
-5. Environment & Level Art | ...
-6. UI Visual Language | ...
-7. VFX & Particle Style | ...
+2. Mood & Atmosphere | ...
+3. Shape Language | ...
+4. Color System | ...
+5. Character Design Direction | ...
+6. Environment Design Language | ...
+7. UI/HUD Visual Direction | ...
 8. Asset Standards | ...
-9. Style Prohibitions | ...
+9. Reference Direction | ...
 ```
 
 - Present this table to the user:
   > "Found existing art bible at `design/art/art-bible.md`. [N] sections are complete, [M] need content. I'll work on the incomplete sections only — existing content will not be touched."
 - Only work on sections with Status: Empty or Placeholder. Do not re-author sections that are already complete.
 
-If the file does not exist, this is a fresh authoring session — proceed normally.
+If the file does not exist, this is a fresh authoring session. The first
+approved section creates the file from `.claude/docs/templates/art-bible.md`,
+whose nine `## N. Name` headings are the ones retrofit mode reads — ask first:
+"May I create `design/art/art-bible.md` from the art bible template?" Each
+approved section then replaces its own `[To be designed]` line with `Edit`;
+keep the headings as the template has them.
+
+**A section's approval names its write.** Every section is approved through an
+`AskUserQuestion` whose approving option is `[A] Lock this in and write it to
+design/art/art-bible.md` (Section 1's full option list is below). Choosing it is
+the approval to write that section; no section is written without it, fresh or
+retrofit.
 
 Extract performance budgets and the engine for asset standard constraints: read `performance.*` and `engine.name` from `project.yaml`; for any key absent or empty (including when `project.yaml` has no `performance` or `engine` block), fall back to `.claude/docs/technical-preferences.md`.
 
@@ -119,6 +133,11 @@ Use `AskUserQuestion` with two tabs:
 If the game-concept.md has a Visual Identity Anchor section, note it:
 > "Found a visual identity anchor from brainstorm: '[anchor name] — [one-line rule]'. I'll use this as the foundation for the art bible."
 
+**Author only the sections in the chosen scope.** Phases 2–4 run only the
+sections inside it — for `Resume`, the Empty and Placeholder rows of the
+retrofit table — and skip every other section, and any phase left with none.
+Phase 6 names each section not authored this run and why.
+
 ---
 
 ## Phase 2: Visual Identity Foundation (Sections 1–4)
@@ -151,10 +170,10 @@ If a visual anchor exists from game-concept.md: present it and ask:
 
 **Agent delegation (MANDATORY)**: Spawn `art-director` via `Agent`:
 - Provide: game concept (elevator pitch, core fantasy), full pillar set, platform target, any reference games/art from Phase 1 framing, the visual anchor if it exists
-- Ask: "Draft a Visual Identity Statement for this game. Provide: (1) a one-line visual rule that could resolve any visual decision ambiguity, (2) 2–3 supporting visual principles, each with a one-sentence design test ('when X is ambiguous, this principle says choose Y'). Anchor all principles directly in the stated pillars — each principle must serve a specific pillar."
+- Ask: "Draft a Visual Identity Statement for this game. Provide: (1) a one-line visual rule that could resolve any visual decision ambiguity, (2) 2–3 supporting visual principles, each with a one-sentence design test ('when X is ambiguous, this principle says choose Y'). Anchor all principles directly in the stated pillars — each principle must serve a specific pillar. (From a one-page brief, which has no pillars, anchor them in its pitch and "what they feel" line.)"
 
 Present the art-director's draft to the user. Use `AskUserQuestion`:
-- Options: `[A] Lock this in` / `[B] Revise the one-liner` / `[C] Revise a supporting principle` / `[D] Describe my own direction`
+- Options: `[A] Lock this in and write it to design/art/art-bible.md` / `[B] Revise the one-liner` / `[C] Revise a supporting principle` / `[D] Describe my own direction`
 
 Write the approved section to file immediately.
 
@@ -261,7 +280,7 @@ Write the approved section to file.
 - **`art-director`**: File format preferences, naming convention direction, texture resolution tiers, LOD level expectations, export settings philosophy
 - **`technical-artist`**: Engine-specific hard constraints — poly count budgets per asset category, texture memory limits, material slot counts, importer constraints, anything from the performance budgets (`performance.*` in `project.yaml`, falling back to `.claude/docs/technical-preferences.md`)
 
-If any art preference conflicts with a technical constraint (e.g., art-director wants 4K textures but performance budget requires 2K for mobile), resolve the conflict explicitly — note both the ideal and the constrained standard, and explain the tradeoff. Ambiguity in asset standards is where production costs are born.
+If any art preference conflicts with a technical constraint (e.g., art-director wants 4K textures but performance budget requires 2K for mobile), surface the conflict explicitly with both positions — the ideal and the constrained standard, and the tradeoff. Do NOT silently resolve it — use `AskUserQuestion` to let the user pick (options: the ideal standard, the constrained standard, or document both and let per-asset judgment apply). Ambiguity in asset standards is where production costs are born.
 
 Write the approved section to file.
 
@@ -280,20 +299,45 @@ Write the approved section to file.
 ## Phase 5: Art Director Sign-Off
 
 **Review mode check** — apply before spawning AD-ART-BIBLE:
-- `solo` → skip. Note: "AD-ART-BIBLE skipped — Solo mode." Proceed to Phase 6.
-- `lean` → skip (not a PHASE-GATE). Note: "AD-ART-BIBLE skipped — Lean mode." Proceed to Phase 6.
+- `solo` → skip. Note: "AD-ART-BIBLE skipped — Solo mode." Then record the skip
+  (below) and proceed to Phase 6.
+- `lean` → skip (not a PHASE-GATE). Note: "AD-ART-BIBLE skipped — Lean mode."
+  Then record the skip (below) and proceed to Phase 6.
 - `full` → spawn as normal.
 
-After all sections are complete (or the scoped set from Phase 1 is complete), spawn `creative-director` via `Agent` using gate **AD-ART-BIBLE** (`.claude/docs/director-gates/ad-art-bible.md`).
+On either skip, ask "May I record the skipped sign-off in
+`design/art/art-bible.md`'s header?" and, on yes, replace the header's
+`> **Art Director Sign-Off (AD-ART-BIBLE)**: [Not yet reviewed]` with
+`> **Art Director Sign-Off (AD-ART-BIBLE)**: SKIPPED [date] — [solo|lean] mode`
+— the gate accepts either form as a recorded sign-off.
 
-Pass: art bible file path, game pillars, visual identity anchor.
+After all sections are complete (or the scoped set from Phase 1 is complete), spawn `art-director` via `Agent` using gate **AD-ART-BIBLE** (`.claude/docs/director-gates/ad-art-bible.md`).
 
-Handle verdict per standard rules in `director-gates.md`. Record the verdict in the art bible's status header:
-`> **Art Director Sign-Off (AD-ART-BIBLE)**: APPROVED [date] / CONCERNS (accepted) [date] / REVISED [date]`
+Pass: the art bible path (`design/art/art-bible.md`); the game pillars and core
+fantasy; the platform and performance constraints (`platform.*` and
+`performance.*` from `project.yaml`, falling back to
+`.claude/docs/technical-preferences.md`); and the visual identity anchor. When
+Phase 0 read the one-page brief, pass its pitch and "what they feel" line as the
+pillars and fantasy, and its "Art & audio direction" line as the anchor.
+
+Handle verdict per standard rules in `director-gates.md`.
+On `Revise flagged items`, or to resolve a REJECT, the section's own specialist
+— `art-director`, with `ux-designer` for Section 7 and `technical-artist` for
+Section 8 — re-drafts each flagged section, which is then presented, approved
+and written like any other section before `REVISED [date]` is recorded.
+A `NOT ASSESSED` answer is never an approval: name the missing input, then
+supply it and re-run the gate, or record `NOT ASSESSED`.
+Record the verdict in the art bible's status header:
+`> **Art Director Sign-Off (AD-ART-BIBLE)**: APPROVED [date] / CONCERNS (accepted) [date] / REVISED [date] / NOT ASSESSED [date] — [missing input]`
 
 ---
 
 ## Phase 6: Close
+
+First, name each of the nine sections not authored this run and why — outside
+the chosen scope, or already complete — e.g. *"Not authored this run: sections
+5–9 (outside the chosen scope; `standard` requires 1–4)."* A run that stopped
+after Section 4 must not read like a finished bible.
 
 Before presenting next steps, check project state:
 - Does `design/gdd/systems-index.md` exist? → map-systems is done, skip that option
@@ -303,6 +347,10 @@ Before presenting next steps, check project state:
 - Do GDDs exist (check above)? → include /consistency-check option
 
 Use `AskUserQuestion` for next steps. Only include options that are genuinely next based on the state check above:
+
+At `workflow: minimal`, the pool is `/create-stories` (no stories yet) or
+`/dev-story [next story]`, plus Stop here — the GDD/architecture pool below is
+`standard`/`full` only.
 
 **Option pool — include only if not already done:**
 - `[_] Run /map-systems — decompose the concept into systems before writing GDDs` (skip if systems-index.md exists)
@@ -316,7 +364,7 @@ Use `AskUserQuestion` for next steps. Only include options that are genuinely ne
 
 Assign letters A, B, C… only to the options actually included. Mark the most logical pipeline-advancing option as `(recommended)`.
 
-> **Always include** `/create-architecture` and Stop here as options — these are always valid next steps once the art bible is complete.
+> **Always include** (`standard`/`full` only) `/create-architecture` and Stop here as options — these are always valid next steps once the art bible is complete.
 
 ---
 

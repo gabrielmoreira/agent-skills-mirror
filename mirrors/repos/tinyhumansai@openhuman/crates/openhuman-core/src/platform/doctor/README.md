@@ -19,7 +19,7 @@ Diagnostic / self-check domain for OpenHuman. Runs a synchronous battery of prob
 | --- | --- |
 | `crates/openhuman-core/src/platform/doctor/mod.rs` | Module docstring + exports. Declares `core`, `ops`, `schemas`; re-exports `core::*`, `ops::*` (also aliased `pub use ops as rpc`), and the schema controller pair. |
 | `crates/openhuman-core/src/platform/doctor/core.rs` | All diagnostic logic + types. `run()` entry point and every `check_*` probe; `run_models()`; severity helpers; OS-specific disk/command helpers. |
-| `crates/openhuman-core/src/platform/doctor/ops.rs` | Async JSON-RPC/CLI controller surface (`doctor_report`, `doctor_models`) wrapping the sync `core` logic in `spawn_blocking` and returning `RpcOutcome<T>`. |
+| `crates/openhuman-core/src/platform/doctor/ops.rs` | Async JSON-RPC/CLI controller surface (`doctor_report`, `doctor_models`) wrapping the sync `core` logic in `spawn_blocking` and returning `Outcome<T>`. |
 | `crates/openhuman-core/src/platform/doctor/schemas.rs` | Controller schemas + registry (`all_controller_schemas`, `all_registered_controllers`, `handle_report`/`handle_models`). |
 | `crates/openhuman-core/src/platform/doctor/core_tests.rs` | Test suite for `core.rs` (via `#[path = "core_tests.rs"] mod tests`). |
 
@@ -33,8 +33,8 @@ From `mod.rs` re-exports (`core::*`):
 
 From `ops` (also re-exported as `doctor::rpc`):
 
-- `doctor_report(&Config) -> Result<RpcOutcome<DoctorReport>, String>`
-- `doctor_models(&Config, use_cache: bool) -> Result<RpcOutcome<ModelProbeReport>, String>`
+- `doctor_report(&Config) -> Result<Outcome<DoctorReport>, String>`
+- `doctor_models(&Config, use_cache: bool) -> Result<Outcome<ModelProbeReport>, String>`
 
 Schema pair re-exported as `all_doctor_controller_schemas` / `all_doctor_registered_controllers`.
 
@@ -47,7 +47,7 @@ Namespace `doctor`, two functions:
 | `doctor.report` | none | `DoctorReport` ("Run diagnostics for workspace and runtime configuration.") |
 | `doctor.models` | `use_cache: Option<bool>` (default `true`) | `ModelProbeReport` ("Probe provider model availability and auth status.") |
 
-Both handlers load config via `config_rpc::load_config_with_timeout()` and return `RpcOutcome::single_log(...)`. Wired into the global registry in `crates/openhuman-core/src/core/all.rs` (controllers, schemas, and the namespace description "Run diagnostics for workspace and runtime health.").
+Both handlers load config via `config_rpc::load_config_with_timeout()` and return `Outcome::single_log(...)`. Wired into the global registry in `crates/openhuman-core/src/core/all.rs` (controllers, schemas, and the namespace description "Run diagnostics for workspace and runtime health.").
 
 ## Agent tools
 

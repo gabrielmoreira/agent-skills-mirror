@@ -101,6 +101,9 @@ device gating before running the service.
 
 ## Quickstart
 
+New to Tailscale or Herdr? **[Install in five minutes](./docs/five-minute-install.md)** walks the
+whole setup, from an empty computer to Collie on your phone.
+
 Run this on the host, not your phone. It requires `curl`, `tar`, and a sha256 utility. It needs no
 compiler toolchain and does not ask for `sudo`:
 
@@ -115,12 +118,23 @@ then run `collie start`. You do not need to specify a multiplexer ahead of time.
 from source, **[`docs/install.md`](./docs/install.md)** covers manual builds, each system and
 package, Herdr routes, and adding Collie to the home screen of an iPhone or Android phone.
 
+ColliePWA is not in the App Store or Google Play. You add it to your home screen from the browser,
+and that is the only way to install it on a phone.
+
 ## Documentation
+
+### Guides
+
+| | |
+| --- | --- |
+| [**Install in five minutes**](./docs/five-minute-install.md) | The recommended setup, step by step: Tailscale, Herdr and Collie on your computer, then a paired phone with Collie on its home screen |
+| [**Claude Code in tmux or Herdr, on your phone**](./docs/claude-code-on-your-phone.md) | Keep Claude Code running in tmux or Herdr when SSH drops. Manage sessions, approve prompts, and send Esc or Ctrl from your phone with push alerts. |
+
+### Reference
 
 | | |
 | --- | --- |
 | [**Install**](./docs/install.md) | The front door you need, then the install for your system: Linux, Arch and Omarchy, Nix, macOS, Windows, or as a Herdr plugin. Covers first run, setup on an iPhone or Android phone, updates, and uninstallation |
-| [**Claude Code in tmux or Herdr, on your phone**](./docs/claude-code-on-your-phone.md) | Keep Claude Code running in tmux or Herdr when SSH drops. Manage sessions, approve prompts, and send Esc or Ctrl from your phone with push alerts. |
 | [**Security**](./docs/security.md) | What a Collie exposes, the defenses, and pairing a device as the write credential |
 | [**Configure**](./docs/configure.md) | The `.env`, your own slash commands, keys, quick replies and typefaces; appearance, Zen mode, language |
 | [**Deployment**](./docs/deployment.md) | Front doors other than the default: an identity-aware proxy, a reverse proxy with no Tailscale, an off-host ingress, several Collies on one host (one per user, or several instances for one user), and a crew's standby door |
@@ -310,4 +324,5 @@ integration is documented in [`HERDR_API.md`](./HERDR_API.md).
 - Verified Herdr socket API: [`HERDR_API.md`](./HERDR_API.md)
 - Operations, versioning, and project conventions: [`CLAUDE.md`](./CLAUDE.md)
 - Contribution guidelines: [`CONTRIBUTING.md`](./CONTRIBUTING.md)
+- Names, logo and forks: [`TRADEMARKS.md`](./TRADEMARKS.md)
 - Release history: [`CHANGELOG.md`](./CHANGELOG.md)

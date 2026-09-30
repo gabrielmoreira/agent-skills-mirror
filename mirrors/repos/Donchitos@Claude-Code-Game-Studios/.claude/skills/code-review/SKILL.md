@@ -3,7 +3,7 @@ name: code-review
 description: "Architectural code review — coding standards, SOLID, testability, performance concerns."
 argument-hint: "[path-to-file-or-directory]"
 user-invocable: true
-allowed-tools: Read, Glob, Grep, Bash, Agent, AskUserQuestion, Bash(bash "*/.claude/skills/code-review/../../hooks/yaml-helper.sh" resolve_config *)
+allowed-tools: Read, Glob, Grep, Bash(git log *), Agent, AskUserQuestion, Bash(bash "*/.claude/skills/code-review/../../hooks/yaml-helper.sh" resolve_config *)
 model: sonnet
 ---
 
@@ -68,27 +68,31 @@ specialist carries `shader: null` and `ui: null`. The config reader returns the
 four-character string `"null"` for these, which is not empty and therefore reads
 as configured. `null`, empty, and missing are the same state here.
 
-If no engine is configured (no `engine.name` in `project.yaml`, and `technical-preferences.md` reads `[TO BE CONFIGURED]` or is missing), skip engine specialist steps. **Record `Engine validation: NOT ASSESSED — no engine configured (`engine.name` unset in `project.yaml`)` in this run's output.** A skipped check that says nothing is indistinguishable from a check that passed; the reader cannot tell engine guidance was never sought.
+If no engine is configured (no `engine.name` in `project.yaml`, and `technical-preferences.md` reads `[TO BE CONFIGURED]` or is missing), skip engine specialist steps. **Record ``Engine validation: NOT ASSESSED — no engine configured (`engine.name` unset in `project.yaml`)`` in this run's output.** A skipped check that says nothing is indistinguishable from a check that passed; the reader cannot tell engine guidance was never sought.
 
 ---
 
 ## Phase 3: ADR Compliance Check
 
-**Argument:** `/code-review [file(s)]` may optionally include a story file path as the last argument (e.g., `/code-review src/combat/attack.gd production/epics/combat/story-001.md`). If a story path is provided, read it to extract the governing ADR reference.
+**Argument:** `/code-review [file(s)]` may optionally include a story file path as the last argument (e.g., `/code-review Assets/Scripts/Combat/Attack.cs production/epics/combat/story-001.md`). If a story path is provided, read it to extract the governing ADR reference.
 
 Search for ADR references in, in priority order:
 1. The story file (if provided as argument)
 2. Header comments at the top of the implementation files
 3. Commit messages referencing these files (`git log --oneline -- [file]`)
 
-Look for patterns like `ADR-NNN` or `docs/architecture/ADR-`.
+Look for patterns like `ADR-NNNN` or `docs/architecture/adr-` (either case).
 
 If no ADR references found, note: "No ADR references found — ADR compliance check skipped. For full ADR compliance review, provide the story path: `/code-review [files] [story-path]`."
 
-For each referenced ADR, load **only the sections this check needs — never an unbounded full read.** A substantial ADR exceeds the 25k-token `Read` cap, and a capped read's only recovery is paging the remainder — the most expensive way to read a file (measured ~103k vs ~54k tokens on a 34k-token ADR). Use the same pattern as `/dev-story` and `/create-stories`:
+For each referenced ADR, load **only the sections this check needs — never an unbounded full read.** A substantial ADR exceeds the 25k-token `Read` cap, and a capped read's only recovery is paging the remainder — the most expensive way to read a file. Use the same pattern as `/dev-story` and `/create-stories`:
 
 1. **Map the headings** (cheap — line numbers only): `Grep pattern="^## " path="[adr-file]" output_mode="content" -n`
 2. **Bounded-read only `## Decision` and `## Consequences`**, using the line numbers to set `Read(offset, limit)` spans that end where the next heading begins. If the heading map is empty (a nonstandard ADR predating the template), fall back to one full `Read`; if that truncates at the cap, grep for the decision/consequence content directly rather than paging the remainder.
+
+A referenced ADR whose file is missing, or that cannot be read, makes ADR
+Compliance `NOT ASSESSED — [ADR] could not be read`: name it. No reference at
+all is `NO ADRS FOUND`, a different result.
 
 From those two sections, classify any deviation:
 
@@ -155,7 +159,7 @@ Spawn all applicable specialists simultaneously via `Agent` — do not wait for 
 > promoted to a defect on the strength of confident phrasing.
 >
 > **Why this is mandatory.** Agents are reliable when deriving and unreliable when
-> diagnosing existing code. Measured in practice: three separate agents
+> diagnosing existing code. In practice, three separate agents
 > produced three different **wrong** claims about the same six-line function,
 > every one fluent enough to pass a skim — including a spawned specialist here
 > alleging a float-precision bug that enumerating the inputs disproves. Without
@@ -201,7 +205,7 @@ Collect all specialist findings before producing output.
 ### Engine Specialist Findings: [N/A — no engine configured / CLEAN / ISSUES FOUND]
 [Findings from engine specialist(s), or "No engine configured." if skipped]
 
-### Testability: [N/A — Visual/Feel or Config story / TESTABLE / GAPS / BLOCKING]
+### Testability: [N/A — no story path given / N/A — Visual/Feel or Config story / TESTABLE / GAPS / BLOCKING]
 [qa-tester findings: test hooks, coverage gaps, untestable paths, new edge cases]
 [If BLOCKING: implementation must expose [X] before tests in ## QA Test Cases can run]
 
@@ -209,7 +213,7 @@ Collect all specialist findings before producing output.
 [List each ADR checked, result, and any deviations with severity]
 
 ### Standards Compliance: [X/6 passing]
-[List failures with line references]
+[List failures with line references; a missing doc comment names the method or class]
 
 ### Architecture: [NOT ASSESSED / CLEAN / MINOR ISSUES / VIOLATIONS FOUND]
 [List specific architectural concerns]
@@ -232,6 +236,20 @@ Collect all specialist findings before producing output.
 ### Verdict: [NOT ASSESSED / APPROVED / APPROVED WITH SUGGESTIONS / CHANGES REQUIRED]
 ```
 
+Choose the verdict, first match wins:
+- **CHANGES REQUIRED** — anything under Required Changes
+- **NOT ASSESSED** — nothing to review (the no-data path above), the engine
+  specialist review did not run — no engine configured, or a specialist that
+  could not be spawned — or any report section reads `NOT ASSESSED` (ADR
+  Compliance with a referenced ADR that could not be read, Architecture, SOLID);
+  name which. NOT ASSESSED ranks below CHANGES REQUIRED, because a known
+  defect is more actionable than a skipped check, and above both approvals: a
+  review that skipped the engine check has not approved the code. (`NO ADRS
+  FOUND` is not NOT ASSESSED: with no ADR to check, it does not stop an
+  approval.)
+- **APPROVED WITH SUGGESTIONS** — only Suggestions
+- **APPROVED** — no required changes and no suggestions
+
 This skill is read-only — no files are written.
 
 ---
@@ -239,15 +257,22 @@ This skill is read-only — no files are written.
 ## Phase 9: Next Steps
 
 Use `AskUserQuestion`:
-- Prompt: "Code review complete — verdict: [NOT ASSESSED / APPROVED / CHANGES REQUIRED / MAJOR REVISION]. How would you like to proceed?"
+- Prompt: "Code review complete — verdict: [NOT ASSESSED / APPROVED / APPROVED WITH SUGGESTIONS / CHANGES REQUIRED]. How would you like to proceed?" (the Phase 8 verdict, word for word)
 - Options (adjust based on verdict):
   - If APPROVED:
     - `[A] Run /story-done to mark the story complete`
     - `[B] Stop here`
-  - If CHANGES REQUIRED or MAJOR REVISION:
+  - If APPROVED WITH SUGGESTIONS:
+    - `[A] Apply the suggestions, then run /story-done`
+    - `[B] Run /story-done now — suggestions noted for later`
+    - `[C] Stop here`
+  - If CHANGES REQUIRED:
     - `[A] Fix the issues and re-run /code-review`
     - `[B] Run /story-done anyway with noted exceptions`
     - `[C] Stop here`
+  - If NOT ASSESSED:
+    - `[A] Fix what stopped the review (point me at the code, run /setup-engine, or fix the unreadable ADR reference), then re-run /code-review`
+    - `[B] Stop here`
 
 If an ARCHITECTURAL VIOLATION is found:
 - If the violation contradicts an **existing ADR**: fix the implementation to comply with `docs/architecture/[adr-file].md`. If the design has legitimately changed, run `/architecture-decision` to formally *revise* the existing ADR — do not create a competing one.

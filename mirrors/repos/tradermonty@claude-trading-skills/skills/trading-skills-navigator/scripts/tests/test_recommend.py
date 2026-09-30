@@ -36,11 +36,9 @@ from recommend import (  # noqa: E402
 # no_api_path = the WHOLE recommended path works without paid API keys
 # (PROJECT_VISION.md §12 / intent_routing.md "no-API" column). None on a
 # honest gap (no path → contract column "—").
-# manifest_status (PR-N2): "active" iff a skillsets/<skillset>.yaml manifest
-# ships (market-regime / core-portfolio / swing-opportunity / trade-memory);
-# honest-gap categories (advanced-satellite / strategy-research) stay
-# "deferred". The PR-N2 diff vs PR-N1 is EXACTLY this column — every other
-# value is byte-unchanged (proves manifests didn't perturb routing).
+# manifest_status: "active" iff a skillsets/<skillset>.yaml manifest ships.
+# Advanced Satellite remains a deliberate honest gap until a dedicated
+# workflow and matching skillset are available.
 # ---------------------------------------------------------------------------
 
 CONTRACT: list[tuple[int, str, str | None, set[str], str, bool, bool | None, str]] = [
@@ -137,12 +135,12 @@ CONTRACT: list[tuple[int, str, str | None, set[str], str, bool, bool | None, str
     (
         10,
         "I want to research and backtest new strategy ideas",
-        None,
+        "strategy-research-pipeline",
         set(),
         "strategy-research",
+        False,
         True,
-        None,
-        "deferred",  # honest gap — no manifest
+        "active",
     ),
 ]
 
@@ -181,6 +179,35 @@ def test_ten_question_contract(
         assert manifest["required_skills"] == ss["required_skills"], f"Q{num} manifest req"
     else:
         assert manifest is None, f"Q{num} manifest null on deferred"
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        "I want to backtest a new strategy",
+        "I want to back test a new strategy",
+        "I want to back-test a new strategy",
+        "新しい戦略をバックテストしたい",
+    ],
+)
+def test_backtest_execution_request_explains_capability_gap(
+    repo_metadata: dict[str, Any], query: str
+) -> None:
+    result = recommend(query, repo_metadata)
+    assert result["primary_workflow"]["id"] == "strategy-research-pipeline"
+    assert result["note"] and "does not execute a backtest" in result["note"]
+    assert "separate backtest tool" in result["note"]
+    assert "No-API path describes this workflow only" in result["note"]
+    assert f"Note: {result['note']}" in render_text(result)
+    assert result["note"] in dumps(result)
+
+
+def test_research_request_without_backtest_execution_has_no_capability_note(
+    repo_metadata: dict[str, Any],
+) -> None:
+    result = recommend("Build a strategy research workflow", repo_metadata)
+    assert result["primary_workflow"]["id"] == "strategy-research-pipeline"
+    assert result["note"] is None
 
 
 @pytest.mark.parametrize(
@@ -461,7 +488,6 @@ def test_kanchi_persona_terms_do_not_collide_with_pinned_queries() -> None:
 def test_honest_gap_returns_suggested_skills(repo_metadata: dict[str, Any]) -> None:
     for query, cat in [
         ("I want to use short strategies", "advanced-satellite"),
-        ("I want to research and backtest new strategy ideas", "strategy-research"),
     ]:
         r = recommend(query, repo_metadata)
         assert r["honest_gap"] is True
@@ -757,6 +783,7 @@ SHIPPED_SKILLSETS = {
     "core-portfolio",
     "swing-opportunity",
     "trade-memory",
+    "strategy-research",
 }
 
 
@@ -812,9 +839,8 @@ def test_skillset_manifest_active_for_shipped_categories(
     "query,exp_skillset",
     [
         ("I want to use short strategies", "advanced-satellite"),
-        ("I want to research and backtest new strategy ideas", "strategy-research"),
     ],
-    ids=["short-gap", "research-gap"],
+    ids=["short-gap"],
 )
 def test_skillset_deferred_without_manifest(
     repo_metadata: dict[str, Any], query: str, exp_skillset: str
@@ -923,9 +949,8 @@ def test_skillset_manifest_contents_match_yaml(
     "query",
     [
         "I want to use short strategies",
-        "I want to research and backtest new strategy ideas",
     ],
-    ids=["short-gap", "research-gap"],
+    ids=["short-gap"],
 )
 def test_setup_bundle_empty_on_honest_gap(repo_metadata: dict[str, Any], query: str) -> None:
     r = recommend(query, repo_metadata)
@@ -995,7 +1020,12 @@ def test_render_text_honest_gap_no_bundle(repo_metadata: dict[str, Any]) -> None
         # a few more JA personas
         ("初心者だけどどこから始めればいい", "market-regime-daily", False, "market-regime"),
         ("ショート戦略を使いたい", None, True, "advanced-satellite"),
-        ("新しい戦略をバックテストしたい", None, True, "strategy-research"),
+        (
+            "新しい戦略をバックテストしたい",
+            "strategy-research-pipeline",
+            False,
+            "strategy-research",
+        ),
         ("毎朝15分で今日リスクを取れるか知りたい", "market-regime-daily", False, "market-regime"),
     ],
     ids=[
@@ -1004,7 +1034,7 @@ def test_render_text_honest_gap_no_bundle(repo_metadata: dict[str, Any]) -> None
         "ja-dividend",
         "ja-beginner",
         "ja-short-gap",
-        "ja-research-gap",
+        "ja-research-workflow",
         "ja-morning",
     ],
 )

@@ -764,10 +764,43 @@ const AIDetector = (() => {
   ];
 
   // ─── False concession ──────────────────────────────────────────────
+  // "While X is impressive, Y remains a challenge" and "Although X has made
+  // strides, Y is still an open question" only read as the AI tell when both
+  // halves are vague: an opener that concedes nothing specific, paired with a
+  // close that names no actual gap. The subject (X) is widened past a single
+  // word — "while the underlying model architecture is impressive" is as
+  // hollow as "while it is impressive" — but stays inside one clause (no
+  // comma or sentence punctuation) so the opener cannot reach across clauses.
+  // The close is required in the same sentence: a bare opener followed by a
+  // concrete, specific continuation ("...at this scale, our write pattern is
+  // append-only, so we moved the hot table to a log-structured store
+  // instead") is ordinary technical writing, not the empty frame. See #211.
+  // "Despite X challenges" is dropped entirely: alone it is too common a
+  // shape in ordinary prose to carry the tell.
+  // The close must also follow a clause separator (comma, semicolon or
+  // colon): without one, "While the model is impressive and remains a
+  // challenge to maintain, we plan to replace it next month" matched both
+  // phrases inside the opening clause and never looked at the concrete main
+  // clause that followed. See #359.
+  // Stop at the next clause separator too: a concrete continuation followed
+  // by a later vague phrase is not the empty two-half frame.
+  const FALSE_CONCESSION_SUBJECT = "[^,;:.!?\\n]{1,60}?";
+  // Known limit: a period inside an abbreviation ("U.S.", "e.g.") ends the
+  // gap the same as a real sentence boundary would, so a close on the far
+  // side of one is deliberately missed to keep that boundary guarantee;
+  // only a comma, semicolon or colon counts as the clause separator #359
+  // requires.
+  const FALSE_CONCESSION_GAP = "[^,;:.!?\\n]{0,80}?[,;:]\\s*[^,;:.!?\\n]{0,80}?";
+  const FALSE_CONCESSION_VAGUE_CLOSE =
+    "(?:remains?\\s+a\\s+challenge" +
+    "|(?:is|are)\\s+still\\s+an?\\s+open\\s+questions?" +
+    "|there\\s+(?:is|are)\\s+still\\s+work\\s+to\\s+do" +
+    "|remains?\\s+unanswered)\\b";
   const FALSE_CONCESSION = [
-    /\bwhile\s+\w+\s+is\s+impressive\b/gi,
-    /\balthough\s+\w+\s+has\s+made\s+strides\b/gi,
-    /\bdespite\s+\w+\s+challenges?\b/gi,
+    new RegExp("\\bwhile\\s+" + FALSE_CONCESSION_SUBJECT + "\\s+is\\s+impressive\\b" +
+      FALSE_CONCESSION_GAP + FALSE_CONCESSION_VAGUE_CLOSE, 'gi'),
+    new RegExp("\\balthough\\s+" + FALSE_CONCESSION_SUBJECT + "\\s+has\\s+made\\s+strides\\b" +
+      FALSE_CONCESSION_GAP + FALSE_CONCESSION_VAGUE_CLOSE, 'gi'),
   ];
 
   // ─── Rhetorical question openers ───────────────────────────────────
@@ -2073,9 +2106,45 @@ const AIDetector = (() => {
   }
 
   function analyzeText(text, options = {}) {
-    if (!text || text.trim().length === 0) {
-      return { ...buildV2Defaults('UNSCORED', 'low'), score: 0, label: 'Empty', issues: [], stats: {}, tooShort: true };
+
+    if (typeof text !== 'string') {
+      throw new TypeError('analyzeText(text): argument must be a string');
     }
+
+    const VALID_CONTEXT_MODES = new Set(['general', 'technical', 'marketing', 'personal']);
+    const requestedMode = options.contextMode === undefined ? 'general' : options.contextMode;
+    const contextMode = VALID_CONTEXT_MODES.has(requestedMode) ? requestedMode : 'general';
+    const contextModeFallback = requestedMode !== contextMode ? requestedMode : null;
+
+    // Source mode controls which parts of a Markdown file count as prose.
+    // Plain remains the compatibility default. Rendered Markdown masks only
+    // initial YAML frontmatter and HTML comments; source-hygiene checks for
+    // hidden TODO/placeholder comments remain available through plain mode.
+    const VALID_SOURCE_MODES = new Set(['plain', 'rendered-markdown']);
+    const requestedSourceMode = options.sourceMode === undefined ? 'plain' : options.sourceMode;
+    const sourceMode = VALID_SOURCE_MODES.has(requestedSourceMode) ? requestedSourceMode : 'plain';
+    const sourceModeFallback = requestedSourceMode !== sourceMode ? requestedSourceMode : undefined;
+    if (!text || text.trim().length === 0) {
+      return {
+                ...buildV2Defaults('UNSCORED', 'low'),
+                    score: 0,
+                    label: 'Empty',
+                    issues: [],
+                    stats: {
+                        wordCount: 0,
+                        contextMode,
+                        contextModeFallback,
+                        sourceMode,
+                        sourceModeFallback,
+                        maskedFrontmatter: 0,
+                        maskedHtmlComments: 0,
+                        ignoredRegions: 0,
+                        quotedLines: 0,
+                        maskedQuotes: 0,
+                    },
+                  tooShort: true,
+                };
+              }
 
     // Map each working-string code unit back to the caller's source. Every
     // length-changing preprocessing stage composes this map as it removes
@@ -2093,19 +2162,6 @@ const AIDetector = (() => {
     // Mode validation: an unknown string (e.g. typo "tecnical") would
     // otherwise silently downgrade to general-mode behavior. Coerce to
     // 'general' and surface the original value in stats for traceability.
-    const VALID_CONTEXT_MODES = new Set(['general', 'technical', 'marketing', 'personal']);
-    const requestedMode = options.contextMode || 'general';
-    const contextMode = VALID_CONTEXT_MODES.has(requestedMode) ? requestedMode : 'general';
-    const contextModeFallback = requestedMode !== contextMode ? requestedMode : null;
-
-    // Source mode controls which parts of a Markdown file count as prose.
-    // Plain remains the compatibility default. Rendered Markdown masks only
-    // initial YAML frontmatter and HTML comments; source-hygiene checks for
-    // hidden TODO/placeholder comments remain available through plain mode.
-    const VALID_SOURCE_MODES = new Set(['plain', 'rendered-markdown']);
-    const requestedSourceMode = options.sourceMode === undefined ? 'plain' : options.sourceMode;
-    const sourceMode = VALID_SOURCE_MODES.has(requestedSourceMode) ? requestedSourceMode : 'plain';
-    const sourceModeFallback = requestedSourceMode !== sourceMode ? requestedSourceMode : undefined;
     let maskedFrontmatter = 0;
     let maskedHtmlComments = 0;
 

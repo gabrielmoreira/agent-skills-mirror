@@ -551,7 +551,9 @@ Rules:
 In the dashboard, single-file extras whose `file` is `AGENTS.md` appear on the
 **AGENTS.md** tab; all other single-file extras appear on **Folders & files**. There,
 **Add extra** offers **Folder** or **Single file**, each target has a **File name**,
-and a single file can use `merge`, `copy` or `import`. The dashboard does not edit
+and a single file can use `merge`, `copy` or `import`. A single file's **Name**
+follows its file name without the extension (`APPEND_SYSTEM.md` gives
+`APPEND_SYSTEM`) until you type one. The dashboard does not edit
 the file's content; edit the source file directly.
 
 ### One folder, several files

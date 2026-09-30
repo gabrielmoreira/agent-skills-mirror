@@ -115,7 +115,7 @@ therefore has no derived pre-event: denying it belongs to `preToolUse`. The
 
 ## Wiring
 
-- `crate::hooks::init(&cfg)` is called from `core/jsonrpc.rs` during core
+- `crate::hooks::init(&cfg)` is called from `core/runtime/bootstrap.rs` during core
   boot: it sets host context, reads config, and installs or uninstalls the
   bridge. Disabled (`config::schema::hooks::HooksConfig::enabled = false`)
   or empty config uninstalls the bridge entirely so an unconfigured host pays

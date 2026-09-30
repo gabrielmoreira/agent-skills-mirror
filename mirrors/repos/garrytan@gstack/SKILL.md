@@ -20,8 +20,8 @@ triggers:
 ## When to invoke this skill
 
 Sends any gstack request to the right skill
-(planning, review, QA, shipping, debugging, docs, security, design). For browser/QA
-and dogfooding it points you at /browse. Use when you invoke gstack without a specific
+(planning, review, QA, shipping, debugging, docs, security, design). Routes QA by
+intent and browser interaction to /browse. Use when you invoke gstack without a specific
 skill, or ask "which gstack skill fits this?".
 
 ## Preamble (run first)
@@ -156,15 +156,19 @@ Skills that run plan reviews (`/plan-*-review`, `/codex review`) include the EXI
 
 This is the gstack router. Its one job is to send the request to the right skill.
 
-1. If the request is about a browser, QA, dogfooding, screenshots, or inspecting a page
-   (open a site, test a deploy, take a screenshot, check a flow visually) → invoke `/browse`.
+1. If the request is to test behavior, find bugs, QA or dogfood software → invoke `/qa`,
+   or `/qa-only` when the user wants reporting without fixes. These skills select browser,
+   API, CLI, job, worker or webhook surfaces before loading their testing instructions.
+   An API URL does not imply browser testing. An explicit skill request keeps its authority.
+2. If the request is browser interaction, screenshots, or inspecting a page
+   (open a site, take a screenshot, inspect a flow visually) → invoke `/browse`.
    Every gstack browser skill (`/browse`, `/qa`, `/qa-only`, `/design-review`, `/canary`,
    `/benchmark`, `/scrape`) drives the Aside browser first — the user's real browser with
    their real logged-in sessions — and falls back to gstack's own browser when Aside is not
    installed or not running. Route "open the browser" / "import cookies" requests to the
    fallback-browser skills below only when the user is clearly on that path (Linux,
    Windows, or Aside closed); on Aside there is nothing to open or import.
-2. Otherwise, route by the rules below. If nothing matches, answer directly.
+3. Otherwise, route by the rules below. If nothing matches, answer directly.
 
 Best-effort, record which way you routed (never block on it). Set `ROUTE_OUTCOME` to
 `browse` (sent to /browse), `routed` (sent to another skill), or `direct` (answered
@@ -196,6 +200,7 @@ quality gates that produce better results than answering inline.
 - User asks to just report bugs without fixing → invoke `/qa-only`
 - User asks to review code, check the diff, pre-landing review, "look at my changes" → invoke `/review`
 - User asks to find code worth sharing, shared-code extractions, or duplication worth consolidating → invoke `/deslop-shared-libs`
+- User asks to audit, prune or find low-value tests in the existing suite → invoke `/test-audit`
 - User asks about visual polish, design audit of a live site, "this looks off" → invoke `/design-review`
 - User asks to audit the live developer experience, time-to-hello-world → invoke `/devex-review`
 - User asks to ship, deploy, push, create a PR, "let's land this", "send it" → invoke `/ship`

@@ -3,7 +3,7 @@ name: scope-check
 description: "Scope creep check — current scope versus the original plan. Flags additions, quantifies bloat, recommends cuts. 'Any scope creep?'"
 argument-hint: "[feature-name or sprint-N]"
 user-invocable: true
-allowed-tools: Read, Glob, Grep, Bash
+allowed-tools: Read, Glob, Grep, Bash(git log *)
 model: haiku
 ---
 
@@ -14,7 +14,7 @@ This skill is read-only — it reports findings but writes no files.
 Compares original planned scope against current state to detect, quantify, and triage
 scope creep.
 
-**Argument:** `$ARGUMENTS[0]` — feature name, sprint number, or milestone name.
+**Argument:** `$ARGUMENTS` — the whole string: a feature name (it may be several words), sprint number, or milestone name.
 
 ---
 
@@ -23,7 +23,7 @@ scope creep.
 Locate the baseline scope document for the given argument:
 
 - **Feature name** → read `design/gdd/[feature].md` or matching file in `design/`
-- **Sprint number** (e.g., `sprint-3`) → read `production/sprints/sprint-03.md` or similar
+- **Sprint number** (e.g., `sprint-3`) → read `production/sprints/sprint-003.md` (the name `/sprint-plan` writes) or similar
 - **Milestone** → read `production/milestones/[name].md`
 
 If the document is not found, report the missing file and stop. Do not proceed without
@@ -58,7 +58,8 @@ Generated: [Date]
 
 > **If Phase 4 will return NOT ASSESSED, do not render the numeric block below.**
 > Replace the counts and the Bloat Score with
-> `Baseline unusable — see verdict` and give the reason. A rendered
+> `[Baseline | Current state] unusable — see verdict` (whichever side could not
+> be read) and give the reason. A rendered
 > `Original items: 0 / Net scope change: 0%` one section above a NOT ASSESSED
 > verdict re-creates the exact "0% reads as on track" hazard Phase 4 exists to
 > kill, one phase earlier — and readers trust a number over a caveat.
@@ -115,7 +116,8 @@ Assign a canonical verdict based on net scope change:
   Track**. Nothing was compared. Nothing was on track.
 - The **current state cannot be determined** — no related source files, no commits
   in the window, nothing in progress to read. Comparing a real baseline against an
-  unreadable present is not a 0% change.
+  unreadable present is not a 0% change, and not the −100% that zero current
+  items computes — the table reads both as PASS.
 - The denominator would be zero for any other reason. A percentage computed from
   no baseline items is not a small number; it is not a number.
 
@@ -145,8 +147,11 @@ After presenting the report, offer concrete follow-up:
 - **CONCERNS** → offer to identify the 2–3 additions with best cut ratio. Reference `/sprint-plan update` to formally re-scope.
 - **FAIL** → recommend escalating to producer. Reference `/sprint-plan update` for re-planning or `/estimate` to re-baseline timeline.
 
-Always end with:
+End every verdict except NOT ASSESSED with:
 > "Run `/scope-check [name]` again after cuts are made to verify the verdict improves."
+
+(NOT ASSESSED ends with what would make it assessable, above — a re-run against
+the same inputs would repeat the non-answer.)
 
 ---
 

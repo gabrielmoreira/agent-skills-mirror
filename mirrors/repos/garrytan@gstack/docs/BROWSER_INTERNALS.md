@@ -162,5 +162,6 @@ file lost its only writer when sidebar-agent.ts was ripped, so the shield
 reported a permanent 'inactive' or a stale false-green 'protected' from
 leftover disk state. The live defenses (L1-L3 filters, L4 sidecar on the
 inject-scan path) report through their own call sites, never through
-/health. `browse/test/server-security-surface.test.ts` pins both the
-removal and the live L4 wiring. Do not re-document these as live.
+/health. `browse/test/extension-token.test.ts` pins the removal on the real
+/health body and `browse/test/pty-inject-scan.test.ts` pins the live L4
+wiring behaviorally. Do not re-document these as live.

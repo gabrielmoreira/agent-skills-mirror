@@ -23,8 +23,8 @@ The snapshot never talks to the backend. The user it reports is the payload the 
 - `AppStateSnapshot`: composite payload: `auth` (`AuthStateResponse`: `isAuthenticated`, `userId`, `user`, `profileId`, `credential`, `expiresAt`), `session_token`, `current_user` (= `auth.user`), `onboarding_completed`, `chat_onboarding_completed`, `analytics_enabled`, `local_state`, `keyring_status`, `runtime` (`RuntimeSnapshot { local_ai: LocalAiStatus, service: ServiceStatus }`), `health`, `config_recovered`.
 - `StoredAppState`: disk schema persisted to `<workspace_dir>/state/app-state.json` (`encryption_key`, `onboarding_tasks`, `keyring_consent`). `StoredOnboardingTasks` holds the shell-tracked onboarding flags plus `enabled_tools` and `connected_sources`.
 - `StoredAppStatePatch`: partial update (`Option<Option<_>>` per field) applied by `update_local_state`.
-- `pub async fn snapshot() -> Result<RpcOutcome<AppStateSnapshot>, String>`: full snapshot; one auth-profile load per call, no network.
-- `pub async fn update_local_state(StoredAppStatePatch) -> Result<RpcOutcome<StoredAppState>, String>`: merge under `APP_STATE_FILE_LOCK` and save atomically.
+- `pub async fn snapshot() -> Result<Outcome<AppStateSnapshot>, String>`: full snapshot; one auth-profile load per call, no network.
+- `pub async fn update_local_state(StoredAppStatePatch) -> Result<Outcome<StoredAppState>, String>`: merge under `APP_STATE_FILE_LOCK` and save atomically.
 - `pub(crate) fn load_stored_app_state(&Config)` / `pub fn save_app_state(&Config, &StoredAppState)`: direct disk access; a corrupt file is renamed to `app-state.json.corrupted.<ts>` and replaced with defaults.
 - `latch_from_config(&Config)` / `config_recovered_this_session()`: recovery latch.
 - RPC `app_state.{snapshot, update_local_state}` via `all_app_state_controller_schemas` / `all_app_state_registered_controllers`.
@@ -41,7 +41,7 @@ The signed-in identity for prompts and Sentry is `security::credentials::identit
 ## Called by
 
 - `crates/openhuman-core/src/core/all.rs`: registers `all_app_state_registered_controllers()`; the shell reaches them through `coreRpcClient` → `relay_http_rpc`.
-- `crates/openhuman-core/src/core/jsonrpc.rs`: `latch_from_config` at runtime bootstrap.
+- `crates/openhuman-core/src/core/runtime/bootstrap.rs`: `latch_from_config` at runtime bootstrap.
 - `crates/openhuman-core/src/agent/session_host/builder/factory.rs`: `load_stored_app_state` to read `onboarding_tasks.enabled_tools` for tool filtering.
 - `crates/openhuman-core/src/security/keyring_consent/ops.rs`: persists the consent choice through `update_local_state`.
 

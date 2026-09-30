@@ -22,6 +22,9 @@ runtime. Prettier governs the frontend JSON/TS; rustfmt governs `src-tauri/`.
 
 ## Existing behavior first
 
+- For integration work, read `internal-docs/integration-memory.md` when present
+  (local-only feedback). Recheck current code; older notes may describe retired
+  layouts or an earlier, incomplete implementation.
 - Before adding a feature similar to one already in the app, identify the
   reference files and trace the full interaction through handlers, effects,
   and backend calls. Compare loading, selection, refresh, errors, and saved
@@ -36,6 +39,12 @@ runtime. Prettier governs the frontend JSON/TS; rustfmt governs `src-tauri/`.
   restrict an existing cross-platform client to Windows. Verify native paths,
   credential storage, process handling, and installation on supported systems,
   and state any platform limitation before release.
+- Before implementation, record the requested capabilities against all three
+  platforms, with the existing code to reuse and the verification for each.
+  Distinguish implemented, unverified, and vendor-unavailable; do not turn an
+  excluded capability into new scope to fill the table.
+- A visual-only request must preserve unrelated typography, spacing, layout,
+  and interaction. Keep the latest user-approved result as the baseline.
 - If existing implementations disagree, follow the user's confirmed behavior
   and these conventions. Do not silently choose one and call it consistent.
   Ask a focused question only when a product decision remains unresolved.
@@ -46,6 +55,15 @@ runtime. Prettier governs the frontend JSON/TS; rustfmt governs `src-tauri/`.
 - Review against the reference behavior as well as code correctness. Passing
   tests alone does not establish consistency. Report what was reused and any
   necessary differences; keep unrelated implementations outside the change.
+- Before calling an integration complete, reconcile that capability table with
+  evidence for detection, installation, launch, and the requested account or
+  model operations. A Windows build or UI approval does not verify other OSes
+  or native account switching. Report build, fixture, and live-client checks
+  separately; verify test instrumentation with a positive control.
+- At a handoff or interruption, save the current goal, approved decisions,
+  reference files, changed/committed state, verification limits, and next step
+  in a local note. Resume from that note and current Git state; do not restart
+  the design or silently drop unfinished parts when the user gives feedback.
 
 ## CI gates (must pass locally before pushing)
 

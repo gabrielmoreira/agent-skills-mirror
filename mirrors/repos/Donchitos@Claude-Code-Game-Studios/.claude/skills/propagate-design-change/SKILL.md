@@ -1,15 +1,16 @@
 ---
 name: propagate-design-change
 description: "A GDD changed — scan ADRs and the traceability index for now-stale architectural decisions. Impact report, guides resolution."
-argument-hint: "[path/to/changed-gdd.md]"
+argument-hint: "[path/to/changed-gdd.md] [--review full|lean|solo]"
 user-invocable: true
 allowed-tools: Read, Glob, Grep, Write, Bash, Agent, AskUserQuestion, Bash(bash "*/.claude/skills/propagate-design-change/../../hooks/yaml-helper.sh" resolve_config *)
 model: sonnet
 ---
 
-!`bash "${CLAUDE_SKILL_DIR}/../../hooks/yaml-helper.sh" resolve_config --keys automation,workflow,system_overrides`
+!`bash "${CLAUDE_SKILL_DIR}/../../hooks/yaml-helper.sh" resolve_config --keys review_mode,automation,workflow,system_overrides`
 
-
+Resolved above — use as-is; `--review` overrides `review_mode` for this run. No
+block → defaults in `.claude/docs/config-resolution.md`.
 
 # Propagate Design Change
 
@@ -122,7 +123,12 @@ below still runs.
 Read ADRs in `docs/architecture/` **per the resolved tier**:
 - **`full`** — read **all** ADRs.
 - **`standard`** — read only **critical (Foundation-layer) ADRs** plus any ADR
-  that references the changed GDD.
+  that references the changed GDD. An ADR is critical when the `**Layer**` row of
+  its `## Engine Compatibility` table says `Foundation`, or when it has no
+  `**Layer**` row — when in doubt, treat it as critical
+  (`.claude/docs/workflow-modes.md`). Read every row in one call:
+  `Grep pattern="\*\*Layer\*\*" glob="docs/architecture/adr-*.md" output_mode="content"`,
+  and count an ADR that Grep does not list as critical.
 - **`minimal`** — **not applicable**: there are no ADRs to cascade. Report "No ADR
   cascade at minimal workflow — design change recorded; no architecture impact
   analysis." and stop here.
@@ -147,7 +153,7 @@ Interpret the result — a zero-match scan is **never** "no impact" by default:
 | Result | Meaning | Action |
 |---|---|---|
 | **M ≥ 1** | Normal. | Proceed. The N − M non-matching ADRs are *out of scope for this cascade* — do not describe them as verified unaffected. |
-| **Both scans 0, N > 0** | Ambiguous — either no ADR references this GDD, or the ADRs lack requirement tables. | Run `Grep pattern="## GDD Requirements Addressed" glob="docs/architecture/adr-*.md" output_mode="files_with_matches"`. If that is **also** empty: "[N] ADRs found, none contains a 'GDD Requirements Addressed' section — traceability cannot be computed (a `gate-pre-production` blocker). Run `/architecture-decision [adr] retrofit`." If it is **non-empty**: the tables exist and genuinely none reference this GDD — "No ADR references [gdd] — no architecture impact." |
+| **Both scans 0, N > 0** | Ambiguous — either no ADR references this GDD, or the ADRs lack requirement tables. | Run `Grep pattern="## GDD Requirements Addressed" glob="docs/architecture/adr-*.md" output_mode="files_with_matches"`. If that is **also** empty: "[N] ADRs found, none contains a 'GDD Requirements Addressed' section — traceability cannot be computed (a `gate-pre-production` blocker). Run `/architecture-decision retrofit [adr]`." If it is **non-empty**: the tables exist and genuinely none reference this GDD — "No ADR references [gdd] — no architecture impact." |
 
 Read `docs/architecture/requirements-traceability.md` if it exists.
 
@@ -170,8 +176,8 @@ This read is unbounded only up to a point — check size first
   (`Grep pattern="^## " path="docs/architecture/[adr-file].md" output_mode="content" -n`),
   then bounded-`Read` only `## Context`, `## Decision`, and `## Consequences`.
   An unbounded `Read` on a large ADR hits the 25k-token cap and, unrecovered,
-  the only path forward is paging through the entire remainder — measured at
-  103k tokens on a 34k-token ADR, most of it content this analysis never uses.
+  the only path forward is paging through the entire remainder — most of it
+  content this analysis never uses.
 
 For each ADR that references the changed GDD:
 
@@ -254,6 +260,7 @@ Apply the verdict:
 - **APPROVE** → proceed to Phase 7 resolution workflow
 - **CONCERNS** → surface the specific ADRs or recommendations flagged; use `AskUserQuestion` with options: `Revise the impact assessment` / `Accept with noted concerns` / `Discuss further`
 - **REJECT** → do not proceed to resolution; re-analyze the impact before continuing
+- **NOT ASSESSED** [missing input] → not an approval (`.claude/docs/director-gates.md`): name what was missing, then supply it and re-run the gate — or, if the user chooses to go on without it, proceed to Phase 7 and state `TD-CHANGE-IMPACT: NOT ASSESSED — [input]` in the change impact report and the final Verdict line
 
 ---
 

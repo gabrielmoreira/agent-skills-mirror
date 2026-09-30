@@ -14,14 +14,14 @@ binary both build on to host the core without duplicating
    `CoreRuntime::invoke` can dispatch any RPC method in-process and agent
    turns can run: a harness-only embedder using `ServiceSet::none()` needs
    nothing more.
-2. **`CoreRuntime::serve()`: transport + background services.** Binds the
-   HTTP listener (when `ServiceSet::rpc_http` is set), mounts the router,
-   fires the readiness signal, spawns the selected background services, and
-   serves until shutdown. When `rpc_http` is unset it just spawns the
-   selected background services and returns immediately: the caller owns
-   the process lifetime. In a build compiled without the `http-server`
-   feature, requesting `rpc_http` returns an `Err` rather than silently
-   binding nothing.
+2. **`openhuman_rpc::server::serve(&runtime, …)`: transport + background
+   services.** Binds the HTTP listener (when `ServiceSet::rpc_http` is set),
+   mounts the router, fires the readiness signal, calls
+   `CoreRuntime::start_services`, and serves until shutdown, then runs
+   `CoreRuntime::exit_cleanup`. When `rpc_http` is unset it just starts the
+   selected background services and returns: the caller owns the process
+   lifetime. The server lives in `openhuman-rpc`, above this crate; a
+   runtime that needs no transport calls `start_services` directly.
 
 `CoreRuntime::invoke(method, params)` dispatches an RPC method in-process
 through `jsonrpc::invoke_method`: the same path the HTTP `/rpc` handler and
@@ -36,15 +36,15 @@ Each flag is independent. Presets:
 | Preset | Shape |
 | --- | --- |
 | `ServiceSet::desktop()` | Everything on: the Tauri shell and standalone `openhuman-core run`. |
-| `ServiceSet::headless_api()` | HTTP JSON-RPC only (`rpc_http`): no Socket.IO, cron, channels, or heartbeat; a single-core cloud/server deployment. |
+| `ServiceSet::headless_api()` | HTTP JSON-RPC only (`rpc_http`): no Socket.IO, cron, channels, or login-gated services; a single-core cloud/server deployment. |
 | `ServiceSet::none()` | No transport, no background services: a library/harness embedder driving only `CoreRuntime::invoke`. |
-| `ServiceSet::embedded()` | No transport (`rpc_http: false`), but the background work a long-lived embedded session expects: cron, heartbeat, memory queue, harness init, skill catalog refresh, memory sync. `socketio`/`channels` stay off because such a host reads state through the facade and owns its own networking. |
+| `ServiceSet::embedded()` | No transport (`rpc_http: false`), but the background work a long-lived embedded session expects: cron, login-gated services, memory queue, harness init, skill catalog refresh, memory sync. `socketio`/`channels` stay off because such a host reads state through the facade and owns its own networking. |
 
 Individual services still honor their own runtime gates inside
 `runtime/services.rs` regardless of `ServiceSet` selection: `cron` checks
 `config.cron.enabled`; `channels` returns early on
 `OPENHUMAN_DISABLE_CHANNEL_LISTENERS=1` or when
-`config.channels_config.has_listening_integrations()` is false; `heartbeat`
+`config.channels_config.has_listening_integrations()` is false; `login_gated`
 (`spawn_login_gated_services`) defers the login-gated services until a user
 session exists on disk. `ServiceSet` picks *whether a service is spawned at
 all*; the gate picks *whether it runs for this user*.

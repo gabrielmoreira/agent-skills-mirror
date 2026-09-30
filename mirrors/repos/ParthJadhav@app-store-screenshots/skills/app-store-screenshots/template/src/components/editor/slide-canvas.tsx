@@ -1401,6 +1401,7 @@ function Movable({
           height: 28 / controlScale,
         }}
         onPointerDown={startRotate}
+        onFocus={() => onSelect?.()}
         title="Rotate"
         aria-label="Rotate element"
       >

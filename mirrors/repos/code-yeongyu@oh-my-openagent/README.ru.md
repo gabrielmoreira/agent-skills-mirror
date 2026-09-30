@@ -1,6 +1,6 @@
 > [!NOTE]
 > **OmO Бета: OmO ❤️ Pi**
-> Установите `bun add -g omo-ai`: система памяти, CodeMode, подписки Anthropic. Всё включено.
+> Установите одной командой `curl -fsSL https://get.omo.dev/install.sh | bash`: система памяти, CodeMode, подписки Anthropic. Всё включено.
 > [![OmO Herdr DAG - live OmO workflow DAGs in a Herdr side pane](./.github/assets/omo-herdr-dag.png)](https://github.com/jc01rho/omo-herdr-dag)
 > *Просто добавьте "mass ulw" в свой промпт - и вы мастер графовой инженерии. Мультимодельный ultracode с улучшенной системой памяти. (Правая панель - [omo-herdr-dag](https://github.com/jc01rho/omo-herdr-dag))*
 
@@ -52,11 +52,11 @@ OmO это одна команда `omo`, которая превращает в
 ## Установка
 
 ```bash
-bun add -g omo-ai
+curl -fsSL https://get.omo.dev/install.sh | bash
 omo
 ```
 
-Нет bun? Подойдёт и `npm i -g omo-ai`. Пакет называется `omo-ai`, а пакет `omo` в npm не имеет к нам отношения.
+В Windows запустите в PowerShell `irm https://get.omo.dev/install.ps1 | iex`. Скрипт ставит нативный `omo` для вашей ОС и процессора в `~/.local/bin` и сверяет его с контрольными суммами релиза. Если удобнее пакетный менеджер, `bun add -g omo-ai` (или `npm i -g omo-ai`) ставит тот же OmO. Пакет называется `omo-ai`, а пакет `omo` в npm не имеет к нам отношения. Windows CMD, исправление `PATH`, обновление и удаление описаны на [omo.dev/docs/install](https://omo.dev/docs/install).
 
 Откройте проект, запустите `omo` и опишите задачу. На этом настройка закончена.
 

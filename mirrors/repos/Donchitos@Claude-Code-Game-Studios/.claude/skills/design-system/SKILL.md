@@ -27,9 +27,9 @@ Every `AskUserQuestion` call follows `.claude/docs/automation-modes.md`
 
 **`docs.density`** — it controls per-section *depth*, where `workflow`
 controls which sections exist. `modes.rigor` sets both together; set
-`docs.density` explicitly to vary depth alone: `terse` = bullet points, 2–5 lines per section,
+`docs.density` explicitly to vary depth alone: `terse` (the default, via `rigor: minimal`) = bullet points, 2–5 lines per section,
 skip rationale and preambles; `balanced` = paragraphs with light rationale
-(default); `thorough` = full prose with rationale, examples, and alternatives
+(`rigor: standard`); `thorough` = full prose with rationale, examples, and alternatives
 considered. Apply it to every section you author. Mandated structures (the
 Formulas variable table, Given-When-Then acceptance criteria) are correctness
 requirements at every density — `terse` trims the surrounding prose, never the
@@ -207,7 +207,7 @@ From the systems index, identify:
 For each dependency GDD that exists, read **only the four sections that carry the
 cross-system contract** — not the whole GDD:
 ```
-Grep pattern="## (Dependencies|Formulas|Edge Cases|Tuning Knobs)" glob="design/gdd/[dep].md" output_mode="content" -A 20
+Grep pattern="^## ([0-9]+\. )?(Dependencies|Formulas|Edge Cases|Tuning Knobs)" glob="design/gdd/[dep].md" output_mode="content" -A 20
 ```
 - Key interfaces and data flow (from Dependencies)
 - Formulas that reference this system's outputs
@@ -564,6 +564,12 @@ it if absent, Edit to update it if present.
 
 Each section has unique design considerations and may benefit from specialist agents:
 
+**Every skipped spawn is announced.** When a section's review-mode check below
+skips its specialist — in `lean` as well as `solo` — print that section's note
+with the mode it ran in, e.g. "`creative-director` not consulted — Lean mode.
+Review manually before production." A section drafted without its specialist
+must say so in the output, whichever mode skipped it.
+
 ---
 
 ### Section A: Overview
@@ -671,7 +677,7 @@ This is usually the largest section. Break it into sub-sections:
 - What can the player NOT do? (Constraints are as important as capabilities)
 
 **Review mode check** (apply before spawning):
-- `solo` → skip this agent spawn. Draft the section without the specialist. Add a note: "Specialist agents not consulted — Solo mode. Review manually before production."
+- `solo` → skip this agent spawn. Draft the section without the specialist. Add a note naming them: "`[the Section 6 routing table's Primary and Supporting Agents for this category]` not consulted — Solo mode. Review manually before production."
 - `lean` → skip unless this is a section with HIGH implementation risk (Sections D and H only). For other sections, draft without the agent.
 - `full` → spawn as described below.
 
@@ -1029,10 +1035,17 @@ the source of truth). Verify:
 
 Before finalizing the GDD, spawn `creative-director` via `Agent` using gate **CD-GDD-ALIGN** (`.claude/docs/director-gates/cd-gdd-align.md`).
 
-Pass: completed GDD file path, game pillars (from `design/gdd/game-concept.md` or `design/gdd/game-pillars.md`), MDA aesthetics target.
+Pass: completed GDD file path, game pillars (from `design/gdd/game-concept.md` or `design/gdd/game-pillars.md`; if there is neither, the pitch and "what they feel" line of `design/game-brief.md`), MDA aesthetics target, and the GDD's Player Fantasy section — or, when this tier did not author one, say so.
 
-Handle verdict per the standard rules in `director-gates.md`. After resolution, record the verdict in the GDD Status header:
-`> **Creative Director Review (CD-GDD-ALIGN)**: APPROVED [date] / CONCERNS (accepted) [date] / REVISED [date]`
+Handle verdict per the standard rules in `director-gates.md`.
+On `Revise flagged items`, or to resolve a REJECT, each flagged section runs its
+section cycle again — its specialist consulted as that section's review-mode
+check says — and is re-approved through its "Approve the [Section Name]
+section?" widget before the Edit that writes it; then record `REVISED [date]`.
+A `NOT ASSESSED` answer is never an approval: name the missing input, then
+supply it and re-run the gate, or record `NOT ASSESSED`.
+After resolution, record the verdict in the GDD Status header:
+`> **Creative Director Review (CD-GDD-ALIGN)**: APPROVED [date] / CONCERNS (accepted) [date] / REVISED [date] / NOT ASSESSED [date] — [missing input]`
 
 ---
 
@@ -1125,7 +1138,7 @@ nothing else in §5 hints the file may be absent.
 - Read the systems index
 - Update the target system's row:
   - If design-review was run and verdict is APPROVED: Status → "Approved"
-  - If design-review was run and verdict is NEEDS REVISION: Status → "In Review"
+  - If design-review was run and verdict is NEEDS REVISION or MAJOR REVISION NEEDED: Status → "Needs Revision" (that exact string — `/design-review` sets "In Review" only once the revisions are applied)
   - If design-review was skipped: Status → "Designed" (pending review)
   - If the user chose "I'll review it myself first": Status → "Designed"
   - Design Doc: link to `design/gdd/[system-name].md`
@@ -1272,4 +1285,4 @@ shows context at or above 70%. If so, append this notice to the response:
 - Run `/design-review design/gdd/[system-name].md` in a **fresh session** to validate the completed GDD independently
 - Run `/consistency-check` to verify this GDD's values don't conflict with other GDDs
 - Run `/map-systems next` to move to the next highest-priority undesigned system
-- Run `/gate-check pre-production` when all MVP GDDs are authored and reviewed
+- Run `/gate-check technical-setup` when all MVP GDDs are authored and reviewed

@@ -3,7 +3,7 @@ name: project-stage-detect
 description: "Analyze project state, detect stage, identify gaps, recommend next steps. 'Where are we in development?'"
 argument-hint: "[optional: role filter like 'programmer' or 'designer']"
 user-invocable: true
-allowed-tools: Read, Glob, Grep, Bash, Write, Bash(bash "*/.claude/skills/project-stage-detect/../../hooks/yaml-helper.sh" resolve_config *)
+allowed-tools: Read, Glob, Grep, Write, Bash(bash "*/.claude/skills/project-stage-detect/../../hooks/yaml-helper.sh" resolve_config *), Bash(bash .claude/scripts/artifact-check.sh), Bash(bash ".claude/scripts/artifact-check.sh"), Bash(bash ./.claude/scripts/artifact-check.sh), Bash(bash .claude/scripts/artifact-check.sh *), Bash(bash ".claude/scripts/artifact-check.sh" *), Bash(bash ./.claude/scripts/artifact-check.sh *)
 model: haiku
 # Read-only diagnostic skill — no specialist agent delegation needed
 ---
@@ -55,6 +55,10 @@ catalogued artifact in one call:**
 Bash: bash .claude/scripts/artifact-check.sh
 ```
 
+Run it exactly as written — from the project root, relative path, no
+arguments, no `cd`, no `2>&1`. This skill's permission grant matches that form;
+any other asks the user to approve it.
+
 With no `--phase` it reports every phase, so a single call covers the whole
 project: per step, `PRESENT` / `ABSENT` / `SHORT` (with `count=` and `min=`) /
 `PATTERN_MISS` / `NO_CHECK`. Use it instead of hand-globbing each artifact
@@ -81,9 +85,15 @@ track, and the judgement calls.
 - Identify major systems (directories with 5+ files)
 - Check for core/, gameplay/, ai/, networking/, ui/ directories
 - Estimate lines of code (rough scale)
+- An unresolved root means none of these ran: report
+  `NOT ASSESSED — code root unresolved`, never zero source files — zero files
+  reads as a greenfield project, and the source-file rows of the stage table
+  cannot be decided without the count
 
 **Production Artifacts** (`production/`):
-- Check for active sprint plans
+- Check for active sprint plans. At `workflow: minimal` there are no sprints:
+  read the story files' progress through the brief's build order instead, and
+  never report a missing sprint plan, milestone or roadmap as a gap
 - Look for milestone definitions
 - Find roadmap documents
 
@@ -116,9 +126,15 @@ Based on scanned artifacts, determine stage. Check `project.stage` in `project.y
 >
 > Reading config and reporting it back is not detection. This skill's own
 > description promises "analyze project state, detect stage", and a stage
-> detector that cannot contradict its input is the one thing it must never be.
-> Observed live: it reported `Release` for a project whose artifacts matched its
-> own Pre-Production row, four stages below, and said nothing.
+> detector that cannot contradict its input is the one thing it must never be —
+> it would report `Release` for a project whose artifacts match its own
+> Pre-Production row, four stages below, and say nothing.
+>
+> **A disagreement makes Stage Confidence CONCERNS** (step 4) — ambiguous
+> signals by definition — however complete the artifacts are. One exception: at
+> `workflow: minimal` nothing runs `/gate-check`, so the configured stage stays
+> where `/start` set it. There, report the observed stage and say the configured
+> one is not advanced at this tier; that lag is expected, not a disagreement.
 
 | Stage | Indicators |
 |-------|-----------|
@@ -138,14 +154,16 @@ Based on scanned artifacts, determine stage. Check `project.stage` in `project.y
   missing critical (Foundation-layer) ADRs. Do NOT flag an absent art bible unless
   visual-asset stories exist, and do NOT flag non-core UX specs.
 - **`minimal`** — a `design/game-brief.md` + engine present is the normal state. Do NOT flag
-  absent GDDs, art bible, UX specs, or ADRs as gaps; the expected next step is code.
+  absent GDDs, art bible, UX specs, ADRs, epics or sprint plans as gaps: the brief's build
+  order is the plan, and the expected next step is code.
 
 **DO NOT** just list missing files. Instead, **ask clarifying questions** (only
 for gaps the tier above says to surface):
 
-- "I see combat code (`src/gameplay/combat/`) but no `design/gdd/combat-system.md`. Was this prototyped first, or should we reverse-document?"
+- "I see combat code (`<code root>/gameplay/combat/`) but no `design/gdd/combat-system.md`. Was this prototyped first, or should we reverse-document?"
 - "You have 15 ADRs but no architecture overview. Should I create one to help new contributors?"
-- "No sprint plans in `production/`. Are you tracking work elsewhere (Jira, Trello, etc.)?"
+- (`standard`/`full` only) "I see [N] systems under `<code root>/` but no ADRs in `docs/architecture/`. Were those decisions recorded somewhere else, or should we write the critical ones with `/architecture-decision`?"
+- (`standard`/`full` only) "No sprint plans in `production/`. Are you tracking work elsewhere (Jira, Trello, etc.)?"
 - "I found a game concept but no systems index. Have you decomposed the concept into individual systems yet, or should we run `/map-systems`?"
 - "Prototypes directory has 3 projects with no READMEs. Were these experiments, or do they need documentation?"
 
@@ -159,13 +177,13 @@ Use template: `.claude/docs/templates/project-stage-report.md`
 
 **Date**: [date]
 **Stage**: [Concept/Systems Design/Technical Setup/Pre-Production/Production/Polish/Release]
-**Stage Confidence**: [PASS — clearly detected / CONCERNS — ambiguous signals / FAIL — critical gaps block progress]
+**Stage Confidence**: [PASS — clearly detected / CONCERNS — ambiguous signals / NOT ASSESSED — a check the stage depends on did not run / FAIL — critical gaps block progress]
 
 ## Completeness Overview
 - Design: [X%] ([N] docs, [gaps])
 - Code: [X%] ([N] files, [systems])
 - Architecture: [X%] ([N] ADRs, [gaps])
-- Production: [X%] ([status])
+- Production: [X%] ([status] — at `minimal`: stories complete in the brief's build order, never "no sprint plan")
 - Tests: [X%] ([coverage estimate])
 
 ## Gaps Identified
@@ -175,6 +193,16 @@ Use template: `.claude/docs/templates/project-stage-report.md`
 ## Recommended Next Steps
 [Priority-ordered list based on stage and role]
 ```
+
+**Stage Confidence — first match wins:** **FAIL** if critical gaps block
+progress; else **CONCERNS** if the signals that were gathered are ambiguous —
+they fit more than one stage, or the configured and observed stages disagree
+(step 2); else **NOT ASSESSED** if a check the stage depends on did not run —
+name it (an unresolved code root, two candidate roots included, leaves the
+source-file count, and so the table's Production row, undecided); else
+**PASS**. NOT ASSESSED outranks PASS — a stage nobody could check is not a
+clearly detected one — and ranks below CONCERNS and FAIL, so a known problem is
+never buried behind it.
 
 ### 5. Role-Filtered Recommendations (Optional)
 
@@ -243,10 +271,10 @@ suggest authoring optional docs (e.g. don't suggest `/reverse-document` for an
 absent GDD at `minimal`, where code is the expected next step):
 
 - **Concept exists but no systems index?** → `/map-systems` to decompose into systems
-- **Missing design docs?** → `/reverse-document design src/[system]`
+- **Missing design docs?** → `/reverse-document design <code root>/[system]`
 - **Missing architecture docs?** → `/architecture-decision` or `/reverse-document architecture`
 - **Prototypes need documentation?** → `/reverse-document concept prototypes/[name]`
-- **No sprint plan?** → `/sprint-plan`
+- **No sprint plan?** → `/sprint-plan` (not at `rigor: minimal`, where the brief's build order is the plan)
 - **Approaching milestone?** → `/milestone-review`
 
 ---

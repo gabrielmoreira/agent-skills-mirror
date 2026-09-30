@@ -2,6 +2,8 @@
 
 Opt-in **Model Context Protocol (MCP) server** that exposes a curated, security-gated slice of OpenHuman's tool surface (memory-tree reads/writes, core/agent introspection, subagent execution, web search) and bundled prompt assets to external MCP clients (Claude Desktop, Cursor, Windsurf, …). Started via `openhuman-core mcp`: stdio transport by default, or `--transport http` for Streamable HTTP + SSE on a local bind address. It is a JSON-RPC dispatcher, not a registered RPC domain: it has no `schemas.rs`/controllers and is wired only through `crates/openhuman-core/src/core/cli.rs`, translating each MCP `tools/call` into an existing registered core RPC method.
 
+The generic server half — JSON-RPC protocol, client-provenance sessions, argument validators, and the stdio and Streamable HTTP transports — lives in `tinymcp::server` (`vendor/tinymcp`). This module is the host half: it implements `tinymcp::McpServerHandler` (`handler.rs`) over OpenHuman's config, security policy, write audit, agent turns, tool catalog, prompt resources and subagent depth.
+
 ## Responsibilities
 
 - Implement the MCP JSON-RPC server lifecycle: `initialize`, `ping`, `tools/list`, `tools/call`, `resources/list`, `resources/templates/list`, `resources/read`, plus notifications (`notifications/initialized`, `notifications/cancelled`).
@@ -18,16 +20,16 @@ Opt-in **Model Context Protocol (MCP) server** that exposes a curated, security-
 | File | Role |
 | --- | --- |
 | `crates/openhuman-core/src/mcp/server/mod.rs` | Module docstring + private submodule decls; re-exports `run_http`/`run_http_reporting`/`HttpServerConfig`, `run_stdio_from_cli`, `ensure_local_http`/`LocalMcpEndpoint`, `current_subagent_depth`/`HEADER_SUBAGENT_DEPTH`, `tool_specs`/`McpToolSpec`. |
-| `crates/openhuman-core/src/mcp/server/protocol.rs` | JSON-RPC 2.0 dispatch core: parses lines/values (single + batch), routes `initialize`/`ping`/`tools/*`/`resources/*`, builds success/error envelopes, negotiates protocol version. |
-| `crates/openhuman-core/src/mcp/server/tools/` | Tool catalog and dispatch, split into `mod.rs` (facade), `types.rs` (`McpToolSpec`, `ToolCallError`, the limit/tag constants, stays ungated so `McpToolSpec` is one real type in both builds), `specs.rs` (`tool_specs`/`base_tool_specs`/`searxng_tool_spec` builders), `params.rs` (argument parsing/validation → RPC params), `dispatch.rs` (`call_tool`/`list_tools_result`, act-policy enforcement, subagent handlers). |
+| `crates/openhuman-core/src/mcp/server/handler.rs` | `OpenHumanMcpHandler`, the `tinymcp::McpServerHandler` every transport serves: `serverInfo` (`openhuman-core` + instructions), the `mcp` source-type prefix, `tools/list` from the config-gated catalog, `tools/call` through `tools::dispatch` inside the request's subagent-depth scope, and the prompt resources. |
+| `crates/openhuman-core/src/mcp/server/tools/` | Tool catalog and dispatch: `mod.rs` (facade; re-exports `tinymcp::ToolCallError`), `types.rs` (`McpToolSpec` and the limit/tag constants, ungated so `McpToolSpec` is one real type in both builds), `specs.rs` (`tool_specs`/`base_tool_specs`/`tool_specs_for_loaded_config` builders and the `server_tool_spec` conversion), `params.rs` (OpenHuman's per-tool argument policy → RPC params, over `tinymcp::server::args`), `dispatch.rs` (`call_tool`/`list_tool_specs`, policy enforcement, subagent handlers). |
 | `crates/openhuman-core/src/mcp/server/write_dispatch.rs` | Write/audit pipeline for `memory.store`/`memory.note`/`tree.tag`: config load, act-policy enforcement, RPC dispatch to `openhuman.memory_doc_put`, audit-record write (success/rejection) via `crate::mcp::audit::record_write`, PII-redacting arg summaries. |
-| `crates/openhuman-core/src/mcp/server/resources.rs` | Static `RESOURCE_CATALOG` of compile-time-embedded (`include_str!`) prompt markdown; `resources/list`, `resources/templates/list` (always empty), `resources/read`. Test cross-checks catalog vs `agent::agents::BUILTINS`. |
-| `crates/openhuman-core/src/mcp/server/session.rs` | `McpSession`: captures + normalizes client name from `initialize` into a `source_type`; first observation locks the value. |
-| `crates/openhuman-core/src/mcp/server/http.rs` | Axum Streamable HTTP + SSE transport (`run_http`, `HttpServerConfig`): POST/GET/DELETE on `/`, session map, protocol-version checks, optional `Authorization: Bearer`, SSE keep-alive, session-id redaction. Gated on `all(feature = "mcp", feature = "http-server")`: the transport is axum-only. |
+| `crates/openhuman-core/src/mcp/server/resources.rs` | Static `RESOURCE_CATALOG` of compile-time-embedded (`include_str!`) prompt markdown, served as `tinymcp::ResourceSpec`s and read by URI (`-32002` when unknown). Test cross-checks catalog vs `agent::agents::BUILTINS`. |
+| `crates/openhuman-core/src/mcp/server/http.rs` | OpenHuman's `run_http`/`run_http_reporting`: `tinymcp::run_http_reporting` bound to the handler. Gated on `all(feature = "mcp", feature = "http-server")`; `http-server` forwards `tinymcp/server-http`. |
 | `crates/openhuman-core/src/mcp/server/local.rs` | Lazily-started, process-wide in-process loopback HTTP MCP server (`ensure_local_http`, `LocalMcpEndpoint`). Lets the sandboxed `claude` subprocess (Claude Code provider) reach OpenHuman's memory/tools over loopback without the MCP server inheriting Claude Code's OS jail; a per-process random bearer token stops any other local process from talking to it. |
-| `crates/openhuman-core/src/mcp/server/subagent_depth.rs` | Per-delegation-chain depth tracking for `agent.run_subagent`, propagated across the loopback MCP HTTP hop via the `X-OpenHuman-Subagent-Depth` header so nested Claude Code subagent calls are bounded without penalizing unrelated parallel callers. |
-| `crates/openhuman-core/src/mcp/server/stdio.rs` | CLI entry `run_stdio_from_cli` (arg parse: `--transport`/`--host`/`--port`/`--auth-token`/`-v`/`--help`), logging init, stdio read/write loop (`run_stdio`). |
+| `crates/openhuman-core/src/mcp/server/subagent_depth.rs` | Per-delegation-chain depth tracking for `agent.run_subagent`, propagated across the loopback MCP HTTP hop via the `X-OpenHuman-Subagent-Depth` header (read by `handler.rs` from `tinymcp`'s `RequestContext`) so nested Claude Code subagent calls are bounded without penalizing unrelated parallel callers. |
+| `crates/openhuman-core/src/mcp/server/stdio.rs` | CLI entry `run_stdio_from_cli` (arg parse: `--transport`/`--host`/`--port`/`--auth-token`/`-v`/`--help`), logging init, then `tinymcp::run_stdio` or `run_http` with the handler. |
 | `crates/openhuman-core/src/mcp/server/stub.rs` | The `mcp`-less mirror of `run_stdio_from_cli`, `ensure_local_http`/`LocalMcpEndpoint`, and `tool_specs`: disabled-error / empty-catalog bodies so always-on callers (`core/cli.rs`, the Claude Code driver, `tools/registry/ops.rs`) keep a stable surface. |
+| `crates/openhuman-core/src/mcp/server/wire_golden_tests.rs`, `http_golden_tests.rs` | Golden wire fixtures captured before the move to `tinymcp`: exact protocol bytes and HTTP status/body/header behavior. A diff here is a wire change. `test_support.rs` is the one seam they call through. |
 | `crates/openhuman-core/src/mcp/server/tools_tests.rs` | Sibling `#[cfg(test)]` suite for `tools/` (via `#[path]`). |
 
 ## Public surface
@@ -35,7 +37,7 @@ Opt-in **Model Context Protocol (MCP) server** that exposes a curated, security-
 Re-exported from `mod.rs`:
 
 - `run_stdio_from_cli(args: &[String]) -> Result<()>`: CLI entry point; builds its own tokio runtime and selects stdio vs HTTP transport.
-- `run_http(config: HttpServerConfig) -> Result<()>`, `run_http_reporting` (the same, plus a oneshot that reports the bound address; `local.rs` uses it), and `HttpServerConfig { bind_addr, auth_token }`: HTTP/SSE server (`mcp` + `http-server`).
+- `run_http(config: HttpServerConfig) -> Result<()>`, `run_http_reporting` (the same, plus a oneshot that reports the bound address; `local.rs` uses it), and `HttpServerConfig { bind_addr, auth_token }` (`tinymcp`'s): HTTP/SSE server (`mcp` + `http-server`).
 - `ensure_local_http() -> Result<LocalMcpEndpoint>` and `LocalMcpEndpoint { addr, token }`: the loopback in-process server for the Claude Code driver.
 - `current_subagent_depth()` / `HEADER_SUBAGENT_DEPTH`: the delegation-depth hop for `agent.run_subagent`.
 - `tool_specs() -> Vec<McpToolSpec>` and `McpToolSpec { name, title, description, rpc_method, input_schema, annotations }`: the advertised tool catalog.
@@ -87,7 +89,8 @@ No `store.rs`. The only durable side effect is the **MCP write-audit log**, writ
 - `crate::search::providers`: which search tools the config can serve (`tool_specs_for_config`).
 - `crate::mcp::audit` (`record_write`, `NewMcpWriteRecord`, list/query helpers in tests): durable write-audit log.
 - `crate::mcp::http_client::McpHttpClient`: round-trip test harness for the HTTP transport (test-only).
-- External crates: `axum`/`tokio`/`tokio-stream` (HTTP+SSE), `serde_json`, `uuid`, `sha2`/`hex` (session-id redaction, slug fallback hash), `chrono` (audit timestamps).
+- `tinymcp::server` (protocol, sessions, argument validators, stdio + HTTP/SSE transports; HTTP behind `tinymcp/server-http`).
+- External crates: `serde_json`, `uuid`, `sha2`/`hex` (slug fallback hash), `chrono` (audit timestamps), `futures-util` (`BoxFuture`).
 
 ## Used by
 
@@ -99,7 +102,7 @@ No `store.rs`. The only durable side effect is the **MCP write-audit log**, writ
 ## Notes / gotchas
 
 - **Not a controller-registry domain.** Don't look for `schemas.rs`/`all_controller_schemas`: exposure is via the CLI only, and tool calls re-enter the registry through `core::all`.
-- **`ToolCallError` variant → JSON-RPC code is deliberate:** `InvalidParams` → `-32602` (client-actionable, including policy denials so the reason text surfaces), `Internal` → `-32603` (config load / platform failures). Policy denials are intentionally `InvalidParams`, not `Internal`.
+- **`ToolCallError` variant → JSON-RPC code is deliberate:** `InvalidParams` → `-32602` (client-actionable, including policy denials so the reason text surfaces), `Internal` → `-32603` (config load / platform failures), `ResourceNotFound` → `-32002`. Policy denials are intentionally `InvalidParams`, not `Internal`.
 - **Explicit rejection over silent clamping** throughout: over-cap `k`, oversize/over-count tags, blank required strings, and unexpected arguments all error rather than being trimmed/dropped.
 - **Write audit is fire-and-forget but mandatory:** rejections are audited even before config is loaded (`audit_write_rejection_without_config`), and `dispatch_write_tool` returns `Ok(tool_error(...))` (not `Err`) on RPC-handler failure so the client gets an MCP `isError` result while the failure is still recorded.
 - **Protocol negotiation:** supports `2024-11-05`, `2025-03-26`, `2025-06-18`, and `2025-11-25` (`LATEST_PROTOCOL_VERSION`); unknown requested versions fall back to latest. HTTP enforces an exact session protocol-version match on subsequent requests.

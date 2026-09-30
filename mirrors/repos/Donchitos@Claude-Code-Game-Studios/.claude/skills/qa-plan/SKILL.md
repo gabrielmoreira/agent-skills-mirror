@@ -42,6 +42,8 @@ the test plan is mined from — see Phase 2.
 plan — drop the automated-test-required rows and the test-file DoD; at `standard`,
 a full plan per story type; at `full`, also add per-system coverage targets.
 Distinct axis from `workflow` (which sets how many GDD sections are mined).
+No level drops the Visual/Feel and UI screenshot rows — tests are waived at
+`minimal`, the look is not (`.claude/docs/coding-standards.md`).
 
 ## Phase 1: Parse Scope
 
@@ -72,6 +74,8 @@ for one missing file.
 > Report `NOT ASSESSED — no stories in scope`, naming which scope was searched
 > and which path was empty, and route:
 > - no file in `production/sprints/` → "No sprint plan found. Run `/sprint-plan new`."
+>   At `workflow: minimal` there are no sprints by design — route instead to
+>   `/qa-plan feature: [epic-slug]` or `/qa-plan story: [path]`.
 > - a sprint plan exists but references no stories → "Sprint plan `[path]` lists no
 >   stories. Run `/create-stories [epic-slug]`."
 > - `feature:`/`story:` scope matched nothing → name the glob that came back empty.
@@ -190,7 +194,7 @@ Assemble the full QA plan document. Use this structure:
 | [story title] | Logic | Unit test — `tests/unit/[system]/` | None |
 | [story title] | Integration | Integration test — `tests/integration/[system]/` | Smoke check |
 | [story title] | Visual/Feel | None (not automatable) | Screenshot + lead sign-off |
-| [story title] | UI | Interaction walkthrough | Manual step-through |
+| [story title] | UI | None (verified by its screenshots) | Retained screenshot of each screen touched |
 | [story title] | Config/Data | Data validation test | Spot-check in-game values |
 
 ---
@@ -227,7 +231,7 @@ criteria directly. Review the GDD Formulas section before writing tests.*
 ### [Story Title] — [Type]
 **Verification method**: [Screenshot + designer sign-off | Playtest session |
 Manual step-through | Comparison against reference footage]
-**Who must sign off**: [designer / lead-programmer / qa-lead / art-lead]
+**Who must sign off**: [designer / lead-programmer / qa-lead / art-director]
 **Evidence to capture**: [screenshot of X | video clip of Y | written playtest
 notes | side-by-side comparison]
 
@@ -275,13 +279,14 @@ this sprint.*
 ## Definition of Done — This Sprint
 
 A story is DONE when ALL of the following are true (at `qa.level: minimal`, drop
-the test-file / evidence-document / smoke rows below — only acceptance-criteria
-verification is required):
+the test-file and smoke rows below — tests are waived there; the screenshot and
+sign-off rows stay at every level, because the look is not):
 
 - [ ] All acceptance criteria verified — via automated test result OR documented
       manual evidence (screenshot, video, or playtest notes with sign-off)
 - [ ] Test file exists at the specified path for all Logic and Integration stories *(qa.level standard/full)*
-- [ ] Manual evidence document exists for all Visual/Feel and UI stories *(qa.level standard/full)*
+- [ ] Retained screenshot of each screen touched, in `production/qa/evidence/`, for all Visual/Feel and UI stories *(every qa.level)*
+- [ ] Signed-off evidence doc at `production/qa/evidence/[story-slug]-evidence.md` for all Visual/Feel stories *(every qa.level)*
 - [ ] Smoke check passes (run `/smoke-check sprint` before QA hand-off) *(qa.level standard/full)*
 - [ ] No regressions introduced
 - [ ] Code reviewed (via `/code-review` or documented peer review)
@@ -326,6 +331,10 @@ Silently append to `production/session-state/active.md` (create the file if it d
 ```
 <!-- QA-PLAN: [date] | System: [system/sprint identifier] | Plan written: production/qa/qa-plan-[identifier]-[date].md -->
 ```
+
+Close with the verdict: **COMPLETE** — QA plan written (or **COMPLETE** — QA plan
+shown, not written, if the write was declined). The only other outcome is the
+`NOT ASSESSED — no stories in scope` path in Phase 1.
 
 ---
 

@@ -118,7 +118,8 @@ Write the file:
 After writing, tell the user:
 > "Entity inventory saved. Next steps:
 > - Run `/ux-design [screen name]` for each UI screen in the inventory
-> - Run `/asset-spec entity:[name]` to spec each visual entity
+> - Run `/asset-spec system:[name]`, `level:[name]` or `character:[name]` for each
+>   visual entity — whichever of the three the entity belongs to
 > - Or run `/asset-spec` again to work through the inventory one item at a time"
 
 ---
@@ -131,8 +132,9 @@ Extract:
 - **Review mode**: `--review [full|lean|solo]` if present
 
 The effective mode is the one already resolved at the top of this skill via
-`resolve_config --keys review_mode`, which applies the full chain and
-defaults to `lean` — not `full`. A `--review` argument overrides it for this
+`resolve_config --keys review_mode`, which applies the full chain; with nothing
+set it follows `modes.rigor` — `solo` at `minimal` (the default), `lean` at
+`standard`, `full` at `full`. A `--review` argument overrides it for this
 run only.
 
 **Mode behavior:**
@@ -149,6 +151,18 @@ Read all source material **before** asking the user anything.
 ### Required reads:
 - **Art bible**: Read `design/art/art-bible.md` — fail if missing:
   > "No art bible found. Run `/art-bible` first — asset specs are anchored to the art bible's visual rules and asset standards."
+
+  **Exception — the minimal path.** If there is no art bible but
+  `design/game-brief.md` exists (at `rigor: minimal` no art bible is required),
+  do not fail: anchor the specs in the brief's **Art & audio direction** line,
+  and say so at the top of the output — "Anchored to the brief's one-line art
+  direction; there is no art bible, so colour, shape and asset-standard rules
+  below are proposals, not constraints." Offer `/art-bible` once, as optional.
+  The written spec follows the same anchor: its header reads
+  `> **Art direction**: design/game-brief.md (Art & audio direction) — no art bible`
+  in place of the `> **Art Bible**:` line, each asset carries
+  `**Brief anchor:** [the brief line applied]` in place of the **Art Bible
+  Anchors** block, and no spec cites an Art Bible section or §8 tier.
   Extract: Visual Identity Statement, Color System (semantic colors), Shape Language, Asset Standards (art bible Section 8 — dimensions, formats, polycount budgets, texture resolution tiers).
 
 - **Project config**: Read `performance.*` and `naming.*` from `project.yaml`; for any key absent or empty (including when `project.yaml` has no `performance` or `naming` block), fall back to `.claude/docs/technical-preferences.md`. Extract performance budgets and naming conventions.
@@ -165,6 +179,7 @@ Read all source material **before** asking the user anything.
     - If [A]: the user's description becomes the source. Brief answers produce concise specs; detailed answers produce detailed specs. Accept whatever level of detail the user provides and work from it.
 
 ### Optional reads:
+- **This target's existing spec**: if `design/assets/specs/[target-name]-assets.md` exists, read it — this is a re-run, and Phase 2 proposes only what is new or changed since (Phase 5 updates the file in place).
 - **Existing manifest**: Read `design/assets/asset-manifest.md` if it exists — extract already-specced assets for this target to avoid duplicates.
 - **Related specs**: Glob `design/assets/specs/*.md` — scan for assets that could be shared (e.g., a common UI element specced for one system might apply here too).
 
@@ -222,6 +237,12 @@ Spawn specialist agents based on review mode. **Issue all `Agent` calls simultan
 
 ### Solo mode — skip both. Derive specs from art bible rules alone, noting that technical constraints were not validated.
 
+**Announce every skipped agent by name in the output**, before the specs:
+"technical-artist skipped — Lean mode: technical constraints not validated." /
+"art-director and technical-artist skipped — Solo mode: specs derived in this
+session; technical constraints not validated." A spec drafted without an agent
+must not read like one an agent reviewed.
+
 **Collect both responses before Phase 4.** If any conflict exists between art-director and technical-artist (e.g., art-director specifies 4K textures but technical-artist flags the engine budget requires 512px), surface it explicitly — do NOT silently resolve.
 
 ---
@@ -269,6 +290,12 @@ If [C]: ask what direction to change. Re-spawn the relevant agent with the updat
 
 After approval, ask: "May I write the spec to `design/assets/specs/[target-name]-assets.md`?"
 
+**If that file already exists** (a re-run for the same target), update it in
+place — never overwrite it wholesale. Keep its existing `ASSET-NNN` blocks and
+IDs, apply only the changes the user approved, and append new assets with the
+next project-wide IDs. Show what changes, then ask "May I update
+`design/assets/specs/[target-name]-assets.md`?" instead of "May I write".
+
 Write the file with:
 
 ```markdown
@@ -303,7 +330,7 @@ Then update `design/assets/asset-manifest.md`. If it doesn't exist, create it:
 | ASSET-001 | [name] | [category] | Needed | design/assets/specs/[target]-assets.md |
 ```
 
-If the manifest already exists, append the new context block and update the Progress Summary counts.
+If the manifest already exists, append the new context block — on a re-run for this target, add the new rows to its existing block instead of appending a second one — and update the Progress Summary counts.
 
 Ask: "May I update `design/assets/asset-manifest.md`?"
 

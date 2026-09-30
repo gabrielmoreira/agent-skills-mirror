@@ -7,6 +7,9 @@ allowed-tools: Read, Glob, Grep, Write, Edit, Bash, Agent, AskUserQuestion, Task
 model: sonnet
 ---
 
+If no argument is provided, output usage guidance and exit without spawning any agents or reading any design files:
+> Usage: `/team-level [level name or area to design] [--review full|lean|solo]` — specify the level or area to design (e.g., `forest temple`, `tutorial village`, `final boss arena`). Do not use `AskUserQuestion` here; output the guidance directly.
+
 When this skill is invoked:
 
 **Decision Points:** At each step transition, use `AskUserQuestion` to present
@@ -26,19 +29,19 @@ in `autonomous` mode it runs end to end, recording each step outcome via
 Resolved above — use as-is; `--review` overrides `review_mode`. No block →
 defaults in `.claude/docs/config-resolution.md`.
 
-`review_mode` sets gate depth:
-- `full` — spawn all director and lead gates as described
-- `lean` — skip director gates unless they are PHASE-GATE type (CD-PHASE-GATE, TD-PHASE-GATE, PR-PHASE-GATE, AD-PHASE-GATE)
-- `solo` — skip all director gate spawning entirely; run the skill without any agent gates
+`review_mode` sets director-gate depth, and this pipeline has no director gate:
+no phase below spawns CD-, TD-, PR- or AD-PHASE-GATE, at any `review_mode`. Its
+phase gates are the pipeline's own decision points (defined under `team.size`
+below), and the agents that work at them are team members, not director gates.
 
 `automation` drives the Decision Points note above. See the Decision Points note above and
 `.claude/docs/automation-modes.md` for how each mode changes pipeline behavior.
 
 **`team.size`**: which agents are active (orthogonal to review_mode gate-depth and workflow docs).
-- **`individual`** (default): `level-designer` + `gameplay-programmer`. Other agents consulted via these two, not spawned separately.
-- **`small`**: + `systems-designer` + `art-director`.
-- **`studio`**: + `narrative-director` + `world-builder` + `accessibility-specialist`.
-Directors (CD/TD/PR) still spawn at phase gates regardless of size; a non-core agent needed at `individual` routes through the nearest active core agent with an informational note. **"Phase gate" means any phase that ends in an `AskUserQuestion` decision point before the pipeline advances** — not every phase. Apply the test literally: if the phase below has no decision point, it is not a gate, and an agent restricted to "phase gates only" is not spawned for it. This active-set scoping applies throughout the pipeline below: any phase that names an agent outside the active set routes through the nearest core agent rather than spawning it.
+- **`individual`** (default): `level-designer` only. Other agents consulted via the level-designer, not spawned separately.
+- **`small`**: + `systems-designer` + `art-director` + `qa-tester`.
+- **`studio`**: + `narrative-director` + `world-builder` + `accessibility-specialist` (the full pipeline as documented).
+A non-core agent needed at `individual` routes through the nearest active core agent with an informational note. **"Phase gate" means any phase that ends in an `AskUserQuestion` decision point this pipeline itself lists** — a transition under Decision Points above, or a **Gate** step written into the pipeline below — **whatever the `automation` mode.** `guided` and `autonomous` change how a gate is passed (it auto-advances, or is recorded with `log_decision`), not whether it is one, so bounded-exception condition (3) below holds at it in every mode. An agent restricted to "phase gates only" is spawned at those points and no others. This active-set scoping applies throughout the pipeline below: any phase that names an agent outside the active set routes through the nearest core agent rather than spawning it.
 
 **Announce the active set before Step 1 — never let the collapse be silent.**
 Before spawning anything, state in one line which agents this run will actually
@@ -53,10 +56,10 @@ Fill it from the `team.size` list directly above and the agents this file's own
 pipeline names — not from an example. Both sets differ per orchestrator.
 
 The pipeline below reads as a multi-agent fan-out and at the shipped default it
-is one or two agents — `team-release` names eight and runs one, `team-narrative`
+is one or two agents — `team-release` names ten and runs one, `team-narrative`
 names six across five phases and runs `writer` alone. **The collapse is correct**:
-`team.size` is rigor-fronted and the narrow default is the token lever, measured
-at roughly 10x. What was wrong is that nothing said so, so a reader could not
+`team.size` is rigor-fronted and the narrow default is the token lever.
+Without saying so, a reader cannot
 distinguish a correctly-collapsed run from a broken pipeline, and the per-agent
 "routes through the nearest core agent with an informational note" rule above
 fires at routing time and never states the shape of the run as a whole.
@@ -69,7 +72,8 @@ enforced.**
    `forest dungeon`, `hub town`, `final boss arena`).
 
 2. **Gather context**:
-   - Read the game concept at `design/gdd/game-concept.md`
+   - Read the game concept at `design/gdd/game-concept.md` — or `design/game-brief.md`,
+     the one-page brief that replaces it at `rigor: minimal` — if either exists
    - Read game pillars at `design/gdd/game-pillars.md`
    - Read existing level docs in `design/levels/`
    - Read relevant narrative docs in `design/narrative/`
@@ -89,6 +93,24 @@ Use the `Agent` tool to spawn each team member as a subagent:
 **Brief each agent — do not dump context.** Read the shared inputs **once** and pass a distilled brief inline: the lines each agent actually needs, never a file path for a document you have already read (an agent handed a path re-reads the whole file). Pass a path only for a document you have not read and only that agent needs.
 
 **End every agent prompt with a return contract:** "Write your full output to `[path]` — that named path is your write authorisation under the bounded exception below, so write it without a separate approval prompt. Return **only** (1) the path written, (2) a ≤5-bullet summary of decisions, (3) any BLOCKED/CONCERNS items, one line each. Do not restate the documents you read." Without it, an agent returns everything it read back into this session.
+
+**Substitute a real path for `[path]`.** Working artifacts go under
+`production/levels/[level-name]/`, slugged as in the "Save to" step below. One
+file per agent, so the parallel steps never share one:
+
+| Step / agent | Writes to |
+|---|---|
+| 1 narrative-director | `production/levels/[level-name]/narrative.md` |
+| 1 world-builder | `production/levels/[level-name]/lore.md` |
+| 1 art-director | `production/levels/[level-name]/visual-direction.md` |
+| 2 level-designer | `production/levels/[level-name]/layout.md` |
+| 3 systems-designer | `production/levels/[level-name]/systems.md` |
+| 4 art-director | `production/levels/[level-name]/production-concepts.md` |
+| 4 accessibility-specialist | `production/levels/[level-name]/accessibility.md` |
+| 5 qa-tester | `production/qa/test-cases/[level-name]-cases.md` — test cases, edge cases, playtest checklist, acceptance criteria |
+
+These are working drafts; the durable record is the level design document you
+compile from them (`design/levels/[level-name].md`).
 
 > **Why this does not violate the Collaboration Protocol.** `CLAUDE.md` requires an agent to ask "May I write this to [filepath]?" before Write/Edit. A subagent spawned here writes **without** asking, and that is a deliberate, bounded exception rather than an oversight — the same call already made for `consistency-check` appending to `active.md`. The exception holds only when all three are true: (1) the path is one **you** named in the prompt, so the user approved the destination when they approved the phase; (2) it is a new artifact under `production/`, `docs/` or `tests/`, never an edit to existing source or config; (3) the phase that produced it is itself gated by an `AskUserQuestion` before the pipeline advances. Outside those three, the agent must ask. **Do not "fix" this by asking per subagent** — a prompt per agent per phase makes an orchestrator unusable, which is why the exception exists.
 
@@ -199,6 +221,9 @@ into the level-design template format, ask the user directly via
 `design/levels/[level-name].md`?" On approval, write it.
 
 5. **Save to** `design/levels/[level-name].md` after that approval.
+   `[level-name]` is the argument as a slug — lowercase, spaces → hyphens
+   (`forest dungeon` → `forest-dungeon.md`) — and `[area-name]` in the adjacent
+   area check is slugged the same way.
 
 6. **Output a summary** with: area overview, encounter count, estimated asset
    list, narrative beats, any cross-team dependencies or open questions, open
@@ -219,7 +244,7 @@ itself after its own "May I write …?" prompt (Step 4) — re-spawning an agent
 just to write text the orchestrator is already holding is pure overhead.
 
 Verdict: **COMPLETE** — level design document produced and all team outputs compiled.
-Verdict: **BLOCKED** — one or more agents blocked; partial report produced with unresolved items listed.
+Verdict: **BLOCKED** — one or more agents blocked, or an agent was skipped (`.claude/docs/error-recovery-protocol.md` step 5); partial report produced with unresolved items listed.
 
 ## Next Steps
 
@@ -239,10 +264,10 @@ usually still there.
 
 If any spawned agent returns BLOCKED, errors, or cannot complete: **surface it
 immediately, don't proceed past a dependency it blocks, and always produce a
-partial report.** Full procedure: `.claude/docs/error-recovery-protocol.md`.
+partial report.** A skipped agent's section stays a named gap — never fill it with content of your own. Full procedure: `.claude/docs/error-recovery-protocol.md`.
 
 Common blockers:
 - Input file missing (story not found, GDD absent) → redirect to the skill that creates it
-- ADR status is Proposed → do not implement; run `/architecture-decision` first
+- ADR status is Proposed → do not implement; once it is decided, accept it with `/architecture-decision accept ADR-NNNN`
 - Scope too large → split into two stories via `/create-stories`
 - Conflicting instructions between ADR and story → surface the conflict, do not guess
