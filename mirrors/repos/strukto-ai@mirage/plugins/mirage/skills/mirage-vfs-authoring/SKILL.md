@@ -6,7 +6,7 @@ description: Build or extend a custom Mirage VFS adapter for a user's API, datab
 # Author a Mirage VFS
 
 Deliver an adapter in the user's project, a working mount configuration, and
-tests of its filesystem behavior. Use `GenericVFS` with a `VFSAdapter` built from resource capabilities. A normal custom backend needs no Mirage fork.
+tests of its filesystem behavior. Use `BaseVFS` with a `VFSAdapter` built from resource capabilities. A normal custom backend needs no Mirage fork.
 
 ## Start from the bundled adapter
 
@@ -58,7 +58,7 @@ Implement these resource operations over `PathSpec`:
   `None` / `null` when the length is unknown without reading it.
 
 Group those callbacks as `ReadOps` inside `VFSAdapter`, and pass the adapter
-as `GenericVFS(io=...)` / `new GenericVFS({ io: ... })`. The minimal adapter
+as `BaseVFS(name=..., io=...)` / `new BaseVFS({ name, io })`. The minimal adapter
 needs only these three callbacks. It derives streaming from bytes and existence
 from stat, and defaults to a remote resource. A derived stream still fetches
 the entire file; it is not a memory-efficient stream.
@@ -95,7 +95,7 @@ signatures, including optional index parameters. Older versions may require
 assembling `CommandIO` directly, including `read_stream` / `readStream` and
 `is_mounted` / `isMounted`.
 
-Give `GenericVFS` a unique name and a concise prompt describing the tree and
+Give `BaseVFS` a unique name and a concise prompt describing the tree and
 rendering. Let it derive commands, globbing, and dispatcher ops from the
 assembled table. Add bespoke commands or overrides for behavior the generic
 operations cannot express.

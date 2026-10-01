@@ -68,15 +68,15 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 7 | ✓ | [`.agents/skills/tdd/references/refactoring.md`](.agents/skills/tdd/references/refactoring.md) |
 | 8 | ✓ | [`.agents/skills/tdd/references/tests.md`](.agents/skills/tdd/references/tests.md) |
 | 9 | ✓ | [`.agents/skills/tdd/SKILL.md`](.agents/skills/tdd/SKILL.md) |
-| 10 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 11 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 10 | ✓ | [`.claude/CLAUDE.md`](.claude/CLAUDE.md) |
+| 11 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 12 | ✓ | [`skills/you-discover/references/x402-direct-client.md`](skills/you-discover/references/x402-direct-client.md) |
 | 13 | ✓ | [`skills/you-discover/SKILL.md`](skills/you-discover/SKILL.md) |
 | 14 | ✓ | [`skills/you-finance/references/coinbase-payments-mcp.md`](skills/you-finance/references/coinbase-payments-mcp.md) |
 | 15 | ✓ | [`skills/you-finance/SKILL.md`](skills/you-finance/SKILL.md) |
-| 16 | ✓ | [`skills/you-free/SKILL.md`](skills/you-free/SKILL.md) |
-| 17 | ✓ | [`skills/you-research/references/coinbase-payments-mcp.md`](skills/you-research/references/coinbase-payments-mcp.md) |
-| 18 | ✓ | [`skills/you-research/SKILL.md`](skills/you-research/SKILL.md) |
+| 16 | ✓ | [`skills/you-research/references/coinbase-payments-mcp.md`](skills/you-research/references/coinbase-payments-mcp.md) |
+| 17 | ✓ | [`skills/you-research/SKILL.md`](skills/you-research/SKILL.md) |
+| 18 | ✓ | [`skills/you-web/references/free-profile.md`](skills/you-web/references/free-profile.md) |
 | 19 | ✓ | [`skills/you-web/SKILL.md`](skills/you-web/SKILL.md) |
 
 ---

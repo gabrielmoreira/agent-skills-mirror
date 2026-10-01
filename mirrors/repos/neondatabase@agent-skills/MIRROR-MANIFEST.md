@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `neondatabase/agent-skills` — 26 default patterns, 1 followed patterns, 49 file(s) materialized.
+Mirror of `neondatabase/agent-skills` — 26 default patterns, 1 followed patterns, 50 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `neondatabase/agent-skills` — 26 default patterns, 1 followed patter
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 49 |
+| Files         | 50 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -88,26 +88,27 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 27 | ✓ | [`skills/neon-functions/references/function-triggers.md`](skills/neon-functions/references/function-triggers.md) |
 | 28 | ✓ | [`skills/neon-functions/references/mastra-studio.md`](skills/neon-functions/references/mastra-studio.md) |
 | 29 | ✓ | [`skills/neon-functions/references/mcp.md`](skills/neon-functions/references/mcp.md) |
-| 30 | ✓ | [`skills/neon-functions/references/production-hardening.md`](skills/neon-functions/references/production-hardening.md) |
-| 31 | ✓ | [`skills/neon-functions/references/sentry.md`](skills/neon-functions/references/sentry.md) |
-| 32 | ✓ | [`skills/neon-functions/references/sse.md`](skills/neon-functions/references/sse.md) |
-| 33 | ✓ | [`skills/neon-functions/SKILL.md`](skills/neon-functions/SKILL.md) |
-| 34 | ✓ | [`skills/neon-object-storage/SKILL.md`](skills/neon-object-storage/SKILL.md) |
-| 35 | ✓ | [`skills/neon-postgres-branches/SKILL.md`](skills/neon-postgres-branches/SKILL.md) |
-| 36 | ✓ | [`skills/neon-postgres-egress-optimizer/SKILL.md`](skills/neon-postgres-egress-optimizer/SKILL.md) |
-| 37 | ✓ | [`skills/neon-postgres/references/full-text-search.md`](skills/neon-postgres/references/full-text-search.md) |
-| 38 | ✓ | [`skills/neon-postgres/references/hybrid-search.md`](skills/neon-postgres/references/hybrid-search.md) |
-| 39 | ✓ | [`skills/neon-postgres/references/lakebase-search-drizzle.md`](skills/neon-postgres/references/lakebase-search-drizzle.md) |
-| 40 | ✓ | [`skills/neon-postgres/references/vector-search.md`](skills/neon-postgres/references/vector-search.md) |
-| 41 | ✓ | [`skills/neon-postgres/SKILL.md`](skills/neon-postgres/SKILL.md) |
-| 42 | ✓ | [`skills/neon/references/auth.md`](skills/neon/references/auth.md) |
-| 43 | ✓ | [`skills/neon/references/claimable-neon.md`](skills/neon/references/claimable-neon.md) |
-| 44 | ✓ | [`skills/neon/references/function-triggers.md`](skills/neon/references/function-triggers.md) |
-| 45 | ✓ | [`skills/neon/references/logs-loki.md`](skills/neon/references/logs-loki.md) |
-| 46 | ✓ | [`skills/neon/references/parse-env.md`](skills/neon/references/parse-env.md) |
-| 47 | ✓ | [`skills/neon/references/sdk.md`](skills/neon/references/sdk.md) |
-| 48 | ✓ | [`skills/neon/SKILL.md`](skills/neon/SKILL.md) |
-| 49 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 30 | ✓ | [`skills/neon-functions/references/native-binaries.md`](skills/neon-functions/references/native-binaries.md) |
+| 31 | ✓ | [`skills/neon-functions/references/production-hardening.md`](skills/neon-functions/references/production-hardening.md) |
+| 32 | ✓ | [`skills/neon-functions/references/sentry.md`](skills/neon-functions/references/sentry.md) |
+| 33 | ✓ | [`skills/neon-functions/references/sse.md`](skills/neon-functions/references/sse.md) |
+| 34 | ✓ | [`skills/neon-functions/SKILL.md`](skills/neon-functions/SKILL.md) |
+| 35 | ✓ | [`skills/neon-object-storage/SKILL.md`](skills/neon-object-storage/SKILL.md) |
+| 36 | ✓ | [`skills/neon-postgres-branches/SKILL.md`](skills/neon-postgres-branches/SKILL.md) |
+| 37 | ✓ | [`skills/neon-postgres-egress-optimizer/SKILL.md`](skills/neon-postgres-egress-optimizer/SKILL.md) |
+| 38 | ✓ | [`skills/neon-postgres/references/full-text-search.md`](skills/neon-postgres/references/full-text-search.md) |
+| 39 | ✓ | [`skills/neon-postgres/references/hybrid-search.md`](skills/neon-postgres/references/hybrid-search.md) |
+| 40 | ✓ | [`skills/neon-postgres/references/lakebase-search-drizzle.md`](skills/neon-postgres/references/lakebase-search-drizzle.md) |
+| 41 | ✓ | [`skills/neon-postgres/references/vector-search.md`](skills/neon-postgres/references/vector-search.md) |
+| 42 | ✓ | [`skills/neon-postgres/SKILL.md`](skills/neon-postgres/SKILL.md) |
+| 43 | ✓ | [`skills/neon/references/auth.md`](skills/neon/references/auth.md) |
+| 44 | ✓ | [`skills/neon/references/claimable-neon.md`](skills/neon/references/claimable-neon.md) |
+| 45 | ✓ | [`skills/neon/references/function-triggers.md`](skills/neon/references/function-triggers.md) |
+| 46 | ✓ | [`skills/neon/references/logs-loki.md`](skills/neon/references/logs-loki.md) |
+| 47 | ✓ | [`skills/neon/references/parse-env.md`](skills/neon/references/parse-env.md) |
+| 48 | ✓ | [`skills/neon/references/sdk.md`](skills/neon/references/sdk.md) |
+| 49 | ✓ | [`skills/neon/SKILL.md`](skills/neon/SKILL.md) |
+| 50 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
 
 ---
 

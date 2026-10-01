@@ -21,13 +21,11 @@ computes the active set from all three flags together.
 | File | Role |
 | --- | --- |
 | `mod.rs` | Submodule decls and `pub use` re-exports. |
-| `server.rs` | Process lifecycle: `RuntimePythonServer` (spawn, request/response, restart-on-failure, idle expiry), the process-wide `ensure_started`/`status` cache. |
-| `protocol.rs` | JSONL wire types: `PythonServerRequest`, `PythonServerResponse`, `PythonServerError`, `ReadyLine`, `PROTOCOL_VERSION`. |
+| `server.rs` | Host side: maps `Config` and the managed interpreter onto a `ServerLaunch`, holds the process-wide `ServerSlot` (`ensure_started`, `status`). The process lifecycle itself (spawn, handshake, request/response, restart-on-failure, idle expiry, start back-off) is `tinyruntime_pyserver::{PythonServer, ServerSlot}`. |
 | `registry.rs` | `RuntimePythonBackend` enum (`Spacy`, `Kompress`) and `enabled_backends(config)`. |
 | `kompress.rs` | Kompress venv provisioning (`ensure_kompress`, `install_into`, `kompress_provisioned`) and the compress request (`request_kompress`). |
 | `spacy.rs` | spaCy venv provisioning (`ensure_spacy`, `spacy_provisioned`), the extract request (`extract`, re-exported as `extract_spacy`), and `python_server_cache_root`. |
-| `types.rs` | `BackendStatus`, `RuntimePythonServerStatus` serde types. |
-| `server.py` | The worker script itself, embedded via `include_str!` and written to the cache root as `runtime_python_server.py` each time a server is prepared. |
+| (`tinyruntime-pyserver`) | Owns the JSONL wire types (`PROTOCOL_VERSION`, request/response/ready-line), the status types (`BackendStatus`, `ServerStatus`, re-exported here as `RuntimePythonServerStatus`) and the worker script itself (`SERVER_SCRIPT`), written to the cache root as `runtime_python_server.py` each time a server is prepared. Library crate in `vendor/tinyruntime`. |
 
 ## Lifecycle
 
@@ -56,7 +54,7 @@ backend needs a venv the worker still runs under the base interpreter from
 
 ## Wire protocol
 
-JSONL over the child's stdin/stdout (`protocol.rs`), one line per message:
+JSONL over the child's stdin/stdout (`tinyruntime_pyserver::protocol`), one line per message:
 
 - Startup handshake: the worker writes a `ReadyLine` (`ready`, `protocol`,
   `backends`, optional `error`) before any request is sent; a `protocol`

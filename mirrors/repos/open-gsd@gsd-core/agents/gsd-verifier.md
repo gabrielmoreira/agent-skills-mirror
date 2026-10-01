@@ -80,6 +80,12 @@ At verification decision points, apply structured reasoning:
 At verification decision points, reference calibration examples:
 @~/.claude/gsd-core/references/few-shot-examples/verifier.md
 
+## Resolver Bootstrap (Every Mode)
+
+`gsd_run` is used in initial and re-verification mode alike, so it is defined here, before Step 0, not inside a mode-specific step. Each Bash call is a fresh shell, so a `gsd_run` function defined in one call does not exist in the next: every Bash snippet below that calls `gsd_run` (in any step, in any mode) must begin with this resolver block in the same call. If `gsd-tools.cjs` cannot be found, never search the filesystem (no `find /`, no `find "$HOME"`): use the runtime config directory's `gsd-core/bin/gsd-tools.cjs` (`${CLAUDE_CONFIG_DIR:-$HOME/.claude}/gsd-core/bin/gsd-tools.cjs` on Claude Code) or stop and report.
+
+@~/.claude/gsd-core/references/gsd-run-resolver.md
+
 ## Step 0: Check for Previous Verification
 
 ```bash
@@ -102,8 +108,6 @@ if [ -e "${_VERIF[0]}" ]; then cat "${_VERIF[@]}"; fi
 Set `is_re_verification = false`, proceed with Step 1.
 
 ## Step 1: Load Context (Initial Mode Only)
-
-@~/.claude/gsd-core/references/gsd-run-resolver.md
 
 ```bash
 ls "$PHASE_DIR"/*-PLAN.md 2>/dev/null
@@ -555,7 +559,7 @@ Classify status using this decision tree IN ORDER (most restrictive first):
 
 **A ⚠️ PRESENT_BEHAVIOR_UNVERIFIED truth is never FAILED and never VERIFIED.** It does not trigger gaps_found (the code is present and wired) and is not counted as verified (behavior unexercised). On its own it routes to human_needed; when a higher-precedence gaps_found also applies, the status stays gaps_found and the item is preserved in the always-on `behavior_unverified_items` list so it is never lost. Either way it stays a *per-truth* state — the overall-status vocabulary is unchanged, with no new status value.
 
-> **Shared status seam**: the status vocabulary (`passed`, `gaps_found`, `human_needed`) and the per-status routing (next action and next command for each value) are owned by `src/verification.cts` via `gsd_run query verification.status`. This agent is the single emitter of the frontmatter status field; consumers (ship.md, execute-phase.md) read routing from that query instead of re-deriving it.
+> **Shared status seam**: the status vocabulary (`passed`, `gaps_found`, `human_needed` — the writer subset of the closed `VERIFICATION_STATUS` enum) and the per-status routing are owned by `src/verification.cts` via `gsd_run query verification.status`. Any other value is a hard error there (#5118); the `<output>` self-check catches it. This agent is the single emitter of the frontmatter status field; consumers (ship.md, execute-phase.md) read routing from that query instead of re-deriving it.
 
 **Score (presence- vs behavior-verified split):**
 
@@ -815,6 +819,19 @@ not blocking. Include this section (even "None") whenever re-verification ran.
 _Verified: {timestamp}_
 _Verifier: Claude (gsd-verifier)_
 ```
+
+## Self-check the written status (#5118)
+
+After writing VERIFICATION.md, read it back through its owner:
+
+```bash
+gsd_run query verification.status "{phaseDir}" --pick status
+```
+
+Gate on the exit code only. Non-zero is the write-time hard error (stderr names the value and the
+accepted `passed | gaps_found | human_needed`): fix the frontmatter `status` to the Step 9 decision
+and re-run before returning. A printed value that differs from yours (e.g. `stale`) is routing,
+not an error — never edit `status` to match it.
 
 ## Return to Orchestrator
 

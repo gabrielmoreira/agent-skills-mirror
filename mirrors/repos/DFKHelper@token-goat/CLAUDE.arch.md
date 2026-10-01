@@ -118,6 +118,7 @@ token-goat is a TypeScript CLI bundled to `dist/token-goat.mjs` via esbuild. The
 | [`src/session_audit_report.ts`](src/session_audit_report.ts) | Plain-text rendering of the summary `session_audit.ts` builds, for `token-goat session-audit`. The `--json` form prints that same summary without passing through here. |
 | [`src/session_audit.ts`](src/session_audit.ts) | Corpus-wide session audit: streams every Claude Code transcript (JSONL) under a corpus root (default `~/.claude/projects`) and reports where the tokens actually went. |
 | [`src/session_read.ts`](src/session_read.ts) | Surgical reads over Claude Code's own session JSONL transcripts (files like `~/.claude/projects/<project-slug>/<session-id>.jsonl`). |
+| [`src/session_reminder.ts`](src/session_reminder.ts) | The routing reminder the SessionStart hook injects. |
 | [`src/session_store_schema.ts`](src/session_store_schema.ts) | Session store and database schema catalog, discovery, and runtime error diagnostics. |
 | [`src/session_store.ts`](src/session_store.ts) | Persists session state across the per-tool-call hook processes: `loadSessionState()` / `saveSessionState()` (one JSON per session under `sessions/`), wired into [`src/relay.ts`](src/relay.ts). Fail-soft + merge-on-save |
 | [`src/session.ts`](src/session.ts) | In-memory per-session state for the current hook process: `recordFileRead()`, `recordFileEdit()`, `recordWebFetch()`, `recordBashOutput()`, `getSessionId()`; `exportSessionState()` / `importSessionState()` serialize it for cross-process persistence |
@@ -322,6 +323,7 @@ token-goat is a TypeScript CLI bundled to `dist/token-goat.mjs` via esbuild. The
 
 | Module | Role |
 |--------|------|
+| [`src/cli_doctor_guidance.ts`](src/cli_doctor_guidance.ts) | Doctor diagnostic health checks for guidance |
 | [`src/cli_doctor_index.ts`](src/cli_doctor_index.ts) | Index and reindex-queue diagnostics for token-goat doctor. |
 | [`src/cli_doctor_native.ts`](src/cli_doctor_native.ts) | `doctor`'s native hook client rows: per harness and scope, which form of hook command is wired (the native client in front of the Node command, or the Node command alone), whether |
 | [`src/cli_doctor_platforms.ts`](src/cli_doctor_platforms.ts) | Platform and harness integration diagnostics for token-goat doctor. |
@@ -399,6 +401,7 @@ token-goat is a TypeScript CLI bundled to `dist/token-goat.mjs` via esbuild. The
 | [`src/cli_mcp_audit.ts`](src/cli_mcp_audit.ts) | CLI handler for `token-goat mcp-audit`. |
 | [`src/cli_memory.ts`](src/cli_memory.ts) | CLI handler for `token-goat memory --analyze` / `--fix`. |
 | [`src/cli_office.ts`](src/cli_office.ts) | Exports: `fenceFileText`, `fenceFileFieldIfMatched`, `fileSizeOrZero`, `recordDocStat` |
+| [`src/cli_payloads.ts`](src/cli_payloads.ts) | `token-goat stats --payloads`: what token-goat itself adds to every session's context, measured rather than estimated from source. |
 | [`src/cli_recall.ts`](src/cli_recall.ts) | CLI handler for `token-goat recall`. |
 | [`src/cli_session.ts`](src/cli_session.ts) | Session, corpus audit, memory, and output recall command handlers. |
 | [`src/cli_skills.ts`](src/cli_skills.ts) | Exports: `cmdSkillBody`, `cmdSkillCompact`, `cmdSkillList`, `cmdSkillSize` |
@@ -487,6 +490,7 @@ token-goat is a TypeScript CLI bundled to `dist/token-goat.mjs` via esbuild. The
 | [`src/modules.ts`](src/modules.ts) | Module detection over the project's internal import graph. |
 | [`src/native_hook.ts`](src/native_hook.ts) | The native hook client (native/tg-hook) as installers and `doctor` see it: where this install's binary is, whether an install should wire it, the command lines that put it in front |
 | [`src/nested_worktrees.ts`](src/nested_worktrees.ts) | Git linked worktrees that sit inside a project's own directory, and the SQL that keeps their rows out of that project's queries. |
+| [`src/note_anchor.ts`](src/note_anchor.ts) | Exports: `anchorStatus` |
 | [`src/notebook_compact.ts`](src/notebook_compact.ts) | Strip cell outputs from Jupyter notebooks to reduce token burn. |
 | [`src/notes.ts`](src/notes.ts) | Architecture-notes storage layer. |
 | [`src/ocr_hashes.ts`](src/ocr_hashes.ts) | Exports: `OcrLangSpec`, `ocrLangPath`, `OCR_LANG_HASHES`, `SUPPORTED_OCR_LANGS` |

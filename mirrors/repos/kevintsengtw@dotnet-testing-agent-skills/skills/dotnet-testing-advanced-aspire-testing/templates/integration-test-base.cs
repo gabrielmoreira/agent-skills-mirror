@@ -4,28 +4,25 @@ namespace MyApp.Tests.Integration.Infrastructure;
 /// 整合測試基底類別 - 使用 Aspire Testing 框架
 /// 所有整合測試類別應繼承此基底類別
 /// </summary>
-[Collection(IntegrationTestCollection.Name)]
 public abstract class IntegrationTestBase : IAsyncLifetime
 {
     protected readonly AspireAppFixture Fixture;
     protected readonly HttpClient HttpClient;
-    protected readonly DatabaseManager DatabaseManager;
+    /// <summary>
+    /// 資料庫管理器 - 由 Fixture 持有單一實例，避免每個測試重建 Respawner
+    /// </summary>
+    protected DatabaseManager DatabaseManager => Fixture.DatabaseManager;
 
     protected IntegrationTestBase(AspireAppFixture fixture)
     {
         Fixture = fixture;
         HttpClient = fixture.HttpClient;
-        DatabaseManager = new DatabaseManager(() => fixture.GetConnectionStringAsync());
     }
 
     /// <summary>
-    /// 每個測試執行前的初始化
-    /// 確保資料庫結構存在
+    /// 每個測試執行前的初始化（資料庫結構與 Respawner 已在 Fixture 初始化）
     /// </summary>
-    public async Task InitializeAsync()
-    {
-        await DatabaseManager.InitializeDatabaseAsync();
-    }
+    public Task InitializeAsync() => Task.CompletedTask;
 
     /// <summary>
     /// 每個測試執行後的清理

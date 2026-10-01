@@ -21,7 +21,6 @@ public class IntegrationTestCollection : ICollectionFixture<TestWebApplicationFa
 /// <summary>
 /// 整合測試基底類別 - 使用 Collection Fixture 共享容器
 /// </summary>
-[Collection(IntegrationTestCollection.Name)]
 public abstract class IntegrationTestBase : IAsyncLifetime
 {
     /// <summary>
@@ -35,9 +34,9 @@ public abstract class IntegrationTestBase : IAsyncLifetime
     protected readonly HttpClient HttpClient;
 
     /// <summary>
-    /// 資料庫管理器
+    /// 資料庫管理器 - 由 Factory 持有單一實例，避免每個測試重建 Respawner
     /// </summary>
-    protected readonly DatabaseManager DatabaseManager;
+    protected DatabaseManager DatabaseManager => Factory.DatabaseManager;
 
     /// <summary>
     /// Flurl HTTP 用戶端
@@ -48,20 +47,16 @@ public abstract class IntegrationTestBase : IAsyncLifetime
     {
         Factory = factory;
         HttpClient = factory.CreateClient();
-        DatabaseManager = new DatabaseManager(factory.PostgresContainer.GetConnectionString());
 
         // 設定 Flurl 用戶端
         FlurlClient = new FlurlClient(HttpClient);
     }
 
     /// <summary>
-    /// 每個測試前執行 - 初始化資料庫結構
+    /// 每個測試前執行（資料庫結構與 Respawner 已在 Factory 初始化）
+    /// FakeTimeProvider 由整個 Collection 共用、只能往前推，這裡不重設時間
     /// </summary>
-    public virtual async Task InitializeAsync()
-    {
-        await DatabaseManager.InitializeDatabaseAsync();
-        ResetTime();
-    }
+    public virtual Task InitializeAsync() => Task.CompletedTask;
 
     /// <summary>
     /// 每個測試後執行 - 清理資料庫資料
@@ -70,14 +65,6 @@ public abstract class IntegrationTestBase : IAsyncLifetime
     {
         await DatabaseManager.CleanDatabaseAsync();
         FlurlClient.Dispose();
-    }
-
-    /// <summary>
-    /// 重設時間為測試開始時間 (2024-01-01 00:00:00 UTC)
-    /// </summary>
-    protected void ResetTime()
-    {
-        Factory.TimeProvider.SetUtcNow(new DateTimeOffset(2024, 1, 1, 0, 0, 0, TimeSpan.Zero));
     }
 
     /// <summary>
@@ -90,7 +77,7 @@ public abstract class IntegrationTestBase : IAsyncLifetime
     }
 
     /// <summary>
-    /// 設定特定時間
+    /// 設定特定時間（只能設為晚於目前的時間，FakeTimeProvider 不可回設）
     /// </summary>
     /// <param name="time">要設定的時間</param>
     protected void SetTime(DateTimeOffset time)

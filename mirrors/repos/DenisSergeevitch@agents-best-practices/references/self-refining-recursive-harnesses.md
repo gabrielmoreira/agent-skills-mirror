@@ -60,6 +60,8 @@ A recursive full-agent harness lets a parent session create child sessions that 
 
 This differs from a nested model call, which returns one model response, and from a planned workflow packet, whose lifecycle and integration are defined in a versioned workflow artifact. Recursive children are useful for dynamic exploration; [workflow orchestration](workflow-orchestration.md) remains the better fit for predictable decomposition, independent verification, and controlled fan-in.
 
+When several approach-owning teams use these children, [adaptive agent teams](adaptive-agent-teams.md) owns team charters, work-intent overlap, and portfolio changes. Child admission, delivery semantics, cancellation, and aggregate reservations remain canonical here; changing team allocation does not require continual harness refinement.
+
 ### Self-refining harness
 
 A self-refining harness runs an outer adaptation loop that proposes and evaluates changes to versioned supplemental harness state while the ordinary action loop continues serving tasks.

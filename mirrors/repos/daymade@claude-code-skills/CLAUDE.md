@@ -183,6 +183,10 @@ unavailable, report an unknown inventory; do not substitute a raw rollout scan.
 Edit shared reader code in `daymade-claude-code/_conversation_core/`, then run
 `python3 daymade-claude-code/sync_core.py sync` and `check` before shipping;
 bundled `scripts/_core/` copies are generated projections.
+For Claude task-ending and cwd interpretation, enter `read-claude-code-history`
+and its [local runtime and cwd contract](daymade-claude-code/read-claude-code-history/references/session_file_format.md#local-runtime-and-working-directory-evidence).
+Use its [session-ending workflow](daymade-claude-code/read-claude-code-history/references/workflow_examples.md#inspect-session-endings)
+for candidate selection and commands; keep the detailed rules in those owners.
 
 ### Local Agent Messaging
 
@@ -219,8 +223,9 @@ reset promise or a question about missing execution signals enters the Skill's
 [monitoring route](tibo-reset-codex/SKILL.md#监测轮从信息到可行动信号) and
 [output contract](tibo-reset-codex/SKILL.md#输出合同先给结论再交代边界).
 Before using a third-party date or Yes/No as a reset signal, check its source-post
-chronology, whether it observes account quota changes or only classifies posts,
-and whether the monitor completed a plausible-time check. The Skill owns the
+chronology (an operator-entered event cites no source post), whether it observes
+account quota changes or only classifies posts, and whether the monitor completed a
+plausible-time check. The Skill owns the
 detailed procedure.
 [Next-reset forecast](tibo-reset-codex/references/next-reset-forecast.md) owns
 date judgments; [forecast feedback](tibo-reset-codex/references/forecast-feedback.md)

@@ -287,6 +287,53 @@ For [hardware agents](hardware-agents.md), extend the existing case/trace format
 
 Launch gates additionally require physical boot and a cycle on the exact artifact, with remote resulting-state verification for authorized effects. Scheduled products also need sleep/wake evidence; resumable products need a safe reset/power-cycle recovery probe. Unattended or overnight reliability needs a declared, completed soak; a passing host-backed run or first hour is not a substitute.
 
+## Adaptive agent-team evals
+
+[Adaptive agent teams](adaptive-agent-teams.md) are an advanced, post-MVP profile. Evaluate the proposed coordination contracts and their measured contribution; published outcomes or team counts do not establish how a research system implemented them or which mechanism caused its gains.
+
+Compare at least these conditions with the same model/settings, task fixtures, tools, authority, acceptance criteria, and total resource budget:
+
+```text
+single-agent research loop
+ordinary parallel workers executing bounded packets
+adaptive teams retaining distinct approach charters
+```
+
+A fixed team portfolio is a useful intermediate comparison before allowing allocation changes. Match available concurrency where the comparison permits it and report differences explicitly. If budgets cannot be matched, report the quality/cost frontier rather than attributing additional compute to coordination. Use held-out investigations with plausible competing explanations, misleading early leads, and independently checkable acceptance evidence.
+
+Ablate these mechanisms separately; keep other team controls fixed and declare any coupled changes:
+
+| Mechanism | Matched comparison | Diagnostic measurement |
+|---|---|---|
+| Varied formulations | Distinct formulations, assumptions, or methods versus the same approach under different wording | Validated coverage of competing explanations, overlap in explored questions, and recovery from misleading leads. |
+| Work awareness | Work-intent visibility and overlap checks on/off with the same permitted replication policy | Unintended duplicate work, missed semantic overlap, false conflicts that block useful work, and registry/coordination cost. |
+| Cross-team communication | Finding exchange on/off while keeping team-local communication fixed | Useful finding adoption, time saved, message overhead, unsupported-claim propagation, and dependence among apparent corroborations. |
+| Adaptive allocation | Evidence-linked allocation changes versus a fixed portfolio with the same aggregate budget | Quality and cost to reach acceptance, abandoned approaches, retained challenge coverage, and failed or unnecessary transitions. |
+
+State which interactions were actually tested. Do not infer benefits from formulation diversity or larger team count when communication or available compute changed at the same time.
+
+Use controlled interleavings and restorable fixtures for these probes:
+
+| Probe | Required observed result |
+|---|---|
+| An unsupported finding is shared, echoed by several teams, and sent to a reviewer | Provenance and consumption dependencies survive; echoes cannot count as independent validation or convert the claim to verified status. |
+| A replication task receives the result it was meant to check before sealing its own artifact | The run reports the exposure and loses the claimed independence, or the declared visibility policy prevents it. |
+| A promising early lead conflicts with later evidence from a minority approach | Contradictions remain visible; allocation and acceptance follow the declared evidence policy rather than message volume or consensus. |
+| Different labels hide the same question/method/input scope; similar labels conceal distinct work | Semantic overlap and false-conflict rates are graded against fixture labels; useful distinct work is not suppressed merely by names. |
+| Unintended overlap and explicitly reserved independent replication occur together | The harness distinguishes waste from declared replication and applies the replication visibility policy. |
+| Two teams simultaneously claim overlapping work; one lease expires while its worker can still write | The ownership conflict is explicit and current fencing prevents conflicting writes; expiry alone cannot establish safe reassignment. |
+| Duplicate or stale create/split/merge/retire/retask decisions arrive | Accepted identity/version checks prevent additional teams, repeated allocation debits, or silent overwrite of a newer portfolio. |
+| A proposed change exceeds authority, changes the parent objective, or lacks capacity | The transition returns the applicable denial/conflict outcome without partially changing ownership or budget. |
+| A result arrives after retasking, merging, or retirement | Its producing charter and intent remain intact; relevance is reassessed before adoption and it is not credited to the new approach. |
+| A recipient is unavailable; a message arrives after its intended charter changes | Delivery has a bounded observable outcome; the late message cannot revive obsolete work or act as a current assignment. |
+| Restart occurs between transition acceptance, worker admission, and handoff | Reconciliation recovers the recorded decision and outstanding work without duplicate admission, lost ownership, or blind side-effect replay. |
+| Budget exhaustion occurs with reservations, in-flight work, and a pending transition | Aggregate accounting includes spent, reserved, and outstanding work under the existing budget contract; the run stops or degrades with an explicit incomplete outcome. |
+| All teams become idle or retire with unresolved questions; a rollback leaves external effects | Quiescence is not scored as acceptance; the run reports remaining work and effects rather than claiming completion or restored spent budget. |
+
+Measure task quality, validated coverage, false-success rate, cost to reach acceptance including failed approaches, elapsed time, unresolved/failure rate, and human intervention. Also measure unintended overlapping work separately from declared replication, coordination/message cost, allocation churn, stale-decision rejection, stale-result adoption, and independence-policy violations. Use runtime records for ownership, transitions, authority, and accounting; a model judge's interpretation of an approach is not evidence that these controls held.
+
+Launch only when the profile improves a declared outcome over the simpler baselines at the required quality floor and within the resource envelope. Authority, ownership, accounting, stale-state, and independent-acceptance probes must have no unresolved control failures; report the trials and observed failures rather than treating a passing suite as universal proof. Keep adaptive allocation disabled when it cannot justify its overhead or when these invariants regress. Acceptance still follows the parent goal and validation policy, not team consensus, scale, or inactivity.
+
 ## Self-refinement evals
 
 Online refinement is an advanced, post-MVP feature. Compare the same tasks and model under at least these conditions:

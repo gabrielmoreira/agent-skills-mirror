@@ -21,8 +21,9 @@ What stays here, per that split:
   + prompt), and the consolidated `memory_query` agent tool in
   [`query/`](query/) (it came back from the extracted crate because the
   engine crate cannot name the `Tool` trait).
-- Guard: [`guard/`](guard/), the taint/scope/budget policy gate over
-  every provider call.
+- Guard: [`guard/`](guard/), the host half of the taint/scope/budget policy
+  gate over every provider call (`HostGuardPolicy`, the `MemoryGuard` alias).
+  The decorator itself is `tinymemory-guard`'s `GuardedProvider`.
 - Driver binding: [`binding.rs`](binding.rs) (`memory::binding::for_config`,
   the workspace-keyed driver binding the Layer rules below reference) and
   [`driver/`](driver/), which provider backs a workspace. The built-in driver

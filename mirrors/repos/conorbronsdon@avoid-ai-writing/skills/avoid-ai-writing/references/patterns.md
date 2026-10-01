@@ -587,7 +587,7 @@ Structural regularity can matter more than a vocabulary swap. Consistent sentenc
 
 ### Vocabulary diversity (stylometric)
 
-In longer pieces (200+ words), look at how much vocabulary the text actually uses. The type-token ratio (TTR) — distinct word types divided by total tokens — is a classical stylometric signal that's easy to read by eye. Human prose at this length usually lands somewhere around 0.50–0.65 in English. AI text trends flatter, sometimes drifting under 0.40 when the model gets locked on a small vocabulary loop.
+In longer pieces (200+ words), look at how much vocabulary the text actually uses. The type-token ratio (TTR) — distinct word types divided by total tokens — is a classical stylometric signal that's easy to read by eye. It falls as a text gets longer, whoever wrote it, so read it over stretches of about 200 words rather than across a whole document: the 6,000-word public-domain slices in this repo's human control corpus sit between 0.18 and 0.31 overall. Within a 200-word stretch, human prose usually lands somewhere around 0.50–0.65 in English. AI text trends flatter, sometimes drifting under 0.40 when the model gets locked on a small vocabulary loop.
 
 A very low TTR is not by itself proof of AI authorship — narrow topics, technical reference material, and second-language writing all legitimately compress vocabulary. But on general prose where you'd expect range (essays, articles, social content over ~200 words), a TTR below 0.40 is worth a second look. The fix is rarely to thesaurus the text. Use specific things and cases already present in the source, and repeat a technical term when it is the accurate term.
 

@@ -8,7 +8,7 @@ description: |
 
 > **DO NOT scan `lib/` (2.1G, 10k SKILL.md, 122 repos). It is raw clone cache, not curated.**
 
-## Canonical Discovery (: 3 hops, not 122)
+## Canonical Discovery (3 hops, not 122)
 
 1. Open `skills-aggregated/AGENTS.md` — pick hub from 4 (business, code-quality, frontend, server-side)
 2. Open `skills-aggregated/<hub>/SKILL.md` — pick sub-hub (16 total, not 122)
@@ -17,20 +17,6 @@ description: |
 ## Opencode Native (if synced)
 
 When synced, hubs are also available via `skill` tool as 4 entries (business, code-quality, frontend, server-side) — 120 tokens, not 3840. Load hub via `skill`, then follow routing.csv.
-
-## Antigravity (AGY) Global Discovery
-
-When running AGY in sub-projects (e.g., inside a project folder with its own `.git` repo), AGY's workspace discovery stops at `.git` root and will not discover parent `.agent/skills` folders automatically.
-- To resolve, configure `~/.gemini/config/skills.json` globally:
-  ```json
-  {
-    "entries": [
-      {
-        "path": "/absolute/path/to/shared/.agent/skills"
-      }
-    ]
-  }
-  ```
 
 ## Anti-Patterns
 

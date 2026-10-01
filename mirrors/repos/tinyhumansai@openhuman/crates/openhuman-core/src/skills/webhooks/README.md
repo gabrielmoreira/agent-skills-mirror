@@ -70,7 +70,7 @@ The router also runs a separate `tokio::sync::broadcast` channel of `WebhookDebu
 
 `WebhookRouter` serializes its registrations to a JSON file (`PersistedRoutes`) at the optional `persist_path` passed to `new()`, and reloads them from that file when constructed. Writes are best-effort and fire-and-forget: offloaded to `spawn_blocking` inside a tokio runtime (inline otherwise), guarded by a monotonic generation counter so stale writes under rapid churn are dropped. Debug logs are not persisted. They live only in an in-memory `VecDeque` capped at 250 entries.
 
-Note that nothing in the production startup path currently constructs a `WebhookRouter` or calls `SocketManager::set_webhook_router`; the only caller is `tests/raw_coverage/webhooks_ingress_e2e.rs`. Until a router is attached, the local RPCs return empty results (see above) and the subscriber answers every incoming request with `404`.
+Note that nothing in the production startup path currently constructs a `WebhookRouter` or calls `SocketManager::set_webhook_router`; it has no caller outside tests. Until a router is attached, the local RPCs return empty results (see above) and the subscriber answers every incoming request with `404`.
 
 ## Dependencies
 

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `webpack/webpack` — 26 default patterns, 4 followed patterns, 6 file(s) materialized.
+Mirror of `webpack/webpack` — 26 default patterns, 7 followed patterns, 9 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `webpack/webpack` — 26 default patterns, 4 followed patterns, 6 file
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 4 |
-| Files         | 6 |
+| Followed pats | 7 |
+| Files         | 9 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -53,8 +53,11 @@ Mirror of `webpack/webpack` — 26 default patterns, 4 followed patterns, 6 file
 
 - `TESTING_DOCS.md`
 - `docs/architecture.md`
+- `docs/options.md`
 - `docs/performance.md`
 - `docs/pull-requests.md`
+- `docs/runtime.md`
+- `docs/caching.md`
 
 ## File Index
 
@@ -65,9 +68,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 2 | ✓ | [`docs/syntax.md`](docs/syntax.md) |
 | 3 | → | [`docs/architecture.md`](docs/architecture.md) |
-| 4 | → | [`docs/performance.md`](docs/performance.md) |
-| 5 | → | [`docs/pull-requests.md`](docs/pull-requests.md) |
-| 6 | → | [`TESTING_DOCS.md`](TESTING_DOCS.md) |
+| 4 | → | [`docs/caching.md`](docs/caching.md) |
+| 5 | → | [`docs/options.md`](docs/options.md) |
+| 6 | → | [`docs/performance.md`](docs/performance.md) |
+| 7 | → | [`docs/pull-requests.md`](docs/pull-requests.md) |
+| 8 | → | [`docs/runtime.md`](docs/runtime.md) |
+| 9 | → | [`TESTING_DOCS.md`](TESTING_DOCS.md) |
 
 ---
 

@@ -1,6 +1,6 @@
 # Skills
 
-Discovery and parsing of agentskills.io-style skills (a directory containing `SKILL.md`/`WORKFLOW.md` with YAML frontmatter and Markdown instructions). Owns scope resolution (Builtin / User / Project / Legacy / Flow), trust-marker enforcement, resource reading, create/install/uninstall, run logging, search, and the agent-tool wrappers over all of it. Skills are surfaced to agents as a compact catalog (`## Installed Skills` in the orchestrator prompt) and launched through the `run_workflow` tool as a separate agent run; skill bodies are not spliced into chat turns. Remote catalog browsing lives in [`catalog/`](catalog/README.md) and run execution lives in [`runtime/`](runtime/README.md); this module owns local metadata only.
+Host policy over agentskills.io-style skills (a directory containing `SKILL.md`/`WORKFLOW.md` with YAML frontmatter and Markdown instructions). The portable mechanics live in the vendored `tinyskills` crate (see [tinyskills vs host](#tinyskills-vs-host)); this module owns scope resolution (Builtin / User / Project / Legacy / Flow), trust-marker enforcement, resource reading, create/install/uninstall, run logging, search, and the agent-tool wrappers over all of it. Skills are surfaced to agents as a compact catalog (`## Installed Skills` in the orchestrator prompt) and launched through the `run_workflow` tool as a separate agent run; skill bodies are not spliced into chat turns. Remote catalog browsing lives in [`catalog/`](catalog/README.md) and run execution lives in [`runtime/`](runtime/README.md); this module owns local metadata only.
 
 ## Compile-time gate (`skills` feature, see `mod.rs`)
 
@@ -12,13 +12,30 @@ Discovery and parsing of agentskills.io-style skills (a directory containing `SK
 
 Stub signatures must match the real ones exactly; `cargo check --no-default-features` is the only thing that catches drift.
 
+## tinyskills vs host
+
+`vendor/tinyskills` owns everything host-independent, and this module calls it instead of re-implementing it:
+
+| In `tinyskills` | In this module (host policy) |
+| --- | --- |
+| Document/frontmatter parsing, bounded `read_document`, resource inventory, name/description limits and `RESOURCE_DIRS` (re-exported from `ops_types.rs`) | Which roots exist (`~/.openhuman/{skills,workflows}`, `~/.agents/skills`, `<ws>/.openhuman/...`, builtin root), the trust marker, `OPENHUMAN_SKILL_INSTALL_ALLOW_LOCAL_HTTP` |
+| `scan_root` / `resolve_collisions_with` (precedence, shadow warnings, `LastWins` tie-break); host passes `id_noun = "workflow"` and excludes `Profile` | Root ordering in `ops_discover/scan.rs`, `source_format` normalisation, the metadata cache and its invalidation |
+| `resolve_skill` / `read_resource` (traversal, symlink, size, UTF-8 guards) | `read_workflow_resource` wrapper and the empty `skill_id` check |
+| `slugify`, `validate_*`, `yaml_scalar`, `scaffold_bundle` (containment, create/edit preconditions, body preservation, SKILL.md to WORKFLOW.md migration, resource dirs) | Scope-to-root choice, `workflow.toml` sidecar (`render_workflow_toml`), `[[inputs]]` validation, re-discovery of the created workflow |
+| `remove_bundle` (slug/symlink/containment/bundle checks) | The root search order, `workflow '...' is not installed` wording, `WorkflowsChanged` publish |
+| Install URL normalisation and SSRF guards, `check_document_size`, `validate_fetched_document`, `write_installed_document`, `redact_url` | The `reqwest` fetch, `Retry-After`/rate-limit messages, ClawHub file-API URL exception, Sentry `report_error` |
+| `TriggerPattern` grammar and matching | `TriggeredWorkflowIndex`, the bus subscriber (passes an empty slug so slug-qualified patterns stay inert) |
+| Bundled-skill `validate`/`digest`/`install`/`is_current_materialization` | The compiled `BUNDLED` table and the builtin root |
+
+Tests for the portable pieces live in `vendor/tinyskills/crates/tinyskills/tests/`; the `*_tests.rs` files here cover only the host wiring.
+
 ## Key files
 
 | File | Role |
 | --- | --- |
 | `ops.rs` | Facade re-exporting `ops_create`/`ops_discover`/`ops_install`/`ops_parse`/`bundled::install_bundled_skills`; the module doc explains scope precedence and the trust marker. |
 | `ops_create.rs` | Scaffolds new `WORKFLOW.md`/`SKILL.md` skills on disk from declared `[[inputs]]`. |
-| `ops_discover.rs` | Scans workspace, user, bundled, and legacy root directories; resolves scope precedence and collisions; skips symlinked bundle entries; and creates the legacy `<workspace>/skills/` directory. |
+| `ops_discover.rs` | Scans workspace, user, bundled, and legacy root directories and hands the result to `tinyskills::resolve_collisions_with` for scope precedence and collisions; and creates the legacy `<workspace>/skills/` directory. |
 | `ops_install.rs` | Facade over submodules `ops_install/fetch.rs`/`ops_install/url_validation.rs`: the hardened HTTPS skill-URL installer (size cap, timeout clamp, non-https/private-IP/non-SKILL.md rejection, GitHub blob-to-raw normalization). Localhost HTTP installs require `OPENHUMAN_SKILL_INSTALL_ALLOW_LOCAL_HTTP=1` and are for local fixtures only. |
 | `ops_parse.rs` | Splits `SKILL.md`/`WORKFLOW.md` into frontmatter and body, builds the resource inventory, reads a single resource. |
 | `ops_types.rs` | Ungated carve-out: `Workflow`, `WorkflowFrontmatter`, `WorkflowScope` (`Builtin`, `User`, `Project`, `Legacy`, `Flow`), filename/size constants (`MAX_WORKFLOW_RESOURCE_BYTES = 128 KiB`). |
@@ -61,7 +78,7 @@ Plus the sub-domain namespaces: `skill_registry.*` (`browse`, `search`, `sources
 
 ## Tests
 
-Behavior tests live beside their modules as `*_tests.rs` (for example `ops_tests.rs` and its `ops_discovery_tests.rs`, `ops_create_and_url_tests.rs`, `ops_uninstall_tests.rs` siblings, `ops_types_tests.rs`, `ops_create_render_skill_toml_tests_tests.rs`, `ops_discover_include_skills_tests_tests.rs`, `ops_install_install_fetch_tests_tests.rs`, `preflight_tests.rs`, `registry_tests.rs`, `run_log_tests.rs`, `schemas_tests.rs`, `search_tests.rs`, `tools_tests.rs`, `types_tests.rs`, `bus_tests.rs`), wired via `#[path]` from the module they cover.
+Behavior tests live beside their modules as `*_tests.rs` (for example `ops_tests.rs` and its `ops_discovery_tests.rs`, `ops_create_and_url_tests.rs`, `ops_uninstall_tests.rs` siblings, `ops_create_render_skill_toml_tests_tests.rs`, `ops_discover_include_skills_tests_tests.rs`, `ops_install_install_fetch_tests_tests.rs`, `preflight_tests.rs`, `registry_tests.rs`, `run_log_tests.rs`, `schemas_tests.rs`, `search_tests.rs`, `tools_tests.rs`, `types_tests.rs`, `bus_tests.rs`), wired via `#[path]` from the module they cover.
 
 `e2e_plumbing_tests.rs` and `e2e_run_tests.rs` are mock-LLM end-to-end tests: plumbing (create then registry round-trip, an orchestrator turn calling `list_workflows`/`run_workflow`, `await_run_outcome` polling) and run execution (`spawn_workflow_run_background` through a terminal `DONE` to `await_run_outcome`, marked `#[ignore]` and run serially because they set the process-global `OPENHUMAN_WORKSPACE`).
 
@@ -70,4 +87,4 @@ Catalog refresh in a live session (`refresh_workflows`) is covered by `crates/op
 ## Notes
 
 - Per AGENTS.md, skill discovery rejects symlinked bundles; copy skills into the `Harness` workspace rather than symlinking them.
-- `WorkflowScope` precedence on name collision (`ops_discover::precedence`), lowest to highest: `Builtin` < `Legacy` < `User` < `Project`. `Flow` is a distinct, non-collision-checked scope: a Flows automation row from `flows.db` surfaced in the same catalogue rather than a `SKILL.md` bundle on disk.
+- `WorkflowScope` precedence on name collision (`tinyskills::SkillScope::precedence`), lowest to highest: `Builtin` < `Legacy` < `User` < `Project`. `Flow` is a distinct, non-collision-checked scope: a Flows automation row from `flows.db` surfaced in the same catalogue rather than a `SKILL.md` bundle on disk.

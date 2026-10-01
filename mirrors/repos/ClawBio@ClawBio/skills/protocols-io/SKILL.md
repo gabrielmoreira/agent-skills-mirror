@@ -146,7 +146,7 @@ Without `--output`: results are printed to the terminal as markdown. With `--out
 
 ## Dependencies
 
-**Required** (in `requirements.txt`):
+**Required** (core dependency in `pyproject.toml`):
 - `requests` >= 2.28 — HTTP client for API calls
 
 **Optional**:

@@ -385,7 +385,7 @@ Path-aware 工具统一用 `ToolExecContext` 解析默认路径：显式绝对�
 |------|------|------|
 | `send_notification` | 条件注入, internal | 发系统原生桌面通知。参数：`title`、`body`(必填)。 |
 | `send_attachment` | always_load, internal | 把生成文件以可下载卡片推送到桌面 UI。参数：`path`(必填，绝对路径，上限 20 MB)、`display_name`、`description`。自动复制到 `~/.hope-agent/attachments/{session_id}/`。IM 渠道会话不可用（由渠道插件的原生媒体发送代替）。 |
-| `get_weather` | deferred, internal, concurrent_safe | 通过 Open-Meteo 获取天气（免 API key）。`location` 支持城市名或 `latitude,longitude`；`forecast_days` 1–16(默认 1)。 |
+| `get_weather` | deferred, internal, concurrent_safe | 通过 Open-Meteo 获取天气（免 API key）。`location` 支持城市名或 `latitude,longitude`；含汉字的城市名使用 `zh` 地理编码，其余沿用 `en`。地理编码允许上游省略 `country`（内部以空字符串表示），不使整批位置解码失败；`forecast_days` 1–16(默认 1)。 |
 
 ### 15. 元工具
 

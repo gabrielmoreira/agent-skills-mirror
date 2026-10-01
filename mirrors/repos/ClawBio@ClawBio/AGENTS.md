@@ -85,7 +85,6 @@ the catalog and SKILL.md `--help` do not make obvious:
 | `just-prs`, `fine-mapping` (SuSiE) | Optional extras: `uv sync --extra just-prs` / `--extra fine-mapping`, then `uv run --extra <name> ...` |
 | nf-core wrappers (`sarek-pipeline`, `rnaseq-pipeline`, `scrnaseq-pipeline`) | `--check` validates the run plan without executing; `--demo` pulls nf-core's public test data (needs network; `NXF_OFFLINE` is detected and reported) |
 | `flow-bio`, `protocols-io`, `labstep`, `galaxy-bridge` | Credentials via env vars or `--login`; see the skill's SKILL.md |
-| `ancestry-risk-profiler` demo | `--demo --ancestry SAS`. The catalog `demo_command` omits `--ancestry` and exits with an error: the bundled patient's high-Fst AIM coverage is below the automatic-inference floor |
 
 ## Shared Demo Data
 

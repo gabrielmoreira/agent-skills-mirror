@@ -2,7 +2,6 @@
 name: dotnet-testing-advanced-tunit-fundamentals
 description: |
   TUnit 新世代測試框架入門完整指南。當需要使用 TUnit 建立測試專案或從 xUnit 遷移至 TUnit 時使用。涵蓋 Source Generator 驅動測試發現、AOT 編譯支援、流暢式非同步斷言。包含專案建立、[Test] 屬性、生命週期管理、並行控制與 xUnit 語法對照。
-  Make sure to use this skill whenever the user mentions TUnit, Source Generator testing, AOT test framework, TUnit vs xUnit, or migrating to TUnit, even if they don't explicitly ask for TUnit fundamentals.
   Keywords: TUnit, tunit testing, source generator testing, AOT testing, 新世代測試框架, [Test], [Arguments], TUnit.Assertions, Assert.That, Before(Test), After(Test), NotInParallel, TUnit.Templates, Microsoft.Testing.Platform, TUnit vs xUnit, 並行執行
 ---
 
@@ -81,6 +80,11 @@ public async Task Add_多組輸入_應回傳正確結果(int a, int b, int expec
     await Assert.That(result).IsEqualTo(expected);
 }
 ```
+
+> `decimal` 不是 attribute 常數型別，`[Arguments(1.5m)]` 會編譯失敗（CS0182）。
+> TUnit 0.60.15 起會把 `double` 或 `string` 常值自動轉成 `decimal` 參數：參數宣告為 `decimal`，
+> 寫 `[Arguments(1.5)]` 或 `[Arguments("19.99")]` 即可。更早的版本不支援這個轉換，
+> 請改用 `[MethodDataSource]` 提供 `decimal` 值。
 
 ## TUnit.Assertions 斷言系統
 

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `anthropics/claude-code` — 26 default patterns, 0 followed patterns, 10 file(s) materialized.
+Mirror of `anthropics/claude-code` — 26 default patterns, 0 followed patterns, 11 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `anthropics/claude-code` — 26 default patterns, 0 followed patterns,
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 10 |
+| Files         | 11 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,16 +59,17 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`plugins/claude-opus-4-5-migration/skills/claude-opus-4-5-migration/SKILL.md`](plugins/claude-opus-4-5-migration/skills/claude-opus-4-5-migration/SKILL.md) |
-| 2 | ✓ | [`plugins/frontend-design/skills/frontend-design/SKILL.md`](plugins/frontend-design/skills/frontend-design/SKILL.md) |
-| 3 | ✓ | [`plugins/hookify/skills/writing-rules/SKILL.md`](plugins/hookify/skills/writing-rules/SKILL.md) |
-| 4 | ✓ | [`plugins/plugin-dev/skills/agent-development/SKILL.md`](plugins/plugin-dev/skills/agent-development/SKILL.md) |
-| 5 | ✓ | [`plugins/plugin-dev/skills/command-development/SKILL.md`](plugins/plugin-dev/skills/command-development/SKILL.md) |
-| 6 | ✓ | [`plugins/plugin-dev/skills/hook-development/SKILL.md`](plugins/plugin-dev/skills/hook-development/SKILL.md) |
-| 7 | ✓ | [`plugins/plugin-dev/skills/mcp-integration/SKILL.md`](plugins/plugin-dev/skills/mcp-integration/SKILL.md) |
-| 8 | ✓ | [`plugins/plugin-dev/skills/plugin-settings/SKILL.md`](plugins/plugin-dev/skills/plugin-settings/SKILL.md) |
-| 9 | ✓ | [`plugins/plugin-dev/skills/plugin-structure/SKILL.md`](plugins/plugin-dev/skills/plugin-structure/SKILL.md) |
-| 10 | ✓ | [`plugins/plugin-dev/skills/skill-development/SKILL.md`](plugins/plugin-dev/skills/skill-development/SKILL.md) |
+| 1 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 2 | ✓ | [`plugins/claude-opus-4-5-migration/skills/claude-opus-4-5-migration/SKILL.md`](plugins/claude-opus-4-5-migration/skills/claude-opus-4-5-migration/SKILL.md) |
+| 3 | ✓ | [`plugins/frontend-design/skills/frontend-design/SKILL.md`](plugins/frontend-design/skills/frontend-design/SKILL.md) |
+| 4 | ✓ | [`plugins/hookify/skills/writing-rules/SKILL.md`](plugins/hookify/skills/writing-rules/SKILL.md) |
+| 5 | ✓ | [`plugins/plugin-dev/skills/agent-development/SKILL.md`](plugins/plugin-dev/skills/agent-development/SKILL.md) |
+| 6 | ✓ | [`plugins/plugin-dev/skills/command-development/SKILL.md`](plugins/plugin-dev/skills/command-development/SKILL.md) |
+| 7 | ✓ | [`plugins/plugin-dev/skills/hook-development/SKILL.md`](plugins/plugin-dev/skills/hook-development/SKILL.md) |
+| 8 | ✓ | [`plugins/plugin-dev/skills/mcp-integration/SKILL.md`](plugins/plugin-dev/skills/mcp-integration/SKILL.md) |
+| 9 | ✓ | [`plugins/plugin-dev/skills/plugin-settings/SKILL.md`](plugins/plugin-dev/skills/plugin-settings/SKILL.md) |
+| 10 | ✓ | [`plugins/plugin-dev/skills/plugin-structure/SKILL.md`](plugins/plugin-dev/skills/plugin-structure/SKILL.md) |
+| 11 | ✓ | [`plugins/plugin-dev/skills/skill-development/SKILL.md`](plugins/plugin-dev/skills/skill-development/SKILL.md) |
 
 ---
 

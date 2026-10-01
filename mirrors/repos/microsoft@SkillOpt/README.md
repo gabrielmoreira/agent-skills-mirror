@@ -94,11 +94,10 @@ python -m skillopt_webui.app
 | Flag | Default | Description |
 |---|---|---|
 | `--port` | 7860 | Server port |
-| `--host` | `0.0.0.0` | Bind address |
+| `--host` | `127.0.0.1` | Bind address |
 | `--share` | off | Create a public Gradio share link |
 
-The default host listens on every network interface. Use
-`--host 127.0.0.1` for local-only access.
+The default host is loopback-only; pass `--host 0.0.0.0` to expose the dashboard.
 
 ---
 

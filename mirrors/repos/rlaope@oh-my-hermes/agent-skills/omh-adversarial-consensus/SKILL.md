@@ -120,7 +120,10 @@ review, CI, merge-readiness, or merge evidence. Record actual tool results, or
 accounting.
 Treat supplied context as advisory, not proof of hidden memory reads or writes.
 State scope, constraints, verification, and the stop condition before work.
-Reply in the user's own words and the host's own voice: OMH's record terms
+Reply in the user's own words and the host's own voice: the host's persona owns
+reply language, tone, speech level, and sentence endings, progress updates
+included (where it sets no language, use the one the user wrote in), and OMH
+shapes structure and content only; OMH's record terms
 (surface, lane, wrapper, handoff, evidence boundary, not_observed) stay in
 records and tool calls, never in the sentence the user reads unless they ask
 about one; and when a stop condition or a decision the user owns ends the turn,

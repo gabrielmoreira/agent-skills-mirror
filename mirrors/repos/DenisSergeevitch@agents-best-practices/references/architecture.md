@@ -202,6 +202,8 @@ objective
 
 Use this only when the single-worker loop is measurably insufficient because the task requires broad coverage, independent packet work, parallel read-only inspection, or separate verification. The workflow plan is not trusted policy. It is an artifact that must pass the same validation, permission, budget, and approval gates as any other model-proposed action.
 
+When work requires persistent teams that own distinct research approaches and change allocation as evidence develops, use [adaptive agent teams](adaptive-agent-teams.md). This optional post-MVP composition adds portfolio contracts to the existing workflow and child-session mechanisms; it does not add a maturity level or grant authority.
+
 ## Design rule
 
 Most agent failures are not caused by insufficient autonomy. They are caused by weak harness boundaries: broad tools, vague instructions, missing approval gates, unstructured tool results, poor context hygiene, and no evals.

@@ -13,6 +13,7 @@ This file maps the required agent-harness knowledge areas to the Markdown files 
 | Goal-like loop | `agentic-loop.md`, `planning-and-goals.md` | Includes objective, done condition, budget, checkpoints, progress log, validation, and stop rules. |
 | Planning mode | `planning-and-goals.md` | Covers read-only planning, plan artifact, approval, execution after approval, and plan-validate-execute; distinguishes execution-time progress scaffolds and their stopping effects from permission mode. |
 | Workflow orchestration | `workflow-orchestration.md`, `architecture.md`, `planning-and-goals.md`, `checklists.md` | Covers planner-generated workflows, work packets, worker and verifier contexts, integration, durable workflow state, budgets, approvals, and anti-patterns. |
+| Adaptive agent teams | [adaptive-agent-teams.md](adaptive-agent-teams.md), [team evals](evals.md#adaptive-agent-team-evals), `checklists.md` | Covers approach portfolios, discoverable work intentions, overlap resolution and declared replication, communication dependence, evidence-linked allocation changes, and stale-result attribution; reuses goal, workflow, and child-lifecycle owners. |
 | Programmable context and recursive execution | `self-refining-recursive-harnesses.md`, `context-memory-compaction.md`, `workflow-orchestration.md`, `planning-and-goals.md` | Distinguishes strict prompt-as-variable processing, code-first context access, raw-model recursion, and full-harness recursion; covers aggregate tree budgets and retained-child contracts. |
 | Hardware agents and board deployment | `hardware-agents.md`, `evals.md`, `checklists.md`, `source-links.md` | Covers inference location, board/runtime inventory, launcher versus compiled installation, partition/boot selection, bounded transport and native TLS memory, power-loss state, clock/wake contracts, retained identity, rollback, and physical-versus-host evidence. |
 | Continual harness refinement | `self-refining-recursive-harnesses.md`, `agent-legibility-feedback-loops.md`, `security-observability.md`, `evals.md`, `checklists.md` | Covers typed supplemental state, immutable policy boundaries, structured proposals, observed validation, rollback, quarantine, and local-to-global promotion. |
@@ -48,6 +49,7 @@ This file maps the required agent-harness knowledge areas to the Markdown files 
 - The skill includes agent-legibility, knowledge-base, feedback-loop, and entropy-management practices.
 - The skill includes workflow orchestration as a generic harness pattern without depending on a vendor-specific runtime.
 - The skill treats recursive execution and continual refinement as advanced, post-MVP profiles that require measured justification.
+- Adaptive agent teams remain a post-MVP architecture composition with measured simpler baselines; agent count, consensus, and published outcomes do not establish independent acceptance or expanded authority.
 - Mutable harness state cannot expand base authority, permissions, credentials, budgets, or evaluation policy.
 - Runtime capability discovery, probing, schema inference, binding, and generated helpers cannot create or expand authority.
 - Partial model output cannot authorize speculative execution; every physical dispatch and later claim remain host-validated and policy-bound.
@@ -70,6 +72,7 @@ agents-best-practices/
     environment-adaptive-tools.md
     speculative-tool-execution.md
     workflow-orchestration.md
+    adaptive-agent-teams.md
     self-refining-recursive-harnesses.md
     context-memory-compaction.md
     prompt-caching-and-cost.md

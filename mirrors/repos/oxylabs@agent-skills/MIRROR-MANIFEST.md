@@ -59,13 +59,13 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`skills/headless-browser/errors.md`](skills/headless-browser/errors.md) |
-| 2 | ✓ | [`skills/headless-browser/examples.md`](skills/headless-browser/examples.md) |
-| 3 | ✓ | [`skills/headless-browser/parameters.md`](skills/headless-browser/parameters.md) |
-| 4 | ✓ | [`skills/headless-browser/scripts/playwright_scrape.js`](skills/headless-browser/scripts/playwright_scrape.js) |
-| 5 | ✓ | [`skills/headless-browser/scripts/playwright_scrape.py`](skills/headless-browser/scripts/playwright_scrape.py) |
-| 6 | ✓ | [`skills/headless-browser/SKILL.md`](skills/headless-browser/SKILL.md) |
-| 7 | ✓ | [`skills/headless-browser/targets.md`](skills/headless-browser/targets.md) |
+| 1 | ✓ | [`skills/agent-browser/errors.md`](skills/agent-browser/errors.md) |
+| 2 | ✓ | [`skills/agent-browser/examples.md`](skills/agent-browser/examples.md) |
+| 3 | ✓ | [`skills/agent-browser/parameters.md`](skills/agent-browser/parameters.md) |
+| 4 | ✓ | [`skills/agent-browser/scripts/playwright_scrape.js`](skills/agent-browser/scripts/playwright_scrape.js) |
+| 5 | ✓ | [`skills/agent-browser/scripts/playwright_scrape.py`](skills/agent-browser/scripts/playwright_scrape.py) |
+| 6 | ✓ | [`skills/agent-browser/SKILL.md`](skills/agent-browser/SKILL.md) |
+| 7 | ✓ | [`skills/agent-browser/targets.md`](skills/agent-browser/targets.md) |
 | 8 | ✓ | [`skills/proxies/dedicated-datacenter.md`](skills/proxies/dedicated-datacenter.md) |
 | 9 | ✓ | [`skills/proxies/dedicated-isp.md`](skills/proxies/dedicated-isp.md) |
 | 10 | ✓ | [`skills/proxies/examples.md`](skills/proxies/examples.md) |

@@ -15,7 +15,7 @@ from concurrent.futures import Future
 from contextlib import contextmanager
 from contextvars import ContextVar, copy_context
 from pathlib import Path
-from typing import Any, Dict, Optional, Union
+from typing import Any, Callable, Dict, Optional, Union
 from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit, quote
 
 from . import health
@@ -46,7 +46,7 @@ _EPOCH_RESET_THRESHOLD = 100_000_000.0
 def retry_delay_from_headers(headers, fallback):
     """Seconds to wait after a 429, read from whichever header the host sent.
 
-    ``Retry-After`` is the standard, but Reddit's search/RSS endpoints answer an
+    ``Retry-After`` is the standard, but Reddit's keyless search endpoints answer an
     anonymous 429 with ``x-ratelimit-reset`` (seconds until the window rolls) and
     no ``Retry-After`` at all::
 
@@ -1068,7 +1068,7 @@ def get_text(
 ) -> Optional[str]:
     """Fetch a URL and return decoded text, or None on any failure.
 
-    Keyless helper for Reddit RSS and shreddit HTML endpoints — the free path
+    Keyless helper for Reddit site search and shreddit HTML endpoints, the free path
     that replaced the now-403 ``.json`` endpoints. Sends a browser User-Agent
     and never raises: returns None on HTTP error, network failure, or timeout
     so tiered callers can fall through to the next source.
@@ -1077,7 +1077,7 @@ def get_text(
         url: Request URL
         timeout: HTTP timeout per attempt in seconds
         retries: Number of retries on failure (kept low — these tiers fail fast)
-        accept: Accept header value (e.g. "application/atom+xml", "text/html")
+        accept: Accept header value (e.g. "text/html")
         headers: Optional extra headers merged over the defaults
 
     Returns:
@@ -1157,10 +1157,10 @@ class RateLimiter:
                     self._waiting -= 1
 
 
-# Shared across all keyless Reddit tiers (RSS, listing, shreddit) so their
+# Shared across all keyless Reddit tiers (site search, listing, shreddit) so their
 # combined fan-out is throttled as one family. Burst lets the parallel
 # enrichment workers proceed; sustained rate caps the stampede.
-# 1 req/sec is slow enough that home IPs survive RSS + listing + shreddit
+# 1 req/sec is slow enough that home IPs survive search + listing + shreddit
 # fan-out; raise LAST30DAYS_REDDIT_KEYLESS_RATE to trade 429s for wall-clock.
 REDDIT_KEYLESS_RATE_ENV = "LAST30DAYS_REDDIT_KEYLESS_RATE"
 DEFAULT_REDDIT_KEYLESS_RATE = 1.0
@@ -1218,10 +1218,11 @@ def _sleep_reddit_429_retry() -> None:
     )
 
 
-# Run-scoped memo for keyless Reddit GETs. Subreddit listing partials, listing
-# RSS feeds, arctic supplements, and shreddit comment pages depend only on the
-# subreddit and sort, and the Reddit lane is dispatched with the raw topic for
-# every subquery, so a four-subquery run requested each of them four times.
+# Run-scoped memo for keyless Reddit GETs. Subreddit listing partials, site
+# search pages, arctic supplements, and shreddit comment pages depend only on
+# the subreddit, sort, or raw topic, and the Reddit lane is dispatched with the
+# raw topic for every subquery, so a four-subquery run requested each of them
+# four times.
 # Memoizing successful bodies for the life of one command turns ~184 requests
 # into ~50 on the measured 2026-08-31 run shape. Concurrent requesters for the
 # same URL wait on the first fetch instead of issuing their own (all four
@@ -1284,6 +1285,7 @@ def reddit_keyless_get_text(
     retries: int = 2,
     accept: str = "*/*",
     headers: Optional[Dict[str, str]] = None,
+    validate: Optional[Callable[[str], Optional[str]]] = None,
 ) -> Optional[str]:
     """get_text for the keyless Reddit tiers, memoized per run and throttled.
 
@@ -1292,6 +1294,12 @@ def reddit_keyless_get_text(
     a limiter token, concurrent requesters for one URL share the in-flight
     fetch, and cold fetches are spaced via :data:`REDDIT_KEYLESS_LIMITER` so a
     broad multi-query run does not stampede Reddit's keyless endpoints.
+
+    ``validate`` lets a caller reject a fetched body before it is memoized. It
+    returns None for a body the caller recognizes, or a short reason string.
+    A rejected body is recorded into the failure sink as schema drift and the
+    call returns None, so an HTTP 200 challenge page is neither reported as a
+    clean empty result nor served from the memo to later streams.
     """
     cached = _reddit_memo_get(url)
     if cached is not None:
@@ -1326,6 +1334,14 @@ def reddit_keyless_get_text(
         _sync_reddit_keyless_rate()
         REDDIT_KEYLESS_LIMITER.acquire()
         text = get_text(url, timeout=timeout, retries=retries, accept=accept, headers=headers)
+        if text is not None and validate is not None:
+            problem = validate(text)
+            if problem:
+                _record_failure(HTTPError(
+                    f"Unrecognized response ({problem}): {url}",
+                    outcome_state=health.SCHEMA_DRIFT,
+                ))
+                return None
         if text is not None:
             _reddit_memo_put(url, text)
         return text
@@ -1340,6 +1356,7 @@ def reddit_keyless_get_text_retry_429(
     timeout: int = DEFAULT_TIMEOUT,
     accept: str = "*/*",
     headers: Optional[Dict[str, str]] = None,
+    validate: Optional[Callable[[str], Optional[str]]] = None,
 ) -> tuple[Optional[str], Optional[str]]:
     """Limiter-throttled GET with one extra limiter-respecting retry on 429.
 
@@ -1347,7 +1364,8 @@ def reddit_keyless_get_text_retry_429(
     recovered 429 is not left in the pipeline sink. A second 429, or any
     non-429 miss, is recorded as before. Internal ``get_text`` retries are
     skipped (``retries=1``) so the in-lane retry is the one that re-acquires
-    the bucket.
+    the bucket. ``validate`` is passed through to
+    :func:`reddit_keyless_get_text`; a rejected body is a non-429 miss.
     """
     # retries=1 on purpose: letting request() sleep out a 42-60s
     # x-ratelimit-reset inside a lane worker starves the whole batch (the
@@ -1360,6 +1378,7 @@ def reddit_keyless_get_text_retry_429(
         "retries": 1,
         "accept": accept,
         "headers": headers,
+        "validate": validate,
     }
     with capture_failures() as first:
         text = reddit_keyless_get_text(url, **kwargs)

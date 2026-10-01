@@ -163,6 +163,27 @@ Les surfaces Code/Texte/Classic existantes servent de repli avant tout plugin ;
 installer un plugin nécessite toujours une autorisation explicite.
 Voir la [recette](../../src/chrome/skills/wordpress-rest-api.md).
 
+#### Recettes de contenu CMS (API d'abord)
+
+Neuf compétences distinctes, purement instructives, couvrent **Ghost, Drupal,
+Joomla, Webflow, Shopify, Wix, Strapi, Contentful et Sanity**. Chacune apparaît
+dans le catalogue par défaut en Ask/Act/Dev sur Mid et Full ; seule la recette
+sélectionnée pour la tâche de contenu en cours est chargée. Elles n'ajoutent ni
+manifeste d'outils HTTP, ni magasin d'identifiants, ni intégration OAuth. Voir
+[Limites et validation CMS API-first](../cms-api-first.md) (en anglais) pour la
+matrice des services et la couverture des tests.
+
+Pour ces tâches, WebBrain privilégie l'API officielle après une découverte en
+lecture seule des capacités et de l'authentification, lorsque la cible, les
+champs requis, la portée de la tâche, les droits du service et l'autorisation de
+modification WebBrain le permettent. L'échec de l'éditeur n'est pas un
+préalable. Une API par ailleurs utilisable, mais sans autorisation, demande
+`/allow-api` une seule fois ; une autorisation existante est réutilisée et un
+refus est respecté. Ask reste en lecture seule, et les requêtes GraphQL en POST
+restent soumises au même contrôle par méthode. Compact conserve des notes
+d'adaptateur courtes sur les routes CMS prises en charge, sans chargeur de
+compétences.
+
 ### Compétences packagées à activer
 
 Ces compétences sont livrées avec l'extension et apparaissent dans Paramètres →
@@ -194,5 +215,7 @@ prompts avec leurs recettes complètes.
 
 - [Outils de l'agent](agent-tools.md) — niveaux, modes et matrice complète
 - [Confidentialité et flux de données](privacy-and-data-flow.md)
+- [CMS API-first](../cms-api-first.md) — services pris en charge,
+  authentification et repli interface (en anglais)
 - [Architecture](architecture.md) — compétences et exposition dynamique des
   outils dans le flux d'un tour

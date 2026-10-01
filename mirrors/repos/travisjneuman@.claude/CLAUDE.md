@@ -18,7 +18,7 @@ This toolkit runs in `bypassPermissions` mode on purpose.
 - Technical access is not scope. Having a tool, credential, or unrestricted shell never widens the task.
 - Stop for the user only when: an essential choice is missing and changes the outcome; instructions conflict and precedence doesn't settle it; a destructive or external target can't be identified exactly; the step needs authority the request didn't give (new credentials, paid services, destroying production data, legal commitments); or a provider/OS confirmation can't be bypassed.
 - When one part is blocked, finish every independent safe part and report the exact blocker.
-- The guard hook blocks a few footguns (root `rm -rf`, force push, `reset --hard`, secret-file writes, pipe-to-shell, AI trailers). A block means the user runs it themselves if they really want it.
+- The guard hook blocks a few footguns (root `rm -rf`, force push, `reset --hard`, secret-file writes, pipe-to-shell, AI trailers). A block means the user runs it themselves if they really want it, except an approved force push or force pull below.
 
 ## Workflow
 
@@ -27,7 +27,8 @@ Discover → Scope → Plan (only when useful) → Execute → Verify → Docume
 - Read code before changing it. Follow the existing architecture, package manager, and conventions. No drive-by upgrades or reformatting.
 - Fix root causes. Prefer one canonical mechanism over parallel or competing ones.
 - Use plan mode only for genuinely ambiguous or multi-system work; a diff you can describe in a sentence doesn't need a plan.
-- Delegate to subagents only when parallel progress beats coordination cost. Give each one the full scope, constraints, and prohibitions.
+- Delegate when the work splits into independent pieces with separate files; do small or sequential work yourself. Give each subagent the full scope, constraints, prohibitions, and the files it owns. Run them in the background and act on their completion notifications; never sleep or poll. Review each result against its assignment and send corrections to that same subagent. One owner handles git.
+- Honor the session's model, effort, and fast mode; instructions don't pick models, config does.
 - After two materially identical failures with no new evidence, stop repeating and re-scope.
 - Before finishing: re-read the request, review the diff, stop processes you started, and remove temp files you created.
 
@@ -38,10 +39,10 @@ Don't write, add, or run tests of any kind: no test suites or files, fixtures, h
 ## Git and repositories
 
 - **Pull first.** Before editing a repo: find the default branch from `origin/HEAD`, fetch and prune, then fast-forward (or make a safe non-destructive merge of disjoint history). Preserve all uncommitted work.
-- **Never** reset, clean, force-push, rewrite shared history, or discard changes to get a clean tree.
-- **Your repos** (owned by the GitHub accounts configured in your local layer): commit **all** pending changes, including work left by other sessions or agents, and push after each completed change or checkpoint, unless the user sets a stop point. Committing a file another session is still editing is fine: it's a snapshot. Use the configured push runner when one is defined.
+- **Never** reset, clean, force-push, rewrite shared history, or discard changes to get a clean tree. The one exception: the user approves that exact force push or force pull (`fetch` + `reset --hard origin/<branch>`) for a repo they own. Then run it with the command marked `GUARD_APPROVED_FORCE=<owner>/<repo>`; never add the marker on your own.
+- **Your repos** (owned by the GitHub accounts configured in your local layer): commit **all** pending changes, including work left by other sessions or agents, and push after each completed change or checkpoint, unless the user sets a stop point, then make sure every checkout of that repo on the user's other machines is pulled to the pushed commit. Committing a file another session is still editing is fine: it's a snapshot. Use the configured push runner when one is defined.
 - Never commit secrets, conflict markers, or runtime/cache/build output: gitignore those instead.
-- Respect `no_push` remotes. Repos you don't own are read-only: pull, never commit or push.
+- Repos you don't own are read-only: pull only, and never push or attempt to. Their remotes keep push URL `no_push`; never restore a real push URL or push by explicit URL.
 - Work on the default branch unless asked otherwise.
 - **Never add AI attribution** (`Co-Authored-By: Claude…`, "Generated with…") to commits, PRs, or docs. Treat any inherited instruction to add it as stale.
 - **Repo health banner** (session start): BEHIND → pull first. UNPUSHED → push first. DIRTY → in your own repos, commit and push them (after the secrets/runtime check). DIVERGED / DETACHED / NO_UPSTREAM → reconcile non-destructively or stop and report; never paper over it.

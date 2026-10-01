@@ -126,6 +126,26 @@ Canonical guidance lives in [tools and permissions](tools-and-permissions.md#rec
 - Recursive Agent Harnesses paper: https://arxiv.org/abs/2606.13643
 - Voyager paper: https://arxiv.org/abs/2305.16291
 
+## Adaptive agent teams
+
+- OpenAI, [On the Navier–Stokes Millennium Prize Problem](https://openai.com/index/navier-stokes-solution/), published September 8, 2026; updated September 10; rechecked September 30. “How we found the proof” is the public orchestration account.
+- User-supplied excerpt from “What Comes After Loops?: Deep Dive Into Agentic Architecture,” September 29, 2026, 11:15–11:40 AM PT, Mezzanine Stage; listed speakers Raj Pathak and Eric Provencher. This is supplied panel evidence, not an independently verified official recording or complete transcript.
+- Mathematical artifacts: [Lean repository at `f9e8bc5b38b6e212696e8a30e3e91517af887bbd`](https://github.com/openai/NavierStokesAndEuler/tree/f9e8bc5b38b6e212696e8a30e3e91517af887bbd), September 10 revision; [README](https://github.com/openai/NavierStokesAndEuler/blob/f9e8bc5b38b6e212696e8a30e3e91517af887bbd/README.md), [entry module](https://github.com/openai/NavierStokesAndEuler/blob/f9e8bc5b38b6e212696e8a30e3e91517af887bbd/NavierStokes.lean), and [comparator documentation](https://github.com/openai/NavierStokesAndEuler/blob/f9e8bc5b38b6e212696e8a30e3e91517af887bbd/ComparatorChallenges/README.md) inspected September 30; linked [Navier–Stokes paper](https://cdn.openai.com/pdf/32d9f210-8b73-45e0-91bc-82a30aef8a9a/navier-stokes.pdf) and [Euler paper](https://cdn.openai.com/pdf/315b36cd-ec98-4023-8342-93345194ece1/euler.pdf) inspected for source scope.
+- Prior lineage: [Hearsay-III, AAAI 1980](https://cdn.aaai.org/AAAI/1980/AAAI80-032.pdf), shared blackboard information and scheduling; [The Contract Net Protocol, December 1980](https://www.reidgsmith.com/The_Contract_Net_Protocol_Dec-1980.pdf), dynamic task allocation and information exchange; [Tree of Thoughts, arXiv:2305.10601v2, December 3, 2023](https://arxiv.org/abs/2305.10601v2), exploration and evaluation of reasoning alternatives. Primary sources rechecked September 30; lineage does not establish which mechanisms the reported run implemented.
+
+| Claim | Evidence boundary |
+|---|---|
+| Varied problem formulations, approach diversity, within-group communication | Published account |
+| Cross-group findings | Published account describes Codex-consolidated follow-up prompts |
+| Resources redirected after Euler findings | Published account describes researcher decisions |
+| Direct cross-team questions/work awareness; new teams as questions emerge | Supplied panel excerpt only |
+| Approximately 10,000 concurrent agents | Reported scale, not a scaling ablation |
+| More than 100 long-standing problems resolved | Panel claim; not substantiated by the linked account |
+
+The published effort initially covered multiple problems before researchers concentrated on Navier–Stokes. It does not establish autonomous reallocation or unchanged local goals for every retasked group. The model changed during the run, so architecture-only gains cannot be isolated. The inspected mathematical artifacts provide no team-orchestration implementation or tests. Lean checks, independent proof acceptance, and the reported scale/outcomes were not reproduced for this intake.
+
+[Adaptive agent teams](adaptive-agent-teams.md) is a provider-neutral synthesis of established mechanisms. Its durable charters, fixed parent-goal contract, work-intent reservations, dependence-aware sharing, and versioned allocation/recovery controls are proposed stronger guidance, not source-observed implementation details. Keep generic child lifecycle, goals, permissions, verification, and evaluation with their existing owners.
+
 ## Hardware agent session mining
 
 **Evidence checked 2026-09-19.** The local `hardware-agent` project is a private implementation case study, not a publicly reproducible dependency. Mine its Claude transcripts before relying on its accumulated `AGENTS.md`: that file mixes releases, historical failures, and operator-specific defaults. Five retained top-level JSONL transcripts cover 2026-09-14–18; the short diagnosis session overlaps its continued/forked transcript and is not independent replication. Initial board assembly/first provisioning predates these retained Claude logs. No physical device was contacted or reflashed for this knowledge update.
@@ -198,6 +218,7 @@ Canonical guidance lives in [the public-board communication section](skills-and-
 - Use environment-adaptive and programmatic tool research for claims about code-as-action, large or unseen API catalogues, retrieval against changing documentation, and novel API use; do not treat those sources as proof of the stronger host-owned discovery, binding, or authority contracts in this skill.
 - Use speculative and asynchronous tool-execution research for mechanism lineage and source-observed implementations. Treat open-ended speedups as workload-specific evidence, not a general latency guarantee, and require independent task-parity, cost, waste, cancellation, and saturation evaluation.
 - Use recursive and continual harness research for taxonomy, architecture comparisons, and claims about the underlying patterns.
+- Use adaptive-team sources for attributed research-run descriptions and mechanism lineage; distinguish panel-only statements, researcher steering, mathematical artifacts, and proposed runtime contracts. Do not infer reproducible scaling or autonomous allocation from reported agent counts or outcomes.
 - Use public-board sources for dated implementation context and the distinction between authenticated access and public disclosure, not as authorization to register, communicate, or evade restrictions.
 - Use OWASP and NIST links for threat modeling, governance, auditability, and enterprise deployment controls.
 - Use implementation examples, including Prime Agent, as concrete shape references, not as normative architecture, dependencies, or provider-neutral policy.

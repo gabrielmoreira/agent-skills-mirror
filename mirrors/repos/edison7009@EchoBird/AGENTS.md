@@ -34,6 +34,11 @@ runtime. Prettier governs the frontend JSON/TS; rustfmt governs `src-tauri/`.
   automatic actions, new interaction flows, or new frameworks unless the
   task requires them. State any necessary behavioral difference and its reason
   before implementing it.
+- Tool detection and executable resolution belong in `services/tool_manager.rs`
+  with catalog entries in `tools/<id>/paths.json`; Windows Store package lookup
+  uses `services/msix.rs`. Launch through `services/process_manager.rs` and
+  create background commands with `utils/process.rs` so Windows console
+  suppression is shared. Keep explicit interactive terminal launches separate.
 - Evaluate Windows, macOS, and Linux for every new integration. Separate
   vendor availability from EchoBird implementation gaps; do not silently
   restrict an existing cross-platform client to Windows. Verify native paths,
@@ -114,6 +119,9 @@ clippy/test, not optional.
 
 ## Account login UI conventions
 
+- Reuse `src/pages/AppManager/useManagedAccounts.ts` for account loading,
+  selection, login deadlines/cancellation, refresh and deletion. Provider hooks
+  supply protocol/API and storage adapters; do not copy the lifecycle again.
 - Use `src/pages/AppManager/AccountSectionPrimitives.tsx` for account login
   buttons and rows. ChatGPT is the structural reference; do not copy a new
   provider-specific button/row implementation.

@@ -2,7 +2,6 @@
 name: dotnet-testing-advanced-aspire-testing
 description: |
   .NET Aspire Testing 整合測試框架完整指南。當需要測試 .NET Aspire 分散式應用程式、設定 AppHost 測試或從 Testcontainers 遷移至 Aspire 測試時使用。涵蓋 DistributedApplicationTestingBuilder、容器生命週期管理、多服務編排、Respawn 配置與時間可測試性設計。
-  Make sure to use this skill whenever the user mentions .NET Aspire, AppHost testing, DistributedApplicationTestingBuilder, cloud-native testing, or migrating from Testcontainers to Aspire, even if they don't explicitly ask for Aspire testing guidance.
   Keywords: aspire testing, .NET Aspire, DistributedApplicationTestingBuilder, AppHost testing, 分散式測試, AspireAppFixture, IAsyncLifetime, ContainerLifetime.Session, 雲原生測試, 多服務整合, Aspire.Hosting.Testing, Respawn
 ---
 
@@ -161,6 +160,13 @@ private async Task WaitForPostgreSqlReadyAsync()
 }
 ```
 
+> ⚠️ **不以固定延遲取代就緒探測**：等待必須是「探測 → 失敗 → 退避 → 再探測」的迴圈，
+> 由**探測成功**決定何時繼續。`await Task.Delay(30_000)` 之後直接假設服務已就緒，
+> 在慢機器上仍會失敗、在快機器上白等，是不穩定測試的常見來源。
+>
+> 上面示範中的 `Task.Delay(delayMs)` 是**重試之間的退避**，屬於探測迴圈的一部分，
+> 與固定延遲不同。`Task.Delay` 這個 API 本身沒有問題，問題在於有沒有探測。
+
 ## 資料庫初始化
 
 Aspire 啟動容器但不自動建立資料庫：
@@ -210,12 +216,13 @@ _respawner = await Respawner.CreateAsync(connection, new RespawnerOptions
 避免每個測試類別重複啟動容器：
 
 ```csharp
-[CollectionDefinition("Integration Tests")]
+[CollectionDefinition(Name)]
 public class IntegrationTestCollection : ICollectionFixture<AspireAppFixture>
 {
+    public const string Name = "Integration Tests";
 }
 
-[Collection("Integration Tests")]
+[Collection(IntegrationTestCollection.Name)]
 public class MyControllerTests : IntegrationTestBase
 {
     public MyControllerTests(AspireAppFixture fixture) : base(fixture) { }
@@ -252,6 +259,30 @@ public class ProductService
 // DI 註冊
 builder.Services.AddSingleton<TimeProvider>(TimeProvider.System);
 ```
+
+## HTTP 回應斷言
+
+`AwesomeAssertions.Web` 的狀態碼專用擴充方法（**只用表列的方法**）：
+
+| 狀態碼 | 方法 |
+| --- | --- |
+| 200 | `Be200Ok()` |
+| 201 | `Be201Created()` |
+| 204 | `Be204NoContent()` |
+| 400 | `Be400BadRequest()` |
+| 401 | `Be401Unauthorized()` |
+| 403 | `Be403Forbidden()` |
+| 404 | `Be404NotFound()` |
+| 409 | `Be409Conflict()` |
+
+以上方法已對照 AwesomeAssertions.Web 1.9.6 與 2.0.3 的 API 文件確認存在。
+
+⛔ 不得使用 `.HaveStatusCode(HttpStatusCode.X)`，該方法在 AwesomeAssertions.Web 中不存在。
+
+**表上沒有的狀態碼**：改用 `response.StatusCode.Should().Be(HttpStatusCode.XXX)`，
+**不得為了確認某個 `BeNNN***()` 方法是否存在而搜尋檔案系統**。
+
+範例見 `templates/controller-tests.cs` 的 `CreateProduct_名稱重複_應回傳409狀態衝突`。
 
 ## 選擇建議
 
@@ -314,7 +345,15 @@ const string sql = @"
 
 ### 範例檔案
 
+- [templates/apphost-program.cs](templates/apphost-program.cs) - AppHost 編排定義
+- [templates/apphost-project.csproj](templates/apphost-project.csproj) - AppHost 專案設定
+- [templates/aspire-app-fixture.cs](templates/aspire-app-fixture.cs) - 測試基礎設施：啟動應用、等待服務就緒，並持有整個 Collection 共用的 `DatabaseManager`
+- [templates/integration-test-collection.cs](templates/integration-test-collection.cs) - Collection Fixture 設定
+- [templates/integration-test-base.cs](templates/integration-test-base.cs) - 測試基底類別
+- [templates/database-manager.cs](templates/database-manager.cs) - 資料庫管理員
+- [templates/controller-tests.cs](templates/controller-tests.cs) - 控制器測試範例
 - [templates/test-helpers.cs](templates/test-helpers.cs) - `TestHelpers` 靜態類別，提供測試資料的種入、清除與計數（`SeedProductsAsync`、`SeedSpecificProductAsync`、`CleanAllProductsAsync`、`GetProductCountAsync`）
+- [templates/test-project.csproj](templates/test-project.csproj) - 測試專案設定
 
 ### 原始文章
 
@@ -332,19 +371,6 @@ const string sql = @"
 
 - [.NET Aspire 官方文件](https://learn.microsoft.com/dotnet/aspire/)
 - [Aspire Testing 文件](https://learn.microsoft.com/dotnet/aspire/testing)
-
-### 範例檔案
-
-請參考同目錄下的範例檔案：
-
-- `templates/apphost-program.cs` - AppHost 編排定義
-- `templates/aspire-app-fixture.cs` - 測試基礎設施
-- `templates/integration-test-collection.cs` - Collection Fixture 設定
-- `templates/integration-test-base.cs` - 測試基底類別
-- `templates/database-manager.cs` - 資料庫管理員
-- `templates/controller-tests.cs` - 控制器測試範例
-- `templates/test-project.csproj` - 測試專案設定
-- `templates/apphost-project.csproj` - AppHost 專案設定
 
 ### 相關技能
 

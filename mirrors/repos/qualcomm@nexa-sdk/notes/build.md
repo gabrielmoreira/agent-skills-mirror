@@ -12,12 +12,43 @@ Install Bazelisk:
 
 ## Windows prerequisites
 
-### Symlink support (Bazel)
+Run every command below from **PowerShell**, not `cmd.exe`, Git Bash, or WSL. The `cmd /c '"...\VsDevCmd.bat" ... && ...'` commands below rely on PowerShell quoting (outer single quotes, inner double quotes).
+
+### Symlink support (Bazel and CMake)
+
+Also needed by the SDK's CMake configure: a vendored submodule (sentencepiece, under `third-party/geniex-qairt`) creates a symlink and fails with "A required privilege is not held by the client" without it.
 
 1. Enable **Developer Mode**: Settings → Privacy & Security → For developers.
 2. Grant **Create symbolic links** rights via `gpedit.msc` → Computer Configuration → Windows Settings → Security Settings → Local Policies → User Rights Assignment, or set `HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\LocalAccountTokenFilterPolicy = 1` (DWORD).
 3. Enable **Long paths**: Settings → Privacy & Security → For developers.
-4. If symlink errors persist, comment out `startup --windows_enable_symlinks` in `.bazelrc` — but be aware this can break other SDK paths.
+4. **Sign out and back in (or reboot)** after enabling Developer Mode; open sessions keep the old token. Verify in a new terminal with `whoami /priv | findstr SymbolicLink` (no output means it hasn't taken effect).
+5. If symlink errors persist, comment out `startup --windows_enable_symlinks` in `.bazelrc` — but be aware this can break other SDK paths.
+
+**Corporate/domain-joined machines:** Group Policy can block step 4 even after a reboot. In that case, run the build (`cmake --preset ...` and `bazelisk ...`) from an **elevated** terminal ("Run as Administrator"); local Administrators get `SeCreateSymbolicLinkPrivilege` once elevated. `whoami /groups` showing `BUILTIN\Administrators` as "Group used for deny only" confirms you're an admin filtered by UAC.
+
+### Toolchain (SDK build)
+
+The SDK's Rust model manager (`sdk/model-manager`) is built by `cargo` from CMake, and its build scripts compile C code, so a native Windows ARM64 build also needs:
+
+- **clang** (verified with `22.1.2`) — used by `cc-rs` and the Snapdragon presets. Install the ARM64 MSYS2 build (the plain LLVM installer has no `aarch64`-hosted `clang.exe`):
+
+  ```powershell
+  winget install --id MSYS2.MSYS2
+  C:\msys64\usr\bin\pacman.exe -S --noconfirm mingw-w64-clang-aarch64-clang mingw-w64-clang-aarch64-lld
+  ```
+
+  Then add `C:\msys64\clangarm64\bin` to `PATH` (ahead of any other `clang.exe`, e.g. one bundled with Visual Studio).
+
+- **cargo** (verified with `1.95.0`) and the Windows ARM64 target:
+
+  ```powershell
+  winget install --id Rustlang.Rustup
+  rustup target add aarch64-pc-windows-msvc
+  ```
+
+- **Visual Studio** (verified with VS 2026 18.5 Community) — for the MSVC libs/linker only. Install the **"Desktop development with C++"** workload with the **ARM64 build tools** component.
+
+`clang` targets the MSVC ABI, so it needs MSVC's `INCLUDE`/`LIB` and `lld-link` on `PATH`. Without them, CMake's compiler check fails with `lld-link: error: could not open 'oldnames.lib'`. Configure and build from a Visual Studio **Developer** environment for ARM64 (see [Build the SDK](#windows-arm64-snapdragon)).
 
 ### Native SDKs (for full Snapdragon build)
 
@@ -40,11 +71,19 @@ The `arm64-windows-snapdragon-release` preset requires:
 > cd G:\sdk
 > ```
 
+Run from a "Developer PowerShell for VS" (ARM64), elevated if the symlink privilege won't take effect (see [Symlink support](#symlink-support-bazel-and-cmake)):
+
 ```powershell
 cd sdk
 cmake --preset arm64-windows-snapdragon-release -B build
 cmake --build build -j
 cmake --install build --prefix pkg-geniex
+```
+
+Or from a plain PowerShell, chaining through `VsDevCmd.bat` (adjust the path/edition for your install):
+
+```powershell
+cmd /c '"C:\Program Files\Microsoft Visual Studio\<edition>\Common7\Tools\VsDevCmd.bat" -arch=arm64 -host_arch=x64 && cmake --preset arm64-windows-snapdragon-release -B build && cmake --build build -j && cmake --install build --prefix pkg-geniex'
 ```
 
 ### Linux (cross-compile from x86_64)
@@ -157,6 +196,16 @@ adb shell "cd /data/local/tmp/geniex && \
 ```
 
 The Android demo app is no longer hosted in this repo — it lives in [`qualcomm/ai-hub-apps`](https://github.com/qualcomm/ai-hub-apps/tree/main/apps/geniex_chat_android). Build the AAR here, then point the demo app at it.
+
+### Building against a different QAIRT SDK's headers
+
+The `qairt` plugin compiles against the lowest-supported QNN headers vendored in `third-party/geniex-qairt/qnn-api/include/`. To use another set (e.g. an internal QAIRT checkout), pass `-DQAIRT_QNN_HEADERS=...` to any preset above:
+
+```powershell
+cmake --preset arm64-windows-snapdragon-release -B build -DQAIRT_QNN_HEADERS=C:\path\to\qairt\include
+```
+
+See the [plugin README](https://github.com/qualcomm/geniex-qairt-plugin#using-a-different-qairt-runtime) for the expected directory shape and caveats.
 
 ## Build and run the CLI
 

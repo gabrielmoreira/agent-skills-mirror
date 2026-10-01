@@ -4,6 +4,31 @@ Dated notes on what changed in the skill and which build's finding drove it.
 Builds live in `OtherWorlds/Ultimate Websites/builds/`; each carries a
 `BUILD-REPORT.md`.
 
+## 2026-09-30: security and Windows fixes, release 0.3.1
+
+No change to how pages are planned, built, or animated.
+
+- `serve.mjs` (issue #9, reported by ukama-dev): binds to 127.0.0.1 by
+  default instead of every interface, so nothing else on the network can read
+  the build folder. New `--lan` flag for real-phone testing prints the LAN URL
+  and warns that the folder is readable on that network. The root check now
+  requires a path separator, so `builds/acme` no longer serves `builds/acme-v2`,
+  and a malformed URL gets a 400 instead of crashing the server.
+- `doctor.mjs`, `shoot.mjs`, `worldflight-assert.mjs` (issue #8, reported by
+  Calgeroth): the browser lookup now checks Edge's real install path
+  (`Program Files (x86)`) and per-user Chrome installs under `%LOCALAPPDATA%`.
+- Engine (issue #6, patch by mkreyman): `ScrollCraft.mount()` now returns an
+  api with an idempotent `destroy()` that removes that mount's window
+  listeners, stops both rAF loops, disconnects its IntersectionObservers,
+  revokes its clip blob URLs, and removes it from `ScrollCraft.instances`.
+  Needed only under client-side routers that re-mount. A page that never calls
+  `destroy()` behaves exactly as before: an A/B run of the old and new engine
+  on four builds (including worldflight) matched on every sampled element
+  state at eight scroll positions, with no console errors.
+- Skill text: personal attributions reworded as neutral standards. The rules
+  themselves are unchanged. SKILL.md Step 5 mentions `--lan` next to the
+  real-phone paragraph.
+
 ## 2026-09-04: approved ten-site rebuild, public release 0.3.0
 
 Nate approved the rebuilt ten-site collection and requested that its process

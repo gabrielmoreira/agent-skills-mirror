@@ -77,6 +77,29 @@ Multi-byte text (CJK, emoji, combining marks) is handled grapheme-by-grapheme th
 
 ---
 
+## Handle preview and the REPL tools (default)
+
+Compaction is **on by default**. For a result of at least `ccr_min_tokens` the router does not compress to one blob. It stores the original in the CCR cache and shows the model a small preview instead:
+
+- a one-line **stats** description of the shape (estimated tokens, bytes, lines, JSON keys or a Markdown outline, never values),
+- the **first 500 characters**,
+- an extractive outline, and
+- a footer naming the **handle** (the CCR token).
+
+The model then queries the stored original with three read-only tools, none of which calls a model:
+
+| Tool | Does |
+| ---- | ---- |
+| `juice_find` | `text`, `grep`, `regex`, `rank` (BM25), `sed`, `awk` and `jq` over the output, with a Python-style `scope` slice. |
+| `juice_extract` | Links or headings from HTML or Markdown output. |
+| `juice_summarize` | Size, outline or JSON shape, then head and tail, or the parts most relevant to a `hint`. |
+
+Answers are size-capped, and an unknown or evicted handle is an error. `tinyjuice_retrieve` still returns the whole original. Because a handle preview is built without a model call, it also replaces the LLM summary for results big enough to get one, so a slow summarizer cannot stall the turn. The three tools are registered (about 1.5 KB of schema) only while this mode is in effect.
+
+Opt out of the whole feature with `context.compaction_enabled = false` or `OPENHUMAN_COMPACTION=0`. Keep compaction but return to the one-blob compression and `tinyjuice_retrieve` with `tokenjuice.repl_handle_enabled = false` (`OPENHUMAN_TOKENJUICE_REPL_HANDLE_ENABLED=0`). Set `tokenjuice.repl_save_enabled = true` to also write each stored original to `<workspace>/.tokenjuice/repl/<handle>.txt` (mode 0600) so an agent can script over it; that puts raw tool output on disk and nothing prunes it.
+
+---
+
 ## ML compression (opt-in)
 
 Beyond the deterministic compressors, TokenJuice can route plain text through a **ModernBERT** token-salience model that scores and drops low-information spans. The TinyJuice compressor exposes the optional ML slot, and OpenHuman bridges it to Kompress in `crates/openhuman-core/src/inference/tokenjuice/ml/`.
@@ -127,12 +150,13 @@ Each rule names a command/tool pattern and a reduction strategy (skip/keep filte
 
 Everything lives under the `[tokenjuice]` config block (`crates/openhuman-core/src/config/schema/tokenjuice.rs`) and can be changed live.
 
-- **Master switch:** `router_enabled` (default `true`).
+- **Master switches:** `context.compaction_enabled` (default `true`; `OPENHUMAN_COMPACTION=0` opts out) and `router_enabled` (default `true`).
+- **Handle preview:** `repl_handle_enabled` (default `true`), `repl_save_enabled` (default `false`).
 - **Thresholds:** `min_bytes_to_compress`, `ccr_min_tokens`.
 - **CCR:** `ccr_enabled`, `ccr_disk_enabled`, `max_cache_entries`, `max_cache_bytes`, `ccr_ttl_secs`.
 - **Per-kind:** `search_enabled`, `code_enabled`, `html_enabled`, plus the `ml_*` keys.
 - **RPC** (`openhuman.tokenjuice_*`): `detect`, `compress` (dry-run the pipeline), `settings_get` / `settings_update` (live partial patch), `cache_stats`, `retrieve`, `savings_stats`, `savings_reset`.
-- **Agent tool:** `tokenjuice_retrieve` (read-only) recovers offloaded originals.
+- **Agent tools:** `tinyjuice_retrieve` recovers a whole offloaded original; `juice_find`, `juice_extract` and `juice_summarize` query one by handle. All are read-only.
 - **Debugging:** start the core with `RUST_LOG=openhuman_core::inference::tokenjuice=debug` to watch detection, matching, and how much each blob is trimmed.
 
 ---

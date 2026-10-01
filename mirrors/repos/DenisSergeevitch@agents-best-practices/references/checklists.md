@@ -207,6 +207,25 @@ For each tool:
 - [ ] Reproducibility state is captured: workflow version, model/runtime settings, tool calls, result references, source revision or data snapshot, and approval records.
 - [ ] Final output distinguishes verified findings, rejected findings, unresolved questions, partial coverage, and next safe actions.
 
+## Adaptive agent-team checklist
+
+Use [adaptive agent teams](adaptive-agent-teams.md) for the contracts and [adaptive agent-team evals](evals.md#adaptive-agent-team-evals) for their validation cases.
+
+- [ ] The profile is post-MVP and justified against measured single-agent and ordinary-worker baselines under matched budgets or a reported quality/cost frontier.
+- [ ] Versioned approach charters identify durable owners, distinct formulations/methods/assumptions, and the authorized parent goal and acceptance criteria.
+- [ ] Active work intents expose question, method, input/artifact scope, dependencies, current owner, and charter version before expensive execution.
+- [ ] Overlap checks distinguish unintended duplication, useful distinct work, and bounded declared replication.
+- [ ] Concurrent ownership claims use host-enforced atomic reservations/version checks; expired leases cannot bypass fencing of active writers.
+- [ ] Finding shares retain producing charter/intent, evidence, uncertainty, validation status, recipients, and consumed-finding dependencies.
+- [ ] Independent replication declares permitted exposure and sealing rules; shared claims cannot count as independent corroboration.
+- [ ] Create, split, merge, retire, and retask decisions cite evidence and record expected portfolio version, authorized decision-maker, changed charters, and outstanding-work disposition.
+- [ ] Host checks preserve goal scope, authority, aggregate capacity, and budget; duplicate/stale/denied transitions produce no partial mutation or repeated debit.
+- [ ] Allocation policy retains declared exploration/challenge coverage and records contradictions rather than accepting consensus as evidence.
+- [ ] Late messages/results preserve their producing generation and require relevance checks before adoption; unavailable recipients have bounded delivery outcomes.
+- [ ] Restart, handoff, cancellation, and rollback reconcile outstanding work without duplicate admission, silent ownership loss, restored spent budget, or blind replay.
+- [ ] Completion requires parent-goal acceptance evidence; quiescence, retired teams, exhausted budget, and promising leads retain explicit incomplete outcomes where applicable.
+- [ ] Independent mechanism ablations and dependence, overlap, transition, late-delivery, budget, and quiescence probes meet the declared launch gates.
+
 ## Skills checklist
 
 - [ ] Skill name matches directory name.

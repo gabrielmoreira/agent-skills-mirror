@@ -185,6 +185,8 @@ genuinely cannot run without.
 - Give concrete workflows, commands, and worked examples rather than background explanation.
 - Name the required packages, system dependencies, credentials, and network access.
 - Include the scientific caveats and validation checks that matter.
+- Use ASCII console status markers (`[OK]`, `[FAIL]`, `->`) so diagnostics work on
+  legacy Windows consoles. Unicode in documentation and generated figures is fine.
 - Put fragile or repetitive logic in `scripts/` instead of asking the agent to recreate it.
 - Never include secrets, API keys, private URLs, or unpublished data.
 

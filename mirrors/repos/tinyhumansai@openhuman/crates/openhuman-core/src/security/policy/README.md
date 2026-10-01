@@ -45,7 +45,7 @@ impl in `types.rs`.
 | `path_checks.rs` | `is_workspace_internal_path`, `is_always_forbidden`, `check_cross_profile`, `is_within_trusted_root`, `is_resolved_path_allowed[_for]`, `check_resolved_against_forbidden` |
 | `command_checks.rs` | `classify_command`, `gate_decision`, `check_gated_command`, `is_command_allowed`, `command_risk_level`, `parse_declared_class`, `is_command_executor`, `split_unquoted_segments` |
 | `enforcement.rs` | `can_act`, `enforce_write_tier`, `enforce_tool_operation`, `record_action`/`is_rate_limited`, `from_config`, `with_privacy_mode`, `openhuman_scratch_dir`/`ensure_openhuman_scratch_dir`, `validate_path_within_root` |
-| `policy_command/` (`quoting.rs`, `env_guard.rs`, `command_name.rs`, `classification.rs`) | Shell-parsing helpers behind the command checks: `split_unquoted_segments`, `skip_env_assignments`, `normalized_command_name`, `is_command_executor`, `classify_segment`, `has_hidden_execution`, `contains_unquoted_char` |
+| `tinybox_core::shell::{scan,classify,executor,env_guard}` (vendored) | Shell-parsing helpers behind the command checks: `split_unquoted_segments`, `skip_env_assignments`, `normalized_command_name`, `is_command_executor`, `classify_segment`, `has_hidden_execution`, `has_dangerous_env_prefix`, `contains_unquoted_char`, and the `CommandClass` enum (re-exported from `types.rs`) |
 
 ## Public surface
 
@@ -59,9 +59,10 @@ Re-exported through `policy/mod.rs` and then through `security/mod.rs`:
 `security/live_policy.rs` (a sibling of this directory) holds the current
 `SecurityPolicy` in a process-global cell: new sessions `install` the latest
 policy, and `reload_from` / `reload_privacy` swap it the moment the config is
-saved. `security_for_tool_context` (`tools/impl/filesystem/mod.rs`,
-`tools/impl/system/mod.rs`) clones a tool's policy per call and, when the run
-carries a workspace descriptor, sets `action_dir` to that root and pushes it
+saved. `security_scoped_to_root` (`tools/impl/filesystem/gate.rs`, reached through
+`FsGate::scoped_to_workspace`) and `security_for_tool_context`
+(`tools/impl/system/mod.rs`) clone a tool's policy per call and, when the run
+carries a workspace descriptor, set `action_dir` to that root and pushes it
 as a `ReadWrite` `TrustedRoot`. `is_always_forbidden` and
 `is_workspace_internal_path` are evaluated before any trusted-root shortcut,
 so the grant cannot widen them.

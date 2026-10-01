@@ -65,7 +65,7 @@ export interface CosPutAuthOptions {
   securityToken?: string;
   /** 形如 "1690000000;1690003600"；测试注入固定值以获得确定性签名。缺省按 now 推导。 */
   keyTime?: string;
-  /** keyTime 未指定时的有效期（秒），默认 3600。 */
+  /** keyTime 未指定时的有效期（秒），默认 300。 */
   expiresInSeconds?: number;
   /** Unix 秒，仅测试注入。 */
   now?: number;
@@ -88,7 +88,7 @@ export function buildCosPutAuthorization(options: CosPutAuthOptions): string {
     region,
     objectKey,
     securityToken,
-    expiresInSeconds = 3600,
+    expiresInSeconds = 300,
   } = options;
 
   if (!secretId) throw new Error("missing param SecretId");
@@ -156,7 +156,10 @@ export interface BuildFunctionZipUploadParams {
   /** 环境自有存储桶（DescribeEnvs → Storages[0]）。 */
   storage: { bucket: string; region: string };
   credential: { secretId: string; secretKey: string; token?: string };
-  /** 可选，仅用于生成可读的对象 key（如 `fnzip-upload/.../helloWorld.zip`）。 */
+  /**
+   * 可选，仅用于生成可读的对象 key（如 `fnzip-upload/.../helloWorld.zip`）。
+   * 只接受字母数字与 -_（1-64 字符），其余回落为 `code`。
+   */
   functionName?: string;
   expiresIn?: number;
   /** 仅测试注入。 */
@@ -167,20 +170,54 @@ export interface BuildFunctionZipUploadParams {
 }
 
 /**
+ * 上传对象 key 的形状：`fnzip-upload/{10 位秒级时间戳}-{16 位 hex}/{名字}.zip`。
+ *
+ * 阶段 B 用它判断「code.cosObjectName 是不是本工具铸造出来的地址」。校验与铸造
+ * 放在同一模块、共用 {@link buildFunctionZipObjectKey}，改 key 格式时不会只改一边
+ * （`function-cos-upload.test.ts` 有一条漂移用例守着）。
+ *
+ * 刻意不额外维护「本进程铸造过哪些 key」的登记表：托管形态是每请求无状态、
+ * 可由多副本承载（BFF 每个请求新建 transport，MCP Server 实例只是 LRU 缓存），
+ * 任何「必须由本进程铸造」的判断都会在跨进程时把正常部署误判成非法。
+ */
+export const FUNCTION_ZIP_OBJECT_KEY_PATTERN =
+  /^fnzip-upload\/\d{10}-[0-9a-f]{16}\/[A-Za-z0-9_-]{1,64}\.zip$/;
+
+/** 判断对象 key 是否为上传代码包该有的形状。 */
+export function isFunctionZipObjectKey(objectKey: string): boolean {
+  return FUNCTION_ZIP_OBJECT_KEY_PATTERN.test(objectKey);
+}
+
+/**
+ * 拼出上传对象 key。functionName 只用于让 key 可读，必须收窄：否则 "../" 之类
+ * 能把对象写到 `fnzip-upload/` 前缀之外。
+ */
+export function buildFunctionZipObjectKey(params: {
+  ts: number;
+  rand: string;
+  functionName?: string;
+}): string {
+  const safeFunctionName =
+    params.functionName && /^[A-Za-z0-9_-]{1,64}$/.test(params.functionName)
+      ? params.functionName
+      : "code";
+  return `fnzip-upload/${params.ts}-${params.rand}/${safeFunctionName}.zip`;
+}
+
+/**
  * 生成两段式部署阶段 A 的完整返回体：预签名 PUT URL + 阶段 B 所需的 COS 三元组。
- * 对象 key 形如 `fnzip-upload/{ts}-{rand}/{functionName|code}.zip`，全部为 COS 签名
- * 安全字符（字母数字与 -_. /），保证签名 pathname 与请求 URL 一致。
  */
 export function buildFunctionZipUpload(
   params: BuildFunctionZipUploadParams,
 ): FunctionZipUploadResult {
   const { storage, credential, functionName } = params;
-  const expiresIn = params.expiresIn ?? 3600;
+  const expiresIn = params.expiresIn ?? 300;
 
   const ts = params.now ?? Math.floor(Date.now() / 1000);
-  const rand =
-    params.randomSuffix ?? randomBytes(8).toString("hex");
-  const objectKey = `fnzip-upload/${ts}-${rand}/${functionName || "code"}.zip`;
+  const rand = params.randomSuffix ?? randomBytes(8).toString("hex");
+  // functionName 会被收窄到 COS 签名安全字符（字母数字与 -_），保证签名 pathname
+  // 与请求 URL 一致
+  const objectKey = buildFunctionZipObjectKey({ ts, rand, functionName });
 
   const keyTime =
     params.keyTime ?? `${ts - 1};${ts + expiresIn}`;

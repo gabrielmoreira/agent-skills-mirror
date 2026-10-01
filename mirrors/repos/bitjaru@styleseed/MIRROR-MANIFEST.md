@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `bitjaru/styleseed` — 26 default patterns, 0 followed patterns, 96 file(s) materialized.
+Mirror of `bitjaru/styleseed` — 26 default patterns, 0 followed patterns, 76 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `bitjaru/styleseed` — 26 default patterns, 0 followed patterns, 96 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 96 |
+| Files         | 76 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -63,98 +63,78 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 2 | ✓ | [`demo-pricing/AGENTS.md`](demo-pricing/AGENTS.md) |
 | 3 | ✓ | [`demo-pricing/CLAUDE.md`](demo-pricing/CLAUDE.md) |
 | 4 | ✓ | [`demo-pricing/public/llms.txt`](demo-pricing/public/llms.txt) |
-| 5 | ✓ | [`engine/.claude/skills/ss-a11y/SKILL.md`](engine/.claude/skills/ss-a11y/SKILL.md) |
-| 6 | ✓ | [`engine/.claude/skills/ss-audit/SKILL.md`](engine/.claude/skills/ss-audit/SKILL.md) |
-| 7 | ✓ | [`engine/.claude/skills/ss-build/SKILL.md`](engine/.claude/skills/ss-build/SKILL.md) |
-| 8 | ✓ | [`engine/.claude/skills/ss-component/SKILL.md`](engine/.claude/skills/ss-component/SKILL.md) |
-| 9 | ✓ | [`engine/.claude/skills/ss-copy/SKILL.md`](engine/.claude/skills/ss-copy/SKILL.md) |
-| 10 | ✓ | [`engine/.claude/skills/ss-dial/SKILL.md`](engine/.claude/skills/ss-dial/SKILL.md) |
-| 11 | ✓ | [`engine/.claude/skills/ss-feedback/SKILL.md`](engine/.claude/skills/ss-feedback/SKILL.md) |
-| 12 | ✓ | [`engine/.claude/skills/ss-flow/SKILL.md`](engine/.claude/skills/ss-flow/SKILL.md) |
-| 13 | ✓ | [`engine/.claude/skills/ss-lint/SKILL.md`](engine/.claude/skills/ss-lint/SKILL.md) |
-| 14 | ✓ | [`engine/.claude/skills/ss-motion/SKILL.md`](engine/.claude/skills/ss-motion/SKILL.md) |
-| 15 | ✓ | [`engine/.claude/skills/ss-page/SKILL.md`](engine/.claude/skills/ss-page/SKILL.md) |
-| 16 | ✓ | [`engine/.claude/skills/ss-pattern/SKILL.md`](engine/.claude/skills/ss-pattern/SKILL.md) |
-| 17 | ✓ | [`engine/.claude/skills/ss-reference/SKILL.md`](engine/.claude/skills/ss-reference/SKILL.md) |
-| 18 | ✓ | [`engine/.claude/skills/ss-resolve/SKILL.md`](engine/.claude/skills/ss-resolve/SKILL.md) |
-| 19 | ✓ | [`engine/.claude/skills/ss-restyle/SKILL.md`](engine/.claude/skills/ss-restyle/SKILL.md) |
-| 20 | ✓ | [`engine/.claude/skills/ss-review/SKILL.md`](engine/.claude/skills/ss-review/SKILL.md) |
-| 21 | ✓ | [`engine/.claude/skills/ss-score/SKILL.md`](engine/.claude/skills/ss-score/SKILL.md) |
-| 22 | ✓ | [`engine/.claude/skills/ss-setup/SKILL.md`](engine/.claude/skills/ss-setup/SKILL.md) |
-| 23 | ✓ | [`engine/.claude/skills/ss-studio/SKILL.md`](engine/.claude/skills/ss-studio/SKILL.md) |
-| 24 | ✓ | [`engine/.claude/skills/ss-tokens/SKILL.md`](engine/.claude/skills/ss-tokens/SKILL.md) |
-| 25 | ✓ | [`engine/.claude/skills/ss-update/SKILL.md`](engine/.claude/skills/ss-update/SKILL.md) |
-| 26 | ✓ | [`engine/.claude/skills/ss-verify/SKILL.md`](engine/.claude/skills/ss-verify/SKILL.md) |
-| 27 | ✓ | [`engine/.claude/skills/styleseed/SKILL.md`](engine/.claude/skills/styleseed/SKILL.md) |
-| 28 | ✓ | [`engine/.cursorrules`](engine/.cursorrules) |
-| 29 | ✓ | [`engine/AGENTS.md`](engine/AGENTS.md) |
-| 30 | ✓ | [`engine/CLAUDE.md`](engine/CLAUDE.md) |
-| 31 | ✓ | [`extensions/learning/skills/ss-learn/SKILL.md`](extensions/learning/skills/ss-learn/SKILL.md) |
-| 32 | ✓ | [`skills/ss-a11y/SKILL.md`](skills/ss-a11y/SKILL.md) |
-| 33 | ✓ | [`skills/ss-audit/SKILL.md`](skills/ss-audit/SKILL.md) |
-| 34 | ✓ | [`skills/ss-build/SKILL.md`](skills/ss-build/SKILL.md) |
-| 35 | ✓ | [`skills/ss-component/SKILL.md`](skills/ss-component/SKILL.md) |
-| 36 | ✓ | [`skills/ss-copy/SKILL.md`](skills/ss-copy/SKILL.md) |
-| 37 | ✓ | [`skills/ss-dial/SKILL.md`](skills/ss-dial/SKILL.md) |
-| 38 | ✓ | [`skills/ss-feedback/SKILL.md`](skills/ss-feedback/SKILL.md) |
-| 39 | ✓ | [`skills/ss-flow/SKILL.md`](skills/ss-flow/SKILL.md) |
-| 40 | ✓ | [`skills/ss-lint/SKILL.md`](skills/ss-lint/SKILL.md) |
-| 41 | ✓ | [`skills/ss-motion/SKILL.md`](skills/ss-motion/SKILL.md) |
-| 42 | ✓ | [`skills/ss-page/SKILL.md`](skills/ss-page/SKILL.md) |
-| 43 | ✓ | [`skills/ss-pattern/SKILL.md`](skills/ss-pattern/SKILL.md) |
-| 44 | ✓ | [`skills/ss-reference/SKILL.md`](skills/ss-reference/SKILL.md) |
-| 45 | ✓ | [`skills/ss-resolve/references/artifact-index.schema.json`](skills/ss-resolve/references/artifact-index.schema.json) |
-| 46 | ✓ | [`skills/ss-resolve/references/artifact.schema.json`](skills/ss-resolve/references/artifact.schema.json) |
-| 47 | ✓ | [`skills/ss-resolve/references/catalog.json`](skills/ss-resolve/references/catalog.json) |
-| 48 | ✓ | [`skills/ss-resolve/references/manifest.schema.json`](skills/ss-resolve/references/manifest.schema.json) |
-| 49 | ✓ | [`skills/ss-resolve/references/migration.md`](skills/ss-resolve/references/migration.md) |
-| 50 | ✓ | [`skills/ss-resolve/references/project.schema.json`](skills/ss-resolve/references/project.schema.json) |
-| 51 | ✓ | [`skills/ss-resolve/references/spacing.md`](skills/ss-resolve/references/spacing.md) |
-| 52 | ✓ | [`skills/ss-resolve/scripts/compiler.mjs`](skills/ss-resolve/scripts/compiler.mjs) |
-| 53 | ✓ | [`skills/ss-resolve/scripts/distribution-integrity.mjs`](skills/ss-resolve/scripts/distribution-integrity.mjs) |
-| 54 | ✓ | [`skills/ss-resolve/scripts/legacy-lock-analysis.mjs`](skills/ss-resolve/scripts/legacy-lock-analysis.mjs) |
-| 55 | ✓ | [`skills/ss-resolve/scripts/migrate-project.mjs`](skills/ss-resolve/scripts/migrate-project.mjs) |
-| 56 | ✓ | [`skills/ss-resolve/scripts/palette-generator.mjs`](skills/ss-resolve/scripts/palette-generator.mjs) |
-| 57 | ✓ | [`skills/ss-resolve/scripts/project-registry.mjs`](skills/ss-resolve/scripts/project-registry.mjs) |
-| 58 | ✓ | [`skills/ss-resolve/scripts/recommend-spacing.mjs`](skills/ss-resolve/scripts/recommend-spacing.mjs) |
-| 59 | ✓ | [`skills/ss-resolve/scripts/resolve-context.mjs`](skills/ss-resolve/scripts/resolve-context.mjs) |
-| 60 | ✓ | [`skills/ss-resolve/scripts/runtime-contract.mjs`](skills/ss-resolve/scripts/runtime-contract.mjs) |
-| 61 | ✓ | [`skills/ss-resolve/scripts/spacing-contract.mjs`](skills/ss-resolve/scripts/spacing-contract.mjs) |
-| 62 | ✓ | [`skills/ss-resolve/scripts/spacing-measurement.mjs`](skills/ss-resolve/scripts/spacing-measurement.mjs) |
-| 63 | ✓ | [`skills/ss-resolve/scripts/styleseed-doctor.mjs`](skills/ss-resolve/scripts/styleseed-doctor.mjs) |
-| 64 | ✓ | [`skills/ss-resolve/SKILL.md`](skills/ss-resolve/SKILL.md) |
-| 65 | ✓ | [`skills/ss-restyle/SKILL.md`](skills/ss-restyle/SKILL.md) |
-| 66 | ✓ | [`skills/ss-review/SKILL.md`](skills/ss-review/SKILL.md) |
-| 67 | ✓ | [`skills/ss-score/references/acceptance-report.schema.json`](skills/ss-score/references/acceptance-report.schema.json) |
-| 68 | ✓ | [`skills/ss-score/references/code-report.schema.json`](skills/ss-score/references/code-report.schema.json) |
-| 69 | ✓ | [`skills/ss-score/references/deterministic-report.schema.json`](skills/ss-score/references/deterministic-report.schema.json) |
-| 70 | ✓ | [`skills/ss-score/references/functional-checks.md`](skills/ss-score/references/functional-checks.md) |
-| 71 | ✓ | [`skills/ss-score/references/gate-run.schema.json`](skills/ss-score/references/gate-run.schema.json) |
-| 72 | ✓ | [`skills/ss-score/references/temporal-report.schema.json`](skills/ss-score/references/temporal-report.schema.json) |
-| 73 | ✓ | [`skills/ss-score/references/visual-report.schema.json`](skills/ss-score/references/visual-report.schema.json) |
-| 74 | ✓ | [`skills/ss-score/scripts/evidence-contract.mjs`](skills/ss-score/scripts/evidence-contract.mjs) |
-| 75 | ✓ | [`skills/ss-score/scripts/evidence-gate.mjs`](skills/ss-score/scripts/evidence-gate.mjs) |
-| 76 | ✓ | [`skills/ss-score/scripts/functional-reporter.mjs`](skills/ss-score/scripts/functional-reporter.mjs) |
-| 77 | ✓ | [`skills/ss-score/scripts/functional-results.mjs`](skills/ss-score/scripts/functional-results.mjs) |
-| 78 | ✓ | [`skills/ss-score/scripts/run-functional-tests.mjs`](skills/ss-score/scripts/run-functional-tests.mjs) |
-| 79 | ✓ | [`skills/ss-score/scripts/styleseed-check.mjs`](skills/ss-score/scripts/styleseed-check.mjs) |
-| 80 | ✓ | [`skills/ss-score/SKILL.md`](skills/ss-score/SKILL.md) |
-| 81 | ✓ | [`skills/ss-setup/SKILL.md`](skills/ss-setup/SKILL.md) |
-| 82 | ✓ | [`skills/ss-studio/agents/openai.yaml`](skills/ss-studio/agents/openai.yaml) |
-| 83 | ✓ | [`skills/ss-studio/references/artifact-contract.md`](skills/ss-studio/references/artifact-contract.md) |
-| 84 | ✓ | [`skills/ss-studio/references/provider-adapters.md`](skills/ss-studio/references/provider-adapters.md) |
-| 85 | ✓ | [`skills/ss-studio/scripts/studio-run.mjs`](skills/ss-studio/scripts/studio-run.mjs) |
-| 86 | ✓ | [`skills/ss-studio/SKILL.md`](skills/ss-studio/SKILL.md) |
-| 87 | ✓ | [`skills/ss-tokens/scripts/generate-palette.mjs`](skills/ss-tokens/scripts/generate-palette.mjs) |
-| 88 | ✓ | [`skills/ss-tokens/scripts/generator.mjs`](skills/ss-tokens/scripts/generator.mjs) |
-| 89 | ✓ | [`skills/ss-tokens/SKILL.md`](skills/ss-tokens/SKILL.md) |
-| 90 | ✓ | [`skills/ss-update/references/update-preflight.md`](skills/ss-update/references/update-preflight.md) |
-| 91 | ✓ | [`skills/ss-update/scripts/artifact-impact.mjs`](skills/ss-update/scripts/artifact-impact.mjs) |
-| 92 | ✓ | [`skills/ss-update/scripts/check-update.mjs`](skills/ss-update/scripts/check-update.mjs) |
-| 93 | ✓ | [`skills/ss-update/SKILL.md`](skills/ss-update/SKILL.md) |
-| 94 | ✓ | [`skills/ss-verify/scripts/inspect-spacing.mjs`](skills/ss-verify/scripts/inspect-spacing.mjs) |
-| 95 | ✓ | [`skills/ss-verify/SKILL.md`](skills/ss-verify/SKILL.md) |
-| 96 | ✓ | [`skills/styleseed/SKILL.md`](skills/styleseed/SKILL.md) |
+| 5 | ✓ | [`engine/.claude/skills/styleseed/SKILL.md`](engine/.claude/skills/styleseed/SKILL.md) |
+| 6 | ✓ | [`engine/.cursorrules`](engine/.cursorrules) |
+| 7 | ✓ | [`engine/AGENTS.md`](engine/AGENTS.md) |
+| 8 | ✓ | [`engine/CLAUDE.md`](engine/CLAUDE.md) |
+| 9 | ✓ | [`extensions/learning/skills/ss-learn/SKILL.md`](extensions/learning/skills/ss-learn/SKILL.md) |
+| 10 | ✓ | [`skills/styleseed/SKILL.md`](skills/styleseed/SKILL.md) |
+| 11 | ✓ | [`skills/styleseed/workflows/ss-a11y/WORKFLOW.md`](skills/styleseed/workflows/ss-a11y/WORKFLOW.md) |
+| 12 | ✓ | [`skills/styleseed/workflows/ss-audit/WORKFLOW.md`](skills/styleseed/workflows/ss-audit/WORKFLOW.md) |
+| 13 | ✓ | [`skills/styleseed/workflows/ss-build/WORKFLOW.md`](skills/styleseed/workflows/ss-build/WORKFLOW.md) |
+| 14 | ✓ | [`skills/styleseed/workflows/ss-component/WORKFLOW.md`](skills/styleseed/workflows/ss-component/WORKFLOW.md) |
+| 15 | ✓ | [`skills/styleseed/workflows/ss-copy/WORKFLOW.md`](skills/styleseed/workflows/ss-copy/WORKFLOW.md) |
+| 16 | ✓ | [`skills/styleseed/workflows/ss-dial/WORKFLOW.md`](skills/styleseed/workflows/ss-dial/WORKFLOW.md) |
+| 17 | ✓ | [`skills/styleseed/workflows/ss-feedback/WORKFLOW.md`](skills/styleseed/workflows/ss-feedback/WORKFLOW.md) |
+| 18 | ✓ | [`skills/styleseed/workflows/ss-flow/WORKFLOW.md`](skills/styleseed/workflows/ss-flow/WORKFLOW.md) |
+| 19 | ✓ | [`skills/styleseed/workflows/ss-lint/WORKFLOW.md`](skills/styleseed/workflows/ss-lint/WORKFLOW.md) |
+| 20 | ✓ | [`skills/styleseed/workflows/ss-motion/WORKFLOW.md`](skills/styleseed/workflows/ss-motion/WORKFLOW.md) |
+| 21 | ✓ | [`skills/styleseed/workflows/ss-page/WORKFLOW.md`](skills/styleseed/workflows/ss-page/WORKFLOW.md) |
+| 22 | ✓ | [`skills/styleseed/workflows/ss-pattern/WORKFLOW.md`](skills/styleseed/workflows/ss-pattern/WORKFLOW.md) |
+| 23 | ✓ | [`skills/styleseed/workflows/ss-reference/WORKFLOW.md`](skills/styleseed/workflows/ss-reference/WORKFLOW.md) |
+| 24 | ✓ | [`skills/styleseed/workflows/ss-resolve/references/artifact-index.schema.json`](skills/styleseed/workflows/ss-resolve/references/artifact-index.schema.json) |
+| 25 | ✓ | [`skills/styleseed/workflows/ss-resolve/references/artifact.schema.json`](skills/styleseed/workflows/ss-resolve/references/artifact.schema.json) |
+| 26 | ✓ | [`skills/styleseed/workflows/ss-resolve/references/catalog.json`](skills/styleseed/workflows/ss-resolve/references/catalog.json) |
+| 27 | ✓ | [`skills/styleseed/workflows/ss-resolve/references/manifest.schema.json`](skills/styleseed/workflows/ss-resolve/references/manifest.schema.json) |
+| 28 | ✓ | [`skills/styleseed/workflows/ss-resolve/references/migration.md`](skills/styleseed/workflows/ss-resolve/references/migration.md) |
+| 29 | ✓ | [`skills/styleseed/workflows/ss-resolve/references/project.schema.json`](skills/styleseed/workflows/ss-resolve/references/project.schema.json) |
+| 30 | ✓ | [`skills/styleseed/workflows/ss-resolve/references/spacing.md`](skills/styleseed/workflows/ss-resolve/references/spacing.md) |
+| 31 | ✓ | [`skills/styleseed/workflows/ss-resolve/scripts/compiler.mjs`](skills/styleseed/workflows/ss-resolve/scripts/compiler.mjs) |
+| 32 | ✓ | [`skills/styleseed/workflows/ss-resolve/scripts/distribution-integrity.mjs`](skills/styleseed/workflows/ss-resolve/scripts/distribution-integrity.mjs) |
+| 33 | ✓ | [`skills/styleseed/workflows/ss-resolve/scripts/legacy-lock-analysis.mjs`](skills/styleseed/workflows/ss-resolve/scripts/legacy-lock-analysis.mjs) |
+| 34 | ✓ | [`skills/styleseed/workflows/ss-resolve/scripts/migrate-project.mjs`](skills/styleseed/workflows/ss-resolve/scripts/migrate-project.mjs) |
+| 35 | ✓ | [`skills/styleseed/workflows/ss-resolve/scripts/palette-generator.mjs`](skills/styleseed/workflows/ss-resolve/scripts/palette-generator.mjs) |
+| 36 | ✓ | [`skills/styleseed/workflows/ss-resolve/scripts/project-registry.mjs`](skills/styleseed/workflows/ss-resolve/scripts/project-registry.mjs) |
+| 37 | ✓ | [`skills/styleseed/workflows/ss-resolve/scripts/recommend-spacing.mjs`](skills/styleseed/workflows/ss-resolve/scripts/recommend-spacing.mjs) |
+| 38 | ✓ | [`skills/styleseed/workflows/ss-resolve/scripts/resolve-context.mjs`](skills/styleseed/workflows/ss-resolve/scripts/resolve-context.mjs) |
+| 39 | ✓ | [`skills/styleseed/workflows/ss-resolve/scripts/runtime-contract.mjs`](skills/styleseed/workflows/ss-resolve/scripts/runtime-contract.mjs) |
+| 40 | ✓ | [`skills/styleseed/workflows/ss-resolve/scripts/spacing-contract.mjs`](skills/styleseed/workflows/ss-resolve/scripts/spacing-contract.mjs) |
+| 41 | ✓ | [`skills/styleseed/workflows/ss-resolve/scripts/spacing-measurement.mjs`](skills/styleseed/workflows/ss-resolve/scripts/spacing-measurement.mjs) |
+| 42 | ✓ | [`skills/styleseed/workflows/ss-resolve/scripts/styleseed-doctor.mjs`](skills/styleseed/workflows/ss-resolve/scripts/styleseed-doctor.mjs) |
+| 43 | ✓ | [`skills/styleseed/workflows/ss-resolve/WORKFLOW.md`](skills/styleseed/workflows/ss-resolve/WORKFLOW.md) |
+| 44 | ✓ | [`skills/styleseed/workflows/ss-restyle/WORKFLOW.md`](skills/styleseed/workflows/ss-restyle/WORKFLOW.md) |
+| 45 | ✓ | [`skills/styleseed/workflows/ss-review/WORKFLOW.md`](skills/styleseed/workflows/ss-review/WORKFLOW.md) |
+| 46 | ✓ | [`skills/styleseed/workflows/ss-score/references/acceptance-report.schema.json`](skills/styleseed/workflows/ss-score/references/acceptance-report.schema.json) |
+| 47 | ✓ | [`skills/styleseed/workflows/ss-score/references/code-report.schema.json`](skills/styleseed/workflows/ss-score/references/code-report.schema.json) |
+| 48 | ✓ | [`skills/styleseed/workflows/ss-score/references/deterministic-report.schema.json`](skills/styleseed/workflows/ss-score/references/deterministic-report.schema.json) |
+| 49 | ✓ | [`skills/styleseed/workflows/ss-score/references/functional-checks.md`](skills/styleseed/workflows/ss-score/references/functional-checks.md) |
+| 50 | ✓ | [`skills/styleseed/workflows/ss-score/references/gate-run.schema.json`](skills/styleseed/workflows/ss-score/references/gate-run.schema.json) |
+| 51 | ✓ | [`skills/styleseed/workflows/ss-score/references/temporal-report.schema.json`](skills/styleseed/workflows/ss-score/references/temporal-report.schema.json) |
+| 52 | ✓ | [`skills/styleseed/workflows/ss-score/references/visual-report.schema.json`](skills/styleseed/workflows/ss-score/references/visual-report.schema.json) |
+| 53 | ✓ | [`skills/styleseed/workflows/ss-score/scripts/evidence-contract.mjs`](skills/styleseed/workflows/ss-score/scripts/evidence-contract.mjs) |
+| 54 | ✓ | [`skills/styleseed/workflows/ss-score/scripts/evidence-gate.mjs`](skills/styleseed/workflows/ss-score/scripts/evidence-gate.mjs) |
+| 55 | ✓ | [`skills/styleseed/workflows/ss-score/scripts/functional-reporter.mjs`](skills/styleseed/workflows/ss-score/scripts/functional-reporter.mjs) |
+| 56 | ✓ | [`skills/styleseed/workflows/ss-score/scripts/functional-results.mjs`](skills/styleseed/workflows/ss-score/scripts/functional-results.mjs) |
+| 57 | ✓ | [`skills/styleseed/workflows/ss-score/scripts/run-functional-tests.mjs`](skills/styleseed/workflows/ss-score/scripts/run-functional-tests.mjs) |
+| 58 | ✓ | [`skills/styleseed/workflows/ss-score/scripts/styleseed-check.mjs`](skills/styleseed/workflows/ss-score/scripts/styleseed-check.mjs) |
+| 59 | ✓ | [`skills/styleseed/workflows/ss-score/WORKFLOW.md`](skills/styleseed/workflows/ss-score/WORKFLOW.md) |
+| 60 | ✓ | [`skills/styleseed/workflows/ss-setup/WORKFLOW.md`](skills/styleseed/workflows/ss-setup/WORKFLOW.md) |
+| 61 | ✓ | [`skills/styleseed/workflows/ss-studio/agents/openai.yaml`](skills/styleseed/workflows/ss-studio/agents/openai.yaml) |
+| 62 | ✓ | [`skills/styleseed/workflows/ss-studio/references/artifact-contract.md`](skills/styleseed/workflows/ss-studio/references/artifact-contract.md) |
+| 63 | ✓ | [`skills/styleseed/workflows/ss-studio/references/provider-adapters.md`](skills/styleseed/workflows/ss-studio/references/provider-adapters.md) |
+| 64 | ✓ | [`skills/styleseed/workflows/ss-studio/scripts/studio-run.mjs`](skills/styleseed/workflows/ss-studio/scripts/studio-run.mjs) |
+| 65 | ✓ | [`skills/styleseed/workflows/ss-studio/WORKFLOW.md`](skills/styleseed/workflows/ss-studio/WORKFLOW.md) |
+| 66 | ✓ | [`skills/styleseed/workflows/ss-tokens/scripts/generate-palette.mjs`](skills/styleseed/workflows/ss-tokens/scripts/generate-palette.mjs) |
+| 67 | ✓ | [`skills/styleseed/workflows/ss-tokens/scripts/generator.mjs`](skills/styleseed/workflows/ss-tokens/scripts/generator.mjs) |
+| 68 | ✓ | [`skills/styleseed/workflows/ss-tokens/WORKFLOW.md`](skills/styleseed/workflows/ss-tokens/WORKFLOW.md) |
+| 69 | ✓ | [`skills/styleseed/workflows/ss-update/references/update-preflight.md`](skills/styleseed/workflows/ss-update/references/update-preflight.md) |
+| 70 | ✓ | [`skills/styleseed/workflows/ss-update/references/upgrade-notice.json`](skills/styleseed/workflows/ss-update/references/upgrade-notice.json) |
+| 71 | ✓ | [`skills/styleseed/workflows/ss-update/scripts/artifact-impact.mjs`](skills/styleseed/workflows/ss-update/scripts/artifact-impact.mjs) |
+| 72 | ✓ | [`skills/styleseed/workflows/ss-update/scripts/check-update.mjs`](skills/styleseed/workflows/ss-update/scripts/check-update.mjs) |
+| 73 | ✓ | [`skills/styleseed/workflows/ss-update/scripts/consolidate-skills.mjs`](skills/styleseed/workflows/ss-update/scripts/consolidate-skills.mjs) |
+| 74 | ✓ | [`skills/styleseed/workflows/ss-update/WORKFLOW.md`](skills/styleseed/workflows/ss-update/WORKFLOW.md) |
+| 75 | ✓ | [`skills/styleseed/workflows/ss-verify/scripts/inspect-spacing.mjs`](skills/styleseed/workflows/ss-verify/scripts/inspect-spacing.mjs) |
+| 76 | ✓ | [`skills/styleseed/workflows/ss-verify/WORKFLOW.md`](skills/styleseed/workflows/ss-verify/WORKFLOW.md) |
 
 ---
 

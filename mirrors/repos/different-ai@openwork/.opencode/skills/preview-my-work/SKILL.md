@@ -9,9 +9,70 @@ Use the repository's world lifecycle. These are disposable test environments,
 not production or a user's installed desktop profile. Do not touch another
 world or an existing test sandbox. Run from the requested worktree.
 
+## Agent quick path
+
+Three calls take you from intent to a running preview; each prints what the
+next one needs.
+
+1. `pnpm world help <world> --json`: each target's seeds and sources, what an
+   omitted `--source` means, the login or key each placement needs with its
+   fix, and ready-to-run commands by intent. Remote desktop and Den previews
+   default to the current `origin/dev` commit (the source the alpha channel is
+   built from), so "the latest alpha" needs no `--source` there; the per-target
+   `defaultSource` shows where a source is required instead. `pnpm world help
+   --json` lists every world with a one-line summary.
+2. `pnpm world plan <world> --place <place> --stage <stage>`: checks those
+   requirements without creating anything and exits 1 with the fix while one is
+   unmet. `pnpm world outputs <world> --stage <stage> --json` answers
+   `{"exists": false}` when there is nothing to reopen.
+3. `pnpm world up ...` from an example. It checks the requirements again before
+   any side effect and prints the exact command to rerun.
+
+A refused `--seed` names the worlds and placements that offer it.
+
+### Credentials, scoped to one command
+
+Load keys only inside a command substitution on the one command that needs
+them, from the repo root; never print a value.
+
+- Daytona, team organization (preferred):
+  `DAYTONA_API_URL=https://app.daytona.io/api DAYTONA_API_KEY="$(infisical secrets get DAYTONA_API_KEY --env dev --path /openwork-ops --plain --silent)" pnpm world up ...`.
+  Both variables are required: the Daytona CLI **silently ignores
+  `DAYTONA_API_KEY` without `DAYTONA_API_URL`** and falls back to whatever the
+  CLI is logged into, often a personal organization with a 10 GiB memory cap
+  and none of the team's warm snapshots. The alternative is a person running
+  `daytona login` interactively.
+- Freestyle:
+  `FREESTYLE_API_KEY="$(infisical secrets get FREESTYLE_API_KEY --env dev --path /openwork-ops --plain --silent)" pnpm world up ...`.
+- Never run `daytona login --api-key ...` for a world: it replaces the person's
+  CLI login for every tool on the machine. If a lookup printed `*not found*`
+  (Infisical CLI 0.28.x exits 0 on a missing secret), stop; do not pass it on.
+- Do not wrap world commands in `infisical run --env dev -- ...`. It injects
+  about 21 unrelated secrets, omits `DAYTONA_API_URL` (so the Daytona key is
+  ignored), and every local Den or desktop process the world starts inherits
+  them.
+
+### Read what the CLI reports
+
+- `plan --place daytona` prints which identity it will use, e.g. `using the
+  API key in this command's environment (DAYTONA_API_KEY)` or `using your
+  Daytona browser login, organization "..."`. A ⚠ on a personal organization or
+  an ignored key does not block, but fix it before a multi-sandbox preview such
+  as `preview-full`.
+- `up` and `plan` print `source  <short sha> (origin/dev) <subject>`: that is
+  the commit the remote world builds. Report it to the user with the preview
+  link without being asked.
+- A `note  this checkout's world recipes differ from <sha> ...` line means the
+  driver runs this checkout's (possibly stale) recipes against a newer build.
+  Before launching, run from the worktree command it prints, unless the user
+  asked to preview this checkout's recipes.
+- A failed `up` appends `hint:` lines for recognised causes (Daytona memory
+  limit, rejected credentials, CLI/API version mismatch); act on them rather
+  than retrying unchanged.
+
 ## Choose a preview
 
-- Discover the actual primitives first: `pnpm world help`, `pnpm world list` (declared targets are shown; undeclared scripts cannot run remotely),
+- Discover the actual primitives first: `pnpm world help <world> --json` and `pnpm world list --json` (declared targets are shown; undeclared scripts cannot run remotely),
   then inspect the requested script in `worlds/` and its options in `worlds/lib/`.
   A preset's restrictions are not restrictions of the generic world CLI.
   For another composition, inspect `packages/world/src/index.ts` and
@@ -199,8 +260,14 @@ is the reviewed baseline. Explicit launch refs and update refs still reject
 mutable branch names. To preview a specific commit:
 
 ```sh
-OPENWORK_EVAL_REF=<pushed-sha> infisical run --silent --env dev -- pnpm world up preview-den --stage pr-1234 --place daytona --detach --timeout 600000 -- --scenario fresh --lifetime 120
+OPENWORK_EVAL_REF=<pushed-sha> \
+DAYTONA_API_URL=https://app.daytona.io/api \
+DAYTONA_API_KEY="$(infisical secrets get DAYTONA_API_KEY --env dev --path /openwork-ops --plain --silent)" \
+pnpm world up preview-den --stage pr-1234 --place daytona --detach --timeout 600000 -- --scenario fresh --lifetime 120
 ```
+
+Omit the two Daytona variables when the person's own `daytona login` is the
+intended identity; `plan --place daytona` shows which one applies.
 
 Substitute `preview-full` or `preview-desktop` and the desired scenario as needed. The existing
 Daytona snapshots handle dependencies. A cold build takes minutes; reopening a
@@ -305,5 +372,6 @@ and digest: implicit preset defaults such as a moving remote dev ref are not a
 request to update an existing world. Use a new stage or explicitly down/reset;
 never treat adoption as an update.
 
-Report the preview link, tested ref/scenario, expiry, and any actual limitation.
+Report the preview link, the commit from the `source` line (short SHA and
+subject), scenario, expiry, and any actual limitation.
 Keep infrastructure IDs and startup logs out of the user-facing walkthrough.

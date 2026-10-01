@@ -77,7 +77,7 @@ Flat files: `bus.rs` (`agent.run_turn` native request handler), `context_breakdo
 
 ## Tests
 
-- Unit: `agent_tests.rs`, `multimodal_tests.rs`, and direct TinyTools Agent dialect coverage in `pformat_tests.rs`, plus `*_tests.rs` files colocated with `bus.rs`, `cost.rs`, `error.rs`, `hooks.rs`, `host_runtime.rs`, `message_convert.rs`, `platform_shell.rs`, `progress_sink.rs`, `schemas.rs`, `stop_hooks.rs`, `tool_policy.rs`, `turn_origin.rs`, `turn_workspace.rs`, and under `harness/`, `session_host/`, `triage/`.
+- Unit: `agent_tests.rs`, `multimodal_tests.rs`, plus `*_tests.rs` files colocated with `bus.rs`, `cost.rs`, `error.rs`, `hooks.rs`, `host_runtime.rs`, `message_convert.rs`, `platform_shell.rs`, `progress_sink.rs`, `schemas.rs`, `stop_hooks.rs`, `tool_policy.rs`, `turn_origin.rs`, `turn_workspace.rs`, and under `harness/`, `session_host/`, `triage/`.
 - Integration: `tests/agent_builder_public.rs`, `tests/agent_harness_public.rs`, `tests/agent_harness_e2e.rs`, `tests/agent_multimodal_public.rs`, `tests/agent_turn_overrides_e2e.rs`, `tests/agent_approval_memory_coverage_e2e.rs`.
 - Schema regression: `schemas_tests.rs` (`controller_schema_inventory_is_stable`).
 
@@ -92,7 +92,7 @@ Flat files: `bus.rs` (`agent.run_turn` native request handler), `context_breakdo
 invocation budget for one awaited turn without changing the agent's persistent
 configuration. Zero permits no tool invocations. The adapter applies the limit
 to both run policy and run configuration, including parallel calls counted by
-TinyAgents. `with_stop_hooks_and_tool_limit` combines it with stop hooks.
+TinyAgents.
 
 Nested scopes take the smaller limit; `None` preserves an enclosing limit.
 Exiting or dropping the future restores the caller's scope, and concurrent

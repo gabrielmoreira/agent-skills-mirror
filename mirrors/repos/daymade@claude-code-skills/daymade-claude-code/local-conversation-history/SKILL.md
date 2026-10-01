@@ -30,18 +30,19 @@ on, and whether the user wants **evidence** (what was said/done) or
 Resumption always follows a read. The continuation skills require a verified
 read receipt; routing straight to them without one is a defect, not a shortcut.
 
-**When the platform is not stated** — a bare session ID, "pick up where we left
-off" — do not guess it. Identify it first: try the Claude Code exact-session
-lookup in `read-claude-code-history`, then the Codex rollout locator in
-`read-codex-history`. Only a lookup that returns a verified identity decides
-which continuation skill runs; a plausible-looking ID prefix does not.
+**When the platform is not stated**, separate an exact identity from a memory
+of content. With a complete session ID, first use the Codex exact-ID locator,
+then the Claude Code exact-session lookup if Codex does not verify it. The
+verified original record decides the provider and continuation skill; an ID
+prefix does not. With only a title, date, quote, or remembered topic, use the
+inventory or content-search route below and verify the original messages before
+assigning a provider.
 
 ## Provider scope — the job only this entry point routes
 
-Each executor defaults to its own provider, so a request that spans providers
-never widens by itself. **Naming the scope is this skill's whole job.** It has
-two axes, and they use different flags — conflating them is the failure this
-section exists to prevent.
+Name the requested providers before handing off. Inventory and content recall
+use different executors; do not assume a provider-specific default covers a
+cross-provider request.
 
 | Cross-provider need | Route to | Name this scope |
 |---|---|---|
@@ -58,15 +59,6 @@ verify their original messages. For Codex, follow **Locate a quoted exchange** i
 candidates miss or its scope is incomplete, report the gap and refine the indexed query.
 Keep the current Session excluded. A request for only an ID stops at verified
 message evidence; it does not require reconstructing every unrelated conversation.
-
-For this single-ID lookup when the provider is unknown, first probe the Codex
-reader's exact-ID locator backed by state-DB metadata when available.
-This is a discovery order, not an assumption that the conversation was Codex;
-only verified original messages establish that. If no candidate verifies, widen
-to the other providers through indexed recall. Do not start this probe
-with `--source all`: its Claude inventory reads session bodies before applying
-date and output limits. Do not promise exhaustive search or absence when an
-index or exact-session read cannot cover the requested records.
 
 **Search history through the index or an exact known session.** A raw sweep of
 every conversation is prohibited, including when an output limit or scan timeout

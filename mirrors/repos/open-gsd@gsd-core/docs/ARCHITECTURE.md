@@ -316,9 +316,29 @@ they never call `deny()`. See
 
 ### Command Routing Hub (`gsd-core/bin/lib/command-routing-hub.cjs`)
 
-CJS command family routers dispatch through `CommandRoutingHub`. The hub owns the no-throw pure-result contract (`hub.dispatch()` catches internal exceptions and returns `{ ok: false, kind, ...typedPayload }`) and the closed runtime error taxonomy (`UnknownCommand`, `InvalidArgs`, `HandlerRefusal`, `HandlerFailure`). Router adapters remain thin CLI translators — they build the hub, call `dispatch`, then map the Result to `output()`/`error()` calls. The runtime is single-path (no dual-runtime mode selection). See `docs/adr/0174-retire-gsd-sdk-package-boundary.md`.
+CJS command family routers dispatch through `CommandRoutingHub`. The hub owns the no-throw pure-result contract (`hub.dispatch()` catches internal exceptions and returns `{ ok: false, kind, ...typedPayload }`) and the closed runtime error taxonomy (`UnknownCommand`, `InvalidArgs`, `HandlerRefusal`, `HandlerFailure`, and `VerificationStatusInvalid` — a handler that read a verification report whose `status` is outside the closed set; the adapter fails with the error's own reason, `verification_status_invalid`). Router adapters remain thin CLI translators — they build the hub, call `dispatch`, then map the Result to `output()`/`error()` calls. The runtime is single-path (no dual-runtime mode selection). See `docs/adr/0174-retire-gsd-sdk-package-boundary.md`.
 
 > **Planned (ADR-2346 / epic #2345):** the `runCommand` 73-case switch is being dissolved into a two-layer dispatch — families via the `commandFamilies` registry (ADR-959 mechanism, completed) and single-purpose leaf verbs via a table filling the prepared `_dispatchNonFamily` seam — collapsing `runCommand` to a ~15-line dispatcher. Behavior-preserving; tracked phase-by-phase under epic #2345. The current-state description above holds until each phase lands.
+
+### Check Gate Modules (`src/gate-*.cts`, `src/check-command-router.cts`, #5139, epic #5056)
+
+Every `gsd-tools check <gate>` verb is a module that returns a value; the router only turns that value into output. Each gate module (`gate-decision-coverage-plan`, `gate-decision-coverage-verify`, `gate-ui-plan`, `gate-ui-safety`, `gate-tdd-review-checkpoint`, `gate-tdd-red-evidence`, `gate-verify-command-paths`, `gate-verify-failure-directions`, `gate-gap-analysis-plan-post`, `gate-predicate`, `gate-api-coverage-verify-pre`) returns a `GateResult` from `gate-verdict`: a `GateVerdict` (`outcome`, `block`, a frozen ordered `payload`) or a `GateUsageFailure`. `GATE_FAILURE_CODE` is the closed set of failure codes.
+
+`src/check-command-router.cts` (233 lines) parses argv, calls the gate, and formats the result through one output site, `emitGateResult`. A gate's stdout and exit code are byte-identical to the pre-refactor router; 103 golden files pin them (`tests/check-router-cutover-equivalence.test.cjs`).
+
+Support modules shared by the gates: `gate-config` (workflow switches, read quietly), `gate-args` (argument parsing), `gate-phase-context` (containment, phase-directory resolution, the tolerant file read and the degraded verify-probe verdict), `decision-coverage-support` (decision extraction and matching), and `check-auto-mode` (the `check auto-mode` state reader). XML decision-tag extraction lives in the markdown sectionizer seam (`src/markdown-sectionizer.cts`), and `type: tdd` detection in the Frontmatter Module (`frontmatterKeyHasValue`).
+
+Two ESLint boundaries in `eslint.config.mjs` keep the split honest: a gate module imports no io module (`./io.cjs` or any `**/io.cjs` / `**/io` path) and performs no direct `console`, `process.stdout` or `process.stderr` write, and the router cannot import `fs`, `child_process` or `fs/promises` (bare or `node:`), or the shell exec and version-control helpers. Gate config is read through the same dot-path resolver `config-get` uses (`resolveConfigKey`, with `quiet: true`), so a gate sees the configuration `config-get` reports, including `GSD_WORKSTREAM` routing; only nested `workflow.*` keys are honored, and a malformed `config.json` is an absent key with nothing written to stderr. `verify context-drift` and `verify codebase-drift` read their `workflow.*` keys through the same reader.
+
+Behavior differences from the pre-refactor router:
+
+- A top-level `context_coverage_gate` no longer disables the decision-coverage gates, and top-level `auto_advance` / `_auto_chain_active` no longer feed `check auto-mode`; only nested `workflow.*` keys count (#4978).
+- Gate config honors `GSD_WORKSTREAM`; the old router read `<project>/.planning/config.json` only.
+- `decision-coverage-verify` reads a SUMMARY's `files_modified` from its frontmatter (inline `[a, b]` and block lists); a `files_modified:` block in the body is ignored.
+- `tdd-red-evidence` requires the record path to stay inside the project directory and fails as `path escapes its allowed directory: <arg>` otherwise; it used to read any readable path. A record inside the project is reported exactly as before. A relative record path resolves against the process working directory, which every workflow sets to the project directory; invoked from elsewhere, a project-relative path is that same usage failure rather than an `unreadable_record` verdict.
+- `tdd-review-checkpoint` passes the plan id (a plan file name) to `git log --extended-regexp --grep` with every metacharacter escaped, so a name such as `x.*` cannot satisfy RED or GREEN with an unrelated commit. `type: tdd` detection is unchanged (`frontmatterKeyHasValue` is the old `^type:\s*tdd\s*$` test over the frontmatter block).
+- Stderr from the version-control calls in `ui-safety-gate`, `tdd-review-checkpoint` and `decision-coverage-verify` is captured instead of leaking to the process stderr (`fatal: not a git repository` on a non-git project).
+- `api-coverage-verify-pre` resolves a phase's relative directory against the project directory, not the process working directory.
 
 ### Capability Command Dispatch (`gsd-core/bin/gsd-tools.cjs`, ADR-1244 D7)
 

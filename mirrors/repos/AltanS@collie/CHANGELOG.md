@@ -64,16 +64,190 @@ PATH. Details and rollback: [`docs/upgrading.md`](./docs/upgrading.md) → *Upgr
   marked `denied` rather than lumped in with a real failure, because "you said no" and "it crashed"
   are not the same thing to read. The shape is additive, so every existing view keeps working, and
   the name table is shared, so `Bash`, `bash`, `shell` and `exec_command` are one kind of thing.
-  Claude Code fills it first; the other five adapters follow.
+
+- **Every harness now records what a tool call DID, not just that one ran.** Claude already did;
+  Codex, opencode, pi, grok and hermes now do too. A command carries its exit code, an edit carries
+  its hunks and its added and removed counts, a search carries its hit count, and a call the
+  operator refused is marked as refused rather than as an error. Nothing is guessed: each harness
+  fills only what its own record actually holds, and the three that write no exit code and no patch
+  say so rather than inventing one. This is what a session card will draw, and it is read from one
+  place for all six.
+
+- **The pane switcher can run by activity instead of by place.** The sheet you open with the layers
+  mark keeps every pane in its space and tab, which is the right answer when you know where you are
+  going and the wrong one when you just want the pane you were last in. A Place / Activity toggle now
+  sits at the top of it, and Activity folds the space headings and the Shells fold into one list,
+  newest first, counting both the agent's own last turn and the last time you were in the pane. The
+  choice is a standing one and also a row under Settings → Appearance → Pane order. It reads the
+  clock once, when the sheet opens, so a pane that finishes a turn while you are reaching for a row
+  repaints where it stands and never moves under your thumb.
+
+- **The journal reads a session one row at a time.** Every harness adapter now folds its log row by
+  row instead of only parsing a whole file, and says which earlier turns a row changed as well as
+  which turns it added. That second half is the point: a tool result lands rows after the call it
+  belongs to, so attaching it edits a turn that is already on screen. A live session that gains one
+  row can now cost one row of work instead of re-reading and re-parsing the last 32 MB of a log that
+  can be 187 MB long. Nothing you can see changes yet, and the whole-file reading is the same reading
+  it always was, proved for all six harnesses against the same bytes arriving in torn random chunks.
+
+- **Asking a session what is new now costs only what is new.** Every harness can answer that
+  question in the language its own storage speaks: the four that write a log file count bytes, and
+  the two that keep a SQLite database count a row's own clock or its row id. The reader above them
+  learns none of that, so a harness can change how it counts without anything else changing. Three
+  things follow. A first read takes a bounded tail instead of a whole session, which starts to matter
+  once a log runs to hundreds of megabytes, as a long Claude session does. A row the agent is halfway
+  through writing is held back
+  until the newline arrives, so it is never shown half and never dropped. And a read that cannot
+  simply continue, because a log was truncated or because Claude handed the conversation over to a
+  new file, says so in one word and hands back the truth instead of a guess. Nothing you can see
+  changes yet.
+
+- **A watching screen asks what is new and is told only that.** A new read answers a pane's session
+  the way a poll wants it answered: the turns you have not seen, the turns that changed since you
+  last looked, and nothing else. A poll that finds nothing new sends no body at all. The bridge holds
+  a bounded tail per session, about two megabytes of it, so a session of any length costs the same
+  memory, and older turns come off the disk only when somebody asks for them. It rides the poll
+  Collie already has rather than a new socket, so it crosses a crew link exactly as the history read
+  does, and a member one release behind simply reports no such read instead of an empty session.
+  Nothing you can see changes yet.
+
+- **The pane menu can copy a pane's output.** There was no way to get the terminal text off a
+  phone at all: an installed iOS PWA suppresses long-press selection app-wide unless an element asks
+  for it back, and the mirror never did. Two ways in now. The mirror opts back into selection, so
+  long-press and Copy works. And a Copy output row joins Find and History in the pane menu, which
+  copies the whole buffer in one tap, unwrapped, so a paste reads as real lines rather than as the
+  phone's own hard wraps. The row copies the screen you are looking at, not a poll that landed under
+  your thumb, and it stays hidden where there is no output or no clipboard to write to, which is
+  every plain-HTTP deploy. Thanks @jyothyswaroop (#287).
+
+- **A push notification arrives in the language you picked.** The bridge writes a notification title,
+  and the bridge has no idea which language your phone is set to, so a German device still read an
+  English line on its lock screen. The bridge now sends a short catalogue code beside the English
+  title. The page leaves the active language's templates in Cache Storage, and the service worker
+  fills them in there, which is the only place that runs when the app is closed. Any miss falls back
+  to the English title, so a phone that has not opened the app since you changed language still gets
+  a readable notice instead of a code. Thanks @jaehyun2yo (#310).
+
+- **A canary run now checks what Chat reads, not only what the screen shows.** Each of the six
+  journal readers counts the row kinds and content kinds it has no branch for, and `bun run canary`
+  reads the session each agent wrote in its own pane: a user item for the prompt the canary sent, a
+  tool item for the file read it asked for, a reply below it, and nothing unrecognised. Above zero
+  the run fails and NAMES the type, which is a gate against a vendor format change nobody has
+  written a test for. Claude Code and Codex both broke reading on the day they shipped, while
+  every test stayed green. No session file is saved anywhere, not even under `/tmp`: an
+  agent's log carries file contents from every read and environment from every command, so only
+  counts and item kinds are kept. `verified-versions.json` records the journal reader's verified
+  version beside the screen reader's and `bun run harness:drift` prints a row per reader, because
+  the two drift apart: a vendor can change what it paints without changing what it writes.
 
 ### Changed
 
 - **The theme card is called Theme.** It was called Appearance, which is now the name of the
   section it sits in, and a page that says Appearance twice tells you nothing the second time.
 
-- **Claude Code 2.1.284 is verified.** The canary ran all five scenarios against it, idle, drafts,
-  sends, narrow and start-exit, and every one passed. The reader ledger now names 2.1.284 instead
-  of 2.1.283.
+- **Claude Code 2.1.285, opencode 1.18.33 and pi 0.87.1 are verified, for both readers.** The canary
+  ran all six scenarios against each of them, idle, drafts, sends, journal, narrow and start-exit,
+  and every one passed. `journal` is the new scenario: it parses the canary's own session with the
+  same adapter Chat uses, and asserts the kinds it finds. The ledger now carries two lines per
+  agent, the screen reader's and the journal reader's, so `bun run harness:drift` covers Chat as
+  well as the mirror. Codex 0.159.2 passed every screen scenario and is not recorded: it answered
+  the journal prompt in words without calling a tool, so that scenario reached no verdict.
+
+- **The canary's journal prompt cannot be answered without opening the file.** It used to say "read
+  README.md, then reply with only OK", and "OK" needs nothing from the file, so an agent was free to
+  skip the very tool call the scenario exists to watch. Codex did exactly that, on two versions. The
+  canary's own README now carries a token, and the prompt asks for the token it names, which no
+  agent can answer without reading. The reply is still one word.
+
+- **The canary runs pi the way an operator runs it.** pi was launched with `--no-session`, so it
+  wrote no session file, so the journal check spec 05 added could never see pi at all. The flag is
+  gone. pi was also the only agent exempt: Claude, Codex and opencode already write to their own
+  stores on every canary run, because the canary isolates Herdr and deliberately leaves an agent's
+  own configuration alone. `--thinking off` stays, because that one only makes a run cheaper.
+
+- **A canary ledger entry is judged per agent, not per run.** One agent failing used to block the
+  ledger for every agent in the run. The run on 2026-09-30 showed the cost: a Codex three versions
+  behind painted its update picker over the composer and failed one scenario, which blocked the
+  entries for Claude 2.1.285 and opencode 1.18.33, both of which had passed all six of their own
+  scenarios and were the two versions the drift check was asking about. Another vendor's startup
+  prompt is not evidence about our Claude reader. A run with any failure is still a failed run.
+
+### Fixed
+
+- **A two-pane box pans on a phone instead of losing its right half.** Claude Code's dynamic-workflow
+  view draws the phases in a left pane and the running agents in a right one, and on a phone every row
+  of it was cut off at the screen edge: the report showed a band of stacked rules with `· 74…` hanging
+  off the side. The mirror only ever panned a box whose divider crossed a rule, `┼`, and a two-pane box
+  never draws one, so it was refused and then clipped rather than wrapped. It now pans like any other
+  wide table, which also gives back the model names in omp's `/model` picker and the Tips beside omp's
+  welcome logo. Thanks @cryptiklemur (discussion #301).
+
+- **A long file name in Changes keeps both ends instead of losing its start.** The tree truncated a
+  name from the left, which is correct for a path and wrong for a bare file name, so a folder of
+  long names drew every row as `…m_breaks_under_podman_compose.md` with the very prefix that orders
+  them cut off. A name now gives up its MIDDLE: the start and the extension both stay, the way a
+  file manager does it. Compacted folder rows keep both ends too, so two repos holding the same deep
+  folder chain no longer read as the same row.
+
+- **A pi turn that failed now says so, instead of vanishing.** When a provider call errors, pi
+  writes the turn with no content at all, so the failure was not merely unexplained, the turn was
+  simply missing from the history. The message pi recorded now shows as a note under the turn, set
+  apart from anything the agent said, and an interrupted turn says so too while keeping whatever the
+  model got out first. Measured over 44 real sessions before the fix: 37 errored turns, every one of
+  them empty, and 15 interrupted ones.
+
+- **A pi session you rewound shows the path you are on, not both paths.** pi keeps every branch in
+  one file, and Collie was reading all of it, so History showed the turns you had abandoned mixed in
+  with the live ones and nothing said which was which. It now follows the branch you are actually on,
+  and rewinding back onto a path you left brings it back. Eight of forty-four real sessions had
+  forked, so this was the common case rather than the corner.
+
+- **pi's compaction, its branch summaries and a desk command all show up now.** Collie read only
+  pi's message rows, so a compacted conversation read as though nothing had happened, an extension's
+  own note never appeared, and a `!command` you ran at the desk looked like a message you had typed.
+  Each now reads as what it is, set apart from anything the agent said.
+
+- **A panel drawn over opencode's composer no longer reads as a draft.** When another panel's box
+  border crosses the composer bar, the draft walk could land on that border row and hand it back as
+  the draft, so the phone showed a Draft in terminal card holding one line of box glyphs, and Take
+  over would have typed that junk into the composer. A border row is excluded now, and it takes two
+  conditions to be one: a corner or a junction on the row's interior, AND nothing but chrome inside
+  it. Either condition on its own gets a real draft wrong. People type a bare rule inside a message,
+  and a pasted `tree` carries a junction on every line, which read four typed lines back as the last
+  one. The reader also held two glyph sets that disagreed about whether `─` and `│` were border
+  glyphs, and there is one set now. Thanks @AndiWandHerd (#319).
+
+- **Two Chinese catalogues said a cache had expired when it had only gone cold.** A cold cache still
+  works, it only costs more, so the word carries a fact. The Simplified Chinese notification setting
+  read 缓存即将失效, which claims the cache became invalid, while the two strings next to it already
+  said 变冷. Traditional Chinese said 冷卻 where its own neighbours say 變冷, which was consistency
+  rather than fact. Both now use the wording their catalogue already uses everywhere else.
+
+- **German, Japanese and Korean said a cache had expired, and German said it was idle.** The same
+  wrong fact sat in three strings in each of those catalogues. German is the worst of the three:
+  "inaktiv" is German's own word for an IDLE pane, so one word named two different states. Each
+  catalogue now uses the word its own cache chip already uses, "kalt" in German, コールド in Japanese
+  and 콜드 in Korean. Nothing was newly translated; the word was already in the file.
+
+- **A notification about a finished agent now uses the same word as the app.** German said "ist
+  fertig" and Spanish "ha terminado", while the status chip in the app says "abgeschlossen" and
+  "completado". Every other push title matches its chip, so these two were the exception. Both carry
+  the chip's word now, with an object, because German "ist abgeschlossen" is wrong for an actor and a
+  bare "hat abgeschlossen" can be read as having locked up.
+
+- **A send on a Muse pane could type your message and then never submit it.** With block grammars
+  on, tapping Send typed the text into the composer and stalled, three taps in a row, while the
+  words sat in the box. The verify read after typing can catch the terminal's echo one character
+  short, and the matcher accepted that prefix, so the phone bound a partial row and the bridge's own
+  exact check then refused to submit it. A single-chunk send now waits for the echo's tail before it
+  binds, which is what the multi-chunk loop already did. Thanks @jpcarranza94 (#312).
+
+- **`collie status` sees a launchd agent that Home Manager put in the user domain.** Collie probed
+  only `gui/<uid>`, so an agent declared with `domain = "user"`, which is what a background service
+  without a graphical login needs, read as not loaded while it was running. Both domains are probed
+  now, the status line names the full target, and both registrations are reported when both exist,
+  so a running background agent is not hidden behind a stopped GUI one. The pidfile fallback is
+  unchanged. Thanks @mavam (#314).
 
 ### Docs
 

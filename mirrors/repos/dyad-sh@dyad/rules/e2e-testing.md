@@ -236,6 +236,7 @@ If a targeted E2E fails before launch with `ENOENT: no such file or directory, s
 - **TypeScript-dependent actions in freshly generated apps**: After `ensurePnpmInstall()`, also call `ensureCodeExplorerReady()` before triggering a manual Problems check or another action that loads the app-local `typescript` module. Direct dependency links can appear while the local TypeScript module is not yet resolvable, making the first check fail as an incomplete install.
 - **After `po.importApp(...)`**: Some imports trigger an initial assistant turn (for example `minimal` generating `AI_RULES.md`) that can leave a visible `Retry` button in the chat. If the test is about a later prompt, first wait for that import-time turn to finish, then start a new chat before calling `sendPrompt()`, or helper methods that wait on `Retry` visibility may return too early.
 - **Agent tool approval setup**: Keep shared E2E setup defaults conservative (`autoApprove: false`) so approval flows remain testable. Tests whose fixtures intentionally run mutating Agent or Build tools must pass `autoApprove: true` explicitly; otherwise they can stall on an approval card and report misleading downstream timeouts.
+- **MCP manual-consent coverage**: Pro enables `autoApproveSafeMcpTools` by default, independently of the setup helper's `autoApprove` option. Suites asserting consent buttons must explicitly persist `autoApproveSafeMcpTools: false` and poll the saved setting; otherwise safe tools finish successfully while the test times out waiting for `Always allow`.
 - **After `page.reload()`**: Always add `await page.waitForLoadState("domcontentloaded")` before interacting with elements. Without this, the page may not have re-rendered yet.
 - **Keyboard navigation events (ArrowUp/ArrowDown)**: Add `await page.waitForTimeout(100)` between sequential keyboard presses to let the UI state settle. Rapid keypresses can cause race conditions in menu navigation.
 - **Navigation to tabs**: Use `await expect(link).toBeVisible({ timeout: Timeout.EXTRA_LONG })` before clicking tab links (especially in `goToAppsTab()`). Electron sidebar links can take time to render during app initialization.
@@ -356,6 +357,16 @@ If a targeted E2E fails before launch with `ENOENT: no such file or directory, s
 - In package-manager E2E shims, execute the resolved `pnpm` path directly. CI setup can provide a shell wrapper, and running that wrapper through `process.execPath` makes Node parse shell syntax instead of invoking pnpm.
 - Fake package-manager shims must parse subcommands across the full argv, not only `argv[0]`. Dyad can invoke `pnpm` as `pnpm --config.pm-on-fail=ignore --config.confirmModulesPurge=false --config.strictDepBuilds=false install`, so fake pnpm scripts should recognize config-prefixed `install`, `run dev`, and `--version`.
 
+## Dialog focus readiness
+
+- After opening the Add Plugin dialog, wait for its initial Name field to be focused before filling other inputs. Base UI autofocus can otherwise redirect a fast Command fill into Name.
+
+## Native scroll readiness
+
+- In virtualized-chat E2Es, wait for native wheel/PageUp movement to settle before recording a reading anchor; a gap threshold alone can pass mid-animation. Bound the settling wait and retain subsequent no-drift assertions.
+- Do not combine the chat scroll controller with Virtuoso `initialTopMostItemIndex: LAST`: its index-scroll operation retries on size changes until 150ms of quiet, so fast streaming can keep jumping to bottom after user scroll-away. Let the controller own initial positioning too.
+- When testing initial virtualized-chat positioning, sample after animation-frame callbacks and check CSS visibility/opacity; geometry alone can count hidden measurement rows. Cover both opening a long chat at the bottom and restoring a deliberate top-of-history reading position.
+
 ## Waiting for button state transitions
 
 When clicking a button that triggers an async operation and changes its text/state (e.g., "Run Security Review" → "Running Security Review..."), wait for the loading state to appear and disappear rather than just waiting for the original button to be hidden:
@@ -410,3 +421,10 @@ When adding E2E test fixtures that need a `.dyad` directory for testing:
 
 - `write_app_blueprint` fixture args must include at least one entry in `visuals` (`.min(1)` in the tool schema). An empty `visuals: []` fails tool validation silently: the blueprint card still renders from the streamed XML tag and "Approve Plan" is clickable, but approval fails with "Blueprint data is unavailable. Please regenerate the plan." because the plan never reached the renderer atom.
 - After a rename/approval, the title bar's `data-app-path` can update a beat later than `data-app-name`. Assert the name AND the path inside a single `expect(async () => {...}).toPass()` poll instead of reading `getCurrentAppPath()` once after the name matches.
+
+## Benchmark harness interactions
+
+- A union locator (`a.or(b)`) is strict: a valid empty list can render both its container and empty-state element. Select a visible alternative, then separately assert no rows; do not mistake the two different test IDs for duplicate IDs.
+- Open a menu before counting its lazily mounted options. For mutations, wait for the request or persisted API state before navigating away; an immediate `goto` can abort a correct save, an optimistic UI change is not proof of a committed write, and `toHaveCount(0)` before list hydration can falsely pass.
+- Benchmark rescoring must use unchanged checkpoint tags and cloned snapshots. Preserve previous artifacts. If a judge consumes test outcomes, refresh its verdict when that evidence changes; retain only verdicts based on unchanged evidence. Infrastructure failures or missing judges are unscored, not model-quality zeros.
+- Do not wait for `response.finished()` on a successful 204 mutation response: Chromium/Playwright can leave that wait pending even after the server committed. Wait for the response headers and then assert persisted state; include 204 as well as JSON responses in helper regression tests.

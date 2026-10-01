@@ -12,7 +12,7 @@ Highest precedence first:
 
 ## Responsibilities
 
-- Hold the effective timeout in a process-global `AtomicU64`, seeded lazily from env or default on first read.
+- Hold the effective timeout in a process-global vendored `tinyagents_harness::tool::ToolTimeoutSettings` (atomic inside), seeded lazily from env or default on first read. Deadline/budget resolution (`resolve_tool_deadline`) delegates to that vendor type; env/config parsing stays here.
 - Bound every candidate value to `1..=3600` seconds, falling back to the `120`s default on missing, non-numeric, zero, negative, or out-of-range input.
 - Let the persisted config drive the value at runtime while keeping the operator env var as an always-wins override.
 - Provide the timeout to callers in two shapes: raw seconds (for logging and matching frontend timeouts) and `Duration` (for `tokio::time::timeout`-style wrapping).

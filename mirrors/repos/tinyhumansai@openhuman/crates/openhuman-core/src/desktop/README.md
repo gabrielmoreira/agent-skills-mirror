@@ -17,7 +17,6 @@ since it is specifically the desktop-only slice.
 
 | Folder | Owns |
 | --- | --- |
-| [`accessibility`](accessibility/README.md) | macOS AX/IOKit FFI, the Swift helper process, focus queries, permission detection, the Globe-key listener. Reached today only from the `voice` family. |
 | [`app_state`](app_state/README.md) | The aggregator the React shell polls (`openhuman.app_state_snapshot`): stored credential, local-AI status, service health, onboarding tasks, keyring status. |
 | `control` | Local opt-in desktop automation: native window inspection and control, driven through [Jev](../../../../gitbooks/developing/jev.md)-ranked accessibility actions. See its `WORKFLOW.md`. Gated by `#[cfg(feature = "modules")]`. |
 | [`dashboard`](dashboard/README.md) | Aggregate operator-facing views over local config; today a single read-only per-model health comparison table. |
@@ -27,10 +26,11 @@ since it is specifically the desktop-only slice.
 
 ## Gating
 
-Only two members are feature-gated today:
+Only one member is feature-gated today. (OS accessibility — macOS AX/IOKit FFI,
+the Swift helper, focus, permissions, Globe key — moved to the
+`tinycomputer-accessibility` crate in `vendor/tinycomputer`; its microphone probe
+rides the `inference` feature, and reports `PermissionState::Unknown` without it.)
 
-- `accessibility`'s microphone probe rides the `inference` feature (it calls
-  `cpal`, which without `inference` reports `PermissionState::Unknown`).
 - `control` is compiled only under `#[cfg(feature = "modules")]`.
 
 Everything else in this module compiles unconditionally. See

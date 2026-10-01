@@ -648,7 +648,8 @@ a mostly English message on verbatim matching, and a Korean file path in a tool 
 memory either one finds can still reach the sidecar, which decides what is worth a nudge, and the
 note that matches an English phrase from the conversation word for word keeps first place. Word
 rarity treats common English endings as one word, so `rollback` still finds a note that says
-`rollbacks`.
+`rollbacks`. Chinese characters and Japanese kanji also count one by one, so a question can find a
+note it shares only single characters with.
 
 #### Facts
 

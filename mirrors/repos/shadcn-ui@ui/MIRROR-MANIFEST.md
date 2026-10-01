@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `shadcn-ui/ui` — 26 default patterns, 0 followed patterns, 29 file(s) materialized.
+Mirror of `shadcn-ui/ui` — 26 default patterns, 0 followed patterns, 31 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `shadcn-ui/ui` — 26 default patterns, 0 followed patterns, 29 file(s
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 29 |
+| Files         | 31 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -87,7 +87,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 26 | ✓ | [`skills/shadcn/rules/styling.md`](skills/shadcn/rules/styling.md) |
 | 27 | ✓ | [`skills/shadcn/SKILL.md`](skills/shadcn/SKILL.md) |
 | 28 | ✓ | [`templates/next-app/AGENTS.md`](templates/next-app/AGENTS.md) |
-| 29 | ✓ | [`templates/next-monorepo/AGENTS.md`](templates/next-monorepo/AGENTS.md) |
+| 29 | ✓ | [`templates/next-app/CLAUDE.md`](templates/next-app/CLAUDE.md) |
+| 30 | ✓ | [`templates/next-monorepo/AGENTS.md`](templates/next-monorepo/AGENTS.md) |
+| 31 | ✓ | [`templates/next-monorepo/CLAUDE.md`](templates/next-monorepo/CLAUDE.md) |
 
 ---
 

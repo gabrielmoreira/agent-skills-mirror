@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import contextlib
 import copy
 from collections.abc import Iterable, Mapping
 import math
@@ -4573,13 +4574,18 @@ def _retrieve_stream(*args, **kwargs) -> tuple[list[dict], dict]:
             # swallowed sub-requests lost, so doctor can still show it, and
             # the most specific failure state so a later empty filter result
             # or the thin-source retry can act on it.
+            # Append to any detail the impl already set (e.g. a Reddit
+            # backfill note) rather than overwriting it.
             artifact = dict(artifact or {})
-            artifact["_source_outcome_detail"] = _summarize_lane_failures(
-                failures, str(kwargs.get("source") or "")
-            )
+            summary = _summarize_lane_failures(failures, str(kwargs.get("source") or ""))
+            prior = artifact.get("_source_outcome_detail")
+            artifact["_source_outcome_detail"] = f"{prior}; {summary}" if prior else summary
+            states = [f.outcome_state for f in failures]
+            if artifact.get("_source_outcome_detail_state"):
+                states.append(artifact["_source_outcome_detail_state"])
             artifact["_source_outcome_detail_state"] = min(
-                failures, key=lambda f: _FAILURE_SPECIFICITY.get(f.outcome_state, 9)
-            ).outcome_state
+                states, key=lambda state: _FAILURE_SPECIFICITY.get(state, 9)
+            )
     if module_backed:
         http.fixture_source_record(fixture_request, [items, artifact])
     return items, artifact
@@ -4757,7 +4763,7 @@ def _retrieve_stream_impl(
             # env.REDDIT_BACKEND_PIN_VAR=scrapecreators: SC primary, public fallback
             primary_failure: Exception | None = None
             try:
-                result = reddit.search_and_enrich(
+                result = reddit.search_and_enrich_memo(
                     reddit_query, from_date, to_date, depth=depth,
                     token=config.get("SCRAPECREATORS_API_KEY"),
                     subreddits=subreddits,
@@ -4810,13 +4816,10 @@ def _retrieve_stream_impl(
             return [], {}
 
         # Default: public Reddit first (free). ScrapeCreators backfills when the
-        # free path is empty OR returns fewer than the configured thinness floor
-        # (env.REDDIT_SC_MIN_ITEMS_VAR, default 0 = empty-only — today's
-        # behavior, no extra credit spend unless the user opts in).
-        try:
-            min_items = int(config.get(env.REDDIT_SC_MIN_ITEMS_VAR) or 0)
-        except (TypeError, ValueError):
-            min_items = 0
+        # free path returns fewer than the thinness floor (env.reddit_sc_min_items:
+        # unset -> env.REDDIT_SC_MIN_ITEMS_DEFAULT, explicit 0 -> empty-only,
+        # malformed -> 0 so a typo never spends extra credits).
+        min_items = env.reddit_sc_min_items(config)
         public_results: list[dict] = []
         public_failure: Exception | None = None
         try:
@@ -4844,12 +4847,23 @@ def _retrieve_stream_impl(
                 f"[Reddit] Free path returned {len(public_results)} "
                 f"(below the {min_items}-item floor); backfilling with ScrapeCreators\n"
             )
+        # With free items in hand, scope the backfill's own HTTP failures
+        # away from the stream's capture sink: a ScrapeCreators 429 is not a
+        # reddit.com rate limit, and a RATE_LIMITED lane state would put
+        # 'reddit' in rate_limited_sources and skip later Reddit streams and
+        # the thin-source retry. Its failures become the detail note instead.
+        # With no free items the backfill IS the source, so failures reach
+        # the stream sink as before.
+        backfill_scope = (
+            http.capture_failures() if public_results else contextlib.nullcontext([])
+        )
         try:
-            result = reddit.search_and_enrich(
-                reddit_query, from_date, to_date, depth=depth,
-                token=config.get("SCRAPECREATORS_API_KEY"),
-                subreddits=subreddits,
-            )
+            with backfill_scope as backfill_failures:
+                result = reddit.search_and_enrich_memo(
+                    reddit_query, from_date, to_date, depth=depth,
+                    token=config.get("SCRAPECREATORS_API_KEY"),
+                    subreddits=subreddits,
+                )
             sc_items = reddit.parse_reddit_response(result)
         except Exception as exc:
             sys.stderr.write(
@@ -4857,6 +4871,20 @@ def _retrieve_stream_impl(
                 f"({type(exc).__name__}: {exc})\n"
             )
             state = reddit.classify_run_failure(str(exc))
+            if public_results:
+                # The free path delivered: Reddit is working. The failed
+                # backfill is a detail note, never the source's outcome.
+                artifact = {
+                    "_source_outcome_detail": (
+                        f"ScrapeCreators backfill failed after "
+                        f"{len(public_results)} free items: {exc}"
+                    ),
+                }
+                if state != health.RATE_LIMITED:
+                    # A ScrapeCreators rate limit says nothing about
+                    # reddit.com (and the run memo already stops a retry).
+                    artifact["_source_outcome_detail_state"] = state
+                return public_results, artifact
             return public_results, _outcome_artifact(
                 state,
                 f"Reddit backup failed after {len(public_results)} public items: {exc}",
@@ -4869,7 +4897,17 @@ def _retrieve_stream_impl(
                 f"Reddit public search failed; backup returned {len(sc_items)} items: "
                 f"{public_failure}",
             )
-        return merged, {}
+        trigger = (
+            f"below the {min_items}-item floor" if min_items > 0 else "free path empty"
+        )
+        backfill_detail = (
+            f"ScrapeCreators backfill ran ({len(public_results)} free items, "
+            f"{trigger}); added {len(merged) - len(public_results)} items"
+        )
+        if backfill_failures:
+            summary = _summarize_lane_failures(backfill_failures, "reddit")
+            backfill_detail = f"{backfill_detail}; ScrapeCreators backfill lost {summary}"
+        return merged, {"_source_outcome_detail": backfill_detail}
     if source == "x":
         if config.get("_x_lane_missing"):
             # The model declared the connector lane but passed no envelope.

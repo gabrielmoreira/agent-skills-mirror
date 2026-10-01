@@ -30,7 +30,7 @@ The tool comes with a `computer-use` skill, the full helper reference. If you al
 - **npm install (`omo-ai`):** the npm package carries no native binaries. On first use, OmO looks for an engine for its own release version under `~/.omo/cache/senpi-desktop-engine/<version>/<host>/`, and when none is there it downloads the matching asset from the OmO GitHub release and verifies it against the release's checksum file before running it.
 - **Your own build:** set `computer.engine_path` to a binary, or build one in a checkout with `cargo build --release -p senpi-desktop-engine`.
 
-Without `computer.engine_path`, the locator also checks the compiled executable's sidecar, the `@oh-my-opencode/senpi-desktop-engine` package's native prebuild, and the development build at `target/release/senpi-desktop-engine` (`packages/senpi-desktop-engine/src/locator.ts`). A candidate carrying macOS's `com.apple.quarantine` attribute is skipped and reported, never cleared. Hosts with no released engine (Linux arm64, Windows arm64) keep the tool registered and report `native-unavailable` on first use.
+Without `computer.engine_path`, the locator checks the extracted runtime (`OMO_PACKAGE_DIR`), the compiled executable's sidecar at `native/prebuilds/<host>/senpi-desktop-engine`, the `@oh-my-opencode/senpi-desktop-engine` package's native prebuild, and the development build at `target/release/senpi-desktop-engine` (`packages/senpi-desktop-engine/src/locator.ts`). A candidate carrying macOS's `com.apple.quarantine` attribute is skipped and reported, never cleared, with one exception: a sidecar inside the launcher's own installation is accepted when its canonical path stays under that launcher's `native/prebuilds/` and its SHA-256 matches the host entry in `native/prebuilds/senpi-desktop-engine-checksums.txt`. The launcher's build writes this file for the engine bytes as packaged, including any re-signing. A missing or invalid checksum file, a digest mismatch, or a symlink escaping the installation keeps the refusal. This exception does not apply to an explicit `computer.engine_path` or the other locations. Hosts with no released engine (Linux arm64, Windows arm64) keep the tool registered and report `native-unavailable` on first use.
 
 ## Set up your operating system
 
@@ -45,7 +45,7 @@ macOS gates capture and input behind two privacy permissions, and grants them to
 | Permission | Needed for | System Settings location |
 |------------|------------|--------------------------|
 | Screen Recording (Screen & System Audio Recording on newer macOS) | screenshots, the display and window lists | Privacy & Security > Screen & System Audio Recording |
-| Accessibility | mouse and keyboard input, accessibility trees and element actions | Privacy & Security > Accessibility |
+| Accessibility | mouse and keyboard input, accessibility trees and element actions, the global stop chord | Privacy & Security > Accessibility |
 
 To grant them:
 
@@ -55,7 +55,7 @@ To grant them:
 4. Quit and reopen the terminal app. macOS offers "Quit & Reopen" after a Screen Recording change; a grant does not reach processes that were already running.
 5. Start a new OmO session and run `/computer status`; `capturePermission=granted inputPermission=granted axPermission=granted` means you are set.
 
-OmO never opens the macOS permission prompt itself: it checks the grants with the non-prompting preflight calls and, when one is missing, reports it in `/computer status` and fails the call with `PermissionDenied` naming the process macOS evaluated. If you launch OmO from a different app later, that app needs its own grants.
+OmO checks grants without a permission prompt. A denied action opens the matching System Settings pane at most once per permission per engine process, names the launching app when known, and tells you to fully quit and relaunch that app after enabling the grant. The error also includes the engine's executable identity for diagnosis. A missing Accessibility grant refuses input as `PermissionDenied`, including when it prevents the global stop chord from starting; capture still works if Screen Recording is granted. The agent must stop and wait until you confirm the grant and relaunch rather than retrying. If you launch OmO from a different app later, that app needs its own grants.
 
 By default, the first background input of a session on macOS runs a short delivery check: a small dialog reading "senpi desktop canary" appears for a moment, receives a marked keystroke, and is dismissed automatically (it closes on its own after five seconds at most). Leave it alone while it is up. It proves background keyboard delivery works before OmO relies on it. If the check fails, background window input is reported as unavailable (`stopReason=skylight-canary-failed`) and `/computer resume` re-arms it. Setting `computer.macos_canary` to `"off"` skips this check and its dialog.
 

@@ -64,21 +64,78 @@ lists the providers; `factory.rs` builds the client; `schemas.rs` defines the
 ## Memory
 
 The memory contract (`tinymemory-api`, vendored at `vendor/tinymemory/`)
-defines a driver-neutral `MemoryProvider` trait and ships adapter crates for
-six remote engines: Supermemory, Mem0, Cognee, CortexDB, AgentMemory, and
-LivingBrain (`vendor/tinymemory/crates/tinymemory-remote/`).
+defines a driver-neutral `MemoryProvider` trait. Engines are built by
+`tinymemory::factory` (`list_engines`, `build_provider`), and
+`tinymemory::migrate::copy` moves every record between two of them.
 
-What actually binds today is narrower than that adapter list. OpenHuman's
-host-side binding (`crates/openhuman-core/src/memory/binding.rs`, function
-`admit`) only accepts the compiled TinyMemory module (id `tinymemory`, with
-`tinycortex` kept as a legacy config alias) or the `null` driver; an external
-driver configured under `[subsystems.memory.drivers.<id>]` is refused with
-"external driver transport is not implemented yet." TinyCortex is the memory
-engine every OpenHuman install actually runs. The `[subsystems.memory]`
-config block (`driver`, `hooks`, `drivers`, and the `OPENHUMAN_MEMORY_DRIVER`
-env var) already parses and persists, ahead of the wiring that will make a
-non-default `driver` value actually switch engines; nothing reads it at
-runtime yet beyond the module/null choice above.
+What the user can pick (Settings > Memory Engine, or `openhuman.memory_engine_*`
+over RPC):
+
+| id | what | endpoint | key |
+| --- | --- | --- | --- |
+| `tinymemory` | the compiled local TinyCortex module (default, nothing leaves the device) | none | none |
+| `tinyhumans` | CortexDB hosted by the TinyHumans backend, billed in credits | the backend origin, forced | the signed-in session (or API key), read live on every call |
+| `supermemory`, `mem0`, `cognee`, `cortex`, `agentmemory` | the user's own service | from the form | from the form, kept in the OS keychain |
+
+The switch is applied in process: `memory::ops::engine` validates the request,
+stores any key under the keychain entry `memory-<id>`, writes
+`[subsystems.memory] driver` plus `drivers.<id>` (`class = "external"`,
+`transport = "http"`, `credential_ref = "keychain:memory-<id>"`,
+`trust_state = "trusted"` because the user chose it in the UI), and calls
+`memory::binding::rebind`, which drops the stale bindings, re-points the
+context and publishes `MemoryDriverChanged`. Bindings already held by a running
+agent session or the learning facet cache keep the previous engine until that
+session or the app restarts (derived contexts that keep the parent's memory
+config share its binding handle, so they follow a switch; one with its own
+`[subsystems.memory]` keeps that override). Every switch runs under one process-wide
+lock, `engine_set` is refused while a migration runs, and the commit reloads the
+config fresh and patches only `[subsystems.memory]`. Migration (`engine_migrate`) copies first and
+switches only after a clean copy; the source is never modified, and a failed
+run leaves the active engine alone. A running copy can be cancelled (`engine_migrate_cancel`, between pages), is
+bounded by `OPENHUMAN_MEMORY_MIGRATE_TIMEOUT_SECS` (default 2 hours) and fails, not
+hangs, if its task panics. Records written while a copy runs may be missing from
+the new engine; the job result carries a `note` saying so, and this migration does not provide a second-pass delta copy. `OPENHUMAN_MEMORY_DRIVER` pins the engine and makes the switch RPCs
+refuse.
+
+`binding::admit` admits `tinymemory` (with `tinycortex` kept as a legacy
+alias), `null`, the first-party `tinyhumans` (no `drivers` entry, implicitly
+trusted) and any factory engine configured `class = "external"` with
+`trust_state = "trusted"`. An untrusted external driver, or an id the factory
+does not know, is still refused, and a build without the `memory-remote` gate
+refuses every external driver ("external driver transport is not implemented
+yet"). A driver that fails to build falls back to `null` with the reason
+surfaced in `memory.engine_get` and on the event bus, never silently. It falls
+back to `null`, not to the local module, so nothing is written locally while the
+user chose a remote engine; the UI says memory is paused. A construction failure
+(keychain locked, transport not installed yet) is retried on the next resolve after
+30 seconds; an admission refusal stays cached.
+
+On a remote engine the mandatory-surface fallbacks are bounded: recency reads at
+most two `export_page` calls of `min(limit*4, 200)` records, and the document list
+scans at most 10 namespaces and returns at most 200 documents with a `truncated`
+flag. The proper fix is a bounded `recent(namespace, limit)` on the tinymemory
+contract, an upstream follow-up. Hosted 402 and 401 errors from ordinary memory
+RPCs read `INSUFFICIENT_CREDITS:` and `SESSION_EXPIRED:` too; a 403 (a credential
+the engine refuses, such as an API key without the memory scope) reads
+`MEMORY_FORBIDDEN:` and never signs the user out, and a timeout, refused
+connection, 429 or 5xx that outlasts the retries reads `MEMORY_UNREACHABLE:`.
+
+Not every engine advertises every capability family. The hosted and CortexDB
+engines have no `documents`, `tree`, `sources` or `graph` families, so the
+document, tree and source RPCs answer a clean "does not support" error on them
+(see the [`memory/driver` README](../../crates/openhuman-core/src/memory/driver/README.md)
+for the full table). Brain's sync panels (activity, history, coding sessions)
+need `sources` and show "Not available" there.
+
+Auto-recall reads the notes a user saved through the mandatory recall on such an
+engine. Hosted CortexDB ranks its recall without scoring it, so its notes cannot
+be floored on similarity: the lane keeps the engine's first three, behind the
+same gate that decides whether a message needs memory at all. Situational
+preferences and the contradiction check need a scored engine and stay empty
+there. A lookup the engine refuses (out of credits, session not accepted,
+credential refused, unreachable) puts a one-line reason in the recall block
+instead of an empty result, so the model says memory is unavailable rather than
+that something was never stored.
 
 Related pages: [Memory](../features/obsidian-wiki/README.md) and its
 sub-pages for what TinyCortex actually does (memory tree, scoring, retrieval,

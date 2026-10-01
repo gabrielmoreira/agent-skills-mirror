@@ -158,7 +158,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 97 | ✓ | [`skills/last30days/scripts/lib/reddit_keyless.py`](skills/last30days/scripts/lib/reddit_keyless.py) |
 | 98 | ✓ | [`skills/last30days/scripts/lib/reddit_listing.py`](skills/last30days/scripts/lib/reddit_listing.py) |
 | 99 | ✓ | [`skills/last30days/scripts/lib/reddit_public.py`](skills/last30days/scripts/lib/reddit_public.py) |
-| 100 | ✓ | [`skills/last30days/scripts/lib/reddit_rss.py`](skills/last30days/scripts/lib/reddit_rss.py) |
+| 100 | ✓ | [`skills/last30days/scripts/lib/reddit_search.py`](skills/last30days/scripts/lib/reddit_search.py) |
 | 101 | ✓ | [`skills/last30days/scripts/lib/reddit_shreddit.py`](skills/last30days/scripts/lib/reddit_shreddit.py) |
 | 102 | ✓ | [`skills/last30days/scripts/lib/reddit.py`](skills/last30days/scripts/lib/reddit.py) |
 | 103 | ✓ | [`skills/last30days/scripts/lib/registers.py`](skills/last30days/scripts/lib/registers.py) |

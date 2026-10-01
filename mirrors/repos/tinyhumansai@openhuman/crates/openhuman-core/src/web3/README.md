@@ -33,7 +33,7 @@ Three members (`swap`, `bridge`, `dapp`) are documented here; `wallet` and
 > Ungated family members: `wallet` and `x402` are facades in their own right.
 > Each keeps its own `stub.rs` and gates its real submodules on the same
 > default-ON `web3` feature. Always-compiled callers resolve through those
-> stubs (`tools/impl/network/http_request.rs` calls into `x402`), so these
+> stubs (`tools/impl/network/host.rs` calls into `x402`), so these
 > declarations must NOT carry a `#[cfg]`.
 
 ## Compile-time gate (`web3` feature)

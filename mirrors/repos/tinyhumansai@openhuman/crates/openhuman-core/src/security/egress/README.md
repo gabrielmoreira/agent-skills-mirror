@@ -62,7 +62,7 @@ Both `enforce_egress` and `local_only_tool_block` read the live mode via
 
 ## Used by
 
-- `memory/guard/policy.rs`: memory-write egress guard.
+- `memory/guard/policy.rs` (`HostGuardPolicy`): memory-write egress guard.
 - `integrations/client/requests.rs`, `integrations/composio/client/execute.rs`,
   `integrations/composio/execute_dispatch.rs`: backend and Composio calls.
 - `tools/impl/network/{curl,http_request,web_fetch}.rs`: agent network-fetch

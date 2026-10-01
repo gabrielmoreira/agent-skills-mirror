@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `anthropics/claude-plugins-official` — 26 default patterns, 0 followed patterns, 31 file(s) materialized.
+Mirror of `anthropics/claude-plugins-official` — 26 default patterns, 0 followed patterns, 33 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `anthropics/claude-plugins-official` — 26 default patterns, 0 follow
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 31 |
+| Files         | 33 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -75,21 +75,23 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 14 | ✓ | [`plugins/frontend-design/skills/frontend-design/SKILL.md`](plugins/frontend-design/skills/frontend-design/SKILL.md) |
 | 15 | ✓ | [`plugins/hookify/skills/writing-rules/SKILL.md`](plugins/hookify/skills/writing-rules/SKILL.md) |
 | 16 | ✓ | [`plugins/math-olympiad/skills/math-olympiad/SKILL.md`](plugins/math-olympiad/skills/math-olympiad/SKILL.md) |
-| 17 | ✓ | [`plugins/mcp-server-dev/skills/build-mcp-app/SKILL.md`](plugins/mcp-server-dev/skills/build-mcp-app/SKILL.md) |
-| 18 | ✓ | [`plugins/mcp-server-dev/skills/build-mcp-server/SKILL.md`](plugins/mcp-server-dev/skills/build-mcp-server/SKILL.md) |
-| 19 | ✓ | [`plugins/mcp-server-dev/skills/build-mcpb/SKILL.md`](plugins/mcp-server-dev/skills/build-mcpb/SKILL.md) |
-| 20 | ✓ | [`plugins/playground/skills/playground/SKILL.md`](plugins/playground/skills/playground/SKILL.md) |
-| 21 | ✓ | [`plugins/plugin-dev/skills/agent-development/SKILL.md`](plugins/plugin-dev/skills/agent-development/SKILL.md) |
-| 22 | ✓ | [`plugins/plugin-dev/skills/command-development/SKILL.md`](plugins/plugin-dev/skills/command-development/SKILL.md) |
-| 23 | ✓ | [`plugins/plugin-dev/skills/hook-development/SKILL.md`](plugins/plugin-dev/skills/hook-development/SKILL.md) |
-| 24 | ✓ | [`plugins/plugin-dev/skills/mcp-integration/SKILL.md`](plugins/plugin-dev/skills/mcp-integration/SKILL.md) |
-| 25 | ✓ | [`plugins/plugin-dev/skills/plugin-settings/SKILL.md`](plugins/plugin-dev/skills/plugin-settings/SKILL.md) |
-| 26 | ✓ | [`plugins/plugin-dev/skills/plugin-structure/SKILL.md`](plugins/plugin-dev/skills/plugin-structure/SKILL.md) |
-| 27 | ✓ | [`plugins/plugin-dev/skills/skill-development/SKILL.md`](plugins/plugin-dev/skills/skill-development/SKILL.md) |
-| 28 | ✓ | [`plugins/project-artifact/skills/project-artifact/SKILL.md`](plugins/project-artifact/skills/project-artifact/SKILL.md) |
-| 29 | ✓ | [`plugins/receipts/skills/receipts/SKILL.md`](plugins/receipts/skills/receipts/SKILL.md) |
-| 30 | ✓ | [`plugins/session-report/skills/session-report/SKILL.md`](plugins/session-report/skills/session-report/SKILL.md) |
-| 31 | ✓ | [`plugins/skill-creator/skills/skill-creator/SKILL.md`](plugins/skill-creator/skills/skill-creator/SKILL.md) |
+| 17 | ✓ | [`plugins/math-proof/skills/siege/SKILL.md`](plugins/math-proof/skills/siege/SKILL.md) |
+| 18 | ✓ | [`plugins/math-proof/skills/solo/SKILL.md`](plugins/math-proof/skills/solo/SKILL.md) |
+| 19 | ✓ | [`plugins/mcp-server-dev/skills/build-mcp-app/SKILL.md`](plugins/mcp-server-dev/skills/build-mcp-app/SKILL.md) |
+| 20 | ✓ | [`plugins/mcp-server-dev/skills/build-mcp-server/SKILL.md`](plugins/mcp-server-dev/skills/build-mcp-server/SKILL.md) |
+| 21 | ✓ | [`plugins/mcp-server-dev/skills/build-mcpb/SKILL.md`](plugins/mcp-server-dev/skills/build-mcpb/SKILL.md) |
+| 22 | ✓ | [`plugins/playground/skills/playground/SKILL.md`](plugins/playground/skills/playground/SKILL.md) |
+| 23 | ✓ | [`plugins/plugin-dev/skills/agent-development/SKILL.md`](plugins/plugin-dev/skills/agent-development/SKILL.md) |
+| 24 | ✓ | [`plugins/plugin-dev/skills/command-development/SKILL.md`](plugins/plugin-dev/skills/command-development/SKILL.md) |
+| 25 | ✓ | [`plugins/plugin-dev/skills/hook-development/SKILL.md`](plugins/plugin-dev/skills/hook-development/SKILL.md) |
+| 26 | ✓ | [`plugins/plugin-dev/skills/mcp-integration/SKILL.md`](plugins/plugin-dev/skills/mcp-integration/SKILL.md) |
+| 27 | ✓ | [`plugins/plugin-dev/skills/plugin-settings/SKILL.md`](plugins/plugin-dev/skills/plugin-settings/SKILL.md) |
+| 28 | ✓ | [`plugins/plugin-dev/skills/plugin-structure/SKILL.md`](plugins/plugin-dev/skills/plugin-structure/SKILL.md) |
+| 29 | ✓ | [`plugins/plugin-dev/skills/skill-development/SKILL.md`](plugins/plugin-dev/skills/skill-development/SKILL.md) |
+| 30 | ✓ | [`plugins/project-artifact/skills/project-artifact/SKILL.md`](plugins/project-artifact/skills/project-artifact/SKILL.md) |
+| 31 | ✓ | [`plugins/receipts/skills/receipts/SKILL.md`](plugins/receipts/skills/receipts/SKILL.md) |
+| 32 | ✓ | [`plugins/session-report/skills/session-report/SKILL.md`](plugins/session-report/skills/session-report/SKILL.md) |
+| 33 | ✓ | [`plugins/skill-creator/skills/skill-creator/SKILL.md`](plugins/skill-creator/skills/skill-creator/SKILL.md) |
 
 ---
 

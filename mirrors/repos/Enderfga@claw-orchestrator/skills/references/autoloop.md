@@ -173,14 +173,14 @@ autoloop_stop({ "run_id": "my-run", "reason": "done" })
 
 ## Plugin tools
 
-| Tool                   | Args                                                                                                                                               | What                                                                                                                                    |
-| ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| Tool                   | Args                                                                                                                                                            | What                                                                                                                                |
+| ---------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
 | `autoloop_start`       | `run_id`, `workspace`, per-role `*_engine?`, `*_model?`, `*_effort?`, `*_custom_engine?`, `send_timeout_ms?`, `activity_lease_ms?`, `autoloop_hard_timeout_ms?` | Start a run; launches Planner and stores fixed role bindings and timeout controls. Each `custom` role requires its matching config. |
-| `autoloop_chat`        | `run_id`, `text`                                                                                                                                   | Send a chat message to the Planner; returns the Planner's reply.                                                                        |
-| `autoloop_status`      | `run_id`                                                                                                                                           | Current state (status, iter, push count, subagents_spawned).                                                                            |
-| `autoloop_list`        | —                                                                                                                                                  | All autoloop runs in the run store, live or not.                                                                                        |
-| `autoloop_stop`        | `run_id`, `reason?`                                                                                                                                | Terminate; stops Planner / Coder / Reviewer.                                                                                            |
-| `autoloop_reset_agent` | `run_id`, `agent` ('planner' / 'coder' / 'reviewer'), `force?`, `eager_restart?`                                                                   | Reset one subagent. Planner reset requires `force: true`.                                                                               |
+| `autoloop_chat`        | `run_id`, `text`                                                                                                                                                | Send a chat message to the Planner; returns the Planner's reply.                                                                    |
+| `autoloop_status`      | `run_id`                                                                                                                                                        | Current state (status, iter, push count, subagents_spawned).                                                                        |
+| `autoloop_list`        | —                                                                                                                                                               | All autoloop runs in the run store, live or not.                                                                                    |
+| `autoloop_stop`        | `run_id`, `reason?`                                                                                                                                             | Terminate; stops Planner / Coder / Reviewer.                                                                                        |
+| `autoloop_reset_agent` | `run_id`, `agent` ('planner' / 'coder' / 'reviewer'), `force?`, `eager_restart?`                                                                                | Reset one subagent. Planner reset requires `force: true`.                                                                           |
 
 ## Planner-emitted control tools
 
@@ -288,7 +288,9 @@ Treat that warning as the signal to start a fresh session.
 
 Subprocess deaths (Claude session lost), failed `git commit` in an iter, and
 other phase-bound failures surface as `phase_error` messages instead of
-silently masquerading as a "clarification request". The runner counts
+silently masquerading as a "clarification request". An empty or whitespace-only
+Coder reply is also a phase error. Only a non-empty reply without
+`iter_complete` is treated as a clarification request. The runner counts
 consecutive `phase_error`s and:
 
 1. Fires `on_phase_error` on each one (defaults to error / both channels).

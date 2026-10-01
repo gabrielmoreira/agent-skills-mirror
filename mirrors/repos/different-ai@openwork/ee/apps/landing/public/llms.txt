@@ -44,6 +44,9 @@ One URL brings the user's organization skills, plugins, and connections into any
 
 ### Machine-readable resources
 
+- OpenWork in Slack is **private alpha**, available only to approved organizations. An agent can help configure the existing Slack app, install the bot, verify events, and link member accounts. Guide: https://openworklabs.com/docs/slack/overview
+- Slack setup skill: https://openworklabs.com/.well-known/agent-skills/set-up-openwork-slack/SKILL.md. Preserve existing user OAuth and MCP settings; each member must authorize their own Slack account. Alpha access is enabled by a platform administrator.
+
 - MCP server card: https://openworklabs.com/.well-known/mcp/server-card.json (discovery: https://openworklabs.com/.well-known/mcp.json)
 - OAuth protected-resource metadata: https://api.openworklabs.com/.well-known/oauth-protected-resource/mcp/agent
 - OpenAPI (Den API): https://api.openworklabs.com/openapi.json

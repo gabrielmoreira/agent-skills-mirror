@@ -1,8 +1,8 @@
 ---
 name: agents-best-practices
-description: "Use this skill when designing, generating an MVP blueprint for, auditing, troubleshooting, refactoring, or explaining an agentic harness for any domain. Covers provider-neutral agent architecture for OpenAI, Anthropic, and OpenAI-compatible APIs: agent loops, tool design, record provenance, interactive presentation, user-memory lifecycles, environment-adaptive tools, speculative tool execution, late-bound capabilities, permissions, system prompts, planning, goals, context compaction, memory, skills, MCP/external connectors, public-board communications, hardware agents and board deployment, self-refining recursive harnesses, programmable context, continual refinement, observability, evals, prompt caching, agent-legible environments, feedback loops, and safety."
+description: "Use this skill when designing, generating an MVP blueprint for, auditing, troubleshooting, refactoring, or explaining an agentic harness for any domain. Covers provider-neutral agent architecture for OpenAI, Anthropic, and OpenAI-compatible APIs: agent loops, tool design, record provenance, interactive presentation, user-memory lifecycles, environment-adaptive tools, speculative tool execution, late-bound capabilities, permissions, system prompts, planning, goals, adaptive agent teams, context compaction, memory, skills, MCP/external connectors, public-board communications, hardware agents and board deployment, self-refining recursive harnesses, programmable context, continual refinement, observability, evals, prompt caching, agent-legible environments, feedback loops, and safety."
 metadata:
-  version: "1.10.0"
+  version: "1.11.0"
   scope: "provider-neutral-agent-harness"
   file_policy: "markdown-only"
 ---
@@ -54,6 +54,7 @@ Use this skill for prompts involving any of these intents:
 - design an agent for a partially known or changing environment using capability discovery, safe probing, runtime binding, schema verification, or drift invalidation;
 - reduce code-mode or programmatic-tool latency through speculative execution, partial-program analysis, futures, exact claim semantics, or cancellation of unused work;
 - create planning mode, workflow orchestration, goal mode, todo tracking, or long-running task behavior;
+- design collaborating agent teams with distinct approaches, shared work awareness, finding exchange, or evidence-driven reassignment;
 - add context compaction, memory, retrieval, scoped instructions, or prompt hierarchies;
 - design a recursive language model (RLM), programmable-context runtime, self-refining or continual harness, retained child agents, daemon-backed or scheduled agent, or executable skills;
 - build or install a hardware/embedded agent, flash an agent to a board, preserve device identity during an update, or debug its resource and wake behavior;
@@ -115,6 +116,12 @@ Use this mode only when the user explicitly asks for programmable context, recur
 
 Make the context representation, recursive unit, mutable state, promotion scope, lifecycle, budgets, validation probes, and rollback path explicit. Keep base authority, permission enforcement, credentials, budgets, and evaluation policy outside the mutable surface.
 
+## Adaptive Agent Team Mode
+
+Use this mode when the user requests collaborating teams that explore distinct approaches and change assignments as evidence develops. Keep it post-MVP: establish measured single-agent and ordinary parallel-worker baselines first, then read [adaptive-agent-teams.md](references/adaptive-agent-teams.md) with the workflow, recursive lifecycle, goal, and eval owners.
+
+Return the approach portfolio, work-overlap policy, communication dependencies, evidence-linked transitions, host authority, aggregate budget, and acceptance evidence. Use the profile's contracts and existing owners rather than repeating their manuals. Treat it as an architecture composition; published scale or outcomes do not establish a model change or general performance gain. Routine lookup tasks still use the single-loop MVP.
+
 ## Experimental Speculative Tool Execution Mode
 
 Use this mode only when the user explicitly asks to reduce latency by launching tool work before a generated program or action is complete. Establish measured sequential and ordinary committed-parallel baselines first, then read [speculative-tool-execution.md](references/speculative-tool-execution.md) together with the loop, tool, security, and eval references.
@@ -136,6 +143,7 @@ Require host-owned eligibility, permission at physical dispatch, isolated dispos
 - Read [prompt-caching-and-cost.md](references/prompt-caching-and-cost.md) for stable-prefix design, cache-aware context ordering, compaction/cache tradeoffs, telemetry, and cost control.
 - Read [planning-and-goals.md](references/planning-and-goals.md) to distinguish read-only planning mode from execution-time progress scaffolds, and for approval-gated execution, goals, checkpoints, and stopping conditions.
 - Read [workflow-orchestration.md](references/workflow-orchestration.md) for planner-generated workflows, bounded work packets, worker/verifier contexts, integration, durable workflow state, and orchestration anti-patterns.
+- Read [adaptive-agent-teams.md](references/adaptive-agent-teams.md) for post-MVP approach portfolios, shared work intentions, selective finding exchange, and evidence-linked team reallocation.
 - Read [self-refining-recursive-harnesses.md](references/self-refining-recursive-harnesses.md) for strict RLM and RLM-inspired patterns, programmable context, recursive execution units, retained children, continual refinement, executable skills, and long-running lifecycle controls.
 - Read [skills-and-connectors.md](references/skills-and-connectors.md) for Agent Skills, progressive disclosure, predictive loading, MCP, external connectors, tool search, and attachment strategy. For public-board communication, use its [public disclosure and publication contract](references/skills-and-connectors.md#agent-communication-via-public-boards).
 - Read [system-prompts-instructions.md](references/system-prompts-instructions.md) for system/developer/user instruction hierarchy and prompt templates.
@@ -167,6 +175,7 @@ When the user asks for architecture guidance, produce a concrete architecture, n
 14. **Legibility loop**: source-of-truth artifacts, validation signals, feedback capture, and recurring cleanup.
 15. **Advanced recursive/continual profile, when requested**: context handles, recursive unit, retained lifecycle, mutable state boundary, observed validation, promotion, and rollback.
 16. **Experimental speculative execution, when requested**: eligibility, exact claim identity, isolated state, waste budgets, cancellation evidence, and parity evaluation against speculation-off.
+17. **Adaptive agent teams, when requested**: distinct approach ownership, work-intent overlap and declared replication, communication dependence, versioned portfolio decisions, stale-result handling, and independently validated completion.
 
 For hardware requests, append the target/runtime inventory, installation route and exact write boundary, resource/deadline budget, preserved state and recovery plan, and evidence split between host checks and physical-board commissioning.
 

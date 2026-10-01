@@ -2,7 +2,6 @@
 name: dotnet-testing-advanced-webapi-integration-testing
 description: |
   ASP.NET Core WebApi 整合測試完整指南。當需要對 WebApi 端點進行整合測試或驗證 ProblemDetails 錯誤格式時使用。涵蓋 WebApplicationFactory、IExceptionHandler、Testcontainers 多容器編排、Flurl URL 建構與 AwesomeAssertions HTTP 驗證。
-  Make sure to use this skill whenever the user mentions WebApi integration testing, ProblemDetails, IExceptionHandler, Flurl, Respawn, or multi-container test orchestration, even if they don't explicitly ask for WebApi testing guidance.
   Keywords: webapi integration testing, WebApplicationFactory, asp.net core integration test, webapi 整合測試, IExceptionHandler, ProblemDetails, ValidationProblemDetails, AwesomeAssertions, Flurl, Respawn, Be201Created, Be400BadRequest, 多容器測試, Collection Fixture, 全域例外處理
 ---
 
@@ -52,6 +51,9 @@ FluentValidation 異常處理器實作 `IExceptionHandler` 介面，專門處理
 測試基礎設施由三個核心組件構成：
 
 - **TestWebApplicationFactory**：繼承 `WebApplicationFactory<Program>`，配置多容器（PostgreSQL + Redis）與 DI 替換（如 FakeTimeProvider）
+
+  > `FakeTimeProvider` 由 Collection 內所有測試共用，只能往前推；不要在每個測試開始時設回固定起點，時間斷言改以 `Factory.TimeProvider.GetUtcNow()` 推算。
+
 - **IntegrationTestCollection**：Collection Fixture 定義，確保容器共享
 - **IntegrationTestBase**：測試基底類別，提供 HttpClient、DatabaseManager、FlurlClient 與時間控制方法
 

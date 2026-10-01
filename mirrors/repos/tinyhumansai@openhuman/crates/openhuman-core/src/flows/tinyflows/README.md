@@ -45,9 +45,9 @@ security model); this README covers only the host seam.
     graph, output, or logs.
   - `code.rs`: `OpenHumanCode` (`CodeRunner`); runs JS/Python through
     `sandbox::execute_in_sandbox` under `CODE_RUN_TIMEOUT_SECS`.
-  - `state.rs`: `FlowStateStore` (`StateStore`) over
-    `flows::{kv_get,kv_set}`, namespaced per flow (`"flow:<id>"`) so saved
-    flows never collide on a state key.
+  - `StateStore` is `tinyflows_sqlite::flows::SqliteStateStore` (built in
+    `ops.rs`), namespaced per flow (`"flow:<id>"`) so saved flows never
+    collide on a state key.
   - `resolver.rs`: `OpenHumanWorkflowResolver` (`WorkflowResolver`);
     resolves a `sub_workflow` node's id to a stored workflow.
   - `tier.rs`: `enforce_node_tier_gate` / `gate_call_for_tier`: the
@@ -66,7 +66,7 @@ security model); this README covers only the host seam.
   `"flow"`, and `scope: "flow"` shares the `flow_namespace` the
   `flow_memory_*` agent tools use.
 - `observability.rs`: `tinyflows::observability::RunObserver` impls:
-  `TracingRunObserver` (log-only) and `FlowRunObserver`, which persists live
+  `FlowRunObserver`, which persists live
   steps via `flows::upsert_flow_run_step` and publishes
   `DomainEvent::FlowRunProgress` twice per non-trigger node so the frontend
   can render a run live.
@@ -100,8 +100,6 @@ new origin wrapper.
 `tinyflows_tests.rs` (capability-seam smoke tests against the real engine;
 note the real `HttpRequestTool` blocks loopback, so HTTP coverage asserts the
 SSRF/allowlist rejections rather than a mock round-trip),
-`checkpoint_compat_tests.rs` (proves the `tinyflows-sqlite` checkpoint store
-stays byte-compatible with the `tinyagents` backend it was ported from),
 `memory_node_e2e_tests.rs` (the `memory` node through the real engine,
 adapter, and on-disk store; kept apart from `tinyflows_tests.rs` because the
 unit tests only exercise error paths against an empty workspace), plus a

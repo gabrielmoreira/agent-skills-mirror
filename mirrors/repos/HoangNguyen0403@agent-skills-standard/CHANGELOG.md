@@ -7,6 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Quick Navigation
 
+## [Unreleased]
+
+**Category**: CLI Tool, Quality Engineering
+
+### Fixed
+
+- Managed skill package files and ownership-writer operations refuse pre-existing symlinks below the project root before payload writes, reads, backups, or pruning; package resources across selected agents are checked before the first package write. This does not cover unrelated direct root-document writes or concurrent filesystem swaps.
+- Removed a cross-project environment and credential-handling reference from the reusable Playwright CLI skill and four tracked agent install mirrors.
+
+## [common-v2.8.1] - 2026-09-30
+
+**Category**: Subagent-Driven Development and Plan Execution Gate
+
+### Added
+
+- `common-subagent-driven-development`: Orchestrates multi-task implementation plans by dispatching a fresh implementer subagent per task with independent review gates, preventing orchestrator context bloat. Includes cross-platform helper scripts (`sdd_workspace.py`, `task_brief.py`, `review_package.py`) and prompt templates for implementers, reviewers, and scoped re-reviewers.
+- Updated Agent Skills Routing Protocol (State 4) across rule generator templates (`AgentBridgeService.ts`), `.agents/rules/`, `.codex/rules/`, and `.github/instructions/`: Enforces the Plan Execution Confirmation Gate (Subagent-Driven vs. Inline) on multi-task implementation plans before direct file modifications.
+
+### Versions
+
+- **Common Skills**: `2.8.0` → `2.8.1`
 ## [cli-v2.6.5] - 2026-09-29
 
 **Category**: CLI Tool
@@ -72,6 +93,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Harness: capture CLI output through files (OpenCode truncated piped stdout), give `ags mcp snippets` a valid `.skillsrc`, run the specialist emitter from the repo so `tsx` resolves, and report the underlying error when a setup step fails.
 - Mark the vendored `.agents/skills/caveman*` skills and the new `cyber-*` Codex workflow wrappers `metadata.internal: true`, so `npx skills` lists exactly the 300 registry skills.
 - `interopRules` uses the js-yaml 5 namespace import (the default export was removed).
+
+## [workflows-v1.1.0]
+
+**Category**: Opt-in Stitch design workflows
+
+### Added
+
+- `review-stitch-design`: review a Google Stitch project against the family-UX rubric with an HTML audit, gate fixes on approval, and improve through `REFINE` variants and a new design system without touching original screens.
+- `create-stitch-design`: brief, linted `DESIGN.md`, new design system, phone and tablet screens, gated by `review-stitch-design`.
+- Opt-in design workflows section in `docs/sdlc-workflow-quick-reference.md`.
+
+### Versions
+
+- **Workflows**: `1.0.0` → `1.1.0`
+
+## [common-v2.8.0]
+
+**Category**: Google Stitch design and family UX
+
+### Added
+
+- `common-stitch-design`: Stitch MCP setup and tool safety (variants over overwrites, approval before destructive calls, instance ids for `apply_design_system`), `DESIGN.md` lint gate, prompting patterns, and observed Stitch behaviour.
+- `common-stitch-design/scripts/audit_html.js`: read-only audit of Stitch HTML exports for small text, small targets, unlabeled icon buttons, white-on-primary contrast, mixed language, multiple fonts, and inconsistent primaries; exit 0/3/1.
+- `common-family-ux`: six-axis rubric for parent and child surfaces (audience fit, accessibility, safety and trust, comfort, consistency, human feel) with child-surface rules for ages 3-6 and an AI-tells table.
+
+### Versions
+
+- **Common Skills**: `2.7.0` → `2.8.0`
 
 ## [common-v2.7.0]
 

@@ -30,6 +30,21 @@
    no-op for publishing. A failed run can be re-run; each step skips what is
    already published.
 
+## Native CPU portability
+
+Repository builds use `.cargo/config.toml` to pass `GGML_NATIVE=OFF` and
+`TRANSCRIBE_X86_CONSERVATIVE=ON` to transcribe-cpp-sys. This disables host-specific
+CPU tuning and optional x86 SIMD tiers: a binary built on a recent CI CPU can
+run on an older supported CPU. CI checks the compiled CMake cache on every
+release target with `scripts/check-native-cpu.py`. Model-free compilation alone
+does not prove CPU portability. The benchmark's AVX2 tool build is a separate
+measurement, not the portable release binary's performance guarantee.
+
+When redistributing a source build outside this checkout, set
+`TRANSCRIBE_CMAKE_ARGS="-DGGML_NATIVE=OFF -DTRANSCRIBE_X86_CONSERVATIVE=ON"`
+before building; Cargo's repository configuration is not inherited by downstream
+crates.io consumers.
+
 ## crates.io
 
 The `crates` job in `release.yml` runs after the release job succeeds and calls
@@ -37,10 +52,13 @@ The `crates` job in `release.yml` runs after the release job succeeds and calls
 (the two forks, `anymd-pdf`, `anymd-formats`, `anymd-core`, `anymd`) with the
 organization secret `CARGO_REGISTRY_TOKEN`, and skips any version already on
 crates.io. `set-version.ts` moves the workspace version and the internal
-`version` pins together; the forks keep the version of the upstream crate they
-patch (`anymd-pdf-extract` 0.12.1, `anymd-adobe-cmap-parser` 0.4.1), and their
+`version` pins together; the forks have their own versions
+(`anymd-pdf-extract` 0.12.2, `anymd-adobe-cmap-parser` 0.4.1), and their
 version is raised by hand in `vendor/*/Cargo.toml` (and in the `[workspace.dependencies]`
-pin) when the fork changes. CI packs every crate on each pull request
+pin) when the fork changes. `check:versions` compares each already-published fork
+with its crates.io package (sources, manifest, README and license), without
+compiling. A changed payload must have a new version and a matching workspace
+pin; registry errors fail the check. CI packs every crate on each pull request
 (`cargo package` for each crate) and fails a package over 9 MB (the limit is 10 MB).
 The token needs the scopes `publish-new` and `publish-update`.
 
@@ -69,3 +87,41 @@ launcher, so `citra` and `pdf-reader-mcp` behave exactly like `anymd`.
 Project site URLs do not redirect on rename. Renaming the repository moves the
 docs site path behind `websiteUrl` and `homepage`, and needs `base` in
 `docs/.vitepress/config.ts` updated with it.
+
+## Recover a partial release
+
+Re-running an old run keeps its original commit and workflow, so it cannot
+pick up a release fix merged afterward. For a fix on `main`, dispatch
+`release.yml` on `main` without changing the product version. npm and the
+GitHub release are skipped when that version already exists; the crates job
+publishes only missing versions. On a dispatch with no native artifacts, the
+image job downloads the two Linux tarballs from the matching GitHub release
+and stages them into `dist/amd64/anymd` and `dist/arm64/anymd`, with no Rust
+compile. `Dockerfile.release.dockerignore` includes those binaries and the root
+`LICENSE` in the build context. The image ships that file at
+`/usr/share/licenses/anymd/LICENSE`, including any bundled third-party notices,
+and the release job compares its contents with the checkout after publishing.
+The OCI metadata includes `org.opencontainers.image.licenses=MIT`.
+Ordinary pushes without new binaries skip the image job.
+
+## Python wheel payload
+
+`scripts/build-wheels.py` packages the same release binary as a scripts entry
+and includes `packages/pypi/anymd` as an importable Python package in that wheel.
+The wrapper never downloads another binary or implements conversion. Base
+requirements stay empty; `langchain` and `llamaindex` extras declare their
+optional core framework dependencies. All payload files are hashed in `RECORD`.
+No separate Python version or release workflow is introduced.
+
+CI runs the standard-library API/packaging tests, then installs a wheel built
+from its native binary with both extras and tests the actual adapters and small
+PDF/CSV fixtures. The release smoke checks both the installed CLI and Python
+API before `twine check`. Locally, use
+`python3 -m unittest discover -s packages/pypi/tests -v`; set `ANYMD_BIN` to an
+existing native binary for fixture tests and install the extras to run framework
+tests. Neither these checks nor the examples download models.
+
+PyPI uses the trusted publisher for owner `SylphxAI`, repository `anymd`,
+workflow `release.yml`, environment `pypi`. That publisher must be registered
+on PyPI before OIDC token exchange can succeed; an image/crates recovery
+dispatch has no new wheels and does not retry PyPI.

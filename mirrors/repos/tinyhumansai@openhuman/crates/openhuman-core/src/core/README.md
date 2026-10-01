@@ -49,7 +49,7 @@ logic. Every controller it exposes is implemented by a domain module under
 | `legacy_aliases.rs` | `resolve_legacy`: rewrites retired method names before dispatch; mirrors `app/src/services/rpcMethods.ts`'s `LEGACY_METHOD_ALIASES`. |
 | `observability.rs` | `report_error` + Sentry `before_send` filters that drop deterministic provider/updater noise. |
 | `log_redaction.rs` | `scrub_secrets`: regex secret scrubbing shared by the Sentry path and always-on log path. |
-| `rpc_log.rs` | `redact_params_for_log` (key-name redaction for the `[rpc:dispatch]` trace log in `dispatch.rs`) plus `format_request_id` / `summarize_rpc_result` / `redact_result_for_trace` helpers with no caller yet. |
+| `rpc_log.rs` | `redact_params_for_log` (key-name redaction for the `[rpc:dispatch]` trace log in `dispatch.rs`) |
 | `logging.rs` | `init_for_cli_run` / `init_for_embedded`: logger setup for each host kind. |
 | `shutdown.rs` | Graceful shutdown signal plumbing. |
 | `sentry_transport.rs` | Sentry client setup, gated by the `crash-reporting` feature. |

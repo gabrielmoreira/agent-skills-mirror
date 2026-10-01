@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `magnus919/agent-skills` — 26 default patterns, 8 followed patterns, 387 file(s) materialized.
+Mirror of `magnus919/agent-skills` — 26 default patterns, 8 followed patterns, 389 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `magnus919/agent-skills` — 26 default patterns, 8 followed patterns,
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 8 |
-| Files         | 387 |
+| Files         | 389 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -445,14 +445,16 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 377 | ✓ | [`yc-default-alive-calculator/SKILL.md`](yc-default-alive-calculator/SKILL.md) |
 | 378 | ✓ | [`yc-weekly-growth-compass/README.md`](yc-weekly-growth-compass/README.md) |
 | 379 | ✓ | [`yc-weekly-growth-compass/SKILL.md`](yc-weekly-growth-compass/SKILL.md) |
-| 380 | → | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
-| 381 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 382 | → | [`data-scientist/README.md`](data-scientist/README.md) |
-| 383 | → | [`docs/jev-ci-reference-runlog.md`](docs/jev-ci-reference-runlog.md) |
-| 384 | → | [`FAILURE-MODE-INDEX.md`](FAILURE-MODE-INDEX.md) |
-| 385 | → | [`LICENSE.md`](LICENSE.md) |
-| 386 | → | [`README.md`](README.md) |
-| 387 | → | [`references/skill-triggers.md`](references/skill-triggers.md) |
+| 380 | ✓ | [`youtube-thumbnail/README.md`](youtube-thumbnail/README.md) |
+| 381 | ✓ | [`youtube-thumbnail/SKILL.md`](youtube-thumbnail/SKILL.md) |
+| 382 | → | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
+| 383 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 384 | → | [`data-scientist/README.md`](data-scientist/README.md) |
+| 385 | → | [`docs/jev-ci-reference-runlog.md`](docs/jev-ci-reference-runlog.md) |
+| 386 | → | [`FAILURE-MODE-INDEX.md`](FAILURE-MODE-INDEX.md) |
+| 387 | → | [`LICENSE.md`](LICENSE.md) |
+| 388 | → | [`README.md`](README.md) |
+| 389 | → | [`references/skill-triggers.md`](references/skill-triggers.md) |
 
 ---
 

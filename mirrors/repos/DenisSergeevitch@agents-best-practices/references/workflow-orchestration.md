@@ -23,6 +23,8 @@ objective
 
 The important shift is that the plan is not held only in conversational context. The workflow is represented as a durable artifact or runtime object. A mature harness can inspect, approve, execute, pause, resume, and audit that object within the limits of its runtime.
 
+Bounded packets remain the unit here. For ongoing teams that own distinct approaches and revise their allocation during research, [adaptive agent teams](adaptive-agent-teams.md) owns the portfolio contracts. Reuse this reference for packet execution, verification, and integration rather than duplicating those mechanisms in the team profile.
+
 ## Workflow as orchestration program
 
 A concrete workflow is often closer to a generated program than to a prose plan. It stores the execution structure for a set of prompts:

@@ -35,13 +35,17 @@ constructed and executable but unadvertised: the agent sees one small tool,
   session-scoped listing (`render_pack_filtered` + `route_sentence`) is
   produced by the tinyagents policy middleware, which is the only layer that
   holds the session (see below).
-- `tools::PackRegistryHandle` is the late-bound, non-owning (`Weak`) view the
+- `tinyagents_harness::tool::packs::PackRegistryHandle` is the late-bound, non-owning (`Weak`) view the
   proxy dispatches through. It holds two registries: the durable tool `Arc`
   and the agent's `synthesized_tools` `Arc`, where every `delegate_*` tool
   lives. Each must be rebound after its `Arc` is replaced, or packed
   tools degrade to "skill unavailable" / "no tool in skill". The handle rides
   on `Tool::host_extension` and is read back by
-  `tools::host_extensions::pack_registry_handle`.
+  `tools::host_extensions::pack_registry_handle`. The proxy itself
+  (`UseSkillTool`, `PackCatalog`, `ToolPack`, the listing/scoping renderers) lives in
+  `tinyagents_harness::tool::packs`; this module keeps the pack table
+  (`registry::PACKS`, handed over as `registry::CATALOG`), the group posture and the
+  registry binding.
 - `ops::strip_packed_from_visible` does the actual compression: it removes a
   pack's tool names from an agent's advertised `visible` set (only those whose
   group is `Withheld`) and adds `use_skill` back in only if something was
@@ -119,8 +123,11 @@ its schemas.
 
 Running an installed skill is not a pack concern: the orchestrator uses its
 own `run_workflow`. The install hand-off `setup_skills` (into `skill_setup`)
-stays unpacked on the orchestrator's belt
-(`DELIBERATELY_UNPACKED_HANDOFFS`).
+is a member of the `skills` pack, like the other packed hand-offs
+(`build_workflow`, `manage_tasks`): it was ~270 tokens on every orchestrator
+request for a family used a few times a week. Being packed, it no longer
+closes the `skills` pack through `ops::closed_by_direct_handoff`, so the
+listing offers the hand-off beside the raw registry tools.
 
 ## Called by
 

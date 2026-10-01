@@ -1,6 +1,6 @@
 ---
 name: recipe-scaling
-description: Scale recipes across portions, batch size, equipment, timing, heat transfer, seasoning, and service workflow without blindly multiplying every value.
+description: Scale recipes across portions, batch size, equipment, timing, heat transfer, seasoning, and service workflow without blindly multiplying every value. Use for recipe-scaling requests even when the recipe or original or target yield is missing, and for diagnosing a changed result after scaling a recipe.
 license: MIT
 ---
 

@@ -91,6 +91,56 @@ checks and should be paired with an outcome check or substantive rubric.
 > `"evidence_log": false` to disable it; setting `"redact_secrets": false`
 > deliberately disables this defense-in-depth redaction.
 
+### Optimizer feedback boundary
+
+Judge evidence and optimizer feedback have different trust and retention needs.
+`ReplayResult.fail_reason` and `judge_rationale` retain the raw scoring evidence
+for replay results and audit surfaces such as diagnostics and `evidence.jsonl`.
+Reflection, contrastive reflection, and slow update instead consume
+`optimizer_feedback`, which is a semantic projection intended to describe the
+user-visible behavior to improve.
+
+For a rule judge, the separation looks like this:
+
+| Stage | Example |
+|---|---|
+| Mined check | `{"op":"regex","arg":"(?im)^\\s*ROUTE:...$","description":"Route recurring consultation requests through the consultation utility."}` |
+| Raw audit evidence | `failed: regex=(?im)^\s*ROUTE:...$` |
+| Before this boundary | The raw failure could be copied into reflection, encouraging a rule that imitates the regex. |
+| Optimizer feedback now | `Route recurring consultation requests through the consultation utility.` |
+| Reviewable proposal | A general routing instruction, without the regex or check expression. |
+
+The deterministic integration regression in
+`tests/test_optimizer_feedback_flow.py` carries that description through mining,
+replay, reflection, the validation gate, and staging: its synthetic rule score
+moves from 0.0 to 1.0 while the proposal remains free of the regex. That proves
+useful signal survives this specific rule-judge path; it is not evidence that
+optimization quality is preserved for every judge type or real workload.
+
+Descriptions are a targeted projection, not a universal sanitizer. They are
+expected to be trusted, operator- or miner-provided semantic statements. A regex
+description that literally copies its pattern is rejected, but arbitrary prose
+may still contain unsafe, sensitive, misleading, or prompt-like content. Do not
+treat this channel as an adversarial-input boundary, and continue to review mined
+tasks and staged proposals before adoption. Raw evidence files remain sensitive
+local artifacts even though they are excluded from optimizer prompts.
+
+Non-rule judges have no structured check from which the engine can reliably
+derive a safe semantic explanation. A failed exact, rubric, or legacy
+deserialized result therefore receives the generic optimizer message:
+
+```text
+The response did not satisfy the task's evaluation criteria.
+```
+
+This fail-closed fallback prevents an exact/rubric judge rationale such as
+`private-evaluator-expression: expected internal label X` from becoming learning
+context, but it also removes potentially useful information about how the answer
+was deficient. The change contains verifier leakage; it does **not** establish
+that optimization quality is preserved for non-rule tasks. Restoring richer
+feedback requires a future typed, explicitly learning-safe feedback API rather
+than reusing raw judge rationale.
+
 ## How to use it
 
 ### Quickest path: the `skillopt-sleep` CLI (pip)

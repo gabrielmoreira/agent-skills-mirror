@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `23blocks-OS/ai-maestro` — 26 default patterns, 44 followed patterns, 54 file(s) materialized.
+Mirror of `23blocks-OS/ai-maestro` — 26 default patterns, 47 followed patterns, 57 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `23blocks-OS/ai-maestro` — 26 default patterns, 44 followed patterns
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 44 |
-| Files         | 54 |
+| Followed pats | 47 |
+| Files         | 57 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -75,6 +75,9 @@ Mirror of `23blocks-OS/ai-maestro` — 26 default patterns, 44 followed patterns
 - `backlog/F016-context-budget.md`
 - `backlog/F017-context-pruning-proxy.md`
 - `backlog/F018-cheap-models-for-tool-work.md`
+- `backlog/F019-effort-per-agent.md`
+- `backlog/F020-cold-wakes.md`
+- `backlog/F021-action-instruction-audit.md`
 - `backlog/B001-multi-client-terminal-sizing.md`
 - `backlog/B002-wterm-and-ws-updates.md`
 - `backlog/B003-option-click-missing-enter.md`
@@ -137,25 +140,28 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 33 | → | [`backlog/F016-context-budget.md`](backlog/F016-context-budget.md) |
 | 34 | → | [`backlog/F017-context-pruning-proxy.md`](backlog/F017-context-pruning-proxy.md) |
 | 35 | → | [`backlog/F018-cheap-models-for-tool-work.md`](backlog/F018-cheap-models-for-tool-work.md) |
-| 36 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 37 | → | [`docs/AGENT-COMMUNICATION-ARCHITECTURE.md`](docs/AGENT-COMMUNICATION-ARCHITECTURE.md) |
-| 38 | → | [`docs/AGENT-INTELLIGENCE.md`](docs/AGENT-INTELLIGENCE.md) |
-| 39 | → | [`docs/AGENT-MESSAGING-GUIDE.md`](docs/AGENT-MESSAGING-GUIDE.md) |
-| 40 | → | [`docs/CEREBELLUM.md`](docs/CEREBELLUM.md) |
-| 41 | → | [`docs/CHAT-ARCHITECTURE.md`](docs/CHAT-ARCHITECTURE.md) |
-| 42 | → | [`docs/CONCEPTS.md`](docs/CONCEPTS.md) |
-| 43 | → | [`docs/ECOSYSTEM.md`](docs/ECOSYSTEM.md) |
-| 44 | → | [`docs/LONG-TERM-MEMORY.md`](docs/LONG-TERM-MEMORY.md) |
-| 45 | → | [`docs/NETWORK-ACCESS.md`](docs/NETWORK-ACCESS.md) |
-| 46 | → | [`docs/OPERATIONS-GUIDE.md`](docs/OPERATIONS-GUIDE.md) |
-| 47 | → | [`docs/QUICKSTART.md`](docs/QUICKSTART.md) |
-| 48 | → | [`docs/REQUIREMENTS.md`](docs/REQUIREMENTS.md) |
-| 49 | → | [`docs/SETUP-TUTORIAL.md`](docs/SETUP-TUTORIAL.md) |
-| 50 | → | [`docs/TROUBLESHOOTING.md`](docs/TROUBLESHOOTING.md) |
-| 51 | → | [`docs/USE-CASES.md`](docs/USE-CASES.md) |
-| 52 | → | [`docs/WINDOWS-INSTALLATION.md`](docs/WINDOWS-INSTALLATION.md) |
-| 53 | → | [`README.md`](README.md) |
-| 54 | → | [`SECURITY.md`](SECURITY.md) |
+| 36 | → | [`backlog/F019-effort-per-agent.md`](backlog/F019-effort-per-agent.md) |
+| 37 | → | [`backlog/F020-cold-wakes.md`](backlog/F020-cold-wakes.md) |
+| 38 | → | [`backlog/F021-action-instruction-audit.md`](backlog/F021-action-instruction-audit.md) |
+| 39 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 40 | → | [`docs/AGENT-COMMUNICATION-ARCHITECTURE.md`](docs/AGENT-COMMUNICATION-ARCHITECTURE.md) |
+| 41 | → | [`docs/AGENT-INTELLIGENCE.md`](docs/AGENT-INTELLIGENCE.md) |
+| 42 | → | [`docs/AGENT-MESSAGING-GUIDE.md`](docs/AGENT-MESSAGING-GUIDE.md) |
+| 43 | → | [`docs/CEREBELLUM.md`](docs/CEREBELLUM.md) |
+| 44 | → | [`docs/CHAT-ARCHITECTURE.md`](docs/CHAT-ARCHITECTURE.md) |
+| 45 | → | [`docs/CONCEPTS.md`](docs/CONCEPTS.md) |
+| 46 | → | [`docs/ECOSYSTEM.md`](docs/ECOSYSTEM.md) |
+| 47 | → | [`docs/LONG-TERM-MEMORY.md`](docs/LONG-TERM-MEMORY.md) |
+| 48 | → | [`docs/NETWORK-ACCESS.md`](docs/NETWORK-ACCESS.md) |
+| 49 | → | [`docs/OPERATIONS-GUIDE.md`](docs/OPERATIONS-GUIDE.md) |
+| 50 | → | [`docs/QUICKSTART.md`](docs/QUICKSTART.md) |
+| 51 | → | [`docs/REQUIREMENTS.md`](docs/REQUIREMENTS.md) |
+| 52 | → | [`docs/SETUP-TUTORIAL.md`](docs/SETUP-TUTORIAL.md) |
+| 53 | → | [`docs/TROUBLESHOOTING.md`](docs/TROUBLESHOOTING.md) |
+| 54 | → | [`docs/USE-CASES.md`](docs/USE-CASES.md) |
+| 55 | → | [`docs/WINDOWS-INSTALLATION.md`](docs/WINDOWS-INSTALLATION.md) |
+| 56 | → | [`README.md`](README.md) |
+| 57 | → | [`SECURITY.md`](SECURITY.md) |
 
 ---
 

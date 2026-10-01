@@ -65,6 +65,10 @@ whitespace. An empty present
 source uses line 1, column 1, and an empty excerpt; empty physical lines also
 use an empty excerpt at column 1. Source identity remains mandatory.
 
+Binary deletions remain in scope as Git deletion metadata; their former contents
+are not included or reviewed. Each local transition is checked independently:
+deleting a file in the working tree cannot hide a staged binary change.
+
 Finding locations may use native absolute paths that resolve inside the reviewed
 repository; these become repository-relative paths before scope and attribution
 checks, preserving a changed symlink's path when its target is also inside.
@@ -150,12 +154,13 @@ it or Codex is unavailable for the review; report the concrete availability fail
 before switching. Do not switch because a review is slow, rate-limited, or returns
 findings, or to bypass a safety refusal or isolation failure.
 
-Codex defaults to `gpt-6-sol`, high reasoning, with a `gpt-6-luna` retry
-only for an account-access failure. Explicit `gpt-6-sol` selections use the same
-retry; other explicit models, including Luna and Astra, have no model fallback.
+Codex defaults to `gpt-6.1-sol`, high reasoning, with a single `gpt-6-sol` retry
+only for an account-access failure. Explicit `gpt-6.1-sol` selections use the same
+retry. Explicit `gpt-6-sol` selections retain their access-only `gpt-6-luna` retry;
+other explicit models, including Luna and Astra, have no model fallback.
 Explicit `gpt-5.6-sol` selections retain their access-only `gpt-5.6-terra` retry.
-GPT-6 Sol and Luna reject unsupported `minimal` effort before review preparation;
-an effort-only override no longer selects an older model.
+GPT-6.1 Sol rejects `none` and `minimal` effort before review preparation;
+GPT-6 Sol and Luna reject `minimal`. An effort-only override keeps the default model.
 Honor explicit user engine/model choices.
 The helper does not automatically fall back between engines.
 
@@ -170,14 +175,16 @@ GPT-6 Astra without a model fallback, select it explicitly:
 "$AUTOREVIEW" --mode local --model gpt-6-astra --thinking high
 ```
 
-GPT-6 Sol and Luna support `none`, `low`, `medium`, `high`, `xhigh`, and `max`;
-neither supports `minimal`. Astra also excludes `none`. AutoReview defaults to
+GPT-6.1 Sol and GPT-6 Astra support `low`, `medium`, `high`, `xhigh`, and `max`;
+neither supports `none` or `minimal`. GPT-6 Sol and Luna additionally support `none`,
+but not `minimal`. AutoReview defaults to
 `high` and does not fall back from an explicit Luna or Astra selection.
 Codex's `ultra` mode uses automatic
 delegation and is outside this helper's supported effort levels. Use `max`
 for its deepest supported review. For EU data residency, use
 `--codex-speed default`; GPT-6 fast mode is unavailable there.
-See the [GPT-6 Sol](https://developers.openai.com/api/docs/models/gpt-6-sol) and
+See the [GPT-6.1 Sol](https://developers.openai.com/api/docs/models/gpt-6.1-sol),
+[GPT-6 Sol](https://developers.openai.com/api/docs/models/gpt-6-sol), and
 [GPT-6 Luna](https://developers.openai.com/api/docs/models/gpt-6-luna) model docs
 and [Codex reasoning modes](https://learn.chatgpt.com/docs/models#know-when-to-use-max-or-ultra).
 
@@ -250,8 +257,10 @@ Every pass receives the path, media type, byte count and SHA-256 manifest alongs
 the image attachments and text diff. Image findings use the original path and line 1.
 Text-only review does not require Pillow.
 
-Other binaries, modified/deleted images, local/commit image changes and image review
-with other engines remain unsupported and fail closed. Missing Pillow or provider
+Binary deletions, including images, are reviewed as deletion metadata in every
+mode without image attachments or Pillow. Other binaries, modified images,
+local/commit image additions or modifications, and image review with other engines
+remain unsupported and fail closed. Missing Pillow or provider
 image limits fail the review rather than silently dropping assets. Sensitive-path,
 source-mutation, authentication and sandbox controls remain enabled.
 

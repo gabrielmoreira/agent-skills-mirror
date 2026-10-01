@@ -165,7 +165,7 @@ credit-note.js:1-19 ~ invoice.js:1-17 [~0.75 ast]
 
 - `console`: `Clone found (javascript, renamed)`, `Clone found (javascript, similar (gap) ~0.91)`, `Clone found (javascript, similar (ast) ~0.75)`.
 - `json`: `"kind": "exact" | "renamed" | "similar"`, plus `"similarity"` and `"method": "gap" | "ast"` for similar clones.
-- `sarif`: rules `jscpd/duplicate-code`, `jscpd/renamed-code`, `jscpd/similar-code`; Code Climate uses the same three `check_name` values.
+- `sarif`: rules `jscpd/duplicate-code`, `jscpd/renamed-code`, `jscpd/similar-code` (clones merged across a gap), `jscpd/similar-function` (functions paired by `--similarity`) and `jscpd/semantic-code` (`--semantic`); Code Climate uses the same `check_name` values.
 - A default run reports only `exact` clones and its output is unchanged by these features.
 - Normalized runs produce different clone fingerprints than exact runs: keep a separate `--baseline` file per configuration.
 
@@ -234,7 +234,7 @@ npx jscpd --compare ios/ android/ -r console-full                          # par
 npx jscpd --compare python-lib/ rust-lib/ -r json -o .jscpd-compare --silent  # jscpd-compare.json for an agent
 ```
 
-Functions pair by code first (each is the other's closest match), then by name when the names match once case and underscores are ignored and the code is similar enough. Every pair has its similarity and a level (`high`, `medium`, `low`) on the scale of the model, and the default report lists the pairs under other names on their own. `--min-tokens` defaults to 30 here. Reporters: `console`, `console-full`, `json`, `markdown`. See the **[compare-codebases](../compare-codebases/SKILL.md)** skill for how the comparison works and how to check it, and **[code-migration](../code-migration/SKILL.md)** for porting code with it.
+Functions pair by code first (each is the other's closest match), then by name when the names match once case and underscores are ignored and the code is similar enough. Every pair has its similarity and a level (`high`, `medium`, `low`) on the scale of the model, and the default report lists the pairs under other names on their own. jscpd measures tests and code in two blocks and pairs a test only with a test. `--min-tokens` defaults to 30 here. Reporters: `console`, `console-full`, `json`, `markdown`. See the **[compare-codebases](../compare-codebases/SKILL.md)** skill for how the comparison works and how to check it, and **[code-migration](../code-migration/SKILL.md)** for porting code with it.
 
 ## Configuration File
 

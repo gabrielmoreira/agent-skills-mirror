@@ -188,6 +188,12 @@ guessing from logs.
   `openhuman-core agent dump-prompt --agent <id> --json --with-tools`
   (`scripts/debug-agent-prompts.sh`); the proxy shows the request the harness
   assembles from it per turn.
+- `pnpm debug breakdown <req-NNN.json> --response <res-NNN.txt>`
+  (`scripts/debug/prompt-breakdown.mjs`) prices one captured request: each
+  system-prompt section, each tool schema (description vs parameters) and each
+  message, in o200k tokens calibrated to the provider's `usage.prompt_tokens`,
+  plus paragraphs the request pays for twice. Capture with
+  `CAPTURE_ALL=1 CAPTURE_RESPONSES=1` so the response carries the usage.
 
 ## Configuration and security
 
@@ -328,7 +334,10 @@ Additional rules:
   `openhuman_rpc::server::install_cli_server()` before `run_core_from_args`.
   Domain-owned HTTP handlers the router mounts (`inference::http`, the
   dictation WebSocket) stay in their domains behind core's `http-server`
-  feature.
+  feature. The `http_host` static-directory file server lives here too
+  (`openhuman_rpc::http_host`); `install_cli_server()` and
+  `build_core_http_router()` register its `http_host.*` controllers as a core
+  extension, so a host without this crate has no `http_host` surface.
 
 ## Tool, harness, and runtime boundaries
 

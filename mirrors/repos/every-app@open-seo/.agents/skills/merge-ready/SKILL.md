@@ -25,7 +25,7 @@ This skill composes with feature work — it is not only a review pass:
 
 ## 2. Multi-axis subagent review
 
-Spawn independent review subagents **in parallel**, one per axis, each given repo access and the complete branch scope:
+Spawn independent review subagents **in parallel**, one per axis, each given repo access, `docs/maintainers/review-guidelines.md` as required reading (hard invariants plus the false-positive controls for deployment modes, fixtures, and generated files), and the complete branch scope:
 
 - committed changes: `git diff origin/main...HEAD`
 - staged changes: `git diff --cached`
@@ -50,8 +50,8 @@ For each `blocker` and `should-fix` finding, spawn verification subagents (in pa
 
 After verification, route durable learnings without forcing every review to change policy:
 
-- If an **APPLY** or **APPLY-MODIFIED** finding reveals a recurring or high-risk repository invariant that existing `.greptile/` context and CI do not capture, use `maintain-greptile-rules` and apply its promotion bar.
-- Keep one-off bugs as code fixes and regression tests. Put deterministic mechanical checks in CI or lint instead of Greptile.
+- If an **APPLY** or **APPLY-MODIFIED** finding reveals a recurring or high-risk repository invariant that `docs/maintainers/review-guidelines.md` and CI do not capture, add a short paragraph there. A finding is evidence to evaluate, not automatically a rule.
+- Keep one-off bugs as code fixes and regression tests. Put deterministic mechanical checks in CI or lint instead of review prose.
 - When a small tooling, documentation, or workflow frustration occurs, use `papercuts` to append it to `.agents/PAPERCUTS.md`; do not derail merge-ready work to fix it.
 
 ## 4. Fix, check, loop

@@ -35,7 +35,7 @@ replay. The welcome migration is guarded by
 - `ops/`: conversation, message, title, usage, transcript, and turn-state ops.
 - `schemas/`: controller schemas and thin handlers.
 - `turn_state/`: persisted turn snapshots and the progress-event mirror.
-- `transcript_view/`: session transcript projection for the renderer.
+- Transcript projection for the renderer lives in `tinyagents_session::transcript::view`; `ops/transcript.rs` serves it over RPC.
 - `welcome_migration.rs`: one-shot legacy conversation migration.
 
 Agent goal and todo integration lives in `crate::agent::{goals,todos}` and is

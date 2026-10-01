@@ -119,7 +119,7 @@ on why it inverts. The speed bump is deliberate.
 uv run python scripts/utils/render_prompt.py --mode ptc --diff
 
 # Resolve the level from a real model, as runtime would
-uv run python scripts/utils/render_prompt.py --mode ptc --model claude-opus-5
+uv run python scripts/utils/render_prompt.py --mode ptc --model claude-opus-5-5
 ```
 
 `test_lean_subset_invariant.py` enforces the subset property across PTC, Flash,

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `ageerle/ruoyi-ai` — 26 default patterns, 0 followed patterns, 6 file(s) materialized.
+Mirror of `ageerle/ruoyi-ai` — 26 default patterns, 0 followed patterns, 13 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `ageerle/ruoyi-ai` — 26 default patterns, 0 followed patterns, 6 fil
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 6 |
+| Files         | 13 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -65,6 +65,13 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 4 | ✓ | [`ruoyi-modules/ruoyi-chat/src/main/resources/coding-harness/skills/repository-investigation/SKILL.md`](ruoyi-modules/ruoyi-chat/src/main/resources/coding-harness/skills/repository-investigation/SKILL.md) |
 | 5 | ✓ | [`ruoyi-modules/ruoyi-chat/src/main/resources/coding-harness/skills/safe-refactoring/SKILL.md`](ruoyi-modules/ruoyi-chat/src/main/resources/coding-harness/skills/safe-refactoring/SKILL.md) |
 | 6 | ✓ | [`ruoyi-modules/ruoyi-chat/src/main/resources/coding-harness/skills/verification/SKILL.md`](ruoyi-modules/ruoyi-chat/src/main/resources/coding-harness/skills/verification/SKILL.md) |
+| 7 | ✓ | [`ruoyi-modules/ruoyi-chat/src/main/resources/short-drama/skills/director-blocking/SKILL.md`](ruoyi-modules/ruoyi-chat/src/main/resources/short-drama/skills/director-blocking/SKILL.md) |
+| 8 | ✓ | [`ruoyi-modules/ruoyi-chat/src/main/resources/short-drama/skills/director-review/SKILL.md`](ruoyi-modules/ruoyi-chat/src/main/resources/short-drama/skills/director-review/SKILL.md) |
+| 9 | ✓ | [`ruoyi-modules/ruoyi-chat/src/main/resources/short-drama/skills/emotional-dialogue/SKILL.md`](ruoyi-modules/ruoyi-chat/src/main/resources/short-drama/skills/emotional-dialogue/SKILL.md) |
+| 10 | ✓ | [`ruoyi-modules/ruoyi-chat/src/main/resources/short-drama/skills/real-material/SKILL.md`](ruoyi-modules/ruoyi-chat/src/main/resources/short-drama/skills/real-material/SKILL.md) |
+| 11 | ✓ | [`ruoyi-modules/ruoyi-chat/src/main/resources/short-drama/skills/story-causality/SKILL.md`](ruoyi-modules/ruoyi-chat/src/main/resources/short-drama/skills/story-causality/SKILL.md) |
+| 12 | ✓ | [`ruoyi-modules/ruoyi-chat/src/main/resources/short-drama/skills/video-continuity/SKILL.md`](ruoyi-modules/ruoyi-chat/src/main/resources/short-drama/skills/video-continuity/SKILL.md) |
+| 13 | ✓ | [`ruoyi-modules/ruoyi-chat/src/main/resources/short-drama/skills/visual-world/SKILL.md`](ruoyi-modules/ruoyi-chat/src/main/resources/short-drama/skills/visual-world/SKILL.md) |
 
 ---
 

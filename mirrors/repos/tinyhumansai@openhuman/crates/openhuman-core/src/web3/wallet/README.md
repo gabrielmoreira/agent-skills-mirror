@@ -96,7 +96,7 @@ Namespace `wallet` (method form `openhuman.wallet_<function>`), 13 controllers r
 | `network_defaults` | RPC/explorer/capability flags + asset catalogs per chain. |
 | `supported_assets` | Built-in asset catalog including default EVM ERC-20s / BEP20s. |
 | `encode_erc20_transfer` | Encode `transfer(address,uint256)` calldata (EVM only). |
-| `chain_status` | Per-chain readiness + active RPC URL. |
+| `chain_status` | Per-chain readiness + active RPC URL. An account's endpoint is probed (chain tip) through the transport; a failure reports `missing` with `error`. |
 | `prepare_transfer` | Quote a native/token transfer (all four chains). |
 | `execute_prepared` | Confirm (`confirmed: true`) and execute a quote by `quoteId` (tx send). |
 | `tx_status` | Check a transaction's lifecycle state (pending/confirmed/failed/not_found) by hash. |

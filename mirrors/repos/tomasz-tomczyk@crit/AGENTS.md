@@ -228,6 +228,7 @@ Session-scoped:
 
 - `GET  /api/health` — liveness probe (no readiness gate; used for daemon health checks); `{status, browser_clients, api_version}` — bump `APIVersion` only for breaking HTTP API changes; missing `api_version` = 0
 - `GET  /api/qr` — QR code for current shared URL
+- `POST /api/shutdown?pid=<daemon pid>` - graceful stop, same path as SIGTERM; CLI-only (403 on `Sec-Fetch-Site`/`Origin`), 409 when `pid` is another daemon's (checked before readiness, so also during init)
 - `GET  /api/session` — session metadata
 - `GET  /api/config` — `{share_url, hosted_url, delete_token, version, latest_version, ...}`
 - `GET  /api/review-cycle` — review-cycle metadata (round number, edits-since-last)
@@ -355,8 +356,9 @@ When the agent runs `crit` again (or calls `POST /api/round-complete`):
 2. **Subsequent `crit`**: connects to existing daemon (same cwd + args), signals round-complete, blocks
 3. **`crit plan.md`**: looks up daemon by hash(cwd + "plan.md") — reuses if alive, starts new if dead
 4. **Ctrl+C**: kills the daemon the client started
-5. **`crit stop`**: kills daemon for current cwd; `crit stop --all` kills every daemon
-6. **Lifetime**: daemon runs until killed (Ctrl+C, `crit stop`, or SIGINT/SIGTERM/SIGHUP). No idle timeout — walking away from a review session is fine.
+5. **`crit stop`**: stops daemon for current cwd; `crit stop --all` stops every daemon. Both ask for a graceful stop via `POST /api/shutdown` first and fall back to signals
+6. **Approve**: the approving client asks for `POST /api/shutdown`, waits for the daemon to exit, and only then applies `cleanup_on_approve`, under the session lock and only if no other daemon took the key over. A stopping daemon can still write the review, so never remove it earlier
+7. **Lifetime**: daemon runs until approved or killed (Ctrl+C, `crit stop`, or SIGINT/SIGTERM/SIGHUP). No idle timeout — walking away from a review session is fine.
 
 ### Deferred initialization & readiness
 

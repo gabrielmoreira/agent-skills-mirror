@@ -19,26 +19,52 @@ workspace-keyed `for_config` lookup that resolves which driver backs a given
 workspace, reached through `CoreContext::memory_binding`). Both are described
 in the top-level [`memory/README.md`](../README.md#wiring).
 
-## Pluggable engines, and how far that goes today
+## Pluggable engines
 
-Memory is one of this project's pluggable-engine subsystems, and the config
-shape for it already exists: `[subsystems.memory] driver` (or the
-`OPENHUMAN_MEMORY_DRIVER` env override) names which driver a workspace should
-bind to. `tinymemory-api` (vendored at `vendor/tinymemory/`) defines a
-driver-neutral `MemoryProvider` trait and ships adapter crates for six remote
-engines under `vendor/tinymemory/crates/tinymemory-remote/`: Supermemory,
-Mem0, Cognee, CortexDB, AgentMemory, and LivingBrain.
+`[subsystems.memory] driver` (or the `OPENHUMAN_MEMORY_DRIVER` env override)
+names which driver a workspace binds. The user-facing switch is the
+`memory.engines_list` / `engine_get` / `engine_set` / `engine_migrate` /
+`engine_migrate_status` RPCs (`memory/ops/engine.rs`,
+`memory/ops/engine_migrate.rs`), behind the `memory-remote` Cargo gate.
 
-What `binding::admit` actually accepts is narrower than that adapter list. It
-only binds the compiled TinyMemory module (registry id `tinymemory`, with
-`tinycortex` kept as a legacy config alias) or the `null` fallback provider. A
-driver id configured under `[subsystems.memory.drivers.<id>]` for one of the
-remote engines above is refused with "external driver transport is not
-implemented yet." TinyCortex is the memory engine every OpenHuman install
-actually runs; the config surface for the rest is in place ahead of the
-wiring that will make it switch engines. See
-[engines.md](../../../../../gitbooks/developing/engines.md) for how engine
-selection works across subsystems.
+`binding::admit` accepts:
+
+- the compiled TinyMemory module (`tinymemory`, with `tinycortex` kept as a
+  legacy alias) and the `null` provider, as before;
+- `tinyhumans`, first-party: no `drivers` entry, implicitly trusted, endpoint
+  forced to the backend origin, credential a live bearer read from the host's
+  API key or session on every request (`memory/binding_remote.rs`);
+- `supermemory`, `mem0`, `cognee`, `cortex`, `agentmemory` configured
+  `class = "external"` with `trust_state = "trusted"`, endpoint and deployment
+  from the entry and the key from the keychain through
+  `credential_ref = "keychain:memory-<id>"`.
+
+Everything else, and every external driver in a build without `memory-remote`,
+is refused and falls back to `null` loudly (`MemoryDriverBindFailed`, the
+fallback in `provider_status`). `binding::rebind` applies a switch in process
+and publishes `MemoryDriverChanged`.
+
+### What degrades on a remote engine
+
+The remote engines advertise the three mandatory families plus what their
+dialect adds (CortexDB and TinyHumans: document/conversation/learning/event
+ingest and `answer`; Mem0: conversation ingest and graph; Cognee: graph). The
+module-only surfaces (`documents`, `tree`, `sources`, `entities`, `people`,
+`maintenance`, `goals`, `tool_memory`) are absent from those engines. Their RPCs
+are capability-gated out of the registry when a context is ambient, and answer
+"memory driver does not support the ... family" otherwise. `provider_status`,
+the engine RPCs and the mandatory core/recall RPCs are never gated.
+
+Two host lanes read the mandatory recall on such an engine, and an engine that
+ranks without scoring (hosted CortexDB) changes what they can do. Auto-recall's
+notes leg keeps the engine's first `AUTO_RECALL_UNSCORED_NOTES` hits instead of
+flooring similarities that all read 0.0 (`memory/auto_recall`), and a refused
+lookup puts its reason in the block (`auto_recall/refusal.rs`). Situational
+preferences and the contradiction check (`memory/preferences`) cannot judge
+relevance without a score and answer nothing. A connector sync resolves the
+Sources sink before it asks the connector for pages, because the connector
+saves its cursor as it pages and records fetched for a driver without the
+family would never be fetched again.
 
 ## Where next
 

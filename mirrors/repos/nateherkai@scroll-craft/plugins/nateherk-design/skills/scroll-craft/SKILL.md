@@ -53,7 +53,7 @@ Four rules follow from that, and they are the spine of this skill:
    deliberately or every build inherits the same skeleton. The first four builds
    did exactly that. Read [references/uniqueness.md](references/uniqueness.md).
 
-## Nate's standing hero preference
+## Standing hero preference
 
 **Dimensional layering is a baseline requirement for a premium marketing hero.**
 Plan independently moving background, subject, foreground, and atmospheric
@@ -73,8 +73,8 @@ directions, and keep depth in the static composition when motion is reduced.
 ## Approved collection standard
 
 Read [references/approved-collection.md](references/approved-collection.md)
-before planning a premium marketing site. It distills the ten-site rebuild Nate
-approved: real brand research, layer contracts, meaningful pointer/scroll depth,
+before planning a premium marketing site. It distills the approved ten-site
+rebuild: real brand research, layer contracts, meaningful pointer/scroll depth,
 appropriate photographic or 3D rendering, distinct navigation and endings,
 useful interactions, mobile art direction, and evidence from the final package.
 These are execution principles and worked examples, not a reusable page skeleton.
@@ -405,7 +405,10 @@ targets are all authored (see assets.md and verify.md). When any mobile defect
 is reported, deploy `references/device-diag.html` beside the site on the
 **first** round and let the device answer, rather than theorising from a
 machine that cannot reproduce the failure. The full iOS clip-lifecycle notes
-live in verify.md, "The phone is a different machine".
+live in verify.md, "The phone is a different machine". To open the page on a
+phone over Wi-Fi, start the server with `--lan` (by default it binds to this
+machine only), and stop it when you are done: `--lan` makes everything under
+`--root` readable by anyone on that network.
 
 Fix what you found and shoot it again. Report what you actually verified and
 what you did not.

@@ -4,6 +4,30 @@ Note: Only use **NEW:** for entirely new prompt files, NOT for new additions/sec
 
 ### Claude Code System Prompts Changelog
 
+# [2.1.286](https://github.com/Piebald-AI/claude-code-system-prompts/commit/91b99c7)
+
+_+3,170 tokens_
+
+- **NEW:** Tool Description: Artifact share action reference — Documents the Artifact `share` action for sharing an owned artifact with the organization or named people, with a confirmation card the person must approve first.
+- **NEW:** Tool Description: Artifact sharing guidance — Lets Claude offer once to share a private artifact when readers are named, proposing the narrowest audience and never inventing email addresses.
+- **NEW:** System Prompt: Project member session user message provenance — Treats marked project-message turns in a member's own session as that member's user speech, but a bare "yes" or "go ahead" in one clears no block.
+- **NEW:** System Prompt: You should know understood-topic skip guidance — Tells the suggestion agent to skip topics the person plausibly understood in the main session, while still surfacing consequential details mentioned only in passing.
+- **NEW:** System Reminder: You should know side request — Tells the tool-less side agent to answer a one-off "You should know" request directly in one response, never reproducing secrets or credentials from the conversation.
+- **NEW:** Data: SDK initialize response sdk_mcp_manifests_parked field — Reports per SDK MCP server whether its manifest entry was parked, already connected, protocol-mismatched, malformed, or not honoured, and when the field is absent.
+- **NEW:** Tool Description: Bash (Git commit instructions) and Bash (PR creation instructions) — Split from the combined Git commit and PR prompt with otherwise identical text; the pre-commit-checks slot is gone, and the PR half now opens with a commit-and-PR-writing guidance slot.
+- **REMOVED:** Tool Description: Bash (Git commit and PR creation instructions) — Replaced by the separate Git commit and PR creation prompts; its combined text no longer ships as one prompt.
+- **REMOVED:** Tool Description: Bash (pre-commit skill checks) — Drops the long rule requiring a visible RAN/NOT RUN statement per verification, simplify, or review skill before commits; Bash now just says to always run those skills right before `commit`, never for docs or tests.
+- **REMOVED:** Agent Prompt: Security monitor candidate account and standing-rule changes rule, evaluation rules, unrequested connected-app commit rule, and user boundary rule — Removes the four selectable rule variants; the evaluation-rule and boundary text are now written directly into the main monitor prompt, while the two block rules are still referenced by name but no longer ship as extracted prompt text.
+- Agent Prompt: Security monitor for autonomous agent actions — Now always includes the Bound rule, unverifiable-gesture, side-door, tool-effect, secrets-as-labels, restricted-destination and copies-carry-sharing rules, and a persistent-configuration rule that treats forwarding rules, webhooks, and permission grants as high-severity and, when no specific rule covers them, allows them only when the user asked for that exact change.
+- Agent Prompt: Security monitor Claude Tag connector writes — The rules the connector exception does not override are now fixed as the User Intent Rule, scope escalation, External System Writes, and Unrequested Commit in a Connected App.
+- Agent Prompt: Background job agent instructions — When the human replies, the first sentence of the answer should carry what they asked or said instead of a separate recap, since the extractor cannot see their message.
+- Data: Claude Code gateway protocol — Gateways must ignore unrecognized request input, and pass through the auto-mode `safeguards` field or answer 400; it also specifies the managed-settings response shape and checksum, same-origin discovery fallbacks, and certificate pinning effects.
+- Data: SDK footer indicator schema — Adds the main model's `footer_indicator_<text>` capability as a source for the footer indicator, between the environment variable and bootstrap `client_data`.
+- Data: SDK frame_intake_phases_ms field — Splits `before_read` into `startup_wait`, `control_requests_ahead` and `user_frames_ahead` where the input loop could tell them apart, leaving `before_read` with the remainder.
+- Data: SDK set max thinking tokens request schema — Reworded the `highlights` error case from providers "without Anthropic's first-party beta features" to providers to which Claude Code sends no first-party-only beta features.
+- System Prompt: Project timeline user message provenance — Adds that a marked "in another thread of this project" message is the user's own words, but its bare "yes" approved something elsewhere and clears nothing here.
+- Tool Description: Artifact action reference and Artifact action reference (concise app wording) — Add a `share` action bullet, listed only when the artifact sharing feature is enabled.
+
 # [2.1.285](https://github.com/Piebald-AI/claude-code-system-prompts/commit/f960644)
 
 _-4,252 tokens_

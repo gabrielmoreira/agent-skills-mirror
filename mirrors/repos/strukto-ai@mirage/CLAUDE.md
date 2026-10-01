@@ -107,7 +107,7 @@ only).
 
 ### VFS
 
-One backend adapter per prefix (`vfs/`, `BaseVFS`, `GenericVFS`): object
+One backend adapter per prefix (`vfs/`, `BaseVFS`, `VFSAdapter`): object
 stores, SaaS, databases, disk, RAM. Each backend is four layers with one
 name: `accessor/x.py` (client), `core/x/` (pure functions), `ops/x/` (op
 table), `vfs/x/` (adapter and config model). `vfs/registry.py`

@@ -17,8 +17,8 @@ Gates background AI work (memory-tree digests, embeddings, summarisation, triage
 | --- | --- |
 | `crates/openhuman-core/src/cron/scheduler_gate/mod.rs` | Module docstring + re-exports of the public surface. |
 | `crates/openhuman-core/src/cron/scheduler_gate/gate.rs` | Process-wide singleton: cached `State` (config + signals + policy), the 30s sampler task, the single-slot LLM semaphore, `LlmPermit` RAII guard, signed-out override, and `init_global`/`update_config`/`current_policy`/`current_signals`/`wait_for_capacity`. Holds the per-tokio-runtime test-state scaffolding. |
-| `crates/openhuman-core/src/cron/scheduler_gate/policy.rs` | Pure decision logic: `decide(signals, cfg) -> Policy`, the `Policy` and `PauseReason` enums, and their `as_str` / `pause_reason` helpers. Evaluation order: user mode override → server mode → power-aware stand-down → hard CPU ceiling → battery/CPU headroom. |
-| `crates/openhuman-core/src/cron/scheduler_gate/signals.rs` | `Signals` snapshot + `Signals::sample()`. Probes battery (via `starship_battery`), CPU usage (via `sysinfo`, two-refresh delta), and detects server/container mode. Honours `OPENHUMAN_ON_AC_POWER`, `OPENHUMAN_BATTERY_CHARGE`, `OPENHUMAN_DEPLOYMENT` env overrides plus Kubernetes / `/.dockerenv` heuristics. |
+| `tinymemory-api` (`host::scheduler_gate_decide`, vendored) | Pure decision logic: `decide(signals, cfg) -> Policy`, the `Signals` snapshot, with `Policy` / `PauseReason` beside `SchedulerGateConfig` in `host::scheduler_gate`. Evaluation order: user mode override → server mode → power-aware stand-down → hard CPU ceiling → battery/CPU headroom. |
+| `crates/openhuman-core/src/cron/scheduler_gate/signals.rs` | `sample() -> Signals` (the `Signals` type lives in `tinymemory-api`). Probes battery (via `starship_battery`), CPU usage (via `sysinfo`, two-refresh delta), and detects server/container mode. Honours `OPENHUMAN_ON_AC_POWER`, `OPENHUMAN_BATTERY_CHARGE`, `OPENHUMAN_DEPLOYMENT` env overrides plus Kubernetes / `/.dockerenv` heuristics. |
 
 ## Public surface
 

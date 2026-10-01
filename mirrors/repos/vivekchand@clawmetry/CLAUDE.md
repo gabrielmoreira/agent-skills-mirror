@@ -84,6 +84,7 @@ All HTTP endpoints live here, organised by feature: 70 modules, 82 blueprints, l
 | `clawmetry/detector_money.py` | `spend_at_risk_usd` and the ranking. Only a measured basis may promote a warning to `critical` |
 | `clawmetry/policy_engine.py` | **Pure** Guard policy evaluator — detector incident + policies → at most one enforcement decision per session, including the escalation ladder |
 | `clawmetry/detector_injection.py` | The **content** detector `prompt_injection`: declared injection signatures in the text of tool results and user-sourced messages; critical when a high-risk call follows in the same turn. Never keeps the matched text |
+| `clawmetry/detector_package_source.py` | The **behavioural** detector `untrusted_package_source`: a tool argument under a version/package/spec key that names a package SOURCE (`file:`, `npm:`, `git+ssh:`, a URL, a path) instead of a version (CVE-2026-59176). Critical for a temp dir or a path outside the cwd, a named warning otherwise |
 | `clawmetry/prompt_injection.py` | **Pure** injection signatures plus the untrusted-content signal for the Claude Code pre-tool gate (after ATLAS AML.M0030): the hook derives tool names and signature ids for the current turn from the transcript, `approvals.match_policy` rates a high-risk call critical after untrusted output |
 | `clawmetry/framework_map.py` | **Pure** mapping contract from every Guard finding kind to OWASP LLM 2026, OWASP Agentic 2026 and MITRE ATLAS identifiers, with edition, rationale, limits and tests. Stamps `incident["frameworks"]`; renders `docs/FRAMEWORK_COVERAGE.md` |
 | `clawmetry/guard_actuator.py` | The one place a decision becomes a signal. Both the manual and the automatic path go through it |
@@ -190,7 +191,7 @@ Minimal by design, and this list had drifted — `setup.py` is the source of tru
 - **duckdb** (>=0.10) — the local store at `~/.clawmetry/clawmetry.duckdb`
 - **websocket-client** (>=1.6) — cloud cold-data relay tunnel
 - **truststore** (>=0.8, 3.10+ only) — OS trust store, so corporate TLS-interception root CAs work
-- **certifi** (>=2024.2.2) — CA bundle; the trust-store fallback on 3.8/3.9 and on any interpreter whose OpenSSL has no CA store. Without one, every outbound HTTPS call fails `CERTIFICATE_VERIFY_FAILED`, and for the fire-and-forget pings that failure is silent
+- **certifi** (>=2024.7.4) — CA bundle; the trust-store fallback on 3.8/3.9 and on any interpreter whose OpenSSL has no CA store. Without one, every outbound HTTPS call fails `CERTIFICATE_VERIFY_FAILED`, and for the fire-and-forget pings that failure is silent
 - **cffi** (`<2` below 3.10, `>=2` on 3.10+) — not a direct import; it is what sets the `cryptography` ceiling above. The `<2` half exists because cffi 2.0.0 has a Python 3.9 finalizer SIGSEGV and cffi 2.1+ ships no cp39 wheels
 - **Optional**: `opentelemetry-proto` + `protobuf` for OTLP (`pip install clawmetry[otel]`), `deepeval` for the eval bridge (`clawmetry[deepeval]`, 3.10+)
 - `python_requires=">=3.8"`

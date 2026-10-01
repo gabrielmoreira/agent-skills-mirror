@@ -81,6 +81,10 @@ Consequences you must respect:
   because ggml-org publishes no Linux CUDA/ROCm artifact. Never widen one
   provider's matrix from the other's hardware probe. Upstream ROCm exists on
   Windows only, gated on a generated AMD PCI-id table.
+- Hardware facts and backend recommendations come from the core (`GET /hardware/info`,
+  `POST /backends/:provider/{catalog,recommendation,updates}`). `tauri-plugin-hardware`
+  is System Monitor usage polling only; never probe hardware in the app to decide a
+  backend. The Rust decision commands are deprecated: the `backend-select` fixture source.
 - `llamacpp-upstream` artefacts come from the signed `atomic-chat-conf` mirror,
   with ggml-org as the fallback for an unmirrored tag. Resolve tag, asset, URL
   and `sha256` through `scripts/resolve-upstream-backend.mjs` — never hardcode a
@@ -168,6 +172,11 @@ defaults on conflict.
 8. **Record non-trivial decisions** as a new file in `docs/decisions/`
    (architecture, backend selection, perf trade-off, security default, schema
    or migration). Same session, before you finish. See §7.
+9. **Everything written in the repo is English** — code, comments, commit
+   messages, docs, ADRs, plans, scripts and their output. Only two exceptions:
+   UI translations under `web-app/src/locales/` (and each language's own name
+   in the language switcher), and non-English test data that a test exists to
+   exercise.
 
 ---
 

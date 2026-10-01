@@ -2046,6 +2046,40 @@ const AIDetector = (() => {
     return text.toLowerCase().match(/[\w'-]+/g) || [];
   }
 
+  // Moving-average type-token ratio (MATTR; Covington & McFall 2010,
+  // doi:10.1080/09296171003643098): the share of distinct tokens in each
+  // run of `size` consecutive tokens, averaged over every such run. Plain
+  // TTR falls as a text grows, because common words keep recurring while
+  // new ones arrive more slowly, so a fixed threshold on it measures length.
+  // The windowed mean does not drift with length, and on a text of exactly
+  // `size` tokens it equals plain TTR.
+  function movingAverageTTR(tokens, size) {
+    const counts = new Map();
+    let distinct = 0;
+    const add = (token) => {
+      const n = (counts.get(token) || 0) + 1;
+      counts.set(token, n);
+      if (n === 1) distinct += 1;
+    };
+    const drop = (token) => {
+      const n = counts.get(token) - 1;
+      if (n === 0) {
+        counts.delete(token);
+        distinct -= 1;
+      } else {
+        counts.set(token, n);
+      }
+    };
+    for (let i = 0; i < size; i += 1) add(tokens[i]);
+    let sum = distinct;
+    for (let i = size; i < tokens.length; i += 1) {
+      drop(tokens[i - size]);
+      add(tokens[i]);
+      sum += distinct;
+    }
+    return sum / ((tokens.length - size + 1) * size);
+  }
+
   function countWords(text) {
     return (text.match(/\S+/g) || []).length;
   }
@@ -2872,12 +2906,17 @@ const AIDetector = (() => {
     }
 
     // ── Type-token ratio (stylometric — vocabulary diversity) ────
-    // TTR = distinct word types / total tokens. Human prose at 200+
-    // words typically sits around 0.50–0.65 for English; AI prose
-    // tends flatter (0.55–0.75 looks normal, but the lower end of the
-    // *too-flat* tail at >=200 words is where the signal lives — too
-    // FEW unique words for the length). This is the simplest of the
-    // four stylometric signals identified in the May 2026 detection-
+    // TTR = distinct word types / total tokens, taken over each 200-token
+    // window and averaged (movingAverageTTR). Whole-text TTR falls with
+    // length whoever wrote the text: on the human documents in corpus/ its
+    // median is 0.63 at 200 tokens, 0.37 at 2,000 and 0.28 at 6,000, so a
+    // fixed threshold on it flagged every 6,000-word public-domain slice.
+    // The windowed median stays between 0.62 and 0.64 at every length.
+    // Within a window, human prose typically sits around 0.50–0.65 for
+    // English; AI prose tends flatter (0.55–0.75 looks normal, but the
+    // lower end of the *too-flat* tail at >=200 words is where the signal
+    // lives — too FEW unique words for the length). This is the simplest
+    // of the four stylometric signals identified in the May 2026 detection-
     // research review: no POS tagger required, no model, pure JS.
     //
     // Threshold tuning: flag only when the sample is large enough
@@ -2893,12 +2932,11 @@ const AIDetector = (() => {
     // three). POS-bigram log-odds and function-word z-scores are
     // still TODO.
     if (tokens.length >= 200) {
-      const unique = new Set(tokens).size;
-      const ttr = unique / tokens.length;
-      if (ttr < 0.4) {
+      const diversity = movingAverageTTR(tokens, 200);
+      if (diversity < 0.4) {
         issues.push({
           type: 'low-ttr',
-          text: `Vocabulary diversity ${(ttr * 100).toFixed(1)}% (${unique} unique / ${tokens.length} tokens)`,
+          text: `Vocabulary diversity ${(diversity * 100).toFixed(1)}% (distinct words per 200-token window, ${tokens.length} tokens)`,
           severity: 'low',
           suggestion: 'Text reuses a narrow word set. Vary nouns and verbs deliberately, or check if the topic genuinely warrants the repetition.',
         });

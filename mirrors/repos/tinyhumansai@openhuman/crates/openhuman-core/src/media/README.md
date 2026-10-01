@@ -14,13 +14,10 @@ thing the group tags is the `media_*` tool names (`tool_group()` in
   `crates/openhuman-core/src/tools/ops.rs` under `#[cfg(feature = "media")]`.
   The builder returns no tools when `integrations::build_client()` yields no
   `IntegrationClient` for the config.
-- [`image`](image/README.md), image tool contracts scaffold
-  (`image_generation`, `view_image`). Currently unwired (#2997); nothing
-  outside `media/image/` references its types.
 
 ## Gate
 
-Both children are wholly gated behind the `media` feature
+The family is wholly gated behind the `media` feature
 (`#[cfg(feature = "media")] pub mod media;` in
 `crates/openhuman-core/src/lib.rs`). `media` is a default feature
 (`crates/openhuman-core/Cargo.toml`) and is forwarded explicitly from
@@ -29,8 +26,7 @@ Both children are wholly gated behind the `media` feature
 `AGENTS.md`.
 
 It is a **surface-only** gate: media generation is backend-proxied through the
-shared `IntegrationClient`/`reqwest`, and `image` is a dependency-free contract
-layer, so disabling the feature sheds no exclusive dependency.
+shared `IntegrationClient`/`reqwest`, so disabling the feature sheds no exclusive dependency.
 
 ## `generation`
 
@@ -55,5 +51,4 @@ flows against a `wiremock` server).
 
 ## Related docs
 
-- [`image/README.md`](image/README.md)
 - [`gitbooks/features/native-tools/media-generation.md`](../../../../gitbooks/features/native-tools/media-generation.md)

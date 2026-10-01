@@ -5,10 +5,11 @@
 Periodic orchestrator wake scheduler. After continuous parent-idle time,
 capability-gated host session APIs may receive a static internal wake prompt
 when incomplete todos remain (or when a background job stopped without a
-terminal result). Active children do not suppress wakes; host responses are
-authoritative and the local job board is never consulted. Progress/reservation
-state is process-global so independently created hook instances share
-one-flight and the two-wake no-progress cap.
+terminal result). Normal child progress is silent; stable child evidence keeps
+a bounded stalled-child check. Host responses are authoritative and the local
+job board is never consulted. Progress/reservation state is process-global so
+independently created hook instances share one-flight and the two-wake
+no-progress cap.
 
 On v2 hosts (hostFlavor 'v2' from the client shim) the scheduler runs in a
 children-driven degraded mode: no todo/children/status surfaces exist there,
@@ -48,7 +49,11 @@ fallback), the wake condition is children without a terminal `outcome`
     `classifyChildrenSnapshot` → `applySnapshotVerdict`): identical v1
     check order (parent-active → active-child suppression → todo
     condition); children mode uses the event-tracked parent race guard
-    (fail-open) and outcome-based child activity as the wake condition.
+    (fail-open) and outcome-based child activity, then defers periodic wakes
+    whenever the child fingerprint is not stable — first baseline
+    observation and normal progress alike. Stable fingerprints retain the
+    bounded
+    stalled-child check; forced publication/recovery wakes bypass it.
   - Event bookkeeping: `lastStatusBySession` (busy-set + race guard),
     `childSessions`/`childEvidence` from `session.created` parentID links
     (both v1-shape and flat v2 events), all bounded at 512 entries FIFO and
@@ -99,6 +104,9 @@ evaluate() (one-flight via gate)
     ├─ active status? → end idle spell
     ├─ todo mode: active child? → schedule later; no incomplete todos? → end
     ├─ children mode: no active (outcome-less, fresh) child? → end
+    ├─ children mode: fingerprint not seen before? → record baseline, defer
+    ├─ children mode: changing fingerprint? → defer to next interval
+    ├─ stable fingerprint → bounded stalled-child wake, then cap
     ├─ fingerprint unchanged ≥ cap? → stop
     ├─ recheck archive state immediately before promptAsync
     ├─ commitWakeReservation

@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `n8n-io/n8n` — 26 default patterns, 11 followed patterns, 124 file(s) materialized.
+Mirror of `n8n-io/n8n` — 26 default patterns, 11 followed patterns, 125 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `n8n-io/n8n` — 26 default patterns, 11 followed patterns, 124 file(s
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 11 |
-| Files         | 124 |
+| Files         | 125 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -167,32 +167,33 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 96 | ✓ | [`packages/@n8n/instance-ai/skills/workflow-builder/SKILL.md`](packages/@n8n/instance-ai/skills/workflow-builder/SKILL.md) |
 | 97 | ✓ | [`packages/@n8n/node-cli/src/template/templates/shared/default/AGENTS.md`](packages/@n8n/node-cli/src/template/templates/shared/default/AGENTS.md) |
 | 98 | ✓ | [`packages/@n8n/node-cli/src/template/templates/shared/default/CLAUDE.md`](packages/@n8n/node-cli/src/template/templates/shared/default/CLAUDE.md) |
-| 99 | ✓ | [`packages/cli/AGENTS.md`](packages/cli/AGENTS.md) |
-| 100 | ✓ | [`packages/cli/src/modules/n8n-packages/CLAUDE.md`](packages/cli/src/modules/n8n-packages/CLAUDE.md) |
-| 101 | ✓ | [`packages/frontend/@n8n/design-system/AGENTS.md`](packages/frontend/@n8n/design-system/AGENTS.md) |
-| 102 | ✓ | [`packages/frontend/AGENTS.md`](packages/frontend/AGENTS.md) |
-| 103 | ✓ | [`packages/frontend/CLAUDE.md`](packages/frontend/CLAUDE.md) |
-| 104 | ✓ | [`packages/frontend/editor-ui/src/app/stores/workflowDocument/CLAUDE.md`](packages/frontend/editor-ui/src/app/stores/workflowDocument/CLAUDE.md) |
-| 105 | ✓ | [`packages/frontend/editor-ui/src/features/agents/AGENTS.md`](packages/frontend/editor-ui/src/features/agents/AGENTS.md) |
-| 106 | ✓ | [`packages/nodes-base/AGENTS.md`](packages/nodes-base/AGENTS.md) |
-| 107 | ✓ | [`packages/nodes-base/CLAUDE.md`](packages/nodes-base/CLAUDE.md) |
-| 108 | ✓ | [`packages/testing/janitor/CLAUDE.md`](packages/testing/janitor/CLAUDE.md) |
-| 109 | ✓ | [`packages/testing/playwright/AGENTS.md`](packages/testing/playwright/AGENTS.md) |
-| 110 | ✓ | [`packages/testing/playwright/CLAUDE.md`](packages/testing/playwright/CLAUDE.md) |
-| 111 | ✓ | [`packages/testing/playwright/CONTRIBUTING.md`](packages/testing/playwright/CONTRIBUTING.md) |
-| 112 | ✓ | [`packages/testing/playwright/tests/infrastructure/benchmarks/AGENTS.md`](packages/testing/playwright/tests/infrastructure/benchmarks/AGENTS.md) |
-| 113 | ✓ | [`scripts/instance-seeding/AGENTS.md`](scripts/instance-seeding/AGENTS.md) |
-| 114 | → | [`.claude/plugins/n8n/README.md`](.claude/plugins/n8n/README.md) |
-| 115 | → | [`.devcontainer/codespaces/README.md`](.devcontainer/codespaces/README.md) |
-| 116 | → | [`.github/DEVELOPING_V3.md`](.github/DEVELOPING_V3.md) |
-| 117 | → | [`.github/pull_request_title_conventions.md`](.github/pull_request_title_conventions.md) |
-| 118 | → | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
-| 119 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 120 | → | [`CONTRIBUTOR_LICENSE_AGREEMENT.md`](CONTRIBUTOR_LICENSE_AGREEMENT.md) |
-| 121 | → | [`packages/cli/test/integration/eventbus/README-manual-test-syslog.md`](packages/cli/test/integration/eventbus/README-manual-test-syslog.md) |
-| 122 | → | [`packages/testing/code-health/README.md`](packages/testing/code-health/README.md) |
-| 123 | → | [`packages/testing/containers/README.md`](packages/testing/containers/README.md) |
-| 124 | → | [`packages/testing/playwright/README.md`](packages/testing/playwright/README.md) |
+| 99 | ✓ | [`packages/@n8n/nodes-langchain/AGENTS.md`](packages/@n8n/nodes-langchain/AGENTS.md) |
+| 100 | ✓ | [`packages/cli/AGENTS.md`](packages/cli/AGENTS.md) |
+| 101 | ✓ | [`packages/cli/src/modules/n8n-packages/CLAUDE.md`](packages/cli/src/modules/n8n-packages/CLAUDE.md) |
+| 102 | ✓ | [`packages/frontend/@n8n/design-system/AGENTS.md`](packages/frontend/@n8n/design-system/AGENTS.md) |
+| 103 | ✓ | [`packages/frontend/AGENTS.md`](packages/frontend/AGENTS.md) |
+| 104 | ✓ | [`packages/frontend/CLAUDE.md`](packages/frontend/CLAUDE.md) |
+| 105 | ✓ | [`packages/frontend/editor-ui/src/app/stores/workflowDocument/CLAUDE.md`](packages/frontend/editor-ui/src/app/stores/workflowDocument/CLAUDE.md) |
+| 106 | ✓ | [`packages/frontend/editor-ui/src/features/agents/AGENTS.md`](packages/frontend/editor-ui/src/features/agents/AGENTS.md) |
+| 107 | ✓ | [`packages/nodes-base/AGENTS.md`](packages/nodes-base/AGENTS.md) |
+| 108 | ✓ | [`packages/nodes-base/CLAUDE.md`](packages/nodes-base/CLAUDE.md) |
+| 109 | ✓ | [`packages/testing/janitor/CLAUDE.md`](packages/testing/janitor/CLAUDE.md) |
+| 110 | ✓ | [`packages/testing/playwright/AGENTS.md`](packages/testing/playwright/AGENTS.md) |
+| 111 | ✓ | [`packages/testing/playwright/CLAUDE.md`](packages/testing/playwright/CLAUDE.md) |
+| 112 | ✓ | [`packages/testing/playwright/CONTRIBUTING.md`](packages/testing/playwright/CONTRIBUTING.md) |
+| 113 | ✓ | [`packages/testing/playwright/tests/infrastructure/benchmarks/AGENTS.md`](packages/testing/playwright/tests/infrastructure/benchmarks/AGENTS.md) |
+| 114 | ✓ | [`scripts/instance-seeding/AGENTS.md`](scripts/instance-seeding/AGENTS.md) |
+| 115 | → | [`.claude/plugins/n8n/README.md`](.claude/plugins/n8n/README.md) |
+| 116 | → | [`.devcontainer/codespaces/README.md`](.devcontainer/codespaces/README.md) |
+| 117 | → | [`.github/DEVELOPING_V3.md`](.github/DEVELOPING_V3.md) |
+| 118 | → | [`.github/pull_request_title_conventions.md`](.github/pull_request_title_conventions.md) |
+| 119 | → | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
+| 120 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 121 | → | [`CONTRIBUTOR_LICENSE_AGREEMENT.md`](CONTRIBUTOR_LICENSE_AGREEMENT.md) |
+| 122 | → | [`packages/cli/test/integration/eventbus/README-manual-test-syslog.md`](packages/cli/test/integration/eventbus/README-manual-test-syslog.md) |
+| 123 | → | [`packages/testing/code-health/README.md`](packages/testing/code-health/README.md) |
+| 124 | → | [`packages/testing/containers/README.md`](packages/testing/containers/README.md) |
+| 125 | → | [`packages/testing/playwright/README.md`](packages/testing/playwright/README.md) |
 
 ---
 
