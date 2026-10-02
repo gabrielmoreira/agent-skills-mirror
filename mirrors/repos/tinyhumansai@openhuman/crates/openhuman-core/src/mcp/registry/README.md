@@ -44,14 +44,11 @@ keep working. The Rust module path is `crate::mcp::registry`.
 - `connections`: a thin view over the live connection map the `mcp::host`
   service holds: `connected_overview[_for_config]`,
   `all_connected_tools[_for_config]`, `tools_for`/`server_tools_for_config`,
-  `is_connected[_for_config]`, `auth_hint_for[_config]`, `connect`,
-  `disconnect[_for_config]`, `last_error_for[_config]`. Every lookup answers
+  `is_connected_for_config`, `auth_hint_for_config`, `connect`,
+  `disconnect_for_config`, `last_error_for_config`. Every lookup answers
   "nothing" (empty list / `false` / `None`) when the workspace has no open
   host yet, rather than erroring; only `connect` returns an error in that
   case.
-- `store`: the one direct reach into the registry's store that outlived the
-  extraction: `set_cached`, used by an end-to-end test to seed the upstream
-  response cache without a real catalog call.
 - `boot`: `spawn_installed_servers`, connecting every enabled installed
   server at startup; never fails (a broken third-party server is logged and
   skipped).

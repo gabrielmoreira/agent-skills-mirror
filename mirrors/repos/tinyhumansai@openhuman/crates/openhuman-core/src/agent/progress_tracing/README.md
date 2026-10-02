@@ -14,15 +14,18 @@ content).
 - `agent/progress_tracing.rs` (parent module file) declares the submodules
   below it. `collector/` holds `SpanCollector` (a pure state machine: feed it
   progress events plus a timestamp, it accumulates finished `TraceSpan`s).
-  `types.rs` has `TraceContext`, `RunType`, `SpanKind`/`SpanStatus`.
-  `serialize.rs` has `spans_to_ndjson`. `export.rs` has the local file/log
+  The data model (`TraceContext`, `RunType`, `SpanKind`/`SpanStatus`), content
+  caps, `spans_to_ndjson`, the pure OTLP conversion and Langfuse batch
+  chunking live upstream in
+  `tinyagents_harness::observability::trace_export`. `export.rs` has the local file/log
   exporter `export_spans`, and the two run-completion entry points
   `export_run_trace` / `export_run_trace_from_journal`. Each entry point runs
   two independent, best-effort paths: a Langfuse push when
   `observability.share_usage_data` is on (the default), and local NDJSON
   export to `export_path` or the app log when
   `observability.agent_tracing.enabled` is on (opt-in).
-- `otlp.rs`: the remote agent-turn exporter. It turns completed live spans
+- `otlp.rs`: the remote agent-turn exporter (the span-to-OTLP conversion is
+  upstream; this file resolves the backend URL and credential and posts). It turns completed live spans
   into OTLP/HTTP JSON, preserves the root turn's input/output, maps
   TinyInference messages into role-labeled conversations, puts usage only on
   model generations, and summarizes repeated internal tool discovery.

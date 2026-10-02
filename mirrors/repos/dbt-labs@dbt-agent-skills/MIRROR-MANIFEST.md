@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `dbt-labs/dbt-agent-skills` — 26 default patterns, 0 followed patterns, 193 file(s) materialized.
+Mirror of `dbt-labs/dbt-agent-skills` — 26 default patterns, 0 followed patterns, 195 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `dbt-labs/dbt-agent-skills` — 26 default patterns, 0 followed patter
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 193 |
+| Files         | 195 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -234,24 +234,26 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 173 | ✓ | [`skills/dbt/skills/fetching-dbt-docs/SKILL.md`](skills/dbt/skills/fetching-dbt-docs/SKILL.md) |
 | 174 | ✓ | [`skills/dbt/skills/maintaining-dbt-documentation/audit_coverage.py`](skills/dbt/skills/maintaining-dbt-documentation/audit_coverage.py) |
 | 175 | ✓ | [`skills/dbt/skills/maintaining-dbt-documentation/SKILL.md`](skills/dbt/skills/maintaining-dbt-documentation/SKILL.md) |
-| 176 | ✓ | [`skills/dbt/skills/running-dbt-commands/SKILL.md`](skills/dbt/skills/running-dbt-commands/SKILL.md) |
-| 177 | ✓ | [`skills/dbt/skills/troubleshooting-dbt-job-errors/references/investigation-template.md`](skills/dbt/skills/troubleshooting-dbt-job-errors/references/investigation-template.md) |
-| 178 | ✓ | [`skills/dbt/skills/troubleshooting-dbt-job-errors/SKILL.md`](skills/dbt/skills/troubleshooting-dbt-job-errors/SKILL.md) |
-| 179 | ✓ | [`skills/dbt/skills/using-dbt-for-analytics-engineering/references/debugging-dbt-errors.md`](skills/dbt/skills/using-dbt-for-analytics-engineering/references/debugging-dbt-errors.md) |
-| 180 | ✓ | [`skills/dbt/skills/using-dbt-for-analytics-engineering/references/discovering-data.md`](skills/dbt/skills/using-dbt-for-analytics-engineering/references/discovering-data.md) |
-| 181 | ✓ | [`skills/dbt/skills/using-dbt-for-analytics-engineering/references/evaluating-impact-of-a-dbt-model-change.md`](skills/dbt/skills/using-dbt-for-analytics-engineering/references/evaluating-impact-of-a-dbt-model-change.md) |
-| 182 | ✓ | [`skills/dbt/skills/using-dbt-for-analytics-engineering/references/managing-packages.md`](skills/dbt/skills/using-dbt-for-analytics-engineering/references/managing-packages.md) |
-| 183 | ✓ | [`skills/dbt/skills/using-dbt-for-analytics-engineering/references/planning-dbt-models.md`](skills/dbt/skills/using-dbt-for-analytics-engineering/references/planning-dbt-models.md) |
-| 184 | ✓ | [`skills/dbt/skills/using-dbt-for-analytics-engineering/references/writing-data-tests.md`](skills/dbt/skills/using-dbt-for-analytics-engineering/references/writing-data-tests.md) |
-| 185 | ✓ | [`skills/dbt/skills/using-dbt-for-analytics-engineering/references/writing-documentation.md`](skills/dbt/skills/using-dbt-for-analytics-engineering/references/writing-documentation.md) |
-| 186 | ✓ | [`skills/dbt/skills/using-dbt-for-analytics-engineering/scripts/review_run_results.md`](skills/dbt/skills/using-dbt-for-analytics-engineering/scripts/review_run_results.md) |
-| 187 | ✓ | [`skills/dbt/skills/using-dbt-for-analytics-engineering/SKILL.md`](skills/dbt/skills/using-dbt-for-analytics-engineering/SKILL.md) |
-| 188 | ✓ | [`skills/dbt/skills/using-dbt-state/SKILL.md`](skills/dbt/skills/using-dbt-state/SKILL.md) |
-| 189 | ✓ | [`skills/dbt/skills/working-with-dbt-mesh/references/cross-project-collaboration.md`](skills/dbt/skills/working-with-dbt-mesh/references/cross-project-collaboration.md) |
-| 190 | ✓ | [`skills/dbt/skills/working-with-dbt-mesh/references/groups-and-access.md`](skills/dbt/skills/working-with-dbt-mesh/references/groups-and-access.md) |
-| 191 | ✓ | [`skills/dbt/skills/working-with-dbt-mesh/references/model-contracts.md`](skills/dbt/skills/working-with-dbt-mesh/references/model-contracts.md) |
-| 192 | ✓ | [`skills/dbt/skills/working-with-dbt-mesh/references/model-versions.md`](skills/dbt/skills/working-with-dbt-mesh/references/model-versions.md) |
-| 193 | ✓ | [`skills/dbt/skills/working-with-dbt-mesh/SKILL.md`](skills/dbt/skills/working-with-dbt-mesh/SKILL.md) |
+| 176 | ✓ | [`skills/dbt/skills/querying-the-dbt-information-schema/references/view-columns.md`](skills/dbt/skills/querying-the-dbt-information-schema/references/view-columns.md) |
+| 177 | ✓ | [`skills/dbt/skills/querying-the-dbt-information-schema/SKILL.md`](skills/dbt/skills/querying-the-dbt-information-schema/SKILL.md) |
+| 178 | ✓ | [`skills/dbt/skills/running-dbt-commands/SKILL.md`](skills/dbt/skills/running-dbt-commands/SKILL.md) |
+| 179 | ✓ | [`skills/dbt/skills/troubleshooting-dbt-job-errors/references/investigation-template.md`](skills/dbt/skills/troubleshooting-dbt-job-errors/references/investigation-template.md) |
+| 180 | ✓ | [`skills/dbt/skills/troubleshooting-dbt-job-errors/SKILL.md`](skills/dbt/skills/troubleshooting-dbt-job-errors/SKILL.md) |
+| 181 | ✓ | [`skills/dbt/skills/using-dbt-for-analytics-engineering/references/debugging-dbt-errors.md`](skills/dbt/skills/using-dbt-for-analytics-engineering/references/debugging-dbt-errors.md) |
+| 182 | ✓ | [`skills/dbt/skills/using-dbt-for-analytics-engineering/references/discovering-data.md`](skills/dbt/skills/using-dbt-for-analytics-engineering/references/discovering-data.md) |
+| 183 | ✓ | [`skills/dbt/skills/using-dbt-for-analytics-engineering/references/evaluating-impact-of-a-dbt-model-change.md`](skills/dbt/skills/using-dbt-for-analytics-engineering/references/evaluating-impact-of-a-dbt-model-change.md) |
+| 184 | ✓ | [`skills/dbt/skills/using-dbt-for-analytics-engineering/references/managing-packages.md`](skills/dbt/skills/using-dbt-for-analytics-engineering/references/managing-packages.md) |
+| 185 | ✓ | [`skills/dbt/skills/using-dbt-for-analytics-engineering/references/planning-dbt-models.md`](skills/dbt/skills/using-dbt-for-analytics-engineering/references/planning-dbt-models.md) |
+| 186 | ✓ | [`skills/dbt/skills/using-dbt-for-analytics-engineering/references/writing-data-tests.md`](skills/dbt/skills/using-dbt-for-analytics-engineering/references/writing-data-tests.md) |
+| 187 | ✓ | [`skills/dbt/skills/using-dbt-for-analytics-engineering/references/writing-documentation.md`](skills/dbt/skills/using-dbt-for-analytics-engineering/references/writing-documentation.md) |
+| 188 | ✓ | [`skills/dbt/skills/using-dbt-for-analytics-engineering/scripts/review_run_results.md`](skills/dbt/skills/using-dbt-for-analytics-engineering/scripts/review_run_results.md) |
+| 189 | ✓ | [`skills/dbt/skills/using-dbt-for-analytics-engineering/SKILL.md`](skills/dbt/skills/using-dbt-for-analytics-engineering/SKILL.md) |
+| 190 | ✓ | [`skills/dbt/skills/using-dbt-state/SKILL.md`](skills/dbt/skills/using-dbt-state/SKILL.md) |
+| 191 | ✓ | [`skills/dbt/skills/working-with-dbt-mesh/references/cross-project-collaboration.md`](skills/dbt/skills/working-with-dbt-mesh/references/cross-project-collaboration.md) |
+| 192 | ✓ | [`skills/dbt/skills/working-with-dbt-mesh/references/groups-and-access.md`](skills/dbt/skills/working-with-dbt-mesh/references/groups-and-access.md) |
+| 193 | ✓ | [`skills/dbt/skills/working-with-dbt-mesh/references/model-contracts.md`](skills/dbt/skills/working-with-dbt-mesh/references/model-contracts.md) |
+| 194 | ✓ | [`skills/dbt/skills/working-with-dbt-mesh/references/model-versions.md`](skills/dbt/skills/working-with-dbt-mesh/references/model-versions.md) |
+| 195 | ✓ | [`skills/dbt/skills/working-with-dbt-mesh/SKILL.md`](skills/dbt/skills/working-with-dbt-mesh/SKILL.md) |
 
 ---
 

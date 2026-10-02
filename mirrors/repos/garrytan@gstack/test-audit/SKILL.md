@@ -234,7 +234,8 @@ At session start or after compaction, recover recent project context.
 ```bash
 eval "$(~/.claude/skills/gstack/bin/gstack-slug 2>/dev/null)"
 _BRANCH=$(git branch --show-current 2>/dev/null | tr -cd 'a-zA-Z0-9._/-') || :; _BRANCH=${_BRANCH:-unknown}
-_PROJ="${GSTACK_HOME:-$HOME/.gstack}/projects/${SLUG:-unknown}"
+eval "$(~/.claude/skills/gstack/bin/gstack-paths)"; : "${GSTACK_STATE_ROOT:?gstack-paths failed; reinstall with ./setup or /gstack-upgrade}"
+_PROJ="$GSTACK_STATE_ROOT/projects/${SLUG:-unknown}"
 if [ -d "$_PROJ" ]; then
   echo "--- RECENT ARTIFACTS ---"
   find "$_PROJ/ceo-plans" "$_PROJ/checkpoints" -type f -name "*.md" 2>/dev/null | xargs -r ls -t 2>/dev/null | head -3
@@ -426,15 +427,17 @@ Retirement card, complete before any edit: `test`, `detects`, `non_test_callers`
 ## Step 1: Scope and seeds
 
 ```bash
+eval "$(~/.claude/skills/gstack/bin/gstack-paths)"; : "${GSTACK_STATE_ROOT:?gstack-paths failed; reinstall with ./setup or /gstack-upgrade}"
 setopt +o nomatch 2>/dev/null || true  # zsh compat
-eval "$(~/.claude/skills/gstack/bin/gstack-slug 2>/dev/null)" && mkdir -p ~/.gstack/projects/$SLUG
+eval "$(~/.claude/skills/gstack/bin/gstack-paths)"; : "${GSTACK_STATE_ROOT:?gstack-paths failed; reinstall with ./setup or /gstack-upgrade}"
+eval "$(~/.claude/skills/gstack/bin/gstack-slug 2>/dev/null)" && mkdir -p "$GSTACK_STATE_ROOT/projects/$SLUG" && echo "PROJECT_DIR: $GSTACK_STATE_ROOT/projects/$SLUG"
 DATETIME=$(date +%Y%m%d-%H%M%S)
-REPORT=~/.gstack/projects/$SLUG/test-audit-$DATETIME.md
+REPORT="$GSTACK_STATE_ROOT"/projects/$SLUG/test-audit-$DATETIME.md
 DEFAULT_BRANCH=$(git symbolic-ref --short refs/remotes/origin/HEAD 2>/dev/null | sed 's|^origin/||')
 echo "REPORT: $REPORT"
 echo "DEFAULT_BRANCH: ${DEFAULT_BRANCH:-unknown}"
 git ls-files | grep -cE '(^|/)(tests?|spec|__tests__)/|(^|/)test_[^/]+\.py$|_test\.(go|py|rb|ts|js|exs)$|\.(test|spec)\.[jt]sx?$|_spec\.rb$|Test\.(java|kt)$' | sed 's/^/TESTFILES:/'
-ls -t ~/.gstack/projects/$SLUG/*-"$BRANCH"-eng-review-test-plan-*.md 2>/dev/null | head -1 | sed 's/^/SEED_PLAN:/'
+ls -t "$GSTACK_STATE_ROOT"/projects/$SLUG/*-"$BRANCH"-eng-review-test-plan-*.md 2>/dev/null | head -1 | sed 's/^/SEED_PLAN:/'
 ```
 
 - Scope is the paths given, else the whole repository. With more than 300 test files

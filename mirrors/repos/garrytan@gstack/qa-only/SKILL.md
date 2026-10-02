@@ -238,7 +238,8 @@ At session start or after compaction, recover recent project context.
 ```bash
 eval "$(~/.claude/skills/gstack/bin/gstack-slug 2>/dev/null)"
 _BRANCH=$(git branch --show-current 2>/dev/null | tr -cd 'a-zA-Z0-9._/-') || :; _BRANCH=${_BRANCH:-unknown}
-_PROJ="${GSTACK_HOME:-$HOME/.gstack}/projects/${SLUG:-unknown}"
+eval "$(~/.claude/skills/gstack/bin/gstack-paths)"; : "${GSTACK_STATE_ROOT:?gstack-paths failed; reinstall with ./setup or /gstack-upgrade}"
+_PROJ="$GSTACK_STATE_ROOT/projects/${SLUG:-unknown}"
 if [ -d "$_PROJ" ]; then
   echo "--- RECENT ARTIFACTS ---"
   find "$_PROJ/ceo-plans" "$_PROJ/checkpoints" -type f -name "*.md" 2>/dev/null | xargs -r ls -t 2>/dev/null | head -3
@@ -348,7 +349,8 @@ Then build the complete version of what remains.
 
 **Eureka:** When first-principles reasoning contradicts conventional wisdom, name it and log:
 ```bash
-jq -n --arg ts "$(date -u +%Y-%m-%dT%H:%M:%SZ)" --arg skill "SKILL_NAME" --arg branch "$(git branch --show-current 2>/dev/null)" --arg insight "ONE_LINE_SUMMARY" '{ts:$ts,skill:$skill,branch:$branch,insight:$insight}' >> ~/.gstack/analytics/eureka.jsonl 2>/dev/null || true
+eval "$(~/.claude/skills/gstack/bin/gstack-paths)"; : "${GSTACK_STATE_ROOT:?gstack-paths failed; reinstall with ./setup or /gstack-upgrade}"
+jq -n --arg ts "$(date -u +%Y-%m-%dT%H:%M:%SZ)" --arg skill "SKILL_NAME" --arg branch "$(git branch --show-current 2>/dev/null)" --arg insight "ONE_LINE_SUMMARY" '{ts:$ts,skill:$skill,branch:$branch,insight:$insight}' >> "$GSTACK_STATE_ROOT/analytics/eureka.jsonl" 2>/dev/null || true
 ```
 
 ## Completion Status Protocol
@@ -418,7 +420,7 @@ Read sections in full when directed; do not work from memory.
 
 | When | Read this section |
 |------|-------------------|
-| running selected report-only baseline and exploratory probes without product or test writes | `sections/exploratory.md` relative to the installed `qa-only`/`gstack-qa-only` SKILL.md directory |
+| selecting surfaces, then running report-only probes (one Read covers both) | `sections/exploratory.md` relative to the installed `qa-only`/`gstack-qa-only` SKILL.md directory |
 | finalizing the report after probing stops | `sections/reporting.md` relative to the installed `qa-only`/`gstack-qa-only` SKILL.md directory |
 
 Start at Request Parameters, then follow the sections below in order.
@@ -464,11 +466,11 @@ the current behavior. Reading old notes never requires writing new ones.
 
 ## Select Surfaces and Isolation
 
-Load the shared preparation gate now: complete its scope and selected-method Reads,
+Load the shared preparation gate now (the exploratory STOP just below): complete its scope and selected-method Reads,
 await their results, and select the surfaces. Defer charters, clocks and probes to
 Run the Selected Checks, after report ownership and conditional browser setup below.
 
-> **STOP.** Before running selected report-only baseline and exploratory probes without product or test writes, Read `sections/exploratory.md` relative to the installed `qa-only`/`gstack-qa-only` SKILL.md directory in full and follow it.
+> **STOP.** Before selecting surfaces, then running report-only probes (one Read covers both), Read `sections/exploratory.md` relative to the installed `qa-only`/`gstack-qa-only` SKILL.md directory in full and follow it.
 > Use this host's installed path, never the product working directory or another host's assets.
 > If missing or unreadable, report a QA setup blocker and its affected probes as blocked; continue other safe probes (independent functional/static checks). Missing/unreadable assets block required QA.
 
@@ -532,7 +534,7 @@ During browser discovery, observe behavior without reading source to diagnose it
 
 ### Assemble the report
 
-After probing stops, load the finalization procedure below. Use retained evidence;
+After probing stops, load the finalization procedure below. Order: exploratory §4 annotations and materialize, then this procedure, then the final report Write. Use retained evidence;
 this step does not authorize more probes or restart an expired clock.
 Do not preload reporting. To recover from an accidental early Read:
 If already read, issue another Read now and await its
@@ -554,10 +556,10 @@ Preserve the initial charters under **Charters** after that metadata, before fin
 
 Each proposed test carries a value card; propose it only when it passes this bar:
 
-**Test value bar.** Before writing the test (the reproduced bug answers what it protects and what makes it fail):
+**Test value bar.** Before writing or proposing a test, the reproduced bug already answers what it protects and what makes it fail; also answer:
 
-3. Why does existing coverage not already catch that? Prefer adding a row to an existing table-driven test or shared fixture over a near-duplicate.
-4. Does it need a production seam (export, flag, wrapper, injection hook) that no production caller needs? If yes, test at the real boundary instead.
+1. Why does existing coverage not already catch that? Prefer adding a row to an existing table-driven test or shared fixture over a near-duplicate.
+2. Does it need a production seam (export, flag, wrapper, injection hook) that no production caller needs? If yes, test at the real boundary instead.
 
 Value card: `Value: protects=<...>; fails_when=<...>; why_new=<...>; seam=none` (seam: `none` or its name); each field at most 160 UTF-8 bytes here (clamp to 157 plus `...`; JSON keeps full values). Put it in the 8e.5 record (/qa) or under each proposed test (/qa-only). A missing upstream card never blocks: derive it; ignore unknown fields.
 
@@ -582,7 +584,7 @@ permissions or fixed paths override them. Do not create a forbidden second copy.
 Use this session's existing project slug and state directory for the project copy.
 If unknown or not writable within the supplied permissions, report that copy as
 blocked; still write the permitted local report. Do not run state-setup helpers.
-Write identical content to `~/.gstack/projects/{slug}/{user}-{branch}-test-outcome-{datetime}.md`.
+Write identical content to `$GSTACK_STATE_ROOT/projects/{slug}/{user}-{branch}-test-outcome-{datetime}.md` (the state root this session resolved).
 Get `{user}`/`{branch}` from `git config user.name`/`git branch --show-current`
 (fallbacks: `unknown-user`/`detached`); sanitize like `{target}`. Use UTC `YYYYMMDDTHHMMSSZ`.
 If that destination exists, choose a fresh suffixed filename; never replace a prior report.

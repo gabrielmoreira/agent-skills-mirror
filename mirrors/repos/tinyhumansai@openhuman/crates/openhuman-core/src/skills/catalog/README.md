@@ -3,7 +3,7 @@
 Module path: `crate::skills::catalog`. RPC namespace: `skill_registry`, a
 stable wire contract left unchanged by the module rename (JSON-RPC methods are
 still `openhuman.skill_registry_<function>`, the CLI namespace is still
-`skill_registry`; see `tests/skill_registry_e2e.rs`).
+`skill_registry`; see `tests/in_process/skill_registry_e2e.rs`).
 
 Owns remote skill catalogs and installed-skill lifecycle:
 

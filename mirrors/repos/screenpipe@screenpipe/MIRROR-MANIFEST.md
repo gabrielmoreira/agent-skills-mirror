@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `screenpipe/screenpipe` — 26 default patterns, 0 followed patterns, 23 file(s) materialized.
+Mirror of `screenpipe/screenpipe` — 26 default patterns, 0 followed patterns, 24 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `screenpipe/screenpipe` — 26 default patterns, 0 followed patterns, 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 23 |
+| Files         | 24 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -82,6 +82,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 21 | ✓ | [`crates/screenpipe-core/assets/skills/screenpipe-team/SKILL.md`](crates/screenpipe-core/assets/skills/screenpipe-team/SKILL.md) |
 | 22 | ✓ | [`crates/screenpipe-core/assets/skills/screenpipe-workflow-maintenance/SKILL.md`](crates/screenpipe-core/assets/skills/screenpipe-workflow-maintenance/SKILL.md) |
 | 23 | ✓ | [`crates/screenpipe-core/assets/skills/screenpipe-worklog/SKILL.md`](crates/screenpipe-core/assets/skills/screenpipe-worklog/SKILL.md) |
+| 24 | ✓ | [`packages/workflows-ui/skills/video-sop/SKILL.md`](packages/workflows-ui/skills/video-sop/SKILL.md) |
 
 ---
 

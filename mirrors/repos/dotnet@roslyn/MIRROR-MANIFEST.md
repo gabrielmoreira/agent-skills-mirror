@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `dotnet/roslyn` — 26 default patterns, 1 followed patterns, 20 file(s) materialized.
+Mirror of `dotnet/roslyn` — 26 default patterns, 1 followed patterns, 21 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `dotnet/roslyn` — 26 default patterns, 1 followed patterns, 20 file(
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 20 |
+| Files         | 21 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -70,15 +70,16 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 9 | ✓ | [`.github/skills/integration-test-analysis/SKILL.md`](.github/skills/integration-test-analysis/SKILL.md) |
 | 10 | ✓ | [`.github/skills/merge-into-branch/SKILL.md`](.github/skills/merge-into-branch/SKILL.md) |
 | 11 | ✓ | [`.github/skills/new-compiler-feature/SKILL.md`](.github/skills/new-compiler-feature/SKILL.md) |
-| 12 | ✓ | [`.github/skills/run-toolset-tests/SKILL.md`](.github/skills/run-toolset-tests/SKILL.md) |
-| 13 | ✓ | [`.github/skills/setup-darc-branch-publishing/SKILL.md`](.github/skills/setup-darc-branch-publishing/SKILL.md) |
-| 14 | ✓ | [`.github/skills/snap/SKILL.md`](.github/skills/snap/SKILL.md) |
-| 15 | ✓ | [`.github/skills/update-agent-docs/SKILL.md`](.github/skills/update-agent-docs/SKILL.md) |
-| 16 | ✓ | [`.github/skills/validate-sdk/SKILL.md`](.github/skills/validate-sdk/SKILL.md) |
-| 17 | ✓ | [`.github/skills/vmr-codeflow-status/SKILL.md`](.github/skills/vmr-codeflow-status/SKILL.md) |
-| 18 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 19 | ✓ | [`eng/common/AGENTS.md`](eng/common/AGENTS.md) |
-| 20 | → | [`.github/memory/INDEX.md`](.github/memory/INDEX.md) |
+| 12 | ✓ | [`.github/skills/patch-il-baselines/SKILL.md`](.github/skills/patch-il-baselines/SKILL.md) |
+| 13 | ✓ | [`.github/skills/run-toolset-tests/SKILL.md`](.github/skills/run-toolset-tests/SKILL.md) |
+| 14 | ✓ | [`.github/skills/setup-darc-branch-publishing/SKILL.md`](.github/skills/setup-darc-branch-publishing/SKILL.md) |
+| 15 | ✓ | [`.github/skills/snap/SKILL.md`](.github/skills/snap/SKILL.md) |
+| 16 | ✓ | [`.github/skills/update-agent-docs/SKILL.md`](.github/skills/update-agent-docs/SKILL.md) |
+| 17 | ✓ | [`.github/skills/validate-sdk/SKILL.md`](.github/skills/validate-sdk/SKILL.md) |
+| 18 | ✓ | [`.github/skills/vmr-codeflow-status/SKILL.md`](.github/skills/vmr-codeflow-status/SKILL.md) |
+| 19 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 20 | ✓ | [`eng/common/AGENTS.md`](eng/common/AGENTS.md) |
+| 21 | → | [`.github/memory/INDEX.md`](.github/memory/INDEX.md) |
 
 ---
 

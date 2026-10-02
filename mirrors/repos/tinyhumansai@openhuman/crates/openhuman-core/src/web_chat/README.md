@@ -52,7 +52,14 @@ runner behind both surfaces.
    `web_errors::classify_inference_error` into the user-facing `chat_error`
    (budget-exhausted, non-retryable rate limit, fallback-chain-exhausted, turn
    timeout, and so on) and decides via `sentry_suppression_reason` whether it
-   pages.
+   pages. The event carries `message` (finished English copy, unchanged for
+   older UIs, the CLI, the TUI and embedders) plus `copy_key`
+   (`chat_error.<class>`, one per row of `inference/failure_copy/table.rs`) and
+   `copy_params` (`retry_after_secs`, `provider`, `detail`); the app renders
+   the key in the user's locale (`app/src/lib/chatErrorCopy.ts`) and falls back
+   to `message` for an unknown or missing key. Loop-guard halt summaries are
+   not `chat_error` events (they become the turn's reply text), so they carry
+   no key.
 
 Host-authored turns, meaning background-delivery notices
 (`agent::orchestration::background_delivery`) and goal continuations
@@ -111,7 +118,7 @@ re-cached its own agent wins.
 | `presentation.rs` | `deliver_response` (one unsegmented `chat_done`, persisted first) and `deliver_response_single_bubble` (core-initiated turns); local-model emoji-reaction decision; legacy segmentation helpers |
 | `reply_persistence.rs` | Durable write of the reply about to be announced, under a deterministic id shared with the client's own append |
 | `event_bus.rs` | The `WebChannelEvent` broadcast channel plus approval/artifact/egress `DomainEvent` surface subscribers |
-| `web_errors.rs` (thin shell over `web_errors/`: `backend_error_code.rs`, `budget.rs`, `classify.rs`, `provider_detail.rs`, `response_predicates.rs`, `retry.rs`, `timeout.rs`) | Classifies raw provider error strings into user-facing copy; budget-exhausted / rate-limit / fallback-exhausted / timeout detection |
+| `web_errors.rs` (thin shell over `web_errors/`: `backend_error_code.rs`, `budget.rs`, `classify.rs`, `provider_detail.rs`, `retry.rs`, `timeout.rs`; the class -> copy table is `inference/failure_copy/`) | Classifies raw provider error strings into user-facing copy; budget-exhausted / rate-limit / fallback-exhausted / timeout detection |
 | `schemas.rs` | `ControllerSchema`/`RegisteredController` definitions for the `channel.web_*` RPC functions |
 | `types.rs` | `SessionEntry`, `SessionCacheFingerprint`, `InFlightEntry`, `ParallelEntry`, `WebChatTaskResult`, `ChatRequestMetadata`, `WebChatParams` |
 

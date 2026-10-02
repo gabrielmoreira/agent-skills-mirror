@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `shinpr/claude-code-workflows` — 26 default patterns, 0 followed patterns, 179 file(s) materialized.
+Mirror of `shinpr/claude-code-workflows` — 26 default patterns, 0 followed patterns, 180 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `shinpr/claude-code-workflows` — 26 default patterns, 0 followed pat
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 179 |
+| Files         | 180 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -230,14 +230,15 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 169 | ✓ | [`skills/recipe-update-doc/SKILL.md`](skills/recipe-update-doc/SKILL.md) |
 | 170 | ✓ | [`skills/requirement-convergence/references/criteria.md`](skills/requirement-convergence/references/criteria.md) |
 | 171 | ✓ | [`skills/requirement-convergence/SKILL.md`](skills/requirement-convergence/SKILL.md) |
-| 172 | ✓ | [`skills/subagents-orchestration-guide/references/monorepo-flow.md`](skills/subagents-orchestration-guide/references/monorepo-flow.md) |
-| 173 | ✓ | [`skills/subagents-orchestration-guide/references/review-resolution.md`](skills/subagents-orchestration-guide/references/review-resolution.md) |
-| 174 | ✓ | [`skills/subagents-orchestration-guide/SKILL.md`](skills/subagents-orchestration-guide/SKILL.md) |
-| 175 | ✓ | [`skills/test-implement/references/e2e.md`](skills/test-implement/references/e2e.md) |
-| 176 | ✓ | [`skills/test-implement/references/frontend.md`](skills/test-implement/references/frontend.md) |
-| 177 | ✓ | [`skills/test-implement/SKILL.md`](skills/test-implement/SKILL.md) |
-| 178 | ✓ | [`skills/testing-principles/SKILL.md`](skills/testing-principles/SKILL.md) |
-| 179 | ✓ | [`skills/typescript-rules/SKILL.md`](skills/typescript-rules/SKILL.md) |
+| 172 | ✓ | [`skills/subagents-orchestration-guide/references/lite-mode.md`](skills/subagents-orchestration-guide/references/lite-mode.md) |
+| 173 | ✓ | [`skills/subagents-orchestration-guide/references/monorepo-flow.md`](skills/subagents-orchestration-guide/references/monorepo-flow.md) |
+| 174 | ✓ | [`skills/subagents-orchestration-guide/references/review-resolution.md`](skills/subagents-orchestration-guide/references/review-resolution.md) |
+| 175 | ✓ | [`skills/subagents-orchestration-guide/SKILL.md`](skills/subagents-orchestration-guide/SKILL.md) |
+| 176 | ✓ | [`skills/test-implement/references/e2e.md`](skills/test-implement/references/e2e.md) |
+| 177 | ✓ | [`skills/test-implement/references/frontend.md`](skills/test-implement/references/frontend.md) |
+| 178 | ✓ | [`skills/test-implement/SKILL.md`](skills/test-implement/SKILL.md) |
+| 179 | ✓ | [`skills/testing-principles/SKILL.md`](skills/testing-principles/SKILL.md) |
+| 180 | ✓ | [`skills/typescript-rules/SKILL.md`](skills/typescript-rules/SKILL.md) |
 
 ---
 

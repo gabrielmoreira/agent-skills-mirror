@@ -240,7 +240,8 @@ At session start or after compaction, recover recent project context.
 ```bash
 eval "$(~/.claude/skills/gstack/bin/gstack-slug 2>/dev/null)"
 _BRANCH=$(git branch --show-current 2>/dev/null | tr -cd 'a-zA-Z0-9._/-') || :; _BRANCH=${_BRANCH:-unknown}
-_PROJ="${GSTACK_HOME:-$HOME/.gstack}/projects/${SLUG:-unknown}"
+eval "$(~/.claude/skills/gstack/bin/gstack-paths)"; : "${GSTACK_STATE_ROOT:?gstack-paths failed; reinstall with ./setup or /gstack-upgrade}"
+_PROJ="$GSTACK_STATE_ROOT/projects/${SLUG:-unknown}"
 if [ -d "$_PROJ" ]; then
   echo "--- RECENT ARTIFACTS ---"
   find "$_PROJ/ceo-plans" "$_PROJ/checkpoints" -type f -name "*.md" 2>/dev/null | xargs -r ls -t 2>/dev/null | head -3
@@ -425,7 +426,7 @@ Make factual updates directly; ask about risky or subjective decisions in standa
 
 ## Ship-owned documentation mode
 
-With a ship candidate, require the actual spawned marker and audit-scope rules below.
+With a ship candidate, follow audit-scope's inputs, steps and JSON result below.
 Missing marking/inputs/assets returns `blocked`, never standalone execution. Ship
 authority overrides generic spawned recommendations and standalone steps.
 
@@ -438,8 +439,8 @@ authority overrides generic spawned recommendations and standalone steps.
 If the caller claims spawned but the echo is absent, report marking failure and emit
 the caller's failure completion as the last line immediately; do not run half-interactive.
 Otherwise stay interactive without the marker. Outside ship-owned mode, spawned gates
-auto-choose the RECOMMENDED option, record it in the completion report, and continue:
-never call AskUserQuestion or stop for a prose answer. The NEVER-do invariants below do
+auto-choose the RECOMMENDED option, record it in the completion report, and continue
+through Step 9: never call AskUserQuestion or stop for a prose answer. The NEVER-do invariants below do
 not relax: skip any recommendation that rewrites CHANGELOG or changes VERSION and
 record why. Step 8 and cross-model review refer to this rule; narrower caller scope wins.
 
@@ -488,10 +489,10 @@ DOC_DIFF_BASE=$(git merge-base origin/<base> HEAD 2>/dev/null || git merge-base 
 echo "DOC_DIFF_BASE: $DOC_DIFF_BASE"
 ```
 
-1. Check the current branch. In standalone mode, if on the base branch, **abort**: "You're on the base branch. Run from a feature branch." A ship-owned read-only store audit uses its supplied source scope instead.
+1. Check the current branch. In standalone mode, if on the base branch, **abort**: "You're on the base branch. Run from a feature branch." Ship-owned mode skips this gate.
 
-2. Gather the diff. In ship-owned mode, also read `git diff --cached`, `git diff`,
-   and selected new-file content against the supplied base, not HEAD alone.
+2. Gather the diff. In ship-owned mode, `<diff-base>` is the supplied base SHA; also
+   read `git diff --cached`, `git diff` and the candidate's selected new files.
 
 ```bash
 git diff <diff-base> HEAD --stat
@@ -546,16 +547,16 @@ Use these definitions:
 - **Tutorial** — learning-oriented: step-by-step walkthrough for newcomers (getting started guides)
 - **Explanation** — understanding-oriented: "why this works this way" (ARCHITECTURE decisions, design rationale)
 
-3. **Output the coverage map.** Items with zero coverage are **critical gaps** — flag them for
-   Step 3. Items with reference-only coverage are **common gaps** — note them for the PR body.
+3. **Output the coverage map.** Items with zero coverage are **critical gaps**; items with
+   reference-only coverage are **common gaps**. Report both as documentation debt.
 
 4. **Architecture diagram drift detection.** If ARCHITECTURE.md (or any doc) contains ASCII
    diagrams or Mermaid blocks, extract entity names (modules, services, data flows) from the
    diagrams. Cross-reference against the diff. Flag any diagram entities that were renamed,
    split, removed, or moved in the code.
 
-The coverage map feeds into Steps 2-3 (what to audit and fix) and Step 9 (documentation debt
-summary in the PR body). Do NOT auto-generate missing documentation pages — flag gaps only.
+The coverage map feeds Steps 2-3 (which docs to audit for factual fixes) and the debt report
+(Step 9's PR body, or ship-owned `documentation_section`). Do NOT auto-generate missing documentation pages — flag gaps only.
 When significant gaps are found, suggest running `/document-generate` to fill them.
 
 ---

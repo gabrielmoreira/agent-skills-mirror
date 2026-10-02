@@ -59,12 +59,12 @@ Directories come first, in alphabetical order, then the individual files worth t
 
 #### `swc/`
 
-- **Purpose**: swc's repository, read only under `crates/swc_ecma_minifier/tests`: its fixtures with their configs, the tests `exec.rs` and `mangle.rs` write inline, and the libraries it measures itself on. Each is held to terser's bytes like the terser corpora; a test with an `expected.stdout`, and every `exec.rs` test, also has its outputs run, and each fixture's recorded `output.js` is what `JS_MINIFY_REPORT=<file>` compares sizes against.
+- **Purpose**: swc's repository, read only under `crates/swc_ecma_minifier/tests`: its fixtures with their configs, the tests `exec.rs` and `mangle.rs` write inline, and the libraries it measures itself on. Each is held to terser's bytes like the terser corpora; a test with an `expected.stdout`, and every `exec.rs` test, also has its outputs run, and webpack's output may be no bigger than each fixture's recorded `output.js`, nor than what swc's port of a terser case records when its `passing.txt` lists it, unless `SWC_SMALLER` lists why.
 - **Usage**: Git submodule — initialize with `git submodule update --init --depth 1 test/external/swc`. Test runner: `test/specCases/minify-corpora.spectest.js` (`yarn test:minify-corpora`).
 
 #### `terser/`
 
-- **Purpose**: terser's own repository, pinned to the version webpack depends on. Its `test/compress` cases and `test/input` files are two of the six corpora `lib/javascript/syntax-printer.js` is held to (test262 and swc's fixtures, `exec.rs` and `mangle.rs` tests are the other four): each source is minified by terser as published and by webpack's printer under several option sets, and the outputs, or the errors, must be byte-for-byte the same, but for what webpack's `correct` phase fixes. A case stating its `expect_stdout` also has each output run in terser's sandbox, which must print it — or, for `expect_stdout: true`, do whatever its input does, a throw or silence included.
+- **Purpose**: terser's own repository, pinned to webpack's `terser` devDependency. Its `test/compress` cases and `test/input` files are two of the six corpora `lib/javascript/syntax-printer.js` is held to (test262 and swc's fixtures, `exec.rs` and `mangle.rs` tests are the other four): each source is minified by terser as published and by webpack's printer under several option sets, and the outputs, or the errors, must be byte-for-byte the same, but for what webpack's `correct` phase fixes. A case stating its `expect_stdout` also has each output run in terser's sandbox, which must print it — or, for `expect_stdout: true`, do whatever its input does, a throw or silence included.
 - **Usage**: Git submodule — initialize with `git submodule update --init --depth 1 test/external/terser`. Test runner: `test/specCases/minify-corpora.spectest.js` (`yarn test:minify-corpora`), which also fails when the pin and the installed `terser` disagree, so bumping the dependency means moving the pin with it. A new corpus is one entry in its `CORPORA` list.
 
 ### `fixtures/`
@@ -199,10 +199,16 @@ through playwright, which is what reaches it, under a shim in
 call. Fetch the browser first — `yarn setup:firefox`, `yarn setup:webkit` —
 which installs into puppeteer's own cache (`PUPPETEER_CACHE_DIR`, defaulting to
 `~/.cache/puppeteer`) or playwright's; `FIREFOX_EXECUTABLE_PATH` and
-`WEBKIT_EXECUTABLE_PATH` point at one already on the machine. Only Chromium
-answers the media-emulation calls, so elsewhere a condition carries what no
-viewport varies as text. A defect only one engine has is filed against it with a
-reason opening `<engine> only:` rather than tolerated in all three.
+`WEBKIT_EXECUTABLE_PATH` point at one already on the machine. It compares
+effects, never CSSOM text: a stylesheet by the styles elements built from its
+selectors compute, at the widths its queries switch on; a page by its DOM and
+its render, with the dark color scheme read through each frame's own. Only
+Chromium answers the media-emulation calls, so only there is a stylesheet naming
+print also read under it. A defect only one
+engine has is filed against it with a reason opening `<engine> only:` rather
+than tolerated in all three, and each list must match exactly, so a defect the
+engine fixes fails until its entry goes. A workaround in the suite's own code
+gets the same treatment through a probe in `ENGINE_QUIRKS`.
 
 They are excluded from `test:bun` / `test:deno` (see the `--testPathIgnorePatterns`
 in those scripts): under Jest on Bun, loading the ESM-only `puppeteer-core` fails

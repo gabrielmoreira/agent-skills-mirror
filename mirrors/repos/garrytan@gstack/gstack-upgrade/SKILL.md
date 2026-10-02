@@ -58,7 +58,8 @@ Tell user: "Auto-upgrade enabled. Future updates will install automatically." Th
 
 **If "Not now":** Write snooze state with escalating backoff (first snooze = 24h, second = 48h, third+ = 1 week), then continue with the current skill. Do not mention the upgrade again.
 ```bash
-_SNOOZE_FILE="$HOME/.gstack/update-snoozed"
+eval "$(~/.claude/skills/gstack/bin/gstack-paths)"; : "${GSTACK_STATE_ROOT:?gstack-paths failed; reinstall with ./setup or /gstack-upgrade}"
+_SNOOZE_FILE="$GSTACK_STATE_ROOT/update-snoozed"
 _REMOTE_VER="{new}"
 _CUR_LEVEL=0
 if [ -f "$_SNOOZE_FILE" ]; then
@@ -328,10 +329,11 @@ running. Interpret the `DAEMON_CHECK` result:
 ### Step 5: Write marker + clear cache
 
 ```bash
-mkdir -p ~/.gstack
-echo "$OLD_VERSION" > ~/.gstack/just-upgraded-from
-rm -f ~/.gstack/last-update-check
-rm -f ~/.gstack/update-snoozed
+eval "$(~/.claude/skills/gstack/bin/gstack-paths)"; : "${GSTACK_STATE_ROOT:?gstack-paths failed; reinstall with ./setup or /gstack-upgrade}"
+mkdir -p "$GSTACK_STATE_ROOT"
+echo "$OLD_VERSION" > "$GSTACK_STATE_ROOT"/just-upgraded-from
+rm -f "$GSTACK_STATE_ROOT"/last-update-check
+rm -f "$GSTACK_STATE_ROOT"/update-snoozed
 ```
 
 ### Step 6: Show What's New

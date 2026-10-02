@@ -69,7 +69,7 @@ Does not own a `store.rs`. Its effects are written through other layers:
 - `tinyagents_session::transcript` (`transcript`, `SessionTranscript`, `write_transcript`): `phase_out_profile_md` parses and rewrites persisted session transcripts byte-compatibly.
 - `crate::inference::provider::factory`: `reconcile_orphaned_providers` mirrors the factory's exact, case-sensitive provider-string grammar so "resolvable here" matches "resolvable at inference time"; `unify_ai_provider_settings` references the factory's provider-string format.
 - `crate::inference::host_runtime::ollama_base_url_from_config`: the runner's Ollama reachability probe for the 6→7 step. That step and the 9→10 step mirror, by hand, the provider-string grammar of `embeddings::factory::create_embedding_provider` and `voice::factory::create_stt_provider` respectively (doc-linked, not imported), so keep them in sync when those factories change.
-- `crate::agent::messages::ChatMessage`, `schema::{LocalAiConfig, LocalAiUsage, ModelRouteConfig, SttEngine}` and `voice::factory::effective_stt_provider` are imported only by tests.
+- `tinyagents_session::transcript::TranscriptMessage`, `schema::{LocalAiConfig, LocalAiUsage, ModelRouteConfig, SttEngine}` and `voice::factory::effective_stt_provider` are imported only by tests.
 
 ## Used by
 

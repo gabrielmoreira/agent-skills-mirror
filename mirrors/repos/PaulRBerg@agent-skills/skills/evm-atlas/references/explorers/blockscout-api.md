@@ -150,7 +150,8 @@ curl -s -H "authorization: Bearer $BLOCKSCOUT_API_KEY" \
 }
 ```
 
-`coin_balance` is the native balance in wei. See [Unit Conversion](#unit-conversion).
+`coin_balance` is the indexed native balance in wei and can lag chain state; use RPC `eth_getBalance` when the amount
+decides anything. See [Unit Conversion](#unit-conversion).
 
 ### Token Holdings
 
@@ -184,7 +185,9 @@ Each entry embeds full token metadata and balance:
 ]
 ```
 
-For ERC-721/1155, `token_id` and `token_instance` are populated. Divide `value` by `10^decimals` per token.
+For ERC-721/1155, `token_id` and `token_instance` are populated. Divide `value` by `10^decimals` per token. Indexed
+`value` can be stale (a listed USDT balance has read zero on-chain); treat these endpoints as token discovery and
+confirm amounts with RPC `balanceOf`.
 
 ### Transaction History
 
@@ -287,9 +290,12 @@ curl -s "${api_url}?module=account&action=balance&address=0xADDR"
 ```
 
 Use the helper's `api_url` for API requests; `instance_url` is the page host. An explicit `explorerApiUrl` in
-`target-mainnets.json` takes precedence over a Chainscout URL. Morph (`2818`) uses
+`target-mainnets.json` or a Blockscout overlay `apiUrl` takes precedence over a Chainscout URL. Morph (`2818`) uses
 `https://explorer-api.morph.network/api` for its API and `https://explorer.morph.network` for pages, verified in
-Chromium and through the API on 2026-09-15.
+Chromium and through the API on 2026-09-15. Linea (`59144`) uses `https://api-explorer.linea.build/api` for its API;
+`https://explorer.linea.build` serves only pages and returns HTML `404` under `/api`, verified through the frontend's
+`NEXT_PUBLIC_API_HOST` and the API on 2026-10-01. When a self-hosted page host returns HTML for `/api`, read its
+`/assets/envs.js` `NEXT_PUBLIC_API_HOST` before reporting the instance down.
 
 Superseed (`5330`) is not a usable Blockscout instance despite its stale Chainscout entry. Chromium verified on
 2026-09-15 that `https://explorer.superseed.xyz` serves Conduit Explorer and explicitly lacks historical transactions,
@@ -314,14 +320,15 @@ Use the completion format in `SKILL.md`: preserve full identifiers and use a com
 
 ## Error Handling
 
-| Symptom                              | Cause / Action                                                                                                    |
-| ------------------------------------ | ----------------------------------------------------------------------------------------------------------------- |
-| `401 {"error":"Unauthorized"}`       | Missing/invalid key on the gateway. Report the coverage gap; do not substitute a hosted per-instance route.       |
-| `404` on `api.blockscout.com/{id}/…` | Resolve the target through Chainscout; use its per-instance route only when it qualifies for the exception above. |
-| `429` / `x-ratelimit-remaining: 0`   | Rate limited. Back off until `x-ratelimit-reset` (seconds); retain the keyed gateway route.                       |
-| `503`                                | Transient gateway error. Retry within the bounded policy; otherwise report a coverage gap.                        |
-| `403` HTML "Just a moment..." page   | Bot challenge on a hosted `*.blockscout.com` instance. Use the keyed gateway, not repeated scripted retries.      |
-| Compat `{"status":"0", …}`           | Etherscan-shaped error (`No transactions found`, bad address, etc.).                                              |
+| Symptom                                    | Cause / Action                                                                                                    |
+| ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------- |
+| `401 {"error":"Unauthorized"}`             | Missing/invalid key on the gateway. Report the coverage gap; do not substitute a hosted per-instance route.       |
+| `402` "requires Builder/Business/Pro plan" | Chain is plan-gated on the gateway (e.g. Polygon `137`). Coverage gap for this route; do not retry.               |
+| `404` on `api.blockscout.com/{id}/…`       | Resolve the target through Chainscout; use its per-instance route only when it qualifies for the exception above. |
+| `429` / `x-ratelimit-remaining: 0`         | Rate limited. Back off until `x-ratelimit-reset` (seconds); retain the keyed gateway route.                       |
+| `503`                                      | Transient gateway error. Retry within the bounded policy; otherwise report a coverage gap.                        |
+| `403` HTML "Just a moment..." page         | Bot challenge on a hosted `*.blockscout.com` instance. Use the keyed gateway, not repeated scripted retries.      |
+| Compat `{"status":"0", …}`                 | Etherscan-shaped error (`No transactions found`, bad address, etc.).                                              |
 
 ## Reference Files
 

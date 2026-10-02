@@ -6,6 +6,8 @@ This package is the platform-neutral contract between Clawket UI and backend ada
 
 `ModelInfo.sortOrder` is optional backend recommendation order within a provider (lower first). Missing order retains legacy alphabetical presentation; consumers must not infer model age from names.
 
+`ModelSelectionState.thinkingLevels` optionally carries the levels the current model accepts, in display order, when the backend reports them per session or model. It takes precedence over `ModelInfo.reasoningLevels` and `listThinkingLevels()`; a missing field keeps those. An adapter exposes `setThinkingLevel` only when its backend validates the write.
+
 1. Keep runtime dependencies empty. Do not import React, React Native, storage, networking, or backend implementations.
 2. Export only serializable protocol data, adapter interfaces, capability policy, errors, and deterministic test helpers.
 3. Backend support is expressed through `Capabilities`; unsupported management groups are absent instead of throwing at runtime. `attachments` means image attachments, while the additive optional `fileAttachments` capability enables non-image files. Missing refinements fail closed.
@@ -60,4 +62,9 @@ Optional `run_finished.terminalMessage` carries a fixed, safe system notice for 
 
 `health.sessionCatalogSync === 1` optionally negotiates `sessions.sync` for Codex, Claude Code and Pi without changing `sessions.list` or the adapter's array return type. Full snapshots use immutable epoch/revision pages of at most 64 KiB; small deltas carry exact base revision, upserts, removed keys and complete order. Clients apply only complete, validated results atomically and may restart an expired page sequence once. Incomplete native discovery is not deletion evidence. Keep these wire types runtime-free.
 
+Codex may independently negotiate `health.sessionCatalogPageIndex === 1`. Only then request `pageIndex: true` on an initial/base read; the optional first-page `pageOffsets` indexes frozen continuations. Bound it to 512 increasing offsets and three outstanding reads; keep complete atomic validation, one expiry restart and all existing size limits. Missing negotiation/index retains serial v1 pages.
+
 `ChatMessage.attachments[].artifactId` and `FinalMessage.attachments` preserve stable, backend-authored attachment references. Optional `AgentAdapter.artifacts` resolves a session-bound artifact into an opaque expiring file handle with bounded reads. This capability is independent of transport and workspace configuration files; absence never authorizes a URL/path fallback. Keep the package runtime-neutral.
+
+`SessionActivity` and the optional negotiated `AgentAdapter.readSessionActivity` provide ephemeral presentation evidence for a bounded visible window (32 keys). `session_activity_update` carries only that projection. Unknown never proves idle, health or ownership; keep this evidence out of durable catalogs and history. See [session activity](../../docs/3.1/session-activity.md).
+Optional `profileManagement` is Codex-only and runtime-negotiated by profile version 1. `AgentProfileOperations` covers native defaults, quota, authorized project skills/instructions, and read-only MCP/plugins; it is separate from per-session settings, ownership and arbitrary filesystem access. Replies use opaque IDs, document/config versions and explicit nullable unknown usage. Missing capability remains unavailable. Keep these contracts runtime-free; see `../../docs/3.1/codex-profile.md`.

@@ -102,10 +102,7 @@ is returned by `status()` and reflects the cache directly: `Empty` reports
 `ready` flag from the worker's handshake `backends` list. There is no public
 RPC method for this; `crates/openhuman-core/src/agent/harness_init/registry.rs`
 reads `status().running` to decide whether the `runtime_python_server` init
-step is done. The about-app capability catalog
-(`platform/about_app/catalog_localai_settings_mobile.rs`, id `local_ai.python_runtime_installer`,
-domain `runtime_python`) describes the managed-interpreter capability this
-worker depends on, not this module's own status.
+step is done.
 
 ## Persistence
 
@@ -120,8 +117,7 @@ No domain store. `spacy::python_server_cache_root` picks the root:
 
 The worker runs under whichever interpreter `runtime::python::PythonBootstrap`
 or the venv provisioning resolved: it does not choose or sandbox that
-interpreter itself, and it is spawned through
-`runtime::python::process::spawn_stdio_process` with the core's own
+interpreter itself, and it is spawned with the core's own
 environment inherited (there is no `env_clear`). On top of that the module
 adds `OPENHUMAN_RPS_BACKENDS` (the enabled backend list) and, for Kompress,
 `OPENHUMAN_RPS_KOMPRESS_{MODEL,DEVICE,TARGET_RATIO,MAX_INPUT_CHARS}`,

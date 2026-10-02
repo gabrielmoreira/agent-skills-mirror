@@ -83,7 +83,11 @@ user's. Remote computers are covered by their transport's trust, not this
 ledger. `app_script` goes through the ledger too: every app a script names
 (`tell application "X"`, `Application("X")`, and System Events plus each
 `process "X"` it drives) needs the user's decision first, and macOS
-Automation prompts come on top of that.
+Automation prompts come on top of that. A script that names no app runs as
+osascript itself and needs consent for `com.apple.osascript`. Recording a
+decision (`consent` allow or revoke, a `confirm`), running `app_script`, and
+registering or spawning a computer are the user's own calls: the host shows
+them the exact call, and a model call alone returns `consent_needs_user`.
 
 Only in explicitly authorized foreground mode, where a shared surface is taken
 — a front lease for window-record
@@ -333,7 +337,10 @@ with stderr, and `script_timeout` means the script — or a consent dialog
   `doShellScript`, `do script`/`doScript` (terminals), the Objective-C
   bridge (`ObjC`, `$`, `use framework`), `run script`, `eval`, raw
   `«event …»` codes, System Events `keystroke`/`key code`/`click at`, and
-  terminal or script-runner apps as targets all refuse `script_refused`.
+  terminal or script-runner apps as targets all refuse `script_refused`,
+  as do StandardAdditions file access, `open location`, `mount volume`,
+  `system attribute`, and opening files or other apps through an app
+  (`open POSIX file …`, `.open(`, `.launch(`, `Path(`).
   So does any app the script does not name with a literal: write
   `tell application "Mail"` / `Application("Mail")`, `process "Safari"` /
   `processes.byName("Safari")`, and in JXA use `.at(i)` or `.byName("x")`

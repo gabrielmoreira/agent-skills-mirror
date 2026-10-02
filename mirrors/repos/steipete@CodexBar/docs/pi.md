@@ -9,7 +9,9 @@ read_when:
 
 Enable Pi in Settings → Providers to show Pi and OMP token history as a separate local source in the menu, Usage & Spend, Overview, and widgets. Pi has no subscription quota or account balance. Costs are API-rate estimates from recorded assistant usage, not a billing statement. No provider login or credential is required to read the transcripts.
 
-The scanner currently supports the `openai-codex` and `anthropic` backends. Other backends keep standalone Pi history incomplete; they do not become measured zero or invalidate the supported Codex and Claude partitions. Supported usage with an unknown model retains its recorded tokens and is marked unpriced. Mixed priced and unpriced history preserves the known subtotal without presenting it as a complete cost.
+The scanner supports the `openai-codex`, `anthropic`, and `amazon-bedrock` backends. Bedrock sessions stay in standalone Pi history and use the exact model ID in the cached models.dev Bedrock catalog, preserving regional and global prices. They are never mirrored into native Claude or Codex history. Other backends keep standalone Pi history incomplete; they do not become measured zero or invalidate supported partitions. Supported usage with an unknown model retains its recorded tokens and is marked unpriced. Mixed priced and unpriced history preserves the known subtotal without presenting it as a complete cost.
+
+The `cacheWrite1h` counter is the one-hour subset of `cacheWrite`, priced at twice the input rate; remaining writes use the default cache-write tariff. Missing one-hour counters retain the default tariff. Invalid counts, including a one-hour count larger than total writes, keep history incomplete. Pi's recorded `usage.cost` is not used to replace the independent estimate. Cached history is reparsed after this pricing change or a Bedrock catalog rate change.
 
 Cost collection can refresh the public [models.dev pricing catalog](model-pricing.md). Transcript contents stay local; the catalog request needs no credential. Existing cached prices and bundled rates remain available when a pricing refresh fails.
 

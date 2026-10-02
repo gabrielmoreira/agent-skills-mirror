@@ -20,7 +20,7 @@ OS-keychain-backed secret storage with pluggable test and debug backends, plus a
 | `crates/openhuman-core/src/security/keyring/ops.rs` | Core operations: `get`/`set`/`delete`/`is_available`/`get_or_create_random`/`migrate_from_file`, the `MigrationOutcome` enum, the `namespaced_key` helper, the cached availability probe, and `force_backend_for_test`. |
 | `crates/openhuman-core/src/security/keyring/store.rs` | Backend selection and global state. Owns the `WORKSPACE_DIR` and `BACKEND` `OnceLock`s, `init_workspace`, `backend()`, `build_backend()`/`build_backend_at()`, and `workspace_dir_for_file_backend()` path derivation. Also the `cfg(test)`-only `test_scope` module (thread-scoped test workspaces). |
 | `crates/openhuman-core/src/security/keyring/backend.rs` | `KeyringBackend` trait plus `OsBackend` (native keychain via the `keyring` crate, service name `"openhuman"`), `FileBackend` (plaintext `dev-keychain.json`, test/debug only), and test-only `MockBackend`. |
-| `crates/openhuman-core/src/security/keyring/encrypted_file_backend.rs` | `EncryptedFileBackend`: all secrets in one ChaCha20-Poly1305 `secrets.enc` file keyed by an app master key; `init_master_key`/`is_master_key_available`; legacy `dev-keychain.json` migration; corrupt-file quarantine. |
+| `crates/openhuman-core/src/security/keyring/encrypted_file_backend.rs` | `EncryptedFileBackend`: all secrets in one ChaCha20-Poly1305 `secrets.enc` file keyed by an app master key; `init_master_key`; legacy `dev-keychain.json` migration; corrupt-file quarantine. |
 | `crates/openhuman-core/src/security/keyring/encrypted_store.rs` | `SecretStore`: config-field encryption (`enc2:` ChaCha20-Poly1305, legacy `enc:` XOR migration), keychain-backed master key with legacy `.secret_key` file migration, process-wide key cache, Windows ACL repair (`icacls`). |
 | `crates/openhuman-core/src/security/keyring/file_store.rs` | Shared secrets-file primitives for both file backends: the cross-process advisory write lock (`lock_for_write`, on a sidecar `<path>.lock`), the `0600` unique-temp-then-rename `write_atomic`, and `quarantine_corrupt`. |
 | `crates/openhuman-core/src/security/keyring/crypto.rs` | Shared ChaCha20-Poly1305 helpers (`chacha20_encrypt`/`chacha20_decrypt`), random-byte generation, hex encode/decode. Used by both `encrypted_store` and `encrypted_file_backend`. |
@@ -34,7 +34,7 @@ OS-keychain-backed secret storage with pluggable test and debug backends, plus a
 Re-exported from `mod.rs`:
 
 - `KeyringBackend`: backend trait (`get`/`set`/`delete`/`name`).
-- `SecretStore`: config-field encrypt/decrypt; `encrypt`/`decrypt`/`decrypt_and_migrate`/`needs_migration`/`is_encrypted`/`is_secure_encrypted`/`new`.
+- `SecretStore`: config-field encrypt/decrypt; `encrypt`/`decrypt`/`decrypt_and_migrate`/`needs_migration`/`is_encrypted`/`new`.
 - `KeyringError`: error enum with `diagnostic()`.
 - `init_master_key`: load the app master key from the OS keychain at startup (staging/prod only).
 - `init_workspace`: register the workspace dir for file and encrypted-file backends.

@@ -3,21 +3,20 @@
 OpenHuman's inference integration domain. Reusable model, provider transport,
 embedding, capability, temperature, and failure behavior belongs to
 `tinyinference`; this domain owns product configuration, credentials, access
-policy, local process lifecycle (Ollama / LM Studio), RPC/controller
-surfaces, OpenAI/Codex subscription OAuth, and the OpenAI-compatible HTTP
+policy, the endpoint seam to a user-run local runtime (Ollama / LM Studio /
+MLX / OMLX / OpenAI-compatible), RPC/controller surfaces, OpenAI/Codex subscription OAuth, and the OpenAI-compatible HTTP
 endpoint. The RPC surface is `inference.*`; older `local_ai_*` method names are
 compatibility aliases in `crates/openhuman-core/src/core/legacy_aliases.rs`.
 
 ## Responsibilities
 
 - Resolve workload names (`chat`, `reasoning`, `agentic`, `coding`, `memory`, `embeddings`, `learning`, etc.) and provider strings (`openhuman`, `cloud`, `ollama:<model>`, `lmstudio:<model>`, `claude_agent_sdk:<model>`, `claude-code:<model>`, `<slug>:<model>[@<temp>]`) to a concrete `Arc<dyn tinyinference_llm::ChatModel<()>>` + model id.
-- Manage the local AI runtime: detect/spawn/adopt `ollama serve`, probe LM Studio over HTTP (never spawned), select OpenHuman-owned artifact paths, invoke TinyInference's Ollama/Piper installers, and enforce a minimum-context-window floor. Local STT (whisper.cpp) was retired; STT is now cloud/engine-configurable via `voice_server.stt_engine` (see `config/migrations/retire_local_whisper_stt.rs`).
+- Talk to the local AI runtime the **user** runs (Ollama, LM Studio, MLX, OMLX, any OpenAI-compatible server): probe the configured endpoint (`ready` / `degraded` / `unreachable`), report which configured models it serves, and enforce a minimum-context-window floor. OpenHuman never installs or launches a runtime, never pulls or downloads a model, never installs Piper, and does not pick models by RAM tier; a missing model is reported with "run `ollama pull <model>`" guidance. Local STT (whisper.cpp) was retired; STT is now cloud/engine-configurable via `voice_server.stt_engine` (see `config/migrations/retire_local_whisper_stt.rs`).
 - Provide chat, vision (multimodal), summarization, embeddings, sentiment, and "should react" inference operations.
 - Preserve product-specific config-rejection, billing, and authentication policy while TinyInference owns provider-failure classification and TinyAgents owns model-call retry execution.
 - Resolve abstract tier names (`hint:reasoning`, `hint:agentic`, `hint:coding`, etc.) through the TinyAgents `ModelRouter` in `crates/openhuman-core/src/agent/tinyagents/routes.rs` and the provider factory here.
 - Run ChatGPT/Codex OAuth (PKCE) for the `openai` cloud slug and persist tokens in the encrypted auth-profile store.
 - Expose an OpenAI-compatible `/v1/*` HTTP endpoint guarded by a stable user-managed external bearer.
-- Detect device hardware profile and recommend/apply local model presets/tiers.
 - Maintain the built-in BYOK provider preset catalog used by Connections → API keys → LLM.
   The current matrix is `tinymemory_api::host::cloud_providers`, re-exported through
   `config/schema/cloud_providers.rs`; credentials are stored under `provider:<slug>` in the auth-profile store.
@@ -27,23 +26,21 @@ compatibility aliases in `crates/openhuman-core/src/core/legacy_aliases.rs`.
 | File / dir                                                                        | Role                                                                                                                                                                                                                                               |
 | --------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `mod.rs`                                                                          | Domain root; module decls + re-exports; wires `inference.*` controller schemas/controllers.                                                                                                                                                        |
-| `ops.rs`                                                                          | Canonical handler file, `inference_*` business logic returning `Outcome<T>`; delegates to `local`, `provider`, `sentiment`, `device`, `presets`, `openai_oauth`. Includes Sentry-noise suppression for expected provider/user-config failures. |
+| `ops.rs`                                                                          | Canonical handler file, `inference_*` business logic returning `Outcome<T>`; delegates to `host_runtime`, `provider`, `sentiment`, `openai_oauth`. Includes Sentry-noise suppression for expected provider/user-config failures. |
 | `schemas.rs` + `schemas/` (`catalog.rs`, `prompt_handlers.rs`, `oauth_handlers.rs`, `claude_code_handlers.rs`, `settings_handlers.rs`) | `inference.*` controller schemas + `handle_*` fns + param DTOs.                                                                                                                                                                                    |
 | `tinyinference_llm::{classification,completion,sentiment}` | Reusable language-model parsing and classification called directly by the host. |
-| `tinyinference_local::device`; `tinyinference_core::sanitize` | Shared hardware detection and credential-safe diagnostic formatting. |
+| `tinyinference_core::sanitize` | Credential-safe diagnostic formatting. |
 | `tinyinference_llm::model::model_id_supports_vision`                                  | Upstream capability hint used directly for local model ids when the runtime cannot return an authoritative profile.                                                                                                                               |
 | `tinyinference_llm::model::effective_temperature`                                     | Applies unsupported-model glob patterns and overrides before provider serialization.                                                                                                                                                              |
-| `types.rs`                                                                        | Serde DTOs: `LocalAiStatus`, `LocalAiAssetsStatus`, `LocalAiDownloadsProgress`, `LocalAiEmbeddingResult`, `LocalAiSpeechResult`, `LocalAiTtsResult`, etc.                                                                                          |
+| `tinyinference_local::status`                                                     | Serde DTOs re-exported from `mod.rs`: `LocalAiStatus`, `LocalAiEmbeddingResult`, `LocalAiSpeechResult`, `LocalAiTtsResult`. |
 | `model_context.rs`                                                                | Known model context-window sizes (`context_window_for_model`) for pre-dispatch budgeting.                                                                                                                                                          |
-| `config/ops/local_ai_presets.rs`                                                  | OpenHuman `LocalAiConfig` mapping for `tinyinference_local::presets`; reusable tiers, recommendations, and preset data live upstream.                                                                                                             |
 | `paths.rs`                                                                        | Host-owned on-disk model artifact paths. Completion and sentiment parsing live in `tinyinference`. |
 | `local/`                                                                          | Local runtime manager (was `local_ai/`). See `local/README.md`.                                                                                                                                                                                    |
-| `local/core.rs`                                                                   | `LocalAiService` singleton (`global`/`try_global`), `model_artifact_path`.                                                                                                                                                                         |
-| `local/ops.rs` + `local/ops/` (`runtime_ops.rs`, `chat.rs`, `agent_chat.rs`, `turn_guards.rs`)                                       | Local RPC entrypoints (`local_ai_status/prompt/summarize/vision_prompt/embed`); re-exported as `local::rpc`.                                                                                                      |
+| `host_runtime/core.rs`                                                            | `LocalAiService` singleton (`global`). |
+| `host_runtime/ops.rs` + `host_runtime/ops/` (`runtime_ops.rs`, `agent_chat.rs`, `turn_guards.rs`) | Local RPC entrypoints (`local_ai_status/prompt/summarize/vision_prompt/transcribe/tts`); re-exported as `host_runtime::rpc`. |
 | `local/schemas.rs`                                                                | Local-runtime `inference.*` controller schemas + handlers.                                                                                                                                                                                         |
-| `tinyinference_local`                                                            | Ollama/LM Studio wire types, URL handling, model requirements, runtime profiles, provider selection, process flags, spawn-marker persistence, Ollama installation, and Piper binary/voice installation. |
-| `local/service/`                                                                  | `LocalAiService` impl split: `bootstrap`, `assets`, `lm_studio`, `model_rpc`, `public_infer`, `speech`, `transcription`, `vision_embed`, `spawn_marker`, `ollama_admin/`.                                                                          |
-| `local/service/ollama_admin/`                                                    | Ollama daemon lifecycle split by concern: `binary`, `diagnostics`, `health`, `model_pull`, `server`, `util` (`test_ollama_connection`).                                                                                                            |
+| `tinyinference_local`                                                            | Endpoint-only local inference: Ollama/LM Studio wire types, URL handling, model requirements, runtime profiles, provider selection, endpoint probe, and inference calls. No download, install, or process management. |
+| `host_runtime/service/`                                                           | OpenHuman speech bindings (`speech.rs`, `transcription.rs`) over `tinyinference_local::service::LocalAiService`. |
 | `provider/`                                                                       | Native TinyAgents model construction plus host provider configuration, auth, error taxonomy, DTOs, and RPC helpers (was `providers/`). See `provider/README.md`.                                                                                  |
 | `provider/types.rs`                                                               | Host request/response, streaming delta, tool-call, and usage DTOs retained at product/RPC boundaries.                                                                                                                                              |
 | `provider/factory.rs` + `provider/factory/` (`routing.rs`, `tiers.rs`, `turn_model.rs`, `subprocess_providers.rs`, `access_gates.rs`, `chat_model.rs`, `cloud_slug.rs`, `credentials.rs`, `local_runtime.rs`, `managed_backend.rs`, `primary_cloud.rs`) | `create_chat_model*`, `provider_for_role`, provider-string grammar, access gates, and local/cloud/CLI model construction; `BYOK_INCOMPLETE_SENTINEL`.                                                                                              |
@@ -69,17 +66,23 @@ compatibility aliases in `crates/openhuman-core/src/core/legacy_aliases.rs`.
 From `mod.rs` re-exports:
 
 - `model_context::context_window_for_model`
-- `types::{LocalAiStatus, LocalAiAssetStatus, LocalAiAssetsStatus, LocalAiDownloadProgressItem, LocalAiDownloadsProgress, LocalAiEmbeddingResult, LocalAiSpeechResult, LocalAiTtsResult}`
+- `{LocalAiStatus, LocalAiEmbeddingResult, LocalAiSpeechResult, LocalAiTtsResult}` (from `tinyinference_local::status`), `local_vision_mode`, `disabled_local_ai_status`, `local_runtime_config`
 - `local::all_local_inference_controller_schemas` / `local::all_local_inference_registered_controllers` (legacy export names; registered schemas are in the `inference` namespace)
 - `rpc` (alias for `ops`) and `all_inference_controller_schemas` / `all_inference_registered_controllers`
 
-Provider-layer (via `provider::`): `ChatRequest`, `ChatResponse`, `ProviderDelta`, `ToolCall`, `UsageInfo`, `create_chat_model*`, `provider_for_role`, `BYOK_INCOMPLETE_SENTINEL`, `OpenHumanBackendModel`, plus error classifiers. Local runtime: `local::{global, try_global}` → `Arc<LocalAiService>`.
+Provider-layer (via `provider::`): `ChatRequest`, `ChatResponse`, `ProviderDelta`, `ToolCall`, `UsageInfo`, `create_chat_model*`, `provider_for_role`, `BYOK_INCOMPLETE_SENTINEL`, `OpenHumanBackendModel`, plus error classifiers. Local runtime: `host_runtime::global` → `Arc<LocalAiService>`.
 
 ## RPC / controllers
 
 One namespace is wired into the controller registry (`crates/openhuman-core/src/core/all.rs`).
 
-`inference.*` (`schemas.rs`, `local/schemas.rs`): `resolve_model`, `status`, `get_client_config`, `update_model_settings`, `update_local_settings`, `list_models`, `provider_auth_errors`, `device_profile`, `presets`, `apply_preset`, `diagnostics`, `openai_oauth_start`, `openai_oauth_complete`, `openai_oauth_import_codex_cli`, `openai_oauth_status`, `openai_oauth_disconnect`, `summarize`, `prompt`, `vision_prompt`, `test_provider_model`, `analyze_sentiment`, `claude_code_status`, `claude_code_auth_status`, `claude_code_settings`, `claude_code_set_full_access`, `agent_chat`, `agent_chat_simple`, `transcribe`, `transcribe_bytes`, `tts`, `assets_status`, `downloads_progress`, `download_asset`, `install_piper`, `piper_install_status`, `test_connection`.
+`inference.*` (`schemas.rs`, `local/schemas.rs`): `resolve_model`, `status`, `get_client_config`, `update_model_settings`, `update_local_settings`, `list_models`, `provider_auth_errors`, `diagnostics`, `openai_oauth_start`, `openai_oauth_complete`, `openai_oauth_import_codex_cli`, `openai_oauth_status`, `openai_oauth_disconnect`, `summarize`, `prompt`, `vision_prompt`, `test_provider_model`, `analyze_sentiment`, `claude_code_status`, `claude_code_auth_status`, `claude_code_settings`, `claude_code_set_full_access`, `agent_chat`, `agent_chat_simple`, `transcribe`, `transcribe_bytes`, `tts`, `test_connection`.
+
+The model-download, asset-status, Piper-installer, preset and device-profile
+controllers (`assets_status`, `downloads_progress`, `download_asset`,
+`install_piper`, `piper_install_status`, `presets`, `apply_preset`,
+`device_profile`) and their `local_ai_*` aliases were removed: the user runs
+their own runtime and pulls models there.
 
 Legacy `openhuman.local_ai_*` and `openhuman.update_local_ai_settings` method names are rewritten to canonical `openhuman.inference_*` methods by `crates/openhuman-core/src/core/legacy_aliases.rs` and `app/src/services/rpcMethods.ts`.
 
@@ -94,8 +97,8 @@ Also exposes a non-RPC HTTP router (`http::router()`) nested at `/v1` by `crates
 ## Persistence
 
 - `openai_oauth/store.rs` persists OAuth tokens via the credentials auth-profile store (`AuthProfilesStore`, `auth-profiles.json`, encrypted at rest) under profile key `provider:openai` / profile `oauth`.
-- `LocalAiService` holds in-process runtime state (status, owned `ollama serve` child) via the `local::global` `OnceCell` singleton, process-lifetime, not durably persisted.
-- Model artifacts live under `<root>/models/local-ai/` (`local/core.rs::model_artifact_path`); OpenHuman selects the Piper root and passes it to `tinyinference_local::piper::PiperInstall`.
+- `LocalAiService` holds in-process probe state (the last endpoint verdict) via the `host_runtime::global` `OnceCell` singleton, process-lifetime, not durably persisted. `inference.update_local_settings` resets it so the next status poll re-probes.
+- No model artifacts are stored by OpenHuman; models live in the user's runtime. Local TTS uses a Piper binary the user installed (`PIPER_BIN` / PATH).
 - Routing/provider/local settings persisted through `config` (no dedicated `store.rs`).
 
 ## Dependencies
@@ -114,7 +117,7 @@ Also exposes a non-RPC HTTP router (`http::router()`) nested at `/v1` by `crates
 - `crate::core::observability`: `expected_error_kind` for Sentry-noise classification.
 - `openhuman_rpc::server::build_core_http_router`: mounts this router at `/v1`.
 - `crate::core::auth`: bearer auth for the OpenAI-compatible endpoint.
-- External: `sysinfo` (device profile), `reqwest`.
+- External: `reqwest`.
 
 ## Used by
 
@@ -125,15 +128,15 @@ TinyInference crates; `host_runtime` retains OpenHuman policy and RPC wiring.
 
 ## Notes / gotchas
 
-- TinyInference owns effective chat, vision, embedding, STT, TTS, and
-  quantization resolution; OpenHuman implements its configuration view and
+- TinyInference owns effective chat, vision, embedding, STT, and TTS model
+  resolution (a configured id passes through unchanged; defaults apply only
+  when it is empty); OpenHuman implements its configuration view and
   calls `tinyinference_local::models` directly.
 - Provider strings carry an optional `@<temp>` suffix that pins a per-workload temperature; the suffix is stripped before the model id is sent upstream.
 - `update_model_settings` silently drops reserved cloud-provider slugs (`openhuman`/`cloud`/`pid` built-ins the frontend echoes back); `apply_model_settings` re-injects them from stored config so they aren't lost.
 - `ops.rs` deliberately demotes known provider/user-config failures (unknown cloud provider, 401/429, model-not-found) to `warn!` to keep them out of Sentry; only unclassified failures escalate to `error!`.
-- `apply_preset` is MVP-gated: only the 1B local preset (`ram_2_4gb`) and `disabled` are accepted; `custom` cannot be applied via this path.
 - `diagnostics` returns its payload unwrapped (no `{result, logs}` envelope) to match the legacy `local_ai_diagnostics` shape that `json_rpc_e2e` asserts against.
-- Adopted (externally started) `ollama serve` daemons are never killed on exit; only the child OpenHuman itself spawned (`owned_ollama`) is.
-- `local::global` lazily initialises the `LocalAiService` singleton; use `try_global()` on shutdown paths to avoid creating it just to no-op.
+- OpenHuman never spawns or stops a local runtime, so shutdown has no local-runtime cleanup step.
+- `host_runtime::global` lazily initialises the `LocalAiService` singleton.
 - The `/v1/*` endpoint uses a stable external bearer (`EXTERNAL_OPENAI_COMPAT_PROVIDER`) separate from the core launch bearer, so external OpenAI-compatible harnesses can call it.
 - Tests serialize through `inference_test_guard()` (a process-global mutex) since the runtime singleton and config are shared.

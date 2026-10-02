@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `rikkahub/rikkahub` — 26 default patterns, 0 followed patterns, 77 file(s) materialized.
+Mirror of `rikkahub/rikkahub` — 26 default patterns, 0 followed patterns, 91 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `rikkahub/rikkahub` — 26 default patterns, 0 followed patterns, 77 f
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 77 |
+| Files         | 91 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -86,56 +86,70 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 25 | ✓ | [`.agents/skills/claude-api/python/claude-api/batches.md`](.agents/skills/claude-api/python/claude-api/batches.md) |
 | 26 | ✓ | [`.agents/skills/claude-api/python/claude-api/files-api.md`](.agents/skills/claude-api/python/claude-api/files-api.md) |
 | 27 | ✓ | [`.agents/skills/claude-api/python/claude-api/README.md`](.agents/skills/claude-api/python/claude-api/README.md) |
-| 28 | ✓ | [`.agents/skills/claude-api/python/claude-api/streaming.md`](.agents/skills/claude-api/python/claude-api/streaming.md) |
-| 29 | ✓ | [`.agents/skills/claude-api/python/claude-api/tool-use.md`](.agents/skills/claude-api/python/claude-api/tool-use.md) |
-| 30 | ✓ | [`.agents/skills/claude-api/python/managed-agents/README.md`](.agents/skills/claude-api/python/managed-agents/README.md) |
-| 31 | ✓ | [`.agents/skills/claude-api/ruby/claude-api/README.md`](.agents/skills/claude-api/ruby/claude-api/README.md) |
-| 32 | ✓ | [`.agents/skills/claude-api/ruby/claude-api/streaming.md`](.agents/skills/claude-api/ruby/claude-api/streaming.md) |
-| 33 | ✓ | [`.agents/skills/claude-api/ruby/claude-api/tool-use.md`](.agents/skills/claude-api/ruby/claude-api/tool-use.md) |
-| 34 | ✓ | [`.agents/skills/claude-api/ruby/managed-agents/README.md`](.agents/skills/claude-api/ruby/managed-agents/README.md) |
-| 35 | ✓ | [`.agents/skills/claude-api/shared/agent-design.md`](.agents/skills/claude-api/shared/agent-design.md) |
-| 36 | ✓ | [`.agents/skills/claude-api/shared/anthropic-cli.md`](.agents/skills/claude-api/shared/anthropic-cli.md) |
-| 37 | ✓ | [`.agents/skills/claude-api/shared/claude-platform-on-aws.md`](.agents/skills/claude-api/shared/claude-platform-on-aws.md) |
-| 38 | ✓ | [`.agents/skills/claude-api/shared/error-codes.md`](.agents/skills/claude-api/shared/error-codes.md) |
-| 39 | ✓ | [`.agents/skills/claude-api/shared/live-sources.md`](.agents/skills/claude-api/shared/live-sources.md) |
-| 40 | ✓ | [`.agents/skills/claude-api/shared/managed-agents-api-reference.md`](.agents/skills/claude-api/shared/managed-agents-api-reference.md) |
-| 41 | ✓ | [`.agents/skills/claude-api/shared/managed-agents-client-patterns.md`](.agents/skills/claude-api/shared/managed-agents-client-patterns.md) |
-| 42 | ✓ | [`.agents/skills/claude-api/shared/managed-agents-core.md`](.agents/skills/claude-api/shared/managed-agents-core.md) |
-| 43 | ✓ | [`.agents/skills/claude-api/shared/managed-agents-environments.md`](.agents/skills/claude-api/shared/managed-agents-environments.md) |
-| 44 | ✓ | [`.agents/skills/claude-api/shared/managed-agents-events.md`](.agents/skills/claude-api/shared/managed-agents-events.md) |
-| 45 | ✓ | [`.agents/skills/claude-api/shared/managed-agents-memory.md`](.agents/skills/claude-api/shared/managed-agents-memory.md) |
-| 46 | ✓ | [`.agents/skills/claude-api/shared/managed-agents-multiagent.md`](.agents/skills/claude-api/shared/managed-agents-multiagent.md) |
-| 47 | ✓ | [`.agents/skills/claude-api/shared/managed-agents-onboarding.md`](.agents/skills/claude-api/shared/managed-agents-onboarding.md) |
-| 48 | ✓ | [`.agents/skills/claude-api/shared/managed-agents-outcomes.md`](.agents/skills/claude-api/shared/managed-agents-outcomes.md) |
-| 49 | ✓ | [`.agents/skills/claude-api/shared/managed-agents-overview.md`](.agents/skills/claude-api/shared/managed-agents-overview.md) |
-| 50 | ✓ | [`.agents/skills/claude-api/shared/managed-agents-scheduled-deployments.md`](.agents/skills/claude-api/shared/managed-agents-scheduled-deployments.md) |
-| 51 | ✓ | [`.agents/skills/claude-api/shared/managed-agents-self-hosted-sandboxes.md`](.agents/skills/claude-api/shared/managed-agents-self-hosted-sandboxes.md) |
-| 52 | ✓ | [`.agents/skills/claude-api/shared/managed-agents-tools.md`](.agents/skills/claude-api/shared/managed-agents-tools.md) |
-| 53 | ✓ | [`.agents/skills/claude-api/shared/managed-agents-webhooks.md`](.agents/skills/claude-api/shared/managed-agents-webhooks.md) |
-| 54 | ✓ | [`.agents/skills/claude-api/shared/model-migration.md`](.agents/skills/claude-api/shared/model-migration.md) |
-| 55 | ✓ | [`.agents/skills/claude-api/shared/models.md`](.agents/skills/claude-api/shared/models.md) |
-| 56 | ✓ | [`.agents/skills/claude-api/shared/platform-availability.md`](.agents/skills/claude-api/shared/platform-availability.md) |
-| 57 | ✓ | [`.agents/skills/claude-api/shared/prompt-caching.md`](.agents/skills/claude-api/shared/prompt-caching.md) |
-| 58 | ✓ | [`.agents/skills/claude-api/shared/token-counting.md`](.agents/skills/claude-api/shared/token-counting.md) |
-| 59 | ✓ | [`.agents/skills/claude-api/shared/tool-use-concepts.md`](.agents/skills/claude-api/shared/tool-use-concepts.md) |
-| 60 | ✓ | [`.agents/skills/claude-api/SKILL.md`](.agents/skills/claude-api/SKILL.md) |
-| 61 | ✓ | [`.agents/skills/claude-api/typescript/claude-api/batches.md`](.agents/skills/claude-api/typescript/claude-api/batches.md) |
-| 62 | ✓ | [`.agents/skills/claude-api/typescript/claude-api/files-api.md`](.agents/skills/claude-api/typescript/claude-api/files-api.md) |
-| 63 | ✓ | [`.agents/skills/claude-api/typescript/claude-api/README.md`](.agents/skills/claude-api/typescript/claude-api/README.md) |
-| 64 | ✓ | [`.agents/skills/claude-api/typescript/claude-api/streaming.md`](.agents/skills/claude-api/typescript/claude-api/streaming.md) |
-| 65 | ✓ | [`.agents/skills/claude-api/typescript/claude-api/tool-use.md`](.agents/skills/claude-api/typescript/claude-api/tool-use.md) |
-| 66 | ✓ | [`.agents/skills/claude-api/typescript/managed-agents/README.md`](.agents/skills/claude-api/typescript/managed-agents/README.md) |
-| 67 | ✓ | [`.agents/skills/find-hugeicons/SKILL.md`](.agents/skills/find-hugeicons/SKILL.md) |
-| 68 | ✓ | [`.agents/skills/gemini-api-dev/SKILL.md`](.agents/skills/gemini-api-dev/SKILL.md) |
-| 69 | ✓ | [`.agents/skills/gemini-interactions-api/references/migration.md`](.agents/skills/gemini-interactions-api/references/migration.md) |
-| 70 | ✓ | [`.agents/skills/gemini-interactions-api/SKILL.md`](.agents/skills/gemini-interactions-api/SKILL.md) |
-| 71 | ✓ | [`.agents/skills/locale-tui-localization/SKILL.md`](.agents/skills/locale-tui-localization/SKILL.md) |
-| 72 | ✓ | [`.agents/skills/publish-release/SKILL.md`](.agents/skills/publish-release/SKILL.md) |
-| 73 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 74 | ✓ | [`app/src/main/assets/builtin_skills/skill-creator/SKILL.md`](app/src/main/assets/builtin_skills/skill-creator/SKILL.md) |
-| 75 | ✓ | [`locale-tui/CLAUDE.md`](locale-tui/CLAUDE.md) |
-| 76 | ✓ | [`web-ui/AGENTS.md`](web-ui/AGENTS.md) |
-| 77 | ✓ | [`web-ui/CLAUDE.md`](web-ui/CLAUDE.md) |
+| 28 | ✓ | [`.agents/skills/claude-api/python/claude-api/sdk-upgrade.md`](.agents/skills/claude-api/python/claude-api/sdk-upgrade.md) |
+| 29 | ✓ | [`.agents/skills/claude-api/python/claude-api/streaming.md`](.agents/skills/claude-api/python/claude-api/streaming.md) |
+| 30 | ✓ | [`.agents/skills/claude-api/python/claude-api/tool-use.md`](.agents/skills/claude-api/python/claude-api/tool-use.md) |
+| 31 | ✓ | [`.agents/skills/claude-api/python/managed-agents/README.md`](.agents/skills/claude-api/python/managed-agents/README.md) |
+| 32 | ✓ | [`.agents/skills/claude-api/ruby/claude-api/README.md`](.agents/skills/claude-api/ruby/claude-api/README.md) |
+| 33 | ✓ | [`.agents/skills/claude-api/ruby/claude-api/streaming.md`](.agents/skills/claude-api/ruby/claude-api/streaming.md) |
+| 34 | ✓ | [`.agents/skills/claude-api/ruby/claude-api/tool-use.md`](.agents/skills/claude-api/ruby/claude-api/tool-use.md) |
+| 35 | ✓ | [`.agents/skills/claude-api/ruby/managed-agents/README.md`](.agents/skills/claude-api/ruby/managed-agents/README.md) |
+| 36 | ✓ | [`.agents/skills/claude-api/shared/admin-api.md`](.agents/skills/claude-api/shared/admin-api.md) |
+| 37 | ✓ | [`.agents/skills/claude-api/shared/agent-design.md`](.agents/skills/claude-api/shared/agent-design.md) |
+| 38 | ✓ | [`.agents/skills/claude-api/shared/anthropic-cli.md`](.agents/skills/claude-api/shared/anthropic-cli.md) |
+| 39 | ✓ | [`.agents/skills/claude-api/shared/claude-platform-on-aws.md`](.agents/skills/claude-api/shared/claude-platform-on-aws.md) |
+| 40 | ✓ | [`.agents/skills/claude-api/shared/cost-optimization.md`](.agents/skills/claude-api/shared/cost-optimization.md) |
+| 41 | ✓ | [`.agents/skills/claude-api/shared/error-codes.md`](.agents/skills/claude-api/shared/error-codes.md) |
+| 42 | ✓ | [`.agents/skills/claude-api/shared/evals/build-eval.md`](.agents/skills/claude-api/shared/evals/build-eval.md) |
+| 43 | ✓ | [`.agents/skills/claude-api/shared/evals/cost-hillclimb.md`](.agents/skills/claude-api/shared/evals/cost-hillclimb.md) |
+| 44 | ✓ | [`.agents/skills/claude-api/shared/evals/eval-audit.md`](.agents/skills/claude-api/shared/evals/eval-audit.md) |
+| 45 | ✓ | [`.agents/skills/claude-api/shared/evals/eval-hillclimb.md`](.agents/skills/claude-api/shared/evals/eval-hillclimb.md) |
+| 46 | ✓ | [`.agents/skills/claude-api/shared/evals/report/build-report-lite.mjs`](.agents/skills/claude-api/shared/evals/report/build-report-lite.mjs) |
+| 47 | ✓ | [`.agents/skills/claude-api/shared/evals/report/runner-scaffold.mjs`](.agents/skills/claude-api/shared/evals/report/runner-scaffold.mjs) |
+| 48 | ✓ | [`.agents/skills/claude-api/shared/evals/report/SCHEMA.md`](.agents/skills/claude-api/shared/evals/report/SCHEMA.md) |
+| 49 | ✓ | [`.agents/skills/claude-api/shared/live-sources.md`](.agents/skills/claude-api/shared/live-sources.md) |
+| 50 | ✓ | [`.agents/skills/claude-api/shared/managed-agents-api-reference.md`](.agents/skills/claude-api/shared/managed-agents-api-reference.md) |
+| 51 | ✓ | [`.agents/skills/claude-api/shared/managed-agents-client-patterns.md`](.agents/skills/claude-api/shared/managed-agents-client-patterns.md) |
+| 52 | ✓ | [`.agents/skills/claude-api/shared/managed-agents-core.md`](.agents/skills/claude-api/shared/managed-agents-core.md) |
+| 53 | ✓ | [`.agents/skills/claude-api/shared/managed-agents-environments.md`](.agents/skills/claude-api/shared/managed-agents-environments.md) |
+| 54 | ✓ | [`.agents/skills/claude-api/shared/managed-agents-events.md`](.agents/skills/claude-api/shared/managed-agents-events.md) |
+| 55 | ✓ | [`.agents/skills/claude-api/shared/managed-agents-memory.md`](.agents/skills/claude-api/shared/managed-agents-memory.md) |
+| 56 | ✓ | [`.agents/skills/claude-api/shared/managed-agents-multiagent.md`](.agents/skills/claude-api/shared/managed-agents-multiagent.md) |
+| 57 | ✓ | [`.agents/skills/claude-api/shared/managed-agents-onboarding.md`](.agents/skills/claude-api/shared/managed-agents-onboarding.md) |
+| 58 | ✓ | [`.agents/skills/claude-api/shared/managed-agents-outcomes.md`](.agents/skills/claude-api/shared/managed-agents-outcomes.md) |
+| 59 | ✓ | [`.agents/skills/claude-api/shared/managed-agents-overview.md`](.agents/skills/claude-api/shared/managed-agents-overview.md) |
+| 60 | ✓ | [`.agents/skills/claude-api/shared/managed-agents-scheduled-deployments.md`](.agents/skills/claude-api/shared/managed-agents-scheduled-deployments.md) |
+| 61 | ✓ | [`.agents/skills/claude-api/shared/managed-agents-self-hosted-sandboxes.md`](.agents/skills/claude-api/shared/managed-agents-self-hosted-sandboxes.md) |
+| 62 | ✓ | [`.agents/skills/claude-api/shared/managed-agents-tools.md`](.agents/skills/claude-api/shared/managed-agents-tools.md) |
+| 63 | ✓ | [`.agents/skills/claude-api/shared/managed-agents-webhooks.md`](.agents/skills/claude-api/shared/managed-agents-webhooks.md) |
+| 64 | ✓ | [`.agents/skills/claude-api/shared/model-migration.md`](.agents/skills/claude-api/shared/model-migration.md) |
+| 65 | ✓ | [`.agents/skills/claude-api/shared/models.md`](.agents/skills/claude-api/shared/models.md) |
+| 66 | ✓ | [`.agents/skills/claude-api/shared/platform-availability.md`](.agents/skills/claude-api/shared/platform-availability.md) |
+| 67 | ✓ | [`.agents/skills/claude-api/shared/preserved-thinking-migration.md`](.agents/skills/claude-api/shared/preserved-thinking-migration.md) |
+| 68 | ✓ | [`.agents/skills/claude-api/shared/preserved-thinking-migration/causes.md`](.agents/skills/claude-api/shared/preserved-thinking-migration/causes.md) |
+| 69 | ✓ | [`.agents/skills/claude-api/shared/preserved-thinking-migration/drop_block_probe.py`](.agents/skills/claude-api/shared/preserved-thinking-migration/drop_block_probe.py) |
+| 70 | ✓ | [`.agents/skills/claude-api/shared/preserved-thinking-migration/prefix_diff.py`](.agents/skills/claude-api/shared/preserved-thinking-migration/prefix_diff.py) |
+| 71 | ✓ | [`.agents/skills/claude-api/shared/prompt-audit.md`](.agents/skills/claude-api/shared/prompt-audit.md) |
+| 72 | ✓ | [`.agents/skills/claude-api/shared/prompt-caching.md`](.agents/skills/claude-api/shared/prompt-caching.md) |
+| 73 | ✓ | [`.agents/skills/claude-api/shared/token-counting.md`](.agents/skills/claude-api/shared/token-counting.md) |
+| 74 | ✓ | [`.agents/skills/claude-api/shared/tool-use-concepts.md`](.agents/skills/claude-api/shared/tool-use-concepts.md) |
+| 75 | ✓ | [`.agents/skills/claude-api/SKILL.md`](.agents/skills/claude-api/SKILL.md) |
+| 76 | ✓ | [`.agents/skills/claude-api/typescript/claude-api/batches.md`](.agents/skills/claude-api/typescript/claude-api/batches.md) |
+| 77 | ✓ | [`.agents/skills/claude-api/typescript/claude-api/files-api.md`](.agents/skills/claude-api/typescript/claude-api/files-api.md) |
+| 78 | ✓ | [`.agents/skills/claude-api/typescript/claude-api/README.md`](.agents/skills/claude-api/typescript/claude-api/README.md) |
+| 79 | ✓ | [`.agents/skills/claude-api/typescript/claude-api/streaming.md`](.agents/skills/claude-api/typescript/claude-api/streaming.md) |
+| 80 | ✓ | [`.agents/skills/claude-api/typescript/claude-api/tool-use.md`](.agents/skills/claude-api/typescript/claude-api/tool-use.md) |
+| 81 | ✓ | [`.agents/skills/claude-api/typescript/managed-agents/README.md`](.agents/skills/claude-api/typescript/managed-agents/README.md) |
+| 82 | ✓ | [`.agents/skills/find-hugeicons/SKILL.md`](.agents/skills/find-hugeicons/SKILL.md) |
+| 83 | ✓ | [`.agents/skills/gemini-api-dev/references/migration.md`](.agents/skills/gemini-api-dev/references/migration.md) |
+| 84 | ✓ | [`.agents/skills/gemini-api-dev/SKILL.md`](.agents/skills/gemini-api-dev/SKILL.md) |
+| 85 | ✓ | [`.agents/skills/locale-tui-localization/SKILL.md`](.agents/skills/locale-tui-localization/SKILL.md) |
+| 86 | ✓ | [`.agents/skills/publish-release/SKILL.md`](.agents/skills/publish-release/SKILL.md) |
+| 87 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 88 | ✓ | [`app/src/main/assets/builtin_skills/skill-creator/SKILL.md`](app/src/main/assets/builtin_skills/skill-creator/SKILL.md) |
+| 89 | ✓ | [`locale-tui/CLAUDE.md`](locale-tui/CLAUDE.md) |
+| 90 | ✓ | [`web-ui/AGENTS.md`](web-ui/AGENTS.md) |
+| 91 | ✓ | [`web-ui/CLAUDE.md`](web-ui/CLAUDE.md) |
 
 ---
 

@@ -14,7 +14,7 @@ The agent tool layer. Defines the core [`Tool`] trait every agent-callable capab
 - Filter the registry by user tool-toggle preferences (`user_filter`).
 - Own tool-call lifecycle state and failure classification (`status`), on-demand schema disclosure (`toolpacks`), the process-wide tool execution timeout (`timeout`), the read-only cross-surface discovery registry (`registry`), and per-session tool-boundary policy (`agent_policy`): each documented in its own sibling README.
 - Expose a JSON-RPC `tools` controller allowlist (`openhuman.tools_*` on the wire) for Tauri-driven flows (onboarding-style orchestration in the renderer).
-- Browser-allowlist derivation: narrow the browser host list from the unified fetch allowlist (`browser_allowed_domains`, strips `"*"`).
+- Browser-allowlist derivation: narrow the browser host list from the unified fetch allowlist (strips `"*"`).
 
 ## Key files
 
@@ -22,7 +22,7 @@ The agent tool layer. Defines the core [`Tool`] trait every agent-callable capab
 | --- | --- |
 | `crates/openhuman-core/src/tools/mod.rs` | Export hub. Declares submodules, re-exports the built-in impls and every domain-owned tool set, and the `all_tools_*` controller pair. |
 | `crates/openhuman-core/src/tools/host_extensions.rs` | OpenHuman-only readers over erased `host_extension` slots: `pack_registry_handle`, `delegation_target`, and `generated_runtime_context`. Import the shared `Tool` vocabulary from `tinytools` directly. |
-| `crates/openhuman-core/src/tools/ops.rs` | Registry assembly: `default_tools`, `default_tools_with_runtime`, `all_tools`, `all_tools_with_runtime`, `browser_allowed_domains`. All config-gating logic lives here. |
+| `crates/openhuman-core/src/tools/ops.rs` | Registry assembly: `default_tools`, `default_tools_with_runtime`, `all_tools`, `all_tools_with_runtime`. All config-gating logic lives here. |
 | `crates/openhuman-core/src/tools/schemas.rs` (thin shell over the `schemas/` submodule: `apify.rs`, `composio.rs`, `registry.rs`, `web_search.rs`) | JSON-RPC `tools` namespace controllers + `handle_*` fns. `all_controller_schemas` / `all_registered_controllers` (re-exported as `all_tools_*`). |
 | `crates/openhuman-core/src/tools/orchestrator_tools.rs` | Synthesizes named per-subagent tools from the orchestrator's `subagents = [...]` definition; expands the skills wildcard into one `Deferred` `ComposioActionTool` per connected action (reached through `tool_search`, no delegate). |
 | [`crates/openhuman-core/src/mcp/registry/action_tool.rs`](../mcp/registry/action_tool.rs) | Registers connected MCP server actions as deferred tools for the orchestrator. Their searchable schemas use the same `tool_search` catalogue and JEV ranker as other deferred tools. |
@@ -121,7 +121,7 @@ None. No `store.rs`; the module holds no persisted state. Tools that persist (me
 
 - Ownership rule: only genuinely cross-cutting tool families (filesystem, browser, generic system/network, meta, and the `documents`-gated document/presentation tools) belong in `impl/`. New domain tools go in the owning domain's `tools.rs` and are re-exported via `mod.rs`: do not add them under `impl/`.
 - One unified `ToolResult`: every tool imports it from `tinytools`, so every tool uses the same type.
-- Browser allowlist is fail-safe: the browser shares `http_request.allowed_domains` but `browser_allowed_domains` strips the `"*"` wildcard: unifying can only narrow browser reach. Allow-all stays behind `OPENHUMAN_BROWSER_ALLOW_ALL`.
+- Browser allowlist is fail-safe: the browser shares `http_request.allowed_domains` but strips the `"*"` wildcard: unifying can only narrow browser reach. Allow-all stays behind `OPENHUMAN_BROWSER_ALLOW_ALL`.
 - Node tools are co-gated: `shell`, `node_exec`, and `npm_exec` share one memoised `NodeBootstrap`; with `node.enabled = false` (or the `runtime-node` feature off), node/npm tools are not registered and shell skips PATH injection.
 - `external_effect_with_args` is the hook the harness checks at the gate-decision point, not the arg-less variant. Override it for per-call gating (e.g. composio `execute` vs `list`).
 - `PermissionLevel` ordering is load-bearing: the runtime compares `<` to reject tools above a channel's max; `permission_level()` should return the *minimum* level across a multi-action tool, with `permission_level_with_args` doing the per-call check.

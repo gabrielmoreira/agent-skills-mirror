@@ -258,7 +258,8 @@ At session start or after compaction, recover recent project context.
 ```bash
 eval "$(~/.claude/skills/gstack/bin/gstack-slug 2>/dev/null)"
 _BRANCH=$(git branch --show-current 2>/dev/null | tr -cd 'a-zA-Z0-9._/-') || :; _BRANCH=${_BRANCH:-unknown}
-_PROJ="${GSTACK_HOME:-$HOME/.gstack}/projects/${SLUG:-unknown}"
+eval "$(~/.claude/skills/gstack/bin/gstack-paths)"; : "${GSTACK_STATE_ROOT:?gstack-paths failed; reinstall with ./setup or /gstack-upgrade}"
+_PROJ="$GSTACK_STATE_ROOT/projects/${SLUG:-unknown}"
 if [ -d "$_PROJ" ]; then
   echo "--- RECENT ARTIFACTS ---"
   find "$_PROJ/ceo-plans" "$_PROJ/checkpoints" -type f -name "*.md" 2>/dev/null | xargs -r ls -t 2>/dev/null | head -3
@@ -368,7 +369,8 @@ Then build the complete version of what remains.
 
 **Eureka:** When first-principles reasoning contradicts conventional wisdom, name it and log:
 ```bash
-jq -n --arg ts "$(date -u +%Y-%m-%dT%H:%M:%SZ)" --arg skill "SKILL_NAME" --arg branch "$(git branch --show-current 2>/dev/null)" --arg insight "ONE_LINE_SUMMARY" '{ts:$ts,skill:$skill,branch:$branch,insight:$insight}' >> ~/.gstack/analytics/eureka.jsonl 2>/dev/null || true
+eval "$(~/.claude/skills/gstack/bin/gstack-paths)"; : "${GSTACK_STATE_ROOT:?gstack-paths failed; reinstall with ./setup or /gstack-upgrade}"
+jq -n --arg ts "$(date -u +%Y-%m-%dT%H:%M:%SZ)" --arg skill "SKILL_NAME" --arg branch "$(git branch --show-current 2>/dev/null)" --arg insight "ONE_LINE_SUMMARY" '{ts:$ts,skill:$skill,branch:$branch,insight:$insight}' >> "$GSTACK_STATE_ROOT/analytics/eureka.jsonl" 2>/dev/null || true
 ```
 
 ## Completion Status Protocol
@@ -538,9 +540,9 @@ Sanitize every query before it leaves the machine: strip hostnames, IPs, file pa
 ## PRE-REVIEW SYSTEM AUDIT (before Step 0)
 Before anything else, audit the system for review context. Run:
 ```
-git log --oneline -30                          # Recent history
-git diff <base> --stat                           # What's already changed
-git stash list                                 # Any stashed work
+git log --oneline -30  # Recent history
+git diff <base> --stat  # What's already changed
+git stash list  # Any stashed work
 grep -r "TODO\|FIXME\|HACK\|XXX" -l --exclude-dir=node_modules --exclude-dir=vendor --exclude-dir=.git . | head -30
 git log --since=30.days --name-only --format="" | sort | uniq -c | sort -rn | head -20  # Recently touched files
 ```
@@ -572,8 +574,9 @@ Read any `/office-hours` design doc as the problem, constraints and approach sou
 
 **Handoff note check** (reuses $SLUG and $BRANCH from the design doc check above):
 ```bash
+eval "$(~/.claude/skills/gstack/bin/gstack-paths)"; : "${GSTACK_STATE_ROOT:?gstack-paths failed; reinstall with ./setup or /gstack-upgrade}"
 setopt +o nomatch 2>/dev/null || true  # zsh compat
-HANDOFF=$(ls -t ~/.gstack/projects/$SLUG/*-$BRANCH-ceo-handoff-*.md 2>/dev/null | head -1)
+HANDOFF=$(ls -t "$GSTACK_STATE_ROOT"/projects/$SLUG/*-$BRANCH-ceo-handoff-*.md 2>/dev/null | head -1)
 [ -n "$HANDOFF" ] && echo "HANDOFF_FOUND: $HANDOFF" || echo "NO_HANDOFF"
 ```
 In a separate shell, first recompute $SLUG and $BRANCH with the design-doc commands.
@@ -1024,7 +1027,8 @@ Follow the preamble's session rules; `CONDUCTOR_SESSION: true` changes transport
      added capability → SELECTIVE EXPANSION; fix/refactor → HOLD SCOPE.
    In the Recommendation's `because` clause, connect a concrete plan fact or
    constraint to this mode's actual benefit or tradeoff, not just its count/category.
-3. Resolve that recommendation. When `QUESTION_TUNING: true`, first check `question_id=plan-ceo-review-mode` through the preamble.
+3. Resolve that recommendation. When `QUESTION_TUNING: true`, first check `question_id=plan-ceo-review-mode` through the preamble's
+   `gstack-question-preference --check`.
    A check that exits 0 with `AUTO_DECIDE` selects the recommendation; go to the automatic handoff in
    step 4. When tuning is false, omit the lookup.
    Without that successful check, offer all four modes in one AskUserQuestion,
@@ -1032,7 +1036,7 @@ Follow the preamble's session rules; `CONDUCTOR_SESSION: true` changes transport
    wins. When `QUESTION_TUNING: true`, include `<gstack-qid:plan-ceo-review-mode>`.
    These modes differ in kind, not coverage; do NOT score completeness.
 
-4. **Mode handoff:** After selection, send brief chat before tools or further questions: the mode's application and rationale; every governing approved row's ID, answer reference and accepted scope. Keep rows separate.
+4. **Mode handoff:** After selection, send brief chat before tools or further questions: the mode's application and rationale; every governing approved row's ID, answer reference and accepted scope. Keep rows separate. Begin with the exact matching line below:
 - `plan-ceo-review-mode: AUTO_DECIDE`: `Auto-decided review mode → <selected mode> (your preference). Change with /plan-tune. Approved decisions: <rows or none>. <Application and rationale>.`
 - Other selections: `Mode: <selected mode>; approved decisions: <rows or none>. <Application and rationale>.`
 
@@ -1075,14 +1079,14 @@ In expansion modes, extend 0F's pending list.
 1. **10x check:** Describe 10x value for 2x effort.
 2. **Platonic ideal:** What would the best engineer with unlimited time and perfect taste build? Start with the user's experience.
 3. **Delight scan:** List at least 5 adjacent 30-minute improvements that would delight the user.
-4. **Expansion opt-in ceremony:** Present visions and individual proposals; enthusiastically explain each one's value. The user decides.
+4. **Expansion opt-in ceremony:** Lead each proposal with the felt user experience, then shape, effort and impact. The user decides.
 
 **For SELECTIVE EXPANSION:**
 1. Run all three HOLD SCOPE checks below, including their defer/keep decisions.
 2. Describe 10x ambition, run the delight scan and assess platform potential. Candidates stay pending until scope answers.
 3. **Cherry-pick ceremony:** Use 0F with S/M/L/XL effort and risk. For more than 8, present the top 5–6; offer the rest on request.
 
-For both expansion modes, ask separately for each addition: **A)** Add to this plan's scope **B)** Defer to TODOS.md **C)** Skip. Accepted items govern the remaining sections.
+For both expansion modes, ask separately for each addition, in turn, no pacing menu: **A)** Add to this plan's scope **B)** Defer to TODOS.md **C)** Skip. Accepted items govern the remaining sections.
 
 **For HOLD SCOPE** — run this:
 1. Complexity check: at more than 8 files or more than 2 new classes/services, challenge whether fewer moving parts achieve the same goal.
@@ -1119,7 +1123,7 @@ summary; the summary cannot serve as the plan.
 
 ```bash
 eval "$(~/.claude/skills/gstack/bin/gstack-slug 2>/dev/null)"
-eval "$(~/.claude/skills/gstack/bin/gstack-paths)"
+eval "$(~/.claude/skills/gstack/bin/gstack-paths)"; : "${GSTACK_STATE_ROOT:?gstack-paths failed; reinstall with ./setup or /gstack-upgrade}"
 CEO_PLANS="$GSTACK_STATE_ROOT/projects/$SLUG/ceo-plans"
 mkdir -p "$CEO_PLANS"
 echo "CEO_PLANS=$CEO_PLANS"
@@ -1218,8 +1222,9 @@ forbidden, show the actual fields as not persisted and continue without writing.
 If the reviewer fails, report that limit and continue after recording the outcome;
 if a required save fails, stop before claiming completion.
 ```bash
-mkdir -p ~/.gstack/analytics || exit 1
-echo '{"skill":"plan-ceo-review","ts":"'$(date -u +%Y-%m-%dT%H:%M:%SZ)'","iterations":ITERATIONS,"issues_found":FOUND,"issues_fixed":FIXED,"remaining":REMAINING,"quality_score":SCORE}' >> ~/.gstack/analytics/spec-review.jsonl || exit 1
+eval "$(~/.claude/skills/gstack/bin/gstack-paths)"; : "${GSTACK_STATE_ROOT:?gstack-paths failed; reinstall with ./setup or /gstack-upgrade}"
+mkdir -p "$GSTACK_STATE_ROOT/analytics" || exit 1
+echo '{"skill":"plan-ceo-review","ts":"'$(date -u +%Y-%m-%dT%H:%M:%SZ)'","iterations":ITERATIONS,"issues_found":FOUND,"issues_fixed":FIXED,"remaining":REMAINING,"quality_score":SCORE}' >> "$GSTACK_STATE_ROOT/analytics/spec-review.jsonl" || exit 1
 ```
 ITERATIONS counts actual reviewer launches. FOUND, FIXED and REMAINING count reported issues, reviewer-confirmed fixes and reported unresolved issues. Use actual counts, never estimates.
 

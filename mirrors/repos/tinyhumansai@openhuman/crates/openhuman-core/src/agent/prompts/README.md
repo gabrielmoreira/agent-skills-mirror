@@ -144,8 +144,7 @@ instead of trailing the memory sections.
 each leading system message its own cacheable segment
 (`PromptBuilder::push_system_messages`), so a rewritten memory file or a newly
 connected service changes the second segment and leaves the first
-byte-identical; `PromptCacheSegmentMiddleware` mirrors that split in the
-segment ids it declares. A prefix is reusable only up to the first differing
+byte-identical (`system`, `system.1`). A prefix is reusable only up to the first differing
 byte, so a volatile section rendered early invalidates every stable byte
 behind it. Two consequences are visible in this module: `DateTimeSection`
 renders only the clock *rules* and is `Stable` (the live timestamp rides the

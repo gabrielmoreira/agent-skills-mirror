@@ -360,14 +360,14 @@ Agent는 자체 global MCP 파일과 프로젝트 파일을 함께 읽습니다.
 막으려면, **Agent의 global 파일이 사용하는 것과 동일한 이름**으로 항목을 추가하고
 `disabled`로 표시하세요.
 
-이는 다음 세 client에서만 동작합니다.
+이는 다음 네 client에서만 동작합니다.
 
 | Client | Supported | What Skillshare writes |
 |---|---|---|
 | Claude Code | 예 | `~/.claude.json`: 이름을 이 프로젝트의 `disabledMcpServers` 목록에 추가 |
 | OpenCode | 예 | `opencode.json`: `"NAME": {"enabled": false}` |
 | Kilo Code | 예 | `kilo.jsonc`: `"NAME": {"enabled": false}` |
-| Pi | 아니요 | 완전한 항목 필요: command/url이 있는 서버에 `piOptions: {enabled: false}` 사용 |
+| Pi | 예, `mcp.projects`에서 | `.pi/mcp.json`: `"NAME": {"command": "...", "enabled": false}`, 아래 참조 |
 | Codex | 아니요 | 아래 참고 |
 | Every other client | 아니요 | 하나를 선택하면 오류가 발생하며 아무것도 작성되지 않음 |
 
@@ -383,6 +383,14 @@ Codex는 다른 이유로 거부됩니다. Codex는 `.codex/config.toml`을 필�
 못합니다. `.codex/config.toml`은 보통 커밋되므로, 한 팀원의 스위치가 다른 팀원의
 Codex 시작을 막을 수 있습니다. 대신 `~/.codex/config.toml`에서 `enabled = false`로
 머신별로 서버를 끄세요.
+
+Pi는 같은 이름의 프로젝트 항목으로 global 항목을 통째로 대체하고, `command`나 `url`이 없는 항목은
+건너뜁니다. 그래서 Pi에는 global 서버의 `command`, 또는 query를 뺀 `url`을 `enabled: false`와 함께
+씁니다. 꺼진 서버는 시작되지 않으므로 args, env, headers는 프로젝트 파일에 쓰지 않으며, 다른
+프로젝트는 그 서버를 그대로 사용합니다. sync할 때마다 이 항목은 global 서버를 기준으로 다시
+작성됩니다. global 서버가 필요하므로 global 구성의 `mcp.projects` 아래 프로젝트에서만 동작합니다.
+프로젝트 자체 구성에서는 global 서버를 볼 수 없으므로, 그곳의 `disabled` 항목에 `pi`를 쓰면
+오류가 납니다.
 
 ### OpenCode and Kilo Code
 
@@ -933,23 +941,30 @@ OAuth를 승인하세요. 간단한 Pi 전용 설정에는 `pi mcp add`가 globa
 project에는 `-l`을 추가하세요. `pi mcp list`는 활성 서버를 모두 시작해 연결을 확인하며,
 `pi mcp login NAME`은 사용자 승인이 필요합니다.
 
-Pi 서버 이름에는 영문자, 숫자, `_`, `-`만 쓸 수 있습니다. Pi는 한 프로젝트에서 global
-서버를 끌 수 없으므로 `disabled` 항목은 Pi를 target으로 삼을 수 없습니다. 대신 완전한
-항목에 `piOptions: {enabled: false}`를 사용하세요.
+Pi 서버 이름에는 영문자, 숫자, `_`, `-`만 쓸 수 있습니다. `-`와 `_`만 다른 이름은 Pi가 같은 서버로
+읽으므로 sync는 두 번째 이름을 거부합니다. Pi에서는 프로젝트 항목이 같은 이름의
+global 항목을 통째로 대체합니다. 한 프로젝트에서 global 서버를 끄려면
+[Turn off a global server in one project](#turn-off-a-global-server-in-one-project)를 참고하세요.
 
 ### 기타 Pi 설정 {#pi-options}
 
 `piOptions`는 Pi 내장 MCP의 그 밖의 서버별 필드를 담습니다. Pi만 이를 받습니다.
 
-- `exposure`는 `codemode`(Pi 기본값), `codemode-deferred`, `deferred`, `direct`,
+- `exposure`는 `codemode`(Pi 기본값), `codemode-deferred`(`codemode`의 이전 이름), `deferred`, `direct`,
   `hidden`을 받습니다. `toolExposure`는 도구 이름이나 와일드카드 패턴을 이 값 중 하나에
   대응시킵니다: 정확한 이름이 우선하고, 그다음 처음 일치하는 패턴이 적용됩니다.
   Skillshare는 import와 JSON/YAML 변환에서 패턴 순서를 유지합니다. `exposure`는
   [`tools`](#tool-policy) 허용 목록이 남긴 도구를 어떻게 제공할지도 정합니다. `toolExposure`보다
   다른 Agent에도 전달되는 `tools`를 우선 사용하세요. 한 서버에 `tools`와 `toolExposure`를
   함께 설정할 수는 없습니다.
-- `timeout`(양수 초), `cwd`, `enabled`, `oauth`는 검증됩니다. 알 수 없는 필드는
-  사용자 지정 Pi 빌드를 위해 그대로 전달됩니다.
+- `timeout`(양수 초), `cwd`, `enabled`, `oauth`, `auth`는 검증됩니다. `description` 같은
+  알 수 없는 필드는 그대로 전달됩니다.
+- `auth: {provider: NAME}`은 해당 provider의 `/login` 토큰을 bearer 토큰으로 보냅니다.
+  https `url`(localhost는 http도 가능)이 필요하며, Pi가 global 파일에서만 읽으므로 global
+  모드에서만 쓸 수 있습니다.
+- `oauth.authServerMetadataUrl`(Pi 1.0 이상)은 https(localhost는 http도 가능)여야 합니다. Pi가
+  자동 탐색 대신 이 문서를 그대로 신뢰하기 때문입니다. Pi 1.0은 OAuth 로그인을 server 이름과
+  URL별로 저장하므로, server 이름이나 `url`을 바꾼 뒤에는 Pi에서 다시 로그인해야 합니다.
 - 연결 필드는 메인 폼에 둡니다. `directTools`, `includeTools`, `excludeTools`와 그 밖의
   `pi-mcp-adapter` 설정은 Pi 내장 MCP가 읽지 않으므로 거부됩니다. 대신 `tools`를
   사용하세요.
@@ -1023,8 +1038,7 @@ config도 그대로 로드됩니다. `sync mcp --dry-run`과 `sync mcp`는 발�
 | 서버의 `directTools` | `true` → `piOptions.exposure: direct`; `"search"` → `deferred`; 이름 목록 → 해당 도구를 `direct`로 둔 `piOptions.toolExposure` |
 | `mcp.directTools`, 또는 `mcp.projects` 아래 프로젝트의 `directTools` | Pi에 전달되고 자체 값이 없는 각 서버에 기본값이 위와 같이 작성됩니다. 프로젝트의 `false`는 global 값을 재정의합니다 |
 | `piOptions.includeTools` / `excludeTools` | `tools.allow` / `tools.deny`가 되며, 함께 설정한 `directTools`는 여전히 `piOptions.exposure`가 됩니다 |
-| `piOptions`의 그 밖의 `pi-mcp-adapter` 필드: `approveTools`, `auth`, `bearerToken`, `bearerTokenEnv`, `bearerTokenStore`, `caFile`, `debug`, `exposeResources`, `idleTimeout`, `inheritEnv`, `lifecycle`, `protocolVersion`, `requestHeadersCommand`, `requestTimeoutMs`, `searchKeywords`, `socket`, `tasks`, `toolPrefix`, `trace` | Pi 내장 MCP가 읽지 않으므로 제거됩니다 |
-| `disabled` 항목의 `targets`에 있는 `pi` | 그 목록에서 `pi`가 제거됩니다. Pi에는 한 프로젝트에서 global 서버 하나만 끄는 스위치가 없으므로, 그 서버는 해당 프로젝트에서 다시 켜집니다 |
+| `piOptions`의 그 밖의 `pi-mcp-adapter` 필드: `approveTools`, 문자열 `auth`(Pi 자체의 `auth` 객체는 유지), `bearerToken`, `bearerTokenEnv`, `bearerTokenStore`, `caFile`, `debug`, `exposeResources`, `idleTimeout`, `inheritEnv`, `lifecycle`, `protocolVersion`, `requestHeadersCommand`, `requestTimeoutMs`, `searchKeywords`, `socket`, `tasks`, `toolPrefix`, `trace` | Pi 내장 MCP가 읽지 않으므로 제거됩니다 |
 
 서버가 이미 설정한 exposure를 덮어쓰게 되거나 도구 이름 목록이 아닌 `directTools`,
 `includeTools`, `excludeTools`는 별도의 warning과 함께 버려집니다.

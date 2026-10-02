@@ -40,6 +40,9 @@ semantics.
 - `scripts/check_barrel_surface.py`: every `core` export has a consumer.
 - `integ/`: one JSON case corpus runs on both hosts against the same targets
   and goldens. Any change in observable shell behavior adds a case.
+  A pull request runs only the integ jobs whose path filter matches (charted
+  in `integ/README.md`), so adding, moving or renaming a module updates the
+  filters in `test_integ.yml` and that chart.
 
 ### Patterns
 
@@ -54,6 +57,12 @@ only), `errors.py`, `config.py` (knobs; fail loud on unknown fields),
   `asyncio.run()` where a loop may already be running.
 - Imports at the top of the file. A cycle means the dependency direction is
   wrong; fix the design.
+- Package `__init__.py` barrels resolve names on first use (PEP 562
+  `__getattr__` over an `_EXPORTS` table, `TYPE_CHECKING` imports for the
+  checker), so importing a leaf never loads its package. The `mirage` CLI
+  loads only its HTTP client and imports a heavy verb's code inside that
+  verb (`mcp`, `workspace create`), as the TypeScript CLI awaits it;
+  `scripts/check_cli_cold_start.py` gates both hosts.
 - Never swallow an exception. Log it with `logger.debug` or let it
   propagate.
 - Never annotate as `object`. Use `FlagValue`, `JsonValue`, `str | PathSpec`,
@@ -142,7 +151,7 @@ under `rm`/`mv`/`mkdir`/... and refuses it as a source of `tar -c`, `zip`,
 runs; `workspace/expand/` expands and classifies words; `workspace/lookup/`
 holds the one precedence list (builtin, namespace command, function, CLI,
 mount); `workspace/executor/` runs pipes, redirects, jobs and control flow.
-Follow tables live in `workspace/names.py`. Every session write goes through
+Follow tables live in `workspace/lookup/constants.py`. Every session write goes through
 `SessionView.set`, so a `pre_session` rule is enforced; only shell
 bookkeeping and `seed_var` are exempt.
 

@@ -1,6 +1,6 @@
 # Config
 
-Authoritative TOML-backed configuration layer. Owns the `Config` schema (every domain section: agent, channels, memory, autonomy, voice, scheduler, observability, etc.), env-variable overrides, the per-user openhuman directory layout, runtime proxy settings, the daemon descriptor, and the settings CLI. About 870 files under `crates/openhuman-core/src/` reference `crate::config`; almost every other domain reads `Config` here.
+Authoritative TOML-backed configuration layer. Owns the `Config` schema (every domain section: agent, channels, memory, autonomy, voice, scheduler, observability, etc.), env-variable overrides, the per-user openhuman directory layout, runtime proxy settings, the daemon descriptor. About 870 files under `crates/openhuman-core/src/` reference `crate::config`; almost every other domain reads `Config` here.
 
 ## Layout
 
@@ -13,7 +13,6 @@ Authoritative TOML-backed configuration layer. Owns the `Config` schema (every d
 | `migration_helpers/` | User-triggered `migrate.{openclaw,hermes}` RPCs that import memory from other assistants. See [migration_helpers/README.md](migration_helpers/README.md) |
 | `workspace/` | Workspace bootstrap plus editable Persona Pack (`SOUL.md`/`IDENTITY.md`) file RPCs. See [workspace/README.md](workspace/README.md) |
 | `daemon.rs` | `DaemonConfig`: Tauri-supervisor bundle of `data_dir`/`workspace_dir` plus `autonomy`/`security`/`reliability`/`secrets`/`audit` sections (`from_app_data_dir`) |
-| `settings_cli.rs` | `openhuman settings ...` CLI section-slicing helper |
 | `tools.rs` | Read-only LLM-callable wrappers over config (snapshot, autonomy, search, runtime flags, data paths) |
 | `workspace_handle.rs` | Opaque, stable digest identity for a workspace directory, used on the wire (Event Log, notification broadcast) so paths never leak |
 
@@ -26,7 +25,6 @@ Authoritative TOML-backed configuration layer. Owns the `Config` schema (every d
 - `pub fn apply_runtime_proxy_to_builder` / `pub fn build_runtime_proxy_client` / `pub fn build_runtime_proxy_client_with_timeouts` / `pub fn runtime_proxy_config` / `pub fn set_runtime_proxy_config` in `schema/proxy.rs`.
 - Workspace identity helpers in `schema/load/dirs.rs`: `pub fn clear_active_user`, `default_root_openhuman_dir`, `pre_login_user_dir`, `read_active_user_id`, `user_openhuman_dir`, `write_active_user_id`, `PRE_LOGIN_USER_ID`.
 - `pub mod ops` (re-exported as `rpc`) in `ops/`: RPC handlers and settings mutation. See [ops/README.md](ops/README.md).
-- `pub mod settings_cli` in `settings_cli.rs`: the `openhuman settings ...` CLI surface.
 - RPC namespace `config`, 42 methods (`get_config`, `update_model_settings`, `update_autonomy_settings`, `set_privacy_mode`, `reset_local_data`, and others) defined in `schemas/`; the full list is the `//!` header of `schemas/mod.rs` and `all_controller_schemas()` in `schemas/controllers/registry.rs`.
 
 ## Calls into
@@ -44,5 +42,5 @@ Authoritative TOML-backed configuration layer. Owns the `Config` schema (every d
 
 ## Tests
 
-- Unit: `ops_tests.rs` (+ `ops_agent_paths_tests.rs`, `ops_loader_and_search_tests.rs`, `ops_model_and_local_ai_tests.rs`, `ops_voice_and_autonomy_tests.rs`, mounted from `ops/mod.rs`) and `ops/privacy_tests.rs` / `ops/loader_*_tests.rs`; `schemas_tests.rs` (mounted from `schemas/mod.rs`) and `schemas/controllers_tests.rs`; per-section `*_tests.rs` under `schema/` (`channels_tests.rs`, `proxy_tests.rs`, etc.) and `load_tests.rs` (+ `load_active_user_and_dirs_tests.rs`, `load_backup_tests.rs`, `load_corruption_recovery_tests.rs`, `load_env_overlay_tests.rs`, `load_migration_tests.rs`, mounted from `schema/load/mod.rs`); `daemon_tests.rs`, `settings_cli_tests.rs`, `tools_tests.rs`, `workspace_handle_tests.rs`, `mod_tests.rs` beside their sources.
+- Unit: `ops_tests.rs` (+ `ops_agent_paths_tests.rs`, `ops_loader_and_search_tests.rs`, `ops_model_and_local_ai_tests.rs`, `ops_voice_and_autonomy_tests.rs`, mounted from `ops/mod.rs`) and `ops/privacy_tests.rs` / `ops/loader_*_tests.rs`; `schemas_tests.rs` (mounted from `schemas/mod.rs`) and `schemas/controllers_tests.rs`; per-section `*_tests.rs` under `schema/` (`channels_tests.rs`, `proxy_tests.rs`, etc.) and `load_tests.rs` (+ `load_active_user_and_dirs_tests.rs`, `load_backup_tests.rs`, `load_corruption_recovery_tests.rs`, `load_env_overlay_tests.rs`, `load_migration_tests.rs`, mounted from `schema/load/mod.rs`); `daemon_tests.rs`, `tools_tests.rs`, `workspace_handle_tests.rs`, `mod_tests.rs` beside their sources.
 - `TEST_ENV_LOCK` (`mod.rs`) is shared with sibling test modules that mutate `OPENHUMAN_WORKSPACE`.

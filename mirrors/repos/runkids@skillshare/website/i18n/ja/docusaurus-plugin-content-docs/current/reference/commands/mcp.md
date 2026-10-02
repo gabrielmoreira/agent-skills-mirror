@@ -274,14 +274,14 @@ Agent は自身の global MCP ファイルと project のファイルを合わ�
 ファイルで定義されたサーバーはすべての project で読み込まれます。1 つの project だけでそれを読み込まれないようにするには、**Agent の global ファイルが使っているのと同じ名前**のエントリを追加し、
 `disabled` を指定します。
 
-これは以下の 3 つのクライアントでのみ機能します。
+これは以下の 4 つのクライアントでのみ機能します。
 
 | クライアント | 対応 | Skillshare が書き込む内容 |
 |---|---|---|
 | Claude Code | Yes | `~/.claude.json`: この project の `disabledMcpServers` リストにその名前を追加 |
 | OpenCode | Yes | `opencode.json`: `"NAME": {"enabled": false}` |
 | Kilo Code | Yes | `kilo.jsonc`: `"NAME": {"enabled": false}` |
-| Pi | No | 完全なエントリが必要：command/url を持つサーバーに `piOptions: {enabled: false}` を設定 |
+| Pi | Yes（`mcp.projects` から） | `.pi/mcp.json`: `"NAME": {"command": "...", "enabled": false}`、下記参照 |
 | Codex | No | 下記参照 |
 | その他すべてのクライアント | No | 選択するとエラー。何も書き込まれない |
 
@@ -292,6 +292,13 @@ global config がそのサーバーを定義しているマシンでは `enabled
 `command` も `url` もなくなり、Codex は `invalid transport` で設定全体の読み込みに失敗します。`.codex/config.toml` は通常コミットされるため、あるチームメンバーのスイッチが
 別のメンバーの Codex の起動を止めてしまう可能性があります。代わりに、マシンごとに `~/.codex/config.toml` で
 `enabled = false` を指定してサーバーをオフにしてください。
+
+Pi は project の同名エントリで global エントリを丸ごと置き換え、`command` も `url` もないエントリは読み飛ばします。
+そのため Pi には、global サーバーの `command`、またはクエリを除いた `url` を `enabled: false` と一緒に書き込みます。
+オフにしたサーバーは起動しないので、args、env、headers は project ファイルに書き込まれず、他の project では
+そのサーバーがそのまま使われます。sync のたびにエントリは global サーバーから書き直されます。global サーバーが
+必要なので、これは global config の `mcp.projects` 配下の project でのみ機能します。project 自身の config からは
+global サーバーが見えないため、そこで `disabled` エントリに `pi` を指定するとエラーになります。
 
 ### OpenCode と Kilo Code
 
@@ -818,22 +825,27 @@ Pi だけの簡単な設定なら、`pi mcp add` でグローバルファイル�
 書き込みます。`pi mcp list` はすべての有効なサーバーを起動して接続を確認し、`pi mcp login NAME` は
 ユーザーの承認が必要です。
 
-Pi のサーバー名には英数字、`_`、`-` のみを使えます。Pi は 1 つの project だけで global サーバーを
-オフにできないため、`disabled` エントリは Pi を対象にできません。代わりに、完全なエントリに
-`piOptions: {enabled: false}` を設定してください。
+Pi のサーバー名には英数字、`_`、`-` のみを使えます。`-` と `_` だけが異なる名前は Pi では同じサーバーとして扱われるため、sync は 2 つ目を拒否します。Pi では project のエントリが同名の global
+エントリを丸ごと置き換えます。1 つの project で global サーバーをオフにするには、
+[1 つの project だけで global サーバーをオフにする](#turn-off-a-global-server-in-one-project)を参照してください。
 
 ### その他の Pi 設定 {#pi-options}
 
 `piOptions` は、Pi の内蔵 MCP のその他のサーバー別フィールドを保持します。受け取るのは Pi だけです。
 
-- `exposure` は `codemode`（Pi の既定）、`codemode-deferred`、`deferred`、`direct`、`hidden` を
+- `exposure` は `codemode`（Pi の既定）、`codemode-deferred`（`codemode` の旧名）、`deferred`、`direct`、`hidden` を
   受け付けます。`toolExposure` はツール名またはワイルドカードパターンをこれらの値のいずれかに対応付けます。
   完全一致の名前が優先され、次に最初に一致したパターンが採用されます。Skillshare はインポートと
   JSON／YAML 変換を通じてパターンの順序を保持します。`exposure` は、[`tools`](#tool-policy) の許可リストが
   残したツールの提供方法も決めます。`toolExposure` より `tools` を使うほうがよいでしょう。他の Agent にも
   届くためです。1 つのサーバーで `tools` と `toolExposure` を両方設定することはできません。
-- `timeout`（正の秒数）、`cwd`、`enabled`、`oauth` は検証されます。未知のフィールドはカスタム Pi ビルド向けに
-  そのまま渡されます。
+- `timeout`（正の秒数）、`cwd`、`enabled`、`oauth`、`auth` は検証されます。`description` などの未知の
+  フィールドはそのまま渡されます。
+- `auth: {provider: NAME}` は、そのプロバイダーの `/login` トークンを bearer トークンとして送ります。https の
+  `url`（localhost なら http も可）が必要で、Pi は global ファイルからしか読まないため global モードでのみ使えます。
+- `oauth.authServerMetadataUrl`（Pi 1.0 以降）は https（localhost なら http も可）が必要です。Pi は検出の代わりに
+  このドキュメントを信頼するためです。Pi 1.0 は OAuth のサインインを server 名と URL ごとに保存するので、
+  server の名前や `url` を変えた後は Pi で再度サインインしてください。
 - 接続フィールドはメインフォームに入力します。`directTools`、`includeTools`、`excludeTools` など
   `pi-mcp-adapter` の設定は、Pi の内蔵 MCP が読まないため拒否されます。代わりに `tools` を使ってください。
 - トップレベルの `settings` と `autoEnableCodemode` はサーバーのオプションではありません。Pi で直接
@@ -904,8 +916,7 @@ sync がサーバーをこれらの extension から移すとき、`sync mcp --d
 | サーバーの `directTools` | `true` → `piOptions.exposure: direct`、`"search"` → `deferred`、名前のリスト → それらのツールを `direct` にした `piOptions.toolExposure` |
 | `mcp.directTools`、または `mcp.projects` 配下の project の `directTools` | 既定値が、Pi に届き自身の値を持たない各サーバーに上記のとおり書き込まれる。project の `false` はグローバルの値より優先される |
 | `piOptions.includeTools` / `excludeTools` | `tools.allow` / `tools.deny`。一緒に設定した `directTools` は引き続き `piOptions.exposure` になる |
-| `piOptions` 内のその他の `pi-mcp-adapter` フィールド: `approveTools`、`auth`、`bearerToken`、`bearerTokenEnv`、`bearerTokenStore`、`caFile`、`debug`、`exposeResources`、`idleTimeout`、`inheritEnv`、`lifecycle`、`protocolVersion`、`requestHeadersCommand`、`requestTimeoutMs`、`searchKeywords`、`socket`、`tasks`、`toolPrefix`、`trace` | Pi の内蔵 MCP が読まないため削除される |
-| `disabled` エントリの `targets` 内の `pi` | そのリストから `pi` が削除される。Pi には 1 つの project で global サーバーを 1 つだけオフにするスイッチがないため、そのサーバーはその project で再びオンになる |
+| `piOptions` 内のその他の `pi-mcp-adapter` フィールド: `approveTools`、文字列の `auth`（Pi 自身の `auth` オブジェクトは保持）、`bearerToken`、`bearerTokenEnv`、`bearerTokenStore`、`caFile`、`debug`、`exposeResources`、`idleTimeout`、`inheritEnv`、`lifecycle`、`protocolVersion`、`requestHeadersCommand`、`requestTimeoutMs`、`searchKeywords`、`socket`、`tasks`、`toolPrefix`、`trace` | Pi の内蔵 MCP が読まないため削除される |
 
 サーバーがすでに設定している exposure を上書きしてしまう `directTools`、`includeTools`、`excludeTools`、
 またはツール名のリストではないものは、それぞれ独自の warning とともに破棄されます。

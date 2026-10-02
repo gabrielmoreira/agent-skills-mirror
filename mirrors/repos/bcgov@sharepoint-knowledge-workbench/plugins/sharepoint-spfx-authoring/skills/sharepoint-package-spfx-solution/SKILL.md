@@ -54,7 +54,7 @@ This runs `npx heft test --clean --production` followed by
 
 *(Equivalently, if you prefer to run the underlying commands directly instead of the script):*
 ```powershell
-$env:Path = "C:\Users\RICHFREM\AppData\Local\nvm\v22.23.2;" + $env:Path; npx heft test --clean --production && npx heft package-solution --production
+npx heft test --clean --production && npx heft package-solution --production
 ```
 
 *(Or via npm script defined in package.json):*

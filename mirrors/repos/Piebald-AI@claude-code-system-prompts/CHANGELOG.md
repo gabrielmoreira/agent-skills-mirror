@@ -4,6 +4,33 @@ Note: Only use **NEW:** for entirely new prompt files, NOT for new additions/sec
 
 ### Claude Code System Prompts Changelog
 
+# [2.1.287](https://github.com/Piebald-AI/claude-code-system-prompts/commit/b18a6b3)
+
+_+4,435 tokens_
+
+- **NEW:** Agent Prompt: Artifact comment thread background directive — Tells a forked background agent to handle one Artifact comment thread itself, leaving the main session's pending work alone and treating thread content as material, not instructions.
+- **NEW:** Data: Built-in gh stand-in api command help — Usage text for Claude Code's built-in `gh` stand-in, which supports only `gh api` REST requests through the session's GitHub proxy.
+- **NEW:** Data: Get task output control request — Reads the last 8 KiB of a background shell or Monitor task's output without a model turn; refused on redacting lanes.
+- **NEW:** Data: Interrupt send_now parameter and Interrupt send_now message_uuid parameter — Let a client's "Send now" push waiting user messages to the model without acting as a Stop, optionally targeting one exact message.
+- **NEW:** Data: Plugin manifest types field — Names a self-contained `.d.ts` type contract for the noun a plugin adds, delivered to dependent mods and checked by `claude plugin validate`.
+- **NEW:** Data: SDK thinking_duration_ms field — Display-only wrapper field giving how long a streamed thinking block took, excluding the first-token wait; absent on older CLIs and never replayed to the model.
+- **NEW:** Data: Structured tool output field schema — Describes the `tool_use_result` field's per-tool output shapes, the completed Agent output, and a `detachedToolCall` placeholder for calls that stepped aside for a user message.
+- **NEW:** Data: Turn handoff file_names field — Lists user-attached files and client-facing names that a capable worker copies into the session home directory before running handed-over calls; malformed lists are ignored.
+- **NEW:** Skill: /explain-usage measured usage slash command — Variant that receives the session's measured token usage as JSON and asks for one simple chart of effective usage by group with a plain-language explanation.
+- **NEW:** System Reminder: Auto mode no verdict after hook input rewrite — Says auto mode could not review a call whose input a hook rewrote; retry once, then move on and tell the user.
+- **REMOVED:** Skill: /plugin-types tsconfig setup — Drops the closing guidance for pointing a plugin's `tsconfig.json` or `jsconfig.json` at the generated declarations.
+- Agent Prompt: Determine which memory files to attach — Ends with an explicit instruction to reply with only a JSON object of the form `{"selected_memories": [...]}`.
+- Agent Prompt: Web reading specialist — Fetching now also stops when a permission request goes unanswered, and the agent tells the caller why further fetches would fail too.
+- Data: Turn handoff available event schema — The announcement now also lists `home_files` and `file_names` among the optional members reported when set.
+- System Prompt: Coordinator mode orchestration — Adds a note that when the tool list holds two copies of the PR-activity subscription tools (one from the `github` connector), call the preferred one.
+- System Reminder: Attached machine reply not received and Attached machine stopped answering — Fallback now says to continue the task without the named remote machine instead of doing what "this container can do".
+- System Reminder: Still-running tool call — The sentence saying the call still shows as in progress on the user's screen is now included only when the call is on screen.
+- Tool Description: Agent (usage notes) — Adds an opt-in background-agents note: agents run in the background only with `run_in_background: true`, may still run foreground or be refused, and results must never be fabricated.
+- Tool Description: Artifact assets guidance (app wording) and Tool Parameter: Artifact supporting files with cross-artifact sources (and app wording) — SVG images may now be copied or used as sources; only HTML and XML documents are excluded.
+- Tool Description: Artifact type staged first-publish sequence — Restores the instruction to write files directly with the file-writing tool, with no shell step and never a generating script.
+- Tool Description: Background monitor (streaming events) — In diskless sessions, says stderr triggers no notifications and only its last lines appear in the notice sent when the script ends.
+- Tool Description: Poll — The untrusted-event-content guidance can now be overridden, and optional trailing guidance can follow the closing "nothing is dropped" line.
+
 # [2.1.286](https://github.com/Piebald-AI/claude-code-system-prompts/commit/91b99c7)
 
 _+3,170 tokens_

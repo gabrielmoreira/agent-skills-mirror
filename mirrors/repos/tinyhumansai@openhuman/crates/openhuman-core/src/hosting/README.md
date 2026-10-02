@@ -8,26 +8,20 @@ everything about a provider, and this module owns everything about OpenHuman.
 
 - Resolve the configured hosting account (`Account::from_config`) from
   `[hosting]`, falling back to the provider's own environment variables.
-- Decide which directory an agent may deploy (`resolve_in_workspace`).
-- Expose the ten `hosting_*` agent tools and describe their results to a model.
+- Hand the crate's ten `hosting_*` agent tools (`tinyhosts::tools`, its `tools`
+  feature) the account's host and workspace; `resolve_in_workspace` (which
+  decides which directory an agent may deploy) is re-exported from there.
 
 Everything else belongs to the crate: Vercel's endpoints, the upload-then-build
 deployment protocol, how a marketplace database is provisioned and connected,
 and the order a launch runs in. That side is provider-independent and tested
-against a mock of the provider's REST API. Outside the mock responses in
-`hosting_tests.rs`, nothing here knows the word `readyState`.
+against a mock of the provider's REST API. Nothing here knows the word `readyState`.
 
 ## Key files
 
 | File | Role |
 | --- | --- |
-| `mod.rs` | `Account` (`from_config` credential resolution, `connect` for embedders that hold their own key, the shared `dyn Host`) and `resolve_in_workspace`. |
-| `tools.rs` | Module docs, `hosting_tools` (every tool for one account), and the argument helpers shared by the submodules below. |
-| `tools/launch.rs` | `hosting_launch_site`. |
-| `tools/deployments.rs` | `hosting_deployment_status`, `hosting_list_deployments`, `hosting_deployment_logs`, `hosting_rollback`. |
-| `tools/sites.rs` | `hosting_list_sites`, `hosting_set_env`. |
-| `tools/domains.rs` | `hosting_add_domain`, `hosting_domain_status`. |
-| `tools/analytics.rs` | `hosting_analytics`. |
+| `mod.rs` | `Account` (`from_config` credential resolution, `connect` for embedders that hold their own key, the shared `dyn Host`) and the `resolve_in_workspace` re-export. |
 | `hosting_tests.rs` | Account resolution, workspace containment, and each tool's contract. |
 
 ## Agent tools

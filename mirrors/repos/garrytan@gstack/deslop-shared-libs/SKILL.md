@@ -66,9 +66,15 @@ changed after writing one.
    A direct HTTP fallback must also return its response on stdout without
    creating files; do not replace successful authenticated results with an
    unauthenticated request and then describe the source as inaccessible.
-3. Before local object reads, probe no-lazy-fetch support using the safe Git
-   prefix below and `rev-parse --is-inside-work-tree`. A successful Git version
-   check alone is insufficient. If unsupported, use pinned-commit GET API source
+3. Run every Git command as `~/.claude/skills/gstack/bin/gstack-safe-git <args>`, never bare `git`;
+   only the exact diagnostic `git --version` may run bare. The helper fixes the
+   no-lazy-fetch, lock, pager, fsmonitor, signature and replacement-object
+   protections and refuses reads that could run filters, drivers, hooks or
+   transports, naming the allowed forms. Never bypass a refusal with raw `git`.
+   `diff` takes exactly two explicit committed object IDs, then `--` and paths.
+   First probe the audited repository with `~/.claude/skills/gstack/bin/gstack-safe-git -C <repo> rev-parse --is-inside-work-tree` (use `-C <repo>` on every call when your shell is elsewhere); a Git
+   version check alone is insufficient. If the probe fails (for example
+   `unknown option: --no-lazy-fetch`), use pinned-commit GET API source
    and history reads or disclose unavailable local-history coverage. Never retry
    object reads without the no-lazy-fetch protection, including by decoding loose
    objects or packfiles directly. After an unsupported probe, do not inspect Git
@@ -79,31 +85,10 @@ changed after writing one.
    unavailable, continue with clearly labeled raw source and unknown tracking
    status and revision/history coverage.
 
-The exact diagnostic `git --version` may run without the prefix below: it does
-not read repository state or execute configured hooks. It never substitutes for
-the guarded capability probe. For every other Git invocation disable optional
-locks, pager, fsmonitor, signature verification, replacement objects and lazy fetch.
-Signature display can execute a
-configured project verifier. Replacement refs must not substitute different contents
-under a cited commit ID. Keep submodule diffs short rather than reading their trees.
-Use this prefix, including for the capability probe:
-
-```bash
-GIT_OPTIONAL_LOCKS=0 GIT_NO_LAZY_FETCH=1 GIT_TERMINAL_PROMPT=0 \
-  git --no-pager --no-lazy-fetch --no-replace-objects \
-    -c core.fsmonitor=false -c log.showSignature=false -c diff.submodule=short
-```
-
-Restrict `git diff` to **two explicit committed object IDs**, with
-`--no-ext-diff --no-textconv` and `--` before paths. Use the same disabling
-flags for patch-producing `log`/`show` commands. Never use worktree/index diffs,
-`git status`, temporary indexes, `add`, `hash-object --path`, or other
-normalization helpers: these can execute clean/process filters or alter the index.
-Do not execute scripts from the audited project, even to inspect it.
-
-For the uncommitted overlay, enumerate tracked and nonignored untracked paths with
-guarded, NUL-delimited `ls-files --cached --others --exclude-standard -z`, then
-inspect raw source with the host's read tools or isolated standard-library reads.
+Do not execute scripts from the audited project, even to inspect it. For the
+uncommitted overlay, enumerate tracked and nonignored untracked paths with
+`~/.claude/skills/gstack/bin/gstack-safe-git ls-files --cached --others --exclude-standard -z`, then inspect
+raw source with the host's read tools or isolated standard-library reads.
 For Python reads, use a trusted interpreter with `python3 -I -S`: repository-local
 modules can shadow standard-library imports and execute code or write bytecode.
 Do not add project paths to imports, import project modules, or use runtimes that
@@ -115,6 +100,8 @@ the repo, traverse submodule worktrees, or execute filters. Note excluded symlin
 submodule, ignored, unavailable or unreadable source. Handle deletions explicitly.
 Do not call an absent or unreadable overlay clean. Current raw content may differ
 even when a clean filter would produce the same Git tree.
+Sessions have a bounded number of turns. Read related files together: parallel
+host reads or one read-only command per step, not one file per turn.
 
 ## Start with recent work
 

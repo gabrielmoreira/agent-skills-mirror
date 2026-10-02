@@ -1,7 +1,10 @@
 # query
 
 The consolidated `memory_tree` agent tool (`MemoryQueryTool`, an alias of
-`MemoryTreeTool`) and the eight retrieval/write modes it dispatches to.
+`MemoryTreeTool`) and the modes it dispatches to. The tools are
+`tinymemory-tools`' (`query`), instantiated here over `HostMemoryTools`; only
+`ingest_document.rs` is host code, because it writes through the host's own
+tree-ingest path (the dispatcher reaches it through `MemoryToolHost`).
 
 This directory lives under `memory/query` rather than in
 [`memory/tree/`](../tree/) so that module can stay focused on generic tree

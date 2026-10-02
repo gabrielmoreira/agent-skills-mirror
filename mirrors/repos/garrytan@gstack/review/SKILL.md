@@ -240,7 +240,8 @@ At session start or after compaction, recover recent project context.
 ```bash
 eval "$(~/.claude/skills/gstack/bin/gstack-slug 2>/dev/null)"
 _BRANCH=$(git branch --show-current 2>/dev/null | tr -cd 'a-zA-Z0-9._/-') || :; _BRANCH=${_BRANCH:-unknown}
-_PROJ="${GSTACK_HOME:-$HOME/.gstack}/projects/${SLUG:-unknown}"
+eval "$(~/.claude/skills/gstack/bin/gstack-paths)"; : "${GSTACK_STATE_ROOT:?gstack-paths failed; reinstall with ./setup or /gstack-upgrade}"
+_PROJ="$GSTACK_STATE_ROOT/projects/${SLUG:-unknown}"
 if [ -d "$_PROJ" ]; then
   echo "--- RECENT ARTIFACTS ---"
   find "$_PROJ/ceo-plans" "$_PROJ/checkpoints" -type f -name "*.md" 2>/dev/null | xargs -r ls -t 2>/dev/null | head -3
@@ -350,7 +351,8 @@ Then build the complete version of what remains.
 
 **Eureka:** When first-principles reasoning contradicts conventional wisdom, name it and log:
 ```bash
-jq -n --arg ts "$(date -u +%Y-%m-%dT%H:%M:%SZ)" --arg skill "SKILL_NAME" --arg branch "$(git branch --show-current 2>/dev/null)" --arg insight "ONE_LINE_SUMMARY" '{ts:$ts,skill:$skill,branch:$branch,insight:$insight}' >> ~/.gstack/analytics/eureka.jsonl 2>/dev/null || true
+eval "$(~/.claude/skills/gstack/bin/gstack-paths)"; : "${GSTACK_STATE_ROOT:?gstack-paths failed; reinstall with ./setup or /gstack-upgrade}"
+jq -n --arg ts "$(date -u +%Y-%m-%dT%H:%M:%SZ)" --arg skill "SKILL_NAME" --arg branch "$(git branch --show-current 2>/dev/null)" --arg insight "ONE_LINE_SUMMARY" '{ts:$ts,skill:$skill,branch:$branch,insight:$insight}' >> "$GSTACK_STATE_ROOT/analytics/eureka.jsonl" 2>/dev/null || true
 ```
 
 ## Completion Status Protocol
@@ -666,7 +668,7 @@ Sanitize every query before it leaves the machine: strip hostnames, IPs, file pa
 
 ## Step 4: Critical pass (core review)
 
-> **STOP.** Before any probe, including plan checks, complete the ordered scope/method Reads below. Templates cannot replace them.
+> **STOP.** Before any probe, including plan checks, complete the ordered scope/method Reads below and await them. Templates cannot replace them.
 Step 4 is read-only: defer charters, setup and probes to Step 4.7.
 
 From the installed /review SKILL.md's directory, choose one path:
@@ -693,7 +695,7 @@ _aside_exec "Search the web for {framework} {version} {pattern} current best pra
 ```
 
 Without Aside `READY`, use WebSearch if available; with neither, disclose the gap
-and use existing knowledge.
+and use existing knowledge. Research runs alongside specialist dispatch.
 
 ### Shared-code opportunities (core pass)
 
@@ -823,9 +825,9 @@ Never install, import cookies or bootstrap tests. Functional-only skips browser 
 - Required: plan commands/assertions, listed separately. Other ideas are optional, untested.
 
 **3. Run smoke and plan checks.**
-Follow the shared Probe loop for smoke checks, replays and revalidation until the smoke limit.
-Then run required plan checks, even after smoke expires, using the same procedure but no smoke guard; never reset the clock.
-Use finite command timeouts, capped at the caller's remaining time if it has a deadline.
+Follow the shared Probe loop for smoke checks and replays until the smoke limit.
+Then run required plan checks and revalidation, even after smoke expires, using the same procedure but no smoke guard; never reset the clock. Their checkpoints sit beside D; they skip `G status D` and use `--timeout-ms`, not `--deadline D`. Post-expiry smoke rechecks are not-run.
+Use finite command timeouts, capped at the caller's remaining time if it has a deadline. /review sets none; only an invoker-supplied EARLIER_UTC counts.
 Await clock/guard results before acting. When the caller's deadline expires, mark unfinished checks not-run.
 
 **4. Check freshness before reporting.**
@@ -843,7 +845,8 @@ Return verified defects to Fix-First: `path`, `line`, `category`,
 `fingerprint: path:line:category`, replay, `test_stub`. Use checklist severity;
 unmatched functional failures are `functional-contract`, `CRITICAL`.
 Setup/permission blockers are not defects. Test creation needs user approval.
-Ask for setup/permission, never secrets. Unresolved coverage makes Step 5.8 incomplete; a ship waiver cannot complete it.
+Ask only for permission or user-performed setup, never secrets; report-only /review never runs setup, installs or cookie import.
+After a grant, recheck readiness and run affected checks; otherwise they stay blocked. Unresolved coverage makes Step 5.8 incomplete; a ship waiver cannot complete it.
 
 **5. Prepare one provisional QA section.**
 Read QA's `templates/functional-report-template.md`. Title it
@@ -950,8 +953,8 @@ toward AUTO-FIX.
 
 **Test stub override:** Any finding that has a `test_stub` field, from a specialist or exploratory QA,
 is reclassified as ASK regardless of its original classification. When presenting the ASK
-item, show the proposed test file path and the test code. The user approves or skips the
-test creation. If approved, follow Step 5d's regression-before-repair order. Derive the test file path from
+item, show the proposed test file path and the test code. Step 5c's A) Fix writes the test and
+repair in Step 5d's regression-before-repair order; B) Skip skips both; the defect stays unresolved. Derive the test file path from
 the finding's `path` using project conventions (`spec/` for RSpec, `__tests__/` for
 Jest/Vitest, `test_` prefix for pytest, `_test.go` suffix for Go). If the test file
 already exists, append the new test.
@@ -964,13 +967,13 @@ Retain the completed action in the invocation action list before starting any re
 
 ### Step 5c: Batch-ask about ASK items
 
-If there are ASK items remaining, present them in ONE AskUserQuestion:
+Present remaining ASK items in ONE AskUserQuestion:
 
-- List each item with a number, the severity label (or `[ADVISORY]` for optional advice), the problem, and a recommended fix
-- For each item, provide options: A) Fix as recommended, B) Skip
+- Number each item with its severity label (or `[ADVISORY]` for optional advice), problem and recommended fix
+- Options per item: A) Fix as recommended, B) Skip (describe only as: no code/index change; Skip recorded)
 - Include an overall RECOMMENDATION
 
-If 3 or fewer ASK items, you may use individual AskUserQuestion calls instead of batching.
+With 3 or fewer ASK items, individual AskUserQuestion calls are fine.
 Retain each explicit Skip choice and its finding metadata in the invocation action list. Do not record an unanswered question as skipped or ask again about a decision already revalidated in this invocation.
 
 ### Step 5d: Apply user-approved fixes
@@ -1066,8 +1069,8 @@ for the native result, or vice versa. Step 4.8's structured-review gate still ap
 
 - Use Step 4.6's `specialists` object unchanged, including its empty small-diff map.
   If this host omits Review Army, use `specialists: {}` without claiming specialist coverage.
-- Build `findings` from final-pass core, specialist, verified exploratory QA
-  findings and invocation actions. Retain `fingerprint`, `severity`
+- Build `findings` from Step 5's combined final-pass findings (core, specialist,
+  adversarial, actionable Greptile, verified exploratory QA findings) and invocation actions. Retain `fingerprint`, `severity`
   (`CRITICAL|INFORMATIONAL`), `action`, and any `advisory`, `evidence_paths`,
   `helper_target`. Recheck source after fixes. The logger uses `sharedLibsFingerprint`,
   never supplied/model hashes.

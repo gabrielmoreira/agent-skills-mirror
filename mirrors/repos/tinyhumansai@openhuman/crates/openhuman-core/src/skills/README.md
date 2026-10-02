@@ -72,7 +72,7 @@ Plus the sub-domain namespaces: `skill_registry.*` (`browse`, `search`, `sources
 
 - `tinytools`: supplies the shared `ToolResult`/`ToolContent` shape directly.
 - `crates/openhuman-core/src/agent/harness/fork_context.rs`: fork context propagates injected skills.
-- `crates/openhuman-core/src/agent/session_host/turn/context.rs` and `.../turn/tools.rs`: the per-turn `workflows` list handed to `PromptContext`; `refresh_workflows` reloads it from the workspace when a `WorkflowsChanged` event is drained.
+- `crates/openhuman-core/src/agent/session_host/turn/context.rs` and `.../turn/tools.rs`: the per-turn `workflows` list handed to `PromptContext`.
 - `crates/openhuman-core/src/agent/tools/run_workflow.rs`: the separate `run_workflow`/`AwaitWorkflowTool` launch path.
 - `crates/openhuman-core/src/core/all.rs`: controller registry wiring for `skills`, `skill_registry`, and `skill_runtime`.
 
@@ -80,9 +80,8 @@ Plus the sub-domain namespaces: `skill_registry.*` (`browse`, `search`, `sources
 
 Behavior tests live beside their modules as `*_tests.rs` (for example `ops_tests.rs` and its `ops_discovery_tests.rs`, `ops_create_and_url_tests.rs`, `ops_uninstall_tests.rs` siblings, `ops_create_render_skill_toml_tests_tests.rs`, `ops_discover_include_skills_tests_tests.rs`, `ops_install_install_fetch_tests_tests.rs`, `preflight_tests.rs`, `registry_tests.rs`, `run_log_tests.rs`, `schemas_tests.rs`, `search_tests.rs`, `tools_tests.rs`, `types_tests.rs`, `bus_tests.rs`), wired via `#[path]` from the module they cover.
 
-`e2e_plumbing_tests.rs` and `e2e_run_tests.rs` are mock-LLM end-to-end tests: plumbing (create then registry round-trip, an orchestrator turn calling `list_workflows`/`run_workflow`, `await_run_outcome` polling) and run execution (`spawn_workflow_run_background` through a terminal `DONE` to `await_run_outcome`, marked `#[ignore]` and run serially because they set the process-global `OPENHUMAN_WORKSPACE`).
+`e2e_plumbing_tests.rs` is the mock-LLM end-to-end test: create then registry round-trip, an orchestrator turn calling `list_workflows`/`run_workflow`, and `await_run_outcome` polling.
 
-Catalog refresh in a live session (`refresh_workflows`) is covered by `crates/openhuman-core/src/agent/session_host/session_builder_and_listener_tests.rs`.
 
 ## Notes
 

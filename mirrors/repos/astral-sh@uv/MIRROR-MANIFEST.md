@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `astral-sh/uv` — 26 default patterns, 0 followed patterns, 31 file(s) materialized.
+Mirror of `astral-sh/uv` — 26 default patterns, 0 followed patterns, 26 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `astral-sh/uv` — 26 default patterns, 0 followed patterns, 31 file(s
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 31 |
+| Files         | 26 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -71,25 +71,20 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 10 | ✓ | [`agents/prompts/editorialize-changelog.md`](agents/prompts/editorialize-changelog.md) |
 | 11 | ✓ | [`agents/prompts/fix-reproduced-bug.md`](agents/prompts/fix-reproduced-bug.md) |
 | 12 | ✓ | [`agents/prompts/pull-request-labels.md`](agents/prompts/pull-request-labels.md) |
-| 13 | ✓ | [`agents/prompts/pull-request-security-review.md`](agents/prompts/pull-request-security-review.md) |
-| 14 | ✓ | [`agents/prompts/rebase-pull-request.md`](agents/prompts/rebase-pull-request.md) |
-| 15 | ✓ | [`agents/prompts/reproduce-bug.md`](agents/prompts/reproduce-bug.md) |
-| 16 | ✓ | [`agents/prompts/triage-issue.md`](agents/prompts/triage-issue.md) |
-| 17 | ✓ | [`agents/prompts/update-issue-context.md`](agents/prompts/update-issue-context.md) |
-| 18 | ✓ | [`agents/references/repository-threat-model.md`](agents/references/repository-threat-model.md) |
-| 19 | ✓ | [`agents/references/threat-model.md`](agents/references/threat-model.md) |
-| 20 | ✓ | [`agents/schemas/create-bug-test.json`](agents/schemas/create-bug-test.json) |
-| 21 | ✓ | [`agents/schemas/fix-reproduced-bug.json`](agents/schemas/fix-reproduced-bug.json) |
-| 22 | ✓ | [`agents/schemas/issue-triage-bug.json`](agents/schemas/issue-triage-bug.json) |
-| 23 | ✓ | [`agents/schemas/issue-triage.json`](agents/schemas/issue-triage.json) |
-| 24 | ✓ | [`agents/schemas/pull-request-labels.json`](agents/schemas/pull-request-labels.json) |
-| 25 | ✓ | [`agents/schemas/pull-request-security-review.json`](agents/schemas/pull-request-security-review.json) |
-| 26 | ✓ | [`agents/schemas/workflow-failure.json`](agents/schemas/workflow-failure.json) |
-| 27 | ✓ | [`agents/scripts/agent-review-to-github-comments.py`](agents/scripts/agent-review-to-github-comments.py) |
-| 28 | ✓ | [`agents/scripts/agent-review-to-github-comments.py.lock`](agents/scripts/agent-review-to-github-comments.py.lock) |
-| 29 | ✓ | [`agents/scripts/install-codex-security.sh`](agents/scripts/install-codex-security.sh) |
-| 30 | ✓ | [`agents/scripts/load-github-action-thread.sh`](agents/scripts/load-github-action-thread.sh) |
-| 31 | ✓ | [`agents/templates/issue-context-template.md`](agents/templates/issue-context-template.md) |
+| 13 | ✓ | [`agents/prompts/rebase-pull-request.md`](agents/prompts/rebase-pull-request.md) |
+| 14 | ✓ | [`agents/prompts/reproduce-bug.md`](agents/prompts/reproduce-bug.md) |
+| 15 | ✓ | [`agents/prompts/triage-issue.md`](agents/prompts/triage-issue.md) |
+| 16 | ✓ | [`agents/prompts/update-issue-context.md`](agents/prompts/update-issue-context.md) |
+| 17 | ✓ | [`agents/references/repository-threat-model.md`](agents/references/repository-threat-model.md) |
+| 18 | ✓ | [`agents/references/threat-model.md`](agents/references/threat-model.md) |
+| 19 | ✓ | [`agents/schemas/create-bug-test.json`](agents/schemas/create-bug-test.json) |
+| 20 | ✓ | [`agents/schemas/fix-reproduced-bug.json`](agents/schemas/fix-reproduced-bug.json) |
+| 21 | ✓ | [`agents/schemas/issue-triage-bug.json`](agents/schemas/issue-triage-bug.json) |
+| 22 | ✓ | [`agents/schemas/issue-triage.json`](agents/schemas/issue-triage.json) |
+| 23 | ✓ | [`agents/schemas/pull-request-labels.json`](agents/schemas/pull-request-labels.json) |
+| 24 | ✓ | [`agents/schemas/workflow-failure.json`](agents/schemas/workflow-failure.json) |
+| 25 | ✓ | [`agents/scripts/load-github-action-thread.sh`](agents/scripts/load-github-action-thread.sh) |
+| 26 | ✓ | [`agents/templates/issue-context-template.md`](agents/templates/issue-context-template.md) |
 
 ---
 

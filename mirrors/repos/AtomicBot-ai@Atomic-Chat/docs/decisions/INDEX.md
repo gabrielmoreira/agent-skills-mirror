@@ -9,7 +9,7 @@ decision is reversed, add a new one that says which record it supersedes.
 2. Add one line to the right section of this index.
 3. Do **not** paste the record body into `AGENTS.md`.
 
-375 records, 2026-05-19 → 2026-09-30.
+376 records, 2026-05-19 → 2026-10-01.
 
 ---
 
@@ -214,8 +214,9 @@ decision is reversed, add a new one that says which record it supersedes.
 - **2026-05-22** — [Ship `janhq/llama.cpp` cudart DLLs with every Windows CUDA backend](2026-05-22-ship-janhq-llama-cpp-cudart-dlls-with-every-windows-cuda-backend.md)
 - **2026-05-19** — [Windows uses upstream `ggml-org/llama.cpp`, not the TurboQuant fork](2026-05-19-windows-uses-upstream-ggml-org-llama-cpp-not-the-turboquant-fork.md)
 
-## Models, Hub & downloads (33)
+## Models, Hub & downloads (34)
 
+- **2026-10-01** — [Download decision models in the Hub, run them on the TurboQuant page](2026-10-01-download-decision-models-in-the-hub-and-run-them-on-the-turboquant-page.md)
 - **2026-09-29** — [List image and video models in the Hub, from the curated catalog only](2026-09-29-list-image-and-video-models-in-the-hub.md)
 - **2026-09-29** — [Fetch large files over several connections, and give up on quiet ones](2026-09-29-fetch-large-files-over-several-connections-and-give-up-on-quiet-ones.md)
 - **2026-09-16** — [Check disk space before a download starts](2026-09-16-check-disk-space-before-a-download-starts.md)

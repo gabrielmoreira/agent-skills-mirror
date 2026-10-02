@@ -51,11 +51,11 @@ The hook follows the OpenCode plugin hook pattern, exposing a factory function `
    - Generates activation prompt via `activationPrompt(task, sessionID)`
    - Injects activation prompt into output parts
    - Prompt = bundled SKILL.md body (single contract source, build-time text
-     import) + pinned progress-file path + task
+     import) + pinned router-head path + task
 
 ### Deepwork Session Execution
-1. Agent receives the full workflow instructions (SKILL.md body) with the pinned session progress-file path and task
-2. Agent creates its `.slim/deepwork/<session-id>.md` progress file
+1. Agent receives the full workflow instructions (SKILL.md body) with the pinned router-head path and task
+2. Agent creates its `.slim/deepwork/<session-id>.md` router head and the task directory it points to
 3. Agent drafts plan and requests `@oracle` review
 4. Agent creates and reviews phased implementation/delegation plan
 5. Agent executes phases with background specialists as needed
@@ -92,11 +92,11 @@ The hook follows the OpenCode plugin hook pattern, exposing a factory function `
 ```
 
 ### File System
-- Progress file: `.slim/deepwork/<session-id>.md`, path pinned by the activation prompt
+- Router head: `.slim/deepwork/<session-id>.md`, path pinned by the activation prompt; task state lives in `.slim/deepwork/<task-slug>/progress.md`
 
 
 ### Hook Contract
 - **Input**: `{ command: string, sessionID: string, arguments: string }`
 - **Output**: `{ parts: Array<{ type: string, text?: string }> }`
-- **Side effects**: Modifies output parts array, may create progress files
+- **Side effects**: Modifies output parts array
 - **Validation**: Validates task presence, validates command name

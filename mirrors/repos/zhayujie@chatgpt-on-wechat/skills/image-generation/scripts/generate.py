@@ -1227,6 +1227,10 @@ def main():
         print(json.dumps({"error": f"Invalid JSON: {e}"}))
         sys.exit(1)
 
+    if not isinstance(args, dict):
+        print(json.dumps({"error": "Arguments must be a JSON object"}))
+        sys.exit(1)
+
     prompt = args.get("prompt")
     if not prompt:
         print(json.dumps({"error": "Missing required parameter: prompt"}))

@@ -81,7 +81,7 @@ SQLite DB at `{workspace_dir}/devices/devices.db`, table `paired_devices`:
 
 DDL is created idempotently on every connection open (`with_connection`). `peer_online` is **not** persisted; it lives only in the in-memory `PEER_STATUS` map.
 
-Separately, encrypted X25519 private keys are persisted as `enc2:` strings (via `keyring::SecretStore`, ChaCha20-Poly1305) keyed by `channel_id` in the in-memory `PERSISTED_KEYPAIRS` map, allowing keypair reconstruction (`load_keypair_from_store`) for reconnect handshakes.
+Separately, encrypted X25519 private keys are persisted as `enc2:` strings (via `keyring::SecretStore`, ChaCha20-Poly1305) keyed by `channel_id` in the in-memory `PERSISTED_KEYPAIRS` map, allowing keypair reconstruction for reconnect handshakes.
 
 ## Dependencies
 

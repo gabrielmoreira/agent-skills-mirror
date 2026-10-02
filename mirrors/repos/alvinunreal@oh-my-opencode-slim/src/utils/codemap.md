@@ -44,7 +44,7 @@ Centralized utilities and shared abstractions used across the oh-my-opencode-sli
 - **Logger** (`logger.ts`): File-based logging with 7-day retention, automatic directory creation, and write queuing
 - **Environment** (`env.ts`): Environment variable parsing and plugin disable flag checking
 - **Global Store** (`global-store.ts`): Process-local lazy singleton on globalThis with Symbol.for keyed registry
-- **Internal Initiator** (`internal-initiator.ts`): Marker system for identifying internally-initiated agent messages
+- **Internal Initiator** (`internal-initiator.ts`): Marker and strict native-background-notification recognition for internally-initiated agent messages
 - **System Collapse** (`system-collapse.ts`): System message collapsing by joining with double-newlines
 - **Compat** (`compat.ts`): Cross-platform spawn with output collection and Windows command resolution
 - **Zip Extractor** (`zip-extractor.ts`): Cross-platform zip extraction with Windows-aware fallbacks

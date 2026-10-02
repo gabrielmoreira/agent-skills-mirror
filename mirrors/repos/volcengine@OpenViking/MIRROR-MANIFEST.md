@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `volcengine/OpenViking` — 26 default patterns, 0 followed patterns, 45 file(s) materialized.
+Mirror of `volcengine/OpenViking` — 26 default patterns, 0 followed patterns, 53 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `volcengine/OpenViking` — 26 default patterns, 0 followed patterns, 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 45 |
+| Files         | 53 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -76,34 +76,42 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 15 | ✓ | [`bot/workspace/skills/weather/SKILL.md`](bot/workspace/skills/weather/SKILL.md) |
 | 16 | ✓ | [`examples/agent-hook-plugin/hosts/cursor/skills/openviking-memory/SKILL.md`](examples/agent-hook-plugin/hosts/cursor/skills/openviking-memory/SKILL.md) |
 | 17 | ✓ | [`examples/agent-hook-plugin/hosts/cursor/skills/openviking-skills/SKILL.md`](examples/agent-hook-plugin/hosts/cursor/skills/openviking-skills/SKILL.md) |
-| 18 | ✓ | [`examples/claude-code-memory-plugin/skills/openviking-memory/SKILL.md`](examples/claude-code-memory-plugin/skills/openviking-memory/SKILL.md) |
-| 19 | ✓ | [`examples/claude-code-memory-plugin/skills/openviking-skills/SKILL.md`](examples/claude-code-memory-plugin/skills/openviking-skills/SKILL.md) |
-| 20 | ✓ | [`examples/claude-code-memory-plugin/skills/ov-experience-memory/SKILL.md`](examples/claude-code-memory-plugin/skills/ov-experience-memory/SKILL.md) |
-| 21 | ✓ | [`examples/claude-code-memory-plugin/skills/ov-memory-doctor/reference.md`](examples/claude-code-memory-plugin/skills/ov-memory-doctor/reference.md) |
-| 22 | ✓ | [`examples/claude-code-memory-plugin/skills/ov-memory-doctor/SKILL.md`](examples/claude-code-memory-plugin/skills/ov-memory-doctor/SKILL.md) |
-| 23 | ✓ | [`examples/codex-memory-plugin/skills/openviking-memory/SKILL.md`](examples/codex-memory-plugin/skills/openviking-memory/SKILL.md) |
-| 24 | ✓ | [`examples/codex-memory-plugin/skills/openviking-skills/SKILL.md`](examples/codex-memory-plugin/skills/openviking-skills/SKILL.md) |
-| 25 | ✓ | [`examples/codex-memory-plugin/skills/ov-experience-memory/SKILL.md`](examples/codex-memory-plugin/skills/ov-experience-memory/SKILL.md) |
-| 26 | ✓ | [`examples/codex-memory-plugin/skills/ov-memory-doctor/reference.md`](examples/codex-memory-plugin/skills/ov-memory-doctor/reference.md) |
-| 27 | ✓ | [`examples/codex-memory-plugin/skills/ov-memory-doctor/SKILL.md`](examples/codex-memory-plugin/skills/ov-memory-doctor/SKILL.md) |
-| 28 | ✓ | [`examples/compile/ov-compile-skills/daily-report/SKILL.md`](examples/compile/ov-compile-skills/daily-report/SKILL.md) |
-| 29 | ✓ | [`examples/compile/ov-compile-skills/knowledge-distillation/SKILL.md`](examples/compile/ov-compile-skills/knowledge-distillation/SKILL.md) |
-| 30 | ✓ | [`examples/compile/ov-compile-skills/knowledge-graph/SKILL.md`](examples/compile/ov-compile-skills/knowledge-graph/SKILL.md) |
-| 31 | ✓ | [`examples/compile/ov-compile-skills/llm-wiki/SKILL.md`](examples/compile/ov-compile-skills/llm-wiki/SKILL.md) |
-| 32 | ✓ | [`examples/compile/ov-compile-skills/ov-session-report/SKILL.md`](examples/compile/ov-compile-skills/ov-session-report/SKILL.md) |
-| 33 | ✓ | [`examples/dsh-memory-plugin/skills/openviking-memory/SKILL.md`](examples/dsh-memory-plugin/skills/openviking-memory/SKILL.md) |
-| 34 | ✓ | [`examples/dsh-memory-plugin/skills/openviking-skills/SKILL.md`](examples/dsh-memory-plugin/skills/openviking-skills/SKILL.md) |
-| 35 | ✓ | [`examples/openclaw-plugin/skills/install-openviking-memory/SKILL.md`](examples/openclaw-plugin/skills/install-openviking-memory/SKILL.md) |
-| 36 | ✓ | [`examples/openclaw-plugin/skills/openviking-context-database/SKILL.md`](examples/openclaw-plugin/skills/openviking-context-database/SKILL.md) |
-| 37 | ✓ | [`examples/openclaw-plugin/skills/ov-experience-memory/SKILL.md`](examples/openclaw-plugin/skills/ov-experience-memory/SKILL.md) |
-| 38 | ✓ | [`examples/skills/openviking-memory/SKILL.md`](examples/skills/openviking-memory/SKILL.md) |
-| 39 | ✓ | [`examples/skills/openviking-skills/SKILL.md`](examples/skills/openviking-skills/SKILL.md) |
-| 40 | ✓ | [`examples/skills/ov_dream/SKILL.md`](examples/skills/ov_dream/SKILL.md) |
-| 41 | ✓ | [`examples/skills/ov-add-paper/SKILL.md`](examples/skills/ov-add-paper/SKILL.md) |
-| 42 | ✓ | [`examples/skills/ov-experience-memory/SKILL.md`](examples/skills/ov-experience-memory/SKILL.md) |
-| 43 | ✓ | [`examples/skills/ov-resources/SKILL.md`](examples/skills/ov-resources/SKILL.md) |
-| 44 | ✓ | [`examples/skills/ov-server-operate/SKILL.md`](examples/skills/ov-server-operate/SKILL.md) |
-| 45 | ✓ | [`examples/skills/ov-skills/SKILL.md`](examples/skills/ov-skills/SKILL.md) |
+| 18 | ✓ | [`examples/agent-hook-plugin/hosts/cursor/skills/ov-experience-memory/SKILL.md`](examples/agent-hook-plugin/hosts/cursor/skills/ov-experience-memory/SKILL.md) |
+| 19 | ✓ | [`examples/claude-code-memory-plugin/skills/openviking-memory/SKILL.md`](examples/claude-code-memory-plugin/skills/openviking-memory/SKILL.md) |
+| 20 | ✓ | [`examples/claude-code-memory-plugin/skills/openviking-skills/SKILL.md`](examples/claude-code-memory-plugin/skills/openviking-skills/SKILL.md) |
+| 21 | ✓ | [`examples/claude-code-memory-plugin/skills/ov-experience-memory/SKILL.md`](examples/claude-code-memory-plugin/skills/ov-experience-memory/SKILL.md) |
+| 22 | ✓ | [`examples/claude-code-memory-plugin/skills/ov-memory-doctor/reference.md`](examples/claude-code-memory-plugin/skills/ov-memory-doctor/reference.md) |
+| 23 | ✓ | [`examples/claude-code-memory-plugin/skills/ov-memory-doctor/SKILL.md`](examples/claude-code-memory-plugin/skills/ov-memory-doctor/SKILL.md) |
+| 24 | ✓ | [`examples/codex-memory-plugin/skills/openviking-memory/SKILL.md`](examples/codex-memory-plugin/skills/openviking-memory/SKILL.md) |
+| 25 | ✓ | [`examples/codex-memory-plugin/skills/openviking-skills/SKILL.md`](examples/codex-memory-plugin/skills/openviking-skills/SKILL.md) |
+| 26 | ✓ | [`examples/codex-memory-plugin/skills/ov-experience-memory/SKILL.md`](examples/codex-memory-plugin/skills/ov-experience-memory/SKILL.md) |
+| 27 | ✓ | [`examples/codex-memory-plugin/skills/ov-memory-doctor/reference.md`](examples/codex-memory-plugin/skills/ov-memory-doctor/reference.md) |
+| 28 | ✓ | [`examples/codex-memory-plugin/skills/ov-memory-doctor/SKILL.md`](examples/codex-memory-plugin/skills/ov-memory-doctor/SKILL.md) |
+| 29 | ✓ | [`examples/compile/ov-compile-skills/daily-report/SKILL.md`](examples/compile/ov-compile-skills/daily-report/SKILL.md) |
+| 30 | ✓ | [`examples/compile/ov-compile-skills/knowledge-distillation/SKILL.md`](examples/compile/ov-compile-skills/knowledge-distillation/SKILL.md) |
+| 31 | ✓ | [`examples/compile/ov-compile-skills/knowledge-graph/SKILL.md`](examples/compile/ov-compile-skills/knowledge-graph/SKILL.md) |
+| 32 | ✓ | [`examples/compile/ov-compile-skills/llm-wiki/SKILL.md`](examples/compile/ov-compile-skills/llm-wiki/SKILL.md) |
+| 33 | ✓ | [`examples/compile/ov-compile-skills/ov-session-report/SKILL.md`](examples/compile/ov-compile-skills/ov-session-report/SKILL.md) |
+| 34 | ✓ | [`examples/dsh-memory-plugin/skills/openviking-memory/SKILL.md`](examples/dsh-memory-plugin/skills/openviking-memory/SKILL.md) |
+| 35 | ✓ | [`examples/dsh-memory-plugin/skills/openviking-skills/SKILL.md`](examples/dsh-memory-plugin/skills/openviking-skills/SKILL.md) |
+| 36 | ✓ | [`examples/dsh-memory-plugin/skills/ov-experience-memory/SKILL.md`](examples/dsh-memory-plugin/skills/ov-experience-memory/SKILL.md) |
+| 37 | ✓ | [`examples/openclaw-plugin/skills/install-openviking-memory/SKILL.md`](examples/openclaw-plugin/skills/install-openviking-memory/SKILL.md) |
+| 38 | ✓ | [`examples/openclaw-plugin/skills/openviking-context-database/SKILL.md`](examples/openclaw-plugin/skills/openviking-context-database/SKILL.md) |
+| 39 | ✓ | [`examples/openclaw-plugin/skills/ov-experience-memory/SKILL.md`](examples/openclaw-plugin/skills/ov-experience-memory/SKILL.md) |
+| 40 | ✓ | [`examples/opencode-plugin/skills/openviking-memory/SKILL.md`](examples/opencode-plugin/skills/openviking-memory/SKILL.md) |
+| 41 | ✓ | [`examples/opencode-plugin/skills/openviking-skills/SKILL.md`](examples/opencode-plugin/skills/openviking-skills/SKILL.md) |
+| 42 | ✓ | [`examples/opencode-plugin/skills/ov-experience-memory/SKILL.md`](examples/opencode-plugin/skills/ov-experience-memory/SKILL.md) |
+| 43 | ✓ | [`examples/pi-coding-agent-extension/skills/openviking-memory/SKILL.md`](examples/pi-coding-agent-extension/skills/openviking-memory/SKILL.md) |
+| 44 | ✓ | [`examples/pi-coding-agent-extension/skills/openviking-skills/SKILL.md`](examples/pi-coding-agent-extension/skills/openviking-skills/SKILL.md) |
+| 45 | ✓ | [`examples/pi-coding-agent-extension/skills/ov-experience-memory/SKILL.md`](examples/pi-coding-agent-extension/skills/ov-experience-memory/SKILL.md) |
+| 46 | ✓ | [`examples/skills/openviking-memory/SKILL.md`](examples/skills/openviking-memory/SKILL.md) |
+| 47 | ✓ | [`examples/skills/openviking-skills/SKILL.md`](examples/skills/openviking-skills/SKILL.md) |
+| 48 | ✓ | [`examples/skills/ov_dream/SKILL.md`](examples/skills/ov_dream/SKILL.md) |
+| 49 | ✓ | [`examples/skills/ov-add-paper/SKILL.md`](examples/skills/ov-add-paper/SKILL.md) |
+| 50 | ✓ | [`examples/skills/ov-experience-memory/SKILL.md`](examples/skills/ov-experience-memory/SKILL.md) |
+| 51 | ✓ | [`examples/skills/ov-resources/SKILL.md`](examples/skills/ov-resources/SKILL.md) |
+| 52 | ✓ | [`examples/skills/ov-server-operate/SKILL.md`](examples/skills/ov-server-operate/SKILL.md) |
+| 53 | ✓ | [`examples/skills/ov-skills/SKILL.md`](examples/skills/ov-skills/SKILL.md) |
 
 ---
 

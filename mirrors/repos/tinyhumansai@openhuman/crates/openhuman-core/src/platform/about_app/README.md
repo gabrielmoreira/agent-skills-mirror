@@ -39,7 +39,7 @@ Namespace `about_app`, registered into the global controller registry via `crate
 | Method | Inputs | Output | Description |
 | --- | --- | --- | --- |
 | `about_app.list` | `category` (optional enum) | `capabilities: Capability[]` | List all capabilities, optionally filtered by category. |
-| `about_app.lookup` | `id` (string, required) | `capability: Capability` | Look up one capability by stable id (e.g. `local_ai.download_model`); errors on unknown id. |
+| `about_app.lookup` | `id` (string, required) | `capability: Capability` | Look up one capability by stable id (e.g. `local_ai.configure_provider`); errors on unknown id. |
 | `about_app.search` | `query` (string, required) | `capabilities: Capability[]` | Keyword search; empty query returns all. |
 
 Handlers deserialize params, log at `debug`, and emit `Outcome` via `into_cli_compatible_json()`. The `category` input is schema-typed as an `Option<Enum>` of all `CapabilityCategory` wire names.

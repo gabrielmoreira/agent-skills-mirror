@@ -5,13 +5,14 @@ human-facing; put maintainer and agent guidance here.
 
 ## Model Optimization
 
-Optimize every skill and other agent-facing content for GPT-6 Astra and Claude Opus 5.5. The summaries below are
+Optimize every skill and other agent-facing content for GPT-6.1 Sol and Claude Opus 5.5. The summaries below are
 reminders, not substitutes for the live guides. Read both guides before complex, long-running, multi-tool, or
 orchestration-heavy work because their recommendations may evolve.
 
-- [GPT-6 Astra prompting guidance](https://developers.openai.com/api/docs/guides/latest-model/gpt-6-astra#prompting-best-practices):
-  Complete authorized work under stated assumptions; make user-instruction precedence over skills explicit; specify
-  writing and delegation preferences; and keep verification proportional to the change.
+- [GPT-6.1 Sol prompting guidance](https://developers.openai.com/api/docs/guides/latest-model#prompting-best-practices)
+  (shared GPT-6 guide; evaluate its family-wide recommendations on Sol): Complete authorized work under stated
+  assumptions; make user-instruction precedence over skills explicit; specify writing and delegation preferences; and
+  keep verification proportional to the change.
 - [Claude Opus 5.5 prompting guidance](https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/prompting-claude-opus-5-5):
   Calibrate effort instead of prompting for more thinking; never ask for reasoning in response text; name the premature
   stops to avoid and the stops that are wanted; treat text-only turns as reports, not completion; request brief progress
@@ -59,6 +60,8 @@ Treat visual structure as information architecture, not decoration.
 - `skills/<name>/assets/` contains bundled media or other static assets.
 - `.agents/internal-skills/<name>.md` contains repo-private internal skills referenced with `@`.
 - `tests/<name>/` contains tests for that skill's helpers; `scripts/` contains catalog tooling.
+- `toolkit/` is the Rust workspace and Bun apps that own the `ai-*` CLIs the skills and the global coordination workflow
+  rely on; follow `toolkit/AGENTS.md` there.
 - `README.md` lists every skill and stays minimal.
 - Claude Code reads `AGENTS.md` directly; do not add a `CLAUDE.md`.
 
@@ -68,9 +71,11 @@ Run `just` to list every recipe with its description; the `justfile` is authorit
 
 - After editing Markdown, run `just prettier-write <changed files>` then `just prettier-check <changed files>`, in that
   order; if `prettier-check` fails, fix only the files you changed.
-- `package.json` exists only for local formatting, type-checking, and hook wiring; there is no build step.
-- Treat Markdown formatting, invocation metadata checks, and skill-specific helper scripts as the verification surface
-  unless a task introduces a narrower check.
+- The root `package.json` exists only for local formatting, type-checking, and hook wiring; there is no build step.
+- Toolkit changes verify with `just toolkit::check` (or narrower toolkit recipes). CLI changes go live only via
+  `just toolkit::install-cli`, under the install-authorization rules in `toolkit/AGENTS.md`.
+- For catalog changes, treat Markdown formatting, invocation metadata checks, and skill-specific helper scripts as the
+  verification surface unless a task introduces a narrower check.
 
 ## Resource-Safe Search
 

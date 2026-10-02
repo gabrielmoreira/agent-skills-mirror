@@ -1,7 +1,6 @@
 # runtime/python
 
-The **Python interpreter client**, plus the process-launch helper for the
-long-lived Python children this core owns.
+The **Python interpreter client**.
 
 ## What moved out
 
@@ -11,27 +10,17 @@ selection, download, digest verification, extraction, atomic install,
 cross-process install locking) are all in the `tinyruntime` module now, reached
 through [`modules::runtime`](../../modules/runtime.rs).
 
-## What stayed, and why
-
-`process.rs` launches stdio Python children: the runtime Python server, and the
-stdio MCP servers. That is deliberately **not** the module's pooled execution:
-those children outlive a single job, speak their own protocols, and are owned by
-the subsystem that started them. The module resolves the interpreter; this core
-decides what to run with it.
-
 ## Key files
 
 | File | Role |
 | --- | --- |
 | `mod.rs` | Export-focused: submodule decls and `pub use` re-exports. |
-| `bootstrap.rs` | The interpreter client. `PythonBootstrap` (`resolve`, `probe_installed`, `try_cached`, `spawn_stdio`), `ResolvedPython`, `PythonSource`. |
-| `process.rs` | `PythonLaunchSpec` and `spawn_stdio_process`: unbuffered stdio (`-u`), piped fds, `kill_on_drop`, and the Windows no-console flag. |
+| `bootstrap.rs` | The interpreter client. `PythonBootstrap` (`resolve`, `probe_installed`, `try_cached`), `ResolvedPython`, `PythonSource`. |
 
 ## Public surface
 
 `PythonBootstrap::new(Arc<Config>)`, `.resolve() -> Result<ResolvedPython>`,
-`.probe_installed()`, `.try_cached()`,
-`.spawn_stdio(&PythonLaunchSpec) -> Result<tokio::process::Child>`, plus
+`.probe_installed()`, `.try_cached()`, plus
 `ResolvedPython` (`python_bin`, `bin_dir`, `version`, `source`) and
 `PythonSource`.
 
@@ -46,16 +35,12 @@ This module reads `config.runtime_python` (`enabled`, `prefer_system`,
 
 - `crate::modules::runtime`: the module client this delegates to.
 - `crate::config`: the settings each request carries.
-- `crate::inference::host_runtime::process_util`: the Windows no-console
-  hook, shared with the other child-spawning paths.
 
 External crates: `tinyruntime-bus`, `tokio`, `anyhow`, `tracing`. No HTTP
 client, no archive crates, no `walkdir`, no `fs2`: those went with the pipeline.
 
 ## Used by
 
-- `crates/openhuman-core/src/runtime/python_server/`: resolves an interpreter, then spawns
-  and supervises the long-lived model server with `spawn_stdio`.
 - `crates/openhuman-core/src/tools/impl/system/{python_exec,shell}.rs`: hold an
   `Arc<PythonBootstrap>`; `python_exec` calls `resolve()`, `shell` uses the
   non-blocking `try_cached()` for `PATH` injection.
@@ -73,6 +58,5 @@ client, no archive crates, no `walkdir`, no `fs2`: those went with the pipeline.
 - **The local cache is not redundant with the module's.** Only this one can
   answer without awaiting, which is what lets the shell inject `PATH` without
   blocking on a bus round trip.
-- **`spawn_stdio` is not pooled execution.** It exists for children that outlive
-  a job. Inline Python code goes through `runtime::pool::python` instead, which
-  routes to the module's warm workers.
+- Inline Python code goes through `runtime::pool::python`, which routes to the
+  module's warm workers.

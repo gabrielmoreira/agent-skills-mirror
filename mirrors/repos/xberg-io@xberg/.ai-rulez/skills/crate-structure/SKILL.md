@@ -19,7 +19,7 @@ Version source of truth: root `Cargo.toml` `[workspace.package] version`.
 - `xberg-wasm` — wasm-bindgen WASM bindings; `wasm-target` feature set
 - `xberg-native-pdf` — pure-Rust PDF engine, vendored into this workspace. Path dependency with **no** `package =` alias, so the extern crate name is `xberg_native_pdf`. Exports `LOG_TARGET_ROOT = module_path!()`; derive log-target filters from that constant, never a string literal
 - `xberg-pdfium-render` — pdfium FFI backend behind the `pdf-pdfium` feature. Aliased: `pdfium-render = { package = "xberg-pdfium-render", … }`, so call sites still write `pdfium_render::`
-- `xberg-paddle-ocr` — PaddleOCR; ORT and tract engines. On WASM only `paddle-ocr-types` is available, but `paddle-ocr` **is** in `windows-target`
+- `xberg-paddle-ocr` — PaddleOCR; ORT and tract engines. On WASM only the PaddleOCR config types are available (they compile in every build), but `paddle-ocr` **is** in `windows-target`
 - `xberg-tesseract` — Tesseract OCR bindings
 - `xberg-candle-ocr` — candle VLM OCR backends (TrOCR, PaddleOCR-VL, GLM-OCR, DeepSeek-OCR)
 - `xberg-gliner` — GLiNER NER inference

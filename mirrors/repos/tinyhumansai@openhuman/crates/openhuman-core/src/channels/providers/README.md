@@ -33,7 +33,7 @@ What a provider can do beyond send/receive is declared once, upstream, in `tinyc
 - `host/channel_events.rs::ChannelTurnStateSubscriber` records busy state for `/status`.
 - `bus/`'s progressive reply shows draft, thinking and filler bubbles only where `progressive_edits` is set.
 
-Ported providers reach host capabilities (voice, approvals, conversation history, shutdown, event sink) through the `tinychannels::host::ProviderContext` built by `channels::host::build_provider_context` instead of calling OpenHuman internals directly; see `channels/host/mod.rs`.
+Ported providers reach host capabilities (voice, approvals, conversation history, shutdown, event sink) through the `tinychannels::host::ProviderContext` built in `channels::host` instead of calling OpenHuman internals directly; see `channels/host/mod.rs`.
 
 ## Adding a provider
 

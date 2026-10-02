@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `openclaw/clawsweeper` — 26 default patterns, 2 followed patterns, 46 file(s) materialized.
+Mirror of `openclaw/clawsweeper` — 26 default patterns, 3 followed patterns, 47 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `openclaw/clawsweeper` — 26 default patterns, 2 followed patterns, 4
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 2 |
-| Files         | 46 |
+| Followed pats | 3 |
+| Files         | 47 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,6 +51,7 @@ Mirror of `openclaw/clawsweeper` — 26 default patterns, 2 followed patterns, 4
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
+- `changelog.d/README.md`
 - `docs/limits.md`
 - `docs/README.md`
 
@@ -104,8 +105,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 42 | ✓ | [`prompts/repair/worker-system.md`](prompts/repair/worker-system.md) |
 | 43 | ✓ | [`prompts/review-commit.md`](prompts/review-commit.md) |
 | 44 | ✓ | [`prompts/review-item.md`](prompts/review-item.md) |
-| 45 | → | [`docs/limits.md`](docs/limits.md) |
-| 46 | → | [`docs/README.md`](docs/README.md) |
+| 45 | → | [`changelog.d/README.md`](changelog.d/README.md) |
+| 46 | → | [`docs/limits.md`](docs/limits.md) |
+| 47 | → | [`docs/README.md`](docs/README.md) |
 
 ---
 

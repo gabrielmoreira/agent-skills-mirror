@@ -18,7 +18,7 @@ green wrappers, or process completeness.
 
 - Release, shared gateway, saved plan, staging receipt, or production promotion: read
   [release-safety-and-environment-parity.md](references/release-safety-and-environment-parity.md).
-- A second environment, environment retirement, shared data backend, DNS ownership, state, or snapshots: read
+- Environment isolation, including cached initialization, environment retirement, shared data backend, DNS ownership, state, or snapshots: read
   [multi-env-isolation.md](references/multi-env-isolation.md).
 - Pre-deploy checks or a validator: read
   [pre-deploy-validation.md](references/pre-deploy-validation.md).
@@ -72,6 +72,20 @@ TF_CLI_ARGS_plan='-replace=module.<name>.null_resource.<resource>' terraform pla
 Then apply. The provisioner will rebuild from the plan's frozen bytes, ignoring the corrupted live state.
 
 **Prevention**: Add a periodic job that compares state-tracked file hashes against live server files. Terraform alone will never catch this.
+
+### Staging applies cleanly but production fails `port is already allocated`
+
+**Symptom**: Compose deploy passes staging verification, then the production apply dies at `docker compose up` with `Bind for 127.0.0.1:<port> failed: port is already allocated`.
+
+**Root cause**: Staging/production parity covers configuration, **not host port allocation**. The staging host does not run the colliding service (2026-10-01: 3001 was free on staging, occupied by lobe-new-api on the production gateway). A tainted `null_resource` is left behind, so the retry must go through the replace flow (`CONFIRM_REPLACE`), not a plain re-apply.
+
+**Diagnosis**:
+```bash
+ssh root@<target-host> 'ss -ltnp | grep <port>'   # find the real occupant
+docker ps --format "{{.Names}} {{.Ports}}" | grep <port>
+```
+
+**Prevention**: Before binding a host port in a module, check the **target** host for the exact bind at design time — never infer freeness from staging. Prefer uncommon high ports, record the allocation in the module comment and the deploy doc, and when a container needs a host-local probe target remember `127.0.0.1` inside a container is the container itself: host-local targets belong to host-level probes (systemd scripts), not containerized monitors.
 
 ### `docker: not found` in remote-exec
 

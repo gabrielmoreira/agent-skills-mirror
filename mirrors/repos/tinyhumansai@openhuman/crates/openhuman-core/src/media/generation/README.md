@@ -40,7 +40,7 @@ agent's tool list; it returns an empty list rather than erroring when no
 backend transport is installed, so a library host with no TinyHumans
 connection simply has no media tools rather than a broken one. Generated
 files land under `<action_dir>/generated-media/`, and `MediaArtifactTool`
-moves each one into the workspace's `artifacts/<id>/` layout so it shows up
+moves each one into the visible files folder (`~/OpenHuman/projects/Files`, metadata in the workspace's `artifacts/<id>/`) so it shows up
 as a card in the chat UI. Billing and margin stay backend-side: this module
 never charges directly, it only refuses to submit when
 `crate::integrations::client::budget_gate` reports the account's managed

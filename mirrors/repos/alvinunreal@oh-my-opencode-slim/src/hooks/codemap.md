@@ -142,7 +142,8 @@ discoverable skills require permission approval. The plugin does not rewrite
 
 - **Cache safety**: all injection goes through the tagged/volatile helpers to
   preserve provider prompt-cache prefixes.
-- **Debounced cleanup**: image cleanup and runtime-status reconciliation run on
-  timers, not per-event.
+- **Image assets**: auto-routed attachments persist under `.opencode/images/`
+  until the user removes them explicitly; no cleanup timer deletes them.
+- **Runtime status**: reconciliation runs on timers, not per-event.
 - **Bounded state**: cache monitor and wake gate cap tracked sessions; idle
   reconciliation uses per-session tokens to invalidate stale timers.

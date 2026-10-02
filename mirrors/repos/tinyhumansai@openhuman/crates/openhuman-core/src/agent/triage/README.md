@@ -44,7 +44,7 @@ notification ingest); those build a `TriggerEnvelope` and call in.
    (`TriggerEvaluated`, `TriggerEscalated`, `TriggerEscalationFailed`) so the
    field list lives in one place.
 
-`routing.rs` resolves the arms. `resolve_provider` resolves the
+`routing.rs` resolves the arms. `resolve_provider_with_config` resolves the
 `chat` workload role and forces the managed backend whenever that
 role points at a local runtime, a local CLI delegate, or an incomplete BYOK
 route, so the initial attempt never depends on a local model being up.
@@ -54,8 +54,7 @@ otherwise the chain skips straight to `Deferred`.
 
 Only the local arm takes the `cron::scheduler_gate::wait_for_capacity`
 permit (held for the duration of that turn); cloud attempts do not wait on
-the gate. `run_triage_with_arms` is the same chain with pre-resolved arms;
-tests use a `_for_test` variant that skips the permit.
+the gate. Tests use a `_for_test` variant that skips the permit.
 
 ## Not routed through triage
 
@@ -76,10 +75,10 @@ Re-exported from `mod.rs`:
   `decision.rs`.
 - `run_triage(&envelope) -> anyhow::Result<TriageOutcome>`, `TriageOutcome`,
   `TriageRun`, `TriageResolutionPath`: `evaluator*.rs`. Also `pub` on the
-  module: `run_triage_with_arms`, `TRIGGER_TRIAGE_AGENT_ID`.
+  module: `TRIGGER_TRIAGE_AGENT_ID`.
 - `apply_decision(run, &envelope) -> anyhow::Result<()>`: `escalation.rs`.
 - `local_trigger_origin()`, `remote_trigger_origin(&envelope)`: `origin.rs`.
-- `resolve_provider()`, `build_local_provider_with_config(&config)`,
+- `build_local_provider_with_config(&config)`,
   `ResolvedProvider`: `routing.rs`. Also `pub` on the module:
   `resolve_provider_with_config`.
 

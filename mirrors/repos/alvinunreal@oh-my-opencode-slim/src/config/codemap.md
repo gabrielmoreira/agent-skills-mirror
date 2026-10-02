@@ -143,7 +143,7 @@ This allows consumers to import directly from `src/config` rather than individua
 - `RuntimeConfig.reset(directory)`: Clear the singleton for a directory
 - `RuntimeConfig.captureHostConfig(opencodeConfig)`: Capture host-side config before the config hook mutates it
 - `setRuntimePreset(name)` / `getRuntimePreset()`: Runtime preset override (stale names clear it)
-- Derived getters: `plugin`, `preset`, `agents()`, `agent(name)`, `disabledAgents`, `disabledTools`, `disabledSkills`, `customAgentNames`, `disabledMcps`, `imageRouting`, `multiplexer`, `backgroundJobs` (incl. `orchestratorWake`), `fallback`, `webfetch`, `acpAgents`, `companion`, `council`, `autoUpdate`, `stripOrchestratorModel`, `setDefaultAgent`, `compactSidebar`, `modelArrays` (incl. councillor chains), `runtimeChains`, `primaryModel`, `smallModel()`, `hostAgent(name)`
+- Derived getters: `plugin`, `preset`, `agents()`, `agent(name)`, `disabledAgents`, `disabledTools`, `disabledSkills`, `disabledHooks`, `disabledCommands`, `customAgentNames`, `disabledMcps`, `imageRouting`, `multiplexer`, `backgroundJobs` (incl. `orchestratorWake`), `fallback`, `webfetch`, `acpAgents`, `companion`, `council`, `autoUpdate`, `stripOrchestratorModel`, `setDefaultAgent`, `compactSidebar`, `modelArrays` (incl. councillor chains), `runtimeChains`, `primaryModel`, `smallModel()`, `hostAgent(name)`
 
 ### MCP Management
 
@@ -164,6 +164,7 @@ This allows consumers to import directly from `src/config` rather than individua
 - `disabled_skills`: List of skills to disable
 - `disabled_hooks`: List of hooks to disable (`phase-reminder`, `foreground-fallback`)
 - `disabled_commands`: List of slash commands to disable (`interview`, `deepwork`, `reflect`, `loop`)
+- Enum-backed disabled keys use whole-family replacement semantics: explicit `[]` overrides a lower layer, a mixed list replaces it with the valid subset, and a list containing only unknown names is treated as unset so the lower layer applies.
 - `multiplexer`: Unified pane management config (type, layout, sizes)
 - `tmux`: Legacy tmux configuration (migrated to multiplexer)
 - `interview`: Interview feature configuration

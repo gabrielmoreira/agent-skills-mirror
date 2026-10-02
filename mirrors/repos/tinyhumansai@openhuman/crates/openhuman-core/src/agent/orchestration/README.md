@@ -80,7 +80,11 @@ RPC/tool formatting, and OpenHuman's worktree policy.
   outside an agent turn.
 - `running_subagents.rs` + `running_subagents/` (`registry.rs`, `roster.rs`,
   `resolve.rs`, `cancel.rs`, `steering.rs`, `wait.rs`, `task_ledger.rs`): the
-  detached sub-agent registry mirror. `background_completions.rs` and
+  detached sub-agent host glue (registry instance and metadata, store path,
+  steering, boot reconcile). The status type, wait, ledger helpers, roster and
+  session resolution live in `tinyagents_orchestration::subagent`
+  (`DetachedSubagentStatus`, `wait_detached`, `SubagentIdentity`, ...).
+  `background_completions.rs` and
   `background_delivery.rs` queue and idle-gated, debounced, batched delivery
   of finished background runs back into chat; `run_ledger_finalize.rs` is the
   global-bus subscriber that settles ledger rows for runs that outlive their
@@ -135,7 +139,7 @@ name:
   `Deferred` tools on the orchestrator's own belt, found through
   `tool_search` and called directly (`tools/orchestrator_tools.rs`).
 
-`dispatch.rs` (`dispatch_subagent`, the shared spawn path every tool above
+`dispatch.rs` (the shared spawn path every tool above
 calls), `awaiting_user.rs` (the awaiting-user envelope), and
 `worker_thread.rs` (worker thread creation) are `pub(crate)` helpers, not
 tools. Live harness registrations use typed `ToolDispatch<(),

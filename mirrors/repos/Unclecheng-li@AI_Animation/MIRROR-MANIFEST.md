@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `Unclecheng-li/AI_Animation` — 26 default patterns, 0 followed patterns, 159 file(s) materialized.
+Mirror of `Unclecheng-li/AI_Animation` — 26 default patterns, 0 followed patterns, 179 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Unclecheng-li/AI_Animation` — 26 default patterns, 0 followed patte
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 159 |
+| Files         | 179 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -218,6 +218,26 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 157 | ✓ | [`skills/video-shot-demos/references/style-cards.md`](skills/video-shot-demos/references/style-cards.md) |
 | 158 | ✓ | [`skills/video-shot-demos/scripts/shot.js`](skills/video-shot-demos/scripts/shot.js) |
 | 159 | ✓ | [`skills/video-shot-demos/SKILL.md`](skills/video-shot-demos/SKILL.md) |
+| 160 | ✓ | [`skills/win11-ui-demos/assets/examples/wukong-c-clean/index.html`](skills/win11-ui-demos/assets/examples/wukong-c-clean/index.html) |
+| 161 | ✓ | [`skills/win11-ui-demos/assets/examples/wukong-c-clean/material/w11.jfif`](skills/win11-ui-demos/assets/examples/wukong-c-clean/material/w11.jfif) |
+| 162 | ✓ | [`skills/win11-ui-demos/assets/examples/wukong-c-clean/material/winxp.png`](skills/win11-ui-demos/assets/examples/wukong-c-clean/material/winxp.png) |
+| 163 | ✓ | [`skills/win11-ui-demos/assets/examples/wukong-c-clean/shot-11_Edge_Temp_updater.html`](skills/win11-ui-demos/assets/examples/wukong-c-clean/shot-11_Edge_Temp_updater.html) |
+| 164 | ✓ | [`skills/win11-ui-demos/assets/examples/wukong-c-clean/wukong/icon.png`](skills/win11-ui-demos/assets/examples/wukong-c-clean/wukong/icon.png) |
+| 165 | ✓ | [`skills/win11-ui-demos/assets/examples/wukong-c-clean/wukong/logo-h-black.png`](skills/win11-ui-demos/assets/examples/wukong-c-clean/wukong/logo-h-black.png) |
+| 166 | ✓ | [`skills/win11-ui-demos/assets/examples/wukong-c-clean/wukong/logo-h-color.png`](skills/win11-ui-demos/assets/examples/wukong-c-clean/wukong/logo-h-color.png) |
+| 167 | ✓ | [`skills/win11-ui-demos/assets/examples/wukong-c-clean/wukong/logo-h-white.png`](skills/win11-ui-demos/assets/examples/wukong-c-clean/wukong/logo-h-white.png) |
+| 168 | ✓ | [`skills/win11-ui-demos/assets/preview/main.png`](skills/win11-ui-demos/assets/preview/main.png) |
+| 169 | ✓ | [`skills/win11-ui-demos/assets/preview/shot-01.png`](skills/win11-ui-demos/assets/preview/shot-01.png) |
+| 170 | ✓ | [`skills/win11-ui-demos/assets/preview/shot-04.png`](skills/win11-ui-demos/assets/preview/shot-04.png) |
+| 171 | ✓ | [`skills/win11-ui-demos/assets/preview/shot-05.png`](skills/win11-ui-demos/assets/preview/shot-05.png) |
+| 172 | ✓ | [`skills/win11-ui-demos/assets/preview/shot-15.png`](skills/win11-ui-demos/assets/preview/shot-15.png) |
+| 173 | ✓ | [`skills/win11-ui-demos/assets/preview/shot-17.png`](skills/win11-ui-demos/assets/preview/shot-17.png) |
+| 174 | ✓ | [`skills/win11-ui-demos/assets/preview/shot-19.png`](skills/win11-ui-demos/assets/preview/shot-19.png) |
+| 175 | ✓ | [`skills/win11-ui-demos/assets/template.html`](skills/win11-ui-demos/assets/template.html) |
+| 176 | ✓ | [`skills/win11-ui-demos/README.md`](skills/win11-ui-demos/README.md) |
+| 177 | ✓ | [`skills/win11-ui-demos/references/simulation-patterns.md`](skills/win11-ui-demos/references/simulation-patterns.md) |
+| 178 | ✓ | [`skills/win11-ui-demos/references/win11-kit.md`](skills/win11-ui-demos/references/win11-kit.md) |
+| 179 | ✓ | [`skills/win11-ui-demos/SKILL.md`](skills/win11-ui-demos/SKILL.md) |
 
 ---
 

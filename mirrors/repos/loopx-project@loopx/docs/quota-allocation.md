@@ -129,7 +129,8 @@ Other cadences are independent: the standard profile's two-small-delivery
 streak suggests widening work; fine mode's five-small-delivery streak suggests
 direction review. Neither is this completed-Todo counter. The periodic review
 window of 20 material run records and long-open-Todo-chain triggers also retain
-their existing thresholds.
+their existing thresholds. Quiet or unchanged Monitor polls do not consume the
+periodic material-run window; their dedicated Monitor replan thresholds still apply.
 
 ### Governed Turn Execution
 
@@ -711,7 +712,7 @@ For autonomous heartbeats, unchanged monitor polls can be recorded as
 no-spend stall evidence with:
 
 ```bash
-loopx --registry "$HOME/.codex/loopx/registry.global.json" quota monitor-poll --goal-id <GOAL_ID> --source heartbeat --execute
+loopx --registry "$HOME/.loopx/registry.global.json" quota monitor-poll --goal-id <GOAL_ID> --source heartbeat --execute
 ```
 
 `quota monitor-poll` is valid when the current guard is a quiet monitor skip,
@@ -913,9 +914,9 @@ The first read-only or preview commands are:
 ```bash
 loopx quota status
 loopx quota plan
-loopx --format json --registry "$HOME/.codex/loopx/registry.global.json" quota should-run --goal-id <goal-id> --runtime-profile codex_app_heartbeat
-loopx --registry "$HOME/.codex/loopx/registry.global.json" quota spend-slot --goal-id <goal-id> --slots 1
-loopx --registry "$HOME/.codex/loopx/registry.global.json" quota spend-slot --goal-id <goal-id> --slots 1 --execute
+loopx --format json --registry "$HOME/.loopx/registry.global.json" quota should-run --goal-id <goal-id> --runtime-profile codex_app_heartbeat
+loopx --registry "$HOME/.loopx/registry.global.json" quota spend-slot --goal-id <goal-id> --slots 1
+loopx --registry "$HOME/.loopx/registry.global.json" quota spend-slot --goal-id <goal-id> --slots 1 --execute
 ```
 
 These commands reuse the status contract, including contract health, global
@@ -1193,6 +1194,14 @@ slows Codex App and stops CLI/Claude loops after repeated unchanged polls;
 agent-to-agent handoff cadence too quickly;
 `backoff_until_material_transition` handles monitor-only quiet polls; and
 `backoff_until_fresh_evidence` handles mapped or post-handoff no-op waits.
+`preserve_current_schedule` handles `heartbeat_settled_skip`: settlement closes
+one Turn, not the Goal or its remaining Todos. Replay keeps the installed host
+cadence and emits no target interval/RRULE, scheduler reset, ACK, fallback or
+host-update instruction, even when no host cadence has been observed. The next
+trigger uses a fresh Turn identity to evaluate the live frontier; it never
+re-executes or spends for the closed Turn. Native Goal runtimes continue to that
+fresh guard instead of blocking the Goal. Explicit Goal stop or quota pause
+still takes precedence. Actual fresh-Turn waits retain their existing backoff.
 For Codex App and local schedulers, `recommended_interval_minutes` is the next
 target interval. For Codex App heartbeats, `recommended_rrule` is emitted only
 when `app_automation.stateful_backoff.apply_needed=true`; if the desired RRULE is

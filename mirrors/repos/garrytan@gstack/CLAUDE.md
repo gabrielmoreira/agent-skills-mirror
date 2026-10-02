@@ -19,6 +19,8 @@ bun run test:e2e     # run E2E tests only (diff-based, ~$4.20/run max)
 bun run test:e2e:all # run ALL E2E tests regardless of diff
 bun run eval:select  # show which tests would run based on current diff
 bun run dev <cmd>    # run CLI in dev mode, e.g. bun run dev goto https://example.com
+bun run typecheck    # strict tsc over product code (zero errors required)
+bun run typecheck:test  # test-code type-debt ratchet
 bun run build        # gen docs + compile binaries
 bun run gen:skill-docs  # regenerate SKILL.md files from templates
 bun run skill:check  # health dashboard for all skills

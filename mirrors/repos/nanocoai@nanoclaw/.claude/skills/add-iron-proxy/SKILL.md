@@ -17,6 +17,8 @@ Copy the package's provider, approval middleware, tests, and agent guidance into
 payload/src/gateway-providers/iron-proxy.ts -> src/gateway-providers/iron-proxy.ts
 payload/src/gateway-providers/iron-proxy.test.ts -> src/gateway-providers/iron-proxy.test.ts
 payload/src/gateway-providers/iron-proxy-allowlist.ts -> src/gateway-providers/iron-proxy-allowlist.ts
+payload/src/gateway-providers/iron-proxy-local-model.ts -> src/gateway-providers/iron-proxy-local-model.ts
+payload/src/gateway-providers/iron-proxy-local-model.test.ts -> src/gateway-providers/iron-proxy-local-model.test.ts
 payload/src/gateway-providers/iron-proxy-approval.ts -> src/gateway-providers/iron-proxy-approval.ts
 payload/src/gateway-providers/iron-proxy-approval.test.ts -> src/gateway-providers/iron-proxy-approval.test.ts
 payload/src/gateway-providers/iron-proxy-transform.proto -> src/gateway-providers/iron-proxy-transform.proto
@@ -92,12 +94,12 @@ pnpm run build
 ```
 
 ```nc:run effect:test
-pnpm exec vitest run src/gateway-providers/iron-proxy.test.ts src/gateway-providers/iron-proxy-approval.test.ts src/gateway-providers/gateway-provider-registry.test.ts src/gateway-approval-coordinator.test.ts .claude/skills/add-iron-proxy/scripts/control.test.ts .claude/skills/add-iron-proxy/scripts/setup.test.ts .claude/skills/add-iron-proxy/scripts/provider-credentials.test.ts .claude/skills/add-iron-proxy/scripts/credential-isolation.test.ts .claude/skills/add-iron-proxy/scripts/install-command.test.ts
+pnpm exec vitest run src/gateway-providers/iron-proxy.test.ts src/gateway-providers/iron-proxy-approval.test.ts src/gateway-providers/gateway-provider-registry.test.ts src/gateway-approval-coordinator.test.ts .claude/skills/add-iron-proxy/scripts/control.test.ts .claude/skills/add-iron-proxy/scripts/setup.test.ts .claude/skills/add-iron-proxy/scripts/provider-credentials.test.ts .claude/skills/add-iron-proxy/scripts/credential-isolation.test.ts .claude/skills/add-iron-proxy/scripts/install-command.test.ts src/gateway-providers/iron-proxy-local-model.test.ts .claude/skills/add-iron-proxy/scripts/local-model.test.ts
 ```
 
 The setup consumer writes `NANOCLAW_GATEWAY_PROVIDER=iron-proxy` only after every directive succeeds. Restart only this copy's NanoClaw service after an upgrade so its session contribution and approval bridge match the new installation. Check the proxy has synced its assigned principal before reporting the gateway ready.
 
-The request order is front identity and allowlist → human approval → stock Iron credentials → upstream. The front also requires an explicit response decision before returning upstream data. HTTPS tunnels pin the target authority; each inner HTTP request is checked again. Streaming responses and WebSocket upgrades use this same request/response gate. Credentialed application requests use HTTPS; the approval bridge rejects plaintext HTTP destinations. Do not rewrite an HTTP request’s approval metadata as HTTPS to bypass that restriction. The bridge forwards every allowed HTTP request to core as a default approval request. Core uses the active agent provider’s model-domain declaration to permit model traffic without a card; other destinations retain human approval. CONNECT verifies identity; the inner HTTP request is the approval point. Existing standalone model credentials are moved into Iron Control during setup and removed from the old secret file after successful storage and grant.
+The request order is front identity and allowlist → human approval → stock Iron credentials → upstream. The front also requires an explicit response decision before returning upstream data. HTTPS tunnels pin the target authority; each inner HTTP request is checked again. Streaming responses and WebSocket upgrades use this same request/response gate. Credentialed application requests use HTTPS; the approval bridge rejects plaintext HTTP destinations, except one keyless model on this machine pinned by host and port (see [Serve a local model](#serve-a-local-model)). Do not rewrite an HTTP request’s approval metadata as HTTPS to bypass that restriction. The bridge forwards every allowed HTTP request to core as a default approval request. Core uses the active agent provider’s model-domain declaration to permit model traffic without a card; other destinations retain human approval. CONNECT verifies identity; the inner HTTP request is the approval point. Existing standalone model credentials are moved into Iron Control during setup and removed from the old secret file after successful storage and grant.
 
 ## Open and use the official console
 
@@ -164,9 +166,21 @@ reading values. Before keeping or overwriting a record, setup rechecks its
 ownership and rules and stops if they no longer match. Broker refresh may continue during login; a change to the broker's
 client binding or the secrets' rules stops setup.
 
-Native backends and custom/keyless HTTPS endpoints on port 443 are supported.
-Use a DNS name and TLS for local models; plaintext HTTP endpoints fail during
-setup. Follow the OpenCode skill to restart the host and test a real reply.
+Native backends and keyless or custom HTTPS endpoints on port 443 are supported.
+Setup refuses plain HTTP (except a local model, below), other ports, IP addresses
+and private names such as `*.home.arpa`, because Iron trusts only public
+certificates. Setup adds the model host to Iron's allowlist.
+Follow your provider's skill to restart the host and test a real reply.
+
+### Serve a local model
+
+A keyless model on this machine can use `http://host.docker.internal:<port>/v1`. Traffic still goes through Iron.
+
+1. Run the server on a fixed port, bound to `127.0.0.1` (Docker Desktop) or the Docker bridge address, often `172.17.0.1` (Linux). Not `0.0.0.0`: that exposes it to your network.
+2. Enter the URL at the provider's endpoint prompt, and answer that it needs no key.
+3. Restart the host.
+
+Only that port and the OpenAI inference routes are reachable. Don't grant an Iron credential for `host.docker.internal`: Iron would send it over plain HTTP. A model that needs a key, or runs on another machine, needs https on a public DNS name.
 
 ## Remove
 

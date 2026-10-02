@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `mui/material-ui` — 26 default patterns, 0 followed patterns, 26 file(s) materialized.
+Mirror of `mui/material-ui` — 26 default patterns, 0 followed patterns, 31 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `mui/material-ui` — 26 default patterns, 0 followed patterns, 26 fil
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 26 |
+| Files         | 31 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -61,30 +61,35 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`.agents/skills/material-ui-review/agents/openai.yaml`](.agents/skills/material-ui-review/agents/openai.yaml) |
 | 2 | ✓ | [`.agents/skills/material-ui-review/SKILL.md`](.agents/skills/material-ui-review/SKILL.md) |
-| 3 | ✓ | [`.claude/skills/material-ui-review/SKILL.md`](.claude/skills/material-ui-review/SKILL.md) |
-| 4 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 5 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 6 | ✓ | [`skills/material-ui-nextjs/AGENTS.md`](skills/material-ui-nextjs/AGENTS.md) |
-| 7 | ✓ | [`skills/material-ui-nextjs/metadata.json`](skills/material-ui-nextjs/metadata.json) |
-| 8 | ✓ | [`skills/material-ui-nextjs/README.md`](skills/material-ui-nextjs/README.md) |
-| 9 | ✓ | [`skills/material-ui-nextjs/reference.md`](skills/material-ui-nextjs/reference.md) |
-| 10 | ✓ | [`skills/material-ui-nextjs/SKILL.md`](skills/material-ui-nextjs/SKILL.md) |
-| 11 | ✓ | [`skills/material-ui-styling/AGENTS.md`](skills/material-ui-styling/AGENTS.md) |
-| 12 | ✓ | [`skills/material-ui-styling/metadata.json`](skills/material-ui-styling/metadata.json) |
-| 13 | ✓ | [`skills/material-ui-styling/README.md`](skills/material-ui-styling/README.md) |
-| 14 | ✓ | [`skills/material-ui-styling/reference.md`](skills/material-ui-styling/reference.md) |
-| 15 | ✓ | [`skills/material-ui-styling/SKILL.md`](skills/material-ui-styling/SKILL.md) |
-| 16 | ✓ | [`skills/material-ui-tailwind/AGENTS.md`](skills/material-ui-tailwind/AGENTS.md) |
-| 17 | ✓ | [`skills/material-ui-tailwind/metadata.json`](skills/material-ui-tailwind/metadata.json) |
-| 18 | ✓ | [`skills/material-ui-tailwind/README.md`](skills/material-ui-tailwind/README.md) |
-| 19 | ✓ | [`skills/material-ui-tailwind/reference.md`](skills/material-ui-tailwind/reference.md) |
-| 20 | ✓ | [`skills/material-ui-tailwind/SKILL.md`](skills/material-ui-tailwind/SKILL.md) |
-| 21 | ✓ | [`skills/material-ui-theming/AGENTS.md`](skills/material-ui-theming/AGENTS.md) |
-| 22 | ✓ | [`skills/material-ui-theming/metadata.json`](skills/material-ui-theming/metadata.json) |
-| 23 | ✓ | [`skills/material-ui-theming/README.md`](skills/material-ui-theming/README.md) |
-| 24 | ✓ | [`skills/material-ui-theming/reference.md`](skills/material-ui-theming/reference.md) |
-| 25 | ✓ | [`skills/material-ui-theming/SKILL.md`](skills/material-ui-theming/SKILL.md) |
-| 26 | ✓ | [`skills/README.md`](skills/README.md) |
+| 3 | ✓ | [`.agents/skills/mui-release/SKILL.md`](.agents/skills/mui-release/SKILL.md) |
+| 4 | ✓ | [`.agents/skills/mui-release/stage-1-prepare-pr.md`](.agents/skills/mui-release/stage-1-prepare-pr.md) |
+| 5 | ✓ | [`.agents/skills/mui-release/stage-2-publish-packages.md`](.agents/skills/mui-release/stage-2-publish-packages.md) |
+| 6 | ✓ | [`.agents/skills/mui-release/stage-3-publish-docs.md`](.agents/skills/mui-release/stage-3-publish-docs.md) |
+| 7 | ✓ | [`.agents/skills/mui-release/stage-4-github-release.md`](.agents/skills/mui-release/stage-4-github-release.md) |
+| 8 | ✓ | [`.claude/skills/material-ui-review/SKILL.md`](.claude/skills/material-ui-review/SKILL.md) |
+| 9 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 10 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 11 | ✓ | [`skills/material-ui-nextjs/AGENTS.md`](skills/material-ui-nextjs/AGENTS.md) |
+| 12 | ✓ | [`skills/material-ui-nextjs/metadata.json`](skills/material-ui-nextjs/metadata.json) |
+| 13 | ✓ | [`skills/material-ui-nextjs/README.md`](skills/material-ui-nextjs/README.md) |
+| 14 | ✓ | [`skills/material-ui-nextjs/reference.md`](skills/material-ui-nextjs/reference.md) |
+| 15 | ✓ | [`skills/material-ui-nextjs/SKILL.md`](skills/material-ui-nextjs/SKILL.md) |
+| 16 | ✓ | [`skills/material-ui-styling/AGENTS.md`](skills/material-ui-styling/AGENTS.md) |
+| 17 | ✓ | [`skills/material-ui-styling/metadata.json`](skills/material-ui-styling/metadata.json) |
+| 18 | ✓ | [`skills/material-ui-styling/README.md`](skills/material-ui-styling/README.md) |
+| 19 | ✓ | [`skills/material-ui-styling/reference.md`](skills/material-ui-styling/reference.md) |
+| 20 | ✓ | [`skills/material-ui-styling/SKILL.md`](skills/material-ui-styling/SKILL.md) |
+| 21 | ✓ | [`skills/material-ui-tailwind/AGENTS.md`](skills/material-ui-tailwind/AGENTS.md) |
+| 22 | ✓ | [`skills/material-ui-tailwind/metadata.json`](skills/material-ui-tailwind/metadata.json) |
+| 23 | ✓ | [`skills/material-ui-tailwind/README.md`](skills/material-ui-tailwind/README.md) |
+| 24 | ✓ | [`skills/material-ui-tailwind/reference.md`](skills/material-ui-tailwind/reference.md) |
+| 25 | ✓ | [`skills/material-ui-tailwind/SKILL.md`](skills/material-ui-tailwind/SKILL.md) |
+| 26 | ✓ | [`skills/material-ui-theming/AGENTS.md`](skills/material-ui-theming/AGENTS.md) |
+| 27 | ✓ | [`skills/material-ui-theming/metadata.json`](skills/material-ui-theming/metadata.json) |
+| 28 | ✓ | [`skills/material-ui-theming/README.md`](skills/material-ui-theming/README.md) |
+| 29 | ✓ | [`skills/material-ui-theming/reference.md`](skills/material-ui-theming/reference.md) |
+| 30 | ✓ | [`skills/material-ui-theming/SKILL.md`](skills/material-ui-theming/SKILL.md) |
+| 31 | ✓ | [`skills/README.md`](skills/README.md) |
 
 ---
 

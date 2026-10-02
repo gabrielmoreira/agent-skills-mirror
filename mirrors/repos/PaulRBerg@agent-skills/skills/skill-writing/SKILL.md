@@ -15,13 +15,14 @@ the result with the repository's canonical skill validator.
 
 ## Model Guidance
 
-Optimize every new skill and its content for GPT-6 Astra and Claude Opus 5.5. The summaries below are reminders, not
+Optimize every new skill and its content for GPT-6.1 Sol and Claude Opus 5.5. The summaries below are reminders, not
 substitutes for the live guides. Read both guides before designing or writing a complex, long-running, multi-tool, or
 orchestration-heavy skill because their recommendations may evolve.
 
-- [GPT-6 Astra prompting guidance](https://developers.openai.com/api/docs/guides/latest-model/gpt-6-astra#prompting-best-practices):
-  Complete authorized work under stated assumptions; make user-instruction precedence over skills explicit; specify
-  writing and delegation preferences; and keep verification proportional to the change.
+- [GPT-6.1 Sol prompting guidance](https://developers.openai.com/api/docs/guides/latest-model#prompting-best-practices)
+  (shared GPT-6 guide; evaluate its family-wide recommendations on Sol): Complete authorized work under stated
+  assumptions; make user-instruction precedence over skills explicit; specify writing and delegation preferences; and
+  keep verification proportional to the change.
 - [Claude Opus 5.5 prompting guidance](https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/prompting-claude-opus-5-5):
   Calibrate effort instead of prompting for more thinking; never ask for reasoning in response text; name the premature
   stops to avoid and the stops that are wanted; treat text-only turns as reports, not completion; request brief progress
@@ -160,8 +161,8 @@ ln -s "../../.agents/skills/<name>" "<scope>/.claude/skills/<name>"
   gate.
 - Finish with `### 🧩 Skill created: <name>`, a tree of created paths, and `### ✅ Verified` with the exact checks. Link
   files by their absolute `.agents/skills/<name>/` source paths, never through the `.claude/skills/<name>` symlink.
-- Offer to commit the new skill. When the host project's standing instructions require prompt commits, commit without
-  further prompting.
+- Commit when the request or standing instructions authorize it; otherwise offer to commit. Do not ask again for
+  authorization already given.
 
 Keep helper stdout, commands, paths, frontmatter, and generated skill content undecorated unless the new skill's output
 contract requires otherwise.

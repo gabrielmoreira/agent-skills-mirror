@@ -17,7 +17,7 @@ run after each turn commits.
 | `builder/` | `SessionHostBuilder` fluent API and the `from_config` factory |
 | `factory.rs` | `OpenHumanSessionFactory` |
 | `runtime_session.rs` | Runtime session composition and the public `turn()` |
-| `runtime/` | Public accessors, `run_single`, `run_interactive` |
+| `runtime/` | Public accessors, `run_single` |
 | `session_api.rs` | Start, read back, and list the generations of a durable session |
 | `driver.rs` | The OpenHuman `SessionDriver` that runs the model and tools |
 | `hooks.rs` | Product prepare, commit, and terminal hooks |

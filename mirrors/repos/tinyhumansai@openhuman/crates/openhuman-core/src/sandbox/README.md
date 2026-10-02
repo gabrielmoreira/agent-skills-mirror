@@ -64,7 +64,7 @@ backend, and delegates local OS-level confinement to `tinybox-jail`.
   captured by redirecting stdout/stderr to temp files inside the jail root,
   because some backends (macOS Seatbelt) rebuild the command and drop piped
   stdio.
-- Docker: `docker::docker_exec` runs `docker run --rm` with the host
+- Docker: `docker::docker_exec` maps the policy onto `tinybox_docker::OneShot`, which runs `docker run --rm` with the host
   `action_dir` mounted read/write at `/workspace`, network `none` by default,
   `--cap-drop ALL` (plus policy-specified extra drops),
   `--security-opt no-new-privileges`, a read-only rootfs with `/tmp` and

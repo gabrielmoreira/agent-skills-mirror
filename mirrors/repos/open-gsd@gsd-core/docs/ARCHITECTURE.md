@@ -336,9 +336,47 @@ Behavior differences from the pre-refactor router:
 - Gate config honors `GSD_WORKSTREAM`; the old router read `<project>/.planning/config.json` only.
 - `decision-coverage-verify` reads a SUMMARY's `files_modified` from its frontmatter (inline `[a, b]` and block lists); a `files_modified:` block in the body is ignored.
 - `tdd-red-evidence` requires the record path to stay inside the project directory and fails as `path escapes its allowed directory: <arg>` otherwise; it used to read any readable path. A record inside the project is reported exactly as before. A relative record path resolves against the process working directory, which every workflow sets to the project directory; invoked from elsewhere, a project-relative path is that same usage failure rather than an `unreadable_record` verdict.
-- `tdd-review-checkpoint` passes the plan id (a plan file name) to `git log --extended-regexp --grep` with every metacharacter escaped, so a name such as `x.*` cannot satisfy RED or GREEN with an unrelated commit. `type: tdd` detection is unchanged (`frontmatterKeyHasValue` is the old `^type:\s*tdd\s*$` test over the frontmatter block).
+- `tdd-review-checkpoint` asks the evaluation-scope resolver (below) for the plan's commits, so a name such as `x.*` matches nothing instead of satisfying RED or GREEN with an unrelated commit, and a commit on another branch no longer counts. `type: tdd` detection is unchanged (`frontmatterKeyHasValue` is the old `^type:\s*tdd\s*$` test over the frontmatter block).
 - Stderr from the version-control calls in `ui-safety-gate`, `tdd-review-checkpoint` and `decision-coverage-verify` is captured instead of leaking to the process stderr (`fatal: not a git repository` on a non-git project).
 - `api-coverage-verify-pre` resolves a phase's relative directory against the project directory, not the process working directory.
+
+### Evaluation Scope Resolver (`src/gate-evaluation-scope.cts`, #5164, epic #5056, ADR-5057 §4)
+
+"Which commits and which files does this gate or workflow step evaluate?" has one owner. Before it existed, `code-review`, `quick`, `execute-plan`, `execute-phase`, the `gsd-code-reviewer` agents, `ui-safety-gate`, `tdd-review-checkpoint`, `decision-coverage-verify` and `verify schema-drift` each derived their own answer (`HEAD~1..HEAD`, `DIFF_BASE..HEAD`, `git log --all`), and the answers disagreed with each other and with the work they meant to scope.
+
+`resolveEvaluationScope(projectDir, unit, options)` takes a unit — a phase, a plan (`<phase>-<plan>`) or a quick task id — and returns:
+
+| Field | Meaning |
+|-------|---------|
+| `status` | `resolved` (exactly the unit's own commits), `degraded` (the preferred evidence was absent or empty, so `files` come from wider evidence; `reason` says why) or `unresolvable` (git or the phase could not be read, including a git timeout; `files` is empty and means "could not look"). A plan or quick unit that matches nothing is `resolved` with `reason: no-matching-commits` (or `empty-after-exclusions` when its commits touched only excluded paths): git was read and the answer is "none", and the verb reports it as `advisory`, not `pass` |
+| `source` | `task-commits`, `plan-subjects`, `quick-subjects`, `phase-range` or `none` |
+| `commits` | the unit's commits (`sha`, `subject`, optionally `body` and `files`) |
+| `changedFiles` / `files` / `missingOnDisk` | every path the commits touched; the subset that exists on disk (the reviewable set); the subset that no longer exists, **by name** |
+| `outsideUnion` | files changed in the phase window by commits that are *not* the unit's, by name |
+| `unreachable` | listed task commits that are not reachable from the evaluated ref (another branch, dropped by a rebase), by name |
+| `rangeBase` | the phase-start anchor (the parent of the commit that first added the phase directory, or `--since`), for consumers that need an anchor sha |
+
+The design rules:
+
+- **The scope is a union, not a range.** A range keeps every interleaved non-phase commit in its window. Measured on a 9,676-commit repository, the range held 23, 194 and 602 files for three phases where the union of the phases' own commits held 9, 42 and 69. A phase's commits are the `## Task Commits` rows of its SUMMARY files (section-scoped, row-scoped, backtick-anchored: a sha quoted in prose is not a task commit); a merge commit contributes its diff against its first parent.
+- **Only commits reachable from the evaluated ref count.** The former `git log --all` let a commit on any branch satisfy a check.
+- **An empty union never becomes an empty scope.** A phase with no SUMMARY, no task rows, no reachable task commits, or only planning paths degrades to the phase-directory range and reports `degraded` with the reason. A phase directory git has never seen, or an unreadable repository, is `unresolvable`.
+- **Plan commits are matched on the subject.** `<type>(<phase>-<plan>):` is anchored, tolerant of zero padding (`03-01`, `3-1`) and of decimal, N-segment and letter-suffixed phase numbers, and escapes every metacharacter, so `03-01` never matches `03-010`.
+- **Every git call is bounded** by the `execGit` seam; a timeout or a missing git is `unresolvable`, never a throw and never an empty scope.
+
+Workflows reach it as `gsd_run check evaluation-scope`:
+
+```bash
+gsd_run check evaluation-scope --phase <phase> [--since <sha>] --raw      # a phase (or --phase-dir <dir>; --ref <ref>)
+gsd_run check evaluation-scope --plan <phase>-<plan> --raw                # a plan: --commits-only, --max-commits N,
+                                                                          #   --milestone-bound, --committed-since <date>,
+                                                                          #   --pathspec <glob> (repeatable)
+gsd_run check evaluation-scope --quick <quick-id> --include-files --raw   # a quick task
+```
+
+The verb is a resolver, not a policy: it always reports `block: false`, and the caller decides what a `degraded` or `unresolvable` scope means. `scripts/lint-evaluation-scope-drift.cjs` fails CI when a gate module, `verify`, a workflow or an agent derives its own range again (`git log … --all`, `git diff … ..HEAD`, a `HEAD~N` anchor, a hand-rolled phase-start anchor, a commit-message lookup); its allowlist pins exact non-scope sites and is drained, never renewed.
+
+Behavior differences from the pre-resolver derivations: a UI file, task commit or decision that appears only in an interleaved non-phase commit, or only on another branch, no longer counts toward a phase or plan; `ui-safety-gate` reads the whole phase's commits instead of the last one and reports `scopeStatus` / `scopeReason` when the scope was widened or unreadable; `decision-coverage-verify` and `verify schema-drift` read the phase's own commit messages instead of the last 200 (or 50) commits of any branch; the code-review step names deleted files and out-of-scope files instead of counting them.
 
 ### Capability Command Dispatch (`gsd-core/bin/gsd-tools.cjs`, ADR-1244 D7)
 

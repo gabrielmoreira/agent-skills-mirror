@@ -33,7 +33,7 @@ Re-exported from `mod.rs`:
 - `all_webhooks_controller_schemas`, `all_webhooks_registered_controllers` (from `schemas`).
 - Types: `TunnelRegistration`, `WebhookActivityEntry`, `WebhookDebugEvent`, `WebhookDebugLogEntry`, `WebhookDebugLogListResult`, `WebhookDebugLogsClearedResult`, `WebhookDebugRegistrationsResult`, `WebhookRequest`, `WebhookResponseData`.
 
-Key `WebhookRouter` methods: `new(persist_path)`, `register` / `register_echo` / `register_agent`, `unregister`, `unregister_skill`, `route`, `registration`, `list_for_skill`, `list_all`, `record_request` / `record_parse_error` / `record_response`, `list_logs`, `clear_logs`, `subscribe_debug_events`. `ops::build_echo_response` is also public for the bus.
+Key `WebhookRouter` methods: `new(persist_path)`, `register` / `register_echo` / `register_agent`, `unregister`, `unregister_skill`, `route`, `registration`, `list_all`, `record_request` / `record_parse_error` / `record_response`, `list_logs`, `clear_logs`, `subscribe_debug_events`. `ops::build_echo_response` is also public for the bus.
 
 ## RPC / controllers
 

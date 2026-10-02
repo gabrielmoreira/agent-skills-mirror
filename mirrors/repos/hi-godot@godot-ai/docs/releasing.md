@@ -87,8 +87,11 @@ Failed editor runs retain available `godot.log`, `attached-bridge.log`,
 temporary project is removed. `runtime-diagnostics.json` records whether each
 file was retained, absent, empty, or could not be collected. Private values
 cause the affected output to be withheld. Collection failures do not replace
-an active runtime failure, and retained diagnostic files never count as a
+an active runtime failure, including a process-identity failure before the
+driver writes its normal result. Retained diagnostic files never count as a
 passed upgrade case. Subprocess timeouts retain captured output when available.
+Qualification enables startup tracing so retained `godot.log` output includes
+bounded launcher lookup outcomes and candidate paths.
 
 Then dispatch `release.yml`. Select **patch**, **minor**, or **major**, and
 provide the previous published version and the qualification run ID. The

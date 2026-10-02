@@ -9,12 +9,234 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-**Category**: CLI Tool, Quality Engineering
+**Category**: CLI Tool, Quality Engineering, Common, Cybersecurity, Testing Skills
 
 ### Fixed
 
 - Managed skill package files and ownership-writer operations refuse pre-existing symlinks below the project root before payload writes, reads, backups, or pruning; package resources across selected agents are checked before the first package write. This does not cover unrelated direct root-document writes or concurrent filesystem swaps.
 - Removed a cross-project environment and credential-handling reference from the reusable Playwright CLI skill and four tracked agent install mirrors.
+- SkillSpector static scan: reworded phrasing that matched Excessive-Agency and Memory-Poisoning heuristics without changing intended behavior. `common-decision-discipline` and `cyber-framework-mapping` no longer read as unconfirmed autonomous action; the 13 testing skills' `Permanent Rule Anchor IDs` heading (which the scanner's persistent-context-injection pattern flagged on the word "Permanent") is renamed `Core Rule Anchors` across `android`, `angular`, `flutter`, `golang`, `java`, `laravel`, `nestjs`, `php`, `python`, `react`, `react-native`, `spring-boot`, and `swift` testing skills. Risk score reduced from 27 to within the 25 threshold; 0 critical findings before and after.
+
+## [android-v1.5.1]
+
+**Category**: Quality-over-quantity test standards
+
+### Changed
+
+- `android-testing`: Integrated qualitative Four-Pillar framework, `[MOB-TEST-01..05]` rule anchors, diagnostic coverage, and banned smells against brittle state copies, pass-through mock echoing, and unverified bug fixes.
+
+### Versions
+
+- **Android Skills**: `1.5.0` → `1.5.1`
+
+## [angular-v1.5.1]
+
+**Category**: Quality-over-quantity test standards
+
+### Changed
+
+- `angular-testing`: Introduced `[WEB-TEST-01..05]` rule anchors for ComponentHarness queries, banned private state inspections and raw CSS selectors, enforced HTTP boundary testing via HttpTestingController, and made coverage diagnostic.
+
+### Versions
+
+- **Angular Skills**: `1.5.0` → `1.5.1`
+
+## [java-v1.3.5]
+
+**Category**: Quality-over-quantity test standards
+
+### Changed
+
+- `java-testing`: Introduced `[BE-TEST-01..05]` rule anchors for parameterized tests, banned brittle SQL string matching in mocks and shallow assertions, enforced bug-first regression testing, and defined coverage as diagnostic.
+
+### Versions
+
+- **Java Skills**: `1.3.4` → `1.3.5`
+
+## [laravel-v1.4.1]
+
+**Category**: Quality-over-quantity test standards
+
+### Changed
+
+- `laravel-testing`: Introduced `[BE-TEST-01..05]` rule anchors for dataset-driven tests, banned brittle SQL string matching and shallow status-only assertions, banned pass-through mock echoing, and replaced arbitrary targets with diagnostic coverage.
+
+### Versions
+
+- **Laravel Skills**: `1.4.0` → `1.4.1`
+
+## [nestjs-v1.4.7]
+
+**Category**: Quality-over-quantity test standards
+
+### Changed
+
+- `nestjs-testing`: Introduced `[BE-TEST-01..05]` rule anchors for `test.each` equivalent inputs, banned brittle DB mock string matching and shallow `toBeDefined` assertions, banned 1:1 pass-through mock echoing, and framed coverage as diagnostic.
+
+### Versions
+
+- **NestJS Skills**: `1.4.6` → `1.4.7`
+
+## [php-v1.3.7]
+
+**Category**: Quality-over-quantity test standards
+
+### Changed
+
+- `php-testing`: Introduced `[BE-TEST-01..05]` rule anchors for data providers and datasets, banned brittle SQL string matching and shallow `assertNotNull` assertions, banned pass-through mock echoing, and removed arbitrary 80%+ coverage targets in favor of diagnostic coverage.
+
+### Versions
+
+- **PHP Skills**: `1.3.6` → `1.3.7`
+
+## [python-v1.0.1]
+
+**Category**: Quality-over-quantity test standards
+
+### Changed
+
+- `python-testing`: Introduced `[BE-TEST-01..05]` rule anchors for parametrized inputs, banned SQL regex string matching and shallow truthiness assertions, banned 1:1 pass-through seam mocks, and made coverage diagnostic and risk-weighted.
+
+### Versions
+
+- **Python Skills**: `1.0.0` → `1.0.1`
+
+## [react-native-v1.5.1]
+
+**Category**: Quality-over-quantity test standards
+
+### Changed
+
+- `react-native-testing`: Introduced `[MOB-TEST-01..05]` rule anchors for user-centric queries and visible outcomes, banned component internal state/prop inspection and pass-through mock echoing, and removed arbitrary 70%+ coverage targets in favor of diagnostic coverage.
+
+### Versions
+
+- **React Native Skills**: `1.5.0` → `1.5.1`
+
+## [spring-boot-v1.4.1]
+
+**Category**: Quality-over-quantity test standards
+
+### Changed
+
+- `spring-boot-testing`: Introduced `[BE-TEST-01..05]` rule anchors for parameterized tests, banned brittle SQL string matching and shallow assertions, banned pass-through mock echoing in slice tests, and established diagnostic coverage.
+
+### Versions
+
+- **Spring Boot Skills**: `1.4.0` → `1.4.1`
+
+## [swift-v1.3.7]
+
+**Category**: Quality-over-quantity test standards
+
+### Changed
+
+- `swift-testing`: Introduced `[MOB-TEST-01..05]` rule anchors for tripartite test naming and state invariants, banned trivial state mirror tests and 1:1 mock echoing, and treated coverage as diagnostic and project-configured.
+
+### Versions
+
+- **Swift Skills**: `1.3.6` → `1.3.7`
+
+## [common-v2.8.3]
+
+**Category**: Quality-over-quantity test standards
+
+### Changed
+
+- `common-tdd`: Added pre-suite comparison, observable outward side effects focus, diagnostic coverage definition, and qualitative Four Pillars framework to quality contract.
+- `common-code-review`: Added Test-Review Evidence Gate requiring contract, plausible escaping fault, and lack of nearby coverage before flagging missing-test findings.
+
+### Versions
+
+- **Common Skills**: `2.8.2` → `2.8.3`
+
+## [flutter-v1.8.2]
+
+**Category**: Quality-over-quantity test standards
+
+### Changed
+
+- `flutter-testing`: Integrated qualitative Four-Pillar framework, `[MOB-TEST-01..05]` rule anchors, contract-based optional negative assertions, and risk-based verification.
+
+### Versions
+
+- **Flutter Skills**: `1.8.1` → `1.8.2`
+
+## [golang-v1.3.8]
+
+**Category**: Quality-over-quantity test standards
+
+### Changed
+
+- `golang-testing`: Introduced `[BE-TEST-01..05]` rule anchors for table-driven equivalent inputs, banned brittle SQL string matching and shallow assertions, and removed arbitrary coverage percentage targets.
+
+### Versions
+
+- **Golang Skills**: `1.3.7` → `1.3.8`
+
+## [nextjs-v1.4.7]
+
+**Category**: Quality-over-quantity test standards
+
+### Changed
+
+- `nextjs-testing`: Scoped MSW network mocking to isolated unit/component determinism, permitted dedicated E2E network calls, and replaced arbitrary 80% coverage targets with risk-weighted verification.
+
+### Versions
+
+- **Next.js Skills**: `1.4.6` → `1.4.7`
+
+## [react-v1.4.1]
+
+**Category**: Quality-over-quantity test standards
+
+### Changed
+
+- `react-testing`: Upgraded to P1 with user-behavior core philosophy, `[WEB-TEST-01..05]` rule anchors, accessible role queries, MSW boundary mocking, and bug-first regression testing.
+
+### Versions
+
+- **React Skills**: `1.4.0` → `1.4.1`
+
+## [workflows-v1.1.1]
+
+**Category**: Design-to-delivery execution gate
+
+### Changed
+
+- `system-design-session` now requires bounded artifact slices with exact files, acceptance and verification checks, an integration owner, lowest-cost qualified production executor, one correction before fallback, and honest cost evidence.
+
+### Versions
+
+- **Workflows**: `1.1.0` → `1.1.1`
+
+## [system-design-v1.2.1]
+
+**Category**: HLD-to-LLD design delivery gate
+
+### Changed
+
+- `system-design-methodology` now routes bounded post-decision documentation and diagram work to the lowest-cost qualified configured executor while the lead retains design decisions and final review; defective slices get one focused correction before fallback.
+
+### Versions
+
+- **System Design Skills**: `1.2.0` → `1.2.1`
+
+---
+
+## [common-v2.8.2]
+
+**Category**: Exported architecture diagram readability gate
+
+### Changed
+
+- `common-architecture-diagramming` now requires visual inspection of exported images at normal reading size; strict validation does not prove labels and edges are legible.
+
+### Versions
+
+- **Common Skills**: `2.8.1` → `2.8.2`
+
+---
 
 ## [common-v2.8.1] - 2026-09-30
 
@@ -28,6 +250,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Versions
 
 - **Common Skills**: `2.8.0` → `2.8.1`
+
+---
+
 ## [cli-v2.6.5] - 2026-09-29
 
 **Category**: CLI Tool

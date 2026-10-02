@@ -39,6 +39,15 @@ empty-calldata EIP-1559 transfer (about 46 bytes) is therefore less than half th
 `r`/`s` placeholders. Verified 2026-09-29: the oracle quote on real signed bytes at the parent block equals the receipt
 `l1Fee`.
 
+Linea (`59144`) is eligible as a ZK target. Blocks carry `baseFeePerGas = 7`; legacy transactions are debited exactly
+`gasUsed * gasPrice` with no L1 or other extra debit; receipts report `effectiveGasPrice` equal to the signed
+`gasPrice`; and an empty-calldata EOA transfer estimates and uses `21000` gas. `linea_estimateGas` returns the
+sequencer's profitability floor as `baseFeePerGas + priorityFeePerGas`, while `eth_gasPrice` and
+`eth_maxPriorityFeePerGas` sit above it, rose about 50% within two minutes, and differed between reads at one head;
+price from the highest suggestion observed at the checkpoint. Verified 2026-10-01: a third-party empty-calldata legacy
+transfer in block `32202314` reconciled to `value + 21000 * gasPrice` across its block, and an exact-zero sweep at
+`21000` gas left a `0` balance.
+
 Lightlink (`1890`) is an Alt L2 exception. It runs a Geth 1.10 fork without London: blocks carry no `baseFeePerGas`,
 `eth_maxPriorityFeePerGas` and `eth_feeHistory` are unsupported, and receipts omit `effectiveGasPrice`, so use legacy
 pricing only. No separate L1 data, operator, or rollup fee is debited from the sender. Enterprise Mode gasless
@@ -55,6 +64,36 @@ reconciliation. An empty-calldata EOA transfer charges `10000` gas, not `21000`,
 which `eth_call` and the node accept, instead of the estimate. Verified 2026-09-30: two empty-calldata transfers used
 exactly `10000` gas, and sender balance deltas reconciled to `value + gasUsed * gasPrice`; an exact-zero sweep at that
 limit left a `0` balance.
+
+Polygon PoS (`137`) is eligible as an ordinary Alt L1 target. Legacy transactions are debited exactly
+`gasUsed * gasPrice` with no refund or extra debit; receipts report `effectiveGasPrice` equal to the signed `gasPrice`,
+and an empty-calldata EOA transfer estimates and uses `21000` gas. Plain transfer receipts carry Bor system logs, which
+are not sender debits. Take the required tip from `eth_maxPriorityFeePerGas` (observed 25-30 gwei). Verified 2026-10-01:
+a third-party empty-calldata legacy transfer reconciled to `value + 21000 * gasPrice` across its block, and an
+exact-zero sweep at `21000` gas left a `0` balance.
+
+BNB Chain (`56`) is eligible as an ordinary Alt L1 target. Blocks carry `baseFeePerGas = 0`; legacy transactions are
+debited exactly `gasUsed * gasPrice` with no refund or extra debit; receipts report `effectiveGasPrice` equal to the
+signed `gasPrice`; and an empty-calldata EOA transfer estimates and uses `21000` gas. Take the required price from
+`eth_gasPrice` and `eth_maxPriorityFeePerGas` (both observed at 0.05 gwei). Verified 2026-10-01: undelegated third-party
+empty-calldata legacy transfers in block `125118813` reconciled to `value + 21000 * gasPrice` across their block, and an
+exact-zero sweep at `21000` gas left a `0` balance.
+
+Avalanche C-Chain (`43114`) is eligible as an ordinary Alt L1 target. Legacy transactions are debited exactly
+`gasUsed * gasPrice` with no refund or extra debit; receipts report `effectiveGasPrice` equal to the signed `gasPrice`;
+and an empty-calldata EOA transfer estimates and uses `21000` gas. Block-level `blockGasCost` is not a sender debit.
+`eth_gasPrice` can sit below the latest `baseFeePerGas` (observed 5.0 vs 5.047 gwei), so price from
+`baseFeePerGas + eth_maxPriorityFeePerGas` when it is higher. Verified 2026-10-01: third-party empty-calldata legacy
+transfers in blocks `96539423` and `96539426` reconciled to `value + 21000 * gasPrice` across their blocks, and an
+exact-zero sweep at `21000` gas left a `0` balance.
+
+Gnosis (`100`) is eligible as an ordinary Alt L1 target. Legacy transactions are debited exactly `gasUsed * gasPrice`
+with no refund or extra debit; receipts report `effectiveGasPrice` equal to the signed `gasPrice`, and an empty-calldata
+EOA transfer estimates and uses `21000` gas. Base fees are only tens of wei and volatile: a 1024-block `eth_feeHistory`
+window spanned 8-53 wei, and the base fee doubled within minutes, so a price derived from one block can fall below the
+inclusion base fee and wait in the mempool. Verified 2026-10-01: a third-party empty-calldata legacy transfer at 14 wei
+in block `48535334` reconciled to `value + 21000 * gasPrice` across its block, and an exact-zero sweep at `21000` gas
+and 16 wei left a `0` balance after waiting for the base fee to fall back.
 
 Filecoin FEVM is an Alt L1 exception. FVM fee translation and overestimation require bespoke evidence; do not generalize
 Ethereum-style L1 fee behavior to it. A fresh EOA recipient does not alter the standard top-level transfer gas cost: the

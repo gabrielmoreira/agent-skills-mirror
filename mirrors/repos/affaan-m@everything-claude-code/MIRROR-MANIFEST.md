@@ -107,10 +107,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 44 | ✓ | [`.agents/skills/documentation-lookup/SKILL.md`](.agents/skills/documentation-lookup/SKILL.md) |
 | 45 | ✓ | [`.agents/skills/e2e-testing/agents/openai.yaml`](.agents/skills/e2e-testing/agents/openai.yaml) |
 | 46 | ✓ | [`.agents/skills/e2e-testing/SKILL.md`](.agents/skills/e2e-testing/SKILL.md) |
-| 47 | ✓ | [`.agents/skills/eval-harness/agents/openai.yaml`](.agents/skills/eval-harness/agents/openai.yaml) |
-| 48 | ✓ | [`.agents/skills/eval-harness/SKILL.md`](.agents/skills/eval-harness/SKILL.md) |
-| 49 | ✓ | [`.agents/skills/everything-claude-code/agents/openai.yaml`](.agents/skills/everything-claude-code/agents/openai.yaml) |
-| 50 | ✓ | [`.agents/skills/everything-claude-code/SKILL.md`](.agents/skills/everything-claude-code/SKILL.md) |
+| 47 | ✓ | [`.agents/skills/ecc-conventions/agents/openai.yaml`](.agents/skills/ecc-conventions/agents/openai.yaml) |
+| 48 | ✓ | [`.agents/skills/ecc-conventions/SKILL.md`](.agents/skills/ecc-conventions/SKILL.md) |
+| 49 | ✓ | [`.agents/skills/eval-harness/agents/openai.yaml`](.agents/skills/eval-harness/agents/openai.yaml) |
+| 50 | ✓ | [`.agents/skills/eval-harness/SKILL.md`](.agents/skills/eval-harness/SKILL.md) |
 | 51 | ✓ | [`.agents/skills/exa-search/agents/openai.yaml`](.agents/skills/exa-search/agents/openai.yaml) |
 | 52 | ✓ | [`.agents/skills/exa-search/SKILL.md`](.agents/skills/exa-search/SKILL.md) |
 | 53 | ✓ | [`.agents/skills/fal-ai-media/agents/openai.yaml`](.agents/skills/fal-ai-media/agents/openai.yaml) |

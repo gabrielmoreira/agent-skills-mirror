@@ -4,6 +4,24 @@
 
 ## v0.3.225：聊一聊链接分享、多行输入与逐字流式（2026-10-01）
 
+### 优化：B 站搜索冷却半程恢复探测——风控解除不再空转整个冷却期（2026-10-02，feat/bili-cooldown-recovery-probe，issue #232）
+
+- **问题**：412 / v_voucher 冷却最长可升级到 1800s，期间即使 B 站已解除封禁，搜索也只能空转到 deadline 才恢复；这是 #232 方向 2 剩余的「明确风控恢复后的探测节奏」。
+- **方案**：冷却窗口过半时，`search()` 放行**一次**单 attempt 恢复探测——状态文件新增 `activated_at` / `last_probe_at` 字段（向后兼容，缺省 0），探测预算跨进程共享、每个冷却窗口最多一次；探测成功即清除全部冷却与 DOM fallback 状态（`clear` 模式整体覆写落盘）并传播到所有进程，探测失败则经既有 412 / v_voucher 路径自然重新武装（escalate）冷却；持久化禁用 / 不可读时退回进程内「每窗口一次」的内存语义。请求成本有界：每窗口至多一次额外搜索请求。回归：`tests/test_bilibili_search_backoff.py` +6 条（未过半不探测、过半探测且仅一次、探测预算跨进程共享、禁用持久化时内存兜底、无冷却不探测、探测成功清除冷却并落盘）。真实请求 E2E：半程窗口下探测发出恰好 nav + 1 次搜索请求、返回 5 条真实结果、冷却即刻清零落盘；未过半窗口保持零请求跳过。
+- **文档同步**：`docs/modules/bilibili.md`（搜索风控冷却特性行 + 设计要点第 10 条）。
+
+### 优化：B 站 /view 载荷进程内缓存——同一轮不再重复拉同一视频（2026-10-02，feat/bili-view-data-cache，issue #232）
+
+- **问题**：一轮 discovery 里同一个 bvid 会被多个环节各自请求 `/x/web-interface/view`——推荐打分（`get_video_info`）、danmaku / 字幕 / play 的 cid 解析、收藏 / 稍后再看的 aid 解析、API 层 view 转发，同一出口 IP 承受数倍于必要的请求量。
+- **方案**：`get_video_view_data()` 对成功响应做进程级 LRU 缓存（ClassVar `OrderedDict`，TTL 600s、上限 512 条）；缓存键携带 SESSDATA 指纹（匿名与登录响应可能不同，explore 策略使用匿名 client），失败永不缓存。回归：`tests/test_bilibili_view_cache.py` +6 条（同 bvid 只请求一次、不同 bvid 分别请求、匿名 / 登录隔离、过期重取、失败不缓存、LRU 逐出）；`tests/conftest.py` 增加 autouse fixture 每测试清空缓存，防止跨测试泄漏。
+- **文档同步**：`docs/modules/bilibili.md`（特性表新增「/view 进程内缓存」行）。
+
+### 修复：B 站搜索冷却状态跨进程共享（2026-10-01，feat/bili-search-cooldown-shared-state，issue #232）
+
+- **问题**：搜索冷却 / 退避档位 / v_voucher streak / DOM fallback 四项状态此前只是 `BilibiliAPIClient` 的 ClassVar，仅同进程共享；CLI 四进程布局（API 主进程 + worker + discovery worker）下，API 进程被 412 打进 600s 硬冷却后 discovery worker 仍用 API 搜索打同一出口 IP，worker 侧触发的 DOM fallback 信号 API 进程也看不到。
+- **方案**：新增 `bilibili/search_backoff.py`，把四项状态镜像到 `<data_dir>/bilibili_search_backoff.json`——deadline 以墙钟存储（`time.monotonic()` 跨进程不可比），复用 `memory/json_state.py` 的文件锁读-改-写，读取时按「最保守者赢」合并（deadline 取 max；escalation 档位与 streak 只在最长冷却 1800s 的事故窗口内合并，避免陈旧 streak 误触发新进程），任一进程搜索成功后清零计数并传播。状态文件不可写 / 不存在时完全退回进程内行为（fail-open，无新增配置项）；schema 预留 `scope` 字段，为后续按 cookie / proxy 分账留口。回归：`tests/test_bilibili_search_backoff.py` +9 条（412 硬冷却 / DOM fallback / streak 跨进程可见、最保守 deadline 获胜、reset 传播、陈旧计数忽略、禁用与不可写时逐字退回进程内行为、落盘 schema）；新增 `tests/conftest.py` 把套件的状态文件统一重定向到 tmp，避免测试读写真实 `data/`。
+- **文档同步**：`docs/modules/bilibili.md`（搜索风控冷却特性行 + 设计要点第 10 条）。
+
 ### 特性：聊天回复 token 级流式输出（2026-10-01，feat/token-streaming，issue #83）
 
 - **LLM 层流式契约**：`LLMProvider` 新增 `stream_complete()` / `stream_complete_with_tools()` 异步生成器，产出 `LLMStreamChunk`（`delta` 增量块 + 携带聚合 `LLMResponse` 的终止块）；基类默认实现调用 `complete()` / `complete_with_tools()` 后一次性吐全文，Claude / Gemini / CodexChatGPT 等所有现存 provider 零改动兼容。真流式在 `OpenAIProvider`（chat-completions flavor）落地：`stream=True` + `stream_options.include_usage`（老网关拒绝 `stream_options` 时降级一次重试），FC 流式把 `tool_calls` 增量静默聚合到终止块、只把 content 增量实时吐出；responses flavor 与 `json_mode` 保持一次性回退（结构化调用依赖格式拒绝重试梯），DeepSeek / Ollama / OpenRouter / OrcaRouter / Requesty / ApiRoute / openai_compatible 子类自动继承真流式。流式路径刻意不做「截断翻倍预算重发」——中途重发会重复已展示文本。
@@ -214,6 +232,11 @@
 - **openai_compatible 原生 function calling**：`LLMProvider` 新增 `supports_tool_calling` 与 `complete_with_tools()`（默认抛 `LLMToolCallUnsupportedError`）；`OpenAIProvider` 实现 OpenAI `tools=[{"type":"function",...}]` 原生 FC，单次响应多 `tool_calls` 并行解析为 `{"id","name","arguments","arguments_raw"}`，带工具调用的空 content 合法；DeepSeek 继承并保留 thinking max_tokens 下限；`api_flavor="responses"` 与 Ollama 显式标 `False` 走兜底。`LLMRegistry` 新增 `complete_with_tools()` / `complete_with_tools_chain()` / `complete_provider_with_tools()` / `provider_supports_tool_calling()`，复用 fallback 链 cooldown / 限流 / 告警语义并跳过无 FC 能力实例。
 - **`LLMService.complete_with_native_tools()`**：agent loop 单跳入口，接收完整 canonical 消息列表 + OpenAI 工具 schema；路由首选 provider 支持原生 FC 走 native 链，否则把消息展平（assistant.tool_calls → 文本注释、role=tool → `[工具执行结果]`）进 prompt 模拟，解析 `{"tool_call": ...}` / `{"tool_calls": [...]}` 多调用 JSON；两条路径都不注入 core memory（loop 调用方拥有 system prompt）。旧 `complete_with_tools()`（单跳、旧扁平 schema）保持不变。
 - **多跳 `AgentLoop`（`agent/loop.py`）**：`run()` 异步生成器逐跳产出 `AgentEvent`（thinking / tool_call / tool_result / final / step_limit_reached，`to_dict()` 供 M2 SSE 序列化）；默认 64 跳上限（新增 `[agent]` 配置段 `loop_max_steps` / `tool_result_max_chars`，见 `docs/modules/config.md`），超限后发出 step_limit_reached 并以无工具收尾调用让模型汇报进展；未知工具名与参数校验失败以 `ok=false` 结果回填模型自纠；工具结果超长截断并标记。回归：`tests/test_agent_tool_registry.py` / `tests/test_llm_native_tools.py` / `tests/test_agent_loop.py` + `test_config.py` 的 `[agent]` round-trip。
+
+## 新增 Cheaper Inference 内置 Provider（2026-09-30，cheaperinference-provider）
+
+- `provider_type="cheaperinference"` 通过 OpenAI 兼容接口接入 Cheaper Inference，默认 `https://api.cheaperinference.com/v1`、`gpt-5.4-mini`，模型名不带厂商前缀。支持独立实例、调用链、模型发现（只列 `type` 为 `text` 的聊天模型）和请求探测；多模型网关不发送 `reasoning_effort`，embedding 仍需独立配置。
+- 接入后端配置与 API、CLI 和安装向导（菜单第 10 项）、桌面与扩展设置、首次设置向导；补充配置样例、文档和回归测试。只有用户显式配置时才会调用。
 
 ## v0.3.224：自定义回复语气与设置页一键测试（2026-09-19）
 

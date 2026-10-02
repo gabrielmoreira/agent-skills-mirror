@@ -45,13 +45,27 @@ Launcher discovery adds `lookup=` records when startup tracing is enabled.
 Each record names the lookup tier and result, elapsed milliseconds, and
 execution flags. A `cached_miss` means an earlier lookup returned no path;
 it does not establish that the executable is absent or explain the earlier
-failure. The records omit executable paths, output, and environment values.
-The dock's explicit Refresh retains its existing negative-cache recovery.
+failure. Failed and successful lookups also retain the bounded absolute
+candidate paths and the selected path when available; raw command output and
+environment values are omitted. The dock's explicit Refresh retains its
+existing negative-cache recovery.
 
 A failed Windows launch can also report bounded snapshot diagnostics naming
 the capture pair or its first or final member and a fixed failure category.
 `collector_null` means the collector returned no usable snapshot; it does not identify the
-underlying operating-system exception. These diagnostics do not grant process
+underlying operating-system exception.
+
+A proof that times out or is refused adds one identity-capture record. It
+names the proof stage (`launch`, `first_server`, or `final_server`), one fixed
+failure category (`process_query`, `json_shape`, `ancestor_capture`, or
+`identity_mismatch`), the PID, creation-time identity, attempt, and elapsed
+milliseconds. When the collector recorded its own refusal, the record also
+carries that refusal as `detail` and, for an ancestor row, its `depth`.
+Process-query failures mean the collector did not return a usable result;
+JSON-shape failures mean the returned structure was invalid; ancestor-capture
+failures identify an invalid ancestor row or lineage; identity mismatches mean
+the observed fingerprint or lineage changed. The records never include raw
+command lines or capability values. These diagnostics do not grant process
 ownership or change the checks required before stopping a process.
 
 ## Upgrading from a pre-v4 installation

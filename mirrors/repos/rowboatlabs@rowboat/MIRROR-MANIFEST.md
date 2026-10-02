@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `rowboatlabs/rowboat` — 26 default patterns, 0 followed patterns, 8 file(s) materialized.
+Mirror of `rowboatlabs/rowboat` — 26 default patterns, 0 followed patterns, 9 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `rowboatlabs/rowboat` — 26 default patterns, 0 followed patterns, 8 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 8 |
+| Files         | 9 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -67,6 +67,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 6 | ✓ | [`apps/x/apps/mobile/AGENTS.md`](apps/x/apps/mobile/AGENTS.md) |
 | 7 | ✓ | [`apps/x/apps/mobile/CLAUDE.md`](apps/x/apps/mobile/CLAUDE.md) |
 | 8 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 9 | ✓ | [`skills/rowboat-spaces/SKILL.md`](skills/rowboat-spaces/SKILL.md) |
 
 ---
 

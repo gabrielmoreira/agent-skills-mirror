@@ -35,7 +35,7 @@
     "omh-backend/references/service-contract.md": "984cd9cb634b88a505cbd76214e281b2e22edf3d75fc6a3b9a0a88fcc4a265f5",
     "omh-build-failure-triage/SKILL.md": "d02513dd1b5b629000cf31f25fd6c974d47c69ba10d0e4c9fc14f570380a2753",
     "omh-cancel/SKILL.md": "735cb62ac316ff6c35a5c54ac9bfdf0d38d81e8d41f651a4c29ca86f9aa7ded8",
-    "omh-code-review/SKILL.md": "07c554deb7dfbdc14c3fbd63dc9f83eb6ed7f23ebf9eba093f5b83fd0994bc48",
+    "omh-code-review/SKILL.md": "64a62cd6c7e6eece6c65694faf001e08d00531d3069c387abef3ca647f074114",
     "omh-code-review/references/review-dispatch.md": "6a155bc585a17cb85a5bea62c5b834657e308a3958c317d54657ab0f8fcab424",
     "omh-code-review/references/review-lenses.md": "fb2ae13bd37473da0937c715db313142d5f5516fe0b4235038b38b0ad28d7d4f",
     "omh-code-review/references/review-response.md": "9da4fc0d81fb7c7d26ecf6fbcf17f8ee95fc76bfba8a31f70cf689ee296682db",
@@ -70,7 +70,7 @@
     "omh-external-connector-readiness/references/memory-provider-trial.md": "b6eda7efc3307d8bd6540bec47b2564f3e565da5ad8133bd998b2ebcabdf29a3",
     "omh-failure-signal-audit/SKILL.md": "ea34846d980bab8d2878deeaf9b3a284f7b3ec178d228b7af438aad05b2579f4",
     "omh-feedback-triage/SKILL.md": "00e8008b7cc2b4d0eeca4dd2dde0c4fb1ea5e112c6f167189da5c9c2b9a61262",
-    "omh-files/SKILL.md": "a22387ae0c3898eeb87ee925d18cd8d225aeb74cf5e5e164629bb6fb8d47c993",
+    "omh-files/SKILL.md": "44411ba3c8a1a22e8b7d37c1b4a8fbceb9b4095b25fb4d724ce8687c0a22cb6a",
     "omh-finance-analysis/SKILL.md": "7a2cb00ccd913a82172b58f3be124b2c031d9bbcbba46cd5549ecfa3554fd9c9",
     "omh-finance-analysis/references/procedure.md": "0fd8b3ad528d10aebd971c26375de9775e95429d3dbdc3a6f2ee5cc063a9c79c",
     "omh-frontend-refactor/SKILL.md": "347d22b3dd7d7f57524bd2737658d64e65095fa8f3e665ddff528da4043c16f2",
@@ -193,7 +193,7 @@
     "ulw-perf/SKILL.md": "4189814b67cd81e446f42dc0dbb0e91168c065d2833b9dbc895539226bb927ad",
     "ulw-plan/SKILL.md": "a1068aa7705c9cd362a1b8385d5228fab29e4a5a8e4ad8645dea53e98bb55be2",
     "ulw-qa/SKILL.md": "11049ec3a49f47c5b0447cb8faa6b36ade31da65219def1a9d5526d9f535479f",
-    "ulw-research/SKILL.md": "e953a2149a34ffa1d72502d65b38b66e250e00a01bf53f1e196353a144b00943",
+    "ulw-research/SKILL.md": "ca887a0cb672c2418d5d3f959c25d25d50187df964c3219a8d0586888faa0f58",
     "ulw-research/references/briefing-format.md": "466c21fb7bedefe1e42dbdb3f8ddaf3321504882140af507a292188678243dac",
     "ulw-work/SKILL.md": "32ca677b6e4ac3c7e54881105bd262f8e8cf03f32dadd6ed66ebd31e7ddb87e8",
     "ulw-work/references/dependency-topology.md": "b35e627344579054a9ec46722ca59cdf9f6bda41a217f0b3775669c1ad764dac"
@@ -314,7 +314,7 @@
     "ulw-work"
   ],
   "source": "agent-skills",
-  "source_digest": "fbc929dbf71d39021cb78dfddde889779c0504b037e3f5742d0a8344910fd966",
+  "source_digest": "7b34c42a913ec3d04ff45709bcfb2567cbc310f5cc003fb3ab87c4c9881fdacb",
   "targets": {
     "repo": ".agents/skills",
     "user": ".agents/skills"

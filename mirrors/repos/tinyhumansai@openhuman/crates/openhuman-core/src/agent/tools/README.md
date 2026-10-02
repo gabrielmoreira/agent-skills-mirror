@@ -10,7 +10,7 @@ crate should construct them directly.
 
 | Tool | File | Wire name (if different) |
 | --- | --- | --- |
-| `AskClarificationTool` | `ask_clarification.rs` | `ask_user_clarification` |
+| `AskClarificationTool` | `tinyagents_harness::tools` | `ask_user_clarification` |
 | `DelegateTool` | `delegate.rs` | `delegate` |
 | `PlanExitTool` | `plan_exit.rs` | `plan_exit` |
 | `RememberPreferenceTool` | `remember_preference.rs` | `remember_preference` |

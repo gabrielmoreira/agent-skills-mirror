@@ -172,7 +172,6 @@ Authoritative list = the `reducer` map in `store/index.ts`. One-line purposes:
 | `mascot`              | Mascot appearance / voice selection                                               | `color`, `voiceId`, `customMascotGifUrl`, `selectedMascotId`    |
 | `notifications`       | Notification items + preferences                                                  | `items`, `preferences`                                          |
 | `persona`             | Cosmetic persona display name + description (SOUL.md lives in the core)           | `displayName`, `description`                                    |
-| `providerSurfaces`    | Provider webview surface state                                                    | no                                                               |
 | `ptt`                 | Push-to-talk hotkey + session prefs (`isHeld` deliberately excluded)              | `shortcut`, `speakReplies`, `showOverlay`                        |
 | `queue`               | The core's per-thread run queue plus the composer's pending follow-up messages    | no (in-memory only)                                              |
 | `runMode`             | Per-thread plan/build run mode                                                    | no (in-memory only)                                              |
@@ -251,7 +250,7 @@ const result = await apiClient.post<LoginResponse>("/auth/login", {
 - `channelConnectionsApi`, `mcpClientsApi`, `mcpSetupApi`, `tunnelsApi`: connections
 - `memoryTimelineApi`, `memoryFreshnessApi`, `graphCentralityApi`, `namespaceOverviewApi`: memory/graph
 - `billingApi`, `creditsApi`, `referralApi`, `inviteApi`: commerce
-- `voiceSettingsApi`, `voiceInstallApi`, `aiSettingsApi`, `modelCouncilApi`: AI/voice config
+- `voiceSettingsApi`, `aiSettingsApi`, `modelCouncilApi`: AI/voice config
 
 For the full list, `ls app/src/services/api/`. New feature surfaces get their own module here rather than growing `apiClient`.
 

@@ -89,6 +89,8 @@ Repeated Pi pairing against an authenticated running owner must reuse its exact 
 
 Explicit Codex stop/restart/reset uses authenticated lifecycle control independent of native health. Older Bridges may confirm their authenticated `agents.list` identity after a native-health error; wrong identity, authentication rejection and uncertain timeouts never authorize a replacement. Only connection refusal means no local listener; never kill an occupant by PID or port.
 
+Codex pair/start/doctor/status must preserve non-refusal health failures instead of treating them as an offline owner. Native-health rejection gives fixed explicit restart guidance without exposing the native error body; pairing must not spawn, stop or refresh Registry credentials on that failure.
+
 Pair chooser and pairing use the shared Codex executable resolver, including macOS desktop fallback when the default PATH CLI is absent. Missing authentication guidance must also work for desktop-only users; preserve explicit command selection and existing configuration scope.
 
 `clawket codex pair` / `clawket pair --backend codex` creates a device connection by default, with a persistent `~/Documents/Clawket/Chats` fallback. Explicit `--project` retains project-only authorization. Existing `--config` files never widen silently. Device lifecycle/state lives under `~/.clawket/codex/device/<environment>`; legacy project configuration stays in its hashed directory. Reuse the installed Codex credentials; never migrate them or change another client process. Local and Relay pairing must report readiness only after native initialization. `--preview` must use the isolated Codex Preview Registry.
@@ -101,13 +103,15 @@ Codex first-time detached pairing must carry the resolved device scope into the 
 
 `clawket claude-code pair` / `pair --backend claude-code` uses the installed, unmodified Claude executable and device discovery by default. `--project` authorizes only that project. State, logs and Preview credentials live under the independent `~/.clawket/claude-code` tree; lifecycle commands stop only authenticated Clawket-owned runtimes. The official `@anthropic-ai/claude-agent-sdk` is an explicit package external, retained as a production dependency; do not bundle its assets or silently substitute its packaged CLI for the user's selected executable. Native authentication remains on the computer. See `../../docs/3.1/claude-code.md`.
 
+Claude pairing discovery and SDK startup share the runtime's Desktop-first executable resolver. Default macOS/Windows pairing prefers the installed Desktop Code host runtime, including Desktop-only machines, and retains CLI-only fallback. Explicit saved commands stay authoritative. Keep authentication/install guidance usable without a terminal CLI; no credential copying or existing Desktop owner takeover.
+
 Claude first-time detached pairing must carry the resolved device scope into the child even when adding a not-yet-created `--config` path. Existing scoped configurations are never silently widened.
 
 ## 3.1 release
 
-The authorized Bridge patch release is `3.1.7`. Keep the publish guard and bundled workspace versions aligned. Preserve the existing OpenClaw/Hermes pair behavior for old clients. `pair choose` is interactive and read-only until selection; explicit `--backend` is required for agent/script prompts. Client distribution is a separate release stage.
+The authorized Bridge patch release is `3.1.9`. Keep the publish guard and bundled workspace versions aligned. Preserve the existing OpenClaw/Hermes pair behavior for old clients. `pair choose` is interactive and read-only until selection; explicit `--backend` is required for agent/script prompts. Client distribution is a separate release stage.
 
-Codex and Claude Code Registry registrations and QR invitations default to `Codex` / `Claude Code`; project/device scope remains in configuration and must not be inferred from the display name.
+New Codex and Claude Code configurations save a `Product · Device name` default via `src/device-connection-name.ts`: prefer the bounded macOS ComputerName lookup, then hostname, then the plain product name. Reuse the saved label for Registry registration, encrypted invitations and Relay/local QR output; existing configurations without a label retain plain product defaults. Refresh must not rename existing Registry records. Project/device scope and connection identity never come from the display name; keep device labels out of diagnostics and persistent logs.
 
 Codex foreground/background native RPC diagnostics use the runtime's bounded metadata contract in the existing local log. Never forward raw native frames, stderr or exception text, and do not upload local logs automatically. See `../../docs/3.0/20-connection-diagnostics.md`.
 

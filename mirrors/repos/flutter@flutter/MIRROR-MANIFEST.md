@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `flutter/flutter` — 26 default patterns, 0 followed patterns, 49 file(s) materialized.
+Mirror of `flutter/flutter` — 26 default patterns, 0 followed patterns, 48 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `flutter/flutter` — 26 default patterns, 0 followed patterns, 49 fil
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 49 |
+| Files         | 48 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -102,12 +102,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 41 | ✓ | [`.agents/skills/updating-android-sdk/SKILL.md`](.agents/skills/updating-android-sdk/SKILL.md) |
 | 42 | ✓ | [`.agents/skills/upgrade-browser/scripts/fetch_versions.dart`](.agents/skills/upgrade-browser/scripts/fetch_versions.dart) |
 | 43 | ✓ | [`.agents/skills/upgrade-browser/SKILL.md`](.agents/skills/upgrade-browser/SKILL.md) |
-| 44 | ✓ | [`dev/a11y_assessments/GEMINI.md`](dev/a11y_assessments/GEMINI.md) |
-| 45 | ✓ | [`engine/src/flutter/GEMINI.md`](engine/src/flutter/GEMINI.md) |
-| 46 | ✓ | [`engine/src/flutter/impeller/GEMINI.md`](engine/src/flutter/impeller/GEMINI.md) |
-| 47 | ✓ | [`engine/src/flutter/lib/web_ui/GEMINI.md`](engine/src/flutter/lib/web_ui/GEMINI.md) |
-| 48 | ✓ | [`engine/src/flutter/tools/licenses_cpp/GEMINI.md`](engine/src/flutter/tools/licenses_cpp/GEMINI.md) |
-| 49 | ✓ | [`packages/flutter_tools/gradle/AGENTS.md`](packages/flutter_tools/gradle/AGENTS.md) |
+| 44 | ✓ | [`engine/src/flutter/GEMINI.md`](engine/src/flutter/GEMINI.md) |
+| 45 | ✓ | [`engine/src/flutter/impeller/GEMINI.md`](engine/src/flutter/impeller/GEMINI.md) |
+| 46 | ✓ | [`engine/src/flutter/lib/web_ui/GEMINI.md`](engine/src/flutter/lib/web_ui/GEMINI.md) |
+| 47 | ✓ | [`engine/src/flutter/tools/licenses_cpp/GEMINI.md`](engine/src/flutter/tools/licenses_cpp/GEMINI.md) |
+| 48 | ✓ | [`packages/flutter_tools/gradle/AGENTS.md`](packages/flutter_tools/gradle/AGENTS.md) |
 
 ---
 

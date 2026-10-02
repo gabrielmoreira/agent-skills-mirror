@@ -38,7 +38,7 @@ and post-dispatch, move a failure out of the default.
 
 | File | Role |
 | --- | --- |
-| `mod.rs` | `PoolRunError`, the shared `run_inline` dispatch, `classify`, and `all_stats`. |
+| `mod.rs` | `PoolRunError`, the shared `run_inline` dispatch, and `classify`. |
 | `node.rs` / `python.rs` | Per-language `enabled()` and `run_inline()`; they differ only in which language they name. |
 | `types.rs` | `PoolExecOutcome` (with `queue_wait` kept apart from `elapsed`), `PoolLang`, `PoolSettings`. |
 
@@ -69,8 +69,6 @@ state across jobs). Set `enabled` explicitly per language to override.
 
 - **`queue_wait` is reported separately from `elapsed` on purpose.** A host that
   cannot tell a slow job from a busy pool will tune the wrong knob.
-- **`all_stats` returns empty rather than failing** when the module is not
-  loaded. A status surface wants to render "nothing running", not an error.
 - **A worker is still a child of this process.** A TinyBus module is a `cdylib`
   loaded in-process, so the resident cost and the process-tree shape the
   `library-profile skill-run` gate asserts on are unchanged by the move.

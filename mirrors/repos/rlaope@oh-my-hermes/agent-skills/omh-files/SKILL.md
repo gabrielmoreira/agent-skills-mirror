@@ -92,6 +92,7 @@ Artifact expectations:
 - workspace_file_task_card/v1 metadata-only wrapper card when prepared
 - file_operation_scope/v1 with path root, allowed operations, excluded paths, and stop condition
 - file_observation_manifest/v1 only when directory listings, file stats, hashes, diffs, or operation output are observed
+- session_file_activity/v1 (`omh quality-evidence file-activity --hermes-session <id> --json`) cited in that manifest for which workspace files a Hermes session's read_file, write_file, and patch calls named and the outcome Hermes recorded; never as file-content, hash, diff, test, review, CI, or merge evidence
 - file_confirmation_gate/v1 for delete, overwrite, move, rename, chmod, archive mutation, or irreversible cleanup
 
 Safety rules:

@@ -51,7 +51,7 @@ Bad example:
 
 ## Recovery Notes
 
-- If a source fails with HTTP 403, HTTP 429, a paywall, or a WAF or bot wall, use the host's blocked-page recovery capability once for that source when it offers one and never retry the same URL in a loop; cite an archive or cached copy it returns as a dated historical capture, never as the live page. If no such capability exists, recovery fails, or the source needs a login or payment, name the retrieval gap with that reason.
+- If a source fails with HTTP 403, HTTP 429, a paywall, or a WAF or bot wall, use the host's blocked-page recovery capability once for that source when it offers one and never retry the same URL in a loop; cite an archive or cached copy it returns as a dated historical capture, never as the live page. If no such capability exists, recovery fails, the retrieval budget is spent, or the source needs a login or payment, name the retrieval gap with that reason. Record each blocked source as one `research_source_recovery/v1`.
 - If web or repository access is unavailable, name the retrieval gap and use only observed local context instead of inventing findings.
 - If no archive access exists or the capture provider's paid authority is exhausted, record a temporal retrieval gap with no network action and keep the as-of claim in the annex; never substitute the current page for it.
 - If the evidence stays thin or contested, lower the stated confidence and keep the unresolved claims in the annex rather than flattening them.

@@ -66,7 +66,7 @@ OpenCode Core → Plugin Initialization (index.ts)
 4. **Tool Registration**: Tools are created conditionally based on config (task_cancel, task_message, task_revive, task_status, task_result, wait_for_user, webfetch, AST-grep, acp_run)
 5. **MCP Registration**: Built-in MCPs are created (context7, gh_grep)
 6. **Hook Initialization**: Auto-update checker, phase reminders, skill filters, task-session manager, cache monitor, orchestrator-wake scheduler, etc.
-7. **Runtime Model Resolution**: Resolves model arrays to single models for startup
+7. **Runtime Model Resolution**: Resolves model arrays to startup primaries, installs hidden v1 secondary-model routes, and keeps delegated children plus native completion turns on the parent's live fallback provider
 8. **TUI State Sync**: `recordTuiAgentModels()` captures resolved models/variants for TUI display
 9. **Health Check**: Validates agent/tool/MCP counts against `HEALTH_CHECK` thresholds, adjusted for disabled baseline tools via `minimumExpectedToolCount`
 10. **Companion Management**: Ensures companion version compatibility
@@ -131,7 +131,7 @@ Key event flows:
    - `tool.execute.after` → post-tool hooks (retry guidance, JSON error recovery)
 
 4. **Chat Integration**:
-   - `chat.message` → track session → agent mapping and mark TUI activity
+   - `chat.message` → track session → agent/model mapping, preserve live v1 fallback selection across native background completions, and mark TUI activity
    - `experimental.chat.system.transform` → inject orchestrator prompt for serve mode
    - `experimental.chat.messages.transform` → phase reminders, skill filtering, image attachment processing
 

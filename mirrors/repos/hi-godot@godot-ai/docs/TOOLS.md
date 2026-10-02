@@ -288,10 +288,17 @@ fail-closed resource-group mutations. Moves carry `.uid`/`.import` sidecars and
 preserve verified UID references; they refuse literal-path dependencies,
 project-setting references, affected open scene tabs and missing destination
 parents. Automatic dependency rewriting is not supported. Discovery includes
-literal relative, `res://` and `uid://` references in .gd, .cs, .gdshader, .gdshaderinc, .tscn and .tres owners. Binary
-ownership, unreadable/oversized inputs and linked paths are refused, including
-when `force=true`; computed runtime paths are outside static owner discovery.
-Engine metadata, VCS internals and the loaded plugin implementation are excluded.
+literal relative, `res://` and `uid://` references in `.gd`, `.cs`, `.gdshader`,
+`.gdshaderinc`, `.tscn` and `.tres` owners. Binary `.res`/`.scn` owners are
+checked through Godot's resource dependency records, and those whose payload
+is at most 256 KiB, after expanding a compressed container, are also scanned
+for exact serialized path/UID bytes. Serialized strings in larger binary
+owners that are not engine dependencies remain outside static discovery, like
+computed runtime paths. Unreadable
+metadata, discovery deadline/cancellation and discovery budgets return
+`FILESYSTEM_DISCOVERY_FAILED`; semantic refusals remain `INVALID_PARAMS`.
+Linked paths are refused, including when `force=true`. Engine metadata, VCS
+internals and the loaded plugin implementation are excluded.
 
 Remove defaults to OS trash. `force=true` permits known dangling references,
 not unknown ownership. `permanent=true` supports files only; permanent directory
@@ -299,8 +306,8 @@ removal is refused. None of these operations participates in editor undo.
 Call directly rather than through `batch_execute`. Directory mutations return
 `scan_required=true`; follow with `filesystem_manage(op="scan")` to refresh the
 editor tree. Discovery yields between bounded work units and refuses operations
-exceeding 10,000 project entries, 256 affected resources, 256 KiB per inspected file
-or 64 MiB of inspected bytes, including revalidation.
+exceeding 10,000 project entries, 256 affected resources, 256 KiB per inspected
+target/small-owner file or 64 MiB of inspected bytes, including revalidation.
 
 Required fixups never fail silently: errors include `data.outcome` (`unchanged`,
 `rolled_back` or `partial`) and actual affected/unrestored paths. A partial result

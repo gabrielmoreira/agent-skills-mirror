@@ -131,6 +131,17 @@ coverage must be at least 80 percent.
 
 - Frontend unit tests are colocated as `*.test.ts` or `*.test.tsx` under
   `app/src/`. Use Vitest and test behavior rather than implementation.
+- Rust unit tests are never inline. Put them in a sibling `<module>_tests.rs`
+  (`mod_tests.rs` beside a `mod.rs`) declared at the bottom of the module with
+  `#[cfg(test)]` and `#[path = "<module>_tests.rs"]` above `mod tests;`. The file
+  starts with `use super::*;` and carries no `#[cfg(test)]` of its own. Never name
+  one `test.rs`, `tests.rs` or `<module>_test.rs`, and never write an inline
+  `#[cfg(test)] mod tests { ... }` (`pnpm rust:layout` fails on an inline module
+  and on `test.rs`/`tests.rs`; it does not yet catch `<module>_test.rs`). The same
+  rule binds every `vendor/` submodule: `node scripts/externalize-inline-tests.mjs
+  <repo-root> --write` converts one mechanically, and a crate root directly in
+  `src/bin/` keeps its tests in `src/bin/<stem>/` because Cargo builds any `.rs`
+  placed straight in `src/bin/` as a binary.
 - Rust domain tests live beside their modules. Use
   `scripts/test-rust-with-mock.sh` for tests that need the shared mock backend.
 - JSON-RPC behavior belongs in Rust E2E tests, commonly
@@ -364,7 +375,7 @@ sandboxing, timeouts, and progress events.
   number of independently configured agents on it (`AgentSpec`: provider,
   access, `action_dir`, MCP servers, skills, prompt, tool scope, sandbox).
   `Harness` is the one-agent shorthand over the same two types. Agent turns
-  dispatch natively (`inference::local::ops::agent_chat_for`) under the
+  dispatch natively (`inference::host_runtime::ops::agent_chat_for`) under the
   agent's own `CoreContext` (`CoreContext::derive_with`); other facade calls
   go through `CoreRuntime::invoke`.
 - Set `config_path` with `workspace_dir`, and set a turn origin with its access

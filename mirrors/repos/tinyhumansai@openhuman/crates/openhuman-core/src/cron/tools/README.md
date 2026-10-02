@@ -25,7 +25,7 @@ model's tool list with six near-duplicate schemas.
 field (`list` / `add` / `update` / `remove` / `run` / `runs`) instead of six
 near-duplicate schemas: four of the six take only `job_id`. Each action
 forwards to the matching per-operation tool through
-`crate::tools::implementations::meta::collapse` (`merge_action_schemas`,
+`tinytools::collapse` (`merge_action_schemas`,
 `resolve`, `args_without_action`), so schedule parsing, the `SecurityPolicy`
 check and delivery validation live in exactly one place.
 `permission_level_with_args` / `external_effect_with_args` resolve the real
@@ -79,7 +79,7 @@ or immediately execute a stored command or agent prompt on the host.
   one-shot `schedule` tool built on `cron::add_once` / `cron::add_once_at`;
   not part of the collapse above.
 - `crates/openhuman-core/src/tools/impl/meta/collapse.rs` (module path
-  `crate::tools::implementations::meta::collapse`): the generic
+  `tinytools::collapse`): the generic
   action-collapsing helper `collapsed.rs` builds on.
 
 ## Tests

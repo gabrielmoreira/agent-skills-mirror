@@ -40,7 +40,7 @@ and does not need a stub. Signatures must match the real ones exactly;
 
 | File | Role |
 | --- | --- |
-| `mod.rs` | Facade root: feature gate; re-exports from `tinywallet_x402` (`X402Client`, `X402Error`, `X402PaymentResult`, `handle_402`, the ledger and wire types); `init_ledger`, `handle_402_and_pay`, `try_paid_request` and `request_tool`, which supply the seams; the `store` accessors used by `http_request`. |
+| `mod.rs` | Facade root: feature gate; re-exports from `tinywallet_x402` (`X402Client`, `X402Error`, `X402PaymentResult`, `handle_402`, the ledger and wire types); `init_ledger`, `handle_402_and_pay` and `request_tool`, which supply the seams; the `store` accessors used by `http_request`. |
 | `seams.rs` | `WalletPaymentSigner` (the crate's `PaymentSigner`: keyring secret, decrypt, `modules::wallet::{derive_account, sign_message}`), `RuntimeProxyPolicy` (`ProxyPolicy` over `config::apply_runtime_proxy_to_builder`), and the `payments()` / `request_tool()` constructors that pair them with the wallet's `OpenHumanTransport`. |
 | `budget.rs` | The spending limits: the crate's defaults plus the `OPENHUMAN_X402_*` overrides. |
 | `records.rs` | `pending_record`: the `Pending` ledger record for the `http_request` fallback (ledger session + chat thread). |

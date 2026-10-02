@@ -238,7 +238,8 @@ At session start or after compaction, recover recent project context.
 ```bash
 eval "$(~/.claude/skills/gstack/bin/gstack-slug 2>/dev/null)"
 _BRANCH=$(git branch --show-current 2>/dev/null | tr -cd 'a-zA-Z0-9._/-') || :; _BRANCH=${_BRANCH:-unknown}
-_PROJ="${GSTACK_HOME:-$HOME/.gstack}/projects/${SLUG:-unknown}"
+eval "$(~/.claude/skills/gstack/bin/gstack-paths)"; : "${GSTACK_STATE_ROOT:?gstack-paths failed; reinstall with ./setup or /gstack-upgrade}"
+_PROJ="$GSTACK_STATE_ROOT/projects/${SLUG:-unknown}"
 if [ -d "$_PROJ" ]; then
   echo "--- RECENT ARTIFACTS ---"
   find "$_PROJ/ceo-plans" "$_PROJ/checkpoints" -type f -name "*.md" 2>/dev/null | xargs -r ls -t 2>/dev/null | head -3
@@ -905,10 +906,11 @@ configured Mac is a first-class doctor path: every step detects existing
 state, repairs only what's missing, and reports here.
 
 ```bash
+eval "$(~/.claude/skills/gstack/bin/gstack-paths)"; : "${GSTACK_STATE_ROOT:?gstack-paths failed; reinstall with ./setup or /gstack-upgrade}"
 ~/.claude/skills/gstack/bin/gstack-gbrain-detect 2>/dev/null || true
 ~/.claude/skills/gstack/bin/gstack-config get transcript_ingest_mode 2>/dev/null || echo "off"
 ~/.claude/skills/gstack/bin/gstack-config get artifacts_sync_mode 2>/dev/null || echo "off"
-[ -f ~/.gstack/.gbrain-sync-state.json ] && cat ~/.gstack/.gbrain-sync-state.json || echo "{}"
+[ -f "$GSTACK_STATE_ROOT"/.gbrain-sync-state.json ] && cat "$GSTACK_STATE_ROOT"/.gbrain-sync-state.json || echo "{}"
 ```
 
 Read `gbrain_mcp_mode` from the detect output and pick the right verdict
@@ -1040,13 +1042,14 @@ this at build time.
   failures are not evidence of a competing run:
 
   ```bash
-  if ! mkdir -p ~/.gstack; then
-    echo "ERROR: Cannot create setup-gbrain lock parent ~/.gstack." >&2
+  eval "$(~/.claude/skills/gstack/bin/gstack-paths)"; : "${GSTACK_STATE_ROOT:?gstack-paths failed; reinstall with ./setup or /gstack-upgrade}"
+  if ! mkdir -p "$GSTACK_STATE_ROOT"; then
+    echo "ERROR: Cannot create setup-gbrain lock parent $GSTACK_STATE_ROOT." >&2
     exit 1
   fi
-  if ! mkdir ~/.gstack/.setup-gbrain.lock.d; then
-    if [ -d ~/.gstack/.setup-gbrain.lock.d ]; then
-      echo "Another /setup-gbrain instance is running. Wait for it, or remove ~/.gstack/.setup-gbrain.lock.d only if you are sure it is stale." >&2
+  if ! mkdir "$GSTACK_STATE_ROOT"/.setup-gbrain.lock.d; then
+    if [ -d "$GSTACK_STATE_ROOT"/.setup-gbrain.lock.d ]; then
+      echo "Another /setup-gbrain instance is running. Wait for it, or remove $GSTACK_STATE_ROOT/.setup-gbrain.lock.d only if you are sure it is stale." >&2
     else
       echo "ERROR: Cannot acquire setup-gbrain lock." >&2
     fi

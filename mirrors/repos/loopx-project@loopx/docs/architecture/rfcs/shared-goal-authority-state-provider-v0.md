@@ -29,7 +29,8 @@
 Audit `ce3862e33`: #5054, #5140, #5144, #5156, #5173, #5175 and #5169
 are merged. Do not count event retirement, archive recovery, managed process
 supervision, reviewed local cutover or native drain as new pending PRs.
-#4931 remains an open SQLite optimization, not a completed D2 qualification.
+The SQLite read-proof optimization [#4931](https://github.com/loopx-project/loopx/pull/4931)
+has since merged at `9482a9496`; D2 qualification remains incomplete.
 
 Next: qualify whole-Goal execution/consumer integration and matched local
 profiles in parallel; then unify new-Goal/install/settings and supported upgrade
@@ -2632,6 +2633,23 @@ superseded；前提是没有仍在有效期内的租约，也未提交旧执行�
 执行必须重新获取租约。`complete`、挤占有效租约、跨负责人修改及混入执行内容的
 更新仍受原有门禁约束。
 
+Owner suspension closes the reverse transition as well: an open Agent Todo's
+current claim/lease holder may atomically set `deferred` with an explicit wait
+and reason while releasing that live execution generation. No work-content or
+ownership edits are bundled. Retained lease lineage applies in legacy mode too;
+reopening then follows the same no-live-holder rule. The shared TS owner and
+provider CAS preserve receipts and retries. Pending registered Todo/monitor
+waits remain eligible for blocked, no-spend closeout after deferral, retaining
+the original Turn binding. See [causal closeout](../../reference/protocols/quota-blocked-causal-closeout-v0.md).
+This closes an S3 owner-wait lifecycle gap; it does not qualify general shared
+amendment or SQLite default admission.
+
+反向转换也由同一 TS owner 负责：当前 claim／lease 持有者可凭有效证明，把开放任务
+原子延期并释放租约；不混入任务内容或所有权修改。有租约历史的 legacy 模式同样
+适用，恢复遵守无活跃持有者规则。延期后的已注册 Todo／monitor 等待仍能按原 Turn
+身份完成无扣额阻塞结算。该交付收敛 S3 等待生命周期，不等于通用 amendment 或
+SQLite 默认准入已验收。
+
 ### Relation to Staged Delivery
 
 Mapped to the five-stage plan from the #2787 review: the characterization
@@ -3246,7 +3264,8 @@ new implementation work; changing languages or moving a helper is not an exit.
 **Earlier 2026-09-24 implementation context.** Display refresh advances
 projection recovery/client closure without claiming every consumer qualified. SQLite #4910 added the larger measurement axes; #4224 records
 failed 1 MiB receipt/scan budgets and still-missing recovery/soak evidence.
-#4931 is the in-review read-proof optimization, not proof that D2 passed.
+At that checkpoint #4931 was still in review. Its subsequent merge supplies
+read-proof optimization, not proof that D2 passed.
 Snapshot pagination #4922 has merged and still must be qualified at its accepted
 head. None of these PR statuses grants cutover or changes the selected profile.
 

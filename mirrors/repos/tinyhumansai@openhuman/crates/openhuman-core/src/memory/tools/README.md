@@ -30,14 +30,18 @@ per-mode structs are also reachable through this module.
 | `recall.rs` | `MemoryRecallTool` | `memory_recall` |
 | `store.rs` | `MemoryStoreTool` | `memory_store` |
 | `goals.rs` | `GoalsTool` | `goals` |
-| `raw_store/kinds.rs` | `MemoryStoreKindsTool` | `memory_store_kinds` |
-| `raw_store/raw_chunks.rs` | `MemoryStoreRawChunksTool` | `memory_store_raw_chunks` |
-| `raw_store/raw_search.rs` | `MemoryStoreRawSearchTool` | `memory_store_raw_search` |
-| `search/chunk_context.rs` | `MemoryChunkContextTool` | `memory_chunk_context` |
-| `search/hybrid_search.rs` | `MemoryHybridSearchTool` | `memory_hybrid_search` |
-| `search/vector_search.rs` | `MemoryVectorSearchTool` | `memory_vector_search` |
-| `tool_memory/list.rs` | `MemoryToolsListTool` | `memory_tools_list` |
-| `tool_memory/put.rs` | `MemoryToolsPutTool` | `memory_tools_put` |
+| `host.rs` | `HostMemoryTools` | the `tinymemory_tools::MemoryToolHost` every alias below runs under |
+| `raw_store/mod.rs` (alias) | `MemoryStoreKindsTool`, `MemoryStoreRawChunksTool`, `MemoryStoreRawSearchTool` | `memory_store_kinds`, `memory_store_raw_chunks`, `memory_store_raw_search` |
+| `search/mod.rs` (alias) | `MemoryChunkContextTool`, `MemoryHybridSearchTool`, `MemoryVectorSearchTool` | `memory_chunk_context`, `memory_hybrid_search`, `memory_vector_search` |
+| `tool_memory/mod.rs` (alias) | `MemoryToolsListTool`, `MemoryToolsPutTool` | `memory_tools_list`, `memory_tools_put` |
+
+The rows marked alias are `tinymemory-tools` types instantiated over
+`HostMemoryTools` (construct one with `::default()`); their names, schemas and
+argument tests live in that crate. This directory keeps only the tools that
+need host policy (`memory_store`, `memory_forget`, the goals tool, the
+consolidated `memory` tool) plus the host-integration tests
+(`tool_memory/guard_tests.rs`) that run the tools against the real guarded
+driver.
 
 `tool_memory/` here (agent tools for reading/writing tool-scoped rules) is
 distinct from [`memory/tool_memory/`](../tool_memory/) (the rule store and

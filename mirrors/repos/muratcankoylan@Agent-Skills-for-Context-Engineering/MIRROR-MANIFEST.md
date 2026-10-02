@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `muratcankoylan/Agent-Skills-for-Context-Engineering` — 26 default patterns, 1 followed patterns, 67 file(s) materialized.
+Mirror of `muratcankoylan/Agent-Skills-for-Context-Engineering` — 26 default patterns, 1 followed patterns, 70 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `muratcankoylan/Agent-Skills-for-Context-Engineering` — 26 default p
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 67 |
+| Files         | 70 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -120,12 +120,15 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 59 | ✓ | [`skills/project-development/SKILL.md`](skills/project-development/SKILL.md) |
 | 60 | ✓ | [`skills/self-improvement-loops/references/loop-design-evidence.md`](skills/self-improvement-loops/references/loop-design-evidence.md) |
 | 61 | ✓ | [`skills/self-improvement-loops/SKILL.md`](skills/self-improvement-loops/SKILL.md) |
-| 62 | ✓ | [`skills/tool-design/references/architectural_reduction.md`](skills/tool-design/references/architectural_reduction.md) |
-| 63 | ✓ | [`skills/tool-design/references/best_practices.md`](skills/tool-design/references/best_practices.md) |
-| 64 | ✓ | [`skills/tool-design/scripts/description_generator.py`](skills/tool-design/scripts/description_generator.py) |
-| 65 | ✓ | [`skills/tool-design/SKILL.md`](skills/tool-design/SKILL.md) |
-| 66 | ✓ | [`template/SKILL.md`](template/SKILL.md) |
-| 67 | → | [`researcher/generated/corpus-summary.md`](researcher/generated/corpus-summary.md) |
+| 62 | ✓ | [`skills/self-managed-context/references/evidence.md`](skills/self-managed-context/references/evidence.md) |
+| 63 | ✓ | [`skills/self-managed-context/references/harness-protocol.md`](skills/self-managed-context/references/harness-protocol.md) |
+| 64 | ✓ | [`skills/self-managed-context/SKILL.md`](skills/self-managed-context/SKILL.md) |
+| 65 | ✓ | [`skills/tool-design/references/architectural_reduction.md`](skills/tool-design/references/architectural_reduction.md) |
+| 66 | ✓ | [`skills/tool-design/references/best_practices.md`](skills/tool-design/references/best_practices.md) |
+| 67 | ✓ | [`skills/tool-design/scripts/description_generator.py`](skills/tool-design/scripts/description_generator.py) |
+| 68 | ✓ | [`skills/tool-design/SKILL.md`](skills/tool-design/SKILL.md) |
+| 69 | ✓ | [`template/SKILL.md`](template/SKILL.md) |
+| 70 | → | [`researcher/generated/corpus-summary.md`](researcher/generated/corpus-summary.md) |
 
 ---
 

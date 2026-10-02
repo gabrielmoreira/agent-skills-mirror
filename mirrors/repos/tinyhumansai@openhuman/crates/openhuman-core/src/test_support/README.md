@@ -28,7 +28,7 @@ From `mod.rs`:
 - `all_test_support_registered_controllers()`: `Vec<RegisteredController>` (schema + handler pairs).
 
 From `rpc` / `introspect` (used by handlers, also `pub`):
-- `rpc::reset() -> Outcome<ResetSummary>`, `rpc::reset_json()` (raw JSON envelope convenience; currently `#[allow(dead_code)]`, no caller).
+- `rpc::reset() -> Outcome<ResetSummary>`.
 - `introspect::workspace_root()`, `list_workspace_files(rel_root, max_depth)`, `read_workspace_file(rel_path, max_bytes)`, `in_flight_chats()`, `wallet_prepared_quotes()`.
 - Result types: `ResetSummary`, `WorkspaceRoot`, `ListEntry`/`ListResult`, `ReadFileResult`, `InFlightEntryView`/`InFlightResult`, `PreparedQuotesResult`.
 

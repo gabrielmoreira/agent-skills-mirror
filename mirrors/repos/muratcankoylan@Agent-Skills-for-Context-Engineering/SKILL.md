@@ -56,6 +56,9 @@ When agent sessions exhaust memory, compression becomes mandatory. The correct o
 **Context Optimization**
 Techniques include compaction (summarizing context near limits), observation masking (replacing verbose tool outputs with references), prefix caching (reusing KV blocks across requests), and strategic context partitioning (splitting work across sub-agents with isolated contexts).
 
+**Self-Managed Context**
+The model, not the harness, decides what stays in its live context: the editable region is exposed as a file the model rewrites with code tools and re-parsed each turn. The harness keeps the invariants (pinned system and task prefix, role folding, edit gate, receipts, deterministic budget readouts, rollback on overflow). Edit cost scales with the text after the edit under prefix caching, so edits are batched and placed with the tail in mind; strategy can be steered by instruction, evolved as a skill, or trained with a success-gated efficiency reward.
+
 **Latent Briefing (KV Memory Sharing)**
 Orchestrator-worker systems can compound tokens when supervisors accumulate long trajectories but workers see only narrow text slices. Latent Briefing compacts the orchestrator trajectory in the worker model's KV cache using task-guided attention (Attention Matching-style compaction) so workers receive relevant latent state without full-text replay when the stack exposes worker KV state and the models are compatible.
 
@@ -105,6 +108,7 @@ Internal skills in this collection:
 - [filesystem-context](skills/filesystem-context/SKILL.md)
 - [hosted-agents](skills/hosted-agents/SKILL.md)
 - [context-optimization](skills/context-optimization/SKILL.md)
+- [self-managed-context](skills/self-managed-context/SKILL.md)
 - [latent-briefing](skills/latent-briefing/SKILL.md)
 - [evaluation](skills/evaluation/SKILL.md)
 - [advanced-evaluation](skills/advanced-evaluation/SKILL.md)
@@ -123,6 +127,6 @@ External resources on context engineering:
 ## Skill Metadata
 
 **Created**: 2025-12-20
-**Last Updated**: 2026-07-11
+**Last Updated**: 2026-10-01
 **Author**: Agent Skills for Context Engineering Contributors
-**Version**: 2.5.0
+**Version**: 2.6.0

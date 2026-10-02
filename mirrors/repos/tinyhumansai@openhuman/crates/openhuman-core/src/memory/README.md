@@ -45,8 +45,9 @@ What stays here, per that split:
   the engine's:
   - [`auto_recall/`](auto_recall/): Lane C, the gated, bounded pre-turn
     recall of facts about the user (#6040).
-  - [`safety.rs`](safety.rs): the host-side secret/PII scrubbers applied to
-    anything this host persists or hands on.
+  - [`safety.rs`](safety.rs): the host's import path for the shared
+    `tinymemory-safety` secret/PII scrubbers, applied to anything this host
+    persists or hands on (default, strictest policy).
   - [`source_scope.rs`](source_scope.rs): the host-side per-turn
     memory-source allowlist.
   - [`obsidian_registry.rs`](obsidian_registry.rs): is the memory content

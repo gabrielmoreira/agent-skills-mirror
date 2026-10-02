@@ -4,18 +4,18 @@
 This is a generated view of canonical repository artifacts, not a second source of truth.
 
 - Schema: `1.0.0`
-- Source tree: `sha256:cdd6e53336fa690cfaf9ee97ba4da08225611477c0addf2e2d4c392b5ed5c49d`
+- Source tree: `sha256:dcbac67436e1252ff10fcdcc5ad1649c77ff0669837f42b04d1abea9c471d36c`
 - Unresolved references: `0`
 
 | Artifact | Count |
 | --- | ---: |
-| Published skills | 17 |
-| Mechanism registry records | 22 |
-| Accepted-ledger events | 28 |
+| Published skills | 18 |
+| Mechanism registry records | 26 |
+| Accepted-ledger events | 32 |
 | Rejected-ledger events | 1 |
-| Provenance-tracked claims | 26 |
-| Activation cases | 23 |
-| Router prompts | 56 |
+| Provenance-tracked claims | 40 |
+| Activation cases | 26 |
+| Router prompts | 59 |
 | Adversarial scenarios | 7 |
 | Adversarial goldens | 7 |
 | Effectiveness tasks | 1 |
@@ -23,7 +23,7 @@ This is a generated view of canonical repository artifacts, not a second source 
 
 ## Compatibility
 
-- Plugin version: `2.5.0`
+- Plugin version: `2.6.0`
 - Router runner: `operational`
 - Effectiveness runner: `scaffold`
 

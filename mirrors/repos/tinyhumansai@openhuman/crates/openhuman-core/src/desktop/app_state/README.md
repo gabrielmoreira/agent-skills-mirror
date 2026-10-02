@@ -48,4 +48,4 @@ The signed-in identity for prompts and Sentry is `security::credentials::identit
 ## Tests
 
 - `ops_tests.rs`, `recovery_signal_tests.rs`, `schemas_tests.rs`.
-- JSON-RPC shape: `tests/json_rpc_e2e.rs` (`json_rpc_app_state_snapshot_returns_runtime_shape`), `tests/config_auth_app_state_connectivity_e2e.rs`.
+- JSON-RPC shape: `tests/json_rpc_e2e.rs` (`json_rpc_app_state_snapshot_returns_runtime_shape`), `tests/in_process/config_auth_app_state_connectivity_e2e.rs`.

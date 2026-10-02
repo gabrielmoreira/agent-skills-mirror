@@ -1,0 +1,47 @@
+# RedAmon MCP Servers - Python Dependencies
+
+# FastMCP - Fast Python MCP server framework.
+# fastmcp and mcp are a matched pair and must be pinned together (issue #181).
+# semgrep (installed later in the Dockerfile) hard-pins mcp==1.29.0 into this
+# same venv, so mcp is effectively locked to 1.29.0. fastmcp 4.x switched to the
+# fastmcp-slim split whose server code imports mcp.server.request_state (mcp>=2.0
+# only); left unpinned it resolves to 4.x, gets its mcp downgraded to 1.29.0 by
+# semgrep, and every MCP server dies on import. fastmcp 3.2.4 is the newest
+# release that still supports mcp<2.0,>=1.24.0 (satisfied by 1.29.0) and does not
+# import request_state, so keep fastmcp on 3.x to stay compatible with semgrep.
+fastmcp==3.2.4
+
+# MCP SDK (core protocol implementation). Pinned to the version semgrep forces so
+# the resolver cannot silently skew it against fastmcp above.
+mcp==1.29.0
+
+# Async support
+anyio>=4.0.0
+httpx[http2]>=0.25.0
+
+# SSE transport support
+sse-starlette>=1.6.0
+starlette>=0.27.0
+uvicorn>=0.24.0
+
+# Utility libraries
+pydantic>=2.0.0
+PyYAML>=6.0
+
+# Common libraries for execute_code scripts
+requests>=2.31.0
+beautifulsoup4>=4.12.0
+pycryptodome>=3.19.0
+PyJWT>=2.8.0
+paramiko>=3.4.0
+impacket>=0.11.0
+pwntools>=4.11.0
+
+# HTTP parameter discovery
+arjun>=2.2.7
+
+# Browser automation (Playwright)
+playwright>=1.40.0
+
+# WebSocket terminal server
+websockets>=12.0

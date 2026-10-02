@@ -239,7 +239,8 @@ At session start or after compaction, recover recent project context.
 ```bash
 eval "$(~/.claude/skills/gstack/bin/gstack-slug 2>/dev/null)"
 _BRANCH=$(git branch --show-current 2>/dev/null | tr -cd 'a-zA-Z0-9._/-') || :; _BRANCH=${_BRANCH:-unknown}
-_PROJ="${GSTACK_HOME:-$HOME/.gstack}/projects/${SLUG:-unknown}"
+eval "$(~/.claude/skills/gstack/bin/gstack-paths)"; : "${GSTACK_STATE_ROOT:?gstack-paths failed; reinstall with ./setup or /gstack-upgrade}"
+_PROJ="$GSTACK_STATE_ROOT/projects/${SLUG:-unknown}"
 if [ -d "$_PROJ" ]; then
   echo "--- RECENT ARTIFACTS ---"
   find "$_PROJ/ceo-plans" "$_PROJ/checkpoints" -type f -name "*.md" 2>/dev/null | xargs -r ls -t 2>/dev/null | head -3
@@ -672,6 +673,10 @@ Capability check (per /plan-eng-review §6):
 bun run ~/.claude/skills/gstack/bin/gstack-gbrain-read-capability.ts <user-args>
 ```
 
+`<user-args>` are the same flags this /sync-gbrain invocation passed to Step 2,
+unchanged (empty for a plain run). The helper needs no other input: run it once
+and use its JSON result; do not inspect its source or the gbrain CLI first.
+
 The helper reports JSON `status: ready` only after the successful code sync's
 source and real worktree match `.gbrain-source`, the source registration points
 to that worktree, and a bounded, source-scoped list/get returns the same page.
@@ -746,16 +751,17 @@ sync code walk for them requires an explicit `--allow-reclone` opt-in.
 <!-- gstack-gbrain-search-guidance:end -->
 ```
 
-Use the Read + Edit tools. The find-and-replace target is the entire region
-from `<!-- gstack-gbrain-search-guidance:start -->` through
+Read CLAUDE.md once and compute its new content. The replacement target is
+the entire region from `<!-- gstack-gbrain-search-guidance:start -->` through
 `<!-- gstack-gbrain-search-guidance:end -->`. If those markers are missing,
 search for `## GBrain Search Guidance (configured by /sync-gbrain)` heading
 and replace from there to the next `## ` or EOF. If no heading exists, append
 the entire block at the end of CLAUDE.md.
 
-**Atomic write:** write the new CLAUDE.md content to a tmp file alongside it
-(e.g., `CLAUDE.md.sync-gbrain.tmp`) then `mv` to atomic-rename, so a crash
-mid-write never leaves the file half-modified.
+**Atomic write (the only write path; do not Edit CLAUDE.md in place):** Write
+the complete new content to `CLAUDE.md.sync-gbrain.tmp` beside it, then `mv` it
+over CLAUDE.md, so a crash mid-write never leaves the file half-modified. Verify
+the block count in the same Bash call as the `mv`, then go to Step 5.
 
 **If `status=unknown`** — preserve the existing guidance block, if any, and
 report the helper's reason as WARN with advice to retry `/sync-gbrain` or the

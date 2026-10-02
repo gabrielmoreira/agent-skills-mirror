@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `langfuse/skills` — 26 default patterns, 0 followed patterns, 22 file(s) materialized.
+Mirror of `langfuse/skills` — 26 default patterns, 0 followed patterns, 24 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `langfuse/skills` — 26 default patterns, 0 followed patterns, 22 fil
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 22 |
+| Files         | 24 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -81,6 +81,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 20 | ✓ | [`skills/langfuse/references/user-feedback.md`](skills/langfuse/references/user-feedback.md) |
 | 21 | ✓ | [`skills/langfuse/references/v4-project-migration.md`](skills/langfuse/references/v4-project-migration.md) |
 | 22 | ✓ | [`skills/langfuse/SKILL.md`](skills/langfuse/SKILL.md) |
+| 23 | ✓ | [`skills/migrate-to-langfuse/references/reingest-history.md`](skills/migrate-to-langfuse/references/reingest-history.md) |
+| 24 | ✓ | [`skills/migrate-to-langfuse/SKILL.md`](skills/migrate-to-langfuse/SKILL.md) |
 
 ---
 

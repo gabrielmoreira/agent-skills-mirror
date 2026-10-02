@@ -34,7 +34,7 @@ logic. Every controller it exposes is implemented by a domain module under
 | `mod.rs` | `ControllerSchema`/`FieldSchema`/`TypeSchema`: the controller contract; module declarations. |
 | `all.rs` | The controller registry: `RegisteredController`, `RegisteredCliAdapter`, `DomainGroup`, `all_registered_controllers()`, `all_controller_schemas()`, `rpc_method_name()`, `validate_params()`, `all_http_method_schemas()`. |
 | `dispatch.rs` | `dispatch()`: the 4-tier RPC router. |
-| `bus.rs` | The `BUS: OnceBus<DomainEvent>` singleton, `EVENTS_ROOT`/`EVENTS_INTERFACE`/`EVENTS_VERSION`, `init`/`init_over_socket`. |
+| `bus.rs` | The `BUS: OnceBus<DomainEvent>` singleton, `EVENTS_ROOT`/`EVENTS_INTERFACE`/`EVENTS_VERSION`, `init`. |
 | `events.rs` | `DomainEvent`: the full event catalog, `domain()` routing. |
 | `outcome.rs` | `Outcome<T>`, `apply_log_envelope`, `unwrap_rpc`: the controller result and its wire shape. |
 | `structured_error.rs` | `StructuredRpcError`: typed error envelope sentinel-encoded into a controller's `Err(String)`. |

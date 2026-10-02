@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `gokapso/agent-skills` — 26 default patterns, 0 followed patterns, 163 file(s) materialized.
+Mirror of `gokapso/agent-skills` — 26 default patterns, 0 followed patterns, 164 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `gokapso/agent-skills` — 26 default patterns, 0 followed patterns, 1
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 163 |
+| Files         | 164 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -167,61 +167,62 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 106 | ✓ | [`skills/integrate-whatsapp/scripts/lib/output.mjs`](skills/integrate-whatsapp/scripts/lib/output.mjs) |
 | 107 | ✓ | [`skills/integrate-whatsapp/scripts/lib/request.mjs`](skills/integrate-whatsapp/scripts/lib/request.mjs) |
 | 108 | ✓ | [`skills/integrate-whatsapp/scripts/lib/run.js`](skills/integrate-whatsapp/scripts/lib/run.js) |
-| 109 | ✓ | [`skills/integrate-whatsapp/scripts/lib/webhooks/args.js`](skills/integrate-whatsapp/scripts/lib/webhooks/args.js) |
-| 110 | ✓ | [`skills/integrate-whatsapp/scripts/lib/webhooks/kapso-api.js`](skills/integrate-whatsapp/scripts/lib/webhooks/kapso-api.js) |
-| 111 | ✓ | [`skills/integrate-whatsapp/scripts/lib/webhooks/webhook.js`](skills/integrate-whatsapp/scripts/lib/webhooks/webhook.js) |
-| 112 | ✓ | [`skills/integrate-whatsapp/scripts/lib/whatsapp-flow.js`](skills/integrate-whatsapp/scripts/lib/whatsapp-flow.js) |
-| 113 | ✓ | [`skills/integrate-whatsapp/scripts/list-connected-numbers.mjs`](skills/integrate-whatsapp/scripts/list-connected-numbers.mjs) |
-| 114 | ✓ | [`skills/integrate-whatsapp/scripts/list-flow-responses.js`](skills/integrate-whatsapp/scripts/list-flow-responses.js) |
-| 115 | ✓ | [`skills/integrate-whatsapp/scripts/list-flows.js`](skills/integrate-whatsapp/scripts/list-flows.js) |
-| 116 | ✓ | [`skills/integrate-whatsapp/scripts/list-function-invocations.js`](skills/integrate-whatsapp/scripts/list-function-invocations.js) |
-| 117 | ✓ | [`skills/integrate-whatsapp/scripts/list-function-logs.js`](skills/integrate-whatsapp/scripts/list-function-logs.js) |
-| 118 | ✓ | [`skills/integrate-whatsapp/scripts/list-platform-phone-numbers.mjs`](skills/integrate-whatsapp/scripts/list-platform-phone-numbers.mjs) |
-| 119 | ✓ | [`skills/integrate-whatsapp/scripts/list-templates.mjs`](skills/integrate-whatsapp/scripts/list-templates.mjs) |
-| 120 | ✓ | [`skills/integrate-whatsapp/scripts/list.js`](skills/integrate-whatsapp/scripts/list.js) |
-| 121 | ✓ | [`skills/integrate-whatsapp/scripts/openapi-explore.mjs`](skills/integrate-whatsapp/scripts/openapi-explore.mjs) |
-| 122 | ✓ | [`skills/integrate-whatsapp/scripts/publish-flow.js`](skills/integrate-whatsapp/scripts/publish-flow.js) |
-| 123 | ✓ | [`skills/integrate-whatsapp/scripts/read-flow-json.js`](skills/integrate-whatsapp/scripts/read-flow-json.js) |
-| 124 | ✓ | [`skills/integrate-whatsapp/scripts/register-data-endpoint.js`](skills/integrate-whatsapp/scripts/register-data-endpoint.js) |
-| 125 | ✓ | [`skills/integrate-whatsapp/scripts/send-interactive.mjs`](skills/integrate-whatsapp/scripts/send-interactive.mjs) |
-| 126 | ✓ | [`skills/integrate-whatsapp/scripts/send-template.mjs`](skills/integrate-whatsapp/scripts/send-template.mjs) |
-| 127 | ✓ | [`skills/integrate-whatsapp/scripts/send-test-flow.js`](skills/integrate-whatsapp/scripts/send-test-flow.js) |
-| 128 | ✓ | [`skills/integrate-whatsapp/scripts/set-data-endpoint.js`](skills/integrate-whatsapp/scripts/set-data-endpoint.js) |
-| 129 | ✓ | [`skills/integrate-whatsapp/scripts/setup-encryption.js`](skills/integrate-whatsapp/scripts/setup-encryption.js) |
-| 130 | ✓ | [`skills/integrate-whatsapp/scripts/submit-template.mjs`](skills/integrate-whatsapp/scripts/submit-template.mjs) |
-| 131 | ✓ | [`skills/integrate-whatsapp/scripts/template-status.mjs`](skills/integrate-whatsapp/scripts/template-status.mjs) |
-| 132 | ✓ | [`skills/integrate-whatsapp/scripts/test.js`](skills/integrate-whatsapp/scripts/test.js) |
-| 133 | ✓ | [`skills/integrate-whatsapp/scripts/update-flow-json.js`](skills/integrate-whatsapp/scripts/update-flow-json.js) |
-| 134 | ✓ | [`skills/integrate-whatsapp/scripts/update-function.js`](skills/integrate-whatsapp/scripts/update-function.js) |
-| 135 | ✓ | [`skills/integrate-whatsapp/scripts/update-template.mjs`](skills/integrate-whatsapp/scripts/update-template.mjs) |
-| 136 | ✓ | [`skills/integrate-whatsapp/scripts/update.js`](skills/integrate-whatsapp/scripts/update.js) |
-| 137 | ✓ | [`skills/integrate-whatsapp/scripts/upload-media.mjs`](skills/integrate-whatsapp/scripts/upload-media.mjs) |
-| 138 | ✓ | [`skills/integrate-whatsapp/scripts/upload-template-header-handle.mjs`](skills/integrate-whatsapp/scripts/upload-template-header-handle.mjs) |
-| 139 | ✓ | [`skills/integrate-whatsapp/SKILL.md`](skills/integrate-whatsapp/SKILL.md) |
-| 140 | ✓ | [`skills/observe-whatsapp/assets/health-example.json`](skills/observe-whatsapp/assets/health-example.json) |
-| 141 | ✓ | [`skills/observe-whatsapp/assets/message-debugging-example.json`](skills/observe-whatsapp/assets/message-debugging-example.json) |
-| 142 | ✓ | [`skills/observe-whatsapp/assets/triage-example.json`](skills/observe-whatsapp/assets/triage-example.json) |
-| 143 | ✓ | [`skills/observe-whatsapp/package.json`](skills/observe-whatsapp/package.json) |
-| 144 | ✓ | [`skills/observe-whatsapp/references/health-reference.md`](skills/observe-whatsapp/references/health-reference.md) |
-| 145 | ✓ | [`skills/observe-whatsapp/references/message-debugging-reference.md`](skills/observe-whatsapp/references/message-debugging-reference.md) |
-| 146 | ✓ | [`skills/observe-whatsapp/references/triage-reference.md`](skills/observe-whatsapp/references/triage-reference.md) |
-| 147 | ✓ | [`skills/observe-whatsapp/scripts/api-logs.js`](skills/observe-whatsapp/scripts/api-logs.js) |
-| 148 | ✓ | [`skills/observe-whatsapp/scripts/errors.js`](skills/observe-whatsapp/scripts/errors.js) |
-| 149 | ✓ | [`skills/observe-whatsapp/scripts/lib/messages/args.js`](skills/observe-whatsapp/scripts/lib/messages/args.js) |
-| 150 | ✓ | [`skills/observe-whatsapp/scripts/lib/messages/kapso-api.js`](skills/observe-whatsapp/scripts/lib/messages/kapso-api.js) |
-| 151 | ✓ | [`skills/observe-whatsapp/scripts/lib/status/args.js`](skills/observe-whatsapp/scripts/lib/status/args.js) |
-| 152 | ✓ | [`skills/observe-whatsapp/scripts/lib/status/kapso-api.js`](skills/observe-whatsapp/scripts/lib/status/kapso-api.js) |
-| 153 | ✓ | [`skills/observe-whatsapp/scripts/lib/triage/args.js`](skills/observe-whatsapp/scripts/lib/triage/args.js) |
-| 154 | ✓ | [`skills/observe-whatsapp/scripts/lib/triage/kapso-api.js`](skills/observe-whatsapp/scripts/lib/triage/kapso-api.js) |
-| 155 | ✓ | [`skills/observe-whatsapp/scripts/log-search.js`](skills/observe-whatsapp/scripts/log-search.js) |
-| 156 | ✓ | [`skills/observe-whatsapp/scripts/lookup-conversation.js`](skills/observe-whatsapp/scripts/lookup-conversation.js) |
-| 157 | ✓ | [`skills/observe-whatsapp/scripts/message-details.js`](skills/observe-whatsapp/scripts/message-details.js) |
-| 158 | ✓ | [`skills/observe-whatsapp/scripts/messages.js`](skills/observe-whatsapp/scripts/messages.js) |
-| 159 | ✓ | [`skills/observe-whatsapp/scripts/openapi-explore.mjs`](skills/observe-whatsapp/scripts/openapi-explore.mjs) |
-| 160 | ✓ | [`skills/observe-whatsapp/scripts/overview.js`](skills/observe-whatsapp/scripts/overview.js) |
-| 161 | ✓ | [`skills/observe-whatsapp/scripts/webhook-deliveries.js`](skills/observe-whatsapp/scripts/webhook-deliveries.js) |
-| 162 | ✓ | [`skills/observe-whatsapp/scripts/whatsapp-health.js`](skills/observe-whatsapp/scripts/whatsapp-health.js) |
-| 163 | ✓ | [`skills/observe-whatsapp/SKILL.md`](skills/observe-whatsapp/SKILL.md) |
+| 109 | ✓ | [`skills/integrate-whatsapp/scripts/lib/security.js`](skills/integrate-whatsapp/scripts/lib/security.js) |
+| 110 | ✓ | [`skills/integrate-whatsapp/scripts/lib/webhooks/args.js`](skills/integrate-whatsapp/scripts/lib/webhooks/args.js) |
+| 111 | ✓ | [`skills/integrate-whatsapp/scripts/lib/webhooks/kapso-api.js`](skills/integrate-whatsapp/scripts/lib/webhooks/kapso-api.js) |
+| 112 | ✓ | [`skills/integrate-whatsapp/scripts/lib/webhooks/webhook.js`](skills/integrate-whatsapp/scripts/lib/webhooks/webhook.js) |
+| 113 | ✓ | [`skills/integrate-whatsapp/scripts/lib/whatsapp-flow.js`](skills/integrate-whatsapp/scripts/lib/whatsapp-flow.js) |
+| 114 | ✓ | [`skills/integrate-whatsapp/scripts/list-connected-numbers.mjs`](skills/integrate-whatsapp/scripts/list-connected-numbers.mjs) |
+| 115 | ✓ | [`skills/integrate-whatsapp/scripts/list-flow-responses.js`](skills/integrate-whatsapp/scripts/list-flow-responses.js) |
+| 116 | ✓ | [`skills/integrate-whatsapp/scripts/list-flows.js`](skills/integrate-whatsapp/scripts/list-flows.js) |
+| 117 | ✓ | [`skills/integrate-whatsapp/scripts/list-function-invocations.js`](skills/integrate-whatsapp/scripts/list-function-invocations.js) |
+| 118 | ✓ | [`skills/integrate-whatsapp/scripts/list-function-logs.js`](skills/integrate-whatsapp/scripts/list-function-logs.js) |
+| 119 | ✓ | [`skills/integrate-whatsapp/scripts/list-platform-phone-numbers.mjs`](skills/integrate-whatsapp/scripts/list-platform-phone-numbers.mjs) |
+| 120 | ✓ | [`skills/integrate-whatsapp/scripts/list-templates.mjs`](skills/integrate-whatsapp/scripts/list-templates.mjs) |
+| 121 | ✓ | [`skills/integrate-whatsapp/scripts/list.js`](skills/integrate-whatsapp/scripts/list.js) |
+| 122 | ✓ | [`skills/integrate-whatsapp/scripts/openapi-explore.mjs`](skills/integrate-whatsapp/scripts/openapi-explore.mjs) |
+| 123 | ✓ | [`skills/integrate-whatsapp/scripts/publish-flow.js`](skills/integrate-whatsapp/scripts/publish-flow.js) |
+| 124 | ✓ | [`skills/integrate-whatsapp/scripts/read-flow-json.js`](skills/integrate-whatsapp/scripts/read-flow-json.js) |
+| 125 | ✓ | [`skills/integrate-whatsapp/scripts/register-data-endpoint.js`](skills/integrate-whatsapp/scripts/register-data-endpoint.js) |
+| 126 | ✓ | [`skills/integrate-whatsapp/scripts/send-interactive.mjs`](skills/integrate-whatsapp/scripts/send-interactive.mjs) |
+| 127 | ✓ | [`skills/integrate-whatsapp/scripts/send-template.mjs`](skills/integrate-whatsapp/scripts/send-template.mjs) |
+| 128 | ✓ | [`skills/integrate-whatsapp/scripts/send-test-flow.js`](skills/integrate-whatsapp/scripts/send-test-flow.js) |
+| 129 | ✓ | [`skills/integrate-whatsapp/scripts/set-data-endpoint.js`](skills/integrate-whatsapp/scripts/set-data-endpoint.js) |
+| 130 | ✓ | [`skills/integrate-whatsapp/scripts/setup-encryption.js`](skills/integrate-whatsapp/scripts/setup-encryption.js) |
+| 131 | ✓ | [`skills/integrate-whatsapp/scripts/submit-template.mjs`](skills/integrate-whatsapp/scripts/submit-template.mjs) |
+| 132 | ✓ | [`skills/integrate-whatsapp/scripts/template-status.mjs`](skills/integrate-whatsapp/scripts/template-status.mjs) |
+| 133 | ✓ | [`skills/integrate-whatsapp/scripts/test.js`](skills/integrate-whatsapp/scripts/test.js) |
+| 134 | ✓ | [`skills/integrate-whatsapp/scripts/update-flow-json.js`](skills/integrate-whatsapp/scripts/update-flow-json.js) |
+| 135 | ✓ | [`skills/integrate-whatsapp/scripts/update-function.js`](skills/integrate-whatsapp/scripts/update-function.js) |
+| 136 | ✓ | [`skills/integrate-whatsapp/scripts/update-template.mjs`](skills/integrate-whatsapp/scripts/update-template.mjs) |
+| 137 | ✓ | [`skills/integrate-whatsapp/scripts/update.js`](skills/integrate-whatsapp/scripts/update.js) |
+| 138 | ✓ | [`skills/integrate-whatsapp/scripts/upload-media.mjs`](skills/integrate-whatsapp/scripts/upload-media.mjs) |
+| 139 | ✓ | [`skills/integrate-whatsapp/scripts/upload-template-header-handle.mjs`](skills/integrate-whatsapp/scripts/upload-template-header-handle.mjs) |
+| 140 | ✓ | [`skills/integrate-whatsapp/SKILL.md`](skills/integrate-whatsapp/SKILL.md) |
+| 141 | ✓ | [`skills/observe-whatsapp/assets/health-example.json`](skills/observe-whatsapp/assets/health-example.json) |
+| 142 | ✓ | [`skills/observe-whatsapp/assets/message-debugging-example.json`](skills/observe-whatsapp/assets/message-debugging-example.json) |
+| 143 | ✓ | [`skills/observe-whatsapp/assets/triage-example.json`](skills/observe-whatsapp/assets/triage-example.json) |
+| 144 | ✓ | [`skills/observe-whatsapp/package.json`](skills/observe-whatsapp/package.json) |
+| 145 | ✓ | [`skills/observe-whatsapp/references/health-reference.md`](skills/observe-whatsapp/references/health-reference.md) |
+| 146 | ✓ | [`skills/observe-whatsapp/references/message-debugging-reference.md`](skills/observe-whatsapp/references/message-debugging-reference.md) |
+| 147 | ✓ | [`skills/observe-whatsapp/references/triage-reference.md`](skills/observe-whatsapp/references/triage-reference.md) |
+| 148 | ✓ | [`skills/observe-whatsapp/scripts/api-logs.js`](skills/observe-whatsapp/scripts/api-logs.js) |
+| 149 | ✓ | [`skills/observe-whatsapp/scripts/errors.js`](skills/observe-whatsapp/scripts/errors.js) |
+| 150 | ✓ | [`skills/observe-whatsapp/scripts/lib/messages/args.js`](skills/observe-whatsapp/scripts/lib/messages/args.js) |
+| 151 | ✓ | [`skills/observe-whatsapp/scripts/lib/messages/kapso-api.js`](skills/observe-whatsapp/scripts/lib/messages/kapso-api.js) |
+| 152 | ✓ | [`skills/observe-whatsapp/scripts/lib/status/args.js`](skills/observe-whatsapp/scripts/lib/status/args.js) |
+| 153 | ✓ | [`skills/observe-whatsapp/scripts/lib/status/kapso-api.js`](skills/observe-whatsapp/scripts/lib/status/kapso-api.js) |
+| 154 | ✓ | [`skills/observe-whatsapp/scripts/lib/triage/args.js`](skills/observe-whatsapp/scripts/lib/triage/args.js) |
+| 155 | ✓ | [`skills/observe-whatsapp/scripts/lib/triage/kapso-api.js`](skills/observe-whatsapp/scripts/lib/triage/kapso-api.js) |
+| 156 | ✓ | [`skills/observe-whatsapp/scripts/log-search.js`](skills/observe-whatsapp/scripts/log-search.js) |
+| 157 | ✓ | [`skills/observe-whatsapp/scripts/lookup-conversation.js`](skills/observe-whatsapp/scripts/lookup-conversation.js) |
+| 158 | ✓ | [`skills/observe-whatsapp/scripts/message-details.js`](skills/observe-whatsapp/scripts/message-details.js) |
+| 159 | ✓ | [`skills/observe-whatsapp/scripts/messages.js`](skills/observe-whatsapp/scripts/messages.js) |
+| 160 | ✓ | [`skills/observe-whatsapp/scripts/openapi-explore.mjs`](skills/observe-whatsapp/scripts/openapi-explore.mjs) |
+| 161 | ✓ | [`skills/observe-whatsapp/scripts/overview.js`](skills/observe-whatsapp/scripts/overview.js) |
+| 162 | ✓ | [`skills/observe-whatsapp/scripts/webhook-deliveries.js`](skills/observe-whatsapp/scripts/webhook-deliveries.js) |
+| 163 | ✓ | [`skills/observe-whatsapp/scripts/whatsapp-health.js`](skills/observe-whatsapp/scripts/whatsapp-health.js) |
+| 164 | ✓ | [`skills/observe-whatsapp/SKILL.md`](skills/observe-whatsapp/SKILL.md) |
 
 ---
 

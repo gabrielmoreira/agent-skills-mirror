@@ -282,6 +282,24 @@ Send Feedback → feedback sent to agent session
 Approve → approved prompt sent to agent session (with the note/annotations when approving with notes)
 ```
 
+### Color-free VCS output (#1661)
+
+Every git command the review servers parse goes through `prepareGitCommand`
+(`packages/shared/review-core.ts`, both runtimes), which prepends
+`GIT_COLOR_FREE_ARGS`: `--no-pager` plus `-c color.<key>=never` for `ui`,
+`diff`, `status`, `branch`, `grep`, `showBranch` and `interactive`.
+`color.ui=never` alone is not enough, because an explicit `color.diff = always`
+in the user's config wins over it and colors a piped diff, which used to parse
+to 0 files and 0 viewed-file identities. jj gets `JJ_COLOR_FREE_ARGS`
+(`--color=never --no-pager`, `packages/shared/jj-core.ts`) in both runtimes'
+`runJj`, `gh pr diff` gets `--color=never`, and agent jobs inherit the same git
+settings as `GIT_CONFIG_*` variables (`gitColorFreeEnvironment`). As a backstop,
+`parseDiffToFiles` strips ANSI codes from a patch whose `diff --git` headers are
+colored (`stripPatchColor`, `packages/core/diff-files.ts`); a normal patch is
+returned byte for byte. A new git/jj spawn that bypasses these runners must add
+the same options. `packages/server/review-git-color-config.test.ts` runs both
+servers against a sandboxed config that forces color on.
+
 ### Review directory targets
 
 `plannotator review [DIRECTORY | PR_URL]` (and `/plannotator-review` on OpenCode
@@ -380,11 +398,13 @@ GitHub/GitLab outputs of all of these are pinned byte-for-byte (`pr-platforms.te
 draft target keys). Bitbucket specifics: REST API 2.0 over `fetch` (`packages/shared/pr-bitbucket.ts`,
 vendored to Pi), credentials per the `PLANNOTATOR_BITBUCKET_*` rows above; the PR object's 12-char
 hashes are resolved to full SHAs and the merge base comes from `/merge-base` (the PR diff is
-three-dot); existing inline threads get a GitHub-shaped `diffHunk` cut from the PR diff (`bitbucketDiffHunk`), since Bitbucket comments carry none; a review posts the body as one comment, each line comment as an inline comment
-(`inline: { path, to | from, start_to | start_from }`), then `POST /approve` or
-`POST /request-changes` (so `requestChangesSupported` is true, and an author may approve their own PR,
+three-dot); existing inline threads get a GitHub-shaped `diffHunk` cut from the PR diff (`bitbucketDiffHunk`), since Bitbucket comments carry none; a review posts each line comment as an inline comment
+(`inline: { path, to | from, start_to | start_from }`), THEN the body as one general comment (the
+Activity feed lists newest first, so this puts the summary above the inline comments, #1583), then
+`POST /approve` or `POST /request-changes` (so `requestChangesSupported` is true, and an author may approve their own PR,
 so nothing is muted); it follows GitLab's partial contract, with `retry.action` naming the failed
-decision (`request_changes` included). File-level comments fold into the body, there is no viewed sync
+decision (`request_changes` included) and `retry.body` carrying the general comment when that is the
+part that failed after inline comments landed (`buildPRActionRequest` resends exactly it). File-level comments fold into the body, there is no viewed sync
 and no stack discovery, the PR Artifacts panel is hidden (`artifacts: false`), and agent review, Code Tour and
 Guided Review prompts carry the diff inline when no local checkout is ready (`agentCliAccess: false`: no CLI a job may run can read the PR). The portable
 guide format names only github/gitlab, so a Bitbucket guide omits `source.pr.platform`. Recorded

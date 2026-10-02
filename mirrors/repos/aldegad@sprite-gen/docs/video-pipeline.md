@@ -82,6 +82,46 @@ stance … same height every time"). `video-set` carries those templates
 name limbs — the first drafts said "bipedal … knees … arms pumping", which prompted a
 quadruped and a legless blob into a contradiction (2026-09-09).
 
+A walk seen from the front or from behind, and a run seen from the front, take their own
+sentence (`VIEW_MOTION_TEXT`) instead: the steps lift and land straight forward and back
+under the body, toward the viewer or away from it "as if on a treadmill", and the body never
+turns to the side, steps sideways or crosses its feet; a walk also asks for a calm, natural
+cycle with small, even steps that never kick a leg out to the side. The body-neutral walk
+sentence asks for "an even left-right or front-back rhythm", and a character facing the
+viewer read that as stepping sideways: crossed feet, side kicks, a body turned to
+three-quarters. Measured on Grok (subscription), 480p 3 s, nine humanoid characters twice
+each, judged on frame sheets with the variant hidden: a front walk kept its facing and walked
+in 7 of 18 clips with the old sentence and 16 of 18 with the new one. Without the calm-steps
+clause it was 12 to 13 of 18, and five crossed their feet or kicked sideways. A back walk: 8
+of 10 with the old sentence, 10 of 10 with the new one. A front run: 11 of 18 and 15 of 18
+(a run keeps its stride and has no calm-steps clause). "on a treadmill" said as a place was
+sometimes drawn under the feet; "as if on a treadmill" was not. A side view and a run seen
+from behind keep the state's sentence (the second was not measured). A walk drawn at a
+three-quarter angle kept that angle in about half the clips (6 of 10) with the old sentence
+and in 5 of 10 with one that said to walk "toward the way its body faces in the image", and
+otherwise mostly turned to a side view: no sentence tried held a three-quarter view.
+
+Since 2.15.0 the walk says less. Spelling the steps out ("each one lifting and landing straight
+forward and back under the body") made some takes march in place, knees lifted to the waist and
+arms held stiff, so a front or back walk now says only that it walks naturally, which way it
+faces and that it stays in place: "walks naturally in place, facing the viewer, as if on a
+treadmill, without coming any closer" (and "facing away from the viewer … without moving any
+farther away"). On one character, 480p 3 s on the API, two clips per sentence: the 2.13
+sentence lifted the knees to the waist in one of two; "walks naturally" swung the arms, kept the
+knees low and kept facing the viewer in both; a third sentence that asked for low heel-to-toe
+steps and a loose arm swing kept the feet low but shuffled. Two clips each is a small sample:
+the default is generic on purpose, because how a character walks (high steps, a stroll, a
+march) is the caller's to say. The front run keeps its sentence.
+
+Since 2.16.0 every walk and run takes that form, from every view: the side walk "walks
+naturally in place, as if on a treadmill, without moving across the screen" (it said "moves in
+place on a treadmill" as a place and asked for "an even left-right or front-back rhythm"), the
+side run "runs naturally in place …", and the front and back runs "runs naturally in place,
+facing (away from) the viewer, as if on a treadmill …" (the front run spelled its strides out
+and said "toward the viewer" and "without coming any closer" in one clause). On one character,
+480p 3 s on the API: the front run kept facing in 2 of 2, the side run ran in 2 of 2, the back
+run kept facing away in the one clip whose frames passed; the side walk walked in 2 of 2.
+
 An attack is one timed strike, not a repeat. `MOTION_TEXT["attack"]` asks for one attack: a windup
 (about 0.5 s), one strike in front (about 0.25 s), a held impact pose (about 0.3 s) and a recovery
 to the exact starting stance (about 0.5 s), then `HOLD_TEXT["attack"]`:
@@ -117,7 +157,19 @@ it for a repeat.
 `build_prompt(direction, state, character, facing, motion=...)` takes a caller's own motion
 paragraph — whole sentences about the subject, such as a request interpreter writes per
 request — in place of the built-in state sentence. The frame, camera, background and design
-rules stay the engine's, and an attack keeps its `HOLD_TEXT` sentence after the paragraph.
+rules stay the engine's, and an attack keeps its `HOLD_TEXT` sentence after the paragraph. A
+walk or run gets `GAIT_HOLD_TEXT` for its view after the paragraph instead: it stays in place as
+if on a treadmill and keeps facing the viewer, away from the viewer or `{facing}` the whole time,
+so a caller describes the gait (a sneak, a march, a lazy stroll) and the engine keeps it on the
+spot. On one character, one clip each: a march lifted the knees high as asked and stayed in
+place, a lazy stroll seen from behind kept facing away, and a tiptoe sneak kept facing the viewer
+but read only as a slightly hunched walk.
+
+`build_prompt(..., pinned=True)` says the clip is pinned to end on its first frame, so any state
+gets `PINNED_LOOP_TEXT` (the return to the first pose) instead of the evenly paced repeat; left
+out, only `PINNED_LOOP_STATES` do. A caller that retries a walk pinned after no cycle was found
+says True; two such front-walk clips closed on their first frame (seam 0.12 and 0.24 of an
+ordinary step).
 
 ## 3. Frames — extract, key, check the edges
 

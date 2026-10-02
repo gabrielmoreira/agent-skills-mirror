@@ -88,6 +88,10 @@ base prompt". Two more corollaries earned here:
   "for the record" notes. The one exception is closing or superseding a human
   contributor's PR or issue: one sentence saying why, with the link. The PR and
   issue review workflows are disabled; re-enable one only by founder decision.
+- **A user feature lands with its registry row.** A new command, `[features]`
+  flag, provider or user-visible feature adds or updates its row in
+  `docs/features.toml` in the same change;
+  `cargo test -p codewhale-tui --test feature_registry` fails on flag drift.
 - **Write `close`/`fix`/`resolve #N` only when you mean it.** GitHub closes the
   issue on merge even inside "does not close #N"; use `Refs #N` otherwise.
 

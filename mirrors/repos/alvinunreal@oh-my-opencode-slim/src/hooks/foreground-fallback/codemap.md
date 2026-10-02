@@ -15,6 +15,14 @@ Runtime model fallback system for foreground (interactive) agent sessions. When 
 - **ForegroundFallbackManager**: Class instantiated at plugin initialization; process-local fallback progress is shared across replacement instances
 - Maintains per-session state tracking:
   - `sessionModel`: Maps sessionID → current model string ("providerID/modelID")
+  - `activeFallbackModel`: Maps sessionID → the model selected by a
+    confirmed fallback for the current external turn. Synthetic admissions
+    cannot overwrite it implicitly; a genuine new external turn clears it,
+    and an explicit `retry-primary` continuation reconciles it to the primary
+    before subsequent delegation.
+    OpenCode v1 internal continuation and lifecycle selection consults
+    `fallback.continuationPolicy`: retry the primary by default or retain this
+    confirmed fallback until that external turn boundary.
   - `sessionAgent`: Maps sessionID → agent name
   - `sessionTried`: Maps sessionID → Set of models already attempted
   - `sessionRetries`: Maps sessionID → absorbed host retry count for the entire descent (not per model)
@@ -120,6 +128,8 @@ Log fallback event
 
 ### Consumers
 - **Primary**: Main plugin initialization (`src/index.ts`) creates ForegroundFallbackManager instance
+- **Delegation routing**: Main plugin reads the confirmed active fallback so
+  newly delegated children avoid a provider the parent already escaped
 - **Event source**: OpenCode plugin event system provides `message.updated`, `session.error`, `session.status`, `session.deleted` events
 
 ### Dependencies

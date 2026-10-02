@@ -324,6 +324,7 @@ token-goat is a TypeScript CLI bundled to `dist/token-goat.mjs` via esbuild. The
 | Module | Role |
 |--------|------|
 | [`src/cli_doctor_guidance.ts`](src/cli_doctor_guidance.ts) | Doctor diagnostic health checks for guidance |
+| [`src/cli_doctor_hooks.ts`](src/cli_doctor_hooks.ts) | Harness hook repairs for `token-goat doctor --repair` and `token-goat install`. |
 | [`src/cli_doctor_index.ts`](src/cli_doctor_index.ts) | Index and reindex-queue diagnostics for token-goat doctor. |
 | [`src/cli_doctor_native.ts`](src/cli_doctor_native.ts) | `doctor`'s native hook client rows: per harness and scope, which form of hook command is wired (the native client in front of the Node command, or the Node command alone), whether |
 | [`src/cli_doctor_platforms.ts`](src/cli_doctor_platforms.ts) | Platform and harness integration diagnostics for token-goat doctor. |
@@ -479,6 +480,7 @@ token-goat is a TypeScript CLI bundled to `dist/token-goat.mjs` via esbuild. The
 | [`src/line_regions.ts`](src/line_regions.ts) | Maps a requested line span onto the file regions that cover it. |
 | [`src/listing_size.ts`](src/listing_size.ts) | `token-goat listing-size`: price the skill and agent listings Claude Code puts in context. |
 | [`src/manifest.ts`](src/manifest.ts) | The compaction manifest: what this session touched, rendered for whoever reads it next. |
+| [`src/markdown_frontmatter.ts`](src/markdown_frontmatter.ts) | Index of the first line after a leading YAML front-matter block, or 0 when the document has none. |
 | [`src/markdown_lines.ts`](src/markdown_lines.ts) | Iterate markdown lines, skipping fenced-code-block content (``` or ~~~ blocks) and the fence delimiter lines themselves, so a `#` comment inside a code fence is never mistaken for |
 | [`src/mcp_compress_packs.ts`](src/mcp_compress_packs.ts) | Schema-aware compression packs for two specific MCP servers, layered on top of {@link mcp_compress.ts}'s generic structural pass. |
 | [`src/mcp_compress.ts`](src/mcp_compress.ts) | Deterministic, structural compression for MCP tool results. |
@@ -601,7 +603,7 @@ Project hash = `crypto.createHash('sha1').update(canonicalRoot)` from [`src/proj
 ### (b) Incremental updates (background worker)
 
 1. Every `Write` or `Edit` tool event fires `postEditHandler()` in [`src/hooks_edit.ts`](src/hooks_edit.ts), which appends the normalized absolute path to `queue/dirty.txt` via `appendDirtyPath()` in [`src/hooks_index.ts`](src/hooks_index.ts).
-2. The background worker (`worker.ts::runWorkerLoop`) polls `queue/dirty.txt` every **2 seconds** (`DEFAULT_POLL_INTERVAL_MS = 2000`).
+2. The background worker (`worker.ts::runWorkerLoop`) drains `queue/dirty.txt` as soon as a producer appends (fs.watch on `queue/`, via `createQueueWaker` in [`src/queue_waker.ts`](src/queue_waker.ts)), with the 2 second poll (`DEFAULT_POLL_INTERVAL_MS = 2000`) as the fallback.
 3. `drainOnce()` reads the queue and calls `processDirtyBatch()`, which SHA-fingerprints each file (`fingerprintFile()`), skips unchanged files, and calls `makeIndexer(globalDbPath())(absPath, sha)` which resolves to `indexFileSync()`.
 4. The worker runs either as a Node.js `Worker` thread (in-process, started by `startWorker()`) or as a detached child process with the `--worker-daemon` flag (`worker_daemon.ts::startDaemon()`).
 

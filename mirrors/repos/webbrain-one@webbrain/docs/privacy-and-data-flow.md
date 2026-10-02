@@ -47,7 +47,7 @@ inference stay on-device.
 The user chooses their provider in Settings. Options include:
 
 - **WebBrain Compass**: requests go through `api.webbrain.one`; selected interactions may be retained and used for evaluation, improvement, fine-tuning, and training while Help Improve WebBrain is enabled
-- **Bring-your-own cloud providers**: OpenAI, Anthropic, Google Gemini, Mistral, DeepSeek, xAI, Groq, OpenRouter, etc. — requests go directly to the provider using the user's credentials and are never collected by WebBrain
+- **Bring-your-own cloud providers**: OpenAI, Anthropic, Google Gemini, Mistral, DeepSeek, xAI, Groq, OpenRouter, etc. — requests go directly to the provider using the user's credentials; WebBrain receives a separate research copy only if the user enables that provider's **Share queries for research** switch
 - **Local model runtimes**: llama.cpp, Ollama, LM Studio, Jan, vLLM, SGLang,
   LocalAI, GPT4All, and Unsloth Studio — inference requests stay on the user's
   machine when Studio is configured with its loopback URL
@@ -57,7 +57,7 @@ The user chooses their provider in Settings. Options include:
   local gateway, but the gateway may forward the request context to an upstream
   account. Its configuration and privacy policy determine where data goes.
 
-Local-model and bring-your-own API requests are never collected by WebBrain. WebBrain Compass requests are processed and may be retained as described below.
+Local-model and bring-your-own API requests do not pass through WebBrain Compass. A separate, per-provider research-sharing switch is off by default; when enabled, bounded copies and diagnostic metadata are sent to WebBrain as described below. WebBrain Compass requests are processed and may be retained separately.
 
 ### Optional research escalation to ChatGPT
 
@@ -173,8 +173,9 @@ routed through an OpenRouter workspace where content logging is disabled. This
 does not prevent the minimal metadata-only operational logging required to
 provide the service, enforce quotas, prevent abuse, maintain security, or debug
 failures. Requests sent to local models or directly to providers using the
-user's own credentials never pass through WebBrain Compass and are never eligible
-for WebBrain training.
+user's own credentials never pass through WebBrain Compass for inference. They
+are not collected by WebBrain unless the user separately opts in to that
+provider's research sharing.
 
 For eligible completed generations, MySQL is WebBrain's canonical store. The
 service strips media, compresses the request/response payload, encrypts it with
@@ -197,6 +198,30 @@ selected for improvement are retained for no longer than 12 months before
 deletion or de-identification. De-identified datasets may be retained for up to
 5 years for model development, evaluation, security, and reproducibility.
 
+### Voluntary external/local provider research sharing
+
+**Share queries for research** is off by default for each local or bring-your-own
+provider. If the user turns it on, WebBrain sends a bounded copy of that
+provider's model-facing request and response to the Compass improvement service.
+It also sends a bounded diagnostic timeline for model-attempt runs, including
+failed ones: steps, tool names, outcomes, error codes, and timings. A failed run
+may include its bounded model-facing request and displayed blocker even when no
+response was produced. Screenshot and other binary bytes are stripped; raw tool
+arguments and results are not included in the diagnostic timeline. Text in the
+shared conversation can still contain sensitive personal information after
+truncation and automated de-identification, so users should not enable this
+switch for content they do not want to share.
+
+The extension records a local trace for an opted-in run even if the separate
+Record traces switch is off. The upload projects only metadata from that trace,
+including when the user independently selected local lossless tracing. Research
+shares use a durable, revocable local outbox and are retried after temporary
+delivery failures; the provider's live sharing consent is checked before each
+send. The Compass service admits these records only under explicit
+share-session consent, de-identifies and encrypts them, and applies its
+improvement-data retention rules. They are not counted as Compass inference
+requests.
+
 ---
 
 ## What Stays in the Browser
@@ -216,7 +241,10 @@ the stored copies are not separately synced to WebBrain.
 ### Trace Recorder
 
 When enabled (Settings → Display → "Record traces"), every agent run is written
-to the local `webbrain_traces` IndexedDB database in one of two privacy tiers:
+to the local `webbrain_traces` IndexedDB database in one of two privacy tiers.
+An external/local provider with **Share queries for research** enabled also
+records its run locally for the bounded diagnostic upload, even when this
+separate Record traces setting is off:
 
 - **Default metadata-only tier.** The `runs` store keeps run identifiers and
   lineage, model/provider identifiers, token and event totals, timestamps,
@@ -400,8 +428,9 @@ support this path.
 
 ## Telemetry / Analytics
 
-The extension does not include an analytics SDK, crash-reporting SDK, or a
-separate product-telemetry endpoint. When WebBrain Compass is selected, the model
+The extension does not include an analytics SDK or crash-reporting SDK. Opt-in
+research sharing uses separate improvement endpoints; it is not general product
+telemetry. When WebBrain Compass is selected, the model
 request itself goes to `api.webbrain.one` and is subject to the Compass data-use
 terms above. Operational request metadata is retained separately for quota,
 security, abuse prevention, and debugging.
@@ -415,6 +444,7 @@ The only outbound HTTP requests are:
 6. **User memory extraction calls** (only if auto-learn is enabled; sent to the configured LLM provider after a completed turn)
 7. **Encrypted Cloud Sync calls** to `https://api.webbrain.one/v1/sync` (only after a subscriber explicitly enables sync; vault content is encrypted before upload)
 8. **Slash-driven tab/screen recording** creates no outbound traffic (the .webm is saved to the Downloads folder via `chrome.downloads.download`)
+9. **Voluntary research shares** to `https://api.webbrain.one/v1/improvement/generations` and `/v1/improvement/diagnostic-traces` (only for a local or bring-your-own provider with its separate sharing switch enabled)
 
 The `webRequest` API shortcut observer is on by default and does not
 create outbound requests; it observes replay metadata for requests
@@ -646,7 +676,7 @@ CDP capture → JPEG/PNG data URL
 | Provider selection | Choose which LLM receives the data, or run locally |
 | Provider prompt/tool tier | Choose Compact, Mid, or Full tool exposure for non-cloud providers |
 | Ask / Act / Dev mode | Choose read-only, normal action, or developer/page-inspection mode |
-| Tracing toggle | Prevents any trace data from being stored |
+| Tracing toggle | Controls ordinary local trace recording; a separately opted-in provider research share records a run for metadata-only diagnostic upload even when this toggle is off |
 | Screenshot fallback | Controls whether page images are sent to the LLM |
 | Auto-screenshot mode | Controls how frequently viewport captures are sent |
 | Strict secret handling | Keeps credentials out of assistant text and completion summaries: an instruction to the model, plus exact-match redaction in cloud runs of anything it typed, sent, or read from a labelled field |
@@ -667,6 +697,7 @@ are present and identical to Chrome (`src/firefox/src/trace/recorder.js`). All
 data-flow patterns are otherwise the same, except:
 
 - No dedicated vision sub-call (screenshots go directly to the main provider if vision is supported)
+- Full-page screenshots use the optional local Firefox trusted-automation companion over native messaging and loopback BiDi. The PNG stays local until the user attaches it to a model request. Capture-time page-coordinate redaction scans must agree before a privacy-enabled capture can be staged; otherwise only local preview/save is offered.
 - No slash-driven tab/screen recording
 - Conversation, rendered chat, and detached-run UI journals use
   `browser.storage.session`, matching Chrome's session-scoped persistence.

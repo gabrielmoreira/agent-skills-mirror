@@ -23,7 +23,7 @@ of `mod.rs`.
 | `status.rs` | Per-source sync status: the chunk-key prefix (derived from the registry entry) and freshness label are host-side; in-flight/chunk counts go through `MemoryChunks::source_ingest_status`. |
 | `sync.rs` | `derive_scopes`: which tree scope and raw-archive id a configured source maps onto; the only production-reached piece of the old engine sync pipeline. |
 | `reconcile.rs` | Startup/list-time reconciliation of active Composio connections into the registry, built on `memory::sync::composio::scan_active_sync_targets`. |
-| `readers/mod.rs` | `SourceReader` trait (takes `&Config`, unlike the crate's `&Path` trait) plus one implementation per `SourceKind`: `composio`, `conversation`, `folder`, `github`, `rss`, `twitter`, `web_page`. This module's `reader_for` hands out all seven, network kinds included, because its callers are RPC handlers acting on an explicit user request; the crate's `reader_for` returns `None` for network kinds. Do not call it from a polling loop. |
+| `readers/mod.rs` | Re-exports `tinymemory_sources::readers`: the `SourceReader` trait (takes the workspace `&Path`) and one implementation per `SourceKind` (`composio`, `conversation`, `folder`, `github`, `rss`, `twitter`, `web_page`). `reader_for_request` hands out all seven, network kinds included, because its callers are RPC handlers acting on an explicit user request; the crate's `reader_for` returns `None` for network kinds. Do not call it from a polling loop. |
 
 ## RPC surface (`memory_sources.*`)
 
@@ -55,6 +55,5 @@ re-exported from `schemas::all_registered_controllers`.
 
 `rpc_tests.rs`, `rpc_budget_tests_tests.rs`, `rpc_filter_tests_tests.rs`,
 `rpc_monthly_summary_tests_tests.rs`, `rpc_supported_toolkits_tests_tests.rs`,
-`schemas_tests.rs`, `status_tests.rs`, `sync_tests.rs`, `reconcile_tests.rs`,
-and per-reader tests under `readers/` (`composio_tests.rs`,
-`twitter_tests.rs`).
+`schemas_tests.rs`, `status_tests.rs`, `sync_tests.rs`. The reader and
+reconcile-decision tests live in `tinymemory-sources` with the code.

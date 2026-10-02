@@ -21,7 +21,8 @@ Build, publish, QA, and repo-invariant automation. Run via `bun run <script>` fr
 | `ensure-vendored-lsp-daemon.ts` | Build/watch the vendored LSP daemon (daemon bin + lock-dir watch) |
 | `verify-omo-ai-payload.mjs` | omo-ai npm payload gate: required artifact list, 18-skill minimum, 30 MB unpacked cap, no nested `node_modules`/source paths |
 | `test-fast.ts` | `bun run test:fast` partitioned suite: `opencode-memory` -> `senpi` -> root-rest via `bunfig.win2.toml`. Groups run detached (own process groups) and are killed with the parent on SIGINT/SIGTERM; a spawned group inherits `OMO_TEST_FAST_ACTIVE=1` and re-entry refuses to recurse |
-| `ci-fast-path.mjs` | CI skip classifier (`classifyCiMode`): platform-sensitive paths and the `ci:full-matrix` label force the full OS matrix |
+| `ci-fast-path.mjs` | CI skip classifier (`classifyCiMode`): runtime-touching paths (`isRuntimePath`: every path except an explicit allowlist of web, prose such as top-level Markdown and README/CHANGELOG/AGENTS-style Markdown outside `packages/*/src`, and listed repository metadata), platform-sensitive paths, and the `ci:full-matrix` label force the full OS matrix |
+| `ci-leg-tests-guard.mjs` | Last step of every OS test leg (`judgeLeg`): fails a leg whose test steps were all skipped though the change needed them (`tests not run: add ci:full-matrix`), passes an intended skip with a `tests intentionally not run` notice and job-summary line |
 | `telemetry-schema-block.mjs` | Generate the telemetry schema doc block (`generateTelemetrySchemaBlock`) |
 | `remove-stale-self-package-tests.ts` | Prune self-package tests that reference deleted sources |
 | `agent-command-string-scan.ts` | Scan tracked sources for unsafe agent command strings; allowlisted exceptions live in `agent-command-string-audit.allowlist.json` |

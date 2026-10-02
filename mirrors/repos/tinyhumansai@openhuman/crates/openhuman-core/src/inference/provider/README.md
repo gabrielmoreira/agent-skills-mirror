@@ -25,7 +25,7 @@ previously `providers/` (pre-consolidation single-crate layout); see
 - **Models**: `OpenHumanBackendModel` + `PROVIDER_LABEL`
   (`openhuman_backend_model.rs`); OpenAI-compatible and Anthropic builders live
   in `tinyinference_llm::providers` and are called directly.
-- **DTOs** (`types.rs`): `ChatRequest`, `ChatResponse`, `ProviderDelta`,
+- **DTOs** (`types.rs`): `ChatResponse`, `ProviderDelta`,
   `ToolCall`, `UsageInfo`, `AGENT_TURN_MAX_OUTPUT_TOKENS`.
 - **Error classifiers**: reusable classifiers live in
   `tinyinference_llm::classification`; this directory retains OpenHuman managed-backend and telemetry policy.
@@ -87,13 +87,9 @@ consumers: the agent harness (`agent/session_host/builder/factory.rs`,
 - `ops/`: `http_error` (HTTP error
   classification, Sentry routing, `api_error`), `models`
   (`list_configured_models`), `provider_factory` (`ProviderRuntimeOptions`,
-  `list_providers`, `is_qwen_alias`-style China-provider alias helpers).
+  `list_providers`).
   Preserves the original `pub use ops::*` contract split out of a single `ops.rs`.
 - Claude Code CLI provider: `tinyagents_harness::providers::claude_code` in `vendor/tinyagents`; see the [Claude Code provider guide](../../../../../gitbooks/developing/providers/claude-code.md).
-- `schemas.rs`: a `providers.list_models` controller that is **not**
-  registered in `core/all.rs`; the live method is `inference.list_models`
-  (`openhuman.providers_list_models` survives only as a legacy alias in
-  `core/legacy_aliases.rs`).
 
 ## Tests
 
@@ -104,8 +100,6 @@ consumers: the agent harness (`agent/session_host/builder/factory.rs`,
 - `ops_tests.rs`, `ops_tests_error_suppression_tests.rs`,
   `ops_tests_models_parsing_tests.rs`, `ops/http_error_tests.rs`, `ops/models_tests.rs`: error
   classification and model listing.
-- `error_classify_tests.rs`: OpenHuman-specific classifier policy; reusable
-  classifier tests live in TinyInference.
 - Claude Code provider tests live with the provider in
   `vendor/tinyagents/crates/tinyagents-harness/src/providers/claude_code/`.
 - `openhuman_backend_model_tests.rs`: managed host transport; reusable provider

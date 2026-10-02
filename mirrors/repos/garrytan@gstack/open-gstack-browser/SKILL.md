@@ -208,6 +208,7 @@ may have persisted from a crash. This prevents "already connected" false
 positives and Chromium profile lock conflicts.
 
 ```bash
+eval "$(~/.claude/skills/gstack/bin/gstack-paths)"; : "${GSTACK_STATE_ROOT:?gstack-paths failed; reinstall with ./setup or /gstack-upgrade}"
 # Kill any existing browse server
 if [ -f "$(git rev-parse --show-toplevel 2>/dev/null)/.gstack/browse.json" ]; then
   _OLD_PID=$(cat "$(git rev-parse --show-toplevel)/.gstack/browse.json" 2>/dev/null | grep -o '"pid":[[:space:]]*[0-9]*' | grep -o '[0-9]*')
@@ -217,7 +218,7 @@ if [ -f "$(git rev-parse --show-toplevel 2>/dev/null)/.gstack/browse.json" ]; th
   rm -f "$(git rev-parse --show-toplevel)/.gstack/browse.json"
 fi
 # Clean Chromium profile locks (can persist after crashes)
-_PROFILE_DIR="$HOME/.gstack/chromium-profile"
+_PROFILE_DIR="$GSTACK_STATE_ROOT/chromium-profile"
 for _LF in SingletonLock SingletonSocket SingletonCookie; do
   rm -f "$_PROFILE_DIR/$_LF" 2>/dev/null || true
 done

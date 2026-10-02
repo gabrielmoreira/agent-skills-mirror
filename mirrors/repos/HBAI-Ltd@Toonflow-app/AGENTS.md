@@ -20,6 +20,13 @@
 14. **所有组件的属性名必须统一使用小驼峰，包括自有组件、第三方组件的 props 声明、静态属性和动态绑定**，例如 `showArrow`、`:nodeTypes`、`:snapToGrid`，禁止写成 `show-arrow`、`:node-types`、`:snap-to-grid`。具名 `v-model` 的参数同样使用小驼峰，例如 `v-model:snapEnabled`。组件标签允许短横线的规则不适用于属性名。
 15. **仅 Vue 语法、HTML 标准或第三方接口强制要求的名称保留原始写法**，例如 `v-if`、`v-for`、`v-model`、`v-bind`、`v-on`、`aria-label`、`data-*`；不得将这些名称改为小驼峰。第三方文档中的短横线示例不构成例外，支持小驼峰的组件属性仍必须使用小驼峰。
 
+## 统一文件操作入口
+
+- 自有代码的磁盘操作统一使用 `@toonflow/file`；Bun 文件对象与写入使用 `@toonflow/file/bun`。直接调用原生 `fs`、`fs/promises`、`Bun.file`、`Bun.write` 仅限 `packages/file` 的实现，不在各模块重复封装底层操作。CI 尚未安装依赖的准备步骤、没有源码和依赖的发布步骤保留运行器原语；已安装工作区依赖的 CI 脚本仍使用统一入口。
+- `file` 子包只负责文件原语、原子写入和按路径协调队列。全局文件与工作区文件的统一入口放在各自业务模块，路径授权、工作区边界校验和业务冲突锁继续由模块负责。
+- 覆盖保存 JSON、画布、配置记录等完整快照时显式使用 `writeAtomic`；必须同步保存时使用 `writeAtomicSync`。仅新建使用 `exclusive` 或保留原有 `flag: "wx"`，不能用先检查存在再覆盖代替。
+- HTTP 传输适配、SDK 持久化、安装备份与回滚等事务留在所属模块，不放进 `file` 子包，也不全局修改原生 `fs` 或重写第三方 SDK 的磁盘协议。
+
 ## 前端工作区文件操作
 
 - `apps/web/src/lib/workspaceFiles.ts` 默认导出 `useWorkspaceFiles`。组件与前端工具统一复用此入口，不重复封装 Axios 或直接拼接 `/api/workspaces/files/*` 请求。

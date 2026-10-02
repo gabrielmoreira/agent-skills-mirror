@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `AltanS/collie` — 26 default patterns, 75 followed patterns, 108 file(s) materialized.
+Mirror of `AltanS/collie` — 26 default patterns, 76 followed patterns, 109 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `AltanS/collie` — 26 default patterns, 75 followed patterns, 108 fil
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 75 |
-| Files         | 108 |
+| Followed pats | 76 |
+| Files         | 109 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -96,6 +96,7 @@ Mirror of `AltanS/collie` — 26 default patterns, 75 followed patterns, 108 fil
 - `docs/install.md`
 - `docs/claude-code-on-your-phone.md`
 - `docs/configure.md`
+- `docs/changes.md`
 - `docs/deployment.md`
 - `docs/commands.md`
 - `docs/multiplexers.md`
@@ -219,28 +220,29 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 84 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
 | 85 | → | [`CREW_PROTOCOL.md`](CREW_PROTOCOL.md) |
 | 86 | → | [`DESIGN.md`](DESIGN.md) |
-| 87 | → | [`docs/claude-code-on-your-phone.md`](docs/claude-code-on-your-phone.md) |
-| 88 | → | [`docs/commands.md`](docs/commands.md) |
-| 89 | → | [`docs/configure.md`](docs/configure.md) |
-| 90 | → | [`docs/crew.md`](docs/crew.md) |
-| 91 | → | [`docs/deployment.md`](docs/deployment.md) |
-| 92 | → | [`docs/five-minute-install.md`](docs/five-minute-install.md) |
-| 93 | → | [`docs/install.md`](docs/install.md) |
-| 94 | → | [`docs/multiplexers.md`](docs/multiplexers.md) |
-| 95 | → | [`docs/security.md`](docs/security.md) |
-| 96 | → | [`docs/troubleshooting.md`](docs/troubleshooting.md) |
-| 97 | → | [`docs/upgrading.md`](docs/upgrading.md) |
-| 98 | → | [`docs/voice-and-push.md`](docs/voice-and-push.md) |
-| 99 | → | [`HARNESS_CONTRIBUTING.md`](HARNESS_CONTRIBUTING.md) |
-| 100 | → | [`HERDR_API.md`](HERDR_API.md) |
-| 101 | → | [`MUX_CONTRACT.md`](MUX_CONTRACT.md) |
-| 102 | → | [`MUX_CONTRIBUTING.md`](MUX_CONTRIBUTING.md) |
-| 103 | → | [`README.md`](README.md) |
-| 104 | → | [`tools/oxlint/README.md`](tools/oxlint/README.md) |
-| 105 | → | [`TRADEMARKS.md`](TRADEMARKS.md) |
-| 106 | → | [`web/src/fixtures/panes/README.md`](web/src/fixtures/panes/README.md) |
-| 107 | → | [`web/src/lib/grammar/PLAN_FEEDBACK_NOTES.md`](web/src/lib/grammar/PLAN_FEEDBACK_NOTES.md) |
-| 108 | → | [`web/src/lib/grammar/WIZARD_NOTES.md`](web/src/lib/grammar/WIZARD_NOTES.md) |
+| 87 | → | [`docs/changes.md`](docs/changes.md) |
+| 88 | → | [`docs/claude-code-on-your-phone.md`](docs/claude-code-on-your-phone.md) |
+| 89 | → | [`docs/commands.md`](docs/commands.md) |
+| 90 | → | [`docs/configure.md`](docs/configure.md) |
+| 91 | → | [`docs/crew.md`](docs/crew.md) |
+| 92 | → | [`docs/deployment.md`](docs/deployment.md) |
+| 93 | → | [`docs/five-minute-install.md`](docs/five-minute-install.md) |
+| 94 | → | [`docs/install.md`](docs/install.md) |
+| 95 | → | [`docs/multiplexers.md`](docs/multiplexers.md) |
+| 96 | → | [`docs/security.md`](docs/security.md) |
+| 97 | → | [`docs/troubleshooting.md`](docs/troubleshooting.md) |
+| 98 | → | [`docs/upgrading.md`](docs/upgrading.md) |
+| 99 | → | [`docs/voice-and-push.md`](docs/voice-and-push.md) |
+| 100 | → | [`HARNESS_CONTRIBUTING.md`](HARNESS_CONTRIBUTING.md) |
+| 101 | → | [`HERDR_API.md`](HERDR_API.md) |
+| 102 | → | [`MUX_CONTRACT.md`](MUX_CONTRACT.md) |
+| 103 | → | [`MUX_CONTRIBUTING.md`](MUX_CONTRIBUTING.md) |
+| 104 | → | [`README.md`](README.md) |
+| 105 | → | [`tools/oxlint/README.md`](tools/oxlint/README.md) |
+| 106 | → | [`TRADEMARKS.md`](TRADEMARKS.md) |
+| 107 | → | [`web/src/fixtures/panes/README.md`](web/src/fixtures/panes/README.md) |
+| 108 | → | [`web/src/lib/grammar/PLAN_FEEDBACK_NOTES.md`](web/src/lib/grammar/PLAN_FEEDBACK_NOTES.md) |
+| 109 | → | [`web/src/lib/grammar/WIZARD_NOTES.md`](web/src/lib/grammar/WIZARD_NOTES.md) |
 
 ---
 

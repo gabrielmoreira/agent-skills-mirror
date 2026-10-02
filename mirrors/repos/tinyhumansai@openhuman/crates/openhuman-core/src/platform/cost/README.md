@@ -17,7 +17,7 @@ Local API-usage cost tracking for the agent. Records per-call token usage and co
 | File                                  | Role                                                                                                                                                                                                                    |
 | ------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `crates/openhuman-core/src/platform/cost/mod.rs`           | Export-focused module root; re-exports tracker, types, global helpers, and the `all_cost_*` controller schema/registry pair.                                                                                            |
-| `crates/openhuman-core/src/platform/cost/types.rs`         | Serde domain types: `TokenUsage`, `CostSource`, `CostRecord`, `UsagePeriod`, `CostSummary`, `ModelStats`, `DailyCostEntry`, `BudgetStatus`, `CostDashboard`. Cost-calc logic lives in `TokenUsage::new`. |
+| `crates/openhuman-core/src/platform/cost/types.rs`         | Serde domain types: `TokenUsage`, `CostSource`, `CostRecord`, `CostSummary`, `ModelStats`, `DailyCostEntry`, `BudgetStatus`, `CostDashboard`. Cost-calc logic lives in `TokenUsage::new`. |
 | `crates/openhuman-core/src/platform/cost/tracker.rs`       | `CostTracker` (recording, summaries, daily history, dashboard build) plus the private `CostStorage` JSONL persistence + aggregate-cache layer. Functions as both `ops` and `store`.                      |
 | `crates/openhuman-core/src/platform/cost/global.rs`        | Process-global `OnceCell<Arc<CostTracker>>` singleton: `init_global`, `try_global`, `record_provider_usage`, and `build_token_usage` (provider `UsageInfo` → `TokenUsage`).                                             |
 | `crates/openhuman-core/src/platform/cost/rpc.rs`           | RPC-facing handlers (`dashboard`, `daily_history`, `summary`) returning `Outcome<Value>`; DTO types; `resolve_tracker` with a cached fallback tracker + error-replay TTL.                                            |
@@ -34,7 +34,7 @@ From `mod.rs` re-exports:
 - `CostTracker`: the tracker (`tracker`).
 - `init_global`, `rebind_global`, `try_global`, `record_provider_usage` (`global`).
 - `all_cost_controller_schemas`, `all_cost_registered_controllers` (`schemas`).
-- Types: `BudgetStatus`, `CostDashboard`, `CostRecord`, `CostSource`, `CostSummary`, `DailyCostEntry`, `ModelStats`, `TokenUsage`, `UsagePeriod`.
+- Types: `BudgetStatus`, `CostDashboard`, `CostRecord`, `CostSource`, `CostSummary`, `DailyCostEntry`, `ModelStats`, `TokenUsage`.
 
 Notable `CostTracker` methods: `new`, `session_id`, `record_usage`, `record_usage_unconditional`, `get_summary`, `get_daily_cost`, `get_monthly_cost`, `get_daily_history`, `get_dashboard`.
 

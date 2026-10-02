@@ -21,6 +21,7 @@ These are the per-type limits. The universal rows in SKILL.md §7 (9 nodes, 12 a
 
 | Limit | Rule |
 |---|---|
+| Max unique components / relationships / ledger entries (architecture delta) | 8 / 10 / 8 |
 | Max lifelines (sequence) | 5 |
 | Max combined fragments (sequence) | 1 (default); 2 only if each is single-region `opt`/`loop` |
 | Max `alt` regions (sequence) | 2 |

@@ -12,7 +12,7 @@ Highest precedence first:
 
 ## Responsibilities
 
-- Hold the effective timeout in a process-global vendored `tinyagents_harness::tool::ToolTimeoutSettings` (atomic inside), seeded lazily from env or default on first read. Deadline/budget resolution (`resolve_tool_deadline`) delegates to that vendor type; env/config parsing stays here.
+- Hold the effective timeout in a process-global vendored `tinyagents_harness::tool::ToolTimeoutSettings` (atomic inside), seeded lazily from env or default on first read. Env/config parsing stays here.
 - Bound every candidate value to `1..=3600` seconds, falling back to the `120`s default on missing, non-numeric, zero, negative, or out-of-range input.
 - Let the persisted config drive the value at runtime while keeping the operator env var as an always-wins override.
 - Provide the timeout to callers in two shapes: raw seconds (for logging and matching frontend timeouts) and `Duration` (for `tokio::time::timeout`-style wrapping).
@@ -31,7 +31,6 @@ Highest precedence first:
 - `set_tool_timeout_secs(config_secs: u64) -> u64`: pushes a config-sourced value into the runtime atomic, honoring the env override. Returns the effective value stored. Called at startup and on each config update.
 - `env_override_active() -> bool`: true when `OPENHUMAN_TOOL_TIMEOUT_SECS` is set to a valid override, so UI changes are ignored. Surfaced to the settings panel.
 - `tool_execution_timeout_secs() -> u64`: effective timeout in seconds, read fresh each call.
-- `tool_execution_timeout_duration() -> Duration`: same effective value as a `Duration`.
 - `explicit_call_timeout_secs(requested: Option<u64>, cap: u64) -> Option<u64>`: resolves an explicit per-call timeout for an otherwise-unbounded scripting tool. `None` or `Some(0)` means `None` (run unbounded); any positive value clamps to `MIN_TIMEOUT_SECS..=cap`. Callers pass their own ceiling (`MAX_TIMEOUT_SECS` for `shell`, `1800` for `node_exec`/`npm_exec`/`python_exec`).
 - `explicit_call_timeout_duration(requested: Option<u64>, cap: u64) -> Option<Duration>`: same as a `Duration`, `None` for unbounded.
 - `resolve_tool_deadline(policy: tinytools::ToolTimeout) -> (Option<Duration>, u64)`: resolves a tool's `ToolTimeout` policy (`Inherit`, `Millis(req)`, or `Unbounded`) into the `(deadline, timeout_secs)` pair the agent tool-execution loop enforces, padding an explicit millisecond request with `TOOL_TIMEOUT_GRACE_SECS` before the hard deadline fires.
@@ -52,12 +51,11 @@ The global timeout governs non-scripting tools only, since a hung network or MCP
 
 ## Used by
 
-- `crates/openhuman-core/src/agent/tinyagents/tools.rs`: OpenHuman tools execute through `execute_with_options`, which applies each tool's `Tool::timeout_policy` via `resolve_tool_deadline`.
+- `crates/openhuman-core/src/agent/tinyagents/tools.rs`: OpenHuman tools execute through `execute_with_options`, which applies each tool's `Tool::timeout_policy`.
 - `crates/openhuman-core/src/tools/impl/system/{shell,node_exec,npm_exec,python_exec}.rs`: scripting tools, unbounded by default, explicit `timeout_secs` via `explicit_call_timeout_*`.
 - `crates/openhuman-core/src/agent/tools/delegate.rs`: bounds the delegated provider chat call with `tool_execution_timeout_secs`.
 - `crates/openhuman-core/src/config/ops/agent.rs`: `apply_agent_settings` calls `set_tool_timeout_secs` after persisting; `get_agent_settings` reports `effective_timeout_secs`/`env_override`.
 - `crates/openhuman-core/src/core/runtime/subscribers.rs`: `register_domain_subscribers` seeds the runtime value from config on the always-on core boot path, so channel-less or web-chat-only cores get the configured timeout too (#5027).
-- `crates/openhuman-core/src/agent/harness/harness_gap_tests.rs`: pins `parse_tool_timeout_secs` default and boundary behavior.
 
 ## Notes and gotchas
 

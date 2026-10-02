@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `ruvnet/ruflo` — 26 default patterns, 2 followed patterns, 394 file(s) materialized.
+Mirror of `ruvnet/ruflo` — 26 default patterns, 2 followed patterns, 396 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `ruvnet/ruflo` — 26 default patterns, 2 followed patterns, 394 file(
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 2 |
-| Files         | 394 |
+| Files         | 396 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -376,84 +376,86 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 314 | ✓ | [`plugins/ruflo-neural-trader/skills/trader-train/SKILL.md`](plugins/ruflo-neural-trader/skills/trader-train/SKILL.md) |
 | 315 | ✓ | [`plugins/ruflo-observability/skills/observe-metrics/SKILL.md`](plugins/ruflo-observability/skills/observe-metrics/SKILL.md) |
 | 316 | ✓ | [`plugins/ruflo-observability/skills/observe-trace/SKILL.md`](plugins/ruflo-observability/skills/observe-trace/SKILL.md) |
-| 317 | ✓ | [`plugins/ruflo-plugin-creator/skills/create-plugin/SKILL.md`](plugins/ruflo-plugin-creator/skills/create-plugin/SKILL.md) |
-| 318 | ✓ | [`plugins/ruflo-plugin-creator/skills/validate-plugin/SKILL.md`](plugins/ruflo-plugin-creator/skills/validate-plugin/SKILL.md) |
-| 319 | ✓ | [`plugins/ruflo-rag-memory/skills/memory-bridge/SKILL.md`](plugins/ruflo-rag-memory/skills/memory-bridge/SKILL.md) |
-| 320 | ✓ | [`plugins/ruflo-rag-memory/skills/memory-search/SKILL.md`](plugins/ruflo-rag-memory/skills/memory-search/SKILL.md) |
-| 321 | ✓ | [`plugins/ruflo-ruvector/skills/vector-cluster/SKILL.md`](plugins/ruflo-ruvector/skills/vector-cluster/SKILL.md) |
-| 322 | ✓ | [`plugins/ruflo-ruvector/skills/vector-embed/SKILL.md`](plugins/ruflo-ruvector/skills/vector-embed/SKILL.md) |
-| 323 | ✓ | [`plugins/ruflo-ruvector/skills/vector-hyperbolic/SKILL.md`](plugins/ruflo-ruvector/skills/vector-hyperbolic/SKILL.md) |
-| 324 | ✓ | [`plugins/ruflo-ruvector/skills/vector-setup/SKILL.md`](plugins/ruflo-ruvector/skills/vector-setup/SKILL.md) |
-| 325 | ✓ | [`plugins/ruflo-ruvllm/skills/chat-format/SKILL.md`](plugins/ruflo-ruvllm/skills/chat-format/SKILL.md) |
-| 326 | ✓ | [`plugins/ruflo-ruvllm/skills/llm-config/SKILL.md`](plugins/ruflo-ruvllm/skills/llm-config/SKILL.md) |
-| 327 | ✓ | [`plugins/ruflo-rvf/skills/rvf-manage/SKILL.md`](plugins/ruflo-rvf/skills/rvf-manage/SKILL.md) |
-| 328 | ✓ | [`plugins/ruflo-rvf/skills/session-persist/SKILL.md`](plugins/ruflo-rvf/skills/session-persist/SKILL.md) |
-| 329 | ✓ | [`plugins/ruflo-security-audit/skills/dependency-check/SKILL.md`](plugins/ruflo-security-audit/skills/dependency-check/SKILL.md) |
-| 330 | ✓ | [`plugins/ruflo-security-audit/skills/security-scan/SKILL.md`](plugins/ruflo-security-audit/skills/security-scan/SKILL.md) |
-| 331 | ✓ | [`plugins/ruflo-sparc/skills/sparc-implement/SKILL.md`](plugins/ruflo-sparc/skills/sparc-implement/SKILL.md) |
-| 332 | ✓ | [`plugins/ruflo-sparc/skills/sparc-refine/SKILL.md`](plugins/ruflo-sparc/skills/sparc-refine/SKILL.md) |
-| 333 | ✓ | [`plugins/ruflo-sparc/skills/sparc-spec/SKILL.md`](plugins/ruflo-sparc/skills/sparc-spec/SKILL.md) |
-| 334 | ✓ | [`plugins/ruflo-swarm/skills/monitor-stream/SKILL.md`](plugins/ruflo-swarm/skills/monitor-stream/SKILL.md) |
-| 335 | ✓ | [`plugins/ruflo-swarm/skills/swarm-init/SKILL.md`](plugins/ruflo-swarm/skills/swarm-init/SKILL.md) |
-| 336 | ✓ | [`plugins/ruflo-testgen/skills/tdd-repair/SKILL.md`](plugins/ruflo-testgen/skills/tdd-repair/SKILL.md) |
-| 337 | ✓ | [`plugins/ruflo-testgen/skills/tdd-workflow/SKILL.md`](plugins/ruflo-testgen/skills/tdd-workflow/SKILL.md) |
-| 338 | ✓ | [`plugins/ruflo-testgen/skills/test-gaps/SKILL.md`](plugins/ruflo-testgen/skills/test-gaps/SKILL.md) |
-| 339 | ✓ | [`plugins/ruflo-workflows/skills/gaia-architecture-comparison/SKILL.md`](plugins/ruflo-workflows/skills/gaia-architecture-comparison/SKILL.md) |
-| 340 | ✓ | [`plugins/ruflo-workflows/skills/gaia-debugging/SKILL.md`](plugins/ruflo-workflows/skills/gaia-debugging/SKILL.md) |
-| 341 | ✓ | [`plugins/ruflo-workflows/skills/gaia-submission/SKILL.md`](plugins/ruflo-workflows/skills/gaia-submission/SKILL.md) |
-| 342 | ✓ | [`plugins/ruflo-workflows/skills/workflow-create/SKILL.md`](plugins/ruflo-workflows/skills/workflow-create/SKILL.md) |
-| 343 | ✓ | [`plugins/ruflo-workflows/skills/workflow-run/SKILL.md`](plugins/ruflo-workflows/skills/workflow-run/SKILL.md) |
-| 344 | ✓ | [`ruflo/src/ruvocal/.claude/skills/add-model-descriptions/SKILL.md`](ruflo/src/ruvocal/.claude/skills/add-model-descriptions/SKILL.md) |
-| 345 | ✓ | [`ruflo/src/ruvocal/CLAUDE.md`](ruflo/src/ruvocal/CLAUDE.md) |
-| 346 | ✓ | [`SKILL.md`](SKILL.md) |
-| 347 | ✓ | [`v3/@claude-flow/browser/skills/browser/SKILL.md`](v3/@claude-flow/browser/skills/browser/SKILL.md) |
-| 348 | ✓ | [`v3/@claude-flow/cli/.claude/skills/agentdb-advanced/SKILL.md`](v3/@claude-flow/cli/.claude/skills/agentdb-advanced/SKILL.md) |
-| 349 | ✓ | [`v3/@claude-flow/cli/.claude/skills/agentdb-learning/SKILL.md`](v3/@claude-flow/cli/.claude/skills/agentdb-learning/SKILL.md) |
-| 350 | ✓ | [`v3/@claude-flow/cli/.claude/skills/agentdb-memory-patterns/SKILL.md`](v3/@claude-flow/cli/.claude/skills/agentdb-memory-patterns/SKILL.md) |
-| 351 | ✓ | [`v3/@claude-flow/cli/.claude/skills/agentdb-optimization/SKILL.md`](v3/@claude-flow/cli/.claude/skills/agentdb-optimization/SKILL.md) |
-| 352 | ✓ | [`v3/@claude-flow/cli/.claude/skills/agentdb-vector-search/SKILL.md`](v3/@claude-flow/cli/.claude/skills/agentdb-vector-search/SKILL.md) |
-| 353 | ✓ | [`v3/@claude-flow/cli/.claude/skills/browser/SKILL.md`](v3/@claude-flow/cli/.claude/skills/browser/SKILL.md) |
-| 354 | ✓ | [`v3/@claude-flow/cli/.claude/skills/flow-nexus-neural/SKILL.md`](v3/@claude-flow/cli/.claude/skills/flow-nexus-neural/SKILL.md) |
-| 355 | ✓ | [`v3/@claude-flow/cli/.claude/skills/flow-nexus-platform/SKILL.md`](v3/@claude-flow/cli/.claude/skills/flow-nexus-platform/SKILL.md) |
-| 356 | ✓ | [`v3/@claude-flow/cli/.claude/skills/flow-nexus-swarm/SKILL.md`](v3/@claude-flow/cli/.claude/skills/flow-nexus-swarm/SKILL.md) |
-| 357 | ✓ | [`v3/@claude-flow/cli/.claude/skills/github-code-review/SKILL.md`](v3/@claude-flow/cli/.claude/skills/github-code-review/SKILL.md) |
-| 358 | ✓ | [`v3/@claude-flow/cli/.claude/skills/github-multi-repo/SKILL.md`](v3/@claude-flow/cli/.claude/skills/github-multi-repo/SKILL.md) |
-| 359 | ✓ | [`v3/@claude-flow/cli/.claude/skills/github-project-management/SKILL.md`](v3/@claude-flow/cli/.claude/skills/github-project-management/SKILL.md) |
-| 360 | ✓ | [`v3/@claude-flow/cli/.claude/skills/github-release-management/SKILL.md`](v3/@claude-flow/cli/.claude/skills/github-release-management/SKILL.md) |
-| 361 | ✓ | [`v3/@claude-flow/cli/.claude/skills/github-workflow-automation/SKILL.md`](v3/@claude-flow/cli/.claude/skills/github-workflow-automation/SKILL.md) |
-| 362 | ✓ | [`v3/@claude-flow/cli/.claude/skills/hooks-automation/SKILL.md`](v3/@claude-flow/cli/.claude/skills/hooks-automation/SKILL.md) |
-| 363 | ✓ | [`v3/@claude-flow/cli/.claude/skills/pair-programming/SKILL.md`](v3/@claude-flow/cli/.claude/skills/pair-programming/SKILL.md) |
-| 364 | ✓ | [`v3/@claude-flow/cli/.claude/skills/reasoningbank-agentdb/SKILL.md`](v3/@claude-flow/cli/.claude/skills/reasoningbank-agentdb/SKILL.md) |
-| 365 | ✓ | [`v3/@claude-flow/cli/.claude/skills/reasoningbank-intelligence/SKILL.md`](v3/@claude-flow/cli/.claude/skills/reasoningbank-intelligence/SKILL.md) |
-| 366 | ✓ | [`v3/@claude-flow/cli/.claude/skills/skill-builder/SKILL.md`](v3/@claude-flow/cli/.claude/skills/skill-builder/SKILL.md) |
-| 367 | ✓ | [`v3/@claude-flow/cli/.claude/skills/sparc-methodology/SKILL.md`](v3/@claude-flow/cli/.claude/skills/sparc-methodology/SKILL.md) |
-| 368 | ✓ | [`v3/@claude-flow/cli/.claude/skills/stream-chain/SKILL.md`](v3/@claude-flow/cli/.claude/skills/stream-chain/SKILL.md) |
-| 369 | ✓ | [`v3/@claude-flow/cli/.claude/skills/swarm-advanced/SKILL.md`](v3/@claude-flow/cli/.claude/skills/swarm-advanced/SKILL.md) |
-| 370 | ✓ | [`v3/@claude-flow/cli/.claude/skills/swarm-orchestration/SKILL.md`](v3/@claude-flow/cli/.claude/skills/swarm-orchestration/SKILL.md) |
-| 371 | ✓ | [`v3/@claude-flow/cli/.claude/skills/v3-cli-modernization/SKILL.md`](v3/@claude-flow/cli/.claude/skills/v3-cli-modernization/SKILL.md) |
-| 372 | ✓ | [`v3/@claude-flow/cli/.claude/skills/v3-core-implementation/SKILL.md`](v3/@claude-flow/cli/.claude/skills/v3-core-implementation/SKILL.md) |
-| 373 | ✓ | [`v3/@claude-flow/cli/.claude/skills/v3-ddd-architecture/SKILL.md`](v3/@claude-flow/cli/.claude/skills/v3-ddd-architecture/SKILL.md) |
-| 374 | ✓ | [`v3/@claude-flow/cli/.claude/skills/v3-integration-deep/SKILL.md`](v3/@claude-flow/cli/.claude/skills/v3-integration-deep/SKILL.md) |
-| 375 | ✓ | [`v3/@claude-flow/cli/.claude/skills/v3-mcp-optimization/SKILL.md`](v3/@claude-flow/cli/.claude/skills/v3-mcp-optimization/SKILL.md) |
-| 376 | ✓ | [`v3/@claude-flow/cli/.claude/skills/v3-memory-unification/SKILL.md`](v3/@claude-flow/cli/.claude/skills/v3-memory-unification/SKILL.md) |
-| 377 | ✓ | [`v3/@claude-flow/cli/.claude/skills/v3-performance-optimization/SKILL.md`](v3/@claude-flow/cli/.claude/skills/v3-performance-optimization/SKILL.md) |
-| 378 | ✓ | [`v3/@claude-flow/cli/.claude/skills/v3-security-overhaul/SKILL.md`](v3/@claude-flow/cli/.claude/skills/v3-security-overhaul/SKILL.md) |
-| 379 | ✓ | [`v3/@claude-flow/cli/.claude/skills/v3-swarm-coordination/SKILL.md`](v3/@claude-flow/cli/.claude/skills/v3-swarm-coordination/SKILL.md) |
-| 380 | ✓ | [`v3/@claude-flow/cli/.claude/skills/verification-quality/SKILL.md`](v3/@claude-flow/cli/.claude/skills/verification-quality/SKILL.md) |
-| 381 | ✓ | [`v3/@claude-flow/cli/CLAUDE.md`](v3/@claude-flow/cli/CLAUDE.md) |
-| 382 | ✓ | [`v3/@claude-flow/codex/.agents/skills/github-automation/SKILL.md`](v3/@claude-flow/codex/.agents/skills/github-automation/SKILL.md) |
-| 383 | ✓ | [`v3/@claude-flow/codex/.agents/skills/memory-management/SKILL.md`](v3/@claude-flow/codex/.agents/skills/memory-management/SKILL.md) |
-| 384 | ✓ | [`v3/@claude-flow/codex/.agents/skills/performance-analysis/SKILL.md`](v3/@claude-flow/codex/.agents/skills/performance-analysis/SKILL.md) |
-| 385 | ✓ | [`v3/@claude-flow/codex/.agents/skills/security-audit/SKILL.md`](v3/@claude-flow/codex/.agents/skills/security-audit/SKILL.md) |
-| 386 | ✓ | [`v3/@claude-flow/codex/.agents/skills/sparc-methodology/SKILL.md`](v3/@claude-flow/codex/.agents/skills/sparc-methodology/SKILL.md) |
-| 387 | ✓ | [`v3/@claude-flow/codex/.agents/skills/swarm-orchestration/SKILL.md`](v3/@claude-flow/codex/.agents/skills/swarm-orchestration/SKILL.md) |
-| 388 | ✓ | [`v3/@claude-flow/codex/AGENTS.md`](v3/@claude-flow/codex/AGENTS.md) |
-| 389 | ✓ | [`v3/@claude-flow/mcp/CLAUDE.md`](v3/@claude-flow/mcp/CLAUDE.md) |
-| 390 | ✓ | [`v3/CLAUDE.md`](v3/CLAUDE.md) |
-| 391 | ✓ | [`v3/docs/adr/ADR-151-harness-intelligence-layer.md`](v3/docs/adr/ADR-151-harness-intelligence-layer.md) |
-| 392 | ✓ | [`v3/docs/adr/ADR-152-genome-similarity-search.md`](v3/docs/adr/ADR-152-genome-similarity-search.md) |
-| 393 | → | [`docs/reviews/intelligence-system-audit-2026-05-29.md`](docs/reviews/intelligence-system-audit-2026-05-29.md) |
-| 394 | → | [`v3/docs/adr/ADR-150-metaharness-integration-surfaces.md`](v3/docs/adr/ADR-150-metaharness-integration-surfaces.md) |
+| 317 | ✓ | [`plugins/ruflo-plugin-creator/skills/create-mod/SKILL.md`](plugins/ruflo-plugin-creator/skills/create-mod/SKILL.md) |
+| 318 | ✓ | [`plugins/ruflo-plugin-creator/skills/create-plugin/SKILL.md`](plugins/ruflo-plugin-creator/skills/create-plugin/SKILL.md) |
+| 319 | ✓ | [`plugins/ruflo-plugin-creator/skills/validate-plugin/SKILL.md`](plugins/ruflo-plugin-creator/skills/validate-plugin/SKILL.md) |
+| 320 | ✓ | [`plugins/ruflo-rag-memory/skills/memory-bridge/SKILL.md`](plugins/ruflo-rag-memory/skills/memory-bridge/SKILL.md) |
+| 321 | ✓ | [`plugins/ruflo-rag-memory/skills/memory-search/SKILL.md`](plugins/ruflo-rag-memory/skills/memory-search/SKILL.md) |
+| 322 | ✓ | [`plugins/ruflo-ruos/skills/ruos-host-run/SKILL.md`](plugins/ruflo-ruos/skills/ruos-host-run/SKILL.md) |
+| 323 | ✓ | [`plugins/ruflo-ruvector/skills/vector-cluster/SKILL.md`](plugins/ruflo-ruvector/skills/vector-cluster/SKILL.md) |
+| 324 | ✓ | [`plugins/ruflo-ruvector/skills/vector-embed/SKILL.md`](plugins/ruflo-ruvector/skills/vector-embed/SKILL.md) |
+| 325 | ✓ | [`plugins/ruflo-ruvector/skills/vector-hyperbolic/SKILL.md`](plugins/ruflo-ruvector/skills/vector-hyperbolic/SKILL.md) |
+| 326 | ✓ | [`plugins/ruflo-ruvector/skills/vector-setup/SKILL.md`](plugins/ruflo-ruvector/skills/vector-setup/SKILL.md) |
+| 327 | ✓ | [`plugins/ruflo-ruvllm/skills/chat-format/SKILL.md`](plugins/ruflo-ruvllm/skills/chat-format/SKILL.md) |
+| 328 | ✓ | [`plugins/ruflo-ruvllm/skills/llm-config/SKILL.md`](plugins/ruflo-ruvllm/skills/llm-config/SKILL.md) |
+| 329 | ✓ | [`plugins/ruflo-rvf/skills/rvf-manage/SKILL.md`](plugins/ruflo-rvf/skills/rvf-manage/SKILL.md) |
+| 330 | ✓ | [`plugins/ruflo-rvf/skills/session-persist/SKILL.md`](plugins/ruflo-rvf/skills/session-persist/SKILL.md) |
+| 331 | ✓ | [`plugins/ruflo-security-audit/skills/dependency-check/SKILL.md`](plugins/ruflo-security-audit/skills/dependency-check/SKILL.md) |
+| 332 | ✓ | [`plugins/ruflo-security-audit/skills/security-scan/SKILL.md`](plugins/ruflo-security-audit/skills/security-scan/SKILL.md) |
+| 333 | ✓ | [`plugins/ruflo-sparc/skills/sparc-implement/SKILL.md`](plugins/ruflo-sparc/skills/sparc-implement/SKILL.md) |
+| 334 | ✓ | [`plugins/ruflo-sparc/skills/sparc-refine/SKILL.md`](plugins/ruflo-sparc/skills/sparc-refine/SKILL.md) |
+| 335 | ✓ | [`plugins/ruflo-sparc/skills/sparc-spec/SKILL.md`](plugins/ruflo-sparc/skills/sparc-spec/SKILL.md) |
+| 336 | ✓ | [`plugins/ruflo-swarm/skills/monitor-stream/SKILL.md`](plugins/ruflo-swarm/skills/monitor-stream/SKILL.md) |
+| 337 | ✓ | [`plugins/ruflo-swarm/skills/swarm-init/SKILL.md`](plugins/ruflo-swarm/skills/swarm-init/SKILL.md) |
+| 338 | ✓ | [`plugins/ruflo-testgen/skills/tdd-repair/SKILL.md`](plugins/ruflo-testgen/skills/tdd-repair/SKILL.md) |
+| 339 | ✓ | [`plugins/ruflo-testgen/skills/tdd-workflow/SKILL.md`](plugins/ruflo-testgen/skills/tdd-workflow/SKILL.md) |
+| 340 | ✓ | [`plugins/ruflo-testgen/skills/test-gaps/SKILL.md`](plugins/ruflo-testgen/skills/test-gaps/SKILL.md) |
+| 341 | ✓ | [`plugins/ruflo-workflows/skills/gaia-architecture-comparison/SKILL.md`](plugins/ruflo-workflows/skills/gaia-architecture-comparison/SKILL.md) |
+| 342 | ✓ | [`plugins/ruflo-workflows/skills/gaia-debugging/SKILL.md`](plugins/ruflo-workflows/skills/gaia-debugging/SKILL.md) |
+| 343 | ✓ | [`plugins/ruflo-workflows/skills/gaia-submission/SKILL.md`](plugins/ruflo-workflows/skills/gaia-submission/SKILL.md) |
+| 344 | ✓ | [`plugins/ruflo-workflows/skills/workflow-create/SKILL.md`](plugins/ruflo-workflows/skills/workflow-create/SKILL.md) |
+| 345 | ✓ | [`plugins/ruflo-workflows/skills/workflow-run/SKILL.md`](plugins/ruflo-workflows/skills/workflow-run/SKILL.md) |
+| 346 | ✓ | [`ruflo/src/ruvocal/.claude/skills/add-model-descriptions/SKILL.md`](ruflo/src/ruvocal/.claude/skills/add-model-descriptions/SKILL.md) |
+| 347 | ✓ | [`ruflo/src/ruvocal/CLAUDE.md`](ruflo/src/ruvocal/CLAUDE.md) |
+| 348 | ✓ | [`SKILL.md`](SKILL.md) |
+| 349 | ✓ | [`v3/@claude-flow/browser/skills/browser/SKILL.md`](v3/@claude-flow/browser/skills/browser/SKILL.md) |
+| 350 | ✓ | [`v3/@claude-flow/cli/.claude/skills/agentdb-advanced/SKILL.md`](v3/@claude-flow/cli/.claude/skills/agentdb-advanced/SKILL.md) |
+| 351 | ✓ | [`v3/@claude-flow/cli/.claude/skills/agentdb-learning/SKILL.md`](v3/@claude-flow/cli/.claude/skills/agentdb-learning/SKILL.md) |
+| 352 | ✓ | [`v3/@claude-flow/cli/.claude/skills/agentdb-memory-patterns/SKILL.md`](v3/@claude-flow/cli/.claude/skills/agentdb-memory-patterns/SKILL.md) |
+| 353 | ✓ | [`v3/@claude-flow/cli/.claude/skills/agentdb-optimization/SKILL.md`](v3/@claude-flow/cli/.claude/skills/agentdb-optimization/SKILL.md) |
+| 354 | ✓ | [`v3/@claude-flow/cli/.claude/skills/agentdb-vector-search/SKILL.md`](v3/@claude-flow/cli/.claude/skills/agentdb-vector-search/SKILL.md) |
+| 355 | ✓ | [`v3/@claude-flow/cli/.claude/skills/browser/SKILL.md`](v3/@claude-flow/cli/.claude/skills/browser/SKILL.md) |
+| 356 | ✓ | [`v3/@claude-flow/cli/.claude/skills/flow-nexus-neural/SKILL.md`](v3/@claude-flow/cli/.claude/skills/flow-nexus-neural/SKILL.md) |
+| 357 | ✓ | [`v3/@claude-flow/cli/.claude/skills/flow-nexus-platform/SKILL.md`](v3/@claude-flow/cli/.claude/skills/flow-nexus-platform/SKILL.md) |
+| 358 | ✓ | [`v3/@claude-flow/cli/.claude/skills/flow-nexus-swarm/SKILL.md`](v3/@claude-flow/cli/.claude/skills/flow-nexus-swarm/SKILL.md) |
+| 359 | ✓ | [`v3/@claude-flow/cli/.claude/skills/github-code-review/SKILL.md`](v3/@claude-flow/cli/.claude/skills/github-code-review/SKILL.md) |
+| 360 | ✓ | [`v3/@claude-flow/cli/.claude/skills/github-multi-repo/SKILL.md`](v3/@claude-flow/cli/.claude/skills/github-multi-repo/SKILL.md) |
+| 361 | ✓ | [`v3/@claude-flow/cli/.claude/skills/github-project-management/SKILL.md`](v3/@claude-flow/cli/.claude/skills/github-project-management/SKILL.md) |
+| 362 | ✓ | [`v3/@claude-flow/cli/.claude/skills/github-release-management/SKILL.md`](v3/@claude-flow/cli/.claude/skills/github-release-management/SKILL.md) |
+| 363 | ✓ | [`v3/@claude-flow/cli/.claude/skills/github-workflow-automation/SKILL.md`](v3/@claude-flow/cli/.claude/skills/github-workflow-automation/SKILL.md) |
+| 364 | ✓ | [`v3/@claude-flow/cli/.claude/skills/hooks-automation/SKILL.md`](v3/@claude-flow/cli/.claude/skills/hooks-automation/SKILL.md) |
+| 365 | ✓ | [`v3/@claude-flow/cli/.claude/skills/pair-programming/SKILL.md`](v3/@claude-flow/cli/.claude/skills/pair-programming/SKILL.md) |
+| 366 | ✓ | [`v3/@claude-flow/cli/.claude/skills/reasoningbank-agentdb/SKILL.md`](v3/@claude-flow/cli/.claude/skills/reasoningbank-agentdb/SKILL.md) |
+| 367 | ✓ | [`v3/@claude-flow/cli/.claude/skills/reasoningbank-intelligence/SKILL.md`](v3/@claude-flow/cli/.claude/skills/reasoningbank-intelligence/SKILL.md) |
+| 368 | ✓ | [`v3/@claude-flow/cli/.claude/skills/skill-builder/SKILL.md`](v3/@claude-flow/cli/.claude/skills/skill-builder/SKILL.md) |
+| 369 | ✓ | [`v3/@claude-flow/cli/.claude/skills/sparc-methodology/SKILL.md`](v3/@claude-flow/cli/.claude/skills/sparc-methodology/SKILL.md) |
+| 370 | ✓ | [`v3/@claude-flow/cli/.claude/skills/stream-chain/SKILL.md`](v3/@claude-flow/cli/.claude/skills/stream-chain/SKILL.md) |
+| 371 | ✓ | [`v3/@claude-flow/cli/.claude/skills/swarm-advanced/SKILL.md`](v3/@claude-flow/cli/.claude/skills/swarm-advanced/SKILL.md) |
+| 372 | ✓ | [`v3/@claude-flow/cli/.claude/skills/swarm-orchestration/SKILL.md`](v3/@claude-flow/cli/.claude/skills/swarm-orchestration/SKILL.md) |
+| 373 | ✓ | [`v3/@claude-flow/cli/.claude/skills/v3-cli-modernization/SKILL.md`](v3/@claude-flow/cli/.claude/skills/v3-cli-modernization/SKILL.md) |
+| 374 | ✓ | [`v3/@claude-flow/cli/.claude/skills/v3-core-implementation/SKILL.md`](v3/@claude-flow/cli/.claude/skills/v3-core-implementation/SKILL.md) |
+| 375 | ✓ | [`v3/@claude-flow/cli/.claude/skills/v3-ddd-architecture/SKILL.md`](v3/@claude-flow/cli/.claude/skills/v3-ddd-architecture/SKILL.md) |
+| 376 | ✓ | [`v3/@claude-flow/cli/.claude/skills/v3-integration-deep/SKILL.md`](v3/@claude-flow/cli/.claude/skills/v3-integration-deep/SKILL.md) |
+| 377 | ✓ | [`v3/@claude-flow/cli/.claude/skills/v3-mcp-optimization/SKILL.md`](v3/@claude-flow/cli/.claude/skills/v3-mcp-optimization/SKILL.md) |
+| 378 | ✓ | [`v3/@claude-flow/cli/.claude/skills/v3-memory-unification/SKILL.md`](v3/@claude-flow/cli/.claude/skills/v3-memory-unification/SKILL.md) |
+| 379 | ✓ | [`v3/@claude-flow/cli/.claude/skills/v3-performance-optimization/SKILL.md`](v3/@claude-flow/cli/.claude/skills/v3-performance-optimization/SKILL.md) |
+| 380 | ✓ | [`v3/@claude-flow/cli/.claude/skills/v3-security-overhaul/SKILL.md`](v3/@claude-flow/cli/.claude/skills/v3-security-overhaul/SKILL.md) |
+| 381 | ✓ | [`v3/@claude-flow/cli/.claude/skills/v3-swarm-coordination/SKILL.md`](v3/@claude-flow/cli/.claude/skills/v3-swarm-coordination/SKILL.md) |
+| 382 | ✓ | [`v3/@claude-flow/cli/.claude/skills/verification-quality/SKILL.md`](v3/@claude-flow/cli/.claude/skills/verification-quality/SKILL.md) |
+| 383 | ✓ | [`v3/@claude-flow/cli/CLAUDE.md`](v3/@claude-flow/cli/CLAUDE.md) |
+| 384 | ✓ | [`v3/@claude-flow/codex/.agents/skills/github-automation/SKILL.md`](v3/@claude-flow/codex/.agents/skills/github-automation/SKILL.md) |
+| 385 | ✓ | [`v3/@claude-flow/codex/.agents/skills/memory-management/SKILL.md`](v3/@claude-flow/codex/.agents/skills/memory-management/SKILL.md) |
+| 386 | ✓ | [`v3/@claude-flow/codex/.agents/skills/performance-analysis/SKILL.md`](v3/@claude-flow/codex/.agents/skills/performance-analysis/SKILL.md) |
+| 387 | ✓ | [`v3/@claude-flow/codex/.agents/skills/security-audit/SKILL.md`](v3/@claude-flow/codex/.agents/skills/security-audit/SKILL.md) |
+| 388 | ✓ | [`v3/@claude-flow/codex/.agents/skills/sparc-methodology/SKILL.md`](v3/@claude-flow/codex/.agents/skills/sparc-methodology/SKILL.md) |
+| 389 | ✓ | [`v3/@claude-flow/codex/.agents/skills/swarm-orchestration/SKILL.md`](v3/@claude-flow/codex/.agents/skills/swarm-orchestration/SKILL.md) |
+| 390 | ✓ | [`v3/@claude-flow/codex/AGENTS.md`](v3/@claude-flow/codex/AGENTS.md) |
+| 391 | ✓ | [`v3/@claude-flow/mcp/CLAUDE.md`](v3/@claude-flow/mcp/CLAUDE.md) |
+| 392 | ✓ | [`v3/CLAUDE.md`](v3/CLAUDE.md) |
+| 393 | ✓ | [`v3/docs/adr/ADR-151-harness-intelligence-layer.md`](v3/docs/adr/ADR-151-harness-intelligence-layer.md) |
+| 394 | ✓ | [`v3/docs/adr/ADR-152-genome-similarity-search.md`](v3/docs/adr/ADR-152-genome-similarity-search.md) |
+| 395 | → | [`docs/reviews/intelligence-system-audit-2026-05-29.md`](docs/reviews/intelligence-system-audit-2026-05-29.md) |
+| 396 | → | [`v3/docs/adr/ADR-150-metaharness-integration-surfaces.md`](v3/docs/adr/ADR-150-metaharness-integration-surfaces.md) |
 
 ---
 

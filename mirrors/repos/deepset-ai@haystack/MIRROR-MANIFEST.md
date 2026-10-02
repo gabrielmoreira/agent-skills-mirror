@@ -67,8 +67,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 6 | ✓ | [`docs-website/docs/CLAUDE.md`](docs-website/docs/CLAUDE.md) |
 | 7 | ✓ | [`docs-website/versioned_docs/version-3.2/AGENTS.md`](docs-website/versioned_docs/version-3.2/AGENTS.md) |
 | 8 | ✓ | [`docs-website/versioned_docs/version-3.2/CLAUDE.md`](docs-website/versioned_docs/version-3.2/CLAUDE.md) |
-| 9 | ✓ | [`docs-website/versioned_docs/version-3.3-unstable/AGENTS.md`](docs-website/versioned_docs/version-3.3-unstable/AGENTS.md) |
-| 10 | ✓ | [`docs-website/versioned_docs/version-3.3-unstable/CLAUDE.md`](docs-website/versioned_docs/version-3.3-unstable/CLAUDE.md) |
+| 9 | ✓ | [`docs-website/versioned_docs/version-3.3/AGENTS.md`](docs-website/versioned_docs/version-3.3/AGENTS.md) |
+| 10 | ✓ | [`docs-website/versioned_docs/version-3.3/CLAUDE.md`](docs-website/versioned_docs/version-3.3/CLAUDE.md) |
 | 11 | ✓ | [`haystack/hooks/compaction/AGENTS.md`](haystack/hooks/compaction/AGENTS.md) |
 | 12 | ✓ | [`haystack/hooks/compaction/CLAUDE.md`](haystack/hooks/compaction/CLAUDE.md) |
 | 13 | ✓ | [`releasenotes/notes/AGENTS.md`](releasenotes/notes/AGENTS.md) |

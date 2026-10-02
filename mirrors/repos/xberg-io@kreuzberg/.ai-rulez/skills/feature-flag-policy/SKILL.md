@@ -22,7 +22,6 @@ Pure-Rust **type-only** companion features expose the public config/result types
 - `layout-types` — `LayoutDetectionConfig`, `TableModel`, `BBox`, `DetectionResult`, `LayoutClass`, `LayoutDetection`, `RecognizedTable`. `layout-detection` implies `layout-types`.
 - `auto-rotate-types` — `OrientationResult`. `auto-rotate` implies `auto-rotate-types`.
 - `embedding-presets` — `EmbeddingPreset` (already existed; pure-Rust preset metadata).
-- `paddle-ocr-types` — the PaddleOCR config/result types without the engine. This is what `no-ort-target` carries in place of `paddle-ocr`.
 
 Pure-Rust **tract inference** variants run select ONNX models where native ORT cannot link, loading the
 same `.onnx` artifacts through the `tract` engine (CPU-only, no native library):

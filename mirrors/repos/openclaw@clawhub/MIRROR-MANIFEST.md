@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `openclaw/clawhub` — 26 default patterns, 0 followed patterns, 350 file(s) materialized.
+Mirror of `openclaw/clawhub` — 26 default patterns, 0 followed patterns, 351 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `openclaw/clawhub` — 26 default patterns, 0 followed patterns, 350 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 350 |
+| Files         | 351 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -324,91 +324,92 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 263 | ✓ | [`.agents/skills/openclaw-design/SKILL.md`](.agents/skills/openclaw-design/SKILL.md) |
 | 264 | ✓ | [`.agents/skills/openclaw-marketing-pages/references/page-patterns.md`](.agents/skills/openclaw-marketing-pages/references/page-patterns.md) |
 | 265 | ✓ | [`.agents/skills/openclaw-marketing-pages/SKILL.md`](.agents/skills/openclaw-marketing-pages/SKILL.md) |
-| 266 | ✓ | [`.agents/skills/query-metrics/README.md`](.agents/skills/query-metrics/README.md) |
-| 267 | ✓ | [`.agents/skills/query-metrics/scripts/axiom-api`](.agents/skills/query-metrics/scripts/axiom-api) |
-| 268 | ✓ | [`.agents/skills/query-metrics/scripts/datasets`](.agents/skills/query-metrics/scripts/datasets) |
-| 269 | ✓ | [`.agents/skills/query-metrics/scripts/metrics-info`](.agents/skills/query-metrics/scripts/metrics-info) |
-| 270 | ✓ | [`.agents/skills/query-metrics/scripts/metrics-query`](.agents/skills/query-metrics/scripts/metrics-query) |
-| 271 | ✓ | [`.agents/skills/query-metrics/scripts/metrics-spec`](.agents/skills/query-metrics/scripts/metrics-spec) |
-| 272 | ✓ | [`.agents/skills/query-metrics/scripts/resolve-url`](.agents/skills/query-metrics/scripts/resolve-url) |
-| 273 | ✓ | [`.agents/skills/query-metrics/scripts/setup`](.agents/skills/query-metrics/scripts/setup) |
-| 274 | ✓ | [`.agents/skills/query-metrics/SKILL.md`](.agents/skills/query-metrics/SKILL.md) |
-| 275 | ✓ | [`.agents/skills/sentry-fix-issues/SKILL.md`](.agents/skills/sentry-fix-issues/SKILL.md) |
-| 276 | ✓ | [`.agents/skills/spl-to-apl/.meta/2026-01-28-schema-read-findings.md`](.agents/skills/spl-to-apl/.meta/2026-01-28-schema-read-findings.md) |
-| 277 | ✓ | [`.agents/skills/spl-to-apl/.meta/cases.ts`](.agents/skills/spl-to-apl/.meta/cases.ts) |
-| 278 | ✓ | [`.agents/skills/spl-to-apl/.meta/DESIGN-NOTES.md`](.agents/skills/spl-to-apl/.meta/DESIGN-NOTES.md) |
-| 279 | ✓ | [`.agents/skills/spl-to-apl/.meta/spl-to-apl.eval.ts`](.agents/skills/spl-to-apl/.meta/spl-to-apl.eval.ts) |
-| 280 | ✓ | [`.agents/skills/spl-to-apl/README.md`](.agents/skills/spl-to-apl/README.md) |
-| 281 | ✓ | [`.agents/skills/spl-to-apl/reference/command-mapping.md`](.agents/skills/spl-to-apl/reference/command-mapping.md) |
-| 282 | ✓ | [`.agents/skills/spl-to-apl/reference/dataset-schemas.md`](.agents/skills/spl-to-apl/reference/dataset-schemas.md) |
-| 283 | ✓ | [`.agents/skills/spl-to-apl/reference/examples.md`](.agents/skills/spl-to-apl/reference/examples.md) |
-| 284 | ✓ | [`.agents/skills/spl-to-apl/reference/function-mapping.md`](.agents/skills/spl-to-apl/reference/function-mapping.md) |
-| 285 | ✓ | [`.agents/skills/spl-to-apl/SKILL.md`](.agents/skills/spl-to-apl/SKILL.md) |
-| 286 | ✓ | [`.agents/skills/spl-to-apl/tests/test-queries.md`](.agents/skills/spl-to-apl/tests/test-queries.md) |
-| 287 | ✓ | [`.agents/skills/technical-documentation/agents/docs-framework-agent.md`](.agents/skills/technical-documentation/agents/docs-framework-agent.md) |
-| 288 | ✓ | [`.agents/skills/technical-documentation/agents/governance-agent.md`](.agents/skills/technical-documentation/agents/governance-agent.md) |
-| 289 | ✓ | [`.agents/skills/technical-documentation/agents/inventory-agent.md`](.agents/skills/technical-documentation/agents/inventory-agent.md) |
-| 290 | ✓ | [`.agents/skills/technical-documentation/agents/openai.yaml`](.agents/skills/technical-documentation/agents/openai.yaml) |
-| 291 | ✓ | [`.agents/skills/technical-documentation/agents/synthesis-agent.md`](.agents/skills/technical-documentation/agents/synthesis-agent.md) |
-| 292 | ✓ | [`.agents/skills/technical-documentation/assets/icon.jpg`](.agents/skills/technical-documentation/assets/icon.jpg) |
-| 293 | ✓ | [`.agents/skills/technical-documentation/references/agent-and-contributing.md`](.agents/skills/technical-documentation/references/agent-and-contributing.md) |
-| 294 | ✓ | [`.agents/skills/technical-documentation/references/build.md`](.agents/skills/technical-documentation/references/build.md) |
-| 295 | ✓ | [`.agents/skills/technical-documentation/references/openclaw.md`](.agents/skills/technical-documentation/references/openclaw.md) |
-| 296 | ✓ | [`.agents/skills/technical-documentation/references/principles.md`](.agents/skills/technical-documentation/references/principles.md) |
-| 297 | ✓ | [`.agents/skills/technical-documentation/references/review.md`](.agents/skills/technical-documentation/references/review.md) |
-| 298 | ✓ | [`.agents/skills/technical-documentation/references/tooling.md`](.agents/skills/technical-documentation/references/tooling.md) |
-| 299 | ✓ | [`.agents/skills/technical-documentation/SKILL.md`](.agents/skills/technical-documentation/SKILL.md) |
-| 300 | ✓ | [`.agents/skills/vercel-cli/command/vercel.md`](.agents/skills/vercel-cli/command/vercel.md) |
-| 301 | ✓ | [`.agents/skills/vercel-cli/references/advanced.md`](.agents/skills/vercel-cli/references/advanced.md) |
-| 302 | ✓ | [`.agents/skills/vercel-cli/references/agent-and-ai.md`](.agents/skills/vercel-cli/references/agent-and-ai.md) |
-| 303 | ✓ | [`.agents/skills/vercel-cli/references/bun.md`](.agents/skills/vercel-cli/references/bun.md) |
-| 304 | ✓ | [`.agents/skills/vercel-cli/references/ci-automation.md`](.agents/skills/vercel-cli/references/ci-automation.md) |
-| 305 | ✓ | [`.agents/skills/vercel-cli/references/comments.md`](.agents/skills/vercel-cli/references/comments.md) |
-| 306 | ✓ | [`.agents/skills/vercel-cli/references/connectors.md`](.agents/skills/vercel-cli/references/connectors.md) |
-| 307 | ✓ | [`.agents/skills/vercel-cli/references/container-registry.md`](.agents/skills/vercel-cli/references/container-registry.md) |
-| 308 | ✓ | [`.agents/skills/vercel-cli/references/deployment.md`](.agents/skills/vercel-cli/references/deployment.md) |
-| 309 | ✓ | [`.agents/skills/vercel-cli/references/domains-and-dns.md`](.agents/skills/vercel-cli/references/domains-and-dns.md) |
-| 310 | ✓ | [`.agents/skills/vercel-cli/references/environment-variables.md`](.agents/skills/vercel-cli/references/environment-variables.md) |
-| 311 | ✓ | [`.agents/skills/vercel-cli/references/firewall.md`](.agents/skills/vercel-cli/references/firewall.md) |
-| 312 | ✓ | [`.agents/skills/vercel-cli/references/flags.md`](.agents/skills/vercel-cli/references/flags.md) |
-| 313 | ✓ | [`.agents/skills/vercel-cli/references/getting-started.md`](.agents/skills/vercel-cli/references/getting-started.md) |
-| 314 | ✓ | [`.agents/skills/vercel-cli/references/global-options.md`](.agents/skills/vercel-cli/references/global-options.md) |
-| 315 | ✓ | [`.agents/skills/vercel-cli/references/integrations.md`](.agents/skills/vercel-cli/references/integrations.md) |
-| 316 | ✓ | [`.agents/skills/vercel-cli/references/local-development.md`](.agents/skills/vercel-cli/references/local-development.md) |
-| 317 | ✓ | [`.agents/skills/vercel-cli/references/microfrontends.md`](.agents/skills/vercel-cli/references/microfrontends.md) |
-| 318 | ✓ | [`.agents/skills/vercel-cli/references/monitoring-and-debugging.md`](.agents/skills/vercel-cli/references/monitoring-and-debugging.md) |
-| 319 | ✓ | [`.agents/skills/vercel-cli/references/monorepos.md`](.agents/skills/vercel-cli/references/monorepos.md) |
-| 320 | ✓ | [`.agents/skills/vercel-cli/references/node-backends.md`](.agents/skills/vercel-cli/references/node-backends.md) |
-| 321 | ✓ | [`.agents/skills/vercel-cli/references/platform-ops.md`](.agents/skills/vercel-cli/references/platform-ops.md) |
-| 322 | ✓ | [`.agents/skills/vercel-cli/references/project-infra.md`](.agents/skills/vercel-cli/references/project-infra.md) |
-| 323 | ✓ | [`.agents/skills/vercel-cli/references/projects-and-teams.md`](.agents/skills/vercel-cli/references/projects-and-teams.md) |
-| 324 | ✓ | [`.agents/skills/vercel-cli/references/routing.md`](.agents/skills/vercel-cli/references/routing.md) |
-| 325 | ✓ | [`.agents/skills/vercel-cli/references/sandbox.md`](.agents/skills/vercel-cli/references/sandbox.md) |
-| 326 | ✓ | [`.agents/skills/vercel-cli/references/storage.md`](.agents/skills/vercel-cli/references/storage.md) |
-| 327 | ✓ | [`.agents/skills/vercel-cli/SKILL.md`](.agents/skills/vercel-cli/SKILL.md) |
-| 328 | ✓ | [`.agents/skills/writing-evals/.meta/.gitkeep`](.agents/skills/writing-evals/.meta/.gitkeep) |
-| 329 | ✓ | [`.agents/skills/writing-evals/README.md`](.agents/skills/writing-evals/README.md) |
-| 330 | ✓ | [`.agents/skills/writing-evals/reference/api-reference.md`](.agents/skills/writing-evals/reference/api-reference.md) |
-| 331 | ✓ | [`.agents/skills/writing-evals/reference/flag-schema-guide.md`](.agents/skills/writing-evals/reference/flag-schema-guide.md) |
-| 332 | ✓ | [`.agents/skills/writing-evals/reference/scorer-patterns.md`](.agents/skills/writing-evals/reference/scorer-patterns.md) |
-| 333 | ✓ | [`.agents/skills/writing-evals/reference/templates/app-scope.ts`](.agents/skills/writing-evals/reference/templates/app-scope.ts) |
-| 334 | ✓ | [`.agents/skills/writing-evals/reference/templates/axiom.config.ts`](.agents/skills/writing-evals/reference/templates/axiom.config.ts) |
-| 335 | ✓ | [`.agents/skills/writing-evals/reference/templates/classification.eval.ts`](.agents/skills/writing-evals/reference/templates/classification.eval.ts) |
-| 336 | ✓ | [`.agents/skills/writing-evals/reference/templates/instrumentation.ts`](.agents/skills/writing-evals/reference/templates/instrumentation.ts) |
-| 337 | ✓ | [`.agents/skills/writing-evals/reference/templates/minimal.eval.ts`](.agents/skills/writing-evals/reference/templates/minimal.eval.ts) |
-| 338 | ✓ | [`.agents/skills/writing-evals/reference/templates/retrieval.eval.ts`](.agents/skills/writing-evals/reference/templates/retrieval.eval.ts) |
-| 339 | ✓ | [`.agents/skills/writing-evals/reference/templates/structured-output.eval.ts`](.agents/skills/writing-evals/reference/templates/structured-output.eval.ts) |
-| 340 | ✓ | [`.agents/skills/writing-evals/reference/templates/tool-use.eval.ts`](.agents/skills/writing-evals/reference/templates/tool-use.eval.ts) |
-| 341 | ✓ | [`.agents/skills/writing-evals/scripts/eval-add-cases`](.agents/skills/writing-evals/scripts/eval-add-cases) |
-| 342 | ✓ | [`.agents/skills/writing-evals/scripts/eval-init`](.agents/skills/writing-evals/scripts/eval-init) |
-| 343 | ✓ | [`.agents/skills/writing-evals/scripts/eval-list`](.agents/skills/writing-evals/scripts/eval-list) |
-| 344 | ✓ | [`.agents/skills/writing-evals/scripts/eval-results`](.agents/skills/writing-evals/scripts/eval-results) |
-| 345 | ✓ | [`.agents/skills/writing-evals/scripts/eval-run`](.agents/skills/writing-evals/scripts/eval-run) |
-| 346 | ✓ | [`.agents/skills/writing-evals/scripts/eval-scaffold`](.agents/skills/writing-evals/scripts/eval-scaffold) |
-| 347 | ✓ | [`.agents/skills/writing-evals/scripts/eval-validate`](.agents/skills/writing-evals/scripts/eval-validate) |
-| 348 | ✓ | [`.agents/skills/writing-evals/scripts/setup`](.agents/skills/writing-evals/scripts/setup) |
-| 349 | ✓ | [`.agents/skills/writing-evals/SKILL.md`](.agents/skills/writing-evals/SKILL.md) |
-| 350 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 266 | ✓ | [`.agents/skills/proof-video/SKILL.md`](.agents/skills/proof-video/SKILL.md) |
+| 267 | ✓ | [`.agents/skills/query-metrics/README.md`](.agents/skills/query-metrics/README.md) |
+| 268 | ✓ | [`.agents/skills/query-metrics/scripts/axiom-api`](.agents/skills/query-metrics/scripts/axiom-api) |
+| 269 | ✓ | [`.agents/skills/query-metrics/scripts/datasets`](.agents/skills/query-metrics/scripts/datasets) |
+| 270 | ✓ | [`.agents/skills/query-metrics/scripts/metrics-info`](.agents/skills/query-metrics/scripts/metrics-info) |
+| 271 | ✓ | [`.agents/skills/query-metrics/scripts/metrics-query`](.agents/skills/query-metrics/scripts/metrics-query) |
+| 272 | ✓ | [`.agents/skills/query-metrics/scripts/metrics-spec`](.agents/skills/query-metrics/scripts/metrics-spec) |
+| 273 | ✓ | [`.agents/skills/query-metrics/scripts/resolve-url`](.agents/skills/query-metrics/scripts/resolve-url) |
+| 274 | ✓ | [`.agents/skills/query-metrics/scripts/setup`](.agents/skills/query-metrics/scripts/setup) |
+| 275 | ✓ | [`.agents/skills/query-metrics/SKILL.md`](.agents/skills/query-metrics/SKILL.md) |
+| 276 | ✓ | [`.agents/skills/sentry-fix-issues/SKILL.md`](.agents/skills/sentry-fix-issues/SKILL.md) |
+| 277 | ✓ | [`.agents/skills/spl-to-apl/.meta/2026-01-28-schema-read-findings.md`](.agents/skills/spl-to-apl/.meta/2026-01-28-schema-read-findings.md) |
+| 278 | ✓ | [`.agents/skills/spl-to-apl/.meta/cases.ts`](.agents/skills/spl-to-apl/.meta/cases.ts) |
+| 279 | ✓ | [`.agents/skills/spl-to-apl/.meta/DESIGN-NOTES.md`](.agents/skills/spl-to-apl/.meta/DESIGN-NOTES.md) |
+| 280 | ✓ | [`.agents/skills/spl-to-apl/.meta/spl-to-apl.eval.ts`](.agents/skills/spl-to-apl/.meta/spl-to-apl.eval.ts) |
+| 281 | ✓ | [`.agents/skills/spl-to-apl/README.md`](.agents/skills/spl-to-apl/README.md) |
+| 282 | ✓ | [`.agents/skills/spl-to-apl/reference/command-mapping.md`](.agents/skills/spl-to-apl/reference/command-mapping.md) |
+| 283 | ✓ | [`.agents/skills/spl-to-apl/reference/dataset-schemas.md`](.agents/skills/spl-to-apl/reference/dataset-schemas.md) |
+| 284 | ✓ | [`.agents/skills/spl-to-apl/reference/examples.md`](.agents/skills/spl-to-apl/reference/examples.md) |
+| 285 | ✓ | [`.agents/skills/spl-to-apl/reference/function-mapping.md`](.agents/skills/spl-to-apl/reference/function-mapping.md) |
+| 286 | ✓ | [`.agents/skills/spl-to-apl/SKILL.md`](.agents/skills/spl-to-apl/SKILL.md) |
+| 287 | ✓ | [`.agents/skills/spl-to-apl/tests/test-queries.md`](.agents/skills/spl-to-apl/tests/test-queries.md) |
+| 288 | ✓ | [`.agents/skills/technical-documentation/agents/docs-framework-agent.md`](.agents/skills/technical-documentation/agents/docs-framework-agent.md) |
+| 289 | ✓ | [`.agents/skills/technical-documentation/agents/governance-agent.md`](.agents/skills/technical-documentation/agents/governance-agent.md) |
+| 290 | ✓ | [`.agents/skills/technical-documentation/agents/inventory-agent.md`](.agents/skills/technical-documentation/agents/inventory-agent.md) |
+| 291 | ✓ | [`.agents/skills/technical-documentation/agents/openai.yaml`](.agents/skills/technical-documentation/agents/openai.yaml) |
+| 292 | ✓ | [`.agents/skills/technical-documentation/agents/synthesis-agent.md`](.agents/skills/technical-documentation/agents/synthesis-agent.md) |
+| 293 | ✓ | [`.agents/skills/technical-documentation/assets/icon.jpg`](.agents/skills/technical-documentation/assets/icon.jpg) |
+| 294 | ✓ | [`.agents/skills/technical-documentation/references/agent-and-contributing.md`](.agents/skills/technical-documentation/references/agent-and-contributing.md) |
+| 295 | ✓ | [`.agents/skills/technical-documentation/references/build.md`](.agents/skills/technical-documentation/references/build.md) |
+| 296 | ✓ | [`.agents/skills/technical-documentation/references/openclaw.md`](.agents/skills/technical-documentation/references/openclaw.md) |
+| 297 | ✓ | [`.agents/skills/technical-documentation/references/principles.md`](.agents/skills/technical-documentation/references/principles.md) |
+| 298 | ✓ | [`.agents/skills/technical-documentation/references/review.md`](.agents/skills/technical-documentation/references/review.md) |
+| 299 | ✓ | [`.agents/skills/technical-documentation/references/tooling.md`](.agents/skills/technical-documentation/references/tooling.md) |
+| 300 | ✓ | [`.agents/skills/technical-documentation/SKILL.md`](.agents/skills/technical-documentation/SKILL.md) |
+| 301 | ✓ | [`.agents/skills/vercel-cli/command/vercel.md`](.agents/skills/vercel-cli/command/vercel.md) |
+| 302 | ✓ | [`.agents/skills/vercel-cli/references/advanced.md`](.agents/skills/vercel-cli/references/advanced.md) |
+| 303 | ✓ | [`.agents/skills/vercel-cli/references/agent-and-ai.md`](.agents/skills/vercel-cli/references/agent-and-ai.md) |
+| 304 | ✓ | [`.agents/skills/vercel-cli/references/bun.md`](.agents/skills/vercel-cli/references/bun.md) |
+| 305 | ✓ | [`.agents/skills/vercel-cli/references/ci-automation.md`](.agents/skills/vercel-cli/references/ci-automation.md) |
+| 306 | ✓ | [`.agents/skills/vercel-cli/references/comments.md`](.agents/skills/vercel-cli/references/comments.md) |
+| 307 | ✓ | [`.agents/skills/vercel-cli/references/connectors.md`](.agents/skills/vercel-cli/references/connectors.md) |
+| 308 | ✓ | [`.agents/skills/vercel-cli/references/container-registry.md`](.agents/skills/vercel-cli/references/container-registry.md) |
+| 309 | ✓ | [`.agents/skills/vercel-cli/references/deployment.md`](.agents/skills/vercel-cli/references/deployment.md) |
+| 310 | ✓ | [`.agents/skills/vercel-cli/references/domains-and-dns.md`](.agents/skills/vercel-cli/references/domains-and-dns.md) |
+| 311 | ✓ | [`.agents/skills/vercel-cli/references/environment-variables.md`](.agents/skills/vercel-cli/references/environment-variables.md) |
+| 312 | ✓ | [`.agents/skills/vercel-cli/references/firewall.md`](.agents/skills/vercel-cli/references/firewall.md) |
+| 313 | ✓ | [`.agents/skills/vercel-cli/references/flags.md`](.agents/skills/vercel-cli/references/flags.md) |
+| 314 | ✓ | [`.agents/skills/vercel-cli/references/getting-started.md`](.agents/skills/vercel-cli/references/getting-started.md) |
+| 315 | ✓ | [`.agents/skills/vercel-cli/references/global-options.md`](.agents/skills/vercel-cli/references/global-options.md) |
+| 316 | ✓ | [`.agents/skills/vercel-cli/references/integrations.md`](.agents/skills/vercel-cli/references/integrations.md) |
+| 317 | ✓ | [`.agents/skills/vercel-cli/references/local-development.md`](.agents/skills/vercel-cli/references/local-development.md) |
+| 318 | ✓ | [`.agents/skills/vercel-cli/references/microfrontends.md`](.agents/skills/vercel-cli/references/microfrontends.md) |
+| 319 | ✓ | [`.agents/skills/vercel-cli/references/monitoring-and-debugging.md`](.agents/skills/vercel-cli/references/monitoring-and-debugging.md) |
+| 320 | ✓ | [`.agents/skills/vercel-cli/references/monorepos.md`](.agents/skills/vercel-cli/references/monorepos.md) |
+| 321 | ✓ | [`.agents/skills/vercel-cli/references/node-backends.md`](.agents/skills/vercel-cli/references/node-backends.md) |
+| 322 | ✓ | [`.agents/skills/vercel-cli/references/platform-ops.md`](.agents/skills/vercel-cli/references/platform-ops.md) |
+| 323 | ✓ | [`.agents/skills/vercel-cli/references/project-infra.md`](.agents/skills/vercel-cli/references/project-infra.md) |
+| 324 | ✓ | [`.agents/skills/vercel-cli/references/projects-and-teams.md`](.agents/skills/vercel-cli/references/projects-and-teams.md) |
+| 325 | ✓ | [`.agents/skills/vercel-cli/references/routing.md`](.agents/skills/vercel-cli/references/routing.md) |
+| 326 | ✓ | [`.agents/skills/vercel-cli/references/sandbox.md`](.agents/skills/vercel-cli/references/sandbox.md) |
+| 327 | ✓ | [`.agents/skills/vercel-cli/references/storage.md`](.agents/skills/vercel-cli/references/storage.md) |
+| 328 | ✓ | [`.agents/skills/vercel-cli/SKILL.md`](.agents/skills/vercel-cli/SKILL.md) |
+| 329 | ✓ | [`.agents/skills/writing-evals/.meta/.gitkeep`](.agents/skills/writing-evals/.meta/.gitkeep) |
+| 330 | ✓ | [`.agents/skills/writing-evals/README.md`](.agents/skills/writing-evals/README.md) |
+| 331 | ✓ | [`.agents/skills/writing-evals/reference/api-reference.md`](.agents/skills/writing-evals/reference/api-reference.md) |
+| 332 | ✓ | [`.agents/skills/writing-evals/reference/flag-schema-guide.md`](.agents/skills/writing-evals/reference/flag-schema-guide.md) |
+| 333 | ✓ | [`.agents/skills/writing-evals/reference/scorer-patterns.md`](.agents/skills/writing-evals/reference/scorer-patterns.md) |
+| 334 | ✓ | [`.agents/skills/writing-evals/reference/templates/app-scope.ts`](.agents/skills/writing-evals/reference/templates/app-scope.ts) |
+| 335 | ✓ | [`.agents/skills/writing-evals/reference/templates/axiom.config.ts`](.agents/skills/writing-evals/reference/templates/axiom.config.ts) |
+| 336 | ✓ | [`.agents/skills/writing-evals/reference/templates/classification.eval.ts`](.agents/skills/writing-evals/reference/templates/classification.eval.ts) |
+| 337 | ✓ | [`.agents/skills/writing-evals/reference/templates/instrumentation.ts`](.agents/skills/writing-evals/reference/templates/instrumentation.ts) |
+| 338 | ✓ | [`.agents/skills/writing-evals/reference/templates/minimal.eval.ts`](.agents/skills/writing-evals/reference/templates/minimal.eval.ts) |
+| 339 | ✓ | [`.agents/skills/writing-evals/reference/templates/retrieval.eval.ts`](.agents/skills/writing-evals/reference/templates/retrieval.eval.ts) |
+| 340 | ✓ | [`.agents/skills/writing-evals/reference/templates/structured-output.eval.ts`](.agents/skills/writing-evals/reference/templates/structured-output.eval.ts) |
+| 341 | ✓ | [`.agents/skills/writing-evals/reference/templates/tool-use.eval.ts`](.agents/skills/writing-evals/reference/templates/tool-use.eval.ts) |
+| 342 | ✓ | [`.agents/skills/writing-evals/scripts/eval-add-cases`](.agents/skills/writing-evals/scripts/eval-add-cases) |
+| 343 | ✓ | [`.agents/skills/writing-evals/scripts/eval-init`](.agents/skills/writing-evals/scripts/eval-init) |
+| 344 | ✓ | [`.agents/skills/writing-evals/scripts/eval-list`](.agents/skills/writing-evals/scripts/eval-list) |
+| 345 | ✓ | [`.agents/skills/writing-evals/scripts/eval-results`](.agents/skills/writing-evals/scripts/eval-results) |
+| 346 | ✓ | [`.agents/skills/writing-evals/scripts/eval-run`](.agents/skills/writing-evals/scripts/eval-run) |
+| 347 | ✓ | [`.agents/skills/writing-evals/scripts/eval-scaffold`](.agents/skills/writing-evals/scripts/eval-scaffold) |
+| 348 | ✓ | [`.agents/skills/writing-evals/scripts/eval-validate`](.agents/skills/writing-evals/scripts/eval-validate) |
+| 349 | ✓ | [`.agents/skills/writing-evals/scripts/setup`](.agents/skills/writing-evals/scripts/setup) |
+| 350 | ✓ | [`.agents/skills/writing-evals/SKILL.md`](.agents/skills/writing-evals/SKILL.md) |
+| 351 | ✓ | [`AGENTS.md`](AGENTS.md) |
 
 ---
 
